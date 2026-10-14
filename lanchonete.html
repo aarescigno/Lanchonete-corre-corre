@@ -103,6 +103,8 @@ table.rank tr.me td{background:#fbe7a8}
 #rotate{position:fixed;left:50%;bottom:6px;transform:translateX(-50%);background:var(--mostarda);color:var(--tinta);border:2px solid var(--tinta);border-radius:999px;padding:6px 14px;font:600 13px var(--fb);display:none;z-index:5;white-space:nowrap}
 @media (orientation:portrait){#rotate{display:block}}
 @media (prefers-reduced-motion:reduce){.btn{transition:none}}
+/* celular em pé: o card da Dani fica estreito e as tarefas não cabem em 2 colunas (invadiam o card do couvert) */
+@media (max-width:600px) and (min-height:461px){.item .tasks{grid-template-columns:1fr}.item .toggle{border-radius:12px}}
 /* lojinha compacta em telas menores */
 @media (max-height:620px){
   #ov-shop .panel{padding:calc(var(--u)*10) calc(var(--u)*16)}
