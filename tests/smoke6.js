@@ -9,7 +9,17 @@ const run=(sec,keep)=>{ for(let i=0;i<sec*20;i++){ if(keep) g.groups.forEach(x=>
 /* água saborizada no lugar da jukebox */
 ok(L.UPGRADES.some(u=>u.id==='agua') && !L.UPGRADES.some(u=>u.id==='jukebox'),'Água saborizada substitui a Jukebox');
 { const s=L.normSave({up:{jukebox:true}}); ok(s.up.agua && !s.up.jukebox,'save antigo: Jukebox vira Água saborizada'); }
-{ reset({}); g.resetDay(3); const a=new L.Group(g,'estudante',1,0); const p0=a.patPer(); g.up.agua=true; ok(Math.abs(a.patPer()-p0*1.25)<1e-9,'água: paciência na fila ×1,25'); g.up={}; g.save.up=g.up; }
+{ reset({}); g.resetDay(3); const a=new L.Group(g,'estudante',1,0); const p0=a.patPer(); g.up.agua=true;
+  ok(Math.abs(a.patPer()-p0)<1e-9,'água: sem tomar, a paciência não muda');
+  ok(g.agua===L.AGUA.cap,'água: a jarra começa o dia cheia ('+L.AGUA.cap+' doses)');
+  a.size=2; g.agua=5; a.drink(); ok(g.agua===3 && a.aguaN===2 && Math.abs(a.patPer()-p0*1.25)<1e-9,'água: cada pessoa toma 1 dose; paciência na fila ×1,25');
+  const b=new L.Group(g,'estudante',2,0); b.size=2; g.agua=1; b.drink(); ok(g.agua===0 && b.aguaN===1 && Math.abs(b.patPer()-p0*1.125)<1e-9,'água: só 1 dose para 2 pessoas, metade do efeito');
+  const c=new L.Group(g,'estudante',3,0); c.drink(); ok(c.aguaN===0 && Math.abs(c.patPer()-p0)<1e-9,'água: jarra vazia, sem efeito');
+  ok(g.stationAt(182,140)==='agua','água: toque na jarra');
+  g.money=100; g.bia.perform({type:'agua'}); ok(g.agua===L.AGUA.cap && g.money===100-L.AGUA.price && g.stats.refill===1,'água: recarregar custa R$ '+L.AGUA.price);
+  g.bia.perform({type:'agua'}); ok(g.money===100-L.AGUA.price,'água: cheia, não cobra de novo');
+  g.agua=0; g.money=5; g.bia.perform({type:'agua'}); ok(g.agua===0 && g.money===5,'água: sem dinheiro, não recarrega');
+  g.up={}; g.save.up=g.up; ok(g.stationAt(182,140)===null,'sem a melhoria, a jarra não aparece'); }
 
 /* folha e cofre */
 ok(L.payroll(L.normSave({}).equipe)===0,'sem equipe, folha zero');
@@ -60,8 +70,15 @@ ok(L.dishStock(L.DAYS[2])===3 && L.dishStock(L.DAYS[5])===3 && L.dishStock(L.DAY
   g.trash=7; run(20,true); ok(g.trash===0,'Dani tira o lixo'); }
 { reset({dani:1,daniTasks:['lavar','lixo']}); g.startDay(3); g.begin(); g.schedule=[{t:1e9,type:'estudante',color:0}]; g.nextIdx=0;
   g.bia.hands=[{kind:'dirty',n:2}]; ok(g.bia.duration({type:'sink'})===L.WASH.base,'Dani lava: a Bia só deixa na pia');
-  g.kitchen.sinkN=2; ok(Math.abs(g.dani.duration({type:'sink'})-(L.WASH.base+2*L.WASH.perPile/0.5))<1e-9,'Dani nível 1 lava a 50% do ritmo da Bia');
-  g.save.equipe.dani=3; ok(Math.abs(g.dani.duration({type:'sink'})-(L.WASH.base+2*L.WASH.perPile/0.8))<1e-9,'nível 3 lava a 80%'); g.save.equipe.dani=1; g.kitchen.sinkN=0;
+  g.kitchen.sinkN=2; ok(Math.abs(g.dani.duration({type:'sink'})-L.WASH.perPile/0.5)<1e-9,'Dani nível 1 lava 1 pilha a 50% do ritmo da Bia');
+  g.save.equipe.dani=3; ok(Math.abs(g.dani.duration({type:'sink'})-L.WASH.perPile/0.8)<1e-9,'nível 3 lava a 80%'); g.save.equipe.dani=1; g.kitchen.sinkN=0; }
+/* Dani sem limite de pilhas: só o tempo de lavar */
+{ reset({dani:1,daniTasks:['lavar','lixo']}); g.startDay(3); g.begin(); g.schedule=[{t:1e9,type:'estudante',color:0}]; g.nextIdx=0;
+  const TRASHCAP=L.TRASH.cap; L.TRASH.cap=1e9; g.clock=1e4;
+  g.kitchen.sinkN=40; g.kitchen.clean=0; const per=L.WASH.perPile/0.5;
+  run(per*10+6,true); const w1=g.stats.washed; ok(w1>=8 && w1<=11,'Dani devolve os pratos 1 a 1 ('+w1+' em ~'+Math.round(per*10)+' s)');
+  run(per*30+10,true); ok(g.stats.washed===40 && g.kitchen.sinkN===0 && g.kitchen.clean===40,'Dani lava as 40 pilhas, sem limite');
+  L.TRASH.cap=TRASHCAP; g.trash=0; g.clock=60; g.bia.hands=[{kind:'dirty',n:2}];
   g.tapStation('sink',850,450); run(2); ok(g.kitchen.sinkN===1,'pilha esperando na pia'); run(20); ok(g.kitchen.sinkN===0,'Dani lavou'); }
 { reset({dani:1,daniTasks:['cafe','lixo']}); g.startDay(4); g.begin(); g.schedule=[{t:1e9,type:'estudante',color:0}]; g.nextIdx=0;
   const grp=g.spawn({type:'estudante',color:0}); g.seatGroup(grp,g.tables[0]); run(3,true); grp.hearts=2; run(25,true);

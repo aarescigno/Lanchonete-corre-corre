@@ -352,7 +352,8 @@ const STATIONS = {
   coffee: { ap:{x:744,y:350}, rect:{x:766,y:306,w:97, h:88 } },
   juice:  { ap:{x:744,y:350}, rect:{x:863,y:306,w:97, h:88 } },
   sink:   { ap:{x:744,y:452}, rect:{x:766,y:396,w:194,h:140} },
-  trash:  { ap:{x:684,y:520}, rect:{x:700,y:474,w:46,h:62 } }   // lixeira no chão, ao lado do balcão
+  trash:  { ap:{x:684,y:520}, rect:{x:700,y:474,w:46,h:62 } },  // lixeira no chão, ao lado do balcão
+  agua:   { ap:{x:182,y:180}, rect:{x:160,y:112,w:44,h:56 } }   // jarra de água saborizada na entrada
 };
 const PLATE_SLOTS = [ {x:806,y:270}, {x:848,y:270}, {x:890,y:270}, {x:932,y:270} ];
 const BOUNDS = { x0:24, y0:112, x1:744, y1:528 };
@@ -405,6 +406,9 @@ function dishStock(day){
 const JUICE = { price:12, prep:0.6 };
 /* valor de cada bebida; jogar uma na lixeira custa metade dele */
 const DRINK_PRICE = { coffee:5, juice:JUICE.price };
+/* água saborizada (melhoria): jarra com doses na entrada. Cada pessoa que espera na fila
+   toma 1 dose e fica com a paciência 25% mais lenta; vazia, a Bia recarrega por um preço módico */
+const AGUA = { cap:12, price:15, refill:0.8, effect:0.25 };
 const VIP = { pat:0.75, tip:0.5, perfect:40, angry:30, types:['estudante','vovos','familia','executiva'] };
 
 const DAYS = [
@@ -412,16 +416,16 @@ const DAYS = [
   { n:2, tables:[1,2,4,5],       groups:9,  types:['estudante','vovos','familia'],                         nu:'familia',    meta:700, expert:1100,  time:160, speed:0.60, note:'Chegou a família! Grupos de 3 ou 4 só cabem nas mesas grandes.' },
   { n:3, tables:[1,2,3,4,5],     groups:18, types:['estudante','vovos','familia','executiva'],             nu:'executiva',  meta:1300,expert:1800,  time:170, speed:0.60, juice:0.3, note:'O movimento aumentou e agora só há 3 pratos limpos: sozinha a Bia não dá conta, contrate ajuda na lojinha. A executiva tem pouca paciência, mas deixa boa gorjeta. E abriu o balcão de sucos: quem pede suco quer receber antes da conta!' },
   { n:4, tables:[1,2,3,4,5,6],   groups:22, types:['estudante','vovos','familia','executiva','entregador'], nu:'entregador', meta:1300,expert:1750, time:180, speed:0.58, juice:0.3, note:'O entregador de moto tem pressa: pouquíssima paciência!' },
-  { n:5, tables:[1,2,3,4,5,6],   groups:26, types:['estudante','vovos','familia','executiva','entregador'], nu:null,         meta:1440,expert:1900, time:190, speed:0.56, vip:0.15, juice:0.3, note:'Chegou cliente VIP (de óculos escuros e plaquinha dourada)! Fura a fila e tem menos paciência, mas paga gorjeta extra e um bônus se sair com 5 corações. Se sair bravo, a multa dobra.' },
-  { n:6, tables:[1,2,3,4,5,6],   groups:29, types:['estudante','vovos','familia','executiva','entregador'], nu:null,         meta:1440,expert:1950, time:200, speed:0.54, vip:0.15, juice:0.3, note:'Sexta-feira: ninguém quer esperar.' },
-  { n:7, tables:[1,2,3,4,5,6],   groups:33, types:['estudante','vovos','familia','executiva','entregador'], nu:null,         meta:1500,expert:2050, time:220, speed:0.52, vip:0.15, juice:0.3, note:'Tonhão está gripado: a cozinha anda mais devagar hoje.' }
+  { n:5, tables:[1,2,3,4,5,6],   groups:26, types:['estudante','vovos','familia','executiva','entregador'], nu:null,         meta:1360,expert:1900, time:190, speed:0.56, vip:0.15, juice:0.3, note:'Chegou cliente VIP (de óculos escuros e plaquinha dourada)! Fura a fila e tem menos paciência, mas paga gorjeta extra e um bônus se sair com 5 corações. Se sair bravo, a multa dobra.' },
+  { n:6, tables:[1,2,3,4,5,6],   groups:29, types:['estudante','vovos','familia','executiva','entregador'], nu:null,         meta:1360,expert:1950, time:200, speed:0.54, vip:0.15, juice:0.3, note:'Sexta-feira: ninguém quer esperar.' },
+  { n:7, tables:[1,2,3,4,5,6],   groups:33, types:['estudante','vovos','familia','executiva','entregador'], nu:null,         meta:1450,expert:2050, time:220, speed:0.52, vip:0.15, juice:0.3, note:'Tonhão está gripado: a cozinha anda mais devagar hoje.' }
 ];
 
 const ENDLESS = { n:0, tables:[1,2,3,4,5,6], groups:0, types:['estudante','vovos','familia','executiva','entregador'], nu:null, meta:0, expert:0, time:0, speed:1, vip:0.12, juice:0.3, note:'', endless:true };
 
 const UPGRADES = [
   { id:'tenis',      name:'Tênis novos',          desc:'A Bia anda 10% mais rápido.',                  cost:150 },
-  { id:'agua',       name:'Água saborizada',      desc:'Água com frutas na entrada: a paciência na fila cai 20% mais devagar.', cost:180 },
+  { id:'agua',       name:'Água saborizada',      desc:'Jarra na entrada: quem toma 1 dose espera na fila 20% mais devagar. Rende ' + AGUA.cap + ' doses; recarregar custa R$ ' + AGUA.price + '.', cost:180 },
   { id:'cafeteira',  name:'Cafeteira de 2 bocas', desc:'O cafezinho devolve +2 corações.',             cost:200 },
   { id:'bandeja',    name:'Bandeja',              desc:'Leva 2 pratos, 3 bebidas, prato + bebida ou 2 pilhas de louça.', cost:220 },
   { id:'ventilador', name:'Ventilador de teto',   desc:'A freguesia come 15% mais rápido.',            cost:250 },
@@ -672,6 +676,7 @@ class Group {
     this.timer = 0; this.eatTotal = 1; this.coffee = false;
     this.boing = 0; this.angry = false; this.done = false; this.paid = false;
     this.cmd = -1; this.hold = 0; this.bounced = false;
+    this.aguaN = 0; this.drank = false;
     this.state = 'queue'; this.stateT = 0; this.patLeft = 0;
     this.setState('queue');
   }
@@ -680,13 +685,24 @@ class Group {
     if (!b) return Infinity;
     let m = b * this.T.pat;
     if (this.vip) m *= VIP.pat;
-    if (this.state === 'queue' && this.game.up.agua) m *= 1.25;
+    if (this.state === 'queue' && this.aguaN) m *= 1 + AGUA.effect * this.aguaN / this.size;
     const g = this.game, eq = g.save.equipe;
     if (eq.couvert && this.state !== 'queue') m /= 1 - couvertEffect(eq);
     if (g.trashFull) m /= 1 + TRASH.smell;
     return m;
   }
   setState(s){ this.state = s; this.stateT = 0; this.patLeft = this.patPer(); }
+  /* ao chegar na fila, cada pessoa toma 1 dose de água, se houver */
+  drink(){
+    const g = this.game;
+    this.drank = true;
+    if (!g.up.agua) return;
+    const n = Math.min(this.size, g.agua);
+    if (n <= 0) return;
+    const old = this.patPer();
+    g.agua -= n; this.aguaN = n;
+    this.patLeft *= this.patPer() / old;
+  }
   gain(n){ this.hearts = Math.min(5, this.hearts + n); this.patLeft = this.patPer(); }
   get juicePending(){ return Math.max(0, this.juiceWant - this.juiceGot); }
   /* o pedido de suco aparece quando a comanda é anotada e vale até a conta */
@@ -718,7 +734,9 @@ class Group {
     if (this.boing > 0) this.boing -= dt;
     switch (this.state){
       case 'queue':
-        this.moveAlong(dt, 220); this.tick(dt); break;
+        this.moveAlong(dt, 220);
+        if (!this.drank && !this.path.length) this.drink();
+        this.tick(dt); break;
       case 'toTable':
         this.moveAlong(dt, 230);
         if (!this.path.length){
@@ -893,6 +911,7 @@ class Waitress {
       return (t && t.group && t.group.state === 'wantOrder') ? 0.6 : 0.35;
     }
     if (a.type === 'juice') return JUICE.prep;
+    if (a.type === 'agua') return AGUA.refill;
     const g = this.g;
     if (a.type === 'sink'){
       // a Bia lava tudo o que estiver na pia, a não ser que a Dani esteja encarregada de lavar
@@ -1016,6 +1035,16 @@ class Waitress {
       if (overflow){ g.trash = 0; g.stats.emptied++; g.addText(this.x, this.y - 126, 'Lixo pra fora!', PAL.ok, 15); }
       return;
     }
+    if (a.type === 'agua'){
+      if (!g.up.agua) return this.fail('?');
+      if (g.agua >= AGUA.cap) return this.fail('Está cheia!');
+      if (g.money < AGUA.price) return this.fail('Sem dinheiro!');
+      g.agua = AGUA.cap; g.addMoney(-AGUA.price); g.stats.refill++;
+      g.addText(this.x, this.y - 82, 'Água cheia!', PAL.faixa, 15);
+      g.addText(this.x, this.y - 104, '-' + AGUA.price, PAL.perigo, 18);
+      Sfx.tone(520, 0.1, 'sine', 0.05); Sfx.tone(780, 0.12, 'sine', 0.05, 0.08);
+      return;
+    }
     if (a.type === 'sink'){
       const n = this.hands.filter(h => h.kind === 'dirty').length;
       if (!n && !g.kitchen.sinkN) return this.fail('?');
@@ -1128,6 +1157,9 @@ class Helper {
       const t = (coffee.table && coffee.table.group === coffee.group && coffee.group && coffee.group.seated && !coffee.group.coffee) ? coffee.table : this.coffeeTarget();
       if (t){ coffee.table = t; coffee.group = t.group; t.group.daniCoffee = true; return this.go(this.nearestAp(t), { type:'serve', t }); }
     }
+    // já na pia: continua lavando até acabar a louça
+    const ap = STATIONS.sink.ap;
+    if (this.does('lavar') && k.sinkN > 0 && !dirty && Math.hypot(this.x - ap.x, this.y - ap.y) < 4) return this.go(ap, { type:'sink' });
     if (this.does('pratos') && dirty < 2){
       const c = g.tables.filter(t => t.open && t.dirty && !this.biaWants(t));
       c.sort((a,b) => Math.hypot(a.cx-this.x,a.cy-this.y) - Math.hypot(b.cx-this.x,b.cy-this.y));
@@ -1140,8 +1172,12 @@ class Helper {
     if (Math.hypot(this.x - DANI_HOME.x, this.y - DANI_HOME.y) > 4) return this.go(DANI_HOME, null);
   }
   duration(st){
-    // lava no mesmo ritmo do deslocamento: 50% da Bia leva o dobro do tempo por pilha
-    if (st.type === 'sink') return WASH.base + (this.does('lavar') ? WASH.perPile / this.spec.speed * (this.g.kitchen.sinkN + this.hands.filter(h => h.kind === 'dirty').length) : 0);
+    // lava 1 pilha por vez, no mesmo ritmo do deslocamento (50% da Bia leva o dobro do tempo por pilha);
+    // não há limite de pilhas: só o tempo de lavar
+    if (st.type === 'sink'){
+      const drop = this.hands.some(h => h.kind === 'dirty');
+      return (drop ? WASH.base : 0) + (this.does('lavar') ? WASH.perPile / this.spec.speed : 0);
+    }
     if (st.type === 'trash') return TRASH.empty;
     return 0.35;
   }
@@ -1156,7 +1192,7 @@ class Helper {
       const n = this.hands.filter(h => h.kind === 'dirty').length;
       this.hands = this.hands.filter(h => h.kind !== 'dirty');
       g.kitchen.sinkN += n;
-      if (this.does('lavar')){ const w = g.washPiles(g.kitchen.sinkN); if (w) { g.addText(this.x, this.y - 82, 'Dani lavou!', PAL.faixa, 14); Sfx.wash(); } }
+      if (this.does('lavar') && g.washPiles(1)){ g.addText(this.x, this.y - 82, 'Dani lavou!', PAL.faixa, 14); Sfx.wash(); }
     } else if (st.type === 'trash'){
       if (g.trash > 0){ g.trash = 0; g.stats.emptied++; g.addText(this.x, this.y - 82, 'Lixo pra fora!', PAL.ok, 14); Sfx.noise(0.3, 0.1, 0, 400); }
     } else if (st.type === 'coffee'){
@@ -1235,10 +1271,11 @@ class Game {
     this.kitchen.reset();
     this.kitchen.clean = dishStock(this.day);
     this.trash = 0; this.paid = 0; this.unpaid = [];
+    this.agua = AGUA.cap;
     this.bia.reset();
     this.dani.reset();
     this.fx = [];
-    this.stats = { served:0, lost:0, chain:0, spawned:0, full:0, vip:0, vipLost:0, juice:0, juiceMiss:0, trash:0, washed:0, emptied:0 };
+    this.stats = { served:0, lost:0, chain:0, spawned:0, full:0, vip:0, vipLost:0, juice:0, juiceMiss:0, trash:0, washed:0, emptied:0, refill:0 };
     this.lastKind = null; this.chainN = 0;
     this.ending = false; this.endTimer = 0; this.reason = '';
     this.sel = null; this.drag = null; this.hover = null;
@@ -1679,7 +1716,8 @@ class Game {
     return null;
   }
   stationAt(x, y){
-    for (const k of ['order','plates','coffee','juice','sink','trash']){
+    for (const k of ['order','plates','coffee','juice','sink','trash','agua']){
+      if (k === 'agua' && !this.up.agua) continue;
       const r = STATIONS[k].rect;
       if (x >= r.x && x <= r.x + r.w && y >= r.y && y <= r.y + r.h) return k;
     }
@@ -2179,14 +2217,32 @@ function drawMusico(ctx,g,tm){
 }
 /* água saborizada na entrada (jarra com frutas numa mesinha) */
 function ctx2chef(c){ c.beginPath(); c.arc(-5,-17,5,0,TAU); c.arc(0,-20,6,0,TAU); c.arc(5,-17,5,0,TAU); fs(c,'#fff',1.6); }
-function drawAguaJar(ctx,x,y,s){
+function drawAguaJar(ctx,x,y,s,lv){
+  lv = lv == null ? 1 : clamp(lv, 0, 1);
   ctx.save(); ctx.translate(x,y); ctx.scale(s,s);
   rr(ctx,-14,-4,28,6,2); fs(ctx,PAL.madeira,2); ctx.fillStyle = PAL.madeiraEsc; ctx.fillRect(-11,2,3,10); ctx.fillRect(8,2,3,10);
   rr(ctx,-10,-30,20,26,6); fs(ctx,'rgba(214,236,246,.9)',2);
-  rr(ctx,-8,-22,16,16,4); ctx.fillStyle = 'rgba(110,184,234,.55)'; ctx.fill();
-  circ(ctx,-3,-14,3); fs(ctx,'#F6C343',1.2); circ(ctx,3,-10,2.6); fs(ctx,'#3E9B5A',1.2); circ(ctx,2,-18,2.2); fs(ctx,PAL.formica,1.2);
+  if (lv > 0){
+    const h = Math.max(3, 18 * lv);
+    rr(ctx,-8,-6-h,16,h,Math.min(4,h/2)); ctx.fillStyle = 'rgba(110,184,234,.55)'; ctx.fill();
+    circ(ctx,-3,-10,3); fs(ctx,'#F6C343',1.2);
+    if (lv > 0.35){ circ(ctx,3,-12,2.6); fs(ctx,'#3E9B5A',1.2); }
+    if (lv > 0.7){ circ(ctx,2,-19,2.2); fs(ctx,PAL.formica,1.2); }
+  }
   rr(ctx,-3,-34,6,5,2); fs(ctx,PAL.cromo,1.4);
   ctx.restore();
+}
+/* jarra no salão: nível das doses, aviso de vazia e destaque quando é a próxima ação da Bia */
+function drawAgua(ctx,g,t,menu){
+  const x = 182, y = 150;
+  drawAguaJar(ctx,x,y,1,menu ? 1 : g.agua / AGUA.cap);
+  if (menu) return;
+  const n = g.agua;
+  rr(ctx,x+12,y-12,24,14,4); fs(ctx,'#fff',1.4);
+  txt(ctx,String(n),x+24,y-4.5,10,n > 0 ? PAL.tinta : PAL.perigo,'center',FD);
+  if (n <= 0){ rr(ctx,x-21,y-52,42,13,4); fs(ctx,PAL.perigo,1.6); txt(ctx,'VAZIA',x,y-45,9,'#fff','center',FD); }
+  const a0 = g.bia.acts[0];
+  if (a0 && a0.type === 'agua'){ ctx.save(); const a = 0.55 + 0.4*Math.sin(t*8); ctx.strokeStyle = 'rgba(242,179,61,' + a + ')'; ctx.lineWidth = 5; const r = STATIONS.agua.rect; rr(ctx,r.x,r.y,r.w,r.h,8); ctx.stroke(); ctx.restore(); }
 }
 function drawTrash(ctx,on,t,g){
   const x = 723, y = 530;
@@ -2605,6 +2661,7 @@ function drawActIcon(ctx,g,a,x,y){
   else if (a.type === 'juice') drawIcon(ctx,'juice',x,y+1,1.0);
   else if (a.type === 'sink') drawIcon(ctx,'drop',x,y,1.05);
   else if (a.type === 'trash') drawIcon(ctx,'trash',x,y,1.0);
+  else if (a.type === 'agua') drawAguaJar(ctx,x,y+10,0.6);
   else if (a.type === 'plate'){
     const p = g.kitchen.plates.find(q => q && q.id === a.pid);
     drawIcon(ctx,'dish',x,y,1.0,p ? p.dish : 'pf',cc);
@@ -2682,7 +2739,7 @@ function render(g, ctx){
     });
   }});
   if (menu) items.pop();
-  if (g.up.agua) items.push({ y:150, f:() => drawAguaJar(ctx,182,150,1) });
+  if (g.up.agua) items.push({ y:150, f:() => drawAgua(ctx,g,tm,menu) });
   if (g.save.equipe.couvert && !menu) items.push({ y:528, f:() => drawMusico(ctx,g,tm) });
   if (g.dani.active && !menu) items.push({ y:g.dani.y, f:() => drawDani(ctx,g.dani,tm) });
   items.sort((a,c) => a.y - c.y).forEach(it => it.f());
@@ -3351,7 +3408,7 @@ fit();
 try { Rank.init(); } catch(e) {}
 game.setState('menu');
 window.__game = game;
-window.__lcc = { STAFF, DANI_TASKS, TRASH, WASH, payroll, couvertEffect, dishStock, normSave, Helper, JUICE, KITCHEN_SLOTS, handLayout, trayOk, Game, Group, Table, Kitchen, Waitress, DAYS, UPGRADES, CUSTOMER_TYPES, LAYOUT, PAL, Sfx, findPath, render, Rank, sortRows, cleanName, normName, CMD, ENDLESS, VIP, rk, renderRank, openRank, closeRank, LS, lsGet, lsSet, loadSave };
+window.__lcc = { AGUA, STAFF, DANI_TASKS, TRASH, WASH, payroll, couvertEffect, dishStock, normSave, Helper, JUICE, KITCHEN_SLOTS, handLayout, trayOk, Game, Group, Table, Kitchen, Waitress, DAYS, UPGRADES, CUSTOMER_TYPES, LAYOUT, PAL, Sfx, findPath, render, Rank, sortRows, cleanName, normName, CMD, ENDLESS, VIP, rk, renderRank, openRank, closeRank, LS, lsGet, lsSet, loadSave };
 window.requestAnimationFrame(frame);
 
 })();

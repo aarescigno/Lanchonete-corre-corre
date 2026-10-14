@@ -62,11 +62,14 @@ Pedido: sobra dinheiro no cofre. Entram contratações com salário, aumento do 
 ## Água saborizada
 - Substitui a Jukebox, que passava a ideia de poluição sonora. Custa o mesmo e tem o mesmo efeito: a paciência na fila cai 20% mais devagar.
 - Aparece desenhada na entrada (jarra com frutas numa mesinha). O save antigo com `up.jukebox` é convertido em `up.agua`.
+- **Jarra com doses** (`AGUA`): 12 doses, cheia no início de cada dia. Cada pessoa que chega à fila toma 1 dose (`Group.drink`); só quem tomou ganha o efeito (paciência na fila ×1,25), proporcional às doses do grupo. Jarra vazia: sem efeito.
+- **Recarregar:** a Bia toca na jarra (estação `agua`, 0,8 s) e paga R$ 15. Cheia, não cobra; sem dinheiro, não recarrega. A jarra mostra o nível, o número de doses e "VAZIA".
+- Medido com o bot: ~1 recarga no dia 2 e 1 a 2 por dia nos dias 3 a 7 (média ~1,5).
 
 ## Balanceamento: sem equipe é quase impossível (pedido do usuário)
 Objetivo: nos 3/4 finais da carreira (dias 3 a 7), quem não contrata bate a meta só ~10% das vezes; com a equipe que o dinheiro acumulado já paga, ~85%.
 - **Mais movimento:** grupos por dia 6, 9, **18, 22, 26, 29, 33** (antes eram 12, 14, 16, 18, 22 nos dias 3 a 7).
-- **Louça curta:** **3 pratos limpos** do dia 3 em diante e 5 no Turno sem fim. Lavar leva **2,5 s por pilha** para a Bia; a Dani leva isso ÷ a velocidade dela.
+- **Louça curta:** **3 pratos limpos** do dia 3 em diante e 5 no Turno sem fim. Lavar leva **2,5 s por pilha** para a Bia; a Dani leva isso ÷ a velocidade dela. A Dani lava **1 pilha por vez**, sem limite de pilhas: só o tempo conta, e os pratos voltam aos poucos; ela fica na pia até a louça acabar.
 - **Lixeira:** capacidade de **6**; cheia, o cheiro acelera a impaciência em **30%**.
 - **Metas e experts:**
 
@@ -74,10 +77,11 @@ Objetivo: nos 3/4 finais da carreira (dias 3 a 7), quem não contrata bate a met
 |---|---|---|
 | 3 | R$ 1300 | R$ 1800 |
 | 4 | R$ 1300 | R$ 1750 |
-| 5 | R$ 1440 | R$ 1900 |
-| 6 | R$ 1440 | R$ 1950 |
-| 7 | R$ 1500 | R$ 2050 |
+| 5 | R$ 1360 | R$ 1900 |
+| 6 | R$ 1360 | R$ 1950 |
+| 7 | R$ 1450 | R$ 2050 |
 
+- Com a água limitada, as metas dos dias 5 a 7 baixaram (eram R$ 1440, 1440 e 1500). Nova medição (160 rodadas): com equipe 74% a 82%; sem equipe 5% a 13%.
 - A abertura do dia 3 avisa que a Bia sozinha não dá conta.
 - **Medição (bot, 80 a 100 rodadas):**
   - **sem equipe:** dia 3 ~20%, dias 4 a 7 entre 4% e 9%;
