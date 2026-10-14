@@ -43,7 +43,7 @@ O smoke2 tinha uma falha intermitente ("conta paga, mesa suja, servidos=1", ~10%
 ## Artifact publicado
 - URL: https://claude.ai/artifact/MJxrgDg8S4akvg47SoQAvj (privado: dono e quem receber acesso)
 - Versão 1 (13/10/2026) é a v1. Versão 2 (14/10/2026), rótulo "v2 — revisão com base no clone". Versão 3 (14/10/2026), rótulo "v3 — clientes VIP".
-- Arquivos extras publicados: `versoes/v1.html` e `versoes/v2.html`, abertos pelo painel Versões. Esse painel é acessado por um ícone discreto (relógio com seta, "Versões anteriores") no canto inferior direito do menu.
+- Arquivos extras publicados: `versoes/v1.html` e `versoes/v2.html`, abertos pelo painel Versões. Esse painel é acessado por um ícone discreto (relógio com seta, "Versões anteriores") no canto inferior direito do painel do menu, na linha do "Zerar progresso".
 - Ao republicar, os arquivos extras omitidos em `files` continuam publicados. Ao criar uma v4, guardar a v3 em `versoes/` e enviar `versoes/v3.html`.
 - Capacidades declaradas na v2. Ao republicar, omitir `capabilities` mantém essas regras:
 ```json

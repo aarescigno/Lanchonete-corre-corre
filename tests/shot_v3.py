@@ -18,7 +18,7 @@ with sync_playwright() as p:
     pg.goto('file://'+S+'/wrapped.html'); pg.wait_for_timeout(700)
     pg.add_script_tag(content=BOT)
     pg.screenshot(path=OUT+'/00_menu.png')
-    pg.hover('#btn-ver'); pg.wait_for_timeout(150); pg.screenshot(path=OUT+'/00b_menu_icone_versoes.png', clip={'x':780,'y':500,'width':180,'height':100})
+    pg.hover('#btn-ver'); pg.wait_for_timeout(150); pg.screenshot(path=OUT+'/00b_menu_icone_versoes.png', clip={'x':30,'y':400,'width':490,'height':140})
     pg.click('#btn-ver'); pg.wait_for_timeout(150); pg.screenshot(path=OUT+'/01_versoes.png'); pg.click('#btn-ver-close')
     m=b.new_page(viewport={'width':740,'height':360}); m.goto('file://'+S+'/wrapped.html'); m.wait_for_timeout(500); m.screenshot(path=OUT+'/00c_menu_celular.png'); m.close()
     pg.click('#btn-how'); pg.wait_for_timeout(150); pg.screenshot(path=OUT+'/02_como_jogar.png', full_page=True)
