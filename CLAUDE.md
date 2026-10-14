@@ -38,7 +38,7 @@ node smoke2.js           # mecânicas: fluxo de mesa, mãos, fila de ações, pa
 node smoke3.js           # v2: pool de cores, fila lotada, Turno sem fim, ranking local/db (stub)
 node smoke4.js           # v3: clientes VIP (agenda, fila, conta, multa, Turno sem fim, render)
 node smoke5.js           # v4: sucos e bandeja (capacidade das mãos, pedido, entrega, conta sem suco, bot dias 3–7)
-node balance.js [N]      # N rodadas por dia (padrão 20); na v4, ~93% das metas batidas pelo bot
+node balance.js [N]      # N rodadas por dia (padrão 20); na v4, ~96% das metas batidas pelo bot
 python3 shot_v2.py       # capturas com Playwright/Chromium em ../capturas/v2
 python3 shot_v3.py       # capturas da v3 em ../capturas/v3 (usa /opt/pw-browsers/chromium se existir)
 python3 shot_v4.py       # capturas da v4 em ../capturas/v4
@@ -49,7 +49,7 @@ O smoke2 tinha uma falha intermitente ("conta paga, mesa suja, servidos=1", ~10%
 
 ## Artifact publicado
 - URL: https://claude.ai/artifact/MJxrgDg8S4akvg47SoQAvj (privado: dono e quem receber acesso)
-- Versão 1 (13/10/2026) é a v1. Versão 2 (14/10/2026), rótulo "v2 — revisão com base no clone". Versão 3 (14/10/2026), rótulo "v3 — clientes VIP"; Versões 4 e 5 foram ajustes de menu da v3. Versão 6 (14/10/2026), rótulo "v4 — sucos e bandeja".
+- Versão 1 (13/10/2026) é a v1. Versão 2 (14/10/2026), rótulo "v2 — revisão com base no clone". Versão 3 (14/10/2026), rótulo "v3 — clientes VIP"; Versões 4 e 5 foram ajustes de menu da v3. Versão 6 (14/10/2026), rótulo "v4 — sucos e bandeja"; Versão 7, "v4 — regras da bandeja e comandas".
 - Arquivos extras publicados: `versoes/v1.html`, `versoes/v2.html` e `versoes/v3.html`, abertos pelo painel Versões. Esse painel é acessado por um ícone discreto (relógio com seta, "Versões anteriores") no canto inferior direito do painel do menu, na linha do "Zerar progresso".
 - Ao republicar, os arquivos extras omitidos em `files` continuam publicados. Ao criar uma v5, guardar a v4 em `versoes/` e enviar `versoes/v4.html`.
 - Capacidades declaradas na v2. Ao republicar, omitir `capabilities` mantém essas regras:
@@ -89,8 +89,9 @@ O smoke2 tinha uma falha intermitente ("conta paga, mesa suja, servidos=1", ~10%
 - **v4 (14/10/2026), balcão de sucos e bandeja** (ver `docs/spec-v4.md`):
   - balcão de sucos ao lado do cafezinho; do dia 3 em diante, ~30% dos grupos pedem de 1 copo até o número de pessoas;
   - cada copo vale R$ 12 e cada entrega devolve 1 coração; conta paga sem o suco custa 1 coração;
-  - upgrade Bandeja (R$ 220): uma mão leva 2 pratos ou 3 bebidas, a outra mão 1 item;
-  - metas dos dias 5 a 7 e experts dos dias 4 a 7 recalibradas; "Como jogar" em duas colunas.
+  - comandas só na mão sem bandeja, todas juntas, até `kitchen.slots` (3);
+  - upgrade Bandeja (R$ 220): 1 prato + 1 bebida, 2 pratos, 3 bebidas ou 2 pilhas de louça (sujo nunca com limpo); a outra mão leva 1 item ou as comandas;
+  - metas da v3 mantidas; "Como jogar" em duas colunas.
 
 ## Ideias pendentes (não implementadas)
 - Testar som e toque em celular real (nunca testados).

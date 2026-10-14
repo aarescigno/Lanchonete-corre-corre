@@ -340,10 +340,10 @@ const DAYS = [
   { n:1, tables:[1,2,4],         groups:6,  types:['estudante','vovos'],                                   nu:null,         meta:250, expert:400,  time:150, speed:0.60, note:'' },
   { n:2, tables:[1,2,4,5],       groups:9,  types:['estudante','vovos','familia'],                         nu:'familia',    meta:700, expert:1100,  time:160, speed:0.60, note:'Chegou a família! Grupos de 3 ou 4 só cabem nas mesas grandes.' },
   { n:3, tables:[1,2,3,4,5],     groups:12, types:['estudante','vovos','familia','executiva'],             nu:'executiva',  meta:900, expert:1400,  time:170, speed:0.60, juice:0.3, note:'A executiva tem pouca paciência, mas deixa boa gorjeta. E abriu o balcão de sucos: quem pede suco quer receber antes da conta!' },
-  { n:4, tables:[1,2,3,4,5,6],   groups:14, types:['estudante','vovos','familia','executiva','entregador'], nu:'entregador', meta:1050,expert:1500, time:180, speed:0.58, juice:0.3, note:'O entregador de moto tem pressa: pouquíssima paciência!' },
-  { n:5, tables:[1,2,3,4,5,6],   groups:16, types:['estudante','vovos','familia','executiva','entregador'], nu:null,         meta:1050,expert:1550, time:190, speed:0.56, vip:0.15, juice:0.3, note:'Chegou cliente VIP (de óculos escuros e plaquinha dourada)! Fura a fila e tem menos paciência, mas paga gorjeta extra e um bônus se sair com 5 corações. Se sair bravo, a multa dobra.' },
-  { n:6, tables:[1,2,3,4,5,6],   groups:18, types:['estudante','vovos','familia','executiva','entregador'], nu:null,         meta:1150,expert:1700, time:200, speed:0.54, vip:0.15, juice:0.3, note:'Sexta-feira: ninguém quer esperar.' },
-  { n:7, tables:[1,2,3,4,5,6],   groups:22, types:['estudante','vovos','familia','executiva','entregador'], nu:null,         meta:1200,expert:1900, time:220, speed:0.52, vip:0.15, juice:0.3, note:'Tonhão está gripado: a cozinha anda mais devagar hoje.' }
+  { n:4, tables:[1,2,3,4,5,6],   groups:14, types:['estudante','vovos','familia','executiva','entregador'], nu:'entregador', meta:1050,expert:1600, time:180, speed:0.58, juice:0.3, note:'O entregador de moto tem pressa: pouquíssima paciência!' },
+  { n:5, tables:[1,2,3,4,5,6],   groups:16, types:['estudante','vovos','familia','executiva','entregador'], nu:null,         meta:1100,expert:1650, time:190, speed:0.56, vip:0.15, juice:0.3, note:'Chegou cliente VIP (de óculos escuros e plaquinha dourada)! Fura a fila e tem menos paciência, mas paga gorjeta extra e um bônus se sair com 5 corações. Se sair bravo, a multa dobra.' },
+  { n:6, tables:[1,2,3,4,5,6],   groups:18, types:['estudante','vovos','familia','executiva','entregador'], nu:null,         meta:1250,expert:1850, time:200, speed:0.54, vip:0.15, juice:0.3, note:'Sexta-feira: ninguém quer esperar.' },
+  { n:7, tables:[1,2,3,4,5,6],   groups:22, types:['estudante','vovos','familia','executiva','entregador'], nu:null,         meta:1300,expert:2100, time:220, speed:0.52, vip:0.15, juice:0.3, note:'Tonhão está gripado: a cozinha anda mais devagar hoje.' }
 ];
 
 const ENDLESS = { n:0, tables:[1,2,3,4,5,6], groups:0, types:['estudante','vovos','familia','executiva','entregador'], nu:null, meta:0, expert:0, time:0, speed:1, vip:0.12, juice:0.3, note:'', endless:true };
@@ -352,7 +352,7 @@ const UPGRADES = [
   { id:'tenis',      name:'Tênis novos',          desc:'A Bia anda 10% mais rápido.',                  cost:150 },
   { id:'jukebox',    name:'Jukebox',              desc:'A paciência na fila cai 20% mais devagar.',    cost:180 },
   { id:'cafeteira',  name:'Cafeteira de 2 bocas', desc:'O cafezinho devolve +2 corações.',             cost:200 },
-  { id:'bandeja',    name:'Bandeja',              desc:'Uma mão leva 2 pratos ou 3 bebidas; a outra, 1 item.', cost:220 },
+  { id:'bandeja',    name:'Bandeja',              desc:'Leva 2 pratos, 3 bebidas, prato + bebida ou 2 pilhas de louça.', cost:220 },
   { id:'ventilador', name:'Ventilador de teto',   desc:'A freguesia come 15% mais rápido.',            cost:250 },
   { id:'chapa',      name:'Chapa nova',           desc:'A cozinha trabalha 15% mais rápido.',          cost:300 }
 ];
@@ -671,7 +671,7 @@ class Group {
    ============================================================ */
 class Kitchen {
   constructor(game){ this.game = game; this.reset(); }
-  reset(){ this.queue = []; this.cooking = []; this.plates = [null,null,null,null]; this.pid = 0; this.slots = 3; this.sinkN = 0; }
+  reset(){ this.queue = []; this.cooking = []; this.plates = [null,null,null,null]; this.pid = 0; this.slots = KITCHEN_SLOTS; this.sinkN = 0; }
   submit(ticket){
     const g = this.game, grp = ticket.group;
     let time = rand(4,7);
@@ -711,29 +711,45 @@ class Kitchen {
 }
 
 /* ============================================================
-   MÃOS: sem bandeja, 1 item por mão. Com bandeja, uma mão leva
-   2 pratos OU 3 bebidas (cafezinho e suco) OU 1 item qualquer;
-   a outra mão leva 1 item.
+   MÃOS
+   - Comandas: só na mão sem bandeja, todas juntas, até o número de
+     bocas da cozinha (kitchen.slots, hoje 3). Essa mão não leva mais nada.
+   - Mão sem bandeja (sem comandas): 1 item qualquer, inclusive louça suja.
+   - Sem o upgrade, a outra mão também leva 1 item.
+   - Com a bandeja: 1 prato + 1 bebida, ou 2 pratos, ou 3 bebidas (cafezinho
+     e suco), ou 2 pilhas de louça suja, ou menos que isso. Sujo e limpo
+     nunca juntos na bandeja.
    ============================================================ */
+const KITCHEN_SLOTS = 3;
 const DRINKS = { coffee:1, juice:1 };
 function trayOk(items){
-  if (items.length <= 1) return true;
-  if (items.every(h => h.kind === 'dish')) return items.length <= 2;
-  if (items.every(h => DRINKS[h.kind])) return items.length <= 3;
-  return false;
-}
-/* divide os itens em [bandeja, outra mão]; null se não couberem */
-function handLayout(items, tray){
-  if (!tray){
-    if (items.length > 2) return null;
-    return [items.slice(0,1), items.slice(1,2)];
+  let d = 0, k = 0, s = 0;
+  for (const h of items){
+    if (h.kind === 'dish') d++;
+    else if (DRINKS[h.kind]) k++;
+    else if (h.kind === 'dirty') s++;
+    else return false;                 // comanda não vai na bandeja
   }
-  // tenta deixar na mão livre primeiro o item que não vai na bandeja (comanda, louça), depois qualquer um
-  const order = items.map((h,i) => i).sort((a,b) => (items[a].kind === 'dish' || DRINKS[items[a].kind] ? 1 : 0) - (items[b].kind === 'dish' || DRINKS[items[b].kind] ? 1 : 0));
-  if (trayOk(items)) return [items.slice(), []];
+  if (s) return d === 0 && k === 0 && s <= 2;
+  return (k === 0 && d <= 2) || (d === 0 && k <= 3) || (d <= 1 && k <= 1);
+}
+/* divide os itens em [bandeja ou 1ª mão, outra mão]; null se não couberem */
+function handLayout(items, tray, maxTickets){
+  if (maxTickets == null) maxTickets = KITCHEN_SLOTS;
+  const tickets = items.filter(h => h.kind === 'ticket'), rest = items.filter(h => h.kind !== 'ticket');
+  if (tickets.length > maxTickets) return null;
+  if (tickets.length){
+    // a mão sem bandeja fica com as comandas; o resto vai na bandeja (ou na outra mão, 1 item)
+    if (tray ? !trayOk(rest) : rest.length > 1) return null;
+    return [rest, tickets];
+  }
+  if (!tray) return rest.length <= 2 ? [rest.slice(0,1), rest.slice(1,2)] : null;
+  if (trayOk(rest)) return [rest, []];
+  // tenta deixar na mão livre primeiro a louça suja, depois qualquer item
+  const order = rest.map((h,i) => i).sort((a,b) => (rest[b].kind === 'dirty') - (rest[a].kind === 'dirty'));
   for (const i of order){
-    const rest = items.filter((h,j) => j !== i);
-    if (trayOk(rest)) return [rest, [items[i]]];
+    const others = rest.filter((h,j) => j !== i);
+    if (trayOk(others)) return [others, [rest[i]]];
   }
   return null;
 }
@@ -750,9 +766,10 @@ class Waitress {
   }
   get speed(){ return 260 * (this.g.up.tenis ? 1.1 : 1); }
   get tray(){ return !!this.g.up.bandeja; }
-  canTake(kind){ return !!handLayout(this.hands.concat([{ kind }]), this.tray); }
+  layout(items){ return handLayout(items || this.hands, this.tray, this.g.kitchen.slots); }
+  canTake(kind){ return !!this.layout(this.hands.concat([{ kind }])); }
   /* quantos itens comuns (comanda, louça) ainda cabem */
-  free(){ let n = 0; const extra = []; while (n < 3){ extra.push({ kind:'x' }); if (!handLayout(this.hands.concat(extra), this.tray)) break; n++; } return n; }
+  free(){ let n = 0; const extra = []; while (n < 3){ extra.push({ kind:'dirty' }); if (!this.layout(this.hands.concat(extra))) break; n++; } return n; }
   juiceN(){ return this.hands.filter(h => h.kind === 'juice').length; }
   enqueue(a){
     if (this.acts.length >= 6){ this.g.addText(this.x, this.y - 82, 'Fila cheia!', PAL.alerta, 15); return false; }
@@ -2181,7 +2198,7 @@ function drawHud(ctx,g,tm){
   }
   // mãos
   const tray = g.bia.tray;
-  const lay = handLayout(g.bia.hands, tray) || [g.bia.hands.slice(0,1), g.bia.hands.slice(1,2)];
+  const lay = g.bia.layout() || [g.bia.hands.slice(0,1), g.bia.hands.slice(1,2)];
   txt(ctx,tray ? 'BANDEJA · MÃO' : 'MÃOS',748,553,10,'#cfc7b0','center',FB);
   for (let i=0;i<2;i++){
     const hx = 700 + i*48, its = lay[i];
@@ -2282,7 +2299,7 @@ function render(g, ctx){
   const b = g.bia;
   items.push({ y:b.y, f:() => {
     drawBia(ctx,b,b.x,b.y,{ moving:b.moving, ph:b.walkPh, flip:b.dir, t:tm });
-    const lay = handLayout(b.hands, b.tray) || [b.hands.slice(0,1), b.hands.slice(1,2)];
+    const lay = b.layout() || [b.hands.slice(0,1), b.hands.slice(1,2)];
     lay.forEach((its,i) => {
       const hx = b.x + (i ? 20 : -20);
       if (i === 0 && b.tray && its.length){ ell(ctx,hx,b.y-20,its.length > 1 ? 20 : 14,5); fs(ctx,PAL.inox,2); }
@@ -2564,7 +2581,7 @@ function buildTips(){
     ['Toque nas mesas, na cozinha, nos pratos prontos, no cafezinho, nos sucos e na pia: a Bia faz tudo em ordem, na fila de ações. Toque num ícone da fila para cancelar.', c => {
       [['hat',14,16],['dish',32,16],['coffee',50,16],['dirty',14,46],['ticket',32,46],['coin',50,46]].forEach(a => { rr(c,a[1]-10,a[2]-10,20,22,5); fs(c,PAL.creme,1.8); drawIcon(c,a[0],a[1],a[2]+1,0.6,'pastel'); });
     }],
-    ['Ciclo da mesa: anote o pedido, leve à cozinha, busque o prato, entregue, receba a conta e recolha a louça. A Bia carrega 2 coisas por vez (mais com a bandeja).', c => {
+    ['Ciclo da mesa: anote o pedido, leve à cozinha, busque o prato, entregue, receba a conta e recolha a louça. A Bia leva 1 coisa em cada mão, mas até 3 comandas juntas numa mão.', c => {
       drawIcon(c,'ticket',12,16,0.7); drawIcon(c,'hat',30,16,0.7); drawIcon(c,'dish',48,16,0.7,'coxinha');
       drawIcon(c,'coin',16,46,0.7); drawIcon(c,'dirty',34,46,0.7); drawIcon(c,'drop',52,46,0.7);
     }],
@@ -2579,7 +2596,7 @@ function buildTips(){
       txt(c,'×3!',46,22,18,PAL.alerta,'center',FD,3);
       star(c,46,46,9,PAL.mostarda);
     }],
-    ['Do dia 3 em diante, alguns grupos pedem suco (o copinho com o número aparece na mesa). Pegue no balcão de sucos e entregue antes da conta, senão o grupo perde um coração. A bandeja da lojinha leva 2 pratos ou 3 bebidas numa mão.', c => {
+    ['Do dia 3 em diante, alguns grupos pedem suco (copinho com o número na mesa): pegue no balcão e entregue antes da conta, ou o grupo perde um coração. A bandeja leva 2 pratos, 3 bebidas ou prato + bebida.', c => {
       ell(c,32,50,22,6); fs(c,PAL.inox,2);
       drawIcon(c,'juice',20,38,0.8); drawIcon(c,'juice',32,36,0.8); drawIcon(c,'juice',44,38,0.8);
       rr(c,8,4,48,18,6); fs(c,'#fff',1.8); drawIcon(c,'juice',20,13,0.5); txt(c,'×3',38,13,11,PAL.tinta,'center',FD);
@@ -2887,7 +2904,7 @@ fit();
 try { Rank.init(); } catch(e) {}
 game.setState('menu');
 window.__game = game;
-window.__lcc = { JUICE, handLayout, trayOk, Game, Group, Table, Kitchen, Waitress, DAYS, UPGRADES, CUSTOMER_TYPES, LAYOUT, PAL, Sfx, findPath, render, Rank, sortRows, cleanName, normName, CMD, ENDLESS, VIP, rk, renderRank, openRank, closeRank, LS, lsGet, lsSet, loadSave };
+window.__lcc = { JUICE, KITCHEN_SLOTS, handLayout, trayOk, Game, Group, Table, Kitchen, Waitress, DAYS, UPGRADES, CUSTOMER_TYPES, LAYOUT, PAL, Sfx, findPath, render, Rank, sortRows, cleanName, normName, CMD, ENDLESS, VIP, rk, renderRank, openRank, closeRank, LS, lsGet, lsSet, loadSave };
 window.requestAnimationFrame(frame);
 
 })();

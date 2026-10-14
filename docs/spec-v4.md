@@ -12,18 +12,27 @@
 - Conta paga com suco faltando: o grupo perde 1 coração antes do cálculo (mínimo 1) e aparece "Faltou o suco!".
 - Estatísticas: "Sucos" no fim do dia (entregues e mesas sem suco) e "Sucos entregues" no fim do Turno sem fim.
 
-## Bandeja (lojinha, R$ 220)
-- Sem a bandeja: 1 item por mão (2 no total), como antes.
-- Com a bandeja, uma mão leva 2 pratos **ou** 3 bebidas (cafezinho e suco podem ir juntos) **ou** 1 item qualquer. A outra mão leva 1 item. Comanda e louça suja não vão empilhadas na bandeja.
-- `handLayout(itens, bandeja)` distribui os itens entre [bandeja, outra mão] ou devolve `null` se não couberem. `Waitress.canTake(tipo)` usa essa função em todas as ações.
-- No HUD, o rótulo vira "BANDEJA · MÃO" e os itens da bandeja aparecem lado a lado. A Bia aparece com uma bandeja de inox na mão esquerda.
+## Mãos, comandas e bandeja (lojinha, R$ 220)
+Regras definidas pelo usuário na revisão da v4:
+- **Comandas:** só vão na mão sem bandeja, todas juntas, até o número de bocas da cozinha (`kitchen.slots`, hoje 3, constante `KITCHEN_SLOTS`; um upgrade futuro pode aumentar). A mão que leva comandas não leva mais nada.
+- **Mão sem bandeja:** 1 item qualquer (prato, bebida ou pilha de louça suja) ou o maço de comandas.
+- **Sem o upgrade:** as duas mãos seguem essa regra (1 item em cada, ou comandas numa mão e 1 item na outra).
+- **Com a bandeja,** uma mão leva no máximo:
+  - 1 prato + 1 bebida;
+  - 2 pratos;
+  - 3 bebidas (cafezinho e suco, que podem ir misturados);
+  - 2 pilhas de louça suja;
+  - ou qualquer quantidade menor que essas.
+- Sujo e limpo nunca vão juntos na bandeja, mas a bandeja pode ir com coisas limpas enquanto a outra mão leva louça suja. Comanda nunca vai na bandeja.
+- Implementação:
+  - `trayOk(itens)` valida a bandeja;
+  - `handLayout(itens, bandeja, maxComandas)` distribui os itens entre [bandeja ou 1ª mão, outra mão] ou devolve `null`;
+  - `Waitress.layout()` e `canTake(tipo)` usam `kitchen.slots` como limite de comandas.
+- No HUD, o rótulo vira "BANDEJA · MÃO" e os itens agrupados aparecem lado a lado. A Bia aparece com uma bandeja de inox na mão esquerda.
 
 ## Balanceamento (bot, 80 rodadas por dia)
-- Os sucos dão trabalho extra, e o bot passou a perder mais clientes nos dias 4 a 7. As metas foram recalibradas:
-  - dia 4: expert de 1600 para 1500;
-  - dia 5: meta de 1100 para 1050, expert de 1650 para 1550;
-  - dia 6: meta de 1250 para 1150, expert de 1850 para 1700;
-  - dia 7: meta de 1300 para 1200, expert de 2100 para 1900.
-- Metas batidas pelo bot: dias 1 a 3, 80/80; dia 4, 74; dia 5, 79; dia 6, 73; dia 7, 70.
+- Na primeira versão da v4 (bandeja mais restrita e 1 comanda por mão), os sucos derrubaram as metas batidas nos dias 4 a 7, e as metas chegaram a ser reduzidas.
+- Com as regras finais (comandas empilhadas e bandeja mais versátil), o jogo voltou a render como na v3. As **metas da v3 foram mantidas**.
+- Metas batidas pelo bot: dias 1 a 3, 78 a 80 de 80; dia 4, 77; dia 5, 78; dia 6, 74; dia 7, 76.
 - O bot de teste (`tests/bot.js`) busca de uma vez todos os sucos que cabem nas mãos e os entrega. `tests/botpage.js` é gerado a partir dele.
 - O save continua `lcc2_save` e o upgrade novo entra em `save.up.bandeja`.

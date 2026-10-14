@@ -68,3 +68,11 @@
 - Na bandeja, cafezinho e suco contam como bebidas; comanda e louça suja ocupam uma mão inteira.
 - Com os sucos, o bot perdeu mais clientes nos dias 4 a 7. Primeiro o bot foi melhorado (busca vários sucos de uma vez); depois o preço do copo subiu para R$ 12, a frequência ficou em 30% e as metas foram recalibradas (ver `docs/spec-v4.md`).
 - A v3 foi guardada em `versoes/v3-fonte.html` e `versoes/v3.html`.
+
+## 14/10/2026: regras da bandeja e das comandas
+**Pedido:** "a bandeja pode transportar 1 prato e 1 suco, 1 prato e um café ou 2 pratos ou 3 sucos ou 3 cafés ou 2 pilhas de louças sujas ou qualquer quantidade inferior a essas citadas. bandeja não pode carregar coisas sujas com coisas limpas, mas na bandeja pode ter coisas limpas enquanto na mão tenha coisas sujas. papel de pedido só pode ir na mão sem bandeja, com limite do numero de slots atuais da cozinha, que atualmente é 3, mas pode receber upgrade no futuro".
+
+**Decisões:**
+- Cafezinho e suco podem ir misturados nas 3 bebidas da bandeja.
+- Sem o upgrade da bandeja, as comandas também empilham numa mão (até 3), já que as duas mãos são "mãos sem bandeja".
+- Com as regras novas o jogo ficou mais fácil do que a primeira v4, e as metas da v3 voltaram (ver `docs/spec-v4.md`).

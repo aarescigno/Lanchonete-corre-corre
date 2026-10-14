@@ -3,17 +3,30 @@ const load=require('./harness.js');
 let fails=0, total=0; const ok=(c,m)=>{ total++; if(!c){fails++;console.log('FAIL:',m);} else console.log('ok  :',m); };
 const H=load(); const {g,L}=H;
 const K=k=>({kind:k}), many=(k,n)=>Array.from({length:n},()=>K(k));
-const fit=(items,tray)=>L.handLayout(items,tray)!==null;
+const fit=(items,tray,mt)=>L.handLayout(items,tray,mt)!==null;
 
 /* capacidade das mãos */
-ok(fit([K('dish'),K('ticket')],false) && !fit(many('dish',3),false),'sem bandeja: 2 itens');
-ok(!fit(many('juice',3),false),'sem bandeja: 3 sucos não cabem');
-ok(fit(many('dish',3),true) && !fit(many('dish',4),true),'bandeja: 2 pratos + 1 na outra mão, não 4');
-ok(fit(many('juice',4),true) && !fit(many('juice',5),true),'bandeja: 3 bebidas + 1 na outra mão, não 5');
-ok(fit([K('juice'),K('coffee'),K('juice'),K('dish')],true),'bandeja: 3 bebidas (café e suco) + prato na outra mão');
-ok(!fit([K('dish'),K('juice'),K('ticket')],true),'bandeja não mistura prato e bebida');
-ok(fit([K('dish'),K('dish'),K('dirty')],true) && !fit([K('dirty'),K('ticket'),K('dish')],true),'comanda e louça ocupam uma mão inteira');
-{ const lay=L.handLayout([K('ticket'),K('dish'),K('dish')],true); ok(lay[0].length===2&&lay[1][0].kind==='ticket','layout: pratos na bandeja, comanda na outra mão'); }
+ok(fit([K('dish'),K('coffee')],false) && !fit(many('dish',3),false) && !fit(many('juice',3),false),'sem bandeja: 1 item por mão');
+// bandeja: combinações máximas (+ mão livre vazia)
+ok(fit([K('dish'),K('juice')],true) && fit([K('dish'),K('coffee')],true),'bandeja: 1 prato + 1 bebida');
+ok(fit(many('dish',2),true) && fit(many('juice',3),true) && fit(many('coffee',3),true) && fit(many('dirty',2),true),'bandeja: 2 pratos, 3 sucos, 3 cafés, 2 pilhas de louça');
+ok(L.trayOk([K('dish'),K('juice')]) && !L.trayOk([K('dish'),K('juice'),K('juice')]) && !L.trayOk([K('dish'),K('dish'),K('juice')]),'bandeja: prato + bebida no máximo 1 de cada');
+ok(!L.trayOk(many('dish',3)) && !L.trayOk(many('juice',4)) && !L.trayOk(many('dirty',3)),'bandeja: acima do limite não cabe');
+ok(!L.trayOk([K('dirty'),K('dish')]) && !L.trayOk([K('dirty'),K('coffee')]),'bandeja: sujo e limpo nunca juntos');
+ok(!L.trayOk([K('ticket')]),'bandeja: comanda não vai');
+// bandeja + mão livre
+ok(fit([K('dish'),K('dish'),K('dirty')],true),'limpo na bandeja e louça suja na mão');
+ok(fit(many('dish',3),true) && !fit(many('dish',4),true),'2 pratos na bandeja + 1 na mão, não 4');
+ok(fit(many('juice',4),true) && !fit(many('juice',5),true),'3 sucos na bandeja + 1 na mão, não 5');
+ok(fit(many('dirty',3),true) && !fit(many('dirty',4),true),'2 pilhas na bandeja + 1 na mão, não 4');
+// comandas
+ok(fit(many('ticket',3),false) && !fit(many('ticket',4),false),'comandas: até 3 (bocas da cozinha) numa mão');
+ok(fit(many('ticket',5),true,5) && !fit(many('ticket',6),true,5),'limite de comandas acompanha as bocas da cozinha');
+ok(fit([K('ticket'),K('ticket'),K('dish')],false) && !fit([K('ticket'),K('dish'),K('dish')],false),'sem bandeja: comandas numa mão + 1 item na outra');
+ok(fit([K('ticket'),K('ticket'),K('ticket'),K('dish'),K('juice')],true),'com bandeja: 3 comandas na mão + prato e suco na bandeja');
+ok(!fit([K('ticket'),K('dirty'),K('dish')],true),'mão das comandas não leva mais nada');
+{ const lay=L.handLayout([K('ticket'),K('dish'),K('dish')],true); ok(lay[0].length===2&&lay[1].every(h=>h.kind==='ticket'),'layout: pratos na bandeja, comanda na outra mão'); }
+{ const lay=L.handLayout([K('dish'),K('dirty')],true); ok(lay[0][0].kind==='dish'&&lay[1][0].kind==='dirty','layout: louça suja vai na mão livre'); }
 
 /* estações */
 ok(g.stationAt(910,350)==='juice' && g.stationAt(820,350)==='coffee','balcão de sucos ao lado do cafezinho');
