@@ -3628,7 +3628,7 @@ game.hooks.state = function(s){
     const d = game.day;
     if (game.mode === 'semfim'){
       $('intro-title').textContent = 'Turno sem fim';
-      $('intro-goal').textContent = 'Todas as 6 mesas abertas, 5 estrelas de reputação e freguesia cada vez mais rápida.';
+      $('intro-goal').textContent = 'Todas as ' + game.tables.length + ' mesas abertas, 5 estrelas de reputação e freguesia cada vez mais rápida.';
       $('intro-note').textContent = 'Grupo que sai bravo ou que não cabe na fila tira 1 estrela. A cada 8 contas pagas com 5 corações, você ganha 1 de volta. Com 0 estrelas, o turno acaba.';
     } else {
       $('intro-title').textContent = 'Dia ' + d.n;
