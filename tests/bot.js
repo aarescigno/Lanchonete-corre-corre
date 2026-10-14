@@ -17,8 +17,12 @@ module.exports=function(g,L){
     const jt=g.tables.filter(t=>t.group&&t.group.juiceOpen&&t.group.juicePending>0);
     if(b.hands.some(h=>h.kind==='juice')){ const t=jt.find(t=>!has(a=>a.type==='table'&&a.id===t.id)); if(t) return g.tapTable(t); }
     if(b.hands.some(h=>h.kind==='dirty') && !has(a=>a.type==='sink')) return g.tapStation('sink',850,450);
+    // lixeira quase cheia e mãos vazias: esvazia (se a Dani não estiver cuidando disso)
+    if(g.trash!==undefined && g.trash>=L.TRASH.cap-1 && !b.hands.length && !has(a=>a.type==='trash') && !(g.dani&&g.dani.does('lixo'))) return g.tapStation('trash',723,500);
+    // louça esperando na pia e ninguém para lavar
+    if(g.kitchen.sinkN>0 && !(g.dani&&g.dani.does('lavar')) && !has(a=>a.type==='sink') && !b.hands.some(h=>h.kind==='dirty')) return g.tapStation('sink',850,450);
     for(const t of g.tables){
-      if(!t.open||has(a=>a.type==='table'&&a.id===t.id)) continue;
+      if(!t.open||has(a=>a.type==='table'&&a.id===t.id)||(g.dani&&g.dani.targets(t))) continue;
       if(t.dirty||(t.group&&(t.group.state==='wantOrder'||t.group.state==='wantBill'))){ if(can(t.dirty?'dirty':'ticket')||t.group&&t.group.state==='wantBill') return g.tapTable(t); }
     }
     for(let i=0;i<4;i++){ const p=g.kitchen.plates[i]; if(p&&can('dish')&&!has(a=>a.type==='plate'&&a.pid===p.id)) return g.tapStation('plates',L.LAYOUT.PLATE_SLOTS[i].x,L.LAYOUT.PLATE_SLOTS[i].y); }

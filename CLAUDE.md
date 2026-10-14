@@ -1,6 +1,6 @@
 # Lanchonete Corre-Corre
 
-Jogo de navegador de gerenciamento de restaurante, em um único arquivo HTML com canvas 2D, em português do Brasil. Versão atual: **v4**. O estado do projeto, o histórico e os detalhes do artifact e do ranking estão em `docs/RESUMO.md` (leia só quando precisar).
+Jogo de navegador de gerenciamento de restaurante, em um único arquivo HTML com canvas 2D, em português do Brasil. Versão atual: **v5**. O estado do projeto, o histórico e os detalhes do artifact e do ranking estão em `docs/RESUMO.md` (leia só quando precisar).
 
 ## Regras do projeto
 - **Jogo original:** os personagens são a Bia (garçonete) e o Chef Tonhão. Não usar nomes, arte nem logos de jogos existentes, nem citar "Diner Dash" ou "Flo" na interface.
@@ -18,10 +18,10 @@ Jogo de navegador de gerenciamento de restaurante, em um único arquivo HTML com
 - **Docs:** leia `docs/spec-vN.md` e `docs/HISTORICO.md` só quando o assunto pedir.
 
 ## Testes (`cd tests`)
-- `./run_all.sh` roda `extract.sh` (gera `game.js` e confere a sintaxe) e depois os smokes 1 a 5.
-- `node balance.js [N]` roda o bot N vezes por dia; ~96% das metas batidas na v4.
+- `./run_all.sh` roda `extract.sh` (gera `game.js` e confere a sintaxe) e depois os smokes 1 a 6.
+- `node balance.js [N]` roda o bot N vezes por dia, sem equipe (~82% das metas nos dias 6 e 7). Com `EQUIPE='{...}'` mede com contratados.
 - `python3 menu_fit.py` confere que o menu não rola.
-- `python3 shot_v4.py` gera as capturas em `capturas/v4`.
+- `python3 shot_v5.py` gera as capturas em `capturas/v5`.
 - O Playwright usa `/opt/pw-browsers/chromium` quando existe.
 - `botpage.js` é gerado a partir de `bot.js`: ao mudar o bot, gere de novo.
 

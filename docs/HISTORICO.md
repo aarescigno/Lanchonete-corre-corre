@@ -76,3 +76,17 @@
 - Cafezinho e suco podem ir misturados nas 3 bebidas da bandeja.
 - Sem o upgrade da bandeja, as comandas também empilham numa mão (até 3), já que as duas mãos são "mãos sem bandeja".
 - Com as regras novas o jogo ficou mais fácil do que a primeira v4, e as metas da v3 voltaram (ver `docs/spec-v4.md`).
+
+## 14/10/2026: v5, Equipe
+**Pedido:**
+- A proposta anterior (`docs/spec-v5.md` traz o histórico) sugeria robôs para o lixo e a louça. O usuário não quer robôs: as funções precisam de pessoas contratadas.
+- A Dani pode fazer o que a Bia faz, mas só serve café, retira prato sujo, lava pratos e tira o lixo. A Bia escolhe as tarefas dela.
+- Níveis da Dani: 50% da velocidade e 2 tarefas; depois salário +50% e 65%; no máximo, mais +50% de salário, 80% e 3 tarefas.
+- Sai a Jukebox (poluição sonora) e entra a água saborizada.
+- O couvert ganha a opção de cobrar taxa dos clientes, com eficácia 10% menor.
+
+**Decisões tomadas sem resposta explícita (recomendações da proposta):**
+- Salários saem do cofre ao abrir a lanchonete.
+- Tudo numa v5 só.
+- "Eficácia −10%" foi lido como relativo: o efeito de 20% vira 18%.
+- A Dani anda mais devagar, mas lava na mesma velocidade da Bia (1,5 s por pilha).

@@ -1,9 +1,9 @@
 # Resumo do projeto e das alterações (até 14/10/2026)
 
 ## Estado atual
-- **Versão:** v4, publicada como Versão 9 do artifact https://claude.ai/artifact/MJxrgDg8S4akvg47SoQAvj (privado).
+- **Versão:** v5, publicada como Versão 10 do artifact https://claude.ai/artifact/MJxrgDg8S4akvg47SoQAvj (privado).
 - **Branch:** `claude/elegant-curie-sgcl11` no repositório `aarescigno/Lanchonete-corre-corre`.
-- **Arquivos publicados:** `lanchonete.html` (página), mais `versoes/v1.html`, `versoes/v2.html` e `versoes/v3.html`, abertos pelo painel Versões.
+- **Arquivos publicados:** `lanchonete.html` (página), mais `versoes/v1.html`, `versoes/v2.html`, `versoes/v3.html` e `versoes/v4.html`, abertos pelo painel Versões.
 - **Capacidades declaradas (mantidas ao republicar sem `capabilities`):**
   - `db`: `ranking-carreira` e `ranking-semfim` com read "view" e write "owner";
   - `db`: `ranking-*/{self}` com write "interact";
@@ -20,7 +20,8 @@
 | v1 | 13/10 | carreira de 7 dias, fila de ações, mãos, corrente, bônus de cor, lojinha com 5 upgrades, som | `docs/spec-v1.md` |
 | v2 | 14/10 | comandas coloridas, aro de humor, "Lotado!", Turno sem fim, ranking compartilhado, painel Versões | `docs/spec-v2.md` |
 | v3 | 14/10 | clientes VIP | `docs/spec-v3.md` |
-| v4 | 14/10 | balcão de sucos, bandeja, comandas empilhadas | `docs/spec-v4.md` |
+| v4 | 14/10 | balcão de sucos, bandeja, comandas empilhadas, lixeira | `docs/spec-v4.md` |
+| v5 | 14/10 | equipe (Tonhão, Dani, couvert), louça limitada, lixeira que enche, água saborizada, renda de 30% | `docs/spec-v5.md` |
 
 ## Alterações feitas no Claude Code (14/10/2026)
 1. **Importação** do pacote exportado do claude.ai para o repositório (commit `982583b`).
@@ -42,16 +43,29 @@
 6. **Lixeira** (pedido em comentário no artifact): no chão, ao lado do balcão; a Bia joga fora as bebidas que sobraram, com multa de metade do valor de cada uma (suco R$ 6, cafezinho R$ 2,50). Detalhes em `docs/spec-v4.md`.
 7. **Lojinha antes de cada dia**: do dia 2 em diante, escolher o dia (ou repetir) abre a lojinha primeiro, com "Começar o dia N" e "Menu principal"; ainda 1 melhoria por dia. O fim do dia oferece "Melhorias e dia N+1" e "Menu principal".
 
+8. **v5, Equipe** (ver `docs/spec-v5.md`):
+   - **Economia:** o cofre recebe 30% do faturamento de todo dia; a folha sai do cofre ao abrir a lanchonete.
+   - **Lojinha** com abas Melhorias e Equipe.
+   - **Tonhão:** aumento de 3 para 4 e 5 bocas, com +R$ 40 e +R$ 90 por dia.
+   - **Dani, a ajudante (sem robôs):** níveis com 50%, 65% e 80% da velocidade da Bia e 2, 2 e 3 tarefas, por R$ 60, R$ 90 e R$ 135 por dia. Tarefas escolhidas na lojinha: lixo, pratos sujos, lavar louça e cafezinho.
+   - **Louça:** limitada a partir do dia 3; lavar leva 1,5 s por pilha; sem prato limpo, o Tonhão espera.
+   - **Lixeira:** enche (8 itens); cheia, recusa bebidas e o cheiro acelera a impaciência; esvaziar leva 2 s.
+   - **Couvert artístico:** R$ 80 por dia, paciência nas mesas −20%; com a taxa de R$ 3 por pessoa, −18%.
+   - **Água saborizada:** substitui a Jukebox.
+   - **Metas:** dias 6 e 7 em R$ 1200 e R$ 1250.
+
 ## Testes (verdes no último commit)
 - `smoke` (bot nos 7 dias);
 - `smoke2` (mecânicas);
 - `smoke3` (120/120: v2);
 - `smoke4` (23/23: VIP);
 - `smoke5` (41/41: sucos, bandeja e lixeira);
+- `smoke6` (43/43: equipe, louça, lixeira que enche, couvert, água, economia);
 - `menu_fit` (14 tamanhos de tela);
 - `balance` (bot, N rodadas por dia).
 
 ## Ideias pendentes
 - Testar som e toque em celular real.
 - O painel "Como jogar" ainda rola no celular deitado.
-- Ajuste de dificuldade e upgrade de bocas da cozinha (aumentaria o limite de comandas).
+- Ajuste de dificuldade.
+- A lojinha ainda rola no menor celular deitado (568×320).
