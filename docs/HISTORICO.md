@@ -46,4 +46,12 @@
 - A identificação não depende só da cor: óculos escuros e plaquinha com o texto "VIP".
 - A v2 foi guardada em `versoes/v2-fonte.html` e `versoes/v2.html`.
 
-**Resultado:** v3 no repositório, ainda não publicada no artifact. O smoke4 passou 23/23 e os demais testes continuam verdes. A meta do dia 7 caiu para R$ 1300, depois do balanceamento com o bot.
+**Resultado:** v3 no repositório. O smoke4 passou 23/23 e os demais testes continuam verdes. A meta do dia 7 caiu para R$ 1300, depois do balanceamento com o bot.
+
+## 14/10/2026: publicação da v3
+**Pedido:** "pode publicar no artifact, deixe o acesso a versões anteriores de forma menor no menu, como um ícone no canto inferior direito do menu principal para 'versões anteriores'".
+
+**Feito:**
+- O link "Versões" saiu do painel do menu e virou um botão redondo discreto, com ícone de relógio e seta, no canto inferior direito da tela do menu (sobre a barra escura). Ele tem `title` e `aria-label` "Versões anteriores".
+- A versão publicada estava idêntica a `versoes/v2-fonte.html`.
+- A v3 foi publicada no mesmo endereço (Versão 3, rótulo "v3 — clientes VIP"), junto com `versoes/v2.html`. A `versoes/v1.html` e as regras do ranking foram mantidas.

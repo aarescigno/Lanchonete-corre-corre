@@ -64,6 +64,9 @@ p{margin:calc(var(--u)*6) 0;font-size:max(12px,calc(var(--u)*16));line-height:1.
 .vtag{position:absolute;top:calc(var(--u)*10);right:calc(var(--u)*14);font:800 max(11px,calc(var(--u)*13)) var(--fb);color:#5b5446;background:var(--creme);border:calc(var(--u)*2) solid var(--tinta);border-radius:999px;padding:0 calc(var(--u)*9);line-height:1.6}
 .menu-panel .row.tight{margin-top:calc(var(--u)*8);gap:calc(var(--u)*10)}
 .menu-panel .btn{font-size:max(14px,calc(var(--u)*20));padding:calc(var(--u)*6) calc(var(--u)*16)}
+.ver-ico{position:absolute;right:calc(var(--u)*14);bottom:calc(var(--u)*8);width:max(40px,calc(var(--u)*44));height:max(40px,calc(var(--u)*44));display:flex;align-items:center;justify-content:center;border-radius:50%;border:calc(var(--u)*2) solid rgba(255,248,231,.35);background:rgba(255,248,231,.08);color:rgba(255,248,231,.7);cursor:pointer;padding:0;transition:color .15s,background .15s,border-color .15s}
+.ver-ico:hover,.ver-ico:focus-visible{color:#fff;background:rgba(255,248,231,.18);border-color:rgba(255,248,231,.7)}
+.ver-ico:focus-visible{outline:3px solid var(--mostarda,#F2B33D);outline-offset:2px}
 .menu-panel .links{display:flex;gap:calc(var(--u)*18);flex-wrap:wrap}
 .saveform{display:flex;flex-wrap:wrap;gap:calc(var(--u)*8);align-items:center;justify-content:center;margin:calc(var(--u)*8) 0 calc(var(--u)*2)}
 .saveform label{font-weight:800;font-size:max(12px,calc(var(--u)*14));color:var(--faixa)}
@@ -114,10 +117,12 @@ table.rank tr.me td{background:#fbe7a8}
           <button class="btn alt" id="btn-rank">Ranking</button>
         </div>
         <div class="links">
-          <button class="link" id="btn-ver">Versões</button>
           <button class="link" id="btn-reset">Zerar progresso</button>
         </div>
       </div>
+      <button class="ver-ico" id="btn-ver" title="Versões anteriores" aria-label="Versões anteriores">
+        <svg viewBox="0 0 24 24" width="22" height="22" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M3.5 12a8.5 8.5 0 1 0 2.6-6.1"/><path d="M3 4.5v4h4"/><path d="M12 7.5V12l3 2"/></svg>
+      </button>
     </div>
 
     <div class="ov" id="ov-how">

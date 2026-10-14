@@ -42,9 +42,9 @@ O smoke2 tinha uma falha intermitente ("conta paga, mesa suja, servidos=1", ~10%
 
 ## Artifact publicado
 - URL: https://claude.ai/artifact/MJxrgDg8S4akvg47SoQAvj (privado: dono e quem receber acesso)
-- Versão 1 (13/10/2026) é a v1. Versão 2 (14/10/2026), rótulo "v2 — revisão com base no clone".
-- Arquivo extra publicado: `versoes/v1.html`, que o menu Versões abre.
-- **v3 ainda não publicada.** Ao publicar, enviar também `versoes/v2.html` (em `files`), porque o painel Versões da v3 tem o link "Abrir a v2".
+- Versão 1 (13/10/2026) é a v1. Versão 2 (14/10/2026), rótulo "v2 — revisão com base no clone". Versão 3 (14/10/2026), rótulo "v3 — clientes VIP".
+- Arquivos extras publicados: `versoes/v1.html` e `versoes/v2.html`, abertos pelo painel Versões. Esse painel é acessado por um ícone discreto (relógio com seta, "Versões anteriores") no canto inferior direito do menu.
+- Ao republicar, os arquivos extras omitidos em `files` continuam publicados. Ao criar uma v4, guardar a v3 em `versoes/` e enviar `versoes/v3.html`.
 - Capacidades declaradas na v2. Ao republicar, omitir `capabilities` mantém essas regras:
 ```json
 {"db": {"rules": [
@@ -76,7 +76,8 @@ O smoke2 tinha uma falha intermitente ("conta paga, mesa suja, servidos=1", ~10%
   - grupos VIP a partir do dia 5 e no Turno sem fim (depois de 1 min);
   - furam a fila, têm paciência ×0,75 e pagam gorjeta +50%, com bônus de R$ 40 se saírem com 5♥;
   - bravos, pagam multa dobrada;
-  - visual com óculos escuros e plaquinha "★VIP"; meta do dia 7 ajustada para R$ 1300.
+  - visual com óculos escuros e plaquinha "★VIP"; meta do dia 7 ajustada para R$ 1300;
+  - acesso às versões anteriores passou do link "Versões" para um ícone no canto inferior direito do menu.
 
 ## Ideias pendentes (não implementadas)
 - Testar som e toque em celular real (nunca testados).
