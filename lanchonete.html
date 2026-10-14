@@ -385,8 +385,8 @@ const DANI_TASKS = [
   { id:'lavar',  name:'Lavar a louça',  short:'Lavar louça' },
   { id:'cafe',   name:'Servir cafezinho', short:'Cafezinho' }
 ];
-const WASH = { base:0.3, perPile:1.5 };               // segundos na pia
-const TRASH = { cap:8, empty:2, smell:0.15 };         // lixeira: capacidade, tempo para esvaziar, cheiro quando cheia
+const WASH = { base:0.3, perPile:2.5 };               // segundos na pia
+const TRASH = { cap:6, empty:2, smell:0.3 };         // lixeira: capacidade, tempo para esvaziar, cheiro quando cheia
 function couvertEffect(eq){ return STAFF.couvert.effect * (eq.taxa ? 1 - STAFF.couvert.feeCut : 1); }
 function payroll(eq){
   let v = STAFF.tonhao.levels[eq.tonhao].pay;
@@ -396,9 +396,9 @@ function payroll(eq){
 }
 /* pratos limpos na cozinha: sem limite nos dias 1 e 2; depois, mesas abertas (−1 nos dias 6 e 7); no Turno sem fim, 6 */
 function dishStock(day){
-  if (day.endless) return 6;
+  if (day.endless) return 5;
   if (day.n <= 2) return Infinity;
-  return day.tables.length - (day.n >= 6 ? 1 : 0);
+  return Math.min(3, day.tables.length - 2);
 }
 
 /* sucos: alguns grupos pedem junto com a comida; cada copo entregue vale JUICE.price */
@@ -410,11 +410,11 @@ const VIP = { pat:0.75, tip:0.5, perfect:40, angry:30, types:['estudante','vovos
 const DAYS = [
   { n:1, tables:[1,2,4],         groups:6,  types:['estudante','vovos'],                                   nu:null,         meta:250, expert:400,  time:150, speed:0.60, note:'' },
   { n:2, tables:[1,2,4,5],       groups:9,  types:['estudante','vovos','familia'],                         nu:'familia',    meta:700, expert:1100,  time:160, speed:0.60, note:'Chegou a família! Grupos de 3 ou 4 só cabem nas mesas grandes.' },
-  { n:3, tables:[1,2,3,4,5],     groups:12, types:['estudante','vovos','familia','executiva'],             nu:'executiva',  meta:900, expert:1400,  time:170, speed:0.60, juice:0.3, note:'A executiva tem pouca paciência, mas deixa boa gorjeta. E abriu o balcão de sucos: quem pede suco quer receber antes da conta!' },
-  { n:4, tables:[1,2,3,4,5,6],   groups:14, types:['estudante','vovos','familia','executiva','entregador'], nu:'entregador', meta:1050,expert:1600, time:180, speed:0.58, juice:0.3, note:'O entregador de moto tem pressa: pouquíssima paciência!' },
-  { n:5, tables:[1,2,3,4,5,6],   groups:16, types:['estudante','vovos','familia','executiva','entregador'], nu:null,         meta:1100,expert:1650, time:190, speed:0.56, vip:0.15, juice:0.3, note:'Chegou cliente VIP (de óculos escuros e plaquinha dourada)! Fura a fila e tem menos paciência, mas paga gorjeta extra e um bônus se sair com 5 corações. Se sair bravo, a multa dobra.' },
-  { n:6, tables:[1,2,3,4,5,6],   groups:18, types:['estudante','vovos','familia','executiva','entregador'], nu:null,         meta:1200,expert:1850, time:200, speed:0.54, vip:0.15, juice:0.3, note:'Sexta-feira: ninguém quer esperar.' },
-  { n:7, tables:[1,2,3,4,5,6],   groups:22, types:['estudante','vovos','familia','executiva','entregador'], nu:null,         meta:1250,expert:2100, time:220, speed:0.52, vip:0.15, juice:0.3, note:'Tonhão está gripado: a cozinha anda mais devagar hoje.' }
+  { n:3, tables:[1,2,3,4,5],     groups:18, types:['estudante','vovos','familia','executiva'],             nu:'executiva',  meta:1300,expert:1800,  time:170, speed:0.60, juice:0.3, note:'O movimento aumentou e agora só há 3 pratos limpos: sozinha a Bia não dá conta, contrate ajuda na lojinha. A executiva tem pouca paciência, mas deixa boa gorjeta. E abriu o balcão de sucos: quem pede suco quer receber antes da conta!' },
+  { n:4, tables:[1,2,3,4,5,6],   groups:22, types:['estudante','vovos','familia','executiva','entregador'], nu:'entregador', meta:1300,expert:1750, time:180, speed:0.58, juice:0.3, note:'O entregador de moto tem pressa: pouquíssima paciência!' },
+  { n:5, tables:[1,2,3,4,5,6],   groups:26, types:['estudante','vovos','familia','executiva','entregador'], nu:null,         meta:1440,expert:1900, time:190, speed:0.56, vip:0.15, juice:0.3, note:'Chegou cliente VIP (de óculos escuros e plaquinha dourada)! Fura a fila e tem menos paciência, mas paga gorjeta extra e um bônus se sair com 5 corações. Se sair bravo, a multa dobra.' },
+  { n:6, tables:[1,2,3,4,5,6],   groups:29, types:['estudante','vovos','familia','executiva','entregador'], nu:null,         meta:1440,expert:1950, time:200, speed:0.54, vip:0.15, juice:0.3, note:'Sexta-feira: ninguém quer esperar.' },
+  { n:7, tables:[1,2,3,4,5,6],   groups:33, types:['estudante','vovos','familia','executiva','entregador'], nu:null,         meta:1500,expert:2050, time:220, speed:0.52, vip:0.15, juice:0.3, note:'Tonhão está gripado: a cozinha anda mais devagar hoje.' }
 ];
 
 const ENDLESS = { n:0, tables:[1,2,3,4,5,6], groups:0, types:['estudante','vovos','familia','executiva','entregador'], nu:null, meta:0, expert:0, time:0, speed:1, vip:0.12, juice:0.3, note:'', endless:true };
@@ -902,7 +902,8 @@ class Waitress {
     if (a.type === 'trash'){
       const drinks = this.hands.filter(h => DRINKS[h.kind]).length;
       if (!this.hands.length && g.trash > 0) return TRASH.empty;
-      if (drinks && drinks > TRASH.cap - g.trash) return 0.3 + TRASH.empty;   // não cabe: joga tudo e esvazia em seguida
+      // não cabe e só há bebidas nas mãos: joga tudo e esvazia em seguida
+      if (drinks && drinks === this.hands.length && drinks > TRASH.cap - g.trash) return 0.3 + TRASH.empty;
     }
     return 0.3;
   }
@@ -999,8 +1000,10 @@ class Waitress {
         if (!this.hands.length && g.trash > 0){ g.trash = 0; g.stats.emptied++; g.addText(this.x, this.y - 82, 'Lixo pra fora!', PAL.ok, 15); Sfx.noise(0.3, 0.1, 0, 400); return; }
         return this.fail(this.hands.length ? 'Mãos ocupadas!' : '?');
       }
-      // se as bebidas não cabem, a lixeira aceita todas uma última vez e a Bia já esvazia em seguida
+      // se as bebidas não cabem, a lixeira aceita todas uma última vez e a Bia já esvazia em seguida,
+      // mas só se ela tiver apenas bebidas nas mãos (para esvaziar, as mãos precisam ficar livres)
       const overflow = lixo.length > TRASH.cap - g.trash;
+      if (overflow && lixo.length < this.hands.length) return this.fail(g.trash >= TRASH.cap ? 'Lixo cheio!' : 'Não cabe tudo!');
       const fora = lixo;
       fora.forEach(h => this.hands.splice(this.hands.indexOf(h), 1));
       g.addTrash(fora.length);
@@ -2955,7 +2958,7 @@ function buildTips(){
     ['Toque nas mesas, na cozinha, nos pratos prontos, no cafezinho, nos sucos e na pia: a Bia faz tudo em ordem, na fila de ações. Toque num ícone da fila para cancelar.', c => {
       [['hat',14,16],['dish',32,16],['coffee',50,16],['dirty',14,46],['ticket',32,46],['coin',50,46]].forEach(a => { rr(c,a[1]-10,a[2]-10,20,22,5); fs(c,PAL.creme,1.8); drawIcon(c,a[0],a[1],a[2]+1,0.6,'pastel'); });
     }],
-    ['Ciclo da mesa: anote, leve à cozinha, busque o prato, entregue, cobre e recolha a louça. Lave na pia (1,5 s por pilha): do dia 3 em diante, sem prato limpo o Tonhão espera. Na lojinha dá para contratar ajuda.', c => {
+    ['Ciclo da mesa: anote, leve à cozinha, busque o prato, entregue, cobre e recolha a louça. Lave na pia (2,5 s por pilha): do dia 3 em diante, sem prato limpo o Tonhão espera. Sozinha a Bia não dá conta: contrate ajuda na lojinha.', c => {
       drawIcon(c,'ticket',12,16,0.7); drawIcon(c,'hat',30,16,0.7); drawIcon(c,'dish',48,16,0.7,'coxinha');
       drawIcon(c,'coin',16,46,0.7); drawIcon(c,'dirty',34,46,0.7); drawIcon(c,'drop',52,46,0.7);
     }],

@@ -63,8 +63,28 @@ Pedido: sobra dinheiro no cofre. Entram contratações com salário, aumento do 
 - Substitui a Jukebox, que passava a ideia de poluição sonora. Custa o mesmo e tem o mesmo efeito: a paciência na fila cai 20% mais devagar.
 - Aparece desenhada na entrada (jarra com frutas numa mesinha). O save antigo com `up.jukebox` é convertido em `up.agua`.
 
-## Balanceamento (bot, 60 rodadas por dia)
-- Metas dos dias 6 e 7 reduzidas de R$ 1250 e R$ 1300 para R$ 1200 e R$ 1250.
-- **Sem equipe:** o bot bate a meta em 100% das vezes no dia 3, 87% no dia 4, 95% no dia 5 e ~82% nos dias 6 e 7.
-- **Com equipe modesta** (Tonhão nível 2 + Dani nível 1 com pratos e lavar, folha de R$ 100/dia): 97% a 100% nos dias 3 a 7.
-- Para medir com equipe: `EQUIPE='{"tonhao":1,"dani":1,"daniTasks":["pratos","lavar"]}' node balance.js 60`.
+## Balanceamento: sem equipe é quase impossível (pedido do usuário)
+Objetivo: nos 3/4 finais da carreira (dias 3 a 7), quem não contrata bate a meta só ~10% das vezes; com a equipe que o dinheiro acumulado já paga, ~85%.
+- **Mais movimento:** grupos por dia 6, 9, **18, 22, 26, 29, 33** (antes eram 12, 14, 16, 18, 22 nos dias 3 a 7).
+- **Louça curta:** **3 pratos limpos** do dia 3 em diante e 5 no Turno sem fim. Lavar leva **2,5 s por pilha** para a Bia; a Dani leva isso ÷ a velocidade dela.
+- **Lixeira:** capacidade de **6**; cheia, o cheiro acelera a impaciência em **30%**.
+- **Metas e experts:**
+
+| Dia | Meta | Expert |
+|---|---|---|
+| 3 | R$ 1300 | R$ 1800 |
+| 4 | R$ 1300 | R$ 1750 |
+| 5 | R$ 1440 | R$ 1900 |
+| 6 | R$ 1440 | R$ 1950 |
+| 7 | R$ 1500 | R$ 2050 |
+
+- A abertura do dia 3 avisa que a Bia sozinha não dá conta.
+- **Medição (bot, 80 a 100 rodadas):**
+  - **sem equipe:** dia 3 ~20%, dias 4 a 7 entre 4% e 9%;
+  - **com equipe completa** (`EQUIPE=auto`: Tonhão nível 3, Dani nível 3 com pratos, lavar e lixo, couvert; folha de R$ 305 por dia, que o acumulado já paga no dia 3): 76% a 90%.
+- Os dias 1 e 2 continuam de aprendizado (100% e ~98% sem equipe).
+- Comandos: `node balance.js 80` (sem equipe), `EQUIPE=auto node balance.js 80` (equipe que cabe no orçamento) e `EQUIPE='{...}'` (equipe fixa).
+
+## Lixeira: esvaziar exige mãos livres
+- A Bia só esvazia a lixeira com as **duas mãos vazias**, ou com **só bebidas** nas mãos, na última leva quando elas não cabem: joga as bebidas e esvazia em seguida.
+- Com prato de comida, louça suja ou comanda na mão, a lixeira cheia recusa ("Lixo cheio!").

@@ -19,7 +19,7 @@ Jogo de navegador de gerenciamento de restaurante, em um único arquivo HTML com
 
 ## Testes (`cd tests`)
 - `./run_all.sh` roda `extract.sh` (gera `game.js` e confere a sintaxe) e depois os smokes 1 a 6.
-- `node balance.js [N]` roda o bot N vezes por dia, sem equipe (~82% das metas nos dias 6 e 7). Com `EQUIPE='{...}'` mede com contratados.
+- `node balance.js [N]` roda o bot N vezes por dia, sem equipe (alvo: ~10% das metas nos dias 3 a 7). `EQUIPE=auto` usa a equipe que o jogador já paga (alvo: ~85%); `EQUIPE='{...}'` usa uma equipe fixa.
 - `python3 menu_fit.py` confere que o menu não rola.
 - `python3 shot_v5.py` gera as capturas em `capturas/v5`.
 - O Playwright usa `/opt/pw-browsers/chromium` quando existe.

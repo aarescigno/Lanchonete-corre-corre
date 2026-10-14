@@ -100,3 +100,13 @@
 **Decisões:**
 - O dinheiro acumulado recebe 100% do faturamento.
 - As comandas também ficam na mão, como os pratos, porque jogá-las fora faria a mesa perder o pedido.
+
+## 14/10/2026: sem equipe tem que ser quase impossível
+**Pedidos:**
+- A Bia só esvazia a lixeira com as duas mãos vazias, ou com bebidas na última leva.
+- Sem contratar, completar os 3/4 finais do jogo deve ser quase impossível (~10%). Se preciso, criar mais níveis.
+
+**Decisões:**
+- Não foi preciso criar dias novos. O que separou "sozinha" de "com equipe" foi a louça (3 pratos limpos, 2,5 s por pilha) e a lixeira (6 itens, cheiro de 30%), justamente o trabalho da Dani, mais o movimento maior nos dias 3 a 7.
+- As metas ficaram perto do percentil 90 de quem joga sozinho.
+- Ver `docs/spec-v5.md`.

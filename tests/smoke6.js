@@ -26,18 +26,21 @@ for(const lv of [0,1,2]){ reset({tonhao:lv}); g.startDay(4); g.begin(); ok(g.kit
 
 /* louça limitada */
 ok(L.dishStock(L.DAYS[0])===Infinity && L.dishStock(L.DAYS[1])===Infinity,'dias 1 e 2: pratos sem limite');
-ok(L.dishStock(L.DAYS[2])===5 && L.dishStock(L.DAYS[5])===5 && L.dishStock(L.DAYS[6])===5 && L.dishStock({endless:true})===6,'estoque: mesas abertas (−1 nos dias 6 e 7), 6 no Turno sem fim');
+ok(L.dishStock(L.DAYS[2])===3 && L.dishStock(L.DAYS[5])===3 && L.dishStock(L.DAYS[6])===3 && L.dishStock({endless:true})===5,'estoque: 3 pratos limpos do dia 3 em diante, 5 no Turno sem fim');
 { reset({}); g.startDay(3); g.begin(); g.schedule=[{t:1e9,type:'estudante',color:0}]; g.nextIdx=0; g.kitchen.clean=0;
   const grp=g.spawn({type:'estudante',color:0}); g.kitchen.queue.push({group:grp,table:1,time:0.1,p:0,dish:'pf'}); run(1);
   ok(!g.kitchen.plates.some(Boolean) && g.kitchen.noPlate,'sem prato limpo: o Tonhão espera');
-  g.kitchen.sinkN=2; ok(g.bia.duration({type:'sink'})===L.WASH.base+2*L.WASH.perPile,'Bia lava 1,5 s por pilha');
-  g.tapStation('sink',850,450); run(5); ok(g.kitchen.sinkN===0 && g.trash===2 && g.stats.washed===2,'lavou 2 pilhas: restos no lixo');
+  g.kitchen.sinkN=2; ok(g.bia.duration({type:'sink'})===L.WASH.base+2*L.WASH.perPile,'Bia lava '+L.WASH.perPile+' s por pilha');
+  g.tapStation('sink',850,450); run(9); ok(g.kitchen.sinkN===0 && g.trash===2 && g.stats.washed===2,'lavou 2 pilhas: restos no lixo');
   ok(g.kitchen.plates.some(Boolean),'com prato lavado o pedido sai'); }
 
 /* lixeira */
 { reset({}); g.startDay(3); g.begin(); g.schedule=[{t:1e9,type:'estudante',color:0}]; g.nextIdx=0; g.trash=L.TRASH.cap;
-  g.bia.hands=[K('juice'),K('coffee'),{kind:'dish',dish:'pf'}]; ok(g.bia.duration({type:'trash'})===0.3+L.TRASH.empty,'lixo cheio com bebida na mão: joga e esvazia (2,3 s)');
-  g.tapStation('trash',723,500); run(4); ok(g.bia.hands.length===1 && g.bia.hands[0].kind==='dish' && g.trash===0,'lixo cheio: aceita as bebidas uma última vez, fica com o prato e esvazia');
+  g.bia.hands=[K('juice'),{kind:'dish',dish:'pf'}]; g.tapStation('trash',723,500); run(3); ok(g.bia.hands.length===2 && g.trash===L.TRASH.cap,'lixo cheio com prato na mão: não esvazia');
+  g.bia.hands=[K('juice'),K('ticket')]; g.tapStation('trash',723,500); run(3); ok(g.bia.hands.length===2 && g.trash===L.TRASH.cap,'lixo cheio com comanda na mão: não esvazia');
+  g.bia.hands=[{kind:'dirty',n:2}]; g.tapStation('trash',723,500); run(3); ok(g.trash===L.TRASH.cap,'lixo cheio com louça suja na mão: não esvazia');
+  g.bia.hands=[K('juice'),K('coffee')]; ok(g.bia.duration({type:'trash'})===0.3+L.TRASH.empty,'lixo cheio e só bebidas na mão: joga e esvazia (2,3 s)');
+  g.tapStation('trash',723,500); run(4); ok(!g.bia.hands.length && g.trash===0,'lixo cheio: aceita as bebidas uma última vez e esvazia');
   g.trash=7; g.bia.hands=[K('juice'),K('juice')]; g.tapStation('trash',723,500); run(4); ok(g.trash===0 && !g.bia.hands.length,'2 bebidas e 1 vaga: joga as duas e esvazia');
   g.trash=5; g.bia.hands=[K('juice')]; g.tapStation('trash',723,500); run(3); ok(g.trash===6,'com espaço: só joga fora, sem esvaziar');
   g.trash=L.TRASH.cap;
@@ -57,7 +60,7 @@ ok(L.dishStock(L.DAYS[2])===5 && L.dishStock(L.DAYS[5])===5 && L.dishStock(L.DAY
   g.trash=7; run(20,true); ok(g.trash===0,'Dani tira o lixo'); }
 { reset({dani:1,daniTasks:['lavar','lixo']}); g.startDay(3); g.begin(); g.schedule=[{t:1e9,type:'estudante',color:0}]; g.nextIdx=0;
   g.bia.hands=[{kind:'dirty',n:2}]; ok(g.bia.duration({type:'sink'})===L.WASH.base,'Dani lava: a Bia só deixa na pia');
-  g.kitchen.sinkN=2; ok(Math.abs(g.dani.duration({type:'sink'})-(L.WASH.base+2*L.WASH.perPile/0.5))<1e-9,'Dani nível 1 lava a 50%: 3 s por pilha');
+  g.kitchen.sinkN=2; ok(Math.abs(g.dani.duration({type:'sink'})-(L.WASH.base+2*L.WASH.perPile/0.5))<1e-9,'Dani nível 1 lava a 50% do ritmo da Bia');
   g.save.equipe.dani=3; ok(Math.abs(g.dani.duration({type:'sink'})-(L.WASH.base+2*L.WASH.perPile/0.8))<1e-9,'nível 3 lava a 80%'); g.save.equipe.dani=1; g.kitchen.sinkN=0;
   g.tapStation('sink',850,450); run(2); ok(g.kitchen.sinkN===1,'pilha esperando na pia'); run(20); ok(g.kitchen.sinkN===0,'Dani lavou'); }
 { reset({dani:1,daniTasks:['cafe','lixo']}); g.startDay(4); g.begin(); g.schedule=[{t:1e9,type:'estudante',color:0}]; g.nextIdx=0;

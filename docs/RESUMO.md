@@ -1,7 +1,7 @@
 # Resumo do projeto e das alterações (até 14/10/2026)
 
 ## Estado atual
-- **Versão:** v5, publicada como Versão 11 do artifact https://claude.ai/artifact/MJxrgDg8S4akvg47SoQAvj (privado).
+- **Versão:** v5, publicada como Versão 12 do artifact https://claude.ai/artifact/MJxrgDg8S4akvg47SoQAvj (privado).
 - **Branch:** `claude/elegant-curie-sgcl11` no repositório `aarescigno/Lanchonete-corre-corre`.
 - **Arquivos publicados:** `lanchonete.html` (página), mais `versoes/v1.html`, `versoes/v2.html`, `versoes/v3.html` e `versoes/v4.html`, abertos pelo painel Versões.
 - **Capacidades declaradas (mantidas ao republicar sem `capabilities`):**
@@ -53,7 +53,8 @@
    - **Dani lava** no mesmo ritmo do deslocamento (50%, 65% ou 80% da Bia).
    - **Couvert artístico:** R$ 80 por dia, paciência nas mesas −20%; com a taxa de R$ 3 por pessoa, −18%.
    - **Água saborizada:** substitui a Jukebox.
-   - **Metas:** dias 6 e 7 em R$ 1200 e R$ 1250.
+   - **Sem equipe é quase impossível:** mais grupos nos dias 3 a 7, 3 pratos limpos, lavar 2,5 s por pilha e lixeira de 6. Metas dos dias 3 a 7: R$ 1300, 1300, 1440, 1440 e 1500. Sem equipe, ~5% das metas nos dias 4 a 7; com equipe, ~80% a 90%.
+   - **Lixeira:** a Bia só esvazia com as mãos vazias (ou só com bebidas, na última leva).
 
 ## Testes (verdes no último commit)
 - `smoke` (bot nos 7 dias);
@@ -61,7 +62,7 @@
 - `smoke3` (120/120: v2);
 - `smoke4` (23/23: VIP);
 - `smoke5` (41/41: sucos, bandeja e lixeira);
-- `smoke6` (48/48: equipe, louça, lixeira que enche, couvert, água, economia);
+- `smoke6` (51/51: equipe, louça, lixeira que enche, couvert, água, economia);
 - `menu_fit` (14 tamanhos de tela);
 - `balance` (bot, N rodadas por dia).
 
