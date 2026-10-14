@@ -3,3 +3,4 @@ node_modules/
 __pycache__/
 tests/wrapped.html
 tests/game_v*.js
+.claude/settings.local.json
