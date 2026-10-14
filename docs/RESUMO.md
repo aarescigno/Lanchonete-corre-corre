@@ -1,7 +1,7 @@
 # Resumo do projeto e das alterações (até 14/10/2026)
 
 ## Estado atual
-- **Versão:** v5, publicada como Versão 16 do artifact https://claude.ai/artifact/MJxrgDg8S4akvg47SoQAvj (privado).
+- **Versão:** v5, publicada como Versão 17 do artifact https://claude.ai/artifact/MJxrgDg8S4akvg47SoQAvj (privado).
 - **Branch:** `claude/elegant-curie-sgcl11` no repositório `aarescigno/Lanchonete-corre-corre`.
 - **Arquivos publicados:** `lanchonete.html` (página), mais `versoes/v1.html`, `versoes/v2.html`, `versoes/v3.html` e `versoes/v4.html`, abertos pelo painel Versões.
 - **Capacidades declaradas (mantidas ao republicar sem `capabilities`):**
