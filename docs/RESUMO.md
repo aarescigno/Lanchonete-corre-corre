@@ -1,9 +1,9 @@
 # Resumo do projeto e das alterações (até 14/10/2026)
 
 ## Estado atual
-- **Versão:** v5, publicada como Versão 17 do artifact https://claude.ai/artifact/MJxrgDg8S4akvg47SoQAvj (privado).
-- **Branch:** `claude/elegant-curie-sgcl11` no repositório `aarescigno/Lanchonete-corre-corre`.
-- **Arquivos publicados:** `lanchonete.html` (página), mais `versoes/v1.html`, `versoes/v2.html`, `versoes/v3.html` e `versoes/v4.html`, abertos pelo painel Versões.
+- **Versão:** v6 (Salão), publicada no artifact https://claude.ai/artifact/MJxrgDg8S4akvg47SoQAvj (privado).
+- **Branch:** `claude/intelligent-gauss-3owv29` no repositório `aarescigno/Lanchonete-corre-corre`.
+- **Arquivos publicados:** `lanchonete.html` (página), mais `versoes/v1.html`, `versoes/v2.html`, `versoes/v3.html`, `versoes/v4.html` e `versoes/v5.html`, abertos pelo painel Versões.
 - **Capacidades declaradas (mantidas ao republicar sem `capabilities`):**
   - `db`: `ranking-carreira` e `ranking-semfim` com read "view" e write "owner";
   - `db`: `ranking-*/{self}` com write "interact";
@@ -12,7 +12,7 @@
   - documentos `ranking-carreira/<userId>` e `ranking-semfim/<userId>`, com `nome`, `pontos`, `dia` ou `tempo` e `quando`;
   - só sobrescreve quando a pontuação é maior;
   - fallback local em `localStorage` (`lcc2_ranking`).
-- **Save:** `lcc2_save`, que importa o `lcc_save_v1` da v1.
+- **Save:** `lcc2_save`, que importa o `lcc_save_v1` da v1. Desde a v6 guarda também o salão (`save.salao`).
 
 ## Versões
 | Versão | Data | O que trouxe | Detalhes |
@@ -22,6 +22,7 @@
 | v3 | 14/10 | clientes VIP | `docs/spec-v3.md` |
 | v4 | 14/10 | balcão de sucos, bandeja, comandas empilhadas, lixeira | `docs/spec-v4.md` |
 | v5 | 14/10 | equipe (Tonhão, Dani, couvert), louça limitada, lixeira que enche, água saborizada, renda de 30% | `docs/spec-v5.md` |
+| v6 | 14/10 | aba Salão: cadeiras e mesas (até 8) compradas, 2 ou 4 lugares por mesa | `docs/spec-v6.md` |
 
 ## Alterações feitas no Claude Code (14/10/2026)
 1. **Importação** do pacote exportado do claude.ai para o repositório (commit `982583b`).
@@ -69,6 +70,14 @@
      - **Sinal do toque:** cada ação aceita faz o som de toque e um brilho só no desenho do objeto tocado (estação, mesa, prato, grupo da fila ou botão), sem halo em volta, que some em 0,4 s (`glowSprite`: o objeto vai para uma camada à parte e uma cópia é somada por cima com `lighter`). Um toque no vazio mostra só um anel fraco no ponto. O `smoke7` confere tudo isso.
    - **Pia em 2 etapas:** com louça na mão, a Bia só deixa a louça na pia; tocando de novo, sem louça na mão, ela lava. Só 1 pessoa lava por vez (a Bia ou a Dani); o Tonhão lava à parte. O bot dá os 2 toques e não manda lavar enquanto a Dani lava; o equilíbrio não mudou (`balance` sem equipe e com a Dani lavando).
 
+9. **v6, Salão** (ver `docs/spec-v6.md`), a pedido do usuário (só 1 mesa de 4 lugares e várias famílias de 4 esperando):
+   - aba Salão na lojinha, com a planta das 2 fileiras e os botões 2 e 4 em cada mesa;
+   - 2 cadeiras por R$ 60 (até 24) e mesa nova por R$ 300 (a 7 em cima, a 8 embaixo, abertas todo dia);
+   - numa fileira com 4 mesas, só 1 cabe com 4 lugares;
+   - não conta no limite de 1 melhoria por dia;
+   - teste `smoke8`.
+   - A pergunta-lembrete a cada alteração saiu do `CLAUDE.md`, a pedido do usuário.
+
 ## App para Android (PWA)
 - `app/build.py` monta `app/site/` (ignorado no git) a partir de `lanchonete.html`, sem mudar o jogo: `index.html` com invólucro, `manifest.webmanifest` (tela cheia, horizontal), ícones próprios (hambúrguer), `sw.js` (offline; fontes do Google em cache) e as `versoes/vN.html`.
 - `.github/workflows/app.yml` publica `app/site` no GitHub Pages a cada push no branch padrão que mexa no jogo (ou manualmente). Requer Settings → Pages → Source: GitHub Actions.
@@ -83,6 +92,7 @@
 - `smoke5` (41/41: sucos, bandeja e lixeira);
 - `smoke6` (94/94: equipe, louça, lixeira que enche, couvert, água, economia). O teste "a Dani chega a 2 itens" falha em ~1 de 6 rodadas, porque depende do sorteio do dia (já falhava antes do ajuste de toque);
 - `smoke7` (15/15: toque no celular e brilho);
+- `smoke8` (29/29: salão, cadeiras e mesas);
 - `menu_fit` (14 tamanhos de tela);
 - `balance` (bot, N rodadas por dia).
 

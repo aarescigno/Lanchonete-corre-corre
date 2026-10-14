@@ -54,6 +54,21 @@ p{margin:calc(var(--u)*6) 0;font-size:max(12px,calc(var(--u)*16));line-height:1.
 .stats{display:grid;grid-template-columns:auto auto;gap:calc(var(--u)*4) calc(var(--u)*24);justify-content:center;text-align:left;margin:calc(var(--u)*8) auto;font-size:max(12px,calc(var(--u)*16));font-weight:600}
 .stats b{font-family:var(--fd);font-weight:400;text-align:right;font-size:max(13px,calc(var(--u)*18))}
 .shopgrid{display:grid;grid-template-columns:repeat(3,1fr);gap:calc(var(--u)*8);width:calc(var(--u)*760);max-width:100%;margin:calc(var(--u)*6) 0}
+.shopgrid.salao{grid-template-columns:repeat(2,1fr)}
+.plan{grid-column:1 / -1;display:grid;gap:calc(var(--u)*4);background:var(--creme);border:calc(var(--u)*3) solid var(--tinta);border-radius:calc(var(--u)*12);padding:calc(var(--u)*5) calc(var(--u)*8);text-align:left}
+.plan > span{font-size:max(11px,calc(var(--u)*12.5));font-weight:600;line-height:1.2}
+.plan .msg{color:var(--perigo);font-weight:800;min-height:1.2em}
+.prow{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:calc(var(--u)*6)}
+.pcell{background:#fff;border:calc(var(--u)*2) solid var(--tinta);border-radius:calc(var(--u)*8);padding:calc(var(--u)*3) calc(var(--u)*5);display:flex;gap:4px;align-items:center;justify-content:space-between;min-height:36px}
+.pcell.off{background:#ece7da}
+.pcell b small{font-size:inherit}
+@media (max-width:640px){.pcell b small{display:none}}
+.pcell.vaga{border-style:dashed;background:transparent;opacity:.6;justify-content:center;font-size:max(10px,calc(var(--u)*12))}
+.pcell b{font-family:var(--fd);font-weight:400;font-size:max(12px,calc(var(--u)*14));border-bottom:calc(var(--u)*4) solid;line-height:1.3;white-space:nowrap}
+.seg2{display:flex;gap:3px}
+.seg2 button{font:800 max(12px,calc(var(--u)*14)) var(--fb);color:var(--tinta);background:#fff;border:calc(var(--u)*2) solid var(--tinta);border-radius:999px;padding:0;width:max(30px,calc(var(--u)*34));min-height:30px;cursor:pointer}
+#ov-shop.salao #shop-folha{display:none}
+.seg2 button[aria-pressed="true"]{background:var(--faixa);color:#fff}
 .item{background:var(--creme);border:calc(var(--u)*3) solid var(--tinta);border-radius:calc(var(--u)*12);padding:calc(var(--u)*6) calc(var(--u)*8);display:grid;grid-template-columns:auto 1fr;column-gap:calc(var(--u)*8);row-gap:calc(var(--u)*3);align-items:center;align-content:start;text-align:left}
 .item.own{background:#dcefd9}
 .item canvas{width:calc(var(--u)*38);height:calc(var(--u)*38);min-width:28px;min-height:28px;grid-row:span 2}
@@ -133,6 +148,11 @@ table.rank tr.me td{background:#fbe7a8}
   #ov-shop .item span{font-size:10.5px}
   #ov-shop .item .next{padding:2px 5px}
   #ov-shop .item .next b{font-size:10.5px}
+  #ov-shop .plan{gap:3px;padding:3px 6px}
+  #ov-shop .plan > span{font-size:10.5px}
+  #ov-shop .pcell{padding:2px 4px;min-height:32px}
+  #ov-shop .pcell b{font-size:12px}
+  #ov-shop .seg2 button{width:28px;min-height:28px;font-size:12px}
 }
 /* celular deitado: o menu cabe sem rolagem (painel mais largo, título em 1 linha, 4 botões numa fileira) */
 @media (max-height:460px){
@@ -154,7 +174,7 @@ table.rank tr.me td{background:#fbe7a8}
 
     <div class="ov show" id="ov-menu">
       <div class="panel menu-panel">
-        <span class="vtag" aria-label="Versão 5">v5</span>
+        <span class="vtag" aria-label="Versão 6">v6</span>
         <h1 class="title">Lanchonete <br>Corre-Corre</h1>
         <p class="tag">Ajude a Bia a atender a freguesia da esquina antes que o cafezinho esfrie!</p>
         <div class="lbl">Carreira: escolha o dia</div>
@@ -231,6 +251,7 @@ table.rank tr.me td{background:#fbe7a8}
         <div class="rankbar"><div class="seg" id="shop-tabs" role="group" aria-label="Lojinha">
           <button type="button" data-v="melhorias" aria-pressed="true">Melhorias</button>
           <button type="button" data-v="equipe" aria-pressed="false">Equipe</button>
+          <button type="button" data-v="salao" aria-pressed="false">Salão</button>
         </div></div>
         <div class="shopgrid" id="shop-grid"></div>
         <p class="small" id="shop-folha"></p>
@@ -293,7 +314,8 @@ table.rank tr.me td{background:#fbe7a8}
       <div class="panel">
         <h2>Versões</h2>
         <ul class="verlist">
-          <li><b>v5</b><span class="cur">versão atual</span><br>14/10/2026 &mdash; Equipe: aumento do Tonhão, a ajudante Dani e couvert artístico; louça limitada, lixeira que enche e água saborizada.</li>
+          <li><b>v6</b><span class="cur">versão atual</span><br>14/10/2026 &mdash; Salão: compre cadeiras e mesas e escolha 2 ou 4 lugares em cada mesa.</li>
+          <li><b>v5</b><br>14/10/2026 &mdash; Equipe: aumento do Tonhão, a ajudante Dani e couvert artístico; louça limitada, lixeira que enche e água saborizada.<br><a href="versoes/v5.html" target="_blank" rel="noopener">Abrir a v5</a></li>
           <li><b>v4</b><br>14/10/2026 &mdash; Balcão de sucos e bandeja na lojinha (2 pratos ou 3 bebidas numa mão).<br><a href="versoes/v4.html" target="_blank" rel="noopener">Abrir a v4</a></li>
           <li><b>v3</b><br>14/10/2026 &mdash; Clientes VIP: furam a fila, têm menos paciência e pagam gorjeta extra.<br><a href="versoes/v3.html" target="_blank" rel="noopener">Abrir a v3</a></li>
           <li><b>v2</b><br>14/10/2026 &mdash; Comandas coloridas, humor por cor, fila lotada, Turno sem fim e ranking compartilhado.<br><a href="versoes/v2.html" target="_blank" rel="noopener">Abrir a v2</a></li>
@@ -365,6 +387,56 @@ const STATIONS = {
 const PLATE_SLOTS = [ {x:806,y:270}, {x:848,y:270}, {x:890,y:270}, {x:932,y:270} ];
 const BOUNDS = { x0:24, y0:112, x1:744, y1:528 };
 const LAYOUT = { W, H, QUEUE, DOOR, STATIONS, PLATE_SLOTS, BOUNDS, TABLE_DEFS };
+/* ============================================================
+   SALÃO (v6): na lojinha, cada mesa tem 2 ou 4 lugares (as cadeiras são
+   compradas em pares) e dá para comprar 2 mesas novas, uma na ponta direita
+   de cada fileira. Com 3 mesas, a fileira usa as colunas de sempre; com 4,
+   as mesas se espremem e só 1 delas cabe com 4 lugares.
+   ============================================================ */
+const SALAO = { rows:[[1,2,3,7],[4,5,6,8]], ys:[205,415], cols:[260,430,600], x0:196, x1:684, gap:46,
+  chairs:16, maxChairs:24, chairPrice:60, tablePrice:300, colors:{ 7:3, 8:1 } };
+/* centros das mesas de uma fileira, pelos lugares de cada uma; null se não cabem */
+function rowLayout(seats){
+  const k = seats.length;
+  if (k <= SALAO.cols.length) return SALAO.cols.slice(0, k);
+  const w = seats.map(n => 2 * tableHalfW({ seats:n }));
+  const free = SALAO.x1 - SALAO.x0 - w.reduce((a, b) => a + b, 0);
+  if (free < SALAO.gap * (k - 1)) return null;
+  const gap = Math.min(free / (k - 1), Math.max(SALAO.gap, free / (k - 0.4)));
+  let x = SALAO.x0 + (free - gap * (k - 1)) / 2;
+  return w.map(wi => { const c = Math.round(x + wi / 2); x += wi + gap; return c; });
+}
+function salaoIds(sal){ return SALAO.rows.map(row => row.filter(id => id <= 6 || id - 6 <= sal.mesas)); }
+function salaoUsed(sal){ return salaoIds(sal).reduce((a, ids) => a + ids.reduce((b, id) => b + sal.seats[id], 0), 0); }
+function salaoOk(sal){ return salaoUsed(sal) <= sal.chairs && salaoIds(sal).every(ids => !!rowLayout(ids.map(id => sal.seats[id]))); }
+function salaoDefs(sal){
+  const out = [];
+  salaoIds(sal).forEach((ids, r) => {
+    const xs = rowLayout(ids.map(id => sal.seats[id]));
+    ids.forEach((id, i) => out.push({ id, cx:xs[i], cy:SALAO.ys[r], seats:sal.seats[id], color: id <= 6 ? TABLE_DEFS[id-1].color : SALAO.colors[id] }));
+  });
+  return out.sort((a, b) => a.id - b.id);
+}
+/* por que a próxima mesa não pode ser comprada ('' se pode, sem contar o dinheiro) */
+function salaoTableBlock(sal){
+  if (sal.mesas >= 2) return 'O salão já tem 8 mesas.';
+  const id = 7 + sal.mesas;
+  const next = { seats:Object.assign({}, sal.seats, { [id]:2 }), chairs:sal.chairs + 2, mesas:sal.mesas + 1 };
+  return salaoOk(next) ? '' : 'Para caber a mesa ' + id + ', deixe só 1 mesa de 4 lugares na fileira de ' + (id === 7 ? 'cima' : 'baixo') + '.';
+}
+function normSalao(s){
+  s = (s && typeof s === 'object') ? s : {};
+  const mesas = clamp(Math.round(+s.mesas) || 0, 0, 2), def = {};
+  TABLE_DEFS.forEach(d => { def[d.id] = d.seats; });
+  for (let i = 1; i <= mesas; i++) def[6 + i] = 2;
+  const base = SALAO.chairs + 2 * mesas;
+  const out = { seats:Object.assign({}, def), chairs:clamp(Math.round(+s.chairs) || 0, base, SALAO.maxChairs + 2 * mesas), mesas };
+  const src = (s.seats && typeof s.seats === 'object') ? s.seats : {};
+  Object.keys(def).forEach(id => { const v = +src[id]; if (v === 2 || v === 4) out.seats[id] = v; });
+  if (!salaoOk(out)) out.seats = Object.assign({}, def);
+  if (!salaoOk(out)) Object.keys(def).forEach(id => { out.seats[id] = 2; });
+  return out;
+}
 
 const HEART_MULT = [0, 0.6, 0.8, 1, 1.25, 1.5];
 const PAT = { queue:7, wantOrder:6, ordered:9, wantBill:7 };   // segundos por coração (base)
@@ -428,7 +500,7 @@ const VIP = { pat:0.75, tip:0.5, perfect:40, angry:30, dish:25, cook:1.8, types:
 
 const DAYS = [
   { n:1, tables:[1,2,4],         groups:6,  types:['estudante','vovos'],                                   nu:null,         meta:250, expert:400,  time:150, speed:0.60, note:'' },
-  { n:2, tables:[1,2,4,5],       groups:9,  types:['estudante','vovos','familia'],                         nu:'familia',    meta:700, expert:1100,  time:160, speed:0.60, note:'Chegou a família! Grupos de 3 ou 4 só cabem nas mesas grandes.' },
+  { n:2, tables:[1,2,4,5],       groups:9,  types:['estudante','vovos','familia'],                         nu:'familia',    meta:700, expert:1100,  time:160, speed:0.60, note:'Chegou a família! Grupos de 3 ou 4 só cabem nas mesas de 4 lugares. Na lojinha, aba Salão, dá para comprar cadeiras e mesas.' },
   { n:3, tables:[1,2,3,4,5],     groups:18, types:['estudante','vovos','familia','executiva'],             nu:'executiva',  meta:1400,expert:1800,  time:170, speed:0.60, juice:0.3, note:'O movimento aumentou e agora só há 3 pratos limpos: sozinha a Bia não dá conta, contrate ajuda na lojinha. A executiva tem pouca paciência, mas deixa boa gorjeta. E abriu o balcão de sucos: quem pede suco quer receber antes da conta!' },
   { n:4, tables:[1,2,3,4,5,6],   groups:22, types:['estudante','vovos','familia','executiva','entregador'], nu:'entregador', meta:1300,expert:1750, time:180, speed:0.58, juice:0.3, note:'O entregador de moto tem pressa: pouquíssima paciência!' },
   { n:5, tables:[1,2,3,4,5,6],   groups:26, types:['estudante','vovos','familia','executiva','entregador'], nu:null,         meta:1480,expert:2050, time:190, speed:0.56, vip:0.15, juice:0.3, note:'Chegou cliente VIP (de óculos escuros e plaquinha dourada)! Fura a fila e tem menos paciência, mas paga gorjeta extra e um bônus se sair com 5 corações. Se sair bravo, a multa dobra.' },
@@ -514,10 +586,13 @@ const Sfx = {
 /* ============================================================
    CAMINHOS (grafo de visibilidade em volta das mesas)
    ============================================================ */
-const OBST = TABLE_DEFS.map(t => {
-  const hx = t.seats === 2 ? 36 : 62;
-  return { x0:t.cx-hx, x1:t.cx+hx, y0:t.cy-50, y1:t.cy+62 };
-});
+const OBST = [];
+/* obstáculos dos caminhos: refeitos quando o salão muda (cadeiras e mesas da lojinha) */
+function setObst(defs){
+  OBST.length = 0;
+  defs.forEach(t => { const hx = tableHalfW(t); OBST.push({ x0:t.cx-hx, x1:t.cx+hx, y0:t.cy-50, y1:t.cy+62 }); });
+}
+setObst(TABLE_DEFS);
 function segHits(ax,ay,bx,by,r){
   let t0 = 0, t1 = 1;
   const dx = bx-ax, dy = by-ay;
@@ -641,7 +716,7 @@ function normSave(s){
   const up = (s.up && typeof s.up === 'object') ? s.up : {};
   if (up.jukebox){ up.agua = true; delete up.jukebox; }   // a Jukebox virou Água saborizada na v5
   if (up.chapa){ up.pratos = true; delete up.chapa; }     // a Chapa nova virou Jogo de pratos (a velocidade da cozinha é do Tonhão)
-  return { maxDay: clamp(+s.maxDay||1,1,7), bank: Math.max(0,+s.bank||0), up, best: (s.best && typeof s.best === 'object') ? s.best : {}, stars: (s.stars && typeof s.stars === 'object') ? s.stars : {}, equipe: normEquipe(s.equipe) };
+  return { maxDay: clamp(+s.maxDay||1,1,7), bank: Math.max(0,+s.bank||0), up, best: (s.best && typeof s.best === 'object') ? s.best : {}, stars: (s.stars && typeof s.stars === 'object') ? s.stars : {}, equipe: normEquipe(s.equipe), salao: normSalao(s.salao) };
 }
 function loadSave(){
   const def = normSave({});
@@ -1303,7 +1378,8 @@ class Game {
     this.hooks = {};
     this.save = loadSave();
     this.up = this.save.up;
-    this.tables = TABLE_DEFS.map(d => new Table(d));
+    this.tablesKey = ''; this.salaoMsg = '';
+    this.buildTables();
     this.bia = new Waitress(this);
     this.kitchen = new Kitchen(this);
     this.dani = new Helper(this);
@@ -1327,7 +1403,8 @@ class Game {
     this.elapsed = 0;
     this.gid = 0;
     this.groups = []; this.queue = [];
-    this.tables.forEach(t => { t.open = this.day.tables.includes(t.id); t.group = null; t.dirty = false; t.dirtyN = 0; });
+    this.buildTables();
+    this.tables.forEach(t => { t.open = this.day.tables.includes(t.id) || t.id > 6; t.group = null; t.dirty = false; t.dirtyN = 0; });
     this.kitchen.reset();
     this.kitchen.clean = dishStock(this.day, this.up);
     this.trash = 0; this.paid = 0; this.unpaid = [];
@@ -1755,6 +1832,52 @@ class Game {
     Sfx.coin();
     return true;
   }
+  /* salão (v6): refaz as mesas e os obstáculos dos caminhos quando as cadeiras ou as mesas mudam */
+  buildTables(){
+    const sal = this.save.salao, key = JSON.stringify(sal);
+    if (key === this.tablesKey) return;
+    const defs = salaoDefs(sal);
+    this.tables = defs.map(d => new Table(d));
+    setObst(defs);
+    this.tablesKey = key;
+  }
+  /* lugares de uma mesa (2 ou 4): precisa de cadeiras livres e de espaço na fileira; o motivo da recusa fica em salaoMsg */
+  setSeats(id, n){
+    const sal = this.save.salao, old = sal.seats[id];
+    if (old == null || (n !== 2 && n !== 4)) return false;
+    if (old === n) return true;
+    sal.seats[id] = n;
+    if (!salaoOk(sal)){
+      this.salaoMsg = salaoUsed(sal) > sal.chairs ? 'Faltam cadeiras: compre mais 2.' : 'Não cabe: numa fileira com 4 mesas, só 1 pode ter 4 lugares.';
+      sal.seats[id] = old;
+      return false;
+    }
+    return this.salaoSaved();
+  }
+  buyChairs(){
+    const sal = this.save.salao;
+    if (this.save.bank < SALAO.chairPrice || sal.chairs >= SALAO.maxChairs + 2 * sal.mesas) return false;
+    this.save.bank -= SALAO.chairPrice; sal.chairs += 2;
+    Sfx.coin();
+    return this.salaoSaved();
+  }
+  /* mesa nova (com 2 cadeiras): a 7 na ponta direita da fileira de cima, a 8 na de baixo; abre todos os dias */
+  buyTable(){
+    const sal = this.save.salao, why = salaoTableBlock(sal);
+    if (why){ this.salaoMsg = why; return false; }
+    if (this.save.bank < SALAO.tablePrice) return false;
+    this.save.bank -= SALAO.tablePrice;
+    sal.mesas++; sal.seats[6 + sal.mesas] = 2; sal.chairs += 2;
+    Sfx.coin();
+    return this.salaoSaved();
+  }
+  salaoSaved(){
+    this.salaoMsg = '';
+    writeSave(this.save);
+    if (this.state === 'shop') this.resetDay(this.shopNext);   // o salão ao fundo já mostra a mudança
+    else this.buildTables();
+    return true;
+  }
   totals(){
     let money = 0, stars = 0;
     for (let i=1;i<=7;i++){ money += this.save.best[i] || 0; stars += this.save.stars[i] || 0; }
@@ -1763,6 +1886,7 @@ class Game {
   resetProgress(){
     this.save = normSave({});
     this.up = this.save.up; this.boughtFor = 0;
+    this.buildTables();
     this.kitchen.reset(); this.dani.reset();
     writeSave(this.save);
   }
@@ -3180,6 +3304,12 @@ function upgradeIcon(id){
       txt(c,'♪',-12,-12,14,PAL.faixa,'center',FB);
     } else if (id === 'agua'){
       drawAguaJar(c,0,12,0.9);
+    } else if (id === 'cadeira'){
+      c.scale(0.62,0.62); drawChair(c,-13,16,0,true); drawChair(c,15,20,1,true);
+    } else if (id === 'mesa'){
+      c.strokeStyle = PAL.cromoEsc; c.lineWidth = 2.5; c.beginPath(); c.moveTo(-10,6); c.lineTo(-12,17); c.moveTo(10,6); c.lineTo(12,17); c.stroke();
+      rr(c,-18,-4,36,12,5); fs(c,PAL.cromo,2); rr(c,-15,-2,30,7,3); fs(c,PAL.formica,1.4);
+      circ(c,12,-12,7); fs(c,PAL.ok,1.8); txt(c,'+',12,-11,13,'#fff','center',FD);
     } else if (id === 'cafeteira'){
       drawIcon(c,'coffee',-8,0,0.8); drawIcon(c,'coffee',8,2,0.8);
     } else if (id === 'bandeja'){
@@ -3272,6 +3402,47 @@ function buildEquipe(grid){
   duo.appendChild(eq.couvert ? shopBtn('Dispensar', 'btn alt', true, () => game.setStaff('couvert', false)) : shopBtn('Contratar: ' + fmt(C.pay) + '/dia', 'btn', canPay(C.pay), () => game.setStaff('couvert', true)));
   c.appendChild(duo); grid.appendChild(c);
 }
+/* aba Salão: comprar cadeiras e mesas e escolher 2 ou 4 lugares por mesa, na planta das 2 fileiras */
+function buildSalao(grid){
+  const sal = game.save.salao, bank = game.save.bank, used = salaoUsed(sal), livres = sal.chairs - used;
+  const plan = el('div', 'plan');
+  plan.appendChild(el('span', 'full', 'Lugares por mesa (grupos de 3 ou 4 só sentam nas de 4). Numa fileira com 4 mesas, só 1 pode ter 4 lugares.'));
+  SALAO.rows.forEach(row => {
+    const line = el('div', 'prow');
+    row.forEach(id => {
+      const t = game.tables.find(x => x.id === id);
+      const cell = el('div', 'pcell' + (t ? '' : ' vaga'));
+      if (!t){ cell.appendChild(el('span', null, 'vaga')); line.appendChild(cell); return; }
+      const name = el('b'); name.appendChild(el('small', null, 'Mesa ')); name.appendChild(document.createTextNode(String(id))); name.style.borderColor = CHAIRS[t.color].c;
+      cell.appendChild(name);
+      const seg = el('div', 'seg2');
+      [2, 4].forEach(n => {
+        const b = el('button', null, String(n)); b.type = 'button'; b.setAttribute('aria-label', 'Mesa ' + id + ': ' + n + ' lugares');
+        b.setAttribute('aria-pressed', sal.seats[id] === n ? 'true' : 'false');
+        b.addEventListener('click', () => { Sfx.init(); if (sal.seats[id] === n) return; if (game.setSeats(id, n)) Sfx.tap(); else Sfx.boing(); buildShop(); });
+        seg.appendChild(b);
+      });
+      cell.appendChild(seg);
+      if (!t.open){ cell.classList.add('off'); cell.title = 'Fechada no dia ' + game.shopNext; }
+      line.appendChild(cell);
+    });
+    plan.appendChild(line);
+  });
+  if (game.tables.some(t => !t.open)) plan.appendChild(el('span', 'full', 'Mesas apagadas ficam fechadas no dia ' + game.shopNext + '; as novas abrem todo dia.'));
+  if (game.salaoMsg) plan.appendChild(el('span', 'full msg', game.salaoMsg));
+  grid.appendChild(plan);
+  // cadeiras
+  const capC = SALAO.maxChairs + 2 * sal.mesas;
+  let c = staffCard(upgradeIcon('cadeira'), 'Cadeiras: ' + used + ' de ' + sal.chairs + ' em uso', livres ? livres + ' livres: use na planta acima.' : 'Para pôr 4 lugares numa mesa, tire 2 de outra ou compre mais.');
+  c.appendChild(shopBtn(sal.chairs >= capC ? 'Cadeiras no máximo' : 'Comprar 2 cadeiras: ' + fmt(SALAO.chairPrice), 'btn', sal.chairs < capC && bank >= SALAO.chairPrice, () => game.buyChairs()));
+  grid.appendChild(c);
+  // mesa nova
+  const why = salaoTableBlock(sal);
+  c = staffCard(upgradeIcon('mesa'), 'Mesas: ' + (6 + sal.mesas) + ' de 8',
+    sal.mesas >= 2 ? 'O salão está completo.' : (why || 'A mesa ' + (7 + sal.mesas) + ' entra na fileira de ' + (sal.mesas ? 'baixo' : 'cima') + ', com 2 cadeiras.'));
+  if (sal.mesas < 2) c.appendChild(shopBtn('Comprar mesa: ' + fmt(SALAO.tablePrice), 'btn', !why && bank >= SALAO.tablePrice, () => game.buyTable()));
+  grid.appendChild(c);
+}
 function buildShop(){
   const grid = $('shop-grid');
   clearEl(grid);
@@ -3281,7 +3452,10 @@ function buildShop(){
   $('btn-shop-go').textContent = 'Começar o dia ' + game.shopNext;
   const f = payroll(game.save.equipe);
   $('shop-folha').textContent = f ? 'Folha do dia: ' + fmt(f) + ' (debitada do dinheiro acumulado ao abrir a lanchonete).' : 'Sem folha: contrate na aba Equipe. Os salários são debitados do dinheiro acumulado no início de cada dia.';
+  grid.className = 'shopgrid' + (shopTab === 'salao' ? ' salao' : '');
+  $('ov-shop').classList[shopTab === 'salao' ? 'add' : 'remove']('salao');
   if (shopTab === 'equipe') return buildEquipe(grid);
+  if (shopTab === 'salao') return buildSalao(grid);
   UPGRADES.forEach(u => {
     const own = !!game.up[u.id];
     const card = el('div', 'item' + (own ? ' own' : ''));
@@ -3555,7 +3729,7 @@ fit();
 try { Rank.init(); } catch(e) {}
 game.setState('menu');
 window.__game = game;
-window.__lcc = { AGUA, CRIT, STAFF, DANI_TASKS, DANI_HANDS, daniTaskOk, TRASH, WASH, payroll, couvertEffect, dishStock, normSave, Helper, JUICE, KITCHEN_SLOTS, handLayout, trayOk, Game, Group, Table, Kitchen, Waitress, DAYS, UPGRADES, CUSTOMER_TYPES, LAYOUT, PAL, Sfx, findPath, render, Rank, sortRows, cleanName, normName, CMD, ENDLESS, VIP, rk, renderRank, openRank, closeRank, LS, lsGet, lsSet, loadSave };
+window.__lcc = { SALAO, rowLayout, salaoDefs, salaoOk, salaoUsed, salaoTableBlock, normSalao, setObst, OBST, AGUA, CRIT, STAFF, DANI_TASKS, DANI_HANDS, daniTaskOk, TRASH, WASH, payroll, couvertEffect, dishStock, normSave, Helper, JUICE, KITCHEN_SLOTS, handLayout, trayOk, Game, Group, Table, Kitchen, Waitress, DAYS, UPGRADES, CUSTOMER_TYPES, LAYOUT, PAL, Sfx, findPath, render, Rank, sortRows, cleanName, normName, CMD, ENDLESS, VIP, rk, renderRank, openRank, closeRank, LS, lsGet, lsSet, loadSave };
 window.requestAnimationFrame(frame);
 
 })();
