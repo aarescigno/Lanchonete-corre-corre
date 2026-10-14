@@ -35,7 +35,7 @@ function playDay(n){
     botStep(g); g.update(0.05); steps++;
     if(steps%10===0){ L.render(g,ctx); frames++; }
     // invariants
-    ok(g.bia.hands.length<=2,'hands<=2'); ok(g.bia.acts.length<=6,'acts<=6');
+    ok(L.handLayout(g.bia.hands,g.bia.tray)!==null,'mãos cabem (com ou sem bandeja)'); ok(g.bia.acts.length<=6,'acts<=6');
     ok(g.bia.x>=0&&g.bia.x<=960&&isFinite(g.bia.x)&&isFinite(g.bia.y),'bia pos');
     for(const grp of g.groups){ ok(isFinite(grp.x)&&isFinite(grp.y),'grp pos'); ok(grp.hearts>=0&&grp.hearts<=5,'hearts'); }
     if(fails>20) break;

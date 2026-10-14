@@ -1,6 +1,6 @@
 const H=require('./harness.js')(); const {g,L}=H; const bot=require('./bot.js')(g,L);
 const N=+process.argv[2]||20;
-const order=['tenis','jukebox','cafeteira','ventilador','chapa'];
+const order=['tenis','jukebox','cafeteira','bandeja','ventilador','chapa'];
 for(let n=1;n<=7;n++){
   const res=[];
   for(let k=0;k<N;k++){

@@ -13,17 +13,20 @@ Jogo de navegador de gerenciamento de tempo em restaurante (gênero "garçonete 
 
 ## Estrutura
 ```
-lanchonete.html          versão atual (v3), fonte do artifact
+lanchonete.html          versão atual (v4), fonte do artifact
 versoes/v1-fonte.html    v1 exatamente como foi publicada (sem invólucro)
 versoes/v1.html          v1 com doctype, publicada junto em versoes/v1.html no artifact
 versoes/v2-fonte.html    v2 exatamente como foi publicada (sem invólucro)
-versoes/v2.html          v2 com doctype, para publicar em versoes/v2.html (o menu Versões da v3 aponta para ela)
+versoes/v2.html          v2 com doctype, publicada junto em versoes/v2.html
+versoes/v3-fonte.html    v3 exatamente como foi publicada (sem invólucro)
+versoes/v3.html          v3 com doctype, publicada junto em versoes/v3.html
 docs/spec-v1.md          especificação original
 docs/spec-v2.md          especificação da revisão baseada no clone
 docs/spec-v3.md          clientes VIP
+docs/spec-v4.md          balcão de sucos e bandeja
 docs/HISTORICO.md        histórico da conversa e das decisões
 tests/                   harness Node + bot + testes + capturas Playwright
-capturas/v1, v2, v3       telas de referência
+capturas/v1 … v4          telas de referência
 ```
 
 ## Testes
@@ -34,18 +37,21 @@ node smoke.js            # bot joga os 7 dias da carreira, com render (stub de c
 node smoke2.js           # mecânicas: fluxo de mesa, mãos, fila de ações, pausa etc.
 node smoke3.js           # v2: pool de cores, fila lotada, Turno sem fim, ranking local/db (stub)
 node smoke4.js           # v3: clientes VIP (agenda, fila, conta, multa, Turno sem fim, render)
-node balance.js          # 20 rodadas por dia; bot ~137/140 metas batidas
+node smoke5.js           # v4: sucos e bandeja (capacidade das mãos, pedido, entrega, conta sem suco, bot dias 3–7)
+node balance.js [N]      # N rodadas por dia (padrão 20); na v4, ~93% das metas batidas pelo bot
 python3 shot_v2.py       # capturas com Playwright/Chromium em ../capturas/v2
 python3 shot_v3.py       # capturas da v3 em ../capturas/v3 (usa /opt/pw-browsers/chromium se existir)
+python3 shot_v4.py       # capturas da v4 em ../capturas/v4
 python3 menu_fit.py      # o painel do menu não pode rolar em 14 tamanhos de tela (desktop e celular deitado)
 ```
+`tests/botpage.js` é gerado a partir de `tests/bot.js` (mesmo bot, embrulhado para rodar na página). Ao mudar o bot, gere de novo.
 O smoke2 tinha uma falha intermitente ("conta paga, mesa suja, servidos=1", ~10% das execuções, já na v2): um grupo esquecido na fila ia embora bravo durante a cobrança e a multa de R$ 30 anulava a conta. Corrigido no teste, que agora enche a paciência da fila antes de cobrar (100/100 execuções verdes).
 
 ## Artifact publicado
 - URL: https://claude.ai/artifact/MJxrgDg8S4akvg47SoQAvj (privado: dono e quem receber acesso)
-- Versão 1 (13/10/2026) é a v1. Versão 2 (14/10/2026), rótulo "v2 — revisão com base no clone". Versão 3 (14/10/2026), rótulo "v3 — clientes VIP".
-- Arquivos extras publicados: `versoes/v1.html` e `versoes/v2.html`, abertos pelo painel Versões. Esse painel é acessado por um ícone discreto (relógio com seta, "Versões anteriores") no canto inferior direito do painel do menu, na linha do "Zerar progresso".
-- Ao republicar, os arquivos extras omitidos em `files` continuam publicados. Ao criar uma v4, guardar a v3 em `versoes/` e enviar `versoes/v3.html`.
+- Versão 1 (13/10/2026) é a v1. Versão 2 (14/10/2026), rótulo "v2 — revisão com base no clone". Versão 3 (14/10/2026), rótulo "v3 — clientes VIP"; Versões 4 e 5 foram ajustes de menu da v3. Versão 6 (14/10/2026), rótulo "v4 — sucos e bandeja".
+- Arquivos extras publicados: `versoes/v1.html`, `versoes/v2.html` e `versoes/v3.html`, abertos pelo painel Versões. Esse painel é acessado por um ícone discreto (relógio com seta, "Versões anteriores") no canto inferior direito do painel do menu, na linha do "Zerar progresso".
+- Ao republicar, os arquivos extras omitidos em `files` continuam publicados. Ao criar uma v5, guardar a v4 em `versoes/` e enviar `versoes/v4.html`.
 - Capacidades declaradas na v2. Ao republicar, omitir `capabilities` mantém essas regras:
 ```json
 {"db": {"rules": [
@@ -80,8 +86,14 @@ O smoke2 tinha uma falha intermitente ("conta paga, mesa suja, servidos=1", ~10%
   - visual com óculos escuros e plaquinha "★VIP"; meta do dia 7 ajustada para R$ 1300;
   - acesso às versões anteriores passou do link "Versões" para um ícone no canto inferior direito do menu.
   - menu sem barra de rolagem no celular deitado (`@media (max-height:460px)`: painel mais largo, título em 1 linha, 4 botões numa fileira).
+- **v4 (14/10/2026), balcão de sucos e bandeja** (ver `docs/spec-v4.md`):
+  - balcão de sucos ao lado do cafezinho; do dia 3 em diante, ~30% dos grupos pedem de 1 copo até o número de pessoas;
+  - cada copo vale R$ 12 e cada entrega devolve 1 coração; conta paga sem o suco custa 1 coração;
+  - upgrade Bandeja (R$ 220): uma mão leva 2 pratos ou 3 bebidas, a outra mão 1 item;
+  - metas dos dias 5 a 7 e experts dos dias 4 a 7 recalibradas; "Como jogar" em duas colunas.
 
 ## Ideias pendentes (não implementadas)
 - Testar som e toque em celular real (nunca testados).
 - A conta é paga na hora e não ocupa as mãos; cada grupo toma no máximo 1 cafezinho.
-- Possíveis extras discutidos: balcão de sucos, ajuste de dificuldade.
+- Possíveis extras discutidos: ajuste de dificuldade.
+- O painel "Como jogar" ainda rola no celular deitado (o menu principal não rola).

@@ -55,3 +55,16 @@
 - O link "Versões" saiu do painel do menu e virou um botão redondo discreto, com ícone de relógio e seta, no canto inferior direito da tela do menu (sobre a barra escura). Ele tem `title` e `aria-label` "Versões anteriores".
 - A versão publicada estava idêntica a `versoes/v2-fonte.html`.
 - A v3 foi publicada no mesmo endereço (Versão 3, rótulo "v3 — clientes VIP"), junto com `versoes/v2.html`. A `versoes/v1.html` e as regras do ranking foram mantidas.
+
+## 14/10/2026: menu sem rolagem e v4
+**Pedidos:**
+- "ideal seria otimizar para não ter barra de rolagem no menu principal". No celular deitado, o painel ficou mais largo, o título passou para 1 linha e os 4 botões para uma fileira só. O teste `tests/menu_fit.py` confere 14 tamanhos de tela.
+- "agora faz o balcão de sucos e o upgrade de bandeja para poder levar 2 pratos ou 3 bebidas em uma das mãos, a outra mão ainda leva 1 item só".
+
+**Decisões da v4:**
+- O balcão de sucos divide a bancada com o cafezinho, porque a coluna da cozinha não tinha espaço para uma quinta estação. As duas metades têm o mesmo ponto de parada da Bia.
+- O suco é pedido junto com a comida e vale até a conta. Tocar na mesa entrega os sucos junto com a outra ação daquele toque, para não exigir um toque extra.
+- Sem o suco, a conta custa 1 coração. A penalidade é leve e não tira o cliente.
+- Na bandeja, cafezinho e suco contam como bebidas; comanda e louça suja ocupam uma mão inteira.
+- Com os sucos, o bot perdeu mais clientes nos dias 4 a 7. Primeiro o bot foi melhorado (busca vários sucos de uma vez); depois o preço do copo subiu para R$ 12, a frequência ficou em 30% e as metas foram recalibradas (ver `docs/spec-v4.md`).
+- A v3 foi guardada em `versoes/v3-fonte.html` e `versoes/v3.html`.

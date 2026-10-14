@@ -140,11 +140,11 @@ function mkStub(o){
   ok(g.stats.lost>=2,'conta como cliente perdido');
   // recuperação: 8 contas com 5 corações
   g.stars=2; g.five=0; const tb=g.tables[0];
-  for(let i=0;i<8;i++){ const grp=new L.Group(g,'estudante',900+i,0); grp.hearts=5; grp.table=tb; tb.group=grp; g.collectBill(grp,tb); tb.dirty=false; }
+  for(let i=0;i<8;i++){ const grp=new L.Group(g,'estudante',900+i,0); grp.hearts=5; grp.juiceWant=0; grp.table=tb; tb.group=grp; g.collectBill(grp,tb); tb.dirty=false; }
   ok(g.stars===3,'8 contas com 5 corações recuperam 1 estrela'); ok(g.five===0,'contador zera');
-  for(let i=0;i<7;i++){ const grp=new L.Group(g,'estudante',950+i,0); grp.hearts=4; grp.table=tb; tb.group=grp; g.collectBill(grp,tb); tb.dirty=false; }
+  for(let i=0;i<7;i++){ const grp=new L.Group(g,'estudante',950+i,0); grp.hearts=4; grp.juiceWant=0; grp.table=tb; tb.group=grp; g.collectBill(grp,tb); tb.dirty=false; }
   ok(g.stars===3,'contas com 4 corações não contam');
-  g.stars=5; g.five=7; { const grp=new L.Group(g,'estudante',990,0); grp.hearts=5; grp.table=tb; tb.group=grp; g.collectBill(grp,tb); tb.dirty=false; } ok(g.stars===5,'máximo 5 estrelas');
+  g.stars=5; g.five=7; { const grp=new L.Group(g,'estudante',990,0); grp.hearts=5; grp.juiceWant=0; grp.table=tb; tb.group=grp; g.collectBill(grp,tb); tb.dirty=false; } ok(g.stars===5,'máximo 5 estrelas');
   // fim com 0 estrelas
   g.stars=1; g.queue.slice().forEach(x=>{ x.hearts=1; x.patLeft=0.01; }); g.update(0.1);
   ok(g.stars===0&&g.ending&&g.reason==='stars','0 estrelas => fim de turno');

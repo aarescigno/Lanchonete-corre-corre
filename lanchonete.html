@@ -45,7 +45,7 @@ p{margin:calc(var(--u)*6) 0;font-size:max(12px,calc(var(--u)*16));line-height:1.
 .chip[aria-pressed="true"]{background:var(--faixa);color:#fff}
 .chip[disabled]{opacity:.35;cursor:not-allowed}
 .lbl{font-weight:800;font-size:max(11px,calc(var(--u)*13));letter-spacing:.08em;text-transform:uppercase;color:var(--faixa);margin-top:calc(var(--u)*10)}
-#tips{list-style:none;margin:0;padding:0;text-align:left;display:grid;gap:calc(var(--u)*6);width:calc(var(--u)*660);max-width:100%}
+#tips{list-style:none;margin:0;padding:0;text-align:left;display:grid;grid-template-columns:1fr 1fr;gap:calc(var(--u)*6);width:calc(var(--u)*880);max-width:100%}
 #tips li{display:flex;gap:calc(var(--u)*14);align-items:center;background:var(--creme);border:calc(var(--u)*2.5) solid var(--tinta);border-radius:calc(var(--u)*12);padding:calc(var(--u)*3) calc(var(--u)*10)}
 #tips li canvas{flex:0 0 auto;width:calc(var(--u)*52);height:calc(var(--u)*52);min-width:40px;min-height:40px}
 #tips li span{font-size:max(11px,calc(var(--u)*14));font-weight:600;line-height:1.25}
@@ -116,7 +116,7 @@ table.rank tr.me td{background:#fbe7a8}
 
     <div class="ov show" id="ov-menu">
       <div class="panel menu-panel">
-        <span class="vtag" aria-label="Versão 3">v3</span>
+        <span class="vtag" aria-label="Versão 4">v4</span>
         <h1 class="title">Lanchonete <br>Corre-Corre</h1>
         <p class="tag">Ajude a Bia a atender a freguesia da esquina antes que o cafezinho esfrie!</p>
         <div class="lbl">Carreira: escolha o dia</div>
@@ -250,7 +250,8 @@ table.rank tr.me td{background:#fbe7a8}
       <div class="panel">
         <h2>Versões</h2>
         <ul class="verlist">
-          <li><b>v3</b><span class="cur">versão atual</span><br>14/10/2026 &mdash; Clientes VIP: furam a fila, têm menos paciência e pagam gorjeta extra.</li>
+          <li><b>v4</b><span class="cur">versão atual</span><br>14/10/2026 &mdash; Balcão de sucos e bandeja na lojinha (2 pratos ou 3 bebidas numa mão).</li>
+          <li><b>v3</b><br>14/10/2026 &mdash; Clientes VIP: furam a fila, têm menos paciência e pagam gorjeta extra.<br><a href="versoes/v3.html" target="_blank" rel="noopener">Abrir a v3</a></li>
           <li><b>v2</b><br>14/10/2026 &mdash; Comandas coloridas, humor por cor, fila lotada, Turno sem fim e ranking compartilhado.<br><a href="versoes/v2.html" target="_blank" rel="noopener">Abrir a v2</a></li>
           <li><b>v1</b><br>13/10/2026 &mdash; Primeira versão: carreira de 7 dias, lojinha, corrente e bônus de cor.<br><a href="versoes/v1.html" target="_blank" rel="noopener">Abrir a v1</a></li>
         </ul>
@@ -311,7 +312,8 @@ const DOOR  = { x:56, y:100 };
 const STATIONS = {
   order:  { ap:{x:744,y:150}, rect:{x:766,y:96, w:194,h:108} },
   plates: { ap:{x:744,y:256}, rect:{x:766,y:206,w:194,h:98 } },
-  coffee: { ap:{x:744,y:350}, rect:{x:766,y:306,w:194,h:88 } },
+  coffee: { ap:{x:744,y:350}, rect:{x:766,y:306,w:97, h:88 } },
+  juice:  { ap:{x:744,y:350}, rect:{x:863,y:306,w:97, h:88 } },
   sink:   { ap:{x:744,y:452}, rect:{x:766,y:396,w:194,h:140} }
 };
 const PLATE_SLOTS = [ {x:806,y:270}, {x:848,y:270}, {x:890,y:270}, {x:932,y:270} ];
@@ -330,24 +332,27 @@ const CUSTOMER_TYPES = {
 };
 /* cliente VIP: modificador de grupo (qualquer tipo menos entregador). Fura a fila, tem menos
    paciência, paga gorjeta extra e dá bônus se sair com 5 corações; bravo, a multa dobra. */
+/* sucos: alguns grupos pedem junto com a comida; cada copo entregue vale JUICE.price */
+const JUICE = { price:12, prep:0.6 };
 const VIP = { pat:0.75, tip:0.5, perfect:40, angry:30, types:['estudante','vovos','familia','executiva'] };
 
 const DAYS = [
   { n:1, tables:[1,2,4],         groups:6,  types:['estudante','vovos'],                                   nu:null,         meta:250, expert:400,  time:150, speed:0.60, note:'' },
   { n:2, tables:[1,2,4,5],       groups:9,  types:['estudante','vovos','familia'],                         nu:'familia',    meta:700, expert:1100,  time:160, speed:0.60, note:'Chegou a família! Grupos de 3 ou 4 só cabem nas mesas grandes.' },
-  { n:3, tables:[1,2,3,4,5],     groups:12, types:['estudante','vovos','familia','executiva'],             nu:'executiva',  meta:900, expert:1400,  time:170, speed:0.60, note:'A executiva tem pouca paciência, mas deixa boa gorjeta.' },
-  { n:4, tables:[1,2,3,4,5,6],   groups:14, types:['estudante','vovos','familia','executiva','entregador'], nu:'entregador', meta:1050,expert:1600, time:180, speed:0.58, note:'O entregador de moto tem pressa: pouquíssima paciência!' },
-  { n:5, tables:[1,2,3,4,5,6],   groups:16, types:['estudante','vovos','familia','executiva','entregador'], nu:null,         meta:1100,expert:1650, time:190, speed:0.56, vip:0.15, note:'Chegou cliente VIP (de óculos escuros e plaquinha dourada)! Fura a fila e tem menos paciência, mas paga gorjeta extra e um bônus se sair com 5 corações. Se sair bravo, a multa dobra.' },
-  { n:6, tables:[1,2,3,4,5,6],   groups:18, types:['estudante','vovos','familia','executiva','entregador'], nu:null,         meta:1250,expert:1850, time:200, speed:0.54, vip:0.15, note:'Sexta-feira: ninguém quer esperar.' },
-  { n:7, tables:[1,2,3,4,5,6],   groups:22, types:['estudante','vovos','familia','executiva','entregador'], nu:null,         meta:1300,expert:2100, time:220, speed:0.52, vip:0.15, note:'Tonhão está gripado: a cozinha anda mais devagar hoje.' }
+  { n:3, tables:[1,2,3,4,5],     groups:12, types:['estudante','vovos','familia','executiva'],             nu:'executiva',  meta:900, expert:1400,  time:170, speed:0.60, juice:0.3, note:'A executiva tem pouca paciência, mas deixa boa gorjeta. E abriu o balcão de sucos: quem pede suco quer receber antes da conta!' },
+  { n:4, tables:[1,2,3,4,5,6],   groups:14, types:['estudante','vovos','familia','executiva','entregador'], nu:'entregador', meta:1050,expert:1500, time:180, speed:0.58, juice:0.3, note:'O entregador de moto tem pressa: pouquíssima paciência!' },
+  { n:5, tables:[1,2,3,4,5,6],   groups:16, types:['estudante','vovos','familia','executiva','entregador'], nu:null,         meta:1050,expert:1550, time:190, speed:0.56, vip:0.15, juice:0.3, note:'Chegou cliente VIP (de óculos escuros e plaquinha dourada)! Fura a fila e tem menos paciência, mas paga gorjeta extra e um bônus se sair com 5 corações. Se sair bravo, a multa dobra.' },
+  { n:6, tables:[1,2,3,4,5,6],   groups:18, types:['estudante','vovos','familia','executiva','entregador'], nu:null,         meta:1150,expert:1700, time:200, speed:0.54, vip:0.15, juice:0.3, note:'Sexta-feira: ninguém quer esperar.' },
+  { n:7, tables:[1,2,3,4,5,6],   groups:22, types:['estudante','vovos','familia','executiva','entregador'], nu:null,         meta:1200,expert:1900, time:220, speed:0.52, vip:0.15, juice:0.3, note:'Tonhão está gripado: a cozinha anda mais devagar hoje.' }
 ];
 
-const ENDLESS = { n:0, tables:[1,2,3,4,5,6], groups:0, types:['estudante','vovos','familia','executiva','entregador'], nu:null, meta:0, expert:0, time:0, speed:1, vip:0.12, note:'', endless:true };
+const ENDLESS = { n:0, tables:[1,2,3,4,5,6], groups:0, types:['estudante','vovos','familia','executiva','entregador'], nu:null, meta:0, expert:0, time:0, speed:1, vip:0.12, juice:0.3, note:'', endless:true };
 
 const UPGRADES = [
   { id:'tenis',      name:'Tênis novos',          desc:'A Bia anda 10% mais rápido.',                  cost:150 },
   { id:'jukebox',    name:'Jukebox',              desc:'A paciência na fila cai 20% mais devagar.',    cost:180 },
   { id:'cafeteira',  name:'Cafeteira de 2 bocas', desc:'O cafezinho devolve +2 corações.',             cost:200 },
+  { id:'bandeja',    name:'Bandeja',              desc:'Uma mão leva 2 pratos ou 3 bebidas; a outra, 1 item.', cost:220 },
   { id:'ventilador', name:'Ventilador de teto',   desc:'A freguesia come 15% mais rápido.',            cost:250 },
   { id:'chapa',      name:'Chapa nova',           desc:'A cozinha trabalha 15% mais rápido.',          cost:300 }
 ];
@@ -575,6 +580,8 @@ class Group {
     this.size = randi(T.size[0], T.size[1]);
     this.color = color;
     this.vip = !!vip && VIP.types.includes(type);
+    this.juiceWant = Math.random() < (game.day.juice || 0) ? randi(1, this.size) : 0;
+    this.juiceGot = 0;
     this.people = makePeople(type, this.size);
     if (this.vip) this.people.forEach(p => { p.shades = true; });
     this.dishes = this.people.map(() => pick(DISHES));
@@ -600,6 +607,9 @@ class Group {
   }
   setState(s){ this.state = s; this.stateT = 0; this.patLeft = this.patPer(); }
   gain(n){ this.hearts = Math.min(5, this.hearts + n); this.patLeft = this.patPer(); }
+  get juicePending(){ return Math.max(0, this.juiceWant - this.juiceGot); }
+  /* o pedido de suco aparece quando a comanda é anotada e vale até a conta */
+  get juiceOpen(){ return this.juiceWant > 0 && (this.state === 'ordered' || this.state === 'eating' || this.state === 'wantBill'); }
   get seated(){ return this.state==='reading' || this.state==='wantOrder' || this.state==='ordered' || this.state==='eating' || this.state==='wantBill'; }
   get mood(){ return this.angry ? 2 : (this.hearts >= 4 ? 0 : (this.hearts >= 2 ? 1 : 2)); }  // 0 feliz, 1 neutro, 2 bravo
   moveAlong(dt, sp){
@@ -701,6 +711,34 @@ class Kitchen {
 }
 
 /* ============================================================
+   MÃOS: sem bandeja, 1 item por mão. Com bandeja, uma mão leva
+   2 pratos OU 3 bebidas (cafezinho e suco) OU 1 item qualquer;
+   a outra mão leva 1 item.
+   ============================================================ */
+const DRINKS = { coffee:1, juice:1 };
+function trayOk(items){
+  if (items.length <= 1) return true;
+  if (items.every(h => h.kind === 'dish')) return items.length <= 2;
+  if (items.every(h => DRINKS[h.kind])) return items.length <= 3;
+  return false;
+}
+/* divide os itens em [bandeja, outra mão]; null se não couberem */
+function handLayout(items, tray){
+  if (!tray){
+    if (items.length > 2) return null;
+    return [items.slice(0,1), items.slice(1,2)];
+  }
+  // tenta deixar na mão livre primeiro o item que não vai na bandeja (comanda, louça), depois qualquer um
+  const order = items.map((h,i) => i).sort((a,b) => (items[a].kind === 'dish' || DRINKS[items[a].kind] ? 1 : 0) - (items[b].kind === 'dish' || DRINKS[items[b].kind] ? 1 : 0));
+  if (trayOk(items)) return [items.slice(), []];
+  for (const i of order){
+    const rest = items.filter((h,j) => j !== i);
+    if (trayOk(rest)) return [rest, [items[i]]];
+  }
+  return null;
+}
+
+/* ============================================================
    GARÇONETE (Bia)
    ============================================================ */
 class Waitress {
@@ -711,7 +749,11 @@ class Waitress {
     this.path = []; this.walkPh = 0; this.moving = false; this.qT = 0; this.doing = null;
   }
   get speed(){ return 260 * (this.g.up.tenis ? 1.1 : 1); }
-  free(){ return 2 - this.hands.length; }
+  get tray(){ return !!this.g.up.bandeja; }
+  canTake(kind){ return !!handLayout(this.hands.concat([{ kind }]), this.tray); }
+  /* quantos itens comuns (comanda, louça) ainda cabem */
+  free(){ let n = 0; const extra = []; while (n < 3){ extra.push({ kind:'x' }); if (!handLayout(this.hands.concat(extra), this.tray)) break; n++; } return n; }
+  juiceN(){ return this.hands.filter(h => h.kind === 'juice').length; }
   enqueue(a){
     if (this.acts.length >= 6){ this.g.addText(this.x, this.y - 82, 'Fila cheia!', PAL.alerta, 15); return false; }
     this.acts.push(a);
@@ -749,6 +791,7 @@ class Waitress {
       const t = this.g.tables[a.id-1];
       return (t && t.group && t.group.state === 'wantOrder') ? 0.6 : 0.35;
     }
+    if (a.type === 'juice') return JUICE.prep;
     return 0.3;
   }
   update(dt){
@@ -801,6 +844,7 @@ class Waitress {
     if (!t) return null;
     const grp = t.group;
     if (grp && this.hands.some(h => h.kind === 'dish' && h.group === grp) && grp.state === 'ordered') return 'deliver';
+    if (grp && grp.juicePending > 0 && grp.juiceOpen && this.juiceN() > 0) return 'juice';
     if (t.dirty) return 'clear';
     if (grp && grp.state === 'wantOrder') return 'take';
     if (grp && grp.state === 'wantBill') return 'bill';
@@ -815,15 +859,22 @@ class Waitress {
       this.submitTickets();
       const slot = g.kitchen.plates.findIndex(p => p && p.id === a.pid);
       if (slot < 0) return this.fail('?');
-      if (this.free() <= 0) return this.fail('Mãos cheias!');
+      if (!this.canTake('dish')) return this.fail('Mãos cheias!');
       const p = g.kitchen.plates[slot];
       g.kitchen.plates[slot] = null;
       this.hands.push({ kind:'dish', table:p.table, group:p.group, dish:p.dish });
       Sfx.blip();
       return;
     }
+    if (a.type === 'juice'){
+      if (!this.canTake('juice')) return this.fail('Mãos cheias!');
+      this.hands.push({ kind:'juice' });
+      Sfx.tone(700, 0.08, 'sine', 0.05); Sfx.tone(930, 0.1, 'sine', 0.05, 0.07);
+      g.addText(this.x, this.y - 82, 'Suco!', PAL.alerta, 14);
+      return;
+    }
     if (a.type === 'coffee'){
-      if (this.free() <= 0) return this.fail('Mãos cheias!');
+      if (!this.canTake('coffee')) return this.fail('Mãos cheias!');
       this.hands.push({ kind:'coffee' });
       Sfx.blip();
       g.addText(this.x, this.y - 82, 'Cafezinho!', PAL.madeira, 14);
@@ -839,9 +890,27 @@ class Waitress {
       return;
     }
   }
+  /* entrega os sucos que a Bia carrega para essa mesa; devolve quantos entregou */
+  serveJuice(t){
+    const g = this.g, grp = t && t.group;
+    if (!grp || !grp.juiceOpen || grp.juicePending <= 0) return 0;
+    const n = Math.min(grp.juicePending, this.juiceN());
+    if (!n) return 0;
+    for (let k=0;k<n;k++) this.hands.splice(this.hands.findIndex(h => h.kind === 'juice'), 1);
+    grp.juiceGot += n;
+    g.stats.juice += n;
+    grp.gain(1);
+    g.score('juice', JUICE.price * n, t.cx + 24, t.cy - 30);
+    if (!grp.juicePending) g.addText(t.cx, t.cy - 96, n > 1 ? 'Sucos entregues!' : 'Suco entregue!', PAL.alerta, 15);
+    Sfx.tone(880, 0.07, 'sine', 0.05); Sfx.tone(1175, 0.12, 'sine', 0.05, 0.07);
+    return n;
+  }
   doTable(t){
     const g = this.g;
-    const v = this.verbFor(t);
+    const served = this.serveJuice(t);
+    let v = this.verbFor(t);
+    if (v === 'juice') v = null;
+    if (!v && served) return;
     const grp = t && t.group;
     const cx = t ? t.cx : this.x, cy = t ? t.cy : this.y;
     if (v === 'deliver'){
@@ -854,13 +923,13 @@ class Waitress {
       g.score('deliver', 20, cx, cy - 40);
       Sfx.ok();
     } else if (v === 'clear'){
-      if (this.free() <= 0) return this.fail('Mãos cheias!');
+      if (!this.canTake('dirty')) return this.fail('Mãos cheias!');
       this.hands.push({ kind:'dirty', n:t.dirtyN });
       t.dirty = false; t.dirtyN = 0;
       g.score('clear', 10, cx, cy - 20);
       Sfx.blip();
     } else if (v === 'take'){
-      if (this.free() <= 0) return this.fail('Mãos cheias!');
+      if (!this.canTake('ticket')) return this.fail('Mãos cheias!');
       g.assignCmd(grp);
       this.hands.push({ kind:'ticket', table:t.id, group:grp });
       grp.setState('ordered');
@@ -920,7 +989,7 @@ class Game {
     this.kitchen.reset();
     this.bia.reset();
     this.fx = [];
-    this.stats = { served:0, lost:0, chain:0, spawned:0, full:0, vip:0, vipLost:0 };
+    this.stats = { served:0, lost:0, chain:0, spawned:0, full:0, vip:0, vipLost:0, juice:0, juiceMiss:0 };
     this.lastKind = null; this.chainN = 0;
     this.ending = false; this.endTimer = 0; this.reason = '';
     this.sel = null; this.drag = null; this.hover = null;
@@ -1010,6 +1079,11 @@ class Game {
     }
   }
   collectBill(g, t){
+    if (g.juicePending > 0){
+      g.hearts = Math.max(1, g.hearts - 1);
+      this.stats.juiceMiss++;
+      this.addText(t.cx, t.cy - 100, 'Faltou o suco!', PAL.perigo, 16);
+    }
     const amount = Math.round(g.bill * HEART_MULT[g.hearts] * (1 + g.T.tip + (g.vip ? VIP.tip : 0)));
     this.score('bill', amount, t.cx, t.cy - 50);
     if (g.T.tip > 0 || g.vip) this.addText(t.cx + 20, t.cy - 76, 'Gorjeta!', PAL.mostarda, 15);
@@ -1243,13 +1317,13 @@ class Game {
     this.save.stars[d.n] = Math.max(this.save.stars[d.n] || 0, stars);
     if (passed) this.save.maxDay = Math.max(this.save.maxDay, Math.min(7, d.n + 1));
     writeSave(this.save);
-    this.result = { day:d.n, money:m, meta:d.meta, expert:d.expert, passed, stars, served:this.stats.served, lost:this.stats.lost, full:this.stats.full, chain:this.stats.chain, vip:this.stats.vip, vipLost:this.stats.vipLost, reason:this.reason };
+    this.result = { day:d.n, money:m, meta:d.meta, expert:d.expert, passed, stars, served:this.stats.served, lost:this.stats.lost, full:this.stats.full, chain:this.stats.chain, vip:this.stats.vip, vipLost:this.stats.vipLost, juice:this.stats.juice, juiceMiss:this.stats.juiceMiss, reason:this.reason };
     this.setState('dayend');
     if (passed) Sfx.win(); else Sfx.lose();
   }
   finishEndless(){
     const pts = Math.round(this.money);
-    this.endless = { pontos:pts, tempo:Math.floor(this.elapsed), served:this.stats.served, lost:this.stats.lost, full:this.stats.full, chain:this.stats.chain, vip:this.stats.vip };
+    this.endless = { pontos:pts, tempo:Math.floor(this.elapsed), served:this.stats.served, lost:this.stats.lost, full:this.stats.full, chain:this.stats.chain, vip:this.stats.vip, juice:this.stats.juice };
     this.setState('endlessend');
     Sfx.lose();
   }
@@ -1292,7 +1366,7 @@ class Game {
     return null;
   }
   stationAt(x, y){
-    for (const k of ['order','plates','coffee','sink']){
+    for (const k of ['order','plates','coffee','juice','sink']){
       const r = STATIONS[k].rect;
       if (x >= r.x && x <= r.x + r.w && y >= r.y && y <= r.y + r.h) return k;
     }
@@ -1512,6 +1586,13 @@ function drawIcon(ctx,k,x,y,s,extra,extra2){
     ctx.fillStyle = '#5B2E1A'; ctx.fillRect(-5.5,-3.5,11,3);
     ctx.strokeStyle = 'rgba(34,32,28,.45)'; ctx.lineWidth = 1.6;
     ctx.beginPath(); ctx.moveTo(-2,-8); ctx.quadraticCurveTo(-5,-11,-2,-14); ctx.moveTo(3,-8); ctx.quadraticCurveTo(0,-11,3,-14); ctx.stroke();
+  } else if (k === 'juice'){
+    ctx.strokeStyle = PAL.tinta; ctx.lineWidth = 2; ctx.beginPath(); ctx.moveTo(2,-9); ctx.lineTo(6,-16); ctx.lineTo(9,-16); ctx.stroke();
+    ctx.strokeStyle = PAL.perigo; ctx.lineWidth = 1.2; ctx.beginPath(); ctx.moveTo(2,-9); ctx.lineTo(6,-16); ctx.stroke();
+    ctx.beginPath(); ctx.moveTo(-7,-10); ctx.lineTo(7,-10); ctx.lineTo(5,11); ctx.lineTo(-5,11); ctx.closePath(); fs(ctx,'rgba(255,255,255,.85)',2);
+    ctx.beginPath(); ctx.moveTo(-6.2,-4); ctx.lineTo(6.2,-4); ctx.lineTo(4.6,9.5); ctx.lineTo(-4.6,9.5); ctx.closePath(); ctx.fillStyle = '#F39A1E'; ctx.fill();
+    ctx.fillStyle = 'rgba(255,255,255,.45)'; ctx.fillRect(-4.5,-2,2,9);
+    circ(ctx,-6,-10,3.2); fs(ctx,'#F6C343',1.4);
   } else if (k === 'dirty'){
     for (let i=0;i<3;i++){ ell(ctx,0,6-i*5,12,4.2); fs(ctx,i%2?'#f0efe9':'#fff',2); }
     ctx.fillStyle = '#b9772f'; circ(ctx,-3,-5,1.5); ctx.fill();
@@ -1752,7 +1833,7 @@ function drawWall(ctx,g,t){
 
 function drawKitchen(ctx,g,t){
   const bia = g.bia;
-  const target = bia.acts.length ? (bia.acts[0].type === 'plate' ? 'plates' : (bia.acts[0].type === 'table' ? null : bia.acts[0].type)) : null;
+  const target = bia.acts.length ? (bia.acts[0].type === 'plate' ? 'plates' : (bia.acts[0].type === 'table' ? null : bia.acts[0].type)) : null;  // order, coffee, juice, sink
   const glow = (k) => { if (target !== k) return; ctx.save(); const a = 0.55 + 0.4*Math.sin(t*8); ctx.strokeStyle = 'rgba(242,179,61,' + a + ')'; ctx.lineWidth = 6; const r = STATIONS[k].rect; rr(ctx,r.x+3,r.y+3,r.w-6,r.h-6,6); ctx.stroke(); ctx.restore(); };
 
   // fundo da cozinha
@@ -1807,30 +1888,49 @@ function drawKitchen(ctx,g,t){
   }
   glow('plates');
 
-  // --- cafezinho
+  // --- cafezinho (metade esquerda da bancada)
   r = STATIONS.coffee.rect;
-  rr(ctx,r.x+14,r.y+4,r.w-18,r.h-8,8); fs(ctx,'#DCCBA3',3);
-  txt(ctx,'CAFEZINHO',806,318,12,PAL.faixa,'left',FB);
-  rr(ctx,812,332,34,52,8); fs(ctx,PAL.faixa,2.6);
-  rr(ctx,812,332,34,12,6); fs(ctx,PAL.cromo,2.2);
-  ctx.fillStyle = 'rgba(255,255,255,.35)'; ctx.fillRect(817,348,5,32);
-  rr(ctx,846,356,12,8,3); fs(ctx,PAL.cromo,2);
-  rr(ctx,826,326,6,8,2); fs(ctx,PAL.tinta,1.5);
-  for (let i=0;i<3;i++){
-    const cx = 884 + i*24, cy = 370;
-    ell(ctx,cx,cy+9,11,4); fs(ctx,'#fff',2);
-    rr(ctx,cx-7,cy-6,14,14,3); fs(ctx,'#fff',2);
-    ctx.fillStyle = '#5B2E1A'; ctx.fillRect(cx-5.5,cy-4,11,3);
+  rr(ctx,r.x+14,r.y+4,r.w-14,r.h-8,8); fs(ctx,'#DCCBA3',3);
+  txt(ctx,'CAFEZINHO',786,318,11,PAL.faixa,'left',FB,0,72);
+  rr(ctx,788,334,26,46,7); fs(ctx,PAL.faixa,2.4);
+  rr(ctx,788,334,26,10,5); fs(ctx,PAL.cromo,2);
+  ctx.fillStyle = 'rgba(255,255,255,.35)'; ctx.fillRect(792,348,4,28);
+  rr(ctx,814,354,9,7,3); fs(ctx,PAL.cromo,1.8);
+  rr(ctx,798,328,6,7,2); fs(ctx,PAL.tinta,1.4);
+  for (let i=0;i<2;i++){
+    const cx = 836 + i*16, cy = 372;
+    ell(ctx,cx,cy+8,8,3); fs(ctx,'#fff',1.8);
+    rr(ctx,cx-6,cy-5,12,12,3); fs(ctx,'#fff',1.8);
+    ctx.fillStyle = '#5B2E1A'; ctx.fillRect(cx-4.5,cy-3,9,2.5);
   }
   if (!RM){
-    ctx.strokeStyle = 'rgba(255,255,255,.7)'; ctx.lineWidth = 2.2;
-    for (let i=0;i<3;i++){
-      const cx = 884 + i*24, ph = t*2 + i;
-      ctx.beginPath(); ctx.moveTo(cx-2,358); ctx.quadraticCurveTo(cx-6+Math.sin(ph)*3,350,cx-1,343); ctx.stroke();
+    ctx.strokeStyle = 'rgba(255,255,255,.7)'; ctx.lineWidth = 2;
+    for (let i=0;i<2;i++){
+      const cx = 836 + i*16, ph = t*2 + i;
+      ctx.beginPath(); ctx.moveTo(cx-1,362); ctx.quadraticCurveTo(cx-4+Math.sin(ph)*2.5,355,cx,348); ctx.stroke();
     }
   }
-  rr(ctx,r.x+8,r.y+r.h-12,r.w-12,10,3); fs(ctx,PAL.cromo,2.2);
   glow('coffee');
+
+  // --- balcão de sucos (metade direita da bancada)
+  r = STATIONS.juice.rect;
+  rr(ctx,r.x+4,r.y+4,r.w-8,r.h-8,8); fs(ctx,'#F5D9A8',3);
+  txt(ctx,'SUCOS',872,318,11,PAL.faixa,'left',FB);
+  // suqueira: jarra com suco de laranja sobre a base
+  rr(ctx,874,332,30,36,8); fs(ctx,'rgba(255,255,255,.75)',2.4);
+  rr(ctx,877,342,24,23,6); ctx.fillStyle = '#F39A1E'; ctx.fill();
+  ctx.fillStyle = 'rgba(255,255,255,.45)'; ctx.fillRect(880,345,4,16);
+  circ(ctx,886,355,3.4); fs(ctx,'#F6C343',1.2); circ(ctx,895,349,3); fs(ctx,'#F6C343',1.2);
+  rr(ctx,871,366,36,12,4); fs(ctx,PAL.cromo,2.2);
+  rr(ctx,886,377,6,5,2); fs(ctx,PAL.tinta,1.4);
+  // laranjas e copos prontos
+  circ(ctx,918,342,6); fs(ctx,'#F39A1E',1.8); circ(ctx,931,345,5.5); fs(ctx,'#F39A1E',1.8);
+  ctx.fillStyle = '#3E9B5A'; ell(ctx,919,336,2.6,1.4); ctx.fill();
+  drawIcon(ctx,'juice',922,370,0.78); drawIcon(ctx,'juice',942,370,0.78);
+  // tampo de inox contínuo e divisória
+  rr(ctx,774,382,180,10,3); fs(ctx,PAL.cromo,2.2);
+  ctx.strokeStyle = PAL.tinta; ctx.lineWidth = 2.5; ctx.beginPath(); ctx.moveTo(863,306); ctx.lineTo(863,382); ctx.stroke();
+  glow('juice');
 
   // --- pia
   r = STATIONS.sink.rect;
@@ -2009,6 +2109,15 @@ function drawTableOverlay(ctx,g,t,tm,menu){
   }
   ctx.restore();
   if (grp.coffee){ drawIcon(ctx,'coffee',t.cx - t.hx - 8,t.cy - 52,0.6); }
+  if (grp.juiceOpen && grp.juicePending > 0){
+    const jx = bx + 4, jy = t.cy + 2;
+    const jp = (RM || grp.state !== 'wantBill') ? 1 : 1 + 0.1*Math.sin(tm*9);
+    ctx.save(); ctx.translate(jx,jy); ctx.scale(jp,jp);
+    rr(ctx,-14,-15,40,28,9); fs(ctx,'#fff',2.2);
+    drawIcon(ctx,'juice',-3,0,0.75);
+    txt(ctx,'×' + grp.juicePending,14,0,13,PAL.tinta,'center',FD);
+    ctx.restore();
+  }
 }
 
 function drawCluster(ctx,grp,x,y,tm,o){
@@ -2071,11 +2180,15 @@ function drawHud(ctx,g,tm){
     else { txt(ctx,String(i+1),sx+24,571,14,'#5b554a','center',FB); }
   }
   // mãos
-  txt(ctx,'MÃOS',748,553,10,'#cfc7b0','center',FB);
+  const tray = g.bia.tray;
+  const lay = handLayout(g.bia.hands, tray) || [g.bia.hands.slice(0,1), g.bia.hands.slice(1,2)];
+  txt(ctx,tray ? 'BANDEJA · MÃO' : 'MÃOS',748,553,10,'#cfc7b0','center',FB);
   for (let i=0;i<2;i++){
-    const hx = 700 + i*48, h = g.bia.hands[i];
-    rr(ctx,hx,558,40,36,8); fs(ctx,h ? PAL.creme : '#3b362e',2.2);
-    if (h) drawHandItem(ctx,h,hx+20,576,0.85);
+    const hx = 700 + i*48, its = lay[i];
+    rr(ctx,hx,558,40,36,8); fs(ctx,its.length ? PAL.creme : '#3b362e',2.2);
+    if (i === 0 && tray){ ctx.fillStyle = its.length ? 'rgba(142,153,166,.45)' : 'rgba(185,194,204,.25)'; ell(ctx,hx+20,586,17,4.5); ctx.fill(); }
+    if (its.length === 1) drawHandItem(ctx,its[0],hx+20,576,0.85);
+    else its.forEach((h,k) => drawHandItem(ctx,h,hx+20+(k-(its.length-1)/2)*(its.length>2?11:14),578,its.length>2?0.5:0.6,true));
   }
   // pausa e som
   rr(ctx,836,546,52,50,10); fs(ctx,PAL.creme,2.6);
@@ -2085,11 +2198,12 @@ function drawHud(ctx,g,tm){
   if (!Sfx.muted){ ctx.strokeStyle = PAL.tinta; ctx.lineWidth = 2.4; ctx.beginPath(); ctx.arc(924,571,6,-0.9,0.9); ctx.stroke(); ctx.beginPath(); ctx.arc(924,571,11,-0.9,0.9); ctx.stroke(); }
   else { ctx.strokeStyle = PAL.perigo; ctx.lineWidth = 3.2; ctx.beginPath(); ctx.moveTo(927,563); ctx.lineTo(939,579); ctx.moveTo(939,563); ctx.lineTo(927,579); ctx.stroke(); }
 }
-function drawHandItem(ctx,h,x,y,s){
+function drawHandItem(ctx,h,x,y,s,noTag){
   if (h.kind === 'dish') drawIcon(ctx,'dish',x,y,s,h.dish,cmdColor(h.group));
   else if (h.kind === 'ticket') drawIcon(ctx,'ticket',x,y,s,cmdColor(h.group));
   else drawIcon(ctx,h.kind,x,y,s);
-  if (h.table){ circ(ctx,x+12,y-11,8); fs(ctx,'#fff',1.8); txt(ctx,String(h.table),x+12,y-10,11,PAL.tinta,'center',FD); }
+  if (h.table && noTag){ circ(ctx,x+5,y-9,5.5); fs(ctx,'#fff',1.4); txt(ctx,String(h.table),x+5,y-8.5,8,PAL.tinta,'center',FD); }
+  else if (h.table){ circ(ctx,x+12,y-11,8); fs(ctx,'#fff',1.8); txt(ctx,String(h.table),x+12,y-10,11,PAL.tinta,'center',FD); }
 }
 function drawActIcon(ctx,g,a,x,y){
   let cc = null;
@@ -2098,6 +2212,7 @@ function drawActIcon(ctx,g,a,x,y){
   if (cc){ rr(ctx,x-18,550,36,5,2); fs(ctx,cc,1.4); }
   if (a.type === 'order') drawIcon(ctx,'hat',x,y,1.05);
   else if (a.type === 'coffee') drawIcon(ctx,'coffee',x,y,1.05);
+  else if (a.type === 'juice') drawIcon(ctx,'juice',x,y+1,1.0);
   else if (a.type === 'sink') drawIcon(ctx,'drop',x,y,1.05);
   else if (a.type === 'plate'){
     const p = g.kitchen.plates.find(q => q && q.id === a.pid);
@@ -2105,7 +2220,7 @@ function drawActIcon(ctx,g,a,x,y){
     if (p){ circ(ctx,x+13,y-12,8); fs(ctx,'#fff',1.8); txt(ctx,String(p.table),x+13,y-11,11,PAL.tinta,'center',FD); }
   } else if (a.type === 'table'){
     const t = g.tables[a.id-1], v = g.bia.verbFor(t);
-    const k = v === 'deliver' ? 'dish' : v === 'clear' ? 'dirty' : v === 'take' ? 'ticket' : v === 'bill' ? 'coin' : v === 'coffee' ? 'coffee' : 'table';
+    const k = v === 'deliver' ? 'dish' : v === 'clear' ? 'dirty' : v === 'take' ? 'ticket' : v === 'bill' ? 'coin' : v === 'coffee' ? 'coffee' : v === 'juice' ? 'juice' : 'table';
     drawIcon(ctx,k,x,y-1,k==='table'?1.0:0.95, k === 'ticket' ? cc : (t && t.group ? t.group.dish : 'pf'), k === 'dish' ? cc : null);
     circ(ctx,x+14,y+11,9); fs(ctx,'#fff',1.8); txt(ctx,String(a.id),x+14,y+12,12,PAL.tinta,'center',FD);
   }
@@ -2167,7 +2282,13 @@ function render(g, ctx){
   const b = g.bia;
   items.push({ y:b.y, f:() => {
     drawBia(ctx,b,b.x,b.y,{ moving:b.moving, ph:b.walkPh, flip:b.dir, t:tm });
-    b.hands.forEach((h,i) => drawHandItem(ctx,h,b.x + (i?20:-20) * 1, b.y - 28 - 0, 0.75));
+    const lay = handLayout(b.hands, b.tray) || [b.hands.slice(0,1), b.hands.slice(1,2)];
+    lay.forEach((its,i) => {
+      const hx = b.x + (i ? 20 : -20);
+      if (i === 0 && b.tray && its.length){ ell(ctx,hx,b.y-20,its.length > 1 ? 20 : 14,5); fs(ctx,PAL.inox,2); }
+      if (its.length === 1) drawHandItem(ctx,its[0],hx,b.y - 28,0.75);
+      else its.forEach((h,k) => drawHandItem(ctx,h,hx + (k-(its.length-1)/2)*13,b.y - 27 - (k%2)*3,0.6,true));
+    });
   }});
   if (menu) items.pop();
   items.sort((a,c) => a.y - c.y).forEach(it => it.f());
@@ -2440,10 +2561,10 @@ function buildTips(){
       c.save(); c.translate(51,44); c.scale(0.5,0.5); drawChair(c,0,0,1,false); c.restore();
       rr(c,38,32,26,13,4); fs(c,PAL.formica,2);
     }],
-    ['Toque nas mesas, no balcão da cozinha, nos pratos prontos, no cafezinho e na pia: a Bia executa tudo em ordem, na fila de ações. Toque num ícone da fila para cancelar.', c => {
+    ['Toque nas mesas, na cozinha, nos pratos prontos, no cafezinho, nos sucos e na pia: a Bia faz tudo em ordem, na fila de ações. Toque num ícone da fila para cancelar.', c => {
       [['hat',14,16],['dish',32,16],['coffee',50,16],['dirty',14,46],['ticket',32,46],['coin',50,46]].forEach(a => { rr(c,a[1]-10,a[2]-10,20,22,5); fs(c,PAL.creme,1.8); drawIcon(c,a[0],a[1],a[2]+1,0.6,'pastel'); });
     }],
-    ['Ciclo da mesa: anote o pedido, leve à cozinha, busque o prato pronto, entregue, receba a conta e recolha a louça. A Bia carrega só 2 coisas por vez.', c => {
+    ['Ciclo da mesa: anote o pedido, leve à cozinha, busque o prato, entregue, receba a conta e recolha a louça. A Bia carrega 2 coisas por vez (mais com a bandeja).', c => {
       drawIcon(c,'ticket',12,16,0.7); drawIcon(c,'hat',30,16,0.7); drawIcon(c,'dish',48,16,0.7,'coxinha');
       drawIcon(c,'coin',16,46,0.7); drawIcon(c,'dirty',34,46,0.7); drawIcon(c,'drop',52,46,0.7);
     }],
@@ -2457,6 +2578,11 @@ function buildTips(){
       drawPerson(c,{skin:2,hair:5,hairC:'#2F1D12',pants:'#2F3E5C'},18,54,{shirt:CHAIRS[1].c,mood:0,s:0.7,sit:true});
       txt(c,'×3!',46,22,18,PAL.alerta,'center',FD,3);
       star(c,46,46,9,PAL.mostarda);
+    }],
+    ['Do dia 3 em diante, alguns grupos pedem suco (o copinho com o número aparece na mesa). Pegue no balcão de sucos e entregue antes da conta, senão o grupo perde um coração. A bandeja da lojinha leva 2 pratos ou 3 bebidas numa mão.', c => {
+      ell(c,32,50,22,6); fs(c,PAL.inox,2);
+      drawIcon(c,'juice',20,38,0.8); drawIcon(c,'juice',32,36,0.8); drawIcon(c,'juice',44,38,0.8);
+      rr(c,8,4,48,18,6); fs(c,'#fff',1.8); drawIcon(c,'juice',20,13,0.5); txt(c,'×3',38,13,11,PAL.tinta,'center',FD);
     }],
     ['A partir do dia 5 aparece o cliente VIP, de óculos escuros e com a plaquinha dourada. Ele fura a fila e tem menos paciência, mas paga gorjeta extra e um bônus se sair com 5 corações. Se sair bravo, a multa dobra.', c => {
       drawPerson(c,{skin:4,hair:3,hairC:'#1B1512',pants:'#2F3E5C',shades:true},28,60,{shirt:CHAIRS[2].c,mood:0,s:0.85});
@@ -2484,6 +2610,9 @@ function upgradeIcon(id){
       circ(c,0,6,4); fs(c,PAL.faixa,1.6);
     } else if (id === 'cafeteira'){
       drawIcon(c,'coffee',-8,0,0.8); drawIcon(c,'coffee',8,2,0.8);
+    } else if (id === 'bandeja'){
+      ell(c,0,6,17,5); fs(c,PAL.inox,2);
+      drawIcon(c,'juice',-8,-4,0.55); drawIcon(c,'juice',0,-5,0.55); drawIcon(c,'coffee',9,-1,0.5);
     } else if (id === 'ventilador'){
       for (let i=0;i<4;i++){ c.save(); c.rotate(i*Math.PI/2 + 0.4); ell(c,0,-8,4.5,9); fs(c,i%2?PAL.cromo:'#e8edf1',1.8); c.restore(); }
       circ(c,0,0,3.5); fs(c,PAL.mostarda,1.8);
@@ -2523,6 +2652,7 @@ function buildEnd(){
   const st = $('end-stats');
   clearEl(st);
   const rows = [['Atendidos', r.served],['Perdidos', r.lost],['Não couberam', r.full],['Maior corrente', '×' + r.chain],['Cofre', fmt(game.save.bank)]];
+  if (r.juice || r.juiceMiss) rows.splice(2, 0, ['Sucos', r.juice + ' entregue' + (r.juice === 1 ? '' : 's') + (r.juiceMiss ? ' · ' + r.juiceMiss + ' mesa' + (r.juiceMiss > 1 ? 's' : '') + ' sem suco' : '')]);
   if (r.vip || r.vipLost) rows.splice(2, 0, ['VIPs', r.vip + ' atendido' + (r.vip === 1 ? '' : 's') + (r.vipLost ? ' · ' + r.vipLost + ' bravo' + (r.vipLost > 1 ? 's' : '') : '')]);
   rows.forEach(p => {
     st.appendChild(el('span', null, p[0])); st.appendChild(el('b', null, String(p[1])));
@@ -2555,7 +2685,7 @@ function buildEndless(){
   if (!r) return;
   const st = $('endless-stats');
   clearEl(st);
-  [['Pontos', r.pontos],['Tempo sobrevivido', mmssUp(r.tempo)],['Grupos atendidos', r.served],['VIPs atendidos', r.vip],['Maior corrente', '×' + r.chain],['Não couberam na fila', r.full]].forEach(p => {
+  [['Pontos', r.pontos],['Tempo sobrevivido', mmssUp(r.tempo)],['Grupos atendidos', r.served],['VIPs atendidos', r.vip],['Sucos entregues', r.juice],['Maior corrente', '×' + r.chain],['Não couberam na fila', r.full]].forEach(p => {
     st.appendChild(el('span', null, p[0])); st.appendChild(el('b', null, String(p[1])));
   });
   buildSaveForm($('endless-save'), 'semfim');
@@ -2757,7 +2887,7 @@ fit();
 try { Rank.init(); } catch(e) {}
 game.setState('menu');
 window.__game = game;
-window.__lcc = { Game, Group, Table, Kitchen, Waitress, DAYS, UPGRADES, CUSTOMER_TYPES, LAYOUT, PAL, Sfx, findPath, render, Rank, sortRows, cleanName, normName, CMD, ENDLESS, VIP, rk, renderRank, openRank, closeRank, LS, lsGet, lsSet, loadSave };
+window.__lcc = { JUICE, handLayout, trayOk, Game, Group, Table, Kitchen, Waitress, DAYS, UPGRADES, CUSTOMER_TYPES, LAYOUT, PAL, Sfx, findPath, render, Rank, sortRows, cleanName, normName, CMD, ENDLESS, VIP, rk, renderRank, openRank, closeRank, LS, lsGet, lsSet, loadSave };
 window.requestAnimationFrame(frame);
 
 })();

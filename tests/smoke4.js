@@ -27,7 +27,7 @@ for(let n=1;n<=4;n++){ let any=false; for(let k=0;k<30;k++){ g.resetDay(n); if(g
 function pay(vip,hearts){
   g.resetDay(5); g.startDay(5); g.begin();
   const grp=g.spawn({type:'estudante',color:0,vip}); const t=g.tables.find(x=>x.free&&x.seats>=grp.size);
-  g.seatGroup(grp,t); grp.hearts=hearts; grp.bill=30; const m0=g.money; g.lastKind='x';
+  g.seatGroup(grp,t); grp.hearts=hearts; grp.juiceWant=0; grp.bill=30; const m0=g.money; g.lastKind='x';
   g.collectBill(grp,t); return g.money-m0;
 }
 { const base=Math.round(30*1.5), vipAmt=Math.round(30*1.5*(1+V.tip));
