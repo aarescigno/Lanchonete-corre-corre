@@ -6,7 +6,7 @@ const FULL={tonhao:2,dani:3,daniTasks:['pratos','lavar','lixo'],couvert:true};
 const AUTO={2:{},3:FULL,4:FULL,5:FULL,6:FULL,7:FULL};   // do dia 3 em diante o dinheiro acumulado já paga a equipe completa
 const EQ0=process.env.EQUIPE==='auto'?null:(process.env.EQUIPE?JSON.parse(process.env.EQUIPE):{});
 const eqFor=n=>EQ0||AUTO[n]||{};
-const order=['tenis','agua','cafeteira','bandeja','ventilador','chapa'];
+const order=['tenis','agua','cafeteira','bandeja','ventilador','pratos'];
 for(let n=1;n<=7;n++){
   const res=[];
   for(let k=0;k<N;k++){

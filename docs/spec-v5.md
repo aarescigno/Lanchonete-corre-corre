@@ -17,15 +17,23 @@ Pedido: sobra dinheiro no cofre. Entram contratações com salário, aumento do 
 | Cartão | O que tem |
 |---|---|
 | Chef Tonhão | aumento e redução de nível |
-| Dani | contratar, promover, dispensar e as 4 tarefas como botões de liga e desliga |
+| Dani | contratar, promover, dispensar e as 5 tarefas como botões de liga e desliga |
 | Couvert | contratar ou dispensar, e o botão "Cobrar couvert" |
 
 - Os cartões ficaram horizontais (ícone à esquerda) para não rolar a tela. Em telas baixas, o título e a linha da folha somem. Só o menor celular deitado (568×320) ainda rola.
 
 ## Chef Tonhão (`STAFF.tonhao`)
-- **Nível 1:** 3 bocas, sem custo extra. **Nível 2:** 4 bocas, +R$ 40 por dia. **Nível 3:** 5 bocas, +R$ 90 por dia.
-- O número de bocas é `kitchen.slots`. Ele também limita as comandas na mão da Bia (`handLayout`).
-- A janela de pedidos desenha 3, 4 ou 5 comandas.
+Revisto depois da análise das melhorias: as bocas a mais não ajudavam (o gargalo é a Bia e a louça). Agora são sempre 3 bocas, e o aumento mexe na velocidade, no capricho e na pia.
+
+| Nível | Tempo de preparo | Prato caprichado ★ | Lava na pia | Salário |
+|---|---|---|---|---|
+| 1 | normal (4 a 7 s) | 5% | — | — |
+| 2 | 85% | 12% | 1 pilha a cada 7 s | +R$ 40/dia |
+| 3 | 70% | 20% | 1 pilha a cada 4 s | +R$ 90/dia |
+
+- **Prato caprichado** (`CRIT`): sai com ★ na janela de prontos e na mão da Bia; na entrega dá +2 corações (em vez de +1) e R$ 10 a mais (R$ 20 para VIP).
+- **Prato especial do VIP** (`VIP.dish`, `VIP.cook`): soma R$ 25 à conta do VIP (antes dos corações e da gorjeta) e leva 1,8× o tempo; aparece com aro dourado na janela de prontos. Um Tonhão mais rápido deixa o VIP menos tempo esperando.
+- **Pia:** quando alguém além da Bia lava (a Dani com a tarefa, ou o Tonhão com aumento: `game.otherWasher`), a Bia só deixa a louça (0,3 s). Tocando na pia de mãos vazias, ela mesma lava tudo o que estiver lá.
 
 ## Dani, a ajudante (`class Helper`, `STAFF.dani`)
 | Nível | Velocidade (fração da Bia sem tênis) | Tarefas | Salário |
@@ -33,7 +41,7 @@ Pedido: sobra dinheiro no cofre. Entram contratações com salário, aumento do 
 | 1 | 50% | 2 | R$ 60/dia |
 | 2 | 65% | 2 | R$ 90/dia (+50%) |
 | 3 | 80% | 3 | R$ 135/dia (+50%) |
-- **Tarefas possíveis** (`DANI_TASKS`): tirar o lixo, retirar pratos sujos, lavar a louça e servir cafezinho. A escolha é feita na lojinha; valem as primeiras N da lista, conforme o nível.
+- **Tarefas possíveis** (`DANI_TASKS`): tirar o lixo, retirar pratos sujos, lavar a louça, servir cafezinho e recarregar a água saborizada (quando restam 2 doses ou menos, pagando R$ 15). A escolha é feita na lojinha; valem as primeiras N da lista, conforme o nível.
 - **Funcionamento:** ela age sozinha (`think` a cada 0,25 s) e leva 1 item em cada mão.
 - **Prioridades:** entregar o café que está carregando; recolher louça (até 2 pilhas); levar a louça à pia; lavar o que estiver na pia; esvaziar a lixeira a partir de 6/8; buscar cafezinho para a mesa com menos corações (≤3).
 - **Convivência com a Bia:**
@@ -57,12 +65,12 @@ Pedido: sobra dinheiro no cofre. Entram contratações com salário, aumento do 
 ## Couvert artístico (`STAFF.couvert`)
 - R$ 80 por dia. Um músico num banquinho no canto do salão, que muda conforme o dia (violão, sanfona ou cavaquinho), com notinhas flutuando (paradas com `prefers-reduced-motion`).
 - A paciência **nas mesas** cai 20% mais devagar; a fila não é afetada.
-- **Opção "Cobrar couvert":** R$ 3 por pessoa somados na conta, mas a eficácia cai 10% (efeito de 18%).
+- **Opção "Cobrar couvert":** R$ 3 por pessoa somados na conta, mas a eficácia cai pela metade (efeito de 10%). Antes caía só 10% e era sempre vantagem ligar.
 
 ## Água saborizada
 - Substitui a Jukebox, que passava a ideia de poluição sonora. Custa o mesmo e tem o mesmo efeito: a paciência na fila cai 20% mais devagar.
 - Aparece desenhada na entrada (jarra com frutas numa mesinha). O save antigo com `up.jukebox` é convertido em `up.agua`.
-- **Jarra com doses** (`AGUA`): 12 doses, cheia no início de cada dia. Cada pessoa que chega à fila toma 1 dose (`Group.drink`); só quem tomou ganha o efeito (paciência na fila ×1,25), proporcional às doses do grupo. Jarra vazia: sem efeito.
+- **Jarra com doses** (`AGUA`): 12 doses, cheia no início de cada dia. Cada pessoa que chega à fila toma 1 dose (`Group.drink`); só quem tomou ganha o efeito (paciência na fila cai 40% mais devagar), proporcional às doses do grupo. Jarra vazia: sem efeito. A Dani pode recarregar (tarefa "Água").
 - **Recarregar:** a Bia toca na jarra (estação `agua`, 0,8 s) e paga R$ 15. Cheia, não cobra; sem dinheiro, não recarrega. A jarra mostra o nível, o número de doses e "VAZIA".
 - Medido com o bot: ~1 recarga no dia 2 e 1 a 2 por dia nos dias 3 a 7 (média ~1,5).
 
@@ -75,13 +83,14 @@ Objetivo: nos 3/4 finais da carreira (dias 3 a 7), quem não contrata bate a met
 
 | Dia | Meta | Expert |
 |---|---|---|
-| 3 | R$ 1300 | R$ 1800 |
+| 3 | R$ 1400 | R$ 1800 |
 | 4 | R$ 1300 | R$ 1750 |
-| 5 | R$ 1360 | R$ 1900 |
-| 6 | R$ 1360 | R$ 1950 |
-| 7 | R$ 1450 | R$ 2050 |
+| 5 | R$ 1480 | R$ 2050 |
+| 6 | R$ 1500 | R$ 2150 |
+| 7 | R$ 1650 | R$ 2300 |
 
 - Com a água limitada, as metas dos dias 5 a 7 baixaram (eram R$ 1440, 1440 e 1500). Nova medição (160 rodadas): com equipe 74% a 82%; sem equipe 5% a 13%.
+- Depois da revisão das melhorias (Tonhão, água, jogo de pratos, ventilador e taxa), as metas subiram de novo. Medição (`balance.js`, 100 a 160 rodadas): com equipe 79% a 84%; sem equipe 6% a 9%.
 - A abertura do dia 3 avisa que a Bia sozinha não dá conta.
 - **Medição (bot, 80 a 100 rodadas):**
   - **sem equipe:** dia 3 ~20%, dias 4 a 7 entre 4% e 9%;
@@ -92,3 +101,31 @@ Objetivo: nos 3/4 finais da carreira (dias 3 a 7), quem não contrata bate a met
 ## Lixeira: esvaziar exige mãos livres
 - A Bia só esvazia a lixeira com as **duas mãos vazias**, ou com **só bebidas** nas mãos, na última leva quando elas não cabem: joga as bebidas e esvazia em seguida.
 - Com prato de comida, louça suja ou comanda na mão, a lixeira cheia recusa ("Lixo cheio!").
+
+## Revisão das melhorias (análise com o bot)
+Pergunta do usuário: um jogador experiente veria vantagem em comprar cada melhoria? O dinheiro acumulado recebe todo o faturamento, então o custo pesa pouco; o que importa é o efeito. Medido com `EQUIPE` completa, tirando um item de cada vez (150 rodadas, ruído de ±R$ 40 por dia).
+
+**Antes:** só o tênis rendia claramente; a água limitada ficou negativa; chapa, ventilador e bocas do Tonhão davam ~0, porque o gargalo é a Bia e a louça, não a cozinha; a taxa do couvert era sempre vantagem.
+
+**Mudanças:**
+- **Água saborizada:** efeito de 20% para 40%; a Dani pode recarregar.
+- **Chef Tonhão:** sem bocas a mais; o aumento dá velocidade, prato caprichado e ajuda na pia (tabela acima). VIP pede prato especial (mais caro e mais demorado).
+- **Chapa nova → Jogo de pratos** (R$ 300): +1 prato limpo do dia 3 em diante (+2 era forte demais: até +R$ 420 por dia). O save antigo com `up.chapa` vira `up.pratos`.
+- **Ventilador:** além de a freguesia comer 15% mais rápido, a lixeira cheia não cheira.
+- **Taxa do couvert:** efeito cai para 10%.
+- **Dani:** atalhos "Recolher" e "Lavar" nos botões das tarefas, para caber no celular.
+
+**Depois** (ganho por dia nos dias 3 / 5 / 7):
+
+| Item | Ganho |
+|---|---|
+| Tênis | +44 / +149 / +125 |
+| Água | +22 / +72 / +165 |
+| Jogo de pratos | +50 / +165 / +225 |
+| Bandeja | ~0 / +10 / +24 (fraca) |
+| Ventilador | ~0 (fraco) |
+| Cafeteira | ~0 com o bot, que não serve cafezinho |
+| Tonhão nível 1 → 3 | +78 / +152 / +72 |
+| Dani | +200 a +350; com cafezinho como 3ª tarefa, +50 a +200 a mais que com o lixo |
+| Couvert | +65 / +297 / +234 |
+| Taxa do couvert | +75 / −17 / −97 (escolha de verdade) |

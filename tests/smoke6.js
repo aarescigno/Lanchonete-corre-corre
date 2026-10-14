@@ -12,8 +12,8 @@ ok(L.UPGRADES.some(u=>u.id==='agua') && !L.UPGRADES.some(u=>u.id==='jukebox'),'�
 { reset({}); g.resetDay(3); const a=new L.Group(g,'estudante',1,0); const p0=a.patPer(); g.up.agua=true;
   ok(Math.abs(a.patPer()-p0)<1e-9,'água: sem tomar, a paciência não muda');
   ok(g.agua===L.AGUA.cap,'água: a jarra começa o dia cheia ('+L.AGUA.cap+' doses)');
-  a.size=2; g.agua=5; a.drink(); ok(g.agua===3 && a.aguaN===2 && Math.abs(a.patPer()-p0*1.25)<1e-9,'água: cada pessoa toma 1 dose; paciência na fila ×1,25');
-  const b=new L.Group(g,'estudante',2,0); b.size=2; g.agua=1; b.drink(); ok(g.agua===0 && b.aguaN===1 && Math.abs(b.patPer()-p0*1.125)<1e-9,'água: só 1 dose para 2 pessoas, metade do efeito');
+  a.size=2; g.agua=5; a.drink(); ok(g.agua===3 && a.aguaN===2 && Math.abs(a.patPer()-p0/0.6)<1e-9,'água: cada pessoa toma 1 dose; paciência na fila cai 40% mais devagar');
+  const b=new L.Group(g,'estudante',2,0); b.size=2; g.agua=1; b.drink(); ok(g.agua===0 && b.aguaN===1 && Math.abs(b.patPer()-p0/0.8)<1e-9,'água: só 1 dose para 2 pessoas, metade do efeito');
   const c=new L.Group(g,'estudante',3,0); c.drink(); ok(c.aguaN===0 && Math.abs(c.patPer()-p0)<1e-9,'água: jarra vazia, sem efeito');
   ok(g.stationAt(182,140)==='agua','água: toque na jarra');
   g.money=100; g.bia.perform({type:'agua'}); ok(g.agua===L.AGUA.cap && g.money===100-L.AGUA.price && g.stats.refill===1,'água: recarregar custa R$ '+L.AGUA.price);
@@ -31,8 +31,32 @@ ok(L.STAFF.dani.levels[2].pay===L.STAFF.dani.levels[1].pay*1.5 && L.STAFF.dani.l
 { reset({},0); g.startDay(3); g.begin(); g.money=1000; g.save.best[3]=800; g.finishDay(); ok(g.result.income===1000 && g.save.bank===1000,'todo o faturamento do dia vai para o dinheiro acumulado'); }
 
 /* aumento do Tonhão */
-for(const lv of [0,1,2]){ reset({tonhao:lv}); g.startDay(4); g.begin(); ok(g.kitchen.slots===[3,4,5][lv],'Tonhão nível '+(lv+1)+': '+[3,4,5][lv]+' bocas'); }
-{ reset({tonhao:1}); g.startDay(4); g.begin(); g.bia.hands=[K('ticket'),K('ticket'),K('ticket')]; ok(g.bia.canTake('ticket'),'4 bocas: Bia leva 4 comandas'); g.bia.hands.push(K('ticket')); ok(!g.bia.canTake('ticket'),'5ª comanda não cabe'); g.bia.hands=[]; }
+const fresh=()=>{ g.schedule=[{t:1e9,type:'estudante',color:0}]; g.nextIdx=0; };
+for(const lv of [0,1,2]){ reset({tonhao:lv}); g.startDay(4); g.begin(); fresh();
+  const grp=g.spawn({type:'estudante',color:0}); g.seatGroup(grp,g.tables[0]); g.kitchen.submit({group:grp,table:1});
+  const t=g.kitchen.queue[0].time, f=[1,0.85,0.7][lv]; ok(g.kitchen.slots===3 && t>=4*f-1e-9 && t<=7*f+1e-9,'Tonhão nível '+(lv+1)+': 3 bocas, cozinha em '+Math.round(f*100)+'% do tempo'); }
+{ reset({}); g.startDay(5); g.begin(); fresh(); const v=new L.Group(g,'estudante',1,0,true); ok(v.vip && v.bill>=20+L.VIP.dish,'VIP: prato especial soma R$ '+L.VIP.dish+' à conta');
+  g.kitchen.submit({group:v,table:1}); const t=g.kitchen.queue[0].time; ok(t>=4*L.VIP.cook-1e-9 && t<=7*L.VIP.cook+1e-9,'VIP: o prato especial leva '+L.VIP.cook+'× o tempo'); }
+{ reset({tonhao:2}); g.startDay(4); g.begin(); fresh(); const r=Math.random; Math.random=()=>0.01;
+  const grp=g.spawn({type:'estudante',color:0}); g.seatGroup(grp,g.tables[0]); g.kitchen.submit({group:grp,table:1}); g.kitchen.queue[0].time=0.1; for(let i=0;i<6;i++) g.update(0.05); Math.random=r;
+  const p=g.kitchen.plates.find(x=>x); ok(p && p.crit,'Tonhão: prato caprichado sai com ★');
+  grp.state='ordered'; grp.hearts=2; g.money=0; g.bia.hands=[{kind:'dish',table:1,group:grp,dish:'pf',crit:true}]; g.bia.doTable(g.tables[0]);
+  ok(grp.hearts===4 && g.money>=L.CRIT.bonus && g.stats.crit===1,'caprichado: +2 corações e bônus de R$ '+L.CRIT.bonus); }
+{ reset({tonhao:1}); g.startDay(4); g.begin(); fresh(); g.bia.hands=[{kind:'dirty',n:2}];
+  ok(g.bia.duration({type:'sink'})===L.WASH.base,'Tonhão lava: a Bia só deixa na pia'); g.bia.perform({type:'sink'}); ok(g.kitchen.sinkN===1,'pilha na pia');
+  const c0=g.kitchen.clean; for(let i=0;i<6.8*20;i++) g.update(0.05); ok(g.kitchen.sinkN===1,'nível 2: ainda lavando antes de 7 s');
+  for(let i=0;i<0.4*20;i++) g.update(0.05); ok(g.kitchen.sinkN===0 && g.kitchen.clean===c0+1,'nível 2: lava 1 pilha a cada 7 s');
+  g.kitchen.sinkN=2; ok(Math.abs(g.bia.duration({type:'sink'})-(L.WASH.base+2*L.WASH.perPile))<1e-9,'de mãos vazias, a Bia lava ela mesma'); g.kitchen.sinkN=0; }
+{ reset({tonhao:2}); g.startDay(4); g.begin(); fresh(); g.kitchen.sinkN=2; for(let i=0;i<8.2*20;i++) g.update(0.05); ok(g.kitchen.sinkN===0,'nível 3: lava 1 pilha a cada 4 s'); }
+{ reset({}); g.startDay(4); g.begin(); g.bia.hands=[{kind:'dirty',n:2}]; ok(g.bia.duration({type:'sink'})===L.WASH.base+L.WASH.perPile,'sem ajuda, a Bia lava o que leva'); g.bia.hands=[]; }
+
+/* melhorias revistas */
+{ const s=L.normSave({up:{chapa:true}}); ok(s.up.pratos && !s.up.chapa && !L.UPGRADES.some(u=>u.id==='chapa'),'save antigo: Chapa nova vira Jogo de pratos'); }
+ok(L.dishStock(L.DAYS[2],{pratos:true})===4 && L.dishStock({endless:true},{pratos:true})===6 && L.dishStock(L.DAYS[1],{pratos:true})===Infinity,'Jogo de pratos: +1 prato limpo');
+{ reset({}); g.startDay(3); g.begin(); const a=new L.Group(g,'estudante',1,0); a.setState('wantOrder'); const p0=a.patPer(); g.trash=L.TRASH.cap;
+  ok(a.patPer()<p0,'lixeira cheia cheira'); g.up.ventilador=true; ok(Math.abs(a.patPer()-p0)<1e-9,'ventilador: o cheiro não incomoda'); g.trash=0; g.up={}; g.save.up=g.up; }
+{ reset({dani:3,daniTasks:['pratos','lavar','agua']}); g.startDay(4); g.begin(); fresh(); g.up.agua=true; g.agua=1; g.money=100; run(25,true);
+  ok(g.agua===L.AGUA.cap && g.money===100-L.AGUA.price,'Dani recarrega a água'); g.up={}; g.save.up=g.up; }
 
 /* louça limitada */
 ok(L.dishStock(L.DAYS[0])===Infinity && L.dishStock(L.DAYS[1])===Infinity,'dias 1 e 2: pratos sem limite');
@@ -88,7 +112,7 @@ ok(L.dishStock(L.DAYS[2])===3 && L.dishStock(L.DAYS[5])===3 && L.dishStock(L.DAY
 { reset({couvert:true}); g.resetDay(3); const a=new L.Group(g,'estudante',1,0); a.setState('wantOrder');
   const p=a.patPer(); eq().couvert=false; const p0=a.patPer();
   ok(Math.abs(p-p0/0.8)<1e-9,'couvert: paciência nas mesas cai 20% mais devagar');
-  eq().couvert=true; eq().taxa=true; ok(Math.abs(a.patPer()-p0/0.82)<1e-9,'com taxa: eficácia −10% (18%)');
+  eq().couvert=true; eq().taxa=true; ok(Math.abs(a.patPer()-p0/0.9)<1e-9,'com taxa: eficácia cai pela metade (10%)');
   a.setState('queue'); const q=a.patPer(); eq().couvert=false; ok(q===a.patPer(),'couvert não mexe na fila'); }
 { reset({couvert:true,taxa:true}); g.startDay(3); g.begin(); g.schedule=[{t:1e9,type:'estudante',color:0}]; g.nextIdx=0;
   const grp=g.spawn({type:'familia',color:0}); const t=g.tables.find(x=>x.free&&x.seats>=grp.size); g.seatGroup(grp,t); grp.juiceWant=0; grp.hearts=5; grp.bill=40;

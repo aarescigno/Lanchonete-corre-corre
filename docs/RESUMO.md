@@ -56,7 +56,8 @@
    - **Sem equipe é quase impossível:** mais grupos nos dias 3 a 7, 3 pratos limpos, lavar 2,5 s por pilha e lixeira de 6. Metas dos dias 3 a 7: R$ 1300, 1300, 1440, 1440 e 1500. Sem equipe, ~5% das metas nos dias 4 a 7; com equipe, ~80% a 90%.
    - **Lixeira:** a Bia só esvazia com as mãos vazias (ou só com bebidas, na última leva).
    - **Água saborizada com doses:** jarra de 12 doses, 1 por pessoa na fila; recarregar custa R$ 15 (1 a 2 vezes por dia).
-   - **Dani lava sem limite de pilhas:** 1 pilha por vez, só o tempo conta. Metas dos dias 5 a 7: R$ 1360, 1360 e 1450.
+   - **Dani lava sem limite de pilhas:** 1 pilha por vez, só o tempo conta.
+   - **Revisão das melhorias** (análise com o bot, em `docs/spec-v5.md`): água com efeito de 40% e recarga pela Dani; Tonhão sem bocas a mais, com aumento que cozinha mais rápido, faz prato caprichado ★ e lava 1 pilha a cada 7 s ou 4 s; VIP pede prato especial; Chapa nova virou Jogo de pratos (+1 prato limpo); ventilador tira o cheiro da lixeira; taxa do couvert corta o efeito pela metade. Metas dos dias 3 a 7: R$ 1400, 1300, 1480, 1500 e 1650.
 
 ## Testes (verdes no último commit)
 - `smoke` (bot nos 7 dias);
@@ -64,7 +65,7 @@
 - `smoke3` (120/120: v2);
 - `smoke4` (23/23: VIP);
 - `smoke5` (41/41: sucos, bandeja e lixeira);
-- `smoke6` (62/62: equipe, louça, lixeira que enche, couvert, água, economia);
+- `smoke6` (76/76: equipe, louça, lixeira que enche, couvert, água, economia);
 - `menu_fit` (14 tamanhos de tela);
 - `balance` (bot, N rodadas por dia).
 
