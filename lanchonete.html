@@ -1160,6 +1160,7 @@ class Waitress {
    leva 1 item em cada mão.
    ============================================================ */
 const DANI_HOME = { x:700, y:470 };
+const DANI_HANDS = 2;   // 2 mãos: no máximo 2 itens por vez (cada pilha de louça, a de uma mesa, ocupa 1 mão)
 class Helper {
   constructor(g){ this.g = g; this.reset(); }
   reset(){
@@ -1195,15 +1196,15 @@ class Helper {
     // já na pia: continua lavando até acabar a louça
     const ap = STATIONS.sink.ap;
     if (this.does('lavar') && k.sinkN > 0 && !dirty && Math.hypot(this.x - ap.x, this.y - ap.y) < 4) return this.go(ap, { type:'sink' });
-    if (this.does('pratos') && dirty < 2){
+    if (this.does('pratos') && this.hands.length < DANI_HANDS){
       const c = g.tables.filter(t => t.open && t.dirty && !this.biaWants(t));
       c.sort((a,b) => Math.hypot(a.cx-this.x,a.cy-this.y) - Math.hypot(b.cx-this.x,b.cy-this.y));
-      if (c.length && (dirty === 0 || this.hands.length < 2)){ return this.go(this.nearestAp(c[0]), { type:'clear', t:c[0] }); }
+      if (c.length){ return this.go(this.nearestAp(c[0]), { type:'clear', t:c[0] }); }
     }
     if (dirty) return this.go(STATIONS.sink.ap, { type:'sink' });
     if (this.does('lavar') && k.sinkN > 0) return this.go(STATIONS.sink.ap, { type:'sink' });
     if (this.does('lixo') && g.trash >= TRASH.cap - 2 && !this.hands.length) return this.go(STATIONS.trash.ap, { type:'trash' });
-    if (this.does('cafe') && !coffee && this.hands.length < 2 && this.coffeeTarget()) return this.go(STATIONS.coffee.ap, { type:'coffee' });
+    if (this.does('cafe') && !coffee && this.hands.length < DANI_HANDS && this.coffeeTarget()) return this.go(STATIONS.coffee.ap, { type:'coffee' });
     if (this.does('agua') && g.up.agua && g.agua <= 2 && !this.hands.length && g.money >= AGUA.price && !g.bia.acts.some(a => a.type === 'agua')) return this.go(STATIONS.agua.ap, { type:'agua' });
     if (Math.hypot(this.x - DANI_HOME.x, this.y - DANI_HOME.y) > 4) return this.go(DANI_HOME, null);
   }
@@ -1222,7 +1223,7 @@ class Helper {
     const g = this.g;
     if (st.type === 'clear'){
       const t = st.t;
-      if (!t.dirty || this.hands.length >= 2) return;
+      if (!t.dirty || this.hands.length >= DANI_HANDS) return;
       this.hands.push({ kind:'dirty', n:t.dirtyN }); t.dirty = false; t.dirtyN = 0;
       g.addMoney(10); g.addText(t.cx, t.cy - 20, '+10', PAL.ok, 16); Sfx.blip();
     } else if (st.type === 'sink'){
@@ -1238,7 +1239,7 @@ class Helper {
         g.addText(this.x, this.y - 82, 'Dani encheu a água! -' + AGUA.price, PAL.faixa, 14);
       }
     } else if (st.type === 'coffee'){
-      if (this.hands.length < 2) this.hands.push({ kind:'coffee' });
+      if (this.hands.length < DANI_HANDS) this.hands.push({ kind:'coffee' });
     } else if (st.type === 'serve'){
       const t = st.t, h = this.hands.find(x => x.kind === 'coffee'), grp = t.group;
       if (grp) grp.daniCoffee = false;
@@ -3176,7 +3177,7 @@ function buildEquipe(grid){
     ['Tarefas', a && String(a.tasks), String(b.tasks)],
     ['Diária', a && fmt(a.pay), fmt(b.pay)]];
   c = staffCard(upgradeIcon('dani'), lv ? 'Dani · nível ' + lv + ' de 3' : 'Dani (ajudante)',
-    lv ? '' : 'Ajudante da Bia, mais lenta que ela (velocidade em % da dela). Pode ' + avail.map(t => t.name.toLowerCase()).join(', ').replace(/, ([^,]*)$/, ' e $1') + '.');
+    lv ? '' : 'Ajudante da Bia, mais lenta que ela (velocidade em % da dela). Tem 2 mãos: leva 2 itens por vez. Pode ' + avail.map(t => t.name.toLowerCase()).join(', ').replace(/, ([^,]*)$/, ' e $1') + '.');
   if (lv){
     const sel = eq.daniTasks.filter(id => daniTaskOk(id, game.up)).length;
     const tasks = el('div', 'tasks');
@@ -3484,7 +3485,7 @@ fit();
 try { Rank.init(); } catch(e) {}
 game.setState('menu');
 window.__game = game;
-window.__lcc = { AGUA, CRIT, STAFF, DANI_TASKS, daniTaskOk, TRASH, WASH, payroll, couvertEffect, dishStock, normSave, Helper, JUICE, KITCHEN_SLOTS, handLayout, trayOk, Game, Group, Table, Kitchen, Waitress, DAYS, UPGRADES, CUSTOMER_TYPES, LAYOUT, PAL, Sfx, findPath, render, Rank, sortRows, cleanName, normName, CMD, ENDLESS, VIP, rk, renderRank, openRank, closeRank, LS, lsGet, lsSet, loadSave };
+window.__lcc = { AGUA, CRIT, STAFF, DANI_TASKS, DANI_HANDS, daniTaskOk, TRASH, WASH, payroll, couvertEffect, dishStock, normSave, Helper, JUICE, KITCHEN_SLOTS, handLayout, trayOk, Game, Group, Table, Kitchen, Waitress, DAYS, UPGRADES, CUSTOMER_TYPES, LAYOUT, PAL, Sfx, findPath, render, Rank, sortRows, cleanName, normName, CMD, ENDLESS, VIP, rk, renderRank, openRank, closeRank, LS, lsGet, lsSet, loadSave };
 window.requestAnimationFrame(frame);
 
 })();

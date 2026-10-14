@@ -94,6 +94,16 @@ ok(L.dishStock(L.DAYS[2])===3 && L.dishStock(L.DAYS[5])===3 && L.dishStock(L.DAY
   ok(!g.dani.does('agua') && g.dani.does('lixo') && g.toggleDaniTask('pratos') && g.dani.tasks.join()==='lixo,pratos','sem a melhoria, a água não ocupa vaga de tarefa');
   reset({dani:1,daniTasks:[]}); ok(!g.toggleDaniTask('agua'),'sem a melhoria, não marca a água');
   g.up.agua=true; ok(g.toggleDaniTask('agua') && g.dani.does('agua'),'com a melhoria, marca a água'); }
+/* 2 mãos: a Dani nunca leva mais de 2 itens (cada pilha de louça ocupa 1 mão) */
+{ const bot=require('./bot.js')(g,L); ok(L.DANI_HANDS===2,'Dani tem 2 mãos');
+  reset({dani:3,daniTasks:['pratos','cafe','lavar']}); g.startDay(4); g.begin(); g.schedule=[{t:1e9,type:'estudante',color:0}]; g.nextIdx=0;
+  const d=g.dani; d.hands=[{kind:'dirty',n:4},{kind:'coffee'}]; const t=g.tables[0]; t.dirty=true; t.dirtyN=3;
+  d.perform({type:'clear',t}); ok(d.hands.length===2 && t.dirty,'mãos cheias: não pega mais louça');
+  d.hands=[{kind:'dirty',n:2},{kind:'dirty',n:2}]; d.perform({type:'coffee'}); ok(d.hands.length===2,'mãos cheias: não pega cafezinho');
+  let mx=0; for(const tk of [['pratos','cafe'],['pratos','lavar','cafe']]) for(let n=3;n<=7;n++){
+    reset({dani:3,daniTasks:tk}); g.up.bandeja=true; g.startDay(n); g.begin(); let st=0;
+    while(g.state==='playing'&&st<30000){ bot(); g.update(0.05); st++; mx=Math.max(mx,g.dani.hands.length); } }
+  ok(mx===2,'num dia inteiro, a Dani chega a 2 itens e nunca passa disso ('+mx+')'); }
 { reset({dani:3,daniTasks:['pratos','lavar','lixo']}); g.startDay(3); g.begin(); g.schedule=[{t:1e9,type:'estudante',color:0}]; g.nextIdx=0; g.kitchen.clean=0;
   const t=g.tables[0]; t.dirty=true; t.dirtyN=2; run(20,true);
   ok(!t.dirty && g.stats.washed>=1 && g.kitchen.clean>=1,'Dani recolhe a louça, leva à pia e lava');
