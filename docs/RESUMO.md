@@ -1,7 +1,7 @@
 # Resumo do projeto e das alterações (até 14/10/2026)
 
 ## Estado atual
-- **Versão:** v4, publicada como Versão 8 do artifact https://claude.ai/artifact/MJxrgDg8S4akvg47SoQAvj (privado).
+- **Versão:** v4, publicada como Versão 9 do artifact https://claude.ai/artifact/MJxrgDg8S4akvg47SoQAvj (privado).
 - **Branch:** `claude/elegant-curie-sgcl11` no repositório `aarescigno/Lanchonete-corre-corre`.
 - **Arquivos publicados:** `lanchonete.html` (página), mais `versoes/v1.html`, `versoes/v2.html` e `versoes/v3.html`, abertos pelo painel Versões.
 - **Capacidades declaradas (mantidas ao republicar sem `capabilities`):**
@@ -40,6 +40,7 @@
    - **Metas:** iguais às da v3 (o bot bate a meta em 92 a 97% das vezes nos dias 4 a 7).
    - "Como jogar" em duas colunas.
 6. **Lixeira** (pedido em comentário no artifact): no chão, ao lado do balcão; a Bia joga fora as bebidas que sobraram, com multa de metade do valor de cada uma (suco R$ 6, cafezinho R$ 2,50). Detalhes em `docs/spec-v4.md`.
+7. **Lojinha antes de cada dia**: do dia 2 em diante, escolher o dia (ou repetir) abre a lojinha primeiro, com "Começar o dia N" e "Menu principal"; ainda 1 melhoria por dia. O fim do dia oferece "Melhorias e dia N+1" e "Menu principal".
 
 ## Testes (verdes no último commit)
 - `smoke` (bot nos 7 dias);

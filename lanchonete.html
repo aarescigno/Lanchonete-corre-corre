@@ -181,7 +181,7 @@ table.rank tr.me td{background:#fbe7a8}
           <button class="btn go" id="btn-next">Próximo dia</button>
           <button class="btn alt" id="btn-again">Repetir dia</button>
           <button class="btn alt" id="btn-end-rank">Ranking</button>
-          <button class="btn alt" id="btn-end-menu">Menu</button>
+          <button class="btn alt" id="btn-end-menu">Menu principal</button>
         </div>
       </div>
     </div>
@@ -191,7 +191,7 @@ table.rank tr.me td{background:#fbe7a8}
         <h2>Lojinha do Seu Zé</h2>
         <p>Cofre: <span class="bank" id="shop-bank">R$ 0</span> &middot; <span id="shop-limit">Você pode levar 1 melhoria por dia.</span></p>
         <div class="shopgrid" id="shop-grid"></div>
-        <div class="row"><button class="btn go" id="btn-shop-go">Continuar</button></div>
+        <div class="row"><button class="btn go" id="btn-shop-go">Começar o dia</button><button class="btn alt" id="btn-shop-menu">Menu principal</button></div>
       </div>
     </div>
 
@@ -999,7 +999,7 @@ class Game {
     this.kitchen = new Kitchen(this);
     this.fx = [];
     this.sel = null; this.drag = null; this.hover = null; this.hoverOk = false;
-    this.shopBought = false;
+    this.shopBought = false; this.shopNext = 1; this.boughtFor = 0;
     this.soundBtnT = 0;
     this.mode = 'carreira';
     this.resetDay(1);
@@ -1363,11 +1363,17 @@ class Game {
     for (let i=7;i>=1;i--) if ((this.save.stars[i] || 0) >= 1) return i;
     return 0;
   }
-  goShop(){ this.shopBought = false; this.setState('shop'); }
+  /* lojinha antes do dia n (a partir do dia 2): 1 melhoria por dia, mesmo se a lojinha abrir de novo para o mesmo dia */
+  goShop(n){
+    this.shopNext = clamp(n || this.day.n + 1, 1, 7);
+    this.shopBought = this.boughtFor === this.shopNext;
+    this.resetDay(this.shopNext);   // o salão ao fundo já mostra o dia que vem
+    this.setState('shop');
+  }
   buy(id){
     const u = UPGRADES.find(x => x.id === id);
     if (!u || this.shopBought || this.up[id] || this.save.bank < u.cost) return false;
-    this.save.bank -= u.cost; this.up[id] = true; this.shopBought = true;
+    this.save.bank -= u.cost; this.up[id] = true; this.shopBought = true; this.boughtFor = this.shopNext;
     writeSave(this.save);
     Sfx.coin();
     return true;
@@ -1379,7 +1385,7 @@ class Game {
   }
   resetProgress(){
     this.save = { maxDay:1, bank:0, up:{}, best:{}, stars:{} };
-    this.up = this.save.up;
+    this.up = this.save.up; this.boughtFor = 0;
     writeSave(this.save);
   }
 
@@ -2677,7 +2683,8 @@ function buildShop(){
   const grid = $('shop-grid');
   clearEl(grid);
   $('shop-bank').textContent = fmt(game.save.bank);
-  $('shop-limit').textContent = game.shopBought ? 'Melhoria de hoje já escolhida.' : 'Você pode levar 1 melhoria por dia.';
+  $('shop-limit').textContent = game.shopBought ? 'Melhoria do dia ' + game.shopNext + ' já escolhida.' : 'Você pode levar 1 melhoria antes do dia ' + game.shopNext + '.';
+  $('btn-shop-go').textContent = 'Começar o dia ' + game.shopNext;
   UPGRADES.forEach(u => {
     const own = !!game.up[u.id];
     const card = el('div', 'item' + (own ? ' own' : ''));
@@ -2717,7 +2724,7 @@ function buildEnd(){
   $('end-msg').textContent = msg;
   const next = $('btn-next');
   next.style.display = r.passed ? '' : 'none';
-  next.textContent = r.day < 7 ? 'Lojinha e próximo dia' : 'Ver resultado final';
+  next.textContent = r.day < 7 ? 'Melhorias e dia ' + (r.day + 1) : 'Ver resultado final';
   buildSaveForm($('end-save'), 'carreira');
 }
 function buildFinal(){
@@ -2866,8 +2873,13 @@ game.hooks.state = function(s){
   else if (s === 'endlessend'){ buildEndless(); showOnly(['ov-endless']); }
 };
 
+/* carreira: do dia 2 em diante, a lojinha abre antes da introdução do dia */
+function playCareer(n){
+  selectedDay = n;
+  if (n >= 2) game.goShop(n); else game.startDay(n);
+}
 function on(id, fn){ const e = $(id); if (e) e.addEventListener('click', fn); }
-on('btn-play',       () => { Sfx.init(); Sfx.resume(); Sfx.tap(); game.startDay(selectedDay); });
+on('btn-play',       () => { Sfx.init(); Sfx.resume(); Sfx.tap(); playCareer(selectedDay); });
 on('btn-how',        () => { Sfx.init(); Sfx.resume(); Sfx.tap(); buildTips(); showOnly(['ov-how']); });
 on('btn-how-close',  () => { Sfx.tap(); showOnly(['ov-menu']); });
 on('btn-endless',    () => { Sfx.init(); Sfx.resume(); Sfx.tap(); game.startEndless(); });
@@ -2886,10 +2898,11 @@ on('btn-intro-menu', () => game.setState('menu'));
 on('btn-resume',     () => { Sfx.tap(); game.resume(); });
 on('btn-restart',    () => { if (game.mode === 'semfim') game.startEndless(); else game.startDay(game.day.n); });
 on('btn-pause-menu', () => { if (game.mode !== 'semfim') selectedDay = Math.max(1, Math.min(game.day.n, game.unlocked)); game.setState('menu'); });
-on('btn-again',      () => game.startDay(game.day.n));
+on('btn-again',      () => playCareer(game.day.n));
 on('btn-end-menu',   () => { selectedDay = Math.min(game.day.n + (game.result && game.result.passed ? 1 : 0), game.unlocked); game.setState('menu'); });
-on('btn-next',       () => { if (game.day.n < 7) game.goShop(); else game.setState('final'); });
-on('btn-shop-go',    () => { selectedDay = Math.min(game.day.n + 1, 7); game.startDay(game.day.n + 1); });
+on('btn-next',       () => { if (game.day.n < 7) game.goShop(game.day.n + 1); else game.setState('final'); });
+on('btn-shop-go',    () => { Sfx.tap(); selectedDay = game.shopNext; game.startDay(game.shopNext); });
+on('btn-shop-menu',  () => { selectedDay = Math.min(game.shopNext, game.unlocked); game.setState('menu'); });
 on('btn-final-menu', () => { selectedDay = 1; game.setState('menu'); });
 
 /* ---------- entrada ---------- */

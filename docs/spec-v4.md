@@ -36,6 +36,12 @@ Regras definidas pelo usuário na revisão da v4:
 - Cada bebida descartada custa **metade do valor** que renderia: R$ 6 por suco e R$ 2,50 por cafezinho (`DRINK_PRICE`). A multa não mexe na corrente.
 - Sem bebida na mão, a Bia mostra "?". O fim do dia mostra "Na lixeira" quando houve descarte.
 
+## Lojinha antes de cada dia (pedido do usuário, 14/10)
+- Na carreira, do dia 2 em diante, a lojinha abre antes da introdução do dia: ao tocar em "Carreira" no menu e em "Repetir dia" (função `playCareer(n)`). O dia 1 vai direto.
+- A lojinha tem "Começar o dia N" e "Menu principal". `game.goShop(n)` guarda o dia em `shopNext` e mostra esse dia no salão ao fundo.
+- O limite continua sendo 1 melhoria por dia: `boughtFor` guarda o dia da última compra, então reabrir a lojinha para o mesmo dia não libera outra compra.
+- No fim do dia: "Melhorias e dia N+1" (se bateu a meta), "Repetir dia", "Ranking" e "Menu principal".
+
 ## Balanceamento (bot, 80 rodadas por dia)
 - Na primeira versão da v4 (bandeja mais restrita e 1 comanda por mão), os sucos derrubaram as metas batidas nos dias 4 a 7, e as metas chegaram a ser reduzidas.
 - Com as regras finais (comandas empilhadas e bandeja mais versátil), o jogo voltou a render como na v3. As **metas da v3 foram mantidas**.
