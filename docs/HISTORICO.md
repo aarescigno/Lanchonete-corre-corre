@@ -36,3 +36,14 @@
 
 ## 14/10/2026, 08:21
 **Pedido:** exportar tudo para continuar no Claude Code. Este pacote é essa exportação.
+
+## 14/10/2026: continuação no Claude Code
+**Pedido:** "bora dar continuidade nisso aqui". O pacote exportado foi importado no repositório `aarescigno/Lanchonete-corre-corre`. Os testes da v2 passaram, e o usuário escolheu os **clientes VIP** entre as ideias pendentes.
+
+**Decisões:**
+- O VIP é um modificador de grupo, não um tipo novo. Assim continua valendo a variedade visual dos tipos existentes. O entregador ficou de fora, porque com paciência ×0,75 seria impossível.
+- O VIP fura a fila (a mecânica que o torna visível e diferente), e o risco e a recompensa vêm da paciência menor, da gorjeta maior, do bônus com 5♥ e da multa dobrada.
+- A identificação não depende só da cor: óculos escuros e plaquinha com o texto "VIP".
+- A v2 foi guardada em `versoes/v2-fonte.html` e `versoes/v2.html`.
+
+**Resultado:** v3 no repositório, ainda não publicada no artifact. O smoke4 passou 23/23 e os demais testes continuam verdes. A meta do dia 7 caiu para R$ 1300, depois do balanceamento com o bot.

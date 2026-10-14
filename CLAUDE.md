@@ -13,14 +13,17 @@ Jogo de navegador de gerenciamento de tempo em restaurante (gênero "garçonete 
 
 ## Estrutura
 ```
-lanchonete.html          versão atual (v2), fonte do artifact
+lanchonete.html          versão atual (v3), fonte do artifact
 versoes/v1-fonte.html    v1 exatamente como foi publicada (sem invólucro)
 versoes/v1.html          v1 com doctype, publicada junto em versoes/v1.html no artifact
+versoes/v2-fonte.html    v2 exatamente como foi publicada (sem invólucro)
+versoes/v2.html          v2 com doctype, para publicar em versoes/v2.html (o menu Versões da v3 aponta para ela)
 docs/spec-v1.md          especificação original
 docs/spec-v2.md          especificação da revisão baseada no clone
+docs/spec-v3.md          clientes VIP
 docs/HISTORICO.md        histórico da conversa e das decisões
 tests/                   harness Node + bot + testes + capturas Playwright
-capturas/v1, capturas/v2 telas de referência
+capturas/v1, v2, v3       telas de referência
 ```
 
 ## Testes
@@ -30,14 +33,18 @@ cd tests
 node smoke.js            # bot joga os 7 dias da carreira, com render (stub de canvas)
 node smoke2.js           # mecânicas: fluxo de mesa, mãos, fila de ações, pausa etc.
 node smoke3.js           # v2: pool de cores, fila lotada, Turno sem fim, ranking local/db (stub)
+node smoke4.js           # v3: clientes VIP (agenda, fila, conta, multa, Turno sem fim, render)
 node balance.js          # 20 rodadas por dia; bot ~137/140 metas batidas
 python3 shot_v2.py       # capturas com Playwright/Chromium em ../capturas/v2
+python3 shot_v3.py       # capturas da v3 em ../capturas/v3 (usa /opt/pw-browsers/chromium se existir)
 ```
+O smoke2 tem uma falha intermitente ("conta paga, mesa suja, servidos=1", ~10% das execuções), que já existia na v2.
 
 ## Artifact publicado
 - URL: https://claude.ai/artifact/MJxrgDg8S4akvg47SoQAvj (privado: dono e quem receber acesso)
 - Versão 1 (13/10/2026) é a v1. Versão 2 (14/10/2026), rótulo "v2 — revisão com base no clone".
 - Arquivo extra publicado: `versoes/v1.html`, que o menu Versões abre.
+- **v3 ainda não publicada.** Ao publicar, enviar também `versoes/v2.html` (em `files`), porque o painel Versões da v3 tem o link "Abrir a v2".
 - Capacidades declaradas na v2. Ao republicar, omitir `capabilities` mantém essas regras:
 ```json
 {"db": {"rules": [
@@ -65,8 +72,13 @@ python3 shot_v2.py       # capturas com Playwright/Chromium em ../capturas/v2
   - modo Turno sem fim com 5 estrelas de reputação;
   - ranking compartilhado com ordenação por nome ou pontos, crescente ou decrescente, como no clone;
   - painel Versões e correções visuais (placa ABERTO, rótulo PIA E LOUÇA).
+- **v3 (14/10/2026), clientes VIP** (ver `docs/spec-v3.md`):
+  - grupos VIP a partir do dia 5 e no Turno sem fim (depois de 1 min);
+  - furam a fila, têm paciência ×0,75 e pagam gorjeta +50%, com bônus de R$ 40 se saírem com 5♥;
+  - bravos, pagam multa dobrada;
+  - visual com óculos escuros e plaquinha "★VIP"; meta do dia 7 ajustada para R$ 1300.
 
 ## Ideias pendentes (não implementadas)
 - Testar som e toque em celular real (nunca testados).
 - A conta é paga na hora e não ocupa as mãos; cada grupo toma no máximo 1 cafezinho.
-- Possíveis extras discutidos: clientes VIP, balcão de sucos, ajuste de dificuldade.
+- Possíveis extras discutidos: balcão de sucos, ajuste de dificuldade.

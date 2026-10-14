@@ -100,7 +100,7 @@ table.rank tr.me td{background:#fbe7a8}
 
     <div class="ov show" id="ov-menu">
       <div class="panel menu-panel">
-        <span class="vtag" aria-label="Versão 2">v2</span>
+        <span class="vtag" aria-label="Versão 3">v3</span>
         <h1 class="title">Lanchonete<br>Corre-Corre</h1>
         <p class="tag">Ajude a Bia a atender a freguesia da esquina antes que o cafezinho esfrie!</p>
         <div class="lbl">Carreira: escolha o dia</div>
@@ -230,7 +230,8 @@ table.rank tr.me td{background:#fbe7a8}
       <div class="panel">
         <h2>Versões</h2>
         <ul class="verlist">
-          <li><b>v2</b><span class="cur">versão atual</span><br>14/10/2026 &mdash; Comandas coloridas, humor por cor, fila lotada, Turno sem fim e ranking compartilhado.</li>
+          <li><b>v3</b><span class="cur">versão atual</span><br>14/10/2026 &mdash; Clientes VIP: furam a fila, têm menos paciência e pagam gorjeta extra.</li>
+          <li><b>v2</b><br>14/10/2026 &mdash; Comandas coloridas, humor por cor, fila lotada, Turno sem fim e ranking compartilhado.<br><a href="versoes/v2.html" target="_blank" rel="noopener">Abrir a v2</a></li>
           <li><b>v1</b><br>13/10/2026 &mdash; Primeira versão: carreira de 7 dias, lojinha, corrente e bônus de cor.<br><a href="versoes/v1.html" target="_blank" rel="noopener">Abrir a v1</a></li>
         </ul>
         <div class="row"><button class="btn go" id="btn-ver-close">Fechar</button></div>
@@ -307,18 +308,21 @@ const CUSTOMER_TYPES = {
   vovos:      { label:'Vovô e vovó', pat:1.8,  eat:[8,9],     read:[4,6],   size:[2,2], bill:[28,42], tip:0 },
   entregador: { label:'Entregador',  pat:0.5,  eat:[3.5,5],   read:[3,3.5], size:[1,1], bill:[20,26], tip:0 }
 };
+/* cliente VIP: modificador de grupo (qualquer tipo menos entregador). Fura a fila, tem menos
+   paciência, paga gorjeta extra e dá bônus se sair com 5 corações; bravo, a multa dobra. */
+const VIP = { pat:0.75, tip:0.5, perfect:40, angry:30, types:['estudante','vovos','familia','executiva'] };
 
 const DAYS = [
   { n:1, tables:[1,2,4],         groups:6,  types:['estudante','vovos'],                                   nu:null,         meta:250, expert:400,  time:150, speed:0.60, note:'' },
   { n:2, tables:[1,2,4,5],       groups:9,  types:['estudante','vovos','familia'],                         nu:'familia',    meta:700, expert:1100,  time:160, speed:0.60, note:'Chegou a família! Grupos de 3 ou 4 só cabem nas mesas grandes.' },
   { n:3, tables:[1,2,3,4,5],     groups:12, types:['estudante','vovos','familia','executiva'],             nu:'executiva',  meta:900, expert:1400,  time:170, speed:0.60, note:'A executiva tem pouca paciência, mas deixa boa gorjeta.' },
   { n:4, tables:[1,2,3,4,5,6],   groups:14, types:['estudante','vovos','familia','executiva','entregador'], nu:'entregador', meta:1050,expert:1600, time:180, speed:0.58, note:'O entregador de moto tem pressa: pouquíssima paciência!' },
-  { n:5, tables:[1,2,3,4,5,6],   groups:16, types:['estudante','vovos','familia','executiva','entregador'], nu:null,         meta:1100,expert:1650, time:190, speed:0.56, note:'Casa cheia! A freguesia chega mais rápido.' },
-  { n:6, tables:[1,2,3,4,5,6],   groups:18, types:['estudante','vovos','familia','executiva','entregador'], nu:null,         meta:1250,expert:1850, time:200, speed:0.54, note:'Sexta-feira: ninguém quer esperar.' },
-  { n:7, tables:[1,2,3,4,5,6],   groups:22, types:['estudante','vovos','familia','executiva','entregador'], nu:null,         meta:1350,expert:2100, time:220, speed:0.52, note:'Tonhão está gripado: a cozinha anda mais devagar hoje.' }
+  { n:5, tables:[1,2,3,4,5,6],   groups:16, types:['estudante','vovos','familia','executiva','entregador'], nu:null,         meta:1100,expert:1650, time:190, speed:0.56, vip:0.15, note:'Chegou cliente VIP (de óculos escuros e plaquinha dourada)! Fura a fila e tem menos paciência, mas paga gorjeta extra e um bônus se sair com 5 corações. Se sair bravo, a multa dobra.' },
+  { n:6, tables:[1,2,3,4,5,6],   groups:18, types:['estudante','vovos','familia','executiva','entregador'], nu:null,         meta:1250,expert:1850, time:200, speed:0.54, vip:0.15, note:'Sexta-feira: ninguém quer esperar.' },
+  { n:7, tables:[1,2,3,4,5,6],   groups:22, types:['estudante','vovos','familia','executiva','entregador'], nu:null,         meta:1300,expert:2100, time:220, speed:0.52, vip:0.15, note:'Tonhão está gripado: a cozinha anda mais devagar hoje.' }
 ];
 
-const ENDLESS = { n:0, tables:[1,2,3,4,5,6], groups:0, types:['estudante','vovos','familia','executiva','entregador'], nu:null, meta:0, expert:0, time:0, speed:1, note:'', endless:true };
+const ENDLESS = { n:0, tables:[1,2,3,4,5,6], groups:0, types:['estudante','vovos','familia','executiva','entregador'], nu:null, meta:0, expert:0, time:0, speed:1, vip:0.12, note:'', endless:true };
 
 const UPGRADES = [
   { id:'tenis',      name:'Tênis novos',          desc:'A Bia anda 10% mais rápido.',                  cost:150 },
@@ -545,12 +549,14 @@ class Table {
    GRUPO DE CLIENTES
    ============================================================ */
 class Group {
-  constructor(game, type, id, color){
+  constructor(game, type, id, color, vip){
     const T = CUSTOMER_TYPES[type];
     this.game = game; this.id = id; this.type = type; this.T = T;
     this.size = randi(T.size[0], T.size[1]);
     this.color = color;
+    this.vip = !!vip && VIP.types.includes(type);
     this.people = makePeople(type, this.size);
+    if (this.vip) this.people.forEach(p => { p.shades = true; });
     this.dishes = this.people.map(() => pick(DISHES));
     this.dish = this.dishes[0];
     this.bill = randi(T.bill[0], T.bill[1]);
@@ -568,6 +574,7 @@ class Group {
     const b = PAT[this.state];
     if (!b) return Infinity;
     let m = b * this.T.pat;
+    if (this.vip) m *= VIP.pat;
     if (this.state === 'queue' && this.game.up.jukebox) m *= 1.25;
     return m;
   }
@@ -893,7 +900,7 @@ class Game {
     this.kitchen.reset();
     this.bia.reset();
     this.fx = [];
-    this.stats = { served:0, lost:0, chain:0, spawned:0, full:0 };
+    this.stats = { served:0, lost:0, chain:0, spawned:0, full:0, vip:0, vipLost:0 };
     this.lastKind = null; this.chainN = 0;
     this.ending = false; this.endTimer = 0; this.reason = '';
     this.sel = null; this.drag = null; this.hover = null;
@@ -907,10 +914,16 @@ class Game {
     const gap = day.speed * day.time / day.groups;
     let t = 3;
     const forced = day.nu ? randi(1, Math.min(3, day.groups-1)) : -1;
+    const forcedVip = day.vip && !day.nu ? randi(1, Math.min(3, day.groups-1)) : -1;
     const colors = this.tables.filter(x => day.tables.includes(x.id)).map(x => x.color);
     for (let i=0;i<day.groups;i++){
-      const type = (i === forced) ? day.nu : pick(day.types);
-      out.push({ t, type, color: pick(colors.concat([0,1,2,3])) });
+      let type = (i === forced) ? day.nu : pick(day.types);
+      let vip = false;
+      if (day.vip && (i === forcedVip || Math.random() < day.vip)){
+        if (!VIP.types.includes(type)) type = pick(VIP.types);
+        vip = true;
+      }
+      out.push({ t, type, color: pick(colors.concat([0,1,2,3])), vip });
       t += gap * (0.7 + Math.random()*0.6);
     }
     return out;
@@ -977,9 +990,17 @@ class Game {
     }
   }
   collectBill(g, t){
-    const amount = Math.round(g.bill * HEART_MULT[g.hearts] * (1 + g.T.tip));
+    const amount = Math.round(g.bill * HEART_MULT[g.hearts] * (1 + g.T.tip + (g.vip ? VIP.tip : 0)));
     this.score('bill', amount, t.cx, t.cy - 50);
-    if (g.T.tip > 0) this.addText(t.cx + 20, t.cy - 76, 'Gorjeta!', PAL.mostarda, 15);
+    if (g.T.tip > 0 || g.vip) this.addText(t.cx + 20, t.cy - 76, 'Gorjeta!', PAL.mostarda, 15);
+    if (g.vip){
+      this.stats.vip++;
+      if (g.hearts === 5){
+        this.addMoney(VIP.perfect);
+        this.addText(t.cx, t.cy - 100, 'VIP satisfeito! +' + VIP.perfect, PAL.faixa, 17);
+        this.addSparks(t.cx, t.cy - 40, 12, PAL.mostarda);
+      }
+    }
     this.addCoins(t.cx, t.cy, Math.min(8, 3 + g.hearts));
     Sfx.coin();
     this.stats.served++;
@@ -1009,15 +1030,25 @@ class Game {
   }
   spawn(s){
     s = s || this.schedule[this.nextIdx++];
-    const g = new Group(this, s.type, ++this.gid, s.color);
-    this.groups.push(g); this.queue.push(g);
+    const g = new Group(this, s.type, ++this.gid, s.color, s.vip);
+    this.groups.push(g);
+    if (g.vip){
+      // VIP fura a fila: entra logo depois dos outros VIPs que já estão esperando
+      let i = 0;
+      while (i < this.queue.length && this.queue[i].vip) i++;
+      this.queue.splice(i, 0, g);
+      this.addText(DOOR.x + 110, DOOR.y + 12, 'VIP chegou!', PAL.mostarda, 22);
+      Sfx.tone(988, 0.1, 'sine', 0.06); Sfx.tone(1319, 0.14, 'sine', 0.06, 0.1);
+    } else {
+      this.queue.push(g);
+      Sfx.tone(880, 0.12, 'sine', 0.05);
+    }
     this.stats.spawned++;
     this.reslot();
-    Sfx.tone(880, 0.12, 'sine', 0.05);
     return g;
   }
   bounce(s){
-    const g = new Group(this, s.type, ++this.gid, s.color);
+    const g = new Group(this, s.type, ++this.gid, s.color, s.vip);
     g.hearts = 3; g.bounced = true; g.hold = 0.9;
     g.setState('leaving');
     g.path = [{ x:-60, y:DOOR.y + 4 }];
@@ -1029,7 +1060,9 @@ class Game {
     return null;
   }
   spawnEndless(){
-    this.arrive({ type: pick(ENDLESS.types), color: pick([0,1,2,3]) });
+    let type = pick(ENDLESS.types), vip = false;
+    if (this.elapsed > 60 && Math.random() < ENDLESS.vip){ vip = true; if (!VIP.types.includes(type)) type = pick(VIP.types); }
+    this.arrive({ type, color: pick([0,1,2,3]), vip });
   }
   endlessInterval(){ return Math.max(3.5, 9 - this.elapsed / 30); }
   loseStar(){
@@ -1112,8 +1145,10 @@ class Game {
     this.stats.lost++;
     this.addPuff(g.x, g.y - 20, 9);
     this.addText(g.x, g.y - 50, 'Hmpf!', PAL.perigo, 22);
-    this.addMoney(-30);
-    this.addText(g.x, g.y - 78, '-30', PAL.perigo, 18);
+    const fine = 30 + (g.vip ? VIP.angry : 0);
+    this.addMoney(-fine);
+    this.addText(g.x, g.y - 78, '-' + fine, PAL.perigo, 18);
+    if (g.vip) this.stats.vipLost++;
     g.angry = true;
     Sfx.huff();
     this.leaveCommon(g);
@@ -1188,13 +1223,13 @@ class Game {
     this.save.stars[d.n] = Math.max(this.save.stars[d.n] || 0, stars);
     if (passed) this.save.maxDay = Math.max(this.save.maxDay, Math.min(7, d.n + 1));
     writeSave(this.save);
-    this.result = { day:d.n, money:m, meta:d.meta, expert:d.expert, passed, stars, served:this.stats.served, lost:this.stats.lost, full:this.stats.full, chain:this.stats.chain, reason:this.reason };
+    this.result = { day:d.n, money:m, meta:d.meta, expert:d.expert, passed, stars, served:this.stats.served, lost:this.stats.lost, full:this.stats.full, chain:this.stats.chain, vip:this.stats.vip, vipLost:this.stats.vipLost, reason:this.reason };
     this.setState('dayend');
     if (passed) Sfx.win(); else Sfx.lose();
   }
   finishEndless(){
     const pts = Math.round(this.money);
-    this.endless = { pontos:pts, tempo:Math.floor(this.elapsed), served:this.stats.served, lost:this.stats.lost, full:this.stats.full, chain:this.stats.chain };
+    this.endless = { pontos:pts, tempo:Math.floor(this.elapsed), served:this.stats.served, lost:this.stats.lost, full:this.stats.full, chain:this.stats.chain, vip:this.stats.vip };
     this.setState('endlessend');
     Sfx.lose();
   }
@@ -1374,6 +1409,15 @@ function drawMoodRing(ctx,hearts,x,y,rx,ry,tm){
   ctx.save();
   ctx.globalAlpha = 0.28 * a; ctx.fillStyle = col; ell(ctx,x,y,rx,ry); ctx.fill();
   ctx.globalAlpha = a; ctx.lineWidth = 3.5; ctx.strokeStyle = col; ell(ctx,x,y,rx,ry); ctx.stroke();
+  ctx.restore();
+}
+/* selo VIP: plaquinha dourada com estrela e "VIP" (o texto, não só a cor, identifica o VIP) */
+function drawVipBadge(ctx,x,y,tm){
+  const p = RM ? 1 : 1 + 0.06*Math.sin(tm*5);
+  ctx.save(); ctx.translate(x,y); ctx.scale(p,p);
+  rr(ctx,-19,-9,38,18,6); fs(ctx,PAL.mostarda,2.2);
+  star(ctx,-10,0,5.5,'#fff');
+  txt(ctx,'VIP',5,1,12,PAL.tinta,'center',FD);
   ctx.restore();
 }
 function shadowEll(ctx,x,y,rx,ry,a){
@@ -1561,7 +1605,13 @@ function drawPerson(ctx,p,x,y,o){
     ctx.beginPath(); ctx.arc(0,hy+9,4,Math.PI+0.3,TAU-0.3); ctx.stroke();
     ctx.lineWidth = 2; ctx.beginPath(); ctx.moveTo(-7.5,hy-4.6); ctx.lineTo(-2,hy-2.4); ctx.moveTo(7.5,hy-4.6); ctx.lineTo(2,hy-2.4); ctx.stroke();
   }
-  if (p.glasses){ ctx.lineWidth = 1.5; circ(ctx,-4.4,hy+0.5,3.6); ctx.stroke(); circ(ctx,4.4,hy+0.5,3.6); ctx.stroke(); ctx.beginPath(); ctx.moveTo(-0.9,hy+0.5); ctx.lineTo(0.9,hy+0.5); ctx.stroke(); }
+  if (p.shades){
+    ctx.fillStyle = '#1b1b1b'; ctx.lineWidth = 1.5;
+    rr(ctx,-8.6,hy-2.6,7.4,5.6,2.2); ctx.fill(); rr(ctx,1.2,hy-2.6,7.4,5.6,2.2); ctx.fill();
+    ctx.beginPath(); ctx.moveTo(-1.2,hy-0.6); ctx.lineTo(1.2,hy-0.6); ctx.stroke();
+    ctx.fillStyle = 'rgba(255,255,255,.45)'; ctx.fillRect(-7,hy-1.6,2,1.4); ctx.fillRect(2.8,hy-1.6,2,1.4);
+  }
+  else if (p.glasses){ ctx.lineWidth = 1.5; circ(ctx,-4.4,hy+0.5,3.6); ctx.stroke(); circ(ctx,4.4,hy+0.5,3.6); ctx.stroke(); ctx.beginPath(); ctx.moveTo(-0.9,hy+0.5); ctx.lineTo(0.9,hy+0.5); ctx.stroke(); }
   ctx.restore();
 }
 
@@ -1917,6 +1967,7 @@ function drawTableOverlay(ctx,g,t,tm,menu){
   }
   if (!grp || grp.state === 'toTable' || grp.state === 'leaving' || !t.open) return;
   drawHearts(ctx,grp,t.cx,t.cy-70,tm);
+  if (grp.vip) drawVipBadge(ctx,t.cx-60,t.cy-70,tm);
   const pul = RM ? 1 : 1 + 0.12*Math.sin(tm*7);
   ctx.save(); ctx.translate(bx,by);
   if (grp.state === 'reading'){
@@ -2106,7 +2157,8 @@ function render(g, ctx){
   g.queue.forEach(grp => {
     if (grp.state !== 'queue') return;
     if (g.drag && g.drag.moved && g.drag.g === grp) return;
-    drawHearts(ctx,grp,grp.x,grp.y-64,tm);
+    if (grp.vip){ drawHearts(ctx,grp,grp.x+14,grp.y-64,tm); drawVipBadge(ctx,grp.x-45,grp.y-63,tm); }
+    else drawHearts(ctx,grp,grp.x,grp.y-64,tm);
   });
   // "?" sobre a Bia
   if (b.qT > 0 && !menu){
@@ -2385,6 +2437,10 @@ function buildTips(){
       drawPerson(c,{skin:2,hair:5,hairC:'#2F1D12',pants:'#2F3E5C'},18,54,{shirt:CHAIRS[1].c,mood:0,s:0.7,sit:true});
       txt(c,'×3!',46,22,18,PAL.alerta,'center',FD,3);
       star(c,46,46,9,PAL.mostarda);
+    }],
+    ['A partir do dia 5 aparece o cliente VIP, de óculos escuros e com a plaquinha dourada. Ele fura a fila e tem menos paciência, mas paga gorjeta extra e um bônus se sair com 5 corações. Se sair bravo, a multa dobra.', c => {
+      drawPerson(c,{skin:4,hair:3,hairC:'#1B1512',pants:'#2F3E5C',shades:true},28,60,{shirt:CHAIRS[2].c,mood:0,s:0.85});
+      drawVipBadge(c,40,14,0);
     }]
   ];
   tips.forEach(t => {
@@ -2446,7 +2502,9 @@ function buildEnd(){
   $('end-money').textContent = 'Você faturou ' + fmt(r.money) + ' (meta ' + fmt(r.meta) + ' · expert ' + fmt(r.expert) + ')';
   const st = $('end-stats');
   clearEl(st);
-  [['Atendidos', r.served],['Perdidos', r.lost],['Não couberam', r.full],['Maior corrente', '×' + r.chain],['Cofre', fmt(game.save.bank)]].forEach(p => {
+  const rows = [['Atendidos', r.served],['Perdidos', r.lost],['Não couberam', r.full],['Maior corrente', '×' + r.chain],['Cofre', fmt(game.save.bank)]];
+  if (r.vip || r.vipLost) rows.splice(2, 0, ['VIPs', r.vip + ' atendido' + (r.vip === 1 ? '' : 's') + (r.vipLost ? ' · ' + r.vipLost + ' bravo' + (r.vipLost > 1 ? 's' : '') : '')]);
+  rows.forEach(p => {
     st.appendChild(el('span', null, p[0])); st.appendChild(el('b', null, String(p[1])));
   });
   let msg = '';
@@ -2477,7 +2535,7 @@ function buildEndless(){
   if (!r) return;
   const st = $('endless-stats');
   clearEl(st);
-  [['Pontos', r.pontos],['Tempo sobrevivido', mmssUp(r.tempo)],['Grupos atendidos', r.served],['Maior corrente', '×' + r.chain],['Não couberam na fila', r.full]].forEach(p => {
+  [['Pontos', r.pontos],['Tempo sobrevivido', mmssUp(r.tempo)],['Grupos atendidos', r.served],['VIPs atendidos', r.vip],['Maior corrente', '×' + r.chain],['Não couberam na fila', r.full]].forEach(p => {
     st.appendChild(el('span', null, p[0])); st.appendChild(el('b', null, String(p[1])));
   });
   buildSaveForm($('endless-save'), 'semfim');
@@ -2679,7 +2737,7 @@ fit();
 try { Rank.init(); } catch(e) {}
 game.setState('menu');
 window.__game = game;
-window.__lcc = { Game, Group, Table, Kitchen, Waitress, DAYS, UPGRADES, CUSTOMER_TYPES, LAYOUT, PAL, Sfx, findPath, render, Rank, sortRows, cleanName, normName, CMD, ENDLESS, rk, renderRank, openRank, closeRank, LS, lsGet, lsSet, loadSave };
+window.__lcc = { Game, Group, Table, Kitchen, Waitress, DAYS, UPGRADES, CUSTOMER_TYPES, LAYOUT, PAL, Sfx, findPath, render, Rank, sortRows, cleanName, normName, CMD, ENDLESS, VIP, rk, renderRank, openRank, closeRank, LS, lsGet, lsSet, loadSave };
 window.requestAnimationFrame(frame);
 
 })();
