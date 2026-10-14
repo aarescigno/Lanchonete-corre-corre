@@ -37,6 +37,7 @@ node smoke4.js           # v3: clientes VIP (agenda, fila, conta, multa, Turno s
 node balance.js          # 20 rodadas por dia; bot ~137/140 metas batidas
 python3 shot_v2.py       # capturas com Playwright/Chromium em ../capturas/v2
 python3 shot_v3.py       # capturas da v3 em ../capturas/v3 (usa /opt/pw-browsers/chromium se existir)
+python3 menu_fit.py      # o painel do menu não pode rolar em 14 tamanhos de tela (desktop e celular deitado)
 ```
 O smoke2 tinha uma falha intermitente ("conta paga, mesa suja, servidos=1", ~10% das execuções, já na v2): um grupo esquecido na fila ia embora bravo durante a cobrança e a multa de R$ 30 anulava a conta. Corrigido no teste, que agora enche a paciência da fila antes de cobrar (100/100 execuções verdes).
 
@@ -78,6 +79,7 @@ O smoke2 tinha uma falha intermitente ("conta paga, mesa suja, servidos=1", ~10%
   - bravos, pagam multa dobrada;
   - visual com óculos escuros e plaquinha "★VIP"; meta do dia 7 ajustada para R$ 1300;
   - acesso às versões anteriores passou do link "Versões" para um ícone no canto inferior direito do menu.
+  - menu sem barra de rolagem no celular deitado (`@media (max-height:460px)`: painel mais largo, título em 1 linha, 4 botões numa fileira).
 
 ## Ideias pendentes (não implementadas)
 - Testar som e toque em celular real (nunca testados).

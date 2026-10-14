@@ -96,6 +96,19 @@ table.rank tr.me td{background:#fbe7a8}
 #rotate{position:fixed;left:50%;bottom:6px;transform:translateX(-50%);background:var(--mostarda);color:var(--tinta);border:2px solid var(--tinta);border-radius:999px;padding:6px 14px;font:600 13px var(--fb);display:none;z-index:5;white-space:nowrap}
 @media (orientation:portrait){#rotate{display:block}}
 @media (prefers-reduced-motion:reduce){.btn{transition:none}}
+/* celular deitado: o menu cabe sem rolagem (painel mais largo, título em 1 linha, 4 botões numa fileira) */
+@media (max-height:460px){
+  #ov-menu{padding-left:calc(var(--u)*16)}
+  .menu-panel{width:min(100%,calc(var(--u)*760));padding:calc(var(--u)*12) calc(var(--u)*20)}
+  .menu-panel .title br{display:none}
+  .menu-panel .title{font-size:max(24px,calc(var(--u)*44));padding-right:calc(var(--u)*40)}
+  .menu-panel .tag{margin:calc(var(--u)*8) 0 calc(var(--u)*4)}
+  .menu-panel .lbl{margin-top:calc(var(--u)*4)}
+  .menu-panel .chips{gap:6px;flex-wrap:nowrap}
+  .menu-btns{display:flex;flex-wrap:wrap;gap:8px;margin-top:calc(var(--u)*10)}
+  .menu-btns .row.tight{display:contents}
+  .menu-panel .links .link{margin-top:calc(var(--u)*4)}
+}
 </style>
 <div id="app">
   <div id="stage">
@@ -104,17 +117,19 @@ table.rank tr.me td{background:#fbe7a8}
     <div class="ov show" id="ov-menu">
       <div class="panel menu-panel">
         <span class="vtag" aria-label="Versão 3">v3</span>
-        <h1 class="title">Lanchonete<br>Corre-Corre</h1>
+        <h1 class="title">Lanchonete <br>Corre-Corre</h1>
         <p class="tag">Ajude a Bia a atender a freguesia da esquina antes que o cafezinho esfrie!</p>
         <div class="lbl">Carreira: escolha o dia</div>
         <div class="chips" id="daychips" role="group" aria-label="Escolha o dia"></div>
-        <div class="row tight">
-          <button class="btn go" id="btn-play">Carreira</button>
-          <button class="btn" id="btn-endless">Turno sem fim</button>
-        </div>
-        <div class="row tight">
-          <button class="btn alt" id="btn-how">Como jogar</button>
-          <button class="btn alt" id="btn-rank">Ranking</button>
+        <div class="menu-btns">
+          <div class="row tight">
+            <button class="btn go" id="btn-play">Carreira</button>
+            <button class="btn" id="btn-endless">Turno sem fim</button>
+          </div>
+          <div class="row tight">
+            <button class="btn alt" id="btn-how">Como jogar</button>
+            <button class="btn alt" id="btn-rank">Ranking</button>
+          </div>
         </div>
         <div class="links">
           <button class="link" id="btn-reset">Zerar progresso</button>
