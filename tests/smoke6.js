@@ -88,6 +88,12 @@ ok(L.dishStock(L.DAYS[2])===3 && L.dishStock(L.DAYS[5])===3 && L.dishStock(L.DAY
   reset({dani:1,daniTasks:[]}); ok(g.toggleDaniTask('lixo') && g.toggleDaniTask('cafe') && !g.toggleDaniTask('lavar'),'níveis 1 e 2: 2 tarefas');
   eq().dani=3; ok(g.toggleDaniTask('lavar') && !g.toggleDaniTask('pratos'),'nível 3: 3 tarefas');
   ok(g.toggleDaniTask('lixo') && eq().daniTasks.indexOf('lixo')<0,'desmarca tarefa'); }
+{ reset({dani:1,daniTasks:['agua','lixo','pratos']});
+  ok(g.toggleDaniTask('agua') && eq().daniTasks.indexOf('agua')<0,'sem a melhoria, ainda dá para desmarcar a água guardada');
+  reset({dani:1,daniTasks:['agua','lixo']}); g.startDay(3); g.begin();
+  ok(!g.dani.does('agua') && g.dani.does('lixo') && g.toggleDaniTask('pratos') && g.dani.tasks.join()==='lixo,pratos','sem a melhoria, a água não ocupa vaga de tarefa');
+  reset({dani:1,daniTasks:[]}); ok(!g.toggleDaniTask('agua'),'sem a melhoria, não marca a água');
+  g.up.agua=true; ok(g.toggleDaniTask('agua') && g.dani.does('agua'),'com a melhoria, marca a água'); }
 { reset({dani:3,daniTasks:['pratos','lavar','lixo']}); g.startDay(3); g.begin(); g.schedule=[{t:1e9,type:'estudante',color:0}]; g.nextIdx=0; g.kitchen.clean=0;
   const t=g.tables[0]; t.dirty=true; t.dirtyN=2; run(20,true);
   ok(!t.dirty && g.stats.washed>=1 && g.kitchen.clean>=1,'Dani recolhe a louça, leva à pia e lava');

@@ -14,7 +14,7 @@ with sync_playwright() as p:
     pg.goto('file://'+S+'/wrapped.html'); pg.wait_for_timeout(600); pg.add_script_tag(content=BOT)
     pg.evaluate("const g=window.__game; g.save.maxDay=7; g.save.bank=900; g.goShop(6);"); pg.wait_for_timeout(150)
     pg.click('#shop-tabs button[data-v=equipe]'); pg.wait_for_timeout(150)
-    pg.click('text=Contratar: R$ 60/dia'); pg.click('text=Aumento: R$ 40/dia'); pg.click('text=Aumento: R$ 90/dia'); pg.click('text=Contratar: R$ 80/dia'); pg.wait_for_timeout(150)
+    pg.click('#shop-grid .item:nth-child(2) button:text-is("Contratar")'); pg.click('#shop-grid .item:nth-child(1) button:text-is("Aumento")'); pg.click('#shop-grid .item:nth-child(1) button:text-is("Aumento")'); pg.click('text=Contratar: R$ 80/dia'); pg.wait_for_timeout(150)
     pg.screenshot(path=OUT+'/01_lojinha_equipe.png')
     pg.click('#shop-tabs button[data-v=melhorias]'); pg.wait_for_timeout(100); pg.screenshot(path=OUT+'/02_lojinha_melhorias.png')
     pg.evaluate("const g=window.__game; g.up.agua=true; g.save.equipe.couvert=true; g.save.equipe.taxa=true;")

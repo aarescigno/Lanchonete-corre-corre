@@ -65,6 +65,9 @@ p{margin:calc(var(--u)*6) 0;font-size:max(12px,calc(var(--u)*16));line-height:1.
 .item .tasks button,.item .toggle{font:700 max(11px,calc(var(--u)*12)) var(--fb);color:var(--tinta);background:#fff;border:calc(var(--u)*2) solid var(--tinta);border-radius:999px;padding:2px 8px;min-height:32px;cursor:pointer}
 .item .tasks button[aria-pressed="true"],.item .toggle[aria-pressed="true"]{background:var(--faixa);color:#fff}
 .item .tasks button[disabled]{opacity:.4;cursor:not-allowed}
+.item .next{grid-column:1 / -1;display:grid;gap:1px;background:#fff;border:calc(var(--u)*2) dashed rgba(34,32,28,.35);border-radius:calc(var(--u)*8);padding:calc(var(--u)*4) calc(var(--u)*7)}
+.item .next b{font:800 max(11px,calc(var(--u)*12.5)) var(--fb);color:var(--faixa)}
+.item .next strong{color:var(--ok)}
 .item .duo{display:flex;gap:6px;flex-wrap:wrap;justify-content:center}
 .item .duo .btn{flex:1 1 auto}
 .bank{font-family:var(--fd);font-size:max(15px,calc(var(--u)*22));color:var(--ok);text-shadow:calc(var(--u)*1.5) calc(var(--u)*1.5) 0 var(--tinta)}
@@ -128,6 +131,8 @@ table.rank tr.me td{background:#fbe7a8}
   #ov-shop .row .btn{font-size:14px}
   #ov-shop .item{padding:4px 6px}
   #ov-shop .item span{font-size:10.5px}
+  #ov-shop .item .next{padding:2px 5px}
+  #ov-shop .item .next b{font-size:10.5px}
 }
 /* celular deitado: o menu cabe sem rolagem (painel mais largo, título em 1 linha, 4 botões numa fileira) */
 @media (max-height:460px){
@@ -389,8 +394,10 @@ const DANI_TASKS = [
   { id:'pratos', name:'Retirar pratos sujos', short:'Recolher' },
   { id:'lavar',  name:'Lavar a louça',  short:'Lavar' },
   { id:'cafe',   name:'Servir cafezinho', short:'Cafezinho' },
-  { id:'agua',   name:'Recarregar a água saborizada', short:'Água' }
+  { id:'agua',   name:'Recarregar a água saborizada', short:'Água', need:'agua' }
 ];
+/* tarefa que a Dani já pode exercer (a da água depende da melhoria comprada) */
+function daniTaskOk(id, up){ const t = DANI_TASKS.find(d => d.id === id); return !!t && (!t.need || !!(up && up[t.need])); }
 /* prato caprichado (acerto crítico do Tonhão): +1 coração e bônus na entrega */
 const CRIT = { bonus:10, vipBonus:20 };
 const WASH = { base:0.3, perPile:2.5 };               // segundos na pia
@@ -1164,7 +1171,7 @@ class Helper {
   get active(){ return this.level > 0; }
   get spec(){ return STAFF.dani.levels[this.level]; }
   get speed(){ return 260 * this.spec.speed; }
-  get tasks(){ return this.active ? this.g.save.equipe.daniTasks.slice(0, this.spec.tasks) : []; }
+  get tasks(){ return this.active ? this.g.save.equipe.daniTasks.filter(t => daniTaskOk(t, this.g.up)).slice(0, this.spec.tasks) : []; }
   does(t){ return this.tasks.indexOf(t) >= 0; }
   /* mesa já na fila de ações da Bia: a Dani não mexe */
   biaWants(t){ return this.g.bia.acts.some(a => a.type === 'table' && a.id === t.id); }
@@ -1714,7 +1721,8 @@ class Game {
     const eq = this.save.equipe, i = eq.daniTasks.indexOf(id);
     const max = eq.dani ? STAFF.dani.levels[eq.dani].tasks : STAFF.dani.levels[1].tasks;
     if (i >= 0) eq.daniTasks.splice(i, 1);
-    else if (eq.daniTasks.length < max) eq.daniTasks.push(id);
+    else if (!daniTaskOk(id, this.up)) return false;
+    else if (eq.daniTasks.filter(t => daniTaskOk(t, this.up)).length < max) eq.daniTasks.push(id);
     else return false;
     writeSave(this.save); return true;
   }
@@ -3128,38 +3136,63 @@ function shopBtn(text, cls, enabled, fn){
   return b;
 }
 function staffCard(icon, title, desc){
-  const card = el('div', 'item'); card.appendChild(icon); card.appendChild(el('b', null, title)); card.appendChild(el('span', null, desc));
+  const card = el('div', 'item'); card.appendChild(icon); card.appendChild(el('b', null, title)); if (desc) card.appendChild(el('span', null, desc));
   return card;
+}
+/* quadro "agora → próximo nível": linhas [rótulo, agora, depois]; agora == null mostra só o depois */
+function staffNext(title, rows){
+  const box = el('div', 'next');
+  box.appendChild(el('b', null, title));
+  rows.forEach(r => {
+    const line = el('span', null, r[0] + ': ');
+    if (r[1] != null && r[2].indexOf(r[1]) !== 0){ line.appendChild(document.createTextNode(r[1] + ' → ')); line.appendChild(el('strong', null, r[2])); }
+    else line.appendChild(r[1] == null ? el('strong', null, r[2]) : document.createTextNode(r[2] + ' (igual)'));
+    box.appendChild(line);
+  });
+  return box;
 }
 function buildEquipe(grid){
   const eq = game.save.equipe, bank = game.save.bank, T = STAFF.tonhao.levels, D = STAFF.dani.levels, C = STAFF.couvert;
   const canPay = extra => payroll(eq) + extra <= bank;
+  const pc = v => Math.round(v*100) + '%', sec = v => String(Math.round(v*10)/10).replace('.', ',') + ' s';
   // Tonhão
-  const tl = T[eq.tonhao], pc = v => Math.round(v*100) + '%';
-  const tdesc = eq.tonhao === 0
-    ? 'Cozinha no ritmo normal e faz ' + pc(tl.crit) + ' de pratos caprichados ★ (+1♥ e +' + fmt(CRIT.bonus) + '). Com aumento: mais rápido, mais ★ e ajuda na pia.'
-    : pc(1 - tl.cook) + ' mais rápido, ' + pc(tl.crit) + ' ★ e lava 1 pilha a cada ' + tl.wash + ' s. ' + fmt(tl.pay) + '/dia.' + (eq.tonhao < 2 ? ' Nível 3: ' + pc(1 - T[2].cook) + ', ' + pc(T[2].crit) + ' ★, 1 pilha a cada ' + T[2].wash + ' s.' : '');
-  let c = staffCard(upgradeIcon('tonhao'), 'Tonhão · nível ' + (eq.tonhao + 1) + ' de 3', tdesc);
+  const tRows = (a, b) => [
+    ['Rapidez', a && (a.cook === 1 ? 'normal' : '+' + pc(1 - a.cook)), b.cook === 1 ? 'normal' : '+' + pc(1 - b.cook)],
+    ['Caprichados ★', a && pc(a.crit), pc(b.crit)],
+    ['Pia', a && (a.wash ? '1 pilha/' + a.wash + ' s' : 'não'), b.wash ? '1 pilha/' + b.wash + ' s' : 'não'],
+    ['Diária', a && fmt(a.pay), fmt(b.pay)]];
+  let c = staffCard(upgradeIcon('tonhao'), 'Tonhão · nível ' + (eq.tonhao + 1) + ' de 3', 'Prato caprichado ★ vale +1♥ e +' + fmt(CRIT.bonus) + '.');
+  c.appendChild(eq.tonhao < 2 ? staffNext('Com o aumento (nível ' + (eq.tonhao + 2) + '):', tRows(T[eq.tonhao], T[eq.tonhao+1])) : staffNext('Nível máximo:', tRows(null, T[2])));
   let duo = el('div', 'duo');
-  if (eq.tonhao < 2) duo.appendChild(shopBtn('Aumento: ' + fmt(T[eq.tonhao+1].pay) + '/dia', 'btn', canPay(T[eq.tonhao+1].pay - T[eq.tonhao].pay), () => game.setStaff('tonhao', eq.tonhao + 1)));
+  if (eq.tonhao < 2) duo.appendChild(shopBtn('Aumento', 'btn', canPay(T[eq.tonhao+1].pay - T[eq.tonhao].pay), () => game.setStaff('tonhao', eq.tonhao + 1)));
   if (eq.tonhao > 0) duo.appendChild(shopBtn('Reduzir', 'btn alt', true, () => game.setStaff('tonhao', eq.tonhao - 1)));
   c.appendChild(duo); grid.appendChild(c);
-  // Dani
+  // Dani: só mostra as tarefas que ela já pode exercer (e só depois de contratada)
   const lv = eq.dani, sp = D[lv] || D[1];
+  const avail = DANI_TASKS.filter(t => daniTaskOk(t.id, game.up));
+  const dRows = (a, b) => [
+    ['Velocidade', a && pc(a.speed), pc(b.speed)],
+    ['Lava 1 pilha', a && sec(WASH.perPile / a.speed), sec(WASH.perPile / b.speed)],
+    ['Tarefas', a && String(a.tasks), String(b.tasks)],
+    ['Diária', a && fmt(a.pay), fmt(b.pay)]];
   c = staffCard(upgradeIcon('dani'), lv ? 'Dani · nível ' + lv + ' de 3' : 'Dani (ajudante)',
-    (lv ? 'Anda a ' + Math.round(sp.speed*100) + '% da velocidade da Bia e faz ' + sp.tasks + ' tarefas. ' + fmt(sp.pay) + '/dia.' : 'Ajudante da Bia: anda a 50% da velocidade dela e faz 2 tarefas. ' + fmt(D[1].pay) + '/dia.'));
-  const tasks = el('div', 'tasks');
-  DANI_TASKS.forEach(t => {
-    const on = eq.daniTasks.indexOf(t.id) >= 0;
-    const b = el('button', null, t.short); b.type = 'button'; b.title = t.name; b.setAttribute('aria-pressed', on ? 'true' : 'false');
-    if (!on && eq.daniTasks.length >= sp.tasks) b.disabled = true;
-    b.addEventListener('click', () => { Sfx.tap(); game.toggleDaniTask(t.id); buildShop(); });
-    tasks.appendChild(b);
-  });
-  c.appendChild(el('span', 'full', 'Tarefas (' + Math.min(eq.daniTasks.length, sp.tasks) + ' de ' + sp.tasks + '):'));
-  c.appendChild(tasks);
+    lv ? '' : 'Ajudante da Bia, mais lenta que ela (velocidade em % da dela). Pode ' + avail.map(t => t.name.toLowerCase()).join(', ').replace(/, ([^,]*)$/, ' e $1') + '.');
+  if (lv){
+    const sel = eq.daniTasks.filter(id => daniTaskOk(id, game.up)).length;
+    const tasks = el('div', 'tasks');
+    avail.forEach(t => {
+      const on = eq.daniTasks.indexOf(t.id) >= 0;
+      const b = el('button', null, t.short); b.type = 'button'; b.title = t.name; b.setAttribute('aria-pressed', on ? 'true' : 'false');
+      if (!on && sel >= sp.tasks) b.disabled = true;
+      b.addEventListener('click', () => { Sfx.tap(); game.toggleDaniTask(t.id); buildShop(); });
+      tasks.appendChild(b);
+    });
+    c.appendChild(el('span', 'full', 'Tarefas (' + Math.min(sel, sp.tasks) + ' de ' + sp.tasks + '):'));
+    c.appendChild(tasks);
+  }
+  c.appendChild(lv < 3 ? staffNext((lv ? 'Se promover (nível ' : 'Se contratar (nível ') + (lv + 1) + '):', dRows(D[lv], D[lv+1])) : staffNext('Nível máximo:', dRows(null, D[3])));
   duo = el('div', 'duo');
-  if (lv < 3) duo.appendChild(shopBtn((lv ? 'Promover: ' : 'Contratar: ') + fmt(D[lv+1].pay) + '/dia', 'btn', canPay(D[lv+1].pay - (lv ? D[lv].pay : 0)), () => game.setStaff('dani', lv + 1)));
+  if (lv < 3) duo.appendChild(shopBtn(lv ? 'Promover' : 'Contratar', 'btn', canPay(D[lv+1].pay - (lv ? D[lv].pay : 0)), () => game.setStaff('dani', lv + 1)));
   if (lv > 0) duo.appendChild(shopBtn('Dispensar', 'btn alt', true, () => game.setStaff('dani', 0)));
   c.appendChild(duo); grid.appendChild(c);
   // Couvert
@@ -3451,7 +3484,7 @@ fit();
 try { Rank.init(); } catch(e) {}
 game.setState('menu');
 window.__game = game;
-window.__lcc = { AGUA, CRIT, STAFF, DANI_TASKS, TRASH, WASH, payroll, couvertEffect, dishStock, normSave, Helper, JUICE, KITCHEN_SLOTS, handLayout, trayOk, Game, Group, Table, Kitchen, Waitress, DAYS, UPGRADES, CUSTOMER_TYPES, LAYOUT, PAL, Sfx, findPath, render, Rank, sortRows, cleanName, normName, CMD, ENDLESS, VIP, rk, renderRank, openRank, closeRank, LS, lsGet, lsSet, loadSave };
+window.__lcc = { AGUA, CRIT, STAFF, DANI_TASKS, daniTaskOk, TRASH, WASH, payroll, couvertEffect, dishStock, normSave, Helper, JUICE, KITCHEN_SLOTS, handLayout, trayOk, Game, Group, Table, Kitchen, Waitress, DAYS, UPGRADES, CUSTOMER_TYPES, LAYOUT, PAL, Sfx, findPath, render, Rank, sortRows, cleanName, normName, CMD, ENDLESS, VIP, rk, renderRank, openRank, closeRank, LS, lsGet, lsSet, loadSave };
 window.requestAnimationFrame(frame);
 
 })();
