@@ -508,6 +508,10 @@ const DAYS = [
   { n:7, tables:[1,2,3,4,5,6],   groups:33, types:['estudante','vovos','familia','executiva','entregador'], nu:null,         meta:1650,expert:2300, time:220, speed:0.52, vip:0.15, juice:0.3, note:'Tonhão está gripado: a cozinha anda mais devagar hoje.' }
 ];
 
+/* 2ª estrela: metade do caminho entre a meta e a expert (arredondada a R$ 25). Antes ela exigia a expert
+   com algum cliente perdido, e como cada perda custa caro, quem batia a expert quase sempre levava 3 */
+function bomGoal(d){ return Math.round((d.meta + d.expert) / 50) * 25; }
+
 const ENDLESS = { n:0, tables:[1,2,3,4,5,6], groups:0, types:['estudante','vovos','familia','executiva','entregador'], nu:null, meta:0, expert:0, time:0, speed:1, vip:0.12, juice:0.3, note:'', endless:true };
 
 const UPGRADES = [
@@ -1775,7 +1779,7 @@ class Game {
     const passed = m >= d.meta;
     let stars = 0;
     if (passed) stars = 1;
-    if (m >= d.expert) stars = 2;
+    if (passed && m >= bomGoal(d)) stars = 2;
     if (m >= d.expert && this.stats.lost === 0) stars = 3;
     const prevBest = this.save.best[d.n] || 0;
     const income = m;                 // todo o faturamento do dia vai para o dinheiro acumulado
@@ -1784,7 +1788,7 @@ class Game {
     this.save.stars[d.n] = Math.max(this.save.stars[d.n] || 0, stars);
     if (passed) this.save.maxDay = Math.max(this.save.maxDay, Math.min(7, d.n + 1));
     writeSave(this.save);
-    this.result = { day:d.n, money:m, meta:d.meta, expert:d.expert, passed, stars, served:this.stats.served, lost:this.stats.lost, full:this.stats.full, chain:this.stats.chain, vip:this.stats.vip, vipLost:this.stats.vipLost, juice:this.stats.juice, juiceMiss:this.stats.juiceMiss, trash:this.stats.trash, washed:this.stats.washed, income, paid:this.paid, reason:this.reason };
+    this.result = { day:d.n, money:m, meta:d.meta, bom:bomGoal(d), expert:d.expert, passed, stars, served:this.stats.served, lost:this.stats.lost, full:this.stats.full, chain:this.stats.chain, vip:this.stats.vip, vipLost:this.stats.vipLost, juice:this.stats.juice, juiceMiss:this.stats.juiceMiss, trash:this.stats.trash, washed:this.stats.washed, income, paid:this.paid, reason:this.reason };
     this.setState('dayend');
     if (passed) Sfx.win(); else Sfx.lose();
   }
@@ -2812,8 +2816,9 @@ function drawHud(ctx,g,tm){
     rr(ctx,bx,by,bw,10,5); fs(ctx,'#4a453c',2);
     const frac = clamp(m / d.expert, 0, 1);
     if (frac > 0){ ctx.save(); rr(ctx,bx,by,bw,10,5); ctx.clip(); ctx.fillStyle = m >= d.expert ? PAL.mostarda : (m >= d.meta ? PAL.ok : PAL.alerta); ctx.fillRect(bx,by,bw*frac,10); ctx.restore(); }
-    const mx = bx + bw * d.meta / d.expert;
+    const mx = bx + bw * d.meta / d.expert, gx = bx + bw * bomGoal(d) / d.expert;
     ctx.strokeStyle = '#fff'; ctx.lineWidth = 2; ctx.beginPath(); ctx.moveTo(mx,by-3); ctx.lineTo(mx,by+13); ctx.stroke();
+    ctx.lineWidth = 1.5; ctx.beginPath(); ctx.moveTo(gx,by); ctx.lineTo(gx,by+10); ctx.stroke();   // 2ª estrela
     txt(ctx,'meta R$ ' + d.meta,bx,593,11,m >= d.meta ? '#7fd69a' : '#cfc7b0','left',FB);
     txt(ctx,'expert R$ ' + d.expert,bx+bw,593,11,m >= d.expert ? PAL.mostarda : '#cfc7b0','right',FB);
   }
@@ -3478,7 +3483,7 @@ function buildEnd(){
   if (!r) return;
   $('end-title').textContent = r.passed ? ('Dia ' + r.day + ' concluído!') : 'Faltou pouquinho...';
   starsHtml($('end-stars'), r.stars, 3);
-  $('end-money').textContent = 'Você faturou ' + fmt(r.money) + ' (meta ' + fmt(r.meta) + ' · expert ' + fmt(r.expert) + ')';
+  $('end-money').textContent = 'Você faturou ' + fmt(r.money) + ' (meta ' + fmt(r.meta) + ' · 2 estrelas ' + fmt(r.bom) + ' · expert ' + fmt(r.expert) + ')';
   const st = $('end-stats');
   clearEl(st);
   const rows = [['Atendidos', r.served],['Perdidos', r.lost],['Não couberam', r.full],['Maior corrente', '×' + r.chain],['Folha paga hoje', r.paid ? '-' + fmt(r.paid) : '-'],['Dinheiro acumulado', fmt(game.save.bank)]];
@@ -3491,8 +3496,8 @@ function buildEnd(){
   let msg = '';
   if (!r.passed) msg = 'Bata a meta de ' + fmt(r.meta) + ' para liberar o próximo dia.';
   else if (r.stars === 3) msg = 'Perfeito! Expert sem perder nenhum cliente.';
-  else if (r.stars === 2) msg = 'Meta expert batida! Para a 3ª estrela, não perca nenhum cliente.';
-  else msg = 'Meta batida! Chegue a ' + fmt(r.expert) + ' para a 2ª estrela.';
+  else if (r.stars === 2) msg = r.money >= r.expert ? 'Meta expert batida! Para a 3ª estrela, não perca nenhum cliente.' : 'Duas estrelas! Para a 3ª, chegue a ' + fmt(r.expert) + ' sem perder nenhum cliente.';
+  else msg = 'Meta batida! Chegue a ' + fmt(r.bom) + ' para a 2ª estrela.';
   $('end-msg').textContent = msg;
   const next = $('btn-next');
   next.style.display = r.passed ? '' : 'none';
@@ -3632,7 +3637,7 @@ game.hooks.state = function(s){
       $('intro-note').textContent = 'Grupo que sai bravo ou que não cabe na fila tira 1 estrela. A cada 8 contas pagas com 5 corações, você ganha 1 de volta. Com 0 estrelas, o turno acaba.';
     } else {
       $('intro-title').textContent = 'Dia ' + d.n;
-      $('intro-goal').textContent = 'Meta: ' + fmt(d.meta) + ' · Expert: ' + fmt(d.expert) + ' · ' + d.groups + ' grupos · ' + mmss(d.time) + (payroll(game.save.equipe) ? ' · Folha ' + fmt(payroll(game.save.equipe)) : '');
+      $('intro-goal').textContent = 'Meta: ' + fmt(d.meta) + ' · 2 estrelas: ' + fmt(bomGoal(d)) + ' · Expert: ' + fmt(d.expert) + ' · ' + d.groups + ' grupos · ' + mmss(d.time) + (payroll(game.save.equipe) ? ' · Folha ' + fmt(payroll(game.save.equipe)) : '');
       $('intro-note').textContent = d.note || 'Sente a freguesia, anote os pedidos e mantenha todo mundo feliz!';
     }
     showOnly(['ov-intro']);
@@ -3729,7 +3734,7 @@ fit();
 try { Rank.init(); } catch(e) {}
 game.setState('menu');
 window.__game = game;
-window.__lcc = { SALAO, rowLayout, salaoDefs, salaoOk, salaoUsed, salaoTableBlock, normSalao, setObst, OBST, AGUA, CRIT, STAFF, DANI_TASKS, DANI_HANDS, daniTaskOk, TRASH, WASH, payroll, couvertEffect, dishStock, normSave, Helper, JUICE, KITCHEN_SLOTS, handLayout, trayOk, Game, Group, Table, Kitchen, Waitress, DAYS, UPGRADES, CUSTOMER_TYPES, LAYOUT, PAL, Sfx, findPath, render, Rank, sortRows, cleanName, normName, CMD, ENDLESS, VIP, rk, renderRank, openRank, closeRank, LS, lsGet, lsSet, loadSave };
+window.__lcc = { bomGoal, SALAO, rowLayout, salaoDefs, salaoOk, salaoUsed, salaoTableBlock, normSalao, setObst, OBST, AGUA, CRIT, STAFF, DANI_TASKS, DANI_HANDS, daniTaskOk, TRASH, WASH, payroll, couvertEffect, dishStock, normSave, Helper, JUICE, KITCHEN_SLOTS, handLayout, trayOk, Game, Group, Table, Kitchen, Waitress, DAYS, UPGRADES, CUSTOMER_TYPES, LAYOUT, PAL, Sfx, findPath, render, Rank, sortRows, cleanName, normName, CMD, ENDLESS, VIP, rk, renderRank, openRank, closeRank, LS, lsGet, lsSet, loadSave };
 window.requestAnimationFrame(frame);
 
 })();

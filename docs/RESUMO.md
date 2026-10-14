@@ -76,6 +76,7 @@
    - numa fileira com 4 mesas, só 1 cabe com 4 lugares;
    - não conta no limite de 1 melhoria por dia;
    - teste `smoke8`.
+   - **Estrelas:** a 2ª estrela vem na metade do caminho entre a meta e a expert (`bomGoal`). Antes quase nunca saía, porque quem batia a expert levava 3. A 3ª continua sendo a expert sem perder ninguém.
    - A pergunta-lembrete a cada alteração saiu do `CLAUDE.md`, a pedido do usuário.
 
 ## App para Android (PWA)
@@ -92,7 +93,7 @@
 - `smoke5` (41/41: sucos, bandeja e lixeira);
 - `smoke6` (94/94: equipe, louça, lixeira que enche, couvert, água, economia). O teste "a Dani chega a 2 itens" falha em ~1 de 6 rodadas, porque depende do sorteio do dia (já falhava antes do ajuste de toque);
 - `smoke7` (15/15: toque no celular e brilho);
-- `smoke8` (29/29: salão, cadeiras e mesas);
+- `smoke8` (33/33: salão, cadeiras e mesas, e as faixas de estrelas);
 - `menu_fit` (14 tamanhos de tela);
 - `balance` (bot, N rodadas por dia).
 

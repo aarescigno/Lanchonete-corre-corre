@@ -31,3 +31,15 @@ Pedido: o salão só tinha 1 mesa de 4 lugares nos dias 2 e 3 (e 2 depois). Quan
   - bot jogando o dia 2 com 8 mesas.
 - `shot_v6.py` gera as capturas em `capturas/v6`: lojinha em 960×600, 740×360 e 568×320, e salão com 8 mesas.
 - O equilíbrio (`balance`) não muda: o salão padrão é igual ao da v5.
+
+## Estrelas da carreira (correção depois da v6)
+- **Relato do usuário:** o jogo "não dá 2 estrelas, ou é 1 ou é 3".
+- **Causa:** a regra era 1★ na meta, 2★ na expert e 3★ na expert sem perder nenhum cliente. Cada cliente perdido custa R$ 30 de multa mais a conta que não entra. Por isso, quem batia a expert quase sempre não tinha perdido ninguém e já levava 3★.
+- **Agora:**
+  - 1★ na meta;
+  - 2★ em `bomGoal(dia)`, a metade do caminho entre a meta e a expert, arredondada a R$ 25 (dia 1: 325; 2: 900; 3: 1600; 4: 1525; 5: 1775; 6: 1825; 7: 1975);
+  - 3★ igual a antes: a expert sem perder ninguém.
+  - A expert com cliente perdido continua dando 2★.
+- **Onde aparece:** na introdução do dia ("2 estrelas: R$ …"), numa marquinha menor na barra do HUD e no fim do dia.
+- **Bot com equipe, 30 dias de cada:** nos dias 2 a 7 saem 2★ em 50% a 73% das vezes; antes, eram de 3% a 33%.
+- O `smoke8` confere as faixas.
