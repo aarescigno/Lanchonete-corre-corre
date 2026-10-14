@@ -613,6 +613,10 @@ function seatPositions(t){
   ];
 }
 function tableHalfW(t){ return t.seats === 2 ? 36 : 62; }
+const STATION_KEYS = ['order','plates','coffee','juice','sink','trash','agua'];
+function tableRect(t){ return { x:t.cx - t.hx - 10, y:t.cy - 62, w:t.hx*2 + 20, h:132 }; }
+function queueRect(g){ return { x:4, y:QUEUE.ys[g.slot] - 76, w:148, h:90 }; }
+function rectDist(x, y, r){ return Math.hypot(Math.max(r.x - x, 0, x - r.x - r.w), Math.max(r.y - y, 0, y - r.y - r.h)); }
 function tableApproach(t){
   const hx = tableHalfW(t) + 28;
   return [ {x:t.cx-hx, y:t.cy+4}, {x:t.cx+hx, y:t.cy+4} ];
@@ -1389,6 +1393,7 @@ class Game {
   addText(x, y, text, color, size){
     this.fx.push({ k:'text', x, y, vy:-38, life:1.3, max:1.3, text, color:color||PAL.tinta, size:size||18 });
   }
+  addGlow(r){ this.fx.push({ k:'glow', x:r.x, y:r.y, w:r.w, h:r.h, life:0, max:0.4 }); }
   addCoins(x, y, n){
     n = RM ? Math.min(n,2) : n;
     for (let i=0;i<n;i++){
@@ -1422,6 +1427,7 @@ class Game {
       }
       else if (f.k === 'puff'){ f.life += dt; f.x += f.vx*dt; f.y += f.vy*dt; }
       else if (f.k === 'spark'){ f.life += dt; f.x += f.vx*dt; f.y += f.vy*dt; f.vy += 80*dt; }
+      else f.life += dt;   // glow, tap
     }
     this.fx = this.fx.filter(f => f.k === 'text' ? f.life > 0 : f.life < f.max);
   }
@@ -1747,94 +1753,94 @@ class Game {
     writeSave(this.save);
   }
 
-  /* ---------- entrada ---------- */
-  tableAt(x, y){
-    for (const t of this.tables){
-      if (x >= t.cx - t.hx - 10 && x <= t.cx + t.hx + 10 && y >= t.cy - 62 && y <= t.cy + 70) return t;
-    }
-    return null;
+  /* ---------- entrada ----------
+     pad: folga em px lógicos para o dedo (0 no mouse). Um toque que cai fora
+     de tudo vai para o alvo mais próximo dentro da folga; acerto exato vence. */
+  pickAt(x, y, pad){
+    let best = null, bd = Infinity;
+    const take = (r, hit) => { const d = rectDist(x, y, r); if (d <= (pad || 0) && d < bd){ bd = d; best = hit; } };
+    for (const g of this.queue) take(queueRect(g), { k:'queue', g });
+    for (const t of this.tables) take(tableRect(t), { k:'table', t });
+    for (const k of STATION_KEYS){ if (k !== 'agua' || this.up.agua) take(STATIONS[k].rect, { k:'station', st:k }); }
+    return best;
   }
-  queueAt(x, y){
-    for (const g of this.queue){
-      const fy = QUEUE.ys[g.slot];
-      if (x >= 4 && x <= 152 && y >= fy - 76 && y <= fy + 14) return g;
-    }
-    return null;
+  tableAt(x, y, pad){
+    let best = null, bd = Infinity;
+    for (const t of this.tables){ const d = rectDist(x, y, tableRect(t)); if (d <= (pad || 0) && d < bd){ bd = d; best = t; } }
+    return best;
   }
   stationAt(x, y){
-    for (const k of ['order','plates','coffee','juice','sink','trash','agua']){
+    for (const k of STATION_KEYS){
       if (k === 'agua' && !this.up.agua) continue;
       const r = STATIONS[k].rect;
       if (x >= r.x && x <= r.x + r.w && y >= r.y && y <= r.y + r.h) return k;
     }
     return null;
   }
-  plateAt(x, y){
-    for (let i=0;i<4;i++){
-      const s = PLATE_SLOTS[i];
-      if (Math.abs(x - s.x) <= 22 && y >= s.y - 30 && y <= s.y + 28) return i;
-    }
-    return -1;
-  }
   hudHit(x, y){
     if (y < 540) return null;
-    if (x >= 836 && x <= 888 && y >= 546 && y <= 596) return { k:'pause' };
-    if (x >= 894 && x <= 946 && y >= 546 && y <= 596) return { k:'sound' };
+    if (x >= 832 && x <= 891 && y >= 542) return { k:'pause' };
+    if (x >= 891 && x <= 952 && y >= 542) return { k:'sound' };
     for (let i=0;i<6;i++){
-      const sx = 360 + i*52;
-      if (x >= sx && x <= sx + 48 && y >= 546 && y <= 596) return { k:'slot', i };
+      const sx = 358 + i*52;
+      if (x >= sx && x < sx + 52 && y >= 542) return { k:'slot', i };
     }
     return { k:'hud' };
   }
   tapTable(t){
-    if (!t.open) return;
-    if (t.group || t.dirty){ if (this.bia.enqueue({ type:'table', id:t.id })) Sfx.tap(); }
+    if (!t.open) return false;
+    if ((t.group || t.dirty) && this.bia.enqueue({ type:'table', id:t.id })){ Sfx.tap(); this.addGlow(tableRect(t)); return true; }
+    return false;
   }
   tapStation(k, x, y){
     if (k === 'plates'){
-      const i = this.plateAt(x, y);
-      if (i >= 0 && this.kitchen.plates[i]){
-        const pid = this.kitchen.plates[i].id;
-        if (this.bia.acts.some(a => a.type === 'plate' && a.pid === pid)) return;
-        if (this.bia.enqueue({ type:'plate', pid })) Sfx.tap();
-      }
-      return;
+      // a coluna tocada manda; se ela estiver vazia, vale o prato pronto mais perto
+      const pl = this.kitchen.plates;
+      let i = -1;
+      for (let j=0;j<4;j++) if (pl[j] && (i < 0 || Math.abs(x - PLATE_SLOTS[j].x) < Math.abs(x - PLATE_SLOTS[i].x))) i = j;
+      if (i < 0) return false;
+      const pid = pl[i].id;
+      if (this.bia.acts.some(a => a.type === 'plate' && a.pid === pid)) return false;
+      if (this.bia.enqueue({ type:'plate', pid })){ Sfx.tap(); this.addGlow({ x:PLATE_SLOTS[i].x - 21, y:PLATE_SLOTS[i].y - 30, w:42, h:58 }); return true; }
+      return false;
     }
-    if (this.bia.enqueue({ type:k })) Sfx.tap();
+    if (this.bia.enqueue({ type:k })){ Sfx.tap(); this.addGlow(STATIONS[k].rect); return true; }
+    return false;
   }
-  onDown(x, y){
+  onDown(x, y, pad){
     if (this.state !== 'playing') return;
+    pad = pad || 0;
     const h = this.hudHit(x, y);
     if (h){
       if (h.k === 'pause') this.pause();
-      else if (h.k === 'sound'){ Sfx.muted = !Sfx.muted; if (!Sfx.muted) Sfx.tap(); }
-      else if (h.k === 'slot') { if (h.i < this.bia.acts.length){ this.bia.remove(h.i); Sfx.tap(); } }
+      else if (h.k === 'sound'){ Sfx.muted = !Sfx.muted; if (!Sfx.muted) Sfx.tap(); this.addGlow({ x:894, y:546, w:52, h:50 }); }
+      else if (h.k === 'slot') { if (h.i < this.bia.acts.length){ this.bia.remove(h.i); Sfx.tap(); this.addGlow({ x:360 + h.i*52, y:546, w:48, h:50 }); } }
       return;
     }
-    const g = this.queueAt(x, y);
-    if (g){
-      this.drag = { g, sx:x, sy:y, x, y, moved:false };
+    const hit = this.pickAt(x, y, pad);
+    if (hit && hit.k === 'queue'){
+      this.drag = { g:hit.g, sx:x, sy:y, x, y, moved:false, pad };
       return;
     }
-    const t = this.tableAt(x, y);
-    if (t){
-      if (this.sel){ const s = this.sel; this.sel = null; this.seatGroup(s, t); }
-      else this.tapTable(t);
+    if (hit && hit.k === 'table'){
+      if (this.sel){ const s = this.sel; this.sel = null; this.seatGroup(s, hit.t); }
+      else this.tapTable(hit.t);
       return;
     }
     this.sel = null;
-    const st = this.stationAt(x, y);
-    if (st) this.tapStation(st, x, y);
+    if (hit) this.tapStation(hit.st, x, y);
+    else if (pad) this.fx.push({ k:'tap', x, y, life:0, max:0.3 });
   }
   onMove(x, y){
     if (this.state !== 'playing') return;
-    const d = this.drag;
+    const d = this.drag, pad = d ? d.pad : 0;
     if (d){
       d.x = x; d.y = y;
-      if (!d.moved && Math.hypot(x-d.sx, y-d.sy) > 9) d.moved = true;
+      // no dedo, um tremidinho não vira arrasto (folga ~ a mesma do alvo)
+      if (!d.moved && Math.hypot(x-d.sx, y-d.sy) > Math.max(9, pad)) d.moved = true;
     }
     if (d && d.moved){
-      const t = this.tableAt(x, y);
+      const t = this.tableAt(x, y, pad);
       this.hover = t;
       this.hoverOk = !!(t && t.free && t.seats >= d.g.size);
     } else if (this.sel){
@@ -1847,12 +1853,13 @@ class Game {
     this.drag = null; this.hover = null;
     if (!d || this.state !== 'playing') return;
     if (d.moved){
-      const t = this.tableAt(x, y);
+      const t = this.tableAt(x, y, d.pad);
       if (t) this.seatGroup(d.g, t);
       else { d.g.boing = 0.4; }
     } else {
       this.sel = (this.sel === d.g) ? null : d.g;
       Sfx.tap();
+      this.addGlow(queueRect(d.g));
     }
   }
 }
@@ -2725,6 +2732,24 @@ function drawActIcon(ctx,g,a,x,y){
 /* ============================================================
    RENDER PRINCIPAL
    ============================================================ */
+/* sinal discreto de toque: brilho claro que some em 0,4 s (sem crescer com movimento reduzido) */
+function drawTouchFx(ctx,g){
+  for (const f of g.fx){
+    if (f.k !== 'glow' && f.k !== 'tap') continue;
+    const p = clamp(f.life / f.max, 0, 1), a = 1 - p*p, e = RM ? 0 : p*4;
+    ctx.save();
+    if (f.k === 'glow'){
+      rr(ctx,f.x-e,f.y-e,f.w+e*2,f.h+e*2,12);
+      ctx.fillStyle = 'rgba(255,246,214,' + (0.26*a) + ')'; ctx.fill();
+      ctx.strokeStyle = 'rgba(255,255,255,' + (0.7*a) + ')'; ctx.lineWidth = 3; ctx.stroke();
+    } else {
+      circ(ctx,f.x,f.y,RM ? 12 : 8 + p*10);
+      ctx.strokeStyle = 'rgba(255,255,255,' + (0.45*a) + ')'; ctx.lineWidth = 2.5; ctx.stroke();
+    }
+    ctx.restore();
+  }
+}
+
 function render(g, ctx){
   const tm = g.anim;
   const menu = g.state === 'menu';
@@ -2840,6 +2865,7 @@ function render(g, ctx){
     ctx.fillStyle = PAL.mostarda; ctx.fillRect(0,540,W,4);
   } else {
     drawHud(ctx,g,tm);
+    drawTouchFx(ctx,g);
     if (g.ending && g.state === 'playing'){
       const msg = g.reason === 'time' ? 'Fim do expediente!' : (g.reason === 'stars' ? 'Sem estrelas!' : 'Todo mundo atendido!');
       ctx.fillStyle = 'rgba(34,32,28,.35)'; ctx.fillRect(0,230,W,90);
@@ -3444,11 +3470,16 @@ function toLogical(e){
   const w = r.width || W, h = r.height || H;
   return { x:(e.clientX - r.left) * W / w, y:(e.clientY - r.top) * H / h };
 }
+function touchPad(e){
+  if (e.pointerType === 'mouse') return 0;
+  const w = canvas.getBoundingClientRect().width || W;
+  return clamp(14 * W / w, 8, 32);
+}
 canvas.addEventListener('pointerdown', e => {
   Sfx.init(); Sfx.resume();
   e.preventDefault();
   try { canvas.setPointerCapture(e.pointerId); } catch(err) {}
-  const p = toLogical(e); game.onDown(p.x, p.y);
+  const p = toLogical(e); game.onDown(p.x, p.y, touchPad(e));
 });
 canvas.addEventListener('pointermove', e => { const p = toLogical(e); game.onMove(p.x, p.y); });
 canvas.addEventListener('pointerup', e => { const p = toLogical(e); game.onUp(p.x, p.y); });

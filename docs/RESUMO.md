@@ -61,6 +61,12 @@
    - **Lojinha no celular em pé:** as tarefas da Dani invadiam o card do couvert; com a tela até 600 px de largura (e mais de 460 px de altura), elas ficam em 1 coluna e o botão "Cobrar couvert" fica menos arredondado.
    - **Lojinha, aba Equipe:** a tarefa Água só aparece (e só ocupa vaga) com a Água saborizada comprada; antes de contratar a Dani, o card lista o que ela pode fazer, sem os botões de tarefa. Tonhão e Dani mostram um quadro "agora → próximo nível" (rapidez, ★, pia e diária do Tonhão; velocidade, tempo por pilha, tarefas e diária da Dani) e, no nível máximo, os valores atuais. Os botões viraram "Aumento", "Contratar" e "Promover", porque o preço está no quadro.
    - **Dani tem 2 mãos:** no máximo 2 itens por vez (`DANI_HANDS`); cada pilha de louça (a de uma mesa) ocupa 1 mão, como na Bia. O card de contratação diz isso, e o `smoke6` confere com o bot jogando dias inteiros.
+   - **Toque no celular:** no celular deitado o salão fica em ~0,55 a 0,65 da escala, e a lixeira, a jarra de água, cada prato pronto e os ícones da fila tinham de 26 a 30 px na tela (o mínimo confortável para o dedo é ~44 px).
+     - No dedo (não no mouse), um toque que cai fora de tudo vai para o alvo mais próximo a até ~14 px de tela (`touchPad` → `Game.pickAt`). O acerto exato vence a folga, então café e suco continuam separados.
+     - Um tremido de até ~14 px ao tocar um grupo da fila seleciona em vez de virar arrasto, e um arrasto solto rente à mesa senta o grupo.
+     - Pratos: vale a coluna inteira do balcão; numa coluna vazia, vale o prato pronto mais perto.
+     - Ícones da fila e os botões de pausa e de som pegam a faixa toda, até a borda de baixo.
+     - **Sinal do toque:** cada ação aceita faz o som de toque e um brilho claro e suave sobre o alvo, que some em 0,4 s (sem crescer com `prefers-reduced-motion`). Um toque no vazio mostra só um anel fraco no ponto. O `smoke7` confere tudo isso.
 
 ## Testes (verdes no último commit)
 - `smoke` (bot nos 7 dias);
@@ -68,12 +74,14 @@
 - `smoke3` (120/120: v2);
 - `smoke4` (23/23: VIP);
 - `smoke5` (41/41: sucos, bandeja e lixeira);
-- `smoke6` (76/76: equipe, louça, lixeira que enche, couvert, água, economia);
+- `smoke6` (84/84: equipe, louça, lixeira que enche, couvert, água, economia). O teste "a Dani chega a 2 itens" falha em ~1 de 6 rodadas, porque depende do sorteio do dia (já falhava antes do ajuste de toque);
+- `smoke7` (14/14: toque no celular e brilho);
 - `menu_fit` (14 tamanhos de tela);
 - `balance` (bot, N rodadas por dia).
 
 ## Ideias pendentes
-- Testar som e toque em celular real.
+- Testar som e toque em celular real (o toque foi ajustado depois de relato de dificuldade, mas só testado no Chromium com toque emulado).
+- Deixar estável o teste "a Dani chega a 2 itens" do `smoke6`.
 - O painel "Como jogar" ainda rola no celular deitado.
 - Ajuste de dificuldade.
 - A lojinha ainda rola no menor celular deitado (568×320).
