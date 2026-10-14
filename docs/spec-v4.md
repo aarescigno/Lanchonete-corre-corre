@@ -30,6 +30,12 @@ Regras definidas pelo usuário na revisão da v4:
   - `Waitress.layout()` e `canTake(tipo)` usam `kitchen.slots` como limite de comandas.
 - No HUD, o rótulo vira "BANDEJA · MÃO" e os itens agrupados aparecem lado a lado. A Bia aparece com uma bandeja de inox na mão esquerda.
 
+## Lixeira (pedido em comentário no artifact, 14/10)
+- Fica no chão do salão, encostada no balcão, abaixo da pia (`STATIONS.trash`, desenhada por `drawTrash`).
+- Tocar nela põe "jogar fora" na fila de ações: a Bia vai até lá e descarta **todas as bebidas** que carrega (cafezinho e suco). Pratos, comandas e louça ficam na mão.
+- Cada bebida descartada custa **metade do valor** que renderia: R$ 6 por suco e R$ 2,50 por cafezinho (`DRINK_PRICE`). A multa não mexe na corrente.
+- Sem bebida na mão, a Bia mostra "?". O fim do dia mostra "Na lixeira" quando houve descarte.
+
 ## Balanceamento (bot, 80 rodadas por dia)
 - Na primeira versão da v4 (bandeja mais restrita e 1 comanda por mão), os sucos derrubaram as metas batidas nos dias 4 a 7, e as metas chegaram a ser reduzidas.
 - Com as regras finais (comandas empilhadas e bandeja mais versátil), o jogo voltou a render como na v3. As **metas da v3 foram mantidas**.

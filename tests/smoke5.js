@@ -77,6 +77,15 @@ const run=s=>{ for(let i=0;i<s*20;i++){ g.queue.forEach(x=>x.patLeft=1e9); g.gro
   [0,1,2].forEach(i=>g.tapStation('plates',L.LAYOUT.PLATE_SLOTS[i].x,L.LAYOUT.PLATE_SLOTS[i].y)); run(6);
   ok(g.bia.hands.filter(h=>h.kind==='dish').length===3,'com bandeja: 3 pratos (2 na bandeja + 1 na mão)'); }
 
+/* lixeira: descarta as bebidas que sobraram, multa de metade do valor */
+ok(g.stationAt(722,505)==='trash' && g.tableAt(722,505)===null,'lixeira no chão, ao lado do balcão');
+{ g.up={bandeja:true}; g.save.up=g.up; g.startDay(4); g.begin(); g.money=100;   // sem esvaziar a agenda: o dia não pode acabar no meio do teste
+  g.bia.hands=[K('juice'),K('juice'),K('coffee'),K('dirty')]; g.tapStation('trash',722,505); run(6);
+  ok(g.bia.hands.length===1 && g.bia.hands[0].kind==='dirty','lixeira leva só as bebidas (a louça fica)');
+  ok(Math.abs(g.money-(100-6-6-2.5))<1e-9 && g.stats.trash===3,'multa: metade de R$ 12 por suco e de R$ 5 por café ('+g.money+')');
+  g.bia.hands=[K('dish')]; const m=g.money; g.tapStation('trash',722,505); run(1);
+  ok(g.money===m && g.bia.hands.length===1 && g.bia.qT>0,'sem bebida: "?" e nada é jogado fora'); }
+
 /* bot joga dias 3–7 com e sem bandeja, com render */
 { const bot=require('./bot.js')(g,L); let err=null, juice=0;
   try{ for(const tray of [false,true]) for(let n=3;n<=7;n++){ g.up=tray?{bandeja:true}:{}; g.save.up=g.up; g.startDay(n); g.begin(); let st=0;
