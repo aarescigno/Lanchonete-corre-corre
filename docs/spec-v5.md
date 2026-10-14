@@ -2,11 +2,12 @@
 
 Pedido: sobra dinheiro no cofre. Entram contratações com salário, aumento do Tonhão, louça limitada com a Bia lavando, lixo que enche e couvert artístico. A proposta original tinha robôs para o lixo e a louça, mas o usuário vetou: só pessoas.
 
-## Economia
-- O cofre recebe **30% do faturamento de todo dia** (`INCOME`), mais o que passar do recorde do dia. No Turno sem fim, só os 30%.
-- **Folha do dia** (`payroll(equipe)`): sai do cofre ao clicar em "Abrir a lanchonete" (`Game.payDay`), inclusive no Turno sem fim. A meta continua sobre o faturamento bruto.
-- **Cofre sem dinheiro para a folha:** dispensa, nesta ordem, o couvert, a Dani e um nível de aumento do Tonhão, e avisa na tela.
-- **Na lojinha** (`setStaff`): só deixa contratar o que o cofre consegue pagar no dia seguinte. Contratar e dispensar não contam no limite de 1 melhoria por dia.
+## Economia (revisada a pedido do usuário: sem "cofre")
+- **Dinheiro acumulado** (`save.bank`): recebe **todo o faturamento** de cada dia de carreira e de cada Turno sem fim. Antes era só o que passava do recorde, e na primeira v5 eram 30%.
+- **Folha do dia** (`payroll(equipe)`): é **debitada no início do dia**, ao clicar em "Abrir a lanchonete" (`Game.payDay`). O faturamento do dia nunca entra na conta para pagar a equipe.
+- **Sem dinheiro para pagar todos:** o funcionário não trabalha naquele dia e é dispensado, nesta ordem: couvert, Dani, um nível de aumento do Tonhão. Aparece o aviso "Sem dinheiro para pagar: …".
+- **Contratar na lojinha** (`setStaff`): só é possível se o dinheiro acumulado cobrir a folha nova. Contratar e dispensar não contam no limite de 1 melhoria por dia.
+- **Telas:** a lojinha mostra "Dinheiro acumulado"; o fim do dia mostra "Folha paga hoje" e "Dinheiro acumulado".
 - **Save:** `save.equipe = { tonhao, dani, daniTasks, couvert, taxa }`, normalizado por `normEquipe`.
 
 ## Lojinha com abas
@@ -49,6 +50,7 @@ Pedido: sobra dinheiro no cofre. Entram contratações com salário, aumento do 
 
 ## Lixeira que enche (`TRASH`)
 - Capacidade de 8. Enche com os restos de cada pilha lavada e com cada bebida jogada fora.
+- **Sem espaço para as bebidas que a Bia traz** (lixeira cheia ou vagas a menos): a lixeira aceita todas as bebidas uma última vez e a Bia já a esvazia em seguida (0,3 s + 2 s). Pratos e louça suja ficam na mão. Comandas também ficam, para não perder pedidos.
 - **Cheia:** recusa bebidas ("Lixo cheio!") e o cheiro faz a paciência de todos cair 15% mais rápido. Aparecem a placa "CHEIO" e as linhas de cheiro, e o nível fica numa régua de 8 tracinhos ao lado da lixeira.
 - **Esvaziar:** a Bia toca na lixeira de mãos vazias e leva 2 s. A Dani faz isso se a tarefa estiver escolhida.
 

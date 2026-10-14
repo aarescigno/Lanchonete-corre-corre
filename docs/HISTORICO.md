@@ -90,3 +90,13 @@
 - Tudo numa v5 só.
 - "Eficácia −10%" foi lido como relativo: o efeito de 20% vira 18%.
 - A Dani anda mais devagar, mas lava na mesma velocidade da Bia (1,5 s por pilha).
+
+## 14/10/2026: ajustes da v5
+**Pedido:**
+- Tirar o "cofre": o salário sai do total de dinheiro acumulado, debitado no início do dia, sem contar com a entrada do dia.
+- Lixo cheio com café na mão não tinha como ser esvaziado: nesse caso a lixeira aceita o que está na mão (menos pratos) uma última vez e é esvaziada logo em seguida.
+- A Dani lava mais devagar que a Bia, na mesma proporção do deslocamento.
+
+**Decisões:**
+- O dinheiro acumulado recebe 100% do faturamento.
+- As comandas também ficam na mão, como os pratos, porque jogá-las fora faria a mesa perder o pedido.

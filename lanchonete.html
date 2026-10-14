@@ -220,7 +220,7 @@ table.rank tr.me td{background:#fbe7a8}
     <div class="ov" id="ov-shop">
       <div class="panel">
         <h2>Lojinha do Seu Zé</h2>
-        <p>Cofre: <span class="bank" id="shop-bank">R$ 0</span> &middot; <span id="shop-limit">Você pode levar 1 melhoria por dia.</span></p>
+        <p>Dinheiro acumulado: <span class="bank" id="shop-bank">R$ 0</span> &middot; <span id="shop-limit">Você pode levar 1 melhoria por dia.</span></p>
         <div class="rankbar"><div class="seg" id="shop-tabs" role="group" aria-label="Lojinha">
           <button type="button" data-v="melhorias" aria-pressed="true">Melhorias</button>
           <button type="button" data-v="equipe" aria-pressed="false">Equipe</button>
@@ -371,7 +371,8 @@ const CUSTOMER_TYPES = {
 /* cliente VIP: modificador de grupo (qualquer tipo menos entregador). Fura a fila, tem menos
    paciência, paga gorjeta extra e dá bônus se sair com 5 corações; bravo, a multa dobra. */
 /* ============================================================
-   EQUIPE (v5): salários saem do cofre ao abrir a lanchonete
+   EQUIPE (v5): a folha do dia é debitada do dinheiro acumulado ao abrir a
+   lanchonete; sem dinheiro para pagar, o funcionário não trabalha naquele dia
    ============================================================ */
 const STAFF = {
   tonhao:  { levels:[ { slots:3, pay:0 }, { slots:4, pay:40 }, { slots:5, pay:90 } ] },
@@ -384,7 +385,6 @@ const DANI_TASKS = [
   { id:'lavar',  name:'Lavar a louça',  short:'Lavar louça' },
   { id:'cafe',   name:'Servir cafezinho', short:'Cafezinho' }
 ];
-const INCOME = 0.3;                                   // parte do faturamento de todo dia que vai para o cofre
 const WASH = { base:0.3, perPile:1.5 };               // segundos na pia
 const TRASH = { cap:8, empty:2, smell:0.15 };         // lixeira: capacidade, tempo para esvaziar, cheiro quando cheia
 function couvertEffect(eq){ return STAFF.couvert.effect * (eq.taxa ? 1 - STAFF.couvert.feeCut : 1); }
@@ -899,7 +899,11 @@ class Waitress {
       const piles = g.dani.does('lavar') ? 0 : this.hands.filter(h => h.kind === 'dirty').length + g.kitchen.sinkN;
       return WASH.base + WASH.perPile * piles;
     }
-    if (a.type === 'trash' && !this.hands.length && g.trash > 0) return TRASH.empty;
+    if (a.type === 'trash'){
+      const drinks = this.hands.filter(h => DRINKS[h.kind]).length;
+      if (!this.hands.length && g.trash > 0) return TRASH.empty;
+      if (drinks && drinks > TRASH.cap - g.trash) return 0.3 + TRASH.empty;   // não cabe: joga tudo e esvazia em seguida
+    }
     return 0.3;
   }
   update(dt){
@@ -995,9 +999,9 @@ class Waitress {
         if (!this.hands.length && g.trash > 0){ g.trash = 0; g.stats.emptied++; g.addText(this.x, this.y - 82, 'Lixo pra fora!', PAL.ok, 15); Sfx.noise(0.3, 0.1, 0, 400); return; }
         return this.fail(this.hands.length ? 'Mãos ocupadas!' : '?');
       }
-      const room = TRASH.cap - g.trash;
-      if (room <= 0) return this.fail('Lixo cheio!');
-      const fora = lixo.slice(0, room);
+      // se as bebidas não cabem, a lixeira aceita todas uma última vez e a Bia já esvazia em seguida
+      const overflow = lixo.length > TRASH.cap - g.trash;
+      const fora = lixo;
       fora.forEach(h => this.hands.splice(this.hands.indexOf(h), 1));
       g.addTrash(fora.length);
       const fine = fora.reduce((v,h) => v + DRINK_PRICE[h.kind] / 2, 0);
@@ -1006,6 +1010,7 @@ class Waitress {
       g.addText(this.x, this.y - 82, 'No lixo!', PAL.perigo, 15);
       g.addText(this.x, this.y - 104, '-' + (fine % 1 ? fine.toFixed(2).replace('.', ',') : fine), PAL.perigo, 18);
       Sfx.noise(0.18, 0.12, 0, 500); Sfx.tone(160, 0.12, 'square', 0.04);
+      if (overflow){ g.trash = 0; g.stats.emptied++; g.addText(this.x, this.y - 126, 'Lixo pra fora!', PAL.ok, 15); }
       return;
     }
     if (a.type === 'sink'){
@@ -1132,7 +1137,8 @@ class Helper {
     if (Math.hypot(this.x - DANI_HOME.x, this.y - DANI_HOME.y) > 4) return this.go(DANI_HOME, null);
   }
   duration(st){
-    if (st.type === 'sink') return WASH.base + (this.does('lavar') ? WASH.perPile * (this.g.kitchen.sinkN + this.hands.filter(h => h.kind === 'dirty').length) : 0);
+    // lava no mesmo ritmo do deslocamento: 50% da Bia leva o dobro do tempo por pilha
+    if (st.type === 'sink') return WASH.base + (this.does('lavar') ? WASH.perPile / this.spec.speed * (this.g.kitchen.sinkN + this.hands.filter(h => h.kind === 'dirty').length) : 0);
     if (st.type === 'trash') return TRASH.empty;
     return 0.35;
   }
@@ -1259,7 +1265,7 @@ class Game {
   }
   startDay(n){ this.resetDay(n); this.setState('intro'); }
   startEndless(){ this.resetDay(0); this.setState('intro'); }
-  /* paga a folha do dia com o cofre; quem não couber no cofre é dispensado (couvert, Dani, aumento do Tonhão) */
+  /* debita a folha do dia do dinheiro acumulado; quem não puder ser pago é dispensado (couvert, Dani, aumento do Tonhão) */
   payDay(){
     const eq = this.save.equipe; this.unpaid = [];
     while (payroll(eq) > this.save.bank){
@@ -1276,7 +1282,7 @@ class Game {
   }
   begin(){
     this.payDay(); this.setState('playing');
-    if (this.unpaid.length) this.addText(W/2, 300, 'Cofre sem dinheiro: sem ' + this.unpaid.join(', ') + ' hoje', PAL.perigo, 20);
+    if (this.unpaid.length) this.addText(W/2, 300, 'Sem dinheiro para pagar: sem ' + this.unpaid.join(', ') + ' hoje', PAL.perigo, 20);
   }
   get trashFull(){ return this.trash >= TRASH.cap; }
   /* restos no lixo: +n, até encher */
@@ -1590,7 +1596,7 @@ class Game {
     if (m >= d.expert) stars = 2;
     if (m >= d.expert && this.stats.lost === 0) stars = 3;
     const prevBest = this.save.best[d.n] || 0;
-    const income = Math.round(m * INCOME) + Math.max(0, m - prevBest);
+    const income = m;                 // todo o faturamento do dia vai para o dinheiro acumulado
     this.save.bank += income;
     this.save.best[d.n] = Math.max(prevBest, m);
     this.save.stars[d.n] = Math.max(this.save.stars[d.n] || 0, stars);
@@ -1602,7 +1608,7 @@ class Game {
   }
   finishEndless(){
     const pts = Math.round(this.money);
-    const income = Math.round(pts * INCOME);
+    const income = pts;
     this.save.bank += income; writeSave(this.save);
     this.endless = { income, paid:this.paid, pontos:pts, tempo:Math.floor(this.elapsed), served:this.stats.served, lost:this.stats.lost, full:this.stats.full, chain:this.stats.chain, vip:this.stats.vip, juice:this.stats.juice };
     this.setState('endlessend');
@@ -1619,7 +1625,7 @@ class Game {
     this.resetDay(this.shopNext);   // o salão ao fundo já mostra o dia que vem
     this.setState('shop');
   }
-  /* equipe: mudanças à vontade na lojinha, desde que o cofre pague a folha do próximo dia */
+  /* equipe: mudanças à vontade na lojinha, desde que o dinheiro acumulado pague a folha do próximo dia */
   setStaff(key, val){
     const eq = this.save.equipe, old = eq[key];
     eq[key] = val;
@@ -3072,7 +3078,7 @@ function buildShop(){
   $('shop-limit').textContent = game.shopBought ? 'Melhoria do dia ' + game.shopNext + ' já escolhida.' : 'Você pode levar 1 melhoria antes do dia ' + game.shopNext + '.';
   $('btn-shop-go').textContent = 'Começar o dia ' + game.shopNext;
   const f = payroll(game.save.equipe);
-  $('shop-folha').textContent = f ? 'Folha do dia: ' + fmt(f) + ' (sai do cofre ao abrir a lanchonete).' : 'Sem folha: contrate na aba Equipe. Os salários saem do cofre a cada dia.';
+  $('shop-folha').textContent = f ? 'Folha do dia: ' + fmt(f) + ' (debitada do dinheiro acumulado ao abrir a lanchonete).' : 'Sem folha: contrate na aba Equipe. Os salários são debitados do dinheiro acumulado no início de cada dia.';
   if (shopTab === 'equipe') return buildEquipe(grid);
   UPGRADES.forEach(u => {
     const own = !!game.up[u.id];
@@ -3099,7 +3105,7 @@ function buildEnd(){
   $('end-money').textContent = 'Você faturou ' + fmt(r.money) + ' (meta ' + fmt(r.meta) + ' · expert ' + fmt(r.expert) + ')';
   const st = $('end-stats');
   clearEl(st);
-  const rows = [['Atendidos', r.served],['Perdidos', r.lost],['Não couberam', r.full],['Maior corrente', '×' + r.chain],['Para o cofre', '+' + fmt(r.income) + (r.paid ? ' (folha paga: ' + fmt(r.paid) + ')' : '')],['Cofre', fmt(game.save.bank)]];
+  const rows = [['Atendidos', r.served],['Perdidos', r.lost],['Não couberam', r.full],['Maior corrente', '×' + r.chain],['Folha paga hoje', r.paid ? '-' + fmt(r.paid) : '-'],['Dinheiro acumulado', fmt(game.save.bank)]];
   if (r.trash) rows.splice(2, 0, ['Na lixeira', r.trash + ' bebida' + (r.trash > 1 ? 's' : '')]);
   if (r.juice || r.juiceMiss) rows.splice(2, 0, ['Sucos', r.juice + ' entregue' + (r.juice === 1 ? '' : 's') + (r.juiceMiss ? ' · ' + r.juiceMiss + ' mesa' + (r.juiceMiss > 1 ? 's' : '') + ' sem suco' : '')]);
   if (r.vip || r.vipLost) rows.splice(2, 0, ['VIPs', r.vip + ' atendido' + (r.vip === 1 ? '' : 's') + (r.vipLost ? ' · ' + r.vipLost + ' bravo' + (r.vipLost > 1 ? 's' : '') : '')]);
@@ -3134,7 +3140,7 @@ function buildEndless(){
   if (!r) return;
   const st = $('endless-stats');
   clearEl(st);
-  [['Pontos', r.pontos],['Tempo sobrevivido', mmssUp(r.tempo)],['Grupos atendidos', r.served],['VIPs atendidos', r.vip],['Sucos entregues', r.juice],['Maior corrente', '×' + r.chain],['Não couberam na fila', r.full],['Para o cofre', '+' + fmt(r.income)]].forEach(p => {
+  [['Pontos', r.pontos],['Tempo sobrevivido', mmssUp(r.tempo)],['Grupos atendidos', r.served],['VIPs atendidos', r.vip],['Sucos entregues', r.juice],['Maior corrente', '×' + r.chain],['Não couberam na fila', r.full],['Dinheiro acumulado', fmt(game.save.bank)]].forEach(p => {
     st.appendChild(el('span', null, p[0])); st.appendChild(el('b', null, String(p[1])));
   });
   buildSaveForm($('endless-save'), 'semfim');
@@ -3342,7 +3348,7 @@ fit();
 try { Rank.init(); } catch(e) {}
 game.setState('menu');
 window.__game = game;
-window.__lcc = { STAFF, DANI_TASKS, TRASH, WASH, INCOME, payroll, couvertEffect, dishStock, normSave, Helper, JUICE, KITCHEN_SLOTS, handLayout, trayOk, Game, Group, Table, Kitchen, Waitress, DAYS, UPGRADES, CUSTOMER_TYPES, LAYOUT, PAL, Sfx, findPath, render, Rank, sortRows, cleanName, normName, CMD, ENDLESS, VIP, rk, renderRank, openRank, closeRank, LS, lsGet, lsSet, loadSave };
+window.__lcc = { STAFF, DANI_TASKS, TRASH, WASH, payroll, couvertEffect, dishStock, normSave, Helper, JUICE, KITCHEN_SLOTS, handLayout, trayOk, Game, Group, Table, Kitchen, Waitress, DAYS, UPGRADES, CUSTOMER_TYPES, LAYOUT, PAL, Sfx, findPath, render, Rank, sortRows, cleanName, normName, CMD, ENDLESS, VIP, rk, renderRank, openRank, closeRank, LS, lsGet, lsSet, loadSave };
 window.requestAnimationFrame(frame);
 
 })();
