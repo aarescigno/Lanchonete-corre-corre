@@ -17,6 +17,17 @@ Jogo de navegador de gerenciamento de restaurante, em um único arquivo HTML com
 - **Capturas:** confira recortes ampliados (PIL `crop`) só do trecho alterado, em vez de várias telas inteiras.
 - **Docs:** leia `docs/spec-vN.md` e `docs/HISTORICO.md` só quando o assunto pedir.
 
+## Lembrete ao usuário (a cada pedido de alteração)
+Antes de começar uma alteração, faça **uma única pergunta curta**, com as opções abaixo, e espere a resposta:
+> Antes de começar: 1) deu `/clear` desde a última tarefa? 2) os plugins e conectores sem uso neste ambiente estão desligados? 3) quer conferência com capturas ou só com testes? 4) alguma outra sessão está mexendo ou publicando o jogo agora?
+
+Motivos, para explicar se o usuário perguntar:
+- O `/clear` zera o contexto.
+- A lista de plugins e conectores volta inteira a cada reinício do worker.
+- Cada captura custa milhares de tokens.
+- Publicação feita por outra sessão obriga a ler a página no ar inteira (~100 mil tokens).
+- Pedidos pequenos agrupados numa mensagem economizam rodadas de teste e publicação.
+
 ## Testes (`cd tests`)
 - `./run_all.sh` roda `extract.sh` (gera `game.js` e confere a sintaxe) e depois os smokes 1 a 7.
 - `node balance.js [N]` roda o bot N vezes por dia, sem equipe (alvo: ~10% das metas nos dias 3 a 7). `EQUIPE=auto` usa a equipe que o jogador já paga (alvo: ~85%); `EQUIPE='{...}'` usa uma equipe fixa.
