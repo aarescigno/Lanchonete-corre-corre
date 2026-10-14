@@ -38,7 +38,7 @@ node balance.js          # 20 rodadas por dia; bot ~137/140 metas batidas
 python3 shot_v2.py       # capturas com Playwright/Chromium em ../capturas/v2
 python3 shot_v3.py       # capturas da v3 em ../capturas/v3 (usa /opt/pw-browsers/chromium se existir)
 ```
-O smoke2 tem uma falha intermitente ("conta paga, mesa suja, servidos=1", ~10% das execuções), que já existia na v2.
+O smoke2 tinha uma falha intermitente ("conta paga, mesa suja, servidos=1", ~10% das execuções, já na v2): um grupo esquecido na fila ia embora bravo durante a cobrança e a multa de R$ 30 anulava a conta. Corrigido no teste, que agora enche a paciência da fila antes de cobrar (100/100 execuções verdes).
 
 ## Artifact publicado
 - URL: https://claude.ai/artifact/MJxrgDg8S4akvg47SoQAvj (privado: dono e quem receber acesso)

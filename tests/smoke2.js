@@ -34,6 +34,9 @@ ok(g.bia.hands.some(h=>h.kind==='dish'),'pegou prato');
 g.tapTable(t1); run(4); ok(grp.state==='eating','entregou, comendo');
 guard=0; while(grp.state!=='wantBill'&&guard++<400) g.update(0.05);
 ok(grp.state==='wantBill','quer conta');
+// os grupos da agenda ficaram esperando na fila o teste todo; se um deles perder o último
+// coração durante o run(4), a multa de -30 anula a conta e money não sobe. Enche a paciência deles.
+for (const q of g.queue) q.gain(5);
 const mb=g.money; g.tapTable(t1); run(4); ok(g.money>mb && t1.dirty && g.stats.served===1,'conta paga, mesa suja, servidos=1');
 // ação inválida
 g.bia.hands=[];
