@@ -48,7 +48,30 @@ for(const lv of [0,1,2]){ reset({tonhao:lv}); g.startDay(4); g.begin(); fresh();
   for(let i=0;i<0.4*20;i++) g.update(0.05); ok(g.kitchen.sinkN===0 && g.kitchen.clean===c0+1,'nível 2: lava 1 pilha a cada 7 s');
   g.kitchen.sinkN=2; ok(Math.abs(g.bia.duration({type:'sink'})-(L.WASH.base+2*L.WASH.perPile))<1e-9,'de mãos vazias, a Bia lava ela mesma'); g.kitchen.sinkN=0; }
 { reset({tonhao:2}); g.startDay(4); g.begin(); fresh(); g.kitchen.sinkN=2; for(let i=0;i<8.2*20;i++) g.update(0.05); ok(g.kitchen.sinkN===0,'nível 3: lava 1 pilha a cada 4 s'); }
-{ reset({}); g.startDay(4); g.begin(); g.bia.hands=[{kind:'dirty',n:2}]; ok(g.bia.duration({type:'sink'})===L.WASH.base+L.WASH.perPile,'sem ajuda, a Bia lava o que leva'); g.bia.hands=[]; }
+/* pia em 2 etapas: com louça na mão, só deixa; sem louça, lava. Só 1 pessoa lava por vez (o Tonhão lava à parte) */
+{ reset({}); g.startDay(4); g.begin(); g.schedule=[{t:1e9,type:'estudante',color:0}]; g.nextIdx=0; g.trash=0;
+  g.bia.hands=[{kind:'dirty',n:2}]; ok(g.bia.duration({type:'sink'})===L.WASH.base,'com louça na mão, a Bia só deixa na pia');
+  g.bia.clearActs(); g.tapStation('sink',850,450); run(4); ok(g.kitchen.sinkN===1 && g.stats.washed===0 && !g.bia.hands.length,'1º toque: a louça fica na pia, sem lavar');
+  g.tapStation('sink',850,450); run(0.3); ok(g.bia.washing,'2º toque, sem louça na mão: a Bia lava');
+  run(4); ok(g.kitchen.sinkN===0 && g.stats.washed===1 && !g.bia.washing,'lavou a pilha deixada'); }
+{ reset({dani:1,daniTasks:['lavar','lixo']}); g.startDay(3); g.begin(); g.schedule=[{t:1e9,type:'estudante',color:0}]; g.nextIdx=0;
+  const TRASHCAP=L.TRASH.cap; L.TRASH.cap=1e9; g.kitchen.sinkN=6; g.kitchen.clean=0;
+  let gd=0; while(!g.dani.washing && gd++<400) g.update(0.05); ok(g.dani.washing,'Dani lavando');
+  g.bia.x=L.LAYOUT.STATIONS.sink.ap.x; g.bia.y=L.LAYOUT.STATIONS.sink.ap.y; g.bia.clearActs();
+  const a={type:'sink'}; g.bia.duration(a); ok(a.wash===0 && a.busy,'Dani lavando: a Bia não lava junto');
+  g.bia.perform(a); ok(g.bia.qT>0,'aviso de que a Dani está lavando');
+  while(g.dani.washing) g.update(0.05); g.bia.clearActs(); g.tapStation('sink',850,450); g.update(0.05);
+  ok(g.bia.washing,'Dani entre uma pilha e outra: a Bia pega a vez');
+  let both=false; for(let i=0;i<6*20;i++){ g.update(0.05); if(g.bia.washing&&g.dani.washing) both=true; }
+  ok(!both,'Bia lavando: a Dani não lava junto');
+  while(g.bia.washing) g.update(0.05); g.kitchen.sinkN=2; const w0=g.stats.washed; run(L.WASH.perPile/0.5*2+3,true);
+  ok(g.stats.washed===w0+2 && !g.bia.acts.length,'a Bia terminou: a Dani volta a lavar');
+  L.TRASH.cap=TRASHCAP; g.trash=0; }
+{ reset({tonhao:2,dani:1,daniTasks:['lavar','lixo']}); g.startDay(4); g.begin(); g.schedule=[{t:1e9,type:'estudante',color:0}]; g.nextIdx=0;
+  const TRASHCAP=L.TRASH.cap; L.TRASH.cap=1e9; g.kitchen.sinkN=20; g.kitchen.clean=0; let tw=false;
+  const add=g.addText.bind(g); g.addText=(x,y,t,c,sz)=>{ if(t==='Tonhão lavou!' && g.dani.washing) tw=true; add(x,y,t,c,sz); };
+  run(12,true); g.addText=add; ok(tw,'o Tonhão lava mesmo com a Dani lavando');
+  L.TRASH.cap=TRASHCAP; g.trash=0; }
 
 /* melhorias revistas */
 { const s=L.normSave({up:{chapa:true}}); ok(s.up.pratos && !s.up.chapa && !L.UPGRADES.some(u=>u.id==='chapa'),'save antigo: Chapa nova vira Jogo de pratos'); }

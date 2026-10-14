@@ -33,7 +33,7 @@ Revisto depois da análise das melhorias: as bocas a mais não ajudavam (o garga
 
 - **Prato caprichado** (`CRIT`): sai com ★ na janela de prontos e na mão da Bia; na entrega dá +2 corações (em vez de +1) e R$ 10 a mais (R$ 20 para VIP).
 - **Prato especial do VIP** (`VIP.dish`, `VIP.cook`): soma R$ 25 à conta do VIP (antes dos corações e da gorjeta) e leva 1,8× o tempo; aparece com aro dourado na janela de prontos. Um Tonhão mais rápido deixa o VIP menos tempo esperando.
-- **Pia:** quando alguém além da Bia lava (a Dani com a tarefa, ou o Tonhão com aumento: `game.otherWasher`), a Bia só deixa a louça (0,3 s). Tocando na pia de mãos vazias, ela mesma lava tudo o que estiver lá.
+- **Pia:** o Tonhão com aumento lava 1 pilha a cada 7 s ou 4 s, mesmo que a Bia ou a Dani estejam lavando. A pia funciona em 2 etapas (ver Louça).
 
 ## Dani, a ajudante (`class Helper`, `STAFF.dani`)
 | Nível | Velocidade (fração da Bia sem tênis) | Tarefas | Salário |
@@ -54,7 +54,8 @@ Revisto depois da análise das melhorias: as bocas a mais não ajudavam (o garga
 - **Estoque de pratos limpos** (`dishStock`): sem limite nos dias 1 e 2; do dia 3 em diante, igual ao número de mesas abertas (−1 nos dias 6 e 7); 6 no Turno sem fim.
 - **Prato pronto:** só vai ao balcão se houver prato limpo. Se não houver, o Tonhão espera com o balão "Sem prato!". O estoque aparece ao lado de "PRONTOS" (pilha + "×n", vermelho quando zera).
 - **Pia:** a louça entra numa fila (`kitchen.sinkN`). Lavar leva 0,3 s + 1,5 s por pilha (`WASH`). Cada pilha lavada devolve 1 prato limpo e joga os restos na lixeira (+1).
-- **Quem lava:** quando a Bia toca na pia (com ou sem louça na mão), ela lava tudo o que está lá. Se a Dani estiver encarregada de lavar, a Bia só deixa a louça (0,3 s) e a Dani lava.
+- **Pia em 2 etapas:** a Bia toca na pia com louça na mão e só deixa a louça lá (0,3 s). Tocando de novo, sem louça na mão, ela lava tudo o que estava na pia quando começou.
+- **Só 1 pessoa lava por vez:** se a Dani está lavando, a Bia não lava (aviso "A Dani está lavando!"); enquanto a Bia lava, a Dani só deixa a louça e espera a vez. O Tonhão é a exceção: lava à parte (`bia.washing`, `dani.washing`, `dani.canWash()`).
 
 ## Lixeira que enche (`TRASH`)
 - Capacidade de 8. Enche com os restos de cada pilha lavada e com cada bebida jogada fora.

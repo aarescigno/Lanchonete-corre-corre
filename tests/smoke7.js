@@ -10,6 +10,7 @@ const S=L.LAYOUT.STATIONS, b=g.bia;
 b.clearActs(); g.onDown(S.trash.rect.x-15, 500, 0); ok(b.acts.length===0,'mouse: fora da lixeira não conta');
 g.onDown(S.trash.rect.x-15, 500, PAD); ok(b.acts.length===1 && b.acts[0].type==='trash','dedo: perto da lixeira conta');
 ok(glows()===1,'brilho sobre o alvo tocado');
+{ const f=g.fx.find(f=>f.k==='glow'); ok(f.key==='trash' && f.w===undefined,'brilho é do objeto (sem retângulo de halo)'); }
 // acerto exato vence a folga: café e suco lado a lado
 b.clearActs(); g.onDown(860, 350, PAD); ok(b.acts[0] && b.acts[0].type==='coffee','borda do café continua café');
 b.clearActs(); g.onDown(866, 350, PAD); ok(b.acts[0] && b.acts[0].type==='juice','borda do suco continua suco');

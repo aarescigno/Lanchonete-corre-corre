@@ -66,7 +66,8 @@
      - Um tremido de até ~14 px ao tocar um grupo da fila seleciona em vez de virar arrasto, e um arrasto solto rente à mesa senta o grupo.
      - Pratos: vale a coluna inteira do balcão; numa coluna vazia, vale o prato pronto mais perto.
      - Ícones da fila e os botões de pausa e de som pegam a faixa toda, até a borda de baixo.
-     - **Sinal do toque:** cada ação aceita faz o som de toque e um brilho claro e suave sobre o alvo, que some em 0,4 s (sem crescer com `prefers-reduced-motion`). Um toque no vazio mostra só um anel fraco no ponto. O `smoke7` confere tudo isso.
+     - **Sinal do toque:** cada ação aceita faz o som de toque e um brilho só no desenho do objeto tocado (estação, mesa, prato, grupo da fila ou botão), sem halo em volta, que some em 0,4 s (`glowSprite`: o objeto vai para uma camada à parte e uma cópia é somada por cima com `lighter`). Um toque no vazio mostra só um anel fraco no ponto. O `smoke7` confere tudo isso.
+   - **Pia em 2 etapas:** com louça na mão, a Bia só deixa a louça na pia; tocando de novo, sem louça na mão, ela lava. Só 1 pessoa lava por vez (a Bia ou a Dani); o Tonhão lava à parte. O bot dá os 2 toques e não manda lavar enquanto a Dani lava; o equilíbrio não mudou (`balance` sem equipe e com a Dani lavando).
 
 ## Testes (verdes no último commit)
 - `smoke` (bot nos 7 dias);
@@ -74,8 +75,8 @@
 - `smoke3` (120/120: v2);
 - `smoke4` (23/23: VIP);
 - `smoke5` (41/41: sucos, bandeja e lixeira);
-- `smoke6` (84/84: equipe, louça, lixeira que enche, couvert, água, economia). O teste "a Dani chega a 2 itens" falha em ~1 de 6 rodadas, porque depende do sorteio do dia (já falhava antes do ajuste de toque);
-- `smoke7` (14/14: toque no celular e brilho);
+- `smoke6` (94/94: equipe, louça, lixeira que enche, couvert, água, economia). O teste "a Dani chega a 2 itens" falha em ~1 de 6 rodadas, porque depende do sorteio do dia (já falhava antes do ajuste de toque);
+- `smoke7` (15/15: toque no celular e brilho);
 - `menu_fit` (14 tamanhos de tela);
 - `balance` (bot, N rodadas por dia).
 

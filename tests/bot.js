@@ -21,9 +21,10 @@ module.exports=function(g,L){
     if(g.trash!==undefined && g.trash>=L.TRASH.cap-1 && !b.hands.length && !has(a=>a.type==='trash') && !(g.dani&&g.dani.does('lixo'))) return g.tapStation('trash',723,500);
     // jarra de água quase vazia: recarrega (se houver dinheiro para isso)
     if(g.up&&g.up.agua&&L.AGUA&&g.agua<=1&&g.money>=L.AGUA.price&&!has(a=>a.type==='agua')&&!(g.dani&&g.dani.does('agua'))) return g.tapStation('agua',182,140);
-    // louça esperando na pia: lava se ninguém mais lava, ou se faltam pratos e a pia acumulou
+    // louça esperando na pia (2º toque, sem louça na mão): lava se ninguém mais lava, ou se faltam
+    // pratos e a pia acumulou; nunca enquanto a Dani lava (só 1 pessoa lava por vez)
     const helper=g.otherWasher!==undefined?g.otherWasher:(g.dani&&g.dani.does('lavar'));
-    if(g.kitchen.sinkN>0 && (!helper || (g.kitchen.clean<=0 && g.kitchen.sinkN>=2)) && !has(a=>a.type==='sink') && !b.hands.some(h=>h.kind==='dirty')) return g.tapStation('sink',850,450);
+    if(g.kitchen.sinkN>0 && (!helper || (g.kitchen.clean<=0 && g.kitchen.sinkN>=2)) && !has(a=>a.type==='sink') && !b.hands.some(h=>h.kind==='dirty') && !(g.dani&&g.dani.washing)) return g.tapStation('sink',850,450);
     for(const t of g.tables){
       if(!t.open||has(a=>a.type==='table'&&a.id===t.id)||(g.dani&&g.dani.targets(t))) continue;
       if(t.dirty||(t.group&&(t.group.state==='wantOrder'||t.group.state==='wantBill'))){ if(can(t.dirty?'dirty':'ticket')||t.group&&t.group.state==='wantBill') return g.tapTable(t); }
