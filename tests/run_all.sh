@@ -5,7 +5,7 @@
 cd "$(dirname "$0")"
 ./extract.sh >/dev/null || { echo "SINTAXE: erro em game.js"; exit 1; }
 st=0
-for f in smoke.js smoke2.js smoke3.js smoke4.js smoke5.js smoke6.js smoke7.js; do
+for f in smoke.js smoke2.js smoke3.js smoke4.js smoke5.js smoke6.js smoke7.js smoke8.js; do
   out=$(node "$f" 2>&1); rc=$?
   echo "$f: $(echo "$out" | tail -1)"
   echo "$out" | grep -m5 '^FAIL' ; [ $rc -ne 0 ] && st=1
