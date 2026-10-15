@@ -1,6 +1,6 @@
 # Lanchonete Corre-Corre
 
-Jogo de navegador de gerenciamento de restaurante, em um único arquivo HTML com canvas 2D, em português do Brasil. Versão atual: **v7**. O estado do projeto, o histórico e os detalhes do artifact e do ranking estão em `docs/RESUMO.md` (leia só quando precisar). O roteiro das próximas versões, uma etapa por sessão, está em `docs/PLANO.md`: quando o pedido for "a próxima etapa", leia lá só a etapa da vez.
+Jogo de navegador de gerenciamento de restaurante, em um único arquivo HTML com canvas 2D, em português do Brasil. Versão atual: **v7**. O estado do projeto, o histórico e os detalhes do artifact e do ranking estão em `docs/RESUMO.md` (leia só quando precisar). O roteiro das próximas versões, uma etapa por sessão, está em `docs/PLANO.md`: quando o pedido for "a próxima etapa", leia lá só a etapa da vez. Ideias e retornos de jogadores (texto original e destino de cada um) ficam no log `docs/PROPOSTAS.md`: registre lá cada retorno novo.
 
 ## Regras do projeto
 - **Jogo original:** os personagens são a Bia (garçonete) e o Chef Tonhão. Não usar nomes, arte nem logos de jogos existentes, nem citar "Diner Dash" ou "Flo" na interface.

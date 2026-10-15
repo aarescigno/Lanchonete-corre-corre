@@ -1,19 +1,20 @@
 # Plano de novidades (uma etapa por sessão)
 
-Origem: retorno do Renan Martorelli e conversa com o Arthur (15/10/2026). Os pedidos foram escassez de recursos, custos de manutenção, divulgação, aluguel em área nobre com VIPs exigentes e modo história ("o sonho da Bia de ter um restaurante estrelado, começando do zero"). A v7 (Contas) fez a primeira parte.
+Origem: retorno do Renan Martorelli e conversa com o Arthur (15/10/2026). Os textos originais e o destino de cada ideia estão em `docs/PROPOSTAS.md` (log de propostas). Os pedidos foram escassez de recursos, custos de manutenção, divulgação, aluguel em área nobre com VIPs exigentes e modo história ("o sonho da Bia de ter um restaurante estrelado, começando do zero"). A v7 (Contas) fez a primeira parte.
 
 ## Como usar
 - Cada etapa cabe numa sessão e termina como as outras: versão nova (se mexe no jogo), testes verdes, `docs/spec-vN.md`, `RESUMO.md` atualizado, PR com merge no `claude/main` e publicação no artifact (ver `CLAUDE.md`).
 - Para começar uma sessão, basta pedir: **"faça a próxima etapa do docs/PLANO.md"**. A sessão lê só a etapa da vez e as partes de `src/` citadas nela.
 - Antes de programar, a sessão confirma com o usuário as **decisões em aberto** da etapa (cada uma já tem uma sugestão).
 - No fim, a sessão marca a etapa como feita na tabela abaixo (com a versão e a data) e anota o que mudou no plano.
-- Ordem: cada etapa depende só das anteriores. As etapas 1 e 2 podem trocar de lugar. A 3 vem antes da 4, e a 4 antes da 6.
+- Ordem: cada etapa depende só das anteriores. A 1a vem primeiro (mexe no equilíbrio de base). A 1b e a 2 podem trocar de lugar. A 3 vem antes da 4, e a 4 antes da 6.
 
 ## Situação
 | # | Etapa | Versão | Situação |
 |---|---|---|---|
 | 0 | Contas: lucro, ingredientes, contas do dia, divulgação | v7 | feita (15/10) |
-| 1 | Livro-caixa e ajuste fino com jogadores | v7.1 | a fazer |
+| 1a | Jogo justo: dá para não perder ninguém | v7.1 | a fazer |
+| 1b | Livro-caixa e ajuste fino com jogadores | v7.2 | a fazer |
 | 2 | Manutenção e imprevistos | v8 | a fazer |
 | 3 | Ponto: mudar para o Centro | v9 | a fazer |
 | 4 | Área nobre e VIPs exigentes | v10 | a fazer |
@@ -23,7 +24,45 @@ Origem: retorno do Renan Martorelli e conversa com o Arthur (15/10/2026). Os ped
 
 ---
 
-## Etapa 1 — Livro-caixa e ajuste fino (v7.1)
+## Etapa 1a — Jogo justo: dá para não perder ninguém (v7.1)
+**Objetivo:** atender o retorno do Renan (áudio em `docs/PROPOSTAS.md`). Quem joga com perfeição pode terminar com menos corações, mas consegue não perder ninguém. Perder um cliente tem que ser culpa da velocidade ou da prioridade do jogador.
+
+**Situação hoje (v7):** com a equipe completa, o bot ainda perde 0,6 a 2,6 grupos por dia nos dias 3 a 7, e a 3ª estrela exige zero perdas. O caso dele é a fila cheia com todas as mesas ocupadas: a fila perde a paciência sem que dê para fazer nada além de cafezinho e água.
+
+**Passos:**
+1. **Medir onde se perde.** `balance.js` passa a contar as perdas por causa:
+   - na fila sem mesa livre que caiba o grupo;
+   - na fila com mesa livre;
+   - esperando pedido, prato ou conta;
+   - VIP.
+
+   Também conta quanto tempo o salão fica lotado com a fila cheia. Só assim dá para separar o que é impossível do que é falha do bot.
+2. **Bot afiado:** melhorar a prioridade do bot (quem está para sair primeiro) para ele servir de "jogador perfeito". Se o bot afiado ainda perde gente, a conta do jogo está apertada demais.
+3. **Mecânicas candidatas** (escolher na sessão; sugestão: A + B):
+   - **A. Fila justa:** enquanto não há mesa livre que caiba o grupo, a paciência na fila cai bem mais devagar (ex.: 40%) e não passa de 1 coração. Ela volta ao ritmo normal quando abre uma mesa que serve. Um ícone "aguardando mesa" mostra isso.
+   - **B. Porta que respeita a lotação:** com o salão cheio e a fila com 3 ou mais grupos, as próximas chegadas atrasam um pouco em vez de se empilhar. O total do dia não muda, só o ritmo.
+   - C. Ajuste de corações e paciência por tipo (entregador e VIP são os mais apertados).
+   - D. Mesas que esvaziam mais rápido ao final (a conta pedida mais cedo), se a medição mostrar que o gargalo é a mesa ocupada.
+4. **Recalibrar:** com menos perdas, o lucro sobe. Conferir as metas (`balance.js`) e a escassez (`carreira.js`, alvo da v7 no dia 5).
+
+**Alvos:**
+- Bot afiado com a equipe completa: **0 perdidos em ≥ 80% dos dias 3 a 7** (média < 0,3).
+- 3 estrelas possíveis em todos os dias.
+- Sem equipe, perder gente continua normal: a equipe segue valendo a pena.
+- Turno sem fim: continua acabando um dia, mas por velocidade, não por conta impossível.
+
+**Partes:** `12-clientes.js` (paciência na fila), `16-jogo.js` (chegadas, causa da perda), `22-salao-hud.js` (ícone "aguardando mesa"), `10-constantes.js`, `tests/bot.js` e `botpage.js`, `tests/balance.js`.
+
+**Testes:** `smoke10` (paciência na fila com e sem mesa livre, piso de 1 coração, atraso das chegadas, contagem por causa). `balance` com as perdas por causa.
+
+**Decisões em aberto:**
+- Quais mecânicas (sugestão: A + B)?
+- A fila justa vale também no Turno sem fim (sugestão: sim, com o ritmo apertando com o tempo como hoje)?
+- Mostrar o ícone "aguardando mesa" na fila (sugestão: sim)?
+
+---
+
+## Etapa 1b — Livro-caixa e ajuste fino (v7.2)
 **Objetivo:** ver a escassez com números de jogo real (não só do bot) e ajustar os botões da v7 antes de empilhar mais sistemas.
 
 **Entra:**
@@ -36,7 +75,7 @@ Origem: retorno do Renan Martorelli e conversa com o Arthur (15/10/2026). Os ped
 
 **Partes:** `12-clientes.js` (save), `16-jogo.js` (`finishDay`, compras), `41-lojinha.js`, `02-telas.html`, `01-estilo.css`.
 
-**Testes:** `smoke10` (registro, limite de 14, resumo em texto, save antigo sem `caixa`). `carreira.js` continua sendo a referência.
+**Testes:** `smoke11` (registro, limite de 14, resumo em texto, save antigo sem `caixa`). `carreira.js` continua sendo a referência.
 
 **Pronto quando:** o Caixa aparece desde o dia 2, o resumo copia, `carreira.js` e `balance.js` passam nos alvos, e houve pelo menos 1 rodada de retorno de jogador (ou o usuário dispensou).
 
@@ -63,7 +102,7 @@ Origem: retorno do Renan Martorelli e conversa com o Arthur (15/10/2026). Os ped
 
 **Partes:** `10-constantes.js` (`MANUT`), `16-jogo.js`, `13-cozinha.js`, `14-bia.js` (cafezinho), `21-cenario.js` (sinais visuais), `41-lojinha.js`, `43-telas.js` (introdução).
 
-**Testes:** `smoke11` (desgaste, chance de quebra, conserto, efeitos e save). `balance` com e sem manutenção.
+**Testes:** `smoke12` (desgaste, chance de quebra, conserto, efeitos e save). `balance` com e sem manutenção.
 
 **Calibração:**
 - Cuidar de tudo custa ~10–15% do lucro de um dia médio.
@@ -90,7 +129,7 @@ Origem: retorno do Renan Martorelli e conversa com o Arthur (15/10/2026). Os ped
 
 **Partes:** `10-constantes.js`, `12-clientes.js` (save `ponto`, preço), `16-jogo.js` (agenda, contas), `20/21-*.js` (paleta e fachada), `41-lojinha.js`.
 
-**Testes:** `smoke12` (mudança, custo, salão levado junto, contas e preços por ponto, save antigo = Bairro). `carreira.js` com mudança no dia 4 ou 5.
+**Testes:** `smoke13` (mudança, custo, salão levado junto, contas e preços por ponto, save antigo = Bairro). `carreira.js` com mudança no dia 4 ou 5.
 
 **Calibração:**
 - Mudar para o Centro deve compensar em ~3 dias para quem atende bem e não compensar para quem perde muitos clientes.
@@ -118,7 +157,7 @@ Origem: retorno do Renan Martorelli e conversa com o Arthur (15/10/2026). Os ped
 
 **Partes:** `10-constantes.js`, `12-clientes.js` (tipo/modificador exigente), `13-cozinha.js` (prato da casa), `16-jogo.js` (reputação), `20-desenho-base.js` (visual do exigente, sem estereótipo: chapéu/lenço e plaquinha ★★), `22-salao-hud.js` (balão do pedido especial).
 
-**Testes:** `smoke13` (pedido especial, regras de mesa, avaliação ruim, reputação e save). `balance` na área nobre com equipe completa.
+**Testes:** `smoke14` (pedido especial, regras de mesa, avaliação ruim, reputação e save). `balance` na área nobre com equipe completa.
 
 **Calibração:**
 - A área nobre dá mais lucro só com equipe completa + Tonhão nível 3 + salão bem montado.
@@ -147,7 +186,7 @@ Origem: retorno do Renan Martorelli e conversa com o Arthur (15/10/2026). Os ped
 
 **Partes:** `02-telas.html` (menu e painel de conversa), `10-constantes.js` (`HISTORIA`), `16-jogo.js` (modo `historia`, objetivos), `40-interface.js`, `42-resultados.js`, `43-telas.js`.
 
-**Testes:** `smoke14` (início do zero, objetivo cumprido e falhado, save separado, carreira intocada). O bot joga os capítulos 1 a 3.
+**Testes:** `smoke15` (início do zero, objetivo cumprido e falhado, save separado, carreira intocada). O bot joga os capítulos 1 a 3.
 
 **Decisões em aberto:**
 - O texto de abertura e o tom do "universo paralelo".
@@ -169,7 +208,7 @@ Origem: retorno do Renan Martorelli e conversa com o Arthur (15/10/2026). Os ped
 
 **Partes:** as da etapa 5, mais `12-clientes.js` (crítico disfarçado, sem sinal óbvio, talvez um caderninho) e `22-salao-hud.js`.
 
-**Testes:** `smoke15` (aparição do crítico, avaliação, finais). O bot termina a história.
+**Testes:** `smoke16` (aparição do crítico, avaliação, finais). O bot termina a história.
 
 **Decisões em aberto:**
 - Nome do guia.
