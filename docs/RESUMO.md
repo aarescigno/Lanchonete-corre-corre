@@ -1,7 +1,7 @@
 # Resumo do projeto e das alterações (até 15/10/2026)
 
 ## Estado atual
-- **Versão:** v7.1 (Jogo justo: a fila sem mesa espera com calma e não passa de 1 coração; a porta segura chegadas com o salão lotado), publicada no artifact https://claude.ai/artifact/MJxrgDg8S4akvg47SoQAvj (privado).
+- **Versão:** v7.1 (Jogo justo: a fila sem mesa espera com calma e não passa de 1 coração; a porta segura chegadas com o salão lotado), publicada como Versão 23 do artifact https://claude.ai/artifact/MJxrgDg8S4akvg47SoQAvj (privado).
 - **Branch:** `claude/main` (renomeado pelo usuário; o antigo `claude/intelligent-gauss-3owv29` não existe mais) no repositório `aarescigno/Lanchonete-corre-corre`.
 - **Arquivos publicados:** `lanchonete.html` (página), mais `versoes/v1.html` a `versoes/v7.html`, abertos pelo painel Versões.
 - **Capacidades declaradas (mantidas ao republicar sem `capabilities`):**
