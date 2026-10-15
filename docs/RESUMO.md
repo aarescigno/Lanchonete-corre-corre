@@ -1,7 +1,7 @@
 # Resumo do projeto e das alterações (até 15/10/2026)
 
 ## Estado atual
-- **Versão:** v6 (Salão), publicada como Versão 19 do artifact https://claude.ai/artifact/MJxrgDg8S4akvg47SoQAvj (privado).
+- **Versão:** v6 (Salão), publicada como Versão 20 do artifact (com a Dani pegando o café no caminho da pia) https://claude.ai/artifact/MJxrgDg8S4akvg47SoQAvj (privado).
 - **Branch:** `claude/main` (renomeado pelo usuário; o antigo `claude/intelligent-gauss-3owv29` não existe mais) no repositório `aarescigno/Lanchonete-corre-corre`.
 - **Arquivos publicados:** `lanchonete.html` (página), mais `versoes/v1.html`, `versoes/v2.html`, `versoes/v3.html`, `versoes/v4.html` e `versoes/v5.html`, abertos pelo painel Versões.
 - **Capacidades declaradas (mantidas ao republicar sem `capabilities`):**
