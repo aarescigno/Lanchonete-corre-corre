@@ -11,7 +11,8 @@ Jogo de navegador de gerenciamento de restaurante, em um único arquivo HTML com
 - **Código:** a lógica (`Game.update`) fica separada do desenho (`render`); `window.__game` e `window.__lcc` ficam expostos para os testes.
 
 ## Economia de tokens
-- **Nunca leia `lanchonete.html` inteiro** (~145 KB, ~40 mil tokens). Use `tests/mapa.sh [filtro]` para achar a linha, depois Read com `offset` e `limit`, ou grep.
+- **Nunca leia `lanchonete.html` inteiro** (~200 KB, ~100 mil tokens pelo Read). Use `tests/mapa.sh [filtro]` para achar a linha, depois Read com `offset` e `limit`, ou grep.
+- **Buscas:** grep e Glob só em `lanchonete.html`, `tests/` e `docs/`; deixe de fora `versoes/` (cópias inteiras das versões antigas, ~1,4 MB) e `capturas/`.
 - **Edições grandes:** use scripts Python com substituição exata (`assert s.count(a)==1`), em vez de reler o arquivo.
 - **Testes:** `tests/run_all.sh` (só o resumo de cada teste); `--tudo` acrescenta `menu_fit` e `balance`. Não rode `node smokeN.js` sem `| tail`.
 - **Capturas:** confira recortes ampliados (PIL `crop`) só do trecho alterado, em vez de várias telas inteiras.
