@@ -1,7 +1,7 @@
 # Resumo do projeto e das alterações (até 15/10/2026)
 
 ## Estado atual
-- **Versão:** v7 (Contas: a meta é o lucro, com ingredientes, contas do dia e divulgação) https://claude.ai/artifact/MJxrgDg8S4akvg47SoQAvj (privado). A v6 foi a Versão 21 do artifact.
+- **Versão:** v7 (Contas: a meta é o lucro, com ingredientes, contas do dia e divulgação), publicada como Versão 22 do artifact https://claude.ai/artifact/MJxrgDg8S4akvg47SoQAvj (privado).
 - **Branch:** `claude/main` (renomeado pelo usuário; o antigo `claude/intelligent-gauss-3owv29` não existe mais) no repositório `aarescigno/Lanchonete-corre-corre`.
 - **Arquivos publicados:** `lanchonete.html` (página), mais `versoes/v1.html` a `versoes/v6.html`, abertos pelo painel Versões.
 - **Capacidades declaradas (mantidas ao republicar sem `capabilities`):**
@@ -123,5 +123,6 @@
 - Estrelas: conferir com jogadores se a 2ª estrela (`bomGoal`, metade do caminho entre a meta e a expert) ficou no ponto.
 - O painel "Como jogar" ainda rola no celular deitado.
 - Ajuste de dificuldade.
-- v7: conferir com jogadores se a escassez ficou no ponto (valores em `CONTAS`, `INGRED`, `DIVULGA` e nas metas). Próximos passos conversados: ponto (bairro, centro, área nobre) e modo história.
+- v7: conferir com jogadores se a escassez ficou no ponto (valores em `CONTAS`, `INGRED`, `DIVULGA` e nas metas).
+- **Roteiro das próximas versões em `docs/PLANO.md`** (uma etapa por sessão): livro-caixa, manutenção e imprevistos, ponto (Centro, área nobre com VIPs exigentes), modo história em 2 partes e polimento.
 - A lojinha ainda rola no menor celular deitado (568×320).
