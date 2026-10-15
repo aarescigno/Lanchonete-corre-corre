@@ -52,6 +52,9 @@ p{margin:calc(var(--u)*6) 0;font-size:max(12px,calc(var(--u)*16));line-height:1.
 .stars{font-size:max(30px,calc(var(--u)*56));letter-spacing:.1em;line-height:1;margin:calc(var(--u)*4) 0;text-shadow:calc(var(--u)*2) calc(var(--u)*2) 0 var(--tinta)}
 .stars .on{color:var(--mostarda)} .stars .off{color:#d9d4c4}
 .stats{display:grid;grid-template-columns:auto auto;gap:calc(var(--u)*4) calc(var(--u)*24);justify-content:center;text-align:left;margin:calc(var(--u)*8) auto;font-size:max(12px,calc(var(--u)*16));font-weight:600}
+.stats2{display:flex;flex-wrap:wrap;justify-content:center;align-items:flex-start;column-gap:calc(var(--u)*36)}
+.stats2 .stats{margin:calc(var(--u)*6) 0}
+.stats .tot{border-top:2px solid var(--tinta);padding-top:2px}
 .stats b{font-family:var(--fd);font-weight:400;text-align:right;font-size:max(13px,calc(var(--u)*18))}
 .shopgrid{display:grid;grid-template-columns:repeat(3,1fr);gap:calc(var(--u)*8);width:calc(var(--u)*760);max-width:100%;margin:calc(var(--u)*6) 0}
 .shopgrid.salao{grid-template-columns:repeat(2,1fr)}
@@ -205,7 +208,7 @@ table.rank tr.me td{background:#fbe7a8}
 
     <div class="ov show" id="ov-menu">
       <div class="panel menu-panel">
-        <span class="vtag" aria-label="Versão 6">v6</span>
+        <span class="vtag" aria-label="Versão 7">v7</span>
         <h1 class="title">Lanchonete <br>Corre-Corre</h1>
         <p class="tag">Ajude a Bia a atender a freguesia da esquina antes que o cafezinho esfrie!</p>
         <div class="lbl">Carreira: escolha o dia</div>
@@ -266,7 +269,7 @@ table.rank tr.me td{background:#fbe7a8}
         <h2 id="end-title">Fim do dia</h2>
         <div class="stars" id="end-stars" aria-label="Estrelas"></div>
         <p id="end-money"></p>
-        <div class="stats" id="end-stats"></div>
+        <div class="stats2" id="end-stats"></div>
         <p class="small" id="end-msg"></p>
         <div id="end-save"></div>
         <div class="row">
@@ -286,6 +289,7 @@ table.rank tr.me td{background:#fbe7a8}
           <button type="button" data-v="melhorias" aria-pressed="true">Melhorias</button>
           <button type="button" data-v="equipe" aria-pressed="false">Equipe</button>
           <button type="button" data-v="salao" aria-pressed="false">Salão</button>
+          <button type="button" data-v="divulga" aria-pressed="false">Divulgação</button>
         </div></div>
         <div class="shopgrid" id="shop-grid"></div>
         <p class="small" id="shop-folha"></p>
@@ -379,7 +383,8 @@ table.rank tr.me td{background:#fbe7a8}
       <div class="panel">
         <h2>Versões</h2>
         <ul class="verlist">
-          <li><b>v6</b><span class="cur">versão atual</span><br>14/10/2026 &mdash; Salão: compre cadeiras e mesas e escolha 2 ou 4 lugares em cada mesa.</li>
+          <li><b>v7</b><span class="cur">versão atual</span><br>15/10/2026 &mdash; Contas: a meta é o lucro; ingredientes, aluguel, luz e gás, e divulgação (boca a boca, panfletos ou redes sociais).</li>
+          <li><b>v6</b><br>14/10/2026 &mdash; Salão: compre cadeiras e mesas e escolha 2 ou 4 lugares em cada mesa.<br><a href="versoes/v6.html" target="_blank" rel="noopener">Abrir a v6</a></li>
           <li><b>v5</b><br>14/10/2026 &mdash; Equipe: aumento do Tonhão, a ajudante Dani e couvert artístico; louça limitada, lixeira que enche e água saborizada.<br><a href="versoes/v5.html" target="_blank" rel="noopener">Abrir a v5</a></li>
           <li><b>v4</b><br>14/10/2026 &mdash; Balcão de sucos e bandeja na lojinha (2 pratos ou 3 bebidas numa mão).<br><a href="versoes/v4.html" target="_blank" rel="noopener">Abrir a v4</a></li>
           <li><b>v3</b><br>14/10/2026 &mdash; Clientes VIP: furam a fila, têm menos paciência e pagam gorjeta extra.<br><a href="versoes/v3.html" target="_blank" rel="noopener">Abrir a v3</a></li>
@@ -564,18 +569,38 @@ const AGUA = { cap:12, price:15, refill:0.8, slow:0.4 };   // slow: a paciência
 const VIP = { pat:0.75, tip:0.5, perfect:40, angry:30, dish:25, cook:1.8, types:['estudante','vovos','familia','executiva'] };   // dish: o prato especial soma R$ 25 à conta e leva 1,8× o tempo
 
 const DAYS = [
-  { n:1, tables:[1,2,4],         groups:6,  types:['estudante','vovos'],                                   nu:null,         meta:250, expert:400,  time:150, speed:0.60, note:'' },
-  { n:2, tables:[1,2,4,5],       groups:9,  types:['estudante','vovos','familia'],                         nu:'familia',    meta:700, expert:1100,  time:160, speed:0.60, note:'Chegou a família! Grupos de 3 ou 4 só cabem nas mesas de 4 lugares. Na lojinha, aba Salão, dá para comprar cadeiras e mesas.' },
-  { n:3, tables:[1,2,3,4,5],     groups:18, types:['estudante','vovos','familia','executiva'],             nu:'executiva',  meta:1400,expert:1800,  time:170, speed:0.60, juice:0.3, note:'O movimento aumentou e agora só há 3 pratos limpos: sozinha a Bia não dá conta, contrate ajuda na lojinha. A executiva tem pouca paciência, mas deixa boa gorjeta. E abriu o balcão de sucos: quem pede suco quer receber antes da conta!' },
-  { n:4, tables:[1,2,3,4,5,6],   groups:22, types:['estudante','vovos','familia','executiva','entregador'], nu:'entregador', meta:1300,expert:1750, time:180, speed:0.58, juice:0.3, note:'O entregador de moto tem pressa: pouquíssima paciência!' },
-  { n:5, tables:[1,2,3,4,5,6],   groups:26, types:['estudante','vovos','familia','executiva','entregador'], nu:null,         meta:1480,expert:2050, time:190, speed:0.56, vip:0.15, juice:0.3, note:'Chegou cliente VIP (de óculos escuros e plaquinha dourada)! Fura a fila e tem menos paciência, mas paga gorjeta extra e um bônus se sair com 5 corações. Se sair bravo, a multa dobra.' },
-  { n:6, tables:[1,2,3,4,5,6],   groups:29, types:['estudante','vovos','familia','executiva','entregador'], nu:null,         meta:1500,expert:2150, time:200, speed:0.54, vip:0.15, juice:0.3, note:'Sexta-feira: ninguém quer esperar.' },
-  { n:7, tables:[1,2,3,4,5,6],   groups:33, types:['estudante','vovos','familia','executiva','entregador'], nu:null,         meta:1650,expert:2300, time:220, speed:0.52, vip:0.15, juice:0.3, note:'Tonhão está gripado: a cozinha anda mais devagar hoje.' }
+  { n:1, tables:[1,2,4],         groups:6,  types:['estudante','vovos'],                                   nu:null,         meta:200, expert:320,  time:150, speed:0.60, note:'' },
+  { n:2, tables:[1,2,4,5],       groups:9,  types:['estudante','vovos','familia'],                         nu:'familia',    meta:300, expert:720,  time:160, speed:0.60, note:'Chegou a família! Grupos de 3 ou 4 só cabem nas mesas de 4 lugares. Na lojinha, aba Salão, dá para comprar cadeiras e mesas.' },
+  { n:3, tables:[1,2,3,4,5],     groups:13, types:['estudante','vovos','familia','executiva'],             nu:'executiva',  meta:380, expert:880,  time:170, speed:0.60, juice:0.3, note:'O movimento aumentou e agora só há 3 pratos limpos: sozinha a Bia não dá conta, contrate ajuda na lojinha. A executiva tem pouca paciência, mas deixa boa gorjeta. E abriu o balcão de sucos: quem pede suco quer receber antes da conta!' },
+  { n:4, tables:[1,2,3,4,5,6],   groups:15, types:['estudante','vovos','familia','executiva','entregador'], nu:'entregador', meta:300, expert:780, time:180, speed:0.58, juice:0.3, note:'O entregador de moto tem pressa: pouquíssima paciência!' },
+  { n:5, tables:[1,2,3,4,5,6],   groups:16, types:['estudante','vovos','familia','executiva','entregador'], nu:null,         meta:480, expert:1100, time:190, speed:0.56, vip:0.15, juice:0.3, note:'Chegou cliente VIP (de óculos escuros e plaquinha dourada)! Fura a fila e tem menos paciência, mas paga gorjeta extra e um bônus se sair com 5 corações. Se sair bravo, a multa dobra.' },
+  { n:6, tables:[1,2,3,4,5,6],   groups:16, types:['estudante','vovos','familia','executiva','entregador'], nu:null,         meta:460, expert:1100, time:200, speed:0.54, vip:0.15, juice:0.3, note:'Sexta-feira: ninguém quer esperar.' },
+  { n:7, tables:[1,2,3,4,5,6],   groups:17, types:['estudante','vovos','familia','executiva','entregador'], nu:null,         meta:600, expert:1250, time:220, speed:0.52, vip:0.15, juice:0.3, note:'Tonhão está gripado: a cozinha anda mais devagar hoje.' }
 ];
 
 /* 2ª estrela: metade do caminho entre a meta e a expert (arredondada a R$ 25). Antes ela exigia a expert
    com algum cliente perdido, e como cada perda custa caro, quem batia a expert quase sempre levava 3 */
 function bomGoal(d){ return Math.round((d.meta + d.expert) / 50) * 25; }
+
+/* ============================================================
+   CONTAS (v7): a meta do dia é o lucro. Ingredientes saem de cada prato que fica
+   pronto (e de cada suco entregue), as contas do dia crescem com o salão aberto e,
+   do dia 3 em diante, a divulgação decide quanta gente aparece
+   ============================================================ */
+const CONTAS = { aluguel:120, mesa:30, lugar:6 };     // por dia: aluguel + luz e gás de cada mesa aberta e de cada lugar
+const INGRED = { prato:0.6, suco:5 };               // prato: fração da conta (cobrada quando fica pronto); suco: R$ por copo entregue
+const DIVULGA = [
+  { id:'boca',     name:'Boca a boca',   cost:0,   groups:[0.6, 0.9], vip:1,   desc:'Vem menos gente e o movimento varia: pode ser um dia fraco.' },
+  { id:'panfleto', name:'Panfletos',     cost:40,  groups:[1, 1],     vip:1,   desc:'O movimento normal do dia.' },
+  { id:'redes',    name:'Redes sociais', cost:100, groups:[1.2, 1.2], vip:1.5, desc:'+20% de grupos e, do dia 5 em diante, 50% mais VIPs. Precisa de lugar para tanta gente!' }
+];
+const DIVULGA_DIA = 3;                                // antes disso, o movimento é o da inauguração (sem custo)
+function divulgaOf(id){ return DIVULGA.find(d => d.id === id) || DIVULGA[1]; }
+/* contas do dia: aluguel fixo, mais cada mesa aberta e cada lugar dela */
+function contasDia(tables){
+  const open = tables.filter(t => t.open);
+  return CONTAS.aluguel + CONTAS.mesa * open.length + CONTAS.lugar * open.reduce((a, t) => a + t.seats, 0);
+}
 
 const ENDLESS = { n:0, tables:[1,2,3,4,5,6], groups:0, types:['estudante','vovos','familia','executiva','entregador'], nu:null, meta:0, expert:0, time:0, speed:1, vip:0.12, juice:0.3, note:'', endless:true };
 
@@ -595,7 +620,7 @@ const rand  = (a,b) => a + Math.random()*(b-a);
 const randi = (a,b) => Math.floor(a + Math.random()*(b-a+1));
 const pick  = arr => arr[Math.floor(Math.random()*arr.length)];
 const clamp = (v,a,b) => v<a?a:(v>b?b:v);
-const fmt   = n => 'R$ ' + Math.round(n);
+const fmt   = n => (Math.round(n) < 0 ? '-R$ ' : 'R$ ') + Math.abs(Math.round(n));
 
 /* ============================================================
    ÁUDIO (WebAudio sintetizado)
@@ -785,7 +810,7 @@ function normSave(s){
   const up = (s.up && typeof s.up === 'object') ? s.up : {};
   if (up.jukebox){ up.agua = true; delete up.jukebox; }   // a Jukebox virou Água saborizada na v5
   if (up.chapa){ up.pratos = true; delete up.chapa; }     // a Chapa nova virou Jogo de pratos (a velocidade da cozinha é do Tonhão)
-  return { maxDay: clamp(+s.maxDay||1,1,7), bank: Math.max(0,+s.bank||0), up, best: (s.best && typeof s.best === 'object') ? s.best : {}, stars: (s.stars && typeof s.stars === 'object') ? s.stars : {}, equipe: normEquipe(s.equipe), salao: normSalao(s.salao) };
+  return { maxDay: clamp(+s.maxDay||1,1,7), bank: Math.max(0,+s.bank||0), up, best: (s.best && typeof s.best === 'object') ? s.best : {}, stars: (s.stars && typeof s.stars === 'object') ? s.stars : {}, equipe: normEquipe(s.equipe), salao: normSalao(s.salao), divulga: divulgaOf(s.divulga).id };
 }
 function loadSave(){
   const def = normSave({});
@@ -971,6 +996,9 @@ class Kitchen {
           this.cooking.splice(i,1);
           Sfx.bell();
           this.game.addText(PLATE_SLOTS[free].x, PLATE_SLOTS[free].y - 34, 'Pronto!', PAL.mostarda, 16);
+          // ingredientes (v7): o prato pronto já custou, mesmo que o grupo vá embora antes de comer
+          const cost = t.group ? Math.round(t.group.bill * INGRED.prato) : 0;
+          if (cost){ this.game.custo += cost; this.game.addText(PLATE_SLOTS[free].x, PLATE_SLOTS[free].y - 54, '-' + cost, PAL.perigo, 12); }
         }
       }
     }
@@ -1250,7 +1278,7 @@ class Waitress {
     if (!n) return 0;
     for (let k=0;k<n;k++) this.hands.splice(this.hands.findIndex(h => h.kind === 'juice'), 1);
     grp.juiceGot += n;
-    g.stats.juice += n;
+    g.stats.juice += n; g.custo += INGRED.suco * n;
     grp.gain(1);
     g.score('juice', JUICE.price * n, t.cx + 24, t.cy - 30);
     if (!grp.juicePending) g.addText(t.cx, t.cy - 96, n > 1 ? 'Sucos entregues!' : 'Suco entregue!', PAL.alerta, 15);
@@ -1468,7 +1496,10 @@ class Game {
   resetDay(n){
     this.mode = n === 0 ? 'semfim' : 'carreira';
     this.day = n === 0 ? ENDLESS : DAYS[n-1];
-    this.money = 0;
+    this.money = 0; this.custo = 0; this.contas = 0; this.paidDiv = 0;
+    // divulgação (v7, do dia 3 em diante na carreira): quanto da freguesia do dia aparece
+    this.div = (n >= DIVULGA_DIA) ? divulgaOf(this.save.divulga) : null;
+    this.divF = this.div ? rand(this.div.groups[0], this.div.groups[1]) : 1;
     this.clock = this.day.time;
     this.cmdFree = CMD.map((c,i) => i);
     this.stars = 5; this.five = 0; this.starFlash = 0; this.arrT = 2; this.endless = null;
@@ -1495,15 +1526,16 @@ class Game {
   }
   buildSchedule(day){
     const out = [];
-    const gap = day.speed * day.time / day.groups;
+    const N = Math.max(3, Math.round(day.groups * this.divF)), vipP = (day.vip || 0) * (this.div ? this.div.vip : 1);
+    const gap = day.speed * day.time / N;
     let t = 3;
-    const forced = day.nu ? randi(1, Math.min(3, day.groups-1)) : -1;
-    const forcedVip = day.vip && !day.nu ? randi(1, Math.min(3, day.groups-1)) : -1;
+    const forced = day.nu ? randi(1, Math.min(3, N-1)) : -1;
+    const forcedVip = day.vip && !day.nu ? randi(1, Math.min(3, N-1)) : -1;
     const colors = this.tables.filter(x => day.tables.includes(x.id)).map(x => x.color);
-    for (let i=0;i<day.groups;i++){
+    for (let i=0;i<N;i++){
       let type = (i === forced) ? day.nu : pick(day.types);
       let vip = false;
-      if (day.vip && (i === forcedVip || Math.random() < day.vip)){
+      if (day.vip && (i === forcedVip || Math.random() < vipP)){
         if (!VIP.types.includes(type)) type = pick(VIP.types);
         vip = true;
       }
@@ -1514,17 +1546,25 @@ class Game {
   }
   startDay(n){ this.resetDay(n); this.setState('intro'); }
   startEndless(){ this.resetDay(0); this.setState('intro'); }
-  /* debita a folha do dia do dinheiro acumulado; quem não puder ser pago é dispensado (couvert, Dani, aumento do Tonhão) */
+  /* debita a folha e a divulgação do dia do dinheiro acumulado; o que não puder ser pago sai
+     (a divulgação vira boca a boca, depois couvert, Dani e aumento do Tonhão) */
   payDay(){
     const eq = this.save.equipe; this.unpaid = [];
-    while (payroll(eq) > this.save.bank){
-      if (eq.couvert){ eq.couvert = false; this.unpaid.push('Couvert'); }
+    const divCost = () => this.div ? this.div.cost : 0;
+    while (payroll(eq) + divCost() > this.save.bank){
+      if (divCost()){
+        this.unpaid.push(this.div.name); this.save.divulga = 'boca';
+        this.div = divulgaOf('boca'); this.divF = rand(this.div.groups[0], this.div.groups[1]);
+        this.schedule = this.buildSchedule(this.day);
+      }
+      else if (eq.couvert){ eq.couvert = false; this.unpaid.push('Couvert'); }
       else if (eq.dani){ eq.dani = 0; this.unpaid.push('Dani'); }
       else if (eq.tonhao){ eq.tonhao--; this.unpaid.push('aumento do Tonhão'); }
       else break;
     }
-    this.paid = payroll(eq);
-    this.save.bank -= this.paid;
+    this.paid = payroll(eq); this.paidDiv = divCost();
+    this.save.bank -= this.paid + this.paidDiv;
+    this.contas = contasDia(this.tables);
     writeSave(this.save);
     this.kitchen.slots = STAFF.tonhao.levels[eq.tonhao].slots;
     this.dani.reset();
@@ -1533,6 +1573,9 @@ class Game {
     this.payDay(); this.setState('playing');
     if (this.unpaid.length) this.addText(W/2, 300, 'Sem dinheiro para pagar: sem ' + this.unpaid.join(', ') + ' hoje', PAL.perigo, 20);
   }
+  /* lucro do dia (a meta): faturamento − ingredientes − contas − folha − divulgação */
+  get fixo(){ return this.contas + this.paid + this.paidDiv; }
+  get lucro(){ return this.money - this.custo - this.fixo; }
   get trashFull(){ return this.trash >= TRASH.cap; }
   /* alguém além da Bia lava a louça (Dani com a tarefa, ou o Tonhão com aumento) */
   get otherWasher(){ return this.dani.does('lavar') || this.kitchen.chef.wash > 0; }
@@ -1843,28 +1886,29 @@ class Game {
   }
 
   finishDay(){
-    const d = this.day, m = Math.round(this.money);
+    const d = this.day, m = Math.round(this.lucro), fat = Math.round(this.money);
     const passed = m >= d.meta;
     let stars = 0;
     if (passed) stars = 1;
     if (passed && m >= bomGoal(d)) stars = 2;
     if (m >= d.expert && this.stats.lost === 0) stars = 3;
     const prevBest = this.save.best[d.n] || 0;
-    const income = m;                 // todo o faturamento do dia vai para o dinheiro acumulado
-    this.save.bank += income;
-    this.save.best[d.n] = Math.max(prevBest, m);
+    // o faturamento vai para o dinheiro acumulado, menos os ingredientes e as contas (folha e divulgação já saíram ao abrir)
+    const income = fat - Math.round(this.custo) - this.contas;
+    this.save.bank = Math.max(0, this.save.bank + income);
+    this.save.best[d.n] = Math.max(prevBest, fat);   // o ranking da carreira soma o faturamento dos melhores dias
     this.save.stars[d.n] = Math.max(this.save.stars[d.n] || 0, stars);
     if (passed) this.save.maxDay = Math.max(this.save.maxDay, Math.min(7, d.n + 1));
     writeSave(this.save);
-    this.result = { day:d.n, money:m, meta:d.meta, bom:bomGoal(d), expert:d.expert, passed, stars, served:this.stats.served, lost:this.stats.lost, full:this.stats.full, chain:this.stats.chain, vip:this.stats.vip, vipLost:this.stats.vipLost, juice:this.stats.juice, juiceMiss:this.stats.juiceMiss, trash:this.stats.trash, washed:this.stats.washed, income, paid:this.paid, reason:this.reason };
+    this.result = { day:d.n, money:m, fat, custo:Math.round(this.custo), contas:this.contas, div:this.paidDiv, divName:this.div ? this.div.name : '', meta:d.meta, bom:bomGoal(d), expert:d.expert, passed, stars, served:this.stats.served, lost:this.stats.lost, full:this.stats.full, chain:this.stats.chain, vip:this.stats.vip, vipLost:this.stats.vipLost, juice:this.stats.juice, juiceMiss:this.stats.juiceMiss, trash:this.stats.trash, washed:this.stats.washed, income, paid:this.paid, reason:this.reason };
     this.setState('dayend');
     if (passed) Sfx.win(); else Sfx.lose();
   }
   finishEndless(){
     const pts = Math.round(this.money);
-    const income = pts;
-    this.save.bank += income; writeSave(this.save);
-    this.endless = { income, paid:this.paid, pontos:pts, tempo:Math.floor(this.elapsed), served:this.stats.served, lost:this.stats.lost, full:this.stats.full, chain:this.stats.chain, vip:this.stats.vip, juice:this.stats.juice };
+    const income = pts - Math.round(this.custo) - this.contas;
+    this.save.bank = Math.max(0, this.save.bank + income); writeSave(this.save);
+    this.endless = { income, paid:this.paid, custo:Math.round(this.custo), contas:this.contas, pontos:pts, tempo:Math.floor(this.elapsed), served:this.stats.served, lost:this.stats.lost, full:this.stats.full, chain:this.stats.chain, vip:this.stats.vip, juice:this.stats.juice };
     this.setState('endlessend');
     Sfx.lose();
   }
@@ -1885,6 +1929,15 @@ class Game {
     eq[key] = val;
     if (payroll(eq) > this.save.bank && payroll(eq) > payroll(Object.assign({}, eq, { [key]:old }))){ eq[key] = old; return false; }
     writeSave(this.save); this.kitchen.slots = STAFF.tonhao.levels[eq.tonhao].slots;
+    Sfx.ok(); return true;
+  }
+  payroll(){ return payroll(this.save.equipe); }
+  /* divulgação (v7): escolhida na lojinha, paga junto com a folha ao abrir o dia */
+  setDivulga(id){
+    const d = DIVULGA.find(x => x.id === id);
+    if (!d || this.shopNext < DIVULGA_DIA || (d.cost && this.payroll() + d.cost > this.save.bank)) return false;
+    this.save.divulga = id; writeSave(this.save);
+    if (this.state === 'shop') this.resetDay(this.shopNext);
     Sfx.ok(); return true;
   }
   toggleDaniTask(id){
@@ -2876,10 +2929,11 @@ function drawHud(ctx,g,tm){
     // dia
     rr(ctx,12,552,74,40,10); fs(ctx,PAL.mostarda,2.8);
     txt(ctx,'Dia ' + d.n,49,573,20,PAL.tinta,'center',FD);
-    // dinheiro
-    txt(ctx,'R$ ' + m,102,564,24,'#FFF7DC','left',FD,4);
+    // lucro do dia (v7): começa negativo, com as contas, a folha e a divulgação, e cai com os ingredientes
+    const m = Math.round(g.lucro);
+    txt(ctx,(m < 0 ? 'R$ −' : 'R$ ') + Math.abs(m),102,564,24,m < 0 ? '#FF9C8A' : '#FFF7DC','left',FD,4);
     const done = g.stats.served + g.stats.lost + g.stats.full;
-    txt(ctx,'grupos ' + done + '/' + d.groups,320,562,12,'#cfc7b0','right',FB);
+    txt(ctx,'grupos ' + done + '/' + g.schedule.length,320,562,12,'#cfc7b0','right',FB);
     const bx = 102, bw = 218, by = 576;
     rr(ctx,bx,by,bw,10,5); fs(ctx,'#4a453c',2);
     const frac = clamp(m / d.expert, 0, 1);
@@ -2887,7 +2941,7 @@ function drawHud(ctx,g,tm){
     const mx = bx + bw * d.meta / d.expert, gx = bx + bw * bomGoal(d) / d.expert;
     ctx.strokeStyle = '#fff'; ctx.lineWidth = 2; ctx.beginPath(); ctx.moveTo(mx,by-3); ctx.lineTo(mx,by+13); ctx.stroke();
     ctx.lineWidth = 1.5; ctx.beginPath(); ctx.moveTo(gx,by); ctx.lineTo(gx,by+10); ctx.stroke();   // 2ª estrela
-    txt(ctx,'meta R$ ' + d.meta,bx,593,11,m >= d.meta ? '#7fd69a' : '#cfc7b0','left',FB);
+    txt(ctx,'lucro · meta R$ ' + d.meta,bx,593,11,m >= d.meta ? '#7fd69a' : '#cfc7b0','left',FB);
     txt(ctx,'expert R$ ' + d.expert,bx+bw,593,11,m >= d.expert ? PAL.mostarda : '#cfc7b0','right',FB);
   }
   // fila de ações
@@ -3348,6 +3402,12 @@ function buildTips(){
     ['A partir do dia 5 aparece o cliente VIP (óculos escuros e plaquinha dourada): fura a fila e tem menos paciência, mas paga gorjeta extra e bônus com 5 corações. Bravo, a multa dobra.', c => {
       drawPerson(c,{skin:4,hair:3,hairC:'#1B1512',pants:'#2F3E5C',shades:true},28,60,{shirt:CHAIRS[2].c,mood:0,s:0.85});
       drawVipBadge(c,40,14,0);
+    }],
+    ['A meta do dia é o lucro: o que entra menos os ingredientes (' + Math.round(INGRED.prato * 100) + '% de cada prato), as contas (que crescem com o salão), a folha e a divulgação. O dia começa no vermelho! Do dia 3 em diante, escolha a divulgação na lojinha: mais gente só vale se couber.', c => {
+      rr(c,8,12,30,40,3); fs(c,'#fff',2);
+      for (let i=0;i<4;i++){ c.fillStyle = PAL.cromoEsc; c.fillRect(13,19+i*7,14,2.4); c.fillRect(30,19+i*7,4,2.4); }
+      c.strokeStyle = PAL.perigo; c.lineWidth = 2.4; c.beginPath(); c.moveTo(13,47); c.lineTo(34,47); c.stroke();
+      drawIcon(c,'coin',48,40,0.8);
     }]
   ];
   tips.forEach(t => {
@@ -3383,6 +3443,22 @@ function upgradeIcon(id){
       c.strokeStyle = PAL.cromoEsc; c.lineWidth = 2.5; c.beginPath(); c.moveTo(-10,6); c.lineTo(-12,17); c.moveTo(10,6); c.lineTo(12,17); c.stroke();
       rr(c,-18,-4,36,12,5); fs(c,PAL.cromo,2); rr(c,-15,-2,30,7,3); fs(c,PAL.formica,1.4);
       circ(c,12,-12,7); fs(c,PAL.ok,1.8); txt(c,'+',12,-11,13,'#fff','center',FD);
+    } else if (id === 'div-boca'){
+      drawPerson(c,{skin:2,hair:1,hairC:'#2F1D12',pants:'#4A4036'},-8,18,{ shirt:CHAIRS[1].c, mood:0, s:0.6 });
+      drawPerson(c,{skin:4,hair:4,hairC:'#1B1512',pants:'#2F3E5C'},10,18,{ shirt:CHAIRS[3].c, mood:0, s:0.6 });
+      txt(c,'…',1,-16,14,PAL.tinta,'center',FB);
+    } else if (id === 'div-panfleto'){
+      c.rotate(-0.15); rr(c,-11,-14,22,28,2); fs(c,'#fff',2);
+      rr(c,-7,-10,14,7,2); fs(c,PAL.formica,1.2); for (let i=0;i<3;i++){ c.fillStyle = PAL.cromoEsc; c.fillRect(-7,1+i*4,14 - i*3,1.8); }
+      c.rotate(0.15);
+    } else if (id === 'div-redes'){
+      rr(c,-10,-16,20,32,4); fs(c,PAL.tinta,2); rr(c,-7,-12,14,22,2); fs(c,'#E8F1FB',1);
+      c.beginPath(); c.moveTo(0,4); c.bezierCurveTo(-7,-1,-4,-8,0,-4); c.bezierCurveTo(4,-8,7,-1,0,4); c.closePath(); c.fillStyle = PAL.perigo; c.fill();
+      txt(c,'+',13,-14,13,PAL.ok,'center',FD);
+    } else if (id === 'contas'){
+      rr(c,-11,-15,22,30,2); fs(c,'#fff',2);
+      for (let i=0;i<4;i++){ c.fillStyle = PAL.cromoEsc; c.fillRect(-7,-10+i*5,10,1.8); c.fillRect(5,-10+i*5,3,1.8); }
+      c.strokeStyle = PAL.perigo; c.lineWidth = 2; c.beginPath(); c.moveTo(-7,11); c.lineTo(8,11); c.stroke();
     } else if (id === 'cafeteira'){
       drawIcon(c,'coffee',-8,0,0.8); drawIcon(c,'coffee',8,2,0.8);
     } else if (id === 'bandeja'){
@@ -3516,6 +3592,21 @@ function buildSalao(grid){
   if (sal.mesas < 2) c.appendChild(shopBtn('Comprar mesa: ' + fmt(SALAO.tablePrice), 'btn', !why && bank >= SALAO.tablePrice, () => game.buyTable()));
   grid.appendChild(c);
 }
+/* aba Divulgação (v7): escolha do dia, paga junto com a folha ao abrir; e o resumo das contas do dia */
+function buildDivulga(grid){
+  const n = game.shopNext, open = n >= DIVULGA_DIA, cur = game.save.divulga;
+  DIVULGA.forEach(d => {
+    const on = open && cur === d.id;
+    const c = staffCard(upgradeIcon('div-' + d.id), d.name, (d.cost ? fmt(d.cost) + ' por dia. ' : 'Grátis. ') + d.desc);
+    if (on) c.classList.add('own');
+    c.appendChild(shopBtn(!open ? 'A partir do dia ' + DIVULGA_DIA : (on ? 'Escolhida' : 'Escolher'), 'btn', open && !on && (!d.cost || game.payroll() + d.cost <= game.save.bank), () => game.setDivulga(d.id)));
+    grid.appendChild(c);
+  });
+  const sal = game.tables.filter(t => t.open);
+  const c = staffCard(upgradeIcon('contas'), 'Contas do dia ' + n,
+    'Aluguel ' + fmt(CONTAS.aluguel) + ' + luz e gás de ' + sal.length + ' mesas abertas (' + fmt(CONTAS.mesa) + ' cada) e ' + sal.reduce((a, t) => a + t.seats, 0) + ' lugares (' + fmt(CONTAS.lugar) + ' cada) = ' + fmt(contasDia(game.tables)) + ', no fim do dia. Ingredientes: ' + Math.round(INGRED.prato * 100) + '% da conta de cada prato que fica pronto e ' + fmt(INGRED.suco) + ' por suco.');
+  grid.appendChild(c);
+}
 function buildShop(){
   const grid = $('shop-grid');
   clearEl(grid);
@@ -3523,12 +3614,13 @@ function buildShop(){
   $('shop-bank').textContent = fmt(game.save.bank);
   $('shop-limit').textContent = game.shopBought ? 'Melhoria do dia ' + game.shopNext + ' já escolhida.' : 'Você pode levar 1 melhoria antes do dia ' + game.shopNext + '.';
   $('btn-shop-go').textContent = 'Começar o dia ' + game.shopNext;
-  const f = payroll(game.save.equipe);
-  $('shop-folha').textContent = f ? 'Folha do dia: ' + fmt(f) + ' (debitada do dinheiro acumulado ao abrir a lanchonete).' : 'Sem folha: contrate na aba Equipe. Os salários são debitados do dinheiro acumulado no início de cada dia.';
+  const f = payroll(game.save.equipe), dv = game.shopNext >= DIVULGA_DIA ? divulgaOf(game.save.divulga) : null;
+  $('shop-folha').textContent = (f ? 'Folha ' + fmt(f) : 'Sem folha') + (dv ? ' + ' + dv.name.toLowerCase() + ' ' + fmt(dv.cost) : '') + ' ao abrir; contas ' + fmt(contasDia(game.tables)) + ' e ingredientes no fim do dia. A meta é o lucro.';
   grid.className = 'shopgrid' + (shopTab === 'salao' ? ' salao' : '');
   $('ov-shop').classList[shopTab === 'salao' ? 'add' : 'remove']('salao');
   if (shopTab === 'equipe') return buildEquipe(grid);
   if (shopTab === 'salao') return buildSalao(grid);
+  if (shopTab === 'divulga') return buildDivulga(grid);
   UPGRADES.forEach(u => {
     const own = !!game.up[u.id];
     const card = el('div', 'item' + (own ? ' own' : ''));
@@ -3551,15 +3643,22 @@ function buildEnd(){
   if (!r) return;
   $('end-title').textContent = r.passed ? ('Dia ' + r.day + ' concluído!') : 'Faltou pouquinho...';
   starsHtml($('end-stars'), r.stars, 3);
-  $('end-money').textContent = 'Você faturou ' + fmt(r.money) + ' (meta ' + fmt(r.meta) + ' · 2 estrelas ' + fmt(r.bom) + ' · expert ' + fmt(r.expert) + ')';
+  $('end-money').textContent = (r.money < 0 ? 'Prejuízo de ' + fmt(-r.money) : 'Lucro de ' + fmt(r.money)) + ' (meta ' + fmt(r.meta) + ' · 2 estrelas ' + fmt(r.bom) + ' · expert ' + fmt(r.expert) + ')';
   const st = $('end-stats');
   clearEl(st);
-  const rows = [['Atendidos', r.served],['Perdidos', r.lost],['Não couberam', r.full],['Maior corrente', '×' + r.chain],['Folha paga hoje', r.paid ? '-' + fmt(r.paid) : '-'],['Dinheiro acumulado', fmt(game.save.bank)]];
+  const rows = [['Atendidos', r.served],['Perdidos', r.lost],['Não couberam', r.full],['Maior corrente', '×' + r.chain]];
   if (r.trash) rows.splice(2, 0, ['Na lixeira', r.trash + ' bebida' + (r.trash > 1 ? 's' : '')]);
   if (r.juice || r.juiceMiss) rows.splice(2, 0, ['Sucos', r.juice + ' entregue' + (r.juice === 1 ? '' : 's') + (r.juiceMiss ? ' · ' + r.juiceMiss + ' mesa' + (r.juiceMiss > 1 ? 's' : '') + ' sem suco' : '')]);
   if (r.vip || r.vipLost) rows.splice(2, 0, ['VIPs', r.vip + ' atendido' + (r.vip === 1 ? '' : 's') + (r.vipLost ? ' · ' + r.vipLost + ' bravo' + (r.vipLost > 1 ? 's' : '') : '')]);
-  rows.forEach(p => {
-    st.appendChild(el('span', null, p[0])); st.appendChild(el('b', null, String(p[1])));
+  // as contas do dia (v7), do faturamento ao lucro, num quadro ao lado
+  const neg = v => v ? '-' + fmt(v) : '-';
+  const conta = [['Faturamento', fmt(r.fat)],['Ingredientes', neg(r.custo)],['Contas do dia', neg(r.contas)],['Folha', neg(r.paid)]];
+  if (r.divName) conta.push([r.divName, neg(r.div)]);
+  conta.push(['Lucro do dia', fmt(r.money), 'tot'], ['Dinheiro acumulado', fmt(game.save.bank)]);
+  [rows, conta].forEach(list => {
+    const box = el('div', 'stats');
+    list.forEach(p => { box.appendChild(el('span', p[2] || null, p[0])); box.appendChild(el('b', p[2] || null, String(p[1]))); });
+    st.appendChild(box);
   });
   let msg = '';
   if (!r.passed) msg = 'Bata a meta de ' + fmt(r.meta) + ' para liberar o próximo dia.';
@@ -3589,7 +3688,7 @@ function buildEndless(){
   if (!r) return;
   const st = $('endless-stats');
   clearEl(st);
-  [['Pontos', r.pontos],['Tempo sobrevivido', mmssUp(r.tempo)],['Grupos atendidos', r.served],['VIPs atendidos', r.vip],['Sucos entregues', r.juice],['Maior corrente', '×' + r.chain],['Não couberam na fila', r.full],['Dinheiro acumulado', fmt(game.save.bank)]].forEach(p => {
+  [['Pontos', r.pontos],['Tempo sobrevivido', mmssUp(r.tempo)],['Grupos atendidos', r.served],['VIPs atendidos', r.vip],['Sucos entregues', r.juice],['Maior corrente', '×' + r.chain],['Não couberam na fila', r.full],['Ingredientes e contas', '-' + fmt(r.custo + r.contas)],['Dinheiro acumulado', fmt(game.save.bank)]].forEach(p => {
     st.appendChild(el('span', null, p[0])); st.appendChild(el('b', null, String(p[1])));
   });
   buildSaveForm($('endless-save'), 'semfim');
@@ -3705,7 +3804,11 @@ game.hooks.state = function(s){
       $('intro-note').textContent = 'Grupo que sai bravo ou que não cabe na fila tira 1 estrela. A cada 8 contas pagas com 5 corações, você ganha 1 de volta. Com 0 estrelas, o turno acaba.';
     } else {
       $('intro-title').textContent = 'Dia ' + d.n;
-      $('intro-goal').textContent = 'Meta: ' + fmt(d.meta) + ' · 2 estrelas: ' + fmt(bomGoal(d)) + ' · Expert: ' + fmt(d.expert) + ' · ' + d.groups + ' grupos · ' + mmss(d.time) + (payroll(game.save.equipe) ? ' · Folha ' + fmt(payroll(game.save.equipe)) : '');
+      const div = game.div, custos = ['contas ' + fmt(contasDia(game.tables))];
+      if (payroll(game.save.equipe)) custos.push('folha ' + fmt(payroll(game.save.equipe)));
+      if (div && div.cost) custos.push(div.name.toLowerCase() + ' ' + fmt(div.cost));
+      $('intro-goal').textContent = 'Meta de lucro: ' + fmt(d.meta) + ' · 2 estrelas: ' + fmt(bomGoal(d)) + ' · Expert: ' + fmt(d.expert) + ' · ' + game.schedule.length + ' grupos' + (div ? ' (' + div.name.toLowerCase() + ')' : '') + ' · ' + mmss(d.time)
+        + '. Custos do dia: ' + custos.join(' + ') + ', mais ' + Math.round(INGRED.prato * 100) + '% de cada prato em ingredientes.';
       $('intro-note').textContent = d.note || 'Sente a freguesia, anote os pedidos e mantenha todo mundo feliz!';
     }
     showOnly(['ov-intro']);
@@ -3813,7 +3916,7 @@ fit();
 try { Rank.init(); } catch(e) {}
 game.setState('menu');
 window.__game = game;
-window.__lcc = { bomGoal, SALAO, rowLayout, salaoDefs, salaoOk, salaoUsed, salaoTableBlock, normSalao, setObst, OBST, AGUA, CRIT, STAFF, DANI_TASKS, DANI_HANDS, daniTaskOk, TRASH, WASH, payroll, couvertEffect, dishStock, normSave, Helper, JUICE, KITCHEN_SLOTS, handLayout, trayOk, Game, Group, Table, Kitchen, Waitress, DAYS, UPGRADES, CUSTOMER_TYPES, LAYOUT, PAL, Sfx, findPath, render, Rank, sortRows, cleanName, normName, CMD, ENDLESS, VIP, rk, renderRank, openRank, closeRank, LS, lsGet, lsSet, loadSave };
+window.__lcc = { setShopTab: v => { shopTab = v; buildShop(); }, CONTAS, INGRED, DIVULGA, DIVULGA_DIA, divulgaOf, contasDia, bomGoal, SALAO, rowLayout, salaoDefs, salaoOk, salaoUsed, salaoTableBlock, normSalao, setObst, OBST, AGUA, CRIT, STAFF, DANI_TASKS, DANI_HANDS, daniTaskOk, TRASH, WASH, payroll, couvertEffect, dishStock, normSave, Helper, JUICE, KITCHEN_SLOTS, handLayout, trayOk, Game, Group, Table, Kitchen, Waitress, DAYS, UPGRADES, CUSTOMER_TYPES, LAYOUT, PAL, Sfx, findPath, render, Rank, sortRows, cleanName, normName, CMD, ENDLESS, VIP, rk, renderRank, openRank, closeRank, LS, lsGet, lsSet, loadSave };
 window.requestAnimationFrame(frame);
 
 })();

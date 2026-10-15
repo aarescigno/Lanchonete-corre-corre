@@ -23,6 +23,22 @@ function upgradeIcon(id){
       c.strokeStyle = PAL.cromoEsc; c.lineWidth = 2.5; c.beginPath(); c.moveTo(-10,6); c.lineTo(-12,17); c.moveTo(10,6); c.lineTo(12,17); c.stroke();
       rr(c,-18,-4,36,12,5); fs(c,PAL.cromo,2); rr(c,-15,-2,30,7,3); fs(c,PAL.formica,1.4);
       circ(c,12,-12,7); fs(c,PAL.ok,1.8); txt(c,'+',12,-11,13,'#fff','center',FD);
+    } else if (id === 'div-boca'){
+      drawPerson(c,{skin:2,hair:1,hairC:'#2F1D12',pants:'#4A4036'},-8,18,{ shirt:CHAIRS[1].c, mood:0, s:0.6 });
+      drawPerson(c,{skin:4,hair:4,hairC:'#1B1512',pants:'#2F3E5C'},10,18,{ shirt:CHAIRS[3].c, mood:0, s:0.6 });
+      txt(c,'…',1,-16,14,PAL.tinta,'center',FB);
+    } else if (id === 'div-panfleto'){
+      c.rotate(-0.15); rr(c,-11,-14,22,28,2); fs(c,'#fff',2);
+      rr(c,-7,-10,14,7,2); fs(c,PAL.formica,1.2); for (let i=0;i<3;i++){ c.fillStyle = PAL.cromoEsc; c.fillRect(-7,1+i*4,14 - i*3,1.8); }
+      c.rotate(0.15);
+    } else if (id === 'div-redes'){
+      rr(c,-10,-16,20,32,4); fs(c,PAL.tinta,2); rr(c,-7,-12,14,22,2); fs(c,'#E8F1FB',1);
+      c.beginPath(); c.moveTo(0,4); c.bezierCurveTo(-7,-1,-4,-8,0,-4); c.bezierCurveTo(4,-8,7,-1,0,4); c.closePath(); c.fillStyle = PAL.perigo; c.fill();
+      txt(c,'+',13,-14,13,PAL.ok,'center',FD);
+    } else if (id === 'contas'){
+      rr(c,-11,-15,22,30,2); fs(c,'#fff',2);
+      for (let i=0;i<4;i++){ c.fillStyle = PAL.cromoEsc; c.fillRect(-7,-10+i*5,10,1.8); c.fillRect(5,-10+i*5,3,1.8); }
+      c.strokeStyle = PAL.perigo; c.lineWidth = 2; c.beginPath(); c.moveTo(-7,11); c.lineTo(8,11); c.stroke();
     } else if (id === 'cafeteira'){
       drawIcon(c,'coffee',-8,0,0.8); drawIcon(c,'coffee',8,2,0.8);
     } else if (id === 'bandeja'){
@@ -156,6 +172,21 @@ function buildSalao(grid){
   if (sal.mesas < 2) c.appendChild(shopBtn('Comprar mesa: ' + fmt(SALAO.tablePrice), 'btn', !why && bank >= SALAO.tablePrice, () => game.buyTable()));
   grid.appendChild(c);
 }
+/* aba Divulgação (v7): escolha do dia, paga junto com a folha ao abrir; e o resumo das contas do dia */
+function buildDivulga(grid){
+  const n = game.shopNext, open = n >= DIVULGA_DIA, cur = game.save.divulga;
+  DIVULGA.forEach(d => {
+    const on = open && cur === d.id;
+    const c = staffCard(upgradeIcon('div-' + d.id), d.name, (d.cost ? fmt(d.cost) + ' por dia. ' : 'Grátis. ') + d.desc);
+    if (on) c.classList.add('own');
+    c.appendChild(shopBtn(!open ? 'A partir do dia ' + DIVULGA_DIA : (on ? 'Escolhida' : 'Escolher'), 'btn', open && !on && (!d.cost || game.payroll() + d.cost <= game.save.bank), () => game.setDivulga(d.id)));
+    grid.appendChild(c);
+  });
+  const sal = game.tables.filter(t => t.open);
+  const c = staffCard(upgradeIcon('contas'), 'Contas do dia ' + n,
+    'Aluguel ' + fmt(CONTAS.aluguel) + ' + luz e gás de ' + sal.length + ' mesas abertas (' + fmt(CONTAS.mesa) + ' cada) e ' + sal.reduce((a, t) => a + t.seats, 0) + ' lugares (' + fmt(CONTAS.lugar) + ' cada) = ' + fmt(contasDia(game.tables)) + ', no fim do dia. Ingredientes: ' + Math.round(INGRED.prato * 100) + '% da conta de cada prato que fica pronto e ' + fmt(INGRED.suco) + ' por suco.');
+  grid.appendChild(c);
+}
 function buildShop(){
   const grid = $('shop-grid');
   clearEl(grid);
@@ -163,12 +194,13 @@ function buildShop(){
   $('shop-bank').textContent = fmt(game.save.bank);
   $('shop-limit').textContent = game.shopBought ? 'Melhoria do dia ' + game.shopNext + ' já escolhida.' : 'Você pode levar 1 melhoria antes do dia ' + game.shopNext + '.';
   $('btn-shop-go').textContent = 'Começar o dia ' + game.shopNext;
-  const f = payroll(game.save.equipe);
-  $('shop-folha').textContent = f ? 'Folha do dia: ' + fmt(f) + ' (debitada do dinheiro acumulado ao abrir a lanchonete).' : 'Sem folha: contrate na aba Equipe. Os salários são debitados do dinheiro acumulado no início de cada dia.';
+  const f = payroll(game.save.equipe), dv = game.shopNext >= DIVULGA_DIA ? divulgaOf(game.save.divulga) : null;
+  $('shop-folha').textContent = (f ? 'Folha ' + fmt(f) : 'Sem folha') + (dv ? ' + ' + dv.name.toLowerCase() + ' ' + fmt(dv.cost) : '') + ' ao abrir; contas ' + fmt(contasDia(game.tables)) + ' e ingredientes no fim do dia. A meta é o lucro.';
   grid.className = 'shopgrid' + (shopTab === 'salao' ? ' salao' : '');
   $('ov-shop').classList[shopTab === 'salao' ? 'add' : 'remove']('salao');
   if (shopTab === 'equipe') return buildEquipe(grid);
   if (shopTab === 'salao') return buildSalao(grid);
+  if (shopTab === 'divulga') return buildDivulga(grid);
   UPGRADES.forEach(u => {
     const own = !!game.up[u.id];
     const card = el('div', 'item' + (own ? ' own' : ''));

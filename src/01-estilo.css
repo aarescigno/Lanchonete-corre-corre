@@ -47,6 +47,9 @@ p{margin:calc(var(--u)*6) 0;font-size:max(12px,calc(var(--u)*16));line-height:1.
 .stars{font-size:max(30px,calc(var(--u)*56));letter-spacing:.1em;line-height:1;margin:calc(var(--u)*4) 0;text-shadow:calc(var(--u)*2) calc(var(--u)*2) 0 var(--tinta)}
 .stars .on{color:var(--mostarda)} .stars .off{color:#d9d4c4}
 .stats{display:grid;grid-template-columns:auto auto;gap:calc(var(--u)*4) calc(var(--u)*24);justify-content:center;text-align:left;margin:calc(var(--u)*8) auto;font-size:max(12px,calc(var(--u)*16));font-weight:600}
+.stats2{display:flex;flex-wrap:wrap;justify-content:center;align-items:flex-start;column-gap:calc(var(--u)*36)}
+.stats2 .stats{margin:calc(var(--u)*6) 0}
+.stats .tot{border-top:2px solid var(--tinta);padding-top:2px}
 .stats b{font-family:var(--fd);font-weight:400;text-align:right;font-size:max(13px,calc(var(--u)*18))}
 .shopgrid{display:grid;grid-template-columns:repeat(3,1fr);gap:calc(var(--u)*8);width:calc(var(--u)*760);max-width:100%;margin:calc(var(--u)*6) 0}
 .shopgrid.salao{grid-template-columns:repeat(2,1fr)}

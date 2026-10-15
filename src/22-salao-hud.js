@@ -174,10 +174,11 @@ function drawHud(ctx,g,tm){
     // dia
     rr(ctx,12,552,74,40,10); fs(ctx,PAL.mostarda,2.8);
     txt(ctx,'Dia ' + d.n,49,573,20,PAL.tinta,'center',FD);
-    // dinheiro
-    txt(ctx,'R$ ' + m,102,564,24,'#FFF7DC','left',FD,4);
+    // lucro do dia (v7): começa negativo, com as contas, a folha e a divulgação, e cai com os ingredientes
+    const m = Math.round(g.lucro);
+    txt(ctx,(m < 0 ? 'R$ −' : 'R$ ') + Math.abs(m),102,564,24,m < 0 ? '#FF9C8A' : '#FFF7DC','left',FD,4);
     const done = g.stats.served + g.stats.lost + g.stats.full;
-    txt(ctx,'grupos ' + done + '/' + d.groups,320,562,12,'#cfc7b0','right',FB);
+    txt(ctx,'grupos ' + done + '/' + g.schedule.length,320,562,12,'#cfc7b0','right',FB);
     const bx = 102, bw = 218, by = 576;
     rr(ctx,bx,by,bw,10,5); fs(ctx,'#4a453c',2);
     const frac = clamp(m / d.expert, 0, 1);
@@ -185,7 +186,7 @@ function drawHud(ctx,g,tm){
     const mx = bx + bw * d.meta / d.expert, gx = bx + bw * bomGoal(d) / d.expert;
     ctx.strokeStyle = '#fff'; ctx.lineWidth = 2; ctx.beginPath(); ctx.moveTo(mx,by-3); ctx.lineTo(mx,by+13); ctx.stroke();
     ctx.lineWidth = 1.5; ctx.beginPath(); ctx.moveTo(gx,by); ctx.lineTo(gx,by+10); ctx.stroke();   // 2ª estrela
-    txt(ctx,'meta R$ ' + d.meta,bx,593,11,m >= d.meta ? '#7fd69a' : '#cfc7b0','left',FB);
+    txt(ctx,'lucro · meta R$ ' + d.meta,bx,593,11,m >= d.meta ? '#7fd69a' : '#cfc7b0','left',FB);
     txt(ctx,'expert R$ ' + d.expert,bx+bw,593,11,m >= d.expert ? PAL.mostarda : '#cfc7b0','right',FB);
   }
   // fila de ações

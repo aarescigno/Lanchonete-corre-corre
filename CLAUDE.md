@@ -1,6 +1,6 @@
 # Lanchonete Corre-Corre
 
-Jogo de navegador de gerenciamento de restaurante, em um único arquivo HTML com canvas 2D, em português do Brasil. Versão atual: **v6**. O estado do projeto, o histórico e os detalhes do artifact e do ranking estão em `docs/RESUMO.md` (leia só quando precisar).
+Jogo de navegador de gerenciamento de restaurante, em um único arquivo HTML com canvas 2D, em português do Brasil. Versão atual: **v7**. O estado do projeto, o histórico e os detalhes do artifact e do ranking estão em `docs/RESUMO.md` (leia só quando precisar).
 
 ## Regras do projeto
 - **Jogo original:** os personagens são a Bia (garçonete) e o Chef Tonhão. Não usar nomes, arte nem logos de jogos existentes, nem citar "Diner Dash" ou "Flo" na interface.
@@ -13,7 +13,7 @@ Jogo de navegador de gerenciamento de restaurante, em um único arquivo HTML com
 ## Partes do código (`src/`, juntadas em ordem pelo nome)
 Cada parte é um trecho exato do arquivo final (o JS fica todo dentro de um `(function(){ ... })()` que começa em `02-telas.html` e fecha em `43-telas.js`, então as partes `.js` não rodam sozinhas).
 - `00-topo.html` título e fontes · `01-estilo.css` CSS · `02-telas.html` telas (menu, lojinha, painéis `#ov-*`)
-- `10-constantes.js` constantes, salão, equipe, dias, melhorias · `11-base.js` utilidades, áudio, caminhos
+- `10-constantes.js` constantes, salão, equipe, contas e divulgação, dias, melhorias · `11-base.js` utilidades, áudio, caminhos
 - `12-clientes.js` pessoas, mesa, grupo · `13-cozinha.js` Tonhão · `14-bia.js` mãos e Bia · `15-dani.js` Dani · `16-jogo.js` classe `Game`
 - `20-desenho-base.js` helpers de desenho, ícones, pessoas · `21-cenario.js` cenário, cozinha, Dani, músico, água, lixeira · `22-salao-hud.js` mesas, balões, HUD · `23-render.js` brilho e `render`
 - `30-ranking.js` ranking · `40-interface.js` escala, menu, Como jogar · `41-lojinha.js` lojinha · `42-resultados.js` fim do dia, formulário, tela do ranking · `43-telas.js` troca de telas, botões, entrada, laço
@@ -27,10 +27,11 @@ Cada parte é um trecho exato do arquivo final (o JS fica todo dentro de um `(fu
 - **Docs:** leia `docs/spec-vN.md` e `docs/HISTORICO.md` só quando o assunto pedir.
 
 ## Testes (`cd tests`)
-- `./run_all.sh` monta `lanchonete.html` a partir de `src/`, roda `extract.sh` (gera `game.js` e confere a sintaxe) e depois os smokes 1 a 8.
-- `node balance.js [N]` roda o bot N vezes por dia, sem equipe (alvo: ~10% das metas nos dias 3 a 7). `EQUIPE=auto` usa a equipe que o jogador já paga (alvo: ~85%); `EQUIPE='{...}'` usa uma equipe fixa.
+- `./run_all.sh` monta `lanchonete.html` a partir de `src/`, roda `extract.sh` (gera `game.js` e confere a sintaxe) e depois os smokes 1 a 9.
+- `node balance.js [N]` roda o bot N vezes por dia, sem equipe (desde a v7, a meta é o lucro; alvo: ~40–70% das metas nos dias 3 a 7). `EQUIPE=auto` usa a equipe que o jogador já paga (alvo: ~85–95%); `EQUIPE='{...}'` usa uma equipe fixa; `DIV=boca|panfleto|redes` escolhe a divulgação.
+- `node carreira.js [N]` joga a carreira com o dinheiro acumulado de verdade e mostra o dinheiro em cada lojinha (alvo da v7: pouca sobra no dia 5).
 - `python3 menu_fit.py` confere que o menu não rola.
-- `python3 shot_v6.py` gera as capturas em `capturas/v6`.
+- `python3 shot_v7.py` gera as capturas em `capturas/v7`.
 - O Playwright usa `/opt/pw-browsers/chromium` quando existe.
 - `botpage.js` é gerado a partir de `bot.js`: ao mudar o bot, gere de novo.
 

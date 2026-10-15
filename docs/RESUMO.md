@@ -1,9 +1,9 @@
 # Resumo do projeto e das alterações (até 15/10/2026)
 
 ## Estado atual
-- **Versão:** v6 (Salão), publicada como Versão 21 do artifact (com a Dani pegando o café no caminho da pia e o ícone "Instalar no celular") https://claude.ai/artifact/MJxrgDg8S4akvg47SoQAvj (privado).
+- **Versão:** v7 (Contas: a meta é o lucro, com ingredientes, contas do dia e divulgação) https://claude.ai/artifact/MJxrgDg8S4akvg47SoQAvj (privado). A v6 foi a Versão 21 do artifact.
 - **Branch:** `claude/main` (renomeado pelo usuário; o antigo `claude/intelligent-gauss-3owv29` não existe mais) no repositório `aarescigno/Lanchonete-corre-corre`.
-- **Arquivos publicados:** `lanchonete.html` (página), mais `versoes/v1.html`, `versoes/v2.html`, `versoes/v3.html`, `versoes/v4.html` e `versoes/v5.html`, abertos pelo painel Versões.
+- **Arquivos publicados:** `lanchonete.html` (página), mais `versoes/v1.html` a `versoes/v6.html`, abertos pelo painel Versões.
 - **Capacidades declaradas (mantidas ao republicar sem `capabilities`):**
   - `db`: `ranking-carreira` e `ranking-semfim` com read "view" e write "owner";
   - `db`: `ranking-*/{self}` com write "interact";
@@ -12,7 +12,7 @@
   - documentos `ranking-carreira/<userId>` e `ranking-semfim/<userId>`, com `nome`, `pontos`, `dia` ou `tempo` e `quando`;
   - só sobrescreve quando a pontuação é maior;
   - fallback local em `localStorage` (`lcc2_ranking`).
-- **Save:** `lcc2_save`, que importa o `lcc_save_v1` da v1. Desde a v6 guarda também o salão (`save.salao`).
+- **Save:** `lcc2_save`, que importa o `lcc_save_v1` da v1. Desde a v6 guarda também o salão (`save.salao`); desde a v7, a divulgação (`save.divulga`). `save.best` continua guardando o melhor faturamento de cada dia (é o que o ranking da carreira soma).
 
 ## Versões
 | Versão | Data | O que trouxe | Detalhes |
@@ -23,6 +23,7 @@
 | v4 | 14/10 | balcão de sucos, bandeja, comandas empilhadas, lixeira | `docs/spec-v4.md` |
 | v5 | 14/10 | equipe (Tonhão, Dani, couvert), louça limitada, lixeira que enche, água saborizada, renda de 30% | `docs/spec-v5.md` |
 | v6 | 14/10 | aba Salão: cadeiras e mesas (até 8) compradas, 2 ou 4 lugares por mesa | `docs/spec-v6.md` |
+| v7 | 15/10 | Contas: meta em lucro, ingredientes, contas do dia pelo salão aberto, divulgação (boca a boca, panfletos, redes sociais) | `docs/spec-v7.md` |
 
 ## Alterações feitas no Claude Code (14/10/2026)
 1. **Importação** do pacote exportado do claude.ai para o repositório (commit `982583b`).
@@ -80,6 +81,15 @@
    - A pergunta-lembrete a cada alteração saiu do `CLAUDE.md`, a pedido do usuário.
    - **Dani e o cafezinho** (15/10, a pedido do usuário): ela serve café a quem perdeu pelo menos 1 coração (≤4, antes ≤3) e, com 1 pilha de louça na mão, pega o café no caminho da pia, deixa a louça (sem lavar) e vai servir. Assim usa as 2 mãos 4 a 5 vezes a cada 10 dias (antes ~1), e o teste "a Dani chega a 2 itens" do `smoke6` deixou de oscilar. O equilíbrio não mudou (`balance` com a Dani nível 3 em pratos, lavar e cafezinho: 304/400 → 307/400 metas nos dias 3 a 7).
 
+10. **v7, Contas** (ver `docs/spec-v7.md`), a partir do retorno do Renan Martorelli ("no dia 5 tenho dinheiro de sobra pra fazer tudo"):
+   - **Meta em lucro:** faturamento − ingredientes − contas − folha − divulgação. O dia começa no vermelho no HUD.
+   - **Ingredientes:** 60% da conta de cada prato quando fica pronto; R$ 5 por suco entregue.
+   - **Contas do dia:** aluguel R$ 120 + R$ 30 por mesa aberta + R$ 6 por lugar.
+   - **Divulgação** (aba nova na lojinha, do dia 3 em diante): boca a boca (grátis, 60–90% dos grupos), panfletos (R$ 40, 100%), redes sociais (R$ 100, 120% e mais VIPs).
+   - **Menos grupos na base** nos dias 3 a 7 (13, 15, 16, 16, 17), porque o gargalo é atender e mais gente só trazia multas; metas recalibradas pelo lucro.
+   - Bot na carreira: dinheiro antes do dia 5 caiu de R$ 3.410 (v6) para R$ 1.319. Testes `smoke9` e `carreira.js`.
+   - Ficaram para depois: escolher o ponto (bairro, centro, área nobre) e o modo história.
+
 ## Código em partes (`src/`)
 - Desde 15/10/2026 o código fica em 19 partes em `src/` (lista no `CLAUDE.md`), juntadas por `montar.py` em `lanchonete.html` sem acrescentar nada: o arquivo montado é idêntico, byte a byte, ao anterior à divisão.
 - `lanchonete.html` continua no git (artifact, `app/build.py`, testes e capturas usam ele). `montar.py --check` confere que ele está em dia (o workflow do Pages roda isso); `montar.py` recusa sobrescrever um `lanchonete.html` editado à mão depois das partes (`--forcar` passa por cima).
@@ -102,8 +112,10 @@
 - `smoke6` (94/94: equipe, louça, lixeira que enche, couvert, água, economia). O teste "a Dani chega a 2 itens" oscilava (dependia do sorteio do dia) até a Dani pegar o café no caminho da pia; hoje falha em menos de ~1 a cada 40 rodadas;
 - `smoke7` (15/15: toque no celular e brilho);
 - `smoke8` (33/33: salão, cadeiras e mesas, e as faixas de estrelas);
+- `smoke9` (33/33: v7, lucro, ingredientes, contas e divulgação);
 - `menu_fit` (14 tamanhos de tela);
-- `balance` (bot, N rodadas por dia).
+- `balance` (bot, N rodadas por dia; `DIV`, `MULT`, `SALAO`);
+- `carreira` (bot jogando a carreira com o dinheiro acumulado de verdade).
 
 ## Ideias pendentes
 - Testar som e toque em celular real (o toque foi ajustado depois de relato de dificuldade, mas só testado no Chromium com toque emulado).
@@ -111,4 +123,5 @@
 - Estrelas: conferir com jogadores se a 2ª estrela (`bomGoal`, metade do caminho entre a meta e a expert) ficou no ponto.
 - O painel "Como jogar" ainda rola no celular deitado.
 - Ajuste de dificuldade.
+- v7: conferir com jogadores se a escassez ficou no ponto (valores em `CONTAS`, `INGRED`, `DIVULGA` e nas metas). Próximos passos conversados: ponto (bairro, centro, área nobre) e modo história.
 - A lojinha ainda rola no menor celular deitado (568×320).
