@@ -6,6 +6,9 @@ const FULL={tonhao:2,dani:3,daniTasks:['pratos','lavar','lixo'],couvert:true};
 const AUTO={2:{},3:FULL,4:FULL,5:FULL,6:FULL,7:FULL};   // do dia 3 em diante o dinheiro acumulado já paga a equipe completa
 const EQ0=process.env.EQUIPE==='auto'?null:(process.env.EQUIPE?JSON.parse(process.env.EQUIPE):{});
 const eqFor=n=>EQ0||AUTO[n]||{};
+// ajuste rápido sem mexer em src/: INGRED='{"prato":0.7}' CONTAS='{"aluguel":150}' node balance.js
+if(process.env.CONTAS) Object.assign(L.CONTAS,JSON.parse(process.env.CONTAS));
+if(process.env.INGRED) Object.assign(L.INGRED,JSON.parse(process.env.INGRED));
 const order=process.env.ORDEM?process.env.ORDEM.split(','):['tenis','agua','cafeteira','bandeja','ventilador','pratos'];   // ORDEM=pratos,tenis,...: ordem de compra das melhorias
 for(let n=1;n<=7;n++){
   const res=[];

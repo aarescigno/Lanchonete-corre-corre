@@ -70,7 +70,27 @@ p{margin:calc(var(--u)*6) 0;font-size:max(12px,calc(var(--u)*16));line-height:1.
 .pcell b{font-family:var(--fd);font-weight:400;font-size:max(12px,calc(var(--u)*14));border-bottom:calc(var(--u)*4) solid;line-height:1.3;white-space:nowrap}
 .seg2{display:flex;gap:3px}
 .seg2 button{font:800 max(12px,calc(var(--u)*14)) var(--fb);color:var(--tinta);background:#fff;border:calc(var(--u)*2) solid var(--tinta);border-radius:999px;padding:0;width:max(30px,calc(var(--u)*34));min-height:30px;cursor:pointer}
-#ov-shop.salao #shop-folha{display:none}
+#ov-shop.salao #shop-folha,#ov-shop.caixa #shop-folha{display:none}
+/* aba Caixa (v7.2) */
+.shopgrid.caixa{grid-template-columns:1fr}
+.rank-wrap.cx-wrap{width:100%;max-height:max(96px,calc(var(--u)*150));margin:0}
+table.cx{font-size:max(11px,calc(var(--u)*13.5))}
+table.cx th,table.cx td{padding:calc(var(--u)*2) calc(var(--u)*7);white-space:nowrap}
+table.cx th.n{text-align:right}
+table.cx td.pos{color:var(--ok)}
+table.cx td.neg{color:var(--perigo)}
+table.cx .rs{font-size:inherit}
+@media (max-height:620px){table.cx .rs{display:none}table.cx th,table.cx td{padding:1px 5px}}
+.cx-onde{display:grid;gap:calc(var(--u)*4);background:var(--creme);border:calc(var(--u)*3) solid var(--tinta);border-radius:calc(var(--u)*12);padding:calc(var(--u)*5) calc(var(--u)*10);text-align:left;font-size:max(11px,calc(var(--u)*13));font-weight:600}
+.cx-bar{display:flex;height:max(10px,calc(var(--u)*14));border:calc(var(--u)*2) solid var(--tinta);border-radius:999px;overflow:hidden;background:#fff}
+.cx-bar span{min-width:2px}
+.cx-leg{display:flex;flex-wrap:wrap;column-gap:calc(var(--u)*14);row-gap:2px}
+.cx-leg > span{display:inline-flex;align-items:center;gap:5px;white-space:nowrap}
+.cx-leg i{display:inline-block;width:10px;height:10px;border-radius:3px;border:1.5px solid var(--tinta)}
+.cx-copia{display:flex;flex-wrap:wrap;align-items:center;gap:calc(var(--u)*10);margin-top:calc(var(--u)*2)}
+.cx-copia .btn{min-height:34px;padding:2px calc(var(--u)*16);font-size:max(13px,calc(var(--u)*16))}
+.cx-st{font-weight:700;font-size:max(12px,calc(var(--u)*14))}
+.cx-txt{flex-basis:100%;height:calc(var(--u)*90);font:600 12px var(--fb);border:2px solid var(--tinta);border-radius:8px;padding:4px}
 .seg2 button[aria-pressed="true"]{background:var(--faixa);color:#fff}
 .item{background:var(--creme);border:calc(var(--u)*3) solid var(--tinta);border-radius:calc(var(--u)*12);padding:calc(var(--u)*6) calc(var(--u)*8);display:grid;grid-template-columns:auto 1fr;column-gap:calc(var(--u)*8);row-gap:calc(var(--u)*3);align-items:center;align-content:start;text-align:left}
 .item.own{background:#dcefd9}
@@ -208,7 +228,7 @@ table.rank tr.me td{background:#fbe7a8}
 
     <div class="ov show" id="ov-menu">
       <div class="panel menu-panel">
-        <span class="vtag" aria-label="Versão 7.1">v7.1</span>
+        <span class="vtag" aria-label="Versão 7.2">v7.2</span>
         <h1 class="title">Lanchonete <br>Corre-Corre</h1>
         <p class="tag">Ajude a Bia a atender a freguesia da esquina antes que o cafezinho esfrie!</p>
         <div class="lbl">Carreira: escolha o dia</div>
@@ -290,6 +310,7 @@ table.rank tr.me td{background:#fbe7a8}
           <button type="button" data-v="equipe" aria-pressed="false">Equipe</button>
           <button type="button" data-v="salao" aria-pressed="false">Salão</button>
           <button type="button" data-v="divulga" aria-pressed="false">Divulgação</button>
+          <button type="button" data-v="caixa" aria-pressed="false">Caixa</button>
         </div></div>
         <div class="shopgrid" id="shop-grid"></div>
         <p class="small" id="shop-folha"></p>
@@ -383,7 +404,8 @@ table.rank tr.me td{background:#fbe7a8}
       <div class="panel">
         <h2>Versões</h2>
         <ul class="verlist">
-          <li><b>v7.1</b><span class="cur">versão atual</span><br>15/10/2026 &mdash; Jogo justo: sem mesa que sirva, a fila espera com calma e não passa de 1 coração; com o salão lotado, quem chega espera um pouco na porta.</li>
+          <li><b>v7.2</b><span class="cur">versão atual</span><br>15/10/2026 &mdash; Livro-caixa: a aba Caixa da lojinha mostra os últimos 14 dias, para onde foi o dinheiro e um resumo para copiar e mandar no WhatsApp.</li>
+          <li><b>v7.1</b><br>15/10/2026 &mdash; Jogo justo: sem mesa que sirva, a fila espera com calma e não passa de 1 coração; com o salão lotado, quem chega espera um pouco na porta.<br><a href="versoes/v7.1.html" target="_blank" rel="noopener">Abrir a v7.1</a></li>
           <li><b>v7</b><br>15/10/2026 &mdash; Contas: a meta é o lucro; ingredientes, aluguel, luz e gás, e divulgação (boca a boca, panfletos ou redes sociais).<br><a href="versoes/v7.html" target="_blank" rel="noopener">Abrir a v7</a></li>
           <li><b>v6</b><br>14/10/2026 &mdash; Salão: compre cadeiras e mesas e escolha 2 ou 4 lugares em cada mesa.<br><a href="versoes/v6.html" target="_blank" rel="noopener">Abrir a v6</a></li>
           <li><b>v5</b><br>14/10/2026 &mdash; Equipe: aumento do Tonhão, a ajudante Dani e couvert artístico; louça limitada, lixeira que enche e água saborizada.<br><a href="versoes/v5.html" target="_blank" rel="noopener">Abrir a v5</a></li>
@@ -603,6 +625,8 @@ const DIVULGA = [
   { id:'panfleto', name:'Panfletos',     cost:40,  groups:[1, 1],     vip:1,   desc:'O movimento normal do dia.' },
   { id:'redes',    name:'Redes sociais', cost:100, groups:[1.2, 1.2], vip:1.5, desc:'+20% de grupos e, do dia 5 em diante, 50% mais VIPs. Precisa de lugar para tanta gente!' }
 ];
+const CAIXA_MAX = 14;                                 // livro-caixa (v7.2): quantos dias da carreira ficam guardados
+const VERSAO = 'v7.2';                                // vai no resumo do Caixa
 const DIVULGA_DIA = 3;                                // antes disso, o movimento é o da inauguração (sem custo)
 function divulgaOf(id){ return DIVULGA.find(d => d.id === id) || DIVULGA[1]; }
 /* contas do dia: aluguel fixo, mais cada mesa aberta e cada lugar dela */
@@ -815,11 +839,29 @@ function normEquipe(e){
   const tasks = Array.isArray(e.daniTasks) ? e.daniTasks.filter(t => DANI_TASKS.some(d => d.id === t)) : ['pratos','lavar'];
   return { tonhao: clamp(Math.round(+e.tonhao)||0,0,2), dani: clamp(Math.round(+e.dani)||0,0,3), daniTasks: tasks.filter((t,i) => tasks.indexOf(t) === i).slice(0,3), couvert: !!e.couvert, taxa: !!e.taxa };
 }
+/* livro-caixa (v7.2): uma linha por dia jogado na carreira (os últimos CAIXA_MAX). As compras da lojinha
+   (melhorias e salão) ficam em caixaPend e entram na linha do dia seguinte, junto com o saldo ao fim dele */
+function normCaixa(c){
+  const n = v => Math.round(+v) || 0;
+  return (Array.isArray(c) ? c : []).filter(r => r && typeof r === 'object' && +r.d >= 1).slice(-CAIXA_MAX)
+    .map(r => ({ d:clamp(n(r.d),1,7), fat:n(r.fat), ingr:n(r.ingr), contas:n(r.contas), folha:n(r.folha), div:n(r.div), lucro:n(r.lucro), meta:n(r.meta), ok:!!r.ok, perd:n(r.perd), mel:n(r.mel), sal:n(r.sal), saldo:n(r.saldo) }));
+}
+function normPend(p){
+  p = (p && typeof p === 'object') ? p : {};
+  return { mel: Math.max(0, Math.round(+p.mel) || 0), sal: Math.max(0, Math.round(+p.sal) || 0) };
+}
+/* compra na lojinha (k: 'mel' ou 'sal'), anotada para a próxima linha do caixa */
+function caixaGasto(s, k, v){ s.caixaPend = normPend(s.caixaPend); s.caixaPend[k] += v; }
+function caixaAdd(s, row){
+  const p = normPend(s.caixaPend);
+  s.caixa = (Array.isArray(s.caixa) ? s.caixa : []).concat([Object.assign(row, p)]).slice(-CAIXA_MAX);
+  s.caixaPend = normPend({});
+}
 function normSave(s){
   const up = (s.up && typeof s.up === 'object') ? s.up : {};
   if (up.jukebox){ up.agua = true; delete up.jukebox; }   // a Jukebox virou Água saborizada na v5
   if (up.chapa){ up.pratos = true; delete up.chapa; }     // a Chapa nova virou Jogo de pratos (a velocidade da cozinha é do Tonhão)
-  return { maxDay: clamp(+s.maxDay||1,1,7), bank: Math.max(0,+s.bank||0), up, best: (s.best && typeof s.best === 'object') ? s.best : {}, stars: (s.stars && typeof s.stars === 'object') ? s.stars : {}, equipe: normEquipe(s.equipe), salao: normSalao(s.salao), divulga: divulgaOf(s.divulga).id };
+  return { maxDay: clamp(+s.maxDay||1,1,7), bank: Math.max(0,+s.bank||0), up, best: (s.best && typeof s.best === 'object') ? s.best : {}, stars: (s.stars && typeof s.stars === 'object') ? s.stars : {}, equipe: normEquipe(s.equipe), salao: normSalao(s.salao), divulga: divulgaOf(s.divulga).id, caixa: normCaixa(s.caixa), caixaPend: normPend(s.caixaPend) };
 }
 function loadSave(){
   const def = normSave({});
@@ -1934,6 +1976,7 @@ class Game {
     this.save.best[d.n] = Math.max(prevBest, fat);   // o ranking da carreira soma o faturamento dos melhores dias
     this.save.stars[d.n] = Math.max(this.save.stars[d.n] || 0, stars);
     if (passed) this.save.maxDay = Math.max(this.save.maxDay, Math.min(7, d.n + 1));
+    caixaAdd(this.save, { d:d.n, fat, ingr:Math.round(this.custo), contas:this.contas, folha:this.paid, div:this.paidDiv, lucro:m, meta:d.meta, ok:passed, perd:this.stats.lost, saldo:this.save.bank });
     writeSave(this.save);
     this.result = { day:d.n, money:m, fat, custo:Math.round(this.custo), contas:this.contas, div:this.paidDiv, divName:this.div ? this.div.name : '', meta:d.meta, bom:bomGoal(d), expert:d.expert, passed, stars, served:this.stats.served, lost:this.stats.lost, lostBy:this.stats.lostBy, lotadoT:Math.round(this.stats.lotadoT), atraso:Math.round(this.atraso), full:this.stats.full, chain:this.stats.chain, vip:this.stats.vip, vipLost:this.stats.vipLost, juice:this.stats.juice, juiceMiss:this.stats.juiceMiss, trash:this.stats.trash, washed:this.stats.washed, income, paid:this.paid, reason:this.reason };
     this.setState('dayend');
@@ -1988,6 +2031,7 @@ class Game {
     const u = UPGRADES.find(x => x.id === id);
     if (!u || this.shopBought || this.up[id] || this.save.bank < u.cost) return false;
     this.save.bank -= u.cost; this.up[id] = true; this.shopBought = true; this.boughtFor = this.shopNext;
+    caixaGasto(this.save, 'mel', u.cost);
     writeSave(this.save);
     Sfx.coin();
     return true;
@@ -2017,7 +2061,7 @@ class Game {
   buyChairs(){
     const sal = this.save.salao;
     if (this.save.bank < SALAO.chairPrice || sal.chairs >= SALAO.maxChairs + 2 * sal.mesas) return false;
-    this.save.bank -= SALAO.chairPrice; sal.chairs += 2;
+    this.save.bank -= SALAO.chairPrice; sal.chairs += 2; caixaGasto(this.save, 'sal', SALAO.chairPrice);
     Sfx.coin();
     return this.salaoSaved();
   }
@@ -2026,7 +2070,7 @@ class Game {
     const sal = this.save.salao, why = salaoTableBlock(sal);
     if (why){ this.salaoMsg = why; return false; }
     if (this.save.bank < SALAO.tablePrice) return false;
-    this.save.bank -= SALAO.tablePrice;
+    this.save.bank -= SALAO.tablePrice; caixaGasto(this.save, 'sal', SALAO.tablePrice);
     sal.mesas++; sal.seats[6 + sal.mesas] = 2; sal.chairs += 2;
     Sfx.coin();
     return this.salaoSaved();
@@ -3655,6 +3699,90 @@ function buildDivulga(grid){
     'Aluguel ' + fmt(CONTAS.aluguel) + ' + luz e gás de ' + sal.length + ' mesas abertas (' + fmt(CONTAS.mesa) + ' cada) e ' + sal.reduce((a, t) => a + t.seats, 0) + ' lugares (' + fmt(CONTAS.lugar) + ' cada) = ' + fmt(contasDia(game.tables)) + ', no fim do dia. Ingredientes: ' + Math.round(INGRED.prato * 100) + '% da conta de cada prato que fica pronto e ' + fmt(INGRED.suco) + ' por suco.');
   grid.appendChild(c);
 }
+/* aba Caixa (v7.2): os últimos dias da carreira, para onde foi o dinheiro e um resumo para colar no WhatsApp */
+const CAIXA_COR = { ingr:'#E26A2C', contas:'#C2362B', folha:'#1F4FA3', div:'#7B4FB5', mel:'#3E9B5A', sal:'#E0B23A' };
+function caixaTotais(cx){
+  const s = k => cx.reduce((a, r) => a + r[k], 0);
+  return [['ingr','Ingredientes'], ['contas','Contas'], ['folha','Equipe'], ['div','Divulgação'], ['mel','Melhorias'], ['sal','Salão']].map(k => ({ id:k[0], name:k[1], v:s(k[0]) }));
+}
+function caixaResumo(save){
+  const cx = save.caixa, eq = save.equipe, sal = save.salao;
+  const out = ['Lanchonete Corre-Corre ' + VERSAO + ' · Caixa (valores em R$)'];
+  cx.forEach(r => out.push('Dia ' + r.d + (r.ok ? ' ✓' : ' ✗') + ': fatura ' + r.fat + ' − ingred. ' + r.ingr + ' − contas ' + r.contas + ' − equipe ' + r.folha + (r.div ? ' − divulg. ' + r.div : '') +
+    ' = lucro ' + r.lucro + ' (meta ' + r.meta + ')' + (r.perd ? ' · ' + r.perd + (r.perd > 1 ? ' perdidos' : ' perdido') : '') + (r.mel + r.sal ? ' · compras ' + (r.mel + r.sal) : '') + ' · saldo ' + r.saldo));
+  if (cx.length) out.push('Para onde foi (' + cx.length + (cx.length > 1 ? ' dias' : ' dia') + '): ' + caixaTotais(cx).filter(t => t.v).map(t => t.name.toLowerCase() + ' ' + t.v).join(', '));
+  const ups = UPGRADES.filter(u => save.up[u.id]).map(u => u.name.toLowerCase());
+  out.push('Agora: ' + fmt(save.bank) + ' · Tonhão nível ' + (eq.tonhao + 1) + ', ' + (eq.dani ? 'Dani nível ' + eq.dani : 'sem Dani') + (eq.couvert ? ', couvert' : '') +
+    ' · ' + divulgaOf(save.divulga).name.toLowerCase() + ' · ' + (6 + sal.mesas) + ' mesas e ' + sal.chairs + ' cadeiras · melhorias: ' + (ups.join(', ') || 'nenhuma'));
+  return out.join('\n');
+}
+/* copia para a área de transferência; se o navegador não deixar, devolve false (a aba mostra o texto para copiar à mão) */
+function copyText(t){
+  return new Promise(res => {
+    const velho = () => {
+      try {
+        const ta = el('textarea'); ta.value = t; ta.setAttribute('readonly', ''); ta.style.position = 'fixed'; ta.style.opacity = '0';
+        document.body.appendChild(ta); ta.select(); const ok = document.execCommand('copy'); document.body.removeChild(ta); res(!!ok);
+      } catch(e) { res(false); }
+    };
+    try { if (navigator.clipboard && navigator.clipboard.writeText) return navigator.clipboard.writeText(t).then(() => res(true), velho); } catch(e) {}
+    velho();
+  });
+}
+/* célula de dinheiro do Caixa: o "R$" fica num <small> que some nas telas baixas, para a tabela caber */
+function cxTd(v, cls){
+  const td = el('td', 'n' + (cls ? ' ' + cls : ''));
+  if (Math.round(v) < 0) td.appendChild(el('span', null, '-'));
+  td.appendChild(el('small', 'rs', 'R$ ')); td.appendChild(el('span', null, String(Math.abs(Math.round(v)))));
+  return td;
+}
+function buildCaixa(grid){
+  const cx = game.save.caixa, pend = normPend(game.save.caixaPend);
+  if (!cx.length){ grid.appendChild(el('p', 'rank-empty', 'O caixa começa quando você joga um dia da carreira.')); return; }
+  const wrap = el('div', 'rank-wrap cx-wrap'), tb = el('table', 'rank cx');
+  const head = el('tr');
+  [['Dia'], ['Faturou'], ['Ingred.', 'Ingredientes'], ['Contas', 'Aluguel, luz e gás'], ['Equipe', 'Folha da equipe e divulgação'], ['Lucro', 'Lucro do dia (a meta)'], ['Compras', 'Melhorias e salão comprados antes do dia'], ['Saldo', 'Dinheiro acumulado ao fim do dia']].forEach((h, i) => { const th = el('th', i ? 'n' : null, h[0]); th.setAttribute('scope', 'col'); if (h[1]) th.title = h[1]; head.appendChild(th); });
+  tb.appendChild(head);
+  cx.slice().reverse().forEach(r => {
+    const tr = el('tr');
+    const dia = el('td', null, 'Dia ' + r.d); tr.appendChild(dia);
+    [r.fat, r.ingr, r.contas, r.folha + r.div].forEach(v => tr.appendChild(cxTd(v)));
+    const lu = cxTd(r.lucro, r.ok ? 'pos' : 'neg'); lu.title = (r.ok ? 'Passou' : 'Não passou') + ' da meta de ' + fmt(r.meta) + (r.perd ? '; ' + r.perd + (r.perd > 1 ? ' perdidos' : ' perdido') : '');
+    tr.appendChild(lu);
+    tr.appendChild(r.mel + r.sal ? cxTd(r.mel + r.sal) : el('td', 'n', '–'));
+    tr.appendChild(cxTd(r.saldo));
+    tb.appendChild(tr);
+  });
+  wrap.appendChild(tb); grid.appendChild(wrap);
+  // para onde foi o dinheiro: barra empilhada e legenda
+  const tot = caixaTotais(cx).filter(t => t.v > 0), soma = tot.reduce((a, t) => a + t.v, 0);
+  const onde = el('div', 'cx-onde');
+  onde.appendChild(el('b', null, 'Para onde foi o dinheiro ' + (cx.length > 1 ? 'nos últimos ' + cx.length + ' dias' : 'no último dia') + ': ' + fmt(soma)));
+  const bar = el('div', 'cx-bar'); bar.setAttribute('aria-hidden', 'true');
+  const leg = el('div', 'cx-leg');
+  tot.forEach(t => {
+    const seg = el('span'); seg.style.flex = String(t.v); seg.style.background = CAIXA_COR[t.id]; bar.appendChild(seg);
+    const li = el('span'), dot = el('i'); dot.style.background = CAIXA_COR[t.id];
+    li.appendChild(dot); li.appendChild(el('span', null, t.name + ' ' + fmt(t.v) + ' (' + Math.round(t.v / soma * 100) + '%)'));
+    leg.appendChild(li);
+  });
+  onde.appendChild(bar); onde.appendChild(leg);
+  if (pend.mel + pend.sal) onde.appendChild(el('span', 'full', 'Compras nesta lojinha: ' + fmt(pend.mel + pend.sal) + ' (entram na linha do dia ' + game.shopNext + ').'));
+  // resumo para colar no WhatsApp
+  const row = el('div', 'cx-copia'), st = el('span', 'cx-st'); st.setAttribute('role', 'status');
+  let ta = null;
+  const b = el('button', 'btn', 'Copiar resumo'); b.type = 'button';
+  b.addEventListener('click', () => {
+    Sfx.init(); const t = caixaResumo(game.save);
+    copyText(t).then(ok => {
+      if (ok){ Sfx.ok(); st.textContent = 'Copiado! Cole no WhatsApp.'; return; }
+      st.textContent = 'Não deu para copiar sozinho: selecione o texto abaixo.';
+      if (!ta){ ta = el('textarea', 'cx-txt'); ta.setAttribute('readonly', ''); ta.setAttribute('aria-label', 'Resumo do caixa'); row.appendChild(ta); }
+      ta.value = t; if (ta.select) ta.select();
+    });
+  });
+  row.appendChild(b); row.appendChild(st); onde.appendChild(row); grid.appendChild(onde);
+}
 function buildShop(){
   const grid = $('shop-grid');
   clearEl(grid);
@@ -3664,11 +3792,12 @@ function buildShop(){
   $('btn-shop-go').textContent = 'Começar o dia ' + game.shopNext;
   const f = payroll(game.save.equipe), dv = game.shopNext >= DIVULGA_DIA ? divulgaOf(game.save.divulga) : null;
   $('shop-folha').textContent = (f ? 'Folha ' + fmt(f) : 'Sem folha') + (dv ? ' + ' + dv.name.toLowerCase() + ' ' + fmt(dv.cost) : '') + ' ao abrir; contas ' + fmt(contasDia(game.tables)) + ' e ingredientes no fim do dia. A meta é o lucro.';
-  grid.className = 'shopgrid' + (shopTab === 'salao' ? ' salao' : '');
-  $('ov-shop').classList[shopTab === 'salao' ? 'add' : 'remove']('salao');
+  grid.className = 'shopgrid' + (shopTab === 'salao' || shopTab === 'caixa' ? ' ' + shopTab : '');
+  ['salao', 'caixa'].forEach(k => $('ov-shop').classList[shopTab === k ? 'add' : 'remove'](k));
   if (shopTab === 'equipe') return buildEquipe(grid);
   if (shopTab === 'salao') return buildSalao(grid);
   if (shopTab === 'divulga') return buildDivulga(grid);
+  if (shopTab === 'caixa') return buildCaixa(grid);
   UPGRADES.forEach(u => {
     const own = !!game.up[u.id];
     const card = el('div', 'item' + (own ? ' own' : ''));
@@ -3964,7 +4093,7 @@ fit();
 try { Rank.init(); } catch(e) {}
 game.setState('menu');
 window.__game = game;
-window.__lcc = { setShopTab: v => { shopTab = v; buildShop(); }, FILA_JUSTA, PORTA, PAT, CONTAS, INGRED, DIVULGA, DIVULGA_DIA, divulgaOf, contasDia, bomGoal, SALAO, rowLayout, salaoDefs, salaoOk, salaoUsed, salaoTableBlock, normSalao, setObst, OBST, AGUA, CRIT, STAFF, DANI_TASKS, DANI_HANDS, daniTaskOk, TRASH, WASH, payroll, couvertEffect, dishStock, normSave, Helper, JUICE, KITCHEN_SLOTS, handLayout, trayOk, Game, Group, Table, Kitchen, Waitress, DAYS, UPGRADES, CUSTOMER_TYPES, LAYOUT, PAL, Sfx, findPath, render, Rank, sortRows, cleanName, normName, CMD, ENDLESS, VIP, rk, renderRank, openRank, closeRank, LS, lsGet, lsSet, loadSave };
+window.__lcc = { setShopTab: v => { shopTab = v; buildShop(); }, FILA_JUSTA, PORTA, PAT, CONTAS, INGRED, DIVULGA, DIVULGA_DIA, divulgaOf, contasDia, bomGoal, SALAO, rowLayout, salaoDefs, salaoOk, salaoUsed, salaoTableBlock, normSalao, setObst, OBST, AGUA, CRIT, STAFF, DANI_TASKS, DANI_HANDS, daniTaskOk, TRASH, WASH, payroll, couvertEffect, dishStock, normSave, Helper, JUICE, KITCHEN_SLOTS, handLayout, trayOk, Game, Group, Table, Kitchen, Waitress, DAYS, UPGRADES, CUSTOMER_TYPES, LAYOUT, PAL, Sfx, findPath, render, Rank, sortRows, cleanName, normName, CMD, ENDLESS, VIP, rk, renderRank, openRank, closeRank, LS, lsGet, lsSet, loadSave, CAIXA_MAX, VERSAO, normCaixa, caixaResumo, caixaTotais, copyText };
 window.requestAnimationFrame(frame);
 
 })();

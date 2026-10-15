@@ -14,7 +14,7 @@ Origem: retorno do Renan Martorelli e conversa com o Arthur (15/10/2026). Os tex
 |---|---|---|---|
 | 0 | Contas: lucro, ingredientes, contas do dia, divulgação | v7 | feita (15/10) |
 | 1a | Jogo justo: dá para não perder ninguém | v7.1 | feita (15/10) |
-| 1b | Livro-caixa e ajuste fino com jogadores | v7.2 | a fazer |
+| 1b | Livro-caixa e ajuste fino com jogadores | v7.2 | feita (15/10) |
 | 2 | Manutenção e imprevistos | v8 | a fazer |
 | 3 | Ponto: mudar para o Centro | v9 | a fazer |
 | 4 | Área nobre e VIPs exigentes | v10 | a fazer |
@@ -65,6 +65,8 @@ Origem: retorno do Renan Martorelli e conversa com o Arthur (15/10/2026). Os tex
 ---
 
 ## Etapa 1b — Livro-caixa e ajuste fino (v7.2)
+**Feita (v7.2, 15/10):** aba Caixa na lojinha, 14 dias, "Copiar resumo". Rodada de retorno dispensada pelo usuário; `INGRED.prato` 0,7 testado e descartado (tirava só ~R$ 150 do bot até o dia 5 e deixava os dias 5 a 7 sem equipe abaixo do alvo). O ajuste de valores fica para quando chegar o primeiro resumo de jogador (pode entrar em qualquer etapa seguinte). Detalhes em `docs/spec-v7.2.md`.
+
 **Objetivo:** ver a escassez com números de jogo real (não só do bot) e ajustar os botões da v7 antes de empilhar mais sistemas.
 
 **Entra:**
