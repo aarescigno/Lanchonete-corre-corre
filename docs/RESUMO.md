@@ -78,6 +78,7 @@
    - teste `smoke8`.
    - **Estrelas:** a 2ª estrela vem na metade do caminho entre a meta e a expert (`bomGoal`). Antes quase nunca saía, porque quem batia a expert levava 3. A 3ª continua sendo a expert sem perder ninguém.
    - A pergunta-lembrete a cada alteração saiu do `CLAUDE.md`, a pedido do usuário.
+   - **Dani e o cafezinho** (15/10, a pedido do usuário): ela serve café a quem perdeu pelo menos 1 coração (≤4, antes ≤3) e, com 1 pilha de louça na mão, pega o café no caminho da pia, deixa a louça (sem lavar) e vai servir. Assim usa as 2 mãos 4 a 5 vezes a cada 10 dias (antes ~1), e o teste "a Dani chega a 2 itens" do `smoke6` deixou de oscilar. O equilíbrio não mudou (`balance` com a Dani nível 3 em pratos, lavar e cafezinho: 304/400 → 307/400 metas nos dias 3 a 7).
 
 ## App para Android (PWA)
 - `app/build.py` monta `app/site/` (ignorado no git) a partir de `lanchonete.html`, sem mudar o jogo: `index.html` com invólucro, `manifest.webmanifest` (tela cheia, horizontal), ícones próprios (hambúrguer), `sw.js` (offline; fontes do Google em cache) e as `versoes/vN.html`.
@@ -91,7 +92,7 @@
 - `smoke3` (120/120: v2);
 - `smoke4` (23/23: VIP);
 - `smoke5` (41/41: sucos, bandeja e lixeira);
-- `smoke6` (94/94: equipe, louça, lixeira que enche, couvert, água, economia). O teste "a Dani chega a 2 itens" falha em ~1 de 6 rodadas, porque depende do sorteio do dia (já falhava antes do ajuste de toque);
+- `smoke6` (94/94: equipe, louça, lixeira que enche, couvert, água, economia). O teste "a Dani chega a 2 itens" oscilava (dependia do sorteio do dia) até a Dani pegar o café no caminho da pia; hoje falha em menos de ~1 a cada 40 rodadas;
 - `smoke7` (15/15: toque no celular e brilho);
 - `smoke8` (33/33: salão, cadeiras e mesas, e as faixas de estrelas);
 - `menu_fit` (14 tamanhos de tela);
@@ -99,7 +100,6 @@
 
 ## Ideias pendentes
 - Testar som e toque em celular real (o toque foi ajustado depois de relato de dificuldade, mas só testado no Chromium com toque emulado).
-- Deixar estável o teste "a Dani chega a 2 itens" do `smoke6` (falha em ~25% das rodadas, tanto na v5 quanto na v6: depende do sorteio do dia).
 - Salão: os preços (R$ 60 por 2 cadeiras, R$ 300 por mesa) e o limite de 1 mesa de 4 lugares por fileira de 4 mesas ainda não foram testados com jogadores; ajustar em `SALAO`.
 - Estrelas: conferir com jogadores se a 2ª estrela (`bomGoal`, metade do caminho entre a meta e a expert) ficou no ponto.
 - O painel "Como jogar" ainda rola no celular deitado.

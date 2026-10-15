@@ -43,7 +43,7 @@ Revisto depois da análise das melhorias: as bocas a mais não ajudavam (o garga
 | 3 | 80% | 3 | R$ 135/dia (+50%) |
 - **Tarefas possíveis** (`DANI_TASKS`): tirar o lixo, retirar pratos sujos, lavar a louça, servir cafezinho e recarregar a água saborizada (quando restam 2 doses ou menos, pagando R$ 15). A escolha é feita na lojinha; valem as primeiras N da lista, conforme o nível.
 - **Funcionamento:** ela age sozinha (`think` a cada 0,25 s) e leva 1 item em cada mão.
-- **Prioridades:** entregar o café que está carregando; recolher louça (até 2 pilhas); levar a louça à pia; lavar o que estiver na pia; esvaziar a lixeira a partir de 6/8; buscar cafezinho para a mesa com menos corações (≤3).
+- **Prioridades:** entregar o café que está carregando; recolher louça (até 2 pilhas); com 1 pilha na mão, pegar o cafezinho no caminho da pia (a cafeteira fica logo acima dela); levar a louça à pia (com café na mão, só deixa a louça, sem lavar, e depois serve); lavar o que estiver na pia; esvaziar a lixeira a partir de 6/8; buscar cafezinho para a mesa com menos corações, desde que tenha perdido pelo menos 1 (≤4; antes era ≤3).
 - **Convivência com a Bia:**
   - a Dani não mexe em mesas que estão na fila de ações da Bia;
   - o bot e o jogo evitam a mesa para onde a Dani está indo (`dani.targets(t)`);

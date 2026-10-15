@@ -1276,7 +1276,7 @@ class Helper {
   go(pt, step){ this.plan = step; this.path = findPath({ x:this.x, y:this.y }, pt); this.phase = 'walk'; }
   nearestAp(t){ const p = tableApproach(t); return Math.hypot(p[0].x-this.x,p[0].y-this.y) <= Math.hypot(p[1].x-this.x,p[1].y-this.y) ? p[0] : p[1]; }
   coffeeTarget(){
-    const c = this.g.tables.filter(t => t.group && t.group.seated && !t.group.coffee && t.group.hearts <= 3 && !t.group.daniCoffee && !this.biaWants(t));
+    const c = this.g.tables.filter(t => t.group && t.group.seated && !t.group.coffee && t.group.hearts <= 4 && !t.group.daniCoffee && !this.biaWants(t));
     c.sort((a,b) => a.group.hearts - b.group.hearts);
     return c[0] || null;
   }
@@ -1284,20 +1284,23 @@ class Helper {
     const g = this.g, k = g.kitchen;
     const dirty = this.hands.filter(h => h.kind === 'dirty').length;
     const coffee = this.hands.find(h => h.kind === 'coffee');
-    if (coffee){
+    // entrega o café (com louça e café nas mãos, primeiro deixa a louça na pia, logo abaixo da cafeteira)
+    if (coffee && !dirty){
       const t = (coffee.table && coffee.table.group === coffee.group && coffee.group && coffee.group.seated && !coffee.group.coffee) ? coffee.table : this.coffeeTarget();
       if (t){ coffee.table = t; coffee.group = t.group; t.group.daniCoffee = true; return this.go(this.nearestAp(t), { type:'serve', t }); }
     }
     // já na pia: continua lavando até acabar a louça
     const ap = STATIONS.sink.ap;
-    if (this.canWash() && k.sinkN > 0 && !dirty && Math.hypot(this.x - ap.x, this.y - ap.y) < 4) return this.go(ap, { type:'sink' });
+    if (this.canWash() && k.sinkN > 0 && !dirty && !coffee && Math.hypot(this.x - ap.x, this.y - ap.y) < 4) return this.go(ap, { type:'sink' });
     if (this.does('pratos') && this.hands.length < DANI_HANDS){
       const c = g.tables.filter(t => t.open && t.dirty && !this.biaWants(t));
       c.sort((a,b) => Math.hypot(a.cx-this.x,a.cy-this.y) - Math.hypot(b.cx-this.x,b.cy-this.y));
       if (c.length){ return this.go(this.nearestAp(c[0]), { type:'clear', t:c[0] }); }
     }
+    // com 1 pilha na mão, pega o cafezinho no caminho da pia (a 2ª mão)
+    if (dirty && !coffee && this.does('cafe') && this.hands.length < DANI_HANDS && this.coffeeTarget()) return this.go(STATIONS.coffee.ap, { type:'coffee' });
     if (dirty) return this.go(STATIONS.sink.ap, { type:'sink' });
-    if (this.canWash() && k.sinkN > 0) return this.go(STATIONS.sink.ap, { type:'sink' });
+    if (this.canWash() && k.sinkN > 0 && !coffee) return this.go(STATIONS.sink.ap, { type:'sink' });
     if (this.does('lixo') && g.trash >= TRASH.cap - 2 && !this.hands.length) return this.go(STATIONS.trash.ap, { type:'trash' });
     if (this.does('cafe') && !coffee && this.hands.length < DANI_HANDS && this.coffeeTarget()) return this.go(STATIONS.coffee.ap, { type:'coffee' });
     if (this.does('agua') && g.up.agua && g.agua <= 2 && !this.hands.length && g.money >= AGUA.price && !g.bia.acts.some(a => a.type === 'agua')) return this.go(STATIONS.agua.ap, { type:'agua' });
@@ -1308,7 +1311,7 @@ class Helper {
     // não há limite de pilhas: só o tempo de lavar. Se a Bia está lavando, a Dani só deixa a louça
     if (st.type === 'sink'){
       const drop = this.hands.some(h => h.kind === 'dirty');
-      st.wash = this.canWash() && (drop || this.g.kitchen.sinkN > 0);
+      st.wash = this.canWash() && !this.hands.some(h => h.kind === 'coffee') && (drop || this.g.kitchen.sinkN > 0);
       return (drop ? WASH.base : 0) + (st.wash ? WASH.perPile / this.spec.speed : 0);
     }
     if (st.type === 'trash') return TRASH.empty;
