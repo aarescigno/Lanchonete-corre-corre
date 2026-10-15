@@ -1,8 +1,8 @@
-# Resumo do projeto e das alterações (até 14/10/2026)
+# Resumo do projeto e das alterações (até 15/10/2026)
 
 ## Estado atual
 - **Versão:** v6 (Salão), publicada como Versão 19 do artifact https://claude.ai/artifact/MJxrgDg8S4akvg47SoQAvj (privado).
-- **Branch:** `claude/intelligent-gauss-3owv29` no repositório `aarescigno/Lanchonete-corre-corre`.
+- **Branch:** `claude/main` (renomeado pelo usuário; o antigo `claude/intelligent-gauss-3owv29` não existe mais) no repositório `aarescigno/Lanchonete-corre-corre`.
 - **Arquivos publicados:** `lanchonete.html` (página), mais `versoes/v1.html`, `versoes/v2.html`, `versoes/v3.html`, `versoes/v4.html` e `versoes/v5.html`, abertos pelo painel Versões.
 - **Capacidades declaradas (mantidas ao republicar sem `capabilities`):**
   - `db`: `ranking-carreira` e `ranking-semfim` com read "view" e write "owner";
@@ -99,7 +99,9 @@
 
 ## Ideias pendentes
 - Testar som e toque em celular real (o toque foi ajustado depois de relato de dificuldade, mas só testado no Chromium com toque emulado).
-- Deixar estável o teste "a Dani chega a 2 itens" do `smoke6`.
+- Deixar estável o teste "a Dani chega a 2 itens" do `smoke6` (falha em ~25% das rodadas, tanto na v5 quanto na v6: depende do sorteio do dia).
+- Salão: os preços (R$ 60 por 2 cadeiras, R$ 300 por mesa) e o limite de 1 mesa de 4 lugares por fileira de 4 mesas ainda não foram testados com jogadores; ajustar em `SALAO`.
+- Estrelas: conferir com jogadores se a 2ª estrela (`bomGoal`, metade do caminho entre a meta e a expert) ficou no ponto.
 - O painel "Como jogar" ainda rola no celular deitado.
 - Ajuste de dificuldade.
 - A lojinha ainda rola no menor celular deitado (568×320).
