@@ -1,8 +1,9 @@
 #!/usr/bin/env bash
-# Roda todos os testes e mostra só o resumo de cada um (economiza saída/tokens).
+# Junta src/ em lanchonete.html, roda todos os testes e mostra só o resumo de cada um (economiza saída/tokens).
 # Uso: ./run_all.sh            (testes rápidos)
 #      ./run_all.sh --tudo     (também balance com 40 rodadas e menu_fit no Chromium)
 cd "$(dirname "$0")"
+python3 ../montar.py >/dev/null || { echo "MONTAR: falhou ao juntar src/ em lanchonete.html"; exit 1; }
 ./extract.sh >/dev/null || { echo "SINTAXE: erro em game.js"; exit 1; }
 st=0
 for f in smoke.js smoke2.js smoke3.js smoke4.js smoke5.js smoke6.js smoke7.js smoke8.js; do
