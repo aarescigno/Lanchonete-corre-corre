@@ -124,5 +124,5 @@
 - O painel "Como jogar" ainda rola no celular deitado.
 - Ajuste de dificuldade.
 - v7: conferir com jogadores se a escassez ficou no ponto (valores em `CONTAS`, `INGRED`, `DIVULGA` e nas metas).
-- **Roteiro das próximas versões em `docs/PLANO.md`** (uma etapa por sessão): livro-caixa, manutenção e imprevistos, ponto (Centro, área nobre com VIPs exigentes), modo história em 2 partes e polimento.
+- **Roteiro das próximas versões em `docs/PLANO.md`** (uma etapa por sessão; log das ideias e retornos em `docs/PROPOSTAS.md`): jogo justo (dá para não perder ninguém, retorno do Renan), livro-caixa, manutenção e imprevistos, ponto (Centro, área nobre com VIPs exigentes), modo história em 2 partes e polimento.
 - A lojinha ainda rola no menor celular deitado (568×320).
