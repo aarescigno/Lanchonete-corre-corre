@@ -187,6 +187,90 @@ function buildDivulga(grid){
     'Aluguel ' + fmt(CONTAS.aluguel) + ' + luz e gás de ' + sal.length + ' mesas abertas (' + fmt(CONTAS.mesa) + ' cada) e ' + sal.reduce((a, t) => a + t.seats, 0) + ' lugares (' + fmt(CONTAS.lugar) + ' cada) = ' + fmt(contasDia(game.tables)) + ', no fim do dia. Ingredientes: ' + Math.round(INGRED.prato * 100) + '% da conta de cada prato que fica pronto e ' + fmt(INGRED.suco) + ' por suco.');
   grid.appendChild(c);
 }
+/* aba Caixa (v7.2): os últimos dias da carreira, para onde foi o dinheiro e um resumo para colar no WhatsApp */
+const CAIXA_COR = { ingr:'#E26A2C', contas:'#C2362B', folha:'#1F4FA3', div:'#7B4FB5', mel:'#3E9B5A', sal:'#E0B23A' };
+function caixaTotais(cx){
+  const s = k => cx.reduce((a, r) => a + r[k], 0);
+  return [['ingr','Ingredientes'], ['contas','Contas'], ['folha','Equipe'], ['div','Divulgação'], ['mel','Melhorias'], ['sal','Salão']].map(k => ({ id:k[0], name:k[1], v:s(k[0]) }));
+}
+function caixaResumo(save){
+  const cx = save.caixa, eq = save.equipe, sal = save.salao;
+  const out = ['Lanchonete Corre-Corre ' + VERSAO + ' · Caixa (valores em R$)'];
+  cx.forEach(r => out.push('Dia ' + r.d + (r.ok ? ' ✓' : ' ✗') + ': fatura ' + r.fat + ' − ingred. ' + r.ingr + ' − contas ' + r.contas + ' − equipe ' + r.folha + (r.div ? ' − divulg. ' + r.div : '') +
+    ' = lucro ' + r.lucro + ' (meta ' + r.meta + ')' + (r.perd ? ' · ' + r.perd + (r.perd > 1 ? ' perdidos' : ' perdido') : '') + (r.mel + r.sal ? ' · compras ' + (r.mel + r.sal) : '') + ' · saldo ' + r.saldo));
+  if (cx.length) out.push('Para onde foi (' + cx.length + (cx.length > 1 ? ' dias' : ' dia') + '): ' + caixaTotais(cx).filter(t => t.v).map(t => t.name.toLowerCase() + ' ' + t.v).join(', '));
+  const ups = UPGRADES.filter(u => save.up[u.id]).map(u => u.name.toLowerCase());
+  out.push('Agora: ' + fmt(save.bank) + ' · Tonhão nível ' + (eq.tonhao + 1) + ', ' + (eq.dani ? 'Dani nível ' + eq.dani : 'sem Dani') + (eq.couvert ? ', couvert' : '') +
+    ' · ' + divulgaOf(save.divulga).name.toLowerCase() + ' · ' + (6 + sal.mesas) + ' mesas e ' + sal.chairs + ' cadeiras · melhorias: ' + (ups.join(', ') || 'nenhuma'));
+  return out.join('\n');
+}
+/* copia para a área de transferência; se o navegador não deixar, devolve false (a aba mostra o texto para copiar à mão) */
+function copyText(t){
+  return new Promise(res => {
+    const velho = () => {
+      try {
+        const ta = el('textarea'); ta.value = t; ta.setAttribute('readonly', ''); ta.style.position = 'fixed'; ta.style.opacity = '0';
+        document.body.appendChild(ta); ta.select(); const ok = document.execCommand('copy'); document.body.removeChild(ta); res(!!ok);
+      } catch(e) { res(false); }
+    };
+    try { if (navigator.clipboard && navigator.clipboard.writeText) return navigator.clipboard.writeText(t).then(() => res(true), velho); } catch(e) {}
+    velho();
+  });
+}
+/* célula de dinheiro do Caixa: o "R$" fica num <small> que some nas telas baixas, para a tabela caber */
+function cxTd(v, cls){
+  const td = el('td', 'n' + (cls ? ' ' + cls : ''));
+  if (Math.round(v) < 0) td.appendChild(el('span', null, '-'));
+  td.appendChild(el('small', 'rs', 'R$ ')); td.appendChild(el('span', null, String(Math.abs(Math.round(v)))));
+  return td;
+}
+function buildCaixa(grid){
+  const cx = game.save.caixa, pend = normPend(game.save.caixaPend);
+  if (!cx.length){ grid.appendChild(el('p', 'rank-empty', 'O caixa começa quando você joga um dia da carreira.')); return; }
+  const wrap = el('div', 'rank-wrap cx-wrap'), tb = el('table', 'rank cx');
+  const head = el('tr');
+  [['Dia'], ['Faturou'], ['Ingred.', 'Ingredientes'], ['Contas', 'Aluguel, luz e gás'], ['Equipe', 'Folha da equipe e divulgação'], ['Lucro', 'Lucro do dia (a meta)'], ['Compras', 'Melhorias e salão comprados antes do dia'], ['Saldo', 'Dinheiro acumulado ao fim do dia']].forEach((h, i) => { const th = el('th', i ? 'n' : null, h[0]); th.setAttribute('scope', 'col'); if (h[1]) th.title = h[1]; head.appendChild(th); });
+  tb.appendChild(head);
+  cx.slice().reverse().forEach(r => {
+    const tr = el('tr');
+    const dia = el('td', null, 'Dia ' + r.d); tr.appendChild(dia);
+    [r.fat, r.ingr, r.contas, r.folha + r.div].forEach(v => tr.appendChild(cxTd(v)));
+    const lu = cxTd(r.lucro, r.ok ? 'pos' : 'neg'); lu.title = (r.ok ? 'Passou' : 'Não passou') + ' da meta de ' + fmt(r.meta) + (r.perd ? '; ' + r.perd + (r.perd > 1 ? ' perdidos' : ' perdido') : '');
+    tr.appendChild(lu);
+    tr.appendChild(r.mel + r.sal ? cxTd(r.mel + r.sal) : el('td', 'n', '–'));
+    tr.appendChild(cxTd(r.saldo));
+    tb.appendChild(tr);
+  });
+  wrap.appendChild(tb); grid.appendChild(wrap);
+  // para onde foi o dinheiro: barra empilhada e legenda
+  const tot = caixaTotais(cx).filter(t => t.v > 0), soma = tot.reduce((a, t) => a + t.v, 0);
+  const onde = el('div', 'cx-onde');
+  onde.appendChild(el('b', null, 'Para onde foi o dinheiro ' + (cx.length > 1 ? 'nos últimos ' + cx.length + ' dias' : 'no último dia') + ': ' + fmt(soma)));
+  const bar = el('div', 'cx-bar'); bar.setAttribute('aria-hidden', 'true');
+  const leg = el('div', 'cx-leg');
+  tot.forEach(t => {
+    const seg = el('span'); seg.style.flex = String(t.v); seg.style.background = CAIXA_COR[t.id]; bar.appendChild(seg);
+    const li = el('span'), dot = el('i'); dot.style.background = CAIXA_COR[t.id];
+    li.appendChild(dot); li.appendChild(el('span', null, t.name + ' ' + fmt(t.v) + ' (' + Math.round(t.v / soma * 100) + '%)'));
+    leg.appendChild(li);
+  });
+  onde.appendChild(bar); onde.appendChild(leg);
+  if (pend.mel + pend.sal) onde.appendChild(el('span', 'full', 'Compras nesta lojinha: ' + fmt(pend.mel + pend.sal) + ' (entram na linha do dia ' + game.shopNext + ').'));
+  // resumo para colar no WhatsApp
+  const row = el('div', 'cx-copia'), st = el('span', 'cx-st'); st.setAttribute('role', 'status');
+  let ta = null;
+  const b = el('button', 'btn', 'Copiar resumo'); b.type = 'button';
+  b.addEventListener('click', () => {
+    Sfx.init(); const t = caixaResumo(game.save);
+    copyText(t).then(ok => {
+      if (ok){ Sfx.ok(); st.textContent = 'Copiado! Cole no WhatsApp.'; return; }
+      st.textContent = 'Não deu para copiar sozinho: selecione o texto abaixo.';
+      if (!ta){ ta = el('textarea', 'cx-txt'); ta.setAttribute('readonly', ''); ta.setAttribute('aria-label', 'Resumo do caixa'); row.appendChild(ta); }
+      ta.value = t; if (ta.select) ta.select();
+    });
+  });
+  row.appendChild(b); row.appendChild(st); onde.appendChild(row); grid.appendChild(onde);
+}
 function buildShop(){
   const grid = $('shop-grid');
   clearEl(grid);
@@ -196,11 +280,12 @@ function buildShop(){
   $('btn-shop-go').textContent = 'Começar o dia ' + game.shopNext;
   const f = payroll(game.save.equipe), dv = game.shopNext >= DIVULGA_DIA ? divulgaOf(game.save.divulga) : null;
   $('shop-folha').textContent = (f ? 'Folha ' + fmt(f) : 'Sem folha') + (dv ? ' + ' + dv.name.toLowerCase() + ' ' + fmt(dv.cost) : '') + ' ao abrir; contas ' + fmt(contasDia(game.tables)) + ' e ingredientes no fim do dia. A meta é o lucro.';
-  grid.className = 'shopgrid' + (shopTab === 'salao' ? ' salao' : '');
-  $('ov-shop').classList[shopTab === 'salao' ? 'add' : 'remove']('salao');
+  grid.className = 'shopgrid' + (shopTab === 'salao' || shopTab === 'caixa' ? ' ' + shopTab : '');
+  ['salao', 'caixa'].forEach(k => $('ov-shop').classList[shopTab === k ? 'add' : 'remove'](k));
   if (shopTab === 'equipe') return buildEquipe(grid);
   if (shopTab === 'salao') return buildSalao(grid);
   if (shopTab === 'divulga') return buildDivulga(grid);
+  if (shopTab === 'caixa') return buildCaixa(grid);
   UPGRADES.forEach(u => {
     const own = !!game.up[u.id];
     const card = el('div', 'item' + (own ? ' own' : ''));

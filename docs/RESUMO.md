@@ -1,9 +1,9 @@
 # Resumo do projeto e das alterações (até 15/10/2026)
 
 ## Estado atual
-- **Versão:** v7.1 (Jogo justo: a fila sem mesa espera com calma e não passa de 1 coração; a porta segura chegadas com o salão lotado), publicada como Versão 23 do artifact https://claude.ai/artifact/MJxrgDg8S4akvg47SoQAvj (privado).
+- **Versão:** v7.2 (Livro-caixa: aba Caixa na lojinha com os últimos 14 dias, para onde foi o dinheiro e um resumo para copiar), publicada como Versão 24 do artifact https://claude.ai/artifact/MJxrgDg8S4akvg47SoQAvj (privado).
 - **Branch:** `claude/main` (renomeado pelo usuário; o antigo `claude/intelligent-gauss-3owv29` não existe mais) no repositório `aarescigno/Lanchonete-corre-corre`.
-- **Arquivos publicados:** `lanchonete.html` (página), mais `versoes/v1.html` a `versoes/v7.html`, abertos pelo painel Versões.
+- **Arquivos publicados:** `lanchonete.html` (página), mais `versoes/v1.html` a `versoes/v7.1.html`, abertos pelo painel Versões.
 - **Capacidades declaradas (mantidas ao republicar sem `capabilities`):**
   - `db`: `ranking-carreira` e `ranking-semfim` com read "view" e write "owner";
   - `db`: `ranking-*/{self}` com write "interact";
@@ -12,7 +12,7 @@
   - documentos `ranking-carreira/<userId>` e `ranking-semfim/<userId>`, com `nome`, `pontos`, `dia` ou `tempo` e `quando`;
   - só sobrescreve quando a pontuação é maior;
   - fallback local em `localStorage` (`lcc2_ranking`).
-- **Save:** `lcc2_save`, que importa o `lcc_save_v1` da v1. Desde a v6 guarda também o salão (`save.salao`); desde a v7, a divulgação (`save.divulga`). `save.best` continua guardando o melhor faturamento de cada dia (é o que o ranking da carreira soma).
+- **Save:** `lcc2_save`, que importa o `lcc_save_v1` da v1. Desde a v6 guarda também o salão (`save.salao`); desde a v7, a divulgação (`save.divulga`); desde a v7.2, o livro-caixa (`save.caixa`, últimos 14 dias da carreira, e `save.caixaPend`, compras da lojinha que entram na linha do dia seguinte). `save.best` continua guardando o melhor faturamento de cada dia (é o que o ranking da carreira soma).
 
 ## Versões
 | Versão | Data | O que trouxe | Detalhes |
@@ -25,6 +25,7 @@
 | v6 | 14/10 | aba Salão: cadeiras e mesas (até 8) compradas, 2 ou 4 lugares por mesa | `docs/spec-v6.md` |
 | v7 | 15/10 | Contas: meta em lucro, ingredientes, contas do dia pelo salão aberto, divulgação (boca a boca, panfletos, redes sociais) | `docs/spec-v7.md` |
 | v7.1 | 15/10 | Jogo justo: fila justa (ritmo 40% e piso de 1 coração sem mesa que sirva), porta que respeita a lotação, ícone "aguardando mesa", bot afiado e perdas por causa | `docs/spec-v7.1.md` |
+| v7.2 | 15/10 | Livro-caixa: aba Caixa na lojinha (14 dias, para onde foi o dinheiro, "Copiar resumo" para o WhatsApp); valores da v7 mantidos | `docs/spec-v7.2.md` |
 
 ## Alterações feitas no Claude Code (14/10/2026)
 1. **Importação** do pacote exportado do claude.ai para o repositório (commit `982583b`).
@@ -99,6 +100,11 @@
    - **Ícone "aguardando mesa"** na fila (mesa e relógio; azul e parado no piso).
    - Resultado: bot afiado com equipe e Jogo de pratos comprado primeiro, 0 perdidos em 94% dos dias 3 a 7. Metas e escassez sem mudança (dentro do ruído). Teste `smoke10`.
 
+12. **v7.2, Livro-caixa** (ver `docs/spec-v7.2.md`; etapa 1b do `docs/PLANO.md`):
+   - `save.caixa`: uma linha por dia da carreira (até 14), com faturamento, ingredientes, contas, folha, divulgação, lucro, meta, perdidos, compras e saldo. As compras da lojinha entram na linha do dia seguinte.
+   - **Aba Caixa** na lojinha: tabela (mais novo em cima), barra "para onde foi o dinheiro" e **Copiar resumo** (texto para o WhatsApp; se o navegador não deixar copiar, mostra o texto para copiar à mão).
+   - Ajuste fino: `INGRED.prato` 0,7 tirava só ~R$ 150 do bot até o dia 5 e deixava os dias 5 a 7 sem equipe abaixo do alvo; valores mantidos até chegar resumo de jogador (rodada de retorno dispensada pelo usuário). Teste `smoke11`.
+
 ## Código em partes (`src/`)
 - Desde 15/10/2026 o código fica em 19 partes em `src/` (lista no `CLAUDE.md`), juntadas por `montar.py` em `lanchonete.html` sem acrescentar nada: o arquivo montado é idêntico, byte a byte, ao anterior à divisão.
 - `lanchonete.html` continua no git (artifact, `app/build.py`, testes e capturas usam ele). `montar.py --check` confere que ele está em dia (o workflow do Pages roda isso); `montar.py` recusa sobrescrever um `lanchonete.html` editado à mão depois das partes (`--forcar` passa por cima).
@@ -123,8 +129,9 @@
 - `smoke8` (33/33: salão, cadeiras e mesas, e as faixas de estrelas);
 - `smoke9` (33/33: v7, lucro, ingredientes, contas e divulgação);
 - `smoke10` (26/26: v7.1, fila justa, piso, porta e perdas por causa);
+- `smoke11` (39/39: v7.2, livro-caixa, limite de 14 dias, resumo e aba Caixa);
 - `menu_fit` (14 tamanhos de tela);
-- `balance` (bot, N rodadas por dia; `DIV`, `MULT`, `SALAO`, `BOT=afiado`, `ORDEM`; perdas por causa e 3★);
+- `balance` (bot, N rodadas por dia; `DIV`, `MULT`, `SALAO`, `BOT=afiado`, `ORDEM`, `INGRED`, `CONTAS`; perdas por causa e 3★);
 - `carreira` (bot jogando a carreira com o dinheiro acumulado de verdade).
 
 ## Ideias pendentes
@@ -133,7 +140,7 @@
 - Estrelas: conferir com jogadores se a 2ª estrela (`bomGoal`, metade do caminho entre a meta e a expert) ficou no ponto.
 - O painel "Como jogar" ainda rola no celular deitado.
 - Ajuste de dificuldade.
-- v7: conferir com jogadores se a escassez ficou no ponto (valores em `CONTAS`, `INGRED`, `DIVULGA` e nas metas).
+- v7: conferir com jogadores se a escassez ficou no ponto (valores em `CONTAS`, `INGRED`, `DIVULGA` e nas metas). Desde a v7.2, o jeito é pedir o "Copiar resumo" da aba Caixa.
 - v7.1: conferir com jogadores se a fila justa (`FILA_JUSTA`) e a porta (`PORTA`) ficaram no ponto, e se o ícone "aguardando mesa" se entende.
-- **Roteiro das próximas versões em `docs/PLANO.md`** (uma etapa por sessão; log das ideias e retornos em `docs/PROPOSTAS.md`): jogo justo (feito na v7.1), livro-caixa, manutenção e imprevistos, ponto (Centro, área nobre com VIPs exigentes), modo história em 2 partes e polimento.
+- **Roteiro das próximas versões em `docs/PLANO.md`** (uma etapa por sessão; log das ideias e retornos em `docs/PROPOSTAS.md`): jogo justo (feito na v7.1), livro-caixa (feito na v7.2), manutenção e imprevistos, ponto (Centro, área nobre com VIPs exigentes), modo história em 2 partes e polimento.
 - A lojinha ainda rola no menor celular deitado (568×320).

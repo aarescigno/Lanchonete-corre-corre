@@ -441,6 +441,7 @@ class Game {
     this.save.best[d.n] = Math.max(prevBest, fat);   // o ranking da carreira soma o faturamento dos melhores dias
     this.save.stars[d.n] = Math.max(this.save.stars[d.n] || 0, stars);
     if (passed) this.save.maxDay = Math.max(this.save.maxDay, Math.min(7, d.n + 1));
+    caixaAdd(this.save, { d:d.n, fat, ingr:Math.round(this.custo), contas:this.contas, folha:this.paid, div:this.paidDiv, lucro:m, meta:d.meta, ok:passed, perd:this.stats.lost, saldo:this.save.bank });
     writeSave(this.save);
     this.result = { day:d.n, money:m, fat, custo:Math.round(this.custo), contas:this.contas, div:this.paidDiv, divName:this.div ? this.div.name : '', meta:d.meta, bom:bomGoal(d), expert:d.expert, passed, stars, served:this.stats.served, lost:this.stats.lost, lostBy:this.stats.lostBy, lotadoT:Math.round(this.stats.lotadoT), atraso:Math.round(this.atraso), full:this.stats.full, chain:this.stats.chain, vip:this.stats.vip, vipLost:this.stats.vipLost, juice:this.stats.juice, juiceMiss:this.stats.juiceMiss, trash:this.stats.trash, washed:this.stats.washed, income, paid:this.paid, reason:this.reason };
     this.setState('dayend');
@@ -495,6 +496,7 @@ class Game {
     const u = UPGRADES.find(x => x.id === id);
     if (!u || this.shopBought || this.up[id] || this.save.bank < u.cost) return false;
     this.save.bank -= u.cost; this.up[id] = true; this.shopBought = true; this.boughtFor = this.shopNext;
+    caixaGasto(this.save, 'mel', u.cost);
     writeSave(this.save);
     Sfx.coin();
     return true;
@@ -524,7 +526,7 @@ class Game {
   buyChairs(){
     const sal = this.save.salao;
     if (this.save.bank < SALAO.chairPrice || sal.chairs >= SALAO.maxChairs + 2 * sal.mesas) return false;
-    this.save.bank -= SALAO.chairPrice; sal.chairs += 2;
+    this.save.bank -= SALAO.chairPrice; sal.chairs += 2; caixaGasto(this.save, 'sal', SALAO.chairPrice);
     Sfx.coin();
     return this.salaoSaved();
   }
@@ -533,7 +535,7 @@ class Game {
     const sal = this.save.salao, why = salaoTableBlock(sal);
     if (why){ this.salaoMsg = why; return false; }
     if (this.save.bank < SALAO.tablePrice) return false;
-    this.save.bank -= SALAO.tablePrice;
+    this.save.bank -= SALAO.tablePrice; caixaGasto(this.save, 'sal', SALAO.tablePrice);
     sal.mesas++; sal.seats[6 + sal.mesas] = 2; sal.chairs += 2;
     Sfx.coin();
     return this.salaoSaved();
