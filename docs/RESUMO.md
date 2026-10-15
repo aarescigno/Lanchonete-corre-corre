@@ -1,7 +1,7 @@
 # Resumo do projeto e das alterações (até 15/10/2026)
 
 ## Estado atual
-- **Versão:** v6 (Salão), publicada como Versão 19 do artifact https://claude.ai/artifact/MJxrgDg8S4akvg47SoQAvj (privado).
+- **Versão:** v6 (Salão), publicada como Versão 21 do artifact (com a Dani pegando o café no caminho da pia e o ícone "Instalar no celular") https://claude.ai/artifact/MJxrgDg8S4akvg47SoQAvj (privado).
 - **Branch:** `claude/main` (renomeado pelo usuário; o antigo `claude/intelligent-gauss-3owv29` não existe mais) no repositório `aarescigno/Lanchonete-corre-corre`.
 - **Arquivos publicados:** `lanchonete.html` (página), mais `versoes/v1.html`, `versoes/v2.html`, `versoes/v3.html`, `versoes/v4.html` e `versoes/v5.html`, abertos pelo painel Versões.
 - **Capacidades declaradas (mantidas ao republicar sem `capabilities`):**
@@ -78,8 +78,16 @@
    - teste `smoke8`.
    - **Estrelas:** a 2ª estrela vem na metade do caminho entre a meta e a expert (`bomGoal`). Antes quase nunca saía, porque quem batia a expert levava 3. A 3ª continua sendo a expert sem perder ninguém.
    - A pergunta-lembrete a cada alteração saiu do `CLAUDE.md`, a pedido do usuário.
+   - **Dani e o cafezinho** (15/10, a pedido do usuário): ela serve café a quem perdeu pelo menos 1 coração (≤4, antes ≤3) e, com 1 pilha de louça na mão, pega o café no caminho da pia, deixa a louça (sem lavar) e vai servir. Assim usa as 2 mãos 4 a 5 vezes a cada 10 dias (antes ~1), e o teste "a Dani chega a 2 itens" do `smoke6` deixou de oscilar. O equilíbrio não mudou (`balance` com a Dani nível 3 em pratos, lavar e cafezinho: 304/400 → 307/400 metas nos dias 3 a 7).
+
+## Código em partes (`src/`)
+- Desde 15/10/2026 o código fica em 19 partes em `src/` (lista no `CLAUDE.md`), juntadas por `montar.py` em `lanchonete.html` sem acrescentar nada: o arquivo montado é idêntico, byte a byte, ao anterior à divisão.
+- `lanchonete.html` continua no git (artifact, `app/build.py`, testes e capturas usam ele). `montar.py --check` confere que ele está em dia (o workflow do Pages roda isso); `montar.py` recusa sobrescrever um `lanchonete.html` editado à mão depois das partes (`--forcar` passa por cima).
+- `tests/run_all.sh` monta antes de testar; `tests/mapa.sh` indexa as partes (arquivo:linha).
+- Branches: todo trabalho termina com merge no `claude/main` e o branch apagado (pedido do usuário).
 
 ## App para Android (PWA)
+- **Menu principal:** o ícone de celular com seta (ao lado do de Versões) abre o painel `#ov-app`, "Instalar no celular", com o endereço do Pages, um botão "Copiar endereço" e o passo a passo para Android (Chrome → ⋮ → Instalar app) e iPhone/iPad (Safari → Compartilhar → Adicionar à Tela de Início). Cabe sem rolar do 1366×768 ao 568×320 deitado. No app já instalado (tela cheia/standalone), o ícone some.
 - `app/build.py` monta `app/site/` (ignorado no git) a partir de `lanchonete.html`, sem mudar o jogo: `index.html` com invólucro, `manifest.webmanifest` (tela cheia, horizontal), ícones próprios (hambúrguer), `sw.js` (offline; fontes do Google em cache) e as `versoes/vN.html`.
 - `.github/workflows/app.yml` publica `app/site` no GitHub Pages a cada push no branch padrão que mexa no jogo (ou manualmente). Requer Settings → Pages → Source: GitHub Actions.
 - No app o ranking compartilhado não existe (não há `window.claude`); fica o ranking local do aparelho.
@@ -91,7 +99,7 @@
 - `smoke3` (120/120: v2);
 - `smoke4` (23/23: VIP);
 - `smoke5` (41/41: sucos, bandeja e lixeira);
-- `smoke6` (94/94: equipe, louça, lixeira que enche, couvert, água, economia). O teste "a Dani chega a 2 itens" falha em ~1 de 6 rodadas, porque depende do sorteio do dia (já falhava antes do ajuste de toque);
+- `smoke6` (94/94: equipe, louça, lixeira que enche, couvert, água, economia). O teste "a Dani chega a 2 itens" oscilava (dependia do sorteio do dia) até a Dani pegar o café no caminho da pia; hoje falha em menos de ~1 a cada 40 rodadas;
 - `smoke7` (15/15: toque no celular e brilho);
 - `smoke8` (33/33: salão, cadeiras e mesas, e as faixas de estrelas);
 - `menu_fit` (14 tamanhos de tela);
@@ -99,7 +107,6 @@
 
 ## Ideias pendentes
 - Testar som e toque em celular real (o toque foi ajustado depois de relato de dificuldade, mas só testado no Chromium com toque emulado).
-- Deixar estável o teste "a Dani chega a 2 itens" do `smoke6` (falha em ~25% das rodadas, tanto na v5 quanto na v6: depende do sorteio do dia).
 - Salão: os preços (R$ 60 por 2 cadeiras, R$ 300 por mesa) e o limite de 1 mesa de 4 lugares por fileira de 4 mesas ainda não foram testados com jogadores; ajustar em `SALAO`.
 - Estrelas: conferir com jogadores se a 2ª estrela (`bomGoal`, metade do caminho entre a meta e a expert) ficou no ponto.
 - O painel "Como jogar" ainda rola no celular deitado.

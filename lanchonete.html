@@ -93,6 +93,37 @@ p{margin:calc(var(--u)*6) 0;font-size:max(12px,calc(var(--u)*16));line-height:1.
 .ver-ico:hover,.ver-ico:focus-visible{color:var(--faixa);background:var(--creme);border-color:var(--faixa)}
 .ver-ico:focus-visible{outline:3px solid var(--faixa);outline-offset:2px}
 .menu-panel .links{display:flex;gap:calc(var(--u)*18);flex-wrap:wrap;align-items:flex-end}
+.ver-ico + .ver-ico{margin-left:0}
+/* instalar no celular: passo a passo para Android e iPhone */
+.app-panel{width:calc(var(--u)*760);max-width:100%}
+.app-url{display:flex;flex-wrap:wrap;gap:calc(var(--u)*8);align-items:center;justify-content:center;margin:calc(var(--u)*6) 0}
+.app-url a{font:800 max(13px,calc(var(--u)*16)) var(--fb);color:var(--faixa);overflow-wrap:anywhere}
+.app-url .btn{font-size:max(12px,calc(var(--u)*15));padding:calc(var(--u)*3) calc(var(--u)*12);min-height:40px}
+.app-cols{display:grid;grid-template-columns:1fr 1fr;gap:calc(var(--u)*10);text-align:left;margin:calc(var(--u)*6) 0}
+.app-cols section{background:var(--creme);border:calc(var(--u)*2.5) solid var(--tinta);border-radius:calc(var(--u)*12);padding:calc(var(--u)*8) calc(var(--u)*12)}
+.app-cols h3{font-family:var(--fd);font-weight:400;margin:0 0 calc(var(--u)*4);font-size:max(15px,calc(var(--u)*20));color:var(--faixa)}
+.app-cols ol{margin:0;padding-left:1.3em;display:grid;gap:calc(var(--u)*4)}
+.app-cols li{font-size:max(12px,calc(var(--u)*14.5));font-weight:600;line-height:1.3}
+.app-cols svg{vertical-align:-0.2em}
+.app-cols .nw{white-space:nowrap}
+@media (max-width:600px) and (min-height:461px){.app-cols{grid-template-columns:1fr}}
+@media (max-height:460px){
+  .app-panel{padding:calc(var(--u)*6) calc(var(--u)*14)}
+  .app-panel h2{font-size:max(17px,calc(var(--u)*26));margin-bottom:0}
+  .app-panel > p.small{font-size:10.5px;line-height:1.25}
+  .app-panel p{margin:2px 0}
+  .app-url{margin:2px 0;gap:6px;flex-wrap:nowrap}
+  .app-url a{font-size:11px;white-space:nowrap}
+  .app-url .btn{font-size:12px;min-height:30px;padding:1px 8px;box-shadow:0 3px 0 var(--tinta);white-space:nowrap}
+  .app-panel .savemsg{min-height:0}
+  .app-cols{gap:6px;margin:4px 0}
+  .app-cols section{padding:4px 8px}
+  .app-cols h3{font-size:14px;margin-bottom:2px}
+  .app-cols ol{gap:1px}
+  .app-cols li{font-size:11px;line-height:1.25}
+  .app-panel .row{margin-top:2px}
+  .app-panel .row .btn{min-height:32px;font-size:14px;padding:2px 16px;box-shadow:0 3px 0 var(--tinta)}
+}
 .saveform{display:flex;flex-wrap:wrap;gap:calc(var(--u)*8);align-items:center;justify-content:center;margin:calc(var(--u)*8) 0 calc(var(--u)*2)}
 .saveform label{font-weight:800;font-size:max(12px,calc(var(--u)*14));color:var(--faixa)}
 .saveform input{font:600 max(16px,calc(var(--u)*17)) var(--fb);color:var(--tinta);background:#fff;border:calc(var(--u)*3) solid var(--tinta);border-radius:calc(var(--u)*10);padding:calc(var(--u)*4) calc(var(--u)*10);min-height:max(44px,calc(var(--u)*44));width:calc(var(--u)*190);max-width:60vw}
@@ -191,6 +222,9 @@ table.rank tr.me td{background:#fbe7a8}
         </div>
         <div class="links">
           <button class="link" id="btn-reset">Zerar progresso</button>
+          <button class="ver-ico" id="btn-app" title="Instalar no celular" aria-label="Instalar no celular (Android e iPhone)">
+            <svg viewBox="0 0 24 24" width="22" height="22" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><rect x="6.5" y="2.5" width="11" height="19" rx="2.5"/><path d="M10.5 18.5h3"/><path d="M12 6.5v7"/><path d="M9 10.8l3 3 3-3"/></svg>
+          </button>
           <button class="ver-ico" id="btn-ver" title="Versões anteriores" aria-label="Versões anteriores">
             <svg viewBox="0 0 24 24" width="22" height="22" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M3.5 12a8.5 8.5 0 1 0 2.6-6.1"/><path d="M3 4.5v4h4"/><path d="M12 7.5V12l3 2"/></svg>
           </button>
@@ -307,6 +341,37 @@ table.rank tr.me td{background:#fbe7a8}
         </div>
         <div class="rank-wrap" id="rank-wrap"></div>
         <div class="row"><button class="btn go" id="btn-rank-back">Voltar</button></div>
+      </div>
+    </div>
+
+    <div class="ov" id="ov-app">
+      <div class="panel app-panel">
+        <h2>Instalar no celular</h2>
+        <p class="small">O jogo vira um app na tela inicial, em tela cheia e sem precisar de internet. Abra este endereço no celular:</p>
+        <div class="app-url"><a id="app-link" href="https://aarescigno.github.io/Lanchonete-corre-corre/" target="_blank" rel="noopener">aarescigno.github.io/Lanchonete-corre-corre</a><button class="btn alt" type="button" id="btn-app-copy">Copiar endereço</button></div>
+        <p class="small savemsg" id="app-msg" role="status"></p>
+        <div class="app-cols">
+          <section aria-labelledby="app-and">
+            <h3 id="app-and">Android</h3>
+            <ol>
+              <li>Abra o endereço no <b>Chrome</b>.</li>
+              <li>Toque no menu <b>&#8942;</b> (canto de cima).</li>
+              <li>Toque em <b>Instalar app</b> (ou <b>Adicionar à tela inicial</b>).</li>
+              <li>Confirme em <b>Instalar</b>.</li>
+            </ol>
+          </section>
+          <section aria-labelledby="app-ios">
+            <h3 id="app-ios">iPhone e iPad</h3>
+            <ol>
+              <li>Abra o endereço no <b>Safari</b>.</li>
+              <li>Toque em <span class="nw"><b>Compartilhar</b> <svg viewBox="0 0 24 24" width="17" height="17" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M8 8.5H6.5v12h11v-12H16"/><path d="M12 14.5v-12"/><path d="M8.5 6L12 2.5 15.5 6"/></svg>.</span></li>
+              <li>Toque em <b>Adicionar à Tela de Início</b> (role a lista, se precisar).</li>
+              <li>Toque em <b>Adicionar</b>.</li>
+            </ol>
+          </section>
+        </div>
+        <p class="small">Pronto: abra pelo ícone do hambúrguer na tela inicial e jogue com o celular deitado. No app, o ranking fica só no aparelho.</p>
+        <div class="row"><button class="btn go" id="btn-app-close">Voltar</button></div>
       </div>
     </div>
 
@@ -1276,7 +1341,7 @@ class Helper {
   go(pt, step){ this.plan = step; this.path = findPath({ x:this.x, y:this.y }, pt); this.phase = 'walk'; }
   nearestAp(t){ const p = tableApproach(t); return Math.hypot(p[0].x-this.x,p[0].y-this.y) <= Math.hypot(p[1].x-this.x,p[1].y-this.y) ? p[0] : p[1]; }
   coffeeTarget(){
-    const c = this.g.tables.filter(t => t.group && t.group.seated && !t.group.coffee && t.group.hearts <= 3 && !t.group.daniCoffee && !this.biaWants(t));
+    const c = this.g.tables.filter(t => t.group && t.group.seated && !t.group.coffee && t.group.hearts <= 4 && !t.group.daniCoffee && !this.biaWants(t));
     c.sort((a,b) => a.group.hearts - b.group.hearts);
     return c[0] || null;
   }
@@ -1284,20 +1349,23 @@ class Helper {
     const g = this.g, k = g.kitchen;
     const dirty = this.hands.filter(h => h.kind === 'dirty').length;
     const coffee = this.hands.find(h => h.kind === 'coffee');
-    if (coffee){
+    // entrega o café (com louça e café nas mãos, primeiro deixa a louça na pia, logo abaixo da cafeteira)
+    if (coffee && !dirty){
       const t = (coffee.table && coffee.table.group === coffee.group && coffee.group && coffee.group.seated && !coffee.group.coffee) ? coffee.table : this.coffeeTarget();
       if (t){ coffee.table = t; coffee.group = t.group; t.group.daniCoffee = true; return this.go(this.nearestAp(t), { type:'serve', t }); }
     }
     // já na pia: continua lavando até acabar a louça
     const ap = STATIONS.sink.ap;
-    if (this.canWash() && k.sinkN > 0 && !dirty && Math.hypot(this.x - ap.x, this.y - ap.y) < 4) return this.go(ap, { type:'sink' });
+    if (this.canWash() && k.sinkN > 0 && !dirty && !coffee && Math.hypot(this.x - ap.x, this.y - ap.y) < 4) return this.go(ap, { type:'sink' });
     if (this.does('pratos') && this.hands.length < DANI_HANDS){
       const c = g.tables.filter(t => t.open && t.dirty && !this.biaWants(t));
       c.sort((a,b) => Math.hypot(a.cx-this.x,a.cy-this.y) - Math.hypot(b.cx-this.x,b.cy-this.y));
       if (c.length){ return this.go(this.nearestAp(c[0]), { type:'clear', t:c[0] }); }
     }
+    // com 1 pilha na mão, pega o cafezinho no caminho da pia (a 2ª mão)
+    if (dirty && !coffee && this.does('cafe') && this.hands.length < DANI_HANDS && this.coffeeTarget()) return this.go(STATIONS.coffee.ap, { type:'coffee' });
     if (dirty) return this.go(STATIONS.sink.ap, { type:'sink' });
-    if (this.canWash() && k.sinkN > 0) return this.go(STATIONS.sink.ap, { type:'sink' });
+    if (this.canWash() && k.sinkN > 0 && !coffee) return this.go(STATIONS.sink.ap, { type:'sink' });
     if (this.does('lixo') && g.trash >= TRASH.cap - 2 && !this.hands.length) return this.go(STATIONS.trash.ap, { type:'trash' });
     if (this.does('cafe') && !coffee && this.hands.length < DANI_HANDS && this.coffeeTarget()) return this.go(STATIONS.coffee.ap, { type:'coffee' });
     if (this.does('agua') && g.up.agua && g.agua <= 2 && !this.hands.length && g.money >= AGUA.price && !g.bia.acts.some(a => a.type === 'agua')) return this.go(STATIONS.agua.ap, { type:'agua' });
@@ -1308,7 +1376,7 @@ class Helper {
     // não há limite de pilhas: só o tempo de lavar. Se a Bia está lavando, a Dani só deixa a louça
     if (st.type === 'sink'){
       const drop = this.hands.some(h => h.kind === 'dirty');
-      st.wash = this.canWash() && (drop || this.g.kitchen.sinkN > 0);
+      st.wash = this.canWash() && !this.hands.some(h => h.kind === 'coffee') && (drop || this.g.kitchen.sinkN > 0);
       return (drop ? WASH.base : 0) + (st.wash ? WASH.perPile / this.spec.speed : 0);
     }
     if (st.type === 'trash') return TRASH.empty;
@@ -3189,7 +3257,7 @@ const stage = $('stage');
 const game = new Game(canvas, ctx);
 let selectedDay = Math.min(game.unlocked, 7);
 
-const SCREENS = ['ov-menu','ov-how','ov-intro','ov-pause','ov-end','ov-shop','ov-final','ov-endless','ov-rank','ov-ver'];
+const SCREENS = ['ov-menu','ov-how','ov-intro','ov-pause','ov-end','ov-shop','ov-final','ov-endless','ov-rank','ov-ver','ov-app'];
 function showOnly(ids){
   SCREENS.forEach(id => { const el = $(id); if (!el) return; if (ids.indexOf(id) >= 0) el.classList.add('show'); else el.classList.remove('show'); });
 }
@@ -3663,6 +3731,17 @@ on('btn-endless',    () => { Sfx.init(); Sfx.resume(); Sfx.tap(); game.startEndl
 on('btn-rank',       () => { Sfx.init(); Sfx.resume(); Sfx.tap(); openRank('ov-menu'); });
 on('btn-ver',        () => { Sfx.tap(); showOnly(['ov-ver']); });
 on('btn-ver-close',  () => { Sfx.tap(); showOnly(['ov-menu']); });
+/* instalar no celular: passo a passo; já instalado (tela cheia ou standalone), o ícone some */
+on('btn-app',        () => { Sfx.init(); Sfx.tap(); $('app-msg').textContent = ''; showOnly(['ov-app']); });
+on('btn-app-close',  () => { Sfx.tap(); showOnly(['ov-menu']); });
+on('btn-app-copy',   () => {
+  Sfx.tap();
+  const url = $('app-link').href, msg = $('app-msg');
+  const ok = () => { msg.textContent = 'Endereço copiado! Cole no navegador do celular.'; };
+  const no = () => { msg.textContent = 'Não deu para copiar aqui. O endereço é ' + url; };
+  try { if (navigator.clipboard && navigator.clipboard.writeText) navigator.clipboard.writeText(url).then(ok, no); else no(); } catch(e) { no(); }
+});
+try { if (window.matchMedia && window.matchMedia('(display-mode: fullscreen), (display-mode: standalone)').matches || window.navigator.standalone) $('btn-app').style.display = 'none'; } catch(e) {}
 on('btn-rank-back',  () => { Sfx.tap(); closeRank(); });
 on('btn-end-rank',   () => { Sfx.tap(); openRank('ov-end'); });
 on('btn-final-rank', () => { Sfx.tap(); openRank('ov-final'); });
