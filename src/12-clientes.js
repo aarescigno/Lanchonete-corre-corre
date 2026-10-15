@@ -124,6 +124,7 @@ class Group {
     this.cmd = -1; this.hold = 0; this.bounced = false;
     this.aguaN = 0; this.drank = false;
     this.state = 'queue'; this.stateT = 0; this.patLeft = 0;
+    this.aguarda = false; this.piso = false;   // na fila sem mesa que sirva; segurando no piso de 1 coração
     this.setState('queue');
   }
   patPer(){
@@ -167,6 +168,20 @@ class Group {
     }
     if (this.moving) this.walkPh += dt * 11;
   }
+  /* na fila: há mesa (aberta e sem grupo, mesmo suja) onde o grupo cabe? */
+  get semMesa(){ return !this.game.tables.some(t => t.open && !t.group && t.seats >= this.size); }
+  /* paciência na fila (v7.1): sem mesa que sirva, corre no ritmo da fila justa e, na carreira,
+     para no piso (1 coração, com metade da paciência dele) até abrir uma mesa */
+  tickQueue(dt){
+    this.aguarda = this.semMesa; this.piso = false;
+    if (!this.aguarda) return this.tick(dt);
+    const d = dt * FILA_JUSTA.ritmo;
+    if (this.hearts <= 1 && this.game.mode !== 'semfim'){
+      const floor = Math.min(this.patLeft, this.patPer() * FILA_JUSTA.piso);
+      if (this.patLeft - d <= floor){ this.patLeft = floor; this.piso = true; return; }
+    }
+    this.tick(d);
+  }
   tick(dt){
     this.patLeft -= dt;
     if (this.patLeft <= 0){
@@ -182,7 +197,7 @@ class Group {
       case 'queue':
         this.moveAlong(dt, 220);
         if (!this.drank && !this.path.length) this.drink();
-        this.tick(dt); break;
+        this.tickQueue(dt); break;
       case 'toTable':
         this.moveAlong(dt, 230);
         if (!this.path.length){

@@ -1,5 +1,6 @@
-// bot compartilhado
-module.exports=function(g,L){
+// bot compartilhado. opts.afiado: o "jogador perfeito" da v7.1 (ver afiado abaixo)
+module.exports=function(g,L,opts){
+  if(opts&&opts.afiado) return afiado(g,L);
   return function botStep(){
     const b=g.bia;
     const can=k=>b.canTake?b.canTake(k):b.free()>0;
@@ -40,3 +41,87 @@ module.exports=function(g,L){
     }
   };
 };
+
+// Bot afiado (v7.1): faz uma ação de cada vez, sempre a mais urgente. A urgência é o tempo que o grupo
+// ainda aguenta (corações × paciência) menos a caminhada até lá. Senta qualquer grupo da fila que caiba
+// (o mais apressado primeiro, na menor mesa), serve cafezinho a quem está por um fio e lava a louça
+// quando faltam pratos. Serve para medir se dá para não perder ninguém jogando muito bem.
+function afiado(g,L){
+  const ST=L.LAYOUT.STATIONS, SL=L.LAYOUT.PLATE_SLOTS;
+  const ttl=grp=>{ if(!grp) return Infinity; const p=grp.patPer(); return isFinite(p)?grp.patLeft+(grp.hearts-1)*p:Infinity; };
+  const walk=(x0,y0,x1,y1)=>Math.hypot(x1-x0,y1-y0)*1.25/g.bia.speed;
+  return function botStep(){
+    const b=g.bia, k=g.kitchen, dani=g.dani;
+    // 1) sentar: o grupo mais apressado primeiro, na menor mesa livre que caiba (cor igual desempata)
+    const q=g.queue.slice().sort((a,c)=>ttl(a)-ttl(c));
+    for(const grp of q){
+      const c=g.tables.filter(t=>t.free&&t.seats>=grp.size);
+      if(!c.length) continue;
+      c.sort((a,t)=>a.seats-t.seats||(t.color===grp.color)-(a.color===grp.color));
+      g.seatGroup(grp,c[0]);
+    }
+    if(b.acts.length) return;
+    const can=kd=>b.canTake(kd), from=pt=>walk(b.x,b.y,pt.x,pt.y);
+    const tw=t=>walk(b.x,b.y,t.cx,t.cy+4), sw=key=>from(ST[key].ap);
+    const tableOf=grp=>grp&&grp.table;
+    const cands=[];   // [pontos (menor = mais urgente), ação]
+    const add=(sc,fn)=>cands.push([sc,fn]);
+    const dirtyN=b.hands.filter(h=>h.kind==='dirty').length;
+    // pratos e comandas que a Bia carrega
+    b.hands.filter(h=>h.kind==='dish').forEach(h=>{ const t=g.tables[h.table-1]; add(ttl(h.group)-tw(t),()=>g.tapTable(t)); });
+    const tk=b.hands.filter(h=>h.kind==='ticket');
+    if(tk.length) add(Math.min(...tk.map(h=>ttl(h.group)))-sw('order')-6,()=>g.tapStation('order',800,150));
+    // pratos prontos no balcão
+    k.plates.forEach((p,i)=>{ if(!p||!can('dish')) return; const t=tableOf(p.group); if(!t) return;
+      add(ttl(p.group)-sw('plates')-walk(ST.plates.ap.x,ST.plates.ap.y,t.cx,t.cy),()=>g.tapStation('plates',SL[i].x,SL[i].y)); });
+    // grupos esperando nas mesas (pedido, conta) e mesas sujas
+    const ordered=g.tables.filter(t=>t.group&&t.group.state==='ordered').map(t=>ttl(t.group));
+    const plateNeed=k.clean<=0?Math.min(Infinity,...ordered):Infinity;
+    for(const t of g.tables){
+      if(!t.open||(dani&&dani.targets(t))) continue;
+      const grp=t.group;
+      if(grp&&grp.state==='wantOrder'&&can('ticket')) add(ttl(grp)-tw(t),()=>g.tapTable(t));
+      else if(grp&&grp.state==='wantBill'){
+        if(grp.juicePending>0&&b.juiceN()===0&&!dani) { /* conta mesmo assim, mais tarde */ add(ttl(grp)-tw(t)+4,()=>g.tapTable(t)); }
+        else add(ttl(grp)-tw(t),()=>g.tapTable(t));
+      }
+      else if(t.dirty&&can('dirty')){
+        const waits=g.queue.filter(x=>x.size<=t.seats&&!g.tables.some(o=>o.free&&o.seats>=x.size)).map(ttl);
+        const sc=Math.min(waits.length?Math.min(...waits):40, plateNeed-6)-tw(t);
+        add(sc,()=>g.tapTable(t));
+      }
+    }
+    // cafezinho: a quem está com 2 corações ou menos (e ainda não tomou)
+    const coffeeT=g.tables.filter(t=>t.group&&!t.group.coffee&&isFinite(ttl(t.group))&&t.group.hearts<=2);
+    if(b.hasCoffee()){
+      const ts=g.tables.filter(t=>t.group&&t.group.seated&&!t.group.coffee).sort((a,c)=>ttl(a.group)-ttl(c.group));
+      if(ts.length) add(ttl(ts[0].group)-tw(ts[0]),()=>g.tapTable(ts[0]));
+      else add(30,()=>g.tapStation('trash',723,500));
+    } else if(coffeeT.length&&can('coffee')){
+      const t=coffeeT.sort((a,c)=>ttl(a.group)-ttl(c.group))[0];
+      add(ttl(t.group)-sw('coffee')-walk(ST.coffee.ap.x,ST.coffee.ap.y,t.cx,t.cy)+2,()=>g.tapStation('coffee',810,350));
+    }
+    // louça: largar na pia a que está na mão; lavar quando faltam pratos (ou se ninguém mais lava)
+    if(dirtyN) add(Math.min(10,plateNeed-6)+sw('sink'),()=>g.tapStation('sink',850,450));
+    else if(k.sinkN>0&&!(dani&&dani.washing)){
+      const helper=g.otherWasher;
+      if(k.clean<=0) add(plateNeed-6-sw('sink')-L.WASH.base,()=>g.tapStation('sink',850,450));
+      else if(!helper) add(25+sw('sink'),()=>g.tapStation('sink',850,450));
+    }
+    // sucos
+    const jt=g.tables.filter(t=>t.group&&t.group.juiceOpen&&t.group.juicePending>0);
+    if(b.juiceN()){ const t=jt.slice().sort((a,c)=>(c.group.state==='wantBill')-(a.group.state==='wantBill'))[0]; if(t) add((t.group.state==='wantBill'?ttl(t.group):20)-tw(t),()=>g.tapTable(t)); }
+    const need=jt.reduce((n,t)=>n+t.group.juicePending,0)-b.juiceN();
+    if(need>0&&can('juice')) add(18+sw('juice'),()=>{
+      let n=0; const sim=b.hands.slice();
+      while(n<need&&n<6&&L.handLayout(sim.concat([{kind:'juice'}]),b.tray)){ sim.push({kind:'juice'}); n++; }
+      for(let i=0;i<n;i++) g.tapStation('juice',910,350);
+    });
+    // lixo e água
+    if(g.trash>=L.TRASH.cap-1&&!b.hands.length&&!(dani&&dani.does('lixo'))) add(g.trashFull?12:22,()=>g.tapStation('trash',723,500));
+    if(g.up.agua&&g.agua<=1&&g.money>=L.AGUA.price&&!(dani&&dani.does('agua'))&&!b.hands.length) add(g.queue.length?16:26,()=>g.tapStation('agua',182,140));
+    if(!cands.length) return;
+    cands.sort((a,c)=>a[0]-c[0]);
+    cands[0][1]();
+  };
+}

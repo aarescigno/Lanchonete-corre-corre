@@ -13,7 +13,7 @@ Origem: retorno do Renan Martorelli e conversa com o Arthur (15/10/2026). Os tex
 | # | Etapa | Versão | Situação |
 |---|---|---|---|
 | 0 | Contas: lucro, ingredientes, contas do dia, divulgação | v7 | feita (15/10) |
-| 1a | Jogo justo: dá para não perder ninguém | v7.1 | a fazer |
+| 1a | Jogo justo: dá para não perder ninguém | v7.1 | feita (15/10) |
 | 1b | Livro-caixa e ajuste fino com jogadores | v7.2 | a fazer |
 | 2 | Manutenção e imprevistos | v8 | a fazer |
 | 3 | Ponto: mudar para o Centro | v9 | a fazer |
@@ -25,6 +25,8 @@ Origem: retorno do Renan Martorelli e conversa com o Arthur (15/10/2026). Os tex
 ---
 
 ## Etapa 1a — Jogo justo: dá para não perder ninguém (v7.1)
+> **Feita em 15/10 (v7.1, `docs/spec-v7.1.md`).** Decisões: A + B; no Turno sem fim vale o ritmo da fila justa, sem o piso; ícone "aguardando mesa" sim. A medição mostrou que, com a equipe, a maior parte das perdas era a espera pelo prato, e não a fila. O que sobra é o limite de louça nos dias de 6 mesas: o bot afiado só chega ao alvo (0 perdidos em 94% dos dias) comprando o Jogo de pratos primeiro. A louça não mudou; se jogadores reclamarem da espera pelo prato, a etapa 1b pode rever `dishStock` ou a mecânica D. Metas sem mudança.
+
 **Objetivo:** atender o retorno do Renan (áudio em `docs/PROPOSTAS.md`). Quem joga com perfeição pode terminar com menos corações, mas consegue não perder ninguém. Perder um cliente tem que ser culpa da velocidade ou da prioridade do jogador.
 
 **Situação hoje (v7):** com a equipe completa, o bot ainda perde 0,6 a 2,6 grupos por dia nos dias 3 a 7, e a 3ª estrela exige zero perdas. O caso dele é a fila cheia com todas as mesas ocupadas: a fila perde a paciência sem que dê para fazer nada além de cafezinho e água.

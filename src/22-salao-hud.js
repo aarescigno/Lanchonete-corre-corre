@@ -79,6 +79,18 @@ function drawBubble(ctx,x,y,r,fill){
   ctx.beginPath(); ctx.moveTo(x-r*0.75,y+r*0.35); ctx.lineTo(x-r*0.95,y+r*1.35); ctx.lineTo(x-r*0.1,y+r*0.85); ctx.closePath(); fs(ctx,fill,2.4);
   circ(ctx,x,y,r); fs(ctx,fill,2.6);
 }
+/* "aguardando mesa" (v7.1): balãozinho com mesa e relógio ao lado dos corações de quem está na fila sem
+   mesa que sirva (a paciência corre mais devagar). No piso de 1 coração, o relógio fica azul e para */
+function drawWaitBadge(ctx,x,y,tm,piso){
+  ctx.save(); ctx.translate(x,y);
+  drawBubble(ctx,0,0,12,'#fff');
+  drawIcon(ctx,'table',-2,3,0.58);
+  circ(ctx,6,-5,5.2); fs(ctx,piso ? PAL.faixa : PAL.mostarda,1.6);
+  const a = (RM || piso) ? -Math.PI/2 + 1.2 : tm*2.4;
+  ctx.strokeStyle = piso ? '#fff' : PAL.tinta; ctx.lineWidth = 1.3;
+  ctx.beginPath(); ctx.moveTo(6,-5); ctx.lineTo(6 + Math.cos(a)*3.4, -5 + Math.sin(a)*3.4); ctx.moveTo(6,-5); ctx.lineTo(6,-8.2); ctx.stroke();
+  ctx.restore();
+}
 function drawRing(ctx,x,y,r,frac,col){
   ctx.beginPath(); ctx.arc(x,y,r+4,-Math.PI/2,-Math.PI/2+TAU*clamp(frac,0,1));
   ctx.lineWidth = 4; ctx.strokeStyle = col; ctx.lineCap = 'butt'; ctx.stroke(); ctx.lineCap = 'round';
@@ -88,7 +100,7 @@ function drawHearts(ctx,grp,x,y,tm){
   for (let i=0;i<n;i++){
     const hx = x + (i - 2) * sp;
     if (i < grp.hearts){
-      const last = (i === grp.hearts - 1) && grp.patLeft < 2.5 && isFinite(grp.patLeft);
+      const last = (i === grp.hearts - 1) && grp.patLeft < 2.5 && isFinite(grp.patLeft) && !grp.piso;
       const pulse = last && !RM ? 1 + 0.25*Math.sin(tm*14) : 1;
       heart(ctx,hx,y,6.2*pulse, last && Math.floor(tm*6)%2 ? '#ff9a8d' : '#E5384A');
     } else heart(ctx,hx,y,5.4,'rgba(255,255,255,.55)','rgba(34,32,28,.45)');
