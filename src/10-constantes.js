@@ -166,18 +166,38 @@ const AGUA = { cap:12, price:15, refill:0.8, slow:0.4 };   // slow: a paciência
 const VIP = { pat:0.75, tip:0.5, perfect:40, angry:30, dish:25, cook:1.8, types:['estudante','vovos','familia','executiva'] };   // dish: o prato especial soma R$ 25 à conta e leva 1,8× o tempo
 
 const DAYS = [
-  { n:1, tables:[1,2,4],         groups:6,  types:['estudante','vovos'],                                   nu:null,         meta:250, expert:400,  time:150, speed:0.60, note:'' },
-  { n:2, tables:[1,2,4,5],       groups:9,  types:['estudante','vovos','familia'],                         nu:'familia',    meta:700, expert:1100,  time:160, speed:0.60, note:'Chegou a família! Grupos de 3 ou 4 só cabem nas mesas de 4 lugares. Na lojinha, aba Salão, dá para comprar cadeiras e mesas.' },
-  { n:3, tables:[1,2,3,4,5],     groups:18, types:['estudante','vovos','familia','executiva'],             nu:'executiva',  meta:1400,expert:1800,  time:170, speed:0.60, juice:0.3, note:'O movimento aumentou e agora só há 3 pratos limpos: sozinha a Bia não dá conta, contrate ajuda na lojinha. A executiva tem pouca paciência, mas deixa boa gorjeta. E abriu o balcão de sucos: quem pede suco quer receber antes da conta!' },
-  { n:4, tables:[1,2,3,4,5,6],   groups:22, types:['estudante','vovos','familia','executiva','entregador'], nu:'entregador', meta:1300,expert:1750, time:180, speed:0.58, juice:0.3, note:'O entregador de moto tem pressa: pouquíssima paciência!' },
-  { n:5, tables:[1,2,3,4,5,6],   groups:26, types:['estudante','vovos','familia','executiva','entregador'], nu:null,         meta:1480,expert:2050, time:190, speed:0.56, vip:0.15, juice:0.3, note:'Chegou cliente VIP (de óculos escuros e plaquinha dourada)! Fura a fila e tem menos paciência, mas paga gorjeta extra e um bônus se sair com 5 corações. Se sair bravo, a multa dobra.' },
-  { n:6, tables:[1,2,3,4,5,6],   groups:29, types:['estudante','vovos','familia','executiva','entregador'], nu:null,         meta:1500,expert:2150, time:200, speed:0.54, vip:0.15, juice:0.3, note:'Sexta-feira: ninguém quer esperar.' },
-  { n:7, tables:[1,2,3,4,5,6],   groups:33, types:['estudante','vovos','familia','executiva','entregador'], nu:null,         meta:1650,expert:2300, time:220, speed:0.52, vip:0.15, juice:0.3, note:'Tonhão está gripado: a cozinha anda mais devagar hoje.' }
+  { n:1, tables:[1,2,4],         groups:6,  types:['estudante','vovos'],                                   nu:null,         meta:200, expert:320,  time:150, speed:0.60, note:'' },
+  { n:2, tables:[1,2,4,5],       groups:9,  types:['estudante','vovos','familia'],                         nu:'familia',    meta:300, expert:720,  time:160, speed:0.60, note:'Chegou a família! Grupos de 3 ou 4 só cabem nas mesas de 4 lugares. Na lojinha, aba Salão, dá para comprar cadeiras e mesas.' },
+  { n:3, tables:[1,2,3,4,5],     groups:13, types:['estudante','vovos','familia','executiva'],             nu:'executiva',  meta:380, expert:880,  time:170, speed:0.60, juice:0.3, note:'O movimento aumentou e agora só há 3 pratos limpos: sozinha a Bia não dá conta, contrate ajuda na lojinha. A executiva tem pouca paciência, mas deixa boa gorjeta. E abriu o balcão de sucos: quem pede suco quer receber antes da conta!' },
+  { n:4, tables:[1,2,3,4,5,6],   groups:15, types:['estudante','vovos','familia','executiva','entregador'], nu:'entregador', meta:300, expert:780, time:180, speed:0.58, juice:0.3, note:'O entregador de moto tem pressa: pouquíssima paciência!' },
+  { n:5, tables:[1,2,3,4,5,6],   groups:16, types:['estudante','vovos','familia','executiva','entregador'], nu:null,         meta:480, expert:1100, time:190, speed:0.56, vip:0.15, juice:0.3, note:'Chegou cliente VIP (de óculos escuros e plaquinha dourada)! Fura a fila e tem menos paciência, mas paga gorjeta extra e um bônus se sair com 5 corações. Se sair bravo, a multa dobra.' },
+  { n:6, tables:[1,2,3,4,5,6],   groups:16, types:['estudante','vovos','familia','executiva','entregador'], nu:null,         meta:460, expert:1100, time:200, speed:0.54, vip:0.15, juice:0.3, note:'Sexta-feira: ninguém quer esperar.' },
+  { n:7, tables:[1,2,3,4,5,6],   groups:17, types:['estudante','vovos','familia','executiva','entregador'], nu:null,         meta:600, expert:1250, time:220, speed:0.52, vip:0.15, juice:0.3, note:'Tonhão está gripado: a cozinha anda mais devagar hoje.' }
 ];
 
 /* 2ª estrela: metade do caminho entre a meta e a expert (arredondada a R$ 25). Antes ela exigia a expert
    com algum cliente perdido, e como cada perda custa caro, quem batia a expert quase sempre levava 3 */
 function bomGoal(d){ return Math.round((d.meta + d.expert) / 50) * 25; }
+
+/* ============================================================
+   CONTAS (v7): a meta do dia é o lucro. Ingredientes saem de cada prato que fica
+   pronto (e de cada suco entregue), as contas do dia crescem com o salão aberto e,
+   do dia 3 em diante, a divulgação decide quanta gente aparece
+   ============================================================ */
+const CONTAS = { aluguel:120, mesa:30, lugar:6 };     // por dia: aluguel + luz e gás de cada mesa aberta e de cada lugar
+const INGRED = { prato:0.6, suco:5 };               // prato: fração da conta (cobrada quando fica pronto); suco: R$ por copo entregue
+const DIVULGA = [
+  { id:'boca',     name:'Boca a boca',   cost:0,   groups:[0.6, 0.9], vip:1,   desc:'Vem menos gente e o movimento varia: pode ser um dia fraco.' },
+  { id:'panfleto', name:'Panfletos',     cost:40,  groups:[1, 1],     vip:1,   desc:'O movimento normal do dia.' },
+  { id:'redes',    name:'Redes sociais', cost:100, groups:[1.2, 1.2], vip:1.5, desc:'+20% de grupos e, do dia 5 em diante, 50% mais VIPs. Precisa de lugar para tanta gente!' }
+];
+const DIVULGA_DIA = 3;                                // antes disso, o movimento é o da inauguração (sem custo)
+function divulgaOf(id){ return DIVULGA.find(d => d.id === id) || DIVULGA[1]; }
+/* contas do dia: aluguel fixo, mais cada mesa aberta e cada lugar dela */
+function contasDia(tables){
+  const open = tables.filter(t => t.open);
+  return CONTAS.aluguel + CONTAS.mesa * open.length + CONTAS.lugar * open.reduce((a, t) => a + t.seats, 0);
+}
 
 const ENDLESS = { n:0, tables:[1,2,3,4,5,6], groups:0, types:['estudante','vovos','familia','executiva','entregador'], nu:null, meta:0, expert:0, time:0, speed:1, vip:0.12, juice:0.3, note:'', endless:true };
 

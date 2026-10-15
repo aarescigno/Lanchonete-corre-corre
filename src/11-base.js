@@ -5,7 +5,7 @@ const rand  = (a,b) => a + Math.random()*(b-a);
 const randi = (a,b) => Math.floor(a + Math.random()*(b-a+1));
 const pick  = arr => arr[Math.floor(Math.random()*arr.length)];
 const clamp = (v,a,b) => v<a?a:(v>b?b:v);
-const fmt   = n => 'R$ ' + Math.round(n);
+const fmt   = n => (Math.round(n) < 0 ? '-R$ ' : 'R$ ') + Math.abs(Math.round(n));
 
 /* ============================================================
    ÁUDIO (WebAudio sintetizado)

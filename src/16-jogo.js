@@ -27,7 +27,10 @@ class Game {
   resetDay(n){
     this.mode = n === 0 ? 'semfim' : 'carreira';
     this.day = n === 0 ? ENDLESS : DAYS[n-1];
-    this.money = 0;
+    this.money = 0; this.custo = 0; this.contas = 0; this.paidDiv = 0;
+    // divulgação (v7, do dia 3 em diante na carreira): quanto da freguesia do dia aparece
+    this.div = (n >= DIVULGA_DIA) ? divulgaOf(this.save.divulga) : null;
+    this.divF = this.div ? rand(this.div.groups[0], this.div.groups[1]) : 1;
     this.clock = this.day.time;
     this.cmdFree = CMD.map((c,i) => i);
     this.stars = 5; this.five = 0; this.starFlash = 0; this.arrT = 2; this.endless = null;
@@ -54,15 +57,16 @@ class Game {
   }
   buildSchedule(day){
     const out = [];
-    const gap = day.speed * day.time / day.groups;
+    const N = Math.max(3, Math.round(day.groups * this.divF)), vipP = (day.vip || 0) * (this.div ? this.div.vip : 1);
+    const gap = day.speed * day.time / N;
     let t = 3;
-    const forced = day.nu ? randi(1, Math.min(3, day.groups-1)) : -1;
-    const forcedVip = day.vip && !day.nu ? randi(1, Math.min(3, day.groups-1)) : -1;
+    const forced = day.nu ? randi(1, Math.min(3, N-1)) : -1;
+    const forcedVip = day.vip && !day.nu ? randi(1, Math.min(3, N-1)) : -1;
     const colors = this.tables.filter(x => day.tables.includes(x.id)).map(x => x.color);
-    for (let i=0;i<day.groups;i++){
+    for (let i=0;i<N;i++){
       let type = (i === forced) ? day.nu : pick(day.types);
       let vip = false;
-      if (day.vip && (i === forcedVip || Math.random() < day.vip)){
+      if (day.vip && (i === forcedVip || Math.random() < vipP)){
         if (!VIP.types.includes(type)) type = pick(VIP.types);
         vip = true;
       }
@@ -73,17 +77,25 @@ class Game {
   }
   startDay(n){ this.resetDay(n); this.setState('intro'); }
   startEndless(){ this.resetDay(0); this.setState('intro'); }
-  /* debita a folha do dia do dinheiro acumulado; quem não puder ser pago é dispensado (couvert, Dani, aumento do Tonhão) */
+  /* debita a folha e a divulgação do dia do dinheiro acumulado; o que não puder ser pago sai
+     (a divulgação vira boca a boca, depois couvert, Dani e aumento do Tonhão) */
   payDay(){
     const eq = this.save.equipe; this.unpaid = [];
-    while (payroll(eq) > this.save.bank){
-      if (eq.couvert){ eq.couvert = false; this.unpaid.push('Couvert'); }
+    const divCost = () => this.div ? this.div.cost : 0;
+    while (payroll(eq) + divCost() > this.save.bank){
+      if (divCost()){
+        this.unpaid.push(this.div.name); this.save.divulga = 'boca';
+        this.div = divulgaOf('boca'); this.divF = rand(this.div.groups[0], this.div.groups[1]);
+        this.schedule = this.buildSchedule(this.day);
+      }
+      else if (eq.couvert){ eq.couvert = false; this.unpaid.push('Couvert'); }
       else if (eq.dani){ eq.dani = 0; this.unpaid.push('Dani'); }
       else if (eq.tonhao){ eq.tonhao--; this.unpaid.push('aumento do Tonhão'); }
       else break;
     }
-    this.paid = payroll(eq);
-    this.save.bank -= this.paid;
+    this.paid = payroll(eq); this.paidDiv = divCost();
+    this.save.bank -= this.paid + this.paidDiv;
+    this.contas = contasDia(this.tables);
     writeSave(this.save);
     this.kitchen.slots = STAFF.tonhao.levels[eq.tonhao].slots;
     this.dani.reset();
@@ -92,6 +104,9 @@ class Game {
     this.payDay(); this.setState('playing');
     if (this.unpaid.length) this.addText(W/2, 300, 'Sem dinheiro para pagar: sem ' + this.unpaid.join(', ') + ' hoje', PAL.perigo, 20);
   }
+  /* lucro do dia (a meta): faturamento − ingredientes − contas − folha − divulgação */
+  get fixo(){ return this.contas + this.paid + this.paidDiv; }
+  get lucro(){ return this.money - this.custo - this.fixo; }
   get trashFull(){ return this.trash >= TRASH.cap; }
   /* alguém além da Bia lava a louça (Dani com a tarefa, ou o Tonhão com aumento) */
   get otherWasher(){ return this.dani.does('lavar') || this.kitchen.chef.wash > 0; }
@@ -402,28 +417,29 @@ class Game {
   }
 
   finishDay(){
-    const d = this.day, m = Math.round(this.money);
+    const d = this.day, m = Math.round(this.lucro), fat = Math.round(this.money);
     const passed = m >= d.meta;
     let stars = 0;
     if (passed) stars = 1;
     if (passed && m >= bomGoal(d)) stars = 2;
     if (m >= d.expert && this.stats.lost === 0) stars = 3;
     const prevBest = this.save.best[d.n] || 0;
-    const income = m;                 // todo o faturamento do dia vai para o dinheiro acumulado
-    this.save.bank += income;
-    this.save.best[d.n] = Math.max(prevBest, m);
+    // o faturamento vai para o dinheiro acumulado, menos os ingredientes e as contas (folha e divulgação já saíram ao abrir)
+    const income = fat - Math.round(this.custo) - this.contas;
+    this.save.bank = Math.max(0, this.save.bank + income);
+    this.save.best[d.n] = Math.max(prevBest, fat);   // o ranking da carreira soma o faturamento dos melhores dias
     this.save.stars[d.n] = Math.max(this.save.stars[d.n] || 0, stars);
     if (passed) this.save.maxDay = Math.max(this.save.maxDay, Math.min(7, d.n + 1));
     writeSave(this.save);
-    this.result = { day:d.n, money:m, meta:d.meta, bom:bomGoal(d), expert:d.expert, passed, stars, served:this.stats.served, lost:this.stats.lost, full:this.stats.full, chain:this.stats.chain, vip:this.stats.vip, vipLost:this.stats.vipLost, juice:this.stats.juice, juiceMiss:this.stats.juiceMiss, trash:this.stats.trash, washed:this.stats.washed, income, paid:this.paid, reason:this.reason };
+    this.result = { day:d.n, money:m, fat, custo:Math.round(this.custo), contas:this.contas, div:this.paidDiv, divName:this.div ? this.div.name : '', meta:d.meta, bom:bomGoal(d), expert:d.expert, passed, stars, served:this.stats.served, lost:this.stats.lost, full:this.stats.full, chain:this.stats.chain, vip:this.stats.vip, vipLost:this.stats.vipLost, juice:this.stats.juice, juiceMiss:this.stats.juiceMiss, trash:this.stats.trash, washed:this.stats.washed, income, paid:this.paid, reason:this.reason };
     this.setState('dayend');
     if (passed) Sfx.win(); else Sfx.lose();
   }
   finishEndless(){
     const pts = Math.round(this.money);
-    const income = pts;
-    this.save.bank += income; writeSave(this.save);
-    this.endless = { income, paid:this.paid, pontos:pts, tempo:Math.floor(this.elapsed), served:this.stats.served, lost:this.stats.lost, full:this.stats.full, chain:this.stats.chain, vip:this.stats.vip, juice:this.stats.juice };
+    const income = pts - Math.round(this.custo) - this.contas;
+    this.save.bank = Math.max(0, this.save.bank + income); writeSave(this.save);
+    this.endless = { income, paid:this.paid, custo:Math.round(this.custo), contas:this.contas, pontos:pts, tempo:Math.floor(this.elapsed), served:this.stats.served, lost:this.stats.lost, full:this.stats.full, chain:this.stats.chain, vip:this.stats.vip, juice:this.stats.juice };
     this.setState('endlessend');
     Sfx.lose();
   }
@@ -444,6 +460,15 @@ class Game {
     eq[key] = val;
     if (payroll(eq) > this.save.bank && payroll(eq) > payroll(Object.assign({}, eq, { [key]:old }))){ eq[key] = old; return false; }
     writeSave(this.save); this.kitchen.slots = STAFF.tonhao.levels[eq.tonhao].slots;
+    Sfx.ok(); return true;
+  }
+  payroll(){ return payroll(this.save.equipe); }
+  /* divulgação (v7): escolhida na lojinha, paga junto com a folha ao abrir o dia */
+  setDivulga(id){
+    const d = DIVULGA.find(x => x.id === id);
+    if (!d || this.shopNext < DIVULGA_DIA || (d.cost && this.payroll() + d.cost > this.save.bank)) return false;
+    this.save.divulga = id; writeSave(this.save);
+    if (this.state === 'shop') this.resetDay(this.shopNext);
     Sfx.ok(); return true;
   }
   toggleDaniTask(id){

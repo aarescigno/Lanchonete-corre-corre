@@ -25,10 +25,11 @@ ok(L.UPGRADES.some(u=>u.id==='agua') && !L.UPGRADES.some(u=>u.id==='jukebox'),'�
 ok(L.payroll(L.normSave({}).equipe)===0,'sem equipe, folha zero');
 ok(L.payroll({tonhao:2,dani:3,couvert:true})===90+135+80,'folha: Tonhão 90 + Dani nível 3 135 + couvert 80');
 ok(L.STAFF.dani.levels[2].pay===L.STAFF.dani.levels[1].pay*1.5 && L.STAFF.dani.levels[3].pay===L.STAFF.dani.levels[2].pay*1.5,'Dani: cada nível paga 50% a mais');
-{ reset({tonhao:1,dani:1,couvert:true},1000); g.startDay(3); g.begin(); ok(g.save.bank===1000-180 && g.paid===180,'folha debitada do dinheiro acumulado ao abrir a lanchonete'); }
-{ reset({tonhao:1,dani:1,couvert:true},50); g.startDay(3); g.begin(); ok(!eq().couvert && !eq().dani && eq().tonhao===1 && g.save.bank===10,'sem dinheiro para todos: dispensa couvert e Dani, paga o resto'); }
+{ reset({tonhao:1,dani:1,couvert:true},1000); g.save.divulga='boca'; g.startDay(3); g.begin(); ok(g.save.bank===1000-180 && g.paid===180,'folha debitada do dinheiro acumulado ao abrir a lanchonete'); }
+{ reset({tonhao:1,dani:1,couvert:true},50); g.save.divulga='boca'; g.startDay(3); g.begin(); ok(!eq().couvert && !eq().dani && eq().tonhao===1 && g.save.bank===10,'sem dinheiro para todos: dispensa couvert e Dani, paga o resto'); }
 { reset({},100); ok(!g.setStaff('dani',3) && eq().dani===0,'não contrata quem o dinheiro acumulado não paga'); ok(g.setStaff('dani',1),'contrata a Dani com cofre suficiente'); }
-{ reset({},0); g.startDay(3); g.begin(); g.money=1000; g.save.best[3]=800; g.finishDay(); ok(g.result.income===1000 && g.save.bank===1000,'todo o faturamento do dia vai para o dinheiro acumulado'); }
+{ reset({},0); g.save.divulga='boca'; g.startDay(3); g.begin(); g.money=1000; g.custo=100; g.save.best[3]=800; g.finishDay(); const c=L.contasDia(g.tables);
+  ok(g.result.income===1000-100-c && g.save.bank===1000-100-c && g.save.best[3]===1000,'o faturamento vai para o dinheiro acumulado, menos ingredientes e contas (v7)'); }
 
 /* aumento do Tonhão */
 const fresh=()=>{ g.schedule=[{t:1e9,type:'estudante',color:0}]; g.nextIdx=0; };

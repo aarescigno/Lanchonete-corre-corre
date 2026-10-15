@@ -261,7 +261,7 @@ class Waitress {
     if (!n) return 0;
     for (let k=0;k<n;k++) this.hands.splice(this.hands.findIndex(h => h.kind === 'juice'), 1);
     grp.juiceGot += n;
-    g.stats.juice += n;
+    g.stats.juice += n; g.custo += INGRED.suco * n;
     grp.gain(1);
     g.score('juice', JUICE.price * n, t.cx + 24, t.cy - 30);
     if (!grp.juicePending) g.addText(t.cx, t.cy - 96, n > 1 ? 'Sucos entregues!' : 'Suco entregue!', PAL.alerta, 15);

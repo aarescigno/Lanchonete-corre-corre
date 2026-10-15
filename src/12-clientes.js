@@ -67,7 +67,7 @@ function normSave(s){
   const up = (s.up && typeof s.up === 'object') ? s.up : {};
   if (up.jukebox){ up.agua = true; delete up.jukebox; }   // a Jukebox virou Água saborizada na v5
   if (up.chapa){ up.pratos = true; delete up.chapa; }     // a Chapa nova virou Jogo de pratos (a velocidade da cozinha é do Tonhão)
-  return { maxDay: clamp(+s.maxDay||1,1,7), bank: Math.max(0,+s.bank||0), up, best: (s.best && typeof s.best === 'object') ? s.best : {}, stars: (s.stars && typeof s.stars === 'object') ? s.stars : {}, equipe: normEquipe(s.equipe), salao: normSalao(s.salao) };
+  return { maxDay: clamp(+s.maxDay||1,1,7), bank: Math.max(0,+s.bank||0), up, best: (s.best && typeof s.best === 'object') ? s.best : {}, stars: (s.stars && typeof s.stars === 'object') ? s.stars : {}, equipe: normEquipe(s.equipe), salao: normSalao(s.salao), divulga: divulgaOf(s.divulga).id };
 }
 function loadSave(){
   const def = normSave({});

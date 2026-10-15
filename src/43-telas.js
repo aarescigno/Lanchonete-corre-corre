@@ -9,7 +9,11 @@ game.hooks.state = function(s){
       $('intro-note').textContent = 'Grupo que sai bravo ou que não cabe na fila tira 1 estrela. A cada 8 contas pagas com 5 corações, você ganha 1 de volta. Com 0 estrelas, o turno acaba.';
     } else {
       $('intro-title').textContent = 'Dia ' + d.n;
-      $('intro-goal').textContent = 'Meta: ' + fmt(d.meta) + ' · 2 estrelas: ' + fmt(bomGoal(d)) + ' · Expert: ' + fmt(d.expert) + ' · ' + d.groups + ' grupos · ' + mmss(d.time) + (payroll(game.save.equipe) ? ' · Folha ' + fmt(payroll(game.save.equipe)) : '');
+      const div = game.div, custos = ['contas ' + fmt(contasDia(game.tables))];
+      if (payroll(game.save.equipe)) custos.push('folha ' + fmt(payroll(game.save.equipe)));
+      if (div && div.cost) custos.push(div.name.toLowerCase() + ' ' + fmt(div.cost));
+      $('intro-goal').textContent = 'Meta de lucro: ' + fmt(d.meta) + ' · 2 estrelas: ' + fmt(bomGoal(d)) + ' · Expert: ' + fmt(d.expert) + ' · ' + game.schedule.length + ' grupos' + (div ? ' (' + div.name.toLowerCase() + ')' : '') + ' · ' + mmss(d.time)
+        + '. Custos do dia: ' + custos.join(' + ') + ', mais ' + Math.round(INGRED.prato * 100) + '% de cada prato em ingredientes.';
       $('intro-note').textContent = d.note || 'Sente a freguesia, anote os pedidos e mantenha todo mundo feliz!';
     }
     showOnly(['ov-intro']);
@@ -117,7 +121,7 @@ fit();
 try { Rank.init(); } catch(e) {}
 game.setState('menu');
 window.__game = game;
-window.__lcc = { bomGoal, SALAO, rowLayout, salaoDefs, salaoOk, salaoUsed, salaoTableBlock, normSalao, setObst, OBST, AGUA, CRIT, STAFF, DANI_TASKS, DANI_HANDS, daniTaskOk, TRASH, WASH, payroll, couvertEffect, dishStock, normSave, Helper, JUICE, KITCHEN_SLOTS, handLayout, trayOk, Game, Group, Table, Kitchen, Waitress, DAYS, UPGRADES, CUSTOMER_TYPES, LAYOUT, PAL, Sfx, findPath, render, Rank, sortRows, cleanName, normName, CMD, ENDLESS, VIP, rk, renderRank, openRank, closeRank, LS, lsGet, lsSet, loadSave };
+window.__lcc = { setShopTab: v => { shopTab = v; buildShop(); }, CONTAS, INGRED, DIVULGA, DIVULGA_DIA, divulgaOf, contasDia, bomGoal, SALAO, rowLayout, salaoDefs, salaoOk, salaoUsed, salaoTableBlock, normSalao, setObst, OBST, AGUA, CRIT, STAFF, DANI_TASKS, DANI_HANDS, daniTaskOk, TRASH, WASH, payroll, couvertEffect, dishStock, normSave, Helper, JUICE, KITCHEN_SLOTS, handLayout, trayOk, Game, Group, Table, Kitchen, Waitress, DAYS, UPGRADES, CUSTOMER_TYPES, LAYOUT, PAL, Sfx, findPath, render, Rank, sortRows, cleanName, normName, CMD, ENDLESS, VIP, rk, renderRank, openRank, closeRank, LS, lsGet, lsSet, loadSave };
 window.requestAnimationFrame(frame);
 
 })();

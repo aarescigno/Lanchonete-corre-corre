@@ -40,6 +40,9 @@ class Kitchen {
           this.cooking.splice(i,1);
           Sfx.bell();
           this.game.addText(PLATE_SLOTS[free].x, PLATE_SLOTS[free].y - 34, 'Pronto!', PAL.mostarda, 16);
+          // ingredientes (v7): o prato pronto já custou, mesmo que o grupo vá embora antes de comer
+          const cost = t.group ? Math.round(t.group.bill * INGRED.prato) : 0;
+          if (cost){ this.game.custo += cost; this.game.addText(PLATE_SLOTS[free].x, PLATE_SLOTS[free].y - 54, '-' + cost, PAL.perigo, 12); }
         }
       }
     }

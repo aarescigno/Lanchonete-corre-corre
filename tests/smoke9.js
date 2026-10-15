@@ -1,0 +1,75 @@
+// v7, Contas: a meta é o lucro; ingredientes por prato e suco, contas do dia pelo salão aberto, divulgação do dia 3 em diante.
+const H=require('./harness.js')(); const {g,L,ctx,els}=H;
+let fails=0,total=0; const ok=(c,m)=>{ total++; if(!c){fails++;console.log('FAIL:',m);} else console.log('ok  :',m); };
+const C=L.CONTAS, I=L.INGRED;
+const reset=(e,bank,div)=>{ g.save.equipe=L.normSave({equipe:e||{}}).equipe; g.save.bank=bank==null?5000:bank; g.save.divulga=div||'panfleto'; g.up={}; g.save.up=g.up; };
+
+// save
+ok(L.normSave({}).divulga==='panfleto' && L.normSave({divulga:'xyz'}).divulga==='panfleto' && L.normSave({divulga:'redes'}).divulga==='redes','save: divulgação padrão panfletos, inválida vira panfletos');
+ok(L.DIVULGA.map(d=>d.id).join()==='boca,panfleto,redes' && L.DIVULGA_DIA===3,'3 opções de divulgação, a partir do dia 3');
+
+// contas do dia: aluguel + mesas abertas + lugares
+reset(); g.resetDay(1);
+ok(L.contasDia(g.tables)===C.aluguel+3*C.mesa+6*C.lugar,'dia 1: 3 mesas e 6 lugares abertos ('+L.contasDia(g.tables)+')');
+g.resetDay(5);
+ok(L.contasDia(g.tables)===C.aluguel+6*C.mesa+16*C.lugar,'dia 5: 6 mesas e 16 lugares ('+L.contasDia(g.tables)+')');
+{ g.goShop(5); g.save.bank=1000; const before=L.contasDia(g.tables); g.buyTable(); ok(L.contasDia(g.tables)===before+C.mesa+2*C.lugar,'mesa nova soma 1 mesa e 2 lugares às contas'); g.save.salao=L.normSalao({}); g.buildTables(); }
+
+// divulgação e grupos do dia
+{ reset(); g.resetDay(2); ok(!g.div && g.schedule.length===L.DAYS[1].groups,'dia 2: sem divulgação, grupos de sempre');
+  const n=L.DAYS[4].groups;
+  reset({},5000,'panfleto'); g.resetDay(5); ok(g.div.id==='panfleto' && g.schedule.length===n,'panfletos: os '+n+' grupos do dia');
+  reset({},5000,'redes'); g.resetDay(5); ok(g.schedule.length===Math.round(n*1.2),'redes sociais: +20% de grupos');
+  let lo=1e9, hi=0; for(let k=0;k<200;k++){ reset({},5000,'boca'); g.resetDay(5); lo=Math.min(lo,g.schedule.length); hi=Math.max(hi,g.schedule.length); }
+  ok(lo>=Math.round(n*0.6) && hi<=Math.round(n*0.9) && hi>lo,'boca a boca: de 60% a 90% dos grupos, varia ('+lo+' a '+hi+')');
+  let vr=0, vp=0; for(let k=0;k<300;k++){ reset({},5000,'redes'); g.resetDay(5); vr+=g.schedule.filter(s=>s.vip).length/g.schedule.length; reset({},5000,'panfleto'); g.resetDay(5); vp+=g.schedule.filter(s=>s.vip).length/g.schedule.length; }
+  ok(vr>vp*1.15,'redes sociais: mais VIPs ('+(vr/3).toFixed(1)+'% contra '+(vp/3).toFixed(1)+'%)'); }
+
+// pagamento ao abrir: folha + divulgação; sem dinheiro, a divulgação vira boca a boca antes de dispensar alguém
+{ reset({},1000,'panfleto'); g.startDay(3); g.begin(); ok(g.save.bank===960 && g.paidDiv===40 && g.paid===0,'panfletos: R$ 40 debitados ao abrir');
+  ok(g.contas===L.contasDia(g.tables) && Math.round(g.lucro)===-(g.contas+40),'o dia começa no vermelho: −(contas + divulgação)');
+  reset({tonhao:2},150,'redes'); g.startDay(3); g.begin();
+  ok(g.save.divulga==='boca' && g.paidDiv===0 && g.paid===90 && g.save.bank===60 && g.unpaid[0]==='Redes sociais' && g.save.equipe.tonhao===2,'sem dinheiro: redes viram boca a boca e o Tonhão fica');
+  ok(g.schedule.length<=Math.round(L.DAYS[2].groups*0.9),'boca a boca: agenda refeita com menos grupos'); }
+
+// lojinha: escolher a divulgação
+{ reset({},0,'panfleto'); g.goShop(2); ok(!g.setDivulga('boca'),'antes do dia 3 não há divulgação');
+  g.goShop(3); ok(!g.setDivulga('redes') && g.save.divulga==='panfleto','sem dinheiro, não escolhe redes');
+  ok(g.setDivulga('boca') && g.save.divulga==='boca','boca a boca é sempre possível');
+  g.save.bank=500; ok(g.setDivulga('redes') && g.save.divulga==='redes' && g.div.id==='redes','com dinheiro, escolhe redes (e o dia ao fundo já usa)');
+  reset({tonhao:2,dani:3},300,'panfleto'); g.goShop(4); ok(!g.setDivulga('redes'),'a folha conta: R$ 225 + R$ 100 não cabem em R$ 300');
+  let err=null; try{ L.setShopTab('divulga'); }catch(e){ err=e; } const grid=els['shop-grid'];
+  ok(!err && grid.children.length===4 && /Contas do dia 4/.test(JSON.stringify(grid.children[3].children.map(c=>c.textContent))),'aba Divulgação: 3 opções e as contas do dia'+(err?': '+err:''));
+  L.setShopTab('melhorias'); }
+
+// ingredientes: o prato pronto custa, mesmo que o grupo vá embora; o suco entregue também
+{ reset(); g.startDay(3); g.begin(); g.kitchen.clean=Infinity;
+  const grp=g.spawn({type:'familia',color:0}); const c0=g.custo;
+  g.kitchen.submit({group:grp,table:1}); for(let i=0;i<300 && !g.kitchen.plates.some(p=>p);i++) g.kitchen.update(0.05);
+  ok(g.kitchen.plates.some(p=>p) && g.custo-c0===Math.round(grp.bill*I.prato),'prato pronto: '+Math.round(I.prato*100)+'% da conta em ingredientes');
+  const c1=g.custo; g.angryLeave(grp); ok(g.custo===c1,'grupo que vai embora não devolve os ingredientes');
+  const t=g.tables[0], j=g.spawn({type:'estudante',color:0}); g.seatGroup(j,t); j.state='ordered'; j.juiceWant=2; j.juiceGot=0;
+  g.bia.hands=[{kind:'juice'},{kind:'juice'}]; const c2=g.custo, m2=g.money; g.bia.doTable(t);
+  ok(g.money-m2>=2*L.JUICE.price && g.custo-c2===2*I.suco,'suco entregue: '+I.suco+' de ingredientes por copo'); }
+
+// fim do dia: meta pelo lucro; dinheiro acumulado recebe faturamento − ingredientes − contas; best guarda o faturamento (ranking)
+{ reset({tonhao:1},1000,'panfleto'); g.startDay(5); g.begin(); const bank0=g.save.bank;
+  g.money=2000; g.custo=300; g.finishDay(); const r=g.result;
+  ok(r.money===2000-300-g.contas-40-40 && r.fat===2000 && r.custo===300 && r.div===40 && r.paid===40,'resultado: lucro = faturamento − ingredientes − contas − folha − divulgação ('+r.money+')');
+  ok(g.save.bank===bank0+2000-300-g.contas && g.save.best[5]>=2000,'dinheiro acumulado e melhor faturamento');
+  ok(r.passed===(r.money>=L.DAYS[4].meta),'meta comparada com o lucro');
+  let err=null; try{ g.hooks.state('dayend'); }catch(e){ err=e; } ok(!err && /^Lucro de R\$ /.test(els['end-money'].textContent),'fim do dia: "Lucro de R$ ..."'+(err?': '+err:''));
+  reset({},0,'boca'); g.startDay(5); g.begin(); g.money=50; g.custo=0; g.finishDay();
+  ok(g.result.money<0 && g.save.bank===0 && !g.result.passed,'prejuízo: o dinheiro acumulado não fica negativo');
+  g.hooks.state('dayend'); ok(/^Prejuízo de R\$ /.test(els['end-money'].textContent),'fim do dia: "Prejuízo de R$ ..."'); }
+
+// introdução e HUD
+{ reset({tonhao:2},5000,'redes'); g.startDay(5); ok(/^Meta de lucro: /.test(els['intro-goal'].textContent) && /redes sociais R\$ 100/.test(els['intro-goal'].textContent) && /folha R\$ 90/.test(els['intro-goal'].textContent),'introdução: meta de lucro e custos do dia');
+  g.begin(); let err=null; try{ L.render(g,ctx); }catch(e){ err=e; } ok(!err && g.lucro<0,'HUD desenha o lucro negativo do começo do dia'+(err?': '+err:'')); }
+
+// Turno sem fim: pontos = faturamento; o dinheiro acumulado recebe o faturamento menos ingredientes e contas
+{ reset({},100); g.startEndless(); g.begin(); ok(!g.div && g.paidDiv===0,'sem fim: sem divulgação');
+  g.money=500; g.custo=80; g.finishEndless(); ok(g.endless.pontos===500 && g.save.bank===100+500-80-g.contas,'sem fim: pontos = faturamento; acumulado = faturamento − ingredientes − contas'); }
+
+console.log('\n'+(total-fails)+'/'+total+' ok; fails= '+fails);
+process.exitCode = fails ? 1 : 0;

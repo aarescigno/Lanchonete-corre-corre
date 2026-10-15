@@ -75,10 +75,11 @@ g.startEndless(); ok(g.tables.every(t=>t.open),'Turno sem fim: todas abertas');
 { let err=null; try{ g.goShop(4); g.save.bank=500; g.setSeats(1,2); g.setSeats(7,4); L.render(g,ctx); }catch(e){ err=e; } ok(!err && g.tables[6].seats===4 && g.state==='shop','lojinha: mesa 7 com 4 lugares e salão redesenhado'+(err?': '+err:'')); }
 
 // estrelas: 1 na meta, 2 na metade do caminho até a expert, 3 na expert sem perder ninguém
-{ const d=L.DAYS[1], fin=(m,lost)=>{ g.startDay(2); g.begin(); g.money=m; g.stats.lost=lost; g.finishDay(); return g.result.stars; };
-  ok(L.bomGoal(d)===900,'2ª estrela do dia 2 em R$ 900');
-  ok(fin(699,0)===0 && fin(700,0)===1 && fin(899,0)===1 && fin(900,0)===2 && fin(1099,0)===2,'faixas de 0, 1 e 2 estrelas');
-  ok(fin(1100,1)===2 && fin(1100,0)===3,'expert com perda: 2; sem perda: 3');
+// (v7: pelo lucro; fin recebe o lucro e soma de volta as contas do dia ao faturamento)
+{ const d=L.DAYS[1], B=L.bomGoal(d), fin=(m,lost)=>{ g.startDay(2); g.begin(); g.money=m+g.fixo; g.custo=0; g.stats.lost=lost; g.finishDay(); return g.result.stars; };
+  ok(B===Math.round((d.meta+d.expert)/50)*25,'2ª estrela do dia 2 na metade do caminho ('+B+')');
+  ok(fin(d.meta-1,0)===0 && fin(d.meta,0)===1 && fin(B-1,0)===1 && fin(B,0)===2 && fin(d.expert-1,0)===2,'faixas de 0, 1 e 2 estrelas');
+  ok(fin(d.expert,1)===2 && fin(d.expert,0)===3,'expert com perda: 2; sem perda: 3');
   ok(L.DAYS.every(x=>L.bomGoal(x)>x.meta && L.bomGoal(x)<x.expert),'2ª estrela sempre entre a meta e a expert'); }
 
 console.log('\n'+(total-fails)+'/'+total+' ok; fails= '+fails);
