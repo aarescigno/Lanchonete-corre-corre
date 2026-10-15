@@ -35,6 +35,7 @@ class Game {
     this.cmdFree = CMD.map((c,i) => i);
     this.stars = 5; this.five = 0; this.starFlash = 0; this.arrT = 2; this.endless = null;
     this.elapsed = 0;
+    this.atraso = 0; this.portaT = 0;   // porta que respeita a lotação: atraso total das chegadas e da chegada da vez
     this.gid = 0;
     this.groups = []; this.queue = [];
     this.buildTables();
@@ -46,7 +47,7 @@ class Game {
     this.bia.reset();
     this.dani.reset();
     this.fx = [];
-    this.stats = { served:0, lost:0, chain:0, spawned:0, full:0, vip:0, vipLost:0, juice:0, juiceMiss:0, trash:0, washed:0, emptied:0, refill:0, crit:0 };
+    this.stats = { served:0, lost:0, chain:0, spawned:0, full:0, vip:0, vipLost:0, juice:0, juiceMiss:0, trash:0, washed:0, emptied:0, refill:0, crit:0, lostBy:{ semMesa:0, comMesa:0, pedido:0, prato:0, conta:0 }, lotadoT:0 };
     this.lastKind = null; this.chainN = 0;
     this.ending = false; this.endTimer = 0; this.reason = '';
     this.sel = null; this.drag = null; this.hover = null;
@@ -345,9 +346,13 @@ class Game {
     g.setState('leaving');
     g.path = findPath({x:g.x, y:g.y}, {x:DOOR.x, y:DOOR.y});
   }
+  /* salão lotado (v7.1): todas as mesas abertas com grupo e a fila com PORTA.fila grupos ou mais */
+  get lotado(){ return this.queue.length >= PORTA.fila && !this.tables.some(t => t.open && !t.group); }
   angryLeave(g){
     if (g.state === 'leaving') return;
     this.stats.lost++;
+    const by = g.state === 'queue' ? (g.semMesa ? 'semMesa' : 'comMesa') : ({ wantOrder:'pedido', ordered:'prato', wantBill:'conta' })[g.state];
+    if (by) this.stats.lostBy[by]++;
     this.addPuff(g.x, g.y - 20, 9);
     this.addText(g.x, g.y - 50, 'Hmpf!', PAL.perigo, 22);
     const fine = 30 + (g.vip ? VIP.angry : 0);
@@ -383,13 +388,19 @@ class Game {
         }
       } else {
         this.clock -= dt;
-        while (this.nextIdx < this.schedule.length && this.elapsed >= this.schedule[this.nextIdx].t){
+        // com o salão lotado, a chegada da vez espera um pouco (e as seguintes andam junto)
+        const s = this.schedule[this.nextIdx];
+        if (s && this.elapsed >= s.t + this.atraso && this.lotado && this.portaT < PORTA.max && this.atraso < PORTA.total * this.day.time){
+          this.atraso += dt; this.portaT += dt;
+        } else while (this.nextIdx < this.schedule.length && this.elapsed >= this.schedule[this.nextIdx].t + this.atraso){
+          this.portaT = 0;
           this.arrive(this.schedule[this.nextIdx++]);
         }
       }
     }
     this.groups.forEach(g => g.update(dt));
     this.groups = this.groups.filter(g => !g.done);
+    if (this.lotado) this.stats.lotadoT += dt;
     this.bia.update(dt);
     this.dani.update(dt);
     this.kitchen.update(dt);
@@ -431,7 +442,7 @@ class Game {
     this.save.stars[d.n] = Math.max(this.save.stars[d.n] || 0, stars);
     if (passed) this.save.maxDay = Math.max(this.save.maxDay, Math.min(7, d.n + 1));
     writeSave(this.save);
-    this.result = { day:d.n, money:m, fat, custo:Math.round(this.custo), contas:this.contas, div:this.paidDiv, divName:this.div ? this.div.name : '', meta:d.meta, bom:bomGoal(d), expert:d.expert, passed, stars, served:this.stats.served, lost:this.stats.lost, full:this.stats.full, chain:this.stats.chain, vip:this.stats.vip, vipLost:this.stats.vipLost, juice:this.stats.juice, juiceMiss:this.stats.juiceMiss, trash:this.stats.trash, washed:this.stats.washed, income, paid:this.paid, reason:this.reason };
+    this.result = { day:d.n, money:m, fat, custo:Math.round(this.custo), contas:this.contas, div:this.paidDiv, divName:this.div ? this.div.name : '', meta:d.meta, bom:bomGoal(d), expert:d.expert, passed, stars, served:this.stats.served, lost:this.stats.lost, lostBy:this.stats.lostBy, lotadoT:Math.round(this.stats.lotadoT), atraso:Math.round(this.atraso), full:this.stats.full, chain:this.stats.chain, vip:this.stats.vip, vipLost:this.stats.vipLost, juice:this.stats.juice, juiceMiss:this.stats.juiceMiss, trash:this.stats.trash, washed:this.stats.washed, income, paid:this.paid, reason:this.reason };
     this.setState('dayend');
     if (passed) Sfx.win(); else Sfx.lose();
   }

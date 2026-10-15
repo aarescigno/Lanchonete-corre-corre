@@ -80,7 +80,7 @@ function buildTips(){
       drawIcon(c,'ticket',12,16,0.7); drawIcon(c,'hat',30,16,0.7); drawIcon(c,'dish',48,16,0.7,'coxinha');
       drawIcon(c,'coin',16,46,0.7); drawIcon(c,'dirty',34,46,0.7); drawIcon(c,'drop',52,46,0.7);
     }],
-    ['Cada grupo tem 5 corações de paciência. Atender (sentar, anotar, entregar, cafezinho) devolve um coração. Mais corações, mais gorjeta na conta!', c => {
+    ['Cada grupo tem 5 corações de paciência. Atender (sentar, anotar, entregar, cafezinho) devolve um coração. Mais corações, mais gorjeta na conta! Na fila, quem não tem mesa onde caiba (balãozinho com mesa e relógio) espera com mais calma e, na carreira, não passa de 1 coração.', c => {
       for (let i=0;i<5;i++) heart(c,10+i*11,20,5,i<3?'#E5384A':'rgba(255,255,255,.55)', i<3?PAL.tinta:'rgba(34,32,28,.45)');
       drawPerson(c,{skin:1,hair:1,hairC:'#5B3A21',pants:'#4A4036'},20,58,{shirt:CHAIRS[3].c,mood:0,s:0.6});
       drawPerson(c,{skin:4,hair:0,hairC:'#1B1512',pants:'#4A4036'},44,58,{shirt:CHAIRS[0].c,mood:2,s:0.6});

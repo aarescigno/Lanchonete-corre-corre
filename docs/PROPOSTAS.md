@@ -12,7 +12,7 @@ Registro das ideias e dos retornos de quem jogou, com o texto original, e de ond
 | # | Etapa | Versão |
 |---|---|---|
 | 0 | Contas: lucro, ingredientes, contas do dia, divulgação | v7 (feita) |
-| 1a | Jogo justo: dá para não perder ninguém (retorno do Renan, abaixo) | v7.1 |
+| 1a | Jogo justo: dá para não perder ninguém (retorno do Renan, abaixo) | v7.1 (feita) |
 | 1b | Livro-caixa e ajuste fino com jogadores | v7.2 |
 | 2 | Manutenção e imprevistos | v8 |
 | 3 | Ponto: mudar para o Centro | v9 |
@@ -42,7 +42,12 @@ A etapa 1a entrou depois do plano aprovado, por causa do áudio do Renan.
 - A 3ª estrela exige não perder ninguém, então a sensação de "impossível" pesa justamente no objetivo máximo.
 - O caso que ele descreve: fila cheia esperando, enquanto todas as mesas estão ocupadas com gente pensando ou comendo. Nessa hora a fila perde paciência sem que o jogador possa fazer nada além do cafezinho e da água.
 
-**Para onde foi:** etapa **1a, Jogo justo**, do `docs/PLANO.md`, antes do livro-caixa.
+**Para onde foi:** etapa **1a, Jogo justo**, do `docs/PLANO.md`, antes do livro-caixa. **Feita na v7.1** (`docs/spec-v7.1.md`):
+- fila justa: sem mesa que sirva, a paciência na fila corre a 40% e, na carreira, não passa de 1 coração;
+- porta que respeita a lotação: com o salão cheio e 3+ grupos na fila, quem chega espera um pouco;
+- ícone "aguardando mesa".
+
+Decisão do usuário ao escolher: a fila justa "vale [no Turno sem fim] mas sem a proteção de nunca zerar os corações". O bot afiado, com a equipe completa e o Jogo de pratos comprado primeiro, não perde ninguém em 94% dos dias 3 a 7.
 
 ---
 

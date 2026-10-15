@@ -107,6 +107,14 @@ function normSalao(s){
 
 const HEART_MULT = [0, 0.6, 0.8, 1, 1.25, 1.5];
 const PAT = { queue:7, wantOrder:6, ordered:9, wantBill:7 };   // segundos por coração (base)
+/* jogo justo (v7.1): sem mesa livre onde o grupo caiba, a paciência na fila corre mais devagar (ritmo)
+   e, na carreira, não passa de 1 coração com metade da paciência dele (piso). Mesa suja conta como
+   mesa que serve (é só recolher a louça). No Turno sem fim vale o ritmo, mas não o piso */
+const FILA_JUSTA = { ritmo:0.4, piso:0.5 };
+/* porta que respeita a lotação (v7.1, carreira): com todas as mesas ocupadas e 3 ou mais grupos na fila,
+   a próxima chegada espera (até `max` s cada uma; no total, até `total` do tempo do dia). O total de
+   grupos do dia não muda, só o ritmo */
+const PORTA = { fila:3, max:8, total:0.2 };
 
 const CUSTOMER_TYPES = {
   estudante:  { label:'Estudante',   pat:1.0,  eat:[4.5,6.5], read:[3,4.5], size:[1,2], bill:[20,32], tip:0 },
