@@ -4,6 +4,26 @@ Registro das ideias e dos retornos de quem jogou, com o texto original, e de ond
 
 ---
 
+## 18/10/2026 — Arthur: Bia mais rápida, marca do que já está na fila, salão mais simples
+**Origem:** pedido do usuário, ao jogar a v7.2:
+
+> "Adicione na lista de propostas a serem implementadas mais velocidade para a Bia e/ou deixar alguma forma de check para os locais que já estão na fila para a Bia fazer; o manejo das mesas ficou complexo demais.. talvez fique atrelado somente a número total de cadeiras possiveis para cada tamanho de salão, podendo ser distribuídas em mesas de 4 ou de 2 pessoas. Não mexa em nada do código ainda"
+
+**As propostas:**
+
+| Ideia | Como está hoje (v7.2) |
+|---|---|
+| Bia mais rápida | Anda a 260 px/s; os Tênis novos (R$ 150) dão +10%. |
+| Marca ("check") nos lugares que já estão na fila da Bia | A fila de ações só aparece no HUD, nos 6 quadrinhos de baixo; a mesa, a estação ou o prato que já foi pedido não mostra nada no salão. Mesas e estações podem entrar duas vezes sem o jogador perceber (só o prato pronto já não repete). |
+| Salão mais simples: só um total de cadeiras por tamanho de salão, distribuídas em mesas de 4 ou de 2 | Aba Salão da v6: compra de 2 cadeiras (R$ 60, até 24) e de mesa (R$ 300, até 8), botões 2 e 4 em cada mesa e a regra de só 1 mesa de 4 por fileira de 4 mesas. |
+
+**Para onde foi:** guardada para implementar; ainda sem etapa no `docs/PLANO.md` e sem mudança no código (pedido do usuário). Pontos a decidir antes:
+- velocidade: aumento fixo na base, um 2º nível dos Tênis ou os dois; conferir no `balance.js` (sem equipe e `BOT=afiado`) que as metas não ficam fáceis demais;
+- marca: um "✓" (ou o número da vez na fila) sobre cada mesa, estação ou prato pedido, que some quando a Bia faz a ação; ver se um 2º toque no mesmo lugar deve tirar o pedido da fila;
+- salão: o "tamanho de salão" casa com a etapa 3 (mudar para o Centro, onde o salão vai junto com ajuste se não couber); o total de lugares de cada ponto seria o limite, e o jogador só escolhe quantas mesas de 4 e de 2 cabem nele. Rever as contas do dia (R$ 30 por mesa e R$ 6 por lugar) e o `smoke8`.
+
+---
+
 ## 15/10/2026 — Plano de novidades em etapas
 **Origem:** pedido do usuário: "Vamos elaborar plano de novidades para implementação, com steps graduais, para fazer de sessão em sessão uma implementação". Depois: "Gostei dos passos, guardemos com carinho no log de propostas".
 
