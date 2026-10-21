@@ -53,7 +53,7 @@ const LAYOUT = { W, H, QUEUE, DOOR, STATIONS, PLATE_SLOTS, BOUNDS };
    as cadeiras); espera: cadeiras lá fora (v7.5); cardapio: fator dos preços
    ============================================================ */
 const PONTOS = [
-  { id:'garagem', nome:'Garagem da Bia e do tio Tonhão', lugares:16, aluguel:0, mudanca:0, cardapio:1, area:{ x0:196, y0:150, x1:684, y1:500 }, espera:4 }
+  { id:'garagem', nome:'Garagem da mãe da Bia', lugares:16, aluguel:0, mudanca:0, cardapio:1, area:{ x0:196, y0:150, x1:684, y1:500 }, espera:4 }
 ];
 function pontoOf(id){ return PONTOS.find(p => p.id === id) || PONTOS[0]; }
 /* ============================================================

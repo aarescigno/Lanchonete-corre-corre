@@ -115,7 +115,7 @@
    - **Selos da fila:** etiqueta "1º, 2º..." na mesa, na estação ou no prato que está na fila da Bia (todas as vezes do mesmo lugar juntas), com pulinho ao surgir (parada com `prefers-reduced-motion`); os quadrinhos da fila ganham a mesma etiqueta. A mesa pode entrar 2 vezes na fila; cancelar só pelo quadrinho.
    - Metas mantidas por escolha do usuário (sem equipe ~74% das metas nos dias 3 a 7; com equipe ~98%). Teste `smoke12`.
    - Salão (decidido em 21/10): o nível do salão é o ponto.
-     - Garagem da Bia e do tio Tonhão: 16 lugares, sem aluguel, kit de 10 lugares, móveis comprados, editor do salão (1d-1, feita na v7.4); tela que rola até a calçada, espera lá fora e máquina de suco (1d-2, v7.5).
+     - Garagem da mãe da Bia (até a v7.4.2, "Garagem da Bia e do tio Tonhão"): 16 lugares, sem aluguel, kit de 10 lugares, móveis comprados, editor do salão (1d-1, feita na v7.4); tela que rola até a calçada, espera lá fora e máquina de suco (1d-2, v7.5).
      - Área industrial (20 lugares) e Avenida Brasil (24), com a carreira por pontos: etapa 3.
      - Terraço Suíça (28): etapa 4.
      - Aluguéis R$ 0, 120, 400 e 1.000 por dia (pesquisa em `docs/pesquisa-aluguel.md`).
