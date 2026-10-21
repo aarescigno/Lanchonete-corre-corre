@@ -10,7 +10,7 @@ Registro das ideias e dos retornos de quem jogou, com o texto original, e de ond
 > "Lojinha do seu zé" não, "Garagem da da mãe da Bia"
 
 **Destino:**
-- **Feito (depois da v7.4.2, sem número de versão):** o título do painel da lojinha passou de "Lojinha do Seu Zé" para "Garagem da mãe da Bia". O nome do ponto ("Garagem da Bia e do tio Tonhão") ficou como estava.
+- **Feito (depois da v7.4.2, sem número de versão):** o título do painel da lojinha passou de "Lojinha do Seu Zé" para "Garagem da mãe da Bia". Em seguida, com o "sim" do usuário, o ponto também passou a se chamar "Garagem da mãe da Bia" (era "Garagem da Bia e do tio Tonhão"); o letreiro "LANCHES da Bia e do Tonhão", que é o nome do negócio, ficou.
 - Responde em parte à decisão em aberto da etapa 5 ("quem é o Seu Zé"): ele deixa de ser o dono da lojinha.
 
 ---
