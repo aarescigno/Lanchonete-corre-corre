@@ -230,7 +230,7 @@ table.rank tr.me td{background:#fbe7a8}
 
     <div class="ov show" id="ov-menu">
       <div class="panel menu-panel">
-        <span class="vtag" aria-label="Versão 7.4">v7.4</span>
+        <span class="vtag" aria-label="Versão 7.4.1">v7.4.1</span>
         <h1 class="title">Lanchonete <br>Corre-Corre</h1>
         <p class="tag">Ajude a Bia a atender a freguesia da esquina antes que o cafezinho esfrie!</p>
         <div class="lbl">Carreira: escolha o dia</div>
@@ -406,7 +406,8 @@ table.rank tr.me td{background:#fbe7a8}
       <div class="panel">
         <h2>Versões</h2>
         <ul class="verlist">
-          <li><b>v7.4</b><span class="cur">versão atual</span><br>21/10/2026 &mdash; Garagem da Bia e do tio Tonhão: o salão começa numa garagem sem aluguel, com 4 mesas; na lojinha, compre mesas (até 16 lugares) e arraste-as para arrumar o salão.</li>
+          <li><b>v7.4.1</b><span class="cur">versão atual</span><br>21/10/2026 &mdash; Salão cheio chama gente: cada lugar acima de 10 traz 6% mais clientes; 4 pratos limpos do dia 3 em diante; com o salão cheio, a fila perde a paciência um pouco mais rápido.</li>
+          <li><b>v7.4</b><br>21/10/2026 &mdash; Garagem da Bia e do tio Tonhão: o salão começa numa garagem sem aluguel, com 4 mesas; na lojinha, compre mesas (até 16 lugares) e arraste-as para arrumar o salão.<br><a href="versoes/v7.4.html" target="_blank" rel="noopener">Abrir a v7.4</a></li>
           <li><b>v7.3</b><br>21/10/2026 &mdash; Bia mais ágil: anda mais rápido e ganha os Tênis de corrida; no salão, um selo (1º, 2º...) mostra a vez de cada lugar na fila dela.<br><a href="versoes/v7.3.html" target="_blank" rel="noopener">Abrir a v7.3</a></li>
           <li><b>v7.2</b><br>15/10/2026 &mdash; Livro-caixa: a aba Caixa da lojinha mostra os últimos 14 dias, para onde foi o dinheiro e um resumo para copiar e mandar no WhatsApp.<br><a href="versoes/v7.2.html" target="_blank" rel="noopener">Abrir a v7.2</a></li>
           <li><b>v7.1</b><br>15/10/2026 &mdash; Jogo justo: sem mesa que sirva, a fila espera com calma e não passa de 1 coração; com o salão lotado, quem chega espera um pouco na porta.<br><a href="versoes/v7.1.html" target="_blank" rel="noopener">Abrir a v7.1</a></li>
@@ -630,10 +631,10 @@ const SALAO_SEMFIM = [2,2,2,4,2,4];
 
 const HEART_MULT = [0, 0.6, 0.8, 1, 1.25, 1.5];
 const PAT = { queue:7, wantOrder:6, ordered:9, wantBill:7 };   // segundos por coração (base)
-/* jogo justo (v7.1): sem mesa livre onde o grupo caiba, a paciência na fila corre mais devagar (ritmo)
+/* jogo justo (v7.1): sem mesa livre onde o grupo caiba, a paciência na fila corre mais devagar (ritmo; 0,4 até a v7.4)
    e, na carreira, não passa de 1 coração com metade da paciência dele (piso). Mesa suja conta como
    mesa que serve (é só recolher a louça). No Turno sem fim vale o ritmo, mas não o piso */
-const FILA_JUSTA = { ritmo:0.4, piso:0.5 };
+const FILA_JUSTA = { ritmo:0.6, piso:0.5 };
 /* porta que respeita a lotação (v7.1, carreira): com todas as mesas ocupadas e 3 ou mais grupos na fila,
    a próxima chegada espera (até `max` s cada uma; no total, até `total` do tempo do dia). O total de
    grupos do dia não muda, só o ritmo */
@@ -723,8 +724,12 @@ const DIVULGA = [
   { id:'panfleto', name:'Panfletos',     cost:40,  groups:[1, 1],     vip:1,   desc:'O movimento normal do dia.' },
   { id:'redes',    name:'Redes sociais', cost:100, groups:[1.2, 1.2], vip:1.5, desc:'+20% de grupos e, do dia 5 em diante, 50% mais VIPs. Precisa de lugar para tanta gente!' }
 ];
+/* movimento do salão (v7.4.1): cada lugar acima dos 10 do kit traz `porLugar` a mais de grupos no dia
+   (salão cheio chama gente). Sem isso, mesa a mais só dava conta de luz e gás */
+const MOVIMENTO = { kit:10, porLugar:0.06 };
+function movimentoSalao(lugares){ return 1 + MOVIMENTO.porLugar * Math.max(0, lugares - MOVIMENTO.kit); }
 const CAIXA_MAX = 14;                                 // livro-caixa (v7.2): quantos dias da carreira ficam guardados
-const VERSAO = 'v7.4';                                // vai no resumo do Caixa
+const VERSAO = 'v7.4.1';                              // vai no resumo do Caixa
 const DIVULGA_DIA = 3;                                // antes disso, o movimento é o da inauguração (sem custo)
 function divulgaOf(id){ return DIVULGA.find(d => d.id === id) || DIVULGA[1]; }
 /* contas do dia: o aluguel do ponto (v7.4; a Garagem é da família), mais cada mesa aberta e cada lugar dela */
@@ -1723,7 +1728,8 @@ class Game {
   }
   buildSchedule(day){
     const out = [];
-    const N = Math.max(3, Math.round(day.groups * this.divF)), vipP = (day.vip || 0) * (this.div ? this.div.vip : 1);
+    const lug = this.tables.filter(t => t.open).reduce((a, t) => a + t.seats, 0);
+    const N = Math.max(3, Math.round(day.groups * this.divF * movimentoSalao(lug))), vipP = (day.vip || 0) * (this.div ? this.div.vip : 1);
     const gap = day.speed * day.time / N;
     let t = 3;
     const forced = day.nu ? randi(1, Math.min(3, N-1)) : -1;
@@ -3756,7 +3762,7 @@ function buildTips(){
   const ul = $('tips');
   clearEl(ul);
   const tips = [
-    ['Arraste o grupo da fila até uma mesa livre (ou toque no grupo e depois na mesa). Grupos grandes precisam das mesas de 4 lugares. Na lojinha, aba Salão, compre mesas e arraste-as para arrumar a garagem.', c => {
+    ['Arraste o grupo da fila até uma mesa livre (ou toque no grupo e depois na mesa). Grupos grandes precisam das mesas de 4 lugares. Na lojinha, aba Salão, compre mesas e arraste-as para arrumar a garagem: mais lugares trazem mais clientes.', c => {
       drawPerson(c,{skin:3,hair:3,hairC:'#1B1512',pants:'#2F3E5C'},12,52,{shirt:CHAIRS[1].c,mood:0,s:0.8});
       c.strokeStyle = PAL.alerta; c.lineWidth = 3; c.setLineDash([4,4]); c.beginPath(); c.moveTo(22,40); c.lineTo(40,30); c.stroke(); c.setLineDash([]);
       c.beginPath(); c.moveTo(42,28); c.lineTo(35,28); c.lineTo(40,35); c.closePath(); c.fillStyle = PAL.alerta; c.fill();
@@ -4059,6 +4065,8 @@ function buildSalao(grid){
   side.appendChild(edBtn('Desfazer', 'btn alt', game.salaoUndo.length > 0, () => game.desfazerSalao()));
   side.appendChild(el('span', game.salaoMsg ? 'msg' : 'ed-dica', game.salaoMsg || (lug >= p.lugares ? 'O salão está no teto de ' + p.lugares + ' lugares.' : 'Arraste as mesas; toque numa para virar mesa de 4 ou vender. Grupos de 3 ou 4 só sentam nas mesas de 4.')));
   side.appendChild(el('span', 'ed-contas', 'Luz e gás: ' + fmt(contasDia(game.tables, p)) + ' por dia (' + fmt(CONTAS.mesa) + ' por mesa e ' + fmt(CONTAS.lugar) + ' por lugar).'));
+  const mov = Math.round((movimentoSalao(lug) - 1) * 100);
+  side.appendChild(el('span', 'ed-contas', 'Cada lugar acima de ' + MOVIMENTO.kit + ' traz ' + Math.round(MOVIMENTO.porLugar * 100) + '% mais clientes' + (mov > 0 ? ' (hoje, +' + mov + '%).' : '.')));
   ed.appendChild(side);
   grid.appendChild(ed);
   drawEditor(cv);
@@ -4480,7 +4488,7 @@ fit();
 try { Rank.init(); } catch(e) {}
 game.setState('menu');
 window.__game = game;
-window.__lcc = { setShopTab: v => { shopTab = v; buildShop(); }, FILA_JUSTA, PORTA, PAT, CONTAS, INGRED, DIVULGA, DIVULGA_DIA, divulgaOf, contasDia, bomGoal, SALAO, PONTOS, pontoOf, MESA, mesaBox, mesaPreco, salaoLugares, mesaProblema, salaoCaminho, salaoProblema, salaoOrdena, salaoAuto, salaoVaga, salaoPerto, salaoKit, salaoDevolucao, SALAO_SEMFIM, normSalao, setObst, OBST, pathOk, AGUA, CRIT, STAFF, DANI_TASKS, DANI_HANDS, daniTaskOk, TRASH, WASH, payroll, couvertEffect, dishStock, normSave, Helper, JUICE, KITCHEN_SLOTS, handLayout, trayOk, Game, Group, Table, Kitchen, Waitress, BIA_SPEED, DAYS, UPGRADES, CUSTOMER_TYPES, LAYOUT, PAL, Sfx, findPath, render, Rank, sortRows, cleanName, normName, CMD, ENDLESS, VIP, rk, renderRank, openRank, closeRank, LS, lsGet, lsSet, loadSave, CAIXA_MAX, VERSAO, normCaixa, caixaResumo, caixaTotais, copyText };
+window.__lcc = { setShopTab: v => { shopTab = v; buildShop(); }, FILA_JUSTA, PORTA, PAT, CONTAS, INGRED, MOVIMENTO, movimentoSalao, DIVULGA, DIVULGA_DIA, divulgaOf, contasDia, bomGoal, SALAO, PONTOS, pontoOf, MESA, mesaBox, mesaPreco, salaoLugares, mesaProblema, salaoCaminho, salaoProblema, salaoOrdena, salaoAuto, salaoVaga, salaoPerto, salaoKit, salaoDevolucao, SALAO_SEMFIM, normSalao, setObst, OBST, pathOk, AGUA, CRIT, STAFF, DANI_TASKS, DANI_HANDS, daniTaskOk, TRASH, WASH, payroll, couvertEffect, dishStock, normSave, Helper, JUICE, KITCHEN_SLOTS, handLayout, trayOk, Game, Group, Table, Kitchen, Waitress, BIA_SPEED, DAYS, UPGRADES, CUSTOMER_TYPES, LAYOUT, PAL, Sfx, findPath, render, Rank, sortRows, cleanName, normName, CMD, ENDLESS, VIP, rk, renderRank, openRank, closeRank, LS, lsGet, lsSet, loadSave, CAIXA_MAX, VERSAO, normCaixa, caixaResumo, caixaTotais, copyText };
 window.requestAnimationFrame(frame);
 
 })();

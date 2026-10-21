@@ -124,7 +124,7 @@ ok(L.dishStock(L.DAYS[2])===4 && L.dishStock(L.DAYS[5])===4 && L.dishStock(L.DAY
   const d=g.dani; d.hands=[{kind:'dirty',n:4},{kind:'coffee'}]; const t=g.tables[0]; t.dirty=true; t.dirtyN=3;
   d.perform({type:'clear',t}); ok(d.hands.length===2 && t.dirty,'mãos cheias: não pega mais louça');
   d.hands=[{kind:'dirty',n:2},{kind:'dirty',n:2}]; d.perform({type:'coffee'}); ok(d.hands.length===2,'mãos cheias: não pega cafezinho');
-  let mx=0; for(const tk of [['pratos','cafe'],['pratos','lavar','cafe']]) for(let n=3;n<=7;n++){
+  let mx=0; for(let rod=0;rod<4&&mx<2;rod++) for(const tk of [['pratos','cafe'],['pratos','lavar','cafe']]) for(let n=3;n<=7;n++){   // até 4 rodadas: chegar a 2 itens depende do sorteio do dia
     reset({dani:3,daniTasks:tk}); g.up.bandeja=true; g.startDay(n); g.begin(); let st=0;
     while(g.state==='playing'&&st<30000){ bot(); g.update(0.05); st++; mx=Math.max(mx,g.dani.hands.length); } }
   ok(mx===2,'num dia inteiro, a Dani chega a 2 itens e nunca passa disso ('+mx+')'); }

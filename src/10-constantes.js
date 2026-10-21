@@ -200,10 +200,10 @@ const SALAO_SEMFIM = [2,2,2,4,2,4];
 
 const HEART_MULT = [0, 0.6, 0.8, 1, 1.25, 1.5];
 const PAT = { queue:7, wantOrder:6, ordered:9, wantBill:7 };   // segundos por coração (base)
-/* jogo justo (v7.1): sem mesa livre onde o grupo caiba, a paciência na fila corre mais devagar (ritmo)
+/* jogo justo (v7.1): sem mesa livre onde o grupo caiba, a paciência na fila corre mais devagar (ritmo; 0,4 até a v7.4)
    e, na carreira, não passa de 1 coração com metade da paciência dele (piso). Mesa suja conta como
    mesa que serve (é só recolher a louça). No Turno sem fim vale o ritmo, mas não o piso */
-const FILA_JUSTA = { ritmo:0.4, piso:0.5 };
+const FILA_JUSTA = { ritmo:0.6, piso:0.5 };
 /* porta que respeita a lotação (v7.1, carreira): com todas as mesas ocupadas e 3 ou mais grupos na fila,
    a próxima chegada espera (até `max` s cada uma; no total, até `total` do tempo do dia). O total de
    grupos do dia não muda, só o ritmo */
@@ -293,8 +293,12 @@ const DIVULGA = [
   { id:'panfleto', name:'Panfletos',     cost:40,  groups:[1, 1],     vip:1,   desc:'O movimento normal do dia.' },
   { id:'redes',    name:'Redes sociais', cost:100, groups:[1.2, 1.2], vip:1.5, desc:'+20% de grupos e, do dia 5 em diante, 50% mais VIPs. Precisa de lugar para tanta gente!' }
 ];
+/* movimento do salão (v7.4.1): cada lugar acima dos 10 do kit traz `porLugar` a mais de grupos no dia
+   (salão cheio chama gente). Sem isso, mesa a mais só dava conta de luz e gás */
+const MOVIMENTO = { kit:10, porLugar:0.06 };
+function movimentoSalao(lugares){ return 1 + MOVIMENTO.porLugar * Math.max(0, lugares - MOVIMENTO.kit); }
 const CAIXA_MAX = 14;                                 // livro-caixa (v7.2): quantos dias da carreira ficam guardados
-const VERSAO = 'v7.4';                                // vai no resumo do Caixa
+const VERSAO = 'v7.4.1';                              // vai no resumo do Caixa
 const DIVULGA_DIA = 3;                                // antes disso, o movimento é o da inauguração (sem custo)
 function divulgaOf(id){ return DIVULGA.find(d => d.id === id) || DIVULGA[1]; }
 /* contas do dia: o aluguel do ponto (v7.4; a Garagem é da família), mais cada mesa aberta e cada lugar dela */

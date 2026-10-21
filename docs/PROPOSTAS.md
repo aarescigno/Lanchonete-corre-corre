@@ -4,6 +4,25 @@ Registro das ideias e dos retornos de quem jogou, com o texto original, e de ond
 
 ---
 
+## 21/10/2026 — Usuário: mesas que valham a pena, pratos, fila e avaliações
+**Origem:** mensagens do usuário numa sessão de equilíbrio, depois da v7.4:
+
+> "aumente a quantidade de pratos para 4 logo de início e rode o teste para ver ser dá mais lucro."
+
+> "o objetivo é que valha a pena comprar mais mesas e mais cadeiras no fim das contas"
+
+> "faça esse ajuste de chegada de pessoas, vá testando se 6% é suficiente ou demais, corrija esse bug que vc achou também, mantenha os 4 pratos"
+
+> "talvez reduzir um pouco a complacência das pessoas esperando na fila quando a casa estiver cheia, lembro que era um valor elevado"
+
+> "guarde para depois essa ideia: uma das metas para conseguir avançar de fase é a meta de avaliações das pessoas, tipo avaliações do google que vão subindo ou descendo de acordo com as últimas 200 avaliações das pessoas que passaram. avaliações compostas por pontuação: tempo de espera para mesa, qualidade do menu, qualidade do prato, agilidade de atendimento, ambiente e amenidades, cada vez que o grupo perde um coração na espera, é um ponto a menos no critério, cada vez que perde um coração esperando a Bia, perde ponto no aspecto agilidade, qualidade do prato teria que gerar uma faixa de qualidade e acerto para o tonhão/ outros cozinheiros, maior qualificação maior a faixa de acerto e maior a taxa de crítico (100% perfeito - pontuação máxima), qualidade do menu são pela quantidade de pratos disponíveis (que os chefs tenham sido treinados para), ambiente e amenidades é estética do espaço, presença de couvert/entretenimentos, cafezinho etc."
+
+**Destino:**
+- **v7.4.1, feito:** 4 pratos limpos do dia 3 em diante; cada lugar acima de 10 traz 6% mais grupos (testados 3% a 10%: com 6%, mesas de 4 com equipe se pagam em 1 a 3 dias; mesas de 2 demais e salão grande sem equipe continuam dando prejuízo); fila justa a 60% (era 40%); o salão de 16 lugares do `balance.js`, que voltava ao kit sem avisar, corrigido. Números em `docs/spec-v7.4.1.md`.
+- **Avaliações dos clientes:** guardada em `docs/PLANO.md`, "Ideias guardadas" (sem etapa ainda; combina com o nível de luxo, com os pontos das etapas 3 e 4 e com o crítico do guia da etapa 6).
+
+---
+
 ## 21/10/2026 — Usuário: mesas de bar na Garagem
 **Origem:** mensagem do usuário durante a sessão da 1d-1, com a foto de um conjunto branco de mesa quadrada e 4 cadeiras de plástico de bar:
 

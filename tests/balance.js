@@ -7,13 +7,14 @@ const AUTO={2:{},3:FULL,4:FULL,5:FULL,6:FULL,7:FULL};   // do dia 3 em diante o 
 const EQ0=process.env.EQUIPE==='auto'?null:(process.env.EQUIPE?JSON.parse(process.env.EQUIPE):{});
 const eqFor=n=>EQ0||AUTO[n]||{};
 // ajuste rápido sem mexer em src/: INGRED='{"prato":0.7}' CONTAS='{"mesa":40}' node balance.js
+if(process.env.MOVIMENTO) Object.assign(L.MOVIMENTO,JSON.parse(process.env.MOVIMENTO));   // MOVIMENTO='{"porLugar":0.04}'
 if(process.env.CONTAS) Object.assign(L.CONTAS,JSON.parse(process.env.CONTAS));
 if(process.env.INGRED) Object.assign(L.INGRED,JSON.parse(process.env.INGRED));
 if(process.env.GRUPOS){ const gr=JSON.parse(process.env.GRUPOS); for(const k in gr) L.DAYS[k-1].groups=gr[k]; }   // GRUPOS='{"1":5}': testa o movimento do dia
 if(process.env.METAS){ const mt=JSON.parse(process.env.METAS); for(const k in mt) L.DAYS[k-1].meta=mt[k]; }   // METAS='{"3":420}': testa metas sem mexer em src/
 // salão (v7.4): por padrão, o de quem compra móveis como o bot da carreira.js (kit de 10 lugares, +1 mesa de 2 por
 // lojinha até 16); MOVEIS=kit fica no kit; MOVEIS='[2,2,4,4]' usa essas mesas todo dia (arrumação automática)
-const MOV={1:[2,2,2,4],2:[2,2,2,4,2],3:[2,2,2,4,2,2],4:[2,2,2,4,2,2,2]};
+const MOV={1:[2,2,2,4],2:[2,2,2,4,2],3:[2,2,2,4,2,2],4:[2,2,2,2,2,2,4]};   // ([2,2,2,4,2,2,2] não cabia na arrumação automática e voltava ao kit)
 const movFor=n=>process.env.MOVEIS==='kit'?MOV[1]:(process.env.MOVEIS?JSON.parse(process.env.MOVEIS):MOV[Math.min(n,4)]);
 const order=process.env.ORDEM?process.env.ORDEM.split(','):['tenis','agua','cafeteira','bandeja','ventilador','pratos'];   // ORDEM=pratos,tenis,...: ordem de compra das melhorias
 const DIAS=process.env.DIAS?process.env.DIAS.split(',').map(Number):[1,2,3,4,5,6,7];   // DIAS=1,2: só esses dias
@@ -23,6 +24,7 @@ for(const n of DIAS){
     g.up={}; g.save.up=g.up; order.slice(0,n-1).forEach(id=>g.up[id]=true);
     if(L.normSave){ g.save.equipe=L.normSave({equipe:eqFor(n)}).equipe; g.save.bank=1e6; }
     g.save.salao=L.normSalao({mesas:movFor(n).map((seats,c)=>({x:0,y:0,seats,c:c%4}))});
+    if(L.salaoLugares(g.save.salao.mesas)!==movFor(n).reduce((x,y)=>x+y,0)) throw new Error('salão '+JSON.stringify(movFor(n))+' não cabe na arrumação automática (voltou ao kit)');
     if(process.env.DIV) g.save.divulga=process.env.DIV;   // DIV=boca|panfleto|redes
     if(process.env.MULT){ const d=L.divulgaOf(g.save.divulga); d.groups=[+process.env.MULT,+process.env.MULT]; }   // MULT=0.7: fração fixa dos grupos do dia
     g.startDay(n); g.begin();
