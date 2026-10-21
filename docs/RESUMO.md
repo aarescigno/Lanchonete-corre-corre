@@ -1,9 +1,9 @@
 # Resumo do projeto e das alterações (até 21/10/2026)
 
 ## Estado atual
-- **Versão:** v7.4.4 (na Garagem, TV e som no lugar do couvert, que fica para o nível 3), sobre a v7.4.3 (cor das cadeiras de cada mesa no editor do salão) e a v7.4.2 (balão de "aguardando o preparo" com panela no fogo, sem anel), publicada como Versão 32 do artifact https://claude.ai/artifact/MJxrgDg8S4akvg47SoQAvj (privado).
+- **Versão:** v7.5 (a espera foi para a calçada: tela que rola, 4 bancos lá fora e a Máquina de suco no lugar da Água saborizada), pronta no `claude/main` e ainda não publicada no artifact; a publicada é a v7.4.4 (TV e som na Garagem), Versão 32 do artifact https://claude.ai/artifact/MJxrgDg8S4akvg47SoQAvj (privado).
 - **Branch:** `claude/main` (renomeado pelo usuário; o antigo `claude/intelligent-gauss-3owv29` não existe mais) no repositório `aarescigno/Lanchonete-corre-corre`.
-- **Arquivos publicados:** `lanchonete.html` (página), mais `versoes/v1.html` a `versoes/v7.4.3.html`, abertos pelo painel Versões.
+- **Arquivos publicados:** `lanchonete.html` (página), mais `versoes/v1.html` a `versoes/v7.4.3.html`, abertos pelo painel Versões (a `versoes/v7.4.4.html` vai na próxima publicação).
 - **Capacidades declaradas (mantidas ao republicar sem `capabilities`):**
   - `db`: `ranking-carreira` e `ranking-semfim` com read "view" e write "owner";
   - `db`: `ranking-*/{self}` com write "interact";
@@ -32,6 +32,7 @@
 | v7.4.2 | 21/10 | Balão de "aguardando o preparo" (retorno do usuário): panela no fogo (ícone `pot`) no lugar da comanda e do prato com anel; visto verde quando o prato está no balcão | `docs/spec-v7.4.2.md` |
 | v7.4.3 | 21/10 | Cor das cadeiras (pedido do usuário): no balãozinho da mesa, no editor do salão, 4 bolinhas trocam a cor das cadeiras, de graça e com Desfazer | `docs/spec-v7.4.3.md` |
 | v7.4.4 | 21/10 | Ambiente da Garagem (pedido do usuário): TV de tubo na Rede Esfera (R$ 15/dia de luz) e som na rádio Velha Brasil FM (R$ 10/dia), 5% de paciência nas mesas cada; couvert só do nível 3 do salão em diante (`PONTOS.nivel`, `couvertOk`) | `docs/spec-v7.4.4.md` |
+| v7.5 | 21/10 | Calçada (etapa 1d-2): o mundo fica 260 px mais largo e a tela rola (arrastar o fundo no vazio, abinhas fixas no alto com o relógio e o aviso piscando, grupo na borda, 2 toques no grupo); espera lá fora com 4 bancos, tablet, toldo e vaso; Máquina de suco no lugar da Água (pedido no tablet, a Bia pega todos os copos que couberem e entrega grupo a grupo, R$ 12 na conta; a Dani pode levar) | `docs/spec-v7.5.md` |
 
 ## Alterações feitas no Claude Code (14/10/2026)
 1. **Importação** do pacote exportado do claude.ai para o repositório (commit `982583b`).
@@ -129,6 +130,12 @@
    - Visual: cimento queimado, portão de enrolar aberto, letreiro feito à mão, mesa quadrada de plástico de bar (a de 4 são 2 juntas) e cadeira de plástico com frisos verticais.
    - Save antigo: devolve cadeiras e mesas compradas, com linha no Caixa.
    - Sem equipe, ~97% das metas dos dias 3 a 7 (folga da Garagem, de propósito); R$ 1.455 na lojinha do dia 5. Com equipe, mesa a mais não dá lucro (gargalo nos pratos limpos): fica para a etapa 3.
+15. **v7.5, calçada** (ver `docs/spec-v7.5.md`; etapa 1d-2 do `docs/PLANO.md`):
+   - Câmera `Game.cam` de 0 (o salão, como antes) a `CALCADA.w` = 260 (a calçada e todas as mesas); o dia começa na calçada; HUD e abinhas fixos; a entrada chega em coordenadas da tela.
+   - Rolagem: arrastar o fundo (só onde nenhum alvo pega o toque), abinhas "◀ Calçada" e "Salão ▶" (relógio e pratos prontos), grupo arrastado até a borda, 2 toques no grupo (vai ao salão), setas do teclado; instantânea com `prefers-reduced-motion`. A abinha da calçada pisca com suco pronto sem ninguém indo buscar ou alguém lá fora com 1 coração.
+   - Espera: 4 bancos na calçada (`PONTOS.espera`), a freguesia vem da rua e volta para ela; cadeiras de fora não contam nos lugares. Toldo, vaso num banquinho de plástico e portão de enrolar na parede da esquerda.
+   - Máquina de suco (R$ 180, no lugar da Água saborizada; quem tinha a água ganha a máquina): 2,5 s depois de sentar, 1 suco por pessoa no tablet; 3 s de preparo; a Bia pega todos os copos prontos que couberem e entrega grupo a grupo na mesma ação; +1 coração, espera 40% mais devagar, R$ 12 por copo na conta e R$ 5 de ingrediente; quem sai da espera cancela o que não foi pego. A tarefa da água da Dani virou "Levar o suco da espera".
+   - Equilíbrio: a calçada não pesa (bot afiado sem a máquina igual à v7.4.4); o bot simples empata com a máquina; o afiado, que busca o suco em toda brecha, perde ~R$ 190/dia (a ida lá fora leva ~6 s). Dinheiro na lojinha do dia 5: ~R$ 1.500. Teste `smoke14`.
 
 ## Código em partes (`src/`)
 - Desde 15/10/2026 o código fica em 19 partes em `src/` (lista no `CLAUDE.md`), juntadas por `montar.py` em `lanchonete.html` sem acrescentar nada: o arquivo montado é idêntico, byte a byte, ao anterior à divisão.
@@ -149,14 +156,15 @@
 - `smoke3` (120/120: v2);
 - `smoke4` (23/23: VIP);
 - `smoke5` (41/41: sucos, bandeja e lixeira);
-- `smoke6` (105/105: equipe, louça, lixeira que enche, couvert, TV e som, água, economia). O teste "a Dani chega a 2 itens" dependia do sorteio do dia; desde a v7.4.1 joga até 4 rodadas enquanto ela não chega a 2;
+- `smoke6` (97/97: equipe, louça, lixeira que enche, couvert, TV e som, máquina de suco no lugar da água, economia). O teste "a Dani chega a 2 itens" dependia do sorteio do dia; desde a v7.4.1 joga até 4 rodadas enquanto ela não chega a 2;
 - `smoke7` (15/15: toque no celular e brilho);
 - `smoke8` (19/19: conversão do salão da v6 com devolução, e as faixas de estrelas);
 - `smoke9` (33/33: v7, lucro, ingredientes, contas e divulgação);
 - `smoke10` (26/26: v7.1, fila justa, piso, porta e perdas por causa);
 - `smoke11` (39/39: v7.2, livro-caixa, limite de 14 dias, resumo e aba Caixa);
 - `smoke12` (21/21: v7.3, velocidade, Tênis de corrida, selos da fila);
-- `smoke13` (53/53: v7.4 e os 4 pratos da v7.4.1, Garagem, móveis, editor do salão, posição e caminho, contas sem aluguel);
+- `smoke13` (58/58: v7.4 e os 4 pratos da v7.4.1, Garagem, móveis, editor do salão, posição e caminho, contas sem aluguel);
+- `smoke14` (75/75: v7.5, câmera, arrastar o fundo, borda, toque duplo, abinhas, espera de 4, máquina de suco, Dani, movimento reduzido);
 - `menu_fit` (14 tamanhos de tela);
 - `balance` (bot, N rodadas por dia; `DIV`, `MULT`, `MOVEIS`, `MOVIMENTO`, `GRUPOS`, `DIAS`, `BOT=afiado`, `ORDEM`, `INGRED`, `CONTAS`, `METAS`; perdas por causa e 3★);
 - `carreira` (bot jogando a carreira com o dinheiro acumulado de verdade e comprando móveis; `MOVEIS=0`, `MOVEIS=quatro`, `MOVIMENTO`, `MESAS=1`).
@@ -170,5 +178,6 @@
 - Ajuste de dificuldade.
 - v7: conferir com jogadores se a escassez ficou no ponto (valores em `CONTAS`, `INGRED`, `DIVULGA` e nas metas). Desde a v7.2, o jeito é pedir o "Copiar resumo" da aba Caixa.
 - v7.1: conferir com jogadores se a fila justa (`FILA_JUSTA`) e a porta (`PORTA`) ficaram no ponto, e se o ícone "aguardando mesa" se entende.
-- **Roteiro das próximas versões em `docs/PLANO.md`** (uma etapa por sessão; log das ideias e retornos em `docs/PROPOSTAS.md`): jogo justo (feito na v7.1), livro-caixa (feito na v7.2), Bia mais ágil (feito na v7.3), Garagem e editor do salão (feito na v7.4), espera lá fora (1d-2), manutenção e imprevistos, ponto (Centro, área nobre com VIPs exigentes), modo história em 2 partes e polimento.
+- **Roteiro das próximas versões em `docs/PLANO.md`** (uma etapa por sessão; log das ideias e retornos em `docs/PROPOSTAS.md`): jogo justo (feito na v7.1), livro-caixa (feito na v7.2), Bia mais ágil (feito na v7.3), Garagem e editor do salão (feito na v7.4), espera lá fora (feito na v7.5), manutenção e imprevistos, ponto (Centro, área nobre com VIPs exigentes), modo história em 2 partes e polimento.
 - A lojinha ainda rola no menor celular deitado (568×320).
+- v7.5: conferir com jogadores (e no celular de verdade) se a tela que rola se entende (abinhas, arrastar o fundo, 2 toques) e se a Máquina de suco vale a ida lá fora; com a Bia sozinha, o bot afiado perde dinheiro buscando suco em toda brecha.

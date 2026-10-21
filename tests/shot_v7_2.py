@@ -6,7 +6,7 @@ HERE=pathlib.Path(__file__).resolve().parent
 S=str(HERE); OUT=str(HERE.parent/'capturas'/'v7.2'); os.makedirs(OUT,exist_ok=True)
 JOGA=r"""const H=require('./harness.js')(); const {g,L}=H; const bot=require('./bot.js')(g,L);
 g.save=L.normSave({}); g.up=g.save.up; g.boughtFor=0; g.buildTables();
-const order=['tenis','agua','pratos','cafeteira'];
+const order=['tenis','maquina','pratos','cafeteira'];
 for(let n=1;n<=5;n++){
   if(n>=2){ g.goShop(n); const u=order.find(id=>!g.up[id]); if(u) g.buy(u);
     if(n===3){ g.save.equipe=L.normSave({equipe:{tonhao:1,dani:1}}).equipe; g.save.divulga='panfleto'; }

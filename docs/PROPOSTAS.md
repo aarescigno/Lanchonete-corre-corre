@@ -4,6 +4,15 @@ Registro das ideias e dos retornos de quem jogou, com o texto original, e de ond
 
 ---
 
+## 21/10/2026 — Usuário: decisões da etapa 1d-2 (calçada)
+**Origem:** respostas do usuário às dúvidas da 1d-2, no começo da sessão (todas as sugestões aceitas):
+
+> Calçada: "Estreita, ~260 px (Recomendado)" · Arrastar: "Arrastar só no vazio + abinha (Recomendado)" · Suco: "R$ 12, igual ao do balcão (Recomendado)" · Dani: "Levar o suco da espera (Recomendado)"
+
+**Destino:** v7.5, feito (`docs/spec-v7.5.md`): a calçada tem 260 px (olhando a calçada, só a cozinha sai da tela); o arrasto do fundo só começa onde nenhum alvo pega o toque, e as abinhas fixas no alto ("◀ Calçada" e "Salão ▶") levam a tela, com a da calçada piscando quando lá fora precisa de atenção; o suco da espera custa R$ 12 na conta; a Dani pode levar o suco da espera.
+
+---
+
 ## 21/10/2026 — Usuário: ambiente de cada nível do salão
 **Origem:** mensagem do usuário, depois da v7.4.4:
 

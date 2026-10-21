@@ -4,7 +4,7 @@
 // Uso: node carreira.js [N] [divulga]   (divulga: boca, panfleto ou redes; padrão panfleto)
 const N=+process.argv[2]||10, DIV=process.argv[3]||'panfleto';
 const H=require('./harness.js')(); const {g,L}=H; const BOT=require('./bot.js'), bot=BOT(g,L);
-const order=['tenis','agua','cafeteira','bandeja','ventilador','pratos','corrida'];
+const order=['tenis','maquina','cafeteira','bandeja','ventilador','pratos','corrida'];
 const FULL=[{tonhao:2,dani:3,tv:true,som:true},{tonhao:2,dani:3,tv:true},{tonhao:2,dani:3},{tonhao:1,dani:2},{tonhao:0,dani:1},{}];
 // ajuste rápido sem mexer em src/: CONTAS='{"mesa":40}' INGRED='{"prato":0.6}' node carreira.js
 if(process.env.MOVIMENTO) Object.assign(L.MOVIMENTO,JSON.parse(process.env.MOVIMENTO));   // MOVIMENTO='{"porLugar":0.04}'

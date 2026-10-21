@@ -20,8 +20,6 @@ module.exports=function(g,L,opts){
     if(b.hands.some(h=>h.kind==='dirty') && !has(a=>a.type==='sink')) return g.tapStation('sink',850,450);
     // lixeira quase cheia e mãos vazias: esvazia (se a Dani não estiver cuidando disso)
     if(g.trash!==undefined && g.trash>=L.TRASH.cap-1 && !b.hands.length && !has(a=>a.type==='trash') && !(g.dani&&g.dani.does('lixo'))) return g.tapStation('trash',723,500);
-    // jarra de água quase vazia: recarrega (se houver dinheiro para isso)
-    if(g.up&&g.up.agua&&L.AGUA&&g.agua<=1&&g.money>=L.AGUA.price&&!has(a=>a.type==='agua')&&!(g.dani&&g.dani.does('agua'))) return g.tapStation('agua',182,140);
     // louça esperando na pia (2º toque, sem louça na mão): lava se ninguém mais lava, ou se faltam
     // pratos e a pia acumulou; nunca enquanto a Dani lava (só 1 pessoa lava por vez)
     const helper=g.otherWasher!==undefined?g.otherWasher:(g.dani&&g.dani.does('lavar'));
@@ -39,6 +37,8 @@ module.exports=function(g,L,opts){
       for(let i=0;i<k;i++) g.tapStation('juice',910,350);
       if(k) return;
     }
+    // suco da espera pronto na máquina (v7.5), quando não há mais nada: busca e leva (se a Dani não estiver cuidando disso)
+    if(g.up&&g.up.maquina&&g.maqLivre&&g.maqLivre()&&!b.acts.length&&can('suco')&&!(g.dani&&g.dani.does('suco'))) return g.tapStation('maquina');
   };
 };
 
@@ -117,9 +117,11 @@ function afiado(g,L){
       while(n<need&&n<6&&L.handLayout(sim.concat([{kind:'juice'}]),b.tray)){ sim.push({kind:'juice'}); n++; }
       for(let i=0;i<n;i++) g.tapStation('juice',910,350);
     });
-    // lixo e água
+    // lixo e suco da espera (v7.5: a máquina no lugar da água)
     if(g.trash>=L.TRASH.cap-1&&!b.hands.length&&!(dani&&dani.does('lixo'))) add(g.trashFull?12:22,()=>g.tapStation('trash',723,500));
-    if(g.up.agua&&g.agua<=1&&g.money>=L.AGUA.price&&!(dani&&dani.does('agua'))&&!b.hands.length) add(g.queue.length?16:26,()=>g.tapStation('agua',182,140));
+    const mo=g.up.maquina&&!(dani&&dani.does('suco'))&&g.maqLivre();
+    // a ida lá fora é longa: só com folga (nada mais urgente) ou para quem espera por um fio
+    if(mo&&can('suco')){ const tg=ttl(mo.group), trip=sw('maquina')+walk(ST.maquina.ap.x,ST.maquina.ap.y,mo.group.x,mo.group.y); add(tg<12?tg-trip:40,()=>g.tapStation('maquina')); }
     if(!cands.length) return;
     cands.sort((a,c)=>a[0]-c[0]);
     cands[0][1]();

@@ -16,6 +16,7 @@ class Game {
     this.dani = new Helper(this);
     this.fx = [];
     this.sel = null; this.drag = null; this.hover = null; this.hoverOk = false;
+    this.cam = CALCADA.w; this.camTo = null; this.pan = null; this.lastTap = null;   // câmera (v7.5)
     this.shopBought = false; this.shopNext = 1; this.boughtFor = 0;
     this.soundBtnT = 0;
     this.mode = 'carreira';
@@ -44,14 +45,15 @@ class Game {
     this.kitchen.reset();
     this.kitchen.clean = dishStock(this.day, this.up);
     this.trash = 0; this.paid = 0; this.unpaid = [];
-    this.agua = AGUA.cap;
+    this.maq = []; this.maqId = 0;   // pedidos do tablet da espera na máquina de suco: { id, group, n, t (preparo que falta) }
     this.bia.reset();
     this.dani.reset();
     this.fx = [];
-    this.stats = { served:0, lost:0, chain:0, spawned:0, full:0, vip:0, vipLost:0, juice:0, juiceMiss:0, trash:0, washed:0, emptied:0, refill:0, crit:0, lostBy:{ semMesa:0, comMesa:0, pedido:0, prato:0, conta:0 }, lotadoT:0 };
+    this.stats = { served:0, lost:0, chain:0, spawned:0, full:0, vip:0, vipLost:0, juice:0, juiceMiss:0, trash:0, washed:0, emptied:0, sucoEsp:0, crit:0, lostBy:{ semMesa:0, comMesa:0, pedido:0, prato:0, conta:0 }, lotadoT:0 };
     this.lastKind = null; this.chainN = 0;
     this.ending = false; this.endTimer = 0; this.reason = '';
-    this.sel = null; this.drag = null; this.hover = null;
+    this.sel = null; this.drag = null; this.hover = null; this.pan = null; this.lastTap = null;
+    this.cam = CALCADA.w; this.camTo = null;   // o dia começa olhando a calçada, onde a freguesia chega
     this.schedule = n === 0 ? [] : this.buildSchedule(this.day);
     this.nextIdx = 0;
     this.result = null;
@@ -107,7 +109,7 @@ class Game {
   }
   begin(){
     this.payDay(); this.setState('playing');
-    if (this.unpaid.length) this.addText(W/2, 300, 'Sem dinheiro para pagar: sem ' + this.unpaid.join(', ') + ' hoje', PAL.perigo, 20);
+    if (this.unpaid.length) this.addText(W/2 - this.cam, 300, 'Sem dinheiro para pagar: sem ' + this.unpaid.join(', ') + ' hoje', PAL.perigo, 20);
   }
   /* lucro do dia (a meta): faturamento − ingredientes − contas − folha − divulgação */
   get fixo(){ return this.contas + this.paid + this.paidDiv; }
@@ -127,7 +129,7 @@ class Game {
     this.stats.washed += n;
     return n;
   }
-  pause(){ if (this.state === 'playing'){ this.drag = null; this.setState('paused'); } }
+  pause(){ if (this.state === 'playing'){ this.drag = null; this.pan = null; this.setState('paused'); } }
   resume(){ if (this.state === 'paused') this.setState('playing'); }
 
   /* ---------- efeitos ---------- */
@@ -162,7 +164,7 @@ class Game {
         if (f.delay > 0){ f.delay -= dt; continue; }
         f.life += dt; f.vy += 300*dt; f.x += f.vx*dt; f.y += f.vy*dt;
         if (f.life > 0.45){
-          const tx = 120, ty = 566, dx = tx - f.x, dy = ty - f.y, d = Math.hypot(dx,dy) || 1;
+          const tx = 120 - this.cam, ty = 566, dx = tx - f.x, dy = ty - f.y, d = Math.hypot(dx,dy) || 1;
           f.vx = dx/d*420; f.vy = dy/d*420;
           if (d < 20) f.life = f.max;
         }
@@ -196,6 +198,7 @@ class Game {
     }
     const amount = Math.round(g.bill * HEART_MULT[g.hearts] * (1 + g.T.tip + (g.vip ? VIP.tip : 0)));
     this.score('bill', amount, t.cx, t.cy - 50);
+    if (g.sucoConta){ const v = JUICE.price * g.sucoConta; this.addMoney(v); this.addText(t.cx - 34, t.cy - 100, 'Suco da espera +' + v, PAL.alerta, 14); }
     if (g.T.tip > 0 || g.vip) this.addText(t.cx + 20, t.cy - 76, 'Gorjeta!', PAL.mostarda, 15);
     const eq = this.save.equipe;
     if (eq.couvert && eq.taxa){
@@ -218,7 +221,7 @@ class Game {
       this.five++;
       if (this.five >= 8){
         this.five = 0;
-        if (this.stars < 5){ this.stars++; this.starFlash = 1; this.addText(W/2, 300, '+1 estrela!', PAL.mostarda, 28); Sfx.win(); }
+        if (this.stars < 5){ this.stars++; this.starFlash = 1; this.addText(W/2 - this.cam, 300, '+1 estrela!', PAL.mostarda, 28); Sfx.win(); }
       }
     }
     this.releaseCmd(g);
@@ -235,7 +238,7 @@ class Game {
   /* ---------- fluxo de grupos ---------- */
   /* chegada de um grupo: se a fila estiver cheia, o grupo olha, diz "Lotado!" e vai embora */
   arrive(s){
-    if (this.queue.length >= QUEUE.max) return this.bounce(s);
+    if (this.queue.length >= this.ponto.espera) return this.bounce(s);
     return this.spawn(s);
   }
   spawn(s){
@@ -247,7 +250,7 @@ class Game {
       let i = 0;
       while (i < this.queue.length && this.queue[i].vip) i++;
       this.queue.splice(i, 0, g);
-      this.addText(DOOR.x + 110, DOOR.y + 12, 'VIP chegou!', PAL.mostarda, 22);
+      this.addText(QUEUE.x, DOOR.y + 12, 'VIP chegou!', PAL.mostarda, 22);
       Sfx.tone(988, 0.1, 'sine', 0.06); Sfx.tone(1319, 0.14, 'sine', 0.06, 0.1);
     } else {
       this.queue.push(g);
@@ -260,11 +263,12 @@ class Game {
   bounce(s){
     const g = new Group(this, s.type, ++this.gid, s.color, s.vip);
     g.hearts = 3; g.bounced = true; g.hold = 0.9;
+    g.x = QUEUE.x - 60;   // chega à calçada, vê a espera cheia e volta para a rua
     g.setState('leaving');
-    g.path = [{ x:-60, y:DOOR.y + 4 }];
+    g.path = [{ x:DOOR.x, y:DOOR.y + 4 }];
     this.groups.push(g);
     this.stats.spawned++; this.stats.full++;
-    this.addText(DOOR.x + 122, DOOR.y + 12, 'Lotado!', PAL.perigo, 24);
+    this.addText(QUEUE.x, DOOR.y + 12, 'Lotado!', PAL.perigo, 24);
     Sfx.tone(260, 0.18, 'triangle', 0.07, 0, 170);
     if (this.mode === 'semfim'){ this.stats.lost++; this.loseStar(); }
     return null;
@@ -278,7 +282,7 @@ class Game {
   loseStar(){
     if (this.stars <= 0) return;
     this.stars--; this.starFlash = 1;
-    this.addText(W/2, 300, 'Reputação -1 ★', PAL.perigo, 26);
+    this.addText(W/2 - this.cam, 300, 'Reputação -1 ★', PAL.perigo, 26);
     if (this.stars <= 0) this.endEndlessShift();
   }
   endEndlessShift(){
@@ -303,6 +307,82 @@ class Game {
   reslot(){
     this.queue.forEach((g,i) => { g.slot = i; g.path = [{ x:QUEUE.x, y:QUEUE.ys[i] }]; });
   }
+
+  /* ---------- máquina de suco da espera (v7.5) ---------- */
+  maqPedir(g, n){
+    this.maq.push({ id:++this.maqId, group:g, n, t:MAQUINA.prep });
+    this.addText(g.x, g.y - 96, n > 1 ? n + ' sucos no tablet!' : 'Suco no tablet!', PAL.alerta, 14);
+    Sfx.tone(1046, 0.06, 'sine', 0.04); Sfx.tone(1318, 0.08, 'sine', 0.04, 0.06);
+  }
+  /* quem saiu da espera (sentou ou foi embora) cancela o que a máquina ainda não entregou na mão de ninguém */
+  maqCancela(g){ this.maq = this.maq.filter(o => o.group !== g); }
+  /* pedidos prontos, do mais antigo para o mais novo */
+  maqPronto(){ return this.maq.filter(o => o.t <= 0); }
+  /* pronto e ninguém indo buscar: o primeiro que a Bia ainda não vai pegar e a Dani não foi buscar */
+  maqLivre(){
+    const nBia = this.bia.acts.filter(a => a.type === 'maquina' && a.leg !== 2).length;
+    return this.maqPronto().filter(o => !o.dani).slice(nBia)[0] || null;
+  }
+  /* tira k copos do pedido (que some quando acaba) */
+  maqTirar(o, k){ o.n -= k; if (o.n <= 0) this.maq = this.maq.filter(q => q !== o); }
+  /* onde entregar o suco de quem pediu (lá fora ou, se já sentou, na mesa); null se o grupo foi embora */
+  sucoAp(g, from){
+    if (!g || g.done || g.state === 'leaving') return null;
+    if (g.state === 'queue') return esperaAp(g.slot);
+    if (!g.table) return null;
+    const p = tableApproach(g.table);
+    return Math.hypot(p[0].x-from.x, p[0].y-from.y) <= Math.hypot(p[1].x-from.x, p[1].y-from.y) ? p[0] : p[1];
+  }
+  /* n copos entregues: atender devolve 1 coração, quem ainda espera bebe e perde a paciência mais devagar;
+     os copos vão para a conta do grupo e os ingredientes saem agora */
+  entregaSuco(g, n, x, y){
+    g.drink(n); g.gain(1);
+    g.sucoConta += n; this.custo += INGRED.suco * n; this.stats.sucoEsp += n;
+    this.addText(x, y - 86, (n > 1 ? 'Sucos entregues!' : 'Suco entregue!'), PAL.alerta, 15);
+    this.addText(x, y - 108, '+' + JUICE.price * n + ' na conta', PAL.ok, 14);
+    Sfx.tone(880, 0.07, 'sine', 0.05); Sfx.tone(1175, 0.12, 'sine', 0.05, 0.07);
+  }
+
+  /* ---------- câmera (v7.5): cam = quanto o mundo anda para a direita (0: o salão; CALCADA.w: a calçada) ---------- */
+  setCam(v){ this.cam = clamp(v, 0, CALCADA.w); }
+  /* leva a tela até v (com movimento reduzido, na hora) */
+  camGo(v){ this.camTo = null; if (RM) this.setCam(v); else this.camTo = clamp(v, 0, CALCADA.w); }
+  updateCam(dt){
+    const d = this.drag;
+    if (d && d.moved){
+      // grupo arrastado até a borda: a tela rola sozinha para aquele lado
+      const v = d.px < CAM.borda ? 1 : (d.px > W - CAM.borda ? -1 : 0);
+      if (v){
+        this.camTo = null;
+        this.setCam(RM ? (v > 0 ? CALCADA.w : 0) : this.cam + v * CAM.rola * dt);
+        d.x = d.px - this.cam;
+        this.hoverAt(d.x, d.y, d.pad, d.g);
+      }
+    }
+    if (this.camTo != null){
+      const r = this.camTo - this.cam, st = CAM.vel * dt;
+      if (Math.abs(r) <= st){ this.cam = this.camTo; this.camTo = null; }
+      else this.cam += Math.sign(r) * st;
+    }
+  }
+  /* abinhas da borda (no alto da tela): 'l' leva à calçada (aparece enquanto ela não está toda à vista),
+     'r' leva ao salão e à cozinha */
+  abaOn(k){ return k === 'l' ? this.cam < CALCADA.w - CAM.folga : this.cam > CAM.folga; }
+  abaHit(x, y){
+    for (const k of ['l','r']){ const r = ABAS[k]; if (this.abaOn(k) && x >= r.x && x <= r.x + r.w && y >= r.y && y <= r.y + r.h) return k; }
+    return null;
+  }
+  /* a calçada precisa de atenção e está fora da tela: suco pronto sem ninguém indo buscar, ou alguém da
+     espera com 1 coração */
+  abaAlerta(){
+    if (!this.abaOn('l')) return false;
+    const fora = x => x + this.cam < CAM.folga;
+    const r = STATIONS.maquina.rect;
+    if (this.up.maquina && this.maqLivre() && !(this.dani.does('suco')) && fora(r.x + r.w / 2)) return true;
+    return this.queue.some(g => g.state === 'queue' && g.hearts <= 1 && fora(g.x));
+  }
+  /* pratos prontos no balcão que ainda não estão na fila da Bia (contador da abinha da direita) */
+  abaPratos(){ return this.kitchen.plates.filter(p => p && !this.bia.acts.some(a => a.type === 'plate' && a.pid === p.id)).length; }
   fail(g, msg){
     g.boing = 0.6;
     this.addText(g.x, g.y - 60, msg, PAL.perigo, 15);
@@ -317,6 +397,7 @@ class Game {
     if (t.seats < g.size) return this.fail(g, 'Não cabe!');
     this.queue.splice(this.queue.indexOf(g), 1);
     this.reslot();
+    this.maqCancela(g);
     t.group = g; g.table = t;
     g.setState('toTable');
     g.hearts = Math.min(5, g.hearts);
@@ -344,6 +425,8 @@ class Game {
     if (qi >= 0){ this.queue.splice(qi,1); this.reslot(); }
     this.kitchen.purge(g);
     this.bia.purgeGroup(g);
+    this.dani.hands = this.dani.hands.filter(h => h.group !== g);
+    this.maqCancela(g);
     this.releaseCmd(g);
     if (this.sel === g) this.sel = null;
     if (this.drag && this.drag.g === g) this.drag = null;
@@ -404,6 +487,8 @@ class Game {
     }
     this.groups.forEach(g => g.update(dt));
     this.groups = this.groups.filter(g => !g.done);
+    this.maq.forEach(o => { if (o.t > 0){ o.t -= dt; if (o.t <= 0){ Sfx.tone(1568, 0.12, 'sine', 0.05); this.addGlow('maquina'); } } });
+    this.updateCam(dt);
     if (this.lotado) this.stats.lotadoT += dt;
     this.bia.update(dt);
     this.dani.update(dt);
@@ -447,7 +532,7 @@ class Game {
     if (passed) this.save.maxDay = Math.max(this.save.maxDay, Math.min(7, d.n + 1));
     caixaAdd(this.save, { d:d.n, fat, ingr:Math.round(this.custo), contas:this.contas, folha:this.paid, div:this.paidDiv, lucro:m, meta:d.meta, ok:passed, perd:this.stats.lost, saldo:this.save.bank });
     writeSave(this.save);
-    this.result = { day:d.n, money:m, fat, custo:Math.round(this.custo), contas:this.contas, div:this.paidDiv, divName:this.div ? this.div.name : '', meta:d.meta, bom:bomGoal(d), expert:d.expert, passed, stars, served:this.stats.served, lost:this.stats.lost, lostBy:this.stats.lostBy, lotadoT:Math.round(this.stats.lotadoT), atraso:Math.round(this.atraso), full:this.stats.full, chain:this.stats.chain, vip:this.stats.vip, vipLost:this.stats.vipLost, juice:this.stats.juice, juiceMiss:this.stats.juiceMiss, trash:this.stats.trash, washed:this.stats.washed, income, paid:this.paid, reason:this.reason };
+    this.result = { day:d.n, money:m, fat, custo:Math.round(this.custo), contas:this.contas, div:this.paidDiv, divName:this.div ? this.div.name : '', meta:d.meta, bom:bomGoal(d), expert:d.expert, passed, stars, served:this.stats.served, lost:this.stats.lost, lostBy:this.stats.lostBy, lotadoT:Math.round(this.stats.lotadoT), atraso:Math.round(this.atraso), full:this.stats.full, chain:this.stats.chain, vip:this.stats.vip, vipLost:this.stats.vipLost, juice:this.stats.juice, juiceMiss:this.stats.juiceMiss, sucoEsp:this.stats.sucoEsp, trash:this.stats.trash, washed:this.stats.washed, income, paid:this.paid, reason:this.reason };
     this.setState('dayend');
     if (passed) Sfx.win(); else Sfx.lose();
   }
@@ -623,7 +708,7 @@ class Game {
     const take = (r, hit) => { const d = rectDist(x, y, r); if (d <= (pad || 0) && d < bd){ bd = d; best = hit; } };
     for (const g of this.queue) take(queueRect(g), { k:'queue', g });
     for (const t of this.tables) take(tableRect(t), { k:'table', t });
-    for (const k of STATION_KEYS){ if (k !== 'agua' || this.up.agua) take(STATIONS[k].rect, { k:'station', st:k }); }
+    for (const k of STATION_KEYS){ if (k !== 'maquina' || this.up.maquina) take(STATIONS[k].rect, { k:'station', st:k }); }
     return best;
   }
   tableAt(x, y, pad){
@@ -633,7 +718,7 @@ class Game {
   }
   stationAt(x, y){
     for (const k of STATION_KEYS){
-      if (k === 'agua' && !this.up.agua) continue;
+      if (k === 'maquina' && !this.up.maquina) continue;
       const r = STATIONS[k].rect;
       if (x >= r.x && x <= r.x + r.w && y >= r.y && y <= r.y + r.h) return k;
     }
@@ -669,19 +754,26 @@ class Game {
     if (this.bia.enqueue({ type:k })){ Sfx.tap(); this.addGlow(k); return true; }
     return false;
   }
-  onDown(x, y, pad){
+  /* entrada: x e y chegam na tela (o HUD e as abinhas ficam fixos); o resto vira mundo (x - cam) */
+  onDown(sx, y, pad){
     if (this.state !== 'playing') return;
     pad = pad || 0;
-    const h = this.hudHit(x, y);
+    this.pan = null;
+    const h = this.hudHit(sx, y);
     if (h){
       if (h.k === 'pause') this.pause();
       else if (h.k === 'sound'){ Sfx.muted = !Sfx.muted; if (!Sfx.muted) Sfx.tap(); this.addGlow('som'); }
       else if (h.k === 'slot') { if (h.i < this.bia.acts.length){ this.bia.remove(h.i); Sfx.tap(); this.addGlow('acao' + h.i); } }
       return;
     }
+    const aba = this.abaHit(sx, y);
+    if (aba){ this.camGo(aba === 'l' ? CALCADA.w : 0); Sfx.tap(); this.addGlow('aba' + aba); return; }
+    const x = sx - this.cam;
     const hit = this.pickAt(x, y, pad);
     if (hit && hit.k === 'queue'){
-      this.drag = { g:hit.g, sx:x, sy:y, x, y, moved:false, pad };
+      // 2º toque seguido no mesmo grupo: seleciona e leva a tela ao salão, para escolher a mesa
+      const dbl = !!(this.lastTap && this.lastTap.g === hit.g && this.anim - this.lastTap.t < CAM.toque2);
+      this.drag = { g:hit.g, sx:x, sy:y, x, y, px:sx, moved:false, pad, dbl };
       return;
     }
     if (hit && hit.k === 'table'){
@@ -689,37 +781,54 @@ class Game {
       else this.tapTable(hit.t);
       return;
     }
-    this.sel = null;
-    if (hit) this.tapStation(hit.st, x, y);
-    else if (pad) this.fx.push({ k:'tap', x, y, life:0, max:0.3 });
+    if (hit){ this.sel = null; this.tapStation(hit.st, x, y); return; }
+    // no vazio: arrastar rola a tela (só soltando sem arrastar é que o grupo escolhido deixa de estar)
+    this.pan = { sx, cam0:this.cam, moved:false, pad };
+    if (pad) this.fx.push({ k:'tap', x, y, life:0, max:0.3 });
   }
-  onMove(x, y){
+  /* destaque da mesa sob o grupo arrastado ou escolhido */
+  hoverAt(x, y, pad, grp){
+    const t = this.tableAt(x, y, pad);
+    this.hover = t;
+    this.hoverOk = !!(t && t.free && t.seats >= grp.size);
+  }
+  onMove(sx, y){
     if (this.state !== 'playing') return;
-    const d = this.drag, pad = d ? d.pad : 0;
+    const p = this.pan;
+    if (p){
+      if (!p.moved && Math.abs(sx - p.sx) > Math.max(8, p.pad)) p.moved = true;
+      if (p.moved){ this.camTo = null; this.setCam(p.cam0 + sx - p.sx); }
+    }
+    const x = sx - this.cam, d = this.drag, pad = d ? d.pad : 0;
     if (d){
-      d.x = x; d.y = y;
+      d.x = x; d.y = y; d.px = sx;
       // no dedo, um tremidinho não vira arrasto (folga ~ a mesma do alvo)
       if (!d.moved && Math.hypot(x-d.sx, y-d.sy) > Math.max(9, pad)) d.moved = true;
     }
-    if (d && d.moved){
-      const t = this.tableAt(x, y, pad);
-      this.hover = t;
-      this.hoverOk = !!(t && t.free && t.seats >= d.g.size);
-    } else if (this.sel){
-      const t = this.tableAt(x, y);
-      this.hover = t; this.hoverOk = !!(t && t.free && t.seats >= this.sel.size);
-    } else this.hover = null;
+    if (d && d.moved) this.hoverAt(x, y, pad, d.g);
+    else if (this.sel) this.hoverAt(x, y, 0, this.sel);
+    else this.hover = null;
   }
-  onUp(x, y){
-    const d = this.drag;
-    this.drag = null; this.hover = null;
-    if (!d || this.state !== 'playing') return;
+  onUp(sx, y){
+    const d = this.drag, p = this.pan;
+    this.drag = null; this.pan = null; this.hover = null;
+    if (this.state !== 'playing') return;
+    if (p){ if (!p.moved) this.sel = null; return; }
+    if (!d) return;
+    const x = sx - this.cam;
     if (d.moved){
       const t = this.tableAt(x, y, d.pad);
       if (t) this.seatGroup(d.g, t);
       else { d.g.boing = 0.4; }
+      this.lastTap = null;
+    } else if (d.dbl){
+      this.sel = d.g; this.lastTap = null;
+      this.camGo(0);
+      Sfx.tap();
+      this.addGlow(d.g);
     } else {
       this.sel = (this.sel === d.g) ? null : d.g;
+      this.lastTap = { g:d.g, t:this.anim };
       Sfx.tap();
       this.addGlow(d.g);
     }

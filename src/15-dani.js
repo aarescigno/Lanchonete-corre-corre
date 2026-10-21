@@ -1,6 +1,6 @@
 /* ============================================================
    DANI (contratada): age sozinha, só nas tarefas escolhidas na lojinha
-   (tirar o lixo, retirar pratos sujos, lavar a louça, servir cafezinho).
+   (tirar o lixo, retirar pratos sujos, lavar a louça, servir cafezinho, levar o suco da espera).
    Anda mais devagar que a Bia (50%, 65% ou 80% conforme o nível) e
    leva 1 item em cada mão.
    ============================================================ */
@@ -38,6 +38,13 @@ class Helper {
     const g = this.g, k = g.kitchen;
     const dirty = this.hands.filter(h => h.kind === 'dirty').length;
     const coffee = this.hands.find(h => h.kind === 'coffee');
+    // suco da espera na mão: leva a quem pediu (lá fora ou, se já sentou, na mesa)
+    const suco = this.hands.find(h => h.kind === 'suco');
+    if (suco){
+      const ap = g.sucoAp(suco.group, this);
+      if (ap) return this.go(ap, { type:'suco', grp:suco.group });
+      this.hands = this.hands.filter(h => h.kind !== 'suco');
+    }
     // entrega o café (com louça e café nas mãos, primeiro deixa a louça na pia, logo abaixo da cafeteira)
     if (coffee && !dirty){
       const t = (coffee.table && coffee.table.group === coffee.group && coffee.group && coffee.group.seated && !coffee.group.coffee) ? coffee.table : this.coffeeTarget();
@@ -57,7 +64,7 @@ class Helper {
     if (this.canWash() && k.sinkN > 0 && !coffee) return this.go(STATIONS.sink.ap, { type:'sink' });
     if (this.does('lixo') && g.trash >= TRASH.cap - 2 && !this.hands.length) return this.go(STATIONS.trash.ap, { type:'trash' });
     if (this.does('cafe') && !coffee && this.hands.length < DANI_HANDS && this.coffeeTarget()) return this.go(STATIONS.coffee.ap, { type:'coffee' });
-    if (this.does('agua') && g.up.agua && g.agua <= 2 && !this.hands.length && g.money >= AGUA.price && !g.bia.acts.some(a => a.type === 'agua')) return this.go(STATIONS.agua.ap, { type:'agua' });
+    if (this.does('suco') && !this.hands.length){ const o = g.maqLivre(); if (o){ o.dani = true; return this.go(STATIONS.maquina.ap, { type:'maquina', o }); } }
     if (Math.hypot(this.x - DANI_HOME.x, this.y - DANI_HOME.y) > 4) return this.go(DANI_HOME, null);
   }
   duration(st){
@@ -69,7 +76,7 @@ class Helper {
       return (drop ? WASH.base : 0) + (st.wash ? WASH.perPile / this.spec.speed : 0);
     }
     if (st.type === 'trash') return TRASH.empty;
-    if (st.type === 'agua') return AGUA.refill;
+    if (st.type === 'maquina') return MAQUINA.take;
     return 0.35;
   }
   perform(st){
@@ -86,11 +93,16 @@ class Helper {
       if (st.wash && g.washPiles(1)){ g.addText(this.x, this.y - 82, 'Dani lavou!', PAL.faixa, 14); Sfx.wash(); }
     } else if (st.type === 'trash'){
       if (g.trash > 0){ g.trash = 0; g.stats.emptied++; g.addText(this.x, this.y - 82, 'Lixo pra fora!', PAL.ok, 14); Sfx.noise(0.3, 0.1, 0, 400); }
-    } else if (st.type === 'agua'){
-      if (g.up.agua && g.agua < AGUA.cap && g.money >= AGUA.price){
-        g.agua = AGUA.cap; g.addMoney(-AGUA.price); g.stats.refill++;
-        g.addText(this.x, this.y - 82, 'Dani encheu a água! -' + AGUA.price, PAL.faixa, 14);
-      }
+    } else if (st.type === 'maquina'){
+      const o = st.o; o.dani = false;
+      if (g.maq.indexOf(o) < 0 || o.t > 0) return;
+      const k = Math.min(o.n, DANI_HANDS - this.hands.length);
+      for (let i=0;i<k;i++) this.hands.push({ kind:'suco', group:o.group });
+      if (k) g.maqTirar(o, k);
+    } else if (st.type === 'suco'){
+      const grp = st.grp, n = this.hands.filter(h => h.kind === 'suco' && h.group === grp).length;
+      this.hands = this.hands.filter(h => !(h.kind === 'suco' && h.group === grp));
+      if (n && g.sucoAp(grp, this)) g.entregaSuco(grp, n, this.x, this.y);
     } else if (st.type === 'coffee'){
       if (this.hands.length < DANI_HANDS) this.hands.push({ kind:'coffee' });
     } else if (st.type === 'serve'){

@@ -1,7 +1,7 @@
 const H=require('./harness.js')(); const {g,L,els,win,ctx}=H;
 let fails=0; const ok=(c,m)=>{ if(!c){fails++;console.log('FAIL:',m);} else console.log('ok  :',m); };
 const run=(s)=>{ for(let i=0;i<s*20;i++) g.update(0.05); };
-g.startDay(2); g.begin();
+g.startDay(2); g.begin(); g.cam=0; const QX=L.LAYOUT.QUEUE.x;   // v7.5: a entrada chega na tela; com a câmera no salão, tela = mundo (a fila fica em x < 0)
 // espera chegar um grupo
 let guard=0; while(!g.queue.length && guard++<400) g.update(0.05);
 ok(g.queue.length>0,'grupo chegou');
@@ -12,11 +12,11 @@ const suja=g.tables[2]; suja.dirty=true;
 ok(g.seatGroup(grp,suja)===false && grp.boing>0 && grp.state==='queue','boing em mesa suja');
 suja.dirty=false;
 // seleção + toque
-g.onDown(78,L.LAYOUT.QUEUE.ys[0]-20); g.onUp(78,L.LAYOUT.QUEUE.ys[0]-20); ok(g.sel===grp,'grupo selecionado por toque');
+g.onDown(QX,L.LAYOUT.QUEUE.ys[0]-20); g.onUp(QX,L.LAYOUT.QUEUE.ys[0]-20); ok(g.sel===grp,'grupo selecionado por toque');
 const t1=g.tables.find(t=>t.free&&t.seats>=grp.size);
 g.onDown(t1.cx,t1.cy); ok(grp.state==='toTable' && g.sel===null,'toque na mesa senta grupo selecionado');
 const m0=g.money; ok(m0>=10,'sentar pontua (+10 / bônus cor)');
-run(3); ok(grp.state==='reading'||grp.state==='wantOrder','chegou e lê cardápio');
+guard=0; while(grp.state==='toTable'&&guard++<200) g.update(0.05); ok(grp.state==='reading'||grp.state==='wantOrder','chegou e lê cardápio');   // v7.5: vem da calçada, a caminhada varia com a mesa
 // espera pedir
 guard=0; while(grp.state!=='wantOrder'&&guard++<400) g.update(0.05);
 ok(grp.state==='wantOrder','quer pedir');

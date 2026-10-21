@@ -6,10 +6,10 @@
    - Sem o upgrade, a outra mão também leva 1 item.
    - Com a bandeja: 1 prato + 1 bebida, ou 2 pratos, ou 3 bebidas (cafezinho
      e suco), ou 2 pilhas de louça suja, ou menos que isso. Sujo e limpo
-     nunca juntos na bandeja.
+     nunca juntos na bandeja. O suco da espera (v7.5, 'suco') conta como bebida.
    ============================================================ */
 const KITCHEN_SLOTS = 3;
-const DRINKS = { coffee:1, juice:1 };
+const DRINKS = { coffee:1, juice:1, suco:1 };
 function trayOk(items){
   let d = 0, k = 0, s = 0;
   for (const h of items){
@@ -42,6 +42,9 @@ function handLayout(items, tray, maxTickets){
   return null;
 }
 
+/* onde está quem pediu o suco da espera: o banco lá fora ou a mesa (a Bia refaz o caminho quando muda) */
+function sucoLugar(g){ return !g ? '' : g.state === 'queue' ? 'banco' + g.slot : g.table ? 'mesa' + g.table.id : 'fora'; }
+
 /* ============================================================
    GARÇONETE (Bia)
    ============================================================ */
@@ -71,7 +74,7 @@ class Waitress {
   marks(){
     const m = {};
     this.acts.forEach((a,i) => {
-      const k = a.type === 'table' ? 'table:' + a.id : a.type === 'plate' ? 'plate:' + a.pid : a.type;
+      const k = a.type === 'table' ? 'table:' + a.id : a.type === 'plate' ? 'plate:' + a.pid : (a.type === 'maquina' && a.leg === 2) ? 'espera:' + a.group.id : a.type;
       (m[k] = m[k] || []).push(i + 1);
     });
     return m;
@@ -94,12 +97,14 @@ class Waitress {
       const d0 = Math.hypot(pts[0].x-this.x, pts[0].y-this.y), d1 = Math.hypot(pts[1].x-this.x, pts[1].y-this.y);
       return d0 <= d1 ? pts[0] : pts[1];
     }
+    if (a.type === 'maquina' && a.leg === 2) return g.sucoAp(a.group, this);   // 2ª parte: levar a quem pediu
     const st = STATIONS[a.type === 'plate' ? 'plates' : a.type];
     return st ? st.ap : null;
   }
   begin(a){
     const ap = this.apFor(a);
-    if (!ap){ this.acts.shift(); return; }
+    if (!ap){ this.acts.shift(); this.phase = 'idle'; this.path = []; return; }
+    a.alvo = a.type === 'maquina' && a.leg === 2 ? sucoLugar(a.group) : null;   // levando o suco: se quem pediu mudar de lugar, refaz o caminho
     this.path = findPath({x:this.x, y:this.y}, ap);
     this.phase = 'walk';
   }
@@ -109,7 +114,7 @@ class Waitress {
       return (t && t.group && t.group.state === 'wantOrder') ? 0.6 : 0.35;
     }
     if (a.type === 'juice') return JUICE.prep;
-    if (a.type === 'agua') return AGUA.refill;
+    if (a.type === 'maquina') return a.leg === 2 ? 0.35 : MAQUINA.take;
     const g = this.g;
     if (a.type === 'sink'){
       // pia em 2 etapas: com louça na mão, a Bia só deixa a louça lá; sem louça na mão, lava
@@ -132,6 +137,8 @@ class Waitress {
     if (this.qT > 0) this.qT -= dt;
     this.moving = false;
     if (this.phase === 'idle' && this.acts.length) this.begin(this.acts[0]);
+    const a0 = this.acts[0];
+    if (this.phase === 'walk' && a0 && a0.alvo && sucoLugar(a0.group) !== a0.alvo) this.begin(a0);
     if (this.phase === 'walk'){
       let rem = this.speed * dt;
       while (this.path.length && rem > 0){
@@ -156,7 +163,7 @@ class Waitress {
       }
     }
     if (this.moving) this.walkPh += dt * 13;
-    this.x = clamp(this.x, 0, W); this.y = clamp(this.y, 0, H);
+    this.x = clamp(this.x, -CALCADA.w, W); this.y = clamp(this.y, 0, H);
   }
   fail(msg){
     this.g.addText(this.x, this.y - 82, msg, PAL.alerta, msg === '?' ? 26 : 15);
@@ -237,16 +244,7 @@ class Waitress {
       if (overflow){ g.trash = 0; g.stats.emptied++; g.addText(this.x, this.y - 126, 'Lixo pra fora!', PAL.ok, 15); }
       return;
     }
-    if (a.type === 'agua'){
-      if (!g.up.agua) return this.fail('?');
-      if (g.agua >= AGUA.cap) return this.fail('Está cheia!');
-      if (g.money < AGUA.price) return this.fail('Sem dinheiro!');
-      g.agua = AGUA.cap; g.addMoney(-AGUA.price); g.stats.refill++;
-      g.addText(this.x, this.y - 82, 'Água cheia!', PAL.faixa, 15);
-      g.addText(this.x, this.y - 104, '-' + AGUA.price, PAL.perigo, 18);
-      Sfx.tone(520, 0.1, 'sine', 0.05); Sfx.tone(780, 0.12, 'sine', 0.05, 0.08);
-      return;
-    }
+    if (a.type === 'maquina') return this.doMaquina(a);
     if (a.type === 'sink'){
       const n = this.hands.filter(h => h.kind === 'dirty').length;
       if (n){
@@ -262,6 +260,38 @@ class Waitress {
       Sfx.wash();
       return;
     }
+  }
+  /* máquina de suco da espera (v7.5): uma ação só, em 2 partes. Na máquina, pega os copos prontos que couberem (do
+     pedido mais antigo para o mais novo) e a ação volta para o começo da fila, agora indo até quem pediu (lá fora
+     ou, se já sentou, na mesa), um grupo depois do outro, enquanto houver copo na mão. Sem pedido pronto, leva os
+     copos que já estiver carregando */
+  doMaquina(a){
+    const g = this.g;
+    if (a.leg === 2){
+      const grp = a.group, n = this.hands.filter(h => h.kind === 'suco' && h.group === grp).length;
+      if (!n || !g.sucoAp(grp, this)) return this.fail('?');
+      this.hands = this.hands.filter(h => !(h.kind === 'suco' && h.group === grp));
+      g.entregaSuco(grp, n, this.x, this.y);
+      return this.maisSuco(a);
+    }
+    if (!g.up.maquina) return this.fail('?');
+    let k = 0;
+    for (const o of g.maqPronto().filter(q => !q.dani)){
+      let j = 0;
+      while (j < o.n && this.canTake('suco')){ this.hands.push({ kind:'suco', group:o.group }); j++; }
+      if (j){ g.maqTirar(o, j); k += j; }
+      if (!this.canTake('suco')) break;
+    }
+    if (k){ Sfx.tone(700, 0.08, 'sine', 0.05); Sfx.tone(930, 0.1, 'sine', 0.05, 0.07); g.addText(this.x, this.y - 82, k > 1 ? k + ' sucos!' : 'Suco!', PAL.alerta, 14); }
+    if (!this.maisSuco(a)) this.fail(g.maqPronto().length ? 'Mãos cheias!' : (g.maq.length ? 'Ainda não ficou pronto!' : '?'));
+  }
+  /* ainda há copo da espera na mão para alguém que dá para achar: a ação segue até ele */
+  maisSuco(a){
+    const g = this.g, h = this.hands.find(q => q.kind === 'suco' && g.sucoAp(q.group, this));
+    if (!h) return false;
+    a.leg = 2; a.group = h.group; a.t0 = g.anim;
+    this.acts.unshift(a);
+    return true;
   }
   /* entrega os sucos que a Bia carrega para essa mesa; devolve quantos entregou */
   serveJuice(t){

@@ -10,6 +10,7 @@ function buildEnd(){
   const rows = [['Atendidos', r.served],['Perdidos', r.lost],['Não couberam', r.full],['Maior corrente', '×' + r.chain]];
   if (r.trash) rows.splice(2, 0, ['Na lixeira', r.trash + ' bebida' + (r.trash > 1 ? 's' : '')]);
   if (r.juice || r.juiceMiss) rows.splice(2, 0, ['Sucos', r.juice + ' entregue' + (r.juice === 1 ? '' : 's') + (r.juiceMiss ? ' · ' + r.juiceMiss + ' mesa' + (r.juiceMiss > 1 ? 's' : '') + ' sem suco' : '')]);
+  if (r.sucoEsp) rows.splice(2, 0, ['Sucos da espera', r.sucoEsp + ' na conta (' + fmt(r.sucoEsp * JUICE.price) + ')']);
   if (r.vip || r.vipLost) rows.splice(2, 0, ['VIPs', r.vip + ' atendido' + (r.vip === 1 ? '' : 's') + (r.vipLost ? ' · ' + r.vipLost + ' bravo' + (r.vipLost > 1 ? 's' : '') : '')]);
   // as contas do dia (v7), do faturamento ao lucro, num quadro ao lado
   const neg = v => v ? '-' + fmt(v) : '-';
@@ -49,7 +50,7 @@ function buildEndless(){
   if (!r) return;
   const st = $('endless-stats');
   clearEl(st);
-  [['Pontos', r.pontos],['Tempo sobrevivido', mmssUp(r.tempo)],['Grupos atendidos', r.served],['VIPs atendidos', r.vip],['Sucos entregues', r.juice],['Maior corrente', '×' + r.chain],['Não couberam na fila', r.full],['Ingredientes e contas', '-' + fmt(r.custo + r.contas)],['Dinheiro acumulado', fmt(game.save.bank)]].forEach(p => {
+  [['Pontos', r.pontos],['Tempo sobrevivido', mmssUp(r.tempo)],['Grupos atendidos', r.served],['VIPs atendidos', r.vip],['Sucos entregues', r.juice],['Maior corrente', '×' + r.chain],['Não couberam na espera', r.full],['Ingredientes e contas', '-' + fmt(r.custo + r.contas)],['Dinheiro acumulado', fmt(game.save.bank)]].forEach(p => {
     st.appendChild(el('span', null, p[0])); st.appendChild(el('b', null, String(p[1])));
   });
   buildSaveForm($('endless-save'), 'semfim');
