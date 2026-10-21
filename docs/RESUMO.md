@@ -1,7 +1,7 @@
 # Resumo do projeto e das alterações (até 21/10/2026)
 
 ## Estado atual
-- **Versão:** v7.5.1 (modo dev: 10 toques no selo da versão liberam os 7 dias, R$ 10.000 e as melhorias à vontade, num save à parte), pronta no `claude/main` e ainda não publicada no artifact (nem a v7.5, da calçada); a publicada é a v7.4.4 (TV e som na Garagem), Versão 32 do artifact https://claude.ai/artifact/MJxrgDg8S4akvg47SoQAvj (privado).
+- **Versão:** v7.5.1 (modo dev: 10 toques no selo da versão ligam e desligam; o jogo fica igual, com "Modo dev" na tela, 7 dias, R$ 10.000 que não acabam e tudo liberado na lojinha, num save à parte), pronta no `claude/main` e ainda não publicada no artifact (nem a v7.5, da calçada); a publicada é a v7.4.4 (TV e som na Garagem), Versão 32 do artifact https://claude.ai/artifact/MJxrgDg8S4akvg47SoQAvj (privado).
 - **Branch:** `claude/main` (renomeado pelo usuário; o antigo `claude/intelligent-gauss-3owv29` não existe mais) no repositório `aarescigno/Lanchonete-corre-corre`.
 - **Arquivos publicados:** `lanchonete.html` (página), mais `versoes/v1.html` a `versoes/v7.4.3.html`, abertos pelo painel Versões (a `versoes/v7.4.4.html` e a `versoes/v7.5.html` vão na próxima publicação).
 - **Capacidades declaradas (mantidas ao republicar sem `capabilities`):**
@@ -33,7 +33,7 @@
 | v7.4.3 | 21/10 | Cor das cadeiras (pedido do usuário): no balãozinho da mesa, no editor do salão, 4 bolinhas trocam a cor das cadeiras, de graça e com Desfazer | `docs/spec-v7.4.3.md` |
 | v7.4.4 | 21/10 | Ambiente da Garagem (pedido do usuário): TV de tubo na Rede Esfera (R$ 15/dia de luz) e som na rádio Velha Brasil FM (R$ 10/dia), 5% de paciência nas mesas cada; couvert só do nível 3 do salão em diante (`PONTOS.nivel`, `couvertOk`) | `docs/spec-v7.4.4.md` |
 | v7.5 | 21/10 | Calçada (etapa 1d-2): o mundo fica 260 px mais largo e a tela rola (arrastar o fundo no vazio, abinhas fixas no alto com o relógio e o aviso piscando, grupo na borda, 2 toques no grupo); espera lá fora com 4 bancos, tablet, toldo e vaso; Máquina de suco no lugar da Água (pedido no tablet, a Bia pega todos os copos que couberem e entrega grupo a grupo, R$ 12 na conta; a Dani pode levar) | `docs/spec-v7.5.md` |
-| v7.5.1 | 21/10 | Modo dev (pedido do usuário): 10 toques no selo da versão; save à parte (`lcc2_save_dev`), 7 dias, R$ 10.000, melhorias ligadas e desligadas de graça (painel e lojinha), ranking de fora | `docs/spec-v7.5.1.md` |
+| v7.5.1 | 21/10 | Modo dev (pedido do usuário): 10 toques no selo da versão ligam e desligam; sem painel à parte, o jogo fica igual com "Modo dev" na tela; save à parte (`lcc2_save_dev`), 7 dias, R$ 10.000 que a lojinha repõe, lojinha desde o dia 1 com melhorias de graça (liga e desliga), couvert e divulgação liberados; ranking de fora | `docs/spec-v7.5.1.md` |
 
 ## Alterações feitas no Claude Code (14/10/2026)
 1. **Importação** do pacote exportado do claude.ai para o repositório (commit `982583b`).
@@ -138,8 +138,8 @@
    - Máquina de suco (R$ 180, no lugar da Água saborizada; quem tinha a água ganha a máquina): 2,5 s depois de sentar, 1 suco por pessoa no tablet; 3 s de preparo; a Bia pega todos os copos prontos que couberem e entrega grupo a grupo na mesma ação; +1 coração, espera 40% mais devagar, R$ 12 por copo na conta e R$ 5 de ingrediente; quem sai da espera cancela o que não foi pego. A tarefa da água da Dani virou "Levar o suco da espera".
    - Equilíbrio: a calçada não pesa (bot afiado sem a máquina igual à v7.4.4); o bot simples empata com a máquina; o afiado, que busca o suco em toda brecha, perde ~R$ 190/dia (a ida lá fora leva ~6 s). Dinheiro na lojinha do dia 5: ~R$ 1.500. Teste `smoke14`.
 16. **v7.5.1, modo dev** (ver `docs/spec-v7.5.1.md`; pedido do usuário):
-   - 10 toques seguidos no selo da versão ligam; o selo vira "v7.5.1 · dev" e 1 toque abre o painel `#ov-dev`.
-   - Save à parte (`lcc2_save_dev`; o de verdade fica guardado), 7 dias liberados, R$ 10.000 (com "Repor"), melhorias ligadas e desligadas de graça no painel e na lojinha, ranking de fora. Teste `smoke15`.
+   - 10 toques seguidos no selo da versão ligam e desligam (e há "Sair do modo dev" no menu); o selo vira "v7.5.1 · dev" e a etiqueta "MODO DEV" fica no alto da tela, até no jogo. Sem painel à parte (2º retorno do usuário: "o jogo praticamente igual").
+   - Save à parte (`lcc2_save_dev`; o de verdade fica guardado), 7 dias liberados, R$ 10.000 que a lojinha repõe; lojinha desde o dia 1, com as 7 melhorias ligadas e desligadas de graça, couvert e divulgação liberados; ranking de fora. Teste `smoke15`.
 
 ## Código em partes (`src/`)
 - Desde 15/10/2026 o código fica em 19 partes em `src/` (lista no `CLAUDE.md`), juntadas por `montar.py` em `lanchonete.html` sem acrescentar nada: o arquivo montado é idêntico, byte a byte, ao anterior à divisão.
@@ -169,7 +169,7 @@
 - `smoke12` (21/21: v7.3, velocidade, Tênis de corrida, selos da fila);
 - `smoke13` (58/58: v7.4 e os 4 pratos da v7.4.1, Garagem, móveis, editor do salão, posição e caminho, contas sem aluguel);
 - `smoke14` (75/75: v7.5, câmera, arrastar o fundo, borda, toque duplo, abinhas, espera de 4, máquina de suco, Dani, movimento reduzido);
-- `smoke15` (25/25: v7.5.1, modo dev, save à parte, dias, dinheiro, melhorias no painel e na lojinha, ranking de fora);
+- `smoke15` (43/43: v7.5.1, modo dev, save à parte, dias, dinheiro, lojinha desde o dia 1, melhorias, equipe com couvert, divulgação, ranking de fora, sair);
 - `menu_fit` (14 tamanhos de tela);
 - `balance` (bot, N rodadas por dia; `DIV`, `MULT`, `MOVEIS`, `MOVIMENTO`, `GRUPOS`, `DIAS`, `BOT=afiado`, `ORDEM`, `INGRED`, `CONTAS`, `METAS`; perdas por causa e 3★);
 - `carreira` (bot jogando a carreira com o dinheiro acumulado de verdade e comprando móveis; `MOVEIS=0`, `MOVEIS=quatro`, `MOVIMENTO`, `MESAS=1`).

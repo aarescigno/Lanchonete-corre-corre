@@ -60,8 +60,9 @@ function lsSet(k, v){
   MEM[k] = v;
   try { localStorage.setItem(k, v); } catch(e) {}
 }
-/* modo dev (v7.5.1): 10 toques no selo da versão. Usa um save à parte (o progresso de verdade fica guardado e volta
-   ao sair), com os 7 dias liberados e R$ 10.000; as melhorias ligam e desligam à vontade e o ranking fica de fora */
+/* modo dev (v7.5.1): 10 toques no selo da versão ligam e desligam. O jogo fica igual, com um save à parte (o progresso
+   de verdade fica guardado e volta ao sair), os 7 dias liberados, R$ 10.000 que não acabam (a lojinha repõe) e tudo
+   liberado na lojinha, até antes do dia 1: melhorias de graça (liga e desliga), couvert e divulgação. Ranking de fora */
 const DEV = { on: lsGet(LS.dev) === '1', bank: 10000, toques: 10 };
 function saveKey(){ return DEV.on ? LS.devSave : LS.save; }
 /* o couvert só vale do nível 3 do salão em diante: num ponto abaixo, sai */
