@@ -4,6 +4,15 @@ Registro das ideias e dos retornos de quem jogou, com o texto original, e de ond
 
 ---
 
+## 21/10/2026 — Usuário: mesas de bar na Garagem
+**Origem:** mensagem do usuário durante a sessão da 1d-1, com a foto de um conjunto branco de mesa quadrada e 4 cadeiras de plástico de bar:
+
+> "as mesas devem ser quadradas, tipo de bar mesmo, ó"
+
+**Destino:** v7.4, feito. Mesa quadrada de plástico (cantos chanfrados, furo do guarda-sol, pernas que afinam); a mesa de 4 são 2 mesas quadradas juntas; cadeira com encosto de frisos verticais. As cadeiras continuam coloridas por causa do bônus de cor.
+
+---
+
 ## 21/10/2026 — Usuário: decisões da etapa 1d e dos pontos
 **Origem:** respostas do usuário às dúvidas da 1d (e às perguntas que vieram depois):
 

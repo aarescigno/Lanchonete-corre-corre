@@ -9,7 +9,7 @@ class Game {
     this.hooks = {};
     this.save = loadSave();
     this.up = this.save.up;
-    this.tablesKey = ''; this.salaoMsg = '';
+    this.tablesKey = ''; this.salaoMsg = ''; this.salaoSel = -1; this.salaoUndo = [];
     this.buildTables();
     this.bia = new Waitress(this);
     this.kitchen = new Kitchen(this);
@@ -23,6 +23,7 @@ class Game {
   }
   setState(s){ this.state = s; if (this.hooks.state) this.hooks.state(s); }
   get unlocked(){ return this.save.maxDay; }
+  get ponto(){ return pontoOf(this.save.salao.ponto); }
 
   resetDay(n){
     this.mode = n === 0 ? 'semfim' : 'carreira';
@@ -39,7 +40,7 @@ class Game {
     this.gid = 0;
     this.groups = []; this.queue = [];
     this.buildTables();
-    this.tables.forEach(t => { t.open = this.day.tables.includes(t.id) || t.id > 6; t.group = null; t.dirty = false; t.dirtyN = 0; });
+    this.tables.forEach(t => { t.open = true; t.group = null; t.dirty = false; t.dirtyN = 0; });   // v7.4: todas as mesas abrem desde o dia 1
     this.kitchen.reset();
     this.kitchen.clean = dishStock(this.day, this.up);
     this.trash = 0; this.paid = 0; this.unpaid = [];
@@ -63,7 +64,7 @@ class Game {
     let t = 3;
     const forced = day.nu ? randi(1, Math.min(3, N-1)) : -1;
     const forcedVip = day.vip && !day.nu ? randi(1, Math.min(3, N-1)) : -1;
-    const colors = this.tables.filter(x => day.tables.includes(x.id)).map(x => x.color);
+    const colors = this.tables.map(x => x.color);
     for (let i=0;i<N;i++){
       let type = (i === forced) ? day.nu : pick(day.types);
       let vip = false;
@@ -96,7 +97,7 @@ class Game {
     }
     this.paid = payroll(eq); this.paidDiv = divCost();
     this.save.bank -= this.paid + this.paidDiv;
-    this.contas = contasDia(this.tables);
+    this.contas = contasDia(this.tables, this.ponto);
     writeSave(this.save);
     this.kitchen.slots = STAFF.tonhao.levels[eq.tonhao].slots;
     this.dani.reset();
@@ -463,6 +464,7 @@ class Game {
   goShop(n){
     this.shopNext = clamp(n || this.day.n + 1, 1, 7);
     this.shopBought = this.boughtFor === this.shopNext;
+    this.salaoSel = -1; this.salaoUndo = []; this.salaoMsg = '';
     this.resetDay(this.shopNext);   // o salão ao fundo já mostra o dia que vem
     this.setState('shop');
   }
@@ -501,43 +503,84 @@ class Game {
     Sfx.coin();
     return true;
   }
-  /* salão (v6): refaz as mesas e os obstáculos dos caminhos quando as cadeiras ou as mesas mudam */
+  /* salão (v7.4): refaz as mesas e os obstáculos dos caminhos quando o salão muda. Os números seguem a ordem no
+     salão (tables[id-1]). No Turno sem fim, o salão é sempre o mesmo (SALAO_SEMFIM) */
   buildTables(){
-    const sal = this.save.salao, key = JSON.stringify(sal);
+    const sem = this.mode === 'semfim', sal = this.save.salao, key = sem ? 'semfim' : JSON.stringify(sal);
     if (key === this.tablesKey) return;
-    const defs = salaoDefs(sal);
+    const mesas = sem ? (this.semfimMesas || (this.semfimMesas = salaoAuto(SALAO_SEMFIM.map((seats, i) => ({ seats, c:i % 4 })), PONTOS[0]))) : sal.mesas;
+    const defs = mesas.map((m, i) => ({ id:i + 1, cx:m.x, cy:m.y, seats:m.seats, color:m.c }));
     this.tables = defs.map(d => new Table(d));
     setObst(defs);
     this.tablesKey = key;
   }
-  /* lugares de uma mesa (2 ou 4): precisa de cadeiras livres e de espaço na fileira; o motivo da recusa fica em salaoMsg */
-  setSeats(id, n){
-    const sal = this.save.salao, old = sal.seats[id];
-    if (old == null || (n !== 2 && n !== 4)) return false;
-    if (old === n) return true;
-    sal.seats[id] = n;
-    if (!salaoOk(sal)){
-      this.salaoMsg = salaoUsed(sal) > sal.chairs ? 'Faltam cadeiras: compre mais 2.' : 'Não cabe: numa fileira com 4 mesas, só 1 pode ter 4 lugares.';
-      sal.seats[id] = old;
-      return false;
-    }
-    return this.salaoSaved();
-  }
-  buyChairs(){
+  /* troca as mesas do salão (já validadas) e salva. A mesa marcada com `sel` (a nova, a que virou de 4) fica
+     escolhida no editor. undo: guarda o arranjo de antes (compra e venda zeram o Desfazer) */
+  salaoSet(mesas, undo){
     const sal = this.save.salao;
-    if (this.save.bank < SALAO.chairPrice || sal.chairs >= SALAO.maxChairs + 2 * sal.mesas) return false;
-    this.save.bank -= SALAO.chairPrice; sal.chairs += 2; caixaGasto(this.save, 'sal', SALAO.chairPrice);
-    Sfx.coin();
+    if (undo){ this.salaoUndo.push(sal.mesas); if (this.salaoUndo.length > 20) this.salaoUndo.shift(); }
+    else this.salaoUndo = [];
+    sal.mesas = salaoOrdena(mesas);
+    this.salaoSel = sal.mesas.findIndex(m => m.sel);
+    sal.mesas.forEach(m => { delete m.sel; });
     return this.salaoSaved();
   }
-  /* mesa nova (com 2 cadeiras): a 7 na ponta direita da fileira de cima, a 8 na de baixo; abre todos os dias */
-  buyTable(){
-    const sal = this.save.salao, why = salaoTableBlock(sal);
-    if (why){ this.salaoMsg = why; return false; }
-    if (this.save.bank < SALAO.tablePrice) return false;
-    this.save.bank -= SALAO.tablePrice; caixaGasto(this.save, 'sal', SALAO.tablePrice);
-    sal.mesas++; sal.seats[6 + sal.mesas] = 2; sal.chairs += 2;
+  salaoNao(msg){ this.salaoMsg = msg; return false; }
+  /* mesa nova com as cadeiras (2 ou 4 lugares), até o teto do ponto: entra no primeiro lugar livre, ou o salão
+     é rearrumado sozinho se não houver */
+  buyMesa(seats){
+    const p = this.ponto, mesas = this.save.salao.mesas, price = mesaPreco(seats);
+    if (salaoLugares(mesas) + seats > p.lugares) return this.salaoNao('A garagem tem lugar para ' + p.lugares + ' pessoas, no máximo.');
+    if (this.save.bank < price) return this.salaoNao('Falta dinheiro.');
+    const m = { x:0, y:0, seats, c:salaoCor(mesas), sel:1 }, vaga = salaoVaga(mesas, seats, p);
+    const l = vaga ? mesas.concat([Object.assign(m, vaga)]) : salaoAuto(mesas.concat([m]), p);
+    if (!l) return this.salaoNao('Não cabe mais mesa no salão.');
+    this.save.bank -= price; caixaGasto(this.save, 'sal', price);
     Sfx.coin();
+    return this.salaoSet(l);
+  }
+  /* 2 cadeiras a mais: a mesa de 2 vira mesa de 4 (no mesmo lugar, ou no lugar livre mais perto) */
+  virarMesa(i){
+    const p = this.ponto, mesas = this.save.salao.mesas, m = mesas[i];
+    if (!m || m.seats !== 2) return false;
+    if (salaoLugares(mesas) + 2 > p.lugares) return this.salaoNao('Passa de ' + p.lugares + ' lugares.');
+    if (this.save.bank < SALAO.virar) return this.salaoNao('Falta dinheiro.');
+    let l = mesas.slice(); l[i] = Object.assign({}, m, { seats:4, sel:1 });
+    if (salaoProblema(l, p)) l = salaoPerto(l, i, p) || salaoAuto(l, p);
+    if (!l) return this.salaoNao('Não cabe uma mesa de 4 aqui.');
+    this.save.bank -= SALAO.virar; caixaGasto(this.save, 'sal', SALAO.virar);
+    Sfx.coin();
+    return this.salaoSet(l);
+  }
+  /* vende a mesa por metade do preço (o salão fica com pelo menos 1) */
+  venderMesa(i){
+    const mesas = this.save.salao.mesas, m = mesas[i];
+    if (!m || mesas.length <= 1) return this.salaoNao('O salão precisa de pelo menos 1 mesa.');
+    const v = Math.round(mesaPreco(m.seats) * SALAO.venda);
+    this.save.bank += v; caixaGasto(this.save, 'sal', -v);
+    Sfx.coin();
+    return this.salaoSet(mesas.filter(x => x !== m));
+  }
+  /* editor: a mesa i vai para (x, y), se o lugar vale */
+  moverMesa(i, x, y){
+    const mesas = this.save.salao.mesas, m = mesas[i];
+    if (!m) return false;
+    const l = mesas.slice(); l[i] = Object.assign({}, m, { x, y });
+    const why = salaoProblema(l, this.ponto);
+    if (why) return this.salaoNao(why);
+    if (x === m.x && y === m.y) return true;
+    return this.salaoSet(l, true);
+  }
+  arrumarSalao(){
+    const l = salaoAuto(this.save.salao.mesas, this.ponto);
+    if (!l) return this.salaoNao('Não deu para arrumar sozinho.');
+    if (JSON.stringify(l) === JSON.stringify(this.save.salao.mesas)) return true;
+    return this.salaoSet(l, true);
+  }
+  desfazerSalao(){
+    const l = this.salaoUndo.pop();
+    if (!l) return false;
+    this.save.salao.mesas = l; this.salaoSel = -1;
     return this.salaoSaved();
   }
   salaoSaved(){

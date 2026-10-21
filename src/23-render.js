@@ -18,7 +18,7 @@ function render(g, ctx){
   const menu = g.state === 'menu';
   ctx.save();
   ctx.lineJoin = 'round'; ctx.lineCap = 'round';
-  drawFloor(ctx);
+  drawFloor(ctx,g);
   drawWall(ctx,g,tm);
   drawKitchen(ctx,g,tm);
 

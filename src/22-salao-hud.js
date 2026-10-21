@@ -1,8 +1,20 @@
 /* ============================================================
    MESAS E CLIENTES
    ============================================================ */
-function drawChair(ctx,x,y,ci,front){
+function drawChair(ctx,x,y,ci,front,plast){
   const c = CHAIRS[ci];
+  if (plast){
+    // cadeira de plástico de bar (Garagem, v7.4): pernas da mesma cor, abertas, e encosto de aro com frisos
+    // verticais vazados, que abre para cima
+    ctx.strokeStyle = c.d; ctx.lineWidth = 3.5;
+    ctx.beginPath(); ctx.moveTo(x-11,y+2); ctx.lineTo(x-15,y+13); ctx.moveTo(x+11,y+2); ctx.lineTo(x+15,y+13); ctx.stroke();
+    ctx.beginPath(); ctx.moveTo(x-13,y); ctx.lineTo(x-17,y-26); ctx.quadraticCurveTo(x,y-40,x+17,y-26); ctx.lineTo(x+13,y); ctx.closePath(); fs(ctx,c.c,2.5);
+    ctx.fillStyle = c.d;
+    [-1,0,1].forEach(i => { ctx.beginPath(); ctx.moveTo(x+i*7-1.6,y-4); ctx.lineTo(x+i*9-2.2,y-26+Math.abs(i)*2); ctx.lineTo(x+i*9+2.2,y-26+Math.abs(i)*2); ctx.lineTo(x+i*7+1.6,y-4); ctx.closePath(); ctx.fill(); });
+    ctx.fillStyle = 'rgba(255,255,255,.3)'; ctx.fillRect(x-14,y-26,2.5,18);
+    ell(ctx,x,y+2,18,6); fs(ctx,c.d,2.2);
+    return;
+  }
   ctx.strokeStyle = PAL.cromoEsc; ctx.lineWidth = 3;
   ctx.beginPath(); ctx.moveTo(x-12,y+3); ctx.lineTo(x-13,y+12); ctx.moveTo(x+12,y+3); ctx.lineTo(x+13,y+12); ctx.stroke();
   rr(ctx,x-17,y-34,34,36,7); fs(ctx,c.c,2.5);
@@ -13,6 +25,25 @@ function drawChair(ctx,x,y,ci,front){
 function drawTableBody(ctx,t,open,g,tm){
   const hw = t.hx - 4;
   shadowEll(ctx,t.cx,t.cy+24,hw+8,12,0.2);
+  if (garagem(g)){
+    // mesa quadrada de plástico de bar (Garagem, v7.4): cantos chanfrados, furo do guarda-sol no meio e pernas
+    // que afinam para baixo. A mesa de 4 são 2 mesas quadradas juntas, como no bar
+    const n = t.seats === 4 ? 2 : 1, w = hw * 2 / n, top = open ? '#F7F4EB' : '#d6d2c8', side = open ? '#D3CCBB' : '#b9b4a8';
+    const leg = (x, y0, y1, d) => { ctx.beginPath(); ctx.moveTo(x-4*d,y0); ctx.lineTo(x+4*d,y0); ctx.lineTo(x+2,y1); ctx.lineTo(x-2,y1); ctx.closePath(); fs(ctx,side,2); };
+    const oct = (x, y, ww, h, c) => { ctx.beginPath(); ctx.moveTo(x+c,y); ctx.lineTo(x+ww-c,y); ctx.lineTo(x+ww,y+c*0.6); ctx.lineTo(x+ww,y+h-c*0.6); ctx.lineTo(x+ww-c,y+h); ctx.lineTo(x+c,y+h); ctx.lineTo(x,y+h-c*0.6); ctx.lineTo(x,y+c*0.6); ctx.closePath(); };
+    for (let k=0;k<n;k++){
+      const x0 = t.cx - hw + k*w;
+      leg(x0+9,t.cy+8,t.cy+22,0.8); leg(x0+w-9,t.cy+8,t.cy+22,0.8);       // pernas de trás
+      oct(x0,t.cy-14,w,30,8); fs(ctx,side,2.6);                              // espessura do tampo
+      leg(x0+7,t.cy+14,t.cy+32,1); leg(x0+w-7,t.cy+14,t.cy+32,1);          // pernas da frente
+      oct(x0,t.cy-18,w,30,8); fs(ctx,top,2.6);                               // tampo
+      ctx.strokeStyle = 'rgba(34,32,28,.12)'; ctx.lineWidth = 1.2; oct(x0+5,t.cy-14,w-10,22,5); ctx.stroke();
+      ell(ctx,x0+w/2,t.cy-3,3,1.8); ctx.fillStyle = 'rgba(34,32,28,.35)'; ctx.fill();
+    }
+    circ(ctx,t.cx-hw+14,t.cy-1,8.5); fs(ctx,PAL.mostarda,2);
+    txt(ctx,String(t.id),t.cx-hw+14,t.cy,12,PAL.tinta,'center',FD);
+    return;
+  }
   rr(ctx,t.cx-hw,t.cy-15,hw*2,36,9); fs(ctx,'#A8321F',2.6);
   rr(ctx,t.cx-hw,t.cy-18,hw*2,34,9); fs(ctx,open ? PAL.cromo : '#aeb4ba',2.6);
   rr(ctx,t.cx-hw+4,t.cy-14,hw*2-8,26,6); fs(ctx,open ? PAL.formica : '#b7867e',2);
@@ -38,7 +69,8 @@ function drawTable(ctx,g,t,tm,menu){
   }
   if (grp && grp.seated) drawMoodRing(ctx,grp.hearts,t.cx,t.cy+66,t.hx+2,10,tm);
   // cadeiras e pessoas de trás
-  seats.forEach((s,i) => { if (!s.front) drawChair(ctx,s.x,s.y,t.color,false); });
+  const plast = garagem(g);
+  seats.forEach((s,i) => { if (!s.front) drawChair(ctx,s.x,s.y,t.color,false,plast); });
   if (showPpl) seats.forEach((s,i) => { if (!s.front && i < grp.people.length) drawSeatPerson(ctx,g,grp,i,s,tm); });
   drawTableBody(ctx,t,true,g,tm);
   // toalhinha da comanda (do pedido até o grupo sair)
@@ -63,7 +95,7 @@ function drawTable(ctx,g,t,tm,menu){
     }
     ctx.fillStyle = '#fff'; ell(ctx,t.cx+hw-10,t.cy+3,5,3); fs(ctx,'#fff',1.5);
   }
-  seats.forEach((s,i) => { if (s.front) drawChair(ctx,s.x,s.y,t.color,true); });
+  seats.forEach((s,i) => { if (s.front) drawChair(ctx,s.x,s.y,t.color,true,plast); });
   if (showPpl) seats.forEach((s,i) => { if (s.front && i < grp.people.length) drawSeatPerson(ctx,g,grp,i,s,tm); });
 }
 function drawSeatPerson(ctx,g,grp,i,s,tm){

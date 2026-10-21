@@ -5,10 +5,12 @@ g.startDay(2); g.begin();
 // espera chegar um grupo
 let guard=0; while(!g.queue.length && guard++<400) g.update(0.05);
 ok(g.queue.length>0,'grupo chegou');
-// teste boing: mesa fechada (3) no dia 2
+// v7.4: todas as mesas abertas desde o dia 1; teste boing: mesa suja
 const grp=g.queue[0];
-const closed=g.tables[2]; ok(!closed.open,'mesa 3 fechada no dia 2');
-ok(g.seatGroup(grp,closed)===false && grp.boing>0 && grp.state==='queue','boing em mesa fechada');
+ok(g.tables.length>=4 && g.tables.every(t=>t.open),'dia 2: todas as mesas abertas');
+const suja=g.tables[2]; suja.dirty=true;
+ok(g.seatGroup(grp,suja)===false && grp.boing>0 && grp.state==='queue','boing em mesa suja');
+suja.dirty=false;
 // seleção + toque
 g.onDown(78,L.LAYOUT.QUEUE.ys[0]-20); g.onUp(78,L.LAYOUT.QUEUE.ys[0]-20); ok(g.sel===grp,'grupo selecionado por toque');
 const t1=g.tables.find(t=>t.free&&t.seats>=grp.size);

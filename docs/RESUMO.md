@@ -1,9 +1,9 @@
 # Resumo do projeto e das alterações (até 21/10/2026)
 
 ## Estado atual
-- **Versão:** v7.3 (Bia mais ágil: base 300 px/s, Tênis de corrida e selos "1º, 2º..." da fila no salão), publicada como Versão 25 do artifact https://claude.ai/artifact/MJxrgDg8S4akvg47SoQAvj (privado).
+- **Versão:** v7.4 (Garagem da Bia e do tio Tonhão: mesas compradas até 16 lugares e editor do salão), publicada no artifact https://claude.ai/artifact/MJxrgDg8S4akvg47SoQAvj (privado).
 - **Branch:** `claude/main` (renomeado pelo usuário; o antigo `claude/intelligent-gauss-3owv29` não existe mais) no repositório `aarescigno/Lanchonete-corre-corre`.
-- **Arquivos publicados:** `lanchonete.html` (página), mais `versoes/v1.html` a `versoes/v7.2.html`, abertos pelo painel Versões.
+- **Arquivos publicados:** `lanchonete.html` (página), mais `versoes/v1.html` a `versoes/v7.3.html`, abertos pelo painel Versões.
 - **Capacidades declaradas (mantidas ao republicar sem `capabilities`):**
   - `db`: `ranking-carreira` e `ranking-semfim` com read "view" e write "owner";
   - `db`: `ranking-*/{self}` com write "interact";
@@ -12,7 +12,7 @@
   - documentos `ranking-carreira/<userId>` e `ranking-semfim/<userId>`, com `nome`, `pontos`, `dia` ou `tempo` e `quando`;
   - só sobrescreve quando a pontuação é maior;
   - fallback local em `localStorage` (`lcc2_ranking`).
-- **Save:** `lcc2_save`, que importa o `lcc_save_v1` da v1. Desde a v6 guarda também o salão (`save.salao`); desde a v7, a divulgação (`save.divulga`); desde a v7.2, o livro-caixa (`save.caixa`, últimos 14 dias da carreira, e `save.caixaPend`, compras da lojinha que entram na linha do dia seguinte). `save.best` continua guardando o melhor faturamento de cada dia (é o que o ranking da carreira soma).
+- **Save:** `lcc2_save`, que importa o `lcc_save_v1` da v1. Desde a v6 guarda também o salão (`save.salao`); desde a v7, a divulgação (`save.divulga`); desde a v7.2, o livro-caixa (`save.caixa`, últimos 14 dias da carreira, e `save.caixaPend`, compras da lojinha que entram na linha do dia seguinte). Desde a v7.4, `save.salao` é `{ ponto, mesas:[{ x, y, seats, c }] }`; o salão da v6 vira a Garagem com o kit e o que custou volta numa linha "Devolução do salão" do caixa. `save.best` continua guardando o melhor faturamento de cada dia (é o que o ranking da carreira soma).
 
 ## Versões
 | Versão | Data | O que trouxe | Detalhes |
@@ -27,6 +27,7 @@
 | v7.1 | 15/10 | Jogo justo: fila justa (ritmo 40% e piso de 1 coração sem mesa que sirva), porta que respeita a lotação, ícone "aguardando mesa", bot afiado e perdas por causa | `docs/spec-v7.1.md` |
 | v7.2 | 15/10 | Livro-caixa: aba Caixa na lojinha (14 dias, para onde foi o dinheiro, "Copiar resumo" para o WhatsApp); valores da v7 mantidos | `docs/spec-v7.2.md` |
 | v7.3 | 21/10 | Bia mais ágil (retorno do Renan): base 300 px/s, Tênis de corrida (R$ 350, +20%), selos "1º, 2º..." da fila no salão e nos quadrinhos; metas mantidas | `docs/spec-v7.3.md` |
+| v7.4 | 21/10 | Garagem da Bia e do tio Tonhão: sem aluguel, kit de 10 lugares, mesas compradas até 16 lugares (R$ 150, 250, virar R$ 100, vender pela metade), editor do salão (arrastar, tocar, arrumação automática, desfazer), todas as mesas abertas desde o dia 1, mesa quadrada e cadeira de plástico de bar | `docs/spec-v7.4.md` |
 
 ## Alterações feitas no Claude Code (14/10/2026)
 1. **Importação** do pacote exportado do claude.ai para o repositório (commit `982583b`).
@@ -110,11 +111,20 @@
    - Velocidade de base 260 → 300 (`BIA_SPEED`); Tênis novos +10%; **Tênis de corrida** (R$ 350, +20%, pedem os Tênis novos e aparecem no lugar deles na lojinha, que continua com 6 cartões).
    - **Selos da fila:** etiqueta "1º, 2º..." na mesa, na estação ou no prato que está na fila da Bia (todas as vezes do mesmo lugar juntas), com pulinho ao surgir (parada com `prefers-reduced-motion`); os quadrinhos da fila ganham a mesma etiqueta. A mesa pode entrar 2 vezes na fila; cancelar só pelo quadrinho.
    - Metas mantidas por escolha do usuário (sem equipe ~74% das metas nos dias 3 a 7; com equipe ~98%). Teste `smoke12`.
-   - Salão (decidido em 21/10, ainda sem código): o nível do salão é o ponto.
-     - Garagem da Bia e do tio Tonhão: 16 lugares, sem aluguel, kit de 10 lugares, móveis comprados, editor do salão (1d-1, v7.4); tela que rola até a calçada, espera lá fora e máquina de suco (1d-2, v7.5).
+   - Salão (decidido em 21/10): o nível do salão é o ponto.
+     - Garagem da Bia e do tio Tonhão: 16 lugares, sem aluguel, kit de 10 lugares, móveis comprados, editor do salão (1d-1, feita na v7.4); tela que rola até a calçada, espera lá fora e máquina de suco (1d-2, v7.5).
      - Área industrial (20 lugares) e Avenida Brasil (24), com a carreira por pontos: etapa 3.
      - Terraço Suíça (28): etapa 4.
      - Aluguéis R$ 0, 120, 400 e 1.000 por dia (pesquisa em `docs/pesquisa-aluguel.md`).
+
+14. **v7.4, Garagem** (ver `docs/spec-v7.4.md`; etapa 1d-1 do `docs/PLANO.md`):
+   - `PONTOS` só com a Garagem (16 lugares, aluguel 0, área útil, 4 cadeiras de espera para a v7.5); `contasDia(tables, ponto)`.
+   - Mesas compradas uma a uma na aba Salão: mesa de 2 R$ 150, mesa de 4 R$ 250, virar mesa de 4 R$ 100, vender pela metade; até 16 lugares; fora do limite de 1 melhoria.
+   - Editor do salão (canvas próprio na lojinha): arrastar com encaixe de 10 px, lugar inválido em vermelho (volta ao soltar), tocar abre virar/vender, arrumação automática e desfazer; folga de 46 px entre mesas e caminho da Bia até cada uma.
+   - Todas as mesas abertas desde o dia 1; dias 1 e 2 com 5 e 8 grupos; Turno sem fim com salão fixo de 16 lugares.
+   - Visual: cimento queimado, portão de enrolar aberto, letreiro feito à mão, mesa quadrada de plástico de bar (a de 4 são 2 juntas) e cadeira de plástico com frisos verticais.
+   - Save antigo: devolve cadeiras e mesas compradas, com linha no Caixa.
+   - Sem equipe, ~97% das metas dos dias 3 a 7 (folga da Garagem, de propósito); R$ 1.455 na lojinha do dia 5. Com equipe, mesa a mais não dá lucro (gargalo nos pratos limpos): fica para a etapa 3.
 
 ## Código em partes (`src/`)
 - Desde 15/10/2026 o código fica em 19 partes em `src/` (lista no `CLAUDE.md`), juntadas por `montar.py` em `lanchonete.html` sem acrescentar nada: o arquivo montado é idêntico, byte a byte, ao anterior à divisão.
@@ -137,23 +147,24 @@
 - `smoke5` (41/41: sucos, bandeja e lixeira);
 - `smoke6` (94/94: equipe, louça, lixeira que enche, couvert, água, economia). O teste "a Dani chega a 2 itens" oscilava (dependia do sorteio do dia) até a Dani pegar o café no caminho da pia; hoje falha em menos de ~1 a cada 40 rodadas;
 - `smoke7` (15/15: toque no celular e brilho);
-- `smoke8` (33/33: salão, cadeiras e mesas, e as faixas de estrelas);
+- `smoke8` (19/19: conversão do salão da v6 com devolução, e as faixas de estrelas);
 - `smoke9` (33/33: v7, lucro, ingredientes, contas e divulgação);
 - `smoke10` (26/26: v7.1, fila justa, piso, porta e perdas por causa);
 - `smoke11` (39/39: v7.2, livro-caixa, limite de 14 dias, resumo e aba Caixa);
 - `smoke12` (21/21: v7.3, velocidade, Tênis de corrida, selos da fila);
+- `smoke13` (53/53: v7.4, Garagem, móveis, editor do salão, posição e caminho, contas sem aluguel);
 - `menu_fit` (14 tamanhos de tela);
-- `balance` (bot, N rodadas por dia; `DIV`, `MULT`, `SALAO`, `BOT=afiado`, `ORDEM`, `INGRED`, `CONTAS`, `METAS`; perdas por causa e 3★);
-- `carreira` (bot jogando a carreira com o dinheiro acumulado de verdade).
+- `balance` (bot, N rodadas por dia; `DIV`, `MULT`, `MOVEIS`, `GRUPOS`, `DIAS`, `BOT=afiado`, `ORDEM`, `INGRED`, `CONTAS`, `METAS`; perdas por causa e 3★);
+- `carreira` (bot jogando a carreira com o dinheiro acumulado de verdade e comprando móveis; `MOVEIS=0`, `MESAS=1`).
 
 ## Ideias pendentes
 - Testar som e toque em celular real (o toque foi ajustado depois de relato de dificuldade, mas só testado no Chromium com toque emulado).
-- Salão: o Renan achou a aba Salão da v6 complexa demais; a troca por níveis de espaço está proposta na etapa 1d do `docs/PLANO.md`.
+- Salão: conferir com o Renan se o editor da Garagem (v7.4) ficou simples, e decidir se mesa a mais deve dar lucro (hoje o gargalo são os pratos limpos).
 - v7.3: conferir com o Renan se a Bia ficou ágil o bastante e se os selos "1º, 2º..." se entendem.
 - Estrelas: conferir com jogadores se a 2ª estrela (`bomGoal`, metade do caminho entre a meta e a expert) ficou no ponto.
 - O painel "Como jogar" ainda rola no celular deitado.
 - Ajuste de dificuldade.
 - v7: conferir com jogadores se a escassez ficou no ponto (valores em `CONTAS`, `INGRED`, `DIVULGA` e nas metas). Desde a v7.2, o jeito é pedir o "Copiar resumo" da aba Caixa.
 - v7.1: conferir com jogadores se a fila justa (`FILA_JUSTA`) e a porta (`PORTA`) ficaram no ponto, e se o ícone "aguardando mesa" se entende.
-- **Roteiro das próximas versões em `docs/PLANO.md`** (uma etapa por sessão; log das ideias e retornos em `docs/PROPOSTAS.md`): jogo justo (feito na v7.1), livro-caixa (feito na v7.2), Bia mais ágil (feito na v7.3), salão por níveis (1d, em discussão), manutenção e imprevistos, ponto (Centro, área nobre com VIPs exigentes), modo história em 2 partes e polimento.
+- **Roteiro das próximas versões em `docs/PLANO.md`** (uma etapa por sessão; log das ideias e retornos em `docs/PROPOSTAS.md`): jogo justo (feito na v7.1), livro-caixa (feito na v7.2), Bia mais ágil (feito na v7.3), Garagem e editor do salão (feito na v7.4), espera lá fora (1d-2), manutenção e imprevistos, ponto (Centro, área nobre com VIPs exigentes), modo história em 2 partes e polimento.
 - A lojinha ainda rola no menor celular deitado (568×320).

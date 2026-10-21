@@ -66,12 +66,11 @@ const Sfx = {
    CAMINHOS (grafo de visibilidade em volta das mesas)
    ============================================================ */
 const OBST = [];
-/* obstáculos dos caminhos: refeitos quando o salão muda (cadeiras e mesas da lojinha) */
+/* obstáculos dos caminhos: refeitos quando o salão muda (mesas da lojinha e do editor) */
 function setObst(defs){
   OBST.length = 0;
-  defs.forEach(t => { const hx = tableHalfW(t); OBST.push({ x0:t.cx-hx, x1:t.cx+hx, y0:t.cy-50, y1:t.cy+62 }); });
+  defs.forEach(t => OBST.push(mesaBox(t.cx, t.cy, t.seats)));
 }
-setObst(TABLE_DEFS);
 function segHits(ax,ay,bx,by,r){
   let t0 = 0, t1 = 1;
   const dx = bx-ax, dy = by-ay;
@@ -124,5 +123,10 @@ function findPath(from, to){
   const path = [];
   for (let c = 1; c !== 0; c = prev[c]) path.push({x:nodes[c].x, y:nodes[c].y});
   return path.reverse();
+}
+/* há caminho de verdade? (sem caminho, findPath devolve a linha reta, que atravessa alguma mesa) */
+function pathOk(from, to){
+  let a = from;
+  return findPath(from, to).every(p => { const ok = !blocked(a.x, a.y, p.x, p.y); a = p; return ok; });
 }
 

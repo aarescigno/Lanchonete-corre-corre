@@ -10,10 +10,11 @@ ok(L.DIVULGA.map(d=>d.id).join()==='boca,panfleto,redes' && L.DIVULGA_DIA===3,'3
 
 // contas do dia: aluguel + mesas abertas + lugares
 reset(); g.resetDay(1);
-ok(L.contasDia(g.tables)===C.aluguel+3*C.mesa+6*C.lugar,'dia 1: 3 mesas e 6 lugares abertos ('+L.contasDia(g.tables)+')');
+ok(L.contasDia(g.tables,g.ponto)===4*C.mesa+10*C.lugar && g.ponto.aluguel===0,'dia 1: Garagem sem aluguel, 4 mesas e 10 lugares do kit ('+L.contasDia(g.tables,g.ponto)+')');
 g.resetDay(5);
-ok(L.contasDia(g.tables)===C.aluguel+6*C.mesa+16*C.lugar,'dia 5: 6 mesas e 16 lugares ('+L.contasDia(g.tables)+')');
-{ g.goShop(5); g.save.bank=1000; const before=L.contasDia(g.tables); g.buyTable(); ok(L.contasDia(g.tables)===before+C.mesa+2*C.lugar,'mesa nova soma 1 mesa e 2 lugares às contas'); g.save.salao=L.normSalao({}); g.buildTables(); }
+ok(L.contasDia(g.tables,g.ponto)===4*C.mesa+10*C.lugar,'dia 5: as mesmas 4 mesas abertas ('+L.contasDia(g.tables,g.ponto)+')');
+ok(L.contasDia(g.tables,{aluguel:120})===120+4*C.mesa+10*C.lugar,'aluguel do ponto entra nas contas');
+{ g.goShop(5); g.save.bank=1000; const before=L.contasDia(g.tables,g.ponto); g.buyMesa(2); ok(L.contasDia(g.tables,g.ponto)===before+C.mesa+2*C.lugar,'mesa nova soma 1 mesa e 2 lugares às contas'); g.save.salao=L.normSalao({}); g.buildTables(); }
 
 // divulgação e grupos do dia
 { reset(); g.resetDay(2); ok(!g.div && g.schedule.length===L.DAYS[1].groups,'dia 2: sem divulgação, grupos de sempre');
