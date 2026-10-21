@@ -26,12 +26,6 @@ function upgradeIcon(id){
       txt(c,'♪',-12,-12,14,PAL.faixa,'center',FB);
     } else if (id === 'agua'){
       drawAguaJar(c,0,12,0.9);
-    } else if (id === 'cadeira'){
-      c.scale(0.62,0.62); drawChair(c,-13,16,0,true); drawChair(c,15,20,1,true);
-    } else if (id === 'mesa'){
-      c.strokeStyle = PAL.cromoEsc; c.lineWidth = 2.5; c.beginPath(); c.moveTo(-10,6); c.lineTo(-12,17); c.moveTo(10,6); c.lineTo(12,17); c.stroke();
-      rr(c,-18,-4,36,12,5); fs(c,PAL.cromo,2); rr(c,-15,-2,30,7,3); fs(c,PAL.formica,1.4);
-      circ(c,12,-12,7); fs(c,PAL.ok,1.8); txt(c,'+',12,-11,13,'#fff','center',FD);
     } else if (id === 'div-boca'){
       drawPerson(c,{skin:2,hair:1,hairC:'#2F1D12',pants:'#4A4036'},-8,18,{ shirt:CHAIRS[1].c, mood:0, s:0.6 });
       drawPerson(c,{skin:4,hair:4,hairC:'#1B1512',pants:'#2F3E5C'},10,18,{ shirt:CHAIRS[3].c, mood:0, s:0.6 });
@@ -140,46 +134,127 @@ function buildEquipe(grid){
   duo.appendChild(eq.couvert ? shopBtn('Dispensar', 'btn alt', true, () => game.setStaff('couvert', false)) : shopBtn('Contratar: ' + fmt(C.pay) + '/dia', 'btn', canPay(C.pay), () => game.setStaff('couvert', true)));
   c.appendChild(duo); grid.appendChild(c);
 }
-/* aba Salão: comprar cadeiras e mesas e escolher 2 ou 4 lugares por mesa, na planta das 2 fileiras */
-function buildSalao(grid){
-  const sal = game.save.salao, bank = game.save.bank, used = salaoUsed(sal), livres = sal.chairs - used;
-  const plan = el('div', 'plan');
-  plan.appendChild(el('span', 'full', 'Lugares por mesa (grupos de 3 ou 4 só sentam nas de 4). Numa fileira com 4 mesas, só 1 pode ter 4 lugares.'));
-  SALAO.rows.forEach(row => {
-    const line = el('div', 'prow');
-    row.forEach(id => {
-      const t = game.tables.find(x => x.id === id);
-      const cell = el('div', 'pcell' + (t ? '' : ' vaga'));
-      if (!t){ cell.appendChild(el('span', null, 'vaga')); line.appendChild(cell); return; }
-      const name = el('b'); name.appendChild(el('small', null, 'Mesa ')); name.appendChild(document.createTextNode(String(id))); name.style.borderColor = CHAIRS[t.color].c;
-      cell.appendChild(name);
-      const seg = el('div', 'seg2');
-      [2, 4].forEach(n => {
-        const b = el('button', null, String(n)); b.type = 'button'; b.setAttribute('aria-label', 'Mesa ' + id + ': ' + n + ' lugares');
-        b.setAttribute('aria-pressed', sal.seats[id] === n ? 'true' : 'false');
-        b.addEventListener('click', () => { Sfx.init(); if (sal.seats[id] === n) return; if (game.setSeats(id, n)) Sfx.tap(); else Sfx.boing(); buildShop(); });
-        seg.appendChild(b);
-      });
-      cell.appendChild(seg);
-      if (!t.open){ cell.classList.add('off'); cell.title = 'Fechada no dia ' + game.shopNext; }
-      line.appendChild(cell);
-    });
-    plan.appendChild(line);
+/* aba Salão (v7.4): o editor (o salão desenhado em escala, sem clientes) e a loja de móveis ao lado.
+   Arrastar a mesa muda o lugar dela (encaixe na grade); tocar nela abre "virar mesa de 4" e "vender" */
+const ED = { x:0, y:56, w:800, h:484, k:1.25 };  // pedaço do salão no editor (do pé da parede ao chão, até o balcão) e a resolução do canvas
+let edDrag = null;
+function edPt(cv, e){
+  const r = cv.getBoundingClientRect(), w = r.width || ED.w, h = r.height || ED.h;
+  return { x:ED.x + (e.clientX - r.left) * ED.w / w, y:ED.y + (e.clientY - r.top) * ED.h / h };
+}
+/* folga do dedo, como no salão do jogo (~14 px de tela) */
+function edPad(cv, e){
+  if (e.pointerType === 'mouse') return 0;
+  return clamp(14 * ED.w / (cv.getBoundingClientRect().width || ED.w), 8, 32);
+}
+function edRect(m){ const hx = tableHalfW(m); return { x:m.x - hx - 10, y:m.y - 62, w:hx*2 + 20, h:132 }; }
+function edHit(p, pad){
+  let best = -1, bd = Infinity;
+  game.save.salao.mesas.forEach((m, i) => { const d = rectDist(p.x, p.y, edRect(m)); if (d <= pad && d < bd){ bd = d; best = i; } });
+  return best;
+}
+/* mesas como estão no editor: as do salão, com a arrastada no lugar provisório */
+function edMesas(){
+  const l = game.save.salao.mesas.slice();
+  if (edDrag && edDrag.moved) l[edDrag.i] = Object.assign({}, l[edDrag.i], { x:edDrag.x, y:edDrag.y });
+  return l;
+}
+function drawEditor(cv){
+  const c = cv.getContext('2d');
+  if (!c) return;
+  c.setTransform(ED.k, 0, 0, ED.k, -ED.x * ED.k, -ED.y * ED.k);
+  c.lineJoin = 'round'; c.lineCap = 'round';
+  drawFloor(c, game); drawWall(c, game, 0); drawKitchen(c, game, 0);
+  const a = game.ponto.area;
+  c.save(); c.setLineDash([8,6]); c.strokeStyle = 'rgba(31,79,163,.5)'; c.lineWidth = 2; rr(c,a.x0,a.y0,a.x1-a.x0,a.y1-a.y0,10); c.stroke(); c.restore();
+  const l = edMesas(), di = edDrag && edDrag.moved ? edDrag.i : -1;
+  l.map((m, i) => i).sort((i, j) => (i === di) - (j === di)).forEach(i => {   // a mesa arrastada por cima das outras
+    const m = l[i], t = new Table({ id:i + 1, cx:m.x, cy:m.y, seats:m.seats, color:m.c }), drag = i === di;
+    t.open = true;
+    drawTable(c, game, t, 0, true);
+    if (drag || i === game.salaoSel){
+      const bad = drag && !edDrag.ok, r = edRect(m);
+      c.save(); c.strokeStyle = bad ? PAL.perigo : (drag ? PAL.ok : PAL.mostarda); c.lineWidth = 5; c.setLineDash(drag ? [10,6] : []);
+      rr(c,r.x,r.y,r.w,r.h,14); c.stroke();
+      if (bad){ c.fillStyle = 'rgba(194,54,43,.25)'; c.fill(); }
+      c.restore();
+    }
   });
-  if (game.tables.some(t => !t.open)) plan.appendChild(el('span', 'full', 'Mesas apagadas ficam fechadas no dia ' + game.shopNext + '; as novas abrem todo dia.'));
-  if (game.salaoMsg) plan.appendChild(el('span', 'full msg', game.salaoMsg));
-  grid.appendChild(plan);
-  // cadeiras
-  const capC = SALAO.maxChairs + 2 * sal.mesas;
-  let c = staffCard(upgradeIcon('cadeira'), 'Cadeiras: ' + used + ' de ' + sal.chairs + ' em uso', livres ? livres + ' livres: use na planta acima.' : 'Para pôr 4 lugares numa mesa, tire 2 de outra ou compre mais.');
-  c.appendChild(shopBtn(sal.chairs >= capC ? 'Cadeiras no máximo' : 'Comprar 2 cadeiras: ' + fmt(SALAO.chairPrice), 'btn', sal.chairs < capC && bank >= SALAO.chairPrice, () => game.buyChairs()));
-  grid.appendChild(c);
-  // mesa nova
-  const why = salaoTableBlock(sal);
-  c = staffCard(upgradeIcon('mesa'), 'Mesas: ' + (6 + sal.mesas) + ' de 8',
-    sal.mesas >= 2 ? 'O salão está completo.' : (why || 'A mesa ' + (7 + sal.mesas) + ' entra na fileira de ' + (sal.mesas ? 'baixo' : 'cima') + ', com 2 cadeiras.'));
-  if (sal.mesas < 2) c.appendChild(shopBtn('Comprar mesa: ' + fmt(SALAO.tablePrice), 'btn', !why && bank >= SALAO.tablePrice, () => game.buyTable()));
-  grid.appendChild(c);
+}
+/* botão do editor: o motivo da recusa (salaoMsg) aparece logo abaixo */
+function edBtn(text, cls, enabled, fn){
+  const b = el('button', cls, text); b.type = 'button';
+  if (!enabled) b.disabled = true;
+  b.addEventListener('click', () => { Sfx.init(); if (fn()) Sfx.tap(); else Sfx.boing(); buildShop(); });
+  return b;
+}
+function edEvents(cv){
+  cv.addEventListener('pointerdown', e => {
+    Sfx.init(); e.preventDefault();
+    try { cv.setPointerCapture(e.pointerId); } catch(err) {}
+    const p = edPt(cv, e), pad = edPad(cv, e), i = edHit(p, pad);
+    if (i < 0){ if (game.salaoSel >= 0 || game.salaoMsg){ game.salaoSel = -1; game.salaoMsg = ''; buildShop(); } return; }
+    const m = game.save.salao.mesas[i];
+    edDrag = { i, dx:m.x - p.x, dy:m.y - p.y, sx:p.x, sy:p.y, x:m.x, y:m.y, moved:false, ok:true, why:'', pad };
+  });
+  cv.addEventListener('pointermove', e => {
+    const d = edDrag;
+    if (!d) return;
+    const p = edPt(cv, e);
+    // no dedo, um tremidinho não vira arrasto
+    if (!d.moved && Math.hypot(p.x - d.sx, p.y - d.sy) > Math.max(9, d.pad)){ d.moved = true; const pop = cv.parentNode && cv.parentNode.querySelector && cv.parentNode.querySelector('.ed-pop'); if (pop) pop.style.display = 'none'; }
+    if (!d.moved) return;
+    const x = clamp(snapG(p.x + d.dx), ED.x + 40, ED.x + ED.w - 40), y = clamp(snapG(p.y + d.dy), ED.y + 60, ED.y + ED.h - 40);
+    if (x === d.x && y === d.y) return;
+    d.x = x; d.y = y; d.why = salaoProblema(edMesas(), game.ponto); d.ok = !d.why;
+    drawEditor(cv);
+  });
+  cv.addEventListener('pointerup', () => {
+    const d = edDrag; edDrag = null;
+    if (!d) return;
+    if (d.moved){
+      if (d.ok && game.moverMesa(d.i, d.x, d.y)) Sfx.tap();
+      else { Sfx.boing(); game.salaoMsg = 'Aí não dá: ' + (d.why || game.salaoMsg).toLowerCase(); }
+    } else { game.salaoSel = game.salaoSel === d.i ? -1 : d.i; game.salaoMsg = ''; Sfx.tap(); }
+    buildShop();
+  });
+  cv.addEventListener('pointercancel', () => { edDrag = null; drawEditor(cv); });
+  cv.addEventListener('contextmenu', e => e.preventDefault());
+}
+function buildSalao(grid){
+  const p = game.ponto, mesas = game.save.salao.mesas, bank = game.save.bank, lug = salaoLugares(mesas), sel = game.salaoSel;
+  const ed = el('div', 'ed'), box = el('div', 'ed-cv'), cv = el('canvas');
+  cv.width = Math.round(ED.w * ED.k); cv.height = Math.round(ED.h * ED.k);
+  cv.setAttribute('aria-label', 'Salão: arraste as mesas para mudar de lugar e toque numa mesa para ver as opções');
+  box.appendChild(cv); edEvents(cv);
+  // mesa escolhida: virar mesa de 4 e vender (balãozinho em cima do salão)
+  const m = mesas[sel];
+  if (m){
+    const up = m.y + 190 > ED.y + ED.h, pop = el('div', 'ed-pop' + (up ? ' up' : ''));
+    pop.style.left = clamp((m.x - ED.x) / ED.w * 100, 18, 82) + '%';
+    pop.style.top = ((up ? m.y - 66 : m.y + 72) - ED.y) / ED.h * 100 + '%';
+    pop.appendChild(el('b', null, 'Mesa ' + (sel + 1) + ' · ' + m.seats + ' lugares'));
+    if (m.seats === 2) pop.appendChild(edBtn('Virar mesa de 4: ' + fmt(SALAO.virar), 'btn', lug + 2 <= p.lugares && bank >= SALAO.virar, () => game.virarMesa(sel)));
+    pop.appendChild(edBtn('Vender por ' + fmt(mesaPreco(m.seats) * SALAO.venda), 'btn alt', mesas.length > 1, () => game.venderMesa(sel)));
+    const x = el('button', 'ed-x', '×'); x.type = 'button'; x.setAttribute('aria-label', 'Fechar');
+    x.addEventListener('click', () => { Sfx.tap(); game.salaoSel = -1; buildShop(); });
+    pop.appendChild(x);
+    box.appendChild(pop);
+  }
+  ed.appendChild(box);
+  // loja de móveis e arrumação
+  const side = el('div', 'ed-side');
+  side.appendChild(el('b', 'ed-lug', 'Lugares ' + lug + ' de ' + p.lugares));
+  side.appendChild(el('span', 'ed-ponto', p.nome + (p.aluguel ? ': aluguel ' + fmt(p.aluguel) + ' por dia.' : ': sem aluguel.')));
+  side.appendChild(edBtn('Mesa de 2: ' + fmt(SALAO.mesa2), 'btn', lug + 2 <= p.lugares && bank >= SALAO.mesa2, () => game.buyMesa(2)));
+  side.appendChild(edBtn('Mesa de 4: ' + fmt(SALAO.mesa4), 'btn', lug + 4 <= p.lugares && bank >= SALAO.mesa4, () => game.buyMesa(4)));
+  side.appendChild(edBtn('Arrumação automática', 'btn alt', true, () => game.arrumarSalao()));
+  side.appendChild(edBtn('Desfazer', 'btn alt', game.salaoUndo.length > 0, () => game.desfazerSalao()));
+  side.appendChild(el('span', game.salaoMsg ? 'msg' : 'ed-dica', game.salaoMsg || (lug >= p.lugares ? 'O salão está no teto de ' + p.lugares + ' lugares.' : 'Arraste as mesas; toque numa para virar mesa de 4 ou vender. Grupos de 3 ou 4 só sentam nas mesas de 4.')));
+  side.appendChild(el('span', 'ed-contas', 'Luz e gás: ' + fmt(contasDia(game.tables, p)) + ' por dia (' + fmt(CONTAS.mesa) + ' por mesa e ' + fmt(CONTAS.lugar) + ' por lugar).'));
+  ed.appendChild(side);
+  grid.appendChild(ed);
+  drawEditor(cv);
 }
 /* aba Divulgação (v7): escolha do dia, paga junto com a folha ao abrir; e o resumo das contas do dia */
 function buildDivulga(grid){
@@ -191,9 +266,9 @@ function buildDivulga(grid){
     c.appendChild(shopBtn(!open ? 'A partir do dia ' + DIVULGA_DIA : (on ? 'Escolhida' : 'Escolher'), 'btn', open && !on && (!d.cost || game.payroll() + d.cost <= game.save.bank), () => game.setDivulga(d.id)));
     grid.appendChild(c);
   });
-  const sal = game.tables.filter(t => t.open);
+  const sal = game.tables.filter(t => t.open), p = game.ponto;
   const c = staffCard(upgradeIcon('contas'), 'Contas do dia ' + n,
-    'Aluguel ' + fmt(CONTAS.aluguel) + ' + luz e gás de ' + sal.length + ' mesas abertas (' + fmt(CONTAS.mesa) + ' cada) e ' + sal.reduce((a, t) => a + t.seats, 0) + ' lugares (' + fmt(CONTAS.lugar) + ' cada) = ' + fmt(contasDia(game.tables)) + ', no fim do dia. Ingredientes: ' + Math.round(INGRED.prato * 100) + '% da conta de cada prato que fica pronto e ' + fmt(INGRED.suco) + ' por suco.');
+    (p.aluguel ? 'Aluguel ' + fmt(p.aluguel) + ' + l' : 'Sem aluguel (' + p.nome.replace(/^Garagem/, 'a garagem') + '). L') + 'uz e gás de ' + sal.length + ' mesas (' + fmt(CONTAS.mesa) + ' cada) e ' + sal.reduce((a, t) => a + t.seats, 0) + ' lugares (' + fmt(CONTAS.lugar) + ' cada) = ' + fmt(contasDia(game.tables, p)) + ', no fim do dia. Ingredientes: ' + Math.round(INGRED.prato * 100) + '% da conta de cada prato que fica pronto e ' + fmt(INGRED.suco) + ' por suco.');
   grid.appendChild(c);
 }
 /* aba Caixa (v7.2): os últimos dias da carreira, para onde foi o dinheiro e um resumo para colar no WhatsApp */
@@ -205,12 +280,13 @@ function caixaTotais(cx){
 function caixaResumo(save){
   const cx = save.caixa, eq = save.equipe, sal = save.salao;
   const out = ['Lanchonete Corre-Corre ' + VERSAO + ' · Caixa (valores em R$)'];
-  cx.forEach(r => out.push('Dia ' + r.d + (r.ok ? ' ✓' : ' ✗') + ': fatura ' + r.fat + ' − ingred. ' + r.ingr + ' − contas ' + r.contas + ' − equipe ' + r.folha + (r.div ? ' − divulg. ' + r.div : '') +
+  cx.forEach(r => out.push(r.dev ? 'Devolução do salão: +' + r.dev + ' · saldo ' + r.saldo : 'Dia ' + r.d + (r.ok ? ' ✓' : ' ✗') + ': fatura ' + r.fat + ' − ingred. ' + r.ingr + ' − contas ' + r.contas + ' − equipe ' + r.folha + (r.div ? ' − divulg. ' + r.div : '') +
     ' = lucro ' + r.lucro + ' (meta ' + r.meta + ')' + (r.perd ? ' · ' + r.perd + (r.perd > 1 ? ' perdidos' : ' perdido') : '') + (r.mel + r.sal ? ' · compras ' + (r.mel + r.sal) : '') + ' · saldo ' + r.saldo));
-  if (cx.length) out.push('Para onde foi (' + cx.length + (cx.length > 1 ? ' dias' : ' dia') + '): ' + caixaTotais(cx).filter(t => t.v).map(t => t.name.toLowerCase() + ' ' + t.v).join(', '));
+  const nd = cx.filter(r => !r.dev).length;
+  if (nd) out.push('Para onde foi (' + nd + (nd > 1 ? ' dias' : ' dia') + '): ' + caixaTotais(cx).filter(t => t.v).map(t => t.name.toLowerCase() + ' ' + t.v).join(', '));
   const ups = UPGRADES.filter(u => save.up[u.id]).map(u => u.name.toLowerCase());
   out.push('Agora: ' + fmt(save.bank) + ' · Tonhão nível ' + (eq.tonhao + 1) + ', ' + (eq.dani ? 'Dani nível ' + eq.dani : 'sem Dani') + (eq.couvert ? ', couvert' : '') +
-    ' · ' + divulgaOf(save.divulga).name.toLowerCase() + ' · ' + (6 + sal.mesas) + ' mesas e ' + sal.chairs + ' cadeiras · melhorias: ' + (ups.join(', ') || 'nenhuma'));
+    ' · ' + divulgaOf(save.divulga).name.toLowerCase() + ' · ' + pontoOf(sal.ponto).nome.replace(/ da Bia.*/, '').toLowerCase() + ' com ' + sal.mesas.length + ' mesas e ' + salaoLugares(sal.mesas) + ' lugares · melhorias: ' + (ups.join(', ') || 'nenhuma'));
   return out.join('\n');
 }
 /* copia para a área de transferência; se o navegador não deixar, devolve false (a aba mostra o texto para copiar à mão) */
@@ -242,6 +318,11 @@ function buildCaixa(grid){
   tb.appendChild(head);
   cx.slice().reverse().forEach(r => {
     const tr = el('tr');
+    if (r.dev){
+      // v7.4: o salão antigo (cadeiras e mesas da v6) foi trocado pela Garagem e o que custou voltou
+      const td = el('td', 'cx-dev', 'Devolução do salão antigo: +' + fmt(r.dev)); td.setAttribute('colspan', '7');
+      tr.appendChild(td); tr.appendChild(cxTd(r.saldo)); tb.appendChild(tr); return;
+    }
     const dia = el('td', null, 'Dia ' + r.d); tr.appendChild(dia);
     [r.fat, r.ingr, r.contas, r.folha + r.div].forEach(v => tr.appendChild(cxTd(v)));
     const lu = cxTd(r.lucro, r.ok ? 'pos' : 'neg'); lu.title = (r.ok ? 'Passou' : 'Não passou') + ' da meta de ' + fmt(r.meta) + (r.perd ? '; ' + r.perd + (r.perd > 1 ? ' perdidos' : ' perdido') : '');
@@ -254,7 +335,8 @@ function buildCaixa(grid){
   // para onde foi o dinheiro: barra empilhada e legenda
   const tot = caixaTotais(cx).filter(t => t.v > 0), soma = tot.reduce((a, t) => a + t.v, 0);
   const onde = el('div', 'cx-onde');
-  onde.appendChild(el('b', null, 'Para onde foi o dinheiro ' + (cx.length > 1 ? 'nos últimos ' + cx.length + ' dias' : 'no último dia') + ': ' + fmt(soma)));
+  const nd = cx.filter(r => !r.dev).length;
+  onde.appendChild(el('b', null, 'Para onde foi o dinheiro ' + (nd > 1 ? 'nos últimos ' + nd + ' dias' : 'no último dia') + ': ' + fmt(soma)));
   const bar = el('div', 'cx-bar'); bar.setAttribute('aria-hidden', 'true');
   const leg = el('div', 'cx-leg');
   tot.forEach(t => {

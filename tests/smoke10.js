@@ -21,7 +21,7 @@ cheio(); { const x=naFila(); run(0.05); ok(x.aguarda && x.semMesa,'salão cheio:
   ok(!x.aguarda,'mesa livre: deixa de aguardar');
   const p1=x.patLeft; run(1); ok(near(p1-x.patLeft,1),'com mesa livre, a paciência volta ao ritmo normal ('+(p1-x.patLeft).toFixed(3)+')');
   t.dirty=true; run(0.05); ok(!x.aguarda,'mesa suja conta como mesa que serve (é só recolher)'); }
-cheio(); { g.timeUpLeave(g.tables[0].group); run(0.05); const f=naFila('familia'); run(0.05);
+cheio(); { g.timeUpLeave(g.tables.find(t=>t.seats===2).group); run(0.05); const f=naFila('familia'); run(0.05);
   ok(f.aguarda && !g.queue.filter(q=>q!==f).some(q=>q.aguarda),'família com só mesa de 2 livre: aguarda mesa de 4 (e quem cabe na de 2, não)'); }
 
 // piso de 1 coração (carreira)

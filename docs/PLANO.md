@@ -7,7 +7,7 @@ Origem: retorno do Renan Martorelli (beta-tester) e conversa com o Arthur (15/10
 - Para começar uma sessão, basta pedir: **"faça a próxima etapa do docs/PLANO.md"**. A sessão lê só a etapa da vez e as partes de `src/` citadas nela.
 - Antes de programar, a sessão confirma com o usuário as **decisões em aberto** da etapa (cada uma já tem uma sugestão).
 - No fim, a sessão marca a etapa como feita na tabela abaixo (com a versão e a data) e anota o que mudou no plano.
-- Ordem: cada etapa depende só das anteriores. A 1a vem primeiro (mexe no equilíbrio de base). A 1c teve prioridade sobre as demais, por ser retorno do beta-tester Renan (pedido do usuário em 21/10). **A próxima é a 1d-1, depois a 1d-2** (decididas pelo usuário em 21/10; cada uma numa sessão). A 1b e a 2 podiam trocar de lugar. A 3 vem antes da 4, e a 4 antes da 6.
+- Ordem: cada etapa depende só das anteriores. A 1a vem primeiro (mexe no equilíbrio de base). A 1c teve prioridade sobre as demais, por ser retorno do beta-tester Renan (pedido do usuário em 21/10). **A 1d-1 foi feita (v7.4); a próxima é a 1d-2** (decididas pelo usuário em 21/10; cada uma numa sessão). A 1b e a 2 podiam trocar de lugar. A 3 vem antes da 4, e a 4 antes da 6.
 
 ## Situação
 | # | Etapa | Versão | Situação |
@@ -16,8 +16,8 @@ Origem: retorno do Renan Martorelli (beta-tester) e conversa com o Arthur (15/10
 | 1a | Jogo justo: dá para não perder ninguém | v7.1 | feita (15/10) |
 | 1b | Livro-caixa e ajuste fino com jogadores | v7.2 | feita (15/10) |
 | 1c | Retorno do Renan: Bia mais ágil e selos da fila | v7.3 | feita (21/10) |
-| 1d-1 | Garagem da Bia, móveis e editor do salão | v7.4 | **próxima** (decidida em 21/10) |
-| 1d-2 | Tela que rola até a calçada, espera lá fora e máquina de suco | v7.5 | a fazer (decidida em 21/10) |
+| 1d-1 | Garagem da Bia, móveis e editor do salão | v7.4 | feita (21/10) |
+| 1d-2 | Tela que rola até a calçada, espera lá fora e máquina de suco | v7.5 | **próxima** (decidida em 21/10) |
 | 2 | Manutenção e imprevistos | v8 | a fazer |
 | 3 | Pontos: área industrial e Avenida Brasil, carreira por pontos | v9 | a fazer |
 | 4 | Terraço Suíça e VIPs exigentes | v10 | a fazer |
@@ -164,6 +164,8 @@ Origem: retorno do Renan Martorelli (beta-tester) e conversa com o Arthur (15/10
 10. Como jogar, painel Versões, `VERSAO` e `vtag`.
 
 **Fora (vai para a 1d-2):** rolar a tela, espera lá fora, máquina de suco.
+
+**Feita em 21/10 (v7.4, `docs/spec-v7.4.md`).** O que mudou em relação ao plano: dá para **vender** a mesa por metade do preço (sem isso, 16 lugares em mesas de 2 travavam a mesa de 4); a mesa de 4 são 2 mesas quadradas juntas (mesa de bar, pedido do usuário com foto); o Turno sem fim usa um salão fixo de 16 lugares; dias 1 e 2 com 5 e 8 grupos. Sem equipe, o bot que compra móveis passa em ~97% das metas dos dias 3 a 7 (acima do alvo, pela folga da Garagem). Achado para a etapa 3: com equipe, mesa a mais não dá lucro (o gargalo são os 3 pratos limpos), então o pé-de-meia não depende dos móveis.
 
 **Calibração:** **não** tirar a folga da Garagem (pedido do usuário: rende a mais para o pé-de-meia). Conferir com `balance.js` e `carreira.js` que, sem equipe, o jogador que compra móveis bate as metas dos dias 3 a 7 no alvo ou acima (~40–75%), e que dá para juntar ~R$ 800 da mudança até o dia 5 sem deixar de contratar.
 

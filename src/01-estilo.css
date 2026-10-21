@@ -52,19 +52,22 @@ p{margin:calc(var(--u)*6) 0;font-size:max(12px,calc(var(--u)*16));line-height:1.
 .stats .tot{border-top:2px solid var(--tinta);padding-top:2px}
 .stats b{font-family:var(--fd);font-weight:400;text-align:right;font-size:max(13px,calc(var(--u)*18))}
 .shopgrid{display:grid;grid-template-columns:repeat(3,1fr);gap:calc(var(--u)*8);width:calc(var(--u)*760);max-width:100%;margin:calc(var(--u)*6) 0}
-.shopgrid.salao{grid-template-columns:repeat(2,1fr)}
-.plan{grid-column:1 / -1;display:grid;gap:calc(var(--u)*4);background:var(--creme);border:calc(var(--u)*3) solid var(--tinta);border-radius:calc(var(--u)*12);padding:calc(var(--u)*5) calc(var(--u)*8);text-align:left}
-.plan > span{font-size:max(11px,calc(var(--u)*12.5));font-weight:600;line-height:1.2}
-.plan .msg{color:var(--perigo);font-weight:800;min-height:1.2em}
-.prow{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:calc(var(--u)*6)}
-.pcell{background:#fff;border:calc(var(--u)*2) solid var(--tinta);border-radius:calc(var(--u)*8);padding:calc(var(--u)*3) calc(var(--u)*5);display:flex;gap:4px;align-items:center;justify-content:space-between;min-height:36px}
-.pcell.off{background:#ece7da}
-.pcell b small{font-size:inherit}
-@media (max-width:640px){.pcell b small{display:none}}
-.pcell.vaga{border-style:dashed;background:transparent;opacity:.6;justify-content:center;font-size:max(10px,calc(var(--u)*12))}
-.pcell b{font-family:var(--fd);font-weight:400;font-size:max(12px,calc(var(--u)*14));border-bottom:calc(var(--u)*4) solid;line-height:1.3;white-space:nowrap}
-.seg2{display:flex;gap:3px}
-.seg2 button{font:800 max(12px,calc(var(--u)*14)) var(--fb);color:var(--tinta);background:#fff;border:calc(var(--u)*2) solid var(--tinta);border-radius:999px;padding:0;width:max(30px,calc(var(--u)*34));min-height:30px;cursor:pointer}
+.shopgrid.salao{grid-template-columns:1fr}
+/* editor do salão (v7.4): o salão em escala à esquerda, a loja de móveis à direita */
+.ed{display:grid;grid-template-columns:minmax(0,1fr) max(150px,calc(var(--u)*210));gap:calc(var(--u)*8);align-items:start;text-align:left}
+.ed-cv{position:relative;border:calc(var(--u)*3) solid var(--tinta);border-radius:calc(var(--u)*10);overflow:hidden;line-height:0;background:var(--tinta)}
+.ed-cv canvas{display:block;width:100%;height:auto;touch-action:none;cursor:grab}
+.ed-pop{position:absolute;transform:translate(-50%,0);display:grid;gap:4px;background:var(--azulejo);border:calc(var(--u)*2.5) solid var(--tinta);border-radius:calc(var(--u)*10);padding:calc(var(--u)*6) calc(var(--u)*8);line-height:1.2;box-shadow:calc(var(--u)*3) calc(var(--u)*3) 0 var(--tinta);z-index:2;white-space:nowrap}
+.ed-pop.up{transform:translate(-50%,-100%)}
+.ed-pop b{font:800 max(11px,calc(var(--u)*13)) var(--fb);padding-right:26px}
+.ed-pop .btn{font-size:max(12px,calc(var(--u)*15));padding:calc(var(--u)*3) calc(var(--u)*10);min-height:36px}
+.ed-x{position:absolute;right:2px;top:0;width:30px;height:30px;border:0;background:none;font:800 20px var(--fb);color:var(--tinta);cursor:pointer;line-height:1}
+.ed-side{display:flex;flex-direction:column;gap:calc(var(--u)*6)}
+.ed-side .btn{font-size:max(12px,calc(var(--u)*16));padding:calc(var(--u)*3) calc(var(--u)*8);min-height:max(34px,calc(var(--u)*42))}
+.ed-lug{font-family:var(--fd);font-weight:400;font-size:max(15px,calc(var(--u)*22));color:var(--faixa);line-height:1.1}
+.ed-side span{font-size:max(10.5px,calc(var(--u)*12.5));font-weight:600;line-height:1.25}
+.ed-side .msg{color:var(--perigo);font-weight:800}
+.ed-side .ed-contas{font-weight:400;color:#5b5446}
 #ov-shop.salao #shop-folha,#ov-shop.caixa #shop-folha{display:none}
 /* aba Caixa (v7.2) */
 .shopgrid.caixa{grid-template-columns:1fr}
@@ -86,7 +89,6 @@ table.cx .rs{font-size:inherit}
 .cx-copia .btn{min-height:34px;padding:2px calc(var(--u)*16);font-size:max(13px,calc(var(--u)*16))}
 .cx-st{font-weight:700;font-size:max(12px,calc(var(--u)*14))}
 .cx-txt{flex-basis:100%;height:calc(var(--u)*90);font:600 12px var(--fb);border:2px solid var(--tinta);border-radius:8px;padding:4px}
-.seg2 button[aria-pressed="true"]{background:var(--faixa);color:#fff}
 .item{background:var(--creme);border:calc(var(--u)*3) solid var(--tinta);border-radius:calc(var(--u)*12);padding:calc(var(--u)*6) calc(var(--u)*8);display:grid;grid-template-columns:auto 1fr;column-gap:calc(var(--u)*8);row-gap:calc(var(--u)*3);align-items:center;align-content:start;text-align:left}
 .item.own{background:#dcefd9}
 .item canvas{width:calc(var(--u)*38);height:calc(var(--u)*38);min-width:28px;min-height:28px;grid-row:span 2}
@@ -197,11 +199,11 @@ table.rank tr.me td{background:#fbe7a8}
   #ov-shop .item span{font-size:10.5px}
   #ov-shop .item .next{padding:2px 5px}
   #ov-shop .item .next b{font-size:10.5px}
-  #ov-shop .plan{gap:3px;padding:3px 6px}
-  #ov-shop .plan > span{font-size:10.5px}
-  #ov-shop .pcell{padding:2px 4px;min-height:32px}
-  #ov-shop .pcell b{font-size:12px}
-  #ov-shop .seg2 button{width:28px;min-height:28px;font-size:12px}
+  #ov-shop .shopgrid.salao{width:calc(var(--u)*840)}
+  #ov-shop .ed-side{gap:4px}
+  #ov-shop .ed-side .btn{min-height:30px;font-size:12px}
+  #ov-shop .ed-ponto,#ov-shop .ed-contas{display:none}
+  #ov-shop .ed-pop .btn{min-height:30px;font-size:12px}
 }
 /* celular deitado: o menu cabe sem rolagem (painel mais largo, título em 1 linha, 4 botões numa fileira) */
 @media (max-height:460px){

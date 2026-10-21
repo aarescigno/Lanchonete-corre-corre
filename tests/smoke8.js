@@ -1,78 +1,37 @@
-// v6, Salão: cadeiras e mesas compradas na lojinha, 2 ou 4 lugares por mesa, mesas que se espremem na fileira.
-const H=require('./harness.js')(); const {g,L,ctx}=H;
+// v7.4: o salão da v6 à v7.3 (cadeiras e mesas numa planta fixa) vira a Garagem com o kit, e o que o jogador
+// gastou nele volta para o dinheiro, numa linha "Devolução do salão" do caixa. E as faixas de estrelas (v6).
+const HH=require('./harness.js');
+const {g,L,ctx,els}=HH();
 let fails=0,total=0; const ok=(c,m)=>{ total++; if(!c){fails++;console.log('FAIL:',m);} else console.log('ok  :',m); };
-const S=L.SALAO, sal=()=>g.save.salao;
+const S=L.SALAO, V=S.v6, kit=s=>s.ponto==='garagem' && s.mesas.map(m=>m.seats).join()===L.salaoKit(L.PONTOS[0]).map(m=>m.seats).join() && L.salaoLugares(s.mesas)===10;
+const txt=e=>(e.textContent||'')+(e.children||[]).map(txt).join(' ');
 
-// padrão: o salão de sempre
-ok(sal().chairs===16 && sal().mesas===0 && L.salaoUsed(sal())===16,'padrão: 16 cadeiras, 6 mesas');
-ok(g.tables.map(t=>t.cx+'/'+t.seats).join(' ')==='260/2 430/2 600/2 260/2 430/4 600/4','padrão: mesas no lugar de sempre');
+// conversão do save
+{ const old={maxDay:5,bank:500,salao:{seats:{1:4,2:2,3:2,4:2,5:4,6:4,7:2},chairs:22,mesas:1},caixa:[{d:4,fat:900,lucro:300,saldo:500}]};
+  const dev=V.tablePrice+((22-V.chairs-2)/2)*V.chairPrice, n=L.normSave(old);
+  ok(L.salaoDevolucao(old.salao)===dev && dev===420,'devolução: 1 mesa ('+V.tablePrice+') e 2 pares de cadeiras ('+V.chairPrice+' cada) = '+dev);
+  ok(n.bank===500+dev,'o dinheiro acumulado recebe a devolução ('+n.bank+')');
+  ok(kit(n.salao),'começa na Garagem com o kit (4 mesas, 10 lugares)');
+  const last=n.caixa[n.caixa.length-1];
+  ok(n.caixa.length===2 && last.dev===dev && last.saldo===n.bank && last.d===4 && !last.fat && !last.lucro,'linha "Devolução do salão" no caixa, com o saldo');
+  ok(L.normCaixa(n.caixa).length===2 && L.normCaixa(n.caixa)[1].dev===dev,'a linha da devolução sobrevive ao save');
+  ok(L.caixaTotais(n.caixa).every(t=>t.v>=0) && L.caixaTotais(n.caixa).find(t=>t.id==='sal').v===0,'a devolução não entra em "para onde foi o dinheiro"');
+  const n2=L.normSave(JSON.parse(JSON.stringify(n))); ok(n2.bank===n.bank && n2.caixa.length===2,'save já convertido não devolve de novo'); }
+{ const n=L.normSave({bank:100,salao:{seats:{1:2,2:2,3:2,4:2,5:4,6:4},chairs:16,mesas:0}});
+  ok(n.bank===100 && !n.caixa.length && kit(n.salao),'salão antigo sem compras: sem devolução e sem linha'); }
+{ const n=L.normSave({bank:100,salao:{chairs:99,mesas:7}});
+  ok(n.bank===100+2*V.tablePrice+4*V.chairPrice && kit(n.salao),'salão antigo estragado: devolve no máximo 2 mesas e 4 pares'); }
+{ const n=L.normSave({bank:100}); ok(n.bank===100 && kit(n.salao),'save sem salão (v5 ou antes): o kit, sem devolução'); }
 
-// cadeiras
-g.save.bank=0; g.goShop(2);
-ok(!g.setSeats(1,4) && /Faltam cadeiras/.test(g.salaoMsg),'sem cadeira livre, a mesa não cresce');
-ok(!g.buyChairs() && sal().chairs===16,'sem dinheiro, não compra cadeiras');
-g.save.bank=1000;
-ok(g.buyChairs() && sal().chairs===18 && g.save.bank===1000-S.chairPrice,'compra 2 cadeiras');
-ok(g.setSeats(1,4) && g.tables[0].seats===4 && g.tables[0].hx===62,'mesa 1 passa a ter 4 lugares');
-ok(L.OBST[0].x1-L.OBST[0].x0===124,'obstáculo da mesa 1 acompanha o tamanho');
-ok(g.setSeats(6,2) && g.setSeats(4,4) && L.salaoUsed(sal())===18,'tira 2 cadeiras da mesa 6 e põe na 4');
-ok(g.state==='shop' && g.tables.length===6,'segue na lojinha');
-ok(!g.shopBought,'cadeiras não contam no limite de 1 melhoria por dia');
-
-// família de 4 senta na mesa 1 (que era de 2) no dia 2
-g.startDay(2); g.begin();
-{ const t1=g.tables[0]; const grp=g.spawn({type:'familia',color:0,vip:false}); grp.size=4; grp.people=grp.people.concat(grp.people).slice(0,4); grp.dishes=grp.people.map(()=> 'pf');
-  let st=0; while(grp.state==='queue'&&!grp.seated&&st<60){ g.update(0.05); st++; }
-  ok(g.seatGroup(grp,t1),'família de 4 senta na mesa 1');
-  st=0; while(!grp.seated&&st<400){ g.update(0.05); st++; }
-  ok(grp.seated,'família chega à mesa 1'); }
-
-// mesas novas
-g.goShop(3); g.save.bank=1000;
-ok(g.buyTable() && sal().mesas===1 && sal().chairs===20 && g.tables.length===7,'compra a mesa 7 (com 2 cadeiras)');
-ok(g.tables.map(t=>t.id).join()==='1,2,3,4,5,6,7','ids seguidos (tables[id-1])');
-{ const r0=g.tables.filter(t=>t.cy===S.ys[0]).sort((a,b)=>a.cx-b.cx).map(t=>t.id).join(); ok(r0==='1,2,3,7','a mesa 7 fica na ponta direita da fileira de cima'); }
-g.buyChairs(); ok(!g.setSeats(2,4) && /Não cabe/.test(g.salaoMsg),'fileira de 4 mesas: só 1 com 4 lugares');
-ok(/fileira de baixo/.test(L.salaoTableBlock(sal())),'mesa 8 não cabe com 2 mesas grandes embaixo');
-ok(!g.buyTable() && sal().mesas===1,'compra da mesa 8 recusada');
-ok(g.setSeats(4,2) && L.salaoTableBlock(sal())==='' && g.buyTable() && g.tables.length===8,'com 1 mesa grande embaixo, compra a mesa 8');
-g.startDay(1);
-ok(g.tables[6].open && g.tables[7].open && !g.tables[2].open,'mesas novas abrem todo dia (a 3 segue fechada no dia 1)');
-g.startEndless(); ok(g.tables.every(t=>t.open),'Turno sem fim: todas abertas');
-
-// save
-{ const n=L.normSave(JSON.parse(JSON.stringify(g.save))); ok(JSON.stringify(n.salao)===JSON.stringify(sal()),'save guarda o salão'); }
-{ const n=L.normSalao({seats:{1:7,5:4,6:4,8:4},chairs:-5,mesas:9}); ok(n.mesas===2 && n.chairs===20 && L.salaoOk(n),'save estragado vira salão válido'); }
-{ const n=L.normSalao({seats:{1:4,2:4,3:4,4:4,5:4,6:4},chairs:24}); ok(L.salaoOk(n) && L.salaoUsed(n)===24,'6 mesas de 4 lugares'); }
-
-// todas as combinações válidas: mesas sem sobreposição, pontos de atendimento livres e alcançáveis
-{ let combos=0, bad=[];
-  const A=L.LAYOUT.STATIONS.agua.ap, B=L.LAYOUT.BOUNDS;
-  for(let m=0;m<=2;m++) for(let mask=0;mask<(1<<(6+m));mask++){
-    const seats={}; for(let i=0;i<6+m;i++) seats[i+1]=(mask>>i)&1?4:2;
-    const s={seats,chairs:99,mesas:m}; if(!L.salaoOk(s)) continue; combos++;
-    const defs=L.salaoDefs(s); L.setObst(defs);
-    const ins=(x,y)=>L.OBST.some(r=>x>r.x0&&x<r.x1&&y>r.y0&&y<r.y1);
-    defs.forEach((d,i)=>{ const hx=d.seats===2?36:62;
-      defs.forEach((e,j)=>{ if(j>i&&e.cy===d.cy){ const he=e.seats===2?36:62; if(Math.abs(e.cx-d.cx)<hx+he+L.SALAO.gap-1) bad.push('perto '+d.id+'/'+e.id+' '+mask); } });
-      [{x:d.cx-hx-28,y:d.cy+4},{x:d.cx+hx+28,y:d.cy+4}].forEach(p=>{
-        if(ins(p.x,p.y)||p.x<B.x0||p.x>B.x1) bad.push('ap '+d.id+' '+mask+' '+m);
-        const path=L.findPath({x:400,y:316},p); if(Math.hypot(path[path.length-1].x-p.x,path[path.length-1].y-p.y)>1) bad.push('caminho '+d.id); });
-    });
-    if(ins(A.x,A.y)) bad.push('água '+mask); if(ins(700,470)) bad.push('Dani '+mask);
-  }
-  g.buildTables(); g.tablesKey=''; g.buildTables();
-  ok(combos>40 && !bad.length,'combinações válidas ('+combos+') sem sobreposição'+(bad.length?': '+bad.slice(0,4).join('; '):''));
-  ok(!L.salaoOk({seats:{1:4,2:4,3:2,4:2,5:2,6:2,7:2},chairs:99,mesas:1}),'2 mesas grandes numa fileira de 4 não cabem');
-}
-
-// bot joga o dia 2 com 8 mesas
-{ const bot=require('./bot.js')(g,L); let err=null, served=0;
-  try{ g.startDay(2); g.begin(); let st=0; while(g.state==='playing'&&st<30000){ bot(); g.update(0.05); if(st%10===0) L.render(g,ctx); st++; } served=g.result ? g.result.served : 0; }catch(e){ err=e; }
-  ok(!err,'dia 2 com 8 mesas sem exceções'+(err?': '+err.stack:'')); ok(served>=5,'bot atendeu grupos com 8 mesas ('+served+')'); }
-
-// lojinha: o salão ao fundo acompanha cada mudança
-{ let err=null; try{ g.goShop(4); g.save.bank=500; g.setSeats(1,2); g.setSeats(7,4); L.render(g,ctx); }catch(e){ err=e; } ok(!err && g.tables[6].seats===4 && g.state==='shop','lojinha: mesa 7 com 4 lugares e salão redesenhado'+(err?': '+err:'')); }
+// no carregamento: converte e grava uma vez só
+{ const old={maxDay:3,bank:200,salao:{seats:{1:2,2:2,3:2,4:2,5:4,6:4},chairs:20,mesas:0}};
+  const h=HH({store:{lcc2_save:JSON.stringify(old)}});
+  ok(h.g.save.bank===200+2*V.chairPrice && kit(h.g.save.salao) && h.g.tables.length===4,'carregar um save da v7.3 devolve as cadeiras e abre na Garagem');
+  const saved=JSON.parse(h.store.lcc2_save); ok(Array.isArray(saved.salao.mesas) && saved.bank===h.g.save.bank,'o save convertido já fica gravado');
+  const h2=HH({store:{lcc2_save:h.store.lcc2_save}}); ok(h2.g.save.bank===h.g.save.bank && h2.g.save.caixa.length===1,'carregar de novo não devolve outra vez');
+  h.g.goShop(3); h.L.setShopTab('caixa'); const t=txt(h.els['shop-grid']);
+  ok(/Devolução do salão antigo: \+R\$ 120/.test(t),'aba Caixa mostra a devolução');
+  ok(/Devolução do salão: \+120 · saldo 320/.test(h.L.caixaResumo(h.g.save)),'resumo do caixa traz a devolução'); }
 
 // estrelas: 1 na meta, 2 na metade do caminho até a expert, 3 na expert sem perder ninguém
 // (v7: pelo lucro; fin recebe o lucro e soma de volta as contas do dia ao faturamento)
