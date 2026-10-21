@@ -9,6 +9,7 @@ const eqFor=n=>EQ0||AUTO[n]||{};
 // ajuste rápido sem mexer em src/: INGRED='{"prato":0.7}' CONTAS='{"aluguel":150}' node balance.js
 if(process.env.CONTAS) Object.assign(L.CONTAS,JSON.parse(process.env.CONTAS));
 if(process.env.INGRED) Object.assign(L.INGRED,JSON.parse(process.env.INGRED));
+if(process.env.METAS){ const mt=JSON.parse(process.env.METAS); for(const k in mt) L.DAYS[k-1].meta=mt[k]; }   // METAS='{"3":420}': testa metas sem mexer em src/
 const order=process.env.ORDEM?process.env.ORDEM.split(','):['tenis','agua','cafeteira','bandeja','ventilador','pratos'];   // ORDEM=pratos,tenis,...: ordem de compra das melhorias
 for(let n=1;n<=7;n++){
   const res=[];

@@ -89,6 +89,7 @@ function render(g, ctx){
     else drawHearts(ctx,grp,grp.x,grp.y-64,tm);
     if (grp.aguarda && !grp.path.length) drawWaitBadge(ctx,grp.x + (grp.vip ? 63 : 50),grp.y-66,tm,grp.piso);
   });
+  if (!menu) drawFilaMarcas(ctx,g,tm);
   // "?" sobre a Bia
   if (b.qT > 0 && !menu){
     ctx.save(); ctx.translate(b.x, b.y - 96); drawBubble(ctx,0,0,14,'#fff'); txt(ctx,'?',0,1,20,PAL.perigo,'center',FD); ctx.restore();

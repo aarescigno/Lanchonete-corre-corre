@@ -1,9 +1,9 @@
-# Resumo do projeto e das alterações (até 15/10/2026)
+# Resumo do projeto e das alterações (até 21/10/2026)
 
 ## Estado atual
-- **Versão:** v7.2 (Livro-caixa: aba Caixa na lojinha com os últimos 14 dias, para onde foi o dinheiro e um resumo para copiar), publicada como Versão 24 do artifact https://claude.ai/artifact/MJxrgDg8S4akvg47SoQAvj (privado).
+- **Versão:** v7.3 (Bia mais ágil: base 300 px/s, Tênis de corrida e selos "1º, 2º..." da fila no salão), publicada no artifact https://claude.ai/artifact/MJxrgDg8S4akvg47SoQAvj (privado).
 - **Branch:** `claude/main` (renomeado pelo usuário; o antigo `claude/intelligent-gauss-3owv29` não existe mais) no repositório `aarescigno/Lanchonete-corre-corre`.
-- **Arquivos publicados:** `lanchonete.html` (página), mais `versoes/v1.html` a `versoes/v7.1.html`, abertos pelo painel Versões.
+- **Arquivos publicados:** `lanchonete.html` (página), mais `versoes/v1.html` a `versoes/v7.2.html`, abertos pelo painel Versões.
 - **Capacidades declaradas (mantidas ao republicar sem `capabilities`):**
   - `db`: `ranking-carreira` e `ranking-semfim` com read "view" e write "owner";
   - `db`: `ranking-*/{self}` com write "interact";
@@ -26,6 +26,7 @@
 | v7 | 15/10 | Contas: meta em lucro, ingredientes, contas do dia pelo salão aberto, divulgação (boca a boca, panfletos, redes sociais) | `docs/spec-v7.md` |
 | v7.1 | 15/10 | Jogo justo: fila justa (ritmo 40% e piso de 1 coração sem mesa que sirva), porta que respeita a lotação, ícone "aguardando mesa", bot afiado e perdas por causa | `docs/spec-v7.1.md` |
 | v7.2 | 15/10 | Livro-caixa: aba Caixa na lojinha (14 dias, para onde foi o dinheiro, "Copiar resumo" para o WhatsApp); valores da v7 mantidos | `docs/spec-v7.2.md` |
+| v7.3 | 21/10 | Bia mais ágil (retorno do Renan): base 300 px/s, Tênis de corrida (R$ 350, +20%), selos "1º, 2º..." da fila no salão e nos quadrinhos; metas mantidas | `docs/spec-v7.3.md` |
 
 ## Alterações feitas no Claude Code (14/10/2026)
 1. **Importação** do pacote exportado do claude.ai para o repositório (commit `982583b`).
@@ -105,6 +106,12 @@
    - **Aba Caixa** na lojinha: tabela (mais novo em cima), barra "para onde foi o dinheiro" e **Copiar resumo** (texto para o WhatsApp; se o navegador não deixar copiar, mostra o texto para copiar à mão).
    - Ajuste fino: `INGRED.prato` 0,7 tirava só ~R$ 150 do bot até o dia 5 e deixava os dias 5 a 7 sem equipe abaixo do alvo; valores mantidos até chegar resumo de jogador (rodada de retorno dispensada pelo usuário). Teste `smoke11`.
 
+13. **v7.3, Bia mais ágil** (ver `docs/spec-v7.3.md`; etapa 1c do `docs/PLANO.md`, retorno do Renan):
+   - Velocidade de base 260 → 300 (`BIA_SPEED`); Tênis novos +10%; **Tênis de corrida** (R$ 350, +20%, pedem os Tênis novos e aparecem no lugar deles na lojinha, que continua com 6 cartões).
+   - **Selos da fila:** etiqueta "1º, 2º..." na mesa, na estação ou no prato que está na fila da Bia (todas as vezes do mesmo lugar juntas), com pulinho ao surgir (parada com `prefers-reduced-motion`); os quadrinhos da fila ganham a mesma etiqueta. A mesa pode entrar 2 vezes na fila; cancelar só pelo quadrinho.
+   - Metas mantidas por escolha do usuário (sem equipe ~74% das metas nos dias 3 a 7; com equipe ~98%). Teste `smoke12`.
+   - Salão por níveis (16, 20, 26 e 32 lugares): só proposta, etapa 1d do plano, em discussão.
+
 ## Código em partes (`src/`)
 - Desde 15/10/2026 o código fica em 19 partes em `src/` (lista no `CLAUDE.md`), juntadas por `montar.py` em `lanchonete.html` sem acrescentar nada: o arquivo montado é idêntico, byte a byte, ao anterior à divisão.
 - `lanchonete.html` continua no git (artifact, `app/build.py`, testes e capturas usam ele). `montar.py --check` confere que ele está em dia (o workflow do Pages roda isso); `montar.py` recusa sobrescrever um `lanchonete.html` editado à mão depois das partes (`--forcar` passa por cima).
@@ -130,17 +137,19 @@
 - `smoke9` (33/33: v7, lucro, ingredientes, contas e divulgação);
 - `smoke10` (26/26: v7.1, fila justa, piso, porta e perdas por causa);
 - `smoke11` (39/39: v7.2, livro-caixa, limite de 14 dias, resumo e aba Caixa);
+- `smoke12` (21/21: v7.3, velocidade, Tênis de corrida, selos da fila);
 - `menu_fit` (14 tamanhos de tela);
-- `balance` (bot, N rodadas por dia; `DIV`, `MULT`, `SALAO`, `BOT=afiado`, `ORDEM`, `INGRED`, `CONTAS`; perdas por causa e 3★);
+- `balance` (bot, N rodadas por dia; `DIV`, `MULT`, `SALAO`, `BOT=afiado`, `ORDEM`, `INGRED`, `CONTAS`, `METAS`; perdas por causa e 3★);
 - `carreira` (bot jogando a carreira com o dinheiro acumulado de verdade).
 
 ## Ideias pendentes
 - Testar som e toque em celular real (o toque foi ajustado depois de relato de dificuldade, mas só testado no Chromium com toque emulado).
-- Salão: os preços (R$ 60 por 2 cadeiras, R$ 300 por mesa) e o limite de 1 mesa de 4 lugares por fileira de 4 mesas ainda não foram testados com jogadores; ajustar em `SALAO`.
+- Salão: o Renan achou a aba Salão da v6 complexa demais; a troca por níveis de espaço está proposta na etapa 1d do `docs/PLANO.md`.
+- v7.3: conferir com o Renan se a Bia ficou ágil o bastante e se os selos "1º, 2º..." se entendem.
 - Estrelas: conferir com jogadores se a 2ª estrela (`bomGoal`, metade do caminho entre a meta e a expert) ficou no ponto.
 - O painel "Como jogar" ainda rola no celular deitado.
 - Ajuste de dificuldade.
 - v7: conferir com jogadores se a escassez ficou no ponto (valores em `CONTAS`, `INGRED`, `DIVULGA` e nas metas). Desde a v7.2, o jeito é pedir o "Copiar resumo" da aba Caixa.
 - v7.1: conferir com jogadores se a fila justa (`FILA_JUSTA`) e a porta (`PORTA`) ficaram no ponto, e se o ícone "aguardando mesa" se entende.
-- **Roteiro das próximas versões em `docs/PLANO.md`** (uma etapa por sessão; log das ideias e retornos em `docs/PROPOSTAS.md`): jogo justo (feito na v7.1), livro-caixa (feito na v7.2), manutenção e imprevistos, ponto (Centro, área nobre com VIPs exigentes), modo história em 2 partes e polimento.
+- **Roteiro das próximas versões em `docs/PLANO.md`** (uma etapa por sessão; log das ideias e retornos em `docs/PROPOSTAS.md`): jogo justo (feito na v7.1), livro-caixa (feito na v7.2), Bia mais ágil (feito na v7.3), salão por níveis (1d, em discussão), manutenção e imprevistos, ponto (Centro, área nobre com VIPs exigentes), modo história em 2 partes e polimento.
 - A lojinha ainda rola no menor celular deitado (568×320).

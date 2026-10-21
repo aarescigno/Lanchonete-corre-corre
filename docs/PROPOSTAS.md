@@ -4,6 +4,20 @@ Registro das ideias e dos retornos de quem jogou, com o texto original, e de ond
 
 ---
 
+## 21/10/2026 — Usuário: como fazer a etapa 1c (Bia, fila e salão)
+**Origem:** pedido do usuário ao começar a etapa 1c:
+
+> "para o Bia mais rápida aumente a velocidade base e adicione segundo nível de tênis: o nível 2 parecendo um tênis de corrida - implemente e teste
+> para a marca do que já está na fila, adicione um numerinho da ordem em que a Bia vai passar, cancelar somente se tocar na tarefa ali nos quadrinhos de baixo, isso porque se eu quiser fazer 2 coisas na mesma mesa, ficaria cancelando a tarefa anterior ao adicionar a nova.
+> para as mesas, proponha 4 níveis de evolução do espaço, que incrementa em quantidade de mesas/cadeiras possíveis no ambiente, mas não implemente ainda, só para nossa discussão e decisão futura"
+
+**Para onde foi:**
+- Bia mais rápida e Tênis de corrida: **feito na v7.3** (base 260 → 300; Tênis novos +10%; Tênis de corrida +20% por R$ 350). Metas mantidas por escolha do usuário. Ver `docs/spec-v7.3.md`.
+- Número da vez: **feito na v7.3** (etiquetas "1º, 2º...", todas as vezes do mesmo lugar juntas, pulinho ao surgir; mesa pode repetir na fila; cancelar só pelo quadrinho).
+- 4 níveis do salão: **proposta na etapa 1d do `docs/PLANO.md`** (16, 20, 26 e 32 lugares; o jogador só escolhe quantas mesas de 4), à espera da decisão do usuário.
+
+---
+
 ## 18/10/2026 — Renan (beta-tester): Bia mais rápida, marca do que já está na fila, salão mais simples
 **Origem:** retorno do beta-tester Renan Martorelli sobre a v7.2, repassado pelo usuário:
 
@@ -17,7 +31,7 @@ Registro das ideias e dos retornos de quem jogou, com o texto original, e de ond
 | Marca ("check") nos lugares que já estão na fila da Bia | A fila de ações só aparece no HUD, nos 6 quadrinhos de baixo; a mesa, a estação ou o prato que já foi pedido não mostra nada no salão. Mesas e estações podem entrar duas vezes sem o jogador perceber (só o prato pronto já não repete). |
 | Salão mais simples: só um total de cadeiras por tamanho de salão, distribuídas em mesas de 4 ou de 2 | Aba Salão da v6: compra de 2 cadeiras (R$ 60, até 24) e de mesa (R$ 300, até 8), botões 2 e 4 em cada mesa e a regra de só 1 mesa de 4 por fileira de 4 mesas. |
 
-**Para onde foi:** etapa **1c** do `docs/PLANO.md` (v7.3), com **prioridade maior** que as outras, por ser retorno do beta-tester (pedido do usuário em 21/10). Ainda sem mudança no código. Pontos a decidir antes:
+**Para onde foi:** etapa **1c** do `docs/PLANO.md` (v7.3), com **prioridade maior** que as outras, por ser retorno do beta-tester (pedido do usuário em 21/10). Velocidade e marca **feitas na v7.3** (21/10); o salão virou a etapa **1d**, em discussão (ver a entrada de 21/10 acima). Pontos que estavam em aberto:
 - velocidade: aumento fixo na base, um 2º nível dos Tênis ou os dois; conferir no `balance.js` (sem equipe e `BOT=afiado`) que as metas não ficam fáceis demais;
 - marca: um "✓" (ou o número da vez na fila) sobre cada mesa, estação ou prato pedido, que some quando a Bia faz a ação; ver se um 2º toque no mesmo lugar deve tirar o pedido da fila;
 - salão: o "tamanho de salão" casa com a etapa 3 (mudar para o Centro, onde o salão vai junto com ajuste se não couber); o total de lugares de cada ponto seria o limite, e o jogador só escolhe quantas mesas de 4 e de 2 cabem nele. Rever as contas do dia (R$ 30 por mesa e R$ 6 por lugar) e o `smoke8`.

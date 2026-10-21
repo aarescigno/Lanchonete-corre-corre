@@ -494,7 +494,7 @@ class Game {
   }
   buy(id){
     const u = UPGRADES.find(x => x.id === id);
-    if (!u || this.shopBought || this.up[id] || this.save.bank < u.cost) return false;
+    if (!u || this.shopBought || this.up[id] || (u.req && !this.up[u.req]) || this.save.bank < u.cost) return false;
     this.save.bank -= u.cost; this.up[id] = true; this.shopBought = true; this.boughtFor = this.shopNext;
     caixaGasto(this.save, 'mel', u.cost);
     writeSave(this.save);

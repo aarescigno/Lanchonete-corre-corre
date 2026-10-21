@@ -208,7 +208,7 @@ function drawHud(ctx,g,tm){
     glowSprite(ctx,g,'acao' + i,ctx => {
       rr(ctx,sx,548,48,46,8); fs(ctx,a ? PAL.creme : '#3b362e',2.4);
       if (i === 0 && a){ rr(ctx,sx-2,546,52,50,9); ctx.strokeStyle = PAL.mostarda; ctx.lineWidth = 3; ctx.stroke(); }
-      if (a) drawActIcon(ctx,g,a,sx+24,571);
+      if (a){ drawActIcon(ctx,g,a,sx+24,571); drawFilaSelo(ctx,i+1,sx+10,554,9,0.75); }
       else { txt(ctx,String(i+1),sx+24,571,14,'#5b554a','center',FB); }
     });
   }
@@ -231,6 +231,34 @@ function drawHud(ctx,g,tm){
     ctx.fillStyle = PAL.tinta; ctx.beginPath(); ctx.moveTo(906,566); ctx.lineTo(913,566); ctx.lineTo(922,558); ctx.lineTo(922,584); ctx.lineTo(913,576); ctx.lineTo(906,576); ctx.closePath(); ctx.fill();
     if (!Sfx.muted){ ctx.strokeStyle = PAL.tinta; ctx.lineWidth = 2.4; ctx.beginPath(); ctx.arc(924,571,6,-0.9,0.9); ctx.stroke(); ctx.beginPath(); ctx.arc(924,571,11,-0.9,0.9); ctx.stroke(); }
     else { ctx.strokeStyle = PAL.perigo; ctx.lineWidth = 3.2; ctx.beginPath(); ctx.moveTo(927,563); ctx.lineTo(939,579); ctx.moveTo(939,563); ctx.lineTo(927,579); ctx.stroke(); }
+  });
+}
+/* selo com a vez na fila (v7.3): etiqueta "1º", "2º"... (ordinal, para não confundir com o número
+   da mesa); a ação atual em mostarda, as outras escuras; surge com um pulinho (parado com RM) */
+function drawFilaSelo(ctx,n,x,y,age,s){
+  s = s || 1;
+  const p = RM || !(age < 0.3) ? 1 : 1 + 0.45 * Math.sin(Math.PI * Math.min(1, age / 0.3)) * (1 - age / 0.3);
+  const cur = n === 1;
+  ctx.save(); ctx.translate(x,y); ctx.scale(p*s,p*s);
+  rr(ctx,-13,-9,26,18,6); fs(ctx,cur ? PAL.mostarda : PAL.tinta,2); ctx.strokeStyle = '#fff'; ctx.lineWidth = 1.4; rr(ctx,-11.5,-7.5,23,15,5); ctx.stroke();
+  txt(ctx,n + 'º',0.5,0.5,12,cur ? PAL.tinta : '#fff','center',FD);
+  ctx.restore();
+}
+/* onde fica o selo de cada lugar da fila (null se o lugar sumiu, ex.: prato já pego) */
+function filaPos(g,a){
+  // mesa: à esquerda do tampo, empilhando para baixo; prato: em cima dele; estação: no canto, para a direita
+  if (a.type === 'table'){ const t = g.tables[a.id-1]; return t ? { x:t.cx - t.hx - 14, y:t.cy - 10, dy:20 } : null; }
+  if (a.type === 'plate'){ const j = g.kitchen.plates.findIndex(p => p && p.id === a.pid); return j < 0 ? null : { x:PLATE_SLOTS[j].x, y:PLATE_SLOTS[j].y - 26, dy:-20 }; }
+  const st = STATIONS[a.type];
+  return st ? { x:st.rect.x + 12, y:st.rect.y + 6, dx:28 } : null;
+}
+function drawFilaMarcas(ctx,g,tm){
+  const seen = {};
+  g.bia.acts.forEach((a,i) => {
+    const pos = filaPos(g,a);
+    if (!pos) return;
+    const k = pos.x + ',' + pos.y, n = seen[k] = (seen[k] || 0) + 1;
+    drawFilaSelo(ctx,i+1,pos.x + (n-1)*(pos.dx || 0),pos.y + (n-1)*(pos.dy || 0),tm - (a.t0 == null ? -9 : a.t0));
   });
 }
 function drawHandItem(ctx,h,x,y,s,noTag){

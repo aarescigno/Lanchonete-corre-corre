@@ -1,13 +1,13 @@
 # Plano de novidades (uma etapa por sessão)
 
-Origem: retorno do Renan Martorelli (beta-tester) e conversa com o Arthur (15/10/2026); a etapa 1c veio de outro retorno do Renan (18/10). Os textos originais e o destino de cada ideia estão em `docs/PROPOSTAS.md` (log de propostas). Os pedidos foram escassez de recursos, custos de manutenção, divulgação, aluguel em área nobre com VIPs exigentes e modo história ("o sonho da Bia de ter um restaurante estrelado, começando do zero"). A v7 (Contas) fez a primeira parte.
+Origem: retorno do Renan Martorelli (beta-tester) e conversa com o Arthur (15/10/2026); as etapas 1c e 1d vieram de outro retorno do Renan (18/10). Os textos originais e o destino de cada ideia estão em `docs/PROPOSTAS.md` (log de propostas). Os pedidos foram escassez de recursos, custos de manutenção, divulgação, aluguel em área nobre com VIPs exigentes e modo história ("o sonho da Bia de ter um restaurante estrelado, começando do zero"). A v7 (Contas) fez a primeira parte.
 
 ## Como usar
 - Cada etapa cabe numa sessão e termina como as outras: versão nova (se mexe no jogo), testes verdes, `docs/spec-vN.md`, `RESUMO.md` atualizado, PR com merge no `claude/main` e publicação no artifact (ver `CLAUDE.md`).
 - Para começar uma sessão, basta pedir: **"faça a próxima etapa do docs/PLANO.md"**. A sessão lê só a etapa da vez e as partes de `src/` citadas nela.
 - Antes de programar, a sessão confirma com o usuário as **decisões em aberto** da etapa (cada uma já tem uma sugestão).
 - No fim, a sessão marca a etapa como feita na tabela abaixo (com a versão e a data) e anota o que mudou no plano.
-- Ordem: cada etapa depende só das anteriores. A 1a vem primeiro (mexe no equilíbrio de base). **A 1c é a próxima e tem prioridade sobre as demais**, por ser retorno do beta-tester Renan (pedido do usuário em 21/10). A 1b e a 2 podiam trocar de lugar. A 3 vem antes da 4, e a 4 antes da 6.
+- Ordem: cada etapa depende só das anteriores. A 1a vem primeiro (mexe no equilíbrio de base). A 1c teve prioridade sobre as demais, por ser retorno do beta-tester Renan (pedido do usuário em 21/10). **A 1d (salão por níveis) ainda está em discussão**: enquanto o usuário não decidir os níveis, a próxima é a 2. A 1b e a 2 podiam trocar de lugar. A 3 vem antes da 4, e a 4 antes da 6.
 
 ## Situação
 | # | Etapa | Versão | Situação |
@@ -15,8 +15,9 @@ Origem: retorno do Renan Martorelli (beta-tester) e conversa com o Arthur (15/10
 | 0 | Contas: lucro, ingredientes, contas do dia, divulgação | v7 | feita (15/10) |
 | 1a | Jogo justo: dá para não perder ninguém | v7.1 | feita (15/10) |
 | 1b | Livro-caixa e ajuste fino com jogadores | v7.2 | feita (15/10) |
-| 1c | Retorno do Renan: Bia mais ágil, marca do que está na fila, salão por lugares | v7.3 | **próxima (prioridade)** |
-| 2 | Manutenção e imprevistos | v8 | a fazer |
+| 1c | Retorno do Renan: Bia mais ágil e selos da fila | v7.3 | feita (21/10) |
+| 1d | Salão por níveis de espaço (lugares, mesas de 4 e de 2) | v7.4 | **em discussão** (proposta abaixo) |
+| 2 | Manutenção e imprevistos | v8 | **próxima** (se a 1d não for decidida antes) |
 | 3 | Ponto: mudar para o Centro | v9 | a fazer |
 | 4 | Área nobre e VIPs exigentes | v10 | a fazer |
 | 5 | Modo História, parte 1: estrutura e primeiros capítulos | v11 | a fazer |
@@ -91,7 +92,7 @@ Origem: retorno do Renan Martorelli (beta-tester) e conversa com o Arthur (15/10
 ---
 
 ## Etapa 1c — Retorno do Renan: Bia mais ágil e salão simples (v7.3)
-> **Prioridade maior** (pedido do usuário em 21/10): é retorno do beta-tester Renan. Vem antes da etapa 2.
+> **Feita em 21/10** (ver `docs/spec-v7.3.md`): base 300 px/s, Tênis de corrida (R$ 350, +20%), selos "1º, 2º..." na mesa, na estação e no prato pedidos (mesa pode repetir; cancelar só pelo quadrinho da fila) e metas mantidas. O item 3 (salão por lugares) virou a **etapa 1d**, só proposta por enquanto (pedido do usuário).
 
 **Objetivo:** atender o retorno do Renan (entrada de 18/10 em `docs/PROPOSTAS.md`): a Bia anda devagar, não dá para ver o que já foi pedido a ela, e "o manejo das mesas ficou complexo demais".
 
@@ -107,7 +108,7 @@ Origem: retorno do Renan Martorelli (beta-tester) e conversa com o Arthur (15/10
 
 **Fora:** mudar de ponto (etapa 3).
 
-**Partes:** `14-bia.js` (velocidade, fila de ações), `10-constantes.js` (`UPGRADES`, `SALAO`, `CONTAS`, metas em `DAYS`), `16-jogo.js` (toques, compras do salão, contas), `21-cenario.js` e `22-salao-hud.js` (selos nas estações, mesas e pratos), `12-clientes.js` (`normSalao` e save), `41-lojinha.js` (aba Salão), `tests/bot.js` e `botpage.js`.
+**Partes (como foi planejado):** `14-bia.js` (velocidade, fila de ações), `10-constantes.js` (`UPGRADES`, `SALAO`, `CONTAS`, metas em `DAYS`), `16-jogo.js` (toques, compras do salão, contas), `21-cenario.js` e `22-salao-hud.js` (selos nas estações, mesas e pratos), `12-clientes.js` (`normSalao` e save), `41-lojinha.js` (aba Salão), `tests/bot.js` e `botpage.js`.
 
 **Testes:** `smoke12` (velocidade, selo aparece e some, toque repetido não duplica, salão por lugares, save antigo convertido); rever o `smoke8` (salão da v6). `balance.js` (sem equipe, `EQUIPE=auto` e `BOT=afiado`) e `carreira.js` (pouca sobra no dia 5).
 
@@ -116,6 +117,37 @@ Origem: retorno do Renan Martorelli (beta-tester) e conversa com o Arthur (15/10
 - Selo: número da vez (sugestão, porque mostra a ordem) ou só um ✓?
 - Lugares: quantos no Bairro (sugestão: começar com o que cabe nas 6 mesas de hoje e crescer até ~24 comprando "ampliação", no lugar das cadeiras e mesas avulsas)? Mesas de 2 e 4 livres, ou com um limite de mesas pelo espaço?
 - O que acontece com quem já comprou cadeiras e mesas na v6 (sugestão: vira o mesmo total de lugares, sem perder dinheiro)?
+
+---
+
+## Etapa 1d — Salão por níveis de espaço (v7.4) — em discussão
+> Proposta de 21/10, pedida pelo usuário só para discussão ("proponha 4 níveis de evolução do espaço... mas não implemente ainda"). Nada no código até a decisão.
+
+**Objetivo:** trocar a aba Salão da v6 (cadeira por cadeira, mesa por mesa, botões 2/4 e a regra de 1 mesa de 4 por fileira) por uma escolha só: **o nível do espaço** dá o total de lugares e o máximo de mesas, e o jogador só escolhe **quantas mesas de 4** quer. O resto vira mesas de 2, e todos os lugares ficam ocupados.
+
+**Os 4 níveis (proposta):**
+
+| Nível | Nome | Lugares | Mesas (máx.) | Preço | Divisões possíveis (mesas de 4 + de 2) | Contas do dia* | Cabe no salão de hoje? |
+|---|---|---|---|---|---|---|---|
+| 1 | Salãozinho (início) | 16 | 6 | — | 2+4 (6 mesas, como hoje) · 3+2 · 4+0 | R$ 396 · 366 · 336 | sim (2 fileiras de 3) |
+| 2 | Salão arrumado | 20 | 7 | R$ 300 | 3+4 · 4+2 · 5+0 | R$ 450 · 420 · 390 | sim (todas as divisões cabem nas 2 fileiras) |
+| 3 | Puxadinho (3ª fileira) | 26 | 9 | R$ 500 | 4+5 · 5+3 · 6+1 | R$ 546 · 516 · 486 | não: pede 3 fileiras |
+| 4 | Salão grande | 32 | 10 | R$ 800 (do dia 5 em diante) | 6+4 · 7+2 · 8+0 | R$ 612 · 582 · 552 | não: pede 3 fileiras |
+
+\* Com as contas de hoje (aluguel R$ 120 + R$ 30 por mesa + R$ 6 por lugar). Menos mesas e maiores = contas menores, mas grupo de 2 numa mesa de 4 desperdiça lugar: é essa a escolha que fica para o jogador.
+
+- **Controle na lojinha:** um cartão por nível (comprar o próximo) e um seletor "Mesas de 4: − 3 +", com o desenho do salão ao lado mostrando como fica. Sem cadeira avulsa, sem botão 2/4 por mesa e sem a regra da fileira (o jogo arruma as mesas sozinho; cada nível só oferece divisões que cabem).
+- **Conta de cabimento** (feita com o `rowLayout` de hoje): cada fileira leva 3 mesas de qualquer tamanho, ou 4 mesas com no máximo 1 de 4. Os níveis 1 e 2 cabem nas 2 fileiras de hoje em todas as divisões; os níveis 3 e 4 cabem em 3 fileiras.
+- **Comparação com a v6:** hoje o máximo é 28 lugares em 8 mesas, por R$ 840 no total. Na proposta, o nível 4 dá 32 lugares por R$ 1.600 no total. A carreira da v7.3 chega ao dia 5 com ~R$ 1.600 na lojinha.
+
+**Decisões em aberto:**
+- **3ª fileira (níveis 3 e 4):** o salão (y de 112 a 528) mal comporta 3 fileiras com o tamanho de mesa de hoje (cada mesa ocupa ~132 px de altura com as cadeiras). Opções: mesas e cadeiras ~20% menores em todos os níveis; só os níveis 3 e 4 com o desenho mais compacto; ou o nível 4 ganhar uma varanda/calçada em outra parte da tela. Sugestão: protótipo em captura antes de decidir.
+- **Nomes, lugares e preços** dos níveis (a tabela é sugestão); se o nível 4 espera o dia 5.
+- **Contas:** manter R$ 30 por mesa e R$ 6 por lugar (sugestão: sim, porque já pesam o salão maior) ou passar a um aluguel por nível.
+- **Save da v6:** sugestão: quem comprou cadeiras e mesas recebe de volta o que gastou no salão (no dinheiro acumulado e numa linha do Caixa) e começa no nível 1, livre para comprar o nível que quiser; ou cai direto no nível com os lugares mais próximos dos que tinha.
+- **Ligação com as etapas 3 e 4:** o Centro e a área nobre teriam a própria escada de níveis (com mais lugares), e mudar de ponto leva o nível de "tamanho" mais próximo.
+
+**Partes:** `10-constantes.js` (`SALAO`, níveis), `12-clientes.js` (`normSalao` e save), `16-jogo.js` (compra do nível, divisão), `21-cenario.js` e `22-salao-hud.js` (3 fileiras), `41-lojinha.js` (aba Salão), `tests/bot.js`. **Testes:** rever o `smoke8` e criar o `smoke13`; `balance.js` com `SALAO`.
 
 ---
 
@@ -155,7 +187,7 @@ Origem: retorno do Renan Martorelli (beta-tester) e conversa com o Arthur (15/10
 **Entra:**
 - `PONTOS`: Bairro (o de hoje) e **Centro**, cada um com aluguel, multiplicador do preço do cardápio, mistura de clientes, chance de VIP, número de vagas de mesa e custo de mudança.
 - O Centro tem aluguel ~2×, preços +20%, mais executivas e VIPs e espaço para 1 mesa a mais por fileira (ou fileiras mais largas).
-- **Mudança** na lojinha (aba Salão ou aba nova "Ponto"): custo único (reforma + caução). O Centro tem o seu total de lugares (ver salão por lugares na etapa 1c), e o jogador redistribui as mesas de 4 e de 2.
+- **Mudança** na lojinha (aba Salão ou aba nova "Ponto"): custo único (reforma + caução). O Centro tem o seu total de lugares (ver os níveis do salão na etapa 1d), e o jogador redistribui as mesas de 4 e de 2.
 - Visual do ponto: cor do piso, fachada/letreiro e vista da janela diferentes. Sem arte nova pesada: só paleta e detalhes.
 - Metas por ponto: a mesma meta de lucro com multiplicador por ponto, ou metas próprias calibradas com o bot.
 

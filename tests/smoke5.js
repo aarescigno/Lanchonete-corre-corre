@@ -32,7 +32,7 @@ ok(!fit([K('ticket'),K('dirty'),K('dish')],true),'mão das comandas não leva ma
 ok(g.stationAt(910,350)==='juice' && g.stationAt(820,350)==='coffee','balcão de sucos ao lado do cafezinho');
 
 /* upgrade */
-{ const u=L.UPGRADES.find(x=>x.id==='bandeja'); ok(u && u.cost>0,'bandeja na lojinha'); ok(L.UPGRADES.length===6,'6 melhorias'); }
+{ const u=L.UPGRADES.find(x=>x.id==='bandeja'); ok(u && u.cost>0,'bandeja na lojinha'); ok(L.UPGRADES.length===7,'7 melhorias (com os Tênis de corrida, v7.3)'); }
 
 /* agenda: suco só a partir do dia 3 */
 for(const n of [1,2]){ let any=false; for(let k=0;k<20;k++){ g.resetDay(n); const grp=new L.Group(g,'estudante',1,0); if(grp.juiceWant) any=true; } ok(!any,'dia '+n+' sem suco'); }

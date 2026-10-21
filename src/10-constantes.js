@@ -200,7 +200,7 @@ const DIVULGA = [
   { id:'redes',    name:'Redes sociais', cost:100, groups:[1.2, 1.2], vip:1.5, desc:'+20% de grupos e, do dia 5 em diante, 50% mais VIPs. Precisa de lugar para tanta gente!' }
 ];
 const CAIXA_MAX = 14;                                 // livro-caixa (v7.2): quantos dias da carreira ficam guardados
-const VERSAO = 'v7.2';                                // vai no resumo do Caixa
+const VERSAO = 'v7.3';                                // vai no resumo do Caixa
 const DIVULGA_DIA = 3;                                // antes disso, o movimento é o da inauguração (sem custo)
 function divulgaOf(id){ return DIVULGA.find(d => d.id === id) || DIVULGA[1]; }
 /* contas do dia: aluguel fixo, mais cada mesa aberta e cada lugar dela */
@@ -211,8 +211,12 @@ function contasDia(tables){
 
 const ENDLESS = { n:0, tables:[1,2,3,4,5,6], groups:0, types:['estudante','vovos','familia','executiva','entregador'], nu:null, meta:0, expert:0, time:0, speed:1, vip:0.12, juice:0.3, note:'', endless:true };
 
+/* Bia (v7.3): velocidade de base em px/s e o ganho de cada nível dos tênis */
+const BIA_SPEED = { base:300, tenis:1.1, corrida:1.2 };
+
 const UPGRADES = [
-  { id:'tenis',      name:'Tênis novos',          desc:'A Bia anda 10% mais rápido.',                  cost:150 },
+  { id:'tenis',      name:'Tênis novos',          desc:'A Bia anda 10% mais rápido. Depois, libera os Tênis de corrida.', cost:150 },
+  { id:'corrida',    name:'Tênis de corrida',     desc:'2º nível dos tênis: a Bia anda 20% mais rápido (em vez de 10%).', cost:350, req:'tenis' },
   { id:'agua',       name:'Água saborizada',      desc:'Jarra na entrada: quem toma 1 dose perde a paciência na fila 40% mais devagar. Rende ' + AGUA.cap + ' doses; recarregar custa R$ ' + AGUA.price + '.', cost:180 },
   { id:'cafeteira',  name:'Cafeteira de 2 bocas', desc:'O cafezinho devolve +2 corações.',             cost:200 },
   { id:'bandeja',    name:'Bandeja',              desc:'Leva 2 pratos, 3 bebidas, prato + bebida ou 2 pilhas de louça.', cost:220 },
