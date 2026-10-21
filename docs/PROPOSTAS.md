@@ -10,7 +10,7 @@ Registro das ideias e dos retornos de quem jogou, com o texto original, e de ond
 > "os ícones sobre os grupos de pessoas sentados de: "vendo cardápio" e "aguardando preparo da comida" são muito parecidos, sugiro trocar o segundo por um ícone de panelas quentes e tirar o timer de circunferencia se completando do icone de aguardando preparo"
 
 **Destino:**
-- **Feito (depois da v7.4.1, ainda sem número de versão):** no estado "pedido feito", o balão da mesa mostra uma panela no fogo com vapor (ícone `pot`), do pedido anotado até o prato sair, no lugar da comanda e do prato com anel de progresso. Sem anel. Quando o prato fica pronto no balcão, aparece um visto verde no canto do balão (era o anel verde cheio). O vapor fica parado com `prefers-reduced-motion`.
+- **Feito na v7.4.2:** no estado "pedido feito", o balão da mesa mostra uma panela no fogo com vapor (ícone `pot`), do pedido anotado até o prato sair, no lugar da comanda e do prato com anel de progresso. Sem anel. Quando o prato fica pronto no balcão, aparece um visto verde no canto do balão (era o anel verde cheio). O vapor fica parado com `prefers-reduced-motion`.
 
 , pratos, fila e avaliações
 **Origem:** mensagens do usuário numa sessão de equilíbrio, depois da v7.4:
