@@ -4,6 +4,15 @@ Registro das ideias e dos retornos de quem jogou, com o texto original, e de ond
 
 ---
 
+## 21/10/2026 — Usuário: editor do salão (mesas e cadeiras onde o jogador quiser)
+**Origem:** mensagem do usuário, logo depois da proposta dos 4 níveis do salão:
+
+> "meu desejo quanto a espaço é que quando clicar na aba do salão/otimização de mesas e cadeiras, o jogador realmente possa ver o salão e redistribuir as mesas e cadeiras como achar melhor dentro da área útil do salão."
+
+**Para onde foi:** a etapa **1d** do `docs/PLANO.md` foi reescrita em volta de um **editor do salão** na aba Salão. O jogador vê o salão desenhado, arrasta as mesas (com encaixe numa grade fina), toca para trocar entre 2 e 4 lugares e guarda ou tira mesas de uma bandeja. Os níveis do espaço continuam dando o total de lugares, o máximo de mesas e a área útil. Ainda sem código; decisões em aberto no plano (área útil dos níveis 3 e 4, posição livre ou por encaixes).
+
+---
+
 ## 21/10/2026 — Usuário: como fazer a etapa 1c (Bia, fila e salão)
 **Origem:** pedido do usuário ao começar a etapa 1c:
 

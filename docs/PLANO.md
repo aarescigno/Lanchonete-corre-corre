@@ -121,9 +121,17 @@ Origem: retorno do Renan Martorelli (beta-tester) e conversa com o Arthur (15/10
 ---
 
 ## Etapa 1d — Salão por níveis de espaço (v7.4) — em discussão
-> Proposta de 21/10, pedida pelo usuário só para discussão ("proponha 4 níveis de evolução do espaço... mas não implemente ainda"). Nada no código até a decisão.
+> Proposta de 21/10, pedida pelo usuário só para discussão ("proponha 4 níveis de evolução do espaço... mas não implemente ainda"). Nada no código até a decisão. No mesmo dia, o usuário disse como quer a aba Salão: **ver o salão de verdade e redistribuir as mesas e cadeiras como achar melhor, dentro da área útil** (ver `docs/PROPOSTAS.md`). A proposta abaixo já está ajustada a isso.
 
-**Objetivo:** trocar a aba Salão da v6 (cadeira por cadeira, mesa por mesa, botões 2/4 e a regra de 1 mesa de 4 por fileira) por uma escolha só: **o nível do espaço** dá o total de lugares e o máximo de mesas, e o jogador só escolhe **quantas mesas de 4** quer. O resto vira mesas de 2, e todos os lugares ficam ocupados.
+**Objetivo:** trocar a aba Salão da v6 (cadeira por cadeira, mesa por mesa, botões 2/4 e a regra de 1 mesa de 4 por fileira) por um **editor do salão**: o jogador vê o próprio salão desenhado e arrasta as mesas para onde quiser, dentro da área útil. **O nível do espaço** dá o total de lugares, o máximo de mesas e o tamanho da área útil.
+
+**Editor do salão (aba Salão da lojinha):**
+- Mostra o salão com o mesmo desenho do jogo (piso, parede, fila de espera, balcão), em escala, com as mesas e as cadeiras de agora. Fora do dia, sem clientes.
+- **Arrastar** uma mesa a move (dedo ou mouse), encaixando numa grade fina (ex.: 10 px) para alinhar fácil. **Tocar** numa mesa troca entre 2 e 4 lugares. Uma "bandeja" ao lado guarda as mesas que não estão no salão: arrastar dela põe uma mesa, arrastar para ela tira.
+- Contador sempre à vista: "Lugares 18 de 20 · Mesas 7 de 7". Não dá para passar do total do nível.
+- **Posição válida:** dentro da área útil (o retângulo do salão, sem a fila de espera, a porta e o balcão da cozinha); sem encostar em outra mesa (folga mínima para a Bia passar, como o `SALAO.gap` de 46 px); e com caminho da Bia até cada mesa (o `findPath` já desvia de qualquer mesa, porque os obstáculos são feitos a partir delas em `setObst`). Mesa em lugar inválido fica vermelha e volta para o último lugar bom ao soltar.
+- **Botões:** "Arrumação automática" (refaz um arranjo que cabe, como o de hoje) e "Desfazer". Salva sozinho ao fechar a lojinha.
+- Os números das mesas seguem a ordem no salão (de cima para baixo, da esquerda para a direita), para a fila de ações e as comandas continuarem fáceis de ler.
 
 **Os 4 níveis (proposta):**
 
@@ -136,18 +144,19 @@ Origem: retorno do Renan Martorelli (beta-tester) e conversa com o Arthur (15/10
 
 \* Com as contas de hoje (aluguel R$ 120 + R$ 30 por mesa + R$ 6 por lugar). Menos mesas e maiores = contas menores, mas grupo de 2 numa mesa de 4 desperdiça lugar: é essa a escolha que fica para o jogador.
 
-- **Controle na lojinha:** um cartão por nível (comprar o próximo) e um seletor "Mesas de 4: − 3 +", com o desenho do salão ao lado mostrando como fica. Sem cadeira avulsa, sem botão 2/4 por mesa e sem a regra da fileira (o jogo arruma as mesas sozinho; cada nível só oferece divisões que cabem).
-- **Conta de cabimento** (feita com o `rowLayout` de hoje): cada fileira leva 3 mesas de qualquer tamanho, ou 4 mesas com no máximo 1 de 4. Os níveis 1 e 2 cabem nas 2 fileiras de hoje em todas as divisões; os níveis 3 e 4 cabem em 3 fileiras.
+- **Níveis na lojinha:** um cartão "Ampliar o salão" com o próximo nível, acima do editor. Comprar libera mais lugares e mesas na bandeja (e, nos níveis 3 e 4, mais área útil, ver abaixo).
+- **A tabela acima é só referência** de divisões que cabem no arranjo em fileiras de hoje (conta feita com o `rowLayout`: cada fileira leva 3 mesas de qualquer tamanho, ou 4 com no máximo 1 de 4). No editor, o jogador escolhe livre quantas de 4 e de 2 e onde, e pode até deixar lugares sem usar.
 - **Comparação com a v6:** hoje o máximo é 28 lugares em 8 mesas, por R$ 840 no total. Na proposta, o nível 4 dá 32 lugares por R$ 1.600 no total. A carreira da v7.3 chega ao dia 5 com ~R$ 1.600 na lojinha.
 
 **Decisões em aberto:**
-- **3ª fileira (níveis 3 e 4):** o salão (y de 112 a 528) mal comporta 3 fileiras com o tamanho de mesa de hoje (cada mesa ocupa ~132 px de altura com as cadeiras). Opções: mesas e cadeiras ~20% menores em todos os níveis; só os níveis 3 e 4 com o desenho mais compacto; ou o nível 4 ganhar uma varanda/calçada em outra parte da tela. Sugestão: protótipo em captura antes de decidir.
+- **Área útil dos níveis 3 e 4:** na área de hoje (x de ~196 a ~684, y de 112 a 528) cabem com folga só ~20 a 24 lugares com o tamanho de mesa atual (cada mesa ocupa ~132 px de altura com as cadeiras). Para 26 e 32 lugares: (a) a área cresce de verdade, ex.: o nível 3 leva a fila de espera para a calçada e libera a faixa da esquerda, e o nível 4 ganha uma varanda; (b) mesas e cadeiras ~20% menores em todos os níveis; ou (c) a "câmera" se afasta um pouco nos níveis maiores. Sugestão: (a), com protótipo em captura antes de decidir.
+- **Liberdade no editor:** posição livre com grade fina (sugestão) ou só encaixes pré-definidos (mais simples de jogar no celular); mesas giradas (de pé) ou só deitadas como hoje (sugestão: só deitadas na primeira versão).
 - **Nomes, lugares e preços** dos níveis (a tabela é sugestão); se o nível 4 espera o dia 5.
 - **Contas:** manter R$ 30 por mesa e R$ 6 por lugar (sugestão: sim, porque já pesam o salão maior) ou passar a um aluguel por nível.
 - **Save da v6:** sugestão: quem comprou cadeiras e mesas recebe de volta o que gastou no salão (no dinheiro acumulado e numa linha do Caixa) e começa no nível 1, livre para comprar o nível que quiser; ou cai direto no nível com os lugares mais próximos dos que tinha.
 - **Ligação com as etapas 3 e 4:** o Centro e a área nobre teriam a própria escada de níveis (com mais lugares), e mudar de ponto leva o nível de "tamanho" mais próximo.
 
-**Partes:** `10-constantes.js` (`SALAO`, níveis), `12-clientes.js` (`normSalao` e save), `16-jogo.js` (compra do nível, divisão), `21-cenario.js` e `22-salao-hud.js` (3 fileiras), `41-lojinha.js` (aba Salão), `tests/bot.js`. **Testes:** rever o `smoke8` e criar o `smoke13`; `balance.js` com `SALAO`.
+**Partes:** `10-constantes.js` (`SALAO`, níveis, área útil), `12-clientes.js` (`normSalao`: o save passa a ser a lista de mesas com `x`, `y` e lugares, e o save da v6 vira essa lista), `11-base.js` (`setObst`), `16-jogo.js` (compra do nível, validação das posições), `41-lojinha.js` (editor: um canvas na aba Salão, com arrastar, tocar e bandeja), `20`/`21`/`22` (desenho do salão no editor), `43-telas.js` (entrada do editor), `tests/bot.js`. Talvez caiba em 2 sessões: (1) save, níveis e validação com a arrumação automática; (2) o editor de arrastar. **Testes:** rever o `smoke8` e criar o `smoke13` (posição válida e inválida, caminho até cada mesa, limites do nível, save antigo); `balance.js` com `SALAO`; capturas do editor em 960×600 e 740×360.
 
 ---
 
