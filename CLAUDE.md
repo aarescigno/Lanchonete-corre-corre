@@ -1,6 +1,6 @@
 # Lanchonete Corre-Corre
 
-Jogo de navegador de gerenciamento de restaurante, em um único arquivo HTML com canvas 2D, em português do Brasil. Versão atual: **v7.2**. O estado do projeto, o histórico e os detalhes do artifact e do ranking estão em `docs/RESUMO.md` (leia só quando precisar). O roteiro das próximas versões, uma etapa por sessão, está em `docs/PLANO.md`: quando o pedido for "a próxima etapa", leia lá só a etapa da vez. Ideias e retornos de jogadores (texto original e destino de cada um) ficam no log `docs/PROPOSTAS.md`: registre lá cada retorno novo.
+Jogo de navegador de gerenciamento de restaurante, em um único arquivo HTML com canvas 2D, em português do Brasil. Versão atual: **v7.3**. O estado do projeto, o histórico e os detalhes do artifact e do ranking estão em `docs/RESUMO.md` (leia só quando precisar). O roteiro das próximas versões, uma etapa por sessão, está em `docs/PLANO.md`: quando o pedido for "a próxima etapa", leia lá só a etapa da vez. Ideias e retornos de jogadores (texto original e destino de cada um) ficam no log `docs/PROPOSTAS.md`: registre lá cada retorno novo.
 
 ## Regras do projeto
 - **Jogo original:** os personagens são a Bia (garçonete) e o Chef Tonhão. Não usar nomes, arte nem logos de jogos existentes, nem citar "Diner Dash" ou "Flo" na interface.
@@ -27,11 +27,11 @@ Cada parte é um trecho exato do arquivo final (o JS fica todo dentro de um `(fu
 - **Docs:** leia `docs/spec-vN.md` e `docs/HISTORICO.md` só quando o assunto pedir.
 
 ## Testes (`cd tests`)
-- `./run_all.sh` monta `lanchonete.html` a partir de `src/`, roda `extract.sh` (gera `game.js` e confere a sintaxe), gera `botpage.js` e roda os smokes 1 a 11.
-- `node balance.js [N]` roda o bot N vezes por dia, sem equipe (desde a v7, a meta é o lucro; alvo: ~40–70% das metas nos dias 3 a 7). `EQUIPE=auto` usa a equipe que o jogador já paga (alvo: ~85–95%); `EQUIPE='{...}'` usa uma equipe fixa; `DIV=boca|panfleto|redes` escolhe a divulgação. `BOT=afiado` usa o "jogador perfeito" (alvo da v7.1, com `EQUIPE=auto ORDEM=pratos,tenis,agua,cafeteira,bandeja,ventilador`: 0 perdidos em ≥ 80% dos dias 3 a 7). `INGRED='{...}'` e `CONTAS='{...}'` testam valores sem mexer em `src/` (também no `carreira.js`). Mostra as perdas por causa.
+- `./run_all.sh` monta `lanchonete.html` a partir de `src/`, roda `extract.sh` (gera `game.js` e confere a sintaxe), gera `botpage.js` e roda os smokes 1 a 12.
+- `node balance.js [N]` roda o bot N vezes por dia, sem equipe (desde a v7, a meta é o lucro; alvo: ~40–70% das metas nos dias 3 a 7). `EQUIPE=auto` usa a equipe que o jogador já paga (alvo: ~85–95%); `EQUIPE='{...}'` usa uma equipe fixa; `DIV=boca|panfleto|redes` escolhe a divulgação. `BOT=afiado` usa o "jogador perfeito" (alvo da v7.1, com `EQUIPE=auto ORDEM=pratos,tenis,agua,cafeteira,bandeja,ventilador`: 0 perdidos em ≥ 80% dos dias 3 a 7). `INGRED='{...}'` e `CONTAS='{...}'` testam valores sem mexer em `src/` (também no `carreira.js`); `METAS='{"3":420}'` testa metas. Desde a v7.3 (Bia a 300 px/s), sem equipe fica em ~74%, um pouco acima do alvo, por escolha do usuário (metas mantidas). Mostra as perdas por causa.
 - `node carreira.js [N]` joga a carreira com o dinheiro acumulado de verdade e mostra o dinheiro em cada lojinha (alvo da v7: pouca sobra no dia 5).
 - `python3 menu_fit.py` confere que o menu não rola.
-- `python3 shot_v7_2.py` gera as capturas da aba Caixa em `capturas/v7.2` (precisa do pacote `playwright` do Python).
+- `python3 shot_v7_2.py` gera as capturas da aba Caixa em `capturas/v7.2` e `python3 shot_v7_3.py` as dos selos da fila e dos Tênis de corrida em `capturas/v7.3` (precisam do pacote `playwright` do Python).
 - O Playwright usa `/opt/pw-browsers/chromium` quando existe.
 - `botpage.js` é gerado a partir de `bot.js` por `gera_botpage.sh` (o `run_all.sh` já chama).
 

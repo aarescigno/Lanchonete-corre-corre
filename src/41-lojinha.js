@@ -5,6 +5,15 @@ function upgradeIcon(id){
     if (id === 'tenis'){
       c.beginPath(); c.moveTo(-14,6); c.lineTo(-14,-8); c.lineTo(-6,-10); c.lineTo(0,-2); c.lineTo(12,2); c.quadraticCurveTo(15,4,14,8); c.lineTo(-14,8); c.closePath(); fs(c,'#fff',2);
       c.fillStyle = PAL.formica; c.fillRect(-14,5,28,3); c.strokeStyle = PAL.faixa; c.lineWidth = 1.5; c.beginPath(); c.moveTo(-3,-3); c.lineTo(1,-6); c.moveTo(1,0); c.lineTo(5,-3); c.stroke();
+    } else if (id === 'corrida'){
+      // tênis de corrida: perfil baixo e esticado, solado alto em gomos, cadarço e linhas de velocidade
+      c.strokeStyle = PAL.faixa; c.lineWidth = 2; c.lineCap = 'round';
+      [[-22,-4,-15],[-24,1,-16],[-21,6,-15]].forEach(l => { c.beginPath(); c.moveTo(l[0],l[1]); c.lineTo(l[2],l[1]); c.stroke(); });
+      c.beginPath(); c.moveTo(-12,4); c.lineTo(-11,-6); c.quadraticCurveTo(-9,-9,-5,-8); c.lineTo(1,-3); c.quadraticCurveTo(9,-1,15,2); c.quadraticCurveTo(18,4,16,6); c.lineTo(-12,6); c.closePath(); fs(c,PAL.alerta,2);
+      c.beginPath(); c.moveTo(-9,-1); c.quadraticCurveTo(0,-1,6,4); c.lineWidth = 2.2; c.strokeStyle = '#fff'; c.stroke();
+      rr(c,-13,5,31,5,2.5); fs(c,'#fff',1.8);
+      c.strokeStyle = PAL.tinta; c.lineWidth = 1; for (let x=-8;x<=12;x+=5){ c.beginPath(); c.moveTo(x,6); c.lineTo(x-1,10); c.stroke(); }
+      c.lineWidth = 1.4; c.beginPath(); c.moveTo(-3,-6); c.lineTo(0,-8); c.moveTo(0,-4); c.lineTo(3,-6); c.stroke();
     } else if (id === 'tonhao'){
       c.translate(0,4); rr(c,-13,-2,26,14,3); fs(c,'#555',2);
       for (let i=-1;i<=1;i++){ circ(c,i*8,-6,3.5); fs(c,PAL.alerta,1.4); }
@@ -286,7 +295,8 @@ function buildShop(){
   if (shopTab === 'salao') return buildSalao(grid);
   if (shopTab === 'divulga') return buildDivulga(grid);
   if (shopTab === 'caixa') return buildCaixa(grid);
-  UPGRADES.forEach(u => {
+  // os Tênis de corrida (v7.3) só aparecem depois dos Tênis novos, no lugar deles (a grade continua com 6)
+  UPGRADES.filter(u => u.req ? game.up[u.req] : !(game.up[u.id] && UPGRADES.some(v => v.req === u.id))).forEach(u => {
     const own = !!game.up[u.id];
     const card = el('div', 'item' + (own ? ' own' : ''));
     card.appendChild(upgradeIcon(u.id));

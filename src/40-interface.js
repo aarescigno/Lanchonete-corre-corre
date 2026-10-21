@@ -73,7 +73,7 @@ function buildTips(){
       c.save(); c.translate(51,44); c.scale(0.5,0.5); drawChair(c,0,0,1,false); c.restore();
       rr(c,38,32,26,13,4); fs(c,PAL.formica,2);
     }],
-    ['Toque nas mesas, na cozinha, nos pratos prontos, no cafezinho, nos sucos e na pia: a Bia faz tudo em ordem, na fila de ações. Toque num ícone da fila para cancelar.', c => {
+    ['Toque nas mesas, na cozinha, nos pratos prontos, no cafezinho, nos sucos e na pia: a Bia faz tudo em ordem, na fila de ações, e um número em cada lugar mostra a vez dela. Dá para pedir 2 coisas na mesma mesa; para cancelar, toque no quadrinho da fila.', c => {
       [['hat',14,16],['dish',32,16],['coffee',50,16],['dirty',14,46],['ticket',32,46],['coin',50,46]].forEach(a => { rr(c,a[1]-10,a[2]-10,20,22,5); fs(c,PAL.creme,1.8); drawIcon(c,a[0],a[1],a[2]+1,0.6,'pastel'); });
     }],
     ['Ciclo da mesa: anote, leve à cozinha, busque o prato, entregue, cobre e recolha a louça. Na pia, um toque deixa a louça e outro, sem louça na mão, lava (2,5 s por pilha). Do dia 3 em diante, sem prato limpo o Tonhão espera; sozinha a Bia não dá conta: contrate ajuda.', c => {

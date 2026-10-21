@@ -52,7 +52,7 @@ class Waitress {
     this.hands = []; this.acts = []; this.phase = 'idle'; this.timer = 0;
     this.path = []; this.walkPh = 0; this.moving = false; this.qT = 0; this.doing = null;
   }
-  get speed(){ return 260 * (this.g.up.tenis ? 1.1 : 1); }
+  get speed(){ const u = this.g.up; return BIA_SPEED.base * (u.corrida ? BIA_SPEED.corrida : u.tenis ? BIA_SPEED.tenis : 1); }
   get tray(){ return !!this.g.up.bandeja; }
   layout(items){ return handLayout(items || this.hands, this.tray, this.g.kitchen.slots); }
   canTake(kind){ return !!this.layout(this.hands.concat([{ kind }])); }
@@ -63,8 +63,18 @@ class Waitress {
   get washing(){ return !!(this.doing && this.doing.type === 'sink' && this.doing.wash > 0); }
   enqueue(a){
     if (this.acts.length >= 6){ this.g.addText(this.x, this.y - 82, 'Fila cheia!', PAL.alerta, 15); return false; }
+    a.t0 = this.g.anim;   // para o selo da fila surgir com um pulinho
     this.acts.push(a);
     return true;
+  }
+  /* selos da fila no salão (v7.3): lugar -> vezes em que a Bia vai passar ali (1 = a ação atual) */
+  marks(){
+    const m = {};
+    this.acts.forEach((a,i) => {
+      const k = a.type === 'table' ? 'table:' + a.id : a.type === 'plate' ? 'plate:' + a.pid : a.type;
+      (m[k] = m[k] || []).push(i + 1);
+    });
+    return m;
   }
   remove(i){
     if (i < 0 || i >= this.acts.length) return;
