@@ -139,7 +139,7 @@ Origem: retorno do Renan Martorelli (beta-tester) e conversa com o Arthur (15/10
   - Aluguéis na **proporção real** entre os pontos (ver a pesquisa). A Garagem não paga aluguel e **rende a mais de propósito**: é o pé-de-meia para a mudança (levar as coisas, montar, reajustar, caução).
   - O aluguel entra nas **contas fixas do dia** (com luz e gás, que continuam R$ 30 por mesa e R$ 6 por lugar), aparece na lojinha e no Caixa.
 - **Móveis:** dentro de cada ponto, mesas e cadeiras são compradas até o teto de lugares, e **vão junto na mudança**. Não há limite de mesas: só o teto de lugares e a área útil. Grupos de 3 ou 4 sem mesa de 4 continuam ficando insatisfeitos e desistindo (regra de hoje, `semMesa`).
-- **Ambiente por nível** (decidido em 21/10, v7.4.4): no nível 1, TV (Rede Esfera) e som (rádio Velha Brasil FM), 5% de paciência cada, pagando a luz; o **couvert artístico só do nível 3** em diante (`STAFF.couvert.nivel`).
+- **Ambiente por nível** (decidido em 21/10; nível 1 feito na v7.4.4, os outros nas Ideias guardadas): nível 1, TV (Rede Esfera) e som (rádio Velha Brasil FM), 5% de paciência cada, pagando a luz; nível 2, 3 televisores com playlist de sertanejo (10% com anúncios, 15% sem, por R$ 20/dia); nível 3, o **couvert artístico** de hoje (`STAFF.couvert.nivel`); nível 4, quarteto de cordas ou pianista (20%; o pianista soma luxo e tem a manutenção do piano).
 - **Novos pontos destravam** (etapas 3 e 4; o que vai em cada nível é sugestão): 2º garçom (área industrial); mais bocas no fogão; balcão de pratos maior; mais pratos no cardápio; um cozinheiro/confeiteiro especializado em sobremesas (níveis 3 e 4); balcão de coquetelaria com profissional de drinks (do nível 3 em diante).
 - **Carreira por pontos, sem fim fixo** (etapa 3): cada ponto tem a sua série de metas; batidas as metas e juntado o dinheiro, dá para mudar. Até a etapa 3, a carreira continua com 7 dias, todos na Garagem.
 - **Mais para frente:** o **nível de luxo** (0 a 5) vai pontuar enfeites, móveis, ponto, mídia e críticos. As mesas quadradas e as cadeiras de plástico de bar da Garagem são o degrau mais baixo.
@@ -255,7 +255,7 @@ Também: rever o `smoke7` (toque) e o `smoke10` (fila justa e porta), mais `bala
   - área útil, cadeiras de espera e visual próprios.
 - **Mudança** na lojinha (aba "Ponto"): custo único, aluguel dali em diante e os móveis levados junto. O editor abre no ponto novo com a arrumação automática.
 - **O que cada ponto destrava** (sugestão):
-  - área industrial: 2º garçom, +1 boca no fogão (4 pratos ao mesmo tempo) e balcão de pratos com 5 vagas;
+  - área industrial: 2º garçom, +1 boca no fogão (4 pratos ao mesmo tempo), balcão de pratos com 5 vagas e os **3 televisores com playlist de sertanejo** (ver "Ambiente por nível do salão" nas Ideias guardadas);
   - Avenida Brasil: confeiteiro (sobremesas), balcão de coquetelaria com profissional de drinks, um prato novo no cardápio, balcão de pratos com 6 vagas e o **couvert artístico** (já pronto no código desde a v5, escondido abaixo do nível 3 desde a v7.4.4: basta o ponto ter `nivel:3`). Decidir se a TV e o som vão junto na mudança.
   Se ficar grande demais, a etapa se divide (3a: mudança e área industrial; 3b: Avenida Brasil, confeitaria e coquetelaria).
 - **Carreira por pontos, sem fim fixo:** cada ponto tem uma série de metas (ex.: 3 a 5 dias). Batidas as metas e juntado o dinheiro, pode mudar. O ranking da carreira soma o lucro (ou o melhor dia) de cada ponto. Os 7 dias de hoje viram a série da Garagem.
@@ -288,6 +288,7 @@ Também: rever o `smoke7` (toque) e o `smoke10` (fila justa e porta), mais `bala
   - paga muito bem (bônus grande com 5 corações) e, se sair bravo, deixa **avaliação ruim**: −10% de clientes no dia seguinte.
 - **Reputação do ponto** (0 a 5 ★, média móvel dos últimos dias): no Terraço ela muda a freguesia do dia, e na etapa 6 vira a régua do guia. Mais tarde pode virar uma das partes do **nível de luxo** (ver Ideias guardadas).
 - Um item de lojinha do Terraço, por exemplo "Louça fina": prato especial mais rápido.
+- **Couvert do Terraço:** quarteto de cordas ou pianista (ver "Ambiente por nível do salão" nas Ideias guardadas).
 
 **Partes:** `10-constantes.js`, `12-clientes.js` (tipo/modificador exigente), `13-cozinha.js` (prato da casa), `16-jogo.js` (reputação), `20-desenho-base.js` (visual do exigente, sem estereótipo: chapéu/lenço e plaquinha ★★), `22-salao-hud.js` (balão do pedido especial).
 
@@ -359,6 +360,12 @@ Também: rever o `smoke7` (toque) e o `smoke10` (fila justa e porta), mais `bala
 ---
 
 ## Ideias guardadas (sem etapa ainda)
+- **Ambiente por nível do salão** (pedido do usuário em 21/10; texto e decisões em aberto em `docs/PROPOSTAS.md`). Em todos, a paciência nas mesas cai mais devagar, como na v7.4.4 (`ambienteEffect`):
+  - **nível 1, Garagem:** TV de tubo na Rede Esfera (5%, luz R$ 15/dia) e som na rádio Velha Brasil FM (5%, luz R$ 10/dia). **Feito na v7.4.4.**
+  - **nível 2, área industrial (etapa 3):** 3 televisores com playlist de sertanejo. Com anúncios: 10%; sem anúncios: 15%, por R$ 20/dia.
+  - **nível 3, Avenida Brasil (etapa 3):** o couvert artístico de hoje (músico, 20%, R$ 80/dia, taxa opcional de R$ 3 por pessoa que corta o efeito à metade). Já está no código, escondido abaixo do nível 3.
+  - **nível 4, Terraço Suíça (etapa 4):** couvert com quarteto de cordas ou com pianista, os dois com 20%. O pianista também soma ao **nível de luxo** do ambiente e traz o custo de manutenção do piano.
+  - Desenho: cada nível com o seu (paredão de 3 TVs, palco do músico, quarteto, piano de cauda), respeitando `prefers-reduced-motion`; nomes de emissoras, rádios e músicas sempre inventados.
 - Cardápio com preço escolhido pelo jogador (o Arthur achou estranho só mexer em preço; talvez nunca).
 - Equipamento melhor no lugar da manutenção (fogão industrial etc.).
 - Mais funcionários: um segundo garçom, além da Dani.
