@@ -1,13 +1,13 @@
 # Plano de novidades (uma etapa por sessão)
 
-Origem: retorno do Renan Martorelli e conversa com o Arthur (15/10/2026). Os textos originais e o destino de cada ideia estão em `docs/PROPOSTAS.md` (log de propostas). Os pedidos foram escassez de recursos, custos de manutenção, divulgação, aluguel em área nobre com VIPs exigentes e modo história ("o sonho da Bia de ter um restaurante estrelado, começando do zero"). A v7 (Contas) fez a primeira parte.
+Origem: retorno do Renan Martorelli (beta-tester) e conversa com o Arthur (15/10/2026); a etapa 1c veio de outro retorno do Renan (18/10). Os textos originais e o destino de cada ideia estão em `docs/PROPOSTAS.md` (log de propostas). Os pedidos foram escassez de recursos, custos de manutenção, divulgação, aluguel em área nobre com VIPs exigentes e modo história ("o sonho da Bia de ter um restaurante estrelado, começando do zero"). A v7 (Contas) fez a primeira parte.
 
 ## Como usar
 - Cada etapa cabe numa sessão e termina como as outras: versão nova (se mexe no jogo), testes verdes, `docs/spec-vN.md`, `RESUMO.md` atualizado, PR com merge no `claude/main` e publicação no artifact (ver `CLAUDE.md`).
 - Para começar uma sessão, basta pedir: **"faça a próxima etapa do docs/PLANO.md"**. A sessão lê só a etapa da vez e as partes de `src/` citadas nela.
 - Antes de programar, a sessão confirma com o usuário as **decisões em aberto** da etapa (cada uma já tem uma sugestão).
 - No fim, a sessão marca a etapa como feita na tabela abaixo (com a versão e a data) e anota o que mudou no plano.
-- Ordem: cada etapa depende só das anteriores. A 1a vem primeiro (mexe no equilíbrio de base). A 1b e a 2 podem trocar de lugar. A 3 vem antes da 4, e a 4 antes da 6.
+- Ordem: cada etapa depende só das anteriores. A 1a vem primeiro (mexe no equilíbrio de base). **A 1c é a próxima e tem prioridade sobre as demais**, por ser retorno do beta-tester Renan (pedido do usuário em 21/10). A 1b e a 2 podiam trocar de lugar. A 3 vem antes da 4, e a 4 antes da 6.
 
 ## Situação
 | # | Etapa | Versão | Situação |
@@ -15,6 +15,7 @@ Origem: retorno do Renan Martorelli e conversa com o Arthur (15/10/2026). Os tex
 | 0 | Contas: lucro, ingredientes, contas do dia, divulgação | v7 | feita (15/10) |
 | 1a | Jogo justo: dá para não perder ninguém | v7.1 | feita (15/10) |
 | 1b | Livro-caixa e ajuste fino com jogadores | v7.2 | feita (15/10) |
+| 1c | Retorno do Renan: Bia mais ágil, marca do que está na fila, salão por lugares | v7.3 | **próxima (prioridade)** |
 | 2 | Manutenção e imprevistos | v8 | a fazer |
 | 3 | Ponto: mudar para o Centro | v9 | a fazer |
 | 4 | Área nobre e VIPs exigentes | v10 | a fazer |
@@ -89,6 +90,35 @@ Origem: retorno do Renan Martorelli e conversa com o Arthur (15/10/2026). Os tex
 
 ---
 
+## Etapa 1c — Retorno do Renan: Bia mais ágil e salão simples (v7.3)
+> **Prioridade maior** (pedido do usuário em 21/10): é retorno do beta-tester Renan. Vem antes da etapa 2.
+
+**Objetivo:** atender o retorno do Renan (entrada de 18/10 em `docs/PROPOSTAS.md`): a Bia anda devagar, não dá para ver o que já foi pedido a ela, e "o manejo das mesas ficou complexo demais".
+
+**Situação hoje (v7.2):**
+- a Bia anda a 260 px/s (`Waitress.speed`, `14-bia.js`); os Tênis novos (R$ 150) dão +10%;
+- a fila de ações só aparece nos 6 quadrinhos do HUD; no salão, a mesa, a estação ou o prato pedido não mostra nada. Mesas e estações podem entrar duas vezes na fila (só o prato pronto não repete, `16-jogo.js`, toque);
+- aba Salão da v6: 2 cadeiras por R$ 60 (até 24), mesa por R$ 300 (até 8), botões 2 e 4 em cada mesa e só 1 mesa de 4 por fileira de 4 mesas.
+
+**Entra:**
+1. **Bia mais ágil:** aumentar a velocidade de base (ex.: 260 → 300) e, se precisar, um 2º nível dos Tênis. Conferir com o `balance.js` que as metas não ficam fáceis demais (sem equipe: ~40–70% das metas nos dias 3 a 7; `EQUIPE=auto`: ~85–95%) e recalibrar as metas se for o caso.
+2. **Marca do que está na fila:** cada mesa, estação ou prato que já está na fila da Bia ganha, no salão, um selo pequeno com o número da vez (ou um ✓), que some quando ela faz a ação. Sem animação com `prefers-reduced-motion`. Tocar de novo num lugar marcado não repete o pedido; antes, conferir se algum caso precisa da mesma mesa 2 vezes seguidas na fila (ex.: anotar o pedido e depois entregar o prato).
+3. **Salão por lugares:** cada salão tem um total de lugares (o do Bairro hoje; o Centro e a área nobre das etapas 3 e 4 terão o seu). O jogador só distribui esses lugares em mesas de 4 e de 2, sem comprar cadeira por cadeira nem a regra de 1 mesa de 4 por fileira. Comprar o salão maior (mais lugares) continua sendo um gasto. Rever as contas do dia (R$ 30 por mesa e R$ 6 por lugar) e converter o `save.salao` antigo sem perder o que o jogador já pagou.
+
+**Fora:** mudar de ponto (etapa 3).
+
+**Partes:** `14-bia.js` (velocidade, fila de ações), `10-constantes.js` (`UPGRADES`, `SALAO`, `CONTAS`, metas em `DAYS`), `16-jogo.js` (toques, compras do salão, contas), `21-cenario.js` e `22-salao-hud.js` (selos nas estações, mesas e pratos), `12-clientes.js` (`normSalao` e save), `41-lojinha.js` (aba Salão), `tests/bot.js` e `botpage.js`.
+
+**Testes:** `smoke12` (velocidade, selo aparece e some, toque repetido não duplica, salão por lugares, save antigo convertido); rever o `smoke8` (salão da v6). `balance.js` (sem equipe, `EQUIPE=auto` e `BOT=afiado`) e `carreira.js` (pouca sobra no dia 5).
+
+**Decisões em aberto:**
+- Velocidade: só a base (sugestão: 260 → 300), um 2º nível dos Tênis ou os dois?
+- Selo: número da vez (sugestão, porque mostra a ordem) ou só um ✓?
+- Lugares: quantos no Bairro (sugestão: começar com o que cabe nas 6 mesas de hoje e crescer até ~24 comprando "ampliação", no lugar das cadeiras e mesas avulsas)? Mesas de 2 e 4 livres, ou com um limite de mesas pelo espaço?
+- O que acontece com quem já comprou cadeiras e mesas na v6 (sugestão: vira o mesmo total de lugares, sem perder dinheiro)?
+
+---
+
 ## Etapa 2 — Manutenção e imprevistos (v8)
 **Objetivo:** gastos recorrentes com escolha (a "manutenção do espaço" do Arthur), sem virar só um imposto.
 
@@ -106,7 +136,7 @@ Origem: retorno do Renan Martorelli e conversa com o Arthur (15/10/2026). Os tex
 
 **Partes:** `10-constantes.js` (`MANUT`), `16-jogo.js`, `13-cozinha.js`, `14-bia.js` (cafezinho), `21-cenario.js` (sinais visuais), `41-lojinha.js`, `43-telas.js` (introdução).
 
-**Testes:** `smoke12` (desgaste, chance de quebra, conserto, efeitos e save). `balance` com e sem manutenção.
+**Testes:** `smoke13` (desgaste, chance de quebra, conserto, efeitos e save). `balance` com e sem manutenção.
 
 **Calibração:**
 - Cuidar de tudo custa ~10–15% do lucro de um dia médio.
@@ -125,7 +155,7 @@ Origem: retorno do Renan Martorelli e conversa com o Arthur (15/10/2026). Os tex
 **Entra:**
 - `PONTOS`: Bairro (o de hoje) e **Centro**, cada um com aluguel, multiplicador do preço do cardápio, mistura de clientes, chance de VIP, número de vagas de mesa e custo de mudança.
 - O Centro tem aluguel ~2×, preços +20%, mais executivas e VIPs e espaço para 1 mesa a mais por fileira (ou fileiras mais largas).
-- **Mudança** na lojinha (aba Salão ou aba nova "Ponto"): custo único (reforma + caução). O salão comprado vai junto (mesas e cadeiras), com ajuste se não couber.
+- **Mudança** na lojinha (aba Salão ou aba nova "Ponto"): custo único (reforma + caução). O Centro tem o seu total de lugares (ver salão por lugares na etapa 1c), e o jogador redistribui as mesas de 4 e de 2.
 - Visual do ponto: cor do piso, fachada/letreiro e vista da janela diferentes. Sem arte nova pesada: só paleta e detalhes.
 - Metas por ponto: a mesma meta de lucro com multiplicador por ponto, ou metas próprias calibradas com o bot.
 
@@ -133,7 +163,7 @@ Origem: retorno do Renan Martorelli e conversa com o Arthur (15/10/2026). Os tex
 
 **Partes:** `10-constantes.js`, `12-clientes.js` (save `ponto`, preço), `16-jogo.js` (agenda, contas), `20/21-*.js` (paleta e fachada), `41-lojinha.js`.
 
-**Testes:** `smoke13` (mudança, custo, salão levado junto, contas e preços por ponto, save antigo = Bairro). `carreira.js` com mudança no dia 4 ou 5.
+**Testes:** `smoke14` (mudança, custo, salão levado junto, contas e preços por ponto, save antigo = Bairro). `carreira.js` com mudança no dia 4 ou 5.
 
 **Calibração:**
 - Mudar para o Centro deve compensar em ~3 dias para quem atende bem e não compensar para quem perde muitos clientes.
@@ -161,7 +191,7 @@ Origem: retorno do Renan Martorelli e conversa com o Arthur (15/10/2026). Os tex
 
 **Partes:** `10-constantes.js`, `12-clientes.js` (tipo/modificador exigente), `13-cozinha.js` (prato da casa), `16-jogo.js` (reputação), `20-desenho-base.js` (visual do exigente, sem estereótipo: chapéu/lenço e plaquinha ★★), `22-salao-hud.js` (balão do pedido especial).
 
-**Testes:** `smoke14` (pedido especial, regras de mesa, avaliação ruim, reputação e save). `balance` na área nobre com equipe completa.
+**Testes:** `smoke15` (pedido especial, regras de mesa, avaliação ruim, reputação e save). `balance` na área nobre com equipe completa.
 
 **Calibração:**
 - A área nobre dá mais lucro só com equipe completa + Tonhão nível 3 + salão bem montado.
@@ -190,7 +220,7 @@ Origem: retorno do Renan Martorelli e conversa com o Arthur (15/10/2026). Os tex
 
 **Partes:** `02-telas.html` (menu e painel de conversa), `10-constantes.js` (`HISTORIA`), `16-jogo.js` (modo `historia`, objetivos), `40-interface.js`, `42-resultados.js`, `43-telas.js`.
 
-**Testes:** `smoke15` (início do zero, objetivo cumprido e falhado, save separado, carreira intocada). O bot joga os capítulos 1 a 3.
+**Testes:** `smoke16` (início do zero, objetivo cumprido e falhado, save separado, carreira intocada). O bot joga os capítulos 1 a 3.
 
 **Decisões em aberto:**
 - O texto de abertura e o tom do "universo paralelo".
@@ -212,7 +242,7 @@ Origem: retorno do Renan Martorelli e conversa com o Arthur (15/10/2026). Os tex
 
 **Partes:** as da etapa 5, mais `12-clientes.js` (crítico disfarçado, sem sinal óbvio, talvez um caderninho) e `22-salao-hud.js`.
 
-**Testes:** `smoke16` (aparição do crítico, avaliação, finais). O bot termina a história.
+**Testes:** `smoke17` (aparição do crítico, avaliação, finais). O bot termina a história.
 
 **Decisões em aberto:**
 - Nome do guia.
