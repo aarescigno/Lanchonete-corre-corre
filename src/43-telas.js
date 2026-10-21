@@ -1,6 +1,6 @@
 /* ---------- troca de telas ---------- */
 game.hooks.state = function(s){
-  if (s === 'menu'){ game.resetDay(1); buildChips(); showOnly(['ov-menu']); }
+  if (s === 'menu'){ game.resetDay(1); buildChips(); devSync(); showOnly(['ov-menu']); }
   else if (s === 'intro'){
     const d = game.day;
     if (game.mode === 'semfim'){
@@ -39,6 +39,21 @@ on('btn-endless',    () => { Sfx.init(); Sfx.resume(); Sfx.tap(); game.startEndl
 on('btn-rank',       () => { Sfx.init(); Sfx.resume(); Sfx.tap(); openRank('ov-menu'); });
 on('btn-ver',        () => { Sfx.tap(); showOnly(['ov-ver']); });
 on('btn-ver-close',  () => { Sfx.tap(); showOnly(['ov-menu']); });
+/* modo dev: 10 toques seguidos no selo da versão (no máximo 1,5 s entre um e outro) ligam; ligado, 1 toque abre o painel */
+(function(){
+  const t = $('vtag'); if (!t) return;
+  let n = 0, prev = 0;
+  t.addEventListener('click', () => {
+    if (DEV.on){ Sfx.init(); Sfx.tap(); openDev(); return; }
+    const now = Date.now();
+    n = (now - prev < 1500) ? n + 1 : 1; prev = now;
+    if (n < DEV.toques) return;
+    n = 0; Sfx.init(); Sfx.ok(); game.setDev(true); selectedDay = 7; buildChips(); openDev();
+  });
+})();
+on('btn-dev-bank',   () => { Sfx.tap(); if (game.devBank()) buildDev(); });
+on('btn-dev-close',  () => { Sfx.tap(); game.setState('menu'); });
+on('btn-dev-off',    () => { Sfx.tap(); game.setDev(false); selectedDay = Math.min(7, game.unlocked); game.setState('menu'); });
 /* instalar no celular: passo a passo; já instalado (tela cheia ou standalone), o ícone some */
 on('btn-app',        () => { Sfx.init(); Sfx.tap(); $('app-msg').textContent = ''; showOnly(['ov-app']); });
 on('btn-app-close',  () => { Sfx.tap(); showOnly(['ov-menu']); });
@@ -123,7 +138,7 @@ fit();
 try { Rank.init(); } catch(e) {}
 game.setState('menu');
 window.__game = game;
-window.__lcc = { setShopTab: v => { shopTab = v; buildShop(); }, FILA_JUSTA, PORTA, CHAIRS, PAT, CONTAS, INGRED, MOVIMENTO, movimentoSalao, DIVULGA, DIVULGA_DIA, divulgaOf, contasDia, bomGoal, SALAO, PONTOS, pontoOf, MESA, mesaBox, mesaPreco, salaoLugares, mesaProblema, salaoCaminho, salaoProblema, salaoOrdena, salaoAuto, salaoVaga, salaoPerto, salaoKit, salaoDevolucao, SALAO_SEMFIM, normSalao, setObst, OBST, pathOk, MAQUINA, CALCADA, CAM, ABAS, esperaAp, tableApproach, CRIT, STAFF, DANI_TASKS, DANI_HANDS, daniTaskOk, TRASH, WASH, payroll, couvertEffect, couvertOk, ambienteEffect, dishStock, normSave, Helper, JUICE, KITCHEN_SLOTS, handLayout, trayOk, Game, Group, Table, Kitchen, Waitress, BIA_SPEED, DAYS, UPGRADES, CUSTOMER_TYPES, LAYOUT, PAL, Sfx, findPath, render, Rank, sortRows, cleanName, normName, CMD, ENDLESS, VIP, rk, renderRank, openRank, closeRank, LS, lsGet, lsSet, loadSave, CAIXA_MAX, VERSAO, normCaixa, caixaResumo, caixaTotais, copyText };
+window.__lcc = { setShopTab: v => { shopTab = v; buildShop(); }, FILA_JUSTA, PORTA, CHAIRS, PAT, CONTAS, INGRED, MOVIMENTO, movimentoSalao, DIVULGA, DIVULGA_DIA, divulgaOf, contasDia, bomGoal, SALAO, PONTOS, pontoOf, MESA, mesaBox, mesaPreco, salaoLugares, mesaProblema, salaoCaminho, salaoProblema, salaoOrdena, salaoAuto, salaoVaga, salaoPerto, salaoKit, salaoDevolucao, SALAO_SEMFIM, normSalao, setObst, OBST, pathOk, MAQUINA, CALCADA, CAM, ABAS, esperaAp, tableApproach, CRIT, STAFF, DANI_TASKS, DANI_HANDS, daniTaskOk, TRASH, WASH, payroll, couvertEffect, couvertOk, ambienteEffect, dishStock, normSave, Helper, JUICE, KITCHEN_SLOTS, handLayout, trayOk, Game, Group, Table, Kitchen, Waitress, BIA_SPEED, DAYS, UPGRADES, CUSTOMER_TYPES, LAYOUT, PAL, Sfx, findPath, render, Rank, sortRows, cleanName, normName, CMD, ENDLESS, VIP, rk, renderRank, openRank, closeRank, LS, lsGet, lsSet, loadSave, DEV, saveKey, devSync, openDev, CAIXA_MAX, VERSAO, normCaixa, caixaResumo, caixaTotais, copyText };
 window.requestAnimationFrame(frame);
 
 })();

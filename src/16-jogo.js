@@ -693,11 +693,30 @@ class Game {
     return { money, stars };
   }
   resetProgress(){
-    this.save = normSave({});
+    this.save = normSave(DEV.on ? { maxDay:7, bank:DEV.bank } : {});
     this.up = this.save.up; this.boughtFor = 0;
     this.buildTables();
     this.kitchen.reset(); this.dani.reset();
     writeSave(this.save);
+  }
+  /* modo dev: troca de save (o de verdade fica guardado). Ao entrar, o dinheiro volta a R$ 10.000 */
+  setDev(on){
+    DEV.on = !!on; lsSet(LS.dev, DEV.on ? '1' : '0');
+    this.save = loadSave();
+    if (DEV.on){ this.save.bank = DEV.bank; writeSave(this.save); }
+    this.up = this.save.up; this.boughtFor = 0;
+    this.buildTables();
+    this.kitchen.reset(); this.dani.reset();
+  }
+  devBank(){ if (!DEV.on) return false; this.save.bank = DEV.bank; writeSave(this.save); return true; }
+  /* liga ou desliga uma melhoria de graça; os Tênis de corrida andam junto com os Tênis novos */
+  devToggle(id){
+    const u = UPGRADES.find(x => x.id === id);
+    if (!DEV.on || !u) return false;
+    if (this.up[id]){ delete this.up[id]; UPGRADES.forEach(v => { if (v.req === id) delete this.up[v.id]; }); }
+    else { this.up[id] = true; if (u.req) this.up[u.req] = true; }
+    writeSave(this.save);
+    return true;
   }
 
   /* ---------- entrada ----------

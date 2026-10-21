@@ -50,7 +50,7 @@ function tableApproach(t){
   return [ {x:t.cx-hx, y:t.cy+4}, {x:t.cx+hx, y:t.cy+4} ];
 }
 /* ---------- armazenamento (localStorage com try/catch e cópia em memória) ---------- */
-const LS = { save:'lcc2_save', v1:'lcc_save_v1', rank:'lcc2_ranking', name:'lcc2_name' };
+const LS = { save:'lcc2_save', v1:'lcc_save_v1', rank:'lcc2_ranking', name:'lcc2_name', dev:'lcc2_dev', devSave:'lcc2_save_dev' };
 const MEM = {};
 function lsGet(k){
   try { const v = localStorage.getItem(k); if (v != null) return v; } catch(e) {}
@@ -60,6 +60,10 @@ function lsSet(k, v){
   MEM[k] = v;
   try { localStorage.setItem(k, v); } catch(e) {}
 }
+/* modo dev (v7.5.1): 10 toques no selo da versão. Usa um save à parte (o progresso de verdade fica guardado e volta
+   ao sair), com os 7 dias liberados e R$ 10.000; as melhorias ligam e desligam à vontade e o ranking fica de fora */
+const DEV = { on: lsGet(LS.dev) === '1', bank: 10000, toques: 10 };
+function saveKey(){ return DEV.on ? LS.devSave : LS.save; }
 /* o couvert só vale do nível 3 do salão em diante: num ponto abaixo, sai */
 function normEquipe(e, ponto){
   e = (e && typeof e === 'object') ? e : {};
@@ -104,7 +108,8 @@ function normSave(s){
 function loadSave(){
   const def = normSave({});
   try {
-    const s2 = JSON.parse(lsGet(LS.save) || 'null');
+    const s2 = JSON.parse(lsGet(saveKey()) || 'null');
+    if (DEV.on) return normSave(Object.assign({}, s2 || { bank:DEV.bank }, { maxDay:7 }));
     if (s2 && typeof s2 === 'object'){
       const n = normSave(s2);
       if (s2.salao && !Array.isArray(s2.salao.mesas)) writeSave(n);   // salão antigo convertido (com a devolução): só uma vez
@@ -120,7 +125,7 @@ function loadSave(){
   } catch(e) {}
   return def;
 }
-function writeSave(s){ lsSet(LS.save, JSON.stringify(s)); }
+function writeSave(s){ lsSet(saveKey(), JSON.stringify(s)); }
 
 /* ============================================================
    MESA

@@ -8,7 +8,7 @@ const stage = $('stage');
 const game = new Game(canvas, ctx);
 let selectedDay = Math.min(game.unlocked, 7);
 
-const SCREENS = ['ov-menu','ov-how','ov-intro','ov-pause','ov-end','ov-shop','ov-final','ov-endless','ov-rank','ov-ver','ov-app'];
+const SCREENS = ['ov-menu','ov-how','ov-intro','ov-pause','ov-end','ov-shop','ov-final','ov-endless','ov-rank','ov-ver','ov-app','ov-dev'];
 function showOnly(ids){
   SCREENS.forEach(id => { const el = $(id); if (!el) return; if (ids.indexOf(id) >= 0) el.classList.add('show'); else el.classList.remove('show'); });
 }
@@ -51,6 +51,26 @@ function buildChips(){
     box.appendChild(b);
   }
 }
+
+/* ---------- modo dev: selo da versão e painel ---------- */
+function devSync(){
+  const t = $('vtag'); if (!t) return;
+  t.textContent = VERSAO + (DEV.on ? ' · dev' : '');
+  t.classList[DEV.on ? 'add' : 'remove']('dev');
+}
+function buildDev(){
+  $('dev-bank').textContent = fmt(game.save.bank);
+  const box = $('dev-ups');
+  clearEl(box);
+  UPGRADES.forEach(u => {
+    const b = el('button', null, u.name);
+    b.type = 'button';
+    b.setAttribute('aria-pressed', game.up[u.id] ? 'true' : 'false');
+    b.addEventListener('click', () => { Sfx.tap(); if (game.devToggle(u.id)) buildDev(); });
+    box.appendChild(b);
+  });
+}
+function openDev(){ devSync(); buildDev(); showOnly(['ov-dev']); }
 
 /* ---------- Como jogar ---------- */
 function tipCanvas(draw){
