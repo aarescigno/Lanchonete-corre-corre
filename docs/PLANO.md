@@ -267,6 +267,7 @@ Também: rever o `smoke7` (toque) e o `smoke10` (fila justa e porta), mais `bala
 **Calibração:**
 - Mudar de ponto deve compensar em ~3 a 5 dias para quem atende bem e não compensar para quem perde muitos clientes.
 - O jogador deve ter que escolher entre mudar e (equipe + melhorias + móveis).
+- **Achado da v7.4 (`docs/spec-v7.4.md`, item 9):** com equipe, mesa a mais não dá lucro (dia 5: kit de 10 lugares R$ 1.332 contra 16 lugares R$ 1.007), porque o gargalo são os 3 pratos limpos e a fila justa segura quem espera mesa. Antes de calibrar a mudança, decidir com o usuário se mais lugares devem render (ex.: pratos limpos pelos lugares do salão, ou grupos que vão embora quando a fila enche); senão, ponto maior não compensa.
 
 **Decisões em aberto:** a mudança é permanente ou dá para voltar; quantos dias tem a série de cada ponto; como o ranking soma os pontos; o que cada destravado custa.
 
