@@ -157,11 +157,12 @@ function drawTableOverlay(ctx,g,t,tm,menu){
   } else if (grp.state === 'wantOrder'){
     ctx.scale(pul,pul); drawBubble(ctx,0,0,18,PAL.alerta); txt(ctx,'!',0,1,26,'#fff','center',FD,3);
   } else if (grp.state === 'ordered'){
-    drawBubble(ctx,0,0,17,'#fff');
-    const pr = g.kitchen.progressFor(grp);
-    const plate = g.kitchen.plates.some(p => p && p.group === grp);
-    if (pr < 0 && !plate){ drawIcon(ctx,'ticket',0,0,0.8); }
-    else { drawDish(ctx,grp.dish,0,2,0.9); drawRing(ctx,0,0,17,plate ? 1 : pr,plate ? PAL.ok : PAL.alerta); }
+    // aguardando o preparo: panela no fogo, sem anel, para não parecer o cardápio; o visto verde diz que o prato já está no balcão
+    drawBubble(ctx,0,0,17,'#fff'); drawIcon(ctx,'pot',0,2,0.72,tm);
+    if (g.kitchen.plates.some(p => p && p.group === grp)){
+      circ(ctx,13,-12,6.5); fs(ctx,PAL.ok,1.8);
+      ctx.strokeStyle = '#fff'; ctx.lineWidth = 2; ctx.beginPath(); ctx.moveTo(10,-12); ctx.lineTo(12.4,-9.6); ctx.lineTo(16,-14.5); ctx.stroke();
+    }
   } else if (grp.state === 'eating'){
     drawBubble(ctx,0,0,17,'#fff'); drawDish(ctx,grp.dish,0,2,0.9);
     drawRing(ctx,0,0,17,1 - grp.timer/Math.max(0.1,grp.eatTotal),PAL.ok);

@@ -4,7 +4,15 @@ Registro das ideias e dos retornos de quem jogou, com o texto original, e de ond
 
 ---
 
-## 21/10/2026 — Usuário: mesas que valham a pena, pratos, fila e avaliações
+## 21/10/2026 — Usuário: ícone de "aguardando o preparo"
+**Origem:** mensagem do usuário:
+
+> "os ícones sobre os grupos de pessoas sentados de: "vendo cardápio" e "aguardando preparo da comida" são muito parecidos, sugiro trocar o segundo por um ícone de panelas quentes e tirar o timer de circunferencia se completando do icone de aguardando preparo"
+
+**Destino:**
+- **Feito (depois da v7.4.1, ainda sem número de versão):** no estado "pedido feito", o balão da mesa mostra uma panela no fogo com vapor (ícone `pot`), do pedido anotado até o prato sair, no lugar da comanda e do prato com anel de progresso. Sem anel. Quando o prato fica pronto no balcão, aparece um visto verde no canto do balão (era o anel verde cheio). O vapor fica parado com `prefers-reduced-motion`.
+
+, pratos, fila e avaliações
 **Origem:** mensagens do usuário numa sessão de equilíbrio, depois da v7.4:
 
 > "aumente a quantidade de pratos para 4 logo de início e rode o teste para ver ser dá mais lucro."
