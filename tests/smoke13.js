@@ -19,7 +19,7 @@ ok(new Set(mesas().map(m=>m.c)).size===4,'cada mesa do kit com uma cor de cadeir
 g.startDay(1); ok(g.tables.length===4 && g.tables.every(t=>t.open),'dia 1: todas as mesas abertas');
 ok(L.DAYS.every(d=>!('tables' in d)) && !('tables' in L.ENDLESS),'DAYS sem a lista de mesas abertas');
 ok(g.schedule.length===L.DAYS[0].groups && L.DAYS[0].groups===5 && L.DAYS[1].groups===8,'dias 1 e 2 com 5 e 8 grupos');
-ok(L.dishStock(L.DAYS[2],{})===3 && L.dishStock(L.DAYS[6],{pratos:true})===4 && L.dishStock(L.DAYS[0],{})===Infinity,'pratos limpos: sem limite nos dias 1 e 2, 3 depois (+1 com o Jogo de pratos)');
+ok(L.dishStock(L.DAYS[2],{})===4 && L.dishStock(L.DAYS[6],{pratos:true})===5 && L.dishStock(L.DAYS[0],{})===Infinity,'pratos limpos: sem limite nos dias 1 e 2, 4 depois (+1 com o Jogo de pratos)');
 
 // contas sem aluguel
 g.startDay(3); g.begin(); ok(g.contas===4*C.mesa+10*C.lugar && g.contas===180,'contas da Garagem: só luz e gás (R$ 30 por mesa e R$ 6 por lugar) = '+g.contas);

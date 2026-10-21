@@ -7,6 +7,7 @@ const H=require('./harness.js')(); const {g,L}=H; const BOT=require('./bot.js'),
 const order=['tenis','agua','cafeteira','bandeja','ventilador','pratos','corrida'];
 const FULL=[{tonhao:2,dani:3,couvert:true},{tonhao:2,dani:3},{tonhao:1,dani:2},{tonhao:0,dani:1},{}];
 // ajuste rápido sem mexer em src/: CONTAS='{"mesa":40}' INGRED='{"prato":0.6}' node carreira.js
+if(process.env.MOVIMENTO) Object.assign(L.MOVIMENTO,JSON.parse(process.env.MOVIMENTO));   // MOVIMENTO='{"porLugar":0.04}'
 if(process.env.CONTAS) Object.assign(L.CONTAS,JSON.parse(process.env.CONTAS));
 if(process.env.INGRED) Object.assign(L.INGRED,JSON.parse(process.env.INGRED));
 const rows={};
@@ -18,7 +19,7 @@ for(let k=0;k<N;k++){
       g.goShop(n);
       const u=order.find(id=>!g.up[id]); const uc=L.UPGRADES.find(x=>x.id===u);
       if(u && g.save.bank>=uc.cost+(n>=3?300:0)) g.buy(u);
-      if(process.env.MOVEIS!=='0') BOT.moveis(g,L,semMesa,n>=3?300:0);
+      if(process.env.MOVEIS!=='0') BOT.moveis(g,L,semMesa,n>=3?300:0,process.env.MOVEIS);
       if(n>=3){
         const e=FULL.find(e=>L.payroll(L.normSave({equipe:e}).equipe)+(L.divulgaOf(DIV).cost)<=g.save.bank)||{};
         g.save.equipe=L.normSave({equipe:Object.assign({daniTasks:['pratos','lavar','lixo']},e)}).equipe;

@@ -17,6 +17,7 @@ Origem: retorno do Renan Martorelli (beta-tester) e conversa com o Arthur (15/10
 | 1b | Livro-caixa e ajuste fino com jogadores | v7.2 | feita (15/10) |
 | 1c | Retorno do Renan: Bia mais ágil e selos da fila | v7.3 | feita (21/10) |
 | 1d-1 | Garagem da Bia, móveis e editor do salão | v7.4 | feita (21/10) |
+| — | Ajuste fora do plano: salão cheio chama gente, 4 pratos, fila justa a 60% | v7.4.1 | feita (21/10) |
 | 1d-2 | Tela que rola até a calçada, espera lá fora e máquina de suco | v7.5 | **próxima** (decidida em 21/10) |
 | 2 | Manutenção e imprevistos | v8 | a fazer |
 | 3 | Pontos: área industrial e Avenida Brasil, carreira por pontos | v9 | a fazer |
@@ -360,4 +361,12 @@ Também: rever o `smoke7` (toque) e o `smoke10` (fila justa e porta), mais `bala
 - Equipamento melhor no lugar da manutenção (fogão industrial etc.).
 - Mais funcionários: um segundo garçom, além da Dani.
 - Eventos de bairro: festa junina, jogo do Brasil.
+- **Avaliações dos clientes como meta para avançar** (pedido do usuário em 21/10; texto em `docs/PROPOSTAS.md`): uma nota parecida com as avaliações de mapa na internet, que sobe ou desce pela média das **últimas 200 avaliações** de quem passou. Cada grupo avalia 5 critérios:
+  - **espera por mesa:** cada coração perdido na fila tira 1 ponto;
+  - **agilidade do atendimento:** cada coração perdido esperando a Bia (pedido, prato, conta) tira 1 ponto;
+  - **qualidade do prato:** cada cozinheiro tem uma faixa de qualidade e de acerto; mais treinado, faixa mais alta e mais pratos caprichados (o crítico de hoje, `CRIT`, vira 100% de perfeição, nota máxima);
+  - **qualidade do menu:** quantos pratos o cardápio tem (só os que os cozinheiros foram treinados para fazer);
+  - **ambiente e amenidades:** a estética do salão (enfeites, móveis melhores que as mesas de plástico da Garagem), couvert e outros entretenimentos, cafezinho etc.
+
+  Uma das metas para passar de fase seria a nota mínima de avaliação. Combina com o **nível de luxo** (abaixo), com a escada de pontos (etapas 3 e 4) e com o crítico do guia (etapa 6).
 - **Nível de luxo** (0 a 5, bem para frente, depois de tudo o que está na fila; pedido do usuário em 21/10): a soma dos enfeites (decoração da área de espera e do salão), da localização (ponto), do impacto da mídia (divulgação), da avaliação de críticos surpresa e de outras coisas a ponderar. A progressão seria parecida com a de subir de nível de um personagem por atributos (o usuário citou o sistema do Kratos em God of War Ragnarök como referência; na interface, sem citar o jogo).

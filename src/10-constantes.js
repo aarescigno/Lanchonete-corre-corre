@@ -200,10 +200,10 @@ const SALAO_SEMFIM = [2,2,2,4,2,4];
 
 const HEART_MULT = [0, 0.6, 0.8, 1, 1.25, 1.5];
 const PAT = { queue:7, wantOrder:6, ordered:9, wantBill:7 };   // segundos por coração (base)
-/* jogo justo (v7.1): sem mesa livre onde o grupo caiba, a paciência na fila corre mais devagar (ritmo)
+/* jogo justo (v7.1): sem mesa livre onde o grupo caiba, a paciência na fila corre mais devagar (ritmo; 0,4 até a v7.4)
    e, na carreira, não passa de 1 coração com metade da paciência dele (piso). Mesa suja conta como
    mesa que serve (é só recolher a louça). No Turno sem fim vale o ritmo, mas não o piso */
-const FILA_JUSTA = { ritmo:0.4, piso:0.5 };
+const FILA_JUSTA = { ritmo:0.6, piso:0.5 };
 /* porta que respeita a lotação (v7.1, carreira): com todas as mesas ocupadas e 3 ou mais grupos na fila,
    a próxima chegada espera (até `max` s cada uma; no total, até `total` do tempo do dia). O total de
    grupos do dia não muda, só o ritmo */
@@ -249,12 +249,12 @@ function payroll(eq){
   if (eq.couvert) v += STAFF.couvert.pay;
   return v;
 }
-/* pratos limpos na cozinha: sem limite nos dias 1 e 2; depois, 3; no Turno sem fim, 5 (+1 com o Jogo de pratos) */
+/* pratos limpos na cozinha: sem limite nos dias 1 e 2; depois, 4; no Turno sem fim, 5 (+1 com o Jogo de pratos) */
 function dishStock(day, up){
   const extra = up && up.pratos ? 1 : 0;
   if (day.endless) return 5 + extra;
   if (day.n <= 2) return Infinity;
-  return 3 + extra;
+  return 4 + extra;
 }
 
 /* sucos: alguns grupos pedem junto com a comida; cada copo entregue vale JUICE.price */
@@ -269,7 +269,7 @@ const VIP = { pat:0.75, tip:0.5, perfect:40, angry:30, dish:25, cook:1.8, types:
 const DAYS = [
   { n:1, groups:5,  types:['estudante','vovos'],                                   nu:null,         meta:200, expert:320,  time:150, speed:0.60, note:'' },
   { n:2, groups:8,  types:['estudante','vovos','familia'],                         nu:'familia',    meta:300, expert:720,  time:160, speed:0.60, note:'Chegou a família! Grupos de 3 ou 4 só cabem nas mesas de 4 lugares. Na lojinha, aba Salão, dá para comprar mesas e arrumar o salão.' },
-  { n:3, groups:13, types:['estudante','vovos','familia','executiva'],             nu:'executiva',  meta:380, expert:880,  time:170, speed:0.60, juice:0.3, note:'O movimento aumentou e agora só há 3 pratos limpos: sozinha a Bia não dá conta, contrate ajuda na lojinha. A executiva tem pouca paciência, mas deixa boa gorjeta. E abriu o balcão de sucos: quem pede suco quer receber antes da conta!' },
+  { n:3, groups:13, types:['estudante','vovos','familia','executiva'],             nu:'executiva',  meta:380, expert:880,  time:170, speed:0.60, juice:0.3, note:'O movimento aumentou e agora só há 4 pratos limpos: sozinha a Bia não dá conta, contrate ajuda na lojinha. A executiva tem pouca paciência, mas deixa boa gorjeta. E abriu o balcão de sucos: quem pede suco quer receber antes da conta!' },
   { n:4, groups:15, types:['estudante','vovos','familia','executiva','entregador'], nu:'entregador', meta:300, expert:780, time:180, speed:0.58, juice:0.3, note:'O entregador de moto tem pressa: pouquíssima paciência!' },
   { n:5, groups:16, types:['estudante','vovos','familia','executiva','entregador'], nu:null,         meta:480, expert:1100, time:190, speed:0.56, vip:0.15, juice:0.3, note:'Chegou cliente VIP (de óculos escuros e plaquinha dourada)! Fura a fila e tem menos paciência, mas paga gorjeta extra e um bônus se sair com 5 corações. Se sair bravo, a multa dobra.' },
   { n:6, groups:16, types:['estudante','vovos','familia','executiva','entregador'], nu:null,         meta:460, expert:1100, time:200, speed:0.54, vip:0.15, juice:0.3, note:'Sexta-feira: ninguém quer esperar.' },
@@ -293,8 +293,12 @@ const DIVULGA = [
   { id:'panfleto', name:'Panfletos',     cost:40,  groups:[1, 1],     vip:1,   desc:'O movimento normal do dia.' },
   { id:'redes',    name:'Redes sociais', cost:100, groups:[1.2, 1.2], vip:1.5, desc:'+20% de grupos e, do dia 5 em diante, 50% mais VIPs. Precisa de lugar para tanta gente!' }
 ];
+/* movimento do salão (v7.4.1): cada lugar acima dos 10 do kit traz `porLugar` a mais de grupos no dia
+   (salão cheio chama gente). Sem isso, mesa a mais só dava conta de luz e gás */
+const MOVIMENTO = { kit:10, porLugar:0.06 };
+function movimentoSalao(lugares){ return 1 + MOVIMENTO.porLugar * Math.max(0, lugares - MOVIMENTO.kit); }
 const CAIXA_MAX = 14;                                 // livro-caixa (v7.2): quantos dias da carreira ficam guardados
-const VERSAO = 'v7.4';                                // vai no resumo do Caixa
+const VERSAO = 'v7.4.1';                              // vai no resumo do Caixa
 const DIVULGA_DIA = 3;                                // antes disso, o movimento é o da inauguração (sem custo)
 function divulgaOf(id){ return DIVULGA.find(d => d.id === id) || DIVULGA[1]; }
 /* contas do dia: o aluguel do ponto (v7.4; a Garagem é da família), mais cada mesa aberta e cada lugar dela */

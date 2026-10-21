@@ -59,7 +59,8 @@ class Game {
   }
   buildSchedule(day){
     const out = [];
-    const N = Math.max(3, Math.round(day.groups * this.divF)), vipP = (day.vip || 0) * (this.div ? this.div.vip : 1);
+    const lug = this.tables.filter(t => t.open).reduce((a, t) => a + t.seats, 0);
+    const N = Math.max(3, Math.round(day.groups * this.divF * movimentoSalao(lug))), vipP = (day.vip || 0) * (this.div ? this.div.vip : 1);
     const gap = day.speed * day.time / N;
     let t = 3;
     const forced = day.nu ? randi(1, Math.min(3, N-1)) : -1;
