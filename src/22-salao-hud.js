@@ -190,8 +190,9 @@ function drawCluster(ctx,grp,x,y,tm,o){
     const px = x + (i - (n-1)/2) * sp;
     const jig = (grp.hearts <= 2 && !grp.moving && grp.state === 'queue' && !RM) ? Math.sin(tm*14 + i) * 1.2 : 0;
     drawPerson(ctx,grp.people[i],px,y,{
-      mood:grp.mood, shirt:CHAIRS[grp.color].c, moving:grp.moving, ph:grp.walkPh + i*0.8, s:o.s, dx:jig
+      mood:grp.mood, shirt:CHAIRS[grp.color].c, moving:grp.moving, ph:grp.walkPh + i*0.8, s:o.s, dx:jig, sit:o.sit
     });
+    if (o.sit && i < grp.sucoN) drawIcon(ctx,'juice',px + 12,y - 14,0.42);   // bebendo o suco da espera
   }
 }
 
@@ -282,8 +283,59 @@ function filaPos(g,a){
   // mesa: à esquerda do tampo, empilhando para baixo; prato: em cima dele; estação: no canto, para a direita
   if (a.type === 'table'){ const t = g.tables[a.id-1]; return t ? { x:t.cx - t.hx - 14, y:t.cy - 10, dy:20 } : null; }
   if (a.type === 'plate'){ const j = g.kitchen.plates.findIndex(p => p && p.id === a.pid); return j < 0 ? null : { x:PLATE_SLOTS[j].x, y:PLATE_SLOTS[j].y - 26, dy:-20 }; }
+  if (a.type === 'maquina' && a.leg === 2){
+    const grp = a.group;
+    if (!grp) return null;
+    if (grp.state === 'queue') return { x:grp.x + 74, y:grp.y - 40, dy:20 };
+    return grp.table ? { x:grp.table.cx - grp.table.hx - 14, y:grp.table.cy - 10, dy:20 } : null;
+  }
   const st = STATIONS[a.type];
   return st ? { x:st.rect.x + 12, y:st.rect.y + 6, dx:28 } : null;
+}
+/* pedido de quem espera lá fora (v7.5), em cima do tablet: preparando (anel), pronto na máquina (pulsa),
+   a caminho (na mão da Bia ou da Dani) */
+function drawPedidoEspera(ctx,g,grp,tm){
+  if (!grp.pediu || grp.path.length) return;
+  const o = g.maq.find(q => q.group === grp);
+  const leva = [g.bia, g.dani].some(p => p.hands.some(h => h.kind === 'suco' && h.group === grp));
+  if (!o && !leva) return;
+  const x = QUEUE.x + 90, y = QUEUE.ys[grp.slot] - 64, pronto = o && o.t <= 0;
+  const p = pronto && !RM ? 1 + 0.1 * Math.sin(tm*8) : 1;
+  ctx.save(); ctx.translate(x,y); ctx.scale(p,p);
+  drawBubble(ctx,0,0,15,pronto ? PAL.ok : '#fff');
+  drawIcon(ctx,'juice',-2,1,0.62);
+  if (o && o.t > 0) drawRing(ctx,0,0,15,1 - o.t / MAQUINA.prep,PAL.alerta);
+  const n = o ? o.n : 0;
+  if (n){ circ(ctx,12,-11,7); fs(ctx,'#fff',1.4); txt(ctx,String(n),12,-10.5,10,PAL.tinta,'center',FD); }
+  if (leva && !o){ circ(ctx,12,-11,7); fs(ctx,PAL.mostarda,1.4); txt(ctx,'→',12,-11,10,PAL.tinta,'center',FD); }
+  ctx.restore();
+}
+/* abinhas do alto da tela (v7.5): a da esquerda leva à calçada (com quantos esperam e, piscando, o aviso de que lá
+   fora precisa de atenção); a da direita leva ao salão e mostra o relógio, que some da tela junto com a cozinha */
+function drawAbas(ctx,g,tm){
+  ['l','r'].forEach(k => {
+    if (!g.abaOn(k)) return;
+    const r = ABAS[k], al = k === 'l' && g.abaAlerta();
+    glowSprite(ctx,g,'aba' + k,ctx => {
+      const blink = al && (RM || Math.floor(tm*3) % 2 === 0);
+      rr(ctx,r.x,r.y,r.w,r.h,10); fs(ctx,blink ? PAL.alerta : 'rgba(43,40,35,.88)',2.4);
+      const cx = r.x + r.w / 2, cy = r.y + r.h / 2;
+      if (k === 'l'){
+        txt(ctx,'◀',r.x + 14,cy,16,PAL.mostarda,'center',FD);
+        txt(ctx,'Calçada',cx + 10,cy - 7,13,'#fff','center',FD,0,r.w - 30);
+        const n = g.queue.length;
+        txt(ctx,n ? (n > 1 ? n + ' esperando' : '1 esperando') : 'ninguém',cx + 10,cy + 10,10,'#F7EFD8','center',FB,0,r.w - 30);
+        if (al){ const p = RM ? 1 : 1 + 0.15 * Math.sin(tm*10); ctx.save(); ctx.translate(r.x + r.w - 2,r.y + 2); ctx.scale(p,p); circ(ctx,0,0,10); fs(ctx,PAL.perigo,2); txt(ctx,'!',0,1,14,'#fff','center',FD); ctx.restore(); }
+      } else {
+        txt(ctx,'▶',r.x + r.w - 14,cy,16,PAL.mostarda,'center',FD);
+        txt(ctx,'Salão',cx - 10,cy - 7,13,'#fff','center',FD,0,r.w - 30);
+        const endless = g.mode === 'semfim', low = !endless && g.clock < 20;
+        txt(ctx,endless ? mmssUp(g.elapsed) : mmss(g.clock),cx - 10,cy + 10,12,low ? '#FF9C8A' : PAL.mostarda,'center',FD);
+        const n = g.abaPratos();
+        if (n){ circ(ctx,r.x + 2,r.y + 2,10); fs(ctx,PAL.ok,2); txt(ctx,String(n),r.x + 2,r.y + 3,12,'#fff','center',FD); }   // pratos prontos esperando a Bia
+      }
+    });
+  });
 }
 function drawFilaMarcas(ctx,g,tm){
   const seen = {};
@@ -297,6 +349,7 @@ function drawFilaMarcas(ctx,g,tm){
 function drawHandItem(ctx,h,x,y,s,noTag){
   if (h.kind === 'dish'){ drawIcon(ctx,'dish',x,y,s,h.dish,cmdColor(h.group)); if (h.crit) txt(ctx,'★',x-12*s,y-12*s,13*s,PAL.mostarda,'center',FD); }
   else if (h.kind === 'ticket') drawIcon(ctx,'ticket',x,y,s,cmdColor(h.group));
+  else if (h.kind === 'suco'){ drawIcon(ctx,'juice',x,y,s); if (h.group){ circ(ctx,x+8*s,y+9*s,4.5*s); fs(ctx,CHAIRS[h.group.color].c,1.2); } }   // da espera: a cor de quem pediu
   else drawIcon(ctx,h.kind,x,y,s);
   if (h.table && noTag){ circ(ctx,x+5,y-9,5.5); fs(ctx,'#fff',1.4); txt(ctx,String(h.table),x+5,y-8.5,8,PAL.tinta,'center',FD); }
   else if (h.table){ circ(ctx,x+12,y-11,8); fs(ctx,'#fff',1.8); txt(ctx,String(h.table),x+12,y-10,11,PAL.tinta,'center',FD); }
@@ -311,7 +364,11 @@ function drawActIcon(ctx,g,a,x,y){
   else if (a.type === 'juice') drawIcon(ctx,'juice',x,y+1,1.0);
   else if (a.type === 'sink') drawIcon(ctx,'drop',x,y,1.05);
   else if (a.type === 'trash') drawIcon(ctx,'trash',x,y,1.0);
-  else if (a.type === 'agua') drawAguaJar(ctx,x,y+10,0.6);
+  else if (a.type === 'maquina'){
+    drawIcon(ctx,'juice',x,y+1,1.0);
+    if (a.leg === 2 && a.group){ circ(ctx,x+13,y+12,7); fs(ctx,CHAIRS[a.group.color].c,1.8); }   // levando: a cor de quem pediu
+    else { rr(ctx,x+6,y+5,14,11,2); fs(ctx,PAL.tinta,1.2); ctx.fillStyle = '#FFE0A6'; ctx.fillRect(x+8,y+7,10,7); }   // o tablet
+  }
   else if (a.type === 'plate'){
     const p = g.kitchen.plates.find(q => q && q.id === a.pid);
     drawIcon(ctx,'dish',x,y,1.0,p ? p.dish : 'pf',cc);

@@ -39,9 +39,11 @@ function seatPositions(t){
   ];
 }
 function tableHalfW(t){ return t.seats === 2 ? 36 : 62; }
-const STATION_KEYS = ['order','plates','coffee','juice','sink','trash','agua'];
+const STATION_KEYS = ['order','plates','coffee','juice','sink','trash','maquina'];
 function tableRect(t){ return { x:t.cx - t.hx - 10, y:t.cy - 62, w:t.hx*2 + 20, h:132 }; }
-function queueRect(g){ return { x:4, y:QUEUE.ys[g.slot] - 76, w:148, h:90 }; }
+function queueRect(g){ return { x:QUEUE.x - 74, y:QUEUE.ys[g.slot] - 76, w:148, h:90 }; }
+/* onde a Bia (ou a Dani) para ao levar o suco a quem espera: ao lado do tablet do lugar */
+function esperaAp(slot){ return { x:QUEUE.x + 104, y:QUEUE.ys[slot] - 18 }; }
 function rectDist(x, y, r){ return Math.hypot(Math.max(r.x - x, 0, x - r.x - r.w), Math.max(r.y - y, 0, y - r.y - r.h)); }
 function tableApproach(t){
   const hx = tableHalfW(t) + 28;
@@ -61,7 +63,7 @@ function lsSet(k, v){
 /* o couvert só vale do nível 3 do salão em diante: num ponto abaixo, sai */
 function normEquipe(e, ponto){
   e = (e && typeof e === 'object') ? e : {};
-  const tasks = Array.isArray(e.daniTasks) ? e.daniTasks.filter(t => DANI_TASKS.some(d => d.id === t)) : ['pratos','lavar'];
+  const tasks = Array.isArray(e.daniTasks) ? e.daniTasks.map(t => t === 'agua' ? 'suco' : t).filter(t => DANI_TASKS.some(d => d.id === t)) : ['pratos','lavar'];   // v7.5: a tarefa da água vira a do suco da espera
   return { tonhao: clamp(Math.round(+e.tonhao)||0,0,2), dani: clamp(Math.round(+e.dani)||0,0,3), daniTasks: tasks.filter((t,i) => tasks.indexOf(t) === i).slice(0,3), couvert: !!e.couvert && couvertOk(ponto), taxa: !!e.taxa, tv: !!e.tv, som: !!e.som };
 }
 /* livro-caixa (v7.2): uma linha por dia jogado na carreira (os últimos CAIXA_MAX). As compras da lojinha
@@ -90,6 +92,7 @@ function caixaAdd(s, row){
 function normSave(s){
   const up = (s.up && typeof s.up === 'object') ? s.up : {};
   if (up.jukebox){ up.agua = true; delete up.jukebox; }   // a Jukebox virou Água saborizada na v5
+  if (up.agua){ up.maquina = true; delete up.agua; }      // e a Água saborizada virou a Máquina de suco na v7.5
   if (up.chapa){ up.pratos = true; delete up.chapa; }     // a Chapa nova virou Jogo de pratos (a velocidade da cozinha é do Tonhão)
   // salão da v6 à v7.3 (v7.4): o que foi gasto em cadeiras e mesas volta para o dinheiro, numa linha do caixa, e o
   // jogo começa na Garagem com o kit
@@ -155,7 +158,7 @@ class Group {
     this.timer = 0; this.eatTotal = 1; this.coffee = false;
     this.boing = 0; this.angry = false; this.done = false; this.paid = false;
     this.cmd = -1; this.hold = 0; this.bounced = false;
-    this.aguaN = 0; this.drank = false;
+    this.sucoN = 0; this.sucoConta = 0; this.tabT = 0; this.pediu = false;   // suco da espera (v7.5): bebidos, na conta, tempo no lugar
     this.state = 'queue'; this.stateT = 0; this.patLeft = 0;
     this.aguarda = false; this.piso = false;   // na fila sem mesa que sirva; segurando no piso de 1 coração
     this.setState('queue');
@@ -165,7 +168,7 @@ class Group {
     if (!b) return Infinity;
     let m = b * this.T.pat;
     if (this.vip) m *= VIP.pat;
-    if (this.state === 'queue' && this.aguaN) m /= 1 - AGUA.slow * this.aguaN / this.size;
+    if (this.state === 'queue' && this.sucoN) m /= 1 - MAQUINA.slow * Math.min(1, this.sucoN / this.size);
     const g = this.game, eq = g.save.equipe;
     const amb = ambienteEffect(eq);
     if (amb && this.state !== 'queue') m /= 1 - amb;
@@ -173,16 +176,11 @@ class Group {
     return m;
   }
   setState(s){ this.state = s; this.stateT = 0; this.patLeft = this.patPer(); }
-  /* ao chegar na fila, cada pessoa toma 1 dose de água, se houver */
-  drink(){
-    const g = this.game;
-    this.drank = true;
-    if (!g.up.agua) return;
-    const n = Math.min(this.size, g.agua);
-    if (n <= 0) return;
+  /* bebeu n sucos da espera: a paciência que falta no coração encolhe junto com o ritmo */
+  drink(n){
     const old = this.patPer();
-    g.agua -= n; this.aguaN = n;
-    this.patLeft *= this.patPer() / old;
+    this.sucoN += n;
+    if (this.state === 'queue') this.patLeft *= this.patPer() / old;
   }
   gain(n){ this.hearts = Math.min(5, this.hearts + n); this.patLeft = this.patPer(); }
   get juicePending(){ return Math.max(0, this.juiceWant - this.juiceGot); }
@@ -230,7 +228,11 @@ class Group {
     switch (this.state){
       case 'queue':
         this.moveAlong(dt, 220);
-        if (!this.drank && !this.path.length) this.drink();
+        // sentado lá fora, depois de `pede` s, pede no tablet 1 suco por pessoa (com a máquina)
+        if (!this.pediu && !this.path.length && this.game.up.maquina){
+          this.tabT += dt;
+          if (this.tabT >= MAQUINA.pede){ this.pediu = true; this.game.maqPedir(this, this.size); }
+        }
         this.tickQueue(dt); break;
       case 'toTable':
         this.moveAlong(dt, 230);

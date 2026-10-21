@@ -26,8 +26,9 @@ function upgradeIcon(id){
       txt(c,'♪',-12,-12,14,PAL.faixa,'center',FB);
     } else if (id === 'ambiente'){
       drawTv(c,6,2,0,0.48); drawSom(c,-6,17,0,0.42); txt(c,'♪',-16,-12,12,PAL.faixa,'center',FB);
-    } else if (id === 'agua'){
-      drawAguaJar(c,0,12,0.9);
+    } else if (id === 'maquina'){
+      rr(c,-12,-16,24,30,4); fs(c,'#F2F2EE',2); rr(c,-8,-12,16,12,3); fs(c,'rgba(242,140,40,.75)',1.6);
+      rr(c,-10,8,20,4,2); fs(c,PAL.cromo,1.2); drawIcon(c,'juice',15,6,0.55);
     } else if (id === 'div-boca'){
       drawPerson(c,{skin:2,hair:1,hairC:'#2F1D12',pants:'#4A4036'},-8,18,{ shirt:CHAIRS[1].c, mood:0, s:0.6 });
       drawPerson(c,{skin:4,hair:4,hairC:'#1B1512',pants:'#2F3E5C'},10,18,{ shirt:CHAIRS[3].c, mood:0, s:0.6 });

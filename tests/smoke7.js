@@ -3,7 +3,7 @@ const H=require('./harness.js')(); const {g,L,ctx}=H;
 let fails=0,total=0; const ok=(c,m)=>{ total++; if(!c){fails++;console.log('FAIL:',m);} else console.log('ok  :',m); };
 const PAD=23;   // folga de um celular deitado (escala ~0,6)
 const glows=()=>g.fx.filter(f=>f.k==='glow').length;
-g.startDay(3); g.begin();
+g.startDay(3); g.begin(); g.cam=0; const QX=L.LAYOUT.QUEUE.x;   // v7.5: a entrada chega na tela; com a câmera no salão, tela = mundo (a fila fica em x < 0)
 const S=L.LAYOUT.STATIONS, b=g.bia;
 
 // lixeira (46×62): toque 15 px à esquerda dela
@@ -26,13 +26,13 @@ g.kitchen.plates=[null,null,null,null];
 // grupo na fila: tremido de ~12 px vira seleção, não arrasto
 let guard=0; while(!g.queue.length && guard++<600) g.update(0.05);
 const grp=g.queue[0], qy=L.LAYOUT.QUEUE.ys[grp.slot]-20;
-g.sel=null; g.onDown(78,qy,PAD); g.onMove(88,qy+7); g.onUp(88,qy+7);
+g.sel=null; g.onDown(QX,qy,PAD); g.onMove(QX+10,qy+7); g.onUp(QX+10,qy+7);
 ok(g.sel===grp && grp.state==='queue','dedo tremido seleciona o grupo');
-g.sel=null; g.onDown(78,qy,0); g.onMove(88,qy+7); g.onUp(88,qy+7);
+g.sel=null; g.onDown(QX,qy,0); g.onMove(QX+10,qy+7); g.onUp(QX+10,qy+7);
 ok(g.sel===null,'mouse: mesmo movimento é arrasto');
 // arrasto solto perto da mesa (fora do retângulo) senta
 const t=g.tables.find(t=>t.open&&t.free&&t.seats>=grp.size), r={x:t.cx-t.hx-10,y:t.cy-62};
-g.onDown(78,qy,PAD); g.onMove(200,200); g.onUp(r.x-12, t.cy);
+g.onDown(QX,qy,PAD); g.onMove(200,200); g.onUp(r.x-12, t.cy);
 ok(grp.state==='toTable','arrasto solto rente à mesa senta o grupo');
 
 // HUD: ícone da fila com a área cheia da faixa

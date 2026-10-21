@@ -13,22 +13,18 @@ function drawTouchFx(ctx,g){
   }
 }
 
+/* o mundo (salão, calçada, gente e efeitos) anda com a câmera (v7.5); o HUD e as abinhas ficam fixos na tela */
 function render(g, ctx){
   const tm = g.anim;
   const menu = g.state === 'menu';
   ctx.save();
   ctx.lineJoin = 'round'; ctx.lineCap = 'round';
+  ctx.save();
+  ctx.translate(menu ? 0 : g.cam, 0);
   drawFloor(ctx,g);
   drawWall(ctx,g,tm);
+  drawCalcada(ctx,g,tm);
   drawKitchen(ctx,g,tm);
-
-  // marcação da fila
-  ctx.fillStyle = 'rgba(34,32,28,.07)';
-  for (let i=0;i<QUEUE.max;i++){ rr(ctx,10,QUEUE.ys[i]-72,136,84,12); ctx.fill(); }
-  ctx.setLineDash([6,5]); ctx.strokeStyle = 'rgba(31,79,163,.4)'; ctx.lineWidth = 2;
-  for (let i=0;i<QUEUE.max;i++){ rr(ctx,10,QUEUE.ys[i]-72,136,84,12); ctx.stroke(); }
-  ctx.setLineDash([]);
-  txt(ctx,'FILA DE ESPERA',78,QUEUE.ys[3]+26,11,'rgba(31,79,163,.85)','center',FB);
 
   // destaque de mesa durante arrasto/seleção
   if (g.hover && (g.drag || g.sel)){
@@ -56,7 +52,7 @@ function render(g, ctx){
         if (isDrag) ctx.globalAlpha = 0.35;
         const sq = grp.boing > 0 && !RM ? 1 + Math.sin(grp.boing*22)*0.08 : 1;
         ctx.translate(grp.x, grp.y); ctx.scale(1/sq, sq); ctx.translate(-grp.x, -grp.y);
-        glowSprite(ctx,g,grp,ctx => drawCluster(ctx,grp,grp.x,grp.y,tm));
+        glowSprite(ctx,g,grp,ctx => drawCluster(ctx,grp,grp.x,grp.y,tm,{ sit:!grp.path.length }));   // no lugar, sentado no banco
         ctx.restore();
       }});
     } else if (grp.state === 'toTable' || grp.state === 'leaving'){
@@ -75,7 +71,7 @@ function render(g, ctx){
     });
   }});
   if (menu) items.pop();
-  if (g.up.agua) items.push({ y:150, f:() => glowSprite(ctx,g,'agua',ctx => drawAgua(ctx,g,tm,menu)) });
+  if (g.up.maquina) items.push({ y:STATIONS.maquina.rect.y + STATIONS.maquina.rect.h, f:() => glowSprite(ctx,g,'maquina',ctx => drawMaquina(ctx,g,tm,menu)) });
   if (g.save.equipe.couvert && !menu) items.push({ y:528, f:() => drawMusico(ctx,g,tm) });
   if ((g.save.equipe.tv || g.save.equipe.som) && !menu) items.push({ y:532, f:() => drawAmbiente(ctx,g,tm) });
   if (g.dani.active && !menu) items.push({ y:g.dani.y, f:() => drawDani(ctx,g.dani,tm) });
@@ -89,6 +85,7 @@ function render(g, ctx){
     if (grp.vip){ drawHearts(ctx,grp,grp.x+14,grp.y-64,tm); drawVipBadge(ctx,grp.x-45,grp.y-63,tm); }
     else drawHearts(ctx,grp,grp.x,grp.y-64,tm);
     if (grp.aguarda && !grp.path.length) drawWaitBadge(ctx,grp.x + (grp.vip ? 63 : 50),grp.y-66,tm,grp.piso);
+    if (!menu) drawPedidoEspera(ctx,g,grp,tm);
   });
   if (!menu) drawFilaMarcas(ctx,g,tm);
   // "?" sobre a Bia
@@ -124,6 +121,9 @@ function render(g, ctx){
     }
   }
 
+  if (!menu) drawTouchFx(ctx,g);
+  ctx.restore();
+
   if (menu){
     ctx.fillStyle = 'rgba(34,32,28,.18)'; ctx.fillRect(0,92,W,448);
     drawBia(ctx,b,790,520,{ s:2.3, wave:true, t:tm });
@@ -131,7 +131,7 @@ function render(g, ctx){
     ctx.fillStyle = PAL.mostarda; ctx.fillRect(0,540,W,4);
   } else {
     drawHud(ctx,g,tm);
-    drawTouchFx(ctx,g);
+    if (g.state === 'playing' || g.state === 'paused') drawAbas(ctx,g,tm);
     if (g.ending && g.state === 'playing'){
       const msg = g.reason === 'time' ? 'Fim do expediente!' : (g.reason === 'stars' ? 'Sem estrelas!' : 'Todo mundo atendido!');
       ctx.fillStyle = 'rgba(34,32,28,.35)'; ctx.fillRect(0,230,W,90);

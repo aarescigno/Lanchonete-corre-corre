@@ -1,4 +1,4 @@
-// v5: equipe (Tonhão, Dani, couvert; TV e som desde a v7.4.3), louça limitada, lixeira que enche, água saborizada, economia
+// v5: equipe (Tonhão, Dani, couvert; TV e som desde a v7.4.3), louça limitada, lixeira que enche, água saborizada (máquina de suco desde a v7.5), economia
 const load=require('./harness.js');
 let fails=0, total=0; const ok=(c,m)=>{ total++; if(!c){fails++;console.log('FAIL:',m);} else console.log('ok  :',m); };
 const H=load(); const {g,L}=H; const K=k=>({kind:k});
@@ -6,20 +6,12 @@ const eq=()=>g.save.equipe;
 const reset=(e,bank)=>{ g.save.equipe=L.normSave({equipe:e}).equipe; g.save.bank=bank==null?5000:bank; g.up={}; g.save.up=g.up; };
 const run=(sec,keep)=>{ for(let i=0;i<sec*20;i++){ if(keep) g.groups.forEach(x=>x.patLeft=1e9); g.update(0.05); } };
 
-/* água saborizada no lugar da jukebox */
-ok(L.UPGRADES.some(u=>u.id==='agua') && !L.UPGRADES.some(u=>u.id==='jukebox'),'Água saborizada substitui a Jukebox');
-{ const s=L.normSave({up:{jukebox:true}}); ok(s.up.agua && !s.up.jukebox,'save antigo: Jukebox vira Água saborizada'); }
-{ reset({}); g.resetDay(3); const a=new L.Group(g,'estudante',1,0); const p0=a.patPer(); g.up.agua=true;
-  ok(Math.abs(a.patPer()-p0)<1e-9,'água: sem tomar, a paciência não muda');
-  ok(g.agua===L.AGUA.cap,'água: a jarra começa o dia cheia ('+L.AGUA.cap+' doses)');
-  a.size=2; g.agua=5; a.drink(); ok(g.agua===3 && a.aguaN===2 && Math.abs(a.patPer()-p0/0.6)<1e-9,'água: cada pessoa toma 1 dose; paciência na fila cai 40% mais devagar');
-  const b=new L.Group(g,'estudante',2,0); b.size=2; g.agua=1; b.drink(); ok(g.agua===0 && b.aguaN===1 && Math.abs(b.patPer()-p0/0.8)<1e-9,'água: só 1 dose para 2 pessoas, metade do efeito');
-  const c=new L.Group(g,'estudante',3,0); c.drink(); ok(c.aguaN===0 && Math.abs(c.patPer()-p0)<1e-9,'água: jarra vazia, sem efeito');
-  ok(g.stationAt(182,140)==='agua','água: toque na jarra');
-  g.money=100; g.bia.perform({type:'agua'}); ok(g.agua===L.AGUA.cap && g.money===100-L.AGUA.price && g.stats.refill===1,'água: recarregar custa R$ '+L.AGUA.price);
-  g.bia.perform({type:'agua'}); ok(g.money===100-L.AGUA.price,'água: cheia, não cobra de novo');
-  g.agua=0; g.money=5; g.bia.perform({type:'agua'}); ok(g.agua===0 && g.money===5,'água: sem dinheiro, não recarrega');
-  g.up={}; g.save.up=g.up; ok(g.stationAt(182,140)===null,'sem a melhoria, a jarra não aparece'); }
+/* água saborizada no lugar da jukebox (v5) e, desde a v7.5, a máquina de suco no lugar da água (testes da máquina no smoke14) */
+ok(L.UPGRADES.some(u=>u.id==='maquina') && !L.UPGRADES.some(u=>u.id==='agua'||u.id==='jukebox'),'Máquina de suco substitui a Água saborizada (que substituiu a Jukebox)');
+{ const s=L.normSave({up:{jukebox:true}}); ok(s.up.maquina && !s.up.jukebox && !s.up.agua,'save antigo: Jukebox vira Água saborizada, que vira Máquina de suco'); }
+{ reset({}); g.resetDay(3); g.up.maquina=true; const r=L.LAYOUT.STATIONS.maquina.rect;
+  ok(g.stationAt(r.x+10,r.y+10)==='maquina','máquina: toque nela');
+  g.up={}; g.save.up=g.up; ok(g.stationAt(r.x+10,r.y+10)===null,'sem a melhoria, a máquina não aparece'); }
 
 /* folha e cofre */
 ok(L.payroll(L.normSave({}).equipe)===0,'sem equipe, folha zero');
@@ -81,8 +73,7 @@ for(const lv of [0,1,2]){ reset({tonhao:lv}); g.startDay(4); g.begin(); fresh();
 ok(L.dishStock(L.DAYS[2],{pratos:true})===5 && L.dishStock({endless:true},{pratos:true})===6 && L.dishStock(L.DAYS[1],{pratos:true})===Infinity,'Jogo de pratos: +1 prato limpo');
 { reset({}); g.startDay(3); g.begin(); const a=new L.Group(g,'estudante',1,0); a.setState('wantOrder'); const p0=a.patPer(); g.trash=L.TRASH.cap;
   ok(a.patPer()<p0,'lixeira cheia cheira'); g.up.ventilador=true; ok(Math.abs(a.patPer()-p0)<1e-9,'ventilador: o cheiro não incomoda'); g.trash=0; g.up={}; g.save.up=g.up; }
-{ reset({dani:3,daniTasks:['pratos','lavar','agua']}); g.startDay(4); g.begin(); fresh(); g.up.agua=true; g.agua=1; g.money=100; run(25,true);
-  ok(g.agua===L.AGUA.cap && g.money===100-L.AGUA.price,'Dani recarrega a água'); g.up={}; g.save.up=g.up; }
+{ const e=L.normSave({equipe:{dani:1,daniTasks:['agua','lixo']}}).equipe; ok(e.daniTasks.join()==='suco,lixo','save antigo: a tarefa da água vira a do suco da espera'); }
 
 /* louça limitada */
 ok(L.dishStock(L.DAYS[0])===Infinity && L.dishStock(L.DAYS[1])===Infinity,'dias 1 e 2: pratos sem limite');
@@ -114,12 +105,12 @@ ok(L.dishStock(L.DAYS[2])===4 && L.dishStock(L.DAYS[5])===4 && L.dishStock(L.DAY
   reset({dani:1,daniTasks:[]}); ok(g.toggleDaniTask('lixo') && g.toggleDaniTask('cafe') && !g.toggleDaniTask('lavar'),'níveis 1 e 2: 2 tarefas');
   eq().dani=3; ok(g.toggleDaniTask('lavar') && !g.toggleDaniTask('pratos'),'nível 3: 3 tarefas');
   ok(g.toggleDaniTask('lixo') && eq().daniTasks.indexOf('lixo')<0,'desmarca tarefa'); }
-{ reset({dani:1,daniTasks:['agua','lixo','pratos']});
-  ok(g.toggleDaniTask('agua') && eq().daniTasks.indexOf('agua')<0,'sem a melhoria, ainda dá para desmarcar a água guardada');
-  reset({dani:1,daniTasks:['agua','lixo']}); g.startDay(3); g.begin();
-  ok(!g.dani.does('agua') && g.dani.does('lixo') && g.toggleDaniTask('pratos') && g.dani.tasks.join()==='lixo,pratos','sem a melhoria, a água não ocupa vaga de tarefa');
-  reset({dani:1,daniTasks:[]}); ok(!g.toggleDaniTask('agua'),'sem a melhoria, não marca a água');
-  g.up.agua=true; ok(g.toggleDaniTask('agua') && g.dani.does('agua'),'com a melhoria, marca a água'); }
+{ reset({dani:1,daniTasks:['suco','lixo','pratos']});
+  ok(g.toggleDaniTask('suco') && eq().daniTasks.indexOf('suco')<0,'sem a máquina, ainda dá para desmarcar o suco guardado');
+  reset({dani:1,daniTasks:['suco','lixo']}); g.startDay(3); g.begin();
+  ok(!g.dani.does('suco') && g.dani.does('lixo') && g.toggleDaniTask('pratos') && g.dani.tasks.join()==='lixo,pratos','sem a máquina, o suco não ocupa vaga de tarefa');
+  reset({dani:1,daniTasks:[]}); ok(!g.toggleDaniTask('suco'),'sem a máquina, não marca o suco');
+  g.up.maquina=true; ok(g.toggleDaniTask('suco') && g.dani.does('suco'),'com a máquina, marca o suco'); }
 /* 2 mãos: a Dani nunca leva mais de 2 itens (cada pilha de louça ocupa 1 mão) */
 { const bot=require('./bot.js')(g,L); ok(L.DANI_HANDS===2,'Dani tem 2 mãos');
   reset({dani:3,daniTasks:['pratos','cafe','lavar']}); g.startDay(4); g.begin(); g.schedule=[{t:1e9,type:'estudante',color:0}]; g.nextIdx=0;

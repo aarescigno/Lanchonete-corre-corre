@@ -64,11 +64,11 @@ g.startDay(3); g.begin(); g.finishDay(); els['btn-again'].fire('click'); ok(g.st
 els['btn-shop-menu'].fire('click'); ok(g.state==='menu','lojinha tem menu principal');
 g.startDay(1); g.begin(); g.finishDay(); els['btn-again'].fire('click'); ok(g.state==='intro'&&g.day.n===1,'dia 1 vai direto');
 // drag/select + pointer tests
-g.startDay(1); g.begin();
+g.startDay(1); g.begin(); g.cam=0; const QX=L.LAYOUT.QUEUE.x;   // v7.5: a entrada chega na tela; com a câmera no salão, tela = mundo (a fila fica em x < 0)
 for(let i=0;i<200;i++) g.update(0.05);
 ok(g.queue.length>0,'queue has group');
 const q=g.queue[0];
-g.onDown(78,q.y-20); g.onMove(260,205); g.onMove(262,205); g.onUp(262,205);
+g.onDown(QX,q.y-20); g.onMove(260,205); g.onMove(262,205); g.onUp(262,205);
 ok(q.state==='toTable'||q.boing>0,'drag seat attempt');
 g.pause(); ok(g.state==='paused','paused'); g.resume(); ok(g.state==='playing','resumed');
 console.log('rendered ok; fails =',fails);

@@ -7,7 +7,7 @@ Origem: retorno do Renan Martorelli (beta-tester) e conversa com o Arthur (15/10
 - Para começar uma sessão, basta pedir: **"faça a próxima etapa do docs/PLANO.md"**. A sessão lê só a etapa da vez e as partes de `src/` citadas nela.
 - Antes de programar, a sessão confirma com o usuário as **decisões em aberto** da etapa (cada uma já tem uma sugestão).
 - No fim, a sessão marca a etapa como feita na tabela abaixo (com a versão e a data) e anota o que mudou no plano.
-- Ordem: cada etapa depende só das anteriores. A 1a vem primeiro (mexe no equilíbrio de base). A 1c teve prioridade sobre as demais, por ser retorno do beta-tester Renan (pedido do usuário em 21/10). **A 1d-1 foi feita (v7.4); a próxima é a 1d-2** (decididas pelo usuário em 21/10; cada uma numa sessão). A 1b e a 2 podiam trocar de lugar. A 3 vem antes da 4, e a 4 antes da 6.
+- Ordem: cada etapa depende só das anteriores. A 1a vem primeiro (mexe no equilíbrio de base). A 1c teve prioridade sobre as demais, por ser retorno do beta-tester Renan (pedido do usuário em 21/10). **A 1d-1 (v7.4) e a 1d-2 (v7.5) foram feitas; a próxima é a 2** (manutenção e imprevistos). A 1b e a 2 podiam trocar de lugar. A 3 vem antes da 4, e a 4 antes da 6.
 
 ## Situação
 | # | Etapa | Versão | Situação |
@@ -19,8 +19,8 @@ Origem: retorno do Renan Martorelli (beta-tester) e conversa com o Arthur (15/10
 | 1d-1 | Garagem da Bia, móveis e editor do salão | v7.4 | feita (21/10) |
 | — | Ajuste fora do plano: salão cheio chama gente, 4 pratos, fila justa a 60% | v7.4.1 | feita (21/10) |
 | — | Fora do plano: TV e som na Garagem, couvert só no nível 3 | v7.4.4 | feita (21/10) |
-| 1d-2 | Tela que rola até a calçada, espera lá fora e máquina de suco | v7.5 | **próxima** (decidida em 21/10) |
-| 2 | Manutenção e imprevistos | v8 | a fazer |
+| 1d-2 | Tela que rola até a calçada, espera lá fora e máquina de suco | v7.5 | feita (21/10) |
+| 2 | Manutenção e imprevistos | v8 | **próxima** |
 | 3 | Pontos: área industrial e Avenida Brasil, carreira por pontos | v9 | a fazer |
 | 4 | Terraço Suíça e VIPs exigentes | v10 | a fazer |
 | 5 | Modo História, parte 1: estrutura e primeiros capítulos | v11 | a fazer |
@@ -212,6 +212,8 @@ Também: rever `smoke8` (salão da v6, que sai ou vira teste de conversão) e o 
 Também: rever o `smoke7` (toque) e o `smoke10` (fila justa e porta), mais `balance.js` e capturas `shot_v7_5.py`.
 
 **Dúvidas que ainda podem surgir (perguntar na sessão):** largura da calçada visível; se o arrastar do fundo conflita com o toque com folga do celular; preço do suco da espera.
+
+**Feita em 21/10 (v7.5, `docs/spec-v7.5.md`).** Decisões: calçada de 260 px; arrastar o fundo só no vazio, com abinhas fixas no alto (a da calçada vira a setinha, piscando); suco da espera a R$ 12; a tarefa da água da Dani virou "Levar o suco da espera". O que mudou em relação ao plano: a setinha é a abinha do alto (com quantos esperam), e a da direita mostra o relógio (que sai da tela junto com a cozinha) e os pratos prontos; o dia começa olhando a calçada; a Bia pega de uma vez todos os copos prontos que couberem e entrega grupo a grupo; o suco entregue também devolve 1 coração; os enfeites são o toldo, os bancos de ripas e um vaso num banquinho de plástico. Achado: com a Bia sozinha, a ida até a máquina (~6 s) faz o bot afiado perder ~R$ 190/dia se busca suco em toda brecha; o bot simples (só na folga) empata. Fica para conferir com jogadores (Ideias pendentes do `RESUMO.md`).
 
 ---
 
