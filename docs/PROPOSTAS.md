@@ -4,6 +4,31 @@ Registro das ideias e dos retornos de quem jogou, com o texto original, e de ond
 
 ---
 
+## 21/10/2026 — Usuário: decisões da etapa 1d e dos pontos
+**Origem:** respostas do usuário às dúvidas da 1d (e às perguntas que vieram depois):
+
+> "1. deixe render a mais na garagem, isso é importante para o pé de meia, pois deve ter um custo inicial para mudar de local de trabalho (levar as coisas, montar e reajustar etc), em novos ambientes teremos possibilidade de contratação de mais pessoas, mais espaço para mais pratos etc.
+> 2. pessoas pedem no tablet da mesa de espera e o suco sai pronto da maquina
+> 3. arrastar até a borda rola a tela sozinha e, se tocar 2x no grupo, automaticamente muda a tela para o salão para escolher onde colocar eles
+> 4. garagem com 4 de espera
+> 5. boa.
+> 6. temos que pesquisar se esses valores são relativamente compatíveis com preços do aluguel de espaço similar em regiões assim, como o 2 na região de subúrbio tipo são bernardo do campo, 3 na avenida brasil, avenida paulista/augusta etc e 4 similar a terraço itália ou outro espaço muito luxuoso de são paulo/rio de janeiro. Manter quantidade de cadeiras: 16, 20, 24, 28 respectivamente para os níveis.
+> planeje os passos a serem tomados e anote para eu poder dar o clear antes de iniciar a programação"
+
+Nas perguntas seguintes, o usuário escolheu:
+- a máquina de suco **lá fora, ao lado da espera**, com o suco cobrado na conta;
+- a **Água saborizada vira a máquina de suco**;
+- o que os pontos novos destravam: "poder contratar outro cozinheiro/confeiteiro, um com especialização em sobremesas para o nível 3 e 4. balcão de coquetelaria a partir do nível 3, com necessidade de contratação de profissional de drinks", 2º garçom (área industrial), mais bocas no fogão, mais pratos no cardápio e balcão de pratos maior;
+- **sem limite de mesas**: "Só o total de lugares e a área útil limitam (dá para fazer tudo com mesas de 2, se couber), mas isso não muda que clientes em 3 ou em 4 fiquem insatisfeitos e desistam do atendimento";
+- aluguel na **proporção real** (R$ 0 · 120 · 400 · 1.000 por dia) e mudança de R$ 800 · 2.000 · 5.000;
+- **carreira por pontos, sem fim fixo**;
+- inauguração: "O arranjo do jogador vale inteiro desde o início; o movimento menor dos dias 1 e 2 vem só de menos grupos por pouca visibilidade pública e do fato de não ter dinheiro para mais cadeiras";
+- móveis: kit de 10 lugares; mesa de 2 por R$ 150, mesa de 4 por R$ 250, 2 cadeiras por R$ 100; "A Garagem vem com mesas quadradas e cadeiras de plástico estilo 'bar', que futuramente serão pontuação bem baixa para upgrade".
+
+**Para onde foi:** `docs/PLANO.md`, etapa 1d em 2 sessões (**1d-1**, v7.4: Garagem, móveis e editor; **1d-2**, v7.5: tela que rola, espera lá fora e máquina de suco), e etapas 3 e 4 com os valores e o que cada ponto destrava. A pesquisa de aluguel ficou em `docs/pesquisa-aluguel.md`.
+
+---
+
 ## 21/10/2026 — Usuário: níveis do salão são os pontos, Garagem da Bia, área de espera lá fora e nível de luxo
 **Origem:** mensagem do usuário, respondendo à proposta do editor do salão:
 
