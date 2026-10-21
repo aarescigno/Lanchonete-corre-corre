@@ -76,7 +76,7 @@ for(const lv of [0,1,2]){ reset({tonhao:lv}); g.startDay(4); g.begin(); fresh();
 
 /* melhorias revistas */
 { const s=L.normSave({up:{chapa:true}}); ok(s.up.pratos && !s.up.chapa && !L.UPGRADES.some(u=>u.id==='chapa'),'save antigo: Chapa nova vira Jogo de pratos'); }
-ok(L.dishStock(L.DAYS[2],{pratos:true})===4 && L.dishStock({endless:true},{pratos:true})===6 && L.dishStock(L.DAYS[1],{pratos:true})===Infinity,'Jogo de pratos: +1 prato limpo');
+ok(L.dishStock(L.DAYS[2],{pratos:true})===5 && L.dishStock({endless:true},{pratos:true})===6 && L.dishStock(L.DAYS[1],{pratos:true})===Infinity,'Jogo de pratos: +1 prato limpo');
 { reset({}); g.startDay(3); g.begin(); const a=new L.Group(g,'estudante',1,0); a.setState('wantOrder'); const p0=a.patPer(); g.trash=L.TRASH.cap;
   ok(a.patPer()<p0,'lixeira cheia cheira'); g.up.ventilador=true; ok(Math.abs(a.patPer()-p0)<1e-9,'ventilador: o cheiro não incomoda'); g.trash=0; g.up={}; g.save.up=g.up; }
 { reset({dani:3,daniTasks:['pratos','lavar','agua']}); g.startDay(4); g.begin(); fresh(); g.up.agua=true; g.agua=1; g.money=100; run(25,true);
@@ -84,7 +84,7 @@ ok(L.dishStock(L.DAYS[2],{pratos:true})===4 && L.dishStock({endless:true},{prato
 
 /* louça limitada */
 ok(L.dishStock(L.DAYS[0])===Infinity && L.dishStock(L.DAYS[1])===Infinity,'dias 1 e 2: pratos sem limite');
-ok(L.dishStock(L.DAYS[2])===3 && L.dishStock(L.DAYS[5])===3 && L.dishStock(L.DAYS[6])===3 && L.dishStock({endless:true})===5,'estoque: 3 pratos limpos do dia 3 em diante, 5 no Turno sem fim');
+ok(L.dishStock(L.DAYS[2])===4 && L.dishStock(L.DAYS[5])===4 && L.dishStock(L.DAYS[6])===4 && L.dishStock({endless:true})===5,'estoque: 4 pratos limpos do dia 3 em diante, 5 no Turno sem fim');
 { reset({}); g.startDay(3); g.begin(); g.schedule=[{t:1e9,type:'estudante',color:0}]; g.nextIdx=0; g.kitchen.clean=0;
   const grp=g.spawn({type:'estudante',color:0}); g.kitchen.queue.push({group:grp,table:1,time:0.1,p:0,dish:'pf'}); run(1);
   ok(!g.kitchen.plates.some(Boolean) && g.kitchen.noPlate,'sem prato limpo: o Tonhão espera');

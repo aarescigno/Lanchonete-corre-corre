@@ -679,12 +679,12 @@ function payroll(eq){
   if (eq.couvert) v += STAFF.couvert.pay;
   return v;
 }
-/* pratos limpos na cozinha: sem limite nos dias 1 e 2; depois, 3; no Turno sem fim, 5 (+1 com o Jogo de pratos) */
+/* pratos limpos na cozinha: sem limite nos dias 1 e 2; depois, 4; no Turno sem fim, 5 (+1 com o Jogo de pratos) */
 function dishStock(day, up){
   const extra = up && up.pratos ? 1 : 0;
   if (day.endless) return 5 + extra;
   if (day.n <= 2) return Infinity;
-  return 3 + extra;
+  return 4 + extra;
 }
 
 /* sucos: alguns grupos pedem junto com a comida; cada copo entregue vale JUICE.price */
@@ -699,7 +699,7 @@ const VIP = { pat:0.75, tip:0.5, perfect:40, angry:30, dish:25, cook:1.8, types:
 const DAYS = [
   { n:1, groups:5,  types:['estudante','vovos'],                                   nu:null,         meta:200, expert:320,  time:150, speed:0.60, note:'' },
   { n:2, groups:8,  types:['estudante','vovos','familia'],                         nu:'familia',    meta:300, expert:720,  time:160, speed:0.60, note:'Chegou a família! Grupos de 3 ou 4 só cabem nas mesas de 4 lugares. Na lojinha, aba Salão, dá para comprar mesas e arrumar o salão.' },
-  { n:3, groups:13, types:['estudante','vovos','familia','executiva'],             nu:'executiva',  meta:380, expert:880,  time:170, speed:0.60, juice:0.3, note:'O movimento aumentou e agora só há 3 pratos limpos: sozinha a Bia não dá conta, contrate ajuda na lojinha. A executiva tem pouca paciência, mas deixa boa gorjeta. E abriu o balcão de sucos: quem pede suco quer receber antes da conta!' },
+  { n:3, groups:13, types:['estudante','vovos','familia','executiva'],             nu:'executiva',  meta:380, expert:880,  time:170, speed:0.60, juice:0.3, note:'O movimento aumentou e agora só há 4 pratos limpos: sozinha a Bia não dá conta, contrate ajuda na lojinha. A executiva tem pouca paciência, mas deixa boa gorjeta. E abriu o balcão de sucos: quem pede suco quer receber antes da conta!' },
   { n:4, groups:15, types:['estudante','vovos','familia','executiva','entregador'], nu:'entregador', meta:300, expert:780, time:180, speed:0.58, juice:0.3, note:'O entregador de moto tem pressa: pouquíssima paciência!' },
   { n:5, groups:16, types:['estudante','vovos','familia','executiva','entregador'], nu:null,         meta:480, expert:1100, time:190, speed:0.56, vip:0.15, juice:0.3, note:'Chegou cliente VIP (de óculos escuros e plaquinha dourada)! Fura a fila e tem menos paciência, mas paga gorjeta extra e um bônus se sair com 5 corações. Se sair bravo, a multa dobra.' },
   { n:6, groups:16, types:['estudante','vovos','familia','executiva','entregador'], nu:null,         meta:460, expert:1100, time:200, speed:0.54, vip:0.15, juice:0.3, note:'Sexta-feira: ninguém quer esperar.' },
