@@ -4,6 +4,29 @@ Registro das ideias e dos retornos de quem jogou, com o texto original, e de ond
 
 ---
 
+## 21/10/2026 — Usuário: ambiente de cada nível do salão
+**Origem:** mensagem do usuário, depois da v7.4.4:
+
+> para nivel 1 são esses aí e anote nas propostas o que será para os próximos níveis:
+> nivel 2: 3 televisores com playlist de sertanejo versão com anúncios reduz em 10% a perda de paciência, versão sem anúncios com custo de 20 reais por dia com redução de 15% da perda de paciencia
+> nível 3: couvert artístico como já conhecemos
+> nível 4: Couvert com quarteto de cordas ou pianista, ambos reduzindo em 20%, mas pianista adiciona em luxo do ambiente também e tem custo de manutenção do piano também. guarde nas ideias
+
+**Destino** (guardado nas Ideias do `docs/PLANO.md`, item "Ambiente por nível do salão", e citado nas etapas 3 e 4):
+
+| Nível | Ponto | Ambiente | Paciência nas mesas | Custo |
+|---|---|---|---|---|
+| 1 | Garagem da mãe da Bia | TV de tubo na Rede Esfera e som na rádio Velha Brasil FM (**feito na v7.4.4**) | 5% cada (10% os dois) | luz: R$ 15 e R$ 10/dia |
+| 2 | Lanchonete na área industrial | 3 televisores com playlist de sertanejo, **com anúncios** | 10% | só a luz (valor a definir) |
+| 2 | | a mesma playlist **sem anúncios** | 15% | R$ 20/dia (mais a luz?) |
+| 3 | Restaurante na Avenida Brasil | couvert artístico como o de hoje (músico; taxa opcional de R$ 3 por pessoa, que corta o efeito à metade) | 20% | R$ 80/dia |
+| 4 | Terraço Suíça | couvert com **quarteto de cordas** | 20% | a definir |
+| 4 | | couvert com **pianista**: soma ao **nível de luxo** do ambiente | 20% | diária a definir + manutenção do piano |
+
+**Decisões em aberto** (para a sessão da etapa 3 ou 4 confirmar): se o ambiente de um nível continua disponível nos níveis de cima (por exemplo, a TV da Garagem na área industrial) ou é trocado; se os efeitos de um mesmo nível se somam (TV e som somam desde a v7.4.4); se "com anúncios" é de graça (só a luz) e se os R$ 20 da versão sem anúncios já incluem a luz; os valores do quarteto, do pianista e da manutenção do piano (por dia ou de vez em quando, como os imprevistos da etapa 2); quanto o pianista soma ao nível de luxo.
+
+---
+
 ## 21/10/2026 — Usuário: couvert só no nível 3; TV e som na Garagem
 **Origem:** mensagem do usuário:
 
