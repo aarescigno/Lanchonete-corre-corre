@@ -1,13 +1,13 @@
 # Plano de novidades (uma etapa por sessão)
 
-Origem: retorno do Renan Martorelli (beta-tester) e conversa com o Arthur (15/10/2026); as etapas 1c e 1d vieram de outro retorno do Renan (18/10). Os textos originais e o destino de cada ideia estão em `docs/PROPOSTAS.md` (log de propostas). Os pedidos foram escassez de recursos, custos de manutenção, divulgação, aluguel em área nobre com VIPs exigentes e modo história ("o sonho da Bia de ter um restaurante estrelado, começando do zero"). A v7 (Contas) fez a primeira parte.
+Origem: retorno do Renan Martorelli (beta-tester) e conversa com o Arthur (15/10/2026); as etapas 1c e 1d vieram de outro retorno do Renan (18/10). Os textos originais e o destino de cada ideia estão em `docs/PROPOSTAS.md` (log de propostas). Os pedidos foram escassez de recursos, custos de manutenção, divulgação, aluguel em área nobre com VIPs exigentes (hoje, a escada de pontos: Garagem, área industrial, Avenida Brasil e Terraço Suíça) e modo história ("o sonho da Bia de ter um restaurante estrelado, começando do zero"). A v7 (Contas) fez a primeira parte.
 
 ## Como usar
 - Cada etapa cabe numa sessão e termina como as outras: versão nova (se mexe no jogo), testes verdes, `docs/spec-vN.md`, `RESUMO.md` atualizado, PR com merge no `claude/main` e publicação no artifact (ver `CLAUDE.md`).
 - Para começar uma sessão, basta pedir: **"faça a próxima etapa do docs/PLANO.md"**. A sessão lê só a etapa da vez e as partes de `src/` citadas nela.
 - Antes de programar, a sessão confirma com o usuário as **decisões em aberto** da etapa (cada uma já tem uma sugestão).
 - No fim, a sessão marca a etapa como feita na tabela abaixo (com a versão e a data) e anota o que mudou no plano.
-- Ordem: cada etapa depende só das anteriores. A 1a vem primeiro (mexe no equilíbrio de base). A 1c teve prioridade sobre as demais, por ser retorno do beta-tester Renan (pedido do usuário em 21/10). **A 1d (salão por níveis) ainda está em discussão**: enquanto o usuário não decidir os níveis, a próxima é a 2. A 1b e a 2 podiam trocar de lugar. A 3 vem antes da 4, e a 4 antes da 6.
+- Ordem: cada etapa depende só das anteriores. A 1a vem primeiro (mexe no equilíbrio de base). A 1c teve prioridade sobre as demais, por ser retorno do beta-tester Renan (pedido do usuário em 21/10). **A 1d (editor do salão e Garagem) ainda está em discussão**: enquanto o usuário não decidir os níveis, a próxima é a 2. A 1b e a 2 podiam trocar de lugar. A 3 vem antes da 4, e a 4 antes da 6.
 
 ## Situação
 | # | Etapa | Versão | Situação |
@@ -16,10 +16,10 @@ Origem: retorno do Renan Martorelli (beta-tester) e conversa com o Arthur (15/10
 | 1a | Jogo justo: dá para não perder ninguém | v7.1 | feita (15/10) |
 | 1b | Livro-caixa e ajuste fino com jogadores | v7.2 | feita (15/10) |
 | 1c | Retorno do Renan: Bia mais ágil e selos da fila | v7.3 | feita (21/10) |
-| 1d | Salão por níveis de espaço (lugares, mesas de 4 e de 2) | v7.4 | **em discussão** (proposta abaixo) |
+| 1d | Editor do salão, Garagem da Bia e área de espera lá fora | v7.4 | **em discussão** (proposta abaixo) |
 | 2 | Manutenção e imprevistos | v8 | **próxima** (se a 1d não for decidida antes) |
-| 3 | Ponto: mudar para o Centro | v9 | a fazer |
-| 4 | Área nobre e VIPs exigentes | v10 | a fazer |
+| 3 | Pontos: área industrial e Avenida Brasil | v9 | a fazer |
+| 4 | Terraço Suíça e VIPs exigentes | v10 | a fazer |
 | 5 | Modo História, parte 1: estrutura e primeiros capítulos | v11 | a fazer |
 | 6 | Modo História, parte 2: subir de ponto, crítico do guia e final | v12 | a fazer |
 | 7 | Polimento: celular, ranking da história, ajuste geral | v12.1 | a fazer |
@@ -120,43 +120,37 @@ Origem: retorno do Renan Martorelli (beta-tester) e conversa com o Arthur (15/10
 
 ---
 
-## Etapa 1d — Salão por níveis de espaço (v7.4) — em discussão
-> Proposta de 21/10, pedida pelo usuário só para discussão ("proponha 4 níveis de evolução do espaço... mas não implemente ainda"). Nada no código até a decisão. No mesmo dia, o usuário disse como quer a aba Salão: **ver o salão de verdade e redistribuir as mesas e cadeiras como achar melhor, dentro da área útil** (ver `docs/PROPOSTAS.md`). A proposta abaixo já está ajustada a isso.
+## Etapa 1d — Editor do salão, Garagem da Bia e área de espera lá fora (v7.4) — em discussão
+> Proposta de 21/10, refeita com as respostas do usuário no mesmo dia (texto original em `docs/PROPOSTAS.md`): o jogador **vê o salão e arruma as mesas e cadeiras como quiser**; o **nível do salão é o ponto** (cada nível é um lugar novo, com aluguel maior), e a 1d fica com o editor e o nível 1, a **Garagem**; os níveis 2 a 4 vão para as etapas 3 e 4. Nada no código até a decisão.
 
-**Objetivo:** trocar a aba Salão da v6 (cadeira por cadeira, mesa por mesa, botões 2/4 e a regra de 1 mesa de 4 por fileira) por um **editor do salão**: o jogador vê o próprio salão desenhado e arrasta as mesas para onde quiser, dentro da área útil. **O nível do espaço** dá o total de lugares, o máximo de mesas e o tamanho da área útil.
+**Os 4 níveis do salão = os 4 pontos da carreira:**
 
-**Editor do salão (aba Salão da lojinha):**
-- Mostra o salão com o mesmo desenho do jogo (piso, parede, fila de espera, balcão), em escala, com as mesas e as cadeiras de agora. Fora do dia, sem clientes.
-- **Arrastar** uma mesa a move (dedo ou mouse), encaixando numa grade fina (ex.: 10 px) para alinhar fácil. **Tocar** numa mesa troca entre 2 e 4 lugares. Uma "bandeja" ao lado guarda as mesas que não estão no salão: arrastar dela põe uma mesa, arrastar para ela tira.
-- Contador sempre à vista: "Lugares 18 de 20 · Mesas 7 de 7". Não dá para passar do total do nível.
-- **Posição válida:** dentro da área útil (o retângulo do salão, sem a fila de espera, a porta e o balcão da cozinha); sem encostar em outra mesa (folga mínima para a Bia passar, como o `SALAO.gap` de 46 px); e com caminho da Bia até cada mesa (o `findPath` já desvia de qualquer mesa, porque os obstáculos são feitos a partir delas em `setObst`). Mesa em lugar inválido fica vermelha e volta para o último lugar bom ao soltar.
-- **Botões:** "Arrumação automática" (refaz um arranjo que cabe, como o de hoje) e "Desfazer". Salva sozinho ao fechar a lojinha.
-- Os números das mesas seguem a ordem no salão (de cima para baixo, da esquerda para a direita), para a fila de ações e as comandas continuarem fáceis de ler.
+| Nível | Ponto | Lugares | Aluguel por dia | Etapa |
+|---|---|---|---|---|
+| 1 | **Garagem da Bia e do tio Tonhão** | 16 | grátis (é da família) | 1d |
+| 2 | **Lanchonete na área industrial** | 20 | sugestão: R$ 120 (o de hoje) | 3 |
+| 3 | **Restaurante na Avenida Brasil** | sugestão: 26 | sugestão: R$ 220 | 3 |
+| 4 | **Terraço Suíça** | 30 | sugestão: R$ 380 | 4 |
 
-**Os 4 níveis (proposta):**
+- O aluguel entra nas **contas fixas do dia** (com luz e gás, que continuam por mesa e por lugar), aparece na lojinha antes de decidir e no Caixa.
+- A Garagem não paga aluguel porque é a casa da família: o **Tonhão é tio da Bia**, cozinheiro aposentado que topou voltar à ativa para apoiar o sonho da sobrinha (vale também para o Modo História, etapa 5).
 
-| Nível | Nome | Lugares | Mesas (máx.) | Preço | Divisões possíveis (mesas de 4 + de 2) | Contas do dia* | Cabe no salão de hoje? |
-|---|---|---|---|---|---|---|---|
-| 1 | Salãozinho (início) | 16 | 6 | — | 2+4 (6 mesas, como hoje) · 3+2 · 4+0 | R$ 396 · 366 · 336 | sim (2 fileiras de 3) |
-| 2 | Salão arrumado | 20 | 7 | R$ 300 | 3+4 · 4+2 · 5+0 | R$ 450 · 420 · 390 | sim (todas as divisões cabem nas 2 fileiras) |
-| 3 | Puxadinho (3ª fileira) | 26 | 9 | R$ 500 | 4+5 · 5+3 · 6+1 | R$ 546 · 516 · 486 | não: pede 3 fileiras |
-| 4 | Salão grande | 32 | 10 | R$ 800 (do dia 5 em diante) | 6+4 · 7+2 · 8+0 | R$ 612 · 582 · 552 | não: pede 3 fileiras |
-
-\* Com as contas de hoje (aluguel R$ 120 + R$ 30 por mesa + R$ 6 por lugar). Menos mesas e maiores = contas menores, mas grupo de 2 numa mesa de 4 desperdiça lugar: é essa a escolha que fica para o jogador.
-
-- **Níveis na lojinha:** um cartão "Ampliar o salão" com o próximo nível, acima do editor. Comprar libera mais lugares e mesas na bandeja (e, nos níveis 3 e 4, mais área útil, ver abaixo).
-- **A tabela acima é só referência** de divisões que cabem no arranjo em fileiras de hoje (conta feita com o `rowLayout`: cada fileira leva 3 mesas de qualquer tamanho, ou 4 com no máximo 1 de 4). No editor, o jogador escolhe livre quantas de 4 e de 2 e onde, e pode até deixar lugares sem usar.
-- **Comparação com a v6:** hoje o máximo é 28 lugares em 8 mesas, por R$ 840 no total. Na proposta, o nível 4 dá 32 lugares por R$ 1.600 no total. A carreira da v7.3 chega ao dia 5 com ~R$ 1.600 na lojinha.
+**Entra na 1d:**
+1. **Editor do salão (aba Salão da lojinha).** O jogador vê o salão desenhado e arrasta as mesas para onde quiser dentro da área útil (encaixe numa grade fina). Tocar numa mesa troca entre 2 e 4 lugares; uma bandeja ao lado guarda as mesas que não estão no salão. Contador sempre à vista ("Lugares 14 de 16 · Mesas 6"). Posição válida: dentro da área útil, sem encostar em outra mesa (folga para a Bia passar, como o `SALAO.gap`) e com caminho da Bia até cada mesa (`setObst`/`findPath` já funcionam com qualquer arranjo). Mesa em lugar inválido fica vermelha e volta ao soltar. Botões "Arrumação automática" e "Desfazer". Os números das mesas seguem a ordem no salão. Some a compra de cadeira avulsa, de mesa e a regra de 1 mesa de 4 por fileira.
+2. **Arrastar a tela para ver o lado de fora.** O salão fica mais largo que a tela: arrastando o fundo, aparece a calçada, e o HUD fica fixo. Uma **setinha na borda** avisa quando uma cadeira de fora precisa de atenção. Vale durante o dia e no editor.
+3. **Área de espera lá fora** (no lugar da fila de espera de hoje, na faixa da esquerda). Cadeiras na calçada onde os grupos **esperam mesa**; elas **não contam nos lugares**. Enquanto esperam, os grupos podem **pedir suco no totem**: o pedido vira um suco a entregar, e a Bia só leva até eles (sem anotar pedido). Daqui a área de espera cresce com os níveis e com enfeites: mesinhas, toldo e, nos níveis maiores, uma antessala ("foyer") com amenidades.
+4. **Visual da Garagem:** portão de garagem aberto, piso de cimento queimado, letreiro feito à mão. Só paleta e detalhes, sem arte pesada.
 
 **Decisões em aberto:**
-- **Área útil dos níveis 3 e 4:** na área de hoje (x de ~196 a ~684, y de 112 a 528) cabem com folga só ~20 a 24 lugares com o tamanho de mesa atual (cada mesa ocupa ~132 px de altura com as cadeiras). Para 26 e 32 lugares: (a) a área cresce de verdade, ex.: o nível 3 leva a fila de espera para a calçada e libera a faixa da esquerda, e o nível 4 ganha uma varanda; (b) mesas e cadeiras ~20% menores em todos os níveis; ou (c) a "câmera" se afasta um pouco nos níveis maiores. Sugestão: (a), com protótipo em captura antes de decidir.
-- **Liberdade no editor:** posição livre com grade fina (sugestão) ou só encaixes pré-definidos (mais simples de jogar no celular); mesas giradas (de pé) ou só deitadas como hoje (sugestão: só deitadas na primeira versão).
-- **Nomes, lugares e preços** dos níveis (a tabela é sugestão); se o nível 4 espera o dia 5.
-- **Contas:** manter R$ 30 por mesa e R$ 6 por lugar (sugestão: sim, porque já pesam o salão maior) ou passar a um aluguel por nível.
-- **Save da v6:** sugestão: quem comprou cadeiras e mesas recebe de volta o que gastou no salão (no dinheiro acumulado e numa linha do Caixa) e começa no nível 1, livre para comprar o nível que quiser; ou cai direto no nível com os lugares mais próximos dos que tinha.
-- **Ligação com as etapas 3 e 4:** o Centro e a área nobre teriam a própria escada de níveis (com mais lugares), e mudar de ponto leva o nível de "tamanho" mais próximo.
+- **Contas da Garagem:** sem os R$ 120 de aluguel, o dia rende ~R$ 120 a mais. Recalibrar as metas com o bot (sugestão) ou deixar mais folgado, já que a carreira passa a ter mudanças caras pela frente?
+- **Totem de suco:** quem prepara (sugestão: sai pronto no balcão de sucos e entra na fila como "entregar suco"; com a Dani, ela pode preparar), quanto custa e se a água saborizada continua (ou vira um item da área de espera).
+- **Arrastar o fundo × arrastar grupo:** hoje o grupo da fila é arrastado até a mesa. Sugestão: arrastar um grupo perto da borda rola a tela sozinho; tocar no grupo e depois na mesa continua valendo.
+- **Editor:** posição livre com grade fina (sugestão) ou só encaixes; mesas só deitadas na primeira versão (sugestão).
+- **Quantas cadeiras de espera** na Garagem (sugestão: 4, como a fila de hoje) e o que acontece com quem chega e não tem cadeira (hoje: espera na porta, `PORTA`).
+- **Save da v6/v7:** sugestão: quem comprou cadeiras e mesas recebe de volta o que gastou no salão (no dinheiro e numa linha do Caixa) e começa na Garagem com o arranjo automático.
+- Tamanho: provavelmente 2 sessões: (1) save, Garagem, contas e editor; (2) rolagem da tela, área de espera e totem.
 
-**Partes:** `10-constantes.js` (`SALAO`, níveis, área útil), `12-clientes.js` (`normSalao`: o save passa a ser a lista de mesas com `x`, `y` e lugares, e o save da v6 vira essa lista), `11-base.js` (`setObst`), `16-jogo.js` (compra do nível, validação das posições), `41-lojinha.js` (editor: um canvas na aba Salão, com arrastar, tocar e bandeja), `20`/`21`/`22` (desenho do salão no editor), `43-telas.js` (entrada do editor), `tests/bot.js`. Talvez caiba em 2 sessões: (1) save, níveis e validação com a arrumação automática; (2) o editor de arrastar. **Testes:** rever o `smoke8` e criar o `smoke13` (posição válida e inválida, caminho até cada mesa, limites do nível, save antigo); `balance.js` com `SALAO`; capturas do editor em 960×600 e 740×360.
+**Partes:** `10-constantes.js` (`SALAO`, `PONTOS` com a Garagem, área útil, `CONTAS`), `11-base.js` (`setObst`, caminhos até a calçada), `12-clientes.js` (`normSalao`: lista de mesas com `x`, `y` e lugares; espera lá fora, pedido no totem), `16-jogo.js` (rolagem, validação, contas), `21-cenario.js` e `22-salao-hud.js` (Garagem, calçada, totem, setinha da borda), `23-render.js` (deslocamento da câmera, HUD fixo), `41-lojinha.js` (editor), `43-telas.js` (entrada: arrastar o fundo, tela → mundo), `tests/bot.js`. **Testes:** rever o `smoke8` e criar o `smoke13` (posição válida e inválida, caminho até cada mesa, limites, save antigo, rolagem e toque com a tela deslocada, espera e totem); `balance.js` e `carreira.js` com a Garagem; capturas em 960×600 e 740×360.
 
 ---
 
@@ -190,56 +184,55 @@ Origem: retorno do Renan Martorelli (beta-tester) e conversa com o Arthur (15/10
 
 ---
 
-## Etapa 3 — Ponto: mudar para o Centro (v9)
-**Objetivo:** primeira decisão grande de dinheiro, "alugar espaço maior e melhor", com mecânica genérica de **ponto** que a etapa 4 só preenche com mais um.
+## Etapa 3 — Pontos: área industrial e Avenida Brasil (v9)
+**Objetivo:** primeira decisão grande de dinheiro: **mudar de ponto** é subir o nível do salão (ver a tabela da etapa 1d). Mecânica genérica de `PONTOS`, que a etapa 4 só completa com o Terraço Suíça.
 
 **Entra:**
-- `PONTOS`: Bairro (o de hoje) e **Centro**, cada um com aluguel, multiplicador do preço do cardápio, mistura de clientes, chance de VIP, número de vagas de mesa e custo de mudança.
-- O Centro tem aluguel ~2×, preços +20%, mais executivas e VIPs e espaço para 1 mesa a mais por fileira (ou fileiras mais largas).
-- **Mudança** na lojinha (aba Salão ou aba nova "Ponto"): custo único (reforma + caução). O Centro tem o seu total de lugares (ver os níveis do salão na etapa 1d), e o jogador redistribui as mesas de 4 e de 2.
-- Visual do ponto: cor do piso, fachada/letreiro e vista da janela diferentes. Sem arte nova pesada: só paleta e detalhes.
+- `PONTOS`: Garagem (1d), **Lanchonete na área industrial** (nível 2, 20 lugares) e **Restaurante na Avenida Brasil** (nível 3, ~26 lugares). Cada um com aluguel por dia (nas contas fixas), multiplicador do preço do cardápio, mistura de clientes (área industrial: mais entregadores e trabalhadores com pressa; Avenida Brasil: mais executivas, famílias e VIPs), chance de VIP, área útil, área de espera lá fora e custo de mudança.
+- **Mudança** na lojinha (aba nova "Ponto" ou dentro da aba Salão): custo único (reforma + caução) e aluguel maior dali em diante. O editor do salão (1d) abre no ponto novo com o arranjo automático.
+- Visual de cada ponto: piso, fachada, letreiro, vista da janela e a calçada (toldo, mesinhas da espera). Só paleta e detalhes.
 - Metas por ponto: a mesma meta de lucro com multiplicador por ponto, ou metas próprias calibradas com o bot.
 
-**Fora:** área nobre, VIP exigente e modo história.
+**Fora:** Terraço Suíça, VIP exigente e modo história.
 
-**Partes:** `10-constantes.js`, `12-clientes.js` (save `ponto`, preço), `16-jogo.js` (agenda, contas), `20/21-*.js` (paleta e fachada), `41-lojinha.js`.
+**Partes:** `10-constantes.js` (`PONTOS`), `12-clientes.js` (save `ponto`, preço), `16-jogo.js` (agenda, contas), `20/21-*.js` (paleta, fachada e calçada de cada ponto), `41-lojinha.js`.
 
-**Testes:** `smoke14` (mudança, custo, salão levado junto, contas e preços por ponto, save antigo = Bairro). `carreira.js` com mudança no dia 4 ou 5.
+**Testes:** `smoke14` (mudança, custo, aluguel nas contas, arranjo no ponto novo, preços e clientela por ponto, save antigo = Garagem). `carreira.js` com mudança no dia 3 ou 4.
 
 **Calibração:**
-- Mudar para o Centro deve compensar em ~3 dias para quem atende bem e não compensar para quem perde muitos clientes.
-- No dia 5, o jogador deve ter que escolher entre a mudança e (salão + melhorias).
+- Mudar de ponto deve compensar em ~3 dias para quem atende bem e não compensar para quem perde muitos clientes.
+- No dia 5, o jogador deve ter que escolher entre a mudança e (equipe + melhorias).
 
 **Decisões em aberto:**
-- A mudança é permanente ou dá para voltar ao Bairro?
-- As metas da carreira mudam com o ponto ou ficam fixas (aí o Centro vira atalho para estrelas)?
-- Nome dos pontos (sugestão: "Bairro", "Centro", "Jardins" para a área nobre, sem nome de bairro real se preferir).
+- A mudança é permanente ou dá para voltar?
+- As metas da carreira mudam com o ponto ou ficam fixas (aí o ponto melhor vira atalho para estrelas)?
+- Custos de mudança e aluguéis (a tabela da 1d é sugestão).
 
 ---
 
-## Etapa 4 — Área nobre e VIPs exigentes (v10)
-**Objetivo:** o topo da escada de pontos, com o cliente que o Arthur descreveu: "VIPs exigentes que entram e pedem pratos especiais".
+## Etapa 4 — Terraço Suíça e VIPs exigentes (v10)
+**Objetivo:** o topo da escada de pontos (nível 4 do salão), com o cliente que o Arthur descreveu: "VIPs exigentes que entram e pedem pratos especiais".
 
 **Entra:**
-- 3º ponto, **área nobre**: aluguel alto, preços +45%, VIPs frequentes.
-- **VIP exigente** (só na área nobre e no fim da história):
+- 4º ponto, **Terraço Suíça** (30 lugares): aluguel alto, preços +45%, VIPs frequentes e uma antessala ("foyer") com amenidades na área de espera.
+- **VIP exigente** (só no Terraço Suíça e no fim da história):
   - pede o **prato da casa**, que só sai caprichado ★ se o Tonhão tiver aumento (ou demora o dobro);
   - às vezes pede uma **bebida específica** (suco ou café) antes do prato;
   - não aceita mesa suja ao sentar;
   - paga muito bem (bônus grande com 5 corações) e, se sair bravo, deixa **avaliação ruim**: −10% de clientes no dia seguinte.
-- **Reputação do ponto** (0 a 5 ★, média móvel dos últimos dias): na área nobre ela muda a freguesia do dia, e na etapa 6 vira a régua do guia.
-- Um item de lojinha da área nobre, por exemplo "Louça fina": prato especial mais rápido.
+- **Reputação do ponto** (0 a 5 ★, média móvel dos últimos dias): no Terraço ela muda a freguesia do dia, e na etapa 6 vira a régua do guia. Mais tarde pode virar uma das partes do **nível de luxo** (ver Ideias guardadas).
+- Um item de lojinha do Terraço, por exemplo "Louça fina": prato especial mais rápido.
 
 **Partes:** `10-constantes.js`, `12-clientes.js` (tipo/modificador exigente), `13-cozinha.js` (prato da casa), `16-jogo.js` (reputação), `20-desenho-base.js` (visual do exigente, sem estereótipo: chapéu/lenço e plaquinha ★★), `22-salao-hud.js` (balão do pedido especial).
 
-**Testes:** `smoke15` (pedido especial, regras de mesa, avaliação ruim, reputação e save). `balance` na área nobre com equipe completa.
+**Testes:** `smoke15` (pedido especial, regras de mesa, avaliação ruim, reputação e save). `balance` no Terraço Suíça com equipe completa.
 
 **Calibração:**
-- A área nobre dá mais lucro só com equipe completa + Tonhão nível 3 + salão bem montado.
-- Para quem não está pronto, é um passo arriscado: lucro abaixo do Centro.
+- O Terraço dá mais lucro só com equipe completa + Tonhão nível 3 + salão bem montado.
+- Para quem não está pronto, é um passo arriscado: lucro abaixo da Avenida Brasil.
 
 **Decisões em aberto:**
-- A reputação aparece já na carreira ou só no modo história (sugestão: aparece só a partir da área nobre)?
+- A reputação aparece já na carreira ou só no modo história (sugestão: aparece só a partir do Terraço)?
 - O que o exigente usa para se distinguir visualmente.
 
 ---
@@ -249,7 +242,7 @@ Origem: retorno do Renan Martorelli (beta-tester) e conversa com o Arthur (15/10
 
 **Entra:**
 - Botão **História** no menu, ao lado de Carreira e Turno sem fim. Save próprio (`save.historia`), sem mexer na carreira.
-- **Começo do zero:** a Bia abre a lanchonete com pouco dinheiro, 3 mesas e sem equipe. O Tonhão aceita trabalhar "pelo prato do dia". Uma dívida pequena de abertura (empréstimo do Seu Zé) se paga aos poucos.
+- **Começo do zero:** a Bia abre a lanchonete na **garagem de casa**, com pouco dinheiro, 3 mesas e sem equipe. O **tio Tonhão**, cozinheiro aposentado, volta à ativa para apoiar o sonho da sobrinha e aceita trabalhar "pelo prato do dia". Uma dívida pequena de abertura (empréstimo do Seu Zé) se paga aos poucos.
 - **Capítulos:** cada um tem alguns dias, um objetivo (lucro acumulado, reputação, contratar alguém, quitar a dívida) e um cartão de conversa curto antes e depois (Bia, Tonhão, Seu Zé, Dani), com 2 a 4 falas em balões sobre o cenário.
   - Cap. 1, "A esquina": 3 dias, aprender o ciclo e fechar no azul.
   - Cap. 2, "A Dani chega": contratar a Dani e quitar metade da dívida.
@@ -274,7 +267,7 @@ Origem: retorno do Renan Martorelli (beta-tester) e conversa com o Arthur (15/10
 **Objetivo:** a escada até a estrela.
 
 **Entra:**
-- **Capítulos de mudança:** o Centro (cap. 4 e 5) e a área nobre (cap. 6), com objetivos de reputação e de lucro, usando os pontos das etapas 3 e 4.
+- **Capítulos de mudança:** a área industrial e a Avenida Brasil (cap. 4 e 5) e o Terraço Suíça (cap. 6), com objetivos de reputação e de lucro, usando os pontos das etapas 3 e 4.
 - **O crítico do guia:** um guia gastronômico **inventado**, por exemplo "Guia Garfo de Ouro". Não usar "Michelin" nem outra marca real.
   - No capítulo final, um cliente disfarçado aparece em dia sorteado.
   - Atendê-lo com 5 corações, prato caprichado e mesa limpa conta para a avaliação.
@@ -304,3 +297,4 @@ Origem: retorno do Renan Martorelli (beta-tester) e conversa com o Arthur (15/10
 - Equipamento melhor no lugar da manutenção (fogão industrial etc.).
 - Mais funcionários: um segundo garçom, além da Dani.
 - Eventos de bairro: festa junina, jogo do Brasil.
+- **Nível de luxo** (0 a 5, bem para frente, depois de tudo o que está na fila; pedido do usuário em 21/10): a soma dos enfeites (decoração da área de espera e do salão), da localização (ponto), do impacto da mídia (divulgação), da avaliação de críticos surpresa e de outras coisas a ponderar. A progressão seria parecida com a de subir de nível de um personagem por atributos (o usuário citou o sistema do Kratos em God of War Ragnarök como referência; na interface, sem citar o jogo).

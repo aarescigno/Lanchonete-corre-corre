@@ -110,7 +110,7 @@
    - Velocidade de base 260 → 300 (`BIA_SPEED`); Tênis novos +10%; **Tênis de corrida** (R$ 350, +20%, pedem os Tênis novos e aparecem no lugar deles na lojinha, que continua com 6 cartões).
    - **Selos da fila:** etiqueta "1º, 2º..." na mesa, na estação ou no prato que está na fila da Bia (todas as vezes do mesmo lugar juntas), com pulinho ao surgir (parada com `prefers-reduced-motion`); os quadrinhos da fila ganham a mesma etiqueta. A mesa pode entrar 2 vezes na fila; cancelar só pelo quadrinho.
    - Metas mantidas por escolha do usuário (sem equipe ~74% das metas nos dias 3 a 7; com equipe ~98%). Teste `smoke12`.
-   - Salão por níveis (16, 20, 26 e 32 lugares) com um **editor do salão** (o jogador vê o salão e arrasta as mesas dentro da área útil, desejo do usuário em 21/10): só proposta, etapa 1d do plano, em discussão.
+   - Salão: só proposta, em discussão (21/10). O nível do salão é o ponto: Garagem da Bia e do tio Tonhão (sem aluguel, 16 lugares, etapa 1d, com o **editor do salão**, a tela que rola até a calçada e a área de espera lá fora com totem de suco), área industrial e Avenida Brasil (etapa 3) e Terraço Suíça (30 lugares, etapa 4).
 
 ## Código em partes (`src/`)
 - Desde 15/10/2026 o código fica em 19 partes em `src/` (lista no `CLAUDE.md`), juntadas por `montar.py` em `lanchonete.html` sem acrescentar nada: o arquivo montado é idêntico, byte a byte, ao anterior à divisão.
