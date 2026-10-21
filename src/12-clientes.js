@@ -58,10 +58,11 @@ function lsSet(k, v){
   MEM[k] = v;
   try { localStorage.setItem(k, v); } catch(e) {}
 }
-function normEquipe(e){
+/* o couvert só vale do nível 3 do salão em diante: num ponto abaixo, sai */
+function normEquipe(e, ponto){
   e = (e && typeof e === 'object') ? e : {};
   const tasks = Array.isArray(e.daniTasks) ? e.daniTasks.filter(t => DANI_TASKS.some(d => d.id === t)) : ['pratos','lavar'];
-  return { tonhao: clamp(Math.round(+e.tonhao)||0,0,2), dani: clamp(Math.round(+e.dani)||0,0,3), daniTasks: tasks.filter((t,i) => tasks.indexOf(t) === i).slice(0,3), couvert: !!e.couvert, taxa: !!e.taxa };
+  return { tonhao: clamp(Math.round(+e.tonhao)||0,0,2), dani: clamp(Math.round(+e.dani)||0,0,3), daniTasks: tasks.filter((t,i) => tasks.indexOf(t) === i).slice(0,3), couvert: !!e.couvert && couvertOk(ponto), taxa: !!e.taxa, tv: !!e.tv, som: !!e.som };
 }
 /* livro-caixa (v7.2): uma linha por dia jogado na carreira (os últimos CAIXA_MAX). As compras da lojinha
    (melhorias e salão) ficam em caixaPend e entram na linha do dia seguinte, junto com o saldo ao fim dele */
@@ -92,7 +93,8 @@ function normSave(s){
   if (up.chapa){ up.pratos = true; delete up.chapa; }     // a Chapa nova virou Jogo de pratos (a velocidade da cozinha é do Tonhão)
   // salão da v6 à v7.3 (v7.4): o que foi gasto em cadeiras e mesas volta para o dinheiro, numa linha do caixa, e o
   // jogo começa na Garagem com o kit
-  const dev = salaoDevolucao(s.salao), out = { maxDay: clamp(+s.maxDay||1,1,7), bank: Math.max(0,+s.bank||0) + dev, up, best: (s.best && typeof s.best === 'object') ? s.best : {}, stars: (s.stars && typeof s.stars === 'object') ? s.stars : {}, equipe: normEquipe(s.equipe), salao: normSalao(dev ? null : s.salao), divulga: divulgaOf(s.divulga).id, caixa: normCaixa(s.caixa), caixaPend: normPend(s.caixaPend) };
+  const dev = salaoDevolucao(s.salao), out = { maxDay: clamp(+s.maxDay||1,1,7), bank: Math.max(0,+s.bank||0) + dev, up, best: (s.best && typeof s.best === 'object') ? s.best : {}, stars: (s.stars && typeof s.stars === 'object') ? s.stars : {}, salao: normSalao(dev ? null : s.salao), divulga: divulgaOf(s.divulga).id, caixa: normCaixa(s.caixa), caixaPend: normPend(s.caixaPend) };
+  out.equipe = normEquipe(s.equipe, pontoOf(out.salao.ponto));
   if (dev){ const last = out.caixa[out.caixa.length - 1]; out.caixa = normCaixa(out.caixa.concat([{ d:last ? last.d : 1, dev, saldo:out.bank }])); }
   return out;
 }
@@ -165,7 +167,8 @@ class Group {
     if (this.vip) m *= VIP.pat;
     if (this.state === 'queue' && this.aguaN) m /= 1 - AGUA.slow * this.aguaN / this.size;
     const g = this.game, eq = g.save.equipe;
-    if (eq.couvert && this.state !== 'queue') m /= 1 - couvertEffect(eq);
+    const amb = ambienteEffect(eq);
+    if (amb && this.state !== 'queue') m /= 1 - amb;
     if (g.trashFull && !g.up.ventilador) m /= 1 + TRASH.smell;
     return m;
   }

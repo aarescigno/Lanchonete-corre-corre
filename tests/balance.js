@@ -2,7 +2,7 @@ const H=require('./harness.js')(); const {g,L}=H; const bot=require('./bot.js')(
 const N=+process.argv[2]||20;
 // EQUIPE='{"tonhao":1,"dani":1,"daniTasks":["pratos","lavar"]}' node balance.js 40
 // EQUIPE=auto: a equipe que um jogador consegue pagar em cada dia (contratando aos poucos)
-const FULL={tonhao:2,dani:3,daniTasks:['pratos','lavar','lixo'],couvert:true};
+const FULL={tonhao:2,dani:3,daniTasks:['pratos','lavar','lixo'],tv:true,som:true};   // na Garagem, TV e som no lugar do couvert (v7.4.3)
 const AUTO={2:{},3:FULL,4:FULL,5:FULL,6:FULL,7:FULL};   // do dia 3 em diante o dinheiro acumulado já paga a equipe completa
 const EQ0=process.env.EQUIPE==='auto'?null:(process.env.EQUIPE?JSON.parse(process.env.EQUIPE):{});
 const eqFor=n=>EQ0||AUTO[n]||{};

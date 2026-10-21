@@ -233,7 +233,7 @@ table.rank tr.me td{background:#fbe7a8}
 
     <div class="ov show" id="ov-menu">
       <div class="panel menu-panel">
-        <span class="vtag" aria-label="Versão 7.4.3">v7.4.3</span>
+        <span class="vtag" aria-label="Versão 7.4.4">v7.4.4</span>
         <h1 class="title">Lanchonete <br>Corre-Corre</h1>
         <p class="tag">Ajude a Bia a atender a freguesia da esquina antes que o cafezinho esfrie!</p>
         <div class="lbl">Carreira: escolha o dia</div>
@@ -409,7 +409,8 @@ table.rank tr.me td{background:#fbe7a8}
       <div class="panel">
         <h2>Versões</h2>
         <ul class="verlist">
-          <li><b>v7.4.3</b><span class="cur">versão atual</span><br>21/10/2026 &mdash; Entre os dias, na aba Salão: toque numa mesa para trocar a cor das cadeiras, de graça.</li>
+          <li><b>v7.4.4</b><span class="cur">versão atual</span><br>21/10/2026 &mdash; Na Garagem, TV e som no lugar do couvert: a TV de tubo na Rede Esfera e o som na rádio Velha Brasil FM deixam a paciência nas mesas cair 5% mais devagar cada um, pagando só a luz (aba Equipe). O couvert artístico fica para o restaurante da Avenida Brasil.</li>
+          <li><b>v7.4.3</b><br>21/10/2026 &mdash; Entre os dias, na aba Salão: toque numa mesa para trocar a cor das cadeiras, de graça.<br><a href="versoes/v7.4.3.html" target="_blank" rel="noopener">Abrir a v7.4.3</a></li>
           <li><b>v7.4.2</b><br>21/10/2026 &mdash; Quem espera a comida mostra uma panela no fogo (não confunde mais com o cardápio); um visto verde avisa que o prato já está no balcão.<br><a href="versoes/v7.4.2.html" target="_blank" rel="noopener">Abrir a v7.4.2</a></li>
           <li><b>v7.4.1</b><br>21/10/2026 &mdash; Salão cheio chama gente: cada lugar acima de 10 traz 6% mais clientes; 4 pratos limpos do dia 3 em diante; com o salão cheio, a fila perde a paciência um pouco mais rápido.<br><a href="versoes/v7.4.1.html" target="_blank" rel="noopener">Abrir a v7.4.1</a></li>
           <li><b>v7.4</b><br>21/10/2026 &mdash; Garagem da Bia e do tio Tonhão: o salão começa numa garagem sem aluguel, com 4 mesas; na lojinha, compre mesas (até 16 lugares) e arraste-as para arrumar o salão.<br><a href="versoes/v7.4.html" target="_blank" rel="noopener">Abrir a v7.4</a></li>
@@ -485,11 +486,11 @@ const LAYOUT = { W, H, QUEUE, DOOR, STATIONS, PLATE_SLOTS, BOUNDS };
 /* ============================================================
    PONTOS (v7.4): o nível do salão é o ponto. Por enquanto só a Garagem; a área
    industrial, a Avenida Brasil e o Terraço Suíça vêm nas etapas 3 e 4 do plano.
-   lugares: teto de lugares; area: onde as mesas podem ficar (a mesa inteira, com
+   nivel: o nível do salão (1 a 4); lugares: teto de lugares; area: onde as mesas podem ficar (a mesa inteira, com
    as cadeiras); espera: cadeiras lá fora (v7.5); cardapio: fator dos preços
    ============================================================ */
 const PONTOS = [
-  { id:'garagem', nome:'Garagem da mãe da Bia', lugares:16, aluguel:0, mudanca:0, cardapio:1, area:{ x0:196, y0:150, x1:684, y1:500 }, espera:4 }
+  { id:'garagem', nome:'Garagem da mãe da Bia', nivel:1, lugares:16, aluguel:0, mudanca:0, cardapio:1, area:{ x0:196, y0:150, x1:684, y1:500 }, espera:4 }
 ];
 function pontoOf(id){ return PONTOS.find(p => p.id === id) || PONTOS[0]; }
 /* ============================================================
@@ -663,7 +664,11 @@ const STAFF = {
   // com aumento, lava 1 pilha da pia a cada `wash` segundos
   tonhao:  { levels:[ { slots:3, cook:1, crit:0.05, wash:0, pay:0 }, { slots:3, cook:0.85, crit:0.12, wash:7, pay:40 }, { slots:3, cook:0.7, crit:0.2, wash:4, pay:90 } ] },
   dani:    { levels:[ null, { speed:0.5, tasks:2, pay:60 }, { speed:0.65, tasks:2, pay:90 }, { speed:0.8, tasks:3, pay:135 } ] },
-  couvert: { pay:80, fee:3, effect:0.2, feeCut:0.5 }
+  // couvert artístico: só do nível 3 do salão em diante (Avenida Brasil, etapa 3 do plano)
+  couvert: { pay:80, fee:3, effect:0.2, feeCut:0.5, nivel:3 },
+  // ambiente da Garagem (v7.4.3): TV e som ligados o dia todo; o custo é a conta de luz (pay) e entra na folha
+  tv:      { pay:15, effect:0.05 },
+  som:     { pay:10, effect:0.05 }
 };
 const DANI_TASKS = [
   { id:'lixo',   name:'Tirar o lixo',   short:'Lixo' },
@@ -679,10 +684,17 @@ const CRIT = { bonus:10, vipBonus:20 };
 const WASH = { base:0.3, perPile:2.5 };               // segundos na pia
 const TRASH = { cap:6, empty:2, smell:0.3 };         // lixeira: capacidade, tempo para esvaziar, cheiro quando cheia
 function couvertEffect(eq){ return STAFF.couvert.effect * (eq.taxa ? 1 - STAFF.couvert.feeCut : 1); }
+function couvertOk(ponto){ return (ponto || PONTOS[0]).nivel >= STAFF.couvert.nivel; }
+/* ambiente do salão: quanto a paciência nas mesas cai mais devagar (TV, som e couvert se somam) */
+function ambienteEffect(eq){
+  return (eq.tv ? STAFF.tv.effect : 0) + (eq.som ? STAFF.som.effect : 0) + (eq.couvert ? couvertEffect(eq) : 0);
+}
 function payroll(eq){
   let v = STAFF.tonhao.levels[eq.tonhao].pay;
   if (eq.dani) v += STAFF.dani.levels[eq.dani].pay;
   if (eq.couvert) v += STAFF.couvert.pay;
+  if (eq.tv) v += STAFF.tv.pay;
+  if (eq.som) v += STAFF.som.pay;
   return v;
 }
 /* pratos limpos na cozinha: sem limite nos dias 1 e 2; depois, 4; no Turno sem fim, 5 (+1 com o Jogo de pratos) */
@@ -734,7 +746,7 @@ const DIVULGA = [
 const MOVIMENTO = { kit:10, porLugar:0.06 };
 function movimentoSalao(lugares){ return 1 + MOVIMENTO.porLugar * Math.max(0, lugares - MOVIMENTO.kit); }
 const CAIXA_MAX = 14;                                 // livro-caixa (v7.2): quantos dias da carreira ficam guardados
-const VERSAO = 'v7.4.3';                              // vai no resumo do Caixa
+const VERSAO = 'v7.4.4';                              // vai no resumo do Caixa
 const DIVULGA_DIA = 3;                                // antes disso, o movimento é o da inauguração (sem custo)
 function divulgaOf(id){ return DIVULGA.find(d => d.id === id) || DIVULGA[1]; }
 /* contas do dia: o aluguel do ponto (v7.4; a Garagem é da família), mais cada mesa aberta e cada lugar dela */
@@ -950,10 +962,11 @@ function lsSet(k, v){
   MEM[k] = v;
   try { localStorage.setItem(k, v); } catch(e) {}
 }
-function normEquipe(e){
+/* o couvert só vale do nível 3 do salão em diante: num ponto abaixo, sai */
+function normEquipe(e, ponto){
   e = (e && typeof e === 'object') ? e : {};
   const tasks = Array.isArray(e.daniTasks) ? e.daniTasks.filter(t => DANI_TASKS.some(d => d.id === t)) : ['pratos','lavar'];
-  return { tonhao: clamp(Math.round(+e.tonhao)||0,0,2), dani: clamp(Math.round(+e.dani)||0,0,3), daniTasks: tasks.filter((t,i) => tasks.indexOf(t) === i).slice(0,3), couvert: !!e.couvert, taxa: !!e.taxa };
+  return { tonhao: clamp(Math.round(+e.tonhao)||0,0,2), dani: clamp(Math.round(+e.dani)||0,0,3), daniTasks: tasks.filter((t,i) => tasks.indexOf(t) === i).slice(0,3), couvert: !!e.couvert && couvertOk(ponto), taxa: !!e.taxa, tv: !!e.tv, som: !!e.som };
 }
 /* livro-caixa (v7.2): uma linha por dia jogado na carreira (os últimos CAIXA_MAX). As compras da lojinha
    (melhorias e salão) ficam em caixaPend e entram na linha do dia seguinte, junto com o saldo ao fim dele */
@@ -984,7 +997,8 @@ function normSave(s){
   if (up.chapa){ up.pratos = true; delete up.chapa; }     // a Chapa nova virou Jogo de pratos (a velocidade da cozinha é do Tonhão)
   // salão da v6 à v7.3 (v7.4): o que foi gasto em cadeiras e mesas volta para o dinheiro, numa linha do caixa, e o
   // jogo começa na Garagem com o kit
-  const dev = salaoDevolucao(s.salao), out = { maxDay: clamp(+s.maxDay||1,1,7), bank: Math.max(0,+s.bank||0) + dev, up, best: (s.best && typeof s.best === 'object') ? s.best : {}, stars: (s.stars && typeof s.stars === 'object') ? s.stars : {}, equipe: normEquipe(s.equipe), salao: normSalao(dev ? null : s.salao), divulga: divulgaOf(s.divulga).id, caixa: normCaixa(s.caixa), caixaPend: normPend(s.caixaPend) };
+  const dev = salaoDevolucao(s.salao), out = { maxDay: clamp(+s.maxDay||1,1,7), bank: Math.max(0,+s.bank||0) + dev, up, best: (s.best && typeof s.best === 'object') ? s.best : {}, stars: (s.stars && typeof s.stars === 'object') ? s.stars : {}, salao: normSalao(dev ? null : s.salao), divulga: divulgaOf(s.divulga).id, caixa: normCaixa(s.caixa), caixaPend: normPend(s.caixaPend) };
+  out.equipe = normEquipe(s.equipe, pontoOf(out.salao.ponto));
   if (dev){ const last = out.caixa[out.caixa.length - 1]; out.caixa = normCaixa(out.caixa.concat([{ d:last ? last.d : 1, dev, saldo:out.bank }])); }
   return out;
 }
@@ -1057,7 +1071,8 @@ class Group {
     if (this.vip) m *= VIP.pat;
     if (this.state === 'queue' && this.aguaN) m /= 1 - AGUA.slow * this.aguaN / this.size;
     const g = this.game, eq = g.save.equipe;
-    if (eq.couvert && this.state !== 'queue') m /= 1 - couvertEffect(eq);
+    const amb = ambienteEffect(eq);
+    if (amb && this.state !== 'queue') m /= 1 - amb;
     if (g.trashFull && !g.up.ventilador) m /= 1 + TRASH.smell;
     return m;
   }
@@ -1755,7 +1770,7 @@ class Game {
   startDay(n){ this.resetDay(n); this.setState('intro'); }
   startEndless(){ this.resetDay(0); this.setState('intro'); }
   /* debita a folha e a divulgação do dia do dinheiro acumulado; o que não puder ser pago sai
-     (a divulgação vira boca a boca, depois couvert, Dani e aumento do Tonhão) */
+     (a divulgação vira boca a boca, depois couvert, som, TV, Dani e aumento do Tonhão) */
   payDay(){
     const eq = this.save.equipe; this.unpaid = [];
     const divCost = () => this.div ? this.div.cost : 0;
@@ -1766,6 +1781,8 @@ class Game {
         this.schedule = this.buildSchedule(this.day);
       }
       else if (eq.couvert){ eq.couvert = false; this.unpaid.push('Couvert'); }
+      else if (eq.som){ eq.som = false; this.unpaid.push('som'); }
+      else if (eq.tv){ eq.tv = false; this.unpaid.push('TV'); }
       else if (eq.dani){ eq.dani = 0; this.unpaid.push('Dani'); }
       else if (eq.tonhao){ eq.tonhao--; this.unpaid.push('aumento do Tonhão'); }
       else break;
@@ -2146,6 +2163,7 @@ class Game {
   /* equipe: mudanças à vontade na lojinha, desde que o dinheiro acumulado pague a folha do próximo dia */
   setStaff(key, val){
     const eq = this.save.equipe, old = eq[key];
+    if (key === 'couvert' && val && !couvertOk(this.ponto)) return false;
     eq[key] = val;
     if (payroll(eq) > this.save.bank && payroll(eq) > payroll(Object.assign({}, eq, { [key]:old }))){ eq[key] = old; return false; }
     writeSave(this.save); this.kitchen.slots = STAFF.tonhao.levels[eq.tonhao].slots;
@@ -2878,6 +2896,71 @@ function drawMusico(ctx,g,tm){
   if (!RM){ for (let i=0;i<2;i++){ const p = (tm*0.6 + i*0.5) % 1; ctx.globalAlpha = 1 - p; txt(ctx,'♪',x+14+i*10,y-56-p*30,14,PAL.faixa,'center',FB); ctx.globalAlpha = 1; } }
   else txt(ctx,'♪',x+16,y-62,14,PAL.faixa,'center',FB);
 }
+/* ambiente da Garagem (v7.4.3): TV de tubo passando a Rede Esfera e aparelho de som na rádio Velha Brasil FM.
+   drawTv e drawSom desenham com a base em (x, y); a TV troca de programa a cada 6 s (parada, só o logo) */
+function drawTv(ctx,x,y,tm,s){
+  ctx.save(); ctx.translate(x,y); if (s) ctx.scale(s,s);
+  ctx.strokeStyle = PAL.tinta; ctx.lineWidth = 2;
+  ctx.beginPath(); ctx.moveTo(-4,-42); ctx.lineTo(-18,-62); ctx.moveTo(4,-42); ctx.lineTo(14,-64); ctx.stroke();
+  circ(ctx,-18,-62,3); fs(ctx,PAL.cromo,1.4); circ(ctx,14,-64,3.5); fs(ctx,PAL.cromo,1.4);
+  rr(ctx,-30,-44,60,44,7); fs(ctx,'#6B6F7A',2.5);
+  rr(ctx,-26,-40,40,34,7); fs(ctx,'#1B2233',2);
+  ctx.save(); rr(ctx,-24,-38,36,30,6); ctx.clip();
+  const prog = RM ? 0 : Math.floor(tm / 6) % 3;
+  if (prog === 0){
+    ctx.fillStyle = '#1E4FA8'; ctx.fillRect(-24,-38,36,30);
+    circ(ctx,-6,-26,8); fs(ctx,'#5FB8F0',1.4);
+    ctx.save(); ctx.translate(-6,-26); ctx.rotate(-0.4); ell(ctx,0,0,12,3.5); ctx.strokeStyle = '#FFD36B'; ctx.lineWidth = 1.6; ctx.stroke(); ctx.restore();
+    txt(ctx,'ESFERA',-6,-13,6,'#fff','center',FD);
+  } else if (prog === 1){
+    ctx.fillStyle = '#3E9B4F'; ctx.fillRect(-24,-38,36,30);
+    ctx.strokeStyle = 'rgba(255,255,255,.8)'; ctx.lineWidth = 1; ctx.beginPath(); ctx.moveTo(-6,-38); ctx.lineTo(-6,-8); ctx.stroke();
+    circ(ctx,-6,-23,6); ctx.stroke();
+    circ(ctx,-6 + Math.sin(tm*1.7)*12,-23 + Math.sin(tm*2.3)*8,2.2); fs(ctx,'#fff',1);
+  } else {
+    ctx.fillStyle = '#E8A0B4'; ctx.fillRect(-24,-38,36,30);
+    circ(ctx,-15,-20,6); fs(ctx,SKINS[1],1.2); circ(ctx,3,-20,6); fs(ctx,SKINS[4],1.2);
+    heart(ctx,-6,-31,3.5 + (Math.sin(tm*4) > 0 ? 0.6 : 0),PAL.perigo);
+  }
+  if (prog){ circ(ctx,8,-33,2.6); ctx.fillStyle = 'rgba(255,255,255,.85)'; ctx.fill(); }   // logo da emissora no canto
+  ctx.fillStyle = 'rgba(255,255,255,.18)'; ctx.beginPath(); ctx.moveTo(-24,-38); ctx.lineTo(-10,-38); ctx.lineTo(-24,-20); ctx.closePath(); ctx.fill();
+  ctx.restore();
+  circ(ctx,22,-32,3.2); fs(ctx,PAL.cromo,1.4); circ(ctx,22,-22,3.2); fs(ctx,PAL.cromo,1.4);
+  ctx.fillStyle = PAL.tinta; for (let i=0;i<3;i++) ctx.fillRect(18,-14+i*3,8,1.2);
+  ctx.restore();
+}
+function drawSom(ctx,x,y,tm,s){
+  ctx.save(); ctx.translate(x,y); if (s) ctx.scale(s,s);
+  const p = RM ? 0 : Math.max(0, Math.sin(tm*9)) * 0.8;
+  [-31,31].forEach(cx => {
+    rr(ctx,cx-9,-30,18,30,3); fs(ctx,'#3B3B42',2);
+    circ(ctx,cx,-22,3); fs(ctx,'#5A5A63',1.2);
+    circ(ctx,cx,-10,5.5 + p); fs(ctx,'#5A5A63',1.4); circ(ctx,cx,-10,2); ctx.fillStyle = PAL.tinta; ctx.fill();
+  });
+  rr(ctx,-20,-22,40,22,3); fs(ctx,PAL.cromo,2);
+  rr(ctx,-16,-18,32,9,2); fs(ctx,'#9BD48A',1.2);
+  ctx.save(); rr(ctx,-15,-17,30,7,2); ctx.clip();
+  const nome = 'VELHA BRASIL FM', w = 70;
+  txt(ctx,nome,RM ? -14 : 15 - ((tm*14) % (w + 30)),-13.5,6,'#1E3B1A','left',FB);
+  ctx.restore();
+  for (let i=0;i<4;i++){ circ(ctx,-12+i*8,-4,1.8); fs(ctx,i === 1 ? PAL.alerta : PAL.cromoEsc,1); }
+  ctx.restore();
+}
+/* estante no canto de baixo, à esquerda, com o que estiver ligado */
+function drawAmbiente(ctx,g,tm){
+  const eq = g.save.equipe, y = 506;
+  shadowEll(ctx,96,532,86,5,0.15);
+  ctx.strokeStyle = PAL.madeiraEsc; ctx.lineWidth = 3;
+  [22,170].forEach(x => { ctx.beginPath(); ctx.moveTo(x,y); ctx.lineTo(x,531); ctx.stroke(); });
+  rr(ctx,16,520,160,5,2); fs(ctx,PAL.madeira,1.6);
+  rr(ctx,12,y-2,168,8,2); fs(ctx,PAL.madeira,2);
+  if (eq.som){
+    drawSom(ctx,64,y-2,tm);
+    if (!RM){ for (let i=0;i<2;i++){ const q = (tm*0.6 + i*0.5) % 1; ctx.globalAlpha = 1 - q; txt(ctx,'♪',22 - i*6,y-36-q*18,12,PAL.faixa,'center',FB); ctx.globalAlpha = 1; } }
+    else txt(ctx,'♪',20,y-40,12,PAL.faixa,'center',FB);
+  }
+  if (eq.tv) drawTv(ctx,146,y-2,tm);
+}
 /* água saborizada na entrada (jarra com frutas numa mesinha) */
 function ctx2chef(c){ c.beginPath(); c.arc(-5,-17,5,0,TAU); c.arc(0,-20,6,0,TAU); c.arc(5,-17,5,0,TAU); fs(c,'#fff',1.6); }
 function drawAguaJar(ctx,x,y,s,lv){
@@ -3524,6 +3607,7 @@ function render(g, ctx){
   if (menu) items.pop();
   if (g.up.agua) items.push({ y:150, f:() => glowSprite(ctx,g,'agua',ctx => drawAgua(ctx,g,tm,menu)) });
   if (g.save.equipe.couvert && !menu) items.push({ y:528, f:() => drawMusico(ctx,g,tm) });
+  if ((g.save.equipe.tv || g.save.equipe.som) && !menu) items.push({ y:532, f:() => drawAmbiente(ctx,g,tm) });
   if (g.dani.active && !menu) items.push({ y:g.dani.y, f:() => drawDani(ctx,g.dani,tm) });
   items.sort((a,c) => a.y - c.y).forEach(it => it.f());
 
@@ -3866,6 +3950,8 @@ function upgradeIcon(id){
     } else if (id === 'couvert'){
       c.rotate(-0.5); ell(c,0,4,10,8); fs(c,'#B5733A',2); circ(c,0,4,3); c.fillStyle = PAL.tinta; c.fill(); rr(c,8,1,20,4,1); fs(c,PAL.madeiraEsc,1.4); c.rotate(0.5);
       txt(c,'♪',-12,-12,14,PAL.faixa,'center',FB);
+    } else if (id === 'ambiente'){
+      drawTv(c,6,2,0,0.48); drawSom(c,-6,17,0,0.42); txt(c,'♪',-16,-12,12,PAL.faixa,'center',FB);
     } else if (id === 'agua'){
       drawAguaJar(c,0,12,0.9);
     } else if (id === 'div-boca'){
@@ -3965,7 +4051,19 @@ function buildEquipe(grid){
   if (lv < 3) duo.appendChild(shopBtn(lv ? 'Promover' : 'Contratar', 'btn', canPay(D[lv+1].pay - (lv ? D[lv].pay : 0)), () => game.setStaff('dani', lv + 1)));
   if (lv > 0) duo.appendChild(shopBtn('Dispensar', 'btn alt', true, () => game.setStaff('dani', 0)));
   c.appendChild(duo); grid.appendChild(c);
-  // Couvert
+  // TV e som (v7.4.3): cada um liga e desliga à parte; o custo é a conta de luz do dia
+  const TV = STAFF.tv, SOM = STAFF.som;
+  c = staffCard(upgradeIcon('ambiente'), 'TV e som', 'Com a TV ligada, a paciência nas mesas cai ' + Math.round(TV.effect*100) + '% mais devagar; com o som, mais ' + Math.round(SOM.effect*100) + '%. O custo é a luz do dia.');
+  [['tv', 'TV de tubo na Rede Esfera'], ['som', 'Som na rádio Velha Brasil FM']].forEach(a => {
+    const on = eq[a[0]], b = el('button', 'toggle', (on ? 'Ligado: ' : 'Ligar: ') + a[1] + ' · ' + fmt(STAFF[a[0]].pay) + '/dia'); b.type = 'button';
+    b.setAttribute('aria-pressed', on ? 'true' : 'false');
+    if (!on && !canPay(STAFF[a[0]].pay)) b.disabled = true;
+    b.addEventListener('click', () => { Sfx.init(); if (!game.setStaff(a[0], !on)) Sfx.boing(); buildShop(); });
+    c.appendChild(b);
+  });
+  grid.appendChild(c);
+  // Couvert: só do nível 3 do salão em diante
+  if (!couvertOk(game.ponto)) return;
   const ef = Math.round(couvertEffect(Object.assign({}, eq, { taxa:true })) * 100);
   c = staffCard(upgradeIcon('couvert'), 'Couvert artístico', 'Música ao vivo: a paciência nas mesas cai ' + Math.round(C.effect*100) + '% mais devagar. ' + fmt(C.pay) + '/dia.');
   const tg = el('button', 'toggle', 'Cobrar couvert: ' + fmt(C.fee) + ' por pessoa (efeito cai para ' + ef + '%)'); tg.type = 'button';
@@ -4139,7 +4237,7 @@ function caixaResumo(save){
   const nd = cx.filter(r => !r.dev).length;
   if (nd) out.push('Para onde foi (' + nd + (nd > 1 ? ' dias' : ' dia') + '): ' + caixaTotais(cx).filter(t => t.v).map(t => t.name.toLowerCase() + ' ' + t.v).join(', '));
   const ups = UPGRADES.filter(u => save.up[u.id]).map(u => u.name.toLowerCase());
-  out.push('Agora: ' + fmt(save.bank) + ' · Tonhão nível ' + (eq.tonhao + 1) + ', ' + (eq.dani ? 'Dani nível ' + eq.dani : 'sem Dani') + (eq.couvert ? ', couvert' : '') +
+  out.push('Agora: ' + fmt(save.bank) + ' · Tonhão nível ' + (eq.tonhao + 1) + ', ' + (eq.dani ? 'Dani nível ' + eq.dani : 'sem Dani') + (eq.couvert ? ', couvert' : '') + (eq.tv ? ', TV' : '') + (eq.som ? ', som' : '') +
     ' · ' + divulgaOf(save.divulga).name.toLowerCase() + ' · ' + pontoOf(sal.ponto).nome.replace(/ da .*/, '').toLowerCase() + ' com ' + sal.mesas.length + ' mesas e ' + salaoLugares(sal.mesas) + ' lugares · melhorias: ' + (ups.join(', ') || 'nenhuma'));
   return out.join('\n');
 }
@@ -4168,7 +4266,7 @@ function buildCaixa(grid){
   if (!cx.length){ grid.appendChild(el('p', 'rank-empty', 'O caixa começa quando você joga um dia da carreira.')); return; }
   const wrap = el('div', 'rank-wrap cx-wrap'), tb = el('table', 'rank cx');
   const head = el('tr');
-  [['Dia'], ['Faturou'], ['Ingred.', 'Ingredientes'], ['Contas', 'Aluguel, luz e gás'], ['Equipe', 'Folha da equipe e divulgação'], ['Lucro', 'Lucro do dia (a meta)'], ['Compras', 'Melhorias e salão comprados antes do dia'], ['Saldo', 'Dinheiro acumulado ao fim do dia']].forEach((h, i) => { const th = el('th', i ? 'n' : null, h[0]); th.setAttribute('scope', 'col'); if (h[1]) th.title = h[1]; head.appendChild(th); });
+  [['Dia'], ['Faturou'], ['Ingred.', 'Ingredientes'], ['Contas', 'Aluguel, luz e gás'], ['Equipe', 'Folha da equipe, luz da TV e do som e divulgação'], ['Lucro', 'Lucro do dia (a meta)'], ['Compras', 'Melhorias e salão comprados antes do dia'], ['Saldo', 'Dinheiro acumulado ao fim do dia']].forEach((h, i) => { const th = el('th', i ? 'n' : null, h[0]); th.setAttribute('scope', 'col'); if (h[1]) th.title = h[1]; head.appendChild(th); });
   tb.appendChild(head);
   cx.slice().reverse().forEach(r => {
     const tr = el('tr');
@@ -4527,7 +4625,7 @@ fit();
 try { Rank.init(); } catch(e) {}
 game.setState('menu');
 window.__game = game;
-window.__lcc = { setShopTab: v => { shopTab = v; buildShop(); }, FILA_JUSTA, PORTA, CHAIRS, PAT, CONTAS, INGRED, MOVIMENTO, movimentoSalao, DIVULGA, DIVULGA_DIA, divulgaOf, contasDia, bomGoal, SALAO, PONTOS, pontoOf, MESA, mesaBox, mesaPreco, salaoLugares, mesaProblema, salaoCaminho, salaoProblema, salaoOrdena, salaoAuto, salaoVaga, salaoPerto, salaoKit, salaoDevolucao, SALAO_SEMFIM, normSalao, setObst, OBST, pathOk, AGUA, CRIT, STAFF, DANI_TASKS, DANI_HANDS, daniTaskOk, TRASH, WASH, payroll, couvertEffect, dishStock, normSave, Helper, JUICE, KITCHEN_SLOTS, handLayout, trayOk, Game, Group, Table, Kitchen, Waitress, BIA_SPEED, DAYS, UPGRADES, CUSTOMER_TYPES, LAYOUT, PAL, Sfx, findPath, render, Rank, sortRows, cleanName, normName, CMD, ENDLESS, VIP, rk, renderRank, openRank, closeRank, LS, lsGet, lsSet, loadSave, CAIXA_MAX, VERSAO, normCaixa, caixaResumo, caixaTotais, copyText };
+window.__lcc = { setShopTab: v => { shopTab = v; buildShop(); }, FILA_JUSTA, PORTA, CHAIRS, PAT, CONTAS, INGRED, MOVIMENTO, movimentoSalao, DIVULGA, DIVULGA_DIA, divulgaOf, contasDia, bomGoal, SALAO, PONTOS, pontoOf, MESA, mesaBox, mesaPreco, salaoLugares, mesaProblema, salaoCaminho, salaoProblema, salaoOrdena, salaoAuto, salaoVaga, salaoPerto, salaoKit, salaoDevolucao, SALAO_SEMFIM, normSalao, setObst, OBST, pathOk, AGUA, CRIT, STAFF, DANI_TASKS, DANI_HANDS, daniTaskOk, TRASH, WASH, payroll, couvertEffect, couvertOk, ambienteEffect, dishStock, normSave, Helper, JUICE, KITCHEN_SLOTS, handLayout, trayOk, Game, Group, Table, Kitchen, Waitress, BIA_SPEED, DAYS, UPGRADES, CUSTOMER_TYPES, LAYOUT, PAL, Sfx, findPath, render, Rank, sortRows, cleanName, normName, CMD, ENDLESS, VIP, rk, renderRank, openRank, closeRank, LS, lsGet, lsSet, loadSave, CAIXA_MAX, VERSAO, normCaixa, caixaResumo, caixaTotais, copyText };
 window.requestAnimationFrame(frame);
 
 })();

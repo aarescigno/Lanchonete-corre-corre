@@ -157,6 +157,71 @@ function drawMusico(ctx,g,tm){
   if (!RM){ for (let i=0;i<2;i++){ const p = (tm*0.6 + i*0.5) % 1; ctx.globalAlpha = 1 - p; txt(ctx,'♪',x+14+i*10,y-56-p*30,14,PAL.faixa,'center',FB); ctx.globalAlpha = 1; } }
   else txt(ctx,'♪',x+16,y-62,14,PAL.faixa,'center',FB);
 }
+/* ambiente da Garagem (v7.4.3): TV de tubo passando a Rede Esfera e aparelho de som na rádio Velha Brasil FM.
+   drawTv e drawSom desenham com a base em (x, y); a TV troca de programa a cada 6 s (parada, só o logo) */
+function drawTv(ctx,x,y,tm,s){
+  ctx.save(); ctx.translate(x,y); if (s) ctx.scale(s,s);
+  ctx.strokeStyle = PAL.tinta; ctx.lineWidth = 2;
+  ctx.beginPath(); ctx.moveTo(-4,-42); ctx.lineTo(-18,-62); ctx.moveTo(4,-42); ctx.lineTo(14,-64); ctx.stroke();
+  circ(ctx,-18,-62,3); fs(ctx,PAL.cromo,1.4); circ(ctx,14,-64,3.5); fs(ctx,PAL.cromo,1.4);
+  rr(ctx,-30,-44,60,44,7); fs(ctx,'#6B6F7A',2.5);
+  rr(ctx,-26,-40,40,34,7); fs(ctx,'#1B2233',2);
+  ctx.save(); rr(ctx,-24,-38,36,30,6); ctx.clip();
+  const prog = RM ? 0 : Math.floor(tm / 6) % 3;
+  if (prog === 0){
+    ctx.fillStyle = '#1E4FA8'; ctx.fillRect(-24,-38,36,30);
+    circ(ctx,-6,-26,8); fs(ctx,'#5FB8F0',1.4);
+    ctx.save(); ctx.translate(-6,-26); ctx.rotate(-0.4); ell(ctx,0,0,12,3.5); ctx.strokeStyle = '#FFD36B'; ctx.lineWidth = 1.6; ctx.stroke(); ctx.restore();
+    txt(ctx,'ESFERA',-6,-13,6,'#fff','center',FD);
+  } else if (prog === 1){
+    ctx.fillStyle = '#3E9B4F'; ctx.fillRect(-24,-38,36,30);
+    ctx.strokeStyle = 'rgba(255,255,255,.8)'; ctx.lineWidth = 1; ctx.beginPath(); ctx.moveTo(-6,-38); ctx.lineTo(-6,-8); ctx.stroke();
+    circ(ctx,-6,-23,6); ctx.stroke();
+    circ(ctx,-6 + Math.sin(tm*1.7)*12,-23 + Math.sin(tm*2.3)*8,2.2); fs(ctx,'#fff',1);
+  } else {
+    ctx.fillStyle = '#E8A0B4'; ctx.fillRect(-24,-38,36,30);
+    circ(ctx,-15,-20,6); fs(ctx,SKINS[1],1.2); circ(ctx,3,-20,6); fs(ctx,SKINS[4],1.2);
+    heart(ctx,-6,-31,3.5 + (Math.sin(tm*4) > 0 ? 0.6 : 0),PAL.perigo);
+  }
+  if (prog){ circ(ctx,8,-33,2.6); ctx.fillStyle = 'rgba(255,255,255,.85)'; ctx.fill(); }   // logo da emissora no canto
+  ctx.fillStyle = 'rgba(255,255,255,.18)'; ctx.beginPath(); ctx.moveTo(-24,-38); ctx.lineTo(-10,-38); ctx.lineTo(-24,-20); ctx.closePath(); ctx.fill();
+  ctx.restore();
+  circ(ctx,22,-32,3.2); fs(ctx,PAL.cromo,1.4); circ(ctx,22,-22,3.2); fs(ctx,PAL.cromo,1.4);
+  ctx.fillStyle = PAL.tinta; for (let i=0;i<3;i++) ctx.fillRect(18,-14+i*3,8,1.2);
+  ctx.restore();
+}
+function drawSom(ctx,x,y,tm,s){
+  ctx.save(); ctx.translate(x,y); if (s) ctx.scale(s,s);
+  const p = RM ? 0 : Math.max(0, Math.sin(tm*9)) * 0.8;
+  [-31,31].forEach(cx => {
+    rr(ctx,cx-9,-30,18,30,3); fs(ctx,'#3B3B42',2);
+    circ(ctx,cx,-22,3); fs(ctx,'#5A5A63',1.2);
+    circ(ctx,cx,-10,5.5 + p); fs(ctx,'#5A5A63',1.4); circ(ctx,cx,-10,2); ctx.fillStyle = PAL.tinta; ctx.fill();
+  });
+  rr(ctx,-20,-22,40,22,3); fs(ctx,PAL.cromo,2);
+  rr(ctx,-16,-18,32,9,2); fs(ctx,'#9BD48A',1.2);
+  ctx.save(); rr(ctx,-15,-17,30,7,2); ctx.clip();
+  const nome = 'VELHA BRASIL FM', w = 70;
+  txt(ctx,nome,RM ? -14 : 15 - ((tm*14) % (w + 30)),-13.5,6,'#1E3B1A','left',FB);
+  ctx.restore();
+  for (let i=0;i<4;i++){ circ(ctx,-12+i*8,-4,1.8); fs(ctx,i === 1 ? PAL.alerta : PAL.cromoEsc,1); }
+  ctx.restore();
+}
+/* estante no canto de baixo, à esquerda, com o que estiver ligado */
+function drawAmbiente(ctx,g,tm){
+  const eq = g.save.equipe, y = 506;
+  shadowEll(ctx,96,532,86,5,0.15);
+  ctx.strokeStyle = PAL.madeiraEsc; ctx.lineWidth = 3;
+  [22,170].forEach(x => { ctx.beginPath(); ctx.moveTo(x,y); ctx.lineTo(x,531); ctx.stroke(); });
+  rr(ctx,16,520,160,5,2); fs(ctx,PAL.madeira,1.6);
+  rr(ctx,12,y-2,168,8,2); fs(ctx,PAL.madeira,2);
+  if (eq.som){
+    drawSom(ctx,64,y-2,tm);
+    if (!RM){ for (let i=0;i<2;i++){ const q = (tm*0.6 + i*0.5) % 1; ctx.globalAlpha = 1 - q; txt(ctx,'♪',22 - i*6,y-36-q*18,12,PAL.faixa,'center',FB); ctx.globalAlpha = 1; } }
+    else txt(ctx,'♪',20,y-40,12,PAL.faixa,'center',FB);
+  }
+  if (eq.tv) drawTv(ctx,146,y-2,tm);
+}
 /* água saborizada na entrada (jarra com frutas numa mesinha) */
 function ctx2chef(c){ c.beginPath(); c.arc(-5,-17,5,0,TAU); c.arc(0,-20,6,0,TAU); c.arc(5,-17,5,0,TAU); fs(c,'#fff',1.6); }
 function drawAguaJar(ctx,x,y,s,lv){

@@ -81,7 +81,7 @@ class Game {
   startDay(n){ this.resetDay(n); this.setState('intro'); }
   startEndless(){ this.resetDay(0); this.setState('intro'); }
   /* debita a folha e a divulgação do dia do dinheiro acumulado; o que não puder ser pago sai
-     (a divulgação vira boca a boca, depois couvert, Dani e aumento do Tonhão) */
+     (a divulgação vira boca a boca, depois couvert, som, TV, Dani e aumento do Tonhão) */
   payDay(){
     const eq = this.save.equipe; this.unpaid = [];
     const divCost = () => this.div ? this.div.cost : 0;
@@ -92,6 +92,8 @@ class Game {
         this.schedule = this.buildSchedule(this.day);
       }
       else if (eq.couvert){ eq.couvert = false; this.unpaid.push('Couvert'); }
+      else if (eq.som){ eq.som = false; this.unpaid.push('som'); }
+      else if (eq.tv){ eq.tv = false; this.unpaid.push('TV'); }
       else if (eq.dani){ eq.dani = 0; this.unpaid.push('Dani'); }
       else if (eq.tonhao){ eq.tonhao--; this.unpaid.push('aumento do Tonhão'); }
       else break;
@@ -472,6 +474,7 @@ class Game {
   /* equipe: mudanças à vontade na lojinha, desde que o dinheiro acumulado pague a folha do próximo dia */
   setStaff(key, val){
     const eq = this.save.equipe, old = eq[key];
+    if (key === 'couvert' && val && !couvertOk(this.ponto)) return false;
     eq[key] = val;
     if (payroll(eq) > this.save.bank && payroll(eq) > payroll(Object.assign({}, eq, { [key]:old }))){ eq[key] = old; return false; }
     writeSave(this.save); this.kitchen.slots = STAFF.tonhao.levels[eq.tonhao].slots;

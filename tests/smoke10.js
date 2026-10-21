@@ -51,7 +51,7 @@ cheio(0,'semfim'); { [0,1,2].forEach(()=>naFila()); g.arrT=0; const n0=g.stats.s
 
 // dia inteiro com o bot afiado: o total de grupos não muda e as causas somam as perdas
 { const bot=require('./bot.js')(g,L,{afiado:true}); let sp=0, sch=0, lost=0, by=0;
-  for(let k=0;k<6;k++){ g.save.equipe=L.normSave({equipe:{tonhao:2,dani:3,daniTasks:['pratos','lavar','lixo'],couvert:true}}).equipe; g.save.bank=5000; g.up={pratos:true,tenis:true}; g.save.up=g.up;
+  for(let k=0;k<6;k++){ g.save.equipe=L.normSave({equipe:{tonhao:2,dani:3,daniTasks:['pratos','lavar','lixo'],tv:true,som:true}}).equipe; g.save.bank=5000; g.up={pratos:true,tenis:true}; g.save.up=g.up;
     g.startDay(6); g.begin(); sch+=g.schedule.length; let st=0; while(g.state==='playing'&&st<30000){ bot(); g.update(0.05); st++; }
     sp+=g.stats.spawned; lost+=g.result.lost; by+=Object.values(g.result.lostBy).reduce((a,b)=>a+b,0); }
   ok(sp===sch,'dia 6 inteiro: chegaram todos os '+sch+' grupos (a porta só muda o ritmo)');

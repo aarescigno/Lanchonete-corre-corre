@@ -77,6 +77,7 @@ function render(g, ctx){
   if (menu) items.pop();
   if (g.up.agua) items.push({ y:150, f:() => glowSprite(ctx,g,'agua',ctx => drawAgua(ctx,g,tm,menu)) });
   if (g.save.equipe.couvert && !menu) items.push({ y:528, f:() => drawMusico(ctx,g,tm) });
+  if ((g.save.equipe.tv || g.save.equipe.som) && !menu) items.push({ y:532, f:() => drawAmbiente(ctx,g,tm) });
   if (g.dani.active && !menu) items.push({ y:g.dani.y, f:() => drawDani(ctx,g.dani,tm) });
   items.sort((a,c) => a.y - c.y).forEach(it => it.f());
 

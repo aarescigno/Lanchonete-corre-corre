@@ -1,4 +1,4 @@
-// v5: equipe (Tonhão, Dani, couvert), louça limitada, lixeira que enche, água saborizada, economia
+// v5: equipe (Tonhão, Dani, couvert; TV e som desde a v7.4.3), louça limitada, lixeira que enche, água saborizada, economia
 const load=require('./harness.js');
 let fails=0, total=0; const ok=(c,m)=>{ total++; if(!c){fails++;console.log('FAIL:',m);} else console.log('ok  :',m); };
 const H=load(); const {g,L}=H; const K=k=>({kind:k});
@@ -25,8 +25,10 @@ ok(L.UPGRADES.some(u=>u.id==='agua') && !L.UPGRADES.some(u=>u.id==='jukebox'),'�
 ok(L.payroll(L.normSave({}).equipe)===0,'sem equipe, folha zero');
 ok(L.payroll({tonhao:2,dani:3,couvert:true})===90+135+80,'folha: Tonhão 90 + Dani nível 3 135 + couvert 80');
 ok(L.STAFF.dani.levels[2].pay===L.STAFF.dani.levels[1].pay*1.5 && L.STAFF.dani.levels[3].pay===L.STAFF.dani.levels[2].pay*1.5,'Dani: cada nível paga 50% a mais');
-{ reset({tonhao:1,dani:1,couvert:true},1000); g.save.divulga='boca'; g.startDay(3); g.begin(); ok(g.save.bank===1000-180 && g.paid===180,'folha debitada do dinheiro acumulado ao abrir a lanchonete'); }
-{ reset({tonhao:1,dani:1,couvert:true},50); g.save.divulga='boca'; g.startDay(3); g.begin(); ok(!eq().couvert && !eq().dani && eq().tonhao===1 && g.save.bank===10,'sem dinheiro para todos: dispensa couvert e Dani, paga o resto'); }
+ok(L.payroll({tonhao:0,dani:0,tv:true,som:true})===15+10,'folha: luz da TV 15 + som 10');
+{ reset({tonhao:1,dani:1,tv:true,som:true},1000); g.save.divulga='boca'; g.startDay(3); g.begin(); ok(g.save.bank===1000-125 && g.paid===125,'folha (com a luz da TV e do som) debitada do dinheiro acumulado ao abrir a lanchonete'); }
+{ reset({tonhao:1,dani:1,tv:true,som:true},50); g.save.divulga='boca'; g.startDay(3); g.begin(); ok(!eq().som && !eq().tv && !eq().dani && eq().tonhao===1 && g.save.bank===10 && g.unpaid.join()==='som,TV,Dani','sem dinheiro para todos: desliga som e TV, dispensa a Dani, paga o resto'); }
+{ reset({tonhao:0,dani:1,tv:true,som:true},75); g.save.divulga='boca'; g.startDay(3); g.begin(); ok(!eq().som && eq().tv && eq().dani===1 && g.save.bank===0,'som sai antes da TV, e a TV antes da Dani'); }
 { reset({},100); ok(!g.setStaff('dani',3) && eq().dani===0,'não contrata quem o dinheiro acumulado não paga'); ok(g.setStaff('dani',1),'contrata a Dani com cofre suficiente'); }
 { reset({},0); g.save.divulga='boca'; g.startDay(3); g.begin(); g.money=1000; g.custo=100; g.save.best[3]=800; g.finishDay(); const c=L.contasDia(g.tables);
   ok(g.result.income===1000-100-c && g.save.bank===1000-100-c && g.save.best[3]===1000,'o faturamento vai para o dinheiro acumulado, menos ingredientes e contas (v7)'); }
@@ -148,20 +150,30 @@ ok(L.dishStock(L.DAYS[2])===4 && L.dishStock(L.DAYS[5])===4 && L.dishStock(L.DAY
   const grp=g.spawn({type:'estudante',color:0}); g.seatGroup(grp,g.tables[0]); run(3,true); grp.hearts=2; run(25,true);
   ok(grp.coffee && grp.hearts>=3,'Dani serve cafezinho para mesa com pouca paciência'); }
 
-/* couvert */
-{ reset({couvert:true}); g.resetDay(3); const a=new L.Group(g,'estudante',1,0); a.setState('wantOrder');
+/* couvert: só do nível 3 do salão em diante (v7.4.3); na Garagem (nível 1) sai do save e não dá para contratar */
+ok(L.pontoOf('garagem').nivel===1 && L.STAFF.couvert.nivel===3 && !L.couvertOk(L.pontoOf('garagem')) && L.couvertOk({nivel:3}),'couvert: só do nível 3 em diante; a Garagem é nível 1');
+{ const s=L.normSave({equipe:{couvert:true,taxa:true,tv:true}}); ok(!s.equipe.couvert && s.equipe.taxa && s.equipe.tv,'save com couvert na Garagem: o couvert sai, o resto fica'); }
+{ reset({},5000); ok(!g.setStaff('couvert',true) && !eq().couvert,'na Garagem não dá para contratar o couvert'); }
+/* TV e som (v7.4.3): 5% cada, somados, só nas mesas */
+{ reset({}); g.resetDay(3); const a=new L.Group(g,'estudante',1,0); a.setState('wantOrder'); const p0=a.patPer();
+  eq().tv=true; ok(Math.abs(a.patPer()-p0/0.95)<1e-9,'TV: paciência nas mesas cai 5% mais devagar');
+  eq().som=true; ok(Math.abs(a.patPer()-p0/0.9)<1e-9,'TV e som: 10% (somados)');
+  eq().tv=false; ok(Math.abs(a.patPer()-p0/0.95)<1e-9,'só o som: 5%');
+  eq().tv=true; a.setState('queue'); const q=a.patPer(); eq().tv=false; eq().som=false; ok(q===a.patPer(),'TV e som não mexem na fila'); }
+{ reset({},20); ok(!g.setStaff('tv',true) || L.payroll(eq())<=20,'só liga o que o dinheiro paga'); reset({},12); ok(!g.setStaff('tv',true) && g.setStaff('som',true) && eq().som,'TV (R$ 15) não liga com R$ 12; som (R$ 10) liga'); }
+{ reset({}); g.resetDay(3); const a=new L.Group(g,'estudante',1,0); a.setState('wantOrder'); eq().couvert=true;
   const p=a.patPer(); eq().couvert=false; const p0=a.patPer();
   ok(Math.abs(p-p0/0.8)<1e-9,'couvert: paciência nas mesas cai 20% mais devagar');
   eq().couvert=true; eq().taxa=true; ok(Math.abs(a.patPer()-p0/0.9)<1e-9,'com taxa: eficácia cai pela metade (10%)');
   a.setState('queue'); const q=a.patPer(); eq().couvert=false; ok(q===a.patPer(),'couvert não mexe na fila'); }
-{ reset({couvert:true,taxa:true}); g.startDay(3); g.begin(); g.schedule=[{t:1e9,type:'estudante',color:0}]; g.nextIdx=0;
+{ reset({taxa:true}); eq().couvert=true; g.startDay(3); g.begin(); g.schedule=[{t:1e9,type:'estudante',color:0}]; g.nextIdx=0;
   const grp=g.spawn({type:'familia',color:0}); const t=g.tables.find(x=>x.free&&x.seats>=grp.size); g.seatGroup(grp,t); grp.juiceWant=0; grp.hearts=5; grp.bill=40;
   const m0=g.money; g.lastKind='x'; g.collectBill(grp,t); ok(g.money-m0===Math.round(40*1.5)+3*grp.size,'taxa de couvert: R$ 3 por pessoa na conta'); }
 
 /* bot joga dias 3–7 sem equipe e com equipe completa, com render */
 { const bot=require('./bot.js')(g,L); let err=null; const res=[];
   try{ for(const full of [false,true]) for(let n=3;n<=7;n++){
-    reset(full?{tonhao:2,dani:3,daniTasks:['pratos','lavar','lixo'],couvert:true}:{},5000); g.startDay(n); g.begin(); let st=0;
+    reset(full?{tonhao:2,dani:3,daniTasks:['pratos','lavar','lixo'],tv:true,som:true}:{},5000); g.startDay(n); g.begin(); let st=0;
     while(g.state==='playing'&&st<30000){ bot(); g.update(0.05); if(st%10===0) L.render(g,H.ctx); st++; }
     if(g.state!=='dayend') throw new Error('dia '+n+' não terminou'); res.push(g.result.money); } }catch(e){ err=e; }
   ok(!err,'bot nos dias 3–7 (sem e com equipe), com render'+(err?': '+err.stack:''));
