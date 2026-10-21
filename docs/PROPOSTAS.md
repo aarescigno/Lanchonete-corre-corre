@@ -4,6 +4,16 @@ Registro das ideias e dos retornos de quem jogou, com o texto original, e de ond
 
 ---
 
+## 21/10/2026 — Usuário: cor das cadeiras
+**Origem:** mensagem do usuário, depois da v7.4.2:
+
+> "faltou poder trocar as cores das cadeiras"
+
+**Destino:**
+- **Feito na v7.4.3:** no editor do salão (lojinha, aba Salão), o balãozinho da mesa escolhida ganhou a linha "Cadeiras:" com as 4 cores (vermelha, azul, amarela, verde). Tocar numa troca a cor das cadeiras da mesa, de graça; a mesa continua escolhida e o Desfazer volta a cor.
+
+---
+
 ## 21/10/2026 — Usuário: título da lojinha
 **Origem:** mensagem do usuário:
 

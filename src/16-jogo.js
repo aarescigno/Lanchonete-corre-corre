@@ -562,6 +562,14 @@ class Game {
     Sfx.coin();
     return this.salaoSet(mesas.filter(x => x !== m));
   }
+  /* editor: as cadeiras da mesa i ganham a cor c (de graça; a mesa continua escolhida e dá para desfazer) */
+  pintarMesa(i, c){
+    const mesas = this.save.salao.mesas, m = mesas[i];
+    if (!m || !(c >= 0 && c < CHAIRS.length)) return false;
+    if (m.c === c) return true;
+    const l = mesas.slice(); l[i] = Object.assign({}, m, { c, sel:1 });
+    return this.salaoSet(l, true);
+  }
   /* editor: a mesa i vai para (x, y), se o lugar vale */
   moverMesa(i, x, y){
     const mesas = this.save.salao.mesas, m = mesas[i];
