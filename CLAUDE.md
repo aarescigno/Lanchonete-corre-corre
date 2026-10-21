@@ -39,6 +39,9 @@ Cada parte é um trecho exato do arquivo final (o JS fica todo dentro de um `(fu
 - **Sem branches parados:** todo trabalho termina com PR para o `claude/main` (o branch padrão), merge e o branch apagado, para o `claude/main` ser sempre a versão mais nova (o GitHub Pages publica a partir dele, e o workflow confere `python3 montar.py --check`).
 
 ## Publicar (Artifact do claude.ai)
+- **Só quando o usuário mandar:** publicar no artifact custa tokens (cada chamada relê a conversa inteira). Não publique por conta própria ao terminar uma versão: termine o trabalho no GitHub (PR, merge, branch apagado, como em **Git**, que não muda) e avise que a versão está pronta para publicar. Publique quando o usuário pedir (ex.: "publica o artefato").
+- **Publicar barato:** não leia a página inteira antes (`read` sem `path` traz ~100 mil tokens). A 1ª publicação da sessão é recusada com o diff da versão no ar; se o diff só mostra as suas mudanças, publique de novo o mesmo arquivo (pode ser recusado mais uma vez por ser idêntico; na seguinte, passa). Se o diff mostra mudanças de outra pessoa, junte em `src/` antes.
+- Depois de publicar, registre o número da versão do artifact em `docs/RESUMO.md` (com PR, como o resto).
 - Rode `python3 montar.py` antes; o que se publica é o `lanchonete.html` montado.
 - **URL:** https://claude.ai/artifact/MJxrgDg8S4akvg47SoQAvj. Publique `lanchonete.html` nesse `url`.
 - **Capacidades:** omita `capabilities`, para manter o db do ranking e o `user`.
