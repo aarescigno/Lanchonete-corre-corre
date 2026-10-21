@@ -322,7 +322,7 @@ Também: rever o `smoke7` (toque) e o `smoke10` (fila justa e porta), mais `bala
 
 **Decisões em aberto:**
 - O texto de abertura e o tom do "universo paralelo".
-- Quem é o Seu Zé na história (dono da lojinha e credor?).
+- Quem é o Seu Zé na história (credor?). A lojinha agora é a "Garagem da mãe da Bia" (21/10/2026), então ele não é mais o dono dela.
 - Falha num capítulo: repetir o dia (sugestão) ou o capítulo inteiro?
 
 ---
