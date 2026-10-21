@@ -49,11 +49,11 @@ const LAYOUT = { W, H, QUEUE, DOOR, STATIONS, PLATE_SLOTS, BOUNDS };
 /* ============================================================
    PONTOS (v7.4): o nível do salão é o ponto. Por enquanto só a Garagem; a área
    industrial, a Avenida Brasil e o Terraço Suíça vêm nas etapas 3 e 4 do plano.
-   lugares: teto de lugares; area: onde as mesas podem ficar (a mesa inteira, com
+   nivel: o nível do salão (1 a 4); lugares: teto de lugares; area: onde as mesas podem ficar (a mesa inteira, com
    as cadeiras); espera: cadeiras lá fora (v7.5); cardapio: fator dos preços
    ============================================================ */
 const PONTOS = [
-  { id:'garagem', nome:'Garagem da Bia e do tio Tonhão', lugares:16, aluguel:0, mudanca:0, cardapio:1, area:{ x0:196, y0:150, x1:684, y1:500 }, espera:4 }
+  { id:'garagem', nome:'Garagem da Bia e do tio Tonhão', nivel:1, lugares:16, aluguel:0, mudanca:0, cardapio:1, area:{ x0:196, y0:150, x1:684, y1:500 }, espera:4 }
 ];
 function pontoOf(id){ return PONTOS.find(p => p.id === id) || PONTOS[0]; }
 /* ============================================================
@@ -227,7 +227,11 @@ const STAFF = {
   // com aumento, lava 1 pilha da pia a cada `wash` segundos
   tonhao:  { levels:[ { slots:3, cook:1, crit:0.05, wash:0, pay:0 }, { slots:3, cook:0.85, crit:0.12, wash:7, pay:40 }, { slots:3, cook:0.7, crit:0.2, wash:4, pay:90 } ] },
   dani:    { levels:[ null, { speed:0.5, tasks:2, pay:60 }, { speed:0.65, tasks:2, pay:90 }, { speed:0.8, tasks:3, pay:135 } ] },
-  couvert: { pay:80, fee:3, effect:0.2, feeCut:0.5 }
+  // couvert artístico: só do nível 3 do salão em diante (Avenida Brasil, etapa 3 do plano)
+  couvert: { pay:80, fee:3, effect:0.2, feeCut:0.5, nivel:3 },
+  // ambiente da Garagem (v7.4.3): TV e som ligados o dia todo; o custo é a conta de luz (pay) e entra na folha
+  tv:      { pay:15, effect:0.05 },
+  som:     { pay:10, effect:0.05 }
 };
 const DANI_TASKS = [
   { id:'lixo',   name:'Tirar o lixo',   short:'Lixo' },
@@ -243,10 +247,17 @@ const CRIT = { bonus:10, vipBonus:20 };
 const WASH = { base:0.3, perPile:2.5 };               // segundos na pia
 const TRASH = { cap:6, empty:2, smell:0.3 };         // lixeira: capacidade, tempo para esvaziar, cheiro quando cheia
 function couvertEffect(eq){ return STAFF.couvert.effect * (eq.taxa ? 1 - STAFF.couvert.feeCut : 1); }
+function couvertOk(ponto){ return (ponto || PONTOS[0]).nivel >= STAFF.couvert.nivel; }
+/* ambiente do salão: quanto a paciência nas mesas cai mais devagar (TV, som e couvert se somam) */
+function ambienteEffect(eq){
+  return (eq.tv ? STAFF.tv.effect : 0) + (eq.som ? STAFF.som.effect : 0) + (eq.couvert ? couvertEffect(eq) : 0);
+}
 function payroll(eq){
   let v = STAFF.tonhao.levels[eq.tonhao].pay;
   if (eq.dani) v += STAFF.dani.levels[eq.dani].pay;
   if (eq.couvert) v += STAFF.couvert.pay;
+  if (eq.tv) v += STAFF.tv.pay;
+  if (eq.som) v += STAFF.som.pay;
   return v;
 }
 /* pratos limpos na cozinha: sem limite nos dias 1 e 2; depois, 4; no Turno sem fim, 5 (+1 com o Jogo de pratos) */
@@ -298,7 +309,7 @@ const DIVULGA = [
 const MOVIMENTO = { kit:10, porLugar:0.06 };
 function movimentoSalao(lugares){ return 1 + MOVIMENTO.porLugar * Math.max(0, lugares - MOVIMENTO.kit); }
 const CAIXA_MAX = 14;                                 // livro-caixa (v7.2): quantos dias da carreira ficam guardados
-const VERSAO = 'v7.4.2';                              // vai no resumo do Caixa
+const VERSAO = 'v7.4.3';                              // vai no resumo do Caixa
 const DIVULGA_DIA = 3;                                // antes disso, o movimento é o da inauguração (sem custo)
 function divulgaOf(id){ return DIVULGA.find(d => d.id === id) || DIVULGA[1]; }
 /* contas do dia: o aluguel do ponto (v7.4; a Garagem é da família), mais cada mesa aberta e cada lugar dela */
