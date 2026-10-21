@@ -17,13 +17,21 @@ Registro das ideias e dos retornos de quem jogou, com o texto original, e de ond
 | Nível | Ponto | Ambiente | Paciência nas mesas | Custo |
 |---|---|---|---|---|
 | 1 | Garagem da mãe da Bia | TV de tubo na Rede Esfera e som na rádio Velha Brasil FM (**feito na v7.4.4**) | 5% cada (10% os dois) | luz: R$ 15 e R$ 10/dia |
-| 2 | Lanchonete na área industrial | 3 televisores com playlist de sertanejo, **com anúncios** | 10% | só a luz (valor a definir) |
-| 2 | | a mesma playlist **sem anúncios** | 15% | R$ 20/dia (mais a luz?) |
+| 2 | Lanchonete na área industrial | 3 televisores com playlist de sertanejo, **com anúncios** | 10% | a luz (valor a definir) |
+| 2 | | a mesma playlist **sem anúncios** | 15% | R$ 20/dia mais a luz |
 | 3 | Restaurante na Avenida Brasil | couvert artístico como o de hoje (músico; taxa opcional de R$ 3 por pessoa, que corta o efeito à metade) | 20% | R$ 80/dia |
-| 4 | Terraço Suíça | couvert com **quarteto de cordas** | 20% | a definir |
-| 4 | | couvert com **pianista**: soma ao **nível de luxo** do ambiente | 20% | diária a definir + manutenção do piano |
+| 4 | Terraço Suíça | couvert com **quarteto de cordas** | 20% | diária a definir |
+| 4 | | couvert com **pianista**: soma ao **nível de luxo** do ambiente | 20% | diária a definir + manutenção diária do piano |
 
-**Decisões em aberto** (para a sessão da etapa 3 ou 4 confirmar): se o ambiente de um nível continua disponível nos níveis de cima (por exemplo, a TV da Garagem na área industrial) ou é trocado; se os efeitos de um mesmo nível se somam (TV e som somam desde a v7.4.4); se "com anúncios" é de graça (só a luz) e se os R$ 20 da versão sem anúncios já incluem a luz; os valores do quarteto, do pianista e da manutenção do piano (por dia ou de vez em quando, como os imprevistos da etapa 2); quanto o pianista soma ao nível de luxo.
+**Respostas do usuário às decisões em aberto** (21/10, na mesma conversa):
+> são trocados, os bonus são perdidos ao avançar
+> tem que incluir valor da luz também
+> os custos do quarteto e pianista estão a definir, manutenção diária, não estádefinida pontuação do luxo ainda... deixar para o futuro
+
+- **Ao mudar de ponto, o ambiente é trocado:** o do nível de baixo sai (a TV e o som da Garagem não vão para a área industrial), e os bônus dele se perdem. Cada ponto só tem o ambiente do seu nível.
+- **Luz das TVs do nível 2:** as duas versões pagam a luz dos 3 televisores. A versão sem anúncios custa R$ 20/dia **mais** a luz. (Leitura da sessão: "incluir a luz também" = somar a luz aos R$ 20; se a ideia era R$ 20 já com a luz, é só ajustar na etapa 3.)
+- **Nível 4:** a diária do quarteto e a do pianista ficam a definir; a manutenção do piano é **diária**; quanto o pianista soma ao nível de luxo fica para o futuro (o nível de luxo ainda não tem pontuação).
+- Continua em aberto: se os efeitos de um mesmo nível se somam (TV e som somam desde a v7.4.4) e o valor da luz das TVs do nível 2.
 
 ---
 
