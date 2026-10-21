@@ -1,7 +1,7 @@
 # Resumo do projeto e das alterações (até 21/10/2026)
 
 ## Estado atual
-- **Versão:** v7.4.3 (cor das cadeiras de cada mesa no editor do salão), sobre a v7.4.2 (balão de "aguardando o preparo" com panela no fogo, sem anel), publicada como Versão 29 do artifact https://claude.ai/artifact/MJxrgDg8S4akvg47SoQAvj (privado).
+- **Versão:** v7.4.3 (cor das cadeiras de cada mesa no editor do salão), sobre a v7.4.2 (balão de "aguardando o preparo" com panela no fogo, sem anel), publicada como Versão 31 do artifact https://claude.ai/artifact/MJxrgDg8S4akvg47SoQAvj (privado).
 - **Branch:** `claude/main` (renomeado pelo usuário; o antigo `claude/intelligent-gauss-3owv29` não existe mais) no repositório `aarescigno/Lanchonete-corre-corre`.
 - **Arquivos publicados:** `lanchonete.html` (página), mais `versoes/v1.html` a `versoes/v7.4.2.html`, abertos pelo painel Versões.
 - **Capacidades declaradas (mantidas ao republicar sem `capabilities`):**
