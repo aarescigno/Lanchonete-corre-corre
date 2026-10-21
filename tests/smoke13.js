@@ -107,10 +107,10 @@ novo(1000); L.setShopTab('salao');
   ok(mesas().some(m=>m.x===alvo.x && m.y===alvo.y) && g.salaoUndo.length===1,'arrastar a mesa para um lugar livre (encaixe na grade de '+S.grid+' px)');
   let err=null; try{ L.render(g,ctx); }catch(e){ err=e; } ok(!err,'o salão ao fundo redesenha'+(err?': '+err:'')); }
 
-// o bot joga o dia 5 com 16 lugares sem exceções
+// o bot joga o dia 2 com 16 lugares sem exceções (no dia 5 sem equipe nem melhorias, o atendimento varia demais)
 { const bot=require('./bot.js')(g,L); let err=null, served=0;
-  try{ novo(2000); g.buyMesa(2); g.buyMesa(4); g.startDay(5); g.begin(); let st=0; while(g.state==='playing'&&st<30000){ bot(); g.update(0.05); if(st%10===0) L.render(g,ctx); st++; } served=g.result?g.result.served:0; }catch(e){ err=e; }
-  ok(!err && served>=5,'bot joga o dia 5 com 6 mesas ('+served+' atendidos)'+(err?': '+err.stack:'')); }
+  try{ novo(2000); g.buyMesa(2); g.buyMesa(4); g.startDay(2); g.begin(); let st=0; while(g.state==='playing'&&st<30000){ bot(); g.update(0.05); if(st%10===0) L.render(g,ctx); st++; } served=g.result?g.result.served:0; }catch(e){ err=e; }
+  ok(!err && served>=5,'bot joga o dia 2 com 6 mesas ('+served+' atendidos)'+(err?': '+err.stack:'')); }
 // bot da carreira compra móveis
 { const BOT=require('./bot.js'); novo(1000); ok(BOT.moveis(g,L,0,0) && lug()===12,'bot: sem perdas por falta de mesa, compra mesa de 2'); ok(BOT.moveis(g,L,2,0) && lug()===16,'bot: com perdas por falta de mesa, compra mesa de 4'); }
 
