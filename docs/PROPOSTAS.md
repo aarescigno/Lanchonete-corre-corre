@@ -4,6 +4,15 @@ Registro das ideias e dos retornos de quem jogou, com o texto original, e de ond
 
 ---
 
+## 21/10/2026 — Usuário: modo dev sem painel à parte
+**Origem:** mensagem do usuário, depois da 1ª versão do modo dev (com painel próprio):
+
+> Faltou incluir nesse modo dev a possibilidade de todos os restantes, né? Tipo, a equipe completa, todas as outras coisas que são upgrades ali, estar disponíveis no menu. Eu tinha pensado em ter um menu, como se fosse um menu de upgrades, de ir para o próximo nível, essas coisas, né? Em que todas as coisas estivessem ali, habilitáveis. Em vez de ser um menu à parte do modo dev, sabe? Só põe o modo dev escrito em todo lugar e vira modo dev. Com o jogo praticamente igual.
+
+**Destino:** v7.5.1, refeita antes de publicar (`docs/spec-v7.5.1.md`): saiu o painel; o jogo fica igual, com "Modo dev" no selo e no alto da tela. A lojinha abre antes de qualquer dia (até o 1) com tudo liberado: as 7 melhorias de graça (liga e desliga), equipe completa (o dinheiro volta a R$ 10.000 a cada lojinha), couvert mesmo na Garagem e divulgação desde o dia 1. "Próximo nível" do salão ainda não existe (só a Garagem): quando vierem os pontos das etapas 3 e 4, entram liberados no modo dev.
+
+---
+
 ## 21/10/2026 — Usuário: modo dev
 **Origem:** mensagem do usuário, depois da v7.5:
 

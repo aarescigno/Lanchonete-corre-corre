@@ -31,7 +31,7 @@ class Game {
     this.day = n === 0 ? ENDLESS : DAYS[n-1];
     this.money = 0; this.custo = 0; this.contas = 0; this.paidDiv = 0;
     // divulgação (v7, do dia 3 em diante na carreira): quanto da freguesia do dia aparece
-    this.div = (n >= DIVULGA_DIA) ? divulgaOf(this.save.divulga) : null;
+    this.div = divulgaAberta(n) ? divulgaOf(this.save.divulga) : null;
     this.divF = this.div ? rand(this.div.groups[0], this.div.groups[1]) : 1;
     this.clock = this.day.time;
     this.cmdFree = CMD.map((c,i) => i);
@@ -552,6 +552,7 @@ class Game {
   goShop(n){
     this.shopNext = clamp(n || this.day.n + 1, 1, 7);
     this.shopBought = this.boughtFor === this.shopNext;
+    if (DEV.on && this.save.bank < DEV.bank){ this.save.bank = DEV.bank; writeSave(this.save); }   // modo dev: o dinheiro não acaba
     this.salaoSel = -1; this.salaoUndo = []; this.salaoMsg = '';
     this.resetDay(this.shopNext);   // o salão ao fundo já mostra o dia que vem
     this.setState('shop');
@@ -569,7 +570,7 @@ class Game {
   /* divulgação (v7): escolhida na lojinha, paga junto com a folha ao abrir o dia */
   setDivulga(id){
     const d = DIVULGA.find(x => x.id === id);
-    if (!d || this.shopNext < DIVULGA_DIA || (d.cost && this.payroll() + d.cost > this.save.bank)) return false;
+    if (!d || !divulgaAberta(this.shopNext) || (d.cost && this.payroll() + d.cost > this.save.bank)) return false;
     this.save.divulga = id; writeSave(this.save);
     if (this.state === 'shop') this.resetDay(this.shopNext);
     Sfx.ok(); return true;
@@ -708,7 +709,6 @@ class Game {
     this.buildTables();
     this.kitchen.reset(); this.dani.reset();
   }
-  devBank(){ if (!DEV.on) return false; this.save.bank = DEV.bank; writeSave(this.save); return true; }
   /* liga ou desliga uma melhoria de graça; os Tênis de corrida andam junto com os Tênis novos */
   devToggle(id){
     const u = UPGRADES.find(x => x.id === id);

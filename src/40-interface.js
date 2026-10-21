@@ -8,7 +8,7 @@ const stage = $('stage');
 const game = new Game(canvas, ctx);
 let selectedDay = Math.min(game.unlocked, 7);
 
-const SCREENS = ['ov-menu','ov-how','ov-intro','ov-pause','ov-end','ov-shop','ov-final','ov-endless','ov-rank','ov-ver','ov-app','ov-dev'];
+const SCREENS = ['ov-menu','ov-how','ov-intro','ov-pause','ov-end','ov-shop','ov-final','ov-endless','ov-rank','ov-ver','ov-app'];
 function showOnly(ids){
   SCREENS.forEach(id => { const el = $(id); if (!el) return; if (ids.indexOf(id) >= 0) el.classList.add('show'); else el.classList.remove('show'); });
 }
@@ -52,25 +52,13 @@ function buildChips(){
   }
 }
 
-/* ---------- modo dev: selo da versão e painel ---------- */
+/* ---------- modo dev: "Modo dev" no selo da versão e no alto da tela, e o link de sair ---------- */
 function devSync(){
-  const t = $('vtag'); if (!t) return;
-  t.textContent = VERSAO + (DEV.on ? ' · dev' : '');
-  t.classList[DEV.on ? 'add' : 'remove']('dev');
+  const t = $('vtag'), b = $('devbadge'), o = $('btn-dev-off');
+  if (t){ t.textContent = VERSAO + (DEV.on ? ' · dev' : ''); t.classList[DEV.on ? 'add' : 'remove']('dev'); }
+  if (b) b.style.display = DEV.on ? '' : 'none';
+  if (o) o.style.display = DEV.on ? '' : 'none';
 }
-function buildDev(){
-  $('dev-bank').textContent = fmt(game.save.bank);
-  const box = $('dev-ups');
-  clearEl(box);
-  UPGRADES.forEach(u => {
-    const b = el('button', null, u.name);
-    b.type = 'button';
-    b.setAttribute('aria-pressed', game.up[u.id] ? 'true' : 'false');
-    b.addEventListener('click', () => { Sfx.tap(); if (game.devToggle(u.id)) buildDev(); });
-    box.appendChild(b);
-  });
-}
-function openDev(){ devSync(); buildDev(); showOnly(['ov-dev']); }
 
 /* ---------- Como jogar ---------- */
 function tipCanvas(draw){

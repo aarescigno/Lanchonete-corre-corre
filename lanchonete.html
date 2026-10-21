@@ -117,13 +117,7 @@ table.cx .rs{font-size:inherit}
 .vtag{position:absolute;top:calc(var(--u)*10);right:calc(var(--u)*14);font:800 max(11px,calc(var(--u)*13)) var(--fb);color:#5b5446;background:var(--creme);border:calc(var(--u)*2) solid var(--tinta);border-radius:999px;padding:0 calc(var(--u)*9);line-height:1.6}
 .vtag{-webkit-user-select:none;user-select:none;touch-action:manipulation;-webkit-tap-highlight-color:transparent}
 .vtag.dev{background:var(--alerta);color:#fff}
-.devpanel{width:calc(var(--u)*640)}
-.devrow{align-items:center;justify-content:center;gap:calc(var(--u)*14)}
-#dev-bank{font:400 max(16px,calc(var(--u)*24)) var(--fd);color:var(--ok)}
-.devups{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:calc(var(--u)*8);margin:calc(var(--u)*6) 0}
-.devups button{font:800 max(11px,calc(var(--u)*14)) var(--fb);line-height:1.2;color:var(--tinta);background:var(--azulejo);border:calc(var(--u)*3) solid var(--tinta);border-radius:calc(var(--u)*12);padding:calc(var(--u)*6) calc(var(--u)*12);min-height:max(44px,calc(var(--u)*42));cursor:pointer}
-.devups button[aria-pressed="true"]{background:var(--faixa);color:#fff}
-.devups button:focus-visible{outline:3px solid var(--faixa);outline-offset:2px}
+.devbadge{position:absolute;left:50%;top:calc(var(--u)*4);transform:translateX(-50%);z-index:20;pointer-events:none;font:800 max(10px,calc(var(--u)*13)) var(--fb);letter-spacing:.08em;text-transform:uppercase;color:#fff;background:var(--alerta);border:calc(var(--u)*2) solid var(--tinta);border-radius:999px;padding:0 calc(var(--u)*10);line-height:1.5;opacity:.92}
 .menu-panel .row.tight{margin-top:calc(var(--u)*8);gap:calc(var(--u)*10)}
 .menu-panel .btn{font-size:max(14px,calc(var(--u)*20));padding:calc(var(--u)*6) calc(var(--u)*16)}
 .ver-ico{margin-left:auto;align-self:flex-end;width:max(40px,calc(var(--u)*40));height:max(40px,calc(var(--u)*40));display:flex;align-items:center;justify-content:center;border-radius:50%;border:calc(var(--u)*2) solid rgba(34,32,28,.3);background:transparent;color:#7a7263;cursor:pointer;padding:0;transition:color .15s,background .15s,border-color .15s}
@@ -259,6 +253,7 @@ table.rank tr.me td{background:#fbe7a8}
         </div>
         <div class="links">
           <button class="link" id="btn-reset">Zerar progresso</button>
+          <button class="link" id="btn-dev-off" style="display:none">Sair do modo dev</button>
           <button class="ver-ico" id="btn-app" title="Instalar no celular" aria-label="Instalar no celular (Android e iPhone)">
             <svg viewBox="0 0 24 24" width="22" height="22" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><rect x="6.5" y="2.5" width="11" height="19" rx="2.5"/><path d="M10.5 18.5h3"/><path d="M12 6.5v7"/><path d="M9 10.8l3 3 3-3"/></svg>
           </button>
@@ -414,23 +409,11 @@ table.rank tr.me td{background:#fbe7a8}
       </div>
     </div>
 
-    <div class="ov" id="ov-dev">
-      <div class="panel devpanel">
-        <h2>Modo dev</h2>
-        <p class="small">Save à parte: o seu progresso de verdade fica guardado e volta quando você sair do modo dev. Os 7 dias ficam liberados e o ranking fica de fora.</p>
-        <div class="lbl">Dinheiro</div>
-        <div class="row tight devrow"><b id="dev-bank"></b><button class="btn alt" id="btn-dev-bank" type="button">Repor R$ 10.000</button></div>
-        <div class="lbl">Melhorias: toque para ligar ou desligar</div>
-        <div class="devups" id="dev-ups" role="group" aria-label="Melhorias"></div>
-        <div class="row"><button class="btn go" id="btn-dev-close">Fechar</button><button class="btn alt" id="btn-dev-off">Sair do modo dev</button></div>
-      </div>
-    </div>
-
     <div class="ov" id="ov-ver">
       <div class="panel">
         <h2>Versões</h2>
         <ul class="verlist">
-          <li><b>v7.5.1</b><span class="cur">versão atual</span><br>21/10/2026 &mdash; Modo dev, para testar: 10 toques no selo da versão liberam os 7 dias, R$ 10.000 e as melhorias ligadas e desligadas à vontade, num save à parte (fora do ranking).</li>
+          <li><b>v7.5.1</b><span class="cur">versão atual</span><br>21/10/2026 &mdash; Modo dev, para testar: 10 toques no selo da versão ligam e desligam. O jogo fica igual, com "Modo dev" na tela, os 7 dias liberados, R$ 10.000 que não acabam e tudo liberado na lojinha (até antes do dia 1): melhorias de graça, liga e desliga; equipe completa, couvert e divulgação. Usa um save à parte e fica fora do ranking.</li>
           <li><b>v7.5</b><br>21/10/2026 &mdash; A espera foi para a calçada: a tela rola (arraste o fundo, use as abinhas do alto ou arraste o grupo até a borda; 2 toques no grupo levam ao salão), 4 bancos lá fora com tablet, toldo e vaso, e a Máquina de suco no lugar da Água saborizada: quem espera pede no tablet, a Bia (ou a Dani) leva e o suco entra na conta.<br><a href="versoes/v7.5.html" target="_blank" rel="noopener">Abrir a v7.5</a></li>
           <li><b>v7.4.4</b><br>21/10/2026 &mdash; Na Garagem, TV e som no lugar do couvert: a TV de tubo na Rede Esfera e o som na rádio Velha Brasil FM deixam a paciência nas mesas cair 5% mais devagar cada um, pagando só a luz (aba Equipe). O couvert artístico fica para o restaurante da Avenida Brasil.<br><a href="versoes/v7.4.4.html" target="_blank" rel="noopener">Abrir a v7.4.4</a></li>
           <li><b>v7.4.3</b><br>21/10/2026 &mdash; Entre os dias, na aba Salão: toque numa mesa para trocar a cor das cadeiras, de graça.<br><a href="versoes/v7.4.3.html" target="_blank" rel="noopener">Abrir a v7.4.3</a></li>
@@ -451,6 +434,7 @@ table.rank tr.me td{background:#fbe7a8}
         <div class="row"><button class="btn go" id="btn-ver-close">Fechar</button></div>
       </div>
     </div>
+    <div class="devbadge" id="devbadge" style="display:none">Modo dev</div>
   </div>
   <div id="rotate" role="status">Gire o celular para jogar melhor</div>
 </div>
@@ -714,7 +698,7 @@ const CRIT = { bonus:10, vipBonus:20 };
 const WASH = { base:0.3, perPile:2.5 };               // segundos na pia
 const TRASH = { cap:6, empty:2, smell:0.3 };         // lixeira: capacidade, tempo para esvaziar, cheiro quando cheia
 function couvertEffect(eq){ return STAFF.couvert.effect * (eq.taxa ? 1 - STAFF.couvert.feeCut : 1); }
-function couvertOk(ponto){ return (ponto || PONTOS[0]).nivel >= STAFF.couvert.nivel; }
+function couvertOk(ponto){ return DEV.on || (ponto || PONTOS[0]).nivel >= STAFF.couvert.nivel; }   // no modo dev, em qualquer ponto
 /* ambiente do salão: quanto a paciência nas mesas cai mais devagar (TV, som e couvert se somam) */
 function ambienteEffect(eq){
   return (eq.tv ? STAFF.tv.effect : 0) + (eq.som ? STAFF.som.effect : 0) + (eq.couvert ? couvertEffect(eq) : 0);
@@ -780,6 +764,7 @@ function movimentoSalao(lugares){ return 1 + MOVIMENTO.porLugar * Math.max(0, lu
 const CAIXA_MAX = 14;                                 // livro-caixa (v7.2): quantos dias da carreira ficam guardados
 const VERSAO = 'v7.5.1';                              // vai no resumo do Caixa
 const DIVULGA_DIA = 3;                                // antes disso, o movimento é o da inauguração (sem custo)
+function divulgaAberta(n){ return DEV.on || n >= DIVULGA_DIA; }   // no modo dev, desde o dia 1
 function divulgaOf(id){ return DIVULGA.find(d => d.id === id) || DIVULGA[1]; }
 /* contas do dia: o aluguel do ponto (v7.4; a Garagem é da família), mais cada mesa aberta e cada lugar dela */
 function contasDia(tables, ponto){
@@ -996,8 +981,9 @@ function lsSet(k, v){
   MEM[k] = v;
   try { localStorage.setItem(k, v); } catch(e) {}
 }
-/* modo dev (v7.5.1): 10 toques no selo da versão. Usa um save à parte (o progresso de verdade fica guardado e volta
-   ao sair), com os 7 dias liberados e R$ 10.000; as melhorias ligam e desligam à vontade e o ranking fica de fora */
+/* modo dev (v7.5.1): 10 toques no selo da versão ligam e desligam. O jogo fica igual, com um save à parte (o progresso
+   de verdade fica guardado e volta ao sair), os 7 dias liberados, R$ 10.000 que não acabam (a lojinha repõe) e tudo
+   liberado na lojinha, até antes do dia 1: melhorias de graça (liga e desliga), couvert e divulgação. Ranking de fora */
 const DEV = { on: lsGet(LS.dev) === '1', bank: 10000, toques: 10 };
 function saveKey(){ return DEV.on ? LS.devSave : LS.save; }
 /* o couvert só vale do nível 3 do salão em diante: num ponto abaixo, sai */
@@ -1801,7 +1787,7 @@ class Game {
     this.day = n === 0 ? ENDLESS : DAYS[n-1];
     this.money = 0; this.custo = 0; this.contas = 0; this.paidDiv = 0;
     // divulgação (v7, do dia 3 em diante na carreira): quanto da freguesia do dia aparece
-    this.div = (n >= DIVULGA_DIA) ? divulgaOf(this.save.divulga) : null;
+    this.div = divulgaAberta(n) ? divulgaOf(this.save.divulga) : null;
     this.divF = this.div ? rand(this.div.groups[0], this.div.groups[1]) : 1;
     this.clock = this.day.time;
     this.cmdFree = CMD.map((c,i) => i);
@@ -2322,6 +2308,7 @@ class Game {
   goShop(n){
     this.shopNext = clamp(n || this.day.n + 1, 1, 7);
     this.shopBought = this.boughtFor === this.shopNext;
+    if (DEV.on && this.save.bank < DEV.bank){ this.save.bank = DEV.bank; writeSave(this.save); }   // modo dev: o dinheiro não acaba
     this.salaoSel = -1; this.salaoUndo = []; this.salaoMsg = '';
     this.resetDay(this.shopNext);   // o salão ao fundo já mostra o dia que vem
     this.setState('shop');
@@ -2339,7 +2326,7 @@ class Game {
   /* divulgação (v7): escolhida na lojinha, paga junto com a folha ao abrir o dia */
   setDivulga(id){
     const d = DIVULGA.find(x => x.id === id);
-    if (!d || this.shopNext < DIVULGA_DIA || (d.cost && this.payroll() + d.cost > this.save.bank)) return false;
+    if (!d || !divulgaAberta(this.shopNext) || (d.cost && this.payroll() + d.cost > this.save.bank)) return false;
     this.save.divulga = id; writeSave(this.save);
     if (this.state === 'shop') this.resetDay(this.shopNext);
     Sfx.ok(); return true;
@@ -2478,7 +2465,6 @@ class Game {
     this.buildTables();
     this.kitchen.reset(); this.dani.reset();
   }
-  devBank(){ if (!DEV.on) return false; this.save.bank = DEV.bank; writeSave(this.save); return true; }
   /* liga ou desliga uma melhoria de graça; os Tênis de corrida andam junto com os Tênis novos */
   devToggle(id){
     const u = UPGRADES.find(x => x.id === id);
@@ -4130,7 +4116,7 @@ const stage = $('stage');
 const game = new Game(canvas, ctx);
 let selectedDay = Math.min(game.unlocked, 7);
 
-const SCREENS = ['ov-menu','ov-how','ov-intro','ov-pause','ov-end','ov-shop','ov-final','ov-endless','ov-rank','ov-ver','ov-app','ov-dev'];
+const SCREENS = ['ov-menu','ov-how','ov-intro','ov-pause','ov-end','ov-shop','ov-final','ov-endless','ov-rank','ov-ver','ov-app'];
 function showOnly(ids){
   SCREENS.forEach(id => { const el = $(id); if (!el) return; if (ids.indexOf(id) >= 0) el.classList.add('show'); else el.classList.remove('show'); });
 }
@@ -4174,25 +4160,13 @@ function buildChips(){
   }
 }
 
-/* ---------- modo dev: selo da versão e painel ---------- */
+/* ---------- modo dev: "Modo dev" no selo da versão e no alto da tela, e o link de sair ---------- */
 function devSync(){
-  const t = $('vtag'); if (!t) return;
-  t.textContent = VERSAO + (DEV.on ? ' · dev' : '');
-  t.classList[DEV.on ? 'add' : 'remove']('dev');
+  const t = $('vtag'), b = $('devbadge'), o = $('btn-dev-off');
+  if (t){ t.textContent = VERSAO + (DEV.on ? ' · dev' : ''); t.classList[DEV.on ? 'add' : 'remove']('dev'); }
+  if (b) b.style.display = DEV.on ? '' : 'none';
+  if (o) o.style.display = DEV.on ? '' : 'none';
 }
-function buildDev(){
-  $('dev-bank').textContent = fmt(game.save.bank);
-  const box = $('dev-ups');
-  clearEl(box);
-  UPGRADES.forEach(u => {
-    const b = el('button', null, u.name);
-    b.type = 'button';
-    b.setAttribute('aria-pressed', game.up[u.id] ? 'true' : 'false');
-    b.addEventListener('click', () => { Sfx.tap(); if (game.devToggle(u.id)) buildDev(); });
-    box.appendChild(b);
-  });
-}
-function openDev(){ devSync(); buildDev(); showOnly(['ov-dev']); }
 
 /* ---------- Como jogar ---------- */
 function tipCanvas(draw){
@@ -4550,7 +4524,7 @@ function buildSalao(grid){
 }
 /* aba Divulgação (v7): escolha do dia, paga junto com a folha ao abrir; e o resumo das contas do dia */
 function buildDivulga(grid){
-  const n = game.shopNext, open = n >= DIVULGA_DIA, cur = game.save.divulga;
+  const n = game.shopNext, open = divulgaAberta(n), cur = game.save.divulga;
   DIVULGA.forEach(d => {
     const on = open && cur === d.id;
     const c = staffCard(upgradeIcon('div-' + d.id), d.name, (d.cost ? fmt(d.cost) + ' por dia. ' : 'Grátis. ') + d.desc);
@@ -4659,9 +4633,9 @@ function buildShop(){
   clearEl(grid);
   segSync('shop-tabs', shopTab);
   $('shop-bank').textContent = fmt(game.save.bank);
-  $('shop-limit').textContent = DEV.on ? 'Modo dev: ligue e desligue as melhorias de graça.' : game.shopBought ? 'Melhoria do dia ' + game.shopNext + ' já escolhida.' : 'Você pode levar 1 melhoria antes do dia ' + game.shopNext + '.';
+  $('shop-limit').textContent = DEV.on ? 'Modo dev: tudo liberado; melhorias de graça, ligue e desligue à vontade.' : game.shopBought ? 'Melhoria do dia ' + game.shopNext + ' já escolhida.' : 'Você pode levar 1 melhoria antes do dia ' + game.shopNext + '.';
   $('btn-shop-go').textContent = 'Começar o dia ' + game.shopNext;
-  const f = payroll(game.save.equipe), dv = game.shopNext >= DIVULGA_DIA ? divulgaOf(game.save.divulga) : null;
+  const f = payroll(game.save.equipe), dv = divulgaAberta(game.shopNext) ? divulgaOf(game.save.divulga) : null;
   $('shop-folha').textContent = (f ? 'Folha ' + fmt(f) : 'Sem folha') + (dv ? ' + ' + dv.name.toLowerCase() + ' ' + fmt(dv.cost) : '') + ' ao abrir; contas ' + fmt(contasDia(game.tables)) + ' e ingredientes no fim do dia. A meta é o lucro.';
   grid.className = 'shopgrid' + (shopTab === 'salao' || shopTab === 'caixa' ? ' ' + shopTab : '');
   ['salao', 'caixa'].forEach(k => $('ov-shop').classList[shopTab === k ? 'add' : 'remove'](k));
@@ -4669,8 +4643,8 @@ function buildShop(){
   if (shopTab === 'salao') return buildSalao(grid);
   if (shopTab === 'divulga') return buildDivulga(grid);
   if (shopTab === 'caixa') return buildCaixa(grid);
-  // os Tênis de corrida (v7.3) só aparecem depois dos Tênis novos, no lugar deles (a grade continua com 6)
-  UPGRADES.filter(u => u.req ? game.up[u.req] : !(game.up[u.id] && UPGRADES.some(v => v.req === u.id))).forEach(u => {
+  // os Tênis de corrida (v7.3) só aparecem depois dos Tênis novos, no lugar deles (a grade continua com 6); no modo dev, todas
+  UPGRADES.filter(u => DEV.on || (u.req ? game.up[u.req] : !(game.up[u.id] && UPGRADES.some(v => v.req === u.id)))).forEach(u => {
     const own = !!game.up[u.id];
     const card = el('div', 'item' + (own ? ' own' : ''));
     card.appendChild(upgradeIcon(u.id));
@@ -4872,10 +4846,10 @@ game.hooks.state = function(s){
   else if (s === 'endlessend'){ buildEndless(); showOnly(['ov-endless']); }
 };
 
-/* carreira: do dia 2 em diante, a lojinha abre antes da introdução do dia */
+/* carreira: do dia 2 em diante (no modo dev, desde o dia 1), a lojinha abre antes da introdução do dia */
 function playCareer(n){
   selectedDay = n;
-  if (n >= 2) game.goShop(n); else game.startDay(n);
+  if (n >= 2 || DEV.on) game.goShop(n); else game.startDay(n);
 }
 function on(id, fn){ const e = $(id); if (e) e.addEventListener('click', fn); }
 on('btn-play',       () => { Sfx.init(); Sfx.resume(); Sfx.tap(); playCareer(selectedDay); });
@@ -4885,21 +4859,20 @@ on('btn-endless',    () => { Sfx.init(); Sfx.resume(); Sfx.tap(); game.startEndl
 on('btn-rank',       () => { Sfx.init(); Sfx.resume(); Sfx.tap(); openRank('ov-menu'); });
 on('btn-ver',        () => { Sfx.tap(); showOnly(['ov-ver']); });
 on('btn-ver-close',  () => { Sfx.tap(); showOnly(['ov-menu']); });
-/* modo dev: 10 toques seguidos no selo da versão (no máximo 1,5 s entre um e outro) ligam; ligado, 1 toque abre o painel */
+/* modo dev: 10 toques seguidos no selo da versão (no máximo 1,5 s entre um e outro) ligam e desligam */
+function devSet(on){ game.setDev(on); selectedDay = on ? 7 : Math.min(7, game.unlocked); game.setState('menu'); }
 (function(){
   const t = $('vtag'); if (!t) return;
   let n = 0, prev = 0;
   t.addEventListener('click', () => {
-    if (DEV.on){ Sfx.init(); Sfx.tap(); openDev(); return; }
     const now = Date.now();
     n = (now - prev < 1500) ? n + 1 : 1; prev = now;
     if (n < DEV.toques) return;
-    n = 0; Sfx.init(); Sfx.ok(); game.setDev(true); selectedDay = 7; buildChips(); openDev();
+    n = 0; Sfx.init(); if (DEV.on) Sfx.tap(); else Sfx.ok();
+    devSet(!DEV.on);
   });
 })();
-on('btn-dev-bank',   () => { Sfx.tap(); if (game.devBank()) buildDev(); });
-on('btn-dev-close',  () => { Sfx.tap(); game.setState('menu'); });
-on('btn-dev-off',    () => { Sfx.tap(); game.setDev(false); selectedDay = Math.min(7, game.unlocked); game.setState('menu'); });
+on('btn-dev-off',    () => { Sfx.tap(); devSet(false); });
 /* instalar no celular: passo a passo; já instalado (tela cheia ou standalone), o ícone some */
 on('btn-app',        () => { Sfx.init(); Sfx.tap(); $('app-msg').textContent = ''; showOnly(['ov-app']); });
 on('btn-app-close',  () => { Sfx.tap(); showOnly(['ov-menu']); });
@@ -4984,7 +4957,7 @@ fit();
 try { Rank.init(); } catch(e) {}
 game.setState('menu');
 window.__game = game;
-window.__lcc = { setShopTab: v => { shopTab = v; buildShop(); }, FILA_JUSTA, PORTA, CHAIRS, PAT, CONTAS, INGRED, MOVIMENTO, movimentoSalao, DIVULGA, DIVULGA_DIA, divulgaOf, contasDia, bomGoal, SALAO, PONTOS, pontoOf, MESA, mesaBox, mesaPreco, salaoLugares, mesaProblema, salaoCaminho, salaoProblema, salaoOrdena, salaoAuto, salaoVaga, salaoPerto, salaoKit, salaoDevolucao, SALAO_SEMFIM, normSalao, setObst, OBST, pathOk, MAQUINA, CALCADA, CAM, ABAS, esperaAp, tableApproach, CRIT, STAFF, DANI_TASKS, DANI_HANDS, daniTaskOk, TRASH, WASH, payroll, couvertEffect, couvertOk, ambienteEffect, dishStock, normSave, Helper, JUICE, KITCHEN_SLOTS, handLayout, trayOk, Game, Group, Table, Kitchen, Waitress, BIA_SPEED, DAYS, UPGRADES, CUSTOMER_TYPES, LAYOUT, PAL, Sfx, findPath, render, Rank, sortRows, cleanName, normName, CMD, ENDLESS, VIP, rk, renderRank, openRank, closeRank, LS, lsGet, lsSet, loadSave, DEV, saveKey, devSync, openDev, CAIXA_MAX, VERSAO, normCaixa, caixaResumo, caixaTotais, copyText };
+window.__lcc = { setShopTab: v => { shopTab = v; buildShop(); }, FILA_JUSTA, PORTA, CHAIRS, PAT, CONTAS, INGRED, MOVIMENTO, movimentoSalao, DIVULGA, DIVULGA_DIA, divulgaOf, contasDia, bomGoal, SALAO, PONTOS, pontoOf, MESA, mesaBox, mesaPreco, salaoLugares, mesaProblema, salaoCaminho, salaoProblema, salaoOrdena, salaoAuto, salaoVaga, salaoPerto, salaoKit, salaoDevolucao, SALAO_SEMFIM, normSalao, setObst, OBST, pathOk, MAQUINA, CALCADA, CAM, ABAS, esperaAp, tableApproach, CRIT, STAFF, DANI_TASKS, DANI_HANDS, daniTaskOk, TRASH, WASH, payroll, couvertEffect, couvertOk, ambienteEffect, dishStock, normSave, Helper, JUICE, KITCHEN_SLOTS, handLayout, trayOk, Game, Group, Table, Kitchen, Waitress, BIA_SPEED, DAYS, UPGRADES, CUSTOMER_TYPES, LAYOUT, PAL, Sfx, findPath, render, Rank, sortRows, cleanName, normName, CMD, ENDLESS, VIP, rk, renderRank, openRank, closeRank, LS, lsGet, lsSet, loadSave, DEV, saveKey, devSync, divulgaAberta, CAIXA_MAX, VERSAO, normCaixa, caixaResumo, caixaTotais, copyText };
 window.requestAnimationFrame(frame);
 
 })();
