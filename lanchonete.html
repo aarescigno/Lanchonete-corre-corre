@@ -66,6 +66,9 @@ p{margin:calc(var(--u)*6) 0;font-size:max(12px,calc(var(--u)*16));line-height:1.
 .ed-pop.up{transform:translate(-50%,-100%)}
 .ed-pop b{font:800 max(11px,calc(var(--u)*13)) var(--fb);padding-right:26px}
 .ed-pop .btn{font-size:max(12px,calc(var(--u)*15));padding:calc(var(--u)*3) calc(var(--u)*10);min-height:36px}
+.ed-cores{display:flex;align-items:center;gap:calc(var(--u)*6);font:700 max(11px,calc(var(--u)*13)) var(--fb)}
+.ed-cor{width:max(32px,calc(var(--u)*36));height:max(32px,calc(var(--u)*36));padding:0;border:calc(var(--u)*2.5) solid var(--tinta);border-radius:50%;cursor:pointer;font:800 max(14px,calc(var(--u)*18)) var(--fb);color:#fff;text-shadow:0 1px 2px rgba(0,0,0,.6);line-height:1}
+.ed-cor[aria-pressed="true"]{box-shadow:0 0 0 calc(var(--u)*2.5) var(--azulejo),0 0 0 calc(var(--u)*5) var(--tinta)}
 .ed-x{position:absolute;right:2px;top:0;width:30px;height:30px;border:0;background:none;font:800 20px var(--fb);color:var(--tinta);cursor:pointer;line-height:1}
 .ed-side{display:flex;flex-direction:column;gap:calc(var(--u)*6)}
 .ed-side .btn{font-size:max(12px,calc(var(--u)*16));padding:calc(var(--u)*3) calc(var(--u)*8);min-height:max(34px,calc(var(--u)*42))}
@@ -230,7 +233,7 @@ table.rank tr.me td{background:#fbe7a8}
 
     <div class="ov show" id="ov-menu">
       <div class="panel menu-panel">
-        <span class="vtag" aria-label="Versão 7.4.2">v7.4.2</span>
+        <span class="vtag" aria-label="Versão 7.4.3">v7.4.3</span>
         <h1 class="title">Lanchonete <br>Corre-Corre</h1>
         <p class="tag">Ajude a Bia a atender a freguesia da esquina antes que o cafezinho esfrie!</p>
         <div class="lbl">Carreira: escolha o dia</div>
@@ -406,7 +409,8 @@ table.rank tr.me td{background:#fbe7a8}
       <div class="panel">
         <h2>Versões</h2>
         <ul class="verlist">
-          <li><b>v7.4.2</b><span class="cur">versão atual</span><br>21/10/2026 &mdash; Quem espera a comida mostra uma panela no fogo (não confunde mais com o cardápio); um visto verde avisa que o prato já está no balcão.</li>
+          <li><b>v7.4.3</b><span class="cur">versão atual</span><br>21/10/2026 &mdash; Na lojinha, aba Salão: toque numa mesa para trocar a cor das cadeiras, de graça.</li>
+          <li><b>v7.4.2</b><br>21/10/2026 &mdash; Quem espera a comida mostra uma panela no fogo (não confunde mais com o cardápio); um visto verde avisa que o prato já está no balcão.<br><a href="versoes/v7.4.2.html" target="_blank" rel="noopener">Abrir a v7.4.2</a></li>
           <li><b>v7.4.1</b><br>21/10/2026 &mdash; Salão cheio chama gente: cada lugar acima de 10 traz 6% mais clientes; 4 pratos limpos do dia 3 em diante; com o salão cheio, a fila perde a paciência um pouco mais rápido.<br><a href="versoes/v7.4.1.html" target="_blank" rel="noopener">Abrir a v7.4.1</a></li>
           <li><b>v7.4</b><br>21/10/2026 &mdash; Garagem da Bia e do tio Tonhão: o salão começa numa garagem sem aluguel, com 4 mesas; na lojinha, compre mesas (até 16 lugares) e arraste-as para arrumar o salão.<br><a href="versoes/v7.4.html" target="_blank" rel="noopener">Abrir a v7.4</a></li>
           <li><b>v7.3</b><br>21/10/2026 &mdash; Bia mais ágil: anda mais rápido e ganha os Tênis de corrida; no salão, um selo (1º, 2º...) mostra a vez de cada lugar na fila dela.<br><a href="versoes/v7.3.html" target="_blank" rel="noopener">Abrir a v7.3</a></li>
@@ -730,7 +734,7 @@ const DIVULGA = [
 const MOVIMENTO = { kit:10, porLugar:0.06 };
 function movimentoSalao(lugares){ return 1 + MOVIMENTO.porLugar * Math.max(0, lugares - MOVIMENTO.kit); }
 const CAIXA_MAX = 14;                                 // livro-caixa (v7.2): quantos dias da carreira ficam guardados
-const VERSAO = 'v7.4.2';                              // vai no resumo do Caixa
+const VERSAO = 'v7.4.3';                              // vai no resumo do Caixa
 const DIVULGA_DIA = 3;                                // antes disso, o movimento é o da inauguração (sem custo)
 function divulgaOf(id){ return DIVULGA.find(d => d.id === id) || DIVULGA[1]; }
 /* contas do dia: o aluguel do ponto (v7.4; a Garagem é da família), mais cada mesa aberta e cada lugar dela */
@@ -2231,6 +2235,14 @@ class Game {
     this.save.bank += v; caixaGasto(this.save, 'sal', -v);
     Sfx.coin();
     return this.salaoSet(mesas.filter(x => x !== m));
+  }
+  /* editor: as cadeiras da mesa i ganham a cor c (de graça; a mesa continua escolhida e dá para desfazer) */
+  pintarMesa(i, c){
+    const mesas = this.save.salao.mesas, m = mesas[i];
+    if (!m || !(c >= 0 && c < CHAIRS.length)) return false;
+    if (m.c === c) return true;
+    const l = mesas.slice(); l[i] = Object.assign({}, m, { c, sel:1 });
+    return this.salaoSet(l, true);
   }
   /* editor: a mesa i vai para (x, y), se o lugar vale */
   moverMesa(i, x, y){
@@ -3965,7 +3977,7 @@ function buildEquipe(grid){
   c.appendChild(duo); grid.appendChild(c);
 }
 /* aba Salão (v7.4): o editor (o salão desenhado em escala, sem clientes) e a loja de móveis ao lado.
-   Arrastar a mesa muda o lugar dela (encaixe na grade); tocar nela abre "virar mesa de 4" e "vender" */
+   Arrastar a mesa muda o lugar dela (encaixe na grade); tocar nela abre a cor das cadeiras, "virar mesa de 4" e "vender" */
 const ED = { x:0, y:56, w:800, h:484, k:1.25 };  // pedaço do salão no editor (do pé da parede ao chão, até o balcão) e a resolução do canvas
 let edDrag = null;
 function edPt(cv, e){
@@ -4057,13 +4069,23 @@ function buildSalao(grid){
   cv.width = Math.round(ED.w * ED.k); cv.height = Math.round(ED.h * ED.k);
   cv.setAttribute('aria-label', 'Salão: arraste as mesas para mudar de lugar e toque numa mesa para ver as opções');
   box.appendChild(cv); edEvents(cv);
-  // mesa escolhida: virar mesa de 4 e vender (balãozinho em cima do salão)
+  // mesa escolhida: cor das cadeiras, virar mesa de 4 e vender (balãozinho em cima do salão)
   const m = mesas[sel];
   if (m){
     const up = m.y + 190 > ED.y + ED.h, pop = el('div', 'ed-pop' + (up ? ' up' : ''));
     pop.style.left = clamp((m.x - ED.x) / ED.w * 100, 18, 82) + '%';
     pop.style.top = ((up ? m.y - 66 : m.y + 72) - ED.y) / ED.h * 100 + '%';
     pop.appendChild(el('b', null, 'Mesa ' + (sel + 1) + ' · ' + m.seats + ' lugares'));
+    // v7.4.3: a cor das cadeiras (de graça), em bolinhas com o nome da cor no rótulo
+    const cores = el('div', 'ed-cores');
+    cores.appendChild(el('span', null, 'Cadeiras:'));
+    CHAIRS.forEach((ch, k) => {
+      const b = edBtn(k === m.c ? '✓' : '', 'ed-cor', true, () => game.pintarMesa(sel, k));
+      b.style.background = ch.c; b.title = 'Cadeiras na cor ' + ch.n;
+      b.setAttribute('aria-label', 'Cadeiras na cor ' + ch.n); b.setAttribute('aria-pressed', k === m.c ? 'true' : 'false');
+      cores.appendChild(b);
+    });
+    pop.appendChild(cores);
     if (m.seats === 2) pop.appendChild(edBtn('Virar mesa de 4: ' + fmt(SALAO.virar), 'btn', lug + 2 <= p.lugares && bank >= SALAO.virar, () => game.virarMesa(sel)));
     pop.appendChild(edBtn('Vender por ' + fmt(mesaPreco(m.seats) * SALAO.venda), 'btn alt', mesas.length > 1, () => game.venderMesa(sel)));
     const x = el('button', 'ed-x', '×'); x.type = 'button'; x.setAttribute('aria-label', 'Fechar');
@@ -4080,7 +4102,7 @@ function buildSalao(grid){
   side.appendChild(edBtn('Mesa de 4: ' + fmt(SALAO.mesa4), 'btn', lug + 4 <= p.lugares && bank >= SALAO.mesa4, () => game.buyMesa(4)));
   side.appendChild(edBtn('Arrumação automática', 'btn alt', true, () => game.arrumarSalao()));
   side.appendChild(edBtn('Desfazer', 'btn alt', game.salaoUndo.length > 0, () => game.desfazerSalao()));
-  side.appendChild(el('span', game.salaoMsg ? 'msg' : 'ed-dica', game.salaoMsg || (lug >= p.lugares ? 'O salão está no teto de ' + p.lugares + ' lugares.' : 'Arraste as mesas; toque numa para virar mesa de 4 ou vender. Grupos de 3 ou 4 só sentam nas mesas de 4.')));
+  side.appendChild(el('span', game.salaoMsg ? 'msg' : 'ed-dica', game.salaoMsg || (lug >= p.lugares ? 'O salão está no teto de ' + p.lugares + ' lugares.' : 'Arraste as mesas; toque numa para trocar a cor das cadeiras, virar mesa de 4 ou vender. Grupos de 3 ou 4 só sentam nas mesas de 4.')));
   side.appendChild(el('span', 'ed-contas', 'Luz e gás: ' + fmt(contasDia(game.tables, p)) + ' por dia (' + fmt(CONTAS.mesa) + ' por mesa e ' + fmt(CONTAS.lugar) + ' por lugar).'));
   const mov = Math.round((movimentoSalao(lug) - 1) * 100);
   side.appendChild(el('span', 'ed-contas', 'Cada lugar acima de ' + MOVIMENTO.kit + ' traz ' + Math.round(MOVIMENTO.porLugar * 100) + '% mais clientes' + (mov > 0 ? ' (hoje, +' + mov + '%).' : '.')));
@@ -4505,7 +4527,7 @@ fit();
 try { Rank.init(); } catch(e) {}
 game.setState('menu');
 window.__game = game;
-window.__lcc = { setShopTab: v => { shopTab = v; buildShop(); }, FILA_JUSTA, PORTA, PAT, CONTAS, INGRED, MOVIMENTO, movimentoSalao, DIVULGA, DIVULGA_DIA, divulgaOf, contasDia, bomGoal, SALAO, PONTOS, pontoOf, MESA, mesaBox, mesaPreco, salaoLugares, mesaProblema, salaoCaminho, salaoProblema, salaoOrdena, salaoAuto, salaoVaga, salaoPerto, salaoKit, salaoDevolucao, SALAO_SEMFIM, normSalao, setObst, OBST, pathOk, AGUA, CRIT, STAFF, DANI_TASKS, DANI_HANDS, daniTaskOk, TRASH, WASH, payroll, couvertEffect, dishStock, normSave, Helper, JUICE, KITCHEN_SLOTS, handLayout, trayOk, Game, Group, Table, Kitchen, Waitress, BIA_SPEED, DAYS, UPGRADES, CUSTOMER_TYPES, LAYOUT, PAL, Sfx, findPath, render, Rank, sortRows, cleanName, normName, CMD, ENDLESS, VIP, rk, renderRank, openRank, closeRank, LS, lsGet, lsSet, loadSave, CAIXA_MAX, VERSAO, normCaixa, caixaResumo, caixaTotais, copyText };
+window.__lcc = { setShopTab: v => { shopTab = v; buildShop(); }, FILA_JUSTA, PORTA, CHAIRS, PAT, CONTAS, INGRED, MOVIMENTO, movimentoSalao, DIVULGA, DIVULGA_DIA, divulgaOf, contasDia, bomGoal, SALAO, PONTOS, pontoOf, MESA, mesaBox, mesaPreco, salaoLugares, mesaProblema, salaoCaminho, salaoProblema, salaoOrdena, salaoAuto, salaoVaga, salaoPerto, salaoKit, salaoDevolucao, SALAO_SEMFIM, normSalao, setObst, OBST, pathOk, AGUA, CRIT, STAFF, DANI_TASKS, DANI_HANDS, daniTaskOk, TRASH, WASH, payroll, couvertEffect, dishStock, normSave, Helper, JUICE, KITCHEN_SLOTS, handLayout, trayOk, Game, Group, Table, Kitchen, Waitress, BIA_SPEED, DAYS, UPGRADES, CUSTOMER_TYPES, LAYOUT, PAL, Sfx, findPath, render, Rank, sortRows, cleanName, normName, CMD, ENDLESS, VIP, rk, renderRank, openRank, closeRank, LS, lsGet, lsSet, loadSave, CAIXA_MAX, VERSAO, normCaixa, caixaResumo, caixaTotais, copyText };
 window.requestAnimationFrame(frame);
 
 })();
