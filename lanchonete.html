@@ -230,7 +230,7 @@ table.rank tr.me td{background:#fbe7a8}
 
     <div class="ov show" id="ov-menu">
       <div class="panel menu-panel">
-        <span class="vtag" aria-label="Versão 7.4.1">v7.4.1</span>
+        <span class="vtag" aria-label="Versão 7.4.2">v7.4.2</span>
         <h1 class="title">Lanchonete <br>Corre-Corre</h1>
         <p class="tag">Ajude a Bia a atender a freguesia da esquina antes que o cafezinho esfrie!</p>
         <div class="lbl">Carreira: escolha o dia</div>
@@ -406,7 +406,8 @@ table.rank tr.me td{background:#fbe7a8}
       <div class="panel">
         <h2>Versões</h2>
         <ul class="verlist">
-          <li><b>v7.4.1</b><span class="cur">versão atual</span><br>21/10/2026 &mdash; Salão cheio chama gente: cada lugar acima de 10 traz 6% mais clientes; 4 pratos limpos do dia 3 em diante; com o salão cheio, a fila perde a paciência um pouco mais rápido.</li>
+          <li><b>v7.4.2</b><span class="cur">versão atual</span><br>21/10/2026 &mdash; Quem espera a comida mostra uma panela no fogo (não confunde mais com o cardápio); um visto verde avisa que o prato já está no balcão.</li>
+          <li><b>v7.4.1</b><br>21/10/2026 &mdash; Salão cheio chama gente: cada lugar acima de 10 traz 6% mais clientes; 4 pratos limpos do dia 3 em diante; com o salão cheio, a fila perde a paciência um pouco mais rápido.<br><a href="versoes/v7.4.1.html" target="_blank" rel="noopener">Abrir a v7.4.1</a></li>
           <li><b>v7.4</b><br>21/10/2026 &mdash; Garagem da Bia e do tio Tonhão: o salão começa numa garagem sem aluguel, com 4 mesas; na lojinha, compre mesas (até 16 lugares) e arraste-as para arrumar o salão.<br><a href="versoes/v7.4.html" target="_blank" rel="noopener">Abrir a v7.4</a></li>
           <li><b>v7.3</b><br>21/10/2026 &mdash; Bia mais ágil: anda mais rápido e ganha os Tênis de corrida; no salão, um selo (1º, 2º...) mostra a vez de cada lugar na fila dela.<br><a href="versoes/v7.3.html" target="_blank" rel="noopener">Abrir a v7.3</a></li>
           <li><b>v7.2</b><br>15/10/2026 &mdash; Livro-caixa: a aba Caixa da lojinha mostra os últimos 14 dias, para onde foi o dinheiro e um resumo para copiar e mandar no WhatsApp.<br><a href="versoes/v7.2.html" target="_blank" rel="noopener">Abrir a v7.2</a></li>
@@ -729,7 +730,7 @@ const DIVULGA = [
 const MOVIMENTO = { kit:10, porLugar:0.06 };
 function movimentoSalao(lugares){ return 1 + MOVIMENTO.porLugar * Math.max(0, lugares - MOVIMENTO.kit); }
 const CAIXA_MAX = 14;                                 // livro-caixa (v7.2): quantos dias da carreira ficam guardados
-const VERSAO = 'v7.4.1';                              // vai no resumo do Caixa
+const VERSAO = 'v7.4.2';                              // vai no resumo do Caixa
 const DIVULGA_DIA = 3;                                // antes disso, o movimento é o da inauguração (sem custo)
 function divulgaOf(id){ return DIVULGA.find(d => d.id === id) || DIVULGA[1]; }
 /* contas do dia: o aluguel do ponto (v7.4; a Garagem é da família), mais cada mesa aberta e cada lugar dela */

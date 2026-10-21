@@ -1,9 +1,9 @@
 # Resumo do projeto e das alterações (até 21/10/2026)
 
 ## Estado atual
-- **Versão:** v7.4.1 (salão cheio chama gente: +6% de grupos por lugar acima de 10, 4 pratos limpos, fila justa a 60%), sobre a v7.4 (Garagem da Bia e do tio Tonhão), publicada como Versão 27 do artifact https://claude.ai/artifact/MJxrgDg8S4akvg47SoQAvj (privado).
+- **Versão:** v7.4.2 (balão de "aguardando o preparo" com panela no fogo, sem anel), sobre a v7.4.1 (salão cheio chama gente: +6% de grupos por lugar acima de 10, 4 pratos limpos, fila justa a 60%), publicada como Versão 28 do artifact https://claude.ai/artifact/MJxrgDg8S4akvg47SoQAvj (privado).
 - **Branch:** `claude/main` (renomeado pelo usuário; o antigo `claude/intelligent-gauss-3owv29` não existe mais) no repositório `aarescigno/Lanchonete-corre-corre`.
-- **Arquivos publicados:** `lanchonete.html` (página), mais `versoes/v1.html` a `versoes/v7.4.html`, abertos pelo painel Versões.
+- **Arquivos publicados:** `lanchonete.html` (página), mais `versoes/v1.html` a `versoes/v7.4.1.html`, abertos pelo painel Versões.
 - **Capacidades declaradas (mantidas ao republicar sem `capabilities`):**
   - `db`: `ranking-carreira` e `ranking-semfim` com read "view" e write "owner";
   - `db`: `ranking-*/{self}` com write "interact";
@@ -29,6 +29,7 @@
 | v7.3 | 21/10 | Bia mais ágil (retorno do Renan): base 300 px/s, Tênis de corrida (R$ 350, +20%), selos "1º, 2º..." da fila no salão e nos quadrinhos; metas mantidas | `docs/spec-v7.3.md` |
 | v7.4 | 21/10 | Garagem da Bia e do tio Tonhão: sem aluguel, kit de 10 lugares, mesas compradas até 16 lugares (R$ 150, 250, virar R$ 100, vender pela metade), editor do salão (arrastar, tocar, arrumação automática, desfazer), todas as mesas abertas desde o dia 1, mesa quadrada e cadeira de plástico de bar | `docs/spec-v7.4.md` |
 | v7.4.1 | 21/10 | Salão cheio chama gente: `MOVIMENTO` (+6% de grupos por lugar acima de 10; mesas de 4 com equipe se pagam em 1 a 3 dias), 4 pratos limpos do dia 3 em diante, fila justa a 60% (era 40%), salão de 16 lugares do `balance.js` corrigido | `docs/spec-v7.4.1.md` |
+| v7.4.2 | 21/10 | Balão de "aguardando o preparo" (retorno do usuário): panela no fogo (ícone `pot`) no lugar da comanda e do prato com anel; visto verde quando o prato está no balcão | `docs/spec-v7.4.2.md` |
 
 ## Alterações feitas no Claude Code (14/10/2026)
 1. **Importação** do pacote exportado do claude.ai para o repositório (commit `982583b`).
