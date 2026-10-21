@@ -1,7 +1,7 @@
 # Resumo do projeto e das alterações (até 21/10/2026)
 
 ## Estado atual
-- **Versão:** v7.4.1 (salão cheio chama gente: +6% de grupos por lugar acima de 10, 4 pratos limpos, fila justa a 60%), sobre a v7.4 (Garagem da Bia e do tio Tonhão), publicada como Versão 26 do artifact https://claude.ai/artifact/MJxrgDg8S4akvg47SoQAvj (privado).
+- **Versão:** v7.4.1 (salão cheio chama gente: +6% de grupos por lugar acima de 10, 4 pratos limpos, fila justa a 60%), sobre a v7.4 (Garagem da Bia e do tio Tonhão), publicada como Versão 27 do artifact https://claude.ai/artifact/MJxrgDg8S4akvg47SoQAvj (privado).
 - **Branch:** `claude/main` (renomeado pelo usuário; o antigo `claude/intelligent-gauss-3owv29` não existe mais) no repositório `aarescigno/Lanchonete-corre-corre`.
 - **Arquivos publicados:** `lanchonete.html` (página), mais `versoes/v1.html` a `versoes/v7.4.html`, abertos pelo painel Versões.
 - **Capacidades declaradas (mantidas ao republicar sem `capabilities`):**
