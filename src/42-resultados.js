@@ -60,6 +60,7 @@ function buildEndless(){
 function lastName(){ return cleanName(lsGet(LS.name) || ''); }
 function buildSaveForm(host, kind){
   clearEl(host);
+  if (DEV.on){ host.appendChild(el('p', 'small savemsg', 'Modo dev: o ranking fica de fora.')); return; }
   const form = el('form', 'saveform');
   form.setAttribute('autocomplete', 'off');
   const id = 'nm-' + kind;

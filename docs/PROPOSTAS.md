@@ -4,6 +4,15 @@ Registro das ideias e dos retornos de quem jogou, com o texto original, e de ond
 
 ---
 
+## 21/10/2026 — Usuário: modo dev
+**Origem:** mensagem do usuário, depois da v7.5:
+
+> Adicione um dev  mode ao clicar/tocar 10x no ícone com a versão do jogo (p. Ex. v7.5) nesse dev mode quero todos os níveis liberados, 10000 de dinheiro e liberação para ativar ou desativar quaisquer upgrades do jogo
+
+**Destino:** v7.5.1, feito (`docs/spec-v7.5.1.md`): 10 toques seguidos no selo da versão ligam o modo dev, com os 7 dias liberados, R$ 10.000 (e um botão para repor) e todas as melhorias ligadas e desligadas de graça, no painel do modo dev e na lojinha. Para não estragar o progresso nem o ranking, o modo dev usa um save à parte (o de verdade volta ao sair) e não salva no ranking.
+
+---
+
 ## 21/10/2026 — Usuário: decisões da etapa 1d-2 (calçada)
 **Origem:** respostas do usuário às dúvidas da 1d-2, no começo da sessão (todas as sugestões aceitas):
 

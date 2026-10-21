@@ -394,7 +394,7 @@ function buildShop(){
   clearEl(grid);
   segSync('shop-tabs', shopTab);
   $('shop-bank').textContent = fmt(game.save.bank);
-  $('shop-limit').textContent = game.shopBought ? 'Melhoria do dia ' + game.shopNext + ' já escolhida.' : 'Você pode levar 1 melhoria antes do dia ' + game.shopNext + '.';
+  $('shop-limit').textContent = DEV.on ? 'Modo dev: ligue e desligue as melhorias de graça.' : game.shopBought ? 'Melhoria do dia ' + game.shopNext + ' já escolhida.' : 'Você pode levar 1 melhoria antes do dia ' + game.shopNext + '.';
   $('btn-shop-go').textContent = 'Começar o dia ' + game.shopNext;
   const f = payroll(game.save.equipe), dv = game.shopNext >= DIVULGA_DIA ? divulgaOf(game.save.divulga) : null;
   $('shop-folha').textContent = (f ? 'Folha ' + fmt(f) : 'Sem folha') + (dv ? ' + ' + dv.name.toLowerCase() + ' ' + fmt(dv.cost) : '') + ' ao abrir; contas ' + fmt(contasDia(game.tables)) + ' e ingredientes no fim do dia. A meta é o lucro.';
@@ -411,10 +411,10 @@ function buildShop(){
     card.appendChild(upgradeIcon(u.id));
     card.appendChild(el('b', null, u.name));
     card.appendChild(el('span', null, u.desc));
-    const b = el('button', 'btn', own ? 'Já comprado' : ('Comprar ' + fmt(u.cost)));
+    const b = el('button', 'btn', DEV.on ? (own ? 'Desligar' : 'Ligar') : own ? 'Já comprado' : ('Comprar ' + fmt(u.cost)));
     b.type = 'button';
-    if (own || game.shopBought || game.save.bank < u.cost) b.disabled = true;
-    b.addEventListener('click', () => { if (game.buy(u.id)) buildShop(); });
+    if (!DEV.on && (own || game.shopBought || game.save.bank < u.cost)) b.disabled = true;
+    b.addEventListener('click', () => { if (DEV.on ? game.devToggle(u.id) : game.buy(u.id)) buildShop(); });
     card.appendChild(b);
     grid.appendChild(card);
   });
