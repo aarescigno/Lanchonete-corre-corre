@@ -18,7 +18,7 @@ Origem: retorno do Renan Martorelli (beta-tester) e conversa com o Arthur (15/10
 | 1c | Retorno do Renan: Bia mais ágil e selos da fila | v7.3 | feita (21/10) |
 | 1d-1 | Garagem da Bia, móveis e editor do salão | v7.4 | feita (21/10) |
 | — | Ajuste fora do plano: salão cheio chama gente, 4 pratos, fila justa a 60% | v7.4.1 | feita (21/10) |
-| — | Fora do plano: TV e som na Garagem, couvert só no nível 3 | v7.4.3 | feita (21/10) |
+| — | Fora do plano: TV e som na Garagem, couvert só no nível 3 | v7.4.4 | feita (21/10) |
 | 1d-2 | Tela que rola até a calçada, espera lá fora e máquina de suco | v7.5 | **próxima** (decidida em 21/10) |
 | 2 | Manutenção e imprevistos | v8 | a fazer |
 | 3 | Pontos: área industrial e Avenida Brasil, carreira por pontos | v9 | a fazer |
@@ -139,7 +139,7 @@ Origem: retorno do Renan Martorelli (beta-tester) e conversa com o Arthur (15/10
   - Aluguéis na **proporção real** entre os pontos (ver a pesquisa). A Garagem não paga aluguel e **rende a mais de propósito**: é o pé-de-meia para a mudança (levar as coisas, montar, reajustar, caução).
   - O aluguel entra nas **contas fixas do dia** (com luz e gás, que continuam R$ 30 por mesa e R$ 6 por lugar), aparece na lojinha e no Caixa.
 - **Móveis:** dentro de cada ponto, mesas e cadeiras são compradas até o teto de lugares, e **vão junto na mudança**. Não há limite de mesas: só o teto de lugares e a área útil. Grupos de 3 ou 4 sem mesa de 4 continuam ficando insatisfeitos e desistindo (regra de hoje, `semMesa`).
-- **Ambiente por nível** (decidido em 21/10, v7.4.3): no nível 1, TV (Rede Esfera) e som (rádio Velha Brasil FM), 5% de paciência cada, pagando a luz; o **couvert artístico só do nível 3** em diante (`STAFF.couvert.nivel`).
+- **Ambiente por nível** (decidido em 21/10, v7.4.4): no nível 1, TV (Rede Esfera) e som (rádio Velha Brasil FM), 5% de paciência cada, pagando a luz; o **couvert artístico só do nível 3** em diante (`STAFF.couvert.nivel`).
 - **Novos pontos destravam** (etapas 3 e 4; o que vai em cada nível é sugestão): 2º garçom (área industrial); mais bocas no fogão; balcão de pratos maior; mais pratos no cardápio; um cozinheiro/confeiteiro especializado em sobremesas (níveis 3 e 4); balcão de coquetelaria com profissional de drinks (do nível 3 em diante).
 - **Carreira por pontos, sem fim fixo** (etapa 3): cada ponto tem a sua série de metas; batidas as metas e juntado o dinheiro, dá para mudar. Até a etapa 3, a carreira continua com 7 dias, todos na Garagem.
 - **Mais para frente:** o **nível de luxo** (0 a 5) vai pontuar enfeites, móveis, ponto, mídia e críticos. As mesas quadradas e as cadeiras de plástico de bar da Garagem são o degrau mais baixo.
@@ -256,7 +256,7 @@ Também: rever o `smoke7` (toque) e o `smoke10` (fila justa e porta), mais `bala
 - **Mudança** na lojinha (aba "Ponto"): custo único, aluguel dali em diante e os móveis levados junto. O editor abre no ponto novo com a arrumação automática.
 - **O que cada ponto destrava** (sugestão):
   - área industrial: 2º garçom, +1 boca no fogão (4 pratos ao mesmo tempo) e balcão de pratos com 5 vagas;
-  - Avenida Brasil: confeiteiro (sobremesas), balcão de coquetelaria com profissional de drinks, um prato novo no cardápio, balcão de pratos com 6 vagas e o **couvert artístico** (já pronto no código desde a v5, escondido abaixo do nível 3 desde a v7.4.3: basta o ponto ter `nivel:3`). Decidir se a TV e o som vão junto na mudança.
+  - Avenida Brasil: confeiteiro (sobremesas), balcão de coquetelaria com profissional de drinks, um prato novo no cardápio, balcão de pratos com 6 vagas e o **couvert artístico** (já pronto no código desde a v5, escondido abaixo do nível 3 desde a v7.4.4: basta o ponto ter `nivel:3`). Decidir se a TV e o som vão junto na mudança.
   Se ficar grande demais, a etapa se divide (3a: mudança e área industrial; 3b: Avenida Brasil, confeitaria e coquetelaria).
 - **Carreira por pontos, sem fim fixo:** cada ponto tem uma série de metas (ex.: 3 a 5 dias). Batidas as metas e juntado o dinheiro, pode mudar. O ranking da carreira soma o lucro (ou o melhor dia) de cada ponto. Os 7 dias de hoje viram a série da Garagem.
 - Visual de cada ponto: piso, fachada, letreiro, vista da janela e calçada.

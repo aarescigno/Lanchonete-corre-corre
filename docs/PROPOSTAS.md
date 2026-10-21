@@ -10,9 +10,19 @@ Registro das ideias e dos retornos de quem jogou, com o texto original, e de ond
 > couvert artístico é para o nível 3 só, para nível 1 é televisão passando Rede Esfera com redução de 5% de perda de paciência e sistema de som tocando rádio Velha Brasil FM, com redução de mais 5% de perda de paciencia, custo, pode deixar na aba equipe mesmo por enquanto, pra adicionar o custo de energia elétrica de manter eles ativados
 
 **Destino:**
-- **Feito na v7.4.3:** na Garagem (nível 1), a aba Equipe tem o card "TV e som": TV de tubo na Rede Esfera (5%, luz R$ 15/dia) e som na rádio Velha Brasil FM (mais 5%, luz R$ 10/dia), ligados e desligados à parte, com a luz na folha do dia. Os dois aparecem numa estante no canto do salão. Valores de luz escolhidos na sessão (com eles, o bot com a equipe completa lucra ~R$ 30 a mais por dia).
+- **Feito na v7.4.4:** na Garagem (nível 1), a aba Equipe tem o card "TV e som": TV de tubo na Rede Esfera (5%, luz R$ 15/dia) e som na rádio Velha Brasil FM (mais 5%, luz R$ 10/dia), ligados e desligados à parte, com a luz na folha do dia. Os dois aparecem numa estante no canto do salão. Valores de luz escolhidos na sessão (com eles, o bot com a equipe completa lucra ~R$ 30 a mais por dia).
 - **Couvert artístico:** só do nível 3 do salão (Restaurante na Avenida Brasil) em diante, que chega na etapa 3 do `docs/PLANO.md`; até lá some da lojinha e sai dos saves.
 - **"Por enquanto" na aba Equipe:** quando houver um lugar para o ambiente (o nível de luxo, nas Ideias guardadas do plano), TV, som e couvert podem mudar de aba.
+
+---
+
+## 21/10/2026 — Usuário: cor das cadeiras
+**Origem:** mensagem do usuário, depois da v7.4.2:
+
+> "faltou poder trocar as cores das cadeiras"
+
+**Destino:**
+- **Feito na v7.4.3:** no editor do salão (lojinha, aba Salão), o balãozinho da mesa escolhida ganhou a linha "Cadeiras:" com as 4 cores (vermelha, azul, amarela, verde). Tocar numa troca a cor das cadeiras da mesa, de graça; a mesa continua escolhida e o Desfazer volta a cor.
 
 ---
 
@@ -22,7 +32,7 @@ Registro das ideias e dos retornos de quem jogou, com o texto original, e de ond
 > "Lojinha do seu zé" não, "Garagem da da mãe da Bia"
 
 **Destino:**
-- **Feito (depois da v7.4.2, sem número de versão):** o título do painel da lojinha passou de "Lojinha do Seu Zé" para "Garagem da mãe da Bia". O nome do ponto ("Garagem da Bia e do tio Tonhão") ficou como estava.
+- **Feito (depois da v7.4.2, sem número de versão):** o título do painel da lojinha passou de "Lojinha do Seu Zé" para "Garagem da mãe da Bia". Em seguida, com o "sim" do usuário, o ponto também passou a se chamar "Garagem da mãe da Bia" (era "Garagem da Bia e do tio Tonhão"); o letreiro "LANCHES da Bia e do Tonhão", que é o nome do negócio, ficou.
 - Responde em parte à decisão em aberto da etapa 5 ("quem é o Seu Zé"): ele deixa de ser o dono da lojinha.
 
 ---

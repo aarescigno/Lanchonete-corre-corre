@@ -1,9 +1,9 @@
 # Resumo do projeto e das alterações (até 21/10/2026)
 
 ## Estado atual
-- **Versão:** v7.4.3 (na Garagem, TV e som no lugar do couvert, que fica para o nível 3), sobre a v7.4.2 (balão de "aguardando o preparo" com panela no fogo, sem anel) e a v7.4.1 (salão cheio chama gente: +6% de grupos por lugar acima de 10, 4 pratos limpos, fila justa a 60%), publicada como Versão 28 do artifact https://claude.ai/artifact/MJxrgDg8S4akvg47SoQAvj (privado).
+- **Versão:** v7.4.4 (na Garagem, TV e som no lugar do couvert, que fica para o nível 3), sobre a v7.4.3 (cor das cadeiras de cada mesa no editor do salão) e a v7.4.2 (balão de "aguardando o preparo" com panela no fogo, sem anel), publicada como Versão 31 do artifact https://claude.ai/artifact/MJxrgDg8S4akvg47SoQAvj (privado).
 - **Branch:** `claude/main` (renomeado pelo usuário; o antigo `claude/intelligent-gauss-3owv29` não existe mais) no repositório `aarescigno/Lanchonete-corre-corre`.
-- **Arquivos publicados:** `lanchonete.html` (página), mais `versoes/v1.html` a `versoes/v7.4.2.html`, abertos pelo painel Versões.
+- **Arquivos publicados:** `lanchonete.html` (página), mais `versoes/v1.html` a `versoes/v7.4.3.html`, abertos pelo painel Versões.
 - **Capacidades declaradas (mantidas ao republicar sem `capabilities`):**
   - `db`: `ranking-carreira` e `ranking-semfim` com read "view" e write "owner";
   - `db`: `ranking-*/{self}` com write "interact";
@@ -30,7 +30,8 @@
 | v7.4 | 21/10 | Garagem da Bia e do tio Tonhão: sem aluguel, kit de 10 lugares, mesas compradas até 16 lugares (R$ 150, 250, virar R$ 100, vender pela metade), editor do salão (arrastar, tocar, arrumação automática, desfazer), todas as mesas abertas desde o dia 1, mesa quadrada e cadeira de plástico de bar | `docs/spec-v7.4.md` |
 | v7.4.1 | 21/10 | Salão cheio chama gente: `MOVIMENTO` (+6% de grupos por lugar acima de 10; mesas de 4 com equipe se pagam em 1 a 3 dias), 4 pratos limpos do dia 3 em diante, fila justa a 60% (era 40%), salão de 16 lugares do `balance.js` corrigido | `docs/spec-v7.4.1.md` |
 | v7.4.2 | 21/10 | Balão de "aguardando o preparo" (retorno do usuário): panela no fogo (ícone `pot`) no lugar da comanda e do prato com anel; visto verde quando o prato está no balcão | `docs/spec-v7.4.2.md` |
-| v7.4.3 | 21/10 | Ambiente da Garagem (pedido do usuário): TV de tubo na Rede Esfera (R$ 15/dia de luz) e som na rádio Velha Brasil FM (R$ 10/dia), 5% de paciência nas mesas cada; couvert só do nível 3 do salão em diante (`PONTOS.nivel`, `couvertOk`) | `docs/spec-v7.4.3.md` |
+| v7.4.3 | 21/10 | Cor das cadeiras (pedido do usuário): no balãozinho da mesa, no editor do salão, 4 bolinhas trocam a cor das cadeiras, de graça e com Desfazer | `docs/spec-v7.4.3.md` |
+| v7.4.4 | 21/10 | Ambiente da Garagem (pedido do usuário): TV de tubo na Rede Esfera (R$ 15/dia de luz) e som na rádio Velha Brasil FM (R$ 10/dia), 5% de paciência nas mesas cada; couvert só do nível 3 do salão em diante (`PONTOS.nivel`, `couvertOk`) | `docs/spec-v7.4.4.md` |
 
 ## Alterações feitas no Claude Code (14/10/2026)
 1. **Importação** do pacote exportado do claude.ai para o repositório (commit `982583b`).
@@ -115,7 +116,7 @@
    - **Selos da fila:** etiqueta "1º, 2º..." na mesa, na estação ou no prato que está na fila da Bia (todas as vezes do mesmo lugar juntas), com pulinho ao surgir (parada com `prefers-reduced-motion`); os quadrinhos da fila ganham a mesma etiqueta. A mesa pode entrar 2 vezes na fila; cancelar só pelo quadrinho.
    - Metas mantidas por escolha do usuário (sem equipe ~74% das metas nos dias 3 a 7; com equipe ~98%). Teste `smoke12`.
    - Salão (decidido em 21/10): o nível do salão é o ponto.
-     - Garagem da Bia e do tio Tonhão: 16 lugares, sem aluguel, kit de 10 lugares, móveis comprados, editor do salão (1d-1, feita na v7.4); tela que rola até a calçada, espera lá fora e máquina de suco (1d-2, v7.5).
+     - Garagem da mãe da Bia (até a v7.4.2, "Garagem da Bia e do tio Tonhão"): 16 lugares, sem aluguel, kit de 10 lugares, móveis comprados, editor do salão (1d-1, feita na v7.4); tela que rola até a calçada, espera lá fora e máquina de suco (1d-2, v7.5).
      - Área industrial (20 lugares) e Avenida Brasil (24), com a carreira por pontos: etapa 3.
      - Terraço Suíça (28): etapa 4.
      - Aluguéis R$ 0, 120, 400 e 1.000 por dia (pesquisa em `docs/pesquisa-aluguel.md`).

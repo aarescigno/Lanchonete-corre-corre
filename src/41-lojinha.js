@@ -149,7 +149,7 @@ function buildEquipe(grid){
   c.appendChild(duo); grid.appendChild(c);
 }
 /* aba Salão (v7.4): o editor (o salão desenhado em escala, sem clientes) e a loja de móveis ao lado.
-   Arrastar a mesa muda o lugar dela (encaixe na grade); tocar nela abre "virar mesa de 4" e "vender" */
+   Arrastar a mesa muda o lugar dela (encaixe na grade); tocar nela abre a cor das cadeiras, "virar mesa de 4" e "vender" */
 const ED = { x:0, y:56, w:800, h:484, k:1.25 };  // pedaço do salão no editor (do pé da parede ao chão, até o balcão) e a resolução do canvas
 let edDrag = null;
 function edPt(cv, e){
@@ -241,13 +241,23 @@ function buildSalao(grid){
   cv.width = Math.round(ED.w * ED.k); cv.height = Math.round(ED.h * ED.k);
   cv.setAttribute('aria-label', 'Salão: arraste as mesas para mudar de lugar e toque numa mesa para ver as opções');
   box.appendChild(cv); edEvents(cv);
-  // mesa escolhida: virar mesa de 4 e vender (balãozinho em cima do salão)
+  // mesa escolhida: cor das cadeiras, virar mesa de 4 e vender (balãozinho em cima do salão)
   const m = mesas[sel];
   if (m){
     const up = m.y + 190 > ED.y + ED.h, pop = el('div', 'ed-pop' + (up ? ' up' : ''));
     pop.style.left = clamp((m.x - ED.x) / ED.w * 100, 18, 82) + '%';
     pop.style.top = ((up ? m.y - 66 : m.y + 72) - ED.y) / ED.h * 100 + '%';
     pop.appendChild(el('b', null, 'Mesa ' + (sel + 1) + ' · ' + m.seats + ' lugares'));
+    // v7.4.3: a cor das cadeiras (de graça), em bolinhas com o nome da cor no rótulo
+    const cores = el('div', 'ed-cores');
+    cores.appendChild(el('span', null, 'Cadeiras:'));
+    CHAIRS.forEach((ch, k) => {
+      const b = edBtn(k === m.c ? '✓' : '', 'ed-cor', true, () => game.pintarMesa(sel, k));
+      b.style.background = ch.c; b.title = 'Cadeiras na cor ' + ch.n;
+      b.setAttribute('aria-label', 'Cadeiras na cor ' + ch.n); b.setAttribute('aria-pressed', k === m.c ? 'true' : 'false');
+      cores.appendChild(b);
+    });
+    pop.appendChild(cores);
     if (m.seats === 2) pop.appendChild(edBtn('Virar mesa de 4: ' + fmt(SALAO.virar), 'btn', lug + 2 <= p.lugares && bank >= SALAO.virar, () => game.virarMesa(sel)));
     pop.appendChild(edBtn('Vender por ' + fmt(mesaPreco(m.seats) * SALAO.venda), 'btn alt', mesas.length > 1, () => game.venderMesa(sel)));
     const x = el('button', 'ed-x', '×'); x.type = 'button'; x.setAttribute('aria-label', 'Fechar');
@@ -264,7 +274,7 @@ function buildSalao(grid){
   side.appendChild(edBtn('Mesa de 4: ' + fmt(SALAO.mesa4), 'btn', lug + 4 <= p.lugares && bank >= SALAO.mesa4, () => game.buyMesa(4)));
   side.appendChild(edBtn('Arrumação automática', 'btn alt', true, () => game.arrumarSalao()));
   side.appendChild(edBtn('Desfazer', 'btn alt', game.salaoUndo.length > 0, () => game.desfazerSalao()));
-  side.appendChild(el('span', game.salaoMsg ? 'msg' : 'ed-dica', game.salaoMsg || (lug >= p.lugares ? 'O salão está no teto de ' + p.lugares + ' lugares.' : 'Arraste as mesas; toque numa para virar mesa de 4 ou vender. Grupos de 3 ou 4 só sentam nas mesas de 4.')));
+  side.appendChild(el('span', game.salaoMsg ? 'msg' : 'ed-dica', game.salaoMsg || (lug >= p.lugares ? 'O salão está no teto de ' + p.lugares + ' lugares.' : 'Arraste as mesas; toque numa para trocar a cor das cadeiras, virar mesa de 4 ou vender. Grupos de 3 ou 4 só sentam nas mesas de 4.')));
   side.appendChild(el('span', 'ed-contas', 'Luz e gás: ' + fmt(contasDia(game.tables, p)) + ' por dia (' + fmt(CONTAS.mesa) + ' por mesa e ' + fmt(CONTAS.lugar) + ' por lugar).'));
   const mov = Math.round((movimentoSalao(lug) - 1) * 100);
   side.appendChild(el('span', 'ed-contas', 'Cada lugar acima de ' + MOVIMENTO.kit + ' traz ' + Math.round(MOVIMENTO.porLugar * 100) + '% mais clientes' + (mov > 0 ? ' (hoje, +' + mov + '%).' : '.')));
@@ -302,7 +312,7 @@ function caixaResumo(save){
   if (nd) out.push('Para onde foi (' + nd + (nd > 1 ? ' dias' : ' dia') + '): ' + caixaTotais(cx).filter(t => t.v).map(t => t.name.toLowerCase() + ' ' + t.v).join(', '));
   const ups = UPGRADES.filter(u => save.up[u.id]).map(u => u.name.toLowerCase());
   out.push('Agora: ' + fmt(save.bank) + ' · Tonhão nível ' + (eq.tonhao + 1) + ', ' + (eq.dani ? 'Dani nível ' + eq.dani : 'sem Dani') + (eq.couvert ? ', couvert' : '') + (eq.tv ? ', TV' : '') + (eq.som ? ', som' : '') +
-    ' · ' + divulgaOf(save.divulga).name.toLowerCase() + ' · ' + pontoOf(sal.ponto).nome.replace(/ da Bia.*/, '').toLowerCase() + ' com ' + sal.mesas.length + ' mesas e ' + salaoLugares(sal.mesas) + ' lugares · melhorias: ' + (ups.join(', ') || 'nenhuma'));
+    ' · ' + divulgaOf(save.divulga).name.toLowerCase() + ' · ' + pontoOf(sal.ponto).nome.replace(/ da .*/, '').toLowerCase() + ' com ' + sal.mesas.length + ' mesas e ' + salaoLugares(sal.mesas) + ' lugares · melhorias: ' + (ups.join(', ') || 'nenhuma'));
   return out.join('\n');
 }
 /* copia para a área de transferência; se o navegador não deixar, devolve false (a aba mostra o texto para copiar à mão) */

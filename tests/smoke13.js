@@ -1,5 +1,5 @@
 // v7.4, Garagem: kit inicial, mesas compradas até o teto de 16 lugares, editor do salão (mover, arrumar, desfazer,
-// virar mesa de 4, vender), posição válida e caminho até cada mesa, contas sem aluguel e todas as mesas abertas.
+// virar mesa de 4, vender, cor das cadeiras), posição válida e caminho até cada mesa, contas sem aluguel e todas as mesas abertas.
 const H=require('./harness.js')(); const {g,L,ctx,els}=H;
 let fails=0,total=0; const ok=(c,m)=>{ total++; if(!c){fails++;console.log('FAIL:',m);} else console.log('ok  :',m); };
 const S=L.SALAO, P=L.PONTOS[0], C=L.CONTAS, mesas=()=>g.save.salao.mesas, lug=()=>L.salaoLugares(mesas());
@@ -96,6 +96,17 @@ novo(1000); L.setShopTab('salao');
   ok(g.salaoSel===1,'tocar na mesa escolhe a mesa');
   let pop=acha(els['shop-grid'],e=>/ed-pop/.test(e.className||''));
   ok(!!pop && /Mesa 2 · 2 lugares/.test(txt(pop)) && /Virar mesa de 4: R\$ 100/.test(txt(pop)) && /Vender por R\$ 75/.test(txt(pop)),'balãozinho da mesa: virar mesa de 4 e vender');
+  // cor das cadeiras (v7.4.3): de graça, a mesa continua escolhida e dá para desfazer
+  { const c0=mesas()[1].c, cor=(c0+1)%4, b=g.save.bank, nome=k=>'Cadeiras na cor '+L.CHAIRS[k].n;
+    const bolas=pop.children.find(e=>/ed-cores/.test(e.className||'')).children.filter(e=>e.tagName==='BUTTON');
+    ok(bolas.length===4 && bolas[c0].getAttribute('aria-pressed')==='true' && bolas.filter(e=>e.getAttribute('aria-pressed')==='true').length===1,'balãozinho: 4 cores de cadeira, a atual marcada');
+    acha(pop,e=>e.tagName==='BUTTON'&&e.getAttribute('aria-label')===nome(cor)).fire('click');
+    ok(mesas()[1].c===cor && g.tables[1].color===cor && g.save.bank===b && g.salaoSel===1 && g.salaoUndo.length===1,'trocar a cor das cadeiras: de graça, no salão do jogo e com a mesa ainda escolhida');
+    pop=acha(els['shop-grid'],e=>/ed-pop/.test(e.className||''));
+    ok(acha(pop,e=>e.tagName==='BUTTON'&&e.getAttribute('aria-label')===nome(cor)).getAttribute('aria-pressed')==='true','a cor nova fica marcada');
+    ok(!g.pintarMesa(1,4) && !g.pintarMesa(9,0) && mesas()[1].c===cor,'cor ou mesa que não existe: recusa');
+    ok(g.desfazerSalao() && mesas()[1].c===c0,'Desfazer volta a cor'); g.salaoSel=1; L.setShopTab('salao');
+    pop=acha(els['shop-grid'],e=>/ed-pop/.test(e.className||'')); }
   const vb=acha(pop,e=>e.tagName==='BUTTON'&&/Virar/.test(e.textContent)); vb.fire('click');
   ok(mesas().filter(m=>m.seats===4).length===2 && /Lugares 12 de 16/.test(txt(els['shop-grid'])),'botão do balão vira a mesa de 4');
   // arrastar a mesa 3 para um lugar livre (no dedo, com folga) e para cima de outra (volta)
