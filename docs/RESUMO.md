@@ -1,9 +1,9 @@
 # Resumo do projeto e das alterações (até 21/10/2026)
 
 ## Estado atual
-- **Versão:** v7.6 (tela larga: calçada, salão e cozinha na mesma tela, sem rolar), sobre a v7.5.1 (modo dev: 10 toques no selo da versão) e a v7.5 (espera na calçada e Máquina de suco), pronta no `claude/main` e ainda não publicada no artifact; a publicada é a v7.4.4 (TV e som na Garagem), Versão 32 do artifact https://claude.ai/artifact/MJxrgDg8S4akvg47SoQAvj (privado).
+- **Versão:** v7.6 (tela larga: calçada, salão e cozinha na mesma tela, sem rolar), sobre a v7.5.1 (modo dev: 10 toques no selo da versão) e a v7.5 (espera na calçada e Máquina de suco), publicada em 22/10 como Versão 33 do artifact https://claude.ai/artifact/MJxrgDg8S4akvg47SoQAvj (privado).
 - **Branch:** `claude/main` (renomeado pelo usuário; o antigo `claude/intelligent-gauss-3owv29` não existe mais) no repositório `aarescigno/Lanchonete-corre-corre`.
-- **Arquivos publicados:** `lanchonete.html` (página), mais `versoes/v1.html` a `versoes/v7.4.3.html`, abertos pelo painel Versões (a `versoes/v7.4.4.html`, a `versoes/v7.5.html` e a `versoes/v7.5.1.html` vão na próxima publicação).
+- **Arquivos publicados:** `lanchonete.html` (página), mais `versoes/v1.html` a `versoes/v7.5.1.html`, abertos pelo painel Versões.
 - **Capacidades declaradas (mantidas ao republicar sem `capabilities`):**
   - `db`: `ranking-carreira` e `ranking-semfim` com read "view" e write "owner";
   - `db`: `ranking-*/{self}` com write "interact";
