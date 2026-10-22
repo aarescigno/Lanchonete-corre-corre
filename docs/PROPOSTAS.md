@@ -4,6 +4,21 @@ Registro das ideias e dos retornos de quem jogou, com o texto original, e de ond
 
 ---
 
+## 22/10/2026 — Usuário: Missão zero, o tutorial com pop-ups
+**Origem:** mensagem do usuário, depois da v8.1.1 (a sessão se chamava "Missão zero tutorial com pop-ups"; o primeiro pedido não chegou e ele explicou de novo):
+
+> Boa, tem que ter uma missão tutorial, tipo um dia zero, assim, ou mesmo dia um. E precisa mostrar todo o fluxo de tarefas que a Bia pode fazer. Então, direcionar a pessoa para a mesa, é importante direcionar da mesma cor, que tem bônus. É, esperar o cardápio, pegar o pedido, levar para o Tonhão, esperar, servir a comida, servir o cafezinho, explicar os bônus que tem no cafezinho, de dinheiro e de pontuação. E de coração, né? É, retirar os pratos, lavar os pratos, cobrar, tirar o lixo, lavar os pratos, todo esse ciclo aí.
+
+**Para onde foi cada ideia:**
+- **Feito na v8.2:** o dia 0 é a Missão zero, um treino com uma mesa só e 23 pop-ups (`docs/spec-v8.2.md`).
+- Levar à mesa da mesma cor, com o bônus: passos "cor" e "sentar" (só a mesa da cor certa aceita o grupo no treino).
+- Esperar o cardápio, pegar o pedido, levar ao Tonhão, esperar, servir: passos "cardapio" a "servir".
+- Cafezinho e os bônus dele (dinheiro, pontuação e coração): passos "cafe", "cafe2" e "bonus"; o passo "conta" mostra a conta de verdade com os 5 corações ("a conta de R$ 36 virou R$ 54") e que o que entra é a pontuação do ranking.
+- Cobrar, recolher os pratos, lavar e tirar o lixo: passos "cobrar" a "lixo". Na ordem do jogo, cobrar vem antes de recolher (a louça só fica na mesa depois que o grupo paga e sai).
+- "Dia zero ou mesmo dia um": ficou como dia 0, à parte, que não conta para a carreira (a paciência não acaba); quem nunca treinou já encontra o 0 escolhido no menu, e o dia 1 convida quem pulou.
+
+---
+
 ## 22/10/2026 — Retorno de jogador: só três balões nas mesas
 **Origem:** mensagem do usuário, repassando um retorno, depois da v8.1:
 

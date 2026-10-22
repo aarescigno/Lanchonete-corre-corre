@@ -37,6 +37,10 @@ p{margin:calc(var(--u)*6) 0;font-size:max(12px,calc(var(--u)*16));line-height:1.
 .link{background:none;border:0;font:600 max(12px,calc(var(--u)*14)) var(--fb);color:var(--faixa);text-decoration:underline;cursor:pointer;margin-top:calc(var(--u)*10);padding:8px 4px;min-height:44px}
 .chips{display:flex;flex-wrap:wrap;gap:calc(var(--u)*8);margin:calc(var(--u)*6) 0 calc(var(--u)*4)}
 .chip{font-family:var(--fd);font-size:max(13px,calc(var(--u)*18));min-width:max(44px,calc(var(--u)*50));min-height:max(44px,calc(var(--u)*46));background:var(--azulejo);border:calc(var(--u)*3) solid var(--tinta);border-radius:calc(var(--u)*12);cursor:pointer;color:var(--tinta);box-shadow:0 calc(var(--u)*4) 0 var(--tinta)}
+.menu-panel .chips{gap:calc(var(--u)*6)}   /* 8 chips (0 a 7) numa linha */
+.menu-panel .chip{min-width:max(40px,calc(var(--u)*46))}
+.chip.treino{background:var(--mostarda)}   /* dia 0: a Missão zero (v8.2) */
+.sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap;margin:-1px}
 .chip[aria-pressed="true"]{background:var(--faixa);color:#fff}
 .chip[disabled]{opacity:.35;cursor:not-allowed}
 .lbl{font-weight:800;font-size:max(11px,calc(var(--u)*13));letter-spacing:.08em;text-transform:uppercase;color:var(--faixa);margin-top:calc(var(--u)*10)}
@@ -225,7 +229,8 @@ table.rank tr.me td{background:#fbe7a8}
   .menu-panel .title{font-size:max(24px,calc(var(--u)*44));padding-right:calc(var(--u)*40)}
   .menu-panel .tag{margin:calc(var(--u)*8) 0 calc(var(--u)*4)}
   .menu-panel .lbl{margin-top:calc(var(--u)*4)}
-  .menu-panel .chips{gap:6px;flex-wrap:nowrap}
+  .menu-panel .chips{gap:4px;flex-wrap:nowrap}
+  .menu-panel .chip{min-width:38px}
   .menu-btns{display:flex;flex-wrap:wrap;gap:8px;margin-top:calc(var(--u)*10)}
   .menu-btns .row.tight{display:contents}
   .menu-panel .links .link{margin-top:calc(var(--u)*4)}

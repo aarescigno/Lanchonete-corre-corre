@@ -24,6 +24,7 @@ Origem: retorno do Renan Martorelli (beta-tester) e conversa com o Arthur (15/10
 | — | Fora do plano: espera da Garagem de pé, Água da torneira e espada-de-são-jorge | v7.7 | feita (22/10) |
 | 2 | Manutenção e imprevistos | v8 | feita (22/10) |
 | — | Retorno do usuário: dinheiro comprometido com a folha à vista na lojinha | v8.1 | feita (22/10) |
+| — | Pedido do usuário: Missão zero, o dia 0 de treino com pop-ups | v8.2 | feita (22/10) |
 | 3 | Pontos: área industrial e Avenida Brasil, carreira por pontos | v9 | **próxima** |
 | 4 | Terraço Suíça e VIPs exigentes | v10 | a fazer |
 | 5 | Modo História, parte 1: estrutura e primeiros capítulos | v11 | a fazer |

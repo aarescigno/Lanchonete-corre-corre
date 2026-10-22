@@ -351,7 +351,7 @@ const DIVULGA = [
 const MOVIMENTO = { kit:10, porLugar:0.06 };
 function movimentoSalao(lugares){ return 1 + MOVIMENTO.porLugar * Math.max(0, lugares - MOVIMENTO.kit); }
 const CAIXA_MAX = 14;                                 // livro-caixa (v7.2): quantos dias da carreira ficam guardados
-const VERSAO = 'v8.1.1';                              // vai no resumo do Caixa
+const VERSAO = 'v8.2';                                // vai no resumo do Caixa
 const DIVULGA_DIA = 3;                                // antes disso, o movimento é o da inauguração (sem custo)
 function divulgaAberta(n){ return DEV.on || n >= DIVULGA_DIA; }   // no modo dev, desde o dia 1
 function divulgaOf(id){ return DIVULGA.find(d => d.id === id) || DIVULGA[1]; }
@@ -372,6 +372,8 @@ function contasDia(tables, ponto){
   return (ponto || PONTOS[0]).aluguel + CONTAS.mesa * open.length + CONTAS.lugar * open.reduce((a, t) => a + t.seats, 0);
 }
 
+/* Missão zero (v8.2): o dia de treino, com uma mesa só e os pop-ups do passo a passo (TREINO_PASSOS, em 17-treino.js) */
+const TREINO = { n:0, groups:1, types:['vovos'], nu:null, meta:0, expert:0, time:0, speed:1, juice:0, note:'', treino:true };
 const ENDLESS = { n:0, groups:0, types:['estudante','vovos','familia','executiva','entregador'], nu:null, meta:0, expert:0, time:0, speed:1, vip:0.12, juice:0.3, note:'', endless:true };
 
 /* Bia (v7.3): velocidade de base em px/s e o ganho de cada nível dos tênis */
