@@ -13,14 +13,14 @@ function drawTouchFx(ctx,g){
   }
 }
 
-/* o mundo (salão, calçada, gente e efeitos) anda com a câmera (v7.5); o HUD e as abinhas ficam fixos na tela */
+/* o mundo (salão, calçada, gente e efeitos) começa em g.cam na tela larga (v7.6); o HUD fica na tela */
 function render(g, ctx){
   const tm = g.anim;
   const menu = g.state === 'menu';
   ctx.save();
   ctx.lineJoin = 'round'; ctx.lineCap = 'round';
   ctx.save();
-  ctx.translate(menu ? 0 : g.cam, 0);
+  ctx.translate(g.cam, 0);
   drawFloor(ctx,g);
   drawWall(ctx,g,tm);
   drawCalcada(ctx,g,tm);
@@ -125,17 +125,16 @@ function render(g, ctx){
   ctx.restore();
 
   if (menu){
-    ctx.fillStyle = 'rgba(34,32,28,.18)'; ctx.fillRect(0,92,W,448);
-    drawBia(ctx,b,790,520,{ s:2.3, wave:true, t:tm });
-    ctx.fillStyle = '#2B2823'; ctx.fillRect(0,540,W,60);
-    ctx.fillStyle = PAL.mostarda; ctx.fillRect(0,540,W,4);
+    ctx.fillStyle = 'rgba(34,32,28,.18)'; ctx.fillRect(0,92,TW,448);
+    drawBia(ctx,b,TW-170,520,{ s:2.3, wave:true, t:tm });
+    ctx.fillStyle = '#2B2823'; ctx.fillRect(0,540,TW,60);
+    ctx.fillStyle = PAL.mostarda; ctx.fillRect(0,540,TW,4);
   } else {
     drawHud(ctx,g,tm);
-    if (g.state === 'playing' || g.state === 'paused') drawAbas(ctx,g,tm);
     if (g.ending && g.state === 'playing'){
       const msg = g.reason === 'time' ? 'Fim do expediente!' : (g.reason === 'stars' ? 'Sem estrelas!' : 'Todo mundo atendido!');
-      ctx.fillStyle = 'rgba(34,32,28,.35)'; ctx.fillRect(0,230,W,90);
-      txt(ctx,msg,W/2,275,46,PAL.mostarda,'center',FD,7);
+      ctx.fillStyle = 'rgba(34,32,28,.35)'; ctx.fillRect(0,230,TW,90);
+      txt(ctx,msg,TW/2,275,46,PAL.mostarda,'center',FD,7);
     }
   }
   ctx.restore();

@@ -27,12 +27,17 @@ function starsHtml(box, n, total){
 /* ---------- escala / DPR ---------- */
 function fit(){
   const vw = window.innerWidth || 960, vh = window.innerHeight || 600;
-  const s = Math.max(0.2, Math.min(vw / W, vh / H));
+  const s = Math.max(0.2, Math.min(vw / TW, vh / H));   // tela larga (v7.6)
   const dpr = Math.min(window.devicePixelRatio || 1, 2.5);
-  stage.style.width = Math.floor(W*s) + 'px';
-  stage.style.height = Math.floor(H*s) + 'px';
+  // numa tela mais estreita que a do jogo (~2:1), o jogo encolhe; o palco ganha a altura que teria com a tela de antes
+  // (960 de largura), para os painéis (menu, lojinha) não ficarem apertados, e o jogo fica no meio dele
+  const sh = Math.max(H*s, Math.min(vh, H * Math.min(vw / W, vh / H)));
+  stage.style.width = Math.floor(TW*s) + 'px';
+  stage.style.height = Math.floor(sh) + 'px';
   stage.style.setProperty('--u', s + 'px');
-  canvas.width = Math.round(W*s*dpr);
+  canvas.style.height = Math.floor(H*s) + 'px';
+  canvas.style.marginTop = Math.floor((sh - H*s) / 2) + 'px';
+  canvas.width = Math.round(TW*s*dpr);
   canvas.height = Math.round(H*s*dpr);
 }
 
@@ -74,7 +79,7 @@ function buildTips(){
   const ul = $('tips');
   clearEl(ul);
   const tips = [
-    ['A freguesia espera lá fora, na calçada. Arraste o grupo até uma mesa livre (ou toque no grupo e depois na mesa; 2 toques no grupo levam a tela ao salão). Grupos grandes precisam das mesas de 4 lugares. Na lojinha, aba Salão, compre mesas e arraste-as para arrumar a garagem: mais lugares trazem mais clientes.', c => {
+    ['A freguesia espera lá fora, na calçada. Arraste o grupo até uma mesa livre (ou toque no grupo e depois na mesa). Grupos grandes precisam das mesas de 4 lugares. Na lojinha, aba Salão, compre mesas e arraste-as para arrumar a garagem: mais lugares trazem mais clientes.', c => {
       drawPerson(c,{skin:3,hair:3,hairC:'#1B1512',pants:'#2F3E5C'},12,52,{shirt:CHAIRS[1].c,mood:0,s:0.8});
       c.strokeStyle = PAL.alerta; c.lineWidth = 3; c.setLineDash([4,4]); c.beginPath(); c.moveTo(22,40); c.lineTo(40,30); c.stroke(); c.setLineDash([]);
       c.beginPath(); c.moveTo(42,28); c.lineTo(35,28); c.lineTo(40,35); c.closePath(); c.fillStyle = PAL.alerta; c.fill();
@@ -93,9 +98,9 @@ function buildTips(){
       drawPerson(c,{skin:1,hair:1,hairC:'#5B3A21',pants:'#4A4036'},20,58,{shirt:CHAIRS[3].c,mood:0,s:0.6});
       drawPerson(c,{skin:4,hair:0,hairC:'#1B1512',pants:'#4A4036'},44,58,{shirt:CHAIRS[0].c,mood:2,s:0.6});
     }],
-    ['A tela rola: arraste o fundo (ou toque nas abinhas do alto) para ver a calçada e a cozinha; levando um grupo até a borda, ela rola sozinha. A abinha da calçada pisca quando alguém lá fora precisa de você. Com a Máquina de suco, quem espera pede no tablet: toque na máquina e a Bia leva (o suco entra na conta).', c => {
+    ['Com a Máquina de suco, quem espera lá fora pede no tablet (1 suco por pessoa) e o suco sai pronto em poucos segundos: toque na máquina e a Bia pega os copos que couberem e leva a cada grupo. Atender devolve 1 coração, quem bebe espera com mais calma e o suco (R$ ' + JUICE.price + ') entra na conta.', c => {
       rr(c,6,10,20,28,4); fs(c,'#F2F2EE',1.8); rr(c,9,13,14,10,2); fs(c,'rgba(242,140,40,.75)',1.2); drawIcon(c,'juice',16,32,0.4);
-      rr(c,30,18,28,22,6); fs(c,'rgba(43,40,35,.88)',1.6); txt(c,'◀',38,29,11,PAL.mostarda,'center',FD); txt(c,'!',51,29,12,PAL.alerta,'center',FD);
+      c.save(); c.translate(44,26); c.rotate(-0.18); rr(c,-12,-9,24,17,3); fs(c,PAL.tinta,1.4); c.fillStyle = '#FFE0A6'; c.fillRect(-9,-6,18,11); c.restore(); drawIcon(c,'juice',44,26,0.32);   // tablet
       c.save(); c.translate(16,52); drawBubble(c,0,0,8,PAL.ok); drawIcon(c,'juice',-1,1,0.36); c.restore();
       c.strokeStyle = PAL.faixa; c.lineWidth = 2.5; c.beginPath(); c.moveTo(30,54); c.lineTo(56,54); c.moveTo(50,49); c.lineTo(56,54); c.lineTo(50,59); c.stroke();
     }],

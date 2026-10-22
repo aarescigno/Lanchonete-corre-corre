@@ -13,12 +13,12 @@ const cartoes=()=>els['shop-grid'].children;
 const cartao=nome=>cartoes().find(c=>c.children[1] && c.children[1].textContent===nome);
 
 ok(!L.DEV.on && g.unlocked===3 && g.save.bank===420,'sem o modo dev, o save de verdade (dia 3, R$ 420)');
-ok(L.VERSAO==='v7.5.1' && tag.textContent==='v7.5.1' && !vis('devbadge') && !vis('btn-dev-off'),'selo v7.5.1, sem "Modo dev" na tela');
+ok(/^v\d/.test(L.VERSAO) && tag.textContent===L.VERSAO && !vis('devbadge') && !vis('btn-dev-off'),'selo '+L.VERSAO+', sem "Modo dev" na tela');
 toca(9); ok(!L.DEV.on,'9 toques: nada');
 toca(1); ok(L.DEV.on && g.state==='menu' && els['ov-menu'].classList.contains('show'),'10º toque: liga o modo dev e fica no menu');
 ok(!els['ov-dev'] || !els['ov-dev'].classList.contains('show'),'sem painel à parte');
 ok(g.unlocked===7 && g.save.bank===10000,'7 dias liberados e R$ 10.000');
-ok(tag.textContent==='v7.5.1 · dev' && tag.classList.contains('dev') && vis('devbadge') && vis('btn-dev-off'),'"Modo dev" no selo, no alto da tela e o link de sair');
+ok(tag.textContent===L.VERSAO+' · dev' && tag.classList.contains('dev') && vis('devbadge') && vis('btn-dev-off'),'"Modo dev" no selo, no alto da tela e o link de sair');
 ok(store[L.LS.dev]==='1' && JSON.parse(store[L.LS.devSave]).bank===10000 && store[L.LS.save]===real,'save à parte: o de verdade não muda');
 
 // dia 1: no modo dev, a lojinha abre antes
@@ -57,7 +57,7 @@ g.save.bank=5; g.resetProgress(); ok(g.unlocked===7 && g.save.bank===10000 && st
 // sair: 10 toques de novo
 g.setState('menu'); toca(10);
 ok(!L.DEV.on && store[L.LS.dev]==='0' && g.unlocked===3 && g.save.bank===420 && g.up.bandeja && !g.up.tenis,'10 toques de novo: sai e volta o save de verdade');
-ok(tag.textContent==='v7.5.1' && !tag.classList.contains('dev') && !vis('devbadge') && !vis('btn-dev-off'),'"Modo dev" some da tela');
+ok(tag.textContent===L.VERSAO && !tag.classList.contains('dev') && !vis('devbadge') && !vis('btn-dev-off'),'"Modo dev" some da tela');
 ok(!L.couvertOk(g.ponto) && !L.divulgaAberta(1) && !g.save.equipe.couvert,'fora do modo dev, couvert e divulgação voltam às regras');
 els['btn-play'].fire('click'); ok(g.state==='shop' && g.shopNext===3,'carreira normal');
 g.setState('menu'); els['daychips'].children[0].fire('click'); els['btn-play'].fire('click'); ok(g.state==='intro' && g.day.n===1,'dia 1 sem lojinha, como antes');
@@ -67,6 +67,6 @@ g.setState('menu'); toca(10); ok(L.DEV.on,'liga de novo'); els['btn-dev-off'].fi
 // o modo dev fica guardado entre aberturas
 { const H2=load({store:{lcc2_save:real, lcc2_dev:'1', lcc2_save_dev:JSON.stringify({maxDay:2,bank:77,up:{ventilador:true}})}});
   ok(H2.L.DEV.on && H2.g.unlocked===7 && H2.g.save.bank===77 && H2.g.up.ventilador,'reabrindo com o modo dev ligado: save dev, 7 dias');
-  ok(H2.els['vtag'].textContent==='v7.5.1 · dev' && H2.els['devbadge'].style.display!=='none','"Modo dev" desde a abertura'); }
+  ok(H2.els['vtag'].textContent===H2.L.VERSAO+' · dev' && H2.els['devbadge'].style.display!=='none','"Modo dev" desde a abertura'); }
 console.log('total =',total,' fails =',fails);
 process.exit(fails?1:0);

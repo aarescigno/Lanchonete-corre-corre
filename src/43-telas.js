@@ -86,13 +86,13 @@ on('btn-final-menu', () => { selectedDay = 1; game.setState('menu'); });
 /* ---------- entrada ---------- */
 function toLogical(e){
   const r = canvas.getBoundingClientRect();
-  const w = r.width || W, h = r.height || H;
-  return { x:(e.clientX - r.left) * W / w, y:(e.clientY - r.top) * H / h };
+  const w = r.width || TW, h = r.height || H;
+  return { x:(e.clientX - r.left) * TW / w, y:(e.clientY - r.top) * H / h };
 }
 function touchPad(e){
   if (e.pointerType === 'mouse') return 0;
-  const w = canvas.getBoundingClientRect().width || W;
-  return clamp(14 * W / w, 8, 32);
+  const w = canvas.getBoundingClientRect().width || TW;
+  return clamp(14 * TW / w, 8, 32);
 }
 canvas.addEventListener('pointerdown', e => {
   Sfx.init(); Sfx.resume();
@@ -102,7 +102,7 @@ canvas.addEventListener('pointerdown', e => {
 });
 canvas.addEventListener('pointermove', e => { const p = toLogical(e); game.onMove(p.x, p.y); });
 canvas.addEventListener('pointerup', e => { const p = toLogical(e); game.onUp(p.x, p.y); });
-canvas.addEventListener('pointercancel', e => { game.drag = null; game.pan = null; game.hover = null; });
+canvas.addEventListener('pointercancel', e => { game.drag = null; game.hover = null; });
 canvas.addEventListener('contextmenu', e => e.preventDefault());
 window.addEventListener('keydown', e => {
   const k = e.key;
@@ -111,8 +111,6 @@ window.addEventListener('keydown', e => {
     if (game.state === 'playing'){ game.pause(); e.preventDefault(); }
     else if (game.state === 'paused' && k !== 'Escape'){ game.resume(); e.preventDefault(); }
   }
-  // setas: leva a tela à calçada (esquerda) ou ao salão (direita)
-  if ((k === 'ArrowLeft' || k === 'ArrowRight') && game.state === 'playing'){ game.camGo(k === 'ArrowLeft' ? CALCADA.w : 0); e.preventDefault(); }
 });
 document.addEventListener('visibilitychange', () => { if (document.hidden) game.pause(); });
 window.addEventListener('blur', () => game.pause());
@@ -128,7 +126,7 @@ function frame(ts){
   if (!(dt > 0)) dt = 0.016;
   dt = Math.min(dt, 0.05);
   game.update(dt);
-  ctx.setTransform(canvas.width / W, 0, 0, canvas.height / H, 0, 0);
+  ctx.setTransform(canvas.width / TW, 0, 0, canvas.height / H, 0, 0);
   render(game, ctx);
 }
 
@@ -137,7 +135,7 @@ fit();
 try { Rank.init(); } catch(e) {}
 game.setState('menu');
 window.__game = game;
-window.__lcc = { setShopTab: v => { shopTab = v; buildShop(); }, FILA_JUSTA, PORTA, CHAIRS, PAT, CONTAS, INGRED, MOVIMENTO, movimentoSalao, DIVULGA, DIVULGA_DIA, divulgaOf, contasDia, bomGoal, SALAO, PONTOS, pontoOf, MESA, mesaBox, mesaPreco, salaoLugares, mesaProblema, salaoCaminho, salaoProblema, salaoOrdena, salaoAuto, salaoVaga, salaoPerto, salaoKit, salaoDevolucao, SALAO_SEMFIM, normSalao, setObst, OBST, pathOk, MAQUINA, CALCADA, CAM, ABAS, esperaAp, tableApproach, CRIT, STAFF, DANI_TASKS, DANI_HANDS, daniTaskOk, TRASH, WASH, payroll, couvertEffect, couvertOk, ambienteEffect, dishStock, normSave, Helper, JUICE, KITCHEN_SLOTS, handLayout, trayOk, Game, Group, Table, Kitchen, Waitress, BIA_SPEED, DAYS, UPGRADES, CUSTOMER_TYPES, LAYOUT, PAL, Sfx, findPath, render, Rank, sortRows, cleanName, normName, CMD, ENDLESS, VIP, rk, renderRank, openRank, closeRank, LS, lsGet, lsSet, loadSave, DEV, saveKey, devSync, divulgaAberta, CAIXA_MAX, VERSAO, normCaixa, caixaResumo, caixaTotais, copyText };
+window.__lcc = { setShopTab: v => { shopTab = v; buildShop(); }, FILA_JUSTA, PORTA, CHAIRS, PAT, CONTAS, INGRED, MOVIMENTO, movimentoSalao, DIVULGA, DIVULGA_DIA, divulgaOf, contasDia, bomGoal, SALAO, PONTOS, pontoOf, MESA, mesaBox, mesaPreco, salaoLugares, mesaProblema, salaoCaminho, salaoProblema, salaoOrdena, salaoAuto, salaoVaga, salaoPerto, salaoKit, salaoDevolucao, SALAO_SEMFIM, normSalao, setObst, OBST, pathOk, MAQUINA, CALCADA, TW, HUDX, esperaAp, tableApproach, CRIT, STAFF, DANI_TASKS, DANI_HANDS, daniTaskOk, TRASH, WASH, payroll, couvertEffect, couvertOk, ambienteEffect, dishStock, normSave, Helper, JUICE, KITCHEN_SLOTS, handLayout, trayOk, Game, Group, Table, Kitchen, Waitress, BIA_SPEED, DAYS, UPGRADES, CUSTOMER_TYPES, LAYOUT, PAL, Sfx, findPath, render, Rank, sortRows, cleanName, normName, CMD, ENDLESS, VIP, rk, renderRank, openRank, closeRank, LS, lsGet, lsSet, loadSave, DEV, saveKey, devSync, divulgaAberta, CAIXA_MAX, VERSAO, normCaixa, caixaResumo, caixaTotais, copyText };
 window.requestAnimationFrame(frame);
 
 })();
