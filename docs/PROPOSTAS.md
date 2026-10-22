@@ -4,6 +4,16 @@ Registro das ideias e dos retornos de quem jogou, com o texto original, e de ond
 
 ---
 
+## 22/10/2026 — Retorno de jogador: a ordem da espera lá fora
+**Origem:** mensagem do usuário, repassando um retorno da beta tester, depois da v8.1.1:
+
+> Outro feedback que recebi da minha beta tester: a fila de chegada das pessoas, ela acumula de uma forma errada. ela acumula, sendo que o último fica em cima, né? O que está mais tempo fica em cima e deveria estar abaixo. Então deveria acumular na porta embaixo, ser o antigo, e vai acumulando para cima os outros que chegam depois
+
+**Para onde foi cada ideia:**
+- **Feito na v8.1.2:** o 1º da fila fica no lugar 1, embaixo, e quem chega depois fica acima dele; quando alguém sai, quem estava acima desce.
+
+---
+
 ## 22/10/2026 — Retorno de jogador: só três balões nas mesas
 **Origem:** mensagem do usuário, repassando um retorno, depois da v8.1:
 
