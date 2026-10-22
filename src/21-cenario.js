@@ -108,7 +108,7 @@ function drawWallCommon(ctx,g,t){
   ctx.restore();
 
   // relógio
-  const endless = !!(g && g.mode === 'semfim');
+  const endless = !!(g && (g.mode === 'semfim' || g.mode === 'treino'));   // na Missão zero também conta para a frente, sem fim
   const frac = endless ? ((g.elapsed % 60) / 60) : (g ? clamp(g.clock / g.day.time, 0, 1) : 1);
   const low = !endless && g && g.clock < 20 && g.state === 'playing';
   circ(ctx,712,44,32); fs(ctx,PAL.cromo,3);

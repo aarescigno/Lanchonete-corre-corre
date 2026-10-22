@@ -142,6 +142,7 @@ function render(g, ctx){
       ctx.fillStyle = 'rgba(34,32,28,.35)'; ctx.fillRect(0,230,TW,90);
       txt(ctx,msg,TW/2,275,46,PAL.mostarda,'center',FD,7);
     }
+    if (g.treino && g.mode === 'treino') drawTreino(ctx,g,tm);
   }
   ctx.restore();
 }

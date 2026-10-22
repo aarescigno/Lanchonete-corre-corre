@@ -5,7 +5,7 @@
 
     <div class="ov show" id="ov-menu">
       <div class="panel menu-panel">
-        <span class="vtag" id="vtag" aria-label="Versão 8.1.2">v8.1.2</span>
+        <span class="vtag" id="vtag" aria-label="Versão 8.2">v8.2</span>
         <h1 class="title">Lanchonete <br>Corre-Corre</h1>
         <p class="tag">Ajude a Bia a atender a freguesia da esquina antes que o cafezinho esfrie!</p>
         <div class="lbl">Carreira: escolha o dia</div>
@@ -48,6 +48,15 @@
         <p class="small" id="intro-note"></p>
         <p class="small" id="intro-manut"></p>
         <div class="row"><button class="btn go" id="btn-start">Abrir a lanchonete</button><button class="btn alt" id="btn-intro-menu">Menu</button></div>
+      </div>
+    </div>
+
+    <div class="ov" id="ov-treino">
+      <div class="panel">
+        <h2>Missão zero completa!</h2>
+        <p>Agora você conhece o ciclo da Bia: sentar na cor certa, anotar, levar ao Tonhão, servir, cafezinho, cobrar, recolher a louça, lavar e tirar o lixo.</p>
+        <p class="small">Dá para treinar de novo quando quiser: no menu, escolha o dia 0.</p>
+        <div class="row"><button class="btn go" id="btn-treino-dia1">Começar o dia 1</button><button class="btn alt" id="btn-treino-menu">Menu</button></div>
       </div>
     </div>
 
@@ -184,7 +193,8 @@
       <div class="panel">
         <h2>Versões</h2>
         <ul class="verlist">
-          <li><b>v8.1.2</b><span class="cur">versão atual</span><br>22/10/2026 &mdash; A espera lá fora na ordem certa: quem chegou primeiro fica embaixo, no lugar 1, e quem chega depois vai ficando acima. Quando alguém sai, a fila desce.</li>
+          <li><b>v8.2</b><span class="cur">versão atual</span><br>22/10/2026 &mdash; Missão zero: o dia 0 é um treino com uma mesa só e pop-ups passo a passo, mostrando tudo o que a Bia faz: sentar o grupo na mesa da mesma cor (bônus), esperar o cardápio, anotar, levar ao Tonhão, servir, cafezinho (e os bônus dele em dinheiro e corações), cobrar, recolher a louça, lavar e tirar o lixo. Ninguém perde a paciência e nada conta para a carreira. Quem nunca treinou já encontra o dia 0 escolhido no menu.</li>
+          <li><b>v8.1.2</b><br>22/10/2026 &mdash; A espera lá fora na ordem certa: quem chegou primeiro fica embaixo, no lugar 1, e quem chega depois vai ficando acima. Quando alguém sai, a fila desce.<br><a href="versoes/v8.1.2.html" target="_blank" rel="noopener">Abrir a v8.1.2</a></li>
           <li><b>v8.1.1</b><br>22/10/2026 &mdash; Menos balões nas mesas: ficam só o cardápio (escolhendo), a exclamação (chamando para pedir) e o dinheiro (pedindo a conta). Esperando a comida ou comendo, a mesa fica sem balão.<br><a href="versoes/v8.1.1.html" target="_blank" rel="noopener">Abrir a v8.1.1</a></li>
           <li><b>v8.1</b><br>22/10/2026 &mdash; Dinheiro comprometido: na lojinha, ao lado do dinheiro acumulado, aparece quanto está livre e quanto já está reservado para a folha e a divulgação do dia (Dani, TV, som, panfletos...). Compra que usaria esse dinheiro fica com um ⚠ e pede um 2º toque, dizendo o que fica de fora no dia.<br><a href="versoes/v8.1.html" target="_blank" rel="noopener">Abrir a v8.1</a></li>
           <li><b>v8</b><br>22/10/2026 &mdash; Manutenção e imprevistos: o fogão, a geladeira e a cafeteira se gastam a cada dia (mais em dia cheio) e, do dia 4 em diante, o que está gasto pode quebrar no meio do dia (fogão falhando: o Tonhão cozinha mais devagar; geladeira: ingredientes mais caros; cafeteira: sem cafezinho). Um toque na plaquinha chama o técnico na hora; na lojinha, aba Manutenção, a revisão deixa tudo novo. E, de vez em quando, chuva (menos gente, mais entregadores) ou feriado (mais gente). O caixa ganhou a coluna Manutenção.<br><a href="versoes/v8.html" target="_blank" rel="noopener">Abrir a v8</a></li>
@@ -212,6 +222,7 @@
       </div>
     </div>
     <div class="devbadge" id="devbadge" style="display:none">Modo dev</div>
+    <p class="sr" id="treino-live" role="status" aria-live="polite"></p>
   </div>
   <div id="rotate" role="status">Gire o celular para jogar melhor</div>
 </div>

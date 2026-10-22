@@ -36,7 +36,7 @@ class Kitchen {
         if (free >= 0 && this.clean <= 0) this.noPlate = true;
         if (free >= 0 && this.clean > 0){
           this.clean--;
-          const crit = Math.random() < this.chef.crit;
+          const crit = this.game.mode !== 'treino' && Math.random() < this.chef.crit;
           this.plates[free] = { id:++this.pid, table:t.table, group:t.group, dish:t.dish, slot:free, age:0, crit, vip:!!(t.group && t.group.vip) };
           this.cooking.splice(i,1);
           this.game.usos.fogao++; this.game.usos.geladeira++;

@@ -20,6 +20,7 @@ class Game {
     this.shopBought = false; this.shopNext = 1; this.boughtFor = 0;
     this.soundBtnT = 0;
     this.mode = 'carreira';
+    this.treino = null; this.salvo = null;   // Missão zero (v8.2): o passo a passo e o save de verdade, guardado enquanto ela dura
     this.resetDay(1);
   }
   setState(s){ this.state = s; if (this.hooks.state) this.hooks.state(s); }
@@ -27,9 +28,10 @@ class Game {
   get ponto(){ return pontoOf(this.save.salao.ponto); }
   get bebida(){ return bebidaOf(this.ponto); }   // o que se serve na espera (v7.7)
 
-  resetDay(n){
-    this.mode = n === 0 ? 'semfim' : 'carreira';
-    this.day = n === 0 ? ENDLESS : DAYS[n-1];
+  resetDay(n, treino){
+    if (!treino) this.sairTreino();
+    this.mode = treino ? 'treino' : n === 0 ? 'semfim' : 'carreira';
+    this.day = treino ? TREINO : n === 0 ? ENDLESS : DAYS[n-1];
     this.money = 0; this.custo = 0; this.contas = 0; this.paidDiv = 0; this.conserto = 0;
     // imprevistos (v8): o sorteio do dia (feito ao começar o dia, e guardado até ele acabar) diz o clima e o que quebra
     const so = n && this.save.manut.sorteio && this.save.manut.sorteio.d === n ? this.save.manut.sorteio : null;
@@ -60,7 +62,7 @@ class Game {
     this.ending = false; this.endTimer = 0; this.reason = '';
     this.sel = null; this.drag = null; this.hover = null;
     this.cam = CALCADA.w;
-    this.schedule = n === 0 ? [] : this.buildSchedule(this.day);
+    this.schedule = n === 0 || treino ? [] : this.buildSchedule(this.day);
     this.nextIdx = 0;
     this.result = null;
     this.bannerT = 0;
@@ -145,6 +147,28 @@ class Game {
     });
   }
   startEndless(){ this.resetDay(0); this.setState('intro'); }
+  /* Missão zero (v8.2): o treino joga com o save de um jogador novo (kit da Garagem, sem melhorias nem equipe), que
+     nunca se grava; o de verdade fica guardado em `salvo` e volta ao sair. Começa direto, sem a introdução do dia */
+  startTreino(){
+    if (!this.salvo) this.salvo = this.save;
+    this.save = Object.assign(normSave({}), { _treino:true });
+    this.up = this.save.up;
+    this.resetDay(0, true);
+    this.treino = new Treino(this);
+    this.setState('playing');
+  }
+  sairTreino(){
+    if (!this.salvo) return;
+    this.save = this.salvo; this.salvo = null; this.up = this.save.up; this.treino = null;
+  }
+  /* último passo: a Missão zero fica marcada como feita no save de verdade */
+  acabouTreino(){
+    this.sairTreino();
+    this.save.treino = true; writeSave(this.save);
+    this.setState('treinoend');
+    Sfx.win();
+  }
+  get treinoSegura(){ return !!(this.treino && this.treino.segura); }
   /* debita a folha e a divulgação do dia do dinheiro acumulado; o que não puder ser pago sai
      (a divulgação vira boca a boca, depois couvert, som, TV, Dani e aumento do Tonhão) */
   payDay(){
@@ -256,6 +280,7 @@ class Game {
     }
     const amount = Math.round(g.bill * HEART_MULT[g.hearts] * (1 + g.T.tip + (g.vip ? VIP.tip : 0)));
     this.score('bill', amount, t.cx, t.cy - 50);
+    if (this.treino) this.treino.conta = { v:amount, h:g.hearts, base:g.bill };
     if (g.sucoConta){ const v = this.bebida.preco * g.sucoConta; this.addMoney(v); this.addText(t.cx - 34, t.cy - 100, 'Suco da espera +' + v, PAL.alerta, 14); }
     if (g.T.tip > 0 || g.vip) this.addText(t.cx + 20, t.cy - 76, 'Gorjeta!', PAL.mostarda, 15);
     const eq = this.save.equipe;
@@ -416,6 +441,7 @@ class Game {
     if (t.group) return this.fail(g, 'Mesa ocupada!');
     if (t.dirty) return this.fail(g, 'Mesa suja!');
     if (t.seats < g.size) return this.fail(g, 'Não cabe!');
+    if (this.treino && t !== this.treino.mesa) return this.fail(g, 'Procure as cadeiras ' + TREINO_COR[g.color] + '!');
     this.queue.splice(this.queue.indexOf(g), 1);
     this.reslot();
     this.maqCancela(g);
@@ -485,10 +511,12 @@ class Game {
       return;
     }
     dt = Math.min(dt, 0.05);
+    if (this.treino && this.treino.para){ this.updateFx(dt); return; }   // Missão zero: com o pop-up de explicação, o jogo espera
     if (this.starFlash > 0) this.starFlash = Math.max(0, this.starFlash - dt);
     if (!this.ending){
       this.elapsed += dt;
-      if (this.mode === 'semfim'){
+      if (this.mode === 'treino'){ if (this.treino) this.treino.update(dt); }
+      else if (this.mode === 'semfim'){
         this.arrT -= dt;
         while (this.arrT <= 0 && !this.ending){
           this.spawnEndless();
@@ -527,6 +555,8 @@ class Game {
         this.endTimer -= dt;
         if (this.endTimer <= 0) this.finishEndless();
       }
+    } else if (this.mode === 'treino'){
+      // a Missão zero acaba no último passo do pop-up, sem relógio
     } else if (!this.ending){
       if (this.clock <= 0){
         this.clock = 0;
@@ -820,6 +850,8 @@ class Game {
     if (this.state !== 'playing') return;
     pad = pad || 0;
     const h = this.hudHit(sx, y);
+    // Missão zero: com o pop-up de explicação, qualquer toque (menos a pausa e o som) segue para o próximo passo
+    if (this.treino && this.treino.para && !(h && (h.k === 'pause' || h.k === 'sound'))){ this.treino.seguir(); return; }
     if (h){
       if (h.k === 'pause') this.pause();
       else if (h.k === 'sound'){ Sfx.muted = !Sfx.muted; if (!Sfx.muted) Sfx.tap(); this.addGlow('som'); }

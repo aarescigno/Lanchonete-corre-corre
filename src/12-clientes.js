@@ -104,7 +104,7 @@ function normSave(s){
   if (up.chapa){ up.pratos = true; delete up.chapa; }     // a Chapa nova virou Jogo de pratos (a velocidade da cozinha é do Tonhão)
   // salão da v6 à v7.3 (v7.4): o que foi gasto em cadeiras e mesas volta para o dinheiro, numa linha do caixa, e o
   // jogo começa na Garagem com o kit
-  const dev = salaoDevolucao(s.salao), out = { maxDay: clamp(+s.maxDay||1,1,7), bank: Math.max(0,+s.bank||0) + dev + devMaq, up, torneira:true, best: (s.best && typeof s.best === 'object') ? s.best : {}, stars: (s.stars && typeof s.stars === 'object') ? s.stars : {}, salao: normSalao(dev ? null : s.salao), divulga: divulgaOf(s.divulga).id, manut: normManut(s.manut), caixa: normCaixa(s.caixa), caixaPend: normPend(s.caixaPend) };
+  const dev = salaoDevolucao(s.salao), out = { maxDay: clamp(+s.maxDay||1,1,7), bank: Math.max(0,+s.bank||0) + dev + devMaq, up, torneira:true, best: (s.best && typeof s.best === 'object') ? s.best : {}, stars: (s.stars && typeof s.stars === 'object') ? s.stars : {}, salao: normSalao(dev ? null : s.salao), divulga: divulgaOf(s.divulga).id, treino: !!s.treino, manut: normManut(s.manut), caixa: normCaixa(s.caixa), caixaPend: normPend(s.caixaPend) };
   out.equipe = normEquipe(s.equipe, pontoOf(out.salao.ponto));
   if (dev){ const last = out.caixa[out.caixa.length - 1]; out.caixa = normCaixa(out.caixa.concat([{ d:last ? last.d : 1, dev, saldo:out.bank - devMaq }])); }
   if (devMaq){ const last = out.caixa[out.caixa.length - 1]; out.caixa = normCaixa(out.caixa.concat([{ d:last ? last.d : 1, dev:devMaq, devK:'maquina', saldo:out.bank }])); }
@@ -130,7 +130,8 @@ function loadSave(){
   } catch(e) {}
   return def;
 }
-function writeSave(s){ lsSet(saveKey(), JSON.stringify(s)); }
+/* o save de mentira da Missão zero (v8.2, `_treino`) nunca vai para o localStorage */
+function writeSave(s){ if (s && s._treino) return; lsSet(saveKey(), JSON.stringify(s)); }
 
 /* ============================================================
    MESA
@@ -225,6 +226,7 @@ class Group {
     this.tick(d);
   }
   tick(dt){
+    if (this.game.mode === 'treino') return;   // na Missão zero, a paciência não acaba
     this.patLeft -= dt;
     if (this.patLeft <= 0){
       this.hearts--;
@@ -254,12 +256,14 @@ class Group {
         }
         break;
       case 'reading':
+        if (this.game.treinoSegura) break;
         this.timer -= dt;
         if (this.timer <= 0) { this.setState('wantOrder'); Sfx.blip(); }
         break;
       case 'wantOrder': case 'ordered': case 'wantBill':
         this.tick(dt); break;
       case 'eating':
+        if (this.game.treinoSegura) break;   // na Missão zero, a refeição espera o cafezinho
         this.timer -= dt;
         if (this.timer <= 0) { this.setState('wantBill'); Sfx.blip(); }
         break;

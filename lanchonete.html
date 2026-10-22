@@ -42,6 +42,10 @@ p{margin:calc(var(--u)*6) 0;font-size:max(12px,calc(var(--u)*16));line-height:1.
 .link{background:none;border:0;font:600 max(12px,calc(var(--u)*14)) var(--fb);color:var(--faixa);text-decoration:underline;cursor:pointer;margin-top:calc(var(--u)*10);padding:8px 4px;min-height:44px}
 .chips{display:flex;flex-wrap:wrap;gap:calc(var(--u)*8);margin:calc(var(--u)*6) 0 calc(var(--u)*4)}
 .chip{font-family:var(--fd);font-size:max(13px,calc(var(--u)*18));min-width:max(44px,calc(var(--u)*50));min-height:max(44px,calc(var(--u)*46));background:var(--azulejo);border:calc(var(--u)*3) solid var(--tinta);border-radius:calc(var(--u)*12);cursor:pointer;color:var(--tinta);box-shadow:0 calc(var(--u)*4) 0 var(--tinta)}
+.menu-panel .chips{gap:calc(var(--u)*6)}   /* 8 chips (0 a 7) numa linha */
+.menu-panel .chip{min-width:max(40px,calc(var(--u)*46))}
+.chip.treino{background:var(--mostarda)}   /* dia 0: a Missão zero (v8.2) */
+.sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap;margin:-1px}
 .chip[aria-pressed="true"]{background:var(--faixa);color:#fff}
 .chip[disabled]{opacity:.35;cursor:not-allowed}
 .lbl{font-weight:800;font-size:max(11px,calc(var(--u)*13));letter-spacing:.08em;text-transform:uppercase;color:var(--faixa);margin-top:calc(var(--u)*10)}
@@ -230,7 +234,8 @@ table.rank tr.me td{background:#fbe7a8}
   .menu-panel .title{font-size:max(24px,calc(var(--u)*44));padding-right:calc(var(--u)*40)}
   .menu-panel .tag{margin:calc(var(--u)*8) 0 calc(var(--u)*4)}
   .menu-panel .lbl{margin-top:calc(var(--u)*4)}
-  .menu-panel .chips{gap:6px;flex-wrap:nowrap}
+  .menu-panel .chips{gap:4px;flex-wrap:nowrap}
+  .menu-panel .chip{min-width:38px}
   .menu-btns{display:flex;flex-wrap:wrap;gap:8px;margin-top:calc(var(--u)*10)}
   .menu-btns .row.tight{display:contents}
   .menu-panel .links .link{margin-top:calc(var(--u)*4)}
@@ -242,7 +247,7 @@ table.rank tr.me td{background:#fbe7a8}
 
     <div class="ov show" id="ov-menu">
       <div class="panel menu-panel">
-        <span class="vtag" id="vtag" aria-label="Versão 8.1.2">v8.1.2</span>
+        <span class="vtag" id="vtag" aria-label="Versão 8.2">v8.2</span>
         <h1 class="title">Lanchonete <br>Corre-Corre</h1>
         <p class="tag">Ajude a Bia a atender a freguesia da esquina antes que o cafezinho esfrie!</p>
         <div class="lbl">Carreira: escolha o dia</div>
@@ -285,6 +290,15 @@ table.rank tr.me td{background:#fbe7a8}
         <p class="small" id="intro-note"></p>
         <p class="small" id="intro-manut"></p>
         <div class="row"><button class="btn go" id="btn-start">Abrir a lanchonete</button><button class="btn alt" id="btn-intro-menu">Menu</button></div>
+      </div>
+    </div>
+
+    <div class="ov" id="ov-treino">
+      <div class="panel">
+        <h2>Missão zero completa!</h2>
+        <p>Agora você conhece o ciclo da Bia: sentar na cor certa, anotar, levar ao Tonhão, servir, cafezinho, cobrar, recolher a louça, lavar e tirar o lixo.</p>
+        <p class="small">Dá para treinar de novo quando quiser: no menu, escolha o dia 0.</p>
+        <div class="row"><button class="btn go" id="btn-treino-dia1">Começar o dia 1</button><button class="btn alt" id="btn-treino-menu">Menu</button></div>
       </div>
     </div>
 
@@ -421,7 +435,8 @@ table.rank tr.me td{background:#fbe7a8}
       <div class="panel">
         <h2>Versões</h2>
         <ul class="verlist">
-          <li><b>v8.1.2</b><span class="cur">versão atual</span><br>22/10/2026 &mdash; A espera lá fora na ordem certa: quem chegou primeiro fica embaixo, no lugar 1, e quem chega depois vai ficando acima. Quando alguém sai, a fila desce.</li>
+          <li><b>v8.2</b><span class="cur">versão atual</span><br>22/10/2026 &mdash; Missão zero: o dia 0 é um treino com uma mesa só e pop-ups passo a passo, mostrando tudo o que a Bia faz: sentar o grupo na mesa da mesma cor (bônus), esperar o cardápio, anotar, levar ao Tonhão, servir, cafezinho (e os bônus dele em dinheiro e corações), cobrar, recolher a louça, lavar e tirar o lixo. Ninguém perde a paciência e nada conta para a carreira. Quem nunca treinou já encontra o dia 0 escolhido no menu.</li>
+          <li><b>v8.1.2</b><br>22/10/2026 &mdash; A espera lá fora na ordem certa: quem chegou primeiro fica embaixo, no lugar 1, e quem chega depois vai ficando acima. Quando alguém sai, a fila desce.<br><a href="versoes/v8.1.2.html" target="_blank" rel="noopener">Abrir a v8.1.2</a></li>
           <li><b>v8.1.1</b><br>22/10/2026 &mdash; Menos balões nas mesas: ficam só o cardápio (escolhendo), a exclamação (chamando para pedir) e o dinheiro (pedindo a conta). Esperando a comida ou comendo, a mesa fica sem balão.<br><a href="versoes/v8.1.1.html" target="_blank" rel="noopener">Abrir a v8.1.1</a></li>
           <li><b>v8.1</b><br>22/10/2026 &mdash; Dinheiro comprometido: na lojinha, ao lado do dinheiro acumulado, aparece quanto está livre e quanto já está reservado para a folha e a divulgação do dia (Dani, TV, som, panfletos...). Compra que usaria esse dinheiro fica com um ⚠ e pede um 2º toque, dizendo o que fica de fora no dia.<br><a href="versoes/v8.1.html" target="_blank" rel="noopener">Abrir a v8.1</a></li>
           <li><b>v8</b><br>22/10/2026 &mdash; Manutenção e imprevistos: o fogão, a geladeira e a cafeteira se gastam a cada dia (mais em dia cheio) e, do dia 4 em diante, o que está gasto pode quebrar no meio do dia (fogão falhando: o Tonhão cozinha mais devagar; geladeira: ingredientes mais caros; cafeteira: sem cafezinho). Um toque na plaquinha chama o técnico na hora; na lojinha, aba Manutenção, a revisão deixa tudo novo. E, de vez em quando, chuva (menos gente, mais entregadores) ou feriado (mais gente). O caixa ganhou a coluna Manutenção.<br><a href="versoes/v8.html" target="_blank" rel="noopener">Abrir a v8</a></li>
@@ -449,6 +464,7 @@ table.rank tr.me td{background:#fbe7a8}
       </div>
     </div>
     <div class="devbadge" id="devbadge" style="display:none">Modo dev</div>
+    <p class="sr" id="treino-live" role="status" aria-live="polite"></p>
   </div>
   <div id="rotate" role="status">Gire o celular para jogar melhor</div>
 </div>
@@ -811,7 +827,7 @@ const DIVULGA = [
 const MOVIMENTO = { kit:10, porLugar:0.06 };
 function movimentoSalao(lugares){ return 1 + MOVIMENTO.porLugar * Math.max(0, lugares - MOVIMENTO.kit); }
 const CAIXA_MAX = 14;                                 // livro-caixa (v7.2): quantos dias da carreira ficam guardados
-const VERSAO = 'v8.1.2';                              // vai no resumo do Caixa
+const VERSAO = 'v8.2';                                // vai no resumo do Caixa
 const DIVULGA_DIA = 3;                                // antes disso, o movimento é o da inauguração (sem custo)
 function divulgaAberta(n){ return DEV.on || n >= DIVULGA_DIA; }   // no modo dev, desde o dia 1
 function divulgaOf(id){ return DIVULGA.find(d => d.id === id) || DIVULGA[1]; }
@@ -832,6 +848,8 @@ function contasDia(tables, ponto){
   return (ponto || PONTOS[0]).aluguel + CONTAS.mesa * open.length + CONTAS.lugar * open.reduce((a, t) => a + t.seats, 0);
 }
 
+/* Missão zero (v8.2): o dia de treino, com uma mesa só e os pop-ups do passo a passo (TREINO_PASSOS, em 17-treino.js) */
+const TREINO = { n:0, groups:1, types:['vovos'], nu:null, meta:0, expert:0, time:0, speed:1, juice:0, note:'', treino:true };
 const ENDLESS = { n:0, groups:0, types:['estudante','vovos','familia','executiva','entregador'], nu:null, meta:0, expert:0, time:0, speed:1, vip:0.12, juice:0.3, note:'', endless:true };
 
 /* Bia (v7.3): velocidade de base em px/s e o ganho de cada nível dos tênis */
@@ -1127,7 +1145,7 @@ function normSave(s){
   if (up.chapa){ up.pratos = true; delete up.chapa; }     // a Chapa nova virou Jogo de pratos (a velocidade da cozinha é do Tonhão)
   // salão da v6 à v7.3 (v7.4): o que foi gasto em cadeiras e mesas volta para o dinheiro, numa linha do caixa, e o
   // jogo começa na Garagem com o kit
-  const dev = salaoDevolucao(s.salao), out = { maxDay: clamp(+s.maxDay||1,1,7), bank: Math.max(0,+s.bank||0) + dev + devMaq, up, torneira:true, best: (s.best && typeof s.best === 'object') ? s.best : {}, stars: (s.stars && typeof s.stars === 'object') ? s.stars : {}, salao: normSalao(dev ? null : s.salao), divulga: divulgaOf(s.divulga).id, manut: normManut(s.manut), caixa: normCaixa(s.caixa), caixaPend: normPend(s.caixaPend) };
+  const dev = salaoDevolucao(s.salao), out = { maxDay: clamp(+s.maxDay||1,1,7), bank: Math.max(0,+s.bank||0) + dev + devMaq, up, torneira:true, best: (s.best && typeof s.best === 'object') ? s.best : {}, stars: (s.stars && typeof s.stars === 'object') ? s.stars : {}, salao: normSalao(dev ? null : s.salao), divulga: divulgaOf(s.divulga).id, treino: !!s.treino, manut: normManut(s.manut), caixa: normCaixa(s.caixa), caixaPend: normPend(s.caixaPend) };
   out.equipe = normEquipe(s.equipe, pontoOf(out.salao.ponto));
   if (dev){ const last = out.caixa[out.caixa.length - 1]; out.caixa = normCaixa(out.caixa.concat([{ d:last ? last.d : 1, dev, saldo:out.bank - devMaq }])); }
   if (devMaq){ const last = out.caixa[out.caixa.length - 1]; out.caixa = normCaixa(out.caixa.concat([{ d:last ? last.d : 1, dev:devMaq, devK:'maquina', saldo:out.bank }])); }
@@ -1153,7 +1171,8 @@ function loadSave(){
   } catch(e) {}
   return def;
 }
-function writeSave(s){ lsSet(saveKey(), JSON.stringify(s)); }
+/* o save de mentira da Missão zero (v8.2, `_treino`) nunca vai para o localStorage */
+function writeSave(s){ if (s && s._treino) return; lsSet(saveKey(), JSON.stringify(s)); }
 
 /* ============================================================
    MESA
@@ -1248,6 +1267,7 @@ class Group {
     this.tick(d);
   }
   tick(dt){
+    if (this.game.mode === 'treino') return;   // na Missão zero, a paciência não acaba
     this.patLeft -= dt;
     if (this.patLeft <= 0){
       this.hearts--;
@@ -1277,12 +1297,14 @@ class Group {
         }
         break;
       case 'reading':
+        if (this.game.treinoSegura) break;
         this.timer -= dt;
         if (this.timer <= 0) { this.setState('wantOrder'); Sfx.blip(); }
         break;
       case 'wantOrder': case 'ordered': case 'wantBill':
         this.tick(dt); break;
       case 'eating':
+        if (this.game.treinoSegura) break;   // na Missão zero, a refeição espera o cafezinho
         this.timer -= dt;
         if (this.timer <= 0) { this.setState('wantBill'); Sfx.blip(); }
         break;
@@ -1333,7 +1355,7 @@ class Kitchen {
         if (free >= 0 && this.clean <= 0) this.noPlate = true;
         if (free >= 0 && this.clean > 0){
           this.clean--;
-          const crit = Math.random() < this.chef.crit;
+          const crit = this.game.mode !== 'treino' && Math.random() < this.chef.crit;
           this.plates[free] = { id:++this.pid, table:t.table, group:t.group, dish:t.dish, slot:free, age:0, crit, vip:!!(t.group && t.group.vip) };
           this.cooking.splice(i,1);
           this.game.usos.fogao++; this.game.usos.geladeira++;
@@ -1888,6 +1910,7 @@ class Game {
     this.shopBought = false; this.shopNext = 1; this.boughtFor = 0;
     this.soundBtnT = 0;
     this.mode = 'carreira';
+    this.treino = null; this.salvo = null;   // Missão zero (v8.2): o passo a passo e o save de verdade, guardado enquanto ela dura
     this.resetDay(1);
   }
   setState(s){ this.state = s; if (this.hooks.state) this.hooks.state(s); }
@@ -1895,9 +1918,10 @@ class Game {
   get ponto(){ return pontoOf(this.save.salao.ponto); }
   get bebida(){ return bebidaOf(this.ponto); }   // o que se serve na espera (v7.7)
 
-  resetDay(n){
-    this.mode = n === 0 ? 'semfim' : 'carreira';
-    this.day = n === 0 ? ENDLESS : DAYS[n-1];
+  resetDay(n, treino){
+    if (!treino) this.sairTreino();
+    this.mode = treino ? 'treino' : n === 0 ? 'semfim' : 'carreira';
+    this.day = treino ? TREINO : n === 0 ? ENDLESS : DAYS[n-1];
     this.money = 0; this.custo = 0; this.contas = 0; this.paidDiv = 0; this.conserto = 0;
     // imprevistos (v8): o sorteio do dia (feito ao começar o dia, e guardado até ele acabar) diz o clima e o que quebra
     const so = n && this.save.manut.sorteio && this.save.manut.sorteio.d === n ? this.save.manut.sorteio : null;
@@ -1928,7 +1952,7 @@ class Game {
     this.ending = false; this.endTimer = 0; this.reason = '';
     this.sel = null; this.drag = null; this.hover = null;
     this.cam = CALCADA.w;
-    this.schedule = n === 0 ? [] : this.buildSchedule(this.day);
+    this.schedule = n === 0 || treino ? [] : this.buildSchedule(this.day);
     this.nextIdx = 0;
     this.result = null;
     this.bannerT = 0;
@@ -2013,6 +2037,28 @@ class Game {
     });
   }
   startEndless(){ this.resetDay(0); this.setState('intro'); }
+  /* Missão zero (v8.2): o treino joga com o save de um jogador novo (kit da Garagem, sem melhorias nem equipe), que
+     nunca se grava; o de verdade fica guardado em `salvo` e volta ao sair. Começa direto, sem a introdução do dia */
+  startTreino(){
+    if (!this.salvo) this.salvo = this.save;
+    this.save = Object.assign(normSave({}), { _treino:true });
+    this.up = this.save.up;
+    this.resetDay(0, true);
+    this.treino = new Treino(this);
+    this.setState('playing');
+  }
+  sairTreino(){
+    if (!this.salvo) return;
+    this.save = this.salvo; this.salvo = null; this.up = this.save.up; this.treino = null;
+  }
+  /* último passo: a Missão zero fica marcada como feita no save de verdade */
+  acabouTreino(){
+    this.sairTreino();
+    this.save.treino = true; writeSave(this.save);
+    this.setState('treinoend');
+    Sfx.win();
+  }
+  get treinoSegura(){ return !!(this.treino && this.treino.segura); }
   /* debita a folha e a divulgação do dia do dinheiro acumulado; o que não puder ser pago sai
      (a divulgação vira boca a boca, depois couvert, som, TV, Dani e aumento do Tonhão) */
   payDay(){
@@ -2124,6 +2170,7 @@ class Game {
     }
     const amount = Math.round(g.bill * HEART_MULT[g.hearts] * (1 + g.T.tip + (g.vip ? VIP.tip : 0)));
     this.score('bill', amount, t.cx, t.cy - 50);
+    if (this.treino) this.treino.conta = { v:amount, h:g.hearts, base:g.bill };
     if (g.sucoConta){ const v = this.bebida.preco * g.sucoConta; this.addMoney(v); this.addText(t.cx - 34, t.cy - 100, 'Suco da espera +' + v, PAL.alerta, 14); }
     if (g.T.tip > 0 || g.vip) this.addText(t.cx + 20, t.cy - 76, 'Gorjeta!', PAL.mostarda, 15);
     const eq = this.save.equipe;
@@ -2284,6 +2331,7 @@ class Game {
     if (t.group) return this.fail(g, 'Mesa ocupada!');
     if (t.dirty) return this.fail(g, 'Mesa suja!');
     if (t.seats < g.size) return this.fail(g, 'Não cabe!');
+    if (this.treino && t !== this.treino.mesa) return this.fail(g, 'Procure as cadeiras ' + TREINO_COR[g.color] + '!');
     this.queue.splice(this.queue.indexOf(g), 1);
     this.reslot();
     this.maqCancela(g);
@@ -2353,10 +2401,12 @@ class Game {
       return;
     }
     dt = Math.min(dt, 0.05);
+    if (this.treino && this.treino.para){ this.updateFx(dt); return; }   // Missão zero: com o pop-up de explicação, o jogo espera
     if (this.starFlash > 0) this.starFlash = Math.max(0, this.starFlash - dt);
     if (!this.ending){
       this.elapsed += dt;
-      if (this.mode === 'semfim'){
+      if (this.mode === 'treino'){ if (this.treino) this.treino.update(dt); }
+      else if (this.mode === 'semfim'){
         this.arrT -= dt;
         while (this.arrT <= 0 && !this.ending){
           this.spawnEndless();
@@ -2395,6 +2445,8 @@ class Game {
         this.endTimer -= dt;
         if (this.endTimer <= 0) this.finishEndless();
       }
+    } else if (this.mode === 'treino'){
+      // a Missão zero acaba no último passo do pop-up, sem relógio
     } else if (!this.ending){
       if (this.clock <= 0){
         this.clock = 0;
@@ -2688,6 +2740,8 @@ class Game {
     if (this.state !== 'playing') return;
     pad = pad || 0;
     const h = this.hudHit(sx, y);
+    // Missão zero: com o pop-up de explicação, qualquer toque (menos a pausa e o som) segue para o próximo passo
+    if (this.treino && this.treino.para && !(h && (h.k === 'pause' || h.k === 'sound'))){ this.treino.seguir(); return; }
     if (h){
       if (h.k === 'pause') this.pause();
       else if (h.k === 'sound'){ Sfx.muted = !Sfx.muted; if (!Sfx.muted) Sfx.tap(); this.addGlow('som'); }
@@ -2742,6 +2796,115 @@ class Game {
       Sfx.tap();
       this.addGlow(d.g);
     }
+  }
+}
+
+/* ============================================================
+   MISSÃO ZERO (v8.2): o dia de treino, com pop-ups passo a passo
+   Uma mesa só: um casal de vovós chega com 1 coração, e a Bia faz o ciclo inteiro (sentar na cor
+   certa, esperar o cardápio, anotar, levar ao Tonhão, buscar o prato, servir, cafezinho, cobrar,
+   recolher a louça, pia, lavar e tirar o lixo). A paciência não acaba e nada vai para a carreira.
+   Cada passo tem o texto do pop-up e o alvo (retângulos do mundo, ou da tela com `tela`). Passo com
+   `ok` explica e o jogo espera um toque; passo com `feito` segue sozinho quando a condição vale.
+   `segura` para o relógio da mesa (cardápio e refeição), para dar tempo de fazer o passo
+   ============================================================ */
+const TREINO_COR = ['vermelhas', 'azuis', 'amarelas', 'verdes'];
+const TREINO_CHEGA = 0.6;   // segundos até o grupo aparecer na rua
+
+function treinoMesaR(g){ const t = g.treino.mesa; return tableRect(t); }
+function treinoGrupoR(g){ const grp = g.treino.grupo; return grp && grp.state === 'queue' ? queueRect(grp) : treinoMesaR(g); }
+function treinoSt(k){ return () => STATIONS[k].rect; }
+function treinoPrato(g){ return g.kitchen.plates.find(p => p && p.group === g.treino.grupo); }
+function treinoNaMao(g, kind){ return g.bia.hands.some(h => h.kind === kind && (!h.group || h.group === g.treino.grupo)); }
+
+const TREINO_PASSOS = [
+  { id:'oi', ok:true, tit:'Missão zero: o dia de treino',
+    txt:'Vamos aprender todo o trabalho da Bia com uma mesa só. No treino, ninguém perde a paciência e o dinheiro não vai para a carreira.' },
+  { id:'chega', alvo:g => [{ x:QUEUE.x - 90, y:QUEUE.ys[0] - 84, w:180, h:104 }], tit:'Chegou freguesia!',
+    txt:'Quem chega espera lá fora, na calçada. Lá vêm o vovô e a vovó...', feito:g => { const grp = g.treino.grupo; return !!grp && grp.state === 'queue' && !grp.path.length; } },
+  { id:'coracoes', ok:true, alvo:g => { const grp = g.treino.grupo; return [{ x:grp.x - 40, y:grp.y - 80, w:80, h:30 }]; }, tit:'Os corações são a paciência',
+    txt:'Este casal chegou cansado: só 1 coração. Esperar gasta corações, e cada atendimento devolve 1. Quanto mais corações na hora da conta, mais dinheiro.' },
+  { id:'cor', ok:true, alvo:g => [treinoGrupoR(g), treinoMesaR(g)], tit:'Combine as cores',
+    txt:g => 'Veja a cor das camisas: ' + CHAIRS[g.treino.grupo.color].n + '. A mesa ' + g.treino.mesa.id + ' tem cadeiras ' + TREINO_COR[g.treino.mesa.color] + '. Sentar o grupo na mesa da mesma cor dá bônus de R$ 15.' },
+  { id:'sentar', alvo:g => [treinoGrupoR(g), treinoMesaR(g)], tit:'Leve o grupo à mesa',
+    txt:g => 'Arraste o grupo até a mesa de cadeiras ' + TREINO_COR[g.treino.mesa.color] + ' (ou toque no grupo e depois na mesa).', feito:g => !!g.treino.grupo.table },
+  { id:'cardapio', alvo:g => [treinoMesaR(g)], tit:'Combinou!',
+    txt:'Sentar vale R$ 10 e 1 coração; a cor certa, mais R$ 15. Agora eles escolhem no cardápio (o balão com o anel). Espere eles chamarem.',
+    feito:g => g.treino.grupo.state === 'wantOrder' },
+  { id:'anotar', alvo:g => [treinoMesaR(g)], tit:'Chamaram!',
+    txt:'O balão com "!" é o grupo chamando a Bia. Toque na mesa para ela anotar o pedido.', feito:g => g.treino.grupo.state !== 'wantOrder' && g.treino.grupo.state !== 'reading' },
+  { id:'fila', ok:true, tela:true, alvo:g => [{ x:HUDX.dir + 696, y:546, w:96, h:52 }, { x:HUDX.fila + 354, y:546, w:316, h:52 }], tit:'Mãos e fila de ações',
+    txt:'A comanda está nas mãos da Bia (MÃOS, lá embaixo). Cada toque vira uma tarefa na FILA, ao lado: a Bia faz uma depois da outra. Um toque no quadrinho cancela a tarefa.' },
+  { id:'cozinha', alvo:treinoSt('order'), tit:'Leve o pedido ao Tonhão',
+    txt:'Toque na cozinha, no Chef Tonhão, para entregar a comanda.', feito:g => g.kitchen.progressFor(g.treino.grupo) >= 0 || !!treinoPrato(g) },
+  { id:'preparo', alvo:treinoSt('order'), tit:'O Tonhão está cozinhando',
+    txt:'Agora é esperar o prato ficar pronto. Na carreira, a Bia aproveita esse tempo para atender as outras mesas.', feito:g => !!treinoPrato(g) || treinoNaMao(g, 'dish') },
+  { id:'prato', alvo:treinoSt('plates'), tit:'Prato pronto!',
+    txt:'Toque no prato, no balcão, para a Bia pegar.', feito:g => treinoNaMao(g, 'dish') || g.treino.grupo.state === 'eating' },
+  { id:'servir', alvo:g => [treinoMesaR(g)], tit:'Sirva a comida',
+    txt:'Toque na mesa para servir. Prato entregue vale R$ 20 e 1 coração.', feito:g => g.treino.grupo.state === 'eating' },
+  { id:'cafe', segura:true, alvo:treinoSt('coffee'), tit:'Hora do cafezinho',
+    txt:'Enquanto eles comem, a Bia pode levar um cafezinho. Toque na cafeteira.', feito:g => treinoNaMao(g, 'coffee') || g.treino.grupo.coffee },
+  { id:'cafe2', segura:true, alvo:g => [treinoMesaR(g)], tit:'Sirva o cafezinho',
+    txt:'Agora toque na mesa para servir o cafezinho.', feito:g => g.treino.grupo.coffee },
+  { id:'bonus', ok:true, segura:true, alvo:g => [treinoMesaR(g)], tit:'Os bônus do cafezinho',
+    txt:'Cada cafezinho vale R$ 5 e 1 coração (2 com a Cafeteira de 2 bocas, da lojinha). E coração vale dinheiro: com 5 corações, a conta sai 50% maior; com 1, sai 40% menor.' },
+  { id:'comendo', alvo:g => [treinoMesaR(g)], tit:'Bom apetite',
+    txt:'Eles estão comendo. Quando acabarem, pedem a conta (balão com "$").', feito:g => g.treino.grupo.state === 'wantBill' },
+  { id:'cobrar', alvo:g => [treinoMesaR(g)], tit:'Hora de cobrar',
+    txt:'Toque na mesa para a Bia cobrar a conta.', feito:g => g.treino.grupo.paid },
+  { id:'conta', ok:true, alvo:g => [treinoMesaR(g)], tit:'Conta paga!',
+    txt:g => { const c = g.treino.conta || { v:0, h:5, base:0 }; return 'Com ' + c.h + (c.h > 1 ? ' corações' : ' coração') + ', a conta de R$ ' + c.base + ' virou R$ ' + c.v + '. O que entra no dia é a sua pontuação no ranking da carreira.'; } },
+  { id:'louca', alvo:g => [treinoMesaR(g)], tit:'Recolha a louça',
+    txt:'Ficou louça suja na mesa, e mesa suja não recebe ninguém. Toque na mesa para recolher.', feito:g => !g.treino.mesa.dirty },
+  { id:'pia', alvo:treinoSt('sink'), tit:'Leve à pia',
+    txt:'Toque na pia: a Bia deixa a louça lá.', feito:g => g.kitchen.sinkN > 0 || g.stats.washed > 0 },
+  { id:'lavar', alvo:treinoSt('sink'), tit:'Lave os pratos',
+    txt:'Agora, com as mãos vazias, toque na pia de novo para lavar. O prato lavado volta para a cozinha (do dia 3 em diante, os pratos limpos são contados).', feito:g => g.stats.washed > 0 },
+  { id:'lixo', alvo:treinoSt('trash'), tit:'Tire o lixo',
+    txt:'Lavar joga os restos na lixeira. Cheia, ela cheira mal e a freguesia perde a paciência mais rápido. Toque na lixeira, de mãos vazias, para tirar o lixo.', feito:g => g.stats.emptied > 0 },
+  { id:'fim', ok:true, tit:'Esse é o ciclo da Bia!',
+    txt:'Na carreira, vários grupos chegam juntos: toque em várias coisas seguidas e a Bia faz tudo em ordem. Repetir a mesma ação em sequência forma corrente, com bônus. Boa sorte!' }
+];
+
+class Treino {
+  constructor(game){
+    this.g = game; this.i = 0; this.t = 0; this.grupo = null; this.conta = null;
+    // a mesa do treino: a de 2 lugares com cadeiras azuis (ou a primeira de 2), e o grupo com camisas da mesma cor
+    const ts = game.tables;
+    this.mesa = ts.find(t => t.seats === 2 && t.color === 1) || ts.find(t => t.seats === 2) || ts[0];
+    this.mudou();
+  }
+  /* passo novo: avisa a interface (o texto vai para o leitor de tela) */
+  mudou(){ if (this.g.hooks.treino) this.g.hooks.treino(this); }
+  get passo(){ return TREINO_PASSOS[this.i]; }
+  get total(){ return TREINO_PASSOS.length; }
+  /* pop-up de explicação: o jogo espera um toque */
+  get para(){ return !!(this.passo && this.passo.ok); }
+  get segura(){ return !!(this.passo && this.passo.segura); }
+  texto(p){ p = p || this.passo; return typeof p.txt === 'function' ? p.txt(this.g) : p.txt; }
+  alvos(){
+    const p = this.passo;
+    if (!p || !p.alvo) return [];
+    const r = p.alvo(this.g);
+    return (Array.isArray(r) ? r : [r]).filter(Boolean).map(q => p.tela ? q : { x:q.x + this.g.cam, y:q.y, w:q.w, h:q.h });   // na tela
+  }
+  chegar(){
+    const g = this.g, grp = g.spawn({ type:'vovos', color:this.mesa.color, vip:false });
+    grp.hearts = 1; grp.patLeft = grp.patPer();
+    this.grupo = grp;
+  }
+  seguir(){
+    if (!this.passo) return;
+    this.i++; this.t = 0;
+    Sfx.tap();
+    if (this.i >= this.total) this.g.acabouTreino(); else this.mudou();
+  }
+  update(dt){
+    this.t += dt;
+    if (!this.grupo && this.i >= 1 && this.t >= TREINO_CHEGA) this.chegar();
+    const p = this.passo;
+    if (p && p.feito && this.grupo && p.feito(this.g)){ this.i++; this.t = 0; Sfx.ok(); this.mudou(); }
   }
 }
 
@@ -3194,7 +3357,7 @@ function drawWallCommon(ctx,g,t){
   ctx.restore();
 
   // relógio
-  const endless = !!(g && g.mode === 'semfim');
+  const endless = !!(g && (g.mode === 'semfim' || g.mode === 'treino'));   // na Missão zero também conta para a frente, sem fim
   const frac = endless ? ((g.elapsed % 60) / 60) : (g ? clamp(g.clock / g.day.time, 0, 1) : 1);
   const low = !endless && g && g.clock < 20 && g.state === 'playing';
   circ(ctx,712,44,32); fs(ctx,PAL.cromo,3);
@@ -3958,6 +4121,13 @@ function drawHud(ctx,g,tm){
       star(ctx,116 + i*24,582,10.5,on ? (flash ? '#fff' : PAL.mostarda) : '#4a453c');
     }
     txt(ctx,'próxima: ' + g.five + '/8 (5 corações)',232,583,10.5,'#cfc7b0','left',FB,0,104);
+  } else if (g.mode === 'treino'){
+    // Missão zero (v8.2): o que entrou no treino e o passo do pop-up, no lugar da meta
+    rr(ctx,12,552,74,40,10); fs(ctx,PAL.mostarda,2.8);
+    txt(ctx,'Treino',49,573,17,PAL.tinta,'center',FD,0,64);
+    txt(ctx,'R$ ' + m,102,564,24,'#FFF7DC','left',FD,4);
+    const tr = g.treino;
+    txt(ctx,'Missão zero' + (tr ? ' · passo ' + Math.min(tr.i + 1, tr.total) + ' de ' + tr.total : ' concluída'),102,587,12,'#cfc7b0','left',FB);
   } else {
     // dia
     rr(ctx,12,552,74,40,10); fs(ctx,PAL.mostarda,2.8);
@@ -4264,7 +4434,79 @@ function render(g, ctx){
       ctx.fillStyle = 'rgba(34,32,28,.35)'; ctx.fillRect(0,230,TW,90);
       txt(ctx,msg,TW/2,275,46,PAL.mostarda,'center',FD,7);
     }
+    if (g.treino && g.mode === 'treino') drawTreino(ctx,g,tm);
   }
+  ctx.restore();
+}
+
+/* ============================================================
+   MISSÃO ZERO (v8.2): o pop-up do passo a passo, na tela (por cima do HUD)
+   Cartão creme com o título, o texto e o passo; no passo de explicação, "Continuar" e o resto
+   escurecido (com um buraco em cada alvo). O alvo ganha um anel tracejado e uma seta, que pulsam
+   (parados com movimento reduzido). O cartão vai para o primeiro canto que não cobre o alvo
+   ============================================================ */
+const TREINO_UI = { w:470, pad:20, tit:22, corpo:17, linha:23 };
+
+function treinoLinhas(ctx, s, maxW, size){
+  ctx.font = size + 'px ' + FB;
+  const out = []; let cur = '';
+  s.split(' ').forEach(w => {
+    const t = cur ? cur + ' ' + w : w;
+    if (cur && ctx.measureText(t).width > maxW){ out.push(cur); cur = w; } else cur = t;
+  });
+  if (cur) out.push(cur);
+  return out;
+}
+function treinoCruza(a, b, m){ return a.x < b.x + b.w + m && b.x < a.x + a.w + m && a.y < b.y + b.h + m && b.y < a.y + a.h + m; }
+/* onde fica o cartão: no alto ou embaixo, no meio ou nos cantos, sem cobrir nenhum alvo */
+function treinoLugar(alvos, w, h){
+  const L = 16, R = TW - w - 16, C = (TW - w) / 2, T = 14, B = 532 - h;
+  const opts = [[C,T],[C,B],[L,T],[R,T],[L,B],[R,B],[L,(540 - h) / 2],[R,(540 - h) / 2]];
+  for (const o of opts){ const r = { x:o[0], y:o[1], w, h }; if (!alvos.some(a => treinoCruza(r, a, 14))) return r; }
+  return { x:C, y:T, w, h };
+}
+function drawTreino(ctx,g,tm){
+  const tr = g.treino, p = tr && tr.passo;
+  if (!p) return;
+  const U = TREINO_UI, alvos = tr.alvos(), pulso = RM ? 0 : Math.sin(tm * 5);
+  ctx.save();
+  // explicação: o resto escurece, com um buraco em cada alvo
+  if (p.ok){
+    ctx.beginPath(); ctx.rect(0, 0, TW, H);
+    alvos.forEach(a => rr(ctx, a.x - 8, a.y - 8, a.w + 16, a.h + 16, 14));
+    ctx.fillStyle = 'rgba(34,32,28,.38)'; ctx.fill('evenodd');
+  }
+  // anel tracejado e seta em cada alvo
+  alvos.forEach((a, k) => {
+    rr(ctx, a.x - 8, a.y - 8, a.w + 16, a.h + 16, 14);
+    ctx.setLineDash([]); ctx.lineWidth = 7; ctx.strokeStyle = 'rgba(255,255,255,.75)'; ctx.stroke();
+    ctx.setLineDash([12, 8]); ctx.lineDashOffset = RM ? 0 : -tm * 30; ctx.lineWidth = 4; ctx.strokeStyle = PAL.mostarda; ctx.stroke();
+    ctx.setLineDash([]);
+    if (k) return;
+    const cima = a.y > 70, ax = a.x + a.w / 2, ay = cima ? a.y - 16 - 6 * (1 + pulso) : a.y + a.h + 16 + 6 * (1 + pulso), s = cima ? -1 : 1;
+    ctx.beginPath(); ctx.moveTo(ax, ay); ctx.lineTo(ax - 13, ay + 20 * s); ctx.lineTo(ax - 5, ay + 20 * s); ctx.lineTo(ax - 5, ay + 34 * s);
+    ctx.lineTo(ax + 5, ay + 34 * s); ctx.lineTo(ax + 5, ay + 20 * s); ctx.lineTo(ax + 13, ay + 20 * s); ctx.closePath();
+    fs(ctx, PAL.mostarda, 3);
+  });
+  // cartão
+  const tw = U.w - 2 * U.pad, linhas = treinoLinhas(ctx, tr.texto(), tw, U.corpo);
+  const h = U.pad + U.tit + 10 + linhas.length * U.linha + 14 + 34 + U.pad - 6;
+  const r = treinoLugar(alvos, U.w, h);
+  ctx.save(); ctx.globalAlpha = 0.3; rr(ctx, r.x + 4, r.y + 6, r.w, r.h, 16); ctx.fillStyle = PAL.tinta; ctx.fill(); ctx.restore();
+  rr(ctx, r.x, r.y, r.w, r.h, 16); fs(ctx, PAL.creme, 3);
+  ctx.fillStyle = PAL.faixa; rr(ctx, r.x, r.y, 10, r.h, 5); ctx.fill();
+  let y = r.y + U.pad + U.tit / 2;
+  txt(ctx, p.tit, r.x + U.pad, y, U.tit, PAL.faixa, 'left', FD, 0, tw);
+  y += U.tit / 2 + 10 + U.linha / 2;
+  linhas.forEach(l => { txt(ctx, l, r.x + U.pad, y, U.corpo, PAL.tinta, 'left', FB); y += U.linha; });
+  const fy = r.y + r.h - U.pad - 11;
+  txt(ctx, 'Missão zero · passo ' + (tr.i + 1) + ' de ' + tr.total, r.x + U.pad, fy, 13, '#6b6355', 'left', FB);
+  if (p.ok){
+    const bw = 150, bx = r.x + r.w - U.pad - bw, by = fy - 17;
+    rr(ctx, bx, by + 4, bw, 34, 10); ctx.fillStyle = PAL.tinta; ctx.fill();
+    rr(ctx, bx, by, bw, 34, 10); fs(ctx, PAL.ok, 2.6);
+    txt(ctx, tr.i + 1 >= tr.total ? 'Concluir ▸' : 'Continuar ▸', bx + bw / 2, by + 17, 17, '#fff', 'center', FD, 3);
+  } else txt(ctx, 'Sua vez!', r.x + r.w - U.pad, fy, 17, PAL.alerta, 'right', FD);
   ctx.restore();
 }
 
@@ -4412,9 +4654,11 @@ const canvas = $('c');
 const ctx = canvas.getContext('2d');
 const stage = $('stage');
 const game = new Game(canvas, ctx);
-let selectedDay = Math.min(game.unlocked, 7);
+let selectedDay = treinoPrimeiro() ? 0 : Math.min(game.unlocked, 7);
+/* quem nunca fez a Missão zero (e ainda está no dia 1) já encontra o dia 0 escolhido */
+function treinoPrimeiro(){ return !game.save.treino && game.unlocked <= 1 && !DEV.on; }
 
-const SCREENS = ['ov-menu','ov-how','ov-intro','ov-pause','ov-end','ov-shop','ov-final','ov-endless','ov-rank','ov-ver','ov-app'];
+const SCREENS = ['ov-menu','ov-how','ov-intro','ov-treino','ov-pause','ov-end','ov-shop','ov-final','ov-endless','ov-rank','ov-ver','ov-app'];
 function showOnly(ids){
   SCREENS.forEach(id => { const el = $(id); if (!el) return; if (ids.indexOf(id) >= 0) el.classList.add('show'); else el.classList.remove('show'); });
 }
@@ -4452,10 +4696,11 @@ function buildChips(){
   const box = $('daychips');
   clearEl(box);
   selectedDay = Math.min(selectedDay, game.unlocked);
-  for (let i=1;i<=7;i++){
-    const b = el('button','chip', String(i));
+  for (let i=0;i<=7;i++){   // o dia 0 é a Missão zero (v8.2), sempre aberta
+    const b = el('button', i ? 'chip' : 'chip treino', String(i));
     b.type = 'button';
-    b.setAttribute('aria-label', 'Dia ' + i);
+    b.setAttribute('aria-label', i ? 'Dia ' + i : 'Dia 0: Missão zero, o treino');
+    if (!i) b.title = 'Missão zero: o treino';
     b.setAttribute('aria-pressed', i === selectedDay ? 'true' : 'false');
     if (i > game.unlocked) b.disabled = true;
     b.addEventListener('click', () => { selectedDay = i; Sfx.init(); Sfx.tap(); buildChips(); });
@@ -5207,12 +5452,13 @@ game.hooks.state = function(s){
       if (div && div.cost) custos.push(div.name.toLowerCase() + ' ' + fmt(div.cost));
       $('intro-goal').textContent = 'Meta de lucro: ' + fmt(d.meta) + ' · 2 estrelas: ' + fmt(bomGoal(d)) + ' · Expert: ' + fmt(d.expert) + ' · ' + game.schedule.length + ' grupos' + (div ? ' (' + div.name.toLowerCase() + ')' : '') + ' · ' + mmss(d.time)
         + '. Custos do dia: ' + custos.join(' + ') + ', mais ' + Math.round(INGRED.prato * 100) + '% de cada prato em ingredientes.';
-      $('intro-note').textContent = d.note || 'Sente a freguesia, anote os pedidos e mantenha todo mundo feliz!';
+      $('intro-note').textContent = (d.note || 'Sente a freguesia, anote os pedidos e mantenha todo mundo feliz!') + (d.n === 1 && !game.save.treino ? ' Primeira vez? No menu, o dia 0 é a Missão zero, um treino passo a passo.' : '');
     }
     $('intro-manut').textContent = introManut();
     showOnly(['ov-intro']);
   }
   else if (s === 'playing') showOnly([]);
+  else if (s === 'treinoend') showOnly(['ov-treino']);
   else if (s === 'paused') showOnly(['ov-pause']);
   else if (s === 'dayend'){ buildEnd(); showOnly(['ov-end']); }
   else if (s === 'shop'){ buildShop(); showOnly(['ov-shop']); }
@@ -5233,8 +5479,11 @@ function introManut(){
 /* carreira: do dia 2 em diante (no modo dev, desde o dia 1), a lojinha abre antes da introdução do dia */
 function playCareer(n){
   selectedDay = n;
-  if (n >= 2 || DEV.on) game.goShop(n); else game.startDay(n);
+  if (n === 0) game.startTreino();   // Missão zero (v8.2)
+  else if (n >= 2 || DEV.on) game.goShop(n); else game.startDay(n);
 }
+/* Missão zero: o texto do pop-up também vai para quem usa leitor de tela */
+game.hooks.treino = tr => { const e = $('treino-live'), p = tr.passo; if (e) e.textContent = p ? p.tit + '. ' + tr.texto() : ''; };
 function on(id, fn){ const e = $(id); if (e) e.addEventListener('click', fn); }
 on('btn-play',       () => { Sfx.init(); Sfx.resume(); Sfx.tap(); playCareer(selectedDay); });
 on('btn-how',        () => { Sfx.init(); Sfx.resume(); Sfx.tap(); buildTips(); showOnly(['ov-how']); });
@@ -5278,7 +5527,9 @@ on('btn-reset',      () => { game.resetProgress(); selectedDay = 1; game.setStat
 on('btn-start',      () => { Sfx.init(); Sfx.resume(); Sfx.ok(); game.begin(); });
 on('btn-intro-menu', () => game.setState('menu'));
 on('btn-resume',     () => { Sfx.tap(); game.resume(); });
-on('btn-restart',    () => { if (game.mode === 'semfim') game.startEndless(); else game.startDay(game.day.n); });
+on('btn-restart',    () => { if (game.mode === 'semfim') game.startEndless(); else if (game.mode === 'treino') game.startTreino(); else game.startDay(game.day.n); });
+on('btn-treino-dia1', () => { Sfx.tap(); playCareer(1); });
+on('btn-treino-menu', () => { selectedDay = 1; game.setState('menu'); });
 on('btn-pause-menu', () => { if (game.mode !== 'semfim') selectedDay = Math.max(1, Math.min(game.day.n, game.unlocked)); game.setState('menu'); });
 on('btn-again',      () => playCareer(game.day.n));
 on('btn-end-menu',   () => { selectedDay = Math.min(game.day.n + (game.result && game.result.passed ? 1 : 0), game.unlocked); game.setState('menu'); });
@@ -5311,6 +5562,8 @@ canvas.addEventListener('contextmenu', e => e.preventDefault());
 window.addEventListener('keydown', e => {
   const k = e.key;
   if (e.target && (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA')) return;
+  // Missão zero: Enter segue o pop-up de explicação
+  if (k === 'Enter' && game.state === 'playing' && game.treino && game.treino.para && !(e.target && e.target.tagName === 'BUTTON')){ game.treino.seguir(); e.preventDefault(); return; }
   if (k === 'p' || k === 'P' || k === 'Escape' || ((k === ' ' || k === 'Spacebar') && !(e.target && e.target.tagName === 'BUTTON'))){
     if (game.state === 'playing'){ game.pause(); e.preventDefault(); }
     else if (game.state === 'paused' && k !== 'Escape'){ game.resume(); e.preventDefault(); }
@@ -5339,7 +5592,7 @@ fit();
 try { Rank.init(); } catch(e) {}
 game.setState('menu');
 window.__game = game;
-window.__lcc = { setShopTab: v => { shopTab = v; buildShop(); }, FILA_JUSTA, PORTA, CHAIRS, PAT, CONTAS, INGRED, MOVIMENTO, movimentoSalao, DIVULGA, DIVULGA_DIA, divulgaOf, contasDia, bomGoal, SALAO, PONTOS, pontoOf, MESA, mesaBox, mesaPreco, salaoLugares, mesaProblema, salaoCaminho, salaoProblema, salaoOrdena, salaoAuto, salaoVaga, salaoPerto, salaoKit, salaoDevolucao, SALAO_SEMFIM, normSalao, setObst, OBST, pathOk, MAQUINA, BEBIDA_ESPERA, bebidaOf, MANUT, manutOf, manutChance, manutPreco, normManut, CLIMA, CLIMA_DIA, introManut, normPend, CALCADA, TW, HUDX, esperaAp, tableApproach, CRIT, STAFF, DANI_TASKS, DANI_HANDS, daniTaskOk, TRASH, WASH, payroll, FOLHA_CORTE, folhaCorta, folhaCortes, folhaItens, listaE, couvertEffect, couvertOk, ambienteEffect, dishStock, normSave, Helper, JUICE, KITCHEN_SLOTS, handLayout, trayOk, Game, Group, Table, Kitchen, Waitress, BIA_SPEED, DAYS, UPGRADES, CUSTOMER_TYPES, LAYOUT, PAL, Sfx, findPath, render, Rank, sortRows, cleanName, normName, CMD, ENDLESS, VIP, rk, renderRank, openRank, closeRank, LS, lsGet, lsSet, loadSave, DEV, saveKey, devSync, divulgaAberta, CAIXA_MAX, VERSAO, normCaixa, caixaResumo, caixaTotais, copyText };
+window.__lcc = { setShopTab: v => { shopTab = v; buildShop(); }, TREINO, TREINO_PASSOS, TREINO_COR, Treino, treinoLugar, treinoPrimeiro, playCareer, FILA_JUSTA, PORTA, CHAIRS, PAT, CONTAS, INGRED, MOVIMENTO, movimentoSalao, DIVULGA, DIVULGA_DIA, divulgaOf, contasDia, bomGoal, SALAO, PONTOS, pontoOf, MESA, mesaBox, mesaPreco, salaoLugares, mesaProblema, salaoCaminho, salaoProblema, salaoOrdena, salaoAuto, salaoVaga, salaoPerto, salaoKit, salaoDevolucao, SALAO_SEMFIM, normSalao, setObst, OBST, pathOk, MAQUINA, BEBIDA_ESPERA, bebidaOf, MANUT, manutOf, manutChance, manutPreco, normManut, CLIMA, CLIMA_DIA, introManut, normPend, CALCADA, TW, HUDX, esperaAp, tableApproach, CRIT, STAFF, DANI_TASKS, DANI_HANDS, daniTaskOk, TRASH, WASH, payroll, FOLHA_CORTE, folhaCorta, folhaCortes, folhaItens, listaE, couvertEffect, couvertOk, ambienteEffect, dishStock, normSave, Helper, JUICE, KITCHEN_SLOTS, handLayout, trayOk, Game, Group, Table, Kitchen, Waitress, BIA_SPEED, DAYS, UPGRADES, CUSTOMER_TYPES, LAYOUT, PAL, Sfx, findPath, render, Rank, sortRows, cleanName, normName, CMD, ENDLESS, VIP, rk, renderRank, openRank, closeRank, LS, lsGet, lsSet, loadSave, DEV, saveKey, devSync, divulgaAberta, CAIXA_MAX, VERSAO, normCaixa, caixaResumo, caixaTotais, copyText };
 window.requestAnimationFrame(frame);
 
 })();
