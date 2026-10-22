@@ -4,6 +4,19 @@ Registro das ideias e dos retornos de quem jogou, com o texto original, e de ond
 
 ---
 
+## 22/10/2026 — Usuário: só dias completos rendem; progresso por experiência e dinheiro
+**Origem:** mensagem do usuário, depois da v8.2.1:
+
+> E aí o processo vai ser através, o progresso, né? Vai ser através do acúmulo de experiências, dinheiro, etc., para progredir para novos restaurantes.
+>
+> Cobrar o salário ao fim do dia só e, quando a pessoa interromper no meio de um dia, não ganha nada, só dias completos rendem
+
+**Para onde foi cada ideia:**
+- **Feito na v8.2.2** (`docs/spec-v8.2.2.md`): a folha e a divulgação são pagas no fim do dia (ao abrir, só ficam reservadas); Reiniciar ou Menu na pausa não pagam nem ganham nada. Substitui a regra da v8.2.1.
+- **Ideia guardada** no `docs/PLANO.md`, junto com a "Carreira como campanha contínua": o progresso vem do acúmulo de experiência e dinheiro, que levam a novos restaurantes (combina com os pontos das etapas 3 e 4).
+
+---
+
 ## 22/10/2026 — Usuário: rejogar o dia mantendo o dinheiro; depois, campanha contínua
 **Origem:** mensagem do usuário, depois da v8.1.2 (feito sobre a v8.2):
 

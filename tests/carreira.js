@@ -39,7 +39,7 @@ for(let k=0;k<N;k++){
       }
       r.shop.push(g.save.bank);
     }
-    g.startDay(n); g.begin(); r.after.push(g.save.bank); r.eq.push(g.paid);
+    g.startDay(n); g.begin(); r.after.push(g.save.bank-g.paid-g.paidDiv); r.eq.push(g.paid);   // v8.2.2: a folha só sai no fim do dia; "depois da folha" é o que sobra além dela
     let st=0; while(g.state==='playing'&&st<30000){ bot(); g.update(0.05); st++; }
     r.lucro.push(g.result.money); r.con.push(g.result.conserto); r.qb.push(g.result.quebras.length); if(g.result.clima==='chuva') r.chuva++; if(g.result.clima==='feriado') r.fer++; r.fim.push(g.save.bank); if(g.result.passed) r.pass++; semMesa=g.result.lostBy.semMesa; r.lug.push(L.salaoLugares(g.save.salao.mesas)); if(process.env.MESAS) console.log(n, g.save.salao.mesas.map(m=>m.seats).sort().join(''), 'semMesa', semMesa);
   }

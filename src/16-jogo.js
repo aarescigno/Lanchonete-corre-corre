@@ -52,7 +52,7 @@ class Game {
     this.tables.forEach(t => { t.open = true; t.group = null; t.dirty = false; t.dirtyN = 0; });   // v7.4: todas as mesas abrem desde o dia 1
     this.kitchen.reset();
     this.kitchen.clean = dishStock(this.day, this.up);
-    this.trash = 0; this.paid = 0; this.unpaid = []; this.aberto = false;
+    this.trash = 0; this.paid = 0; this.unpaid = [];
     this.maq = []; this.maqId = 0;   // pedidos do tablet da espera na máquina de suco: { id, group, n, t (preparo que falta) }
     this.bia.reset();
     this.dani.reset();
@@ -106,12 +106,12 @@ class Game {
   /* equipamento quebrado agora (e sem conserto) */
   quebrado(id){ return this.quebras.some(q => q.id === id && q.on && !q.fixed); }
   get manut(){ return this.save.manut; }
-  /* conserto de emergência (v8): um toque na plaquinha chama o técnico. Sai do dinheiro acumulado na hora (como a
-     folha), conta no lucro do dia e no caixa (manutenção); o equipamento volta a 100% e não quebra de novo se o dia recomeçar */
+  /* conserto de emergência (v8): um toque na plaquinha chama o técnico. Sai do dinheiro acumulado na hora (só do que
+     sobra além da folha do dia, que fica reservada), conta no lucro do dia e no caixa (manutenção); o equipamento volta a 100% e não quebra de novo se o dia recomeçar */
   consertar(id){
     const q = this.quebras.find(x => x.id === id && x.on && !x.fixed), eq = manutOf(id);
     if (!q || !eq) return false;
-    if (!DEV.on && this.save.bank < eq.emerg){ this.addText(eq.badge.x, eq.badge.y - 26, 'Falta dinheiro!', PAL.perigo, 14); Sfx.boing(); return false; }
+    if (!DEV.on && this.save.bank - this.paid - this.paidDiv < eq.emerg){ this.addText(eq.badge.x, eq.badge.y - 26, 'Falta dinheiro!', PAL.perigo, 14); Sfx.boing(); return false; }
     q.fixed = true; this.manut[id] = 1;
     const so = this.manut.sorteio;
     if (so) so.quebra = so.quebra.filter(x => x.id !== id);
@@ -169,8 +169,8 @@ class Game {
     Sfx.win();
   }
   get treinoSegura(){ return !!(this.treino && this.treino.segura); }
-  /* debita a folha e a divulgação do dia do dinheiro acumulado; o que não puder ser pago sai
-     (a divulgação vira boca a boca, depois couvert, som, TV, Dani e aumento do Tonhão) */
+  /* ao abrir, a folha e a divulgação do dia ficam reservadas (desde a v8.2.2, só saem do dinheiro acumulado no fim do dia);
+     o que não couber no dinheiro sai (a divulgação vira boca a boca, depois couvert, som, TV, Dani e aumento do Tonhão) */
   payDay(){
     const eq = this.save.equipe; this.unpaid = [];
     const divCost = () => this.div ? this.div.cost : 0;
@@ -183,7 +183,6 @@ class Game {
       else { const n = folhaCorta(eq); if (!n) break; this.unpaid.push(n); }
     }
     this.paid = payroll(eq); this.paidDiv = divCost();
-    this.save.bank -= this.paid + this.paidDiv; this.aberto = true;
     this.contas = contasDia(this.tables, this.ponto);
     writeSave(this.save);
     this.kitchen.slots = STAFF.tonhao.levels[eq.tonhao].slots;
@@ -576,14 +575,14 @@ class Game {
   finishDay(){
     const d = this.day, m = Math.round(this.lucro), fat = Math.round(this.money);
     const passed = m >= d.meta;
-    this.aberto = false;
     let stars = 0;
     if (passed) stars = 1;
     if (passed && m >= bomGoal(d)) stars = 2;
     if (m >= d.expert && this.stats.lost === 0) stars = 3;
     const prevBest = this.save.best[d.n] || 0;
-    // o faturamento vai para o dinheiro acumulado, menos os ingredientes e as contas (folha e divulgação já saíram ao abrir)
-    const income = fat - Math.round(this.custo) - this.contas;   // folha, divulgação e conserto na hora já saíram
+    // v8.2.2: só o dia completo rende. O faturamento vai para o dinheiro acumulado, menos ingredientes, contas, folha e
+    // divulgação, que só são pagas agora (o conserto na hora já saiu); dia interrompido na pausa não paga nem ganha nada
+    const income = fat - Math.round(this.custo) - this.contas - this.paid - this.paidDiv;
     this.save.bank = Math.max(0, this.save.bank + income);
     this.desgastar(); delete this.save.manut.sorteio;
     this.save.best[d.n] = Math.max(prevBest, fat);   // o ranking da carreira soma o faturamento dos melhores dias
@@ -595,27 +594,9 @@ class Game {
     this.setState('dayend');
     if (passed) Sfx.win(); else Sfx.lose();
   }
-  /* v8.2.1: sair do dia no meio (Reiniciar ou Menu na pausa) fecha as contas do que já foi jogado. O faturamento menos os
-     ingredientes fica no dinheiro acumulado; as contas, a folha e a divulgação valem só pela parte do dia que passou (o resto
-     da folha e da divulgação volta). Não conta como dia jogado: estrelas, recorde e próximo dia ficam como estavam */
-  get parcial(){
-    if (this.mode !== 'carreira' || !this.aberto) return null;
-    const f = clamp(1 - this.clock / this.day.time, 0, 1), fat = Math.round(this.money), ingr = Math.round(this.custo);
-    const contas = Math.round(this.contas * f), folha = Math.round(this.paid * f), div = Math.round(this.paidDiv * f);
-    const ganho = Math.max(-this.save.bank, fat - ingr - contas + (this.paid - folha) + (this.paidDiv - div));
-    return { fat, ingr, contas, folha, div, ganho, lucro:fat - ingr - contas - folha - div - this.conserto };
-  }
-  interromper(){
-    const p = this.parcial, d = this.day;
-    if (!p) return null;
-    this.aberto = false; this.save.bank += p.ganho;
-    caixaAdd(this.save, { d:d.n, fat:p.fat, ingr:p.ingr, contas:p.contas, folha:p.folha, div:p.div, lucro:p.lucro, meta:d.meta, ok:false, perd:this.stats.lost, saldo:this.save.bank, int:true });
-    writeSave(this.save);
-    return (this.interrompido = { d:d.n, ganho:p.ganho, bank:this.save.bank });
-  }
   finishEndless(){
     const pts = Math.round(this.money);
-    const income = pts - Math.round(this.custo) - this.contas;
+    const income = pts - Math.round(this.custo) - this.contas - this.paid - this.paidDiv;
     this.save.bank = Math.max(0, this.save.bank + income); writeSave(this.save);
     this.endless = { income, paid:this.paid, custo:Math.round(this.custo), contas:this.contas, pontos:pts, tempo:Math.floor(this.elapsed), served:this.stats.served, lost:this.stats.lost, full:this.stats.full, chain:this.stats.chain, vip:this.stats.vip, juice:this.stats.juice };
     this.setState('endlessend');

@@ -230,8 +230,8 @@ const CUSTOMER_TYPES = {
 /* cliente VIP: modificador de grupo (qualquer tipo menos entregador). Fura a fila, tem menos
    paciência, paga gorjeta extra e dá bônus se sair com 5 corações; bravo, a multa dobra. */
 /* ============================================================
-   EQUIPE (v5): a folha do dia é debitada do dinheiro acumulado ao abrir a
-   lanchonete; sem dinheiro para pagar, o funcionário não trabalha naquele dia
+   EQUIPE (v5): a folha do dia fica reservada ao abrir a lanchonete e é paga
+   no fim do dia (v8.2.2); sem dinheiro para pagar, o funcionário não trabalha naquele dia
    ============================================================ */
 const STAFF = {
   // Tonhão: cozinha mais rápido (cook = fator do tempo), mais pratos caprichados (crit) e,
@@ -271,8 +271,8 @@ function payroll(eq){
   if (eq.som) v += STAFF.som.pay;
   return v;
 }
-/* v8.1: dinheiro comprometido. A folha e a divulgação saem do dinheiro acumulado ao abrir o dia; o que não puder ser
-   pago fica de fora, nesta ordem (a divulgação vira boca a boca antes de tudo) */
+/* v8.1: dinheiro comprometido. A folha e a divulgação ficam reservadas ao abrir o dia (e saem no fim dele); o que não
+   couber fica de fora, nesta ordem (a divulgação vira boca a boca antes de tudo) */
 const FOLHA_CORTE = [['couvert', 'Couvert'], ['som', 'som'], ['tv', 'TV'], ['dani', 'Dani'], ['tonhao', 'aumento do Tonhão']];
 /* tira de eq o próximo item da folha (o Tonhão perde 1 nível de aumento) e devolve o nome; nada a tirar: null */
 function folhaCorta(eq){
@@ -353,7 +353,7 @@ const DIVULGA = [
 const MOVIMENTO = { kit:10, porLugar:0.06 };
 function movimentoSalao(lugares){ return 1 + MOVIMENTO.porLugar * Math.max(0, lugares - MOVIMENTO.kit); }
 const CAIXA_MAX = 14;                                 // livro-caixa (v7.2): quantos dias da carreira ficam guardados
-const VERSAO = 'v8.2.1';                              // vai no resumo do Caixa
+const VERSAO = 'v8.2.2';                              // vai no resumo do Caixa
 const DIVULGA_DIA = 3;                                // antes disso, o movimento é o da inauguração (sem custo)
 function divulgaAberta(n){ return DEV.on || n >= DIVULGA_DIA; }   // no modo dev, desde o dia 1
 function divulgaOf(id){ return DIVULGA.find(d => d.id === id) || DIVULGA[1]; }

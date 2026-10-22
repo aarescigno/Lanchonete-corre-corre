@@ -14,9 +14,7 @@ game.hooks.state = function(s){
       if (div && div.cost) custos.push(div.name.toLowerCase() + ' ' + fmt(div.cost));
       $('intro-goal').textContent = 'Meta de lucro: ' + fmt(d.meta) + ' · 2 estrelas: ' + fmt(bomGoal(d)) + ' · Expert: ' + fmt(d.expert) + ' · ' + game.schedule.length + ' grupos' + (div ? ' (' + div.name.toLowerCase() + ')' : '') + ' · ' + mmss(d.time)
         + '. Custos do dia: ' + custos.join(' + ') + ', mais ' + Math.round(INGRED.prato * 100) + '% de cada prato em ingredientes.';
-      // v8.2.1: ao reiniciar no meio, o que o dia interrompido rendeu já foi para o dinheiro acumulado
-      const it = game.interrompido; game.interrompido = null;
-      $('intro-note').textContent = (it && it.ganho ? 'O dia interrompido ' + (it.ganho > 0 ? 'rendeu ' + fmt(it.ganho) + ', que já foi para o' : 'custou ' + fmt(-it.ganho) + ', que já saiu do') + ' dinheiro acumulado (agora ' + fmt(it.bank) + '). ' : '') + (d.note || 'Sente a freguesia, anote os pedidos e mantenha todo mundo feliz!') + (d.n === 1 && !game.save.treino ? ' Primeira vez? No menu, o dia 0 é a Missão zero, um treino passo a passo.' : '');
+      $('intro-note').textContent = (d.note || 'Sente a freguesia, anote os pedidos e mantenha todo mundo feliz!') + (d.n === 1 && !game.save.treino ? ' Primeira vez? No menu, o dia 0 é a Missão zero, um treino passo a passo.' : '');
     }
     $('intro-manut').textContent = introManut();
     showOnly(['ov-intro']);
@@ -24,9 +22,8 @@ game.hooks.state = function(s){
   else if (s === 'playing') showOnly([]);
   else if (s === 'treinoend') showOnly(['ov-treino']);
   else if (s === 'paused'){
-    // v8.2.1: reiniciar ou sair no meio não perde o que o dia já rendeu
-    const p = game.parcial;
-    $('pause-note').textContent = !p ? '' : 'Se reiniciar ou sair, ' + (p.ganho > 0 ? 'o que o dia já rendeu (' + fmt(p.ganho) + ') vai para o dinheiro acumulado' : p.ganho < 0 ? fmt(-p.ganho) + ' saem do dinheiro acumulado' : 'o dinheiro acumulado fica como está') + '. Contas, folha e divulgação contam só a parte do dia que passou.';
+    // v8.2.2: só o dia completo rende; interrompido, não paga nem ganha nada
+    $('pause-note').textContent = game.mode === 'carreira' ? 'Se reiniciar ou sair, o dia não conta: só dias completos rendem. A folha e as contas só são pagas no fim do dia.' : '';
     showOnly(['ov-pause']);
   }
   else if (s === 'dayend'){ buildEnd(); showOnly(['ov-end']); }
@@ -96,10 +93,10 @@ on('btn-reset',      () => { game.resetProgress(); selectedDay = 1; game.setStat
 on('btn-start',      () => { Sfx.init(); Sfx.resume(); Sfx.ok(); game.begin(); });
 on('btn-intro-menu', () => game.setState('menu'));
 on('btn-resume',     () => { Sfx.tap(); game.resume(); });
-on('btn-restart',    () => { if (game.mode === 'semfim') game.startEndless(); else if (game.mode === 'treino') game.startTreino(); else { game.interromper(); game.startDay(game.day.n); } });
+on('btn-restart',    () => { if (game.mode === 'semfim') game.startEndless(); else if (game.mode === 'treino') game.startTreino(); else game.startDay(game.day.n); });
 on('btn-treino-dia1', () => { Sfx.tap(); playCareer(1); });
 on('btn-treino-menu', () => { selectedDay = 1; game.setState('menu'); });
-on('btn-pause-menu', () => { game.interromper(); game.interrompido = null; if (game.mode !== 'semfim') selectedDay = Math.max(1, Math.min(game.day.n, game.unlocked)); game.setState('menu'); });
+on('btn-pause-menu', () => { if (game.mode !== 'semfim') selectedDay = Math.max(1, Math.min(game.day.n, game.unlocked)); game.setState('menu'); });
 on('btn-again',      () => playCareer(game.day.n));
 on('btn-end-menu',   () => { selectedDay = Math.min(game.day.n + (game.result && game.result.passed ? 1 : 0), game.unlocked); game.setState('menu'); });
 on('btn-next',       () => { if (game.day.n < 7) game.goShop(game.day.n + 1); else game.setState('final'); });
