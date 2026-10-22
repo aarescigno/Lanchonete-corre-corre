@@ -319,7 +319,7 @@ const DIVULGA = [
 const MOVIMENTO = { kit:10, porLugar:0.06 };
 function movimentoSalao(lugares){ return 1 + MOVIMENTO.porLugar * Math.max(0, lugares - MOVIMENTO.kit); }
 const CAIXA_MAX = 14;                                 // livro-caixa (v7.2): quantos dias da carreira ficam guardados
-const VERSAO = 'v7.7';                              // vai no resumo do Caixa
+const VERSAO = 'v8';                              // vai no resumo do Caixa
 const DIVULGA_DIA = 3;                                // antes disso, o movimento é o da inauguração (sem custo)
 function divulgaAberta(n){ return DEV.on || n >= DIVULGA_DIA; }   // no modo dev, desde o dia 1
 function divulgaOf(id){ return DIVULGA.find(d => d.id === id) || DIVULGA[1]; }
@@ -354,4 +354,46 @@ const UPGRADES = [
   { id:'ventilador', name:'Ventilador de teto',   desc:'A freguesia come 15% mais rápido e o cheiro da lixeira cheia não incomoda.', cost:250 },
   { id:'pratos',     name:'Jogo de pratos',       desc:'+1 prato limpo na cozinha (do dia 3 em diante).', cost:300 }
 ];
+
+/* ============================================================
+   MANUTENÇÃO (v8): fogão, geladeira e cafeteira vão de 100% a 0%. Cada dia jogado
+   na carreira gasta `base` pontos e mais `uso` por prato que fica pronto (fogão e
+   geladeira) ou por cafezinho servido (cafeteira): dia cheio gasta mais. Do dia
+   `dia` em diante, cada um pode quebrar no meio do dia, com chance que cresce com o
+   gasto (chance). Revisão na lojinha: volta a 100% e custa `preco` × o que gastou.
+   Quebrado, um toque na plaquinha do conserto chama o técnico na hora, por `emerg`
+   (volta a 100%). No Turno sem fim, nada se gasta nem quebra
+   ============================================================ */
+const MANUT = {
+  on: true,               // desligado, nada se gasta nem quebra e não há chuva nem feriado (os testes desligam)
+  dia: 4,
+  quando: [0.12, 0.55],   // em que parte do dia a quebra acontece
+  equip: [
+    { id:'fogao',     name:'Fogão',     base:4, uso:0.4, preco:500, emerg:120, efeito:'o Tonhão cozinha 40% mais devagar', lento:0.6,  badge:{ x:884, y:178 } },
+    { id:'geladeira', name:'Geladeira', base:6, uso:0.3, preco:440, emerg:100, efeito:'os ingredientes custam 50% a mais', ingred:1.5, badge:{ x:709, y:127 } },
+    { id:'cafeteira', name:'Cafeteira', base:4, uso:1,   preco:240, emerg:50,  efeito:'sem cafezinho',                       badge:{ x:840, y:346 } }
+  ],
+  badge: 18                // raio da plaquinha do conserto (toque)
+};
+function manutOf(id){ return MANUT.equip.find(e => e.id === id); }
+/* chance de quebrar no dia, pelo estado (0 a 1): quase nada até ~80%, 1 em 3 dias perto de 40% (com os 3 juntos) */
+function manutChance(e){ return Math.min(0.6, 0.9 * Math.pow(1 - clamp(e, 0, 1), 2)); }
+/* preço da revisão: proporcional ao que gastou, em múltiplos de R$ 5 (0 se está a 100%) */
+function manutPreco(id, e){ const q = manutOf(id); return e >= 0.995 ? 0 : Math.max(10, Math.ceil(q.preco * (1 - e) / 5) * 5); }
+function normManut(m){
+  m = (m && typeof m === 'object') ? m : {};
+  const out = {};
+  MANUT.equip.forEach(q => { const v = +m[q.id]; out[q.id] = isFinite(v) ? clamp(v, 0, 1) : 1; });
+  const s = m.sorteio;
+  if (s && typeof s === 'object' && +s.d >= 1) out.sorteio = { d:Math.round(+s.d), clima:CLIMA[s.clima] ? s.clima : '',
+    quebra:(Array.isArray(s.quebra) ? s.quebra : []).filter(x => x && manutOf(x.id)).map(x => ({ id:x.id, f:clamp(+x.f || 0.3, 0, 1) })) };
+  return out;
+}
+/* imprevistos sem culpa (v8), do dia `dia` em diante na carreira: raros e avisados na introdução.
+   chuva: menos gente e mais entregadores; feriado: mais gente e mais famílias */
+const CLIMA = {
+  chuva:   { nome:'Dia de chuva', chance:0.12, groups:0.8,  tipo:'entregador', tipoP:0.35, aviso:'Dia de chuva: vem menos gente, e mais entregadores (com pressa!).' },
+  feriado: { nome:'Feriado',      chance:0.10, groups:1.25, tipo:'familia',    tipoP:0.25, aviso:'Feriado: a cidade saiu de casa! Mais gente e mais famílias.' }
+};
+const CLIMA_DIA = 3;
 

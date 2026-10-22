@@ -1,4 +1,19 @@
-const H=require('./harness.js')(); const {g,L}=H; const bot=require('./bot.js')(g,L,{afiado:process.env.BOT==='afiado'});   // BOT=afiado: o jogador perfeito
+// v8, manutenção e imprevistos (fogão, geladeira e cafeteira se gastam; do dia 4 podem quebrar; chuva e feriado a partir do dia 3):
+//   MANUT=sem    (padrão) imprevistos desligados (MANUT.on=false): os números de sempre
+//   MANUT=com    liga os imprevistos e o jogador nunca revisa: cada rodada joga os dias 1 a 7 em sequência (o desgaste passa de um dia
+//                para o outro, como na carreira) e mostra os dias de DIAS. Cada dia continua isolado nas demais coisas (melhorias, equipe, salão)
+//   MANUT=cuida  liga os imprevistos e revisa tudo (revisarTudo) em toda lojinha, antes de cada dia; mostra o gasto com revisão
+//   CONSERTO=1   o bot chama o técnico na hora quando o fogão quebra (CONSERTO=todos: também a geladeira e a cafeteira)
+//   Mostra também, por dia: quebras (média por dia, por equipamento), chuva/feriado (% dos dias), revisão e conserto (R$ por dia)
+//   e "revisão/lucro" (o que cuidar de tudo custa em relação ao lucro do dia). L.MANUT e L.CLIMA podem ser trocados em runtime:
+//   MANUT_CFG='{"dia":4,"equip":{"fogao":{"base":3,"uso":0.3}}}'  CLIMA_CFG='{"chuva":{"chance":0.1}}'  (veja ajustaManut abaixo)
+const H=require('./harness.js')(); const {g,L}=H;
+const MODO=process.env.MANUT||'sem';
+if(!['sem','com','cuida'].includes(MODO)) throw new Error('MANUT=sem|com|cuida');
+const bot=require('./bot.js')(g,L,{afiado:process.env.BOT==='afiado',conserto:process.env.CONSERTO==='todos'?'todos':!!process.env.CONSERTO});   // BOT=afiado: o jogador perfeito
+L.MANUT.on=MODO!=='sem';
+if(process.env.MANUT_CFG){ const c=JSON.parse(process.env.MANUT_CFG); const eq=c.equip; delete c.equip; Object.assign(L.MANUT,c); if(eq) for(const id in eq) Object.assign(L.manutOf(id),eq[id]); }
+if(process.env.CLIMA_CFG){ const c=JSON.parse(process.env.CLIMA_CFG); for(const k in c) Object.assign(L.CLIMA[k],c[k]); }
 const N=+process.argv[2]||20;
 // EQUIPE='{"tonhao":1,"dani":1,"daniTasks":["pratos","lavar"]}' node balance.js 40
 // EQUIPE=auto: a equipe que um jogador consegue pagar em cada dia (contratando aos poucos)
@@ -18,22 +33,42 @@ const MOV={1:[2,2,2,4],2:[2,2,2,4,2],3:[2,2,2,4,2,2],4:[2,2,2,2,2,2,4]};   // ([
 const movFor=n=>process.env.MOVEIS==='kit'?MOV[1]:(process.env.MOVEIS?JSON.parse(process.env.MOVEIS):MOV[Math.min(n,4)]);
 const order=process.env.ORDEM?process.env.ORDEM.split(','):['tenis','maquina','cafeteira','bandeja','ventilador','pratos'];   // ORDEM=pratos,tenis,...: ordem de compra das melhorias
 const DIAS=process.env.DIAS?process.env.DIAS.split(',').map(Number):[1,2,3,4,5,6,7];   // DIAS=1,2: só esses dias
+const NMAX=Math.max(...DIAS);
+const R={}; DIAS.forEach(n=>R[n]=[]);
+// um dia de uma rodada; man: o estado de equipamentos que vem do dia anterior (null: tudo novo)
+function jogaDia(n,man){
+  g.up={}; g.save.up=g.up; order.slice(0,n-1).forEach(id=>g.up[id]=true);
+  if(L.normSave){ g.save.equipe=L.normSave({equipe:eqFor(n)}).equipe; g.save.bank=1e6; }
+  g.save.salao=L.normSalao({mesas:movFor(n).map((seats,c)=>({x:0,y:0,seats,c:c%4}))});
+  if(L.salaoLugares(g.save.salao.mesas)!==movFor(n).reduce((x,y)=>x+y,0)) throw new Error('salão '+JSON.stringify(movFor(n))+' não cabe na arrumação automática (voltou ao kit)');
+  if(process.env.DIV) g.save.divulga=process.env.DIV;   // DIV=boca|panfleto|redes
+  if(process.env.MULT){ const d=L.divulgaOf(g.save.divulga); d.groups=[+process.env.MULT,+process.env.MULT]; }   // MULT=0.7: fração fixa dos grupos do dia
+  g.save.manut=L.normManut(man); g.save.caixaPend={mel:0,sal:0,man:0}; delete g.save.manut.sorteio;
+  let rev=0;
+  if(MODO==='cuida'&&n>=2){ const b0=g.save.bank; g.goShop(n); g.revisarTudo(); rev=b0-g.save.bank; }   // revisa na lojinha, antes do dia
+  const b1=g.save.bank;
+  g.startDay(n); g.begin();
+  let st=0; while(g.state==='playing'&&st<30000){ bot(); g.update(0.05); st++; }
+  const r=g.result; r.rev=rev; r.bankFim=g.save.bank;
+  return r;
+}
+for(let k=0;k<N;k++){
+  if(MODO==='sem'){ for(const n of DIAS) R[n].push(jogaDia(n,null)); }
+  else { let man=null; for(let n=1;n<=NMAX;n++){ const r=jogaDia(n,man); man=Object.assign({},g.save.manut); if(R[n]) R[n].push(r); } }   // desgaste de um dia para o outro
+}
+const tot={rev:0,lucro:0,quebras:0,dias:0};
 for(const n of DIAS){
-  const res=[];
-  for(let k=0;k<N;k++){
-    g.up={}; g.save.up=g.up; order.slice(0,n-1).forEach(id=>g.up[id]=true);
-    if(L.normSave){ g.save.equipe=L.normSave({equipe:eqFor(n)}).equipe; g.save.bank=1e6; }
-    g.save.salao=L.normSalao({mesas:movFor(n).map((seats,c)=>({x:0,y:0,seats,c:c%4}))});
-    if(L.salaoLugares(g.save.salao.mesas)!==movFor(n).reduce((x,y)=>x+y,0)) throw new Error('salão '+JSON.stringify(movFor(n))+' não cabe na arrumação automática (voltou ao kit)');
-    if(process.env.DIV) g.save.divulga=process.env.DIV;   // DIV=boca|panfleto|redes
-    if(process.env.MULT){ const d=L.divulgaOf(g.save.divulga); d.groups=[+process.env.MULT,+process.env.MULT]; }   // MULT=0.7: fração fixa dos grupos do dia
-    g.startDay(n); g.begin();
-    let st=0; while(g.state==='playing'&&st<30000){ bot(); g.update(0.05); st++; }
-    res.push(g.result);
-  }
+  const res=R[n];
   const m=res.map(r=>r.money), mean=m.reduce((a,b)=>a+b,0)/N, d=L.DAYS[n-1];
   const avg=k=>(res.reduce((a,r)=>a+(r[k]||0),0)/N).toFixed(0);
   const pass=res.filter(r=>r.passed).length, exp=res.filter(r=>r.money>=d.expert).length;
   const so=m.slice().sort((a,b)=>a-b), q=f=>so[Math.min(so.length-1,Math.floor(f*so.length))];
   console.log('Dia',n,'meta',d.meta,'exp',d.expert,'| media',mean.toFixed(0),'p10',q(0.1),'p90',q(0.9),'min',Math.min(...m),'max',Math.max(...m),'| passou',pass+'/'+N,'expert',exp+'/'+N,'3★',res.filter(r=>r.stars===3).length+'/'+N,'| perdidos',(res.reduce((a,r)=>a+r.lost,0)/N).toFixed(1),'lotado',(res.reduce((a,r)=>a+r.full,0)/N).toFixed(1),'| causas',['semMesa','comMesa','pedido','prato','conta'].map(k=>k+' '+(res.reduce((a,r)=>a+r.lostBy[k],0)/N).toFixed(1)).join(' '),'vip',(res.reduce((a,r)=>a+r.vipLost,0)/N).toFixed(1),'lotadoT',avg('lotadoT'),'atraso',avg('atraso'),'zero',res.filter(r=>r.lost===0&&!r.full).length+'/'+N,'| fat',avg('fat'),'ingr',avg('custo'),'contas',avg('contas'),'folha',avg('paid'),'div',avg('div'),'suco da espera',avg('sucoEsp'));
+  if(MODO!=='sem'){
+    const qb=id=>(res.reduce((a,r)=>a+r.quebras.filter(x=>x.id===id).length,0)/N).toFixed(2);
+    const qt=res.reduce((a,r)=>a+r.quebras.length,0)/N, rev=res.reduce((a,r)=>a+r.rev,0)/N, con=res.reduce((a,r)=>a+r.conserto,0)/N;
+    console.log('      imprevistos | quebras/dia',qt.toFixed(2),'(fogão',qb('fogao'),'geladeira',qb('geladeira'),'cafeteira',qb('cafeteira')+')','dias com quebra',res.filter(r=>r.quebras.length).length+'/'+N,'| chuva',res.filter(r=>r.clima==='chuva').length+'/'+N,'feriado',res.filter(r=>r.clima==='feriado').length+'/'+N,'| revisão R$',rev.toFixed(0),'('+(mean>0?(rev/mean*100).toFixed(0):'-')+'% do lucro)','conserto R$',con.toFixed(0),'| estado médio no fim: fogão',(100*res.reduce((a,r)=>a+r.manut.fogao,0)/N).toFixed(0)+'% geladeira',(100*res.reduce((a,r)=>a+r.manut.geladeira,0)/N).toFixed(0)+'% cafeteira',(100*res.reduce((a,r)=>a+r.manut.cafeteira,0)/N).toFixed(0)+'%');
+    if(n>=3){ tot.rev+=rev; tot.lucro+=mean; tot.quebras+=n>=L.MANUT.dia?qt:0; tot.dias+=n>=L.MANUT.dia?1:0; }
+  }
 }
+if(MODO!=='sem'&&tot.dias) console.log('RESUMO',MODO,'| dias 3 a '+NMAX+': revisão =',(tot.rev/tot.lucro*100).toFixed(1)+'% do lucro médio | quebras/dia (dias '+L.MANUT.dia+' a '+NMAX+') =',(tot.quebras/tot.dias).toFixed(2),'(1 a cada',(tot.dias/tot.quebras).toFixed(1),'dias)');

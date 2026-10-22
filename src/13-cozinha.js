@@ -26,10 +26,11 @@ class Kitchen {
   }
   update(dt){
     this.noPlate = false;
+    const fogo = this.game.quebrado('fogao') ? manutOf('fogao').lento : 1;   // fogão falhando (v8): cozinha mais devagar
     while (this.cooking.length < this.slots && this.queue.length) this.cooking.push(this.queue.shift());
     for (let i=this.cooking.length-1; i>=0; i--){
       const t = this.cooking[i];
-      t.p = Math.min(t.time, t.p + dt);
+      t.p = Math.min(t.time, t.p + dt * fogo);
       if (t.p >= t.time){
         const free = this.plates.findIndex(p => !p);
         if (free >= 0 && this.clean <= 0) this.noPlate = true;
@@ -38,10 +39,12 @@ class Kitchen {
           const crit = Math.random() < this.chef.crit;
           this.plates[free] = { id:++this.pid, table:t.table, group:t.group, dish:t.dish, slot:free, age:0, crit, vip:!!(t.group && t.group.vip) };
           this.cooking.splice(i,1);
+          this.game.usos.fogao++; this.game.usos.geladeira++;
           Sfx.bell();
           this.game.addText(PLATE_SLOTS[free].x, PLATE_SLOTS[free].y - 34, 'Pronto!', PAL.mostarda, 16);
           // ingredientes (v7): o prato pronto já custou, mesmo que o grupo vá embora antes de comer
-          const cost = t.group ? Math.round(t.group.bill * INGRED.prato) : 0;
+          // geladeira quebrada (v8): ingredientes mais caros enquanto ela não for consertada
+          const cost = t.group ? Math.round(t.group.bill * INGRED.prato * (this.game.quebrado('geladeira') ? manutOf('geladeira').ingred : 1)) : 0;
           if (cost){ this.game.custo += cost; this.game.addText(PLATE_SLOTS[free].x, PLATE_SLOTS[free].y - 54, '-' + cost, PAL.perigo, 12); }
         }
       }

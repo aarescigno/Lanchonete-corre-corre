@@ -215,6 +215,7 @@ class Waitress {
       return;
     }
     if (a.type === 'coffee'){
+      if (g.quebrado('cafeteira')) return this.fail('Cafeteira parada!');
       if (!this.canTake('coffee')) return this.fail('Mãos cheias!');
       this.hands.push({ kind:'coffee' });
       Sfx.blip();
@@ -353,6 +354,7 @@ class Waitress {
       grp.coffee = true;
       grp.gain(g.up.cafeteira ? 2 : 1);
       g.score('coffee', DRINK_PRICE.coffee, cx, cy - 40);
+      g.usos.cafeteira++;
       Sfx.coin();
     } else {
       this.fail('?');

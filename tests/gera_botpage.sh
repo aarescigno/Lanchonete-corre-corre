@@ -5,7 +5,7 @@ cd "$(dirname "$0")"
 {
   echo "// gerado por gera_botpage.sh a partir de bot.js: não edite à mão"
   echo "(function(){"
-  printf ' const mk='; sed 's/^module\.exports=//' bot.js
+  printf ' const mk='; sed 's/^module\.exports\.moveis=/mk.moveis=/; s/^module\.exports=//' bot.js
   cat <<'JS'
  window.botStep=function(){ if(!window.__bot) window.__bot=mk(window.__game,window.__lcc); window.__bot(); };
  window.botAfiado=function(){ if(!window.__botA) window.__botA=mk(window.__game,window.__lcc,{afiado:true}); window.__botA(); };

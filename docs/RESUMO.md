@@ -1,9 +1,9 @@
 # Resumo do projeto e das alterações (até 22/10/2026)
 
 ## Estado atual
-- **Versão:** v7.7 (espera da Garagem de pé e Água da torneira no lugar da Máquina de suco; ainda não publicada no artifact), sobre a v7.6 (tela larga: calçada, salão e cozinha na mesma tela, sem rolar), a v7.5.1 (modo dev: 10 toques no selo da versão) e a v7.5 (espera na calçada e Máquina de suco), publicada em 22/10 como Versão 33 do artifact https://claude.ai/artifact/MJxrgDg8S4akvg47SoQAvj (privado).
+- **Versão:** v8 (manutenção e imprevistos: fogão, geladeira e cafeteira se desgastam e quebram a partir do dia 4; conserto na hora e revisão na lojinha; chuva e feriado; ainda não publicada no artifact), sobre a v7.7 (espera da Garagem de pé e Água da torneira no lugar da Máquina de suco; também ainda não publicada), a v7.6 (tela larga: calçada, salão e cozinha na mesma tela, sem rolar), a v7.5.1 (modo dev: 10 toques no selo da versão) e a v7.5 (espera na calçada e Máquina de suco), publicada em 22/10 como Versão 33 do artifact https://claude.ai/artifact/MJxrgDg8S4akvg47SoQAvj (privado).
 - **Branch:** `claude/main` (renomeado pelo usuário; o antigo `claude/intelligent-gauss-3owv29` não existe mais) no repositório `aarescigno/Lanchonete-corre-corre`.
-- **Arquivos publicados:** `lanchonete.html` (página), mais `versoes/v1.html` a `versoes/v7.5.1.html`, abertos pelo painel Versões. Ao publicar a v7.7, enviar `versoes/v7.6.html`.
+- **Arquivos publicados:** `lanchonete.html` (página), mais `versoes/v1.html` a `versoes/v7.5.1.html`, abertos pelo painel Versões. Ao publicar, enviar `versoes/v7.6.html` e `versoes/v7.7.html` (as duas ainda não estão no artifact).
 - **Capacidades declaradas (mantidas ao republicar sem `capabilities`):**
   - `db`: `ranking-carreira` e `ranking-semfim` com read "view" e write "owner";
   - `db`: `ranking-*/{self}` com write "interact";
@@ -12,7 +12,7 @@
   - documentos `ranking-carreira/<userId>` e `ranking-semfim/<userId>`, com `nome`, `pontos`, `dia` ou `tempo` e `quando`;
   - só sobrescreve quando a pontuação é maior;
   - fallback local em `localStorage` (`lcc2_ranking`).
-- **Save:** `lcc2_save`, que importa o `lcc_save_v1` da v1 (no modo dev da v7.5.1, `lcc2_save_dev`, com `lcc2_dev` guardando se o modo está ligado). Desde a v6 guarda também o salão (`save.salao`); desde a v7, a divulgação (`save.divulga`); desde a v7.2, o livro-caixa (`save.caixa`, últimos 14 dias da carreira, e `save.caixaPend`, compras da lojinha que entram na linha do dia seguinte). Desde a v7.4, `save.salao` é `{ ponto, mesas:[{ x, y, seats, c }] }`; o salão da v6 vira a Garagem com o kit e o que custou volta numa linha "Devolução do salão" do caixa. Desde a v7.7, `save.torneira` marca que a Máquina de suco já virou Água da torneira (quem tinha recebe R$ 100, uma vez, na linha "Devolução da máquina de suco"). `save.best` continua guardando o melhor faturamento de cada dia (é o que o ranking da carreira soma).
+- **Save:** `lcc2_save`, que importa o `lcc_save_v1` da v1 (no modo dev da v7.5.1, `lcc2_save_dev`, com `lcc2_dev` guardando se o modo está ligado). Desde a v6 guarda também o salão (`save.salao`); desde a v7, a divulgação (`save.divulga`); desde a v7.2, o livro-caixa (`save.caixa`, últimos 14 dias da carreira, e `save.caixaPend`, compras da lojinha que entram na linha do dia seguinte). Desde a v7.4, `save.salao` é `{ ponto, mesas:[{ x, y, seats, c }] }`; o salão da v6 vira a Garagem com o kit e o que custou volta numa linha "Devolução do salão" do caixa. Desde a v7.7, `save.torneira` marca que a Máquina de suco já virou Água da torneira (quem tinha recebe R$ 100, uma vez, na linha "Devolução da máquina de suco"). `save.best` continua guardando o melhor faturamento de cada dia (é o que o ranking da carreira soma). Desde a v8, `save.manut` guarda o estado de fogão, geladeira e cafeteira (0 a 1) e o sorteio do dia (`sorteio`), e as linhas do caixa ganham `man` (revisões e consertos).
 
 ## Versões
 | Versão | Data | O que trouxe | Detalhes |
@@ -36,6 +36,7 @@
 | v7.5.1 | 21/10 | Modo dev (pedido do usuário): 10 toques no selo da versão ligam e desligam; sem painel à parte, o jogo fica igual com "Modo dev" na tela; save à parte (`lcc2_save_dev`), 7 dias, R$ 10.000 que a lojinha repõe, lojinha desde o dia 1 com melhorias de graça (liga e desliga), couvert e divulgação liberados; ranking de fora | `docs/spec-v7.5.1.md` |
 | v7.6 | 22/10 | Tela larga (retorno de jogador: rolar fazia perder o controle): 1220×600, calçada, salão e cozinha juntos, sem rolar; HUD espalhado; no celular deitado, tudo do mesmo tamanho de antes | `docs/spec-v7.6.md` |
 | v7.7 | 22/10 | Espera com a cara do nível (pedido do usuário): na Garagem, de pé numa faixa pintada no chão, e a Água da torneira (R$ 80, de graça na conta, pedida no balão e enchida na hora) no lugar da Máquina de suco (R$ 100 de volta para quem tinha); espada-de-são-jorge no vaso e na lata; `PONTOS.assento` e `BEBIDA_ESPERA` preparados para os níveis 2 a 4 | `docs/spec-v7.7.md` |
+| v8 | 22/10 | Manutenção e imprevistos (etapa 2 do plano): fogão, geladeira e cafeteira se desgastam e quebram a partir do dia 4 (conserto na hora com a plaquinha; revisão na aba Manutenção da lojinha); chuva e feriado a partir do dia 3 | `docs/spec-v8.md` |
 
 ## Alterações feitas no Claude Code (14/10/2026)
 1. **Importação** do pacote exportado do claude.ai para o repositório (commit `982583b`).

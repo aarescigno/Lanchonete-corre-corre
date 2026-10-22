@@ -124,6 +124,14 @@ function buildTips(){
       for (let i=0;i<4;i++){ c.fillStyle = PAL.cromoEsc; c.fillRect(13,19+i*7,14,2.4); c.fillRect(30,19+i*7,4,2.4); }
       c.strokeStyle = PAL.perigo; c.lineWidth = 2.4; c.beginPath(); c.moveTo(13,47); c.lineTo(34,47); c.stroke();
       drawIcon(c,'coin',48,40,0.8);
+    }],
+    ['O fogão, a geladeira e a cafeteira se gastam um pouco a cada dia. Do dia 4 em diante, o que está gasto pode quebrar no meio do dia: toque na plaquinha com a chave para chamar o técnico na hora (mais caro) ou aguente até a lojinha, onde a revisão (aba Manutenção) deixa tudo novo. Às vezes chove (menos gente) ou é feriado (mais gente).', c => {
+      circ(c,32,32,20); fs(c,PAL.mostarda,2.4);
+      c.save(); c.translate(32,32); c.rotate(-0.7);
+      rr(c,-3,-4,6,22,2); fs(c,PAL.cromo,1.8);
+      c.beginPath(); c.arc(0,-10,8,0.6,Math.PI*2-0.6+Math.PI,false); c.closePath(); fs(c,PAL.cromo,1.8);
+      rr(c,-3,-19,6,8,1); c.fillStyle = PAL.mostarda; c.fill();
+      c.restore();
     }]
   ];
   tips.forEach(t => {

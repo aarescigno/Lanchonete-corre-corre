@@ -30,6 +30,7 @@ class Helper {
   go(pt, step){ this.plan = step; this.path = findPath({ x:this.x, y:this.y }, pt); this.phase = 'walk'; }
   nearestAp(t){ const p = tableApproach(t); return Math.hypot(p[0].x-this.x,p[0].y-this.y) <= Math.hypot(p[1].x-this.x,p[1].y-this.y) ? p[0] : p[1]; }
   coffeeTarget(){
+    if (this.g.quebrado('cafeteira')) return null;   // cafeteira parada (v8)
     const c = this.g.tables.filter(t => t.group && t.group.seated && !t.group.coffee && t.group.hearts <= 4 && !t.group.daniCoffee && !this.biaWants(t));
     c.sort((a,b) => a.group.hearts - b.group.hearts);
     return c[0] || null;
@@ -110,7 +111,7 @@ class Helper {
       if (grp) grp.daniCoffee = false;
       if (!h || !grp || !grp.seated || grp.coffee) return;
       this.hands.splice(this.hands.indexOf(h), 1);
-      grp.coffee = true; grp.gain(g.up.cafeteira ? 2 : 1);
+      grp.coffee = true; grp.gain(g.up.cafeteira ? 2 : 1); g.usos.cafeteira++;
       g.addMoney(5); g.addText(t.cx, t.cy - 40, '+5', PAL.ok, 16); Sfx.coin();
     }
   }

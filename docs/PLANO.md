@@ -7,7 +7,7 @@ Origem: retorno do Renan Martorelli (beta-tester) e conversa com o Arthur (15/10
 - Para começar uma sessão, basta pedir: **"faça a próxima etapa do docs/PLANO.md"**. A sessão lê só a etapa da vez e as partes de `src/` citadas nela.
 - Antes de programar, a sessão confirma com o usuário as **decisões em aberto** da etapa (cada uma já tem uma sugestão).
 - No fim, a sessão marca a etapa como feita na tabela abaixo (com a versão e a data) e anota o que mudou no plano.
-- Ordem: cada etapa depende só das anteriores. A 1a vem primeiro (mexe no equilíbrio de base). A 1c teve prioridade sobre as demais, por ser retorno do beta-tester Renan (pedido do usuário em 21/10). **A 1d-1 (v7.4) e a 1d-2 (v7.5) foram feitas; a próxima é a 2** (manutenção e imprevistos). A 1b e a 2 podiam trocar de lugar. A 3 vem antes da 4, e a 4 antes da 6.
+- Ordem: cada etapa depende só das anteriores. A 1a vem primeiro (mexe no equilíbrio de base). A 1c teve prioridade sobre as demais, por ser retorno do beta-tester Renan (pedido do usuário em 21/10). **A 1d-1 (v7.4), a 1d-2 (v7.5) e a 2 (v8) foram feitas; a próxima é a 3** (pontos: área industrial e Avenida Brasil). A 1b e a 2 podiam trocar de lugar. A 3 vem antes da 4, e a 4 antes da 6.
 
 ## Situação
 | # | Etapa | Versão | Situação |
@@ -22,8 +22,8 @@ Origem: retorno do Renan Martorelli (beta-tester) e conversa com o Arthur (15/10
 | 1d-2 | Tela que rola até a calçada, espera lá fora e máquina de suco | v7.5 | feita (21/10) |
 | — | Retorno de jogador: tela larga, tudo à vista sem rolar | v7.6 | feita (22/10) |
 | — | Fora do plano: espera da Garagem de pé, Água da torneira e espada-de-são-jorge | v7.7 | feita (22/10) |
-| 2 | Manutenção e imprevistos | v8 | **próxima** |
-| 3 | Pontos: área industrial e Avenida Brasil, carreira por pontos | v9 | a fazer |
+| 2 | Manutenção e imprevistos | v8 | feita (22/10) |
+| 3 | Pontos: área industrial e Avenida Brasil, carreira por pontos | v9 | **próxima** |
 | 4 | Terraço Suíça e VIPs exigentes | v10 | a fazer |
 | 5 | Modo História, parte 1: estrutura e primeiros capítulos | v11 | a fazer |
 | 6 | Modo História, parte 2: subir de ponto, crítico do guia e final | v12 | a fazer |
@@ -249,6 +249,8 @@ Também: rever o `smoke7` (toque) e o `smoke10` (fila justa e porta), mais `bala
 - Quais equipamentos (sugestão: fogão, geladeira e cafeteira)?
 - Conserto de emergência dentro do dia (sugestão: sim, com um toque no equipamento quebrado) ou só na lojinha?
 - Chuva e feriado entram aqui ou numa etapa própria?
+
+**Feito (v8, 22/10):** decisões do usuário: equipamentos fogão, geladeira e cafeteira; conserto de emergência com um toque na plaquinha, além da revisão na lojinha; chuva e feriado já na v8; quebras só a partir do dia 4 (o desgaste corre desde o dia 1). O que mudou em relação ao plano: os efeitos ficaram mais fortes (fogão 40% mais lento, em vez de 20%; geladeira +50%, em vez de +20%), porque com 20% e 20% a quebra custava só R$ 20 a 65 e cuidar não compensava; a revisão custa o valor cheio × o que se gastou (cheio: fogão R$ 500, geladeira R$ 440, cafeteira R$ 240), e o conserto na hora custa R$ 120, R$ 100 e R$ 50 (no plano, R$ 80 a 180); o "fora de serviço" virou a placa "QUEBRADO" (pedido do usuário, regra no `CLAUDE.md`); a geladeira foi desenhada nova (de pé, ao lado do balcão), e a quebrada ganhou porta aberta e poça; a revisão não conta como a melhoria do dia. Detalhes em `docs/spec-v8.md`.
 
 ---
 
