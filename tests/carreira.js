@@ -2,8 +2,19 @@
 // lojinha (v7.4, regra em bot.moveis) e, do dia 3 em diante, contrata a equipe completa que o dinheiro pagar.
 // Mostra o dinheiro em cada lojinha e os lugares do salão. MOVEIS=0: não compra móveis (fica no kit).
 // Uso: node carreira.js [N] [divulga]   (divulga: boca, panfleto ou redes; padrão panfleto)
+// v8, manutenção e imprevistos:
+//   MANUT=sem    (padrão) imprevistos desligados (MANUT.on=false), como antes
+//   MANUT=com    liga os imprevistos (desgaste, quebras do dia 4 em diante, chuva e feriado do dia 3) e o jogador nunca revisa
+//   MANUT=cuida  liga e revisa tudo (revisarTudo) em toda lojinha, antes das outras compras, com o dinheiro de verdade
+//   CONSERTO=1   chama o técnico na hora quando o fogão quebra (se tiver dinheiro; CONSERTO=todos: os três equipamentos)
+//   Com MANUT=com|cuida, mostra por dia: quebras (média), chuva/feriado (dias), revisão e conserto (R$) e o dinheiro final.
+//   MANUT_CFG='{"equip":{"fogao":{"preco":300}}}' e CLIMA_CFG='{"chuva":{"chance":0.1}}' trocam L.MANUT / L.CLIMA em runtime (sem mexer em src/)
 const N=+process.argv[2]||10, DIV=process.argv[3]||'panfleto';
-const H=require('./harness.js')(); const {g,L}=H; const BOT=require('./bot.js'), bot=BOT(g,L);
+const H=require('./harness.js')(); const {g,L}=H; const BOT=require('./bot.js'), bot=BOT(g,L,{conserto:process.env.CONSERTO==='todos'?'todos':!!process.env.CONSERTO});
+const MODO=process.env.MANUT||'sem'; if(!['sem','com','cuida'].includes(MODO)) throw new Error('MANUT=sem|com|cuida');
+L.MANUT.on=MODO!=='sem';
+if(process.env.MANUT_CFG){ const c=JSON.parse(process.env.MANUT_CFG); const eq=c.equip; delete c.equip; Object.assign(L.MANUT,c); if(eq) for(const id in eq) Object.assign(L.manutOf(id),eq[id]); }
+if(process.env.CLIMA_CFG){ const c=JSON.parse(process.env.CLIMA_CFG); for(const k in c) Object.assign(L.CLIMA[k],c[k]); }
 const order=['tenis','maquina','cafeteira','bandeja','ventilador','pratos','corrida'];
 const FULL=[{tonhao:2,dani:3,tv:true,som:true},{tonhao:2,dani:3,tv:true},{tonhao:2,dani:3},{tonhao:1,dani:2},{tonhao:0,dani:1},{}];
 // ajuste rápido sem mexer em src/: CONTAS='{"mesa":40}' INGRED='{"prato":0.6}' node carreira.js
@@ -14,9 +25,10 @@ const rows={};
 for(let k=0;k<N;k++){
   g.save=L.normSave({}); g.up=g.save.up; g.boughtFor=0; g.buildTables(); let semMesa=0;
   for(let n=1;n<=7;n++){
-    const r=rows[n]||(rows[n]={shop:[],after:[],lucro:[],pass:0,eq:[],lug:[]});
+    const r=rows[n]||(rows[n]={shop:[],after:[],lucro:[],pass:0,eq:[],lug:[],rev:[],con:[],qb:[],chuva:0,fer:0,fim:[]});
     if(n>=2){
       g.goShop(n);
+      if(MODO==='cuida'){ const b0=g.save.bank; g.revisarTudo(); r.rev.push(b0-g.save.bank); }
       const u=order.find(id=>!g.up[id]); const uc=L.UPGRADES.find(x=>x.id===u);
       if(u && g.save.bank>=uc.cost+(n>=3?300:0)) g.buy(u);
       if(process.env.MOVEIS!=='0') BOT.moveis(g,L,semMesa,n>=3?300:0,process.env.MOVEIS);
@@ -29,8 +41,14 @@ for(let k=0;k<N;k++){
     }
     g.startDay(n); g.begin(); r.after.push(g.save.bank); r.eq.push(g.paid);
     let st=0; while(g.state==='playing'&&st<30000){ bot(); g.update(0.05); st++; }
-    r.lucro.push(g.result.money); if(g.result.passed) r.pass++; semMesa=g.result.lostBy.semMesa; r.lug.push(L.salaoLugares(g.save.salao.mesas)); if(process.env.MESAS) console.log(n, g.save.salao.mesas.map(m=>m.seats).sort().join(''), 'semMesa', semMesa);
+    r.lucro.push(g.result.money); r.con.push(g.result.conserto); r.qb.push(g.result.quebras.length); if(g.result.clima==='chuva') r.chuva++; if(g.result.clima==='feriado') r.fer++; r.fim.push(g.save.bank); if(g.result.passed) r.pass++; semMesa=g.result.lostBy.semMesa; r.lug.push(L.salaoLugares(g.save.salao.mesas)); if(process.env.MESAS) console.log(n, g.save.salao.mesas.map(m=>m.seats).sort().join(''), 'semMesa', semMesa);
   }
 }
 const avg=a=>a.length?Math.round(a.reduce((x,y)=>x+y,0)/a.length):'-';
 for(let n=1;n<=7;n++){ const r=rows[n]; console.log('Dia',n,'| dinheiro na lojinha',avg(r.shop),'| depois da folha',avg(r.after),'| folha',avg(r.eq),'| lucro',avg(r.lucro),'| lugares',avg(r.lug),'| passou',r.pass+'/'+N); }
+if(MODO!=='sem'){
+  let tl=0,tr=0,tq=0,tc=0; const NM=L.MANUT.dia;
+  for(let n=1;n<=7;n++){ const r=rows[n]; console.log('      Dia',n,'| quebras',(r.qb.reduce((a,b)=>a+b,0)/N).toFixed(2),'| chuva',r.chuva+'/'+N,'feriado',r.fer+'/'+N,'| revisão R$',avg(r.rev),'conserto R$',avg(r.con),'| dinheiro no fim do dia',avg(r.fim));
+    if(n>=3){ tl+=avg(r.lucro); tr+=avg(r.rev)||0; tc+=avg(r.con); } if(n>=NM) tq+=r.qb.reduce((a,b)=>a+b,0)/N; }
+  console.log('RESUMO carreira',MODO,'| dias 3 a 7: revisão',(tr/tl*100).toFixed(1)+'% e conserto',(tc/tl*100).toFixed(1)+'% do lucro | quebras dos dias '+NM+' a 7:',tq.toFixed(2),'por carreira (1 a cada',(4/tq).toFixed(1),'dias) | metas batidas dias 3 a 7:',[3,4,5,6,7].reduce((a,n)=>a+rows[n].pass,0)+'/'+(5*N),'('+([3,4,5,6,7].reduce((a,n)=>a+rows[n].pass,0)/(5*N)*100).toFixed(0)+'%)');
+}

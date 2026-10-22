@@ -1,7 +1,15 @@
 // gerado por gera_botpage.sh a partir de bot.js: não edite à mão
 (function(){
  const mk=// bot compartilhado. opts.afiado: o "jogador perfeito" da v7.1 (ver afiado abaixo)
+// opts.conserto (v8): chama o técnico na hora quando o equipamento quebra, como o jogador que toca na plaquinha:
+//   true ou 'fogao' conserta só o fogão (o que mais pesa: cozinha 20% mais devagar); 'todos' conserta também geladeira e cafeteira
 function(g,L,opts){
+  const base=baseBot(g,L,opts), cs=opts&&opts.conserto;
+  if(!cs) return base;
+  const ids=cs==='todos'?['fogao','geladeira','cafeteira']:['fogao'];
+  return function botStep(){ for(const id of ids) if(g.quebrado(id)) g.consertar(id); base(); };
+};
+function baseBot(g,L,opts){
   if(opts&&opts.afiado) return afiado(g,L);
   return function botStep(){
     const b=g.bia;
@@ -42,7 +50,7 @@ function(g,L,opts){
     // suco da espera pronto na máquina (v7.5), quando não há mais nada: busca e leva (se a Dani não estiver cuidando disso)
     if(g.up&&g.up.maquina&&g.maqLivre&&g.maqLivre()&&!b.acts.length&&can('suco')&&!(g.dani&&g.dani.does('suco'))) return g.tapStation('maquina');
   };
-};
+}
 
 // Bot afiado (v7.1): faz uma ação de cada vez, sempre a mais urgente. A urgência é o tempo que o grupo
 // ainda aguenta (corações × paciência) menos a caminhada até lá. Senta qualquer grupo da fila que caiba
