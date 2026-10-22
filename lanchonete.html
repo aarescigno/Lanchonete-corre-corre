@@ -242,7 +242,7 @@ table.rank tr.me td{background:#fbe7a8}
 
     <div class="ov show" id="ov-menu">
       <div class="panel menu-panel">
-        <span class="vtag" id="vtag" aria-label="Versão 8.1">v8.1</span>
+        <span class="vtag" id="vtag" aria-label="Versão 8.1.1">v8.1.1</span>
         <h1 class="title">Lanchonete <br>Corre-Corre</h1>
         <p class="tag">Ajude a Bia a atender a freguesia da esquina antes que o cafezinho esfrie!</p>
         <div class="lbl">Carreira: escolha o dia</div>
@@ -421,7 +421,8 @@ table.rank tr.me td{background:#fbe7a8}
       <div class="panel">
         <h2>Versões</h2>
         <ul class="verlist">
-          <li><b>v8.1</b><span class="cur">versão atual</span><br>22/10/2026 &mdash; Dinheiro comprometido: na lojinha, ao lado do dinheiro acumulado, aparece quanto está livre e quanto já está reservado para a folha e a divulgação do dia (Dani, TV, som, panfletos...). Compra que usaria esse dinheiro fica com um ⚠ e pede um 2º toque, dizendo o que fica de fora no dia.</li>
+          <li><b>v8.1.1</b><span class="cur">versão atual</span><br>22/10/2026 &mdash; Menos balões nas mesas: ficam só o cardápio (escolhendo), a exclamação (chamando para pedir) e o dinheiro (pedindo a conta). Esperando a comida ou comendo, a mesa fica sem balão.</li>
+          <li><b>v8.1</b><br>22/10/2026 &mdash; Dinheiro comprometido: na lojinha, ao lado do dinheiro acumulado, aparece quanto está livre e quanto já está reservado para a folha e a divulgação do dia (Dani, TV, som, panfletos...). Compra que usaria esse dinheiro fica com um ⚠ e pede um 2º toque, dizendo o que fica de fora no dia.<br><a href="versoes/v8.1.html" target="_blank" rel="noopener">Abrir a v8.1</a></li>
           <li><b>v8</b><br>22/10/2026 &mdash; Manutenção e imprevistos: o fogão, a geladeira e a cafeteira se gastam a cada dia (mais em dia cheio) e, do dia 4 em diante, o que está gasto pode quebrar no meio do dia (fogão falhando: o Tonhão cozinha mais devagar; geladeira: ingredientes mais caros; cafeteira: sem cafezinho). Um toque na plaquinha chama o técnico na hora; na lojinha, aba Manutenção, a revisão deixa tudo novo. E, de vez em quando, chuva (menos gente, mais entregadores) ou feriado (mais gente). O caixa ganhou a coluna Manutenção.<br><a href="versoes/v8.html" target="_blank" rel="noopener">Abrir a v8</a></li>
           <li><b>v7.7</b><br>22/10/2026 &mdash; A espera lá fora com a cara da Garagem: quem espera fica de pé, numa faixa pintada no chão, e a Máquina de suco virou a Água da torneira (R$ 80; quem tinha a máquina recebe R$ 100 de volta): quem espera pede água, a Bia enche os copos americanos na torneira e leva, de graça. Na calçada, as plantas da casa da Bia: espada-de-são-jorge no vaso de barro e numa lata. Bancos, sucos e o resto vêm com os próximos pontos.<br><a href="versoes/v7.7.html" target="_blank" rel="noopener">Abrir a v7.7</a></li>
           <li><b>v7.6</b><br>22/10/2026 &mdash; Tudo na mesma tela: a tela ficou mais larga e mostra a calçada, o salão e a cozinha juntos, sem rolar (sem abinhas nem arrastar o fundo). No celular deitado, tudo fica do mesmo tamanho de antes.<br><a href="versoes/v7.6.html" target="_blank" rel="noopener">Abrir a v7.6</a></li>
@@ -807,7 +808,7 @@ const DIVULGA = [
 const MOVIMENTO = { kit:10, porLugar:0.06 };
 function movimentoSalao(lugares){ return 1 + MOVIMENTO.porLugar * Math.max(0, lugares - MOVIMENTO.kit); }
 const CAIXA_MAX = 14;                                 // livro-caixa (v7.2): quantos dias da carreira ficam guardados
-const VERSAO = 'v8.1';                              // vai no resumo do Caixa
+const VERSAO = 'v8.1.1';                              // vai no resumo do Caixa
 const DIVULGA_DIA = 3;                                // antes disso, o movimento é o da inauguração (sem custo)
 function divulgaAberta(n){ return DEV.on || n >= DIVULGA_DIA; }   // no modo dev, desde o dia 1
 function divulgaOf(id){ return DIVULGA.find(d => d.id === id) || DIVULGA[1]; }
@@ -2915,21 +2916,6 @@ function drawIcon(ctx,k,x,y,s,extra,extra2){
   } else if (k === 'table'){
     rr(ctx,-11,-5,22,12,4); fs(ctx,PAL.formica,2.2);
     ctx.fillStyle = PAL.cromo; ctx.fillRect(-9,7,3,5); ctx.fillRect(6,7,3,5);
-  } else if (k === 'pot'){
-    // panela no fogo: `extra` é o tempo, para o vapor ondular (parado com RM)
-    const w = (typeof extra === 'number' && !RM) ? extra*5 : 0;
-    ctx.fillStyle = PAL.alerta;
-    for (let i=-1;i<=1;i++){ ctx.beginPath(); ctx.moveTo(i*6-3,13); ctx.quadraticCurveTo(i*6,5,i*6+3,13); ctx.closePath(); ctx.fill(); }
-    rr(ctx,-15,-1,5,3.5,1.5); fs(ctx,PAL.tinta,1); rr(ctx,10,-1,5,3.5,1.5); fs(ctx,PAL.tinta,1);
-    rr(ctx,-11,-3,22,13,3); fs(ctx,PAL.formica,2.2);
-    ctx.fillStyle = 'rgba(255,255,255,.3)'; ctx.fillRect(-8,0,3,7);
-    rr(ctx,-12.5,-6,25,4,2); fs(ctx,PAL.cromo,1.8);
-    circ(ctx,0,-7.5,2.2); fs(ctx,PAL.cromoEsc,1.4);
-    ctx.strokeStyle = 'rgba(34,32,28,.45)'; ctx.lineWidth = 1.6;
-    for (let i=-1;i<=1;i++){
-      const d = Math.sin(w + i*2) * 1.5, sx = i*6;
-      ctx.beginPath(); ctx.moveTo(sx,-11); ctx.quadraticCurveTo(sx-3+d,-14,sx,-17); ctx.quadraticCurveTo(sx+3+d,-19.5,sx+0.5,-22); ctx.stroke();
-    }
   } else if (k === 'menu'){
     rr(ctx,-12,-8,11,16,2); fs(ctx,'#FFFBEA',2); rr(ctx,1,-8,11,16,2); fs(ctx,'#FFFBEA',2);
     ctx.strokeStyle = PAL.faixa; ctx.lineWidth = 1.5;
@@ -3919,16 +3905,6 @@ function drawTableOverlay(ctx,g,t,tm,menu){
     drawRing(ctx,0,0,17,1 - grp.timer/Math.max(0.1,grp.T.read[1]),PAL.faixa);
   } else if (grp.state === 'wantOrder'){
     ctx.scale(pul,pul); drawBubble(ctx,0,0,18,PAL.alerta); txt(ctx,'!',0,1,26,'#fff','center',FD,3);
-  } else if (grp.state === 'ordered'){
-    // aguardando o preparo: panela no fogo, sem anel, para não parecer o cardápio; o visto verde diz que o prato já está no balcão
-    drawBubble(ctx,0,0,17,'#fff'); drawIcon(ctx,'pot',0,2,0.72,tm);
-    if (g.kitchen.plates.some(p => p && p.group === grp)){
-      circ(ctx,13,-12,6.5); fs(ctx,PAL.ok,1.8);
-      ctx.strokeStyle = '#fff'; ctx.lineWidth = 2; ctx.beginPath(); ctx.moveTo(10,-12); ctx.lineTo(12.4,-9.6); ctx.lineTo(16,-14.5); ctx.stroke();
-    }
-  } else if (grp.state === 'eating'){
-    drawBubble(ctx,0,0,17,'#fff'); drawDish(ctx,grp.dish,0,2,0.9);
-    drawRing(ctx,0,0,17,1 - grp.timer/Math.max(0.1,grp.eatTotal),PAL.ok);
   } else if (grp.state === 'wantBill'){
     ctx.scale(pul,pul); drawBubble(ctx,0,0,18,PAL.mostarda); txt(ctx,'$',0,1,26,PAL.tinta,'center',FD);
   }

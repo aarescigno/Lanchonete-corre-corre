@@ -172,21 +172,6 @@ function drawIcon(ctx,k,x,y,s,extra,extra2){
   } else if (k === 'table'){
     rr(ctx,-11,-5,22,12,4); fs(ctx,PAL.formica,2.2);
     ctx.fillStyle = PAL.cromo; ctx.fillRect(-9,7,3,5); ctx.fillRect(6,7,3,5);
-  } else if (k === 'pot'){
-    // panela no fogo: `extra` é o tempo, para o vapor ondular (parado com RM)
-    const w = (typeof extra === 'number' && !RM) ? extra*5 : 0;
-    ctx.fillStyle = PAL.alerta;
-    for (let i=-1;i<=1;i++){ ctx.beginPath(); ctx.moveTo(i*6-3,13); ctx.quadraticCurveTo(i*6,5,i*6+3,13); ctx.closePath(); ctx.fill(); }
-    rr(ctx,-15,-1,5,3.5,1.5); fs(ctx,PAL.tinta,1); rr(ctx,10,-1,5,3.5,1.5); fs(ctx,PAL.tinta,1);
-    rr(ctx,-11,-3,22,13,3); fs(ctx,PAL.formica,2.2);
-    ctx.fillStyle = 'rgba(255,255,255,.3)'; ctx.fillRect(-8,0,3,7);
-    rr(ctx,-12.5,-6,25,4,2); fs(ctx,PAL.cromo,1.8);
-    circ(ctx,0,-7.5,2.2); fs(ctx,PAL.cromoEsc,1.4);
-    ctx.strokeStyle = 'rgba(34,32,28,.45)'; ctx.lineWidth = 1.6;
-    for (let i=-1;i<=1;i++){
-      const d = Math.sin(w + i*2) * 1.5, sx = i*6;
-      ctx.beginPath(); ctx.moveTo(sx,-11); ctx.quadraticCurveTo(sx-3+d,-14,sx,-17); ctx.quadraticCurveTo(sx+3+d,-19.5,sx+0.5,-22); ctx.stroke();
-    }
   } else if (k === 'menu'){
     rr(ctx,-12,-8,11,16,2); fs(ctx,'#FFFBEA',2); rr(ctx,1,-8,11,16,2); fs(ctx,'#FFFBEA',2);
     ctx.strokeStyle = PAL.faixa; ctx.lineWidth = 1.5;

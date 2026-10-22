@@ -4,6 +4,16 @@ Registro das ideias e dos retornos de quem jogou, com o texto original, e de ond
 
 ---
 
+## 22/10/2026 — Retorno de jogador: só três balões nas mesas
+**Origem:** mensagem do usuário, repassando um retorno, depois da v8.1:
+
+> Recebi um feedback aqui. Durante o jogo, cada pessoa sentada, né, cada grupo sentado, vai ter um timerzinho, né, de um círculo fechando ali, de escolher no cardápio. E depois ele vai chamar para você ir lá pegar o pedido. Depois que pega o pedido, fica um símbolo da panelinha. Pode tirar esse balãozinho da panelinha e depois tira o símbolozinho também deles comendo. Pra ficar só o símbolo do lendo cardápio, exclamação pra chamar e dinheirinho pra terminar. Só.
+
+**Para onde foi cada ideia:**
+- **Feito na v8.1.1:** sem balão da panelinha (esperando a comida) nem do prato com anel (comendo); ficam só o cardápio com anel, o "!" e o "$". O visto verde de "prato no balcão", que ficava no balão da panela, saiu junto.
+
+---
+
 ## 22/10/2026 — Usuário: o dinheiro da folha já estava comprometido
 **Origem:** mensagem do usuário, depois da v8:
 
