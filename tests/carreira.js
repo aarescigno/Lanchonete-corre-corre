@@ -49,6 +49,6 @@ for(let n=1;n<=7;n++){ const r=rows[n]; console.log('Dia',n,'| dinheiro na lojin
 if(MODO!=='sem'){
   let tl=0,tr=0,tq=0,tc=0; const NM=L.MANUT.dia;
   for(let n=1;n<=7;n++){ const r=rows[n]; console.log('      Dia',n,'| quebras',(r.qb.reduce((a,b)=>a+b,0)/N).toFixed(2),'| chuva',r.chuva+'/'+N,'feriado',r.fer+'/'+N,'| revisão R$',avg(r.rev),'conserto R$',avg(r.con),'| dinheiro no fim do dia',avg(r.fim));
-    if(n>=3){ tl+=avg(r.lucro); tr+=avg(r.rev)||0; tc+=avg(r.con); } if(n>=NM) tq+=r.qb.reduce((a,b)=>a+b,0)/N; }
+    if(n>=3){ tl+=avg(r.lucro); tr+=r.rev.length?avg(r.rev):0; tc+=avg(r.con); } if(n>=NM) tq+=r.qb.reduce((a,b)=>a+b,0)/N; }
   console.log('RESUMO carreira',MODO,'| dias 3 a 7: revisão',(tr/tl*100).toFixed(1)+'% e conserto',(tc/tl*100).toFixed(1)+'% do lucro | quebras dos dias '+NM+' a 7:',tq.toFixed(2),'por carreira (1 a cada',(4/tq).toFixed(1),'dias) | metas batidas dias 3 a 7:',[3,4,5,6,7].reduce((a,n)=>a+rows[n].pass,0)+'/'+(5*N),'('+([3,4,5,6,7].reduce((a,n)=>a+rows[n].pass,0)/(5*N)*100).toFixed(0)+'%)');
 }
