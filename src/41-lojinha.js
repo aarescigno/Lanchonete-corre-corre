@@ -347,17 +347,17 @@ function buildManut(grid){
   grid.appendChild(c);
 }
 /* aba Caixa (v7.2): os últimos dias da carreira, para onde foi o dinheiro e um resumo para colar no WhatsApp */
-const CAIXA_COR = { ingr:'#E26A2C', contas:'#C2362B', folha:'#1F4FA3', div:'#7B4FB5', mel:'#3E9B5A', sal:'#E0B23A', man:'#5B5F6B' };
+const CAIXA_COR = { ingr:'#E26A2C', contas:'#C2362B', folha:'#1F4FA3', div:'#7B4FB5', mel:'#3E9B5A', sal:'#E0B23A', man:'#5B5F6B', mul:'#8A1F1A' };
 function caixaTotais(cx){
   const s = k => cx.reduce((a, r) => a + (r[k] || 0), 0);
-  return [['ingr','Ingredientes'], ['contas','Contas'], ['folha','Equipe'], ['div','Divulgação'], ['mel','Melhorias'], ['sal','Salão'], ['man','Manutenção']].map(k => ({ id:k[0], name:k[1], v:s(k[0]) }));
+  return [['ingr','Ingredientes'], ['contas','Contas'], ['folha','Equipe'], ['div','Divulgação'], ['mel','Melhorias'], ['sal','Salão'], ['man','Manutenção'], ['mul','Dias largados no meio']].map(k => ({ id:k[0], name:k[1], v:s(k[0]) }));
 }
 function caixaResumo(save){
   const cx = save.caixa, eq = save.equipe, sal = save.salao;
   const out = ['Lanchonete Corre-Corre ' + VERSAO + ' · Caixa (valores em R$)'];
-  cx.forEach(r => out.push(r.dev ? 'Devolução ' + (r.devK === 'maquina' ? 'da máquina de suco' : 'do salão') + ': +' + r.dev + ' · saldo ' + r.saldo : 'Dia ' + r.d + (r.ok ? ' ✓' : ' ✗') + ': fatura ' + r.fat + ' − ingred. ' + r.ingr + ' − contas ' + r.contas + ' − equipe ' + r.folha + (r.div ? ' − divulg. ' + r.div : '') +
+  cx.forEach(r => out.push(r.int ? 'Dia ' + r.d + ' largado no meio: ' + r.int + (r.int > 1 ? ' grupos foram' : ' grupo foi') + ' embora bravo' + (r.int > 1 ? 's' : '') + ': −' + r.mul + ' · saldo ' + r.saldo : r.dev ? 'Devolução ' + (r.devK === 'maquina' ? 'da máquina de suco' : 'do salão') + ': +' + r.dev + ' · saldo ' + r.saldo : 'Dia ' + r.d + (r.ok ? ' ✓' : ' ✗') + ': fatura ' + r.fat + ' − ingred. ' + r.ingr + ' − contas ' + r.contas + ' − equipe ' + r.folha + (r.div ? ' − divulg. ' + r.div : '') +
     ' = lucro ' + r.lucro + ' (meta ' + r.meta + ')' + (r.perd ? ' · ' + r.perd + (r.perd > 1 ? ' perdidos' : ' perdido') : '') + (r.mel + r.sal ? ' · compras ' + (r.mel + r.sal) : '') + (r.man ? ' · manutenção ' + r.man : '') + ' · saldo ' + r.saldo));
-  const nd = cx.filter(r => !r.dev).length;
+  const nd = cx.filter(r => !r.dev && !r.int).length;
   if (nd) out.push('Para onde foi (' + nd + (nd > 1 ? ' dias' : ' dia') + '): ' + caixaTotais(cx).filter(t => t.v).map(t => t.name.toLowerCase() + ' ' + t.v).join(', '));
   const ups = UPGRADES.filter(u => save.up[u.id]).map(u => u.name.toLowerCase());
   out.push('Agora: ' + fmt(save.bank) + ' · Tonhão nível ' + (eq.tonhao + 1) + ', ' + (eq.dani ? 'Dani nível ' + eq.dani : 'sem Dani') + (eq.couvert ? ', couvert' : '') + (eq.tv ? ', TV' : '') + (eq.som ? ', som' : '') +
@@ -393,6 +393,11 @@ function buildCaixa(grid){
   tb.appendChild(head);
   cx.slice().reverse().forEach(r => {
     const tr = el('tr');
+    if (r.int){
+      // v8.2.3: dia largado no meio, com gente na espera ou nas mesas: cada grupo foi embora bravo e pagou a multa
+      const td = el('td', 'cx-dev', 'Dia ' + r.d + ' largado no meio: ' + r.int + (r.int > 1 ? ' grupos foram' : ' grupo foi') + ' embora bravo' + (r.int > 1 ? 's' : '') + ': −' + fmt(r.mul)); td.setAttribute('colspan', '8');
+      tr.appendChild(td); tr.appendChild(cxTd(r.saldo)); tb.appendChild(tr); return;
+    }
     if (r.dev){
       // v7.4: o salão antigo (cadeiras e mesas da v6) foi trocado pela Garagem e o que custou voltou;
       // v7.7: a Máquina de suco virou a Água da torneira, mais barata, e a diferença voltou
@@ -412,8 +417,8 @@ function buildCaixa(grid){
   // para onde foi o dinheiro: barra empilhada e legenda
   const tot = caixaTotais(cx).filter(t => t.v > 0), soma = tot.reduce((a, t) => a + t.v, 0);
   const onde = el('div', 'cx-onde');
-  const nd = cx.filter(r => !r.dev).length;
-  onde.appendChild(el('b', null, 'Para onde foi o dinheiro ' + (nd > 1 ? 'nos últimos ' + nd + ' dias' : 'no último dia') + ': ' + fmt(soma)));
+  const nd = cx.filter(r => !r.dev && !r.int).length;
+  onde.appendChild(el('b', null, 'Para onde foi o dinheiro ' + (nd > 1 ? 'nos últimos ' + nd + ' dias' : nd ? 'no último dia' : 'até agora') + ': ' + fmt(soma)));
   const bar = el('div', 'cx-bar'); bar.setAttribute('aria-hidden', 'true');
   const leg = el('div', 'cx-leg');
   tot.forEach(t => {
