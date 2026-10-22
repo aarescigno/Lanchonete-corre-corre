@@ -7,6 +7,7 @@ Jogo de navegador de gerenciamento de restaurante, em um único arquivo HTML com
 - **Código em partes, publicado em arquivo único:** edite só em `src/` (veja abaixo); `python3 montar.py` junta as partes em `lanchonete.html`, que tem HTML, CSS e JS inline e é o que se publica (o único recurso externo é o Google Fonts). Nunca edite `lanchonete.html` à mão: ele é gerado, mas fica no git (artifact, app e testes usam ele). Antes de publicar ou fazer commit, monte (`tests/run_all.sh` já monta).
 - **Sem invólucro:** o arquivo montado não tem `<!doctype>`, `<html>`, `<head>` nem `<body>` (o publicador envolve) e começa com `<title>`.
 - **Nome fixo:** o nome do arquivo não muda. Versões antigas vão para `versoes/vN-fonte.html` (exato) e `versoes/vN.html` (com a 1ª linha de `versoes/v1.html` como invólucro).
+- **Palavras do dia a dia:** na interface, prefira os termos mais comuns no Brasil (ex.: "QUEBRADO", e não "FORA DE SERVIÇO").
 - **Diversidade e movimento:** clientes diversos, sem estereótipos; respeitar `prefers-reduced-motion`.
 - **Código:** a lógica (`Game.update`) fica separada do desenho (`render`); `window.__game` e `window.__lcc` ficam expostos para os testes.
 
