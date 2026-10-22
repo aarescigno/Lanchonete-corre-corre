@@ -4,6 +4,24 @@ Registro das ideias e dos retornos de quem jogou, com o texto original, e de ond
 
 ---
 
+## 22/10/2026 — Usuário: a espera lá fora com a cara de cada nível
+**Origem:** mensagem do usuário, depois da v7.6:
+
+> "Eu percebi algumas coisas na fila de espera, que agora tá na tela grande, né, lá de fora, que a estética da fila de espera de fora tem que ser similar aos níveis dos restaurantes, né? Por exemplo, nível 1 não pode ter nada. Tem que ser o lado de fora, a fila de espera, servindo o copo d'água da torneira, sabe? E aí o próximo nível, que tem o jarra de suco, o próximo nível tem... águas saborizadas diferentes, e o nível maior é coquetelaria lá de fora, sabe? Acho que é isso. E também os banquinhos lá de fora, né? É de pé no primeiro, no segundo pode ter esses cadeirinha de plástico, ou banquinho de madeira, assim, né? Essa coisinha assim. No terceiro já põe sofás. E no quarto coloca poltronas individuais e coisa assim. É isso. O que não for para aplicar agora, que a gente só está mexendo no nível 1, guarde nas ideias e propostas para a próxima."
+
+Respostas às dúvidas da sessão (as sugestões aceitas): Torneira: "Melhoria barata (Recomendado)", R$ 80 na lojinha, com R$ 100 de volta para quem já tinha a máquina · Pedido: "Pede no balão (Recomendado)", sem tablet, e a Bia enche os copos na hora (~1 s).
+
+**Destino:**
+
+| Nível | Assento | Bebida da espera | Destino |
+|---|---|---|---|
+| 1, Garagem | de pé | copo d'água da torneira | **v7.7, feito** (`docs/spec-v7.7.md`): faixa pintada no chão; a Máquina de suco virou a Água da torneira (de graça, R$ 80) |
+| 2, área industrial | cadeirinha de plástico ou banquinho de madeira | jarra de suco | etapa 3 do `docs/PLANO.md` (guardado em "Espera lá fora por nível", nas Ideias guardadas) |
+| 3, Avenida Brasil | sofás | águas saborizadas diferentes | etapa 3 (idem) |
+| 4, Terraço Suíça | poltronas individuais | coquetelaria lá fora | etapa 4 (idem) |
+
+---
+
 ## 22/10/2026 — Retorno de jogador: rolar a tela faz perder o controle
 **Origem:** mensagem do usuário, repassando o retorno de um jogador sobre a v7.5:
 

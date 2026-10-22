@@ -25,6 +25,7 @@ class Game {
   setState(s){ this.state = s; if (this.hooks.state) this.hooks.state(s); }
   get unlocked(){ return this.save.maxDay; }
   get ponto(){ return pontoOf(this.save.salao.ponto); }
+  get bebida(){ return bebidaOf(this.ponto); }   // o que se serve na espera (v7.7)
 
   resetDay(n){
     this.mode = n === 0 ? 'semfim' : 'carreira';
@@ -198,7 +199,7 @@ class Game {
     }
     const amount = Math.round(g.bill * HEART_MULT[g.hearts] * (1 + g.T.tip + (g.vip ? VIP.tip : 0)));
     this.score('bill', amount, t.cx, t.cy - 50);
-    if (g.sucoConta){ const v = JUICE.price * g.sucoConta; this.addMoney(v); this.addText(t.cx - 34, t.cy - 100, 'Suco da espera +' + v, PAL.alerta, 14); }
+    if (g.sucoConta){ const v = this.bebida.preco * g.sucoConta; this.addMoney(v); this.addText(t.cx - 34, t.cy - 100, 'Suco da espera +' + v, PAL.alerta, 14); }
     if (g.T.tip > 0 || g.vip) this.addText(t.cx + 20, t.cy - 76, 'Gorjeta!', PAL.mostarda, 15);
     const eq = this.save.equipe;
     if (eq.couvert && eq.taxa){
@@ -308,11 +309,13 @@ class Game {
     this.queue.forEach((g,i) => { g.slot = i; g.path = [{ x:QUEUE.x, y:QUEUE.ys[i] }]; });
   }
 
-  /* ---------- máquina de suco da espera (v7.5) ---------- */
+  /* ---------- bebida da espera (v7.5; o que se serve vem do ponto desde a v7.7) ---------- */
   maqPedir(g, n){
-    this.maq.push({ id:++this.maqId, group:g, n, t:MAQUINA.prep });
-    this.addText(g.x, g.y - 96, n > 1 ? n + ' sucos no tablet!' : 'Suco no tablet!', PAL.alerta, 14);
+    const b = this.bebida;
+    this.maq.push({ id:++this.maqId, group:g, n, t:b.prep });
+    this.addText(g.x, g.y - 96, b.pede(n), PAL.alerta, 14);
     Sfx.tone(1046, 0.06, 'sine', 0.04); Sfx.tone(1318, 0.08, 'sine', 0.04, 0.06);
+    if (b.prep <= 0) this.addGlow('maquina');   // água: já dá para encher
   }
   /* quem saiu da espera (sentou ou foi embora) cancela o que a máquina ainda não entregou na mão de ninguém */
   maqCancela(g){ this.maq = this.maq.filter(o => o.group !== g); }
@@ -334,12 +337,14 @@ class Game {
     return Math.hypot(p[0].x-from.x, p[0].y-from.y) <= Math.hypot(p[1].x-from.x, p[1].y-from.y) ? p[0] : p[1];
   }
   /* n copos entregues: atender devolve 1 coração, quem ainda espera bebe e perde a paciência mais devagar;
-     os copos vão para a conta do grupo e os ingredientes saem agora */
+     os copos vão para a conta do grupo (a água da Garagem é de graça) e os ingredientes saem agora */
   entregaSuco(g, n, x, y){
+    const b = this.bebida;
     g.drink(n); g.gain(1);
-    g.sucoConta += n; this.custo += INGRED.suco * n; this.stats.sucoEsp += n;
-    this.addText(x, y - 86, (n > 1 ? 'Sucos entregues!' : 'Suco entregue!'), PAL.alerta, 15);
-    this.addText(x, y - 108, '+' + JUICE.price * n + ' na conta', PAL.ok, 14);
+    if (b.preco) g.sucoConta += n;
+    this.custo += b.ingred * n; this.stats.sucoEsp += n;
+    this.addText(x, y - 86, b.entrega(n), PAL.alerta, 15);
+    if (b.preco) this.addText(x, y - 108, '+' + b.preco * n + ' na conta', PAL.ok, 14);
     Sfx.tone(880, 0.07, 'sine', 0.05); Sfx.tone(1175, 0.12, 'sine', 0.05, 0.07);
   }
   fail(g, msg){
@@ -490,7 +495,7 @@ class Game {
     if (passed) this.save.maxDay = Math.max(this.save.maxDay, Math.min(7, d.n + 1));
     caixaAdd(this.save, { d:d.n, fat, ingr:Math.round(this.custo), contas:this.contas, folha:this.paid, div:this.paidDiv, lucro:m, meta:d.meta, ok:passed, perd:this.stats.lost, saldo:this.save.bank });
     writeSave(this.save);
-    this.result = { day:d.n, money:m, fat, custo:Math.round(this.custo), contas:this.contas, div:this.paidDiv, divName:this.div ? this.div.name : '', meta:d.meta, bom:bomGoal(d), expert:d.expert, passed, stars, served:this.stats.served, lost:this.stats.lost, lostBy:this.stats.lostBy, lotadoT:Math.round(this.stats.lotadoT), atraso:Math.round(this.atraso), full:this.stats.full, chain:this.stats.chain, vip:this.stats.vip, vipLost:this.stats.vipLost, juice:this.stats.juice, juiceMiss:this.stats.juiceMiss, sucoEsp:this.stats.sucoEsp, trash:this.stats.trash, washed:this.stats.washed, income, paid:this.paid, reason:this.reason };
+    this.result = { day:d.n, money:m, fat, custo:Math.round(this.custo), contas:this.contas, div:this.paidDiv, divName:this.div ? this.div.name : '', meta:d.meta, bom:bomGoal(d), expert:d.expert, passed, stars, served:this.stats.served, lost:this.stats.lost, lostBy:this.stats.lostBy, lotadoT:Math.round(this.stats.lotadoT), atraso:Math.round(this.atraso), full:this.stats.full, chain:this.stats.chain, vip:this.stats.vip, vipLost:this.stats.vipLost, juice:this.stats.juice, juiceMiss:this.stats.juiceMiss, sucoEsp:this.stats.sucoEsp, bebida:this.bebida.id, trash:this.stats.trash, washed:this.stats.washed, income, paid:this.paid, reason:this.reason };
     this.setState('dayend');
     if (passed) Sfx.win(); else Sfx.lose();
   }
