@@ -7,7 +7,7 @@ Origem: retorno do Renan Martorelli (beta-tester) e conversa com o Arthur (15/10
 - Para começar uma sessão, basta pedir: **"faça a próxima etapa do docs/PLANO.md"**. A sessão lê só a etapa da vez e as partes de `src/` citadas nela.
 - Antes de programar, a sessão confirma com o usuário as **decisões em aberto** da etapa (cada uma já tem uma sugestão).
 - No fim, a sessão marca a etapa como feita na tabela abaixo (com a versão e a data) e anota o que mudou no plano.
-- Ordem: cada etapa depende só das anteriores. A 1a vem primeiro (mexe no equilíbrio de base). A 1c teve prioridade sobre as demais, por ser retorno do beta-tester Renan (pedido do usuário em 21/10). **A 1d-1 (v7.4), a 1d-2 (v7.5) e a 2 (v8) foram feitas; a próxima é a 3** (pontos: área industrial e Avenida Brasil). A 1b e a 2 podiam trocar de lugar. A 3 vem antes da 4, e a 4 antes da 6.
+- Ordem: cada etapa depende só das anteriores. A 1a vem primeiro (mexe no equilíbrio de base). A 1c teve prioridade sobre as demais, por ser retorno do beta-tester Renan (pedido do usuário em 21/10). A 1d-1 (v7.4), a 1d-2 (v7.5) e a 2 (v8) foram feitas. **Ordem revista com o usuário em 22/10:** 2b (campanha contínua e banco), 2c (avaliações dos clientes), 2d (abertura animada do Modo História), 3a (área industrial), 3b (Avenida Brasil) e 4 (Terraço Suíça). A campanha vem antes dos pontos para a carreira não ser refeita duas vezes, e as avaliações viram a "experiência" que abre os pontos novos e a reputação da etapa 4. **A próxima é a 2b.** As etapas 5, 6 e 7 ficam **a rever** com o usuário antes de começar.
 
 ## Situação
 | # | Etapa | Versão | Situação |
@@ -28,11 +28,15 @@ Origem: retorno do Renan Martorelli (beta-tester) e conversa com o Arthur (15/10
 | — | Pedido do usuário: rejogar o dia (Reiniciar ou Menu na pausa) sem perder o dinheiro | v8.2.1 | feita (22/10) |
 | — | Pedido do usuário: só o dia completo rende (folha no fim do dia; interromper não paga nem ganha) | v8.2.2 | feita (22/10) |
 | — | Pedido do usuário: largar o dia com gente na espera ou nas mesas cobra a multa de quem sai bravo | v8.2.3 | feita (22/10) |
-| 3 | Pontos: área industrial e Avenida Brasil, carreira por pontos | v9 | **próxima** |
+| 2b | Carreira como campanha contínua, dinheiro no negativo e empréstimo no banco | v8.3 | **próxima** |
+| 2c | Avaliações dos clientes (nota de 0 a 5 ★, 5 critérios) | v8.4 | a fazer |
+| 2d | Abertura animada do Modo História: o sonho da Bia | v8.5 | a fazer |
+| 3a | Mudança de ponto e Lanchonete na área industrial | v9 | a fazer |
+| 3b | Restaurante na Avenida Brasil | v9.1 | a fazer |
 | 4 | Terraço Suíça e VIPs exigentes | v10 | a fazer |
-| 5 | Modo História, parte 1: estrutura e primeiros capítulos | v11 | a fazer |
-| 6 | Modo História, parte 2: subir de ponto, crítico do guia e final | v12 | a fazer |
-| 7 | Polimento: celular, ranking da história, ajuste geral | v12.1 | a fazer |
+| 5 | Modo História, parte 1: estrutura e primeiros capítulos | v11 | a rever |
+| 6 | Modo História, parte 2: subir de ponto, crítico do guia e final | v12 | a rever |
+| 7 | Polimento: celular, ranking da história, ajuste geral | v12.1 | a rever |
 
 ---
 
@@ -259,8 +263,98 @@ Também: rever o `smoke7` (toque) e o `smoke10` (fila justa e porta), mais `bala
 
 ---
 
-## Etapa 3 — Pontos: área industrial e Avenida Brasil, carreira por pontos (v9)
+## Etapa 2b — Carreira como campanha contínua e banco (v8.3)
+**Objetivo:** "novo dia, novo acúmulo, novo serviço, nova vida" (pedido do usuário em 22/10). A carreira deixa de ser uma lista de dias que se escolhem e se rejogam e vira uma sequência de dias, levando tudo o que havia antes: dinheiro, móveis, equipe, melhorias e desgaste. Como sem rejogar um dia ruim pode travar a carreira, entram junto o caixa no negativo e o empréstimo no banco. Vem antes dos pontos (etapa 3) para a carreira não ser refeita duas vezes.
+
+**Entra:**
+- **Menu da carreira com "Continuar":** abre o próximo dia; sai a escolha de dia e o "Repetir dia". A Missão zero e o Turno sem fim continuam à parte.
+- **Os dias 1 a 7 viram a rampa de abertura** (movimento que cresce, como hoje); do dia 8 em diante, os dias seguem com o perfil do dia 7 e variação (chuva, feriado e o movimento de cada dia da semana, se couber).
+- **A meta do dia continua** (lucro e estrelas), mas não trava: o dia seguinte vem de qualquer jeito.
+- **Caixa no negativo:** a folha e as contas são pagas mesmo sem dinheiro; o caixa pode ficar negativo por até 3 dias seguidos, com aviso na introdução do dia e na lojinha.
+- **Banco** (aba na lojinha, ou uma linha no Caixa): empréstimo com juros e parcelas diárias, que entram nas contas do fim do dia e aparecem no livro-caixa.
+- **Recomeçar do zero**, com confirmação.
+- Save antigo: segue do maior dia alcançado, com o dinheiro que tem.
+
+**Partes:** `10-constantes.js` (dias depois do 7, `BANCO`), `16-jogo.js` (sequência, negativo, parcelas), `40-interface.js` (menu), `41-lojinha.js` (banco, folha), `42-resultados.js` (fim do dia, caixa), `43-telas.js`, `30-ranking.js`, `tests/bot.js`, `balance.js` e `carreira.js`.
+
+**Testes:** smoke novo (sequência de dias, sem rejogar, save antigo, negativo por 3 dias e o 4º, empréstimo e parcelas, recomeçar). `carreira.js` passa a jogar a campanha (dias além do 7).
+
+**Calibração:** um dia ruim não pode travar a carreira; o empréstimo deve custar mais do que esperar juntando; quem joga bem chega ao dinheiro da mudança para a área industrial (R$ 800) em ~5 dias, como hoje.
+
+**Decisões em aberto:**
+- O que acontece com a meta não batida (sugestão: segue, sem estrelas, e mais tarde pesa na nota da 2c)?
+- O que acontece no 4º dia negativo (sugestão: o banco empresta o que falta, à força e com juros maiores; alternativa: fim da carreira, com "Recomeçar")?
+- Juros, prazo e limite do empréstimo (sugestão: 10% sobre o valor, 5 parcelas diárias, até R$ 1.000 na Garagem)?
+- A folha ainda pode ficar de fora quando falta dinheiro, como hoje (sugestão: sim, como opção na lojinha)?
+- O que vira o ranking da carreira, que hoje soma os melhores dias (sugestão: o lucro acumulado da campanha, com o dia alcançado ao lado)?
+- Reiniciar no meio do dia: continua como hoje (o dia largado não rende e cobra a multa da v8.2.3)?
+
+---
+
+## Etapa 2c — Avaliações dos clientes (v8.4)
+**Objetivo:** a nota da lanchonete, parecida com as avaliações de mapa na internet (pedido do usuário em 21/10; texto em `docs/PROPOSTAS.md`). Ela vira a "experiência" que, junto com o dinheiro, abre os pontos novos (etapa 3) e é a reputação do Terraço Suíça (etapa 4) e a régua do crítico (etapa 6).
+
+**Entra:**
+- **Cada grupo avalia ao sair** (inclusive quem sai bravo), de 1 a 5 em 5 critérios:
+  - **espera por mesa:** cada coração perdido na fila tira 1 ponto;
+  - **agilidade do atendimento:** cada coração perdido esperando a Bia (pedido, prato, conta) tira 1 ponto;
+  - **qualidade do prato:** a faixa de acerto do cozinheiro; o Tonhão mais treinado faz mais pratos caprichados (o crítico de hoje, `CRIT`, vale a nota máxima);
+  - **qualidade do menu:** quantos pratos a cozinha sabe fazer;
+  - **ambiente e amenidades:** cor das cadeiras, móveis, TV e som, cafezinho, torneira e, nos pontos de cima, couvert e decoração.
+- **A nota** (0 a 5 ★, uma casa decimal) é a média das **últimas 200 avaliações**. Aparece no HUD, no fim do dia e no Caixa, com a nota de cada critério e 2 ou 3 comentários curtos inventados ("A comida veio rapidinho!", "Esperei muito por uma mesa").
+- **Efeito no movimento** (a decidir): nota alta traz mais gente, como um boca a boca; nota baixa, menos.
+
+**Fora:** o nível de luxo (ideia guardada) e o crítico do guia (etapa 6).
+
+**Partes:** `10-constantes.js` (`AVAL`), `12-clientes.js` (avaliar ao sair), `13-cozinha.js` (faixa de acerto), `16-jogo.js` (média e save), `22-salao-hud.js` (nota no HUD), `41-lojinha.js` (Caixa), `42-resultados.js`, `tests/balance.js` (nota por dia).
+
+**Testes:** smoke novo (cada critério, média das 200, save, efeito no movimento). `balance` mostra a nota média por dia, com e sem equipe.
+
+**Calibração:** o bot afiado com equipe fica em ~4,5 ★; sem equipe, ~3,5 ★; perder muita gente derruba a nota abaixo de 3.
+
+**Decisões em aberto:**
+- O peso de cada critério (sugestão: todos iguais).
+- A nota mexe no movimento (sugestão: sim, de −10% a +10%)?
+- A nota inicial (sugestão: sem nota até as 20 primeiras avaliações).
+- A nota mínima para mudar de ponto (sugestão: 3,5 ★ para a área industrial, 4,0 para a Avenida Brasil e 4,5 para o Terraço Suíça).
+- Os comentários aparecem só no fim do dia ou também em balõezinhos quando o grupo sai?
+
+---
+
+## Etapa 2d — Abertura animada do Modo História: o sonho da Bia (v8.5)
+**Objetivo:** pedido do usuário em 22/10 (texto em `docs/PROPOSTAS.md`): uma animação de abertura do Modo História que conta **de onde a Bia tirou a ideia** e o **profundo desejo de ter um restaurante com a estrela do Michelzão**. Vem antes dos pontos e do modo jogável para dar o coração da história já cedo; nas etapas 5 e 6 ela vira o prólogo do Modo História.
+
+**Entra:**
+- **Botão "História" no menu**, ao lado de Carreira e Turno sem fim. Enquanto o modo não existe, ele toca a abertura e termina num cartão "Em breve: o Modo História", voltando ao menu.
+- **Animação em canvas, em cenas:** cada uma com 5 a 10 s, falas em balões ou legenda na parte de baixo, e trilha curta com o áudio do jogo (respeitando o botão de som). Um toque ou clique avança a cena, e o botão "Pular" fica sempre à vista. Total de ~45 a 60 s.
+- **Roteiro sugerido** (a decidir com o usuário):
+  1. **A cozinha do tio:** a Bia criança num banquinho, provando o molho do tio Tonhão, então cozinheiro de um restaurante famoso do centro.
+  2. **A noite da estrela:** o restaurante onde o Tonhão trabalhava ganha a estrela do Michelzão; a plaquinha brilha na porta, o salão aplaude, e a Bia, espiando da porta da cozinha, decide: "Um dia eu vou ter a minha".
+  3. **Os anos de correria:** a Bia já crescida, garçonete numa lanchonete, correndo entre as mesas e guardando as gorjetas num pote escrito "Meu restaurante".
+  4. **A ideia:** o tio Tonhão aposentado e a garagem da mãe da Bia vazia; ela olha para a garagem, depois para o tio, e conta as moedas do pote: não dá para a reforma. Vem o empréstimo no banco para a reforma, "tudo nos conformes da vigilância sanitária" (liga à dívida de abertura da etapa 5).
+  5. **A inauguração:** a Bia e o Tonhão levantam a porta da garagem, acendem o letreiro "Lanchonete Corre-Corre" e, no céu, uma estrela pisca. Título: "O sonho da Bia".
+- **Movimento reduzido:** com `prefers-reduced-motion`, as cenas viram quadros parados que trocam sem animação (só um fade curto ou nenhum) e avançam por toque.
+- Lógica (cenas, tempo, falas) separada do desenho, como no resto do jogo: partes novas, por exemplo `18-abertura.js` (`ABERTURA`) e `25-abertura.js` (desenho).
+
+**Fora:** o Modo História jogável (etapas 5 e 6).
+
+**Partes:** `02-telas.html` (botão e tela da abertura), `10-constantes.js`, `18-abertura.js` e `25-abertura.js` (novas), `40-interface.js` (menu), `43-telas.js` (troca de telas, toque), `01-estilo.css`.
+
+**Testes:** smoke novo (abre pelo menu, avança por toque, pula, volta ao menu, não mexe no save, movimento reduzido sem animação). Capturas de cada cena (`shot_v8_5.py`).
+
+**Decisões em aberto:**
+- O roteiro: cenas, falas e duração (sugestão acima: 5 cenas, ~50 s).
+- O tom: leve e emocionante; entra a piscadela do "universo paralelo em que a meritocracia é possível" (decisão que era da etapa 5)?
+- **Michelzão:** nome do guia escolhido pelo usuário em 22/10 (era "Guia Garfo de Ouro" na etapa 6). Como o Terraço Suíça, é uma brincadeira com o nome real: a estrela, a plaquinha e o letreiro são desenhos nossos, sem logo, mascote nem arte do guia de verdade.
+- Onde o Tonhão trabalhava (nome inventado do restaurante) e se o chef estrelado aparece.
+- A abertura toca sozinha na 1ª vez que o jogo abre (sugestão: não, para não atrasar a Missão zero; fica no botão História)?
+
+---
+
+## Etapa 3 — Pontos: área industrial (3a, v9) e Avenida Brasil (3b, v9.1), carreira por pontos
 **Objetivo:** a primeira decisão grande de dinheiro, mudar de ponto, que é subir o nível do salão. Valores na tabela da etapa 1d.
+
+> **Dividida em 2 sessões (22/10):** **3a** (v9) é a mudança de ponto e a área industrial; **3b** (v9.1) é a Avenida Brasil, com confeitaria, coquetelaria e couvert. Desde a revisão de 22/10, a carreira já é a campanha contínua da etapa 2b, e o ponto novo abre com o dinheiro da mudança **e a nota mínima de avaliação** da etapa 2c.
 
 **Entra:**
 - `PONTOS` ganha a **Lanchonete na área industrial** (nível 2: 20 lugares, aluguel R$ 120, mudança R$ 800) e o **Restaurante na Avenida Brasil** (nível 3: 24 lugares, aluguel R$ 400, mudança R$ 2.000). Cada um traz:
@@ -272,21 +366,21 @@ Também: rever o `smoke7` (toque) e o `smoke10` (fila justa e porta), mais `bala
   - área industrial: 2º garçom (o **Joca**, pedido do usuário em 22/10; ou na Avenida Brasil), +1 boca no fogão (4 pratos ao mesmo tempo), balcão de pratos com 5 vagas, os **3 televisores com playlist de sertanejo** (ver "Ambiente por nível do salão" nas Ideias guardadas) e a **espera com cadeirinhas de plástico ou banquinhos de madeira e jarra de suco** (ver "Espera lá fora por nível");
   - Avenida Brasil: confeiteiro (sobremesas), balcão de coquetelaria com profissional de drinks, um prato novo no cardápio, balcão de pratos com 6 vagas, a **espera com sofás e águas saborizadas** e o **couvert artístico** (já pronto no código desde a v5, escondido abaixo do nível 3 desde a v7.4.4: basta o ponto ter `nivel:3`). Decidir se a TV e o som vão junto na mudança.
   Se ficar grande demais, a etapa se divide (3a: mudança e área industrial; 3b: Avenida Brasil, confeitaria e coquetelaria).
-- **Carreira por pontos, sem fim fixo:** cada ponto tem uma série de metas (ex.: 3 a 5 dias). Batidas as metas e juntado o dinheiro, pode mudar. O ranking da carreira soma o lucro (ou o melhor dia) de cada ponto. Os 7 dias de hoje viram a série da Garagem.
+- **Carreira por pontos, sem fim fixo:** a campanha da etapa 2b continua no ponto novo. Para mudar, é preciso o dinheiro da mudança e a nota mínima de avaliação (etapa 2c). O ranking da carreira segue a regra decidida na 2b, com o ponto alcançado ao lado.
 - Visual de cada ponto: piso, fachada, letreiro, vista da janela e calçada.
 
 **Fora:** Terraço Suíça, VIP exigente e modo história.
 
 **Partes:** `10-constantes.js` (`PONTOS`, metas por ponto, equipe nova), `12-clientes.js` (save `ponto`, preço), `13-cozinha.js` (bocas, balcão, sobremesa), `15-dani.js`/novo ajudante (2º garçom), `16-jogo.js` (carreira por pontos, contas), `20/21-*.js` (visual), `30-ranking.js`, `41-lojinha.js` (aba Ponto), `42-resultados.js`.
 
-**Testes:** `smoke15` (mudança, custo, aluguel nas contas, móveis levados, preços e clientela por ponto, destravados, carreira por pontos, save antigo = Garagem). `carreira.js` com mudança.
+**Testes:** smoke novo (mudança, custo, nota mínima, aluguel nas contas, móveis levados, preços e clientela por ponto, destravados, save antigo = Garagem). `carreira.js` com mudança.
 
 **Calibração:**
 - Mudar de ponto deve compensar em ~3 a 5 dias para quem atende bem e não compensar para quem perde muitos clientes.
 - O jogador deve ter que escolher entre mudar e (equipe + melhorias + móveis).
-- **Achado da v7.4 (`docs/spec-v7.4.md`, item 9):** com equipe, mesa a mais não dá lucro (dia 5: kit de 10 lugares R$ 1.332 contra 16 lugares R$ 1.007), porque o gargalo são os 3 pratos limpos e a fila justa segura quem espera mesa. Antes de calibrar a mudança, decidir com o usuário se mais lugares devem render (ex.: pratos limpos pelos lugares do salão, ou grupos que vão embora quando a fila enche); senão, ponto maior não compensa.
+- **Achado da v7.4, resolvido na v7.4.1** (`docs/spec-v7.4.1.md`): na v7.4, mesa a mais não dava lucro; com 4 pratos limpos, +6% de grupos por lugar acima de 10 e a fila justa a 60%, mesas de 4 com equipe se pagam em 1 a 3 dias. Conferir no ponto novo se os 20 e 24 lugares também rendem.
 
-**Decisões em aberto:** a mudança é permanente ou dá para voltar; quantos dias tem a série de cada ponto; como o ranking soma os pontos; o que cada destravado custa.
+**Decisões em aberto:** a mudança é permanente ou dá para voltar; o que cada destravado custa; o que o Joca faz (o mesmo que a Dani ou só a calçada), salário e níveis; se a TV e o som da Garagem saem na mudança (decidido em 21/10: o ambiente é trocado pelo do ponto novo).
 
 ---
 
@@ -300,25 +394,27 @@ Também: rever o `smoke7` (toque) e o `smoke10` (fila justa e porta), mais `bala
   - às vezes pede uma **bebida específica** (suco ou café) antes do prato;
   - não aceita mesa suja ao sentar;
   - paga muito bem (bônus grande com 5 corações) e, se sair bravo, deixa **avaliação ruim**: −10% de clientes no dia seguinte.
-- **Reputação do ponto** (0 a 5 ★, média móvel dos últimos dias): no Terraço ela muda a freguesia do dia, e na etapa 6 vira a régua do guia. Mais tarde pode virar uma das partes do **nível de luxo** (ver Ideias guardadas).
+- **Reputação do ponto:** é a nota de avaliação da etapa 2c (0 a 5 ★, últimas 200 avaliações). No Terraço ela muda a freguesia do dia (mais VIPs com nota alta), e na etapa 6 vira a régua do guia. Mais tarde pode virar uma das partes do **nível de luxo** (ver Ideias guardadas).
 - Um item de lojinha do Terraço, por exemplo "Louça fina": prato especial mais rápido.
 - **Couvert do Terraço:** quarteto de cordas ou pianista (ver "Ambiente por nível do salão" nas Ideias guardadas).
 
 **Partes:** `10-constantes.js`, `12-clientes.js` (tipo/modificador exigente), `13-cozinha.js` (prato da casa), `16-jogo.js` (reputação), `20-desenho-base.js` (visual do exigente, sem estereótipo: chapéu/lenço e plaquinha ★★), `22-salao-hud.js` (balão do pedido especial).
 
-**Testes:** `smoke15` (pedido especial, regras de mesa, avaliação ruim, reputação e save). `balance` no Terraço Suíça com equipe completa.
+**Testes:** smoke novo (pedido especial, regras de mesa, avaliação ruim, reputação e save). `balance` no Terraço Suíça com equipe completa.
 
 **Calibração:**
 - O Terraço dá mais lucro só com equipe completa + Tonhão nível 3 + salão bem montado.
 - Para quem não está pronto, é um passo arriscado: lucro abaixo da Avenida Brasil.
 
 **Decisões em aberto:**
-- A reputação aparece já na carreira ou só no modo história (sugestão: aparece só a partir do Terraço)?
+- A avaliação ruim do VIP exigente pesa mais na nota da 2c do que a de um cliente comum?
 - O que o exigente usa para se distinguir visualmente.
 
 ---
 
 ## Etapa 5 — Modo História, parte 1 (v11)
+> **A rever com o usuário antes de começar** (revisão de 22/10). A abertura animada já vem pronta da etapa 2d e vira o prólogo do modo.
+
 **Objetivo:** "o sonho da Bia de ter um restaurante estrelado, começando do zero". A estrutura do modo e os primeiros capítulos, usando só o que já existe (Bairro).
 
 **Entra:**
@@ -335,21 +431,23 @@ Também: rever o `smoke7` (toque) e o `smoke10` (fila justa e porta), mais `bala
 
 **Partes:** `02-telas.html` (menu e painel de conversa), `10-constantes.js` (`HISTORIA`), `16-jogo.js` (modo `historia`, objetivos), `40-interface.js`, `42-resultados.js`, `43-telas.js`.
 
-**Testes:** `smoke16` (início do zero, objetivo cumprido e falhado, save separado, carreira intocada). O bot joga os capítulos 1 a 3.
+**Testes:** smoke novo (início do zero, objetivo cumprido e falhado, save separado, carreira intocada). O bot joga os capítulos 1 a 3.
 
 **Decisões em aberto:**
-- O texto de abertura e o tom do "universo paralelo".
+- O texto de abertura e o tom do "universo paralelo" (a abertura animada é da etapa 2d; ver lá).
 - Quem é o Seu Zé na história (credor?). **Ideia do usuário (22/10):** a Bia pegou um **empréstimo no banco** para a reforma da garagem, para deixar tudo nos conformes da vigilância sanitária, e tem um **prazo para quitar**; a dívida de abertura pode ser essa, no lugar do empréstimo do Seu Zé (ver "Dinheiro no negativo e empréstimo no banco" nas ideias guardadas). A lojinha agora é a "Garagem da mãe da Bia" (21/10/2026), então ele não é mais o dono dela.
 - Falha num capítulo: repetir o dia (sugestão) ou o capítulo inteiro?
 
 ---
 
 ## Etapa 6 — Modo História, parte 2 (v12)
+> **A rever com o usuário antes de começar** (revisão de 22/10). O guia se chama **Michelzão** (escolha do usuário em 22/10, na etapa 2d).
+
 **Objetivo:** a escada até a estrela.
 
 **Entra:**
 - **Capítulos de mudança:** a área industrial e a Avenida Brasil (cap. 4 e 5) e o Terraço Suíça (cap. 6), com objetivos de reputação e de lucro, usando os pontos das etapas 3 e 4.
-- **O crítico do guia:** um guia gastronômico **inventado**, por exemplo "Guia Garfo de Ouro". Não usar "Michelin" nem outra marca real.
+- **O crítico do guia:** um guia gastronômico **inventado**, o **Michelzão** (escolha do usuário em 22/10; antes, "Guia Garfo de Ouro"). Não usar o nome "Michelin", nem logo, mascote ou arte do guia real.
   - No capítulo final, um cliente disfarçado aparece em dia sorteado.
   - Atendê-lo com 5 corações, prato caprichado e mesa limpa conta para a avaliação.
 - **Final:** a avaliação junta reputação, lucro e o atendimento do crítico, e dá de 0 a 3 garfos/estrelas, com cena final (falas) e créditos curtos. Rejogar o final para tentar mais estrelas.
@@ -357,16 +455,18 @@ Também: rever o `smoke7` (toque) e o `smoke10` (fila justa e porta), mais `bala
 
 **Partes:** as da etapa 5, mais `12-clientes.js` (crítico disfarçado, sem sinal óbvio, talvez um caderninho) e `22-salao-hud.js`.
 
-**Testes:** `smoke17` (aparição do crítico, avaliação, finais). O bot termina a história.
+**Testes:** smoke novo (aparição do crítico, avaliação, finais). O bot termina a história.
 
 **Decisões em aberto:**
-- Nome do guia.
+- Nome do guia: **Michelzão** (decidido em 22/10).
 - O crítico pode ser reconhecido (pista sutil) ou é surpresa total?
 - Quantas estrelas possíveis (sugestão: 3).
 
 ---
 
 ## Etapa 7 — Polimento (v12.1)
+> **A rever com o usuário antes de começar** (revisão de 22/10).
+
 - Celular: "Como jogar" sem rolar no celular deitado; lojinha sem rolar no 568×320 (pendências antigas do `RESUMO.md`). Testar som e toque num aparelho real.
 - **Ranking da história:** coleção nova (ex.: `ranking-historia`) exige mudar as capacidades do artifact (passar `capabilities` com a regra nova). Fazer só com o OK do usuário.
 - Revisão geral de equilíbrio com `carreira.js` e com o retorno dos jogadores. Revisar textos do "Como jogar" para os sistemas novos.
@@ -393,13 +493,13 @@ Também: rever o `smoke7` (toque) e o `smoke10` (fila justa e porta), mais `bala
   - **nível 4, Terraço Suíça (etapa 4):** couvert com quarteto de cordas ou com pianista, os dois com 20% (diárias a definir). O pianista também soma ao **nível de luxo** do ambiente (pontuação para o futuro) e traz a manutenção **diária** do piano.
   - **Ao mudar de ponto, o ambiente é trocado** (decidido em 21/10): o do nível de baixo sai, com os bônus dele; cada ponto só tem o ambiente do seu nível. Na etapa 3, a mudança desliga a TV e o som da Garagem (`equipe.tv` e `equipe.som` saem do save, como o couvert abaixo do nível 3).
   - Desenho: cada nível com o seu (paredão de 3 TVs, palco do músico, quarteto, piano de cauda), respeitando `prefers-reduced-motion`; nomes de emissoras, rádios e músicas sempre inventados.
-- **Carreira como campanha contínua** (pedido do usuário em 22/10; texto em `docs/PROPOSTAS.md`): acabar com o sistema de níveis (escolher o dia no menu, repetir o dia para tirar mais estrelas) e virar uma campanha: "novo dia, novo acúmulo, novo serviço, nova vida", seguindo com tudo o que havia antes (dinheiro, móveis, equipe, melhorias, desgaste). **O progresso** (mesmo pedido, depois da v8.2.1): vem do acúmulo de experiência e dinheiro, que levam a novos restaurantes (os pontos das etapas 3 e 4: área industrial, Avenida Brasil, Terraço Suíça); decidir o que é a "experiência" (dias completos? clientes atendidos? avaliações, que já estão nas ideias guardadas?) e quanto de cada uma abre o próximo ponto. Solução de agora: rejogar guarda o dinheiro dos dias completos e, desde a v8.2.2, só o dia completo rende (a folha é paga no fim dele; interromper não paga nem ganha). Decidir: o que acontece com a meta não batida (o dia seguinte vem igual? fica mais difícil? perde reputação?); se os dias 1 a 7 viram uma sequência sem fim (com os pontos das etapas 3 e 4 como degraus); o que vira o ranking da carreira (hoje soma os melhores dias) e as estrelas; se há um jeito de recomeçar do zero. Combina com o Modo História (etapas 5 e 6) e com o dinheiro no negativo (abaixo).
-- **Dinheiro no negativo e empréstimo no banco** (retorno do usuário em 22/10; texto em `docs/PROPOSTAS.md`): em vez de a folha ficar de fora quando falta dinheiro, deixar o caixa ficar negativo, mas no máximo 3 dias seguidos; e a opção de pegar um empréstimo no banco, com juros. A v8.1 só mostrou o dinheiro já comprometido. Decidir: se a folha passa a ser sempre paga (negativo) ou se o corte continua como opção; o que acontece no 4º dia negativo (fim da carreira? empréstimo obrigatório?); juros, prazo e parcelas (saem da folha do dia?); uma aba Banco na lojinha ou uma linha no Caixa. Combina com a dívida de abertura da etapa 5.
+- **Virou a etapa 2b (revisão de 22/10).** **Carreira como campanha contínua** (pedido do usuário em 22/10; texto em `docs/PROPOSTAS.md`): acabar com o sistema de níveis (escolher o dia no menu, repetir o dia para tirar mais estrelas) e virar uma campanha: "novo dia, novo acúmulo, novo serviço, nova vida", seguindo com tudo o que havia antes (dinheiro, móveis, equipe, melhorias, desgaste). **O progresso** (mesmo pedido, depois da v8.2.1): vem do acúmulo de experiência e dinheiro, que levam a novos restaurantes (os pontos das etapas 3 e 4: área industrial, Avenida Brasil, Terraço Suíça); decidir o que é a "experiência" (dias completos? clientes atendidos? avaliações, que já estão nas ideias guardadas?) e quanto de cada uma abre o próximo ponto. Solução de agora: rejogar guarda o dinheiro dos dias completos e, desde a v8.2.2, só o dia completo rende (a folha é paga no fim dele; interromper não paga nem ganha). Decidir: o que acontece com a meta não batida (o dia seguinte vem igual? fica mais difícil? perde reputação?); se os dias 1 a 7 viram uma sequência sem fim (com os pontos das etapas 3 e 4 como degraus); o que vira o ranking da carreira (hoje soma os melhores dias) e as estrelas; se há um jeito de recomeçar do zero. Combina com o Modo História (etapas 5 e 6) e com o dinheiro no negativo (abaixo).
+- **Virou a etapa 2b (revisão de 22/10).** **Dinheiro no negativo e empréstimo no banco** (retorno do usuário em 22/10; texto em `docs/PROPOSTAS.md`): em vez de a folha ficar de fora quando falta dinheiro, deixar o caixa ficar negativo, mas no máximo 3 dias seguidos; e a opção de pegar um empréstimo no banco, com juros. A v8.1 só mostrou o dinheiro já comprometido. Decidir: se a folha passa a ser sempre paga (negativo) ou se o corte continua como opção; o que acontece no 4º dia negativo (fim da carreira? empréstimo obrigatório?); juros, prazo e parcelas (saem da folha do dia?); uma aba Banco na lojinha ou uma linha no Caixa. Combina com a dívida de abertura da etapa 5.
 - Cardápio com preço escolhido pelo jogador (o Arthur achou estranho só mexer em preço; talvez nunca).
 - Equipamento melhor no lugar da manutenção (fogão industrial etc.).
 - Mais funcionários: um segundo garçom, além da Dani. **Pedido do usuário em 22/10:** a partir do nível 2 ou 3, dá para contratar um **segundo ajudante, o Joca** (o 2º garçom da etapa 3; texto em `docs/PROPOSTAS.md`). Decidir: se o Joca faz as mesmas tarefas da Dani ou outras (por exemplo, cuidar só da calçada: levar o grupo à mesa e servir a espera), salário, níveis e visual (sem estereótipo, com crachá como a Dani).
 - Eventos de bairro: festa junina, jogo do Brasil.
-- **Avaliações dos clientes como meta para avançar** (pedido do usuário em 21/10; texto em `docs/PROPOSTAS.md`): uma nota parecida com as avaliações de mapa na internet, que sobe ou desce pela média das **últimas 200 avaliações** de quem passou. Cada grupo avalia 5 critérios:
+- **Virou a etapa 2c (revisão de 22/10).** **Avaliações dos clientes como meta para avançar** (pedido do usuário em 21/10; texto em `docs/PROPOSTAS.md`): uma nota parecida com as avaliações de mapa na internet, que sobe ou desce pela média das **últimas 200 avaliações** de quem passou. Cada grupo avalia 5 critérios:
   - **espera por mesa:** cada coração perdido na fila tira 1 ponto;
   - **agilidade do atendimento:** cada coração perdido esperando a Bia (pedido, prato, conta) tira 1 ponto;
   - **qualidade do prato:** cada cozinheiro tem uma faixa de qualidade e de acerto; mais treinado, faixa mais alta e mais pratos caprichados (o crítico de hoje, `CRIT`, vira 100% de perfeição, nota máxima);
