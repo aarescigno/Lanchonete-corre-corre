@@ -1,9 +1,9 @@
 # Resumo do projeto e das alterações (até 22/10/2026)
 
 ## Estado atual
-- **Versão:** v8.1 (dinheiro comprometido: a lojinha mostra o livre e o que já é da folha, e compra que come a folha pede um 2º toque), publicada em 22/10 como **Versão 34** do artifact https://claude.ai/artifact/MJxrgDg8S4akvg47SoQAvj (privado), sobre a v8 (manutenção e imprevistos), a v7.7 (espera da Garagem de pé e Água da torneira), a v7.6 (tela larga), a v7.5.1 (modo dev) e a v7.5 (espera na calçada). Antes dela, o que estava no ar era a v7.6 (não a v7.5 da Versão 33, como dizia este resumo): a Versão 34 foi publicada com `force:true` depois de conferir que a versão no ar era igual a `versoes/v7.6-fonte.html`. Na próxima publicação, compare a versão no ar com o `lanchonete.html` do commit da v8.1 (`git show 473d7c4:lanchonete.html`), ou com `versoes/v8.1-fonte.html` depois que a v8.1 for guardada.
+- **Versão:** v8.1.1 (menos balões nas mesas: só cardápio, "!" e "$"), pronta para publicar, sobre a v8.1 (dinheiro comprometido: a lojinha mostra o livre e o que já é da folha, e compra que come a folha pede um 2º toque), publicada em 22/10 como **Versão 34** do artifact https://claude.ai/artifact/MJxrgDg8S4akvg47SoQAvj (privado), sobre a v8 (manutenção e imprevistos), a v7.7 (espera da Garagem de pé e Água da torneira), a v7.6 (tela larga), a v7.5.1 (modo dev) e a v7.5 (espera na calçada). Antes dela, o que estava no ar era a v7.6 (não a v7.5 da Versão 33, como dizia este resumo): a Versão 34 foi publicada com `force:true` depois de conferir que a versão no ar era igual a `versoes/v7.6-fonte.html`. Na próxima publicação, compare a versão no ar com o `lanchonete.html` do commit da v8.1 (`git show 473d7c4:lanchonete.html`), ou com `versoes/v8.1-fonte.html` (guardada na v8.1.1).
 - **Branch:** `claude/main` (renomeado pelo usuário; o antigo `claude/intelligent-gauss-3owv29` não existe mais) no repositório `aarescigno/Lanchonete-corre-corre`.
-- **Arquivos publicados:** `lanchonete.html` (página), mais `versoes/v1.html` a `versoes/v8.html` (com a v7.6, a v7.7 e a v8, enviadas na Versão 34), abertos pelo painel Versões. Na próxima versão, enviar só o `versoes/v8.1.html` novo.
+- **Arquivos publicados:** `lanchonete.html` (página), mais `versoes/v1.html` a `versoes/v8.html` (com a v7.6, a v7.7 e a v8, enviadas na Versão 34), abertos pelo painel Versões. Na publicação da v8.1.1, enviar só o `versoes/v8.1.html` novo.
 - **Capacidades declaradas (mantidas ao republicar sem `capabilities`):**
   - `db`: `ranking-carreira` e `ranking-semfim` com read "view" e write "owner";
   - `db`: `ranking-*/{self}` com write "interact";
@@ -38,6 +38,7 @@
 | v7.7 | 22/10 | Espera com a cara do nível (pedido do usuário): na Garagem, de pé numa faixa pintada no chão, e a Água da torneira (R$ 80, de graça na conta, pedida no balão e enchida na hora) no lugar da Máquina de suco (R$ 100 de volta para quem tinha); espada-de-são-jorge no vaso e na lata; `PONTOS.assento` e `BEBIDA_ESPERA` preparados para os níveis 2 a 4 | `docs/spec-v7.7.md` |
 | v8 | 22/10 | Manutenção e imprevistos (etapa 2 do plano): fogão, geladeira e cafeteira se desgastam e quebram a partir do dia 4 (conserto na hora com a plaquinha; revisão na aba Manutenção da lojinha); chuva e feriado a partir do dia 3 | `docs/spec-v8.md` |
 | v8.1 | 22/10 | Dinheiro comprometido (retorno do usuário): no alto da lojinha, o livre e o reservado para a folha e a divulgação (em vermelho quando falta); compra que faz algo ficar de fora no dia tem ⚠ e pede um 2º toque | `docs/spec-v8.1.md` |
+| v8.1.1 | 22/10 | Menos balões nas mesas (retorno de jogador): só o cardápio com anel, o "!" e o "$"; esperando a comida e comendo, sem balão (saem a panela da v7.4.2 e o visto verde) | `docs/spec-v8.1.1.md` |
 
 ## Alterações feitas no Claude Code (14/10/2026)
 1. **Importação** do pacote exportado do claude.ai para o repositório (commit `982583b`).
