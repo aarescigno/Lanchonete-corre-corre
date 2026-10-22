@@ -369,9 +369,9 @@ const MANUT = {
   dia: 4,
   quando: [0.12, 0.55],   // em que parte do dia a quebra acontece
   equip: [
-    { id:'fogao',     name:'Fogão',     base:4, uso:0.4, preco:250, emerg:180, efeito:'o Tonhão cozinha 20% mais devagar', lento:0.8,  badge:{ x:884, y:178 } },
-    { id:'geladeira', name:'Geladeira', base:6, uso:0.3, preco:220, emerg:150, efeito:'os ingredientes custam 20% a mais',  ingred:1.2, badge:{ x:709, y:127 } },
-    { id:'cafeteira', name:'Cafeteira', base:4, uso:1,   preco:120, emerg:80,  efeito:'sem cafezinho',                       badge:{ x:840, y:346 } }
+    { id:'fogao',     name:'Fogão',     base:4, uso:0.4, preco:500, emerg:120, efeito:'o Tonhão cozinha 40% mais devagar', lento:0.6,  badge:{ x:884, y:178 } },
+    { id:'geladeira', name:'Geladeira', base:6, uso:0.3, preco:440, emerg:100, efeito:'os ingredientes custam 50% a mais', ingred:1.5, badge:{ x:709, y:127 } },
+    { id:'cafeteira', name:'Cafeteira', base:4, uso:1,   preco:240, emerg:50,  efeito:'sem cafezinho',                       badge:{ x:840, y:346 } }
   ],
   badge: 18                // raio da plaquinha do conserto (toque)
 };

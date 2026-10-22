@@ -139,7 +139,7 @@ function afiado(g,L){
 }
 // v7.4: móveis na lojinha (1 compra por visita). Regra simples: mesa de 4 enquanto houver grupos perdidos por falta
 // de mesa (semMesa) no último dia, senão mesa de 2; depois, a arrumação automática. reserva: o dinheiro que fica guardado
-module.exports.moveis=function(g,L,semMesa,reserva,estrategia){
+mk.moveis=function(g,L,semMesa,reserva,estrategia){
   const p=g.ponto, mesas=g.save.salao.mesas, lug=L.salaoLugares(mesas), S=L.SALAO, sobra=c=>g.save.bank-c>=(reserva||0);
   let ok=false;
   if(estrategia==='quatro'){   // vira as mesas de 2 em mesas de 4 e depois compra mesas de 4 (o que mais rende com equipe)

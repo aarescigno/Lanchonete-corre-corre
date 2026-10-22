@@ -86,11 +86,11 @@ const quebra=id=>{ g.quebras=[{id,t:0,on:true,fixed:false}]; };
 { novo(3000,7); g.startDay(2); g.begin();
   const rodaFogao=()=>{ g.kitchen.cooking=[{group:null,table:1,time:100,p:0,dish:0}]; g.kitchen.queue=[]; g.kitchen.update(1); return g.kitchen.cooking[0].p; };
   const normal=rodaFogao(); quebra('fogao'); const lento=rodaFogao();
-  ok(near(normal,1) && near(lento,0.8),'fogão quebrado: cozinha a 0,8 da velocidade ('+normal+' → '+lento+')');
+  ok(near(normal,1) && near(lento,L.manutOf('fogao').lento),'fogão quebrado: cozinha a '+L.manutOf('fogao').lento+' da velocidade ('+normal+' → '+lento+')');
   g.quebras=[]; g.kitchen.clean=5;
   const grp={bill:100,vip:false,state:'ordered'}, preco=()=>{ g.custo=0; g.kitchen.cooking=[{group:grp,table:1,time:1,p:0,dish:0}]; g.kitchen.plates=[null,null,null,null]; g.kitchen.update(2); return g.custo; };
   const c1=preco(); quebra('geladeira'); const c2=preco(); quebra('fogao'); const c3=preco();
-  ok(c1===Math.round(100*L.INGRED.prato) && c2===Math.round(100*L.INGRED.prato*1.2) && c3===c1,'geladeira quebrada: ingredientes ×1,2 ('+c1+' → '+c2+'); outro equipamento quebrado não mexe');
+  ok(c1===Math.round(100*L.INGRED.prato) && c2===Math.round(100*L.INGRED.prato*L.manutOf('geladeira').ingred) && c3===c1,'geladeira quebrada: ingredientes ×'+L.manutOf('geladeira').ingred+' ('+c1+' → '+c2+'); outro equipamento quebrado não mexe');
   g.quebras=[]; g.kitchen.clean=Infinity; g.usos={fogao:0,geladeira:0,cafeteira:0}; g.kitchen.plates=[null,null,null,null]; g.kitchen.cooking=[{group:null,table:1,time:1,p:0,dish:0}]; g.kitchen.update(2);
   ok(g.usos.fogao===1 && g.usos.geladeira===1 && g.usos.cafeteira===0,'prato pronto conta 1 uso no fogão e na geladeira'); }
 { novo(3000,7); g.startDay(2); g.begin(); g.sel=null;
@@ -134,7 +134,7 @@ const quebra=id=>{ g.quebras=[{id,t:0,on:true,fixed:false}]; };
 
 // ---------- revisão na lojinha ----------
 { const P=L.manutPreco, q=M.equip[0];
-  ok(P('fogao',1)===0 && P('fogao',0.996)===0 && P('fogao',0.9)===25 && P('fogao',0.6)===100 && P('fogao',0.2)===200 && P('fogao',0)===q.preco,'preço da revisão proporcional ao desgaste (fogão: 90%→25, 60%→100, 20%→200, 0%→'+q.preco+')');
+  ok(P('fogao',1)===0 && P('fogao',0.996)===0 && [0.9,0.6,0.2].every(e=>P('fogao',e)===Math.max(10,Math.ceil(q.preco*(1-e)/5)*5)) && P('fogao',0.2)===4*P('fogao',0.8) && P('fogao',0)===q.preco,'preço da revisão proporcional ao desgaste (fogão: 90%→'+P('fogao',0.9)+', 60%→'+P('fogao',0.6)+', 0%→'+q.preco+')');
   ok(P('fogao',0.99)===10 && P('cafeteira',0.5)%5===0,'preço mínimo R$ 10 e múltiplos de 5'); }
 { fixa(0); novo(1000,7,{fogao:0.6,geladeira:0.8,cafeteira:0.5}); g.startDay(4); solta();
   ok(g.quebras.length===3,'(sorteio de 3 quebras para o dia 4)');
@@ -150,15 +150,15 @@ const quebra=id=>{ g.quebras=[{id,t:0,on:true,fixed:false}]; };
   const row=g.save.caixa[g.save.caixa.length-1]; ok(row.man===p+rest && g.save.caixaPend.man===0,'a linha do caixa do dia seguinte traz a manutenção (R$ '+row.man+')'); }
 { novo(30,7,{fogao:0.2,geladeira:1,cafeteira:1}); g.goShop(4);
   ok(g.revisar('fogao')===false && g.save.manut.fogao===0.2 && g.save.bank===30 && g.save.caixaPend.man===0,'sem dinheiro para a revisão: recusa'); 
-  novo(100,7,{fogao:0.2,geladeira:0.5,cafeteira:0.5}); g.goShop(4); const c=L.manutPreco('cafeteira',0.5);
-  ok(g.revisarTudo() && g.save.manut.cafeteira===1 && g.save.manut.fogao===0.2 && g.save.manut.geladeira===0.5 && g.save.bank===100-c,'revisarTudo com dinheiro curto paga o que der (sem ficar negativo)'); }
+  const c=L.manutPreco('cafeteira',0.5); novo(c+10,7,{fogao:0.2,geladeira:0.5,cafeteira:0.5}); g.goShop(4);
+  ok(g.revisarTudo() && g.save.manut.cafeteira===1 && g.save.manut.fogao===0.2 && g.save.manut.geladeira===0.5 && g.save.bank===10,'revisarTudo com dinheiro curto paga o que der (sem ficar negativo)'); }
 
 // ---------- aba Manutenção ----------
 { novo(1000,7,{fogao:0.6,geladeira:1,cafeteira:0.5}); g.goShop(5); L.setShopTab('manut');
   const cs=els['shop-grid'].children; ok(cs.length===4,'aba Manutenção: 4 cartões (fogão, geladeira, cafeteira, revisar tudo) — '+cs.length);
   ok(/Fogão · 60%/.test(txt(cs[0])) && /Geladeira · 100%/.test(txt(cs[1])) && /Cafeteira · 50%/.test(txt(cs[2])) && /Revisar tudo/.test(txt(cs[3])),'títulos com o estado de cada um');
   const btn=c=>acha(c,e=>e.tagName==='BUTTON');
-  ok(/Revisão: .*100/.test(btn(cs[0]).textContent) && btn(cs[1]).textContent==='Em dia' && btn(cs[1]).disabled,'botão com o preço; em dia fica desligado');
+  ok(btn(cs[0]).textContent.indexOf(String(L.manutPreco('fogao',0.6)))>0 && btn(cs[1]).textContent==='Em dia' && btn(cs[1]).disabled,'botão com o preço; em dia fica desligado');
   const B0=g.save.bank; btn(cs[0]).fire('click'); ok(g.save.manut.fogao===1 && g.save.bank<B0,'clicar em "Revisão" revisa o fogão');
   const cs2=els['shop-grid'].children; btn(cs2[3]).fire('click'); ok(g.save.manut.cafeteira===1,'"Revisar tudo" revisa o resto');
   ok(/Tudo em dia/.test(btn(els['shop-grid'].children[3]).textContent),'depois, "Tudo em dia"'); }
