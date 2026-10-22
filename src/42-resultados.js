@@ -11,11 +11,15 @@ function buildEnd(){
   if (r.trash) rows.splice(2, 0, ['Na lixeira', r.trash + ' bebida' + (r.trash > 1 ? 's' : '')]);
   if (r.juice || r.juiceMiss) rows.splice(2, 0, ['Sucos', r.juice + ' entregue' + (r.juice === 1 ? '' : 's') + (r.juiceMiss ? ' · ' + r.juiceMiss + ' mesa' + (r.juiceMiss > 1 ? 's' : '') + ' sem suco' : '')]);
   if (r.sucoEsp){ const b = BEBIDA_ESPERA[r.bebida] || BEBIDA_ESPERA.suco; rows.splice(2, 0, [b.fim, b.preco ? r.sucoEsp + ' na conta (' + fmt(r.sucoEsp * b.preco) + ')' : r.sucoEsp + (r.sucoEsp > 1 ? ' copos' : ' copo') + ', de graça']); }
+  // imprevistos (v8): o que quebrou (e se foi consertado na hora) e o clima do dia
+  if (r.quebras && r.quebras.length) rows.push(['Quebrou', r.quebras.map(q => manutOf(q.id).name.toLowerCase() + (q.fixed ? ' (consertado)' : '')).join(', ')]);
+  if (r.clima) rows.push(['Imprevisto', CLIMA[r.clima].nome]);
   if (r.vip || r.vipLost) rows.splice(2, 0, ['VIPs', r.vip + ' atendido' + (r.vip === 1 ? '' : 's') + (r.vipLost ? ' · ' + r.vipLost + ' bravo' + (r.vipLost > 1 ? 's' : '') : '')]);
   // as contas do dia (v7), do faturamento ao lucro, num quadro ao lado
   const neg = v => v ? '-' + fmt(v) : '-';
   const conta = [['Faturamento', fmt(r.fat)],['Ingredientes', neg(r.custo)],['Contas do dia', neg(r.contas)],['Folha', neg(r.paid)]];
   if (r.divName) conta.push([r.divName, neg(r.div)]);
+  if (r.conserto) conta.push(['Conserto na hora', neg(r.conserto)]);
   conta.push(['Lucro do dia', fmt(r.money), 'tot'], ['Dinheiro acumulado', fmt(game.save.bank)]);
   [rows, conta].forEach(list => {
     const box = el('div', 'stats');

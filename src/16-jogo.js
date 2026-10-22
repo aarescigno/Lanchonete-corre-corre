@@ -30,7 +30,12 @@ class Game {
   resetDay(n){
     this.mode = n === 0 ? 'semfim' : 'carreira';
     this.day = n === 0 ? ENDLESS : DAYS[n-1];
-    this.money = 0; this.custo = 0; this.contas = 0; this.paidDiv = 0;
+    this.money = 0; this.custo = 0; this.contas = 0; this.paidDiv = 0; this.conserto = 0;
+    // imprevistos (v8): o sorteio do dia (feito ao começar o dia, e guardado até ele acabar) diz o clima e o que quebra
+    const so = n && this.save.manut.sorteio && this.save.manut.sorteio.d === n ? this.save.manut.sorteio : null;
+    this.clima = so ? so.clima : '';
+    this.quebras = so ? so.quebra.map(q => ({ id:q.id, t:q.f * this.day.time, on:false, fixed:false })) : [];
+    this.usos = { fogao:0, geladeira:0, cafeteira:0 };
     // divulgação (v7, do dia 3 em diante na carreira): quanto da freguesia do dia aparece
     this.div = divulgaAberta(n) ? divulgaOf(this.save.divulga) : null;
     this.divF = this.div ? rand(this.div.groups[0], this.div.groups[1]) : 1;
@@ -50,7 +55,7 @@ class Game {
     this.bia.reset();
     this.dani.reset();
     this.fx = [];
-    this.stats = { served:0, lost:0, chain:0, spawned:0, full:0, vip:0, vipLost:0, juice:0, juiceMiss:0, trash:0, washed:0, emptied:0, sucoEsp:0, crit:0, lostBy:{ semMesa:0, comMesa:0, pedido:0, prato:0, conta:0 }, lotadoT:0 };
+    this.stats = { served:0, lost:0, chain:0, spawned:0, full:0, vip:0, vipLost:0, juice:0, juiceMiss:0, trash:0, washed:0, emptied:0, sucoEsp:0, crit:0, consertos:0, quebras:0, lostBy:{ semMesa:0, comMesa:0, pedido:0, prato:0, conta:0 }, lotadoT:0 };
     this.lastKind = null; this.chainN = 0;
     this.ending = false; this.endTimer = 0; this.reason = '';
     this.sel = null; this.drag = null; this.hover = null;
@@ -63,7 +68,8 @@ class Game {
   buildSchedule(day){
     const out = [];
     const lug = this.tables.filter(t => t.open).reduce((a, t) => a + t.seats, 0);
-    const N = Math.max(3, Math.round(day.groups * this.divF * movimentoSalao(lug))), vipP = (day.vip || 0) * (this.div ? this.div.vip : 1);
+    const cl = CLIMA[this.clima];
+    const N = Math.max(3, Math.round(day.groups * this.divF * movimentoSalao(lug) * (cl ? cl.groups : 1))), vipP = (day.vip || 0) * (this.div ? this.div.vip : 1);
     const gap = day.speed * day.time / N;
     let t = 3;
     const forced = day.nu ? randi(1, Math.min(3, N-1)) : -1;
@@ -71,6 +77,7 @@ class Game {
     const colors = this.tables.map(x => x.color);
     for (let i=0;i<N;i++){
       let type = (i === forced) ? day.nu : pick(day.types);
+      if (cl && i !== forced && Math.random() < cl.tipoP) type = cl.tipo;   // chuva: entregadores; feriado: famílias
       let vip = false;
       if (day.vip && (i === forcedVip || Math.random() < vipP)){
         if (!VIP.types.includes(type)) type = pick(VIP.types);
@@ -81,7 +88,62 @@ class Game {
     }
     return out;
   }
-  startDay(n){ this.resetDay(n); this.setState('intro'); }
+  startDay(n){ this.sortear(n); this.resetDay(n); this.setState('intro'); }
+  /* imprevistos do dia n (v8, carreira): clima (do dia 3) e quebras (do dia 4), sorteados uma vez e guardados no save
+     até o dia acabar (recomeçar o dia não sorteia de novo; a revisão na lojinha tira a quebra do equipamento) */
+  sortear(n){
+    const m = this.save.manut;
+    if (!MANUT.on || !n){ delete m.sorteio; return; }
+    if (m.sorteio && m.sorteio.d === n) return;
+    let clima = '';
+    if (n >= CLIMA_DIA){ const r = Math.random(); if (r < CLIMA.chuva.chance) clima = 'chuva'; else if (r < CLIMA.chuva.chance + CLIMA.feriado.chance) clima = 'feriado'; }
+    const quebra = n >= MANUT.dia ? MANUT.equip.filter(q => Math.random() < manutChance(m[q.id])).map(q => ({ id:q.id, f:rand(MANUT.quando[0], MANUT.quando[1]) })) : [];
+    m.sorteio = { d:n, clima, quebra };
+    writeSave(this.save);
+  }
+  /* equipamento quebrado agora (e sem conserto) */
+  quebrado(id){ return this.quebras.some(q => q.id === id && q.on && !q.fixed); }
+  get manut(){ return this.save.manut; }
+  /* conserto de emergência (v8): um toque na plaquinha chama o técnico. Sai do dinheiro acumulado na hora (como a
+     folha), conta no lucro do dia e no caixa (manutenção); o equipamento volta a 100% e não quebra de novo se o dia recomeçar */
+  consertar(id){
+    const q = this.quebras.find(x => x.id === id && x.on && !x.fixed), eq = manutOf(id);
+    if (!q || !eq) return false;
+    if (!DEV.on && this.save.bank < eq.emerg){ this.addText(eq.badge.x, eq.badge.y - 26, 'Falta dinheiro!', PAL.perigo, 14); Sfx.boing(); return false; }
+    q.fixed = true; this.manut[id] = 1;
+    const so = this.manut.sorteio;
+    if (so) so.quebra = so.quebra.filter(x => x.id !== id);
+    if (!DEV.on){ this.conserto += eq.emerg; this.save.bank -= eq.emerg; caixaGasto(this.save, 'man', eq.emerg); }
+    writeSave(this.save);
+    this.stats.consertos++;
+    this.addText(eq.badge.x, eq.badge.y - 26, eq.name + ' consertado! -' + eq.emerg, PAL.ok, 15);
+    this.addSparks(eq.badge.x, eq.badge.y, 10, PAL.mostarda);
+    Sfx.coin();
+    return true;
+  }
+  /* revisão na lojinha: volta a 100% e tira a quebra já sorteada para o equipamento */
+  revisar(id){
+    const e = this.manut[id], v = manutPreco(id, e);
+    if (!manutOf(id) || !v || (!DEV.on && this.save.bank < v)) return false;
+    if (!DEV.on){ this.save.bank -= v; caixaGasto(this.save, 'man', v); }
+    this.manut[id] = 1;
+    const so = this.manut.sorteio;
+    if (so) so.quebra = so.quebra.filter(q => q.id !== id);
+    writeSave(this.save);
+    if (this.state === 'shop') this.resetDay(this.shopNext);
+    Sfx.coin(); return true;
+  }
+  revisarTudo(){ let ok = false; MANUT.equip.forEach(q => { if (this.revisar(q.id)) ok = true; }); return ok; }
+  /* gasto do dia (v8): base + uso; quebrado e sem conserto, perde mais 10 pontos */
+  desgastar(){
+    if (!MANUT.on || this.mode !== 'carreira') return;
+    const m = this.manut;
+    MANUT.equip.forEach(q => {
+      if (this.quebras.some(x => x.id === q.id && x.fixed)) return;   // consertado hoje: fica novo
+      const broke = this.quebras.some(x => x.id === q.id && x.on);
+      m[q.id] = clamp(m[q.id] - (q.base + q.uso * this.usos[q.id] + (broke ? 10 : 0)) / 100, 0, 1);
+    });
+  }
   startEndless(){ this.resetDay(0); this.setState('intro'); }
   /* debita a folha e a divulgação do dia do dinheiro acumulado; o que não puder ser pago sai
      (a divulgação vira boca a boca, depois couvert, som, TV, Dani e aumento do Tonhão) */
@@ -113,7 +175,7 @@ class Game {
     if (this.unpaid.length) this.addText(TW/2 - this.cam, 300, 'Sem dinheiro para pagar: sem ' + this.unpaid.join(', ') + ' hoje', PAL.perigo, 20);
   }
   /* lucro do dia (a meta): faturamento − ingredientes − contas − folha − divulgação */
-  get fixo(){ return this.contas + this.paid + this.paidDiv; }
+  get fixo(){ return this.contas + this.paid + this.paidDiv + this.conserto; }
   get lucro(){ return this.money - this.custo - this.fixo; }
   get trashFull(){ return this.trash >= TRASH.cap; }
   /* alguém além da Bia lava a louça (Dani com a tarefa, ou o Tonhão com aumento) */
@@ -449,6 +511,13 @@ class Game {
         }
       }
     }
+    if (!this.ending) this.quebras.forEach(q => {
+      if (q.on || this.elapsed < q.t) return;
+      const eq = manutOf(q.id); q.on = true; this.stats.quebras++;
+      this.addText(eq.badge.x, eq.badge.y - 30, eq.name + ' quebrou!', PAL.perigo, 17);
+      this.addPuff(eq.badge.x, eq.badge.y, 8);
+      Sfx.boing(); Sfx.tone(180, 0.25, 'sawtooth', 0.04, 0.12);
+    });
     this.groups.forEach(g => g.update(dt));
     this.groups = this.groups.filter(g => !g.done);
     this.maq.forEach(o => { if (o.t > 0){ o.t -= dt; if (o.t <= 0){ Sfx.tone(1568, 0.12, 'sine', 0.05); this.addGlow('maquina'); } } });
@@ -488,14 +557,15 @@ class Game {
     if (m >= d.expert && this.stats.lost === 0) stars = 3;
     const prevBest = this.save.best[d.n] || 0;
     // o faturamento vai para o dinheiro acumulado, menos os ingredientes e as contas (folha e divulgação já saíram ao abrir)
-    const income = fat - Math.round(this.custo) - this.contas;
+    const income = fat - Math.round(this.custo) - this.contas;   // folha, divulgação e conserto na hora já saíram
     this.save.bank = Math.max(0, this.save.bank + income);
+    this.desgastar(); delete this.save.manut.sorteio;
     this.save.best[d.n] = Math.max(prevBest, fat);   // o ranking da carreira soma o faturamento dos melhores dias
     this.save.stars[d.n] = Math.max(this.save.stars[d.n] || 0, stars);
     if (passed) this.save.maxDay = Math.max(this.save.maxDay, Math.min(7, d.n + 1));
     caixaAdd(this.save, { d:d.n, fat, ingr:Math.round(this.custo), contas:this.contas, folha:this.paid, div:this.paidDiv, lucro:m, meta:d.meta, ok:passed, perd:this.stats.lost, saldo:this.save.bank });
     writeSave(this.save);
-    this.result = { day:d.n, money:m, fat, custo:Math.round(this.custo), contas:this.contas, div:this.paidDiv, divName:this.div ? this.div.name : '', meta:d.meta, bom:bomGoal(d), expert:d.expert, passed, stars, served:this.stats.served, lost:this.stats.lost, lostBy:this.stats.lostBy, lotadoT:Math.round(this.stats.lotadoT), atraso:Math.round(this.atraso), full:this.stats.full, chain:this.stats.chain, vip:this.stats.vip, vipLost:this.stats.vipLost, juice:this.stats.juice, juiceMiss:this.stats.juiceMiss, sucoEsp:this.stats.sucoEsp, bebida:this.bebida.id, trash:this.stats.trash, washed:this.stats.washed, income, paid:this.paid, reason:this.reason };
+    this.result = { day:d.n, money:m, fat, custo:Math.round(this.custo), contas:this.contas, div:this.paidDiv, divName:this.div ? this.div.name : '', meta:d.meta, bom:bomGoal(d), expert:d.expert, passed, stars, served:this.stats.served, lost:this.stats.lost, lostBy:this.stats.lostBy, lotadoT:Math.round(this.stats.lotadoT), atraso:Math.round(this.atraso), full:this.stats.full, chain:this.stats.chain, vip:this.stats.vip, vipLost:this.stats.vipLost, juice:this.stats.juice, juiceMiss:this.stats.juiceMiss, sucoEsp:this.stats.sucoEsp, bebida:this.bebida.id, trash:this.stats.trash, washed:this.stats.washed, income, paid:this.paid, reason:this.reason, conserto:this.conserto, consertos:this.stats.consertos, quebras:this.quebras.filter(q => q.on).map(q => ({ id:q.id, fixed:q.fixed })), clima:this.clima, manut:Object.assign({}, this.manut) };
     this.setState('dayend');
     if (passed) Sfx.win(); else Sfx.lose();
   }
@@ -688,6 +758,12 @@ class Game {
   pickAt(x, y, pad){
     let best = null, bd = Infinity;
     const take = (r, hit) => { const d = rectDist(x, y, r); if (d <= (pad || 0) && d < bd){ bd = d; best = hit; } };
+    // conserto (v8): a plaquinha do equipamento quebrado vence o que está embaixo dela
+    for (const q of this.quebras){
+      if (!q.on || q.fixed) continue;
+      const b = manutOf(q.id).badge, R = MANUT.badge;
+      if (rectDist(x, y, { x:b.x - R, y:b.y - R, w:2 * R, h:2 * R }) <= (pad || 0)) return { k:'conserto', id:q.id };
+    }
     for (const g of this.queue) take(queueRect(g), { k:'queue', g });
     for (const t of this.tables) take(tableRect(t), { k:'table', t });
     for (const k of STATION_KEYS){ if (k !== 'maquina' || this.up.maquina) take(STATIONS[k].rect, { k:'station', st:k }); }
@@ -735,6 +811,7 @@ class Game {
       if (this.bia.enqueue({ type:'plate', pid })){ Sfx.tap(); this.addGlow(pl[i]); return true; }
       return false;
     }
+    if (k === 'coffee' && this.quebrado('cafeteira')){ this.addText(STATIONS.coffee.ap.x + 50, STATIONS.coffee.rect.y + 14, 'Cafeteira parada!', PAL.perigo, 14); Sfx.boing(); return false; }
     if (this.bia.enqueue({ type:k })){ Sfx.tap(); this.addGlow(k); return true; }
     return false;
   }
@@ -761,7 +838,8 @@ class Game {
       return;
     }
     this.sel = null;
-    if (hit) this.tapStation(hit.st, x, y);
+    if (hit && hit.k === 'conserto') this.consertar(hit.id);
+    else if (hit) this.tapStation(hit.st, x, y);
     else if (pad) this.fx.push({ k:'tap', x, y, life:0, max:0.3 });
   }
   /* destaque da mesa sob o grupo arrastado ou escolhido */

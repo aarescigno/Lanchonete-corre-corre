@@ -77,18 +77,18 @@ function normCaixa(c){
   const n = v => Math.round(+v) || 0;
   return (Array.isArray(c) ? c : []).filter(r => r && typeof r === 'object' && +r.d >= 1).slice(-CAIXA_MAX)
     .map(r => {
-      const o = { d:clamp(n(r.d),1,7), fat:n(r.fat), ingr:n(r.ingr), contas:n(r.contas), folha:n(r.folha), div:n(r.div), lucro:n(r.lucro), meta:n(r.meta), ok:!!r.ok, perd:n(r.perd), mel:n(r.mel), sal:n(r.sal), saldo:n(r.saldo) };
+      const o = { d:clamp(n(r.d),1,7), fat:n(r.fat), ingr:n(r.ingr), contas:n(r.contas), folha:n(r.folha), div:n(r.div), lucro:n(r.lucro), meta:n(r.meta), ok:!!r.ok, perd:n(r.perd), mel:n(r.mel), sal:n(r.sal), man:n(r.man), saldo:n(r.saldo) };
       if (n(r.dev)) o.dev = n(r.dev);   // linha "Devolução do salão" (v7.4): o que o salão antigo custou, de volta
       if (o.dev && r.devK === 'maquina') o.devK = 'maquina';   // ou a da máquina de suco, que virou torneira (v7.7)
       return o;
     });
 }
-/* sal pode ficar negativo: mesa vendida no editor (v7.4) volta como dinheiro */
+/* sal pode ficar negativo: mesa vendida no editor (v7.4) volta como dinheiro. man (v8): revisões na lojinha e consertos na hora */
 function normPend(p){
   p = (p && typeof p === 'object') ? p : {};
-  return { mel: Math.max(0, Math.round(+p.mel) || 0), sal: Math.round(+p.sal) || 0 };
+  return { mel: Math.max(0, Math.round(+p.mel) || 0), sal: Math.round(+p.sal) || 0, man: Math.max(0, Math.round(+p.man) || 0) };
 }
-/* compra na lojinha (k: 'mel' ou 'sal'), anotada para a próxima linha do caixa */
+/* compra na lojinha (k: 'mel', 'sal' ou 'man'), anotada para a próxima linha do caixa */
 function caixaGasto(s, k, v){ s.caixaPend = normPend(s.caixaPend); s.caixaPend[k] += v; }
 function caixaAdd(s, row){
   const p = normPend(s.caixaPend);
@@ -104,7 +104,7 @@ function normSave(s){
   if (up.chapa){ up.pratos = true; delete up.chapa; }     // a Chapa nova virou Jogo de pratos (a velocidade da cozinha é do Tonhão)
   // salão da v6 à v7.3 (v7.4): o que foi gasto em cadeiras e mesas volta para o dinheiro, numa linha do caixa, e o
   // jogo começa na Garagem com o kit
-  const dev = salaoDevolucao(s.salao), out = { maxDay: clamp(+s.maxDay||1,1,7), bank: Math.max(0,+s.bank||0) + dev + devMaq, up, torneira:true, best: (s.best && typeof s.best === 'object') ? s.best : {}, stars: (s.stars && typeof s.stars === 'object') ? s.stars : {}, salao: normSalao(dev ? null : s.salao), divulga: divulgaOf(s.divulga).id, caixa: normCaixa(s.caixa), caixaPend: normPend(s.caixaPend) };
+  const dev = salaoDevolucao(s.salao), out = { maxDay: clamp(+s.maxDay||1,1,7), bank: Math.max(0,+s.bank||0) + dev + devMaq, up, torneira:true, best: (s.best && typeof s.best === 'object') ? s.best : {}, stars: (s.stars && typeof s.stars === 'object') ? s.stars : {}, salao: normSalao(dev ? null : s.salao), divulga: divulgaOf(s.divulga).id, manut: normManut(s.manut), caixa: normCaixa(s.caixa), caixaPend: normPend(s.caixaPend) };
   out.equipe = normEquipe(s.equipe, pontoOf(out.salao.ponto));
   if (dev){ const last = out.caixa[out.caixa.length - 1]; out.caixa = normCaixa(out.caixa.concat([{ d:last ? last.d : 1, dev, saldo:out.bank - devMaq }])); }
   if (devMaq){ const last = out.caixa[out.caixa.length - 1]; out.caixa = normCaixa(out.caixa.concat([{ d:last ? last.d : 1, dev:devMaq, devK:'maquina', saldo:out.bank }])); }

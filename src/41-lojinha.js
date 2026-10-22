@@ -297,17 +297,36 @@ function buildDivulga(grid){
     (p.aluguel ? 'Aluguel ' + fmt(p.aluguel) + ' + l' : 'Sem aluguel (' + p.nome.replace(/^Garagem/, 'a garagem') + '). L') + 'uz e gás de ' + sal.length + ' mesas (' + fmt(CONTAS.mesa) + ' cada) e ' + sal.reduce((a, t) => a + t.seats, 0) + ' lugares (' + fmt(CONTAS.lugar) + ' cada) = ' + fmt(contasDia(game.tables, p)) + ', no fim do dia. Ingredientes: ' + Math.round(INGRED.prato * 100) + '% da conta de cada prato que fica pronto e ' + fmt(INGRED.suco) + ' por suco.');
   grid.appendChild(c);
 }
+/* aba Manutenção (v8): o estado de cada equipamento, o risco de quebrar e a revisão (volta a 100%) */
+function buildManut(grid){
+  const m = game.manut, n = game.shopNext, pc = v => Math.round(v * 100) + '%';
+  MANUT.equip.forEach(q => {
+    const e = m[q.id], v = manutPreco(q.id, e), risco = n >= MANUT.dia ? manutChance(e) : 0;
+    const c = staffCard(upgradeIcon('m-' + q.id), q.name + ' · ' + pc(e),
+      'Quebrado, ' + q.efeito + ' até o conserto na hora (' + fmt(q.emerg) + ', um toque na plaquinha). Risco de quebrar no dia ' + n + ': ' + (risco >= 0.005 ? pc(risco) : (n < MANUT.dia ? 'nenhum até o dia ' + MANUT.dia : 'quase nenhum')) + '.');
+    const bar = el('div', 'mbar'); bar.setAttribute('role', 'meter'); bar.setAttribute('aria-label', q.name); bar.setAttribute('aria-valuenow', String(Math.round(e * 100)));
+    const fill = el('i'); fill.style.width = pc(e); fill.style.background = e >= 0.7 ? PAL.ok : e >= 0.4 ? PAL.mostarda : PAL.perigo; bar.appendChild(fill);
+    c.appendChild(bar);
+    if (e >= 0.995) c.classList.add('own');
+    c.appendChild(shopBtn(!v ? 'Em dia' : DEV.on ? 'Revisão (grátis)' : 'Revisão: ' + fmt(v), 'btn', !!v && (DEV.on || game.save.bank >= v), () => game.revisar(q.id)));
+    grid.appendChild(c);
+  });
+  const tot = MANUT.equip.reduce((a, q) => a + manutPreco(q.id, m[q.id]), 0);
+  const c = staffCard(upgradeIcon('contas'), 'Revisar tudo', 'Cada dia gasta cada equipamento um pouco, e mais em dia cheio. Do dia ' + MANUT.dia + ' em diante, o que está gasto pode quebrar no meio do dia. A revisão sai do dinheiro acumulado e entra no caixa como manutenção.');
+  c.appendChild(shopBtn(!tot ? 'Tudo em dia' : DEV.on ? 'Revisar tudo (grátis)' : 'Revisar tudo: ' + fmt(tot), 'btn', !!tot && (DEV.on || game.save.bank >= tot), () => game.revisarTudo()));
+  grid.appendChild(c);
+}
 /* aba Caixa (v7.2): os últimos dias da carreira, para onde foi o dinheiro e um resumo para colar no WhatsApp */
-const CAIXA_COR = { ingr:'#E26A2C', contas:'#C2362B', folha:'#1F4FA3', div:'#7B4FB5', mel:'#3E9B5A', sal:'#E0B23A' };
+const CAIXA_COR = { ingr:'#E26A2C', contas:'#C2362B', folha:'#1F4FA3', div:'#7B4FB5', mel:'#3E9B5A', sal:'#E0B23A', man:'#5B5F6B' };
 function caixaTotais(cx){
-  const s = k => cx.reduce((a, r) => a + r[k], 0);
-  return [['ingr','Ingredientes'], ['contas','Contas'], ['folha','Equipe'], ['div','Divulgação'], ['mel','Melhorias'], ['sal','Salão']].map(k => ({ id:k[0], name:k[1], v:s(k[0]) }));
+  const s = k => cx.reduce((a, r) => a + (r[k] || 0), 0);
+  return [['ingr','Ingredientes'], ['contas','Contas'], ['folha','Equipe'], ['div','Divulgação'], ['mel','Melhorias'], ['sal','Salão'], ['man','Manutenção']].map(k => ({ id:k[0], name:k[1], v:s(k[0]) }));
 }
 function caixaResumo(save){
   const cx = save.caixa, eq = save.equipe, sal = save.salao;
   const out = ['Lanchonete Corre-Corre ' + VERSAO + ' · Caixa (valores em R$)'];
   cx.forEach(r => out.push(r.dev ? 'Devolução ' + (r.devK === 'maquina' ? 'da máquina de suco' : 'do salão') + ': +' + r.dev + ' · saldo ' + r.saldo : 'Dia ' + r.d + (r.ok ? ' ✓' : ' ✗') + ': fatura ' + r.fat + ' − ingred. ' + r.ingr + ' − contas ' + r.contas + ' − equipe ' + r.folha + (r.div ? ' − divulg. ' + r.div : '') +
-    ' = lucro ' + r.lucro + ' (meta ' + r.meta + ')' + (r.perd ? ' · ' + r.perd + (r.perd > 1 ? ' perdidos' : ' perdido') : '') + (r.mel + r.sal ? ' · compras ' + (r.mel + r.sal) : '') + ' · saldo ' + r.saldo));
+    ' = lucro ' + r.lucro + ' (meta ' + r.meta + ')' + (r.perd ? ' · ' + r.perd + (r.perd > 1 ? ' perdidos' : ' perdido') : '') + (r.mel + r.sal ? ' · compras ' + (r.mel + r.sal) : '') + (r.man ? ' · manutenção ' + r.man : '') + ' · saldo ' + r.saldo));
   const nd = cx.filter(r => !r.dev).length;
   if (nd) out.push('Para onde foi (' + nd + (nd > 1 ? ' dias' : ' dia') + '): ' + caixaTotais(cx).filter(t => t.v).map(t => t.name.toLowerCase() + ' ' + t.v).join(', '));
   const ups = UPGRADES.filter(u => save.up[u.id]).map(u => u.name.toLowerCase());
@@ -340,14 +359,14 @@ function buildCaixa(grid){
   if (!cx.length){ grid.appendChild(el('p', 'rank-empty', 'O caixa começa quando você joga um dia da carreira.')); return; }
   const wrap = el('div', 'rank-wrap cx-wrap'), tb = el('table', 'rank cx');
   const head = el('tr');
-  [['Dia'], ['Faturou'], ['Ingred.', 'Ingredientes'], ['Contas', 'Aluguel, luz e gás'], ['Equipe', 'Folha da equipe, luz da TV e do som e divulgação'], ['Lucro', 'Lucro do dia (a meta)'], ['Compras', 'Melhorias e salão comprados antes do dia'], ['Saldo', 'Dinheiro acumulado ao fim do dia']].forEach((h, i) => { const th = el('th', i ? 'n' : null, h[0]); th.setAttribute('scope', 'col'); if (h[1]) th.title = h[1]; head.appendChild(th); });
+  [['Dia'], ['Faturou'], ['Ingred.', 'Ingredientes'], ['Contas', 'Aluguel, luz e gás'], ['Equipe', 'Folha da equipe, luz da TV e do som e divulgação'], ['Lucro', 'Lucro do dia (a meta)'], ['Compras', 'Melhorias e salão comprados antes do dia'], ['Manut.', 'Revisões na lojinha e consertos na hora'], ['Saldo', 'Dinheiro acumulado ao fim do dia']].forEach((h, i) => { const th = el('th', i ? 'n' : null, h[0]); th.setAttribute('scope', 'col'); if (h[1]) th.title = h[1]; head.appendChild(th); });
   tb.appendChild(head);
   cx.slice().reverse().forEach(r => {
     const tr = el('tr');
     if (r.dev){
       // v7.4: o salão antigo (cadeiras e mesas da v6) foi trocado pela Garagem e o que custou voltou;
       // v7.7: a Máquina de suco virou a Água da torneira, mais barata, e a diferença voltou
-      const td = el('td', 'cx-dev', (r.devK === 'maquina' ? 'Devolução da máquina de suco (virou a Água da torneira): +' : 'Devolução do salão antigo: +') + fmt(r.dev)); td.setAttribute('colspan', '7');
+      const td = el('td', 'cx-dev', (r.devK === 'maquina' ? 'Devolução da máquina de suco (virou a Água da torneira): +' : 'Devolução do salão antigo: +') + fmt(r.dev)); td.setAttribute('colspan', '8');
       tr.appendChild(td); tr.appendChild(cxTd(r.saldo)); tb.appendChild(tr); return;
     }
     const dia = el('td', null, 'Dia ' + r.d); tr.appendChild(dia);
@@ -355,6 +374,7 @@ function buildCaixa(grid){
     const lu = cxTd(r.lucro, r.ok ? 'pos' : 'neg'); lu.title = (r.ok ? 'Passou' : 'Não passou') + ' da meta de ' + fmt(r.meta) + (r.perd ? '; ' + r.perd + (r.perd > 1 ? ' perdidos' : ' perdido') : '');
     tr.appendChild(lu);
     tr.appendChild(r.mel + r.sal ? cxTd(r.mel + r.sal) : el('td', 'n', '–'));
+    tr.appendChild(r.man ? cxTd(r.man) : el('td', 'n', '–'));
     tr.appendChild(cxTd(r.saldo));
     tb.appendChild(tr);
   });
@@ -373,7 +393,7 @@ function buildCaixa(grid){
     leg.appendChild(li);
   });
   onde.appendChild(bar); onde.appendChild(leg);
-  if (pend.mel + pend.sal) onde.appendChild(el('span', 'full', 'Compras nesta lojinha: ' + fmt(pend.mel + pend.sal) + ' (entram na linha do dia ' + game.shopNext + ').'));
+  if (pend.mel + pend.sal + pend.man) onde.appendChild(el('span', 'full', 'Compras nesta lojinha: ' + fmt(pend.mel + pend.sal + pend.man) + ' (entram na linha do dia ' + game.shopNext + ').'));
   // resumo para colar no WhatsApp
   const row = el('div', 'cx-copia'), st = el('span', 'cx-st'); st.setAttribute('role', 'status');
   let ta = null;
@@ -403,6 +423,7 @@ function buildShop(){
   if (shopTab === 'equipe') return buildEquipe(grid);
   if (shopTab === 'salao') return buildSalao(grid);
   if (shopTab === 'divulga') return buildDivulga(grid);
+  if (shopTab === 'manut') return buildManut(grid);
   if (shopTab === 'caixa') return buildCaixa(grid);
   // os Tênis de corrida (v7.3) só aparecem depois dos Tênis novos, no lugar deles (a grade continua com 6); no modo dev, todas
   UPGRADES.filter(u => DEV.on || (u.req ? game.up[u.req] : !(game.up[u.id] && UPGRADES.some(v => v.req === u.id)))).forEach(u => {

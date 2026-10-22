@@ -236,7 +236,7 @@ table.rank tr.me td{background:#fbe7a8}
 
     <div class="ov show" id="ov-menu">
       <div class="panel menu-panel">
-        <span class="vtag" id="vtag" aria-label="Versão 7.7">v7.7</span>
+        <span class="vtag" id="vtag" aria-label="Versão 8">v8</span>
         <h1 class="title">Lanchonete <br>Corre-Corre</h1>
         <p class="tag">Ajude a Bia a atender a freguesia da esquina antes que o cafezinho esfrie!</p>
         <div class="lbl">Carreira: escolha o dia</div>
@@ -277,6 +277,7 @@ table.rank tr.me td{background:#fbe7a8}
         <h2 id="intro-title">Dia 1</h2>
         <p id="intro-goal"></p>
         <p class="small" id="intro-note"></p>
+        <p class="small" id="intro-manut"></p>
         <div class="row"><button class="btn go" id="btn-start">Abrir a lanchonete</button><button class="btn alt" id="btn-intro-menu">Menu</button></div>
       </div>
     </div>
@@ -319,6 +320,7 @@ table.rank tr.me td{background:#fbe7a8}
           <button type="button" data-v="equipe" aria-pressed="false">Equipe</button>
           <button type="button" data-v="salao" aria-pressed="false">Salão</button>
           <button type="button" data-v="divulga" aria-pressed="false">Divulgação</button>
+          <button type="button" data-v="manut" aria-pressed="false">Manutenção</button>
           <button type="button" data-v="caixa" aria-pressed="false">Caixa</button>
         </div></div>
         <div class="shopgrid" id="shop-grid"></div>
@@ -413,7 +415,8 @@ table.rank tr.me td{background:#fbe7a8}
       <div class="panel">
         <h2>Versões</h2>
         <ul class="verlist">
-          <li><b>v7.7</b><span class="cur">versão atual</span><br>22/10/2026 &mdash; A espera lá fora com a cara da Garagem: quem espera fica de pé, numa faixa pintada no chão, e a Máquina de suco virou a Água da torneira (R$ 80; quem tinha a máquina recebe R$ 100 de volta): quem espera pede água, a Bia enche os copos americanos na torneira e leva, de graça. Na calçada, as plantas da casa da Bia: espada-de-são-jorge no vaso de barro e numa lata. Bancos, sucos e o resto vêm com os próximos pontos.</li>
+          <li><b>v8</b><span class="cur">versão atual</span><br>22/10/2026 &mdash; Manutenção e imprevistos: o fogão, a geladeira e a cafeteira se gastam a cada dia (mais em dia cheio) e, do dia 4 em diante, o que está gasto pode quebrar no meio do dia (fogão falhando: o Tonhão cozinha mais devagar; geladeira: ingredientes mais caros; cafeteira: sem cafezinho). Um toque na plaquinha chama o técnico na hora; na lojinha, aba Manutenção, a revisão deixa tudo novo. E, de vez em quando, chuva (menos gente, mais entregadores) ou feriado (mais gente). O caixa ganhou a coluna Manutenção.</li>
+          <li><b>v7.7</b><br>22/10/2026 &mdash; A espera lá fora com a cara da Garagem: quem espera fica de pé, numa faixa pintada no chão, e a Máquina de suco virou a Água da torneira (R$ 80; quem tinha a máquina recebe R$ 100 de volta): quem espera pede água, a Bia enche os copos americanos na torneira e leva, de graça. Na calçada, as plantas da casa da Bia: espada-de-são-jorge no vaso de barro e numa lata. Bancos, sucos e o resto vêm com os próximos pontos.<br><a href="versoes/v7.7.html" target="_blank" rel="noopener">Abrir a v7.7</a></li>
           <li><b>v7.6</b><br>22/10/2026 &mdash; Tudo na mesma tela: a tela ficou mais larga e mostra a calçada, o salão e a cozinha juntos, sem rolar (sem abinhas nem arrastar o fundo). No celular deitado, tudo fica do mesmo tamanho de antes.<br><a href="versoes/v7.6.html" target="_blank" rel="noopener">Abrir a v7.6</a></li>
           <li><b>v7.5.1</b><br>21/10/2026 &mdash; Modo dev, para testar: 10 toques no selo da versão ligam e desligam. O jogo fica igual, com "Modo dev" na tela, os 7 dias liberados, R$ 10.000 que não acabam e tudo liberado na lojinha (até antes do dia 1): melhorias de graça, liga e desliga; equipe completa, couvert e divulgação. Usa um save à parte e fica fora do ranking.<br><a href="versoes/v7.5.1.html" target="_blank" rel="noopener">Abrir a v7.5.1</a></li>
           <li><b>v7.5</b><br>21/10/2026 &mdash; A espera foi para a calçada: a tela rola (arraste o fundo, use as abinhas do alto ou arraste o grupo até a borda; 2 toques no grupo levam ao salão), 4 bancos lá fora com tablet, toldo e vaso, e a Máquina de suco no lugar da Água saborizada: quem espera pede no tablet, a Bia (ou a Dani) leva e o suco entra na conta.<br><a href="versoes/v7.5.html" target="_blank" rel="noopener">Abrir a v7.5</a></li>
@@ -765,7 +768,7 @@ const DIVULGA = [
 const MOVIMENTO = { kit:10, porLugar:0.06 };
 function movimentoSalao(lugares){ return 1 + MOVIMENTO.porLugar * Math.max(0, lugares - MOVIMENTO.kit); }
 const CAIXA_MAX = 14;                                 // livro-caixa (v7.2): quantos dias da carreira ficam guardados
-const VERSAO = 'v7.7';                              // vai no resumo do Caixa
+const VERSAO = 'v8';                              // vai no resumo do Caixa
 const DIVULGA_DIA = 3;                                // antes disso, o movimento é o da inauguração (sem custo)
 function divulgaAberta(n){ return DEV.on || n >= DIVULGA_DIA; }   // no modo dev, desde o dia 1
 function divulgaOf(id){ return DIVULGA.find(d => d.id === id) || DIVULGA[1]; }
@@ -800,6 +803,48 @@ const UPGRADES = [
   { id:'ventilador', name:'Ventilador de teto',   desc:'A freguesia come 15% mais rápido e o cheiro da lixeira cheia não incomoda.', cost:250 },
   { id:'pratos',     name:'Jogo de pratos',       desc:'+1 prato limpo na cozinha (do dia 3 em diante).', cost:300 }
 ];
+
+/* ============================================================
+   MANUTENÇÃO (v8): fogão, geladeira e cafeteira vão de 100% a 0%. Cada dia jogado
+   na carreira gasta `base` pontos e mais `uso` por prato que fica pronto (fogão e
+   geladeira) ou por cafezinho servido (cafeteira): dia cheio gasta mais. Do dia
+   `dia` em diante, cada um pode quebrar no meio do dia, com chance que cresce com o
+   gasto (chance). Revisão na lojinha: volta a 100% e custa `preco` × o que gastou.
+   Quebrado, um toque na plaquinha do conserto chama o técnico na hora, por `emerg`
+   (volta a 100%). No Turno sem fim, nada se gasta nem quebra
+   ============================================================ */
+const MANUT = {
+  on: true,               // desligado, nada se gasta nem quebra e não há chuva nem feriado (os testes desligam)
+  dia: 4,
+  quando: [0.12, 0.55],   // em que parte do dia a quebra acontece
+  equip: [
+    { id:'fogao',     name:'Fogão',     base:4, uso:0.4, preco:250, emerg:180, efeito:'o Tonhão cozinha 20% mais devagar', lento:0.8,  badge:{ x:788, y:112 } },
+    { id:'geladeira', name:'Geladeira', base:6, uso:0.3, preco:220, emerg:150, efeito:'os ingredientes custam 20% a mais',  ingred:1.2, badge:{ x:718, y:130 } },
+    { id:'cafeteira', name:'Cafeteira', base:4, uso:1,   preco:120, emerg:80,  efeito:'sem cafezinho',                       badge:{ x:788, y:322 } }
+  ],
+  badge: 18                // raio da plaquinha do conserto (toque)
+};
+function manutOf(id){ return MANUT.equip.find(e => e.id === id); }
+/* chance de quebrar no dia, pelo estado (0 a 1): quase nada até ~80%, 1 em 3 dias perto de 40% (com os 3 juntos) */
+function manutChance(e){ return Math.min(0.6, 0.9 * Math.pow(1 - clamp(e, 0, 1), 2)); }
+/* preço da revisão: proporcional ao que gastou, em múltiplos de R$ 5 (0 se está a 100%) */
+function manutPreco(id, e){ const q = manutOf(id); return e >= 0.995 ? 0 : Math.max(10, Math.ceil(q.preco * (1 - e) / 5) * 5); }
+function normManut(m){
+  m = (m && typeof m === 'object') ? m : {};
+  const out = {};
+  MANUT.equip.forEach(q => { const v = +m[q.id]; out[q.id] = isFinite(v) ? clamp(v, 0, 1) : 1; });
+  const s = m.sorteio;
+  if (s && typeof s === 'object' && +s.d >= 1) out.sorteio = { d:Math.round(+s.d), clima:CLIMA[s.clima] ? s.clima : '',
+    quebra:(Array.isArray(s.quebra) ? s.quebra : []).filter(x => x && manutOf(x.id)).map(x => ({ id:x.id, f:clamp(+x.f || 0.3, 0, 1) })) };
+  return out;
+}
+/* imprevistos sem culpa (v8), do dia `dia` em diante na carreira: raros e avisados na introdução.
+   chuva: menos gente e mais entregadores; feriado: mais gente e mais famílias */
+const CLIMA = {
+  chuva:   { nome:'Dia de chuva', chance:0.12, groups:0.8,  tipo:'entregador', tipoP:0.35, aviso:'Dia de chuva: vem menos gente, e mais entregadores (com pressa!).' },
+  feriado: { nome:'Feriado',      chance:0.10, groups:1.25, tipo:'familia',    tipoP:0.25, aviso:'Feriado: a cidade saiu de casa! Mais gente e mais famílias.' }
+};
+const CLIMA_DIA = 3;
 
 /* ============================================================
    UTILIDADES
@@ -1012,18 +1057,18 @@ function normCaixa(c){
   const n = v => Math.round(+v) || 0;
   return (Array.isArray(c) ? c : []).filter(r => r && typeof r === 'object' && +r.d >= 1).slice(-CAIXA_MAX)
     .map(r => {
-      const o = { d:clamp(n(r.d),1,7), fat:n(r.fat), ingr:n(r.ingr), contas:n(r.contas), folha:n(r.folha), div:n(r.div), lucro:n(r.lucro), meta:n(r.meta), ok:!!r.ok, perd:n(r.perd), mel:n(r.mel), sal:n(r.sal), saldo:n(r.saldo) };
+      const o = { d:clamp(n(r.d),1,7), fat:n(r.fat), ingr:n(r.ingr), contas:n(r.contas), folha:n(r.folha), div:n(r.div), lucro:n(r.lucro), meta:n(r.meta), ok:!!r.ok, perd:n(r.perd), mel:n(r.mel), sal:n(r.sal), man:n(r.man), saldo:n(r.saldo) };
       if (n(r.dev)) o.dev = n(r.dev);   // linha "Devolução do salão" (v7.4): o que o salão antigo custou, de volta
       if (o.dev && r.devK === 'maquina') o.devK = 'maquina';   // ou a da máquina de suco, que virou torneira (v7.7)
       return o;
     });
 }
-/* sal pode ficar negativo: mesa vendida no editor (v7.4) volta como dinheiro */
+/* sal pode ficar negativo: mesa vendida no editor (v7.4) volta como dinheiro. man (v8): revisões na lojinha e consertos na hora */
 function normPend(p){
   p = (p && typeof p === 'object') ? p : {};
-  return { mel: Math.max(0, Math.round(+p.mel) || 0), sal: Math.round(+p.sal) || 0 };
+  return { mel: Math.max(0, Math.round(+p.mel) || 0), sal: Math.round(+p.sal) || 0, man: Math.max(0, Math.round(+p.man) || 0) };
 }
-/* compra na lojinha (k: 'mel' ou 'sal'), anotada para a próxima linha do caixa */
+/* compra na lojinha (k: 'mel', 'sal' ou 'man'), anotada para a próxima linha do caixa */
 function caixaGasto(s, k, v){ s.caixaPend = normPend(s.caixaPend); s.caixaPend[k] += v; }
 function caixaAdd(s, row){
   const p = normPend(s.caixaPend);
@@ -1039,7 +1084,7 @@ function normSave(s){
   if (up.chapa){ up.pratos = true; delete up.chapa; }     // a Chapa nova virou Jogo de pratos (a velocidade da cozinha é do Tonhão)
   // salão da v6 à v7.3 (v7.4): o que foi gasto em cadeiras e mesas volta para o dinheiro, numa linha do caixa, e o
   // jogo começa na Garagem com o kit
-  const dev = salaoDevolucao(s.salao), out = { maxDay: clamp(+s.maxDay||1,1,7), bank: Math.max(0,+s.bank||0) + dev + devMaq, up, torneira:true, best: (s.best && typeof s.best === 'object') ? s.best : {}, stars: (s.stars && typeof s.stars === 'object') ? s.stars : {}, salao: normSalao(dev ? null : s.salao), divulga: divulgaOf(s.divulga).id, caixa: normCaixa(s.caixa), caixaPend: normPend(s.caixaPend) };
+  const dev = salaoDevolucao(s.salao), out = { maxDay: clamp(+s.maxDay||1,1,7), bank: Math.max(0,+s.bank||0) + dev + devMaq, up, torneira:true, best: (s.best && typeof s.best === 'object') ? s.best : {}, stars: (s.stars && typeof s.stars === 'object') ? s.stars : {}, salao: normSalao(dev ? null : s.salao), divulga: divulgaOf(s.divulga).id, manut: normManut(s.manut), caixa: normCaixa(s.caixa), caixaPend: normPend(s.caixaPend) };
   out.equipe = normEquipe(s.equipe, pontoOf(out.salao.ponto));
   if (dev){ const last = out.caixa[out.caixa.length - 1]; out.caixa = normCaixa(out.caixa.concat([{ d:last ? last.d : 1, dev, saldo:out.bank - devMaq }])); }
   if (devMaq){ const last = out.caixa[out.caixa.length - 1]; out.caixa = normCaixa(out.caixa.concat([{ d:last ? last.d : 1, dev:devMaq, devK:'maquina', saldo:out.bank }])); }
@@ -1235,10 +1280,11 @@ class Kitchen {
   }
   update(dt){
     this.noPlate = false;
+    const fogo = this.game.quebrado('fogao') ? manutOf('fogao').lento : 1;   // fogão falhando (v8): cozinha mais devagar
     while (this.cooking.length < this.slots && this.queue.length) this.cooking.push(this.queue.shift());
     for (let i=this.cooking.length-1; i>=0; i--){
       const t = this.cooking[i];
-      t.p = Math.min(t.time, t.p + dt);
+      t.p = Math.min(t.time, t.p + dt * fogo);
       if (t.p >= t.time){
         const free = this.plates.findIndex(p => !p);
         if (free >= 0 && this.clean <= 0) this.noPlate = true;
@@ -1247,10 +1293,12 @@ class Kitchen {
           const crit = Math.random() < this.chef.crit;
           this.plates[free] = { id:++this.pid, table:t.table, group:t.group, dish:t.dish, slot:free, age:0, crit, vip:!!(t.group && t.group.vip) };
           this.cooking.splice(i,1);
+          this.game.usos.fogao++; this.game.usos.geladeira++;
           Sfx.bell();
           this.game.addText(PLATE_SLOTS[free].x, PLATE_SLOTS[free].y - 34, 'Pronto!', PAL.mostarda, 16);
           // ingredientes (v7): o prato pronto já custou, mesmo que o grupo vá embora antes de comer
-          const cost = t.group ? Math.round(t.group.bill * INGRED.prato) : 0;
+          // geladeira quebrada (v8): ingredientes mais caros enquanto ela não for consertada
+          const cost = t.group ? Math.round(t.group.bill * INGRED.prato * (this.game.quebrado('geladeira') ? manutOf('geladeira').ingred : 1)) : 0;
           if (cost){ this.game.custo += cost; this.game.addText(PLATE_SLOTS[free].x, PLATE_SLOTS[free].y - 54, '-' + cost, PAL.perigo, 12); }
         }
       }
@@ -1485,6 +1533,7 @@ class Waitress {
       return;
     }
     if (a.type === 'coffee'){
+      if (g.quebrado('cafeteira')) return this.fail('Cafeteira parada!');
       if (!this.canTake('coffee')) return this.fail('Mãos cheias!');
       this.hands.push({ kind:'coffee' });
       Sfx.blip();
@@ -1623,6 +1672,7 @@ class Waitress {
       grp.coffee = true;
       grp.gain(g.up.cafeteira ? 2 : 1);
       g.score('coffee', DRINK_PRICE.coffee, cx, cy - 40);
+      g.usos.cafeteira++;
       Sfx.coin();
     } else {
       this.fail('?');
@@ -1662,6 +1712,7 @@ class Helper {
   go(pt, step){ this.plan = step; this.path = findPath({ x:this.x, y:this.y }, pt); this.phase = 'walk'; }
   nearestAp(t){ const p = tableApproach(t); return Math.hypot(p[0].x-this.x,p[0].y-this.y) <= Math.hypot(p[1].x-this.x,p[1].y-this.y) ? p[0] : p[1]; }
   coffeeTarget(){
+    if (this.g.quebrado('cafeteira')) return null;   // cafeteira parada (v8)
     const c = this.g.tables.filter(t => t.group && t.group.seated && !t.group.coffee && t.group.hearts <= 4 && !t.group.daniCoffee && !this.biaWants(t));
     c.sort((a,b) => a.group.hearts - b.group.hearts);
     return c[0] || null;
@@ -1742,7 +1793,7 @@ class Helper {
       if (grp) grp.daniCoffee = false;
       if (!h || !grp || !grp.seated || grp.coffee) return;
       this.hands.splice(this.hands.indexOf(h), 1);
-      grp.coffee = true; grp.gain(g.up.cafeteira ? 2 : 1);
+      grp.coffee = true; grp.gain(g.up.cafeteira ? 2 : 1); g.usos.cafeteira++;
       g.addMoney(5); g.addText(t.cx, t.cy - 40, '+5', PAL.ok, 16); Sfx.coin();
     }
   }
@@ -1804,7 +1855,12 @@ class Game {
   resetDay(n){
     this.mode = n === 0 ? 'semfim' : 'carreira';
     this.day = n === 0 ? ENDLESS : DAYS[n-1];
-    this.money = 0; this.custo = 0; this.contas = 0; this.paidDiv = 0;
+    this.money = 0; this.custo = 0; this.contas = 0; this.paidDiv = 0; this.conserto = 0;
+    // imprevistos (v8): o sorteio do dia (feito ao começar o dia, e guardado até ele acabar) diz o clima e o que quebra
+    const so = n && this.save.manut.sorteio && this.save.manut.sorteio.d === n ? this.save.manut.sorteio : null;
+    this.clima = so ? so.clima : '';
+    this.quebras = so ? so.quebra.map(q => ({ id:q.id, t:q.f * this.day.time, on:false, fixed:false })) : [];
+    this.usos = { fogao:0, geladeira:0, cafeteira:0 };
     // divulgação (v7, do dia 3 em diante na carreira): quanto da freguesia do dia aparece
     this.div = divulgaAberta(n) ? divulgaOf(this.save.divulga) : null;
     this.divF = this.div ? rand(this.div.groups[0], this.div.groups[1]) : 1;
@@ -1824,7 +1880,7 @@ class Game {
     this.bia.reset();
     this.dani.reset();
     this.fx = [];
-    this.stats = { served:0, lost:0, chain:0, spawned:0, full:0, vip:0, vipLost:0, juice:0, juiceMiss:0, trash:0, washed:0, emptied:0, sucoEsp:0, crit:0, lostBy:{ semMesa:0, comMesa:0, pedido:0, prato:0, conta:0 }, lotadoT:0 };
+    this.stats = { served:0, lost:0, chain:0, spawned:0, full:0, vip:0, vipLost:0, juice:0, juiceMiss:0, trash:0, washed:0, emptied:0, sucoEsp:0, crit:0, consertos:0, quebras:0, lostBy:{ semMesa:0, comMesa:0, pedido:0, prato:0, conta:0 }, lotadoT:0 };
     this.lastKind = null; this.chainN = 0;
     this.ending = false; this.endTimer = 0; this.reason = '';
     this.sel = null; this.drag = null; this.hover = null;
@@ -1837,7 +1893,8 @@ class Game {
   buildSchedule(day){
     const out = [];
     const lug = this.tables.filter(t => t.open).reduce((a, t) => a + t.seats, 0);
-    const N = Math.max(3, Math.round(day.groups * this.divF * movimentoSalao(lug))), vipP = (day.vip || 0) * (this.div ? this.div.vip : 1);
+    const cl = CLIMA[this.clima];
+    const N = Math.max(3, Math.round(day.groups * this.divF * movimentoSalao(lug) * (cl ? cl.groups : 1))), vipP = (day.vip || 0) * (this.div ? this.div.vip : 1);
     const gap = day.speed * day.time / N;
     let t = 3;
     const forced = day.nu ? randi(1, Math.min(3, N-1)) : -1;
@@ -1845,6 +1902,7 @@ class Game {
     const colors = this.tables.map(x => x.color);
     for (let i=0;i<N;i++){
       let type = (i === forced) ? day.nu : pick(day.types);
+      if (cl && i !== forced && Math.random() < cl.tipoP) type = cl.tipo;   // chuva: entregadores; feriado: famílias
       let vip = false;
       if (day.vip && (i === forcedVip || Math.random() < vipP)){
         if (!VIP.types.includes(type)) type = pick(VIP.types);
@@ -1855,7 +1913,62 @@ class Game {
     }
     return out;
   }
-  startDay(n){ this.resetDay(n); this.setState('intro'); }
+  startDay(n){ this.sortear(n); this.resetDay(n); this.setState('intro'); }
+  /* imprevistos do dia n (v8, carreira): clima (do dia 3) e quebras (do dia 4), sorteados uma vez e guardados no save
+     até o dia acabar (recomeçar o dia não sorteia de novo; a revisão na lojinha tira a quebra do equipamento) */
+  sortear(n){
+    const m = this.save.manut;
+    if (!MANUT.on || !n){ delete m.sorteio; return; }
+    if (m.sorteio && m.sorteio.d === n) return;
+    let clima = '';
+    if (n >= CLIMA_DIA){ const r = Math.random(); if (r < CLIMA.chuva.chance) clima = 'chuva'; else if (r < CLIMA.chuva.chance + CLIMA.feriado.chance) clima = 'feriado'; }
+    const quebra = n >= MANUT.dia ? MANUT.equip.filter(q => Math.random() < manutChance(m[q.id])).map(q => ({ id:q.id, f:rand(MANUT.quando[0], MANUT.quando[1]) })) : [];
+    m.sorteio = { d:n, clima, quebra };
+    writeSave(this.save);
+  }
+  /* equipamento quebrado agora (e sem conserto) */
+  quebrado(id){ return this.quebras.some(q => q.id === id && q.on && !q.fixed); }
+  get manut(){ return this.save.manut; }
+  /* conserto de emergência (v8): um toque na plaquinha chama o técnico. Sai do dinheiro acumulado na hora (como a
+     folha), conta no lucro do dia e no caixa (manutenção); o equipamento volta a 100% e não quebra de novo se o dia recomeçar */
+  consertar(id){
+    const q = this.quebras.find(x => x.id === id && x.on && !x.fixed), eq = manutOf(id);
+    if (!q || !eq) return false;
+    if (!DEV.on && this.save.bank < eq.emerg){ this.addText(eq.badge.x, eq.badge.y - 26, 'Falta dinheiro!', PAL.perigo, 14); Sfx.boing(); return false; }
+    q.fixed = true; this.manut[id] = 1;
+    const so = this.manut.sorteio;
+    if (so) so.quebra = so.quebra.filter(x => x.id !== id);
+    if (!DEV.on){ this.conserto += eq.emerg; this.save.bank -= eq.emerg; caixaGasto(this.save, 'man', eq.emerg); }
+    writeSave(this.save);
+    this.stats.consertos++;
+    this.addText(eq.badge.x, eq.badge.y - 26, eq.name + ' consertado! -' + eq.emerg, PAL.ok, 15);
+    this.addSparks(eq.badge.x, eq.badge.y, 10, PAL.mostarda);
+    Sfx.coin();
+    return true;
+  }
+  /* revisão na lojinha: volta a 100% e tira a quebra já sorteada para o equipamento */
+  revisar(id){
+    const e = this.manut[id], v = manutPreco(id, e);
+    if (!manutOf(id) || !v || (!DEV.on && this.save.bank < v)) return false;
+    if (!DEV.on){ this.save.bank -= v; caixaGasto(this.save, 'man', v); }
+    this.manut[id] = 1;
+    const so = this.manut.sorteio;
+    if (so) so.quebra = so.quebra.filter(q => q.id !== id);
+    writeSave(this.save);
+    if (this.state === 'shop') this.resetDay(this.shopNext);
+    Sfx.coin(); return true;
+  }
+  revisarTudo(){ let ok = false; MANUT.equip.forEach(q => { if (this.revisar(q.id)) ok = true; }); return ok; }
+  /* gasto do dia (v8): base + uso; quebrado e sem conserto, perde mais 10 pontos */
+  desgastar(){
+    if (!MANUT.on || this.mode !== 'carreira') return;
+    const m = this.manut;
+    MANUT.equip.forEach(q => {
+      if (this.quebras.some(x => x.id === q.id && x.fixed)) return;   // consertado hoje: fica novo
+      const broke = this.quebras.some(x => x.id === q.id && x.on);
+      m[q.id] = clamp(m[q.id] - (q.base + q.uso * this.usos[q.id] + (broke ? 10 : 0)) / 100, 0, 1);
+    });
+  }
   startEndless(){ this.resetDay(0); this.setState('intro'); }
   /* debita a folha e a divulgação do dia do dinheiro acumulado; o que não puder ser pago sai
      (a divulgação vira boca a boca, depois couvert, som, TV, Dani e aumento do Tonhão) */
@@ -1887,7 +2000,7 @@ class Game {
     if (this.unpaid.length) this.addText(TW/2 - this.cam, 300, 'Sem dinheiro para pagar: sem ' + this.unpaid.join(', ') + ' hoje', PAL.perigo, 20);
   }
   /* lucro do dia (a meta): faturamento − ingredientes − contas − folha − divulgação */
-  get fixo(){ return this.contas + this.paid + this.paidDiv; }
+  get fixo(){ return this.contas + this.paid + this.paidDiv + this.conserto; }
   get lucro(){ return this.money - this.custo - this.fixo; }
   get trashFull(){ return this.trash >= TRASH.cap; }
   /* alguém além da Bia lava a louça (Dani com a tarefa, ou o Tonhão com aumento) */
@@ -2223,6 +2336,13 @@ class Game {
         }
       }
     }
+    if (!this.ending) this.quebras.forEach(q => {
+      if (q.on || this.elapsed < q.t) return;
+      const eq = manutOf(q.id); q.on = true; this.stats.quebras++;
+      this.addText(eq.badge.x, eq.badge.y - 30, eq.name + ' quebrou!', PAL.perigo, 17);
+      this.addPuff(eq.badge.x, eq.badge.y, 8);
+      Sfx.boing(); Sfx.tone(180, 0.25, 'sawtooth', 0.04, 0.12);
+    });
     this.groups.forEach(g => g.update(dt));
     this.groups = this.groups.filter(g => !g.done);
     this.maq.forEach(o => { if (o.t > 0){ o.t -= dt; if (o.t <= 0){ Sfx.tone(1568, 0.12, 'sine', 0.05); this.addGlow('maquina'); } } });
@@ -2262,14 +2382,15 @@ class Game {
     if (m >= d.expert && this.stats.lost === 0) stars = 3;
     const prevBest = this.save.best[d.n] || 0;
     // o faturamento vai para o dinheiro acumulado, menos os ingredientes e as contas (folha e divulgação já saíram ao abrir)
-    const income = fat - Math.round(this.custo) - this.contas;
+    const income = fat - Math.round(this.custo) - this.contas;   // folha, divulgação e conserto na hora já saíram
     this.save.bank = Math.max(0, this.save.bank + income);
+    this.desgastar(); delete this.save.manut.sorteio;
     this.save.best[d.n] = Math.max(prevBest, fat);   // o ranking da carreira soma o faturamento dos melhores dias
     this.save.stars[d.n] = Math.max(this.save.stars[d.n] || 0, stars);
     if (passed) this.save.maxDay = Math.max(this.save.maxDay, Math.min(7, d.n + 1));
     caixaAdd(this.save, { d:d.n, fat, ingr:Math.round(this.custo), contas:this.contas, folha:this.paid, div:this.paidDiv, lucro:m, meta:d.meta, ok:passed, perd:this.stats.lost, saldo:this.save.bank });
     writeSave(this.save);
-    this.result = { day:d.n, money:m, fat, custo:Math.round(this.custo), contas:this.contas, div:this.paidDiv, divName:this.div ? this.div.name : '', meta:d.meta, bom:bomGoal(d), expert:d.expert, passed, stars, served:this.stats.served, lost:this.stats.lost, lostBy:this.stats.lostBy, lotadoT:Math.round(this.stats.lotadoT), atraso:Math.round(this.atraso), full:this.stats.full, chain:this.stats.chain, vip:this.stats.vip, vipLost:this.stats.vipLost, juice:this.stats.juice, juiceMiss:this.stats.juiceMiss, sucoEsp:this.stats.sucoEsp, bebida:this.bebida.id, trash:this.stats.trash, washed:this.stats.washed, income, paid:this.paid, reason:this.reason };
+    this.result = { day:d.n, money:m, fat, custo:Math.round(this.custo), contas:this.contas, div:this.paidDiv, divName:this.div ? this.div.name : '', meta:d.meta, bom:bomGoal(d), expert:d.expert, passed, stars, served:this.stats.served, lost:this.stats.lost, lostBy:this.stats.lostBy, lotadoT:Math.round(this.stats.lotadoT), atraso:Math.round(this.atraso), full:this.stats.full, chain:this.stats.chain, vip:this.stats.vip, vipLost:this.stats.vipLost, juice:this.stats.juice, juiceMiss:this.stats.juiceMiss, sucoEsp:this.stats.sucoEsp, bebida:this.bebida.id, trash:this.stats.trash, washed:this.stats.washed, income, paid:this.paid, reason:this.reason, conserto:this.conserto, consertos:this.stats.consertos, quebras:this.quebras.filter(q => q.on).map(q => ({ id:q.id, fixed:q.fixed })), clima:this.clima, manut:Object.assign({}, this.manut) };
     this.setState('dayend');
     if (passed) Sfx.win(); else Sfx.lose();
   }
@@ -2462,6 +2583,12 @@ class Game {
   pickAt(x, y, pad){
     let best = null, bd = Infinity;
     const take = (r, hit) => { const d = rectDist(x, y, r); if (d <= (pad || 0) && d < bd){ bd = d; best = hit; } };
+    // conserto (v8): a plaquinha do equipamento quebrado vence o que está embaixo dela
+    for (const q of this.quebras){
+      if (!q.on || q.fixed) continue;
+      const b = manutOf(q.id).badge, R = MANUT.badge;
+      if (rectDist(x, y, { x:b.x - R, y:b.y - R, w:2 * R, h:2 * R }) <= (pad || 0)) return { k:'conserto', id:q.id };
+    }
     for (const g of this.queue) take(queueRect(g), { k:'queue', g });
     for (const t of this.tables) take(tableRect(t), { k:'table', t });
     for (const k of STATION_KEYS){ if (k !== 'maquina' || this.up.maquina) take(STATIONS[k].rect, { k:'station', st:k }); }
@@ -2509,6 +2636,7 @@ class Game {
       if (this.bia.enqueue({ type:'plate', pid })){ Sfx.tap(); this.addGlow(pl[i]); return true; }
       return false;
     }
+    if (k === 'coffee' && this.quebrado('cafeteira')){ this.addText(STATIONS.coffee.ap.x + 50, STATIONS.coffee.rect.y + 14, 'Cafeteira parada!', PAL.perigo, 14); Sfx.boing(); return false; }
     if (this.bia.enqueue({ type:k })){ Sfx.tap(); this.addGlow(k); return true; }
     return false;
   }
@@ -2535,7 +2663,8 @@ class Game {
       return;
     }
     this.sel = null;
-    if (hit) this.tapStation(hit.st, x, y);
+    if (hit && hit.k === 'conserto') this.consertar(hit.id);
+    else if (hit) this.tapStation(hit.st, x, y);
     else if (pad) this.fx.push({ k:'tap', x, y, life:0, max:0.3 });
   }
   /* destaque da mesa sob o grupo arrastado ou escolhido */
@@ -4260,6 +4389,14 @@ function buildTips(){
       for (let i=0;i<4;i++){ c.fillStyle = PAL.cromoEsc; c.fillRect(13,19+i*7,14,2.4); c.fillRect(30,19+i*7,4,2.4); }
       c.strokeStyle = PAL.perigo; c.lineWidth = 2.4; c.beginPath(); c.moveTo(13,47); c.lineTo(34,47); c.stroke();
       drawIcon(c,'coin',48,40,0.8);
+    }],
+    ['O fogão, a geladeira e a cafeteira se gastam um pouco a cada dia. Do dia 4 em diante, o que está gasto pode quebrar no meio do dia: toque na plaquinha com a chave para chamar o técnico na hora (mais caro) ou aguente até a lojinha, onde a revisão (aba Manutenção) deixa tudo novo. Às vezes chove (menos gente) ou é feriado (mais gente).', c => {
+      circ(c,32,32,20); fs(c,PAL.mostarda,2.4);
+      c.save(); c.translate(32,32); c.rotate(-0.7);
+      rr(c,-3,-4,6,22,2); fs(c,PAL.cromo,1.8);
+      c.beginPath(); c.arc(0,-10,8,0.6,Math.PI*2-0.6+Math.PI,false); c.closePath(); fs(c,PAL.cromo,1.8);
+      rr(c,-3,-19,6,8,1); c.fillStyle = PAL.mostarda; c.fill();
+      c.restore();
     }]
   ];
   tips.forEach(t => {
@@ -4569,17 +4706,36 @@ function buildDivulga(grid){
     (p.aluguel ? 'Aluguel ' + fmt(p.aluguel) + ' + l' : 'Sem aluguel (' + p.nome.replace(/^Garagem/, 'a garagem') + '). L') + 'uz e gás de ' + sal.length + ' mesas (' + fmt(CONTAS.mesa) + ' cada) e ' + sal.reduce((a, t) => a + t.seats, 0) + ' lugares (' + fmt(CONTAS.lugar) + ' cada) = ' + fmt(contasDia(game.tables, p)) + ', no fim do dia. Ingredientes: ' + Math.round(INGRED.prato * 100) + '% da conta de cada prato que fica pronto e ' + fmt(INGRED.suco) + ' por suco.');
   grid.appendChild(c);
 }
+/* aba Manutenção (v8): o estado de cada equipamento, o risco de quebrar e a revisão (volta a 100%) */
+function buildManut(grid){
+  const m = game.manut, n = game.shopNext, pc = v => Math.round(v * 100) + '%';
+  MANUT.equip.forEach(q => {
+    const e = m[q.id], v = manutPreco(q.id, e), risco = n >= MANUT.dia ? manutChance(e) : 0;
+    const c = staffCard(upgradeIcon('m-' + q.id), q.name + ' · ' + pc(e),
+      'Quebrado, ' + q.efeito + ' até o conserto na hora (' + fmt(q.emerg) + ', um toque na plaquinha). Risco de quebrar no dia ' + n + ': ' + (risco >= 0.005 ? pc(risco) : (n < MANUT.dia ? 'nenhum até o dia ' + MANUT.dia : 'quase nenhum')) + '.');
+    const bar = el('div', 'mbar'); bar.setAttribute('role', 'meter'); bar.setAttribute('aria-label', q.name); bar.setAttribute('aria-valuenow', String(Math.round(e * 100)));
+    const fill = el('i'); fill.style.width = pc(e); fill.style.background = e >= 0.7 ? PAL.ok : e >= 0.4 ? PAL.mostarda : PAL.perigo; bar.appendChild(fill);
+    c.appendChild(bar);
+    if (e >= 0.995) c.classList.add('own');
+    c.appendChild(shopBtn(!v ? 'Em dia' : DEV.on ? 'Revisão (grátis)' : 'Revisão: ' + fmt(v), 'btn', !!v && (DEV.on || game.save.bank >= v), () => game.revisar(q.id)));
+    grid.appendChild(c);
+  });
+  const tot = MANUT.equip.reduce((a, q) => a + manutPreco(q.id, m[q.id]), 0);
+  const c = staffCard(upgradeIcon('contas'), 'Revisar tudo', 'Cada dia gasta cada equipamento um pouco, e mais em dia cheio. Do dia ' + MANUT.dia + ' em diante, o que está gasto pode quebrar no meio do dia. A revisão sai do dinheiro acumulado e entra no caixa como manutenção.');
+  c.appendChild(shopBtn(!tot ? 'Tudo em dia' : DEV.on ? 'Revisar tudo (grátis)' : 'Revisar tudo: ' + fmt(tot), 'btn', !!tot && (DEV.on || game.save.bank >= tot), () => game.revisarTudo()));
+  grid.appendChild(c);
+}
 /* aba Caixa (v7.2): os últimos dias da carreira, para onde foi o dinheiro e um resumo para colar no WhatsApp */
-const CAIXA_COR = { ingr:'#E26A2C', contas:'#C2362B', folha:'#1F4FA3', div:'#7B4FB5', mel:'#3E9B5A', sal:'#E0B23A' };
+const CAIXA_COR = { ingr:'#E26A2C', contas:'#C2362B', folha:'#1F4FA3', div:'#7B4FB5', mel:'#3E9B5A', sal:'#E0B23A', man:'#5B5F6B' };
 function caixaTotais(cx){
-  const s = k => cx.reduce((a, r) => a + r[k], 0);
-  return [['ingr','Ingredientes'], ['contas','Contas'], ['folha','Equipe'], ['div','Divulgação'], ['mel','Melhorias'], ['sal','Salão']].map(k => ({ id:k[0], name:k[1], v:s(k[0]) }));
+  const s = k => cx.reduce((a, r) => a + (r[k] || 0), 0);
+  return [['ingr','Ingredientes'], ['contas','Contas'], ['folha','Equipe'], ['div','Divulgação'], ['mel','Melhorias'], ['sal','Salão'], ['man','Manutenção']].map(k => ({ id:k[0], name:k[1], v:s(k[0]) }));
 }
 function caixaResumo(save){
   const cx = save.caixa, eq = save.equipe, sal = save.salao;
   const out = ['Lanchonete Corre-Corre ' + VERSAO + ' · Caixa (valores em R$)'];
   cx.forEach(r => out.push(r.dev ? 'Devolução ' + (r.devK === 'maquina' ? 'da máquina de suco' : 'do salão') + ': +' + r.dev + ' · saldo ' + r.saldo : 'Dia ' + r.d + (r.ok ? ' ✓' : ' ✗') + ': fatura ' + r.fat + ' − ingred. ' + r.ingr + ' − contas ' + r.contas + ' − equipe ' + r.folha + (r.div ? ' − divulg. ' + r.div : '') +
-    ' = lucro ' + r.lucro + ' (meta ' + r.meta + ')' + (r.perd ? ' · ' + r.perd + (r.perd > 1 ? ' perdidos' : ' perdido') : '') + (r.mel + r.sal ? ' · compras ' + (r.mel + r.sal) : '') + ' · saldo ' + r.saldo));
+    ' = lucro ' + r.lucro + ' (meta ' + r.meta + ')' + (r.perd ? ' · ' + r.perd + (r.perd > 1 ? ' perdidos' : ' perdido') : '') + (r.mel + r.sal ? ' · compras ' + (r.mel + r.sal) : '') + (r.man ? ' · manutenção ' + r.man : '') + ' · saldo ' + r.saldo));
   const nd = cx.filter(r => !r.dev).length;
   if (nd) out.push('Para onde foi (' + nd + (nd > 1 ? ' dias' : ' dia') + '): ' + caixaTotais(cx).filter(t => t.v).map(t => t.name.toLowerCase() + ' ' + t.v).join(', '));
   const ups = UPGRADES.filter(u => save.up[u.id]).map(u => u.name.toLowerCase());
@@ -4612,14 +4768,14 @@ function buildCaixa(grid){
   if (!cx.length){ grid.appendChild(el('p', 'rank-empty', 'O caixa começa quando você joga um dia da carreira.')); return; }
   const wrap = el('div', 'rank-wrap cx-wrap'), tb = el('table', 'rank cx');
   const head = el('tr');
-  [['Dia'], ['Faturou'], ['Ingred.', 'Ingredientes'], ['Contas', 'Aluguel, luz e gás'], ['Equipe', 'Folha da equipe, luz da TV e do som e divulgação'], ['Lucro', 'Lucro do dia (a meta)'], ['Compras', 'Melhorias e salão comprados antes do dia'], ['Saldo', 'Dinheiro acumulado ao fim do dia']].forEach((h, i) => { const th = el('th', i ? 'n' : null, h[0]); th.setAttribute('scope', 'col'); if (h[1]) th.title = h[1]; head.appendChild(th); });
+  [['Dia'], ['Faturou'], ['Ingred.', 'Ingredientes'], ['Contas', 'Aluguel, luz e gás'], ['Equipe', 'Folha da equipe, luz da TV e do som e divulgação'], ['Lucro', 'Lucro do dia (a meta)'], ['Compras', 'Melhorias e salão comprados antes do dia'], ['Manut.', 'Revisões na lojinha e consertos na hora'], ['Saldo', 'Dinheiro acumulado ao fim do dia']].forEach((h, i) => { const th = el('th', i ? 'n' : null, h[0]); th.setAttribute('scope', 'col'); if (h[1]) th.title = h[1]; head.appendChild(th); });
   tb.appendChild(head);
   cx.slice().reverse().forEach(r => {
     const tr = el('tr');
     if (r.dev){
       // v7.4: o salão antigo (cadeiras e mesas da v6) foi trocado pela Garagem e o que custou voltou;
       // v7.7: a Máquina de suco virou a Água da torneira, mais barata, e a diferença voltou
-      const td = el('td', 'cx-dev', (r.devK === 'maquina' ? 'Devolução da máquina de suco (virou a Água da torneira): +' : 'Devolução do salão antigo: +') + fmt(r.dev)); td.setAttribute('colspan', '7');
+      const td = el('td', 'cx-dev', (r.devK === 'maquina' ? 'Devolução da máquina de suco (virou a Água da torneira): +' : 'Devolução do salão antigo: +') + fmt(r.dev)); td.setAttribute('colspan', '8');
       tr.appendChild(td); tr.appendChild(cxTd(r.saldo)); tb.appendChild(tr); return;
     }
     const dia = el('td', null, 'Dia ' + r.d); tr.appendChild(dia);
@@ -4627,6 +4783,7 @@ function buildCaixa(grid){
     const lu = cxTd(r.lucro, r.ok ? 'pos' : 'neg'); lu.title = (r.ok ? 'Passou' : 'Não passou') + ' da meta de ' + fmt(r.meta) + (r.perd ? '; ' + r.perd + (r.perd > 1 ? ' perdidos' : ' perdido') : '');
     tr.appendChild(lu);
     tr.appendChild(r.mel + r.sal ? cxTd(r.mel + r.sal) : el('td', 'n', '–'));
+    tr.appendChild(r.man ? cxTd(r.man) : el('td', 'n', '–'));
     tr.appendChild(cxTd(r.saldo));
     tb.appendChild(tr);
   });
@@ -4645,7 +4802,7 @@ function buildCaixa(grid){
     leg.appendChild(li);
   });
   onde.appendChild(bar); onde.appendChild(leg);
-  if (pend.mel + pend.sal) onde.appendChild(el('span', 'full', 'Compras nesta lojinha: ' + fmt(pend.mel + pend.sal) + ' (entram na linha do dia ' + game.shopNext + ').'));
+  if (pend.mel + pend.sal + pend.man) onde.appendChild(el('span', 'full', 'Compras nesta lojinha: ' + fmt(pend.mel + pend.sal + pend.man) + ' (entram na linha do dia ' + game.shopNext + ').'));
   // resumo para colar no WhatsApp
   const row = el('div', 'cx-copia'), st = el('span', 'cx-st'); st.setAttribute('role', 'status');
   let ta = null;
@@ -4675,6 +4832,7 @@ function buildShop(){
   if (shopTab === 'equipe') return buildEquipe(grid);
   if (shopTab === 'salao') return buildSalao(grid);
   if (shopTab === 'divulga') return buildDivulga(grid);
+  if (shopTab === 'manut') return buildManut(grid);
   if (shopTab === 'caixa') return buildCaixa(grid);
   // os Tênis de corrida (v7.3) só aparecem depois dos Tênis novos, no lugar deles (a grade continua com 6); no modo dev, todas
   UPGRADES.filter(u => DEV.on || (u.req ? game.up[u.req] : !(game.up[u.id] && UPGRADES.some(v => v.req === u.id)))).forEach(u => {
@@ -4706,11 +4864,15 @@ function buildEnd(){
   if (r.trash) rows.splice(2, 0, ['Na lixeira', r.trash + ' bebida' + (r.trash > 1 ? 's' : '')]);
   if (r.juice || r.juiceMiss) rows.splice(2, 0, ['Sucos', r.juice + ' entregue' + (r.juice === 1 ? '' : 's') + (r.juiceMiss ? ' · ' + r.juiceMiss + ' mesa' + (r.juiceMiss > 1 ? 's' : '') + ' sem suco' : '')]);
   if (r.sucoEsp){ const b = BEBIDA_ESPERA[r.bebida] || BEBIDA_ESPERA.suco; rows.splice(2, 0, [b.fim, b.preco ? r.sucoEsp + ' na conta (' + fmt(r.sucoEsp * b.preco) + ')' : r.sucoEsp + (r.sucoEsp > 1 ? ' copos' : ' copo') + ', de graça']); }
+  // imprevistos (v8): o que quebrou (e se foi consertado na hora) e o clima do dia
+  if (r.quebras && r.quebras.length) rows.push(['Quebrou', r.quebras.map(q => manutOf(q.id).name.toLowerCase() + (q.fixed ? ' (consertado)' : '')).join(', ')]);
+  if (r.clima) rows.push(['Imprevisto', CLIMA[r.clima].nome]);
   if (r.vip || r.vipLost) rows.splice(2, 0, ['VIPs', r.vip + ' atendido' + (r.vip === 1 ? '' : 's') + (r.vipLost ? ' · ' + r.vipLost + ' bravo' + (r.vipLost > 1 ? 's' : '') : '')]);
   // as contas do dia (v7), do faturamento ao lucro, num quadro ao lado
   const neg = v => v ? '-' + fmt(v) : '-';
   const conta = [['Faturamento', fmt(r.fat)],['Ingredientes', neg(r.custo)],['Contas do dia', neg(r.contas)],['Folha', neg(r.paid)]];
   if (r.divName) conta.push([r.divName, neg(r.div)]);
+  if (r.conserto) conta.push(['Conserto na hora', neg(r.conserto)]);
   conta.push(['Lucro do dia', fmt(r.money), 'tot'], ['Dinheiro acumulado', fmt(game.save.bank)]);
   [rows, conta].forEach(list => {
     const box = el('div', 'stats');
@@ -4869,6 +5031,7 @@ game.hooks.state = function(s){
         + '. Custos do dia: ' + custos.join(' + ') + ', mais ' + Math.round(INGRED.prato * 100) + '% de cada prato em ingredientes.';
       $('intro-note').textContent = d.note || 'Sente a freguesia, anote os pedidos e mantenha todo mundo feliz!';
     }
+    $('intro-manut').textContent = introManut();
     showOnly(['ov-intro']);
   }
   else if (s === 'playing') showOnly([]);
@@ -4879,6 +5042,16 @@ game.hooks.state = function(s){
   else if (s === 'endlessend'){ buildEndless(); showOnly(['ov-endless']); }
 };
 
+/* introdução do dia (v8): o clima do dia e o estado do fogão, da geladeira e da cafeteira (com o risco de quebrar) */
+function introManut(){
+  if (!MANUT.on || game.mode !== 'carreira') return '';
+  const m = game.manut, cl = CLIMA[game.clima], out = [];
+  if (cl) out.push(cl.aviso);
+  const est = MANUT.equip.map(q => q.name + ' ' + Math.round(m[q.id] * 100) + '%').join(' · ');
+  const risco = game.day.n >= MANUT.dia ? MANUT.equip.filter(q => manutChance(m[q.id]) >= 0.05) : [];
+  out.push('Equipamentos: ' + est + '.' + (risco.length ? ' ' + risco.map(q => q.name.toLowerCase()).join(' e ').replace(/^./, c => c.toUpperCase()) + (risco.length > 1 ? ' podem' : ' pode') + ' quebrar hoje (revisão na lojinha, aba Manutenção).' : ''));
+  return out.join(' ');
+}
 /* carreira: do dia 2 em diante (no modo dev, desde o dia 1), a lojinha abre antes da introdução do dia */
 function playCareer(n){
   selectedDay = n;
@@ -4988,7 +5161,7 @@ fit();
 try { Rank.init(); } catch(e) {}
 game.setState('menu');
 window.__game = game;
-window.__lcc = { setShopTab: v => { shopTab = v; buildShop(); }, FILA_JUSTA, PORTA, CHAIRS, PAT, CONTAS, INGRED, MOVIMENTO, movimentoSalao, DIVULGA, DIVULGA_DIA, divulgaOf, contasDia, bomGoal, SALAO, PONTOS, pontoOf, MESA, mesaBox, mesaPreco, salaoLugares, mesaProblema, salaoCaminho, salaoProblema, salaoOrdena, salaoAuto, salaoVaga, salaoPerto, salaoKit, salaoDevolucao, SALAO_SEMFIM, normSalao, setObst, OBST, pathOk, MAQUINA, BEBIDA_ESPERA, bebidaOf, CALCADA, TW, HUDX, esperaAp, tableApproach, CRIT, STAFF, DANI_TASKS, DANI_HANDS, daniTaskOk, TRASH, WASH, payroll, couvertEffect, couvertOk, ambienteEffect, dishStock, normSave, Helper, JUICE, KITCHEN_SLOTS, handLayout, trayOk, Game, Group, Table, Kitchen, Waitress, BIA_SPEED, DAYS, UPGRADES, CUSTOMER_TYPES, LAYOUT, PAL, Sfx, findPath, render, Rank, sortRows, cleanName, normName, CMD, ENDLESS, VIP, rk, renderRank, openRank, closeRank, LS, lsGet, lsSet, loadSave, DEV, saveKey, devSync, divulgaAberta, CAIXA_MAX, VERSAO, normCaixa, caixaResumo, caixaTotais, copyText };
+window.__lcc = { setShopTab: v => { shopTab = v; buildShop(); }, FILA_JUSTA, PORTA, CHAIRS, PAT, CONTAS, INGRED, MOVIMENTO, movimentoSalao, DIVULGA, DIVULGA_DIA, divulgaOf, contasDia, bomGoal, SALAO, PONTOS, pontoOf, MESA, mesaBox, mesaPreco, salaoLugares, mesaProblema, salaoCaminho, salaoProblema, salaoOrdena, salaoAuto, salaoVaga, salaoPerto, salaoKit, salaoDevolucao, SALAO_SEMFIM, normSalao, setObst, OBST, pathOk, MAQUINA, BEBIDA_ESPERA, bebidaOf, MANUT, manutOf, manutChance, manutPreco, normManut, CLIMA, CLIMA_DIA, introManut, normPend, CALCADA, TW, HUDX, esperaAp, tableApproach, CRIT, STAFF, DANI_TASKS, DANI_HANDS, daniTaskOk, TRASH, WASH, payroll, couvertEffect, couvertOk, ambienteEffect, dishStock, normSave, Helper, JUICE, KITCHEN_SLOTS, handLayout, trayOk, Game, Group, Table, Kitchen, Waitress, BIA_SPEED, DAYS, UPGRADES, CUSTOMER_TYPES, LAYOUT, PAL, Sfx, findPath, render, Rank, sortRows, cleanName, normName, CMD, ENDLESS, VIP, rk, renderRank, openRank, closeRank, LS, lsGet, lsSet, loadSave, DEV, saveKey, devSync, divulgaAberta, CAIXA_MAX, VERSAO, normCaixa, caixaResumo, caixaTotais, copyText };
 window.requestAnimationFrame(frame);
 
 })();
