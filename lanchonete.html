@@ -247,7 +247,7 @@ table.rank tr.me td{background:#fbe7a8}
 
     <div class="ov show" id="ov-menu">
       <div class="panel menu-panel">
-        <span class="vtag" id="vtag" aria-label="Versão 8.2">v8.2</span>
+        <span class="vtag" id="vtag" aria-label="Versão 8.2.1">v8.2.1</span>
         <h1 class="title">Lanchonete <br>Corre-Corre</h1>
         <p class="tag">Ajude a Bia a atender a freguesia da esquina antes que o cafezinho esfrie!</p>
         <div class="lbl">Carreira: escolha o dia</div>
@@ -306,6 +306,7 @@ table.rank tr.me td{background:#fbe7a8}
       <div class="panel">
         <h2>Pausa</h2>
         <p>Respire fundo. O cafezinho espera.</p>
+        <p class="small" id="pause-note"></p>
         <div class="row">
           <button class="btn go" id="btn-resume">Continuar</button>
           <button class="btn alt" id="btn-restart">Reiniciar</button>
@@ -435,7 +436,8 @@ table.rank tr.me td{background:#fbe7a8}
       <div class="panel">
         <h2>Versões</h2>
         <ul class="verlist">
-          <li><b>v8.2</b><span class="cur">versão atual</span><br>22/10/2026 &mdash; Missão zero: o dia 0 é um treino com uma mesa só e pop-ups passo a passo, mostrando tudo o que a Bia faz: sentar o grupo na mesa da mesma cor (bônus), esperar o cardápio, anotar, levar ao Tonhão, servir, cafezinho (e os bônus dele em dinheiro e corações), cobrar, recolher a louça, lavar e tirar o lixo. Ninguém perde a paciência e nada conta para a carreira. Quem nunca treinou já encontra o dia 0 escolhido no menu.</li>
+          <li><b>v8.2.1</b><span class="cur">versão atual</span><br>22/10/2026 &mdash; Rejogar sem perder o dinheiro: Reiniciar ou sair pelo Menu no meio de um dia guarda o que o dia já rendeu no dinheiro acumulado (contas, folha e divulgação contam só a parte do dia que passou; o resto da folha volta). O caixa mostra a linha do dia interrompido. Terminar o dia e repetir já guardava o dinheiro.</li>
+          <li><b>v8.2</b><br>22/10/2026 &mdash; Missão zero: o dia 0 é um treino com uma mesa só e pop-ups passo a passo, mostrando tudo o que a Bia faz: sentar o grupo na mesa da mesma cor (bônus), esperar o cardápio, anotar, levar ao Tonhão, servir, cafezinho (e os bônus dele em dinheiro e corações), cobrar, recolher a louça, lavar e tirar o lixo. Ninguém perde a paciência e nada conta para a carreira. Quem nunca treinou já encontra o dia 0 escolhido no menu.<br><a href="versoes/v8.2.html" target="_blank" rel="noopener">Abrir a v8.2</a></li>
           <li><b>v8.1.2</b><br>22/10/2026 &mdash; A espera lá fora na ordem certa: quem chegou primeiro fica embaixo, no lugar 1, e quem chega depois vai ficando acima. Quando alguém sai, a fila desce.<br><a href="versoes/v8.1.2.html" target="_blank" rel="noopener">Abrir a v8.1.2</a></li>
           <li><b>v8.1.1</b><br>22/10/2026 &mdash; Menos balões nas mesas: ficam só o cardápio (escolhendo), a exclamação (chamando para pedir) e o dinheiro (pedindo a conta). Esperando a comida ou comendo, a mesa fica sem balão.<br><a href="versoes/v8.1.1.html" target="_blank" rel="noopener">Abrir a v8.1.1</a></li>
           <li><b>v8.1</b><br>22/10/2026 &mdash; Dinheiro comprometido: na lojinha, ao lado do dinheiro acumulado, aparece quanto está livre e quanto já está reservado para a folha e a divulgação do dia (Dani, TV, som, panfletos...). Compra que usaria esse dinheiro fica com um ⚠ e pede um 2º toque, dizendo o que fica de fora no dia.<br><a href="versoes/v8.1.html" target="_blank" rel="noopener">Abrir a v8.1</a></li>
@@ -827,7 +829,7 @@ const DIVULGA = [
 const MOVIMENTO = { kit:10, porLugar:0.06 };
 function movimentoSalao(lugares){ return 1 + MOVIMENTO.porLugar * Math.max(0, lugares - MOVIMENTO.kit); }
 const CAIXA_MAX = 14;                                 // livro-caixa (v7.2): quantos dias da carreira ficam guardados
-const VERSAO = 'v8.2';                                // vai no resumo do Caixa
+const VERSAO = 'v8.2.1';                              // vai no resumo do Caixa
 const DIVULGA_DIA = 3;                                // antes disso, o movimento é o da inauguração (sem custo)
 function divulgaAberta(n){ return DEV.on || n >= DIVULGA_DIA; }   // no modo dev, desde o dia 1
 function divulgaOf(id){ return DIVULGA.find(d => d.id === id) || DIVULGA[1]; }
@@ -1121,6 +1123,7 @@ function normCaixa(c){
       const o = { d:clamp(n(r.d),1,7), fat:n(r.fat), ingr:n(r.ingr), contas:n(r.contas), folha:n(r.folha), div:n(r.div), lucro:n(r.lucro), meta:n(r.meta), ok:!!r.ok, perd:n(r.perd), mel:n(r.mel), sal:n(r.sal), man:n(r.man), saldo:n(r.saldo) };
       if (n(r.dev)) o.dev = n(r.dev);   // linha "Devolução do salão" (v7.4): o que o salão antigo custou, de volta
       if (o.dev && r.devK === 'maquina') o.devK = 'maquina';   // ou a da máquina de suco, que virou torneira (v7.7)
+      if (r.int) o.int = true;   // dia interrompido na pausa (v8.2.1): contas só da parte jogada
       return o;
     });
 }
@@ -1942,7 +1945,7 @@ class Game {
     this.tables.forEach(t => { t.open = true; t.group = null; t.dirty = false; t.dirtyN = 0; });   // v7.4: todas as mesas abrem desde o dia 1
     this.kitchen.reset();
     this.kitchen.clean = dishStock(this.day, this.up);
-    this.trash = 0; this.paid = 0; this.unpaid = [];
+    this.trash = 0; this.paid = 0; this.unpaid = []; this.aberto = false;
     this.maq = []; this.maqId = 0;   // pedidos do tablet da espera na máquina de suco: { id, group, n, t (preparo que falta) }
     this.bia.reset();
     this.dani.reset();
@@ -2073,7 +2076,7 @@ class Game {
       else { const n = folhaCorta(eq); if (!n) break; this.unpaid.push(n); }
     }
     this.paid = payroll(eq); this.paidDiv = divCost();
-    this.save.bank -= this.paid + this.paidDiv;
+    this.save.bank -= this.paid + this.paidDiv; this.aberto = true;
     this.contas = contasDia(this.tables, this.ponto);
     writeSave(this.save);
     this.kitchen.slots = STAFF.tonhao.levels[eq.tonhao].slots;
@@ -2466,6 +2469,7 @@ class Game {
   finishDay(){
     const d = this.day, m = Math.round(this.lucro), fat = Math.round(this.money);
     const passed = m >= d.meta;
+    this.aberto = false;
     let stars = 0;
     if (passed) stars = 1;
     if (passed && m >= bomGoal(d)) stars = 2;
@@ -2483,6 +2487,24 @@ class Game {
     this.result = { day:d.n, money:m, fat, custo:Math.round(this.custo), contas:this.contas, div:this.paidDiv, divName:this.div ? this.div.name : '', meta:d.meta, bom:bomGoal(d), expert:d.expert, passed, stars, served:this.stats.served, lost:this.stats.lost, lostBy:this.stats.lostBy, lotadoT:Math.round(this.stats.lotadoT), atraso:Math.round(this.atraso), full:this.stats.full, chain:this.stats.chain, vip:this.stats.vip, vipLost:this.stats.vipLost, juice:this.stats.juice, juiceMiss:this.stats.juiceMiss, sucoEsp:this.stats.sucoEsp, bebida:this.bebida.id, trash:this.stats.trash, washed:this.stats.washed, income, paid:this.paid, reason:this.reason, conserto:this.conserto, consertos:this.stats.consertos, quebras:this.quebras.filter(q => q.on).map(q => ({ id:q.id, fixed:q.fixed })), clima:this.clima, manut:Object.assign({}, this.manut) };
     this.setState('dayend');
     if (passed) Sfx.win(); else Sfx.lose();
+  }
+  /* v8.2.1: sair do dia no meio (Reiniciar ou Menu na pausa) fecha as contas do que já foi jogado. O faturamento menos os
+     ingredientes fica no dinheiro acumulado; as contas, a folha e a divulgação valem só pela parte do dia que passou (o resto
+     da folha e da divulgação volta). Não conta como dia jogado: estrelas, recorde e próximo dia ficam como estavam */
+  get parcial(){
+    if (this.mode !== 'carreira' || !this.aberto) return null;
+    const f = clamp(1 - this.clock / this.day.time, 0, 1), fat = Math.round(this.money), ingr = Math.round(this.custo);
+    const contas = Math.round(this.contas * f), folha = Math.round(this.paid * f), div = Math.round(this.paidDiv * f);
+    const ganho = Math.max(-this.save.bank, fat - ingr - contas + (this.paid - folha) + (this.paidDiv - div));
+    return { fat, ingr, contas, folha, div, ganho, lucro:fat - ingr - contas - folha - div - this.conserto };
+  }
+  interromper(){
+    const p = this.parcial, d = this.day;
+    if (!p) return null;
+    this.aberto = false; this.save.bank += p.ganho;
+    caixaAdd(this.save, { d:d.n, fat:p.fat, ingr:p.ingr, contas:p.contas, folha:p.folha, div:p.div, lucro:p.lucro, meta:d.meta, ok:false, perd:this.stats.lost, saldo:this.save.bank, int:true });
+    writeSave(this.save);
+    return (this.interrompido = { d:d.n, ganho:p.ganho, bank:this.save.bank });
   }
   finishEndless(){
     const pts = Math.round(this.money);
@@ -5150,7 +5172,7 @@ function caixaTotais(cx){
 function caixaResumo(save){
   const cx = save.caixa, eq = save.equipe, sal = save.salao;
   const out = ['Lanchonete Corre-Corre ' + VERSAO + ' · Caixa (valores em R$)'];
-  cx.forEach(r => out.push(r.dev ? 'Devolução ' + (r.devK === 'maquina' ? 'da máquina de suco' : 'do salão') + ': +' + r.dev + ' · saldo ' + r.saldo : 'Dia ' + r.d + (r.ok ? ' ✓' : ' ✗') + ': fatura ' + r.fat + ' − ingred. ' + r.ingr + ' − contas ' + r.contas + ' − equipe ' + r.folha + (r.div ? ' − divulg. ' + r.div : '') +
+  cx.forEach(r => out.push(r.dev ? 'Devolução ' + (r.devK === 'maquina' ? 'da máquina de suco' : 'do salão') + ': +' + r.dev + ' · saldo ' + r.saldo : 'Dia ' + r.d + (r.int ? ' (interrompido)' : r.ok ? ' ✓' : ' ✗') + ': fatura ' + r.fat + ' − ingred. ' + r.ingr + ' − contas ' + r.contas + ' − equipe ' + r.folha + (r.div ? ' − divulg. ' + r.div : '') +
     ' = lucro ' + r.lucro + ' (meta ' + r.meta + ')' + (r.perd ? ' · ' + r.perd + (r.perd > 1 ? ' perdidos' : ' perdido') : '') + (r.mel + r.sal ? ' · compras ' + (r.mel + r.sal) : '') + (r.man ? ' · manutenção ' + r.man : '') + ' · saldo ' + r.saldo));
   const nd = cx.filter(r => !r.dev).length;
   if (nd) out.push('Para onde foi (' + nd + (nd > 1 ? ' dias' : ' dia') + '): ' + caixaTotais(cx).filter(t => t.v).map(t => t.name.toLowerCase() + ' ' + t.v).join(', '));
@@ -5194,9 +5216,9 @@ function buildCaixa(grid){
       const td = el('td', 'cx-dev', (r.devK === 'maquina' ? 'Devolução da máquina de suco (virou a Água da torneira): +' : 'Devolução do salão antigo: +') + fmt(r.dev)); td.setAttribute('colspan', '8');
       tr.appendChild(td); tr.appendChild(cxTd(r.saldo)); tb.appendChild(tr); return;
     }
-    const dia = el('td', null, 'Dia ' + r.d); tr.appendChild(dia);
+    const dia = el('td', null, 'Dia ' + r.d + (r.int ? ' (interrompido)' : '')); tr.appendChild(dia);
     [r.fat, r.ingr, r.contas, r.folha + r.div].forEach(v => tr.appendChild(cxTd(v)));
-    const lu = cxTd(r.lucro, r.ok ? 'pos' : 'neg'); lu.title = (r.ok ? 'Passou' : 'Não passou') + ' da meta de ' + fmt(r.meta) + (r.perd ? '; ' + r.perd + (r.perd > 1 ? ' perdidos' : ' perdido') : '');
+    const lu = cxTd(r.lucro, r.ok ? 'pos' : 'neg'); lu.title = (r.int ? 'Interrompido na pausa (contas, folha e divulgação só da parte jogada); não conta' : r.ok ? 'Passou' : 'Não passou') + ' da meta de ' + fmt(r.meta) + (r.perd ? '; ' + r.perd + (r.perd > 1 ? ' perdidos' : ' perdido') : '');
     tr.appendChild(lu);
     tr.appendChild(r.mel + r.sal ? cxTd(r.mel + r.sal) : el('td', 'n', '–'));
     tr.appendChild(r.man ? cxTd(r.man) : el('td', 'n', '–'));
@@ -5303,7 +5325,7 @@ function buildEnd(){
     st.appendChild(box);
   });
   let msg = '';
-  if (!r.passed) msg = 'Bata a meta de ' + fmt(r.meta) + ' para liberar o próximo dia.';
+  if (!r.passed) msg = 'Bata a meta de ' + fmt(r.meta) + ' para liberar o próximo dia. O que você ganhou hoje fica no dinheiro acumulado, mesmo repetindo o dia.';
   else if (r.stars === 3) msg = 'Perfeito! Expert sem perder nenhum cliente.';
   else if (r.stars === 2) msg = r.money >= r.expert ? 'Meta expert batida! Para a 3ª estrela, não perca nenhum cliente.' : 'Duas estrelas! Para a 3ª, chegue a ' + fmt(r.expert) + ' sem perder nenhum cliente.';
   else msg = 'Meta batida! Chegue a ' + fmt(r.bom) + ' para a 2ª estrela.';
@@ -5452,14 +5474,21 @@ game.hooks.state = function(s){
       if (div && div.cost) custos.push(div.name.toLowerCase() + ' ' + fmt(div.cost));
       $('intro-goal').textContent = 'Meta de lucro: ' + fmt(d.meta) + ' · 2 estrelas: ' + fmt(bomGoal(d)) + ' · Expert: ' + fmt(d.expert) + ' · ' + game.schedule.length + ' grupos' + (div ? ' (' + div.name.toLowerCase() + ')' : '') + ' · ' + mmss(d.time)
         + '. Custos do dia: ' + custos.join(' + ') + ', mais ' + Math.round(INGRED.prato * 100) + '% de cada prato em ingredientes.';
-      $('intro-note').textContent = (d.note || 'Sente a freguesia, anote os pedidos e mantenha todo mundo feliz!') + (d.n === 1 && !game.save.treino ? ' Primeira vez? No menu, o dia 0 é a Missão zero, um treino passo a passo.' : '');
+      // v8.2.1: ao reiniciar no meio, o que o dia interrompido rendeu já foi para o dinheiro acumulado
+      const it = game.interrompido; game.interrompido = null;
+      $('intro-note').textContent = (it && it.ganho ? 'O dia interrompido ' + (it.ganho > 0 ? 'rendeu ' + fmt(it.ganho) + ', que já foi para o' : 'custou ' + fmt(-it.ganho) + ', que já saiu do') + ' dinheiro acumulado (agora ' + fmt(it.bank) + '). ' : '') + (d.note || 'Sente a freguesia, anote os pedidos e mantenha todo mundo feliz!') + (d.n === 1 && !game.save.treino ? ' Primeira vez? No menu, o dia 0 é a Missão zero, um treino passo a passo.' : '');
     }
     $('intro-manut').textContent = introManut();
     showOnly(['ov-intro']);
   }
   else if (s === 'playing') showOnly([]);
   else if (s === 'treinoend') showOnly(['ov-treino']);
-  else if (s === 'paused') showOnly(['ov-pause']);
+  else if (s === 'paused'){
+    // v8.2.1: reiniciar ou sair no meio não perde o que o dia já rendeu
+    const p = game.parcial;
+    $('pause-note').textContent = !p ? '' : 'Se reiniciar ou sair, ' + (p.ganho > 0 ? 'o que o dia já rendeu (' + fmt(p.ganho) + ') vai para o dinheiro acumulado' : p.ganho < 0 ? fmt(-p.ganho) + ' saem do dinheiro acumulado' : 'o dinheiro acumulado fica como está') + '. Contas, folha e divulgação contam só a parte do dia que passou.';
+    showOnly(['ov-pause']);
+  }
   else if (s === 'dayend'){ buildEnd(); showOnly(['ov-end']); }
   else if (s === 'shop'){ buildShop(); showOnly(['ov-shop']); }
   else if (s === 'final'){ buildFinal(); showOnly(['ov-final']); }
@@ -5527,10 +5556,10 @@ on('btn-reset',      () => { game.resetProgress(); selectedDay = 1; game.setStat
 on('btn-start',      () => { Sfx.init(); Sfx.resume(); Sfx.ok(); game.begin(); });
 on('btn-intro-menu', () => game.setState('menu'));
 on('btn-resume',     () => { Sfx.tap(); game.resume(); });
-on('btn-restart',    () => { if (game.mode === 'semfim') game.startEndless(); else if (game.mode === 'treino') game.startTreino(); else game.startDay(game.day.n); });
+on('btn-restart',    () => { if (game.mode === 'semfim') game.startEndless(); else if (game.mode === 'treino') game.startTreino(); else { game.interromper(); game.startDay(game.day.n); } });
 on('btn-treino-dia1', () => { Sfx.tap(); playCareer(1); });
 on('btn-treino-menu', () => { selectedDay = 1; game.setState('menu'); });
-on('btn-pause-menu', () => { if (game.mode !== 'semfim') selectedDay = Math.max(1, Math.min(game.day.n, game.unlocked)); game.setState('menu'); });
+on('btn-pause-menu', () => { game.interromper(); game.interrompido = null; if (game.mode !== 'semfim') selectedDay = Math.max(1, Math.min(game.day.n, game.unlocked)); game.setState('menu'); });
 on('btn-again',      () => playCareer(game.day.n));
 on('btn-end-menu',   () => { selectedDay = Math.min(game.day.n + (game.result && game.result.passed ? 1 : 0), game.unlocked); game.setState('menu'); });
 on('btn-next',       () => { if (game.day.n < 7) game.goShop(game.day.n + 1); else game.setState('final'); });

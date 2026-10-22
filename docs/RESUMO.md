@@ -1,9 +1,9 @@
 # Resumo do projeto e das alterações (até 22/10/2026)
 
 ## Estado atual
-- **Versão:** v8.2 (Missão zero: o dia 0 é um treino com pop-ups passo a passo), pronta para publicar, sobre a v8.1.2 (a espera lá fora na ordem certa: o 1º da fila embaixo, os novos acima) e a v8.1.1 (menos balões nas mesas: só cardápio, "!" e "$"), as duas ainda não publicadas, e a v8.1 (dinheiro comprometido: a lojinha mostra o livre e o que já é da folha, e compra que come a folha pede um 2º toque), publicada em 22/10 como **Versão 34** do artifact https://claude.ai/artifact/MJxrgDg8S4akvg47SoQAvj (privado), sobre a v8 (manutenção e imprevistos), a v7.7 (espera da Garagem de pé e Água da torneira), a v7.6 (tela larga), a v7.5.1 (modo dev) e a v7.5 (espera na calçada). Antes dela, o que estava no ar era a v7.6 (não a v7.5 da Versão 33, como dizia este resumo): a Versão 34 foi publicada com `force:true` depois de conferir que a versão no ar era igual a `versoes/v7.6-fonte.html`. Na próxima publicação, compare a versão no ar com o `lanchonete.html` do commit da v8.1 (`git show 473d7c4:lanchonete.html`), ou com `versoes/v8.1-fonte.html` (guardada na v8.1.1).
+- **Versão:** v8.2.1 (rejogar sem perder o dinheiro: Reiniciar ou Menu na pausa guardam o que o dia já rendeu), pronta para publicar, sobre a v8.2 (Missão zero: o dia 0 é um treino com pop-ups passo a passo, guardada em `versoes/`), a v8.1.2 (a espera lá fora na ordem certa: o 1º da fila embaixo, os novos acima) e a v8.1.1 (menos balões nas mesas: só cardápio, "!" e "$"), as duas ainda não publicadas, e a v8.1 (dinheiro comprometido: a lojinha mostra o livre e o que já é da folha, e compra que come a folha pede um 2º toque), publicada em 22/10 como **Versão 34** do artifact https://claude.ai/artifact/MJxrgDg8S4akvg47SoQAvj (privado), sobre a v8 (manutenção e imprevistos), a v7.7 (espera da Garagem de pé e Água da torneira), a v7.6 (tela larga), a v7.5.1 (modo dev) e a v7.5 (espera na calçada). Antes dela, o que estava no ar era a v7.6 (não a v7.5 da Versão 33, como dizia este resumo): a Versão 34 foi publicada com `force:true` depois de conferir que a versão no ar era igual a `versoes/v7.6-fonte.html`. Na próxima publicação, compare a versão no ar com o `lanchonete.html` do commit da v8.1 (`git show 473d7c4:lanchonete.html`), ou com `versoes/v8.1-fonte.html` (guardada na v8.1.1).
 - **Branch:** `claude/main` (renomeado pelo usuário; o antigo `claude/intelligent-gauss-3owv29` não existe mais) no repositório `aarescigno/Lanchonete-corre-corre`.
-- **Arquivos publicados:** `lanchonete.html` (página), mais `versoes/v1.html` a `versoes/v8.html` (com a v7.6, a v7.7 e a v8, enviadas na Versão 34), abertos pelo painel Versões. Na publicação da v8.2, enviar os `versoes/v8.1.html`, `versoes/v8.1.1.html` e `versoes/v8.1.2.html` novos (a v8.1.1 e a v8.1.2 não chegaram a ser publicadas, e o painel Versões tem link para as três).
+- **Arquivos publicados:** `lanchonete.html` (página), mais `versoes/v1.html` a `versoes/v8.html` (com a v7.6, a v7.7 e a v8, enviadas na Versão 34), abertos pelo painel Versões. Na próxima publicação, enviar os `versoes/v8.1.html`, `versoes/v8.1.1.html`, `versoes/v8.1.2.html` e `versoes/v8.2.html` novos (a v8.1.1, a v8.1.2 e a v8.2 não chegaram a ser publicadas, e o painel Versões tem link para as quatro).
 - **Capacidades declaradas (mantidas ao republicar sem `capabilities`):**
   - `db`: `ranking-carreira` e `ranking-semfim` com read "view" e write "owner";
   - `db`: `ranking-*/{self}` com write "interact";
@@ -41,6 +41,7 @@
 | v8.1.1 | 22/10 | Menos balões nas mesas (retorno de jogador): só o cardápio com anel, o "!" e o "$"; esperando a comida e comendo, sem balão (saem a panela da v7.4.2 e o visto verde) | `docs/spec-v8.1.1.md` |
 | v8.1.2 | 22/10 | Espera na ordem certa (retorno de jogador): o 1º da fila fica embaixo, no lugar 1, e quem chega depois fica acima; quando alguém sai, a fila desce | `docs/spec-v8.1.2.md` |
 | v8.2 | 22/10 | Missão zero (pedido do usuário): o dia 0 é um treino com uma mesa só e 23 pop-ups do ciclo da Bia (cor da mesa, cardápio, pedido, Tonhão, prato, cafezinho e seus bônus, conta, louça, pia, lixo); paciência que não acaba, save de mentira, chip 0 no menu (escolhido para quem nunca treinou) | `docs/spec-v8.2.md` |
+| v8.2.1 | 22/10 | Rejogar sem perder o dinheiro (pedido do usuário): Reiniciar ou Menu na pausa fecham as contas da parte jogada (contas, folha e divulgação proporcionais ao tempo; o resto da folha volta), com linha "interrompido" no caixa; não conta como dia jogado | `docs/spec-v8.2.1.md` |
 
 ## Alterações feitas no Claude Code (14/10/2026)
 1. **Importação** do pacote exportado do claude.ai para o repositório (commit `982583b`).
@@ -184,6 +185,7 @@
 - `smoke16` (101/101: v8, manutenção e imprevistos);
 - `smoke17` (22/22: v8.1, dinheiro comprometido, livre e reservado, aviso e 2º toque nas compras);
 - `smoke18` (70/70: v8.2, Missão zero jogada inteira com toques de verdade, save de verdade intacto, convite do dia 1, Reiniciar e Menu no meio do treino);
+- `smoke19` (27/27: v8.2.1, reiniciar ou sair pela pausa guarda o que o dia rendeu, linha "interrompido" no caixa, fim do dia e "Repetir dia");
 - `menu_fit` (14 tamanhos de tela);
 - `balance` (bot, N rodadas por dia; `DIV`, `MULT`, `MOVEIS`, `MOVIMENTO`, `GRUPOS`, `DIAS`, `BOT=afiado`, `ORDEM`, `INGRED`, `CONTAS`, `METAS`; perdas por causa e 3★);
 - `carreira` (bot jogando a carreira com o dinheiro acumulado de verdade e comprando móveis; `MOVEIS=0`, `MOVEIS=quatro`, `MOVIMENTO`, `MESAS=1`).

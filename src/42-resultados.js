@@ -27,7 +27,7 @@ function buildEnd(){
     st.appendChild(box);
   });
   let msg = '';
-  if (!r.passed) msg = 'Bata a meta de ' + fmt(r.meta) + ' para liberar o próximo dia.';
+  if (!r.passed) msg = 'Bata a meta de ' + fmt(r.meta) + ' para liberar o próximo dia. O que você ganhou hoje fica no dinheiro acumulado, mesmo repetindo o dia.';
   else if (r.stars === 3) msg = 'Perfeito! Expert sem perder nenhum cliente.';
   else if (r.stars === 2) msg = r.money >= r.expert ? 'Meta expert batida! Para a 3ª estrela, não perca nenhum cliente.' : 'Duas estrelas! Para a 3ª, chegue a ' + fmt(r.expert) + ' sem perder nenhum cliente.';
   else msg = 'Meta batida! Chegue a ' + fmt(r.bom) + ' para a 2ª estrela.';

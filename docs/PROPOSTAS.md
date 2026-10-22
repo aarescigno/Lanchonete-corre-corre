@@ -4,6 +4,16 @@ Registro das ideias e dos retornos de quem jogou, com o texto original, e de ond
 
 ---
 
+## 22/10/2026 — Usuário: rejogar o dia mantendo o dinheiro; depois, campanha contínua
+**Origem:** mensagem do usuário, depois da v8.1.2 (feito sobre a v8.2):
+
+> Outra avaliação. Liberar para, quando a pessoa rejogar o nível, ela manter o dinheiro que ela ganhou. Isso por enquanto, né? Porque depois, anota aí, depois a gente vai abolir esse sistema de níveis para ser uma campanha de novo dia. Novo dia, novo acúmulo, novo serviço, nova vida, e vai seguir com tudo que tinha antes.
+
+**Para onde foi cada ideia:**
+- **Feito na v8.2.1** (`docs/spec-v8.2.1.md`): terminar o dia e "Repetir dia" já guardavam o dinheiro; o que se perdia era Reiniciar ou Menu na pausa, no meio do dia. Agora eles também guardam o que o dia rendeu (contas, folha e divulgação só da parte jogada; o resto da folha volta), com linha "interrompido" no caixa.
+- **Ideia guardada** no `docs/PLANO.md` ("Carreira como campanha contínua"): acabar com os níveis que se escolhem e rejogam; cada dia é um dia novo, que segue com tudo o que havia antes (dinheiro, móveis, equipe, desgaste).
+---
+
 ## 22/10/2026 — Usuário: Missão zero, o tutorial com pop-ups
 **Origem:** mensagem do usuário, depois da v8.1.1 (a sessão se chamava "Missão zero tutorial com pop-ups"; o primeiro pedido não chegou e ele explicou de novo):
 
