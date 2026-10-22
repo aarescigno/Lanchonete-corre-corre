@@ -14,13 +14,20 @@ game.hooks.state = function(s){
       if (div && div.cost) custos.push(div.name.toLowerCase() + ' ' + fmt(div.cost));
       $('intro-goal').textContent = 'Meta de lucro: ' + fmt(d.meta) + ' · 2 estrelas: ' + fmt(bomGoal(d)) + ' · Expert: ' + fmt(d.expert) + ' · ' + game.schedule.length + ' grupos' + (div ? ' (' + div.name.toLowerCase() + ')' : '') + ' · ' + mmss(d.time)
         + '. Custos do dia: ' + custos.join(' + ') + ', mais ' + Math.round(INGRED.prato * 100) + '% de cada prato em ingredientes.';
-      $('intro-note').textContent = d.note || 'Sente a freguesia, anote os pedidos e mantenha todo mundo feliz!';
+      // v8.1.3: ao reiniciar no meio, o que o dia interrompido rendeu já foi para o dinheiro acumulado
+      const it = game.interrompido; game.interrompido = null;
+      $('intro-note').textContent = (it && it.ganho ? 'O dia interrompido ' + (it.ganho > 0 ? 'rendeu ' + fmt(it.ganho) + ', que já foi para o' : 'custou ' + fmt(-it.ganho) + ', que já saiu do') + ' dinheiro acumulado (agora ' + fmt(it.bank) + '). ' : '') + (d.note || 'Sente a freguesia, anote os pedidos e mantenha todo mundo feliz!');
     }
     $('intro-manut').textContent = introManut();
     showOnly(['ov-intro']);
   }
   else if (s === 'playing') showOnly([]);
-  else if (s === 'paused') showOnly(['ov-pause']);
+  else if (s === 'paused'){
+    // v8.1.3: reiniciar ou sair no meio não perde o que o dia já rendeu
+    const p = game.parcial;
+    $('pause-note').textContent = !p ? '' : 'Se reiniciar ou sair, ' + (p.ganho > 0 ? 'o que o dia já rendeu (' + fmt(p.ganho) + ') vai para o dinheiro acumulado' : p.ganho < 0 ? fmt(-p.ganho) + ' saem do dinheiro acumulado' : 'o dinheiro acumulado fica como está') + '. Contas, folha e divulgação contam só a parte do dia que passou.';
+    showOnly(['ov-pause']);
+  }
   else if (s === 'dayend'){ buildEnd(); showOnly(['ov-end']); }
   else if (s === 'shop'){ buildShop(); showOnly(['ov-shop']); }
   else if (s === 'final'){ buildFinal(); showOnly(['ov-final']); }
@@ -85,8 +92,8 @@ on('btn-reset',      () => { game.resetProgress(); selectedDay = 1; game.setStat
 on('btn-start',      () => { Sfx.init(); Sfx.resume(); Sfx.ok(); game.begin(); });
 on('btn-intro-menu', () => game.setState('menu'));
 on('btn-resume',     () => { Sfx.tap(); game.resume(); });
-on('btn-restart',    () => { if (game.mode === 'semfim') game.startEndless(); else game.startDay(game.day.n); });
-on('btn-pause-menu', () => { if (game.mode !== 'semfim') selectedDay = Math.max(1, Math.min(game.day.n, game.unlocked)); game.setState('menu'); });
+on('btn-restart',    () => { if (game.mode === 'semfim') game.startEndless(); else { game.interromper(); game.startDay(game.day.n); } });
+on('btn-pause-menu', () => { game.interromper(); game.interrompido = null; if (game.mode !== 'semfim') selectedDay = Math.max(1, Math.min(game.day.n, game.unlocked)); game.setState('menu'); });
 on('btn-again',      () => playCareer(game.day.n));
 on('btn-end-menu',   () => { selectedDay = Math.min(game.day.n + (game.result && game.result.passed ? 1 : 0), game.unlocked); game.setState('menu'); });
 on('btn-next',       () => { if (game.day.n < 7) game.goShop(game.day.n + 1); else game.setState('final'); });

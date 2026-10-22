@@ -50,7 +50,7 @@ class Game {
     this.tables.forEach(t => { t.open = true; t.group = null; t.dirty = false; t.dirtyN = 0; });   // v7.4: todas as mesas abrem desde o dia 1
     this.kitchen.reset();
     this.kitchen.clean = dishStock(this.day, this.up);
-    this.trash = 0; this.paid = 0; this.unpaid = [];
+    this.trash = 0; this.paid = 0; this.unpaid = []; this.aberto = false;
     this.maq = []; this.maqId = 0;   // pedidos do tablet da espera na máquina de suco: { id, group, n, t (preparo que falta) }
     this.bia.reset();
     this.dani.reset();
@@ -159,7 +159,7 @@ class Game {
       else { const n = folhaCorta(eq); if (!n) break; this.unpaid.push(n); }
     }
     this.paid = payroll(eq); this.paidDiv = divCost();
-    this.save.bank -= this.paid + this.paidDiv;
+    this.save.bank -= this.paid + this.paidDiv; this.aberto = true;
     this.contas = contasDia(this.tables, this.ponto);
     writeSave(this.save);
     this.kitchen.slots = STAFF.tonhao.levels[eq.tonhao].slots;
@@ -546,6 +546,7 @@ class Game {
   finishDay(){
     const d = this.day, m = Math.round(this.lucro), fat = Math.round(this.money);
     const passed = m >= d.meta;
+    this.aberto = false;
     let stars = 0;
     if (passed) stars = 1;
     if (passed && m >= bomGoal(d)) stars = 2;
@@ -563,6 +564,24 @@ class Game {
     this.result = { day:d.n, money:m, fat, custo:Math.round(this.custo), contas:this.contas, div:this.paidDiv, divName:this.div ? this.div.name : '', meta:d.meta, bom:bomGoal(d), expert:d.expert, passed, stars, served:this.stats.served, lost:this.stats.lost, lostBy:this.stats.lostBy, lotadoT:Math.round(this.stats.lotadoT), atraso:Math.round(this.atraso), full:this.stats.full, chain:this.stats.chain, vip:this.stats.vip, vipLost:this.stats.vipLost, juice:this.stats.juice, juiceMiss:this.stats.juiceMiss, sucoEsp:this.stats.sucoEsp, bebida:this.bebida.id, trash:this.stats.trash, washed:this.stats.washed, income, paid:this.paid, reason:this.reason, conserto:this.conserto, consertos:this.stats.consertos, quebras:this.quebras.filter(q => q.on).map(q => ({ id:q.id, fixed:q.fixed })), clima:this.clima, manut:Object.assign({}, this.manut) };
     this.setState('dayend');
     if (passed) Sfx.win(); else Sfx.lose();
+  }
+  /* v8.1.3: sair do dia no meio (Reiniciar ou Menu na pausa) fecha as contas do que já foi jogado. O faturamento menos os
+     ingredientes fica no dinheiro acumulado; as contas, a folha e a divulgação valem só pela parte do dia que passou (o resto
+     da folha e da divulgação volta). Não conta como dia jogado: estrelas, recorde e próximo dia ficam como estavam */
+  get parcial(){
+    if (this.mode !== 'carreira' || !this.aberto) return null;
+    const f = clamp(1 - this.clock / this.day.time, 0, 1), fat = Math.round(this.money), ingr = Math.round(this.custo);
+    const contas = Math.round(this.contas * f), folha = Math.round(this.paid * f), div = Math.round(this.paidDiv * f);
+    const ganho = Math.max(-this.save.bank, fat - ingr - contas + (this.paid - folha) + (this.paidDiv - div));
+    return { fat, ingr, contas, folha, div, ganho, lucro:fat - ingr - contas - folha - div - this.conserto };
+  }
+  interromper(){
+    const p = this.parcial, d = this.day;
+    if (!p) return null;
+    this.aberto = false; this.save.bank += p.ganho;
+    caixaAdd(this.save, { d:d.n, fat:p.fat, ingr:p.ingr, contas:p.contas, folha:p.folha, div:p.div, lucro:p.lucro, meta:d.meta, ok:false, perd:this.stats.lost, saldo:this.save.bank, int:true });
+    writeSave(this.save);
+    return (this.interrompido = { d:d.n, ganho:p.ganho, bank:this.save.bank });
   }
   finishEndless(){
     const pts = Math.round(this.money);
