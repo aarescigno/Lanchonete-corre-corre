@@ -79,6 +79,7 @@ function normCaixa(c){
     .map(r => {
       const o = { d:clamp(n(r.d),1,7), fat:n(r.fat), ingr:n(r.ingr), contas:n(r.contas), folha:n(r.folha), div:n(r.div), lucro:n(r.lucro), meta:n(r.meta), ok:!!r.ok, perd:n(r.perd), mel:n(r.mel), sal:n(r.sal), saldo:n(r.saldo) };
       if (n(r.dev)) o.dev = n(r.dev);   // linha "Devolução do salão" (v7.4): o que o salão antigo custou, de volta
+      if (o.dev && r.devK === 'maquina') o.devK = 'maquina';   // ou a da máquina de suco, que virou torneira (v7.7)
       return o;
     });
 }
@@ -98,12 +99,15 @@ function normSave(s){
   const up = (s.up && typeof s.up === 'object') ? s.up : {};
   if (up.jukebox){ up.agua = true; delete up.jukebox; }   // a Jukebox virou Água saborizada na v5
   if (up.agua){ up.maquina = true; delete up.agua; }      // e a Água saborizada virou a Máquina de suco na v7.5
+  // a Máquina de suco virou a Água da torneira na v7.7 (mais barata): quem já tinha recebe a diferença, uma vez
+  const devMaq = up.maquina && !s.torneira ? UPGRADES.find(u => u.id === 'maquina').devolve : 0;
   if (up.chapa){ up.pratos = true; delete up.chapa; }     // a Chapa nova virou Jogo de pratos (a velocidade da cozinha é do Tonhão)
   // salão da v6 à v7.3 (v7.4): o que foi gasto em cadeiras e mesas volta para o dinheiro, numa linha do caixa, e o
   // jogo começa na Garagem com o kit
-  const dev = salaoDevolucao(s.salao), out = { maxDay: clamp(+s.maxDay||1,1,7), bank: Math.max(0,+s.bank||0) + dev, up, best: (s.best && typeof s.best === 'object') ? s.best : {}, stars: (s.stars && typeof s.stars === 'object') ? s.stars : {}, salao: normSalao(dev ? null : s.salao), divulga: divulgaOf(s.divulga).id, caixa: normCaixa(s.caixa), caixaPend: normPend(s.caixaPend) };
+  const dev = salaoDevolucao(s.salao), out = { maxDay: clamp(+s.maxDay||1,1,7), bank: Math.max(0,+s.bank||0) + dev + devMaq, up, torneira:true, best: (s.best && typeof s.best === 'object') ? s.best : {}, stars: (s.stars && typeof s.stars === 'object') ? s.stars : {}, salao: normSalao(dev ? null : s.salao), divulga: divulgaOf(s.divulga).id, caixa: normCaixa(s.caixa), caixaPend: normPend(s.caixaPend) };
   out.equipe = normEquipe(s.equipe, pontoOf(out.salao.ponto));
-  if (dev){ const last = out.caixa[out.caixa.length - 1]; out.caixa = normCaixa(out.caixa.concat([{ d:last ? last.d : 1, dev, saldo:out.bank }])); }
+  if (dev){ const last = out.caixa[out.caixa.length - 1]; out.caixa = normCaixa(out.caixa.concat([{ d:last ? last.d : 1, dev, saldo:out.bank - devMaq }])); }
+  if (devMaq){ const last = out.caixa[out.caixa.length - 1]; out.caixa = normCaixa(out.caixa.concat([{ d:last ? last.d : 1, dev:devMaq, devK:'maquina', saldo:out.bank }])); }
   return out;
 }
 function loadSave(){
@@ -113,7 +117,7 @@ function loadSave(){
     if (DEV.on) return normSave(Object.assign({}, s2 || { bank:DEV.bank }, { maxDay:7 }));
     if (s2 && typeof s2 === 'object'){
       const n = normSave(s2);
-      if (s2.salao && !Array.isArray(s2.salao.mesas)) writeSave(n);   // salão antigo convertido (com a devolução): só uma vez
+      if ((s2.salao && !Array.isArray(s2.salao.mesas)) || !s2.torneira) writeSave(n);   // salão antigo ou máquina de suco convertidos (com a devolução): só uma vez
       return n;
     }
     // primeira execução da v2: importa o progresso da v1, se existir
@@ -164,7 +168,7 @@ class Group {
     this.timer = 0; this.eatTotal = 1; this.coffee = false;
     this.boing = 0; this.angry = false; this.done = false; this.paid = false;
     this.cmd = -1; this.hold = 0; this.bounced = false;
-    this.sucoN = 0; this.sucoConta = 0; this.tabT = 0; this.pediu = false;   // suco da espera (v7.5): bebidos, na conta, tempo no lugar
+    this.sucoN = 0; this.sucoConta = 0; this.tabT = 0; this.pediu = false;   // bebida da espera (v7.5): bebidos, na conta, tempo no lugar
     this.state = 'queue'; this.stateT = 0; this.patLeft = 0;
     this.aguarda = false; this.piso = false;   // na fila sem mesa que sirva; segurando no piso de 1 coração
     this.setState('queue');
@@ -234,7 +238,7 @@ class Group {
     switch (this.state){
       case 'queue':
         this.moveAlong(dt, 220);
-        // sentado lá fora, depois de `pede` s, pede no tablet 1 suco por pessoa (com a máquina)
+        // no lugar lá fora, depois de `pede` s, pede 1 copo por pessoa (com a melhoria): na Garagem, água no balão
         if (!this.pediu && !this.path.length && this.game.up.maquina){
           this.tabT += dt;
           if (this.tabT >= MAQUINA.pede){ this.pediu = true; this.game.maqPedir(this, this.size); }

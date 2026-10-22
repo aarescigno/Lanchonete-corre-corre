@@ -123,8 +123,9 @@ function placaCozinha(ctx){
 }
 
 /* calçada (v7.5), de -CALCADA.w a 0: o muro da casa com o toldo, o piso de concreto, o meio-fio e a rua; os
-   lugares de espera (banco, tablet e número) e o vaso num banquinho de plástico. Na borda do salão, o portão de
-   enrolar aberto (trilho e soleira) */
+   lugares de espera e o vaso no chão. Na borda do salão, o portão de enrolar aberto (trilho e soleira).
+   Os lugares seguem o ponto (v7.7, PONTOS.assento): na Garagem, de pé, numa faixa pintada no chão com o número;
+   com assento, o banco de ripas da v7.5, com o tablet num pedestal se a bebida pede preparo */
 function drawCalcada(ctx,g,tm){
   const x0 = -CALCADA.w;
   // rua e meio-fio
@@ -150,25 +151,32 @@ function drawCalcada(ctx,g,tm){
     fs(ctx,i % 2 ? '#fff' : PAL.formica,2);
   }
   ctx.strokeStyle = PAL.tinta; ctx.lineWidth = 2.5; ctx.beginPath(); ctx.moveTo(tx0,62); ctx.lineTo(tx1,62); ctx.stroke();
-  // lugares de espera: banco de ripas, número e o tablet num pedestal ao lado
-  const max = g && g.ponto ? g.ponto.espera : QUEUE.max;
+  // lugares de espera
+  const ponto = g && g.ponto ? g.ponto : PONTOS[0], max = ponto.espera, tablet = bebidaOf(ponto).prep > 0;
   for (let i=0;i<max;i++){
     const y = QUEUE.ys[i], x = QUEUE.x;
+    if (ponto.assento === 'pe'){
+      // de pé: faixa amarela pintada no concreto (meio gasta) e o número no chão
+      ctx.save(); ctx.strokeStyle = 'rgba(226,170,40,.75)'; ctx.lineWidth = 3; ctx.setLineDash([12,7]);
+      rr(ctx,x-58,y-16,116,30,6); ctx.stroke(); ctx.restore();
+      txt(ctx,String(i+1),x-70,y-1,18,'rgba(190,132,20,.85)','center',FD);
+      continue;
+    }
     ctx.fillStyle = 'rgba(34,32,28,.06)'; rr(ctx,x-70,y-72,140,84,12); ctx.fill();
     shadowEll(ctx,x,y+8,60,6,0.16);
     ctx.fillStyle = PAL.madeiraEsc; ctx.fillRect(x-52,y-4,6,12); ctx.fillRect(x+46,y-4,6,12);
     rr(ctx,x-58,y-10,116,10,3); fs(ctx,PAL.madeira,2.2);
     ctx.strokeStyle = 'rgba(34,32,28,.3)'; ctx.lineWidth = 1; ctx.beginPath(); ctx.moveTo(x-56,y-5); ctx.lineTo(x+56,y-5); ctx.stroke();
     circ(ctx,x-62,y-26,9); fs(ctx,'#fff',1.8); txt(ctx,String(i+1),x-62,y-25.5,11,PAL.faixa,'center',FD);
+    if (!tablet) continue;
     const px = x + 90;
     ctx.fillStyle = PAL.cromoEsc; ctx.fillRect(px-2,y-30,4,36); ell(ctx,px,y+6,9,3); fs(ctx,PAL.cromoEsc,1.4);
     ctx.save(); ctx.translate(px,y-36); ctx.rotate(-0.18); rr(ctx,-10,-8,20,14,3); fs(ctx,PAL.tinta,1.6);
     ctx.fillStyle = g && g.up && g.up.maquina ? '#FFE0A6' : '#4a5a6a'; ctx.fillRect(-7,-5,14,8); ctx.restore();
   }
-  // vaso num banquinho de plástico, no canto de baixo
-  const vx = x0 + 52, vy = 516;
-  ctx.strokeStyle = CHAIRS[2].d; ctx.lineWidth = 3; ctx.beginPath(); ctx.moveTo(vx-10,vy-8); ctx.lineTo(vx-13,vy+6); ctx.moveTo(vx+10,vy-8); ctx.lineTo(vx+13,vy+6); ctx.stroke();
-  ell(ctx,vx,vy-10,15,5); fs(ctx,CHAIRS[2].c,2);
+  // vaso no chão, no canto de baixo (o banquinho de plástico da v7.5 fica para o nível 2)
+  const vx = x0 + 52, vy = 536;
+  shadowEll(ctx,vx,vy-11,11,3,0.18);
   ctx.beginPath(); ctx.moveTo(vx-10,vy-34); ctx.lineTo(vx+10,vy-34); ctx.lineTo(vx+7,vy-12); ctx.lineTo(vx-7,vy-12); ctx.closePath(); fs(ctx,'#C9673B',2);
   [[-8,-46],[0,-54],[8,-46],[-3,-40],[5,-40]].forEach(l => { ell(ctx,vx+l[0],vy+l[1],6,9); fs(ctx,'#4E9A5C',1.6); });
   // portão de enrolar aberto, na borda do salão: trilho no alto e soleira no chão
@@ -178,8 +186,9 @@ function drawCalcada(ctx,g,tm){
   ctx.strokeStyle = 'rgba(34,32,28,.35)'; ctx.lineWidth = 1.2;
   for (let y=10;y<86;y+=8){ ctx.beginPath(); ctx.moveTo(-9,y); ctx.lineTo(9,y); ctx.stroke(); }
 }
-/* máquina de suco da espera (v7.5): tanque com suco, copos prontos na bandeja e o aviso PRONTO */
+/* estação da bebida da espera: na Garagem (v7.7), a torneira; senão, a máquina de suco da v7.5 */
 function drawMaquina(ctx,g,t,menu){
+  if (g.bebida.id === 'agua') return drawTorneiraEspera(ctx,g,t,menu);
   const r = STATIONS.maquina.rect, x = r.x + r.w / 2, y = r.y + r.h;
   shadowEll(ctx,x,y-2,34,6,0.2);
   rr(ctx,x-28,y-70,56,68,8); fs(ctx,'#F2F2EE',2.5);
@@ -200,6 +209,42 @@ function drawMaquina(ctx,g,t,menu){
   }
   const a0 = g.bia.acts[0];
   if (a0 && a0.type === 'maquina' && a0.leg !== 2){ ctx.save(); const a = 0.55 + 0.4*Math.sin(t*8); ctx.strokeStyle = 'rgba(242,179,61,' + a + ')'; ctx.lineWidth = 5; rr(ctx,r.x,r.y,r.w,r.h,8); ctx.stroke(); ctx.restore(); }
+}
+/* torneira da espera (v7.7): um caixote de feira com os copos americanos de boca para baixo e, ao lado, o cano
+   saindo do chão, a torneira e o ralo embaixo da bica. A Bia enchendo: o fio d'água (parado com prefers-reduced-motion) e o copo.
+   A bolinha verde diz quantos copos pediram */
+function drawTorneiraEspera(ctx,g,t,menu){
+  const r = STATIONS.maquina.rect, x = r.x + r.w / 2, y = r.y + r.h;
+  const px = x + 4, tx = px + 28, ty = y - 40;
+  shadowEll(ctx,x,y-4,32,5,0.16);
+  ell(ctx,tx,y-8,9,3.5); fs(ctx,'#8D8A82',1.6);   // ralo
+  ctx.strokeStyle = 'rgba(34,32,28,.5)'; ctx.lineWidth = 1; ctx.beginPath(); ctx.moveTo(tx-5,y-8); ctx.lineTo(tx+5,y-8); ctx.stroke();
+  rr(ctx,px-4,ty-14,8,y - ty + 8,2); fs(ctx,PAL.cromoEsc,2);   // cano
+  ell(ctx,px,y-6,7,2.5); fs(ctx,PAL.cromoEsc,1.4);
+  drawTorneira(ctx,tx,ty,1);
+  const a0 = g.bia.doing, enche = !menu && a0 && a0.type === 'maquina' && a0.leg !== 2;
+  if (enche){
+    ctx.fillStyle = 'rgba(110,184,234,.85)'; ctx.fillRect(tx-1.2,ty,2.4,14 + (RM ? 0 : Math.sin(t*20)));
+    drawIcon(ctx,'agua',tx,ty + 22,0.62);
+  }
+  // caixote com os copos virados
+  const cx = x - 15, cy = y - 6;
+  rr(ctx,cx-16,cy-20,32,20,2); fs(ctx,PAL.madeira,2);
+  ctx.strokeStyle = 'rgba(34,32,28,.35)'; ctx.lineWidth = 1.2; ctx.beginPath(); ctx.moveTo(cx-16,cy-10); ctx.lineTo(cx+16,cy-10); ctx.stroke();
+  for (let i=0;i<3;i++){
+    ctx.save(); ctx.translate(cx - 10 + i*10,cy - 27); ctx.rotate(Math.PI); ctx.scale(0.5,0.5);
+    ctx.beginPath(); ctx.moveTo(-7,-10); ctx.lineTo(7,-10); ctx.lineTo(5,11); ctx.lineTo(-5,11); ctx.closePath(); fs(ctx,'rgba(236,246,250,.95)',2.6);
+    ctx.restore();
+  }
+  txt(ctx,'ÁGUA',cx,cy - 5,8,'#fff','center',FD);
+  if (menu) return;
+  const pr = g.maqPronto().reduce((a,o) => a + o.n, 0);
+  if (pr){
+    const p = RM ? 1 : 1 + 0.08 * Math.sin(t*7);
+    ctx.save(); ctx.translate(x+14,r.y + 6); ctx.scale(p,p); circ(ctx,0,0,11); fs(ctx,PAL.ok,2); txt(ctx,String(pr),0,1,13,'#fff','center',FD); ctx.restore();   // copos pedidos
+  }
+  const q = g.bia.acts[0];
+  if (q && q.type === 'maquina' && q.leg !== 2){ ctx.save(); const a = 0.55 + 0.4*Math.sin(t*8); ctx.strokeStyle = 'rgba(242,179,61,' + a + ')'; ctx.lineWidth = 5; rr(ctx,r.x,r.y,r.w,r.h,8); ctx.stroke(); ctx.restore(); }
 }
 /* lixeira de pedal no chão do salão, encostada no balcão */
 /* Dani: cabelo cacheado, avental roxo e crachá com o nome */

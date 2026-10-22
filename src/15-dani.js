@@ -76,7 +76,7 @@ class Helper {
       return (drop ? WASH.base : 0) + (st.wash ? WASH.perPile / this.spec.speed : 0);
     }
     if (st.type === 'trash') return TRASH.empty;
-    if (st.type === 'maquina') return MAQUINA.take;
+    if (st.type === 'maquina') return this.g.bebida.take;
     return 0.35;
   }
   perform(st){

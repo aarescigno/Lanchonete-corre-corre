@@ -104,6 +104,18 @@ function drawDish(ctx,k,x,y,s,empty){
   ctx.restore();
 }
 
+/* torneira de parede (v7.7, a água da espera da Garagem): cano, registro de borboleta e bica; (x, y) é a ponta da bica */
+function drawTorneira(ctx,x,y,s){
+  ctx.save(); ctx.translate(x,y); if (s) ctx.scale(s,s);
+  rr(ctx,-30,-15,20,6,2); fs(ctx,PAL.cromoEsc,1.8);
+  ctx.strokeStyle = PAL.tinta; ctx.lineWidth = 7; ctx.lineCap = 'round';
+  ctx.beginPath(); ctx.moveTo(-6,-12); ctx.quadraticCurveTo(0,-12,0,-3); ctx.stroke();
+  ctx.strokeStyle = PAL.cromo; ctx.lineWidth = 3.6; ctx.stroke(); ctx.lineCap = 'butt';
+  rr(ctx,-13,-18,11,11,3); fs(ctx,PAL.cromo,1.8);
+  ctx.fillStyle = PAL.cromoEsc; ctx.fillRect(-8.5,-23,2,5);
+  rr(ctx,-14,-26,13,4,2); fs(ctx,PAL.cromo,1.4);
+  ctx.restore();
+}
 /* ---------- ícones (HUD / mãos) ---------- */
 function drawIcon(ctx,k,x,y,s,extra,extra2){
   ctx.save(); ctx.translate(x,y); ctx.scale(s,s);
@@ -131,6 +143,15 @@ function drawIcon(ctx,k,x,y,s,extra,extra2){
     ctx.beginPath(); ctx.moveTo(-6.2,-4); ctx.lineTo(6.2,-4); ctx.lineTo(4.6,9.5); ctx.lineTo(-4.6,9.5); ctx.closePath(); ctx.fillStyle = '#F39A1E'; ctx.fill();
     ctx.fillStyle = 'rgba(255,255,255,.45)'; ctx.fillRect(-4.5,-2,2,9);
     circ(ctx,-6,-10,3.2); fs(ctx,'#F6C343',1.4);
+  } else if (k === 'agua'){
+    // copo americano com água da torneira (v7.7): a boca lisa em cima e os gomos
+    ctx.beginPath(); ctx.moveTo(-7,-10); ctx.lineTo(7,-10); ctx.lineTo(5,11); ctx.lineTo(-5,11); ctx.closePath(); fs(ctx,'rgba(255,255,255,.85)',2);
+    ctx.beginPath(); ctx.moveTo(-6.3,-5); ctx.lineTo(6.3,-5); ctx.lineTo(4.6,9.5); ctx.lineTo(-4.6,9.5); ctx.closePath(); ctx.fillStyle = 'rgba(110,184,234,.7)'; ctx.fill();
+    ctx.strokeStyle = 'rgba(34,32,28,.35)'; ctx.lineWidth = 1;
+    ctx.beginPath(); ctx.moveTo(-6.6,-6.5); ctx.lineTo(6.6,-6.5);
+    for (const f of [-3,0,3]){ ctx.moveTo(f*1.15,-6.5); ctx.lineTo(f*0.8,10.5); }
+    ctx.stroke();
+    ctx.fillStyle = 'rgba(255,255,255,.6)'; ctx.fillRect(-4.8,-3,1.6,10);
   } else if (k === 'dirty'){
     for (let i=0;i<3;i++){ ell(ctx,0,6-i*5,12,4.2); fs(ctx,i%2?'#f0efe9':'#fff',2); }
     ctx.fillStyle = '#b9772f'; circ(ctx,-3,-5,1.5); ctx.fill();

@@ -49,7 +49,7 @@ const STATIONS = {
   juice:  { ap:{x:744,y:350}, rect:{x:863,y:306,w:97, h:88 } },
   sink:   { ap:{x:744,y:452}, rect:{x:766,y:396,w:194,h:140} },
   trash:  { ap:{x:684,y:520}, rect:{x:700,y:474,w:46,h:62 } },  // lixeira no chão, ao lado do balcão
-  maquina:{ ap:{x:-26,y:498}, rect:{x:-110,y:452,w:62,h:84 } }  // máquina de suco da espera (v7.5), na calçada
+  maquina:{ ap:{x:-26,y:498}, rect:{x:-110,y:452,w:62,h:84 } }  // bebida da espera (v7.5), na calçada: na Garagem, a torneira (v7.7)
 };
 const PLATE_SLOTS = [ {x:806,y:270}, {x:848,y:270}, {x:890,y:270}, {x:932,y:270} ];
 const BOUNDS = { x0:16 - CALCADA.w, y0:112, x1:744, y1:528 };
@@ -58,10 +58,11 @@ const LAYOUT = { W, H, TW, HUDX, CALCADA, QUEUE, DOOR, STATIONS, PLATE_SLOTS, BO
    PONTOS (v7.4): o nível do salão é o ponto. Por enquanto só a Garagem; a área
    industrial, a Avenida Brasil e o Terraço Suíça vêm nas etapas 3 e 4 do plano.
    nivel: o nível do salão (1 a 4); lugares: teto de lugares; area: onde as mesas podem ficar (a mesa inteira, com
-   as cadeiras); espera: cadeiras lá fora (v7.5); cardapio: fator dos preços
+   as cadeiras); espera: lugares lá fora (v7.5); cardapio: fator dos preços; assento: como se espera lá fora e
+   bebida: o que se serve lá (v7.7; ver BEBIDA_ESPERA). Na Garagem, de pé e água da torneira
    ============================================================ */
 const PONTOS = [
-  { id:'garagem', nome:'Garagem da mãe da Bia', nivel:1, lugares:16, aluguel:0, mudanca:0, cardapio:1, area:{ x0:196, y0:150, x1:684, y1:500 }, espera:4 }
+  { id:'garagem', nome:'Garagem da mãe da Bia', nivel:1, lugares:16, aluguel:0, mudanca:0, cardapio:1, area:{ x0:196, y0:150, x1:684, y1:500 }, espera:4, assento:'pe', bebida:'agua' }
 ];
 function pontoOf(id){ return PONTOS.find(p => p.id === id) || PONTOS[0]; }
 /* ============================================================
@@ -246,7 +247,7 @@ const DANI_TASKS = [
   { id:'pratos', name:'Retirar pratos sujos', short:'Recolher' },
   { id:'lavar',  name:'Lavar a louça',  short:'Lavar' },
   { id:'cafe',   name:'Servir cafezinho', short:'Cafezinho' },
-  { id:'suco',   name:'Levar o suco da espera', short:'Suco', need:'maquina' }
+  { id:'suco',   name:'Levar a água da espera', short:'Água', need:'maquina' }   // o suco da espera da v7.5 (água na Garagem desde a v7.7)
 ];
 /* tarefa que a Dani já pode exercer (a do suco da espera depende da máquina) */
 function daniTaskOk(id, up){ const t = DANI_TASKS.find(d => d.id === id); return !!t && (!t.need || !!(up && up[t.need])); }
@@ -278,13 +279,12 @@ function dishStock(day, up){
 
 /* sucos: alguns grupos pedem junto com a comida; cada copo entregue vale JUICE.price */
 const JUICE = { price:12, prep:0.6 };
-/* valor de cada bebida; jogar uma na lixeira custa metade dele (suco: o da espera, v7.5) */
-const DRINK_PRICE = { coffee:5, juice:JUICE.price, suco:JUICE.price };
-/* máquina de suco da espera (v7.5, melhoria no lugar da Água saborizada): `pede` s depois de sentar lá fora, o
-   grupo pede no tablet 1 suco por pessoa; a máquina leva `prep` s e o suco fica pronto lá. A Bia (ou a Dani) pega
-   e entrega: cada copo entra na conta do grupo (JUICE.price; ingrediente INGRED.suco) e quem bebe perde a paciência
-   da espera `slow` mais devagar. Quem sai da espera antes cancela o que não foi pego */
-const MAQUINA = { pede:2.5, prep:3, take:0.5, slow:0.4 };
+/* valor de cada bebida; jogar uma na lixeira custa metade dele (a da espera, 'suco', vale o preço da BEBIDA_ESPERA) */
+const DRINK_PRICE = { coffee:5, juice:JUICE.price };
+/* bebida da espera (v7.5, melhoria no lugar da Água saborizada; o que se serve vem do ponto, BEBIDA_ESPERA): `pede` s
+   depois de chegar ao lugar lá fora, o grupo pede 1 copo por pessoa; a Bia (ou a Dani) pega na estação e entrega,
+   e quem bebe perde a paciência da espera `slow` mais devagar. Quem sai da espera antes cancela o que não foi pego */
+const MAQUINA = { pede:2.5, slow:0.4 };
 const VIP = { pat:0.75, tip:0.5, perfect:40, angry:30, dish:25, cook:1.8, types:['estudante','vovos','familia','executiva'] };   // dish: o prato especial soma R$ 25 à conta e leva 1,8× o tempo
 
 const DAYS = [
@@ -319,10 +319,21 @@ const DIVULGA = [
 const MOVIMENTO = { kit:10, porLugar:0.06 };
 function movimentoSalao(lugares){ return 1 + MOVIMENTO.porLugar * Math.max(0, lugares - MOVIMENTO.kit); }
 const CAIXA_MAX = 14;                                 // livro-caixa (v7.2): quantos dias da carreira ficam guardados
-const VERSAO = 'v7.6';                              // vai no resumo do Caixa
+const VERSAO = 'v7.7';                              // vai no resumo do Caixa
 const DIVULGA_DIA = 3;                                // antes disso, o movimento é o da inauguração (sem custo)
 function divulgaAberta(n){ return DEV.on || n >= DIVULGA_DIA; }   // no modo dev, desde o dia 1
 function divulgaOf(id){ return DIVULGA.find(d => d.id === id) || DIVULGA[1]; }
+/* o que se serve na espera, por nível do salão (v7.7, PONTOS.bebida). preco: R$ por copo na conta do grupo; ingred:
+   custo de cada copo; prep: s até ficar pronto na estação; take: s da Bia (ou da Dani) para pegar ali.
+   agua (nível 1, Garagem): água da torneira em copo americano, de graça; pedida no balão, a Bia enche na hora.
+   suco (a máquina da v7.5, com tablet): guardado para a jarra de suco do nível 2 (etapa 3 do plano) */
+const BEBIDA_ESPERA = {
+  agua: { id:'agua', icon:'agua', preco:0, ingred:0, prep:0, take:1, fim:'Água na espera',
+          pede:n => n > 1 ? n + ' águas, por favor!' : 'Uma água, por favor!', pega:n => n > 1 ? n + ' copos!' : 'Água!', entrega:n => n > 1 ? 'Águas entregues!' : 'Água entregue!' },
+  suco: { id:'suco', icon:'juice', preco:JUICE.price, ingred:INGRED.suco, prep:3, take:0.5, fim:'Sucos da espera',
+          pede:n => n > 1 ? n + ' sucos no tablet!' : 'Suco no tablet!', pega:n => n > 1 ? n + ' sucos!' : 'Suco!', entrega:n => n > 1 ? 'Sucos entregues!' : 'Suco entregue!' }
+};
+function bebidaOf(ponto){ return BEBIDA_ESPERA[(ponto || PONTOS[0]).bebida] || BEBIDA_ESPERA.agua; }
 /* contas do dia: o aluguel do ponto (v7.4; a Garagem é da família), mais cada mesa aberta e cada lugar dela */
 function contasDia(tables, ponto){
   const open = tables.filter(t => t.open);
@@ -337,7 +348,7 @@ const BIA_SPEED = { base:300, tenis:1.1, corrida:1.2 };
 const UPGRADES = [
   { id:'tenis',      name:'Tênis novos',          desc:'A Bia anda 10% mais rápido. Depois, libera os Tênis de corrida.', cost:150 },
   { id:'corrida',    name:'Tênis de corrida',     desc:'2º nível dos tênis: a Bia anda 20% mais rápido (em vez de 10%).', cost:350, req:'tenis' },
-  { id:'maquina',    name:'Máquina de suco',      desc:'Na calçada, ao lado da espera: quem espera pede no tablet e o suco sai pronto. A Bia leva; cada copo entra na conta (R$ ' + JUICE.price + ') e quem bebe perde a paciência 40% mais devagar.', cost:180 },
+  { id:'maquina',    name:'Água da torneira',     desc:'Na calçada: torneira e copos americanos num caixote. Quem espera pede água; a Bia enche e leva, de graça, e quem bebe perde a paciência 40% mais devagar.', cost:80, devolve:100 },   // a Máquina de suco (R$ 180) até a v7.6: devolve a diferença
   { id:'cafeteira',  name:'Cafeteira de 2 bocas', desc:'O cafezinho devolve +2 corações.',             cost:200 },
   { id:'bandeja',    name:'Bandeja',              desc:'Leva 2 pratos, 3 bebidas, prato + bebida ou 2 pilhas de louça.', cost:220 },
   { id:'ventilador', name:'Ventilador de teto',   desc:'A freguesia come 15% mais rápido e o cheiro da lixeira cheia não incomoda.', cost:250 },

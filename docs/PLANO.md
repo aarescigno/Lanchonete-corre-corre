@@ -21,6 +21,7 @@ Origem: retorno do Renan Martorelli (beta-tester) e conversa com o Arthur (15/10
 | — | Fora do plano: TV e som na Garagem, couvert só no nível 3 | v7.4.4 | feita (21/10) |
 | 1d-2 | Tela que rola até a calçada, espera lá fora e máquina de suco | v7.5 | feita (21/10) |
 | — | Retorno de jogador: tela larga, tudo à vista sem rolar | v7.6 | feita (22/10) |
+| — | Fora do plano: espera da Garagem de pé e Água da torneira | v7.7 | feita (22/10) |
 | 2 | Manutenção e imprevistos | v8 | **próxima** |
 | 3 | Pontos: área industrial e Avenida Brasil, carreira por pontos | v9 | a fazer |
 | 4 | Terraço Suíça e VIPs exigentes | v10 | a fazer |
@@ -140,6 +141,7 @@ Origem: retorno do Renan Martorelli (beta-tester) e conversa com o Arthur (15/10
   - Aluguéis na **proporção real** entre os pontos (ver a pesquisa). A Garagem não paga aluguel e **rende a mais de propósito**: é o pé-de-meia para a mudança (levar as coisas, montar, reajustar, caução).
   - O aluguel entra nas **contas fixas do dia** (com luz e gás, que continuam R$ 30 por mesa e R$ 6 por lugar), aparece na lojinha e no Caixa.
 - **Móveis:** dentro de cada ponto, mesas e cadeiras são compradas até o teto de lugares, e **vão junto na mudança**. Não há limite de mesas: só o teto de lugares e a área útil. Grupos de 3 ou 4 sem mesa de 4 continuam ficando insatisfeitos e desistindo (regra de hoje, `semMesa`).
+- **Espera lá fora por nível** (decidido em 22/10; nível 1 feito na v7.7, os outros nas Ideias guardadas): nível 1, de pé e copo d'água da torneira; nível 2, cadeirinhas de plástico ou banquinhos de madeira e jarra de suco; nível 3, sofás e águas saborizadas; nível 4, poltronas individuais e coquetelaria.
 - **Ambiente por nível** (decidido em 21/10; nível 1 feito na v7.4.4, os outros nas Ideias guardadas): nível 1, TV (Rede Esfera) e som (rádio Velha Brasil FM), 5% de paciência cada, pagando a luz; nível 2, 3 televisores com playlist de sertanejo (10% com anúncios, 15% sem, por R$ 20/dia); nível 3, o **couvert artístico** de hoje (`STAFF.couvert.nivel`); nível 4, quarteto de cordas ou pianista (20%; o pianista soma luxo e tem a manutenção do piano).
 - **Novos pontos destravam** (etapas 3 e 4; o que vai em cada nível é sugestão): 2º garçom (área industrial); mais bocas no fogão; balcão de pratos maior; mais pratos no cardápio; um cozinheiro/confeiteiro especializado em sobremesas (níveis 3 e 4); balcão de coquetelaria com profissional de drinks (do nível 3 em diante).
 - **Carreira por pontos, sem fim fixo** (etapa 3): cada ponto tem a sua série de metas; batidas as metas e juntado o dinheiro, dá para mudar. Até a etapa 3, a carreira continua com 7 dias, todos na Garagem.
@@ -260,8 +262,8 @@ Também: rever o `smoke7` (toque) e o `smoke10` (fila justa e porta), mais `bala
   - área útil, cadeiras de espera e visual próprios.
 - **Mudança** na lojinha (aba "Ponto"): custo único, aluguel dali em diante e os móveis levados junto. O editor abre no ponto novo com a arrumação automática.
 - **O que cada ponto destrava** (sugestão):
-  - área industrial: 2º garçom, +1 boca no fogão (4 pratos ao mesmo tempo), balcão de pratos com 5 vagas e os **3 televisores com playlist de sertanejo** (ver "Ambiente por nível do salão" nas Ideias guardadas);
-  - Avenida Brasil: confeiteiro (sobremesas), balcão de coquetelaria com profissional de drinks, um prato novo no cardápio, balcão de pratos com 6 vagas e o **couvert artístico** (já pronto no código desde a v5, escondido abaixo do nível 3 desde a v7.4.4: basta o ponto ter `nivel:3`). Decidir se a TV e o som vão junto na mudança.
+  - área industrial: 2º garçom, +1 boca no fogão (4 pratos ao mesmo tempo), balcão de pratos com 5 vagas, os **3 televisores com playlist de sertanejo** (ver "Ambiente por nível do salão" nas Ideias guardadas) e a **espera com cadeirinhas de plástico ou banquinhos de madeira e jarra de suco** (ver "Espera lá fora por nível");
+  - Avenida Brasil: confeiteiro (sobremesas), balcão de coquetelaria com profissional de drinks, um prato novo no cardápio, balcão de pratos com 6 vagas, a **espera com sofás e águas saborizadas** e o **couvert artístico** (já pronto no código desde a v5, escondido abaixo do nível 3 desde a v7.4.4: basta o ponto ter `nivel:3`). Decidir se a TV e o som vão junto na mudança.
   Se ficar grande demais, a etapa se divide (3a: mudança e área industrial; 3b: Avenida Brasil, confeitaria e coquetelaria).
 - **Carreira por pontos, sem fim fixo:** cada ponto tem uma série de metas (ex.: 3 a 5 dias). Batidas as metas e juntado o dinheiro, pode mudar. O ranking da carreira soma o lucro (ou o melhor dia) de cada ponto. Os 7 dias de hoje viram a série da Garagem.
 - Visual de cada ponto: piso, fachada, letreiro, vista da janela e calçada.
@@ -285,7 +287,7 @@ Também: rever o `smoke7` (toque) e o `smoke10` (fila justa e porta), mais `bala
 **Objetivo:** o topo da escada de pontos (nível 4 do salão), com o cliente que o Arthur descreveu: "VIPs exigentes que entram e pedem pratos especiais".
 
 **Entra:**
-- 4º ponto, **Terraço Suíça** (nível 4: 28 lugares, aluguel R$ 1.000, mudança R$ 5.000, cardápio ×2,2 como sugestão), com VIPs frequentes e uma antessala ("foyer") com amenidades na área de espera. Confeiteiro e coquetelaria continuam disponíveis.
+- 4º ponto, **Terraço Suíça** (nível 4: 28 lugares, aluguel R$ 1.000, mudança R$ 5.000, cardápio ×2,2 como sugestão), com VIPs frequentes e uma antessala ("foyer") com amenidades na área de espera: **poltronas individuais e coquetelaria lá fora** (ver "Espera lá fora por nível" nas Ideias guardadas). Confeiteiro e coquetelaria continuam disponíveis.
 - **VIP exigente** (só no Terraço Suíça e no fim da história):
   - pede o **prato da casa**, que só sai caprichado ★ se o Tonhão tiver aumento (ou demora o dobro);
   - às vezes pede uma **bebida específica** (suco ou café) antes do prato;
@@ -365,6 +367,17 @@ Também: rever o `smoke7` (toque) e o `smoke10` (fila justa e porta), mais `bala
 ---
 
 ## Ideias guardadas (sem etapa ainda)
+- **Espera lá fora por nível do salão** (pedido do usuário em 22/10; texto em `docs/PROPOSTAS.md`): a estética e o serviço da espera na calçada sobem junto com o ponto. Cada ponto tem `assento` e `bebida` (`PONTOS`, `BEBIDA_ESPERA`, desde a v7.7):
+
+| Nível | Ponto | Assento | Bebida da espera | Situação |
+|---|---|---|---|---|
+| 1 | Garagem | **de pé** (faixa pintada no chão) | **copo d'água da torneira**, de graça (melhoria de R$ 80) | **feito na v7.7** |
+| 2 | área industrial (etapa 3) | **cadeirinhas de plástico ou banquinhos de madeira** | **jarra de suco** (a base é a máquina de suco da v7.5, guardada em `BEBIDA_ESPERA.suco`: R$ 12 na conta) | a fazer |
+| 3 | Avenida Brasil (etapa 3) | **sofás** | **águas saborizadas diferentes** | a fazer |
+| 4 | Terraço Suíça (etapa 4) | **poltronas individuais** | **coquetelaria lá fora** | a fazer |
+
+  - Decisões em aberto: preço e efeito de cada bebida (a de cima rende mais na conta ou segura mais a paciência?); se o assento também segura a paciência (sentado espera com mais calma que de pé) ou só soma ao **nível de luxo**; se a coquetelaria lá fora usa o profissional de drinks do balcão de coquetelaria (níveis 3 e 4); o que acontece com a torneira na mudança (sugestão: como o ambiente, a bebida do nível de baixo sai e entra a do ponto novo).
+  - Desenho de cada um com o seu (banquinhos e jarra na mesinha; sofás com almofadas e garrafas coloridas; poltronas, tapete e balcãozinho de drinks), respeitando `prefers-reduced-motion`.
 - **Ambiente por nível do salão** (pedido do usuário em 21/10; texto e decisões em aberto em `docs/PROPOSTAS.md`). Em todos, a paciência nas mesas cai mais devagar, como na v7.4.4 (`ambienteEffect`):
   - **nível 1, Garagem:** TV de tubo na Rede Esfera (5%, luz R$ 15/dia) e som na rádio Velha Brasil FM (5%, luz R$ 10/dia). **Feito na v7.4.4.**
   - **nível 2, área industrial (etapa 3):** 3 televisores com playlist de sertanejo. Com anúncios: 10%, pagando a luz; sem anúncios: 15%, por R$ 20/dia mais a luz.

@@ -27,8 +27,7 @@ function upgradeIcon(id){
     } else if (id === 'ambiente'){
       drawTv(c,6,2,0,0.48); drawSom(c,-6,17,0,0.42); txt(c,'♪',-16,-12,12,PAL.faixa,'center',FB);
     } else if (id === 'maquina'){
-      rr(c,-12,-16,24,30,4); fs(c,'#F2F2EE',2); rr(c,-8,-12,16,12,3); fs(c,'rgba(242,140,40,.75)',1.6);
-      rr(c,-10,8,20,4,2); fs(c,PAL.cromo,1.2); drawIcon(c,'juice',15,6,0.55);
+      drawTorneira(c,12,0,1.15); drawIcon(c,'agua',12,14,0.65);
     } else if (id === 'div-boca'){
       drawPerson(c,{skin:2,hair:1,hairC:'#2F1D12',pants:'#4A4036'},-8,18,{ shirt:CHAIRS[1].c, mood:0, s:0.6 });
       drawPerson(c,{skin:4,hair:4,hairC:'#1B1512',pants:'#2F3E5C'},10,18,{ shirt:CHAIRS[3].c, mood:0, s:0.6 });
@@ -307,7 +306,7 @@ function caixaTotais(cx){
 function caixaResumo(save){
   const cx = save.caixa, eq = save.equipe, sal = save.salao;
   const out = ['Lanchonete Corre-Corre ' + VERSAO + ' · Caixa (valores em R$)'];
-  cx.forEach(r => out.push(r.dev ? 'Devolução do salão: +' + r.dev + ' · saldo ' + r.saldo : 'Dia ' + r.d + (r.ok ? ' ✓' : ' ✗') + ': fatura ' + r.fat + ' − ingred. ' + r.ingr + ' − contas ' + r.contas + ' − equipe ' + r.folha + (r.div ? ' − divulg. ' + r.div : '') +
+  cx.forEach(r => out.push(r.dev ? 'Devolução ' + (r.devK === 'maquina' ? 'da máquina de suco' : 'do salão') + ': +' + r.dev + ' · saldo ' + r.saldo : 'Dia ' + r.d + (r.ok ? ' ✓' : ' ✗') + ': fatura ' + r.fat + ' − ingred. ' + r.ingr + ' − contas ' + r.contas + ' − equipe ' + r.folha + (r.div ? ' − divulg. ' + r.div : '') +
     ' = lucro ' + r.lucro + ' (meta ' + r.meta + ')' + (r.perd ? ' · ' + r.perd + (r.perd > 1 ? ' perdidos' : ' perdido') : '') + (r.mel + r.sal ? ' · compras ' + (r.mel + r.sal) : '') + ' · saldo ' + r.saldo));
   const nd = cx.filter(r => !r.dev).length;
   if (nd) out.push('Para onde foi (' + nd + (nd > 1 ? ' dias' : ' dia') + '): ' + caixaTotais(cx).filter(t => t.v).map(t => t.name.toLowerCase() + ' ' + t.v).join(', '));
@@ -346,8 +345,9 @@ function buildCaixa(grid){
   cx.slice().reverse().forEach(r => {
     const tr = el('tr');
     if (r.dev){
-      // v7.4: o salão antigo (cadeiras e mesas da v6) foi trocado pela Garagem e o que custou voltou
-      const td = el('td', 'cx-dev', 'Devolução do salão antigo: +' + fmt(r.dev)); td.setAttribute('colspan', '7');
+      // v7.4: o salão antigo (cadeiras e mesas da v6) foi trocado pela Garagem e o que custou voltou;
+      // v7.7: a Máquina de suco virou a Água da torneira, mais barata, e a diferença voltou
+      const td = el('td', 'cx-dev', (r.devK === 'maquina' ? 'Devolução da máquina de suco (virou a Água da torneira): +' : 'Devolução do salão antigo: +') + fmt(r.dev)); td.setAttribute('colspan', '7');
       tr.appendChild(td); tr.appendChild(cxTd(r.saldo)); tb.appendChild(tr); return;
     }
     const dia = el('td', null, 'Dia ' + r.d); tr.appendChild(dia);

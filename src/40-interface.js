@@ -98,10 +98,10 @@ function buildTips(){
       drawPerson(c,{skin:1,hair:1,hairC:'#5B3A21',pants:'#4A4036'},20,58,{shirt:CHAIRS[3].c,mood:0,s:0.6});
       drawPerson(c,{skin:4,hair:0,hairC:'#1B1512',pants:'#4A4036'},44,58,{shirt:CHAIRS[0].c,mood:2,s:0.6});
     }],
-    ['Com a Máquina de suco, quem espera lá fora pede no tablet (1 suco por pessoa) e o suco sai pronto em poucos segundos: toque na máquina e a Bia pega os copos que couberem e leva a cada grupo. Atender devolve 1 coração, quem bebe espera com mais calma e o suco (R$ ' + JUICE.price + ') entra na conta.', c => {
-      rr(c,6,10,20,28,4); fs(c,'#F2F2EE',1.8); rr(c,9,13,14,10,2); fs(c,'rgba(242,140,40,.75)',1.2); drawIcon(c,'juice',16,32,0.4);
-      c.save(); c.translate(44,26); c.rotate(-0.18); rr(c,-12,-9,24,17,3); fs(c,PAL.tinta,1.4); c.fillStyle = '#FFE0A6'; c.fillRect(-9,-6,18,11); c.restore(); drawIcon(c,'juice',44,26,0.32);   // tablet
-      c.save(); c.translate(16,52); drawBubble(c,0,0,8,PAL.ok); drawIcon(c,'juice',-1,1,0.36); c.restore();
+    ['Com a Água da torneira, quem espera lá fora (de pé, na Garagem) pede água (1 copo por pessoa): toque na torneira e a Bia enche os copos que couberem e leva a cada grupo. Atender devolve 1 coração e quem bebe espera com mais calma. A água é de graça: não entra na conta.', c => {
+      drawTorneira(c,22,24,0.9); drawIcon(c,'agua',22,36,0.45);
+      drawPerson(c,{skin:3,hair:2,hairC:'#2F1D12',pants:'#4A4036'},46,40,{shirt:CHAIRS[1].c,mood:0,s:0.5});
+      c.save(); c.translate(16,52); drawBubble(c,0,0,8,PAL.ok); drawIcon(c,'agua',-1,1,0.36); c.restore();
       c.strokeStyle = PAL.faixa; c.lineWidth = 2.5; c.beginPath(); c.moveTo(30,54); c.lineTo(56,54); c.moveTo(50,49); c.lineTo(56,54); c.lineTo(50,59); c.stroke();
     }],
     ['Combine a cor da camisa do grupo com a cor da cadeira para ganhar bônus. Repetir o mesmo tipo de ação em sequência forma uma corrente cada vez mais valiosa.', c => {

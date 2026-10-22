@@ -114,7 +114,7 @@ class Waitress {
       return (t && t.group && t.group.state === 'wantOrder') ? 0.6 : 0.35;
     }
     if (a.type === 'juice') return JUICE.prep;
-    if (a.type === 'maquina') return a.leg === 2 ? 0.35 : MAQUINA.take;
+    if (a.type === 'maquina') return a.leg === 2 ? 0.35 : this.g.bebida.take;
     const g = this.g;
     if (a.type === 'sink'){
       // pia em 2 etapas: com louça na mão, a Bia só deixa a louça lá; sem louça na mão, lava
@@ -235,11 +235,11 @@ class Waitress {
       const fora = lixo;
       fora.forEach(h => this.hands.splice(this.hands.indexOf(h), 1));
       g.addTrash(fora.length);
-      const fine = fora.reduce((v,h) => v + DRINK_PRICE[h.kind] / 2, 0);
+      const fine = fora.reduce((v,h) => v + (h.kind === 'suco' ? g.bebida.preco : DRINK_PRICE[h.kind]) / 2, 0);
       g.addMoney(-fine);
       g.stats.trash += fora.length;
       g.addText(this.x, this.y - 82, 'No lixo!', PAL.perigo, 15);
-      g.addText(this.x, this.y - 104, '-' + (fine % 1 ? fine.toFixed(2).replace('.', ',') : fine), PAL.perigo, 18);
+      if (fine) g.addText(this.x, this.y - 104, '-' + (fine % 1 ? fine.toFixed(2).replace('.', ',') : fine), PAL.perigo, 18);
       Sfx.noise(0.18, 0.12, 0, 500); Sfx.tone(160, 0.12, 'square', 0.04);
       if (overflow){ g.trash = 0; g.stats.emptied++; g.addText(this.x, this.y - 126, 'Lixo pra fora!', PAL.ok, 15); }
       return;
@@ -282,7 +282,7 @@ class Waitress {
       if (j){ g.maqTirar(o, j); k += j; }
       if (!this.canTake('suco')) break;
     }
-    if (k){ Sfx.tone(700, 0.08, 'sine', 0.05); Sfx.tone(930, 0.1, 'sine', 0.05, 0.07); g.addText(this.x, this.y - 82, k > 1 ? k + ' sucos!' : 'Suco!', PAL.alerta, 14); }
+    if (k){ Sfx.tone(700, 0.08, 'sine', 0.05); Sfx.tone(930, 0.1, 'sine', 0.05, 0.07); g.addText(this.x, this.y - 82, g.bebida.pega(k), PAL.alerta, 14); }
     if (!this.maisSuco(a)) this.fail(g.maqPronto().length ? 'Mãos cheias!' : (g.maq.length ? 'Ainda não ficou pronto!' : '?'));
   }
   /* ainda há copo da espera na mão para alguém que dá para achar: a ação segue até ele */
