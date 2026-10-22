@@ -32,15 +32,16 @@ const HAIRC  = ['#1B1512','#2F1D12','#5B3A21','#A67B43','#8C8C8C','#E8E8E8','#7A
 const PANTS  = ['#2F3E5C','#4A4036','#5B5F6B','#3C5A4A','#6A3F52'];
 const DISHES = ['pf','pastel','coxinha','misto'];
 
-/* calçada (v7.5): o mundo vai de -CALCADA.w (a rua) até W; a tela mostra W px dele e rola (câmera: Game.cam,
-   de 0, o salão como antes, até CALCADA.w, a calçada inteira). A espera fica lá fora, no lugar da fila de antes */
+/* calçada (v7.5): o mundo vai de -CALCADA.w (a rua) até W; a espera fica lá fora, no lugar da fila de antes.
+   Tela larga (v7.6): a tela tem TW px e mostra o mundo inteiro, sem rolar (Game.cam = CALCADA.w: onde o mundo
+   começa na tela). No celular deitado (~2:1), tudo fica do mesmo tamanho de antes */
 const CALCADA = { w:260 };
+const TW = W + CALCADA.w;
 const QUEUE = { x:-132, ys:[178, 264, 350, 436], max:4 };
 const DOOR  = { x:-300, y:106 };                     // de onde a freguesia vem (e para onde vai): a rua, à esquerda
-/* câmera: borda (px da tela) onde o grupo arrastado faz a tela rolar, a `rola` px/s; `vel`: px/s da rolagem das
-   abinhas e do toque duplo; folga: a partir de quantos px escondidos a abinha aparece; toque2: s entre os 2 toques */
-const CAM = { borda:56, rola:520, vel:1500, folga:14, toque2:0.4 };
-const ABAS = { l:{ x:6, y:20, w:104, h:46 }, r:{ x:850, y:20, w:104, h:46 } };   // abinhas no alto da tela (fixas)
+/* HUD na tela larga (v7.6): dia e lucro à esquerda, como antes; a fila de ações anda `fila` px e as mãos, a pausa e
+   o som, `dir` px (para a direita) */
+const HUDX = { fila:CALCADA.w / 2, dir:CALCADA.w };
 const STATIONS = {
   order:  { ap:{x:744,y:150}, rect:{x:766,y:96, w:194,h:108} },
   plates: { ap:{x:744,y:256}, rect:{x:766,y:206,w:194,h:98 } },
@@ -52,7 +53,7 @@ const STATIONS = {
 };
 const PLATE_SLOTS = [ {x:806,y:270}, {x:848,y:270}, {x:890,y:270}, {x:932,y:270} ];
 const BOUNDS = { x0:16 - CALCADA.w, y0:112, x1:744, y1:528 };
-const LAYOUT = { W, H, CALCADA, QUEUE, DOOR, STATIONS, PLATE_SLOTS, BOUNDS };
+const LAYOUT = { W, H, TW, HUDX, CALCADA, QUEUE, DOOR, STATIONS, PLATE_SLOTS, BOUNDS };
 /* ============================================================
    PONTOS (v7.4): o nível do salão é o ponto. Por enquanto só a Garagem; a área
    industrial, a Avenida Brasil e o Terraço Suíça vêm nas etapas 3 e 4 do plano.
@@ -287,7 +288,7 @@ const MAQUINA = { pede:2.5, prep:3, take:0.5, slow:0.4 };
 const VIP = { pat:0.75, tip:0.5, perfect:40, angry:30, dish:25, cook:1.8, types:['estudante','vovos','familia','executiva'] };   // dish: o prato especial soma R$ 25 à conta e leva 1,8× o tempo
 
 const DAYS = [
-  { n:1, groups:5,  types:['estudante','vovos'],                                   nu:null,         meta:200, expert:320,  time:150, speed:0.60, note:'A freguesia espera lá fora, na calçada. Arraste o fundo para o lado (ou toque nas abinhas do alto) para ver a calçada e a cozinha. Arrastando um grupo até a borda, a tela rola sozinha.' },
+  { n:1, groups:5,  types:['estudante','vovos'],                                   nu:null,         meta:200, expert:320,  time:150, speed:0.60, note:'A freguesia espera lá fora, na calçada: arraste cada grupo até uma mesa livre.' },
   { n:2, groups:8,  types:['estudante','vovos','familia'],                         nu:'familia',    meta:300, expert:720,  time:160, speed:0.60, note:'Chegou a família! Grupos de 3 ou 4 só cabem nas mesas de 4 lugares. Na lojinha, aba Salão, dá para comprar mesas e arrumar o salão.' },
   { n:3, groups:13, types:['estudante','vovos','familia','executiva'],             nu:'executiva',  meta:380, expert:880,  time:170, speed:0.60, juice:0.3, note:'O movimento aumentou e agora só há 4 pratos limpos: sozinha a Bia não dá conta, contrate ajuda na lojinha. A executiva tem pouca paciência, mas deixa boa gorjeta. E abriu o balcão de sucos: quem pede suco quer receber antes da conta!' },
   { n:4, groups:15, types:['estudante','vovos','familia','executiva','entregador'], nu:'entregador', meta:300, expert:780, time:180, speed:0.58, juice:0.3, note:'O entregador de moto tem pressa: pouquíssima paciência!' },
@@ -318,7 +319,7 @@ const DIVULGA = [
 const MOVIMENTO = { kit:10, porLugar:0.06 };
 function movimentoSalao(lugares){ return 1 + MOVIMENTO.porLugar * Math.max(0, lugares - MOVIMENTO.kit); }
 const CAIXA_MAX = 14;                                 // livro-caixa (v7.2): quantos dias da carreira ficam guardados
-const VERSAO = 'v7.5.1';                              // vai no resumo do Caixa
+const VERSAO = 'v7.6';                              // vai no resumo do Caixa
 const DIVULGA_DIA = 3;                                // antes disso, o movimento é o da inauguração (sem custo)
 function divulgaAberta(n){ return DEV.on || n >= DIVULGA_DIA; }   // no modo dev, desde o dia 1
 function divulgaOf(id){ return DIVULGA.find(d => d.id === id) || DIVULGA[1]; }

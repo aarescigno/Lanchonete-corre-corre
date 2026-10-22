@@ -35,7 +35,7 @@ ok(g.bia.acts.length===3,'o 2º toque na mesa entra na fila (não cancela nem é
 ok(J(g.bia.marks())===J({['table:'+t.id]:[1,3],coffee:[2]}),'selos: mesa com 1º e 3º, cafezinho com 2º');
 ok(g.bia.acts.every(a=>typeof a.t0==='number'),'cada ação guarda a hora em que entrou (para o pulinho do selo)');
 // cancelar só pelo quadrinho: o toque no slot 1 (cafezinho) tira só ele e renumera
-g.onDown(360+1*52+20,570,0);
+g.onDown(L.HUDX.fila+360+1*52+20,570,0);   // v7.6: a fila de ações anda HUDX.fila na tela larga
 ok(J(g.bia.marks())===J({['table:'+t.id]:[1,2]}),'tocar no 2º quadrinho cancela o cafezinho; a mesa fica com 1º e 2º');
 // prato pronto não repete
 g.kitchen.plates=[{id:77,table:t.id,group:grp,dish:'pf',slot:0,age:0},null,null,null];

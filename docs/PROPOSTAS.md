@@ -4,6 +4,17 @@ Registro das ideias e dos retornos de quem jogou, com o texto original, e de ond
 
 ---
 
+## 22/10/2026 — Retorno de jogador: rolar a tela faz perder o controle
+**Origem:** mensagem do usuário, repassando o retorno de um jogador sobre a v7.5:
+
+> "recebi feedback que esse rolar para o lado faz perder o controle sobre o jogo, que deve ser dinâmico e com tudo à vista, será que dá para espremer tudo numa tela só? faça propostas com a fila de espera fora à esquerda, fora acima e fora abaixo do salão ou outras que você compreenda ser útil"
+
+Propostas (com montagens): 1) tela mais larga, sem rolar (recomendada); 2) espera à esquerda, dentro dos 960 px; 3) espera em cima, na faixa da parede; 4) espera embaixo (não recomendada: perto do HUD); 5) mistura da 1 com a 3. O usuário respondeu: "Faça a 1".
+
+**Destino:** v7.6, feito (`docs/spec-v7.6.md`): tela de 1220×600 com a calçada, o salão e a cozinha juntos; saem a rolagem e as abinhas da v7.5.
+
+---
+
 ## 21/10/2026 — Usuário: modo dev sem painel à parte
 **Origem:** mensagem do usuário, depois da 1ª versão do modo dev (com painel próprio):
 

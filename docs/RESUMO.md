@@ -1,9 +1,9 @@
 # Resumo do projeto e das alterações (até 21/10/2026)
 
 ## Estado atual
-- **Versão:** v7.5.1 (modo dev: 10 toques no selo da versão ligam e desligam; o jogo fica igual, com "Modo dev" na tela, 7 dias, R$ 10.000 que não acabam e tudo liberado na lojinha, num save à parte), pronta no `claude/main` e ainda não publicada no artifact (nem a v7.5, da calçada); a publicada é a v7.4.4 (TV e som na Garagem), Versão 32 do artifact https://claude.ai/artifact/MJxrgDg8S4akvg47SoQAvj (privado).
+- **Versão:** v7.6 (tela larga: calçada, salão e cozinha na mesma tela, sem rolar), sobre a v7.5.1 (modo dev: 10 toques no selo da versão) e a v7.5 (espera na calçada e Máquina de suco), pronta no `claude/main` e ainda não publicada no artifact; a publicada é a v7.4.4 (TV e som na Garagem), Versão 32 do artifact https://claude.ai/artifact/MJxrgDg8S4akvg47SoQAvj (privado).
 - **Branch:** `claude/main` (renomeado pelo usuário; o antigo `claude/intelligent-gauss-3owv29` não existe mais) no repositório `aarescigno/Lanchonete-corre-corre`.
-- **Arquivos publicados:** `lanchonete.html` (página), mais `versoes/v1.html` a `versoes/v7.4.3.html`, abertos pelo painel Versões (a `versoes/v7.4.4.html` e a `versoes/v7.5.html` vão na próxima publicação).
+- **Arquivos publicados:** `lanchonete.html` (página), mais `versoes/v1.html` a `versoes/v7.4.3.html`, abertos pelo painel Versões (a `versoes/v7.4.4.html`, a `versoes/v7.5.html` e a `versoes/v7.5.1.html` vão na próxima publicação).
 - **Capacidades declaradas (mantidas ao republicar sem `capabilities`):**
   - `db`: `ranking-carreira` e `ranking-semfim` com read "view" e write "owner";
   - `db`: `ranking-*/{self}` com write "interact";
@@ -34,6 +34,7 @@
 | v7.4.4 | 21/10 | Ambiente da Garagem (pedido do usuário): TV de tubo na Rede Esfera (R$ 15/dia de luz) e som na rádio Velha Brasil FM (R$ 10/dia), 5% de paciência nas mesas cada; couvert só do nível 3 do salão em diante (`PONTOS.nivel`, `couvertOk`) | `docs/spec-v7.4.4.md` |
 | v7.5 | 21/10 | Calçada (etapa 1d-2): o mundo fica 260 px mais largo e a tela rola (arrastar o fundo no vazio, abinhas fixas no alto com o relógio e o aviso piscando, grupo na borda, 2 toques no grupo); espera lá fora com 4 bancos, tablet, toldo e vaso; Máquina de suco no lugar da Água (pedido no tablet, a Bia pega todos os copos que couberem e entrega grupo a grupo, R$ 12 na conta; a Dani pode levar) | `docs/spec-v7.5.md` |
 | v7.5.1 | 21/10 | Modo dev (pedido do usuário): 10 toques no selo da versão ligam e desligam; sem painel à parte, o jogo fica igual com "Modo dev" na tela; save à parte (`lcc2_save_dev`), 7 dias, R$ 10.000 que a lojinha repõe, lojinha desde o dia 1 com melhorias de graça (liga e desliga), couvert e divulgação liberados; ranking de fora | `docs/spec-v7.5.1.md` |
+| v7.6 | 22/10 | Tela larga (retorno de jogador: rolar fazia perder o controle): 1220×600, calçada, salão e cozinha juntos, sem rolar; HUD espalhado; no celular deitado, tudo do mesmo tamanho de antes | `docs/spec-v7.6.md` |
 
 ## Alterações feitas no Claude Code (14/10/2026)
 1. **Importação** do pacote exportado do claude.ai para o repositório (commit `982583b`).
@@ -140,6 +141,10 @@
 16. **v7.5.1, modo dev** (ver `docs/spec-v7.5.1.md`; pedido do usuário):
    - 10 toques seguidos no selo da versão ligam e desligam (e há "Sair do modo dev" no menu); o selo vira "v7.5.1 · dev" e a etiqueta "MODO DEV" fica no alto da tela, até no jogo. Sem painel à parte (2º retorno do usuário: "o jogo praticamente igual").
    - Save à parte (`lcc2_save_dev`; o de verdade fica guardado), 7 dias liberados, R$ 10.000 que a lojinha repõe; lojinha desde o dia 1, com as 7 melhorias ligadas e desligadas de graça, couvert e divulgação liberados; ranking de fora. Teste `smoke15`.
+17. **v7.6, tela larga** (ver `docs/spec-v7.6.md`; retorno de jogador, proposta 1 escolhida pelo usuário):
+   - Tela de 1220×600 (`TW`): o mundo da v7.5 inteiro à vista; `Game.cam` fixo em 260. Saem a rolagem, as abinhas, a borda e os 2 toques.
+   - HUD espalhado (`HUDX`: fila de ações +130, mãos, pausa e som +260). Celular deitado do mesmo tamanho de antes; notebook e tablet um pouco menores; palco com a altura de antes nas telas estreitas (menu e lojinha sem apertar).
+   - Equilíbrio igual ao da v7.5. Testes `smoke14` (refeito), `smoke2`, `smoke7`, `smoke12`; capturas `shot_v7_6.py`.
 
 ## Código em partes (`src/`)
 - Desde 15/10/2026 o código fica em 19 partes em `src/` (lista no `CLAUDE.md`), juntadas por `montar.py` em `lanchonete.html` sem acrescentar nada: o arquivo montado é idêntico, byte a byte, ao anterior à divisão.
@@ -168,7 +173,7 @@
 - `smoke11` (39/39: v7.2, livro-caixa, limite de 14 dias, resumo e aba Caixa);
 - `smoke12` (21/21: v7.3, velocidade, Tênis de corrida, selos da fila);
 - `smoke13` (58/58: v7.4 e os 4 pratos da v7.4.1, Garagem, móveis, editor do salão, posição e caminho, contas sem aluguel);
-- `smoke14` (75/75: v7.5, câmera, arrastar o fundo, borda, toque duplo, abinhas, espera de 4, máquina de suco, Dani, movimento reduzido);
+- `smoke14` (47/47: v7.5 e a tela larga da v7.6, espera de 4, toque na tela larga, HUD largo, máquina de suco, Dani);
 - `smoke15` (43/43: v7.5.1, modo dev, save à parte, dias, dinheiro, lojinha desde o dia 1, melhorias, equipe com couvert, divulgação, ranking de fora, sair);
 - `menu_fit` (14 tamanhos de tela);
 - `balance` (bot, N rodadas por dia; `DIV`, `MULT`, `MOVEIS`, `MOVIMENTO`, `GRUPOS`, `DIAS`, `BOT=afiado`, `ORDEM`, `INGRED`, `CONTAS`, `METAS`; perdas por causa e 3★);
@@ -185,4 +190,4 @@
 - v7.1: conferir com jogadores se a fila justa (`FILA_JUSTA`) e a porta (`PORTA`) ficaram no ponto, e se o ícone "aguardando mesa" se entende.
 - **Roteiro das próximas versões em `docs/PLANO.md`** (uma etapa por sessão; log das ideias e retornos em `docs/PROPOSTAS.md`): jogo justo (feito na v7.1), livro-caixa (feito na v7.2), Bia mais ágil (feito na v7.3), Garagem e editor do salão (feito na v7.4), espera lá fora (feito na v7.5), manutenção e imprevistos, ponto (Centro, área nobre com VIPs exigentes), modo história em 2 partes e polimento.
 - A lojinha ainda rola no menor celular deitado (568×320).
-- v7.5: conferir com jogadores (e no celular de verdade) se a tela que rola se entende (abinhas, arrastar o fundo, 2 toques) e se a Máquina de suco vale a ida lá fora; com a Bia sozinha, o bot afiado perde dinheiro buscando suco em toda brecha.
+- v7.6: conferir com jogadores (e no celular de verdade) se a tela larga deixou tudo à vista sem ficar pequeno demais (no notebook e no tablet o jogo encolhe um pouco) e se a Máquina de suco vale a ida lá fora; com a Bia sozinha, o bot afiado perde dinheiro buscando suco em toda brecha.

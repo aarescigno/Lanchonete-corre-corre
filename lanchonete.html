@@ -15,8 +15,8 @@
 *{box-sizing:border-box}
 html,body{margin:0;padding:0;height:100%;width:100%;overflow:hidden;background:#22201C;color:#22201C;font-family:var(--fb);-webkit-tap-highlight-color:transparent}
 #app{position:fixed;inset:0;display:flex;align-items:center;justify-content:center;background:#22201C;overflow:hidden}
-#stage{position:relative;width:960px;height:600px;overflow:hidden;background:#CFE8D6;user-select:none;-webkit-user-select:none}
-#c{display:block;width:100%;height:100%;touch-action:none;outline:none;cursor:pointer}
+#stage{position:relative;width:1220px;height:600px;overflow:hidden;background:#22201C;user-select:none;-webkit-user-select:none}
+#c{display:block;width:100%;height:600px;touch-action:none;outline:none;cursor:pointer}
 .ov{position:absolute;inset:0;display:none;align-items:center;justify-content:center;padding:calc(var(--u)*10);background:rgba(34,32,28,.55)}
 .ov.show{display:flex}
 #ov-menu{background:linear-gradient(90deg,rgba(34,32,28,.0),rgba(34,32,28,0));justify-content:flex-start;padding-left:calc(var(--u)*34)}
@@ -232,11 +232,11 @@ table.rank tr.me td{background:#fbe7a8}
 </style>
 <div id="app">
   <div id="stage">
-    <canvas id="c" width="960" height="600" role="img" aria-label="Lanchonete Corre-Corre: área do jogo"></canvas>
+    <canvas id="c" width="1220" height="600" role="img" aria-label="Lanchonete Corre-Corre: área do jogo"></canvas>
 
     <div class="ov show" id="ov-menu">
       <div class="panel menu-panel">
-        <span class="vtag" id="vtag" aria-label="Versão 7.5.1">v7.5.1</span>
+        <span class="vtag" id="vtag" aria-label="Versão 7.6">v7.6</span>
         <h1 class="title">Lanchonete <br>Corre-Corre</h1>
         <p class="tag">Ajude a Bia a atender a freguesia da esquina antes que o cafezinho esfrie!</p>
         <div class="lbl">Carreira: escolha o dia</div>
@@ -413,7 +413,8 @@ table.rank tr.me td{background:#fbe7a8}
       <div class="panel">
         <h2>Versões</h2>
         <ul class="verlist">
-          <li><b>v7.5.1</b><span class="cur">versão atual</span><br>21/10/2026 &mdash; Modo dev, para testar: 10 toques no selo da versão ligam e desligam. O jogo fica igual, com "Modo dev" na tela, os 7 dias liberados, R$ 10.000 que não acabam e tudo liberado na lojinha (até antes do dia 1): melhorias de graça, liga e desliga; equipe completa, couvert e divulgação. Usa um save à parte e fica fora do ranking.</li>
+          <li><b>v7.6</b><span class="cur">versão atual</span><br>22/10/2026 &mdash; Tudo na mesma tela: a tela ficou mais larga e mostra a calçada, o salão e a cozinha juntos, sem rolar (sem abinhas nem arrastar o fundo). No celular deitado, tudo fica do mesmo tamanho de antes.</li>
+          <li><b>v7.5.1</b><br>21/10/2026 &mdash; Modo dev, para testar: 10 toques no selo da versão ligam e desligam. O jogo fica igual, com "Modo dev" na tela, os 7 dias liberados, R$ 10.000 que não acabam e tudo liberado na lojinha (até antes do dia 1): melhorias de graça, liga e desliga; equipe completa, couvert e divulgação. Usa um save à parte e fica fora do ranking.<br><a href="versoes/v7.5.1.html" target="_blank" rel="noopener">Abrir a v7.5.1</a></li>
           <li><b>v7.5</b><br>21/10/2026 &mdash; A espera foi para a calçada: a tela rola (arraste o fundo, use as abinhas do alto ou arraste o grupo até a borda; 2 toques no grupo levam ao salão), 4 bancos lá fora com tablet, toldo e vaso, e a Máquina de suco no lugar da Água saborizada: quem espera pede no tablet, a Bia (ou a Dani) leva e o suco entra na conta.<br><a href="versoes/v7.5.html" target="_blank" rel="noopener">Abrir a v7.5</a></li>
           <li><b>v7.4.4</b><br>21/10/2026 &mdash; Na Garagem, TV e som no lugar do couvert: a TV de tubo na Rede Esfera e o som na rádio Velha Brasil FM deixam a paciência nas mesas cair 5% mais devagar cada um, pagando só a luz (aba Equipe). O couvert artístico fica para o restaurante da Avenida Brasil.<br><a href="versoes/v7.4.4.html" target="_blank" rel="noopener">Abrir a v7.4.4</a></li>
           <li><b>v7.4.3</b><br>21/10/2026 &mdash; Entre os dias, na aba Salão: toque numa mesa para trocar a cor das cadeiras, de graça.<br><a href="versoes/v7.4.3.html" target="_blank" rel="noopener">Abrir a v7.4.3</a></li>
@@ -476,15 +477,16 @@ const HAIRC  = ['#1B1512','#2F1D12','#5B3A21','#A67B43','#8C8C8C','#E8E8E8','#7A
 const PANTS  = ['#2F3E5C','#4A4036','#5B5F6B','#3C5A4A','#6A3F52'];
 const DISHES = ['pf','pastel','coxinha','misto'];
 
-/* calçada (v7.5): o mundo vai de -CALCADA.w (a rua) até W; a tela mostra W px dele e rola (câmera: Game.cam,
-   de 0, o salão como antes, até CALCADA.w, a calçada inteira). A espera fica lá fora, no lugar da fila de antes */
+/* calçada (v7.5): o mundo vai de -CALCADA.w (a rua) até W; a espera fica lá fora, no lugar da fila de antes.
+   Tela larga (v7.6): a tela tem TW px e mostra o mundo inteiro, sem rolar (Game.cam = CALCADA.w: onde o mundo
+   começa na tela). No celular deitado (~2:1), tudo fica do mesmo tamanho de antes */
 const CALCADA = { w:260 };
+const TW = W + CALCADA.w;
 const QUEUE = { x:-132, ys:[178, 264, 350, 436], max:4 };
 const DOOR  = { x:-300, y:106 };                     // de onde a freguesia vem (e para onde vai): a rua, à esquerda
-/* câmera: borda (px da tela) onde o grupo arrastado faz a tela rolar, a `rola` px/s; `vel`: px/s da rolagem das
-   abinhas e do toque duplo; folga: a partir de quantos px escondidos a abinha aparece; toque2: s entre os 2 toques */
-const CAM = { borda:56, rola:520, vel:1500, folga:14, toque2:0.4 };
-const ABAS = { l:{ x:6, y:20, w:104, h:46 }, r:{ x:850, y:20, w:104, h:46 } };   // abinhas no alto da tela (fixas)
+/* HUD na tela larga (v7.6): dia e lucro à esquerda, como antes; a fila de ações anda `fila` px e as mãos, a pausa e
+   o som, `dir` px (para a direita) */
+const HUDX = { fila:CALCADA.w / 2, dir:CALCADA.w };
 const STATIONS = {
   order:  { ap:{x:744,y:150}, rect:{x:766,y:96, w:194,h:108} },
   plates: { ap:{x:744,y:256}, rect:{x:766,y:206,w:194,h:98 } },
@@ -496,7 +498,7 @@ const STATIONS = {
 };
 const PLATE_SLOTS = [ {x:806,y:270}, {x:848,y:270}, {x:890,y:270}, {x:932,y:270} ];
 const BOUNDS = { x0:16 - CALCADA.w, y0:112, x1:744, y1:528 };
-const LAYOUT = { W, H, CALCADA, QUEUE, DOOR, STATIONS, PLATE_SLOTS, BOUNDS };
+const LAYOUT = { W, H, TW, HUDX, CALCADA, QUEUE, DOOR, STATIONS, PLATE_SLOTS, BOUNDS };
 /* ============================================================
    PONTOS (v7.4): o nível do salão é o ponto. Por enquanto só a Garagem; a área
    industrial, a Avenida Brasil e o Terraço Suíça vêm nas etapas 3 e 4 do plano.
@@ -731,7 +733,7 @@ const MAQUINA = { pede:2.5, prep:3, take:0.5, slow:0.4 };
 const VIP = { pat:0.75, tip:0.5, perfect:40, angry:30, dish:25, cook:1.8, types:['estudante','vovos','familia','executiva'] };   // dish: o prato especial soma R$ 25 à conta e leva 1,8× o tempo
 
 const DAYS = [
-  { n:1, groups:5,  types:['estudante','vovos'],                                   nu:null,         meta:200, expert:320,  time:150, speed:0.60, note:'A freguesia espera lá fora, na calçada. Arraste o fundo para o lado (ou toque nas abinhas do alto) para ver a calçada e a cozinha. Arrastando um grupo até a borda, a tela rola sozinha.' },
+  { n:1, groups:5,  types:['estudante','vovos'],                                   nu:null,         meta:200, expert:320,  time:150, speed:0.60, note:'A freguesia espera lá fora, na calçada: arraste cada grupo até uma mesa livre.' },
   { n:2, groups:8,  types:['estudante','vovos','familia'],                         nu:'familia',    meta:300, expert:720,  time:160, speed:0.60, note:'Chegou a família! Grupos de 3 ou 4 só cabem nas mesas de 4 lugares. Na lojinha, aba Salão, dá para comprar mesas e arrumar o salão.' },
   { n:3, groups:13, types:['estudante','vovos','familia','executiva'],             nu:'executiva',  meta:380, expert:880,  time:170, speed:0.60, juice:0.3, note:'O movimento aumentou e agora só há 4 pratos limpos: sozinha a Bia não dá conta, contrate ajuda na lojinha. A executiva tem pouca paciência, mas deixa boa gorjeta. E abriu o balcão de sucos: quem pede suco quer receber antes da conta!' },
   { n:4, groups:15, types:['estudante','vovos','familia','executiva','entregador'], nu:'entregador', meta:300, expert:780, time:180, speed:0.58, juice:0.3, note:'O entregador de moto tem pressa: pouquíssima paciência!' },
@@ -762,7 +764,7 @@ const DIVULGA = [
 const MOVIMENTO = { kit:10, porLugar:0.06 };
 function movimentoSalao(lugares){ return 1 + MOVIMENTO.porLugar * Math.max(0, lugares - MOVIMENTO.kit); }
 const CAIXA_MAX = 14;                                 // livro-caixa (v7.2): quantos dias da carreira ficam guardados
-const VERSAO = 'v7.5.1';                              // vai no resumo do Caixa
+const VERSAO = 'v7.6';                              // vai no resumo do Caixa
 const DIVULGA_DIA = 3;                                // antes disso, o movimento é o da inauguração (sem custo)
 function divulgaAberta(n){ return DEV.on || n >= DIVULGA_DIA; }   // no modo dev, desde o dia 1
 function divulgaOf(id){ return DIVULGA.find(d => d.id === id) || DIVULGA[1]; }
@@ -1772,7 +1774,7 @@ class Game {
     this.dani = new Helper(this);
     this.fx = [];
     this.sel = null; this.drag = null; this.hover = null; this.hoverOk = false;
-    this.cam = CALCADA.w; this.camTo = null; this.pan = null; this.lastTap = null;   // câmera (v7.5)
+    this.cam = CALCADA.w;   // onde o mundo começa na tela larga (v7.6: a calçada inteira à vista, sem rolar)
     this.shopBought = false; this.shopNext = 1; this.boughtFor = 0;
     this.soundBtnT = 0;
     this.mode = 'carreira';
@@ -1808,8 +1810,8 @@ class Game {
     this.stats = { served:0, lost:0, chain:0, spawned:0, full:0, vip:0, vipLost:0, juice:0, juiceMiss:0, trash:0, washed:0, emptied:0, sucoEsp:0, crit:0, lostBy:{ semMesa:0, comMesa:0, pedido:0, prato:0, conta:0 }, lotadoT:0 };
     this.lastKind = null; this.chainN = 0;
     this.ending = false; this.endTimer = 0; this.reason = '';
-    this.sel = null; this.drag = null; this.hover = null; this.pan = null; this.lastTap = null;
-    this.cam = CALCADA.w; this.camTo = null;   // o dia começa olhando a calçada, onde a freguesia chega
+    this.sel = null; this.drag = null; this.hover = null;
+    this.cam = CALCADA.w;
     this.schedule = n === 0 ? [] : this.buildSchedule(this.day);
     this.nextIdx = 0;
     this.result = null;
@@ -1865,7 +1867,7 @@ class Game {
   }
   begin(){
     this.payDay(); this.setState('playing');
-    if (this.unpaid.length) this.addText(W/2 - this.cam, 300, 'Sem dinheiro para pagar: sem ' + this.unpaid.join(', ') + ' hoje', PAL.perigo, 20);
+    if (this.unpaid.length) this.addText(TW/2 - this.cam, 300, 'Sem dinheiro para pagar: sem ' + this.unpaid.join(', ') + ' hoje', PAL.perigo, 20);
   }
   /* lucro do dia (a meta): faturamento − ingredientes − contas − folha − divulgação */
   get fixo(){ return this.contas + this.paid + this.paidDiv; }
@@ -1885,7 +1887,7 @@ class Game {
     this.stats.washed += n;
     return n;
   }
-  pause(){ if (this.state === 'playing'){ this.drag = null; this.pan = null; this.setState('paused'); } }
+  pause(){ if (this.state === 'playing'){ this.drag = null; this.setState('paused'); } }
   resume(){ if (this.state === 'paused') this.setState('playing'); }
 
   /* ---------- efeitos ---------- */
@@ -1977,7 +1979,7 @@ class Game {
       this.five++;
       if (this.five >= 8){
         this.five = 0;
-        if (this.stars < 5){ this.stars++; this.starFlash = 1; this.addText(W/2 - this.cam, 300, '+1 estrela!', PAL.mostarda, 28); Sfx.win(); }
+        if (this.stars < 5){ this.stars++; this.starFlash = 1; this.addText(TW/2 - this.cam, 300, '+1 estrela!', PAL.mostarda, 28); Sfx.win(); }
       }
     }
     this.releaseCmd(g);
@@ -2038,7 +2040,7 @@ class Game {
   loseStar(){
     if (this.stars <= 0) return;
     this.stars--; this.starFlash = 1;
-    this.addText(W/2 - this.cam, 300, 'Reputação -1 ★', PAL.perigo, 26);
+    this.addText(TW/2 - this.cam, 300, 'Reputação -1 ★', PAL.perigo, 26);
     if (this.stars <= 0) this.endEndlessShift();
   }
   endEndlessShift(){
@@ -2098,47 +2100,6 @@ class Game {
     this.addText(x, y - 108, '+' + JUICE.price * n + ' na conta', PAL.ok, 14);
     Sfx.tone(880, 0.07, 'sine', 0.05); Sfx.tone(1175, 0.12, 'sine', 0.05, 0.07);
   }
-
-  /* ---------- câmera (v7.5): cam = quanto o mundo anda para a direita (0: o salão; CALCADA.w: a calçada) ---------- */
-  setCam(v){ this.cam = clamp(v, 0, CALCADA.w); }
-  /* leva a tela até v (com movimento reduzido, na hora) */
-  camGo(v){ this.camTo = null; if (RM) this.setCam(v); else this.camTo = clamp(v, 0, CALCADA.w); }
-  updateCam(dt){
-    const d = this.drag;
-    if (d && d.moved){
-      // grupo arrastado até a borda: a tela rola sozinha para aquele lado
-      const v = d.px < CAM.borda ? 1 : (d.px > W - CAM.borda ? -1 : 0);
-      if (v){
-        this.camTo = null;
-        this.setCam(RM ? (v > 0 ? CALCADA.w : 0) : this.cam + v * CAM.rola * dt);
-        d.x = d.px - this.cam;
-        this.hoverAt(d.x, d.y, d.pad, d.g);
-      }
-    }
-    if (this.camTo != null){
-      const r = this.camTo - this.cam, st = CAM.vel * dt;
-      if (Math.abs(r) <= st){ this.cam = this.camTo; this.camTo = null; }
-      else this.cam += Math.sign(r) * st;
-    }
-  }
-  /* abinhas da borda (no alto da tela): 'l' leva à calçada (aparece enquanto ela não está toda à vista),
-     'r' leva ao salão e à cozinha */
-  abaOn(k){ return k === 'l' ? this.cam < CALCADA.w - CAM.folga : this.cam > CAM.folga; }
-  abaHit(x, y){
-    for (const k of ['l','r']){ const r = ABAS[k]; if (this.abaOn(k) && x >= r.x && x <= r.x + r.w && y >= r.y && y <= r.y + r.h) return k; }
-    return null;
-  }
-  /* a calçada precisa de atenção e está fora da tela: suco pronto sem ninguém indo buscar, ou alguém da
-     espera com 1 coração */
-  abaAlerta(){
-    if (!this.abaOn('l')) return false;
-    const fora = x => x + this.cam < CAM.folga;
-    const r = STATIONS.maquina.rect;
-    if (this.up.maquina && this.maqLivre() && !(this.dani.does('suco')) && fora(r.x + r.w / 2)) return true;
-    return this.queue.some(g => g.state === 'queue' && g.hearts <= 1 && fora(g.x));
-  }
-  /* pratos prontos no balcão que ainda não estão na fila da Bia (contador da abinha da direita) */
-  abaPratos(){ return this.kitchen.plates.filter(p => p && !this.bia.acts.some(a => a.type === 'plate' && a.pid === p.id)).length; }
   fail(g, msg){
     g.boing = 0.6;
     this.addText(g.x, g.y - 60, msg, PAL.perigo, 15);
@@ -2244,7 +2205,6 @@ class Game {
     this.groups.forEach(g => g.update(dt));
     this.groups = this.groups.filter(g => !g.done);
     this.maq.forEach(o => { if (o.t > 0){ o.t -= dt; if (o.t <= 0){ Sfx.tone(1568, 0.12, 'sine', 0.05); this.addGlow('maquina'); } } });
-    this.updateCam(dt);
     if (this.lotado) this.stats.lotadoT += dt;
     this.bia.update(dt);
     this.dani.update(dt);
@@ -2499,12 +2459,14 @@ class Game {
     }
     return null;
   }
+  /* HUD na tela larga (v7.6): a fila de ações anda HUDX.fila e a pausa e o som, HUDX.dir */
   hudHit(x, y){
     if (y < 540) return null;
-    if (x >= 832 && x <= 891 && y >= 542) return { k:'pause' };
-    if (x >= 891 && x <= 952 && y >= 542) return { k:'sound' };
+    const xd = x - HUDX.dir;
+    if (xd >= 832 && xd <= 891 && y >= 542) return { k:'pause' };
+    if (xd >= 891 && xd <= 952 && y >= 542) return { k:'sound' };
     for (let i=0;i<6;i++){
-      const sx = 358 + i*52;
+      const sx = 358 + i*52 + HUDX.fila;
       if (x >= sx && x < sx + 52 && y >= 542) return { k:'slot', i };
     }
     return { k:'hud' };
@@ -2529,11 +2491,10 @@ class Game {
     if (this.bia.enqueue({ type:k })){ Sfx.tap(); this.addGlow(k); return true; }
     return false;
   }
-  /* entrada: x e y chegam na tela (o HUD e as abinhas ficam fixos); o resto vira mundo (x - cam) */
+  /* entrada: x e y chegam na tela (HUD na tela; o resto vira mundo, x - cam) */
   onDown(sx, y, pad){
     if (this.state !== 'playing') return;
     pad = pad || 0;
-    this.pan = null;
     const h = this.hudHit(sx, y);
     if (h){
       if (h.k === 'pause') this.pause();
@@ -2541,14 +2502,10 @@ class Game {
       else if (h.k === 'slot') { if (h.i < this.bia.acts.length){ this.bia.remove(h.i); Sfx.tap(); this.addGlow('acao' + h.i); } }
       return;
     }
-    const aba = this.abaHit(sx, y);
-    if (aba){ this.camGo(aba === 'l' ? CALCADA.w : 0); Sfx.tap(); this.addGlow('aba' + aba); return; }
     const x = sx - this.cam;
     const hit = this.pickAt(x, y, pad);
     if (hit && hit.k === 'queue'){
-      // 2º toque seguido no mesmo grupo: seleciona e leva a tela ao salão, para escolher a mesa
-      const dbl = !!(this.lastTap && this.lastTap.g === hit.g && this.anim - this.lastTap.t < CAM.toque2);
-      this.drag = { g:hit.g, sx:x, sy:y, x, y, px:sx, moved:false, pad, dbl };
+      this.drag = { g:hit.g, sx:x, sy:y, x, y, moved:false, pad };
       return;
     }
     if (hit && hit.k === 'table'){
@@ -2556,10 +2513,9 @@ class Game {
       else this.tapTable(hit.t);
       return;
     }
-    if (hit){ this.sel = null; this.tapStation(hit.st, x, y); return; }
-    // no vazio: arrastar rola a tela (só soltando sem arrastar é que o grupo escolhido deixa de estar)
-    this.pan = { sx, cam0:this.cam, moved:false, pad };
-    if (pad) this.fx.push({ k:'tap', x, y, life:0, max:0.3 });
+    this.sel = null;
+    if (hit) this.tapStation(hit.st, x, y);
+    else if (pad) this.fx.push({ k:'tap', x, y, life:0, max:0.3 });
   }
   /* destaque da mesa sob o grupo arrastado ou escolhido */
   hoverAt(x, y, pad, grp){
@@ -2569,14 +2525,9 @@ class Game {
   }
   onMove(sx, y){
     if (this.state !== 'playing') return;
-    const p = this.pan;
-    if (p){
-      if (!p.moved && Math.abs(sx - p.sx) > Math.max(8, p.pad)) p.moved = true;
-      if (p.moved){ this.camTo = null; this.setCam(p.cam0 + sx - p.sx); }
-    }
     const x = sx - this.cam, d = this.drag, pad = d ? d.pad : 0;
     if (d){
-      d.x = x; d.y = y; d.px = sx;
+      d.x = x; d.y = y;
       // no dedo, um tremidinho não vira arrasto (folga ~ a mesma do alvo)
       if (!d.moved && Math.hypot(x-d.sx, y-d.sy) > Math.max(9, pad)) d.moved = true;
     }
@@ -2585,25 +2536,16 @@ class Game {
     else this.hover = null;
   }
   onUp(sx, y){
-    const d = this.drag, p = this.pan;
-    this.drag = null; this.pan = null; this.hover = null;
-    if (this.state !== 'playing') return;
-    if (p){ if (!p.moved) this.sel = null; return; }
-    if (!d) return;
+    const d = this.drag;
+    this.drag = null; this.hover = null;
+    if (!d || this.state !== 'playing') return;
     const x = sx - this.cam;
     if (d.moved){
       const t = this.tableAt(x, y, d.pad);
       if (t) this.seatGroup(d.g, t);
       else { d.g.boing = 0.4; }
-      this.lastTap = null;
-    } else if (d.dbl){
-      this.sel = d.g; this.lastTap = null;
-      this.camGo(0);
-      Sfx.tap();
-      this.addGlow(d.g);
     } else {
       this.sel = (this.sel === d.g) ? null : d.g;
-      this.lastTap = { g:d.g, t:this.anim };
       Sfx.tap();
       this.addGlow(d.g);
     }
@@ -3045,7 +2987,6 @@ function drawWallCommon(ctx,g,t){
   const endless = !!(g && g.mode === 'semfim');
   const frac = endless ? ((g.elapsed % 60) / 60) : (g ? clamp(g.clock / g.day.time, 0, 1) : 1);
   const low = !endless && g && g.clock < 20 && g.state === 'playing';
-  if (g && (g.state === 'playing' || g.state === 'paused') && 744 + g.cam > ABAS.r.x) return placaCozinha(ctx);
   circ(ctx,712,44,32); fs(ctx,PAL.cromo,3);
   circ(ctx,712,44,26); fs(ctx,'#fff',2);
   ctx.beginPath(); ctx.arc(712,44,21,-Math.PI/2,-Math.PI/2 + TAU*frac); ctx.lineWidth = 6; ctx.strokeStyle = low ? PAL.perigo : (endless ? PAL.ok : PAL.mostarda); ctx.lineCap = 'butt'; ctx.stroke(); ctx.lineCap = 'round';
@@ -3627,9 +3568,9 @@ function drawCluster(ctx,grp,x,y,tm,o){
    HUD
    ============================================================ */
 function drawHud(ctx,g,tm){
-  ctx.fillStyle = '#2B2823'; ctx.fillRect(0,540,W,60);
-  ctx.fillStyle = PAL.mostarda; ctx.fillRect(0,540,W,4);
-  ctx.strokeStyle = PAL.tinta; ctx.lineWidth = 2; ctx.beginPath(); ctx.moveTo(0,544); ctx.lineTo(W,544); ctx.stroke();
+  ctx.fillStyle = '#2B2823'; ctx.fillRect(0,540,TW,60);
+  ctx.fillStyle = PAL.mostarda; ctx.fillRect(0,540,TW,4);
+  ctx.strokeStyle = PAL.tinta; ctx.lineWidth = 2; ctx.beginPath(); ctx.moveTo(0,544); ctx.lineTo(TW,544); ctx.stroke();
   const m = Math.round(g.money), d = g.day;
   if (g.mode === 'semfim'){
     // modo sem fim: reputação em 5 estrelas no lugar da meta
@@ -3662,7 +3603,8 @@ function drawHud(ctx,g,tm){
     txt(ctx,'lucro · meta R$ ' + d.meta,bx,593,11,m >= d.meta ? '#7fd69a' : '#cfc7b0','left',FB);
     txt(ctx,'expert R$ ' + d.expert,bx+bw,593,11,m >= d.expert ? PAL.mostarda : '#cfc7b0','right',FB);
   }
-  // fila de ações
+  // fila de ações (no meio da tela larga)
+  ctx.save(); ctx.translate(HUDX.fila, 0);
   ctx.save(); ctx.translate(342,570); ctx.rotate(-Math.PI/2); txt(ctx,'FILA',0,0,11,'#cfc7b0','center',FB); ctx.restore();
   for (let i=0;i<6;i++){
     const sx = 360 + i*52, a = g.bia.acts[i];
@@ -3673,7 +3615,9 @@ function drawHud(ctx,g,tm){
       else { txt(ctx,String(i+1),sx+24,571,14,'#5b554a','center',FB); }
     });
   }
-  // mãos
+  ctx.restore();
+  // mãos, pausa e som (à direita)
+  ctx.save(); ctx.translate(HUDX.dir, 0);
   const tray = g.bia.tray;
   const lay = g.bia.layout() || [g.bia.hands.slice(0,1), g.bia.hands.slice(1,2)];
   txt(ctx,tray ? 'BANDEJA · MÃO' : 'MÃOS',748,553,10,'#cfc7b0','center',FB);
@@ -3693,6 +3637,7 @@ function drawHud(ctx,g,tm){
     if (!Sfx.muted){ ctx.strokeStyle = PAL.tinta; ctx.lineWidth = 2.4; ctx.beginPath(); ctx.arc(924,571,6,-0.9,0.9); ctx.stroke(); ctx.beginPath(); ctx.arc(924,571,11,-0.9,0.9); ctx.stroke(); }
     else { ctx.strokeStyle = PAL.perigo; ctx.lineWidth = 3.2; ctx.beginPath(); ctx.moveTo(927,563); ctx.lineTo(939,579); ctx.moveTo(939,563); ctx.lineTo(927,579); ctx.stroke(); }
   });
+  ctx.restore();
 }
 /* selo com a vez na fila (v7.3): etiqueta "1º", "2º"... (ordinal, para não confundir com o número
    da mesa); a ação atual em mostarda, as outras escuras; surge com um pulinho (parado com RM) */
@@ -3736,33 +3681,6 @@ function drawPedidoEspera(ctx,g,grp,tm){
   if (n){ circ(ctx,12,-11,7); fs(ctx,'#fff',1.4); txt(ctx,String(n),12,-10.5,10,PAL.tinta,'center',FD); }
   if (leva && !o){ circ(ctx,12,-11,7); fs(ctx,PAL.mostarda,1.4); txt(ctx,'→',12,-11,10,PAL.tinta,'center',FD); }
   ctx.restore();
-}
-/* abinhas do alto da tela (v7.5): a da esquerda leva à calçada (com quantos esperam e, piscando, o aviso de que lá
-   fora precisa de atenção); a da direita leva ao salão e mostra o relógio, que some da tela junto com a cozinha */
-function drawAbas(ctx,g,tm){
-  ['l','r'].forEach(k => {
-    if (!g.abaOn(k)) return;
-    const r = ABAS[k], al = k === 'l' && g.abaAlerta();
-    glowSprite(ctx,g,'aba' + k,ctx => {
-      const blink = al && (RM || Math.floor(tm*3) % 2 === 0);
-      rr(ctx,r.x,r.y,r.w,r.h,10); fs(ctx,blink ? PAL.alerta : 'rgba(43,40,35,.88)',2.4);
-      const cx = r.x + r.w / 2, cy = r.y + r.h / 2;
-      if (k === 'l'){
-        txt(ctx,'◀',r.x + 14,cy,16,PAL.mostarda,'center',FD);
-        txt(ctx,'Calçada',cx + 10,cy - 7,13,'#fff','center',FD,0,r.w - 30);
-        const n = g.queue.length;
-        txt(ctx,n ? (n > 1 ? n + ' esperando' : '1 esperando') : 'ninguém',cx + 10,cy + 10,10,'#F7EFD8','center',FB,0,r.w - 30);
-        if (al){ const p = RM ? 1 : 1 + 0.15 * Math.sin(tm*10); ctx.save(); ctx.translate(r.x + r.w - 2,r.y + 2); ctx.scale(p,p); circ(ctx,0,0,10); fs(ctx,PAL.perigo,2); txt(ctx,'!',0,1,14,'#fff','center',FD); ctx.restore(); }
-      } else {
-        txt(ctx,'▶',r.x + r.w - 14,cy,16,PAL.mostarda,'center',FD);
-        txt(ctx,'Salão',cx - 10,cy - 7,13,'#fff','center',FD,0,r.w - 30);
-        const endless = g.mode === 'semfim', low = !endless && g.clock < 20;
-        txt(ctx,endless ? mmssUp(g.elapsed) : mmss(g.clock),cx - 10,cy + 10,12,low ? '#FF9C8A' : PAL.mostarda,'center',FD);
-        const n = g.abaPratos();
-        if (n){ circ(ctx,r.x + 2,r.y + 2,10); fs(ctx,PAL.ok,2); txt(ctx,String(n),r.x + 2,r.y + 3,12,'#fff','center',FD); }   // pratos prontos esperando a Bia
-      }
-    });
-  });
 }
 function drawFilaMarcas(ctx,g,tm){
   const seen = {};
@@ -3842,14 +3760,14 @@ function drawTouchFx(ctx,g){
   }
 }
 
-/* o mundo (salão, calçada, gente e efeitos) anda com a câmera (v7.5); o HUD e as abinhas ficam fixos na tela */
+/* o mundo (salão, calçada, gente e efeitos) começa em g.cam na tela larga (v7.6); o HUD fica na tela */
 function render(g, ctx){
   const tm = g.anim;
   const menu = g.state === 'menu';
   ctx.save();
   ctx.lineJoin = 'round'; ctx.lineCap = 'round';
   ctx.save();
-  ctx.translate(menu ? 0 : g.cam, 0);
+  ctx.translate(g.cam, 0);
   drawFloor(ctx,g);
   drawWall(ctx,g,tm);
   drawCalcada(ctx,g,tm);
@@ -3954,17 +3872,16 @@ function render(g, ctx){
   ctx.restore();
 
   if (menu){
-    ctx.fillStyle = 'rgba(34,32,28,.18)'; ctx.fillRect(0,92,W,448);
-    drawBia(ctx,b,790,520,{ s:2.3, wave:true, t:tm });
-    ctx.fillStyle = '#2B2823'; ctx.fillRect(0,540,W,60);
-    ctx.fillStyle = PAL.mostarda; ctx.fillRect(0,540,W,4);
+    ctx.fillStyle = 'rgba(34,32,28,.18)'; ctx.fillRect(0,92,TW,448);
+    drawBia(ctx,b,TW-170,520,{ s:2.3, wave:true, t:tm });
+    ctx.fillStyle = '#2B2823'; ctx.fillRect(0,540,TW,60);
+    ctx.fillStyle = PAL.mostarda; ctx.fillRect(0,540,TW,4);
   } else {
     drawHud(ctx,g,tm);
-    if (g.state === 'playing' || g.state === 'paused') drawAbas(ctx,g,tm);
     if (g.ending && g.state === 'playing'){
       const msg = g.reason === 'time' ? 'Fim do expediente!' : (g.reason === 'stars' ? 'Sem estrelas!' : 'Todo mundo atendido!');
-      ctx.fillStyle = 'rgba(34,32,28,.35)'; ctx.fillRect(0,230,W,90);
-      txt(ctx,msg,W/2,275,46,PAL.mostarda,'center',FD,7);
+      ctx.fillStyle = 'rgba(34,32,28,.35)'; ctx.fillRect(0,230,TW,90);
+      txt(ctx,msg,TW/2,275,46,PAL.mostarda,'center',FD,7);
     }
   }
   ctx.restore();
@@ -4135,12 +4052,17 @@ function starsHtml(box, n, total){
 /* ---------- escala / DPR ---------- */
 function fit(){
   const vw = window.innerWidth || 960, vh = window.innerHeight || 600;
-  const s = Math.max(0.2, Math.min(vw / W, vh / H));
+  const s = Math.max(0.2, Math.min(vw / TW, vh / H));   // tela larga (v7.6)
   const dpr = Math.min(window.devicePixelRatio || 1, 2.5);
-  stage.style.width = Math.floor(W*s) + 'px';
-  stage.style.height = Math.floor(H*s) + 'px';
+  // numa tela mais estreita que a do jogo (~2:1), o jogo encolhe; o palco ganha a altura que teria com a tela de antes
+  // (960 de largura), para os painéis (menu, lojinha) não ficarem apertados, e o jogo fica no meio dele
+  const sh = Math.max(H*s, Math.min(vh, H * Math.min(vw / W, vh / H)));
+  stage.style.width = Math.floor(TW*s) + 'px';
+  stage.style.height = Math.floor(sh) + 'px';
   stage.style.setProperty('--u', s + 'px');
-  canvas.width = Math.round(W*s*dpr);
+  canvas.style.height = Math.floor(H*s) + 'px';
+  canvas.style.marginTop = Math.floor((sh - H*s) / 2) + 'px';
+  canvas.width = Math.round(TW*s*dpr);
   canvas.height = Math.round(H*s*dpr);
 }
 
@@ -4182,7 +4104,7 @@ function buildTips(){
   const ul = $('tips');
   clearEl(ul);
   const tips = [
-    ['A freguesia espera lá fora, na calçada. Arraste o grupo até uma mesa livre (ou toque no grupo e depois na mesa; 2 toques no grupo levam a tela ao salão). Grupos grandes precisam das mesas de 4 lugares. Na lojinha, aba Salão, compre mesas e arraste-as para arrumar a garagem: mais lugares trazem mais clientes.', c => {
+    ['A freguesia espera lá fora, na calçada. Arraste o grupo até uma mesa livre (ou toque no grupo e depois na mesa). Grupos grandes precisam das mesas de 4 lugares. Na lojinha, aba Salão, compre mesas e arraste-as para arrumar a garagem: mais lugares trazem mais clientes.', c => {
       drawPerson(c,{skin:3,hair:3,hairC:'#1B1512',pants:'#2F3E5C'},12,52,{shirt:CHAIRS[1].c,mood:0,s:0.8});
       c.strokeStyle = PAL.alerta; c.lineWidth = 3; c.setLineDash([4,4]); c.beginPath(); c.moveTo(22,40); c.lineTo(40,30); c.stroke(); c.setLineDash([]);
       c.beginPath(); c.moveTo(42,28); c.lineTo(35,28); c.lineTo(40,35); c.closePath(); c.fillStyle = PAL.alerta; c.fill();
@@ -4201,9 +4123,9 @@ function buildTips(){
       drawPerson(c,{skin:1,hair:1,hairC:'#5B3A21',pants:'#4A4036'},20,58,{shirt:CHAIRS[3].c,mood:0,s:0.6});
       drawPerson(c,{skin:4,hair:0,hairC:'#1B1512',pants:'#4A4036'},44,58,{shirt:CHAIRS[0].c,mood:2,s:0.6});
     }],
-    ['A tela rola: arraste o fundo (ou toque nas abinhas do alto) para ver a calçada e a cozinha; levando um grupo até a borda, ela rola sozinha. A abinha da calçada pisca quando alguém lá fora precisa de você. Com a Máquina de suco, quem espera pede no tablet: toque na máquina e a Bia leva (o suco entra na conta).', c => {
+    ['Com a Máquina de suco, quem espera lá fora pede no tablet (1 suco por pessoa) e o suco sai pronto em poucos segundos: toque na máquina e a Bia pega os copos que couberem e leva a cada grupo. Atender devolve 1 coração, quem bebe espera com mais calma e o suco (R$ ' + JUICE.price + ') entra na conta.', c => {
       rr(c,6,10,20,28,4); fs(c,'#F2F2EE',1.8); rr(c,9,13,14,10,2); fs(c,'rgba(242,140,40,.75)',1.2); drawIcon(c,'juice',16,32,0.4);
-      rr(c,30,18,28,22,6); fs(c,'rgba(43,40,35,.88)',1.6); txt(c,'◀',38,29,11,PAL.mostarda,'center',FD); txt(c,'!',51,29,12,PAL.alerta,'center',FD);
+      c.save(); c.translate(44,26); c.rotate(-0.18); rr(c,-12,-9,24,17,3); fs(c,PAL.tinta,1.4); c.fillStyle = '#FFE0A6'; c.fillRect(-9,-6,18,11); c.restore(); drawIcon(c,'juice',44,26,0.32);   // tablet
       c.save(); c.translate(16,52); drawBubble(c,0,0,8,PAL.ok); drawIcon(c,'juice',-1,1,0.36); c.restore();
       c.strokeStyle = PAL.faixa; c.lineWidth = 2.5; c.beginPath(); c.moveTo(30,54); c.lineTo(56,54); c.moveTo(50,49); c.lineTo(56,54); c.lineTo(50,59); c.stroke();
     }],
@@ -4906,13 +4828,13 @@ on('btn-final-menu', () => { selectedDay = 1; game.setState('menu'); });
 /* ---------- entrada ---------- */
 function toLogical(e){
   const r = canvas.getBoundingClientRect();
-  const w = r.width || W, h = r.height || H;
-  return { x:(e.clientX - r.left) * W / w, y:(e.clientY - r.top) * H / h };
+  const w = r.width || TW, h = r.height || H;
+  return { x:(e.clientX - r.left) * TW / w, y:(e.clientY - r.top) * H / h };
 }
 function touchPad(e){
   if (e.pointerType === 'mouse') return 0;
-  const w = canvas.getBoundingClientRect().width || W;
-  return clamp(14 * W / w, 8, 32);
+  const w = canvas.getBoundingClientRect().width || TW;
+  return clamp(14 * TW / w, 8, 32);
 }
 canvas.addEventListener('pointerdown', e => {
   Sfx.init(); Sfx.resume();
@@ -4922,7 +4844,7 @@ canvas.addEventListener('pointerdown', e => {
 });
 canvas.addEventListener('pointermove', e => { const p = toLogical(e); game.onMove(p.x, p.y); });
 canvas.addEventListener('pointerup', e => { const p = toLogical(e); game.onUp(p.x, p.y); });
-canvas.addEventListener('pointercancel', e => { game.drag = null; game.pan = null; game.hover = null; });
+canvas.addEventListener('pointercancel', e => { game.drag = null; game.hover = null; });
 canvas.addEventListener('contextmenu', e => e.preventDefault());
 window.addEventListener('keydown', e => {
   const k = e.key;
@@ -4931,8 +4853,6 @@ window.addEventListener('keydown', e => {
     if (game.state === 'playing'){ game.pause(); e.preventDefault(); }
     else if (game.state === 'paused' && k !== 'Escape'){ game.resume(); e.preventDefault(); }
   }
-  // setas: leva a tela à calçada (esquerda) ou ao salão (direita)
-  if ((k === 'ArrowLeft' || k === 'ArrowRight') && game.state === 'playing'){ game.camGo(k === 'ArrowLeft' ? CALCADA.w : 0); e.preventDefault(); }
 });
 document.addEventListener('visibilitychange', () => { if (document.hidden) game.pause(); });
 window.addEventListener('blur', () => game.pause());
@@ -4948,7 +4868,7 @@ function frame(ts){
   if (!(dt > 0)) dt = 0.016;
   dt = Math.min(dt, 0.05);
   game.update(dt);
-  ctx.setTransform(canvas.width / W, 0, 0, canvas.height / H, 0, 0);
+  ctx.setTransform(canvas.width / TW, 0, 0, canvas.height / H, 0, 0);
   render(game, ctx);
 }
 
@@ -4957,7 +4877,7 @@ fit();
 try { Rank.init(); } catch(e) {}
 game.setState('menu');
 window.__game = game;
-window.__lcc = { setShopTab: v => { shopTab = v; buildShop(); }, FILA_JUSTA, PORTA, CHAIRS, PAT, CONTAS, INGRED, MOVIMENTO, movimentoSalao, DIVULGA, DIVULGA_DIA, divulgaOf, contasDia, bomGoal, SALAO, PONTOS, pontoOf, MESA, mesaBox, mesaPreco, salaoLugares, mesaProblema, salaoCaminho, salaoProblema, salaoOrdena, salaoAuto, salaoVaga, salaoPerto, salaoKit, salaoDevolucao, SALAO_SEMFIM, normSalao, setObst, OBST, pathOk, MAQUINA, CALCADA, CAM, ABAS, esperaAp, tableApproach, CRIT, STAFF, DANI_TASKS, DANI_HANDS, daniTaskOk, TRASH, WASH, payroll, couvertEffect, couvertOk, ambienteEffect, dishStock, normSave, Helper, JUICE, KITCHEN_SLOTS, handLayout, trayOk, Game, Group, Table, Kitchen, Waitress, BIA_SPEED, DAYS, UPGRADES, CUSTOMER_TYPES, LAYOUT, PAL, Sfx, findPath, render, Rank, sortRows, cleanName, normName, CMD, ENDLESS, VIP, rk, renderRank, openRank, closeRank, LS, lsGet, lsSet, loadSave, DEV, saveKey, devSync, divulgaAberta, CAIXA_MAX, VERSAO, normCaixa, caixaResumo, caixaTotais, copyText };
+window.__lcc = { setShopTab: v => { shopTab = v; buildShop(); }, FILA_JUSTA, PORTA, CHAIRS, PAT, CONTAS, INGRED, MOVIMENTO, movimentoSalao, DIVULGA, DIVULGA_DIA, divulgaOf, contasDia, bomGoal, SALAO, PONTOS, pontoOf, MESA, mesaBox, mesaPreco, salaoLugares, mesaProblema, salaoCaminho, salaoProblema, salaoOrdena, salaoAuto, salaoVaga, salaoPerto, salaoKit, salaoDevolucao, SALAO_SEMFIM, normSalao, setObst, OBST, pathOk, MAQUINA, CALCADA, TW, HUDX, esperaAp, tableApproach, CRIT, STAFF, DANI_TASKS, DANI_HANDS, daniTaskOk, TRASH, WASH, payroll, couvertEffect, couvertOk, ambienteEffect, dishStock, normSave, Helper, JUICE, KITCHEN_SLOTS, handLayout, trayOk, Game, Group, Table, Kitchen, Waitress, BIA_SPEED, DAYS, UPGRADES, CUSTOMER_TYPES, LAYOUT, PAL, Sfx, findPath, render, Rank, sortRows, cleanName, normName, CMD, ENDLESS, VIP, rk, renderRank, openRank, closeRank, LS, lsGet, lsSet, loadSave, DEV, saveKey, devSync, divulgaAberta, CAIXA_MAX, VERSAO, normCaixa, caixaResumo, caixaTotais, copyText };
 window.requestAnimationFrame(frame);
 
 })();

@@ -48,8 +48,8 @@ g.tapStation('sink',850,450); run(5); ok(!g.bia.hands.some(h=>h.kind==='dirty'),
 g.tapStation('sink',850,450); run(5); ok(g.bia.qT>0||true,'pia vazia gera ?');
 // remover ação pelo HUD
 g.bia.clearActs(); g.tapStation('coffee',850,350); g.tapStation('order',800,150);
-ok(g.bia.acts.length===2,'2 ações na fila'); g.onDown(360+52*1+10,570); ok(g.bia.acts.length===1,'toque no ícone remove ação');
-g.onDown(360+10,570); ok(g.bia.acts.length===0,'remove ação atual');
+ok(g.bia.acts.length===2,'2 ações na fila'); g.onDown(L.HUDX.fila+360+52*1+10,570); ok(g.bia.acts.length===1,'toque no ícone remove ação');
+g.onDown(L.HUDX.fila+360+10,570); ok(g.bia.acts.length===0,'remove ação atual');
 // limite 6
 for(let k=0;k<9;k++) g.tapStation('coffee',850,350); ok(g.bia.acts.length===6,'fila máx 6');
 g.bia.clearActs();

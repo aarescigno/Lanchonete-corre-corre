@@ -37,7 +37,7 @@ ok(grp.state==='toTable','arrasto solto rente à mesa senta o grupo');
 
 // HUD: ícone da fila com a área cheia da faixa
 b.clearActs(); g.tapStation('coffee',850,350); g.tapStation('order',800,150);
-g.onDown(360+52+47, 598, PAD); ok(b.acts.length===1,'ícone da fila: canto de baixo conta');
+g.onDown(L.HUDX.fila+360+52+47, 598, PAD); ok(b.acts.length===1,'ícone da fila: canto de baixo conta');
 
 // o brilho some e o desenho não quebra
 for(let i=0;i<20;i++) g.update(0.05);

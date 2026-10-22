@@ -200,9 +200,9 @@ function drawCluster(ctx,grp,x,y,tm,o){
    HUD
    ============================================================ */
 function drawHud(ctx,g,tm){
-  ctx.fillStyle = '#2B2823'; ctx.fillRect(0,540,W,60);
-  ctx.fillStyle = PAL.mostarda; ctx.fillRect(0,540,W,4);
-  ctx.strokeStyle = PAL.tinta; ctx.lineWidth = 2; ctx.beginPath(); ctx.moveTo(0,544); ctx.lineTo(W,544); ctx.stroke();
+  ctx.fillStyle = '#2B2823'; ctx.fillRect(0,540,TW,60);
+  ctx.fillStyle = PAL.mostarda; ctx.fillRect(0,540,TW,4);
+  ctx.strokeStyle = PAL.tinta; ctx.lineWidth = 2; ctx.beginPath(); ctx.moveTo(0,544); ctx.lineTo(TW,544); ctx.stroke();
   const m = Math.round(g.money), d = g.day;
   if (g.mode === 'semfim'){
     // modo sem fim: reputação em 5 estrelas no lugar da meta
@@ -235,7 +235,8 @@ function drawHud(ctx,g,tm){
     txt(ctx,'lucro · meta R$ ' + d.meta,bx,593,11,m >= d.meta ? '#7fd69a' : '#cfc7b0','left',FB);
     txt(ctx,'expert R$ ' + d.expert,bx+bw,593,11,m >= d.expert ? PAL.mostarda : '#cfc7b0','right',FB);
   }
-  // fila de ações
+  // fila de ações (no meio da tela larga)
+  ctx.save(); ctx.translate(HUDX.fila, 0);
   ctx.save(); ctx.translate(342,570); ctx.rotate(-Math.PI/2); txt(ctx,'FILA',0,0,11,'#cfc7b0','center',FB); ctx.restore();
   for (let i=0;i<6;i++){
     const sx = 360 + i*52, a = g.bia.acts[i];
@@ -246,7 +247,9 @@ function drawHud(ctx,g,tm){
       else { txt(ctx,String(i+1),sx+24,571,14,'#5b554a','center',FB); }
     });
   }
-  // mãos
+  ctx.restore();
+  // mãos, pausa e som (à direita)
+  ctx.save(); ctx.translate(HUDX.dir, 0);
   const tray = g.bia.tray;
   const lay = g.bia.layout() || [g.bia.hands.slice(0,1), g.bia.hands.slice(1,2)];
   txt(ctx,tray ? 'BANDEJA · MÃO' : 'MÃOS',748,553,10,'#cfc7b0','center',FB);
@@ -266,6 +269,7 @@ function drawHud(ctx,g,tm){
     if (!Sfx.muted){ ctx.strokeStyle = PAL.tinta; ctx.lineWidth = 2.4; ctx.beginPath(); ctx.arc(924,571,6,-0.9,0.9); ctx.stroke(); ctx.beginPath(); ctx.arc(924,571,11,-0.9,0.9); ctx.stroke(); }
     else { ctx.strokeStyle = PAL.perigo; ctx.lineWidth = 3.2; ctx.beginPath(); ctx.moveTo(927,563); ctx.lineTo(939,579); ctx.moveTo(939,563); ctx.lineTo(927,579); ctx.stroke(); }
   });
+  ctx.restore();
 }
 /* selo com a vez na fila (v7.3): etiqueta "1º", "2º"... (ordinal, para não confundir com o número
    da mesa); a ação atual em mostarda, as outras escuras; surge com um pulinho (parado com RM) */
@@ -309,33 +313,6 @@ function drawPedidoEspera(ctx,g,grp,tm){
   if (n){ circ(ctx,12,-11,7); fs(ctx,'#fff',1.4); txt(ctx,String(n),12,-10.5,10,PAL.tinta,'center',FD); }
   if (leva && !o){ circ(ctx,12,-11,7); fs(ctx,PAL.mostarda,1.4); txt(ctx,'→',12,-11,10,PAL.tinta,'center',FD); }
   ctx.restore();
-}
-/* abinhas do alto da tela (v7.5): a da esquerda leva à calçada (com quantos esperam e, piscando, o aviso de que lá
-   fora precisa de atenção); a da direita leva ao salão e mostra o relógio, que some da tela junto com a cozinha */
-function drawAbas(ctx,g,tm){
-  ['l','r'].forEach(k => {
-    if (!g.abaOn(k)) return;
-    const r = ABAS[k], al = k === 'l' && g.abaAlerta();
-    glowSprite(ctx,g,'aba' + k,ctx => {
-      const blink = al && (RM || Math.floor(tm*3) % 2 === 0);
-      rr(ctx,r.x,r.y,r.w,r.h,10); fs(ctx,blink ? PAL.alerta : 'rgba(43,40,35,.88)',2.4);
-      const cx = r.x + r.w / 2, cy = r.y + r.h / 2;
-      if (k === 'l'){
-        txt(ctx,'◀',r.x + 14,cy,16,PAL.mostarda,'center',FD);
-        txt(ctx,'Calçada',cx + 10,cy - 7,13,'#fff','center',FD,0,r.w - 30);
-        const n = g.queue.length;
-        txt(ctx,n ? (n > 1 ? n + ' esperando' : '1 esperando') : 'ninguém',cx + 10,cy + 10,10,'#F7EFD8','center',FB,0,r.w - 30);
-        if (al){ const p = RM ? 1 : 1 + 0.15 * Math.sin(tm*10); ctx.save(); ctx.translate(r.x + r.w - 2,r.y + 2); ctx.scale(p,p); circ(ctx,0,0,10); fs(ctx,PAL.perigo,2); txt(ctx,'!',0,1,14,'#fff','center',FD); ctx.restore(); }
-      } else {
-        txt(ctx,'▶',r.x + r.w - 14,cy,16,PAL.mostarda,'center',FD);
-        txt(ctx,'Salão',cx - 10,cy - 7,13,'#fff','center',FD,0,r.w - 30);
-        const endless = g.mode === 'semfim', low = !endless && g.clock < 20;
-        txt(ctx,endless ? mmssUp(g.elapsed) : mmss(g.clock),cx - 10,cy + 10,12,low ? '#FF9C8A' : PAL.mostarda,'center',FD);
-        const n = g.abaPratos();
-        if (n){ circ(ctx,r.x + 2,r.y + 2,10); fs(ctx,PAL.ok,2); txt(ctx,String(n),r.x + 2,r.y + 3,12,'#fff','center',FD); }   // pratos prontos esperando a Bia
-      }
-    });
-  });
 }
 function drawFilaMarcas(ctx,g,tm){
   const seen = {};

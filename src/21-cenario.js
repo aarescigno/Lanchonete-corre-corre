@@ -111,7 +111,6 @@ function drawWallCommon(ctx,g,t){
   const endless = !!(g && g.mode === 'semfim');
   const frac = endless ? ((g.elapsed % 60) / 60) : (g ? clamp(g.clock / g.day.time, 0, 1) : 1);
   const low = !endless && g && g.clock < 20 && g.state === 'playing';
-  if (g && (g.state === 'playing' || g.state === 'paused') && 744 + g.cam > ABAS.r.x) return placaCozinha(ctx);
   circ(ctx,712,44,32); fs(ctx,PAL.cromo,3);
   circ(ctx,712,44,26); fs(ctx,'#fff',2);
   ctx.beginPath(); ctx.arc(712,44,21,-Math.PI/2,-Math.PI/2 + TAU*frac); ctx.lineWidth = 6; ctx.strokeStyle = low ? PAL.perigo : (endless ? PAL.ok : PAL.mostarda); ctx.lineCap = 'butt'; ctx.stroke(); ctx.lineCap = 'round';
