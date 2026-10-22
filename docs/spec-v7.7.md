@@ -11,6 +11,7 @@ Pedido do usuário em 22/10 (texto em `docs/PROPOSTAS.md`): a espera lá fora te
 | 4, Terraço Suíça | poltronas individuais | coquetelaria | guardado (etapa 4) |
 
 - **De pé (`assento:'pe'`):** sem bancos nem tablets. Cada lugar é uma faixa amarela tracejada pintada no concreto, com o número no chão; o grupo fica em pé nela (e, depois da água, com o copo na mão). O vaso saiu do banquinho de plástico (que fica para o nível 2) e foi para o chão. O toldo e o muro da casa ficam.
+- **Decoração (2º pedido do usuário no mesmo dia):** as plantas da casa da Bia, simples: uma **espada-de-são-jorge** no vaso de barro (no canto de baixo, no lugar do vaso de folhinhas) e outra menor numa **lata de tinta reaproveitada**, encostada no muro (`drawEspada`). Decoração dos níveis 2 a 4 guardada no `docs/PLANO.md` ("Decoração da calçada por nível").
 - O código guarda o banco de ripas e o tablet da v7.5 para os pontos com assento (o tablet só aparece se a bebida tem preparo).
 
 ## Água da torneira (melhoria `maquina`, no lugar da Máquina de suco)
@@ -43,4 +44,4 @@ Pedido do usuário em 22/10 (texto em `docs/PROPOSTAS.md`): a espera lá fora te
 ## Testes
 - `smoke14` (63): Garagem de pé com água; preço, devolução (uma vez, também da Água saborizada antiga), pedido pronto na hora, 1 s para encher (Bia e Dani), entrega de graça com coração e paciência, lixeira sem custo, render (de pé, torneira enchendo, copo na mão) e o fim do dia; a máquina de suco da v7.5 com o suco posto no ponto.
 - `smoke15`: o save de teste é da v7.7 (`torneira:true`), para o save de verdade não ser regravado.
-- Capturas `shot_v7_7.py` (`capturas/v7.7`, 960×600 e 740×360): a calçada com 4 grupos de pé, a Bia enchendo na torneira, e a lojinha.
+- Capturas `shot_v7_7.py` (`capturas/v7.7`, 960×600 e 740×360): a calçada com 4 grupos de pé, as espadas-de-são-jorge, a Bia enchendo na torneira, e a lojinha.

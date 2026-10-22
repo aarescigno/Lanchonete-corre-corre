@@ -21,7 +21,7 @@ Origem: retorno do Renan Martorelli (beta-tester) e conversa com o Arthur (15/10
 | — | Fora do plano: TV e som na Garagem, couvert só no nível 3 | v7.4.4 | feita (21/10) |
 | 1d-2 | Tela que rola até a calçada, espera lá fora e máquina de suco | v7.5 | feita (21/10) |
 | — | Retorno de jogador: tela larga, tudo à vista sem rolar | v7.6 | feita (22/10) |
-| — | Fora do plano: espera da Garagem de pé e Água da torneira | v7.7 | feita (22/10) |
+| — | Fora do plano: espera da Garagem de pé, Água da torneira e espada-de-são-jorge | v7.7 | feita (22/10) |
 | 2 | Manutenção e imprevistos | v8 | **próxima** |
 | 3 | Pontos: área industrial e Avenida Brasil, carreira por pontos | v9 | a fazer |
 | 4 | Terraço Suíça e VIPs exigentes | v10 | a fazer |
@@ -262,7 +262,7 @@ Também: rever o `smoke7` (toque) e o `smoke10` (fila justa e porta), mais `bala
   - área útil, cadeiras de espera e visual próprios.
 - **Mudança** na lojinha (aba "Ponto"): custo único, aluguel dali em diante e os móveis levados junto. O editor abre no ponto novo com a arrumação automática.
 - **O que cada ponto destrava** (sugestão):
-  - área industrial: 2º garçom, +1 boca no fogão (4 pratos ao mesmo tempo), balcão de pratos com 5 vagas, os **3 televisores com playlist de sertanejo** (ver "Ambiente por nível do salão" nas Ideias guardadas) e a **espera com cadeirinhas de plástico ou banquinhos de madeira e jarra de suco** (ver "Espera lá fora por nível");
+  - área industrial: 2º garçom (o **Joca**, pedido do usuário em 22/10; ou na Avenida Brasil), +1 boca no fogão (4 pratos ao mesmo tempo), balcão de pratos com 5 vagas, os **3 televisores com playlist de sertanejo** (ver "Ambiente por nível do salão" nas Ideias guardadas) e a **espera com cadeirinhas de plástico ou banquinhos de madeira e jarra de suco** (ver "Espera lá fora por nível");
   - Avenida Brasil: confeiteiro (sobremesas), balcão de coquetelaria com profissional de drinks, um prato novo no cardápio, balcão de pratos com 6 vagas, a **espera com sofás e águas saborizadas** e o **couvert artístico** (já pronto no código desde a v5, escondido abaixo do nível 3 desde a v7.4.4: basta o ponto ter `nivel:3`). Decidir se a TV e o som vão junto na mudança.
   Se ficar grande demais, a etapa se divide (3a: mudança e área industrial; 3b: Avenida Brasil, confeitaria e coquetelaria).
 - **Carreira por pontos, sem fim fixo:** cada ponto tem uma série de metas (ex.: 3 a 5 dias). Batidas as metas e juntado o dinheiro, pode mudar. O ranking da carreira soma o lucro (ou o melhor dia) de cada ponto. Os 7 dias de hoje viram a série da Garagem.
@@ -377,6 +377,7 @@ Também: rever o `smoke7` (toque) e o `smoke10` (fila justa e porta), mais `bala
 | 4 | Terraço Suíça (etapa 4) | **poltronas individuais** | **coquetelaria lá fora** | a fazer |
 
   - Decisões em aberto: preço e efeito de cada bebida (a de cima rende mais na conta ou segura mais a paciência?); se o assento também segura a paciência (sentado espera com mais calma que de pé) ou só soma ao **nível de luxo**; se a coquetelaria lá fora usa o profissional de drinks do balcão de coquetelaria (níveis 3 e 4); o que acontece com a torneira na mudança (sugestão: como o ambiente, a bebida do nível de baixo sai e entra a do ponto novo).
+  - **Decoração da calçada por nível** (pedido do usuário em 22/10, mesma conversa): plantas e enfeites sobem junto com o ponto. Nível 1, Garagem: **espada-de-são-jorge**, plantinhas simples (vaso de barro e lata reaproveitada; **feito na v7.7**). Nível 2: uma planta um pouco maior e mais bonita, por exemplo **violetas** em vasinhos (ou um antúrio, uma samambaia pendurada). Nível 3: flores mais rebuscadas, como **tulipas**, **orquídeas** ou **copos-de-leite**. Nível 4: **flores muito belas e arranjos**, como **ikebana**, arranjos de orquídeas e flores do campo em vasos de cerâmica. Só visual por enquanto; mais tarde soma ao **nível de luxo**.
   - Desenho de cada um com o seu (banquinhos e jarra na mesinha; sofás com almofadas e garrafas coloridas; poltronas, tapete e balcãozinho de drinks), respeitando `prefers-reduced-motion`.
 - **Ambiente por nível do salão** (pedido do usuário em 21/10; texto e decisões em aberto em `docs/PROPOSTAS.md`). Em todos, a paciência nas mesas cai mais devagar, como na v7.4.4 (`ambienteEffect`):
   - **nível 1, Garagem:** TV de tubo na Rede Esfera (5%, luz R$ 15/dia) e som na rádio Velha Brasil FM (5%, luz R$ 10/dia). **Feito na v7.4.4.**
@@ -387,7 +388,7 @@ Também: rever o `smoke7` (toque) e o `smoke10` (fila justa e porta), mais `bala
   - Desenho: cada nível com o seu (paredão de 3 TVs, palco do músico, quarteto, piano de cauda), respeitando `prefers-reduced-motion`; nomes de emissoras, rádios e músicas sempre inventados.
 - Cardápio com preço escolhido pelo jogador (o Arthur achou estranho só mexer em preço; talvez nunca).
 - Equipamento melhor no lugar da manutenção (fogão industrial etc.).
-- Mais funcionários: um segundo garçom, além da Dani.
+- Mais funcionários: um segundo garçom, além da Dani. **Pedido do usuário em 22/10:** a partir do nível 2 ou 3, dá para contratar um **segundo ajudante, o Joca** (o 2º garçom da etapa 3; texto em `docs/PROPOSTAS.md`). Decidir: se o Joca faz as mesmas tarefas da Dani ou outras (por exemplo, cuidar só da calçada: levar o grupo à mesa e servir a espera), salário, níveis e visual (sem estereótipo, com crachá como a Dani).
 - Eventos de bairro: festa junina, jogo do Brasil.
 - **Avaliações dos clientes como meta para avançar** (pedido do usuário em 21/10; texto em `docs/PROPOSTAS.md`): uma nota parecida com as avaliações de mapa na internet, que sobe ou desce pela média das **últimas 200 avaliações** de quem passou. Cada grupo avalia 5 critérios:
   - **espera por mesa:** cada coração perdido na fila tira 1 ponto;

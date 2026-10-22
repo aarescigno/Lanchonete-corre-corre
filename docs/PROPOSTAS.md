@@ -4,6 +4,25 @@ Registro das ideias e dos retornos de quem jogou, com o texto original, e de ond
 
 ---
 
+## 22/10/2026 — Usuário: decoração por nível e o Joca
+**Origem:** mensagem do usuário, logo depois da v7.7 (antes de publicar):
+
+> "E decoração, plantas, essas coisas, né? Decoraçãozinha da casa da Bia, lá da garagem da Bia, né? Nível 1. Pode ser só a espada de São Jorge, né? As plantinhas assim, mais simplinhas, né? No nível 2 pode ter de planta na decoração, talvez uma... violeta. Não sei, alguma planta que seja um pouquinho maior, um pouquinho mais bonita, né? E nível 3, coisas mais rebuscadas, né? Aí pode ser, sei lá, uma tulipa ou uma flor mais rebuscada que você saiba, que eu não conheço tantas. E nível 4, flores muito belas e arranjos bonitos, tipo ikebana, essas coisas assim. E mais uma vez, o que não for para usar nesse nível 1 agora, anota nas ideias para o nível 2. E 3 e 4.
+> Ideias para implementar a partir do nível 2 ou 3. É possibilidade de contratar um segundo ajudante. Joca."
+
+**Destino:**
+
+| Nível | Decoração | Destino |
+|---|---|---|
+| 1, Garagem | espada-de-são-jorge, plantinhas simples | **v7.7, feito** (entrou na mesma versão, que ainda não tinha sido publicada): no vaso de barro e numa lata de tinta reaproveitada |
+| 2, área industrial | planta um pouco maior e mais bonita: violetas (sugestões: antúrio, samambaia pendurada) | etapa 3 do `docs/PLANO.md` ("Decoração da calçada por nível", nas Ideias guardadas) |
+| 3, Avenida Brasil | flores mais rebuscadas: tulipas (sugestões: orquídeas, copos-de-leite) | etapa 3 (idem) |
+| 4, Terraço Suíça | flores muito belas e arranjos: ikebana (sugestão: arranjos de orquídeas) | etapa 4 (idem) |
+
+- **Joca, o 2º ajudante** (do nível 2 ou 3 em diante): guardado no `docs/PLANO.md` (etapa 3, "2º garçom", e nas Ideias guardadas, "Mais funcionários"), com as decisões em aberto (tarefas, salário, níveis, visual).
+
+---
+
 ## 22/10/2026 — Usuário: a espera lá fora com a cara de cada nível
 **Origem:** mensagem do usuário, depois da v7.6:
 
