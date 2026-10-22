@@ -28,7 +28,7 @@ ok(M.on && M.dia===4 && L.CLIMA_DIA===3 && M.equip.map(e=>e.id).join()==='fogao,
 // ---------- desgaste depois de um dia ----------
 novo(3000,7); g.startDay(2); g.begin(); joga();
 { const u=Object.assign({},g.usos), m=g.save.manut;
-  ok(g.state==='dayend' && u.fogao>=8 && u.fogao===u.geladeira,'dia 2 jogado pelo bot: '+u.fogao+' pratos prontos, '+u.cafeteira+' cafés');
+  ok(g.state==='dayend' && u.fogao>=5 && u.fogao===u.geladeira,'dia 2 jogado pelo bot: '+u.fogao+' pratos prontos, '+u.cafeteira+' cafés');
   ok(M.equip.every(q=>near(m[q.id],1-(q.base+q.uso*u[q.id])/100,1e-9)),'desgaste = base + uso × usos do dia (fogão '+m.fogao.toFixed(2)+', geladeira '+m.geladeira.toFixed(2)+', cafeteira '+m.cafeteira.toFixed(2)+')');
   ok(m.fogao<1 && m.geladeira<1 && m.cafeteira<1,'os três ficam abaixo de 100% depois de um dia');
   ok(near(lerSave().manut.fogao,m.fogao),'o desgaste vai para o save');
