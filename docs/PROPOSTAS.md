@@ -4,6 +4,21 @@ Registro das ideias e dos retornos de quem jogou, com o texto original, e de ond
 
 ---
 
+## 22/10/2026 — Usuário: revisão da ordem do plano e abertura animada do Modo História
+**Origem:** a sessão juntou tudo o que estava planejado e nas ideias guardadas e propôs uma ordem nova (campanha contínua com banco, avaliações, área industrial, Avenida Brasil, Terraço Suíça e, depois, Modo História e polimento). Resposta do usuário:
+
+> Até E tá ótimo, FGH e depois vai precisar rever, aí vemos depois.
+> Entre B e C, vamos criar uma animação de abertura do modo história sobre de onde a Bia tirou a ideia é o profundo desejo de ter um restaurante estrela Michelzão
+
+**Para onde foi cada ideia (`docs/PLANO.md`):**
+- **Ordem nova até o Terraço Suíça:** etapa **2b** (v8.3, campanha contínua, dinheiro no negativo e empréstimo no banco), **2c** (v8.4, avaliações dos clientes), **2d** (v8.5, abertura animada), **3a** (v9, mudança e área industrial), **3b** (v9.1, Avenida Brasil) e **4** (v10, Terraço Suíça). A campanha, o banco e as avaliações saíram das ideias guardadas e viraram etapas.
+- **Modo História (5 e 6), polimento (7) e o que vem depois:** marcados "a rever" com o usuário antes de começar.
+- **Abertura animada** sobre de onde a Bia tirou a ideia e o desejo da estrela: etapa **2d**, entre as avaliações e os pontos, com roteiro sugerido de 5 cenas (decisões em aberto lá). Vira o prólogo do Modo História.
+- **"Michelzão":** é o nome do guia, que era "Guia Garfo de Ouro" na etapa 6. Como o Terraço Suíça, é uma brincadeira com o nome real, com estrela e plaquinha desenhadas por nós, sem logo nem arte do guia de verdade.
+- Na revisão, saiu da etapa 3 a trava "mesa a mais não dá lucro", já resolvida na v7.4.1.
+
+---
+
 ## 22/10/2026 — Usuário: largar o dia com clientes na porta ou na mesa é penalizado
 **Origem:** mensagem do usuário, depois da v8.2.2 (citando o resumo da v8.2.1):
 
