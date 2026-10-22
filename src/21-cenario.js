@@ -123,7 +123,8 @@ function placaCozinha(ctx){
 }
 
 /* calçada (v7.5), de -CALCADA.w a 0: o muro da casa com o toldo, o piso de concreto, o meio-fio e a rua; os
-   lugares de espera e o vaso no chão. Na borda do salão, o portão de enrolar aberto (trilho e soleira).
+   lugares de espera e as plantas da casa (espada-de-são-jorge no vaso de barro e numa lata reaproveitada, v7.7).
+   Na borda do salão, o portão de enrolar aberto (trilho e soleira).
    Os lugares seguem o ponto (v7.7, PONTOS.assento): na Garagem, de pé, numa faixa pintada no chão com o número;
    com assento, o banco de ripas da v7.5, com o tablet num pedestal se a bebida pede preparo */
 function drawCalcada(ctx,g,tm){
@@ -174,17 +175,38 @@ function drawCalcada(ctx,g,tm){
     ctx.save(); ctx.translate(px,y-36); ctx.rotate(-0.18); rr(ctx,-10,-8,20,14,3); fs(ctx,PAL.tinta,1.6);
     ctx.fillStyle = g && g.up && g.up.maquina ? '#FFE0A6' : '#4a5a6a'; ctx.fillRect(-7,-5,14,8); ctx.restore();
   }
-  // vaso no chão, no canto de baixo (o banquinho de plástico da v7.5 fica para o nível 2)
-  const vx = x0 + 52, vy = 536;
-  shadowEll(ctx,vx,vy-11,11,3,0.18);
-  ctx.beginPath(); ctx.moveTo(vx-10,vy-34); ctx.lineTo(vx+10,vy-34); ctx.lineTo(vx+7,vy-12); ctx.lineTo(vx-7,vy-12); ctx.closePath(); fs(ctx,'#C9673B',2);
-  [[-8,-46],[0,-54],[8,-46],[-3,-40],[5,-40]].forEach(l => { ell(ctx,vx+l[0],vy+l[1],6,9); fs(ctx,'#4E9A5C',1.6); });
+  // plantas da casa da Bia (nível 1, v7.7): espada-de-são-jorge no vaso de barro, no canto de baixo, e uma menor
+  // numa lata de tinta reaproveitada, encostada no muro (o banquinho de plástico da v7.5 fica para o nível 2)
+  const vx = x0 + 40, vy = 536;
+  shadowEll(ctx,vx,vy-11,12,3,0.18);
+  drawEspada(ctx,vx,vy-32,0.85);
+  ctx.beginPath(); ctx.moveTo(vx-11,vy-36); ctx.lineTo(vx+11,vy-36); ctx.lineTo(vx+8,vy-12); ctx.lineTo(vx-8,vy-12); ctx.closePath(); fs(ctx,'#C9673B',2);
+  rr(ctx,vx-13,vy-40,26,6,2); fs(ctx,'#B85A30',2);
+  const lx = x0 + 44, ly = 132;
+  shadowEll(ctx,lx,ly+1,10,3,0.18);
+  drawEspada(ctx,lx,ly-18,0.68);
+  rr(ctx,lx-9,ly-20,18,20,2); fs(ctx,PAL.cromo,2);
+  ctx.fillStyle = 'rgba(216,67,47,.55)'; ctx.fillRect(lx-8,ly-14,16,7);   // o rótulo desbotado da lata
   // portão de enrolar aberto, na borda do salão: trilho no alto e soleira no chão
   ctx.fillStyle = '#ABA394'; ctx.fillRect(-6,92,12,448);
   ctx.strokeStyle = 'rgba(34,32,28,.4)'; ctx.lineWidth = 1.5; ctx.beginPath(); ctx.moveTo(0,96); ctx.lineTo(0,540); ctx.stroke();
   rr(ctx,-12,0,24,92,4); fs(ctx,PAL.cromo,2.5);
   ctx.strokeStyle = 'rgba(34,32,28,.35)'; ctx.lineWidth = 1.2;
   for (let y=10;y<86;y+=8){ ctx.beginPath(); ctx.moveTo(-9,y); ctx.lineTo(9,y); ctx.stroke(); }
+}
+/* espada-de-são-jorge (v7.7): folhas compridas e pontudas, verde-escuras com faixas claras e a borda amarela;
+   (x, y) é a terra do vaso */
+function drawEspada(ctx,x,y,s){
+  ctx.save(); ctx.translate(x,y); ctx.scale(s,s);
+  [[-9,-44,-0.22],[9,-48,0.2],[-4,-62,-0.06],[4,-56,0.1],[0,-70,0]].forEach(([bx,h,r]) => {
+    ctx.save(); ctx.translate(bx,0); ctx.rotate(r);
+    ctx.beginPath(); ctx.moveTo(-5,0); ctx.quadraticCurveTo(-6,h*0.55,0,h); ctx.quadraticCurveTo(6,h*0.55,5,0); ctx.closePath(); fs(ctx,'#D9C24A',1.6);
+    ctx.beginPath(); ctx.moveTo(-3.2,0); ctx.quadraticCurveTo(-4,h*0.55,0,h + 5); ctx.quadraticCurveTo(4,h*0.55,3.2,0); ctx.closePath(); ctx.fillStyle = '#2F6B3A'; ctx.fill();
+    ctx.strokeStyle = 'rgba(190,226,160,.55)'; ctx.lineWidth = 1.2;
+    for (let k=0.2;k<0.8;k+=0.17){ ctx.beginPath(); ctx.moveTo(-2.6,h*k); ctx.lineTo(2.6,h*k - 2); ctx.stroke(); }
+    ctx.restore();
+  });
+  ctx.restore();
 }
 /* estação da bebida da espera: na Garagem (v7.7), a torneira; senão, a máquina de suco da v7.5 */
 function drawMaquina(ctx,g,t,menu){
