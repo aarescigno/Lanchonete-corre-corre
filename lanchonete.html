@@ -436,6 +436,7 @@ table.rank tr.me td{background:#fbe7a8}
         <h2>Versões</h2>
         <ul class="verlist">
           <li><b>v8.2</b><span class="cur">versão atual</span><br>22/10/2026 &mdash; Missão zero: o dia 0 é um treino com uma mesa só e pop-ups passo a passo, mostrando tudo o que a Bia faz: sentar o grupo na mesa da mesma cor (bônus), esperar o cardápio, anotar, levar ao Tonhão, servir, cafezinho (e os bônus dele em dinheiro e corações), cobrar, recolher a louça, lavar e tirar o lixo. Ninguém perde a paciência e nada conta para a carreira. Quem nunca treinou já encontra o dia 0 escolhido no menu.</li>
+          <li><b>v8.1.2</b><br>22/10/2026 &mdash; A espera lá fora na ordem certa: quem chegou primeiro fica embaixo, no lugar 1, e quem chega depois vai ficando acima. Quando alguém sai, a fila desce.<br><a href="versoes/v8.1.2.html" target="_blank" rel="noopener">Abrir a v8.1.2</a></li>
           <li><b>v8.1.1</b><br>22/10/2026 &mdash; Menos balões nas mesas: ficam só o cardápio (escolhendo), a exclamação (chamando para pedir) e o dinheiro (pedindo a conta). Esperando a comida ou comendo, a mesa fica sem balão.<br><a href="versoes/v8.1.1.html" target="_blank" rel="noopener">Abrir a v8.1.1</a></li>
           <li><b>v8.1</b><br>22/10/2026 &mdash; Dinheiro comprometido: na lojinha, ao lado do dinheiro acumulado, aparece quanto está livre e quanto já está reservado para a folha e a divulgação do dia (Dani, TV, som, panfletos...). Compra que usaria esse dinheiro fica com um ⚠ e pede um 2º toque, dizendo o que fica de fora no dia.<br><a href="versoes/v8.1.html" target="_blank" rel="noopener">Abrir a v8.1</a></li>
           <li><b>v8</b><br>22/10/2026 &mdash; Manutenção e imprevistos: o fogão, a geladeira e a cafeteira se gastam a cada dia (mais em dia cheio) e, do dia 4 em diante, o que está gasto pode quebrar no meio do dia (fogão falhando: o Tonhão cozinha mais devagar; geladeira: ingredientes mais caros; cafeteira: sem cafezinho). Um toque na plaquinha chama o técnico na hora; na lojinha, aba Manutenção, a revisão deixa tudo novo. E, de vez em quando, chuva (menos gente, mais entregadores) ou feriado (mais gente). O caixa ganhou a coluna Manutenção.<br><a href="versoes/v8.html" target="_blank" rel="noopener">Abrir a v8</a></li>
@@ -510,7 +511,9 @@ const DISHES = ['pf','pastel','coxinha','misto'];
    começa na tela). No celular deitado (~2:1), tudo fica do mesmo tamanho de antes */
 const CALCADA = { w:260 };
 const TW = W + CALCADA.w;
-const QUEUE = { x:-132, ys:[178, 264, 350, 436], max:4 };
+/* lugares da espera, do 1º da fila ao último (v8.1.2): o 1º fica embaixo, perto da torneira, e quem chega depois
+   fica acima dele, do lado da rua por onde chega */
+const QUEUE = { x:-132, ys:[436, 350, 264, 178], max:4 };
 const DOOR  = { x:-300, y:106 };                     // de onde a freguesia vem (e para onde vai): a rua, à esquerda
 /* HUD na tela larga (v7.6): dia e lucro à esquerda, como antes; a fila de ações anda `fila` px e as mãos, a pausa e
    o som, `dir` px (para a direita) */

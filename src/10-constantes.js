@@ -37,7 +37,9 @@ const DISHES = ['pf','pastel','coxinha','misto'];
    começa na tela). No celular deitado (~2:1), tudo fica do mesmo tamanho de antes */
 const CALCADA = { w:260 };
 const TW = W + CALCADA.w;
-const QUEUE = { x:-132, ys:[178, 264, 350, 436], max:4 };
+/* lugares da espera, do 1º da fila ao último (v8.1.2): o 1º fica embaixo, perto da torneira, e quem chega depois
+   fica acima dele, do lado da rua por onde chega */
+const QUEUE = { x:-132, ys:[436, 350, 264, 178], max:4 };
 const DOOR  = { x:-300, y:106 };                     // de onde a freguesia vem (e para onde vai): a rua, à esquerda
 /* HUD na tela larga (v7.6): dia e lucro à esquerda, como antes; a fila de ações anda `fila` px e as mãos, a pausa e
    o som, `dir` px (para a direita) */
