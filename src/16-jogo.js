@@ -156,12 +156,7 @@ class Game {
         this.div = divulgaOf('boca'); this.divF = rand(this.div.groups[0], this.div.groups[1]);
         this.schedule = this.buildSchedule(this.day);
       }
-      else if (eq.couvert){ eq.couvert = false; this.unpaid.push('Couvert'); }
-      else if (eq.som){ eq.som = false; this.unpaid.push('som'); }
-      else if (eq.tv){ eq.tv = false; this.unpaid.push('TV'); }
-      else if (eq.dani){ eq.dani = 0; this.unpaid.push('Dani'); }
-      else if (eq.tonhao){ eq.tonhao--; this.unpaid.push('aumento do Tonhão'); }
-      else break;
+      else { const n = folhaCorta(eq); if (!n) break; this.unpaid.push(n); }
     }
     this.paid = payroll(eq); this.paidDiv = divCost();
     this.save.bank -= this.paid + this.paidDiv;
@@ -172,7 +167,7 @@ class Game {
   }
   begin(){
     this.payDay(); this.setState('playing');
-    if (this.unpaid.length) this.addText(TW/2 - this.cam, 300, 'Sem dinheiro para pagar: sem ' + this.unpaid.join(', ') + ' hoje', PAL.perigo, 20);
+    if (this.unpaid.length) this.addText(TW/2 - this.cam, 300, 'Sem dinheiro para pagar: sem ' + listaE(this.unpaid) + ' hoje', PAL.perigo, 20);
   }
   /* lucro do dia (a meta): faturamento − ingredientes − contas − folha − divulgação */
   get fixo(){ return this.contas + this.paid + this.paidDiv + this.conserto; }
@@ -600,6 +595,11 @@ class Game {
     Sfx.ok(); return true;
   }
   payroll(){ return payroll(this.save.equipe); }
+  /* v8.1: o que já está comprometido com a abertura do próximo dia (folha e divulgação) e o que sobra livre */
+  get compromisso(){ return this.payroll() + (this.div ? this.div.cost : 0); }
+  get livre(){ return this.save.bank - this.compromisso; }
+  /* o que ficaria de fora ao abrir o próximo dia se gastar v agora */
+  cortesSe(v){ return folhaCortes(this.save.equipe, this.div, this.save.bank - (v || 0)); }
   /* divulgação (v7): escolhida na lojinha, paga junto com a folha ao abrir o dia */
   setDivulga(id){
     const d = DIVULGA.find(x => x.id === id);

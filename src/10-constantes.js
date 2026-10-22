@@ -269,6 +269,38 @@ function payroll(eq){
   if (eq.som) v += STAFF.som.pay;
   return v;
 }
+/* v8.1: dinheiro comprometido. A folha e a divulgação saem do dinheiro acumulado ao abrir o dia; o que não puder ser
+   pago fica de fora, nesta ordem (a divulgação vira boca a boca antes de tudo) */
+const FOLHA_CORTE = [['couvert', 'Couvert'], ['som', 'som'], ['tv', 'TV'], ['dani', 'Dani'], ['tonhao', 'aumento do Tonhão']];
+/* tira de eq o próximo item da folha (o Tonhão perde 1 nível de aumento) e devolve o nome; nada a tirar: null */
+function folhaCorta(eq){
+  const c = FOLHA_CORTE.find(k => eq[k[0]]);
+  if (!c) return null;
+  if (c[0] === 'tonhao') eq.tonhao--; else eq[c[0]] = c[0] === 'dani' ? 0 : false;
+  return c[1];
+}
+/* o que fica de fora ao abrir o dia com `bank` no caixa (sem mexer em eq) */
+function folhaCortes(eq, div, bank){
+  eq = Object.assign({}, eq); let dc = div ? div.cost : 0; const out = [];
+  while (payroll(eq) + dc > bank){
+    if (dc){ out.push(div.name.toLowerCase()); dc = 0; continue; }
+    const n = folhaCorta(eq); if (!n) break;
+    out.push(n);
+  }
+  return out;
+}
+/* o que a folha e a divulgação pagam, pelo nome (para a lojinha) */
+function folhaItens(eq, div){
+  const out = [];
+  if (eq.tonhao) out.push('aumento do Tonhão');
+  if (eq.dani) out.push('Dani');
+  if (eq.couvert) out.push('couvert');
+  if (eq.tv) out.push('TV');
+  if (eq.som) out.push('som');
+  if (div && div.cost) out.push(div.name.toLowerCase());
+  return out;
+}
+function listaE(a){ return a.join(', ').replace(/, ([^,]*)$/, ' e $1'); }
 /* pratos limpos na cozinha: sem limite nos dias 1 e 2; depois, 4; no Turno sem fim, 5 (+1 com o Jogo de pratos) */
 function dishStock(day, up){
   const extra = up && up.pratos ? 1 : 0;
@@ -319,7 +351,7 @@ const DIVULGA = [
 const MOVIMENTO = { kit:10, porLugar:0.06 };
 function movimentoSalao(lugares){ return 1 + MOVIMENTO.porLugar * Math.max(0, lugares - MOVIMENTO.kit); }
 const CAIXA_MAX = 14;                                 // livro-caixa (v7.2): quantos dias da carreira ficam guardados
-const VERSAO = 'v8';                              // vai no resumo do Caixa
+const VERSAO = 'v8.1';                              // vai no resumo do Caixa
 const DIVULGA_DIA = 3;                                // antes disso, o movimento é o da inauguração (sem custo)
 function divulgaAberta(n){ return DEV.on || n >= DIVULGA_DIA; }   // no modo dev, desde o dia 1
 function divulgaOf(id){ return DIVULGA.find(d => d.id === id) || DIVULGA[1]; }

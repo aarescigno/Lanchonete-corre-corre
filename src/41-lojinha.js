@@ -73,10 +73,26 @@ function upgradeIcon(id){
   });
 }
 let shopTab = 'melhorias';
-function shopBtn(text, cls, enabled, fn){
+/* v8.1: compra que usa o dinheiro já reservado para a folha (o que fica de fora ao abrir o dia aumenta): o botão fica
+   em alerta e o 1º toque só avisa o que vai ficar de fora; o 2º compra */
+function folhaAviso(b, cost){
+  const corte = cost > 0 ? game.cortesSe(cost) : [];
+  if (corte.length <= game.cortesSe(0).length) return;
+  b.classList.add('warn');
+  b.title = 'Usa o dinheiro da folha: o dia ' + game.shopNext + ' abre sem ' + listaE(corte) + '.';
+  b.setAttribute('data-aviso', 'Confirmar: sem ' + listaE(corte));
+}
+/* 1º toque num botão em alerta: troca o texto pelo aviso e devolve true (a compra fica para o 2º toque) */
+function folhaPede(b){
+  const t = b.getAttribute('data-aviso');
+  if (!t || b.getAttribute('data-ok')) return false;
+  b.setAttribute('data-ok', '1'); b.textContent = t; Sfx.tap();
+  return true;
+}
+function shopBtn(text, cls, enabled, fn, cost){
   const b = el('button', cls || 'btn', text); b.type = 'button';
-  if (!enabled) b.disabled = true;
-  b.addEventListener('click', () => { Sfx.init(); if (fn()) buildShop(); else Sfx.boing(); });
+  if (!enabled) b.disabled = true; else folhaAviso(b, cost);
+  b.addEventListener('click', () => { Sfx.init(); if (folhaPede(b)) return; if (fn()) buildShop(); else Sfx.boing(); });
   return b;
 }
 function staffCard(icon, title, desc){
@@ -210,10 +226,10 @@ function drawEditor(cv){
   });
 }
 /* botão do editor: o motivo da recusa (salaoMsg) aparece logo abaixo */
-function edBtn(text, cls, enabled, fn){
+function edBtn(text, cls, enabled, fn, cost){
   const b = el('button', cls, text); b.type = 'button';
-  if (!enabled) b.disabled = true;
-  b.addEventListener('click', () => { Sfx.init(); if (fn()) Sfx.tap(); else Sfx.boing(); buildShop(); });
+  if (!enabled) b.disabled = true; else folhaAviso(b, cost);
+  b.addEventListener('click', () => { Sfx.init(); if (folhaPede(b)) return; if (fn()) Sfx.tap(); else Sfx.boing(); buildShop(); });
   return b;
 }
 function edEvents(cv){
@@ -272,7 +288,7 @@ function buildSalao(grid){
       cores.appendChild(b);
     });
     pop.appendChild(cores);
-    if (m.seats === 2) pop.appendChild(edBtn('Virar mesa de 4: ' + fmt(SALAO.virar), 'btn', lug + 2 <= p.lugares && bank >= SALAO.virar, () => game.virarMesa(sel)));
+    if (m.seats === 2) pop.appendChild(edBtn('Virar mesa de 4: ' + fmt(SALAO.virar), 'btn', lug + 2 <= p.lugares && bank >= SALAO.virar, () => game.virarMesa(sel), SALAO.virar));
     pop.appendChild(edBtn('Vender por ' + fmt(mesaPreco(m.seats) * SALAO.venda), 'btn alt', mesas.length > 1, () => game.venderMesa(sel)));
     const x = el('button', 'ed-x', '×'); x.type = 'button'; x.setAttribute('aria-label', 'Fechar');
     x.addEventListener('click', () => { Sfx.tap(); game.salaoSel = -1; buildShop(); });
@@ -284,8 +300,8 @@ function buildSalao(grid){
   const side = el('div', 'ed-side');
   side.appendChild(el('b', 'ed-lug', 'Lugares ' + lug + ' de ' + p.lugares));
   side.appendChild(el('span', 'ed-ponto', p.nome + (p.aluguel ? ': aluguel ' + fmt(p.aluguel) + ' por dia.' : ': sem aluguel.')));
-  side.appendChild(edBtn('Mesa de 2: ' + fmt(SALAO.mesa2), 'btn', lug + 2 <= p.lugares && bank >= SALAO.mesa2, () => game.buyMesa(2)));
-  side.appendChild(edBtn('Mesa de 4: ' + fmt(SALAO.mesa4), 'btn', lug + 4 <= p.lugares && bank >= SALAO.mesa4, () => game.buyMesa(4)));
+  side.appendChild(edBtn('Mesa de 2: ' + fmt(SALAO.mesa2), 'btn', lug + 2 <= p.lugares && bank >= SALAO.mesa2, () => game.buyMesa(2), SALAO.mesa2));
+  side.appendChild(edBtn('Mesa de 4: ' + fmt(SALAO.mesa4), 'btn', lug + 4 <= p.lugares && bank >= SALAO.mesa4, () => game.buyMesa(4), SALAO.mesa4));
   side.appendChild(edBtn('Arrumação automática', 'btn alt', true, () => game.arrumarSalao()));
   side.appendChild(edBtn('Desfazer', 'btn alt', game.salaoUndo.length > 0, () => game.desfazerSalao()));
   side.appendChild(el('span', game.salaoMsg ? 'msg' : 'ed-dica', game.salaoMsg || (lug >= p.lugares ? 'O salão está no teto de ' + p.lugares + ' lugares.' : 'Arraste as mesas; toque numa para trocar a cor das cadeiras, virar mesa de 4 ou vender. Grupos de 3 ou 4 só sentam nas mesas de 4.')));
@@ -322,12 +338,12 @@ function buildManut(grid){
     const fill = el('i'); fill.style.width = pc(e); fill.style.background = e >= 0.7 ? PAL.ok : e >= 0.4 ? PAL.mostarda : PAL.perigo; bar.appendChild(fill);
     c.appendChild(bar);
     if (e >= 0.995) c.classList.add('own');
-    c.appendChild(shopBtn(!v ? 'Em dia' : DEV.on ? 'Revisão (grátis)' : 'Revisão: ' + fmt(v), 'btn', !!v && (DEV.on || game.save.bank >= v), () => game.revisar(q.id)));
+    c.appendChild(shopBtn(!v ? 'Em dia' : DEV.on ? 'Revisão (grátis)' : 'Revisão: ' + fmt(v), 'btn', !!v && (DEV.on || game.save.bank >= v), () => game.revisar(q.id), DEV.on ? 0 : v));
     grid.appendChild(c);
   });
   const tot = MANUT.equip.reduce((a, q) => a + manutPreco(q.id, m[q.id]), 0);
   const c = staffCard(upgradeIcon('contas'), 'Revisar tudo', 'Cada dia gasta cada equipamento um pouco, e mais em dia cheio. Do dia ' + MANUT.dia + ' em diante, o que está gasto pode quebrar no meio do dia. A revisão sai do dinheiro acumulado e entra no caixa como manutenção.');
-  c.appendChild(shopBtn(!tot ? 'Tudo em dia' : DEV.on ? 'Revisar tudo (grátis)' : 'Revisar tudo: ' + fmt(tot), 'btn', !!tot && (DEV.on || game.save.bank >= tot), () => game.revisarTudo()));
+  c.appendChild(shopBtn(!tot ? 'Tudo em dia' : DEV.on ? 'Revisar tudo (grátis)' : 'Revisar tudo: ' + fmt(tot), 'btn', !!tot && (DEV.on || game.save.bank >= tot), () => game.revisarTudo(), DEV.on ? 0 : tot));
   grid.appendChild(c);
 }
 /* aba Caixa (v7.2): os últimos dias da carreira, para onde foi o dinheiro e um resumo para colar no WhatsApp */
@@ -428,6 +444,12 @@ function buildShop(){
   clearEl(grid);
   segSync('shop-tabs', shopTab);
   $('shop-bank').textContent = fmt(game.save.bank);
+  // v8.1: o que já está comprometido com a abertura do dia não está livre para gastar
+  const comp = game.compromisso, corte = game.cortesSe(0), liv = $('shop-livre');
+  liv.className = corte.length ? 'livre falta' : 'livre';
+  liv.textContent = !comp ? '' : corte.length
+    ? ' · faltam ' + fmt(-game.livre) + ' para a folha: o dia ' + game.shopNext + ' abre sem ' + listaE(corte)
+    : ' · livre ' + fmt(game.livre) + ' (' + fmt(comp) + ' reservados para ' + listaE(folhaItens(game.save.equipe, game.div)) + ')';
   $('shop-limit').textContent = DEV.on ? 'Modo dev: tudo liberado; melhorias de graça, ligue e desligue à vontade.' : game.shopBought ? 'Melhoria do dia ' + game.shopNext + ' já escolhida.' : 'Você pode levar 1 melhoria antes do dia ' + game.shopNext + '.';
   $('btn-shop-go').textContent = 'Começar o dia ' + game.shopNext;
   const f = payroll(game.save.equipe), dv = divulgaAberta(game.shopNext) ? divulgaOf(game.save.divulga) : null;
@@ -449,7 +471,8 @@ function buildShop(){
     const b = el('button', 'btn', DEV.on ? (own ? 'Desligar' : 'Ligar') : own ? 'Já comprado' : ('Comprar ' + fmt(u.cost)));
     b.type = 'button';
     if (!DEV.on && (own || game.shopBought || game.save.bank < u.cost)) b.disabled = true;
-    b.addEventListener('click', () => { if (DEV.on ? game.devToggle(u.id) : game.buy(u.id)) buildShop(); });
+    else if (!DEV.on) folhaAviso(b, u.cost);
+    b.addEventListener('click', () => { if (folhaPede(b)) return; if (DEV.on ? game.devToggle(u.id) : game.buy(u.id)) buildShop(); });
     card.appendChild(b);
     grid.appendChild(card);
   });

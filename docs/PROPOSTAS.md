@@ -4,6 +4,22 @@ Registro das ideias e dos retornos de quem jogou, com o texto original, e de ond
 
 ---
 
+## 22/10/2026 — Usuário: o dinheiro da folha já estava comprometido
+**Origem:** mensagem do usuário, depois da v8:
+
+> Eu tive a oportunidade de começar o jogo e eu tinha R$159 ali, né, no dinheirinho do jogo. E eu falei, vou comprar mais uma cadeira. Comprei mais um kit de cadeiras, duas cadeiras lá. E aí, quando começou o jogo, desativou automaticamente as televisões e a Dani. Eu acho que isso não é bom. Eu fiquei iludido achando que ia ter dinheiro para comprar um upgrade, mas na verdade o dinheiro já estava travado. Então acho que seria bom sinalizar que esse dinheiro da paga da Dani e da televisão já estão sendo contados inicialmente, né? Então eu não tenho 159 livres para gastar. Eu tenho menos que isso, porque boa parte já está comprometido pros custos dos equipamentos e da equipe. Talvez valha a pena até deixar ficar no negativo, sabe? E aí no negativo você tem a opção de não pode ficar negativo mais que 3 dias seguidos, e tem a opção de pegar um empréstimo num banco. Aí o empréstimo no banco aplica-se juros, né? Aliás, uma ideia também para a história é que ela quis começar esse trabalho para começar a pagar tudo, a reforma da garagem, essas coisas, para deixar tudo nos conformes da vigilância sanitária, etc. Ela pegou um empréstimo do banco e tem um prazo para saldar esse empréstimo. Eu acho que seria interessante isso para o futuro, né, na lore. Mas por agora, só essa questão de demonstrar que o dinheiro já... que dá na conta, teoricamente já está comprometido.
+
+**Para onde foi cada ideia:**
+
+| Ideia | Destino |
+|---|---|
+| Mostrar que o dinheiro da Dani e da TV já está comprometido | **v8.1, feita** (`docs/spec-v8.1.md`): "livre" e "reservados para Dani e TV" no alto da lojinha; em vermelho quando falta; compra que faz algo ficar de fora tem ⚠ e pede um 2º toque |
+| Deixar o caixa ficar negativo (no máximo 3 dias seguidos) | Ideia guardada no `docs/PLANO.md`: "Dinheiro no negativo e empréstimo no banco" |
+| Empréstimo no banco, com juros | Mesma ideia guardada |
+| Na história, a Bia pegou um empréstimo para a reforma da garagem (vigilância sanitária), com prazo para quitar | Etapa 5 (Modo História, parte 1), nas decisões em aberto: a dívida de abertura pode ser essa |
+
+---
+
 ## 22/10/2026 — Usuário: "QUEBRADO", não "FORA DE SERVIÇO"
 **Origem:** mensagem do usuário, na sessão da v8, sobre a placa da cafeteira quebrada:
 
