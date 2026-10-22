@@ -1,9 +1,9 @@
 # Resumo do projeto e das alterações (até 22/10/2026)
 
 ## Estado atual
-- **Versão:** v8 (manutenção e imprevistos: fogão, geladeira e cafeteira se desgastam e quebram a partir do dia 4; conserto na hora e revisão na lojinha; chuva e feriado; ainda não publicada no artifact), sobre a v7.7 (espera da Garagem de pé e Água da torneira no lugar da Máquina de suco; também ainda não publicada), a v7.6 (tela larga: calçada, salão e cozinha na mesma tela, sem rolar), a v7.5.1 (modo dev: 10 toques no selo da versão) e a v7.5 (espera na calçada e Máquina de suco), publicada em 22/10 como Versão 33 do artifact https://claude.ai/artifact/MJxrgDg8S4akvg47SoQAvj (privado).
+- **Versão:** v8.1 (dinheiro comprometido: a lojinha mostra o livre e o que já é da folha, e compra que come a folha pede um 2º toque; ainda não publicada no artifact), sobre a v8 (manutenção e imprevistos: fogão, geladeira e cafeteira se desgastam e quebram a partir do dia 4; conserto na hora e revisão na lojinha; chuva e feriado; ainda não publicada no artifact), sobre a v7.7 (espera da Garagem de pé e Água da torneira no lugar da Máquina de suco; também ainda não publicada), a v7.6 (tela larga: calçada, salão e cozinha na mesma tela, sem rolar), a v7.5.1 (modo dev: 10 toques no selo da versão) e a v7.5 (espera na calçada e Máquina de suco), publicada em 22/10 como Versão 33 do artifact https://claude.ai/artifact/MJxrgDg8S4akvg47SoQAvj (privado).
 - **Branch:** `claude/main` (renomeado pelo usuário; o antigo `claude/intelligent-gauss-3owv29` não existe mais) no repositório `aarescigno/Lanchonete-corre-corre`.
-- **Arquivos publicados:** `lanchonete.html` (página), mais `versoes/v1.html` a `versoes/v7.5.1.html`, abertos pelo painel Versões. Ao publicar, enviar `versoes/v7.6.html` e `versoes/v7.7.html` (as duas ainda não estão no artifact).
+- **Arquivos publicados:** `lanchonete.html` (página), mais `versoes/v1.html` a `versoes/v7.5.1.html`, abertos pelo painel Versões. Ao publicar, enviar `versoes/v7.6.html`, `versoes/v7.7.html` e `versoes/v8.html` (ainda não estão no artifact).
 - **Capacidades declaradas (mantidas ao republicar sem `capabilities`):**
   - `db`: `ranking-carreira` e `ranking-semfim` com read "view" e write "owner";
   - `db`: `ranking-*/{self}` com write "interact";
@@ -37,6 +37,7 @@
 | v7.6 | 22/10 | Tela larga (retorno de jogador: rolar fazia perder o controle): 1220×600, calçada, salão e cozinha juntos, sem rolar; HUD espalhado; no celular deitado, tudo do mesmo tamanho de antes | `docs/spec-v7.6.md` |
 | v7.7 | 22/10 | Espera com a cara do nível (pedido do usuário): na Garagem, de pé numa faixa pintada no chão, e a Água da torneira (R$ 80, de graça na conta, pedida no balão e enchida na hora) no lugar da Máquina de suco (R$ 100 de volta para quem tinha); espada-de-são-jorge no vaso e na lata; `PONTOS.assento` e `BEBIDA_ESPERA` preparados para os níveis 2 a 4 | `docs/spec-v7.7.md` |
 | v8 | 22/10 | Manutenção e imprevistos (etapa 2 do plano): fogão, geladeira e cafeteira se desgastam e quebram a partir do dia 4 (conserto na hora com a plaquinha; revisão na aba Manutenção da lojinha); chuva e feriado a partir do dia 3 | `docs/spec-v8.md` |
+| v8.1 | 22/10 | Dinheiro comprometido (retorno do usuário): no alto da lojinha, o livre e o reservado para a folha e a divulgação (em vermelho quando falta); compra que faz algo ficar de fora no dia tem ⚠ e pede um 2º toque | `docs/spec-v8.1.md` |
 
 ## Alterações feitas no Claude Code (14/10/2026)
 1. **Importação** do pacote exportado do claude.ai para o repositório (commit `982583b`).
@@ -177,6 +178,8 @@
 - `smoke13` (58/58: v7.4 e os 4 pratos da v7.4.1, Garagem, móveis, editor do salão, posição e caminho, contas sem aluguel);
 - `smoke14` (63/63: v7.5, a tela larga da v7.6 e a v7.7, espera de 4, toque na tela larga, HUD largo, água da torneira com a devolução, máquina de suco posta no ponto, Dani);
 - `smoke15` (43/43: v7.5.1, modo dev, save à parte, dias, dinheiro, lojinha desde o dia 1, melhorias, equipe com couvert, divulgação, ranking de fora, sair);
+- `smoke16` (101/101: v8, manutenção e imprevistos);
+- `smoke17` (22/22: v8.1, dinheiro comprometido, livre e reservado, aviso e 2º toque nas compras);
 - `menu_fit` (14 tamanhos de tela);
 - `balance` (bot, N rodadas por dia; `DIV`, `MULT`, `MOVEIS`, `MOVIMENTO`, `GRUPOS`, `DIAS`, `BOT=afiado`, `ORDEM`, `INGRED`, `CONTAS`, `METAS`; perdas por causa e 3★);
 - `carreira` (bot jogando a carreira com o dinheiro acumulado de verdade e comprando móveis; `MOVEIS=0`, `MOVEIS=quatro`, `MOVIMENTO`, `MESAS=1`).
@@ -192,5 +195,6 @@
 - v7.1: conferir com jogadores se a fila justa (`FILA_JUSTA`) e a porta (`PORTA`) ficaram no ponto, e se o ícone "aguardando mesa" se entende.
 - **Roteiro das próximas versões em `docs/PLANO.md`** (uma etapa por sessão; log das ideias e retornos em `docs/PROPOSTAS.md`): jogo justo (feito na v7.1), livro-caixa (feito na v7.2), Bia mais ágil (feito na v7.3), Garagem e editor do salão (feito na v7.4), espera lá fora (feito na v7.5), manutenção e imprevistos, ponto (Centro, área nobre com VIPs exigentes), modo história em 2 partes e polimento.
 - A lojinha ainda rola no menor celular deitado (568×320).
+- v8.1: conferir com jogadores se "livre" e "reservados" no alto da lojinha se entendem, e se o 2º toque nas compras não incomoda.
 - v7.6: conferir com jogadores (e no celular de verdade) se a tela larga deixou tudo à vista sem ficar pequeno demais (no notebook e no tablet o jogo encolhe um pouco) e se a ida lá fora vale a pena; com a Bia sozinha, o bot afiado perdia dinheiro buscando suco em toda brecha.
 - v7.7: conferir com jogadores se a Água da torneira (de graça, só paciência e coração) ainda vale os R$ 80 e a ida lá fora, e se a faixa pintada no chão se entende como lugar de espera.

@@ -115,6 +115,10 @@ table.cx .rs{font-size:inherit}
 .item .next strong{color:var(--ok)}
 .item .duo{display:flex;gap:6px;flex-wrap:wrap;justify-content:center}
 .item .duo .btn{flex:1 1 auto}
+.livre{font-weight:800}
+.livre.falta{color:var(--perigo)}
+.btn.warn{background:#F6D7A8;border-style:dashed}
+.btn.warn::before{content:'⚠ '}
 .bank{font-family:var(--fd);font-size:max(15px,calc(var(--u)*22));color:var(--ok);text-shadow:calc(var(--u)*1.5) calc(var(--u)*1.5) 0 var(--tinta)}
 .vtag{position:absolute;top:calc(var(--u)*10);right:calc(var(--u)*14);font:800 max(11px,calc(var(--u)*13)) var(--fb);color:#5b5446;background:var(--creme);border:calc(var(--u)*2) solid var(--tinta);border-radius:999px;padding:0 calc(var(--u)*9);line-height:1.6}
 .vtag{-webkit-user-select:none;user-select:none;touch-action:manipulation;-webkit-tap-highlight-color:transparent}
@@ -238,7 +242,7 @@ table.rank tr.me td{background:#fbe7a8}
 
     <div class="ov show" id="ov-menu">
       <div class="panel menu-panel">
-        <span class="vtag" id="vtag" aria-label="Versão 8">v8</span>
+        <span class="vtag" id="vtag" aria-label="Versão 8.1">v8.1</span>
         <h1 class="title">Lanchonete <br>Corre-Corre</h1>
         <p class="tag">Ajude a Bia a atender a freguesia da esquina antes que o cafezinho esfrie!</p>
         <div class="lbl">Carreira: escolha o dia</div>
@@ -316,7 +320,7 @@ table.rank tr.me td{background:#fbe7a8}
     <div class="ov" id="ov-shop">
       <div class="panel">
         <h2>Garagem da mãe da Bia</h2>
-        <p>Dinheiro acumulado: <span class="bank" id="shop-bank">R$ 0</span> &middot; <span id="shop-limit">Você pode levar 1 melhoria por dia.</span></p>
+        <p>Dinheiro acumulado: <span class="bank" id="shop-bank">R$ 0</span><span class="livre" id="shop-livre"></span> &middot; <span id="shop-limit">Você pode levar 1 melhoria por dia.</span></p>
         <div class="rankbar"><div class="seg" id="shop-tabs" role="group" aria-label="Lojinha">
           <button type="button" data-v="melhorias" aria-pressed="true">Melhorias</button>
           <button type="button" data-v="equipe" aria-pressed="false">Equipe</button>
@@ -417,7 +421,8 @@ table.rank tr.me td{background:#fbe7a8}
       <div class="panel">
         <h2>Versões</h2>
         <ul class="verlist">
-          <li><b>v8</b><span class="cur">versão atual</span><br>22/10/2026 &mdash; Manutenção e imprevistos: o fogão, a geladeira e a cafeteira se gastam a cada dia (mais em dia cheio) e, do dia 4 em diante, o que está gasto pode quebrar no meio do dia (fogão falhando: o Tonhão cozinha mais devagar; geladeira: ingredientes mais caros; cafeteira: sem cafezinho). Um toque na plaquinha chama o técnico na hora; na lojinha, aba Manutenção, a revisão deixa tudo novo. E, de vez em quando, chuva (menos gente, mais entregadores) ou feriado (mais gente). O caixa ganhou a coluna Manutenção.</li>
+          <li><b>v8.1</b><span class="cur">versão atual</span><br>22/10/2026 &mdash; Dinheiro comprometido: na lojinha, ao lado do dinheiro acumulado, aparece quanto está livre e quanto já está reservado para a folha e a divulgação do dia (Dani, TV, som, panfletos...). Compra que usaria esse dinheiro fica com um ⚠ e pede um 2º toque, dizendo o que fica de fora no dia.</li>
+          <li><b>v8</b><br>22/10/2026 &mdash; Manutenção e imprevistos: o fogão, a geladeira e a cafeteira se gastam a cada dia (mais em dia cheio) e, do dia 4 em diante, o que está gasto pode quebrar no meio do dia (fogão falhando: o Tonhão cozinha mais devagar; geladeira: ingredientes mais caros; cafeteira: sem cafezinho). Um toque na plaquinha chama o técnico na hora; na lojinha, aba Manutenção, a revisão deixa tudo novo. E, de vez em quando, chuva (menos gente, mais entregadores) ou feriado (mais gente). O caixa ganhou a coluna Manutenção.<br><a href="versoes/v8.html" target="_blank" rel="noopener">Abrir a v8</a></li>
           <li><b>v7.7</b><br>22/10/2026 &mdash; A espera lá fora com a cara da Garagem: quem espera fica de pé, numa faixa pintada no chão, e a Máquina de suco virou a Água da torneira (R$ 80; quem tinha a máquina recebe R$ 100 de volta): quem espera pede água, a Bia enche os copos americanos na torneira e leva, de graça. Na calçada, as plantas da casa da Bia: espada-de-são-jorge no vaso de barro e numa lata. Bancos, sucos e o resto vêm com os próximos pontos.<br><a href="versoes/v7.7.html" target="_blank" rel="noopener">Abrir a v7.7</a></li>
           <li><b>v7.6</b><br>22/10/2026 &mdash; Tudo na mesma tela: a tela ficou mais larga e mostra a calçada, o salão e a cozinha juntos, sem rolar (sem abinhas nem arrastar o fundo). No celular deitado, tudo fica do mesmo tamanho de antes.<br><a href="versoes/v7.6.html" target="_blank" rel="noopener">Abrir a v7.6</a></li>
           <li><b>v7.5.1</b><br>21/10/2026 &mdash; Modo dev, para testar: 10 toques no selo da versão ligam e desligam. O jogo fica igual, com "Modo dev" na tela, os 7 dias liberados, R$ 10.000 que não acabam e tudo liberado na lojinha (até antes do dia 1): melhorias de graça, liga e desliga; equipe completa, couvert e divulgação. Usa um save à parte e fica fora do ranking.<br><a href="versoes/v7.5.1.html" target="_blank" rel="noopener">Abrir a v7.5.1</a></li>
@@ -720,6 +725,38 @@ function payroll(eq){
   if (eq.som) v += STAFF.som.pay;
   return v;
 }
+/* v8.1: dinheiro comprometido. A folha e a divulgação saem do dinheiro acumulado ao abrir o dia; o que não puder ser
+   pago fica de fora, nesta ordem (a divulgação vira boca a boca antes de tudo) */
+const FOLHA_CORTE = [['couvert', 'Couvert'], ['som', 'som'], ['tv', 'TV'], ['dani', 'Dani'], ['tonhao', 'aumento do Tonhão']];
+/* tira de eq o próximo item da folha (o Tonhão perde 1 nível de aumento) e devolve o nome; nada a tirar: null */
+function folhaCorta(eq){
+  const c = FOLHA_CORTE.find(k => eq[k[0]]);
+  if (!c) return null;
+  if (c[0] === 'tonhao') eq.tonhao--; else eq[c[0]] = c[0] === 'dani' ? 0 : false;
+  return c[1];
+}
+/* o que fica de fora ao abrir o dia com `bank` no caixa (sem mexer em eq) */
+function folhaCortes(eq, div, bank){
+  eq = Object.assign({}, eq); let dc = div ? div.cost : 0; const out = [];
+  while (payroll(eq) + dc > bank){
+    if (dc){ out.push(div.name.toLowerCase()); dc = 0; continue; }
+    const n = folhaCorta(eq); if (!n) break;
+    out.push(n);
+  }
+  return out;
+}
+/* o que a folha e a divulgação pagam, pelo nome (para a lojinha) */
+function folhaItens(eq, div){
+  const out = [];
+  if (eq.tonhao) out.push('aumento do Tonhão');
+  if (eq.dani) out.push('Dani');
+  if (eq.couvert) out.push('couvert');
+  if (eq.tv) out.push('TV');
+  if (eq.som) out.push('som');
+  if (div && div.cost) out.push(div.name.toLowerCase());
+  return out;
+}
+function listaE(a){ return a.join(', ').replace(/, ([^,]*)$/, ' e $1'); }
 /* pratos limpos na cozinha: sem limite nos dias 1 e 2; depois, 4; no Turno sem fim, 5 (+1 com o Jogo de pratos) */
 function dishStock(day, up){
   const extra = up && up.pratos ? 1 : 0;
@@ -770,7 +807,7 @@ const DIVULGA = [
 const MOVIMENTO = { kit:10, porLugar:0.06 };
 function movimentoSalao(lugares){ return 1 + MOVIMENTO.porLugar * Math.max(0, lugares - MOVIMENTO.kit); }
 const CAIXA_MAX = 14;                                 // livro-caixa (v7.2): quantos dias da carreira ficam guardados
-const VERSAO = 'v8';                              // vai no resumo do Caixa
+const VERSAO = 'v8.1';                              // vai no resumo do Caixa
 const DIVULGA_DIA = 3;                                // antes disso, o movimento é o da inauguração (sem custo)
 function divulgaAberta(n){ return DEV.on || n >= DIVULGA_DIA; }   // no modo dev, desde o dia 1
 function divulgaOf(id){ return DIVULGA.find(d => d.id === id) || DIVULGA[1]; }
@@ -1983,12 +2020,7 @@ class Game {
         this.div = divulgaOf('boca'); this.divF = rand(this.div.groups[0], this.div.groups[1]);
         this.schedule = this.buildSchedule(this.day);
       }
-      else if (eq.couvert){ eq.couvert = false; this.unpaid.push('Couvert'); }
-      else if (eq.som){ eq.som = false; this.unpaid.push('som'); }
-      else if (eq.tv){ eq.tv = false; this.unpaid.push('TV'); }
-      else if (eq.dani){ eq.dani = 0; this.unpaid.push('Dani'); }
-      else if (eq.tonhao){ eq.tonhao--; this.unpaid.push('aumento do Tonhão'); }
-      else break;
+      else { const n = folhaCorta(eq); if (!n) break; this.unpaid.push(n); }
     }
     this.paid = payroll(eq); this.paidDiv = divCost();
     this.save.bank -= this.paid + this.paidDiv;
@@ -1999,7 +2031,7 @@ class Game {
   }
   begin(){
     this.payDay(); this.setState('playing');
-    if (this.unpaid.length) this.addText(TW/2 - this.cam, 300, 'Sem dinheiro para pagar: sem ' + this.unpaid.join(', ') + ' hoje', PAL.perigo, 20);
+    if (this.unpaid.length) this.addText(TW/2 - this.cam, 300, 'Sem dinheiro para pagar: sem ' + listaE(this.unpaid) + ' hoje', PAL.perigo, 20);
   }
   /* lucro do dia (a meta): faturamento − ingredientes − contas − folha − divulgação */
   get fixo(){ return this.contas + this.paid + this.paidDiv + this.conserto; }
@@ -2427,6 +2459,11 @@ class Game {
     Sfx.ok(); return true;
   }
   payroll(){ return payroll(this.save.equipe); }
+  /* v8.1: o que já está comprometido com a abertura do próximo dia (folha e divulgação) e o que sobra livre */
+  get compromisso(){ return this.payroll() + (this.div ? this.div.cost : 0); }
+  get livre(){ return this.save.bank - this.compromisso; }
+  /* o que ficaria de fora ao abrir o próximo dia se gastar v agora */
+  cortesSe(v){ return folhaCortes(this.save.equipe, this.div, this.save.bank - (v || 0)); }
   /* divulgação (v7): escolhida na lojinha, paga junto com a folha ao abrir o dia */
   setDivulga(id){
     const d = DIVULGA.find(x => x.id === id);
@@ -4607,10 +4644,26 @@ function upgradeIcon(id){
   });
 }
 let shopTab = 'melhorias';
-function shopBtn(text, cls, enabled, fn){
+/* v8.1: compra que usa o dinheiro já reservado para a folha (o que fica de fora ao abrir o dia aumenta): o botão fica
+   em alerta e o 1º toque só avisa o que vai ficar de fora; o 2º compra */
+function folhaAviso(b, cost){
+  const corte = cost > 0 ? game.cortesSe(cost) : [];
+  if (corte.length <= game.cortesSe(0).length) return;
+  b.classList.add('warn');
+  b.title = 'Usa o dinheiro da folha: o dia ' + game.shopNext + ' abre sem ' + listaE(corte) + '.';
+  b.setAttribute('data-aviso', 'Confirmar: sem ' + listaE(corte));
+}
+/* 1º toque num botão em alerta: troca o texto pelo aviso e devolve true (a compra fica para o 2º toque) */
+function folhaPede(b){
+  const t = b.getAttribute('data-aviso');
+  if (!t || b.getAttribute('data-ok')) return false;
+  b.setAttribute('data-ok', '1'); b.textContent = t; Sfx.tap();
+  return true;
+}
+function shopBtn(text, cls, enabled, fn, cost){
   const b = el('button', cls || 'btn', text); b.type = 'button';
-  if (!enabled) b.disabled = true;
-  b.addEventListener('click', () => { Sfx.init(); if (fn()) buildShop(); else Sfx.boing(); });
+  if (!enabled) b.disabled = true; else folhaAviso(b, cost);
+  b.addEventListener('click', () => { Sfx.init(); if (folhaPede(b)) return; if (fn()) buildShop(); else Sfx.boing(); });
   return b;
 }
 function staffCard(icon, title, desc){
@@ -4744,10 +4797,10 @@ function drawEditor(cv){
   });
 }
 /* botão do editor: o motivo da recusa (salaoMsg) aparece logo abaixo */
-function edBtn(text, cls, enabled, fn){
+function edBtn(text, cls, enabled, fn, cost){
   const b = el('button', cls, text); b.type = 'button';
-  if (!enabled) b.disabled = true;
-  b.addEventListener('click', () => { Sfx.init(); if (fn()) Sfx.tap(); else Sfx.boing(); buildShop(); });
+  if (!enabled) b.disabled = true; else folhaAviso(b, cost);
+  b.addEventListener('click', () => { Sfx.init(); if (folhaPede(b)) return; if (fn()) Sfx.tap(); else Sfx.boing(); buildShop(); });
   return b;
 }
 function edEvents(cv){
@@ -4806,7 +4859,7 @@ function buildSalao(grid){
       cores.appendChild(b);
     });
     pop.appendChild(cores);
-    if (m.seats === 2) pop.appendChild(edBtn('Virar mesa de 4: ' + fmt(SALAO.virar), 'btn', lug + 2 <= p.lugares && bank >= SALAO.virar, () => game.virarMesa(sel)));
+    if (m.seats === 2) pop.appendChild(edBtn('Virar mesa de 4: ' + fmt(SALAO.virar), 'btn', lug + 2 <= p.lugares && bank >= SALAO.virar, () => game.virarMesa(sel), SALAO.virar));
     pop.appendChild(edBtn('Vender por ' + fmt(mesaPreco(m.seats) * SALAO.venda), 'btn alt', mesas.length > 1, () => game.venderMesa(sel)));
     const x = el('button', 'ed-x', '×'); x.type = 'button'; x.setAttribute('aria-label', 'Fechar');
     x.addEventListener('click', () => { Sfx.tap(); game.salaoSel = -1; buildShop(); });
@@ -4818,8 +4871,8 @@ function buildSalao(grid){
   const side = el('div', 'ed-side');
   side.appendChild(el('b', 'ed-lug', 'Lugares ' + lug + ' de ' + p.lugares));
   side.appendChild(el('span', 'ed-ponto', p.nome + (p.aluguel ? ': aluguel ' + fmt(p.aluguel) + ' por dia.' : ': sem aluguel.')));
-  side.appendChild(edBtn('Mesa de 2: ' + fmt(SALAO.mesa2), 'btn', lug + 2 <= p.lugares && bank >= SALAO.mesa2, () => game.buyMesa(2)));
-  side.appendChild(edBtn('Mesa de 4: ' + fmt(SALAO.mesa4), 'btn', lug + 4 <= p.lugares && bank >= SALAO.mesa4, () => game.buyMesa(4)));
+  side.appendChild(edBtn('Mesa de 2: ' + fmt(SALAO.mesa2), 'btn', lug + 2 <= p.lugares && bank >= SALAO.mesa2, () => game.buyMesa(2), SALAO.mesa2));
+  side.appendChild(edBtn('Mesa de 4: ' + fmt(SALAO.mesa4), 'btn', lug + 4 <= p.lugares && bank >= SALAO.mesa4, () => game.buyMesa(4), SALAO.mesa4));
   side.appendChild(edBtn('Arrumação automática', 'btn alt', true, () => game.arrumarSalao()));
   side.appendChild(edBtn('Desfazer', 'btn alt', game.salaoUndo.length > 0, () => game.desfazerSalao()));
   side.appendChild(el('span', game.salaoMsg ? 'msg' : 'ed-dica', game.salaoMsg || (lug >= p.lugares ? 'O salão está no teto de ' + p.lugares + ' lugares.' : 'Arraste as mesas; toque numa para trocar a cor das cadeiras, virar mesa de 4 ou vender. Grupos de 3 ou 4 só sentam nas mesas de 4.')));
@@ -4856,12 +4909,12 @@ function buildManut(grid){
     const fill = el('i'); fill.style.width = pc(e); fill.style.background = e >= 0.7 ? PAL.ok : e >= 0.4 ? PAL.mostarda : PAL.perigo; bar.appendChild(fill);
     c.appendChild(bar);
     if (e >= 0.995) c.classList.add('own');
-    c.appendChild(shopBtn(!v ? 'Em dia' : DEV.on ? 'Revisão (grátis)' : 'Revisão: ' + fmt(v), 'btn', !!v && (DEV.on || game.save.bank >= v), () => game.revisar(q.id)));
+    c.appendChild(shopBtn(!v ? 'Em dia' : DEV.on ? 'Revisão (grátis)' : 'Revisão: ' + fmt(v), 'btn', !!v && (DEV.on || game.save.bank >= v), () => game.revisar(q.id), DEV.on ? 0 : v));
     grid.appendChild(c);
   });
   const tot = MANUT.equip.reduce((a, q) => a + manutPreco(q.id, m[q.id]), 0);
   const c = staffCard(upgradeIcon('contas'), 'Revisar tudo', 'Cada dia gasta cada equipamento um pouco, e mais em dia cheio. Do dia ' + MANUT.dia + ' em diante, o que está gasto pode quebrar no meio do dia. A revisão sai do dinheiro acumulado e entra no caixa como manutenção.');
-  c.appendChild(shopBtn(!tot ? 'Tudo em dia' : DEV.on ? 'Revisar tudo (grátis)' : 'Revisar tudo: ' + fmt(tot), 'btn', !!tot && (DEV.on || game.save.bank >= tot), () => game.revisarTudo()));
+  c.appendChild(shopBtn(!tot ? 'Tudo em dia' : DEV.on ? 'Revisar tudo (grátis)' : 'Revisar tudo: ' + fmt(tot), 'btn', !!tot && (DEV.on || game.save.bank >= tot), () => game.revisarTudo(), DEV.on ? 0 : tot));
   grid.appendChild(c);
 }
 /* aba Caixa (v7.2): os últimos dias da carreira, para onde foi o dinheiro e um resumo para colar no WhatsApp */
@@ -4962,6 +5015,12 @@ function buildShop(){
   clearEl(grid);
   segSync('shop-tabs', shopTab);
   $('shop-bank').textContent = fmt(game.save.bank);
+  // v8.1: o que já está comprometido com a abertura do dia não está livre para gastar
+  const comp = game.compromisso, corte = game.cortesSe(0), liv = $('shop-livre');
+  liv.className = corte.length ? 'livre falta' : 'livre';
+  liv.textContent = !comp ? '' : corte.length
+    ? ' · faltam ' + fmt(-game.livre) + ' para a folha: o dia ' + game.shopNext + ' abre sem ' + listaE(corte)
+    : ' · livre ' + fmt(game.livre) + ' (' + fmt(comp) + ' reservados para ' + listaE(folhaItens(game.save.equipe, game.div)) + ')';
   $('shop-limit').textContent = DEV.on ? 'Modo dev: tudo liberado; melhorias de graça, ligue e desligue à vontade.' : game.shopBought ? 'Melhoria do dia ' + game.shopNext + ' já escolhida.' : 'Você pode levar 1 melhoria antes do dia ' + game.shopNext + '.';
   $('btn-shop-go').textContent = 'Começar o dia ' + game.shopNext;
   const f = payroll(game.save.equipe), dv = divulgaAberta(game.shopNext) ? divulgaOf(game.save.divulga) : null;
@@ -4983,7 +5042,8 @@ function buildShop(){
     const b = el('button', 'btn', DEV.on ? (own ? 'Desligar' : 'Ligar') : own ? 'Já comprado' : ('Comprar ' + fmt(u.cost)));
     b.type = 'button';
     if (!DEV.on && (own || game.shopBought || game.save.bank < u.cost)) b.disabled = true;
-    b.addEventListener('click', () => { if (DEV.on ? game.devToggle(u.id) : game.buy(u.id)) buildShop(); });
+    else if (!DEV.on) folhaAviso(b, u.cost);
+    b.addEventListener('click', () => { if (folhaPede(b)) return; if (DEV.on ? game.devToggle(u.id) : game.buy(u.id)) buildShop(); });
     card.appendChild(b);
     grid.appendChild(card);
   });
@@ -5300,7 +5360,7 @@ fit();
 try { Rank.init(); } catch(e) {}
 game.setState('menu');
 window.__game = game;
-window.__lcc = { setShopTab: v => { shopTab = v; buildShop(); }, FILA_JUSTA, PORTA, CHAIRS, PAT, CONTAS, INGRED, MOVIMENTO, movimentoSalao, DIVULGA, DIVULGA_DIA, divulgaOf, contasDia, bomGoal, SALAO, PONTOS, pontoOf, MESA, mesaBox, mesaPreco, salaoLugares, mesaProblema, salaoCaminho, salaoProblema, salaoOrdena, salaoAuto, salaoVaga, salaoPerto, salaoKit, salaoDevolucao, SALAO_SEMFIM, normSalao, setObst, OBST, pathOk, MAQUINA, BEBIDA_ESPERA, bebidaOf, MANUT, manutOf, manutChance, manutPreco, normManut, CLIMA, CLIMA_DIA, introManut, normPend, CALCADA, TW, HUDX, esperaAp, tableApproach, CRIT, STAFF, DANI_TASKS, DANI_HANDS, daniTaskOk, TRASH, WASH, payroll, couvertEffect, couvertOk, ambienteEffect, dishStock, normSave, Helper, JUICE, KITCHEN_SLOTS, handLayout, trayOk, Game, Group, Table, Kitchen, Waitress, BIA_SPEED, DAYS, UPGRADES, CUSTOMER_TYPES, LAYOUT, PAL, Sfx, findPath, render, Rank, sortRows, cleanName, normName, CMD, ENDLESS, VIP, rk, renderRank, openRank, closeRank, LS, lsGet, lsSet, loadSave, DEV, saveKey, devSync, divulgaAberta, CAIXA_MAX, VERSAO, normCaixa, caixaResumo, caixaTotais, copyText };
+window.__lcc = { setShopTab: v => { shopTab = v; buildShop(); }, FILA_JUSTA, PORTA, CHAIRS, PAT, CONTAS, INGRED, MOVIMENTO, movimentoSalao, DIVULGA, DIVULGA_DIA, divulgaOf, contasDia, bomGoal, SALAO, PONTOS, pontoOf, MESA, mesaBox, mesaPreco, salaoLugares, mesaProblema, salaoCaminho, salaoProblema, salaoOrdena, salaoAuto, salaoVaga, salaoPerto, salaoKit, salaoDevolucao, SALAO_SEMFIM, normSalao, setObst, OBST, pathOk, MAQUINA, BEBIDA_ESPERA, bebidaOf, MANUT, manutOf, manutChance, manutPreco, normManut, CLIMA, CLIMA_DIA, introManut, normPend, CALCADA, TW, HUDX, esperaAp, tableApproach, CRIT, STAFF, DANI_TASKS, DANI_HANDS, daniTaskOk, TRASH, WASH, payroll, FOLHA_CORTE, folhaCorta, folhaCortes, folhaItens, listaE, couvertEffect, couvertOk, ambienteEffect, dishStock, normSave, Helper, JUICE, KITCHEN_SLOTS, handLayout, trayOk, Game, Group, Table, Kitchen, Waitress, BIA_SPEED, DAYS, UPGRADES, CUSTOMER_TYPES, LAYOUT, PAL, Sfx, findPath, render, Rank, sortRows, cleanName, normName, CMD, ENDLESS, VIP, rk, renderRank, openRank, closeRank, LS, lsGet, lsSet, loadSave, DEV, saveKey, devSync, divulgaAberta, CAIXA_MAX, VERSAO, normCaixa, caixaResumo, caixaTotais, copyText };
 window.requestAnimationFrame(frame);
 
 })();

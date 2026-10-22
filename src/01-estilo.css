@@ -110,6 +110,10 @@ table.cx .rs{font-size:inherit}
 .item .next strong{color:var(--ok)}
 .item .duo{display:flex;gap:6px;flex-wrap:wrap;justify-content:center}
 .item .duo .btn{flex:1 1 auto}
+.livre{font-weight:800}
+.livre.falta{color:var(--perigo)}
+.btn.warn{background:#F6D7A8;border-style:dashed}
+.btn.warn::before{content:'⚠ '}
 .bank{font-family:var(--fd);font-size:max(15px,calc(var(--u)*22));color:var(--ok);text-shadow:calc(var(--u)*1.5) calc(var(--u)*1.5) 0 var(--tinta)}
 .vtag{position:absolute;top:calc(var(--u)*10);right:calc(var(--u)*14);font:800 max(11px,calc(var(--u)*13)) var(--fb);color:#5b5446;background:var(--creme);border:calc(var(--u)*2) solid var(--tinta);border-radius:999px;padding:0 calc(var(--u)*9);line-height:1.6}
 .vtag{-webkit-user-select:none;user-select:none;touch-action:manipulation;-webkit-tap-highlight-color:transparent}

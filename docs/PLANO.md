@@ -23,6 +23,7 @@ Origem: retorno do Renan Martorelli (beta-tester) e conversa com o Arthur (15/10
 | — | Retorno de jogador: tela larga, tudo à vista sem rolar | v7.6 | feita (22/10) |
 | — | Fora do plano: espera da Garagem de pé, Água da torneira e espada-de-são-jorge | v7.7 | feita (22/10) |
 | 2 | Manutenção e imprevistos | v8 | feita (22/10) |
+| — | Retorno do usuário: dinheiro comprometido com a folha à vista na lojinha | v8.1 | feita (22/10) |
 | 3 | Pontos: área industrial e Avenida Brasil, carreira por pontos | v9 | **próxima** |
 | 4 | Terraço Suíça e VIPs exigentes | v10 | a fazer |
 | 5 | Modo História, parte 1: estrutura e primeiros capítulos | v11 | a fazer |
@@ -334,7 +335,7 @@ Também: rever o `smoke7` (toque) e o `smoke10` (fila justa e porta), mais `bala
 
 **Decisões em aberto:**
 - O texto de abertura e o tom do "universo paralelo".
-- Quem é o Seu Zé na história (credor?). A lojinha agora é a "Garagem da mãe da Bia" (21/10/2026), então ele não é mais o dono dela.
+- Quem é o Seu Zé na história (credor?). **Ideia do usuário (22/10):** a Bia pegou um **empréstimo no banco** para a reforma da garagem, para deixar tudo nos conformes da vigilância sanitária, e tem um **prazo para quitar**; a dívida de abertura pode ser essa, no lugar do empréstimo do Seu Zé (ver "Dinheiro no negativo e empréstimo no banco" nas ideias guardadas). A lojinha agora é a "Garagem da mãe da Bia" (21/10/2026), então ele não é mais o dono dela.
 - Falha num capítulo: repetir o dia (sugestão) ou o capítulo inteiro?
 
 ---
@@ -388,6 +389,7 @@ Também: rever o `smoke7` (toque) e o `smoke10` (fila justa e porta), mais `bala
   - **nível 4, Terraço Suíça (etapa 4):** couvert com quarteto de cordas ou com pianista, os dois com 20% (diárias a definir). O pianista também soma ao **nível de luxo** do ambiente (pontuação para o futuro) e traz a manutenção **diária** do piano.
   - **Ao mudar de ponto, o ambiente é trocado** (decidido em 21/10): o do nível de baixo sai, com os bônus dele; cada ponto só tem o ambiente do seu nível. Na etapa 3, a mudança desliga a TV e o som da Garagem (`equipe.tv` e `equipe.som` saem do save, como o couvert abaixo do nível 3).
   - Desenho: cada nível com o seu (paredão de 3 TVs, palco do músico, quarteto, piano de cauda), respeitando `prefers-reduced-motion`; nomes de emissoras, rádios e músicas sempre inventados.
+- **Dinheiro no negativo e empréstimo no banco** (retorno do usuário em 22/10; texto em `docs/PROPOSTAS.md`): em vez de a folha ficar de fora quando falta dinheiro, deixar o caixa ficar negativo, mas no máximo 3 dias seguidos; e a opção de pegar um empréstimo no banco, com juros. A v8.1 só mostrou o dinheiro já comprometido. Decidir: se a folha passa a ser sempre paga (negativo) ou se o corte continua como opção; o que acontece no 4º dia negativo (fim da carreira? empréstimo obrigatório?); juros, prazo e parcelas (saem da folha do dia?); uma aba Banco na lojinha ou uma linha no Caixa. Combina com a dívida de abertura da etapa 5.
 - Cardápio com preço escolhido pelo jogador (o Arthur achou estranho só mexer em preço; talvez nunca).
 - Equipamento melhor no lugar da manutenção (fogão industrial etc.).
 - Mais funcionários: um segundo garçom, além da Dani. **Pedido do usuário em 22/10:** a partir do nível 2 ou 3, dá para contratar um **segundo ajudante, o Joca** (o 2º garçom da etapa 3; texto em `docs/PROPOSTAS.md`). Decidir: se o Joca faz as mesmas tarefas da Dani ou outras (por exemplo, cuidar só da calçada: levar o grupo à mesa e servir a espera), salário, níveis e visual (sem estereótipo, com crachá como a Dani).
