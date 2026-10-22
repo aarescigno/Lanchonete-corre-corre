@@ -18,9 +18,9 @@ ok(L.payroll(L.normSave({}).equipe)===0,'sem equipe, folha zero');
 ok(L.payroll({tonhao:2,dani:3,couvert:true})===90+135+80,'folha: Tonhão 90 + Dani nível 3 135 + couvert 80');
 ok(L.STAFF.dani.levels[2].pay===L.STAFF.dani.levels[1].pay*1.5 && L.STAFF.dani.levels[3].pay===L.STAFF.dani.levels[2].pay*1.5,'Dani: cada nível paga 50% a mais');
 ok(L.payroll({tonhao:0,dani:0,tv:true,som:true})===15+10,'folha: luz da TV 15 + som 10');
-{ reset({tonhao:1,dani:1,tv:true,som:true},1000); g.save.divulga='boca'; g.startDay(3); g.begin(); ok(g.save.bank===1000-125 && g.paid===125,'folha (com a luz da TV e do som) debitada do dinheiro acumulado ao abrir a lanchonete'); }
-{ reset({tonhao:1,dani:1,tv:true,som:true},50); g.save.divulga='boca'; g.startDay(3); g.begin(); ok(!eq().som && !eq().tv && !eq().dani && eq().tonhao===1 && g.save.bank===10 && g.unpaid.join()==='som,TV,Dani','sem dinheiro para todos: desliga som e TV, dispensa a Dani, paga o resto'); }
-{ reset({tonhao:0,dani:1,tv:true,som:true},75); g.save.divulga='boca'; g.startDay(3); g.begin(); ok(!eq().som && eq().tv && eq().dani===1 && g.save.bank===0,'som sai antes da TV, e a TV antes da Dani'); }
+{ reset({tonhao:1,dani:1,tv:true,som:true},1000); g.save.divulga='boca'; g.startDay(3); g.begin(); ok(g.save.bank===1000 && g.paid===125,'folha (com a luz da TV e do som) reservada ao abrir a lanchonete; só sai no fim do dia (v8.2.2)'); }
+{ reset({tonhao:1,dani:1,tv:true,som:true},50); g.save.divulga='boca'; g.startDay(3); g.begin(); ok(!eq().som && !eq().tv && !eq().dani && eq().tonhao===1 && g.paid===40 && g.save.bank===50 && g.unpaid.join()==='som,TV,Dani','sem dinheiro para todos: desliga som e TV, dispensa a Dani, paga o resto'); }
+{ reset({tonhao:0,dani:1,tv:true,som:true},75); g.save.divulga='boca'; g.startDay(3); g.begin(); ok(!eq().som && eq().tv && eq().dani===1 && g.paid===75 && g.save.bank===75,'som sai antes da TV, e a TV antes da Dani'); }
 { reset({},100); ok(!g.setStaff('dani',3) && eq().dani===0,'não contrata quem o dinheiro acumulado não paga'); ok(g.setStaff('dani',1),'contrata a Dani com cofre suficiente'); }
 { reset({},0); g.save.divulga='boca'; g.startDay(3); g.begin(); g.money=1000; g.custo=100; g.save.best[3]=800; g.finishDay(); const c=L.contasDia(g.tables);
   ok(g.result.income===1000-100-c && g.save.bank===1000-100-c && g.save.best[3]===1000,'o faturamento vai para o dinheiro acumulado, menos ingredientes e contas (v7)'); }

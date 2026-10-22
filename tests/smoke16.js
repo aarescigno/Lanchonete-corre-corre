@@ -118,7 +118,7 @@ const quebra=id=>{ g.quebras=[{id,t:0,on:true,fixed:false}]; };
   ok(!g.save.manut.sorteio.quebra.some(q=>q.id==='fogao') && lerSave().manut.fogao===1,'tirado do sorteio e salvo (recomeçar o dia não quebra de novo)');
   g.onDown(bx,by,0); ok(g.conserto===eq.emerg,'não cobra duas vezes');
   g.money=500; g.finishDay();
-  ok(g.save.bank===B0-eq.emerg+g.result.income && g.result.income===500-Math.round(g.custo)-g.contas,'no fim do dia o conserto não sai de novo do banco');
+  ok(g.save.bank===B0-eq.emerg+g.result.income && g.result.income===500-Math.round(g.custo)-g.contas-g.paid-g.paidDiv,'no fim do dia o conserto não sai de novo do banco');
   const row=g.save.caixa[g.save.caixa.length-1]; ok(row.man===eq.emerg && g.save.caixaPend.man===0,'linha do caixa do dia: manutenção '+row.man);
   ok(g.result.conserto===eq.emerg && g.result.consertos===1 && g.result.quebras[0].fixed,'resultado: conserto e quebra consertada');
   ok(g.save.manut.fogao===1,'consertado no dia: o desgaste não mexe (100%)'); }
@@ -129,7 +129,8 @@ const quebra=id=>{ g.quebras=[{id,t:0,on:true,fixed:false}]; };
   novo(100,7); g.startDay(4); g.begin(); const eq=M.equip[1], B0=g.save.bank; g.quebras=[{id:'geladeira',t:0,on:true,fixed:false}];
   const ok1=g.consertar('geladeira'); ok(ok1===false && g.quebrado('geladeira') && g.conserto===0 && g.save.bank===B0 && g.save.caixaPend.man===0,'banco R$ '+B0+' < R$ '+eq.emerg+': recusa e não cobra nada');
   ok(g.fx.some(f=>f.text==='Falta dinheiro!'),'aparece "Falta dinheiro!"');
-  g.save.bank=eq.emerg; ok(g.consertar('geladeira') && g.save.bank===0,'com exatamente R$ '+eq.emerg+', conserta');
+  const res=g.paid+g.paidDiv; g.save.bank=res+eq.emerg-1; ok(g.consertar('geladeira')===false,'a folha do dia fica reservada: o conserto só usa o que sobra (v8.2.2)');
+  g.save.bank=res+eq.emerg; ok(g.consertar('geladeira') && g.save.bank===res,'com exatamente R$ '+eq.emerg+' além da folha, conserta');
   ok(g.consertar('cafeteira')===false && g.consertar('xx')===false,'consertar equipamento que não está quebrado ou não existe: false'); }
 
 // ---------- revisão na lojinha ----------
