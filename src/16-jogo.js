@@ -52,7 +52,7 @@ class Game {
     this.tables.forEach(t => { t.open = true; t.group = null; t.dirty = false; t.dirtyN = 0; });   // v7.4: todas as mesas abrem desde o dia 1
     this.kitchen.reset();
     this.kitchen.clean = dishStock(this.day, this.up);
-    this.trash = 0; this.paid = 0; this.unpaid = [];
+    this.trash = 0; this.paid = 0; this.unpaid = []; this.aberto = false;
     this.maq = []; this.maqId = 0;   // pedidos do tablet da espera na máquina de suco: { id, group, n, t (preparo que falta) }
     this.bia.reset();
     this.dani.reset();
@@ -182,7 +182,7 @@ class Game {
       }
       else { const n = folhaCorta(eq); if (!n) break; this.unpaid.push(n); }
     }
-    this.paid = payroll(eq); this.paidDiv = divCost();
+    this.paid = payroll(eq); this.paidDiv = divCost(); this.aberto = true;
     this.contas = contasDia(this.tables, this.ponto);
     writeSave(this.save);
     this.kitchen.slots = STAFF.tonhao.levels[eq.tonhao].slots;
@@ -488,7 +488,7 @@ class Game {
     if (by) this.stats.lostBy[by]++;
     this.addPuff(g.x, g.y - 20, 9);
     this.addText(g.x, g.y - 50, 'Hmpf!', PAL.perigo, 22);
-    const fine = 30 + (g.vip ? VIP.angry : 0);
+    const fine = this.multa(g);
     this.addMoney(-fine);
     this.addText(g.x, g.y - 78, '-' + fine, PAL.perigo, 18);
     if (g.vip) this.stats.vipLost++;
@@ -496,6 +496,20 @@ class Game {
     Sfx.huff();
     this.leaveCommon(g);
     if (this.mode === 'semfim' && !this.ending) this.loseStar();
+  }
+  multa(g){ return MULTA + (g.vip ? VIP.angry : 0); }   // grupo que vai embora bravo (0 corações)
+  /* v8.2.3: encerrar o dia no meio (Reiniciar ou Menu na pausa) não rende nada (v8.2.2), e quem está na espera ou nas
+     mesas vai embora bravo, como se tivesse zerado os corações: cada grupo paga a multa, direto do dinheiro acumulado */
+  get bravosSeSair(){ return this.mode === 'carreira' && this.aberto ? this.groups.filter(g => g.state !== 'leaving') : []; }
+  get multaSeSair(){ return this.bravosSeSair.reduce((a, g) => a + this.multa(g), 0); }
+  encerrar(){
+    const gs = this.bravosSeSair, v = this.multaSeSair, d = this.day;
+    this.aberto = false;
+    if (!gs.length) return (this.encerrado = null);
+    const antes = this.save.bank; this.save.bank = Math.max(0, antes - v);
+    this.save.caixa = normCaixa(this.save.caixa.concat([{ d:d.n, int:gs.length, mul:antes - this.save.bank, saldo:this.save.bank }]));
+    writeSave(this.save);
+    return (this.encerrado = { n:gs.length, vip:gs.filter(g => g.vip).length, multa:antes - this.save.bank, bank:this.save.bank });
   }
   timeUpLeave(g){
     if (g.state === 'leaving') return;
@@ -575,6 +589,7 @@ class Game {
   finishDay(){
     const d = this.day, m = Math.round(this.lucro), fat = Math.round(this.money);
     const passed = m >= d.meta;
+    this.aberto = false;
     let stars = 0;
     if (passed) stars = 1;
     if (passed && m >= bomGoal(d)) stars = 2;

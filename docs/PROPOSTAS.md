@@ -4,6 +4,15 @@ Registro das ideias e dos retornos de quem jogou, com o texto original, e de ond
 
 ---
 
+## 22/10/2026 — Usuário: largar o dia com clientes na porta ou na mesa é penalizado
+**Origem:** mensagem do usuário, depois da v8.2.2 (citando o resumo da v8.2.1):
+
+> Quando a pessoa encerrar o dia no meio e tiver clientes na porta ou na mesa, a pessoa deve ser penalizada como se as pessoas tivessem desistido por zerar corações.
+
+**Para onde foi:** **feito na v8.2.3** (`docs/spec-v8.2.3.md`): ao Reiniciar ou sair pelo Menu no meio do dia, cada grupo na espera ou nas mesas vai embora bravo e paga a multa de quem zera os corações (R$ 30, mais R$ 30 se VIP), direto do dinheiro acumulado. O resto da v8.2.2 continua (o dia largado não rende nada).
+
+---
+
 ## 22/10/2026 — Usuário: só dias completos rendem; progresso por experiência e dinheiro
 **Origem:** mensagem do usuário, depois da v8.2.1:
 
