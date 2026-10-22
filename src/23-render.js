@@ -25,6 +25,9 @@ function render(g, ctx){
   drawWall(ctx,g,tm);
   drawCalcada(ctx,g,tm);
   drawKitchen(ctx,g,tm);
+  drawGeladeira(ctx,g,tm);
+  if (g.clima === 'chuva' && !menu) drawChuvaFundo(ctx,tm);
+  if (g.clima === 'feriado' && !menu) drawBandeirinhas(ctx);
 
   // destaque de mesa durante arrasto/seleção
   if (g.hover && (g.drag || g.sel)){
@@ -77,6 +80,8 @@ function render(g, ctx){
   if ((g.save.equipe.tv || g.save.equipe.som) && !menu) items.push({ y:532, f:() => drawAmbiente(ctx,g,tm) });
   if (g.dani.active && !menu) items.push({ y:g.dani.y, f:() => drawDani(ctx,g.dani,tm) });
   items.sort((a,c) => a.y - c.y).forEach(it => it.f());
+  if (g.clima === 'chuva' && !menu) drawChuvaPingos(ctx,tm);
+  if (!menu) drawConsertos(ctx,g,tm);
 
   // camada superior: balões, corações, fila
   g.tables.forEach(t => { if (t.open || menu) drawTableOverlay(ctx,g,t,tm,menu); });

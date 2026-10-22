@@ -341,3 +341,14 @@ function drawBia(ctx,b,x,y,o){
   ctx.restore();
 }
 
+
+/* chave inglesa (v8), desenhada: cabo e boca aberta, com contorno; (x,y) é o centro, s a escala, rot em radianos */
+function drawWrench(ctx,x,y,s,rot,cor){
+  ctx.save(); ctx.translate(x,y); ctx.rotate(rot || 0); ctx.scale(s || 1,s || 1); ctx.lineCap = 'butt';
+  ctx.strokeStyle = PAL.tinta; ctx.lineWidth = 6.4; ctx.beginPath(); ctx.moveTo(0,9); ctx.lineTo(0,-2); ctx.stroke();
+  ctx.beginPath(); ctx.arc(0,-6,4.6,-Math.PI/2 + 0.65,-Math.PI/2 - 0.65 + TAU); ctx.stroke();
+  ctx.strokeStyle = cor || '#fff'; ctx.lineWidth = 3.4; ctx.beginPath(); ctx.moveTo(0,9); ctx.lineTo(0,-2); ctx.stroke();
+  ctx.beginPath(); ctx.arc(0,-6,4.6,-Math.PI/2 + 0.65,-Math.PI/2 - 0.65 + TAU); ctx.stroke();
+  ctx.lineCap = 'round'; circ(ctx,0,9,1.9); ctx.fillStyle = cor || '#fff'; ctx.fill(); ctx.lineWidth = 1.4; ctx.strokeStyle = PAL.tinta; ctx.stroke();
+  ctx.restore();
+}

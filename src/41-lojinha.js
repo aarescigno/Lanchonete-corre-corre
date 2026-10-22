@@ -44,6 +44,20 @@ function upgradeIcon(id){
       rr(c,-11,-15,22,30,2); fs(c,'#fff',2);
       for (let i=0;i<4;i++){ c.fillStyle = PAL.cromoEsc; c.fillRect(-7,-10+i*5,10,1.8); c.fillRect(5,-10+i*5,3,1.8); }
       c.strokeStyle = PAL.perigo; c.lineWidth = 2; c.beginPath(); c.moveTo(-7,11); c.lineTo(8,11); c.stroke();
+    } else if (id === 'm-fogao'){
+      // fogão de 4 bocas visto de cima, com os botões na frente
+      rr(c,-15,-14,30,28,3); fs(c,PAL.inox,2);
+      [[-7,-7],[7,-7],[-7,5],[7,5]].forEach(p => { circ(c,p[0],p[1],5); fs(c,'#555',1.6); circ(c,p[0],p[1],2); fs(c,PAL.alerta,1); });
+      for (let i=0;i<4;i++){ circ(c,-9 + i*6,11.5,1.4); fs(c,PAL.cromoEsc,1); }
+      drawWrench(c,14,-12,0.8,0.78);
+    } else if (id === 'm-geladeira'){
+      rr(c,-9,-16,18,32,3); fs(c,'#F3F6F8',2); c.strokeStyle = PAL.tinta; c.lineWidth = 1.8; c.beginPath(); c.moveTo(-9,-4); c.lineTo(9,-4); c.stroke();
+      rr(c,4,-13,2,6,1); fs(c,PAL.cromoEsc,1); rr(c,4,-1,2,10,1); fs(c,PAL.cromoEsc,1);
+      ell(c,0,16,11,2.6); c.fillStyle = '#8EC5E8'; c.fill();
+      drawWrench(c,13,-11,0.8,0.78);
+    } else if (id === 'm-cafeteira'){
+      drawIcon(c,'coffee',-8,2,0.8); drawIcon(c,'coffee',6,4,0.8);
+      drawWrench(c,14,-11,0.8,0.78);
     } else if (id === 'cafeteira'){
       drawIcon(c,'coffee',-8,0,0.8); drawIcon(c,'coffee',8,2,0.8);
     } else if (id === 'bandeja'){

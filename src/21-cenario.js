@@ -386,6 +386,107 @@ function drawTrash(ctx,on,t,g){
   }
   if (on){ ctx.save(); const a = 0.55 + 0.4*Math.sin(t*8); ctx.strokeStyle = 'rgba(242,179,61,' + a + ')'; ctx.lineWidth = 5; const r = STATIONS.trash.rect; rr(ctx,r.x,r.y,r.w,r.h,8); ctx.stroke(); ctx.restore(); }
 }
+/* placa pendurada "FORA DE SERVIÇO" (v8), no aparelho parado: cordinha e etiqueta vermelha meio torta */
+function drawPlacaParada(ctx,x,y){
+  ctx.save(); ctx.translate(x,y); ctx.rotate(-0.1);
+  ctx.strokeStyle = PAL.tinta; ctx.lineWidth = 1.6; ctx.beginPath(); ctx.moveTo(-5,-9); ctx.lineTo(0,-4); ctx.lineTo(5,-9); ctx.stroke();
+  rr(ctx,-17,-4,34,23,3); fs(ctx,PAL.perigo,2.2);
+  txt(ctx,'FORA DE',0,3.5,7.5,'#fff','center',FD,0,30); txt(ctx,'SERVIÇO',0,12,7.5,'#fff','center',FD,0,30);
+  ctx.restore();
+}
+/* fumaça cinza do fogão quebrado: bolinhas que sobem e somem (paradas com movimento reduzido) */
+function drawFumaca(ctx,t){
+  for (let k=0;k<3;k++) for (let i=0;i<4;i++){
+    const ph = RM ? (i/4) : ((t*0.35 + i/4 + k*0.13) % 1), x = 800 + k*44 + Math.sin(ph*6 + k*2)*7 + (RM ? 0 : 0), y = 100 - ph*52;
+    ctx.globalAlpha = (1 - ph)*0.9; circ(ctx,x,y,5 + ph*8); ctx.fillStyle = '#7C8187'; ctx.fill(); ctx.lineWidth = 1.6; ctx.strokeStyle = 'rgba(34,32,28,.55)'; ctx.stroke();
+  }
+  ctx.globalAlpha = 1;
+}
+/* geladeira (v8), de pé no chão encostada na parede do salão, ao lado da cozinha. Quebrada: luz apagada, a porta de baixo
+   entreaberta, poça d'água no chão e uma gota caindo */
+function drawGeladeira(ctx,g,t){
+  const q = g.quebrado('geladeira'), x = 688, y = 102, w = 42, h = 94;
+  shadowEll(ctx,x + w/2,y + h + 4,26,6,0.2);
+  if (q){   // poça no chão
+    ell(ctx,x + w/2 + 2,y + h + 5,31,7); fs(ctx,'#8EC5E8',2);
+    ctx.strokeStyle = 'rgba(255,255,255,.75)'; ctx.lineWidth = 1.6; ctx.beginPath(); ctx.moveTo(x + 4,y + h + 4); ctx.lineTo(x + 16,y + h + 3); ctx.stroke();
+  }
+  rr(ctx,x + 4,y + h - 2,8,6,2); fs(ctx,PAL.cromoEsc,1.6); rr(ctx,x + w - 12,y + h - 2,8,6,2); fs(ctx,PAL.cromoEsc,1.6);
+  rr(ctx,x,y,w,h,6); fs(ctx,'#F3F6F8',2.8);
+  ctx.fillStyle = 'rgba(255,255,255,.7)'; ctx.fillRect(x + 4,y + 6,3,h - 18);
+  const dv = y + 34;
+  if (q){
+    // porta de baixo aberta: vão escuro com prateleira e a porta de lado, em pé
+    ctx.beginPath(); ctx.rect(x + 3,dv + 2,w - 6,y + h - dv - 6); fs(ctx,'#CFE0E8',1.8);
+    ctx.strokeStyle = PAL.cromoEsc; ctx.lineWidth = 1.6; ctx.beginPath(); ctx.moveTo(x + 4,dv + 19); ctx.lineTo(x + w - 4,dv + 19); ctx.moveTo(x + 4,dv + 36); ctx.lineTo(x + w - 4,dv + 36); ctx.stroke();
+    ctx.beginPath(); ctx.moveTo(x + w - 3,dv + 2); ctx.lineTo(x + w + 9,dv + 8); ctx.lineTo(x + w + 9,y + h - 5); ctx.lineTo(x + w - 3,y + h - 6); ctx.closePath(); fs(ctx,'#E3E8EC',2);
+    ctx.fillStyle = 'rgba(34,32,28,.5)'; ctx.fillRect(x + w + 5,dv + 20,2,14);
+    // gota caindo
+    const ph = RM ? 0.4 : (t*0.9 % 1), gy = y + h - 4 + ph*8;
+    ctx.globalAlpha = 1 - ph*ph; ctx.beginPath(); ctx.moveTo(x + 14,gy - 4); ctx.quadraticCurveTo(x + 18,gy + 1,x + 14,gy + 3); ctx.quadraticCurveTo(x + 10,gy + 1,x + 14,gy - 4); fs(ctx,'#8EC5E8',1.4); ctx.globalAlpha = 1;
+  } else {
+    ctx.strokeStyle = PAL.tinta; ctx.lineWidth = 2.2; ctx.beginPath(); ctx.moveTo(x + 1,dv); ctx.lineTo(x + w - 1,dv); ctx.stroke();
+    rr(ctx,x + w - 10,y + 8,3.4,17,1.6); fs(ctx,PAL.cromoEsc,1.5); rr(ctx,x + w - 10,dv + 8,3.4,28,1.6); fs(ctx,PAL.cromoEsc,1.5);
+    // ímãs e bilhete
+    rr(ctx,x + 11,dv + 14,14,12,1.5); fs(ctx,'#FFF3C9',1.4); ctx.fillStyle = PAL.formica; ctx.fillRect(x + 13,dv + 18,10,1.6); ctx.fillRect(x + 13,dv + 21,7,1.6);
+    circ(ctx,x + 18,dv + 14,2.2); fs(ctx,PAL.faixa,1.2);
+  }
+  circ(ctx,x + 9,y + 10,2.6); fs(ctx,q ? '#9AA0A6' : '#62D88A',1.4);   // luz de funcionamento
+}
+/* chuva (v8): sobre a calçada, o céu fica mais escuro e há poças; os pingos (diagonais) caem por cima de tudo */
+function drawChuvaFundo(ctx,t){
+  const x0 = -CALCADA.w - 60;
+  ctx.fillStyle = 'rgba(52,72,104,.22)'; ctx.fillRect(x0,0,-x0,540);
+  [[-190,222,34,7],[-90,306,40,8],[-200,392,30,6],[-70,478,28,6]].forEach((p,i) => {
+    ell(ctx,p[0],p[1],p[2],p[3]); ctx.fillStyle = 'rgba(120,160,196,.55)'; ctx.fill();
+    ctx.strokeStyle = 'rgba(255,255,255,.55)'; ctx.lineWidth = 1.4; ctx.stroke();
+    const ph = RM ? 0.5 : ((t*0.8 + i*0.31) % 1); ctx.globalAlpha = 1 - ph; ell(ctx,p[0] + (i%2 ? 8 : -8),p[1],4 + ph*10,1.2 + ph*2.4); ctx.stroke(); ctx.globalAlpha = 1;
+  });
+  // pingos que escorrem do toldo
+  for (let i=0;i<5;i++){ const ph = RM ? 0.3 : ((t*0.9 + i*0.37) % 1), x = -234 + i*45 + 6; ctx.globalAlpha = 1 - ph; circ(ctx,x,98 + ph*30,2); ctx.fillStyle = '#9CC4E4'; ctx.fill(); ctx.globalAlpha = 1; }
+}
+function drawChuvaPingos(ctx,t){
+  const x0 = -CALCADA.w - 60, w = -x0;
+  ctx.save(); ctx.lineWidth = 1.6; ctx.lineCap = 'round';
+  for (let i=0;i<70;i++){
+    const sp = 520 + (i*37 % 7)*40, x = x0 + ((i*131.7) % w) + (RM ? 0 : -((t*sp) % 540)*0.22), y = RM ? ((i*97.3) % 540) : (((i*97.3) + t*sp) % 540);
+    const xx = x0 + (((x - x0) % w) + w) % w;
+    ctx.strokeStyle = 'rgba(205,226,246,' + (0.35 + (i%3)*0.12) + ')';
+    ctx.beginPath(); ctx.moveTo(xx,y); ctx.lineTo(xx - 4,y + 13); ctx.stroke();
+  }
+  ctx.restore();
+}
+/* feriado (v8): fio de bandeirinhas coloridas no alto da fachada da calçada, por cima do muro */
+function drawBandeirinhas(ctx){
+  const x0 = -CALCADA.w + 30, x1 = -8, cores = ['#E2574C','#F2B33D','#3E9B5A','#3F7FD0','#8E5BB5','#F28FB0','#4FB6B0'];
+  const pt = u => ({ x:x0 + (x1 - x0)*u, y:2 + 7*4*u*(1 - u) });
+  ctx.strokeStyle = PAL.tinta; ctx.lineWidth = 1.8; ctx.beginPath();
+  for (let i=0;i<=24;i++){ const p = pt(i/24); i ? ctx.lineTo(p.x,p.y) : ctx.moveTo(p.x,p.y); } ctx.stroke();
+  for (let i=0;i<14;i++){
+    const u = (i + 0.5)/14, p = pt(u), d = 6;
+    ctx.beginPath(); ctx.moveTo(p.x - d,p.y); ctx.lineTo(p.x + d,p.y); ctx.lineTo(p.x,p.y + 12); ctx.closePath(); fs(ctx,cores[(i*3) % cores.length],1.6);
+  }
+}
+/* plaquinhas de conserto (v8): alvo do toque (raio MANUT.badge), no ponto `badge` de cada equipamento quebrado e sem conserto.
+   Círculo mostarda com a chave inglesa e o preço do conserto embaixo; pulsa de leve (parada com movimento reduzido) */
+function drawConsertos(ctx,g,t){
+  if (g.state !== 'playing' && g.state !== 'paused') return;
+  g.quebras.forEach(q => {
+    if (!q.on || q.fixed) return;
+    const eq = manutOf(q.id), b = eq.badge, R = MANUT.badge, pul = RM ? 0 : Math.sin(t*5);
+    if (q.id === 'fogao') drawFumaca(ctx,t);
+    ctx.save(); ctx.translate(b.x,b.y); ctx.scale(1 + pul*0.06,1 + pul*0.06);
+    shadowEll(ctx,1,R + 2,R*0.8,4,0.22);
+    circ(ctx,0,0,R + 4 + (RM ? 0 : (pul + 1)*1.6)); ctx.fillStyle = 'rgba(255,255,255,.55)'; ctx.fill();
+    circ(ctx,0,0,R); fs(ctx,PAL.mostarda,3);
+    circ(ctx,0,0,R - 5); ctx.lineWidth = 1.4; ctx.strokeStyle = 'rgba(34,32,28,.35)'; ctx.stroke();
+    drawWrench(ctx,0,1,1.35,0.78);
+    ctx.restore();
+    const lbl = fmt(eq.emerg), pw = 8 + lbl.length*6.2;
+    rr(ctx,b.x - pw/2,b.y + R - 2,pw,15,7); fs(ctx,'#fff',2);
+    txt(ctx,lbl,b.x,b.y + R + 5.8,10.5,PAL.tinta,'center',FD);
+  });
+}
 function drawKitchen(ctx,g,t){
   const bia = g.bia;
   const target = bia.acts.length ? (bia.acts[0].type === 'plate' ? 'plates' : (bia.acts[0].type === 'table' ? null : bia.acts[0].type)) : null;  // order, coffee, juice, sink
@@ -420,6 +521,10 @@ function drawKitchen(ctx,g,t){
         ctx.fillStyle = tk.p >= tk.time ? PAL.ok : PAL.alerta; ctx.fillRect(x+3,y+38,(tw-6)*clamp(tk.p/tk.time,0,1),6);
         ctx.strokeStyle = PAL.tinta; ctx.lineWidth = 1.5; ctx.strokeRect(x+3,y+38,tw-6,6);
       }
+    }
+    if (g.quebrado('fogao')){   // fogão parado: bocas apagadas (cinza e chama riscada) e fumaça preta saindo
+      for (let i=0;i<ns;i++){ const x = 786 + i*(tw+4) + tw/2;
+        rr(ctx,x - tw/2,108,tw,48,3); ctx.fillStyle = 'rgba(96,100,104,.55)'; ctx.fill(); ctx.strokeStyle = 'rgba(34,32,28,.75)'; ctx.lineWidth = 2.2; ctx.beginPath(); ctx.moveTo(x-5,148); ctx.lineTo(x+5,138); ctx.moveTo(x+5,148); ctx.lineTo(x-5,138); ctx.stroke(); }
     }
     const qn = g.kitchen.queue.length;
     txt(ctx,qn ? ('Na fila: ' + qn) : 'PEDIDOS',800,168,12,PAL.tinta,'left',FB);
@@ -467,13 +572,15 @@ function drawKitchen(ctx,g,t){
     ctx.fillStyle = 'rgba(255,255,255,.35)'; ctx.fillRect(792,348,4,28);
     rr(ctx,814,354,9,7,3); fs(ctx,PAL.cromo,1.8);
     rr(ctx,798,328,6,7,2); fs(ctx,PAL.tinta,1.4);
-    for (let i=0;i<2;i++){
+    const parada = g.quebrado('cafeteira');
+    for (let i=0;i<2 && !parada;i++){
       const cx = 836 + i*16, cy = 372;
       ell(ctx,cx,cy+8,8,3); fs(ctx,'#fff',1.8);
       rr(ctx,cx-6,cy-5,12,12,3); fs(ctx,'#fff',1.8);
       ctx.fillStyle = '#5B2E1A'; ctx.fillRect(cx-4.5,cy-3,9,2.5);
     }
-    if (!RM){
+    if (parada) drawPlacaParada(ctx,801,345);
+    if (!RM && !parada){
       ctx.strokeStyle = 'rgba(255,255,255,.7)'; ctx.lineWidth = 2;
       for (let i=0;i<2;i++){
         const cx = 836 + i*16, ph = t*2 + i;
