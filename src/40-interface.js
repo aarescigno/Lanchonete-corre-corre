@@ -6,9 +6,11 @@ const canvas = $('c');
 const ctx = canvas.getContext('2d');
 const stage = $('stage');
 const game = new Game(canvas, ctx);
-let selectedDay = Math.min(game.unlocked, 7);
+let selectedDay = treinoPrimeiro() ? 0 : Math.min(game.unlocked, 7);
+/* quem nunca fez a Missão zero (e ainda está no dia 1) já encontra o dia 0 escolhido */
+function treinoPrimeiro(){ return !game.save.treino && game.unlocked <= 1 && !DEV.on; }
 
-const SCREENS = ['ov-menu','ov-how','ov-intro','ov-pause','ov-end','ov-shop','ov-final','ov-endless','ov-rank','ov-ver','ov-app'];
+const SCREENS = ['ov-menu','ov-how','ov-intro','ov-treino','ov-pause','ov-end','ov-shop','ov-final','ov-endless','ov-rank','ov-ver','ov-app'];
 function showOnly(ids){
   SCREENS.forEach(id => { const el = $(id); if (!el) return; if (ids.indexOf(id) >= 0) el.classList.add('show'); else el.classList.remove('show'); });
 }
@@ -46,10 +48,11 @@ function buildChips(){
   const box = $('daychips');
   clearEl(box);
   selectedDay = Math.min(selectedDay, game.unlocked);
-  for (let i=1;i<=7;i++){
-    const b = el('button','chip', String(i));
+  for (let i=0;i<=7;i++){   // o dia 0 é a Missão zero (v8.2), sempre aberta
+    const b = el('button', i ? 'chip' : 'chip treino', String(i));
     b.type = 'button';
-    b.setAttribute('aria-label', 'Dia ' + i);
+    b.setAttribute('aria-label', i ? 'Dia ' + i : 'Dia 0: Missão zero, o treino');
+    if (!i) b.title = 'Missão zero: o treino';
     b.setAttribute('aria-pressed', i === selectedDay ? 'true' : 'false');
     if (i > game.unlocked) b.disabled = true;
     b.addEventListener('click', () => { selectedDay = i; Sfx.init(); Sfx.tap(); buildChips(); });

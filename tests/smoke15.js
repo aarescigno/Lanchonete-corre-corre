@@ -23,7 +23,7 @@ ok(store[L.LS.dev]==='1' && JSON.parse(store[L.LS.devSave]).bank===10000 && stor
 
 // dia 1: no modo dev, a lojinha abre antes
 els['btn-play'].fire('click'); ok(g.state==='shop' && g.shopNext===7,'Carreira (dia 7 escolhido) abre a lojinha');
-g.setState('menu'); els['daychips'].children[0].fire('click'); els['btn-play'].fire('click');
+g.setState('menu'); els['daychips'].children.find(c=>c.getAttribute('aria-label')==='Dia 1').fire('click'); els['btn-play'].fire('click');
 ok(g.state==='shop' && g.shopNext===1,'até o dia 1 abre a lojinha no modo dev');
 
 // melhorias: todas na grade, de graça, liga e desliga, sem limite
@@ -60,7 +60,7 @@ ok(!L.DEV.on && store[L.LS.dev]==='0' && g.unlocked===3 && g.save.bank===420 && 
 ok(tag.textContent===L.VERSAO && !tag.classList.contains('dev') && !vis('devbadge') && !vis('btn-dev-off'),'"Modo dev" some da tela');
 ok(!L.couvertOk(g.ponto) && !L.divulgaAberta(1) && !g.save.equipe.couvert,'fora do modo dev, couvert e divulgação voltam às regras');
 els['btn-play'].fire('click'); ok(g.state==='shop' && g.shopNext===3,'carreira normal');
-g.setState('menu'); els['daychips'].children[0].fire('click'); els['btn-play'].fire('click'); ok(g.state==='intro' && g.day.n===1,'dia 1 sem lojinha, como antes');
+g.setState('menu'); els['daychips'].children.find(c=>c.getAttribute('aria-label')==='Dia 1').fire('click'); els['btn-play'].fire('click'); ok(g.state==='intro' && g.day.n===1,'dia 1 sem lojinha, como antes');
 { g.goShop(2); L.setShopTab('melhorias'); const b=cartao('Bandeja').children[3]; ok(b.textContent==='Já comprado' && b.disabled,'lojinha normal fora do modo dev'); }
 // link "Sair do modo dev"
 g.setState('menu'); toca(10); ok(L.DEV.on,'liga de novo'); els['btn-dev-off'].fire('click'); ok(!L.DEV.on && !vis('devbadge'),'"Sair do modo dev" no menu');

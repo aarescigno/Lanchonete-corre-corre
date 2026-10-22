@@ -1,9 +1,9 @@
-# capturas da v8.1.3 (rejogar sem perder o dinheiro) em ../capturas/v8.1.3: a pausa no meio do dia 3 (o aviso do que fica)
+# capturas da v8.2.1 (rejogar sem perder o dinheiro) em ../capturas/v8.2.1: a pausa no meio do dia 3 (o aviso do que fica)
 # e a introdução depois de Reiniciar, no PC (1220×600) e no celular deitado (740×360)
 from playwright.sync_api import sync_playwright
 import pathlib, os
 HERE=pathlib.Path(__file__).resolve().parent
-S=str(HERE); OUT=str(HERE.parent/'capturas'/'v8.1.3'); os.makedirs(OUT,exist_ok=True)
+S=str(HERE); OUT=str(HERE.parent/'capturas'/'v8.2.1'); os.makedirs(OUT,exist_ok=True)
 html='<!doctype html><html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"></head><body>'+open(str(HERE.parent/'lanchonete.html'),encoding='utf8').read()+'</body></html>'
 open(S+'/wrapped.html','w').write(html)
 exe='/opt/pw-browsers/chromium' if os.path.exists('/opt/pw-browsers/chromium') else None

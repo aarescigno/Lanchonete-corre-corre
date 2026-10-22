@@ -5,13 +5,27 @@ Registro das ideias e dos retornos de quem jogou, com o texto original, e de ond
 ---
 
 ## 22/10/2026 — Usuário: rejogar o dia mantendo o dinheiro; depois, campanha contínua
-**Origem:** mensagem do usuário, depois da v8.1.2:
+**Origem:** mensagem do usuário, depois da v8.1.2 (feito sobre a v8.2):
 
 > Outra avaliação. Liberar para, quando a pessoa rejogar o nível, ela manter o dinheiro que ela ganhou. Isso por enquanto, né? Porque depois, anota aí, depois a gente vai abolir esse sistema de níveis para ser uma campanha de novo dia. Novo dia, novo acúmulo, novo serviço, nova vida, e vai seguir com tudo que tinha antes.
 
 **Para onde foi cada ideia:**
-- **Feito na v8.1.3** (`docs/spec-v8.1.3.md`): terminar o dia e "Repetir dia" já guardavam o dinheiro; o que se perdia era Reiniciar ou Menu na pausa, no meio do dia. Agora eles também guardam o que o dia rendeu (contas, folha e divulgação só da parte jogada; o resto da folha volta), com linha "interrompido" no caixa.
+- **Feito na v8.2.1** (`docs/spec-v8.2.1.md`): terminar o dia e "Repetir dia" já guardavam o dinheiro; o que se perdia era Reiniciar ou Menu na pausa, no meio do dia. Agora eles também guardam o que o dia rendeu (contas, folha e divulgação só da parte jogada; o resto da folha volta), com linha "interrompido" no caixa.
 - **Ideia guardada** no `docs/PLANO.md` ("Carreira como campanha contínua"): acabar com os níveis que se escolhem e rejogam; cada dia é um dia novo, que segue com tudo o que havia antes (dinheiro, móveis, equipe, desgaste).
+---
+
+## 22/10/2026 — Usuário: Missão zero, o tutorial com pop-ups
+**Origem:** mensagem do usuário, depois da v8.1.1 (a sessão se chamava "Missão zero tutorial com pop-ups"; o primeiro pedido não chegou e ele explicou de novo):
+
+> Boa, tem que ter uma missão tutorial, tipo um dia zero, assim, ou mesmo dia um. E precisa mostrar todo o fluxo de tarefas que a Bia pode fazer. Então, direcionar a pessoa para a mesa, é importante direcionar da mesma cor, que tem bônus. É, esperar o cardápio, pegar o pedido, levar para o Tonhão, esperar, servir a comida, servir o cafezinho, explicar os bônus que tem no cafezinho, de dinheiro e de pontuação. E de coração, né? É, retirar os pratos, lavar os pratos, cobrar, tirar o lixo, lavar os pratos, todo esse ciclo aí.
+
+**Para onde foi cada ideia:**
+- **Feito na v8.2:** o dia 0 é a Missão zero, um treino com uma mesa só e 23 pop-ups (`docs/spec-v8.2.md`).
+- Levar à mesa da mesma cor, com o bônus: passos "cor" e "sentar" (só a mesa da cor certa aceita o grupo no treino).
+- Esperar o cardápio, pegar o pedido, levar ao Tonhão, esperar, servir: passos "cardapio" a "servir".
+- Cafezinho e os bônus dele (dinheiro, pontuação e coração): passos "cafe", "cafe2" e "bonus"; o passo "conta" mostra a conta de verdade com os 5 corações ("a conta de R$ 36 virou R$ 54") e que o que entra é a pontuação do ranking.
+- Cobrar, recolher os pratos, lavar e tirar o lixo: passos "cobrar" a "lixo". Na ordem do jogo, cobrar vem antes de recolher (a louça só fica na mesa depois que o grupo paga e sai).
+- "Dia zero ou mesmo dia um": ficou como dia 0, à parte, que não conta para a carreira (a paciência não acaba); quem nunca treinou já encontra o 0 escolhido no menu, e o dia 1 convida quem pulou.
 
 ---
 

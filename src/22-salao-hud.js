@@ -206,6 +206,13 @@ function drawHud(ctx,g,tm){
       star(ctx,116 + i*24,582,10.5,on ? (flash ? '#fff' : PAL.mostarda) : '#4a453c');
     }
     txt(ctx,'próxima: ' + g.five + '/8 (5 corações)',232,583,10.5,'#cfc7b0','left',FB,0,104);
+  } else if (g.mode === 'treino'){
+    // Missão zero (v8.2): o que entrou no treino e o passo do pop-up, no lugar da meta
+    rr(ctx,12,552,74,40,10); fs(ctx,PAL.mostarda,2.8);
+    txt(ctx,'Treino',49,573,17,PAL.tinta,'center',FD,0,64);
+    txt(ctx,'R$ ' + m,102,564,24,'#FFF7DC','left',FD,4);
+    const tr = g.treino;
+    txt(ctx,'Missão zero' + (tr ? ' · passo ' + Math.min(tr.i + 1, tr.total) + ' de ' + tr.total : ' concluída'),102,587,12,'#cfc7b0','left',FB);
   } else {
     // dia
     rr(ctx,12,552,74,40,10); fs(ctx,PAL.mostarda,2.8);

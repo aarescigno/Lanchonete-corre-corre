@@ -1,4 +1,4 @@
-# v8.1.3 — Rejogar sem perder o dinheiro
+# v8.2.1 — Rejogar sem perder o dinheiro
 
 Pedido do usuário em 22/10 (texto em `docs/PROPOSTAS.md`): ao rejogar um dia, manter o dinheiro ganho. É uma solução para agora; depois, os dias devem virar uma campanha contínua (ideia guardada no `docs/PLANO.md`).
 
@@ -17,8 +17,8 @@ Pedido do usuário em 22/10 (texto em `docs/PROPOSTAS.md`): ao rejogar um dia, m
 - O caixa ganha uma linha "Dia N (interrompido)" com os valores da parte jogada (e o resumo do Caixa também), marcada com `int` (mantida pelo `normCaixa`).
 - Na pausa, uma linha diz quanto vai para o dinheiro acumulado (`game.parcial`); depois de Reiniciar, a introdução do dia diz quanto o dia interrompido rendeu e o dinheiro de agora.
 - No fim do dia sem a meta, a mensagem lembra que o que se ganhou fica, mesmo repetindo o dia.
-- Turno sem fim: igual a antes.
+- Turno sem fim e Missão zero (v8.2): iguais a antes.
 
 ## Testes
-- `tests/smoke18.js` (24 checagens): reiniciar na metade, logo no começo e no fim; Menu na pausa; prejuízo com R$ 0; linha do caixa; fim do dia e "Repetir dia"; turno sem fim.
-- `python3 tests/shot_v8_1_3.py`: a pausa e a introdução depois de reiniciar, no PC e no celular deitado, em `capturas/v8.1.3`.
+- `tests/smoke19.js` (27 checagens): reiniciar na metade, logo no começo e no fim; Menu na pausa; prejuízo com R$ 0; linha do caixa; fim do dia e "Repetir dia"; turno sem fim; Missão zero.
+- `python3 tests/shot_v8_2_1.py`: a pausa e a introdução depois de reiniciar, no PC e no celular deitado, em `capturas/v8.2.1`.
