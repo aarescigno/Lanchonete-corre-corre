@@ -4,6 +4,30 @@ Registro das ideias e dos retornos de quem jogou, com o texto original, e de ond
 
 ---
 
+## 22/10/2026 — Usuário: "QUEBRADO", não "FORA DE SERVIÇO"
+**Origem:** mensagem do usuário, na sessão da v8, sobre a placa da cafeteira quebrada:
+
+> "\"QUEBRADO\" é melhor, usar termos mais comuns no brasil é mais adequado para esse projeto"
+
+**Destino:** v8, feito (placa da cafeteira) e regra nova no `CLAUDE.md` ("Palavras do dia a dia").
+
+---
+
+## 22/10/2026 — Usuário: decisões da etapa 2 (manutenção)
+**Origem:** mensagem do usuário, ao começar a sessão da v8, com as 4 sugestões da etapa 2 do `docs/PLANO.md`:
+
+> "Bora dar seguimento nos próximos pontos e propostas?"
+
+**Respostas** (aceitou as 4 sugestões):
+1. Equipamentos: fogão, geladeira e cafeteira.
+2. Conserto: de emergência, com um toque no equipamento quebrado (plaquinha), além da revisão na lojinha.
+3. Chuva e feriado: já na v8.
+4. Quebras: só a partir do dia 4 (o desgaste corre desde o dia 1).
+
+**Destino:** v8, feito (`docs/spec-v8.md`).
+
+---
+
 ## 22/10/2026 — Usuário: decoração por nível e o Joca
 **Origem:** mensagem do usuário, logo depois da v7.7 (antes de publicar):
 
