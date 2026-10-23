@@ -37,6 +37,7 @@ Origem: retorno do Renan Martorelli (beta-tester) e conversa com o Arthur (15/10
 | — | Pedido do usuário: Jogo de pratos sem limite, fora da melhoria do dia | v8.3.6 | feita (23/10) |
 | — | Retorno do usuário: a 3ª estrela pede não perder ninguém, e a tela passa a dizer isso | v8.3.7 | feita (23/10) |
 | — | Retorno do usuário: preços de verdade (cardápio, 2º item, gorjeta de até 10%, ações viram pontos de atendimento, custos e metas de garagem) | v8.3.8 | feita (23/10) |
+| — | Retorno do usuário: jogo perfeito no dia 1 deu 1 estrela; metas e 3 estrelas pelo bot afiado | v8.3.9 | feita (23/10) |
 | 2c | Avaliações dos clientes (nota de 0 a 5 ★, 5 critérios) | v8.4 | **próxima** |
 | 2d | Abertura animada do Modo História: o sonho da Bia | v8.5 | a fazer |
 | 3a | Mudança de ponto e Lanchonete na área industrial | v9 | a fazer |

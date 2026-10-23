@@ -253,7 +253,7 @@ table.rank tr.me td{background:#fbe7a8}
 
     <div class="ov show" id="ov-menu">
       <div class="panel menu-panel">
-        <span class="vtag" id="vtag" aria-label="Versão 8.3.8">v8.3.8</span>
+        <span class="vtag" id="vtag" aria-label="Versão 8.3.9">v8.3.9</span>
         <h1 class="title">Lanchonete <br>Corre-Corre</h1>
         <p class="tag">Ajude a Bia a atender a freguesia da esquina antes que o cafezinho esfrie!</p>
         <div class="lbl" id="menu-dia">Carreira: dia 1</div>
@@ -447,7 +447,8 @@ table.rank tr.me td{background:#fbe7a8}
       <div class="panel">
         <h2>Versões</h2>
         <ul class="verlist">
-          <li><b>v8.3.8</b><span class="cur">versão atual</span><br>23/10/2026 &mdash; Preços de verdade: cada cliente paga o que pediu no cardápio da Garagem (PF R$ 25, misto R$ 12, pastel R$ 10, coxinha R$ 8, cafezinho R$ 3), e alguns pedem um 2º item. Os corações viram gorjeta de até 10%. Sentar, anotar, entregar, recolher, a cor certa e a corrente rendem pontos de atendimento, e não mais dinheiro. Contas, folha, divulgação, ingredientes, revisões e metas ficaram do tamanho de uma garagem.</li>
+          <li><b>v8.3.9</b><span class="cur">versão atual</span><br>23/10/2026 &mdash; Estrelas que premiam o jogo bem feito: com os preços novos, o lucro dos primeiros dias depende muito de quem aparece, e quem não perdia ninguém às vezes levava só 1 estrela. As metas e o lucro das 3 estrelas foram recalculados pelo jogo perfeito: no dia 1, meta R$ 30, 2 estrelas R$ 50 e 3 estrelas R$ 60.</li>
+          <li><b>v8.3.8</b><br>23/10/2026 &mdash; Preços de verdade: cada cliente paga o que pediu no cardápio da Garagem (PF R$ 25, misto R$ 12, pastel R$ 10, coxinha R$ 8, cafezinho R$ 3), e alguns pedem um 2º item. Os corações viram gorjeta de até 10%. Sentar, anotar, entregar, recolher, a cor certa e a corrente rendem pontos de atendimento, e não mais dinheiro. Contas, folha, divulgação, ingredientes, revisões e metas ficaram do tamanho de uma garagem.<br><a href="versoes/v8.3.8.html" target="_blank" rel="noopener">Abrir a v8.3.8</a></li>
           <li><b>v8.3.7</b><br>23/10/2026 &mdash; 3ª estrela mais clara: no lugar de "expert", a introdução do dia, a barra de lucro e o fim do dia dizem "3 estrelas", sempre com "sem perder ninguém". Quando um cliente vai embora, a barra avisa que a 3ª estrela foi perdida.<br><a href="versoes/v8.3.7.html" target="_blank" rel="noopener">Abrir a v8.3.7</a></li>
           <li><b>v8.3.6</b><br>23/10/2026 &mdash; Jogo de pratos sem limite: na lojinha, ele fica sempre à venda, quantas vezes você quiser (cada um põe +1 prato limpo na cozinha), e não conta como a melhoria do dia. As outras melhorias seguem 1 por dia.<br><a href="versoes/v8.3.6.html" target="_blank" rel="noopener">Abrir a v8.3.6</a></li>
           <li><b>v8.3.5</b><br>23/10/2026 &mdash; Estoque no editor do salão: arraste uma mesa para o estoque, à esquerda, para abrir espaço e rearrumar o salão cheio, e depois arraste de volta (ou toque nela e em "Pôr no salão"). Mesa no estoque não abre no dia nem paga luz e gás, mas conta no teto de lugares.<br><a href="versoes/v8.3.5.html" target="_blank" rel="noopener">Abrir a v8.3.5</a></li>
@@ -845,13 +846,13 @@ const MULTA = 10;                                     // grupo que vai embora br
 const VIP = { pat:0.75, tip:0.1, perfect:40, angry:10, dish:12, cook:1.8, types:['estudante','vovos','familia','executiva'] };   // dish: o prato especial soma R$ 12 à conta e leva 1,8× o tempo; perfect: pontos (v8.3.8)
 
 const DAYS = [
-  { n:1, groups:5,  types:['estudante','vovos'],                                   nu:null,         meta:60, expert:130,  time:150, speed:0.60, note:'A freguesia espera lá fora, na calçada: arraste cada grupo até uma mesa livre.' },
-  { n:2, groups:8,  types:['estudante','vovos','familia'],                         nu:'familia',    meta:200, expert:340,  time:160, speed:0.60, note:'Chegou a família! Grupos de 3 ou 4 só cabem nas mesas de 4 lugares. Na lojinha, aba Salão, dá para comprar mesas e arrumar o salão.' },
-  { n:3, groups:13, types:['estudante','vovos','familia','executiva'],             nu:'executiva',  meta:150, expert:290,  time:170, speed:0.60, juice:0.3, note:'O movimento aumentou e agora só há 4 pratos limpos: sozinha a Bia não dá conta, contrate ajuda na lojinha. A executiva tem pouca paciência, mas deixa boa gorjeta. E abriu o balcão de sucos: quem pede suco quer receber antes da conta!' },
-  { n:4, groups:15, types:['estudante','vovos','familia','executiva','entregador'], nu:'entregador', meta:100, expert:230, time:180, speed:0.58, juice:0.3, note:'O entregador de moto tem pressa: pouquíssima paciência!' },
-  { n:5, groups:16, types:['estudante','vovos','familia','executiva','entregador'], nu:null,         meta:150, expert:320, time:190, speed:0.56, vip:0.15, juice:0.3, note:'Chegou cliente VIP (de óculos escuros e plaquinha dourada)! Fura a fila e tem menos paciência, mas pede o prato especial (mais caro), dá gorjeta e, se sair com 5 corações, pontos a mais. Se sair bravo, a multa dobra.' },
-  { n:6, groups:16, types:['estudante','vovos','familia','executiva','entregador'], nu:null,         meta:150, expert:300, time:200, speed:0.54, vip:0.15, juice:0.3, note:'Sexta-feira: ninguém quer esperar.' },
-  { n:7, groups:17, types:['estudante','vovos','familia','executiva','entregador'], nu:null,         meta:180, expert:360, time:220, speed:0.52, vip:0.15, juice:0.3, gripe:true, note:'Tonhão está gripado: a cozinha anda mais devagar hoje.' }
+  { n:1, groups:5,  types:['estudante','vovos'],                                   nu:null,         meta:30, expert:60,  time:150, speed:0.60, note:'A freguesia espera lá fora, na calçada: arraste cada grupo até uma mesa livre.' },
+  { n:2, groups:8,  types:['estudante','vovos','familia'],                         nu:'familia',    meta:120, expert:220,  time:160, speed:0.60, note:'Chegou a família! Grupos de 3 ou 4 só cabem nas mesas de 4 lugares. Na lojinha, aba Salão, dá para comprar mesas e arrumar o salão.' },
+  { n:3, groups:13, types:['estudante','vovos','familia','executiva'],             nu:'executiva',  meta:150, expert:230,  time:170, speed:0.60, juice:0.3, note:'O movimento aumentou e agora só há 4 pratos limpos: sozinha a Bia não dá conta, contrate ajuda na lojinha. A executiva tem pouca paciência, mas deixa boa gorjeta. E abriu o balcão de sucos: quem pede suco quer receber antes da conta!' },
+  { n:4, groups:15, types:['estudante','vovos','familia','executiva','entregador'], nu:'entregador', meta:70, expert:110, time:180, speed:0.58, juice:0.3, note:'O entregador de moto tem pressa: pouquíssima paciência!' },
+  { n:5, groups:16, types:['estudante','vovos','familia','executiva','entregador'], nu:null,         meta:100, expert:140, time:190, speed:0.56, vip:0.15, juice:0.3, note:'Chegou cliente VIP (de óculos escuros e plaquinha dourada)! Fura a fila e tem menos paciência, mas pede o prato especial (mais caro), dá gorjeta e, se sair com 5 corações, pontos a mais. Se sair bravo, a multa dobra.' },
+  { n:6, groups:16, types:['estudante','vovos','familia','executiva','entregador'], nu:null,         meta:150, expert:280, time:200, speed:0.54, vip:0.15, juice:0.3, note:'Sexta-feira: ninguém quer esperar.' },
+  { n:7, groups:17, types:['estudante','vovos','familia','executiva','entregador'], nu:null,         meta:180, expert:310, time:220, speed:0.52, vip:0.15, juice:0.3, gripe:true, note:'Tonhão está gripado: a cozinha anda mais devagar hoje.' }
 ];
 /* campanha (v8.3): os dias 1 a 7 são a rampa de abertura; do dia 8 em diante, cada dia tem o perfil do dia 7 (sem a gripe
    do Tonhão) com o movimento do dia da semana (o dia 1 é domingo e o 6, sexta). f: fator dos grupos e das metas;
@@ -927,7 +928,7 @@ function tabelaDe(e){
 /* um empréstimo novo de v, pagando em dia: as parcelas e os juros somados */
 function simulaEmprestimo(v, j){ const t = tabelaDe(normEmprestimo({ resto:v, amort:Math.ceil(v / BANCO.parcelas), j })); return { parcelas:t, juros:t.reduce((a, p) => a + p, 0) - v }; }
 const CAIXA_MAX = 14;                                 // livro-caixa (v7.2): quantos dias da carreira ficam guardados
-const VERSAO = 'v8.3.8';                              // vai no resumo do Caixa
+const VERSAO = 'v8.3.9';                              // vai no resumo do Caixa
 const DIVULGA_DIA = 3;                                // antes disso, o movimento é o da inauguração (sem custo)
 function divulgaAberta(n){ return DEV.on || n >= DIVULGA_DIA; }   // no modo dev, desde o dia 1
 function divulgaOf(id){ return DIVULGA.find(d => d.id === id) || DIVULGA[1]; }
