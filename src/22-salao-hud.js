@@ -40,6 +40,7 @@ function drawTableBody(ctx,t,open,g,tm){
       ctx.strokeStyle = 'rgba(34,32,28,.12)'; ctx.lineWidth = 1.2; oct(x0+5,t.cy-14,w-10,22,5); ctx.stroke();
       ell(ctx,x0+w/2,t.cy-3,3,1.8); ctx.fillStyle = 'rgba(34,32,28,.35)'; ctx.fill();
     }
+    if (t.id === '') return;   // mesa no estoque do editor (v8.3.5): sem número
     circ(ctx,t.cx-hw+14,t.cy-1,8.5); fs(ctx,PAL.mostarda,2);
     txt(ctx,String(t.id),t.cx-hw+14,t.cy,12,PAL.tinta,'center',FD);
     return;
@@ -49,6 +50,7 @@ function drawTableBody(ctx,t,open,g,tm){
   rr(ctx,t.cx-hw+4,t.cy-14,hw*2-8,26,6); fs(ctx,open ? PAL.formica : '#b7867e',2);
   ctx.fillStyle = 'rgba(255,255,255,.22)'; rr(ctx,t.cx-hw+8,t.cy-11,hw*2-30,5,2.5); ctx.fill();
   // plaquinha do número
+  if (t.id === '') return;
   circ(ctx,t.cx-hw+14,t.cy-1,8.5); fs(ctx,'#fff',2);
   txt(ctx,String(t.id),t.cx-hw+14,t.cy,12,PAL.tinta,'center',FD);
 }

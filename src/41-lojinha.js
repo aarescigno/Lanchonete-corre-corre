@@ -193,8 +193,10 @@ function buildEquipe(grid){
   c.appendChild(duo); grid.appendChild(c);
 }
 /* aba Salão (v7.4): o editor (o salão desenhado em escala, sem clientes) e a loja de móveis ao lado.
-   Arrastar a mesa muda o lugar dela (encaixe na grade); tocar nela abre a cor das cadeiras, "virar mesa de 4" e "vender" */
+   Arrastar a mesa muda o lugar dela (encaixe na grade); tocar nela abre a cor das cadeiras, "virar mesa de 4" e "vender".
+   v8.3.5: o estoque, à esquerda do salão, guarda mesas (pequenas, em 2 colunas) para rearrumar com folga */
 const ED = { x:0, y:56, w:800, h:484, k:1.25 };  // pedaço do salão no editor (do pé da parede ao chão, até o balcão) e a resolução do canvas
+const EST = { x0:12, y0:118, x1:182, y1:530, top:30, k:0.55 };   // o estoque no editor (em px do salão) e a escala das mesas nele
 let edDrag = null;
 function edPt(cv, e){
   const r = cv.getBoundingClientRect(), w = r.width || ED.w, h = r.height || ED.h;
@@ -206,16 +208,57 @@ function edPad(cv, e){
   return clamp(14 * ED.w / (cv.getBoundingClientRect().width || ED.w), 8, 32);
 }
 function edRect(m){ const hx = tableHalfW(m); return { x:m.x - hx - 10, y:m.y - 62, w:hx*2 + 20, h:132 }; }
+/* casinhas do estoque: 2 colunas, pelo menos 4 fileiras (as mesas encolhem se houver mais) */
+function estSlots(n){
+  const cols = 2, rows = Math.max(4, Math.ceil(n / cols)), w = (EST.x1 - EST.x0) / cols, h = (EST.y1 - EST.y0 - EST.top) / rows, k = Math.min(EST.k, h / 140), out = [];
+  for (let i = 0; i < n; i++) out.push({ x:EST.x0 + w * (i % cols + 0.5), y:EST.y0 + EST.top + h * (Math.floor(i / cols) + 0.5), w, h, k });
+  return out;
+}
+const naEst = p => p.x >= EST.x0 && p.x <= EST.x1 && p.y >= EST.y0 && p.y <= EST.y1;
+/* a mesa sob o toque: { est, i } (est: do estoque) ou null */
 function edHit(p, pad){
+  const sl = estSlots(game.estoque.length);
+  for (let k = 0; k < sl.length; k++){ const q = sl[k]; if (rectDist(p.x, p.y, { x:q.x - q.w/2, y:q.y - q.h/2, w:q.w, h:q.h }) <= Math.min(pad, 4)) return { est:true, i:k }; }
   let best = -1, bd = Infinity;
   game.save.salao.mesas.forEach((m, i) => { const d = rectDist(p.x, p.y, edRect(m)); if (d <= pad && d < bd){ bd = d; best = i; } });
-  return best;
+  return best < 0 ? null : { est:false, i:best };
 }
-/* mesas como estão no editor: as do salão, com a arrastada no lugar provisório */
+/* mesas do salão como ficariam com a mesa arrastada solta onde está (no estoque, ela sai do salão) */
 function edMesas(){
-  const l = game.save.salao.mesas.slice();
-  if (edDrag && edDrag.moved) l[edDrag.i] = Object.assign({}, l[edDrag.i], { x:edDrag.x, y:edDrag.y });
+  const d = edDrag, l = game.save.salao.mesas.slice();
+  if (!d || !d.moved) return l;
+  if (d.est) return d.inEst ? l : l.concat([{ x:d.x, y:d.y, seats:game.estoque[d.i].seats, c:game.estoque[d.i].c }]);
+  if (d.inEst){ l.splice(d.i, 1); return l; }
+  l[d.i] = Object.assign({}, l[d.i], { x:d.x, y:d.y });
   return l;
+}
+/* contorno da mesa escolhida (amarelo), arrastada (verde) ou num lugar que não vale (vermelho) */
+function edMarca(c, r, drag, bad){
+  c.save(); c.strokeStyle = bad ? PAL.perigo : (drag ? PAL.ok : PAL.mostarda); c.lineWidth = 5; c.setLineDash(drag ? [10,6] : []);
+  rr(c,r.x,r.y,r.w,r.h,14); c.stroke();
+  if (bad){ c.fillStyle = 'rgba(194,54,43,.25)'; c.fill(); }
+  c.restore();
+}
+function drawEstoque(c){
+  const d = edDrag && edDrag.moved ? edDrag : null, est = game.estoque, sl = estSlots(est.length), alvo = d && d.inEst && !d.est;
+  c.save();
+  rr(c,EST.x0,EST.y0,EST.x1-EST.x0,EST.y1-EST.y0,12); c.fillStyle = alvo ? (d.ok ? 'rgba(62,155,90,.3)' : 'rgba(194,54,43,.25)') : 'rgba(255,253,245,.7)'; c.fill();
+  c.setLineDash([8,6]); c.strokeStyle = alvo ? (d.ok ? PAL.ok : PAL.perigo) : 'rgba(34,32,28,.45)'; c.lineWidth = alvo ? 4 : 2; c.stroke();
+  c.restore();
+  txt(c,'ESTOQUE',(EST.x0+EST.x1)/2,EST.y0+17,17,PAL.tinta,'center',FD);
+  if (!est.length){
+    ['Arraste uma', 'mesa para cá', 'e abra espaço', 'no salão.', '', 'Aqui ela não', 'abre no dia.'].forEach((t, k) => txt(c,t,(EST.x0+EST.x1)/2,EST.y0+92+k*24,15,'rgba(34,32,28,.6)','center',FB));
+    return;
+  }
+  est.forEach((m, i) => {
+    if (d && d.est && d.i === i) return;   // a arrastada vai desenhada por cima
+    const q = sl[i], t = new Table({ id:'', cx:q.x, cy:q.y - 4 * q.k, seats:m.seats, color:m.c });
+    t.open = true;
+    c.save(); c.translate(q.x, q.y); c.scale(q.k, q.k); c.translate(-q.x, -q.y);
+    drawTable(c, game, t, 0, true);
+    c.restore();
+    if (i === game.estoqueSel) edMarca(c, { x:q.x - q.w/2 + 3, y:q.y - q.h/2 + 3, w:q.w - 6, h:q.h - 6 }, false, false);
+  });
 }
 function drawEditor(cv){
   const c = cv.getContext('2d');
@@ -225,19 +268,21 @@ function drawEditor(cv){
   drawFloor(c, game); drawWall(c, game, 0); drawKitchen(c, game, 0);
   const a = game.ponto.area;
   c.save(); c.setLineDash([8,6]); c.strokeStyle = 'rgba(31,79,163,.5)'; c.lineWidth = 2; rr(c,a.x0,a.y0,a.x1-a.x0,a.y1-a.y0,10); c.stroke(); c.restore();
-  const l = edMesas(), di = edDrag && edDrag.moved ? edDrag.i : -1;
-  l.map((m, i) => i).sort((i, j) => (i === di) - (j === di)).forEach(i => {   // a mesa arrastada por cima das outras
-    const m = l[i], t = new Table({ id:i + 1, cx:m.x, cy:m.y, seats:m.seats, color:m.c }), drag = i === di;
+  drawEstoque(c);
+  const d = edDrag && edDrag.moved ? edDrag : null;
+  game.save.salao.mesas.forEach((m, i) => {
+    if (d && !d.est && d.i === i) return;
+    const t = new Table({ id:i + 1, cx:m.x, cy:m.y, seats:m.seats, color:m.c });
     t.open = true;
     drawTable(c, game, t, 0, true);
-    if (drag || i === game.salaoSel){
-      const bad = drag && !edDrag.ok, r = edRect(m);
-      c.save(); c.strokeStyle = bad ? PAL.perigo : (drag ? PAL.ok : PAL.mostarda); c.lineWidth = 5; c.setLineDash(drag ? [10,6] : []);
-      rr(c,r.x,r.y,r.w,r.h,14); c.stroke();
-      if (bad){ c.fillStyle = 'rgba(194,54,43,.25)'; c.fill(); }
-      c.restore();
-    }
+    if (i === game.salaoSel) edMarca(c, edRect(m), false, false);
   });
+  if (d){   // a mesa arrastada, por cima de tudo
+    const m = d.est ? game.estoque[d.i] : game.save.salao.mesas[d.i], t = new Table({ id:d.est ? '' : d.i + 1, cx:d.x, cy:d.y, seats:m.seats, color:m.c });
+    t.open = true;
+    drawTable(c, game, t, 0, true);
+    edMarca(c, edRect({ x:d.x, y:d.y, seats:m.seats }), true, !d.ok);
+  }
 }
 /* botão do editor: o motivo da recusa (salaoMsg) aparece logo abaixo */
 function edBtn(text, cls, enabled, fn, cost){
@@ -246,14 +291,22 @@ function edBtn(text, cls, enabled, fn, cost){
   b.addEventListener('click', () => { Sfx.init(); if (folhaPede(b)) return; if (fn()) Sfx.tap(); else Sfx.boing(); buildShop(); });
   return b;
 }
+/* vale soltar a mesa arrastada onde está? (d.why: o motivo, se não) */
+function edValida(d){
+  const mesas = game.save.salao.mesas;
+  if (d.inEst) d.why = d.est || mesas.length > 1 ? '' : 'O salão precisa de pelo menos 1 mesa.';
+  else d.why = salaoProblema(edMesas(), game.ponto);
+  d.ok = !d.why;
+}
 function edEvents(cv){
   cv.addEventListener('pointerdown', e => {
     Sfx.init(); e.preventDefault();
     try { cv.setPointerCapture(e.pointerId); } catch(err) {}
-    const p = edPt(cv, e), pad = edPad(cv, e), i = edHit(p, pad);
-    if (i < 0){ if (game.salaoSel >= 0 || game.salaoMsg){ game.salaoSel = -1; game.salaoMsg = ''; buildShop(); } return; }
-    const m = game.save.salao.mesas[i];
-    edDrag = { i, dx:m.x - p.x, dy:m.y - p.y, sx:p.x, sy:p.y, x:m.x, y:m.y, moved:false, ok:true, why:'', pad };
+    const p = edPt(cv, e), pad = edPad(cv, e), h = edHit(p, pad);
+    if (!h){ if (game.salaoSel >= 0 || game.estoqueSel >= 0 || game.salaoMsg){ game.salaoSel = -1; game.estoqueSel = -1; game.salaoMsg = ''; buildShop(); } return; }
+    const m = h.est ? null : game.save.salao.mesas[h.i];
+    // do estoque, a mesa sai já no tamanho do salão, presa no dedo
+    edDrag = { est:h.est, i:h.i, dx:m ? m.x - p.x : 0, dy:m ? m.y - p.y : 0, sx:p.x, sy:p.y, x:m ? m.x : p.x, y:m ? m.y : p.y, moved:false, ok:true, why:'', pad, inEst:h.est };
   });
   cv.addEventListener('pointermove', e => {
     const d = edDrag;
@@ -262,63 +315,87 @@ function edEvents(cv){
     // no dedo, um tremidinho não vira arrasto
     if (!d.moved && Math.hypot(p.x - d.sx, p.y - d.sy) > Math.max(9, d.pad)){ d.moved = true; const pop = cv.parentNode && cv.parentNode.querySelector && cv.parentNode.querySelector('.ed-pop'); if (pop) pop.style.display = 'none'; }
     if (!d.moved) return;
-    const x = clamp(snapG(p.x + d.dx), ED.x + 40, ED.x + ED.w - 40), y = clamp(snapG(p.y + d.dy), ED.y + 60, ED.y + ED.h - 40);
-    if (x === d.x && y === d.y) return;
-    d.x = x; d.y = y; d.why = salaoProblema(edMesas(), game.ponto); d.ok = !d.why;
+    const x = clamp(snapG(p.x + d.dx), ED.x + 40, ED.x + ED.w - 40), y = clamp(snapG(p.y + d.dy), ED.y + 60, ED.y + ED.h - 40), inEst = naEst(p);
+    if (x === d.x && y === d.y && inEst === d.inEst && d.vez) return;
+    d.x = x; d.y = y; d.inEst = inEst; d.vez = true; edValida(d);
     drawEditor(cv);
   });
   cv.addEventListener('pointerup', () => {
     const d = edDrag; edDrag = null;
     if (!d) return;
     if (d.moved){
-      if (d.ok && game.moverMesa(d.i, d.x, d.y)) Sfx.tap();
+      if (d.inEst && d.est) Sfx.tap();   // voltou para o estoque: nada muda
+      else if (d.ok && (d.inEst ? game.guardarMesa(d.i) : d.est ? game.tirarMesa(d.i, d.x, d.y) : game.moverMesa(d.i, d.x, d.y))) Sfx.tap();
       else { Sfx.boing(); game.salaoMsg = 'Aí não dá: ' + (d.why || game.salaoMsg).toLowerCase(); }
-    } else { game.salaoSel = game.salaoSel === d.i ? -1 : d.i; game.salaoMsg = ''; Sfx.tap(); }
+    } else if (d.est){ game.estoqueSel = game.estoqueSel === d.i ? -1 : d.i; game.salaoSel = -1; game.salaoMsg = ''; Sfx.tap(); }
+    else { game.salaoSel = game.salaoSel === d.i ? -1 : d.i; game.estoqueSel = -1; game.salaoMsg = ''; Sfx.tap(); }
     buildShop();
   });
   cv.addEventListener('pointercancel', () => { edDrag = null; drawEditor(cv); });
   cv.addEventListener('contextmenu', e => e.preventDefault());
 }
+/* cor das cadeiras (v7.4.3, de graça), em bolinhas com o nome da cor no rótulo */
+function edCores(m, fn){
+  const cores = el('div', 'ed-cores');
+  cores.appendChild(el('span', null, 'Cadeiras:'));
+  CHAIRS.forEach((ch, k) => {
+    const b = edBtn(k === m.c ? '✓' : '', 'ed-cor', true, () => fn(k));
+    b.style.background = ch.c; b.title = 'Cadeiras na cor ' + ch.n;
+    b.setAttribute('aria-label', 'Cadeiras na cor ' + ch.n); b.setAttribute('aria-pressed', k === m.c ? 'true' : 'false');
+    cores.appendChild(b);
+  });
+  return cores;
+}
 function buildSalao(grid){
-  const p = game.ponto, mesas = game.save.salao.mesas, bank = game.save.bank, lug = salaoLugares(mesas), sel = game.salaoSel;
+  const p = game.ponto, mesas = game.save.salao.mesas, est = game.estoque, bank = game.save.bank, lug = salaoLugares(mesas), tot = game.lugaresTot;
+  if (!est[game.estoqueSel]) game.estoqueSel = -1;
+  const sel = game.salaoSel, ks = game.estoqueSel;
   const ed = el('div', 'ed'), box = el('div', 'ed-cv'), cv = el('canvas');
   cv.width = Math.round(ED.w * ED.k); cv.height = Math.round(ED.h * ED.k);
-  cv.setAttribute('aria-label', 'Salão: arraste as mesas para mudar de lugar e toque numa mesa para ver as opções');
+  cv.setAttribute('aria-label', 'Salão: arraste as mesas para mudar de lugar ou para o estoque, à esquerda, e toque numa mesa para ver as opções');
   box.appendChild(cv); edEvents(cv);
-  // mesa escolhida: cor das cadeiras, virar mesa de 4 e vender (balãozinho em cima do salão)
-  const m = mesas[sel];
-  if (m){
-    const up = m.y + 190 > ED.y + ED.h, pop = el('div', 'ed-pop' + (up ? ' up' : ''));
-    pop.style.left = clamp((m.x - ED.x) / ED.w * 100, 18, 82) + '%';
-    pop.style.top = ((up ? m.y - 66 : m.y + 72) - ED.y) / ED.h * 100 + '%';
-    pop.appendChild(el('b', null, 'Mesa ' + (sel + 1) + ' · ' + m.seats + ' lugares'));
-    // v7.4.3: a cor das cadeiras (de graça), em bolinhas com o nome da cor no rótulo
-    const cores = el('div', 'ed-cores');
-    cores.appendChild(el('span', null, 'Cadeiras:'));
-    CHAIRS.forEach((ch, k) => {
-      const b = edBtn(k === m.c ? '✓' : '', 'ed-cor', true, () => game.pintarMesa(sel, k));
-      b.style.background = ch.c; b.title = 'Cadeiras na cor ' + ch.n;
-      b.setAttribute('aria-label', 'Cadeiras na cor ' + ch.n); b.setAttribute('aria-pressed', k === m.c ? 'true' : 'false');
-      cores.appendChild(b);
-    });
-    pop.appendChild(cores);
-    if (m.seats === 2) pop.appendChild(edBtn('Virar mesa de 4: ' + fmt(SALAO.virar), 'btn', lug + 2 <= p.lugares && bank >= SALAO.virar, () => game.virarMesa(sel), SALAO.virar));
-    pop.appendChild(edBtn('Vender por ' + fmt(mesaPreco(m.seats) * SALAO.venda), 'btn alt', mesas.length > 1, () => game.venderMesa(sel)));
+  // mesa escolhida: cor das cadeiras, guardar no estoque, virar mesa de 4 e vender (balãozinho em cima do salão)
+  const m = mesas[sel], me = est[ks];
+  if (m || me){
+    let pop;
+    if (m){
+      const up = m.y + 230 > ED.y + ED.h;
+      pop = el('div', 'ed-pop' + (up ? ' up' : ''));
+      pop.style.left = clamp((m.x - ED.x) / ED.w * 100, 18, 82) + '%';
+      pop.style.top = ((up ? m.y - 66 : m.y + 72) - ED.y) / ED.h * 100 + '%';
+      pop.appendChild(el('b', null, 'Mesa ' + (sel + 1) + ' · ' + m.seats + ' lugares'));
+      pop.appendChild(edCores(m, k => game.pintarMesa(sel, k)));
+      if (m.seats === 2) pop.appendChild(edBtn('Virar mesa de 4: ' + fmt(SALAO.virar), 'btn', tot + 2 <= p.lugares && bank >= SALAO.virar, () => game.virarMesa(sel), SALAO.virar));
+      pop.appendChild(edBtn('Guardar no estoque', 'btn alt', mesas.length > 1, () => game.guardarMesa(sel)));
+      pop.appendChild(edBtn('Vender por ' + fmt(mesaPreco(m.seats) * SALAO.venda), 'btn alt', mesas.length > 1, () => game.venderMesa(sel)));
+    } else {
+      // v8.3.5: mesa do estoque; o balãozinho sai ao lado do estoque, por cima do salão
+      const q = estSlots(est.length)[ks], up = q.y + 230 > ED.y + ED.h;
+      pop = el('div', 'ed-pop est' + (up ? ' up' : ''));
+      pop.style.left = (EST.x1 + 6 - ED.x) / ED.w * 100 + '%';
+      pop.style.top = ((up ? q.y + q.h / 2 : q.y - q.h / 2) - ED.y) / ED.h * 100 + '%';
+      pop.appendChild(el('b', null, 'Mesa no estoque · ' + me.seats + ' lugares'));
+      pop.appendChild(edCores(me, k => game.pintarMesa(ks, k, true)));
+      pop.appendChild(edBtn('Pôr no salão', 'btn', true, () => game.tirarMesa(ks)));
+      if (me.seats === 2) pop.appendChild(edBtn('Virar mesa de 4: ' + fmt(SALAO.virar), 'btn', tot + 2 <= p.lugares && bank >= SALAO.virar, () => game.virarMesa(ks, true), SALAO.virar));
+      pop.appendChild(edBtn('Vender por ' + fmt(mesaPreco(me.seats) * SALAO.venda), 'btn alt', true, () => game.venderMesa(ks, true)));
+    }
     const x = el('button', 'ed-x', '×'); x.type = 'button'; x.setAttribute('aria-label', 'Fechar');
-    x.addEventListener('click', () => { Sfx.tap(); game.salaoSel = -1; buildShop(); });
+    x.addEventListener('click', () => { Sfx.tap(); game.salaoSel = -1; game.estoqueSel = -1; buildShop(); });
     pop.appendChild(x);
     box.appendChild(pop);
   }
   ed.appendChild(box);
   // loja de móveis e arrumação
-  const side = el('div', 'ed-side');
+  const side = el('div', 'ed-side'), nEst = salaoLugares(est);
   side.appendChild(el('b', 'ed-lug', 'Lugares ' + lug + ' de ' + p.lugares));
+  if (est.length) side.appendChild(el('span', 'ed-est', 'No estoque: ' + est.length + (est.length > 1 ? ' mesas' : ' mesa') + ' (' + nEst + ' lugares), que não abre' + (est.length > 1 ? 'm' : '') + ' no dia.'));
   side.appendChild(el('span', 'ed-ponto', p.nome + (p.aluguel ? ': aluguel ' + fmt(p.aluguel) + ' por dia.' : ': sem aluguel.')));
-  side.appendChild(edBtn('Mesa de 2: ' + fmt(SALAO.mesa2), 'btn', lug + 2 <= p.lugares && bank >= SALAO.mesa2, () => game.buyMesa(2), SALAO.mesa2));
-  side.appendChild(edBtn('Mesa de 4: ' + fmt(SALAO.mesa4), 'btn', lug + 4 <= p.lugares && bank >= SALAO.mesa4, () => game.buyMesa(4), SALAO.mesa4));
+  side.appendChild(edBtn('Mesa de 2: ' + fmt(SALAO.mesa2), 'btn', tot + 2 <= p.lugares && bank >= SALAO.mesa2, () => game.buyMesa(2), SALAO.mesa2));
+  side.appendChild(edBtn('Mesa de 4: ' + fmt(SALAO.mesa4), 'btn', tot + 4 <= p.lugares && bank >= SALAO.mesa4, () => game.buyMesa(4), SALAO.mesa4));
   side.appendChild(edBtn('Arrumação automática', 'btn alt', true, () => game.arrumarSalao()));
   side.appendChild(edBtn('Desfazer', 'btn alt', game.salaoUndo.length > 0, () => game.desfazerSalao()));
-  side.appendChild(el('span', game.salaoMsg ? 'msg' : 'ed-dica', game.salaoMsg || (lug >= p.lugares ? 'O salão está no teto de ' + p.lugares + ' lugares.' : 'Arraste as mesas; toque numa para trocar a cor das cadeiras, virar mesa de 4 ou vender. Grupos de 3 ou 4 só sentam nas mesas de 4.')));
+  side.appendChild(el('span', game.salaoMsg ? 'msg' : 'ed-dica', game.salaoMsg || (tot >= p.lugares ? (nEst ? 'Salão e estoque estão no teto de ' + p.lugares + ' lugares.' : 'O salão está no teto de ' + p.lugares + ' lugares.') + ' Para rearrumar, arraste mesas para o estoque e de volta.' : 'Arraste as mesas, até para o estoque; toque numa para trocar a cor das cadeiras, virar mesa de 4 ou vender. Grupos de 3 ou 4 só sentam nas mesas de 4.')));
   side.appendChild(el('span', 'ed-contas', 'Luz e gás: ' + fmt(contasDia(game.tables, p)) + ' por dia (' + fmt(CONTAS.mesa) + ' por mesa e ' + fmt(CONTAS.lugar) + ' por lugar).'));
   const mov = Math.round((movimentoSalao(lug) - 1) * 100);
   side.appendChild(el('span', 'ed-contas', 'Cada lugar acima de ' + MOVIMENTO.kit + ' traz ' + Math.round(MOVIMENTO.porLugar * 100) + '% mais clientes' + (mov > 0 ? ' (hoje, +' + mov + '%).' : '.')));
