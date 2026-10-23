@@ -12,34 +12,36 @@ const cont=()=>{ g.setState('menu'); els['btn-play'].fire('click'); if(g.state==
 const fecha=(fat,bankAntes)=>{ els['btn-start'].fire('click'); g.schedule=[]; g.nextIdx=0; g.money=fat||0; g.custo=0; if(bankAntes!=null) g.save.bank=bankAntes; g.finishDay(); };
 
 // ---------- devidoDe ----------
-ok(L.devidoDe({resto:550,n:5})===110 && L.devidoDe({resto:550,n:5,atr:true})===220,'devido: a parcela do dia, ou a atrasada e a do dia');
-ok(L.devidoDe({resto:110,n:1,atr:true})===110,'a última atrasada: só ela');
+const N=L.normEmprestimo;
+ok(L.devidoDe(N({resto:550,n:5}))===110 && L.devidoDe(N({resto:550,n:5,atr:true}))===220,'save da v8.3 (juros já somados): a parcela do dia, ou a atrasada e a do dia');
+ok(L.devidoDe(N({resto:110,n:1,atr:true}))===110 && L.devidoDe(N({resto:103,amort:100,j:0.03,atr:true}))===106,'a última atrasada: só ela (com os juros)');
+ok(L.devidoDe({resto:500,amort:100,j:0.03})===115 && L.devidoDe({resto:515,amort:100,j:0.03,atr:true})===215,'v8.3.2: amortização e juros do dia; atrasada, 2 amortizações e os juros');
 ok(L.normEmprestimo({resto:550,n:5,atr:true}).atr===true && L.normEmprestimo({resto:0,n:0,atr:true}).atr===undefined,'o save guarda o atraso (só com dívida)');
 
 // ---------- não coube: fica atrasada ----------
-novo({dia:5,bank:600}); g.emprestar(500);   // deve 550: 5 × 110
+novo({dia:5,bank:600}); g.emprestar(500);   // v8.3.2: saldo 500, amortização 100, 3% ao dia: 115, 112, 109, 106, 103
 cont(); fecha(0,50); const c5=g.contas;
-ok(g.result.atrasou && !g.result.tomou && g.save.emp.atr && g.save.emp.resto===550 && g.save.emp.n===5,'caixa sem a parcela: ficou atrasada e nada saiu');
+ok(g.result.atrasou && !g.result.tomou && g.save.emp.atr && g.save.emp.resto===515 && g.save.emp.n===6,'caixa sem a parcela: ficou atrasada, nada saiu e os juros do dia (15) foram para o saldo');
 ok(g.save.bank===50-c5 && !g.result.par,'o dinheiro não pagou parcela');
-ok(g.state==='dayend' && /ficou atrasada/.test(els['end-msg'].textContent) && /R\$ 220/.test(els['end-msg'].textContent),'o fim do dia avisa: amanhã R$ 220');
+ok(g.state==='dayend' && /ficou atrasada/.test(els['end-msg'].textContent) && /R\$ 215/.test(els['end-msg'].textContent),'o fim do dia avisa: amanhã R$ 215');
 ok(g.save.caixa.slice(-1)[0].atr===1 && /parcela atrasada/.test(L.caixaResumo(g.save)),'o caixa marca o atraso');
-ok(g.devido===220,'devido amanhã: 220');
+ok(g.devido===215,'devido amanhã: 2 amortizações (200) e os juros do saldo novo (15)');
 els['btn-next'].fire('click');
 ok(/parcela do banco atrasada/.test(els['shop-livre'].textContent) && /falta/.test(els['shop-livre'].className),'a lojinha avisa no alto');
 L.setShopTab('banco'); ok(/Parcela atrasada/.test(txt(els['shop-grid'])),'e na aba Banco');
-ok(/parcela do banco R\$ 220 \(com a atrasada\)/.test(els['shop-folha'].textContent),'a linha da folha mostra o devido');
-els['btn-shop-go'].fire('click'); ok(/Parcela do banco atrasada/.test(els['intro-manut'].textContent) && /R\$ 220/.test(els['intro-manut'].textContent),'a introdução avisa');
+ok(/parcela do banco R\$ 215 \(com a atrasada\)/.test(els['shop-folha'].textContent),'a linha da folha mostra o devido');
+els['btn-shop-go'].fire('click'); ok(/Parcela do banco atrasada/.test(els['intro-manut'].textContent) && /R\$ 215/.test(els['intro-manut'].textContent),'a introdução avisa');
 // ---------- no dia seguinte, pagou: volta ao normal ----------
 const b6=g.save.bank; els['btn-start'].fire('click'); g.schedule=[]; g.nextIdx=0; g.money=1000; g.custo=0; const c6=g.contas; g.finishDay();
-ok(g.result.par===220 && !g.save.emp.atr && g.save.emp.n===3 && g.save.emp.resto===330 && g.save.bank===b6+1000-c6-220,'pagou a atrasada e a do dia: faltam 3, sem atraso');
+ok(g.result.par===215 && !g.save.emp.atr && g.save.emp.n===4 && g.save.emp.resto===315 && g.save.bank===b6+1000-c6-215,'pagou a atrasada e a do dia: saldo 315 em 4 parcelas, sem atraso (atrasar custou uma parcela a mais)');
 ok(g.state==='dayend' && !g.save.fechou,'a carreira segue');
 
 // ---------- atrasou de novo: o banco toma a lanchonete ----------
 novo({dia:5,bank:600}); g.emprestar(500);
 cont(); fecha(0,50); ok(g.save.emp.atr,'atrasou no dia 5');
 cont(); fecha(0,100);
-ok(g.result.tomou && g.save.fechou===6 && g.state==='falencia' && els['ov-falencia'].classList.contains('show'),'no dia 6 sem os R$ 220: o banco toma a lanchonete');
-ok(/O banco tomou|não tinha os R\$ 220/.test(els['falencia-msg'].textContent),'a tela conta o porquê');
+ok(g.result.tomou && g.save.fechou===6 && g.state==='falencia' && els['ov-falencia'].classList.contains('show'),'no dia 6 sem os R$ 215: o banco toma a lanchonete');
+ok(/não tinha os R\$ 215/.test(els['falencia-msg'].textContent),'a tela conta o porquê');
 ok(/Dias jogados/.test(txt(els['falencia-stats'])) && /Lucro acumulado/.test(txt(els['falencia-stats'])),'resumo da carreira');
 ok(/Salvar no ranking/.test(txt(els['falencia-save'])) || /ranking/.test(txt(els['falencia-save'])),'formulário do ranking');
 ok(g.save.caixa.slice(-1)[0].tom===1 && /o banco tomou a lanchonete/.test(L.caixaResumo(g.save)),'o caixa marca o dia');
@@ -57,7 +59,7 @@ novo({dia:8,bank:300,fechou:7}); els['btn-falencia-rank'].fire('click'); ok(els[
 
 // ---------- quitar tira o atraso ----------
 novo({dia:5,bank:600}); g.emprestar(500); cont(); fecha(0,50);
-g.goShop(6); g.save.bank=800; ok(g.quitar() && !g.save.emp.resto && !g.save.emp.atr && g.save.bank===250,'quitar paga tudo e tira o atraso');
+g.goShop(6); g.save.bank=800; ok(g.quitar() && !g.save.emp.resto && !g.save.emp.atr && g.save.bank===285,'quitar paga tudo e tira o atraso');
 
 // ---------- a última parcela atrasada ----------
 novo({dia:5,bank:500,emp:{resto:110,n:1}}); cont(); fecha(0,20); ok(g.save.emp.atr && g.devido===110,'a última atrasou: devido continua 110');

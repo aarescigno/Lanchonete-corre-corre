@@ -363,25 +363,30 @@ function buildManut(grid){
 /* aba Banco (v8.3): o empréstimo (ou o que falta pagar dele), o caixa no negativo e a chave da folha sem dinheiro */
 function buildBanco(grid){
   const sv = game.save, e = sv.emp, cr = game.ponto.credito, pc = Math.round(BANCO.juros * 100);
-  const vs = BANCO.valores.filter(v => v <= cr), parc = v => fmt(Math.ceil(Math.round(v * (1 + BANCO.juros)) / BANCO.parcelas));
-  let c = staffCard(upgradeIcon('banco'), 'Empréstimo',
-    'Juros de ' + pc + '%, em ' + BANCO.parcelas + ' parcelas no fim de cada dia (' + vs.map(parc).join(', ').replace(/, ([^,]*)$/, ' ou $1') + '), fora do lucro do dia. Até ' + fmt(cr) + ' na ' + game.ponto.nome.replace(/ da .*/, '').toLowerCase() + ', um por vez. Parcela que não couber no caixa atrasa; sem pagar no dia seguinte, o banco toma a lanchonete.');
+  // v8.3.2, amortização: juros ao dia sobre o saldo; cada parcela é a amortização fixa mais os juros do dia
+  const vs = BANCO.valores.filter(v => v <= cr), sim = simulaEmprestimo(vs[vs.length - 1], BANCO.juros);
+  let c = staffCard(upgradeIcon('banco'), 'Empréstimo', pc + '% ao dia sobre o saldo; cada parcela paga 1/' + BANCO.parcelas + ' do valor mais os juros. ' + (e.resto ? 'Amortizar antes corta os juros.' : fmt(vs[vs.length - 1]) + ' viram ' + sim.parcelas.join(', ').replace(/, ([^,]*)$/, ' e $1') + ' (' + fmt(sim.juros) + ' de juros). Até ' + fmt(cr) + ', um por vez.') + ' Atrasar 2 dias fecha a lanchonete.');
   if (e.resto){
     c.classList.add(e.atr ? 'atr' : 'own');
-    c.appendChild(el('span', 'full', 'Seu empréstimo: faltam ' + fmt(e.resto) + ', em ' + e.n + (e.n > 1 ? ' parcelas' : ' parcela') + (e.atr ? '. Parcela atrasada! No fim do dia ' + game.shopNext + ', o caixa precisa ter ' + fmt(game.devido) + ', senão o banco toma a lanchonete.' : ' (a próxima, ' + fmt(game.parcela) + ', no fim do dia ' + game.shopNext + ').')));
-    c.appendChild(shopBtn('Quitar agora: ' + fmt(e.resto), 'btn', sv.bank >= e.resto, () => game.quitar(), e.resto));
+    const tab = tabelaDe(e);
+    c.appendChild(el('span', 'full', 'Faltam ' + fmt(e.resto) + (e.j !== BANCO.juros && e.j ? ' (' + Math.round(e.j * 100) + '% ao dia)' : '') + '. ' + (e.atr ? 'Parcela atrasada! No fim do dia ' + game.shopNext + ', o caixa precisa ter ' + fmt(game.devido) + '.' : 'Fim do dia ' + game.shopNext + ': ' + fmt(game.parcela) + ' (' + Math.min(e.resto, e.amort) + ' + ' + game.jurosHoje + ' de juros)' + (tab.length > 1 ? '; depois, ' + tab.slice(1).join(', ').replace(/, ([^,]*)$/, ' e $1') : '') + '.')));
+    const duo = el('div', 'duo'), a1 = Math.min(e.resto, e.amort);
+    if (e.resto > a1) duo.appendChild(shopBtn('Amortizar ' + fmt(a1), 'btn', sv.bank >= a1, () => game.amortizar(a1), a1));
+    duo.appendChild(shopBtn('Quitar: ' + fmt(e.resto), 'btn', sv.bank >= e.resto, () => game.quitar(), e.resto));
+    c.appendChild(duo);
   } else {
     const duo = el('div', 'duo');
     vs.forEach(v => {
+      const s = simulaEmprestimo(v, BANCO.juros);
       const b = shopBtn(fmt(v), 'btn', game.podeEmprestar(v), () => game.emprestar(v));
-      b.setAttribute('aria-label', 'Pegar ' + fmt(v) + ' emprestado: ' + BANCO.parcelas + ' parcelas de ' + parc(v)); b.title = BANCO.parcelas + '× ' + parc(v);
+      b.setAttribute('aria-label', 'Pegar ' + fmt(v) + ' emprestado: ' + BANCO.parcelas + ' parcelas, de ' + fmt(s.parcelas[0]) + ' a ' + fmt(s.parcelas[s.parcelas.length - 1]) + ', ' + fmt(s.juros) + ' de juros'); b.title = 'Parcelas: ' + s.parcelas.join(', ') + ' (' + fmt(s.juros) + ' de juros)';
       duo.appendChild(b);
     });
     c.appendChild(duo);
   }
   grid.appendChild(c);
   c = staffCard(upgradeIcon('negativo'), 'Caixa no negativo',
-    'Folha, contas e parcelas saem no fim do dia mesmo sem dinheiro. O caixa pode fechar no negativo ' + BANCO.neg + ' dias seguidos; no ' + (BANCO.neg + 1) + 'º, o banco cobre o que falta, à força, com juros de ' + Math.round(BANCO.forcado * 100) + '%.');
+    'Folha, contas e parcelas saem no fim do dia mesmo sem dinheiro. O caixa pode fechar no negativo ' + BANCO.neg + ' dias seguidos; no ' + (BANCO.neg + 1) + 'º, o banco cobre o que falta, à força, com juros de ' + Math.round(BANCO.forcado * 100) + '% ao dia sobre todo o saldo.');
   c.appendChild(el('span', 'full', sv.bank < 0 ? 'Agora: ' + fmt(sv.bank) + ', no negativo há ' + sv.neg + (sv.neg === 1 ? ' dia.' : ' dias.') : 'Agora: no positivo.'));
   grid.appendChild(c);
   c = staffCard(upgradeIcon('contas'), 'Folha sem dinheiro',
@@ -393,16 +398,16 @@ function buildBanco(grid){
   grid.appendChild(c);
 }
 /* aba Caixa (v7.2): os últimos dias da carreira, para onde foi o dinheiro e um resumo para colar no WhatsApp */
-const CAIXA_COR = { ingr:'#E26A2C', contas:'#C2362B', folha:'#1F4FA3', div:'#7B4FB5', mel:'#3E9B5A', sal:'#E0B23A', man:'#5B5F6B', mul:'#8A1F1A', par:'#2B7A78' };
+const CAIXA_COR = { ingr:'#E26A2C', contas:'#C2362B', folha:'#1F4FA3', div:'#7B4FB5', mel:'#3E9B5A', sal:'#E0B23A', man:'#5B5F6B', mul:'#8A1F1A', jur:'#2B7A78' };
 function caixaTotais(cx){
   const s = k => cx.reduce((a, r) => a + (r[k] || 0), 0);
-  return [['ingr','Ingredientes'], ['contas','Contas'], ['folha','Equipe'], ['div','Divulgação'], ['mel','Melhorias'], ['sal','Salão'], ['man','Manutenção'], ['mul','Dias largados no meio'], ['par','Banco (parcelas)']].map(k => ({ id:k[0], name:k[1], v:s(k[0]) }));
+  return [['ingr','Ingredientes'], ['contas','Contas'], ['folha','Equipe'], ['div','Divulgação'], ['mel','Melhorias'], ['sal','Salão'], ['man','Manutenção'], ['mul','Dias largados no meio'], ['jur','Juros do banco']].map(k => ({ id:k[0], name:k[1], v:s(k[0]) }));   // v8.3.2: o que o banco custa são os juros (o resto devolve o empréstimo)
 }
 function caixaResumo(save){
   const cx = save.caixa, eq = save.equipe, sal = save.salao;
   const out = ['Lanchonete Corre-Corre ' + VERSAO + ' · Caixa (valores em R$)'];
   cx.forEach(r => out.push(r.int ? 'Dia ' + r.d + ' largado no meio: ' + r.int + (r.int > 1 ? ' grupos foram' : ' grupo foi') + ' embora bravo' + (r.int > 1 ? 's' : '') + ': −' + r.mul + ' · saldo ' + r.saldo : r.dev ? 'Devolução ' + (r.devK === 'maquina' ? 'da máquina de suco' : 'do salão') + ': +' + r.dev + ' · saldo ' + r.saldo : 'Dia ' + r.d + (r.ok ? ' ✓' : ' ✗') + ': fatura ' + r.fat + ' − ingred. ' + r.ingr + ' − contas ' + r.contas + ' − equipe ' + r.folha + (r.div ? ' − divulg. ' + r.div : '') +
-    ' = lucro ' + r.lucro + ' (meta ' + r.meta + ')' + (r.perd ? ' · ' + r.perd + (r.perd > 1 ? ' perdidos' : ' perdido') : '') + (r.mel + r.sal ? ' · compras ' + (r.mel + r.sal) : '') + (r.man ? ' · manutenção ' + r.man : '') + (r.emp ? ' · empréstimo +' + r.emp + (r.forc ? ' (à força)' : '') : '') + (r.par ? ' · banco −' + r.par : '') + (r.atr ? ' · parcela atrasada' : '') + (r.tom ? ' · o banco tomou a lanchonete' : '') + ' · saldo ' + r.saldo));
+    ' = lucro ' + r.lucro + ' (meta ' + r.meta + ')' + (r.perd ? ' · ' + r.perd + (r.perd > 1 ? ' perdidos' : ' perdido') : '') + (r.mel + r.sal ? ' · compras ' + (r.mel + r.sal) : '') + (r.man ? ' · manutenção ' + r.man : '') + (r.emp ? ' · empréstimo +' + r.emp + (r.forc ? ' (à força)' : '') : '') + (r.par ? ' · banco −' + r.par + (r.jur ? ' (juros ' + r.jur + ')' : '') : '') + (r.atr ? ' · parcela atrasada' : '') + (r.tom ? ' · o banco tomou a lanchonete' : '') + ' · saldo ' + r.saldo));
   const nd = cx.filter(r => !r.dev && !r.int).length;
   if (nd) out.push('Para onde foi (' + nd + (nd > 1 ? ' dias' : ' dia') + '): ' + caixaTotais(cx).filter(t => t.v).map(t => t.name.toLowerCase() + ' ' + t.v).join(', '));
   const ups = UPGRADES.filter(u => save.up[u.id]).map(u => u.name.toLowerCase());
@@ -457,7 +462,7 @@ function buildCaixa(grid){
     tr.appendChild(r.mel + r.sal ? cxTd(r.mel + r.sal) : el('td', 'n', '–'));
     tr.appendChild(r.man ? cxTd(r.man) : el('td', 'n', '–'));
     const ban = (r.emp || 0) - (r.par || 0), bt = r.emp || r.par ? cxTd(ban, ban >= 0 ? 'pos' : 'neg') : el('td', 'n', '–');
-    if (r.emp || r.par) bt.title = (r.emp ? 'Empréstimo' + (r.forc ? ' à força' : '') + ': +' + fmt(r.emp) : '') + (r.emp && r.par ? '; ' : '') + (r.par ? 'pago ao banco: ' + fmt(r.par) : '');
+    if (r.emp || r.par) bt.title = (r.emp ? 'Empréstimo' + (r.forc ? ' à força' : '') + ': +' + fmt(r.emp) : '') + (r.emp && r.par ? '; ' : '') + (r.par ? 'pago ao banco: ' + fmt(r.par) + (r.jur ? ', ' + fmt(r.jur) + ' de juros' : '') : '');
     if (r.atr || r.tom){ bt.className = 'n neg'; bt.textContent = r.tom ? 'tomou' : 'atrasou'; bt.title = r.tom ? 'O banco tomou a lanchonete' : 'Parcela do banco atrasada'; }   // v8.3.1
     tr.appendChild(bt);
     tr.appendChild(cxTd(r.saldo, r.saldo < 0 ? 'neg' : null));

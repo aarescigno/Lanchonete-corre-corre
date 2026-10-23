@@ -601,7 +601,7 @@ class Game {
     // v8.3: tudo sai mesmo sem dinheiro (o caixa pode ficar negativo), junto com a parcela do empréstimo
     const income = fat - Math.round(this.custo) - this.contas - this.paid - this.paidDiv;
     sv.bank += income;
-    const atr0 = !!sv.emp.atr, par = this.pagaParcela(), atrasou = !atr0 && !!sv.emp.atr, tomou = atr0 && !!sv.emp.atr;
+    const atr0 = !!sv.emp.atr, devido = this.devido, par = this.pagaParcela(), atrasou = !atr0 && !!sv.emp.atr, tomou = atr0 && !!sv.emp.atr;
     // v8.3.1: atrasou de novo (não deu para a atrasada e a do dia): o banco toma a lanchonete e a carreira acaba
     if (tomou) sv.fechou = d.n;
     this.desgastar(); delete sv.manut.sorteio;
@@ -617,7 +617,7 @@ class Game {
     if (tomou) row.tom = 1;
     caixaAdd(sv, row);
     writeSave(sv);
-    this.result = { day:d.n, money:m, fat, custo:Math.round(this.custo), contas:this.contas, div:this.paidDiv, divName:this.div ? this.div.name : '', meta:d.meta, bom:bomGoal(d), expert:d.expert, passed, stars, served:this.stats.served, lost:this.stats.lost, lostBy:this.stats.lostBy, lotadoT:Math.round(this.stats.lotadoT), atraso:Math.round(this.atraso), full:this.stats.full, chain:this.stats.chain, vip:this.stats.vip, vipLost:this.stats.vipLost, juice:this.stats.juice, juiceMiss:this.stats.juiceMiss, sucoEsp:this.stats.sucoEsp, bebida:this.bebida.id, trash:this.stats.trash, washed:this.stats.washed, income, paid:this.paid, reason:this.reason, conserto:this.conserto, consertos:this.stats.consertos, quebras:this.quebras.filter(q => q.on).map(q => ({ id:q.id, fixed:q.fixed })), clima:this.clima, manut:Object.assign({}, this.manut), par, forcado, neg:sv.neg, emp:Object.assign({}, sv.emp), atrasou, tomou };
+    this.result = { day:d.n, money:m, fat, custo:Math.round(this.custo), contas:this.contas, div:this.paidDiv, divName:this.div ? this.div.name : '', meta:d.meta, bom:bomGoal(d), expert:d.expert, passed, stars, served:this.stats.served, lost:this.stats.lost, lostBy:this.stats.lostBy, lotadoT:Math.round(this.stats.lotadoT), atraso:Math.round(this.atraso), full:this.stats.full, chain:this.stats.chain, vip:this.stats.vip, vipLost:this.stats.vipLost, juice:this.stats.juice, juiceMiss:this.stats.juiceMiss, sucoEsp:this.stats.sucoEsp, bebida:this.bebida.id, trash:this.stats.trash, washed:this.stats.washed, income, paid:this.paid, reason:this.reason, conserto:this.conserto, consertos:this.stats.consertos, quebras:this.quebras.filter(q => q.on).map(q => ({ id:q.id, fixed:q.fixed })), clima:this.clima, manut:Object.assign({}, this.manut), par, forcado, neg:sv.neg, emp:Object.assign({}, sv.emp), atrasou, tomou, devido };
     if (tomou){ this.setState('falencia'); Sfx.lose(); return; }
     this.setState('dayend');
     if (passed) Sfx.win(); else Sfx.lose();
@@ -660,34 +660,40 @@ class Game {
      soma ao que já se devia, com juros maiores, e as parcelas recomeçam */
   get parcela(){ return parcelaDe(this.save.emp); }
   get devido(){ return devidoDe(this.save.emp); }   // v8.3.1: com a atrasada, se houver
+  get jurosHoje(){ return jurosDe(this.save.emp); }
   podeEmprestar(v){ return !this.save.emp.resto && v > 0 && v <= this.ponto.credito; }
   emprestar(v, forcado){
     const sv = this.save;
     if (!forcado && !this.podeEmprestar(v)) return false;
     sv.bank += v; caixaGasto(sv, 'emp', v);
-    sv.emp = normEmprestimo({ resto:sv.emp.resto + Math.round(v * (1 + (forcado ? BANCO.forcado : BANCO.juros))), n:BANCO.parcelas, atr:sv.emp.atr });   // a parcela atrasada continua atrasada
+    // v8.3.2: o saldo cresce de v e a amortização volta a ser o saldo ÷ BANCO.parcelas; à força, os juros do saldo todo sobem
+    const resto = sv.emp.resto + v;
+    sv.emp = normEmprestimo({ resto, amort:Math.ceil(resto / BANCO.parcelas), j:forcado ? BANCO.forcado : BANCO.juros, atr:sv.emp.atr });   // a parcela atrasada continua atrasada
     if (forcado) sv.neg = 0;
     writeSave(sv);
     if (!forcado) Sfx.coin();
     return true;
   }
   /* parcela do fim do dia (v8.3.1): sai só se couber no dinheiro, com a atrasada, se houver; senão, fica atrasada
-     (emp.atr) e nada sai. Devolve o que foi pago */
+     (emp.atr) e nada sai, e os juros do dia vão para o saldo (v8.3.2). Devolve o que foi pago */
   pagaParcela(){
-    const sv = this.save, e = sv.emp, v = Math.min(e.resto, this.devido);
+    const sv = this.save, e = sv.emp, v = this.devido, jur = jurosDe(e);
     if (!v) return 0;
-    if (sv.bank < v){ sv.emp = normEmprestimo(Object.assign({}, e, { atr:true })); return 0; }
-    sv.bank -= v; caixaGasto(sv, 'par', v);
-    sv.emp = normEmprestimo({ resto:e.resto - v, n:e.n - (e.atr ? 2 : 1) });
+    if (sv.bank < v){ sv.emp = normEmprestimo(Object.assign({}, e, { resto:e.resto + jur, atr:true })); return 0; }
+    sv.bank -= v; caixaGasto(sv, 'par', v); caixaGasto(sv, 'jur', jur);
+    sv.emp = normEmprestimo(Object.assign({}, e, { resto:e.resto - (v - jur), atr:false }));
     return v;
   }
-  /* quitar na lojinha: paga o que falta de uma vez (sem desconto dos juros) */
-  quitar(){
-    const sv = this.save, v = sv.emp.resto;
-    if (!v || sv.bank < v) return false;
-    sv.bank -= v; caixaGasto(sv, 'par', v); sv.emp = normEmprestimo({});
+  /* amortizar na lojinha (v8.3.2): paga x do saldo, sem juros; o prazo encurta e os juros dos próximos dias caem.
+     Quitar é amortizar o saldo todo (tira também o atraso) */
+  amortizar(x){
+    const sv = this.save, e = sv.emp; x = Math.min(Math.round(x) || 0, e.resto);
+    if (!(x > 0) || sv.bank < x) return false;
+    sv.bank -= x; caixaGasto(sv, 'par', x);
+    sv.emp = normEmprestimo(Object.assign({}, e, { resto:e.resto - x, atr:x >= e.resto ? false : e.atr }));
     writeSave(sv); Sfx.coin(); return true;
   }
+  quitar(){ return this.amortizar(this.save.emp.resto); }
   /* divulgação (v7): escolhida na lojinha, paga junto com a folha ao abrir o dia */
   setDivulga(id){
     const d = DIVULGA.find(x => x.id === id);
