@@ -43,7 +43,7 @@ novo(); { joga(1); g.startEndless(); g.begin(); g.finishEndless(); ok(g.save.cai
   ok(L.normSave({caixa:c.concat(c)}).caixa.length===L.CAIXA_MAX,'save com linhas demais é cortado no limite'); }
 
 // resumo em texto
-novo(); { joga(1); g.goShop(2); g.buy('tenis'); joga(2);
+novo(); { joga(1); g.goShop(2); g.save.bank+=200; g.buy('tenis'); joga(2);
   const t=L.caixaResumo(g.save), lines=t.split('\n');
   ok(lines[0].indexOf(L.VERSAO)>=0,'resumo: 1ª linha com a versão');
   ok(lines.length===5&&/^Dia 1 [✓✗]: fatura \d+ − ingred\. \d+ − contas \d+ − equipe \d+ = lucro -?\d+ \(meta \d+\).* · saldo \d+$/.test(lines[1]),'resumo: uma linha por dia com a conta do lucro ('+lines[1]+')');
@@ -58,7 +58,7 @@ const acha=(e,f)=>f(e)?e:(e.children||[]).reduce((a,c)=>a||acha(c,f),null);
 (async()=>{
   novo(); g.goShop(2); let err=null; try{ L.setShopTab('caixa'); }catch(e){ err=e; }
   let grid=els['shop-grid']; ok(!err&&/O caixa começa/.test(txt(grid)),'aba Caixa vazia: explica quando começa'+(err?': '+err:''));
-  novo(); joga(1); g.goShop(2); g.buy('tenis'); joga(2); g.goShop(3); g.virarMesa(1);
+  novo(); joga(1); g.goShop(2); g.save.bank+=200; g.buy('tenis'); joga(2); g.goShop(3); g.virarMesa(1);
   err=null; try{ L.setShopTab('caixa'); }catch(e){ err=e; } grid=els['shop-grid'];
   ok(!err&&/caixa/.test(grid.className),'aba Caixa monta'+(err?': '+err:''));
   const tb=acha(grid,e=>e.tagName==='TABLE'); ok(tb&&tb.children.length===3,'tabela com o cabeçalho e 2 dias');

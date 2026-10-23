@@ -125,7 +125,7 @@ function buildTips(){
       c.save(); c.translate(16,52); drawBubble(c,0,0,8,PAL.ok); drawIcon(c,'agua',-1,1,0.36); c.restore();
       c.strokeStyle = PAL.faixa; c.lineWidth = 2.5; c.beginPath(); c.moveTo(30,54); c.lineTo(56,54); c.moveTo(50,49); c.lineTo(56,54); c.lineTo(50,59); c.stroke();
     }],
-    ['Combine a cor da camisa do grupo com a cor da cadeira para ganhar bônus. Repetir o mesmo tipo de ação em sequência forma uma corrente cada vez mais valiosa.', c => {
+    ['As ações da Bia rendem pontos de atendimento (o dinheiro vem só do que o cliente paga). Combine a cor da camisa do grupo com a cor da cadeira para ganhar pontos a mais. Repetir o mesmo tipo de ação em sequência forma uma corrente, com cada vez mais pontos.', c => {
       drawChair(c,18,34,1,false,true);
       drawPerson(c,{skin:2,hair:5,hairC:'#2F1D12',pants:'#2F3E5C'},18,54,{shirt:CHAIRS[1].c,mood:0,s:0.7,sit:true});
       txt(c,'×3!',46,22,18,PAL.alerta,'center',FD,3);
@@ -136,11 +136,11 @@ function buildTips(){
       drawIcon(c,'juice',20,38,0.8); drawIcon(c,'juice',32,36,0.8); drawIcon(c,'juice',44,38,0.8);
       rr(c,8,4,48,18,6); fs(c,'#fff',1.8); drawIcon(c,'juice',20,13,0.5); txt(c,'×3',38,13,11,PAL.tinta,'center',FD);
     }],
-    ['A partir do dia 5 aparece o cliente VIP (óculos escuros e plaquinha dourada): fura a fila e tem menos paciência, mas paga gorjeta extra e bônus com 5 corações. Bravo, a multa dobra.', c => {
+    ['A partir do dia 5 aparece o cliente VIP (óculos escuros e plaquinha dourada): fura a fila e tem menos paciência, mas pede o prato especial (mais caro), dá gorjeta e, com 5 corações, pontos a mais. Bravo, a multa dobra.', c => {
       drawPerson(c,{skin:4,hair:3,hairC:'#1B1512',pants:'#2F3E5C',shades:true},28,60,{shirt:CHAIRS[2].c,mood:0,s:0.85});
       drawVipBadge(c,40,14,0);
     }],
-    ['A meta do dia é o lucro: o que entra menos os ingredientes (' + Math.round(INGRED.prato * 100) + '% de cada prato), as contas (luz e gás crescem com o salão; a garagem não paga aluguel), a folha e a divulgação. O dia começa no vermelho! Do dia 3 em diante, escolha a divulgação na lojinha: mais gente só vale se couber.', c => {
+    ['A meta do dia é o lucro: o que a freguesia paga (cada um paga o que pediu: ' + listaE(Object.keys(CARDAPIO).map(k => CARDAPIO[k].nome + ' R$ ' + precoPrato(k))) + '; alguns pedem um 2º item) menos os ingredientes (' + Math.round(INGRED.prato * 100) + '% de cada prato), as contas (luz e gás crescem com o salão; a garagem não paga aluguel), a folha e a divulgação. O dia começa no vermelho! Do dia 3 em diante, escolha a divulgação na lojinha: mais gente só vale se couber.', c => {
       rr(c,8,12,30,40,3); fs(c,'#fff',2);
       for (let i=0;i<4;i++){ c.fillStyle = PAL.cromoEsc; c.fillRect(13,19+i*7,14,2.4); c.fillRect(30,19+i*7,4,2.4); }
       c.strokeStyle = PAL.perigo; c.lineWidth = 2.4; c.beginPath(); c.moveTo(13,47); c.lineTo(34,47); c.stroke();

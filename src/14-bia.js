@@ -304,7 +304,7 @@ class Waitress {
     grp.juiceGot += n;
     g.stats.juice += n; g.custo += INGRED.suco * n;
     grp.gain(1);
-    g.score('juice', JUICE.price * n, t.cx + 24, t.cy - 30);
+    g.score('juice', t.cx + 24, t.cy - 30, JUICE.price * n);
     if (!grp.juicePending) g.addText(t.cx, t.cy - 96, n > 1 ? 'Sucos entregues!' : 'Suco entregue!', PAL.alerta, 15);
     Sfx.tone(880, 0.07, 'sine', 0.05); Sfx.tone(1175, 0.12, 'sine', 0.05, 0.07);
     return n;
@@ -325,18 +325,18 @@ class Waitress {
       grp.timer = rand(grp.T.eat[0], grp.T.eat[1]) * (g.up.ventilador ? 0.85 : 1);
       grp.eatTotal = grp.timer;
       grp.gain(dish.crit ? 2 : 1);
-      g.score('deliver', 20, cx, cy - 40);
+      g.score('deliver', cx, cy - 40);
       if (dish.crit){
         const b = grp.vip ? CRIT.vipBonus : CRIT.bonus;
-        g.addMoney(b); g.stats.crit++;
-        g.addText(cx, cy - 92, 'Caprichado! +' + b, PAL.mostarda, 16);
+        g.pontos += b; g.stats.crit++;
+        g.addText(cx, cy - 92, 'Caprichado! +' + b + ' pts', PAL.mostarda, 16);
       }
       Sfx.ok();
     } else if (v === 'clear'){
       if (!this.canTake('dirty')) return this.fail('Mãos cheias!');
       this.hands.push({ kind:'dirty', n:t.dirtyN });
       t.dirty = false; t.dirtyN = 0;
-      g.score('clear', 10, cx, cy - 20);
+      g.score('clear', cx, cy - 20);
       Sfx.blip();
     } else if (v === 'take'){
       if (!this.canTake('ticket')) return this.fail('Mãos cheias!');
@@ -344,7 +344,7 @@ class Waitress {
       this.hands.push({ kind:'ticket', table:t.id, group:grp });
       grp.setState('ordered');
       grp.gain(1);
-      g.score('take', 15, cx, cy - 40);
+      g.score('take', cx, cy - 40);
       Sfx.blip();
     } else if (v === 'bill'){
       g.collectBill(grp, t);
@@ -353,7 +353,7 @@ class Waitress {
       this.hands.splice(i,1);
       grp.coffee = true;
       grp.gain(g.up.cafeteira ? 2 : 1);
-      g.score('coffee', DRINK_PRICE.coffee, cx, cy - 40);
+      g.score('coffee', cx, cy - 40, DRINK_PRICE.coffee);
       g.usos.cafeteira++;
       Sfx.coin();
     } else {

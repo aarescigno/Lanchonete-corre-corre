@@ -208,7 +208,7 @@ function drawHud(ctx,g,tm){
     rr(ctx,12,552,74,40,10); fs(ctx,PAL.mostarda,2.8);
     txt(ctx,'Sem fim',49,573,15,PAL.tinta,'center',FD,0,64);
     txt(ctx,'R$ ' + m,102,564,24,'#FFF7DC','left',FD,4);
-    txt(ctx,'atendidos ' + g.stats.served,320,562,12,'#cfc7b0','right',FB);
+    txt(ctx,Math.round(g.pontos) + ' pts · atendidos ' + g.stats.served,320,562,12,'#cfc7b0','right',FB,0,120);
     const flash = g.starFlash > 0 && !RM && Math.floor(g.starFlash*10)%2 === 0;
     for (let i=0;i<5;i++){
       const on = i < g.stars;
@@ -230,7 +230,8 @@ function drawHud(ctx,g,tm){
     const m = Math.round(g.lucro);
     txt(ctx,(m < 0 ? 'R$ −' : 'R$ ') + Math.abs(m),102,564,24,m < 0 ? '#FF9C8A' : '#FFF7DC','left',FD,4);
     const done = g.stats.served + g.stats.lost + g.stats.full;
-    txt(ctx,'grupos ' + done + '/' + g.schedule.length,320,562,12,'#cfc7b0','right',FB);
+    // pontos de atendimento (v8.3.8): o que as ações da Bia rendem (o dinheiro vem só do que o cliente paga)
+    txt(ctx,Math.round(g.pontos) + ' pts · grupos ' + done + '/' + g.schedule.length,320,562,12,'#cfc7b0','right',FB,0,124);
     const bx = 102, bw = 218, by = 576;
     rr(ctx,bx,by,bw,10,5); fs(ctx,'#4a453c',2);
     const frac = clamp(m / d.expert, 0, 1);

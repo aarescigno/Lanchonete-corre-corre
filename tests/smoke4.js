@@ -23,23 +23,24 @@ for(let n=1;n<=4;n++){ let any=false; for(let k=0;k<30;k++){ g.resetDay(n); if(g
   const before=g.stats.full; g.arrive({type:'estudante',color:0,vip:true});
   ok(g.stats.full===before+1 && g.queue.length===4,'VIP também volta com fila lotada'); }
 
-/* conta: gorjeta extra e bônus com 5 corações */
+/* conta: gorjeta pelos corações (v8.3.8: até +10%), gorjeta extra do VIP e, com 5 corações, pontos a mais */
 function pay(vip,hearts){
   g.resetDay(5); g.startDay(5); g.begin();
   const grp=g.spawn({type:'estudante',color:0,vip}); const t=g.tables.find(x=>x.free&&x.seats>=grp.size);
   g.seatGroup(grp,t); grp.hearts=hearts; grp.juiceWant=0; grp.bill=30; const m0=g.money; g.lastKind='x';
-  g.collectBill(grp,t); return g.money-m0;
+  const p0=g.pontos; g.collectBill(grp,t); pay.pts=g.pontos-p0-L.PONTOS_ACAO.bill; return g.money-m0;
 }
-{ const base=Math.round(30*1.5), vipAmt=Math.round(30*1.5*(1+V.tip));
-  ok(pay(false,5)===base,'conta normal 5♥ = '+base);
-  ok(pay(true,5)===vipAmt+V.perfect,'conta VIP 5♥ = '+vipAmt+' + bônus '+V.perfect);
+{ const base=Math.round(30*1.1), vipAmt=Math.round(30*(1.1+V.tip));
+  ok(pay(false,5)===base && pay.pts===0,'conta normal 5♥ = '+base+' (+10% de gorjeta)');
+  ok(pay(true,5)===vipAmt && pay.pts===V.perfect,'conta VIP 5♥ = '+vipAmt+' e '+V.perfect+' pontos a mais');
   ok(g.stats.vip===1,'VIP atendido conta na estatística');
-  ok(pay(true,4)===Math.round(30*1.25*(1+V.tip)),'VIP com 4♥ não ganha bônus'); }
+  ok(pay(true,4)===Math.round(30*(1.05+V.tip)) && pay.pts===0,'VIP com 4♥ não ganha os pontos a mais');
+  ok(pay(false,1)===Math.round(30*0.8),'com 1♥ o grupo reclama e paga 20% menos'); }
 
 /* bravo: multa dobrada */
 { g.resetDay(5); g.startDay(5); g.begin(); g.money=500;
-  const a=g.spawn({type:'estudante',color:0}); g.angryLeave(a); ok(g.money===470,'normal bravo -30');
-  const b=g.spawn({type:'estudante',color:0,vip:true}); g.angryLeave(b); ok(g.money===470-30-V.angry,'VIP bravo -'+(30+V.angry));
+  const M=L.MULTA, a=g.spawn({type:'estudante',color:0}); g.angryLeave(a); ok(g.money===500-M,'normal bravo -'+M);
+  const b=g.spawn({type:'estudante',color:0,vip:true}); g.angryLeave(b); ok(g.money===500-M-M-V.angry,'VIP bravo -'+(M+V.angry));
   ok(g.stats.vipLost===1,'VIP bravo contado'); }
 
 /* Turno sem fim: VIP só depois de 1 minuto */

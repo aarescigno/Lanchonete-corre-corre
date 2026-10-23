@@ -104,7 +104,8 @@ function drawWallCommon(ctx,g,t){
   rr(ctx,-172,-24,344,48,6); fs(ctx,'#FFF3C9',3);
   ctx.setLineDash([5,4]); rr(ctx,-166,-19,332,38,4); ctx.strokeStyle = PAL.formica; ctx.lineWidth = 2; ctx.stroke(); ctx.setLineDash([]);
   txt(ctx,'CARDÁPIO DA CASA',0,-10,10,PAL.faixa,'center',FB);
-  txt(ctx,'PF R$ 18 · Pastel R$ 9 · Cafezinho R$ 3',0,6,16,PAL.formica,'center',FD);
+  const pt = g && g.ponto;   // os preços do cardápio (v8.3.8)
+  txt(ctx,'PF R$ ' + precoPrato('pf', pt) + ' · Pastel R$ ' + precoPrato('pastel', pt) + ' · Cafezinho R$ ' + DRINK_PRICE.coffee,0,6,16,PAL.formica,'center',FD,0,322);
   ctx.restore();
 
   // relógio

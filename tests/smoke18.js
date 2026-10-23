@@ -34,7 +34,7 @@ const outra=g.tables.find(t=>t!==g.treino.mesa && t.seats>=2);
 arrasta(grp,{x:outra.cx,y:outra.cy});
 ok(grp.state==='queue' && !outra.group,'mesa de outra cor não aceita o grupo');
 arrasta(grp,{x:g.treino.mesa.cx,y:g.treino.mesa.cy});
-ok(grp.table===g.treino.mesa && g.money===25 && grp.hearts===2,'arrastado até a mesa azul: R$ 10 + 15 da cor e +1 coração');
+ok(grp.table===g.treino.mesa && g.money===0 && g.pontos===L.PONTOS_ACAO.sit+L.PONTOS_ACAO.cor && grp.hearts===2,'arrastado até a mesa azul: 10 pontos + 15 da cor (v8.3.8: sem dinheiro) e +1 coração');
 
 // ---------- cardápio, pedido, cozinha, prato ----------
 ok(roda(()=>passo()==='anotar'),'esperou o cardápio: chamaram');
@@ -67,7 +67,7 @@ ok(roda(()=>passo()==='cobrar'),'acabaram de comer: pedem a conta');
 toca(g.treino.mesa.cx,g.treino.mesa.cy);
 ok(roda(()=>passo()==='conta'),'conta cobrada');
 const c=g.treino.conta;
-ok(c && c.h===5 && c.v===Math.round(c.base*1.5),'com 5 corações a conta sai 50% maior: '+c.base+' -> '+c.v);
+ok(c && c.h===5 && c.v===Math.round(c.base*1.1),'com 5 corações a conta sai 10% maior (v8.3.8): '+c.base+' -> '+c.v);
 ok(new RegExp('R\\$ '+c.base+' virou R\\$ '+c.v).test(g.treino.texto()),'o pop-up mostra a conta: '+g.treino.texto());
 segue('conta');
 

@@ -32,7 +32,7 @@ class Game {
     if (!treino) this.sairTreino();
     this.mode = treino ? 'treino' : n === 0 ? 'semfim' : 'carreira';
     this.day = treino ? TREINO : n === 0 ? ENDLESS : diaOf(n);
-    this.money = 0; this.custo = 0; this.contas = 0; this.paidDiv = 0; this.conserto = 0;
+    this.money = 0; this.custo = 0; this.contas = 0; this.paidDiv = 0; this.conserto = 0; this.pontos = 0;
     // imprevistos (v8): o sorteio do dia (feito ao começar o dia, e guardado até ele acabar) diz o clima e o que quebra
     const so = n && this.save.manut.sorteio && this.save.manut.sorteio.d === n ? this.save.manut.sorteio : null;
     this.clima = so ? so.clima : '';
@@ -261,15 +261,19 @@ class Game {
 
   /* ---------- pontuação ---------- */
   addMoney(v){ this.money = Math.max(0, this.money + v); }
-  score(kind, base, x, y){
+  /* v8.3.8: cada ação da Bia rende pontos de atendimento (PONTOS_ACAO, mais a corrente), e não dinheiro; din é o que o
+     cliente paga por ela (a conta, o cafezinho, o suco), que vai para o dinheiro do dia */
+  score(kind, x, y, din){
     let bonus = 0;
     if (kind === this.lastKind) this.chainN++; else { this.chainN = 1; this.lastKind = kind; }
     if (this.chainN >= 2) bonus = Math.min(160, 10 * Math.pow(2, this.chainN - 2));
     this.stats.chain = Math.max(this.stats.chain, this.chainN);
-    this.addMoney(base + bonus);
-    this.addText(x, y, '+' + base, PAL.ok, 18);
+    const p = PONTOS_ACAO[kind] || 0;
+    this.pontos += p + bonus;
+    if (din){ this.addMoney(din); this.addText(x, y, '+R$ ' + din, PAL.ok, 18); }
+    else this.addText(x, y, '+' + p + ' pts', PAL.faixa, 15);
     if (bonus){
-      this.addText(x, y - 22, 'Corrente ×' + this.chainN + '! +' + bonus, PAL.alerta, 17);
+      this.addText(x, y - 22, 'Corrente ×' + this.chainN + '! +' + bonus + ' pts', PAL.alerta, 16);
       this.addSparks(x, y, 6, PAL.alerta);
     }
   }
@@ -279,8 +283,9 @@ class Game {
       this.stats.juiceMiss++;
       this.addText(t.cx, t.cy - 100, 'Faltou o suco!', PAL.perigo, 16);
     }
-    const amount = Math.round(g.bill * HEART_MULT[g.hearts] * (1 + g.T.tip + (g.vip ? VIP.tip : 0)));
-    this.score('bill', amount, t.cx, t.cy - 50);
+    // v8.3.8: os corações viram gorjeta (no máximo +10%; com 1 ou 2, desconto), mais a da executiva e a do VIP
+    const amount = Math.round(g.bill * (1 + GORJETA[g.hearts] + g.T.tip + (g.vip ? VIP.tip : 0)));
+    this.score('bill', t.cx, t.cy - 50, amount);
     if (this.treino) this.treino.conta = { v:amount, h:g.hearts, base:g.bill };
     if (g.sucoConta){ const v = this.bebida.preco * g.sucoConta; this.addMoney(v); this.addText(t.cx - 34, t.cy - 100, 'Suco da espera +' + v, PAL.alerta, 14); }
     if (g.T.tip > 0 || g.vip) this.addText(t.cx + 20, t.cy - 76, 'Gorjeta!', PAL.mostarda, 15);
@@ -293,8 +298,8 @@ class Game {
     if (g.vip){
       this.stats.vip++;
       if (g.hearts === 5){
-        this.addMoney(VIP.perfect);
-        this.addText(t.cx, t.cy - 100, 'VIP satisfeito! +' + VIP.perfect, PAL.faixa, 17);
+        this.pontos += VIP.perfect;
+        this.addText(t.cx, t.cy - 100, 'VIP satisfeito! +' + VIP.perfect + ' pts', PAL.faixa, 17);
         this.addSparks(t.cx, t.cy - 40, 12, PAL.mostarda);
       }
     }
@@ -454,10 +459,10 @@ class Game {
     const ap = Math.hypot(pts[0].x-g.x, pts[0].y-g.y) <= Math.hypot(pts[1].x-g.x, pts[1].y-g.y) ? pts[0] : pts[1];
     g.path = findPath({x:g.x, y:g.y}, ap);
     g.path.push({ x:t.cx, y:t.cy + 30 });
-    this.score('sit', 10, t.cx, t.cy - 40);
+    this.score('sit', t.cx, t.cy - 40);
     if (g.color === t.color){
-      this.addMoney(15);
-      this.addText(t.cx, t.cy - 82, 'Combinou! +15', PAL.faixa, 16);
+      this.pontos += PONTOS_ACAO.cor;
+      this.addText(t.cx, t.cy - 82, 'Combinou! +' + PONTOS_ACAO.cor + ' pts', PAL.faixa, 16);
       this.addSparks(t.cx, t.cy, 14, CHAIRS[t.color].c);
       Sfx.ok();
     } else Sfx.blip();
@@ -606,7 +611,7 @@ class Game {
     if (tomou) sv.fechou = d.n;
     this.desgastar(); delete sv.manut.sorteio;
     // campanha (v8.3): o dia seguinte vem de qualquer jeito; a meta não batida só fica sem estrelas
-    sv.dia = d.n + 1; sv.estrelas += stars; sv.lucroTot += m;
+    sv.dia = d.n + 1; sv.estrelas += stars; sv.lucroTot += m; sv.pontosTot += Math.round(this.pontos);
     // caixa no negativo: BANCO.neg dias seguidos podem; no seguinte, o banco cobre o que falta, à força
     let forcado = 0;
     if (sv.bank >= 0 || tomou) sv.neg = 0;
@@ -617,16 +622,16 @@ class Game {
     if (tomou) row.tom = 1;
     caixaAdd(sv, row);
     writeSave(sv);
-    this.result = { day:d.n, money:m, fat, custo:Math.round(this.custo), contas:this.contas, div:this.paidDiv, divName:this.div ? this.div.name : '', meta:d.meta, bom:bomGoal(d), expert:d.expert, passed, stars, served:this.stats.served, lost:this.stats.lost, lostBy:this.stats.lostBy, lotadoT:Math.round(this.stats.lotadoT), atraso:Math.round(this.atraso), full:this.stats.full, chain:this.stats.chain, vip:this.stats.vip, vipLost:this.stats.vipLost, juice:this.stats.juice, juiceMiss:this.stats.juiceMiss, sucoEsp:this.stats.sucoEsp, bebida:this.bebida.id, trash:this.stats.trash, washed:this.stats.washed, income, paid:this.paid, reason:this.reason, conserto:this.conserto, consertos:this.stats.consertos, quebras:this.quebras.filter(q => q.on).map(q => ({ id:q.id, fixed:q.fixed })), clima:this.clima, manut:Object.assign({}, this.manut), par, forcado, neg:sv.neg, emp:Object.assign({}, sv.emp), atrasou, tomou, devido };
+    this.result = { day:d.n, money:m, fat, pontos:Math.round(this.pontos), custo:Math.round(this.custo), contas:this.contas, div:this.paidDiv, divName:this.div ? this.div.name : '', meta:d.meta, bom:bomGoal(d), expert:d.expert, passed, stars, served:this.stats.served, lost:this.stats.lost, lostBy:this.stats.lostBy, lotadoT:Math.round(this.stats.lotadoT), atraso:Math.round(this.atraso), full:this.stats.full, chain:this.stats.chain, vip:this.stats.vip, vipLost:this.stats.vipLost, juice:this.stats.juice, juiceMiss:this.stats.juiceMiss, sucoEsp:this.stats.sucoEsp, bebida:this.bebida.id, trash:this.stats.trash, washed:this.stats.washed, income, paid:this.paid, reason:this.reason, conserto:this.conserto, consertos:this.stats.consertos, quebras:this.quebras.filter(q => q.on).map(q => ({ id:q.id, fixed:q.fixed })), clima:this.clima, manut:Object.assign({}, this.manut), par, forcado, neg:sv.neg, emp:Object.assign({}, sv.emp), atrasou, tomou, devido };
     if (tomou){ this.setState('falencia'); Sfx.lose(); return; }
     this.setState('dayend');
     if (passed) Sfx.win(); else Sfx.lose();
   }
   finishEndless(){
-    const pts = Math.round(this.money);
-    const income = pts - Math.round(this.custo) - this.contas - this.paid - this.paidDiv;
+    const pts = Math.round(this.pontos);   // v8.3.8: os pontos de atendimento (antes, o faturamento)
+    const income = Math.round(this.money) - Math.round(this.custo) - this.contas - this.paid - this.paidDiv;
     this.save.bank = Math.max(Math.min(0, this.save.bank), this.save.bank + income); writeSave(this.save);   // não deixa o caixa abaixo de zero (nem de onde estava, se já estava no negativo)
-    this.endless = { income, paid:this.paid, custo:Math.round(this.custo), contas:this.contas, pontos:pts, tempo:Math.floor(this.elapsed), served:this.stats.served, lost:this.stats.lost, full:this.stats.full, chain:this.stats.chain, vip:this.stats.vip, juice:this.stats.juice };
+    this.endless = { income, paid:this.paid, custo:Math.round(this.custo), contas:this.contas, pontos:pts, fat:Math.round(this.money), tempo:Math.floor(this.elapsed), served:this.stats.served, lost:this.stats.lost, full:this.stats.full, chain:this.stats.chain, vip:this.stats.vip, juice:this.stats.juice };
     this.setState('endlessend');
     Sfx.lose();
   }

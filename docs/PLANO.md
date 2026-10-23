@@ -36,6 +36,7 @@ Origem: retorno do Renan Martorelli (beta-tester) e conversa com o Arthur (15/10
 | — | Pedido do usuário: estoque no editor do salão, para rearrumar o salão cheio | v8.3.5 | feita (23/10) |
 | — | Pedido do usuário: Jogo de pratos sem limite, fora da melhoria do dia | v8.3.6 | feita (23/10) |
 | — | Retorno do usuário: a 3ª estrela pede não perder ninguém, e a tela passa a dizer isso | v8.3.7 | feita (23/10) |
+| — | Retorno do usuário: preços de verdade (cardápio, 2º item, gorjeta de até 10%, ações viram pontos de atendimento, custos e metas de garagem) | v8.3.8 | feita (23/10) |
 | 2c | Avaliações dos clientes (nota de 0 a 5 ★, 5 critérios) | v8.4 | **próxima** |
 | 2d | Abertura animada do Modo História: o sonho da Bia | v8.5 | a fazer |
 | 3a | Mudança de ponto e Lanchonete na área industrial | v9 | a fazer |
@@ -312,6 +313,7 @@ Também: rever o `smoke7` (toque) e o `smoke10` (fila justa e porta), mais `bala
   - **ambiente e amenidades:** cor das cadeiras, móveis, TV e som, cafezinho, torneira e, nos pontos de cima, couvert e decoração.
 - **A nota** (0 a 5 ★, uma casa decimal) é a média das **últimas 200 avaliações**. Aparece no HUD, no fim do dia e no Caixa, com a nota de cada critério e 2 ou 3 comentários curtos inventados ("A comida veio rapidinho!", "Esperei muito por uma mesa").
 - **Efeito no movimento** (a decidir): nota alta traz mais gente, como um boca a boca; nota baixa, menos.
+- **Pontos de atendimento (v8.3.8):** desde a v8.3.8, as ações da Bia (sentar, anotar, entregar, recolher, cor certa, corrente, caprichado) dão pontos e não dinheiro (`Game.pontos`, `result.pontos`, `save.pontosTot`). Pedido do usuário em 23/10: esses pontos contam para a nota da lanchonete ("as pessoas se sentirem bem atendidas"), e uma das metas para subir de ponto é a Garagem ter **4,5★ ou mais no Gurugol** (o site de avaliações do jogo). Decidir como os pontos entram nos critérios (sobretudo agilidade e ambiente).
 
 **Fora:** o nível de luxo (ideia guardada) e o crítico do guia (etapa 6).
 

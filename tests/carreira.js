@@ -24,6 +24,8 @@ const FULL=[{tonhao:2,dani:3,tv:true,som:true},{tonhao:2,dani:3,tv:true},{tonhao
 if(process.env.MOVIMENTO) Object.assign(L.MOVIMENTO,JSON.parse(process.env.MOVIMENTO));   // MOVIMENTO='{"porLugar":0.04}'
 if(process.env.CONTAS) Object.assign(L.CONTAS,JSON.parse(process.env.CONTAS));
 if(process.env.INGRED) Object.assign(L.INGRED,JSON.parse(process.env.INGRED));
+if(process.env.CARDAPIO){ const c=JSON.parse(process.env.CARDAPIO); for(const k in c) L.CARDAPIO[k].preco=c[k]; }   // v8.3.8: CARDAPIO='{"pf":25}' testa os preços dos pratos
+if(process.env.MAIS) Object.assign(L.MAIS,JSON.parse(process.env.MAIS));   // v8.3.8: MAIS='{"cada":0.6}' testa o 2º pedido
 const ND=+process.env.DIAS||14, MUDA=800; const rows={}, chega=[]; let negs=0, forcs=0;
 for(let k=0;k<N;k++){
   g.save=L.normSave({}); g.up=g.save.up; g.boughtFor=0; g.buildTables(); let semMesa=0, chegou=0;
