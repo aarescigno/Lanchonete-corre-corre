@@ -148,7 +148,7 @@ function openRank(back){
   rk.back = back || 'ov-menu'; rk.open = true;
   showOnly(['ov-rank']);
   renderRank();
-  $('rank-source').textContent = 'Conectando...';
+  if (Rank.online) $('rank-source').textContent = 'Conectando...';
   Promise.race([Rank.init(), delay(2500)]).then(() => { if (rk.open) rankStart(); });
   Rank.init().then(() => { if (rk.open) rankStart(); });
 }

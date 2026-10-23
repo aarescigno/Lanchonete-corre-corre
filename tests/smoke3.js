@@ -161,10 +161,17 @@ function mkStub(o){
   ok(g.money>0,'bot ganha dinheiro no sem fim');
 }
 
+/* ---------- v8.3.3: offline, mesmo com window.claude o jogo não chama o artifact ---------- */
+{ let usos=0; const stub=mkStub({}); const H=load({claude:{use:n=>{ usos++; return stub.claude.use(n); }}}); const R=H.L.Rank;
+  await R.init(); const r=await R.saveScore('carreira','Off',50,{dia:2});
+  ok(usos===0 && !R.shared && r.where==='local' && !Object.keys(stub.data).length,'offline: nenhum use(), nada no db, salvo no aparelho');
+  H.L.openRank('ov-menu'); await sleep(20); ok(H.els['rank-source'].textContent==='Ranking deste aparelho','a tela do ranking diz "deste aparelho", sem "Conectando..."'); }
+
 /* ---------- 4. ranking local ---------- */
 {
   const H=load(); const {g,L,els}=H; const R=L.Rank;
   await R.init(); ok(!R.shared,'sem window.claude: ranking local');
+  ok(R.online===false,'v8.3.3: o jogo é offline (ranking compartilhado desligado)');
   let r=await R.saveScore('carreira','  Ana   Paula  ',500,{dia:3});
   ok(r.where==='local'&&r.improved,'salvou local');
   r=await R.saveScore('carreira','ANA PAULA',300,{dia:2}); ok(!r.improved&&r.best===500,'mesmo nome (normalizado): mantém a melhor');
@@ -196,7 +203,7 @@ function mkStub(o){
 
 /* ---------- 5. caminho db ---------- */
 {
-  const stub=mkStub({}); const H=load({claude:stub.claude}); const {g,L,els}=H; const R=L.Rank;
+  const stub=mkStub({}); const H=load({online:true,claude:stub.claude}); const {g,L,els}=H; const R=L.Rank;
   await R.init(); ok(R.shared&&R.uid==='u_abc123','db+user resolvidos, uid ok');
   let r=await R.saveScore('carreira','Marta',400,{dia:2});
   ok(r.where==='shared'&&r.improved,'salvou no db'); ok(!!stub.data['ranking-campanha/u_abc123'],'doc em ranking-campanha/<userId>');
@@ -225,34 +232,34 @@ function mkStub(o){
   L.closeRank(); ok(stub.subs.filter(s=>!s.dead).length===0,'sair da tela cancela assinatura');
 }
 // db null
-{ const stub=mkStub({noDb:true}); const H=load({claude:stub.claude}); const R=H.L.Rank; await R.init(); ok(!R.shared,'use("db") null => local');
+{ const stub=mkStub({noDb:true}); const H=load({online:true,claude:stub.claude}); const R=H.L.Rank; await R.init(); ok(!R.shared,'use("db") null => local');
   const r=await R.saveScore('carreira','Nulo',10,{dia:1}); ok(r.where==='local'&&!r.refused,'fallback local sem db'); }
 // user.id null
-{ const stub=mkStub({uid:null}); const H=load({claude:stub.claude}); const R=H.L.Rank; await R.init(); ok(!R.shared,'user.id null => local');
+{ const stub=mkStub({uid:null}); const H=load({online:true,claude:stub.claude}); const R=H.L.Rank; await R.init(); ok(!R.shared,'user.id null => local');
   const r=await R.saveScore('carreira','SemId',10,{dia:1}); ok(r.where==='local','fallback local sem id'); ok(Object.keys(stub.data).length===0,'nada gravado no db'); }
-{ const stub=mkStub({noUser:true}); const H=load({claude:stub.claude}); const R=H.L.Rank; await R.init(); ok(!R.shared,'use("user") null => local'); }
+{ const stub=mkStub({noUser:true}); const H=load({online:true,claude:stub.claude}); const R=H.L.Rank; await R.init(); ok(!R.shared,'use("user") null => local'); }
 // uid inválido p/ path
-{ const stub=mkStub({uid:'a/b'}); const H=load({claude:stub.claude}); const R=H.L.Rank; await R.init(); ok(!R.shared,'uid fora da gramática => local'); }
+{ const stub=mkStub({uid:'a/b'}); const H=load({online:true,claude:stub.claude}); const R=H.L.Rank; await R.init(); ok(!R.shared,'uid fora da gramática => local'); }
 // gravação recusada
 for(const code of ['invalid_argument','not_granted','permission_denied']){
-  const stub=mkStub({writeErr:{code,message:'x'}}); const H=load({claude:stub.claude}); const R=H.L.Rank; await R.init();
+  const stub=mkStub({writeErr:{code,message:'x'}}); const H=load({online:true,claude:stub.claude}); const R=H.L.Rank; await R.init();
   const r=await R.saveScore('carreira','Recusado',77,{dia:1}); ok(r.where==='local'&&r.refused,'gravação recusada ('+code+') => local + refused'); ok(R.localRows('carreira').length===1,'  registrado localmente');
 }
 // erro de rede: rejeita (UI mostra mensagem), não trava
-{ const stub=mkStub({getErr:{code:'resource_exhausted',message:'x'}}); const H=load({claude:stub.claude}); const R=H.L.Rank; await R.init();
+{ const stub=mkStub({getErr:{code:'resource_exhausted',message:'x'}}); const H=load({online:true,claude:stub.claude}); const R=H.L.Rank; await R.init();
   let err=null; try{ await R.saveScore('carreira','Rede',77,{dia:1}); }catch(e){ err=e; } ok(err&&err.code==='resource_exhausted','falha de rede propaga erro (UI mostra mensagem curta)'); }
 // erro na assinatura => cai para local
-{ const stub=mkStub({snapErr:true}); const H=load({claude:stub.claude}); const R=H.L.Rank; await R.init(); await R.saveScore('carreira','X',1,{dia:1}).catch(()=>{});
+{ const stub=mkStub({snapErr:true}); const H=load({online:true,claude:stub.claude}); const R=H.L.Rank; await R.init(); await R.saveScore('carreira','X',1,{dia:1}).catch(()=>{});
   let src=null; R.subscribe('carreira',(r,s)=>{src=s;}); await sleep(10); ok(src==='local','erro na assinatura => ranking local'); }
 // use() que rejeita / lança / nunca resolve
-{ const H=load({claude:{use:()=>Promise.reject(new Error('x'))}}); await H.L.Rank.init(); ok(!H.L.Rank.shared,'use() rejeita => local'); }
-{ const H=load({claude:{use:()=>{ throw new Error('boom'); }}}); await H.L.Rank.init(); ok(!H.L.Rank.shared,'use() lança => local'); }
-{ const H=load({claude:{}}); await H.L.Rank.init(); ok(!H.L.Rank.shared,'window.claude sem use => local'); }
-{ const H=load({claude:{use:()=>new Promise(()=>{})}}); const t=Date.now(); const r=await H.L.Rank.saveScore('carreira','Trava',10,{dia:1}); const dt=Date.now()-t;
+{ const H=load({online:true,claude:{use:()=>Promise.reject(new Error('x'))}}); await H.L.Rank.init(); ok(!H.L.Rank.shared,'use() rejeita => local'); }
+{ const H=load({online:true,claude:{use:()=>{ throw new Error('boom'); }}}); await H.L.Rank.init(); ok(!H.L.Rank.shared,'use() lança => local'); }
+{ const H=load({online:true,claude:{}}); await H.L.Rank.init(); ok(!H.L.Rank.shared,'window.claude sem use => local'); }
+{ const H=load({online:true,claude:{use:()=>new Promise(()=>{})}}); const t=Date.now(); const r=await H.L.Rank.saveScore('carreira','Trava',10,{dia:1}); const dt=Date.now()-t;
   ok(r.where==='local'&&dt<5000,'use() que nunca resolve não trava o salvar ('+dt+' ms)'); ok(H.g.state==='menu','jogo segue funcionando'); }
 // retry em unavailable
 { let n=0; const stub=mkStub({}); const orig=stub.db.doc; stub.db.doc=(p)=>{ const d=orig(p); const g0=d.get; d.get=()=>{ n++; return n===1?Promise.reject({code:'unavailable'}):g0(); }; return d; };
-  const H=load({claude:stub.claude}); await H.L.Rank.init(); const r=await H.L.Rank.saveScore('carreira','Retry',5,{dia:1}); ok(r.where==='shared'&&n===2,'unavailable: uma nova tentativa'); }
+  const H=load({online:true,claude:stub.claude}); await H.L.Rank.init(); const r=await H.L.Rank.saveScore('carreira','Retry',5,{dia:1}); ok(r.where==='shared'&&n===2,'unavailable: uma nova tentativa'); }
 
 /* ---------- 6. save / v1 / storage ---------- */
 {

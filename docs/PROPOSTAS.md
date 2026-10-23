@@ -4,6 +4,15 @@ Registro das ideias e dos retornos de quem jogou, com o texto original, e de ond
 
 ---
 
+## 23/10/2026 — Usuário: jogo offline por enquanto
+**Origem:** mensagem do usuário, depois da v8.3.2 (sobre a pendência de declarar a coleção `ranking-campanha` ao publicar):
+
+> Não precisa de modo online com ranking compartilhado, é pra ser um jogo offline a princípio, onlinização eu prevejo só para os ajustes finais do jogo
+
+**Para onde foi:** **feito na v8.3.3** (`docs/spec-v8.3.3.md`): `Rank.online = false`, o ranking fica só no aparelho e o jogo não usa o `db` nem o `user` do artifact. Religar o compartilhado ficou na etapa 7 (polimento) do `docs/PLANO.md`.
+
+---
+
 ## 23/10/2026 — Usuário: amortização e empréstimo que não valha sempre a pena
 **Origem:** mensagem do usuário, depois da v8.3.1:
 

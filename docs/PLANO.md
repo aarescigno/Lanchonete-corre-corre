@@ -31,6 +31,7 @@ Origem: retorno do Renan Martorelli (beta-tester) e conversa com o Arthur (15/10
 | 2b | Carreira como campanha contínua, dinheiro no negativo e empréstimo no banco | v8.3 | feita (23/10) |
 | — | Pedido do usuário: parcela atrasada 2 dias seguidos, o banco toma a lanchonete (game over) | v8.3.1 | feita (23/10) |
 | — | Pedido do usuário: amortização (SAC, 3% ao dia sobre o saldo) e empréstimo neutro a um pouco desvantajoso | v8.3.2 | feita (23/10) |
+| — | Pedido do usuário: jogo offline por enquanto (ranking só no aparelho; o compartilhado volta na etapa 7) | v8.3.3 | feita (23/10) |
 | 2c | Avaliações dos clientes (nota de 0 a 5 ★, 5 critérios) | v8.4 | **próxima** |
 | 2d | Abertura animada do Modo História: o sonho da Bia | v8.5 | a fazer |
 | 3a | Mudança de ponto e Lanchonete na área industrial | v9 | a fazer |
@@ -472,7 +473,7 @@ Também: rever o `smoke7` (toque) e o `smoke10` (fila justa e porta), mais `bala
 > **A rever com o usuário antes de começar** (revisão de 22/10).
 
 - Celular: "Como jogar" sem rolar no celular deitado; lojinha sem rolar no 568×320 (pendências antigas do `RESUMO.md`). Testar som e toque num aparelho real.
-- **Ranking da história:** coleção nova (ex.: `ranking-historia`) exige mudar as capacidades do artifact (passar `capabilities` com a regra nova). Fazer só com o OK do usuário.
+- **Jogo online (pedido do usuário em 23/10: "onlinização só para os ajustes finais"):** desde a v8.3.3 o jogo é offline (`Rank.online = false`, ranking só no aparelho). Aqui, religar o ranking compartilhado: `Rank.online = true` e as capacidades do artifact com a leitura de `ranking-campanha` (a coleção da campanha, criada na v8.3) e, se houver, de uma coleção da história (ex.: `ranking-historia`). Fazer só com o OK do usuário.
 - Revisão geral de equilíbrio com `carreira.js` e com o retorno dos jogadores. Revisar textos do "Como jogar" para os sistemas novos.
 
 ---
