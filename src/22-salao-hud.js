@@ -158,6 +158,13 @@ function drawTableOverlay(ctx,g,t,tm,menu){
     ctx.scale(pul,pul); drawBubble(ctx,0,0,18,PAL.alerta); txt(ctx,'!',0,1,26,'#fff','center',FD,3);
   } else if (grp.state === 'wantBill'){
     ctx.scale(pul,pul); drawBubble(ctx,0,0,18,PAL.mostarda); txt(ctx,'$',0,1,26,PAL.tinta,'center',FD);
+  } else if (grp.state === 'ordered'){
+    // comida pronta (v8.3.4): o prato do grupo no balão; verde pulsando no balcão, branco na mão da Bia ou da Dani
+    const pr = g.kitchen.plates.find(p => p && p.group === grp);
+    if (pr || [g.bia, g.dani].some(q => q.hands.some(h => h.kind === 'dish' && h.group === grp))){
+      if (pr) ctx.scale(pul,pul);
+      drawBubble(ctx,0,0,18,pr ? PAL.ok : '#fff'); drawDish(ctx,grp.dish,0,0,0.85);
+    }
   }
   ctx.restore();
   if (grp.coffee){ drawIcon(ctx,'coffee',t.cx - t.hx - 8,t.cy - 52,0.6); }
