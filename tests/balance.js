@@ -52,6 +52,7 @@ function jogaDia(n,man){
   g.startDay(n); g.begin();
   let st=0; while(g.state==='playing'&&st<30000){ bot(); g.update(0.05); st++; }
   const r=g.result; r.rev=rev; r.bankFim=g.save.bank;
+  if(process.env.DUMP) console.log('DUMP',n,r.money,r.lost,r.fat);   // v8.3.9: DUMP=1 lista lucro, perdidos e faturamento de cada dia jogado
   return r;
 }
 for(let k=0;k<N;k++){

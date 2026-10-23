@@ -4,6 +4,15 @@ Registro das ideias e dos retornos de quem jogou, com o texto original, e de ond
 
 ---
 
+## 23/10/2026 — Usuário: dia 1 perfeito e só 1 estrela
+**Origem:** mensagem do usuário, depois da v8.3.8:
+
+> Joguei nível 1 do zero totalmente flawless e tirei 1 estrela só ein
+
+**Para onde foi:** as metas da v8.3.8 vinham do bot comum, e o lucro dos primeiros dias varia muito com a sorte (no dia 1, de R$ 44 a 174 para o bot perfeito, sem perder ninguém). **Feito na v8.3.9** (`docs/spec-v8.3.9.md`): metas e 3 estrelas recalculadas pelo jogo perfeito (dia 1: meta R$ 30, 2 estrelas R$ 50, 3 estrelas R$ 60). O bot afiado leva 3 estrelas em ~93% dos dias 1 a 3. A regra não muda.
+
+---
+
 ## 23/10/2026 — Usuário: ganho demais na Garagem
 **Origem:** mensagens do usuário, depois da v8.3.7:
 
