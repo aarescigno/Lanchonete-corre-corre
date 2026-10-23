@@ -1,5 +1,8 @@
 /* ============================================================
    RANKING (db compartilhado do artifact, com fallback local)
+   v8.3.3: o jogo é offline por enquanto (pedido do usuário): Rank.online = false deixa o ranking só no aparelho, sem
+   tocar no db nem no user do artifact. O compartilhado volta nos ajustes finais (etapa 7 do plano): basta ligar
+   Rank.online e declarar a leitura da coleção ranking-campanha nas capacidades do artifact
    ============================================================ */
 /* v8.3: a carreira virou campanha e os pontos, o lucro acumulado (antes, o faturamento dos melhores dias): ranking novo,
    em outra coleção (e outra lista no aparelho), para não misturar as contas */
@@ -31,12 +34,12 @@ function toRow(d, id, uid){
 }
 const delay = ms => new Promise(r => setTimeout(r, ms));
 const Rank = {
-  db:null, user:null, uid:null, ready:null, done:false,
+  online:false, db:null, user:null, uid:null, ready:null, done:false,
   init(){
     if (this.ready) return this.ready;
     this.ready = (async () => {
       try {
-        const cl = window.claude;
+        const cl = this.online ? window.claude : null;
         if (!cl || typeof cl.use !== 'function') return;
         const grab = n => { try { return Promise.resolve(cl.use(n)).then(v => v || null, () => null); } catch(e) { return Promise.resolve(null); } };
         const r = await Promise.all([grab('db'), grab('user')]);

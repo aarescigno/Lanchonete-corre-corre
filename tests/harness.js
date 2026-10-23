@@ -8,7 +8,7 @@ function mkCtx(){
     return ()=>{};
   }, set:(o,k,v)=>{o[k]=v;return true;}});
 }
-// opts: {claude: stub|undefined, store: initial localStorage object, noStorage:bool, rm:boolean, imprevistos:bool}
+// opts: {claude: stub|undefined, online:bool (v8.3.3: liga o ranking compartilhado, que o jogo deixa desligado), store: initial localStorage object, noStorage:bool, rm:boolean, imprevistos:bool}
 module.exports=function load(opts){
   opts=opts||{};
   const code=fs.readFileSync(__dirname+'/'+(process.env.GAMEJS||'game.js'),'utf8');
@@ -41,5 +41,6 @@ module.exports=function load(opts){
   vm.runInContext(code,sandbox);
   // v8: sem quebras, chuva nem feriado, a não ser que o teste peça (opts.imprevistos)
   if (!opts.imprevistos && win.__lcc && win.__lcc.MANUT) win.__lcc.MANUT.on=false;
+  if (opts.online && win.__lcc){ const R=win.__lcc.Rank; R.online=true; R.ready=null; R.done=false; }
   return { g:win.__game, L:win.__lcc, els, win, ctx, store, doc };
 };
