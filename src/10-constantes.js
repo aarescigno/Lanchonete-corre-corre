@@ -310,10 +310,12 @@ function folhaItens(eq, div){
   if (div && div.cost) out.push(div.name.toLowerCase());
   return out;
 }
+/* Jogos de pratos comprados (v8.3.6: acumulam; save antigo guardava true = 1) */
+function pratosDe(up){ return up ? Math.max(0, Math.floor(+up.pratos || 0)) : 0; }
 function listaE(a){ return a.join(', ').replace(/, ([^,]*)$/, ' e $1'); }
-/* pratos limpos na cozinha: sem limite nos dias 1 e 2; depois, 4; no Turno sem fim, 5 (+1 com o Jogo de pratos) */
+/* pratos limpos na cozinha: sem limite nos dias 1 e 2; depois, 4; no Turno sem fim, 5 (+1 por Jogo de pratos comprado) */
 function dishStock(day, up){
-  const extra = up && up.pratos ? 1 : 0;
+  const extra = pratosDe(up);
   if (day.endless) return 5 + extra;
   if (day.n <= 2) return Infinity;
   return 4 + extra;
@@ -413,7 +415,7 @@ function tabelaDe(e){
 /* um empréstimo novo de v, pagando em dia: as parcelas e os juros somados */
 function simulaEmprestimo(v, j){ const t = tabelaDe(normEmprestimo({ resto:v, amort:Math.ceil(v / BANCO.parcelas), j })); return { parcelas:t, juros:t.reduce((a, p) => a + p, 0) - v }; }
 const CAIXA_MAX = 14;                                 // livro-caixa (v7.2): quantos dias da carreira ficam guardados
-const VERSAO = 'v8.3.5';                              // vai no resumo do Caixa
+const VERSAO = 'v8.3.6';                              // vai no resumo do Caixa
 const DIVULGA_DIA = 3;                                // antes disso, o movimento é o da inauguração (sem custo)
 function divulgaAberta(n){ return DEV.on || n >= DIVULGA_DIA; }   // no modo dev, desde o dia 1
 function divulgaOf(id){ return DIVULGA.find(d => d.id === id) || DIVULGA[1]; }
@@ -448,7 +450,7 @@ const UPGRADES = [
   { id:'cafeteira',  name:'Cafeteira de 2 bocas', desc:'O cafezinho devolve +2 corações.',             cost:200 },
   { id:'bandeja',    name:'Bandeja',              desc:'Leva 2 pratos, 3 bebidas, prato + bebida ou 2 pilhas de louça.', cost:220 },
   { id:'ventilador', name:'Ventilador de teto',   desc:'A freguesia come 15% mais rápido e o cheiro da lixeira cheia não incomoda.', cost:250 },
-  { id:'pratos',     name:'Jogo de pratos',       desc:'+1 prato limpo na cozinha (do dia 3 em diante).', cost:300 }
+  { id:'pratos',     name:'Jogo de pratos',       desc:'+1 prato limpo na cozinha (do dia 3 em diante). Leve quantos quiser, fora da melhoria do dia.', cost:300, multi:true }   // v8.3.6: acumula e não conta no limite de 1 por dia
 ];
 
 /* ============================================================
