@@ -4,6 +4,15 @@ Registro das ideias e dos retornos de quem jogou, com o texto original, e de ond
 
 ---
 
+## 23/10/2026 — Usuário: estoque no editor do salão
+**Origem:** mensagem do usuário, depois da v8.3.4:
+
+> no editor de posições das cadeiras do menu entre níveis, importante ter um espaço de "estoque" para deixar as cadeiras para mais fácil reorganização, quando o salão está cheio fica difícil de remanejar as cadeiras só com a área do salão mesmo.
+
+**Para onde foi:** **feito na v8.3.5** (`docs/spec-v8.3.5.md`): o editor do salão (lojinha, aba Salão) ganhou o estoque, na faixa à esquerda do salão. Arrastar a mesa até ele a guarda; arrastar de volta (ou "Pôr no salão") a recoloca. A mesa guardada não abre no dia nem paga luz e gás, mas conta no teto de lugares (para não virar um jeito de comprar além do teto).
+
+---
+
 ## 23/10/2026 — Usuário: balão de comida pronta
 **Origem:** mensagem do usuário, depois da v8.3.3:
 

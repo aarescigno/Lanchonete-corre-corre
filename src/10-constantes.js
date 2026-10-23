@@ -187,18 +187,25 @@ function salaoCor(mesas){
   return n.indexOf(Math.min.apply(null, n));
 }
 function salaoKit(ponto){ return salaoAuto(SALAO.kit.map((seats, c) => ({ x:0, y:0, seats, c:c % 4 })), ponto); }
-/* save do salão: { ponto, mesas:[{ x, y, seats, c }] }. Mesa estragada sai; passou do teto, saem as últimas;
-   arranjo inválido vira o automático (e, se nem assim, o kit inicial) */
+/* save do salão: { ponto, mesas:[{ x, y, seats, c }], estoque:[{ seats, c }] }. O estoque (v8.3.5) guarda mesas
+   fora do salão: não abrem no dia nem pagam luz e gás, mas contam no teto de lugares. Mesa estragada sai; passou
+   do teto, saem as do estoque e depois as últimas do salão; arranjo inválido vira o automático (e, se nem assim,
+   o kit inicial) */
 function normSalao(s){
   s = (s && typeof s === 'object') ? s : {};
   const ponto = pontoOf(s.ponto);
-  let mesas = (Array.isArray(s.mesas) ? s.mesas : []).filter(m => m && typeof m === 'object' && (+m.seats === 2 || +m.seats === 4))
+  const lista = l => (Array.isArray(l) ? l : []).filter(m => m && typeof m === 'object' && (+m.seats === 2 || +m.seats === 4))
     .map((m, i) => ({ x:Math.round(+m.x) || 0, y:Math.round(+m.y) || 0, seats:+m.seats, c:(+m.c >= 0 && +m.c <= 3) ? Math.round(+m.c) : i % 4 }));
+  let mesas = lista(s.mesas);
+  const estoque = lista(s.estoque).map(m => ({ seats:m.seats, c:m.c })), tot = () => salaoLugares(mesas) + salaoLugares(estoque);
+  while (tot() > ponto.lugares && estoque.length) estoque.pop();
   while (salaoLugares(mesas) > ponto.lugares) mesas.pop();
   mesas = salaoOrdena(mesas);
+  if (!mesas.length && estoque.length) mesas = salaoAuto([estoque.shift()], ponto) || [];
   if (!mesas.length) mesas = salaoKit(ponto);
   else if (salaoProblema(mesas, ponto)) mesas = salaoAuto(mesas, ponto) || salaoKit(ponto);
-  return { ponto:ponto.id, mesas };
+  while (tot() > ponto.lugares) estoque.pop();
+  return { ponto:ponto.id, mesas, estoque };
 }
 /* salão da v6 à v7.3 (cadeiras e mesas numa planta fixa): o que o jogador gastou nele, para devolver */
 function salaoDevolucao(s){
@@ -406,7 +413,7 @@ function tabelaDe(e){
 /* um empréstimo novo de v, pagando em dia: as parcelas e os juros somados */
 function simulaEmprestimo(v, j){ const t = tabelaDe(normEmprestimo({ resto:v, amort:Math.ceil(v / BANCO.parcelas), j })); return { parcelas:t, juros:t.reduce((a, p) => a + p, 0) - v }; }
 const CAIXA_MAX = 14;                                 // livro-caixa (v7.2): quantos dias da carreira ficam guardados
-const VERSAO = 'v8.3.4';                              // vai no resumo do Caixa
+const VERSAO = 'v8.3.5';                              // vai no resumo do Caixa
 const DIVULGA_DIA = 3;                                // antes disso, o movimento é o da inauguração (sem custo)
 function divulgaAberta(n){ return DEV.on || n >= DIVULGA_DIA; }   // no modo dev, desde o dia 1
 function divulgaOf(id){ return DIVULGA.find(d => d.id === id) || DIVULGA[1]; }

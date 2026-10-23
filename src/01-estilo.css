@@ -64,6 +64,8 @@ p{margin:calc(var(--u)*6) 0;font-size:max(12px,calc(var(--u)*16));line-height:1.
 .ed-cv canvas{display:block;width:100%;height:auto;touch-action:none;cursor:grab}
 .ed-pop{position:absolute;transform:translate(-50%,0);display:grid;gap:4px;background:var(--azulejo);border:calc(var(--u)*2.5) solid var(--tinta);border-radius:calc(var(--u)*10);padding:calc(var(--u)*6) calc(var(--u)*8);line-height:1.2;box-shadow:calc(var(--u)*3) calc(var(--u)*3) 0 var(--tinta);z-index:2;white-space:nowrap}
 .ed-pop.up{transform:translate(-50%,-100%)}
+.ed-pop.est{transform:none}
+.ed-pop.est.up{transform:translate(0,-100%)}
 .ed-pop b{font:800 max(11px,calc(var(--u)*13)) var(--fb);padding-right:26px}
 .ed-pop .btn{font-size:max(12px,calc(var(--u)*15));padding:calc(var(--u)*3) calc(var(--u)*10);min-height:36px}
 .ed-cores{display:flex;align-items:center;gap:calc(var(--u)*6);font:700 max(11px,calc(var(--u)*13)) var(--fb)}
@@ -222,7 +224,7 @@ table.rank tr.me td{background:#fbe7a8}
   #ov-shop .shopgrid.caixa{width:100%}   /* v8.3: o Caixa ganhou a coluna Banco */
   #ov-shop .ed-side{gap:4px}
   #ov-shop .ed-side .btn{min-height:30px;font-size:12px}
-  #ov-shop .ed-ponto,#ov-shop .ed-contas{display:none}
+  #ov-shop .ed-ponto,#ov-shop .ed-contas,#ov-shop .ed-est{display:none}
   #ov-shop .ed-pop .btn{min-height:30px;font-size:12px}
 }
 /* celular deitado: o menu cabe sem rolagem (painel mais largo, título em 1 linha, 4 botões numa fileira) */

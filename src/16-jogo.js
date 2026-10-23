@@ -9,7 +9,7 @@ class Game {
     this.hooks = {};
     this.save = loadSave();
     this.up = this.save.up;
-    this.tablesKey = ''; this.salaoMsg = ''; this.salaoSel = -1; this.salaoUndo = [];
+    this.tablesKey = ''; this.salaoMsg = ''; this.salaoSel = -1; this.estoqueSel = -1; this.salaoUndo = [];
     this.buildTables();
     this.bia = new Waitress(this);
     this.kitchen = new Kitchen(this);
@@ -635,7 +635,7 @@ class Game {
     this.shopNext = Math.max(1, n || this.day.n + 1);
     this.shopBought = this.boughtFor === this.shopNext;
     if (DEV.on && this.save.bank < DEV.bank){ this.save.bank = DEV.bank; writeSave(this.save); }   // modo dev: o dinheiro não acaba
-    this.salaoSel = -1; this.salaoUndo = []; this.salaoMsg = '';
+    this.salaoSel = -1; this.estoqueSel = -1; this.salaoUndo = []; this.salaoMsg = '';
     this.resetDay(this.shopNext);   // o salão ao fundo já mostra o dia que vem
     this.setState('shop');
   }
@@ -731,60 +731,71 @@ class Game {
     setObst(defs);
     this.tablesKey = key;
   }
-  /* troca as mesas do salão (já validadas) e salva. A mesa marcada com `sel` (a nova, a que virou de 4) fica
-     escolhida no editor. undo: guarda o arranjo de antes (compra e venda zeram o Desfazer) */
-  salaoSet(mesas, undo){
+  /* estoque do salão (v8.3.5): mesas guardadas fora do salão, para rearrumar com folga (não abrem no dia) */
+  get estoque(){ const sal = this.save.salao; return sal.estoque || (sal.estoque = []); }
+  /* lugares de todas as mesas compradas (salão e estoque): o que conta no teto do ponto */
+  get lugaresTot(){ return salaoLugares(this.save.salao.mesas) + salaoLugares(this.estoque); }
+  /* troca as mesas do salão (já validadas) e, se vier `est`, as do estoque, e salva. A mesa marcada com `sel` (a nova,
+     a que virou de 4) fica escolhida no editor. undo: guarda o arranjo de antes (compra e venda zeram o Desfazer) */
+  salaoSet(mesas, undo, est){
     const sal = this.save.salao;
-    if (undo){ this.salaoUndo.push(sal.mesas); if (this.salaoUndo.length > 20) this.salaoUndo.shift(); }
+    if (undo){ this.salaoUndo.push({ m:sal.mesas, e:this.estoque }); if (this.salaoUndo.length > 20) this.salaoUndo.shift(); }
     else this.salaoUndo = [];
     sal.mesas = salaoOrdena(mesas);
+    if (est) sal.estoque = est;
     this.salaoSel = sal.mesas.findIndex(m => m.sel);
-    sal.mesas.forEach(m => { delete m.sel; });
+    this.estoqueSel = this.estoque.findIndex(m => m.sel);
+    sal.mesas.forEach(m => { delete m.sel; }); this.estoque.forEach(m => { delete m.sel; });
     return this.salaoSaved();
   }
   salaoNao(msg){ this.salaoMsg = msg; return false; }
-  /* mesa nova com as cadeiras (2 ou 4 lugares), até o teto do ponto: entra no primeiro lugar livre, ou o salão
-     é rearrumado sozinho se não houver */
+  /* mesa nova com as cadeiras (2 ou 4 lugares), até o teto do ponto (contando o estoque): entra no primeiro lugar
+     livre, ou o salão é rearrumado sozinho se não houver; se nem assim couber, vai para o estoque */
   buyMesa(seats){
     const p = this.ponto, mesas = this.save.salao.mesas, price = mesaPreco(seats);
-    if (salaoLugares(mesas) + seats > p.lugares) return this.salaoNao('A garagem tem lugar para ' + p.lugares + ' pessoas, no máximo.');
+    if (this.lugaresTot + seats > p.lugares) return this.salaoNao('A garagem tem lugar para ' + p.lugares + ' pessoas, no máximo.');
     if (this.save.bank < price) return this.salaoNao('Falta dinheiro.');
-    const m = { x:0, y:0, seats, c:salaoCor(mesas), sel:1 }, vaga = salaoVaga(mesas, seats, p);
+    const m = { x:0, y:0, seats, c:salaoCor(mesas.concat(this.estoque)), sel:1 }, vaga = salaoVaga(mesas, seats, p);
     const l = vaga ? mesas.concat([Object.assign(m, vaga)]) : salaoAuto(mesas.concat([m]), p);
-    if (!l) return this.salaoNao('Não cabe mais mesa no salão.');
     this.save.bank -= price; caixaGasto(this.save, 'sal', price);
     Sfx.coin();
+    if (!l){ this.salaoSet(mesas, false, this.estoque.concat([{ seats, c:m.c, sel:1 }])); this.salaoMsg = 'Não coube no salão: a mesa nova foi para o estoque.'; return true; }
     return this.salaoSet(l);
   }
-  /* 2 cadeiras a mais: a mesa de 2 vira mesa de 4 (no mesmo lugar, ou no lugar livre mais perto) */
-  virarMesa(i){
-    const p = this.ponto, mesas = this.save.salao.mesas, m = mesas[i];
+  /* 2 cadeiras a mais: a mesa de 2 vira mesa de 4 (no mesmo lugar, ou no lugar livre mais perto; no estoque, só vira) */
+  virarMesa(i, est){
+    const p = this.ponto, mesas = this.save.salao.mesas, m = (est ? this.estoque : mesas)[i];
     if (!m || m.seats !== 2) return false;
-    if (salaoLugares(mesas) + 2 > p.lugares) return this.salaoNao('Passa de ' + p.lugares + ' lugares.');
+    if (this.lugaresTot + 2 > p.lugares) return this.salaoNao('Passa de ' + p.lugares + ' lugares.');
     if (this.save.bank < SALAO.virar) return this.salaoNao('Falta dinheiro.');
-    let l = mesas.slice(); l[i] = Object.assign({}, m, { seats:4, sel:1 });
-    if (salaoProblema(l, p)) l = salaoPerto(l, i, p) || salaoAuto(l, p);
-    if (!l) return this.salaoNao('Não cabe uma mesa de 4 aqui.');
+    let l = mesas.slice(), e = null;
+    if (est){ e = this.estoque.slice(); e[i] = Object.assign({}, m, { seats:4, sel:1 }); }
+    else {
+      l[i] = Object.assign({}, m, { seats:4, sel:1 });
+      if (salaoProblema(l, p)) l = salaoPerto(l, i, p) || salaoAuto(l, p);
+      if (!l) return this.salaoNao('Não cabe uma mesa de 4 aqui.');
+    }
     this.save.bank -= SALAO.virar; caixaGasto(this.save, 'sal', SALAO.virar);
     Sfx.coin();
-    return this.salaoSet(l);
+    return this.salaoSet(l, false, e);
   }
-  /* vende a mesa por metade do preço (o salão fica com pelo menos 1) */
-  venderMesa(i){
-    const mesas = this.save.salao.mesas, m = mesas[i];
-    if (!m || mesas.length <= 1) return this.salaoNao('O salão precisa de pelo menos 1 mesa.');
+  /* vende a mesa por metade do preço (o salão fica com pelo menos 1; do estoque, sai qualquer uma) */
+  venderMesa(i, est){
+    const mesas = this.save.salao.mesas, m = (est ? this.estoque : mesas)[i];
+    if (!m) return false;
+    if (!est && mesas.length <= 1) return this.salaoNao('O salão precisa de pelo menos 1 mesa.');
     const v = Math.round(mesaPreco(m.seats) * SALAO.venda);
     this.save.bank += v; caixaGasto(this.save, 'sal', -v);
     Sfx.coin();
-    return this.salaoSet(mesas.filter(x => x !== m));
+    return est ? this.salaoSet(mesas, false, this.estoque.filter(x => x !== m)) : this.salaoSet(mesas.filter(x => x !== m));
   }
-  /* editor: as cadeiras da mesa i ganham a cor c (de graça; a mesa continua escolhida e dá para desfazer) */
-  pintarMesa(i, c){
-    const mesas = this.save.salao.mesas, m = mesas[i];
+  /* editor: as cadeiras da mesa i (do salão ou do estoque) ganham a cor c (de graça; a mesa continua escolhida e dá para desfazer) */
+  pintarMesa(i, c, est){
+    const mesas = this.save.salao.mesas, lista = est ? this.estoque : mesas, m = lista[i];
     if (!m || !(c >= 0 && c < CHAIRS.length)) return false;
     if (m.c === c) return true;
-    const l = mesas.slice(); l[i] = Object.assign({}, m, { c, sel:1 });
-    return this.salaoSet(l, true);
+    const l = lista.slice(); l[i] = Object.assign({}, m, { c, sel:1 });
+    return est ? this.salaoSet(mesas, true, l) : this.salaoSet(l, true);
   }
   /* editor: a mesa i vai para (x, y), se o lugar vale */
   moverMesa(i, x, y){
@@ -796,6 +807,22 @@ class Game {
     if (x === m.x && y === m.y) return true;
     return this.salaoSet(l, true);
   }
+  /* editor (v8.3.5): a mesa i do salão vai para o estoque (o salão fica com pelo menos 1) */
+  guardarMesa(i){
+    const mesas = this.save.salao.mesas, m = mesas[i];
+    if (!m) return false;
+    if (mesas.length <= 1) return this.salaoNao('O salão precisa de pelo menos 1 mesa.');
+    return this.salaoSet(mesas.filter(x => x !== m), true, this.estoque.concat([{ seats:m.seats, c:m.c }]));
+  }
+  /* editor (v8.3.5): a mesa k do estoque volta para o salão em (x, y), ou no primeiro lugar livre se não vier lugar */
+  tirarMesa(k, x, y){
+    const p = this.ponto, mesas = this.save.salao.mesas, m = this.estoque[k];
+    if (!m) return false;
+    if (x == null){ const v = salaoVaga(mesas, m.seats, p); if (!v) return this.salaoNao('Não há lugar livre no salão: abra espaço ou guarde outra mesa.'); x = v.x; y = v.y; }
+    const l = mesas.concat([{ x, y, seats:m.seats, c:m.c, sel:1 }]), why = salaoProblema(l, p);
+    if (why) return this.salaoNao(why);
+    return this.salaoSet(l, true, this.estoque.filter(e => e !== m));
+  }
   arrumarSalao(){
     const l = salaoAuto(this.save.salao.mesas, this.ponto);
     if (!l) return this.salaoNao('Não deu para arrumar sozinho.');
@@ -803,9 +830,9 @@ class Game {
     return this.salaoSet(l, true);
   }
   desfazerSalao(){
-    const l = this.salaoUndo.pop();
-    if (!l) return false;
-    this.save.salao.mesas = l; this.salaoSel = -1;
+    const u = this.salaoUndo.pop();
+    if (!u) return false;
+    this.save.salao.mesas = u.m; this.save.salao.estoque = u.e; this.salaoSel = -1; this.estoqueSel = -1;
     return this.salaoSaved();
   }
   salaoSaved(){
