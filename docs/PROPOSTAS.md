@@ -4,6 +4,15 @@ Registro das ideias e dos retornos de quem jogou, com o texto original, e de ond
 
 ---
 
+## 23/10/2026 — Usuário: Jogo de pratos sem limite
+**Origem:** mensagem do usuário, depois da v8.3.5:
+
+> pratos devem ser melhorias sempre disponíveis para compra de quantas vezes a pessoa quiser, as demais melhorias ainda limitadas a 1 por dia (por enquanto até rebalanceamento financeiro)
+
+**Para onde foi:** **feito na v8.3.6** (`docs/spec-v8.3.6.md`): o Jogo de pratos fica sempre à venda (R$ 300 cada, +1 prato limpo por compra) e não conta como a melhoria do dia; as outras seguem 1 por dia. O preço e o limite das outras ficam para o rebalanceamento financeiro.
+
+---
+
 ## 23/10/2026 — Usuário: estoque no editor do salão
 **Origem:** mensagem do usuário, depois da v8.3.4:
 

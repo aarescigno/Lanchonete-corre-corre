@@ -630,7 +630,7 @@ class Game {
     this.setState('endlessend');
     Sfx.lose();
   }
-  /* lojinha antes do dia n (a partir do dia 2): 1 melhoria por dia, mesmo se a lojinha abrir de novo para o mesmo dia */
+  /* lojinha antes do dia n (a partir do dia 2): 1 melhoria por dia, mesmo se a lojinha abrir de novo para o mesmo dia (o Jogo de pratos fica de fora) */
   goShop(n){
     this.shopNext = Math.max(1, n || this.day.n + 1);
     this.shopBought = this.boughtFor === this.shopNext;
@@ -713,8 +713,10 @@ class Game {
   }
   buy(id){
     const u = UPGRADES.find(x => x.id === id);
-    if (!u || this.shopBought || this.up[id] || (u.req && !this.up[u.req]) || this.save.bank < u.cost) return false;
-    this.save.bank -= u.cost; this.up[id] = true; this.shopBought = true; this.boughtFor = this.shopNext;
+    if (!u || (!u.multi && (this.shopBought || this.up[id])) || (u.req && !this.up[u.req]) || this.save.bank < u.cost) return false;
+    this.save.bank -= u.cost;
+    if (u.multi) this.up[id] = pratosDe(this.up) + 1;   // Jogo de pratos (v8.3.6): acumula, fora da melhoria do dia
+    else { this.up[id] = true; this.shopBought = true; this.boughtFor = this.shopNext; }
     caixaGasto(this.save, 'mel', u.cost);
     writeSave(this.save);
     Sfx.coin();
@@ -864,7 +866,7 @@ class Game {
     const u = UPGRADES.find(x => x.id === id);
     if (!DEV.on || !u) return false;
     if (this.up[id]){ delete this.up[id]; UPGRADES.forEach(v => { if (v.req === id) delete this.up[v.id]; }); }
-    else { this.up[id] = true; if (u.req) this.up[u.req] = true; }
+    else { this.up[id] = u.multi ? 1 : true; if (u.req) this.up[u.req] = true; }
     writeSave(this.save);
     return true;
   }

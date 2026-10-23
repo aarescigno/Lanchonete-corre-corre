@@ -34,6 +34,7 @@ Origem: retorno do Renan Martorelli (beta-tester) e conversa com o Arthur (15/10
 | — | Pedido do usuário: jogo offline por enquanto (ranking só no aparelho; o compartilhado volta na etapa 7) | v8.3.3 | feita (23/10) |
 | — | Pedido do usuário: balão com o prato na mesa quando a comida fica pronta | v8.3.4 | feita (23/10) |
 | — | Pedido do usuário: estoque no editor do salão, para rearrumar o salão cheio | v8.3.5 | feita (23/10) |
+| — | Pedido do usuário: Jogo de pratos sem limite, fora da melhoria do dia | v8.3.6 | feita (23/10) |
 | 2c | Avaliações dos clientes (nota de 0 a 5 ★, 5 critérios) | v8.4 | **próxima** |
 | 2d | Abertura animada do Modo História: o sonho da Bia | v8.5 | a fazer |
 | 3a | Mudança de ponto e Lanchonete na área industrial | v9 | a fazer |

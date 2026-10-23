@@ -7,7 +7,7 @@ python3 ../montar.py >/dev/null || { echo "MONTAR: falhou ao juntar src/ em lanc
 ./extract.sh >/dev/null || { echo "SINTAXE: erro em game.js"; exit 1; }
 ./gera_botpage.sh || { echo "SINTAXE: erro em botpage.js"; exit 1; }
 st=0
-for f in smoke.js smoke2.js smoke3.js smoke4.js smoke5.js smoke6.js smoke7.js smoke8.js smoke9.js smoke10.js smoke11.js smoke12.js smoke13.js smoke14.js smoke15.js smoke16.js smoke17.js smoke18.js smoke19.js smoke20.js smoke21.js smoke22.js; do
+for f in smoke.js smoke2.js smoke3.js smoke4.js smoke5.js smoke6.js smoke7.js smoke8.js smoke9.js smoke10.js smoke11.js smoke12.js smoke13.js smoke14.js smoke15.js smoke16.js smoke17.js smoke18.js smoke19.js smoke20.js smoke21.js smoke22.js smoke23.js; do
   out=$(node "$f" 2>&1); rc=$?
   echo "$f: $(echo "$out" | tail -1)"
   echo "$out" | grep -m5 '^FAIL' ; [ $rc -ne 0 ] && st=1
