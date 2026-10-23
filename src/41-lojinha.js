@@ -40,6 +40,12 @@ function upgradeIcon(id){
       rr(c,-10,-16,20,32,4); fs(c,PAL.tinta,2); rr(c,-7,-12,14,22,2); fs(c,'#E8F1FB',1);
       c.beginPath(); c.moveTo(0,4); c.bezierCurveTo(-7,-1,-4,-8,0,-4); c.bezierCurveTo(4,-8,7,-1,0,4); c.closePath(); c.fillStyle = PAL.perigo; c.fill();
       txt(c,'+',13,-14,13,PAL.ok,'center',FD);
+    } else if (id === 'banco'){
+      drawBanco(c);   // v8.3
+    } else if (id === 'negativo'){
+      // caixa no negativo (v8.3): a moeda e o sinal de menos vermelho
+      circ(c,-3,3,12); fs(c,PAL.mostarda,2); txt(c,'$',-3,4,14,PAL.tinta,'center',FD);
+      rr(c,5,-15,13,6,2); c.fillStyle = PAL.perigo; c.fill(); c.strokeStyle = PAL.tinta; c.lineWidth = 1.6; c.stroke();
     } else if (id === 'contas'){
       rr(c,-11,-15,22,30,2); fs(c,'#fff',2);
       for (let i=0;i<4;i++){ c.fillStyle = PAL.cromoEsc; c.fillRect(-7,-10+i*5,10,1.8); c.fillRect(5,-10+i*5,3,1.8); }
@@ -76,6 +82,14 @@ let shopTab = 'melhorias';
 /* v8.1: compra que usa o dinheiro já reservado para a folha (o que fica de fora ao abrir o dia aumenta): o botão fica
    em alerta e o 1º toque só avisa o que vai ficar de fora; o 2º compra */
 function folhaAviso(b, cost){
+  // v8.3: com a chave da folha desligada, nada fica de fora: o aviso é o caixa no negativo no fim do dia
+  if (!game.save.corta){
+    if (!(cost > 0) || game.livre < 0 || game.livre - cost >= 0) return;
+    b.classList.add('warn');
+    b.title = 'Usa o dinheiro da folha: o dia ' + game.shopNext + ' paga tudo e o caixa pode fechar no negativo.';
+    b.setAttribute('data-aviso', 'Confirmar: caixa no negativo');
+    return;
+  }
   const corte = cost > 0 ? game.cortesSe(cost) : [];
   if (corte.length <= game.cortesSe(0).length) return;
   b.classList.add('warn');
@@ -346,21 +360,53 @@ function buildManut(grid){
   c.appendChild(shopBtn(!tot ? 'Tudo em dia' : DEV.on ? 'Revisar tudo (grátis)' : 'Revisar tudo: ' + fmt(tot), 'btn', !!tot && (DEV.on || game.save.bank >= tot), () => game.revisarTudo(), DEV.on ? 0 : tot));
   grid.appendChild(c);
 }
+/* aba Banco (v8.3): o empréstimo (ou o que falta pagar dele), o caixa no negativo e a chave da folha sem dinheiro */
+function buildBanco(grid){
+  const sv = game.save, e = sv.emp, cr = game.ponto.credito, pc = Math.round(BANCO.juros * 100);
+  const vs = BANCO.valores.filter(v => v <= cr), parc = v => fmt(Math.ceil(Math.round(v * (1 + BANCO.juros)) / BANCO.parcelas));
+  let c = staffCard(upgradeIcon('banco'), 'Empréstimo',
+    'Juros de ' + pc + '%, em ' + BANCO.parcelas + ' parcelas no fim de cada dia (' + vs.map(parc).join(', ').replace(/, ([^,]*)$/, ' ou $1') + '), fora do lucro do dia. Até ' + fmt(cr) + ' na ' + game.ponto.nome.replace(/ da .*/, '').toLowerCase() + ', um por vez. Esperar juntando sai mais barato!');
+  if (e.resto){
+    c.classList.add('own');
+    c.appendChild(el('span', 'full', 'Seu empréstimo: faltam ' + fmt(e.resto) + ', em ' + e.n + (e.n > 1 ? ' parcelas' : ' parcela') + ' (a próxima, ' + fmt(game.parcela) + ', no fim do dia ' + game.shopNext + ').'));
+    c.appendChild(shopBtn('Quitar agora: ' + fmt(e.resto), 'btn', sv.bank >= e.resto, () => game.quitar(), e.resto));
+  } else {
+    const duo = el('div', 'duo');
+    vs.forEach(v => {
+      const b = shopBtn(fmt(v), 'btn', game.podeEmprestar(v), () => game.emprestar(v));
+      b.setAttribute('aria-label', 'Pegar ' + fmt(v) + ' emprestado: ' + BANCO.parcelas + ' parcelas de ' + parc(v)); b.title = BANCO.parcelas + '× ' + parc(v);
+      duo.appendChild(b);
+    });
+    c.appendChild(duo);
+  }
+  grid.appendChild(c);
+  c = staffCard(upgradeIcon('negativo'), 'Caixa no negativo',
+    'Folha, contas e parcelas saem no fim do dia mesmo sem dinheiro. O caixa pode fechar no negativo ' + BANCO.neg + ' dias seguidos; no ' + (BANCO.neg + 1) + 'º, o banco cobre o que falta, à força, com juros de ' + Math.round(BANCO.forcado * 100) + '%.');
+  c.appendChild(el('span', 'full', sv.bank < 0 ? 'Agora: ' + fmt(sv.bank) + ', no negativo há ' + sv.neg + (sv.neg === 1 ? ' dia.' : ' dias.') : 'Agora: no positivo.'));
+  grid.appendChild(c);
+  c = staffCard(upgradeIcon('contas'), 'Folha sem dinheiro',
+    'Ligado, o que não couber no dinheiro fica de fora ao abrir o dia (divulgação, couvert, som, TV, Dani, aumento do Tonhão). Desligado, paga tudo e o caixa pode ficar negativo.');
+  const tg = el('button', 'toggle', (sv.corta ? 'Ligado' : 'Desligado') + ': cortar a folha se faltar dinheiro'); tg.type = 'button';
+  tg.setAttribute('aria-pressed', sv.corta ? 'true' : 'false');
+  tg.addEventListener('click', () => { Sfx.tap(); game.setCorta(!sv.corta); buildShop(); });
+  c.appendChild(tg);
+  grid.appendChild(c);
+}
 /* aba Caixa (v7.2): os últimos dias da carreira, para onde foi o dinheiro e um resumo para colar no WhatsApp */
-const CAIXA_COR = { ingr:'#E26A2C', contas:'#C2362B', folha:'#1F4FA3', div:'#7B4FB5', mel:'#3E9B5A', sal:'#E0B23A', man:'#5B5F6B', mul:'#8A1F1A' };
+const CAIXA_COR = { ingr:'#E26A2C', contas:'#C2362B', folha:'#1F4FA3', div:'#7B4FB5', mel:'#3E9B5A', sal:'#E0B23A', man:'#5B5F6B', mul:'#8A1F1A', par:'#2B7A78' };
 function caixaTotais(cx){
   const s = k => cx.reduce((a, r) => a + (r[k] || 0), 0);
-  return [['ingr','Ingredientes'], ['contas','Contas'], ['folha','Equipe'], ['div','Divulgação'], ['mel','Melhorias'], ['sal','Salão'], ['man','Manutenção'], ['mul','Dias largados no meio']].map(k => ({ id:k[0], name:k[1], v:s(k[0]) }));
+  return [['ingr','Ingredientes'], ['contas','Contas'], ['folha','Equipe'], ['div','Divulgação'], ['mel','Melhorias'], ['sal','Salão'], ['man','Manutenção'], ['mul','Dias largados no meio'], ['par','Banco (parcelas)']].map(k => ({ id:k[0], name:k[1], v:s(k[0]) }));
 }
 function caixaResumo(save){
   const cx = save.caixa, eq = save.equipe, sal = save.salao;
   const out = ['Lanchonete Corre-Corre ' + VERSAO + ' · Caixa (valores em R$)'];
   cx.forEach(r => out.push(r.int ? 'Dia ' + r.d + ' largado no meio: ' + r.int + (r.int > 1 ? ' grupos foram' : ' grupo foi') + ' embora bravo' + (r.int > 1 ? 's' : '') + ': −' + r.mul + ' · saldo ' + r.saldo : r.dev ? 'Devolução ' + (r.devK === 'maquina' ? 'da máquina de suco' : 'do salão') + ': +' + r.dev + ' · saldo ' + r.saldo : 'Dia ' + r.d + (r.ok ? ' ✓' : ' ✗') + ': fatura ' + r.fat + ' − ingred. ' + r.ingr + ' − contas ' + r.contas + ' − equipe ' + r.folha + (r.div ? ' − divulg. ' + r.div : '') +
-    ' = lucro ' + r.lucro + ' (meta ' + r.meta + ')' + (r.perd ? ' · ' + r.perd + (r.perd > 1 ? ' perdidos' : ' perdido') : '') + (r.mel + r.sal ? ' · compras ' + (r.mel + r.sal) : '') + (r.man ? ' · manutenção ' + r.man : '') + ' · saldo ' + r.saldo));
+    ' = lucro ' + r.lucro + ' (meta ' + r.meta + ')' + (r.perd ? ' · ' + r.perd + (r.perd > 1 ? ' perdidos' : ' perdido') : '') + (r.mel + r.sal ? ' · compras ' + (r.mel + r.sal) : '') + (r.man ? ' · manutenção ' + r.man : '') + (r.emp ? ' · empréstimo +' + r.emp + (r.forc ? ' (à força)' : '') : '') + (r.par ? ' · banco −' + r.par : '') + ' · saldo ' + r.saldo));
   const nd = cx.filter(r => !r.dev && !r.int).length;
   if (nd) out.push('Para onde foi (' + nd + (nd > 1 ? ' dias' : ' dia') + '): ' + caixaTotais(cx).filter(t => t.v).map(t => t.name.toLowerCase() + ' ' + t.v).join(', '));
   const ups = UPGRADES.filter(u => save.up[u.id]).map(u => u.name.toLowerCase());
-  out.push('Agora: ' + fmt(save.bank) + ' · Tonhão nível ' + (eq.tonhao + 1) + ', ' + (eq.dani ? 'Dani nível ' + eq.dani : 'sem Dani') + (eq.couvert ? ', couvert' : '') + (eq.tv ? ', TV' : '') + (eq.som ? ', som' : '') +
+  out.push('Agora: dia ' + save.dia + ' · ' + fmt(save.bank) + (save.emp.resto ? ' (banco: faltam ' + save.emp.resto + ')' : '') + ' · lucro acumulado ' + save.lucroTot + ' · Tonhão nível ' + (eq.tonhao + 1) + ', ' + (eq.dani ? 'Dani nível ' + eq.dani : 'sem Dani') + (eq.couvert ? ', couvert' : '') + (eq.tv ? ', TV' : '') + (eq.som ? ', som' : '') +
     ' · ' + divulgaOf(save.divulga).name.toLowerCase() + ' · ' + pontoOf(sal.ponto).nome.replace(/ da .*/, '').toLowerCase() + ' com ' + sal.mesas.length + ' mesas e ' + salaoLugares(sal.mesas) + ' lugares · melhorias: ' + (ups.join(', ') || 'nenhuma'));
   return out.join('\n');
 }
@@ -389,28 +435,31 @@ function buildCaixa(grid){
   if (!cx.length){ grid.appendChild(el('p', 'rank-empty', 'O caixa começa quando você joga um dia da carreira.')); return; }
   const wrap = el('div', 'rank-wrap cx-wrap'), tb = el('table', 'rank cx');
   const head = el('tr');
-  [['Dia'], ['Faturou'], ['Ingred.', 'Ingredientes'], ['Contas', 'Aluguel, luz e gás'], ['Equipe', 'Folha da equipe, luz da TV e do som e divulgação'], ['Lucro', 'Lucro do dia (a meta)'], ['Compras', 'Melhorias e salão comprados antes do dia'], ['Manut.', 'Revisões na lojinha e consertos na hora'], ['Saldo', 'Dinheiro acumulado ao fim do dia']].forEach((h, i) => { const th = el('th', i ? 'n' : null, h[0]); th.setAttribute('scope', 'col'); if (h[1]) th.title = h[1]; head.appendChild(th); });
+  [['Dia'], ['Faturou'], ['Ingred.', 'Ingredientes'], ['Contas', 'Aluguel, luz e gás'], ['Equipe', 'Folha da equipe, luz da TV e do som e divulgação'], ['Lucro', 'Lucro do dia (a meta)'], ['Compras', 'Melhorias e salão comprados antes do dia'], ['Manut.', 'Revisões na lojinha e consertos na hora'], ['Banco', 'Empréstimo recebido (+) e parcelas pagas (−)'], ['Saldo', 'Dinheiro acumulado ao fim do dia']].forEach((h, i) => { const th = el('th', i ? 'n' : null, h[0]); th.setAttribute('scope', 'col'); if (h[1]) th.title = h[1]; head.appendChild(th); });
   tb.appendChild(head);
   cx.slice().reverse().forEach(r => {
     const tr = el('tr');
     if (r.int){
       // v8.2.3: dia largado no meio, com gente na espera ou nas mesas: cada grupo foi embora bravo e pagou a multa
-      const td = el('td', 'cx-dev', 'Dia ' + r.d + ' largado no meio: ' + r.int + (r.int > 1 ? ' grupos foram' : ' grupo foi') + ' embora bravo' + (r.int > 1 ? 's' : '') + ': −' + fmt(r.mul)); td.setAttribute('colspan', '8');
+      const td = el('td', 'cx-dev', 'Dia ' + r.d + ' largado no meio: ' + r.int + (r.int > 1 ? ' grupos foram' : ' grupo foi') + ' embora bravo' + (r.int > 1 ? 's' : '') + ': −' + fmt(r.mul)); td.setAttribute('colspan', '9');
       tr.appendChild(td); tr.appendChild(cxTd(r.saldo)); tb.appendChild(tr); return;
     }
     if (r.dev){
       // v7.4: o salão antigo (cadeiras e mesas da v6) foi trocado pela Garagem e o que custou voltou;
       // v7.7: a Máquina de suco virou a Água da torneira, mais barata, e a diferença voltou
-      const td = el('td', 'cx-dev', (r.devK === 'maquina' ? 'Devolução da máquina de suco (virou a Água da torneira): +' : 'Devolução do salão antigo: +') + fmt(r.dev)); td.setAttribute('colspan', '8');
+      const td = el('td', 'cx-dev', (r.devK === 'maquina' ? 'Devolução da máquina de suco (virou a Água da torneira): +' : 'Devolução do salão antigo: +') + fmt(r.dev)); td.setAttribute('colspan', '9');
       tr.appendChild(td); tr.appendChild(cxTd(r.saldo)); tb.appendChild(tr); return;
     }
-    const dia = el('td', null, 'Dia ' + r.d); tr.appendChild(dia);
+    const dia = el('td', null, 'Dia ' + r.d + (r.st ? ' ' + '★'.repeat(r.st) : '')); tr.appendChild(dia);
     [r.fat, r.ingr, r.contas, r.folha + r.div].forEach(v => tr.appendChild(cxTd(v)));
     const lu = cxTd(r.lucro, r.ok ? 'pos' : 'neg'); lu.title = (r.ok ? 'Passou' : 'Não passou') + ' da meta de ' + fmt(r.meta) + (r.perd ? '; ' + r.perd + (r.perd > 1 ? ' perdidos' : ' perdido') : '');
     tr.appendChild(lu);
     tr.appendChild(r.mel + r.sal ? cxTd(r.mel + r.sal) : el('td', 'n', '–'));
     tr.appendChild(r.man ? cxTd(r.man) : el('td', 'n', '–'));
-    tr.appendChild(cxTd(r.saldo));
+    const ban = (r.emp || 0) - (r.par || 0), bt = r.emp || r.par ? cxTd(ban, ban >= 0 ? 'pos' : 'neg') : el('td', 'n', '–');
+    if (r.emp || r.par) bt.title = (r.emp ? 'Empréstimo' + (r.forc ? ' à força' : '') + ': +' + fmt(r.emp) : '') + (r.emp && r.par ? '; ' : '') + (r.par ? 'pago ao banco: ' + fmt(r.par) : '');
+    tr.appendChild(bt);
+    tr.appendChild(cxTd(r.saldo, r.saldo < 0 ? 'neg' : null));
     tb.appendChild(tr);
   });
   wrap.appendChild(tb); grid.appendChild(wrap);
@@ -429,6 +478,7 @@ function buildCaixa(grid){
   });
   onde.appendChild(bar); onde.appendChild(leg);
   if (pend.mel + pend.sal + pend.man) onde.appendChild(el('span', 'full', 'Compras nesta lojinha: ' + fmt(pend.mel + pend.sal + pend.man) + ' (entram na linha do dia ' + game.shopNext + ').'));
+  if (pend.emp || pend.par) onde.appendChild(el('span', 'full', 'Banco nesta lojinha: ' + (pend.emp ? 'empréstimo de ' + fmt(pend.emp) : '') + (pend.emp && pend.par ? ' e ' : '') + (pend.par ? fmt(pend.par) + ' pagos' : '') + ' (entram na linha do dia ' + game.shopNext + ').'));
   // resumo para colar no WhatsApp
   const row = el('div', 'cx-copia'), st = el('span', 'cx-st'); st.setAttribute('role', 'status');
   let ta = null;
@@ -449,22 +499,27 @@ function buildShop(){
   clearEl(grid);
   segSync('shop-tabs', shopTab);
   $('shop-bank').textContent = fmt(game.save.bank);
+  $('shop-bank').className = 'bank' + (game.save.bank < 0 ? ' neg' : '');   // v8.3: no negativo, em vermelho
   // v8.1: o que já está comprometido com a abertura do dia não está livre para gastar
-  const comp = game.compromisso, corte = game.cortesSe(0), liv = $('shop-livre');
-  liv.className = corte.length ? 'livre falta' : 'livre';
-  liv.textContent = !comp ? '' : corte.length
+  const comp = game.compromisso, corte = game.cortesSe(0), liv = $('shop-livre'), sv = game.save;
+  // v8.3: com a chave da folha desligada, falta de dinheiro vira caixa no negativo; e o aviso dos dias no negativo
+  const negFim = !sv.corta && comp && game.livre < 0, negAgora = sv.bank < 0;
+  liv.className = corte.length || negFim || negAgora ? 'livre falta' : 'livre';
+  liv.textContent = (negAgora ? ' · no negativo há ' + sv.neg + (sv.neg === 1 ? ' dia' : ' dias') + ' (no ' + (BANCO.neg + 1) + 'º seguido, o banco cobre à força)' : '') + (!comp ? '' : corte.length
     ? ' · faltam ' + fmt(-game.livre) + ' para a folha: o dia ' + game.shopNext + ' abre sem ' + listaE(corte)
-    : ' · livre ' + fmt(game.livre) + ' (' + fmt(comp) + ' reservados para ' + listaE(folhaItens(game.save.equipe, game.div)) + ')';
+    : negFim ? ' · faltam ' + fmt(-game.livre) + ' para a folha: o caixa pode fechar no negativo'
+    : ' · livre ' + fmt(game.livre) + ' (' + fmt(comp) + ' reservados para ' + listaE(folhaItens(game.save.equipe, game.div)) + ')');
   $('shop-limit').textContent = DEV.on ? 'Modo dev: tudo liberado; melhorias de graça, ligue e desligue à vontade.' : game.shopBought ? 'Melhoria do dia ' + game.shopNext + ' já escolhida.' : 'Você pode levar 1 melhoria antes do dia ' + game.shopNext + '.';
   $('btn-shop-go').textContent = 'Começar o dia ' + game.shopNext;
   const f = payroll(game.save.equipe), dv = divulgaAberta(game.shopNext) ? divulgaOf(game.save.divulga) : null;
-  $('shop-folha').textContent = (f ? 'Folha ' + fmt(f) : 'Sem folha') + (dv ? ' + ' + dv.name.toLowerCase() + ' ' + fmt(dv.cost) : '') + ', contas ' + fmt(contasDia(game.tables)) + ' e ingredientes: tudo pago no fim do dia, que só rende completo. A meta é o lucro.';
+  $('shop-folha').textContent = (f ? 'Folha ' + fmt(f) : 'Sem folha') + (dv ? ' + ' + dv.name.toLowerCase() + ' ' + fmt(dv.cost) : '') + ', contas ' + fmt(contasDia(game.tables)) + (sv.emp.resto ? ', parcela do banco ' + fmt(game.parcela) : '') + ' e ingredientes: tudo pago no fim do dia, que só rende completo. A meta é o lucro.';
   grid.className = 'shopgrid' + (shopTab === 'salao' || shopTab === 'caixa' ? ' ' + shopTab : '');
   ['salao', 'caixa'].forEach(k => $('ov-shop').classList[shopTab === k ? 'add' : 'remove'](k));
   if (shopTab === 'equipe') return buildEquipe(grid);
   if (shopTab === 'salao') return buildSalao(grid);
   if (shopTab === 'divulga') return buildDivulga(grid);
   if (shopTab === 'manut') return buildManut(grid);
+  if (shopTab === 'banco') return buildBanco(grid);
   if (shopTab === 'caixa') return buildCaixa(grid);
   // os Tênis de corrida (v7.3) só aparecem depois dos Tênis novos, no lugar deles (a grade continua com 6); no modo dev, todas
   UPGRADES.filter(u => DEV.on || (u.req ? game.up[u.req] : !(game.up[u.id] && UPGRADES.some(v => v.req === u.id)))).forEach(u => {

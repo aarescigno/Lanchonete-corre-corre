@@ -1,6 +1,6 @@
 /* ---------- troca de telas ---------- */
 game.hooks.state = function(s){
-  if (s === 'menu'){ game.resetDay(1); buildChips(); devSync(); showOnly(['ov-menu']); }
+  if (s === 'menu'){ game.resetDay(game.proxDia); buildMenu(); devSync(); showOnly(['ov-menu']); }
   else if (s === 'intro'){
     const d = game.day;
     if (game.mode === 'semfim'){
@@ -8,7 +8,7 @@ game.hooks.state = function(s){
       $('intro-goal').textContent = 'Todas as ' + game.tables.length + ' mesas abertas, 5 estrelas de reputação e freguesia cada vez mais rápida.';
       $('intro-note').textContent = 'Grupo que sai bravo ou que não cabe na fila tira 1 estrela. A cada 8 contas pagas com 5 corações, você ganha 1 de volta. Com 0 estrelas, o turno acaba.';
     } else {
-      $('intro-title').textContent = 'Dia ' + d.n;
+      $('intro-title').textContent = 'Dia ' + d.n + (d.semana ? ' · ' + d.semana : '');
       const div = game.div, custos = ['contas ' + fmt(contasDia(game.tables, game.ponto))];
       if (payroll(game.save.equipe)) custos.push('folha ' + fmt(payroll(game.save.equipe)));
       if (div && div.cost) custos.push(div.name.toLowerCase() + ' ' + fmt(div.cost));
@@ -16,13 +16,13 @@ game.hooks.state = function(s){
         + '. Custos do dia: ' + custos.join(' + ') + ', mais ' + Math.round(INGRED.prato * 100) + '% de cada prato em ingredientes.';
       // v8.2.3: reiniciou no meio com gente na espera ou nas mesas: a multa de quem foi embora bravo
       const en = game.encerrado; game.encerrado = null;
-      $('intro-note').textContent = (en ? 'Você largou o dia no meio: ' + en.n + (en.n > 1 ? ' grupos foram' : ' grupo foi') + ' embora bravo' + (en.n > 1 ? 's' : '') + ' (multa de ' + fmt(en.multa) + '; agora você tem ' + fmt(en.bank) + '). ' : '') + (d.note || 'Sente a freguesia, anote os pedidos e mantenha todo mundo feliz!') + (d.n === 1 && !game.save.treino ? ' Primeira vez? No menu, o dia 0 é a Missão zero, um treino passo a passo.' : '');
+      $('intro-note').textContent = (en ? 'Você largou o dia no meio: ' + en.n + (en.n > 1 ? ' grupos foram' : ' grupo foi') + ' embora bravo' + (en.n > 1 ? 's' : '') + ' (multa de ' + fmt(en.multa) + '; agora você tem ' + fmt(en.bank) + '). ' : '') + (d.note || 'Sente a freguesia, anote os pedidos e mantenha todo mundo feliz!') + (d.n === 1 && !game.save.treino ? ' Primeira vez? No menu, a Missão zero é um treino passo a passo.' : '');
     }
-    $('intro-manut').textContent = introManut();
+    $('intro-manut').textContent = [introBanco(), introManut()].filter(Boolean).join(' ');
     showOnly(['ov-intro']);
   }
   else if (s === 'playing') showOnly([]);
-  else if (s === 'treinoend') showOnly(['ov-treino']);
+  else if (s === 'treinoend'){ $('btn-treino-dia1').textContent = game.proxDia > 1 ? 'Continuar: dia ' + game.proxDia : 'Começar o dia 1'; showOnly(['ov-treino']); }
   else if (s === 'paused'){
     // v8.2.2: só o dia completo rende; interrompido, não paga nem ganha nada
     const nb = game.bravosSeSair.length, mb = game.multaSeSair;
@@ -32,10 +32,20 @@ game.hooks.state = function(s){
   }
   else if (s === 'dayend'){ buildEnd(); showOnly(['ov-end']); }
   else if (s === 'shop'){ buildShop(); showOnly(['ov-shop']); }
-  else if (s === 'final'){ buildFinal(); showOnly(['ov-final']); }
   else if (s === 'endlessend'){ buildEndless(); showOnly(['ov-endless']); }
 };
 
+/* introdução do dia (v8.3): o caixa no negativo (e quantos dias faltam para o banco cobrir à força) e a parcela do dia */
+function introBanco(){
+  if (game.mode !== 'carreira') return '';
+  const sv = game.save, out = [];
+  if (sv.bank < 0){
+    const falta = BANCO.neg - sv.neg;
+    out.push('Caixa no negativo (' + fmt(sv.bank) + ')' + (sv.neg ? ' há ' + sv.neg + (sv.neg > 1 ? ' dias' : ' dia') : '') + ': ' + (falta > 0 ? 'mais ' + (falta + 1) + ' dias seguidos fechando no negativo (contando hoje) e' : 'se fechar hoje no negativo,') + ' o banco cobre o que falta, à força, com juros de ' + Math.round(BANCO.forcado * 100) + '%.');
+  }
+  if (sv.emp.resto) out.push('Parcela do banco no fim do dia: ' + fmt(game.parcela) + ' (' + (sv.emp.n > 1 ? 'faltam ' + sv.emp.n : 'a última') + ').');
+  return out.join(' ');
+}
 /* introdução do dia (v8): o clima do dia e o estado do fogão, da geladeira e da cafeteira (com o risco de quebrar) */
 function introManut(){
   if (!MANUT.on || game.mode !== 'carreira') return '';
@@ -46,16 +56,18 @@ function introManut(){
   out.push('Equipamentos: ' + est + '.' + (risco.length ? ' ' + risco.map(q => q.name.toLowerCase()).join(' e ').replace(/^./, c => c.toUpperCase()) + (risco.length > 1 ? ' podem' : ' pode') + ' quebrar hoje (revisão na lojinha, aba Manutenção).' : ''));
   return out.join(' ');
 }
-/* carreira: do dia 2 em diante (no modo dev, desde o dia 1), a lojinha abre antes da introdução do dia */
+/* carreira (v8.3, campanha): sempre o próximo dia; do dia 2 em diante (no modo dev, desde o dia 1), a lojinha abre antes
+   da introdução do dia. n = 0: a Missão zero (v8.2) */
 function playCareer(n){
-  selectedDay = n;
-  if (n === 0) game.startTreino();   // Missão zero (v8.2)
-  else if (n >= 2 || DEV.on) game.goShop(n); else game.startDay(n);
+  if (n === 0) return game.startTreino();
+  n = game.proxDia;
+  if (n >= 2 || DEV.on) game.goShop(n); else game.startDay(n);
 }
 /* Missão zero: o texto do pop-up também vai para quem usa leitor de tela */
 game.hooks.treino = tr => { const e = $('treino-live'), p = tr.passo; if (e) e.textContent = p ? p.tit + '. ' + tr.texto() : ''; };
 function on(id, fn){ const e = $(id); if (e) e.addEventListener('click', fn); }
-on('btn-play',       () => { Sfx.init(); Sfx.resume(); Sfx.tap(); playCareer(selectedDay); });
+on('btn-play',       () => { Sfx.init(); Sfx.resume(); Sfx.tap(); playCareer(); });
+on('btn-treino',     () => { Sfx.init(); Sfx.resume(); Sfx.tap(); playCareer(0); });
 on('btn-how',        () => { Sfx.init(); Sfx.resume(); Sfx.tap(); buildTips(); showOnly(['ov-how']); });
 on('btn-how-close',  () => { Sfx.tap(); showOnly(['ov-menu']); });
 on('btn-endless',    () => { Sfx.init(); Sfx.resume(); Sfx.tap(); game.startEndless(); });
@@ -63,7 +75,7 @@ on('btn-rank',       () => { Sfx.init(); Sfx.resume(); Sfx.tap(); openRank('ov-m
 on('btn-ver',        () => { Sfx.tap(); showOnly(['ov-ver']); });
 on('btn-ver-close',  () => { Sfx.tap(); showOnly(['ov-menu']); });
 /* modo dev: 10 toques seguidos no selo da versão (no máximo 1,5 s entre um e outro) ligam e desligam */
-function devSet(on){ game.setDev(on); selectedDay = on ? 7 : Math.min(7, game.unlocked); game.setState('menu'); }
+function devSet(on){ game.setDev(on); game.setState('menu'); }
 (function(){
   const t = $('vtag'); if (!t) return;
   let n = 0, prev = 0;
@@ -89,24 +101,26 @@ on('btn-app-copy',   () => {
 try { if (window.matchMedia && window.matchMedia('(display-mode: fullscreen), (display-mode: standalone)').matches || window.navigator.standalone) $('btn-app').style.display = 'none'; } catch(e) {}
 on('btn-rank-back',  () => { Sfx.tap(); closeRank(); });
 on('btn-end-rank',   () => { Sfx.tap(); openRank('ov-end'); });
-on('btn-final-rank', () => { Sfx.tap(); openRank('ov-final'); });
 on('btn-endless-rank',  () => { Sfx.tap(); openRank('ov-endless'); });
 on('btn-endless-again', () => { Sfx.init(); Sfx.resume(); Sfx.tap(); game.startEndless(); });
 on('btn-endless-menu',  () => { game.setState('menu'); });
-on('btn-reset',      () => { game.resetProgress(); selectedDay = 1; game.setState('menu'); });
+/* Recomeçar do zero (v8.3): o 1º toque pede confirmação; o 2º apaga a carreira */
+on('btn-reset',      () => {
+  Sfx.init();
+  if (!resetPede){ resetPede = true; $('btn-reset').textContent = 'Confirmar: apagar a carreira e voltar ao dia 1?'; Sfx.tap(); return; }
+  game.resetProgress(); game.setState('menu');
+});
 on('btn-start',      () => { Sfx.init(); Sfx.resume(); Sfx.ok(); game.begin(); });
 on('btn-intro-menu', () => game.setState('menu'));
 on('btn-resume',     () => { Sfx.tap(); game.resume(); });
 on('btn-restart',    () => { if (game.mode === 'semfim') game.startEndless(); else if (game.mode === 'treino') game.startTreino(); else { game.encerrar(); game.startDay(game.day.n); } });
-on('btn-treino-dia1', () => { Sfx.tap(); playCareer(1); });
-on('btn-treino-menu', () => { selectedDay = 1; game.setState('menu'); });
-on('btn-pause-menu', () => { game.encerrar(); game.encerrado = null; if (game.mode !== 'semfim') selectedDay = Math.max(1, Math.min(game.day.n, game.unlocked)); game.setState('menu'); });
-on('btn-again',      () => playCareer(game.day.n));
-on('btn-end-menu',   () => { selectedDay = Math.min(game.day.n + (game.result && game.result.passed ? 1 : 0), game.unlocked); game.setState('menu'); });
-on('btn-next',       () => { if (game.day.n < 7) game.goShop(game.day.n + 1); else game.setState('final'); });
-on('btn-shop-go',    () => { Sfx.tap(); selectedDay = game.shopNext; game.startDay(game.shopNext); });
-on('btn-shop-menu',  () => { selectedDay = Math.min(game.shopNext, game.unlocked); game.setState('menu'); });
-on('btn-final-menu', () => { selectedDay = 1; game.setState('menu'); });
+on('btn-treino-dia1', () => { Sfx.tap(); playCareer(); });
+on('btn-treino-menu', () => game.setState('menu'));
+on('btn-pause-menu', () => { game.encerrar(); game.encerrado = null; game.setState('menu'); });
+on('btn-end-menu',   () => game.setState('menu'));
+on('btn-next',       () => game.goShop(game.proxDia));
+on('btn-shop-go',    () => { Sfx.tap(); game.startDay(game.shopNext); });
+on('btn-shop-menu',  () => game.setState('menu'));
 
 /* ---------- entrada ---------- */
 function toLogical(e){
@@ -162,7 +176,7 @@ fit();
 try { Rank.init(); } catch(e) {}
 game.setState('menu');
 window.__game = game;
-window.__lcc = { setShopTab: v => { shopTab = v; buildShop(); }, TREINO, TREINO_PASSOS, TREINO_COR, Treino, treinoLugar, treinoPrimeiro, playCareer, FILA_JUSTA, PORTA, CHAIRS, PAT, CONTAS, INGRED, MOVIMENTO, movimentoSalao, DIVULGA, DIVULGA_DIA, divulgaOf, contasDia, bomGoal, SALAO, PONTOS, pontoOf, MESA, mesaBox, mesaPreco, salaoLugares, mesaProblema, salaoCaminho, salaoProblema, salaoOrdena, salaoAuto, salaoVaga, salaoPerto, salaoKit, salaoDevolucao, SALAO_SEMFIM, normSalao, setObst, OBST, pathOk, MAQUINA, BEBIDA_ESPERA, bebidaOf, MANUT, manutOf, manutChance, manutPreco, normManut, CLIMA, CLIMA_DIA, introManut, normPend, CALCADA, TW, HUDX, esperaAp, tableApproach, CRIT, STAFF, DANI_TASKS, DANI_HANDS, daniTaskOk, TRASH, WASH, payroll, FOLHA_CORTE, folhaCorta, folhaCortes, folhaItens, listaE, couvertEffect, couvertOk, ambienteEffect, dishStock, normSave, Helper, JUICE, KITCHEN_SLOTS, handLayout, trayOk, Game, Group, Table, Kitchen, Waitress, BIA_SPEED, DAYS, UPGRADES, CUSTOMER_TYPES, LAYOUT, PAL, Sfx, findPath, render, Rank, sortRows, cleanName, normName, CMD, ENDLESS, VIP, MULTA, rk, renderRank, openRank, closeRank, LS, lsGet, lsSet, loadSave, DEV, saveKey, devSync, divulgaAberta, CAIXA_MAX, VERSAO, normCaixa, caixaResumo, caixaTotais, copyText };
+window.__lcc = { setShopTab: v => { shopTab = v; buildShop(); }, TREINO, TREINO_PASSOS, TREINO_COR, Treino, treinoLugar, treinoPrimeiro, playCareer, buildMenu, introBanco, BANCO, normEmprestimo, parcelaDe, SEMANA, semanaOf, diaOf, FILA_JUSTA, PORTA, CHAIRS, PAT, CONTAS, INGRED, MOVIMENTO, movimentoSalao, DIVULGA, DIVULGA_DIA, divulgaOf, contasDia, bomGoal, SALAO, PONTOS, pontoOf, MESA, mesaBox, mesaPreco, salaoLugares, mesaProblema, salaoCaminho, salaoProblema, salaoOrdena, salaoAuto, salaoVaga, salaoPerto, salaoKit, salaoDevolucao, SALAO_SEMFIM, normSalao, setObst, OBST, pathOk, MAQUINA, BEBIDA_ESPERA, bebidaOf, MANUT, manutOf, manutChance, manutPreco, normManut, CLIMA, CLIMA_DIA, introManut, normPend, CALCADA, TW, HUDX, esperaAp, tableApproach, CRIT, STAFF, DANI_TASKS, DANI_HANDS, daniTaskOk, TRASH, WASH, payroll, FOLHA_CORTE, folhaCorta, folhaCortes, folhaItens, listaE, couvertEffect, couvertOk, ambienteEffect, dishStock, normSave, Helper, JUICE, KITCHEN_SLOTS, handLayout, trayOk, Game, Group, Table, Kitchen, Waitress, BIA_SPEED, DAYS, UPGRADES, CUSTOMER_TYPES, LAYOUT, PAL, Sfx, findPath, render, Rank, sortRows, cleanName, normName, CMD, ENDLESS, VIP, MULTA, rk, renderRank, openRank, closeRank, LS, lsGet, lsSet, loadSave, DEV, saveKey, devSync, divulgaAberta, CAIXA_MAX, VERSAO, normCaixa, caixaResumo, caixaTotais, copyText };
 window.requestAnimationFrame(frame);
 
 })();

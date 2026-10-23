@@ -17,7 +17,7 @@ html,body{margin:0;padding:0;height:100%;width:100%;overflow:hidden;background:#
 #ov-menu{background:linear-gradient(90deg,rgba(34,32,28,.0),rgba(34,32,28,0));justify-content:flex-start;padding-left:calc(var(--u)*34)}
 .panel{background:var(--azulejo);color:var(--tinta);border:calc(var(--u)*4) solid var(--tinta);border-radius:calc(var(--u)*18);box-shadow:calc(var(--u)*6) calc(var(--u)*6) 0 var(--tinta);padding:calc(var(--u)*18) calc(var(--u)*26);max-width:96%;max-height:97%;overflow:auto;text-align:center;position:relative}
 .panel::before{content:"";position:absolute;left:0;right:0;top:calc(var(--u)*0);height:calc(var(--u)*10);background:var(--faixa);opacity:.0}
-.menu-panel{text-align:left;width:calc(var(--u)*470)}
+.menu-panel{text-align:left;width:calc(var(--u)*490)}   /* v8.3: 3 botões na 2ª linha (Turno sem fim, Como jogar e Ranking) */
 .title{font-family:var(--fd);font-weight:400;margin:0;line-height:.95;font-size:max(26px,calc(var(--u)*58));color:var(--formica);-webkit-text-stroke:calc(var(--u)*2) var(--tinta);paint-order:stroke fill;text-shadow:calc(var(--u)*4) calc(var(--u)*4) 0 var(--mostarda),calc(var(--u)*6) calc(var(--u)*6) 0 var(--tinta);letter-spacing:.01em}
 h2{font-family:var(--fd);font-weight:400;margin:0 0 calc(var(--u)*6);font-size:max(20px,calc(var(--u)*34));color:var(--faixa);text-shadow:calc(var(--u)*2) calc(var(--u)*2) 0 var(--mostarda)}
 p{margin:calc(var(--u)*6) 0;font-size:max(12px,calc(var(--u)*16));line-height:1.35;font-weight:600}
@@ -39,6 +39,7 @@ p{margin:calc(var(--u)*6) 0;font-size:max(12px,calc(var(--u)*16));line-height:1.
 .chip{font-family:var(--fd);font-size:max(13px,calc(var(--u)*18));min-width:max(44px,calc(var(--u)*50));min-height:max(44px,calc(var(--u)*46));background:var(--azulejo);border:calc(var(--u)*3) solid var(--tinta);border-radius:calc(var(--u)*12);cursor:pointer;color:var(--tinta);box-shadow:0 calc(var(--u)*4) 0 var(--tinta)}
 .menu-panel .chips{gap:calc(var(--u)*6)}   /* 8 chips (0 a 7) numa linha */
 .menu-panel .chip{min-width:max(40px,calc(var(--u)*46))}
+.menu-panel .menu-info{margin:calc(var(--u)*4) 0 0}   /* v8.3: o caixa, as estrelas e o lucro acumulado da campanha */
 .chip.treino{background:var(--mostarda)}   /* dia 0: a Missão zero (v8.2) */
 .sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap;margin:-1px}
 .chip[aria-pressed="true"]{background:var(--faixa);color:#fff}
@@ -119,12 +120,13 @@ table.cx .rs{font-size:inherit}
 .btn.warn{background:#F6D7A8;border-style:dashed}
 .btn.warn::before{content:'⚠ '}
 .bank{font-family:var(--fd);font-size:max(15px,calc(var(--u)*22));color:var(--ok);text-shadow:calc(var(--u)*1.5) calc(var(--u)*1.5) 0 var(--tinta)}
+.bank.neg{color:var(--perigo)}
 .vtag{position:absolute;top:calc(var(--u)*10);right:calc(var(--u)*14);font:800 max(11px,calc(var(--u)*13)) var(--fb);color:#5b5446;background:var(--creme);border:calc(var(--u)*2) solid var(--tinta);border-radius:999px;padding:0 calc(var(--u)*9);line-height:1.6}
 .vtag{-webkit-user-select:none;user-select:none;touch-action:manipulation;-webkit-tap-highlight-color:transparent}
 .vtag.dev{background:var(--alerta);color:#fff}
 .devbadge{position:absolute;left:50%;top:calc(var(--u)*4);transform:translateX(-50%);z-index:20;pointer-events:none;font:800 max(10px,calc(var(--u)*13)) var(--fb);letter-spacing:.08em;text-transform:uppercase;color:#fff;background:var(--alerta);border:calc(var(--u)*2) solid var(--tinta);border-radius:999px;padding:0 calc(var(--u)*10);line-height:1.5;opacity:.92}
 .menu-panel .row.tight{margin-top:calc(var(--u)*8);gap:calc(var(--u)*10)}
-.menu-panel .btn{font-size:max(14px,calc(var(--u)*20));padding:calc(var(--u)*6) calc(var(--u)*16)}
+.menu-panel .btn{font-size:max(14px,calc(var(--u)*20));padding:calc(var(--u)*6) calc(var(--u)*14)}
 .ver-ico{margin-left:auto;align-self:flex-end;width:max(40px,calc(var(--u)*40));height:max(40px,calc(var(--u)*40));display:flex;align-items:center;justify-content:center;border-radius:50%;border:calc(var(--u)*2) solid rgba(34,32,28,.3);background:transparent;color:#7a7263;cursor:pointer;padding:0;transition:color .15s,background .15s,border-color .15s}
 .ver-ico:hover,.ver-ico:focus-visible{color:var(--faixa);background:var(--creme);border-color:var(--faixa)}
 .ver-ico:focus-visible{outline:3px solid var(--faixa);outline-offset:2px}
@@ -216,6 +218,7 @@ table.rank tr.me td{background:#fbe7a8}
   #ov-shop .item .next{padding:2px 5px}
   #ov-shop .item .next b{font-size:10.5px}
   #ov-shop .shopgrid.salao{width:calc(var(--u)*840)}
+  #ov-shop .shopgrid.caixa{width:100%}   /* v8.3: o Caixa ganhou a coluna Banco */
   #ov-shop .ed-side{gap:4px}
   #ov-shop .ed-side .btn{min-height:30px;font-size:12px}
   #ov-shop .ed-ponto,#ov-shop .ed-contas{display:none}

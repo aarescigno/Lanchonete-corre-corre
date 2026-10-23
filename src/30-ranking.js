@@ -1,7 +1,9 @@
 /* ============================================================
    RANKING (db compartilhado do artifact, com fallback local)
    ============================================================ */
-const RK = { carreira:{ col:'ranking-carreira' }, semfim:{ col:'ranking-semfim' } };
+/* v8.3: a carreira virou campanha e os pontos, o lucro acumulado (antes, o faturamento dos melhores dias): ranking novo,
+   em outra coleção (e outra lista no aparelho), para não misturar as contas */
+const RK = { carreira:{ col:'ranking-campanha', local:'campanha' }, semfim:{ col:'ranking-semfim', local:'semfim' } };
 const REFUSED = { invalid_argument:1, not_granted:1, capability_disabled:1, capability_removed:1, revoked:1, permission_denied:1, transform_error:1 };
 function cleanName(v){
   return String(v == null ? '' : v).replace(/[\u0000-\u001f\u007f]/g,' ').replace(/\s+/g,' ').trim().slice(0,16).trim();
@@ -60,17 +62,18 @@ const Rank = {
       throw e;
     }
   },
+  /* tudo o que está no aparelho (as listas antigas ficam guardadas como estão) */
   loadLocal(){
     let o = null;
     try { o = JSON.parse(lsGet(LS.rank) || 'null'); } catch(e) {}
-    if (!o || typeof o !== 'object') o = {};
-    return { carreira: Array.isArray(o.carreira) ? o.carreira : [], semfim: Array.isArray(o.semfim) ? o.semfim : [] };
+    return (o && typeof o === 'object' && !Array.isArray(o)) ? o : {};
   },
+  localList(all, kind){ const l = all[RK[kind].local]; return Array.isArray(l) ? l : []; },
   localRows(kind){
-    return this.loadLocal()[kind].map((r,i) => toRow(r, 'local' + i, null)).filter(Boolean);
+    return this.localList(this.loadLocal(), kind).map((r,i) => toRow(r, 'local' + i, null)).filter(Boolean);
   },
   saveLocal(kind, body){
-    const all = this.loadLocal(), list = all[kind], key = normName(body.nome);
+    const all = this.loadLocal(), list = this.localList(all, kind), key = normName(body.nome);
     const i = list.findIndex(r => r && r.key === key);
     let improved = true, best = body.pontos;
     if (i >= 0){
@@ -78,7 +81,7 @@ const Rank = {
       else { improved = false; best = +list[i].pontos || 0; list[i].nome = body.nome; }
     } else list.push(Object.assign({ key }, body));
     list.sort((a,b) => (+b.pontos || 0) - (+a.pontos || 0));
-    all[kind] = list.slice(0, 50);
+    all[RK[kind].local] = list.slice(0, 50);
     lsSet(LS.rank, JSON.stringify(all));
     return { where:'local', improved, best };
   },

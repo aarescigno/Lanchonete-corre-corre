@@ -641,7 +641,7 @@ function drawKitchen(ctx,g,t){
 }
 
 function drawChef(ctx,g,x,y,t){
-  const sick = g.day.n === 7;
+  const sick = !!g.day.gripe;
   ctx.save(); ctx.translate(x,y);
   // corpo
   ctx.beginPath(); ctx.moveTo(-20,34); ctx.lineTo(-17,2); ctx.lineTo(17,2); ctx.lineTo(20,34); ctx.closePath(); fs(ctx,'#fff',2.6);

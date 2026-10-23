@@ -9,7 +9,7 @@ const somaOk=r=>Math.abs(r.fat-r.ingr-r.contas-r.folha-r.div-r.lucro)<=2;
 
 // save novo e save antigo (v7.1, sem caixa)
 { const s=L.normSave({}); ok(Array.isArray(s.caixa)&&s.caixa.length===0&&s.caixaPend.mel===0&&s.caixaPend.sal===0,'save novo: caixa vazio e sem compras pendentes');
-  const old=L.normSave({maxDay:4,bank:900,up:{tenis:true}}); ok(old.caixa.length===0&&old.bank===900&&old.maxDay===4,'save antigo sem caixa: carrega com o caixa vazio');
+  const old=L.normSave({maxDay:4,bank:900,up:{tenis:true}}); ok(old.caixa.length===0&&old.bank===900&&old.dia===4,'save antigo sem caixa: carrega com o caixa vazio');
   const lixo=L.normSave({caixa:[null,5,{d:0},{d:3,fat:'500',lucro:120.4,ok:1,saldo:800}],caixaPend:{mel:-5,sal:'60'}});
   ok(lixo.caixa.length===1&&lixo.caixa[0].fat===500&&lixo.caixa[0].lucro===120&&lixo.caixa[0].ok===true&&lixo.caixa[0].mel===0,'caixa com lixo: só as linhas válidas, com números');
   ok(lixo.caixaPend.mel===0&&lixo.caixaPend.sal===60,'compras pendentes: números não negativos'); }
@@ -49,7 +49,7 @@ novo(); { joga(1); g.goShop(2); g.buy('tenis'); joga(2);
   ok(lines.length===5&&/^Dia 1 [✓✗]: fatura \d+ − ingred\. \d+ − contas \d+ − equipe \d+ = lucro -?\d+ \(meta \d+\).* · saldo \d+$/.test(lines[1]),'resumo: uma linha por dia com a conta do lucro ('+lines[1]+')');
   ok(/compras 150/.test(lines[2]),'resumo: as compras aparecem na linha do dia');
   ok(/^Para onde foi \(2 dias\): ingredientes \d+, contas \d+.*melhorias 150/.test(lines[3]),'resumo: para onde foi o dinheiro');
-  ok(/Agora: R\$ \d+ · Tonhão nível 1, sem Dani · panfletos · garagem com 4 mesas e 10 lugares · melhorias: tênis novos/.test(t),'resumo: dinheiro, equipe, divulgação, salão e melhorias de agora');
+  ok(/Agora: dia \d+ · R\$ \d+ · lucro acumulado -?\d+ · Tonhão nível 1, sem Dani · panfletos · garagem com 4 mesas e 10 lugares · melhorias: tênis novos/.test(t),'resumo: dinheiro, equipe, divulgação, salão e melhorias de agora');
   const vazio=L.caixaResumo(L.normSave({})); ok(vazio.split('\n').length===2&&!/Para onde/.test(vazio),'resumo sem dias: só o cabeçalho e o agora'); }
 
 // aba Caixa

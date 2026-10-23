@@ -7,7 +7,7 @@ Origem: retorno do Renan Martorelli (beta-tester) e conversa com o Arthur (15/10
 - Para começar uma sessão, basta pedir: **"faça a próxima etapa do docs/PLANO.md"**. A sessão lê só a etapa da vez e as partes de `src/` citadas nela.
 - Antes de programar, a sessão confirma com o usuário as **decisões em aberto** da etapa (cada uma já tem uma sugestão).
 - No fim, a sessão marca a etapa como feita na tabela abaixo (com a versão e a data) e anota o que mudou no plano.
-- Ordem: cada etapa depende só das anteriores. A 1a vem primeiro (mexe no equilíbrio de base). A 1c teve prioridade sobre as demais, por ser retorno do beta-tester Renan (pedido do usuário em 21/10). A 1d-1 (v7.4), a 1d-2 (v7.5) e a 2 (v8) foram feitas. **Ordem revista com o usuário em 22/10:** 2b (campanha contínua e banco), 2c (avaliações dos clientes), 2d (abertura animada do Modo História), 3a (área industrial), 3b (Avenida Brasil) e 4 (Terraço Suíça). A campanha vem antes dos pontos para a carreira não ser refeita duas vezes, e as avaliações viram a "experiência" que abre os pontos novos e a reputação da etapa 4. **A próxima é a 2b.** As etapas 5, 6 e 7 ficam **a rever** com o usuário antes de começar.
+- Ordem: cada etapa depende só das anteriores. A 1a vem primeiro (mexe no equilíbrio de base). A 1c teve prioridade sobre as demais, por ser retorno do beta-tester Renan (pedido do usuário em 21/10). A 1d-1 (v7.4), a 1d-2 (v7.5), a 2 (v8) e a 2b (v8.3) foram feitas. **Ordem revista com o usuário em 22/10:** 2b (campanha contínua e banco), 2c (avaliações dos clientes), 2d (abertura animada do Modo História), 3a (área industrial), 3b (Avenida Brasil) e 4 (Terraço Suíça). A campanha vem antes dos pontos para a carreira não ser refeita duas vezes, e as avaliações viram a "experiência" que abre os pontos novos e a reputação da etapa 4. **A próxima é a 2c.** As etapas 5, 6 e 7 ficam **a rever** com o usuário antes de começar.
 
 ## Situação
 | # | Etapa | Versão | Situação |
@@ -28,8 +28,8 @@ Origem: retorno do Renan Martorelli (beta-tester) e conversa com o Arthur (15/10
 | — | Pedido do usuário: rejogar o dia (Reiniciar ou Menu na pausa) sem perder o dinheiro | v8.2.1 | feita (22/10) |
 | — | Pedido do usuário: só o dia completo rende (folha no fim do dia; interromper não paga nem ganha) | v8.2.2 | feita (22/10) |
 | — | Pedido do usuário: largar o dia com gente na espera ou nas mesas cobra a multa de quem sai bravo | v8.2.3 | feita (22/10) |
-| 2b | Carreira como campanha contínua, dinheiro no negativo e empréstimo no banco | v8.3 | **próxima** |
-| 2c | Avaliações dos clientes (nota de 0 a 5 ★, 5 critérios) | v8.4 | a fazer |
+| 2b | Carreira como campanha contínua, dinheiro no negativo e empréstimo no banco | v8.3 | feita (23/10) |
+| 2c | Avaliações dos clientes (nota de 0 a 5 ★, 5 critérios) | v8.4 | **próxima** |
 | 2d | Abertura animada do Modo História: o sonho da Bia | v8.5 | a fazer |
 | 3a | Mudança de ponto e Lanchonete na área industrial | v9 | a fazer |
 | 3b | Restaurante na Avenida Brasil | v9.1 | a fazer |
@@ -264,6 +264,8 @@ Também: rever o `smoke7` (toque) e o `smoke10` (fila justa e porta), mais `bala
 ---
 
 ## Etapa 2b — Carreira como campanha contínua e banco (v8.3)
+**Feita em 23/10 (v8.3, `docs/spec-v8.3.md`).** Decisões: todas as sugestões abaixo (meta não batida segue sem estrelas; no 4º dia negativo, o banco cobre à força com juros de 20%; empréstimo de 10% em 5 parcelas, até R$ 1.000 na Garagem, em `PONTOS.credito`; chave "cortar a folha se faltar dinheiro" na aba Banco, ligada por padrão; ranking pelo lucro acumulado, numa coleção nova, `ranking-campanha`; Reiniciar como na v8.2.3). Os dias 8+ seguem o dia da semana (`SEMANA`, `diaOf`). Para a 2c: a meta não batida está nas linhas do caixa (`ok`, `st`), à espera da nota.
+
 **Objetivo:** "novo dia, novo acúmulo, novo serviço, nova vida" (pedido do usuário em 22/10). A carreira deixa de ser uma lista de dias que se escolhem e se rejogam e vira uma sequência de dias, levando tudo o que havia antes: dinheiro, móveis, equipe, melhorias e desgaste. Como sem rejogar um dia ruim pode travar a carreira, entram junto o caixa no negativo e o empréstimo no banco. Vem antes dos pontos (etapa 3) para a carreira não ser refeita duas vezes.
 
 **Entra:**

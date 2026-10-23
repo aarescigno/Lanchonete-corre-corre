@@ -2,7 +2,7 @@
 function buildEnd(){
   const r = game.result;
   if (!r) return;
-  $('end-title').textContent = r.passed ? ('Dia ' + r.day + ' concluído!') : 'Faltou pouquinho...';
+  $('end-title').textContent = r.passed ? ('Dia ' + r.day + ' concluído!') : 'Dia ' + r.day + ': faltou pouquinho...';
   starsHtml($('end-stars'), r.stars, 3);
   $('end-money').textContent = (r.money < 0 ? 'Prejuízo de ' + fmt(-r.money) : 'Lucro de ' + fmt(r.money)) + ' (meta ' + fmt(r.meta) + ' · 2 estrelas ' + fmt(r.bom) + ' · expert ' + fmt(r.expert) + ')';
   const st = $('end-stats');
@@ -20,34 +20,29 @@ function buildEnd(){
   const conta = [['Faturamento', fmt(r.fat)],['Ingredientes', neg(r.custo)],['Contas do dia', neg(r.contas)],['Folha', neg(r.paid)]];
   if (r.divName) conta.push([r.divName, neg(r.div)]);
   if (r.conserto) conta.push(['Conserto na hora', neg(r.conserto)]);
-  conta.push(['Lucro do dia', fmt(r.money), 'tot'], ['Dinheiro acumulado', fmt(game.save.bank)]);
+  conta.push(['Lucro do dia', fmt(r.money), 'tot']);
+  if (r.par) conta.push(['Parcela do banco', neg(r.par)]);   // v8.3: fora do lucro (a meta), mas sai do dinheiro
+  if (r.forcado) conta.push(['Banco (à força)', '+' + fmt(r.forcado)]);
+  conta.push(['Dinheiro acumulado', fmt(game.save.bank)]);
   [rows, conta].forEach(list => {
     const box = el('div', 'stats');
     list.forEach(p => { box.appendChild(el('span', p[2] || null, p[0])); box.appendChild(el('b', p[2] || null, String(p[1]))); });
     st.appendChild(box);
   });
   let msg = '';
-  if (!r.passed) msg = 'Bata a meta de ' + fmt(r.meta) + ' para liberar o próximo dia. O que você ganhou hoje fica no dinheiro acumulado, mesmo repetindo o dia.';
+  // campanha (v8.3): o dia seguinte vem de qualquer jeito; a meta não batida só fica sem estrelas
+  if (!r.passed) msg = 'Meta de ' + fmt(r.meta) + ' não batida: o dia fica sem estrelas, mas a lanchonete abre amanhã de novo.';
   else if (r.stars === 3) msg = 'Perfeito! Expert sem perder nenhum cliente.';
   else if (r.stars === 2) msg = r.money >= r.expert ? 'Meta expert batida! Para a 3ª estrela, não perca nenhum cliente.' : 'Duas estrelas! Para a 3ª, chegue a ' + fmt(r.expert) + ' sem perder nenhum cliente.';
   else msg = 'Meta batida! Chegue a ' + fmt(r.bom) + ' para a 2ª estrela.';
+  if (r.day === DAYS.length) msg += ' Fim da semana de inauguração! Daqui em diante, cada dia tem o movimento do dia da semana.';
+  // caixa no negativo (v8.3): quantos dias seguidos, ou o banco que cobriu à força
+  const sv = game.save;
+  if (r.forcado) msg += ' O caixa fechou no negativo pelo ' + (BANCO.neg + 1) + 'º dia seguido: o banco cobriu ' + fmt(r.forcado) + ', com juros de ' + Math.round(BANCO.forcado * 100) + '%, em ' + sv.emp.n + ' parcelas de ' + fmt(game.parcela) + '.';
+  else if (sv.bank < 0) msg += ' Caixa no negativo há ' + sv.neg + (sv.neg > 1 ? ' dias' : ' dia') + (sv.neg >= BANCO.neg ? ': se fechar amanhã no negativo, o banco cobre à força.' : ' (pode ficar até ' + BANCO.neg + ').');
   $('end-msg').textContent = msg;
-  const next = $('btn-next');
-  next.style.display = r.passed ? '' : 'none';
-  next.textContent = r.day < 7 ? 'Melhorias e dia ' + (r.day + 1) : 'Ver resultado final';
+  $('btn-next').textContent = 'Lojinha e dia ' + game.proxDia;
   buildSaveForm($('end-save'), 'carreira');
-}
-function buildFinal(){
-  const t = game.totals();
-  const fs3 = $('final-stars');
-  clearEl(fs3);
-  fs3.appendChild(el('span','on', '★ ' + t.stars + '/21'));
-  const st = $('final-stats');
-  clearEl(st);
-  [['Faturamento total (melhores dias)', fmt(t.money)],['Estrelas', t.stars + ' de 21'],['Melhorias compradas', Object.keys(game.up).filter(k => game.up[k]).length + ' de ' + UPGRADES.length]].forEach(p => {
-    st.appendChild(el('span', null, p[0])); st.appendChild(el('b', null, p[1]));
-  });
-  buildSaveForm($('final-save'), 'carreira');
 }
 function buildEndless(){
   const r = game.endless;
@@ -82,9 +77,9 @@ function buildSaveForm(host, kind){
     const nome = cleanName(inp.value);
     if (!nome){ msg.textContent = 'Digite seu nome para entrar no ranking.'; return; }
     let pontos, extra;
-    if (kind === 'carreira'){ pontos = game.totals().money; extra = { dia: game.careerMaxDone() }; }
+    if (kind === 'carreira'){ pontos = game.save.lucroTot; extra = { dia: game.proxDia - 1 }; }   // v8.3: o lucro acumulado da campanha e o último dia jogado
     else { const r = game.endless || { pontos:0, tempo:0 }; pontos = r.pontos; extra = { tempo: r.tempo }; }
-    if (!(pontos > 0)){ msg.textContent = 'Faça alguns pontos antes de salvar.'; return; }
+    if (!(pontos > 0)){ msg.textContent = kind === 'carreira' ? 'O lucro acumulado precisa ficar acima de zero para entrar no ranking.' : 'Faça alguns pontos antes de salvar.'; return; }
     busy = true; btn.disabled = true; msg.textContent = 'Salvando...';
     lsSet(LS.name, nome);
     try {

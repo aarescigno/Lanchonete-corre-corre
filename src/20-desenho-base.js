@@ -327,6 +327,13 @@ function drawBia(ctx,b,x,y,o){
 }
 
 
+/* banco (v8.3): o prediozinho de colunas, com a moeda na frente (centro em 0,0; ~30 px) */
+function drawBanco(c){
+  c.beginPath(); c.moveTo(-15,-6); c.lineTo(0,-16); c.lineTo(15,-6); c.closePath(); fs(c,PAL.creme,2);
+  rr(c,-14,10,28,5,1); fs(c,PAL.creme,2);
+  for (let i=-1;i<=1;i++){ rr(c,i*9-2.5,-5,5,15,1); fs(c,'#fff',1.6); }
+  circ(c,10,9,7); fs(c,PAL.mostarda,1.8); txt(c,'$',10,9.5,9,PAL.tinta,'center',FD);
+}
 /* chave inglesa (v8), desenhada: cabo e boca aberta, com contorno; (x,y) é o centro, s a escala, rot em radianos */
 function drawWrench(ctx,x,y,s,rot,cor){
   ctx.save(); ctx.translate(x,y); ctx.rotate(rot || 0); ctx.scale(s || 1,s || 1); ctx.lineCap = 'butt';

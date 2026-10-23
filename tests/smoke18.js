@@ -3,7 +3,6 @@
 const load=require('./harness.js');
 let fails=0,total=0; const ok=(c,m)=>{ total++; if(!c){fails++;console.log('FAIL:',m);} else console.log('ok  :',m); };
 const H=load(); const {g,L,els,store}=H;
-const chip=n=>els['daychips'].children.find(c=>c.getAttribute('aria-label').startsWith('Dia '+n));
 const tela=(x,y)=>({x:x+g.cam,y});
 const toca=(x,y)=>{ const p=tela(x,y); g.onDown(p.x,p.y,0); g.onUp(p.x,p.y); };
 const arrasta=(a,b)=>{ const p=tela(a.x,a.y), q=tela(b.x,b.y); g.onDown(p.x,p.y,0); g.onMove((p.x+q.x)/2,(p.y+q.y)/2); g.onMove(q.x,q.y); g.onUp(q.x,q.y); };
@@ -13,13 +12,12 @@ const desenha=()=>{ try { L.render(g,H.ctx); return true; } catch(e){ console.lo
 const st=k=>{ const r=L.LAYOUT.STATIONS[k].rect; return {x:r.x+r.w/2,y:r.y+r.h/2}; };
 const segue=id=>{ ok(passo()===id && g.treino.para,'pop-up "'+id+'" para o jogo'); const a=g.elapsed; g.update(0.5); ok(g.elapsed===a,'"'+id+'": o tempo não anda'); ok(desenha(),'"'+id+'": desenha'); toca(200,300); };
 
-// ---------- menu: quem nunca treinou já encontra o dia 0 ----------
+// ---------- menu: quem nunca treinou encontra a Missão zero em destaque (v8.3: um botão à parte) ----------
 ok(L.TREINO_PASSOS.length>=20,'passo a passo com '+L.TREINO_PASSOS.length+' passos');
-ok(chip(0) && chip(0).getAttribute('aria-pressed')==='true' && /treino/.test(chip(0).className),'chip do dia 0 escolhido para quem nunca treinou');
-ok(!chip(0).disabled,'o dia 0 está sempre aberto');
+ok(/go/.test(els['btn-treino'].className) && /alt/.test(els['btn-play'].className) && /Missão zero/.test(els['menu-info'].textContent),'Missão zero em destaque para quem nunca treinou');
 const real=store[L.LS.save];
-els['btn-play'].fire('click');
-ok(g.mode==='treino' && g.state==='playing' && g.day===L.TREINO && g.schedule.length===0,'Carreira com o dia 0 começa a Missão zero, sem a introdução do dia');
+els['btn-treino'].fire('click');
+ok(g.mode==='treino' && g.state==='playing' && g.day===L.TREINO && g.schedule.length===0,'o botão Missão zero começa o treino, sem a introdução do dia');
 ok(g.save._treino && g.salvo && g.up===g.save.up && !Object.keys(g.up).length && !g.save.equipe.dani,'save de jogador novo: sem melhorias nem equipe');
 ok(g.tables.length===4 && g.treino.mesa.seats===2 && g.treino.mesa.color===1,'kit da Garagem, mesa do treino de 2 lugares com cadeiras azuis');
 ok(/^Missão zero/.test(els['treino-live'].textContent),'o texto do pop-up vai para o leitor de tela');
@@ -98,8 +96,8 @@ ok(!/Missão zero/.test(els['intro-note'].textContent),'quem já treinou não v�
 
 // ---------- de novo, saindo pela pausa ----------
 g.setState('menu');
-ok(chip(1).getAttribute('aria-pressed')==='true','quem já treinou volta ao dia 1 no menu');
-chip(0).fire('click'); els['btn-play'].fire('click');
+ok(/go/.test(els['btn-play'].className) && /alt/.test(els['btn-treino'].className) && /dia 1/.test(els['btn-play'].textContent),'quem já treinou encontra o "Começar o dia 1" em destaque');
+els['btn-treino'].fire('click');
 ok(g.mode==='treino' && g.treino.i===0,'dá para treinar de novo');
 toca(200,300); roda(()=>g.treino.grupo); g.pause();
 els['btn-restart'].fire('click');
@@ -108,7 +106,7 @@ g.pause(); els['btn-pause-menu'].fire('click');
 ok(g.state==='menu' && g.mode==='carreira' && !g.salvo && !g.save._treino && g.save.treino===true,'Menu no meio do treino devolve o save de verdade');
 
 // ---------- jogador novo: convite no dia 1 ----------
-{ const H2=load(); H2.els['daychips'].children.find(c=>c.getAttribute('aria-label')==='Dia 1').fire('click'); H2.els['btn-play'].fire('click');
+{ const H2=load(); H2.els['btn-play'].fire('click');
   ok(H2.g.mode==='carreira' && /Missão zero/.test(H2.els['intro-note'].textContent),'quem pula o treino vê o convite na introdução do dia 1'); }
 
 // ---------- cartão longe do alvo ----------
