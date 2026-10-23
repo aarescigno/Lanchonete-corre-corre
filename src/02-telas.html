@@ -5,23 +5,25 @@
 
     <div class="ov show" id="ov-menu">
       <div class="panel menu-panel">
-        <span class="vtag" id="vtag" aria-label="Versão 8.2.3">v8.2.3</span>
+        <span class="vtag" id="vtag" aria-label="Versão 8.3">v8.3</span>
         <h1 class="title">Lanchonete <br>Corre-Corre</h1>
         <p class="tag">Ajude a Bia a atender a freguesia da esquina antes que o cafezinho esfrie!</p>
-        <div class="lbl">Carreira: escolha o dia</div>
-        <div class="chips" id="daychips" role="group" aria-label="Escolha o dia"></div>
+        <div class="lbl" id="menu-dia">Carreira: dia 1</div>
+        <p class="small menu-info" id="menu-info"></p>
+        <div class="chips" id="daychips" role="group" aria-label="Modo dev: escolha o dia" style="display:none"></div>
         <div class="menu-btns">
           <div class="row tight">
-            <button class="btn go" id="btn-play">Carreira</button>
-            <button class="btn" id="btn-endless">Turno sem fim</button>
+            <button class="btn go" id="btn-play">Continuar</button>
+            <button class="btn alt" id="btn-treino">Missão zero</button>
           </div>
           <div class="row tight">
+            <button class="btn" id="btn-endless">Turno sem fim</button>
             <button class="btn alt" id="btn-how">Como jogar</button>
             <button class="btn alt" id="btn-rank">Ranking</button>
           </div>
         </div>
         <div class="links">
-          <button class="link" id="btn-reset">Zerar progresso</button>
+          <button class="link" id="btn-reset">Recomeçar do zero</button>
           <button class="link" id="btn-dev-off" style="display:none">Sair do modo dev</button>
           <button class="ver-ico" id="btn-app" title="Instalar no celular" aria-label="Instalar no celular (Android e iPhone)">
             <svg viewBox="0 0 24 24" width="22" height="22" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><rect x="6.5" y="2.5" width="11" height="19" rx="2.5"/><path d="M10.5 18.5h3"/><path d="M12 6.5v7"/><path d="M9 10.8l3 3 3-3"/></svg>
@@ -55,7 +57,7 @@
       <div class="panel">
         <h2>Missão zero completa!</h2>
         <p>Agora você conhece o ciclo da Bia: sentar na cor certa, anotar, levar ao Tonhão, servir, cafezinho, cobrar, recolher a louça, lavar e tirar o lixo.</p>
-        <p class="small">Dá para treinar de novo quando quiser: no menu, escolha o dia 0.</p>
+        <p class="small">Dá para treinar de novo quando quiser: no menu, toque em Missão zero.</p>
         <div class="row"><button class="btn go" id="btn-treino-dia1">Começar o dia 1</button><button class="btn alt" id="btn-treino-menu">Menu</button></div>
       </div>
     </div>
@@ -83,7 +85,6 @@
         <div id="end-save"></div>
         <div class="row">
           <button class="btn go" id="btn-next">Próximo dia</button>
-          <button class="btn alt" id="btn-again">Repetir dia</button>
           <button class="btn alt" id="btn-end-rank">Ranking</button>
           <button class="btn alt" id="btn-end-menu">Menu principal</button>
         </div>
@@ -100,22 +101,12 @@
           <button type="button" data-v="salao" aria-pressed="false">Salão</button>
           <button type="button" data-v="divulga" aria-pressed="false">Divulgação</button>
           <button type="button" data-v="manut" aria-pressed="false">Manutenção</button>
+          <button type="button" data-v="banco" aria-pressed="false">Banco</button>
           <button type="button" data-v="caixa" aria-pressed="false">Caixa</button>
         </div></div>
         <div class="shopgrid" id="shop-grid"></div>
         <p class="small" id="shop-folha"></p>
         <div class="row"><button class="btn go" id="btn-shop-go">Começar o dia</button><button class="btn alt" id="btn-shop-menu">Menu principal</button></div>
-      </div>
-    </div>
-
-    <div class="ov" id="ov-final">
-      <div class="panel">
-        <h2>Parabéns, Bia!</h2>
-        <p>A Lanchonete Corre-Corre virou a queridinha do bairro!</p>
-        <div class="stars" id="final-stars" aria-label="Estrelas"></div>
-        <div class="stats" id="final-stats"></div>
-        <div id="final-save"></div>
-        <div class="row"><button class="btn alt" id="btn-final-rank">Ranking</button><button class="btn go" id="btn-final-menu">Voltar ao menu</button></div>
       </div>
     </div>
 
@@ -194,7 +185,8 @@
       <div class="panel">
         <h2>Versões</h2>
         <ul class="verlist">
-          <li><b>v8.2.3</b><span class="cur">versão atual</span><br>22/10/2026 &mdash; Largar o dia no meio tem preço: ao Reiniciar ou sair pelo Menu com gente na espera ou nas mesas, cada grupo vai embora bravo, como se tivesse zerado os corações, e a multa sai do dinheiro acumulado (R$ 30 por grupo, mais R$ 30 se for VIP). A pausa avisa quanto vai custar, e o caixa mostra a linha do dia largado.</li>
+          <li><b>v8.3</b><span class="cur">versão atual</span><br>23/10/2026 &mdash; Carreira contínua: "Continuar" no menu abre o próximo dia, levando tudo o que veio antes (dinheiro, móveis, equipe, melhorias e desgaste); sai a escolha de dia e o "Repetir dia". Meta não batida fica sem estrelas, mas o dia seguinte vem. Depois do dia 7, os dias seguem com o movimento de cada dia da semana. O caixa pode ficar negativo por 3 dias seguidos (no 4º, o banco cobre à força, com juros de 20%), e a nova aba Banco da lojinha empresta até R$ 1.000 com juros de 10%, em 5 parcelas no fim de cada dia. O ranking da carreira passa a ser o lucro acumulado, com o dia alcançado. No menu, "Recomeçar do zero" (com confirmação).</li>
+          <li><b>v8.2.3</b><br>22/10/2026 &mdash; Largar o dia no meio tem preço: ao Reiniciar ou sair pelo Menu com gente na espera ou nas mesas, cada grupo vai embora bravo, como se tivesse zerado os corações, e a multa sai do dinheiro acumulado (R$ 30 por grupo, mais R$ 30 se for VIP). A pausa avisa quanto vai custar, e o caixa mostra a linha do dia largado.<br><a href="versoes/v8.2.3.html" target="_blank" rel="noopener">Abrir a v8.2.3</a></li>
           <li><b>v8.2.2</b><br>22/10/2026 &mdash; Só o dia completo rende: a folha e a divulgação passam a ser pagas no fim do dia, junto com as contas e os ingredientes (ao abrir, elas só ficam reservadas). Reiniciar ou sair pelo Menu no meio do dia não paga nem ganha nada: o dia não conta.<br><a href="versoes/v8.2.2.html" target="_blank" rel="noopener">Abrir a v8.2.2</a></li>
           <li><b>v8.2.1</b><br>22/10/2026 &mdash; Rejogar sem perder o dinheiro: Reiniciar ou sair pelo Menu no meio de um dia guarda o que o dia já rendeu no dinheiro acumulado (contas, folha e divulgação contam só a parte do dia que passou; o resto da folha volta). O caixa mostra a linha do dia interrompido. Terminar o dia e repetir já guardava o dinheiro.<br><a href="versoes/v8.2.1.html" target="_blank" rel="noopener">Abrir a v8.2.1</a></li>
           <li><b>v8.2</b><br>22/10/2026 &mdash; Missão zero: o dia 0 é um treino com uma mesa só e pop-ups passo a passo, mostrando tudo o que a Bia faz: sentar o grupo na mesa da mesma cor (bônus), esperar o cardápio, anotar, levar ao Tonhão, servir, cafezinho (e os bônus dele em dinheiro e corações), cobrar, recolher a louça, lavar e tirar o lixo. Ninguém perde a paciência e nada conta para a carreira. Quem nunca treinou já encontra o dia 0 escolhido no menu.<br><a href="versoes/v8.2.html" target="_blank" rel="noopener">Abrir a v8.2</a></li>

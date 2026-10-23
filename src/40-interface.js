@@ -6,11 +6,10 @@ const canvas = $('c');
 const ctx = canvas.getContext('2d');
 const stage = $('stage');
 const game = new Game(canvas, ctx);
-let selectedDay = treinoPrimeiro() ? 0 : Math.min(game.unlocked, 7);
-/* quem nunca fez a Missão zero (e ainda está no dia 1) já encontra o dia 0 escolhido */
-function treinoPrimeiro(){ return !game.save.treino && game.unlocked <= 1 && !DEV.on; }
+/* quem nunca fez a Missão zero (e ainda está no dia 1) encontra o botão dela em destaque */
+function treinoPrimeiro(){ return !game.save.treino && game.proxDia <= 1 && !DEV.on; }
 
-const SCREENS = ['ov-menu','ov-how','ov-intro','ov-treino','ov-pause','ov-end','ov-shop','ov-final','ov-endless','ov-rank','ov-ver','ov-app'];
+const SCREENS = ['ov-menu','ov-how','ov-intro','ov-treino','ov-pause','ov-end','ov-shop','ov-endless','ov-rank','ov-ver','ov-app'];
 function showOnly(ids){
   SCREENS.forEach(id => { const el = $(id); if (!el) return; if (ids.indexOf(id) >= 0) el.classList.add('show'); else el.classList.remove('show'); });
 }
@@ -43,19 +42,37 @@ function fit(){
   canvas.height = Math.round(H*s*dpr);
 }
 
-/* ---------- menu: seletor de dia ---------- */
+/* ---------- menu (v8.3): a carreira é uma campanha; "Continuar" abre o próximo dia ---------- */
+let resetPede = false;   // "Recomeçar do zero": o 1º toque pede confirmação
+function buildMenu(){
+  const sv = game.save, n = game.proxDia, novo = n <= 1 && !sv.caixa.length;
+  $('menu-dia').textContent = novo ? 'Carreira' : 'Carreira: dia ' + n;
+  const info = [];
+  if (novo) info.push('A Bia vai abrir a lanchonete na garagem da mãe.' + (treinoPrimeiro() ? ' Primeira vez? Comece pela Missão zero, um treino passo a passo.' : ''));
+  else {
+    info.push((sv.bank < 0 ? 'Caixa no negativo: ' : 'Caixa: ') + fmt(sv.bank), sv.estrelas + ' ★', 'lucro acumulado ' + fmt(sv.lucroTot));
+    if (sv.emp.resto) info.push('banco: faltam ' + fmt(sv.emp.resto));
+  }
+  $('menu-info').textContent = info.join(' · ');
+  $('btn-play').textContent = novo ? 'Começar o dia 1' : 'Continuar: dia ' + n;
+  $('btn-play').className = 'btn ' + (treinoPrimeiro() ? 'alt' : 'go');
+  $('btn-treino').className = 'btn ' + (treinoPrimeiro() ? 'go' : 'alt');
+  resetPede = false; $('btn-reset').textContent = 'Recomeçar do zero';
+  $('btn-reset').style.display = novo ? 'none' : '';   // nada a apagar ainda
+  buildChips();
+}
+/* modo dev: os dias à escolha (o save dev pula para o dia tocado) */
 function buildChips(){
   const box = $('daychips');
   clearEl(box);
-  selectedDay = Math.min(selectedDay, game.unlocked);
-  for (let i=0;i<=7;i++){   // o dia 0 é a Missão zero (v8.2), sempre aberta
-    const b = el('button', i ? 'chip' : 'chip treino', String(i));
+  box.style.display = DEV.on ? '' : 'none';
+  if (!DEV.on) return;
+  for (let i=1;i<=10;i++){
+    const b = el('button', 'chip', String(i));
     b.type = 'button';
-    b.setAttribute('aria-label', i ? 'Dia ' + i : 'Dia 0: Missão zero, o treino');
-    if (!i) b.title = 'Missão zero: o treino';
-    b.setAttribute('aria-pressed', i === selectedDay ? 'true' : 'false');
-    if (i > game.unlocked) b.disabled = true;
-    b.addEventListener('click', () => { selectedDay = i; Sfx.init(); Sfx.tap(); buildChips(); });
+    b.setAttribute('aria-label', 'Dia ' + i);
+    b.setAttribute('aria-pressed', i === game.proxDia ? 'true' : 'false');
+    b.addEventListener('click', () => { game.save.dia = i; writeSave(game.save); Sfx.init(); Sfx.tap(); buildMenu(); });
     box.appendChild(b);
   }
 }
@@ -137,6 +154,11 @@ function buildTips(){
       c.restore();
     }]
   ];
+  // v8.3: a campanha e o banco
+  tips.push(['A carreira segue dia após dia, levando tudo o que veio antes: dinheiro, móveis, equipe, melhorias e o desgaste. Meta não batida deixa o dia sem estrelas, mas o dia seguinte vem. Faltou dinheiro? O caixa pode ficar negativo ' + BANCO.neg + ' dias seguidos (no ' + (BANCO.neg + 1) + 'º, o banco cobre à força) e a aba Banco da lojinha empresta, com juros de ' + Math.round(BANCO.juros * 100) + '%.', c => {
+    c.translate(32,34); c.scale(1.4,1.4);
+    drawBanco(c);
+  }]);
   tips.forEach(t => {
     const li = document.createElement('li');
     li.appendChild(tipCanvas(t[1]));

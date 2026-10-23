@@ -53,15 +53,15 @@ ok(L.contasDia(g.tables,{aluguel:120})===120+4*C.mesa+10*C.lugar,'aluguel do pon
   g.bia.hands=[{kind:'juice'},{kind:'juice'}]; const c2=g.custo, m2=g.money; g.bia.doTable(t);
   ok(g.money-m2>=2*L.JUICE.price && g.custo-c2===2*I.suco,'suco entregue: '+I.suco+' de ingredientes por copo'); }
 
-// fim do dia: meta pelo lucro; dinheiro acumulado recebe faturamento − ingredientes − contas − folha − divulgação (v8.2.2); best guarda o faturamento (ranking)
+// fim do dia: meta pelo lucro; dinheiro acumulado recebe faturamento − ingredientes − contas − folha − divulgação (v8.2.2); o lucro soma no acumulado da campanha (v8.3, o ranking)
 { reset({tonhao:1},1000,'panfleto'); g.startDay(5); g.begin(); const bank0=g.save.bank;
   g.money=2000; g.custo=300; g.finishDay(); const r=g.result;
   ok(r.money===2000-300-g.contas-40-40 && r.fat===2000 && r.custo===300 && r.div===40 && r.paid===40,'resultado: lucro = faturamento − ingredientes − contas − folha − divulgação ('+r.money+')');
-  ok(g.save.bank===bank0+2000-300-g.contas-40-40 && g.save.best[5]>=2000,'dinheiro acumulado e melhor faturamento');
+  ok(g.save.bank===bank0+2000-300-g.contas-40-40 && g.save.lucroTot===g.result.money,'dinheiro acumulado e lucro acumulado da campanha');
   ok(r.passed===(r.money>=L.DAYS[4].meta),'meta comparada com o lucro');
   let err=null; try{ g.hooks.state('dayend'); }catch(e){ err=e; } ok(!err && /^Lucro de R\$ /.test(els['end-money'].textContent),'fim do dia: "Lucro de R$ ..."'+(err?': '+err:''));
   reset({},0,'boca'); g.startDay(5); g.begin(); g.money=50; g.custo=0; g.finishDay();
-  ok(g.result.money<0 && g.save.bank===0 && !g.result.passed,'prejuízo: o dinheiro acumulado não fica negativo');
+  ok(g.result.money<0 && g.save.bank===g.result.money && g.save.neg===1 && !g.result.passed,'prejuízo: o caixa fica negativo (v8.3) e conta 1 dia no negativo');
   g.hooks.state('dayend'); ok(/^Prejuízo de R\$ /.test(els['end-money'].textContent),'fim do dia: "Prejuízo de R$ ..."'); }
 
 // introdução e HUD

@@ -20,7 +20,7 @@ const N=+process.argv[2]||20;
 const FULL={tonhao:2,dani:3,daniTasks:['pratos','lavar','lixo'],tv:true,som:true};   // na Garagem, TV e som no lugar do couvert (v7.4.3)
 const AUTO={2:{},3:FULL,4:FULL,5:FULL,6:FULL,7:FULL};   // do dia 3 em diante o dinheiro acumulado já paga a equipe completa
 const EQ0=process.env.EQUIPE==='auto'?null:(process.env.EQUIPE?JSON.parse(process.env.EQUIPE):{});
-const eqFor=n=>EQ0||AUTO[n]||{};
+const eqFor=n=>EQ0||AUTO[n]||(n>7?FULL:{});   // v8.3: do dia 8 em diante, a equipe completa
 // ajuste rápido sem mexer em src/: INGRED='{"prato":0.7}' CONTAS='{"mesa":40}' node balance.js
 if(process.env.MOVIMENTO) Object.assign(L.MOVIMENTO,JSON.parse(process.env.MOVIMENTO));   // MOVIMENTO='{"porLugar":0.04}'
 if(process.env.CONTAS) Object.assign(L.CONTAS,JSON.parse(process.env.CONTAS));
@@ -32,7 +32,7 @@ if(process.env.METAS){ const mt=JSON.parse(process.env.METAS); for(const k in mt
 const MOV={1:[2,2,2,4],2:[2,2,2,4,2],3:[2,2,2,4,2,2],4:[2,2,2,2,2,2,4]};   // ([2,2,2,4,2,2,2] não cabia na arrumação automática e voltava ao kit)
 const movFor=n=>process.env.MOVEIS==='kit'?MOV[1]:(process.env.MOVEIS?JSON.parse(process.env.MOVEIS):MOV[Math.min(n,4)]);
 const order=process.env.ORDEM?process.env.ORDEM.split(','):['tenis','maquina','cafeteira','bandeja','ventilador','pratos'];   // ORDEM=pratos,tenis,...: ordem de compra das melhorias
-const DIAS=process.env.DIAS?process.env.DIAS.split(',').map(Number):[1,2,3,4,5,6,7];   // DIAS=1,2: só esses dias
+const DIAS=process.env.DIAS?process.env.DIAS.split(',').map(Number):[1,2,3,4,5,6,7];   // DIAS=1,2: só esses dias (v8.3: DIAS=8,9,14 testa os dias da campanha)
 const NMAX=Math.max(...DIAS);
 const R={}; DIAS.forEach(n=>R[n]=[]);
 // um dia de uma rodada; man: o estado de equipamentos que vem do dia anterior (null: tudo novo)
@@ -59,11 +59,11 @@ for(let k=0;k<N;k++){
 const tot={rev:0,lucro:0,quebras:0,dias:0};
 for(const n of DIAS){
   const res=R[n];
-  const m=res.map(r=>r.money), mean=m.reduce((a,b)=>a+b,0)/N, d=L.DAYS[n-1];
+  const m=res.map(r=>r.money), mean=m.reduce((a,b)=>a+b,0)/N, d=L.diaOf(n);
   const avg=k=>(res.reduce((a,r)=>a+(r[k]||0),0)/N).toFixed(0);
   const pass=res.filter(r=>r.passed).length, exp=res.filter(r=>r.money>=d.expert).length;
   const so=m.slice().sort((a,b)=>a-b), q=f=>so[Math.min(so.length-1,Math.floor(f*so.length))];
-  console.log('Dia',n,'meta',d.meta,'exp',d.expert,'| media',mean.toFixed(0),'p10',q(0.1),'p90',q(0.9),'min',Math.min(...m),'max',Math.max(...m),'| passou',pass+'/'+N,'expert',exp+'/'+N,'3★',res.filter(r=>r.stars===3).length+'/'+N,'| perdidos',(res.reduce((a,r)=>a+r.lost,0)/N).toFixed(1),'lotado',(res.reduce((a,r)=>a+r.full,0)/N).toFixed(1),'| causas',['semMesa','comMesa','pedido','prato','conta'].map(k=>k+' '+(res.reduce((a,r)=>a+r.lostBy[k],0)/N).toFixed(1)).join(' '),'vip',(res.reduce((a,r)=>a+r.vipLost,0)/N).toFixed(1),'lotadoT',avg('lotadoT'),'atraso',avg('atraso'),'zero',res.filter(r=>r.lost===0&&!r.full).length+'/'+N,'| fat',avg('fat'),'ingr',avg('custo'),'contas',avg('contas'),'folha',avg('paid'),'div',avg('div'),'suco da espera',avg('sucoEsp'));
+  console.log('Dia',n+(d.semana?' ('+d.semana+')':''),'meta',d.meta,'exp',d.expert,'| media',mean.toFixed(0),'p10',q(0.1),'p90',q(0.9),'min',Math.min(...m),'max',Math.max(...m),'| passou',pass+'/'+N,'expert',exp+'/'+N,'3★',res.filter(r=>r.stars===3).length+'/'+N,'| perdidos',(res.reduce((a,r)=>a+r.lost,0)/N).toFixed(1),'lotado',(res.reduce((a,r)=>a+r.full,0)/N).toFixed(1),'| causas',['semMesa','comMesa','pedido','prato','conta'].map(k=>k+' '+(res.reduce((a,r)=>a+r.lostBy[k],0)/N).toFixed(1)).join(' '),'vip',(res.reduce((a,r)=>a+r.vipLost,0)/N).toFixed(1),'lotadoT',avg('lotadoT'),'atraso',avg('atraso'),'zero',res.filter(r=>r.lost===0&&!r.full).length+'/'+N,'| fat',avg('fat'),'ingr',avg('custo'),'contas',avg('contas'),'folha',avg('paid'),'div',avg('div'),'suco da espera',avg('sucoEsp'));
   if(MODO!=='sem'){
     const qb=id=>(res.reduce((a,r)=>a+r.quebras.filter(x=>x.id===id).length,0)/N).toFixed(2);
     const qt=res.reduce((a,r)=>a+r.quebras.length,0)/N, rev=res.reduce((a,r)=>a+r.rev,0)/N, con=res.reduce((a,r)=>a+r.conserto,0)/N;

@@ -180,6 +180,7 @@ function mkStub(o){
   ok(L.cleanName('x'.repeat(40)).length===16,'nome limitado a 16'); ok(L.cleanName('  <b>a</b>\n\tb ')==='<b>a</b> b','espaços limpos (texto mantido, sem html)');
   await R.saveScore('semfim','Lu',1234,{tempo:95}); ok(R.localRows('semfim')[0].tempo===95,'semfim guarda tempo'); ok(R.localRows('carreira').length===4,'abas separadas');
   ok(!!H.store['lcc2_ranking'],'chave lcc2_ranking');
+  { const o=JSON.parse(H.store['lcc2_ranking']); ok(Array.isArray(o.campanha)&&o.campanha.length===4&&!o.carreira,'v8.3: a carreira fica na lista "campanha" do aparelho'); }
   // UI: renderRank
   L.rk.tab='carreira'; L.rk.by='nome'; L.rk.dir='asc'; L.rk.rows=rows; L.rk.source='local'; L.renderRank();
   const tb=els['rank-wrap'].children[0]; const cell=i=>tb.children[i].children[0].textContent;
@@ -198,23 +199,23 @@ function mkStub(o){
   const stub=mkStub({}); const H=load({claude:stub.claude}); const {g,L,els}=H; const R=L.Rank;
   await R.init(); ok(R.shared&&R.uid==='u_abc123','db+user resolvidos, uid ok');
   let r=await R.saveScore('carreira','Marta',400,{dia:2});
-  ok(r.where==='shared'&&r.improved,'salvou no db'); ok(!!stub.data['ranking-carreira/u_abc123'],'doc em ranking-carreira/<userId>');
-  let d=stub.data['ranking-carreira/u_abc123']; ok(d.nome==='Marta'&&d.pontos===400&&d.dia===2&&typeof d.quando==='string'&&!isNaN(Date.parse(d.quando))&&d.tempo===undefined,'campos nome/pontos/dia/quando');
-  r=await R.saveScore('carreira','Marta',100,{dia:1}); ok(!r.improved&&stub.data['ranking-carreira/u_abc123'].pontos===400,'não sobrescreve pontos menores');
-  r=await R.saveScore('carreira','Marta B.',100,{dia:1}); ok(stub.data['ranking-carreira/u_abc123'].nome==='Marta B.'&&stub.data['ranking-carreira/u_abc123'].pontos===400,'nome atualizado sempre (update)');
-  ok(stub.log.includes('update:ranking-carreira/u_abc123'),'usou update para o nome');
-  r=await R.saveScore('carreira','Marta B.',800,{dia:5}); ok(stub.data['ranking-carreira/u_abc123'].pontos===800&&stub.data['ranking-carreira/u_abc123'].dia===5,'sobrescreve se maior');
+  ok(r.where==='shared'&&r.improved,'salvou no db'); ok(!!stub.data['ranking-campanha/u_abc123'],'doc em ranking-campanha/<userId>');
+  let d=stub.data['ranking-campanha/u_abc123']; ok(d.nome==='Marta'&&d.pontos===400&&d.dia===2&&typeof d.quando==='string'&&!isNaN(Date.parse(d.quando))&&d.tempo===undefined,'campos nome/pontos/dia/quando');
+  r=await R.saveScore('carreira','Marta',100,{dia:1}); ok(!r.improved&&stub.data['ranking-campanha/u_abc123'].pontos===400,'não sobrescreve pontos menores');
+  r=await R.saveScore('carreira','Marta B.',100,{dia:1}); ok(stub.data['ranking-campanha/u_abc123'].nome==='Marta B.'&&stub.data['ranking-campanha/u_abc123'].pontos===400,'nome atualizado sempre (update)');
+  ok(stub.log.includes('update:ranking-campanha/u_abc123'),'usou update para o nome');
+  r=await R.saveScore('carreira','Marta B.',800,{dia:5}); ok(stub.data['ranking-campanha/u_abc123'].pontos===800&&stub.data['ranking-campanha/u_abc123'].dia===5,'sobrescreve se maior');
   r=await R.saveScore('semfim','Marta B.',640,{tempo:130}); d=stub.data['ranking-semfim/u_abc123']; ok(d&&d.tempo===130&&d.pontos===640&&d.dia===undefined,'semfim: ranking-semfim/<userId> com tempo');
   // outros jogadores no db (com dados hostis)
-  stub.data['ranking-carreira/u_x']={nome:'<img src=x onerror=alert(1)>'+'a'.repeat(50),pontos:999.6,dia:'3'};
-  stub.data['ranking-carreira/u_bad']={nome:'Lixo',pontos:'abc'};
-  stub.data['ranking-carreira/u_y']={nome:'Caio',pontos:50,dia:1};
+  stub.data['ranking-campanha/u_x']={nome:'<img src=x onerror=alert(1)>'+'a'.repeat(50),pontos:999.6,dia:'3'};
+  stub.data['ranking-campanha/u_bad']={nome:'Lixo',pontos:'abc'};
+  stub.data['ranking-campanha/u_y']={nome:'Caio',pontos:50,dia:1};
   let got=null, src=null; const un=R.subscribe('carreira',(rows,s)=>{got=rows;src=s;}); await sleep(10);
   ok(src==='shared'&&got.length===3,'assinatura compartilhada: 3 linhas válidas (lixo descartado)');
   ok(got.find(x=>x.me)&&got.find(x=>x.me).nome==='Marta B.','linha própria marcada');
   const hos=got.find(x=>x.id==='u_x'); ok(hos.nome.length===16&&hos.pontos===1000,'nome truncado em 16 e pontos arredondados (dados não confiáveis)');
   ok(stub.subs.length===1,'uma assinatura por aba'); // ordenou desc + limit 50
-  un(); ok(stub.log.includes('unsub:ranking-carreira'),'cancelou assinatura');
+  un(); ok(stub.log.includes('unsub:ranking-campanha'),'cancelou assinatura');
   // tela de ranking usa textContent
   L.rk.tab='carreira'; L.openRank('ov-menu'); await sleep(50);
   ok(els['rank-source'].textContent==='Ranking compartilhado','rótulo compartilhado');
@@ -257,15 +258,14 @@ for(const code of ['invalid_argument','not_granted','permission_denied']){
 {
   const v1={maxDay:5,bank:420,up:{tenis:true},best:{1:600,2:900},stars:{1:3,2:1}};
   const H=load({store:{lcc_save_v1:JSON.stringify(v1)}}); const g=H.g;
-  ok(g.save.maxDay===5&&g.save.bank===420&&g.up.tenis===true&&g.save.best[2]===900,'importa progresso da v1');
+  ok(g.save.dia===5&&g.save.bank===420&&g.up.tenis===true&&g.save.estrelas===4,'importa progresso da v1 (v8.3: segue do maior dia, com as estrelas somadas)');
   ok(!!H.store.lcc2_save,'gravou lcc2_save'); g.save.bank=5; H.L.lsSet('lcc2_save',JSON.stringify(g.save));
   const H2=load({store:{lcc_save_v1:JSON.stringify(v1),lcc2_save:H.store.lcc2_save}}); ok(H2.g.save.bank===5,'lcc2_save tem prioridade sobre v1');
-  const H3=load({store:{lcc_save_v1:'{lixo'}}); ok(H3.g.save.maxDay===1,'v1 corrompido ignorado');
+  const H3=load({store:{lcc_save_v1:'{lixo'}}); ok(H3.g.save.dia===1,'v1 corrompido ignorado');
   const H4=load({noStorage:true}); ok(H4.g.state==='menu','sem localStorage: abre normal'); H4.g.startEndless(); H4.g.begin(); for(let i=0;i<50;i++) H4.g.update(0.05); ok(true,'sem localStorage: joga');
   const H5=load({throwStorage:true}); ok(H5.g.state==='menu','localStorage lançando: abre normal');
   const r=await H5.L.Rank.saveScore('carreira','Mem',9,{dia:1}); ok(r.where==='local'&&H5.L.Rank.localRows('carreira').length===1,'ranking local funciona com storage bloqueado (memória)');
   H.L.lsSet('lcc2_name','Bia'); ok(H.L.lsGet('lcc2_name')==='Bia','nome lembrado');
-  ok(g.careerMaxDone()===2,'maior dia concluído (estrelas>=1)');
 }
 
 /* ---------- 7. render em todos os estados / movimento reduzido ---------- */

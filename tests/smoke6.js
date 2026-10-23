@@ -22,8 +22,8 @@ ok(L.payroll({tonhao:0,dani:0,tv:true,som:true})===15+10,'folha: luz da TV 15 + 
 { reset({tonhao:1,dani:1,tv:true,som:true},50); g.save.divulga='boca'; g.startDay(3); g.begin(); ok(!eq().som && !eq().tv && !eq().dani && eq().tonhao===1 && g.paid===40 && g.save.bank===50 && g.unpaid.join()==='som,TV,Dani','sem dinheiro para todos: desliga som e TV, dispensa a Dani, paga o resto'); }
 { reset({tonhao:0,dani:1,tv:true,som:true},75); g.save.divulga='boca'; g.startDay(3); g.begin(); ok(!eq().som && eq().tv && eq().dani===1 && g.paid===75 && g.save.bank===75,'som sai antes da TV, e a TV antes da Dani'); }
 { reset({},100); ok(!g.setStaff('dani',3) && eq().dani===0,'não contrata quem o dinheiro acumulado não paga'); ok(g.setStaff('dani',1),'contrata a Dani com cofre suficiente'); }
-{ reset({},0); g.save.divulga='boca'; g.startDay(3); g.begin(); g.money=1000; g.custo=100; g.save.best[3]=800; g.finishDay(); const c=L.contasDia(g.tables);
-  ok(g.result.income===1000-100-c && g.save.bank===1000-100-c && g.save.best[3]===1000,'o faturamento vai para o dinheiro acumulado, menos ingredientes e contas (v7)'); }
+{ reset({},0); g.save.divulga='boca'; g.startDay(3); g.begin(); g.money=1000; g.custo=100; g.finishDay(); const c=L.contasDia(g.tables);
+  ok(g.result.income===1000-100-c && g.save.bank===1000-100-c && g.save.lucroTot===1000-100-c,'o faturamento vai para o dinheiro acumulado, menos ingredientes e contas (v7); o lucro soma no acumulado da campanha (v8.3)'); }
 
 /* aumento do Tonhão */
 const fresh=()=>{ g.schedule=[{t:1e9,type:'estudante',color:0}]; g.nextIdx=0; };

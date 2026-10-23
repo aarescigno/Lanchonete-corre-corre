@@ -2,6 +2,9 @@
 // lojinha (v7.4, regra em bot.moveis) e, do dia 3 em diante, contrata a equipe completa que o dinheiro pagar.
 // Mostra o dinheiro em cada lojinha e os lugares do salão. MOVEIS=0: não compra móveis (fica no kit).
 // Uso: node carreira.js [N] [divulga]   (divulga: boca, panfleto ou redes; padrão panfleto)
+// v8.3, campanha: joga DIAS dias em sequência (padrão 14; do dia 8 em diante, o perfil do dia 7 com o dia da semana),
+// com o caixa podendo ficar negativo (e o banco cobrindo à força no 4º dia seguido). Mostra também os dias no negativo,
+// os empréstimos à força e em que dia o dinheiro chegou a R$ 800 (a mudança para a área industrial).
 // v8, manutenção e imprevistos:
 //   MANUT=sem    (padrão) imprevistos desligados (MANUT.on=false), como antes
 //   MANUT=com    liga os imprevistos (desgaste, quebras do dia 4 em diante, chuva e feriado do dia 3) e o jogador nunca revisa
@@ -21,10 +24,10 @@ const FULL=[{tonhao:2,dani:3,tv:true,som:true},{tonhao:2,dani:3,tv:true},{tonhao
 if(process.env.MOVIMENTO) Object.assign(L.MOVIMENTO,JSON.parse(process.env.MOVIMENTO));   // MOVIMENTO='{"porLugar":0.04}'
 if(process.env.CONTAS) Object.assign(L.CONTAS,JSON.parse(process.env.CONTAS));
 if(process.env.INGRED) Object.assign(L.INGRED,JSON.parse(process.env.INGRED));
-const rows={};
+const ND=+process.env.DIAS||14, MUDA=800; const rows={}, chega=[]; let negs=0, forcs=0;
 for(let k=0;k<N;k++){
-  g.save=L.normSave({}); g.up=g.save.up; g.boughtFor=0; g.buildTables(); let semMesa=0;
-  for(let n=1;n<=7;n++){
+  g.save=L.normSave({}); g.up=g.save.up; g.boughtFor=0; g.buildTables(); let semMesa=0, chegou=0;
+  for(let n=1;n<=ND;n++){
     const r=rows[n]||(rows[n]={shop:[],after:[],lucro:[],pass:0,eq:[],lug:[],rev:[],con:[],qb:[],chuva:0,fer:0,fim:[]});
     if(n>=2){
       g.goShop(n);
@@ -39,13 +42,16 @@ for(let k=0;k<N;k++){
       }
       r.shop.push(g.save.bank);
     }
+    if(g.proxDia!==n) throw new Error('a campanha pulou: '+g.proxDia+' em vez de '+n);
     g.startDay(n); g.begin(); r.after.push(g.save.bank-g.paid-g.paidDiv); r.eq.push(g.paid);   // v8.2.2: a folha só sai no fim do dia; "depois da folha" é o que sobra além dela
     let st=0; while(g.state==='playing'&&st<30000){ bot(); g.update(0.05); st++; }
-    r.lucro.push(g.result.money); r.con.push(g.result.conserto); r.qb.push(g.result.quebras.length); if(g.result.clima==='chuva') r.chuva++; if(g.result.clima==='feriado') r.fer++; r.fim.push(g.save.bank); if(g.result.passed) r.pass++; semMesa=g.result.lostBy.semMesa; r.lug.push(L.salaoLugares(g.save.salao.mesas)); if(process.env.MESAS) console.log(n, g.save.salao.mesas.map(m=>m.seats).sort().join(''), 'semMesa', semMesa);
+    r.lucro.push(g.result.money); r.con.push(g.result.conserto); r.qb.push(g.result.quebras.length); if(g.result.clima==='chuva') r.chuva++; if(g.result.clima==='feriado') r.fer++; r.fim.push(g.save.bank); if(g.result.passed) r.pass++; semMesa=g.result.lostBy.semMesa; r.lug.push(L.salaoLugares(g.save.salao.mesas)); if(g.save.bank<0) negs++; if(g.result.forcado) forcs++; if(!chegou&&g.save.bank>=MUDA) chegou=n; if(process.env.MESAS) console.log(n, g.save.salao.mesas.map(m=>m.seats).sort().join(''), 'semMesa', semMesa);
   }
+  chega.push(chegou||Infinity);
 }
 const avg=a=>a.length?Math.round(a.reduce((x,y)=>x+y,0)/a.length):'-';
-for(let n=1;n<=7;n++){ const r=rows[n]; console.log('Dia',n,'| dinheiro na lojinha',avg(r.shop),'| depois da folha',avg(r.after),'| folha',avg(r.eq),'| lucro',avg(r.lucro),'| lugares',avg(r.lug),'| passou',r.pass+'/'+N); }
+for(let n=1;n<=ND;n++){ const r=rows[n], d=L.diaOf(n); console.log('Dia',n+(d.semana?' ('+d.semana.slice(0,3)+')':''),'meta',d.meta,'| dinheiro na lojinha',avg(r.shop),'| depois da folha',avg(r.after),'| folha',avg(r.eq),'| lucro',avg(r.lucro),'| lugares',avg(r.lug),'| passou',r.pass+'/'+N); }
+{ const ch=chega.filter(isFinite).sort((a,b)=>a-b); console.log('CAMPANHA',ND,'dias | chegou a R$',MUDA,'em',ch.length+'/'+N,'carreiras, no dia',ch.length?'mediano '+ch[Math.floor(ch.length/2)]:'-','| dias fechando no negativo',negs,'| empréstimos à força',forcs); }
 if(MODO!=='sem'){
   let tl=0,tr=0,tq=0,tc=0; const NM=L.MANUT.dia;
   for(let n=1;n<=7;n++){ const r=rows[n]; console.log('      Dia',n,'| quebras',(r.qb.reduce((a,b)=>a+b,0)/N).toFixed(2),'| chuva',r.chuva+'/'+N,'feriado',r.fer+'/'+N,'| revisão R$',avg(r.rev),'conserto R$',avg(r.con),'| dinheiro no fim do dia',avg(r.fim));

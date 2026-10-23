@@ -9,7 +9,7 @@ class Kitchen {
     const g = this.game, grp = ticket.group;
     let time = rand(4,7) * this.chef.cook;
     if (grp.vip) time *= VIP.cook;              // prato especial do VIP
-    if (g.day.n === 7) time *= 1.25;
+    if (g.day.gripe) time *= 1.25;   // dia 7: o Tonhão está gripado
     if (g.mode === 'semfim') time *= 1 + Math.min(0.25, 0.01 * g.elapsed / 60);
     this.queue.push({ group:grp, table:ticket.table, time, p:0, dish:grp.dish });
   }

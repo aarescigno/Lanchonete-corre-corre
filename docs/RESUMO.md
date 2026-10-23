@@ -1,18 +1,19 @@
-# Resumo do projeto e das alterações (até 22/10/2026)
+# Resumo do projeto e das alterações (até 23/10/2026)
 
 ## Estado atual
-- **Versão:** v8.2.3 (largar o dia no meio com gente na espera ou nas mesas cobra a multa de quem sai bravo, por grupo), pronta para publicar, sobre a v8.2.2 (só o dia completo rende: folha e divulgação pagas no fim do dia; Reiniciar ou Menu na pausa não pagam nem ganham nada, guardada em `versoes/`), a v8.2.1 (que guardava o que o dia interrompido rendia, guardada em `versoes/`), a v8.2 (Missão zero: o dia 0 é um treino com pop-ups passo a passo, guardada em `versoes/`), a v8.1.2 (a espera lá fora na ordem certa: o 1º da fila embaixo, os novos acima) e a v8.1.1 (menos balões nas mesas: só cardápio, "!" e "$"), as duas ainda não publicadas, e a v8.1 (dinheiro comprometido: a lojinha mostra o livre e o que já é da folha, e compra que come a folha pede um 2º toque), publicada em 22/10 como **Versão 34** do artifact https://claude.ai/artifact/MJxrgDg8S4akvg47SoQAvj (privado), sobre a v8 (manutenção e imprevistos), a v7.7 (espera da Garagem de pé e Água da torneira), a v7.6 (tela larga), a v7.5.1 (modo dev) e a v7.5 (espera na calçada). Antes dela, o que estava no ar era a v7.6 (não a v7.5 da Versão 33, como dizia este resumo): a Versão 34 foi publicada com `force:true` depois de conferir que a versão no ar era igual a `versoes/v7.6-fonte.html`. Na próxima publicação, compare a versão no ar com o `lanchonete.html` do commit da v8.1 (`git show 473d7c4:lanchonete.html`), ou com `versoes/v8.1-fonte.html` (guardada na v8.1.1).
+- **Versão:** v8.3 (etapa 2b: carreira como campanha contínua, com "Continuar", dias além do 7 pelo dia da semana, caixa no negativo por até 3 dias, aba Banco com empréstimo e ranking pelo lucro acumulado), pronta para publicar, sobre a v8.2.3 (largar o dia no meio com gente na espera ou nas mesas cobra a multa de quem sai bravo, por grupo, guardada em `versoes/`), a v8.2.2 (só o dia completo rende: folha e divulgação pagas no fim do dia; Reiniciar ou Menu na pausa não pagam nem ganham nada, guardada em `versoes/`), a v8.2.1 (que guardava o que o dia interrompido rendia, guardada em `versoes/`), a v8.2 (Missão zero: o dia 0 é um treino com pop-ups passo a passo, guardada em `versoes/`), a v8.1.2 (a espera lá fora na ordem certa: o 1º da fila embaixo, os novos acima) e a v8.1.1 (menos balões nas mesas: só cardápio, "!" e "$"), as duas ainda não publicadas, e a v8.1 (dinheiro comprometido: a lojinha mostra o livre e o que já é da folha, e compra que come a folha pede um 2º toque), publicada em 22/10 como **Versão 34** do artifact https://claude.ai/artifact/MJxrgDg8S4akvg47SoQAvj (privado), sobre a v8 (manutenção e imprevistos), a v7.7 (espera da Garagem de pé e Água da torneira), a v7.6 (tela larga), a v7.5.1 (modo dev) e a v7.5 (espera na calçada). Antes dela, o que estava no ar era a v7.6 (não a v7.5 da Versão 33, como dizia este resumo): a Versão 34 foi publicada com `force:true` depois de conferir que a versão no ar era igual a `versoes/v7.6-fonte.html`. Na próxima publicação, compare a versão no ar com o `lanchonete.html` do commit da v8.1 (`git show 473d7c4:lanchonete.html`), ou com `versoes/v8.1-fonte.html` (guardada na v8.1.1).
 - **Branch:** `claude/main` (renomeado pelo usuário; o antigo `claude/intelligent-gauss-3owv29` não existe mais) no repositório `aarescigno/Lanchonete-corre-corre`.
-- **Arquivos publicados:** `lanchonete.html` (página), mais `versoes/v1.html` a `versoes/v8.html` (com a v7.6, a v7.7 e a v8, enviadas na Versão 34), abertos pelo painel Versões. Na próxima publicação, enviar os `versoes/v8.1.html`, `versoes/v8.1.1.html`, `versoes/v8.1.2.html`, `versoes/v8.2.html`, `versoes/v8.2.1.html` e `versoes/v8.2.2.html` novos (da v8.1.1 à v8.2.2, nenhuma chegou a ser publicada, e o painel Versões tem link para as seis).
+- **Arquivos publicados:** `lanchonete.html` (página), mais `versoes/v1.html` a `versoes/v8.html` (com a v7.6, a v7.7 e a v8, enviadas na Versão 34), abertos pelo painel Versões. Na próxima publicação, enviar os `versoes/v8.1.html`, `versoes/v8.1.1.html`, `versoes/v8.1.2.html`, `versoes/v8.2.html`, `versoes/v8.2.1.html`, `versoes/v8.2.2.html` e `versoes/v8.2.3.html` novos (da v8.1.1 à v8.2.3, nenhuma chegou a ser publicada, e o painel Versões tem link para as sete).
 - **Capacidades declaradas (mantidas ao republicar sem `capabilities`):**
   - `db`: `ranking-carreira` e `ranking-semfim` com read "view" e write "owner";
   - `db`: `ranking-*/{self}` com write "interact";
   - `user`.
+  - **Atenção (v8.3):** o ranking da carreira passou para a coleção `ranking-campanha`. A gravação cabe no `ranking-*/{self}`, mas a leitura ("view") só está declarada para `ranking-carreira` e `ranking-semfim`: na próxima publicação, carregar a skill `artifact-capabilities` e declarar também `ranking-campanha` (read "view", write "owner"), mantendo as demais. Sem isso, a aba Carreira do ranking cai no ranking do aparelho.
 - **Ranking:**
-  - documentos `ranking-carreira/<userId>` e `ranking-semfim/<userId>`, com `nome`, `pontos`, `dia` ou `tempo` e `quando`;
+  - documentos `ranking-campanha/<userId>` (desde a v8.3: lucro acumulado da campanha e o último dia jogado; até a v8.2.3 era `ranking-carreira`, com o faturamento dos melhores dias, que fica guardado e não aparece) e `ranking-semfim/<userId>`, com `nome`, `pontos`, `dia` ou `tempo` e `quando`;
   - só sobrescreve quando a pontuação é maior;
-  - fallback local em `localStorage` (`lcc2_ranking`).
-- **Save:** `lcc2_save` (desde a v8.2, com `treino:true` depois da Missão zero; o treino usa um save de mentira, com `_treino`, que nunca se grava), que importa o `lcc_save_v1` da v1 (no modo dev da v7.5.1, `lcc2_save_dev`, com `lcc2_dev` guardando se o modo está ligado). Desde a v6 guarda também o salão (`save.salao`); desde a v7, a divulgação (`save.divulga`); desde a v7.2, o livro-caixa (`save.caixa`, últimos 14 dias da carreira, e `save.caixaPend`, compras da lojinha que entram na linha do dia seguinte). Desde a v7.4, `save.salao` é `{ ponto, mesas:[{ x, y, seats, c }] }`; o salão da v6 vira a Garagem com o kit e o que custou volta numa linha "Devolução do salão" do caixa. Desde a v7.7, `save.torneira` marca que a Máquina de suco já virou Água da torneira (quem tinha recebe R$ 100, uma vez, na linha "Devolução da máquina de suco"). `save.best` continua guardando o melhor faturamento de cada dia (é o que o ranking da carreira soma). Desde a v8, `save.manut` guarda o estado de fogão, geladeira e cafeteira (0 a 1) e o sorteio do dia (`sorteio`), e as linhas do caixa ganham `man` (revisões e consertos).
+  - fallback local em `localStorage` (`lcc2_ranking`, listas `campanha` e `semfim`; a `carreira` antiga fica guardada).
+- **Save:** `lcc2_save` (desde a v8.2, com `treino:true` depois da Missão zero; o treino usa um save de mentira, com `_treino`, que nunca se grava), que importa o `lcc_save_v1` da v1 (no modo dev da v7.5.1, `lcc2_save_dev`, com `lcc2_dev` guardando se o modo está ligado). Desde a v6 guarda também o salão (`save.salao`); desde a v7, a divulgação (`save.divulga`); desde a v7.2, o livro-caixa (`save.caixa`, últimos 14 dias da carreira, e `save.caixaPend`, compras da lojinha que entram na linha do dia seguinte). Desde a v7.4, `save.salao` é `{ ponto, mesas:[{ x, y, seats, c }] }`; o salão da v6 vira a Garagem com o kit e o que custou volta numa linha "Devolução do salão" do caixa. Desde a v7.7, `save.torneira` marca que a Máquina de suco já virou Água da torneira (quem tinha recebe R$ 100, uma vez, na linha "Devolução da máquina de suco"). Até a v8.2.3, `save.maxDay`, `save.best` e `save.stars` guardavam o dia liberado, o melhor faturamento e as estrelas de cada dia; desde a v8.3 (campanha), saem e entram `save.dia` (o próximo dia; o save antigo segue do maior dia alcançado), `save.estrelas` (soma), `save.lucroTot` (lucro acumulado, o ranking), `save.neg` (dias seguidos fechando no negativo), `save.emp` (`{ resto, n }`, o empréstimo) e `save.corta` (a folha que não cabe no dinheiro fica de fora); `save.bank` pode ser negativo e as linhas do caixa ganham `st` (estrelas), `emp`/`forc` (empréstimo, à força) e `par` (pago ao banco). Desde a v8, `save.manut` guarda o estado de fogão, geladeira e cafeteira (0 a 1) e o sorteio do dia (`sorteio`), e as linhas do caixa ganham `man` (revisões e consertos).
 
 ## Versões
 | Versão | Data | O que trouxe | Detalhes |
@@ -43,6 +44,7 @@
 | v8.2 | 22/10 | Missão zero (pedido do usuário): o dia 0 é um treino com uma mesa só e 23 pop-ups do ciclo da Bia (cor da mesa, cardápio, pedido, Tonhão, prato, cafezinho e seus bônus, conta, louça, pia, lixo); paciência que não acaba, save de mentira, chip 0 no menu (escolhido para quem nunca treinou) | `docs/spec-v8.2.md` |
 | v8.2.1 | 22/10 | Rejogar sem perder o dinheiro (pedido do usuário): Reiniciar ou Menu na pausa fecham as contas da parte jogada (contas, folha e divulgação proporcionais ao tempo; o resto da folha volta), com linha "interrompido" no caixa; não conta como dia jogado | `docs/spec-v8.2.1.md` |
 | v8.2.2 | 22/10 | Só o dia completo rende (pedido do usuário, no lugar da regra da v8.2.1): folha e divulgação ficam reservadas ao abrir e saem no fim do dia, com contas e ingredientes; Reiniciar ou Menu na pausa não pagam nem ganham nada; o conserto na hora só usa o que sobra além da folha | `docs/spec-v8.2.2.md` |
+| v8.3 | 23/10 | Carreira contínua e banco (etapa 2b): "Continuar" abre o próximo dia, sem escolher nem repetir; meta não batida fica sem estrelas; dias 8+ com o perfil do dia 7 e o dia da semana; caixa negativo por até 3 dias (no 4º, o banco cobre à força, 20%); aba Banco (até R$ 1.000, 10%, 5 parcelas no fim do dia; chave da folha sem dinheiro); coluna Banco no Caixa; "Recomeçar do zero" com confirmação; ranking pelo lucro acumulado (`ranking-campanha`) | `docs/spec-v8.3.md` |
 | v8.2.3 | 22/10 | Largar o dia tem preço (pedido do usuário): Reiniciar ou Menu na pausa com gente na espera ou nas mesas cobram, por grupo, a multa de quem sai bravo com 0 corações (R$ 30, +R$ 30 se VIP), direto do dinheiro; aviso na pausa e na introdução, linha "largado no meio" no caixa | `docs/spec-v8.2.3.md` |
 
 ## Alterações feitas no Claude Code (14/10/2026)
@@ -169,7 +171,7 @@
 - No Android: abrir o endereço do Pages no Chrome → menu ⋮ → "Instalar app".
 
 ## Testes (verdes no último commit)
-- `smoke` (bot nos 7 dias);
+- `smoke` (bot em 8 dias seguidos da campanha);
 - `smoke2` (mecânicas);
 - `smoke3` (120/120: v2);
 - `smoke4` (23/23: VIP);
@@ -177,20 +179,21 @@
 - `smoke6` (97/97: equipe, louça, lixeira que enche, couvert, TV e som, máquina de suco no lugar da água, economia). O teste "a Dani chega a 2 itens" dependia do sorteio do dia; desde a v7.4.1 joga até 4 rodadas enquanto ela não chega a 2;
 - `smoke7` (15/15: toque no celular e brilho);
 - `smoke8` (19/19: conversão do salão da v6 com devolução, e as faixas de estrelas);
-- `smoke9` (33/33: v7, lucro, ingredientes, contas e divulgação);
+- `smoke9` (34/34: v7, lucro, ingredientes, contas e divulgação);
 - `smoke10` (26/26: v7.1, fila justa, piso, porta e perdas por causa);
 - `smoke11` (39/39: v7.2, livro-caixa, limite de 14 dias, resumo e aba Caixa);
 - `smoke12` (21/21: v7.3, velocidade, Tênis de corrida, selos da fila);
 - `smoke13` (58/58: v7.4 e os 4 pratos da v7.4.1, Garagem, móveis, editor do salão, posição e caminho, contas sem aluguel);
 - `smoke14` (63/63: v7.5, a tela larga da v7.6 e a v7.7, espera de 4, toque na tela larga, HUD largo, água da torneira com a devolução, máquina de suco posta no ponto, Dani);
-- `smoke15` (43/43: v7.5.1, modo dev, save à parte, dias, dinheiro, lojinha desde o dia 1, melhorias, equipe com couvert, divulgação, ranking de fora, sair);
+- `smoke15` (44/44: v7.5.1, modo dev, save à parte, dias à escolha (v8.3), dinheiro, lojinha desde o dia 1, melhorias, equipe com couvert, divulgação, ranking de fora, sair);
 - `smoke16` (101/101: v8, manutenção e imprevistos);
 - `smoke17` (22/22: v8.1, dinheiro comprometido, livre e reservado, aviso e 2º toque nas compras);
-- `smoke18` (70/70: v8.2, Missão zero jogada inteira com toques de verdade, save de verdade intacto, convite do dia 1, Reiniciar e Menu no meio do treino);
-- `smoke19` (38/38: v8.2.2 e v8.2.3, folha paga no fim do dia, reiniciar ou sair pela pausa não paga nem ganha nada, multa de quem está na espera e nas mesas, conserto pago fica pago, fim do dia e "Repetir dia", turno sem fim, Missão zero);
+- `smoke18` (69/69: v8.2, botão Missão zero (v8.3), Missão zero jogada inteira com toques de verdade, save de verdade intacto, convite do dia 1, Reiniciar e Menu no meio do treino);
+- `smoke19` (38/38: v8.2.2 e v8.2.3, folha paga no fim do dia, reiniciar ou sair pela pausa não paga nem ganha nada, multa de quem está na espera e nas mesas, conserto pago fica pago, fim do dia e "Próximo dia" sem a meta (v8.3), turno sem fim, Missão zero);
+- `smoke20` (83/83: v8.3, campanha, dias 8+, save antigo, caixa negativo e banco à força, empréstimo e parcelas, quitar, chave da folha, Recomeçar com confirmação, ranking pelo lucro acumulado);
 - `menu_fit` (14 tamanhos de tela);
 - `balance` (bot, N rodadas por dia; `DIV`, `MULT`, `MOVEIS`, `MOVIMENTO`, `GRUPOS`, `DIAS`, `BOT=afiado`, `ORDEM`, `INGRED`, `CONTAS`, `METAS`; perdas por causa e 3★);
-- `carreira` (bot jogando a carreira com o dinheiro acumulado de verdade e comprando móveis; `MOVEIS=0`, `MOVEIS=quatro`, `MOVIMENTO`, `MESAS=1`).
+- `carreira` (bot jogando a campanha com o dinheiro acumulado de verdade e comprando móveis; `DIAS` (padrão 14), `MOVEIS=0`, `MOVEIS=quatro`, `MOVIMENTO`, `MESAS=1`; mostra o dia em que chega a R$ 800, os dias no negativo e os empréstimos à força).
 
 ## Ideias pendentes
 - Testar som e toque em celular real (o toque foi ajustado depois de relato de dificuldade, mas só testado no Chromium com toque emulado).

@@ -24,14 +24,14 @@ class Game {
     this.resetDay(1);
   }
   setState(s){ this.state = s; if (this.hooks.state) this.hooks.state(s); }
-  get unlocked(){ return this.save.maxDay; }
+  get proxDia(){ return this.save.dia; }   // campanha (v8.3): o próximo dia da carreira
   get ponto(){ return pontoOf(this.save.salao.ponto); }
   get bebida(){ return bebidaOf(this.ponto); }   // o que se serve na espera (v7.7)
 
   resetDay(n, treino){
     if (!treino) this.sairTreino();
     this.mode = treino ? 'treino' : n === 0 ? 'semfim' : 'carreira';
-    this.day = treino ? TREINO : n === 0 ? ENDLESS : DAYS[n-1];
+    this.day = treino ? TREINO : n === 0 ? ENDLESS : diaOf(n);
     this.money = 0; this.custo = 0; this.contas = 0; this.paidDiv = 0; this.conserto = 0;
     // imprevistos (v8): o sorteio do dia (feito ao começar o dia, e guardado até ele acabar) diz o clima e o que quebra
     const so = n && this.save.manut.sorteio && this.save.manut.sorteio.d === n ? this.save.manut.sorteio : null;
@@ -79,6 +79,7 @@ class Game {
     const colors = this.tables.map(x => x.color);
     for (let i=0;i<N;i++){
       let type = (i === forced) ? day.nu : pick(day.types);
+      if (day.tipo && i !== forced && Math.random() < day.tipoP) type = day.tipo;   // o dia da semana (v8.3, do dia 8 em diante)
       if (cl && i !== forced && Math.random() < cl.tipoP) type = cl.tipo;   // chuva: entregadores; feriado: famílias
       let vip = false;
       if (day.vip && (i === forcedVip || Math.random() < vipP)){
@@ -170,11 +171,12 @@ class Game {
   }
   get treinoSegura(){ return !!(this.treino && this.treino.segura); }
   /* ao abrir, a folha e a divulgação do dia ficam reservadas (desde a v8.2.2, só saem do dinheiro acumulado no fim do dia);
-     o que não couber no dinheiro sai (a divulgação vira boca a boca, depois couvert, som, TV, Dani e aumento do Tonhão) */
+     o que não couber no dinheiro sai (a divulgação vira boca a boca, depois couvert, som, TV, Dani e aumento do Tonhão).
+     v8.3: com a chave da folha desligada (save.corta), nada sai: paga tudo no fim do dia, e o caixa pode ficar negativo */
   payDay(){
     const eq = this.save.equipe; this.unpaid = [];
     const divCost = () => this.div ? this.div.cost : 0;
-    while (payroll(eq) + divCost() > this.save.bank){
+    while (this.save.corta && payroll(eq) + divCost() > this.save.bank){
       if (divCost()){
         this.unpaid.push(this.div.name); this.save.divulga = 'boca';
         this.div = divulgaOf('boca'); this.divF = rand(this.div.groups[0], this.div.groups[1]);
@@ -506,7 +508,7 @@ class Game {
     const gs = this.bravosSeSair, v = this.multaSeSair, d = this.day;
     this.aberto = false;
     if (!gs.length) return (this.encerrado = null);
-    const antes = this.save.bank; this.save.bank = Math.max(0, antes - v);
+    const antes = this.save.bank; this.save.bank = antes - v;   // v8.3: pode deixar o caixa no negativo
     this.save.caixa = normCaixa(this.save.caixa.concat([{ d:d.n, int:gs.length, mul:antes - this.save.bank, saldo:this.save.bank }]));
     writeSave(this.save);
     return (this.encerrado = { n:gs.length, vip:gs.filter(g => g.vip).length, multa:antes - this.save.bank, bank:this.save.bank });
@@ -587,43 +589,45 @@ class Game {
   }
 
   finishDay(){
-    const d = this.day, m = Math.round(this.lucro), fat = Math.round(this.money);
+    const d = this.day, m = Math.round(this.lucro), fat = Math.round(this.money), sv = this.save;
     const passed = m >= d.meta;
     this.aberto = false;
     let stars = 0;
     if (passed) stars = 1;
     if (passed && m >= bomGoal(d)) stars = 2;
     if (m >= d.expert && this.stats.lost === 0) stars = 3;
-    const prevBest = this.save.best[d.n] || 0;
     // v8.2.2: só o dia completo rende. O faturamento vai para o dinheiro acumulado, menos ingredientes, contas, folha e
-    // divulgação, que só são pagas agora (o conserto na hora já saiu); dia interrompido na pausa não paga nem ganha nada
+    // divulgação, que só são pagas agora (o conserto na hora já saiu); dia interrompido na pausa não paga nem ganha nada.
+    // v8.3: tudo sai mesmo sem dinheiro (o caixa pode ficar negativo), junto com a parcela do empréstimo
     const income = fat - Math.round(this.custo) - this.contas - this.paid - this.paidDiv;
-    this.save.bank = Math.max(0, this.save.bank + income);
-    this.desgastar(); delete this.save.manut.sorteio;
-    this.save.best[d.n] = Math.max(prevBest, fat);   // o ranking da carreira soma o faturamento dos melhores dias
-    this.save.stars[d.n] = Math.max(this.save.stars[d.n] || 0, stars);
-    if (passed) this.save.maxDay = Math.max(this.save.maxDay, Math.min(7, d.n + 1));
-    caixaAdd(this.save, { d:d.n, fat, ingr:Math.round(this.custo), contas:this.contas, folha:this.paid, div:this.paidDiv, lucro:m, meta:d.meta, ok:passed, perd:this.stats.lost, saldo:this.save.bank });
-    writeSave(this.save);
-    this.result = { day:d.n, money:m, fat, custo:Math.round(this.custo), contas:this.contas, div:this.paidDiv, divName:this.div ? this.div.name : '', meta:d.meta, bom:bomGoal(d), expert:d.expert, passed, stars, served:this.stats.served, lost:this.stats.lost, lostBy:this.stats.lostBy, lotadoT:Math.round(this.stats.lotadoT), atraso:Math.round(this.atraso), full:this.stats.full, chain:this.stats.chain, vip:this.stats.vip, vipLost:this.stats.vipLost, juice:this.stats.juice, juiceMiss:this.stats.juiceMiss, sucoEsp:this.stats.sucoEsp, bebida:this.bebida.id, trash:this.stats.trash, washed:this.stats.washed, income, paid:this.paid, reason:this.reason, conserto:this.conserto, consertos:this.stats.consertos, quebras:this.quebras.filter(q => q.on).map(q => ({ id:q.id, fixed:q.fixed })), clima:this.clima, manut:Object.assign({}, this.manut) };
+    sv.bank += income;
+    const par = this.pagaParcela();
+    this.desgastar(); delete sv.manut.sorteio;
+    // campanha (v8.3): o dia seguinte vem de qualquer jeito; a meta não batida só fica sem estrelas
+    sv.dia = d.n + 1; sv.estrelas += stars; sv.lucroTot += m;
+    // caixa no negativo: BANCO.neg dias seguidos podem; no seguinte, o banco cobre o que falta, à força
+    let forcado = 0;
+    if (sv.bank >= 0) sv.neg = 0;
+    else if (++sv.neg > BANCO.neg){ forcado = Math.ceil(-sv.bank / 10) * 10; this.emprestar(forcado, true); }
+    const row = { d:d.n, fat, ingr:Math.round(this.custo), contas:this.contas, folha:this.paid, div:this.paidDiv, lucro:m, meta:d.meta, ok:passed, st:stars, perd:this.stats.lost, saldo:sv.bank };
+    if (forcado) row.forc = 1;
+    caixaAdd(sv, row);
+    writeSave(sv);
+    this.result = { day:d.n, money:m, fat, custo:Math.round(this.custo), contas:this.contas, div:this.paidDiv, divName:this.div ? this.div.name : '', meta:d.meta, bom:bomGoal(d), expert:d.expert, passed, stars, served:this.stats.served, lost:this.stats.lost, lostBy:this.stats.lostBy, lotadoT:Math.round(this.stats.lotadoT), atraso:Math.round(this.atraso), full:this.stats.full, chain:this.stats.chain, vip:this.stats.vip, vipLost:this.stats.vipLost, juice:this.stats.juice, juiceMiss:this.stats.juiceMiss, sucoEsp:this.stats.sucoEsp, bebida:this.bebida.id, trash:this.stats.trash, washed:this.stats.washed, income, paid:this.paid, reason:this.reason, conserto:this.conserto, consertos:this.stats.consertos, quebras:this.quebras.filter(q => q.on).map(q => ({ id:q.id, fixed:q.fixed })), clima:this.clima, manut:Object.assign({}, this.manut), par, forcado, neg:sv.neg, emp:Object.assign({}, sv.emp) };
     this.setState('dayend');
     if (passed) Sfx.win(); else Sfx.lose();
   }
   finishEndless(){
     const pts = Math.round(this.money);
     const income = pts - Math.round(this.custo) - this.contas - this.paid - this.paidDiv;
-    this.save.bank = Math.max(0, this.save.bank + income); writeSave(this.save);
+    this.save.bank = Math.max(Math.min(0, this.save.bank), this.save.bank + income); writeSave(this.save);   // não deixa o caixa abaixo de zero (nem de onde estava, se já estava no negativo)
     this.endless = { income, paid:this.paid, custo:Math.round(this.custo), contas:this.contas, pontos:pts, tempo:Math.floor(this.elapsed), served:this.stats.served, lost:this.stats.lost, full:this.stats.full, chain:this.stats.chain, vip:this.stats.vip, juice:this.stats.juice };
     this.setState('endlessend');
     Sfx.lose();
   }
-  careerMaxDone(){
-    for (let i=7;i>=1;i--) if ((this.save.stars[i] || 0) >= 1) return i;
-    return 0;
-  }
   /* lojinha antes do dia n (a partir do dia 2): 1 melhoria por dia, mesmo se a lojinha abrir de novo para o mesmo dia */
   goShop(n){
-    this.shopNext = clamp(n || this.day.n + 1, 1, 7);
+    this.shopNext = Math.max(1, n || this.day.n + 1);
     this.shopBought = this.boughtFor === this.shopNext;
     if (DEV.on && this.save.bank < DEV.bank){ this.save.bank = DEV.bank; writeSave(this.save); }   // modo dev: o dinheiro não acaba
     this.salaoSel = -1; this.salaoUndo = []; this.salaoMsg = '';
@@ -643,8 +647,39 @@ class Game {
   /* v8.1: o que já está comprometido com a abertura do próximo dia (folha e divulgação) e o que sobra livre */
   get compromisso(){ return this.payroll() + (this.div ? this.div.cost : 0); }
   get livre(){ return this.save.bank - this.compromisso; }
-  /* o que ficaria de fora ao abrir o próximo dia se gastar v agora */
-  cortesSe(v){ return folhaCortes(this.save.equipe, this.div, this.save.bank - (v || 0)); }
+  /* o que ficaria de fora ao abrir o próximo dia se gastar v agora (com a chave da folha desligada, nada) */
+  cortesSe(v){ return this.save.corta ? folhaCortes(this.save.equipe, this.div, this.save.bank - (v || 0)) : []; }
+  setCorta(on){ this.save.corta = !!on; writeSave(this.save); return true; }
+  /* banco (v8.3): o empréstimo entra no dinheiro na hora e soma `juros` ao que se deve, em BANCO.parcelas no fim de cada
+     dia. Na lojinha, um por vez e até o crédito do ponto; à força (no fim do dia, depois de BANCO.neg dias no negativo),
+     soma ao que já se devia, com juros maiores, e as parcelas recomeçam */
+  get parcela(){ return parcelaDe(this.save.emp); }
+  podeEmprestar(v){ return !this.save.emp.resto && v > 0 && v <= this.ponto.credito; }
+  emprestar(v, forcado){
+    const sv = this.save;
+    if (!forcado && !this.podeEmprestar(v)) return false;
+    sv.bank += v; caixaGasto(sv, 'emp', v);
+    sv.emp = { resto:sv.emp.resto + Math.round(v * (1 + (forcado ? BANCO.forcado : BANCO.juros))), n:BANCO.parcelas };
+    if (forcado) sv.neg = 0;
+    writeSave(sv);
+    if (!forcado) Sfx.coin();
+    return true;
+  }
+  /* parcela do fim do dia (sai mesmo sem dinheiro); devolve o que foi pago */
+  pagaParcela(){
+    const sv = this.save, p = Math.min(sv.emp.resto, this.parcela);
+    if (!p) return 0;
+    sv.bank -= p; caixaGasto(sv, 'par', p);
+    sv.emp = normEmprestimo({ resto:sv.emp.resto - p, n:sv.emp.n - 1 });
+    return p;
+  }
+  /* quitar na lojinha: paga o que falta de uma vez (sem desconto dos juros) */
+  quitar(){
+    const sv = this.save, v = sv.emp.resto;
+    if (!v || sv.bank < v) return false;
+    sv.bank -= v; caixaGasto(sv, 'par', v); sv.emp = normEmprestimo({});
+    writeSave(sv); Sfx.coin(); return true;
+  }
   /* divulgação (v7): escolhida na lojinha, paga junto com a folha ao abrir o dia */
   setDivulga(id){
     const d = DIVULGA.find(x => x.id === id);
@@ -766,13 +801,9 @@ class Game {
     else this.buildTables();
     return true;
   }
-  totals(){
-    let money = 0, stars = 0;
-    for (let i=1;i<=7;i++){ money += this.save.best[i] || 0; stars += this.save.stars[i] || 0; }
-    return { money, stars };
-  }
+  /* Recomeçar do zero (v8.3, com confirmação no menu): a carreira volta ao dia 1; a Missão zero continua feita */
   resetProgress(){
-    this.save = normSave(DEV.on ? { maxDay:7, bank:DEV.bank } : {});
+    this.save = normSave(DEV.on ? { bank:DEV.bank, treino:this.save.treino } : { treino:this.save.treino });
     this.up = this.save.up; this.boughtFor = 0;
     this.buildTables();
     this.kitchen.reset(); this.dani.reset();

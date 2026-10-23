@@ -61,10 +61,11 @@ const LAYOUT = { W, H, TW, HUDX, CALCADA, QUEUE, DOOR, STATIONS, PLATE_SLOTS, BO
    industrial, a Avenida Brasil e o Terraço Suíça vêm nas etapas 3 e 4 do plano.
    nivel: o nível do salão (1 a 4); lugares: teto de lugares; area: onde as mesas podem ficar (a mesa inteira, com
    as cadeiras); espera: lugares lá fora (v7.5); cardapio: fator dos preços; assento: como se espera lá fora e
-   bebida: o que se serve lá (v7.7; ver BEBIDA_ESPERA). Na Garagem, de pé e água da torneira
+   bebida: o que se serve lá (v7.7; ver BEBIDA_ESPERA). Na Garagem, de pé e água da torneira. credito: o limite do
+   empréstimo no banco (v8.3)
    ============================================================ */
 const PONTOS = [
-  { id:'garagem', nome:'Garagem da mãe da Bia', nivel:1, lugares:16, aluguel:0, mudanca:0, cardapio:1, area:{ x0:196, y0:150, x1:684, y1:500 }, espera:4, assento:'pe', bebida:'agua' }
+  { id:'garagem', nome:'Garagem da mãe da Bia', nivel:1, lugares:16, aluguel:0, mudanca:0, credito:1000, cardapio:1, area:{ x0:196, y0:150, x1:684, y1:500 }, espera:4, assento:'pe', bebida:'agua' }
 ];
 function pontoOf(id){ return PONTOS.find(p => p.id === id) || PONTOS[0]; }
 /* ============================================================
@@ -329,8 +330,26 @@ const DAYS = [
   { n:4, groups:15, types:['estudante','vovos','familia','executiva','entregador'], nu:'entregador', meta:300, expert:780, time:180, speed:0.58, juice:0.3, note:'O entregador de moto tem pressa: pouquíssima paciência!' },
   { n:5, groups:16, types:['estudante','vovos','familia','executiva','entregador'], nu:null,         meta:480, expert:1100, time:190, speed:0.56, vip:0.15, juice:0.3, note:'Chegou cliente VIP (de óculos escuros e plaquinha dourada)! Fura a fila e tem menos paciência, mas paga gorjeta extra e um bônus se sair com 5 corações. Se sair bravo, a multa dobra.' },
   { n:6, groups:16, types:['estudante','vovos','familia','executiva','entregador'], nu:null,         meta:460, expert:1100, time:200, speed:0.54, vip:0.15, juice:0.3, note:'Sexta-feira: ninguém quer esperar.' },
-  { n:7, groups:17, types:['estudante','vovos','familia','executiva','entregador'], nu:null,         meta:600, expert:1250, time:220, speed:0.52, vip:0.15, juice:0.3, note:'Tonhão está gripado: a cozinha anda mais devagar hoje.' }
+  { n:7, groups:17, types:['estudante','vovos','familia','executiva','entregador'], nu:null,         meta:600, expert:1250, time:220, speed:0.52, vip:0.15, juice:0.3, gripe:true, note:'Tonhão está gripado: a cozinha anda mais devagar hoje.' }
 ];
+/* campanha (v8.3): os dias 1 a 7 são a rampa de abertura; do dia 8 em diante, cada dia tem o perfil do dia 7 (sem a gripe
+   do Tonhão) com o movimento do dia da semana (o dia 1 é domingo e o 6, sexta). f: fator dos grupos e das metas;
+   tipo e tipoP: mais gente de um tipo, como no clima */
+const SEMANA = [
+  { nome:'Domingo',       f:1.05, tipo:'familia',    tipoP:0.2,  note:'Domingo: a família toda sai para almoçar.' },
+  { nome:'Segunda-feira', f:0.85, note:'Segunda-feira: o movimento é mais fraco.' },
+  { nome:'Terça-feira',   f:0.9,  note:'Terça-feira: dia calmo.' },
+  { nome:'Quarta-feira',  f:1,    note:'Quarta-feira: movimento normal.' },
+  { nome:'Quinta-feira',  f:1,    tipo:'executiva',  tipoP:0.2,  note:'Quinta-feira: almoço de negócios, mais executivas.' },
+  { nome:'Sexta-feira',   f:1.1,  tipo:'entregador', tipoP:0.2,  note:'Sexta-feira: ninguém quer esperar.' },
+  { nome:'Sábado',        f:1.15, tipo:'familia',    tipoP:0.2,  note:'Sábado: casa cheia!' }
+];
+function semanaOf(n){ return SEMANA[(Math.max(1, n) - 1) % 7]; }
+function diaOf(n){
+  if (n >= 1 && n <= DAYS.length) return DAYS[n-1];
+  const d7 = DAYS[DAYS.length - 1], s = semanaOf(n), r10 = v => Math.round(v * s.f / 10) * 10;
+  return Object.assign({}, d7, { n, groups:Math.round(d7.groups * s.f), meta:r10(d7.meta), expert:r10(d7.expert), gripe:false, semana:s.nome, tipo:s.tipo || null, tipoP:s.tipoP || 0, note:s.note });
+}
 
 /* 2ª estrela: metade do caminho entre a meta e a expert (arredondada a R$ 25). Antes ela exigia a expert
    com algum cliente perdido, e como cada perda custa caro, quem batia a expert quase sempre levava 3 */
@@ -353,8 +372,19 @@ const DIVULGA = [
    (salão cheio chama gente). Sem isso, mesa a mais só dava conta de luz e gás */
 const MOVIMENTO = { kit:10, porLugar:0.06 };
 function movimentoSalao(lugares){ return 1 + MOVIMENTO.porLugar * Math.max(0, lugares - MOVIMENTO.kit); }
+/* banco (v8.3): empréstimo com `juros` sobre o valor, pago em `parcelas` no fim de cada dia (um por vez, até o crédito
+   do ponto). A folha, as contas e as parcelas saem mesmo sem dinheiro: o caixa pode fechar `neg` dias seguidos no
+   negativo; no dia seguinte, se fechar no negativo de novo, o banco cobre o que falta, à força, com juros `forcado` */
+const BANCO = { juros:0.10, parcelas:5, valores:[200, 500, 1000], neg:3, forcado:0.20 };
+function normEmprestimo(e){
+  e = (e && typeof e === 'object') ? e : {};
+  const resto = Math.max(0, Math.round(+e.resto) || 0), n = clamp(Math.round(+e.n) || 0, 0, BANCO.parcelas);
+  return resto && n ? { resto, n } : { resto:0, n:0 };
+}
+/* a parcela do fim do dia: o que falta dividido pelas parcelas que faltam (a última fecha a conta) */
+function parcelaDe(e){ return e.n ? Math.ceil(e.resto / e.n) : 0; }
 const CAIXA_MAX = 14;                                 // livro-caixa (v7.2): quantos dias da carreira ficam guardados
-const VERSAO = 'v8.2.3';                              // vai no resumo do Caixa
+const VERSAO = 'v8.3';                              // vai no resumo do Caixa
 const DIVULGA_DIA = 3;                                // antes disso, o movimento é o da inauguração (sem custo)
 function divulgaAberta(n){ return DEV.on || n >= DIVULGA_DIA; }   // no modo dev, desde o dia 1
 function divulgaOf(id){ return DIVULGA.find(d => d.id === id) || DIVULGA[1]; }

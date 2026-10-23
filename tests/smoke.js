@@ -45,24 +45,23 @@ function playDay(n){
   console.log('Dia',n,'t=',(steps*0.05).toFixed(0)+'s','R$',r.money,'meta',r.meta,'exp',r.expert,'stars',r.stars,'served',r.served,'lost',r.lost,'chain',r.chain,r.reason);
   return r;
 }
-for(let n=1;n<=7;n++){
+// v8.3: a carreira é uma campanha; o próximo dia vem de qualquer jeito (a meta não batida só fica sem estrelas)
+for(let n=1;n<=8;n++){
   const r=playDay(n);
-  if(r.passed){
-    els['btn-next'].fire('click');
-    if(n<7){ ok(g.state==='shop','shop after day '+n); 
-      // buy one
-      const u=L.UPGRADES.find(u=>!g.up[u.id]&&g.save.bank>=u.cost); if(u){ ok(g.buy(u.id),'buy '+u.id); ok(!g.buy(L.UPGRADES.find(x=>!g.up[x.id])?.id||'x'),'second buy blocked'); }
-      L.render(g,ctx);
-      ok(g.shopNext===n+1,'lojinha para o dia '+(n+1));
-      els['btn-shop-go'].fire('click'); ok(g.state==='intro'&&g.day.n===n+1,'lojinha leva à introdução do dia '+(n+1));
-      g.goShop(n+1); ok(g.shopBought===!!u,'reabrir a lojinha do mesmo dia não libera outra compra');
-    } else ok(g.state==='final','final');
-  } else { console.log('meta nao atingida no dia',n); break; }
+  if(!r.passed) console.log('meta nao atingida no dia',n);
+  ok(g.proxDia===n+1,'depois do dia '+n+', o próximo é o '+(n+1));
+  els['btn-next'].fire('click');
+  ok(g.state==='shop','shop after day '+n);
+  // buy one
+  const u=L.UPGRADES.find(u=>!g.up[u.id]&&g.save.bank>=u.cost); if(u){ ok(g.buy(u.id),'buy '+u.id); ok(!g.buy(L.UPGRADES.find(x=>!g.up[x.id])?.id||'x'),'second buy blocked'); }
+  L.render(g,ctx);
+  ok(g.shopNext===n+1,'lojinha para o dia '+(n+1));
+  els['btn-shop-go'].fire('click'); ok(g.state==='intro'&&g.day.n===n+1,'lojinha leva à introdução do dia '+(n+1));
+  g.goShop(n+1); ok(g.shopBought===!!u,'reabrir a lojinha do mesmo dia não libera outra compra');
 }
-// carreira: dia 2 em diante abre a lojinha antes; dia 1 vai direto à introdução
-g.startDay(3); g.begin(); g.finishDay(); els['btn-again'].fire('click'); ok(g.state==='shop'&&g.shopNext===3,'repetir dia 3 abre a lojinha');
+ok(!els['btn-again'],'sem "Repetir dia" (v8.3)');
 els['btn-shop-menu'].fire('click'); ok(g.state==='menu','lojinha tem menu principal');
-g.startDay(1); g.begin(); g.finishDay(); els['btn-again'].fire('click'); ok(g.state==='intro'&&g.day.n===1,'dia 1 vai direto');
+els['btn-play'].fire('click'); ok(g.state==='shop'&&g.shopNext===9,'Continuar abre a lojinha do próximo dia (9)');
 // drag/select + pointer tests
 g.startDay(1); g.begin(); g.cam=0; const QX=L.LAYOUT.QUEUE.x;   // v7.5: a entrada chega na tela; com a câmera no salão, tela = mundo (a fila fica em x < 0)
 for(let i=0;i<200;i++) g.update(0.05);
