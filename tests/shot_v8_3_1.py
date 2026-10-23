@@ -1,5 +1,5 @@
 # capturas da v8.3.1 (atrasar o banco) em ../capturas/v8.3.1: o fim do dia com a parcela atrasada, a aba Banco com o
-# atraso, a tela "O banco tomou a lanchonete" e o menu depois dela, no PC (1220×600) e no celular deitado (740×360)
+# atraso, a tela "O banco tomou a lanchonete", o menu depois dela e (v8.3.2) a aba Banco com Amortizar e Quitar, no PC (1220×600) e no celular deitado (740×360)
 from playwright.sync_api import sync_playwright
 import pathlib, os
 HERE=pathlib.Path(__file__).resolve().parent
@@ -18,6 +18,7 @@ with sync_playwright() as p:
         pg.evaluate(SAVE,{'dia':9,'bank':100,'estrelas':12,'lucroTot':5200,'emp':{'resto':550,'n':5}}); pg.evaluate(FECHA,-200); pg.wait_for_timeout(150); pg.screenshot(path=OUT+'/01_fim_atrasou'+name+'.png')
         pg.evaluate("()=>{ const g=window.__game; g.goShop(g.proxDia); window.__lcc.setShopTab('banco'); }"); pg.wait_for_timeout(150); pg.screenshot(path=OUT+'/02_banco_atraso'+name+'.png')
         pg.evaluate(FECHA,-300); pg.wait_for_timeout(150); pg.screenshot(path=OUT+'/03_banco_tomou'+name+'.png')
+        pg.evaluate(SAVE,{'dia':9,'bank':1400}); pg.evaluate("()=>{ const g=window.__game; g.goShop(9); g.emprestar(1000); window.__lcc.setShopTab('banco'); }"); pg.wait_for_timeout(150); pg.screenshot(path=OUT+'/05_banco_amortizar'+name+'.png')
         pg.evaluate("()=>window.__game.setState('menu')"); pg.wait_for_timeout(150); pg.screenshot(path=OUT+'/04_menu_fechou'+name+'.png')
         ctx.close()
     print('ERRORS:',errs); b.close()

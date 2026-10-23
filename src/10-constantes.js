@@ -372,26 +372,41 @@ const DIVULGA = [
    (salão cheio chama gente). Sem isso, mesa a mais só dava conta de luz e gás */
 const MOVIMENTO = { kit:10, porLugar:0.06 };
 function movimentoSalao(lugares){ return 1 + MOVIMENTO.porLugar * Math.max(0, lugares - MOVIMENTO.kit); }
-/* banco (v8.3): empréstimo com `juros` sobre o valor, pago em `parcelas` no fim de cada dia (um por vez, até o crédito
-   do ponto). A folha, as contas e as parcelas saem mesmo sem dinheiro: o caixa pode fechar `neg` dias seguidos no
+/* banco (v8.3): empréstimo pago em `parcelas` no fim de cada dia (um por vez, até o crédito do ponto).
+   v8.3.2, amortização (tabela SAC): cada parcela é a amortização fixa (o valor ÷ `parcelas`) mais os juros do dia, `juros`
+   sobre o saldo devedor (o que falta). Amortizar antes (adiantar parcelas ou quitar) abate o saldo e corta os juros que
+   viriam; o prazo encurta. A folha, as contas e as parcelas saem mesmo sem dinheiro: o caixa pode fechar `neg` dias seguidos no
    negativo; no dia seguinte, se fechar no negativo de novo, o banco cobre o que falta, à força, com juros `forcado`.
    v8.3.1: a parcela que não cabe no dinheiro do fim do dia fica atrasada (atr); se no fim do dia seguinte não der para
    pagar a atrasada e a do dia, o banco toma a lanchonete e a carreira acaba */
-const BANCO = { juros:0.10, parcelas:5, valores:[200, 500, 1000], neg:3, forcado:0.20 };
+const BANCO = { juros:0.03, parcelas:5, valores:[200, 500, 1000], neg:3, forcado:0.06 };
+/* empréstimo no save: resto (o saldo devedor), amort (a amortização de cada parcela), j (juros ao dia), atr (parcela
+   atrasada) e n (parcelas que faltam, calculado). Save da v8.3 ({ resto, n }, com os juros já somados): amort = resto ÷ n, sem juros */
 function normEmprestimo(e){
   e = (e && typeof e === 'object') ? e : {};
-  const resto = Math.max(0, Math.round(+e.resto) || 0), n = clamp(Math.round(+e.n) || 0, 0, BANCO.parcelas);
-  return resto && n ? (e.atr ? { resto, n, atr:true } : { resto, n }) : { resto:0, n:0 };
+  const resto = Math.max(0, Math.round(+e.resto) || 0);
+  if (!resto) return { resto:0, n:0 };
+  const amort = Math.max(1, Math.round(+e.amort) || Math.ceil(resto / clamp(Math.round(+e.n) || 1, 1, BANCO.parcelas)));
+  const j = e.amort ? clamp(+e.j || 0, 0, 1) : 0, out = { resto, amort, j, n:Math.ceil(resto / amort) };
+  if (e.atr) out.atr = true;
+  return out;
 }
-/* a parcela do fim do dia: o que falta dividido pelas parcelas que faltam (a última fecha a conta) */
-function parcelaDe(e){ return e.n ? Math.ceil(e.resto / e.n) : 0; }
-/* o que o banco cobra no fim do dia: a parcela do dia e, se houver, a atrasada antes dela */
-function devidoDe(e){
-  const p1 = parcelaDe(e);
-  return e.atr ? p1 + parcelaDe({ resto:e.resto - p1, n:e.n - 1 }) : p1;
+/* juros do dia sobre o saldo */
+function jurosDe(e){ return e.resto ? Math.round(e.resto * e.j) : 0; }
+/* a parcela do fim do dia: a amortização (a última fecha a conta) mais os juros do dia */
+function parcelaDe(e){ return e.resto ? Math.min(e.resto, e.amort) + jurosDe(e) : 0; }
+/* o que o banco cobra no fim do dia: com uma parcela atrasada, 2 amortizações e os juros (os de ontem já foram para o saldo) */
+function devidoDe(e){ return e.resto ? Math.min(e.resto, e.amort * (e.atr ? 2 : 1)) + jurosDe(e) : 0; }
+/* as parcelas que faltam, pagando em dia (para mostrar na aba Banco) */
+function tabelaDe(e){
+  const out = []; let r = e.resto;
+  while (r > 0 && out.length < 20){ const a = Math.min(r, e.amort); out.push(a + Math.round(r * e.j)); r -= a; }
+  return out;
 }
+/* um empréstimo novo de v, pagando em dia: as parcelas e os juros somados */
+function simulaEmprestimo(v, j){ const t = tabelaDe(normEmprestimo({ resto:v, amort:Math.ceil(v / BANCO.parcelas), j })); return { parcelas:t, juros:t.reduce((a, p) => a + p, 0) - v }; }
 const CAIXA_MAX = 14;                                 // livro-caixa (v7.2): quantos dias da carreira ficam guardados
-const VERSAO = 'v8.3.1';                              // vai no resumo do Caixa
+const VERSAO = 'v8.3.2';                              // vai no resumo do Caixa
 const DIVULGA_DIA = 3;                                // antes disso, o movimento é o da inauguração (sem custo)
 function divulgaAberta(n){ return DEV.on || n >= DIVULGA_DIA; }   // no modo dev, desde o dia 1
 function divulgaOf(id){ return DIVULGA.find(d => d.id === id) || DIVULGA[1]; }

@@ -85,19 +85,20 @@ function normCaixa(c){
       if (n(r.st)) o.st = clamp(n(r.st), 0, 3);
       if (n(r.emp)){ o.emp = n(r.emp); if (r.forc) o.forc = 1; }
       if (n(r.par)) o.par = n(r.par);
+      if (n(r.jur)) o.jur = n(r.jur);   // v8.3.2: a parte de juros do que foi pago ao banco
       if (r.atr) o.atr = 1;   // v8.3.1: parcela do banco atrasada
       if (r.tom) o.tom = 1;   // e o dia em que o banco tomou a lanchonete
       return o;
     });
 }
 /* sal pode ficar negativo: mesa vendida no editor (v7.4) volta como dinheiro. man (v8): revisões na lojinha e consertos na hora.
-   emp e par (v8.3): empréstimo recebido e o que foi pago ao banco (parcelas e quitação) */
+   emp e par (v8.3): empréstimo recebido e o que foi pago ao banco (parcelas e quitação); jur (v8.3.2): a parte de juros */
 function normPend(p){
   p = (p && typeof p === 'object') ? p : {};
   const pos = v => Math.max(0, Math.round(+v) || 0);
-  return { mel: pos(p.mel), sal: Math.round(+p.sal) || 0, man: pos(p.man), emp: pos(p.emp), par: pos(p.par) };
+  return { mel: pos(p.mel), sal: Math.round(+p.sal) || 0, man: pos(p.man), emp: pos(p.emp), par: pos(p.par), jur: pos(p.jur) };
 }
-/* compra na lojinha (k: 'mel', 'sal', 'man', 'emp' ou 'par'), anotada para a próxima linha do caixa */
+/* compra na lojinha (k: 'mel', 'sal', 'man', 'emp', 'par' ou 'jur'), anotada para a próxima linha do caixa */
 function caixaGasto(s, k, v){ s.caixaPend = normPend(s.caixaPend); s.caixaPend[k] += v; }
 function caixaAdd(s, row){
   const p = normPend(s.caixaPend);

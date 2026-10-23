@@ -4,6 +4,16 @@ Registro das ideias e dos retornos de quem jogou, com o texto original, e de ond
 
 ---
 
+## 23/10/2026 — Usuário: amortização e empréstimo que não valha sempre a pena
+**Origem:** mensagem do usuário, depois da v8.3.1:
+
+> Aproveita e inclui a dinâmica de amortização de empréstimo também.
+> Fiquei preocupado de essa dinâmica ficar muito vantajosa, tipo pegar empréstimo sempre valer a pena pelo lucro proporcional que o empréstimo traria, está balanceado isso? Deve ter risco pegar empréstimo e ser relativamente neutro ou pelo menos um pouco desvantajoso pegar empréstimo no longo prazo na maioria dos casos
+
+**Para onde foi:** **feito na v8.3.2** (`docs/spec-v8.3.2.md`): tabela SAC com juros de 3% ao dia sobre o saldo, amortizar e quitar na aba Banco. Medido com `tests/emprestimo.js`: no melhor caso empata, na maioria perde R$ 200 a R$ 500 em 14 dias; o risco é o atraso que fecha a lanchonete (v8.3.1).
+
+---
+
 ## 23/10/2026 — Usuário: atrasar o banco é game over
 **Origem:** mensagem do usuário, depois da v8.3 (campanha contínua e banco):
 

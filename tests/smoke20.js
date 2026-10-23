@@ -55,7 +55,7 @@ ok(g.state==='menu' && g.save.dia===3,'largar o dia no meio não avança a carre
   H2.g.setState('menu'); ok(H2.g.proxDia===4 && /dia 4/.test(H2.els['btn-play'].textContent),'abrindo um save da v8.2: Continuar no dia 4');
   ok(L.normSave({dia:12,bank:-80,neg:2,emp:{resto:330,n:3},corta:false}).bank===-80,'o save guarda o caixa negativo');
   const s2=L.normSave({dia:12,bank:-80,neg:9,emp:{resto:330,n:9},corta:false}); ok(s2.neg===3 && s2.emp.n===5 && s2.corta===false,'neg e parcelas limitados');
-  ok(L.normEmprestimo({resto:100,n:0}).resto===0 && L.normEmprestimo(null).n===0,'empréstimo sem parcelas vira nenhum'); }
+  { const e=L.normEmprestimo({resto:100,n:0}); ok(e.resto===100 && e.n===1 && e.j===0 && L.normEmprestimo(null).n===0,'saldo sem parcelas vira 1 parcela; nada vira nenhum'); } }
 
 // ---------- caixa no negativo: 3 dias seguidos podem; no 4º, o banco cobre à força ----------
 novo({dia:10,bank:20});
@@ -71,11 +71,11 @@ cont(); els['btn-shop-go'].fire('click'); ok(/se fechar hoje no negativo/.test(e
 const b3=g.save.bank; els['btn-start'].fire('click'); g.schedule=[]; g.nextIdx=0; const c4=g.contas; g.finishDay();
 { const deve=-(b3-c4), forc=Math.ceil(deve/10)*10, r=g.result, row=g.save.caixa.slice(-1)[0];
   ok(r.forcado===forc && g.save.bank===b3-c4+forc && g.save.bank>=0 && g.save.neg===0,'4º dia no negativo: o banco cobre '+forc+' e o caixa volta a '+g.save.bank);
-  ok(g.save.emp.resto===Math.round(forc*1.2) && g.save.emp.n===5,'à força, juros de 20% em 5 parcelas');
+  ok(g.save.emp.resto===forc && g.save.emp.j===L.BANCO.forcado && g.save.emp.n===5,'à força: saldo do que cobriu, juros de 6% ao dia, 5 parcelas (v8.3.2)');
   ok(row.emp===forc && row.forc===1 && row.saldo===g.save.bank,'a linha do caixa mostra o empréstimo à força');
   ok(/banco cobriu/.test(els['end-msg'].textContent) && /Banco \(à força\)/.test(txt(els['end-stats'])),'o fim do dia conta');
   // a parcela sai no fim do dia seguinte
-  const p=g.parcela, b=g.save.bank; ok(p===Math.ceil(g.save.emp.resto/5),'parcela: o resto dividido pelas parcelas');
+  const p=g.parcela, b=g.save.bank, e0=g.save.emp; ok(p===Math.min(e0.resto,Math.ceil(e0.resto/5))+Math.round(e0.resto*e0.j),'parcela: amortização (1/5) e os juros do dia sobre o saldo');
   cont(); els['btn-shop-go'].fire('click'); ok(/Parcela do banco no fim do dia/.test(els['intro-manut'].textContent),'a introdução lembra a parcela');
   els['btn-start'].fire('click'); g.schedule=[]; g.nextIdx=0; g.money=1000; const cc=g.contas; g.finishDay();
   ok(g.result.par===p && g.save.bank===b+1000-cc-p && g.result.money===1000-cc,'a parcela sai do dinheiro, fora do lucro do dia');
@@ -87,22 +87,31 @@ novo({dia:5,bank:10,neg:2}); cont(); joga(800,0); ok(g.save.bank>0 && g.save.neg
 // ---------- empréstimo na lojinha ----------
 novo({dia:5,bank:100});
 cont(); L.setShopTab('banco');
-{ const t=txt(els['shop-grid']); ok(/Empréstimo/.test(t) && /Juros de 10%/.test(t) && /Caixa no negativo/.test(t) && /Folha sem dinheiro/.test(t),'aba Banco: empréstimo, negativo e a folha sem dinheiro'); }
+{ const t=txt(els['shop-grid']); ok(/Empréstimo/.test(t) && /3% ao dia sobre o saldo/.test(t) && /R\$ 90 de juros/.test(t) && /Atrasar 2 dias fecha/.test(t) && /Caixa no negativo/.test(t) && /Folha sem dinheiro/.test(t),'aba Banco: empréstimo, negativo e a folha sem dinheiro'); }
 ok(!g.emprestar(1500) && !g.podeEmprestar(1001) && g.podeEmprestar(1000),'até R$ 1.000 na Garagem');
-ok(g.emprestar(500) && g.save.bank===600 && g.save.emp.resto===550 && g.save.emp.n===5,'pega R$ 500: deve R$ 550 em 5 parcelas');
+ok(g.emprestar(500) && g.save.bank===600 && g.save.emp.resto===500 && g.save.emp.amort===100 && g.save.emp.j===0.03 && g.save.emp.n===5,'pega R$ 500: saldo 500, amortização de 100, 3% ao dia, 5 parcelas');
+ok(L.tabelaDe(g.save.emp).join()==='115,112,109,106,103','tabela SAC: 115, 112, 109, 106 e 103 (R$ 45 de juros)');
 ok(!g.emprestar(200),'um empréstimo por vez');
 ok(g.save.caixaPend.emp===500,'o empréstimo vai para a linha do dia');
-L.setShopTab('banco'); ok(/faltam R\$ 550/.test(txt(els['shop-grid'])) && /Quitar agora: R\$ 550/.test(txt(els['shop-grid'])),'a aba mostra o que falta e o quitar');
-ok(/parcela do banco R\$ 110/.test(els['shop-folha'].textContent),'a linha da folha lembra a parcela');
+L.setShopTab('banco'); { const t=txt(els['shop-grid']); ok(/Faltam R\$ 500/.test(t) && /Quitar: R\$ 500/.test(t) && /Amortizar R\$ 100/.test(t) && /R\$ 115 \(100 \+ 15 de juros\)/.test(t) && /112, 109, 106 e 103/.test(t),'a aba mostra o saldo, a próxima parcela (amortização + juros), as seguintes, amortizar e quitar'); }
+ok(/parcela do banco R\$ 115/.test(els['shop-folha'].textContent),'a linha da folha lembra a parcela');
 { let pagas=0, tot=0; for(let i=0;i<5;i++){ joga(1000,0); pagas++; tot+=g.result.par; if(i<4) cont(); }
-  ok(tot===550 && !g.save.emp.resto && g.save.emp.n===0,'5 parcelas pagam R$ 550 e o empréstimo acaba'); }
-{ const cx=g.save.caixa.slice(-5); ok(cx[0].emp===500 && cx.every(r=>r.par===110),'o caixa mostra o empréstimo e as 5 parcelas');
-  ok(L.caixaTotais(g.save.caixa).find(t=>t.id==='par').v===550,'"para onde foi" soma as parcelas');
-  ok(/empréstimo \+500/.test(L.caixaResumo(g.save)) && /banco −110/.test(L.caixaResumo(g.save)),'o resumo do caixa mostra o banco');
-  els['btn-next'].fire('click'); L.setShopTab('caixa'); const t=txt(els['shop-grid']); ok(/Banco/.test(t) && /-R\$ 110|-R\$ 110|-\s*R\$\s*110/.test(t.replace(/\s+/g,' ')),'aba Caixa com a coluna Banco'); }
+  ok(tot===545 && !g.save.emp.resto && g.save.emp.n===0,'5 parcelas pagam R$ 545 e o empréstimo acaba'); }
+{ const cx=g.save.caixa.slice(-5); ok(cx[0].emp===500 && cx.map(r=>r.par).join()==='115,112,109,106,103' && cx.map(r=>r.jur).join()==='15,12,9,6,3','o caixa mostra o empréstimo, as 5 parcelas e os juros de cada uma');
+  ok(L.caixaTotais(g.save.caixa).find(t=>t.id==='jur').v===45,'"para onde foi" soma os juros (o custo do banco)');
+  ok(/empréstimo \+500/.test(L.caixaResumo(g.save)) && /banco −115 \(juros 15\)/.test(L.caixaResumo(g.save)),'o resumo do caixa mostra o banco');
+  els['btn-next'].fire('click'); L.setShopTab('caixa'); const t=txt(els['shop-grid']); ok(/Banco/.test(t) && /-\s*R\$\s*103/.test(t.replace(/\s+/g,' ')),'aba Caixa com a coluna Banco'); }
 // quitar
-novo({dia:5,bank:900}); cont(); g.emprestar(200); ok(g.save.emp.resto===220,'deve 220');
-ok(g.quitar() && g.save.bank===880 && !g.save.emp.resto && g.save.caixaPend.par===220,'quitar paga o resto de uma vez');
+novo({dia:5,bank:900}); cont(); g.emprestar(200); ok(g.save.emp.resto===200,'deve 200');
+ok(g.quitar() && g.save.bank===900 && !g.save.emp.resto && g.save.caixaPend.par===200,'quitar no mesmo dia: devolve só o valor, sem juros');
+// amortizar (v8.3.2): abate o saldo, encurta o prazo e corta os juros
+novo({dia:5,bank:600}); cont(); g.emprestar(500); g.goShop(5);
+ok(g.amortizar(100) && g.save.emp.resto===400 && g.save.emp.n===4 && g.save.bank===1000 && g.parcela===112,'amortizar 100: saldo 400, 4 parcelas, a próxima de 112');
+ok(L.tabelaDe(g.save.emp).join()==='112,109,106,103' && !g.amortizar(0) && !g.amortizar(-1),'a tabela encurta (juros de 30 em vez de 45)');
+g.save.bank=50; ok(!g.amortizar(100),'sem dinheiro, não amortiza');
+{ novo({dia:5,bank:2000}); cont(); g.emprestar(1000); const on=L.simulaEmprestimo(1000,0.03).juros; let jur=0;
+  for(let i=0;i<2;i++){ els['btn-shop-go'].fire('click'); els['btn-start'].fire('click'); g.schedule=[]; g.money=500; g.finishDay(); jur+=g.save.caixa.slice(-1)[0].jur; cont(); }
+  g.quitar(); ok(on===90 && jur===30+24 && !g.save.emp.resto,'quitar depois de 2 parcelas: R$ 54 de juros em vez de R$ 90'); }
 ok(!g.quitar(),'sem empréstimo, nada a quitar');
 // o empréstimo custa mais do que esperar
 { const v=1000, total=v*(1+L.BANCO.juros); ok(total>v && L.BANCO.forcado>L.BANCO.juros,'juros sobre o valor; à força, mais caro'); }

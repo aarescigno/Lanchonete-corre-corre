@@ -156,7 +156,7 @@ function buildTips(){
     }]
   ];
   // v8.3: a campanha e o banco
-  tips.push(['A carreira segue dia após dia, levando tudo o que veio antes: dinheiro, móveis, equipe, melhorias e o desgaste. Meta não batida deixa o dia sem estrelas, mas o dia seguinte vem. Faltou dinheiro? O caixa pode ficar negativo ' + BANCO.neg + ' dias seguidos (no ' + (BANCO.neg + 1) + 'º, o banco cobre à força) e a aba Banco da lojinha empresta, com juros de ' + Math.round(BANCO.juros * 100) + '%. Não atrase: parcela sem pagar 2 dias seguidos, e o banco toma a lanchonete!', c => {
+  tips.push(['A carreira segue dia após dia, levando tudo o que veio antes: dinheiro, móveis, equipe, melhorias e o desgaste. Meta não batida deixa o dia sem estrelas, mas o dia seguinte vem. Faltou dinheiro? O caixa pode ficar negativo ' + BANCO.neg + ' dias seguidos (no ' + (BANCO.neg + 1) + 'º, o banco cobre à força) e a aba Banco da lojinha empresta, com juros de ' + Math.round(BANCO.juros * 100) + '% ao dia sobre o que falta (amortizar antes corta os juros). Não atrase: parcela sem pagar 2 dias seguidos, e o banco toma a lanchonete!', c => {
     c.translate(32,34); c.scale(1.4,1.4);
     drawBanco(c);
   }]);
