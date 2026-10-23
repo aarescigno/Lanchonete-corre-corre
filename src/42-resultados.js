@@ -38,11 +38,25 @@ function buildEnd(){
   if (r.day === DAYS.length) msg += ' Fim da semana de inauguração! Daqui em diante, cada dia tem o movimento do dia da semana.';
   // caixa no negativo (v8.3): quantos dias seguidos, ou o banco que cobriu à força
   const sv = game.save;
+  // v8.3.1: a parcela que não coube no caixa ficou atrasada
+  if (r.atrasou) msg += ' Faltou dinheiro para a parcela do banco: ficou atrasada. Amanhã, no fim do dia, o caixa precisa ter ' + fmt(game.devido) + ' (a atrasada e a do dia), senão o banco toma a lanchonete!';
   if (r.forcado) msg += ' O caixa fechou no negativo pelo ' + (BANCO.neg + 1) + 'º dia seguido: o banco cobriu ' + fmt(r.forcado) + ', com juros de ' + Math.round(BANCO.forcado * 100) + '%, em ' + sv.emp.n + ' parcelas de ' + fmt(game.parcela) + '.';
   else if (sv.bank < 0) msg += ' Caixa no negativo há ' + sv.neg + (sv.neg > 1 ? ' dias' : ' dia') + (sv.neg >= BANCO.neg ? ': se fechar amanhã no negativo, o banco cobre à força.' : ' (pode ficar até ' + BANCO.neg + ').');
   $('end-msg').textContent = msg;
   $('btn-next').textContent = 'Lojinha e dia ' + game.proxDia;
   buildSaveForm($('end-save'), 'carreira');
+}
+/* v8.3.1: o banco tomou a lanchonete (a parcela atrasada não foi paga no dia seguinte): fim da carreira */
+function buildFalencia(){
+  const r = game.result, sv = game.save;
+  if (!r) return;
+  $('falencia-msg').textContent = 'No fim do dia ' + r.day + ', o caixa (' + fmt(sv.bank) + ') não tinha os ' + fmt(devidoDe(sv.emp)) + ' da parcela atrasada e da do dia. A carreira acabou: recomece do zero quando quiser.';
+  const st = $('falencia-stats');
+  clearEl(st);
+  [['Dias jogados', String(r.day)], ['Estrelas', sv.estrelas + ' ★'], ['Lucro acumulado', fmt(sv.lucroTot)], ['Lucro do último dia', fmt(r.money)], ['Dívida com o banco', fmt(sv.emp.resto)]].forEach(p => {
+    st.appendChild(el('span', null, p[0])); st.appendChild(el('b', null, p[1]));
+  });
+  buildSaveForm($('falencia-save'), 'carreira');
 }
 function buildEndless(){
   const r = game.endless;

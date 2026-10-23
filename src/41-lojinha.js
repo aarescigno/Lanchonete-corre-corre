@@ -365,10 +365,10 @@ function buildBanco(grid){
   const sv = game.save, e = sv.emp, cr = game.ponto.credito, pc = Math.round(BANCO.juros * 100);
   const vs = BANCO.valores.filter(v => v <= cr), parc = v => fmt(Math.ceil(Math.round(v * (1 + BANCO.juros)) / BANCO.parcelas));
   let c = staffCard(upgradeIcon('banco'), 'Empréstimo',
-    'Juros de ' + pc + '%, em ' + BANCO.parcelas + ' parcelas no fim de cada dia (' + vs.map(parc).join(', ').replace(/, ([^,]*)$/, ' ou $1') + '), fora do lucro do dia. Até ' + fmt(cr) + ' na ' + game.ponto.nome.replace(/ da .*/, '').toLowerCase() + ', um por vez. Esperar juntando sai mais barato!');
+    'Juros de ' + pc + '%, em ' + BANCO.parcelas + ' parcelas no fim de cada dia (' + vs.map(parc).join(', ').replace(/, ([^,]*)$/, ' ou $1') + '), fora do lucro do dia. Até ' + fmt(cr) + ' na ' + game.ponto.nome.replace(/ da .*/, '').toLowerCase() + ', um por vez. Parcela que não couber no caixa atrasa; sem pagar no dia seguinte, o banco toma a lanchonete.');
   if (e.resto){
-    c.classList.add('own');
-    c.appendChild(el('span', 'full', 'Seu empréstimo: faltam ' + fmt(e.resto) + ', em ' + e.n + (e.n > 1 ? ' parcelas' : ' parcela') + ' (a próxima, ' + fmt(game.parcela) + ', no fim do dia ' + game.shopNext + ').'));
+    c.classList.add(e.atr ? 'atr' : 'own');
+    c.appendChild(el('span', 'full', 'Seu empréstimo: faltam ' + fmt(e.resto) + ', em ' + e.n + (e.n > 1 ? ' parcelas' : ' parcela') + (e.atr ? '. Parcela atrasada! No fim do dia ' + game.shopNext + ', o caixa precisa ter ' + fmt(game.devido) + ', senão o banco toma a lanchonete.' : ' (a próxima, ' + fmt(game.parcela) + ', no fim do dia ' + game.shopNext + ').')));
     c.appendChild(shopBtn('Quitar agora: ' + fmt(e.resto), 'btn', sv.bank >= e.resto, () => game.quitar(), e.resto));
   } else {
     const duo = el('div', 'duo');
@@ -402,7 +402,7 @@ function caixaResumo(save){
   const cx = save.caixa, eq = save.equipe, sal = save.salao;
   const out = ['Lanchonete Corre-Corre ' + VERSAO + ' · Caixa (valores em R$)'];
   cx.forEach(r => out.push(r.int ? 'Dia ' + r.d + ' largado no meio: ' + r.int + (r.int > 1 ? ' grupos foram' : ' grupo foi') + ' embora bravo' + (r.int > 1 ? 's' : '') + ': −' + r.mul + ' · saldo ' + r.saldo : r.dev ? 'Devolução ' + (r.devK === 'maquina' ? 'da máquina de suco' : 'do salão') + ': +' + r.dev + ' · saldo ' + r.saldo : 'Dia ' + r.d + (r.ok ? ' ✓' : ' ✗') + ': fatura ' + r.fat + ' − ingred. ' + r.ingr + ' − contas ' + r.contas + ' − equipe ' + r.folha + (r.div ? ' − divulg. ' + r.div : '') +
-    ' = lucro ' + r.lucro + ' (meta ' + r.meta + ')' + (r.perd ? ' · ' + r.perd + (r.perd > 1 ? ' perdidos' : ' perdido') : '') + (r.mel + r.sal ? ' · compras ' + (r.mel + r.sal) : '') + (r.man ? ' · manutenção ' + r.man : '') + (r.emp ? ' · empréstimo +' + r.emp + (r.forc ? ' (à força)' : '') : '') + (r.par ? ' · banco −' + r.par : '') + ' · saldo ' + r.saldo));
+    ' = lucro ' + r.lucro + ' (meta ' + r.meta + ')' + (r.perd ? ' · ' + r.perd + (r.perd > 1 ? ' perdidos' : ' perdido') : '') + (r.mel + r.sal ? ' · compras ' + (r.mel + r.sal) : '') + (r.man ? ' · manutenção ' + r.man : '') + (r.emp ? ' · empréstimo +' + r.emp + (r.forc ? ' (à força)' : '') : '') + (r.par ? ' · banco −' + r.par : '') + (r.atr ? ' · parcela atrasada' : '') + (r.tom ? ' · o banco tomou a lanchonete' : '') + ' · saldo ' + r.saldo));
   const nd = cx.filter(r => !r.dev && !r.int).length;
   if (nd) out.push('Para onde foi (' + nd + (nd > 1 ? ' dias' : ' dia') + '): ' + caixaTotais(cx).filter(t => t.v).map(t => t.name.toLowerCase() + ' ' + t.v).join(', '));
   const ups = UPGRADES.filter(u => save.up[u.id]).map(u => u.name.toLowerCase());
@@ -458,6 +458,7 @@ function buildCaixa(grid){
     tr.appendChild(r.man ? cxTd(r.man) : el('td', 'n', '–'));
     const ban = (r.emp || 0) - (r.par || 0), bt = r.emp || r.par ? cxTd(ban, ban >= 0 ? 'pos' : 'neg') : el('td', 'n', '–');
     if (r.emp || r.par) bt.title = (r.emp ? 'Empréstimo' + (r.forc ? ' à força' : '') + ': +' + fmt(r.emp) : '') + (r.emp && r.par ? '; ' : '') + (r.par ? 'pago ao banco: ' + fmt(r.par) : '');
+    if (r.atr || r.tom){ bt.className = 'n neg'; bt.textContent = r.tom ? 'tomou' : 'atrasou'; bt.title = r.tom ? 'O banco tomou a lanchonete' : 'Parcela do banco atrasada'; }   // v8.3.1
     tr.appendChild(bt);
     tr.appendChild(cxTd(r.saldo, r.saldo < 0 ? 'neg' : null));
     tb.appendChild(tr);
@@ -504,15 +505,15 @@ function buildShop(){
   const comp = game.compromisso, corte = game.cortesSe(0), liv = $('shop-livre'), sv = game.save;
   // v8.3: com a chave da folha desligada, falta de dinheiro vira caixa no negativo; e o aviso dos dias no negativo
   const negFim = !sv.corta && comp && game.livre < 0, negAgora = sv.bank < 0;
-  liv.className = corte.length || negFim || negAgora ? 'livre falta' : 'livre';
-  liv.textContent = (negAgora ? ' · no negativo há ' + sv.neg + (sv.neg === 1 ? ' dia' : ' dias') + ' (no ' + (BANCO.neg + 1) + 'º seguido, o banco cobre à força)' : '') + (!comp ? '' : corte.length
+  liv.className = corte.length || negFim || negAgora || sv.emp.atr ? 'livre falta' : 'livre';
+  liv.textContent = (sv.emp.atr ? ' · parcela do banco atrasada: ' + fmt(game.devido) + ' no fim do dia, ou o banco toma a lanchonete' : '') + (negAgora ? ' · no negativo há ' + sv.neg + (sv.neg === 1 ? ' dia' : ' dias') + ' (no ' + (BANCO.neg + 1) + 'º seguido, o banco cobre à força)' : '') + (!comp ? '' : corte.length
     ? ' · faltam ' + fmt(-game.livre) + ' para a folha: o dia ' + game.shopNext + ' abre sem ' + listaE(corte)
     : negFim ? ' · faltam ' + fmt(-game.livre) + ' para a folha: o caixa pode fechar no negativo'
     : ' · livre ' + fmt(game.livre) + ' (' + fmt(comp) + ' reservados para ' + listaE(folhaItens(game.save.equipe, game.div)) + ')');
   $('shop-limit').textContent = DEV.on ? 'Modo dev: tudo liberado; melhorias de graça, ligue e desligue à vontade.' : game.shopBought ? 'Melhoria do dia ' + game.shopNext + ' já escolhida.' : 'Você pode levar 1 melhoria antes do dia ' + game.shopNext + '.';
   $('btn-shop-go').textContent = 'Começar o dia ' + game.shopNext;
   const f = payroll(game.save.equipe), dv = divulgaAberta(game.shopNext) ? divulgaOf(game.save.divulga) : null;
-  $('shop-folha').textContent = (f ? 'Folha ' + fmt(f) : 'Sem folha') + (dv ? ' + ' + dv.name.toLowerCase() + ' ' + fmt(dv.cost) : '') + ', contas ' + fmt(contasDia(game.tables)) + (sv.emp.resto ? ', parcela do banco ' + fmt(game.parcela) : '') + ' e ingredientes: tudo pago no fim do dia, que só rende completo. A meta é o lucro.';
+  $('shop-folha').textContent = (f ? 'Folha ' + fmt(f) : 'Sem folha') + (dv ? ' + ' + dv.name.toLowerCase() + ' ' + fmt(dv.cost) : '') + ', contas ' + fmt(contasDia(game.tables)) + (sv.emp.resto ? ', parcela do banco ' + fmt(game.devido) + (sv.emp.atr ? ' (com a atrasada)' : '') : '') + ' e ingredientes: tudo pago no fim do dia, que só rende completo. A meta é o lucro.';
   grid.className = 'shopgrid' + (shopTab === 'salao' || shopTab === 'caixa' ? ' ' + shopTab : '');
   ['salao', 'caixa'].forEach(k => $('ov-shop').classList[shopTab === k ? 'add' : 'remove'](k));
   if (shopTab === 'equipe') return buildEquipe(grid);

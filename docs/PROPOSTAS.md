@@ -4,6 +4,17 @@ Registro das ideias e dos retornos de quem jogou, com o texto original, e de ond
 
 ---
 
+## 23/10/2026 — Usuário: atrasar o banco é game over
+**Origem:** mensagem do usuário, depois da v8.3 (campanha contínua e banco):
+
+> Se atrasar de pagar o banco, ele autua e game over
+
+Decisões confirmadas na mesma conversa (as sugeridas): prazo de 1 dia (a parcela que não cabe no caixa fica atrasada, com aviso; se no fim do dia seguinte não der para pagar a atrasada e a do dia, o banco toma a lanchonete); o empréstimo à força do 4º dia no negativo continua; no game over, a carreira acaba e o único caminho é recomeçar do zero.
+
+**Para onde foi:** **feito na v8.3.1** (`docs/spec-v8.3.1.md`).
+
+---
+
 ## 22/10/2026 — Usuário: revisão da ordem do plano e abertura animada do Modo História
 **Origem:** a sessão juntou tudo o que estava planejado e nas ideias guardadas e propôs uma ordem nova (campanha contínua com banco, avaliações, área industrial, Avenida Brasil, Terraço Suíça e, depois, Modo História e polimento). Resposta do usuário:
 
