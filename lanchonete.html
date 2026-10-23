@@ -253,7 +253,7 @@ table.rank tr.me td{background:#fbe7a8}
 
     <div class="ov show" id="ov-menu">
       <div class="panel menu-panel">
-        <span class="vtag" id="vtag" aria-label="Versão 8.3.6">v8.3.6</span>
+        <span class="vtag" id="vtag" aria-label="Versão 8.3.7">v8.3.7</span>
         <h1 class="title">Lanchonete <br>Corre-Corre</h1>
         <p class="tag">Ajude a Bia a atender a freguesia da esquina antes que o cafezinho esfrie!</p>
         <div class="lbl" id="menu-dia">Carreira: dia 1</div>
@@ -447,7 +447,8 @@ table.rank tr.me td{background:#fbe7a8}
       <div class="panel">
         <h2>Versões</h2>
         <ul class="verlist">
-          <li><b>v8.3.6</b><span class="cur">versão atual</span><br>23/10/2026 &mdash; Jogo de pratos sem limite: na lojinha, ele fica sempre à venda, quantas vezes você quiser (cada um põe +1 prato limpo na cozinha), e não conta como a melhoria do dia. As outras melhorias seguem 1 por dia.</li>
+          <li><b>v8.3.7</b><span class="cur">versão atual</span><br>23/10/2026 &mdash; 3ª estrela mais clara: no lugar de "expert", a introdução do dia, a barra de lucro e o fim do dia dizem "3 estrelas", sempre com "sem perder ninguém". Quando um cliente vai embora, a barra avisa que a 3ª estrela foi perdida.</li>
+          <li><b>v8.3.6</b><br>23/10/2026 &mdash; Jogo de pratos sem limite: na lojinha, ele fica sempre à venda, quantas vezes você quiser (cada um põe +1 prato limpo na cozinha), e não conta como a melhoria do dia. As outras melhorias seguem 1 por dia.</li>
           <li><b>v8.3.5</b><br>23/10/2026 &mdash; Estoque no editor do salão: arraste uma mesa para o estoque, à esquerda, para abrir espaço e rearrumar o salão cheio, e depois arraste de volta (ou toque nela e em "Pôr no salão"). Mesa no estoque não abre no dia nem paga luz e gás, mas conta no teto de lugares.<br><a href="versoes/v8.3.5.html" target="_blank" rel="noopener">Abrir a v8.3.5</a></li>
           <li><b>v8.3.4</b><br>23/10/2026 &mdash; Comida pronta: quando o prato sai no balcão, a mesa que pediu mostra um balão verde com o prato. Na mão da Bia ou da Dani, o balão fica branco até a entrega.<br><a href="versoes/v8.3.4.html" target="_blank" rel="noopener">Abrir a v8.3.4</a></li>
           <li><b>v8.3.3</b><br>23/10/2026 &mdash; Jogo offline: o ranking fica só neste aparelho, sem conexão. O ranking compartilhado volta nos ajustes finais do jogo.<br><a href="versoes/v8.3.3.html" target="_blank" rel="noopener">Abrir a v8.3.3</a></li>
@@ -911,7 +912,7 @@ function tabelaDe(e){
 /* um empréstimo novo de v, pagando em dia: as parcelas e os juros somados */
 function simulaEmprestimo(v, j){ const t = tabelaDe(normEmprestimo({ resto:v, amort:Math.ceil(v / BANCO.parcelas), j })); return { parcelas:t, juros:t.reduce((a, p) => a + p, 0) - v }; }
 const CAIXA_MAX = 14;                                 // livro-caixa (v7.2): quantos dias da carreira ficam guardados
-const VERSAO = 'v8.3.6';                              // vai no resumo do Caixa
+const VERSAO = 'v8.3.7';                              // vai no resumo do Caixa
 const DIVULGA_DIA = 3;                                // antes disso, o movimento é o da inauguração (sem custo)
 function divulgaAberta(n){ return DEV.on || n >= DIVULGA_DIA; }   // no modo dev, desde o dia 1
 function divulgaOf(id){ return DIVULGA.find(d => d.id === id) || DIVULGA[1]; }
@@ -4352,7 +4353,9 @@ function drawHud(ctx,g,tm){
     ctx.strokeStyle = '#fff'; ctx.lineWidth = 2; ctx.beginPath(); ctx.moveTo(mx,by-3); ctx.lineTo(mx,by+13); ctx.stroke();
     ctx.lineWidth = 1.5; ctx.beginPath(); ctx.moveTo(gx,by); ctx.lineTo(gx,by+10); ctx.stroke();   // 2ª estrela
     txt(ctx,'lucro · meta R$ ' + d.meta,bx,593,11,m >= d.meta ? '#7fd69a' : '#cfc7b0','left',FB);
-    txt(ctx,'expert R$ ' + d.expert,bx+bw,593,11,m >= d.expert ? PAL.mostarda : '#cfc7b0','right',FB);
+    // 3ª estrela (v8.3.7): o lucro e nenhum cliente perdido; com uma perda, o rótulo avisa que ela já foi
+    if (g.stats.lost) txt(ctx,'3ª estrela perdida',bx+bw,593,11,'#FF9C8A','right',FB);
+    else txt(ctx,'3 estrelas R$ ' + d.expert,bx+bw,593,11,m >= d.expert ? PAL.mostarda : '#cfc7b0','right',FB);
   }
   // fila de ações (no meio da tela larga)
   ctx.save(); ctx.translate(HUDX.fila, 0);
@@ -5659,7 +5662,7 @@ function buildEnd(){
   if (!r) return;
   $('end-title').textContent = r.passed ? ('Dia ' + r.day + ' concluído!') : 'Dia ' + r.day + ': faltou pouquinho...';
   starsHtml($('end-stars'), r.stars, 3);
-  $('end-money').textContent = (r.money < 0 ? 'Prejuízo de ' + fmt(-r.money) : 'Lucro de ' + fmt(r.money)) + ' (meta ' + fmt(r.meta) + ' · 2 estrelas ' + fmt(r.bom) + ' · expert ' + fmt(r.expert) + ')';
+  $('end-money').textContent = (r.money < 0 ? 'Prejuízo de ' + fmt(-r.money) : 'Lucro de ' + fmt(r.money)) + ' (meta ' + fmt(r.meta) + ' · 2 estrelas ' + fmt(r.bom) + ' · 3 estrelas ' + fmt(r.expert) + ' sem perder ninguém)';
   const st = $('end-stats');
   clearEl(st);
   const rows = [['Atendidos', r.served],['Perdidos', r.lost],['Não couberam', r.full],['Maior corrente', '×' + r.chain]];
@@ -5687,8 +5690,8 @@ function buildEnd(){
   let msg = '';
   // campanha (v8.3): o dia seguinte vem de qualquer jeito; a meta não batida só fica sem estrelas
   if (!r.passed) msg = 'Meta de ' + fmt(r.meta) + ' não batida: o dia fica sem estrelas, mas a lanchonete abre amanhã de novo.';
-  else if (r.stars === 3) msg = 'Perfeito! Expert sem perder nenhum cliente.';
-  else if (r.stars === 2) msg = r.money >= r.expert ? 'Meta expert batida! Para a 3ª estrela, não perca nenhum cliente.' : 'Duas estrelas! Para a 3ª, chegue a ' + fmt(r.expert) + ' sem perder nenhum cliente.';
+  else if (r.stars === 3) msg = 'Perfeito! Lucro das 3 estrelas sem perder nenhum cliente.';
+  else if (r.stars === 2) msg = r.money >= r.expert ? 'Lucro das 3 estrelas batido, mas ' + (r.lost === 1 ? '1 cliente foi embora' : r.lost + ' clientes foram embora') + ': a 3ª estrela pede que ninguém saia sem ser atendido.' : 'Duas estrelas! Para a 3ª, chegue a ' + fmt(r.expert) + ' sem perder nenhum cliente.';
   else msg = 'Meta batida! Chegue a ' + fmt(r.bom) + ' para a 2ª estrela.';
   if (r.day === DAYS.length) msg += ' Fim da semana de inauguração! Daqui em diante, cada dia tem o movimento do dia da semana.';
   // caixa no negativo (v8.3): quantos dias seguidos, ou o banco que cobriu à força
@@ -5838,7 +5841,7 @@ game.hooks.state = function(s){
       const div = game.div, custos = ['contas ' + fmt(contasDia(game.tables, game.ponto))];
       if (payroll(game.save.equipe)) custos.push('folha ' + fmt(payroll(game.save.equipe)));
       if (div && div.cost) custos.push(div.name.toLowerCase() + ' ' + fmt(div.cost));
-      $('intro-goal').textContent = 'Meta de lucro: ' + fmt(d.meta) + ' · 2 estrelas: ' + fmt(bomGoal(d)) + ' · Expert: ' + fmt(d.expert) + ' · ' + game.schedule.length + ' grupos' + (div ? ' (' + div.name.toLowerCase() + ')' : '') + ' · ' + mmss(d.time)
+      $('intro-goal').textContent = 'Meta de lucro: ' + fmt(d.meta) + ' · 2 estrelas: ' + fmt(bomGoal(d)) + ' · 3 estrelas: ' + fmt(d.expert) + ' sem perder ninguém · ' + game.schedule.length + ' grupos' + (div ? ' (' + div.name.toLowerCase() + ')' : '') + ' · ' + mmss(d.time)
         + '. Custos do dia: ' + custos.join(' + ') + ', mais ' + Math.round(INGRED.prato * 100) + '% de cada prato em ingredientes.';
       // v8.2.3: reiniciou no meio com gente na espera ou nas mesas: a multa de quem foi embora bravo
       const en = game.encerrado; game.encerrado = null;

@@ -4,6 +4,15 @@ Registro das ideias e dos retornos de quem jogou, com o texto original, e de ond
 
 ---
 
+## 23/10/2026 — Usuário: a 3ª estrela não veio
+**Origem:** mensagem do usuário, com a captura do fim do dia 7 (lucro de R$ 1583, expert R$ 1250, 1 perdido, 2 estrelas):
+
+> Olha só, tive lucro suficiente para 3 estrelas e o jogo me deu 2 só.
+
+**Para onde foi:** a regra estava certa (3ª estrela = lucro da expert **e** nenhum cliente perdido), mas a tela não deixava isso claro. **Feito na v8.3.7** (`docs/spec-v8.3.7.md`): "expert" vira "3 estrelas ... sem perder ninguém" na introdução, na barra de lucro e no fim do dia; a barra mostra "3ª estrela perdida" depois da 1ª perda, e o fim do dia diz quantos clientes foram embora. A regra não mudou.
+
+---
+
 ## 23/10/2026 — Usuário: Jogo de pratos sem limite
 **Origem:** mensagem do usuário, depois da v8.3.5:
 

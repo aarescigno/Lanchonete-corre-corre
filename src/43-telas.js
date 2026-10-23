@@ -12,7 +12,7 @@ game.hooks.state = function(s){
       const div = game.div, custos = ['contas ' + fmt(contasDia(game.tables, game.ponto))];
       if (payroll(game.save.equipe)) custos.push('folha ' + fmt(payroll(game.save.equipe)));
       if (div && div.cost) custos.push(div.name.toLowerCase() + ' ' + fmt(div.cost));
-      $('intro-goal').textContent = 'Meta de lucro: ' + fmt(d.meta) + ' · 2 estrelas: ' + fmt(bomGoal(d)) + ' · Expert: ' + fmt(d.expert) + ' · ' + game.schedule.length + ' grupos' + (div ? ' (' + div.name.toLowerCase() + ')' : '') + ' · ' + mmss(d.time)
+      $('intro-goal').textContent = 'Meta de lucro: ' + fmt(d.meta) + ' · 2 estrelas: ' + fmt(bomGoal(d)) + ' · 3 estrelas: ' + fmt(d.expert) + ' sem perder ninguém · ' + game.schedule.length + ' grupos' + (div ? ' (' + div.name.toLowerCase() + ')' : '') + ' · ' + mmss(d.time)
         + '. Custos do dia: ' + custos.join(' + ') + ', mais ' + Math.round(INGRED.prato * 100) + '% de cada prato em ingredientes.';
       // v8.2.3: reiniciou no meio com gente na espera ou nas mesas: a multa de quem foi embora bravo
       const en = game.encerrado; game.encerrado = null;
