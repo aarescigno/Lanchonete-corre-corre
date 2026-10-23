@@ -4,6 +4,15 @@ Registro das ideias e dos retornos de quem jogou, com o texto original, e de ond
 
 ---
 
+## 23/10/2026 — Usuário: balão de comida pronta
+**Origem:** mensagem do usuário, depois da v8.3.3:
+
+> quando a comida estiver pronta, aparecer balão com a imagem dela no grupo que a pediu
+
+**Para onde foi:** **feito na v8.3.4** (`docs/spec-v8.3.4.md`): com o prato no balcão, a mesa que pediu mostra um balão verde pulsando com o desenho do prato; na mão da Bia ou da Dani, o balão fica branco até a entrega. Enquanto cozinha, continua sem balão (a panelinha que saiu na v8.1.1, a pedido de jogador, não volta).
+
+---
+
 ## 23/10/2026 — Usuário: jogo offline por enquanto
 **Origem:** mensagem do usuário, depois da v8.3.2 (sobre a pendência de declarar a coleção `ranking-campanha` ao publicar):
 
