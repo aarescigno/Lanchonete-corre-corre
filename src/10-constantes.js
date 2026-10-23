@@ -374,17 +374,24 @@ const MOVIMENTO = { kit:10, porLugar:0.06 };
 function movimentoSalao(lugares){ return 1 + MOVIMENTO.porLugar * Math.max(0, lugares - MOVIMENTO.kit); }
 /* banco (v8.3): empréstimo com `juros` sobre o valor, pago em `parcelas` no fim de cada dia (um por vez, até o crédito
    do ponto). A folha, as contas e as parcelas saem mesmo sem dinheiro: o caixa pode fechar `neg` dias seguidos no
-   negativo; no dia seguinte, se fechar no negativo de novo, o banco cobre o que falta, à força, com juros `forcado` */
+   negativo; no dia seguinte, se fechar no negativo de novo, o banco cobre o que falta, à força, com juros `forcado`.
+   v8.3.1: a parcela que não cabe no dinheiro do fim do dia fica atrasada (atr); se no fim do dia seguinte não der para
+   pagar a atrasada e a do dia, o banco toma a lanchonete e a carreira acaba */
 const BANCO = { juros:0.10, parcelas:5, valores:[200, 500, 1000], neg:3, forcado:0.20 };
 function normEmprestimo(e){
   e = (e && typeof e === 'object') ? e : {};
   const resto = Math.max(0, Math.round(+e.resto) || 0), n = clamp(Math.round(+e.n) || 0, 0, BANCO.parcelas);
-  return resto && n ? { resto, n } : { resto:0, n:0 };
+  return resto && n ? (e.atr ? { resto, n, atr:true } : { resto, n }) : { resto:0, n:0 };
 }
 /* a parcela do fim do dia: o que falta dividido pelas parcelas que faltam (a última fecha a conta) */
 function parcelaDe(e){ return e.n ? Math.ceil(e.resto / e.n) : 0; }
+/* o que o banco cobra no fim do dia: a parcela do dia e, se houver, a atrasada antes dela */
+function devidoDe(e){
+  const p1 = parcelaDe(e);
+  return e.atr ? p1 + parcelaDe({ resto:e.resto - p1, n:e.n - 1 }) : p1;
+}
 const CAIXA_MAX = 14;                                 // livro-caixa (v7.2): quantos dias da carreira ficam guardados
-const VERSAO = 'v8.3';                              // vai no resumo do Caixa
+const VERSAO = 'v8.3.1';                              // vai no resumo do Caixa
 const DIVULGA_DIA = 3;                                // antes disso, o movimento é o da inauguração (sem custo)
 function divulgaAberta(n){ return DEV.on || n >= DIVULGA_DIA; }   // no modo dev, desde o dia 1
 function divulgaOf(id){ return DIVULGA.find(d => d.id === id) || DIVULGA[1]; }

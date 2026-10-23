@@ -99,6 +99,7 @@ table.cx .rs{font-size:inherit}
 .cx-txt{flex-basis:100%;height:calc(var(--u)*90);font:600 12px var(--fb);border:2px solid var(--tinta);border-radius:8px;padding:4px}
 .item{background:var(--creme);border:calc(var(--u)*3) solid var(--tinta);border-radius:calc(var(--u)*12);padding:calc(var(--u)*6) calc(var(--u)*8);display:grid;grid-template-columns:auto 1fr;column-gap:calc(var(--u)*8);row-gap:calc(var(--u)*3);align-items:center;align-content:start;text-align:left}
 .item.own{background:#dcefd9}
+.item.atr{background:#F6D7D3}   /* v8.3.1: empréstimo com parcela atrasada */
 .mbar{grid-column:1 / -1;height:calc(var(--u)*10);min-height:8px;background:#E3E0D6;border:calc(var(--u)*2) solid var(--tinta);border-radius:999px;overflow:hidden;width:100%}
 .mbar i{display:block;height:100%;border-radius:999px 0 0 999px}
 .item canvas{width:calc(var(--u)*38);height:calc(var(--u)*38);min-width:28px;min-height:28px;grid-row:span 2}

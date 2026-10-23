@@ -9,7 +9,7 @@ const game = new Game(canvas, ctx);
 /* quem nunca fez a Missão zero (e ainda está no dia 1) encontra o botão dela em destaque */
 function treinoPrimeiro(){ return !game.save.treino && game.proxDia <= 1 && !DEV.on; }
 
-const SCREENS = ['ov-menu','ov-how','ov-intro','ov-treino','ov-pause','ov-end','ov-shop','ov-endless','ov-rank','ov-ver','ov-app'];
+const SCREENS = ['ov-menu','ov-how','ov-intro','ov-treino','ov-pause','ov-end','ov-shop','ov-falencia','ov-endless','ov-rank','ov-ver','ov-app'];
 function showOnly(ids){
   SCREENS.forEach(id => { const el = $(id); if (!el) return; if (ids.indexOf(id) >= 0) el.classList.add('show'); else el.classList.remove('show'); });
 }
@@ -46,19 +46,20 @@ function fit(){
 let resetPede = false;   // "Recomeçar do zero": o 1º toque pede confirmação
 function buildMenu(){
   const sv = game.save, n = game.proxDia, novo = n <= 1 && !sv.caixa.length;
-  $('menu-dia').textContent = novo ? 'Carreira' : 'Carreira: dia ' + n;
+  $('menu-dia').textContent = sv.fechou ? 'Carreira: fechou no dia ' + sv.fechou : novo ? 'Carreira' : 'Carreira: dia ' + n;
   const info = [];
-  if (novo) info.push('A Bia vai abrir a lanchonete na garagem da mãe.' + (treinoPrimeiro() ? ' Primeira vez? Comece pela Missão zero, um treino passo a passo.' : ''));
+  if (sv.fechou) info.push('O banco tomou a lanchonete por falta de pagamento.', sv.estrelas + ' ★', 'lucro acumulado ' + fmt(sv.lucroTot));   // v8.3.1
+  else if (novo) info.push('A Bia vai abrir a lanchonete na garagem da mãe.' + (treinoPrimeiro() ? ' Primeira vez? Comece pela Missão zero, um treino passo a passo.' : ''));
   else {
     info.push((sv.bank < 0 ? 'Caixa no negativo: ' : 'Caixa: ') + fmt(sv.bank), sv.estrelas + ' ★', 'lucro acumulado ' + fmt(sv.lucroTot));
     if (sv.emp.resto) info.push('banco: faltam ' + fmt(sv.emp.resto));
   }
   $('menu-info').textContent = info.join(' · ');
-  $('btn-play').textContent = novo ? 'Começar o dia 1' : 'Continuar: dia ' + n;
+  $('btn-play').textContent = sv.fechou ? 'Recomeçar do zero' : novo ? 'Começar o dia 1' : 'Continuar: dia ' + n;
   $('btn-play').className = 'btn ' + (treinoPrimeiro() ? 'alt' : 'go');
   $('btn-treino').className = 'btn ' + (treinoPrimeiro() ? 'go' : 'alt');
   resetPede = false; $('btn-reset').textContent = 'Recomeçar do zero';
-  $('btn-reset').style.display = novo ? 'none' : '';   // nada a apagar ainda
+  $('btn-reset').style.display = novo || sv.fechou ? 'none' : '';   // nada a apagar ainda (ou o botão principal já recomeça)
   buildChips();
 }
 /* modo dev: os dias à escolha (o save dev pula para o dia tocado) */
@@ -155,7 +156,7 @@ function buildTips(){
     }]
   ];
   // v8.3: a campanha e o banco
-  tips.push(['A carreira segue dia após dia, levando tudo o que veio antes: dinheiro, móveis, equipe, melhorias e o desgaste. Meta não batida deixa o dia sem estrelas, mas o dia seguinte vem. Faltou dinheiro? O caixa pode ficar negativo ' + BANCO.neg + ' dias seguidos (no ' + (BANCO.neg + 1) + 'º, o banco cobre à força) e a aba Banco da lojinha empresta, com juros de ' + Math.round(BANCO.juros * 100) + '%.', c => {
+  tips.push(['A carreira segue dia após dia, levando tudo o que veio antes: dinheiro, móveis, equipe, melhorias e o desgaste. Meta não batida deixa o dia sem estrelas, mas o dia seguinte vem. Faltou dinheiro? O caixa pode ficar negativo ' + BANCO.neg + ' dias seguidos (no ' + (BANCO.neg + 1) + 'º, o banco cobre à força) e a aba Banco da lojinha empresta, com juros de ' + Math.round(BANCO.juros * 100) + '%. Não atrase: parcela sem pagar 2 dias seguidos, e o banco toma a lanchonete!', c => {
     c.translate(32,34); c.scale(1.4,1.4);
     drawBanco(c);
   }]);
