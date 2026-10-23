@@ -126,7 +126,7 @@ const quebra=id=>{ g.quebras=[{id,t:0,on:true,fixed:false}]; };
   novo(1000,7); g.startDay(4); g.begin(); const eq=M.equip[2]; g.quebras=[{id:'cafeteira',t:0,on:true,fixed:false}];
   g.onDown(eq.badge.x+g.cam+M.badge+10,eq.badge.y,24); ok(!g.quebrado('cafeteira') && g.conserto===eq.emerg,'com a folga do dedo (24 px), o toque perto da plaquinha conserta a cafeteira'); }
 { // sem dinheiro
-  novo(100,7); g.startDay(4); g.begin(); const eq=M.equip[1], B0=g.save.bank; g.quebras=[{id:'geladeira',t:0,on:true,fixed:false}];
+  novo(M.equip[1].emerg-1,7); g.startDay(4); g.begin(); const eq=M.equip[1], B0=g.save.bank; g.quebras=[{id:'geladeira',t:0,on:true,fixed:false}];
   const ok1=g.consertar('geladeira'); ok(ok1===false && g.quebrado('geladeira') && g.conserto===0 && g.save.bank===B0 && g.save.caixaPend.man===0,'banco R$ '+B0+' < R$ '+eq.emerg+': recusa e não cobra nada');
   ok(g.fx.some(f=>f.text==='Falta dinheiro!'),'aparece "Falta dinheiro!"');
   const res=g.paid+g.paidDiv; g.save.bank=res+eq.emerg-1; ok(g.consertar('geladeira')===false,'a folha do dia fica reservada: o conserto só usa o que sobra (v8.2.2)');

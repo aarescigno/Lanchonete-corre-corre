@@ -60,7 +60,7 @@ ok(g.state==='menu' && g.save.dia===3,'largar o dia no meio não avança a carre
 // ---------- caixa no negativo: 3 dias seguidos podem; no 4º, o banco cobre à força ----------
 novo({dia:10,bank:20});
 cont(); joga(0,0); const c10=g.contas;
-ok(g.save.bank===20-c10 && g.save.neg===1,'prejuízo sem dinheiro: o caixa fica negativo ('+g.save.bank+'), 1º dia');
+ok(g.save.bank===20-c10-g.result.div && g.save.neg===1,'prejuízo sem dinheiro: o caixa fica negativo ('+g.save.bank+'), 1º dia');
 ok(/negativo há 1 dia/.test(els['end-msg'].textContent),'o fim do dia avisa');
 els['btn-next'].fire('click'); ok(/no negativo há 1 dia/.test(els['shop-livre'].textContent) && /falta/.test(els['shop-livre'].className),'a lojinha avisa');
 L.setShopTab('melhorias'); ok(els['shop-grid'].children.every(c=>{ const b=c.children[3]; return !b || b.disabled; }),'no negativo, nada se compra');

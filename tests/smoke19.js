@@ -32,25 +32,25 @@ novo(500,{},'boca'); abre(5);
 { const a=g.spawn({type:'estudante',color:0}), b=g.spawn({type:'vovos',color:1,vip:true}), c=g.spawn({type:'estudante',color:2});
   const t=g.tables.find(x=>x.free&&x.seats>=a.size); g.seatGroup(a,t);
   ok(a.state!=='queue' && b.vip,'um grupo sentado ('+a.state+') e um VIP na espera');
-  c.setState('leaving'); const M=L.MULTA, V=L.VIP.angry;
-  ok(M===30 && g.multa(a)===M && g.multa(b)===M+V,'multa de quem sai bravo: R$ '+M+' (VIP: +'+V+')');
+  c.setState('leaving'); const M=L.MULTA, V=L.VIP.angry, MT=2*M+V, SD=500-MT;
+  ok(M===10 && g.multa(a)===M && g.multa(b)===M+V,'multa de quem sai bravo: R$ '+M+' (VIP: +'+V+')');
   ok(g.bravosSeSair.length===2 && g.multaSeSair===2*M+V,'conta quem está na espera e na mesa, não quem já está indo embora');
-  g.pause(); ok(/E os 2 grupos na espera e nas mesas vão embora bravos: multa de R\$ 90\./.test(els['pause-note'].textContent),'a pausa avisa a multa: '+els['pause-note'].textContent);
+  g.pause(); ok(new RegExp('E os 2 grupos na espera e nas mesas vão embora bravos: multa de R\\$ '+MT+'\\.').test(els['pause-note'].textContent),'a pausa avisa a multa: '+els['pause-note'].textContent);
   const n0=g.save.caixa.length; els['btn-restart'].fire('click');
-  ok(g.save.bank===500-90,'reiniciar desconta a multa do dinheiro acumulado: '+g.save.bank);
+  ok(g.save.bank===SD,'reiniciar desconta a multa do dinheiro acumulado: '+g.save.bank);
   const r=g.save.caixa[g.save.caixa.length-1];
-  ok(g.save.caixa.length===n0+1 && r.int===2 && r.mul===90 && r.d===5 && r.saldo===410 && !r.fat,'o caixa ganha a linha do dia largado');
-  ok(L.normCaixa(g.save.caixa).slice(-1)[0].mul===90,'a linha sobrevive ao save');
-  ok(/Você largou o dia no meio: 2 grupos foram embora bravos \(multa de R\$ 90; agora você tem R\$ 410\)/.test(els['intro-note'].textContent),'a introdução conta: '+els['intro-note'].textContent);
-  ok(/Dia 5 largado no meio: 2 grupos foram embora bravos: −90 · saldo 410/.test(L.caixaResumo(g.save)),'o resumo do caixa mostra a linha');
-  ok(L.caixaTotais(g.save.caixa).find(t=>t.id==='mul').v===90,'"para onde foi" soma a multa');
+  ok(g.save.caixa.length===n0+1 && r.int===2 && r.mul===MT && r.d===5 && r.saldo===SD && !r.fat,'o caixa ganha a linha do dia largado');
+  ok(L.normCaixa(g.save.caixa).slice(-1)[0].mul===MT,'a linha sobrevive ao save');
+  ok(new RegExp('Você largou o dia no meio: 2 grupos foram embora bravos \\(multa de R\\$ '+MT+'; agora você tem R\\$ '+SD+'\\)').test(els['intro-note'].textContent),'a introdução conta: '+els['intro-note'].textContent);
+  ok(new RegExp('Dia 5 largado no meio: 2 grupos foram embora bravos: −'+MT+' · saldo '+SD).test(L.caixaResumo(g.save)),'o resumo do caixa mostra a linha');
+  ok(L.caixaTotais(g.save.caixa).find(t=>t.id==='mul').v===MT,'"para onde foi" soma a multa');
  }
 // sem ninguém: sem multa nem linha
 novo(500,{},'boca'); abre(5); g.pause(); ok(!/multa/.test(els['pause-note'].textContent),'sem ninguém no salão, sem multa no aviso');
 { const n0=g.save.caixa.length; els['btn-restart'].fire('click'); ok(g.save.bank===500 && g.save.caixa.length===n0 && !/largou/.test(els['intro-note'].textContent),'sem ninguém, reiniciar não custa nada'); }
 // menu na pausa também cobra; desde a v8.3, a multa pode deixar o caixa negativo
-novo(40,{},'boca'); abre(5); g.spawn({type:'estudante',color:0}); g.spawn({type:'estudante',color:1}); g.pause(); els['btn-pause-menu'].fire('click');
-ok(g.state==='menu' && g.save.bank===-20 && g.save.caixa.slice(-1)[0].mul===60,'Menu na pausa cobra também, e o caixa fica negativo (R$ 60 com R$ 40)');
+novo(L.MULTA,{},'boca'); abre(5); g.spawn({type:'estudante',color:0}); g.spawn({type:'estudante',color:1}); g.pause(); els['btn-pause-menu'].fire('click');
+ok(g.state==='menu' && g.save.bank===-L.MULTA && g.save.caixa.slice(-1)[0].mul===2*L.MULTA,'Menu na pausa cobra também, e o caixa fica negativo (R$ '+2*L.MULTA+' com R$ '+L.MULTA+')');
 ok(!g.encerrado,'o aviso não fica para depois');
 // fim do dia com gente ainda lá: como antes (o tempo acabou, sem multa extra)
 novo(500,{},'boca'); abre(5); g.spawn({type:'estudante',color:0}); g.clock=0.01; g.update(0.05); ok(g.ending && g.groups.every(x=>x.state==='leaving'),'tempo esgotado: quem está lá vai embora sem multa, como antes');
@@ -66,8 +66,8 @@ novo(500,{},'boca'); g.startEndless(); g.begin(); g.spawn({type:'estudante',colo
   ok(g2.save.bank===400-eq.emerg && g2.manut[eq.id]===1,'reiniciar não devolve o conserto, e o equipamento continua novo'); }
 
 // ---------- dia completo: paga tudo no fim e guarda o resto ----------
-novo(300,{dani:1},'boca'); abre(3); g.money=500; g.custo=120; const c3=g.contas, f3=g.paid; g.finishDay();
-ok(g.save.bank===300+500-120-c3-f3 && g.result.income===500-120-c3-f3,'no fim do dia sai a folha, junto com contas e ingredientes: '+g.save.bank);
+novo(300,{dani:1},'boca'); abre(3); g.money=250; g.custo=120; const c3=g.contas, f3=g.paid; g.finishDay();
+ok(g.save.bank===300+250-120-c3-f3 && g.result.income===250-120-c3-f3,'no fim do dia sai a folha, junto com contas e ingredientes: '+g.save.bank);
 ok(g.result.money===g.result.income,'o que entra no dinheiro é o lucro do dia (sem conserto)');
 const r=g.save.caixa[g.save.caixa.length-1]; ok(r.folha===f3 && r.saldo===g.save.bank,'a linha do caixa tem a folha e o saldo');
 ok(!g.result.passed && /sem estrelas/.test(els['end-msg'].textContent),'sem a meta, o fim do dia diz que o dia fica sem estrelas (v8.3)');

@@ -22,7 +22,7 @@ ok(g.schedule.length===L.DAYS[0].groups && L.DAYS[0].groups===5 && L.DAYS[1].gro
 ok(L.dishStock(L.DAYS[2],{})===4 && L.dishStock(L.DAYS[6],{pratos:true})===5 && L.dishStock(L.DAYS[0],{})===Infinity,'pratos limpos: sem limite nos dias 1 e 2, 4 depois (+1 com o Jogo de pratos)');
 
 // contas sem aluguel
-g.startDay(3); g.begin(); ok(g.contas===4*C.mesa+10*C.lugar && g.contas===180,'contas da Garagem: só luz e gás (R$ 30 por mesa e R$ 6 por lugar) = '+g.contas);
+g.startDay(3); g.begin(); ok(g.contas===C.base+4*C.mesa+10*C.lugar && g.contas===42,'contas da Garagem: gás e geladeira (R$ '+C.base+') e luz (R$ '+C.mesa+' por mesa e R$ '+C.lugar+' por lugar) = '+g.contas);
 
 // compras
 novo(0);

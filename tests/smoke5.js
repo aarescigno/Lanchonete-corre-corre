@@ -82,7 +82,7 @@ ok(g.stationAt(722,505)==='trash' && g.tableAt(722,505)===null,'lixeira no chão
 { g.up={bandeja:true}; g.save.up=g.up; g.startDay(4); g.begin(); g.money=100;   // sem esvaziar a agenda: o dia não pode acabar no meio do teste
   g.bia.hands=[K('juice'),K('juice'),K('coffee'),K('dirty')]; g.tapStation('trash',722,505); run(6);
   ok(g.bia.hands.length===1 && g.bia.hands[0].kind==='dirty','lixeira leva só as bebidas (a louça fica)');
-  ok(Math.abs(g.money-(100-6-6-2.5))<1e-9 && g.stats.trash===3,'multa: metade de R$ 12 por suco e de R$ 5 por café ('+g.money+')');
+  ok(Math.abs(g.money-(100-L.JUICE.price-L.DRINK_PRICE.coffee/2))<1e-9 && g.stats.trash===3,'multa: metade do preço de cada suco e do café ('+g.money+')');
   g.bia.hands=[K('dish')]; const m=g.money; g.tapStation('trash',722,505); run(1);
   ok(g.money===m && g.bia.hands.length===1 && g.bia.qT>0,'sem bebida: "?" e nada é jogado fora'); }
 

@@ -86,7 +86,7 @@ class Helper {
       const t = st.t;
       if (!t.dirty || this.hands.length >= DANI_HANDS) return;
       this.hands.push({ kind:'dirty', n:t.dirtyN }); t.dirty = false; t.dirtyN = 0;
-      g.addMoney(10); g.addText(t.cx, t.cy - 20, '+10', PAL.ok, 16); Sfx.blip();
+      g.pontos += PONTOS_ACAO.clear; g.addText(t.cx, t.cy - 20, '+' + PONTOS_ACAO.clear + ' pts', PAL.faixa, 15); Sfx.blip();   // v8.3.8: pontos, não dinheiro
     } else if (st.type === 'sink'){
       const n = this.hands.filter(h => h.kind === 'dirty').length;
       this.hands = this.hands.filter(h => h.kind !== 'dirty');
@@ -112,7 +112,7 @@ class Helper {
       if (!h || !grp || !grp.seated || grp.coffee) return;
       this.hands.splice(this.hands.indexOf(h), 1);
       grp.coffee = true; grp.gain(g.up.cafeteira ? 2 : 1); g.usos.cafeteira++;
-      g.addMoney(5); g.addText(t.cx, t.cy - 40, '+5', PAL.ok, 16); Sfx.coin();
+      g.addMoney(DRINK_PRICE.coffee); g.pontos += PONTOS_ACAO.coffee; g.addText(t.cx, t.cy - 40, '+R$ ' + DRINK_PRICE.coffee, PAL.ok, 16); Sfx.coin();
     }
   }
   update(dt){

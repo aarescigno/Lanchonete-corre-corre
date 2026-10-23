@@ -125,7 +125,7 @@ function mkStub(o){
   ok(Math.abs(g.endlessInterval()-9)<1e-9,'intervalo inicial 9s');
   g.elapsed=60; ok(Math.abs(g.endlessInterval()-7)<1e-9,'intervalo em 60s = 7s'); g.elapsed=300; ok(g.endlessInterval()===3.5,'intervalo mínimo 3,5s'); g.elapsed=0;
   // cozinha mais lenta: 1%/min até 25%
-  g.elapsed=600; let tk={group:{},table:1}; g.kitchen.queue=[]; const orig=Math.random; Math.random=()=>0; g.kitchen.submit(tk); const t0=g.kitchen.queue[0].time; Math.random=orig;
+  g.elapsed=600; let tk={group:{extras:[],size:1},table:1}; g.kitchen.queue=[]; const orig=Math.random; Math.random=()=>0; g.kitchen.submit(tk); const t0=g.kitchen.queue[0].time; Math.random=orig;
   ok(Math.abs(t0-4*1.10)<1e-6,'10 min => +10% ('+t0.toFixed(3)+')');
   g.elapsed=6000; g.kitchen.queue=[]; Math.random=()=>0; g.kitchen.submit(tk); const t1=g.kitchen.queue[0].time; Math.random=orig; ok(Math.abs(t1-4*1.25)<1e-6,'teto +25%');
   g.elapsed=0; g.kitchen.queue=[];
@@ -149,16 +149,16 @@ function mkStub(o){
   g.stars=1; g.queue.slice().forEach(x=>{ x.hearts=1; x.patLeft=0.01; }); g.update(0.1);
   ok(g.stars===0&&g.ending&&g.reason==='stars','0 estrelas => fim de turno');
   for(let i=0;i<100&&g.state==='playing';i++) g.update(0.05);
-  ok(g.state==='endlessend','estado endlessend'); ok(g.endless&&g.endless.pontos===Math.round(g.money)&&g.endless.tempo>=0,'resultado: pontos/tempo');
+  ok(g.state==='endlessend','estado endlessend'); ok(g.endless&&g.endless.pontos===Math.round(g.pontos)&&g.endless.fat===Math.round(g.money)&&g.endless.tempo>=0,'resultado: pontos de atendimento (v8.3.8), faturamento e tempo');
   ok(els['ov-endless'].classList.contains('show'),'tela de fim exibida');
   ok(!g.groups.some(x=>x.state!=='leaving'),'todos saem ao fim');
   // reiniciar
-  els['btn-endless-again'].fire('click'); ok(g.state==='intro'&&g.stars===5&&g.money===0,'jogar de novo reinicia');
+  els['btn-endless-again'].fire('click'); ok(g.state==='intro'&&g.stars===5&&g.money===0&&g.pontos===0,'jogar de novo reinicia');
   L.render(g,H.ctx);
-  // pontuação do modo = dinheiro (mesmas regras): bot por 120 s
+  // pontuação do modo = pontos de atendimento (v8.3.8; antes, o dinheiro): bot por 120 s
   g.begin(); let st=0; while(g.state==='playing'&&st<2400){ bot(); g.update(0.05); st++; if(st%20===0) L.render(g,H.ctx); }
-  console.log('  (bot sem fim: ',(st*0.05).toFixed(0)+'s, R$',Math.round(g.money),'estrelas',g.stars,'atendidos',g.stats.served,')');
-  ok(g.money>0,'bot ganha dinheiro no sem fim');
+  console.log('  (bot sem fim: ',(st*0.05).toFixed(0)+'s, R$',Math.round(g.money),'pontos',Math.round(g.pontos),'estrelas',g.stars,'atendidos',g.stats.served,')');
+  ok(g.money>0 && g.pontos>0,'bot ganha dinheiro e pontos no sem fim');
 }
 
 /* ---------- v8.3.3: offline, mesmo com window.claude o jogo não chama o artifact ---------- */

@@ -30,7 +30,17 @@ const MOOD = { ok:'#3E9B5A', warn:'#F2B33D', bad:'#C2362B' };
 const SKINS  = ['#F7D9BE','#EAB98F','#CE9566','#A8693F','#7B4A2C','#4E2D1B'];
 const HAIRC  = ['#1B1512','#2F1D12','#5B3A21','#A67B43','#8C8C8C','#E8E8E8','#7A2E1B'];
 const PANTS  = ['#2F3E5C','#4A4036','#5B5F6B','#3C5A4A','#6A3F52'];
-const DISHES = ['pf','pastel','coxinha','misto'];
+/* cardápio (v8.3.8, preços de verdade): R$ de cada prato na Garagem (o ponto multiplica por PONTOS.cardapio).
+   Pesquisa de out/2026: PF médio no Brasil R$ 31,90 (o da garagem sai mais barato), coxinha e pastel de R$ 4 a 8 */
+const CARDAPIO = { pf:{ nome:'PF', preco:25 }, misto:{ nome:'Misto quente', preco:12 }, pastel:{ nome:'Pastel', preco:10 }, coxinha:{ nome:'Coxinha', preco:8 } };
+function precoPrato(k, ponto){ return Math.round(CARDAPIO[k].preco * (ponto || PONTOS[0]).cardapio); }
+/* o 2º item (v8.3.8): na hora de pedir, cada pessoa pode querer mais um salgado (chance `mais` do tipo; no máximo 2 itens
+   por pessoa). Vai na mesma comanda e no mesmo prato, para não travar a mesa; a cozinha leva `cozinha` a mais de tempo
+   por item a mais (em fração dos itens do grupo). Pedir depois de comer travava a mesa e derrubava o lucro */
+const MAIS = { cozinha:0.4, pratos:['misto','pastel','coxinha'] };
+/* pontos de atendimento (v8.3.8): as ações da Bia não dão mais dinheiro, dão pontos (a nota da lanchonete virá
+   deles). A corrente e a cor certa também viram pontos */
+const PONTOS_ACAO = { sit:10, take:15, deliver:20, clear:10, coffee:5, juice:5, bill:20, cor:15 };
 
 /* calçada (v7.5): o mundo vai de -CALCADA.w (a rua) até W; a espera fica lá fora, no lugar da fila de antes.
    Tela larga (v7.6): a tela tem TW px e mostra o mundo inteiro, sem rolar (Game.cam = CALCADA.w: onde o mundo
@@ -217,7 +227,9 @@ function salaoDevolucao(s){
 /* Turno sem fim (v7.4): salão fixo de 6 mesas e 16 lugares (o de antes), igual para todo mundo no ranking */
 const SALAO_SEMFIM = [2,2,2,4,2,4];
 
-const HEART_MULT = [0, 0.6, 0.8, 1, 1.25, 1.5];
+/* gorjeta pelos corações na hora da conta (v8.3.8; antes, com 5 corações a conta saía 50% maior): no máximo +10%;
+   com 1 ou 2 o grupo reclama e ganha desconto */
+const GORJETA = [0, -0.2, -0.1, 0, 0.05, 0.1];
 const PAT = { queue:7, wantOrder:6, ordered:9, wantBill:7 };   // segundos por coração (base)
 /* jogo justo (v7.1): sem mesa livre onde o grupo caiba, a paciência na fila corre mais devagar (ritmo; 0,4 até a v7.4)
    e, na carreira, não passa de 1 coração com metade da paciência dele (piso). Mesa suja conta como
@@ -228,12 +240,14 @@ const FILA_JUSTA = { ritmo:0.6, piso:0.5 };
    grupos do dia não muda, só o ritmo */
 const PORTA = { fila:3, max:8, total:0.2 };
 
+/* prefere: os pratos que cada tipo escolhe (sorteio com repetição); mais: chance de cada pessoa pedir um 2º item (v8.3.8);
+   tip: gorjeta a mais, em fração da conta */
 const CUSTOMER_TYPES = {
-  estudante:  { label:'Estudante',   pat:1.0,  eat:[4.5,6.5], read:[3,4.5], size:[1,2], bill:[20,32], tip:0 },
-  executiva:  { label:'Executiva',   pat:0.65, eat:[5,7],     read:[3,4],   size:[1,1], bill:[34,48], tip:0.25 },
-  familia:    { label:'Família',     pat:0.95, eat:[7,9],     read:[5,6],   size:[3,4], bill:[44,60], tip:0 },
-  vovos:      { label:'Vovô e vovó', pat:1.8,  eat:[8,9],     read:[4,6],   size:[2,2], bill:[28,42], tip:0 },
-  entregador: { label:'Entregador',  pat:0.5,  eat:[3.5,5],   read:[3,3.5], size:[1,1], bill:[20,26], tip:0 }
+  estudante:  { label:'Estudante',   pat:1.0,  eat:[4.5,6.5], read:[3,4.5], size:[1,2], prefere:['pf','pf','misto','pastel','coxinha'],     mais:0.3, tip:0 },
+  executiva:  { label:'Executiva',   pat:0.65, eat:[5,7],     read:[3,4],   size:[1,1], prefere:['pf','pf','pf','misto'],                    mais:0.1, tip:0.1 },
+  familia:    { label:'Família',     pat:0.95, eat:[7,9],     read:[5,6],   size:[3,4], prefere:['pf','pf','pf','misto','pastel'],         mais:0.35,  tip:0 },
+  vovos:      { label:'Vovô e vovó', pat:1.8,  eat:[8,9],     read:[4,6],   size:[2,2], prefere:['pf','pf','pf','misto'],                  mais:0.25,  tip:0 },
+  entregador: { label:'Entregador',  pat:0.5,  eat:[3.5,5],   read:[3,3.5], size:[1,1], prefere:['pf','pf','misto','coxinha'],             mais:0.1, tip:0 }
 };
 /* cliente VIP: modificador de grupo (qualquer tipo menos entregador). Fura a fila, tem menos
    paciência, paga gorjeta extra e dá bônus se sair com 5 corações; bravo, a multa dobra. */
@@ -244,13 +258,13 @@ const CUSTOMER_TYPES = {
 const STAFF = {
   // Tonhão: cozinha mais rápido (cook = fator do tempo), mais pratos caprichados (crit) e,
   // com aumento, lava 1 pilha da pia a cada `wash` segundos
-  tonhao:  { levels:[ { slots:3, cook:1, crit:0.05, wash:0, pay:0 }, { slots:3, cook:0.85, crit:0.12, wash:7, pay:40 }, { slots:3, cook:0.7, crit:0.2, wash:4, pay:90 } ] },
-  dani:    { levels:[ null, { speed:0.5, tasks:2, pay:60 }, { speed:0.65, tasks:2, pay:90 }, { speed:0.8, tasks:3, pay:135 } ] },
+  tonhao:  { levels:[ { slots:3, cook:1, crit:0.05, wash:0, pay:0 }, { slots:3, cook:0.85, crit:0.12, wash:7, pay:15 }, { slots:3, cook:0.7, crit:0.2, wash:4, pay:30 } ] },
+  dani:    { levels:[ null, { speed:0.5, tasks:2, pay:40 }, { speed:0.65, tasks:2, pay:50 }, { speed:0.8, tasks:3, pay:60 } ] },
   // couvert artístico: só do nível 3 do salão em diante (Avenida Brasil, etapa 3 do plano)
   couvert: { pay:80, fee:3, effect:0.2, feeCut:0.5, nivel:3 },
   // ambiente da Garagem (v7.4.3): TV e som ligados o dia todo; o custo é a conta de luz (pay) e entra na folha
-  tv:      { pay:15, effect:0.05 },
-  som:     { pay:10, effect:0.05 }
+  tv:      { pay:3, effect:0.05 },
+  som:     { pay:2, effect:0.05 }
 };
 const DANI_TASKS = [
   { id:'lixo',   name:'Tirar o lixo',   short:'Lixo' },
@@ -262,7 +276,7 @@ const DANI_TASKS = [
 /* tarefa que a Dani já pode exercer (a do suco da espera depende da máquina) */
 function daniTaskOk(id, up){ const t = DANI_TASKS.find(d => d.id === id); return !!t && (!t.need || !!(up && up[t.need])); }
 /* prato caprichado (acerto crítico do Tonhão): +1 coração e bônus na entrega */
-const CRIT = { bonus:10, vipBonus:20 };
+const CRIT = { bonus:10, vipBonus:20 };   // pontos (v8.3.8; eram R$)
 const WASH = { base:0.3, perPile:2.5 };               // segundos na pia
 const TRASH = { cap:6, empty:2, smell:0.3 };         // lixeira: capacidade, tempo para esvaziar, cheiro quando cheia
 function couvertEffect(eq){ return STAFF.couvert.effect * (eq.taxa ? 1 - STAFF.couvert.feeCut : 1); }
@@ -322,24 +336,24 @@ function dishStock(day, up){
 }
 
 /* sucos: alguns grupos pedem junto com a comida; cada copo entregue vale JUICE.price */
-const JUICE = { price:12, prep:0.6 };
+const JUICE = { price:8, prep:0.6 };
 /* valor de cada bebida; jogar uma na lixeira custa metade dele (a da espera, 'suco', vale o preço da BEBIDA_ESPERA) */
-const DRINK_PRICE = { coffee:5, juice:JUICE.price };
+const DRINK_PRICE = { coffee:3, juice:JUICE.price };
 /* bebida da espera (v7.5, melhoria no lugar da Água saborizada; o que se serve vem do ponto, BEBIDA_ESPERA): `pede` s
    depois de chegar ao lugar lá fora, o grupo pede 1 copo por pessoa; a Bia (ou a Dani) pega na estação e entrega,
    e quem bebe perde a paciência da espera `slow` mais devagar. Quem sai da espera antes cancela o que não foi pego */
 const MAQUINA = { pede:2.5, slow:0.4 };
-const MULTA = 30;                                     // grupo que vai embora bravo (com 0 corações) desconta isto do dia
-const VIP = { pat:0.75, tip:0.5, perfect:40, angry:30, dish:25, cook:1.8, types:['estudante','vovos','familia','executiva'] };   // dish: o prato especial soma R$ 25 à conta e leva 1,8× o tempo
+const MULTA = 10;                                     // grupo que vai embora bravo (com 0 corações) desconta isto do dia
+const VIP = { pat:0.75, tip:0.1, perfect:40, angry:10, dish:12, cook:1.8, types:['estudante','vovos','familia','executiva'] };   // dish: o prato especial soma R$ 12 à conta e leva 1,8× o tempo; perfect: pontos (v8.3.8)
 
 const DAYS = [
-  { n:1, groups:5,  types:['estudante','vovos'],                                   nu:null,         meta:200, expert:320,  time:150, speed:0.60, note:'A freguesia espera lá fora, na calçada: arraste cada grupo até uma mesa livre.' },
-  { n:2, groups:8,  types:['estudante','vovos','familia'],                         nu:'familia',    meta:300, expert:720,  time:160, speed:0.60, note:'Chegou a família! Grupos de 3 ou 4 só cabem nas mesas de 4 lugares. Na lojinha, aba Salão, dá para comprar mesas e arrumar o salão.' },
-  { n:3, groups:13, types:['estudante','vovos','familia','executiva'],             nu:'executiva',  meta:380, expert:880,  time:170, speed:0.60, juice:0.3, note:'O movimento aumentou e agora só há 4 pratos limpos: sozinha a Bia não dá conta, contrate ajuda na lojinha. A executiva tem pouca paciência, mas deixa boa gorjeta. E abriu o balcão de sucos: quem pede suco quer receber antes da conta!' },
-  { n:4, groups:15, types:['estudante','vovos','familia','executiva','entregador'], nu:'entregador', meta:300, expert:780, time:180, speed:0.58, juice:0.3, note:'O entregador de moto tem pressa: pouquíssima paciência!' },
-  { n:5, groups:16, types:['estudante','vovos','familia','executiva','entregador'], nu:null,         meta:480, expert:1100, time:190, speed:0.56, vip:0.15, juice:0.3, note:'Chegou cliente VIP (de óculos escuros e plaquinha dourada)! Fura a fila e tem menos paciência, mas paga gorjeta extra e um bônus se sair com 5 corações. Se sair bravo, a multa dobra.' },
-  { n:6, groups:16, types:['estudante','vovos','familia','executiva','entregador'], nu:null,         meta:460, expert:1100, time:200, speed:0.54, vip:0.15, juice:0.3, note:'Sexta-feira: ninguém quer esperar.' },
-  { n:7, groups:17, types:['estudante','vovos','familia','executiva','entregador'], nu:null,         meta:600, expert:1250, time:220, speed:0.52, vip:0.15, juice:0.3, gripe:true, note:'Tonhão está gripado: a cozinha anda mais devagar hoje.' }
+  { n:1, groups:5,  types:['estudante','vovos'],                                   nu:null,         meta:60, expert:130,  time:150, speed:0.60, note:'A freguesia espera lá fora, na calçada: arraste cada grupo até uma mesa livre.' },
+  { n:2, groups:8,  types:['estudante','vovos','familia'],                         nu:'familia',    meta:200, expert:340,  time:160, speed:0.60, note:'Chegou a família! Grupos de 3 ou 4 só cabem nas mesas de 4 lugares. Na lojinha, aba Salão, dá para comprar mesas e arrumar o salão.' },
+  { n:3, groups:13, types:['estudante','vovos','familia','executiva'],             nu:'executiva',  meta:150, expert:290,  time:170, speed:0.60, juice:0.3, note:'O movimento aumentou e agora só há 4 pratos limpos: sozinha a Bia não dá conta, contrate ajuda na lojinha. A executiva tem pouca paciência, mas deixa boa gorjeta. E abriu o balcão de sucos: quem pede suco quer receber antes da conta!' },
+  { n:4, groups:15, types:['estudante','vovos','familia','executiva','entregador'], nu:'entregador', meta:100, expert:230, time:180, speed:0.58, juice:0.3, note:'O entregador de moto tem pressa: pouquíssima paciência!' },
+  { n:5, groups:16, types:['estudante','vovos','familia','executiva','entregador'], nu:null,         meta:150, expert:320, time:190, speed:0.56, vip:0.15, juice:0.3, note:'Chegou cliente VIP (de óculos escuros e plaquinha dourada)! Fura a fila e tem menos paciência, mas pede o prato especial (mais caro), dá gorjeta e, se sair com 5 corações, pontos a mais. Se sair bravo, a multa dobra.' },
+  { n:6, groups:16, types:['estudante','vovos','familia','executiva','entregador'], nu:null,         meta:150, expert:300, time:200, speed:0.54, vip:0.15, juice:0.3, note:'Sexta-feira: ninguém quer esperar.' },
+  { n:7, groups:17, types:['estudante','vovos','familia','executiva','entregador'], nu:null,         meta:180, expert:360, time:220, speed:0.52, vip:0.15, juice:0.3, gripe:true, note:'Tonhão está gripado: a cozinha anda mais devagar hoje.' }
 ];
 /* campanha (v8.3): os dias 1 a 7 são a rampa de abertura; do dia 8 em diante, cada dia tem o perfil do dia 7 (sem a gripe
    do Tonhão) com o movimento do dia da semana (o dia 1 é domingo e o 6, sexta). f: fator dos grupos e das metas;
@@ -370,12 +384,12 @@ function bomGoal(d){ return Math.round((d.meta + d.expert) / 50) * 25; }
    aluguel do ponto; a Garagem não paga) e,
    do dia 3 em diante, a divulgação decide quanta gente aparece
    ============================================================ */
-const CONTAS = { mesa:30, lugar:6 };                 // por dia: o aluguel do ponto + luz e gás de cada mesa aberta e de cada lugar
-const INGRED = { prato:0.6, suco:5 };               // prato: fração da conta (cobrada quando fica pronto); suco: R$ por copo entregue
+const CONTAS = { base:20, mesa:3, lugar:1 };         // por dia: o aluguel do ponto + gás e geladeira (base) + a luz de cada mesa aberta e de cada lugar (v8.3.8)
+const INGRED = { prato:0.35, suco:3 };               // prato: fração da conta (cobrada quando fica pronto); suco: R$ por copo entregue
 const DIVULGA = [
   { id:'boca',     name:'Boca a boca',   cost:0,   groups:[0.6, 0.9], vip:1,   desc:'Vem menos gente e o movimento varia: pode ser um dia fraco.' },
-  { id:'panfleto', name:'Panfletos',     cost:40,  groups:[1, 1],     vip:1,   desc:'O movimento normal do dia.' },
-  { id:'redes',    name:'Redes sociais', cost:100, groups:[1.2, 1.2], vip:1.5, desc:'+20% de grupos e, do dia 5 em diante, 50% mais VIPs. Precisa de lugar para tanta gente!' }
+  { id:'panfleto', name:'Panfletos',     cost:20,  groups:[1, 1],     vip:1,   desc:'O movimento normal do dia.' },
+  { id:'redes',    name:'Redes sociais', cost:40,  groups:[1.2, 1.2], vip:1.5, desc:'+20% de grupos e, do dia 5 em diante, 50% mais VIPs. Precisa de lugar para tanta gente!' }
 ];
 /* movimento do salão (v7.4.1): cada lugar acima dos 10 do kit traz `porLugar` a mais de grupos no dia
    (salão cheio chama gente). Sem isso, mesa a mais só dava conta de luz e gás */
@@ -415,7 +429,7 @@ function tabelaDe(e){
 /* um empréstimo novo de v, pagando em dia: as parcelas e os juros somados */
 function simulaEmprestimo(v, j){ const t = tabelaDe(normEmprestimo({ resto:v, amort:Math.ceil(v / BANCO.parcelas), j })); return { parcelas:t, juros:t.reduce((a, p) => a + p, 0) - v }; }
 const CAIXA_MAX = 14;                                 // livro-caixa (v7.2): quantos dias da carreira ficam guardados
-const VERSAO = 'v8.3.7';                              // vai no resumo do Caixa
+const VERSAO = 'v8.3.8';                              // vai no resumo do Caixa
 const DIVULGA_DIA = 3;                                // antes disso, o movimento é o da inauguração (sem custo)
 function divulgaAberta(n){ return DEV.on || n >= DIVULGA_DIA; }   // no modo dev, desde o dia 1
 function divulgaOf(id){ return DIVULGA.find(d => d.id === id) || DIVULGA[1]; }
@@ -433,7 +447,7 @@ function bebidaOf(ponto){ return BEBIDA_ESPERA[(ponto || PONTOS[0]).bebida] || B
 /* contas do dia: o aluguel do ponto (v7.4; a Garagem é da família), mais cada mesa aberta e cada lugar dela */
 function contasDia(tables, ponto){
   const open = tables.filter(t => t.open);
-  return (ponto || PONTOS[0]).aluguel + CONTAS.mesa * open.length + CONTAS.lugar * open.reduce((a, t) => a + t.seats, 0);
+  return (ponto || PONTOS[0]).aluguel + CONTAS.base + CONTAS.mesa * open.length + CONTAS.lugar * open.reduce((a, t) => a + t.seats, 0);
 }
 
 /* Missão zero (v8.2): o dia de treino, com uma mesa só e os pop-ups do passo a passo (TREINO_PASSOS, em 17-treino.js) */
@@ -467,9 +481,9 @@ const MANUT = {
   dia: 4,
   quando: [0.12, 0.55],   // em que parte do dia a quebra acontece
   equip: [
-    { id:'fogao',     name:'Fogão',     base:4, uso:0.4, preco:500, emerg:120, efeito:'o Tonhão cozinha 40% mais devagar', lento:0.6,  badge:{ x:884, y:178 } },
-    { id:'geladeira', name:'Geladeira', base:6, uso:0.3, preco:440, emerg:100, efeito:'os ingredientes custam 50% a mais', ingred:1.5, badge:{ x:709, y:127 } },
-    { id:'cafeteira', name:'Cafeteira', base:4, uso:1,   preco:240, emerg:50,  efeito:'sem cafezinho',                       badge:{ x:840, y:346 } }
+    { id:'fogao',     name:'Fogão',     base:4, uso:0.4, preco:120, emerg:40,  efeito:'o Tonhão cozinha 40% mais devagar', lento:0.6,  badge:{ x:884, y:178 } },
+    { id:'geladeira', name:'Geladeira', base:6, uso:0.3, preco:100, emerg:30,  efeito:'os ingredientes custam 50% a mais', ingred:1.5, badge:{ x:709, y:127 } },
+    { id:'cafeteira', name:'Cafeteira', base:4, uso:1,   preco:60,  emerg:15,  efeito:'sem cafezinho',                       badge:{ x:840, y:346 } }
   ],
   badge: 18                // raio da plaquinha do conserto (toque)
 };

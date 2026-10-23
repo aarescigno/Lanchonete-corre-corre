@@ -15,7 +15,7 @@ suja.dirty=false;
 g.onDown(QX,L.LAYOUT.QUEUE.ys[0]-20); g.onUp(QX,L.LAYOUT.QUEUE.ys[0]-20); ok(g.sel===grp,'grupo selecionado por toque');
 const t1=g.tables.find(t=>t.free&&t.seats>=grp.size);
 g.onDown(t1.cx,t1.cy); ok(grp.state==='toTable' && g.sel===null,'toque na mesa senta grupo selecionado');
-const m0=g.money; ok(m0>=10,'sentar pontua (+10 / bônus cor)');
+const m0=g.money; ok(g.pontos>=L.PONTOS_ACAO.sit && m0===0,'sentar pontua (+10 pontos / cor), sem dinheiro (v8.3.8)');
 guard=0; while(grp.state==='toTable'&&guard++<200) g.update(0.05); ok(grp.state==='reading'||grp.state==='wantOrder','chegou e lê cardápio');   // v7.5: vem da calçada, a caminhada varia com a mesa
 // espera pedir
 guard=0; while(grp.state!=='wantOrder'&&guard++<400) g.update(0.05);
@@ -56,7 +56,7 @@ g.bia.clearActs();
 // paciência esgota -> vai embora bravo
 guard=0; while(!g.queue.length&&guard++<2000) g.update(0.05);
 const q=g.queue[0]; const mm=g.money, lost=g.stats.lost; q.hearts=1; q.patLeft=0.05; run(0.3);
-ok(g.stats.lost===lost+1 && q.state==='leaving' && g.money<=mm,'cliente bravo vai embora (-30)');
+ok(g.stats.lost===lost+1 && q.state==='leaving' && g.money<=mm,'cliente bravo vai embora (multa)');
 // fim de tempo sem penalidade
 g.clock=0.1; run(1); const lost2=g.stats.lost; ok(g.ending && g.groups.every(x=>x.state==='leaving'),'tempo zerou: todos saem');
 run(5); ok(g.state==='dayend' && g.stats.lost===lost2,'dia acabou sem penalidade extra');

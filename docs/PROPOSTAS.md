@@ -4,6 +4,19 @@ Registro das ideias e dos retornos de quem jogou, com o texto original, e de ond
 
 ---
 
+## 23/10/2026 — Usuário: ganho demais na Garagem
+**Origem:** mensagens do usuário, depois da v8.3.7:
+
+> Então, fui jogando joguinho e acumulo muito dinheiro ainda assim. Tô no nível garagem, tô juntando muito dinheiro por dia. Ali no... Isso é ruim, né? O que que tá acontecendo? Acho que as pessoas estão pagando demais. Cada pessoa tá comendo e gastando demais ali. Digo, a arrecadação tá muito grande por dia. Talvez seja uma questão de ajustar nesse sentido. Porque é 10 reais só de sentar, 5 do café, mas não sei quanto, sabe? Acho que esses ganhos marginais assim não estão sendo corretos, né? O que você acha?
+
+> Então, eu acho que a proposta é ser relativamente realista, né, esse jogo. Então, os valores também pagos, os valores do restaurante também tem que ser compatíveis com a localização dele, né? Então, não tem como alguém gastar 100 reais numa lanchonete na garagem de alguém, né?
+
+Respostas às perguntas (23/10): as ações "rendem pontos e contam para o marcador de qualidade do restaurante, pois funciona como uma forma das pessoas se sentirem bem atendidas, uma das metas para upgrade, ser garagem avaliada 4,5+ estrelas no Gurugol para poder avançar para próximo nível"; a conta "por prato do cardápio, mas some que uma pessoa pode pedir mais de um prato se quiser comer e beber mais. Máximo de 2 pedidos por pessoa pra não ficar travando a mesa"; gorjeta de até +10%; "pesquise como seriam preços na vida real e me traga para decidirmos ajustes para jogabilidade". Depois da pesquisa: juntar os R$ 800 em ~10 dias; Bandeja, Jogo de pratos e juros ficam caros; meta só de lucro, mais baixa; primeiro os preços e depois a nota.
+
+**Para onde foi:** o bot mostrou ~R$ 1.870 de lucro por dia contra metas de ~R$ 600, e 36% do faturamento vinha das ações. **Feito na v8.3.8** (`docs/spec-v8.3.8.md`): cardápio com preços de 2026 (PF R$ 25), 2º item na mesma comanda, gorjeta de até 10%, ações viram pontos de atendimento, e custos e metas de garagem. A nota do Gurugol, com 4,5★ para subir de ponto, foi anotada na etapa 2c do `docs/PLANO.md`.
+
+---
+
 ## 23/10/2026 — Usuário: a 3ª estrela não veio
 **Origem:** mensagem do usuário, com a captura do fim do dia 7 (lucro de R$ 1583, expert R$ 1250, 1 perdido, 2 estrelas):
 
