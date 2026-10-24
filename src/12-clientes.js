@@ -204,7 +204,7 @@ class Group {
     const g = this.game, eq = g.save.equipe;
     const amb = ambienteEffect(eq);
     if (amb && this.state !== 'queue') m /= 1 - amb;
-    if (g.trashFull && !g.up.ventilador) m /= 1 + TRASH.smell;
+    if (g.trashFull) m /= 1 + TRASH.smell;
     return m;
   }
   setState(s){ this.state = s; this.stateT = 0; this.patLeft = this.patPer(); }

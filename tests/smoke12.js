@@ -20,9 +20,9 @@ g.goShop(3); ok(g.buy('corrida')&&g.save.bank===1500&&g.up.corrida,'na visita se
 // lojinha: o cartão dos tênis vira o de corrida; a grade continua com 6
 const cartoes=()=>els['shop-grid'].children.map(c=>c.children[1].textContent);
 novo(); g.goShop(2); L.setShopTab('melhorias');
-ok(cartoes().length===6&&cartoes()[0]==='Tênis novos'&&!cartoes().includes('Tênis de corrida'),'antes: Tênis novos na grade de 6');
+ok(cartoes().length===7&&cartoes()[0]==='Tênis novos'&&!cartoes().includes('Tênis de corrida'),'antes: Tênis novos na grade de 7 (com o Triturador, v8.3.10)');
 novo({tenis:true}); g.goShop(3); L.setShopTab('melhorias');
-ok(cartoes().length===6&&cartoes()[0]==='Tênis de corrida'&&!cartoes().includes('Tênis novos'),'com os Tênis novos: o cartão vira Tênis de corrida');
+ok(cartoes().length===7&&cartoes()[0]==='Tênis de corrida'&&!cartoes().includes('Tênis novos'),'com os Tênis novos: o cartão vira Tênis de corrida');
 novo({tenis:true,corrida:true}); g.goShop(4); L.setShopTab('melhorias');
 ok(cartoes()[0]==='Tênis de corrida'&&els['shop-grid'].children[0].children[3].textContent==='Já comprado','Tênis de corrida já comprados');
 
