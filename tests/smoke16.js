@@ -157,7 +157,7 @@ const quebra=id=>{ g.quebras=[{id,t:0,on:true,fixed:false}]; };
   ok(g.revisarTudo() && g.save.manut.cafeteira===1 && g.save.manut.fogao===0.2 && g.save.manut.geladeira===0.5 && g.save.bank===10,'revisarTudo com dinheiro curto paga o que der (sem ficar negativo)'); }
 
 // ---------- aba Manutenção ----------
-{ novo(1000,7,{fogao:0.3,geladeira:0.1,cafeteira:0.5}); g.goShop(5); L.setShopTab('manut'); { const c=els['shop-grid'].children; ok(/No vermelho: 50% de chance de quebrar no dia 5/.test(txt(c[0])) && /No limite: quebra no dia 5/.test(txt(c[1])) && /No amarelo: a hora de revisar/.test(txt(c[2])),'aba Manutenção: vermelho 50%, limite quebra, amarelo é a hora de revisar'); } }
+{ novo(1000,7,{fogao:0.3,geladeira:0.1,cafeteira:0.5}); g.goShop(5); L.setShopTab('manut'); { const c=els['shop-grid'].children; ok(/No vermelho: 50% de chance de quebrar no dia 5/.test(txt(c[0])) && /No limite: quebra no dia 5/.test(txt(c[1])) && /Só desgasta/.test(txt(c[2])),'aba Manutenção: vermelho 50%, limite quebra, amarelo só desgasta'); } }
 { novo(1000,7,{fogao:0.6,geladeira:1,cafeteira:0.5}); g.goShop(5); L.setShopTab('manut');
   const cs=els['shop-grid'].children; ok(cs.length===4,'aba Manutenção: 4 cartões (fogão, geladeira, cafeteira, revisar tudo) — '+cs.length);
   ok(/Fogão · 60%/.test(txt(cs[0])) && /Geladeira · 100%/.test(txt(cs[1])) && /Cafeteira · 50%/.test(txt(cs[2])) && /Revisar tudo/.test(txt(cs[3])),'títulos com o estado de cada um');
