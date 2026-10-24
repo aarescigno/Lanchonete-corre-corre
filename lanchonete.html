@@ -255,7 +255,7 @@ table.rank tr.me td{background:#fbe7a8}
 
     <div class="ov show" id="ov-menu">
       <div class="panel menu-panel">
-        <span class="vtag" id="vtag" aria-label="Versão 8.3.10">v8.3.10</span>
+        <span class="vtag" id="vtag" aria-label="Versão 8.3.11">v8.3.11</span>
         <h1 class="title">Lanchonete <br>Corre-Corre</h1>
         <p class="tag">Ajude a Bia a atender a freguesia da esquina antes que o cafezinho esfrie!</p>
         <div class="lbl" id="menu-dia">Carreira: dia 1</div>
@@ -449,7 +449,8 @@ table.rank tr.me td{background:#fbe7a8}
       <div class="panel">
         <h2>Versões</h2>
         <ul class="verlist">
-          <li><b>v8.3.10</b><span class="cur">versão atual</span><br>24/10/2026 &mdash; Triturador de lixo: melhoria nova da lojinha (R$ 180) que mói 1 do lixo a cada 30 s, mas ainda é preciso esvaziar de vez em quando. A lixeira vai do cinza ao verde conforme enche e, cheia, ganha um saco preto ao lado e fumacinha verde. O Ventilador agora só faz a freguesia comer mais rápido: o cheiro da lixeira cheia volta a incomodar.</li>
+          <li><b>v8.3.11</b><span class="cur">versão atual</span><br>24/10/2026 &mdash; Desgaste sem sorteio: fogão, geladeira e cafeteira só vão gastando enquanto estão no verde e no amarelo. No vermelho (abaixo de 40%) há 50% de chance de quebrar no dia, e no limite (15% ou menos) quebra com certeza. A aba Manutenção e a introdução do dia dizem em que ponto cada um está.</li>
+          <li><b>v8.3.10</b><br>24/10/2026 &mdash; Triturador de lixo: melhoria nova da lojinha (R$ 180) que mói 1 do lixo a cada 30 s, mas ainda é preciso esvaziar de vez em quando. A lixeira vai do cinza ao verde conforme enche e, cheia, ganha um saco preto ao lado e fumacinha verde. O Ventilador agora só faz a freguesia comer mais rápido: o cheiro da lixeira cheia volta a incomodar.<br><a href="versoes/v8.3.10.html" target="_blank" rel="noopener">Abrir a v8.3.10</a></li>
           <li><b>v8.3.9</b><br>23/10/2026 &mdash; Estrelas que premiam o jogo bem feito: com os preços novos, o lucro dos primeiros dias depende muito de quem aparece, e quem não perdia ninguém às vezes levava só 1 estrela. As metas e o lucro das 3 estrelas foram recalculados pelo jogo perfeito: no dia 1, meta R$ 30, 2 estrelas R$ 50 e 3 estrelas R$ 60.<br><a href="versoes/v8.3.9.html" target="_blank" rel="noopener">Abrir a v8.3.9</a></li>
           <li><b>v8.3.8</b><br>23/10/2026 &mdash; Preços de verdade: cada cliente paga o que pediu no cardápio da Garagem (PF R$ 25, misto R$ 12, pastel R$ 10, coxinha R$ 8, cafezinho R$ 3), e alguns pedem um 2º item. Os corações viram gorjeta de até 10%. Sentar, anotar, entregar, recolher, a cor certa e a corrente rendem pontos de atendimento, e não mais dinheiro. Contas, folha, divulgação, ingredientes, revisões e metas ficaram do tamanho de uma garagem.<br><a href="versoes/v8.3.8.html" target="_blank" rel="noopener">Abrir a v8.3.8</a></li>
           <li><b>v8.3.7</b><br>23/10/2026 &mdash; 3ª estrela mais clara: no lugar de "expert", a introdução do dia, a barra de lucro e o fim do dia dizem "3 estrelas", sempre com "sem perder ninguém". Quando um cliente vai embora, a barra avisa que a 3ª estrela foi perdida.<br><a href="versoes/v8.3.7.html" target="_blank" rel="noopener">Abrir a v8.3.7</a></li>
@@ -931,7 +932,7 @@ function tabelaDe(e){
 /* um empréstimo novo de v, pagando em dia: as parcelas e os juros somados */
 function simulaEmprestimo(v, j){ const t = tabelaDe(normEmprestimo({ resto:v, amort:Math.ceil(v / BANCO.parcelas), j })); return { parcelas:t, juros:t.reduce((a, p) => a + p, 0) - v }; }
 const CAIXA_MAX = 14;                                 // livro-caixa (v7.2): quantos dias da carreira ficam guardados
-const VERSAO = 'v8.3.10';                              // vai no resumo do Caixa
+const VERSAO = 'v8.3.11';                              // vai no resumo do Caixa
 const DIVULGA_DIA = 3;                                // antes disso, o movimento é o da inauguração (sem custo)
 function divulgaAberta(n){ return DEV.on || n >= DIVULGA_DIA; }   // no modo dev, desde o dia 1
 function divulgaOf(id){ return DIVULGA.find(d => d.id === id) || DIVULGA[1]; }
@@ -974,8 +975,9 @@ const UPGRADES = [
    MANUTENÇÃO (v8): fogão, geladeira e cafeteira vão de 100% a 0%. Cada dia jogado
    na carreira gasta `base` pontos e mais `uso` por prato que fica pronto (fogão e
    geladeira) ou por cafezinho servido (cafeteira): dia cheio gasta mais. Do dia
-   `dia` em diante, cada um pode quebrar no meio do dia, com chance que cresce com o
-   gasto (chance). Revisão na lojinha: volta a 100% e custa `preco` × o que gastou.
+   `dia` em diante, só há risco quando o desgaste chega ao vermelho (abaixo de `vermelho`:
+   `chanceVermelho` de quebrar no dia) e, no limite (`limite` ou menos), quebra com certeza;
+   no verde e no amarelo é só desgaste acumulando (v8.3.11). Revisão na lojinha: volta a 100% e custa `preco` × o que gastou.
    Quebrado, um toque na plaquinha do conserto chama o técnico na hora, por `emerg`
    (volta a 100%). No Turno sem fim, nada se gasta nem quebra
    ============================================================ */
@@ -983,16 +985,19 @@ const MANUT = {
   on: true,               // desligado, nada se gasta nem quebra e não há chuva nem feriado (os testes desligam)
   dia: 4,
   quando: [0.12, 0.55],   // em que parte do dia a quebra acontece
+  vermelho: 0.4,          // abaixo disso a barra fica vermelha: 50% de chance de quebrar no dia
+  chanceVermelho: 0.5,
+  limite: 0.15,           // neste ponto ou abaixo, quebra com certeza
   equip: [
-    { id:'fogao',     name:'Fogão',     base:4, uso:0.4, preco:120, emerg:40,  efeito:'o Tonhão cozinha 40% mais devagar', lento:0.6,  badge:{ x:884, y:178 } },
-    { id:'geladeira', name:'Geladeira', base:6, uso:0.3, preco:100, emerg:30,  efeito:'os ingredientes custam 50% a mais', ingred:1.5, badge:{ x:709, y:127 } },
-    { id:'cafeteira', name:'Cafeteira', base:4, uso:1,   preco:60,  emerg:15,  efeito:'sem cafezinho',                       badge:{ x:840, y:346 } }
+    { id:'fogao',     name:'Fogão',     base:5, uso:0.5, preco:120, emerg:40,  efeito:'o Tonhão cozinha 40% mais devagar', lento:0.6,  badge:{ x:884, y:178 } },
+    { id:'geladeira', name:'Geladeira', base:7, uso:0.4, preco:100, emerg:30,  efeito:'os ingredientes custam 50% a mais', ingred:1.5, badge:{ x:709, y:127 } },
+    { id:'cafeteira', name:'Cafeteira', base:5, uso:1,   preco:60,  emerg:15,  efeito:'sem cafezinho',                       badge:{ x:840, y:346 } }
   ],
   badge: 18                // raio da plaquinha do conserto (toque)
 };
 function manutOf(id){ return MANUT.equip.find(e => e.id === id); }
-/* chance de quebrar no dia, pelo estado (0 a 1): quase nada até ~80%, 1 em 3 dias perto de 40% (com os 3 juntos) */
-function manutChance(e){ return Math.min(0.6, 0.9 * Math.pow(1 - clamp(e, 0, 1), 2)); }
+/* chance de quebrar no dia, pelo estado (0 a 1): zero no verde e no amarelo, 50% no vermelho, 100% no limite */
+function manutChance(e){ return e <= MANUT.limite ? 1 : e < MANUT.vermelho ? MANUT.chanceVermelho : 0; }
 /* preço da revisão: proporcional ao que gastou, em múltiplos de R$ 5 (0 se está a 100%) */
 function manutPreco(id, e){ const q = manutOf(id); return e >= 0.995 ? 0 : Math.max(10, Math.ceil(q.preco * (1 - e) / 5) * 5); }
 function normManut(m){
@@ -5535,7 +5540,7 @@ function buildManut(grid){
   MANUT.equip.forEach(q => {
     const e = m[q.id], v = manutPreco(q.id, e), risco = n >= MANUT.dia ? manutChance(e) : 0;
     const c = staffCard(upgradeIcon('m-' + q.id), q.name + ' · ' + pc(e),
-      'Quebrado, ' + q.efeito + ' até o conserto na hora (' + fmt(q.emerg) + ', um toque na plaquinha). Risco de quebrar no dia ' + n + ': ' + (risco >= 0.005 ? pc(risco) : (n < MANUT.dia ? 'nenhum até o dia ' + MANUT.dia : 'quase nenhum')) + '.');
+      'Quebrado, ' + q.efeito + ' até o conserto na hora (' + fmt(q.emerg) + ', um toque na plaquinha). ' + (n < MANUT.dia ? 'Não quebra até o dia ' + MANUT.dia + '.' : risco >= 1 ? 'No limite: quebra no dia ' + n + '!' : risco > 0 ? 'No vermelho: ' + pc(risco) + ' de chance de quebrar no dia ' + n + '.' : 'Só desgasta: não quebra no dia ' + n + '.'));
     const bar = el('div', 'mbar'); bar.setAttribute('role', 'meter'); bar.setAttribute('aria-label', q.name); bar.setAttribute('aria-valuenow', String(Math.round(e * 100)));
     const fill = el('i'); fill.style.width = pc(e); fill.style.background = e >= 0.7 ? PAL.ok : e >= 0.4 ? PAL.mostarda : PAL.perigo; bar.appendChild(fill);
     c.appendChild(bar);
@@ -5544,7 +5549,7 @@ function buildManut(grid){
     grid.appendChild(c);
   });
   const tot = MANUT.equip.reduce((a, q) => a + manutPreco(q.id, m[q.id]), 0);
-  const c = staffCard(upgradeIcon('contas'), 'Revisar tudo', 'Cada dia gasta cada equipamento um pouco, e mais em dia cheio. Do dia ' + MANUT.dia + ' em diante, o que está gasto pode quebrar no meio do dia. A revisão sai do dinheiro acumulado e entra no caixa como manutenção.');
+  const c = staffCard(upgradeIcon('contas'), 'Revisar tudo', 'Cada dia gasta cada equipamento um pouco, e mais em dia cheio. Do dia ' + MANUT.dia + ' em diante, no vermelho (abaixo de ' + pc(MANUT.vermelho) + ') há ' + pc(MANUT.chanceVermelho) + ' de chance de quebrar no meio do dia, e no limite (' + pc(MANUT.limite) + ' ou menos) quebra com certeza. A revisão sai do dinheiro acumulado e entra no caixa como manutenção.');
   c.appendChild(shopBtn(!tot ? 'Tudo em dia' : DEV.on ? 'Revisar tudo (grátis)' : 'Revisar tudo: ' + fmt(tot), 'btn', !!tot && (DEV.on || game.save.bank >= tot), () => game.revisarTudo(), DEV.on ? 0 : tot));
   grid.appendChild(c);
 }
@@ -5960,8 +5965,10 @@ function introManut(){
   const m = game.manut, cl = CLIMA[game.clima], out = [];
   if (cl) out.push(cl.aviso);
   const est = MANUT.equip.map(q => q.name + ' ' + Math.round(m[q.id] * 100) + '%').join(' · ');
-  const risco = game.day.n >= MANUT.dia ? MANUT.equip.filter(q => manutChance(m[q.id]) >= 0.05) : [];
-  out.push('Equipamentos: ' + est + '.' + (risco.length ? ' ' + risco.map(q => q.name.toLowerCase()).join(' e ').replace(/^./, c => c.toUpperCase()) + (risco.length > 1 ? ' podem' : ' pode') + ' quebrar hoje (revisão na lojinha, aba Manutenção).' : ''));
+  const lista = c => game.day.n >= MANUT.dia ? MANUT.equip.filter(q => manutChance(m[q.id]) === c).map(q => q.name.toLowerCase()) : [];
+  const frase = (l, um, varios) => l.length ? ' ' + l.join(' e ').replace(/^./, x => x.toUpperCase()) + (l.length > 1 ? varios : um) + ' quebrar hoje.' : '';
+  const vai = lista(1), pode = lista(MANUT.chanceVermelho);
+  out.push('Equipamentos: ' + est + '.' + frase(vai, ' vai', ' vão') + frase(pode, ' pode', ' podem') + (vai.length || pode.length ? ' Revisão na lojinha, aba Manutenção.' : ''));
   return out.join(' ');
 }
 /* carreira (v8.3, campanha): sempre o próximo dia; do dia 2 em diante (no modo dev, desde o dia 1), a lojinha abre antes

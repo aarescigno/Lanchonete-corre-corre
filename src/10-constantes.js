@@ -429,7 +429,7 @@ function tabelaDe(e){
 /* um empréstimo novo de v, pagando em dia: as parcelas e os juros somados */
 function simulaEmprestimo(v, j){ const t = tabelaDe(normEmprestimo({ resto:v, amort:Math.ceil(v / BANCO.parcelas), j })); return { parcelas:t, juros:t.reduce((a, p) => a + p, 0) - v }; }
 const CAIXA_MAX = 14;                                 // livro-caixa (v7.2): quantos dias da carreira ficam guardados
-const VERSAO = 'v8.3.10';                              // vai no resumo do Caixa
+const VERSAO = 'v8.3.11';                              // vai no resumo do Caixa
 const DIVULGA_DIA = 3;                                // antes disso, o movimento é o da inauguração (sem custo)
 function divulgaAberta(n){ return DEV.on || n >= DIVULGA_DIA; }   // no modo dev, desde o dia 1
 function divulgaOf(id){ return DIVULGA.find(d => d.id === id) || DIVULGA[1]; }
@@ -472,8 +472,9 @@ const UPGRADES = [
    MANUTENÇÃO (v8): fogão, geladeira e cafeteira vão de 100% a 0%. Cada dia jogado
    na carreira gasta `base` pontos e mais `uso` por prato que fica pronto (fogão e
    geladeira) ou por cafezinho servido (cafeteira): dia cheio gasta mais. Do dia
-   `dia` em diante, cada um pode quebrar no meio do dia, com chance que cresce com o
-   gasto (chance). Revisão na lojinha: volta a 100% e custa `preco` × o que gastou.
+   `dia` em diante, só há risco quando o desgaste chega ao vermelho (abaixo de `vermelho`:
+   `chanceVermelho` de quebrar no dia) e, no limite (`limite` ou menos), quebra com certeza;
+   no verde e no amarelo é só desgaste acumulando (v8.3.11). Revisão na lojinha: volta a 100% e custa `preco` × o que gastou.
    Quebrado, um toque na plaquinha do conserto chama o técnico na hora, por `emerg`
    (volta a 100%). No Turno sem fim, nada se gasta nem quebra
    ============================================================ */
@@ -481,16 +482,19 @@ const MANUT = {
   on: true,               // desligado, nada se gasta nem quebra e não há chuva nem feriado (os testes desligam)
   dia: 4,
   quando: [0.12, 0.55],   // em que parte do dia a quebra acontece
+  vermelho: 0.4,          // abaixo disso a barra fica vermelha: 50% de chance de quebrar no dia
+  chanceVermelho: 0.5,
+  limite: 0.15,           // neste ponto ou abaixo, quebra com certeza
   equip: [
-    { id:'fogao',     name:'Fogão',     base:4, uso:0.4, preco:120, emerg:40,  efeito:'o Tonhão cozinha 40% mais devagar', lento:0.6,  badge:{ x:884, y:178 } },
-    { id:'geladeira', name:'Geladeira', base:6, uso:0.3, preco:100, emerg:30,  efeito:'os ingredientes custam 50% a mais', ingred:1.5, badge:{ x:709, y:127 } },
-    { id:'cafeteira', name:'Cafeteira', base:4, uso:1,   preco:60,  emerg:15,  efeito:'sem cafezinho',                       badge:{ x:840, y:346 } }
+    { id:'fogao',     name:'Fogão',     base:5, uso:0.5, preco:120, emerg:40,  efeito:'o Tonhão cozinha 40% mais devagar', lento:0.6,  badge:{ x:884, y:178 } },
+    { id:'geladeira', name:'Geladeira', base:7, uso:0.4, preco:100, emerg:30,  efeito:'os ingredientes custam 50% a mais', ingred:1.5, badge:{ x:709, y:127 } },
+    { id:'cafeteira', name:'Cafeteira', base:5, uso:1,   preco:60,  emerg:15,  efeito:'sem cafezinho',                       badge:{ x:840, y:346 } }
   ],
   badge: 18                // raio da plaquinha do conserto (toque)
 };
 function manutOf(id){ return MANUT.equip.find(e => e.id === id); }
-/* chance de quebrar no dia, pelo estado (0 a 1): quase nada até ~80%, 1 em 3 dias perto de 40% (com os 3 juntos) */
-function manutChance(e){ return Math.min(0.6, 0.9 * Math.pow(1 - clamp(e, 0, 1), 2)); }
+/* chance de quebrar no dia, pelo estado (0 a 1): zero no verde e no amarelo, 50% no vermelho, 100% no limite */
+function manutChance(e){ return e <= MANUT.limite ? 1 : e < MANUT.vermelho ? MANUT.chanceVermelho : 0; }
 /* preço da revisão: proporcional ao que gastou, em múltiplos de R$ 5 (0 se está a 100%) */
 function manutPreco(id, e){ const q = manutOf(id); return e >= 0.995 ? 0 : Math.max(10, Math.ceil(q.preco * (1 - e) / 5) * 5); }
 function normManut(m){
