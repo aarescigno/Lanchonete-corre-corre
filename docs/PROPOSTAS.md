@@ -22,7 +22,11 @@ Registro das ideias e dos retornos de quem jogou, com o texto original, e de ond
 
 Com 6 s, o triturador tira o lixo 2 a 3 vezes mais rápido do que ele entra: a lixeira nunca enche e a tarefa some, ao contrário do que o pedido quer. Sugestão: **1 a cada 30 s** (a lixeira enche quase na metade das vezes e ainda é preciso esvaziar ~1 vez por dia sem equipe); 20 s se a ideia for quase tirar a tarefa.
 
-**Para onde foi:** Ideias guardadas do `docs/PLANO.md` (melhoria nova da lojinha), esperando o usuário decidir a velocidade e o preço.
+**Decisão do usuário (24/10):**
+
+> faz o triturador com 30 s e muda o ventilador para só fazer as pessoas comerem mais rápido. Também adicione mais evidência de que a lixeira está cheia, fazendo-a variar de cor entre a lata cinza e ela esverdeada, mude o sprite dela quando cheia para uma com saco de lixo preto ao lado com fumacinha verde saindo dele
+
+**Para onde foi:** **feito na v8.3.10** (`docs/spec-v8.3.10.md`): Triturador por R$ 180, 1 gominho a cada 30 s; Ventilador sem o efeito do cheiro; lixeira do cinza ao verde e, cheia, com saco preto e fumacinha verde.
 
 ## 23/10/2026 — Usuário: dia 1 perfeito e só 1 estrela
 **Origem:** mensagem do usuário, depois da v8.3.8:

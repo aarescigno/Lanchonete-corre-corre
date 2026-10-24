@@ -365,23 +365,60 @@ function drawAmbiente(ctx,g,tm){
 }
 /* água saborizada na entrada (jarra com frutas numa mesinha) */
 function ctx2chef(c){ c.beginPath(); c.arc(-5,-17,5,0,TAU); c.arc(0,-20,6,0,TAU); c.arc(5,-17,5,0,TAU); fs(c,'#fff',1.6); }
+/* v8.3.10: mistura duas cores '#rrggbb' (f de 0 a 1) */
+function mixCor(a,b,f){
+  const pa = parseInt(a.slice(1),16), pb = parseInt(b.slice(1),16);
+  const c = sh => Math.round(((pa >> sh) & 255) * (1 - f) + ((pb >> sh) & 255) * f);
+  return 'rgb(' + c(16) + ',' + c(8) + ',' + c(0) + ')';
+}
+const TRASH_COR = { vazia:'#8E99A6', cheia:'#7E9E4E', tampaV:'#B9C2CC', tampaC:'#A5BE78', fumaca:'110,150,60' };
+/* saco de lixo preto amarrado, ao lado da lixeira cheia (v8.3.10) */
+function drawSacoLixo(ctx,x,y){
+  shadowEll(ctx,x,y,13,4,0.2);
+  ctx.beginPath(); ctx.moveTo(x-6,y-21); ctx.bezierCurveTo(x-16,y-17,x-15,y,x-9,y); ctx.lineTo(x+9,y); ctx.bezierCurveTo(x+15,y,x+16,y-17,x+6,y-21); ctx.closePath(); fs(ctx,'#2A2A2E',2.2);
+  ctx.strokeStyle = 'rgba(255,255,255,.22)'; ctx.lineWidth = 2; ctx.beginPath(); ctx.moveTo(x-8,y-15); ctx.quadraticCurveTo(x-10,y-8,x-6,y-4); ctx.stroke();
+  ctx.beginPath(); ctx.moveTo(x-4,y-21); ctx.lineTo(x-7,y-28); ctx.lineTo(x,y-24); ctx.lineTo(x+7,y-28); ctx.lineTo(x+4,y-21); ctx.closePath(); fs(ctx,'#2A2A2E',1.8);
+}
+/* fumacinha verde do lixo cheio: nuvens que sobem e somem (paradas com movimento reduzido) */
+function drawFumacaVerde(ctx,x,y,t){
+  for (let i=0;i<3;i++){
+    const f = RM ? (i + 0.5) / 3 : ((t * 0.5 + i / 3) % 1);
+    const px = x + Math.sin(f * 5 + i * 2) * 4, py = y - f * 26, r = 3 + f * 4;
+    ctx.fillStyle = 'rgba(' + TRASH_COR.fumaca + ',' + (0.7 * (1 - f) + 0.15).toFixed(2) + ')';
+    circ(ctx,px,py,r); ctx.fill();
+  }
+}
 function drawTrash(ctx,on,t,g){
   const x = 723, y = 530;
+  const lv = g && g.state !== 'menu' ? g.trash : 0, cheia = lv >= TRASH.cap;
+  const f = Math.min(1, lv / TRASH.cap);   // v8.3.10: a lata vai do cinza ao esverdeado conforme enche
+  if (cheia) drawSacoLixo(ctx,x-23,y-3);   // à esquerda, atrás da lata (à direita fica a parede da cozinha)
   shadowEll(ctx,x,y,20,5,0.18);
-  ctx.beginPath(); ctx.moveTo(x-15,y-40); ctx.lineTo(x+15,y-40); ctx.lineTo(x+12,y-2); ctx.lineTo(x-12,y-2); ctx.closePath(); fs(ctx,PAL.cromoEsc,2.4);
+  ctx.beginPath(); ctx.moveTo(x-15,y-40); ctx.lineTo(x+15,y-40); ctx.lineTo(x+12,y-2); ctx.lineTo(x-12,y-2); ctx.closePath(); fs(ctx,mixCor(TRASH_COR.vazia,TRASH_COR.cheia,f),2.4);
   ctx.strokeStyle = 'rgba(255,255,255,.4)'; ctx.lineWidth = 3; ctx.beginPath(); ctx.moveTo(x-8,y-34); ctx.lineTo(x-7,y-8); ctx.stroke();
   ctx.strokeStyle = 'rgba(34,32,28,.35)'; ctx.lineWidth = 1.5; ctx.beginPath(); ctx.moveTo(x+1,y-34); ctx.lineTo(x+1,y-8); ctx.moveTo(x+7,y-34); ctx.lineTo(x+6,y-8); ctx.stroke();
-  rr(ctx,x-17,y-47,34,8,3); fs(ctx,PAL.cromo,2.2);
-  rr(ctx,x-4,y-51,8,5,2); fs(ctx,PAL.cromoEsc,1.6);
+  if (cheia){
+    // tampa levantada pelo lixo, com restos aparecendo
+    ctx.beginPath(); ctx.arc(x-6,y-42,5,Math.PI,0); ctx.arc(x+4,y-43,6,Math.PI,0); fs(ctx,'#6F8B3F',1.6);
+    ctx.save(); ctx.translate(x-17,y-44); ctx.rotate(-0.18); rr(ctx,0,-6,34,8,3); fs(ctx,TRASH_COR.tampaC,2.2); rr(ctx,13,-10,8,5,2); fs(ctx,mixCor(TRASH_COR.vazia,TRASH_COR.cheia,1),1.6); ctx.restore();
+  } else {
+    rr(ctx,x-17,y-47,34,8,3); fs(ctx,mixCor(TRASH_COR.tampaV,TRASH_COR.tampaC,f),2.2);
+    rr(ctx,x-4,y-51,8,5,2); fs(ctx,mixCor(TRASH_COR.vazia,TRASH_COR.cheia,f),1.6);
+  }
   rr(ctx,x-7,y-4,14,5,2); fs(ctx,PAL.tinta,1.2);
   txt(ctx,'LIXO',x,y-21,9,'#fff','center',FB);
-  const lv = g ? g.trash : 0;
+  if (g && g.up && g.up.triturador){
+    // v8.3.10: o Triturador, uma caixinha na base com o anel do tempo até moer o próximo
+    rr(ctx,x+22,y-15,13,14,3); fs(ctx,PAL.inox,1.8);
+    circ(ctx,x+28.5,y-8,4.2); fs(ctx,PAL.tinta,1.2);
+    if (lv > 0){ ctx.strokeStyle = PAL.ok; ctx.lineWidth = 2; ctx.beginPath(); ctx.arc(x+28.5,y-8,3.6,-Math.PI/2,-Math.PI/2 + TAU * Math.min(1, (g.trituraT || 0) / TRASH.tritura)); ctx.stroke(); }
+  }
   if (g && g.state !== 'menu'){
-    // nível: 8 tracinhos na lateral
-    for (let i=0;i<TRASH.cap;i++){ ctx.fillStyle = i < lv ? (lv >= TRASH.cap ? PAL.perigo : (lv >= TRASH.cap - 2 ? PAL.alerta : PAL.ok)) : 'rgba(255,255,255,.35)'; ctx.fillRect(x+16,y-6-i*4.4,4,3.2); }
-    if (lv >= TRASH.cap){
-      ctx.strokeStyle = 'rgba(110,140,60,.8)'; ctx.lineWidth = 2;
-      for (let i=0;i<3;i++){ const ph = RM ? 0 : Math.sin(t*3 + i)*3; ctx.beginPath(); ctx.moveTo(x-10+i*10,y-54); ctx.quadraticCurveTo(x-14+i*10+ph,y-62,x-10+i*10,y-70); ctx.stroke(); }
+    // nível: um tracinho por gominho na lateral
+    for (let i=0;i<TRASH.cap;i++){ ctx.fillStyle = i < lv ? (cheia ? PAL.perigo : (lv >= TRASH.cap - 2 ? PAL.alerta : PAL.ok)) : 'rgba(255,255,255,.35)'; ctx.fillRect(x+16,y-6-i*4.4,4,3.2); }
+    if (cheia){
+      drawFumacaVerde(ctx,x-24,y-33,t);
+      drawFumacaVerde(ctx,x-2,y-50,t + 0.6);
       rr(ctx,x-20,y-86,40,13,4); fs(ctx,PAL.perigo,1.6); txt(ctx,'CHEIO',x,y-79,9,'#fff','center',FD);
     }
   }

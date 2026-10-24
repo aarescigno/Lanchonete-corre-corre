@@ -63,6 +63,8 @@ p{margin:calc(var(--u)*6) 0;font-size:max(12px,calc(var(--u)*16));line-height:1.
 .stats b{font-family:var(--fd);font-weight:400;text-align:right;font-size:max(13px,calc(var(--u)*18))}
 .shopgrid{display:grid;grid-template-columns:repeat(3,1fr);gap:calc(var(--u)*8);width:calc(var(--u)*760);max-width:100%;margin:calc(var(--u)*6) 0}
 .shopgrid.salao{grid-template-columns:1fr}
+.shopgrid.melhorias{grid-template-columns:repeat(4,1fr);width:calc(var(--u)*980)}   /* v8.3.10: 7 cartões em 2 fileiras (com o Triturador) */
+@media (max-width:600px) and (min-height:461px){.shopgrid.melhorias{grid-template-columns:repeat(2,1fr)}}
 /* editor do salão (v7.4): o salão em escala à esquerda, a loja de móveis à direita */
 .ed{display:grid;grid-template-columns:minmax(0,1fr) max(150px,calc(var(--u)*210));gap:calc(var(--u)*8);align-items:start;text-align:left}
 .ed-cv{position:relative;border:calc(var(--u)*3) solid var(--tinta);border-radius:calc(var(--u)*10);overflow:hidden;line-height:0;background:var(--tinta)}
@@ -253,7 +255,7 @@ table.rank tr.me td{background:#fbe7a8}
 
     <div class="ov show" id="ov-menu">
       <div class="panel menu-panel">
-        <span class="vtag" id="vtag" aria-label="Versão 8.3.9">v8.3.9</span>
+        <span class="vtag" id="vtag" aria-label="Versão 8.3.10">v8.3.10</span>
         <h1 class="title">Lanchonete <br>Corre-Corre</h1>
         <p class="tag">Ajude a Bia a atender a freguesia da esquina antes que o cafezinho esfrie!</p>
         <div class="lbl" id="menu-dia">Carreira: dia 1</div>
@@ -447,7 +449,8 @@ table.rank tr.me td{background:#fbe7a8}
       <div class="panel">
         <h2>Versões</h2>
         <ul class="verlist">
-          <li><b>v8.3.9</b><span class="cur">versão atual</span><br>23/10/2026 &mdash; Estrelas que premiam o jogo bem feito: com os preços novos, o lucro dos primeiros dias depende muito de quem aparece, e quem não perdia ninguém às vezes levava só 1 estrela. As metas e o lucro das 3 estrelas foram recalculados pelo jogo perfeito: no dia 1, meta R$ 30, 2 estrelas R$ 50 e 3 estrelas R$ 60.</li>
+          <li><b>v8.3.10</b><span class="cur">versão atual</span><br>24/10/2026 &mdash; Triturador de lixo: melhoria nova da lojinha (R$ 180) que mói 1 do lixo a cada 30 s, mas ainda é preciso esvaziar de vez em quando. A lixeira vai do cinza ao verde conforme enche e, cheia, ganha um saco preto ao lado e fumacinha verde. O Ventilador agora só faz a freguesia comer mais rápido: o cheiro da lixeira cheia volta a incomodar.</li>
+          <li><b>v8.3.9</b><br>23/10/2026 &mdash; Estrelas que premiam o jogo bem feito: com os preços novos, o lucro dos primeiros dias depende muito de quem aparece, e quem não perdia ninguém às vezes levava só 1 estrela. As metas e o lucro das 3 estrelas foram recalculados pelo jogo perfeito: no dia 1, meta R$ 30, 2 estrelas R$ 50 e 3 estrelas R$ 60.<br><a href="versoes/v8.3.9.html" target="_blank" rel="noopener">Abrir a v8.3.9</a></li>
           <li><b>v8.3.8</b><br>23/10/2026 &mdash; Preços de verdade: cada cliente paga o que pediu no cardápio da Garagem (PF R$ 25, misto R$ 12, pastel R$ 10, coxinha R$ 8, cafezinho R$ 3), e alguns pedem um 2º item. Os corações viram gorjeta de até 10%. Sentar, anotar, entregar, recolher, a cor certa e a corrente rendem pontos de atendimento, e não mais dinheiro. Contas, folha, divulgação, ingredientes, revisões e metas ficaram do tamanho de uma garagem.<br><a href="versoes/v8.3.8.html" target="_blank" rel="noopener">Abrir a v8.3.8</a></li>
           <li><b>v8.3.7</b><br>23/10/2026 &mdash; 3ª estrela mais clara: no lugar de "expert", a introdução do dia, a barra de lucro e o fim do dia dizem "3 estrelas", sempre com "sem perder ninguém". Quando um cliente vai embora, a barra avisa que a 3ª estrela foi perdida.<br><a href="versoes/v8.3.7.html" target="_blank" rel="noopener">Abrir a v8.3.7</a></li>
           <li><b>v8.3.6</b><br>23/10/2026 &mdash; Jogo de pratos sem limite: na lojinha, ele fica sempre à venda, quantas vezes você quiser (cada um põe +1 prato limpo na cozinha), e não conta como a melhoria do dia. As outras melhorias seguem 1 por dia.<br><a href="versoes/v8.3.6.html" target="_blank" rel="noopener">Abrir a v8.3.6</a></li>
@@ -777,7 +780,7 @@ function daniTaskOk(id, up){ const t = DANI_TASKS.find(d => d.id === id); return
 /* prato caprichado (acerto crítico do Tonhão): +1 coração e bônus na entrega */
 const CRIT = { bonus:10, vipBonus:20 };   // pontos (v8.3.8; eram R$)
 const WASH = { base:0.3, perPile:2.5 };               // segundos na pia
-const TRASH = { cap:6, empty:2, smell:0.3 };         // lixeira: capacidade, tempo para esvaziar, cheiro quando cheia
+const TRASH = { cap:6, empty:2, smell:0.3, tritura:30 };   // lixeira: capacidade, tempo para esvaziar, cheiro quando cheia, segundos do Triturador por gominho (v8.3.10)
 function couvertEffect(eq){ return STAFF.couvert.effect * (eq.taxa ? 1 - STAFF.couvert.feeCut : 1); }
 function couvertOk(ponto){ return DEV.on || (ponto || PONTOS[0]).nivel >= STAFF.couvert.nivel; }   // no modo dev, em qualquer ponto
 /* ambiente do salão: quanto a paciência nas mesas cai mais devagar (TV, som e couvert se somam) */
@@ -928,7 +931,7 @@ function tabelaDe(e){
 /* um empréstimo novo de v, pagando em dia: as parcelas e os juros somados */
 function simulaEmprestimo(v, j){ const t = tabelaDe(normEmprestimo({ resto:v, amort:Math.ceil(v / BANCO.parcelas), j })); return { parcelas:t, juros:t.reduce((a, p) => a + p, 0) - v }; }
 const CAIXA_MAX = 14;                                 // livro-caixa (v7.2): quantos dias da carreira ficam guardados
-const VERSAO = 'v8.3.9';                              // vai no resumo do Caixa
+const VERSAO = 'v8.3.10';                              // vai no resumo do Caixa
 const DIVULGA_DIA = 3;                                // antes disso, o movimento é o da inauguração (sem custo)
 function divulgaAberta(n){ return DEV.on || n >= DIVULGA_DIA; }   // no modo dev, desde o dia 1
 function divulgaOf(id){ return DIVULGA.find(d => d.id === id) || DIVULGA[1]; }
@@ -962,7 +965,8 @@ const UPGRADES = [
   { id:'maquina',    name:'Água da torneira',     desc:'Na calçada: torneira e copos americanos num caixote. Quem espera pede água; a Bia enche e leva, de graça, e quem bebe perde a paciência 40% mais devagar.', cost:80, devolve:100 },   // a Máquina de suco (R$ 180) até a v7.6: devolve a diferença
   { id:'cafeteira',  name:'Cafeteira de 2 bocas', desc:'O cafezinho devolve +2 corações.',             cost:200 },
   { id:'bandeja',    name:'Bandeja',              desc:'Leva 2 pratos, 3 bebidas, prato + bebida ou 2 pilhas de louça.', cost:220 },
-  { id:'ventilador', name:'Ventilador de teto',   desc:'A freguesia come 15% mais rápido e o cheiro da lixeira cheia não incomoda.', cost:250 },
+  { id:'ventilador', name:'Ventilador de teto',   desc:'A freguesia come 15% mais rápido.', cost:250 },   // v8.3.10: o cheiro da lixeira cheia voltou a incomodar
+  { id:'triturador', name:'Triturador de lixo',   desc:'Mói os restos da lixeira: tira 1 do lixo a cada 30 s. Ainda é preciso esvaziar de vez em quando.', cost:180 },
   { id:'pratos',     name:'Jogo de pratos',       desc:'+1 prato limpo na cozinha (do dia 3 em diante). Leve quantos quiser, fora da melhoria do dia.', cost:300, multi:true }   // v8.3.6: acumula e não conta no limite de 1 por dia
 ];
 
@@ -1346,7 +1350,7 @@ class Group {
     const g = this.game, eq = g.save.equipe;
     const amb = ambienteEffect(eq);
     if (amb && this.state !== 'queue') m /= 1 - amb;
-    if (g.trashFull && !g.up.ventilador) m /= 1 + TRASH.smell;
+    if (g.trashFull) m /= 1 + TRASH.smell;
     return m;
   }
   setState(s){ this.state = s; this.stateT = 0; this.patLeft = this.patPer(); }
@@ -2065,7 +2069,7 @@ class Game {
     this.tables.forEach(t => { t.open = true; t.group = null; t.dirty = false; t.dirtyN = 0; });   // v7.4: todas as mesas abrem desde o dia 1
     this.kitchen.reset();
     this.kitchen.clean = dishStock(this.day, this.up);
-    this.trash = 0; this.paid = 0; this.unpaid = []; this.aberto = false;
+    this.trash = 0; this.trituraT = 0; this.paid = 0; this.unpaid = []; this.aberto = false;
     this.maq = []; this.maqId = 0;   // pedidos do tablet da espera na máquina de suco: { id, group, n, t (preparo que falta) }
     this.bia.reset();
     this.dani.reset();
@@ -2578,6 +2582,11 @@ class Game {
     this.groups = this.groups.filter(g => !g.done);
     this.maq.forEach(o => { if (o.t > 0){ o.t -= dt; if (o.t <= 0){ Sfx.tone(1568, 0.12, 'sine', 0.05); this.addGlow('maquina'); } } });
     if (this.lotado) this.stats.lotadoT += dt;
+    // v8.3.10: o Triturador mói 1 do lixo a cada TRASH.tritura segundos (o relógio só anda com lixo na lixeira)
+    if (this.up.triturador && this.trash > 0){
+      this.trituraT += dt;
+      if (this.trituraT >= TRASH.tritura){ this.trituraT = 0; this.trash--; Sfx.noise(0.15, 0.05, 0, 300); }
+    } else this.trituraT = 0;
     this.bia.update(dt);
     this.dani.update(dt);
     this.kitchen.update(dt);
@@ -3838,23 +3847,60 @@ function drawAmbiente(ctx,g,tm){
 }
 /* água saborizada na entrada (jarra com frutas numa mesinha) */
 function ctx2chef(c){ c.beginPath(); c.arc(-5,-17,5,0,TAU); c.arc(0,-20,6,0,TAU); c.arc(5,-17,5,0,TAU); fs(c,'#fff',1.6); }
+/* v8.3.10: mistura duas cores '#rrggbb' (f de 0 a 1) */
+function mixCor(a,b,f){
+  const pa = parseInt(a.slice(1),16), pb = parseInt(b.slice(1),16);
+  const c = sh => Math.round(((pa >> sh) & 255) * (1 - f) + ((pb >> sh) & 255) * f);
+  return 'rgb(' + c(16) + ',' + c(8) + ',' + c(0) + ')';
+}
+const TRASH_COR = { vazia:'#8E99A6', cheia:'#7E9E4E', tampaV:'#B9C2CC', tampaC:'#A5BE78', fumaca:'110,150,60' };
+/* saco de lixo preto amarrado, ao lado da lixeira cheia (v8.3.10) */
+function drawSacoLixo(ctx,x,y){
+  shadowEll(ctx,x,y,13,4,0.2);
+  ctx.beginPath(); ctx.moveTo(x-6,y-21); ctx.bezierCurveTo(x-16,y-17,x-15,y,x-9,y); ctx.lineTo(x+9,y); ctx.bezierCurveTo(x+15,y,x+16,y-17,x+6,y-21); ctx.closePath(); fs(ctx,'#2A2A2E',2.2);
+  ctx.strokeStyle = 'rgba(255,255,255,.22)'; ctx.lineWidth = 2; ctx.beginPath(); ctx.moveTo(x-8,y-15); ctx.quadraticCurveTo(x-10,y-8,x-6,y-4); ctx.stroke();
+  ctx.beginPath(); ctx.moveTo(x-4,y-21); ctx.lineTo(x-7,y-28); ctx.lineTo(x,y-24); ctx.lineTo(x+7,y-28); ctx.lineTo(x+4,y-21); ctx.closePath(); fs(ctx,'#2A2A2E',1.8);
+}
+/* fumacinha verde do lixo cheio: nuvens que sobem e somem (paradas com movimento reduzido) */
+function drawFumacaVerde(ctx,x,y,t){
+  for (let i=0;i<3;i++){
+    const f = RM ? (i + 0.5) / 3 : ((t * 0.5 + i / 3) % 1);
+    const px = x + Math.sin(f * 5 + i * 2) * 4, py = y - f * 26, r = 3 + f * 4;
+    ctx.fillStyle = 'rgba(' + TRASH_COR.fumaca + ',' + (0.7 * (1 - f) + 0.15).toFixed(2) + ')';
+    circ(ctx,px,py,r); ctx.fill();
+  }
+}
 function drawTrash(ctx,on,t,g){
   const x = 723, y = 530;
+  const lv = g && g.state !== 'menu' ? g.trash : 0, cheia = lv >= TRASH.cap;
+  const f = Math.min(1, lv / TRASH.cap);   // v8.3.10: a lata vai do cinza ao esverdeado conforme enche
+  if (cheia) drawSacoLixo(ctx,x-23,y-3);   // à esquerda, atrás da lata (à direita fica a parede da cozinha)
   shadowEll(ctx,x,y,20,5,0.18);
-  ctx.beginPath(); ctx.moveTo(x-15,y-40); ctx.lineTo(x+15,y-40); ctx.lineTo(x+12,y-2); ctx.lineTo(x-12,y-2); ctx.closePath(); fs(ctx,PAL.cromoEsc,2.4);
+  ctx.beginPath(); ctx.moveTo(x-15,y-40); ctx.lineTo(x+15,y-40); ctx.lineTo(x+12,y-2); ctx.lineTo(x-12,y-2); ctx.closePath(); fs(ctx,mixCor(TRASH_COR.vazia,TRASH_COR.cheia,f),2.4);
   ctx.strokeStyle = 'rgba(255,255,255,.4)'; ctx.lineWidth = 3; ctx.beginPath(); ctx.moveTo(x-8,y-34); ctx.lineTo(x-7,y-8); ctx.stroke();
   ctx.strokeStyle = 'rgba(34,32,28,.35)'; ctx.lineWidth = 1.5; ctx.beginPath(); ctx.moveTo(x+1,y-34); ctx.lineTo(x+1,y-8); ctx.moveTo(x+7,y-34); ctx.lineTo(x+6,y-8); ctx.stroke();
-  rr(ctx,x-17,y-47,34,8,3); fs(ctx,PAL.cromo,2.2);
-  rr(ctx,x-4,y-51,8,5,2); fs(ctx,PAL.cromoEsc,1.6);
+  if (cheia){
+    // tampa levantada pelo lixo, com restos aparecendo
+    ctx.beginPath(); ctx.arc(x-6,y-42,5,Math.PI,0); ctx.arc(x+4,y-43,6,Math.PI,0); fs(ctx,'#6F8B3F',1.6);
+    ctx.save(); ctx.translate(x-17,y-44); ctx.rotate(-0.18); rr(ctx,0,-6,34,8,3); fs(ctx,TRASH_COR.tampaC,2.2); rr(ctx,13,-10,8,5,2); fs(ctx,mixCor(TRASH_COR.vazia,TRASH_COR.cheia,1),1.6); ctx.restore();
+  } else {
+    rr(ctx,x-17,y-47,34,8,3); fs(ctx,mixCor(TRASH_COR.tampaV,TRASH_COR.tampaC,f),2.2);
+    rr(ctx,x-4,y-51,8,5,2); fs(ctx,mixCor(TRASH_COR.vazia,TRASH_COR.cheia,f),1.6);
+  }
   rr(ctx,x-7,y-4,14,5,2); fs(ctx,PAL.tinta,1.2);
   txt(ctx,'LIXO',x,y-21,9,'#fff','center',FB);
-  const lv = g ? g.trash : 0;
+  if (g && g.up && g.up.triturador){
+    // v8.3.10: o Triturador, uma caixinha na base com o anel do tempo até moer o próximo
+    rr(ctx,x+22,y-15,13,14,3); fs(ctx,PAL.inox,1.8);
+    circ(ctx,x+28.5,y-8,4.2); fs(ctx,PAL.tinta,1.2);
+    if (lv > 0){ ctx.strokeStyle = PAL.ok; ctx.lineWidth = 2; ctx.beginPath(); ctx.arc(x+28.5,y-8,3.6,-Math.PI/2,-Math.PI/2 + TAU * Math.min(1, (g.trituraT || 0) / TRASH.tritura)); ctx.stroke(); }
+  }
   if (g && g.state !== 'menu'){
-    // nível: 8 tracinhos na lateral
-    for (let i=0;i<TRASH.cap;i++){ ctx.fillStyle = i < lv ? (lv >= TRASH.cap ? PAL.perigo : (lv >= TRASH.cap - 2 ? PAL.alerta : PAL.ok)) : 'rgba(255,255,255,.35)'; ctx.fillRect(x+16,y-6-i*4.4,4,3.2); }
-    if (lv >= TRASH.cap){
-      ctx.strokeStyle = 'rgba(110,140,60,.8)'; ctx.lineWidth = 2;
-      for (let i=0;i<3;i++){ const ph = RM ? 0 : Math.sin(t*3 + i)*3; ctx.beginPath(); ctx.moveTo(x-10+i*10,y-54); ctx.quadraticCurveTo(x-14+i*10+ph,y-62,x-10+i*10,y-70); ctx.stroke(); }
+    // nível: um tracinho por gominho na lateral
+    for (let i=0;i<TRASH.cap;i++){ ctx.fillStyle = i < lv ? (cheia ? PAL.perigo : (lv >= TRASH.cap - 2 ? PAL.alerta : PAL.ok)) : 'rgba(255,255,255,.35)'; ctx.fillRect(x+16,y-6-i*4.4,4,3.2); }
+    if (cheia){
+      drawFumacaVerde(ctx,x-24,y-33,t);
+      drawFumacaVerde(ctx,x-2,y-50,t + 0.6);
       rr(ctx,x-20,y-86,40,13,4); fs(ctx,PAL.perigo,1.6); txt(ctx,'CHEIO',x,y-79,9,'#fff','center',FD);
     }
   }
@@ -5130,6 +5176,10 @@ function upgradeIcon(id){
     } else if (id === 'bandeja'){
       ell(c,0,6,17,5); fs(c,PAL.inox,2);
       drawIcon(c,'juice',-8,-4,0.55); drawIcon(c,'juice',0,-5,0.55); drawIcon(c,'coffee',9,-1,0.5);
+    } else if (id === 'triturador'){
+      rr(c,-11,-14,22,16,3); fs(c,'#8E99A6',2); rr(c,-13,-17,26,5,2); fs(c,PAL.cromo,1.6);
+      rr(c,-10,2,20,12,3); fs(c,PAL.inox,1.8);
+      for (let i=0;i<3;i++){ c.save(); c.translate(0,8); c.rotate(i*TAU/3); rr(c,-1.2,-5,2.4,5,1); fs(c,PAL.cromoEsc,1); c.restore(); }
     } else if (id === 'ventilador'){
       for (let i=0;i<4;i++){ c.save(); c.rotate(i*Math.PI/2 + 0.4); ell(c,0,-8,4.5,9); fs(c,i%2?PAL.cromo:'#e8edf1',1.8); c.restore(); }
       circ(c,0,0,3.5); fs(c,PAL.mostarda,1.8);
@@ -5657,7 +5707,7 @@ function buildShop(){
   $('btn-shop-go').textContent = 'Começar o dia ' + game.shopNext;
   const f = payroll(game.save.equipe), dv = divulgaAberta(game.shopNext) ? divulgaOf(game.save.divulga) : null;
   $('shop-folha').textContent = (f ? 'Folha ' + fmt(f) : 'Sem folha') + (dv ? ' + ' + dv.name.toLowerCase() + ' ' + fmt(dv.cost) : '') + ', contas ' + fmt(contasDia(game.tables)) + (sv.emp.resto ? ', parcela do banco ' + fmt(game.devido) + (sv.emp.atr ? ' (com a atrasada)' : '') : '') + ' e ingredientes: tudo pago no fim do dia, que só rende completo. A meta é o lucro.';
-  grid.className = 'shopgrid' + (shopTab === 'salao' || shopTab === 'caixa' ? ' ' + shopTab : '');
+  grid.className = 'shopgrid' + (shopTab === 'salao' || shopTab === 'caixa' || shopTab === 'melhorias' ? ' ' + shopTab : '');
   ['salao', 'caixa'].forEach(k => $('ov-shop').classList[shopTab === k ? 'add' : 'remove'](k));
   if (shopTab === 'equipe') return buildEquipe(grid);
   if (shopTab === 'salao') return buildSalao(grid);

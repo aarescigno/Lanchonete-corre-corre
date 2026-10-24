@@ -52,7 +52,7 @@ class Game {
     this.tables.forEach(t => { t.open = true; t.group = null; t.dirty = false; t.dirtyN = 0; });   // v7.4: todas as mesas abrem desde o dia 1
     this.kitchen.reset();
     this.kitchen.clean = dishStock(this.day, this.up);
-    this.trash = 0; this.paid = 0; this.unpaid = []; this.aberto = false;
+    this.trash = 0; this.trituraT = 0; this.paid = 0; this.unpaid = []; this.aberto = false;
     this.maq = []; this.maqId = 0;   // pedidos do tablet da espera na máquina de suco: { id, group, n, t (preparo que falta) }
     this.bia.reset();
     this.dani.reset();
@@ -565,6 +565,11 @@ class Game {
     this.groups = this.groups.filter(g => !g.done);
     this.maq.forEach(o => { if (o.t > 0){ o.t -= dt; if (o.t <= 0){ Sfx.tone(1568, 0.12, 'sine', 0.05); this.addGlow('maquina'); } } });
     if (this.lotado) this.stats.lotadoT += dt;
+    // v8.3.10: o Triturador mói 1 do lixo a cada TRASH.tritura segundos (o relógio só anda com lixo na lixeira)
+    if (this.up.triturador && this.trash > 0){
+      this.trituraT += dt;
+      if (this.trituraT >= TRASH.tritura){ this.trituraT = 0; this.trash--; Sfx.noise(0.15, 0.05, 0, 300); }
+    } else this.trituraT = 0;
     this.bia.update(dt);
     this.dani.update(dt);
     this.kitchen.update(dt);
