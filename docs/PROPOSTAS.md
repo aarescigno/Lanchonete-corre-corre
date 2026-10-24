@@ -4,6 +4,26 @@ Registro das ideias e dos retornos de quem jogou, com o texto original, e de ond
 
 ---
 
+## 24/10/2026 — Usuário: Triturador de lixo
+**Origem:** mensagem do usuário, depois da v8.3.9:
+
+> Nova ideia de upgrade! Adicionar a melhoria triturador, que drena 1 Gominho de lixo a cada 6 segundos, acha que é boa essa velocidade? Não isenta ter que esvaziar ainda de vez em quando
+
+**O que os números dizem** (bot comum, 10 rodadas por dia, lixeira de 6 gominhos, `TRASH.cap`): entra 1 gominho a cada ~20 s sem equipe e a cada ~14 s com a equipe completa (cada pilha lavada e cada copo jogado fora vale 1). Esvaziadas por dia, nos dias 3 a 7:
+
+| Triturador | Sem equipe | Com equipe (a Dani também esvazia) |
+|---|---|---|
+| sem | 0,8 a 1,7 (cheia 3–10% do dia) | 2,0 a 2,6 |
+| 1 a cada 6 s | 0 | 0 |
+| 1 a cada 12 s | 0 | — |
+| 1 a cada 15 s | — | 0,7 a 1,1 |
+| 1 a cada 20 s | 0 a 0,4 | — |
+| 1 a cada 30 s | 0,3 a 1,1 | 1,5 a 1,9 |
+
+Com 6 s, o triturador tira o lixo 2 a 3 vezes mais rápido do que ele entra: a lixeira nunca enche e a tarefa some, ao contrário do que o pedido quer. Sugestão: **1 a cada 30 s** (a lixeira enche quase na metade das vezes e ainda é preciso esvaziar ~1 vez por dia sem equipe); 20 s se a ideia for quase tirar a tarefa.
+
+**Para onde foi:** Ideias guardadas do `docs/PLANO.md` (melhoria nova da lojinha), esperando o usuário decidir a velocidade e o preço.
+
 ## 23/10/2026 — Usuário: dia 1 perfeito e só 1 estrela
 **Origem:** mensagem do usuário, depois da v8.3.8:
 
