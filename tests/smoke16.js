@@ -136,9 +136,9 @@ const quebra=id=>{ g.quebras=[{id,t:0,on:true,fixed:false}]; };
   ok(g.consertar('cafeteira')===false && g.consertar('xx')===false,'consertar equipamento que não está quebrado ou não existe: false'); }
 
 // ---------- revisão na lojinha ----------
-{ const P=L.manutPreco, q=M.equip[0];
-  ok(P('fogao',1)===0 && P('fogao',0.996)===0 && [0.9,0.6,0.2].every(e=>P('fogao',e)===Math.max(10,Math.ceil(q.preco*(1-e)/5)*5)) && P('fogao',0.2)===4*P('fogao',0.8) && P('fogao',0)===q.preco,'preço da revisão proporcional ao desgaste (fogão: 90%→'+P('fogao',0.9)+', 60%→'+P('fogao',0.6)+', 0%→'+q.preco+')');
-  ok(P('fogao',0.99)===10 && P('cafeteira',0.5)%5===0,'preço mínimo R$ 10 e múltiplos de 5'); }
+{ const P=L.manutPreco, q=M.equip[0], esp=e=>Math.ceil((M.taxa+q.preco*(1-e))*(e<M.vermelho?M.urgente:1)/5)*5;
+  ok(P('fogao',1)===0 && P('fogao',0.996)===0 && [0.9,0.7,0.5,0.2,0].every(e=>P('fogao',e)===esp(e)) && P('fogao',0.5)>P('fogao',0.9),'preço da revisão: taxa + desgaste, ×'+M.urgente+' no vermelho (fogão: 90%→'+P('fogao',0.9)+', 50%→'+P('fogao',0.5)+', 20%→'+P('fogao',0.2)+', 0%→'+P('fogao',0)+')');
+  ok(P('fogao',0.99)>=M.taxa && P('fogao',0.41)*M.urgente>P('fogao',0.41) && P('fogao',0.39)>P('fogao',0.41)+q.preco*0.02 && P('cafeteira',0.5)%5===0,'a taxa pesa no quase novo, o vermelho encarece de uma vez e tudo é múltiplo de 5'); }
 { fixa(0); novo(1000,7,{fogao:0.3,geladeira:0.35,cafeteira:0.25}); g.startDay(4); solta();
   ok(g.quebras.length===3,'(sorteio de 3 quebras para o dia 4)');
   g.goShop(4); ok(g.state==='shop' && g.quebras.length===3 && g.save.manut.sorteio.d===4,'voltar à lojinha do mesmo dia mantém o sorteio');
@@ -157,7 +157,7 @@ const quebra=id=>{ g.quebras=[{id,t:0,on:true,fixed:false}]; };
   ok(g.revisarTudo() && g.save.manut.cafeteira===1 && g.save.manut.fogao===0.2 && g.save.manut.geladeira===0.5 && g.save.bank===10,'revisarTudo com dinheiro curto paga o que der (sem ficar negativo)'); }
 
 // ---------- aba Manutenção ----------
-{ novo(1000,7,{fogao:0.3,geladeira:0.1,cafeteira:0.5}); g.goShop(5); L.setShopTab('manut'); { const c=els['shop-grid'].children; ok(/No vermelho: 50% de chance de quebrar no dia 5/.test(txt(c[0])) && /No limite: quebra no dia 5/.test(txt(c[1])) && /Só desgasta/.test(txt(c[2])),'aba Manutenção: vermelho 50%, limite quebra, amarelo só desgasta'); } }
+{ novo(1000,7,{fogao:0.3,geladeira:0.1,cafeteira:0.5}); g.goShop(5); L.setShopTab('manut'); { const c=els['shop-grid'].children; ok(/No vermelho: 50% de chance de quebrar no dia 5/.test(txt(c[0])) && /No limite: quebra no dia 5/.test(txt(c[1])) && /No amarelo: a hora de revisar/.test(txt(c[2])),'aba Manutenção: vermelho 50%, limite quebra, amarelo é a hora de revisar'); } }
 { novo(1000,7,{fogao:0.6,geladeira:1,cafeteira:0.5}); g.goShop(5); L.setShopTab('manut');
   const cs=els['shop-grid'].children; ok(cs.length===4,'aba Manutenção: 4 cartões (fogão, geladeira, cafeteira, revisar tudo) — '+cs.length);
   ok(/Fogão · 60%/.test(txt(cs[0])) && /Geladeira · 100%/.test(txt(cs[1])) && /Cafeteira · 50%/.test(txt(cs[2])) && /Revisar tudo/.test(txt(cs[3])),'títulos com o estado de cada um');

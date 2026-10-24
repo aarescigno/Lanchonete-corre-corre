@@ -8,13 +8,14 @@
 // v8, manutenção e imprevistos:
 //   MANUT=sem    (padrão) imprevistos desligados (MANUT.on=false), como antes
 //   MANUT=com    liga os imprevistos (desgaste, quebras do dia 4 em diante, chuva e feriado do dia 3) e o jogador nunca revisa
+//   MANUT=amarelo|vermelho  revisa só quem saiu do verde (abaixo de MANUT.verde) ou só quem já está no vermelho
 //   MANUT=cuida  liga e revisa tudo (revisarTudo) em toda lojinha, antes das outras compras, com o dinheiro de verdade
 //   CONSERTO=1   chama o técnico na hora quando o fogão quebra (se tiver dinheiro; CONSERTO=todos: os três equipamentos)
 //   Com MANUT=com|cuida, mostra por dia: quebras (média), chuva/feriado (dias), revisão e conserto (R$) e o dinheiro final.
 //   MANUT_CFG='{"equip":{"fogao":{"preco":300}}}' e CLIMA_CFG='{"chuva":{"chance":0.1}}' trocam L.MANUT / L.CLIMA em runtime (sem mexer em src/)
 const N=+process.argv[2]||10, DIV=process.argv[3]||'panfleto';
 const H=require('./harness.js')(); const {g,L}=H; const BOT=require('./bot.js'), bot=BOT(g,L,{conserto:process.env.CONSERTO==='todos'?'todos':!!process.env.CONSERTO});
-const MODO=process.env.MANUT||'sem'; if(!['sem','com','cuida'].includes(MODO)) throw new Error('MANUT=sem|com|cuida');
+const MODO=process.env.MANUT||'sem'; if(!['sem','com','cuida','amarelo','vermelho'].includes(MODO)) throw new Error('MANUT=sem|com|cuida|amarelo|vermelho');
 L.MANUT.on=MODO!=='sem';
 if(process.env.MANUT_CFG){ const c=JSON.parse(process.env.MANUT_CFG); const eq=c.equip; delete c.equip; Object.assign(L.MANUT,c); if(eq) for(const id in eq) Object.assign(L.manutOf(id),eq[id]); }
 if(process.env.CLIMA_CFG){ const c=JSON.parse(process.env.CLIMA_CFG); for(const k in c) Object.assign(L.CLIMA[k],c[k]); }
@@ -34,6 +35,7 @@ for(let k=0;k<N;k++){
     if(n>=2){
       g.goShop(n);
       if(MODO==='cuida'){ const b0=g.save.bank; g.revisarTudo(); r.rev.push(b0-g.save.bank); }
+      if(MODO==='amarelo'||MODO==='vermelho'){ const lim=MODO==='amarelo'?L.MANUT.verde:L.MANUT.vermelho, b0=g.save.bank; L.MANUT.equip.forEach(q=>{ if(g.save.manut[q.id]<lim) g.revisar(q.id); }); r.rev.push(b0-g.save.bank); }   // v8.3.12: amarelo = revisa quem saiu do verde; vermelho = só quem já está no vermelho
       const u=order.find(id=>!g.up[id]); const uc=L.UPGRADES.find(x=>x.id===u);
       if(u && g.save.bank>=uc.cost+(n>=3?300:0)) g.buy(u);
       if(process.env.MOVEIS!=='0') BOT.moveis(g,L,semMesa,n>=3?300:0,process.env.MOVEIS);

@@ -482,8 +482,11 @@ const MANUT = {
   on: true,               // desligado, nada se gasta nem quebra e não há chuva nem feriado (os testes desligam)
   dia: 4,
   quando: [0.12, 0.55],   // em que parte do dia a quebra acontece
+  verde: 0.7,             // abaixo disso a barra fica amarela: a hora de revisar
   vermelho: 0.4,          // abaixo disso a barra fica vermelha: 50% de chance de quebrar no dia
   chanceVermelho: 0.5,
+  taxa: 10,               // a visita do técnico na revisão: revisar com o equipamento quase novo não compensa
+  urgente: 1.5,           // no vermelho a revisão custa 50% a mais (peças e correria)
   limite: 0.15,           // neste ponto ou abaixo, quebra com certeza
   equip: [
     { id:'fogao',     name:'Fogão',     base:5, uso:0.5, preco:120, emerg:40,  efeito:'o Tonhão cozinha 40% mais devagar', lento:0.6,  badge:{ x:884, y:178 } },
@@ -495,8 +498,9 @@ const MANUT = {
 function manutOf(id){ return MANUT.equip.find(e => e.id === id); }
 /* chance de quebrar no dia, pelo estado (0 a 1): zero no verde e no amarelo, 50% no vermelho, 100% no limite */
 function manutChance(e){ return e <= MANUT.limite ? 1 : e < MANUT.vermelho ? MANUT.chanceVermelho : 0; }
-/* preço da revisão: proporcional ao que gastou, em múltiplos de R$ 5 (0 se está a 100%) */
-function manutPreco(id, e){ const q = manutOf(id); return e >= 0.995 ? 0 : Math.max(10, Math.ceil(q.preco * (1 - e) / 5) * 5); }
+/* preço da revisão (v8.3.12): a taxa da visita mais o que gastou, ×`urgente` no vermelho, em múltiplos de R$ 5 (0 se está a 100%).
+   O ponto de melhor custo-benefício é o amarelo: antes disso a taxa pesa, depois disso o preço sobe e a quebra ronda */
+function manutPreco(id, e){ const q = manutOf(id); return e >= 0.995 ? 0 : Math.ceil((MANUT.taxa + q.preco * (1 - e)) * (e < MANUT.vermelho ? MANUT.urgente : 1) / 5) * 5; }
 function normManut(m){
   m = (m && typeof m === 'object') ? m : {};
   const out = {};
