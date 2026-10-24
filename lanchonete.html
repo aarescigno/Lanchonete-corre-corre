@@ -449,7 +449,7 @@ table.rank tr.me td{background:#fbe7a8}
       <div class="panel">
         <h2>Versões</h2>
         <ul class="verlist">
-          <li><b>v8.3.11</b><span class="cur">versão atual</span><br>24/10/2026 &mdash; Desgaste sem sorteio: fogão, geladeira e cafeteira só vão gastando enquanto estão no verde e no amarelo. No vermelho (abaixo de 40%) há 50% de chance de quebrar no dia, e no limite (15% ou menos) quebra com certeza. A aba Manutenção e a introdução do dia dizem em que ponto cada um está.</li>
+          <li><b>v8.3.11</b><span class="cur">versão atual</span><br>24/10/2026 &mdash; Desgaste sem sorteio: fogão, geladeira e cafeteira só vão gastando enquanto estão no verde e no amarelo. No vermelho (abaixo de 40%) há 50% de chance de quebrar no dia, e no limite (15% ou menos) quebra com certeza. A aba Manutenção e a introdução do dia avisam do risco de quebra durante o expediente (sem porcentagem) e do alto risco no limite.</li>
           <li><b>v8.3.10</b><br>24/10/2026 &mdash; Triturador de lixo: melhoria nova da lojinha (R$ 180) que mói 1 do lixo a cada 30 s, mas ainda é preciso esvaziar de vez em quando. A lixeira vai do cinza ao verde conforme enche e, cheia, ganha um saco preto ao lado e fumacinha verde. O Ventilador agora só faz a freguesia comer mais rápido: o cheiro da lixeira cheia volta a incomodar.<br><a href="versoes/v8.3.10.html" target="_blank" rel="noopener">Abrir a v8.3.10</a></li>
           <li><b>v8.3.9</b><br>23/10/2026 &mdash; Estrelas que premiam o jogo bem feito: com os preços novos, o lucro dos primeiros dias depende muito de quem aparece, e quem não perdia ninguém às vezes levava só 1 estrela. As metas e o lucro das 3 estrelas foram recalculados pelo jogo perfeito: no dia 1, meta R$ 30, 2 estrelas R$ 50 e 3 estrelas R$ 60.<br><a href="versoes/v8.3.9.html" target="_blank" rel="noopener">Abrir a v8.3.9</a></li>
           <li><b>v8.3.8</b><br>23/10/2026 &mdash; Preços de verdade: cada cliente paga o que pediu no cardápio da Garagem (PF R$ 25, misto R$ 12, pastel R$ 10, coxinha R$ 8, cafezinho R$ 3), e alguns pedem um 2º item. Os corações viram gorjeta de até 10%. Sentar, anotar, entregar, recolher, a cor certa e a corrente rendem pontos de atendimento, e não mais dinheiro. Contas, folha, divulgação, ingredientes, revisões e metas ficaram do tamanho de uma garagem.<br><a href="versoes/v8.3.8.html" target="_blank" rel="noopener">Abrir a v8.3.8</a></li>
@@ -5544,7 +5544,7 @@ function buildManut(grid){
   MANUT.equip.forEach(q => {
     const e = m[q.id], v = manutPreco(q.id, e), risco = n >= MANUT.dia ? manutChance(e) : 0;
     const c = staffCard(upgradeIcon('m-' + q.id), q.name + ' · ' + pc(e),
-      'Quebrado, ' + q.efeito + ' até o conserto na hora (' + fmt(q.emerg) + ', um toque na plaquinha). ' + (n < MANUT.dia ? 'Não quebra até o dia ' + MANUT.dia + '.' : risco >= 1 ? 'No limite: quebra no dia ' + n + '!' : risco > 0 ? 'No vermelho: ' + pc(risco) + ' de chance de quebrar no dia ' + n + '.' : 'Só desgasta: não quebra no dia ' + n + '.'));
+      'Quebrado, ' + q.efeito + ' até o conserto na hora (' + fmt(q.emerg) + ', um toque na plaquinha). ' + (n < MANUT.dia ? '' : risco >= 1 ? 'Alto risco de quebra!' : risco > 0 ? 'Risco de quebra durante o expediente.' : e < MANUT.verde ? 'Já mostra desgaste.' : ''));
     const bar = el('div', 'mbar'); bar.setAttribute('role', 'meter'); bar.setAttribute('aria-label', q.name); bar.setAttribute('aria-valuenow', String(Math.round(e * 100)));
     const fill = el('i'); fill.style.width = pc(e); fill.style.background = e >= MANUT.verde ? PAL.ok : e >= MANUT.vermelho ? PAL.mostarda : PAL.perigo; bar.appendChild(fill);
     c.appendChild(bar);
@@ -5553,7 +5553,7 @@ function buildManut(grid){
     grid.appendChild(c);
   });
   const tot = MANUT.equip.reduce((a, q) => a + manutPreco(q.id, m[q.id]), 0);
-  const c = staffCard(upgradeIcon('contas'), 'Revisar tudo', 'Cada dia gasta cada equipamento um pouco, e mais em dia cheio. Do dia ' + MANUT.dia + ' em diante, no vermelho (abaixo de ' + pc(MANUT.vermelho) + ') há ' + pc(MANUT.chanceVermelho) + ' de chance de quebrar no meio do dia, e no limite (' + pc(MANUT.limite) + ' ou menos) quebra com certeza. A revisão sai do dinheiro acumulado e entra no caixa como manutenção.');
+  const c = staffCard(upgradeIcon('contas'), 'Revisar tudo', 'Cada dia gasta cada equipamento um pouco, e mais em dia cheio. Do dia ' + MANUT.dia + ' em diante, no vermelho (abaixo de ' + pc(MANUT.vermelho) + ') há ' + pc(MANUT.chanceVermelho) + ' de chance de quebrar no meio do dia, e no limite (' + pc(MANUT.limite) + ' ou menos) quebra com certeza. A visita técnica tem custo, e quanto mais desgastado, mais cara fica a manutenção. A revisão sai do dinheiro acumulado e entra no caixa como manutenção.');
   c.appendChild(shopBtn(!tot ? 'Tudo em dia' : DEV.on ? 'Revisar tudo (grátis)' : 'Revisar tudo: ' + fmt(tot), 'btn', !!tot && (DEV.on || game.save.bank >= tot), () => game.revisarTudo(), DEV.on ? 0 : tot));
   grid.appendChild(c);
 }
@@ -5970,9 +5970,9 @@ function introManut(){
   if (cl) out.push(cl.aviso);
   const est = MANUT.equip.map(q => q.name + ' ' + Math.round(m[q.id] * 100) + '%').join(' · ');
   const lista = c => game.day.n >= MANUT.dia ? MANUT.equip.filter(q => manutChance(m[q.id]) === c).map(q => q.name.toLowerCase()) : [];
-  const frase = (l, um, varios) => l.length ? ' ' + l.join(' e ').replace(/^./, x => x.toUpperCase()) + (l.length > 1 ? varios : um) + ' quebrar hoje.' : '';
+  const frase = (l, txt) => l.length ? ' ' + l.join(' e ').replace(/^./, x => x.toUpperCase()) + ': ' + txt + '.' : '';
   const vai = lista(1), pode = lista(MANUT.chanceVermelho);
-  out.push('Equipamentos: ' + est + '.' + frase(vai, ' vai', ' vão') + frase(pode, ' pode', ' podem') + (vai.length || pode.length ? ' Revisão na lojinha, aba Manutenção.' : ''));
+  out.push('Equipamentos: ' + est + '.' + frase(vai, 'alto risco de quebra') + frase(pode, 'risco de quebra durante o expediente') + (vai.length || pode.length ? ' Revisão na lojinha, aba Manutenção.' : ''));
   return out.join(' ');
 }
 /* carreira (v8.3, campanha): sempre o próximo dia; do dia 2 em diante (no modo dev, desde o dia 1), a lojinha abre antes

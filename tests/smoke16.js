@@ -157,7 +157,7 @@ const quebra=id=>{ g.quebras=[{id,t:0,on:true,fixed:false}]; };
   ok(g.revisarTudo() && g.save.manut.cafeteira===1 && g.save.manut.fogao===0.2 && g.save.manut.geladeira===0.5 && g.save.bank===10,'revisarTudo com dinheiro curto paga o que der (sem ficar negativo)'); }
 
 // ---------- aba Manutenção ----------
-{ novo(1000,7,{fogao:0.3,geladeira:0.1,cafeteira:0.5}); g.goShop(5); L.setShopTab('manut'); { const c=els['shop-grid'].children; ok(/No vermelho: 50% de chance de quebrar no dia 5/.test(txt(c[0])) && /No limite: quebra no dia 5/.test(txt(c[1])) && /Só desgasta/.test(txt(c[2])),'aba Manutenção: vermelho 50%, limite quebra, amarelo só desgasta'); } }
+{ novo(1000,7,{fogao:0.3,geladeira:0.1,cafeteira:0.5}); g.goShop(5); L.setShopTab('manut'); { const c=els['shop-grid'].children; ok(/Risco de quebra durante o expediente/.test(txt(c[0])) && !/\d+% de chance/.test(txt(c[0])) && /Alto risco de quebra/.test(txt(c[1])) && /Já mostra desgaste/.test(txt(c[2])) && !/Só desgasta|não quebra/i.test(txt(c[2])),'aba Manutenção: vermelho e limite falam de risco, sem porcentagem, e nunca passam segurança'); } }
 { novo(1000,7,{fogao:0.6,geladeira:1,cafeteira:0.5}); g.goShop(5); L.setShopTab('manut');
   const cs=els['shop-grid'].children; ok(cs.length===4,'aba Manutenção: 4 cartões (fogão, geladeira, cafeteira, revisar tudo) — '+cs.length);
   ok(/Fogão · 60%/.test(txt(cs[0])) && /Geladeira · 100%/.test(txt(cs[1])) && /Cafeteira · 50%/.test(txt(cs[2])) && /Revisar tudo/.test(txt(cs[3])),'títulos com o estado de cada um');
@@ -166,7 +166,7 @@ const quebra=id=>{ g.quebras=[{id,t:0,on:true,fixed:false}]; };
   const B0=g.save.bank; btn(cs[0]).fire('click'); ok(g.save.manut.fogao===1 && g.save.bank<B0,'clicar em "Revisão" revisa o fogão');
   const cs2=els['shop-grid'].children; btn(cs2[3]).fire('click'); ok(g.save.manut.cafeteira===1,'"Revisar tudo" revisa o resto');
   ok(/Tudo em dia/.test(btn(els['shop-grid'].children[3]).textContent),'depois, "Tudo em dia"'); }
-{ novo(1000,7); g.goShop(2); L.setShopTab('manut'); ok(/Não quebra até o dia 4/.test(txt(els['shop-grid'].children[0])),'antes do dia 4 a aba diz que não quebra'); }
+{ novo(1000,7); g.goShop(2); L.setShopTab('manut'); { const t=txt(els['shop-grid'].children[0]); ok(!/risco de quebra/i.test(t) && !/não quebra/i.test(t),'antes do dia 4 a aba não fala de risco nem garante que não quebra'); ok(/visita técnica tem custo/.test(txt(els['shop-grid'].children[3])),'"Revisar tudo" avisa que a visita técnica tem custo'); } }
 
 // ---------- chuva e feriado ----------
 { novo(3000,7); g.startDay(5); const dia=g.day, N=400;
@@ -207,9 +207,9 @@ ok(L.introManut()==='','Turno sem fim: sem texto de equipamentos na introdução
 { novo(1000,7,{fogao:0.3,geladeira:1,cafeteira:0.1}); fixa(0.999); g.startDay(5); solta();
   const t=els['intro-manut'].textContent;
   ok(g.state==='intro' && /Equipamentos: Fogão 30% · Geladeira 100% · Cafeteira 10%/.test(t),'introdução mostra o estado: '+t.slice(0,70));
-  ok(/Cafeteira vai quebrar hoje/.test(t) && /Fogão pode quebrar hoje/.test(t) && !/Geladeira (pode|podem|vai)/.test(t),'avisa o que vai quebrar (no limite) e o que pode (no vermelho)');
+  ok(/Cafeteira: alto risco de quebra/.test(t) && /Fogão: risco de quebra durante o expediente/.test(t) && !/Geladeira:/.test(t),'avisa o alto risco (no limite) e o risco durante o expediente (no vermelho)');
   fixa(0); novo(1000,7); g.startDay(5); solta(); ok(/Dia de chuva: vem menos gente/.test(els['intro-manut'].textContent),'chuva: o aviso está na introdução');
-  novo(1000,7,{fogao:0.5}); g.startDay(2); ok(!/quebrar hoje/.test(els['intro-manut'].textContent) && /Equipamentos/.test(els['intro-manut'].textContent),'antes do dia 4: estado, sem aviso de quebra');
+  novo(1000,7,{fogao:0.5}); g.startDay(2); ok(!/risco de quebra/.test(els['intro-manut'].textContent) && /Equipamentos/.test(els['intro-manut'].textContent),'antes do dia 4: estado, sem aviso de quebra');
   const on=M.on; M.on=false; novo(1000,7); g.startDay(5); ok(els['intro-manut'].textContent==='','imprevistos desligados: introdução sem o texto'); M.on=on; }
 
 // ---------- fim do dia ----------
