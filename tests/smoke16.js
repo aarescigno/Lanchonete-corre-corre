@@ -160,7 +160,7 @@ const quebra=id=>{ g.quebras=[{id,t:0,on:true,fixed:false}]; };
 { novo(1000,7,{fogao:0.3,geladeira:0.1,cafeteira:0.5}); g.goShop(5); L.setShopTab('manut'); { const c=els['shop-grid'].children; ok(/Risco de quebra durante o expediente/.test(txt(c[0])) && !/\d+% de chance/.test(txt(c[0])) && /Alto risco de quebra/.test(txt(c[1])) && /Já mostra desgaste/.test(txt(c[2])) && !/Só desgasta|não quebra/i.test(txt(c[2])),'aba Manutenção: vermelho e limite falam de risco, sem porcentagem, e nunca passam segurança'); } }
 { novo(1000,7,{fogao:0.6,geladeira:1,cafeteira:0.5}); g.goShop(5); L.setShopTab('manut');
   const cs=els['shop-grid'].children; ok(cs.length===4,'aba Manutenção: 4 cartões (fogão, geladeira, cafeteira, revisar tudo) — '+cs.length);
-  ok(/Fogão · 60%/.test(txt(cs[0])) && /Geladeira · 100%/.test(txt(cs[1])) && /Cafeteira · 50%/.test(txt(cs[2])) && /Revisar tudo/.test(txt(cs[3])),'títulos com o estado de cada um');
+  ok(/Fogão/.test(txt(cs[0])) && /Geladeira/.test(txt(cs[1])) && /Cafeteira/.test(txt(cs[2])) && /Revisar tudo/.test(txt(cs[3])) && !/%/.test(cs.map(txt).join(' ')),'cartões com o nome de cada um e nenhuma porcentagem');
   const btn=c=>acha(c,e=>e.tagName==='BUTTON');
   ok(btn(cs[0]).textContent.indexOf(String(L.manutPreco('fogao',0.6)))>0 && btn(cs[1]).textContent==='Em dia' && btn(cs[1]).disabled,'botão com o preço; em dia fica desligado');
   const B0=g.save.bank; btn(cs[0]).fire('click'); ok(g.save.manut.fogao===1 && g.save.bank<B0,'clicar em "Revisão" revisa o fogão');
@@ -206,10 +206,10 @@ ok(L.introManut()==='','Turno sem fim: sem texto de equipamentos na introdução
 // ---------- introdução ----------
 { novo(1000,7,{fogao:0.3,geladeira:1,cafeteira:0.1}); fixa(0.999); g.startDay(5); solta();
   const t=els['intro-manut'].textContent;
-  ok(g.state==='intro' && /Equipamentos: Fogão 30% · Geladeira 100% · Cafeteira 10%/.test(t),'introdução mostra o estado: '+t.slice(0,70));
+  ok(g.state==='intro' && !/%|Equipamentos/.test(t),'introdução sem porcentagem: '+t.slice(0,70));
   ok(/Cafeteira: alto risco de quebra/.test(t) && /Fogão: risco de quebra durante o expediente/.test(t) && !/Geladeira:/.test(t),'avisa o alto risco (no limite) e o risco durante o expediente (no vermelho)');
   fixa(0); novo(1000,7); g.startDay(5); solta(); ok(/Dia de chuva: vem menos gente/.test(els['intro-manut'].textContent),'chuva: o aviso está na introdução');
-  novo(1000,7,{fogao:0.5}); g.startDay(2); ok(!/risco de quebra/.test(els['intro-manut'].textContent) && /Equipamentos/.test(els['intro-manut'].textContent),'antes do dia 4: estado, sem aviso de quebra');
+  novo(1000,7,{fogao:0.5}); g.startDay(2); ok(!/risco de quebra/.test(els['intro-manut'].textContent),'antes do dia 4: sem aviso de quebra');
   const on=M.on; M.on=false; novo(1000,7); g.startDay(5); ok(els['intro-manut'].textContent==='','imprevistos desligados: introdução sem o texto'); M.on=on; }
 
 // ---------- fim do dia ----------

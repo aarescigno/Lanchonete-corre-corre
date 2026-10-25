@@ -11,3 +11,5 @@ Retorno do usuário em 24/10: o desgaste dos equipamentos da cozinha devia ser e
 - **Sem dica no jogo (pedido do usuário):** a taxa, o acréscimo do vermelho e o "melhor momento" não aparecem em texto; o jogador descobre pelo preço do botão e jogando.
 - Aba Manutenção: "Só desgasta", "No vermelho: 50% de chance de quebrar no dia N" ou "No limite: quebra no dia N!". Introdução do dia: "vai quebrar hoje" (limite) e "pode quebrar hoje" (vermelho).
 - Testes: `smoke16` atualizado; `carreira.js` mostra o estado médio dos equipamentos por dia.
+
+- **Textos curtos, sem número (quarto retorno):** os cartões da Manutenção mostram só o nome, a barra e uma frase de risco (nada de "60%" nem de efeito do quebrado e preço do conserto); a introdução só cita quem está em risco; "Revisar tudo" tem uma frase. A barra e o preço do botão dizem o resto.

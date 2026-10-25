@@ -5540,20 +5540,20 @@ function buildDivulga(grid){
 }
 /* aba Manutenção (v8): o estado de cada equipamento, o risco de quebrar e a revisão (volta a 100%) */
 function buildManut(grid){
-  const m = game.manut, n = game.shopNext, pc = v => Math.round(v * 100) + '%';
+  const m = game.manut, n = game.shopNext;
   MANUT.equip.forEach(q => {
     const e = m[q.id], v = manutPreco(q.id, e), risco = n >= MANUT.dia ? manutChance(e) : 0;
-    const c = staffCard(upgradeIcon('m-' + q.id), q.name + ' · ' + pc(e),
-      'Quebrado, ' + q.efeito + ' até o conserto na hora (' + fmt(q.emerg) + ', um toque na plaquinha). ' + (n < MANUT.dia ? '' : risco >= 1 ? 'Alto risco de quebra!' : risco > 0 ? 'Risco de quebra durante o expediente.' : e < MANUT.verde ? 'Já mostra desgaste.' : ''));
+    const c = staffCard(upgradeIcon('m-' + q.id), q.name,
+      (n < MANUT.dia ? '' : risco >= 1 ? 'Alto risco de quebra!' : risco > 0 ? 'Risco de quebra durante o expediente.' : e < MANUT.verde ? 'Já mostra desgaste.' : ''));
     const bar = el('div', 'mbar'); bar.setAttribute('role', 'meter'); bar.setAttribute('aria-label', q.name); bar.setAttribute('aria-valuenow', String(Math.round(e * 100)));
-    const fill = el('i'); fill.style.width = pc(e); fill.style.background = e >= MANUT.verde ? PAL.ok : e >= MANUT.vermelho ? PAL.mostarda : PAL.perigo; bar.appendChild(fill);
+    const fill = el('i'); fill.style.width = Math.round(e * 100) + '%'; fill.style.background = e >= MANUT.verde ? PAL.ok : e >= MANUT.vermelho ? PAL.mostarda : PAL.perigo; bar.appendChild(fill);
     c.appendChild(bar);
     if (e >= 0.995) c.classList.add('own');
     c.appendChild(shopBtn(!v ? 'Em dia' : DEV.on ? 'Revisão (grátis)' : 'Revisão: ' + fmt(v), 'btn', !!v && (DEV.on || game.save.bank >= v), () => game.revisar(q.id), DEV.on ? 0 : v));
     grid.appendChild(c);
   });
   const tot = MANUT.equip.reduce((a, q) => a + manutPreco(q.id, m[q.id]), 0);
-  const c = staffCard(upgradeIcon('contas'), 'Revisar tudo', 'Cada dia gasta cada equipamento um pouco, e mais em dia cheio. Do dia ' + MANUT.dia + ' em diante, no vermelho (abaixo de ' + pc(MANUT.vermelho) + ') há ' + pc(MANUT.chanceVermelho) + ' de chance de quebrar no meio do dia, e no limite (' + pc(MANUT.limite) + ' ou menos) quebra com certeza. A visita técnica tem custo, e quanto mais desgastado, mais cara fica a manutenção. A revisão sai do dinheiro acumulado e entra no caixa como manutenção.');
+  const c = staffCard(upgradeIcon('contas'), 'Revisar tudo', 'A visita técnica tem custo, e quanto mais desgastado, mais cara a manutenção.');
   c.appendChild(shopBtn(!tot ? 'Tudo em dia' : DEV.on ? 'Revisar tudo (grátis)' : 'Revisar tudo: ' + fmt(tot), 'btn', !!tot && (DEV.on || game.save.bank >= tot), () => game.revisarTudo(), DEV.on ? 0 : tot));
   grid.appendChild(c);
 }
@@ -5968,11 +5968,10 @@ function introManut(){
   if (!MANUT.on || game.mode !== 'carreira') return '';
   const m = game.manut, cl = CLIMA[game.clima], out = [];
   if (cl) out.push(cl.aviso);
-  const est = MANUT.equip.map(q => q.name + ' ' + Math.round(m[q.id] * 100) + '%').join(' · ');
   const lista = c => game.day.n >= MANUT.dia ? MANUT.equip.filter(q => manutChance(m[q.id]) === c).map(q => q.name.toLowerCase()) : [];
   const frase = (l, txt) => l.length ? ' ' + l.join(' e ').replace(/^./, x => x.toUpperCase()) + ': ' + txt + '.' : '';
   const vai = lista(1), pode = lista(MANUT.chanceVermelho);
-  out.push('Equipamentos: ' + est + '.' + frase(vai, 'alto risco de quebra') + frase(pode, 'risco de quebra durante o expediente') + (vai.length || pode.length ? ' Revisão na lojinha, aba Manutenção.' : ''));
+  if (vai.length || pode.length) out.push((frase(vai, 'alto risco de quebra') + frase(pode, 'risco de quebra durante o expediente')).trim());
   return out.join(' ');
 }
 /* carreira (v8.3, campanha): sempre o próximo dia; do dia 2 em diante (no modo dev, desde o dia 1), a lojinha abre antes
