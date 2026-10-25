@@ -428,16 +428,16 @@ function buildManut(grid){
   MANUT.equip.forEach(q => {
     const e = m[q.id], v = manutPreco(q.id, e), risco = n >= MANUT.dia ? manutChance(e) : 0;
     const c = staffCard(upgradeIcon('m-' + q.id), q.name + ' · ' + pc(e),
-      'Quebrado, ' + q.efeito + ' até o conserto na hora (' + fmt(q.emerg) + ', um toque na plaquinha). Risco de quebrar no dia ' + n + ': ' + (risco >= 0.005 ? pc(risco) : (n < MANUT.dia ? 'nenhum até o dia ' + MANUT.dia : 'quase nenhum')) + '.');
+      'Quebrado, ' + q.efeito + ' até o conserto na hora (' + fmt(q.emerg) + ', um toque na plaquinha). ' + (n < MANUT.dia ? '' : risco >= 1 ? 'Alto risco de quebra!' : risco > 0 ? 'Risco de quebra durante o expediente.' : e < MANUT.verde ? 'Já mostra desgaste.' : ''));
     const bar = el('div', 'mbar'); bar.setAttribute('role', 'meter'); bar.setAttribute('aria-label', q.name); bar.setAttribute('aria-valuenow', String(Math.round(e * 100)));
-    const fill = el('i'); fill.style.width = pc(e); fill.style.background = e >= 0.7 ? PAL.ok : e >= 0.4 ? PAL.mostarda : PAL.perigo; bar.appendChild(fill);
+    const fill = el('i'); fill.style.width = pc(e); fill.style.background = e >= MANUT.verde ? PAL.ok : e >= MANUT.vermelho ? PAL.mostarda : PAL.perigo; bar.appendChild(fill);
     c.appendChild(bar);
     if (e >= 0.995) c.classList.add('own');
     c.appendChild(shopBtn(!v ? 'Em dia' : DEV.on ? 'Revisão (grátis)' : 'Revisão: ' + fmt(v), 'btn', !!v && (DEV.on || game.save.bank >= v), () => game.revisar(q.id), DEV.on ? 0 : v));
     grid.appendChild(c);
   });
   const tot = MANUT.equip.reduce((a, q) => a + manutPreco(q.id, m[q.id]), 0);
-  const c = staffCard(upgradeIcon('contas'), 'Revisar tudo', 'Cada dia gasta cada equipamento um pouco, e mais em dia cheio. Do dia ' + MANUT.dia + ' em diante, o que está gasto pode quebrar no meio do dia. A revisão sai do dinheiro acumulado e entra no caixa como manutenção.');
+  const c = staffCard(upgradeIcon('contas'), 'Revisar tudo', 'Cada dia gasta cada equipamento um pouco, e mais em dia cheio. Do dia ' + MANUT.dia + ' em diante, no vermelho (abaixo de ' + pc(MANUT.vermelho) + ') há ' + pc(MANUT.chanceVermelho) + ' de chance de quebrar no meio do dia, e no limite (' + pc(MANUT.limite) + ' ou menos) quebra com certeza. A visita técnica tem custo, e quanto mais desgastado, mais cara fica a manutenção. A revisão sai do dinheiro acumulado e entra no caixa como manutenção.');
   c.appendChild(shopBtn(!tot ? 'Tudo em dia' : DEV.on ? 'Revisar tudo (grátis)' : 'Revisar tudo: ' + fmt(tot), 'btn', !!tot && (DEV.on || game.save.bank >= tot), () => game.revisarTudo(), DEV.on ? 0 : tot));
   grid.appendChild(c);
 }

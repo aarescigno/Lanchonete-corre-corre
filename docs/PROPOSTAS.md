@@ -4,6 +4,15 @@ Registro das ideias e dos retornos de quem jogou, com o texto original, e de ond
 
 ---
 
+## 24/10/2026 — Usuário: desgaste sem risco de quebrar
+**Origem:** mensagem do usuário, depois da v8.3.10:
+
+> O desgaste dos equipamentos da cozinha tem que ser em valores absolutos, né? Essa questão de ser um risco de quebrar no dia é bem ruim, porque o jogo não é sobre ponderar riscos. É um jogo sobre ponderar custos e coisas assim. Então tira essa parte de riscos e pode ter uma progressão para a quebra do produto, né? Que se deixar muito para depois, ele quebra mesmo. E aí pode ter só um... Ah, quando chega no vermelho, assim, e coloca lá, 50% de chance de quebrar nesse próximo turno, sabe? Alguma coisa assim. Mas até ele, quando ele tá no verde, no amarelo, é só o desgaste que vai acumulando mesmo.
+
+**Destino:** v8.3.11 (`docs/spec-v8.3.11.md`): verde e amarelo só desgastam; vermelho (< 40%) 50% de quebrar no dia; no limite (≤ 15%, escolha minha) quebra com certeza, para "deixar para depois" sempre acabar quebrando.
+
+---
+
 ## 24/10/2026 — Usuário: Triturador de lixo
 **Origem:** mensagem do usuário, depois da v8.3.9:
 

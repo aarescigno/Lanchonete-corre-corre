@@ -54,8 +54,10 @@ function introManut(){
   const m = game.manut, cl = CLIMA[game.clima], out = [];
   if (cl) out.push(cl.aviso);
   const est = MANUT.equip.map(q => q.name + ' ' + Math.round(m[q.id] * 100) + '%').join(' · ');
-  const risco = game.day.n >= MANUT.dia ? MANUT.equip.filter(q => manutChance(m[q.id]) >= 0.05) : [];
-  out.push('Equipamentos: ' + est + '.' + (risco.length ? ' ' + risco.map(q => q.name.toLowerCase()).join(' e ').replace(/^./, c => c.toUpperCase()) + (risco.length > 1 ? ' podem' : ' pode') + ' quebrar hoje (revisão na lojinha, aba Manutenção).' : ''));
+  const lista = c => game.day.n >= MANUT.dia ? MANUT.equip.filter(q => manutChance(m[q.id]) === c).map(q => q.name.toLowerCase()) : [];
+  const frase = (l, txt) => l.length ? ' ' + l.join(' e ').replace(/^./, x => x.toUpperCase()) + ': ' + txt + '.' : '';
+  const vai = lista(1), pode = lista(MANUT.chanceVermelho);
+  out.push('Equipamentos: ' + est + '.' + frase(vai, 'alto risco de quebra') + frase(pode, 'risco de quebra durante o expediente') + (vai.length || pode.length ? ' Revisão na lojinha, aba Manutenção.' : ''));
   return out.join(' ');
 }
 /* carreira (v8.3, campanha): sempre o próximo dia; do dia 2 em diante (no modo dev, desde o dia 1), a lojinha abre antes
