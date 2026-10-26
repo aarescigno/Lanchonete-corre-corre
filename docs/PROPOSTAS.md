@@ -4,6 +4,15 @@ Registro das ideias e dos retornos de quem jogou, com o texto original, e de ond
 
 ---
 
+## 26/10/2026 — Usuário: a Rosa sem corpo na cama
+**Origem:** mensagem do usuário depois da correção dos braços:
+
+> A rosa ainda é uma cabeça flutuante na cama
+
+**Destino:** v8.5.1 (ainda não publicada; `docs/spec-v8.5.1.md`): a Rosa ganhou o corpo de camisola azul-clara saindo do travesseiro, o cobertor cobre do peito aos pés com o volume do corpo e a dobra branca do lençol, e o braço sai de baixo da dobra até a mão da Bia.
+
+---
+
 ## 26/10/2026 — Usuário: os braços na cena do hospital
 **Origem:** mensagem do usuário na v8.5.1:
 
