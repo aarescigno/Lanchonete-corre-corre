@@ -419,10 +419,10 @@ const AVAL_CRIT = [
     bom:['Sentei rapidinho!', 'Nem precisei esperar.', 'Mesa na hora!'], ruim:['Esperei muito por uma mesa.', 'A espera lá fora não andava.', 'Fiquei um tempão na calçada.'] },
   { id:'agil', nome:'Agilidade',
     bom:['A comida veio rapidinho!', 'Atendimento nota 10!', 'A Bia é um foguete!'], ruim:['Demoraram para anotar o pedido.', 'Esqueceram da gente na mesa.', 'A conta demorou demais.'] },
-  { id:'prato', nome:'Prato',
+  { id:'prato', nome:'Qualidade da comida',
     bom:['O PF estava caprichado!', 'Comida de mãe!', 'Que tempero!'], ruim:['O prato veio sem graça.', 'Comida meio fria.', 'Faltou tempero.'] },
-  { id:'menu', nome:'Cardápio',
-    bom:['Cardápio com de tudo!', 'Muita opção boa.'], ruim:['Pouca opção no cardápio.', 'Queria mais pratos.'] },
+  { id:'menu', nome:'Diversidade do cardápio',
+    bom:['Cardápio bem variado!', 'Muita opção boa.'], ruim:['Pouca opção no cardápio.', 'Queria mais pratos.'] },
   { id:'amb', nome:'Ambiente',
     bom:['Lugar gostoso, dá vontade de voltar.', 'Ambiente bem agradável!'], ruim:['Lugar meio sem graça.', 'Faltou um capricho no salão.'] }
 ];
@@ -432,6 +432,12 @@ function avalMenu(){ return clamp(AVAL.menu.base + AVAL.menu.porPrato * Object.k
 function normAval(a){
   return (Array.isArray(a) ? a : []).filter(r => Array.isArray(r) && r.length === AVAL_CRIT.length).slice(-AVAL.max)
     .map(r => r.map(v => clamp(Math.round((+v || 1) * 10) / 10, 1, 5)));
+}
+/* os últimos comentários (v8.4.2, aba Gurugol da lojinha): { d: o dia, n: a nota ×10, t: o texto, k: o tipo do grupo, v: VIP } */
+const AVAL_COM = 30;
+function normAvalCom(a){
+  return (Array.isArray(a) ? a : []).filter(c => c && typeof c === 'object' && typeof c.t === 'string' && c.t).slice(-AVAL_COM)
+    .map(c => { const o = { d:Math.max(1, Math.round(+c.d) || 1), n:clamp(Math.round(+c.n) || 10, 10, 50), t:c.t.slice(0, 60), k:CUSTOMER_TYPES[c.k] ? c.k : 'estudante' }; if (c.v) o.v = 1; return o; });
 }
 function avalNota(r){ return r.reduce((a, v) => a + v, 0) / r.length; }
 /* médias de uma lista de avaliações: a nota e cada critério (null se a lista estiver vazia) */
@@ -453,7 +459,7 @@ function fmtNota(n){ return n == null ? '–' : (Math.round(n * 10) / 10).toFixe
 const AVAL_BRAVO = { fila:['Desisti de esperar!', 'Nem consegui sentar.'], mesa:['Fui embora sem comer!', 'Nunca mais volto!'] };
 function avalComentario(r, bravo, lixo){
   if (bravo) return pick(AVAL_BRAVO[bravo]);
-  const bom = avalNota(r) >= 4;
+  const bom = Math.round(avalNota(r) * 10) >= 40;   // pela nota que aparece (3,96 vira 4,0)
   let k = 0;
   r.forEach((v, i) => { if (bom ? v > r[k] : v < r[k]) k = i; });
   if (!bom && lixo && AVAL_CRIT[k].id === 'amb') return 'Que cheiro de lixo!';
@@ -493,7 +499,7 @@ function tabelaDe(e){
 /* um empréstimo novo de v, pagando em dia: as parcelas e os juros somados */
 function simulaEmprestimo(v, j){ const t = tabelaDe(normEmprestimo({ resto:v, amort:Math.ceil(v / BANCO.parcelas), j })); return { parcelas:t, juros:t.reduce((a, p) => a + p, 0) - v }; }
 const CAIXA_MAX = 14;                                 // livro-caixa (v7.2): quantos dias da carreira ficam guardados
-const VERSAO = 'v8.4.1';                               // vai no resumo do Caixa
+const VERSAO = 'v8.4.2';                               // vai no resumo do Caixa
 const DIVULGA_DIA = 3;                                // antes disso, o movimento é o da inauguração (sem custo)
 function divulgaAberta(n){ return DEV.on || n >= DIVULGA_DIA; }   // no modo dev, desde o dia 1
 function divulgaOf(id){ return DIVULGA.find(d => d.id === id) || DIVULGA[1]; }

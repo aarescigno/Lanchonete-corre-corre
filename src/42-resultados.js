@@ -5,10 +5,10 @@ const GURU_BRILHOS = { pura:0, prata:0, ouro:3, diamante:7 };
 let guruAnim = 0;   // a animação em curso (abrir de novo o fim do dia cancela a anterior)
 /* caixa do Gurugol no fim do dia (v8.4.1): uma barra por critério, que enche até a nota dele, e embaixo a nota contando
    de 0 até o valor, com a cor da faixa; ouro e diamante soltam brilhinhos. Com prefers-reduced-motion, já aparece pronta */
-function gurugolCaixa(a){
+function gurugolCaixa(a, sub){
   const m = a.geral || a.dia, box = el('div', 'guru');
   box.setAttribute('role', 'img');
-  box.setAttribute('aria-label', 'Gurugol: ' + (a.geral ? fmtNota(m.nota) + ' estrelas' : 'sem nota ainda, ' + a.n + ' de ' + AVAL.min + ' avaliações; hoje ' + fmtNota(m.nota)) + '. ' + AVAL_CRIT.map((c, i) => c.nome + ' ' + fmtNota(m.crit[i])).join(', ') + '.');
+  box.setAttribute('aria-label', 'Gurugol: ' + (a.geral ? fmtNota(m.nota) + ' estrelas' : 'sem nota ainda, ' + a.n + ' de ' + AVAL.min + ' avaliações' + (sub ? '' : '; hoje ' + fmtNota(m.nota))) + '. ' + AVAL_CRIT.map((c, i) => c.nome + ' ' + fmtNota(m.crit[i])).join(', ') + '.');
   box.appendChild(el('b', 'guru-tit', 'Gurugol'));
   const fills = AVAL_CRIT.map((c, i) => {
     const row = el('div', 'guru-crit');
@@ -21,7 +21,7 @@ function gurugolCaixa(a){
   const wrap = el('div', 'guru-nota'), num = el('span', 'guru-num', RM ? fmtNota(m.nota) : '0,0');
   num.className = 'guru-num ' + (RM ? notaFaixa(m.nota) : 'pura');
   wrap.appendChild(num); wrap.appendChild(el('span', 'guru-est', '★')); box.appendChild(wrap);
-  box.appendChild(el('small', null, a.geral ? 'hoje ' + fmtNota(a.dia.nota) + ' em ' + a.dia.n + (a.dia.n > 1 ? ' avaliações' : ' avaliação') : 'sem nota: ' + a.n + ' de ' + AVAL.min + ' (hoje)'));
+  box.appendChild(el('small', null, sub || (a.geral ? 'hoje ' + fmtNota(a.dia.nota) + ' em ' + a.dia.n + (a.dia.n > 1 ? ' avaliações' : ' avaliação') : 'sem nota: ' + a.n + ' de ' + AVAL.min + ' (hoje)')));
   const brilhos = () => {
     for (let k = 0; k < GURU_BRILHOS[notaFaixa(m.nota)]; k++){
       const s = el('span', 'guru-brilho', '✦');

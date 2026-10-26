@@ -108,6 +108,19 @@ p{margin:calc(var(--u)*6) 0;font-size:max(12px,calc(var(--u)*16));line-height:1.
 .ed-side .msg{color:var(--perigo);font-weight:800}
 .ed-side .ed-contas{font-weight:400;color:#5b5446}
 #ov-shop.salao #shop-folha,#ov-shop.caixa #shop-folha{display:none}
+/* aba Gurugol (v8.4.2): a caixa da nota à esquerda e os últimos comentários à direita */
+.shopgrid.gurugol{display:flex;gap:calc(var(--u)*16);align-items:flex-start;text-align:left}
+.guru-lado{flex:none}
+.guru-lado .guru{margin-top:0}
+.guru-lado p{max-width:max(150px,calc(var(--u)*190));margin:calc(var(--u)*6) 0 0}
+.guru-coms{list-style:none;margin:0;padding:0;flex:1;min-width:0;max-height:max(180px,calc(var(--u)*330));overflow:auto;display:grid;grid-template-columns:repeat(auto-fill,minmax(max(200px,calc(var(--u)*250)),1fr));gap:calc(var(--u)*6);align-content:start}
+.guru-coms li{background:#fff;border:calc(var(--u)*2) solid var(--tinta);border-radius:calc(var(--u)*10);padding:calc(var(--u)*5) calc(var(--u)*9)}
+.guru-cab{display:flex;align-items:baseline;gap:calc(var(--u)*5);flex-wrap:wrap;font-size:max(11px,calc(var(--u)*12))}
+.guru-ests{color:var(--mostarda);letter-spacing:.05em;-webkit-text-stroke:.5px var(--tinta)}
+.guru-ests i{font-style:normal;color:#DDD5C2}
+.guru-quem{color:#6b6455;margin-left:auto}
+.guru-coms q{display:block;font-style:italic;font-size:max(12px,calc(var(--u)*14));margin-top:2px}
+@media (max-width:600px){.shopgrid.gurugol{flex-direction:column;align-items:center}}
 /* aba Caixa (v7.2) */
 .shopgrid.caixa{grid-template-columns:1fr}
 .rank-wrap.cx-wrap{width:100%;max-height:max(96px,calc(var(--u)*150));margin:0}

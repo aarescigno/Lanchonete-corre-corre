@@ -569,12 +569,6 @@ function buildCaixa(grid){
   onde.appendChild(bar); onde.appendChild(leg);
   if (pend.mel + pend.sal + pend.man) onde.appendChild(el('span', 'full', 'Compras nesta lojinha: ' + fmt(pend.mel + pend.sal + pend.man) + ' (entram na linha do dia ' + game.shopNext + ').'));
   if (pend.emp || pend.par) onde.appendChild(el('span', 'full', 'Banco nesta lojinha: ' + (pend.emp ? 'empréstimo de ' + fmt(pend.emp) : '') + (pend.emp && pend.par ? ' e ' : '') + (pend.par ? fmt(pend.par) + ' pagos' : '') + ' (entram na linha do dia ' + game.shopNext + ').'));
-  // Gurugol (v8.4): a nota da lanchonete e a de cada critério
-  const ga = avalGeral(game.save.aval), na = game.save.aval.length;
-  const gu = el('div', 'cx-aval');
-  gu.appendChild(el('b', null, 'Gurugol: ' + (ga ? fmtNota(ga.nota) + ' ★ (média das últimas ' + na + ' avaliações)' : 'sem nota ainda (' + na + ' de ' + AVAL.min + ' avaliações)')));
-  if (ga) gu.appendChild(el('span', null, AVAL_CRIT.map((c, i) => c.nome + ' ' + fmtNota(ga.crit[i])).join(' · ') + '. ' + (ga.nota >= AVAL.neutra ? 'Nota boa traz mais gente: ' : 'Nota baixa afasta a freguesia: ') + (Math.round((avalMovimento(game.save.aval) - 1) * 100) >= 0 ? '+' : '') + Math.round((avalMovimento(game.save.aval) - 1) * 100) + '% de movimento.'));
-  onde.appendChild(gu);
   // resumo para colar no WhatsApp
   const row = el('div', 'cx-copia'), st = el('span', 'cx-st'); st.setAttribute('role', 'status');
   let ta = null;
@@ -589,6 +583,26 @@ function buildCaixa(grid){
     });
   });
   row.appendChild(b); row.appendChild(st); onde.appendChild(row); grid.appendChild(onde);
+}
+/* aba Gurugol (v8.4.2): a caixa da nota (a mesma do fim do dia), o efeito no movimento e os últimos comentários, do mais novo */
+function buildGurugol(grid){
+  const sv = game.save, ga = avalGeral(sv.aval), na = sv.aval.length, com = sv.avalCom.slice().reverse();
+  if (!na){ grid.appendChild(el('p', 'rank-empty', 'Ainda ninguém avaliou a lanchonete no Gurugol: cada grupo que sai avalia, e os comentários aparecem aqui.')); return; }
+  const esq = el('div', 'guru-lado');
+  esq.appendChild(gurugolCaixa({ geral:ga, dia:avalMedias(sv.aval), n:na }, ga ? 'média das últimas ' + na + ' avaliações' : 'sem nota: ' + na + ' de ' + AVAL.min + ' avaliações'));
+  const mv = Math.round((avalMovimento(sv.aval) - 1) * 100);
+  esq.appendChild(el('p', 'small', ga ? (mv >= 0 ? 'Nota boa traz mais gente: ' : 'Nota baixa afasta a freguesia: ') + (mv > 0 ? '+' : '') + mv + '% de movimento.' : 'A nota aparece a partir da ' + AVAL.min + 'ª avaliação e mexe no movimento: até +' + Math.round(AVAL.mov * 100) + '% com 5 ★.'));
+  grid.appendChild(esq);
+  const lista = el('ul', 'guru-coms'); lista.setAttribute('aria-label', 'Últimos comentários');
+  com.forEach(c => {
+    const li = el('li'), cab = el('div', 'guru-cab'), n = c.n / 10;
+    const est = el('span', 'guru-ests', '★'.repeat(Math.round(n))); est.appendChild(el('i', null, '★'.repeat(5 - Math.round(n)))); est.setAttribute('aria-label', fmtNota(n) + ' estrelas');
+    cab.appendChild(est); cab.appendChild(el('b', null, fmtNota(n)));
+    cab.appendChild(el('span', 'guru-quem', CUSTOMER_TYPES[c.k].label + (c.v ? ' (VIP)' : '') + ' · dia ' + c.d));
+    li.appendChild(cab); li.appendChild(el('q', null, c.t)); lista.appendChild(li);
+  });
+  if (!com.length) lista.appendChild(el('li', 'rank-empty', 'Os comentários aparecem depois do próximo dia.'));
+  grid.appendChild(lista);
 }
 function buildShop(){
   const grid = $('shop-grid');
@@ -609,13 +623,14 @@ function buildShop(){
   $('btn-shop-go').textContent = 'Começar o dia ' + game.shopNext;
   const f = payroll(game.save.equipe), dv = divulgaAberta(game.shopNext) ? divulgaOf(game.save.divulga) : null;
   $('shop-folha').textContent = (f ? 'Folha ' + fmt(f) : 'Sem folha') + (dv ? ' + ' + dv.name.toLowerCase() + ' ' + fmt(dv.cost) : '') + ', contas ' + fmt(contasDia(game.tables)) + (sv.emp.resto ? ', parcela do banco ' + fmt(game.devido) + (sv.emp.atr ? ' (com a atrasada)' : '') : '') + ' e ingredientes: tudo pago no fim do dia, que só rende completo. A meta é o lucro.';
-  grid.className = 'shopgrid' + (shopTab === 'salao' || shopTab === 'caixa' || shopTab === 'melhorias' ? ' ' + shopTab : '');
+  grid.className = 'shopgrid' + (shopTab === 'salao' || shopTab === 'caixa' || shopTab === 'melhorias' || shopTab === 'gurugol' ? ' ' + shopTab : '');
   ['salao', 'caixa'].forEach(k => $('ov-shop').classList[shopTab === k ? 'add' : 'remove'](k));
   if (shopTab === 'equipe') return buildEquipe(grid);
   if (shopTab === 'salao') return buildSalao(grid);
   if (shopTab === 'divulga') return buildDivulga(grid);
   if (shopTab === 'manut') return buildManut(grid);
   if (shopTab === 'banco') return buildBanco(grid);
+  if (shopTab === 'gurugol') return buildGurugol(grid);
   if (shopTab === 'caixa') return buildCaixa(grid);
   // os Tênis de corrida (v7.3) só aparecem depois dos Tênis novos, no lugar deles (a grade continua com 6); no modo dev, todas
   UPGRADES.filter(u => DEV.on || (u.req ? game.up[u.req] : !(game.up[u.id] && UPGRADES.some(v => v.req === u.id)))).forEach(u => {

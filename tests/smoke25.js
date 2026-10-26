@@ -70,7 +70,20 @@ let st=0; while(g.state==='playing'&&st<30000){ bot(); g.update(0.05); st++; }
   ok(/Gurugol sem nota \(\d+\/20\)/.test(L.caixaResumo(g.save)),'resumo do caixa: sem nota ainda'); }
 g.save.aval=L.normAval(cinco(30));
 ok(g.gurugol.nota===5 && /Gurugol 5,0 \(espera por mesa 5,0/.test(L.caixaResumo(g.save)),'com 20 ou mais: a nota no HUD e no resumo');
-g.goShop(4); L.setShopTab('caixa'); ok(/Gurugol: 5,0 ★/.test(texto(els['shop-grid'])) && /\+10% de movimento/.test(texto(els['shop-grid'])),'aba Caixa mostra a nota e o movimento');
+// v8.4.2: aba Gurugol na lojinha, com a caixa da nota e os últimos comentários; os critérios com os nomes novos
+ok(L.AVAL_CRIT[2].nome==='Qualidade da comida' && L.AVAL_CRIT[3].nome==='Diversidade do cardápio','critérios: qualidade da comida e diversidade do cardápio');
+{ const n=g.save.avalCom.length, c=g.save.avalCom[n-1];
+  ok(n>=8 && n<=L.AVAL_COM && c.d===3 && c.n>=10 && c.n<=50 && typeof c.t==='string' && L.CUSTOMER_TYPES[c.k],'comentários do dia no save (dia, nota, texto e quem)');
+  ok(L.normAvalCom(Array.from({length:50},(_,i)=>({d:i+1,n:45,t:'Bom!',k:'familia'}))).length===L.AVAL_COM && L.normAvalCom([{d:2,n:99,t:'x',k:'alien',v:1},{t:''},null])[0].n===50 && L.normAvalCom([{d:2,n:30,t:'x',k:'alien'}])[0].k==='estudante','normAvalCom: guarda os últimos 30 e limpa o resto');
+  ok(L.normSave({avalCom:[{d:1,n:40,t:'Oi',k:'vovos'}]}).avalCom.length===1,'save leva os comentários'); }
+g.save.avalCom=L.normAvalCom([{d:2,n:32,t:'Comida meio fria.',k:'executiva'},{d:3,n:49,t:'Comida de mãe!',k:'familia',v:1}]);
+g.goShop(4); L.setShopTab('gurugol');
+{ const t=texto(els['shop-grid']), gr=els['shop-grid'];
+  ok(gr.className==='shopgrid gurugol' && gr.children[0].children[0].className==='guru','aba Gurugol: a caixa da nota');
+  ok(/\+10% de movimento/.test(t) && /média das últimas 30 avaliações/.test(t),'aba Gurugol: movimento e quantas avaliações');
+  const li=gr.children[1].children; ok(li.length===2 && /Comida de mãe!/.test(texto(li[0])) && /Família \(VIP\) · dia 3/.test(texto(li[0])) && /Comida meio fria/.test(texto(li[1])),'aba Gurugol: os comentários, do mais novo para o mais velho'); }
+L.setShopTab('caixa'); ok(!/Gurugol/.test(texto(els['shop-grid'])),'o Gurugol saiu da aba Caixa');
+g.save.aval=[]; L.setShopTab('gurugol'); ok(/Ainda ninguém avaliou/.test(texto(els['shop-grid'])),'aba Gurugol sem avaliações'); g.save.aval=L.normAval(cinco(30));
 g.startDay(4); g.begin(); let rn=true; try{ for(let i=0;i<40;i++){ bot(); g.update(0.05); L.render(g,H.ctx); } }catch(e){ rn=false; console.log(e); } ok(rn,'HUD com a nota desenha sem erro');
 console.log('smoke25.js: total = '+total+'  fails = '+fails);
 process.exit(fails?1:0);

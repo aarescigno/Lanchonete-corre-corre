@@ -4,6 +4,15 @@ Registro das ideias e dos retornos de quem jogou, com o texto original, e de ond
 
 ---
 
+## 26/10/2026 — Usuário: nomes dos critérios e aba Gurugol
+**Origem:** mensagem do usuário depois da v8.4.1:
+
+> em vez de "prato" troque por "Qualidade da comida", Cardápio troque por "Diversidade do cardápio" crie um aba no menu entre-partidas só para o Gurugol em que apareça os últimos comentários das pessoas
+
+**Destino:** v8.4.2 (`docs/spec-v8.4.2.md`). O "menu entre-partidas" é a lojinha, que abre entre um dia e outro: a aba Gurugol fica entre Banco e Caixa, e mostra os últimos 30 comentários.
+
+---
+
 ## 26/10/2026 — Usuário: caixa animada do Gurugol no fim do dia
 **Origem:** mensagem do usuário depois da v8.4, com a captura do fim do dia e de um quadro de atributos de um jogo de corrida (barras amarelas segmentadas, uma por atributo):
 
