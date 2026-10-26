@@ -301,12 +301,12 @@ const AB_CENAS = {
     const resp = RM ? 0 : Math.sin(T * 1.4) * 2;
     c.beginPath(); c.moveTo(410,334 - resp); c.quadraticCurveTo(560,300 - resp,730,322); c.lineTo(730,372); c.lineTo(410,372); c.closePath(); fs(c,'#E7A9B8',3);
     // a mão da Rosa e a da Bia
-    abBraco(c,[[470,330],[520,352]],'#E7A9B8',SKINS[3]);
+    abBraco(c,[[450,336],[488,350]],'#E7A9B8',SKINS[3]);
     // a Bia na cadeira, segurando a mão da mãe
     rr(c,520,360,90,16,4); fs(c,PAL.madeira,2.5);
     c.strokeStyle = PAL.tinta; c.lineWidth = 6; c.beginPath(); c.moveTo(530,376); c.lineTo(530,AB_CHAO); c.moveTo(600,376); c.lineTo(600,AB_CHAO); c.stroke();
     abBiaCrianca(c,566,372,2.6,{ sentada:true, mood:1, t:T });
-    abBraco(c,[[548,320],[526,352]],PAL.mostarda,SKINS[4]);
+    abBraco(c,[[541,338],[516,356],[499,352]],PAL.mostarda,SKINS[4]);   // do ombro, o braço desce e a mão pousa sobre a da mãe
     // tudo um pouco mais escuro, como de noite
     c.fillStyle = 'rgba(30,42,74,.18)'; c.fillRect(0,0,TW,500);
     // depois da fala derradeira, a cortina do leito corre no trilho e cobre a cama e a Bia (a janela e a rosa ficam)

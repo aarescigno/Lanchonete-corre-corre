@@ -56,6 +56,8 @@ const toque=els=>els['c'].fire('pointerdown',{preventDefault(){},pointerId:1,cli
   for(let i=0;i<100;i++) ab.update(0.5);
   ok(ab.i===4,'o tempo não troca a cena');
   toque(els); ok(ab.i===5,'o toque troca');
+  ab.voltar(); ok(ab.i===4 && ab.t===0,'voltar: a cena anterior, do começo');
+  ab.i=0; ab.t=3; ab.voltar(); ok(ab.i===0 && ab.t===0,'voltar na primeira cena: recomeça');
   let erro=null; try{ for(let i=0;i<ab.n;i++){ ab.i=i; L.drawAbertura(H.ctx,ab); } } catch(e){ erro=e; } ok(!erro,'desenha os quadros parados');
 }
 console.log('total = '+total+'  fails = '+fails);

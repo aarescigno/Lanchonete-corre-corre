@@ -83,6 +83,7 @@ function abrirAbertura(origem){
   showOnly(['ov-abertura']);
 }
 on('btn-historia',   () => { Sfx.tap(); abrirAbertura('menu'); });
+on('btn-ab-voltar',  () => { Sfx.tap(); if (abertura) abertura.voltar(); });
 on('btn-ab-pular',   () => { Sfx.tap(); if (abertura) abertura.pular(); });
 on('btn-historia-rever', () => { Sfx.tap(); abrirAbertura('menu'); });
 on('btn-historia-menu',  () => { Sfx.tap(); game.setState('menu'); });
@@ -170,9 +171,10 @@ canvas.addEventListener('contextmenu', e => e.preventDefault());
 window.addEventListener('keydown', e => {
   const k = e.key;
   if (e.target && (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA')) return;
-  // abertura: Esc pula; Enter, espaço e a seta para a direita seguem
+  // abertura: Esc pula; a seta para a esquerda volta; Enter, espaço e a seta para a direita seguem
   if (abertura){
     if (k === 'Escape'){ abertura.pular(); e.preventDefault(); }
+    else if (k === 'ArrowLeft'){ abertura.voltar(); e.preventDefault(); }
     else if ((k === 'Enter' || k === ' ' || k === 'Spacebar' || k === 'ArrowRight') && !(e.target && e.target.tagName === 'BUTTON')){ abertura.seguir(); e.preventDefault(); }
     return;
   }

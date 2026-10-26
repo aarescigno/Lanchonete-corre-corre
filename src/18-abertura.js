@@ -80,6 +80,13 @@ class Abertura {
     this.i++; this.t = 0;
     if (this.onCena) this.onCena(this);
   }
+  // volta um quadro: a cena anterior (na primeira, recomeça a cena)
+  voltar(){
+    if (this.fim) return;
+    if (this.i > 0) this.i--;
+    this.t = 0;
+    if (this.onCena) this.onCena(this);
+  }
   pular(){ this.terminar(); }
   terminar(){ if (this.fim) return; this.fim = true; if (this.onFim) this.onFim(this); }
 }
