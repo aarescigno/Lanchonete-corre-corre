@@ -12,6 +12,9 @@ Retorno do usuário sobre a v8.5 (texto em `docs/PROPOSTAS.md`): mostrar a Rosa 
 ## Guardado para depois (Modo História)
 A receita especial da Casa Aurora: o toque do Tonhão de **cominho com açafrão** e a **pétala de rosa** da Dona Rosa. Não entra na abertura (anotado no `docs/PLANO.md`).
 
+## Os braços no hospital (correção)
+A Bia não tem mais um 3º braço: o esquerdo dela sai do ombro e pousa a mão sobre a da mãe (`drawPerson` aceita `bracoE`, o cotovelo e a mão do braço esquerdo, nas medidas da pessoa). A Rosa ganhou o ombro e a manga da camisola (azul-clara) por cima do cobertor, e o braço estendido é da cor da pele, e não do cobertor.
+
 ## Testes
 - `smoke26.js` (30): as 10 cenas, as falas do hospital somem antes da cortina, e o quadro do hospital com movimento reduzido é o de antes da cortina.
 - `python3 shot_v8_5_1.py` gera as capturas em `capturas/v8.5.1` (as mesmas da v8.5, com o hospital e a saudade).

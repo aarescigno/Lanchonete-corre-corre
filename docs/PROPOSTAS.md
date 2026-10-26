@@ -4,6 +4,15 @@ Registro das ideias e dos retornos de quem jogou, com o texto original, e de ond
 
 ---
 
+## 26/10/2026 — Usuário: os braços na cena do hospital
+**Origem:** mensagem do usuário na v8.5.1:
+
+> Corrige a cena da rosa no hospital segurando a mão da bia estão estranhos os braços delas
+
+**Destino:** v8.5.1 (ainda não publicada; `docs/spec-v8.5.1.md`): a Bia tinha 3 braços (os 2 do desenho padrão e um a mais esticado) e o braço da Rosa era um bastão cor do cobertor solto em cima da cama. Agora o braço esquerdo da Bia é o que desce até a mão da mãe (`drawPerson` aceita `bracoE`), e a Rosa tem o ombro e a manga da camisola por cima do cobertor e o braço de pele estendido para a Bia.
+
+---
+
 ## 26/10/2026 — Usuário: a morte da Rosa na abertura e a receita especial
 **Origem:** mensagem do usuário depois da v8.5:
 
