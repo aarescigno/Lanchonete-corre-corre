@@ -9,6 +9,8 @@ Uso: python3 ferramentas/editor.py                abre em http://localhost:8765 
      python3 ferramentas/editor.py --porta 9000   outra porta
      python3 ferramentas/editor.py --so-montar    só gera editor-montado.html (sem servidor: o editor
                                                   baixa o arquivo novo ou copia as mudanças para o chat)
+     python3 ferramentas/editor.py --artifact     gera editor-artifact.html, sem invólucro (o publicador do
+                                                  artifact do claude.ai envolve): baixa ou copia as mudanças
      python3 ferramentas/editor.py src/20-desenho-base.js   também edita as funções desse arquivo
 """
 import http.server, json, os, subprocess, sys, webbrowser
@@ -41,6 +43,19 @@ def montar():
     return html
 
 
+def montar_artifact():
+    # o mesmo editor sem <!doctype>/<html>/<head>/<body>, começando pelo <title> (como o lanchonete.html)
+    html = montar()
+    corpo = html.split('<body>', 1)[1].rsplit('</body>', 1)[0]
+    ini = corpo.index('<title>'); fim = corpo.index('</title>', ini) + len('</title>')
+    corpo = corpo[:ini] + corpo[fim:]
+    out = ('<title>Editor de desenhos</title>\n<meta name="viewport" content="width=device-width,initial-scale=1">'
+           "<script>try{localStorage.setItem('lcc2_abertura','1')}catch(e){}window.__ED_ARTIFACT=true;</script>" + corpo)
+    caminho = os.path.join(AQUI, 'editor-artifact.html')
+    open(caminho, 'w', encoding='utf8').write(out)
+    return caminho
+
+
 class Pedidos(http.server.BaseHTTPRequestHandler):
     def log_message(self, *a): pass
 
@@ -67,6 +82,8 @@ class Pedidos(http.server.BaseHTTPRequestHandler):
 
 
 if __name__ == '__main__':
+    if '--artifact' in sys.argv:
+        print('montado:', montar_artifact()); sys.exit(0)
     montar()
     if '--so-montar' in sys.argv:
         print('montado:', SAIDA); sys.exit(0)

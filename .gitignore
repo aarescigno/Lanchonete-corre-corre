@@ -5,3 +5,4 @@ tests/wrapped.html
 tests/game_v*.js
 .claude/settings.local.json
 ferramentas/editor-montado.html
+ferramentas/editor-artifact.html

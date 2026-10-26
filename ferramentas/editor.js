@@ -179,6 +179,7 @@ FUNCS.forEach((f, i) => {
 });
 $('e-cena').value = est.cena; $('e-zoom').value = est.zoom; $('e-mostra').value = est.mostra; $('e-grade').classList.toggle('on', est.grade);
 if (window.__ED_SERVIDOR) $('e-salva').hidden = false;
+if (window.__ED_ARTIFACT) $('e-baixa').hidden = true;   // o artifact do claude.ai não deixa baixar: copie as mudanças
 
 const funcDaCena = () => FUNCS.find(f => f.tipo === 'metodo' && f.obj === 'AB_CENAS' && f.nome === CENAS[est.cena].id);
 function aviso(s){ const a = $('e-aviso'); a.textContent = s; a.classList.add('ver'); clearTimeout(aviso.t); aviso.t = setTimeout(() => a.classList.remove('ver'), 2600); }
