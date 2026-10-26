@@ -103,7 +103,7 @@ function drawTable(ctx,g,t,tm,menu){
 function drawSeatPerson(ctx,g,grp,i,s,tm){
   const eating = grp.state === 'eating';
   drawPerson(ctx,grp.people[i],s.x,s.y,{
-    sit:true, mood:grp.mood, shirt:CHAIRS[grp.color].c,
+    sit:true, back:s.front, mood:grp.mood, shirt:CHAIRS[grp.color].c,
     handUp: grp.state === 'wantOrder' && i === 0, t:tm,
     bob: eating && !RM ? Math.sin(tm*6 + i*1.7) * 1.2 : 0
   });
