@@ -4,6 +4,15 @@ Registro das ideias e dos retornos de quem jogou, com o texto original, e de ond
 
 ---
 
+## 26/10/2026 — Usuário: caixa animada do Gurugol no fim do dia
+**Origem:** mensagem do usuário depois da v8.4, com a captura do fim do dia e de um quadro de atributos de um jogo de corrida (barras amarelas segmentadas, uma por atributo):
+
+> gostaria de uma caixa animada do lado esquerdo dessa com a avaliação gurugol, em vez de texto bruto, tipo essa aqui no print, em que a barrinha vai preenchendo ate´chegar na nota dela e em baixo aparece a nota final numa animação de número que vai aumentando até chegar no valor da nota. números menores que 4 são puros, de 4 a 4,5 são prateados e metalizados, 4,5 a 4,8 são dourados e soltam um brilhinho de estrelinha, >4,8 fica reluzente e brilhante como diamante e soltam mais brilhos.
+
+**Destino:** v8.4.1 (`docs/spec-v8.4.1.md`). As faixas valem pela nota com uma casa: 4,0 a 4,4 prata, 4,5 a 4,8 ouro, 4,9 e 5,0 diamante. A arte é original (barras no estilo do jogo, sem copiar a do print).
+
+---
+
 ## 26/10/2026 — Usuário: etapa 2c, decisões e a média das 100 últimas
 **Origem:** a sessão da etapa 2c (avaliações) perguntou as decisões em aberto, e o usuário escolheu as sugestões: a nota mexe no movimento (−10% a +10%), pesos iguais, os pontos de atendimento como bônus na agilidade e os comentários no fim do dia e num balãozinho ao sair. Durante a sessão, mandou:
 

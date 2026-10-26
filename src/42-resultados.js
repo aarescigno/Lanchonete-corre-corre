@@ -1,4 +1,52 @@
 /* ---------- fim do dia ---------- */
+/* faixa da nota do Gurugol (v8.4.1), pela nota com uma casa: abaixo de 4 pura, de 4 a 4,4 prata, de 4,5 a 4,8 ouro e acima disso diamante */
+function notaFaixa(n){ n = Math.round(n * 10) / 10; return n > 4.8 ? 'diamante' : n >= 4.5 ? 'ouro' : n >= 4 ? 'prata' : 'pura'; }
+const GURU_BRILHOS = { pura:0, prata:0, ouro:3, diamante:7 };
+let guruAnim = 0;   // a animação em curso (abrir de novo o fim do dia cancela a anterior)
+/* caixa do Gurugol no fim do dia (v8.4.1): uma barra por critério, que enche até a nota dele, e embaixo a nota contando
+   de 0 até o valor, com a cor da faixa; ouro e diamante soltam brilhinhos. Com prefers-reduced-motion, já aparece pronta */
+function gurugolCaixa(a){
+  const m = a.geral || a.dia, box = el('div', 'guru');
+  box.setAttribute('role', 'img');
+  box.setAttribute('aria-label', 'Gurugol: ' + (a.geral ? fmtNota(m.nota) + ' estrelas' : 'sem nota ainda, ' + a.n + ' de ' + AVAL.min + ' avaliações; hoje ' + fmtNota(m.nota)) + '. ' + AVAL_CRIT.map((c, i) => c.nome + ' ' + fmtNota(m.crit[i])).join(', ') + '.');
+  box.appendChild(el('b', 'guru-tit', 'Gurugol'));
+  const fills = AVAL_CRIT.map((c, i) => {
+    const row = el('div', 'guru-crit');
+    row.appendChild(el('span', null, c.nome));
+    const bar = el('div', 'guru-bar'), f = el('i');
+    f.style.width = RM ? (m.crit[i] / 5 * 100) + '%' : '0%';
+    bar.appendChild(f); row.appendChild(bar); box.appendChild(row);
+    return f;
+  });
+  const wrap = el('div', 'guru-nota'), num = el('span', 'guru-num', RM ? fmtNota(m.nota) : '0,0');
+  num.className = 'guru-num ' + (RM ? notaFaixa(m.nota) : 'pura');
+  wrap.appendChild(num); wrap.appendChild(el('span', 'guru-est', '★')); box.appendChild(wrap);
+  box.appendChild(el('small', null, a.geral ? 'hoje ' + fmtNota(a.dia.nota) + ' em ' + a.dia.n + (a.dia.n > 1 ? ' avaliações' : ' avaliação') : 'sem nota: ' + a.n + ' de ' + AVAL.min + ' (hoje)'));
+  const brilhos = () => {
+    for (let k = 0; k < GURU_BRILHOS[notaFaixa(m.nota)]; k++){
+      const s = el('span', 'guru-brilho', '✦');
+      s.style.left = (8 + Math.random() * 84) + '%'; s.style.top = (Math.random() * 80) + '%';
+      s.style.animationDelay = (Math.random() * 1.6).toFixed(2) + 's';
+      wrap.appendChild(s);
+    }
+  };
+  if (RM){ brilhos(); return box; }
+  // as barras enchem uma depois da outra; depois a nota conta até o valor, mudando de faixa no caminho
+  const id = ++guruAnim, raf = window.requestAnimationFrame ? f => window.requestAnimationFrame(f) : f => setTimeout(f, 16);
+  let t0 = 0, feito = false;
+  const passo = t => {
+    if (id !== guruAnim) return;
+    if (!t0) t0 = t;
+    const s = (t - t0) / 1000;
+    fills.forEach((f, i) => { const p = clamp((s - 0.15 * i) / 0.7, 0, 1); f.style.width = (m.crit[i] / 5 * 100 * (1 - Math.pow(1 - p, 3))) + '%'; });
+    const p = clamp((s - 0.5) / 1.3, 0, 1), v = m.nota * (1 - Math.pow(1 - p, 3));
+    num.textContent = fmtNota(v); num.className = 'guru-num ' + notaFaixa(v);
+    if (p >= 1 && !feito){ feito = true; num.className += ' pronto'; brilhos(); }
+    if (!feito || s < 2) raf(passo);
+  };
+  raf(passo);
+  return box;
+}
 function buildEnd(){
   const r = game.result;
   if (!r) return;
@@ -15,11 +63,12 @@ function buildEnd(){
   if (r.quebras && r.quebras.length) rows.push(['Quebrou', r.quebras.map(q => manutOf(q.id).name.toLowerCase() + (q.fixed ? ' (consertado)' : '')).join(', ')]);
   if (r.clima) rows.push(['Imprevisto', CLIMA[r.clima].nome]);
   if (r.vip || r.vipLost) rows.splice(2, 0, ['VIPs', r.vip + ' atendido' + (r.vip === 1 ? '' : 's') + (r.vipLost ? ' · ' + r.vipLost + ' bravo' + (r.vipLost > 1 ? 's' : '') : '')]);
-  // Gurugol (v8.4): a nota (e a do dia) numa linha do quadro; embaixo, 2 ou 3 comentários (os critérios do dia no title)
+  // Gurugol (v8.4): a caixa animada à esquerda dos quadros (v8.4.1); embaixo, 2 ou 3 comentários (os critérios do dia no title)
   const av = $('end-aval'); clearEl(av); av.title = '';
   const a = r.aval;
+  guruAnim++;
   if (a && a.dia){
-    rows.push(['Gurugol', (a.geral ? fmtNota(a.geral.nota) + ' ★ · ' : a.n + '/' + AVAL.min + ' · ') + 'hoje ' + fmtNota(a.dia.nota)]);
+    st.appendChild(gurugolCaixa(a));
     av.title = 'Hoje, em ' + a.dia.n + (a.dia.n > 1 ? ' avaliações: ' : ' avaliação: ') + AVAL_CRIT.map((c, i) => c.nome.toLowerCase() + ' ' + fmtNota(a.dia.crit[i])).join(', ');
     if (a.coment.length) av.appendChild(el('i', null, a.coment.map(t => '“' + t + '”').join(' ')));
   }
