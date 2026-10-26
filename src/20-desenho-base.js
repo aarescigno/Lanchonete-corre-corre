@@ -244,6 +244,13 @@ function drawPerson(ctx,p,x,y,o){
   // cabeça
   circ(ctx,-11,hy+1,2.8); fs(ctx,skin,1.6); circ(ctx,11,hy+1,2.8); fs(ctx,skin,1.6);
   circ(ctx,0,hy,11); fs(ctx,skin,2.5);
+  if (o.back){   // de costas (sentado na frente da mesa, olhando para ela): nuca coberta, sem rosto
+    if (p.acc !== 'helmet'){ circ(ctx,0,hy,11.3); fs(ctx,p.hair === 4 && !p.elder ? skin : hc,2.2); }
+    else { ctx.beginPath(); ctx.arc(0,hy-1,12.5,Math.PI,0); ctx.closePath(); fs(ctx,PAL.faixa,2.5); rr(ctx,-13,hy-3,26,3.5,1.5); fs(ctx,'#1b1b1b',1.6); circ(ctx,0,hy+2,9.5); fs(ctx,skin,1.6); }
+    if (p.hair === 2){ circ(ctx,0,hy-15,6); fs(ctx,hc,2); }
+    ctx.restore();
+    return;
+  }
   // cabelo frente
   if (p.acc === 'helmet'){
     ctx.beginPath(); ctx.arc(0,hy-1,12.5,Math.PI,0); ctx.closePath(); fs(ctx,PAL.faixa,2.5);
