@@ -63,7 +63,10 @@ let st=0; while(g.state==='playing'&&st<30000){ bot(); g.update(0.05); st++; }
   ok(a.geral===null || a.dia.n>=20,'sem nota geral antes da 20ª');
   const row=g.save.caixa[g.save.caixa.length-1]; ok(row.av===Math.round(a.dia.nota*10),'linha do caixa com a nota do dia');
   ok(L.normCaixa([{d:3,av:44}])[0].av===44,'normCaixa guarda a nota');
-  ok(texto(els["end-stats"]).match(/Gurugol .*hoje \d,\d/) && /^Hoje, em \d+ avaliações: espera por mesa/.test(els["end-aval"].title),'fim do dia mostra o Gurugol');
+  const gb=els['end-stats'].children[0];
+  ok(gb.className==='guru' && /^Gurugol: .*Espera por mesa \d,\d/.test(gb.getAttribute('aria-label')) && /^Hoje, em \d+ avaliações: espera por mesa/.test(els['end-aval'].title),'fim do dia: a caixa do Gurugol à esquerda dos quadros');
+  ok(gb.children.filter(c=>c.className==='guru-crit').length===5,'uma barra por critério');
+  ok(L.notaFaixa(3.94)==='pura' && L.notaFaixa(3.96)==='prata' && L.notaFaixa(4.44)==='prata' && L.notaFaixa(4.5)==='ouro' && L.notaFaixa(4.8)==='ouro' && L.notaFaixa(4.85)==='diamante','faixas: pura, prata (4 a 4,4), ouro (4,5 a 4,8) e diamante (acima de 4,8)');
   ok(/Gurugol sem nota \(\d+\/20\)/.test(L.caixaResumo(g.save)),'resumo do caixa: sem nota ainda'); }
 g.save.aval=L.normAval(cinco(30));
 ok(g.gurugol.nota===5 && /Gurugol 5,0 \(espera por mesa 5,0/.test(L.caixaResumo(g.save)),'com 20 ou mais: a nota no HUD e no resumo');

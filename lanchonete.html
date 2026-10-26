@@ -60,6 +60,30 @@ p{margin:calc(var(--u)*6) 0;font-size:max(12px,calc(var(--u)*16));line-height:1.
 .stats2{display:flex;flex-wrap:wrap;justify-content:center;align-items:flex-start;column-gap:calc(var(--u)*36)}
 .stats2 .stats{margin:calc(var(--u)*6) 0}
 #end-stats .stats{row-gap:calc(var(--u)*1)}   /* v8.4: a linha do Gurugol cabe sem rolar */
+/* caixa do Gurugol no fim do dia (v8.4.1): barras por critério e a nota contando, com a cor da faixa */
+@media (min-width:700px){#end-stats{flex-wrap:nowrap}}
+.guru{background:#22344F;color:#F7EFD8;border:calc(var(--u)*3) solid var(--tinta);border-radius:calc(var(--u)*12);padding:calc(var(--u)*5) calc(var(--u)*11) calc(var(--u)*4);margin:calc(var(--u)*6) 0;width:max(140px,calc(var(--u)*176));flex:none;text-align:left;box-shadow:calc(var(--u)*3) calc(var(--u)*3) 0 var(--tinta)}
+.guru-tit{display:block;text-align:center;font-family:var(--fd);font-weight:400;font-size:max(13px,calc(var(--u)*16));line-height:1.1;color:var(--mostarda);letter-spacing:.02em}
+.guru-crit{margin-top:calc(var(--u)*2)}
+.guru-crit span{display:block;font-style:italic;font-weight:700;font-size:max(9px,calc(var(--u)*10.5));line-height:1.1;color:#F2D36B}
+.guru-bar{position:relative;height:max(6px,calc(var(--u)*7));background:#14223A;border:1.5px solid #0B1424;border-radius:2px;overflow:hidden}
+.guru-bar i{position:absolute;left:0;top:0;bottom:0;width:0;background:linear-gradient(#F7DA4F,#E3B21E)}
+.guru-bar::after{content:"";position:absolute;inset:0;background:linear-gradient(90deg,transparent calc(100% - 1.5px),#0B1424 calc(100% - 1.5px)) 0 0/20% 100% repeat-x}
+.guru-nota{position:relative;display:flex;align-items:baseline;justify-content:center;gap:calc(var(--u)*4);margin-top:calc(var(--u)*3);line-height:.95}
+.guru-num{font-family:var(--fd);font-weight:400;font-size:max(26px,calc(var(--u)*34));color:#F7EFD8;-webkit-text-stroke:calc(var(--u)*1) var(--tinta);paint-order:stroke fill}
+.guru-est{font-size:max(16px,calc(var(--u)*20));color:var(--mostarda)}
+.guru small{display:block;text-align:center;font-size:max(9px,calc(var(--u)*10));line-height:1.1;color:#cfc7b0;margin-top:calc(var(--u)*1)}
+.guru-num.prata,.guru-num.ouro,.guru-num.diamante{-webkit-text-stroke:0;color:transparent;-webkit-background-clip:text;background-clip:text;background-size:220% 100%;filter:drop-shadow(calc(var(--u)*1.5) calc(var(--u)*1.5) 0 #0B1424)}
+.guru-num.prata{background-image:linear-gradient(100deg,#8D96A0 0%,#E9EEF2 22%,#9AA4AE 40%,#FFFFFF 52%,#A7B0B9 66%,#D8DEE4 85%,#7F8892 100%)}
+.guru-num.ouro{background-image:linear-gradient(100deg,#A8741A 0%,#FFE48A 22%,#D9A22B 40%,#FFF6C8 52%,#C98E1F 66%,#FFD75E 85%,#9C6914 100%)}
+.guru-num.diamante{background-image:linear-gradient(100deg,#9FE7FF 0%,#FFFFFF 15%,#C7B8FF 30%,#E6FBFF 45%,#FFFFFF 52%,#A7F3E4 65%,#FFD6F5 80%,#B9EFFF 100%);filter:drop-shadow(0 0 calc(var(--u)*5) rgba(190,240,255,.85)) drop-shadow(calc(var(--u)*1.5) calc(var(--u)*1.5) 0 #0B1424)}
+.guru-num.pronto.prata,.guru-num.pronto.ouro{animation:guruReflexo 2.4s ease-in-out infinite}
+.guru-num.pronto.diamante{animation:guruReflexo 1.6s linear infinite}
+@keyframes guruReflexo{0%{background-position:100% 0}100%{background-position:-120% 0}}
+.guru-brilho{position:absolute;pointer-events:none;font-size:max(10px,calc(var(--u)*13));color:#FFF3B0;text-shadow:0 0 4px #FFE27A;animation:guruBrilho 1.6s ease-in-out infinite;opacity:0}
+.guru-num.diamante~.guru-brilho{color:#FFFFFF;text-shadow:0 0 5px #9FE7FF,0 0 9px #C7B8FF}
+@keyframes guruBrilho{0%,100%{opacity:0;transform:scale(.3) rotate(0)}45%{opacity:1;transform:scale(1.15) rotate(45deg)}70%{opacity:.6;transform:scale(.8) rotate(80deg)}}
+@media (prefers-reduced-motion:reduce){.guru-num.pronto.prata,.guru-num.pronto.ouro,.guru-num.pronto.diamante{animation:none;background-position:30% 0}.guru-brilho{animation:none;opacity:.9}}
 .stats .tot{border-top:2px solid var(--tinta);padding-top:2px}
 .cx-aval{display:flex;flex-direction:column;gap:2px;margin-top:calc(var(--u)*6)}
 .aval{display:block}
@@ -258,7 +282,7 @@ table.rank tr.me td{background:#fbe7a8}
 
     <div class="ov show" id="ov-menu">
       <div class="panel menu-panel">
-        <span class="vtag" id="vtag" aria-label="Versão 8.4">v8.4</span>
+        <span class="vtag" id="vtag" aria-label="Versão 8.4.1">v8.4.1</span>
         <h1 class="title">Lanchonete <br>Corre-Corre</h1>
         <p class="tag">Ajude a Bia a atender a freguesia da esquina antes que o cafezinho esfrie!</p>
         <div class="lbl" id="menu-dia">Carreira: dia 1</div>
@@ -452,7 +476,8 @@ table.rank tr.me td{background:#fbe7a8}
       <div class="panel">
         <h2>Versões</h2>
         <ul class="verlist">
-          <li><b>v8.4</b><span class="cur">versão atual</span><br>26/10/2026 &mdash; Avaliações no Gurugol: cada grupo que sai avalia a lanchonete de 1 a 5 em espera por mesa, agilidade, prato, cardápio e ambiente, com um balãozinho de comentário. A nota é a média das últimas 100 avaliações e aparece a partir da 20ª, no HUD, no fim do dia e no Caixa. Nota alta traz até 10% mais gente; nota baixa afasta até 10%.</li>
+          <li><b>v8.4.1</b><span class="cur">versão atual</span><br>26/10/2026 &mdash; Caixa do Gurugol no fim do dia: uma barrinha por critério vai enchendo até a nota dele, e embaixo a nota conta até o valor. Abaixo de 4 ela é pura; de 4 a 4,4, prateada; de 4,5 a 4,8, dourada e com brilhinhos de estrela; acima de 4,8, brilha como diamante, com mais brilhos.</li>
+          <li><b>v8.4</b><br>26/10/2026 &mdash; Avaliações no Gurugol: cada grupo que sai avalia a lanchonete de 1 a 5 em espera por mesa, agilidade, prato, cardápio e ambiente, com um balãozinho de comentário. A nota é a média das últimas 100 avaliações e aparece a partir da 20ª, no HUD, no fim do dia e no Caixa. Nota alta traz até 10% mais gente; nota baixa afasta até 10%.<br><a href="versoes/v8.4.html" target="_blank" rel="noopener">Abrir a v8.4</a></li>
           <li><b>v8.3.11</b><br>24/10/2026 &mdash; Desgaste sem sorteio: fogão, geladeira e cafeteira só vão gastando enquanto estão no verde e no amarelo. No vermelho (abaixo de 40%) há 50% de chance de quebrar no dia, e no limite (15% ou menos) quebra com certeza. A aba Manutenção e a introdução do dia avisam do risco de quebra durante o expediente (sem porcentagem) e do alto risco no limite.<br><a href="versoes/v8.3.11.html" target="_blank" rel="noopener">Abrir a v8.3.11</a></li>
           <li><b>v8.3.10</b><br>24/10/2026 &mdash; Triturador de lixo: melhoria nova da lojinha (R$ 180) que mói 1 do lixo a cada 30 s, mas ainda é preciso esvaziar de vez em quando. A lixeira vai do cinza ao verde conforme enche e, cheia, ganha um saco preto ao lado e fumacinha verde. O Ventilador agora só faz a freguesia comer mais rápido: o cheiro da lixeira cheia volta a incomodar.<br><a href="versoes/v8.3.10.html" target="_blank" rel="noopener">Abrir a v8.3.10</a></li>
           <li><b>v8.3.9</b><br>23/10/2026 &mdash; Estrelas que premiam o jogo bem feito: com os preços novos, o lucro dos primeiros dias depende muito de quem aparece, e quem não perdia ninguém às vezes levava só 1 estrela. As metas e o lucro das 3 estrelas foram recalculados pelo jogo perfeito: no dia 1, meta R$ 30, 2 estrelas R$ 50 e 3 estrelas R$ 60.<br><a href="versoes/v8.3.9.html" target="_blank" rel="noopener">Abrir a v8.3.9</a></li>
@@ -1000,7 +1025,7 @@ function tabelaDe(e){
 /* um empréstimo novo de v, pagando em dia: as parcelas e os juros somados */
 function simulaEmprestimo(v, j){ const t = tabelaDe(normEmprestimo({ resto:v, amort:Math.ceil(v / BANCO.parcelas), j })); return { parcelas:t, juros:t.reduce((a, p) => a + p, 0) - v }; }
 const CAIXA_MAX = 14;                                 // livro-caixa (v7.2): quantos dias da carreira ficam guardados
-const VERSAO = 'v8.4';                                 // vai no resumo do Caixa
+const VERSAO = 'v8.4.1';                               // vai no resumo do Caixa
 const DIVULGA_DIA = 3;                                // antes disso, o movimento é o da inauguração (sem custo)
 function divulgaAberta(n){ return DEV.on || n >= DIVULGA_DIA; }   // no modo dev, desde o dia 1
 function divulgaOf(id){ return DIVULGA.find(d => d.id === id) || DIVULGA[1]; }
@@ -5896,6 +5921,54 @@ function buildShop(){
 (function(){ const box = $('shop-tabs'); if (box) Array.prototype.forEach.call(box.querySelectorAll('button'), b => b.addEventListener('click', () => { Sfx.init(); Sfx.tap(); shopTab = b.getAttribute('data-v'); buildShop(); })); })();
 
 /* ---------- fim do dia ---------- */
+/* faixa da nota do Gurugol (v8.4.1), pela nota com uma casa: abaixo de 4 pura, de 4 a 4,4 prata, de 4,5 a 4,8 ouro e acima disso diamante */
+function notaFaixa(n){ n = Math.round(n * 10) / 10; return n > 4.8 ? 'diamante' : n >= 4.5 ? 'ouro' : n >= 4 ? 'prata' : 'pura'; }
+const GURU_BRILHOS = { pura:0, prata:0, ouro:3, diamante:7 };
+let guruAnim = 0;   // a animação em curso (abrir de novo o fim do dia cancela a anterior)
+/* caixa do Gurugol no fim do dia (v8.4.1): uma barra por critério, que enche até a nota dele, e embaixo a nota contando
+   de 0 até o valor, com a cor da faixa; ouro e diamante soltam brilhinhos. Com prefers-reduced-motion, já aparece pronta */
+function gurugolCaixa(a){
+  const m = a.geral || a.dia, box = el('div', 'guru');
+  box.setAttribute('role', 'img');
+  box.setAttribute('aria-label', 'Gurugol: ' + (a.geral ? fmtNota(m.nota) + ' estrelas' : 'sem nota ainda, ' + a.n + ' de ' + AVAL.min + ' avaliações; hoje ' + fmtNota(m.nota)) + '. ' + AVAL_CRIT.map((c, i) => c.nome + ' ' + fmtNota(m.crit[i])).join(', ') + '.');
+  box.appendChild(el('b', 'guru-tit', 'Gurugol'));
+  const fills = AVAL_CRIT.map((c, i) => {
+    const row = el('div', 'guru-crit');
+    row.appendChild(el('span', null, c.nome));
+    const bar = el('div', 'guru-bar'), f = el('i');
+    f.style.width = RM ? (m.crit[i] / 5 * 100) + '%' : '0%';
+    bar.appendChild(f); row.appendChild(bar); box.appendChild(row);
+    return f;
+  });
+  const wrap = el('div', 'guru-nota'), num = el('span', 'guru-num', RM ? fmtNota(m.nota) : '0,0');
+  num.className = 'guru-num ' + (RM ? notaFaixa(m.nota) : 'pura');
+  wrap.appendChild(num); wrap.appendChild(el('span', 'guru-est', '★')); box.appendChild(wrap);
+  box.appendChild(el('small', null, a.geral ? 'hoje ' + fmtNota(a.dia.nota) + ' em ' + a.dia.n + (a.dia.n > 1 ? ' avaliações' : ' avaliação') : 'sem nota: ' + a.n + ' de ' + AVAL.min + ' (hoje)'));
+  const brilhos = () => {
+    for (let k = 0; k < GURU_BRILHOS[notaFaixa(m.nota)]; k++){
+      const s = el('span', 'guru-brilho', '✦');
+      s.style.left = (8 + Math.random() * 84) + '%'; s.style.top = (Math.random() * 80) + '%';
+      s.style.animationDelay = (Math.random() * 1.6).toFixed(2) + 's';
+      wrap.appendChild(s);
+    }
+  };
+  if (RM){ brilhos(); return box; }
+  // as barras enchem uma depois da outra; depois a nota conta até o valor, mudando de faixa no caminho
+  const id = ++guruAnim, raf = window.requestAnimationFrame ? f => window.requestAnimationFrame(f) : f => setTimeout(f, 16);
+  let t0 = 0, feito = false;
+  const passo = t => {
+    if (id !== guruAnim) return;
+    if (!t0) t0 = t;
+    const s = (t - t0) / 1000;
+    fills.forEach((f, i) => { const p = clamp((s - 0.15 * i) / 0.7, 0, 1); f.style.width = (m.crit[i] / 5 * 100 * (1 - Math.pow(1 - p, 3))) + '%'; });
+    const p = clamp((s - 0.5) / 1.3, 0, 1), v = m.nota * (1 - Math.pow(1 - p, 3));
+    num.textContent = fmtNota(v); num.className = 'guru-num ' + notaFaixa(v);
+    if (p >= 1 && !feito){ feito = true; num.className += ' pronto'; brilhos(); }
+    if (!feito || s < 2) raf(passo);
+  };
+  raf(passo);
+  return box;
+}
 function buildEnd(){
   const r = game.result;
   if (!r) return;
@@ -5912,11 +5985,12 @@ function buildEnd(){
   if (r.quebras && r.quebras.length) rows.push(['Quebrou', r.quebras.map(q => manutOf(q.id).name.toLowerCase() + (q.fixed ? ' (consertado)' : '')).join(', ')]);
   if (r.clima) rows.push(['Imprevisto', CLIMA[r.clima].nome]);
   if (r.vip || r.vipLost) rows.splice(2, 0, ['VIPs', r.vip + ' atendido' + (r.vip === 1 ? '' : 's') + (r.vipLost ? ' · ' + r.vipLost + ' bravo' + (r.vipLost > 1 ? 's' : '') : '')]);
-  // Gurugol (v8.4): a nota (e a do dia) numa linha do quadro; embaixo, 2 ou 3 comentários (os critérios do dia no title)
+  // Gurugol (v8.4): a caixa animada à esquerda dos quadros (v8.4.1); embaixo, 2 ou 3 comentários (os critérios do dia no title)
   const av = $('end-aval'); clearEl(av); av.title = '';
   const a = r.aval;
+  guruAnim++;
   if (a && a.dia){
-    rows.push(['Gurugol', (a.geral ? fmtNota(a.geral.nota) + ' ★ · ' : a.n + '/' + AVAL.min + ' · ') + 'hoje ' + fmtNota(a.dia.nota)]);
+    st.appendChild(gurugolCaixa(a));
     av.title = 'Hoje, em ' + a.dia.n + (a.dia.n > 1 ? ' avaliações: ' : ' avaliação: ') + AVAL_CRIT.map((c, i) => c.nome.toLowerCase() + ' ' + fmtNota(a.dia.crit[i])).join(', ');
     if (a.coment.length) av.appendChild(el('i', null, a.coment.map(t => '“' + t + '”').join(' ')));
   }
@@ -6259,7 +6333,7 @@ fit();
 try { Rank.init(); } catch(e) {}
 game.setState('menu');
 window.__game = game;
-window.__lcc = { setShopTab: v => { shopTab = v; buildShop(); }, TREINO, TREINO_PASSOS, TREINO_COR, Treino, treinoLugar, treinoPrimeiro, playCareer, buildMenu, introBanco, buildFalencia, BANCO, normEmprestimo, parcelaDe, devidoDe, jurosDe, tabelaDe, simulaEmprestimo, SEMANA, semanaOf, diaOf, FILA_JUSTA, PORTA, CHAIRS, PAT, CONTAS, INGRED, CARDAPIO, precoPrato, MAIS, PONTOS_ACAO, GORJETA, DRINK_PRICE, MOVIMENTO, movimentoSalao, DIVULGA, DIVULGA_DIA, divulgaOf, contasDia, bomGoal, SALAO, PONTOS, pontoOf, MESA, mesaBox, mesaPreco, salaoLugares, mesaProblema, salaoCaminho, salaoProblema, salaoOrdena, salaoAuto, salaoVaga, salaoPerto, salaoKit, salaoDevolucao, SALAO_SEMFIM, normSalao, setObst, OBST, pathOk, MAQUINA, BEBIDA_ESPERA, bebidaOf, MANUT, manutOf, manutChance, manutPreco, normManut, CLIMA, CLIMA_DIA, introManut, normPend, CALCADA, TW, HUDX, esperaAp, tableApproach, CRIT, STAFF, DANI_TASKS, DANI_HANDS, daniTaskOk, TRASH, WASH, payroll, FOLHA_CORTE, folhaCorta, folhaCortes, folhaItens, listaE, pratosDe, couvertEffect, couvertOk, ambienteEffect, dishStock, normSave, Helper, JUICE, KITCHEN_SLOTS, handLayout, trayOk, Game, Group, Table, Kitchen, Waitress, BIA_SPEED, DAYS, UPGRADES, CUSTOMER_TYPES, LAYOUT, PAL, Sfx, findPath, render, Rank, sortRows, cleanName, normName, CMD, ENDLESS, VIP, MULTA, rk, renderRank, openRank, closeRank, LS, lsGet, lsSet, loadSave, DEV, saveKey, devSync, divulgaAberta, CAIXA_MAX, VERSAO, normCaixa, caixaResumo, caixaTotais, copyText, AVAL, AVAL_CRIT, AVAL_BRAVO, avalMenu, normAval, avalNota, avalMedias, avalGeral, avalMovimento, avalComentario, fmtNota };
+window.__lcc = { setShopTab: v => { shopTab = v; buildShop(); }, TREINO, TREINO_PASSOS, TREINO_COR, Treino, treinoLugar, treinoPrimeiro, playCareer, buildMenu, introBanco, buildFalencia, BANCO, normEmprestimo, parcelaDe, devidoDe, jurosDe, tabelaDe, simulaEmprestimo, SEMANA, semanaOf, diaOf, FILA_JUSTA, PORTA, CHAIRS, PAT, CONTAS, INGRED, CARDAPIO, precoPrato, MAIS, PONTOS_ACAO, GORJETA, DRINK_PRICE, MOVIMENTO, movimentoSalao, DIVULGA, DIVULGA_DIA, divulgaOf, contasDia, bomGoal, SALAO, PONTOS, pontoOf, MESA, mesaBox, mesaPreco, salaoLugares, mesaProblema, salaoCaminho, salaoProblema, salaoOrdena, salaoAuto, salaoVaga, salaoPerto, salaoKit, salaoDevolucao, SALAO_SEMFIM, normSalao, setObst, OBST, pathOk, MAQUINA, BEBIDA_ESPERA, bebidaOf, MANUT, manutOf, manutChance, manutPreco, normManut, CLIMA, CLIMA_DIA, introManut, normPend, CALCADA, TW, HUDX, esperaAp, tableApproach, CRIT, STAFF, DANI_TASKS, DANI_HANDS, daniTaskOk, TRASH, WASH, payroll, FOLHA_CORTE, folhaCorta, folhaCortes, folhaItens, listaE, pratosDe, couvertEffect, couvertOk, ambienteEffect, dishStock, normSave, Helper, JUICE, KITCHEN_SLOTS, handLayout, trayOk, Game, Group, Table, Kitchen, Waitress, BIA_SPEED, DAYS, UPGRADES, CUSTOMER_TYPES, LAYOUT, PAL, Sfx, findPath, render, Rank, sortRows, cleanName, normName, CMD, ENDLESS, VIP, MULTA, rk, renderRank, openRank, closeRank, LS, lsGet, lsSet, loadSave, DEV, saveKey, devSync, divulgaAberta, CAIXA_MAX, VERSAO, normCaixa, caixaResumo, caixaTotais, copyText, AVAL, AVAL_CRIT, AVAL_BRAVO, avalMenu, normAval, avalNota, avalMedias, avalGeral, avalMovimento, avalComentario, fmtNota, notaFaixa, gurugolCaixa };
 window.requestAnimationFrame(frame);
 
 })();
