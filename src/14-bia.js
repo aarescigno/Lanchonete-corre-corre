@@ -203,7 +203,7 @@ class Waitress {
       if (!this.canTake('dish')) return this.fail('Mãos cheias!');
       const p = g.kitchen.plates[slot];
       g.kitchen.plates[slot] = null;
-      this.hands.push({ kind:'dish', table:p.table, group:p.group, dish:p.dish, crit:p.crit, vip:p.vip });
+      this.hands.push({ kind:'dish', table:p.table, group:p.group, dish:p.dish, crit:p.crit, q:p.q, vip:p.vip });
       Sfx.blip();
       return;
     }
@@ -304,7 +304,7 @@ class Waitress {
     grp.juiceGot += n;
     g.stats.juice += n; g.custo += INGRED.suco * n;
     grp.gain(1);
-    g.score('juice', t.cx + 24, t.cy - 30, JUICE.price * n);
+    g.score('juice', t.cx + 24, t.cy - 30, JUICE.price * n, grp);
     if (!grp.juicePending) g.addText(t.cx, t.cy - 96, n > 1 ? 'Sucos entregues!' : 'Suco entregue!', PAL.alerta, 15);
     Sfx.tone(880, 0.07, 'sine', 0.05); Sfx.tone(1175, 0.12, 'sine', 0.05, 0.07);
     return n;
@@ -325,7 +325,8 @@ class Waitress {
       grp.timer = rand(grp.T.eat[0], grp.T.eat[1]) * (g.up.ventilador ? 0.85 : 1);
       grp.eatTotal = grp.timer;
       grp.gain(dish.crit ? 2 : 1);
-      g.score('deliver', cx, cy - 40);
+      grp.pratoQ = dish.q || 0; if (dish.crit) grp.capricho = true;
+      g.score('deliver', cx, cy - 40, 0, grp);
       if (dish.crit){
         const b = grp.vip ? CRIT.vipBonus : CRIT.bonus;
         g.pontos += b; g.stats.crit++;
@@ -344,7 +345,7 @@ class Waitress {
       this.hands.push({ kind:'ticket', table:t.id, group:grp });
       grp.setState('ordered');
       grp.gain(1);
-      g.score('take', cx, cy - 40);
+      g.score('take', cx, cy - 40, 0, grp);
       Sfx.blip();
     } else if (v === 'bill'){
       g.collectBill(grp, t);
@@ -353,7 +354,7 @@ class Waitress {
       this.hands.splice(i,1);
       grp.coffee = true;
       grp.gain(g.up.cafeteira ? 2 : 1);
-      g.score('coffee', cx, cy - 40, DRINK_PRICE.coffee);
+      g.score('coffee', cx, cy - 40, DRINK_PRICE.coffee, grp);
       g.usos.cafeteira++;
       Sfx.coin();
     } else {

@@ -83,6 +83,7 @@ function normCaixa(c){
       if (o.dev && r.devK === 'maquina') o.devK = 'maquina';   // ou a da máquina de suco, que virou torneira (v7.7)
       if (n(r.int)){ o.int = n(r.int); o.mul = n(r.mul); }   // dia encerrado no meio (v8.2.3): grupos que saíram bravos e a multa
       if (n(r.st)) o.st = clamp(n(r.st), 0, 3);
+      if (n(r.av)) o.av = clamp(n(r.av), 10, 50);   // v8.4: a nota do Gurugol no dia, ×10
       if (n(r.emp)){ o.emp = n(r.emp); if (r.forc) o.forc = 1; }
       if (n(r.par)) o.par = n(r.par);
       if (n(r.jur)) o.jur = n(r.jur);   // v8.3.2: a parte de juros do que foi pago ao banco
@@ -122,7 +123,7 @@ function normSave(s){
   const dia = +s.dia >= 1 ? Math.round(+s.dia) : Math.max(clamp(Math.round(+s.maxDay) || 1, 1, 7), feitos.length ? Math.max(...feitos) + 1 : 1);
   const estrelas = isFinite(+s.estrelas) && s.estrelas != null ? Math.max(0, Math.round(+s.estrelas)) : Object.keys(stars).reduce((a, k) => a + clamp(Math.round(+stars[k]) || 0, 0, 3), 0);
   const bank = isFinite(+s.bank) ? Math.round(+s.bank) : 0;
-  const dev = salaoDevolucao(s.salao), out = { dia, estrelas, lucroTot: Math.round(+s.lucroTot) || 0, pontosTot: Math.max(0, Math.round(+s.pontosTot) || 0), neg: clamp(Math.round(+s.neg) || 0, 0, BANCO.neg), emp: normEmprestimo(s.emp), corta: s.corta !== false, fechou: Math.max(0, Math.round(+s.fechou) || 0), bank: bank + dev + devMaq, up, torneira:true, salao: normSalao(dev ? null : s.salao), divulga: divulgaOf(s.divulga).id, treino: !!s.treino, manut: normManut(s.manut), caixa: normCaixa(s.caixa), caixaPend: normPend(s.caixaPend) };
+  const dev = salaoDevolucao(s.salao), out = { dia, estrelas, lucroTot: Math.round(+s.lucroTot) || 0, pontosTot: Math.max(0, Math.round(+s.pontosTot) || 0), aval: normAval(s.aval), neg: clamp(Math.round(+s.neg) || 0, 0, BANCO.neg), emp: normEmprestimo(s.emp), corta: s.corta !== false, fechou: Math.max(0, Math.round(+s.fechou) || 0), bank: bank + dev + devMaq, up, torneira:true, salao: normSalao(dev ? null : s.salao), divulga: divulgaOf(s.divulga).id, treino: !!s.treino, manut: normManut(s.manut), caixa: normCaixa(s.caixa), caixaPend: normPend(s.caixaPend) };
   out.equipe = normEquipe(s.equipe, pontoOf(out.salao.ponto));
   if (dev){ const last = out.caixa[out.caixa.length - 1]; out.caixa = normCaixa(out.caixa.concat([{ d:last ? last.d : 1, dev, saldo:out.bank - devMaq }])); }
   if (devMaq){ const last = out.caixa[out.caixa.length - 1]; out.caixa = normCaixa(out.caixa.concat([{ d:last ? last.d : 1, dev:devMaq, devK:'maquina', saldo:out.bank }])); }
@@ -193,6 +194,8 @@ class Group {
     this.sucoN = 0; this.sucoConta = 0; this.tabT = 0; this.pediu = false;   // bebida da espera (v7.5): bebidos, na conta, tempo no lugar
     this.state = 'queue'; this.stateT = 0; this.patLeft = 0;
     this.aguarda = false; this.piso = false;   // na fila sem mesa que sirva; segurando no piso de 1 coração
+    // avaliação (v8.4): corações perdidos lá fora e na mesa, a nota do prato que comeu, a cor certa e a corrente
+    this.perdFila = 0; this.perdMesa = 0; this.pratoQ = 0; this.corCerta = false; this.corrente = false; this.capricho = false;
     this.setState('queue');
   }
   patPer(){
@@ -214,7 +217,14 @@ class Group {
     this.sucoN += n;
     if (this.state === 'queue') this.patLeft *= this.patPer() / old;
   }
-  gain(n){ this.hearts = Math.min(5, this.hearts + n); this.patLeft = this.patPer(); }
+  gain(n){
+    const h = this.hearts;
+    this.hearts = Math.min(5, this.hearts + n); this.patLeft = this.patPer();
+    // avaliação (v8.4): o coração devolvido (sentar, a água, o atendimento) compensa um perdido naquela etapa
+    let d = this.hearts - h;
+    if (this.state === 'queue' || this.state === 'toTable'){ const k = Math.min(d, this.perdFila); this.perdFila -= k; d -= k; }
+    this.perdMesa = Math.max(0, this.perdMesa - d);
+  }
   get juicePending(){ return Math.max(0, this.juiceWant - this.juiceGot); }
   /* o pedido de suco aparece quando a comanda é anotada e vale até a conta */
   get juiceOpen(){ return this.juiceWant > 0 && (this.state === 'ordered' || this.state === 'eating' || this.state === 'wantBill'); }
@@ -251,6 +261,7 @@ class Group {
     this.patLeft -= dt;
     if (this.patLeft <= 0){
       this.hearts--;
+      if (this.state === 'queue') this.perdFila++; else this.perdMesa++;
       if (this.hearts <= 0) this.game.angryLeave(this);
       else this.patLeft += this.patPer();
     }

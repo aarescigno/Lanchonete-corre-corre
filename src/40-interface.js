@@ -160,6 +160,11 @@ function buildTips(){
     c.translate(32,34); c.scale(1.4,1.4);
     drawBanco(c);
   }]);
+  // v8.4: as avaliações do Gurugol
+  tips.push(['Cada grupo que sai avalia a lanchonete no Gurugol, de 1 a 5, em 5 critérios: espera por mesa e agilidade (cada coração perdido tira 1 ponto; cor certa, corrente e prato caprichado ajudam), prato (o Tonhão com aumento acerta mais), cardápio e ambiente (TV, som, torneira, ventilador, cafezinho; lixeira cheia atrapalha). A nota é a média das últimas ' + AVAL.max + ' avaliações e aparece a partir da ' + AVAL.min + 'ª. Nota alta traz até ' + Math.round(AVAL.mov * 100) + '% mais gente; nota baixa afasta.', c => {
+    for (let i=0;i<5;i++) star(c,8 + i*12,22,5.5,i < 4 ? PAL.mostarda : '#d8cfb8');
+    txt(c,'4,5',32,48,18,PAL.tinta,'center',FD);
+  }]);
   tips.forEach(t => {
     const li = document.createElement('li');
     li.appendChild(tipCanvas(t[1]));

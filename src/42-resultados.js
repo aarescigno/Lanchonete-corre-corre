@@ -15,6 +15,14 @@ function buildEnd(){
   if (r.quebras && r.quebras.length) rows.push(['Quebrou', r.quebras.map(q => manutOf(q.id).name.toLowerCase() + (q.fixed ? ' (consertado)' : '')).join(', ')]);
   if (r.clima) rows.push(['Imprevisto', CLIMA[r.clima].nome]);
   if (r.vip || r.vipLost) rows.splice(2, 0, ['VIPs', r.vip + ' atendido' + (r.vip === 1 ? '' : 's') + (r.vipLost ? ' · ' + r.vipLost + ' bravo' + (r.vipLost > 1 ? 's' : '') : '')]);
+  // Gurugol (v8.4): a nota (e a do dia) numa linha do quadro; embaixo, 2 ou 3 comentários (os critérios do dia no title)
+  const av = $('end-aval'); clearEl(av); av.title = '';
+  const a = r.aval;
+  if (a && a.dia){
+    rows.push(['Gurugol', (a.geral ? fmtNota(a.geral.nota) + ' ★ · ' : a.n + '/' + AVAL.min + ' · ') + 'hoje ' + fmtNota(a.dia.nota)]);
+    av.title = 'Hoje, em ' + a.dia.n + (a.dia.n > 1 ? ' avaliações: ' : ' avaliação: ') + AVAL_CRIT.map((c, i) => c.nome.toLowerCase() + ' ' + fmtNota(a.dia.crit[i])).join(', ');
+    if (a.coment.length) av.appendChild(el('i', null, a.coment.map(t => '“' + t + '”').join(' ')));
+  }
   // as contas do dia (v7), do faturamento ao lucro, num quadro ao lado
   const neg = v => v ? '-' + fmt(v) : '-';
   const conta = [['Faturamento', fmt(r.fat)],['Ingredientes', neg(r.custo)],['Contas do dia', neg(r.contas)],['Folha', neg(r.paid)]];

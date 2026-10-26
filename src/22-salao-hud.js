@@ -198,6 +198,12 @@ function drawCluster(ctx,grp,x,y,tm,o){
 /* ============================================================
    HUD
    ============================================================ */
+/* estrela pequena, sem contorno (as do Gurugol no HUD, v8.4) */
+function starFill(ctx,x,y,r,fill){
+  ctx.beginPath();
+  for (let i=0;i<10;i++){ const a = -Math.PI/2 + i*Math.PI/5, rad = i%2 ? r*0.45 : r; ctx.lineTo(x+Math.cos(a)*rad, y+Math.sin(a)*rad); }
+  ctx.closePath(); ctx.fillStyle = fill; ctx.fill();
+}
 function drawHud(ctx,g,tm){
   ctx.fillStyle = '#2B2823'; ctx.fillRect(0,540,TW,60);
   ctx.fillStyle = PAL.mostarda; ctx.fillRect(0,540,TW,4);
@@ -243,6 +249,18 @@ function drawHud(ctx,g,tm){
     // 3ª estrela (v8.3.7): o lucro e nenhum cliente perdido; com uma perda, o rótulo avisa que ela já foi
     if (g.stats.lost) txt(ctx,'3ª estrela perdida',bx+bw,593,11,'#FF9C8A','right',FB);
     else txt(ctx,'3 estrelas R$ ' + d.expert,bx+bw,593,11,m >= d.expert ? PAL.mostarda : '#cfc7b0','right',FB);
+    // nota do Gurugol (v8.4): a média das últimas avaliações; antes da AVAL.min-ésima, quantas faltam
+    const av = g.gurugol;
+    rr(ctx,334,550,124,44,9); fs(ctx,'#3b362e',2);
+    txt(ctx,'Gurugol',396,561,11,'#cfc7b0','center',FB);
+    if (av){
+      txt(ctx,fmtNota(av.nota),372,582,19,av.nota >= 4 ? '#7fd69a' : av.nota >= 3 ? '#FFF7DC' : '#FF9C8A','center',FD,3);
+      for (let i=0;i<5;i++){
+        const f = clamp(av.nota - i, 0, 1);
+        starFill(ctx,398 + i*11,582,5.5,'#5b554a');
+        if (f > 0){ ctx.save(); ctx.beginPath(); ctx.rect(392 + i*11,575,12*f,14); ctx.clip(); starFill(ctx,398 + i*11,582,5.5,PAL.mostarda); ctx.restore(); }
+      }
+    } else txt(ctx,'sem nota: ' + g.gurugolN + '/' + AVAL.min,396,582,11,'#cfc7b0','center',FB,0,116);
   }
   // fila de ações (no meio da tela larga)
   ctx.save(); ctx.translate(HUDX.fila, 0);

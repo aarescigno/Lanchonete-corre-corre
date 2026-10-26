@@ -38,7 +38,9 @@ class Kitchen {
         if (free >= 0 && this.clean > 0){
           this.clean--;
           const crit = this.game.mode !== 'treino' && Math.random() < this.chef.crit;
-          this.plates[free] = { id:++this.pid, table:t.table, group:t.group, dish:t.dish, slot:free, age:0, crit, vip:!!(t.group && t.group.vip) };
+          // a nota do prato (v8.4): o caprichado vale 5; os outros caem na faixa de acerto do cozinheiro
+          const fx = AVAL.prato[this.game.save.equipe.tonhao], q = crit ? 5 : rand(fx[0], fx[1]);
+          this.plates[free] = { id:++this.pid, table:t.table, group:t.group, dish:t.dish, slot:free, age:0, crit, q, vip:!!(t.group && t.group.vip) };
           this.cooking.splice(i,1);
           this.game.usos.fogao++; this.game.usos.geladeira++;
           Sfx.bell();
