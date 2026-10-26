@@ -45,6 +45,8 @@ function jogaDia(n,man){
   if(L.salaoLugares(g.save.salao.mesas)!==movFor(n).reduce((x,y)=>x+y,0)) throw new Error('salão '+JSON.stringify(movFor(n))+' não cabe na arrumação automática (voltou ao kit)');
   if(process.env.DIV) g.save.divulga=process.env.DIV;   // DIV=boca|panfleto|redes
   if(process.env.MULT){ const d=L.divulgaOf(g.save.divulga); d.groups=[+process.env.MULT,+process.env.MULT]; }   // MULT=0.7: fração fixa dos grupos do dia
+  g.save.aval=[];   // v8.4: cada dia sem avaliações de antes (a nota não mexe no movimento; AVAL_MOV=1 liga, com a nota do dia anterior)
+  if(process.env.AVAL_MOV&&jogaDia.av) g.save.aval=jogaDia.av.slice();
   g.save.manut=L.normManut(man); g.save.caixaPend={mel:0,sal:0,man:0}; delete g.save.manut.sorteio;
   let rev=0;
   if(MODO==='cuida'&&n>=2){ const b0=g.save.bank; g.goShop(n); g.revisarTudo(); rev=b0-g.save.bank; }   // revisa na lojinha, antes do dia
@@ -52,6 +54,7 @@ function jogaDia(n,man){
   g.startDay(n); g.begin();
   let st=0; while(g.state==='playing'&&st<30000){ bot(); g.update(0.05); st++; }
   const r=g.result; r.rev=rev; r.bankFim=g.save.bank;
+  jogaDia.av=g.save.aval.slice();
   if(process.env.DUMP) console.log('DUMP',n,r.money,r.lost,r.fat);   // v8.3.9: DUMP=1 lista lucro, perdidos e faturamento de cada dia jogado
   return r;
 }
@@ -67,6 +70,8 @@ for(const n of DIAS){
   const pass=res.filter(r=>r.passed).length, exp=res.filter(r=>r.money>=d.expert).length;
   const so=m.slice().sort((a,b)=>a-b), q=f=>so[Math.min(so.length-1,Math.floor(f*so.length))];
   console.log('Dia',n+(d.semana?' ('+d.semana+')':''),'meta',d.meta,'exp',d.expert,'| media',mean.toFixed(0),'p10',q(0.1),'p90',q(0.9),'min',Math.min(...m),'max',Math.max(...m),'| passou',pass+'/'+N,'expert',exp+'/'+N,'3★',res.filter(r=>r.stars===3).length+'/'+N,'| perdidos',(res.reduce((a,r)=>a+r.lost,0)/N).toFixed(1),'lotado',(res.reduce((a,r)=>a+r.full,0)/N).toFixed(1),'| causas',['semMesa','comMesa','pedido','prato','conta'].map(k=>k+' '+(res.reduce((a,r)=>a+r.lostBy[k],0)/N).toFixed(1)).join(' '),'vip',(res.reduce((a,r)=>a+r.vipLost,0)/N).toFixed(1),'lotadoT',avg('lotadoT'),'atraso',avg('atraso'),'zero',res.filter(r=>r.lost===0&&!r.full).length+'/'+N,'| fat',avg('fat'),'ingr',avg('custo'),'contas',avg('contas'),'folha',avg('paid'),'div',avg('div'),'suco da espera',avg('sucoEsp'));
+  { const av=res.filter(r=>r.aval&&r.aval.dia), cr=k=>(av.reduce((a,r)=>a+r.aval.dia.crit[k],0)/av.length).toFixed(2), nt=av.map(r=>r.aval.dia.nota).sort((a,b)=>a-b);   // v8.4: a nota do Gurugol no dia
+    if(av.length) console.log('      Gurugol | nota do dia',(nt.reduce((a,b)=>a+b,0)/nt.length).toFixed(2),'p10',nt[Math.floor(nt.length*0.1)].toFixed(2),'p90',nt[Math.floor(nt.length*0.9)].toFixed(2),'|',L.AVAL_CRIT.map((c,k)=>c.id+' '+cr(k)).join(' '),'| avaliações',(av.reduce((a,r)=>a+r.aval.dia.n,0)/av.length).toFixed(1)); }
   if(MODO!=='sem'){
     const qb=id=>(res.reduce((a,r)=>a+r.quebras.filter(x=>x.id===id).length,0)/N).toFixed(2);
     const qt=res.reduce((a,r)=>a+r.quebras.length,0)/N, rev=res.reduce((a,r)=>a+r.rev,0)/N, con=res.reduce((a,r)=>a+r.conserto,0)/N;

@@ -4,6 +4,15 @@ Registro das ideias e dos retornos de quem jogou, com o texto original, e de ond
 
 ---
 
+## 26/10/2026 — Usuário: etapa 2c, decisões e a média das 100 últimas
+**Origem:** a sessão da etapa 2c (avaliações) perguntou as decisões em aberto, e o usuário escolheu as sugestões: a nota mexe no movimento (−10% a +10%), pesos iguais, os pontos de atendimento como bônus na agilidade e os comentários no fim do dia e num balãozinho ao sair. Durante a sessão, mandou:
+
+> em vez de ser a media das 200 últimas avaliações, faça ser das 100 últimas avaliações, começando a contar a partir da 20 mesmo
+
+**Destino:** v8.4 (`docs/spec-v8.4.md`): `AVAL.max` = 100 e `AVAL.min` = 20.
+
+---
+
 ## 24/10/2026 — Usuário: desgaste sem risco de quebrar
 **Origem:** mensagem do usuário, depois da v8.3.10:
 

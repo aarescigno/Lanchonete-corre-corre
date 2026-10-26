@@ -59,7 +59,10 @@ p{margin:calc(var(--u)*6) 0;font-size:max(12px,calc(var(--u)*16));line-height:1.
 .stats{display:grid;grid-template-columns:auto auto;gap:calc(var(--u)*4) calc(var(--u)*24);justify-content:center;text-align:left;margin:calc(var(--u)*8) auto;font-size:max(12px,calc(var(--u)*16));font-weight:600}
 .stats2{display:flex;flex-wrap:wrap;justify-content:center;align-items:flex-start;column-gap:calc(var(--u)*36)}
 .stats2 .stats{margin:calc(var(--u)*6) 0}
+#end-stats .stats{row-gap:calc(var(--u)*1)}   /* v8.4: a linha do Gurugol cabe sem rolar */
 .stats .tot{border-top:2px solid var(--tinta);padding-top:2px}
+.cx-aval{display:flex;flex-direction:column;gap:2px;margin-top:calc(var(--u)*6)}
+.aval{display:block}
 .stats b{font-family:var(--fd);font-weight:400;text-align:right;font-size:max(13px,calc(var(--u)*18))}
 .shopgrid{display:grid;grid-template-columns:repeat(3,1fr);gap:calc(var(--u)*8);width:calc(var(--u)*760);max-width:100%;margin:calc(var(--u)*6) 0}
 .shopgrid.salao{grid-template-columns:1fr}
@@ -255,7 +258,7 @@ table.rank tr.me td{background:#fbe7a8}
 
     <div class="ov show" id="ov-menu">
       <div class="panel menu-panel">
-        <span class="vtag" id="vtag" aria-label="Versão 8.3.11">v8.3.11</span>
+        <span class="vtag" id="vtag" aria-label="Versão 8.4">v8.4</span>
         <h1 class="title">Lanchonete <br>Corre-Corre</h1>
         <p class="tag">Ajude a Bia a atender a freguesia da esquina antes que o cafezinho esfrie!</p>
         <div class="lbl" id="menu-dia">Carreira: dia 1</div>
@@ -331,7 +334,7 @@ table.rank tr.me td{background:#fbe7a8}
         <div class="stars" id="end-stars" aria-label="Estrelas"></div>
         <p id="end-money"></p>
         <div class="stats2" id="end-stats"></div>
-        <p class="small" id="end-msg"></p>
+        <p class="small"><span class="aval" id="end-aval"></span><span id="end-msg"></span></p>
         <div id="end-save"></div>
         <div class="row">
           <button class="btn go" id="btn-next">Próximo dia</button>
@@ -449,7 +452,8 @@ table.rank tr.me td{background:#fbe7a8}
       <div class="panel">
         <h2>Versões</h2>
         <ul class="verlist">
-          <li><b>v8.3.11</b><span class="cur">versão atual</span><br>24/10/2026 &mdash; Desgaste sem sorteio: fogão, geladeira e cafeteira só vão gastando enquanto estão no verde e no amarelo. No vermelho (abaixo de 40%) há 50% de chance de quebrar no dia, e no limite (15% ou menos) quebra com certeza. A aba Manutenção e a introdução do dia avisam do risco de quebra durante o expediente (sem porcentagem) e do alto risco no limite.</li>
+          <li><b>v8.4</b><span class="cur">versão atual</span><br>26/10/2026 &mdash; Avaliações no Gurugol: cada grupo que sai avalia a lanchonete de 1 a 5 em espera por mesa, agilidade, prato, cardápio e ambiente, com um balãozinho de comentário. A nota é a média das últimas 100 avaliações e aparece a partir da 20ª, no HUD, no fim do dia e no Caixa. Nota alta traz até 10% mais gente; nota baixa afasta até 10%.</li>
+          <li><b>v8.3.11</b><br>24/10/2026 &mdash; Desgaste sem sorteio: fogão, geladeira e cafeteira só vão gastando enquanto estão no verde e no amarelo. No vermelho (abaixo de 40%) há 50% de chance de quebrar no dia, e no limite (15% ou menos) quebra com certeza. A aba Manutenção e a introdução do dia avisam do risco de quebra durante o expediente (sem porcentagem) e do alto risco no limite.<br><a href="versoes/v8.3.11.html" target="_blank" rel="noopener">Abrir a v8.3.11</a></li>
           <li><b>v8.3.10</b><br>24/10/2026 &mdash; Triturador de lixo: melhoria nova da lojinha (R$ 180) que mói 1 do lixo a cada 30 s, mas ainda é preciso esvaziar de vez em quando. A lixeira vai do cinza ao verde conforme enche e, cheia, ganha um saco preto ao lado e fumacinha verde. O Ventilador agora só faz a freguesia comer mais rápido: o cheiro da lixeira cheia volta a incomodar.<br><a href="versoes/v8.3.10.html" target="_blank" rel="noopener">Abrir a v8.3.10</a></li>
           <li><b>v8.3.9</b><br>23/10/2026 &mdash; Estrelas que premiam o jogo bem feito: com os preços novos, o lucro dos primeiros dias depende muito de quem aparece, e quem não perdia ninguém às vezes levava só 1 estrela. As metas e o lucro das 3 estrelas foram recalculados pelo jogo perfeito: no dia 1, meta R$ 30, 2 estrelas R$ 50 e 3 estrelas R$ 60.<br><a href="versoes/v8.3.9.html" target="_blank" rel="noopener">Abrir a v8.3.9</a></li>
           <li><b>v8.3.8</b><br>23/10/2026 &mdash; Preços de verdade: cada cliente paga o que pediu no cardápio da Garagem (PF R$ 25, misto R$ 12, pastel R$ 10, coxinha R$ 8, cafezinho R$ 3), e alguns pedem um 2º item. Os corações viram gorjeta de até 10%. Sentar, anotar, entregar, recolher, a cor certa e a corrente rendem pontos de atendimento, e não mais dinheiro. Contas, folha, divulgação, ingredientes, revisões e metas ficaram do tamanho de uma garagem.<br><a href="versoes/v8.3.8.html" target="_blank" rel="noopener">Abrir a v8.3.8</a></li>
@@ -898,6 +902,70 @@ const DIVULGA = [
    (salão cheio chama gente). Sem isso, mesa a mais só dava conta de luz e gás */
 const MOVIMENTO = { kit:10, porLugar:0.06 };
 function movimentoSalao(lugares){ return 1 + MOVIMENTO.porLugar * Math.max(0, lugares - MOVIMENTO.kit); }
+/* ============================================================
+   AVALIAÇÕES (v8.4): o Gurugol, o site de avaliações do jogo. Cada grupo que sai na carreira (pago ou bravo) dá de 1 a 5
+   em 5 critérios, de peso igual:
+   - espera: cada coração perdido lá fora tira `porCoracao`;
+   - agil (agilidade): cada coração perdido na mesa esperando a Bia (pedido, prato, conta e o suco que faltou) tira
+     `porCoracao`; a cadeira da cor do grupo, uma ação em corrente e o prato caprichado dão `bonus` (até bonus.max);
+   - prato: a faixa de acerto do cozinheiro (pelo nível do Tonhão); o caprichado (CRIT) vale 5;
+   - menu: pelos pratos do cardápio do ponto;
+   - amb (ambiente): a base mais TV, som, torneira, ventilador, o cafezinho servido e o couvert; lixeira cheia tira.
+   Quem sai bravo dá 1 na agilidade e no prato que não chegou a comer. A nota é a média das últimas `max` avaliações,
+   e só aparece depois das `min` primeiras; ela mexe no movimento do dia, de −mov (1 ★) a +mov (5 ★), neutra em 3 ★.
+   Quem fica para o fim do dia (a lanchonete fecha) não avalia; dia largado no meio não conta */
+const AVAL = {
+  max:100, min:20, porCoracao:0.75, mov:0.1, neutra:3,
+  bonus:{ cor:0.5, corrente:0.5, crit:0.5, max:1.5 },
+  prato:[[2.5, 4.5], [3, 4.7], [3.5, 5]],
+  menu:{ base:1.5, porPrato:0.75 },
+  amb:{ base:3, tv:0.5, som:0.5, maquina:0.5, ventilador:0.5, cafe:0.5, couvert:1, lixo:-1 }
+};
+const AVAL_CRIT = [
+  { id:'espera', nome:'Espera por mesa',
+    bom:['Sentei rapidinho!', 'Nem precisei esperar.', 'Mesa na hora!'], ruim:['Esperei muito por uma mesa.', 'A espera lá fora não andava.', 'Fiquei um tempão na calçada.'] },
+  { id:'agil', nome:'Agilidade',
+    bom:['A comida veio rapidinho!', 'Atendimento nota 10!', 'A Bia é um foguete!'], ruim:['Demoraram para anotar o pedido.', 'Esqueceram da gente na mesa.', 'A conta demorou demais.'] },
+  { id:'prato', nome:'Prato',
+    bom:['O PF estava caprichado!', 'Comida de mãe!', 'Que tempero!'], ruim:['O prato veio sem graça.', 'Comida meio fria.', 'Faltou tempero.'] },
+  { id:'menu', nome:'Cardápio',
+    bom:['Cardápio com de tudo!', 'Muita opção boa.'], ruim:['Pouca opção no cardápio.', 'Queria mais pratos.'] },
+  { id:'amb', nome:'Ambiente',
+    bom:['Lugar gostoso, dá vontade de voltar.', 'Ambiente bem agradável!'], ruim:['Lugar meio sem graça.', 'Faltou um capricho no salão.'] }
+];
+/* a nota do cardápio: pelos pratos que a cozinha faz (na Garagem, os 4 do CARDAPIO) */
+function avalMenu(){ return clamp(AVAL.menu.base + AVAL.menu.porPrato * Object.keys(CARDAPIO).length, 1, 5); }
+/* as avaliações guardadas: [espera, agil, prato, menu, amb], com uma casa decimal, as últimas AVAL.max */
+function normAval(a){
+  return (Array.isArray(a) ? a : []).filter(r => Array.isArray(r) && r.length === AVAL_CRIT.length).slice(-AVAL.max)
+    .map(r => r.map(v => clamp(Math.round((+v || 1) * 10) / 10, 1, 5)));
+}
+function avalNota(r){ return r.reduce((a, v) => a + v, 0) / r.length; }
+/* médias de uma lista de avaliações: a nota e cada critério (null se a lista estiver vazia) */
+function avalMedias(lista){
+  if (!lista.length) return null;
+  const crit = AVAL_CRIT.map((c, i) => lista.reduce((a, r) => a + r[i], 0) / lista.length);
+  return { n:lista.length, nota:avalNota(crit), crit };
+}
+/* a nota da lanchonete (as médias das últimas AVAL.max), ou null antes das AVAL.min primeiras */
+function avalGeral(lista){ return lista.length >= AVAL.min ? avalMedias(lista) : null; }
+/* o movimento pela nota: de 1 − mov a 1 + mov; sem nota, 1 */
+function avalMovimento(lista){
+  const m = avalGeral(lista);
+  return m ? 1 + AVAL.mov * clamp((m.nota - AVAL.neutra) / (5 - AVAL.neutra), -1, 1) : 1;
+}
+function fmtNota(n){ return n == null ? '–' : (Math.round(n * 10) / 10).toFixed(1).replace('.', ','); }
+/* o comentário de uma avaliação: quem saiu bravo reclama de ter ido embora; com nota 4 ou mais, elogia o melhor critério;
+   senão, reclama do pior (o ambiente com a lixeira cheia reclama do cheiro) */
+const AVAL_BRAVO = { fila:['Desisti de esperar!', 'Nem consegui sentar.'], mesa:['Fui embora sem comer!', 'Nunca mais volto!'] };
+function avalComentario(r, bravo, lixo){
+  if (bravo) return pick(AVAL_BRAVO[bravo]);
+  const bom = avalNota(r) >= 4;
+  let k = 0;
+  r.forEach((v, i) => { if (bom ? v > r[k] : v < r[k]) k = i; });
+  if (!bom && lixo && AVAL_CRIT[k].id === 'amb') return 'Que cheiro de lixo!';
+  return pick(AVAL_CRIT[k][bom ? 'bom' : 'ruim']);
+}
 /* banco (v8.3): empréstimo pago em `parcelas` no fim de cada dia (um por vez, até o crédito do ponto).
    v8.3.2, amortização (tabela SAC): cada parcela é a amortização fixa (o valor ÷ `parcelas`) mais os juros do dia, `juros`
    sobre o saldo devedor (o que falta). Amortizar antes (adiantar parcelas ou quitar) abate o saldo e corta os juros que
@@ -932,7 +1000,7 @@ function tabelaDe(e){
 /* um empréstimo novo de v, pagando em dia: as parcelas e os juros somados */
 function simulaEmprestimo(v, j){ const t = tabelaDe(normEmprestimo({ resto:v, amort:Math.ceil(v / BANCO.parcelas), j })); return { parcelas:t, juros:t.reduce((a, p) => a + p, 0) - v }; }
 const CAIXA_MAX = 14;                                 // livro-caixa (v7.2): quantos dias da carreira ficam guardados
-const VERSAO = 'v8.3.11';                              // vai no resumo do Caixa
+const VERSAO = 'v8.4';                                 // vai no resumo do Caixa
 const DIVULGA_DIA = 3;                                // antes disso, o movimento é o da inauguração (sem custo)
 function divulgaAberta(n){ return DEV.on || n >= DIVULGA_DIA; }   // no modo dev, desde o dia 1
 function divulgaOf(id){ return DIVULGA.find(d => d.id === id) || DIVULGA[1]; }
@@ -1238,6 +1306,7 @@ function normCaixa(c){
       if (o.dev && r.devK === 'maquina') o.devK = 'maquina';   // ou a da máquina de suco, que virou torneira (v7.7)
       if (n(r.int)){ o.int = n(r.int); o.mul = n(r.mul); }   // dia encerrado no meio (v8.2.3): grupos que saíram bravos e a multa
       if (n(r.st)) o.st = clamp(n(r.st), 0, 3);
+      if (n(r.av)) o.av = clamp(n(r.av), 10, 50);   // v8.4: a nota do Gurugol no dia, ×10
       if (n(r.emp)){ o.emp = n(r.emp); if (r.forc) o.forc = 1; }
       if (n(r.par)) o.par = n(r.par);
       if (n(r.jur)) o.jur = n(r.jur);   // v8.3.2: a parte de juros do que foi pago ao banco
@@ -1277,7 +1346,7 @@ function normSave(s){
   const dia = +s.dia >= 1 ? Math.round(+s.dia) : Math.max(clamp(Math.round(+s.maxDay) || 1, 1, 7), feitos.length ? Math.max(...feitos) + 1 : 1);
   const estrelas = isFinite(+s.estrelas) && s.estrelas != null ? Math.max(0, Math.round(+s.estrelas)) : Object.keys(stars).reduce((a, k) => a + clamp(Math.round(+stars[k]) || 0, 0, 3), 0);
   const bank = isFinite(+s.bank) ? Math.round(+s.bank) : 0;
-  const dev = salaoDevolucao(s.salao), out = { dia, estrelas, lucroTot: Math.round(+s.lucroTot) || 0, pontosTot: Math.max(0, Math.round(+s.pontosTot) || 0), neg: clamp(Math.round(+s.neg) || 0, 0, BANCO.neg), emp: normEmprestimo(s.emp), corta: s.corta !== false, fechou: Math.max(0, Math.round(+s.fechou) || 0), bank: bank + dev + devMaq, up, torneira:true, salao: normSalao(dev ? null : s.salao), divulga: divulgaOf(s.divulga).id, treino: !!s.treino, manut: normManut(s.manut), caixa: normCaixa(s.caixa), caixaPend: normPend(s.caixaPend) };
+  const dev = salaoDevolucao(s.salao), out = { dia, estrelas, lucroTot: Math.round(+s.lucroTot) || 0, pontosTot: Math.max(0, Math.round(+s.pontosTot) || 0), aval: normAval(s.aval), neg: clamp(Math.round(+s.neg) || 0, 0, BANCO.neg), emp: normEmprestimo(s.emp), corta: s.corta !== false, fechou: Math.max(0, Math.round(+s.fechou) || 0), bank: bank + dev + devMaq, up, torneira:true, salao: normSalao(dev ? null : s.salao), divulga: divulgaOf(s.divulga).id, treino: !!s.treino, manut: normManut(s.manut), caixa: normCaixa(s.caixa), caixaPend: normPend(s.caixaPend) };
   out.equipe = normEquipe(s.equipe, pontoOf(out.salao.ponto));
   if (dev){ const last = out.caixa[out.caixa.length - 1]; out.caixa = normCaixa(out.caixa.concat([{ d:last ? last.d : 1, dev, saldo:out.bank - devMaq }])); }
   if (devMaq){ const last = out.caixa[out.caixa.length - 1]; out.caixa = normCaixa(out.caixa.concat([{ d:last ? last.d : 1, dev:devMaq, devK:'maquina', saldo:out.bank }])); }
@@ -1348,6 +1417,8 @@ class Group {
     this.sucoN = 0; this.sucoConta = 0; this.tabT = 0; this.pediu = false;   // bebida da espera (v7.5): bebidos, na conta, tempo no lugar
     this.state = 'queue'; this.stateT = 0; this.patLeft = 0;
     this.aguarda = false; this.piso = false;   // na fila sem mesa que sirva; segurando no piso de 1 coração
+    // avaliação (v8.4): corações perdidos lá fora e na mesa, a nota do prato que comeu, a cor certa e a corrente
+    this.perdFila = 0; this.perdMesa = 0; this.pratoQ = 0; this.corCerta = false; this.corrente = false; this.capricho = false;
     this.setState('queue');
   }
   patPer(){
@@ -1369,7 +1440,14 @@ class Group {
     this.sucoN += n;
     if (this.state === 'queue') this.patLeft *= this.patPer() / old;
   }
-  gain(n){ this.hearts = Math.min(5, this.hearts + n); this.patLeft = this.patPer(); }
+  gain(n){
+    const h = this.hearts;
+    this.hearts = Math.min(5, this.hearts + n); this.patLeft = this.patPer();
+    // avaliação (v8.4): o coração devolvido (sentar, a água, o atendimento) compensa um perdido naquela etapa
+    let d = this.hearts - h;
+    if (this.state === 'queue' || this.state === 'toTable'){ const k = Math.min(d, this.perdFila); this.perdFila -= k; d -= k; }
+    this.perdMesa = Math.max(0, this.perdMesa - d);
+  }
   get juicePending(){ return Math.max(0, this.juiceWant - this.juiceGot); }
   /* o pedido de suco aparece quando a comanda é anotada e vale até a conta */
   get juiceOpen(){ return this.juiceWant > 0 && (this.state === 'ordered' || this.state === 'eating' || this.state === 'wantBill'); }
@@ -1406,6 +1484,7 @@ class Group {
     this.patLeft -= dt;
     if (this.patLeft <= 0){
       this.hearts--;
+      if (this.state === 'queue') this.perdFila++; else this.perdMesa++;
       if (this.hearts <= 0) this.game.angryLeave(this);
       else this.patLeft += this.patPer();
     }
@@ -1492,7 +1571,9 @@ class Kitchen {
         if (free >= 0 && this.clean > 0){
           this.clean--;
           const crit = this.game.mode !== 'treino' && Math.random() < this.chef.crit;
-          this.plates[free] = { id:++this.pid, table:t.table, group:t.group, dish:t.dish, slot:free, age:0, crit, vip:!!(t.group && t.group.vip) };
+          // a nota do prato (v8.4): o caprichado vale 5; os outros caem na faixa de acerto do cozinheiro
+          const fx = AVAL.prato[this.game.save.equipe.tonhao], q = crit ? 5 : rand(fx[0], fx[1]);
+          this.plates[free] = { id:++this.pid, table:t.table, group:t.group, dish:t.dish, slot:free, age:0, crit, q, vip:!!(t.group && t.group.vip) };
           this.cooking.splice(i,1);
           this.game.usos.fogao++; this.game.usos.geladeira++;
           Sfx.bell();
@@ -1722,7 +1803,7 @@ class Waitress {
       if (!this.canTake('dish')) return this.fail('Mãos cheias!');
       const p = g.kitchen.plates[slot];
       g.kitchen.plates[slot] = null;
-      this.hands.push({ kind:'dish', table:p.table, group:p.group, dish:p.dish, crit:p.crit, vip:p.vip });
+      this.hands.push({ kind:'dish', table:p.table, group:p.group, dish:p.dish, crit:p.crit, q:p.q, vip:p.vip });
       Sfx.blip();
       return;
     }
@@ -1823,7 +1904,7 @@ class Waitress {
     grp.juiceGot += n;
     g.stats.juice += n; g.custo += INGRED.suco * n;
     grp.gain(1);
-    g.score('juice', t.cx + 24, t.cy - 30, JUICE.price * n);
+    g.score('juice', t.cx + 24, t.cy - 30, JUICE.price * n, grp);
     if (!grp.juicePending) g.addText(t.cx, t.cy - 96, n > 1 ? 'Sucos entregues!' : 'Suco entregue!', PAL.alerta, 15);
     Sfx.tone(880, 0.07, 'sine', 0.05); Sfx.tone(1175, 0.12, 'sine', 0.05, 0.07);
     return n;
@@ -1844,7 +1925,8 @@ class Waitress {
       grp.timer = rand(grp.T.eat[0], grp.T.eat[1]) * (g.up.ventilador ? 0.85 : 1);
       grp.eatTotal = grp.timer;
       grp.gain(dish.crit ? 2 : 1);
-      g.score('deliver', cx, cy - 40);
+      grp.pratoQ = dish.q || 0; if (dish.crit) grp.capricho = true;
+      g.score('deliver', cx, cy - 40, 0, grp);
       if (dish.crit){
         const b = grp.vip ? CRIT.vipBonus : CRIT.bonus;
         g.pontos += b; g.stats.crit++;
@@ -1863,7 +1945,7 @@ class Waitress {
       this.hands.push({ kind:'ticket', table:t.id, group:grp });
       grp.setState('ordered');
       grp.gain(1);
-      g.score('take', cx, cy - 40);
+      g.score('take', cx, cy - 40, 0, grp);
       Sfx.blip();
     } else if (v === 'bill'){
       g.collectBill(grp, t);
@@ -1872,7 +1954,7 @@ class Waitress {
       this.hands.splice(i,1);
       grp.coffee = true;
       grp.gain(g.up.cafeteira ? 2 : 1);
-      g.score('coffee', cx, cy - 40, DRINK_PRICE.coffee);
+      g.score('coffee', cx, cy - 40, DRINK_PRICE.coffee, grp);
       g.usos.cafeteira++;
       Sfx.coin();
     } else {
@@ -2059,6 +2141,7 @@ class Game {
     this.mode = treino ? 'treino' : n === 0 ? 'semfim' : 'carreira';
     this.day = treino ? TREINO : n === 0 ? ENDLESS : diaOf(n);
     this.money = 0; this.custo = 0; this.contas = 0; this.paidDiv = 0; this.conserto = 0; this.pontos = 0;
+    this.avals = [];   // avaliações do dia (v8.4): { r: as notas dos critérios, txt: o comentário }; entram no save no fim do dia
     // imprevistos (v8): o sorteio do dia (feito ao começar o dia, e guardado até ele acabar) diz o clima e o que quebra
     const so = n && this.save.manut.sorteio && this.save.manut.sorteio.d === n ? this.save.manut.sorteio : null;
     this.clima = so ? so.clima : '';
@@ -2097,7 +2180,8 @@ class Game {
     const out = [];
     const lug = this.tables.filter(t => t.open).reduce((a, t) => a + t.seats, 0);
     const cl = CLIMA[this.clima];
-    const N = Math.max(3, Math.round(day.groups * this.divF * movimentoSalao(lug) * (cl ? cl.groups : 1))), vipP = (day.vip || 0) * (this.div ? this.div.vip : 1);
+    // a nota do Gurugol (v8.4) traz mais ou menos gente
+    const N = Math.max(3, Math.round(day.groups * this.divF * movimentoSalao(lug) * (cl ? cl.groups : 1) * avalMovimento(this.save.aval))), vipP = (day.vip || 0) * (this.div ? this.div.vip : 1);
     const gap = day.speed * day.time / N;
     let t = 3;
     const forced = day.nu ? randi(1, Math.min(3, N-1)) : -1;
@@ -2289,10 +2373,11 @@ class Game {
   addMoney(v){ this.money = Math.max(0, this.money + v); }
   /* v8.3.8: cada ação da Bia rende pontos de atendimento (PONTOS_ACAO, mais a corrente), e não dinheiro; din é o que o
      cliente paga por ela (a conta, o cafezinho, o suco), que vai para o dinheiro do dia */
-  score(kind, x, y, din){
+  score(kind, x, y, din, grp){
     let bonus = 0;
     if (kind === this.lastKind) this.chainN++; else { this.chainN = 1; this.lastKind = kind; }
     if (this.chainN >= 2) bonus = Math.min(160, 10 * Math.pow(2, this.chainN - 2));
+    if (bonus && grp) grp.corrente = true;   // a mesa atendida em corrente avalia melhor a agilidade (v8.4)
     this.stats.chain = Math.max(this.stats.chain, this.chainN);
     const p = PONTOS_ACAO[kind] || 0;
     this.pontos += p + bonus;
@@ -2305,13 +2390,14 @@ class Game {
   }
   collectBill(g, t){
     if (g.juicePending > 0){
+      if (g.hearts > 1) g.perdMesa++;
       g.hearts = Math.max(1, g.hearts - 1);
       this.stats.juiceMiss++;
       this.addText(t.cx, t.cy - 100, 'Faltou o suco!', PAL.perigo, 16);
     }
     // v8.3.8: os corações viram gorjeta (no máximo +10%; com 1 ou 2, desconto), mais a da executiva e a do VIP
     const amount = Math.round(g.bill * (1 + GORJETA[g.hearts] + g.T.tip + (g.vip ? VIP.tip : 0)));
-    this.score('bill', t.cx, t.cy - 50, amount);
+    this.score('bill', t.cx, t.cy - 50, amount, g);
     if (this.treino) this.treino.conta = { v:amount, h:g.hearts, base:g.bill };
     if (g.sucoConta){ const v = this.bebida.preco * g.sucoConta; this.addMoney(v); this.addText(t.cx - 34, t.cy - 100, 'Suco da espera +' + v, PAL.alerta, 14); }
     if (g.T.tip > 0 || g.vip) this.addText(t.cx + 20, t.cy - 76, 'Gorjeta!', PAL.mostarda, 15);
@@ -2339,6 +2425,7 @@ class Game {
         if (this.stars < 5){ this.stars++; this.starFlash = 1; this.addText(TW/2 - this.cam, 300, '+1 estrela!', PAL.mostarda, 28); Sfx.win(); }
       }
     }
+    this.avaliar(g, t.cx, t.cy - 146);
     this.releaseCmd(g);
     g.paid = true;
     t.dirty = true; t.dirtyN = g.size; t.group = null;
@@ -2485,8 +2572,9 @@ class Game {
     const ap = Math.hypot(pts[0].x-g.x, pts[0].y-g.y) <= Math.hypot(pts[1].x-g.x, pts[1].y-g.y) ? pts[0] : pts[1];
     g.path = findPath({x:g.x, y:g.y}, ap);
     g.path.push({ x:t.cx, y:t.cy + 30 });
-    this.score('sit', t.cx, t.cy - 40);
+    this.score('sit', t.cx, t.cy - 40, 0, g);
     if (g.color === t.color){
+      g.corCerta = true;
       this.pontos += PONTOS_ACAO.cor;
       this.addText(t.cx, t.cy - 82, 'Combinou! +' + PONTOS_ACAO.cor + ' pts', PAL.faixa, 16);
       this.addSparks(t.cx, t.cy, 14, CHAIRS[t.color].c);
@@ -2526,10 +2614,29 @@ class Game {
     this.addText(g.x, g.y - 78, '-' + fine, PAL.perigo, 18);
     if (g.vip) this.stats.vipLost++;
     g.angry = true;
+    this.avaliar(g, g.x, g.y - 120);
     Sfx.huff();
     this.leaveCommon(g);
     if (this.mode === 'semfim' && !this.ending) this.loseStar();
   }
+  /* avaliação no Gurugol (v8.4, só na carreira): o grupo que sai (pago ou bravo) dá a nota de cada critério (AVAL) e deixa
+     um comentário curto, num balãozinho sobre ele */
+  avaliar(g, x, y){
+    if (this.mode !== 'carreira') return;
+    const A = AVAL, eq = this.save.equipe, bravo = g.angry ? (g.state === 'queue' ? 'fila' : 'mesa') : '';
+    const bonus = Math.min(A.bonus.max, (g.corCerta ? A.bonus.cor : 0) + (g.corrente ? A.bonus.corrente : 0) + (g.capricho ? A.bonus.crit : 0));
+    const amb = A.amb.base + (eq.tv ? A.amb.tv : 0) + (eq.som ? A.amb.som : 0) + (this.up.maquina ? A.amb.maquina : 0) + (this.up.ventilador ? A.amb.ventilador : 0) +
+      (g.coffee ? A.amb.cafe : 0) + (eq.couvert ? A.amb.couvert : 0) + (this.trashFull ? A.amb.lixo : 0);
+    const r = [5 - A.porCoracao * g.perdFila, bravo ? 1 : 5 - A.porCoracao * g.perdMesa + bonus, g.pratoQ || 1, avalMenu(), amb]
+      .map(v => clamp(Math.round(v * 10) / 10, 1, 5));
+    const txt = avalComentario(r, bravo, this.trashFull), nota = avalNota(r);
+    this.avals.push({ r, txt });
+    // balãozinho branco (sobe devagar, acima dos textos da conta)
+    this.fx.push({ k:'text', box:true, x, y, vy:-12, life:2.8, max:2.8, text:fmtNota(nota) + '★ ' + txt, color:nota >= 4 ? PAL.ok : nota >= 3 ? PAL.alerta : PAL.perigo, size:13 });
+  }
+  /* a nota do Gurugol agora: as do save e as do dia (null antes das AVAL.min primeiras) */
+  get gurugol(){ return avalGeral(this.save.aval.concat(this.avals.map(a => a.r)).slice(-AVAL.max)); }
+  get gurugolN(){ return Math.min(AVAL.max, this.save.aval.length + this.avals.length); }
   multa(g){ return MULTA + (g.vip ? VIP.angry : 0); }   // grupo que vai embora bravo (0 corações)
   /* v8.2.3: encerrar o dia no meio (Reiniciar ou Menu na pausa) não rende nada (v8.2.2), e quem está na espera ou nas
      mesas vai embora bravo, como se tivesse zerado os corações: cada grupo paga a multa, direto do dinheiro acumulado */
@@ -2643,17 +2750,24 @@ class Game {
     this.desgastar(); delete sv.manut.sorteio;
     // campanha (v8.3): o dia seguinte vem de qualquer jeito; a meta não batida só fica sem estrelas
     sv.dia = d.n + 1; sv.estrelas += stars; sv.lucroTot += m; sv.pontosTot += Math.round(this.pontos);
+    // Gurugol (v8.4): as avaliações do dia entram no save; o fim do dia mostra a nota do dia, a geral e 2 ou 3 comentários
+    const avDia = avalMedias(this.avals.map(a => a.r));
+    sv.aval = normAval(sv.aval.concat(this.avals.map(a => a.r)));
+    const ord = this.avals.slice().sort((a, b) => avalNota(b.r) - avalNota(a.r)), coment = [];
+    if (ord.length) [ord[0], ord[ord.length - 1], pick(ord)].forEach(a => { if (!coment.includes(a.txt)) coment.push(a.txt); });
+    this.avals = [];   // já estão no save (a nota do HUD não conta duas vezes)
     // caixa no negativo: BANCO.neg dias seguidos podem; no seguinte, o banco cobre o que falta, à força
     let forcado = 0;
     if (sv.bank >= 0 || tomou) sv.neg = 0;
     else if (++sv.neg > BANCO.neg){ forcado = Math.ceil(-sv.bank / 10) * 10; this.emprestar(forcado, true); }
     const row = { d:d.n, fat, ingr:Math.round(this.custo), contas:this.contas, folha:this.paid, div:this.paidDiv, lucro:m, meta:d.meta, ok:passed, st:stars, perd:this.stats.lost, saldo:sv.bank };
+    if (avDia) row.av = Math.round(avDia.nota * 10);
     if (forcado) row.forc = 1;
     if (atrasou) row.atr = 1;
     if (tomou) row.tom = 1;
     caixaAdd(sv, row);
     writeSave(sv);
-    this.result = { day:d.n, money:m, fat, pontos:Math.round(this.pontos), custo:Math.round(this.custo), contas:this.contas, div:this.paidDiv, divName:this.div ? this.div.name : '', meta:d.meta, bom:bomGoal(d), expert:d.expert, passed, stars, served:this.stats.served, lost:this.stats.lost, lostBy:this.stats.lostBy, lotadoT:Math.round(this.stats.lotadoT), atraso:Math.round(this.atraso), full:this.stats.full, chain:this.stats.chain, vip:this.stats.vip, vipLost:this.stats.vipLost, juice:this.stats.juice, juiceMiss:this.stats.juiceMiss, sucoEsp:this.stats.sucoEsp, bebida:this.bebida.id, trash:this.stats.trash, washed:this.stats.washed, income, paid:this.paid, reason:this.reason, conserto:this.conserto, consertos:this.stats.consertos, quebras:this.quebras.filter(q => q.on).map(q => ({ id:q.id, fixed:q.fixed })), clima:this.clima, manut:Object.assign({}, this.manut), par, forcado, neg:sv.neg, emp:Object.assign({}, sv.emp), atrasou, tomou, devido };
+    this.result = { day:d.n, money:m, fat, pontos:Math.round(this.pontos), custo:Math.round(this.custo), contas:this.contas, div:this.paidDiv, divName:this.div ? this.div.name : '', meta:d.meta, bom:bomGoal(d), expert:d.expert, passed, stars, served:this.stats.served, lost:this.stats.lost, lostBy:this.stats.lostBy, lotadoT:Math.round(this.stats.lotadoT), atraso:Math.round(this.atraso), full:this.stats.full, chain:this.stats.chain, vip:this.stats.vip, vipLost:this.stats.vipLost, juice:this.stats.juice, juiceMiss:this.stats.juiceMiss, sucoEsp:this.stats.sucoEsp, bebida:this.bebida.id, trash:this.stats.trash, washed:this.stats.washed, income, paid:this.paid, reason:this.reason, conserto:this.conserto, consertos:this.stats.consertos, quebras:this.quebras.filter(q => q.on).map(q => ({ id:q.id, fixed:q.fixed })), clima:this.clima, manut:Object.assign({}, this.manut), par, forcado, neg:sv.neg, emp:Object.assign({}, sv.emp), atrasou, tomou, devido, aval:{ dia:avDia, geral:avalGeral(sv.aval), n:sv.aval.length, coment } };
     if (tomou){ this.setState('falencia'); Sfx.lose(); return; }
     this.setState('dayend');
     if (passed) Sfx.win(); else Sfx.lose();
@@ -4393,6 +4507,12 @@ function drawCluster(ctx,grp,x,y,tm,o){
 /* ============================================================
    HUD
    ============================================================ */
+/* estrela pequena, sem contorno (as do Gurugol no HUD, v8.4) */
+function starFill(ctx,x,y,r,fill){
+  ctx.beginPath();
+  for (let i=0;i<10;i++){ const a = -Math.PI/2 + i*Math.PI/5, rad = i%2 ? r*0.45 : r; ctx.lineTo(x+Math.cos(a)*rad, y+Math.sin(a)*rad); }
+  ctx.closePath(); ctx.fillStyle = fill; ctx.fill();
+}
 function drawHud(ctx,g,tm){
   ctx.fillStyle = '#2B2823'; ctx.fillRect(0,540,TW,60);
   ctx.fillStyle = PAL.mostarda; ctx.fillRect(0,540,TW,4);
@@ -4438,6 +4558,18 @@ function drawHud(ctx,g,tm){
     // 3ª estrela (v8.3.7): o lucro e nenhum cliente perdido; com uma perda, o rótulo avisa que ela já foi
     if (g.stats.lost) txt(ctx,'3ª estrela perdida',bx+bw,593,11,'#FF9C8A','right',FB);
     else txt(ctx,'3 estrelas R$ ' + d.expert,bx+bw,593,11,m >= d.expert ? PAL.mostarda : '#cfc7b0','right',FB);
+    // nota do Gurugol (v8.4): a média das últimas avaliações; antes da AVAL.min-ésima, quantas faltam
+    const av = g.gurugol;
+    rr(ctx,334,550,124,44,9); fs(ctx,'#3b362e',2);
+    txt(ctx,'Gurugol',396,561,11,'#cfc7b0','center',FB);
+    if (av){
+      txt(ctx,fmtNota(av.nota),372,582,19,av.nota >= 4 ? '#7fd69a' : av.nota >= 3 ? '#FFF7DC' : '#FF9C8A','center',FD,3);
+      for (let i=0;i<5;i++){
+        const f = clamp(av.nota - i, 0, 1);
+        starFill(ctx,398 + i*11,582,5.5,'#5b554a');
+        if (f > 0){ ctx.save(); ctx.beginPath(); ctx.rect(392 + i*11,575,12*f,14); ctx.clip(); starFill(ctx,398 + i*11,582,5.5,PAL.mostarda); ctx.restore(); }
+      }
+    } else txt(ctx,'sem nota: ' + g.gurugolN + '/' + AVAL.min,396,582,11,'#cfc7b0','center',FB,0,116);
   }
   // fila de ações (no meio da tela larga)
   ctx.save(); ctx.translate(HUDX.fila, 0);
@@ -4696,6 +4828,13 @@ function render(g, ctx){
     if (f.k === 'text'){
       const a = clamp(f.life / 0.5, 0, 1);
       ctx.globalAlpha = a;
+      if (f.box){
+        // a avaliação do Gurugol (v8.4): balão branco com a borda na cor da nota
+        ctx.font = f.size + 'px ' + FB;
+        const w = ctx.measureText(f.text).width + 18, x = clamp(f.x, w/2 + 4 - g.cam, W - w/2 - 4);
+        rr(ctx,x - w/2,f.y - 13,w,26,9); ctx.fillStyle = '#FFFDF6'; ctx.fill(); ctx.lineWidth = 2.4; ctx.strokeStyle = f.color; ctx.stroke();
+        txt(ctx,f.text,x,f.y,f.size,PAL.tinta,'center',FB);
+      } else
       txt(ctx,f.text,f.x,f.y,f.size,f.color,'center',FD,4);
       ctx.globalAlpha = 1;
     } else if (f.k === 'coin'){
@@ -5105,6 +5244,11 @@ function buildTips(){
   tips.push(['A carreira segue dia após dia, levando tudo o que veio antes: dinheiro, móveis, equipe, melhorias e o desgaste. Meta não batida deixa o dia sem estrelas, mas o dia seguinte vem. Faltou dinheiro? O caixa pode ficar negativo ' + BANCO.neg + ' dias seguidos (no ' + (BANCO.neg + 1) + 'º, o banco cobre à força) e a aba Banco da lojinha empresta, com juros de ' + Math.round(BANCO.juros * 100) + '% ao dia sobre o que falta (amortizar antes corta os juros). Não atrase: parcela sem pagar 2 dias seguidos, e o banco toma a lanchonete!', c => {
     c.translate(32,34); c.scale(1.4,1.4);
     drawBanco(c);
+  }]);
+  // v8.4: as avaliações do Gurugol
+  tips.push(['Cada grupo que sai avalia a lanchonete no Gurugol, de 1 a 5, em 5 critérios: espera por mesa e agilidade (cada coração perdido tira 1 ponto; cor certa, corrente e prato caprichado ajudam), prato (o Tonhão com aumento acerta mais), cardápio e ambiente (TV, som, torneira, ventilador, cafezinho; lixeira cheia atrapalha). A nota é a média das últimas ' + AVAL.max + ' avaliações e aparece a partir da ' + AVAL.min + 'ª. Nota alta traz até ' + Math.round(AVAL.mov * 100) + '% mais gente; nota baixa afasta.', c => {
+    for (let i=0;i<5;i++) star(c,8 + i*12,22,5.5,i < 4 ? PAL.mostarda : '#d8cfb8');
+    txt(c,'4,5',32,48,18,PAL.tinta,'center',FD);
   }]);
   tips.forEach(t => {
     const li = document.createElement('li');
@@ -5604,12 +5748,14 @@ function caixaResumo(save){
   const cx = save.caixa, eq = save.equipe, sal = save.salao;
   const out = ['Lanchonete Corre-Corre ' + VERSAO + ' · Caixa (valores em R$)'];
   cx.forEach(r => out.push(r.int ? 'Dia ' + r.d + ' largado no meio: ' + r.int + (r.int > 1 ? ' grupos foram' : ' grupo foi') + ' embora bravo' + (r.int > 1 ? 's' : '') + ': −' + r.mul + ' · saldo ' + r.saldo : r.dev ? 'Devolução ' + (r.devK === 'maquina' ? 'da máquina de suco' : 'do salão') + ': +' + r.dev + ' · saldo ' + r.saldo : 'Dia ' + r.d + (r.ok ? ' ✓' : ' ✗') + ': fatura ' + r.fat + ' − ingred. ' + r.ingr + ' − contas ' + r.contas + ' − equipe ' + r.folha + (r.div ? ' − divulg. ' + r.div : '') +
-    ' = lucro ' + r.lucro + ' (meta ' + r.meta + ')' + (r.perd ? ' · ' + r.perd + (r.perd > 1 ? ' perdidos' : ' perdido') : '') + (r.mel + r.sal ? ' · compras ' + (r.mel + r.sal) : '') + (r.man ? ' · manutenção ' + r.man : '') + (r.emp ? ' · empréstimo +' + r.emp + (r.forc ? ' (à força)' : '') : '') + (r.par ? ' · banco −' + r.par + (r.jur ? ' (juros ' + r.jur + ')' : '') : '') + (r.atr ? ' · parcela atrasada' : '') + (r.tom ? ' · o banco tomou a lanchonete' : '') + ' · saldo ' + r.saldo));
+    ' = lucro ' + r.lucro + ' (meta ' + r.meta + ')' + (r.perd ? ' · ' + r.perd + (r.perd > 1 ? ' perdidos' : ' perdido') : '') + (r.mel + r.sal ? ' · compras ' + (r.mel + r.sal) : '') + (r.man ? ' · manutenção ' + r.man : '') + (r.emp ? ' · empréstimo +' + r.emp + (r.forc ? ' (à força)' : '') : '') + (r.par ? ' · banco −' + r.par + (r.jur ? ' (juros ' + r.jur + ')' : '') : '') + (r.atr ? ' · parcela atrasada' : '') + (r.tom ? ' · o banco tomou a lanchonete' : '') + (r.av ? ' · Gurugol ' + fmtNota(r.av / 10) : '') + ' · saldo ' + r.saldo));
   const nd = cx.filter(r => !r.dev && !r.int).length;
   if (nd) out.push('Para onde foi (' + nd + (nd > 1 ? ' dias' : ' dia') + '): ' + caixaTotais(cx).filter(t => t.v).map(t => t.name.toLowerCase() + ' ' + t.v).join(', '));
   const ups = UPGRADES.filter(u => save.up[u.id]).map(u => u.name.toLowerCase() + (u.multi && pratosDe(save.up) > 1 ? ' ×' + pratosDe(save.up) : ''));
+  const ga = avalGeral(save.aval);
   out.push('Agora: dia ' + save.dia + ' · ' + fmt(save.bank) + (save.emp.resto ? ' (banco: faltam ' + save.emp.resto + ')' : '') + ' · lucro acumulado ' + save.lucroTot + ' · Tonhão nível ' + (eq.tonhao + 1) + ', ' + (eq.dani ? 'Dani nível ' + eq.dani : 'sem Dani') + (eq.couvert ? ', couvert' : '') + (eq.tv ? ', TV' : '') + (eq.som ? ', som' : '') +
-    ' · ' + divulgaOf(save.divulga).name.toLowerCase() + ' · ' + pontoOf(sal.ponto).nome.replace(/ da .*/, '').toLowerCase() + ' com ' + sal.mesas.length + ' mesas e ' + salaoLugares(sal.mesas) + ' lugares · melhorias: ' + (ups.join(', ') || 'nenhuma'));
+    ' · ' + divulgaOf(save.divulga).name.toLowerCase() + ' · ' + pontoOf(sal.ponto).nome.replace(/ da .*/, '').toLowerCase() + ' com ' + sal.mesas.length + ' mesas e ' + salaoLugares(sal.mesas) + ' lugares · melhorias: ' + (ups.join(', ') || 'nenhuma') +
+    ' · Gurugol ' + (ga ? fmtNota(ga.nota) + ' (' + AVAL_CRIT.map((c, i) => c.nome.toLowerCase() + ' ' + fmtNota(ga.crit[i])).join(', ') + ')' : 'sem nota (' + save.aval.length + '/' + AVAL.min + ')'));
   return out.join('\n');
 }
 /* copia para a área de transferência; se o navegador não deixar, devolve false (a aba mostra o texto para copiar à mão) */
@@ -5653,6 +5799,7 @@ function buildCaixa(grid){
       tr.appendChild(td); tr.appendChild(cxTd(r.saldo)); tb.appendChild(tr); return;
     }
     const dia = el('td', null, 'Dia ' + r.d + (r.st ? ' ' + '★'.repeat(r.st) : '')); tr.appendChild(dia);
+    if (r.av) dia.title = 'Gurugol no dia: ' + fmtNota(r.av / 10) + ' ★';
     [r.fat, r.ingr, r.contas, r.folha + r.div].forEach(v => tr.appendChild(cxTd(v)));
     const lu = cxTd(r.lucro, r.ok ? 'pos' : 'neg'); lu.title = (r.ok ? 'Passou' : 'Não passou') + ' da meta de ' + fmt(r.meta) + (r.perd ? '; ' + r.perd + (r.perd > 1 ? ' perdidos' : ' perdido') : '');
     tr.appendChild(lu);
@@ -5682,6 +5829,12 @@ function buildCaixa(grid){
   onde.appendChild(bar); onde.appendChild(leg);
   if (pend.mel + pend.sal + pend.man) onde.appendChild(el('span', 'full', 'Compras nesta lojinha: ' + fmt(pend.mel + pend.sal + pend.man) + ' (entram na linha do dia ' + game.shopNext + ').'));
   if (pend.emp || pend.par) onde.appendChild(el('span', 'full', 'Banco nesta lojinha: ' + (pend.emp ? 'empréstimo de ' + fmt(pend.emp) : '') + (pend.emp && pend.par ? ' e ' : '') + (pend.par ? fmt(pend.par) + ' pagos' : '') + ' (entram na linha do dia ' + game.shopNext + ').'));
+  // Gurugol (v8.4): a nota da lanchonete e a de cada critério
+  const ga = avalGeral(game.save.aval), na = game.save.aval.length;
+  const gu = el('div', 'cx-aval');
+  gu.appendChild(el('b', null, 'Gurugol: ' + (ga ? fmtNota(ga.nota) + ' ★ (média das últimas ' + na + ' avaliações)' : 'sem nota ainda (' + na + ' de ' + AVAL.min + ' avaliações)')));
+  if (ga) gu.appendChild(el('span', null, AVAL_CRIT.map((c, i) => c.nome + ' ' + fmtNota(ga.crit[i])).join(' · ') + '. ' + (ga.nota >= AVAL.neutra ? 'Nota boa traz mais gente: ' : 'Nota baixa afasta a freguesia: ') + (Math.round((avalMovimento(game.save.aval) - 1) * 100) >= 0 ? '+' : '') + Math.round((avalMovimento(game.save.aval) - 1) * 100) + '% de movimento.'));
+  onde.appendChild(gu);
   // resumo para colar no WhatsApp
   const row = el('div', 'cx-copia'), st = el('span', 'cx-st'); st.setAttribute('role', 'status');
   let ta = null;
@@ -5759,6 +5912,14 @@ function buildEnd(){
   if (r.quebras && r.quebras.length) rows.push(['Quebrou', r.quebras.map(q => manutOf(q.id).name.toLowerCase() + (q.fixed ? ' (consertado)' : '')).join(', ')]);
   if (r.clima) rows.push(['Imprevisto', CLIMA[r.clima].nome]);
   if (r.vip || r.vipLost) rows.splice(2, 0, ['VIPs', r.vip + ' atendido' + (r.vip === 1 ? '' : 's') + (r.vipLost ? ' · ' + r.vipLost + ' bravo' + (r.vipLost > 1 ? 's' : '') : '')]);
+  // Gurugol (v8.4): a nota (e a do dia) numa linha do quadro; embaixo, 2 ou 3 comentários (os critérios do dia no title)
+  const av = $('end-aval'); clearEl(av); av.title = '';
+  const a = r.aval;
+  if (a && a.dia){
+    rows.push(['Gurugol', (a.geral ? fmtNota(a.geral.nota) + ' ★ · ' : a.n + '/' + AVAL.min + ' · ') + 'hoje ' + fmtNota(a.dia.nota)]);
+    av.title = 'Hoje, em ' + a.dia.n + (a.dia.n > 1 ? ' avaliações: ' : ' avaliação: ') + AVAL_CRIT.map((c, i) => c.nome.toLowerCase() + ' ' + fmtNota(a.dia.crit[i])).join(', ');
+    if (a.coment.length) av.appendChild(el('i', null, a.coment.map(t => '“' + t + '”').join(' ')));
+  }
   // as contas do dia (v7), do faturamento ao lucro, num quadro ao lado
   const neg = v => v ? '-' + fmt(v) : '-';
   const conta = [['Faturamento', fmt(r.fat)],['Ingredientes', neg(r.custo)],['Contas do dia', neg(r.contas)],['Folha', neg(r.paid)]];
@@ -6098,7 +6259,7 @@ fit();
 try { Rank.init(); } catch(e) {}
 game.setState('menu');
 window.__game = game;
-window.__lcc = { setShopTab: v => { shopTab = v; buildShop(); }, TREINO, TREINO_PASSOS, TREINO_COR, Treino, treinoLugar, treinoPrimeiro, playCareer, buildMenu, introBanco, buildFalencia, BANCO, normEmprestimo, parcelaDe, devidoDe, jurosDe, tabelaDe, simulaEmprestimo, SEMANA, semanaOf, diaOf, FILA_JUSTA, PORTA, CHAIRS, PAT, CONTAS, INGRED, CARDAPIO, precoPrato, MAIS, PONTOS_ACAO, GORJETA, DRINK_PRICE, MOVIMENTO, movimentoSalao, DIVULGA, DIVULGA_DIA, divulgaOf, contasDia, bomGoal, SALAO, PONTOS, pontoOf, MESA, mesaBox, mesaPreco, salaoLugares, mesaProblema, salaoCaminho, salaoProblema, salaoOrdena, salaoAuto, salaoVaga, salaoPerto, salaoKit, salaoDevolucao, SALAO_SEMFIM, normSalao, setObst, OBST, pathOk, MAQUINA, BEBIDA_ESPERA, bebidaOf, MANUT, manutOf, manutChance, manutPreco, normManut, CLIMA, CLIMA_DIA, introManut, normPend, CALCADA, TW, HUDX, esperaAp, tableApproach, CRIT, STAFF, DANI_TASKS, DANI_HANDS, daniTaskOk, TRASH, WASH, payroll, FOLHA_CORTE, folhaCorta, folhaCortes, folhaItens, listaE, pratosDe, couvertEffect, couvertOk, ambienteEffect, dishStock, normSave, Helper, JUICE, KITCHEN_SLOTS, handLayout, trayOk, Game, Group, Table, Kitchen, Waitress, BIA_SPEED, DAYS, UPGRADES, CUSTOMER_TYPES, LAYOUT, PAL, Sfx, findPath, render, Rank, sortRows, cleanName, normName, CMD, ENDLESS, VIP, MULTA, rk, renderRank, openRank, closeRank, LS, lsGet, lsSet, loadSave, DEV, saveKey, devSync, divulgaAberta, CAIXA_MAX, VERSAO, normCaixa, caixaResumo, caixaTotais, copyText };
+window.__lcc = { setShopTab: v => { shopTab = v; buildShop(); }, TREINO, TREINO_PASSOS, TREINO_COR, Treino, treinoLugar, treinoPrimeiro, playCareer, buildMenu, introBanco, buildFalencia, BANCO, normEmprestimo, parcelaDe, devidoDe, jurosDe, tabelaDe, simulaEmprestimo, SEMANA, semanaOf, diaOf, FILA_JUSTA, PORTA, CHAIRS, PAT, CONTAS, INGRED, CARDAPIO, precoPrato, MAIS, PONTOS_ACAO, GORJETA, DRINK_PRICE, MOVIMENTO, movimentoSalao, DIVULGA, DIVULGA_DIA, divulgaOf, contasDia, bomGoal, SALAO, PONTOS, pontoOf, MESA, mesaBox, mesaPreco, salaoLugares, mesaProblema, salaoCaminho, salaoProblema, salaoOrdena, salaoAuto, salaoVaga, salaoPerto, salaoKit, salaoDevolucao, SALAO_SEMFIM, normSalao, setObst, OBST, pathOk, MAQUINA, BEBIDA_ESPERA, bebidaOf, MANUT, manutOf, manutChance, manutPreco, normManut, CLIMA, CLIMA_DIA, introManut, normPend, CALCADA, TW, HUDX, esperaAp, tableApproach, CRIT, STAFF, DANI_TASKS, DANI_HANDS, daniTaskOk, TRASH, WASH, payroll, FOLHA_CORTE, folhaCorta, folhaCortes, folhaItens, listaE, pratosDe, couvertEffect, couvertOk, ambienteEffect, dishStock, normSave, Helper, JUICE, KITCHEN_SLOTS, handLayout, trayOk, Game, Group, Table, Kitchen, Waitress, BIA_SPEED, DAYS, UPGRADES, CUSTOMER_TYPES, LAYOUT, PAL, Sfx, findPath, render, Rank, sortRows, cleanName, normName, CMD, ENDLESS, VIP, MULTA, rk, renderRank, openRank, closeRank, LS, lsGet, lsSet, loadSave, DEV, saveKey, devSync, divulgaAberta, CAIXA_MAX, VERSAO, normCaixa, caixaResumo, caixaTotais, copyText, AVAL, AVAL_CRIT, AVAL_BRAVO, avalMenu, normAval, avalNota, avalMedias, avalGeral, avalMovimento, avalComentario, fmtNota };
 window.requestAnimationFrame(frame);
 
 })();

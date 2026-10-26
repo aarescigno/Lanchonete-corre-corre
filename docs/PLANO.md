@@ -7,7 +7,7 @@ Origem: retorno do Renan Martorelli (beta-tester) e conversa com o Arthur (15/10
 - Para começar uma sessão, basta pedir: **"faça a próxima etapa do docs/PLANO.md"**. A sessão lê só a etapa da vez e as partes de `src/` citadas nela.
 - Antes de programar, a sessão confirma com o usuário as **decisões em aberto** da etapa (cada uma já tem uma sugestão).
 - No fim, a sessão marca a etapa como feita na tabela abaixo (com a versão e a data) e anota o que mudou no plano.
-- Ordem: cada etapa depende só das anteriores. A 1a vem primeiro (mexe no equilíbrio de base). A 1c teve prioridade sobre as demais, por ser retorno do beta-tester Renan (pedido do usuário em 21/10). A 1d-1 (v7.4), a 1d-2 (v7.5), a 2 (v8) e a 2b (v8.3) foram feitas. **Ordem revista com o usuário em 22/10:** 2b (campanha contínua e banco), 2c (avaliações dos clientes), 2d (abertura animada do Modo História), 3a (área industrial), 3b (Avenida Brasil) e 4 (Terraço Suíça). A campanha vem antes dos pontos para a carreira não ser refeita duas vezes, e as avaliações viram a "experiência" que abre os pontos novos e a reputação da etapa 4. **A próxima é a 2c.** As etapas 5, 6 e 7 ficam **a rever** com o usuário antes de começar.
+- Ordem: cada etapa depende só das anteriores. A 1a vem primeiro (mexe no equilíbrio de base). A 1c teve prioridade sobre as demais, por ser retorno do beta-tester Renan (pedido do usuário em 21/10). A 1d-1 (v7.4), a 1d-2 (v7.5), a 2 (v8) e a 2b (v8.3) foram feitas. **Ordem revista com o usuário em 22/10:** 2b (campanha contínua e banco), 2c (avaliações dos clientes), 2d (abertura animada do Modo História), 3a (área industrial), 3b (Avenida Brasil) e 4 (Terraço Suíça). A campanha vem antes dos pontos para a carreira não ser refeita duas vezes, e as avaliações viram a "experiência" que abre os pontos novos e a reputação da etapa 4. A 2c (v8.4) foi feita em 26/10. **A próxima é a 2d.** As etapas 5, 6 e 7 ficam **a rever** com o usuário antes de começar.
 
 ## Situação
 | # | Etapa | Versão | Situação |
@@ -38,8 +38,8 @@ Origem: retorno do Renan Martorelli (beta-tester) e conversa com o Arthur (15/10
 | — | Retorno do usuário: a 3ª estrela pede não perder ninguém, e a tela passa a dizer isso | v8.3.7 | feita (23/10) |
 | — | Retorno do usuário: preços de verdade (cardápio, 2º item, gorjeta de até 10%, ações viram pontos de atendimento, custos e metas de garagem) | v8.3.8 | feita (23/10) |
 | — | Retorno do usuário: jogo perfeito no dia 1 deu 1 estrela; metas e 3 estrelas pelo bot afiado | v8.3.9 | feita (23/10) |
-| 2c | Avaliações dos clientes (nota de 0 a 5 ★, 5 critérios) | v8.4 | **próxima** |
-| 2d | Abertura animada do Modo História: o sonho da Bia | v8.5 | a fazer |
+| 2c | Avaliações dos clientes (nota de 0 a 5 ★, 5 critérios) | v8.4 | feita (26/10) |
+| 2d | Abertura animada do Modo História: o sonho da Bia | v8.5 | **próxima** |
 | 3a | Mudança de ponto e Lanchonete na área industrial | v9 | a fazer |
 | 3b | Restaurante na Avenida Brasil | v9.1 | a fazer |
 | 4 | Terraço Suíça e VIPs exigentes | v10 | a fazer |
@@ -330,6 +330,8 @@ Também: rever o `smoke7` (toque) e o `smoke10` (fila justa e porta), mais `bala
 - A nota inicial (sugestão: sem nota até as 20 primeiras avaliações).
 - A nota mínima para mudar de ponto (sugestão: 3,5 ★ para a área industrial, 4,0 para a Avenida Brasil e 4,5 para o Terraço Suíça).
 - Os comentários aparecem só no fim do dia ou também em balõezinhos quando o grupo sai?
+
+**Feito na v8.4 (26/10, `docs/spec-v8.4.md`).** Decisões do usuário: pesos iguais; a nota mexe no movimento de −10% a +10%; os pontos de atendimento viram bônus na agilidade (cor certa, corrente e prato caprichado, +0,5 cada); comentários no fim do dia e num balãozinho quando o grupo sai; e a média é das **últimas 100** avaliações (não 200), contando a partir da 20ª. Na calibração, cada coração vale 0,75 (com 1, nem o jogo perfeito passava de ~4,25 ★) e o coração devolvido pelo atendimento compensa um perdido. Bot afiado com equipe ~4,4 ★, com equipe ~4,2, sem equipe ~3,6. **Para a etapa 3:** a nota mínima para sair da Garagem (o usuário pediu 4,5 ★, que exige jogar muito bem; o afiado fica entre 4,35 e 4,5) e o cardápio maior dos pontos de cima (`avalMenu`).
 
 ---
 

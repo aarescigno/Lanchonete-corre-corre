@@ -33,6 +33,7 @@ class Game {
     this.mode = treino ? 'treino' : n === 0 ? 'semfim' : 'carreira';
     this.day = treino ? TREINO : n === 0 ? ENDLESS : diaOf(n);
     this.money = 0; this.custo = 0; this.contas = 0; this.paidDiv = 0; this.conserto = 0; this.pontos = 0;
+    this.avals = [];   // avaliações do dia (v8.4): { r: as notas dos critérios, txt: o comentário }; entram no save no fim do dia
     // imprevistos (v8): o sorteio do dia (feito ao começar o dia, e guardado até ele acabar) diz o clima e o que quebra
     const so = n && this.save.manut.sorteio && this.save.manut.sorteio.d === n ? this.save.manut.sorteio : null;
     this.clima = so ? so.clima : '';
@@ -71,7 +72,8 @@ class Game {
     const out = [];
     const lug = this.tables.filter(t => t.open).reduce((a, t) => a + t.seats, 0);
     const cl = CLIMA[this.clima];
-    const N = Math.max(3, Math.round(day.groups * this.divF * movimentoSalao(lug) * (cl ? cl.groups : 1))), vipP = (day.vip || 0) * (this.div ? this.div.vip : 1);
+    // a nota do Gurugol (v8.4) traz mais ou menos gente
+    const N = Math.max(3, Math.round(day.groups * this.divF * movimentoSalao(lug) * (cl ? cl.groups : 1) * avalMovimento(this.save.aval))), vipP = (day.vip || 0) * (this.div ? this.div.vip : 1);
     const gap = day.speed * day.time / N;
     let t = 3;
     const forced = day.nu ? randi(1, Math.min(3, N-1)) : -1;
@@ -263,10 +265,11 @@ class Game {
   addMoney(v){ this.money = Math.max(0, this.money + v); }
   /* v8.3.8: cada ação da Bia rende pontos de atendimento (PONTOS_ACAO, mais a corrente), e não dinheiro; din é o que o
      cliente paga por ela (a conta, o cafezinho, o suco), que vai para o dinheiro do dia */
-  score(kind, x, y, din){
+  score(kind, x, y, din, grp){
     let bonus = 0;
     if (kind === this.lastKind) this.chainN++; else { this.chainN = 1; this.lastKind = kind; }
     if (this.chainN >= 2) bonus = Math.min(160, 10 * Math.pow(2, this.chainN - 2));
+    if (bonus && grp) grp.corrente = true;   // a mesa atendida em corrente avalia melhor a agilidade (v8.4)
     this.stats.chain = Math.max(this.stats.chain, this.chainN);
     const p = PONTOS_ACAO[kind] || 0;
     this.pontos += p + bonus;
@@ -279,13 +282,14 @@ class Game {
   }
   collectBill(g, t){
     if (g.juicePending > 0){
+      if (g.hearts > 1) g.perdMesa++;
       g.hearts = Math.max(1, g.hearts - 1);
       this.stats.juiceMiss++;
       this.addText(t.cx, t.cy - 100, 'Faltou o suco!', PAL.perigo, 16);
     }
     // v8.3.8: os corações viram gorjeta (no máximo +10%; com 1 ou 2, desconto), mais a da executiva e a do VIP
     const amount = Math.round(g.bill * (1 + GORJETA[g.hearts] + g.T.tip + (g.vip ? VIP.tip : 0)));
-    this.score('bill', t.cx, t.cy - 50, amount);
+    this.score('bill', t.cx, t.cy - 50, amount, g);
     if (this.treino) this.treino.conta = { v:amount, h:g.hearts, base:g.bill };
     if (g.sucoConta){ const v = this.bebida.preco * g.sucoConta; this.addMoney(v); this.addText(t.cx - 34, t.cy - 100, 'Suco da espera +' + v, PAL.alerta, 14); }
     if (g.T.tip > 0 || g.vip) this.addText(t.cx + 20, t.cy - 76, 'Gorjeta!', PAL.mostarda, 15);
@@ -313,6 +317,7 @@ class Game {
         if (this.stars < 5){ this.stars++; this.starFlash = 1; this.addText(TW/2 - this.cam, 300, '+1 estrela!', PAL.mostarda, 28); Sfx.win(); }
       }
     }
+    this.avaliar(g, t.cx, t.cy - 146);
     this.releaseCmd(g);
     g.paid = true;
     t.dirty = true; t.dirtyN = g.size; t.group = null;
@@ -459,8 +464,9 @@ class Game {
     const ap = Math.hypot(pts[0].x-g.x, pts[0].y-g.y) <= Math.hypot(pts[1].x-g.x, pts[1].y-g.y) ? pts[0] : pts[1];
     g.path = findPath({x:g.x, y:g.y}, ap);
     g.path.push({ x:t.cx, y:t.cy + 30 });
-    this.score('sit', t.cx, t.cy - 40);
+    this.score('sit', t.cx, t.cy - 40, 0, g);
     if (g.color === t.color){
+      g.corCerta = true;
       this.pontos += PONTOS_ACAO.cor;
       this.addText(t.cx, t.cy - 82, 'Combinou! +' + PONTOS_ACAO.cor + ' pts', PAL.faixa, 16);
       this.addSparks(t.cx, t.cy, 14, CHAIRS[t.color].c);
@@ -500,10 +506,29 @@ class Game {
     this.addText(g.x, g.y - 78, '-' + fine, PAL.perigo, 18);
     if (g.vip) this.stats.vipLost++;
     g.angry = true;
+    this.avaliar(g, g.x, g.y - 120);
     Sfx.huff();
     this.leaveCommon(g);
     if (this.mode === 'semfim' && !this.ending) this.loseStar();
   }
+  /* avaliação no Gurugol (v8.4, só na carreira): o grupo que sai (pago ou bravo) dá a nota de cada critério (AVAL) e deixa
+     um comentário curto, num balãozinho sobre ele */
+  avaliar(g, x, y){
+    if (this.mode !== 'carreira') return;
+    const A = AVAL, eq = this.save.equipe, bravo = g.angry ? (g.state === 'queue' ? 'fila' : 'mesa') : '';
+    const bonus = Math.min(A.bonus.max, (g.corCerta ? A.bonus.cor : 0) + (g.corrente ? A.bonus.corrente : 0) + (g.capricho ? A.bonus.crit : 0));
+    const amb = A.amb.base + (eq.tv ? A.amb.tv : 0) + (eq.som ? A.amb.som : 0) + (this.up.maquina ? A.amb.maquina : 0) + (this.up.ventilador ? A.amb.ventilador : 0) +
+      (g.coffee ? A.amb.cafe : 0) + (eq.couvert ? A.amb.couvert : 0) + (this.trashFull ? A.amb.lixo : 0);
+    const r = [5 - A.porCoracao * g.perdFila, bravo ? 1 : 5 - A.porCoracao * g.perdMesa + bonus, g.pratoQ || 1, avalMenu(), amb]
+      .map(v => clamp(Math.round(v * 10) / 10, 1, 5));
+    const txt = avalComentario(r, bravo, this.trashFull), nota = avalNota(r);
+    this.avals.push({ r, txt });
+    // balãozinho branco (sobe devagar, acima dos textos da conta)
+    this.fx.push({ k:'text', box:true, x, y, vy:-12, life:2.8, max:2.8, text:fmtNota(nota) + '★ ' + txt, color:nota >= 4 ? PAL.ok : nota >= 3 ? PAL.alerta : PAL.perigo, size:13 });
+  }
+  /* a nota do Gurugol agora: as do save e as do dia (null antes das AVAL.min primeiras) */
+  get gurugol(){ return avalGeral(this.save.aval.concat(this.avals.map(a => a.r)).slice(-AVAL.max)); }
+  get gurugolN(){ return Math.min(AVAL.max, this.save.aval.length + this.avals.length); }
   multa(g){ return MULTA + (g.vip ? VIP.angry : 0); }   // grupo que vai embora bravo (0 corações)
   /* v8.2.3: encerrar o dia no meio (Reiniciar ou Menu na pausa) não rende nada (v8.2.2), e quem está na espera ou nas
      mesas vai embora bravo, como se tivesse zerado os corações: cada grupo paga a multa, direto do dinheiro acumulado */
@@ -617,17 +642,24 @@ class Game {
     this.desgastar(); delete sv.manut.sorteio;
     // campanha (v8.3): o dia seguinte vem de qualquer jeito; a meta não batida só fica sem estrelas
     sv.dia = d.n + 1; sv.estrelas += stars; sv.lucroTot += m; sv.pontosTot += Math.round(this.pontos);
+    // Gurugol (v8.4): as avaliações do dia entram no save; o fim do dia mostra a nota do dia, a geral e 2 ou 3 comentários
+    const avDia = avalMedias(this.avals.map(a => a.r));
+    sv.aval = normAval(sv.aval.concat(this.avals.map(a => a.r)));
+    const ord = this.avals.slice().sort((a, b) => avalNota(b.r) - avalNota(a.r)), coment = [];
+    if (ord.length) [ord[0], ord[ord.length - 1], pick(ord)].forEach(a => { if (!coment.includes(a.txt)) coment.push(a.txt); });
+    this.avals = [];   // já estão no save (a nota do HUD não conta duas vezes)
     // caixa no negativo: BANCO.neg dias seguidos podem; no seguinte, o banco cobre o que falta, à força
     let forcado = 0;
     if (sv.bank >= 0 || tomou) sv.neg = 0;
     else if (++sv.neg > BANCO.neg){ forcado = Math.ceil(-sv.bank / 10) * 10; this.emprestar(forcado, true); }
     const row = { d:d.n, fat, ingr:Math.round(this.custo), contas:this.contas, folha:this.paid, div:this.paidDiv, lucro:m, meta:d.meta, ok:passed, st:stars, perd:this.stats.lost, saldo:sv.bank };
+    if (avDia) row.av = Math.round(avDia.nota * 10);
     if (forcado) row.forc = 1;
     if (atrasou) row.atr = 1;
     if (tomou) row.tom = 1;
     caixaAdd(sv, row);
     writeSave(sv);
-    this.result = { day:d.n, money:m, fat, pontos:Math.round(this.pontos), custo:Math.round(this.custo), contas:this.contas, div:this.paidDiv, divName:this.div ? this.div.name : '', meta:d.meta, bom:bomGoal(d), expert:d.expert, passed, stars, served:this.stats.served, lost:this.stats.lost, lostBy:this.stats.lostBy, lotadoT:Math.round(this.stats.lotadoT), atraso:Math.round(this.atraso), full:this.stats.full, chain:this.stats.chain, vip:this.stats.vip, vipLost:this.stats.vipLost, juice:this.stats.juice, juiceMiss:this.stats.juiceMiss, sucoEsp:this.stats.sucoEsp, bebida:this.bebida.id, trash:this.stats.trash, washed:this.stats.washed, income, paid:this.paid, reason:this.reason, conserto:this.conserto, consertos:this.stats.consertos, quebras:this.quebras.filter(q => q.on).map(q => ({ id:q.id, fixed:q.fixed })), clima:this.clima, manut:Object.assign({}, this.manut), par, forcado, neg:sv.neg, emp:Object.assign({}, sv.emp), atrasou, tomou, devido };
+    this.result = { day:d.n, money:m, fat, pontos:Math.round(this.pontos), custo:Math.round(this.custo), contas:this.contas, div:this.paidDiv, divName:this.div ? this.div.name : '', meta:d.meta, bom:bomGoal(d), expert:d.expert, passed, stars, served:this.stats.served, lost:this.stats.lost, lostBy:this.stats.lostBy, lotadoT:Math.round(this.stats.lotadoT), atraso:Math.round(this.atraso), full:this.stats.full, chain:this.stats.chain, vip:this.stats.vip, vipLost:this.stats.vipLost, juice:this.stats.juice, juiceMiss:this.stats.juiceMiss, sucoEsp:this.stats.sucoEsp, bebida:this.bebida.id, trash:this.stats.trash, washed:this.stats.washed, income, paid:this.paid, reason:this.reason, conserto:this.conserto, consertos:this.stats.consertos, quebras:this.quebras.filter(q => q.on).map(q => ({ id:q.id, fixed:q.fixed })), clima:this.clima, manut:Object.assign({}, this.manut), par, forcado, neg:sv.neg, emp:Object.assign({}, sv.emp), atrasou, tomou, devido, aval:{ dia:avDia, geral:avalGeral(sv.aval), n:sv.aval.length, coment } };
     if (tomou){ this.setState('falencia'); Sfx.lose(); return; }
     this.setState('dayend');
     if (passed) Sfx.win(); else Sfx.lose();

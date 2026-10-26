@@ -54,7 +54,10 @@ p{margin:calc(var(--u)*6) 0;font-size:max(12px,calc(var(--u)*16));line-height:1.
 .stats{display:grid;grid-template-columns:auto auto;gap:calc(var(--u)*4) calc(var(--u)*24);justify-content:center;text-align:left;margin:calc(var(--u)*8) auto;font-size:max(12px,calc(var(--u)*16));font-weight:600}
 .stats2{display:flex;flex-wrap:wrap;justify-content:center;align-items:flex-start;column-gap:calc(var(--u)*36)}
 .stats2 .stats{margin:calc(var(--u)*6) 0}
+#end-stats .stats{row-gap:calc(var(--u)*1)}   /* v8.4: a linha do Gurugol cabe sem rolar */
 .stats .tot{border-top:2px solid var(--tinta);padding-top:2px}
+.cx-aval{display:flex;flex-direction:column;gap:2px;margin-top:calc(var(--u)*6)}
+.aval{display:block}
 .stats b{font-family:var(--fd);font-weight:400;text-align:right;font-size:max(13px,calc(var(--u)*18))}
 .shopgrid{display:grid;grid-template-columns:repeat(3,1fr);gap:calc(var(--u)*8);width:calc(var(--u)*760);max-width:100%;margin:calc(var(--u)*6) 0}
 .shopgrid.salao{grid-template-columns:1fr}

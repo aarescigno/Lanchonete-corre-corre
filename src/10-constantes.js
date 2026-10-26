@@ -395,6 +395,70 @@ const DIVULGA = [
    (salão cheio chama gente). Sem isso, mesa a mais só dava conta de luz e gás */
 const MOVIMENTO = { kit:10, porLugar:0.06 };
 function movimentoSalao(lugares){ return 1 + MOVIMENTO.porLugar * Math.max(0, lugares - MOVIMENTO.kit); }
+/* ============================================================
+   AVALIAÇÕES (v8.4): o Gurugol, o site de avaliações do jogo. Cada grupo que sai na carreira (pago ou bravo) dá de 1 a 5
+   em 5 critérios, de peso igual:
+   - espera: cada coração perdido lá fora tira `porCoracao`;
+   - agil (agilidade): cada coração perdido na mesa esperando a Bia (pedido, prato, conta e o suco que faltou) tira
+     `porCoracao`; a cadeira da cor do grupo, uma ação em corrente e o prato caprichado dão `bonus` (até bonus.max);
+   - prato: a faixa de acerto do cozinheiro (pelo nível do Tonhão); o caprichado (CRIT) vale 5;
+   - menu: pelos pratos do cardápio do ponto;
+   - amb (ambiente): a base mais TV, som, torneira, ventilador, o cafezinho servido e o couvert; lixeira cheia tira.
+   Quem sai bravo dá 1 na agilidade e no prato que não chegou a comer. A nota é a média das últimas `max` avaliações,
+   e só aparece depois das `min` primeiras; ela mexe no movimento do dia, de −mov (1 ★) a +mov (5 ★), neutra em 3 ★.
+   Quem fica para o fim do dia (a lanchonete fecha) não avalia; dia largado no meio não conta */
+const AVAL = {
+  max:100, min:20, porCoracao:0.75, mov:0.1, neutra:3,
+  bonus:{ cor:0.5, corrente:0.5, crit:0.5, max:1.5 },
+  prato:[[2.5, 4.5], [3, 4.7], [3.5, 5]],
+  menu:{ base:1.5, porPrato:0.75 },
+  amb:{ base:3, tv:0.5, som:0.5, maquina:0.5, ventilador:0.5, cafe:0.5, couvert:1, lixo:-1 }
+};
+const AVAL_CRIT = [
+  { id:'espera', nome:'Espera por mesa',
+    bom:['Sentei rapidinho!', 'Nem precisei esperar.', 'Mesa na hora!'], ruim:['Esperei muito por uma mesa.', 'A espera lá fora não andava.', 'Fiquei um tempão na calçada.'] },
+  { id:'agil', nome:'Agilidade',
+    bom:['A comida veio rapidinho!', 'Atendimento nota 10!', 'A Bia é um foguete!'], ruim:['Demoraram para anotar o pedido.', 'Esqueceram da gente na mesa.', 'A conta demorou demais.'] },
+  { id:'prato', nome:'Prato',
+    bom:['O PF estava caprichado!', 'Comida de mãe!', 'Que tempero!'], ruim:['O prato veio sem graça.', 'Comida meio fria.', 'Faltou tempero.'] },
+  { id:'menu', nome:'Cardápio',
+    bom:['Cardápio com de tudo!', 'Muita opção boa.'], ruim:['Pouca opção no cardápio.', 'Queria mais pratos.'] },
+  { id:'amb', nome:'Ambiente',
+    bom:['Lugar gostoso, dá vontade de voltar.', 'Ambiente bem agradável!'], ruim:['Lugar meio sem graça.', 'Faltou um capricho no salão.'] }
+];
+/* a nota do cardápio: pelos pratos que a cozinha faz (na Garagem, os 4 do CARDAPIO) */
+function avalMenu(){ return clamp(AVAL.menu.base + AVAL.menu.porPrato * Object.keys(CARDAPIO).length, 1, 5); }
+/* as avaliações guardadas: [espera, agil, prato, menu, amb], com uma casa decimal, as últimas AVAL.max */
+function normAval(a){
+  return (Array.isArray(a) ? a : []).filter(r => Array.isArray(r) && r.length === AVAL_CRIT.length).slice(-AVAL.max)
+    .map(r => r.map(v => clamp(Math.round((+v || 1) * 10) / 10, 1, 5)));
+}
+function avalNota(r){ return r.reduce((a, v) => a + v, 0) / r.length; }
+/* médias de uma lista de avaliações: a nota e cada critério (null se a lista estiver vazia) */
+function avalMedias(lista){
+  if (!lista.length) return null;
+  const crit = AVAL_CRIT.map((c, i) => lista.reduce((a, r) => a + r[i], 0) / lista.length);
+  return { n:lista.length, nota:avalNota(crit), crit };
+}
+/* a nota da lanchonete (as médias das últimas AVAL.max), ou null antes das AVAL.min primeiras */
+function avalGeral(lista){ return lista.length >= AVAL.min ? avalMedias(lista) : null; }
+/* o movimento pela nota: de 1 − mov a 1 + mov; sem nota, 1 */
+function avalMovimento(lista){
+  const m = avalGeral(lista);
+  return m ? 1 + AVAL.mov * clamp((m.nota - AVAL.neutra) / (5 - AVAL.neutra), -1, 1) : 1;
+}
+function fmtNota(n){ return n == null ? '–' : (Math.round(n * 10) / 10).toFixed(1).replace('.', ','); }
+/* o comentário de uma avaliação: quem saiu bravo reclama de ter ido embora; com nota 4 ou mais, elogia o melhor critério;
+   senão, reclama do pior (o ambiente com a lixeira cheia reclama do cheiro) */
+const AVAL_BRAVO = { fila:['Desisti de esperar!', 'Nem consegui sentar.'], mesa:['Fui embora sem comer!', 'Nunca mais volto!'] };
+function avalComentario(r, bravo, lixo){
+  if (bravo) return pick(AVAL_BRAVO[bravo]);
+  const bom = avalNota(r) >= 4;
+  let k = 0;
+  r.forEach((v, i) => { if (bom ? v > r[k] : v < r[k]) k = i; });
+  if (!bom && lixo && AVAL_CRIT[k].id === 'amb') return 'Que cheiro de lixo!';
+  return pick(AVAL_CRIT[k][bom ? 'bom' : 'ruim']);
+}
 /* banco (v8.3): empréstimo pago em `parcelas` no fim de cada dia (um por vez, até o crédito do ponto).
    v8.3.2, amortização (tabela SAC): cada parcela é a amortização fixa (o valor ÷ `parcelas`) mais os juros do dia, `juros`
    sobre o saldo devedor (o que falta). Amortizar antes (adiantar parcelas ou quitar) abate o saldo e corta os juros que
@@ -429,7 +493,7 @@ function tabelaDe(e){
 /* um empréstimo novo de v, pagando em dia: as parcelas e os juros somados */
 function simulaEmprestimo(v, j){ const t = tabelaDe(normEmprestimo({ resto:v, amort:Math.ceil(v / BANCO.parcelas), j })); return { parcelas:t, juros:t.reduce((a, p) => a + p, 0) - v }; }
 const CAIXA_MAX = 14;                                 // livro-caixa (v7.2): quantos dias da carreira ficam guardados
-const VERSAO = 'v8.3.11';                              // vai no resumo do Caixa
+const VERSAO = 'v8.4';                                 // vai no resumo do Caixa
 const DIVULGA_DIA = 3;                                // antes disso, o movimento é o da inauguração (sem custo)
 function divulgaAberta(n){ return DEV.on || n >= DIVULGA_DIA; }   // no modo dev, desde o dia 1
 function divulgaOf(id){ return DIVULGA.find(d => d.id === id) || DIVULGA[1]; }
