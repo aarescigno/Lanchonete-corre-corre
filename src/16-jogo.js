@@ -91,6 +91,9 @@ class Game {
       out.push({ t, type, color: pick(colors.concat([0,1,2,3])), vip });
       t += gap * (0.7 + Math.random()*0.6);
     }
+    // só AVAL.porDia grupos sorteados do dia avaliam no Gurugol (quem fica para o fim do dia não avalia)
+    const idx = out.map((_, i) => i);
+    for (let k = 0; k < Math.min(AVAL.porDia, out.length); k++) out[idx.splice(randi(0, idx.length - 1), 1)[0]].av = true;
     return out;
   }
   startDay(n){ this.sortear(n); this.resetDay(n); this.setState('intro'); }
@@ -338,6 +341,7 @@ class Game {
   spawn(s){
     s = s || this.schedule[this.nextIdx++];
     const g = new Group(this, s.type, ++this.gid, s.color, s.vip);
+    g.avalia = !!s.av;
     this.groups.push(g);
     if (g.vip){
       // VIP fura a fila: entra logo depois dos outros VIPs que já estão esperando
@@ -514,7 +518,7 @@ class Game {
   /* avaliação no Gurugol (v8.4, só na carreira): o grupo que sai (pago ou bravo) dá a nota de cada critério (AVAL) e deixa
      um comentário curto, num balãozinho sobre ele */
   avaliar(g, x, y){
-    if (this.mode !== 'carreira') return;
+    if (this.mode !== 'carreira' || !g.avalia) return;
     const A = AVAL, eq = this.save.equipe, bravo = g.angry ? (g.state === 'queue' ? 'fila' : 'mesa') : '';
     const bonus = Math.min(A.bonus.max, (g.corCerta ? A.bonus.cor : 0) + (g.corrente ? A.bonus.corrente : 0) + (g.capricho ? A.bonus.crit : 0));
     const amb = A.amb.base + (eq.tv ? A.amb.tv : 0) + (eq.som ? A.amb.som : 0) + (this.up.maquina ? A.amb.maquina : 0) + (this.up.ventilador ? A.amb.ventilador : 0) +

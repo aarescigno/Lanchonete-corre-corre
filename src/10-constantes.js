@@ -404,11 +404,11 @@ function movimentoSalao(lugares){ return 1 + MOVIMENTO.porLugar * Math.max(0, lu
    - prato: a faixa de acerto do cozinheiro (pelo nível do Tonhão); o caprichado (CRIT) vale 5;
    - menu: pelos pratos do cardápio do ponto;
    - amb (ambiente): a base mais TV, som, torneira, ventilador, o cafezinho servido e o couvert; lixeira cheia tira.
-   Quem sai bravo dá 1 na agilidade e no prato que não chegou a comer. A nota é a média das últimas `max` avaliações,
+   Quem sai bravo dá 1 na agilidade e no prato que não chegou a comer. Só `porDia` grupos do dia (sorteados) avaliam, como num restaurante de verdade. A nota é a média das últimas `max` avaliações,
    e só aparece depois das `min` primeiras; ela mexe no movimento do dia, de −mov (1 ★) a +mov (5 ★), neutra em 3 ★.
    Quem fica para o fim do dia (a lanchonete fecha) não avalia; dia largado no meio não conta */
 const AVAL = {
-  max:100, min:20, porCoracao:0.75, mov:0.1, neutra:3,
+  max:30, min:8, porDia:4, porCoracao:0.75, mov:0.1, neutra:3,
   bonus:{ cor:0.5, corrente:0.5, crit:0.5, max:1.5 },
   prato:[[2.5, 4.5], [3, 4.7], [3.5, 5]],
   menu:{ base:1.5, porPrato:0.75 },
