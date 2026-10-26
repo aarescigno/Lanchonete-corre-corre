@@ -9,8 +9,8 @@ const toque=els=>els['c'].fire('pointerdown',{preventDefault(){},pointerId:1,cli
 { const H=load({abertura:true}), {g,L,els,store}=H, ab=L.aberturaAtual();
   ok(ab && ab.origem==='auto' && mostra(els,'ov-abertura') && !mostra(els,'ov-menu'),'1ª vez: a abertura toca sozinha, por cima do menu');
   ok(store.lcc2_abertura==='1','fica marcada como vista');
-  ok(L.ABERTURA.cenas.length===9 && L.ABERTURA.cenas.map(c=>c.id).join()==='casa,aurora,tempero,estrela,hospital,promessa,tonhao,banco,inauguracao','9 cenas, na ordem do roteiro');
-  const tot=L.ABERTURA.cenas.reduce((a,c)=>a+c.t,0); ok(tot>=55 && tot<=70,'duração total ~1 min ('+tot+' s)');
+  ok(L.ABERTURA.cenas.length===10 && L.ABERTURA.cenas.map(c=>c.id).join()==='casa,aurora,tempero,estrela,hospital,saudade,promessa,tonhao,banco,inauguracao','10 cenas, na ordem do roteiro (v8.5.1: a saudade depois do hospital)');
+  const tot=L.ABERTURA.cenas.reduce((a,c)=>a+c.t,0); ok(tot>=55 && tot<=80,'duração total ~1 min ('+tot+' s)');
   ok(L.ABERTURA.cenas.every(c=>c.t>=5 && c.t<=10 && c.leg && c.falas.every(f=>f.de<c.t-1)),'cada cena tem de 5 a 10 s, legenda e falas a tempo');
   ok(L.ABERTURA.cenas.every(c=>L.AB_CENAS[c.id]),'cada cena tem desenho');
   ok(els['ab-live'].textContent.includes('Rosa'),'o texto da cena vai para o leitor de tela');
@@ -18,6 +18,8 @@ const toque=els=>els['c'].fire('pointerdown',{preventDefault(){},pointerId:1,cli
   // o tempo passa: as cenas seguem sozinhas, com as falas aparecendo no tempo delas
   ok(ab.falas().length===0 && ab.escuro>0.9,'começa no escuro, sem falas');
   ab.update(2); ok(ab.i===0 && ab.falas().length===1 && ab.escuro===0,'a fala aparece no tempo dela');
+  { const sv2=[ab.i,ab.t]; ab.i=4; ab.t=4; const a1=ab.falas().length; ab.t=6; const a2=ab.falas().length; ab.i=sv2[0]; ab.t=sv2[1];
+    ok(a1===2 && a2===0,'hospital: as falas somem antes de a cortina fechar'); }
   for(let i=0;i<200;i++) ab.update(0.05);
   ok(ab.i===1,'a cena 1 termina e vem a 2 sozinha');
   ok(els['ab-live'].textContent.includes('Casa Aurora'),'o leitor de tela acompanha a cena');
@@ -49,6 +51,7 @@ const toque=els=>els['c'].fire('pointerdown',{preventDefault(){},pointerId:1,cli
 // movimento reduzido: quadro parado (o fim da cena), sem escuro, com todas as falas; só o toque avança
 { const H=load({abertura:true, rm:true}), {L,els}=H, ab=L.aberturaAtual();
   ok(ab.rm && ab.p===1 && ab.escuro===0,'movimento reduzido: o quadro final, sem escurecer');
+  ab.i=4; ok(ab.p<0.66,'hospital com movimento reduzido: o quadro de antes da cortina, com as falas');
   ab.i=4; ok(ab.falas().length===2,'todas as falas da cena à vista');
   for(let i=0;i<100;i++) ab.update(0.5);
   ok(ab.i===4,'o tempo não troca a cena');

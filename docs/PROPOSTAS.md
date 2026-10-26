@@ -4,6 +4,16 @@ Registro das ideias e dos retornos de quem jogou, com o texto original, e de ond
 
 ---
 
+## 26/10/2026 — Usuário: a morte da Rosa na abertura e a receita especial
+**Origem:** mensagem do usuário depois da v8.5:
+
+> Sobre a morte da mãe, eu acho que pode mostrar a mãe deitada no leito de hospital com a coberta, depois fecha a cortina e depois da fala derradeira da mãe, né, de cozinha com carinho, muda de cena para uma cena da Bia triste, só, sem mostrar nada gráfico, né?
+> receita especial era o toque do Tonhão de cominho com açafrão e a pétala de rosa da Dona Rosa. Mas guarda isso para depois.
+
+**Destino:** v8.5.1 (`docs/spec-v8.5.1.md`): a cortina do leito se fecha depois das falas, e entra a cena da saudade (a Bia sozinha e triste no corredor). A receita (cominho com açafrão do Tonhão e a pétala de rosa da Dona Rosa) ficou guardada para o Modo História, nas etapas 5 e 6 do `docs/PLANO.md`.
+
+---
+
 ## 26/10/2026 — Usuário: o roteiro da abertura (etapa 2d)
 **Origem:** a sessão da etapa 2d perguntou as decisões em aberto. O usuário escolheu o tom só emocionante (sem a piscadela da meritocracia), a Casa Aurora com um chef estrelado à parte e a abertura tocando sozinha uma vez. Depois, contou o roteiro em áudio:
 
