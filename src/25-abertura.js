@@ -27,7 +27,7 @@ function abRosa(c,x,y,s,o){
 // a Bia criança: cabelão redondo com laço amarelo e vestido mostarda
 function abBiaCrianca(c,x,y,s,o){
   o = o || {};
-  drawPerson(c,{ kid:true, skin:4, hair:3, hairC:'#15100D', pants:'#7B4A2C' },x,y,{ s, shirt:PAL.mostarda, handUp:!!o.aceno, t:o.t || 0, mood:o.mood || 0, sit:!!o.sentada, noShadow:!!o.sentada });
+  drawPerson(c,{ kid:true, skin:4, hair:3, hairC:'#15100D', pants:'#7B4A2C' },x,y,{ s, shirt:PAL.mostarda, handUp:!!o.aceno, t:o.t || 0, mood:o.mood || 0, sit:!!o.sentada, noShadow:!!o.sentada, bracoE:o.bracoE });
   c.save(); c.translate(x,y + (o.sentada ? 12 * 0.74 * s : 0)); c.scale(s*0.74,s*0.74);
   c.beginPath(); c.moveTo(12,-58); c.lineTo(20,-64); c.lineTo(20,-52); c.closePath(); fs(c,PAL.alerta,1.5);
   c.beginPath(); c.moveTo(12,-58); c.lineTo(4,-66); c.lineTo(5,-53); c.closePath(); fs(c,PAL.alerta,1.5);
@@ -300,13 +300,15 @@ const AB_CENAS = {
     // o cobertor rosa (respira devagar)
     const resp = RM ? 0 : Math.sin(T * 1.4) * 2;
     c.beginPath(); c.moveTo(410,334 - resp); c.quadraticCurveTo(560,300 - resp,730,322); c.lineTo(730,372); c.lineTo(410,372); c.closePath(); fs(c,'#E7A9B8',3);
-    // a mão da Rosa e a da Bia
-    abBraco(c,[[450,336],[488,350]],'#E7A9B8',SKINS[3]);
+    // o braço da Rosa por cima do cobertor: a manga da camisola e a mão estendida para a Bia
+    abBraco(c,[[440,346],[466,350],[492,346]],SKINS[3],SKINS[3]);
+    c.strokeStyle = PAL.tinta; c.lineWidth = 13; c.beginPath(); c.moveTo(432,345); c.lineTo(448,348); c.stroke();
+    ell(c,426,343,19,12); fs(c,'#BFD8E8',2.5);                                // o ombro, virado para a Bia, e a manga
+    c.strokeStyle = '#BFD8E8'; c.lineWidth = 9; c.beginPath(); c.moveTo(432,345); c.lineTo(448,348); c.stroke();
     // a Bia na cadeira, segurando a mão da mãe
     rr(c,520,360,90,16,4); fs(c,PAL.madeira,2.5);
     c.strokeStyle = PAL.tinta; c.lineWidth = 6; c.beginPath(); c.moveTo(530,376); c.lineTo(530,AB_CHAO); c.moveTo(600,376); c.lineTo(600,AB_CHAO); c.stroke();
-    abBiaCrianca(c,566,372,2.6,{ sentada:true, mood:1, t:T });
-    abBraco(c,[[541,338],[516,356],[499,352]],PAL.mostarda,SKINS[4]);   // do ombro, o braço desce e a mão pousa sobre a da mãe
+    abBiaCrianca(c,566,372,2.6,{ sentada:true, mood:1, t:T, bracoE:[[-24,-20],[-35,-25]] });   // o braço esquerdo desce e a mão pousa sobre a da mãe
     // tudo um pouco mais escuro, como de noite
     c.fillStyle = 'rgba(30,42,74,.18)'; c.fillRect(0,0,TW,500);
     // depois da fala derradeira, a cortina do leito corre no trilho e cobre a cama e a Bia (a janela e a rosa ficam)
