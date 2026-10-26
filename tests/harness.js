@@ -29,7 +29,7 @@ module.exports=function load(opts){
   }
   const doc={getElementById:id=>els[id]||(els[id]=mkEl(id)), createElement:t=>{const e=mkEl(t); e.tagName=String(t).toUpperCase(); return e;}, addEventListener(){}, hidden:false};
   const win={innerWidth:960,innerHeight:600,devicePixelRatio:1,addEventListener(){},requestAnimationFrame(){},matchMedia:()=>({matches:!!opts.rm})};
-  const store=Object.assign({}, opts.store||{});
+  const store=Object.assign(opts.abertura?{}:{lcc2_abertura:'1'}, opts.store||{});   // v8.5: abertura já vista, a não ser que o teste peça (opts.abertura)
   const ls = opts.noStorage ? undefined : { getItem:k=>Object.prototype.hasOwnProperty.call(store,k)?store[k]:null, setItem:(k,v)=>{store[k]=String(v)}, removeItem:k=>{delete store[k]} };
   if (opts.throwStorage) { /* acessos lançam */ }
   const sandbox={window:win,document:doc,console,Math,Date,JSON,Object,Array,Set,Number,String,Infinity,isFinite,parseInt,parseFloat,setTimeout,clearTimeout,Promise,RegExp,Error,TypeError};

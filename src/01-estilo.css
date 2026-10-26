@@ -14,10 +14,13 @@ html,body{margin:0;padding:0;height:100%;width:100%;overflow:hidden;background:#
 #c{display:block;width:100%;height:600px;touch-action:none;outline:none;cursor:pointer}
 .ov{position:absolute;inset:0;display:none;align-items:center;justify-content:center;padding:calc(var(--u)*10);background:rgba(34,32,28,.55)}
 .ov.show{display:flex}
+/* abertura do Modo História (v8.5): o canvas desenha as cenas; por cima, só o Pular (o resto do toque vai ao canvas) */
+#ov-abertura{background:transparent;pointer-events:none;align-items:flex-start;justify-content:flex-end}
+#ov-abertura .btn{pointer-events:auto;font-size:max(13px,calc(var(--u)*18));min-height:44px;padding:calc(var(--u)*4) calc(var(--u)*18)}
 #ov-menu{background:linear-gradient(90deg,rgba(34,32,28,.0),rgba(34,32,28,0));justify-content:flex-start;padding-left:calc(var(--u)*34)}
 .panel{background:var(--azulejo);color:var(--tinta);border:calc(var(--u)*4) solid var(--tinta);border-radius:calc(var(--u)*18);box-shadow:calc(var(--u)*6) calc(var(--u)*6) 0 var(--tinta);padding:calc(var(--u)*18) calc(var(--u)*26);max-width:96%;max-height:97%;overflow:auto;text-align:center;position:relative}
 .panel::before{content:"";position:absolute;left:0;right:0;top:calc(var(--u)*0);height:calc(var(--u)*10);background:var(--faixa);opacity:.0}
-.menu-panel{text-align:left;width:calc(var(--u)*490)}   /* v8.3: 3 botões na 2ª linha (Turno sem fim, Como jogar e Ranking) */
+.menu-panel{text-align:left;width:calc(var(--u)*540)}   /* v8.3: 3 botões na 2ª linha (Turno sem fim, Como jogar e Ranking); v8.5: e 3 na 1ª, com História */
 .title{font-family:var(--fd);font-weight:400;margin:0;line-height:.95;font-size:max(26px,calc(var(--u)*58));color:var(--formica);-webkit-text-stroke:calc(var(--u)*2) var(--tinta);paint-order:stroke fill;text-shadow:calc(var(--u)*4) calc(var(--u)*4) 0 var(--mostarda),calc(var(--u)*6) calc(var(--u)*6) 0 var(--tinta);letter-spacing:.01em}
 h2{font-family:var(--fd);font-weight:400;margin:0 0 calc(var(--u)*6);font-size:max(20px,calc(var(--u)*34));color:var(--faixa);text-shadow:calc(var(--u)*2) calc(var(--u)*2) 0 var(--mostarda)}
 p{margin:calc(var(--u)*6) 0;font-size:max(12px,calc(var(--u)*16));line-height:1.35;font-weight:600}
@@ -171,6 +174,7 @@ table.cx .rs{font-size:inherit}
 .vtag.dev{background:var(--alerta);color:#fff}
 .devbadge{position:absolute;left:50%;top:calc(var(--u)*4);transform:translateX(-50%);z-index:20;pointer-events:none;font:800 max(10px,calc(var(--u)*13)) var(--fb);letter-spacing:.08em;text-transform:uppercase;color:#fff;background:var(--alerta);border:calc(var(--u)*2) solid var(--tinta);border-radius:999px;padding:0 calc(var(--u)*10);line-height:1.5;opacity:.92}
 .menu-panel .row.tight{margin-top:calc(var(--u)*8);gap:calc(var(--u)*10)}
+.menu-panel .row.tight .btn{padding-left:calc(var(--u)*15);padding-right:calc(var(--u)*15)}   /* v8.5: cabem Continuar, Missão zero e História na 1ª linha */
 .menu-panel .btn{font-size:max(14px,calc(var(--u)*20));padding:calc(var(--u)*6) calc(var(--u)*14)}
 .ver-ico{margin-left:auto;align-self:flex-end;width:max(40px,calc(var(--u)*40));height:max(40px,calc(var(--u)*40));display:flex;align-items:center;justify-content:center;border-radius:50%;border:calc(var(--u)*2) solid rgba(34,32,28,.3);background:transparent;color:#7a7263;cursor:pointer;padding:0;transition:color .15s,background .15s,border-color .15s}
 .ver-ico:hover,.ver-ico:focus-visible{color:var(--faixa);background:var(--creme);border-color:var(--faixa)}

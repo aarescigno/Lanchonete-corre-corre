@@ -50,7 +50,7 @@ function tableApproach(t){
   return [ {x:t.cx-hx, y:t.cy+4}, {x:t.cx+hx, y:t.cy+4} ];
 }
 /* ---------- armazenamento (localStorage com try/catch e cópia em memória) ---------- */
-const LS = { save:'lcc2_save', v1:'lcc_save_v1', rank:'lcc2_ranking', name:'lcc2_name', dev:'lcc2_dev', devSave:'lcc2_save_dev' };
+const LS = { save:'lcc2_save', v1:'lcc_save_v1', rank:'lcc2_ranking', name:'lcc2_name', dev:'lcc2_dev', devSave:'lcc2_save_dev', abertura:'lcc2_abertura' };   // abertura (v8.5): '1' quando já tocou sozinha
 const MEM = {};
 function lsGet(k){
   try { const v = localStorage.getItem(k); if (v != null) return v; } catch(e) {}

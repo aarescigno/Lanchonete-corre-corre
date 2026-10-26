@@ -10,7 +10,7 @@ fails=0
 with sync_playwright() as p:
     b=p.chromium.launch(executable_path=exe)
     for w,h in VPS:
-        pg=b.new_page(viewport={'width':w,'height':h}); pg.goto('file://'+W); pg.wait_for_timeout(300)
+        pg=b.new_page(viewport={'width':w,'height':h}); pg.add_init_script("try{localStorage.setItem('lcc2_abertura','1')}catch(e){}"); pg.goto('file://'+W); pg.wait_for_timeout(300)
         r=pg.evaluate("()=>{const p=document.querySelector('.menu-panel');return [p.scrollHeight,p.clientHeight,p.scrollWidth,p.clientWidth]}")
         bad=r[0]>r[1]+1 or r[2]>r[3]+1
         fails+=bad
