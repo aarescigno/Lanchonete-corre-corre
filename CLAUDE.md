@@ -39,6 +39,7 @@ Cada parte é um trecho exato do arquivo final (o JS fica todo dentro de um `(fu
 
 ## Editor de desenhos (`ferramentas/`)
 - `python3 ferramentas/editor.py` abre em http://localhost:8765 o editor das cenas da abertura: o jogo roda escondido (com um gancho `window.__ed` só no arquivo do editor, nunca no jogo) e cada número das funções de `src/25-abertura.js` vira valor arrastável (pontos x,y na cena, números no código, setas). "Salvar em src/" grava o arquivo e monta o `lanchonete.html`; sem o servidor (`--so-montar`, arquivo aberto direto), baixa o arquivo ou copia as mudanças para colar no chat. Outros arquivos: `python3 ferramentas/editor.py src/20-desenho-base.js`. Só edita números dentro de funções (as cenas de `AB_CENAS` e as `function`), não as `const` soltas como `AB_CHAO`.
+- **Artifact do editor:** https://claude.ai/artifact/AbUM3hC22aaTmxAVYq5b2F (privado; sem salvar nem baixar, só "Copiar mudanças"). Para atualizar: `python3 ferramentas/editor.py --artifact` e publique `ferramentas/editor-artifact.html` nesse `url` (só quando o usuário pedir ou quando as cenas mudarem e ele for usar o editor; o editor carrega o jogo inteiro, então as cenas são as da hora em que foi publicado).
 - Quando o usuário mandar "Ajustes feitos no editor de desenhos" (linhas `-`/`+` com arquivo:linha), aplique em `src/` como vierem.
 
 ## Git
