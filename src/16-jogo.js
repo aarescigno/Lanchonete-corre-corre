@@ -522,7 +522,7 @@ class Game {
     const r = [5 - A.porCoracao * g.perdFila, bravo ? 1 : 5 - A.porCoracao * g.perdMesa + bonus, g.pratoQ || 1, avalMenu(), amb]
       .map(v => clamp(Math.round(v * 10) / 10, 1, 5));
     const txt = avalComentario(r, bravo, this.trashFull), nota = avalNota(r);
-    this.avals.push({ r, txt });
+    this.avals.push({ r, txt, k:g.type, v:g.vip });
     // balãozinho branco (sobe devagar, acima dos textos da conta)
     this.fx.push({ k:'text', box:true, x, y, vy:-12, life:2.8, max:2.8, text:fmtNota(nota) + '★ ' + txt, color:nota >= 4 ? PAL.ok : nota >= 3 ? PAL.alerta : PAL.perigo, size:13 });
   }
@@ -645,6 +645,7 @@ class Game {
     // Gurugol (v8.4): as avaliações do dia entram no save; o fim do dia mostra a nota do dia, a geral e 2 ou 3 comentários
     const avDia = avalMedias(this.avals.map(a => a.r));
     sv.aval = normAval(sv.aval.concat(this.avals.map(a => a.r)));
+    sv.avalCom = normAvalCom(sv.avalCom.concat(this.avals.map(a => ({ d:d.n, n:Math.round(avalNota(a.r) * 10), t:a.txt, k:a.k, v:a.v }))));
     const ord = this.avals.slice().sort((a, b) => avalNota(b.r) - avalNota(a.r)), coment = [];
     if (ord.length) [ord[0], ord[ord.length - 1], pick(ord)].forEach(a => { if (!coment.includes(a.txt)) coment.push(a.txt); });
     this.avals = [];   // já estão no save (a nota do HUD não conta duas vezes)
