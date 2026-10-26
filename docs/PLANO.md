@@ -7,7 +7,7 @@ Origem: retorno do Renan Martorelli (beta-tester) e conversa com o Arthur (15/10
 - Para começar uma sessão, basta pedir: **"faça a próxima etapa do docs/PLANO.md"**. A sessão lê só a etapa da vez e as partes de `src/` citadas nela.
 - Antes de programar, a sessão confirma com o usuário as **decisões em aberto** da etapa (cada uma já tem uma sugestão).
 - No fim, a sessão marca a etapa como feita na tabela abaixo (com a versão e a data) e anota o que mudou no plano.
-- Ordem: cada etapa depende só das anteriores. A 1a vem primeiro (mexe no equilíbrio de base). A 1c teve prioridade sobre as demais, por ser retorno do beta-tester Renan (pedido do usuário em 21/10). A 1d-1 (v7.4), a 1d-2 (v7.5), a 2 (v8) e a 2b (v8.3) foram feitas. **Ordem revista com o usuário em 22/10:** 2b (campanha contínua e banco), 2c (avaliações dos clientes), 2d (abertura animada do Modo História), 3a (área industrial), 3b (Avenida Brasil) e 4 (Terraço Suíça). A campanha vem antes dos pontos para a carreira não ser refeita duas vezes, e as avaliações viram a "experiência" que abre os pontos novos e a reputação da etapa 4. A 2c (v8.4) foi feita em 26/10. **A próxima é a 2d.** As etapas 5, 6 e 7 ficam **a rever** com o usuário antes de começar.
+- Ordem: cada etapa depende só das anteriores. A 1a vem primeiro (mexe no equilíbrio de base). A 1c teve prioridade sobre as demais, por ser retorno do beta-tester Renan (pedido do usuário em 21/10). A 1d-1 (v7.4), a 1d-2 (v7.5), a 2 (v8) e a 2b (v8.3) foram feitas. **Ordem revista com o usuário em 22/10:** 2b (campanha contínua e banco), 2c (avaliações dos clientes), 2d (abertura animada do Modo História), 3a (área industrial), 3b (Avenida Brasil) e 4 (Terraço Suíça). A campanha vem antes dos pontos para a carreira não ser refeita duas vezes, e as avaliações viram a "experiência" que abre os pontos novos e a reputação da etapa 4. A 2c (v8.4) e a 2d (v8.5) foram feitas em 26/10. **A próxima é a 3a.** As etapas 5, 6 e 7 ficam **a rever** com o usuário antes de começar.
 
 ## Situação
 | # | Etapa | Versão | Situação |
@@ -39,8 +39,8 @@ Origem: retorno do Renan Martorelli (beta-tester) e conversa com o Arthur (15/10
 | — | Retorno do usuário: preços de verdade (cardápio, 2º item, gorjeta de até 10%, ações viram pontos de atendimento, custos e metas de garagem) | v8.3.8 | feita (23/10) |
 | — | Retorno do usuário: jogo perfeito no dia 1 deu 1 estrela; metas e 3 estrelas pelo bot afiado | v8.3.9 | feita (23/10) |
 | 2c | Avaliações dos clientes (nota de 0 a 5 ★, 5 critérios) | v8.4 | feita (26/10) |
-| 2d | Abertura animada do Modo História: o sonho da Bia | v8.5 | **próxima** |
-| 3a | Mudança de ponto e Lanchonete na área industrial | v9 | a fazer |
+| 2d | Abertura animada do Modo História: o sonho da Bia | v8.5 | feita (26/10) |
+| 3a | Mudança de ponto e Lanchonete na área industrial | v9 | **próxima** |
 | 3b | Restaurante na Avenida Brasil | v9.1 | a fazer |
 | 4 | Terraço Suíça e VIPs exigentes | v10 | a fazer |
 | 5 | Modo História, parte 1: estrutura e primeiros capítulos | v11 | a rever |
@@ -362,6 +362,8 @@ Também: rever o `smoke7` (toque) e o `smoke10` (fila justa e porta), mais `bala
 - **Michelzão:** nome do guia escolhido pelo usuário em 22/10 (era "Guia Garfo de Ouro" na etapa 6). Como o Terraço Suíça, é uma brincadeira com o nome real: a estrela, a plaquinha e o letreiro são desenhos nossos, sem logo, mascote nem arte do guia de verdade.
 - Onde o Tonhão trabalhava (nome inventado do restaurante) e se o chef estrelado aparece.
 - A abertura toca sozinha na 1ª vez que o jogo abre (sugestão: não, para não atrasar a Missão zero; fica no botão História)?
+
+**Feito na v8.5 (26/10, `docs/spec-v8.5.md`).** Decisões do usuário: o roteiro é dele (texto em `docs/PROPOSTAS.md`), em 9 cenas (~68 s): a mãe da Bia, a **Rosa**, cozinha com carinho e entra na Casa Aurora, onde o irmão mais velho, o **Tonhão**, já cozinhava. A casa ganha a estrela do Michelzão com o tempero dos dois, mas a fama fica com o chef **Bráulio**. A Rosa adoece e morre (só na legenda). A Bia promete seguir o caminho dela, o Tonhão sai da Casa Aurora para ajudar e a Bia pega o empréstimo para a garagem. O tom é só emocionante, sem a piscadela da meritocracia. A abertura toca sozinha uma vez, na 1ª vez que o jogo abre, e depois pelo botão História. **Para as etapas 5 e 6:** o segredo da Rosa é uma pétala de rosa no molho (na abertura, só a pétala caindo, como pista), e o Bráulio nunca conseguiu repetir o molho. A dívida do banco da cena 8 é a dívida de abertura do Modo História.
 
 ---
 

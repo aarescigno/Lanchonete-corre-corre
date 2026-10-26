@@ -70,6 +70,22 @@ function playCareer(n){
 /* Missão zero: o texto do pop-up também vai para quem usa leitor de tela */
 game.hooks.treino = tr => { const e = $('treino-live'), p = tr.passo; if (e) e.textContent = p ? p.tit + '. ' + tr.texto() : ''; };
 function on(id, fn){ const e = $(id); if (e) e.addEventListener('click', fn); }
+/* abertura do Modo História (v8.5): pelo botão História, termina no cartão "Em breve"; sozinha (a 1ª vez), volta ao menu */
+let abertura = null;
+function abLive(){ const e = $('ab-live'); if (e) e.textContent = abertura ? abertura.texto() : ''; }
+function abrirAbertura(origem){
+  Sfx.init(); Sfx.resume();
+  lsSet(LS.abertura, '1');
+  abertura = new Abertura(origem, RM);
+  abertura.onCena = ab => { aberturaSom(ab.cena); abLive(); };
+  abertura.onFim = ab => { abertura = null; abLive(); if (ab.origem === 'menu') showOnly(['ov-historia']); else game.setState('menu'); };
+  aberturaSom(abertura.cena); abLive();
+  showOnly(['ov-abertura']);
+}
+on('btn-historia',   () => { Sfx.tap(); abrirAbertura('menu'); });
+on('btn-ab-pular',   () => { Sfx.tap(); if (abertura) abertura.pular(); });
+on('btn-historia-rever', () => { Sfx.tap(); abrirAbertura('menu'); });
+on('btn-historia-menu',  () => { Sfx.tap(); game.setState('menu'); });
 on('btn-play',       () => { Sfx.init(); Sfx.resume(); Sfx.tap(); playCareer(); });
 on('btn-treino',     () => { Sfx.init(); Sfx.resume(); Sfx.tap(); playCareer(0); });
 on('btn-how',        () => { Sfx.init(); Sfx.resume(); Sfx.tap(); buildTips(); showOnly(['ov-how']); });
@@ -143,6 +159,7 @@ function touchPad(e){
 canvas.addEventListener('pointerdown', e => {
   Sfx.init(); Sfx.resume();
   e.preventDefault();
+  if (abertura){ Sfx.tap(); abertura.seguir(); return; }   // abertura: o toque passa para a próxima cena
   try { canvas.setPointerCapture(e.pointerId); } catch(err) {}
   const p = toLogical(e); game.onDown(p.x, p.y, touchPad(e));
 });
@@ -153,6 +170,12 @@ canvas.addEventListener('contextmenu', e => e.preventDefault());
 window.addEventListener('keydown', e => {
   const k = e.key;
   if (e.target && (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA')) return;
+  // abertura: Esc pula; Enter, espaço e a seta para a direita seguem
+  if (abertura){
+    if (k === 'Escape'){ abertura.pular(); e.preventDefault(); }
+    else if ((k === 'Enter' || k === ' ' || k === 'Spacebar' || k === 'ArrowRight') && !(e.target && e.target.tagName === 'BUTTON')){ abertura.seguir(); e.preventDefault(); }
+    return;
+  }
   // Missão zero: Enter segue o pop-up de explicação
   if (k === 'Enter' && game.state === 'playing' && game.treino && game.treino.para && !(e.target && e.target.tagName === 'BUTTON')){ game.treino.seguir(); e.preventDefault(); return; }
   if (k === 'p' || k === 'P' || k === 'Escape' || ((k === ' ' || k === 'Spacebar') && !(e.target && e.target.tagName === 'BUTTON'))){
@@ -173,6 +196,8 @@ function frame(ts){
   let dt = (ts - last) / 1000; last = ts;
   if (!(dt > 0)) dt = 0.016;
   dt = Math.min(dt, 0.05);
+  const ab = abertura;
+  if (ab){ ab.update(dt); if (!ab.fim){ ctx.setTransform(canvas.width / TW, 0, 0, canvas.height / H, 0, 0); drawAbertura(ctx, ab); return; } }
   game.update(dt);
   ctx.setTransform(canvas.width / TW, 0, 0, canvas.height / H, 0, 0);
   render(game, ctx);
@@ -182,8 +207,9 @@ try { if (document.fonts && document.fonts.load) { document.fonts.load('20px "Ba
 fit();
 try { Rank.init(); } catch(e) {}
 game.setState('menu');
+if (!aberturaVista() && !DEV.on) abrirAbertura('auto');   // v8.5: a abertura toca sozinha uma vez
 window.__game = game;
-window.__lcc = { setShopTab: v => { shopTab = v; buildShop(); }, TREINO, TREINO_PASSOS, TREINO_COR, Treino, treinoLugar, treinoPrimeiro, playCareer, buildMenu, introBanco, buildFalencia, BANCO, normEmprestimo, parcelaDe, devidoDe, jurosDe, tabelaDe, simulaEmprestimo, SEMANA, semanaOf, diaOf, FILA_JUSTA, PORTA, CHAIRS, PAT, CONTAS, INGRED, CARDAPIO, precoPrato, MAIS, PONTOS_ACAO, GORJETA, DRINK_PRICE, MOVIMENTO, movimentoSalao, DIVULGA, DIVULGA_DIA, divulgaOf, contasDia, bomGoal, SALAO, PONTOS, pontoOf, MESA, mesaBox, mesaPreco, salaoLugares, mesaProblema, salaoCaminho, salaoProblema, salaoOrdena, salaoAuto, salaoVaga, salaoPerto, salaoKit, salaoDevolucao, SALAO_SEMFIM, normSalao, setObst, OBST, pathOk, MAQUINA, BEBIDA_ESPERA, bebidaOf, MANUT, manutOf, manutChance, manutPreco, normManut, CLIMA, CLIMA_DIA, introManut, normPend, CALCADA, TW, HUDX, esperaAp, tableApproach, CRIT, STAFF, DANI_TASKS, DANI_HANDS, daniTaskOk, TRASH, WASH, payroll, FOLHA_CORTE, folhaCorta, folhaCortes, folhaItens, listaE, pratosDe, couvertEffect, couvertOk, ambienteEffect, dishStock, normSave, Helper, JUICE, KITCHEN_SLOTS, handLayout, trayOk, Game, Group, Table, Kitchen, Waitress, BIA_SPEED, DAYS, UPGRADES, CUSTOMER_TYPES, LAYOUT, PAL, Sfx, findPath, render, Rank, sortRows, cleanName, normName, CMD, ENDLESS, VIP, MULTA, rk, renderRank, openRank, closeRank, LS, lsGet, lsSet, loadSave, DEV, saveKey, devSync, divulgaAberta, CAIXA_MAX, VERSAO, normCaixa, caixaResumo, caixaTotais, copyText, AVAL, AVAL_CRIT, AVAL_BRAVO, avalMenu, normAval, avalNota, avalMedias, avalGeral, avalMovimento, avalComentario, fmtNota, notaFaixa, gurugolCaixa, AVAL_COM, normAvalCom, buildGurugol };
+window.__lcc = { setShopTab: v => { shopTab = v; buildShop(); }, TREINO, TREINO_PASSOS, TREINO_COR, Treino, treinoLugar, treinoPrimeiro, playCareer, buildMenu, introBanco, buildFalencia, BANCO, normEmprestimo, parcelaDe, devidoDe, jurosDe, tabelaDe, simulaEmprestimo, SEMANA, semanaOf, diaOf, FILA_JUSTA, PORTA, CHAIRS, PAT, CONTAS, INGRED, CARDAPIO, precoPrato, MAIS, PONTOS_ACAO, GORJETA, DRINK_PRICE, MOVIMENTO, movimentoSalao, DIVULGA, DIVULGA_DIA, divulgaOf, contasDia, bomGoal, SALAO, PONTOS, pontoOf, MESA, mesaBox, mesaPreco, salaoLugares, mesaProblema, salaoCaminho, salaoProblema, salaoOrdena, salaoAuto, salaoVaga, salaoPerto, salaoKit, salaoDevolucao, SALAO_SEMFIM, normSalao, setObst, OBST, pathOk, MAQUINA, BEBIDA_ESPERA, bebidaOf, MANUT, manutOf, manutChance, manutPreco, normManut, CLIMA, CLIMA_DIA, introManut, normPend, CALCADA, TW, HUDX, esperaAp, tableApproach, CRIT, STAFF, DANI_TASKS, DANI_HANDS, daniTaskOk, TRASH, WASH, payroll, FOLHA_CORTE, folhaCorta, folhaCortes, folhaItens, listaE, pratosDe, couvertEffect, couvertOk, ambienteEffect, dishStock, normSave, Helper, JUICE, KITCHEN_SLOTS, handLayout, trayOk, Game, Group, Table, Kitchen, Waitress, BIA_SPEED, DAYS, UPGRADES, CUSTOMER_TYPES, LAYOUT, PAL, Sfx, findPath, render, Rank, sortRows, cleanName, normName, CMD, ENDLESS, VIP, MULTA, rk, renderRank, openRank, closeRank, LS, lsGet, lsSet, loadSave, DEV, saveKey, devSync, divulgaAberta, CAIXA_MAX, VERSAO, normCaixa, caixaResumo, caixaTotais, copyText, AVAL, AVAL_CRIT, AVAL_BRAVO, avalMenu, normAval, avalNota, avalMedias, avalGeral, avalMovimento, avalComentario, fmtNota, notaFaixa, gurugolCaixa, AVAL_COM, normAvalCom, buildGurugol, ABERTURA, Abertura, AB_CENAS, aberturaVista, aberturaSom, drawAbertura, abrirAbertura, aberturaAtual: () => abertura };
 window.requestAnimationFrame(frame);
 
 })();

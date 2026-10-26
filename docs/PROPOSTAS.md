@@ -4,6 +4,19 @@ Registro das ideias e dos retornos de quem jogou, com o texto original, e de ond
 
 ---
 
+## 26/10/2026 — Usuário: o roteiro da abertura (etapa 2d)
+**Origem:** a sessão da etapa 2d perguntou as decisões em aberto. O usuário escolheu o tom só emocionante (sem a piscadela da meritocracia), a Casa Aurora com um chef estrelado à parte e a abertura tocando sozinha uma vez. Depois, contou o roteiro em áudio:
+
+> Vou te descrever o que eu tô pensando, você me ajuda a traduzir em cenas e depois a gente começa a executar, tá bom? A Bia, pequena criança, vendo a mãe cozinhar. Ela gostava muito da mãe cozinhar, a mãe sempre quis ser cozinheira e tal, ela cozinhava sempre muito bem, ela queria ser uma chefe e tal, né? E aí, a mãe conseguiu uma oportunidade, começou a trabalhar num restaurante e aí ficou adoecida. E aí eu pensei numa cena da Bia junto com a mãe, num leito de um hospital, né? E aí a mãe morre. E aí a Bia, que sempre aprendeu que comida era afeto, né? Era carinho e trazia alegria, né? Que seguir esse caminho em homenagem à mãe, com o sonho de ser um restaurante muito condecorado. O irmão dessa mãe, da Bia, né? Que é o Tonhão, o Antônio. Era o irmão mais velho da mãe, né? É o tio mais velho da Bia. Ele trabalhava nesse restaurante que a mãe tinha sido recém-contratada. E o restaurante, pouco depois da chegada da mãe da Bia, ganhou uma estrela Michelin. Pela ajuda do Tonhão e da mãe da Bia. Mas quem recebeu a titulação e a fama foi o cozinheiro-chefe do dia, que disse que ele que tinha usado os temperos, que na verdade foi sugestão do Tonhão e da mãe da Bia. E aí Tonhão desanimou e saiu do restaurante. Sabendo do sonho da Bia, ele decidiu arregaçar as mangas e ajudar como podia, apesar de não terem dinheiro nenhum. E aí Bia resolveu dar a cartada de correr até um banco, pegar um empréstimo e abrir seu estabelecimento na garagem. Algo assim, me ajuda aí.
+
+A sessão propôs as cenas, e o usuário respondeu:
+
+> Pode ser Rosa o nome da mãe. E aí, o chefe do bigode lá, pode chamar Braulio. E o Braulio nunca conseguiu fazer o mesmo molho . Talvez esteja para um momento posterior da história, sabe? O Braulio nunca conseguiu fazer o molho porque ele não sabia exatamente o que tinha sido feito. Porque o segredo da Rosa era uma pétala de rosa na panela toda de molho. Isso mudava completamente e dava nuance perfeita que garantiu o Michelin. O Michelzão, né?
+
+**Destino:** v8.5 (`docs/spec-v8.5.md`), em 9 cenas. A estrela é a do Michelzão, nome inventado no lugar da marca real. O segredo da pétala fica guardado para o Modo História (etapas 5 e 6): na abertura, só aparece a pétala caindo na panela, como pista. O Bráulio nunca conseguir repetir o molho também fica para lá.
+
+---
+
 ## 26/10/2026 — Usuário: nomes dos critérios e aba Gurugol
 **Origem:** mensagem do usuário depois da v8.4.1:
 

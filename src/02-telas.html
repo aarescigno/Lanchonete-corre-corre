@@ -5,7 +5,7 @@
 
     <div class="ov show" id="ov-menu">
       <div class="panel menu-panel">
-        <span class="vtag" id="vtag" aria-label="Versão 8.4.2">v8.4.2</span>
+        <span class="vtag" id="vtag" aria-label="Versão 8.5">v8.5</span>
         <h1 class="title">Lanchonete <br>Corre-Corre</h1>
         <p class="tag">Ajude a Bia a atender a freguesia da esquina antes que o cafezinho esfrie!</p>
         <div class="lbl" id="menu-dia">Carreira: dia 1</div>
@@ -15,6 +15,7 @@
           <div class="row tight">
             <button class="btn go" id="btn-play">Continuar</button>
             <button class="btn alt" id="btn-treino">Missão zero</button>
+            <button class="btn alt" id="btn-historia">História</button>
           </div>
           <div class="row tight">
             <button class="btn" id="btn-endless">Turno sem fim</button>
@@ -50,6 +51,19 @@
         <p class="small" id="intro-note"></p>
         <p class="small" id="intro-manut"></p>
         <div class="row"><button class="btn go" id="btn-start">Abrir a lanchonete</button><button class="btn alt" id="btn-intro-menu">Menu</button></div>
+      </div>
+    </div>
+
+    <div class="ov" id="ov-abertura">
+      <button class="btn alt ab-pular" id="btn-ab-pular">Pular</button>
+    </div>
+
+    <div class="ov" id="ov-historia">
+      <div class="panel">
+        <h2>Em breve: o Modo História</h2>
+        <p>A Bia já abriu a garagem. A caminhada até a estrela do Michelzão vira um modo de jogo em breve.</p>
+        <p class="small">Enquanto isso, a carreira continua no menu, em Continuar.</p>
+        <div class="row"><button class="btn go" id="btn-historia-menu">Menu</button><button class="btn alt" id="btn-historia-rever">Ver de novo</button></div>
       </div>
     </div>
 
@@ -200,7 +214,8 @@
       <div class="panel">
         <h2>Versões</h2>
         <ul class="verlist">
-          <li><b>v8.4.2</b><span class="cur">versão atual</span><br>26/10/2026 &mdash; Aba Gurugol na lojinha: a nota com as barrinhas e os últimos 30 comentários da freguesia, do mais novo para o mais velho, com as estrelas, quem escreveu e o dia. Os critérios agora se chamam Qualidade da comida e Diversidade do cardápio.</li>
+          <li><b>v8.5</b><span class="cur">versão atual</span><br>26/10/2026 &mdash; O sonho da Bia: a abertura animada do Modo História, em 9 cenas, da cozinha da mãe, a Rosa, até a inauguração da Lanchonete Corre-Corre na garagem. Toca sozinha na primeira vez que o jogo abre; depois, no botão História do menu. Um toque passa a cena, e o Pular fica sempre à vista. O Modo História jogável vem em breve.</li>
+          <li><b>v8.4.2</b><br>26/10/2026 &mdash; Aba Gurugol na lojinha: a nota com as barrinhas e os últimos 30 comentários da freguesia, do mais novo para o mais velho, com as estrelas, quem escreveu e o dia. Os critérios agora se chamam Qualidade da comida e Diversidade do cardápio.<br><a href="versoes/v8.4.2.html" target="_blank" rel="noopener">Abrir a v8.4.2</a></li>
           <li><b>v8.4.1</b><br>26/10/2026 &mdash; Caixa do Gurugol no fim do dia: uma barrinha por critério vai enchendo até a nota dele, e embaixo a nota conta até o valor. Abaixo de 4 ela é pura; de 4 a 4,4, prateada; de 4,5 a 4,8, dourada e com brilhinhos de estrela; acima de 4,8, brilha como diamante, com mais brilhos.<br><a href="versoes/v8.4.1.html" target="_blank" rel="noopener">Abrir a v8.4.1</a></li>
           <li><b>v8.4</b><br>26/10/2026 &mdash; Avaliações no Gurugol: cada grupo que sai avalia a lanchonete de 1 a 5 em espera por mesa, agilidade, prato, cardápio e ambiente, com um balãozinho de comentário. A nota é a média das últimas 100 avaliações e aparece a partir da 20ª, no HUD, no fim do dia e no Caixa. Nota alta traz até 10% mais gente; nota baixa afasta até 10%.<br><a href="versoes/v8.4.html" target="_blank" rel="noopener">Abrir a v8.4</a></li>
           <li><b>v8.3.11</b><br>24/10/2026 &mdash; Desgaste sem sorteio: fogão, geladeira e cafeteira só vão gastando enquanto estão no verde e no amarelo. No vermelho (abaixo de 40%) há 50% de chance de quebrar no dia, e no limite (15% ou menos) quebra com certeza. A aba Manutenção e a introdução do dia avisam do risco de quebra durante o expediente (sem porcentagem) e do alto risco no limite.<br><a href="versoes/v8.3.11.html" target="_blank" rel="noopener">Abrir a v8.3.11</a></li>
@@ -248,6 +263,7 @@
     </div>
     <div class="devbadge" id="devbadge" style="display:none">Modo dev</div>
     <p class="sr" id="treino-live" role="status" aria-live="polite"></p>
+    <p class="sr" id="ab-live" role="status" aria-live="polite"></p>
   </div>
   <div id="rotate" role="status">Gire o celular para jogar melhor</div>
 </div>
