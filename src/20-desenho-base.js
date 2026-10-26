@@ -272,6 +272,10 @@ function drawPerson(ctx,p,x,y,o){
   ctx.strokeStyle = PAL.tinta; ctx.lineWidth = 1.8; ctx.lineCap = 'round';
   if (mood === 0){ ctx.beginPath(); ctx.arc(0,hy+3.4,4.4,0.2,Math.PI-0.2); ctx.stroke(); ctx.fillStyle = 'rgba(226,106,44,.28)'; circ(ctx,-7.5,hy+4,2.4); ctx.fill(); circ(ctx,7.5,hy+4,2.4); ctx.fill(); }
   else if (mood === 1){ ctx.beginPath(); ctx.moveTo(-3,hy+6.5); ctx.lineTo(3,hy+6.5); ctx.stroke(); }
+  else if (mood === 3){   // triste (abertura, v8.5.1): boca para baixo e sobrancelhas erguidas no meio
+    ctx.beginPath(); ctx.arc(0,hy+9.5,3.6,Math.PI+0.5,TAU-0.5); ctx.stroke();
+    ctx.lineWidth = 1.6; ctx.beginPath(); ctx.moveTo(-7,hy-3); ctx.lineTo(-2.5,hy-5); ctx.moveTo(7,hy-3); ctx.lineTo(2.5,hy-5); ctx.stroke();
+  }
   else {
     ctx.beginPath(); ctx.arc(0,hy+9,4,Math.PI+0.3,TAU-0.3); ctx.stroke();
     ctx.lineWidth = 2; ctx.beginPath(); ctx.moveTo(-7.5,hy-4.6); ctx.lineTo(-2,hy-2.4); ctx.moveTo(7.5,hy-4.6); ctx.lineTo(2,hy-2.4); ctx.stroke();

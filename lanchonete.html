@@ -299,7 +299,7 @@ table.rank tr.me td{background:#fbe7a8}
 
     <div class="ov show" id="ov-menu">
       <div class="panel menu-panel">
-        <span class="vtag" id="vtag" aria-label="Versão 8.5">v8.5</span>
+        <span class="vtag" id="vtag" aria-label="Versão 8.5.1">v8.5.1</span>
         <h1 class="title">Lanchonete <br>Corre-Corre</h1>
         <p class="tag">Ajude a Bia a atender a freguesia da esquina antes que o cafezinho esfrie!</p>
         <div class="lbl" id="menu-dia">Carreira: dia 1</div>
@@ -508,7 +508,8 @@ table.rank tr.me td{background:#fbe7a8}
       <div class="panel">
         <h2>Versões</h2>
         <ul class="verlist">
-          <li><b>v8.5</b><span class="cur">versão atual</span><br>26/10/2026 &mdash; O sonho da Bia: a abertura animada do Modo História, em 9 cenas, da cozinha da mãe, a Rosa, até a inauguração da Lanchonete Corre-Corre na garagem. Toca sozinha na primeira vez que o jogo abre; depois, no botão História do menu. Um toque passa a cena, e o Pular fica sempre à vista. O Modo História jogável vem em breve.</li>
+          <li><b>v8.5.1</b><span class="cur">versão atual</span><br>26/10/2026 &mdash; Abertura mais delicada no hospital: depois da última fala da Rosa, a cortina do leito se fecha, e uma cena nova mostra a Bia sozinha e triste no corredor, com a rosa da mãe na mão.</li>
+          <li><b>v8.5</b><br>26/10/2026 &mdash; O sonho da Bia: a abertura animada do Modo História, em 9 cenas, da cozinha da mãe, a Rosa, até a inauguração da Lanchonete Corre-Corre na garagem. Toca sozinha na primeira vez que o jogo abre; depois, no botão História do menu. Um toque passa a cena, e o Pular fica sempre à vista. O Modo História jogável vem em breve.<br><a href="versoes/v8.5.html" target="_blank" rel="noopener">Abrir a v8.5</a></li>
           <li><b>v8.4.2</b><br>26/10/2026 &mdash; Aba Gurugol na lojinha: a nota com as barrinhas e os últimos 30 comentários da freguesia, do mais novo para o mais velho, com as estrelas, quem escreveu e o dia. Os critérios agora se chamam Qualidade da comida e Diversidade do cardápio.<br><a href="versoes/v8.4.2.html" target="_blank" rel="noopener">Abrir a v8.4.2</a></li>
           <li><b>v8.4.1</b><br>26/10/2026 &mdash; Caixa do Gurugol no fim do dia: uma barrinha por critério vai enchendo até a nota dele, e embaixo a nota conta até o valor. Abaixo de 4 ela é pura; de 4 a 4,4, prateada; de 4,5 a 4,8, dourada e com brilhinhos de estrela; acima de 4,8, brilha como diamante, com mais brilhos.<br><a href="versoes/v8.4.1.html" target="_blank" rel="noopener">Abrir a v8.4.1</a></li>
           <li><b>v8.4</b><br>26/10/2026 &mdash; Avaliações no Gurugol: cada grupo que sai avalia a lanchonete de 1 a 5 em espera por mesa, agilidade, prato, cardápio e ambiente, com um balãozinho de comentário. A nota é a média das últimas 100 avaliações e aparece a partir da 20ª, no HUD, no fim do dia e no Caixa. Nota alta traz até 10% mais gente; nota baixa afasta até 10%.<br><a href="versoes/v8.4.html" target="_blank" rel="noopener">Abrir a v8.4</a></li>
@@ -1066,7 +1067,7 @@ function tabelaDe(e){
 /* um empréstimo novo de v, pagando em dia: as parcelas e os juros somados */
 function simulaEmprestimo(v, j){ const t = tabelaDe(normEmprestimo({ resto:v, amort:Math.ceil(v / BANCO.parcelas), j })); return { parcelas:t, juros:t.reduce((a, p) => a + p, 0) - v }; }
 const CAIXA_MAX = 14;                                 // livro-caixa (v7.2): quantos dias da carreira ficam guardados
-const VERSAO = 'v8.5';                                 // vai no resumo do Caixa
+const VERSAO = 'v8.5.1';                               // vai no resumo do Caixa
 const DIVULGA_DIA = 3;                                // antes disso, o movimento é o da inauguração (sem custo)
 function divulgaAberta(n){ return DEV.on || n >= DIVULGA_DIA; }   // no modo dev, desde o dia 1
 function divulgaOf(id){ return DIVULGA.find(d => d.id === id) || DIVULGA[1]; }
@@ -3331,7 +3332,7 @@ class Treino {
 /* ============================================================
    ABERTURA DO MODO HISTÓRIA (v8.5): o sonho da Bia
    Cenas com tempo, legenda e falas; o desenho fica em 25-abertura.js. Um toque passa para a próxima cena, "Pular"
-   termina. Com movimento reduzido, cada cena é um quadro parado (o fim da cena) e só avança por toque.
+   termina. Com movimento reduzido, cada cena é um quadro parado (o fim da cena, ou pRM) e só avança por toque.
    Toca sozinha uma vez, na 1ª vez que o jogo abre (LS.abertura); depois, pelo botão História do menu.
    ============================================================ */
 const ABERTURA = {
@@ -3350,10 +3351,15 @@ const ABERTURA = {
     { id:'estrela', t:7.5, leg:'Pouco depois, a Casa Aurora ganhou a estrela do Michelzão. O tempero era deles, mas a fama ficou com o chef Bráulio.',
       falas:[{ q:'braulio', s:'O tempero? Receita minha!', de:2.6 }],
       som:[[784,0,.3],[988,.2,.3],[1175,.4,.3],[1568,.6,.9],[440,1.8,.9]] },
-    { id:'hospital', t:8.5, leg:'Logo depois, a Rosa adoeceu.',
-      falas:[{ q:'rosa', s:'Cozinha sempre com carinho, filha.', de:1.6 }, { q:'bia', s:'Prometo, mãe.', de:4.6 }],
+    // a fala derradeira da Rosa e, depois, a cortina se fecha (com movimento reduzido, o quadro é o de antes da cortina: pRM)
+    { id:'hospital', t:8.5, pRM:0.55, leg:'Logo depois, a Rosa adoeceu.',
+      falas:[{ q:'rosa', s:'Cozinha sempre com carinho, filha.', de:1.4, ate:5.2 }, { q:'bia', s:'Prometo, mãe.', de:3.4, ate:5.4 }],
       som:[[440,0,.9],[392,.8,.9],[349,1.6,1.4]] },
-    { id:'promessa', t:8, leg:'A Rosa partiu, mas deixou a lição: comida é afeto, é alegria. Em homenagem à mãe, a Bia decidiu ter um restaurante com a estrela do Michelzão.',
+    // a Bia sozinha, triste, no corredor; nada mostrado da morte
+    { id:'saudade', t:6.5, leg:'A Rosa partiu.',
+      falas:[],
+      som:[[349,0,1.2],[330,1.1,1.2],[294,2.2,1.8]] },
+    { id:'promessa', t:8, leg:'A Bia guardou a lição da mãe: comida é afeto, é alegria. Em homenagem a ela, decidiu ter um restaurante com a estrela do Michelzão.',
       falas:[{ q:'bia', s:'Essa estrela vai ser nossa, mãe.', de:3.6 }],
       som:[[349,0,.7],[440,.6,.7],[523,1.2,1.1]] },
     { id:'tonhao', t:7.5, leg:'Desanimado, o Tonhão largou a Casa Aurora. Sabendo do sonho da sobrinha, arregaçou as mangas.',
@@ -3379,14 +3385,14 @@ class Abertura {
   get n(){ return ABERTURA.cenas.length; }
   get cena(){ return ABERTURA.cenas[this.i]; }
   // andamento da cena, de 0 a 1 (com movimento reduzido, sempre o quadro final)
-  get p(){ return this.rm ? 1 : clamp(this.t / this.cena.t, 0, 1); }
+  get p(){ return this.rm ? (this.cena.pRM != null ? this.cena.pRM : 1) : clamp(this.t / this.cena.t, 0, 1); }
   // opacidade do escuro por cima da cena (entrada e saída); 0 com movimento reduzido
   get escuro(){
     if (this.rm) return 0;
     const f = ABERTURA.fade, t = this.t, d = this.cena.t;
     return t < f ? 1 - t / f : (t > d - f ? clamp((t - (d - f)) / f, 0, 1) : 0);
   }
-  falas(){ return this.cena.falas.filter(f => this.rm || this.t >= f.de); }
+  falas(){ return this.cena.falas.filter(f => this.rm || (this.t >= f.de && !(f.ate && this.t >= f.ate))); }   // ate: some (a cortina vai fechar)
   // texto da cena para o leitor de tela: legenda, falas e título
   texto(){
     const c = this.cena, nome = { rosa:'Rosa', bia:'Bia', tonhao:'Tonhão', braulio:'Bráulio' };
@@ -3685,6 +3691,10 @@ function drawPerson(ctx,p,x,y,o){
   ctx.strokeStyle = PAL.tinta; ctx.lineWidth = 1.8; ctx.lineCap = 'round';
   if (mood === 0){ ctx.beginPath(); ctx.arc(0,hy+3.4,4.4,0.2,Math.PI-0.2); ctx.stroke(); ctx.fillStyle = 'rgba(226,106,44,.28)'; circ(ctx,-7.5,hy+4,2.4); ctx.fill(); circ(ctx,7.5,hy+4,2.4); ctx.fill(); }
   else if (mood === 1){ ctx.beginPath(); ctx.moveTo(-3,hy+6.5); ctx.lineTo(3,hy+6.5); ctx.stroke(); }
+  else if (mood === 3){   // triste (abertura, v8.5.1): boca para baixo e sobrancelhas erguidas no meio
+    ctx.beginPath(); ctx.arc(0,hy+9.5,3.6,Math.PI+0.5,TAU-0.5); ctx.stroke();
+    ctx.lineWidth = 1.6; ctx.beginPath(); ctx.moveTo(-7,hy-3); ctx.lineTo(-2.5,hy-5); ctx.moveTo(7,hy-3); ctx.lineTo(2.5,hy-5); ctx.stroke();
+  }
   else {
     ctx.beginPath(); ctx.arc(0,hy+9,4,Math.PI+0.3,TAU-0.3); ctx.stroke();
     ctx.lineWidth = 2; ctx.beginPath(); ctx.moveTo(-7.5,hy-4.6); ctx.lineTo(-2,hy-2.4); ctx.moveTo(7.5,hy-4.6); ctx.lineTo(2,hy-2.4); ctx.stroke();
@@ -5413,7 +5423,41 @@ const AB_CENAS = {
     abBraco(c,[[548,320],[526,352]],PAL.mostarda,SKINS[4]);
     // tudo um pouco mais escuro, como de noite
     c.fillStyle = 'rgba(30,42,74,.18)'; c.fillRect(0,0,TW,500);
+    // depois da fala derradeira, a cortina do leito corre no trilho e cobre a cama e a Bia (a janela e a rosa ficam)
+    c.fillStyle = PAL.cromoEsc; c.fillRect(0,36,820,6);
+    const fecha = abSuave(abSeg(p,0.66,0.88)), cx = 30 + fecha * 770;
+    if (cx > 34){
+      c.fillStyle = '#9FC4BC'; c.fillRect(0,42,cx,AB_CHAO - 52);
+      c.strokeStyle = 'rgba(34,32,28,.22)'; c.lineWidth = 3;
+      for (let x=20;x<cx - 6;x+=34){ c.beginPath(); c.moveTo(x,46); c.lineTo(x,AB_CHAO - 14); c.stroke(); }
+      c.strokeStyle = PAL.tinta; c.lineWidth = 3; c.strokeRect(-4,42,cx + 4,AB_CHAO - 52);
+      c.fillStyle = PAL.cromo; for (let x=12;x<cx;x+=34){ circ(c,x,40,4); c.fill(); }
+    }
     return { rosa:[330,250], bia:[610,232] };
+  },
+  saudade(c,p,T){
+    // o corredor do hospital, à noite: a Bia sozinha na cadeira, com a rosa da mãe na mão
+    c.fillStyle = '#B9CFCA'; c.fillRect(0,0,TW,AB_CHAO);
+    c.fillStyle = '#A7C0BA'; c.fillRect(0,290,TW,10);
+    abJanela(c,820,80,200,150,AB_COR.noite,T,false);
+    if (!RM){ c.strokeStyle = 'rgba(255,255,255,.35)'; c.lineWidth = 2; for (let i=0;i<10;i++){ const x = 830 + ((i * 47 + T * 60) % 180), y = 90 + ((i * 31 + T * 220) % 130); c.beginPath(); c.moveTo(x,y); c.lineTo(x - 3,y + 10); c.stroke(); } }
+    abChao(c,'#93AAA6');
+    // a fileira de cadeiras vazias e a Bia na do meio
+    [380,500,620,740].forEach(x => {
+      rr(c,x - 44,372,88,14,4); fs(c,'#3C7BD9',2.5);
+      rr(c,x - 40,300,80,74,8); fs(c,'#3C7BD9',2.5);
+      c.strokeStyle = PAL.tinta; c.lineWidth = 6; c.beginPath(); c.moveTo(x - 34,386); c.lineTo(x - 34,AB_CHAO); c.moveTo(x + 34,386); c.lineTo(x + 34,AB_CHAO); c.stroke();
+    });
+    abBiaCrianca(c,500,388,2.6,{ sentada:true, mood:3, t:T });
+    // a rosa nas mãos e uma lágrima
+    c.strokeStyle = PAL.ok; c.lineWidth = 3; c.beginPath(); c.moveTo(498,384); c.lineTo(504,368); c.stroke();
+    abFlor(c,505,364,5);
+    const la = RM ? 0.5 : (T * 0.5) % 1;
+    c.globalAlpha = RM ? 1 : 1 - la;
+    c.beginPath(); const lx = 492, ly = 339 + la * 12; c.moveTo(lx,ly - 6); c.quadraticCurveTo(lx + 5,ly + 2,lx,ly + 4); c.quadraticCurveTo(lx - 5,ly + 2,lx,ly - 6); fs(c,'#8EC5E8',1.4);
+    c.globalAlpha = 1;
+    c.fillStyle = 'rgba(30,42,74,.22)'; c.fillRect(0,0,TW,500);
+    return { bia:[500,240] };
   },
   promessa(c,p,T){
     abCozinhaCasa(c,T,true);

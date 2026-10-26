@@ -309,7 +309,41 @@ const AB_CENAS = {
     abBraco(c,[[548,320],[526,352]],PAL.mostarda,SKINS[4]);
     // tudo um pouco mais escuro, como de noite
     c.fillStyle = 'rgba(30,42,74,.18)'; c.fillRect(0,0,TW,500);
+    // depois da fala derradeira, a cortina do leito corre no trilho e cobre a cama e a Bia (a janela e a rosa ficam)
+    c.fillStyle = PAL.cromoEsc; c.fillRect(0,36,820,6);
+    const fecha = abSuave(abSeg(p,0.66,0.88)), cx = 30 + fecha * 770;
+    if (cx > 34){
+      c.fillStyle = '#9FC4BC'; c.fillRect(0,42,cx,AB_CHAO - 52);
+      c.strokeStyle = 'rgba(34,32,28,.22)'; c.lineWidth = 3;
+      for (let x=20;x<cx - 6;x+=34){ c.beginPath(); c.moveTo(x,46); c.lineTo(x,AB_CHAO - 14); c.stroke(); }
+      c.strokeStyle = PAL.tinta; c.lineWidth = 3; c.strokeRect(-4,42,cx + 4,AB_CHAO - 52);
+      c.fillStyle = PAL.cromo; for (let x=12;x<cx;x+=34){ circ(c,x,40,4); c.fill(); }
+    }
     return { rosa:[330,250], bia:[610,232] };
+  },
+  saudade(c,p,T){
+    // o corredor do hospital, à noite: a Bia sozinha na cadeira, com a rosa da mãe na mão
+    c.fillStyle = '#B9CFCA'; c.fillRect(0,0,TW,AB_CHAO);
+    c.fillStyle = '#A7C0BA'; c.fillRect(0,290,TW,10);
+    abJanela(c,820,80,200,150,AB_COR.noite,T,false);
+    if (!RM){ c.strokeStyle = 'rgba(255,255,255,.35)'; c.lineWidth = 2; for (let i=0;i<10;i++){ const x = 830 + ((i * 47 + T * 60) % 180), y = 90 + ((i * 31 + T * 220) % 130); c.beginPath(); c.moveTo(x,y); c.lineTo(x - 3,y + 10); c.stroke(); } }
+    abChao(c,'#93AAA6');
+    // a fileira de cadeiras vazias e a Bia na do meio
+    [380,500,620,740].forEach(x => {
+      rr(c,x - 44,372,88,14,4); fs(c,'#3C7BD9',2.5);
+      rr(c,x - 40,300,80,74,8); fs(c,'#3C7BD9',2.5);
+      c.strokeStyle = PAL.tinta; c.lineWidth = 6; c.beginPath(); c.moveTo(x - 34,386); c.lineTo(x - 34,AB_CHAO); c.moveTo(x + 34,386); c.lineTo(x + 34,AB_CHAO); c.stroke();
+    });
+    abBiaCrianca(c,500,388,2.6,{ sentada:true, mood:3, t:T });
+    // a rosa nas mãos e uma lágrima
+    c.strokeStyle = PAL.ok; c.lineWidth = 3; c.beginPath(); c.moveTo(498,384); c.lineTo(504,368); c.stroke();
+    abFlor(c,505,364,5);
+    const la = RM ? 0.5 : (T * 0.5) % 1;
+    c.globalAlpha = RM ? 1 : 1 - la;
+    c.beginPath(); const lx = 492, ly = 339 + la * 12; c.moveTo(lx,ly - 6); c.quadraticCurveTo(lx + 5,ly + 2,lx,ly + 4); c.quadraticCurveTo(lx - 5,ly + 2,lx,ly - 6); fs(c,'#8EC5E8',1.4);
+    c.globalAlpha = 1;
+    c.fillStyle = 'rgba(30,42,74,.22)'; c.fillRect(0,0,TW,500);
+    return { bia:[500,240] };
   },
   promessa(c,p,T){
     abCozinhaCasa(c,T,true);
