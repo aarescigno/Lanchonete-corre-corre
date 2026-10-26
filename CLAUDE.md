@@ -37,6 +37,10 @@ Cada parte é um trecho exato do arquivo final (o JS fica todo dentro de um `(fu
 - O Playwright usa `/opt/pw-browsers/chromium` quando existe.
 - `botpage.js` é gerado a partir de `bot.js` por `gera_botpage.sh` (o `run_all.sh` já chama).
 
+## Editor de desenhos (`ferramentas/`)
+- `python3 ferramentas/editor.py` abre em http://localhost:8765 o editor das cenas da abertura: o jogo roda escondido (com um gancho `window.__ed` só no arquivo do editor, nunca no jogo) e cada número das funções de `src/25-abertura.js` vira valor arrastável (pontos x,y na cena, números no código, setas). "Salvar em src/" grava o arquivo e monta o `lanchonete.html`; sem o servidor (`--so-montar`, arquivo aberto direto), baixa o arquivo ou copia as mudanças para colar no chat. Outros arquivos: `python3 ferramentas/editor.py src/20-desenho-base.js`. Só edita números dentro de funções (as cenas de `AB_CENAS` e as `function`), não as `const` soltas como `AB_CHAO`.
+- Quando o usuário mandar "Ajustes feitos no editor de desenhos" (linhas `-`/`+` com arquivo:linha), aplique em `src/` como vierem.
+
 ## Git
 - **Sem branches parados:** todo trabalho termina com PR para o `claude/main` (o branch padrão), merge e o branch apagado, para o `claude/main` ser sempre a versão mais nova (o GitHub Pages publica a partir dele, e o workflow confere `python3 montar.py --check`).
 
