@@ -13,7 +13,7 @@ Retorno do usuário sobre a v8.5 (texto em `docs/PROPOSTAS.md`): mostrar a Rosa 
 A receita especial da Casa Aurora: o toque do Tonhão de **cominho com açafrão** e a **pétala de rosa** da Dona Rosa. Não entra na abertura (anotado no `docs/PLANO.md`).
 
 ## Os braços no hospital (correção)
-A Bia não tem mais um 3º braço: o esquerdo dela sai do ombro e pousa a mão sobre a da mãe (`drawPerson` aceita `bracoE`, o cotovelo e a mão do braço esquerdo, nas medidas da pessoa). A Rosa ganhou o ombro e a manga da camisola (azul-clara) por cima do cobertor, e o braço estendido é da cor da pele, e não do cobertor.
+A Bia não tem mais um 3º braço: o esquerdo dela sai do ombro e pousa a mão sobre a da mãe (`drawPerson` aceita `bracoE`, o cotovelo e a mão do braço esquerdo, nas medidas da pessoa). A Rosa ganhou o corpo, de camisola azul-clara, deitado entre o travesseiro e o cobertor; o cobertor cobre do peito aos pés, com o volume do corpo e dos pés e a dobra branca do lençol no alto, e o braço (da cor da pele, e não do cobertor) sai de baixo da dobra até a mão da Bia.
 
 ## Testes
 - `smoke26.js` (30): as 10 cenas, as falas do hospital somem antes da cortina, e o quadro do hospital com movimento reduzido é o de antes da cortina.

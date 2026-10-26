@@ -5417,6 +5417,7 @@ const AB_CENAS = {
     c.strokeStyle = PAL.cromo; c.lineWidth = 4; c.stroke();
     rr(c,290,250,20,150,6); fs(c,PAL.cromo,2.5);
     ell(c,370,322,56,22); fs(c,'#fff',2.5);                                     // o travesseiro
+    rr(c,396,322,70,44,20); fs(c,'#BFD8E8',2.5);                               // o corpo, de camisola, deitado (os ombros saem do cobertor)
     circ(c,372,296,30); fs(c,'#1B1512',2.4);                                   // o coque
     circ(c,388,316,28); fs(c,SKINS[3],2.6);
     abFlor(c,360,290,5);
@@ -5425,12 +5426,13 @@ const AB_CENAS = {
     c.beginPath(); c.arc(392,326,5,0.3,Math.PI-0.3); c.stroke();
     // o cobertor rosa (respira devagar)
     const resp = RM ? 0 : Math.sin(T * 1.4) * 2;
-    c.beginPath(); c.moveTo(410,334 - resp); c.quadraticCurveTo(560,300 - resp,730,322); c.lineTo(730,372); c.lineTo(410,372); c.closePath(); fs(c,'#E7A9B8',3);
-    // o braço da Rosa por cima do cobertor: a manga da camisola e a mão estendida para a Bia
-    abBraco(c,[[440,346],[466,350],[492,346]],SKINS[3],SKINS[3]);
-    c.strokeStyle = PAL.tinta; c.lineWidth = 13; c.beginPath(); c.moveTo(432,345); c.lineTo(448,348); c.stroke();
-    ell(c,426,343,19,12); fs(c,'#BFD8E8',2.5);                                // o ombro, virado para a Bia, e a manga
-    c.strokeStyle = '#BFD8E8'; c.lineWidth = 9; c.beginPath(); c.moveTo(432,345); c.lineTo(448,348); c.stroke();
+    // o cobertor rosa, do peito aos pés, com o volume do corpo (respira devagar) e a dobra do lençol no alto
+    c.beginPath(); c.moveTo(446,372); c.lineTo(446,328 - resp);
+    c.quadraticCurveTo(520,312 - resp,600,326); c.quadraticCurveTo(650,332,684,318); c.quadraticCurveTo(712,308,730,330);
+    c.lineTo(730,372); c.closePath(); fs(c,'#E7A9B8',3);
+    // o braço da Rosa sai de baixo da dobra do lençol e estende a mão para a Bia
+    abBraco(c,[[450,344],[470,350],[492,346]],SKINS[3],SKINS[3]);
+    c.beginPath(); c.moveTo(446,372); c.lineTo(446,328 - resp); c.quadraticCurveTo(452,326 - resp,460,325 - resp); c.lineTo(460,372); c.closePath(); fs(c,'#fff',2.5);
     // a Bia na cadeira, segurando a mão da mãe
     rr(c,520,360,90,16,4); fs(c,PAL.madeira,2.5);
     c.strokeStyle = PAL.tinta; c.lineWidth = 6; c.beginPath(); c.moveTo(530,376); c.lineTo(530,AB_CHAO); c.moveTo(600,376); c.lineTo(600,AB_CHAO); c.stroke();
