@@ -21,6 +21,7 @@ html,body{margin:0;padding:0;height:100%;width:100%;overflow:hidden;background:#
 .ov.show{display:flex}
 /* abertura do Modo História (v8.5): o canvas desenha as cenas; por cima, só o Pular (o resto do toque vai ao canvas) */
 #ov-abertura{background:transparent;pointer-events:none;align-items:flex-start;justify-content:flex-end}
+#ov-abertura{gap:calc(var(--u)*8)}
 #ov-abertura .btn{pointer-events:auto;font-size:max(13px,calc(var(--u)*18));min-height:44px;padding:calc(var(--u)*4) calc(var(--u)*18)}
 #ov-menu{background:linear-gradient(90deg,rgba(34,32,28,.0),rgba(34,32,28,0));justify-content:flex-start;padding-left:calc(var(--u)*34)}
 .panel{background:var(--azulejo);color:var(--tinta);border:calc(var(--u)*4) solid var(--tinta);border-radius:calc(var(--u)*18);box-shadow:calc(var(--u)*6) calc(var(--u)*6) 0 var(--tinta);padding:calc(var(--u)*18) calc(var(--u)*26);max-width:96%;max-height:97%;overflow:auto;text-align:center;position:relative}
@@ -349,6 +350,7 @@ table.rank tr.me td{background:#fbe7a8}
     </div>
 
     <div class="ov" id="ov-abertura">
+      <button class="btn alt ab-voltar" id="btn-ab-voltar">Voltar</button>
       <button class="btn alt ab-pular" id="btn-ab-pular">Pular</button>
     </div>
 
@@ -509,7 +511,7 @@ table.rank tr.me td{background:#fbe7a8}
         <h2>Versões</h2>
         <ul class="verlist">
           <li><b>v8.5.1</b><span class="cur">versão atual</span><br>26/10/2026 &mdash; Abertura mais delicada no hospital: depois da última fala da Rosa, a cortina do leito se fecha, e uma cena nova mostra a Bia sozinha e triste no corredor, com a rosa da mãe na mão.</li>
-          <li><b>v8.5</b><br>26/10/2026 &mdash; O sonho da Bia: a abertura animada do Modo História, em 9 cenas, da cozinha da mãe, a Rosa, até a inauguração da Lanchonete Corre-Corre na garagem. Toca sozinha na primeira vez que o jogo abre; depois, no botão História do menu. Um toque passa a cena, e o Pular fica sempre à vista. O Modo História jogável vem em breve.<br><a href="versoes/v8.5.html" target="_blank" rel="noopener">Abrir a v8.5</a></li>
+          <li><b>v8.5</b><br>26/10/2026 &mdash; O sonho da Bia: a abertura animada do Modo História, em 9 cenas, da cozinha da mãe, a Rosa, até a inauguração da Lanchonete Corre-Corre na garagem. Toca sozinha na primeira vez que o jogo abre; depois, no botão História do menu. Um toque passa a cena, o Voltar (ou a seta para a esquerda) volta um quadro e o Pular fica sempre à vista. O Modo História jogável vem em breve.<br><a href="versoes/v8.5.html" target="_blank" rel="noopener">Abrir a v8.5</a></li>
           <li><b>v8.4.2</b><br>26/10/2026 &mdash; Aba Gurugol na lojinha: a nota com as barrinhas e os últimos 30 comentários da freguesia, do mais novo para o mais velho, com as estrelas, quem escreveu e o dia. Os critérios agora se chamam Qualidade da comida e Diversidade do cardápio.<br><a href="versoes/v8.4.2.html" target="_blank" rel="noopener">Abrir a v8.4.2</a></li>
           <li><b>v8.4.1</b><br>26/10/2026 &mdash; Caixa do Gurugol no fim do dia: uma barrinha por critério vai enchendo até a nota dele, e embaixo a nota conta até o valor. Abaixo de 4 ela é pura; de 4 a 4,4, prateada; de 4,5 a 4,8, dourada e com brilhinhos de estrela; acima de 4,8, brilha como diamante, com mais brilhos.<br><a href="versoes/v8.4.1.html" target="_blank" rel="noopener">Abrir a v8.4.1</a></li>
           <li><b>v8.4</b><br>26/10/2026 &mdash; Avaliações no Gurugol: cada grupo que sai avalia a lanchonete de 1 a 5 em espera por mesa, agilidade, prato, cardápio e ambiente, com um balãozinho de comentário. A nota é a média das últimas 100 avaliações e aparece a partir da 20ª, no HUD, no fim do dia e no Caixa. Nota alta traz até 10% mais gente; nota baixa afasta até 10%.<br><a href="versoes/v8.4.html" target="_blank" rel="noopener">Abrir a v8.4</a></li>
@@ -3411,6 +3413,13 @@ class Abertura {
     this.i++; this.t = 0;
     if (this.onCena) this.onCena(this);
   }
+  // volta um quadro: a cena anterior (na primeira, recomeça a cena)
+  voltar(){
+    if (this.fim) return;
+    if (this.i > 0) this.i--;
+    this.t = 0;
+    if (this.onCena) this.onCena(this);
+  }
   pular(){ this.terminar(); }
   terminar(){ if (this.fim) return; this.fim = true; if (this.onFim) this.onFim(this); }
 }
@@ -5415,12 +5424,12 @@ const AB_CENAS = {
     const resp = RM ? 0 : Math.sin(T * 1.4) * 2;
     c.beginPath(); c.moveTo(410,334 - resp); c.quadraticCurveTo(560,300 - resp,730,322); c.lineTo(730,372); c.lineTo(410,372); c.closePath(); fs(c,'#E7A9B8',3);
     // a mão da Rosa e a da Bia
-    abBraco(c,[[470,330],[520,352]],'#E7A9B8',SKINS[3]);
+    abBraco(c,[[450,336],[488,350]],'#E7A9B8',SKINS[3]);
     // a Bia na cadeira, segurando a mão da mãe
     rr(c,520,360,90,16,4); fs(c,PAL.madeira,2.5);
     c.strokeStyle = PAL.tinta; c.lineWidth = 6; c.beginPath(); c.moveTo(530,376); c.lineTo(530,AB_CHAO); c.moveTo(600,376); c.lineTo(600,AB_CHAO); c.stroke();
     abBiaCrianca(c,566,372,2.6,{ sentada:true, mood:1, t:T });
-    abBraco(c,[[548,320],[526,352]],PAL.mostarda,SKINS[4]);
+    abBraco(c,[[541,338],[516,356],[499,352]],PAL.mostarda,SKINS[4]);   // do ombro, o braço desce e a mão pousa sobre a da mãe
     // tudo um pouco mais escuro, como de noite
     c.fillStyle = 'rgba(30,42,74,.18)'; c.fillRect(0,0,TW,500);
     // depois da fala derradeira, a cortina do leito corre no trilho e cobre a cama e a Bia (a janela e a rosa ficam)
@@ -6882,6 +6891,7 @@ function abrirAbertura(origem){
   showOnly(['ov-abertura']);
 }
 on('btn-historia',   () => { Sfx.tap(); abrirAbertura('menu'); });
+on('btn-ab-voltar',  () => { Sfx.tap(); if (abertura) abertura.voltar(); });
 on('btn-ab-pular',   () => { Sfx.tap(); if (abertura) abertura.pular(); });
 on('btn-historia-rever', () => { Sfx.tap(); abrirAbertura('menu'); });
 on('btn-historia-menu',  () => { Sfx.tap(); game.setState('menu'); });
@@ -6969,9 +6979,10 @@ canvas.addEventListener('contextmenu', e => e.preventDefault());
 window.addEventListener('keydown', e => {
   const k = e.key;
   if (e.target && (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA')) return;
-  // abertura: Esc pula; Enter, espaço e a seta para a direita seguem
+  // abertura: Esc pula; a seta para a esquerda volta; Enter, espaço e a seta para a direita seguem
   if (abertura){
     if (k === 'Escape'){ abertura.pular(); e.preventDefault(); }
+    else if (k === 'ArrowLeft'){ abertura.voltar(); e.preventDefault(); }
     else if ((k === 'Enter' || k === ' ' || k === 'Spacebar' || k === 'ArrowRight') && !(e.target && e.target.tagName === 'BUTTON')){ abertura.seguir(); e.preventDefault(); }
     return;
   }
