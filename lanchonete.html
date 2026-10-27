@@ -4458,6 +4458,20 @@ function drawKitchen(ctx,g,t){
     rr(ctx,r.x+8,r.y+r.h-12,r.w-12,10,3); fs(ctx,PAL.cromo,2.2);
   });
   glow('sink');
+  // pia brilha quando não sobra prato limpo
+  if (isFinite(g.kitchen.clean) && g.kitchen.clean <= 0){
+    const k = RM ? 0.6 : 0.5 + 0.5*Math.sin(t*5);
+    ctx.save();
+    rr(ctx,799,438,86,46,6); ctx.fillStyle = 'rgba(255,236,150,' + (0.16 + 0.2*k) + ')'; ctx.fill();
+    ctx.strokeStyle = 'rgba(255,214,90,' + (0.5 + 0.4*k) + ')'; ctx.lineWidth = 3; ctx.stroke();
+    [[808,448],[870,452],[838,474],[878,478]].forEach((c,i) => {
+      const q = RM ? 1 : Math.max(0, Math.sin(t*5 + i*1.7)), z = 2 + 5*q;
+      if (q <= 0.05) return;
+      ctx.strokeStyle = 'rgba(255,255,255,' + (0.4 + 0.5*q) + ')'; ctx.lineWidth = 2;
+      ctx.beginPath(); ctx.moveTo(c[0]-z,c[1]); ctx.lineTo(c[0]+z,c[1]); ctx.moveTo(c[0],c[1]-z); ctx.lineTo(c[0],c[1]+z); ctx.stroke();
+    });
+    ctx.restore();
+  }
 
   // balcão (faixa frontal de inox)
   ctx.fillStyle = PAL.inox; ctx.fillRect(760,92,12,448);
