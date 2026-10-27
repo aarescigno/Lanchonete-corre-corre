@@ -17,7 +17,13 @@ class Kitchen {
   purge(group){
     this.queue   = this.queue.filter(t => t.group !== group);
     this.cooking = this.cooking.filter(t => t.group !== group);
-    this.plates  = this.plates.map(p => (p && p.group === group) ? null : p);
+    // o prato pronto de quem foi embora não some: vai sozinho para a pia, para ser lavado
+    this.plates  = this.plates.map(p => {
+      if (!p || p.group !== group) return p;
+      this.sinkN++;
+      this.game.addText(PLATE_SLOTS[p.slot].x, PLATE_SLOTS[p.slot].y - 34, 'Pra pia!', PAL.faixa, 14);
+      return null;
+    });
   }
   progressFor(group){
     const c = this.cooking.find(t => t.group === group);

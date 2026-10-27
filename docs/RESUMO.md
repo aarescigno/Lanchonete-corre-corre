@@ -210,6 +210,7 @@
 - `smoke21` (34/34: v8.3.1 e o atraso com juros da v8.3.2, parcela atrasada e avisos, pagar no dia seguinte, o banco toma a lanchonete, menu e reabrir, recomeçar, quitar, última parcela, à força com atraso);
 - `smoke25` (48/48: v8.4, a caixa da v8.4.1 e a aba Gurugol da v8.4.2, Gurugol: critérios, média das 100 últimas a partir da 20ª, movimento, save, dia inteiro, fim do dia, caixa e HUD);
 - `smoke26` (30/30: v8.5 e v8.5.1, a abertura (a cortina do hospital e a saudade): toca sozinha só na 1ª vez, cenas e tempos, falas e escuro, toque, Pular, cartão "Em breve", save intacto, modo dev, movimento reduzido);
+- `smoke27` (9/9: o prato de quem vai embora não some: do balcão vai para a pia, na mão vira louça suja ou vai para a pia se não couber);
 - `menu_fit` (14 tamanhos de tela);
 - `balance` (bot, N rodadas por dia; `DIV`, `MULT`, `MOVEIS`, `MOVIMENTO`, `GRUPOS`, `DIAS`, `BOT=afiado`, `ORDEM`, `INGRED`, `CONTAS`, `METAS`; perdas por causa e 3★);
 - `emprestimo` (v8.3.2: o patrimônio no fim da campanha sem empréstimo, pegando cedo, amortizando e pegando sempre; `MOVEIS`, `IMPREV`, `BANCO_CFG`, `VALOR`, `DIA0`);
