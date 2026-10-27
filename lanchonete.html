@@ -1619,7 +1619,13 @@ class Kitchen {
   purge(group){
     this.queue   = this.queue.filter(t => t.group !== group);
     this.cooking = this.cooking.filter(t => t.group !== group);
-    this.plates  = this.plates.map(p => (p && p.group === group) ? null : p);
+    // o prato pronto de quem foi embora não some: vai sozinho para a pia, para ser lavado
+    this.plates  = this.plates.map(p => {
+      if (!p || p.group !== group) return p;
+      this.sinkN++;
+      this.game.addText(PLATE_SLOTS[p.slot].x, PLATE_SLOTS[p.slot].y - 34, 'Pra pia!', PAL.faixa, 14);
+      return null;
+    });
   }
   progressFor(group){
     const c = this.cooking.find(t => t.group === group);
@@ -1754,8 +1760,14 @@ class Waitress {
     if (i === 0){ this.phase = 'idle'; this.path = []; this.doing = null; }
   }
   clearActs(){ this.acts = []; this.phase = 'idle'; this.path = []; this.doing = null; }
+  /* o grupo foi embora: o prato dele na mão vira louça suja (se não couber nas mãos, vai direto para a pia) */
   purgeGroup(group){
-    this.hands = this.hands.filter(h => h.group !== group);
+    this.hands = this.hands.filter(h => h.group !== group || h.kind === 'dish');
+    this.hands.filter(h => h.kind === 'dish' && h.group === group).forEach(h => {
+      const i = this.hands.indexOf(h), sujo = { kind:'dirty', n:group.size };
+      this.hands[i] = sujo;
+      if (!this.layout()){ this.hands.splice(i, 1); this.g.kitchen.sinkN++; }
+    });
   }
   apFor(a){
     const g = this.g;

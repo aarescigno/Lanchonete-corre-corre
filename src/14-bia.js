@@ -85,8 +85,14 @@ class Waitress {
     if (i === 0){ this.phase = 'idle'; this.path = []; this.doing = null; }
   }
   clearActs(){ this.acts = []; this.phase = 'idle'; this.path = []; this.doing = null; }
+  /* o grupo foi embora: o prato dele na mão vira louça suja (se não couber nas mãos, vai direto para a pia) */
   purgeGroup(group){
-    this.hands = this.hands.filter(h => h.group !== group);
+    this.hands = this.hands.filter(h => h.group !== group || h.kind === 'dish');
+    this.hands.filter(h => h.kind === 'dish' && h.group === group).forEach(h => {
+      const i = this.hands.indexOf(h), sujo = { kind:'dirty', n:group.size };
+      this.hands[i] = sujo;
+      if (!this.layout()){ this.hands.splice(i, 1); this.g.kitchen.sinkN++; }
+    });
   }
   apFor(a){
     const g = this.g;

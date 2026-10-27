@@ -4,6 +4,15 @@ Registro das ideias e dos retornos de quem jogou, com o texto original, e de ond
 
 ---
 
+## 27/10/2026 — Usuário: o prato some com quem desiste
+**Origem:** mensagem do usuário:
+
+> bugíssimo detectado, quando uma pessoa desiste de comer e vai embora com o prato já pronto ou em transporte para a mesa, não só a comida some, mas o prato desaparece também, e vez disso prefiro que o prato, se estiver na mão, se transforme em prato sujo para ser levado para a pia ou, se estiver no balcão, transporte-se para a pia automaticamente para ser lavado
+
+**Destino:** feito sobre a v8.5.1 (sem mudar o número da versão): o prato pronto no balcão de quem vai embora vai sozinho para a pia ("Pra pia!", `Kitchen.purge`); o prato na mão da Bia vira louça suja (`Waitress.purgeGroup`) e, só se a louça não couber nas mãos (comandas na mão e cafezinho na bandeja), vai direto para a pia. Lavado, volta como prato limpo. Teste: `smoke27`.
+
+---
+
 ## 26/10/2026 — Usuário: a Rosa sem corpo na cama
 **Origem:** mensagem do usuário depois da correção dos braços:
 
