@@ -120,7 +120,7 @@ function afiado(g,L){
     }
     // sucos
     const jt=g.tables.filter(t=>t.group&&t.group.juiceOpen&&t.group.juicePending>0);
-    if(b.juiceN()){ const t=jt.slice().sort((a,c)=>(c.group.state==='wantBill')-(a.group.state==='wantBill'))[0]; if(t) add((t.group.state==='wantBill'?ttl(t.group):20)-tw(t),()=>g.tapTable(t)); }
+    if(b.juiceN()){ const t=jt.slice().sort((a,c)=>(!!c.group.esperaSuco)-(!!a.group.esperaSuco))[0]; if(t) add((t.group.esperaSuco?ttl(t.group):20)-tw(t),()=>g.tapTable(t)); }
     const need=jt.reduce((n,t)=>n+t.group.juicePending,0)-b.juiceN();
     if(need>0&&can('juice')) add(18+sw('juice'),()=>{
       let n=0; const sim=b.hands.slice();

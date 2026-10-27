@@ -112,7 +112,7 @@ class Helper {
       if (!h || !grp || !grp.seated || grp.coffee) return;
       this.hands.splice(this.hands.indexOf(h), 1);
       grp.coffee = true; grp.gain(g.up.cafeteira ? 2 : 1); g.usos.cafeteira++;
-      g.addMoney(DRINK_PRICE.coffee); g.pontos += PONTOS_ACAO.coffee; g.addText(t.cx, t.cy - 40, '+R$ ' + DRINK_PRICE.coffee, PAL.ok, 16); Sfx.coin();
+      grp.bebConta += DRINK_PRICE.coffee; g.pontos += PONTOS_ACAO.coffee; g.addText(t.cx, t.cy - 40, '+' + DRINK_PRICE.coffee + ' na conta', PAL.ok, 16); Sfx.coin();
     }
   }
   update(dt){

@@ -172,7 +172,7 @@ function drawTableOverlay(ctx,g,t,tm,menu){
   if (grp.coffee){ drawIcon(ctx,'coffee',t.cx - t.hx - 10,t.cy - 56,0.9); }
   if (grp.juiceOpen && grp.juicePending > 0){
     const jx = bx + 4, jy = t.cy + 2;
-    const jp = (RM || grp.state !== 'wantBill') ? 1 : 1 + 0.1*Math.sin(tm*9);
+    const jp = (RM || !grp.esperaSuco) ? 1 : 1 + 0.1*Math.sin(tm*9);
     ctx.save(); ctx.translate(jx,jy); ctx.scale(jp,jp);
     rr(ctx,-14,-15,40,28,9); fs(ctx,'#fff',2.2);
     drawIcon(ctx,'juice',-3,0,0.75);

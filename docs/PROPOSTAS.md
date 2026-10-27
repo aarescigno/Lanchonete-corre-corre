@@ -4,6 +4,15 @@ Registro das ideias e dos retornos de quem jogou, com o texto original, e de ond
 
 ---
 
+## 27/10/2026 — Usuário: conta antes do suco
+**Origem:** mensagem do usuário:
+
+> as pessoas estão pedindo as contas antes de tomarem o suco, não pode, só o café é opcional o suco elas ficam esperando até ser entregue. Inclusive o faturamento do suco e do café deve ser como o da comida, nada de pagamentos adiantados.
+
+**Destino:** feito sobre a v8.5.1 (sem mudar o número da versão): quem pediu suco e acabou de comer não pede a conta; fica esperando o suco (`Group.esperaSuco`), perdendo a paciência no ritmo de quem espera o prato, e se for embora conta como perdido no prato. Sai o "Faltou o suco!" da conta. O suco e o cafezinho da mesa (da Bia e da Dani) não dão mais dinheiro na hora: vão para a conta do grupo (`bebConta`, "+8 na conta") e entram no valor da conta, pelo preço, fora da gorjeta (como já era o suco da espera). Como jogar e Missão zero com o texto novo. Equilíbrio sem mudança relevante (`balance.js`, dias 3 a 7: sem equipe 59% → 63%, com `EQUIPE=auto` 89% → 92%). Testes: `smoke5`, `smoke9`, `smoke24`.
+
+---
+
 ## 27/10/2026 — Usuário: lembrete de lavar os pratos
 **Origem:** mensagem do usuário:
 
