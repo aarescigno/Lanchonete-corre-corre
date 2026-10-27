@@ -198,6 +198,8 @@ class Game {
   begin(){
     this.payDay(); this.setState('playing');
     if (this.unpaid.length) this.addText(TW/2 - this.cam, 300, 'Sem dinheiro para pagar: sem ' + listaE(this.unpaid) + ' hoje', PAL.perigo, 20);
+    // do dia 3 em diante os pratos limpos são contados: o lembrete da louça, no balão branco, logo na abertura
+    if (isFinite(this.kitchen.clean)) this.fx.push({ k:'text', box:true, aviso:'pratos', x:TW/2 - this.cam, y:250, vy:-6, life:3.5, max:3.5, text:'Não se esqueça de lavar os pratos!', color:PAL.faixa, size:16 });
   }
   /* lucro do dia (a meta): faturamento − ingredientes − contas − folha − divulgação */
   get fixo(){ return this.contas + this.paid + this.paidDiv + this.conserto; }
