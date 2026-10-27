@@ -230,17 +230,19 @@ function drawPerson(ctx,p,x,y,o){
   ctx.lineCap = 'round';
   const armCol = shirt;
   const upY = o.handUp ? -52 + Math.sin((o.t||0)*9) * 4 : -17;
-  const bE = o.bracoE || [[-15.5,-17]];   // o braço esquerdo pode ir a outro lugar: (cotovelo e) mão, sem contar o ombro
+  const lv = o.lava ? Math.sin((o.t||0)*11) : 0;   // lavando: os dois braços vão para a frente (a pia) e balançam
+  const bE = o.bracoE || (o.lava ? [[-2,-24-lv*2],[19+lv*4,-24+lv*2]] : [[-15.5,-17]]);
+  const rX = o.lava ? 20-lv*4 : 15.5, rY = o.lava ? -24-lv*2 : -17;   // o braço esquerdo pode ir a outro lugar: (cotovelo e) mão, sem contar o ombro
   const mE = bE[bE.length-1], hE = o.bracoE ? 0 : 1.5;
   ctx.lineJoin = 'round';
   ctx.strokeStyle = PAL.tinta; ctx.lineWidth = 8;
   ctx.beginPath(); ctx.moveTo(-11,-30+bob); bE.forEach(q => ctx.lineTo(q[0],q[1])); ctx.stroke();
-  ctx.beginPath(); ctx.moveTo(11,-30+bob); ctx.lineTo(o.handUp?16:15.5,o.handUp?upY:-17); ctx.stroke();
+  ctx.beginPath(); ctx.moveTo(11,-30+bob); ctx.lineTo(o.handUp?16:rX,o.handUp?upY:rY); ctx.stroke();
   ctx.strokeStyle = armCol; ctx.lineWidth = 4.5;
   ctx.beginPath(); ctx.moveTo(-11,-30+bob); bE.forEach(q => ctx.lineTo(q[0],q[1])); ctx.stroke();
-  ctx.beginPath(); ctx.moveTo(11,-30+bob); ctx.lineTo(o.handUp?16:15.5,o.handUp?upY:-17); ctx.stroke();
+  ctx.beginPath(); ctx.moveTo(11,-30+bob); ctx.lineTo(o.handUp?16:rX,o.handUp?upY:rY); ctx.stroke();
   circ(ctx,mE[0],mE[1] + hE,3.6); fs(ctx,skin,1.8);
-  circ(ctx,o.handUp?16:15.5,o.handUp?upY-2:-15.5,3.6); fs(ctx,skin,1.8);
+  circ(ctx,o.handUp?16:rX,o.handUp?upY-2:rY+1.5,3.6); fs(ctx,skin,1.8);
   if (p.acc === 'laptop'){ rr(ctx,-10,-22+bob,20,13,2); fs(ctx,'#9aa5b1',2); ctx.fillStyle = '#d9e4ee'; ctx.fillRect(-7,-20+bob,14,8); }
   if (p.acc === 'book'){ rr(ctx,-20,-22,9,12,1.5); fs(ctx,PAL.faixa,1.8); }
   if (p.acc === 'cane'){ ctx.strokeStyle = PAL.madeiraEsc; ctx.lineWidth = 3; ctx.beginPath(); ctx.moveTo(21,0); ctx.lineTo(21,-20); ctx.arc(18,-20,3,0,-Math.PI,true); ctx.stroke(); }
@@ -312,14 +314,16 @@ function drawBia(ctx,b,x,y,o){
   // braços
   ctx.lineCap = 'round';
   const wave = o.wave ? Math.sin((o.t||0)*8) * 5 : 0;
+  const lv = o.lava ? Math.sin((o.t||0)*11) : 0;   // lavando: braços à frente, balançando em direção à pia
+  const aE = o.lava ? [-2+lv*4+18,-24+lv*2] : [-15,-18], aD = o.wave ? [19+wave,-52] : (o.lava ? [20-lv*4,-24-lv*2] : [15,-18]);
   ctx.strokeStyle = PAL.tinta; ctx.lineWidth = 8.5;
-  ctx.beginPath(); ctx.moveTo(-10,-30+bob); ctx.lineTo(-15,-18); ctx.stroke();
-  ctx.beginPath(); ctx.moveTo(10,-30+bob); ctx.lineTo(o.wave?19+wave:15, o.wave?-52:-18); ctx.stroke();
+  ctx.beginPath(); ctx.moveTo(-10,-30+bob); ctx.lineTo(aE[0],aE[1]); ctx.stroke();
+  ctx.beginPath(); ctx.moveTo(10,-30+bob); ctx.lineTo(aD[0],aD[1]); ctx.stroke();
   ctx.strokeStyle = '#2E8B57'; ctx.lineWidth = 5;
-  ctx.beginPath(); ctx.moveTo(-10,-30+bob); ctx.lineTo(-15,-18); ctx.stroke();
-  ctx.beginPath(); ctx.moveTo(10,-30+bob); ctx.lineTo(o.wave?19+wave:15, o.wave?-52:-18); ctx.stroke();
-  circ(ctx,-15,-16,3.8); fs(ctx,skin,1.8);
-  circ(ctx,o.wave?19+wave:15, o.wave?-54:-16,3.8); fs(ctx,skin,1.8);
+  ctx.beginPath(); ctx.moveTo(-10,-30+bob); ctx.lineTo(aE[0],aE[1]); ctx.stroke();
+  ctx.beginPath(); ctx.moveTo(10,-30+bob); ctx.lineTo(aD[0],aD[1]); ctx.stroke();
+  circ(ctx,aE[0],aE[1]+2,3.8); fs(ctx,skin,1.8);
+  circ(ctx,aD[0],aD[1]+(o.wave?-2:2),3.8); fs(ctx,skin,1.8);
   // avental laranja
   ctx.beginPath(); ctx.moveTo(-8,-30+bob); ctx.lineTo(8,-30+bob); ctx.lineTo(11,-12); ctx.lineTo(-11,-12); ctx.closePath(); fs(ctx,PAL.alerta,2.4);
   rr(ctx,-5,-22,10,6,1.5); fs(ctx,'#F58A4E',1.6);

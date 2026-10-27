@@ -269,11 +269,27 @@ function drawTorneiraEspera(ctx,g,t,menu){
   const q = g.bia.acts[0];
   if (q && q.type === 'maquina' && q.leg !== 2){ ctx.save(); const a = 0.55 + 0.4*Math.sin(t*8); ctx.strokeStyle = 'rgba(242,179,61,' + a + ')'; ctx.lineWidth = 5; rr(ctx,r.x,r.y,r.w,r.h,8); ctx.stroke(); ctx.restore(); }
 }
+/* espuminha saindo da pia enquanto alguém (Bia, Dani ou Tonhão) lava a louça */
+function drawEspuma(ctx,g,t){
+  const k = g.kitchen;
+  if (!(g.bia.washing || g.dani.washing || (k.chef.wash > 0 && k.sinkN > 0))) return;
+  ctx.save();
+  ctx.fillStyle = 'rgba(255,255,255,.92)'; ctx.strokeStyle = 'rgba(120,180,215,.9)'; ctx.lineWidth = 1.4;
+  [[808,452,7],[822,447,9],[838,452,8],[854,446,9],[868,452,8],[878,456,6]].forEach(c => { circ(ctx,c[0],c[1],c[2]); ctx.fill(); ctx.stroke(); });
+  for (let i=0;i<9;i++){
+    const p = RM ? (i%3)/3 : ((t*0.7 + i*0.37) % 1), r = 2.5 + (i%3)*1.6;
+    const x = 806 + ((i*23) % 76) + (RM ? 0 : Math.sin(t*4 + i)*3), y = 440 - p*46;
+    ctx.globalAlpha = 1 - p*0.85;
+    circ(ctx,x,y,r); ctx.fillStyle = 'rgba(255,255,255,.8)'; ctx.fill(); ctx.stroke();
+    ctx.fillStyle = 'rgba(255,255,255,.95)'; ctx.fillRect(x-r*0.45,y-r*0.45,1.6,1.6);
+  }
+  ctx.restore();
+}
 /* lixeira de pedal no chão do salão, encostada no balcão */
 /* Dani: cabelo cacheado, avental roxo e crachá com o nome */
 const DANI_LOOK = { skin:3, hair:5, hairC:'#2F1D12', pants:'#3C5A4A', kid:false, elder:false, acc:null, glasses:false };
 function drawDani(ctx,d,tm){
-  drawPerson(ctx,DANI_LOOK,d.x,d.y,{ shirt:'#F7EFD8', moving:d.moving, ph:d.walkPh, mood:0 });
+  drawPerson(ctx,DANI_LOOK,d.x,d.y,{ shirt:'#F7EFD8', moving:d.moving, ph:d.walkPh, mood:0, t:tm, lava:d.washing && !RM });
   const bob = (d.moving && !RM) ? -Math.abs(Math.sin(d.walkPh)) * 2.4 : 0;
   ctx.beginPath(); ctx.moveTo(d.x-8,d.y-30+bob); ctx.lineTo(d.x+8,d.y-30+bob); ctx.lineTo(d.x+11,d.y-12); ctx.lineTo(d.x-11,d.y-12); ctx.closePath(); fs(ctx,'#7B4FB5',2.2);
   rr(ctx,d.x-14,d.y-84,28,12,5); fs(ctx,'#fff',1.6); txt(ctx,'Dani',d.x,d.y-77.5,9,'#7B4FB5','center',FD);
@@ -670,6 +686,7 @@ function drawKitchen(ctx,g,t){
     rr(ctx,r.x+8,r.y+r.h-12,r.w-12,10,3); fs(ctx,PAL.cromo,2.2);
   });
   glow('sink');
+  drawEspuma(ctx,g,t);
   // pia brilha quando não sobra prato limpo
   if (isFinite(g.kitchen.clean) && g.kitchen.clean <= 0){
     const k = RM ? 0.6 : 0.5 + 0.5*Math.sin(t*5);

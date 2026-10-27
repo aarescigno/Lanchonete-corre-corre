@@ -65,7 +65,7 @@ function render(g, ctx){
   });
   const b = g.bia;
   items.push({ y:b.y, f:() => {
-    drawBia(ctx,b,b.x,b.y,{ moving:b.moving, ph:b.walkPh, flip:b.dir, t:tm });
+    drawBia(ctx,b,b.x,b.y,{ moving:b.moving, ph:b.walkPh, flip:b.dir, t:tm, lava:b.washing && !RM });
     const lay = b.layout() || [b.hands.slice(0,1), b.hands.slice(1,2)];
     lay.forEach((its,i) => {
       const hx = b.x + (i ? 20 : -20);
