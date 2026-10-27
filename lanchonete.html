@@ -1745,6 +1745,7 @@ class Waitress {
   free(){ let n = 0; const extra = []; while (n < 3){ extra.push({ kind:'dirty' }); if (!this.layout(this.hands.concat(extra))) break; n++; } return n; }
   juiceN(){ return this.hands.filter(h => h.kind === 'juice').length; }
   /* lavando na pia agora (a Dani espera a vez) */
+  get emptying(){ return !!(this.doing && this.doing.type === 'trash' && !this.hands.length && this.g.trash > 0); }   // esvaziando a lixeira (v8.5.2: a tampa abre e fecha)
   get washing(){ return !!(this.doing && this.doing.type === 'sink' && this.doing.wash > 0); }
   enqueue(a){
     if (this.acts.length >= 6){ this.g.addText(this.x, this.y - 82, 'Fila cheia!', PAL.alerta, 15); return false; }
@@ -4221,12 +4222,16 @@ function drawTrash(ctx,on,t,g){
   const x = 723, y = 530;
   const lv = g && g.state !== 'menu' ? g.trash : 0, cheia = lv >= TRASH.cap;
   const f = Math.min(1, lv / TRASH.cap);   // v8.3.10: a lata vai do cinza ao esverdeado conforme enche
+  const ab = g && g.state !== 'menu' && g.bia.emptying ? (RM ? 0.6 : 0.65 + 0.6*Math.sin(t*7)) : null;   // esvaziando: tampa abrindo e fechando
   if (cheia) drawSacoLixo(ctx,x-23,y-3);   // à esquerda, atrás da lata (à direita fica a parede da cozinha)
   shadowEll(ctx,x,y,20,5,0.18);
   ctx.beginPath(); ctx.moveTo(x-15,y-40); ctx.lineTo(x+15,y-40); ctx.lineTo(x+12,y-2); ctx.lineTo(x-12,y-2); ctx.closePath(); fs(ctx,mixCor(TRASH_COR.vazia,TRASH_COR.cheia,f),2.4);
   ctx.strokeStyle = 'rgba(255,255,255,.4)'; ctx.lineWidth = 3; ctx.beginPath(); ctx.moveTo(x-8,y-34); ctx.lineTo(x-7,y-8); ctx.stroke();
   ctx.strokeStyle = 'rgba(34,32,28,.35)'; ctx.lineWidth = 1.5; ctx.beginPath(); ctx.moveTo(x+1,y-34); ctx.lineTo(x+1,y-8); ctx.moveTo(x+7,y-34); ctx.lineTo(x+6,y-8); ctx.stroke();
-  if (cheia){
+  if (ab !== null){
+    ctx.beginPath(); ctx.moveTo(x-15,y-40); ctx.lineTo(x+15,y-40); ctx.lineTo(x+14,y-44); ctx.lineTo(x-14,y-44); ctx.closePath(); fs(ctx,'#3a352e',1.4);   // boca da lata
+    ctx.save(); ctx.translate(x-17,y-44); ctx.rotate(-ab); rr(ctx,0,-6,34,8,3); fs(ctx,mixCor(TRASH_COR.tampaV,TRASH_COR.tampaC,f),2.2); rr(ctx,13,-10,8,5,2); fs(ctx,mixCor(TRASH_COR.vazia,TRASH_COR.cheia,f),1.6); ctx.restore();
+  } else if (cheia){
     // tampa levantada pelo lixo, com restos aparecendo
     ctx.beginPath(); ctx.arc(x-6,y-42,5,Math.PI,0); ctx.arc(x+4,y-43,6,Math.PI,0); fs(ctx,'#6F8B3F',1.6);
     ctx.save(); ctx.translate(x-17,y-44); ctx.rotate(-0.18); rr(ctx,0,-6,34,8,3); fs(ctx,TRASH_COR.tampaC,2.2); rr(ctx,13,-10,8,5,2); fs(ctx,mixCor(TRASH_COR.vazia,TRASH_COR.cheia,1),1.6); ctx.restore();
