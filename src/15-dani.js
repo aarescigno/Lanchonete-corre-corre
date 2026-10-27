@@ -19,6 +19,8 @@ class Helper {
   get speed(){ return this.g.bia.speed * this.spec.speed; }   // proporcional à Bia de agora (com os tênis)
   get tasks(){ return this.active ? this.g.save.equipe.daniTasks.filter(t => daniTaskOk(t, this.g.up)).slice(0, this.spec.tasks) : []; }
   does(t){ return this.tasks.indexOf(t) >= 0; }
+  /* esvaziando a lixeira agora (a tampa abre e fecha) */
+  get emptying(){ return !!(this.phase === 'do' && this.plan && this.plan.type === 'trash' && this.g.trash > 0); }
   /* lavando na pia agora (a Bia não lava junto) */
   get washing(){ return !!(this.phase === 'do' && this.plan && this.plan.type === 'sink' && this.plan.wash); }
   /* pode lavar: tem a tarefa e a Bia não está lavando */

@@ -408,7 +408,7 @@ function drawTrash(ctx,on,t,g){
   const x = 723, y = 530;
   const lv = g && g.state !== 'menu' ? g.trash : 0, cheia = lv >= TRASH.cap;
   const f = Math.min(1, lv / TRASH.cap);   // v8.3.10: a lata vai do cinza ao esverdeado conforme enche
-  const ab = g && g.state !== 'menu' && g.bia.emptying ? (RM ? 0.6 : 0.65 + 0.6*Math.sin(t*7)) : null;   // esvaziando: tampa abrindo e fechando
+  const ab = g && g.state !== 'menu' && (g.bia.emptying || g.dani.emptying) ? (RM ? 0.6 : 0.65 + 0.6*Math.sin(t*7)) : null;   // esvaziando: tampa abrindo e fechando
   if (cheia) drawSacoLixo(ctx,x-23,y-3);   // à esquerda, atrás da lata (à direita fica a parede da cozinha)
   shadowEll(ctx,x,y,20,5,0.18);
   ctx.beginPath(); ctx.moveTo(x-15,y-40); ctx.lineTo(x+15,y-40); ctx.lineTo(x+12,y-2); ctx.lineTo(x-12,y-2); ctx.closePath(); fs(ctx,mixCor(TRASH_COR.vazia,TRASH_COR.cheia,f),2.4);
