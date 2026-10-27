@@ -13,6 +13,17 @@ Registro das ideias e dos retornos de quem jogou, com o texto original, e de ond
 
 ---
 
+## 27/10/2026 — Usuário: o lembrete dos pratos só nos dias 3 a 5
+**Origem:** mensagem do usuário:
+
+> esse aviso de não se esqueça de lavar os pratos aparecer só no dia 3, 4 e 5 do modo história e no modo infinito só no dia 1 e 2.
+
+E, na pergunta sobre o Turno sem fim (que é um turno só, sem dias): "ignore isso sobre o turno sem fim, faça só a implementação no modo história mesmo".
+
+**Destino:** feito sobre a v8.5.1: na campanha, o lembrete aparece só nos dias 3, 4 e 5; no Turno sem fim, continua em toda partida. Teste: `smoke27`.
+
+---
+
 ## 27/10/2026 — Usuário: lembrete de lavar os pratos
 **Origem:** mensagem do usuário:
 
