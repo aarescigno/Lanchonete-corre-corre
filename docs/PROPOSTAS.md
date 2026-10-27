@@ -4,6 +4,15 @@ Registro das ideias e dos retornos de quem jogou, com o texto original, e de ond
 
 ---
 
+## 27/10/2026 — Usuário: fila própria dos entregadores e marmitas
+**Origem:** mensagem do usuário:
+
+> Adiciona nas ideias de implementações futuras que os entregadores têm uma fila própria para retirar comida e não para comer no lugar. Deixa eu levar a marmita. E aí preparar algum fluxo de preparação de marmitas para liberar para os entregadores
+
+**Destino:** ideia guardada em `docs/PLANO.md` (Ideias guardadas, "Entregadores: fila própria e marmitas"), sem etapa ainda. Nada mudou no jogo.
+
+---
+
 ## 27/10/2026 — Usuário: conta antes do suco
 **Origem:** mensagem do usuário:
 
