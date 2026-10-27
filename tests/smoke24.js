@@ -42,9 +42,9 @@ novo(); g.startDay(5); g.begin(); g.schedule=[{t:1e9,type:'estudante',color:0}];
   p1=g.pontos; g.bia.hands=[{kind:'dish',table:t.id,group:grp,dish:grp.dish,crit:true}]; g.bia.doTable(t);
   ok(grp.state==='eating' && g.money===0 && g.pontos-p1===P.deliver+L.CRIT.bonus,'entregar o caprichado: '+P.deliver+' + '+L.CRIT.bonus+' pontos');
   p1=g.pontos; g.bia.hands=[{kind:'coffee'}]; g.bia.doTable(t);
-  ok(g.money===L.DRINK_PRICE.coffee && g.pontos-p1===P.coffee,'cafezinho: R$ '+L.DRINK_PRICE.coffee+' e '+P.coffee+' pontos');
+  ok(g.money===0 && grp.bebConta===L.DRINK_PRICE.coffee && g.pontos-p1===P.coffee,'cafezinho: R$ '+L.DRINK_PRICE.coffee+' na conta (nada adiantado) e '+P.coffee+' pontos');
   grp.setState('wantBill'); grp.hearts=5; grp.juiceWant=0; g.lastKind=null; const m0=g.money; p1=g.pontos; g.collectBill(grp,t);
-  ok(g.money-m0===Math.round(grp.bill*1.1) && g.pontos-p1===P.bill,'conta com 5 corações: R$ '+Math.round(grp.bill*1.1)+' (+10%) e '+P.bill+' pontos');
+  ok(g.money-m0===Math.round(grp.bill*1.1)+L.DRINK_PRICE.coffee && g.pontos-p1===P.bill,'conta com 5 corações: R$ '+Math.round(grp.bill*1.1)+' (+10%), mais o cafezinho, e '+P.bill+' pontos');
   ok(g.fx.some(f=>/pts$/.test(f.text||'')) && g.fx.some(f=>/^\+R\$ /.test(f.text||'')),'na tela: "+N pts" para as ações e "+R$ N" para o que se paga'); }
 { g.lastKind=null; g.chainN=0; const p0=g.pontos, m0=g.money; for(let i=0;i<3;i++) g.score('clear',0,0);
   ok(g.money===m0 && g.pontos-p0===3*P.clear+10+20,'corrente de 3 recolhidas: '+(3*P.clear)+' + 10 + 20 pontos, sem dinheiro'); }

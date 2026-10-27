@@ -1484,6 +1484,7 @@ class Group {
     this.boing = 0; this.angry = false; this.done = false; this.paid = false;
     this.cmd = -1; this.hold = 0; this.bounced = false;
     this.sucoN = 0; this.sucoConta = 0; this.tabT = 0; this.pediu = false;   // bebida da espera (v7.5): bebidos, na conta, tempo no lugar
+    this.bebConta = 0; this.esperaSuco = false;   // v8.5.2: suco e cafezinho da mesa vão para a conta; acabou de comer e espera o suco
     this.state = 'queue'; this.stateT = 0; this.patLeft = 0;
     this.aguarda = false; this.piso = false;   // na fila sem mesa que sirva; segurando no piso de 1 coração
     // avaliação (v8.4): corações perdidos lá fora e na mesa, a nota do prato que comeu, a cor certa e a corrente
@@ -1491,7 +1492,7 @@ class Group {
     this.setState('queue');
   }
   patPer(){
-    const b = PAT[this.state];
+    const b = PAT[this.state === 'eating' && this.esperaSuco ? 'ordered' : this.state];
     if (!b) return Infinity;
     let m = b * this.T.pat;
     if (this.vip) m *= VIP.pat;
@@ -1518,7 +1519,7 @@ class Group {
     this.perdMesa = Math.max(0, this.perdMesa - d);
   }
   get juicePending(){ return Math.max(0, this.juiceWant - this.juiceGot); }
-  /* o pedido de suco aparece quando a comanda é anotada e vale até a conta */
+  /* o pedido de suco aparece quando a comanda é anotada; sem ele, o grupo não pede a conta (v8.5.2) */
   get juiceOpen(){ return this.juiceWant > 0 && (this.state === 'ordered' || this.state === 'eating' || this.state === 'wantBill'); }
   get seated(){ return this.state==='reading' || this.state==='wantOrder' || this.state==='ordered' || this.state==='eating' || this.state==='wantBill'; }
   get mood(){ return this.angry ? 2 : (this.hearts >= 4 ? 0 : (this.hearts >= 2 ? 1 : 2)); }  // 0 feliz, 1 neutro, 2 bravo
@@ -1589,7 +1590,13 @@ class Group {
       case 'eating':
         if (this.game.treinoSegura) break;   // na Missão zero, a refeição espera o cafezinho
         this.timer -= dt;
-        if (this.timer <= 0) { this.setState('wantBill'); Sfx.blip(); }
+        if (this.timer > 0) break;
+        // acabou de comer: quem pediu suco espera por ele (perdendo a paciência) antes de pedir a conta (v8.5.2)
+        if (this.juicePending > 0){
+          if (!this.esperaSuco){ this.esperaSuco = true; this.patLeft = this.patPer(); }
+          this.tick(dt); break;
+        }
+        this.esperaSuco = false; this.setState('wantBill'); Sfx.blip();
         break;
       case 'leaving':
         if (this.hold > 0){ this.hold -= dt; break; }
@@ -1985,7 +1992,9 @@ class Waitress {
     grp.juiceGot += n;
     g.stats.juice += n; g.custo += INGRED.suco * n;
     grp.gain(1);
-    g.score('juice', t.cx + 24, t.cy - 30, JUICE.price * n, grp);
+    grp.bebConta += JUICE.price * n;   // v8.5.2: o suco é pago na conta, com a comida
+    g.score('juice', t.cx + 24, t.cy - 30, 0, grp);
+    g.addText(t.cx + 24, t.cy - 52, '+' + JUICE.price * n + ' na conta', PAL.ok, 14);
     if (!grp.juicePending) g.addText(t.cx, t.cy - 96, n > 1 ? 'Sucos entregues!' : 'Suco entregue!', PAL.alerta, 15);
     Sfx.tone(880, 0.07, 'sine', 0.05); Sfx.tone(1175, 0.12, 'sine', 0.05, 0.07);
     return n;
@@ -2035,7 +2044,9 @@ class Waitress {
       this.hands.splice(i,1);
       grp.coffee = true;
       grp.gain(g.up.cafeteira ? 2 : 1);
-      g.score('coffee', cx, cy - 40, DRINK_PRICE.coffee, grp);
+      grp.bebConta += DRINK_PRICE.coffee;   // v8.5.2: pago na conta
+      g.score('coffee', cx, cy - 40, 0, grp);
+      g.addText(cx, cy - 62, '+' + DRINK_PRICE.coffee + ' na conta', PAL.ok, 14);
       g.usos.cafeteira++;
       Sfx.coin();
     } else {
@@ -2158,7 +2169,7 @@ class Helper {
       if (!h || !grp || !grp.seated || grp.coffee) return;
       this.hands.splice(this.hands.indexOf(h), 1);
       grp.coffee = true; grp.gain(g.up.cafeteira ? 2 : 1); g.usos.cafeteira++;
-      g.addMoney(DRINK_PRICE.coffee); g.pontos += PONTOS_ACAO.coffee; g.addText(t.cx, t.cy - 40, '+R$ ' + DRINK_PRICE.coffee, PAL.ok, 16); Sfx.coin();
+      grp.bebConta += DRINK_PRICE.coffee; g.pontos += PONTOS_ACAO.coffee; g.addText(t.cx, t.cy - 40, '+' + DRINK_PRICE.coffee + ' na conta', PAL.ok, 16); Sfx.coin();
     }
   }
   update(dt){
@@ -2475,16 +2486,11 @@ class Game {
     }
   }
   collectBill(g, t){
-    if (g.juicePending > 0){
-      if (g.hearts > 1) g.perdMesa++;
-      g.hearts = Math.max(1, g.hearts - 1);
-      this.stats.juiceMiss++;
-      this.addText(t.cx, t.cy - 100, 'Faltou o suco!', PAL.perigo, 16);
-    }
-    // v8.3.8: os corações viram gorjeta (no máximo +10%; com 1 ou 2, desconto), mais a da executiva e a do VIP
-    const amount = Math.round(g.bill * (1 + GORJETA[g.hearts] + g.T.tip + (g.vip ? VIP.tip : 0)));
+    // v8.3.8: os corações viram gorjeta (no máximo +10%; com 1 ou 2, desconto), mais a da executiva e a do VIP;
+    // v8.5.2: o suco e o cafezinho da mesa entram aqui também, pelo preço (bebConta)
+    const amount = Math.round(g.bill * (1 + GORJETA[g.hearts] + g.T.tip + (g.vip ? VIP.tip : 0))) + g.bebConta;
     this.score('bill', t.cx, t.cy - 50, amount, g);
-    if (this.treino) this.treino.conta = { v:amount, h:g.hearts, base:g.bill };
+    if (this.treino) this.treino.conta = { v:amount, h:g.hearts, base:g.bill + g.bebConta };
     if (g.sucoConta){ const v = this.bebida.preco * g.sucoConta; this.addMoney(v); this.addText(t.cx - 34, t.cy - 100, 'Suco da espera +' + v, PAL.alerta, 14); }
     if (g.T.tip > 0 || g.vip) this.addText(t.cx + 20, t.cy - 76, 'Gorjeta!', PAL.mostarda, 15);
     const eq = this.save.equipe;
@@ -2692,7 +2698,7 @@ class Game {
   angryLeave(g){
     if (g.state === 'leaving') return;
     this.stats.lost++;
-    const by = g.state === 'queue' ? (g.semMesa ? 'semMesa' : 'comMesa') : ({ wantOrder:'pedido', ordered:'prato', wantBill:'conta' })[g.state];
+    const by = g.state === 'queue' ? (g.semMesa ? 'semMesa' : 'comMesa') : ({ wantOrder:'pedido', ordered:'prato', eating:'prato', wantBill:'conta' })[g.state];
     if (by) this.stats.lostBy[by]++;
     this.addPuff(g.x, g.y - 20, 9);
     this.addText(g.x, g.y - 50, 'Hmpf!', PAL.perigo, 22);
@@ -3285,7 +3291,7 @@ const TREINO_PASSOS = [
   { id:'cafe2', segura:true, alvo:g => [treinoMesaR(g)], tit:'Sirva o cafezinho',
     txt:'Agora toque na mesa para servir o cafezinho.', feito:g => g.treino.grupo.coffee },
   { id:'bonus', ok:true, segura:true, alvo:g => [treinoMesaR(g)], tit:'Os bônus do cafezinho',
-    txt:'Cada cafezinho rende R$ ' + DRINK_PRICE.coffee + ', 5 pontos e 1 coração (2 com a Cafeteira de 2 bocas, da lojinha). E coração vale gorjeta: com 5 corações, a conta sai 10% maior; com 1, o grupo reclama e paga 20% menos.' },
+    txt:'Cada cafezinho põe R$ ' + DRINK_PRICE.coffee + ' na conta, rende 5 pontos e 1 coração (2 com a Cafeteira de 2 bocas, da lojinha). E coração vale gorjeta: com 5 corações, a conta sai 10% maior; com 1, o grupo reclama e paga 20% menos.' },
   { id:'comendo', alvo:g => [treinoMesaR(g)], tit:'Bom apetite',
     txt:'Eles estão comendo. Quando acabarem, pedem a conta (balão com "$").', feito:g => g.treino.grupo.state === 'wantBill' },
   { id:'cobrar', alvo:g => [treinoMesaR(g)], tit:'Hora de cobrar',
@@ -4692,7 +4698,7 @@ function drawTableOverlay(ctx,g,t,tm,menu){
   if (grp.coffee){ drawIcon(ctx,'coffee',t.cx - t.hx - 10,t.cy - 56,0.9); }
   if (grp.juiceOpen && grp.juicePending > 0){
     const jx = bx + 4, jy = t.cy + 2;
-    const jp = (RM || grp.state !== 'wantBill') ? 1 : 1 + 0.1*Math.sin(tm*9);
+    const jp = (RM || !grp.esperaSuco) ? 1 : 1 + 0.1*Math.sin(tm*9);
     ctx.save(); ctx.translate(jx,jy); ctx.scale(jp,jp);
     rr(ctx,-14,-15,40,28,9); fs(ctx,'#fff',2.2);
     drawIcon(ctx,'juice',-3,0,0.75);
@@ -5919,7 +5925,7 @@ function buildTips(){
       txt(c,'×3!',46,22,18,PAL.alerta,'center',FD,3);
       star(c,46,46,9,PAL.mostarda);
     }],
-    ['Do dia 3 em diante, alguns grupos pedem suco (copinho com o número na mesa): entregue antes da conta, ou perdem um coração. A bandeja leva 2 pratos, 3 bebidas ou prato + bebida. Lixeira cheia cheira mal: toque nela de mãos vazias para esvaziar.', c => {
+    ['Do dia 3 em diante, alguns grupos pedem suco (copinho com o número na mesa): só pedem a conta depois do suco, e esperam perdendo a paciência. Suco e cafezinho entram na conta. A bandeja leva 2 pratos, 3 bebidas ou prato + bebida. Lixeira cheia cheira mal: toque nela de mãos vazias para esvaziar.', c => {
       ell(c,32,50,22,6); fs(c,PAL.inox,2);
       drawIcon(c,'juice',20,38,0.8); drawIcon(c,'juice',32,36,0.8); drawIcon(c,'juice',44,38,0.8);
       rr(c,8,4,48,18,6); fs(c,'#fff',1.8); drawIcon(c,'juice',20,13,0.5); txt(c,'×3',38,13,11,PAL.tinta,'center',FD);

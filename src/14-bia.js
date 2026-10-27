@@ -310,7 +310,9 @@ class Waitress {
     grp.juiceGot += n;
     g.stats.juice += n; g.custo += INGRED.suco * n;
     grp.gain(1);
-    g.score('juice', t.cx + 24, t.cy - 30, JUICE.price * n, grp);
+    grp.bebConta += JUICE.price * n;   // v8.5.2: o suco é pago na conta, com a comida
+    g.score('juice', t.cx + 24, t.cy - 30, 0, grp);
+    g.addText(t.cx + 24, t.cy - 52, '+' + JUICE.price * n + ' na conta', PAL.ok, 14);
     if (!grp.juicePending) g.addText(t.cx, t.cy - 96, n > 1 ? 'Sucos entregues!' : 'Suco entregue!', PAL.alerta, 15);
     Sfx.tone(880, 0.07, 'sine', 0.05); Sfx.tone(1175, 0.12, 'sine', 0.05, 0.07);
     return n;
@@ -360,7 +362,9 @@ class Waitress {
       this.hands.splice(i,1);
       grp.coffee = true;
       grp.gain(g.up.cafeteira ? 2 : 1);
-      g.score('coffee', cx, cy - 40, DRINK_PRICE.coffee, grp);
+      grp.bebConta += DRINK_PRICE.coffee;   // v8.5.2: pago na conta
+      g.score('coffee', cx, cy - 40, 0, grp);
+      g.addText(cx, cy - 62, '+' + DRINK_PRICE.coffee + ' na conta', PAL.ok, 14);
       g.usos.cafeteira++;
       Sfx.coin();
     } else {

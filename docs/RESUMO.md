@@ -191,7 +191,7 @@
 - `smoke2` (mecânicas);
 - `smoke3` (123/123: v2, com o ranking compartilhado ligado à força no teste (`load({online:true})`), e o offline da v8.3.3);
 - `smoke4` (23/23: VIP);
-- `smoke5` (41/41: sucos, bandeja e lixeira);
+- `smoke5` (45/45: sucos, bandeja e lixeira; quem pediu suco espera por ele antes de pedir a conta, e o suco e o cafezinho são cobrados na conta);
 - `smoke6` (97/97: equipe, louça, lixeira que enche, couvert, TV e som, máquina de suco no lugar da água, economia). O teste "a Dani chega a 2 itens" dependia do sorteio do dia; desde a v7.4.1 joga até 4 rodadas enquanto ela não chega a 2;
 - `smoke7` (15/15: toque no celular e brilho);
 - `smoke8` (19/19: conversão do salão da v6 com devolução, e as faixas de estrelas);

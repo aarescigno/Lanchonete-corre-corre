@@ -47,7 +47,7 @@ const TREINO_PASSOS = [
   { id:'cafe2', segura:true, alvo:g => [treinoMesaR(g)], tit:'Sirva o cafezinho',
     txt:'Agora toque na mesa para servir o cafezinho.', feito:g => g.treino.grupo.coffee },
   { id:'bonus', ok:true, segura:true, alvo:g => [treinoMesaR(g)], tit:'Os bônus do cafezinho',
-    txt:'Cada cafezinho rende R$ ' + DRINK_PRICE.coffee + ', 5 pontos e 1 coração (2 com a Cafeteira de 2 bocas, da lojinha). E coração vale gorjeta: com 5 corações, a conta sai 10% maior; com 1, o grupo reclama e paga 20% menos.' },
+    txt:'Cada cafezinho põe R$ ' + DRINK_PRICE.coffee + ' na conta, rende 5 pontos e 1 coração (2 com a Cafeteira de 2 bocas, da lojinha). E coração vale gorjeta: com 5 corações, a conta sai 10% maior; com 1, o grupo reclama e paga 20% menos.' },
   { id:'comendo', alvo:g => [treinoMesaR(g)], tit:'Bom apetite',
     txt:'Eles estão comendo. Quando acabarem, pedem a conta (balão com "$").', feito:g => g.treino.grupo.state === 'wantBill' },
   { id:'cobrar', alvo:g => [treinoMesaR(g)], tit:'Hora de cobrar',

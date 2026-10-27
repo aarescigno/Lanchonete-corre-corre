@@ -56,7 +56,7 @@ const run=s=>{ for(let i=0;i<s*20;i++){ g.queue.forEach(x=>x.patLeft=1e9); g.gro
   ok(g.bia.juiceN()===2,'sem bandeja: pegou só 2 sucos (3º: mãos cheias)');
   const m0=g.money, h0=grp.hearts; g.tapTable(t); run(5);
   ok(grp.juicePending===0 && g.bia.juiceN()===0,'entregou os 2 sucos');
-  ok(g.money-m0>=2*L.JUICE.price && grp.hearts===Math.min(5,h0+1),'sucos rendem R$ '+(2*L.JUICE.price)+' e +1 coração');
+  ok(g.money===m0 && grp.bebConta===2*L.JUICE.price && grp.hearts===Math.min(5,h0+1),'sucos: R$ '+(2*L.JUICE.price)+' na conta (nada adiantado) e +1 coração');
   ok(g.stats.juice===2,'estatística de sucos'); }
 { const {grp,t}=setup(true);
   g.tapTable(t); run(4); g.tapStation('order',800,150); run(5);
@@ -65,8 +65,14 @@ const run=s=>{ for(let i=0;i<s*20;i++){ g.queue.forEach(x=>x.patLeft=1e9); g.gro
   g.tapStation('juice',910,350); run(2); ok(g.bia.juiceN()===4,'5º suco não cabe'); }
 { // conta com suco faltando
   const {grp,t}=setup(false); g.tapTable(t); run(4); g.tapStation('order',800,150); run(3);
-  grp.setState('wantBill'); grp.hearts=5; const miss=g.stats.juiceMiss; g.tapTable(t); run(4);
-  ok(grp.paid && g.stats.juiceMiss===miss+1,'conta sem suco: perde 1 coração e conta na estatística'); }
+  grp.setState('eating'); grp.timer=0.01; grp.hearts=5; run(1);
+  ok(grp.state==='eating' && grp.esperaSuco,'acabou de comer sem o suco: não pede a conta, espera o suco');
+  { const pl=grp.patLeft; grp.update(1); ok(grp.state==='eating' && isFinite(pl) && Math.abs(pl-grp.patLeft-1)<1e-9,'esperando o suco, perde a paciência'); }
+  const m0=g.money; g.bia.hands=[K('juice'),K('juice')]; g.tapTable(t); run(4);
+  ok(grp.juicePending===0 && g.money===m0,'entregou o suco: nada de dinheiro adiantado');
+  run(0.5); ok(grp.state==='wantBill' && !grp.esperaSuco,'com o suco, pede a conta');
+  const m1=g.money, h=grp.hearts; g.tapTable(t); run(4);
+  ok(grp.paid && g.money-m1===Math.round(grp.bill*(1+L.GORJETA[h]+grp.T.tip+(grp.vip?L.VIP.tip:0)))+2*L.JUICE.price,'a conta cobra a comida e os sucos'); }
 { // suco entregue no mesmo toque da conta
   const {grp,t}=setup(false); g.tapTable(t); run(4); g.tapStation('order',800,150); run(3);
   g.bia.hands=[K('juice'),K('juice')]; grp.setState('wantBill'); const miss=g.stats.juiceMiss; g.tapTable(t); run(4);

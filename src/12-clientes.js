@@ -192,6 +192,7 @@ class Group {
     this.boing = 0; this.angry = false; this.done = false; this.paid = false;
     this.cmd = -1; this.hold = 0; this.bounced = false;
     this.sucoN = 0; this.sucoConta = 0; this.tabT = 0; this.pediu = false;   // bebida da espera (v7.5): bebidos, na conta, tempo no lugar
+    this.bebConta = 0; this.esperaSuco = false;   // v8.5.2: suco e cafezinho da mesa vão para a conta; acabou de comer e espera o suco
     this.state = 'queue'; this.stateT = 0; this.patLeft = 0;
     this.aguarda = false; this.piso = false;   // na fila sem mesa que sirva; segurando no piso de 1 coração
     // avaliação (v8.4): corações perdidos lá fora e na mesa, a nota do prato que comeu, a cor certa e a corrente
@@ -199,7 +200,7 @@ class Group {
     this.setState('queue');
   }
   patPer(){
-    const b = PAT[this.state];
+    const b = PAT[this.state === 'eating' && this.esperaSuco ? 'ordered' : this.state];
     if (!b) return Infinity;
     let m = b * this.T.pat;
     if (this.vip) m *= VIP.pat;
@@ -226,7 +227,7 @@ class Group {
     this.perdMesa = Math.max(0, this.perdMesa - d);
   }
   get juicePending(){ return Math.max(0, this.juiceWant - this.juiceGot); }
-  /* o pedido de suco aparece quando a comanda é anotada e vale até a conta */
+  /* o pedido de suco aparece quando a comanda é anotada; sem ele, o grupo não pede a conta (v8.5.2) */
   get juiceOpen(){ return this.juiceWant > 0 && (this.state === 'ordered' || this.state === 'eating' || this.state === 'wantBill'); }
   get seated(){ return this.state==='reading' || this.state==='wantOrder' || this.state==='ordered' || this.state==='eating' || this.state==='wantBill'; }
   get mood(){ return this.angry ? 2 : (this.hearts >= 4 ? 0 : (this.hearts >= 2 ? 1 : 2)); }  // 0 feliz, 1 neutro, 2 bravo
@@ -297,7 +298,13 @@ class Group {
       case 'eating':
         if (this.game.treinoSegura) break;   // na Missão zero, a refeição espera o cafezinho
         this.timer -= dt;
-        if (this.timer <= 0) { this.setState('wantBill'); Sfx.blip(); }
+        if (this.timer > 0) break;
+        // acabou de comer: quem pediu suco espera por ele (perdendo a paciência) antes de pedir a conta (v8.5.2)
+        if (this.juicePending > 0){
+          if (!this.esperaSuco){ this.esperaSuco = true; this.patLeft = this.patPer(); }
+          this.tick(dt); break;
+        }
+        this.esperaSuco = false; this.setState('wantBill'); Sfx.blip();
         break;
       case 'leaving':
         if (this.hold > 0){ this.hold -= dt; break; }

@@ -51,7 +51,7 @@ ok(L.contasDia(g.tables,{aluguel:120})===120+C.base+4*C.mesa+10*C.lugar,'aluguel
   const c1=g.custo; g.angryLeave(grp); ok(g.custo===c1,'grupo que vai embora não devolve os ingredientes');
   const t=g.tables[0], j=g.spawn({type:'estudante',color:0}); g.seatGroup(j,t); j.state='ordered'; j.juiceWant=2; j.juiceGot=0;
   g.bia.hands=[{kind:'juice'},{kind:'juice'}]; const c2=g.custo, m2=g.money; g.bia.doTable(t);
-  ok(g.money-m2>=2*L.JUICE.price && g.custo-c2===2*I.suco,'suco entregue: '+I.suco+' de ingredientes por copo'); }
+  ok(g.money===m2 && j.bebConta===2*L.JUICE.price && g.custo-c2===2*I.suco,'suco entregue: '+I.suco+' de ingredientes por copo'); }
 
 // fim do dia: meta pelo lucro; dinheiro acumulado recebe faturamento − ingredientes − contas − folha − divulgação (v8.2.2); o lucro soma no acumulado da campanha (v8.3, o ranking)
 { reset({tonhao:1},1000,'panfleto'); g.startDay(5); g.begin(); const bank0=g.save.bank;

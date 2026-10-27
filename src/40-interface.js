@@ -131,7 +131,7 @@ function buildTips(){
       txt(c,'×3!',46,22,18,PAL.alerta,'center',FD,3);
       star(c,46,46,9,PAL.mostarda);
     }],
-    ['Do dia 3 em diante, alguns grupos pedem suco (copinho com o número na mesa): entregue antes da conta, ou perdem um coração. A bandeja leva 2 pratos, 3 bebidas ou prato + bebida. Lixeira cheia cheira mal: toque nela de mãos vazias para esvaziar.', c => {
+    ['Do dia 3 em diante, alguns grupos pedem suco (copinho com o número na mesa): só pedem a conta depois do suco, e esperam perdendo a paciência. Suco e cafezinho entram na conta. A bandeja leva 2 pratos, 3 bebidas ou prato + bebida. Lixeira cheia cheira mal: toque nela de mãos vazias para esvaziar.', c => {
       ell(c,32,50,22,6); fs(c,PAL.inox,2);
       drawIcon(c,'juice',20,38,0.8); drawIcon(c,'juice',32,36,0.8); drawIcon(c,'juice',44,38,0.8);
       rr(c,8,4,48,18,6); fs(c,'#fff',1.8); drawIcon(c,'juice',20,13,0.5); txt(c,'×3',38,13,11,PAL.tinta,'center',FD);

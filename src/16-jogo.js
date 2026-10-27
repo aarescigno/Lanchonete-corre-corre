@@ -286,16 +286,11 @@ class Game {
     }
   }
   collectBill(g, t){
-    if (g.juicePending > 0){
-      if (g.hearts > 1) g.perdMesa++;
-      g.hearts = Math.max(1, g.hearts - 1);
-      this.stats.juiceMiss++;
-      this.addText(t.cx, t.cy - 100, 'Faltou o suco!', PAL.perigo, 16);
-    }
-    // v8.3.8: os corações viram gorjeta (no máximo +10%; com 1 ou 2, desconto), mais a da executiva e a do VIP
-    const amount = Math.round(g.bill * (1 + GORJETA[g.hearts] + g.T.tip + (g.vip ? VIP.tip : 0)));
+    // v8.3.8: os corações viram gorjeta (no máximo +10%; com 1 ou 2, desconto), mais a da executiva e a do VIP;
+    // v8.5.2: o suco e o cafezinho da mesa entram aqui também, pelo preço (bebConta)
+    const amount = Math.round(g.bill * (1 + GORJETA[g.hearts] + g.T.tip + (g.vip ? VIP.tip : 0))) + g.bebConta;
     this.score('bill', t.cx, t.cy - 50, amount, g);
-    if (this.treino) this.treino.conta = { v:amount, h:g.hearts, base:g.bill };
+    if (this.treino) this.treino.conta = { v:amount, h:g.hearts, base:g.bill + g.bebConta };
     if (g.sucoConta){ const v = this.bebida.preco * g.sucoConta; this.addMoney(v); this.addText(t.cx - 34, t.cy - 100, 'Suco da espera +' + v, PAL.alerta, 14); }
     if (g.T.tip > 0 || g.vip) this.addText(t.cx + 20, t.cy - 76, 'Gorjeta!', PAL.mostarda, 15);
     const eq = this.save.equipe;
@@ -503,7 +498,7 @@ class Game {
   angryLeave(g){
     if (g.state === 'leaving') return;
     this.stats.lost++;
-    const by = g.state === 'queue' ? (g.semMesa ? 'semMesa' : 'comMesa') : ({ wantOrder:'pedido', ordered:'prato', wantBill:'conta' })[g.state];
+    const by = g.state === 'queue' ? (g.semMesa ? 'semMesa' : 'comMesa') : ({ wantOrder:'pedido', ordered:'prato', eating:'prato', wantBill:'conta' })[g.state];
     if (by) this.stats.lostBy[by]++;
     this.addPuff(g.x, g.y - 20, 9);
     this.addText(g.x, g.y - 50, 'Hmpf!', PAL.perigo, 22);
