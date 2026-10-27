@@ -4,6 +4,15 @@ Registro das ideias e dos retornos de quem jogou, com o texto original, e de ond
 
 ---
 
+## 27/10/2026 — Usuário: lembrete de lavar os pratos
+**Origem:** mensagem do usuário:
+
+> adicione que no dia 3 em diante aparece uma notificação de: Não se esqueça de lavar os pratos! no início
+
+**Destino:** feito sobre a v8.5.1 (sem mudar o número da versão): ao abrir o dia (`Game.begin`), quando os pratos limpos são contados (dia 3 em diante e Turno sem fim), aparece por 3,5 s no centro do salão o balão branco "Não se esqueça de lavar os pratos!". Teste: `smoke27`.
+
+---
+
 ## 27/10/2026 — Usuário: o prato some com quem desiste
 **Origem:** mensagem do usuário:
 

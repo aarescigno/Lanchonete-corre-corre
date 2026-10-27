@@ -35,5 +35,10 @@ novo({bandeja:true}); { const a=senta(5);
   g.angryLeave(a);
   ok(!!g.bia.layout() && !g.bia.hands.some(h=>h.kind==='dirty'||h.kind==='dish') && g.kitchen.sinkN===1,'sem lugar nas mãos: o prato vai para a pia'); }
 
+// lembrete da louça no início do dia, só quando os pratos limpos são contados (dia 3 em diante)
+const aviso=()=>g.fx.some(f=>f.aviso==='pratos'&&f.text==='Não se esqueça de lavar os pratos!');
+for (const [d,quer] of [[1,false],[2,false],[3,true],[5,true]]){ g.save=L.normSave({bank:2000,maxDay:5}); g.up=g.save.up; g.buildTables(); g.startDay(d); g.begin();
+  ok(aviso()===quer,'dia '+d+': '+(quer?'mostra':'não mostra')+' "Não se esqueça de lavar os pratos!"'); }
+
 console.log((fails?'FALHOU':'OK')+' smoke27: '+(total-fails)+'/'+total);
 process.exit(fails?1:0);
