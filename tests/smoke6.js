@@ -108,8 +108,8 @@ ok(L.dishStock(L.DAYS[2])===4 && L.dishStock(L.DAYS[5])===4 && L.dishStock(L.DAY
 
 /* Dani */
 { reset({dani:1}); g.startDay(3); g.begin();
-  ok(g.dani.active && g.dani.speed===130,'Dani nível 1: 50% da velocidade da Bia (130)');
-  eq().dani=2; ok(g.dani.speed===169,'nível 2: 65%'); eq().dani=3; ok(g.dani.speed===208 && g.dani.tasks.length<=3,'nível 3: 80%');
+  ok(g.dani.active && g.dani.speed===g.bia.speed*0.5,'Dani nível 1: 50% da velocidade da Bia');
+  eq().dani=2; ok(Math.abs(g.dani.speed-g.bia.speed*0.65)<1e-9,'nível 2: 65%'); eq().dani=3; ok(Math.abs(g.dani.speed-g.bia.speed*0.8)<1e-9 && g.dani.tasks.length<=3,'nível 3: 80%');
   reset({dani:1,daniTasks:[]}); ok(g.toggleDaniTask('lixo') && g.toggleDaniTask('cafe') && !g.toggleDaniTask('lavar'),'níveis 1 e 2: 2 tarefas');
   eq().dani=3; ok(g.toggleDaniTask('lavar') && !g.toggleDaniTask('pratos'),'nível 3: 3 tarefas');
   ok(g.toggleDaniTask('lixo') && eq().daniTasks.indexOf('lixo')<0,'desmarca tarefa'); }

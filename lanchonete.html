@@ -2073,7 +2073,7 @@ class Helper {
   get level(){ return this.g.save.equipe.dani; }
   get active(){ return this.level > 0; }
   get spec(){ return STAFF.dani.levels[this.level]; }
-  get speed(){ return 260 * this.spec.speed; }
+  get speed(){ return this.g.bia.speed * this.spec.speed; }   // proporcional à Bia de agora (com os tênis)
   get tasks(){ return this.active ? this.g.save.equipe.daniTasks.filter(t => daniTaskOk(t, this.g.up)).slice(0, this.spec.tasks) : []; }
   does(t){ return this.tasks.indexOf(t) >= 0; }
   /* lavando na pia agora (a Bia não lava junto) */
