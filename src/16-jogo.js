@@ -292,7 +292,7 @@ class Game {
     // v8.5.2: o suco e o cafezinho da mesa entram aqui também, pelo preço (bebConta)
     const amount = Math.round(g.bill * (1 + GORJETA[g.hearts] + g.T.tip + (g.vip ? VIP.tip : 0))) + g.bebConta;
     this.score('bill', t.cx, t.cy - 50, amount, g);
-    if (this.treino) this.treino.conta = { v:amount, h:g.hearts, base:g.bill + g.bebConta };
+    if (this.treino) this.treino.conta = { v:amount, h:g.hearts, base:g.bill, beb:g.bebConta };   // a gorjeta é só da comida (base)
     if (g.sucoConta){ const v = this.bebida.preco * g.sucoConta; this.addMoney(v); this.addText(t.cx - 34, t.cy - 100, 'Suco da espera +' + v, PAL.alerta, 14); }
     if (g.T.tip > 0 || g.vip) this.addText(t.cx + 20, t.cy - 76, 'Gorjeta!', PAL.mostarda, 15);
     const eq = this.save.equipe;
