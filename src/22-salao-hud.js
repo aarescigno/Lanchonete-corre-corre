@@ -129,15 +129,15 @@ function drawRing(ctx,x,y,r,frac,col){
   ctx.beginPath(); ctx.arc(x,y,r+4,-Math.PI/2,-Math.PI/2+TAU*clamp(frac,0,1));
   ctx.lineWidth = 4; ctx.strokeStyle = col; ctx.lineCap = 'butt'; ctx.stroke(); ctx.lineCap = 'round';
 }
-function drawHearts(ctx,grp,x,y,tm){
-  const n = 5, sp = 15;
+function drawHearts(ctx,grp,x,y,tm,k){
+  const n = 5, sp = 15 * (k || 1);   // k: menor (o entregador na fila de retirada, v8.6)
   for (let i=0;i<n;i++){
     const hx = x + (i - 2) * sp;
     if (i < grp.hearts){
       const last = (i === grp.hearts - 1) && grp.patLeft < 2.5 && isFinite(grp.patLeft) && !grp.piso;
       const pulse = last && !RM ? 1 + 0.25*Math.sin(tm*14) : 1;
-      heart(ctx,hx,y,6.2*pulse, last && Math.floor(tm*6)%2 ? '#ff9a8d' : '#E5384A');
-    } else heart(ctx,hx,y,5.4,'rgba(255,255,255,.55)','rgba(34,32,28,.45)');
+      heart(ctx,hx,y,6.2*pulse*(k || 1), last && Math.floor(tm*6)%2 ? '#ff9a8d' : '#E5384A');
+    } else heart(ctx,hx,y,5.4*(k || 1),'rgba(255,255,255,.55)','rgba(34,32,28,.45)');
   }
 }
 function drawTableOverlay(ctx,g,t,tm,menu){
@@ -353,6 +353,7 @@ function drawFilaMarcas(ctx,g,tm){
 function drawHandItem(ctx,h,x,y,s,noTag){
   if (h.kind === 'dish'){ drawIcon(ctx,'dish',x,y,s,h.dish,cmdColor(h.group)); if (h.crit) txt(ctx,'★',x-12*s,y-12*s,13*s,PAL.mostarda,'center',FD); }
   else if (h.kind === 'ticket') drawIcon(ctx,'ticket',x,y,s,cmdColor(h.group));
+  else if (h.kind === 'marmita'){ drawMarmita(ctx,h.dish,x,y,s * 0.95); if (!noTag) drawMarmitaSelo(ctx,h,x + 12*s,y - 11*s); }   // v8.6
   else if (h.kind === 'suco'){ drawIcon(ctx,h.group ? h.group.game.bebida.icon : 'juice',x,y,s); if (h.group){ circ(ctx,x+8*s,y+9*s,4.5*s); fs(ctx,CHAIRS[h.group.color].c,1.2); } }   // da espera: a cor de quem pediu
   else drawIcon(ctx,h.kind,x,y,s);
   if (h.table && noTag){ circ(ctx,x+5,y-9,5.5); fs(ctx,'#fff',1.4); txt(ctx,String(h.table),x+5,y-8.5,8,PAL.tinta,'center',FD); }
@@ -360,14 +361,16 @@ function drawHandItem(ctx,h,x,y,s,noTag){
 }
 function drawActIcon(ctx,g,a,x,y){
   let cc = null;
-  if (a.type === 'plate'){ const p0 = g.kitchen.plates.find(q => q && q.id === a.pid); cc = p0 ? cmdColor(p0.group) : null; }
+  if (a.type === 'plate'){ const p0 = g.kitchen.plates.find(q => q && q.id === a.pid); cc = p0 && p0.kind !== 'marmita' ? cmdColor(p0.group) : null; }
   else if (a.type === 'table'){ const t0 = g.tables[a.id-1]; cc = t0 ? cmdColor(t0.group) : null; }
   if (cc){ rr(ctx,x-18,550,36,5,2); fs(ctx,cc,1.4); }
   if (a.type === 'order') drawIcon(ctx,'hat',x,y,1.05);
+  else if (a.type === 'adiantar'){ drawIcon(ctx,'marmita',x,y,1.0); circ(ctx,x-12,y-10,6.5); fs(ctx,PAL.ok,1.6); txt(ctx,'+',x-12,y-9.5,11,'#fff','center',FD); }   // v8.6
   else if (a.type === 'coffee') drawIcon(ctx,'coffee',x,y,1.05);
   else if (a.type === 'juice') drawIcon(ctx,'juice',x,y+1,1.0);
   else if (a.type === 'sink') drawIcon(ctx,'drop',x,y,1.05);
   else if (a.type === 'trash') drawIcon(ctx,'trash',x,y,1.0);
+  else if (a.type === 'retirada'){ drawIcon(ctx,'marmita',x,y,1.0); circ(ctx,x+13,y+11,7); fs(ctx,EFOOD_COR,1.6); txt(ctx,'E',x+13,y+11.5,9,'#fff','center',FD); }   // o balcão de retirada (v8.6)
   else if (a.type === 'maquina'){
     drawIcon(ctx,g.bebida.icon,x,y+1,1.0);
     if (a.leg === 2 && a.group){ circ(ctx,x+13,y+12,7); fs(ctx,CHAIRS[a.group.color].c,1.8); }   // levando: a cor de quem pediu
@@ -376,6 +379,7 @@ function drawActIcon(ctx,g,a,x,y){
   }
   else if (a.type === 'plate'){
     const p = g.kitchen.plates.find(q => q && q.id === a.pid);
+    if (p && p.kind === 'marmita'){ drawIcon(ctx,'marmita',x,y,1.0,p.dish); drawMarmitaSelo(ctx,p,x+13,y-12); return; }
     drawIcon(ctx,'dish',x,y,1.0,p ? p.dish : 'pf',cc);
     if (p){ circ(ctx,x+13,y-12,8); fs(ctx,'#fff',1.8); txt(ctx,String(p.table),x+13,y-11,11,PAL.tinta,'center',FD); }
   } else if (a.type === 'table'){

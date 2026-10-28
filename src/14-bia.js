@@ -6,14 +6,14 @@
    - Sem o upgrade, a outra mão também leva 1 item.
    - Com a bandeja: 1 prato + 1 bebida, ou 2 pratos, ou 3 bebidas (cafezinho
      e suco), ou 2 pilhas de louça suja, ou menos que isso. Sujo e limpo
-     nunca juntos na bandeja. O suco da espera (v7.5, 'suco') conta como bebida.
+     nunca juntos na bandeja. O suco da espera (v7.5, 'suco') conta como bebida, e a marmita (v8.6), como prato.
    ============================================================ */
 const KITCHEN_SLOTS = 3;
 const DRINKS = { coffee:1, juice:1, suco:1 };
 function trayOk(items){
   let d = 0, k = 0, s = 0;
   for (const h of items){
-    if (h.kind === 'dish') d++;
+    if (h.kind === 'dish' || h.kind === 'marmita') d++;
     else if (DRINKS[h.kind]) k++;
     else if (h.kind === 'dirty') s++;
     else return false;                 // comanda não vai na bandeja
@@ -42,6 +42,8 @@ function handLayout(items, tray, maxTickets){
   return null;
 }
 
+/* a marmita (v8.6) na mão de quem leva: o mesmo objeto, sem o lugar na janela de prontos */
+function marmitaMao(p){ return { kind:'marmita', mid:p.mid, dish:p.dish, dono:p.dono, age:p.age, crit:p.crit, q:p.q }; }
 /* onde está quem pediu o suco da espera: o banco lá fora ou a mesa (a Bia refaz o caminho quando muda) */
 function sucoLugar(g){ return !g ? '' : g.state === 'queue' ? 'banco' + g.slot : g.table ? 'mesa' + g.table.id : 'fora'; }
 
@@ -203,6 +205,8 @@ class Waitress {
     const g = this.g;
     if (a.type === 'table') return this.doTable(g.tables[a.id-1]);
     if (a.type === 'order'){ if (!this.submitTickets()) this.fail('?'); return; }
+    if (a.type === 'adiantar'){ this.submitTickets(); if (!g.adiantar(this.x, this.y - 104)) this.fail(g.marmitaOk ? 'Já tem ' + MARMITA.vagas + ' marmitas!' : '?'); return; }   // v8.6 (leva as comandas da mão junto)
+    if (a.type === 'retirada'){ if (!g.levaMarmitas(this)) this.fail(this.hands.some(h => h.kind === 'marmita') ? 'Prateleira cheia!' : '?'); return; }
     if (a.type === 'plate'){
       this.submitTickets();
       const slot = g.kitchen.plates.findIndex(p => p && p.id === a.pid);
@@ -210,6 +214,7 @@ class Waitress {
       if (!this.canTake('dish')) return this.fail('Mãos cheias!');
       const p = g.kitchen.plates[slot];
       g.kitchen.plates[slot] = null;
+      if (p.kind === 'marmita'){ this.hands.push(marmitaMao(p)); Sfx.blip(); return; }
       this.hands.push({ kind:'dish', table:p.table, group:p.group, dish:p.dish, crit:p.crit, q:p.q, vip:p.vip });
       Sfx.blip();
       return;

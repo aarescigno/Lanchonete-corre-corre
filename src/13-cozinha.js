@@ -14,6 +14,16 @@ class Kitchen {
     if (g.mode === 'semfim') time *= 1 + Math.min(0.25, 0.01 * g.elapsed / 60);
     this.queue.push({ group:grp, table:ticket.table, time, p:0, dish:grp.dish });
   }
+  /* marmita (v8.6): o pedido da Efood (dono: o entregador) ou a adiantada (sem dono); o tempo de 1 prato */
+  submitMarmita(dish, dono){
+    const g = this.game;
+    let time = rand(4,7) * this.chef.cook;
+    if (g.day.gripe) time *= 1.25;
+    if (g.mode === 'semfim') time *= 1 + Math.min(0.25, 0.01 * g.elapsed / 60);
+    const t = { marmita:true, group:null, table:0, time, p:0, dish, dono:dono || null, enc:!!dono };   // enc: encomenda (cancela se o dono for embora antes de começar)
+    this.queue.push(t);
+    return t;
+  }
   purge(group){
     this.queue   = this.queue.filter(t => t.group !== group);
     this.cooking = this.cooking.filter(t => t.group !== group);
@@ -31,6 +41,17 @@ class Kitchen {
     if (this.queue.some(t => t.group === group)) return 0;
     return -1;
   }
+  /* a marmita pronta vai para a janela de prontos (sem prato limpo); os ingredientes e a embalagem saem agora */
+  marmitaPronta(t, slot){
+    const g = this.game, crit = g.mode !== 'treino' && Math.random() < this.chef.crit;
+    const fx = AVAL.prato[g.save.equipe.tonhao], q = crit ? 5 : rand(fx[0], fx[1]);
+    this.plates[slot] = { id:++this.pid, kind:'marmita', mid:++g.marmitaId, dish:t.dish, dono:t.dono, slot, age:0, crit, q };
+    g.usos.fogao++; g.usos.geladeira++;
+    Sfx.bell();
+    g.addText(PLATE_SLOTS[slot].x, PLATE_SLOTS[slot].y - 34, 'Marmita!', PAL.mostarda, 16);
+    const cost = Math.round(precoPrato(t.dish, g.ponto) * INGRED.prato * (g.quebrado('geladeira') ? manutOf('geladeira').ingred : 1)) + MARMITA.embalagem;
+    g.custo += cost; g.addText(PLATE_SLOTS[slot].x, PLATE_SLOTS[slot].y - 54, '-' + cost, PAL.perigo, 12);
+  }
   update(dt){
     this.noPlate = false;
     const fogo = this.game.quebrado('fogao') ? manutOf('fogao').lento : 1;   // fogão falhando (v8): cozinha mais devagar
@@ -40,6 +61,7 @@ class Kitchen {
       t.p = Math.min(t.time, t.p + dt * fogo);
       if (t.p >= t.time){
         const free = this.plates.findIndex(p => !p);
+        if (t.marmita){ if (free >= 0){ this.cooking.splice(i,1); this.marmitaPronta(t, free); } continue; }
         if (free >= 0 && this.clean <= 0) this.noPlate = true;
         if (free >= 0 && this.clean > 0){
           this.clean--;

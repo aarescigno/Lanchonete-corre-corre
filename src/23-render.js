@@ -59,6 +59,11 @@ function render(g, ctx){
         glowSprite(ctx,g,grp,ctx => drawCluster(ctx,grp,grp.x,grp.y,tm,{ sit:parado && g.ponto.assento !== 'pe', bebe:parado }));
         ctx.restore();
       }});
+    } else if (grp.state === 'retirada'){   // v8.6: o entregador no balcão de retirada, de pé
+      items.push({ y:grp.y, f:() => {
+        if (!grp.path.length) drawMoodRing(ctx,grp.hearts,grp.x,grp.y+2,28,8,tm);
+        drawCluster(ctx,grp,grp.x,grp.y,tm);
+      }});
     } else if (grp.state === 'toTable' || grp.state === 'leaving'){
       items.push({ y:grp.y, f:() => drawCluster(ctx,grp,grp.x,grp.y,tm) });
     }
@@ -75,6 +80,7 @@ function render(g, ctx){
     });
   }});
   if (menu) items.pop();
+  if (g.marmitaOk && !menu) items.push({ y:RETIRADA.balcao.y + 50, f:() => glowSprite(ctx,g,'retirada',ctx => drawRetirada(ctx,g,tm)) });
   if (g.up.maquina) items.push({ y:STATIONS.maquina.rect.y + STATIONS.maquina.rect.h, f:() => glowSprite(ctx,g,'maquina',ctx => drawMaquina(ctx,g,tm,menu)) });
   if (g.save.equipe.couvert && !menu) items.push({ y:528, f:() => drawMusico(ctx,g,tm) });
   if ((g.save.equipe.tv || g.save.equipe.som) && !menu) items.push({ y:532, f:() => drawAmbiente(ctx,g,tm) });
@@ -93,6 +99,7 @@ function render(g, ctx){
     if (grp.aguarda && !grp.path.length) drawWaitBadge(ctx,grp.x + (grp.vip ? 63 : 50),grp.y-66,tm,grp.piso);
     if (!menu) drawPedidoEspera(ctx,g,grp,tm);
   });
+  g.retirada.forEach(grp => { drawHearts(ctx,grp,grp.x,grp.y-62,tm,0.6); if (!menu) drawRetiradaBalao(ctx,g,grp,tm); });
   if (!menu) drawFilaMarcas(ctx,g,tm);
   // "?" sobre a Bia
   if (b.qT > 0 && !menu){
