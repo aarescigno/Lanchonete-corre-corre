@@ -67,8 +67,9 @@ ok(roda(()=>passo()==='cobrar'),'acabaram de comer: pedem a conta');
 toca(g.treino.mesa.cx,g.treino.mesa.cy);
 ok(roda(()=>passo()==='conta'),'conta cobrada');
 const c=g.treino.conta;
-ok(c && c.h===5 && c.v===Math.round(c.base*1.1),'com 5 corações a conta sai 10% maior (v8.3.8): '+c.base+' -> '+c.v);
-ok(new RegExp('R\\$ '+c.base+' virou R\\$ '+c.v).test(g.treino.texto()),'o pop-up mostra a conta: '+g.treino.texto());
+ok(c && c.h===5 && c.base===grp.bill && c.v-c.beb===Math.round(c.base*1.1),'com 5 corações a comida sai 10% mais cara (v8.3.8): '+c.base+' -> '+(c.v-c.beb));
+ok(c.beb===L.DRINK_PRICE.coffee && c.beb===grp.bebConta,'o cafezinho vai para a conta pelo preço, fora da gorjeta (v8.5.2): '+c.beb);
+ok(new RegExp('comida de R\\$ '+c.base+' virou R\\$ '+(c.v-c.beb)+', mais R\\$ '+c.beb+' do cafezinho: a conta deu R\\$ '+c.v).test(g.treino.texto()),'o pop-up mostra a conta: '+g.treino.texto());
 segue('conta');
 
 // ---------- louça, pia, lavar, lixo ----------

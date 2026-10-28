@@ -2574,7 +2574,7 @@ class Game {
     // v8.5.2: o suco e o cafezinho da mesa entram aqui também, pelo preço (bebConta)
     const amount = Math.round(g.bill * (1 + GORJETA[g.hearts] + g.T.tip + (g.vip ? VIP.tip : 0))) + g.bebConta;
     this.score('bill', t.cx, t.cy - 50, amount, g);
-    if (this.treino) this.treino.conta = { v:amount, h:g.hearts, base:g.bill + g.bebConta };
+    if (this.treino) this.treino.conta = { v:amount, h:g.hearts, base:g.bill, beb:g.bebConta };   // a gorjeta é só da comida (base)
     if (g.sucoConta){ const v = this.bebida.preco * g.sucoConta; this.addMoney(v); this.addText(t.cx - 34, t.cy - 100, 'Suco da espera +' + v, PAL.alerta, 14); }
     if (g.T.tip > 0 || g.vip) this.addText(t.cx + 20, t.cy - 76, 'Gorjeta!', PAL.mostarda, 15);
     const eq = this.save.equipe;
@@ -3481,13 +3481,13 @@ const TREINO_PASSOS = [
   { id:'cafe2', segura:true, alvo:g => [treinoMesaR(g)], tit:'Sirva o cafezinho',
     txt:'Agora toque na mesa para servir o cafezinho.', feito:g => g.treino.grupo.coffee },
   { id:'bonus', ok:true, segura:true, alvo:g => [treinoMesaR(g)], tit:'Os bônus do cafezinho',
-    txt:'Cada cafezinho põe R$ ' + DRINK_PRICE.coffee + ' na conta, rende 5 pontos e 1 coração (2 com a Cafeteira de 2 bocas, da lojinha). E coração vale gorjeta: com 5 corações, a conta sai 10% maior; com 1, o grupo reclama e paga 20% menos.' },
+    txt:'Cada cafezinho põe R$ ' + DRINK_PRICE.coffee + ' na conta, rende 5 pontos e 1 coração (2 com a Cafeteira de 2 bocas, da lojinha). E coração vale gorjeta: com 5 corações, a comida sai 10% mais cara; com 1, o grupo reclama e paga 20% menos.' },
   { id:'comendo', alvo:g => [treinoMesaR(g)], tit:'Bom apetite',
     txt:'Eles estão comendo. Quando acabarem, pedem a conta (balão com "$").', feito:g => g.treino.grupo.state === 'wantBill' },
   { id:'cobrar', alvo:g => [treinoMesaR(g)], tit:'Hora de cobrar',
     txt:'Toque na mesa para a Bia cobrar a conta.', feito:g => g.treino.grupo.paid },
   { id:'conta', ok:true, alvo:g => [treinoMesaR(g)], tit:'Conta paga!',
-    txt:g => { const c = g.treino.conta || { v:0, h:5, base:0 }; return 'Com ' + c.h + (c.h > 1 ? ' corações' : ' coração') + ', a conta de R$ ' + c.base + ' virou R$ ' + c.v + '. O dinheiro paga as contas da lanchonete; os pontos mostram como a Bia atendeu.'; } },
+    txt:g => { const c = g.treino.conta || { v:0, h:5, base:0, beb:0 }; return 'Com ' + c.h + (c.h > 1 ? ' corações' : ' coração') + ', a comida de R$ ' + c.base + ' virou R$ ' + (c.v - c.beb) + (c.beb ? ', mais R$ ' + c.beb + ' do cafezinho: a conta deu R$ ' + c.v : '') + '. O dinheiro paga as contas da lanchonete; os pontos mostram como a Bia atendeu.'; } },
   { id:'louca', alvo:g => [treinoMesaR(g)], tit:'Recolha a louça',
     txt:'Ficou louça suja na mesa, e mesa suja não recebe ninguém. Toque na mesa para recolher.', feito:g => !g.treino.mesa.dirty },
   { id:'pia', alvo:treinoSt('sink'), tit:'Leve à pia',
