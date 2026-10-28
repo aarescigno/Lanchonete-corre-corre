@@ -7,7 +7,7 @@ Origem: retorno do Renan Martorelli (beta-tester) e conversa com o Arthur (15/10
 - Para começar uma sessão, basta pedir: **"faça a próxima etapa do docs/PLANO.md"**. A sessão lê só a etapa da vez e as partes de `src/` citadas nela.
 - Antes de programar, a sessão confirma com o usuário as **decisões em aberto** da etapa (cada uma já tem uma sugestão).
 - No fim, a sessão marca a etapa como feita na tabela abaixo (com a versão e a data) e anota o que mudou no plano.
-- Ordem: cada etapa depende só das anteriores. A 1a vem primeiro (mexe no equilíbrio de base). A 1c teve prioridade sobre as demais, por ser retorno do beta-tester Renan (pedido do usuário em 21/10). A 1d-1 (v7.4), a 1d-2 (v7.5), a 2 (v8) e a 2b (v8.3) foram feitas. **Ordem revista com o usuário em 22/10:** 2b (campanha contínua e banco), 2c (avaliações dos clientes), 2d (abertura animada do Modo História), 3a (área industrial), 3b (Avenida Brasil) e 4 (Terraço Suíça). A campanha vem antes dos pontos para a carreira não ser refeita duas vezes, e as avaliações viram a "experiência" que abre os pontos novos e a reputação da etapa 4. A 2c (v8.4) e a 2d (v8.5) foram feitas em 26/10. **Ordem revista com o usuário em 28/10** (texto em `docs/PROPOSTAS.md`): as propostas que estavam só no log e nas Ideias guardadas viraram etapas. Ficou assim: 2e (entregadores com fila própria e marmitas), 2f (a campanha vira o Modo História), 3a (área industrial), 3b (Avenida Brasil), 4a (Terraço Suíça), 4b (nível de luxo), 4c (eventos de bairro), 6 (crítico do Michelzão e final) e 7 (polimento). A marmita vem antes da área industrial, que terá mais entregadores. A campanha e o Modo História viraram uma coisa só: a 2f monta a estrutura e os capítulos da Garagem, cada ponto traz o seu capítulo, e a antiga etapa 5 deixou de existir. A 2e (v8.6) foi feita em 28/10. **A próxima é a 2f.** A etapa 7 fica **a rever** com o usuário antes de começar.
+- Ordem: cada etapa depende só das anteriores. A 1a vem primeiro (mexe no equilíbrio de base). A 1c teve prioridade sobre as demais, por ser retorno do beta-tester Renan (pedido do usuário em 21/10). A 1d-1 (v7.4), a 1d-2 (v7.5), a 2 (v8) e a 2b (v8.3) foram feitas. **Ordem revista com o usuário em 22/10:** 2b (campanha contínua e banco), 2c (avaliações dos clientes), 2d (abertura animada do Modo História), 3a (área industrial), 3b (Avenida Brasil) e 4 (Terraço Suíça). A campanha vem antes dos pontos para a carreira não ser refeita duas vezes, e as avaliações viram a "experiência" que abre os pontos novos e a reputação da etapa 4. A 2c (v8.4) e a 2d (v8.5) foram feitas em 26/10. **Ordem revista com o usuário em 28/10** (texto em `docs/PROPOSTAS.md`): as propostas que estavam só no log e nas Ideias guardadas viraram etapas. Ficou assim: 2e (entregadores com fila própria e marmitas), 2f (a campanha vira o Modo História), 3a (área industrial), 3b (Avenida Brasil), 4a (Terraço Suíça), 4b (nível de luxo), 4c (eventos de bairro), 6 (crítico do Michelzão e final) e 7 (polimento). A marmita vem antes da área industrial, que terá mais entregadores. A campanha e o Modo História viraram uma coisa só: a 2f monta a estrutura e os capítulos da Garagem, cada ponto traz o seu capítulo, e a antiga etapa 5 deixou de existir. A 2e (v8.6) foi feita em 28/10. **A próxima é a 2d-r** (revisão estética da abertura, a confirmar com o usuário); depois, a 2f. A etapa 7 fica **a rever** com o usuário antes de começar.
 
 ## Situação
 | # | Etapa | Versão | Situação |
@@ -40,8 +40,9 @@ Origem: retorno do Renan Martorelli (beta-tester) e conversa com o Arthur (15/10
 | — | Retorno do usuário: jogo perfeito no dia 1 deu 1 estrela; metas e 3 estrelas pelo bot afiado | v8.3.9 | feita (23/10) |
 | 2c | Avaliações dos clientes (nota de 0 a 5 ★, 5 critérios) | v8.4 | feita (26/10) |
 | 2d | Abertura animada do Modo História: o sonho da Bia | v8.5 | feita (26/10) |
+| 2d-r | Revisão estética da abertura, em 5 partes com checagem do usuário | v8.5.2 | **a confirmar a ordem** (sugestão: a próxima) |
 | 2e | Entregadores com fila própria e marmitas | v8.6 | feita (28/10) |
-| 2f | A campanha vira o Modo História: estrutura e capítulos da Garagem | v8.7 | **próxima** |
+| 2f | A campanha vira o Modo História: estrutura e capítulos da Garagem | v8.7 | a fazer |
 | 3a | Mudança de ponto e Lanchonete na área industrial (e o capítulo dela) | v9 | a fazer |
 | 3b | Restaurante na Avenida Brasil (e o capítulo dela) | v9.1 | a fazer |
 | 4a | Terraço Suíça e VIPs exigentes (e o capítulo dele) | v10 | a fazer |
@@ -368,6 +369,75 @@ Também: rever o `smoke7` (toque) e o `smoke10` (fila justa e porta), mais `bala
 - A abertura toca sozinha na 1ª vez que o jogo abre (sugestão: não, para não atrasar a Missão zero; fica no botão História)?
 
 **Feito na v8.5 (26/10, `docs/spec-v8.5.md`).** Decisões do usuário: o roteiro é dele (texto em `docs/PROPOSTAS.md`), em 9 cenas (~68 s): a mãe da Bia, a **Rosa**, cozinha com carinho e entra na Casa Aurora, onde o irmão mais velho, o **Tonhão**, já cozinhava. A casa ganha a estrela do Michelzão com o tempero dos dois, mas a fama fica com o chef **Bráulio**. A Rosa adoece e morre (só na legenda). A Bia promete seguir o caminho dela, o Tonhão sai da Casa Aurora para ajudar e a Bia pega o empréstimo para a garagem. O tom é só emocionante, sem a piscadela da meritocracia. A abertura toca sozinha uma vez, na 1ª vez que o jogo abre, e depois pelo botão História. **Para as etapas 5 e 6:** a receita especial da Casa Aurora era o toque do Tonhão, de cominho com açafrão, e a pétala de rosa da Dona Rosa (na abertura, só a pétala caindo, como pista); o Bráulio nunca conseguiu repetir o molho porque não sabia o que tinha sido feito. Na v8.5.1 (retorno do usuário), o hospital fecha a cortina depois da fala derradeira da Rosa, e uma cena nova mostra a Bia triste, sozinha (10 cenas, ~75 s). A dívida do banco da cena 8 é a dívida de abertura do Modo História.
+
+---
+
+## Etapa 2d-r — Revisão estética da abertura (v8.5.2)
+> Nota de 28/10: a v8.6 (etapa 2e) saiu antes desta etapa; o número da versão que fecha a revisão passa a ser **v8.6.1** (onde se lê v8.5.2 abaixo).
+**Objetivo:** pedido do usuário em 28/10 (texto em `docs/PROPOSTAS.md`): corrigir o que está fora no desenho e na animação da abertura. O exemplo dele foi a Rosa parecer mais baixa que o fogão e mexer a panela com uma "vareta" apontada para cima. A revisão das 10 cenas achou erros de proporção, de gesto, de leitura da cena e de composição. Os pontos estão abaixo, divididos em 5 partes.
+
+**Como cada parte funciona (checagem do usuário):**
+1. A sessão faz só a parte da vez, em `src/25-abertura.js` (e em `src/18-abertura.js` só se mudar texto ou tempo).
+2. Monta, roda `tests/run_all.sh` (o smoke 26 tem que continuar verde) e manda ao usuário as capturas **antes e depois** de cada cena que mudou, em recortes.
+3. **Espera a resposta.** O usuário aprova, pede mudanças no chat ou manda "Ajustes feitos no editor de desenhos" (`ferramentas/editor.py`), e a sessão aplica.
+4. Só depois da aprovação: commit, PR para o `claude/main`, merge e branch apagado, como no `CLAUDE.md`. As partes 1 a 4 são commits sem versão nova, como os ajustes da abertura depois da v8.5.1. A parte 5 fecha a **v8.5.2**.
+5. A sessão marca a parte como feita na lista abaixo e para. A próxima parte começa quando o usuário pedir.
+
+**Partes:**
+
+| Parte | O que entra | Cenas | Situação |
+|---|---|---|---|
+| R1 | Proporções | casa, aurora, tempero, estrela, hospital, promessa, tonhao, inauguracao | a fazer |
+| R2 | Gestos e objetos | casa, tempero, promessa | a fazer |
+| R3 | A cena conta a legenda | aurora, hospital, saudade, tonhao, banco | a fazer |
+| R4 | Composição e sobreposições | casa, tempero, estrela, inauguracao | a fazer |
+| R5 | Vida na animação e fechamento da v8.5.2 | todas | a fazer |
+
+### R1 — Proporções
+- **Alturas comuns:** uma tabela de alturas em px na cena (`AB_ALT`) e a escala de cada personagem calculada por ela, no lugar dos números soltos de hoje (Rosa 3.6, Tonhão 2, Bráulio 2.2, Bia criança 2.6, Bia adulta 3 e 3.2). Assim, a Bia adulta tem a mesma altura em `promessa`, `tonhao`, `banco` e `inauguracao`.
+- **Fogão e bancada** (`abCozinhaCasa`, cenas `casa` e `promessa`): hoje o fogão tem 180 px (de y 290 a 470), 84% da altura da Rosa. A boca do fogão desce para a altura da cintura do avental, ~55% da altura dela (y ≈ 365), e a bancada desce junto. A panela e os corações acompanham o fogão. O banquinho da Bia criança continua fazendo sentido: em cima dele, a cabeça dela fica um pouco acima da panela.
+- **Rosa deitada** (`hospital`): a cabeça passa de r=28 para o tamanho dela em pé (r ≈ 40, com o coque e a flor), e o corpo sob o cobertor fica com o comprimento dela em pé (hoje é quase o dobro). A cama encolhe para caber.
+- **Fogão da Casa Aurora** (`tempero`) e as pessoas na porta (`estrela`): conferir com a tabela nova.
+
+### R2 — Gestos e objetos
+- **Colher de pau da Rosa** (`casa`): hoje ela segura a colher no quadril, em (606, 414), e a colher sobe pela frente do forno até a borda da panela. Passa a ser segurada por cima: a mão acima da borda, o cabo inclinado para fora e a ponta dentro do molho, fazendo uma pequena elipse em vez de ir e voltar para os lados.
+- **Colherinha da Bia** (`casa`): hoje está ao contrário, com a parte vermelha do molho na testa (y 294). A parte vermelha vai para a boca e o cabo sai para fora e para baixo.
+- **Tonhão mexendo** (`tempero`, `braco:'mexe'`): ganha uma colher de pau ou concha dentro da panela (hoje a mão só pousa na borda).
+- **O segredo da Rosa** (`tempero`): no lugar do aceno, a mão fica sobre a panela, como quem solta uma pitada. A pétala fica maior e de um rosa mais forte, com contorno, para se ver cair. Quando ela cai, o molho muda de cor de um jeito que se perceba (hoje passa de `#C2362B` para `#D9502E`, quase igual), com um brilho na superfície.
+- **Caderno de receitas** (`promessa`): as mãos da Bia aparecem segurando o caderno.
+
+### R3 — A cena conta a legenda
+- **Casa Aurora** (`aurora`): a porta abre e a Rosa entra (ela some atrás da porta). A Rosa chega de roupa rosa, sem o dólmã, porque ainda não trabalha lá.
+- **Bia sentada** (`hospital`, `saudade`): pernas penduradas para fora do assento (hoje o corpo fica colado na cadeira). No hospital, a cadeira fica numa altura coerente com a cama.
+- **Corredor do hospital** (`saudade`): uma porta com uma plaquinha (sem cruz vermelha, que é símbolo protegido) e um rodapé, para se ler "hospital" sem a legenda.
+- **Tonhão animado** (`tonhao`): desanimado ao sair da Casa Aurora e sorrindo na fala "braço pra cozinha tenho de sobra!" (hoje as sobrancelhas parecem bravas).
+- **Banco** (`banco`): fachada desenhada no traço da cena (colunas, porta, placa "Banco"), no lugar de `drawBanco` ampliado 7 vezes, que deixa o contorno ~7× mais grosso. A moeda vira "R$". O papel do APROVADO sai da porta do banco (ou da mão de alguém no balcão) e chega até a Bia. Fica a decidir se a reforma da garagem aparece, por exemplo numa plaquinha "Em obras".
+- **Passagem de tempo** (da `saudade` para a `promessa`): a decidir (ver as decisões).
+
+### R4 — Composição e sobreposições
+- **Balões:** não cobrem a panela, a colher, os corações (`casa`) nem o lustre (`estrela`). O balão vai para o lado livre de quem fala, ou fica mais alto.
+- **Vapor:** cinza-azulado claro ou com contorno, para aparecer na parede creme e no azulejo branco (`casa`, `tempero`).
+- **Inauguração:** a estrela que brilha sai de perto dos botões Voltar e Pular (hoje em (1060, 90)). O título "O sonho da Bia" não encosta no telhado. As mesas ganham banquinhos.
+- **Plateia** (`estrela`): gestos variados (palmas, braço erguido, braços parados) e ritmos diferentes, para não parecer cópia. O bigode do Bráulio sai de cima da boca.
+
+### R5 — Vida na animação e fechamento da v8.5.2
+- **Andar:** o personagem vira para o lado em que anda (`flip`), e não desliza de frente (Rosa em `aurora`, Tonhão em `tonhao`, Bia em `banco`).
+- **Piscar e falar:** piscadas de vez em quando e a boca abrindo e fechando enquanto o balão aparece. Com `prefers-reduced-motion`, nada disso acontece.
+- **Gestos suaves:** os acenos e o braço flexionado entram com uma curva rápida, em vez de aparecer de uma vez.
+- **Fechamento:** versão v8.5.2 (`versoes/`, `vtag`, `VERSAO`, painel `#ov-ver`), `docs/spec-v8.5.2.md`, `docs/RESUMO.md`, `tests/shot_v8_5_2.py` com as capturas em `capturas/v8.5.2` e o artifact do editor atualizado se o usuário for usar. O artifact do jogo só é publicado quando o usuário pedir.
+
+**Partes de `src/`:** `25-abertura.js` (quase tudo), `20-desenho-base.js` (só se a boca e o piscar entrarem em `drawPerson`/`drawBia`), `18-abertura.js` (só se mudar texto ou tempo).
+
+**Testes:** `tests/run_all.sh` em toda parte (o smoke 26 confere a abertura). Capturas antes e depois de cada cena que mudou.
+
+**Decisões em aberto** (cada uma com uma sugestão):
+- **Ordem:** fazer a 2d-r antes da 2e? Sugestão: sim, porque a abertura é a primeira coisa que o jogador vê.
+- **Alturas (R1):** Rosa e Bia adulta com ~210 px, Tonhão e Bráulio com ~230 px sem a touca, Bia criança com ~130 px (cerca de 60% da mãe).
+- **Cor do molho com o segredo (R2):** sugestão: um laranja-dourado mais claro, com brilho, ligado às estrelinhas.
+- **Banco (R3):** fachada desenhada (sugestão) ou o ícone de hoje com contorno fino?
+- **Reforma da garagem (R3):** mostrar uma plaquinha "Em obras" no fim da cena do banco? Sugestão: não, para não alongar a cena. A inauguração já mostra a garagem pronta.
+- **Passagem de tempo (R3):** a legenda da `promessa` começa com "Anos depois, a Bia guardou a lição da mãe..."? O roteiro é do usuário, então só muda com o sim dele.
+- **R5 entra?** É a parte mais longa e a menos urgente. Sugestão: fazer, mas ela pode virar uma ideia guardada.
 
 ---
 
