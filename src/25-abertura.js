@@ -394,7 +394,7 @@ const AB_CENAS = {
     // a cama, do tamanho da Rosa deitada (a cabeça do tamanho dela em pé, o corpo com o comprimento dela)
     const sr = abEsc('rosa'), hr = 11 * sr;
     rr(c,310,352,272,58,8); fs(c,'#fff',3);
-    c.strokeStyle = PAL.tinta; c.lineWidth = 7; c.beginPath(); c.moveTo(322,410); c.lineTo(322,AB_CHAO); c.moveTo(570,410); c.lineTo(570,AB_CHAO); c.stroke();
+    c.lineCap = 'butt'; c.strokeStyle = PAL.tinta; c.lineWidth = 7; c.beginPath(); c.moveTo(322,410); c.lineTo(322,AB_CHAO); c.moveTo(570,410); c.lineTo(570,AB_CHAO); c.stroke();
     c.strokeStyle = PAL.cromo; c.lineWidth = 4; c.stroke();
     rr(c,296,262,20,148,6); fs(c,PAL.cromo,2.5);
     ell(c,370,346,52,16); fs(c,'#fff',2.5);                                     // o travesseiro
@@ -402,22 +402,29 @@ const AB_CENAS = {
     circ(c,382,326,hr); fs(c,SKINS[3],2.6);
     c.beginPath(); c.arc(382,323,hr + 1,Math.PI * 0.95,Math.PI * 1.75); c.lineTo(382,323 - hr * 0.55); c.closePath(); fs(c,'#1B1512',2);   // o cabelo
     abFlor(c,334,304,6);
+    // os olhos abrem enquanto ela fala (olhando para a Bia) e fecham depois
+    const fa = ABERTURA.cenas.find(q => q.id === 'hospital').falas[0], tf = p * ABERTURA.cenas.find(q => q.id === 'hospital').t;
+    const abertos = tf >= fa.de && tf < fa.ate && !abPisca(T,0.3);
     c.strokeStyle = PAL.tinta; c.lineWidth = 2.4;
-    c.beginPath(); c.arc(370,328,5,0.2,Math.PI-0.2); c.moveTo(400,328); c.arc(395,328,5,0.2,Math.PI-0.2); c.stroke();   // olhos fechadinhos
+    if (abertos){ circ(c,372,327,3.4); c.fillStyle = PAL.tinta; c.fill(); circ(c,397,327,3.4); c.fill(); }
+    else { c.beginPath(); c.arc(370,328,5,0.2,Math.PI-0.2); c.moveTo(400,328); c.arc(395,328,5,0.2,Math.PI-0.2); c.stroke(); }   // olhos fechadinhos
     const fr = abBoca('rosa');
     if (fr){ ell(c,383,344,4.5,1.5 + fr * 3); fs(c,'#7A2E2E',1.6); }
     else { c.beginPath(); c.arc(383,340,6,0.3,Math.PI-0.3); c.stroke(); }
     // o cobertor rosa, do peito aos pés, com o volume do corpo (respira devagar) e a dobra do lençol no alto
     const resp = RM ? 0 : Math.sin(T * 1.4) * 2;
-    c.beginPath(); c.moveTo(422,394); c.lineTo(422,348 - resp);
-    c.quadraticCurveTo(470,334 - resp,505,344); c.quadraticCurveTo(530,350,545,338); c.quadraticCurveTo(562,330,578,350);
-    c.lineTo(578,394); c.closePath(); fs(c,'#E7A9B8',3);
+    c.beginPath(); c.moveTo(406,404); c.lineTo(406,344);
+    c.quadraticCurveTo(410,322 - resp,444,318 - resp); c.quadraticCurveTo(484,315 - resp,504,328);
+    c.quadraticCurveTo(520,337,536,333); c.quadraticCurveTo(550,310,566,314); c.quadraticCurveTo(580,318,580,340);
+    c.lineTo(580,404); c.closePath(); fs(c,'#E7A9B8',3);
+    c.strokeStyle = 'rgba(122,46,58,.35)'; c.lineWidth = 2.5; c.beginPath(); c.moveTo(410,394); c.lineTo(576,394); c.stroke();   // a barra
+    c.beginPath(); c.moveTo(466,322 - resp); c.quadraticCurveTo(480,340,474,360); c.moveTo(546,322); c.quadraticCurveTo(552,336,548,350); c.stroke();   // as dobras do pano
     // o braço da Rosa sai de baixo da dobra do lençol e estende a mão para a Bia
-    abBraco(c,[[428,366],[452,374],[478,370]],SKINS[3],SKINS[3],9);
-    c.beginPath(); c.moveTo(422,394); c.lineTo(422,348 - resp); c.quadraticCurveTo(428,346 - resp,436,345 - resp); c.lineTo(436,394); c.closePath(); fs(c,'#fff',2.5);
+    abBraco(c,[[424,352],[452,366],[478,370]],SKINS[3],SKINS[3],9);
+    c.beginPath(); c.moveTo(406,404); c.lineTo(406,344); c.quadraticCurveTo(407,330 - resp,418,324 - resp); c.lineTo(418,404); c.closePath(); fs(c,'#F4F1EA',2.2);
     // a Bia na cadeira (mais baixa que a cama), as pernas penduradas, segurando a mão da mãe
     rr(c,494,400,100,14,4); fs(c,PAL.madeira,2.5);
-    c.strokeStyle = PAL.tinta; c.lineWidth = 6; c.beginPath(); c.moveTo(504,414); c.lineTo(504,AB_CHAO); c.moveTo(584,414); c.lineTo(584,AB_CHAO); c.stroke();
+    c.lineCap = 'butt'; c.strokeStyle = PAL.tinta; c.lineWidth = 6; c.beginPath(); c.moveTo(504,414); c.lineTo(504,AB_CHAO); c.moveTo(584,414); c.lineTo(584,AB_CHAO); c.stroke();
     abBiaCrianca(c,545,402,abEsc('biaCrianca'),{ sentada:true, mood:1, t:T, bracoE:[[-22,-24],[-31,-30]] });
     // tudo um pouco mais escuro, como de noite
     c.fillStyle = 'rgba(30,42,74,.18)'; c.fillRect(0,0,TW,500);
@@ -425,10 +432,10 @@ const AB_CENAS = {
     c.fillStyle = PAL.cromoEsc; c.fillRect(0,36,730,6);
     const fecha = abSuave(abSeg(p,0.66,0.88)), cx = 30 + fecha * 690;
     if (cx > 34){
-      c.fillStyle = '#9FC4BC'; c.fillRect(0,42,cx,AB_CHAO - 52);
+      c.fillStyle = '#9FC4BC'; c.fillRect(0,42,cx,AB_CHAO - 42);
       c.strokeStyle = 'rgba(34,32,28,.22)'; c.lineWidth = 3;
-      for (let x=20;x<cx - 6;x+=34){ c.beginPath(); c.moveTo(x,46); c.lineTo(x,AB_CHAO - 14); c.stroke(); }
-      c.strokeStyle = PAL.tinta; c.lineWidth = 3; c.strokeRect(-4,42,cx + 4,AB_CHAO - 52);
+      for (let x=20;x<cx - 6;x+=34){ c.beginPath(); c.moveTo(x,46); c.lineTo(x,AB_CHAO - 4); c.stroke(); }
+      c.strokeStyle = PAL.tinta; c.lineWidth = 3; c.strokeRect(-4,42,cx + 4,AB_CHAO - 42);
       c.fillStyle = PAL.cromo; for (let x=12;x<cx;x+=34){ circ(c,x,40,4); c.fill(); }
     }
     return { rosa:[380,284,-70], bia:[545,292,80] };
@@ -509,11 +516,10 @@ const AB_CENAS = {
     abChao(c,'#BDB6A8');
     // a Bia conta as moedinhas do pote e sai correndo para o banco
     const sb = abEsc('bia'), k = abSuave(abSeg(p,0.3,0.6)), bx = 260 + k * 380, corre = k > 0 && k < 1;
-    if (k < 1){
-      rr(c,bx + 36,AB_CHAO - 120,56,64,10); fs(c,'rgba(255,255,255,.55)',3);
-      rr(c,bx + 32,AB_CHAO - 128,64,12,4); fs(c,PAL.madeira,2.4);
-      [[50,-70],[66,-66],[58,-78]].forEach(m => { circ(c,bx + m[0],AB_CHAO + m[1],7); fs(c,AB_COR.ouro,1.6); });
-    }
+    const pousa = abSuave(abSeg(p,0.56,0.6)), px = bx + 6 * pousa, py = AB_CHAO + 56 * pousa;
+    rr(c,px + 36,py - 120,56,64,10); fs(c,'rgba(255,255,255,.55)',3);
+    rr(c,px + 32,py - 128,64,12,4); fs(c,PAL.madeira,2.4);
+    [[50,-70],[66,-66],[58,-78]].forEach(m => { circ(c,px + m[0],py + m[1],7); fs(c,AB_COR.ouro,1.6); });
     const wa = abSuave(abSeg(p,0.6,0.66));
     abBia(c,bx,AB_CHAO,{ t:T, moving:corre, ph:T * 12, wave:k >= 1, wa, olha:corre ? 1 : 0 });
     // o papel sai da porta do banco e voa até a mão da Bia; lá, ganha o carimbo de APROVADO
