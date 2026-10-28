@@ -36,7 +36,7 @@ Registro das ideias e dos retornos de quem jogou, com o texto original, e de ond
 
 A sessão revisou as 10 cenas em capturas e no código e achou erros de proporção (fogão, Rosa deitada, escalas soltas), de gesto (as colheres da Rosa e da Bia, o segredo do tempero), de leitura da cena (o banco como ícone, a Bia sentada sem pernas, a Rosa que não entra na Casa Aurora) e de composição (balões, vapor, inauguração).
 
-**Destino:** Etapa 2d-r do `docs/PLANO.md` (v8.5.2), em 5 partes (R1 a R5), cada uma com capturas antes e depois e a aprovação do usuário antes do merge.
+**Destino:** Etapa 2d-r do `docs/PLANO.md` (v8.5.2), em 5 partes (R1 a R5), cada uma com capturas antes e depois e a aprovação do usuário antes do merge. Em 28/10 o usuário pediu "que tal fazer todas? de r1 a r5?": as 5 partes saíram juntas na **v8.6.1**, com as sugestões do plano nas decisões em aberto (a legenda da `promessa` ficou como estava).
 
 ---
 

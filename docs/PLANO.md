@@ -7,7 +7,7 @@ Origem: retorno do Renan Martorelli (beta-tester) e conversa com o Arthur (15/10
 - Para começar uma sessão, basta pedir: **"faça a próxima etapa do docs/PLANO.md"**. A sessão lê só a etapa da vez e as partes de `src/` citadas nela.
 - Antes de programar, a sessão confirma com o usuário as **decisões em aberto** da etapa (cada uma já tem uma sugestão).
 - No fim, a sessão marca a etapa como feita na tabela abaixo (com a versão e a data) e anota o que mudou no plano.
-- Ordem: cada etapa depende só das anteriores. A 1a vem primeiro (mexe no equilíbrio de base). A 1c teve prioridade sobre as demais, por ser retorno do beta-tester Renan (pedido do usuário em 21/10). A 1d-1 (v7.4), a 1d-2 (v7.5), a 2 (v8) e a 2b (v8.3) foram feitas. **Ordem revista com o usuário em 22/10:** 2b (campanha contínua e banco), 2c (avaliações dos clientes), 2d (abertura animada do Modo História), 3a (área industrial), 3b (Avenida Brasil) e 4 (Terraço Suíça). A campanha vem antes dos pontos para a carreira não ser refeita duas vezes, e as avaliações viram a "experiência" que abre os pontos novos e a reputação da etapa 4. A 2c (v8.4) e a 2d (v8.5) foram feitas em 26/10. **Ordem revista com o usuário em 28/10** (texto em `docs/PROPOSTAS.md`): as propostas que estavam só no log e nas Ideias guardadas viraram etapas. Ficou assim: 2e (entregadores com fila própria e marmitas), 2f (a campanha vira o Modo História), 3a (área industrial), 3b (Avenida Brasil), 4a (Terraço Suíça), 4b (nível de luxo), 4c (eventos de bairro), 6 (crítico do Michelzão e final) e 7 (polimento). A marmita vem antes da área industrial, que terá mais entregadores. A campanha e o Modo História viraram uma coisa só: a 2f monta a estrutura e os capítulos da Garagem, cada ponto traz o seu capítulo, e a antiga etapa 5 deixou de existir. A 2e (v8.6) foi feita em 28/10. **A próxima é a 2d-r** (revisão estética da abertura, a confirmar com o usuário); depois, a 2f. A etapa 7 fica **a rever** com o usuário antes de começar.
+- Ordem: cada etapa depende só das anteriores. A 1a vem primeiro (mexe no equilíbrio de base). A 1c teve prioridade sobre as demais, por ser retorno do beta-tester Renan (pedido do usuário em 21/10). A 1d-1 (v7.4), a 1d-2 (v7.5), a 2 (v8) e a 2b (v8.3) foram feitas. **Ordem revista com o usuário em 22/10:** 2b (campanha contínua e banco), 2c (avaliações dos clientes), 2d (abertura animada do Modo História), 3a (área industrial), 3b (Avenida Brasil) e 4 (Terraço Suíça). A campanha vem antes dos pontos para a carreira não ser refeita duas vezes, e as avaliações viram a "experiência" que abre os pontos novos e a reputação da etapa 4. A 2c (v8.4) e a 2d (v8.5) foram feitas em 26/10. **Ordem revista com o usuário em 28/10** (texto em `docs/PROPOSTAS.md`): as propostas que estavam só no log e nas Ideias guardadas viraram etapas. Ficou assim: 2e (entregadores com fila própria e marmitas), 2f (a campanha vira o Modo História), 3a (área industrial), 3b (Avenida Brasil), 4a (Terraço Suíça), 4b (nível de luxo), 4c (eventos de bairro), 6 (crítico do Michelzão e final) e 7 (polimento). A marmita vem antes da área industrial, que terá mais entregadores. A campanha e o Modo História viraram uma coisa só: a 2f monta a estrutura e os capítulos da Garagem, cada ponto traz o seu capítulo, e a antiga etapa 5 deixou de existir. A 2e (v8.6) foi feita em 28/10, e a 2d-r (v8.6.1) também, com as 5 partes juntas a pedido do usuário. **A próxima é a 2f.** A etapa 7 fica **a rever** com o usuário antes de começar.
 
 ## Situação
 | # | Etapa | Versão | Situação |
@@ -40,7 +40,7 @@ Origem: retorno do Renan Martorelli (beta-tester) e conversa com o Arthur (15/10
 | — | Retorno do usuário: jogo perfeito no dia 1 deu 1 estrela; metas e 3 estrelas pelo bot afiado | v8.3.9 | feita (23/10) |
 | 2c | Avaliações dos clientes (nota de 0 a 5 ★, 5 critérios) | v8.4 | feita (26/10) |
 | 2d | Abertura animada do Modo História: o sonho da Bia | v8.5 | feita (26/10) |
-| 2d-r | Revisão estética da abertura, em 5 partes com checagem do usuário | v8.5.2 | **a confirmar a ordem** (sugestão: a próxima) |
+| 2d-r | Revisão estética da abertura, em 5 partes com checagem do usuário | v8.6.1 | feita (28/10, as 5 partes juntas) |
 | 2e | Entregadores com fila própria e marmitas | v8.6 | feita (28/10) |
 | 2f | A campanha vira o Modo História: estrutura e capítulos da Garagem | v8.7 | a fazer |
 | 3a | Mudança de ponto e Lanchonete na área industrial (e o capítulo dela) | v9 | a fazer |
@@ -373,6 +373,7 @@ Também: rever o `smoke7` (toque) e o `smoke10` (fila justa e porta), mais `bala
 ---
 
 ## Etapa 2d-r — Revisão estética da abertura (v8.5.2)
+> **Feita em 28/10 (v8.6.1, `docs/spec-v8.6.1.md`):** o usuário pediu as 5 partes de uma vez, com as sugestões abaixo nas decisões em aberto; a legenda da `promessa` ("Anos depois...") ficou como estava, à espera do sim dele.
 > Nota de 28/10: a v8.6 (etapa 2e) saiu antes desta etapa; o número da versão que fecha a revisão passa a ser **v8.6.1** (onde se lê v8.5.2 abaixo).
 **Objetivo:** pedido do usuário em 28/10 (texto em `docs/PROPOSTAS.md`): corrigir o que está fora no desenho e na animação da abertura. O exemplo dele foi a Rosa parecer mais baixa que o fogão e mexer a panela com uma "vareta" apontada para cima. A revisão das 10 cenas achou erros de proporção, de gesto, de leitura da cena e de composição. Os pontos estão abaixo, divididos em 5 partes.
 
@@ -387,11 +388,11 @@ Também: rever o `smoke7` (toque) e o `smoke10` (fila justa e porta), mais `bala
 
 | Parte | O que entra | Cenas | Situação |
 |---|---|---|---|
-| R1 | Proporções | casa, aurora, tempero, estrela, hospital, promessa, tonhao, inauguracao | a fazer |
-| R2 | Gestos e objetos | casa, tempero, promessa | a fazer |
-| R3 | A cena conta a legenda | aurora, hospital, saudade, tonhao, banco | a fazer |
-| R4 | Composição e sobreposições | casa, tempero, estrela, inauguracao | a fazer |
-| R5 | Vida na animação e fechamento da v8.5.2 | todas | a fazer |
+| R1 | Proporções | casa, aurora, tempero, estrela, hospital, promessa, tonhao, inauguracao | feita (v8.6.1) |
+| R2 | Gestos e objetos | casa, tempero, promessa | feita (v8.6.1) |
+| R3 | A cena conta a legenda | aurora, hospital, saudade, tonhao, banco | feita (v8.6.1) |
+| R4 | Composição e sobreposições | casa, tempero, estrela, inauguracao | feita (v8.6.1) |
+| R5 | Vida na animação e fechamento da v8.5.2 | todas | feita (v8.6.1) |
 
 ### R1 — Proporções
 - **Alturas comuns:** uma tabela de alturas em px na cena (`AB_ALT`) e a escala de cada personagem calculada por ela, no lugar dos números soltos de hoje (Rosa 3.6, Tonhão 2, Bráulio 2.2, Bia criança 2.6, Bia adulta 3 e 3.2). Assim, a Bia adulta tem a mesma altura em `promessa`, `tonhao`, `banco` e `inauguracao`.
