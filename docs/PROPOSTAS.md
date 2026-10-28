@@ -4,6 +4,30 @@ Registro das ideias e dos retornos de quem jogou, com o texto original, e de ond
 
 ---
 
+## 28/10/2026 — Usuário: revisão do plano e das propostas sem etapa
+**Origem:** mensagem do usuário:
+
+> Bora revisar o documento de propostas e o documento de plano para a gente fazer adicionar as propostas que estão só nas propostas em planos de implementação. E aí eu quero revisar isso e revisar a ordem dos planos também.
+
+A sessão listou o que estava só no log ou nas Ideias guardadas, sem etapa, e propôs uma ordem. O usuário respondeu às perguntas assim: marmitas "Antes da área industrial (Recomendado)"; campanha e Modo História "Juntar (Recomendado)"; eventos de bairro "Depois do Terraço (Recomendado)"; nível de luxo "Junto com o Terraço".
+
+**Destino (`docs/PLANO.md`):**
+
+| Proposta | Destino |
+|---|---|
+| Entregadores com fila própria e marmitas (27/10) | etapa **2e** (v8.6), a próxima |
+| Juntar a campanha e o Modo História, com a dívida do banco da abertura, a receita da Casa Aurora e o Bráulio | etapa **2f** (v8.7: estrutura e capítulos da Garagem); um capítulo em cada ponto (3a, 3b, 4a); a etapa **6** fica com o crítico do Michelzão e o final; a antiga etapa 5 deixou de existir |
+| Decoração da calçada por nível (22/10), espera e ambiente por nível | dentro da **3a**, da **3b** e da **4a**, cada nível no seu |
+| Equipamento melhor (fogão industrial) | o fogão industrial da **3a**, que dá a +1 boca |
+| Rebalancear as melhorias ("1 por dia, por enquanto", 23/10) | **3a** |
+| Modo dev com os pontos liberados (21/10) | **3a** e **3b** |
+| Nível de luxo (21/10) | etapa **4b** (v10.1), junto com o Terraço |
+| Eventos de bairro: festa junina, jogo do Brasil | etapa **4c** (v10.2) |
+| Pendências de conferir com jogadores (`RESUMO.md`) | etapa **7** |
+| Cardápio com preço escolhido pelo jogador | continua guardada ("talvez nunca") |
+
+---
+
 ## 27/10/2026 — Usuário: fila própria dos entregadores e marmitas
 **Origem:** mensagem do usuário:
 

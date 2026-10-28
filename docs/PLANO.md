@@ -7,7 +7,7 @@ Origem: retorno do Renan Martorelli (beta-tester) e conversa com o Arthur (15/10
 - Para começar uma sessão, basta pedir: **"faça a próxima etapa do docs/PLANO.md"**. A sessão lê só a etapa da vez e as partes de `src/` citadas nela.
 - Antes de programar, a sessão confirma com o usuário as **decisões em aberto** da etapa (cada uma já tem uma sugestão).
 - No fim, a sessão marca a etapa como feita na tabela abaixo (com a versão e a data) e anota o que mudou no plano.
-- Ordem: cada etapa depende só das anteriores. A 1a vem primeiro (mexe no equilíbrio de base). A 1c teve prioridade sobre as demais, por ser retorno do beta-tester Renan (pedido do usuário em 21/10). A 1d-1 (v7.4), a 1d-2 (v7.5), a 2 (v8) e a 2b (v8.3) foram feitas. **Ordem revista com o usuário em 22/10:** 2b (campanha contínua e banco), 2c (avaliações dos clientes), 2d (abertura animada do Modo História), 3a (área industrial), 3b (Avenida Brasil) e 4 (Terraço Suíça). A campanha vem antes dos pontos para a carreira não ser refeita duas vezes, e as avaliações viram a "experiência" que abre os pontos novos e a reputação da etapa 4. A 2c (v8.4) e a 2d (v8.5) foram feitas em 26/10. **A próxima é a 3a.** As etapas 5, 6 e 7 ficam **a rever** com o usuário antes de começar.
+- Ordem: cada etapa depende só das anteriores. A 1a vem primeiro (mexe no equilíbrio de base). A 1c teve prioridade sobre as demais, por ser retorno do beta-tester Renan (pedido do usuário em 21/10). A 1d-1 (v7.4), a 1d-2 (v7.5), a 2 (v8) e a 2b (v8.3) foram feitas. **Ordem revista com o usuário em 22/10:** 2b (campanha contínua e banco), 2c (avaliações dos clientes), 2d (abertura animada do Modo História), 3a (área industrial), 3b (Avenida Brasil) e 4 (Terraço Suíça). A campanha vem antes dos pontos para a carreira não ser refeita duas vezes, e as avaliações viram a "experiência" que abre os pontos novos e a reputação da etapa 4. A 2c (v8.4) e a 2d (v8.5) foram feitas em 26/10. **Ordem revista com o usuário em 28/10** (texto em `docs/PROPOSTAS.md`): as propostas que estavam só no log e nas Ideias guardadas viraram etapas. Ficou assim: 2e (entregadores com fila própria e marmitas), 2f (a campanha vira o Modo História), 3a (área industrial), 3b (Avenida Brasil), 4a (Terraço Suíça), 4b (nível de luxo), 4c (eventos de bairro), 6 (crítico do Michelzão e final) e 7 (polimento). A marmita vem antes da área industrial, que terá mais entregadores. A campanha e o Modo História viraram uma coisa só: a 2f monta a estrutura e os capítulos da Garagem, cada ponto traz o seu capítulo, e a antiga etapa 5 deixou de existir. **A próxima é a 2e.** A etapa 7 fica **a rever** com o usuário antes de começar.
 
 ## Situação
 | # | Etapa | Versão | Situação |
@@ -40,12 +40,16 @@ Origem: retorno do Renan Martorelli (beta-tester) e conversa com o Arthur (15/10
 | — | Retorno do usuário: jogo perfeito no dia 1 deu 1 estrela; metas e 3 estrelas pelo bot afiado | v8.3.9 | feita (23/10) |
 | 2c | Avaliações dos clientes (nota de 0 a 5 ★, 5 critérios) | v8.4 | feita (26/10) |
 | 2d | Abertura animada do Modo História: o sonho da Bia | v8.5 | feita (26/10) |
-| 3a | Mudança de ponto e Lanchonete na área industrial | v9 | **próxima** |
-| 3b | Restaurante na Avenida Brasil | v9.1 | a fazer |
-| 4 | Terraço Suíça e VIPs exigentes | v10 | a fazer |
-| 5 | Modo História, parte 1: estrutura e primeiros capítulos | v11 | a rever |
-| 6 | Modo História, parte 2: subir de ponto, crítico do guia e final | v12 | a rever |
-| 7 | Polimento: celular, ranking da história, ajuste geral | v12.1 | a rever |
+| 2e | Entregadores com fila própria e marmitas | v8.6 | **próxima** |
+| 2f | A campanha vira o Modo História: estrutura e capítulos da Garagem | v8.7 | a fazer |
+| 3a | Mudança de ponto e Lanchonete na área industrial (e o capítulo dela) | v9 | a fazer |
+| 3b | Restaurante na Avenida Brasil (e o capítulo dela) | v9.1 | a fazer |
+| 4a | Terraço Suíça e VIPs exigentes (e o capítulo dele) | v10 | a fazer |
+| 4b | Nível de luxo | v10.1 | a fazer |
+| 4c | Eventos de bairro: festa junina e jogo do Brasil | v10.2 | a fazer |
+| 5 | ~~Modo História, parte 1~~: juntou-se à 2f e aos capítulos da 3a, 3b e 4a (28/10) | — | — |
+| 6 | Modo História: o crítico do Michelzão e o final | v11 | a fazer |
+| 7 | Polimento: celular, jogo online, ajuste geral | v11.1 | a rever |
 
 ---
 
@@ -367,54 +371,136 @@ Também: rever o `smoke7` (toque) e o `smoke10` (fila justa e porta), mais `bala
 
 ---
 
-## Etapa 3 — Pontos: área industrial (3a, v9) e Avenida Brasil (3b, v9.1), carreira por pontos
-**Objetivo:** a primeira decisão grande de dinheiro, mudar de ponto, que é subir o nível do salão. Valores na tabela da etapa 1d.
+## Etapa 2e — Entregadores com fila própria e marmitas (v8.6)
+> Entrou no plano na revisão de 28/10 (pedido do usuário de 27/10; texto em `docs/PROPOSTAS.md`). Vem antes da área industrial, que terá mais entregadores na clientela: assim a calibração da 3a já sai com a marmita.
 
-> **Dividida em 2 sessões (22/10):** **3a** (v9) é a mudança de ponto e a área industrial; **3b** (v9.1) é a Avenida Brasil, com confeitaria, coquetelaria e couvert. Desde a revisão de 22/10, a carreira já é a campanha contínua da etapa 2b, e o ponto novo abre com o dinheiro da mudança **e a nota mínima de avaliação** da etapa 2c.
+**Objetivo:** o entregador de moto não come no salão. Ele entra numa fila própria de retirada e leva a marmita, e a cozinha ganha um fluxo de preparo de marmitas.
+
+**Situação hoje (v8.5.1):** o entregador (`TIPOS.entregador`: 1 pessoa, paciência 0,5, sem gorjeta) entra na fila como qualquer cliente, ocupa uma mesa e come no salão. Ele aparece desde o dia 4 e vem mais na chuva (`CLIMA.chuva`, 35%) e na sexta (`SEMANA`, 20%).
 
 **Entra:**
-- `PONTOS` ganha a **Lanchonete na área industrial** (nível 2: 20 lugares, aluguel R$ 120, mudança R$ 800) e o **Restaurante na Avenida Brasil** (nível 3: 24 lugares, aluguel R$ 400, mudança R$ 2.000). Cada um traz:
-  - multiplicador do cardápio (sugestão: ×1 e ×1,4);
-  - mistura de clientes (área industrial: trabalhadores com pressa e entregadores; Avenida Brasil: executivas, famílias e mais VIPs);
-  - área útil, cadeiras de espera e visual próprios.
+- **Fila de retirada:** um balcão de retirada na calçada, ao lado da porta e separado da espera, com a sua fila. O entregador não ocupa mesa nem lugar na espera.
+- **Marmita:** o pedido do entregador vai ao Tonhão como marmita (tempo e ingredientes próprios, mais a embalagem como custo).
+- **Prateleira de marmitas prontas** no balcão de retirada, com limite de vagas. A Bia (ou a Dani) pega a marmita e entrega ao entregador da vez, que paga na hora.
+- **Adiantar marmitas** em horário calmo (estoque na prateleira), para atender os entregadores sem parar o salão.
+- A paciência continua curta; retirada rápida paga bem; quem não é atendido vai embora e conta como perdido (3ª estrela, multa).
+- **Gurugol:** a espera do entregador conta na agilidade (`AVAL`).
+- Como jogar, Missão zero (um passo curto, se couber), bot (`tests/bot.js`) e `balance.js` com a fila de retirada.
+
+**Partes:** `10-constantes.js` (`MARMITA`, `TIPOS.entregador`), `12-clientes.js` (o entregador na fila de retirada), `13-cozinha.js` (marmita, prateleira), `14-bia.js` e `15-dani.js` (entregar a marmita), `16-jogo.js` (fila de retirada, chegadas, pagamento, avaliação), `21-cenario.js` (balcão de retirada e prateleira), `22-salao-hud.js` (balão do entregador, selos), `40-interface.js` (Como jogar), `tests/bot.js`.
+
+**Testes:** smoke novo (o entregador vai à fila de retirada e não à mesa, marmita feita e entregue, prateleira cheia, marmita adiantada, entregador perdido, avaliação, chuva com mais entregadores). `balance.js` sem equipe, `EQUIPE=auto` e `BOT=afiado`.
+
+**Calibração:** as metas dos dias 3 a 7 continuam no alvo (sem equipe ~40–70%, `EQUIPE=auto` ~85–95%) e o bot afiado segue sem perder ninguém em ≥ 80% dos dias 3 a 7. Na chuva, o dia não pode ficar impossível.
+
+**Decisões em aberto:**
+- A marmita é um item do cardápio ou um jeito de preparar qualquer prato (sugestão: o prato do cardápio feito em marmita, pelo preço do prato)?
+- Dá para adiantar marmitas (sugestão: sim, até as vagas da prateleira, que começam em 2)?
+- Custo da embalagem e taxa de retirada (sugestão: embalagem de R$ 2 no ingrediente, sem taxa)?
+- Onde fica o balcão de retirada (sugestão: na calçada, ao lado da porta)?
+- A Dani também entrega marmitas (sugestão: sim, como uma tarefa nova)?
+- A marmita ocupa uma boca do fogão como um prato (sugestão: sim)?
+
+---
+
+## Etapa 2f — A campanha vira o Modo História (v8.7)
+> Decidido na revisão de 28/10: a campanha (Carreira) e o Modo História viram uma coisa só, com um save só. A campanha já começa na Garagem com a dívida do banco, que é a história da abertura (v8.5). Esta etapa monta a estrutura e o capítulo da Garagem; os capítulos dos outros pontos entram nas etapas 3a, 3b e 4a, e o final na etapa 6. Substitui a antiga etapa 5.
+
+**Objetivo:** "o sonho da Bia de ter um restaurante estrelado, começando do zero". Os dias da campanha passam a contar a história em capítulos, com a abertura animada como prólogo.
+
+**Entra:**
+- **Menu:** o botão História abre a campanha (no lugar do "Em breve" da v8.5). Na 1ª vez, toca a abertura e segue para a Missão zero ou o dia 1; depois, "Continuar". Decidir o que fica do botão Carreira.
+- **Capítulos** (`HISTORIA = [{ cap, titulo, ponto, objetivo, falas }]`): cada um tem um objetivo (lucro acumulado, nota do Gurugol, contratar alguém, quitar parte da dívida) e um cartão de conversa curto antes e depois (Bia, Tonhão, Dani), com 2 a 4 falas em balões sobre o cenário. Os dias continuam os da campanha (`DAYS`, `SEMANA`).
+- **Capítulos da Garagem** (sugestão; textos a decidir com o usuário):
+  - Cap. 1, "A garagem da Rosa": os primeiros dias, aprender o ciclo e fechar no azul.
+  - Cap. 2, "A Dani chega": contratar a Dani e pagar parte da dívida.
+  - Cap. 3, "Casa cheia": a nota do Gurugol e o dinheiro da mudança para a área industrial.
+- **A dívida de abertura** é o empréstimo da reforma da garagem (cena 8 da abertura), "nos conformes da vigilância sanitária", com prazo para quitar, usando o banco da v8.3 (`BANCO`). Sai o Seu Zé como credor.
+- **A trama** (guardada desde a v8.5): a receita da Casa Aurora era o toque do Tonhão, de cominho com açafrão, e a pétala de rosa da Dona Rosa; o chef Bráulio ficou com a fama e nunca conseguiu repetir o molho. Ela se revela aos poucos, nos capítulos dos pontos.
+- **Save antigo:** a campanha que já está em curso vira a história no capítulo que corresponde ao dia e ao dinheiro.
+- Tom só emocionante, sem a piscadela da meritocracia (decidido na 2d).
+
+**Fora:** os capítulos dos outros pontos (3a, 3b, 4a), o crítico do Michelzão e o final (etapa 6).
+
+**Partes:** `02-telas.html` (menu e painel de conversa), `10-constantes.js` (`HISTORIA`), `16-jogo.js` (capítulo, objetivos), `18-abertura.js` (fim da abertura vai para a história), `40-interface.js` (menu), `42-resultados.js` (objetivo do capítulo no fim do dia), `43-telas.js`, `30-ranking.js`.
+
+**Testes:** smoke novo (abertura e depois dia 1, objetivo cumprido e não cumprido, conversa antes e depois, save antigo da campanha, dívida de abertura). O bot joga os capítulos da Garagem.
+
+**Decisões em aberto:**
+- O botão Carreira some ou continua como "campanha sem conversas" (sugestão: some; a História é a campanha)?
+- Objetivo não cumprido: o capítulo continua até cumprir (sugestão, como a meta do dia na v8.3) ou há um prazo?
+- A dívida de abertura: valor e prazo (sugestão: R$ 1.000 em parcelas, com o atraso da v8.3.1 valendo game over)?
+- Quanto da trama do Bráulio e da receita aparece na Garagem (sugestão: só uma pista, como a pétala da abertura)?
+
+---
+
+## Etapa 3 — Pontos: área industrial (3a, v9) e Avenida Brasil (3b, v9.1)
+**Objetivo:** a primeira decisão grande de dinheiro, mudar de ponto, que é subir o nível do salão. Valores na tabela da etapa 1d. Desde a revisão de 28/10, cada ponto é também um capítulo do Modo História (etapa 2f).
+
+### Vale para a 3a e a 3b
 - **Mudança** na lojinha (aba "Ponto"): custo único, aluguel dali em diante e os móveis levados junto. O editor abre no ponto novo com a arrumação automática.
-- **O que cada ponto destrava** (sugestão):
-  - área industrial: 2º garçom (o **Joca**, pedido do usuário em 22/10; ou na Avenida Brasil), +1 boca no fogão (4 pratos ao mesmo tempo), balcão de pratos com 5 vagas, os **3 televisores com playlist de sertanejo** (ver "Ambiente por nível do salão" nas Ideias guardadas) e a **espera com cadeirinhas de plástico ou banquinhos de madeira e jarra de suco** (ver "Espera lá fora por nível");
-  - Avenida Brasil: confeiteiro (sobremesas), balcão de coquetelaria com profissional de drinks, um prato novo no cardápio, balcão de pratos com 6 vagas, a **espera com sofás e águas saborizadas** e o **couvert artístico** (já pronto no código desde a v5, escondido abaixo do nível 3 desde a v7.4.4: basta o ponto ter `nivel:3`). Decidir se a TV e o som vão junto na mudança.
-  Se ficar grande demais, a etapa se divide (3a: mudança e área industrial; 3b: Avenida Brasil, confeitaria e coquetelaria).
-- **Carreira por pontos, sem fim fixo:** a campanha da etapa 2b continua no ponto novo. Para mudar, é preciso o dinheiro da mudança e a nota mínima de avaliação (etapa 2c). O ranking da carreira segue a regra decidida na 2b, com o ponto alcançado ao lado.
-- Visual de cada ponto: piso, fachada, letreiro, vista da janela e calçada.
+- Para mudar, é preciso o dinheiro da mudança **e a nota mínima do Gurugol** (etapa 2c; o usuário pediu 4,5 ★ para sair da Garagem, que exige jogar muito bem: o bot afiado fica entre 4,35 e 4,5).
+- Cada ponto traz: multiplicador do cardápio (sugestão: ×1 e ×1,4), mistura de clientes, área útil, cadeiras de espera, visual (piso, fachada, letreiro, vista da janela, calçada) e o **capítulo da história** do ponto.
+- **Ao mudar, o ambiente e a bebida da espera são trocados** pelos do ponto novo (decidido em 21/10): a TV e o som da Garagem saem do save (`equipe.tv`, `equipe.som`), como o couvert abaixo do nível 3. A torneira sai do mesmo jeito (sugestão).
+- **Modo dev** (v7.5.1): os pontos entram liberados, para testar.
+- O ranking da carreira segue a regra da 2b, com o ponto alcançado ao lado.
+- O "cardápio maior" dos pontos de cima mexe na diversidade do cardápio do Gurugol (`avalMenu`).
 
-**Fora:** Terraço Suíça, VIP exigente e modo história.
+### Sessão 3a — Mudança de ponto e Lanchonete na área industrial (v9)
+- `PONTOS` ganha a **Lanchonete na área industrial** (nível 2: 20 lugares, aluguel R$ 120, mudança R$ 800). Clientela: trabalhadores com pressa e entregadores (que já usam a fila de retirada da etapa 2e).
+- **Destravados:**
+  - o 2º garçom, o **Joca** (pedido do usuário em 22/10);
+  - **fogão industrial** (+1 boca: 4 pratos ao mesmo tempo), comprado na aba Manutenção no lugar do fogão da Garagem e que desgasta mais devagar (era a ideia guardada "equipamento melhor");
+  - balcão de pratos com 5 vagas;
+  - **ambiente:** 3 televisores com playlist de sertanejo (com anúncios: 10%, pagando a luz; sem anúncios: 15%, por R$ 20/dia mais a luz);
+  - **espera:** cadeirinhas de plástico ou banquinhos de madeira e jarra de suco (a base é `BEBIDA_ESPERA.suco`, R$ 12 na conta);
+  - **decoração da calçada:** violetas em vasinhos (ou um antúrio, uma samambaia pendurada).
+- **Capítulo da área industrial** na história (falas a decidir com o usuário).
+- **Rebalancear as melhorias** (pendência da v8.3.6): com o aluguel, rever o preço das melhorias e o limite de 1 por dia.
 
-**Partes:** `10-constantes.js` (`PONTOS`, metas por ponto, equipe nova), `12-clientes.js` (save `ponto`, preço), `13-cozinha.js` (bocas, balcão, sobremesa), `15-dani.js`/novo ajudante (2º garçom), `16-jogo.js` (carreira por pontos, contas), `20/21-*.js` (visual), `30-ranking.js`, `41-lojinha.js` (aba Ponto), `42-resultados.js`.
+### Sessão 3b — Restaurante na Avenida Brasil (v9.1)
+- `PONTOS` ganha o **Restaurante na Avenida Brasil** (nível 3: 24 lugares, aluguel R$ 400, mudança R$ 2.000). Clientela: executivas, famílias e mais VIPs.
+- **Destravados:** confeiteiro (sobremesas), balcão de coquetelaria com profissional de drinks, um prato novo no cardápio, balcão de pratos com 6 vagas.
+  - **ambiente:** o **couvert artístico** (já pronto no código desde a v5, escondido abaixo do nível 3 desde a v7.4.4: basta o ponto ter `nivel:3`);
+  - **espera:** sofás e águas saborizadas diferentes;
+  - **decoração da calçada:** tulipas, orquídeas ou copos-de-leite.
+- **Capítulo da Avenida Brasil** na história.
 
-**Testes:** smoke novo (mudança, custo, nota mínima, aluguel nas contas, móveis levados, preços e clientela por ponto, destravados, save antigo = Garagem). `carreira.js` com mudança.
+**Fora:** Terraço Suíça, VIP exigente e o final da história.
+
+**Partes:** `10-constantes.js` (`PONTOS`, metas por ponto, equipe nova, `HISTORIA`), `12-clientes.js` (save `ponto`, preço), `13-cozinha.js` (bocas, balcão, sobremesa), `15-dani.js`/novo ajudante (Joca), `16-jogo.js` (carreira por pontos, contas), `20/21-*.js` (visual), `30-ranking.js`, `41-lojinha.js` (aba Ponto, fogão industrial), `42-resultados.js`.
+
+**Testes:** smoke novo (mudança, custo, nota mínima, aluguel nas contas, móveis levados, ambiente e espera trocados, preços e clientela por ponto, destravados, save antigo = Garagem, capítulo). `carreira.js` com mudança.
 
 **Calibração:**
 - Mudar de ponto deve compensar em ~3 a 5 dias para quem atende bem e não compensar para quem perde muitos clientes.
 - O jogador deve ter que escolher entre mudar e (equipe + melhorias + móveis).
 - **Achado da v7.4, resolvido na v7.4.1** (`docs/spec-v7.4.1.md`): na v7.4, mesa a mais não dava lucro; com 4 pratos limpos, +6% de grupos por lugar acima de 10 e a fila justa a 60%, mesas de 4 com equipe se pagam em 1 a 3 dias. Conferir no ponto novo se os 20 e 24 lugares também rendem.
 
-**Decisões em aberto:** a mudança é permanente ou dá para voltar; o que cada destravado custa; o que o Joca faz (o mesmo que a Dani ou só a calçada), salário e níveis; se a TV e o som da Garagem saem na mudança (decidido em 21/10: o ambiente é trocado pelo do ponto novo).
+**Decisões em aberto:** a mudança é permanente ou dá para voltar; o que cada destravado custa; o que o Joca faz (o mesmo que a Dani ou só a calçada e a fila de retirada), salário, níveis e visual (sem estereótipo, com crachá como a Dani); preço e efeito de cada bebida da espera e se o assento também segura a paciência; o valor da luz das TVs do nível 2; as falas de cada capítulo.
 
 ---
 
-## Etapa 4 — Terraço Suíça e VIPs exigentes (v10)
+## Etapa 4 — Terraço Suíça, VIPs exigentes e nível de luxo (4a, v10; 4b, v10.1)
+> Desde a revisão de 28/10, o **nível de luxo** entra junto com o Terraço (escolha do usuário), em 2 sessões: **4a** (Terraço e VIPs) e **4b** (nível de luxo).
+
+### Sessão 4a — Terraço Suíça e VIPs exigentes (v10)
 **Objetivo:** o topo da escada de pontos (nível 4 do salão), com o cliente que o Arthur descreveu: "VIPs exigentes que entram e pedem pratos especiais".
 
 **Entra:**
-- 4º ponto, **Terraço Suíça** (nível 4: 28 lugares, aluguel R$ 1.000, mudança R$ 5.000, cardápio ×2,2 como sugestão), com VIPs frequentes e uma antessala ("foyer") com amenidades na área de espera: **poltronas individuais e coquetelaria lá fora** (ver "Espera lá fora por nível" nas Ideias guardadas). Confeiteiro e coquetelaria continuam disponíveis.
+- 4º ponto, **Terraço Suíça** (nível 4: 28 lugares, aluguel R$ 1.000, mudança R$ 5.000, cardápio ×2,2 como sugestão), com VIPs frequentes e uma antessala ("foyer") com amenidades na área de espera: **poltronas individuais e coquetelaria lá fora**. Confeiteiro e coquetelaria continuam disponíveis.
 - **VIP exigente** (só no Terraço Suíça e no fim da história):
   - pede o **prato da casa**, que só sai caprichado ★ se o Tonhão tiver aumento (ou demora o dobro);
   - às vezes pede uma **bebida específica** (suco ou café) antes do prato;
   - não aceita mesa suja ao sentar;
   - paga muito bem (bônus grande com 5 corações) e, se sair bravo, deixa **avaliação ruim**: −10% de clientes no dia seguinte.
-- **Reputação do ponto:** é a nota de avaliação da etapa 2c (0 a 5 ★, últimas 200 avaliações). No Terraço ela muda a freguesia do dia (mais VIPs com nota alta), e na etapa 6 vira a régua do guia. Mais tarde pode virar uma das partes do **nível de luxo** (ver Ideias guardadas).
+- **Reputação do ponto:** é a nota do Gurugol (etapa 2c, últimas 100 avaliações). No Terraço ela muda a freguesia do dia (mais VIPs com nota alta), e na etapa 6 vira a régua do Michelzão.
 - Um item de lojinha do Terraço, por exemplo "Louça fina": prato especial mais rápido.
-- **Couvert do Terraço:** quarteto de cordas ou pianista (ver "Ambiente por nível do salão" nas Ideias guardadas).
+- **Ambiente:** couvert com quarteto de cordas ou pianista (20% cada; diárias a definir; o pianista traz a manutenção diária do piano).
+- **Decoração da calçada:** flores muito belas e arranjos, como ikebana, arranjos de orquídeas e flores do campo em vasos de cerâmica.
+- **Capítulo do Terraço** na história, que prepara o final (etapa 6).
 
-**Partes:** `10-constantes.js`, `12-clientes.js` (tipo/modificador exigente), `13-cozinha.js` (prato da casa), `16-jogo.js` (reputação), `20-desenho-base.js` (visual do exigente, sem estereótipo: chapéu/lenço e plaquinha ★★), `22-salao-hud.js` (balão do pedido especial).
+**Partes:** `10-constantes.js`, `12-clientes.js` (tipo/modificador exigente), `13-cozinha.js` (prato da casa), `16-jogo.js` (reputação), `20-desenho-base.js` (visual do exigente, sem estereótipo: chapéu/lenço e plaquinha ★★), `21-cenario.js` (Terraço, foyer, piano), `22-salao-hud.js` (balão do pedido especial).
 
 **Testes:** smoke novo (pedido especial, regras de mesa, avaliação ruim, reputação e save). `balance` no Terraço Suíça com equipe completa.
 
@@ -423,75 +509,86 @@ Também: rever o `smoke7` (toque) e o `smoke10` (fila justa e porta), mais `bala
 - Para quem não está pronto, é um passo arriscado: lucro abaixo da Avenida Brasil.
 
 **Decisões em aberto:**
-- A avaliação ruim do VIP exigente pesa mais na nota da 2c do que a de um cliente comum?
+- A avaliação ruim do VIP exigente pesa mais na nota do Gurugol do que a de um cliente comum?
 - O que o exigente usa para se distinguir visualmente.
+- As diárias do quarteto e do pianista e a manutenção do piano.
+
+### Sessão 4b — Nível de luxo (v10.1)
+**Objetivo:** o nível de luxo de 0 a 5 (pedido do usuário em 21/10; texto em `docs/PROPOSTAS.md`), que soma o que o jogador montou em todos os pontos.
+
+**Entra:**
+- **Nível de luxo** (0 a 5), a soma de atributos: decoração da espera e do salão, móveis (as mesas de plástico de bar da Garagem são o degrau mais baixo), o ponto, o ambiente (TV, som, couvert, quarteto, pianista, que soma mais), o impacto da divulgação e a avaliação de críticos surpresa.
+- A progressão é por atributos, como subir de nível um personagem (referência do usuário só nos docs; na interface, sem citar o jogo): cada atributo tem a sua barra, e o nível sobe quando elas sobem.
+- Onde aparece: uma aba ou um quadro na lojinha, com as barras (pode reaproveitar o estilo da caixa do Gurugol da v8.4.1).
+- Efeito no jogo (a decidir): mais VIPs, mais gorjeta, nota de ambiente do Gurugol, régua do Michelzão (etapa 6).
+- TV, som e couvert podem sair da aba Equipe e ir para o lugar do ambiente (anotado na v7.4.4).
+- **Enfeites e móveis melhores** à venda, para subir o luxo (decidir quais).
+
+**Partes:** `10-constantes.js` (`LUXO`), `16-jogo.js` (cálculo), `41-lojinha.js` (aba ou quadro do luxo, enfeites), `21-cenario.js` e `22-salao-hud.js` (enfeites e móveis), `12-clientes.js` (efeito na freguesia).
+
+**Testes:** smoke novo (cada atributo, nível de 0 a 5, efeito, save).
+
+**Decisões em aberto:** os atributos e o peso de cada um; o efeito no jogo; quais enfeites e móveis entram; se a nota de ambiente do Gurugol passa a ser o luxo.
 
 ---
 
-## Etapa 5 — Modo História, parte 1 (v11)
-> **A rever com o usuário antes de começar** (revisão de 22/10). A abertura animada já vem pronta da etapa 2d e vira o prólogo do modo.
+## Etapa 4c — Eventos de bairro (v10.2)
+> Entrou no plano na revisão de 28/10 (era ideia guardada). Vem depois do Terraço, para variar com cada ponto.
 
-**Objetivo:** "o sonho da Bia de ter um restaurante estrelado, começando do zero". A estrutura do modo e os primeiros capítulos, usando só o que já existe (Bairro).
+**Objetivo:** dias especiais que dão variedade e testam a reserva de dinheiro, como a chuva e o feriado da v8.
 
 **Entra:**
-- Botão **História** no menu, ao lado de Carreira e Turno sem fim. Save próprio (`save.historia`), sem mexer na carreira.
-- **Começo do zero:** a Bia abre a lanchonete na **garagem de casa**, com pouco dinheiro, 3 mesas e sem equipe. O **tio Tonhão**, cozinheiro aposentado, volta à ativa para apoiar o sonho da sobrinha e aceita trabalhar "pelo prato do dia". Uma dívida pequena de abertura (empréstimo do Seu Zé) se paga aos poucos.
-- **Capítulos:** cada um tem alguns dias, um objetivo (lucro acumulado, reputação, contratar alguém, quitar a dívida) e um cartão de conversa curto antes e depois (Bia, Tonhão, Seu Zé, Dani), com 2 a 4 falas em balões sobre o cenário.
-  - Cap. 1, "A esquina": 3 dias, aprender o ciclo e fechar no azul.
-  - Cap. 2, "A Dani chega": contratar a Dani e quitar metade da dívida.
-  - Cap. 3, "Casa cheia": bater a meta com panfletos e um dia de redes sociais.
-- Os dias da história reaproveitam `DAYS` com ajustes por capítulo: `HISTORIA = [{ cap, titulo, dias:[...], objetivo, falas }]`.
-- Tom: leve e otimista. O "universo paralelo em que meritocracia é possível" pode ser uma piscadela no texto de abertura, se o usuário quiser.
+- **Festa junina** (em junho, ou num dia sorteado da campanha): mais famílias, pratos típicos (pamonha, milho, canjica) e enfeites de bandeirinhas.
+- **Jogo do Brasil:** antes do jogo, a casa lota; durante, quase ninguém vem (todo mundo vendo), e depois vem o pico. Com a TV ligada (Garagem e área industrial), mais paciência e mais gente.
+- Os eventos usam o sistema de `CLIMA` (sorteio, aviso na introdução do dia) e mudam com o ponto (o jogo do Brasil enche a área industrial; a festa junina pesa mais na Garagem).
+- Times, emissoras e músicas sempre inventados; sem logos reais.
 
-**Fora:** troca de ponto na história, crítico do guia e final.
+**Partes:** `10-constantes.js` (`EVENTOS`), `16-jogo.js` (sorteio, movimento do dia), `21-cenario.js` (enfeites), `43-telas.js` (introdução do dia).
 
-**Partes:** `02-telas.html` (menu e painel de conversa), `10-constantes.js` (`HISTORIA`), `16-jogo.js` (modo `historia`, objetivos), `40-interface.js`, `42-resultados.js`, `43-telas.js`.
+**Testes:** smoke novo (sorteio, efeito no movimento, enfeites, save). `balance.js` com os eventos.
 
-**Testes:** smoke novo (início do zero, objetivo cumprido e falhado, save separado, carreira intocada). O bot joga os capítulos 1 a 3.
-
-**Decisões em aberto:**
-- O texto de abertura e o tom do "universo paralelo" (a abertura animada é da etapa 2d; ver lá).
-- Quem é o Seu Zé na história (credor?). **Ideia do usuário (22/10):** a Bia pegou um **empréstimo no banco** para a reforma da garagem, para deixar tudo nos conformes da vigilância sanitária, e tem um **prazo para quitar**; a dívida de abertura pode ser essa, no lugar do empréstimo do Seu Zé (ver "Dinheiro no negativo e empréstimo no banco" nas ideias guardadas). A lojinha agora é a "Garagem da mãe da Bia" (21/10/2026), então ele não é mais o dono dela.
-- Falha num capítulo: repetir o dia (sugestão) ou o capítulo inteiro?
+**Decisões em aberto:** quais eventos entram (sugestão: os 2); com que frequência; se o jogador pode se preparar (comprar ingredientes, decoração) antes.
 
 ---
 
-## Etapa 6 — Modo História, parte 2 (v12)
-> **A rever com o usuário antes de começar** (revisão de 22/10). O guia se chama **Michelzão** (escolha do usuário em 22/10, na etapa 2d).
+## Etapa 6 — Modo História: o crítico do Michelzão e o final (v11)
+> Revista em 28/10: desde que a campanha virou o Modo História (etapa 2f), esta etapa fica só com o crítico e o final. O guia se chama **Michelzão** (escolha do usuário em 22/10).
 
-**Objetivo:** a escada até a estrela.
+**Objetivo:** a estrela do Michelzão, o fim do sonho da Bia.
 
 **Entra:**
-- **Capítulos de mudança:** a área industrial e a Avenida Brasil (cap. 4 e 5) e o Terraço Suíça (cap. 6), com objetivos de reputação e de lucro, usando os pontos das etapas 3 e 4.
-- **O crítico do guia:** um guia gastronômico **inventado**, o **Michelzão** (escolha do usuário em 22/10; antes, "Guia Garfo de Ouro"). Não usar o nome "Michelin", nem logo, mascote ou arte do guia real.
+- **O crítico do guia:** um guia gastronômico **inventado**, o **Michelzão**. Não usar o nome "Michelin", nem logo, mascote ou arte do guia real.
   - No capítulo final, um cliente disfarçado aparece em dia sorteado.
   - Atendê-lo com 5 corações, prato caprichado e mesa limpa conta para a avaliação.
-- **Final:** a avaliação junta reputação, lucro e o atendimento do crítico, e dá de 0 a 3 garfos/estrelas, com cena final (falas) e créditos curtos. Rejogar o final para tentar mais estrelas.
-- Selo do resultado no menu (ex.: "★★ no Garfo de Ouro").
+- **A receita da Casa Aurora** volta: o molho com o cominho com açafrão do Tonhão e a pétala de rosa da Dona Rosa, que o Bráulio nunca conseguiu repetir (sugestão: o prato do crítico, que a Bia faz no final).
+- **Final:** a avaliação junta reputação (Gurugol), lucro, nível de luxo e o atendimento do crítico, e dá de 0 a 3 estrelas, com cena final (falas) e créditos curtos. Rejogar o final para tentar mais estrelas.
+- Selo do resultado no menu (ex.: "★★ no Michelzão").
+- O que acontece depois do final: a campanha continua (sugestão) ou acaba.
 
-**Partes:** as da etapa 5, mais `12-clientes.js` (crítico disfarçado, sem sinal óbvio, talvez um caderninho) e `22-salao-hud.js`.
+**Partes:** `10-constantes.js` (`HISTORIA`), `12-clientes.js` (crítico disfarçado, sem sinal óbvio, talvez um caderninho), `16-jogo.js`, `22-salao-hud.js`, `25-abertura.js` (cena final, se reaproveitar o desenho das cenas), `42-resultados.js`.
 
 **Testes:** smoke novo (aparição do crítico, avaliação, finais). O bot termina a história.
 
 **Decisões em aberto:**
-- Nome do guia: **Michelzão** (decidido em 22/10).
 - O crítico pode ser reconhecido (pista sutil) ou é surpresa total?
 - Quantas estrelas possíveis (sugestão: 3).
+- O Bráulio aparece no final?
 
 ---
 
-## Etapa 7 — Polimento (v12.1)
+## Etapa 7 — Polimento (v11.1)
 > **A rever com o usuário antes de começar** (revisão de 22/10).
 
 - Celular: "Como jogar" sem rolar no celular deitado; lojinha sem rolar no 568×320 (pendências antigas do `RESUMO.md`). Testar som e toque num aparelho real.
-- **Jogo online (pedido do usuário em 23/10: "onlinização só para os ajustes finais"):** desde a v8.3.3 o jogo é offline (`Rank.online = false`, ranking só no aparelho). Aqui, religar o ranking compartilhado: `Rank.online = true` e as capacidades do artifact com a leitura de `ranking-campanha` (a coleção da campanha, criada na v8.3) e, se houver, de uma coleção da história (ex.: `ranking-historia`). Fazer só com o OK do usuário.
-- Revisão geral de equilíbrio com `carreira.js` e com o retorno dos jogadores. Revisar textos do "Como jogar" para os sistemas novos.
+- **Jogo online (pedido do usuário em 23/10: "onlinização só para os ajustes finais"):** desde a v8.3.3 o jogo é offline (`Rank.online = false`, ranking só no aparelho). Aqui, religar o ranking compartilhado: `Rank.online = true` e as capacidades do artifact com a leitura de `ranking-campanha` (a coleção da campanha, criada na v8.3). Fazer só com o OK do usuário.
+- Revisão geral de equilíbrio com `carreira.js` e com o retorno dos jogadores (o "Copiar resumo" do Caixa). Revisar textos do "Como jogar" para os sistemas novos.
+- **Conferir com jogadores** o que ficou pendente no `RESUMO.md` (Ideias pendentes): a Bia e os selos da v7.3, o editor do salão, a fila justa e a porta, as estrelas, a escassez, o "livre" e "reservados" da lojinha e a tela larga.
 
 ---
 
 ## Ideias guardadas (sem etapa ainda)
-- **Entregadores: fila própria e marmitas** (pedido do usuário em 27/10; texto em `docs/PROPOSTAS.md`): hoje o entregador de moto entra na fila como qualquer cliente, senta e come no salão. A ideia é ele **não comer no lugar**: chega pela porta (ou por um balcão de retirada) e entra numa **fila própria de retirada**, separada da fila de mesas, e leva a comida embora. O prato dele é a **marmita**, e para liberá-la pede um **fluxo de preparação**: o Tonhão faz a marmita (tempo e ingredientes próprios, talvez com embalagem como custo), ela fica pronta num ponto de retirada (balcão ou prateleira, com limite de vagas) e a Bia (ou a Dani) entrega ao entregador quando a marmita está pronta. Quem não é atendido a tempo vai embora (paciência curta, como hoje); retirada rápida paga bem. Decidir: se a marmita é um item do cardápio ou um modo de preparo de qualquer prato; se dá para **adiantar marmitas** em horário calmo (estoque no balcão) para liberar os entregadores sem parar o salão; custo da embalagem e preço (taxa de retirada?); como aparece na chuva, quando mais clientes viram entregadores (`CLIMA`), e na sexta, quando vêm mais; efeito nas avaliações do Gurugol (`AVAL`: a espera do entregador conta como agilidade). Combina com o balcão de pratos e com os funcionários extras (Joca).
-- **Espera lá fora por nível do salão** (pedido do usuário em 22/10; texto em `docs/PROPOSTAS.md`): a estética e o serviço da espera na calçada sobem junto com o ponto. Cada ponto tem `assento` e `bebida` (`PONTOS`, `BEBIDA_ESPERA`, desde a v7.7):
+- **Virou a etapa 2e (revisão de 28/10).** **Entregadores: fila própria e marmitas** (pedido do usuário em 27/10; texto em `docs/PROPOSTAS.md`): hoje o entregador de moto entra na fila como qualquer cliente, senta e come no salão. A ideia é ele **não comer no lugar**: chega pela porta (ou por um balcão de retirada) e entra numa **fila própria de retirada**, separada da fila de mesas, e leva a comida embora. O prato dele é a **marmita**, e para liberá-la pede um **fluxo de preparação**: o Tonhão faz a marmita (tempo e ingredientes próprios, talvez com embalagem como custo), ela fica pronta num ponto de retirada (balcão ou prateleira, com limite de vagas) e a Bia (ou a Dani) entrega ao entregador quando a marmita está pronta. Quem não é atendido a tempo vai embora (paciência curta, como hoje); retirada rápida paga bem. Decidir: se a marmita é um item do cardápio ou um modo de preparo de qualquer prato; se dá para **adiantar marmitas** em horário calmo (estoque no balcão) para liberar os entregadores sem parar o salão; custo da embalagem e preço (taxa de retirada?); como aparece na chuva, quando mais clientes viram entregadores (`CLIMA`), e na sexta, quando vêm mais; efeito nas avaliações do Gurugol (`AVAL`: a espera do entregador conta como agilidade). Combina com o balcão de pratos e com os funcionários extras (Joca).
+- **Vai nas etapas 3a, 3b e 4a (revisão de 28/10).** **Espera lá fora por nível do salão** (pedido do usuário em 22/10; texto em `docs/PROPOSTAS.md`): a estética e o serviço da espera na calçada sobem junto com o ponto. Cada ponto tem `assento` e `bebida` (`PONTOS`, `BEBIDA_ESPERA`, desde a v7.7):
 
 | Nível | Ponto | Assento | Bebida da espera | Situação |
 |---|---|---|---|---|
@@ -503,7 +600,7 @@ Também: rever o `smoke7` (toque) e o `smoke10` (fila justa e porta), mais `bala
   - Decisões em aberto: preço e efeito de cada bebida (a de cima rende mais na conta ou segura mais a paciência?); se o assento também segura a paciência (sentado espera com mais calma que de pé) ou só soma ao **nível de luxo**; se a coquetelaria lá fora usa o profissional de drinks do balcão de coquetelaria (níveis 3 e 4); o que acontece com a torneira na mudança (sugestão: como o ambiente, a bebida do nível de baixo sai e entra a do ponto novo).
   - **Decoração da calçada por nível** (pedido do usuário em 22/10, mesma conversa): plantas e enfeites sobem junto com o ponto. Nível 1, Garagem: **espada-de-são-jorge**, plantinhas simples (vaso de barro e lata reaproveitada; **feito na v7.7**). Nível 2: uma planta um pouco maior e mais bonita, por exemplo **violetas** em vasinhos (ou um antúrio, uma samambaia pendurada). Nível 3: flores mais rebuscadas, como **tulipas**, **orquídeas** ou **copos-de-leite**. Nível 4: **flores muito belas e arranjos**, como **ikebana**, arranjos de orquídeas e flores do campo em vasos de cerâmica. Só visual por enquanto; mais tarde soma ao **nível de luxo**.
   - Desenho de cada um com o seu (banquinhos e jarra na mesinha; sofás com almofadas e garrafas coloridas; poltronas, tapete e balcãozinho de drinks), respeitando `prefers-reduced-motion`.
-- **Ambiente por nível do salão** (pedido do usuário em 21/10; texto e decisões em aberto em `docs/PROPOSTAS.md`). Em todos, a paciência nas mesas cai mais devagar, como na v7.4.4 (`ambienteEffect`):
+- **Vai nas etapas 3a, 3b e 4a (revisão de 28/10).** **Ambiente por nível do salão** (pedido do usuário em 21/10; texto e decisões em aberto em `docs/PROPOSTAS.md`). Em todos, a paciência nas mesas cai mais devagar, como na v7.4.4 (`ambienteEffect`):
   - **nível 1, Garagem:** TV de tubo na Rede Esfera (5%, luz R$ 15/dia) e som na rádio Velha Brasil FM (5%, luz R$ 10/dia). **Feito na v7.4.4.**
   - **nível 2, área industrial (etapa 3):** 3 televisores com playlist de sertanejo. Com anúncios: 10%, pagando a luz; sem anúncios: 15%, por R$ 20/dia mais a luz.
   - **nível 3, Avenida Brasil (etapa 3):** o couvert artístico de hoje (músico, 20%, R$ 80/dia, taxa opcional de R$ 3 por pessoa que corta o efeito à metade). Já está no código, escondido abaixo do nível 3.
@@ -514,9 +611,9 @@ Também: rever o `smoke7` (toque) e o `smoke10` (fila justa e porta), mais `bala
 - **Virou a etapa 2b (revisão de 22/10).** **Dinheiro no negativo e empréstimo no banco** (retorno do usuário em 22/10; texto em `docs/PROPOSTAS.md`): em vez de a folha ficar de fora quando falta dinheiro, deixar o caixa ficar negativo, mas no máximo 3 dias seguidos; e a opção de pegar um empréstimo no banco, com juros. A v8.1 só mostrou o dinheiro já comprometido. Decidir: se a folha passa a ser sempre paga (negativo) ou se o corte continua como opção; o que acontece no 4º dia negativo (fim da carreira? empréstimo obrigatório?); juros, prazo e parcelas (saem da folha do dia?); uma aba Banco na lojinha ou uma linha no Caixa. Combina com a dívida de abertura da etapa 5.
 - **Feito na v8.3.10.** **Triturador de lixo** (pedido do usuário em 24/10; texto e números em `docs/PROPOSTAS.md`): R$ 180, 1 gominho a cada 30 s; o Ventilador perdeu o efeito do cheiro.
 - Cardápio com preço escolhido pelo jogador (o Arthur achou estranho só mexer em preço; talvez nunca).
-- Equipamento melhor no lugar da manutenção (fogão industrial etc.).
-- Mais funcionários: um segundo garçom, além da Dani. **Pedido do usuário em 22/10:** a partir do nível 2 ou 3, dá para contratar um **segundo ajudante, o Joca** (o 2º garçom da etapa 3; texto em `docs/PROPOSTAS.md`). Decidir: se o Joca faz as mesmas tarefas da Dani ou outras (por exemplo, cuidar só da calçada: levar o grupo à mesa e servir a espera), salário, níveis e visual (sem estereótipo, com crachá como a Dani).
-- Eventos de bairro: festa junina, jogo do Brasil.
+- **Virou o fogão industrial da etapa 3a (revisão de 28/10).** Equipamento melhor no lugar da manutenção (fogão industrial etc.).
+- **Vai na etapa 3a (o Joca).** Mais funcionários: um segundo garçom, além da Dani. **Pedido do usuário em 22/10:** a partir do nível 2 ou 3, dá para contratar um **segundo ajudante, o Joca** (o 2º garçom da etapa 3; texto em `docs/PROPOSTAS.md`). Decidir: se o Joca faz as mesmas tarefas da Dani ou outras (por exemplo, cuidar só da calçada: levar o grupo à mesa e servir a espera), salário, níveis e visual (sem estereótipo, com crachá como a Dani).
+- **Virou a etapa 4c (revisão de 28/10).** Eventos de bairro: festa junina, jogo do Brasil.
 - **Virou a etapa 2c (revisão de 22/10).** **Avaliações dos clientes como meta para avançar** (pedido do usuário em 21/10; texto em `docs/PROPOSTAS.md`): uma nota parecida com as avaliações de mapa na internet, que sobe ou desce pela média das **últimas 200 avaliações** de quem passou. Cada grupo avalia 5 critérios:
   - **espera por mesa:** cada coração perdido na fila tira 1 ponto;
   - **agilidade do atendimento:** cada coração perdido esperando a Bia (pedido, prato, conta) tira 1 ponto;
@@ -525,4 +622,4 @@ Também: rever o `smoke7` (toque) e o `smoke10` (fila justa e porta), mais `bala
   - **ambiente e amenidades:** a estética do salão (enfeites, móveis melhores que as mesas de plástico da Garagem), couvert e outros entretenimentos, cafezinho etc.
 
   Uma das metas para passar de fase seria a nota mínima de avaliação. Combina com o **nível de luxo** (abaixo), com a escada de pontos (etapas 3 e 4) e com o crítico do guia (etapa 6).
-- **Nível de luxo** (0 a 5, bem para frente, depois de tudo o que está na fila; pedido do usuário em 21/10): a soma dos enfeites (decoração da área de espera e do salão), da localização (ponto), do impacto da mídia (divulgação), da avaliação de críticos surpresa e de outras coisas a ponderar. A progressão seria parecida com a de subir de nível de um personagem por atributos (o usuário citou o sistema do Kratos em God of War Ragnarök como referência; na interface, sem citar o jogo).
+- **Virou a etapa 4b, junto com o Terraço (revisão de 28/10).** **Nível de luxo** (0 a 5, bem para frente, depois de tudo o que está na fila; pedido do usuário em 21/10): a soma dos enfeites (decoração da área de espera e do salão), da localização (ponto), do impacto da mídia (divulgação), da avaliação de críticos surpresa e de outras coisas a ponderar. A progressão seria parecida com a de subir de nível de um personagem por atributos (o usuário citou o sistema do Kratos em God of War Ragnarök como referência; na interface, sem citar o jogo).
