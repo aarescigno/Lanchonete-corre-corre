@@ -4,6 +4,13 @@ Registro das ideias e dos retornos de quem jogou, com o texto original, e de ond
 
 ---
 
+## 28/10/2026 — Usuário: inconsistências da abertura
+**Origem:** pedido do usuário no chat:
+
+> revise a animação inicial por inconsistências, buscando aspectos visuais ou interrupções que possam prejudicar a estética de quem vê, por exemplo, Rosa na cama não tem corpo
+
+**Destino:** feito na **v8.6.2** (`docs/spec-v8.6.2.md`): a Rosa deitada ganhou o corpo sob o cobertor e abre os olhos enquanto fala; a cortina do leito desce até o chão; o pote de moedas do banco fica no chão em vez de sumir.
+
 ## 28/10/2026 — Usuário: decisões da etapa 2e (marmitas)
 **Origem:** respostas do usuário às decisões em aberto da etapa 2e (escolhas e textos dele):
 
