@@ -60,5 +60,13 @@ const toque=els=>els['c'].fire('pointerdown',{preventDefault(){},pointerId:1,cli
   ab.i=0; ab.t=3; ab.voltar(); ok(ab.i===0 && ab.t===0,'voltar na primeira cena: recomeça');
   let erro=null; try{ for(let i=0;i<ab.n;i++){ ab.i=i; L.drawAbertura(H.ctx,ab); } } catch(e){ erro=e; } ok(!erro,'desenha os quadros parados');
 }
+// v8.6.1 (revisão estética): as alturas saem da tabela; a boca de quem fala mexe, mas não com movimento reduzido
+{ const H=load({abertura:true}), {L}=H, ab=L.aberturaAtual();
+  ok(['rosa','bia','biaCrianca','tonhao','braulio'].every(q=>Math.abs(L.abEsc(q)*L.AB_BASE[q]-L.AB_ALT[q])<1e-9),'a escala de cada um vem da altura na tabela');
+  ok(L.AB_ALT.rosa===L.AB_ALT.bia && L.AB_ALT.biaCrianca<L.AB_ALT.rosa*0.7 && L.AB_ALT.tonhao>L.AB_ALT.rosa,'a Bia adulta da altura da mãe, a criança bem menor, o Tonhão mais alto');
+  ab.i=0; ab.t=ab.cena.falas[0].de+0.15; ab.tm=ab.t; L.drawAbertura(H.ctx,ab); ok(L.AB_VIVO.fala.rosa>0,'a Rosa mexe a boca quando o balão aparece');
+  ab.t=ab.cena.falas[0].de+3; ab.tm=ab.t; L.drawAbertura(H.ctx,ab); ok(!L.AB_VIVO.fala.rosa,'e para depois de um tempo, com o balão ainda à vista');
+  const R=load({abertura:true, rm:true}), ar=R.L.aberturaAtual(); R.L.drawAbertura(R.ctx,ar); ok(Object.keys(R.L.AB_VIVO.fala).length===0,'movimento reduzido: a boca não mexe');
+}
 console.log('total = '+total+'  fails = '+fails);
 process.exit(fails?1:0);

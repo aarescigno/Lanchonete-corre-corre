@@ -248,16 +248,17 @@ function drawPerson(ctx,p,x,y,o){
   const lv = o.lava ? Math.sin((o.t||0)*11) : 0;   // lavando: os dois braços vão para a frente (a pia) e balançam
   const bE = o.bracoE || (o.lava ? [[-2,-24-lv*2],[19+lv*4,-24+lv*2]] : [[-15.5,-17]]);
   const rX = o.lava ? 20-lv*4 : 15.5, rY = o.lava ? -24-lv*2 : -17;   // o braço esquerdo pode ir a outro lugar: (cotovelo e) mão, sem contar o ombro
-  const mE = bE[bE.length-1], hE = o.bracoE ? 0 : 1.5;
+  const bD = o.bracoD || [[o.handUp?16:rX,o.handUp?upY:rY]];   // o direito também (abertura, v8.6.1)
+  const mE = bE[bE.length-1], hE = o.bracoE ? 0 : 1.5, mD = bD[bD.length-1], hD = o.bracoD ? 0 : (o.handUp ? -2 : 1.5);
   ctx.lineJoin = 'round';
   ctx.strokeStyle = PAL.tinta; ctx.lineWidth = 8;
   ctx.beginPath(); ctx.moveTo(-11,-30+bob); bE.forEach(q => ctx.lineTo(q[0],q[1])); ctx.stroke();
-  ctx.beginPath(); ctx.moveTo(11,-30+bob); ctx.lineTo(o.handUp?16:rX,o.handUp?upY:rY); ctx.stroke();
+  ctx.beginPath(); ctx.moveTo(11,-30+bob); bD.forEach(q => ctx.lineTo(q[0],q[1])); ctx.stroke();
   ctx.strokeStyle = armCol; ctx.lineWidth = 4.5;
   ctx.beginPath(); ctx.moveTo(-11,-30+bob); bE.forEach(q => ctx.lineTo(q[0],q[1])); ctx.stroke();
-  ctx.beginPath(); ctx.moveTo(11,-30+bob); ctx.lineTo(o.handUp?16:rX,o.handUp?upY:rY); ctx.stroke();
+  ctx.beginPath(); ctx.moveTo(11,-30+bob); bD.forEach(q => ctx.lineTo(q[0],q[1])); ctx.stroke();
   circ(ctx,mE[0],mE[1] + hE,3.6); fs(ctx,skin,1.8);
-  circ(ctx,o.handUp?16:rX,o.handUp?upY-2:rY+1.5,3.6); fs(ctx,skin,1.8);
+  circ(ctx,mD[0],mD[1] + hD,3.6); fs(ctx,skin,1.8);
   if (p.acc === 'laptop'){ rr(ctx,-10,-22+bob,20,13,2); fs(ctx,'#9aa5b1',2); ctx.fillStyle = '#d9e4ee'; ctx.fillRect(-7,-20+bob,14,8); }
   if (p.acc === 'book'){ rr(ctx,-20,-22,9,12,1.5); fs(ctx,PAL.faixa,1.8); }
   if (p.acc === 'cane'){ ctx.strokeStyle = PAL.madeiraEsc; ctx.lineWidth = 3; ctx.beginPath(); ctx.moveTo(21,0); ctx.lineTo(21,-20); ctx.arc(18,-20,3,0,-Math.PI,true); ctx.stroke(); }
@@ -285,12 +286,14 @@ function drawPerson(ctx,p,x,y,o){
   } else if (p.elder){
     ctx.strokeStyle = hc; ctx.lineWidth = 3.5; ctx.beginPath(); ctx.arc(0,hy+1,11.5,Math.PI*0.85,Math.PI*1.1); ctx.stroke(); ctx.beginPath(); ctx.arc(0,hy+1,11.5,-Math.PI*0.1,Math.PI*0.15); ctx.stroke();
   }
-  // rosto
+  // rosto (abertura, v8.6.1: olha vira o rosto para o lado em que anda; pisca e fala animam)
+  if (o.olha) ctx.translate(o.olha * 2.5,0);
   ctx.fillStyle = PAL.tinta;
-  if (o.sleepy) { ctx.fillRect(-6,hy,4,1.6); ctx.fillRect(2,hy,4,1.6); }
+  if (o.sleepy || o.pisca) { ctx.fillRect(-6,hy,4,1.6); ctx.fillRect(2,hy,4,1.6); }
   else { circ(ctx,-4.2,hy+0.5,1.7); ctx.fill(); circ(ctx,4.2,hy+0.5,1.7); ctx.fill(); }
   ctx.strokeStyle = PAL.tinta; ctx.lineWidth = 1.8; ctx.lineCap = 'round';
-  if (mood === 0){ ctx.beginPath(); ctx.arc(0,hy+3.4,4.4,0.2,Math.PI-0.2); ctx.stroke(); ctx.fillStyle = 'rgba(226,106,44,.28)'; circ(ctx,-7.5,hy+4,2.4); ctx.fill(); circ(ctx,7.5,hy+4,2.4); ctx.fill(); }
+  if (o.fala){ ell(ctx,0,hy+5.2,3,1.2 + o.fala * 1.8); fs(ctx,'#7A2E2E',1.5); if (mood === 0){ ctx.fillStyle = 'rgba(226,106,44,.28)'; circ(ctx,-7.5,hy+4,2.4); ctx.fill(); circ(ctx,7.5,hy+4,2.4); ctx.fill(); } }
+  else if (mood === 0){ ctx.beginPath(); ctx.arc(0,hy+3.4,4.4,0.2,Math.PI-0.2); ctx.stroke(); ctx.fillStyle = 'rgba(226,106,44,.28)'; circ(ctx,-7.5,hy+4,2.4); ctx.fill(); circ(ctx,7.5,hy+4,2.4); ctx.fill(); }
   else if (mood === 1){ ctx.beginPath(); ctx.moveTo(-3,hy+6.5); ctx.lineTo(3,hy+6.5); ctx.stroke(); }
   else if (mood === 3){   // triste (abertura, v8.5.1): boca para baixo e sobrancelhas erguidas no meio
     ctx.beginPath(); ctx.arc(0,hy+9.5,3.6,Math.PI+0.5,TAU-0.5); ctx.stroke();
@@ -330,7 +333,9 @@ function drawBia(ctx,b,x,y,o){
   ctx.lineCap = 'round';
   const wave = o.wave ? Math.sin((o.t||0)*8) * 5 : 0;
   const lv = o.lava ? Math.sin((o.t||0)*11) : 0;   // lavando: braços à frente, balançando em direção à pia
-  const aE = o.lava ? [-2+lv*4+18,-24+lv*2] : [-15,-18], aD = o.wave ? [19+wave,-52] : (o.lava ? [20-lv*4,-24-lv*2] : [15,-18]);
+  let aE = o.lava ? [-2+lv*4+18,-24+lv*2] : [-15,-18], aD = o.wave ? [19+wave,-52] : (o.lava ? [20-lv*4,-24-lv*2] : [15,-18]);
+  if (o.wave && o.wa != null){ const k = o.wa; aD = [15 + (4 + wave) * k,-18 - 34 * k]; }   // o aceno entra aos poucos (abertura)
+  if (o.maos){ aE = o.maos[0]; aD = o.maos[1]; }                                             // as mãos onde a cena pede (abertura)
   ctx.strokeStyle = PAL.tinta; ctx.lineWidth = 8.5;
   ctx.beginPath(); ctx.moveTo(-10,-30+bob); ctx.lineTo(aE[0],aE[1]); ctx.stroke();
   ctx.beginPath(); ctx.moveTo(10,-30+bob); ctx.lineTo(aD[0],aD[1]); ctx.stroke();
@@ -338,7 +343,7 @@ function drawBia(ctx,b,x,y,o){
   ctx.beginPath(); ctx.moveTo(-10,-30+bob); ctx.lineTo(aE[0],aE[1]); ctx.stroke();
   ctx.beginPath(); ctx.moveTo(10,-30+bob); ctx.lineTo(aD[0],aD[1]); ctx.stroke();
   circ(ctx,aE[0],aE[1]+2,3.8); fs(ctx,skin,1.8);
-  circ(ctx,aD[0],aD[1]+(o.wave?-2:2),3.8); fs(ctx,skin,1.8);
+  circ(ctx,aD[0],aD[1]+(o.maos ? 0 : (o.wave?-2:2)),3.8); fs(ctx,skin,1.8);
   // avental laranja
   ctx.beginPath(); ctx.moveTo(-8,-30+bob); ctx.lineTo(8,-30+bob); ctx.lineTo(11,-12); ctx.lineTo(-11,-12); ctx.closePath(); fs(ctx,PAL.alerta,2.4);
   rr(ctx,-5,-22,10,6,1.5); fs(ctx,'#F58A4E',1.6);
@@ -353,8 +358,11 @@ function drawBia(ctx,b,x,y,o){
   ctx.beginPath(); ctx.moveTo(-12.5,hy-5); ctx.quadraticCurveTo(0,hy-11,12.5,hy-5); ctx.lineTo(12,hy-9); ctx.quadraticCurveTo(0,hy-16,-12,hy-9); ctx.closePath(); fs(ctx,PAL.mostarda,2);
   ctx.beginPath(); ctx.moveTo(10,hy-8); ctx.lineTo(18,hy-12); ctx.lineTo(16,hy-5); ctx.closePath(); fs(ctx,PAL.mostarda,1.8);
   // rosto
-  ctx.fillStyle = PAL.tinta; circ(ctx,-4.3,hy+1,1.8); ctx.fill(); circ(ctx,4.3,hy+1,1.8); ctx.fill();
-  ctx.strokeStyle = PAL.tinta; ctx.lineWidth = 1.9; ctx.beginPath(); ctx.arc(0,hy+3.8,4.6,0.2,Math.PI-0.2); ctx.stroke();
+  if (o.olha) ctx.translate(o.olha * 2.5,0);
+  ctx.fillStyle = PAL.tinta;
+  if (o.pisca){ ctx.fillRect(-6.2,hy+0.4,4,1.6); ctx.fillRect(2.2,hy+0.4,4,1.6); } else { circ(ctx,-4.3,hy+1,1.8); ctx.fill(); circ(ctx,4.3,hy+1,1.8); ctx.fill(); }
+  ctx.strokeStyle = PAL.tinta; ctx.lineWidth = 1.9;
+  if (o.fala){ ell(ctx,0,hy+5.6,3.2,1.2 + o.fala * 2); fs(ctx,'#7A2E2E',1.5); } else { ctx.beginPath(); ctx.arc(0,hy+3.8,4.6,0.2,Math.PI-0.2); ctx.stroke(); }
   ctx.fillStyle = 'rgba(226,106,44,.3)'; circ(ctx,-7.8,hy+4.6,2.4); ctx.fill(); circ(ctx,7.8,hy+4.6,2.4); ctx.fill();
   ctx.restore();
 }
