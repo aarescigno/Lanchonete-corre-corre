@@ -55,10 +55,11 @@ class Game {
     this.kitchen.clean = dishStock(this.day, this.up);
     this.trash = 0; this.trituraT = 0; this.paid = 0; this.unpaid = []; this.aberto = false;
     this.maq = []; this.maqId = 0;   // pedidos do tablet da espera na máquina de suco: { id, group, n, t (preparo que falta) }
+    this.retirada = []; this.prateleira = []; this.marmitaId = 0; this.efood = 0;   // v8.6: os entregadores no balcão, as marmitas na prateleira e a parte da Efood
     this.bia.reset();
     this.dani.reset();
     this.fx = [];
-    this.stats = { served:0, lost:0, chain:0, spawned:0, full:0, vip:0, vipLost:0, juice:0, juiceMiss:0, trash:0, washed:0, emptied:0, sucoEsp:0, crit:0, consertos:0, quebras:0, lostBy:{ semMesa:0, comMesa:0, pedido:0, prato:0, conta:0 }, lotadoT:0 };
+    this.stats = { served:0, lost:0, chain:0, spawned:0, full:0, vip:0, vipLost:0, juice:0, juiceMiss:0, trash:0, washed:0, emptied:0, sucoEsp:0, crit:0, consertos:0, quebras:0, lostBy:{ semMesa:0, comMesa:0, pedido:0, prato:0, conta:0, retirada:0 }, lotadoT:0, marmitas:0, esfriou:0 };
     this.lastKind = null; this.chainN = 0;
     this.ending = false; this.endTimer = 0; this.reason = '';
     this.sel = null; this.drag = null; this.hover = null;
@@ -311,13 +312,7 @@ class Game {
     this.addCoins(t.cx, t.cy, Math.min(8, 3 + g.hearts));
     Sfx.coin();
     this.stats.served++;
-    if (this.mode === 'semfim' && g.hearts === 5){
-      this.five++;
-      if (this.five >= 8){
-        this.five = 0;
-        if (this.stars < 5){ this.stars++; this.starFlash = 1; this.addText(TW/2 - this.cam, 300, '+1 estrela!', PAL.mostarda, 28); Sfx.win(); }
-      }
-    }
+    this.cinco(g);
     this.avaliar(g, t.cx, t.cy - 146);
     this.releaseCmd(g);
     g.paid = true;
@@ -329,11 +324,108 @@ class Game {
     g.path = findPath({x:g.x, y:g.y}, {x:DOOR.x, y:DOOR.y});
   }
   exitPoint(t){ return tableApproach(t)[0]; }
+  /* Turno sem fim: a cada 8 grupos que saem com 5 corações, volta 1 estrela */
+  cinco(g){
+    if (this.mode !== 'semfim' || g.hearts !== 5) return;
+    this.five++;
+    if (this.five >= 8){
+      this.five = 0;
+      if (this.stars < 5){ this.stars++; this.starFlash = 1; this.addText(TW/2 - this.cam, 300, '+1 estrela!', PAL.mostarda, 28); Sfx.win(); }
+    }
+  }
+
+  /* ---------- marmitas e fila de retirada (v8.6) ---------- */
+  /* há entregador no dia (no Turno sem fim, sempre): o balcão de retirada aparece e dá para adiantar marmitas */
+  get marmitaOk(){ return this.mode === 'semfim' || this.retirada.length > 0 || this.schedule.some(s => s.type === 'entregador'); }
+  reslotRetirada(){ this.retirada.forEach((g,i) => { g.slot = i; g.path = [Object.assign({}, RETIRADA.fila[i])]; }); }
+  /* todas as marmitas do dia, onde estiverem: { m (a marmita ou o pedido na cozinha), onde } */
+  marmitas(){
+    const k = this.kitchen, out = [];
+    k.queue.concat(k.cooking).forEach(t => { if (t.marmita) out.push({ m:t, onde:'fogao' }); });
+    k.plates.forEach(p => { if (p && p.kind === 'marmita') out.push({ m:p, onde:'pronta' }); });
+    [this.bia, this.dani].forEach(q => q.hands.forEach(h => { if (h.kind === 'marmita') out.push({ m:h, onde:'mao', quem:q }); }));
+    this.prateleira.forEach(m => out.push({ m, onde:'prateleira' }));
+    return out;
+  }
+  /* marmitas sem dono (adiantadas ou de quem foi embora), no fogão, prontas, na mão ou na prateleira */
+  get marmitasLivres(){ return this.marmitas().filter(o => !o.m.dono).length; }
+  /* o entregador chegou: fica com uma marmita sem dono do prato dele (a da prateleira primeiro; depois a que está a
+     caminho, pronta ou no fogão); se não houver, a encomenda vai pela Efood ao Tonhão */
+  marmitaPara(g){
+    const ord = { prateleira:0, mao:1, pronta:2, fogao:3 };
+    const l = this.marmitas().filter(o => !o.m.dono && o.m.dish === g.dish).sort((a,b) => ord[a.onde] - ord[b.onde]);
+    if (l.length) l[0].m.dono = g;
+    else this.kitchen.submitMarmita(g.dish, g);
+  }
+  /* o entregador foi embora (ou levou outra): a encomenda que nem começou sai do fogão; o resto fica sem dono */
+  soltaMarmitas(g){
+    const k = this.kitchen;
+    k.queue = k.queue.filter(t => !(t.marmita && t.enc && t.dono === g));
+    this.marmitas().forEach(o => { if (o.m.dono === g) o.m.dono = null; });
+  }
+  /* o entregador no balcão pega a marmita dele na prateleira (ou uma sem dono do prato dele, que chegou antes) */
+  pegaPrateleira(g){
+    let i = this.prateleira.findIndex(m => m.dono === g);
+    if (i < 0){ i = this.prateleira.findIndex(m => !m.dono && m.dish === g.dish); if (i >= 0) this.soltaMarmitas(g); }
+    if (i < 0) return false;
+    this.entregaMarmita(g, this.prateleira.splice(i, 1)[0]);
+    return true;
+  }
+  /* a Bia (ou a Dani) chega ao balcão com marmitas: a do entregador que já está no balcão vai direto para ele; a
+     encomenda de quem ainda está chegando e as sem dono (até MARMITA.vagas) ficam na prateleira. Devolve quantas deixou */
+  levaMarmitas(p){
+    let n = 0, prat = 0;
+    p.hands.filter(h => h.kind === 'marmita').forEach(m => {
+      const d = m.dono;
+      if (d && d.state === 'retirada' && !d.path.length) this.entregaMarmita(d, m);
+      else if (d || this.prateleira.filter(x => !x.dono).length < MARMITA.vagas){ this.prateleira.push(m); prat++; }
+      else return;
+      p.hands.splice(p.hands.indexOf(m), 1); n++;
+    });
+    if (prat){ this.addText(p.x, p.y - 82, 'Na prateleira!', PAL.faixa, 14); Sfx.blip(); }
+    return n;
+  }
+  /* o entregador leva a marmita e paga: o preço do prato com a gorjeta dos corações; a Efood fica com MARMITA.efood do preço */
+  entregaMarmita(g, m){
+    const preco = precoPrato(m.dish, this.ponto), bruto = Math.round(preco * (1 + GORJETA[g.hearts])), taxa = Math.round(preco * MARMITA.efood);
+    const x = g.x, y = g.y;
+    this.efood += taxa; this.stats.marmitas++; this.stats.served++;
+    g.pratoQ = m.q || 0; if (m.crit) g.capricho = true;
+    this.score('marmita', x, y - 76, bruto - taxa, g);
+    this.addText(x, y - 98, 'Efood −' + taxa, PAL.alerta, 13);
+    this.addCoins(x, y - 30, 3);
+    Sfx.coin();
+    this.cinco(g);
+    this.avaliar(g, x, y - 128);
+    g.paid = true;
+    const i = this.retirada.indexOf(g);
+    if (i >= 0){ this.retirada.splice(i, 1); this.reslotRetirada(); }
+    g.setState('leaving');
+    g.path = [{ x:DOOR.x, y:DOOR.y }];
+  }
+  /* adiantar (o "+ marmita" da janela de pedidos): uma marmita de MARMITA.prato sem dono, até MARMITA.vagas */
+  adiantar(x, y){
+    if (!this.marmitaOk || this.marmitasLivres >= MARMITA.vagas) return false;
+    this.kitchen.submitMarmita(MARMITA.prato, null);
+    this.addText(x, y, 'Marmita adiantada!', PAL.faixa, 14); Sfx.ok();
+    return true;
+  }
+  /* a marmita sem dono esfria em MARMITA.validade s (contados desde que ficou pronta): vai para o lixo */
+  esfriar(dt){
+    this.prateleira.forEach(m => { m.age += dt; });
+    [this.bia, this.dani].forEach(q => q.hands.forEach(h => { if (h.kind === 'marmita') h.age += dt; }));
+    const fria = m => m && !m.dono && m.age >= MARMITA.validade, k = this.kitchen;
+    const joga = (x, y) => { this.stats.esfriou++; this.addTrash(1); this.addText(x, y, 'Esfriou!', PAL.perigo, 14); Sfx.tone(220, 0.15, 'triangle', 0.05); };
+    k.plates.forEach((p, i) => { if (p && p.kind === 'marmita' && fria(p)){ k.plates[i] = null; joga(PLATE_SLOTS[i].x, PLATE_SLOTS[i].y - 34); } });
+    this.prateleira.filter(fria).forEach(m => { joga(RETIRADA.vagas[Math.min(2, this.prateleira.indexOf(m))], RETIRADA.balcao.y - 20); this.prateleira.splice(this.prateleira.indexOf(m), 1); });
+    [this.bia, this.dani].forEach(q => q.hands.filter(fria).forEach(h => { q.hands.splice(q.hands.indexOf(h), 1); joga(q.x, q.y - 82); }));
+  }
 
   /* ---------- fluxo de grupos ---------- */
   /* chegada de um grupo: se a fila estiver cheia, o grupo olha, diz "Lotado!" e vai embora */
   arrive(s){
-    if (this.queue.length >= this.ponto.espera) return this.bounce(s);
+    // o entregador (v8.6) vai para a fila de retirada, que tem MARMITA.fila lugares
+    if (s.type === 'entregador' ? this.retirada.length >= MARMITA.fila : this.queue.length >= this.ponto.espera) return this.bounce(s);
     return this.spawn(s);
   }
   spawn(s){
@@ -341,6 +433,14 @@ class Game {
     const g = new Group(this, s.type, ++this.gid, s.color, s.vip);
     g.avalia = !!s.av;
     this.groups.push(g);
+    if (g.retira){
+      this.retirada.push(g); g.setState('retirada'); this.reslotRetirada();
+      this.marmitaPara(g);
+      this.addText(RETIRADA.fila[0].x, DOOR.y + 4, 'Pedido na Efood!', PAL.alerta, 16);
+      Sfx.tone(784, 0.08, 'square', 0.03); Sfx.tone(1046, 0.1, 'square', 0.03, 0.08);
+      this.stats.spawned++;
+      return g;
+    }
     if (g.vip){
       // VIP fura a fila: entra logo depois dos outros VIPs que já estão esperando
       let i = 0;
@@ -484,6 +584,9 @@ class Game {
     }
     const qi = this.queue.indexOf(g);
     if (qi >= 0){ this.queue.splice(qi,1); this.reslot(); }
+    const ri = this.retirada.indexOf(g);
+    if (ri >= 0){ this.retirada.splice(ri,1); this.reslotRetirada(); }
+    if (g.retira) this.soltaMarmitas(g);
     this.kitchen.purge(g);
     this.bia.purgeGroup(g);
     this.dani.hands = this.dani.hands.filter(h => h.group !== g);
@@ -499,7 +602,7 @@ class Game {
   angryLeave(g){
     if (g.state === 'leaving') return;
     this.stats.lost++;
-    const by = g.state === 'queue' ? (g.semMesa ? 'semMesa' : 'comMesa') : ({ wantOrder:'pedido', ordered:'prato', eating:'prato', wantBill:'conta' })[g.state];
+    const by = g.state === 'queue' ? (g.semMesa ? 'semMesa' : 'comMesa') : ({ wantOrder:'pedido', ordered:'prato', eating:'prato', wantBill:'conta', retirada:'retirada' })[g.state];
     if (by) this.stats.lostBy[by]++;
     this.addPuff(g.x, g.y - 20, 9);
     this.addText(g.x, g.y - 50, 'Hmpf!', PAL.perigo, 22);
@@ -517,11 +620,12 @@ class Game {
      um comentário curto, num balãozinho sobre ele */
   avaliar(g, x, y){
     if (this.mode !== 'carreira' || !g.avalia) return;
-    const A = AVAL, eq = this.save.equipe, bravo = g.angry ? (g.state === 'queue' ? 'fila' : 'mesa') : '';
+    const A = AVAL, eq = this.save.equipe, bravo = g.angry ? (g.retira ? 'retirada' : g.state === 'queue' ? 'fila' : 'mesa') : '';
     const bonus = Math.min(A.bonus.max, (g.corCerta ? A.bonus.cor : 0) + (g.corrente ? A.bonus.corrente : 0) + (g.capricho ? A.bonus.crit : 0));
     const amb = A.amb.base + (eq.tv ? A.amb.tv : 0) + (eq.som ? A.amb.som : 0) + (this.up.maquina ? A.amb.maquina : 0) + (this.up.ventilador ? A.amb.ventilador : 0) +
       (g.coffee ? A.amb.cafe : 0) + (eq.couvert ? A.amb.couvert : 0) + (this.trashFull ? A.amb.lixo : 0);
-    const r = [5 - A.porCoracao * g.perdFila, bravo ? 1 : 5 - A.porCoracao * g.perdMesa + bonus, g.pratoQ || 1, avalMenu(), amb]
+    // o entregador (v8.6): a espera no balcão conta na espera e na agilidade
+    const r = [5 - A.porCoracao * (g.retira ? g.perdMesa : g.perdFila), bravo ? 1 : 5 - A.porCoracao * g.perdMesa + bonus, g.pratoQ || 1, avalMenu(), amb]
       .map(v => clamp(Math.round(v * 10) / 10, 1, 5));
     const txt = avalComentario(r, bravo, this.trashFull), nota = avalNota(r);
     this.avals.push({ r, txt, k:g.type, v:g.vip });
@@ -600,6 +704,7 @@ class Game {
     this.bia.update(dt);
     this.dani.update(dt);
     this.kitchen.update(dt);
+    this.esfriar(dt);
     this.updateFx(dt);
 
     if (this.mode === 'semfim'){
@@ -662,7 +767,7 @@ class Game {
     if (tomou) row.tom = 1;
     caixaAdd(sv, row);
     writeSave(sv);
-    this.result = { day:d.n, money:m, fat, pontos:Math.round(this.pontos), custo:Math.round(this.custo), contas:this.contas, div:this.paidDiv, divName:this.div ? this.div.name : '', meta:d.meta, bom:bomGoal(d), expert:d.expert, passed, stars, served:this.stats.served, lost:this.stats.lost, lostBy:this.stats.lostBy, lotadoT:Math.round(this.stats.lotadoT), atraso:Math.round(this.atraso), full:this.stats.full, chain:this.stats.chain, vip:this.stats.vip, vipLost:this.stats.vipLost, juice:this.stats.juice, juiceMiss:this.stats.juiceMiss, sucoEsp:this.stats.sucoEsp, bebida:this.bebida.id, trash:this.stats.trash, washed:this.stats.washed, income, paid:this.paid, reason:this.reason, conserto:this.conserto, consertos:this.stats.consertos, quebras:this.quebras.filter(q => q.on).map(q => ({ id:q.id, fixed:q.fixed })), clima:this.clima, manut:Object.assign({}, this.manut), par, forcado, neg:sv.neg, emp:Object.assign({}, sv.emp), atrasou, tomou, devido, aval:{ dia:avDia, geral:avalGeral(sv.aval), n:sv.aval.length, coment } };
+    this.result = { day:d.n, money:m, fat, pontos:Math.round(this.pontos), custo:Math.round(this.custo), contas:this.contas, div:this.paidDiv, divName:this.div ? this.div.name : '', meta:d.meta, bom:bomGoal(d), expert:d.expert, passed, stars, served:this.stats.served, lost:this.stats.lost, lostBy:this.stats.lostBy, lotadoT:Math.round(this.stats.lotadoT), atraso:Math.round(this.atraso), full:this.stats.full, chain:this.stats.chain, vip:this.stats.vip, vipLost:this.stats.vipLost, marmitas:this.stats.marmitas, efood:this.efood, esfriou:this.stats.esfriou, sobra:this.marmitas().filter(o => o.onde !== 'fogao').length, juice:this.stats.juice, juiceMiss:this.stats.juiceMiss, sucoEsp:this.stats.sucoEsp, bebida:this.bebida.id, trash:this.stats.trash, washed:this.stats.washed, income, paid:this.paid, reason:this.reason, conserto:this.conserto, consertos:this.stats.consertos, quebras:this.quebras.filter(q => q.on).map(q => ({ id:q.id, fixed:q.fixed })), clima:this.clima, manut:Object.assign({}, this.manut), par, forcado, neg:sv.neg, emp:Object.assign({}, sv.emp), atrasou, tomou, devido, aval:{ dia:avDia, geral:avalGeral(sv.aval), n:sv.aval.length, coment } };
     if (tomou){ this.setState('falencia'); Sfx.lose(); return; }
     this.setState('dayend');
     if (passed) Sfx.win(); else Sfx.lose();
@@ -930,9 +1035,11 @@ class Game {
     }
     for (const g of this.queue) take(queueRect(g), { k:'queue', g });
     for (const t of this.tables) take(tableRect(t), { k:'table', t });
-    for (const k of STATION_KEYS){ if (k !== 'maquina' || this.up.maquina) take(STATIONS[k].rect, { k:'station', st:k }); }
+    for (const k of STATION_KEYS){ if (this.estacaoOn(k)) take(STATIONS[k].rect, { k:'station', st:k }); }
     return best;
   }
+  /* a bebida da espera só com a melhoria; o balcão de retirada (v8.6), só no dia com entregador */
+  estacaoOn(k){ return k === 'maquina' ? !!this.up.maquina : k === 'retirada' || k === 'adiantar' ? this.marmitaOk : true; }
   tableAt(x, y, pad){
     let best = null, bd = Infinity;
     for (const t of this.tables){ const d = rectDist(x, y, tableRect(t)); if (d <= (pad || 0) && d < bd){ bd = d; best = t; } }
@@ -940,7 +1047,7 @@ class Game {
   }
   stationAt(x, y){
     for (const k of STATION_KEYS){
-      if (k === 'maquina' && !this.up.maquina) continue;
+      if (!this.estacaoOn(k)) continue;
       const r = STATIONS[k].rect;
       if (x >= r.x && x <= r.x + r.w && y >= r.y && y <= r.y + r.h) return k;
     }

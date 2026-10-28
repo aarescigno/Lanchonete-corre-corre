@@ -62,6 +62,8 @@ function buildEnd(){
   // imprevistos (v8): o que quebrou (e se foi consertado na hora) e o clima do dia
   if (r.quebras && r.quebras.length) rows.push(['Quebrou', r.quebras.map(q => manutOf(q.id).name.toLowerCase() + (q.fixed ? ' (consertado)' : '')).join(', ')]);
   if (r.clima) rows.push(['Imprevisto', CLIMA[r.clima].nome]);
+  // marmitas (v8.6): as entregues (e a parte da Efood), as que esfriaram e as que sobraram no fim do dia
+  if (r.marmitas || r.esfriou || r.sobra) rows.splice(2, 0, ['Marmitas', r.marmitas + ' entregue' + (r.marmitas === 1 ? '' : 's') + (r.efood ? ' (Efood −' + fmt(r.efood) + ')' : '') + (r.esfriou ? ' · ' + r.esfriou + ' esfri' + (r.esfriou > 1 ? 'aram' : 'ou') : '') + (r.sobra ? ' · ' + r.sobra + ' sobr' + (r.sobra > 1 ? 'aram' : 'ou') : '')]);
   if (r.vip || r.vipLost) rows.splice(2, 0, ['VIPs', r.vip + ' atendido' + (r.vip === 1 ? '' : 's') + (r.vipLost ? ' · ' + r.vipLost + ' bravo' + (r.vipLost > 1 ? 's' : '') : '')]);
   // Gurugol (v8.4): a caixa animada à esquerda dos quadros (v8.4.1); embaixo, 2 ou 3 comentários (os critérios do dia no title)
   const av = $('end-aval'); clearEl(av); av.title = '';

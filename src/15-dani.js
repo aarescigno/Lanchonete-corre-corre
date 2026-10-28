@@ -1,6 +1,7 @@
 /* ============================================================
    DANI (contratada): age sozinha, só nas tarefas escolhidas na lojinha
-   (tirar o lixo, retirar pratos sujos, lavar a louça, servir cafezinho, levar o suco da espera).
+   (tirar o lixo, retirar pratos sujos, lavar a louça, servir cafezinho, levar o suco da espera e, desde a v8.6, levar
+   as marmitas da janela de prontos ao balcão de retirada).
    Anda mais devagar que a Bia (50%, 65% ou 80% conforme o nível) e
    leva 1 item em cada mão.
    ============================================================ */
@@ -31,6 +32,14 @@ class Helper {
   targets(t){ return !!(this.plan && this.plan.t === t); }
   go(pt, step){ this.plan = step; this.path = findPath({ x:this.x, y:this.y }, pt); this.phase = 'walk'; }
   nearestAp(t){ const p = tableApproach(t); return Math.hypot(p[0].x-this.x,p[0].y-this.y) <= Math.hypot(p[1].x-this.x,p[1].y-this.y) ? p[0] : p[1]; }
+  /* marmita pronta para levar (v8.6): a de quem espera no balcão primeiro; a sem dono só se couber na prateleira. Nunca a
+     que a Bia já vai pegar */
+  marmitaAlvo(){
+    const g = this.g, livres = g.prateleira.filter(m => !m.dono).length;
+    const ps = g.kitchen.plates.filter(p => p && p.kind === 'marmita' && !p.dani && !g.bia.acts.some(a => a.type === 'plate' && a.pid === p.id) && (p.dono || livres < MARMITA.vagas));
+    ps.sort((a,b) => !!b.dono - !!a.dono);
+    return ps[0] || null;
+  }
   coffeeTarget(){
     if (this.g.quebrado('cafeteira')) return null;   // cafeteira parada (v8)
     const c = this.g.tables.filter(t => t.group && t.group.seated && !t.group.coffee && t.group.hearts <= 4 && !t.group.daniCoffee && !this.biaWants(t));
@@ -48,6 +57,9 @@ class Helper {
       if (ap) return this.go(ap, { type:'suco', grp:suco.group });
       this.hands = this.hands.filter(h => h.kind !== 'suco');
     }
+    // marmita na mão (v8.6): leva ao balcão de retirada; pronta na janela e cabendo na prateleira (ou com dono): vai buscar
+    if (this.hands.some(h => h.kind === 'marmita')) return this.go(STATIONS.retirada.ap, { type:'retirada' });
+    if (this.does('marmita') && !this.hands.length){ const p = this.marmitaAlvo(); if (p){ p.dani = true; return this.go(STATIONS.plates.ap, { type:'pegaMarmita', p }); } }
     // entrega o café (com louça e café nas mãos, primeiro deixa a louça na pia, logo abaixo da cafeteira)
     if (coffee && !dirty){
       const t = (coffee.table && coffee.table.group === coffee.group && coffee.group && coffee.group.seated && !coffee.group.coffee) ? coffee.table : this.coffeeTarget();
@@ -84,7 +96,22 @@ class Helper {
   }
   perform(st){
     const g = this.g;
-    if (st.type === 'clear'){
+    if (st.type === 'pegaMarmita'){
+      // pega a marmita escolhida e, se houver, mais uma (as 2 mãos)
+      st.p.dani = false;
+      const k = g.kitchen;
+      let livres = g.prateleira.filter(m => !m.dono).length;
+      [st.p].concat(k.plates.filter(p => p && p !== st.p && p.kind === 'marmita')).forEach(p => {
+        const i = k.plates.indexOf(p);
+        if (i < 0 || this.hands.length >= DANI_HANDS || g.bia.acts.some(a => a.type === 'plate' && a.pid === p.id)) return;
+        if (!p.dono && livres >= MARMITA.vagas) return;
+        if (!p.dono) livres++;
+        k.plates[i] = null; this.hands.push(marmitaMao(p));
+      });
+      if (this.hands.length) Sfx.blip();
+    } else if (st.type === 'retirada'){
+      g.levaMarmitas(this);   // a que não coube fica na mão: a Dani espera no balcão abrir uma vaga (ou a marmita esfriar)
+    } else if (st.type === 'clear'){
       const t = st.t;
       if (!t.dirty || this.hands.length >= DANI_HANDS) return;
       this.hands.push({ kind:'dirty', n:t.dirtyN }); t.dirty = false; t.dirtyN = 0;

@@ -269,6 +269,59 @@ function drawTorneiraEspera(ctx,g,t,menu){
   const q = g.bia.acts[0];
   if (q && q.type === 'maquina' && q.leg !== 2){ ctx.save(); const a = 0.55 + 0.4*Math.sin(t*8); ctx.strokeStyle = 'rgba(242,179,61,' + a + ')'; ctx.lineWidth = 5; rr(ctx,r.x,r.y,r.w,r.h,8); ctx.stroke(); ctx.restore(); }
 }
+/* ============================================================
+   BALCÃO DE RETIRADA (v8.6): na calçada, ao lado do portão. Um balcão de madeira com a plaquinha da retirada e o
+   adesivo da Efood; no tampo, a prateleira das marmitas: MARMITA.vagas lugares das adiantadas e, à direita, o da
+   encomenda (tracejado). Os entregadores esperam em pé à esquerda dele
+   ============================================================ */
+const EFOOD_COR = '#E26A2C';
+/* selo da marmita: a do entregador, um "E" laranja (Efood); a sem dono, o anel da validade (verde, amarelo, vermelho) */
+function drawMarmitaSelo(ctx,m,x,y){
+  circ(ctx,x,y,7.5); fs(ctx,m.dono ? EFOOD_COR : '#fff',1.6);
+  if (m.dono){ txt(ctx,'E',x,y+0.5,10,'#fff','center',FD); return; }
+  const f = clamp(1 - m.age / MARMITA.validade, 0, 1);
+  ctx.beginPath(); ctx.moveTo(x,y); ctx.arc(x,y,5.5,-Math.PI/2,-Math.PI/2 + TAU*f); ctx.closePath();
+  ctx.fillStyle = f > 0.5 ? PAL.ok : f > 0.25 ? PAL.mostarda : PAL.perigo; ctx.fill();
+}
+/* onde fica cada marmita da prateleira: as sem dono nos lugares das adiantadas; as encomendas no da reserva */
+function prateleiraPos(g){
+  let l = 0, e = 0;
+  return g.prateleira.map(m => m.dono ? { m, x:RETIRADA.vagas[MARMITA.vagas] + 8 * e++ } : { m, x:RETIRADA.vagas[Math.min(l++, MARMITA.vagas - 1)] });
+}
+function drawRetirada(ctx,g,t){
+  const B = RETIRADA.balcao, w = B.x1 - B.x0, y = B.y;
+  shadowEll(ctx,(B.x0 + B.x1) / 2,y + 54,w / 2 + 6,6,0.18);
+  rr(ctx,B.x0,y + 10,w,42,4); fs(ctx,PAL.madeira,2.4);   // a frente
+  ctx.strokeStyle = 'rgba(34,32,28,.25)'; ctx.lineWidth = 1.2;
+  for (let x = B.x0 + 13; x < B.x1; x += 13){ ctx.beginPath(); ctx.moveTo(x,y + 13); ctx.lineTo(x,y + 49); ctx.stroke(); }
+  rr(ctx,B.x0 + 8,y + 18,w - 30,15,4); fs(ctx,EFOOD_COR,1.8);
+  txt(ctx,'RETIRADA',B.x0 + 8 + (w - 30) / 2,y + 26,9,'#fff','center',FD);
+  rr(ctx,B.x1 - 18,y + 18,12,12,3); fs(ctx,'#fff',1.4); txt(ctx,'E',B.x1 - 12,y + 24.5,9,EFOOD_COR,'center',FD);   // o adesivo da Efood
+  rr(ctx,B.x0 - 4,y,w + 8,12,4); fs(ctx,'#E3C79A',2.4);   // o tampo
+  if (g.state === 'menu') return;
+  // a vaga da encomenda, tracejada
+  const xr = RETIRADA.vagas[MARMITA.vagas];
+  ctx.save(); ctx.setLineDash([3,2]); ctx.strokeStyle = 'rgba(226,106,44,.8)'; ctx.lineWidth = 1.4; rr(ctx,xr - 10,y - 9,20,13,3); ctx.stroke(); ctx.restore();
+  prateleiraPos(g).forEach(o => {
+    drawMarmita(ctx,o.m.dish,o.x,y - 4,0.68);
+    drawMarmitaSelo(ctx,o.m,o.x + 8,y - 14);
+  });
+  const a0 = g.bia.acts[0];
+  if (a0 && a0.type === 'retirada'){ ctx.save(); const al = 0.55 + 0.4*Math.sin(t*8); ctx.strokeStyle = 'rgba(242,179,61,' + al + ')'; ctx.lineWidth = 5; const r = STATIONS.retirada.rect; rr(ctx,r.x,r.y,r.w,r.h,8); ctx.stroke(); ctx.restore(); }
+}
+/* o balão do entregador (v8.6): a marmita dele no fogão (anel do preparo), pronta na janela (verde, pulsando) ou a
+   caminho (na mão da Bia ou da Dani) */
+function drawRetiradaBalao(ctx,g,grp,tm){
+  const o = g.marmitas().find(q => q.m.dono === grp);
+  if (!o || grp.path.length) return;
+  const pronta = o.onde === 'pronta', p = pronta && !RM ? 1 + 0.1 * Math.sin(tm*8) : 1;
+  ctx.save(); ctx.translate(grp.x + 24,grp.y - 92); ctx.scale(p,p);
+  drawBubble(ctx,0,0,15,pronta ? PAL.ok : '#fff');
+  drawMarmita(ctx,o.m.dish,0,1,0.62);
+  if (o.onde === 'fogao') drawRing(ctx,0,0,15,o.m.p / o.m.time,PAL.alerta);
+  if (o.onde === 'mao'){ circ(ctx,12,-11,7); fs(ctx,PAL.mostarda,1.4); txt(ctx,'→',12,-11,10,PAL.tinta,'center',FD); }
+  ctx.restore();
+}
 /* espuminha saindo da pia enquanto alguém (Bia, Dani ou Tonhão) lava a louça */
 function drawEspuma(ctx,g,t){
   const k = g.kitchen;
@@ -572,9 +625,10 @@ function drawKitchen(ctx,g,t){
       const tk = ck[i];
       rr(ctx,x,y,tw,48,3); fs(ctx,tk ? '#FFFBEA' : 'rgba(255,251,234,.35)',2);
       if (tk){
-        ctx.fillStyle = cmdColor(tk.group) || PAL.faixa; ctx.fillRect(x,y,tw,9);
+        ctx.fillStyle = tk.marmita ? EFOOD_COR : cmdColor(tk.group) || PAL.faixa; ctx.fillRect(x,y,tw,9);   // marmita (v8.6): a faixa da Efood e a quentinha
         ctx.strokeStyle = PAL.tinta; ctx.lineWidth = 1.5; ctx.strokeRect(x,y,tw,9);
-        txt(ctx,String(tk.table),x+tw/2,y+26,ns > 3 ? 16 : 20,PAL.tinta,'center',FD);
+        if (tk.marmita) drawMarmita(ctx,tk.dish,x+tw/2,y+25,0.85);
+        else txt(ctx,String(tk.table),x+tw/2,y+26,ns > 3 ? 16 : 20,PAL.tinta,'center',FD);
         ctx.fillStyle = '#d9d4c4'; ctx.fillRect(x+3,y+38,tw-6,6);
         ctx.fillStyle = tk.p >= tk.time ? PAL.ok : PAL.alerta; ctx.fillRect(x+3,y+38,(tw-6)*clamp(tk.p/tk.time,0,1),6);
         ctx.strokeStyle = PAL.tinta; ctx.lineWidth = 1.5; ctx.strokeRect(x+3,y+38,tw-6,6);
@@ -588,7 +642,17 @@ function drawKitchen(ctx,g,t){
     txt(ctx,qn ? ('Na fila: ' + qn) : 'PEDIDOS',800,168,12,PAL.tinta,'left',FB);
     rr(ctx,r.x+8,r.y+r.h-16,r.w-12,12,3); fs(ctx,PAL.cromo,2.2);
   });
-  glow('order');
+  // adiantar marmitas (v8.6): o botãozinho com a quentinha, o "+" e as sem dono (adiantadas) de MARMITA.vagas
+  if (g.marmitaOk && g.state !== 'menu') glowSprite(ctx,g,'adiantar',ctx => {
+    const n = g.marmitasLivres, cheio = n >= MARMITA.vagas, q = STATIONS.adiantar.rect;
+    ctx.save(); if (cheio) ctx.globalAlpha = 0.55;
+    rr(ctx,q.x + 4,q.y + 3,q.w - 8,q.h - 10,7); fs(ctx,'#FFFBEA',2);
+    drawMarmita(ctx,MARMITA.prato,q.x + 26,q.y + 16,0.55);
+    circ(ctx,q.x + 13,q.y + 10,5.5); fs(ctx,cheio ? PAL.cromoEsc : PAL.ok,1.4); txt(ctx,'+',q.x + 13,q.y + 10.5,10,'#fff','center',FD);
+    txt(ctx,n + '/' + MARMITA.vagas,q.x + 41,q.y + 17,10,PAL.tinta,'left',FD);
+    ctx.restore();
+  });
+  glow('order'); glow('adiantar');
 
   // --- janela de prontos
   r = STATIONS.plates.rect;
@@ -605,7 +669,16 @@ function drawKitchen(ctx,g,t){
   for (let i=0;i<4;i++){
     const s = PLATE_SLOTS[i], p = g.kitchen.plates[i];
     ell(ctx,s.x,s.y+4,19,10); ctx.fillStyle = 'rgba(34,32,28,.12)'; ctx.fill();
-    if (p) glowSprite(ctx,g,p,ctx => {
+    if (p && p.kind === 'marmita') glowSprite(ctx,g,p,ctx => {
+      // marmita pronta (v8.6): a do entregador com o selo da Efood; a adiantada com o anel da validade
+      const bounce = RM ? 0 : Math.max(0, 1 - p.age*3) * -8;
+      drawMarmita(ctx,p.dish,s.x,s.y+bounce,1.05);
+      if (p.crit) txt(ctx,'★',s.x-14,s.y-14+bounce,15,PAL.mostarda,'center',FD);
+      drawMarmitaSelo(ctx,p,s.x+13,s.y-14+bounce);
+      const a = 0.35 + 0.3*Math.sin(t*6 + i);
+      ctx.strokeStyle = 'rgba(242,179,61,' + a + ')'; ctx.lineWidth = 3; ell(ctx,s.x,s.y+2,21,13); ctx.stroke();
+    });
+    else if (p) glowSprite(ctx,g,p,ctx => {
       const bounce = RM ? 0 : Math.max(0, 1 - p.age*3) * -8;
       const pc = cmdColor(p.group);
       if (pc) drawTray(ctx,s.x,s.y+2+bounce,1.0,pc);

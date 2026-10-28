@@ -19,6 +19,10 @@ function baseBot(g,L,opts){
     }
     if(b.acts.length>=4) return;
     const has=(f)=>b.acts.some(f);
+    // marmitas (v8.6): a que está na mão vai ao balcão de retirada; a de quem espera no balcão, pronta na janela, vai buscar
+    if(b.hands.some(h=>h.kind==='marmita') && !has(a=>a.type==='retirada')) return g.tapStation('retirada');
+    if(g.kitchen.plates){ const i=g.kitchen.plates.findIndex(p=>p&&p.kind==='marmita'&&p.dono&&!p.dani); const p=g.kitchen.plates[i];
+      if(p&&can('marmita')&&!has(a=>a.type==='plate'&&a.pid===p.id)) return g.tapStation('plates',L.LAYOUT.PLATE_SLOTS[i].x,L.LAYOUT.PLATE_SLOTS[i].y); }
     if(b.hands.some(h=>h.kind==='ticket') && !has(a=>a.type==='order')) return g.tapStation('order',800,150);
     const d=b.hands.find(h=>h.kind==='dish');
     if(d && !has(a=>a.type==='table'&&a.id===d.table)) return g.tapTable(g.tables[d.table-1]);
@@ -36,7 +40,7 @@ function baseBot(g,L,opts){
       if(!t.open||has(a=>a.type==='table'&&a.id===t.id)||(g.dani&&g.dani.targets(t))) continue;
       if(t.dirty||(t.group&&(t.group.state==='wantOrder'||t.group.state==='wantBill'))){ if(can(t.dirty?'dirty':'ticket')||t.group&&t.group.state==='wantBill') return g.tapTable(t); }
     }
-    for(let i=0;i<4;i++){ const p=g.kitchen.plates[i]; if(p&&can('dish')&&!has(a=>a.type==='plate'&&a.pid===p.id)) return g.tapStation('plates',L.LAYOUT.PLATE_SLOTS[i].x,L.LAYOUT.PLATE_SLOTS[i].y); }
+    for(let i=0;i<4;i++){ const p=g.kitchen.plates[i]; if(p&&!p.dani&&can('dish')&&!has(a=>a.type==='plate'&&a.pid===p.id)) return g.tapStation('plates',L.LAYOUT.PLATE_SLOTS[i].x,L.LAYOUT.PLATE_SLOTS[i].y); }
     const need=jt.reduce((n,t)=>n+t.group.juicePending,0), carry=b.hands.filter(h=>h.kind==='juice').length+b.acts.filter(a=>a.type==='juice').length;
     // busca de uma vez todos os sucos que couberem (a fila de ações conta como já nas mãos)
     if(need>carry && !has(a=>a.type==='juice')){
@@ -75,12 +79,19 @@ function afiado(g,L){
     const cands=[];   // [pontos (menor = mais urgente), ação]
     const add=(sc,fn)=>cands.push([sc,fn]);
     const dirtyN=b.hands.filter(h=>h.kind==='dirty').length;
+    // marmitas (v8.6): a do entregador que espera, na mão ou pronta na janela; a sem dono vai para a prateleira com folga.
+    // Adiantar (PEDIDOS sem comanda) quando não há nada mais urgente
+    const RT=ST.retirada, livres=g.prateleira?g.prateleira.filter(m=>!m.dono).length:0;
+    b.hands.filter(h=>h.kind==='marmita').forEach(h=>add(h.dono?ttl(h.dono)-from(RT.ap):(livres<L.MARMITA.vagas?30:Infinity),()=>g.tapStation('retirada')));
+    k.plates.forEach((p,i)=>{ if(!p||p.kind!=='marmita'||p.dani||!can('marmita')) return;
+      add(p.dono?ttl(p.dono)-sw('plates')-walk(ST.plates.ap.x,ST.plates.ap.y,RT.ap.x,RT.ap.y):(livres<L.MARMITA.vagas?32:Infinity),()=>g.tapStation('plates',SL[i].x,SL[i].y)); });
+    if(g.marmitaOk&&g.marmitasLivres<1&&g.clock>45&&!b.hands.some(h=>h.kind==='ticket')) add(36+sw('order'),()=>g.tapStation('adiantar'));
     // pratos e comandas que a Bia carrega
     b.hands.filter(h=>h.kind==='dish').forEach(h=>{ const t=g.tables[h.table-1]; add(ttl(h.group)-tw(t),()=>g.tapTable(t)); });
     const tk=b.hands.filter(h=>h.kind==='ticket');
     if(tk.length) add(Math.min(...tk.map(h=>ttl(h.group)))-sw('order')-6,()=>g.tapStation('order',800,150));
     // pratos prontos no balcão
-    k.plates.forEach((p,i)=>{ if(!p||!can('dish')) return; const t=tableOf(p.group); if(!t) return;
+    k.plates.forEach((p,i)=>{ if(!p||p.kind==='marmita'||!can('dish')) return; const t=tableOf(p.group); if(!t) return;
       add(ttl(p.group)-sw('plates')-walk(ST.plates.ap.x,ST.plates.ap.y,t.cx,t.cy),()=>g.tapStation('plates',SL[i].x,SL[i].y)); });
     // grupos esperando nas mesas (pedido, conta) e mesas sujas
     const ordered=g.tables.filter(t=>t.group&&t.group.state==='ordered').map(t=>ttl(t.group));

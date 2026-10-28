@@ -136,7 +136,8 @@ function mkStub(o){
   // não coube tira 1 estrela
   g.queue.slice().forEach(x=>{ x.patLeft=1e9; }); 
   guard=0; while(g.queue.length<4&&guard++<4000){ g.queue.forEach(x=>{x.patLeft=1e9;x.hearts=5;}); g.update(0.05);} 
-  const s0=g.stars, f0=g.stats.full; g.arrT=0; g.update(0.05); ok(g.stats.full===f0+1&&g.stars===s0-1,'não coube: -1 estrela ('+s0+' -> '+g.stars+')');
+  const tps=L.ENDLESS.types; L.ENDLESS.types=tps.filter(t=>t!=='entregador');   // v8.6: o entregador vai à fila de retirada, não à espera
+  const s0=g.stars, f0=g.stats.full; g.arrT=0; g.update(0.05); L.ENDLESS.types=tps; ok(g.stats.full===f0+1&&g.stars===s0-1,'não coube: -1 estrela ('+s0+' -> '+g.stars+')');
   ok(g.stats.lost>=2,'conta como cliente perdido');
   // recuperação: 8 contas com 5 corações
   g.stars=2; g.five=0; const tb=g.tables[0];

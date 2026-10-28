@@ -300,7 +300,7 @@ table.rank tr.me td{background:#fbe7a8}
 
     <div class="ov show" id="ov-menu">
       <div class="panel menu-panel">
-        <span class="vtag" id="vtag" aria-label="Versão 8.5.1">v8.5.1</span>
+        <span class="vtag" id="vtag" aria-label="Versão 8.6">v8.6</span>
         <h1 class="title">Lanchonete <br>Corre-Corre</h1>
         <p class="tag">Ajude a Bia a atender a freguesia da esquina antes que o cafezinho esfrie!</p>
         <div class="lbl" id="menu-dia">Carreira: dia 1</div>
@@ -510,7 +510,8 @@ table.rank tr.me td{background:#fbe7a8}
       <div class="panel">
         <h2>Versões</h2>
         <ul class="verlist">
-          <li><b>v8.5.1</b><span class="cur">versão atual</span><br>26/10/2026 &mdash; Abertura mais delicada no hospital: depois da última fala da Rosa, a cortina do leito se fecha, e uma cena nova mostra a Bia sozinha e triste no corredor, com a rosa da mãe na mão.</li>
+          <li><b>v8.6</b><span class="cur">versão atual</span><br>28/10/2026 &mdash; Marmitas: o entregador de moto não senta mais no salão. Ele espera no balcão de retirada, no alto da calçada, e o pedido dele (pelo app Efood) vai sozinho ao Tonhão, que faz o prato numa marmita: ocupa uma boca do fogão, mas não usa prato limpo. A Bia (ou a Dani, com a tarefa nova) leva a marmita pronta ao balcão e o entregador paga na hora, com a gorjeta dos corações; a Efood fica com 15% do prato, e a embalagem custa R$ 2. No "+ marmita" da janela de pedidos dá para adiantar até 2 marmitas de PF, que ficam na prateleira do balcão e esfriam em 60 s; quem pede PF leva uma na hora.</li>
+          <li><b>v8.5.1</b><br>26/10/2026 &mdash; Abertura mais delicada no hospital: depois da última fala da Rosa, a cortina do leito se fecha, e uma cena nova mostra a Bia sozinha e triste no corredor, com a rosa da mãe na mão.<br><a href="versoes/v8.5.1.html" target="_blank" rel="noopener">Abrir a v8.5.1</a></li>
           <li><b>v8.5</b><br>26/10/2026 &mdash; O sonho da Bia: a abertura animada do Modo História, em 9 cenas, da cozinha da mãe, a Rosa, até a inauguração da Lanchonete Corre-Corre na garagem. Toca sozinha na primeira vez que o jogo abre; depois, no botão História do menu. Um toque passa a cena, o Voltar (ou a seta para a esquerda) volta um quadro e o Pular fica sempre à vista. O Modo História jogável vem em breve.<br><a href="versoes/v8.5.html" target="_blank" rel="noopener">Abrir a v8.5</a></li>
           <li><b>v8.4.2</b><br>26/10/2026 &mdash; Aba Gurugol na lojinha: a nota com as barrinhas e os últimos 30 comentários da freguesia, do mais novo para o mais velho, com as estrelas, quem escreveu e o dia. Os critérios agora se chamam Qualidade da comida e Diversidade do cardápio.<br><a href="versoes/v8.4.2.html" target="_blank" rel="noopener">Abrir a v8.4.2</a></li>
           <li><b>v8.4.1</b><br>26/10/2026 &mdash; Caixa do Gurugol no fim do dia: uma barrinha por critério vai enchendo até a nota dele, e embaixo a nota conta até o valor. Abaixo de 4 ela é pura; de 4 a 4,4, prateada; de 4,5 a 4,8, dourada e com brilhinhos de estrela; acima de 4,8, brilha como diamante, com mais brilhos.<br><a href="versoes/v8.4.1.html" target="_blank" rel="noopener">Abrir a v8.4.1</a></li>
@@ -610,7 +611,7 @@ function precoPrato(k, ponto){ return Math.round(CARDAPIO[k].preco * (ponto || P
 const MAIS = { cozinha:0.4, pratos:['misto','pastel','coxinha'] };
 /* pontos de atendimento (v8.3.8): as ações da Bia não dão mais dinheiro, dão pontos (a nota da lanchonete virá
    deles). A corrente e a cor certa também viram pontos */
-const PONTOS_ACAO = { sit:10, take:15, deliver:20, clear:10, coffee:5, juice:5, bill:20, cor:15 };
+const PONTOS_ACAO = { sit:10, take:15, deliver:20, clear:10, coffee:5, juice:5, bill:20, cor:15, marmita:20 };
 
 /* calçada (v7.5): o mundo vai de -CALCADA.w (a rua) até W; a espera fica lá fora, no lugar da fila de antes.
    Tela larga (v7.6): a tela tem TW px e mostra o mundo inteiro, sem rolar (Game.cam = CALCADA.w: onde o mundo
@@ -618,8 +619,12 @@ const PONTOS_ACAO = { sit:10, take:15, deliver:20, clear:10, coffee:5, juice:5, 
 const CALCADA = { w:260 };
 const TW = W + CALCADA.w;
 /* lugares da espera, do 1º da fila ao último (v8.1.2): o 1º fica embaixo, perto da torneira, e quem chega depois
-   fica acima dele, do lado da rua por onde chega */
-const QUEUE = { x:-132, ys:[436, 350, 264, 178], max:4 };
+   fica acima dele, do lado da rua por onde chega. v8.6: um pouco mais juntos e mais para baixo (eram 436 a 178), para
+   caber o balcão de retirada no alto da calçada */
+const QUEUE = { x:-132, ys:[476, 396, 316, 236], max:4 };
+/* fila de retirada (v8.6): os entregadores esperam em pé no alto da calçada, à esquerda do balcão de retirada (o 1º
+   encostado nele); balcao: o tampo com a prateleira das marmitas (3 vagas: x de cada uma) */
+const RETIRADA = { fila:[{ x:-114, y:160 }, { x:-160, y:160 }, { x:-206, y:160 }], balcao:{ x0:-92, x1:-14, y:112 }, vagas:[-76, -53, -30] };
 const DOOR  = { x:-300, y:106 };                     // de onde a freguesia vem (e para onde vai): a rua, à esquerda
 /* HUD na tela larga (v7.6): dia e lucro à esquerda, como antes; a fila de ações anda `fila` px e as mãos, a pausa e
    o som, `dir` px (para a direita) */
@@ -631,11 +636,13 @@ const STATIONS = {
   juice:  { ap:{x:744,y:350}, rect:{x:863,y:306,w:97, h:88 } },
   sink:   { ap:{x:744,y:452}, rect:{x:766,y:396,w:194,h:140} },
   trash:  { ap:{x:684,y:520}, rect:{x:700,y:474,w:46,h:62 } },  // lixeira no chão, ao lado do balcão
+  retirada:{ ap:{x:16,y:156}, rect:{x:-94,y:98,w:90,h:80 } },
+  adiantar:{ ap:{x:744,y:150}, rect:{x:852,y:150,w:62,h:36} },  // o botãozinho de adiantar marmita (v8.6), na janela de pedidos  // balcão de retirada das marmitas (v8.6), na calçada, ao lado do portão (a Bia atende de dentro)
   maquina:{ ap:{x:-26,y:498}, rect:{x:-110,y:452,w:62,h:84 } }  // bebida da espera (v7.5), na calçada: na Garagem, a torneira (v7.7)
 };
 const PLATE_SLOTS = [ {x:806,y:270}, {x:848,y:270}, {x:890,y:270}, {x:932,y:270} ];
 const BOUNDS = { x0:16 - CALCADA.w, y0:112, x1:744, y1:528 };
-const LAYOUT = { W, H, TW, HUDX, CALCADA, QUEUE, DOOR, STATIONS, PLATE_SLOTS, BOUNDS };
+const LAYOUT = { W, H, TW, HUDX, CALCADA, QUEUE, RETIRADA, DOOR, STATIONS, PLATE_SLOTS, BOUNDS };
 /* ============================================================
    PONTOS (v7.4): o nível do salão é o ponto. Por enquanto só a Garagem; a área
    industrial, a Avenida Brasil e o Terraço Suíça vêm nas etapas 3 e 4 do plano.
@@ -800,7 +807,7 @@ const SALAO_SEMFIM = [2,2,2,4,2,4];
 /* gorjeta pelos corações na hora da conta (v8.3.8; antes, com 5 corações a conta saía 50% maior): no máximo +10%;
    com 1 ou 2 o grupo reclama e ganha desconto */
 const GORJETA = [0, -0.2, -0.1, 0, 0.05, 0.1];
-const PAT = { queue:7, wantOrder:6, ordered:9, wantBill:7 };   // segundos por coração (base)
+const PAT = { queue:7, wantOrder:6, ordered:9, wantBill:7, retirada:9 };   // segundos por coração (base); retirada (v8.6): o entregador no balcão
 /* jogo justo (v7.1): sem mesa livre onde o grupo caiba, a paciência na fila corre mais devagar (ritmo; 0,4 até a v7.4)
    e, na carreira, não passa de 1 coração com metade da paciência dele (piso). Mesa suja conta como
    mesa que serve (é só recolher a louça). No Turno sem fim vale o ritmo, mas não o piso */
@@ -841,7 +848,8 @@ const DANI_TASKS = [
   { id:'pratos', name:'Retirar pratos sujos', short:'Recolher' },
   { id:'lavar',  name:'Lavar a louça',  short:'Lavar' },
   { id:'cafe',   name:'Servir cafezinho', short:'Cafezinho' },
-  { id:'suco',   name:'Levar a água da espera', short:'Água', need:'maquina' }   // o suco da espera da v7.5 (água na Garagem desde a v7.7)
+  { id:'suco',   name:'Levar a água da espera', short:'Água', need:'maquina' },   // o suco da espera da v7.5 (água na Garagem desde a v7.7)
+  { id:'marmita', name:'Levar as marmitas', short:'Marmita' }   // v8.6: da janela de prontos ao balcão de retirada
 ];
 /* tarefa que a Dani já pode exercer (a do suco da espera depende da máquina) */
 function daniTaskOk(id, up){ const t = DANI_TASKS.find(d => d.id === id); return !!t && (!t.need || !!(up && up[t.need])); }
@@ -913,6 +921,15 @@ const DRINK_PRICE = { coffee:3, juice:JUICE.price };
    depois de chegar ao lugar lá fora, o grupo pede 1 copo por pessoa; a Bia (ou a Dani) pega na estação e entrega,
    e quem bebe perde a paciência da espera `slow` mais devagar. Quem sai da espera antes cancela o que não foi pego */
 const MAQUINA = { pede:2.5, slow:0.4 };
+/* marmitas (v8.6): o entregador de moto não come no salão. Ele espera na fila de retirada (RETIRADA, no máximo `fila`) e
+   leva o prato do cardápio numa marmita: o pedido chega pela Efood (o app de entrega) e vai sozinho ao Tonhão. A marmita
+   ocupa uma boca do fogão como um prato, mas não usa prato limpo; os ingredientes e a `embalagem` saem quando ela fica
+   pronta (se ninguém levar, fica o prejuízo). A Bia (ou a Dani) leva a marmita pronta ao balcão de retirada; o entregador
+   paga o preço do prato, com a gorjeta dos corações, e a Efood fica com `efood` do preço. Adiantar: tocando no "+ marmita"
+   da janela de pedidos (STATIONS.adiantar), o Tonhão faz uma marmita de `prato` sem dono (até `vagas` ao mesmo tempo), que fica na prateleira
+   do balcão e esfria em `validade` s (aí vai para o lixo); o entregador que pede esse prato leva uma na hora. A prateleira
+   tem mais `reserva` vaga, a da encomenda feita para quem está esperando. Ideias para depois: prateleira de 4 e estufa */
+const MARMITA = { embalagem:2, efood:0.15, vagas:2, reserva:1, validade:60, prato:'pf', fila:3 };
 const MULTA = 10;                                     // grupo que vai embora bravo (com 0 corações) desconta isto do dia
 const VIP = { pat:0.75, tip:0.1, perfect:40, angry:10, dish:12, cook:1.8, types:['estudante','vovos','familia','executiva'] };   // dish: o prato especial soma R$ 12 à conta e leva 1,8× o tempo; perfect: pontos (v8.3.8)
 
@@ -920,7 +937,7 @@ const DAYS = [
   { n:1, groups:5,  types:['estudante','vovos'],                                   nu:null,         meta:30, expert:60,  time:150, speed:0.60, note:'A freguesia espera lá fora, na calçada: arraste cada grupo até uma mesa livre.' },
   { n:2, groups:8,  types:['estudante','vovos','familia'],                         nu:'familia',    meta:120, expert:220,  time:160, speed:0.60, note:'Chegou a família! Grupos de 3 ou 4 só cabem nas mesas de 4 lugares. Na lojinha, aba Salão, dá para comprar mesas e arrumar o salão.' },
   { n:3, groups:13, types:['estudante','vovos','familia','executiva'],             nu:'executiva',  meta:150, expert:230,  time:170, speed:0.60, juice:0.3, note:'O movimento aumentou e agora só há 4 pratos limpos: sozinha a Bia não dá conta, contrate ajuda na lojinha. A executiva tem pouca paciência, mas deixa boa gorjeta. E abriu o balcão de sucos: quem pede suco quer receber antes da conta!' },
-  { n:4, groups:15, types:['estudante','vovos','familia','executiva','entregador'], nu:'entregador', meta:70, expert:110, time:180, speed:0.58, juice:0.3, note:'O entregador de moto tem pressa: pouquíssima paciência!' },
+  { n:4, groups:15, types:['estudante','vovos','familia','executiva','entregador'], nu:'entregador', meta:70, expert:110, time:180, speed:0.58, juice:0.3, note:'Chegou o entregador de moto! Ele não senta: espera no balcão de retirada, no alto da calçada, e leva o prato numa marmita. O pedido vai sozinho ao Tonhão; leve a marmita pronta ao balcão. Tem pressa! Para adiantar, toque no "+ marmita" da janela de pedidos.' },
   { n:5, groups:16, types:['estudante','vovos','familia','executiva','entregador'], nu:null,         meta:100, expert:140, time:190, speed:0.56, vip:0.15, juice:0.3, note:'Chegou cliente VIP (de óculos escuros e plaquinha dourada)! Fura a fila e tem menos paciência, mas pede o prato especial (mais caro), dá gorjeta e, se sair com 5 corações, pontos a mais. Se sair bravo, a multa dobra.' },
   { n:6, groups:16, types:['estudante','vovos','familia','executiva','entregador'], nu:null,         meta:150, expert:280, time:200, speed:0.54, vip:0.15, juice:0.3, note:'Sexta-feira: ninguém quer esperar.' },
   { n:7, groups:17, types:['estudante','vovos','familia','executiva','entregador'], nu:null,         meta:180, expert:310, time:220, speed:0.52, vip:0.15, juice:0.3, gripe:true, note:'Tonhão está gripado: a cozinha anda mais devagar hoje.' }
@@ -1026,7 +1043,7 @@ function avalMovimento(lista){
 function fmtNota(n){ return n == null ? '–' : (Math.round(n * 10) / 10).toFixed(1).replace('.', ','); }
 /* o comentário de uma avaliação: quem saiu bravo reclama de ter ido embora; com nota 4 ou mais, elogia o melhor critério;
    senão, reclama do pior (o ambiente com a lixeira cheia reclama do cheiro) */
-const AVAL_BRAVO = { fila:['Desisti de esperar!', 'Nem consegui sentar.'], mesa:['Fui embora sem comer!', 'Nunca mais volto!'] };
+const AVAL_BRAVO = { fila:['Desisti de esperar!', 'Nem consegui sentar.'], mesa:['Fui embora sem comer!', 'Nunca mais volto!'], retirada:['Cadê a marmita?!', 'Saí sem o pedido!'] };   // retirada (v8.6): o entregador
 function avalComentario(r, bravo, lixo){
   if (bravo) return pick(AVAL_BRAVO[bravo]);
   const bom = Math.round(avalNota(r) * 10) >= 40;   // pela nota que aparece (3,96 vira 4,0)
@@ -1069,7 +1086,7 @@ function tabelaDe(e){
 /* um empréstimo novo de v, pagando em dia: as parcelas e os juros somados */
 function simulaEmprestimo(v, j){ const t = tabelaDe(normEmprestimo({ resto:v, amort:Math.ceil(v / BANCO.parcelas), j })); return { parcelas:t, juros:t.reduce((a, p) => a + p, 0) - v }; }
 const CAIXA_MAX = 14;                                 // livro-caixa (v7.2): quantos dias da carreira ficam guardados
-const VERSAO = 'v8.5.1';                               // vai no resumo do Caixa
+const VERSAO = 'v8.6';                               // vai no resumo do Caixa
 const DIVULGA_DIA = 3;                                // antes disso, o movimento é o da inauguração (sem custo)
 function divulgaAberta(n){ return DEV.on || n >= DIVULGA_DIA; }   // no modo dev, desde o dia 1
 function divulgaOf(id){ return DIVULGA.find(d => d.id === id) || DIVULGA[1]; }
@@ -1331,7 +1348,7 @@ function seatPositions(t){
   ];
 }
 function tableHalfW(t){ return t.seats === 2 ? 36 : 62; }
-const STATION_KEYS = ['order','plates','coffee','juice','sink','trash','maquina'];
+const STATION_KEYS = ['adiantar','order','plates','coffee','juice','sink','trash','maquina','retirada'];
 function tableRect(t){ return { x:t.cx - t.hx - 10, y:t.cy - 62, w:t.hx*2 + 20, h:132 }; }
 function queueRect(g){ return { x:QUEUE.x - 74, y:QUEUE.ys[g.slot] - 76, w:148, h:90 }; }
 /* onde a Bia (ou a Dani) para ao levar o suco a quem espera: ao lado do tablet do lugar */
@@ -1474,7 +1491,9 @@ class Group {
     // nunca no treino); o prato especial do VIP soma VIP.dish
     this.dishes = this.people.map(() => pick(T.prefere));
     this.dish = this.dishes[0];
-    this.extras = this.people.map(() => game.mode !== 'treino' && Math.random() < T.mais ? pick(MAIS.pratos) : null);
+    // o entregador (v8.6) não come no salão: leva o prato numa marmita, pela fila de retirada, sem 2º item
+    this.retira = type === 'entregador';
+    this.extras = this.people.map(() => !this.retira && game.mode !== 'treino' && Math.random() < T.mais ? pick(MAIS.pratos) : null);
     this.bill = this.dishes.concat(this.extras).reduce((v, k) => v + (k ? precoPrato(k, game.ponto) : 0), 0) + (this.vip ? VIP.dish : 0);
     this.hearts = 5;
     this.x = DOOR.x; this.y = DOOR.y;
@@ -1587,6 +1606,10 @@ class Group {
         break;
       case 'wantOrder': case 'ordered': case 'wantBill':
         this.tick(dt); break;
+      case 'retirada':   // v8.6: no balcão de retirada, esperando a marmita
+        this.moveAlong(dt, 220);
+        if (!this.path.length && this.game.pegaPrateleira(this)) break;
+        this.tick(dt); break;
       case 'eating':
         if (this.game.treinoSegura) break;   // na Missão zero, a refeição espera o cafezinho
         this.timer -= dt;
@@ -1623,6 +1646,16 @@ class Kitchen {
     if (g.mode === 'semfim') time *= 1 + Math.min(0.25, 0.01 * g.elapsed / 60);
     this.queue.push({ group:grp, table:ticket.table, time, p:0, dish:grp.dish });
   }
+  /* marmita (v8.6): o pedido da Efood (dono: o entregador) ou a adiantada (sem dono); o tempo de 1 prato */
+  submitMarmita(dish, dono){
+    const g = this.game;
+    let time = rand(4,7) * this.chef.cook;
+    if (g.day.gripe) time *= 1.25;
+    if (g.mode === 'semfim') time *= 1 + Math.min(0.25, 0.01 * g.elapsed / 60);
+    const t = { marmita:true, group:null, table:0, time, p:0, dish, dono:dono || null, enc:!!dono };   // enc: encomenda (cancela se o dono for embora antes de começar)
+    this.queue.push(t);
+    return t;
+  }
   purge(group){
     this.queue   = this.queue.filter(t => t.group !== group);
     this.cooking = this.cooking.filter(t => t.group !== group);
@@ -1640,6 +1673,17 @@ class Kitchen {
     if (this.queue.some(t => t.group === group)) return 0;
     return -1;
   }
+  /* a marmita pronta vai para a janela de prontos (sem prato limpo); os ingredientes e a embalagem saem agora */
+  marmitaPronta(t, slot){
+    const g = this.game, crit = g.mode !== 'treino' && Math.random() < this.chef.crit;
+    const fx = AVAL.prato[g.save.equipe.tonhao], q = crit ? 5 : rand(fx[0], fx[1]);
+    this.plates[slot] = { id:++this.pid, kind:'marmita', mid:++g.marmitaId, dish:t.dish, dono:t.dono, slot, age:0, crit, q };
+    g.usos.fogao++; g.usos.geladeira++;
+    Sfx.bell();
+    g.addText(PLATE_SLOTS[slot].x, PLATE_SLOTS[slot].y - 34, 'Marmita!', PAL.mostarda, 16);
+    const cost = Math.round(precoPrato(t.dish, g.ponto) * INGRED.prato * (g.quebrado('geladeira') ? manutOf('geladeira').ingred : 1)) + MARMITA.embalagem;
+    g.custo += cost; g.addText(PLATE_SLOTS[slot].x, PLATE_SLOTS[slot].y - 54, '-' + cost, PAL.perigo, 12);
+  }
   update(dt){
     this.noPlate = false;
     const fogo = this.game.quebrado('fogao') ? manutOf('fogao').lento : 1;   // fogão falhando (v8): cozinha mais devagar
@@ -1649,6 +1693,7 @@ class Kitchen {
       t.p = Math.min(t.time, t.p + dt * fogo);
       if (t.p >= t.time){
         const free = this.plates.findIndex(p => !p);
+        if (t.marmita){ if (free >= 0){ this.cooking.splice(i,1); this.marmitaPronta(t, free); } continue; }
         if (free >= 0 && this.clean <= 0) this.noPlate = true;
         if (free >= 0 && this.clean > 0){
           this.clean--;
@@ -1688,14 +1733,14 @@ class Kitchen {
    - Sem o upgrade, a outra mão também leva 1 item.
    - Com a bandeja: 1 prato + 1 bebida, ou 2 pratos, ou 3 bebidas (cafezinho
      e suco), ou 2 pilhas de louça suja, ou menos que isso. Sujo e limpo
-     nunca juntos na bandeja. O suco da espera (v7.5, 'suco') conta como bebida.
+     nunca juntos na bandeja. O suco da espera (v7.5, 'suco') conta como bebida, e a marmita (v8.6), como prato.
    ============================================================ */
 const KITCHEN_SLOTS = 3;
 const DRINKS = { coffee:1, juice:1, suco:1 };
 function trayOk(items){
   let d = 0, k = 0, s = 0;
   for (const h of items){
-    if (h.kind === 'dish') d++;
+    if (h.kind === 'dish' || h.kind === 'marmita') d++;
     else if (DRINKS[h.kind]) k++;
     else if (h.kind === 'dirty') s++;
     else return false;                 // comanda não vai na bandeja
@@ -1724,6 +1769,8 @@ function handLayout(items, tray, maxTickets){
   return null;
 }
 
+/* a marmita (v8.6) na mão de quem leva: o mesmo objeto, sem o lugar na janela de prontos */
+function marmitaMao(p){ return { kind:'marmita', mid:p.mid, dish:p.dish, dono:p.dono, age:p.age, crit:p.crit, q:p.q }; }
 /* onde está quem pediu o suco da espera: o banco lá fora ou a mesa (a Bia refaz o caminho quando muda) */
 function sucoLugar(g){ return !g ? '' : g.state === 'queue' ? 'banco' + g.slot : g.table ? 'mesa' + g.table.id : 'fora'; }
 
@@ -1885,6 +1932,8 @@ class Waitress {
     const g = this.g;
     if (a.type === 'table') return this.doTable(g.tables[a.id-1]);
     if (a.type === 'order'){ if (!this.submitTickets()) this.fail('?'); return; }
+    if (a.type === 'adiantar'){ this.submitTickets(); if (!g.adiantar(this.x, this.y - 104)) this.fail(g.marmitaOk ? 'Já tem ' + MARMITA.vagas + ' marmitas!' : '?'); return; }   // v8.6 (leva as comandas da mão junto)
+    if (a.type === 'retirada'){ if (!g.levaMarmitas(this)) this.fail(this.hands.some(h => h.kind === 'marmita') ? 'Prateleira cheia!' : '?'); return; }
     if (a.type === 'plate'){
       this.submitTickets();
       const slot = g.kitchen.plates.findIndex(p => p && p.id === a.pid);
@@ -1892,6 +1941,7 @@ class Waitress {
       if (!this.canTake('dish')) return this.fail('Mãos cheias!');
       const p = g.kitchen.plates[slot];
       g.kitchen.plates[slot] = null;
+      if (p.kind === 'marmita'){ this.hands.push(marmitaMao(p)); Sfx.blip(); return; }
       this.hands.push({ kind:'dish', table:p.table, group:p.group, dish:p.dish, crit:p.crit, q:p.q, vip:p.vip });
       Sfx.blip();
       return;
@@ -2058,7 +2108,8 @@ class Waitress {
 
 /* ============================================================
    DANI (contratada): age sozinha, só nas tarefas escolhidas na lojinha
-   (tirar o lixo, retirar pratos sujos, lavar a louça, servir cafezinho, levar o suco da espera).
+   (tirar o lixo, retirar pratos sujos, lavar a louça, servir cafezinho, levar o suco da espera e, desde a v8.6, levar
+   as marmitas da janela de prontos ao balcão de retirada).
    Anda mais devagar que a Bia (50%, 65% ou 80% conforme o nível) e
    leva 1 item em cada mão.
    ============================================================ */
@@ -2089,6 +2140,14 @@ class Helper {
   targets(t){ return !!(this.plan && this.plan.t === t); }
   go(pt, step){ this.plan = step; this.path = findPath({ x:this.x, y:this.y }, pt); this.phase = 'walk'; }
   nearestAp(t){ const p = tableApproach(t); return Math.hypot(p[0].x-this.x,p[0].y-this.y) <= Math.hypot(p[1].x-this.x,p[1].y-this.y) ? p[0] : p[1]; }
+  /* marmita pronta para levar (v8.6): a de quem espera no balcão primeiro; a sem dono só se couber na prateleira. Nunca a
+     que a Bia já vai pegar */
+  marmitaAlvo(){
+    const g = this.g, livres = g.prateleira.filter(m => !m.dono).length;
+    const ps = g.kitchen.plates.filter(p => p && p.kind === 'marmita' && !p.dani && !g.bia.acts.some(a => a.type === 'plate' && a.pid === p.id) && (p.dono || livres < MARMITA.vagas));
+    ps.sort((a,b) => !!b.dono - !!a.dono);
+    return ps[0] || null;
+  }
   coffeeTarget(){
     if (this.g.quebrado('cafeteira')) return null;   // cafeteira parada (v8)
     const c = this.g.tables.filter(t => t.group && t.group.seated && !t.group.coffee && t.group.hearts <= 4 && !t.group.daniCoffee && !this.biaWants(t));
@@ -2106,6 +2165,9 @@ class Helper {
       if (ap) return this.go(ap, { type:'suco', grp:suco.group });
       this.hands = this.hands.filter(h => h.kind !== 'suco');
     }
+    // marmita na mão (v8.6): leva ao balcão de retirada; pronta na janela e cabendo na prateleira (ou com dono): vai buscar
+    if (this.hands.some(h => h.kind === 'marmita')) return this.go(STATIONS.retirada.ap, { type:'retirada' });
+    if (this.does('marmita') && !this.hands.length){ const p = this.marmitaAlvo(); if (p){ p.dani = true; return this.go(STATIONS.plates.ap, { type:'pegaMarmita', p }); } }
     // entrega o café (com louça e café nas mãos, primeiro deixa a louça na pia, logo abaixo da cafeteira)
     if (coffee && !dirty){
       const t = (coffee.table && coffee.table.group === coffee.group && coffee.group && coffee.group.seated && !coffee.group.coffee) ? coffee.table : this.coffeeTarget();
@@ -2142,7 +2204,22 @@ class Helper {
   }
   perform(st){
     const g = this.g;
-    if (st.type === 'clear'){
+    if (st.type === 'pegaMarmita'){
+      // pega a marmita escolhida e, se houver, mais uma (as 2 mãos)
+      st.p.dani = false;
+      const k = g.kitchen;
+      let livres = g.prateleira.filter(m => !m.dono).length;
+      [st.p].concat(k.plates.filter(p => p && p !== st.p && p.kind === 'marmita')).forEach(p => {
+        const i = k.plates.indexOf(p);
+        if (i < 0 || this.hands.length >= DANI_HANDS || g.bia.acts.some(a => a.type === 'plate' && a.pid === p.id)) return;
+        if (!p.dono && livres >= MARMITA.vagas) return;
+        if (!p.dono) livres++;
+        k.plates[i] = null; this.hands.push(marmitaMao(p));
+      });
+      if (this.hands.length) Sfx.blip();
+    } else if (st.type === 'retirada'){
+      g.levaMarmitas(this);   // a que não coube fica na mão: a Dani espera no balcão abrir uma vaga (ou a marmita esfriar)
+    } else if (st.type === 'clear'){
       const t = st.t;
       if (!t.dirty || this.hands.length >= DANI_HANDS) return;
       this.hands.push({ kind:'dirty', n:t.dirtyN }); t.dirty = false; t.dirtyN = 0;
@@ -2258,10 +2335,11 @@ class Game {
     this.kitchen.clean = dishStock(this.day, this.up);
     this.trash = 0; this.trituraT = 0; this.paid = 0; this.unpaid = []; this.aberto = false;
     this.maq = []; this.maqId = 0;   // pedidos do tablet da espera na máquina de suco: { id, group, n, t (preparo que falta) }
+    this.retirada = []; this.prateleira = []; this.marmitaId = 0; this.efood = 0;   // v8.6: os entregadores no balcão, as marmitas na prateleira e a parte da Efood
     this.bia.reset();
     this.dani.reset();
     this.fx = [];
-    this.stats = { served:0, lost:0, chain:0, spawned:0, full:0, vip:0, vipLost:0, juice:0, juiceMiss:0, trash:0, washed:0, emptied:0, sucoEsp:0, crit:0, consertos:0, quebras:0, lostBy:{ semMesa:0, comMesa:0, pedido:0, prato:0, conta:0 }, lotadoT:0 };
+    this.stats = { served:0, lost:0, chain:0, spawned:0, full:0, vip:0, vipLost:0, juice:0, juiceMiss:0, trash:0, washed:0, emptied:0, sucoEsp:0, crit:0, consertos:0, quebras:0, lostBy:{ semMesa:0, comMesa:0, pedido:0, prato:0, conta:0, retirada:0 }, lotadoT:0, marmitas:0, esfriou:0 };
     this.lastKind = null; this.chainN = 0;
     this.ending = false; this.endTimer = 0; this.reason = '';
     this.sel = null; this.drag = null; this.hover = null;
@@ -2514,13 +2592,7 @@ class Game {
     this.addCoins(t.cx, t.cy, Math.min(8, 3 + g.hearts));
     Sfx.coin();
     this.stats.served++;
-    if (this.mode === 'semfim' && g.hearts === 5){
-      this.five++;
-      if (this.five >= 8){
-        this.five = 0;
-        if (this.stars < 5){ this.stars++; this.starFlash = 1; this.addText(TW/2 - this.cam, 300, '+1 estrela!', PAL.mostarda, 28); Sfx.win(); }
-      }
-    }
+    this.cinco(g);
     this.avaliar(g, t.cx, t.cy - 146);
     this.releaseCmd(g);
     g.paid = true;
@@ -2532,11 +2604,108 @@ class Game {
     g.path = findPath({x:g.x, y:g.y}, {x:DOOR.x, y:DOOR.y});
   }
   exitPoint(t){ return tableApproach(t)[0]; }
+  /* Turno sem fim: a cada 8 grupos que saem com 5 corações, volta 1 estrela */
+  cinco(g){
+    if (this.mode !== 'semfim' || g.hearts !== 5) return;
+    this.five++;
+    if (this.five >= 8){
+      this.five = 0;
+      if (this.stars < 5){ this.stars++; this.starFlash = 1; this.addText(TW/2 - this.cam, 300, '+1 estrela!', PAL.mostarda, 28); Sfx.win(); }
+    }
+  }
+
+  /* ---------- marmitas e fila de retirada (v8.6) ---------- */
+  /* há entregador no dia (no Turno sem fim, sempre): o balcão de retirada aparece e dá para adiantar marmitas */
+  get marmitaOk(){ return this.mode === 'semfim' || this.retirada.length > 0 || this.schedule.some(s => s.type === 'entregador'); }
+  reslotRetirada(){ this.retirada.forEach((g,i) => { g.slot = i; g.path = [Object.assign({}, RETIRADA.fila[i])]; }); }
+  /* todas as marmitas do dia, onde estiverem: { m (a marmita ou o pedido na cozinha), onde } */
+  marmitas(){
+    const k = this.kitchen, out = [];
+    k.queue.concat(k.cooking).forEach(t => { if (t.marmita) out.push({ m:t, onde:'fogao' }); });
+    k.plates.forEach(p => { if (p && p.kind === 'marmita') out.push({ m:p, onde:'pronta' }); });
+    [this.bia, this.dani].forEach(q => q.hands.forEach(h => { if (h.kind === 'marmita') out.push({ m:h, onde:'mao', quem:q }); }));
+    this.prateleira.forEach(m => out.push({ m, onde:'prateleira' }));
+    return out;
+  }
+  /* marmitas sem dono (adiantadas ou de quem foi embora), no fogão, prontas, na mão ou na prateleira */
+  get marmitasLivres(){ return this.marmitas().filter(o => !o.m.dono).length; }
+  /* o entregador chegou: fica com uma marmita sem dono do prato dele (a da prateleira primeiro; depois a que está a
+     caminho, pronta ou no fogão); se não houver, a encomenda vai pela Efood ao Tonhão */
+  marmitaPara(g){
+    const ord = { prateleira:0, mao:1, pronta:2, fogao:3 };
+    const l = this.marmitas().filter(o => !o.m.dono && o.m.dish === g.dish).sort((a,b) => ord[a.onde] - ord[b.onde]);
+    if (l.length) l[0].m.dono = g;
+    else this.kitchen.submitMarmita(g.dish, g);
+  }
+  /* o entregador foi embora (ou levou outra): a encomenda que nem começou sai do fogão; o resto fica sem dono */
+  soltaMarmitas(g){
+    const k = this.kitchen;
+    k.queue = k.queue.filter(t => !(t.marmita && t.enc && t.dono === g));
+    this.marmitas().forEach(o => { if (o.m.dono === g) o.m.dono = null; });
+  }
+  /* o entregador no balcão pega a marmita dele na prateleira (ou uma sem dono do prato dele, que chegou antes) */
+  pegaPrateleira(g){
+    let i = this.prateleira.findIndex(m => m.dono === g);
+    if (i < 0){ i = this.prateleira.findIndex(m => !m.dono && m.dish === g.dish); if (i >= 0) this.soltaMarmitas(g); }
+    if (i < 0) return false;
+    this.entregaMarmita(g, this.prateleira.splice(i, 1)[0]);
+    return true;
+  }
+  /* a Bia (ou a Dani) chega ao balcão com marmitas: a do entregador que já está no balcão vai direto para ele; a
+     encomenda de quem ainda está chegando e as sem dono (até MARMITA.vagas) ficam na prateleira. Devolve quantas deixou */
+  levaMarmitas(p){
+    let n = 0, prat = 0;
+    p.hands.filter(h => h.kind === 'marmita').forEach(m => {
+      const d = m.dono;
+      if (d && d.state === 'retirada' && !d.path.length) this.entregaMarmita(d, m);
+      else if (d || this.prateleira.filter(x => !x.dono).length < MARMITA.vagas){ this.prateleira.push(m); prat++; }
+      else return;
+      p.hands.splice(p.hands.indexOf(m), 1); n++;
+    });
+    if (prat){ this.addText(p.x, p.y - 82, 'Na prateleira!', PAL.faixa, 14); Sfx.blip(); }
+    return n;
+  }
+  /* o entregador leva a marmita e paga: o preço do prato com a gorjeta dos corações; a Efood fica com MARMITA.efood do preço */
+  entregaMarmita(g, m){
+    const preco = precoPrato(m.dish, this.ponto), bruto = Math.round(preco * (1 + GORJETA[g.hearts])), taxa = Math.round(preco * MARMITA.efood);
+    const x = g.x, y = g.y;
+    this.efood += taxa; this.stats.marmitas++; this.stats.served++;
+    g.pratoQ = m.q || 0; if (m.crit) g.capricho = true;
+    this.score('marmita', x, y - 76, bruto - taxa, g);
+    this.addText(x, y - 98, 'Efood −' + taxa, PAL.alerta, 13);
+    this.addCoins(x, y - 30, 3);
+    Sfx.coin();
+    this.cinco(g);
+    this.avaliar(g, x, y - 128);
+    g.paid = true;
+    const i = this.retirada.indexOf(g);
+    if (i >= 0){ this.retirada.splice(i, 1); this.reslotRetirada(); }
+    g.setState('leaving');
+    g.path = [{ x:DOOR.x, y:DOOR.y }];
+  }
+  /* adiantar (o "+ marmita" da janela de pedidos): uma marmita de MARMITA.prato sem dono, até MARMITA.vagas */
+  adiantar(x, y){
+    if (!this.marmitaOk || this.marmitasLivres >= MARMITA.vagas) return false;
+    this.kitchen.submitMarmita(MARMITA.prato, null);
+    this.addText(x, y, 'Marmita adiantada!', PAL.faixa, 14); Sfx.ok();
+    return true;
+  }
+  /* a marmita sem dono esfria em MARMITA.validade s (contados desde que ficou pronta): vai para o lixo */
+  esfriar(dt){
+    this.prateleira.forEach(m => { m.age += dt; });
+    [this.bia, this.dani].forEach(q => q.hands.forEach(h => { if (h.kind === 'marmita') h.age += dt; }));
+    const fria = m => m && !m.dono && m.age >= MARMITA.validade, k = this.kitchen;
+    const joga = (x, y) => { this.stats.esfriou++; this.addTrash(1); this.addText(x, y, 'Esfriou!', PAL.perigo, 14); Sfx.tone(220, 0.15, 'triangle', 0.05); };
+    k.plates.forEach((p, i) => { if (p && p.kind === 'marmita' && fria(p)){ k.plates[i] = null; joga(PLATE_SLOTS[i].x, PLATE_SLOTS[i].y - 34); } });
+    this.prateleira.filter(fria).forEach(m => { joga(RETIRADA.vagas[Math.min(2, this.prateleira.indexOf(m))], RETIRADA.balcao.y - 20); this.prateleira.splice(this.prateleira.indexOf(m), 1); });
+    [this.bia, this.dani].forEach(q => q.hands.filter(fria).forEach(h => { q.hands.splice(q.hands.indexOf(h), 1); joga(q.x, q.y - 82); }));
+  }
 
   /* ---------- fluxo de grupos ---------- */
   /* chegada de um grupo: se a fila estiver cheia, o grupo olha, diz "Lotado!" e vai embora */
   arrive(s){
-    if (this.queue.length >= this.ponto.espera) return this.bounce(s);
+    // o entregador (v8.6) vai para a fila de retirada, que tem MARMITA.fila lugares
+    if (s.type === 'entregador' ? this.retirada.length >= MARMITA.fila : this.queue.length >= this.ponto.espera) return this.bounce(s);
     return this.spawn(s);
   }
   spawn(s){
@@ -2544,6 +2713,14 @@ class Game {
     const g = new Group(this, s.type, ++this.gid, s.color, s.vip);
     g.avalia = !!s.av;
     this.groups.push(g);
+    if (g.retira){
+      this.retirada.push(g); g.setState('retirada'); this.reslotRetirada();
+      this.marmitaPara(g);
+      this.addText(RETIRADA.fila[0].x, DOOR.y + 4, 'Pedido na Efood!', PAL.alerta, 16);
+      Sfx.tone(784, 0.08, 'square', 0.03); Sfx.tone(1046, 0.1, 'square', 0.03, 0.08);
+      this.stats.spawned++;
+      return g;
+    }
     if (g.vip){
       // VIP fura a fila: entra logo depois dos outros VIPs que já estão esperando
       let i = 0;
@@ -2687,6 +2864,9 @@ class Game {
     }
     const qi = this.queue.indexOf(g);
     if (qi >= 0){ this.queue.splice(qi,1); this.reslot(); }
+    const ri = this.retirada.indexOf(g);
+    if (ri >= 0){ this.retirada.splice(ri,1); this.reslotRetirada(); }
+    if (g.retira) this.soltaMarmitas(g);
     this.kitchen.purge(g);
     this.bia.purgeGroup(g);
     this.dani.hands = this.dani.hands.filter(h => h.group !== g);
@@ -2702,7 +2882,7 @@ class Game {
   angryLeave(g){
     if (g.state === 'leaving') return;
     this.stats.lost++;
-    const by = g.state === 'queue' ? (g.semMesa ? 'semMesa' : 'comMesa') : ({ wantOrder:'pedido', ordered:'prato', eating:'prato', wantBill:'conta' })[g.state];
+    const by = g.state === 'queue' ? (g.semMesa ? 'semMesa' : 'comMesa') : ({ wantOrder:'pedido', ordered:'prato', eating:'prato', wantBill:'conta', retirada:'retirada' })[g.state];
     if (by) this.stats.lostBy[by]++;
     this.addPuff(g.x, g.y - 20, 9);
     this.addText(g.x, g.y - 50, 'Hmpf!', PAL.perigo, 22);
@@ -2720,11 +2900,12 @@ class Game {
      um comentário curto, num balãozinho sobre ele */
   avaliar(g, x, y){
     if (this.mode !== 'carreira' || !g.avalia) return;
-    const A = AVAL, eq = this.save.equipe, bravo = g.angry ? (g.state === 'queue' ? 'fila' : 'mesa') : '';
+    const A = AVAL, eq = this.save.equipe, bravo = g.angry ? (g.retira ? 'retirada' : g.state === 'queue' ? 'fila' : 'mesa') : '';
     const bonus = Math.min(A.bonus.max, (g.corCerta ? A.bonus.cor : 0) + (g.corrente ? A.bonus.corrente : 0) + (g.capricho ? A.bonus.crit : 0));
     const amb = A.amb.base + (eq.tv ? A.amb.tv : 0) + (eq.som ? A.amb.som : 0) + (this.up.maquina ? A.amb.maquina : 0) + (this.up.ventilador ? A.amb.ventilador : 0) +
       (g.coffee ? A.amb.cafe : 0) + (eq.couvert ? A.amb.couvert : 0) + (this.trashFull ? A.amb.lixo : 0);
-    const r = [5 - A.porCoracao * g.perdFila, bravo ? 1 : 5 - A.porCoracao * g.perdMesa + bonus, g.pratoQ || 1, avalMenu(), amb]
+    // o entregador (v8.6): a espera no balcão conta na espera e na agilidade
+    const r = [5 - A.porCoracao * (g.retira ? g.perdMesa : g.perdFila), bravo ? 1 : 5 - A.porCoracao * g.perdMesa + bonus, g.pratoQ || 1, avalMenu(), amb]
       .map(v => clamp(Math.round(v * 10) / 10, 1, 5));
     const txt = avalComentario(r, bravo, this.trashFull), nota = avalNota(r);
     this.avals.push({ r, txt, k:g.type, v:g.vip });
@@ -2803,6 +2984,7 @@ class Game {
     this.bia.update(dt);
     this.dani.update(dt);
     this.kitchen.update(dt);
+    this.esfriar(dt);
     this.updateFx(dt);
 
     if (this.mode === 'semfim'){
@@ -2865,7 +3047,7 @@ class Game {
     if (tomou) row.tom = 1;
     caixaAdd(sv, row);
     writeSave(sv);
-    this.result = { day:d.n, money:m, fat, pontos:Math.round(this.pontos), custo:Math.round(this.custo), contas:this.contas, div:this.paidDiv, divName:this.div ? this.div.name : '', meta:d.meta, bom:bomGoal(d), expert:d.expert, passed, stars, served:this.stats.served, lost:this.stats.lost, lostBy:this.stats.lostBy, lotadoT:Math.round(this.stats.lotadoT), atraso:Math.round(this.atraso), full:this.stats.full, chain:this.stats.chain, vip:this.stats.vip, vipLost:this.stats.vipLost, juice:this.stats.juice, juiceMiss:this.stats.juiceMiss, sucoEsp:this.stats.sucoEsp, bebida:this.bebida.id, trash:this.stats.trash, washed:this.stats.washed, income, paid:this.paid, reason:this.reason, conserto:this.conserto, consertos:this.stats.consertos, quebras:this.quebras.filter(q => q.on).map(q => ({ id:q.id, fixed:q.fixed })), clima:this.clima, manut:Object.assign({}, this.manut), par, forcado, neg:sv.neg, emp:Object.assign({}, sv.emp), atrasou, tomou, devido, aval:{ dia:avDia, geral:avalGeral(sv.aval), n:sv.aval.length, coment } };
+    this.result = { day:d.n, money:m, fat, pontos:Math.round(this.pontos), custo:Math.round(this.custo), contas:this.contas, div:this.paidDiv, divName:this.div ? this.div.name : '', meta:d.meta, bom:bomGoal(d), expert:d.expert, passed, stars, served:this.stats.served, lost:this.stats.lost, lostBy:this.stats.lostBy, lotadoT:Math.round(this.stats.lotadoT), atraso:Math.round(this.atraso), full:this.stats.full, chain:this.stats.chain, vip:this.stats.vip, vipLost:this.stats.vipLost, marmitas:this.stats.marmitas, efood:this.efood, esfriou:this.stats.esfriou, sobra:this.marmitas().filter(o => o.onde !== 'fogao').length, juice:this.stats.juice, juiceMiss:this.stats.juiceMiss, sucoEsp:this.stats.sucoEsp, bebida:this.bebida.id, trash:this.stats.trash, washed:this.stats.washed, income, paid:this.paid, reason:this.reason, conserto:this.conserto, consertos:this.stats.consertos, quebras:this.quebras.filter(q => q.on).map(q => ({ id:q.id, fixed:q.fixed })), clima:this.clima, manut:Object.assign({}, this.manut), par, forcado, neg:sv.neg, emp:Object.assign({}, sv.emp), atrasou, tomou, devido, aval:{ dia:avDia, geral:avalGeral(sv.aval), n:sv.aval.length, coment } };
     if (tomou){ this.setState('falencia'); Sfx.lose(); return; }
     this.setState('dayend');
     if (passed) Sfx.win(); else Sfx.lose();
@@ -3133,9 +3315,11 @@ class Game {
     }
     for (const g of this.queue) take(queueRect(g), { k:'queue', g });
     for (const t of this.tables) take(tableRect(t), { k:'table', t });
-    for (const k of STATION_KEYS){ if (k !== 'maquina' || this.up.maquina) take(STATIONS[k].rect, { k:'station', st:k }); }
+    for (const k of STATION_KEYS){ if (this.estacaoOn(k)) take(STATIONS[k].rect, { k:'station', st:k }); }
     return best;
   }
+  /* a bebida da espera só com a melhoria; o balcão de retirada (v8.6), só no dia com entregador */
+  estacaoOn(k){ return k === 'maquina' ? !!this.up.maquina : k === 'retirada' || k === 'adiantar' ? this.marmitaOk : true; }
   tableAt(x, y, pad){
     let best = null, bd = Infinity;
     for (const t of this.tables){ const d = rectDist(x, y, tableRect(t)); if (d <= (pad || 0) && d < bd){ bd = d; best = t; } }
@@ -3143,7 +3327,7 @@ class Game {
   }
   stationAt(x, y){
     for (const k of STATION_KEYS){
-      if (k === 'maquina' && !this.up.maquina) continue;
+      if (!this.estacaoOn(k)) continue;
       const r = STATIONS[k].rect;
       if (x >= r.x && x <= r.x + r.w && y >= r.y && y <= r.y + r.h) return k;
     }
@@ -3533,6 +3717,20 @@ function drawDish(ctx,k,x,y,s,empty){
     ctx.fillStyle = '#b9772f'; circ(ctx,-3,1,1.6); ctx.fill(); circ(ctx,4,-1,1.2); ctx.fill();
     ctx.restore(); return;
   }
+  drawComida(ctx,k);
+  ctx.restore();
+}
+/* marmita (v8.6): a quentinha de alumínio com a tampa de papelão e o desenho da comida em cima; (x, y) é o meio da tampa */
+function drawMarmita(ctx,k,x,y,s){
+  ctx.save(); ctx.translate(x,y); ctx.scale(s,s);
+  ctx.beginPath(); ctx.moveTo(-16,0); ctx.lineTo(16,0); ctx.lineTo(13,10); ctx.lineTo(-13,10); ctx.closePath(); fs(ctx,'#C9D0D7',2.2);   // a forma de alumínio
+  ctx.strokeStyle = 'rgba(34,32,28,.25)'; ctx.lineWidth = 1; ctx.beginPath(); ctx.moveTo(-14,5); ctx.lineTo(14,5); ctx.stroke();
+  rr(ctx,-18,-13,36,14,4); fs(ctx,'#F4EEDD',2.2);   // a tampa
+  ctx.save(); ctx.translate(0,-6); ctx.scale(0.95,0.62); drawComida(ctx,k); ctx.restore();
+  ctx.restore();
+}
+/* a comida do prato (sem o prato), centrada em (0, 0) */
+function drawComida(ctx,k){
   if (k === 'pf'){
     ell(ctx,-5,-1,5.5,4.2); fs(ctx,'#FFF6DA',1.6);
     ell(ctx,4,-3.5,5,3.4); fs(ctx,'#5B2E1A',1.6);
@@ -3553,7 +3751,6 @@ function drawDish(ctx,k,x,y,s,empty){
     ctx.beginPath(); ctx.moveTo(1,5); ctx.lineTo(12,5); ctx.lineTo(6.5,-7); ctx.closePath(); fs(ctx,'#D9A25B',2);
     ctx.fillStyle = '#F6D44A'; ctx.fillRect(-10,1.5,8.5,2); ctx.fillRect(2,1.5,8.5,2);
   }
-  ctx.restore();
 }
 
 /* torneira de parede (v7.7, a água da espera da Garagem): cano, registro de borboleta e bica; (x, y) é a ponta da bica */
@@ -3581,6 +3778,8 @@ function drawIcon(ctx,k,x,y,s,extra,extra2){
   } else if (k === 'dish'){
     if (extra2) drawTray(ctx,0,2,1,extra2);
     drawDish(ctx,extra||'pf',0,2,0.95);
+  } else if (k === 'marmita'){
+    drawMarmita(ctx,extra||'pf',0,1,0.95);
   } else if (k === 'coffee'){
     ell(ctx,0,7,11,3.5); fs(ctx,'#fff',2);
     rr(ctx,-7,-5,14,12,3); fs(ctx,'#fff',2);
@@ -4085,6 +4284,59 @@ function drawTorneiraEspera(ctx,g,t,menu){
   const q = g.bia.acts[0];
   if (q && q.type === 'maquina' && q.leg !== 2){ ctx.save(); const a = 0.55 + 0.4*Math.sin(t*8); ctx.strokeStyle = 'rgba(242,179,61,' + a + ')'; ctx.lineWidth = 5; rr(ctx,r.x,r.y,r.w,r.h,8); ctx.stroke(); ctx.restore(); }
 }
+/* ============================================================
+   BALCÃO DE RETIRADA (v8.6): na calçada, ao lado do portão. Um balcão de madeira com a plaquinha da retirada e o
+   adesivo da Efood; no tampo, a prateleira das marmitas: MARMITA.vagas lugares das adiantadas e, à direita, o da
+   encomenda (tracejado). Os entregadores esperam em pé à esquerda dele
+   ============================================================ */
+const EFOOD_COR = '#E26A2C';
+/* selo da marmita: a do entregador, um "E" laranja (Efood); a sem dono, o anel da validade (verde, amarelo, vermelho) */
+function drawMarmitaSelo(ctx,m,x,y){
+  circ(ctx,x,y,7.5); fs(ctx,m.dono ? EFOOD_COR : '#fff',1.6);
+  if (m.dono){ txt(ctx,'E',x,y+0.5,10,'#fff','center',FD); return; }
+  const f = clamp(1 - m.age / MARMITA.validade, 0, 1);
+  ctx.beginPath(); ctx.moveTo(x,y); ctx.arc(x,y,5.5,-Math.PI/2,-Math.PI/2 + TAU*f); ctx.closePath();
+  ctx.fillStyle = f > 0.5 ? PAL.ok : f > 0.25 ? PAL.mostarda : PAL.perigo; ctx.fill();
+}
+/* onde fica cada marmita da prateleira: as sem dono nos lugares das adiantadas; as encomendas no da reserva */
+function prateleiraPos(g){
+  let l = 0, e = 0;
+  return g.prateleira.map(m => m.dono ? { m, x:RETIRADA.vagas[MARMITA.vagas] + 8 * e++ } : { m, x:RETIRADA.vagas[Math.min(l++, MARMITA.vagas - 1)] });
+}
+function drawRetirada(ctx,g,t){
+  const B = RETIRADA.balcao, w = B.x1 - B.x0, y = B.y;
+  shadowEll(ctx,(B.x0 + B.x1) / 2,y + 54,w / 2 + 6,6,0.18);
+  rr(ctx,B.x0,y + 10,w,42,4); fs(ctx,PAL.madeira,2.4);   // a frente
+  ctx.strokeStyle = 'rgba(34,32,28,.25)'; ctx.lineWidth = 1.2;
+  for (let x = B.x0 + 13; x < B.x1; x += 13){ ctx.beginPath(); ctx.moveTo(x,y + 13); ctx.lineTo(x,y + 49); ctx.stroke(); }
+  rr(ctx,B.x0 + 8,y + 18,w - 30,15,4); fs(ctx,EFOOD_COR,1.8);
+  txt(ctx,'RETIRADA',B.x0 + 8 + (w - 30) / 2,y + 26,9,'#fff','center',FD);
+  rr(ctx,B.x1 - 18,y + 18,12,12,3); fs(ctx,'#fff',1.4); txt(ctx,'E',B.x1 - 12,y + 24.5,9,EFOOD_COR,'center',FD);   // o adesivo da Efood
+  rr(ctx,B.x0 - 4,y,w + 8,12,4); fs(ctx,'#E3C79A',2.4);   // o tampo
+  if (g.state === 'menu') return;
+  // a vaga da encomenda, tracejada
+  const xr = RETIRADA.vagas[MARMITA.vagas];
+  ctx.save(); ctx.setLineDash([3,2]); ctx.strokeStyle = 'rgba(226,106,44,.8)'; ctx.lineWidth = 1.4; rr(ctx,xr - 10,y - 9,20,13,3); ctx.stroke(); ctx.restore();
+  prateleiraPos(g).forEach(o => {
+    drawMarmita(ctx,o.m.dish,o.x,y - 4,0.68);
+    drawMarmitaSelo(ctx,o.m,o.x + 8,y - 14);
+  });
+  const a0 = g.bia.acts[0];
+  if (a0 && a0.type === 'retirada'){ ctx.save(); const al = 0.55 + 0.4*Math.sin(t*8); ctx.strokeStyle = 'rgba(242,179,61,' + al + ')'; ctx.lineWidth = 5; const r = STATIONS.retirada.rect; rr(ctx,r.x,r.y,r.w,r.h,8); ctx.stroke(); ctx.restore(); }
+}
+/* o balão do entregador (v8.6): a marmita dele no fogão (anel do preparo), pronta na janela (verde, pulsando) ou a
+   caminho (na mão da Bia ou da Dani) */
+function drawRetiradaBalao(ctx,g,grp,tm){
+  const o = g.marmitas().find(q => q.m.dono === grp);
+  if (!o || grp.path.length) return;
+  const pronta = o.onde === 'pronta', p = pronta && !RM ? 1 + 0.1 * Math.sin(tm*8) : 1;
+  ctx.save(); ctx.translate(grp.x + 24,grp.y - 92); ctx.scale(p,p);
+  drawBubble(ctx,0,0,15,pronta ? PAL.ok : '#fff');
+  drawMarmita(ctx,o.m.dish,0,1,0.62);
+  if (o.onde === 'fogao') drawRing(ctx,0,0,15,o.m.p / o.m.time,PAL.alerta);
+  if (o.onde === 'mao'){ circ(ctx,12,-11,7); fs(ctx,PAL.mostarda,1.4); txt(ctx,'→',12,-11,10,PAL.tinta,'center',FD); }
+  ctx.restore();
+}
 /* espuminha saindo da pia enquanto alguém (Bia, Dani ou Tonhão) lava a louça */
 function drawEspuma(ctx,g,t){
   const k = g.kitchen;
@@ -4388,9 +4640,10 @@ function drawKitchen(ctx,g,t){
       const tk = ck[i];
       rr(ctx,x,y,tw,48,3); fs(ctx,tk ? '#FFFBEA' : 'rgba(255,251,234,.35)',2);
       if (tk){
-        ctx.fillStyle = cmdColor(tk.group) || PAL.faixa; ctx.fillRect(x,y,tw,9);
+        ctx.fillStyle = tk.marmita ? EFOOD_COR : cmdColor(tk.group) || PAL.faixa; ctx.fillRect(x,y,tw,9);   // marmita (v8.6): a faixa da Efood e a quentinha
         ctx.strokeStyle = PAL.tinta; ctx.lineWidth = 1.5; ctx.strokeRect(x,y,tw,9);
-        txt(ctx,String(tk.table),x+tw/2,y+26,ns > 3 ? 16 : 20,PAL.tinta,'center',FD);
+        if (tk.marmita) drawMarmita(ctx,tk.dish,x+tw/2,y+25,0.85);
+        else txt(ctx,String(tk.table),x+tw/2,y+26,ns > 3 ? 16 : 20,PAL.tinta,'center',FD);
         ctx.fillStyle = '#d9d4c4'; ctx.fillRect(x+3,y+38,tw-6,6);
         ctx.fillStyle = tk.p >= tk.time ? PAL.ok : PAL.alerta; ctx.fillRect(x+3,y+38,(tw-6)*clamp(tk.p/tk.time,0,1),6);
         ctx.strokeStyle = PAL.tinta; ctx.lineWidth = 1.5; ctx.strokeRect(x+3,y+38,tw-6,6);
@@ -4404,7 +4657,17 @@ function drawKitchen(ctx,g,t){
     txt(ctx,qn ? ('Na fila: ' + qn) : 'PEDIDOS',800,168,12,PAL.tinta,'left',FB);
     rr(ctx,r.x+8,r.y+r.h-16,r.w-12,12,3); fs(ctx,PAL.cromo,2.2);
   });
-  glow('order');
+  // adiantar marmitas (v8.6): o botãozinho com a quentinha, o "+" e as sem dono (adiantadas) de MARMITA.vagas
+  if (g.marmitaOk && g.state !== 'menu') glowSprite(ctx,g,'adiantar',ctx => {
+    const n = g.marmitasLivres, cheio = n >= MARMITA.vagas, q = STATIONS.adiantar.rect;
+    ctx.save(); if (cheio) ctx.globalAlpha = 0.55;
+    rr(ctx,q.x + 4,q.y + 3,q.w - 8,q.h - 10,7); fs(ctx,'#FFFBEA',2);
+    drawMarmita(ctx,MARMITA.prato,q.x + 26,q.y + 16,0.55);
+    circ(ctx,q.x + 13,q.y + 10,5.5); fs(ctx,cheio ? PAL.cromoEsc : PAL.ok,1.4); txt(ctx,'+',q.x + 13,q.y + 10.5,10,'#fff','center',FD);
+    txt(ctx,n + '/' + MARMITA.vagas,q.x + 41,q.y + 17,10,PAL.tinta,'left',FD);
+    ctx.restore();
+  });
+  glow('order'); glow('adiantar');
 
   // --- janela de prontos
   r = STATIONS.plates.rect;
@@ -4421,7 +4684,16 @@ function drawKitchen(ctx,g,t){
   for (let i=0;i<4;i++){
     const s = PLATE_SLOTS[i], p = g.kitchen.plates[i];
     ell(ctx,s.x,s.y+4,19,10); ctx.fillStyle = 'rgba(34,32,28,.12)'; ctx.fill();
-    if (p) glowSprite(ctx,g,p,ctx => {
+    if (p && p.kind === 'marmita') glowSprite(ctx,g,p,ctx => {
+      // marmita pronta (v8.6): a do entregador com o selo da Efood; a adiantada com o anel da validade
+      const bounce = RM ? 0 : Math.max(0, 1 - p.age*3) * -8;
+      drawMarmita(ctx,p.dish,s.x,s.y+bounce,1.05);
+      if (p.crit) txt(ctx,'★',s.x-14,s.y-14+bounce,15,PAL.mostarda,'center',FD);
+      drawMarmitaSelo(ctx,p,s.x+13,s.y-14+bounce);
+      const a = 0.35 + 0.3*Math.sin(t*6 + i);
+      ctx.strokeStyle = 'rgba(242,179,61,' + a + ')'; ctx.lineWidth = 3; ell(ctx,s.x,s.y+2,21,13); ctx.stroke();
+    });
+    else if (p) glowSprite(ctx,g,p,ctx => {
       const bounce = RM ? 0 : Math.max(0, 1 - p.age*3) * -8;
       const pc = cmdColor(p.group);
       if (pc) drawTray(ctx,s.x,s.y+2+bounce,1.0,pc);
@@ -4684,15 +4956,15 @@ function drawRing(ctx,x,y,r,frac,col){
   ctx.beginPath(); ctx.arc(x,y,r+4,-Math.PI/2,-Math.PI/2+TAU*clamp(frac,0,1));
   ctx.lineWidth = 4; ctx.strokeStyle = col; ctx.lineCap = 'butt'; ctx.stroke(); ctx.lineCap = 'round';
 }
-function drawHearts(ctx,grp,x,y,tm){
-  const n = 5, sp = 15;
+function drawHearts(ctx,grp,x,y,tm,k){
+  const n = 5, sp = 15 * (k || 1);   // k: menor (o entregador na fila de retirada, v8.6)
   for (let i=0;i<n;i++){
     const hx = x + (i - 2) * sp;
     if (i < grp.hearts){
       const last = (i === grp.hearts - 1) && grp.patLeft < 2.5 && isFinite(grp.patLeft) && !grp.piso;
       const pulse = last && !RM ? 1 + 0.25*Math.sin(tm*14) : 1;
-      heart(ctx,hx,y,6.2*pulse, last && Math.floor(tm*6)%2 ? '#ff9a8d' : '#E5384A');
-    } else heart(ctx,hx,y,5.4,'rgba(255,255,255,.55)','rgba(34,32,28,.45)');
+      heart(ctx,hx,y,6.2*pulse*(k || 1), last && Math.floor(tm*6)%2 ? '#ff9a8d' : '#E5384A');
+    } else heart(ctx,hx,y,5.4*(k || 1),'rgba(255,255,255,.55)','rgba(34,32,28,.45)');
   }
 }
 function drawTableOverlay(ctx,g,t,tm,menu){
@@ -4908,6 +5180,7 @@ function drawFilaMarcas(ctx,g,tm){
 function drawHandItem(ctx,h,x,y,s,noTag){
   if (h.kind === 'dish'){ drawIcon(ctx,'dish',x,y,s,h.dish,cmdColor(h.group)); if (h.crit) txt(ctx,'★',x-12*s,y-12*s,13*s,PAL.mostarda,'center',FD); }
   else if (h.kind === 'ticket') drawIcon(ctx,'ticket',x,y,s,cmdColor(h.group));
+  else if (h.kind === 'marmita'){ drawMarmita(ctx,h.dish,x,y,s * 0.95); if (!noTag) drawMarmitaSelo(ctx,h,x + 12*s,y - 11*s); }   // v8.6
   else if (h.kind === 'suco'){ drawIcon(ctx,h.group ? h.group.game.bebida.icon : 'juice',x,y,s); if (h.group){ circ(ctx,x+8*s,y+9*s,4.5*s); fs(ctx,CHAIRS[h.group.color].c,1.2); } }   // da espera: a cor de quem pediu
   else drawIcon(ctx,h.kind,x,y,s);
   if (h.table && noTag){ circ(ctx,x+5,y-9,5.5); fs(ctx,'#fff',1.4); txt(ctx,String(h.table),x+5,y-8.5,8,PAL.tinta,'center',FD); }
@@ -4915,14 +5188,16 @@ function drawHandItem(ctx,h,x,y,s,noTag){
 }
 function drawActIcon(ctx,g,a,x,y){
   let cc = null;
-  if (a.type === 'plate'){ const p0 = g.kitchen.plates.find(q => q && q.id === a.pid); cc = p0 ? cmdColor(p0.group) : null; }
+  if (a.type === 'plate'){ const p0 = g.kitchen.plates.find(q => q && q.id === a.pid); cc = p0 && p0.kind !== 'marmita' ? cmdColor(p0.group) : null; }
   else if (a.type === 'table'){ const t0 = g.tables[a.id-1]; cc = t0 ? cmdColor(t0.group) : null; }
   if (cc){ rr(ctx,x-18,550,36,5,2); fs(ctx,cc,1.4); }
   if (a.type === 'order') drawIcon(ctx,'hat',x,y,1.05);
+  else if (a.type === 'adiantar'){ drawIcon(ctx,'marmita',x,y,1.0); circ(ctx,x-12,y-10,6.5); fs(ctx,PAL.ok,1.6); txt(ctx,'+',x-12,y-9.5,11,'#fff','center',FD); }   // v8.6
   else if (a.type === 'coffee') drawIcon(ctx,'coffee',x,y,1.05);
   else if (a.type === 'juice') drawIcon(ctx,'juice',x,y+1,1.0);
   else if (a.type === 'sink') drawIcon(ctx,'drop',x,y,1.05);
   else if (a.type === 'trash') drawIcon(ctx,'trash',x,y,1.0);
+  else if (a.type === 'retirada'){ drawIcon(ctx,'marmita',x,y,1.0); circ(ctx,x+13,y+11,7); fs(ctx,EFOOD_COR,1.6); txt(ctx,'E',x+13,y+11.5,9,'#fff','center',FD); }   // o balcão de retirada (v8.6)
   else if (a.type === 'maquina'){
     drawIcon(ctx,g.bebida.icon,x,y+1,1.0);
     if (a.leg === 2 && a.group){ circ(ctx,x+13,y+12,7); fs(ctx,CHAIRS[a.group.color].c,1.8); }   // levando: a cor de quem pediu
@@ -4931,6 +5206,7 @@ function drawActIcon(ctx,g,a,x,y){
   }
   else if (a.type === 'plate'){
     const p = g.kitchen.plates.find(q => q && q.id === a.pid);
+    if (p && p.kind === 'marmita'){ drawIcon(ctx,'marmita',x,y,1.0,p.dish); drawMarmitaSelo(ctx,p,x+13,y-12); return; }
     drawIcon(ctx,'dish',x,y,1.0,p ? p.dish : 'pf',cc);
     if (p){ circ(ctx,x+13,y-12,8); fs(ctx,'#fff',1.8); txt(ctx,String(p.table),x+13,y-11,11,PAL.tinta,'center',FD); }
   } else if (a.type === 'table'){
@@ -5021,6 +5297,11 @@ function render(g, ctx){
         glowSprite(ctx,g,grp,ctx => drawCluster(ctx,grp,grp.x,grp.y,tm,{ sit:parado && g.ponto.assento !== 'pe', bebe:parado }));
         ctx.restore();
       }});
+    } else if (grp.state === 'retirada'){   // v8.6: o entregador no balcão de retirada, de pé
+      items.push({ y:grp.y, f:() => {
+        if (!grp.path.length) drawMoodRing(ctx,grp.hearts,grp.x,grp.y+2,28,8,tm);
+        drawCluster(ctx,grp,grp.x,grp.y,tm);
+      }});
     } else if (grp.state === 'toTable' || grp.state === 'leaving'){
       items.push({ y:grp.y, f:() => drawCluster(ctx,grp,grp.x,grp.y,tm) });
     }
@@ -5037,6 +5318,7 @@ function render(g, ctx){
     });
   }});
   if (menu) items.pop();
+  if (g.marmitaOk && !menu) items.push({ y:RETIRADA.balcao.y + 50, f:() => glowSprite(ctx,g,'retirada',ctx => drawRetirada(ctx,g,tm)) });
   if (g.up.maquina) items.push({ y:STATIONS.maquina.rect.y + STATIONS.maquina.rect.h, f:() => glowSprite(ctx,g,'maquina',ctx => drawMaquina(ctx,g,tm,menu)) });
   if (g.save.equipe.couvert && !menu) items.push({ y:528, f:() => drawMusico(ctx,g,tm) });
   if ((g.save.equipe.tv || g.save.equipe.som) && !menu) items.push({ y:532, f:() => drawAmbiente(ctx,g,tm) });
@@ -5055,6 +5337,7 @@ function render(g, ctx){
     if (grp.aguarda && !grp.path.length) drawWaitBadge(ctx,grp.x + (grp.vip ? 63 : 50),grp.y-66,tm,grp.piso);
     if (!menu) drawPedidoEspera(ctx,g,grp,tm);
   });
+  g.retirada.forEach(grp => { drawHearts(ctx,grp,grp.x,grp.y-62,tm,0.6); if (!menu) drawRetiradaBalao(ctx,g,grp,tm); });
   if (!menu) drawFilaMarcas(ctx,g,tm);
   // "?" sobre a Bia
   if (b.qT > 0 && !menu){
@@ -5978,6 +6261,12 @@ function buildTips(){
       c.restore();
     }]
   ];
+  // v8.6: o entregador e as marmitas
+  tips.push(['Do dia 4 em diante vem o entregador de moto: ele não senta, espera no balcão de retirada (no alto da calçada), e o pedido dele, pela Efood, vai sozinho ao Tonhão, que faz o prato numa marmita (sem usar prato limpo). Toque na marmita pronta e depois no balcão: ele paga na hora, com a gorjeta dos corações (a Efood fica com ' + Math.round(MARMITA.efood * 100) + '%). Tem pressa! No "+ marmita" da janela de pedidos, o Tonhão adianta até ' + MARMITA.vagas + ' marmitas de PF, que esperam na prateleira do balcão e esfriam em ' + MARMITA.validade + ' s. Embalagem: R$ ' + MARMITA.embalagem + '; marmita que ninguém leva fica no prejuízo. A Dani pode levar as marmitas.', c => {
+    drawMarmita(c,'pf',22,22,1.2);
+    rr(c,30,38,30,18,3); fs(c,PAL.madeira,1.8); rr(c,34,42,16,8,2); fs(c,EFOOD_COR,1.2);
+    drawPerson(c,{skin:2,hair:0,hairC:'#1B1512',pants:'#2F3E5C',acc:'helmet'},16,60,{shirt:CHAIRS[0].c,mood:0,s:0.55});
+  }]);
   // v8.3: a campanha e o banco
   tips.push(['A carreira segue dia após dia, levando tudo o que veio antes: dinheiro, móveis, equipe, melhorias e o desgaste. Meta não batida deixa o dia sem estrelas, mas o dia seguinte vem. Faltou dinheiro? O caixa pode ficar negativo ' + BANCO.neg + ' dias seguidos (no ' + (BANCO.neg + 1) + 'º, o banco cobre à força) e a aba Banco da lojinha empresta, com juros de ' + Math.round(BANCO.juros * 100) + '% ao dia sobre o que falta (amortizar antes corta os juros). Não atrase: parcela sem pagar 2 dias seguidos, e o banco toma a lanchonete!', c => {
     c.translate(32,34); c.scale(1.4,1.4);
@@ -6712,6 +7001,8 @@ function buildEnd(){
   // imprevistos (v8): o que quebrou (e se foi consertado na hora) e o clima do dia
   if (r.quebras && r.quebras.length) rows.push(['Quebrou', r.quebras.map(q => manutOf(q.id).name.toLowerCase() + (q.fixed ? ' (consertado)' : '')).join(', ')]);
   if (r.clima) rows.push(['Imprevisto', CLIMA[r.clima].nome]);
+  // marmitas (v8.6): as entregues (e a parte da Efood), as que esfriaram e as que sobraram no fim do dia
+  if (r.marmitas || r.esfriou || r.sobra) rows.splice(2, 0, ['Marmitas', r.marmitas + ' entregue' + (r.marmitas === 1 ? '' : 's') + (r.efood ? ' (Efood −' + fmt(r.efood) + ')' : '') + (r.esfriou ? ' · ' + r.esfriou + ' esfri' + (r.esfriou > 1 ? 'aram' : 'ou') : '') + (r.sobra ? ' · ' + r.sobra + ' sobr' + (r.sobra > 1 ? 'aram' : 'ou') : '')]);
   if (r.vip || r.vipLost) rows.splice(2, 0, ['VIPs', r.vip + ' atendido' + (r.vip === 1 ? '' : 's') + (r.vipLost ? ' · ' + r.vipLost + ' bravo' + (r.vipLost > 1 ? 's' : '') : '')]);
   // Gurugol (v8.4): a caixa animada à esquerda dos quadros (v8.4.1); embaixo, 2 ou 3 comentários (os critérios do dia no title)
   const av = $('end-aval'); clearEl(av); av.title = '';
@@ -7089,7 +7380,7 @@ try { Rank.init(); } catch(e) {}
 game.setState('menu');
 if (!aberturaVista() && !DEV.on) abrirAbertura('auto');   // v8.5: a abertura toca sozinha uma vez
 window.__game = game;
-window.__lcc = { setShopTab: v => { shopTab = v; buildShop(); }, TREINO, TREINO_PASSOS, TREINO_COR, Treino, treinoLugar, treinoPrimeiro, playCareer, buildMenu, introBanco, buildFalencia, BANCO, normEmprestimo, parcelaDe, devidoDe, jurosDe, tabelaDe, simulaEmprestimo, SEMANA, semanaOf, diaOf, FILA_JUSTA, PORTA, CHAIRS, PAT, CONTAS, INGRED, CARDAPIO, precoPrato, MAIS, PONTOS_ACAO, GORJETA, DRINK_PRICE, MOVIMENTO, movimentoSalao, DIVULGA, DIVULGA_DIA, divulgaOf, contasDia, bomGoal, SALAO, PONTOS, pontoOf, MESA, mesaBox, mesaPreco, salaoLugares, mesaProblema, salaoCaminho, salaoProblema, salaoOrdena, salaoAuto, salaoVaga, salaoPerto, salaoKit, salaoDevolucao, SALAO_SEMFIM, normSalao, setObst, OBST, pathOk, MAQUINA, BEBIDA_ESPERA, bebidaOf, MANUT, manutOf, manutChance, manutPreco, normManut, CLIMA, CLIMA_DIA, introManut, normPend, CALCADA, TW, HUDX, esperaAp, tableApproach, CRIT, STAFF, DANI_TASKS, DANI_HANDS, daniTaskOk, TRASH, WASH, payroll, FOLHA_CORTE, folhaCorta, folhaCortes, folhaItens, listaE, pratosDe, couvertEffect, couvertOk, ambienteEffect, dishStock, normSave, Helper, JUICE, KITCHEN_SLOTS, handLayout, trayOk, Game, Group, Table, Kitchen, Waitress, BIA_SPEED, DAYS, UPGRADES, CUSTOMER_TYPES, LAYOUT, PAL, Sfx, findPath, render, Rank, sortRows, cleanName, normName, CMD, ENDLESS, VIP, MULTA, rk, renderRank, openRank, closeRank, LS, lsGet, lsSet, loadSave, DEV, saveKey, devSync, divulgaAberta, CAIXA_MAX, VERSAO, normCaixa, caixaResumo, caixaTotais, copyText, AVAL, AVAL_CRIT, AVAL_BRAVO, avalMenu, normAval, avalNota, avalMedias, avalGeral, avalMovimento, avalComentario, fmtNota, notaFaixa, gurugolCaixa, AVAL_COM, normAvalCom, buildGurugol, ABERTURA, Abertura, AB_CENAS, aberturaVista, aberturaSom, drawAbertura, abrirAbertura, aberturaAtual: () => abertura };
+window.__lcc = { MARMITA, RETIRADA, marmitaMao, drawMarmita, prateleiraPos, EFOOD_COR, AVAL_BRAVO, QUEUE, setShopTab: v => { shopTab = v; buildShop(); }, TREINO, TREINO_PASSOS, TREINO_COR, Treino, treinoLugar, treinoPrimeiro, playCareer, buildMenu, introBanco, buildFalencia, BANCO, normEmprestimo, parcelaDe, devidoDe, jurosDe, tabelaDe, simulaEmprestimo, SEMANA, semanaOf, diaOf, FILA_JUSTA, PORTA, CHAIRS, PAT, CONTAS, INGRED, CARDAPIO, precoPrato, MAIS, PONTOS_ACAO, GORJETA, DRINK_PRICE, MOVIMENTO, movimentoSalao, DIVULGA, DIVULGA_DIA, divulgaOf, contasDia, bomGoal, SALAO, PONTOS, pontoOf, MESA, mesaBox, mesaPreco, salaoLugares, mesaProblema, salaoCaminho, salaoProblema, salaoOrdena, salaoAuto, salaoVaga, salaoPerto, salaoKit, salaoDevolucao, SALAO_SEMFIM, normSalao, setObst, OBST, pathOk, MAQUINA, BEBIDA_ESPERA, bebidaOf, MANUT, manutOf, manutChance, manutPreco, normManut, CLIMA, CLIMA_DIA, introManut, normPend, CALCADA, TW, HUDX, esperaAp, tableApproach, CRIT, STAFF, DANI_TASKS, DANI_HANDS, daniTaskOk, TRASH, WASH, payroll, FOLHA_CORTE, folhaCorta, folhaCortes, folhaItens, listaE, pratosDe, couvertEffect, couvertOk, ambienteEffect, dishStock, normSave, Helper, JUICE, KITCHEN_SLOTS, handLayout, trayOk, Game, Group, Table, Kitchen, Waitress, BIA_SPEED, DAYS, UPGRADES, CUSTOMER_TYPES, LAYOUT, PAL, Sfx, findPath, render, Rank, sortRows, cleanName, normName, CMD, ENDLESS, VIP, MULTA, rk, renderRank, openRank, closeRank, LS, lsGet, lsSet, loadSave, DEV, saveKey, devSync, divulgaAberta, CAIXA_MAX, VERSAO, normCaixa, caixaResumo, caixaTotais, copyText, AVAL, AVAL_CRIT, AVAL_BRAVO, avalMenu, normAval, avalNota, avalMedias, avalGeral, avalMovimento, avalComentario, fmtNota, notaFaixa, gurugolCaixa, AVAL_COM, normAvalCom, buildGurugol, ABERTURA, Abertura, AB_CENAS, aberturaVista, aberturaSom, drawAbertura, abrirAbertura, aberturaAtual: () => abertura };
 window.requestAnimationFrame(frame);
 
 })();

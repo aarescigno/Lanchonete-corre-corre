@@ -155,6 +155,12 @@ function buildTips(){
       c.restore();
     }]
   ];
+  // v8.6: o entregador e as marmitas
+  tips.push(['Do dia 4 em diante vem o entregador de moto: ele não senta, espera no balcão de retirada (no alto da calçada), e o pedido dele, pela Efood, vai sozinho ao Tonhão, que faz o prato numa marmita (sem usar prato limpo). Toque na marmita pronta e depois no balcão: ele paga na hora, com a gorjeta dos corações (a Efood fica com ' + Math.round(MARMITA.efood * 100) + '%). Tem pressa! No "+ marmita" da janela de pedidos, o Tonhão adianta até ' + MARMITA.vagas + ' marmitas de PF, que esperam na prateleira do balcão e esfriam em ' + MARMITA.validade + ' s. Embalagem: R$ ' + MARMITA.embalagem + '; marmita que ninguém leva fica no prejuízo. A Dani pode levar as marmitas.', c => {
+    drawMarmita(c,'pf',22,22,1.2);
+    rr(c,30,38,30,18,3); fs(c,PAL.madeira,1.8); rr(c,34,42,16,8,2); fs(c,EFOOD_COR,1.2);
+    drawPerson(c,{skin:2,hair:0,hairC:'#1B1512',pants:'#2F3E5C',acc:'helmet'},16,60,{shirt:CHAIRS[0].c,mood:0,s:0.55});
+  }]);
   // v8.3: a campanha e o banco
   tips.push(['A carreira segue dia após dia, levando tudo o que veio antes: dinheiro, móveis, equipe, melhorias e o desgaste. Meta não batida deixa o dia sem estrelas, mas o dia seguinte vem. Faltou dinheiro? O caixa pode ficar negativo ' + BANCO.neg + ' dias seguidos (no ' + (BANCO.neg + 1) + 'º, o banco cobre à força) e a aba Banco da lojinha empresta, com juros de ' + Math.round(BANCO.juros * 100) + '% ao dia sobre o que falta (amortizar antes corta os juros). Não atrase: parcela sem pagar 2 dias seguidos, e o banco toma a lanchonete!', c => {
     c.translate(32,34); c.scale(1.4,1.4);

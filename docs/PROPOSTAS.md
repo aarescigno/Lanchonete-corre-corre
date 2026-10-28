@@ -4,6 +4,29 @@ Registro das ideias e dos retornos de quem jogou, com o texto original, e de ond
 
 ---
 
+## 28/10/2026 — Usuário: decisões da etapa 2e (marmitas)
+**Origem:** respostas do usuário às decisões em aberto da etapa 2e (escolhas e textos dele):
+
+> Marmita: "Prato em marmita (Recomendado)".
+> Adiantar: "dá pra adiantar até 2 por enquanto, mantendo sempre 1 outro espaço (futuramente aumentável) para entregadores retirarem outra encomenda que esteja sendo feita especificamente para eles, e com validade reduzida porque vai esfriando, futuros upgrades de poder adiantar 4 marmitas e colocar elas em estufa que estende a validade quase que para o dia todo. o custo de produção é contabilizado no momento em que a marmita é gerada, se não for pega por um entregador até o fim do dia, fica só o prejuízo de tê-la feito."
+> Custo: "2 reais de embalagem e a operadora da entrega, a Efood, fica com 15% do valor pago pelo prato."
+> Detalhes: "fazer marmita ocupa boca do fogão, mas não ocupa pratos, ela sai pronta com uma sprite de marmita com o desenho da comida em cima." Também marcou: balcão na calçada, a Dani entrega, ocupa boca do fogão.
+
+**Destino:**
+
+| Proposta | Destino |
+|---|---|
+| Prato do cardápio em marmita, pelo preço do prato | v8.6, feita |
+| Adiantar até 2, com mais 1 vaga para a encomenda de quem espera | v8.6, feita (adiantadas de PF, no botão "+ marmita") |
+| Validade curta da adiantada (esfria) | v8.6, feita: 60 s, e vai para o lixo |
+| Custo na hora em que a marmita fica pronta; a que sobra é prejuízo | v8.6, feita |
+| R$ 2 de embalagem e 15% da Efood | v8.6, feita |
+| Ocupa boca do fogão, não usa prato; quentinha com a comida desenhada | v8.6, feita |
+| Balcão na calçada; a Dani entrega | v8.6, feita (tarefa "Levar as marmitas") |
+| Prateleira de 4 e estufa (upgrades futuros) | guardada no `docs/PLANO.md`, para as melhorias da 3a |
+
+---
+
 ## 28/10/2026 — Usuário: revisão estética da abertura
 **Origem:** mensagens do usuário:
 

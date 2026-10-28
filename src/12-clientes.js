@@ -39,7 +39,7 @@ function seatPositions(t){
   ];
 }
 function tableHalfW(t){ return t.seats === 2 ? 36 : 62; }
-const STATION_KEYS = ['order','plates','coffee','juice','sink','trash','maquina'];
+const STATION_KEYS = ['adiantar','order','plates','coffee','juice','sink','trash','maquina','retirada'];
 function tableRect(t){ return { x:t.cx - t.hx - 10, y:t.cy - 62, w:t.hx*2 + 20, h:132 }; }
 function queueRect(g){ return { x:QUEUE.x - 74, y:QUEUE.ys[g.slot] - 76, w:148, h:90 }; }
 /* onde a Bia (ou a Dani) para ao levar o suco a quem espera: ao lado do tablet do lugar */
@@ -182,7 +182,9 @@ class Group {
     // nunca no treino); o prato especial do VIP soma VIP.dish
     this.dishes = this.people.map(() => pick(T.prefere));
     this.dish = this.dishes[0];
-    this.extras = this.people.map(() => game.mode !== 'treino' && Math.random() < T.mais ? pick(MAIS.pratos) : null);
+    // o entregador (v8.6) não come no salão: leva o prato numa marmita, pela fila de retirada, sem 2º item
+    this.retira = type === 'entregador';
+    this.extras = this.people.map(() => !this.retira && game.mode !== 'treino' && Math.random() < T.mais ? pick(MAIS.pratos) : null);
     this.bill = this.dishes.concat(this.extras).reduce((v, k) => v + (k ? precoPrato(k, game.ponto) : 0), 0) + (this.vip ? VIP.dish : 0);
     this.hearts = 5;
     this.x = DOOR.x; this.y = DOOR.y;
@@ -294,6 +296,10 @@ class Group {
         if (this.timer <= 0) { this.setState('wantOrder'); Sfx.blip(); }
         break;
       case 'wantOrder': case 'ordered': case 'wantBill':
+        this.tick(dt); break;
+      case 'retirada':   // v8.6: no balcão de retirada, esperando a marmita
+        this.moveAlong(dt, 220);
+        if (!this.path.length && this.game.pegaPrateleira(this)) break;
         this.tick(dt); break;
       case 'eating':
         if (this.game.treinoSegura) break;   // na Missão zero, a refeição espera o cafezinho

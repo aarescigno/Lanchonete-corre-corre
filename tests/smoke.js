@@ -19,6 +19,7 @@ function botStep(g){
   if(b.hands.some(h=>h.kind==='ticket') && !has(a=>a.type==='order')) return g.tapStation('order',800,150);
   const d=b.hands.find(h=>h.kind==='dish'); 
   if(d && !has(a=>a.type==='table'&&a.id===d.table)) return g.tapTable(g.tables[d.table-1]);
+  if(b.hands.some(h=>h.kind==='marmita') && !has(a=>a.type==='retirada')) return g.tapStation('retirada');   // v8.6: a marmita vai ao balcão de retirada
   if(b.hands.some(h=>h.kind==='dirty') && !has(a=>a.type==='sink')) return g.tapStation('sink',850,450);
   for(const t of g.tables){
     if(!t.open||has(a=>a.type==='table'&&a.id===t.id)) continue;
@@ -36,7 +37,7 @@ function playDay(n){
     if(steps%10===0){ L.render(g,ctx); frames++; }
     // invariants
     ok(L.handLayout(g.bia.hands,g.bia.tray)!==null,'mãos cabem (com ou sem bandeja)'); ok(g.bia.acts.length<=6,'acts<=6');
-    ok(g.bia.x>=0&&g.bia.x<=960&&isFinite(g.bia.x)&&isFinite(g.bia.y),'bia pos');
+    ok(g.bia.x>=-L.CALCADA.w&&g.bia.x<=960&&isFinite(g.bia.x)&&isFinite(g.bia.y),'bia pos');
     for(const grp of g.groups){ ok(isFinite(grp.x)&&isFinite(grp.y),'grp pos'); ok(grp.hearts>=0&&grp.hearts<=5,'hearts'); }
     if(fails>20) break;
   }

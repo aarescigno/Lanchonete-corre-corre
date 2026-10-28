@@ -81,6 +81,20 @@ function drawDish(ctx,k,x,y,s,empty){
     ctx.fillStyle = '#b9772f'; circ(ctx,-3,1,1.6); ctx.fill(); circ(ctx,4,-1,1.2); ctx.fill();
     ctx.restore(); return;
   }
+  drawComida(ctx,k);
+  ctx.restore();
+}
+/* marmita (v8.6): a quentinha de alumínio com a tampa de papelão e o desenho da comida em cima; (x, y) é o meio da tampa */
+function drawMarmita(ctx,k,x,y,s){
+  ctx.save(); ctx.translate(x,y); ctx.scale(s,s);
+  ctx.beginPath(); ctx.moveTo(-16,0); ctx.lineTo(16,0); ctx.lineTo(13,10); ctx.lineTo(-13,10); ctx.closePath(); fs(ctx,'#C9D0D7',2.2);   // a forma de alumínio
+  ctx.strokeStyle = 'rgba(34,32,28,.25)'; ctx.lineWidth = 1; ctx.beginPath(); ctx.moveTo(-14,5); ctx.lineTo(14,5); ctx.stroke();
+  rr(ctx,-18,-13,36,14,4); fs(ctx,'#F4EEDD',2.2);   // a tampa
+  ctx.save(); ctx.translate(0,-6); ctx.scale(0.95,0.62); drawComida(ctx,k); ctx.restore();
+  ctx.restore();
+}
+/* a comida do prato (sem o prato), centrada em (0, 0) */
+function drawComida(ctx,k){
   if (k === 'pf'){
     ell(ctx,-5,-1,5.5,4.2); fs(ctx,'#FFF6DA',1.6);
     ell(ctx,4,-3.5,5,3.4); fs(ctx,'#5B2E1A',1.6);
@@ -101,7 +115,6 @@ function drawDish(ctx,k,x,y,s,empty){
     ctx.beginPath(); ctx.moveTo(1,5); ctx.lineTo(12,5); ctx.lineTo(6.5,-7); ctx.closePath(); fs(ctx,'#D9A25B',2);
     ctx.fillStyle = '#F6D44A'; ctx.fillRect(-10,1.5,8.5,2); ctx.fillRect(2,1.5,8.5,2);
   }
-  ctx.restore();
 }
 
 /* torneira de parede (v7.7, a água da espera da Garagem): cano, registro de borboleta e bica; (x, y) é a ponta da bica */
@@ -129,6 +142,8 @@ function drawIcon(ctx,k,x,y,s,extra,extra2){
   } else if (k === 'dish'){
     if (extra2) drawTray(ctx,0,2,1,extra2);
     drawDish(ctx,extra||'pf',0,2,0.95);
+  } else if (k === 'marmita'){
+    drawMarmita(ctx,extra||'pf',0,1,0.95);
   } else if (k === 'coffee'){
     ell(ctx,0,7,11,3.5); fs(ctx,'#fff',2);
     rr(ctx,-7,-5,14,12,3); fs(ctx,'#fff',2);
