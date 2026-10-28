@@ -4,6 +4,22 @@ Registro das ideias e dos retornos de quem jogou, com o texto original, e de ond
 
 ---
 
+## 28/10/2026 — Usuário: o Bráulio, a nota de 4,35 e o incêndio da Garagem
+**Origem:** mensagem do usuário, na revisão do plano:
+
+> vamos ajustar essa avaliação para ficar 4,35 para ir para o próximo nível e, assim que essa nota for atingida após o dia 8 vem uma animação do Bráulio indo conhecer o restaurante de garagem dos antigos cozinheiros. Ele vai com más intenções, já que ele não consegue replicar a receita que era de tonhão e Rosa. Na transição para a área industrial aparecem cenas de Bia e tonhão cheios de esperança empacotando tudo para a mudança etc. e, na noite desse dia, Bráulio chama uns capangas que destroem e queimam tudo que Bia tinha conquistado (upgrades, mesas etc), deixando a garagem impossibilitada de ser reutilizada também. Bia e Tonhão ficam muito tristes, com a fatalidade (não sabem que foi causado o incêndio).
+> antes disso, quando a lanchonete tiver 20 avaliações no gurugol aparece outra animação do Bráulio ligando para o tonhão mandando ele voltar, ameaçando ele de passar forme por perder a oportunidade de trabalhar no único restaurante estrela Michelzão do estado todo, por trás disso o Bráulio está com dezenas de panelas tentando replicar a receita famosa que só Tonhão e Rosa sabiam fazer. Tonhão nega dizendo que descobriu onde realmente ele consegue viver seu sonho na cozinha e desliga. aí dia 8 ou talvez dia 10 chega o Bráulio para visitar essa lanchonete de garagem que está fazendo sucesso...
+
+Respostas às perguntas da sessão: a visita vem com a "Nota 4,35 a partir do dia 10"; o incêndio leva "móveis, melhorias e um gasto grande para consertar a casa em que habitam, o objetivo é que a pessoa comece a etapa do industrial com uma dívida profunda quase sem esperança, mas depois vem outros eventos da história para agregar oportunidade etc, algumas boas com consequências boas, outras ruins com consequências boas a curto prazo, mas ruins a longo prazo, outras aparentemente boas, mas com consequências ruins etc."; a mudança "Sim, paga antes do incêndio".
+
+**Destino (`docs/PLANO.md`):**
+- Nota mínima para sair da Garagem: **4,35 ★**, do dia 10 em diante (era 4,5): etapa 3.
+- Cenas do **telefonema** (20 avaliações) e da **visita** (4,35 ★ do dia 10 em diante): etapa **2f**.
+- Cenas de **empacotar**, da **noite do incêndio** e da **manhã** (sem nada gráfico), com a perda dos móveis e das melhorias, a Garagem perdida e a dívida do conserto da casa: etapa **3a-1** (v9).
+- **Eventos da história com escolha** (oportunidades boas, armadilhas e o meio-termo): etapa nova **3a-2** (v9.1); a Avenida Brasil passa a ser a v9.2.
+
+---
+
 ## 28/10/2026 — Usuário: revisão do plano e das propostas sem etapa
 **Origem:** mensagem do usuário:
 

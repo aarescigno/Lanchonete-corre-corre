@@ -7,7 +7,7 @@ Origem: retorno do Renan Martorelli (beta-tester) e conversa com o Arthur (15/10
 - Para começar uma sessão, basta pedir: **"faça a próxima etapa do docs/PLANO.md"**. A sessão lê só a etapa da vez e as partes de `src/` citadas nela.
 - Antes de programar, a sessão confirma com o usuário as **decisões em aberto** da etapa (cada uma já tem uma sugestão).
 - No fim, a sessão marca a etapa como feita na tabela abaixo (com a versão e a data) e anota o que mudou no plano.
-- Ordem: cada etapa depende só das anteriores. A 1a vem primeiro (mexe no equilíbrio de base). A 1c teve prioridade sobre as demais, por ser retorno do beta-tester Renan (pedido do usuário em 21/10). A 1d-1 (v7.4), a 1d-2 (v7.5), a 2 (v8) e a 2b (v8.3) foram feitas. **Ordem revista com o usuário em 22/10:** 2b (campanha contínua e banco), 2c (avaliações dos clientes), 2d (abertura animada do Modo História), 3a (área industrial), 3b (Avenida Brasil) e 4 (Terraço Suíça). A campanha vem antes dos pontos para a carreira não ser refeita duas vezes, e as avaliações viram a "experiência" que abre os pontos novos e a reputação da etapa 4. A 2c (v8.4) e a 2d (v8.5) foram feitas em 26/10. **Ordem revista com o usuário em 28/10** (texto em `docs/PROPOSTAS.md`): as propostas que estavam só no log e nas Ideias guardadas viraram etapas. Ficou assim: 2e (entregadores com fila própria e marmitas), 2f (a campanha vira o Modo História), 3a (área industrial), 3b (Avenida Brasil), 4a (Terraço Suíça), 4b (nível de luxo), 4c (eventos de bairro), 6 (crítico do Michelzão e final) e 7 (polimento). A marmita vem antes da área industrial, que terá mais entregadores. A campanha e o Modo História viraram uma coisa só: a 2f monta a estrutura e os capítulos da Garagem, cada ponto traz o seu capítulo, e a antiga etapa 5 deixou de existir. **A próxima é a 2e.** A etapa 7 fica **a rever** com o usuário antes de começar.
+- Ordem: cada etapa depende só das anteriores. A 1a vem primeiro (mexe no equilíbrio de base). A 1c teve prioridade sobre as demais, por ser retorno do beta-tester Renan (pedido do usuário em 21/10). A 1d-1 (v7.4), a 1d-2 (v7.5), a 2 (v8) e a 2b (v8.3) foram feitas. **Ordem revista com o usuário em 22/10:** 2b (campanha contínua e banco), 2c (avaliações dos clientes), 2d (abertura animada do Modo História), 3a (área industrial), 3b (Avenida Brasil) e 4 (Terraço Suíça). A campanha vem antes dos pontos para a carreira não ser refeita duas vezes, e as avaliações viram a "experiência" que abre os pontos novos e a reputação da etapa 4. A 2c (v8.4) e a 2d (v8.5) foram feitas em 26/10. **Ordem revista com o usuário em 28/10** (texto em `docs/PROPOSTAS.md`): as propostas que estavam só no log e nas Ideias guardadas viraram etapas. Ficou assim: 2e (entregadores com fila própria e marmitas), 2f (a campanha vira o Modo História), 3a-1 (área industrial, com o incêndio da Garagem), 3a-2 (escolhas da história), 3b (Avenida Brasil), 4a (Terraço Suíça), 4b (nível de luxo), 4c (eventos de bairro), 6 (crítico do Michelzão e final) e 7 (polimento). A marmita vem antes da área industrial, que terá mais entregadores. A campanha e o Modo História viraram uma coisa só: a 2f monta a estrutura e os capítulos da Garagem, cada ponto traz o seu capítulo, e a antiga etapa 5 deixou de existir. **A próxima é a 2e.** A etapa 7 fica **a rever** com o usuário antes de começar.
 
 ## Situação
 | # | Etapa | Versão | Situação |
@@ -42,8 +42,9 @@ Origem: retorno do Renan Martorelli (beta-tester) e conversa com o Arthur (15/10
 | 2d | Abertura animada do Modo História: o sonho da Bia | v8.5 | feita (26/10) |
 | 2e | Entregadores com fila própria e marmitas | v8.6 | **próxima** |
 | 2f | A campanha vira o Modo História: estrutura e capítulos da Garagem | v8.7 | a fazer |
-| 3a | Mudança de ponto e Lanchonete na área industrial (e o capítulo dela) | v9 | a fazer |
-| 3b | Restaurante na Avenida Brasil (e o capítulo dela) | v9.1 | a fazer |
+| 3a-1 | Mudança, o incêndio da Garagem e a Lanchonete na área industrial (e o capítulo dela) | v9 | a fazer |
+| 3a-2 | Escolhas da história: oportunidades e armadilhas | v9.1 | a fazer |
+| 3b | Restaurante na Avenida Brasil (e o capítulo dela) | v9.2 | a fazer |
 | 4a | Terraço Suíça e VIPs exigentes (e o capítulo dele) | v10 | a fazer |
 | 4b | Nível de luxo | v10.1 | a fazer |
 | 4c | Eventos de bairro: festa junina e jogo do Brasil | v10.2 | a fazer |
@@ -415,6 +416,9 @@ Também: rever o `smoke7` (toque) e o `smoke10` (fila justa e porta), mais `bala
   - Cap. 1, "A garagem da Rosa": os primeiros dias, aprender o ciclo e fechar no azul.
   - Cap. 2, "A Dani chega": contratar a Dani e pagar parte da dívida.
   - Cap. 3, "Casa cheia": a nota do Gurugol e o dinheiro da mudança para a área industrial.
+- **Cenas da história** (pedido do usuário em 28/10; texto em `docs/PROPOSTAS.md`), desenhadas como as da abertura (`18-abertura.js`, `25-abertura.js`), com "Pular" e movimento reduzido:
+  - **O telefonema** (ao fechar o dia em que a lanchonete chega a **20 avaliações no Gurugol**, quando a nota aparece): o Bráulio liga para o Tonhão mandando ele voltar e ameaça: ele vai passar fome por perder a chance de trabalhar no único restaurante com a estrela do Michelzão do estado todo. Por trás, o Bráulio está cercado de dezenas de panelas, tentando repetir a receita que só o Tonhão e a Rosa sabiam fazer. O Tonhão nega ("descobri onde eu vivo o meu sonho na cozinha") e desliga.
+  - **A visita** (ao fechar o 1º dia, **do dia 10 em diante**, com a nota do Gurugol em **4,35 ★ ou mais**): o Bráulio vem conhecer a lanchonete de garagem dos antigos cozinheiros, que está fazendo sucesso. Ele vem com más intenções, porque não consegue repetir a receita. A cena libera a mudança para a área industrial (etapa 3a).
 - **A dívida de abertura** é o empréstimo da reforma da garagem (cena 8 da abertura), "nos conformes da vigilância sanitária", com prazo para quitar, usando o banco da v8.3 (`BANCO`). Sai o Seu Zé como credor.
 - **A trama** (guardada desde a v8.5): a receita da Casa Aurora era o toque do Tonhão, de cominho com açafrão, e a pétala de rosa da Dona Rosa; o chef Bráulio ficou com a fama e nunca conseguiu repetir o molho. Ela se revela aos poucos, nos capítulos dos pontos.
 - **Save antigo:** a campanha que já está em curso vira a história no capítulo que corresponde ao dia e ao dinheiro.
@@ -430,23 +434,32 @@ Também: rever o `smoke7` (toque) e o `smoke10` (fila justa e porta), mais `bala
 - O botão Carreira some ou continua como "campanha sem conversas" (sugestão: some; a História é a campanha)?
 - Objetivo não cumprido: o capítulo continua até cumprir (sugestão, como a meta do dia na v8.3) ou há um prazo?
 - A dívida de abertura: valor e prazo (sugestão: R$ 1.000 em parcelas, com o atraso da v8.3.1 valendo game over)?
-- Quanto da trama do Bráulio e da receita aparece na Garagem (sugestão: só uma pista, como a pétala da abertura)?
+- Quanto da trama da receita aparece na Garagem (sugestão: o Bráulio tentando repetir o molho no telefonema, sem revelar o segredo)?
+- O telefonema toca no fim do dia ou no começo do dia seguinte (sugestão: no fim, antes da lojinha)?
+- O Bráulio aparece na visita como cliente no salão, durante o dia, ou só na cena (sugestão: só na cena, no fim do dia)?
 
 ---
 
-## Etapa 3 — Pontos: área industrial (3a, v9) e Avenida Brasil (3b, v9.1)
+## Etapa 3 — Pontos: área industrial (3a-1, v9, e 3a-2, v9.1) e Avenida Brasil (3b, v9.2)
 **Objetivo:** a primeira decisão grande de dinheiro, mudar de ponto, que é subir o nível do salão. Valores na tabela da etapa 1d. Desde a revisão de 28/10, cada ponto é também um capítulo do Modo História (etapa 2f).
 
 ### Vale para a 3a e a 3b
-- **Mudança** na lojinha (aba "Ponto"): custo único, aluguel dali em diante e os móveis levados junto. O editor abre no ponto novo com a arrumação automática.
-- Para mudar, é preciso o dinheiro da mudança **e a nota mínima do Gurugol** (etapa 2c; o usuário pediu 4,5 ★ para sair da Garagem, que exige jogar muito bem: o bot afiado fica entre 4,35 e 4,5).
+- **Mudança** na lojinha (aba "Ponto"): custo único, aluguel dali em diante e os móveis levados junto. O editor abre no ponto novo com a arrumação automática. **Exceção:** na mudança da Garagem, os móveis e as melhorias queimam no incêndio (3a-1).
+- Para mudar, é preciso o dinheiro da mudança **e a nota mínima do Gurugol** (etapa 2c). **Para sair da Garagem: 4,35 ★, do dia 10 em diante** (decidido em 28/10; era 4,5, que nem o bot afiado garantia), depois da visita do Bráulio (etapa 2f). A nota dos pontos de cima fica a decidir.
 - Cada ponto traz: multiplicador do cardápio (sugestão: ×1 e ×1,4), mistura de clientes, área útil, cadeiras de espera, visual (piso, fachada, letreiro, vista da janela, calçada) e o **capítulo da história** do ponto.
 - **Ao mudar, o ambiente e a bebida da espera são trocados** pelos do ponto novo (decidido em 21/10): a TV e o som da Garagem saem do save (`equipe.tv`, `equipe.som`), como o couvert abaixo do nível 3. A torneira sai do mesmo jeito (sugestão).
 - **Modo dev** (v7.5.1): os pontos entram liberados, para testar.
 - O ranking da carreira segue a regra da 2b, com o ponto alcançado ao lado.
 - O "cardápio maior" dos pontos de cima mexe na diversidade do cardápio do Gurugol (`avalMenu`).
 
-### Sessão 3a — Mudança de ponto e Lanchonete na área industrial (v9)
+### Sessão 3a-1 — Mudança, o incêndio e a Lanchonete na área industrial (v9)
+- **A transição** (pedido do usuário em 28/10; texto em `docs/PROPOSTAS.md`), em cenas como as da abertura:
+  1. a Bia paga a mudança (R$ 800) na aba Ponto;
+  2. **Empacotando:** a Bia e o Tonhão, cheios de esperança, empacotam tudo para a mudança;
+  3. **A noite:** os capangas do Bráulio destroem e queimam tudo o que a Bia tinha conquistado, sem nada gráfico (o fogo visto de fora, os capangas como silhuetas, ninguém ferido);
+  4. **A manhã:** a Bia e o Tonhão, muito tristes, diante da garagem queimada. Eles acham que foi uma fatalidade: não sabem que foi o Bráulio (o jogador sabe).
+- **O que se perde:** os móveis e as melhorias (cafeteira, tênis, pratos, triturador etc.); a Garagem não pode ser usada de novo; e vem um **gasto grande para consertar a casa** onde a família mora. O objetivo é a Bia começar a área industrial com uma **dívida profunda, quase sem esperança**. Ficam a equipe e a nota do Gurugol (sugestão).
+- A dívida da casa não pode virar game over logo de cara: precisa de prazo e parcelas que dão para levar (ver Decisões), e os eventos da 3a-2 trazem as saídas.
 - `PONTOS` ganha a **Lanchonete na área industrial** (nível 2: 20 lugares, aluguel R$ 120, mudança R$ 800). Clientela: trabalhadores com pressa e entregadores (que já usam a fila de retirada da etapa 2e).
 - **Destravados:**
   - o 2º garçom, o **Joca** (pedido do usuário em 22/10);
@@ -456,9 +469,19 @@ Também: rever o `smoke7` (toque) e o `smoke10` (fila justa e porta), mais `bala
   - **espera:** cadeirinhas de plástico ou banquinhos de madeira e jarra de suco (a base é `BEBIDA_ESPERA.suco`, R$ 12 na conta);
   - **decoração da calçada:** violetas em vasinhos (ou um antúrio, uma samambaia pendurada).
 - **Capítulo da área industrial** na história (falas a decidir com o usuário).
-- **Rebalancear as melhorias** (pendência da v8.3.6): com o aluguel, rever o preço das melhorias e o limite de 1 por dia.
+- **Rebalancear as melhorias** (pendência da v8.3.6): com o aluguel e a dívida do incêndio, rever o preço das melhorias e o limite de 1 por dia.
 
-### Sessão 3b — Restaurante na Avenida Brasil (v9.1)
+### Sessão 3a-2 — Escolhas da história: oportunidades e armadilhas (v9.1)
+- **Eventos da história com escolha** (pedido do usuário em 28/10), que trazem saídas para a dívida do incêndio. Cada um é uma cena curta com uma proposta e 2 opções, e as consequências chegam depois:
+  - **boas, com consequências boas** (ex.: um cliente fiel que indica a lanchonete para uma firma da área industrial);
+  - **boas no curto prazo e ruins no longo** (ex.: um agiota que empresta sem juros na hora e cobra caro depois);
+  - **aparentemente boas, mas com consequências ruins** (ex.: um fornecedor barato demais, cujos ingredientes derrubam a nota do Gurugol);
+  - e outras ruins no começo e boas depois.
+- Exemplos a decidir com o usuário; alguns podem ser armações do Bráulio, que segue na trama.
+- Lógica separada do desenho (`HISTORIA_EVENTOS` em `10-constantes.js`, consequências em `16-jogo.js`), com save.
+- Também servem para os pontos de cima (3b e 4a), cada um com os seus.
+
+### Sessão 3b — Restaurante na Avenida Brasil (v9.2)
 - `PONTOS` ganha o **Restaurante na Avenida Brasil** (nível 3: 24 lugares, aluguel R$ 400, mudança R$ 2.000). Clientela: executivas, famílias e mais VIPs.
 - **Destravados:** confeiteiro (sobremesas), balcão de coquetelaria com profissional de drinks, um prato novo no cardápio, balcão de pratos com 6 vagas.
   - **ambiente:** o **couvert artístico** (já pronto no código desde a v5, escondido abaixo do nível 3 desde a v7.4.4: basta o ponto ter `nivel:3`);
@@ -470,14 +493,15 @@ Também: rever o `smoke7` (toque) e o `smoke10` (fila justa e porta), mais `bala
 
 **Partes:** `10-constantes.js` (`PONTOS`, metas por ponto, equipe nova, `HISTORIA`), `12-clientes.js` (save `ponto`, preço), `13-cozinha.js` (bocas, balcão, sobremesa), `15-dani.js`/novo ajudante (Joca), `16-jogo.js` (carreira por pontos, contas), `20/21-*.js` (visual), `30-ranking.js`, `41-lojinha.js` (aba Ponto, fogão industrial), `42-resultados.js`.
 
-**Testes:** smoke novo (mudança, custo, nota mínima, aluguel nas contas, móveis levados, ambiente e espera trocados, preços e clientela por ponto, destravados, save antigo = Garagem, capítulo). `carreira.js` com mudança.
+**Testes:** smoke novo (mudança, custo, nota mínima de 4,35 do dia 10 em diante, incêndio: móveis e melhorias perdidos e dívida da casa, cenas de transição, eventos de escolha e as consequências, aluguel nas contas, móveis levados nas mudanças seguintes, ambiente e espera trocados, preços e clientela por ponto, destravados, save antigo = Garagem, capítulo). `carreira.js` com mudança.
 
 **Calibração:**
-- Mudar de ponto deve compensar em ~3 a 5 dias para quem atende bem e não compensar para quem perde muitos clientes.
+- Mudar de ponto deve compensar em ~3 a 5 dias para quem atende bem e não compensar para quem perde muitos clientes (nas mudanças depois da Garagem).
+- Depois do incêndio, a área industrial começa quase sem esperança, mas quem joga bem (e escolhe bem nos eventos) sai da dívida sem game over.
 - O jogador deve ter que escolher entre mudar e (equipe + melhorias + móveis).
 - **Achado da v7.4, resolvido na v7.4.1** (`docs/spec-v7.4.1.md`): na v7.4, mesa a mais não dava lucro; com 4 pratos limpos, +6% de grupos por lugar acima de 10 e a fila justa a 60%, mesas de 4 com equipe se pagam em 1 a 3 dias. Conferir no ponto novo se os 20 e 24 lugares também rendem.
 
-**Decisões em aberto:** a mudança é permanente ou dá para voltar; o que cada destravado custa; o que o Joca faz (o mesmo que a Dani ou só a calçada e a fila de retirada), salário, níveis e visual (sem estereótipo, com crachá como a Dani); preço e efeito de cada bebida da espera e se o assento também segura a paciência; o valor da luz das TVs do nível 2; as falas de cada capítulo.
+**Decisões em aberto:** a mudança é permanente ou dá para voltar; o que cada destravado custa; o que o Joca faz (o mesmo que a Dani ou só a calçada e a fila de retirada), salário, níveis e visual (sem estereótipo, com crachá como a Dani); preço e efeito de cada bebida da espera e se o assento também segura a paciência; o valor da luz das TVs do nível 2; as falas de cada capítulo; o valor do conserto da casa e como ele vira dívida (sugestão: um empréstimo à parte no banco, com carência de alguns dias e prazo longo, sem o game over da v8.3.1 enquanto estiver na carência); se a área industrial abre com algum móvel (sugestão: um kit mínimo emprestado pelo dono do ponto, para dar para jogar o 1º dia); os eventos de escolha (quais, quantos por ponto, quando aparecem).
 
 ---
 
