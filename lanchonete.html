@@ -4051,8 +4051,8 @@ function drawComida(ctx,k,carne,av){
   } else if (k === 'esfihaA'){
     // a esfiha aberta: borda de massa dourada e, por cima da massa clara, montinhos de carne moída com tomate e cebola, deixando a massa aparecer
     circ(ctx,0,0,10.5); fs(ctx,'#DDA054',2);
-    circ(ctx,0,0,7.4); ctx.fillStyle = '#F3D9A0'; ctx.fill();
-    ctx.fillStyle = '#7E4B2F'; for (let i=0;i<20;i++){ const r = 6.1*Math.sqrt((i+0.5)/20), a = i*2.39996; ctx.beginPath(); ctx.ellipse(Math.cos(a)*r,Math.sin(a)*r,1.15,0.8,a*1.7,0,TAU); ctx.fill(); }   // 20 pedacinhos de carne moída (espiral dourada: espalhados e iguais em toda esfiha)
+    circ(ctx,0,0,6.6); ctx.fillStyle = '#F3D9A0'; ctx.fill();
+    ctx.fillStyle = '#7E4B2F'; for (let i=0;i<20;i++){ const r = 5.3*Math.sqrt((i+0.5)/20), a = i*2.39996; ctx.beginPath(); ctx.ellipse(Math.cos(a)*r,Math.sin(a)*r,1.32,0.95,a*1.7,0,TAU); ctx.fill(); }   // 20 pedacinhos de carne moída que se tocam, cobrindo mais da metade da massa
     ctx.fillStyle = '#C8452B'; for (const d of [[-1.2,-1.8],[3.4,2.6],[-3.2,4]]){ rr(ctx,d[0]-1,d[1]-0.7,2.1,1.4,0.5); ctx.fill(); }
     ctx.fillStyle = '#FFF4D6'; for (const d of [[-0.5,-5],[-5.4,-0.8],[5.2,-2.6]]){ circ(ctx,d[0],d[1],0.9); ctx.fill(); }
     dx = 0; dy = 0;
