@@ -5,7 +5,8 @@ Origem: retorno do Renan Martorelli (beta-tester) e conversa com o Arthur (15/10
 ## Como usar
 - Cada etapa cabe numa sessão e termina como as outras: versão nova (se mexe no jogo), testes verdes, `docs/spec-vN.md`, `RESUMO.md` atualizado, PR com merge no `claude/main` e publicação no artifact (ver `CLAUDE.md`).
 - Para começar uma sessão, basta pedir: **"faça a próxima etapa do docs/PLANO.md"**. A sessão lê só a etapa da vez e as partes de `src/` citadas nela.
-- Antes de programar, a sessão confirma com o usuário as **decisões em aberto** da etapa (cada uma já tem uma sugestão).
+- **Modelo e esforço (desde 29/10, ver `CLAUDE.md`):** cada etapa ou sessão termina com uma linha **Modelo:**. Quando ela pede "planejar com o Opus antes", a primeira sessão (com o Opus) fecha as **decisões em aberto** com o usuário, escreve no plano os valores, textos e falas decididos, apaga a lista de decisões em aberto e troca a linha para só o modelo da execução. A sessão de execução (Sonnet ou Haiku) não decide nada de design: se achar uma decisão que ficou aberta, para e pergunta ao usuário.
+- Antes de programar, se ainda houver **decisões em aberto** na etapa (cada uma já tem uma sugestão), a sessão confirma com o usuário.
 - No fim, a sessão marca a etapa como feita na tabela abaixo (com a versão e a data) e anota o que mudou no plano.
 - Ordem: cada etapa depende só das anteriores. A 1a vem primeiro (mexe no equilíbrio de base). A 1c teve prioridade sobre as demais, por ser retorno do beta-tester Renan (pedido do usuário em 21/10). A 1d-1 (v7.4), a 1d-2 (v7.5), a 2 (v8) e a 2b (v8.3) foram feitas. **Ordem revista com o usuário em 22/10:** 2b (campanha contínua e banco), 2c (avaliações dos clientes), 2d (abertura animada do Modo História), 3a (área industrial), 3b (Avenida Brasil) e 4 (Terraço Suíça). A campanha vem antes dos pontos para a carreira não ser refeita duas vezes, e as avaliações viram a "experiência" que abre os pontos novos e a reputação da etapa 4. A 2c (v8.4) e a 2d (v8.5) foram feitas em 26/10. **Ordem revista com o usuário em 28/10** (texto em `docs/PROPOSTAS.md`): as propostas que estavam só no log e nas Ideias guardadas viraram etapas. Ficou assim: 2e (entregadores com fila própria e marmitas), 2f (a campanha vira o Modo História), 3a (área industrial), 3b (Avenida Brasil), 4a (Terraço Suíça), 4b (nível de luxo), 4c (eventos de bairro), 6 (crítico do Michelzão e final) e 7 (polimento). A marmita vem antes da área industrial, que terá mais entregadores. A campanha e o Modo História viraram uma coisa só: a 2f monta a estrutura e os capítulos da Garagem, cada ponto traz o seu capítulo, e a antiga etapa 5 deixou de existir. A 2e (v8.6) foi feita em 28/10, e a 2d-r (v8.6.1) também, com as 5 partes juntas a pedido do usuário. **A próxima é a 2f.** A etapa 7 fica **a rever** com o usuário antes de começar.
 
@@ -353,10 +354,14 @@ Também: rever o `smoke7` (toque) e o `smoke10` (fila justa e porta), mais `bala
 - **Faixa bronze** na caixa do fim do dia (`notaFaixa`), antes da prata: **a partir de 3,0** (o teto da Garagem; decidido em 29/10), com brilho de bronze. Prata, ouro e diamante ficam como estão.
 - **Nota mínima para sair de um ponto:** 95% do teto (Garagem ~2,9 ★, área industrial ~3,6, Avenida Brasil ~4,2); entra de fato na etapa 3, mas a calibração é desta sessão.
 
+**Modelo:** Sonnet, esforço alto. Mexe em 4 regras da nota e tem calibração por tentativa e erro; se a calibração não fechar em 2 ou 3 rodadas, trocar para o Opus só nessa parte (como diz o objetivo).
+
 ### Sessão 2c-r2 — Prato quente (v8.6.8)
 - O prato que fica no balcão da cozinha esperando a Bia esfria e perde nota na Comida (como as marmitas da v8.6, `esfriar`); o caprichado entregue quente continua 5. Sugestão: quente até ~8 s no balcão, depois perde até ~1,5 de serviço em ~20 s.
 - Mostrar o prato esfriando (o vapor que some aos poucos; sem animação com `prefers-reduced-motion`) e comentário próprio ("Comida meio fria." já existe).
 - Mexe em `13-cozinha.js` (a hora em que o prato fica pronto), `14-bia.js`/`16-jogo.js` (a entrega), `22-salao-hud.js` (o vapor) e no smoke 25; calibrar com o `balance.js` (o bot deixa prato no balcão quando está ocupado).
+
+**Modelo:** Sonnet, esforço médio. É mecânica parecida com o `esfriar` das marmitas, com valores sugeridos; a calibração é curta.
 
 ### Sessão 2c-r3 — Cardápio que cresce com os cursos do Tonhão (v8.6.9)
 - A Garagem começa com **2 itens** (PF e coxinha; sugestão) e a Diversidade do cardápio sobe a cada item novo (`avalMenu` pelos itens que a cozinha sabe, com o teto de 5 só com o cardápio cheio).
@@ -503,6 +508,9 @@ Também: rever o `smoke7` (toque) e o `smoke10` (fila justa e porta), mais `bala
 
 ---
 
+**Modelo:** planejar com o Opus (esforço alto) antes, para fechar quais pratos entram na Garagem, os preços de venda e dos cursos e a chance do curso avançado; executar com o Sonnet, esforço alto (mexe no cardápio, no save, na Missão zero, no Como jogar e no bot).
+
+
 ## Etapa 2f — A campanha vira o Modo História (v8.7)
 > Decidido na revisão de 28/10: a campanha (Carreira) e o Modo História viram uma coisa só, com um save só. A campanha já começa na Garagem com a dívida do banco, que é a história da abertura (v8.5). Esta etapa monta a estrutura e o capítulo da Garagem; os capítulos dos outros pontos entram nas etapas 3a, 3b e 4a, e o final na etapa 6. Substitui a antiga etapa 5.
 
@@ -532,6 +540,8 @@ Também: rever o `smoke7` (toque) e o `smoke10` (fila justa e porta), mais `bala
 - A dívida de abertura: valor e prazo (sugestão: R$ 1.000 em parcelas, com o atraso da v8.3.1 valendo game over)?
 - Quanto da trama do Bráulio e da receita aparece na Garagem (sugestão: só uma pista, como a pétala da abertura)?
 
+**Modelo:** planejar com o Opus (esforço alto) numa sessão curta antes: fechar as 4 decisões em aberto e escrever as falas dos 3 capítulos. Com isso, executar com o Sonnet, esforço alto (muitas partes ao mesmo tempo e o save antigo).
+
 ---
 
 ## Etapa 3 — Pontos: área industrial (3a, v9) e Avenida Brasil (3b, v9.1)
@@ -558,6 +568,8 @@ Também: rever o `smoke7` (toque) e o `smoke10` (fila justa e porta), mais `bala
 - **Capítulo da área industrial** na história (falas a decidir com o usuário).
 - **Rebalancear as melhorias** (pendência da v8.3.6): com o aluguel, rever o preço das melhorias e o limite de 1 por dia.
 
+**Modelo:** planejar com o Opus antes (as decisões em aberto da etapa 3 e o que o Joca faz, salário e visual, valores dos destravados, falas do capítulo); executar com o Sonnet, esforço alto (sistema novo de mudança de ponto e o 2º garçom).
+
 ### Sessão 3b — Restaurante na Avenida Brasil (v9.1)
 - `PONTOS` ganha o **Restaurante na Avenida Brasil** (nível 3: 24 lugares, aluguel R$ 400, mudança R$ 2.000). Clientela: executivas, famílias e mais VIPs.
 - **Destravados:** confeiteiro (sobremesas), balcão de coquetelaria com profissional de drinks, um prato novo no cardápio, balcão de pratos com 6 vagas.
@@ -565,6 +577,8 @@ Também: rever o `smoke7` (toque) e o `smoke10` (fila justa e porta), mais `bala
   - **espera:** sofás e águas saborizadas diferentes;
   - **decoração da calçada:** tulipas, orquídeas ou copos-de-leite.
 - **Capítulo da Avenida Brasil** na história.
+
+**Modelo:** Sonnet, esforço médio, desde que a 3a deixe pronto o molde de um ponto novo e o planejamento já traga valores e falas da Avenida Brasil.
 
 **Fora:** Terraço Suíça, VIP exigente e o final da história.
 
@@ -613,6 +627,8 @@ Também: rever o `smoke7` (toque) e o `smoke10` (fila justa e porta), mais `bala
 - O que o exigente usa para se distinguir visualmente.
 - As diárias do quarteto e do pianista e a manutenção do piano.
 
+**Modelo:** planejar com o Opus antes (as 3 decisões em aberto, regras do prato da casa e da reputação, falas do capítulo); executar com o Sonnet, esforço alto (cliente novo com regras próprias e o desenho do Terraço).
+
 ### Sessão 4b — Nível de luxo (v10.1)
 **Objetivo:** o nível de luxo de 0 a 5 (pedido do usuário em 21/10; texto em `docs/PROPOSTAS.md`), que soma o que o jogador montou em todos os pontos.
 
@@ -630,6 +646,8 @@ Também: rever o `smoke7` (toque) e o `smoke10` (fila justa e porta), mais `bala
 **Testes:** smoke novo (cada atributo, nível de 0 a 5, efeito, save).
 
 **Decisões em aberto:** os atributos e o peso de cada um; o efeito no jogo; quais enfeites e móveis entram; se a nota de ambiente do Gurugol passa a ser o luxo.
+
+**Modelo:** planejar com o Opus antes (atributos, pesos e efeito no jogo, a lista de enfeites e móveis com preços); executar com o Sonnet, esforço médio (é cálculo e interface sobre o que já existe).
 
 ---
 
@@ -649,6 +667,8 @@ Também: rever o `smoke7` (toque) e o `smoke10` (fila justa e porta), mais `bala
 **Testes:** smoke novo (sorteio, efeito no movimento, enfeites, save). `balance.js` com os eventos.
 
 **Decisões em aberto:** quais eventos entram (sugestão: os 2); com que frequência; se o jogador pode se preparar (comprar ingredientes, decoração) antes.
+
+**Modelo:** planejar com o Opus numa sessão curta (eventos, frequência, efeito no movimento e preparo); executar com o Sonnet, esforço médio (segue o molde do `CLIMA` da v8).
 
 ---
 
@@ -675,6 +695,8 @@ Também: rever o `smoke7` (toque) e o `smoke10` (fila justa e porta), mais `bala
 - Quantas estrelas possíveis (sugestão: 3).
 - O Bráulio aparece no final?
 
+**Modelo:** planejar com o Opus (decisões em aberto, regra de pontuação do final e as falas da cena final, que pedem cuidado de texto); executar com o Sonnet, esforço alto.
+
 ---
 
 ## Etapa 7 — Polimento (v11.1)
@@ -684,6 +706,8 @@ Também: rever o `smoke7` (toque) e o `smoke10` (fila justa e porta), mais `bala
 - **Jogo online (pedido do usuário em 23/10: "onlinização só para os ajustes finais"):** desde a v8.3.3 o jogo é offline (`Rank.online = false`, ranking só no aparelho). Aqui, religar o ranking compartilhado: `Rank.online = true` e as capacidades do artifact com a leitura de `ranking-campanha` (a coleção da campanha, criada na v8.3). Fazer só com o OK do usuário.
 - Revisão geral de equilíbrio com `carreira.js` e com o retorno dos jogadores (o "Copiar resumo" do Caixa). Revisar textos do "Como jogar" para os sistemas novos.
 - **Conferir com jogadores** o que ficou pendente no `RESUMO.md` (Ideias pendentes): a Bia e os selos da v7.3, o editor do salão, a fila justa e a porta, as estrelas, a escassez, o "livre" e "reservados" da lojinha e a tela larga.
+
+**Modelo:** a revisão com o usuário é com o Opus; depois, ajustes de tela no celular com o Sonnet, esforço médio; religar o ranking (`Rank.online = true` e capacidades) com o Haiku, esforço baixo; a revisão geral de equilíbrio com o Sonnet, esforço alto.
 
 ---
 
