@@ -73,6 +73,14 @@ function upgradeIcon(id){
       rr(c,-11,-14,22,16,3); fs(c,'#8E99A6',2); rr(c,-13,-17,26,5,2); fs(c,PAL.cromo,1.6);
       rr(c,-10,2,20,12,3); fs(c,PAL.inox,1.8);
       for (let i=0;i<3;i++){ c.save(); c.translate(0,8); c.rotate(i*TAU/3); rr(c,-1.2,-5,2.4,5,1); fs(c,PAL.cromoEsc,1); c.restore(); }
+    } else if (id === 'sudoku'){
+      // livrinho de Sudoku: capa azul com a lombada, a página com a grade 3×3 e alguns números
+      rr(c,-13,-16,26,32,3); fs(c,'#2F5D8C',2); c.fillStyle = '#244A70'; c.fillRect(-13,-16,5,32);
+      rr(c,-6,-12,16,16,1.5); fs(c,'#fff',1.4);
+      c.strokeStyle = PAL.tinta; c.lineWidth = 0.9;
+      for (let i=1;i<3;i++){ const d = -6 + i*5.33; c.beginPath(); c.moveTo(d,-12); c.lineTo(d,4); c.moveTo(-6,-12 + i*5.33); c.lineTo(10,-12 + i*5.33); c.stroke(); }
+      [[-3.3,-9,'5'],[7.4,-3.7,'3'],[2,1.7,'8']].forEach(n => txt(c,n[2],n[0],n[1],5.5,PAL.tinta,'center',FB));
+      txt(c,'SUDOKU',3,10,5,'#fff','center',FD);
     } else if (id === 'ventilador'){
       for (let i=0;i<4;i++){ c.save(); c.rotate(i*Math.PI/2 + 0.4); ell(c,0,-8,4.5,9); fs(c,i%2?PAL.cromo:'#e8edf1',1.8); c.restore(); }
       circ(c,0,0,3.5); fs(c,PAL.mostarda,1.8);

@@ -4,6 +4,13 @@ Registro das ideias e dos retornos de quem jogou, com o texto original, e de ond
 
 ---
 
+## 29/10/2026 — Usuário: Livrinho de Sudoku
+**Origem:** pedido do usuário no chat:
+
+> Adicione mais um upgrade: livrinho de Sudoku, que aumenta a barra de tarefas em 3 gomos. Para tal, reduza a base de tarefas pré agendadas para 5
+
+**Destino:** feito na **v8.6.3** (`docs/spec-v8.6.3.md`): a fila de ações da Bia passa de 6 para 5 quadrinhos de base e a melhoria nova (R$ 200) acrescenta 3, chegando a 8.
+
 ## 28/10/2026 — Usuário: inconsistências da abertura
 **Origem:** pedido do usuário no chat:
 

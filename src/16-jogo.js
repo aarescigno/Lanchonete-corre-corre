@@ -1059,7 +1059,7 @@ class Game {
     const xd = x - HUDX.dir;
     if (xd >= 832 && xd <= 891 && y >= 542) return { k:'pause' };
     if (xd >= 891 && xd <= 952 && y >= 542) return { k:'sound' };
-    for (let i=0;i<6;i++){
+    for (let i=0;i<filaMax(this.up);i++){
       const sx = 358 + i*52 + HUDX.fila;
       if (x >= sx && x < sx + 52 && y >= 542) return { k:'slot', i };
     }
