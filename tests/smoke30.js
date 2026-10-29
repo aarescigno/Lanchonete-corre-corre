@@ -1,4 +1,4 @@
-// v8.6.4: decoração da Garagem (aba Decoração da lojinha). Plantas e o cantinho da Rosa (save.decor) e a toalha
+// v8.6.5: decoração da Garagem (aba Decoração da lojinha). Plantas e o cantinho da Rosa (save.decor) e a toalha
 // xadrez de cada mesa ({ t:1 }). Só visual: nada muda nas contas do dia nem nas avaliações.
 const H=require('./harness.js')(); const {g,L,ctx,els}=H;
 let fails=0,total=0; const ok=(c,m)=>{ total++; if(!c){fails++;console.log('FAIL:',m);} else console.log('ok  :',m); };

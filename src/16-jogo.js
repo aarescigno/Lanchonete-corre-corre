@@ -74,7 +74,7 @@ class Game {
     const lug = this.tables.filter(t => t.open).reduce((a, t) => a + t.seats, 0);
     const cl = CLIMA[this.clima];
     // a nota do Gurugol (v8.4) traz mais ou menos gente
-    const N = Math.max(3, Math.round(day.groups * this.divF * movimentoSalao(lug) * (cl ? cl.groups : 1) * avalMovimento(this.save.aval))), vipP = (day.vip || 0) * (this.div ? this.div.vip : 1);
+    const N = Math.max(3, Math.round(day.groups * this.divF * movimentoSalao(lug) * (cl ? cl.groups : 1) * avalMovimento(this.save.aval, this.ponto))), vipP = (day.vip || 0) * (this.div ? this.div.vip : 1);
     const gap = day.speed * day.time / N;
     let t = 3;
     const forced = day.nu ? randi(1, Math.min(3, N-1)) : -1;
@@ -625,12 +625,15 @@ class Game {
     const amb = A.amb.base + (eq.tv ? A.amb.tv : 0) + (eq.som ? A.amb.som : 0) + (this.up.maquina ? A.amb.maquina : 0) + (this.up.ventilador ? A.amb.ventilador : 0) +
       (g.coffee ? A.amb.cafe : 0) + (eq.couvert ? A.amb.couvert : 0) + (this.trashFull ? A.amb.lixo : 0);
     // o entregador (v8.6): a espera no balcão conta na espera e na agilidade
-    const r = [5 - A.porCoracao * (g.retira ? g.perdMesa : g.perdFila), bravo ? 1 : 5 - A.porCoracao * g.perdMesa + bonus, g.pratoQ || 1, avalMenu(), amb]
+    const s = [5 - A.porCoracao * (g.retira ? g.perdMesa : g.perdFila), bravo ? 1 : 5 - A.porCoracao * g.perdMesa + bonus, g.pratoQ || 1, avalMenu(), amb]
       .map(v => clamp(Math.round(v * 10) / 10, 1, 5));
-    const txt = avalComentario(r, bravo, this.trashFull), nota = avalNota(r);
-    this.avals.push({ r, txt, k:g.type, v:g.vip });
+    // v8.6.4: a nota no Gurugol fica na escala do ponto (o serviço 5 vale o teto), mais o humor de quem avalia
+    const teto = avalTeto(this.ponto), h = bravo ? 0 : rand(-A.humor.var, A.humor.var) + (Math.random() < A.humor.encanta ? rand(A.humor.extra[0], A.humor.extra[1]) : 0);
+    const r = s.map(v => clamp(Math.round((avalEscala(v, teto) + h) * 10) / 10, 1, Math.min(5, teto + A.humor.folga)));
+    const txt = avalComentario(s, bravo, this.trashFull, this.ponto.nivel), nota = avalNota(r), f = avalFrac(nota, teto);
+    this.avals.push({ r, s, txt, k:g.type, v:g.vip });
     // balãozinho branco (sobe devagar, acima dos textos da conta)
-    this.fx.push({ k:'text', box:true, x, y, vy:-12, life:2.8, max:2.8, text:fmtNota(nota) + '★ ' + txt, color:nota >= 4 ? PAL.ok : nota >= 3 ? PAL.alerta : PAL.perigo, size:13 });
+    this.fx.push({ k:'text', box:true, x, y, vy:-12, life:2.8, max:2.8, text:fmtNota(nota) + '★ ' + txt, color:f >= 0.75 ? PAL.ok : f >= 0.5 ? PAL.alerta : PAL.perigo, size:13 });
   }
   /* a nota do Gurugol agora: as do save e as do dia (null antes das AVAL.min primeiras) */
   get gurugol(){ return avalGeral(this.save.aval.concat(this.avals.map(a => a.r)).slice(-AVAL.max)); }
@@ -975,7 +978,7 @@ class Game {
     if (why) return this.salaoNao(why);
     return this.salaoSet(l, true, this.estoque.filter(e => e !== m));
   }
-  /* decoração (v8.6.4): enfeite novo (fica à mostra), à vontade e fora da melhoria do dia */
+  /* decoração (v8.6.5): enfeite novo (fica à mostra), à vontade e fora da melhoria do dia */
   buyDecor(id){
     const d = decorOf(id), dec = this.save.decor;
     if (!d || id in dec || this.save.bank < d.cost) return false;

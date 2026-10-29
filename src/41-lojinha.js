@@ -81,7 +81,7 @@ function upgradeIcon(id){
       for (let i=1;i<3;i++){ const d = -6 + i*5.33; c.beginPath(); c.moveTo(d,-12); c.lineTo(d,4); c.moveTo(-6,-12 + i*5.33); c.lineTo(10,-12 + i*5.33); c.stroke(); }
       [[-3.3,-9,'5'],[7.4,-3.7,'3'],[2,1.7,'8']].forEach(n => txt(c,n[2],n[0],n[1],5.5,PAL.tinta,'center',FB));
       txt(c,'SUDOKU',3,10,5,'#fff','center',FD);
-    } else if (id === 'd-espada'){   // decoração (v8.6.4): os próprios enfeites, menores
+    } else if (id === 'd-espada'){   // decoração (v8.6.5): os próprios enfeites, menores
       c.scale(0.42,0.42); drawVasoEspada(c,0,50);
     } else if (id === 'd-lata'){
       c.scale(0.62,0.62); drawLataEspada(c,0,30);
@@ -394,7 +394,7 @@ function buildSalao(grid){
       pop.style.top = tops[up ? 1 : 0] + '%';
       pop.appendChild(el('b', null, 'Mesa ' + (sel + 1) + ' · ' + m.seats + ' lugares'));
       pop.appendChild(edCores(m, k => game.pintarMesa(sel, k)));
-      if (!m.t) pop.appendChild(edBtn('Toalha xadrez: ' + fmt(TOALHA.cost), 'btn', bank >= TOALHA.cost, () => game.buyToalha(sel), TOALHA.cost));   // v8.6.4
+      if (!m.t) pop.appendChild(edBtn('Toalha xadrez: ' + fmt(TOALHA.cost), 'btn', bank >= TOALHA.cost, () => game.buyToalha(sel), TOALHA.cost));   // v8.6.5
       if (m.seats === 2) pop.appendChild(edBtn('Virar mesa de 4: ' + fmt(SALAO.virar), 'btn', tot + 2 <= p.lugares && bank >= SALAO.virar, () => game.virarMesa(sel), SALAO.virar));
       pop.appendChild(edBtn('Guardar no estoque', 'btn alt', mesas.length > 1, () => game.guardarMesa(sel)));
       pop.appendChild(edBtn('Vender por ' + fmt(mesaPreco(m.seats) * SALAO.venda), 'btn alt', mesas.length > 1, () => game.venderMesa(sel)));
@@ -434,7 +434,7 @@ function buildSalao(grid){
   ed.appendChild(side);
   grid.appendChild(ed);
   drawEditor(cv);
-  // v8.6.4: o balãozinho que não cabe para o lado escolhido (telas baixas, o botão da toalha) abre para o outro, se
+  // v8.6.5: o balãozinho que não cabe para o lado escolhido (telas baixas, o botão da toalha) abre para o outro, se
   // lá couber mais dele
   // lá couber mais dele; se não cabe de nenhum jeito, os botões vão em 2 colunas
   if (pop && box.clientHeight){
@@ -448,7 +448,7 @@ function buildSalao(grid){
     if (!me && w < W) pop.style.left = clamp(parseFloat(pop.style.left) / 100 * W, w / 2 + 4, W - w / 2 - 4) / W * 100 + '%';
   }
 }
-/* aba Decoração (v8.6.4): os enfeites da Garagem (DECOR), comprados à vontade; comprado, guarda e põe de volta de
+/* aba Decoração (v8.6.5): os enfeites da Garagem (DECOR), comprados à vontade; comprado, guarda e põe de volta de
    graça. E a toalha xadrez, em todas as mesas de uma vez (uma a uma, no editor do salão) */
 function decorCard(grupo, icon, title, desc){
   const card = el('div', 'item'); card.appendChild(el('i', 'dgrupo', grupo));
@@ -655,8 +655,10 @@ function buildGurugol(grid){
   if (!na){ grid.appendChild(el('p', 'rank-empty', 'Ainda ninguém avaliou a lanchonete no Gurugol: cada grupo que sai avalia, e os comentários aparecem aqui.')); return; }
   const esq = el('div', 'guru-lado');
   esq.appendChild(gurugolCaixa({ geral:ga, dia:avalMedias(sv.aval), n:na }, ga ? 'média das últimas ' + na + ' avaliações' : 'sem nota: ' + na + ' de ' + AVAL.min + ' avaliações'));
-  const mv = Math.round((avalMovimento(sv.aval) - 1) * 100);
-  esq.appendChild(el('p', 'small', ga ? (mv >= 0 ? 'Nota boa traz mais gente: ' : 'Nota baixa afasta a freguesia: ') + (mv > 0 ? '+' : '') + mv + '% de movimento.' : 'A nota aparece a partir da ' + AVAL.min + 'ª avaliação e mexe no movimento: até +' + Math.round(AVAL.mov * 100) + '% com 5 ★.'));
+  const mv = Math.round((avalMovimento(sv.aval, game.ponto) - 1) * 100), teto = fmtNota(avalTeto(game.ponto));
+  esq.appendChild(el('p', 'small', ga ? (mv >= 0 ? 'Nota boa traz mais gente: ' : 'Nota baixa afasta a freguesia: ') + (mv > 0 ? '+' : '') + mv + '% de movimento.' : 'A nota aparece a partir da ' + AVAL.min + 'ª avaliação e mexe no movimento: até +' + Math.round(AVAL.mov * 100) + '% com ' + teto + ' ★.'));
+  // v8.6.4: o teto do ponto
+  esq.appendChild(el('p', 'small', avalTeto(game.ponto) < 5 ? 'Aqui, o atendimento perfeito vale ' + teto + ' ★ (um cliente encantado dá um pouco mais). Pontos melhores sobem a nota, até 5 ★ no Terraço Suíça.' : 'Aqui, o atendimento perfeito vale 5 ★.'));
   grid.appendChild(esq);
   const lista = el('ul', 'guru-coms'); lista.setAttribute('aria-label', 'Últimos comentários');
   com.forEach(c => {

@@ -178,7 +178,7 @@ function drawCalcada(ctx,g,tm){
   }
   // plantas da casa da Bia (nível 1, v7.7): espada-de-são-jorge no vaso de barro, no canto de baixo, e uma menor
   // numa lata de tinta reaproveitada, encostada no muro (o banquinho de plástico da v7.5 fica para o nível 2).
-  // Desde a v8.6.4, compradas na aba Decoração (DECOR)
+  // Desde a v8.6.5, compradas na aba Decoração (DECOR)
   if (decorOn(g,'espada')) drawVasoEspada(ctx,x0 + 40,536);
   if (decorOn(g,'lata')) drawLataEspada(ctx,x0 + 44,132);
   // portão de enrolar aberto, na borda do salão: trilho no alto e soleira no chão
@@ -202,7 +202,7 @@ function drawLataEspada(ctx,lx,ly){
   ctx.fillStyle = 'rgba(216,67,47,.55)'; ctx.fillRect(lx-8,ly-14,16,7);   // o rótulo desbotado da lata
 }
 /* ============================================================
-   DECORAÇÃO DA GARAGEM (v8.6.4): na parede, à esquerda da janela, a samambaia pendurada e a foto da Rosa; embaixo
+   DECORAÇÃO DA GARAGEM (v8.6.5): na parede, à esquerda da janela, a samambaia pendurada e a foto da Rosa; embaixo
    do letreiro, a plaquinha; no chão, perto do portão, o quadro de giz no cavalete. Desenhados com a parede (antes
    das pessoas). As funções servem também para os ícones da lojinha
    ============================================================ */

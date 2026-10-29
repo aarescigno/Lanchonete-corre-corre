@@ -42,7 +42,7 @@ Origem: retorno do Renan Martorelli (beta-tester) e conversa com o Arthur (15/10
 | 2d | Abertura animada do Modo História: o sonho da Bia | v8.5 | feita (26/10) |
 | 2d-r | Revisão estética da abertura, em 5 partes com checagem do usuário | v8.6.1 | feita (28/10, as 5 partes juntas) |
 | 2e | Entregadores com fila própria e marmitas | v8.6 | feita (28/10) |
-| — | Pedido do usuário: decoração da Garagem (plantas, cantinho da Rosa, toalha xadrez), só visual | v8.6.4 | feita (29/10) |
+| — | Pedido do usuário: decoração da Garagem (plantas, cantinho da Rosa, toalha xadrez), só visual | v8.6.5 | feita (29/10) |
 | 2f | A campanha vira o Modo História: estrutura e capítulos da Garagem | v8.7 | a fazer |
 | 3a | Mudança de ponto e Lanchonete na área industrial (e o capítulo dela) | v9 | a fazer |
 | 3b | Restaurante na Avenida Brasil (e o capítulo dela) | v9.1 | a fazer |
@@ -334,10 +334,12 @@ Também: rever o `smoke7` (toque) e o `smoke10` (fila justa e porta), mais `bala
 - O peso de cada critério (sugestão: todos iguais).
 - A nota mexe no movimento (sugestão: sim, de −10% a +10%)?
 - A nota inicial (sugestão: sem nota até as 20 primeiras avaliações).
-- A nota mínima para mudar de ponto (sugestão: 3,5 ★ para a área industrial, 4,0 para a Avenida Brasil e 4,5 para o Terraço Suíça).
+- A nota mínima para mudar de ponto (sugestão: 3,5 ★ para a área industrial, 4,0 para a Avenida Brasil e 4,5 para o Terraço Suíça). **Revista na v8.6.4** (teto por ponto, abaixo): sugestão nova de 2,8 ★ para sair da Garagem, 3,4 para sair da área industrial e 4,0 para sair da Avenida Brasil (90% do teto de cada ponto).
 - Os comentários aparecem só no fim do dia ou também em balõezinhos quando o grupo sai?
 
 **Feito na v8.4 (26/10, `docs/spec-v8.4.md`).** Decisões do usuário: pesos iguais; a nota mexe no movimento de −10% a +10%; os pontos de atendimento viram bônus na agilidade (cor certa, corrente e prato caprichado, +0,5 cada); comentários no fim do dia e num balãozinho quando o grupo sai; e a média é das **últimas 100** avaliações (não 200), contando a partir da 20ª. Na calibração, cada coração vale 0,75 (com 1, nem o jogo perfeito passava de ~4,25 ★) e o coração devolvido pelo atendimento compensa um perdido. Bot afiado com equipe ~4,4 ★, com equipe ~4,2, sem equipe ~3,6. **Para a etapa 3:** a nota mínima para sair da Garagem (o usuário pediu 4,5 ★, que exige jogar muito bem; o afiado fica entre 4,35 e 4,5) e o cardápio maior dos pontos de cima (`avalMenu`).
+
+**Teto por ponto (v8.6.4, 29/10, `docs/spec-v8.6.4.md`).** Pedido do usuário: 4 ★ e pouco numa garagem é nota alta demais e deixa a progressão numa briga por vírgulas. Agora o serviço perfeito vale o **teto do ponto** (`AVAL.teto`: Garagem 3, área industrial 3,7, Avenida Brasil 4,3, Terraço Suíça 5), mais o humor do cliente (os encantados dão até 0,8 acima do teto). Bot afiado com equipe ~2,8 ★ na Garagem (3,0 ou mais em ~5% dos dias); a nota do dia passa de 3,5 em ~1% dos dias. O movimento vai pela fração do teto (neutro em 2 ★ na Garagem).
 
 ---
 
@@ -512,7 +514,7 @@ Também: rever o `smoke7` (toque) e o `smoke10` (fila justa e porta), mais `bala
 
 ### Vale para a 3a e a 3b
 - **Mudança** na lojinha (aba "Ponto"): custo único, aluguel dali em diante e os móveis levados junto. O editor abre no ponto novo com a arrumação automática.
-- Para mudar, é preciso o dinheiro da mudança **e a nota mínima do Gurugol** (etapa 2c; o usuário pediu 4,5 ★ para sair da Garagem, que exige jogar muito bem: o bot afiado fica entre 4,35 e 4,5).
+- Para mudar, é preciso o dinheiro da mudança **e a nota mínima do Gurugol** (etapa 2c; o usuário pediu 4,5 ★ para sair da Garagem, que exige jogar muito bem: o bot afiado ficava entre 4,35 e 4,5. Desde a v8.6.4, com o teto de 3 ★ da Garagem, o equivalente é **~2,8 ★**: o afiado fica entre 2,73 e 2,92; a decidir com o usuário). Ao mudar, as avaliações antigas continuam na média, e a nota sobe aos poucos até o teto novo.
 - Cada ponto traz: multiplicador do cardápio (sugestão: ×1 e ×1,4), mistura de clientes, área útil, cadeiras de espera, visual (piso, fachada, letreiro, vista da janela, calçada) e o **capítulo da história** do ponto.
 - **Ao mudar, o ambiente e a bebida da espera são trocados** pelos do ponto novo (decidido em 21/10): a TV e o som da Garagem saem do save (`equipe.tv`, `equipe.som`), como o couvert abaixo do nível 3. A torneira sai do mesmo jeito (sugestão).
 - **Modo dev** (v7.5.1): os pontos entram liberados, para testar.
@@ -595,8 +597,8 @@ Também: rever o `smoke7` (toque) e o `smoke10` (fila justa e porta), mais `bala
 - Onde aparece: uma aba ou um quadro na lojinha, com as barras (pode reaproveitar o estilo da caixa do Gurugol da v8.4.1).
 - Efeito no jogo (a decidir): mais VIPs, mais gorjeta, nota de ambiente do Gurugol, régua do Michelzão (etapa 6).
 - TV, som e couvert podem sair da aba Equipe e ir para o lugar do ambiente (anotado na v7.4.4).
-- **Enfeites e móveis melhores** à venda, para subir o luxo (decidir quais). Os da Garagem já existem desde a v8.6.4 (`DECOR` e a toalha xadrez), só visuais.
-- **Decoração no Ambiente do Gurugol** (adiada na v8.6.4 a pedido do usuário, que mexe nas avaliações em outro branch; pode vir antes da 4b, assim que esse trabalho entrar): a base do Ambiente cai de 3 para 2 (a Garagem pelada fica "meio sem graça"), cada planta soma ~0,3, cada peça do cantinho da Rosa ~0,25 e a toalha +0,5 só para o grupo daquela mesa (como o bônus da cadeira da cor); comentários próprios ("Que plantinha linda!", "A toalha xadrez dá um charme").
+- **Enfeites e móveis melhores** à venda, para subir o luxo (decidir quais). Os da Garagem já existem desde a v8.6.5 (`DECOR` e a toalha xadrez), só visuais.
+- **Decoração no Ambiente do Gurugol** (adiada na v8.6.5 a pedido do usuário, que mexia nas avaliações em outro branch, o do teto por ponto da v8.6.4; pode vir antes da 4b; os valores abaixo são na escala do serviço, de 1 a 5, antes do teto): a base do Ambiente cai de 3 para 2 (a Garagem pelada fica "meio sem graça"), cada planta soma ~0,3, cada peça do cantinho da Rosa ~0,25 e a toalha +0,5 só para o grupo daquela mesa (como o bônus da cadeira da cor); comentários próprios ("Que plantinha linda!", "A toalha xadrez dá um charme").
 
 **Partes:** `10-constantes.js` (`LUXO`), `16-jogo.js` (cálculo), `41-lojinha.js` (aba ou quadro do luxo, enfeites), `21-cenario.js` e `22-salao-hud.js` (enfeites e móveis), `12-clientes.js` (efeito na freguesia).
 

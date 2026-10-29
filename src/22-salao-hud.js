@@ -57,7 +57,7 @@ function drawTableBody(ctx,t,open,g,tm){
   txt(ctx,String(t.id),t.cx-hw+14,t.cy,12,PAL.tinta,'center',FD);
 }
 
-/* toalha xadrez (v8.6.4, aba Decoração): por cima do tampo da mesa quadrada (x0 é a borda esquerda, w a largura),
+/* toalha xadrez (v8.6.5, aba Decoração): por cima do tampo da mesa quadrada (x0 é a borda esquerda, w a largura),
    com a aba da frente caindo em ondas */
 function drawToalha(ctx,x0,cy,w){
   const a = x0 - 3, b = x0 + w + 3, y0 = cy - 20, y1 = cy + 12, yb = cy + 19;
@@ -289,7 +289,8 @@ function drawHud(ctx,g,tm){
     rr(ctx,334,550,124,44,9); fs(ctx,'#3b362e',2);
     txt(ctx,'Gurugol',396,561,11,'#cfc7b0','center',FB);
     if (av){
-      txt(ctx,fmtNota(av.nota),372,582,19,av.nota >= 4 ? '#7fd69a' : av.nota >= 3 ? '#FFF7DC' : '#FF9C8A','center',FD,3);
+      const fr = avalFrac(av.nota, avalTeto(g.ponto));   // v8.6.4: a cor vai pelo teto do ponto
+      txt(ctx,fmtNota(av.nota),372,582,19,fr >= 0.75 ? '#7fd69a' : fr >= 0.5 ? '#FFF7DC' : '#FF9C8A','center',FD,3);
       for (let i=0;i<5;i++){
         const f = clamp(av.nota - i, 0, 1);
         starFill(ctx,398 + i*11,582,5.5,'#5b554a');

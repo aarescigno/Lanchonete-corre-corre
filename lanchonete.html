@@ -94,7 +94,7 @@ p{margin:calc(var(--u)*6) 0;font-size:max(12px,calc(var(--u)*16));line-height:1.
 .stats b{font-family:var(--fd);font-weight:400;text-align:right;font-size:max(13px,calc(var(--u)*18))}
 .shopgrid{display:grid;grid-template-columns:repeat(3,1fr);gap:calc(var(--u)*8);width:calc(var(--u)*760);max-width:100%;margin:calc(var(--u)*6) 0}
 .shopgrid.salao{grid-template-columns:1fr}
-.shopgrid.melhorias,.shopgrid.decor{grid-template-columns:repeat(4,1fr);width:calc(var(--u)*980)}   /* v8.3.10: 7 cartões em 2 fileiras (com o Triturador); v8.6.4: e a Decoração */
+.shopgrid.melhorias,.shopgrid.decor{grid-template-columns:repeat(4,1fr);width:calc(var(--u)*980)}   /* v8.3.10: 7 cartões em 2 fileiras (com o Triturador); v8.6.5: e a Decoração */
 @media (max-width:600px) and (min-height:461px){.shopgrid.melhorias,.shopgrid.decor{grid-template-columns:repeat(2,1fr)}}
 /* editor do salão (v7.4): o salão em escala à esquerda, a loja de móveis à direita */
 .ed{display:grid;grid-template-columns:minmax(0,1fr) max(150px,calc(var(--u)*210));gap:calc(var(--u)*8);align-items:start;text-align:left}
@@ -102,7 +102,7 @@ p{margin:calc(var(--u)*6) 0;font-size:max(12px,calc(var(--u)*16));line-height:1.
 .ed-cv canvas{display:block;width:100%;height:auto;touch-action:none;cursor:grab}
 .ed-pop{position:absolute;transform:translate(-50%,0);display:grid;gap:4px;background:var(--azulejo);border:calc(var(--u)*2.5) solid var(--tinta);border-radius:calc(var(--u)*10);padding:calc(var(--u)*6) calc(var(--u)*8);line-height:1.2;box-shadow:calc(var(--u)*3) calc(var(--u)*3) 0 var(--tinta);z-index:2;white-space:nowrap}
 .ed-pop.up{transform:translate(-50%,-100%)}
-.ed-pop.largo{grid-template-columns:1fr 1fr}   /* v8.6.4: sem altura para os botões um embaixo do outro */
+.ed-pop.largo{grid-template-columns:1fr 1fr}   /* v8.6.5: sem altura para os botões um embaixo do outro */
 .ed-pop.largo > b,.ed-pop.largo > .ed-cores{grid-column:1 / -1}
 .ed-pop.est{transform:none}
 .ed-pop.est.up{transform:translate(0,-100%)}
@@ -154,7 +154,7 @@ table.cx .rs{font-size:inherit}
 .cx-txt{flex-basis:100%;height:calc(var(--u)*90);font:600 12px var(--fb);border:2px solid var(--tinta);border-radius:8px;padding:4px}
 .item{background:var(--creme);border:calc(var(--u)*3) solid var(--tinta);border-radius:calc(var(--u)*12);padding:calc(var(--u)*6) calc(var(--u)*8);display:grid;grid-template-columns:auto 1fr;column-gap:calc(var(--u)*8);row-gap:calc(var(--u)*3);align-items:center;align-content:start;text-align:left}
 .item.own{background:#dcefd9}
-.item .dgrupo{grid-column:1 / -1;font:700 max(10px,calc(var(--u)*11)) var(--fb);font-style:normal;text-transform:uppercase;letter-spacing:.04em;color:var(--faixa)}   /* v8.6.4: o grupo do enfeite */
+.item .dgrupo{grid-column:1 / -1;font:700 max(10px,calc(var(--u)*11)) var(--fb);font-style:normal;text-transform:uppercase;letter-spacing:.04em;color:var(--faixa)}   /* v8.6.5: o grupo do enfeite */
 .item.atr{background:#F6D7D3}   /* v8.3.1: empréstimo com parcela atrasada */
 .mbar{grid-column:1 / -1;height:calc(var(--u)*10);min-height:8px;background:#E3E0D6;border:calc(var(--u)*2) solid var(--tinta);border-radius:999px;overflow:hidden;width:100%}
 .mbar i{display:block;height:100%;border-radius:999px 0 0 999px}
@@ -303,7 +303,7 @@ table.rank tr.me td{background:#fbe7a8}
 
     <div class="ov show" id="ov-menu">
       <div class="panel menu-panel">
-        <span class="vtag" id="vtag" aria-label="Versão 8.6.4">v8.6.4</span>
+        <span class="vtag" id="vtag" aria-label="Versão 8.6.5">v8.6.5</span>
         <h1 class="title">Lanchonete <br>Corre-Corre</h1>
         <p class="tag">Ajude a Bia a atender a freguesia da esquina antes que o cafezinho esfrie!</p>
         <div class="lbl" id="menu-dia">Carreira: dia 1</div>
@@ -514,8 +514,9 @@ table.rank tr.me td{background:#fbe7a8}
       <div class="panel">
         <h2>Versões</h2>
         <ul class="verlist">
-          <li><b>v8.6.4</b><span class="cur">versão atual</span><br>29/10/2026 &mdash; Decoração da Garagem: uma aba nova na lojinha, com enfeites comprados à vontade (fora da melhoria do dia). Plantas: a espada-de-são-jorge no vaso e a muda na lata (que vinham de graça) e uma samambaia pendurada na parede. Cantinho da Rosa: a foto da mãe da Bia, o quadro de giz com o prato do dia e a plaquinha &ldquo;Comida é afeto&rdquo;. E a toalha xadrez, com porta-guardanapo e florzinha, mesa por mesa. Comprado, o enfeite pode ser guardado e posto de volta. Por enquanto é só para deixar a garagem bonita.</li>
-          <li><b>v8.6.3</b><br>29/10/2026 &mdash; Livrinho de Sudoku, uma melhoria nova da lojinha (R$ 200): a fila de ações da Bia ganha 3 quadrinhos. Em compensação, a fila de base ficou com 5 quadrinhos, e não mais 6; com o livrinho, são 8 tarefas já marcadas.</li>
+          <li><b>v8.6.5</b><span class="cur">versão atual</span><br>29/10/2026 &mdash; Decoração da Garagem: uma aba nova na lojinha, com enfeites comprados à vontade (fora da melhoria do dia). Plantas: a espada-de-são-jorge no vaso e a muda na lata (que vinham de graça) e uma samambaia pendurada na parede. Cantinho da Rosa: a foto da mãe da Bia, o quadro de giz com o prato do dia e a plaquinha &ldquo;Comida é afeto&rdquo;. E a toalha xadrez, com porta-guardanapo e florzinha, mesa por mesa. Comprado, o enfeite pode ser guardado e posto de volta. Por enquanto é só para deixar a garagem bonita.</li>
+          <li><b>v8.6.4</b><br>29/10/2026 &mdash; Notas do Gurugol com teto por ponto: numa garagem, ninguém dá 5 estrelas. Na Garagem, o atendimento perfeito vale 3,0 ★, e um cliente encantado dá um pouco mais (num dia especial, a nota do dia chega a 3,5 ou 3,8). Cada ponto melhor sobe o teto: 3,7 na área industrial, 4,3 na Avenida Brasil e 5 no Terraço Suíça. As notas que você já tinha passaram para a escala nova.</li>
+          <li><b>v8.6.3</b><br>29/10/2026 &mdash; Livrinho de Sudoku, uma melhoria nova da lojinha (R$ 200): a fila de ações da Bia ganha 3 quadrinhos. Em compensação, a fila de base ficou com 5 quadrinhos, e não mais 6; com o livrinho, são 8 tarefas já marcadas.<br><a href="versoes/v8.6.3.html" target="_blank" rel="noopener">Abrir a v8.6.3</a></li>
           <li><b>v8.6.2</b><br>28/10/2026 &mdash; Abertura mais caprichada no hospital: a Rosa, deitada, ganha o corpo sob o cobertor (ombros, peito e os pés levantando o pano) e abre os olhos para a Bia enquanto fala; a cortina do leito desce até o chão. No banco, o pote de moedas não some mais quando a Bia chega: ela o deixa no chão.</li>
           <li><b>v8.6.1</b><br>28/10/2026 &mdash; Abertura revista: a Rosa, a Bia, o Tonhão e o Bráulio ganham alturas que combinam em todas as cenas, e o fogão de casa desce para a cintura da Rosa. A Rosa mexe a panela por cima com a colher de pau, a Bia prova o molho com a colherinha na boca, e a pétala do segredo cai da mão da Rosa e deixa o molho dourado. A Rosa entra pela porta da Casa Aurora, o corredor do hospital ganha a porta da enfermaria, o banco tem fachada nova e o papel do APROVADO voa até a mão da Bia. As pessoas piscam, mexem a boca quando falam e olham para onde andam.<br><a href="versoes/v8.6.1.html" target="_blank" rel="noopener">Abrir a v8.6.1</a></li>
           <li><b>v8.6</b><br>28/10/2026 &mdash; Marmitas: o entregador de moto não senta mais no salão. Ele espera no balcão de retirada, no alto da calçada, e o pedido dele (pelo app Efood) vai sozinho ao Tonhão, que faz o prato numa marmita: ocupa uma boca do fogão, mas não usa prato limpo. A Bia (ou a Dani, com a tarefa nova) leva a marmita pronta ao balcão e o entregador paga na hora, com a gorjeta dos corações; a Efood fica com 15% do prato, e a embalagem custa R$ 2. No "+ marmita" da janela de pedidos dá para adiantar até 2 marmitas de PF, que ficam na prateleira do balcão e esfriam em 60 s; quem pede PF leva uma na hora.<br><a href="versoes/v8.6.html" target="_blank" rel="noopener">Abrir a v8.6</a></li>
@@ -782,7 +783,7 @@ function salaoCor(mesas){
   return n.indexOf(Math.min.apply(null, n));
 }
 function salaoKit(ponto){ return salaoAuto(SALAO.kit.map((seats, c) => ({ x:0, y:0, seats, c:c % 4 })), ponto); }
-/* save do salão: { ponto, mesas:[{ x, y, seats, c, t? }], estoque:[{ seats, c, t? }] } (t: a toalha, v8.6.4). O estoque (v8.3.5) guarda mesas
+/* save do salão: { ponto, mesas:[{ x, y, seats, c, t? }], estoque:[{ seats, c, t? }] } (t: a toalha, v8.6.5). O estoque (v8.3.5) guarda mesas
    fora do salão: não abrem no dia nem pagam luz e gás, mas contam no teto de lugares. Mesa estragada sai; passou
    do teto, saem as do estoque e depois as últimas do salão; arranjo inválido vira o automático (e, se nem assim,
    o kit inicial) */
@@ -812,7 +813,7 @@ function salaoDevolucao(s){
 /* Turno sem fim (v7.4): salão fixo de 6 mesas e 16 lugares (o de antes), igual para todo mundo no ranking */
 const SALAO_SEMFIM = [2,2,2,4,2,4];
 /* ============================================================
-   DECORAÇÃO (v8.6.4, pedido do usuário): enfeites da Garagem, comprados na aba Decoração da lojinha, à vontade (fora
+   DECORAÇÃO (v8.6.5, pedido do usuário): enfeites da Garagem, comprados na aba Decoração da lojinha, à vontade (fora
    da melhoria do dia). Por enquanto só visuais: o peso no Ambiente do Gurugol fica para uma próxima etapa.
    - plantas: as espadas-de-são-jorge da calçada (da v7.7, que vinham de graça) e a samambaia na parede;
    - cantinho da Rosa: a foto da mãe da Bia, o quadro de giz com o prato do dia e a plaquinha "Comida é afeto".
@@ -1031,10 +1032,18 @@ function movimentoSalao(lugares){ return 1 + MOVIMENTO.porLugar * Math.max(0, lu
    - menu: pelos pratos do cardápio do ponto;
    - amb (ambiente): a base mais TV, som, torneira, ventilador, o cafezinho servido e o couvert; lixeira cheia tira.
    Quem sai bravo dá 1 na agilidade e no prato que não chegou a comer. Só `porDia` grupos do dia (sorteados) avaliam, como num restaurante de verdade. A nota é a média das últimas `max` avaliações,
-   e só aparece depois das `min` primeiras; ela mexe no movimento do dia, de −mov (1 ★) a +mov (5 ★), neutra em 3 ★.
-   Quem fica para o fim do dia (a lanchonete fecha) não avalia; dia largado no meio não conta */
+   e só aparece depois das `min` primeiras; ela mexe no movimento do dia (v8.6.4: pelo teto do ponto, abaixo).
+   Quem fica para o fim do dia (a lanchonete fecha) não avalia; dia largado no meio não conta.
+   v8.6.4, teto por ponto: os critérios acima medem o serviço (1 a 5), e o Gurugol mostra a nota na escala do ponto:
+   serviço 5 vale `teto` (pelo nível do ponto: Garagem 3, área industrial 3,7, Avenida Brasil 4,3, Terraço Suíça 5).
+   Cada cliente tem o seu humor (de −humor.var a +humor.var) e, às vezes (`humor.encanta`), sai encantado e dá de
+   humor.extra a mais, até `humor.folga` acima do teto: num dia especial, a Garagem chega a 3,5 ou 3,8. Quem sai bravo não
+   tem humor.
+   O movimento vai pela fração do teto: neutro na metade (2 ★ na Garagem) e +mov no teto */
 const AVAL = {
-  max:30, min:8, porDia:4, porCoracao:0.75, mov:0.1, neutra:3,
+  max:30, min:8, porDia:4, porCoracao:0.75, mov:0.1,
+  teto:[3, 3.7, 4.3, 5],
+  humor:{ var:0.3, encanta:0.2, extra:[0.6, 1.2], folga:0.8 },
   bonus:{ cor:0.5, corrente:0.5, crit:0.5, max:1.5 },
   prato:[[2.5, 4.5], [3, 4.7], [3.5, 5]],
   menu:{ base:1.5, porPrato:0.75 },
@@ -1074,18 +1083,31 @@ function avalMedias(lista){
 }
 /* a nota da lanchonete (as médias das últimas AVAL.max), ou null antes das AVAL.min primeiras */
 function avalGeral(lista){ return lista.length >= AVAL.min ? avalMedias(lista) : null; }
-/* o movimento pela nota: de 1 − mov a 1 + mov; sem nota, 1 */
-function avalMovimento(lista){
+/* o teto do ponto (v8.6.4): a nota que o serviço perfeito vale lá */
+function avalTeto(ponto){ return AVAL.teto[clamp(((ponto || PONTOS[0]).nivel || 1) - 1, 0, AVAL.teto.length - 1)]; }
+/* a nota do serviço (1 a 5) na escala do ponto: 1 continua 1 e 5 vira o teto */
+function avalEscala(v, teto){ return 1 + (v - 1) * (teto - 1) / 4; }
+/* quanto a nota vale no ponto: 0 com 1 ★ e 1 no teto (passa de 1 com os encantados) */
+function avalFrac(n, teto){ return (n - 1) / (teto - 1); }
+/* o movimento pela nota: de 1 − mov (1 ★) a 1 + mov (o teto do ponto), neutro na metade; sem nota, 1 */
+function avalMovimento(lista, ponto){
   const m = avalGeral(lista);
-  return m ? 1 + AVAL.mov * clamp((m.nota - AVAL.neutra) / (5 - AVAL.neutra), -1, 1) : 1;
+  return m ? 1 + AVAL.mov * clamp(avalFrac(m.nota, avalTeto(ponto)) * 2 - 1, -1, 1) : 1;
 }
 function fmtNota(n){ return n == null ? '–' : (Math.round(n * 10) / 10).toFixed(1).replace('.', ','); }
-/* o comentário de uma avaliação: quem saiu bravo reclama de ter ido embora; com nota 4 ou mais, elogia o melhor critério;
+/* o comentário de uma avaliação, pelas notas do serviço: quem saiu bravo reclama de ter ido embora; com nota 4 ou mais,
+   elogia o melhor critério (v8.6.4: abaixo do Terraço, às vezes elogia e lembra que o lugar é simples, AVAL_SIMPLES);
    senão, reclama do pior (o ambiente com a lixeira cheia reclama do cheiro) */
+const AVAL_SIMPLES = [
+  ['Atendimento ótimo, mas o lugar é bem simples.', 'Comida boa! Pena que é numa garagem.', 'Gostei! Só falta um lugar mais arrumado.'],
+  ['Atendimento ótimo, mas o lugar ainda é simples.', 'Comida boa, salão sem luxo.'],
+  ['Muito bom! Só falta aquele toque de requinte.']
+];
 const AVAL_BRAVO = { fila:['Desisti de esperar!', 'Nem consegui sentar.'], mesa:['Fui embora sem comer!', 'Nunca mais volto!'], retirada:['Cadê a marmita?!', 'Saí sem o pedido!'] };   // retirada (v8.6): o entregador
-function avalComentario(r, bravo, lixo){
+function avalComentario(r, bravo, lixo, nivel){
   if (bravo) return pick(AVAL_BRAVO[bravo]);
-  const bom = Math.round(avalNota(r) * 10) >= 40;   // pela nota que aparece (3,96 vira 4,0)
+  const bom = Math.round(avalNota(r) * 10) >= 40;   // pela nota com uma casa (3,96 vira 4,0)
+  if (bom && AVAL_SIMPLES[(nivel || 1) - 1] && Math.random() < 0.3) return pick(AVAL_SIMPLES[(nivel || 1) - 1]);
   let k = 0;
   r.forEach((v, i) => { if (bom ? v > r[k] : v < r[k]) k = i; });
   if (!bom && lixo && AVAL_CRIT[k].id === 'amb') return 'Que cheiro de lixo!';
@@ -1125,7 +1147,7 @@ function tabelaDe(e){
 /* um empréstimo novo de v, pagando em dia: as parcelas e os juros somados */
 function simulaEmprestimo(v, j){ const t = tabelaDe(normEmprestimo({ resto:v, amort:Math.ceil(v / BANCO.parcelas), j })); return { parcelas:t, juros:t.reduce((a, p) => a + p, 0) - v }; }
 const CAIXA_MAX = 14;                                 // livro-caixa (v7.2): quantos dias da carreira ficam guardados
-const VERSAO = 'v8.6.4';                               // vai no resumo do Caixa
+const VERSAO = 'v8.6.5';                               // vai no resumo do Caixa
 const DIVULGA_DIA = 3;                                // antes disso, o movimento é o da inauguração (sem custo)
 function divulgaAberta(n){ return DEV.on || n >= DIVULGA_DIA; }   // no modo dev, desde o dia 1
 function divulgaOf(id){ return DIVULGA.find(d => d.id === id) || DIVULGA[1]; }
@@ -1478,6 +1500,14 @@ function normSave(s){
   const bank = isFinite(+s.bank) ? Math.round(+s.bank) : 0;
   const dev = salaoDevolucao(s.salao), out = { dia, estrelas, lucroTot: Math.round(+s.lucroTot) || 0, pontosTot: Math.max(0, Math.round(+s.pontosTot) || 0), aval: normAval(s.aval), avalCom: normAvalCom(s.avalCom), neg: clamp(Math.round(+s.neg) || 0, 0, BANCO.neg), emp: normEmprestimo(s.emp), corta: s.corta !== false, fechou: Math.max(0, Math.round(+s.fechou) || 0), bank: bank + dev + devMaq, up, torneira:true, salao: normSalao(dev ? null : s.salao), divulga: divulgaOf(s.divulga).id, treino: !!s.treino, decor: normDecor(s.decor), manut: normManut(s.manut), caixa: normCaixa(s.caixa), caixaPend: normPend(s.caixaPend) };
   out.equipe = normEquipe(s.equipe, pontoOf(out.salao.ponto));
+  // v8.6.4: as notas do Gurugol de antes (de 1 a 5 pelo serviço) passam para a escala da Garagem, uma vez só (avalEsc)
+  if (s.avalEsc !== 2){
+    const t = AVAL.teto[0], esc = v => Math.round(avalEscala(v, t) * 10) / 10;
+    out.aval = normAval(out.aval.map(r => r.map(esc)));
+    out.avalCom.forEach(c => { c.n = Math.round(esc(c.n / 10) * 10); });
+    out.caixa.forEach(r => { if (r.av) r.av = Math.round(esc(r.av / 10) * 10); });
+  }
+  out.avalEsc = 2;
   if (dev){ const last = out.caixa[out.caixa.length - 1]; out.caixa = normCaixa(out.caixa.concat([{ d:last ? last.d : 1, dev, saldo:out.bank - devMaq }])); }
   if (devMaq){ const last = out.caixa[out.caixa.length - 1]; out.caixa = normCaixa(out.caixa.concat([{ d:last ? last.d : 1, dev:devMaq, devK:'maquina', saldo:out.bank }])); }
   return out;
@@ -2398,7 +2428,7 @@ class Game {
     const lug = this.tables.filter(t => t.open).reduce((a, t) => a + t.seats, 0);
     const cl = CLIMA[this.clima];
     // a nota do Gurugol (v8.4) traz mais ou menos gente
-    const N = Math.max(3, Math.round(day.groups * this.divF * movimentoSalao(lug) * (cl ? cl.groups : 1) * avalMovimento(this.save.aval))), vipP = (day.vip || 0) * (this.div ? this.div.vip : 1);
+    const N = Math.max(3, Math.round(day.groups * this.divF * movimentoSalao(lug) * (cl ? cl.groups : 1) * avalMovimento(this.save.aval, this.ponto))), vipP = (day.vip || 0) * (this.div ? this.div.vip : 1);
     const gap = day.speed * day.time / N;
     let t = 3;
     const forced = day.nu ? randi(1, Math.min(3, N-1)) : -1;
@@ -2949,12 +2979,15 @@ class Game {
     const amb = A.amb.base + (eq.tv ? A.amb.tv : 0) + (eq.som ? A.amb.som : 0) + (this.up.maquina ? A.amb.maquina : 0) + (this.up.ventilador ? A.amb.ventilador : 0) +
       (g.coffee ? A.amb.cafe : 0) + (eq.couvert ? A.amb.couvert : 0) + (this.trashFull ? A.amb.lixo : 0);
     // o entregador (v8.6): a espera no balcão conta na espera e na agilidade
-    const r = [5 - A.porCoracao * (g.retira ? g.perdMesa : g.perdFila), bravo ? 1 : 5 - A.porCoracao * g.perdMesa + bonus, g.pratoQ || 1, avalMenu(), amb]
+    const s = [5 - A.porCoracao * (g.retira ? g.perdMesa : g.perdFila), bravo ? 1 : 5 - A.porCoracao * g.perdMesa + bonus, g.pratoQ || 1, avalMenu(), amb]
       .map(v => clamp(Math.round(v * 10) / 10, 1, 5));
-    const txt = avalComentario(r, bravo, this.trashFull), nota = avalNota(r);
-    this.avals.push({ r, txt, k:g.type, v:g.vip });
+    // v8.6.4: a nota no Gurugol fica na escala do ponto (o serviço 5 vale o teto), mais o humor de quem avalia
+    const teto = avalTeto(this.ponto), h = bravo ? 0 : rand(-A.humor.var, A.humor.var) + (Math.random() < A.humor.encanta ? rand(A.humor.extra[0], A.humor.extra[1]) : 0);
+    const r = s.map(v => clamp(Math.round((avalEscala(v, teto) + h) * 10) / 10, 1, Math.min(5, teto + A.humor.folga)));
+    const txt = avalComentario(s, bravo, this.trashFull, this.ponto.nivel), nota = avalNota(r), f = avalFrac(nota, teto);
+    this.avals.push({ r, s, txt, k:g.type, v:g.vip });
     // balãozinho branco (sobe devagar, acima dos textos da conta)
-    this.fx.push({ k:'text', box:true, x, y, vy:-12, life:2.8, max:2.8, text:fmtNota(nota) + '★ ' + txt, color:nota >= 4 ? PAL.ok : nota >= 3 ? PAL.alerta : PAL.perigo, size:13 });
+    this.fx.push({ k:'text', box:true, x, y, vy:-12, life:2.8, max:2.8, text:fmtNota(nota) + '★ ' + txt, color:f >= 0.75 ? PAL.ok : f >= 0.5 ? PAL.alerta : PAL.perigo, size:13 });
   }
   /* a nota do Gurugol agora: as do save e as do dia (null antes das AVAL.min primeiras) */
   get gurugol(){ return avalGeral(this.save.aval.concat(this.avals.map(a => a.r)).slice(-AVAL.max)); }
@@ -3299,7 +3332,7 @@ class Game {
     if (why) return this.salaoNao(why);
     return this.salaoSet(l, true, this.estoque.filter(e => e !== m));
   }
-  /* decoração (v8.6.4): enfeite novo (fica à mostra), à vontade e fora da melhoria do dia */
+  /* decoração (v8.6.5): enfeite novo (fica à mostra), à vontade e fora da melhoria do dia */
   buyDecor(id){
     const d = decorOf(id), dec = this.save.decor;
     if (!d || id in dec || this.save.bank < d.cost) return false;
@@ -4280,7 +4313,7 @@ function drawCalcada(ctx,g,tm){
   }
   // plantas da casa da Bia (nível 1, v7.7): espada-de-são-jorge no vaso de barro, no canto de baixo, e uma menor
   // numa lata de tinta reaproveitada, encostada no muro (o banquinho de plástico da v7.5 fica para o nível 2).
-  // Desde a v8.6.4, compradas na aba Decoração (DECOR)
+  // Desde a v8.6.5, compradas na aba Decoração (DECOR)
   if (decorOn(g,'espada')) drawVasoEspada(ctx,x0 + 40,536);
   if (decorOn(g,'lata')) drawLataEspada(ctx,x0 + 44,132);
   // portão de enrolar aberto, na borda do salão: trilho no alto e soleira no chão
@@ -4304,7 +4337,7 @@ function drawLataEspada(ctx,lx,ly){
   ctx.fillStyle = 'rgba(216,67,47,.55)'; ctx.fillRect(lx-8,ly-14,16,7);   // o rótulo desbotado da lata
 }
 /* ============================================================
-   DECORAÇÃO DA GARAGEM (v8.6.4): na parede, à esquerda da janela, a samambaia pendurada e a foto da Rosa; embaixo
+   DECORAÇÃO DA GARAGEM (v8.6.5): na parede, à esquerda da janela, a samambaia pendurada e a foto da Rosa; embaixo
    do letreiro, a plaquinha; no chão, perto do portão, o quadro de giz no cavalete. Desenhados com a parede (antes
    das pessoas). As funções servem também para os ícones da lojinha
    ============================================================ */
@@ -5056,7 +5089,7 @@ function drawTableBody(ctx,t,open,g,tm){
   txt(ctx,String(t.id),t.cx-hw+14,t.cy,12,PAL.tinta,'center',FD);
 }
 
-/* toalha xadrez (v8.6.4, aba Decoração): por cima do tampo da mesa quadrada (x0 é a borda esquerda, w a largura),
+/* toalha xadrez (v8.6.5, aba Decoração): por cima do tampo da mesa quadrada (x0 é a borda esquerda, w a largura),
    com a aba da frente caindo em ondas */
 function drawToalha(ctx,x0,cy,w){
   const a = x0 - 3, b = x0 + w + 3, y0 = cy - 20, y1 = cy + 12, yb = cy + 19;
@@ -5288,7 +5321,8 @@ function drawHud(ctx,g,tm){
     rr(ctx,334,550,124,44,9); fs(ctx,'#3b362e',2);
     txt(ctx,'Gurugol',396,561,11,'#cfc7b0','center',FB);
     if (av){
-      txt(ctx,fmtNota(av.nota),372,582,19,av.nota >= 4 ? '#7fd69a' : av.nota >= 3 ? '#FFF7DC' : '#FF9C8A','center',FD,3);
+      const fr = avalFrac(av.nota, avalTeto(g.ponto));   // v8.6.4: a cor vai pelo teto do ponto
+      txt(ctx,fmtNota(av.nota),372,582,19,fr >= 0.75 ? '#7fd69a' : fr >= 0.5 ? '#FFF7DC' : '#FF9C8A','center',FD,3);
       for (let i=0;i<5;i++){
         const f = clamp(av.nota - i, 0, 1);
         starFill(ctx,398 + i*11,582,5.5,'#5b554a');
@@ -6626,9 +6660,9 @@ function buildTips(){
     drawBanco(c);
   }]);
   // v8.4: as avaliações do Gurugol
-  tips.push(['Cada grupo que sai avalia a lanchonete no Gurugol, de 1 a 5, em 5 critérios: espera por mesa e agilidade (cada coração perdido tira 1 ponto; cor certa, corrente e prato caprichado ajudam), qualidade da comida (o Tonhão com aumento acerta mais), diversidade do cardápio e ambiente (TV, som, torneira, ventilador, cafezinho; lixeira cheia atrapalha). A nota é a média das últimas ' + AVAL.max + ' avaliações e aparece a partir da ' + AVAL.min + 'ª; a aba Gurugol da lojinha mostra os últimos comentários. Nota alta traz até ' + Math.round(AVAL.mov * 100) + '% mais gente; nota baixa afasta.', c => {
-    for (let i=0;i<5;i++) star(c,8 + i*12,22,5.5,i < 4 ? PAL.mostarda : '#d8cfb8');
-    txt(c,'4,5',32,48,18,PAL.tinta,'center',FD);
+  tips.push(['Cada grupo que sai avalia a lanchonete no Gurugol, de 1 a 5, em 5 critérios: espera por mesa e agilidade (cada coração perdido tira 1 ponto; cor certa, corrente e prato caprichado ajudam), qualidade da comida (o Tonhão com aumento acerta mais), diversidade do cardápio e ambiente (TV, som, torneira, ventilador, cafezinho; lixeira cheia atrapalha). A nota é a média das últimas ' + AVAL.max + ' avaliações e aparece a partir da ' + AVAL.min + 'ª; a aba Gurugol da lojinha mostra os últimos comentários. Na Garagem, lugar simples, o atendimento perfeito vale ' + fmtNota(AVAL.teto[0]) + ' ★ (um cliente encantado dá um pouco mais); cada ponto melhor sobe a nota, até 5 ★ no Terraço Suíça. Nota alta traz até ' + Math.round(AVAL.mov * 100) + '% mais gente; nota baixa afasta.', c => {
+    for (let i=0;i<5;i++) star(c,8 + i*12,22,5.5,i < 3 ? PAL.mostarda : '#d8cfb8');
+    txt(c,'3,0',32,48,18,PAL.tinta,'center',FD);
   }]);
   tips.forEach(t => {
     const li = document.createElement('li');
@@ -6721,7 +6755,7 @@ function upgradeIcon(id){
       for (let i=1;i<3;i++){ const d = -6 + i*5.33; c.beginPath(); c.moveTo(d,-12); c.lineTo(d,4); c.moveTo(-6,-12 + i*5.33); c.lineTo(10,-12 + i*5.33); c.stroke(); }
       [[-3.3,-9,'5'],[7.4,-3.7,'3'],[2,1.7,'8']].forEach(n => txt(c,n[2],n[0],n[1],5.5,PAL.tinta,'center',FB));
       txt(c,'SUDOKU',3,10,5,'#fff','center',FD);
-    } else if (id === 'd-espada'){   // decoração (v8.6.4): os próprios enfeites, menores
+    } else if (id === 'd-espada'){   // decoração (v8.6.5): os próprios enfeites, menores
       c.scale(0.42,0.42); drawVasoEspada(c,0,50);
     } else if (id === 'd-lata'){
       c.scale(0.62,0.62); drawLataEspada(c,0,30);
@@ -7034,7 +7068,7 @@ function buildSalao(grid){
       pop.style.top = tops[up ? 1 : 0] + '%';
       pop.appendChild(el('b', null, 'Mesa ' + (sel + 1) + ' · ' + m.seats + ' lugares'));
       pop.appendChild(edCores(m, k => game.pintarMesa(sel, k)));
-      if (!m.t) pop.appendChild(edBtn('Toalha xadrez: ' + fmt(TOALHA.cost), 'btn', bank >= TOALHA.cost, () => game.buyToalha(sel), TOALHA.cost));   // v8.6.4
+      if (!m.t) pop.appendChild(edBtn('Toalha xadrez: ' + fmt(TOALHA.cost), 'btn', bank >= TOALHA.cost, () => game.buyToalha(sel), TOALHA.cost));   // v8.6.5
       if (m.seats === 2) pop.appendChild(edBtn('Virar mesa de 4: ' + fmt(SALAO.virar), 'btn', tot + 2 <= p.lugares && bank >= SALAO.virar, () => game.virarMesa(sel), SALAO.virar));
       pop.appendChild(edBtn('Guardar no estoque', 'btn alt', mesas.length > 1, () => game.guardarMesa(sel)));
       pop.appendChild(edBtn('Vender por ' + fmt(mesaPreco(m.seats) * SALAO.venda), 'btn alt', mesas.length > 1, () => game.venderMesa(sel)));
@@ -7074,7 +7108,7 @@ function buildSalao(grid){
   ed.appendChild(side);
   grid.appendChild(ed);
   drawEditor(cv);
-  // v8.6.4: o balãozinho que não cabe para o lado escolhido (telas baixas, o botão da toalha) abre para o outro, se
+  // v8.6.5: o balãozinho que não cabe para o lado escolhido (telas baixas, o botão da toalha) abre para o outro, se
   // lá couber mais dele
   // lá couber mais dele; se não cabe de nenhum jeito, os botões vão em 2 colunas
   if (pop && box.clientHeight){
@@ -7088,7 +7122,7 @@ function buildSalao(grid){
     if (!me && w < W) pop.style.left = clamp(parseFloat(pop.style.left) / 100 * W, w / 2 + 4, W - w / 2 - 4) / W * 100 + '%';
   }
 }
-/* aba Decoração (v8.6.4): os enfeites da Garagem (DECOR), comprados à vontade; comprado, guarda e põe de volta de
+/* aba Decoração (v8.6.5): os enfeites da Garagem (DECOR), comprados à vontade; comprado, guarda e põe de volta de
    graça. E a toalha xadrez, em todas as mesas de uma vez (uma a uma, no editor do salão) */
 function decorCard(grupo, icon, title, desc){
   const card = el('div', 'item'); card.appendChild(el('i', 'dgrupo', grupo));
@@ -7295,8 +7329,10 @@ function buildGurugol(grid){
   if (!na){ grid.appendChild(el('p', 'rank-empty', 'Ainda ninguém avaliou a lanchonete no Gurugol: cada grupo que sai avalia, e os comentários aparecem aqui.')); return; }
   const esq = el('div', 'guru-lado');
   esq.appendChild(gurugolCaixa({ geral:ga, dia:avalMedias(sv.aval), n:na }, ga ? 'média das últimas ' + na + ' avaliações' : 'sem nota: ' + na + ' de ' + AVAL.min + ' avaliações'));
-  const mv = Math.round((avalMovimento(sv.aval) - 1) * 100);
-  esq.appendChild(el('p', 'small', ga ? (mv >= 0 ? 'Nota boa traz mais gente: ' : 'Nota baixa afasta a freguesia: ') + (mv > 0 ? '+' : '') + mv + '% de movimento.' : 'A nota aparece a partir da ' + AVAL.min + 'ª avaliação e mexe no movimento: até +' + Math.round(AVAL.mov * 100) + '% com 5 ★.'));
+  const mv = Math.round((avalMovimento(sv.aval, game.ponto) - 1) * 100), teto = fmtNota(avalTeto(game.ponto));
+  esq.appendChild(el('p', 'small', ga ? (mv >= 0 ? 'Nota boa traz mais gente: ' : 'Nota baixa afasta a freguesia: ') + (mv > 0 ? '+' : '') + mv + '% de movimento.' : 'A nota aparece a partir da ' + AVAL.min + 'ª avaliação e mexe no movimento: até +' + Math.round(AVAL.mov * 100) + '% com ' + teto + ' ★.'));
+  // v8.6.4: o teto do ponto
+  esq.appendChild(el('p', 'small', avalTeto(game.ponto) < 5 ? 'Aqui, o atendimento perfeito vale ' + teto + ' ★ (um cliente encantado dá um pouco mais). Pontos melhores sobem a nota, até 5 ★ no Terraço Suíça.' : 'Aqui, o atendimento perfeito vale 5 ★.'));
   grid.appendChild(esq);
   const lista = el('ul', 'guru-coms'); lista.setAttribute('aria-label', 'Últimos comentários');
   com.forEach(c => {
@@ -7799,7 +7835,7 @@ try { Rank.init(); } catch(e) {}
 game.setState('menu');
 if (!aberturaVista() && !DEV.on) abrirAbertura('auto');   // v8.5: a abertura toca sozinha uma vez
 window.__game = game;
-window.__lcc = { DECOR, DECOR_GRUPOS, TOALHA, decorOf, normDecor, decorOn, FILA_ACOES, filaMax, MARMITA, RETIRADA, marmitaMao, drawMarmita, prateleiraPos, EFOOD_COR, AVAL_BRAVO, QUEUE, setShopTab: v => { shopTab = v; buildShop(); }, TREINO, TREINO_PASSOS, TREINO_COR, Treino, treinoLugar, treinoPrimeiro, playCareer, buildMenu, introBanco, buildFalencia, BANCO, normEmprestimo, parcelaDe, devidoDe, jurosDe, tabelaDe, simulaEmprestimo, SEMANA, semanaOf, diaOf, FILA_JUSTA, PORTA, CHAIRS, PAT, CONTAS, INGRED, CARDAPIO, precoPrato, MAIS, PONTOS_ACAO, GORJETA, DRINK_PRICE, MOVIMENTO, movimentoSalao, DIVULGA, DIVULGA_DIA, divulgaOf, contasDia, bomGoal, SALAO, PONTOS, pontoOf, MESA, mesaBox, mesaPreco, salaoLugares, mesaProblema, salaoCaminho, salaoProblema, salaoOrdena, salaoAuto, salaoVaga, salaoPerto, salaoKit, salaoDevolucao, SALAO_SEMFIM, normSalao, setObst, OBST, pathOk, MAQUINA, BEBIDA_ESPERA, bebidaOf, MANUT, manutOf, manutChance, manutPreco, normManut, CLIMA, CLIMA_DIA, introManut, normPend, CALCADA, TW, HUDX, esperaAp, tableApproach, CRIT, STAFF, DANI_TASKS, DANI_HANDS, daniTaskOk, TRASH, WASH, payroll, FOLHA_CORTE, folhaCorta, folhaCortes, folhaItens, listaE, pratosDe, couvertEffect, couvertOk, ambienteEffect, dishStock, normSave, Helper, JUICE, KITCHEN_SLOTS, handLayout, trayOk, Game, Group, Table, Kitchen, Waitress, BIA_SPEED, DAYS, UPGRADES, CUSTOMER_TYPES, LAYOUT, PAL, Sfx, findPath, render, Rank, sortRows, cleanName, normName, CMD, ENDLESS, VIP, MULTA, rk, renderRank, openRank, closeRank, LS, lsGet, lsSet, loadSave, DEV, saveKey, devSync, divulgaAberta, CAIXA_MAX, VERSAO, normCaixa, caixaResumo, caixaTotais, copyText, AVAL, AVAL_CRIT, AVAL_BRAVO, avalMenu, normAval, avalNota, avalMedias, avalGeral, avalMovimento, avalComentario, fmtNota, notaFaixa, gurugolCaixa, AVAL_COM, normAvalCom, buildGurugol, ABERTURA, Abertura, AB_CENAS, AB_ALT, AB_BASE, abEsc, AB_VIVO, aberturaVista, aberturaSom, drawAbertura, abrirAbertura, aberturaAtual: () => abertura };
+window.__lcc = { DECOR, DECOR_GRUPOS, TOALHA, decorOf, normDecor, decorOn, FILA_ACOES, filaMax, MARMITA, RETIRADA, marmitaMao, drawMarmita, prateleiraPos, EFOOD_COR, AVAL_BRAVO, QUEUE, setShopTab: v => { shopTab = v; buildShop(); }, TREINO, TREINO_PASSOS, TREINO_COR, Treino, treinoLugar, treinoPrimeiro, playCareer, buildMenu, introBanco, buildFalencia, BANCO, normEmprestimo, parcelaDe, devidoDe, jurosDe, tabelaDe, simulaEmprestimo, SEMANA, semanaOf, diaOf, FILA_JUSTA, PORTA, CHAIRS, PAT, CONTAS, INGRED, CARDAPIO, precoPrato, MAIS, PONTOS_ACAO, GORJETA, DRINK_PRICE, MOVIMENTO, movimentoSalao, DIVULGA, DIVULGA_DIA, divulgaOf, contasDia, bomGoal, SALAO, PONTOS, pontoOf, MESA, mesaBox, mesaPreco, salaoLugares, mesaProblema, salaoCaminho, salaoProblema, salaoOrdena, salaoAuto, salaoVaga, salaoPerto, salaoKit, salaoDevolucao, SALAO_SEMFIM, normSalao, setObst, OBST, pathOk, MAQUINA, BEBIDA_ESPERA, bebidaOf, MANUT, manutOf, manutChance, manutPreco, normManut, CLIMA, CLIMA_DIA, introManut, normPend, CALCADA, TW, HUDX, esperaAp, tableApproach, CRIT, STAFF, DANI_TASKS, DANI_HANDS, daniTaskOk, TRASH, WASH, payroll, FOLHA_CORTE, folhaCorta, folhaCortes, folhaItens, listaE, pratosDe, couvertEffect, couvertOk, ambienteEffect, dishStock, normSave, Helper, JUICE, KITCHEN_SLOTS, handLayout, trayOk, Game, Group, Table, Kitchen, Waitress, BIA_SPEED, DAYS, UPGRADES, CUSTOMER_TYPES, LAYOUT, PAL, Sfx, findPath, render, Rank, sortRows, cleanName, normName, CMD, ENDLESS, VIP, MULTA, rk, renderRank, openRank, closeRank, LS, lsGet, lsSet, loadSave, DEV, saveKey, devSync, divulgaAberta, CAIXA_MAX, VERSAO, normCaixa, caixaResumo, caixaTotais, copyText, AVAL, AVAL_CRIT, AVAL_BRAVO, avalMenu, avalTeto, avalEscala, avalFrac, AVAL_SIMPLES, normAval, avalNota, avalMedias, avalGeral, avalMovimento, avalComentario, fmtNota, notaFaixa, gurugolCaixa, AVAL_COM, normAvalCom, buildGurugol, ABERTURA, Abertura, AB_CENAS, AB_ALT, AB_BASE, abEsc, AB_VIVO, aberturaVista, aberturaSom, drawAbertura, abrirAbertura, aberturaAtual: () => abertura };
 window.requestAnimationFrame(frame);
 
 })();

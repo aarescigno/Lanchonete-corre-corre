@@ -1,32 +1,28 @@
-# v8.6.4 — Decoração da Garagem
+# v8.6.4 — Notas do Gurugol com teto por ponto
 
-Pedido do usuário em 29/10 (texto em `docs/PROPOSTAS.md`): upgrades de estética no salão da Garagem. Das 4 opções sugeridas, entraram 3: as plantas (tirar a espada-de-são-jorge que vinha de graça e deixar o jogador comprar), as mesas arrumadas (toalha xadrez com porta-guardanapo e florzinha) e o cantinho da Rosa. A parede pintada com o varal de luz ficou de fora.
-
-**Só visual, por decisão do usuário.** O peso da decoração na nota de Ambiente do Gurugol (a proposta era a base do Ambiente cair de 3 para 2 e cada enfeite somar) fica para uma próxima etapa, porque o usuário mexe nas avaliações em outro branch. Esta versão não toca em `AVAL`, `avaliar` nem no Gurugol.
+Pedido do usuário em 29/10 (texto em `docs/PROPOSTAS.md`): 4 ★ e pouco numa garagem é nota alta demais. Se a Garagem já dá 4,4, a progressão dos pontos vira uma briga por vírgulas até o 5. A proposta: na Garagem, a nota máxima (e difícil) é 3; cada ponto sobe o teto, até 5 no Terraço Suíça; e há uma margem que sobe e desce, para um dia especial chegar a 3,5 ou 3,8.
 
 ## O que mudou
-- **Aba Decoração na lojinha** (entre Salão e Divulgação): 7 cartões em 2 fileiras, cada um com o grupo no alto (Plantas, Cantinho da Rosa, Mesas). Compras à vontade, fora da melhoria do dia, como o Jogo de pratos; o gasto entra no caixa do salão (`sal`).
-- **Enfeites** (`DECOR`, `DECOR_GRUPOS` em `10-constantes.js`):
+- **Teto por ponto** (`AVAL.teto = [3, 3.7, 4.3, 5]`, pelo `nivel` do ponto; `avalTeto(ponto)`): os 5 critérios continuam medindo o serviço de 1 a 5, como na v8.4 (agora em `avals[i].s`), e a nota que vai para o Gurugol fica na escala do ponto: `avalEscala(v, teto) = 1 + (v − 1)·(teto − 1)/4`. Serviço 5 vale o teto; 1 continua 1.
+- **Humor do cliente** (`AVAL.humor`), a "margenzinha": cada avaliação ganha de −0,3 a +0,3, e 20% dos clientes saem encantados, com +0,6 a +1,2. Nenhum critério passa de teto + 0,8 (3,8 na Garagem). Quem sai bravo não tem humor.
+- **Movimento** pela fração do teto (`avalFrac`): −10% com 1 ★, neutro na metade (2 ★ na Garagem; era 3 ★) e +10% no teto (3 ★ na Garagem). O efeito para o mesmo jogo fica quase o mesmo de antes.
+- **Cores** do número no HUD e do balãozinho pela fração do teto: verde a partir de 75% (2,5 ★ na Garagem), amarelo a partir de 50%.
+- **Comentários:** o elogio continua pelo serviço (4 ou mais). Abaixo do Terraço, 30% dos elogios lembram que o lugar é simples (`AVAL_SIMPLES`, por nível: "Comida boa! Pena que é numa garagem.").
+- **Textos:** a aba Gurugol da lojinha diz que, ali, o atendimento perfeito vale 3,0 ★ e que os pontos melhores sobem a nota até 5; o Como jogar explica o teto (o desenho mostra 3,0 com 3 estrelas). As faixas da caixa animada (prata a partir de 4, ouro, diamante) não mudaram: na Garagem a nota fica "pura", e as faixas viram recompensa dos pontos de cima.
+- **Save:** as notas guardadas antes (avaliações, comentários e a nota do dia no Caixa) passam para a escala da Garagem uma vez só (`save.avalEsc = 2`); 4,6 vira 2,8.
 
-  | Grupo | Enfeite | Preço | Onde fica |
-  |---|---|---|---|
-  | Plantas | Espada-de-são-jorge (vaso de barro) | R$ 15 | calçada, canto de baixo (a da v7.7) |
-  | Plantas | Muda na lata | R$ 8 | calçada, encostada no muro (a da v7.7) |
-  | Plantas | Samambaia | R$ 30 | parede da garagem, num suporte à esquerda da janela |
-  | Cantinho da Rosa | Foto da dona Rosa | R$ 10 | parede, porta-retrato num prego (a Rosa da abertura) |
-  | Cantinho da Rosa | Quadro de giz | R$ 25 | chão, perto do portão, num cavalete ("HOJE / PF R$ …") |
-  | Cantinho da Rosa | Plaquinha "Comida é afeto" | R$ 15 | pendurada embaixo do letreiro |
+## Balanço (`DUMP=1 AVAL_MOV=1 node balance.js 150`, nota do dia e geral, últimas 30)
+| Bot | nota geral p10 / p50 / p90 (máx.) | dias com a geral ≥ 3,0 | nota do dia p50 / p99 (máx.) | dias ≥ 3,5 |
+|---|---|---|---|---|
+| afiado com equipe | 2,73 / 2,82 / 2,92 (3,06) | 5% | 2,81 / 3,50 (3,72) | 1,2% |
+| comum com equipe | 2,65 / 2,76 / 2,87 (3,07) | 2% | 2,75 / 3,50 (3,80) | 1,1% |
+| sem equipe | 2,40 / 2,52 / 2,64 (2,79) | 0% | 2,53 / 3,26 (3,66) | 0,2% |
 
-  Comprado, o enfeite pode ser **guardado e posto de volta de graça** (`save.decor[id]`: 1 à mostra, 0 guardado; `normDecor`, `decorOn`). Métodos `Game.buyDecor(id)` e `Game.mostraDecor(id, on)`.
-- **As plantas da v7.7 saíram:** o jogo começa sem nenhuma (save novo ou antigo); quem quiser compra na aba Decoração. As funções `drawVasoEspada` e `drawLataEspada` (em `21-cenario.js`) são o desenho de antes, separado.
-- **Toalha xadrez** (`TOALHA.cost` = R$ 12 por mesa): fica na mesa (`{ t:1 }` em `save.salao.mesas` e no estoque), vai junto quando a mesa vai para o estoque e volta, e some quando a mesa é vendida. Na aba Decoração, "Pôr em todas" (`Game.buyToalhas`, `semToalha`); no editor do salão, o balãozinho da mesa ganha "Toalha xadrez: R$ 12" (`Game.buyToalha(i, est)`). Desenho em `22-salao-hud.js`: `drawToalha` (o pano com a aba da frente em ondas) e `drawToalhaEnfeites` (porta-guardanapo e florzinha num copinho); a `Table` tem `toalha`.
-- **Desenho da parede:** `drawDecorParede` (chamada em `drawWall` só na Garagem), com `drawSamambaia`, `drawFotoRosa` (usa `drawPerson` e a `abFlor` da abertura), `drawPlaquinha` e `drawGiz`. No editor do salão o quadro de giz não aparece (ficaria atrás do estoque; `edDesenho`). Os ícones da lojinha (`d-*` em `upgradeIcon`) usam as mesmas funções.
-- **Balãozinho do editor do salão:** antes já passava da borda de baixo nas telas baixas (o "Vender" sumia em 1220×600). Agora, depois de montado, ele é medido: abre para o lado em que cabe mais; se não cabe de nenhum jeito, os botões vão em 2 colunas (`.ed-pop.largo`), e ele não passa das bordas dos lados.
-- **Como jogar:** a dica do salão cita a aba Decoração.
+O afiado era ~4,4 ★ (+7% de movimento) e fica em ~2,8 (+8%). Lucro e metas não mudam (o `balance.js` zera as avaliações a cada dia, como antes).
 
-## Balanço
-Nada muda nas contas: os enfeites não mexem em movimento, paciência, gorjeta nem nota. O bot não compra decoração.
+## Para a etapa 3
+A nota mínima para sair da Garagem (o usuário tinha pedido 4,5 ★, quando o afiado ficava entre 4,35 e 4,5) passa a ser, como sugestão, **2,8 ★** (90% do teto); 3,4 na área industrial e 4,0 na Avenida Brasil. Ao mudar, as avaliações antigas continuam na média, e a nota sobe aos poucos até o teto novo.
 
 ## Testes
-- `run_all.sh`: todos passam (smokes 1 a 30). Novo `smoke30.js` (enfeites, compra fora da melhoria do dia, guardar e pôr de volta, save, toalha por mesa e em todas, estoque, venda, aba Decoração, desenho).
-- Capturas em `capturas/v8.6.4` (`python3 shot_v8_6_4.py`): o dia sem enfeites e com tudo, recortes da parede e da toalha, a aba Decoração e o editor com a toalha, no PC e no celular deitado.
+- `run_all.sh`: todos passam. `smoke25` confere o teto, a escala, o humor (até 3,8), o movimento na Garagem e no Terraço e a conversão do save; `smoke28` lê as notas do serviço do entregador em `s`.
+- `balance.js`: o `DUMP=1` mostra também a nota do Gurugol no dia e a geral.

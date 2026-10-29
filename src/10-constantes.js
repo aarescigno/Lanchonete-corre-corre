@@ -203,7 +203,7 @@ function salaoCor(mesas){
   return n.indexOf(Math.min.apply(null, n));
 }
 function salaoKit(ponto){ return salaoAuto(SALAO.kit.map((seats, c) => ({ x:0, y:0, seats, c:c % 4 })), ponto); }
-/* save do salão: { ponto, mesas:[{ x, y, seats, c, t? }], estoque:[{ seats, c, t? }] } (t: a toalha, v8.6.4). O estoque (v8.3.5) guarda mesas
+/* save do salão: { ponto, mesas:[{ x, y, seats, c, t? }], estoque:[{ seats, c, t? }] } (t: a toalha, v8.6.5). O estoque (v8.3.5) guarda mesas
    fora do salão: não abrem no dia nem pagam luz e gás, mas contam no teto de lugares. Mesa estragada sai; passou
    do teto, saem as do estoque e depois as últimas do salão; arranjo inválido vira o automático (e, se nem assim,
    o kit inicial) */
@@ -233,7 +233,7 @@ function salaoDevolucao(s){
 /* Turno sem fim (v7.4): salão fixo de 6 mesas e 16 lugares (o de antes), igual para todo mundo no ranking */
 const SALAO_SEMFIM = [2,2,2,4,2,4];
 /* ============================================================
-   DECORAÇÃO (v8.6.4, pedido do usuário): enfeites da Garagem, comprados na aba Decoração da lojinha, à vontade (fora
+   DECORAÇÃO (v8.6.5, pedido do usuário): enfeites da Garagem, comprados na aba Decoração da lojinha, à vontade (fora
    da melhoria do dia). Por enquanto só visuais: o peso no Ambiente do Gurugol fica para uma próxima etapa.
    - plantas: as espadas-de-são-jorge da calçada (da v7.7, que vinham de graça) e a samambaia na parede;
    - cantinho da Rosa: a foto da mãe da Bia, o quadro de giz com o prato do dia e a plaquinha "Comida é afeto".
@@ -452,10 +452,18 @@ function movimentoSalao(lugares){ return 1 + MOVIMENTO.porLugar * Math.max(0, lu
    - menu: pelos pratos do cardápio do ponto;
    - amb (ambiente): a base mais TV, som, torneira, ventilador, o cafezinho servido e o couvert; lixeira cheia tira.
    Quem sai bravo dá 1 na agilidade e no prato que não chegou a comer. Só `porDia` grupos do dia (sorteados) avaliam, como num restaurante de verdade. A nota é a média das últimas `max` avaliações,
-   e só aparece depois das `min` primeiras; ela mexe no movimento do dia, de −mov (1 ★) a +mov (5 ★), neutra em 3 ★.
-   Quem fica para o fim do dia (a lanchonete fecha) não avalia; dia largado no meio não conta */
+   e só aparece depois das `min` primeiras; ela mexe no movimento do dia (v8.6.4: pelo teto do ponto, abaixo).
+   Quem fica para o fim do dia (a lanchonete fecha) não avalia; dia largado no meio não conta.
+   v8.6.4, teto por ponto: os critérios acima medem o serviço (1 a 5), e o Gurugol mostra a nota na escala do ponto:
+   serviço 5 vale `teto` (pelo nível do ponto: Garagem 3, área industrial 3,7, Avenida Brasil 4,3, Terraço Suíça 5).
+   Cada cliente tem o seu humor (de −humor.var a +humor.var) e, às vezes (`humor.encanta`), sai encantado e dá de
+   humor.extra a mais, até `humor.folga` acima do teto: num dia especial, a Garagem chega a 3,5 ou 3,8. Quem sai bravo não
+   tem humor.
+   O movimento vai pela fração do teto: neutro na metade (2 ★ na Garagem) e +mov no teto */
 const AVAL = {
-  max:30, min:8, porDia:4, porCoracao:0.75, mov:0.1, neutra:3,
+  max:30, min:8, porDia:4, porCoracao:0.75, mov:0.1,
+  teto:[3, 3.7, 4.3, 5],
+  humor:{ var:0.3, encanta:0.2, extra:[0.6, 1.2], folga:0.8 },
   bonus:{ cor:0.5, corrente:0.5, crit:0.5, max:1.5 },
   prato:[[2.5, 4.5], [3, 4.7], [3.5, 5]],
   menu:{ base:1.5, porPrato:0.75 },
@@ -495,18 +503,31 @@ function avalMedias(lista){
 }
 /* a nota da lanchonete (as médias das últimas AVAL.max), ou null antes das AVAL.min primeiras */
 function avalGeral(lista){ return lista.length >= AVAL.min ? avalMedias(lista) : null; }
-/* o movimento pela nota: de 1 − mov a 1 + mov; sem nota, 1 */
-function avalMovimento(lista){
+/* o teto do ponto (v8.6.4): a nota que o serviço perfeito vale lá */
+function avalTeto(ponto){ return AVAL.teto[clamp(((ponto || PONTOS[0]).nivel || 1) - 1, 0, AVAL.teto.length - 1)]; }
+/* a nota do serviço (1 a 5) na escala do ponto: 1 continua 1 e 5 vira o teto */
+function avalEscala(v, teto){ return 1 + (v - 1) * (teto - 1) / 4; }
+/* quanto a nota vale no ponto: 0 com 1 ★ e 1 no teto (passa de 1 com os encantados) */
+function avalFrac(n, teto){ return (n - 1) / (teto - 1); }
+/* o movimento pela nota: de 1 − mov (1 ★) a 1 + mov (o teto do ponto), neutro na metade; sem nota, 1 */
+function avalMovimento(lista, ponto){
   const m = avalGeral(lista);
-  return m ? 1 + AVAL.mov * clamp((m.nota - AVAL.neutra) / (5 - AVAL.neutra), -1, 1) : 1;
+  return m ? 1 + AVAL.mov * clamp(avalFrac(m.nota, avalTeto(ponto)) * 2 - 1, -1, 1) : 1;
 }
 function fmtNota(n){ return n == null ? '–' : (Math.round(n * 10) / 10).toFixed(1).replace('.', ','); }
-/* o comentário de uma avaliação: quem saiu bravo reclama de ter ido embora; com nota 4 ou mais, elogia o melhor critério;
+/* o comentário de uma avaliação, pelas notas do serviço: quem saiu bravo reclama de ter ido embora; com nota 4 ou mais,
+   elogia o melhor critério (v8.6.4: abaixo do Terraço, às vezes elogia e lembra que o lugar é simples, AVAL_SIMPLES);
    senão, reclama do pior (o ambiente com a lixeira cheia reclama do cheiro) */
+const AVAL_SIMPLES = [
+  ['Atendimento ótimo, mas o lugar é bem simples.', 'Comida boa! Pena que é numa garagem.', 'Gostei! Só falta um lugar mais arrumado.'],
+  ['Atendimento ótimo, mas o lugar ainda é simples.', 'Comida boa, salão sem luxo.'],
+  ['Muito bom! Só falta aquele toque de requinte.']
+];
 const AVAL_BRAVO = { fila:['Desisti de esperar!', 'Nem consegui sentar.'], mesa:['Fui embora sem comer!', 'Nunca mais volto!'], retirada:['Cadê a marmita?!', 'Saí sem o pedido!'] };   // retirada (v8.6): o entregador
-function avalComentario(r, bravo, lixo){
+function avalComentario(r, bravo, lixo, nivel){
   if (bravo) return pick(AVAL_BRAVO[bravo]);
-  const bom = Math.round(avalNota(r) * 10) >= 40;   // pela nota que aparece (3,96 vira 4,0)
+  const bom = Math.round(avalNota(r) * 10) >= 40;   // pela nota com uma casa (3,96 vira 4,0)
+  if (bom && AVAL_SIMPLES[(nivel || 1) - 1] && Math.random() < 0.3) return pick(AVAL_SIMPLES[(nivel || 1) - 1]);
   let k = 0;
   r.forEach((v, i) => { if (bom ? v > r[k] : v < r[k]) k = i; });
   if (!bom && lixo && AVAL_CRIT[k].id === 'amb') return 'Que cheiro de lixo!';
@@ -546,7 +567,7 @@ function tabelaDe(e){
 /* um empréstimo novo de v, pagando em dia: as parcelas e os juros somados */
 function simulaEmprestimo(v, j){ const t = tabelaDe(normEmprestimo({ resto:v, amort:Math.ceil(v / BANCO.parcelas), j })); return { parcelas:t, juros:t.reduce((a, p) => a + p, 0) - v }; }
 const CAIXA_MAX = 14;                                 // livro-caixa (v7.2): quantos dias da carreira ficam guardados
-const VERSAO = 'v8.6.4';                               // vai no resumo do Caixa
+const VERSAO = 'v8.6.5';                               // vai no resumo do Caixa
 const DIVULGA_DIA = 3;                                // antes disso, o movimento é o da inauguração (sem custo)
 function divulgaAberta(n){ return DEV.on || n >= DIVULGA_DIA; }   // no modo dev, desde o dia 1
 function divulgaOf(id){ return DIVULGA.find(d => d.id === id) || DIVULGA[1]; }
