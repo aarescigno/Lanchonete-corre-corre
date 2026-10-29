@@ -36,10 +36,15 @@ const movFor=n=>process.env.MOVEIS==='kit'?MOV[1]:(process.env.MOVEIS?JSON.parse
 const order=process.env.ORDEM?process.env.ORDEM.split(','):['tenis','maquina','cafeteira','bandeja','ventilador','pratos'];   // ORDEM=pratos,tenis,...: ordem de compra das melhorias
 const DIAS=process.env.DIAS?process.env.DIAS.split(',').map(Number):[1,2,3,4,5,6,7];   // DIAS=1,2: só esses dias (v8.3: DIAS=8,9,14 testa os dias da campanha)
 const NMAX=Math.max(...DIAS);
+// v8.6.9, cursos do Tonhão: CURSOS=bot (padrão) o dia d começa com as d−1 primeiras compras da ordem do bot (1 curso por lojinha);
+// CURSOS=todos (os 4 básicos e todos os avançados); CURSOS=0 (nenhum: só PF e coxinha); CURSOS=chapa,pastel,... troca a ordem do bot
+const CUR=process.env.CURSOS||'bot', BOTM=require('./bot.js'), ORD_CUR=!['bot','todos','0'].includes(CUR)?CUR.split(','):null;
+const cursosFor=n=>CUR==='0'?{}:CUR==='todos'?BOTM.cursosApos(L,99):BOTM.cursosApos(L,n-1,ORD_CUR||undefined);
 const R={}; DIAS.forEach(n=>R[n]=[]);
 // um dia de uma rodada; man: o estado de equipamentos que vem do dia anterior (null: tudo novo)
 function jogaDia(n,man){
   g.up={}; g.save.up=g.up; order.slice(0,n-1).forEach(id=>g.up[id]=true);
+  g.save.cursos=cursosFor(n);
   if(L.normSave){ g.save.equipe=L.normSave({equipe:eqFor(n)}).equipe; g.save.bank=1e6; }
   const dec=process.env.DECOR==='tudo';   // v8.6.6: DECOR=tudo põe todos os enfeites à mostra e toalha em todas as mesas (o bot não compra decoração)
   g.save.decor=L.normDecor?L.normDecor(dec?Object.fromEntries(L.DECOR.map(d=>[d.id,1])):{}):{};

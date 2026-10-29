@@ -25,7 +25,7 @@ ok(Math.abs(L.avalMovimento(Array.from({length:20},()=>[4.3,4.3,4.3,4.3,4.3]),{n
   const s2=L.normSave(JSON.parse(JSON.stringify(s))); ok(s2.aval[0].join()==='3,3,3,3,3' && s2.avalCom[0].n===28,'e só uma vez'); }
 ok(L.AVAL_SIMPLES[0].length>=2,'comentários de lugar simples na Garagem');
 ok(L.fmtNota(4.25)==='4,3' && L.fmtNota(null)==='–','nota com vírgula');
-ok(Math.abs(L.avalMenu()-4.5)<1e-9,'cardápio da Garagem (4 pratos): 4,5');
+ok(Math.abs(L.avalMenu({})-2)<1e-9 && Math.abs(L.avalMenu({pastel:1,chapa:1})-3.2)<1e-9,'cardápio da Garagem: 2,0 de início e +0,6 por curso (v8.6.9)');
 ok(L.avalComentario([5,5,5,5,5])!=='' && L.AVAL_BRAVO.fila.includes(L.avalComentario([1,1,1,4,3],'fila')),'comentário (e o de quem desistiu na fila)');
 ok(L.AVAL_CRIT[0].ruim.includes(L.avalComentario([1,3,3,3,3])),'nota baixa reclama do pior critério');
 ok(L.avalComentario([4,4,4,4,1],'',true)==='Que cheiro de lixo!','ambiente ruim com a lixeira cheia: o cheiro');
@@ -45,7 +45,7 @@ g.save=L.normSave({dia:3,bank:500}); g.up=g.save.up; g.buildTables(); g.startDay
   g.avaliar(gr,0,0); const r=g.avals[0].s;
   ok(r[0]===3.5,'espera: 2 corações perdidos lá fora tiram 1,5');
   ok(r[1]===4.3,'agilidade: 1 coração na mesa (−0,75); a cor certa não soma mais (v8.6.7)');
-  ok(r[2]===4.2 && r[3]===4.5,'prato e cardápio');
+  ok(r[2]===4.2 && r[3]===2,'prato e cardápio (2,0 sem cursos, v8.6.9)');
   ok(r[4]===A.amb.base+A.amb.cafe,'ambiente: a base e o cafezinho');
   const v=g.avals[0].r, d=v.map((x,i)=>x-L.avalEscala(r[i],3)), h=d[0];   // r[0] é o menor: não passa do teto + folga
   ok(v.every((x,i)=>Math.abs(x-Math.min(3+A.humor.folga*2,L.avalEscala(r[i],3)+h))<0.11) && h>=-A.humor.var*2-0.06 && h<=(A.humor.var+A.humor.extra[1])*2+0.06,'no Gurugol: a escala da Garagem mais o humor do cliente, até 3,8 ('+v+')');

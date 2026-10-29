@@ -473,6 +473,27 @@ function buildDecor(grid){
   grid.appendChild(c);
 }
 /* aba Divulgação (v7): escolha do dia, paga junto com a folha (no fim do dia, desde a v8.2.2); e o resumo das contas do dia */
+/* aba Cursos (v8.6.9): um cartão por curso do Tonhão; feito o básico, o cartão vira o do avançado. Um curso por lojinha */
+function cursoIcon(c){
+  return tipCanvas(x => { x.translate(32,32); drawDish(x, c.pratos[0] || c.av.pratos[0], 0, 4, 1.7); });
+}
+function buildCursos(grid){
+  const sv = game.save, bank = sv.bank, cur = sv.cursos;
+  if (game.cursoMsg) grid.appendChild(el('p', 'cursomsg', game.cursoMsg));
+  const pratos = (l, cu) => l.map(k => CARDAPIO[k].nome + ' ' + fmt(precoPrato(k, game.ponto, cu || cur))).join(' · ');
+  CURSOS.forEach(c => {
+    const n = cursoNivel(cur, c.id), p = game.cursoProx(c.id), av = n >= 1;
+    const card = el('div', 'item' + (!p ? ' own' : ''));
+    card.appendChild(cursoIcon(c));
+    card.appendChild(el('b', null, av ? c.av.nome : 'Curso de ' + c.nome));
+    if (!p) card.appendChild(el('span', null, 'Curso completo. ' + pratos(c.av.pratos) + '.'));
+    else if (!av) card.appendChild(el('span', null, 'O Tonhão aprende: ' + pratos(c.pratos) + '. +' + String(AVAL.menu.porCurso).replace('.', ',') + ' ★ na Diversidade do cardápio.'));
+    else card.appendChild(el('span', null, 'Receitas: ' + c.av.receita + '. +' + Math.round((CURSO_AV.preco - 1) * 100) + '% no preço destes pratos e o Tonhão capricha mais (×' + String(CURSO_AV.crit).replace('.', ',') + ').'));
+    if (p && game.cursoTrava) card.appendChild(el('span', 'cursos-lista', 'O Tonhão já está num curso. Volte depois do próximo dia.'));
+    card.appendChild(p ? shopBtn('Comprar ' + fmt(p.preco), 'btn', !game.cursoTrava && bank >= p.preco, () => game.buyCurso(c.id), p.preco) : shopBtn('Curso completo', 'btn', false, () => false));
+    grid.appendChild(card);
+  });
+}
 function buildDivulga(grid){
   const n = game.shopNext, open = divulgaAberta(n), cur = game.save.divulga;
   DIVULGA.forEach(d => {
@@ -690,11 +711,12 @@ function buildShop(){
   $('btn-shop-go').textContent = 'Começar o dia ' + game.shopNext;
   const f = payroll(game.save.equipe), dv = divulgaAberta(game.shopNext) ? divulgaOf(game.save.divulga) : null;
   $('shop-folha').textContent = (f ? 'Folha ' + fmt(f) : 'Sem folha') + (dv ? ' + ' + dv.name.toLowerCase() + ' ' + fmt(dv.cost) : '') + ', contas ' + fmt(contasDia(game.tables)) + (sv.emp.resto ? ', parcela do banco ' + fmt(game.devido) + (sv.emp.atr ? ' (com a atrasada)' : '') : '') + ' e ingredientes: tudo pago no fim do dia, que só rende completo. A meta é o lucro.';
-  grid.className = 'shopgrid' + (shopTab === 'salao' || shopTab === 'caixa' || shopTab === 'melhorias' || shopTab === 'gurugol' || shopTab === 'decor' ? ' ' + shopTab : '');
+  grid.className = 'shopgrid' + (shopTab === 'salao' || shopTab === 'caixa' || shopTab === 'melhorias' || shopTab === 'gurugol' || shopTab === 'decor' || shopTab === 'cursos' ? ' ' + shopTab : '');
   ['salao', 'caixa'].forEach(k => $('ov-shop').classList[shopTab === k ? 'add' : 'remove'](k));
   if (shopTab === 'equipe') return buildEquipe(grid);
   if (shopTab === 'salao') return buildSalao(grid);
   if (shopTab === 'decor') return buildDecor(grid);
+  if (shopTab === 'cursos') return buildCursos(grid);
   if (shopTab === 'divulga') return buildDivulga(grid);
   if (shopTab === 'manut') return buildManut(grid);
   if (shopTab === 'banco') return buildBanco(grid);

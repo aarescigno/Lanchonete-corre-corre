@@ -9,7 +9,7 @@ class Game {
     this.hooks = {};
     this.save = loadSave();
     this.up = this.save.up;
-    this.tablesKey = ''; this.salaoMsg = ''; this.salaoSel = -1; this.estoqueSel = -1; this.salaoUndo = [];
+    this.tablesKey = ''; this.salaoMsg = ''; this.cursoMsg = ''; this.salaoSel = -1; this.estoqueSel = -1; this.salaoUndo = [];
     this.buildTables();
     this.bia = new Waitress(this);
     this.kitchen = new Kitchen(this);
@@ -26,6 +26,8 @@ class Game {
   setState(s){ this.state = s; if (this.hooks.state) this.hooks.state(s); }
   get proxDia(){ return this.save.dia; }   // campanha (v8.3): o próximo dia da carreira
   get ponto(){ return pontoOf(this.save.salao.ponto); }
+  /* os cursos do Tonhão que valem no modo (v8.6.9): na Missão zero só o PF e a coxinha; no Turno sem fim, os 4 básicos */
+  get cursos(){ return this.mode === 'treino' ? {} : this.mode === 'semfim' ? CURSOS_SEMFIM : this.save.cursos; }
   get bebida(){ return bebidaOf(this.ponto); }   // o que se serve na espera (v7.7)
 
   resetDay(n, treino){
@@ -387,7 +389,7 @@ class Game {
   }
   /* o entregador leva a marmita e paga: o preço do prato com a gorjeta dos corações; a Efood fica com MARMITA.efood do preço */
   entregaMarmita(g, m){
-    const preco = precoPrato(m.dish, this.ponto), bruto = Math.round(preco * (1 + GORJETA[g.hearts])), taxa = Math.round(preco * MARMITA.efood);
+    const preco = precoPrato(m.dish, this.ponto, this.cursos), bruto = Math.round(preco * (1 + GORJETA[g.hearts])), taxa = Math.round(preco * MARMITA.efood);
     const x = g.x, y = g.y;
     this.efood += taxa; this.stats.marmitas++; this.stats.served++;
     g.pratoQ = m.q || 0; if (m.crit) g.capricho = true;
@@ -633,7 +635,7 @@ class Game {
     // depois do pedido, sem comer, mais o cardápio; o entregador bravo não levou a marmita. Quem comeu (ou pagou) dá os 5
     const st = g.state, comeu = !bravo || st === 'eating' || st === 'wantBill';
     const ve = g.retira ? [1, 1, !bravo, 0, 0] : !bravo || comeu ? [1, 1, 1, 1, 1] : st === 'queue' || st === 'toTable' ? [1, 0, 0, 0, 0] : st === 'wantOrder' ? [1, 1, 0, 0, 1] : [1, 1, 0, 1, 1];
-    const s = [5 - A.porCoracao * (g.retira ? g.perdMesa : g.perdFila), bravo ? 1 : 5 - A.porCoracao * g.perdMesa, g.pratoQ || 1, avalMenu(), amb]
+    const s = [5 - A.porCoracao * (g.retira ? g.perdMesa : g.perdFila), bravo ? 1 : 5 - A.porCoracao * g.perdMesa, g.pratoQ || 1, avalMenu(this.cursos), amb]
       .map((v, i) => ve[i] ? clamp(Math.round(v * 10) / 10, 1, 5) : null);
     // v8.6.4: a nota no Gurugol fica na escala do ponto (o serviço 5 vale o teto), mais o humor de quem avalia; v8.6.7: o humor
     // e a folga são fração da faixa do ponto (teto − 1), e a cor certa, a corrente e o caprichado aumentam a chance de encantar
@@ -798,7 +800,7 @@ class Game {
     this.shopNext = Math.max(1, n || this.day.n + 1);
     this.shopBought = this.boughtFor === this.shopNext;
     if (DEV.on && this.save.bank < DEV.bank){ this.save.bank = DEV.bank; writeSave(this.save); }   // modo dev: o dinheiro não acaba
-    this.salaoSel = -1; this.estoqueSel = -1; this.salaoUndo = []; this.salaoMsg = '';
+    this.salaoSel = -1; this.estoqueSel = -1; this.salaoUndo = []; this.salaoMsg = ''; this.cursoMsg = '';
     this.resetDay(this.shopNext);   // o salão ao fundo já mostra o dia que vem
     this.setState('shop');
   }
@@ -883,6 +885,23 @@ class Game {
     caixaGasto(this.save, 'mel', u.cost);
     writeSave(this.save);
     Sfx.coin();
+    return true;
+  }
+  /* cursos do Tonhão (v8.6.9): o próximo degrau do curso (o básico, ou o avançado se o básico já foi feito), ou null se está completo */
+  cursoProx(id){
+    const c = cursoOf(id), n = c ? cursoNivel(this.save.cursos, id) : 2;
+    if (!c || n >= 2) return null;
+    return n >= 1 ? { nivel:2, nome:c.av.nome, preco:c.av.preco } : { nivel:1, nome:c.nome, preco:c.preco };
+  }
+  /* um curso por lojinha: depois de comprar um, os outros esperam o próximo dia */
+  get cursoTrava(){ return !DEV.on && this.save.cursoDia === this.shopNext; }
+  buyCurso(id){
+    const p = this.cursoProx(id);
+    if (!p || this.cursoTrava || this.save.bank < p.preco) return false;
+    this.save.bank -= p.preco; caixaGasto(this.save, 'mel', p.preco);
+    this.save.cursos[id] = p.nivel; this.save.cursoDia = this.shopNext;
+    this.cursoMsg = 'O Tonhão foi fazer o curso de ' + p.nome + '!';
+    writeSave(this.save); Sfx.coin();
     return true;
   }
   /* salão (v7.4): refaz as mesas e os obstáculos dos caminhos quando o salão muda. Os números seguem a ordem no

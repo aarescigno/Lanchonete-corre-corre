@@ -3,7 +3,7 @@
 // melhorias de graça (liga e desliga), equipe completa, couvert e divulgação; ranking de fora.
 const load=require('./harness.js');
 let fails=0,total=0; const ok=(c,m)=>{ total++; if(!c){fails++;console.log('FAIL:',m);} else console.log('ok  :',m); };
-const real=JSON.stringify({maxDay:3,bank:420,up:{bandeja:true},torneira:true});   // save da v7.7 (o de antes ganha a devolução da máquina)
+const real=JSON.stringify({maxDay:3,bank:420,up:{bandeja:true},torneira:true,cardV:1});   // save da v7.7 (o de antes ganha a devolução da máquina)
 const H=load({store:{lcc2_save:real}}); const {g,L,els,store}=H;
 H.doc.createTextNode=t=>({textContent:String(t),children:[]});   // a aba Equipe usa
 const tag=els['vtag'], toca=n=>{ for(let i=0;i<n;i++) tag.fire('click'); };
