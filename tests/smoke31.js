@@ -10,11 +10,11 @@ const txt=e=>(e.textContent||'')+(e.children||[]).map(txt).join(' ');
 const BAS={pastel:1,chapa:1,fritos:1,assados:1};
 
 // ---------- o cardápio e os cursos ----------
-ok(Object.keys(C).length===14,'14 pratos no cardápio');
+ok(Object.keys(C).length===22,'22 pratos no cardápio (14 + 8 sem carne da v8.6.11)');
 ok(Object.keys(C).every(k=>C[k].cat && ['pf','frito','assado','chapa','pastel'].includes(C[k].cat) && (C[k].curso===null || L.cursoOf(C[k].curso))),'cada prato tem categoria e curso (ou nenhum)');
 ok(C.pf.preco===25 && C.coxinha.preco===8 && C.risoles.preco===6 && C.kibe.preco===7 && C.bolinho.preco===8 && C.empada.preco===9 && C.esfihaA.preco===7 && C.esfihaF.preco===7 && C.misto.preco===10 && C.bauru.preco===12 && C.paoChapa.preco===7 && C.pastel.preco===10 && C.pastelQ.preco===10 && C.pastelP.preco===11,'os preços dos 14 pratos');
-ok(Object.keys(C).filter(k=>!C[k].carne).sort().join()==='paoChapa,pastelQ','só o pão na chapa e o pastel de queijo não têm carne');
-ok(L.CURSOS.map(c=>c.id+':'+c.preco+':'+c.av.preco).join()==='pastel:150:300,chapa:180:360,fritos:220:440,assados:250:500,pf:0:400','cursos e preços: pastel 150/300, chapa 180/360, fritos 220/440, assados 250/500, PF só o avançado 400');
+ok(Object.keys(C).filter(k=>!C[k].carne&&!C[k].veg).sort().join()==='paoChapa,pastelQ' && Object.keys(C).filter(k=>!C[k].carne).length===10,'sem carne de fábrica: só o pão na chapa e o pastel de queijo (mais os 8 pratos do curso Vegetariano)');
+ok(L.CURSOS.map(c=>c.id+':'+c.preco+':'+c.av.preco).join()==='pastel:150:300,chapa:180:360,fritos:220:440,assados:250:500,pf:0:400,veg:150:300','cursos e preços: pastel 150/300, chapa 180/360, fritos 220/440, assados 250/500, PF só o avançado 400, Vegetariano 150/300');
 novo();
 ok(L.pratosSabidos(g.save.cursos).join()==='pf,coxinha','save novo: a cozinha só sabe PF e coxinha');
 ok(Math.abs(L.avalMenu(g.save.cursos)-2)<1e-9,'Diversidade do cardápio: 2,0 de início');
@@ -55,7 +55,7 @@ g.save=L.normSave({bank:1000,dia:3}); g.up=g.save.up; g.boughtFor=0; g.goShop(3)
   for(let i=0;i<2000;i++){ const tp=TIPOS[i%5], gr=new L.Group(g,tp,i,0,false);
     gr.dishes.concat(gr.extras).forEach(k=>{ if(k){ vistos[k]=1; if(!sab.includes(k)) so=false; } });
     gr.extras.forEach(k=>{ if(k==='pf') extraPf=true; });
-    if(tp==='executiva') gr.dishes.forEach(k=>{ if(C[k].cat==='frito'||C[k].cat==='pastel') { if(C[k].cat==='frito') exeFrito=true; else exePastel=true; } }); }
+    if(tp==='executiva') gr.dishes.forEach((k,i)=>{ if(!gr.people[i].veg) if(C[k].cat==='frito'||C[k].cat==='pastel') { if(C[k].cat==='frito') exeFrito=true; else exePastel=true; } }); }
   ok(so && !extraPf,'com pastel e fritos: 2.000 grupos só pedem pratos sabidos, e o 2º item nunca é PF');
   ok(sab.every(k=>vistos[k]),'e todos os pratos sabidos aparecem ('+Object.keys(vistos).length+' de '+sab.length+')');
   ok(!exeFrito && !exePastel,'a executiva não gosta de frito nem de pastel'); }
@@ -86,6 +86,34 @@ ok(L.pedePrato('executiva',{cursos:{},day:{time:100},clock:50},true)==='coxinha'
   const V=load(); ok(!V.g.save.avisoCard && V.g.save.cardV===1,'primeira vez: sem aviso');
   const S=load({store:{lcc2_save:JSON.stringify({dia:6,bank:900,cursos:{pastel:2,chapa:1,pf:1,xx:2},cursoDia:5})}}); ok(S.g.save.dia===6 && S.g.save.cursos.pastel===2 && S.g.save.cursos.chapa===1 && S.g.save.cursos.pf===undefined && S.g.save.cursos.xx===undefined,'save novo: os cursos voltam como estavam (e o lixo sai)'); }
 function normB(A){ return A.L.normSave({}).bank; }
+
+
+// ---------- v8.6.11: vegetarianos e veganos ----------
+{ const V=L.CARDAPIO;
+  ok(V.pfVeg.preco===23 && V.empadaPalmito.preco===9 && V.kibeAbobora.preco===7 && V.coxinhaJaca.preco===8 && V.pastelPalmito.preco===10 && V.esfihaSoja.preco===7 && V.mistoVegano.preco===10 && V.pfVegano.preco===23,'preços dos pratos vegetarianos e veganos');
+  novo({cursos:{}}); ok(Math.abs(L.vegMov(g.save.cursos)-1)<1e-9 && !L.pratoSabido('pfVeg',{}) ,'sem o curso Vegetariano: nada de pratos sem carne a mais, movimento ×1');
+  ok(Math.abs(L.vegMov({veg:1})-1.05)<1e-9 && Math.abs(L.vegMov({veg:2})-1.10)<1e-9,'o curso soma 5% de movimento, o avançado mais 5%');
+  ok(L.pratoSabido('pfVeg',{veg:1}) && !L.pratoSabido('empadaPalmito',{veg:1}) && L.pratoSabido('empadaPalmito',{veg:1,assados:1}) && !L.pratoSabido('kibeAbobora',{veg:1,assados:1}) && L.pratoSabido('kibeAbobora',{veg:1,fritos:1}),'empada de palmito só com assados, kibe de abóbora só com fritos');
+  ok(!L.pratoSabido('pfVegano',{veg:1}) && L.pratoSabido('pfVegano',{veg:2}) && !L.pratoSabido('coxinhaJaca',{veg:2}) && L.pratoSabido('coxinhaJaca',{veg:2,fritos:1}) && !L.pratoSabido('pastelPalmito',{veg:2,fritos:1}) && L.pratoSabido('mistoVegano',{veg:2,chapa:1}),'os veganos pedem o avançado e o básico do curso de que dependem');
+  ok(Math.abs(L.avalMenu({pastel:1,chapa:1,fritos:1,assados:1,veg:1})-5)<1e-9,'com os 5 básicos, a Diversidade do cardápio é 5,0');
+  ok(L.precoPrato('pfVeg',L.PONTOS[0],{veg:2})===Math.round(23*1.15) && L.precoPrato('pfVegano',L.PONTOS[0],{veg:2})===23,'avançado: +15% no PF vegetariano, e os veganos ficam no preço comum');
+  // pedem: o vegetariano só come sem carne; sem opção, coxinha (Cardápio 1)
+  novo({cursos:{veg:1,assados:1}}); let so=true, vegN=0, viuPfv=false;
+  for(let i=0;i<3000;i++){ const gr=new L.Group(g,TIPOS[i%4],i,0,false); gr.people.forEach((p,j)=>{ if(p.veg){ vegN++; if(L.CARDAPIO[gr.dishes[j]].carne) so=false; if(gr.extras[j] && L.CARDAPIO[gr.extras[j]].carne) so=false; } }); if(gr.dishes.includes('pfVeg')) viuPfv=true; }
+  ok(vegN>0 && so,'com o curso, a pessoa vegetariana ('+vegN+') só pede prato sem carne');
+  ok(viuPfv,'quem não é vegetariano também pede o PF vegetariano às vezes');
+  novo({cursos:{}}); let semOp=true, nVeg=0, nSem=0, ent=false, treino=false;
+  for(let i=0;i<4000;i++){ const gr=new L.Group(g,TIPOS[i%5],i,0,false); if(TIPOS[i%5]==='entregador' && gr.people.some(p=>p.veg)) ent=true; const tem=gr.people.some(p=>p.veg); if(tem){ nVeg++; if(gr.semVeg) nSem++; if(!gr.semVeg) semOp=false; } }
+  ok(nVeg>0 && nSem===nVeg && semOp && !ent,'sem nenhum prato sem carne: todo grupo com vegetariano fica semVeg ('+nVeg+'), e o entregador nunca é vegetariano');
+  const frac=nVeg/4000; ok(frac>0.08 && frac<0.35,'~10% das pessoas são vegetarianas: '+(frac*100).toFixed(1)+'% dos grupos têm alguma');
+  // o Gurugol: Cardápio 1 e o comentário
+  novo({cursos:{}}); g.mode='carreira'; g.avals=[]; const gr=new L.Group(g,'executiva',1,0,false); gr.people[0].veg=true; gr.dishes[0]='coxinha'; gr.semVeg=true; gr.avalia=true; gr.pratoQ=5; gr.state='eating'; gr.table=g.tables[0];
+  for(let i=0;i<20;i++) g.avaliar(gr,0,0);
+  const av=g.avals; ok(av.every(a=>a.s[3]===1),'o grupo sem prato vegetariano dá Cardápio 1');
+  ok(av.some(a=>a.txt==='Não tinha nada vegetariano.'),'e o comentário: "Não tinha nada vegetariano."');
+  // desenho de todos os pratos
+  let erro=''; Object.keys(L.CARDAPIO).forEach(k=>{ try{ [0.52,0.85,1.1].forEach(s=>L.drawDish(H.ctx,k,0,0,s)); }catch(e){ erro=k+': '+e.message; } });
+  ok(!erro,'todo prato do cardápio desenha sem erro '+erro); }
 
 // ---------- v8.6.10: os desenhos e as Carnes variadas ----------
 { const c=new Proxy({},{get:(o,k)=>k in o?o[k]:(()=>{}),set:(o,k,v)=>{o[k]=v;return true;}}); let erro=null;

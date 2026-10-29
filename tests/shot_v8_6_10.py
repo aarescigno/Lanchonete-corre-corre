@@ -11,8 +11,8 @@ VISTA="try{localStorage.setItem('lcc2_abertura','1')}catch(e){}"
 FECHA="document.querySelectorAll('.ov').forEach(o=>o.classList.remove('show'));"
 GRADE=FECHA+"""
 const L=window.__lcc, ks=Object.keys(L.CARDAPIO);
-const cv=document.createElement('canvas'); cv.width=980; cv.height=640; cv.style.cssText='position:fixed;left:0;top:0;z-index:99999;background:#FFF6DA';
-document.body.appendChild(cv); const c=cv.getContext('2d'); c.fillStyle='#FFF6DA'; c.fillRect(0,0,980,640);
+const cv=document.createElement('canvas'); cv.width=980; cv.height=780; cv.style.cssText='position:fixed;left:0;top:0;z-index:99999;background:#FFF6DA';
+document.body.appendChild(cv); const c=cv.getContext('2d'); c.fillStyle='#FFF6DA'; c.fillRect(0,0,980,780);
 c.font='11px sans-serif'; c.fillStyle='#222';
 ks.forEach((k,i)=>{
   const x=38+(i%7)*136, y=44+Math.floor(i/7)*118;
@@ -21,7 +21,7 @@ ks.forEach((k,i)=>{
   [0.52,0.85].forEach((s,j)=>{ L.drawDish(c,k,x-10+j*40,y+46,s,false,'bife',false); });
   L.drawDish(c,k,x+70,y+46,0.85,false,'bife',true);
 });
-const y=44+2*118+10; c.fillStyle='#222'; c.fillText('PF: bife, frango, peixe, a cavalo (avançado); marmita comum e avançada',8,y+8);
+const y=44+Math.ceil(ks.length/7)*118+10; c.fillStyle='#222'; c.fillText('PF: bife, frango, peixe, a cavalo (avançado); marmita comum e avançada',8,y+8);
 L.CARNES.forEach((cn,i)=>L.drawDish(c,'pf',60+i*70,y+50,1.7,false,cn,true));
 L.drawMarmita(c,'pf',400,y+50,2.0); L.drawMarmita(c,'coxinha',470,y+50,2.0);
 """
@@ -33,7 +33,7 @@ with sync_playwright() as p:
     pg=ctx.new_page(); pg.on('pageerror',lambda e:errs.append(str(e)))
     pg.goto('file://'+S+'/wrapped.html'); pg.wait_for_timeout(600)
     pg.evaluate('()=>{'+GRADE+'}'); pg.wait_for_timeout(300)
-    pg.screenshot(path=OUT+'/grade.png',clip={'x':0,'y':0,'width':980,'height':640})
+    pg.screenshot(path=OUT+'/grade.png',clip={'x':0,'y':0,'width':980,'height':780})
     pg.goto('file://'+S+'/wrapped.html'); pg.wait_for_timeout(600)
     pg.evaluate('()=>{'+CURSOS+'}'); pg.wait_for_timeout(400)
     pg.screenshot(path=OUT+'/cursos.png')

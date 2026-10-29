@@ -48,7 +48,18 @@ const CARDAPIO = {
   paoChapa:{ nome:'Pão na chapa',    preco:7,  cat:'chapa',  curso:'chapa',   carne:false, cor:'#E0B070' },
   pastel:  { nome:'Pastel de carne', preco:10, cat:'pastel', curso:'pastel',  carne:true,  cor:'#E5A33C' },
   pastelQ: { nome:'Pastel de queijo',preco:10, cat:'pastel', curso:'pastel',  carne:false, cor:'#EBB44E' },
-  pastelP: { nome:'Pastel de pizza', preco:11, cat:'pastel', curso:'pastel',  carne:true,  cor:'#DE9438' }
+  pastelP: { nome:'Pastel de pizza', preco:11, cat:'pastel', curso:'pastel',  carne:true,  cor:'#DE9438' },
+  /* v8.6.11, o curso Vegetariano (veg:true leva o "v" verde no desenho; dep: precisa do básico desse outro curso; pfv: PF sem carne,
+     que quem não é vegetariano pede em VEG.pfTroca das vezes que pede PF) e o avançado, Pratos veganos (nivel:2, vegano:true: a
+     folhinha; semAv: o avançado não sobe o preço, que já é o do prato comum) */
+  pfVeg:        { nome:'PF vegetariano',    preco:23, cat:'pf',     curso:'veg', carne:false, cor:'#A0522D', veg:true, pfv:true },
+  empadaPalmito:{ nome:'Empada de palmito', preco:9,  cat:'assado', curso:'veg', carne:false, cor:'#C9B35A', veg:true, dep:'assados' },
+  kibeAbobora:  { nome:'Kibe de abóbora',   preco:7,  cat:'frito',  curso:'veg', carne:false, cor:'#D98A32', veg:true, dep:'fritos' },
+  pfVegano:     { nome:'PF vegano',         preco:23, cat:'pf',     curso:'veg', carne:false, cor:'#A0522D', veg:true, vegano:true, pfv:true, nivel:2, semAv:true },
+  coxinhaJaca:  { nome:'Coxinha de jaca',   preco:8,  cat:'frito',  curso:'veg', carne:false, cor:'#E8B04A', veg:true, vegano:true, dep:'fritos',  nivel:2, semAv:true },
+  pastelPalmito:{ nome:'Pastel de palmito', preco:10, cat:'pastel', curso:'veg', carne:false, cor:'#E9B85A', veg:true, vegano:true, dep:'pastel',  nivel:2, semAv:true },
+  esfihaSoja:   { nome:'Esfiha de soja',    preco:7,  cat:'assado', curso:'veg', carne:false, cor:'#A9743A', veg:true, vegano:true, dep:'assados', nivel:2, semAv:true },
+  mistoVegano:  { nome:'Misto vegano',      preco:10, cat:'chapa',  curso:'veg', carne:false, cor:'#D9B27A', veg:true, vegano:true, dep:'chapa',   nivel:2, semAv:true }
 };
 /* os cursos do Tonhão (v8.6.9): um por lojinha. O básico ensina os pratos; o avançado ("mais requintadinha") soma CURSO_AV.preco ao
    preço de venda dos pratos dele e CURSO_AV.crit à chance de caprichado. O PF não tem básico (preco 0): o avançado aparece desde o início.
@@ -63,8 +74,15 @@ const CURSOS = [
   { id:'assados', nome:'Salgados assados',  preco:250, pratos:['empada', 'esfihaA', 'esfihaF'],
     av:{ nome:'Massa podre da vó Nilza', preco:500, receita:'empada de frango com azeitona, esfihas com coalhada e limão', pratos:['empada', 'esfihaA', 'esfihaF'] } },
   { id:'pf',      nome:'PF',                preco:0,   pratos:[],
-    av:{ nome:'Carnes variadas', preco:400, receita:'o PF vem com bife, filé de frango grelhado, peixe frito ou bife a cavalo', pratos:['pf'] } }
+    av:{ nome:'Carnes variadas', preco:400, receita:'o PF vem com bife, filé de frango grelhado, peixe frito ou bife a cavalo', pratos:['pf'] } },
+  { id:'veg',     nome:'Vegetariano',       preco:150, pratos:['pfVeg', 'empadaPalmito', 'kibeAbobora'],
+    av:{ nome:'Pratos veganos', preco:300, receita:'PF vegano (sem o ovo), coxinha de jaca, pastel de palmito, esfiha de soja e misto vegano com queijo de castanha',
+      pratos:['pfVeg', 'empadaPalmito', 'kibeAbobora', 'pfVegano', 'coxinhaJaca', 'pastelPalmito', 'esfihaSoja', 'mistoVegano'] } }
 ];
+/* vegetarianos (v8.6.11): chance de cada pessoa (menos o entregador) ser vegetariana; quem não é pede o PF sem carne em pfTroca das
+   vezes que pede PF; mov: o curso Vegetariano traz +5% de movimento no básico e mais +5% no avançado */
+const VEG = { chance:0.1, pfTroca:0.2, mov:0.05 };
+function vegMov(cursos){ return 1 + VEG.mov * cursoNivel(cursos, 'veg'); }
 const CURSO_AV = { preco:1.15, crit:1.5 };
 function cursoOf(id){ return CURSOS.find(c => c.id === id) || null; }
 /* nível do curso: 0 (nada), 1 (básico) ou 2 (avançado); o PF não tem básico, então já nasce no 1 */
@@ -77,11 +95,14 @@ function normCursos(c){
   CURSOS.forEach(x => { const n = Math.min(2, Math.floor(+(c && c[x.id]) || 0)); if (n >= (x.preco > 0 ? 1 : 2)) o[x.id] = n; });
   return o;
 }
-function pratoSabido(k, cursos){ const c = CARDAPIO[k] && CARDAPIO[k].curso; return !!CARDAPIO[k] && (!c || cursoNivel(cursos, c) >= 1); }
+function pratoSabido(k, cursos){
+  const p = CARDAPIO[k];
+  return !!p && (!p.curso || cursoNivel(cursos, p.curso) >= (p.nivel || 1)) && (!p.dep || cursoNivel(cursos, p.dep) >= 1);   // v8.6.11: dep, o prato que precisa de outro curso
+}
 function pratosSabidos(cursos){ return Object.keys(CARDAPIO).filter(k => pratoSabido(k, cursos)); }
 /* os cursos de um modo sem a lojinha: o Turno sem fim sabe os 4 básicos (sem avançado); a Missão zero, só o PF e a coxinha */
 const CURSOS_SEMFIM = { pastel:1, chapa:1, fritos:1, assados:1 };
-function precoPrato(k, ponto, cursos){ return Math.round(CARDAPIO[k].preco * (ponto || PONTOS[0]).cardapio * (pratoAv(k, cursos) ? CURSO_AV.preco : 1)); }
+function precoPrato(k, ponto, cursos){ return Math.round(CARDAPIO[k].preco * (ponto || PONTOS[0]).cardapio * (pratoAv(k, cursos) && !CARDAPIO[k].semAv ? CURSO_AV.preco : 1)); }
 /* as proteínas do PF com o avançado "Carnes variadas" (v8.6.10): cada pessoa que pede PF sorteia uma (guardada em grupo.carnes) */
 const CARNES = ['bife', 'frango', 'peixe', 'cavalo'];
 /* os gostos de cada tipo (v8.6.9): pesos por categoria, na ordem de GOSTOS_CAT; o entregador muda de ideia por terço do turno */
@@ -95,18 +116,24 @@ const GOSTOS = {
 };
 /* o que a pessoa pede: sorteia a categoria pelos pesos do tipo (só entre as que têm algum prato que a cozinha sabe) e depois um prato
    sabido dela, com a mesma chance. Sem categoria possível, PF (com semPf, o 2º item, coxinha) */
-function pedePrato(tipo, game, semPf){
-  const sab = pratosSabidos(game.cursos);
+function pedePrato(tipo, game, semPf, veg){
+  // v8.6.11: veg (a pessoa é vegetariana) pede só prato sem carne; sem opção, o 2º item some e o prato é uma coxinha (e o grupo reclama)
+  const sab = pratosSabidos(game.cursos).filter(k => !veg || !CARDAPIO[k].carne);
   let w = GOSTOS[tipo] || GOSTOS.estudante;
   if (Array.isArray(w[0])){
     const t = game.day && game.day.time > 0 ? clamp(1 - game.clock / game.day.time, 0, 0.999) : Math.random();
     w = w[Math.floor(t * 3)];
   }
-  const cats = GOSTOS_CAT.map((c, i) => ({ w:semPf && c === 'pf' ? 0 : w[i], l:sab.filter(k => CARDAPIO[k].cat === c) })).filter(x => x.w > 0 && x.l.length);
-  if (!cats.length) return semPf ? 'coxinha' : 'pf';
+  const cats = GOSTOS_CAT.map((c, i) => ({ w:semPf && c === 'pf' ? 0 : w[i], l:sab.filter(k => CARDAPIO[k].cat === c && (veg || !CARDAPIO[k].pfv)) })).filter(x => x.w > 0 && x.l.length);
+  if (!cats.length){
+    if (veg){ const alt = sab.filter(k => !semPf || CARDAPIO[k].cat !== 'pf'); return alt.length ? pick(alt) : semPf ? null : 'coxinha'; }
+    return semPf ? 'coxinha' : 'pf';
+  }
   let r = Math.random() * cats.reduce((a, x) => a + x.w, 0);
   const c = cats.find(x => (r -= x.w) < 0) || cats[cats.length - 1];
-  return pick(c.l);
+  const k = pick(c.l);
+  if (!veg && k === 'pf' && Math.random() < VEG.pfTroca){ const pv = sab.filter(x => CARDAPIO[x].pfv); if (pv.length) return pick(pv); }
+  return k;
 }
 /* o 2º item (v8.3.8): na hora de pedir, cada pessoa pode querer mais um salgado (chance `mais` do tipo; no máximo 2 itens
    por pessoa). Vai na mesma comanda e no mesmo prato, para não travar a mesa; a cozinha leva `cozinha` a mais de tempo
@@ -625,7 +652,7 @@ const AVAL_DECOR = {
   foto:'Que foto bonita na parede!', giz:'Adorei o quadro de giz!', placa:'"Comida é afeto": é isso mesmo!',
   toalha:'A toalha xadrez dá um charme!'
 };
-function avalComentario(r, bravo, lixo, nivel, decor, fria){
+function avalComentario(r, bravo, lixo, nivel, decor, fria, semVeg){
   if (bravo) return pick(AVAL_BRAVO[bravo]);
   const bom = Math.round(avalNota(r) * 10) >= 40;   // pela nota com uma casa (3,96 vira 4,0)
   if (bom && AVAL_SIMPLES[(nivel || 1) - 1] && Math.random() < 0.3) return pick(AVAL_SIMPLES[(nivel || 1) - 1]);
@@ -633,6 +660,7 @@ function avalComentario(r, bravo, lixo, nivel, decor, fria){
   if (bom && decor && decor.length && r[AVAL_CRIT.findIndex(c => c.id === 'amb')] >= 4 && Math.random() < 0.35) return AVAL_DECOR[pick(decor)];
   let k = r.findIndex(v => v != null);
   r.forEach((v, i) => { if (v != null && (bom ? v > r[k] : v < r[k])) k = i; });
+  if (!bom && semVeg){ const m = AVAL_CRIT.findIndex(c => c.id === 'menu'); if (r[m] != null && r[m] <= r[k]) return 'Não tinha nada vegetariano.'; }   // v8.6.11
   if (!bom && lixo && AVAL_CRIT[k].id === 'amb') return 'Que cheiro de lixo!';
   if (!bom && fria && AVAL_CRIT[k].id === 'prato') return 'Comida meio fria.';   // v8.6.8: o prato esfriou no balcão
   return pick(AVAL_CRIT[k][bom ? 'bom' : 'ruim']);
@@ -671,7 +699,7 @@ function tabelaDe(e){
 /* um empréstimo novo de v, pagando em dia: as parcelas e os juros somados */
 function simulaEmprestimo(v, j){ const t = tabelaDe(normEmprestimo({ resto:v, amort:Math.ceil(v / BANCO.parcelas), j })); return { parcelas:t, juros:t.reduce((a, p) => a + p, 0) - v }; }
 const CAIXA_MAX = 14;                                 // livro-caixa (v7.2): quantos dias da carreira ficam guardados
-const VERSAO = 'v8.6.9';                               // vai no resumo do Caixa
+const VERSAO = 'v8.6.12';                               // vai no resumo do Caixa
 const DIVULGA_DIA = 3;                                // antes disso, o movimento é o da inauguração (sem custo)
 function divulgaAberta(n){ return DEV.on || n >= DIVULGA_DIA; }   // no modo dev, desde o dia 1
 function divulgaOf(id){ return DIVULGA.find(d => d.id === id) || DIVULGA[1]; }
