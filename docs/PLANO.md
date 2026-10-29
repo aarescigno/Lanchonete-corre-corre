@@ -42,6 +42,7 @@ Origem: retorno do Renan Martorelli (beta-tester) e conversa com o Arthur (15/10
 | 2d | Abertura animada do Modo História: o sonho da Bia | v8.5 | feita (26/10) |
 | 2d-r | Revisão estética da abertura, em 5 partes com checagem do usuário | v8.6.1 | feita (28/10, as 5 partes juntas) |
 | 2e | Entregadores com fila própria e marmitas | v8.6 | feita (28/10) |
+| — | Pedido do usuário: decoração da Garagem (plantas, cantinho da Rosa, toalha xadrez), só visual | v8.6.5 | feita (29/10) |
 | 2f | A campanha vira o Modo História: estrutura e capítulos da Garagem | v8.7 | a fazer |
 | 3a | Mudança de ponto e Lanchonete na área industrial (e o capítulo dela) | v9 | a fazer |
 | 3b | Restaurante na Avenida Brasil (e o capítulo dela) | v9.1 | a fazer |
@@ -596,7 +597,8 @@ Também: rever o `smoke7` (toque) e o `smoke10` (fila justa e porta), mais `bala
 - Onde aparece: uma aba ou um quadro na lojinha, com as barras (pode reaproveitar o estilo da caixa do Gurugol da v8.4.1).
 - Efeito no jogo (a decidir): mais VIPs, mais gorjeta, nota de ambiente do Gurugol, régua do Michelzão (etapa 6).
 - TV, som e couvert podem sair da aba Equipe e ir para o lugar do ambiente (anotado na v7.4.4).
-- **Enfeites e móveis melhores** à venda, para subir o luxo (decidir quais).
+- **Enfeites e móveis melhores** à venda, para subir o luxo (decidir quais). Os da Garagem já existem desde a v8.6.5 (`DECOR` e a toalha xadrez), só visuais.
+- **Decoração no Ambiente do Gurugol** (adiada na v8.6.5 a pedido do usuário, que mexia nas avaliações em outro branch, o do teto por ponto da v8.6.4; pode vir antes da 4b; os valores abaixo são na escala do serviço, de 1 a 5, antes do teto): a base do Ambiente cai de 3 para 2 (a Garagem pelada fica "meio sem graça"), cada planta soma ~0,3, cada peça do cantinho da Rosa ~0,25 e a toalha +0,5 só para o grupo daquela mesa (como o bônus da cadeira da cor); comentários próprios ("Que plantinha linda!", "A toalha xadrez dá um charme").
 
 **Partes:** `10-constantes.js` (`LUXO`), `16-jogo.js` (cálculo), `41-lojinha.js` (aba ou quadro do luxo, enfeites), `21-cenario.js` e `22-salao-hud.js` (enfeites e móveis), `12-clientes.js` (efeito na freguesia).
 

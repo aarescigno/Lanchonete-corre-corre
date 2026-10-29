@@ -94,14 +94,16 @@ p{margin:calc(var(--u)*6) 0;font-size:max(12px,calc(var(--u)*16));line-height:1.
 .stats b{font-family:var(--fd);font-weight:400;text-align:right;font-size:max(13px,calc(var(--u)*18))}
 .shopgrid{display:grid;grid-template-columns:repeat(3,1fr);gap:calc(var(--u)*8);width:calc(var(--u)*760);max-width:100%;margin:calc(var(--u)*6) 0}
 .shopgrid.salao{grid-template-columns:1fr}
-.shopgrid.melhorias{grid-template-columns:repeat(4,1fr);width:calc(var(--u)*980)}   /* v8.3.10: 7 cartões em 2 fileiras (com o Triturador) */
-@media (max-width:600px) and (min-height:461px){.shopgrid.melhorias{grid-template-columns:repeat(2,1fr)}}
+.shopgrid.melhorias,.shopgrid.decor{grid-template-columns:repeat(4,1fr);width:calc(var(--u)*980)}   /* v8.3.10: 7 cartões em 2 fileiras (com o Triturador); v8.6.5: e a Decoração */
+@media (max-width:600px) and (min-height:461px){.shopgrid.melhorias,.shopgrid.decor{grid-template-columns:repeat(2,1fr)}}
 /* editor do salão (v7.4): o salão em escala à esquerda, a loja de móveis à direita */
 .ed{display:grid;grid-template-columns:minmax(0,1fr) max(150px,calc(var(--u)*210));gap:calc(var(--u)*8);align-items:start;text-align:left}
 .ed-cv{position:relative;border:calc(var(--u)*3) solid var(--tinta);border-radius:calc(var(--u)*10);overflow:hidden;line-height:0;background:var(--tinta)}
 .ed-cv canvas{display:block;width:100%;height:auto;touch-action:none;cursor:grab}
 .ed-pop{position:absolute;transform:translate(-50%,0);display:grid;gap:4px;background:var(--azulejo);border:calc(var(--u)*2.5) solid var(--tinta);border-radius:calc(var(--u)*10);padding:calc(var(--u)*6) calc(var(--u)*8);line-height:1.2;box-shadow:calc(var(--u)*3) calc(var(--u)*3) 0 var(--tinta);z-index:2;white-space:nowrap}
 .ed-pop.up{transform:translate(-50%,-100%)}
+.ed-pop.largo{grid-template-columns:1fr 1fr}   /* v8.6.5: sem altura para os botões um embaixo do outro */
+.ed-pop.largo > b,.ed-pop.largo > .ed-cores{grid-column:1 / -1}
 .ed-pop.est{transform:none}
 .ed-pop.est.up{transform:translate(0,-100%)}
 .ed-pop b{font:800 max(11px,calc(var(--u)*13)) var(--fb);padding-right:26px}
@@ -152,6 +154,7 @@ table.cx .rs{font-size:inherit}
 .cx-txt{flex-basis:100%;height:calc(var(--u)*90);font:600 12px var(--fb);border:2px solid var(--tinta);border-radius:8px;padding:4px}
 .item{background:var(--creme);border:calc(var(--u)*3) solid var(--tinta);border-radius:calc(var(--u)*12);padding:calc(var(--u)*6) calc(var(--u)*8);display:grid;grid-template-columns:auto 1fr;column-gap:calc(var(--u)*8);row-gap:calc(var(--u)*3);align-items:center;align-content:start;text-align:left}
 .item.own{background:#dcefd9}
+.item .dgrupo{grid-column:1 / -1;font:700 max(10px,calc(var(--u)*11)) var(--fb);font-style:normal;text-transform:uppercase;letter-spacing:.04em;color:var(--faixa)}   /* v8.6.5: o grupo do enfeite */
 .item.atr{background:#F6D7D3}   /* v8.3.1: empréstimo com parcela atrasada */
 .mbar{grid-column:1 / -1;height:calc(var(--u)*10);min-height:8px;background:#E3E0D6;border:calc(var(--u)*2) solid var(--tinta);border-radius:999px;overflow:hidden;width:100%}
 .mbar i{display:block;height:100%;border-radius:999px 0 0 999px}
@@ -300,7 +303,7 @@ table.rank tr.me td{background:#fbe7a8}
 
     <div class="ov show" id="ov-menu">
       <div class="panel menu-panel">
-        <span class="vtag" id="vtag" aria-label="Versão 8.6.4">v8.6.4</span>
+        <span class="vtag" id="vtag" aria-label="Versão 8.6.5">v8.6.5</span>
         <h1 class="title">Lanchonete <br>Corre-Corre</h1>
         <p class="tag">Ajude a Bia a atender a freguesia da esquina antes que o cafezinho esfrie!</p>
         <div class="lbl" id="menu-dia">Carreira: dia 1</div>
@@ -409,6 +412,7 @@ table.rank tr.me td{background:#fbe7a8}
           <button type="button" data-v="melhorias" aria-pressed="true">Melhorias</button>
           <button type="button" data-v="equipe" aria-pressed="false">Equipe</button>
           <button type="button" data-v="salao" aria-pressed="false">Salão</button>
+          <button type="button" data-v="decor" aria-pressed="false">Decoração</button>
           <button type="button" data-v="divulga" aria-pressed="false">Divulgação</button>
           <button type="button" data-v="manut" aria-pressed="false">Manutenção</button>
           <button type="button" data-v="banco" aria-pressed="false">Banco</button>
@@ -510,7 +514,8 @@ table.rank tr.me td{background:#fbe7a8}
       <div class="panel">
         <h2>Versões</h2>
         <ul class="verlist">
-          <li><b>v8.6.4</b><span class="cur">versão atual</span><br>29/10/2026 &mdash; Notas do Gurugol com teto por ponto: numa garagem, ninguém dá 5 estrelas. Na Garagem, o atendimento perfeito vale 3,0 ★, e um cliente encantado dá um pouco mais (num dia especial, a nota do dia chega a 3,5 ou 3,8). Cada ponto melhor sobe o teto: 3,7 na área industrial, 4,3 na Avenida Brasil e 5 no Terraço Suíça. As notas que você já tinha passaram para a escala nova.</li>
+          <li><b>v8.6.5</b><span class="cur">versão atual</span><br>29/10/2026 &mdash; Decoração da Garagem: uma aba nova na lojinha, com enfeites comprados à vontade (fora da melhoria do dia). Plantas: a espada-de-são-jorge no vaso e a muda na lata (que vinham de graça) e uma samambaia pendurada na parede. Cantinho da Rosa: a foto da mãe da Bia, o quadro de giz com o prato do dia e a plaquinha &ldquo;Comida é afeto&rdquo;. E a toalha xadrez, com porta-guardanapo e florzinha, mesa por mesa. Comprado, o enfeite pode ser guardado e posto de volta. Por enquanto é só para deixar a garagem bonita.</li>
+          <li><b>v8.6.4</b><br>29/10/2026 &mdash; Notas do Gurugol com teto por ponto: numa garagem, ninguém dá 5 estrelas. Na Garagem, o atendimento perfeito vale 3,0 ★, e um cliente encantado dá um pouco mais (num dia especial, a nota do dia chega a 3,5 ou 3,8). Cada ponto melhor sobe o teto: 3,7 na área industrial, 4,3 na Avenida Brasil e 5 no Terraço Suíça. As notas que você já tinha passaram para a escala nova.</li>
           <li><b>v8.6.3</b><br>29/10/2026 &mdash; Livrinho de Sudoku, uma melhoria nova da lojinha (R$ 200): a fila de ações da Bia ganha 3 quadrinhos. Em compensação, a fila de base ficou com 5 quadrinhos, e não mais 6; com o livrinho, são 8 tarefas já marcadas.<br><a href="versoes/v8.6.3.html" target="_blank" rel="noopener">Abrir a v8.6.3</a></li>
           <li><b>v8.6.2</b><br>28/10/2026 &mdash; Abertura mais caprichada no hospital: a Rosa, deitada, ganha o corpo sob o cobertor (ombros, peito e os pés levantando o pano) e abre os olhos para a Bia enquanto fala; a cortina do leito desce até o chão. No banco, o pote de moedas não some mais quando a Bia chega: ela o deixa no chão.</li>
           <li><b>v8.6.1</b><br>28/10/2026 &mdash; Abertura revista: a Rosa, a Bia, o Tonhão e o Bráulio ganham alturas que combinam em todas as cenas, e o fogão de casa desce para a cintura da Rosa. A Rosa mexe a panela por cima com a colher de pau, a Bia prova o molho com a colherinha na boca, e a pétala do segredo cai da mão da Rosa e deixa o molho dourado. A Rosa entra pela porta da Casa Aurora, o corredor do hospital ganha a porta da enfermaria, o banco tem fachada nova e o papel do APROVADO voa até a mão da Bia. As pessoas piscam, mexem a boca quando falam e olham para onde andam.<br><a href="versoes/v8.6.1.html" target="_blank" rel="noopener">Abrir a v8.6.1</a></li>
@@ -778,7 +783,7 @@ function salaoCor(mesas){
   return n.indexOf(Math.min.apply(null, n));
 }
 function salaoKit(ponto){ return salaoAuto(SALAO.kit.map((seats, c) => ({ x:0, y:0, seats, c:c % 4 })), ponto); }
-/* save do salão: { ponto, mesas:[{ x, y, seats, c }], estoque:[{ seats, c }] }. O estoque (v8.3.5) guarda mesas
+/* save do salão: { ponto, mesas:[{ x, y, seats, c, t? }], estoque:[{ seats, c, t? }] } (t: a toalha, v8.6.5). O estoque (v8.3.5) guarda mesas
    fora do salão: não abrem no dia nem pagam luz e gás, mas contam no teto de lugares. Mesa estragada sai; passou
    do teto, saem as do estoque e depois as últimas do salão; arranjo inválido vira o automático (e, se nem assim,
    o kit inicial) */
@@ -786,9 +791,9 @@ function normSalao(s){
   s = (s && typeof s === 'object') ? s : {};
   const ponto = pontoOf(s.ponto);
   const lista = l => (Array.isArray(l) ? l : []).filter(m => m && typeof m === 'object' && (+m.seats === 2 || +m.seats === 4))
-    .map((m, i) => ({ x:Math.round(+m.x) || 0, y:Math.round(+m.y) || 0, seats:+m.seats, c:(+m.c >= 0 && +m.c <= 3) ? Math.round(+m.c) : i % 4 }));
+    .map((m, i) => Object.assign({ x:Math.round(+m.x) || 0, y:Math.round(+m.y) || 0, seats:+m.seats, c:(+m.c >= 0 && +m.c <= 3) ? Math.round(+m.c) : i % 4 }, m.t ? { t:1 } : {}));
   let mesas = lista(s.mesas);
-  const estoque = lista(s.estoque).map(m => ({ seats:m.seats, c:m.c })), tot = () => salaoLugares(mesas) + salaoLugares(estoque);
+  const estoque = lista(s.estoque).map(m => Object.assign({ seats:m.seats, c:m.c }, m.t ? { t:1 } : {})), tot = () => salaoLugares(mesas) + salaoLugares(estoque);
   while (tot() > ponto.lugares && estoque.length) estoque.pop();
   while (salaoLugares(mesas) > ponto.lugares) mesas.pop();
   mesas = salaoOrdena(mesas);
@@ -807,6 +812,37 @@ function salaoDevolucao(s){
 }
 /* Turno sem fim (v7.4): salão fixo de 6 mesas e 16 lugares (o de antes), igual para todo mundo no ranking */
 const SALAO_SEMFIM = [2,2,2,4,2,4];
+/* ============================================================
+   DECORAÇÃO (v8.6.5, pedido do usuário): enfeites da Garagem, comprados na aba Decoração da lojinha, à vontade (fora
+   da melhoria do dia). Por enquanto só visuais: o peso no Ambiente do Gurugol fica para uma próxima etapa.
+   - plantas: as espadas-de-são-jorge da calçada (da v7.7, que vinham de graça) e a samambaia na parede;
+   - cantinho da Rosa: a foto da mãe da Bia, o quadro de giz com o prato do dia e a plaquinha "Comida é afeto".
+   Comprado, o enfeite pode ser guardado e posto de volta de graça: save.decor[id] = 1 (à mostra) ou 0 (guardado).
+   A toalha xadrez (com o porta-guardanapo e a florzinha) é de cada mesa: { t:1 } na mesa do salão ou do estoque,
+   vai junto quando a mesa muda de lugar e some quando ela é vendida
+   ============================================================ */
+const DECOR = [
+  { id:'espada',    grupo:'plantas', name:'Espada-de-são-jorge', desc:'No vaso de barro, na calçada, ao lado da espera.', cost:15 },
+  { id:'lata',      grupo:'plantas', name:'Muda na lata',        desc:'Uma espada menor numa lata de tinta reaproveitada, encostada no muro.', cost:8 },
+  { id:'samambaia', grupo:'plantas', name:'Samambaia',           desc:'Pendurada num suporte na parede da garagem, ao lado da janela.', cost:30 },
+  { id:'foto',      grupo:'rosa',    name:'Foto da dona Rosa',   desc:'A mãe da Bia sorrindo, num porta-retrato na parede.', cost:10 },
+  { id:'giz',       grupo:'rosa',    name:'Quadro de giz',       desc:'No cavalete, perto do portão, com o prato do dia escrito à mão.', cost:25 },
+  { id:'placa',     grupo:'rosa',    name:'Plaquinha',           desc:'"Comida é afeto", pintada à mão, embaixo do letreiro.', cost:15 }
+];
+const DECOR_GRUPOS = [
+  { id:'plantas', nome:'Plantas' },
+  { id:'rosa',    nome:'Cantinho da Rosa' }
+];
+const TOALHA = { cost:12 };   // por mesa
+function decorOf(id){ return DECOR.find(d => d.id === id); }
+/* save.decor: { id: 1 à mostra, 0 guardado }; só os enfeites que existem */
+function normDecor(d){
+  const out = {};
+  if (d && typeof d === 'object') DECOR.forEach(x => { if (x.id in d) out[x.id] = d[x.id] ? 1 : 0; });
+  return out;
+}
+/* o enfeite id está à mostra no jogo g? (no menu e na Missão zero, o save do jogo) */
+function decorOn(g, id){ return !!(g && g.save && g.save.decor && g.save.decor[id]); }
 
 /* gorjeta pelos corações na hora da conta (v8.3.8; antes, com 5 corações a conta saía 50% maior): no máximo +10%;
    com 1 ou 2 o grupo reclama e ganha desconto */
@@ -1111,7 +1147,7 @@ function tabelaDe(e){
 /* um empréstimo novo de v, pagando em dia: as parcelas e os juros somados */
 function simulaEmprestimo(v, j){ const t = tabelaDe(normEmprestimo({ resto:v, amort:Math.ceil(v / BANCO.parcelas), j })); return { parcelas:t, juros:t.reduce((a, p) => a + p, 0) - v }; }
 const CAIXA_MAX = 14;                                 // livro-caixa (v7.2): quantos dias da carreira ficam guardados
-const VERSAO = 'v8.6.4';                               // vai no resumo do Caixa
+const VERSAO = 'v8.6.5';                               // vai no resumo do Caixa
 const DIVULGA_DIA = 3;                                // antes disso, o movimento é o da inauguração (sem custo)
 function divulgaAberta(n){ return DEV.on || n >= DIVULGA_DIA; }   // no modo dev, desde o dia 1
 function divulgaOf(id){ return DIVULGA.find(d => d.id === id) || DIVULGA[1]; }
@@ -1462,7 +1498,7 @@ function normSave(s){
   const dia = +s.dia >= 1 ? Math.round(+s.dia) : Math.max(clamp(Math.round(+s.maxDay) || 1, 1, 7), feitos.length ? Math.max(...feitos) + 1 : 1);
   const estrelas = isFinite(+s.estrelas) && s.estrelas != null ? Math.max(0, Math.round(+s.estrelas)) : Object.keys(stars).reduce((a, k) => a + clamp(Math.round(+stars[k]) || 0, 0, 3), 0);
   const bank = isFinite(+s.bank) ? Math.round(+s.bank) : 0;
-  const dev = salaoDevolucao(s.salao), out = { dia, estrelas, lucroTot: Math.round(+s.lucroTot) || 0, pontosTot: Math.max(0, Math.round(+s.pontosTot) || 0), aval: normAval(s.aval), avalCom: normAvalCom(s.avalCom), neg: clamp(Math.round(+s.neg) || 0, 0, BANCO.neg), emp: normEmprestimo(s.emp), corta: s.corta !== false, fechou: Math.max(0, Math.round(+s.fechou) || 0), bank: bank + dev + devMaq, up, torneira:true, salao: normSalao(dev ? null : s.salao), divulga: divulgaOf(s.divulga).id, treino: !!s.treino, manut: normManut(s.manut), caixa: normCaixa(s.caixa), caixaPend: normPend(s.caixaPend) };
+  const dev = salaoDevolucao(s.salao), out = { dia, estrelas, lucroTot: Math.round(+s.lucroTot) || 0, pontosTot: Math.max(0, Math.round(+s.pontosTot) || 0), aval: normAval(s.aval), avalCom: normAvalCom(s.avalCom), neg: clamp(Math.round(+s.neg) || 0, 0, BANCO.neg), emp: normEmprestimo(s.emp), corta: s.corta !== false, fechou: Math.max(0, Math.round(+s.fechou) || 0), bank: bank + dev + devMaq, up, torneira:true, salao: normSalao(dev ? null : s.salao), divulga: divulgaOf(s.divulga).id, treino: !!s.treino, decor: normDecor(s.decor), manut: normManut(s.manut), caixa: normCaixa(s.caixa), caixaPend: normPend(s.caixaPend) };
   out.equipe = normEquipe(s.equipe, pontoOf(out.salao.ponto));
   // v8.6.4: as notas do Gurugol de antes (de 1 a 5 pelo serviço) passam para a escala da Garagem, uma vez só (avalEsc)
   if (s.avalEsc !== 2){
@@ -1504,7 +1540,7 @@ function writeSave(s){ if (s && s._treino) return; lsSet(saveKey(), JSON.stringi
    ============================================================ */
 class Table {
   constructor(d){
-    this.id = d.id; this.cx = d.cx; this.cy = d.cy; this.seats = d.seats; this.color = d.color;
+    this.id = d.id; this.cx = d.cx; this.cy = d.cy; this.seats = d.seats; this.color = d.color; this.toalha = !!d.toalha;
     this.hx = tableHalfW(d);
     this.open = false; this.group = null; this.dirty = false; this.dirtyN = 0;
   }
@@ -3199,7 +3235,7 @@ class Game {
     const sem = this.mode === 'semfim', sal = this.save.salao, key = sem ? 'semfim' : JSON.stringify(sal);
     if (key === this.tablesKey) return;
     const mesas = sem ? (this.semfimMesas || (this.semfimMesas = salaoAuto(SALAO_SEMFIM.map((seats, i) => ({ seats, c:i % 4 })), PONTOS[0]))) : sal.mesas;
-    const defs = mesas.map((m, i) => ({ id:i + 1, cx:m.x, cy:m.y, seats:m.seats, color:m.c }));
+    const defs = mesas.map((m, i) => ({ id:i + 1, cx:m.x, cy:m.y, seats:m.seats, color:m.c, toalha:!!m.t }));
     this.tables = defs.map(d => new Table(d));
     setObst(defs);
     this.tablesKey = key;
@@ -3285,16 +3321,51 @@ class Game {
     const mesas = this.save.salao.mesas, m = mesas[i];
     if (!m) return false;
     if (mesas.length <= 1) return this.salaoNao('O salão precisa de pelo menos 1 mesa.');
-    return this.salaoSet(mesas.filter(x => x !== m), true, this.estoque.concat([{ seats:m.seats, c:m.c }]));
+    return this.salaoSet(mesas.filter(x => x !== m), true, this.estoque.concat([Object.assign({ seats:m.seats, c:m.c }, m.t ? { t:1 } : {})]));
   }
   /* editor (v8.3.5): a mesa k do estoque volta para o salão em (x, y), ou no primeiro lugar livre se não vier lugar */
   tirarMesa(k, x, y){
     const p = this.ponto, mesas = this.save.salao.mesas, m = this.estoque[k];
     if (!m) return false;
     if (x == null){ const v = salaoVaga(mesas, m.seats, p); if (!v) return this.salaoNao('Não há lugar livre no salão: abra espaço ou guarde outra mesa.'); x = v.x; y = v.y; }
-    const l = mesas.concat([{ x, y, seats:m.seats, c:m.c, sel:1 }]), why = salaoProblema(l, p);
+    const l = mesas.concat([Object.assign({ x, y, seats:m.seats, c:m.c, sel:1 }, m.t ? { t:1 } : {})]), why = salaoProblema(l, p);
     if (why) return this.salaoNao(why);
     return this.salaoSet(l, true, this.estoque.filter(e => e !== m));
+  }
+  /* decoração (v8.6.5): enfeite novo (fica à mostra), à vontade e fora da melhoria do dia */
+  buyDecor(id){
+    const d = decorOf(id), dec = this.save.decor;
+    if (!d || id in dec || this.save.bank < d.cost) return false;
+    this.save.bank -= d.cost; caixaGasto(this.save, 'sal', d.cost);
+    dec[id] = 1;
+    writeSave(this.save); Sfx.coin();
+    return true;
+  }
+  /* guardar ou pôr de volta um enfeite já comprado (de graça) */
+  mostraDecor(id, on){
+    const dec = this.save.decor;
+    if (!(id in dec)) return false;
+    dec[id] = on ? 1 : 0;
+    writeSave(this.save);
+    return true;
+  }
+  /* toalha xadrez na mesa i (do salão ou do estoque) */
+  buyToalha(i, est){
+    const m = (est ? this.estoque : this.save.salao.mesas)[i];
+    if (!m || m.t) return false;
+    if (this.save.bank < TOALHA.cost) return this.salaoNao('Falta dinheiro.');
+    this.save.bank -= TOALHA.cost; caixaGasto(this.save, 'sal', TOALHA.cost);
+    m.t = 1; Sfx.coin();
+    return this.salaoSaved();
+  }
+  /* toalha em todas as mesas que ainda não têm (salão e estoque) */
+  get semToalha(){ return this.save.salao.mesas.concat(this.estoque).filter(m => !m.t); }
+  buyToalhas(){
+    const l = this.semToalha, v = l.length * TOALHA.cost;
+    if (!l.length || this.save.bank < v) return false;
+    this.save.bank -= v; caixaGasto(this.save, 'sal', v);
+    l.forEach(m => { m.t = 1; }); Sfx.coin();
+    return this.salaoSaved();
   }
   arrumarSalao(){
     const l = salaoAuto(this.save.salao.mesas, this.ponto);
@@ -4126,7 +4197,7 @@ function drawGaragem(ctx){
   ctx.restore();
 }
 function drawWall(ctx,g,t){
-  if (garagem(g)) drawGaragem(ctx);
+  if (garagem(g)){ drawGaragem(ctx); drawDecorParede(ctx,g); }
   else drawAzulejo(ctx);
   drawWallCommon(ctx,g,t);
 }
@@ -4241,23 +4312,108 @@ function drawCalcada(ctx,g,tm){
     ctx.fillStyle = g && g.up && g.up.maquina ? '#FFE0A6' : '#4a5a6a'; ctx.fillRect(-7,-5,14,8); ctx.restore();
   }
   // plantas da casa da Bia (nível 1, v7.7): espada-de-são-jorge no vaso de barro, no canto de baixo, e uma menor
-  // numa lata de tinta reaproveitada, encostada no muro (o banquinho de plástico da v7.5 fica para o nível 2)
-  const vx = x0 + 40, vy = 536;
-  shadowEll(ctx,vx,vy-11,12,3,0.18);
-  drawEspada(ctx,vx,vy-32,0.85);
-  ctx.beginPath(); ctx.moveTo(vx-11,vy-36); ctx.lineTo(vx+11,vy-36); ctx.lineTo(vx+8,vy-12); ctx.lineTo(vx-8,vy-12); ctx.closePath(); fs(ctx,'#C9673B',2);
-  rr(ctx,vx-13,vy-40,26,6,2); fs(ctx,'#B85A30',2);
-  const lx = x0 + 44, ly = 132;
-  shadowEll(ctx,lx,ly+1,10,3,0.18);
-  drawEspada(ctx,lx,ly-18,0.68);
-  rr(ctx,lx-9,ly-20,18,20,2); fs(ctx,PAL.cromo,2);
-  ctx.fillStyle = 'rgba(216,67,47,.55)'; ctx.fillRect(lx-8,ly-14,16,7);   // o rótulo desbotado da lata
+  // numa lata de tinta reaproveitada, encostada no muro (o banquinho de plástico da v7.5 fica para o nível 2).
+  // Desde a v8.6.5, compradas na aba Decoração (DECOR)
+  if (decorOn(g,'espada')) drawVasoEspada(ctx,x0 + 40,536);
+  if (decorOn(g,'lata')) drawLataEspada(ctx,x0 + 44,132);
   // portão de enrolar aberto, na borda do salão: trilho no alto e soleira no chão
   ctx.fillStyle = '#ABA394'; ctx.fillRect(-6,92,12,448);
   ctx.strokeStyle = 'rgba(34,32,28,.4)'; ctx.lineWidth = 1.5; ctx.beginPath(); ctx.moveTo(0,96); ctx.lineTo(0,540); ctx.stroke();
   rr(ctx,-12,0,24,92,4); fs(ctx,PAL.cromo,2.5);
   ctx.strokeStyle = 'rgba(34,32,28,.35)'; ctx.lineWidth = 1.2;
   for (let y=10;y<86;y+=8){ ctx.beginPath(); ctx.moveTo(-9,y); ctx.lineTo(9,y); ctx.stroke(); }
+}
+/* espada-de-são-jorge no vaso de barro e na lata de tinta (v7.7); (x, y) é o chão, no pé do vaso */
+function drawVasoEspada(ctx,vx,vy){
+  shadowEll(ctx,vx,vy-11,12,3,0.18);
+  drawEspada(ctx,vx,vy-32,0.85);
+  ctx.beginPath(); ctx.moveTo(vx-11,vy-36); ctx.lineTo(vx+11,vy-36); ctx.lineTo(vx+8,vy-12); ctx.lineTo(vx-8,vy-12); ctx.closePath(); fs(ctx,'#C9673B',2);
+  rr(ctx,vx-13,vy-40,26,6,2); fs(ctx,'#B85A30',2);
+}
+function drawLataEspada(ctx,lx,ly){
+  shadowEll(ctx,lx,ly+1,10,3,0.18);
+  drawEspada(ctx,lx,ly-18,0.68);
+  rr(ctx,lx-9,ly-20,18,20,2); fs(ctx,PAL.cromo,2);
+  ctx.fillStyle = 'rgba(216,67,47,.55)'; ctx.fillRect(lx-8,ly-14,16,7);   // o rótulo desbotado da lata
+}
+/* ============================================================
+   DECORAÇÃO DA GARAGEM (v8.6.5): na parede, à esquerda da janela, a samambaia pendurada e a foto da Rosa; embaixo
+   do letreiro, a plaquinha; no chão, perto do portão, o quadro de giz no cavalete. Desenhados com a parede (antes
+   das pessoas). As funções servem também para os ícones da lojinha
+   ============================================================ */
+let edDesenho = false;   // o editor do salão desenha a parede: o quadro de giz ficaria atrás do estoque
+function drawDecorParede(ctx,g){
+  if (decorOn(g,'samambaia')) drawSamambaia(ctx,42,30,1);
+  if (decorOn(g,'foto')) drawFotoRosa(ctx,88,36,1);
+  if (decorOn(g,'placa')) drawPlaquinha(ctx,234,68,1);
+  if (decorOn(g,'giz') && !edDesenho) drawGiz(ctx,62,150,1,g);
+}
+/* samambaia num vaso de barro pendurado por 3 correntinhas num suporte de ferro na parede; (x, y) é a boca do vaso */
+function drawSamambaia(ctx,x,y,s){
+  ctx.save(); ctx.translate(x,y); ctx.scale(s,s);
+  ctx.strokeStyle = PAL.cromoEsc; ctx.lineWidth = 2.4; ctx.beginPath(); ctx.moveTo(-14,-24); ctx.lineTo(4,-24); ctx.stroke();
+  rr(ctx,-18,-29,5,10,1.5); fs(ctx,PAL.cromoEsc,1.2);
+  ctx.strokeStyle = 'rgba(34,32,28,.55)'; ctx.lineWidth = 1;
+  [-9,0,9].forEach(dx => { ctx.beginPath(); ctx.moveTo(0,-23); ctx.lineTo(dx,0); ctx.stroke(); });
+  // folhas: arcos que caem dos dois lados, com os folíolos
+  const folha = (ang, len, cor) => {
+    ctx.save(); ctx.rotate(ang);
+    ctx.beginPath(); ctx.moveTo(0,0); ctx.quadraticCurveTo(len*0.5,-len*0.25,len,len*0.35); ctx.strokeStyle = cor; ctx.lineWidth = 2; ctx.stroke();
+    for (let k=0.15;k<0.95;k+=0.12){
+      const px = len*k, py = -len*0.25*2*k*(1-k) + len*0.35*k*k, w = 4.5*(1-k*0.6);
+      ctx.beginPath(); ctx.moveTo(px,py); ctx.lineTo(px-1.5,py-w); ctx.moveTo(px,py); ctx.lineTo(px+1.5,py+w); ctx.lineWidth = 1.6; ctx.stroke();
+    }
+    ctx.restore();
+  };
+  [[-2.5,22,'#3E8A47'],[-2.1,26,'#4E9F52'],[-1.7,20,'#3E8A47'],[-1.3,16,'#5DB061'],[-0.7,20,'#4E9F52'],[-0.25,24,'#3E8A47'],[0.15,20,'#5DB061']].forEach(f => {
+    ctx.save(); ctx.translate(0,1); folha(f[0] + Math.PI/2 - 1.57, f[1], f[2]); ctx.restore();
+  });
+  [[1.9,24,'#4E9F52'],[2.4,20,'#3E8A47'],[2.9,26,'#5DB061']].forEach(f => { ctx.save(); ctx.translate(0,1); ctx.scale(-1,1); folha(Math.PI - f[0], f[1], f[2]); ctx.restore(); });
+  ctx.beginPath(); ctx.moveTo(-10,0); ctx.lineTo(10,0); ctx.lineTo(7,13); ctx.lineTo(-7,13); ctx.closePath(); fs(ctx,'#C9673B',1.8);
+  rr(ctx,-11,-2,22,4,1.5); fs(ctx,'#B85A30',1.6);
+  ctx.restore();
+}
+/* foto da Rosa, a mãe da Bia (a mesma da abertura: coque, a rosa no cabelo, roupa rosa), num porta-retrato de
+   madeira pendurado num prego; (x, y) é o centro */
+function drawFotoRosa(ctx,x,y,s){
+  ctx.save(); ctx.translate(x,y); ctx.scale(s,s);
+  ctx.strokeStyle = 'rgba(34,32,28,.6)'; ctx.lineWidth = 1; ctx.beginPath(); ctx.moveTo(-9,-21); ctx.lineTo(0,-28); ctx.lineTo(9,-21); ctx.stroke();
+  circ(ctx,0,-28,1.6); fs(ctx,PAL.cromoEsc,1);
+  rr(ctx,-17,-22,34,42,3); fs(ctx,PAL.madeira,2.2);
+  ctx.save(); rr(ctx,-12,-17,24,32,1.5); ctx.fillStyle = '#F6E7C9'; ctx.fill(); ctx.clip();
+  ctx.fillStyle = 'rgba(242,194,61,.35)'; circ(ctx,0,-4,14); ctx.fill();
+  drawPerson(ctx,{ skin:3, hair:2, hairC:'#1B1512', pants:'#4A4036' },0,30,{ s:0.62, shirt:'#C8506A', mood:0, noShadow:true });
+  ctx.restore();
+  abFlor(ctx,8,-12,2.2);
+  rr(ctx,-12,-17,24,32,1.5); ctx.strokeStyle = PAL.madeiraEsc; ctx.lineWidth = 1.4; ctx.stroke();
+  ctx.restore();
+}
+/* plaquinha "Comida é afeto": tábua clara pintada à mão, pendurada no letreiro por 2 cordinhas; (x, y) é o centro */
+function drawPlaquinha(ctx,x,y,s){
+  ctx.save(); ctx.translate(x,y); ctx.scale(s,s); ctx.rotate(0.03);
+  ctx.strokeStyle = 'rgba(34,32,28,.6)'; ctx.lineWidth = 1; ctx.beginPath(); ctx.moveTo(-34,-7); ctx.lineTo(-30,-14); ctx.moveTo(34,-7); ctx.lineTo(30,-14); ctx.stroke();
+  rr(ctx,-46,-8,92,16,3); fs(ctx,'#F4E2C0',2);
+  txt(ctx,'Comida é afeto',-4,0.5,10,PAL.faixa,'center',FB);
+  const hx = 37, hy = 0;
+  ctx.beginPath(); ctx.moveTo(hx,hy+3.5); ctx.bezierCurveTo(hx-6,hy-1,hx-3,hy-6,hx,hy-2.5); ctx.bezierCurveTo(hx+3,hy-6,hx+6,hy-1,hx,hy+3.5); ctx.closePath(); ctx.fillStyle = PAL.perigo; ctx.fill();
+  ctx.restore();
+}
+/* quadro de giz num cavalete de madeira, com o prato do dia escrito à mão; (x, y) é o chão, entre os pés */
+function drawGiz(ctx,x,y,s,g){
+  ctx.save(); ctx.translate(x,y); ctx.scale(s,s);
+  shadowEll(ctx,0,0,26,4,0.18);
+  ctx.strokeStyle = PAL.madeiraEsc; ctx.lineWidth = 3.2;
+  ctx.beginPath(); ctx.moveTo(-16,-50); ctx.lineTo(-22,0); ctx.moveTo(16,-50); ctx.lineTo(22,0); ctx.moveTo(0,-46); ctx.lineTo(0,-2); ctx.stroke();
+  rr(ctx,-24,-54,48,40,3); fs(ctx,PAL.madeira,2.2);
+  rr(ctx,-20,-50,40,32,2); fs(ctx,'#2E3B35',1.4);
+  txt(ctx,'HOJE',0,-43,7,'rgba(255,255,255,.85)','center',FB);
+  const pt = g && g.ponto;
+  txt(ctx,'PF R$ ' + precoPrato('pf', pt),0,-33,9,'#FFF3C9','center',FB);
+  ctx.strokeStyle = 'rgba(255,255,255,.7)'; ctx.lineWidth = 1; ctx.beginPath(); ctx.moveTo(-12,-26); ctx.quadraticCurveTo(0,-23,12,-26); ctx.stroke();
+  circ(ctx,13,-22,1.6); ctx.fillStyle = '#F7B6C8'; ctx.fill();
+  rr(ctx,-20,-16,40,3,1); fs(ctx,PAL.madeiraEsc,1);
+  ctx.fillStyle = '#fff'; ctx.fillRect(-14,-17.5,6,2);   // o toquinho de giz
+  ctx.restore();
 }
 /* espada-de-são-jorge (v7.7): folhas compridas e pontudas, verde-escuras com faixas claras e a borda amarela;
    (x, y) é a terra do vaso */
@@ -4914,8 +5070,10 @@ function drawTableBody(ctx,t,open,g,tm){
       leg(x0+7,t.cy+14,t.cy+32,1); leg(x0+w-7,t.cy+14,t.cy+32,1);          // pernas da frente
       oct(x0,t.cy-18,w,30,8); fs(ctx,top,2.6);                               // tampo
       ctx.strokeStyle = 'rgba(34,32,28,.12)'; ctx.lineWidth = 1.2; oct(x0+5,t.cy-14,w-10,22,5); ctx.stroke();
-      ell(ctx,x0+w/2,t.cy-3,3,1.8); ctx.fillStyle = 'rgba(34,32,28,.35)'; ctx.fill();
+      if (t.toalha) drawToalha(ctx,x0,t.cy,w);
+      else { ell(ctx,x0+w/2,t.cy-3,3,1.8); ctx.fillStyle = 'rgba(34,32,28,.35)'; ctx.fill(); }
     }
+    if (t.toalha) drawToalhaEnfeites(ctx,t.cx,t.cy,hw);
     if (t.id === '') return;   // mesa no estoque do editor (v8.3.5): sem número
     circ(ctx,t.cx-hw+14,t.cy-1,8.5); fs(ctx,PAL.mostarda,2);
     txt(ctx,String(t.id),t.cx-hw+14,t.cy,12,PAL.tinta,'center',FD);
@@ -4931,6 +5089,39 @@ function drawTableBody(ctx,t,open,g,tm){
   txt(ctx,String(t.id),t.cx-hw+14,t.cy,12,PAL.tinta,'center',FD);
 }
 
+/* toalha xadrez (v8.6.5, aba Decoração): por cima do tampo da mesa quadrada (x0 é a borda esquerda, w a largura),
+   com a aba da frente caindo em ondas */
+function drawToalha(ctx,x0,cy,w){
+  const a = x0 - 3, b = x0 + w + 3, y0 = cy - 20, y1 = cy + 12, yb = cy + 19;
+  ctx.save();
+  ctx.beginPath(); ctx.moveTo(a+5,y0); ctx.lineTo(b-5,y0); ctx.quadraticCurveTo(b,y0,b,y0+5); ctx.lineTo(b+1,yb-3);
+  const n = 4, d = (b - a + 2) / n;
+  for (let i=0;i<n;i++){ const xa = b + 1 - i*d; ctx.quadraticCurveTo(xa - d/2,yb + (i % 2 ? 3 : -1),xa - d,yb - (i === n-1 ? 3 : 0)); }
+  ctx.lineTo(a,y0+5); ctx.quadraticCurveTo(a,y0,a+5,y0); ctx.closePath();
+  ctx.fillStyle = '#FFFDF7'; ctx.fill();
+  ctx.save(); ctx.clip();
+  ctx.fillStyle = 'rgba(200,60,50,.55)';
+  const q = 7;
+  for (let x = a; x < b + 2; x += q*2) ctx.fillRect(x,y0,q,yb - y0 + 4);
+  for (let y = y0; y < yb + 4; y += q*2) ctx.fillRect(a,y,b - a + 2,q);
+  ctx.fillStyle = 'rgba(34,32,28,.12)'; ctx.fillRect(a,y1,b - a + 2,yb - y1 + 4);   // a aba da frente, na sombra
+  ctx.restore();
+  ctx.strokeStyle = PAL.tinta; ctx.lineWidth = 2.2; ctx.stroke();
+  ctx.strokeStyle = 'rgba(34,32,28,.3)'; ctx.lineWidth = 1.2; ctx.beginPath(); ctx.moveTo(a+1,y1); ctx.lineTo(b+1,y1); ctx.stroke();
+  ctx.restore();
+}
+/* na mesa com toalha: o porta-guardanapo no canto de trás, à direita, e a florzinha num copinho, no meio de trás */
+function drawToalhaEnfeites(ctx,cx,cy,hw){
+  const px = cx + hw - 13, py = cy - 13;
+  ctx.beginPath(); ctx.moveTo(px-6,py); ctx.lineTo(px-4,py-10); ctx.lineTo(px+4,py-10); ctx.lineTo(px+6,py); ctx.closePath(); fs(ctx,'#fff',1.4);
+  rr(ctx,px-7,py-6,14,7,1.5); fs(ctx,PAL.cromo,1.6);
+  const fx = cx + (hw > 60 ? -hw*0.15 : 4), fy = cy - 13;
+  ctx.strokeStyle = '#3E8A47'; ctx.lineWidth = 1.6; ctx.beginPath(); ctx.moveTo(fx,fy-4); ctx.quadraticCurveTo(fx-2,fy-12,fx+1,fy-18); ctx.stroke();
+  ell(ctx,fx+3,fy-11,3,1.5); ctx.fillStyle = '#4E9F52'; ctx.fill();
+  for (let i=0;i<5;i++){ const a = i*TAU/5; ell(ctx,fx+1+Math.cos(a)*3,fy-19+Math.sin(a)*3,2.4,2.4); ctx.fillStyle = '#F7F4EB'; ctx.fill(); }
+  circ(ctx,fx+1,fy-19,1.8); fs(ctx,PAL.mostarda,1);
+  rr(ctx,fx-4,fy-6,8,8,2); ctx.fillStyle = 'rgba(191,227,242,.8)'; ctx.fill(); ctx.strokeStyle = PAL.tinta; ctx.lineWidth = 1.4; ctx.stroke();
+}
 function drawTable(ctx,g,t,tm,menu){
   const open = t.open || menu;
   const grp = t.group;
@@ -6402,7 +6593,7 @@ function buildTips(){
   const ul = $('tips');
   clearEl(ul);
   const tips = [
-    ['A freguesia espera lá fora, na calçada. Arraste o grupo até uma mesa livre (ou toque no grupo e depois na mesa). Grupos grandes precisam das mesas de 4 lugares. Na lojinha, aba Salão, compre mesas e arraste-as para arrumar a garagem: mais lugares trazem mais clientes.', c => {
+    ['A freguesia espera lá fora, na calçada. Arraste o grupo até uma mesa livre (ou toque no grupo e depois na mesa). Grupos grandes precisam das mesas de 4 lugares. Na lojinha, aba Salão, compre mesas e arraste-as para arrumar a garagem: mais lugares trazem mais clientes. Na aba Decoração, plantas, o cantinho da Rosa e toalhas deixam a garagem mais bonita.', c => {
       drawPerson(c,{skin:3,hair:3,hairC:'#1B1512',pants:'#2F3E5C'},12,52,{shirt:CHAIRS[1].c,mood:0,s:0.8});
       c.strokeStyle = PAL.alerta; c.lineWidth = 3; c.setLineDash([4,4]); c.beginPath(); c.moveTo(22,40); c.lineTo(40,30); c.stroke(); c.setLineDash([]);
       c.beginPath(); c.moveTo(42,28); c.lineTo(35,28); c.lineTo(40,35); c.closePath(); c.fillStyle = PAL.alerta; c.fill();
@@ -6564,6 +6755,22 @@ function upgradeIcon(id){
       for (let i=1;i<3;i++){ const d = -6 + i*5.33; c.beginPath(); c.moveTo(d,-12); c.lineTo(d,4); c.moveTo(-6,-12 + i*5.33); c.lineTo(10,-12 + i*5.33); c.stroke(); }
       [[-3.3,-9,'5'],[7.4,-3.7,'3'],[2,1.7,'8']].forEach(n => txt(c,n[2],n[0],n[1],5.5,PAL.tinta,'center',FB));
       txt(c,'SUDOKU',3,10,5,'#fff','center',FD);
+    } else if (id === 'd-espada'){   // decoração (v8.6.5): os próprios enfeites, menores
+      c.scale(0.42,0.42); drawVasoEspada(c,0,50);
+    } else if (id === 'd-lata'){
+      c.scale(0.62,0.62); drawLataEspada(c,0,30);
+    } else if (id === 'd-samambaia'){
+      c.scale(0.78,0.78); drawSamambaia(c,0,-4,1);
+    } else if (id === 'd-foto'){
+      drawFotoRosa(c,0,3,0.8);
+    } else if (id === 'd-giz'){
+      c.scale(0.68,0.68); drawGiz(c,0,30,1,game);
+    } else if (id === 'd-placa'){
+      c.rotate(-0.12); c.strokeStyle = 'rgba(34,32,28,.6)'; c.lineWidth = 1.2; c.beginPath(); c.moveTo(-12,-6); c.lineTo(0,-16); c.lineTo(12,-6); c.stroke();
+      rr(c,-19,-7,38,18,3); fs(c,'#F4E2C0',2);
+      c.beginPath(); c.moveTo(0,8); c.bezierCurveTo(-11,0,-6,-9,0,-3); c.bezierCurveTo(6,-9,11,0,0,8); c.closePath(); c.fillStyle = PAL.perigo; c.fill();
+    } else if (id === 'd-toalha'){
+      drawToalha(c,-17,6,34); drawToalhaEnfeites(c,0,6,17);
     } else if (id === 'ventilador'){
       for (let i=0;i<4;i++){ c.save(); c.rotate(i*Math.PI/2 + 0.4); ell(c,0,-8,4.5,9); fs(c,i%2?PAL.cromo:'#e8edf1',1.8); c.restore(); }
       circ(c,0,0,3.5); fs(c,PAL.mostarda,1.8);
@@ -6722,7 +6929,7 @@ function edHit(p, pad){
 function edMesas(){
   const d = edDrag, l = game.save.salao.mesas.slice();
   if (!d || !d.moved) return l;
-  if (d.est) return d.inEst ? l : l.concat([{ x:d.x, y:d.y, seats:game.estoque[d.i].seats, c:game.estoque[d.i].c }]);
+  if (d.est) return d.inEst ? l : l.concat([{ x:d.x, y:d.y, seats:game.estoque[d.i].seats, c:game.estoque[d.i].c, t:game.estoque[d.i].t }]);
   if (d.inEst){ l.splice(d.i, 1); return l; }
   l[d.i] = Object.assign({}, l[d.i], { x:d.x, y:d.y });
   return l;
@@ -6747,7 +6954,7 @@ function drawEstoque(c){
   }
   est.forEach((m, i) => {
     if (d && d.est && d.i === i) return;   // a arrastada vai desenhada por cima
-    const q = sl[i], t = new Table({ id:'', cx:q.x, cy:q.y - 4 * q.k, seats:m.seats, color:m.c });
+    const q = sl[i], t = new Table({ id:'', cx:q.x, cy:q.y - 4 * q.k, seats:m.seats, color:m.c, toalha:m.t });
     t.open = true;
     c.save(); c.translate(q.x, q.y); c.scale(q.k, q.k); c.translate(-q.x, -q.y);
     drawTable(c, game, t, 0, true);
@@ -6760,20 +6967,20 @@ function drawEditor(cv){
   if (!c) return;
   c.setTransform(ED.k, 0, 0, ED.k, -ED.x * ED.k, -ED.y * ED.k);
   c.lineJoin = 'round'; c.lineCap = 'round';
-  drawFloor(c, game); drawWall(c, game, 0); drawKitchen(c, game, 0);
+  drawFloor(c, game); edDesenho = true; drawWall(c, game, 0); edDesenho = false; drawKitchen(c, game, 0);
   const a = game.ponto.area;
   c.save(); c.setLineDash([8,6]); c.strokeStyle = 'rgba(31,79,163,.5)'; c.lineWidth = 2; rr(c,a.x0,a.y0,a.x1-a.x0,a.y1-a.y0,10); c.stroke(); c.restore();
   drawEstoque(c);
   const d = edDrag && edDrag.moved ? edDrag : null;
   game.save.salao.mesas.forEach((m, i) => {
     if (d && !d.est && d.i === i) return;
-    const t = new Table({ id:i + 1, cx:m.x, cy:m.y, seats:m.seats, color:m.c });
+    const t = new Table({ id:i + 1, cx:m.x, cy:m.y, seats:m.seats, color:m.c, toalha:m.t });
     t.open = true;
     drawTable(c, game, t, 0, true);
     if (i === game.salaoSel) edMarca(c, edRect(m), false, false);
   });
   if (d){   // a mesa arrastada, por cima de tudo
-    const m = d.est ? game.estoque[d.i] : game.save.salao.mesas[d.i], t = new Table({ id:d.est ? '' : d.i + 1, cx:d.x, cy:d.y, seats:m.seats, color:m.c });
+    const m = d.est ? game.estoque[d.i] : game.save.salao.mesas[d.i], t = new Table({ id:d.est ? '' : d.i + 1, cx:d.x, cy:d.y, seats:m.seats, color:m.c, toalha:m.t });
     t.open = true;
     drawTable(c, game, t, 0, true);
     edMarca(c, edRect({ x:d.x, y:d.y, seats:m.seats }), true, !d.ok);
@@ -6851,15 +7058,17 @@ function buildSalao(grid){
   box.appendChild(cv); edEvents(cv);
   // mesa escolhida: cor das cadeiras, guardar no estoque, virar mesa de 4 e vender (balãozinho em cima do salão)
   const m = mesas[sel], me = est[ks];
+  let pop = null, tops = null;   // tops: o alto do balãozinho aberto para baixo e para cima (em % do editor)
   if (m || me){
-    let pop;
     if (m){
       const up = m.y + 230 > ED.y + ED.h;
       pop = el('div', 'ed-pop' + (up ? ' up' : ''));
       pop.style.left = clamp((m.x - ED.x) / ED.w * 100, 18, 82) + '%';
-      pop.style.top = ((up ? m.y - 66 : m.y + 72) - ED.y) / ED.h * 100 + '%';
+      tops = [m.y + 72, m.y - 66].map(y => (y - ED.y) / ED.h * 100);
+      pop.style.top = tops[up ? 1 : 0] + '%';
       pop.appendChild(el('b', null, 'Mesa ' + (sel + 1) + ' · ' + m.seats + ' lugares'));
       pop.appendChild(edCores(m, k => game.pintarMesa(sel, k)));
+      if (!m.t) pop.appendChild(edBtn('Toalha xadrez: ' + fmt(TOALHA.cost), 'btn', bank >= TOALHA.cost, () => game.buyToalha(sel), TOALHA.cost));   // v8.6.5
       if (m.seats === 2) pop.appendChild(edBtn('Virar mesa de 4: ' + fmt(SALAO.virar), 'btn', tot + 2 <= p.lugares && bank >= SALAO.virar, () => game.virarMesa(sel), SALAO.virar));
       pop.appendChild(edBtn('Guardar no estoque', 'btn alt', mesas.length > 1, () => game.guardarMesa(sel)));
       pop.appendChild(edBtn('Vender por ' + fmt(mesaPreco(m.seats) * SALAO.venda), 'btn alt', mesas.length > 1, () => game.venderMesa(sel)));
@@ -6868,9 +7077,11 @@ function buildSalao(grid){
       const q = estSlots(est.length)[ks], up = q.y + 230 > ED.y + ED.h;
       pop = el('div', 'ed-pop est' + (up ? ' up' : ''));
       pop.style.left = (EST.x1 + 6 - ED.x) / ED.w * 100 + '%';
-      pop.style.top = ((up ? q.y + q.h / 2 : q.y - q.h / 2) - ED.y) / ED.h * 100 + '%';
+      tops = [q.y - q.h / 2, q.y + q.h / 2].map(y => (y - ED.y) / ED.h * 100);
+      pop.style.top = tops[up ? 1 : 0] + '%';
       pop.appendChild(el('b', null, 'Mesa no estoque · ' + me.seats + ' lugares'));
       pop.appendChild(edCores(me, k => game.pintarMesa(ks, k, true)));
+      if (!me.t) pop.appendChild(edBtn('Toalha xadrez: ' + fmt(TOALHA.cost), 'btn', bank >= TOALHA.cost, () => game.buyToalha(ks, true), TOALHA.cost));
       pop.appendChild(edBtn('Pôr no salão', 'btn', true, () => game.tirarMesa(ks)));
       if (me.seats === 2) pop.appendChild(edBtn('Virar mesa de 4: ' + fmt(SALAO.virar), 'btn', tot + 2 <= p.lugares && bank >= SALAO.virar, () => game.virarMesa(ks, true), SALAO.virar));
       pop.appendChild(edBtn('Vender por ' + fmt(mesaPreco(me.seats) * SALAO.venda), 'btn alt', true, () => game.venderMesa(ks, true)));
@@ -6897,6 +7108,43 @@ function buildSalao(grid){
   ed.appendChild(side);
   grid.appendChild(ed);
   drawEditor(cv);
+  // v8.6.5: o balãozinho que não cabe para o lado escolhido (telas baixas, o botão da toalha) abre para o outro, se
+  // lá couber mais dele
+  // lá couber mais dele; se não cabe de nenhum jeito, os botões vão em 2 colunas
+  if (pop && box.clientHeight){
+    const H = box.clientHeight, y = tops.map(t => t / 100 * H);
+    const fora = () => { const h = pop.offsetHeight; return [Math.max(0, y[0] + h - H), Math.max(0, h - y[1])]; };   // de fora, para baixo e para cima
+    let f = fora();
+    if (f[0] && f[1]){ pop.classList.add('largo'); f = fora(); }
+    const up = pop.classList.contains('up') ? 1 : 0;
+    if (f[up] > f[1 - up]){ pop.classList.toggle('up'); pop.style.top = tops[1 - up] + '%'; }
+    const W = box.clientWidth, w = pop.offsetWidth;   // e não passa das bordas (o da mesa do salão fica centrado na mesa)
+    if (!me && w < W) pop.style.left = clamp(parseFloat(pop.style.left) / 100 * W, w / 2 + 4, W - w / 2 - 4) / W * 100 + '%';
+  }
+}
+/* aba Decoração (v8.6.5): os enfeites da Garagem (DECOR), comprados à vontade; comprado, guarda e põe de volta de
+   graça. E a toalha xadrez, em todas as mesas de uma vez (uma a uma, no editor do salão) */
+function decorCard(grupo, icon, title, desc){
+  const card = el('div', 'item'); card.appendChild(el('i', 'dgrupo', grupo));
+  card.appendChild(icon); card.appendChild(el('b', null, title)); card.appendChild(el('span', null, desc));
+  return card;
+}
+function buildDecor(grid){
+  const dec = game.save.decor, bank = game.save.bank;
+  DECOR.forEach(d => {
+    const tem = d.id in dec, on = !!dec[d.id];
+    const c = decorCard(DECOR_GRUPOS.find(x => x.id === d.grupo).nome, upgradeIcon('d-' + d.id), d.name, d.desc + (tem && !on ? ' Guardado.' : ''));
+    if (on) c.classList.add('own');
+    c.appendChild(!tem ? shopBtn('Comprar ' + fmt(d.cost), 'btn', bank >= d.cost, () => game.buyDecor(d.id), d.cost)
+      : shopBtn(on ? 'Guardar' : 'Pôr de volta', on ? 'btn alt' : 'btn', true, () => game.mostraDecor(d.id, !on)));
+    grid.appendChild(c);
+  });
+  const todas = game.save.salao.mesas.concat(game.estoque), sem = game.semToalha.length, v = sem * TOALHA.cost;
+  const c = decorCard('Mesas', upgradeIcon('d-toalha'), 'Toalha xadrez', 'Com o porta-guardanapo e a florzinha. ' + fmt(TOALHA.cost) + ' por mesa; vai junto com a mesa. ' +
+    (todas.length - sem) + ' de ' + todas.length + (todas.length > 1 ? ' mesas têm' : ' mesa tem') + '; no Salão, toque numa mesa para pôr só nela.');
+  if (!sem) c.classList.add('own');
+  c.appendChild(shopBtn(!sem ? 'Todas as mesas têm' : 'Pôr em ' + (sem > 1 ? 'todas (' + sem + ')' : '1 mesa') + ': ' + fmt(v), 'btn', sem > 0 && bank >= v, () => game.buyToalhas(), v));
+  grid.appendChild(c);
 }
 /* aba Divulgação (v7): escolha do dia, paga junto com a folha (no fim do dia, desde a v8.2.2); e o resumo das contas do dia */
 function buildDivulga(grid){
@@ -7116,10 +7364,11 @@ function buildShop(){
   $('btn-shop-go').textContent = 'Começar o dia ' + game.shopNext;
   const f = payroll(game.save.equipe), dv = divulgaAberta(game.shopNext) ? divulgaOf(game.save.divulga) : null;
   $('shop-folha').textContent = (f ? 'Folha ' + fmt(f) : 'Sem folha') + (dv ? ' + ' + dv.name.toLowerCase() + ' ' + fmt(dv.cost) : '') + ', contas ' + fmt(contasDia(game.tables)) + (sv.emp.resto ? ', parcela do banco ' + fmt(game.devido) + (sv.emp.atr ? ' (com a atrasada)' : '') : '') + ' e ingredientes: tudo pago no fim do dia, que só rende completo. A meta é o lucro.';
-  grid.className = 'shopgrid' + (shopTab === 'salao' || shopTab === 'caixa' || shopTab === 'melhorias' || shopTab === 'gurugol' ? ' ' + shopTab : '');
+  grid.className = 'shopgrid' + (shopTab === 'salao' || shopTab === 'caixa' || shopTab === 'melhorias' || shopTab === 'gurugol' || shopTab === 'decor' ? ' ' + shopTab : '');
   ['salao', 'caixa'].forEach(k => $('ov-shop').classList[shopTab === k ? 'add' : 'remove'](k));
   if (shopTab === 'equipe') return buildEquipe(grid);
   if (shopTab === 'salao') return buildSalao(grid);
+  if (shopTab === 'decor') return buildDecor(grid);
   if (shopTab === 'divulga') return buildDivulga(grid);
   if (shopTab === 'manut') return buildManut(grid);
   if (shopTab === 'banco') return buildBanco(grid);
@@ -7586,7 +7835,7 @@ try { Rank.init(); } catch(e) {}
 game.setState('menu');
 if (!aberturaVista() && !DEV.on) abrirAbertura('auto');   // v8.5: a abertura toca sozinha uma vez
 window.__game = game;
-window.__lcc = { FILA_ACOES, filaMax, MARMITA, RETIRADA, marmitaMao, drawMarmita, prateleiraPos, EFOOD_COR, AVAL_BRAVO, QUEUE, setShopTab: v => { shopTab = v; buildShop(); }, TREINO, TREINO_PASSOS, TREINO_COR, Treino, treinoLugar, treinoPrimeiro, playCareer, buildMenu, introBanco, buildFalencia, BANCO, normEmprestimo, parcelaDe, devidoDe, jurosDe, tabelaDe, simulaEmprestimo, SEMANA, semanaOf, diaOf, FILA_JUSTA, PORTA, CHAIRS, PAT, CONTAS, INGRED, CARDAPIO, precoPrato, MAIS, PONTOS_ACAO, GORJETA, DRINK_PRICE, MOVIMENTO, movimentoSalao, DIVULGA, DIVULGA_DIA, divulgaOf, contasDia, bomGoal, SALAO, PONTOS, pontoOf, MESA, mesaBox, mesaPreco, salaoLugares, mesaProblema, salaoCaminho, salaoProblema, salaoOrdena, salaoAuto, salaoVaga, salaoPerto, salaoKit, salaoDevolucao, SALAO_SEMFIM, normSalao, setObst, OBST, pathOk, MAQUINA, BEBIDA_ESPERA, bebidaOf, MANUT, manutOf, manutChance, manutPreco, normManut, CLIMA, CLIMA_DIA, introManut, normPend, CALCADA, TW, HUDX, esperaAp, tableApproach, CRIT, STAFF, DANI_TASKS, DANI_HANDS, daniTaskOk, TRASH, WASH, payroll, FOLHA_CORTE, folhaCorta, folhaCortes, folhaItens, listaE, pratosDe, couvertEffect, couvertOk, ambienteEffect, dishStock, normSave, Helper, JUICE, KITCHEN_SLOTS, handLayout, trayOk, Game, Group, Table, Kitchen, Waitress, BIA_SPEED, DAYS, UPGRADES, CUSTOMER_TYPES, LAYOUT, PAL, Sfx, findPath, render, Rank, sortRows, cleanName, normName, CMD, ENDLESS, VIP, MULTA, rk, renderRank, openRank, closeRank, LS, lsGet, lsSet, loadSave, DEV, saveKey, devSync, divulgaAberta, CAIXA_MAX, VERSAO, normCaixa, caixaResumo, caixaTotais, copyText, AVAL, AVAL_CRIT, AVAL_BRAVO, avalMenu, avalTeto, avalEscala, avalFrac, AVAL_SIMPLES, normAval, avalNota, avalMedias, avalGeral, avalMovimento, avalComentario, fmtNota, notaFaixa, gurugolCaixa, AVAL_COM, normAvalCom, buildGurugol, ABERTURA, Abertura, AB_CENAS, AB_ALT, AB_BASE, abEsc, AB_VIVO, aberturaVista, aberturaSom, drawAbertura, abrirAbertura, aberturaAtual: () => abertura };
+window.__lcc = { DECOR, DECOR_GRUPOS, TOALHA, decorOf, normDecor, decorOn, FILA_ACOES, filaMax, MARMITA, RETIRADA, marmitaMao, drawMarmita, prateleiraPos, EFOOD_COR, AVAL_BRAVO, QUEUE, setShopTab: v => { shopTab = v; buildShop(); }, TREINO, TREINO_PASSOS, TREINO_COR, Treino, treinoLugar, treinoPrimeiro, playCareer, buildMenu, introBanco, buildFalencia, BANCO, normEmprestimo, parcelaDe, devidoDe, jurosDe, tabelaDe, simulaEmprestimo, SEMANA, semanaOf, diaOf, FILA_JUSTA, PORTA, CHAIRS, PAT, CONTAS, INGRED, CARDAPIO, precoPrato, MAIS, PONTOS_ACAO, GORJETA, DRINK_PRICE, MOVIMENTO, movimentoSalao, DIVULGA, DIVULGA_DIA, divulgaOf, contasDia, bomGoal, SALAO, PONTOS, pontoOf, MESA, mesaBox, mesaPreco, salaoLugares, mesaProblema, salaoCaminho, salaoProblema, salaoOrdena, salaoAuto, salaoVaga, salaoPerto, salaoKit, salaoDevolucao, SALAO_SEMFIM, normSalao, setObst, OBST, pathOk, MAQUINA, BEBIDA_ESPERA, bebidaOf, MANUT, manutOf, manutChance, manutPreco, normManut, CLIMA, CLIMA_DIA, introManut, normPend, CALCADA, TW, HUDX, esperaAp, tableApproach, CRIT, STAFF, DANI_TASKS, DANI_HANDS, daniTaskOk, TRASH, WASH, payroll, FOLHA_CORTE, folhaCorta, folhaCortes, folhaItens, listaE, pratosDe, couvertEffect, couvertOk, ambienteEffect, dishStock, normSave, Helper, JUICE, KITCHEN_SLOTS, handLayout, trayOk, Game, Group, Table, Kitchen, Waitress, BIA_SPEED, DAYS, UPGRADES, CUSTOMER_TYPES, LAYOUT, PAL, Sfx, findPath, render, Rank, sortRows, cleanName, normName, CMD, ENDLESS, VIP, MULTA, rk, renderRank, openRank, closeRank, LS, lsGet, lsSet, loadSave, DEV, saveKey, devSync, divulgaAberta, CAIXA_MAX, VERSAO, normCaixa, caixaResumo, caixaTotais, copyText, AVAL, AVAL_CRIT, AVAL_BRAVO, avalMenu, avalTeto, avalEscala, avalFrac, AVAL_SIMPLES, normAval, avalNota, avalMedias, avalGeral, avalMovimento, avalComentario, fmtNota, notaFaixa, gurugolCaixa, AVAL_COM, normAvalCom, buildGurugol, ABERTURA, Abertura, AB_CENAS, AB_ALT, AB_BASE, abEsc, AB_VIVO, aberturaVista, aberturaSom, drawAbertura, abrirAbertura, aberturaAtual: () => abertura };
 window.requestAnimationFrame(frame);
 
 })();
