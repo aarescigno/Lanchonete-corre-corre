@@ -138,7 +138,9 @@ function pedePrato(tipo, game, semPf, veg){
 /* o 2º item (v8.3.8): na hora de pedir, cada pessoa pode querer mais um salgado (chance `mais` do tipo; no máximo 2 itens
    por pessoa). Vai na mesma comanda e no mesmo prato, para não travar a mesa; a cozinha leva `cozinha` a mais de tempo
    por item a mais (em fração dos itens do grupo). Pedir depois de comer travava a mesa e derrubava o lucro */
-const MAIS = { cozinha:0.4 };   // v8.6.9: o 2º item sai de pedePrato(..., true), pelos gostos do tipo, sem o PF
+/* v8.6.13: quem pede salgado (qualquer prato que não é do tipo PF) pede um 2º item em `salgado` das vezes (salgado se pede
+   de dois); sem isso, cada curso trocava PF de R$ 25 por salgado de R$ 7 e derrubava o lucro do dia */
+const MAIS = { cozinha:0.4, salgado:0.8 };   // v8.6.9: o 2º item sai de pedePrato(..., true), pelos gostos do tipo, sem o PF
 /* pontos de atendimento (v8.3.8): as ações da Bia não dão mais dinheiro, dão pontos (a nota da lanchonete virá
    deles). A corrente e a cor certa também viram pontos */
 const PONTOS_ACAO = { sit:10, take:15, deliver:20, clear:10, coffee:5, juice:5, bill:20, cor:15, marmita:20 };
@@ -506,8 +508,8 @@ const DAYS = [
   { n:3, groups:13, types:['estudante','vovos','familia','executiva'],             nu:'executiva',  meta:135, expert:230,  time:170, speed:0.60, juice:0.3, note:'O movimento aumentou e agora só há 4 pratos limpos: sozinha a Bia não dá conta, contrate ajuda na lojinha. A executiva tem pouca paciência, mas deixa boa gorjeta. E abriu o balcão de sucos: quem pede suco quer receber antes da conta!' },
   { n:4, groups:15, types:['estudante','vovos','familia','executiva','entregador'], nu:'entregador', meta:63, expert:110, time:180, speed:0.58, juice:0.3, note:'Chegou o entregador de moto! Ele não senta: espera no balcão de retirada, no alto da calçada, e leva o prato numa marmita. O pedido vai sozinho ao Tonhão; leve a marmita pronta ao balcão. Tem pressa! Para adiantar, toque no "+ marmita" da janela de pedidos.' },
   { n:5, groups:16, types:['estudante','vovos','familia','executiva','entregador'], nu:null,         meta:90, expert:140, time:190, speed:0.56, vip:0.15, juice:0.3, note:'Chegou cliente VIP (de óculos escuros e plaquinha dourada)! Fura a fila e tem menos paciência, mas pede o prato especial (mais caro), dá gorjeta e, se sair com 5 corações, pontos a mais. Se sair bravo, a multa dobra.' },
-  { n:6, groups:16, types:['estudante','vovos','familia','executiva','entregador'], nu:null,         meta:150, expert:280, time:200, speed:0.54, vip:0.15, juice:0.3, note:'Sexta-feira: ninguém quer esperar.' },
-  { n:7, groups:17, types:['estudante','vovos','familia','executiva','entregador'], nu:null,         meta:180, expert:310, time:220, speed:0.52, vip:0.15, juice:0.3, gripe:true, note:'Tonhão está gripado: a cozinha anda mais devagar hoje.' }
+  { n:6, groups:16, types:['estudante','vovos','familia','executiva','entregador'], nu:null,         meta:140, expert:280, time:200, speed:0.54, vip:0.15, juice:0.3, note:'Sexta-feira: ninguém quer esperar.' },
+  { n:7, groups:17, types:['estudante','vovos','familia','executiva','entregador'], nu:null,         meta:170, expert:310, time:220, speed:0.52, vip:0.15, juice:0.3, gripe:true, note:'Tonhão está gripado: a cozinha anda mais devagar hoje.' }
 ];
 /* campanha (v8.3): os dias 1 a 7 são a rampa de abertura; do dia 8 em diante, cada dia tem o perfil do dia 7 (sem a gripe
    do Tonhão) com o movimento do dia da semana (o dia 1 é domingo e o 6, sexta). f: fator dos grupos e das metas;
@@ -575,13 +577,14 @@ function movimentoSalao(lugares){ return 1 + MOVIMENTO.porLugar * Math.max(0, lu
    os 5; o entregador, Espera, Agilidade e Comida, e sem a marmita só Espera e Agilidade); cada critério tem a sua média, com a sua
    contagem, e a nota é a média das médias. (2) O humor e os encantados são fração da faixa do ponto (teto − 1), não um valor
    absoluto. (3) A cor certa, a corrente e o caprichado não somam mais na Agilidade: aumentam a chance de encantar (AVAL.bonus).
-   (4) A nota mínima para sair de um ponto é AVAL.minimo (95%) do teto (avalMinimo), que só vale de verdade na etapa 3 */
+   (4) A nota mínima para sair de um ponto é AVAL.minimo do teto (avalMinimo), que só vale de verdade na etapa 3. v8.6.13: 90% (Garagem 2,7;
+   era 95%, 2,9, que só o serviço perfeito com todos os cursos e a decoração alcançava; com 90%, quem faz os cursos chega lá por volta do dia 10) */
 const AVAL = {
   max:30, min:8, porDia:4, porCoracao:0.75, mov:0.1,
   teto:[3, 3.7, 4.3, 5],
   humor:{ var:0.15, encanta:0.15, extra:[0.3, 0.6], folga:0.4 },   // frações da faixa do ponto (teto − 1)
   bonus:{ cor:0.1, corrente:0.1, crit:0.1 },   // v8.6.7: chance a mais de o cliente sair encantado
-  minimo:0.95,
+  minimo:0.9,
   prato:[[2.5, 4.5], [3, 4.7], [3.5, 5]],
   menu:{ base:2, porCurso:0.6 },   // v8.6.9: pelos cursos básicos que o Tonhão fez (a Diversidade do cardápio)
   amb:{ base:2, tv:0.5, som:0.5, maquina:0.5, ventilador:0.5, cafe:0.5, couvert:1, lixo:-1, planta:0.3, rosa:0.25, toalha:0.5 }
@@ -699,7 +702,7 @@ function tabelaDe(e){
 /* um empréstimo novo de v, pagando em dia: as parcelas e os juros somados */
 function simulaEmprestimo(v, j){ const t = tabelaDe(normEmprestimo({ resto:v, amort:Math.ceil(v / BANCO.parcelas), j })); return { parcelas:t, juros:t.reduce((a, p) => a + p, 0) - v }; }
 const CAIXA_MAX = 14;                                 // livro-caixa (v7.2): quantos dias da carreira ficam guardados
-const VERSAO = 'v8.6.12';                               // vai no resumo do Caixa
+const VERSAO = 'v8.6.13';                               // vai no resumo do Caixa
 const DIVULGA_DIA = 3;                                // antes disso, o movimento é o da inauguração (sem custo)
 function divulgaAberta(n){ return DEV.on || n >= DIVULGA_DIA; }   // no modo dev, desde o dia 1
 function divulgaOf(id){ return DIVULGA.find(d => d.id === id) || DIVULGA[1]; }

@@ -143,7 +143,7 @@ function buildTips(){
       drawPerson(c,{skin:4,hair:3,hairC:'#1B1512',pants:'#2F3E5C',shades:true},28,60,{shirt:CHAIRS[2].c,mood:0,s:0.85});
       drawVipBadge(c,40,14,0);
     }],
-    ['A meta do dia é o lucro: o que a freguesia paga (cada um paga o que pediu: de início, ' + listaE(['pf', 'coxinha'].map(k => CARDAPIO[k].nome + ' R$ ' + precoPrato(k))) + '; os cursos do Tonhão acrescentam pratos; alguns pedem um 2º item) menos os ingredientes (' + Math.round(INGRED.prato * 100) + '% de cada prato), as contas (luz e gás crescem com o salão; a garagem não paga aluguel), a folha e a divulgação. O dia começa no vermelho! Do dia 3 em diante, escolha a divulgação na lojinha: mais gente só vale se couber.', c => {
+    ['A meta do dia é o lucro: o que a freguesia paga (cada um paga o que pediu: de início, ' + listaE(['pf', 'coxinha'].map(k => CARDAPIO[k].nome + ' R$ ' + precoPrato(k))) + '; os cursos do Tonhão acrescentam pratos; alguns pedem um 2º item, e quem pede salgado quase sempre pede dois) menos os ingredientes (' + Math.round(INGRED.prato * 100) + '% de cada prato), as contas (luz e gás crescem com o salão; a garagem não paga aluguel), a folha e a divulgação. O dia começa no vermelho! Do dia 3 em diante, escolha a divulgação na lojinha: mais gente só vale se couber.', c => {
       rr(c,8,12,30,40,3); fs(c,'#fff',2);
       for (let i=0;i<4;i++){ c.fillStyle = PAL.cromoEsc; c.fillRect(13,19+i*7,14,2.4); c.fillRect(30,19+i*7,4,2.4); }
       c.strokeStyle = PAL.perigo; c.lineWidth = 2.4; c.beginPath(); c.moveTo(13,47); c.lineTo(34,47); c.stroke();

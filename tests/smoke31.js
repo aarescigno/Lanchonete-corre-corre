@@ -126,5 +126,10 @@ function normB(A){ return A.L.normSave({}).bank; }
   const vistos=new Set(); Array.from({length:200},gr).forEach(x=>x.carnes.forEach(cn=>vistos.add(cn)));
   ok(['bife','frango','peixe','cavalo'].every(cn=>vistos.has(cn)) && vistos.size===4,'com Carnes variadas, o PF sorteia as 4 proteínas'); }
 
+// v8.6.13: quem pede salgado pede um 2º item em MAIS.salgado das vezes; quem pede PF, na chance do tipo (executiva, 10%)
+{ novo({cursos:BAS}); ok(L.MAIS.salgado===0.8,'MAIS.salgado = 0,8');
+  let sal=0, salM=0, pf=0, pfM=0;
+  for(let i=0;i<3000;i++){ const gr=new L.Group(g,'executiva',i,0,false); gr.dishes.forEach((k,j)=>{ if(L.CARDAPIO[k].cat==='pf'){ pf++; if(gr.extras[j]) pfM++; } else { sal++; if(gr.extras[j]) salM++; } }); }
+  ok(salM/sal>0.72 && salM/sal<0.88 && pfM/pf<0.15,'salgado vem em dois em ~80% das vezes, o PF fica na chance do tipo ('+(salM/sal).toFixed(2)+' e '+(pfM/pf).toFixed(2)+')'); }
 console.log('total =',total,' fails =',fails);
 process.exit(fails?1:0);
