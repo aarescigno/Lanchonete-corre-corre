@@ -4,6 +4,15 @@ Registro das ideias e dos retornos de quem jogou, com o texto original, e de ond
 
 ---
 
+## 29/10/2026 — Usuário: rebalanceamento das notas do Gurugol
+**Origem:** pedido do usuário no chat (falado):
+
+> A gente precisa fazer um rebalanceamento de notas do Guru Gol para esse jogo. Porque receber 4, muito numa garagem me parece algo... uma nota muito alta, né? Porque o que que ele vai receber de upgrade, né? O que que a pessoa que joga vai se sentir satisfeita de ver aumentar se no próximo nível já tem que ser maior que 4.35? E no outro, tipo, o objetivo vai ser sempre atingir o 5? Vai ficar nessa briga por vírgulas, 0, vírgula, pouca coisa? Acho ruim. Eu proponho que um nível máximo e mais difícil de conseguir na garagem seja 3. E assim progride para os outros até o máximo atingível ser 5 ali no terraço suíça lá. Eventualmente, foi uma margenzinha, né, que sobe um pouquinho, abaixa um pouquinho e tal, né? Então, eventualmente, no primeiro nível da garagem ali, pode chegar em 3,5, 3,8, em algum dia muito especial, assim, sei lá. Mas... tem que ter esse senso de progressão, né?
+
+**Destino:** feito na **v8.6.4** (`docs/spec-v8.6.4.md`): teto por ponto (Garagem 3, área industrial 3,7, Avenida Brasil 4,3, Terraço Suíça 5), com o humor do cliente como a "margenzinha" (até 3,8 na Garagem). A nota mínima para sair da Garagem (era 4,5 ★) ficou como sugestão de 2,8 ★ na etapa 3 do `docs/PLANO.md`, a decidir.
+
+---
+
 ## 29/10/2026 — Usuário: Livrinho de Sudoku
 **Origem:** pedido do usuário no chat:
 
