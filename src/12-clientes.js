@@ -199,6 +199,7 @@ class Group {
     // nunca no treino); o prato especial do VIP soma VIP.dish
     this.dishes = this.people.map(() => pedePrato(type, game));   // v8.6.9: pelo gosto do tipo, entre os pratos que a cozinha sabe
     this.dish = this.dishes[0];
+    this.carnes = this.people.map(() => pratoAv('pf', game.cursos) ? pick(CARNES) : 'bife');   // v8.6.10: Carnes variadas
     // o entregador (v8.6) não come no salão: leva o prato numa marmita, pela fila de retirada, sem 2º item
     this.retira = type === 'entregador';
     this.extras = this.people.map(() => !this.retira && game.mode !== 'treino' && Math.random() < T.mais ? pedePrato(type, game, true) : null);

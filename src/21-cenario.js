@@ -769,7 +769,7 @@ function drawKitchen(ctx,g,t){
       const pc = cmdColor(p.group);
       if (pc) drawTray(ctx,s.x,s.y+2+bounce,1.0,pc);
       if (p.vip){ ctx.strokeStyle = PAL.mostarda; ctx.lineWidth = 3; ell(ctx,s.x,s.y+bounce,17,9); ctx.stroke(); }
-      drawDish(ctx,p.dish,s.x,s.y+bounce,1.1);
+      drawDish(ctx,p.dish,s.x,s.y+bounce,1.1,false,p.group && p.group.carnes && p.group.carnes[0]);
       // v8.6.8: o vapor some aos poucos enquanto o prato espera (parado, sem balançar, com movimento reduzido)
       const vp = pratoVapor(p.age);
       if (vp > 0.02){

@@ -15,6 +15,7 @@ function drawTouchFx(ctx,g){
 
 /* o mundo (salão, calçada, gente e efeitos) começa em g.cam na tela larga (v7.6); o HUD fica na tela */
 function render(g, ctx){
+  COMIDA_CURSOS = g.cursos;   // v8.6.10: os pratos do curso avançado ganham o detalhe
   const tm = g.anim;
   const menu = g.state === 'menu';
   ctx.save();

@@ -82,6 +82,8 @@ function pratosSabidos(cursos){ return Object.keys(CARDAPIO).filter(k => pratoSa
 /* os cursos de um modo sem a lojinha: o Turno sem fim sabe os 4 básicos (sem avançado); a Missão zero, só o PF e a coxinha */
 const CURSOS_SEMFIM = { pastel:1, chapa:1, fritos:1, assados:1 };
 function precoPrato(k, ponto, cursos){ return Math.round(CARDAPIO[k].preco * (ponto || PONTOS[0]).cardapio * (pratoAv(k, cursos) ? CURSO_AV.preco : 1)); }
+/* as proteínas do PF com o avançado "Carnes variadas" (v8.6.10): cada pessoa que pede PF sorteia uma (guardada em grupo.carnes) */
+const CARNES = ['bife', 'frango', 'peixe', 'cavalo'];
 /* os gostos de cada tipo (v8.6.9): pesos por categoria, na ordem de GOSTOS_CAT; o entregador muda de ideia por terço do turno */
 const GOSTOS_CAT = ['pf', 'frito', 'assado', 'chapa', 'pastel'];
 const GOSTOS = {

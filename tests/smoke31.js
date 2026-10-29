@@ -87,5 +87,16 @@ ok(L.pedePrato('executiva',{cursos:{},day:{time:100},clock:50},true)==='coxinha'
   const S=load({store:{lcc2_save:JSON.stringify({dia:6,bank:900,cursos:{pastel:2,chapa:1,pf:1,xx:2},cursoDia:5})}}); ok(S.g.save.dia===6 && S.g.save.cursos.pastel===2 && S.g.save.cursos.chapa===1 && S.g.save.cursos.pf===undefined && S.g.save.cursos.xx===undefined,'save novo: os cursos voltam como estavam (e o lixo sai)'); }
 function normB(A){ return A.L.normSave({}).bank; }
 
+// ---------- v8.6.10: os desenhos e as Carnes variadas ----------
+{ const c=new Proxy({},{get:(o,k)=>k in o?o[k]:(()=>{}),set:(o,k,v)=>{o[k]=v;return true;}}); let erro=null;
+  try{ Object.keys(C).forEach(k=>{ [false,true].forEach(av=>{ L.drawDish(c,k,10,10,1,false,'bife',av); L.drawDish(c,k,10,10,0.52,true,'bife',av); L.drawMarmita(c,k,10,10,1); }); }); L.CARNES.forEach(cn=>L.drawDish(c,'pf',10,10,1,false,cn,true)); }catch(e){ erro=e; }
+  ok(!erro && L.CARNES.join()==='bife,frango,peixe,cavalo','todo prato do CARDAPIO desenha sem erro (comum, avançado e na marmita) e as 4 proteínas do PF');
+  novo();
+  const gr=()=>new L.Group(g,'familia',1,0,false);
+  ok(Array.from({length:40},gr).every(x=>x.carnes.length===x.size && x.carnes.every(cn=>cn==='bife')),'sem o avançado do PF, todo PF vem com bife');
+  novo({cursos:{pf:2}});
+  const vistos=new Set(); Array.from({length:200},gr).forEach(x=>x.carnes.forEach(cn=>vistos.add(cn)));
+  ok(['bife','frango','peixe','cavalo'].every(cn=>vistos.has(cn)) && vistos.size===4,'com Carnes variadas, o PF sorteia as 4 proteínas'); }
+
 console.log('total =',total,' fails =',fails);
 process.exit(fails?1:0);
