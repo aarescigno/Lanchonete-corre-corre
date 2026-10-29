@@ -1,5 +1,5 @@
 // v8.6.5: decoração da Garagem (aba Decoração da lojinha). Plantas e o cantinho da Rosa (save.decor) e a toalha
-// xadrez de cada mesa ({ t:1 }). Só visual: nada muda nas contas do dia nem nas avaliações.
+// xadrez de cada mesa ({ t:1 }). Não muda as contas do dia; desde a v8.6.6, conta no ambiente do Gurugol.
 const H=require('./harness.js')(); const {g,L,ctx,els}=H;
 let fails=0,total=0; const ok=(c,m)=>{ total++; if(!c){fails++;console.log('FAIL:',m);} else console.log('ok  :',m); };
 const novo=s=>{ g.save=L.normSave(Object.assign({bank:500,dia:5},s||{})); g.up=g.save.up; g.boughtFor=0; g.shopBought=false; g.buildTables(); };
@@ -55,6 +55,25 @@ novo({decor:{espada:1,foto:0}}); g.goShop(5); L.setShopTab('decor'); {
 novo({decor:{espada:1,lata:1,samambaia:1,foto:1,giz:1,placa:1}}); g.save.salao.mesas.forEach(m=>{ m.t=1; }); g.buildTables(); g.startDay(5); g.begin();
 { let err=null; try{ L.render(g,ctx); }catch(e){ err=e; } ok(!err,'desenha o dia com tudo'+(err?': '+err.message:'')); }
 g.goShop(5); { let err=null; try{ L.setShopTab('decor'); L.setShopTab('salao'); }catch(e){ err=e; } ok(!err,'desenha a aba Decoração e o editor'+(err?': '+err.message:'')); }
+
+// v8.6.6: a decoração no ambiente do Gurugol (na escala do serviço, avals[i].s[4])
+{ const A=L.AVAL, amb=(decor,toalha)=>{ novo({decor,salao:undefined}); g.save.salao.mesas.forEach(m=>{ m.t=toalha?1:0; }); g.buildTables(); g.startDay(5); g.begin();
+    const t=g.tables.find(x=>x.open), gr=g.spawn({type:'estudante',color:0,vip:false,av:true}); gr.table=t; gr.pratoQ=5; g.avaliar(gr,0,0); const r=g.avals[g.avals.length-1]; return {v:r.s[4],txt:r.txt}; };
+  ok(A.amb.base===2 && A.amb.planta===0.3 && A.amb.rosa===0.25 && A.amb.toalha===0.5,'pesos: base 2, planta 0,3, cantinho da Rosa 0,25, toalha 0,5');
+  ok(amb({},false).v===2,'garagem pelada: ambiente 2');
+  ok(amb({espada:1,lata:1,samambaia:1},false).v===2.9,'3 plantas: +0,9');
+  ok(amb({foto:1,giz:1,placa:1},false).v===2.8,'cantinho da Rosa inteiro: +0,75 (2,75 vira 2,8)');
+  ok(amb({espada:1,foto:0},false).v===2.3,'enfeite guardado não conta');
+  ok(amb({},true).v===2.5,'mesa com toalha: +0,5');
+  { novo({}); g.save.salao.mesas.forEach((m,i)=>{ m.t=i===0?1:0; }); g.buildTables(); g.startDay(5); g.begin();
+    const com=g.tables.find(x=>x.open&&x.toalha), sem=g.tables.find(x=>x.open&&!x.toalha), a=g.spawn({type:'estudante',color:0,vip:false,av:true}), b=g.spawn({type:'estudante',color:0,vip:false,av:true});
+    a.table=com; b.table=sem; g.avaliar(a,0,0); g.avaliar(b,0,0); const n=g.avals.length;
+    ok(com && sem && g.avals[n-2].s[4]===2.5 && g.avals[n-1].s[4]===2,'a toalha conta só para quem senta na mesa dela'); }
+  { let v=0; for(let i=0;i<40;i++){ const r=amb({espada:1,lata:1,samambaia:1,foto:1,giz:1,placa:1},true); if(Object.values(L.AVAL_DECOR).includes(r.txt)) v++; } ok(v>0,'elogios que citam a decoração ('+v+' em 40)'); }
+  { novo({decor:{samambaia:1}}); g.save.salao.mesas.forEach(m=>{ m.t=1; }); g.buildTables(); g.startDay(5); g.begin();
+    const t=g.tables.find(x=>x.open), gr=g.spawn({type:'estudante',color:0,vip:false,av:true}); gr.table=t; t.group=gr; gr.state='wantOrder'; gr.hearts=1; gr.perdMesa=5; const n0=g.avals.length; g.angryLeave(gr);
+    ok(g.avals.length===n0+1 && g.avals[n0].s[4]===2.8,'quem sai bravo da mesa também vê a toalha e a samambaia ('+(g.avals[n0]&&g.avals[n0].s[4])+')'); }
+}
 
 console.log((fails?'FALHOU':'OK')+' smoke30: '+(total-fails)+'/'+total);
 process.exit(fails?1:0);

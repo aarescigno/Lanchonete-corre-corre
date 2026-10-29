@@ -459,14 +459,14 @@ function buildDecor(grid){
   const dec = game.save.decor, bank = game.save.bank;
   DECOR.forEach(d => {
     const tem = d.id in dec, on = !!dec[d.id];
-    const c = decorCard(DECOR_GRUPOS.find(x => x.id === d.grupo).nome, upgradeIcon('d-' + d.id), d.name, d.desc + (tem && !on ? ' Guardado.' : ''));
+    const c = decorCard(DECOR_GRUPOS.find(x => x.id === d.grupo).nome, upgradeIcon('d-' + d.id), d.name, d.desc + ' Melhora o ambiente no Gurugol.' + (tem && !on ? ' Guardado.' : ''));
     if (on) c.classList.add('own');
     c.appendChild(!tem ? shopBtn('Comprar ' + fmt(d.cost), 'btn', bank >= d.cost, () => game.buyDecor(d.id), d.cost)
       : shopBtn(on ? 'Guardar' : 'Pôr de volta', on ? 'btn alt' : 'btn', true, () => game.mostraDecor(d.id, !on)));
     grid.appendChild(c);
   });
   const todas = game.save.salao.mesas.concat(game.estoque), sem = game.semToalha.length, v = sem * TOALHA.cost;
-  const c = decorCard('Mesas', upgradeIcon('d-toalha'), 'Toalha xadrez', 'Com o porta-guardanapo e a florzinha. ' + fmt(TOALHA.cost) + ' por mesa; vai junto com a mesa. ' +
+  const c = decorCard('Mesas', upgradeIcon('d-toalha'), 'Toalha xadrez', 'Com o porta-guardanapo e a florzinha; melhora o ambiente no Gurugol para quem senta nela. ' + fmt(TOALHA.cost) + ' por mesa; vai junto com a mesa. ' +
     (todas.length - sem) + ' de ' + todas.length + (todas.length > 1 ? ' mesas têm' : ' mesa tem') + '; no Salão, toque numa mesa para pôr só nela.');
   if (!sem) c.classList.add('own');
   c.appendChild(shopBtn(!sem ? 'Todas as mesas têm' : 'Pôr em ' + (sem > 1 ? 'todas (' + sem + ')' : '1 mesa') + ': ' + fmt(v), 'btn', sem > 0 && bank >= v, () => game.buyToalhas(), v));

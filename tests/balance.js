@@ -41,7 +41,9 @@ const R={}; DIAS.forEach(n=>R[n]=[]);
 function jogaDia(n,man){
   g.up={}; g.save.up=g.up; order.slice(0,n-1).forEach(id=>g.up[id]=true);
   if(L.normSave){ g.save.equipe=L.normSave({equipe:eqFor(n)}).equipe; g.save.bank=1e6; }
-  g.save.salao=L.normSalao({mesas:movFor(n).map((seats,c)=>({x:0,y:0,seats,c:c%4}))});
+  const dec=process.env.DECOR==='tudo';   // v8.6.6: DECOR=tudo põe todos os enfeites à mostra e toalha em todas as mesas (o bot não compra decoração)
+  g.save.decor=L.normDecor?L.normDecor(dec?Object.fromEntries(L.DECOR.map(d=>[d.id,1])):{}):{};
+  g.save.salao=L.normSalao({mesas:movFor(n).map((seats,c)=>({x:0,y:0,seats,c:c%4,t:dec?1:0}))});
   if(L.salaoLugares(g.save.salao.mesas)!==movFor(n).reduce((x,y)=>x+y,0)) throw new Error('salão '+JSON.stringify(movFor(n))+' não cabe na arrumação automática (voltou ao kit)');
   if(process.env.DIV) g.save.divulga=process.env.DIV;   // DIV=boca|panfleto|redes
   if(process.env.MULT){ const d=L.divulgaOf(g.save.divulga); d.groups=[+process.env.MULT,+process.env.MULT]; }   // MULT=0.7: fração fixa dos grupos do dia
