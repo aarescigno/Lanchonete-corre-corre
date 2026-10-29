@@ -29,6 +29,8 @@ Registro das ideias e dos retornos de quem jogou, com o texto original, e de ond
 
 **Destino:** a sessão 2c-r3 do `docs/PLANO.md` virou 3 partes: 2c-r3a (cursos e gostos, v8.6.9), 2c-r3b (desenhos, v8.6.10) e 2c-r3c (vegetarianos e veganos, v8.6.11). Decidido por mim, sem pergunta: a Nilza é a avó da Bia (mãe da Rosa e do Tonhão); o bolinho japonês ficou de fora dos pratos veg (na última resposta, o usuário o tirou da lista); a empada de palmito e o kibe de abóbora só aparecem com o curso de assados e o de fritos; o "+ marmita" continua fazendo PF.
 
+> Correções depois: "bolinho japonês é de carne, é uma massa frita de carne"; "mude o parma com bufala para presunto defumado com queijo minas"; e pediu clareza sobre os salgados vegetarianos no cartão do curso (os que dependem de outro curso aparecem apagados, com "precisa do curso de ...").
+
 ---
 
 ## 29/10/2026 — Usuário: entrevista sobre o relatório do Gurugol
