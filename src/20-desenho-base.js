@@ -125,11 +125,11 @@ function drawComida(ctx,k,carne,av){
     ctx.fillStyle = 'rgba(120,70,20,.5)'; for (const d of [[3,0],[5,2],[1,2.2]]){ circ(ctx,d[0],d[1],0.7); ctx.fill(); }
     dx = 5; dy = -4.5;
   } else if (k === 'kibe'){
-    // o kibe frito: oval de trigo, um pouco mais fino numa ponta, de casca áspera (sem risquinhos)
-    ctx.beginPath(); ctx.moveTo(-11.5,2); ctx.bezierCurveTo(-11,-6,-3,-9,5,-6.5); ctx.bezierCurveTo(10,-4.5,12,0,10.5,3.5); ctx.bezierCurveTo(8,8,-2,9,-11.5,2); ctx.closePath(); fs(ctx,cor,2);
-    ctx.fillStyle = 'rgba(40,20,5,.5)'; for (const d of [[-6,-1],[-2,-4],[2,1],[6,-2],[-4,4],[1,5],[7,3],[-8,2]]){ circ(ctx,d[0],d[1],0.75); ctx.fill(); }
-    ctx.fillStyle = 'rgba(240,190,110,.55)'; for (const d of [[-3,0],[3,-4],[5,4],[-7,-3]]){ circ(ctx,d[0],d[1],0.6); ctx.fill(); }
-    dx = 0; dy = -6.5;
+    // o kibe frito: fuso simétrico de pontas bem pontudas, casca áspera (sem risquinhos)
+    ctx.beginPath(); ctx.moveTo(-13,0); ctx.bezierCurveTo(-6,-11,6,-11,13,0); ctx.bezierCurveTo(6,11,-6,11,-13,0); ctx.closePath(); ctx.lineJoin = 'miter'; fs(ctx,cor,2); ctx.lineJoin = 'round';
+    ctx.fillStyle = 'rgba(40,20,5,.5)'; for (const d of [[-6,-1.5],[-2,-4],[2,-3],[6,-1],[-6,2],[-1,3.5],[3,3],[7,1.5],[0,0]]){ circ(ctx,d[0],d[1],0.75); ctx.fill(); }
+    ctx.fillStyle = 'rgba(240,190,110,.55)'; for (const d of [[-3,0.5],[3,-0.5],[-9,0],[9,0],[0,-6],[0,6]]){ circ(ctx,d[0],d[1],0.55); ctx.fill(); }
+    dx = 0; dy = -4.5;
   } else if (k === 'bolinho'){
     // o bolinho japonês: uma bolinha de massa frita, empanada e áspera, com manchas escuras do recheio
     circ(ctx,0,0,9); fs(ctx,cor,2);
@@ -143,11 +143,12 @@ function drawComida(ctx,k,carne,av){
     ctx.fillStyle = 'rgba(90,50,20,.6)'; circ(ctx,0,-2,1); ctx.fill();
     dx = -3.5; dy = -3.5;
   } else if (k === 'esfihaA'){
-    // a esfiha aberta: massa dourada com a carne moída à mostra (marrom, com pedacinhos de tomate e cebola), sem fundo vermelho
+    // a esfiha aberta: borda de massa dourada e, por cima da massa clara, montinhos de carne moída com tomate e cebola, deixando a massa aparecer
     circ(ctx,0,0,10.5); fs(ctx,'#DDA054',2);
-    circ(ctx,0,0,7.4); fs(ctx,'#8A5638',1.2);
-    ctx.fillStyle = '#C8452B'; for (const d of [[-3,-2],[3,1.5],[0.5,3.8]]){ rr(ctx,d[0]-1,d[1]-0.8,2.2,1.6,0.6); ctx.fill(); }
-    ctx.fillStyle = '#EFDCB0'; for (const d of [[2.5,-3],[-3.5,2],[0,-0.5]]){ circ(ctx,d[0],d[1],1); ctx.fill(); }
+    circ(ctx,0,0,7.4); ctx.fillStyle = '#F3D9A0'; ctx.fill();
+    ctx.fillStyle = '#7E4B2F'; for (const d of [[-3.6,-3,2.3,1.6],[1.8,-4,2,1.4],[4,0.2,1.9,1.6],[-4.5,1.6,1.8,1.4],[0,1.2,2.2,1.7],[2,4.4,1.9,1.1]]){ ell(ctx,d[0],d[1],d[2],d[3]); ctx.fill(); }
+    ctx.fillStyle = '#C8452B'; for (const d of [[-1.2,-1.8],[3.4,2.6],[-3.2,4]]){ rr(ctx,d[0]-1,d[1]-0.7,2.1,1.4,0.5); ctx.fill(); }
+    ctx.fillStyle = '#FFF4D6'; for (const d of [[-0.5,-5],[-5.4,-0.8],[5.2,-2.6]]){ circ(ctx,d[0],d[1],0.9); ctx.fill(); }
     dx = 0; dy = 0;
   } else if (k === 'esfihaF'){
     ctx.beginPath(); ctx.moveTo(0,-10); ctx.lineTo(10.5,7); ctx.lineTo(-10.5,7); ctx.closePath(); ctx.lineJoin = 'round'; fs(ctx,cor,2);
