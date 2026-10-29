@@ -4031,16 +4031,17 @@ function drawComida(ctx,k,carne,av){
     ctx.fillStyle = 'rgba(120,70,20,.5)'; for (const d of [[3,0],[5,2],[1,2.2]]){ circ(ctx,d[0],d[1],0.7); ctx.fill(); }
     dx = 5; dy = -4.5;
   } else if (k === 'kibe'){
-    ctx.beginPath(); ctx.moveTo(-12,0); ctx.quadraticCurveTo(0,-14,12,0); ctx.quadraticCurveTo(0,14,-12,0); ctx.closePath(); fs(ctx,cor,2);
-    ctx.strokeStyle = 'rgba(40,20,5,.45)'; ctx.lineWidth = 1.1; ctx.beginPath();
-    for (let x=-6;x<=6;x+=3){ ctx.moveTo(x-1.5,-2.5); ctx.lineTo(x+1.5,2.5); ctx.moveTo(x+1.5,-2.5); ctx.lineTo(x-1.5,2.5); } ctx.stroke();
-    dx = 0; dy = -4.5;
+    // o kibe frito: oval de trigo, um pouco mais fino numa ponta, de casca áspera (sem risquinhos)
+    ctx.beginPath(); ctx.moveTo(-11.5,2); ctx.bezierCurveTo(-11,-6,-3,-9,5,-6.5); ctx.bezierCurveTo(10,-4.5,12,0,10.5,3.5); ctx.bezierCurveTo(8,8,-2,9,-11.5,2); ctx.closePath(); fs(ctx,cor,2);
+    ctx.fillStyle = 'rgba(40,20,5,.5)'; for (const d of [[-6,-1],[-2,-4],[2,1],[6,-2],[-4,4],[1,5],[7,3],[-8,2]]){ circ(ctx,d[0],d[1],0.75); ctx.fill(); }
+    ctx.fillStyle = 'rgba(240,190,110,.55)'; for (const d of [[-3,0],[3,-4],[5,4],[-7,-3]]){ circ(ctx,d[0],d[1],0.6); ctx.fill(); }
+    dx = 0; dy = -6.5;
   } else if (k === 'bolinho'){
-    rr(ctx,-12,-5,24,10,5); fs(ctx,cor,2);
-    circ(ctx,9.5,0,3.4); fs(ctx,'#6B3A1E',1.4);
-    ctx.fillStyle = '#B97A4A'; for (const d of [[8.6,-1],[10.4,0.6],[8.8,1.4]]){ circ(ctx,d[0],d[1],0.55); ctx.fill(); }
-    ctx.fillStyle = 'rgba(255,230,160,.7)'; ell(ctx,-4,-2,4,1.2); ctx.fill();
-    dx = 0; dy = -3.2;
+    // o bolinho japonês: uma bolinha de massa frita, empanada e áspera, com manchas escuras do recheio
+    circ(ctx,0,0,9); fs(ctx,cor,2);
+    ctx.fillStyle = 'rgba(70,35,10,.55)'; for (const d of [[-4,-3],[3,-4.5],[5,1],[-1,3.5],[-6,2]]){ ell(ctx,d[0],d[1],1.5,1); ctx.fill(); }
+    ctx.fillStyle = 'rgba(255,235,170,.7)'; for (const d of [[-1,-1],[4,3],[-5,-0.5],[1,-5.5]]){ circ(ctx,d[0],d[1],0.6); ctx.fill(); }
+    dx = 0; dy = -7.5;
   } else if (k === 'empada'){
     ctx.beginPath(); ctx.moveTo(-8,-1); ctx.lineTo(8,-1); ctx.lineTo(6,7); ctx.lineTo(-6,7); ctx.closePath(); fs(ctx,'#D9A55B',2);
     ctx.strokeStyle = 'rgba(90,50,20,.45)'; ctx.lineWidth = 1; ctx.beginPath(); ctx.moveTo(-4,1); ctx.lineTo(-3,6); ctx.moveTo(0,1); ctx.lineTo(0,6); ctx.moveTo(4,1); ctx.lineTo(3,6); ctx.stroke();
@@ -4048,11 +4049,12 @@ function drawComida(ctx,k,carne,av){
     ctx.fillStyle = 'rgba(90,50,20,.6)'; circ(ctx,0,-2,1); ctx.fill();
     dx = -3.5; dy = -3.5;
   } else if (k === 'esfihaA'){
-    circ(ctx,0,0,10.5); fs(ctx,'#D79A4B',2);
-    circ(ctx,0,0,7.2); fs(ctx,cor,1.4);
-    ctx.fillStyle = '#F4E3B0'; for (const d of [[-3,-2],[2.5,-3],[3,2],[-2,3]]){ circ(ctx,d[0],d[1],0.9); ctx.fill(); }
-    ctx.fillStyle = '#5E9B3A'; circ(ctx,0,0.3,0.9); ctx.fill();
-    dx = 1; dy = 0;
+    // a esfiha aberta: massa dourada com a carne moída à mostra (marrom, com pedacinhos de tomate e cebola), sem fundo vermelho
+    circ(ctx,0,0,10.5); fs(ctx,'#DDA054',2);
+    circ(ctx,0,0,7.4); fs(ctx,'#8A5638',1.2);
+    ctx.fillStyle = '#C8452B'; for (const d of [[-3,-2],[3,1.5],[0.5,3.8]]){ rr(ctx,d[0]-1,d[1]-0.8,2.2,1.6,0.6); ctx.fill(); }
+    ctx.fillStyle = '#EFDCB0'; for (const d of [[2.5,-3],[-3.5,2],[0,-0.5]]){ circ(ctx,d[0],d[1],1); ctx.fill(); }
+    dx = 0; dy = 0;
   } else if (k === 'esfihaF'){
     ctx.beginPath(); ctx.moveTo(0,-10); ctx.lineTo(10.5,7); ctx.lineTo(-10.5,7); ctx.closePath(); ctx.lineJoin = 'round'; fs(ctx,cor,2);
     ctx.strokeStyle = 'rgba(90,50,20,.5)'; ctx.lineWidth = 1.1; ctx.beginPath();
@@ -4073,10 +4075,10 @@ function drawComida(ctx,k,carne,av){
     rr(ctx,-9,0,18,3.2,1.6); fs(ctx,'#F6D44A',1.3);
     dx = 0; dy = 0;
   } else if (k === 'pastelQ' || k === 'pastelP' || cat === 'pastel'){
-    rr(ctx,-11,-6,22,12,5.5); fs(ctx,cor,2);
-    ctx.fillStyle = '#F4C874'; rr(ctx,-8,-4,10,3,1.5); ctx.fill();
-    ctx.strokeStyle = '#B97A1E'; ctx.lineWidth = 1.2;
-    for (let i=-8;i<=8;i+=4){ ctx.beginPath(); ctx.moveTo(i,4.6); ctx.lineTo(i,6.2); ctx.stroke(); }
+    // o pastel: retângulo de massa frita e bolhosa, de cantos quase retos
+    rr(ctx,-12,-7,24,14,2.2); fs(ctx,cor,2);
+    ctx.fillStyle = '#F4C874'; rr(ctx,-9.5,-5,12,3,1.2); ctx.fill();
+    ctx.fillStyle = 'rgba(150,90,20,.45)'; for (const d of [[-7,2],[-2,3.5],[4,2.5],[8,-2],[1,-3],[-8,-0.5],[7,4.5]]){ circ(ctx,d[0],d[1],0.9); ctx.fill(); }
     if (k === 'pastelQ'){
       ctx.strokeStyle = '#F6D44A'; ctx.lineWidth = 2; ctx.lineCap = 'round'; ctx.beginPath(); ctx.moveTo(8,-1); ctx.quadraticCurveTo(12,-3,13,-7); ctx.stroke(); ctx.lineCap = 'butt';
     } else if (k === 'pastelP'){
@@ -4090,10 +4092,13 @@ function drawComida(ctx,k,carne,av){
     dx = 0; dy = -8;
   } else if (cat === 'assado'){
     circ(ctx,0,0,9.5); fs(ctx,cor,2);
-  } else { // misto-quente
-    ctx.beginPath(); ctx.moveTo(-12,5); ctx.lineTo(-1,5); ctx.lineTo(-6.5,-7); ctx.closePath(); fs(ctx,cor,2);
-    ctx.beginPath(); ctx.moveTo(1,5); ctx.lineTo(12,5); ctx.lineTo(6.5,-7); ctx.closePath(); fs(ctx,cor,2);
-    ctx.fillStyle = '#F6D44A'; ctx.fillRect(-10,1.5,8.5,2); ctx.fillRect(2,1.5,8.5,2);
+  } else { // misto quente: duas metades de pão tostado empilhadas, com presunto e queijo à mostra
+    rr(ctx,-11,0.5,22,6.5,2.2); fs(ctx,cor,2);
+    ctx.fillStyle = '#E58C8C'; ctx.fillRect(-9.5,1.4,19,1.6);
+    ctx.fillStyle = '#F6D44A'; ctx.fillRect(-9.5,3,19,2.2); ell(ctx,6,6,2.2,1.6); ctx.fill();
+    rr(ctx,-9,-7.5,22,6.5,2.2); fs(ctx,cor,2);
+    ctx.fillStyle = '#E58C8C'; ctx.fillRect(-7.5,-6.6,19,1.6);
+    ctx.fillStyle = '#F6D44A'; ctx.fillRect(-7.5,-5,19,2.2);
     dx = 0; dy = 0;
   }
   if (!av) return;
