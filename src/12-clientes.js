@@ -123,7 +123,7 @@ function normSave(s){
   const dia = +s.dia >= 1 ? Math.round(+s.dia) : Math.max(clamp(Math.round(+s.maxDay) || 1, 1, 7), feitos.length ? Math.max(...feitos) + 1 : 1);
   const estrelas = isFinite(+s.estrelas) && s.estrelas != null ? Math.max(0, Math.round(+s.estrelas)) : Object.keys(stars).reduce((a, k) => a + clamp(Math.round(+stars[k]) || 0, 0, 3), 0);
   const bank = isFinite(+s.bank) ? Math.round(+s.bank) : 0;
-  const dev = salaoDevolucao(s.salao), out = { dia, estrelas, lucroTot: Math.round(+s.lucroTot) || 0, pontosTot: Math.max(0, Math.round(+s.pontosTot) || 0), aval: normAval(s.aval), avalCom: normAvalCom(s.avalCom), neg: clamp(Math.round(+s.neg) || 0, 0, BANCO.neg), emp: normEmprestimo(s.emp), corta: s.corta !== false, fechou: Math.max(0, Math.round(+s.fechou) || 0), bank: bank + dev + devMaq, up, torneira:true, salao: normSalao(dev ? null : s.salao), divulga: divulgaOf(s.divulga).id, treino: !!s.treino, decor: normDecor(s.decor), manut: normManut(s.manut), caixa: normCaixa(s.caixa), caixaPend: normPend(s.caixaPend) };
+  const dev = salaoDevolucao(s.salao), out = { dia, estrelas, lucroTot: Math.round(+s.lucroTot) || 0, pontosTot: Math.max(0, Math.round(+s.pontosTot) || 0), aval: normAval(s.aval), avalCom: normAvalCom(s.avalCom), neg: clamp(Math.round(+s.neg) || 0, 0, BANCO.neg), emp: normEmprestimo(s.emp), corta: s.corta !== false, fechou: Math.max(0, Math.round(+s.fechou) || 0), bank: bank + dev + devMaq, up, torneira:true, salao: normSalao(dev ? null : s.salao), divulga: divulgaOf(s.divulga).id, treino: !!s.treino, decor: normDecor(s.decor), cursos: normCursos(s.cursos), cursoDia: Math.max(0, Math.round(+s.cursoDia) || 0), cardV: 1, avisoCard: !!s.avisoCard, manut: normManut(s.manut), caixa: normCaixa(s.caixa), caixaPend: normPend(s.caixaPend) };
   out.equipe = normEquipe(s.equipe, pontoOf(out.salao.ponto));
   // v8.6.4: as notas do Gurugol de antes (de 1 a 5 pelo serviço) passam para a escala da Garagem, uma vez só (avalEsc)
   if (s.avalEsc !== 2){
@@ -143,6 +143,15 @@ function loadSave(){
     const s2 = JSON.parse(lsGet(saveKey()) || 'null');
     if (DEV.on) return normSave(s2 || { bank:DEV.bank });
     if (s2 && typeof s2 === 'object'){
+      // v8.6.9: save de antes do cardápio que cresce (sem cardV): a campanha recomeça do dia 1, com um aviso no menu (se já tinha jogado);
+      // o ranking, a abertura e a Missão zero ficam
+      if (s2.cardV !== 1){
+        const jogou = (+s2.dia > 1) || (+s2.maxDay > 1) || (+s2.lucroTot > 0) || (Array.isArray(s2.caixa) && s2.caixa.length > 0) || (s2.stars && Object.keys(s2.stars).length > 0);
+        const n = normSave({ treino: s2.treino });
+        n.avisoCard = !!jogou;
+        writeSave(n);
+        return n;
+      }
       const n = normSave(s2);
       if ((s2.salao && !Array.isArray(s2.salao.mesas)) || !s2.torneira) writeSave(n);   // salão antigo ou máquina de suco convertidos (com a devolução): só uma vez
       return n;
@@ -188,12 +197,12 @@ class Group {
     if (this.vip) this.people.forEach(p => { p.shades = true; });
     // a conta (v8.3.8): cada pessoa paga o que pediu, pelo cardápio do ponto: o prato e, às vezes, um 2º item (extras;
     // nunca no treino); o prato especial do VIP soma VIP.dish
-    this.dishes = this.people.map(() => pick(T.prefere));
+    this.dishes = this.people.map(() => pedePrato(type, game));   // v8.6.9: pelo gosto do tipo, entre os pratos que a cozinha sabe
     this.dish = this.dishes[0];
     // o entregador (v8.6) não come no salão: leva o prato numa marmita, pela fila de retirada, sem 2º item
     this.retira = type === 'entregador';
-    this.extras = this.people.map(() => !this.retira && game.mode !== 'treino' && Math.random() < T.mais ? pick(MAIS.pratos) : null);
-    this.bill = this.dishes.concat(this.extras).reduce((v, k) => v + (k ? precoPrato(k, game.ponto) : 0), 0) + (this.vip ? VIP.dish : 0);
+    this.extras = this.people.map(() => !this.retira && game.mode !== 'treino' && Math.random() < T.mais ? pedePrato(type, game, true) : null);
+    this.bill = this.dishes.concat(this.extras).reduce((v, k) => v + (k ? precoPrato(k, game.ponto, game.cursos) : 0), 0) + (this.vip ? VIP.dish : 0);
     this.hearts = 5;
     this.x = DOOR.x; this.y = DOOR.y;
     this.path = []; this.moving = false; this.walkPh = 0;

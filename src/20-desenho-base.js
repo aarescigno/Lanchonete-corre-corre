@@ -95,24 +95,28 @@ function drawMarmita(ctx,k,x,y,s){
 }
 /* a comida do prato (sem o prato), centrada em (0, 0) */
 function drawComida(ctx,k){
+  const pr = CARDAPIO[k], cat = pr ? pr.cat : 'chapa', cor = pr ? pr.cor : '#D9A25B';   // v8.6.9: os pratos novos usam o desenho da categoria, na cor do prato (as artes de verdade vêm na v8.6.10)
   if (k === 'pf'){
     ell(ctx,-5,-1,5.5,4.2); fs(ctx,'#FFF6DA',1.6);
     ell(ctx,4,-3.5,5,3.4); fs(ctx,'#5B2E1A',1.6);
     rr(ctx,-3,1.5,12,5,2.5); fs(ctx,'#A0522D',1.6);
     ell(ctx,-7,5,3.4,2.2); fs(ctx,'#fff',1.4); circ(ctx,-7,5,1.2); ctx.fillStyle = '#F5B800'; ctx.fill();
-  } else if (k === 'pastel'){
-    rr(ctx,-11,-6,22,12,5.5); fs(ctx,'#E5A33C',2);
+  } else if (cat === 'pastel'){
+    rr(ctx,-11,-6,22,12,5.5); fs(ctx,cor,2);
     ctx.fillStyle = '#F4C874'; rr(ctx,-8,-4,10,3,1.5); ctx.fill();
     ctx.strokeStyle = '#B97A1E'; ctx.lineWidth = 1.2;
     for (let i=-8;i<=8;i+=4){ ctx.beginPath(); ctx.moveTo(i,4.6); ctx.lineTo(i,6.2); ctx.stroke(); }
-  } else if (k === 'coxinha'){
+  } else if (cat === 'frito'){
     ctx.beginPath(); ctx.moveTo(0,-10);
     ctx.bezierCurveTo(11,-5, 10,5, 3,8); ctx.lineTo(-3,8);
-    ctx.bezierCurveTo(-10,5, -11,-5, 0,-10); ctx.closePath(); fs(ctx,'#E8912A',2);
+    ctx.bezierCurveTo(-10,5, -11,-5, 0,-10); ctx.closePath(); fs(ctx,cor,2);
     ctx.fillStyle = '#F7C168'; ell(ctx,-3,-2,2.2,3.6); ctx.fill();
-  } else { // misto-quente
-    ctx.beginPath(); ctx.moveTo(-12,5); ctx.lineTo(-1,5); ctx.lineTo(-6.5,-7); ctx.closePath(); fs(ctx,'#D9A25B',2);
-    ctx.beginPath(); ctx.moveTo(1,5); ctx.lineTo(12,5); ctx.lineTo(6.5,-7); ctx.closePath(); fs(ctx,'#D9A25B',2);
+  } else if (cat === 'assado'){
+    circ(ctx,0,0,9.5); fs(ctx,cor,2);
+    ctx.strokeStyle = 'rgba(90,50,20,.45)'; ctx.lineWidth = 1.2; ctx.beginPath(); ctx.moveTo(-4,-3); ctx.lineTo(4,3); ctx.moveTo(4,-3); ctx.lineTo(-4,3); ctx.stroke();
+  } else { // misto-quente (e os da chapa)
+    ctx.beginPath(); ctx.moveTo(-12,5); ctx.lineTo(-1,5); ctx.lineTo(-6.5,-7); ctx.closePath(); fs(ctx,cor,2);
+    ctx.beginPath(); ctx.moveTo(1,5); ctx.lineTo(12,5); ctx.lineTo(6.5,-7); ctx.closePath(); fs(ctx,cor,2);
     ctx.fillStyle = '#F6D44A'; ctx.fillRect(-10,1.5,8.5,2); ctx.fillRect(2,1.5,8.5,2);
   }
 }

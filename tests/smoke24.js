@@ -8,16 +8,16 @@ const novo=()=>{ g.save=L.normSave({maxDay:7,bank:500}); g.up=g.save.up; g.bough
 const preco=k=>k?L.precoPrato(k):0;
 
 // ---------- cardápio e conta ----------
-ok(C.pf.preco===25 && C.misto.preco===12 && C.pastel.preco===10 && C.coxinha.preco===8,'cardápio da Garagem: PF 25, misto 12, pastel 10, coxinha 8');
+ok(C.pf.preco===25 && C.misto.preco===10 && C.pastel.preco===10 && C.coxinha.preco===8,'cardápio da Garagem: PF 25, misto 10, pastel 10, coxinha 8 (v8.6.9: misto de 12 para 10)');
 ok(L.precoPrato('pf',{cardapio:1.5})===38,'o ponto multiplica o cardápio (PONTOS.cardapio)');
 ok(L.GORJETA.join()==='0,-0.2,-0.1,0,0.05,0.1','gorjeta: até +10% com 5 corações; com 1 ou 2, desconto');
-ok(Object.keys(L.CUSTOMER_TYPES).every(k=>{ const T=L.CUSTOMER_TYPES[k]; return !T.bill && T.prefere.every(d=>C[d]) && T.mais>=0 && T.mais<1; }),'cada tipo escolhe pratos do cardápio (sem faixa de conta) e tem a chance do 2º item');
+ok(Object.keys(L.CUSTOMER_TYPES).every(k=>{ const T=L.CUSTOMER_TYPES[k]; return !T.bill && !T.prefere && L.GOSTOS[k] && T.mais>=0 && T.mais<1; }),'cada tipo tem o seu gosto (GOSTOS, v8.6.9; sem faixa de conta) e a chance do 2º item');
 novo(); g.startDay(5); g.begin();
 { let n=0, comExtra=0, okConta=true, okExtra=true;
   for(let i=0;i<400;i++){ const tp=['estudante','familia','vovos','executiva','entregador'][i%5], grp=new L.Group(g,tp,i,0,i%7===0);
     const soma=grp.dishes.concat(grp.extras).reduce((a,k)=>a+preco(k),0)+(grp.vip?L.VIP.dish:0);
     if(grp.bill!==soma) okConta=false;
-    if(grp.extras.length!==grp.size || grp.extras.some(k=>k && L.MAIS.pratos.indexOf(k)<0)) okExtra=false;
+    if(grp.extras.length!==grp.size || grp.extras.some(k=>k && (k==='pf' || !L.pratoSabido(k,{})))) okExtra=false;
     n+=grp.size; comExtra+=grp.extras.filter(Boolean).length; }
   ok(okConta,'a conta é a soma do que cada um pediu (e do prato especial do VIP)');
   ok(okExtra,'no máximo 2 itens por pessoa: o 2º é um salgado');
@@ -58,7 +58,7 @@ novo(); g.startDay(5); g.begin(); g.schedule=[{t:1e9,type:'estudante',color:0}];
 // ---------- custos ----------
 ok(L.CONTAS.base===20 && L.INGRED.prato===0.35 && L.DRINK_PRICE.coffee===3 && L.JUICE.price===8,'custos: gás e geladeira R$ 20/dia, ingredientes 35%, cafezinho R$ 3, suco R$ 8');
 ok(L.payroll({tonhao:2,dani:3,tv:true,som:true})===95,'folha completa da Garagem: R$ 95 por dia');
-ok(L.DAYS.map(d=>d.meta).join()==='30,120,150,70,100,150,180','metas de lucro realistas (R$ 30 a 180; v8.3.9)');
+ok(L.DAYS.map(d=>d.meta).join()==='30,108,135,63,90,150,180','metas de lucro realistas (R$ 30 a 180; v8.3.9; dias 2 a 5 -10% na v8.6.9)');
 ok(L.DAYS.map(d=>d.expert).join()==='60,220,230,110,140,280,310','3 estrelas pelo jogo perfeito (v8.3.9): R$ 60 a 310');
 ok(L.bomGoal(L.DAYS[0])===50,'dia 1: 2 estrelas com R$ 50');
 // ---------- Como jogar ----------

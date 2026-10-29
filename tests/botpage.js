@@ -148,6 +148,27 @@ function afiado(g,L){
     cands[0][1]();
   };
 }
+// v8.6.9: cursos do Tonhão. A ordem é uma lista de ids: a 1ª vez que o id aparece é o degrau 1 (o básico; no PF, o avançado, que não tem
+// básico), a 2ª é o avançado. Padrão: os 4 básicos, depois os avançados (CURSOS=chapa,pastel,... troca a lista inteira)
+const CURSOS_ORDEM=['pastel','chapa','fritos','assados','pf','fritos','pastel','chapa','assados'];
+function proximoCurso(L,cursos,ordem){
+  const vistos={};
+  for(const id of ordem){ vistos[id]=(vistos[id]||0)+1; const alvo=id==='pf'?2:vistos[id]; if(L.cursoNivel(cursos,id)<alvo&&!(id==='pf'&&vistos[id]>1)) return {id,nivel:alvo}; }
+  return null;
+}
+// os cursos de quem já fez as k primeiras compras da ordem (o balance.js, que joga os dias soltos)
+module.exports.cursosApos=function(L,k,ordem){
+  const cu={}; ordem=ordem||CURSOS_ORDEM;
+  for(let i=0;i<k;i++){ const p=proximoCurso(L,cu,ordem); if(!p) break; cu[p.id]=p.nivel; }
+  return cu;
+};
+// compra o próximo curso da ordem se sobrar o preço mais a reserva (a carreira.js); devolve o id comprado ou ''
+module.exports.cursos=function(g,L,reserva,ordem){
+  const p=proximoCurso(L,g.save.cursos,ordem||CURSOS_ORDEM); if(!p) return '';
+  const c=g.cursoProx(p.id); if(!c||c.nivel!==p.nivel) return '';
+  return g.save.bank-c.preco>=(reserva||0)&&g.buyCurso(p.id)?p.id+p.nivel:'';
+};
+module.exports.CURSOS_ORDEM=CURSOS_ORDEM;
 // v7.4: móveis na lojinha (1 compra por visita). Regra simples: mesa de 4 enquanto houver grupos perdidos por falta
 // de mesa (semMesa) no último dia, senão mesa de 2; depois, a arrumação automática. reserva: o dinheiro que fica guardado
 mk.moveis=function(g,L,semMesa,reserva,estrategia){

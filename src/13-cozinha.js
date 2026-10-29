@@ -5,6 +5,8 @@ class Kitchen {
   constructor(game){ this.game = game; this.reset(); }
   reset(){ this.queue = []; this.cooking = []; this.plates = [null,null,null,null]; this.pid = 0; this.slots = STAFF.tonhao.levels[this.game.save.equipe.tonhao].slots; this.sinkN = 0; this.clean = Infinity; this.noPlate = false; this.washT = 0; }
   get chef(){ return STAFF.tonhao.levels[this.game.save.equipe.tonhao]; }
+  /* a chance de caprichar: x CURSO_AV.crit nos pratos de um curso avançado que o Tonhão já fez (v8.6.9) */
+  chefCrit(dish){ return this.chef.crit * (pratoAv(dish, this.game.cursos) ? CURSO_AV.crit : 1); }
   submit(ticket){
     const g = this.game, grp = ticket.group;
     let time = rand(4,7) * this.chef.cook;
@@ -43,13 +45,13 @@ class Kitchen {
   }
   /* a marmita pronta vai para a janela de prontos (sem prato limpo); os ingredientes e a embalagem saem agora */
   marmitaPronta(t, slot){
-    const g = this.game, crit = g.mode !== 'treino' && Math.random() < this.chef.crit;
+    const g = this.game, crit = g.mode !== 'treino' && Math.random() < this.chefCrit(t.dish);
     const fx = AVAL.prato[g.save.equipe.tonhao], q = crit ? 5 : rand(fx[0], fx[1]);
     this.plates[slot] = { id:++this.pid, kind:'marmita', mid:++g.marmitaId, dish:t.dish, dono:t.dono, slot, age:0, crit, q };
     g.usos.fogao++; g.usos.geladeira++;
     Sfx.bell();
     g.addText(PLATE_SLOTS[slot].x, PLATE_SLOTS[slot].y - 34, 'Marmita!', PAL.mostarda, 16);
-    const cost = Math.round(precoPrato(t.dish, g.ponto) * INGRED.prato * (g.quebrado('geladeira') ? manutOf('geladeira').ingred : 1)) + MARMITA.embalagem;
+    const cost = Math.round(precoPrato(t.dish, g.ponto, g.cursos) * INGRED.prato * (g.quebrado('geladeira') ? manutOf('geladeira').ingred : 1)) + MARMITA.embalagem;
     g.custo += cost; g.addText(PLATE_SLOTS[slot].x, PLATE_SLOTS[slot].y - 54, '-' + cost, PAL.perigo, 12);
   }
   update(dt){
@@ -65,7 +67,7 @@ class Kitchen {
         if (free >= 0 && this.clean <= 0) this.noPlate = true;
         if (free >= 0 && this.clean > 0){
           this.clean--;
-          const crit = this.game.mode !== 'treino' && Math.random() < this.chef.crit;
+          const crit = this.game.mode !== 'treino' && Math.random() < this.chefCrit(t.dish);
           // a nota do prato (v8.4): o caprichado vale 5; os outros caem na faixa de acerto do cozinheiro
           const fx = AVAL.prato[this.game.save.equipe.tonhao], q = crit ? 5 : rand(fx[0], fx[1]);
           this.plates[free] = { id:++this.pid, table:t.table, group:t.group, dish:t.dish, slot:free, age:0, crit, q, vip:!!(t.group && t.group.vip) };

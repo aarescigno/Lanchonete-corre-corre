@@ -49,6 +49,8 @@ p{margin:calc(var(--u)*6) 0;font-size:max(12px,calc(var(--u)*16));line-height:1.
 .menu-panel .chips{gap:calc(var(--u)*6)}   /* 8 chips (0 a 7) numa linha */
 .menu-panel .chip{min-width:max(40px,calc(var(--u)*46))}
 .menu-panel .menu-info{margin:calc(var(--u)*4) 0 0}   /* v8.3: o caixa, as estrelas e o lucro acumulado da campanha */
+.menu-panel .menu-aviso{margin:calc(var(--u)*6) 0 0;padding:calc(var(--u)*4) calc(var(--u)*8);border-radius:calc(var(--u)*8);background:var(--creme);border:2px solid var(--mostarda);font-weight:600}   /* v8.6.9: o aviso de uma vez só (cardápio que cresce) */
+.menu-panel .menu-aviso .link{margin:0;padding:0 4px;min-height:0}
 .chip.treino{background:var(--mostarda)}   /* dia 0: a Missão zero (v8.2) */
 .sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap;margin:-1px}
 .chip[aria-pressed="true"]{background:var(--faixa);color:#fff}
@@ -95,8 +97,11 @@ p{margin:calc(var(--u)*6) 0;font-size:max(12px,calc(var(--u)*16));line-height:1.
 .stats b{font-family:var(--fd);font-weight:400;text-align:right;font-size:max(13px,calc(var(--u)*18))}
 .shopgrid{display:grid;grid-template-columns:repeat(3,1fr);gap:calc(var(--u)*8);width:calc(var(--u)*760);max-width:100%;margin:calc(var(--u)*6) 0}
 .shopgrid.salao{grid-template-columns:1fr}
+.shopgrid.cursos{width:calc(var(--u)*980)}   /* v8.6.9: 5 cartões, 3 por fileira */
+.shopgrid .cursomsg{grid-column:1/-1;margin:0;font-weight:700;color:var(--ok,#3E9B5A)}
+.item .cursos-lista{grid-column:1 / -1;font-weight:700}   /* o aviso do curso do dia, na largura do cartão */
 .shopgrid.melhorias,.shopgrid.decor{grid-template-columns:repeat(4,1fr);width:calc(var(--u)*980)}   /* v8.3.10: 7 cartões em 2 fileiras (com o Triturador); v8.6.5: e a Decoração */
-@media (max-width:600px) and (min-height:461px){.shopgrid.melhorias,.shopgrid.decor{grid-template-columns:repeat(2,1fr)}}
+@media (max-width:600px) and (min-height:461px){.shopgrid.melhorias,.shopgrid.decor,.shopgrid.cursos{grid-template-columns:repeat(2,1fr)}}
 /* editor do salão (v7.4): o salão em escala à esquerda, a loja de móveis à direita */
 .ed{display:grid;grid-template-columns:minmax(0,1fr) max(150px,calc(var(--u)*210));gap:calc(var(--u)*8);align-items:start;text-align:left}
 .ed-cv{position:relative;border:calc(var(--u)*3) solid var(--tinta);border-radius:calc(var(--u)*10);overflow:hidden;line-height:0;background:var(--tinta)}
@@ -304,11 +309,12 @@ table.rank tr.me td{background:#fbe7a8}
 
     <div class="ov show" id="ov-menu">
       <div class="panel menu-panel">
-        <span class="vtag" id="vtag" aria-label="Versão 8.6.8">v8.6.8</span>
+        <span class="vtag" id="vtag" aria-label="Versão 8.6.9">v8.6.9</span>
         <h1 class="title">Lanchonete <br>Corre-Corre</h1>
         <p class="tag">Ajude a Bia a atender a freguesia da esquina antes que o cafezinho esfrie!</p>
         <div class="lbl" id="menu-dia">Carreira: dia 1</div>
         <p class="small menu-info" id="menu-info"></p>
+        <p class="small menu-aviso" id="menu-aviso" style="display:none"><span id="menu-aviso-txt"></span> <button class="link" id="btn-aviso" type="button">Entendi</button></p>
         <div class="chips" id="daychips" role="group" aria-label="Modo dev: escolha o dia" style="display:none"></div>
         <div class="menu-btns">
           <div class="row tight">
@@ -412,6 +418,7 @@ table.rank tr.me td{background:#fbe7a8}
         <div class="rankbar"><div class="seg" id="shop-tabs" role="group" aria-label="Lojinha">
           <button type="button" data-v="melhorias" aria-pressed="true">Melhorias</button>
           <button type="button" data-v="equipe" aria-pressed="false">Equipe</button>
+          <button type="button" data-v="cursos" aria-pressed="false">Cursos</button>
           <button type="button" data-v="salao" aria-pressed="false">Salão</button>
           <button type="button" data-v="decor" aria-pressed="false">Decoração</button>
           <button type="button" data-v="divulga" aria-pressed="false">Divulgação</button>
@@ -515,7 +522,8 @@ table.rank tr.me td{background:#fbe7a8}
       <div class="panel">
         <h2>Versões</h2>
         <ul class="verlist">
-          <li><b>v8.6.8</b><span class="cur">versão atual</span><br>29/10/2026 &mdash; Prato quente: o prato que fica esperando no balcão da cozinha solta vapor e, depois de uns 8 segundos, vai esfriando (o vapor some aos poucos). Quem recebe o prato frio dá nota menor na comida e pode reclamar: &ldquo;Comida meio fria.&rdquo; Prato levado logo à mesa continua quentinho.</li>
+          <li><b>v8.6.9</b><span class="cur">versão atual</span><br>29/10/2026 &mdash; O cardápio cresce: a cozinha começa sabendo só PF e coxinha, e na aba Cursos da lojinha o Tonhão aprende pratos novos (pastel, chapa, salgados fritos e assados; um curso por dia). Cada curso tem a versão avançada, que deixa os pratos mais caros e mais caprichados. Cada tipo de cliente tem o seu gosto, e o entregador muda de ideia ao longo do dia. A Diversidade do cardápio no Gurugol sobe com cada curso. Quem já tinha uma campanha recomeça do dia 1.</li>
+          <li><b>v8.6.8</b><br>29/10/2026 &mdash; Prato quente: o prato que fica esperando no balcão da cozinha solta vapor e, depois de uns 8 segundos, vai esfriando (o vapor some aos poucos). Quem recebe o prato frio dá nota menor na comida e pode reclamar: &ldquo;Comida meio fria.&rdquo; Prato levado logo à mesa continua quentinho.<br><a href="versoes/v8.6.8.html" target="_blank" rel="noopener">Abrir a v8.6.8</a></li>
           <li><b>v8.6.7</b><br>29/10/2026 &mdash; Regras da nota do Gurugol: cada cliente avalia só o que viveu (quem desistiu na fila dá só a Espera; quem saiu bravo antes do pedido, Espera, Agilidade e Ambiente), e cada critério mostra quantas avaliações o viram. O humor dos clientes e os encantados passam a valer pela faixa do ponto, a cor certa, a corrente e o prato caprichado aumentam a chance de encantar, e a nota ganhou a faixa bronze a partir de 3,0 ★.</li>
           <li><b>v8.6.6</b><br>29/10/2026 &mdash; A decoração conta no Gurugol: a garagem sem enfeite nenhum ficou &ldquo;meio sem graça&rdquo; no ambiente, e cada planta, cada peça do cantinho da Rosa e a toalha xadrez (para quem senta na mesa dela) deixam o ambiente melhor. Com tudo enfeitado, a nota da Garagem chega perto dos 3 ★, e os clientes às vezes elogiam um enfeite (&ldquo;Que samambaia bonita!&rdquo;).</li>
           <li><b>v8.6.5</b><br>29/10/2026 &mdash; Decoração da Garagem: uma aba nova na lojinha, com enfeites comprados à vontade (fora da melhoria do dia). Plantas: a espada-de-são-jorge no vaso e a muda na lata (que vinham de graça) e uma samambaia pendurada na parede. Cantinho da Rosa: a foto da mãe da Bia, o quadro de giz com o prato do dia e a plaquinha &ldquo;Comida é afeto&rdquo;. E a toalha xadrez, com porta-guardanapo e florzinha, mesa por mesa. Comprado, o enfeite pode ser guardado e posto de volta. Por enquanto é só para deixar a garagem bonita.<br><a href="versoes/v8.6.5.html" target="_blank" rel="noopener">Abrir a v8.6.5</a></li>
@@ -614,14 +622,86 @@ const MOOD = { ok:'#3E9B5A', warn:'#F2B33D', bad:'#C2362B' };
 const SKINS  = ['#F7D9BE','#EAB98F','#CE9566','#A8693F','#7B4A2C','#4E2D1B'];
 const HAIRC  = ['#1B1512','#2F1D12','#5B3A21','#A67B43','#8C8C8C','#E8E8E8','#7A2E1B'];
 const PANTS  = ['#2F3E5C','#4A4036','#5B5F6B','#3C5A4A','#6A3F52'];
-/* cardápio (v8.3.8, preços de verdade): R$ de cada prato na Garagem (o ponto multiplica por PONTOS.cardapio).
-   Pesquisa de out/2026: PF médio no Brasil R$ 31,90 (o da garagem sai mais barato), coxinha e pastel de R$ 4 a 8 */
-const CARDAPIO = { pf:{ nome:'PF', preco:25 }, misto:{ nome:'Misto quente', preco:12 }, pastel:{ nome:'Pastel', preco:10 }, coxinha:{ nome:'Coxinha', preco:8 } };
-function precoPrato(k, ponto){ return Math.round(CARDAPIO[k].preco * (ponto || PONTOS[0]).cardapio); }
+/* cardápio (v8.3.8, preços de verdade; v8.6.9, o cardápio cresce): R$ de cada prato na Garagem (o ponto multiplica por PONTOS.cardapio).
+   A cozinha começa sabendo o PF e a coxinha (curso: null); os outros vêm dos cursos do Tonhão (CURSOS). cat: a categoria do gosto
+   dos clientes (GOSTOS); carne: false marca os sem carne (usados na v8.6.11); cor: a cor do desenho provisório (as artes de
+   verdade são da v8.6.10). Pesquisa de out/2026: PF médio no Brasil R$ 31,90 (o da garagem sai mais barato), coxinha e pastel de R$ 4 a 8 */
+const CARDAPIO = {
+  pf:      { nome:'PF',              preco:25, cat:'pf',     curso:null,      carne:true,  cor:'#A0522D' },
+  coxinha: { nome:'Coxinha',         preco:8,  cat:'frito',  curso:null,      carne:true,  cor:'#E8912A' },
+  risoles: { nome:'Risoles',         preco:6,  cat:'frito',  curso:'fritos',  carne:true,  cor:'#D98A32' },
+  kibe:    { nome:'Kibe',            preco:7,  cat:'frito',  curso:'fritos',  carne:true,  cor:'#9A5B2B' },
+  bolinho: { nome:'Bolinho japonês', preco:8,  cat:'frito',  curso:'fritos',  carne:true,  cor:'#E2A64A' },
+  empada:  { nome:'Empada',          preco:9,  cat:'assado', curso:'assados', carne:true,  cor:'#E3A84A' },
+  esfihaA: { nome:'Esfiha aberta',   preco:7,  cat:'assado', curso:'assados', carne:true,  cor:'#C8452B' },
+  esfihaF: { nome:'Esfiha fechada',  preco:7,  cat:'assado', curso:'assados', carne:true,  cor:'#D79A4B' },
+  misto:   { nome:'Misto quente',    preco:10, cat:'chapa',  curso:'chapa',   carne:true,  cor:'#D9A25B' },
+  bauru:   { nome:'Bauru',           preco:12, cat:'chapa',  curso:'chapa',   carne:true,  cor:'#C98A4B' },
+  paoChapa:{ nome:'Pão na chapa',    preco:7,  cat:'chapa',  curso:'chapa',   carne:false, cor:'#E0B070' },
+  pastel:  { nome:'Pastel de carne', preco:10, cat:'pastel', curso:'pastel',  carne:true,  cor:'#E5A33C' },
+  pastelQ: { nome:'Pastel de queijo',preco:10, cat:'pastel', curso:'pastel',  carne:false, cor:'#EBB44E' },
+  pastelP: { nome:'Pastel de pizza', preco:11, cat:'pastel', curso:'pastel',  carne:true,  cor:'#DE9438' }
+};
+/* os cursos do Tonhão (v8.6.9): um por lojinha. O básico ensina os pratos; o avançado ("mais requintadinha") soma CURSO_AV.preco ao
+   preço de venda dos pratos dele e CURSO_AV.crit à chance de caprichado. O PF não tem básico (preco 0): o avançado aparece desde o início.
+   save.cursos: { id: 1 (básico) | 2 (avançado) } */
+const CURSOS = [
+  { id:'pastel',  nome:'Pastel de feira',   preco:150, pratos:['pastel', 'pastelQ', 'pastelP'],
+    av:{ nome:'Pastel de feira de verdade', preco:300, receita:'carne com ovo e azeitona, queijo com orégano, pizza com calabresa', pratos:['pastel', 'pastelQ', 'pastelP'] } },
+  { id:'chapa',   nome:'Chapa',             preco:180, pratos:['misto', 'bauru', 'paoChapa'],
+    av:{ nome:'Pão francês da padaria e requeijão de corte', preco:360, receita:'misto de presunto defumado com queijo minas, bauru clássico com rosbife e picles', pratos:['misto', 'bauru', 'paoChapa'] } },
+  { id:'fritos',  nome:'Salgados fritos',   preco:220, pratos:['risoles', 'kibe', 'bolinho'],
+    av:{ nome:'Coxinha de massa de batata com catupiry', preco:440, receita:'vale também para a coxinha; risoles de camarão, kibe com coalhada, bolinho japonês com queijo', pratos:['coxinha', 'risoles', 'kibe', 'bolinho'] } },
+  { id:'assados', nome:'Salgados assados',  preco:250, pratos:['empada', 'esfihaA', 'esfihaF'],
+    av:{ nome:'Massa podre da vó Nilza', preco:500, receita:'empada de frango com azeitona, esfihas com coalhada e limão', pratos:['empada', 'esfihaA', 'esfihaF'] } },
+  { id:'pf',      nome:'PF',                preco:0,   pratos:[],
+    av:{ nome:'Carnes variadas', preco:400, receita:'o PF vem com bife, filé de frango grelhado, peixe frito ou bife a cavalo', pratos:['pf'] } }
+];
+const CURSO_AV = { preco:1.15, crit:1.5 };
+function cursoOf(id){ return CURSOS.find(c => c.id === id) || null; }
+/* nível do curso: 0 (nada), 1 (básico) ou 2 (avançado); o PF não tem básico, então já nasce no 1 */
+function cursoNivel(cursos, id){ const n = Math.max(0, Math.min(2, Math.floor(+(cursos && cursos[id]) || 0))); return id === 'pf' ? Math.max(1, n) : n; }
+/* o prato é do avançado de algum curso que já foi feito? */
+function pratoAv(k, cursos){ return CURSOS.some(c => cursoNivel(cursos, c.id) >= 2 && c.av.pratos.indexOf(k) >= 0); }
+/* o save: só os níveis que existem (o PF só tem o avançado, 2) */
+function normCursos(c){
+  const o = {};
+  CURSOS.forEach(x => { const n = Math.min(2, Math.floor(+(c && c[x.id]) || 0)); if (n >= (x.preco > 0 ? 1 : 2)) o[x.id] = n; });
+  return o;
+}
+function pratoSabido(k, cursos){ const c = CARDAPIO[k] && CARDAPIO[k].curso; return !!CARDAPIO[k] && (!c || cursoNivel(cursos, c) >= 1); }
+function pratosSabidos(cursos){ return Object.keys(CARDAPIO).filter(k => pratoSabido(k, cursos)); }
+/* os cursos de um modo sem a lojinha: o Turno sem fim sabe os 4 básicos (sem avançado); a Missão zero, só o PF e a coxinha */
+const CURSOS_SEMFIM = { pastel:1, chapa:1, fritos:1, assados:1 };
+function precoPrato(k, ponto, cursos){ return Math.round(CARDAPIO[k].preco * (ponto || PONTOS[0]).cardapio * (pratoAv(k, cursos) ? CURSO_AV.preco : 1)); }
+/* os gostos de cada tipo (v8.6.9): pesos por categoria, na ordem de GOSTOS_CAT; o entregador muda de ideia por terço do turno */
+const GOSTOS_CAT = ['pf', 'frito', 'assado', 'chapa', 'pastel'];
+const GOSTOS = {
+  estudante:  [2, 3, 1, 2, 2],
+  executiva:  [4, 0, 2, 1, 0],
+  familia:    [4, 1, 0, 1, 2],
+  vovos:      [3, 0, 3, 1, 0],
+  entregador: [[0, 3, 2, 1, 0], [1, 0, 0, 0, 0], [0, 4, 1, 0, 1]]
+};
+/* o que a pessoa pede: sorteia a categoria pelos pesos do tipo (só entre as que têm algum prato que a cozinha sabe) e depois um prato
+   sabido dela, com a mesma chance. Sem categoria possível, PF (com semPf, o 2º item, coxinha) */
+function pedePrato(tipo, game, semPf){
+  const sab = pratosSabidos(game.cursos);
+  let w = GOSTOS[tipo] || GOSTOS.estudante;
+  if (Array.isArray(w[0])){
+    const t = game.day && game.day.time > 0 ? clamp(1 - game.clock / game.day.time, 0, 0.999) : Math.random();
+    w = w[Math.floor(t * 3)];
+  }
+  const cats = GOSTOS_CAT.map((c, i) => ({ w:semPf && c === 'pf' ? 0 : w[i], l:sab.filter(k => CARDAPIO[k].cat === c) })).filter(x => x.w > 0 && x.l.length);
+  if (!cats.length) return semPf ? 'coxinha' : 'pf';
+  let r = Math.random() * cats.reduce((a, x) => a + x.w, 0);
+  const c = cats.find(x => (r -= x.w) < 0) || cats[cats.length - 1];
+  return pick(c.l);
+}
 /* o 2º item (v8.3.8): na hora de pedir, cada pessoa pode querer mais um salgado (chance `mais` do tipo; no máximo 2 itens
    por pessoa). Vai na mesma comanda e no mesmo prato, para não travar a mesa; a cozinha leva `cozinha` a mais de tempo
    por item a mais (em fração dos itens do grupo). Pedir depois de comer travava a mesa e derrubava o lucro */
-const MAIS = { cozinha:0.4, pratos:['misto','pastel','coxinha'] };
+const MAIS = { cozinha:0.4 };   // v8.6.9: o 2º item sai de pedePrato(..., true), pelos gostos do tipo, sem o PF
 /* pontos de atendimento (v8.3.8): as ações da Bia não dão mais dinheiro, dão pontos (a nota da lanchonete virá
    deles). A corrente e a cor certa também viram pontos */
 const PONTOS_ACAO = { sit:10, take:15, deliver:20, clear:10, coffee:5, juice:5, bill:20, cor:15, marmita:20 };
@@ -861,14 +941,14 @@ const FILA_JUSTA = { ritmo:0.6, piso:0.5 };
    grupos do dia não muda, só o ritmo */
 const PORTA = { fila:3, max:8, total:0.2 };
 
-/* prefere: os pratos que cada tipo escolhe (sorteio com repetição); mais: chance de cada pessoa pedir um 2º item (v8.3.8);
+/* o gosto de cada tipo está em GOSTOS (v8.6.9); mais: chance de cada pessoa pedir um 2º item (v8.3.8);
    tip: gorjeta a mais, em fração da conta */
 const CUSTOMER_TYPES = {
-  estudante:  { label:'Estudante',   pat:1.0,  eat:[4.5,6.5], read:[3,4.5], size:[1,2], prefere:['pf','pf','misto','pastel','coxinha'],     mais:0.3, tip:0 },
-  executiva:  { label:'Executiva',   pat:0.65, eat:[5,7],     read:[3,4],   size:[1,1], prefere:['pf','pf','pf','misto'],                    mais:0.1, tip:0.1 },
-  familia:    { label:'Família',     pat:0.95, eat:[7,9],     read:[5,6],   size:[3,4], prefere:['pf','pf','pf','misto','pastel'],         mais:0.35,  tip:0 },
-  vovos:      { label:'Vovô e vovó', pat:1.8,  eat:[8,9],     read:[4,6],   size:[2,2], prefere:['pf','pf','pf','misto'],                  mais:0.25,  tip:0 },
-  entregador: { label:'Entregador',  pat:0.5,  eat:[3.5,5],   read:[3,3.5], size:[1,1], prefere:['pf','pf','misto','coxinha'],             mais:0.1, tip:0 }
+  estudante:  { label:'Estudante',   pat:1.0,  eat:[4.5,6.5], read:[3,4.5], size:[1,2], mais:0.3, tip:0 },
+  executiva:  { label:'Executiva',   pat:0.65, eat:[5,7],     read:[3,4],   size:[1,1], mais:0.1, tip:0.1 },
+  familia:    { label:'Família',     pat:0.95, eat:[7,9],     read:[5,6],   size:[3,4], mais:0.35,  tip:0 },
+  vovos:      { label:'Vovô e vovó', pat:1.8,  eat:[8,9],     read:[4,6],   size:[2,2], mais:0.25,  tip:0 },
+  entregador: { label:'Entregador',  pat:0.5,  eat:[3.5,5],   read:[3,3.5], size:[1,1], mais:0.1, tip:0 }
 };
 /* cliente VIP: modificador de grupo (qualquer tipo menos entregador). Fura a fila, tem menos
    paciência, paga gorjeta extra e dá bônus se sair com 5 corações; bravo, a multa dobra. */
@@ -985,10 +1065,10 @@ const VIP = { pat:0.75, tip:0.1, perfect:40, angry:10, dish:12, cook:1.8, types:
 
 const DAYS = [
   { n:1, groups:5,  types:['estudante','vovos'],                                   nu:null,         meta:30, expert:60,  time:150, speed:0.60, note:'A freguesia espera lá fora, na calçada: arraste cada grupo até uma mesa livre.' },
-  { n:2, groups:8,  types:['estudante','vovos','familia'],                         nu:'familia',    meta:120, expert:220,  time:160, speed:0.60, note:'Chegou a família! Grupos de 3 ou 4 só cabem nas mesas de 4 lugares. Na lojinha, aba Salão, dá para comprar mesas e arrumar o salão.' },
-  { n:3, groups:13, types:['estudante','vovos','familia','executiva'],             nu:'executiva',  meta:150, expert:230,  time:170, speed:0.60, juice:0.3, note:'O movimento aumentou e agora só há 4 pratos limpos: sozinha a Bia não dá conta, contrate ajuda na lojinha. A executiva tem pouca paciência, mas deixa boa gorjeta. E abriu o balcão de sucos: quem pede suco quer receber antes da conta!' },
-  { n:4, groups:15, types:['estudante','vovos','familia','executiva','entregador'], nu:'entregador', meta:70, expert:110, time:180, speed:0.58, juice:0.3, note:'Chegou o entregador de moto! Ele não senta: espera no balcão de retirada, no alto da calçada, e leva o prato numa marmita. O pedido vai sozinho ao Tonhão; leve a marmita pronta ao balcão. Tem pressa! Para adiantar, toque no "+ marmita" da janela de pedidos.' },
-  { n:5, groups:16, types:['estudante','vovos','familia','executiva','entregador'], nu:null,         meta:100, expert:140, time:190, speed:0.56, vip:0.15, juice:0.3, note:'Chegou cliente VIP (de óculos escuros e plaquinha dourada)! Fura a fila e tem menos paciência, mas pede o prato especial (mais caro), dá gorjeta e, se sair com 5 corações, pontos a mais. Se sair bravo, a multa dobra.' },
+  { n:2, groups:8,  types:['estudante','vovos','familia'],                         nu:'familia',    meta:108, expert:220,  time:160, speed:0.60, note:'Chegou a família! Grupos de 3 ou 4 só cabem nas mesas de 4 lugares. Na lojinha, aba Salão, dá para comprar mesas e arrumar o salão.' },
+  { n:3, groups:13, types:['estudante','vovos','familia','executiva'],             nu:'executiva',  meta:135, expert:230,  time:170, speed:0.60, juice:0.3, note:'O movimento aumentou e agora só há 4 pratos limpos: sozinha a Bia não dá conta, contrate ajuda na lojinha. A executiva tem pouca paciência, mas deixa boa gorjeta. E abriu o balcão de sucos: quem pede suco quer receber antes da conta!' },
+  { n:4, groups:15, types:['estudante','vovos','familia','executiva','entregador'], nu:'entregador', meta:63, expert:110, time:180, speed:0.58, juice:0.3, note:'Chegou o entregador de moto! Ele não senta: espera no balcão de retirada, no alto da calçada, e leva o prato numa marmita. O pedido vai sozinho ao Tonhão; leve a marmita pronta ao balcão. Tem pressa! Para adiantar, toque no "+ marmita" da janela de pedidos.' },
+  { n:5, groups:16, types:['estudante','vovos','familia','executiva','entregador'], nu:null,         meta:90, expert:140, time:190, speed:0.56, vip:0.15, juice:0.3, note:'Chegou cliente VIP (de óculos escuros e plaquinha dourada)! Fura a fila e tem menos paciência, mas pede o prato especial (mais caro), dá gorjeta e, se sair com 5 corações, pontos a mais. Se sair bravo, a multa dobra.' },
   { n:6, groups:16, types:['estudante','vovos','familia','executiva','entregador'], nu:null,         meta:150, expert:280, time:200, speed:0.54, vip:0.15, juice:0.3, note:'Sexta-feira: ninguém quer esperar.' },
   { n:7, groups:17, types:['estudante','vovos','familia','executiva','entregador'], nu:null,         meta:180, expert:310, time:220, speed:0.52, vip:0.15, juice:0.3, gripe:true, note:'Tonhão está gripado: a cozinha anda mais devagar hoje.' }
 ];
@@ -1039,7 +1119,7 @@ function movimentoSalao(lugares){ return 1 + MOVIMENTO.porLugar * Math.max(0, lu
    - agil (agilidade): cada coração perdido na mesa esperando a Bia (pedido, prato, conta e o suco que faltou) tira
      `porCoracao`; a cadeira da cor do grupo, uma ação em corrente e o prato caprichado dão `bonus` (até bonus.max);
    - prato: a faixa de acerto do cozinheiro (pelo nível do Tonhão); o caprichado (CRIT) vale 5;
-   - menu: pelos pratos do cardápio do ponto;
+   - menu: pelos cursos básicos que o Tonhão já fez (v8.6.9: base + porCurso por curso);
    - amb (ambiente): a base mais TV, som, torneira, ventilador, o cafezinho servido e o couvert; lixeira cheia tira.
    Quem sai bravo dá 1 na agilidade e no prato que não chegou a comer. Só `porDia` grupos do dia (sorteados) avaliam, como num restaurante de verdade. A nota é a média das últimas `max` avaliações,
    e só aparece depois das `min` primeiras; ela mexe no movimento do dia (v8.6.4: pelo teto do ponto, abaixo).
@@ -1066,7 +1146,7 @@ const AVAL = {
   bonus:{ cor:0.1, corrente:0.1, crit:0.1 },   // v8.6.7: chance a mais de o cliente sair encantado
   minimo:0.95,
   prato:[[2.5, 4.5], [3, 4.7], [3.5, 5]],
-  menu:{ base:1.5, porPrato:0.75 },
+  menu:{ base:2, porCurso:0.6 },   // v8.6.9: pelos cursos básicos que o Tonhão fez (a Diversidade do cardápio)
   amb:{ base:2, tv:0.5, som:0.5, maquina:0.5, ventilador:0.5, cafe:0.5, couvert:1, lixo:-1, planta:0.3, rosa:0.25, toalha:0.5 }
 };
 const AVAL_CRIT = [
@@ -1081,8 +1161,8 @@ const AVAL_CRIT = [
   { id:'amb', nome:'Ambiente',
     bom:['Lugar gostoso, dá vontade de voltar.', 'Ambiente bem agradável!'], ruim:['Lugar meio sem graça.', 'Faltou um capricho no salão.'] }
 ];
-/* a nota do cardápio: pelos pratos que a cozinha faz (na Garagem, os 4 do CARDAPIO) */
-function avalMenu(){ return clamp(AVAL.menu.base + AVAL.menu.porPrato * Object.keys(CARDAPIO).length, 1, 5); }
+/* a nota do cardápio (v8.6.9): a base mais um tanto por curso básico feito (o avançado não conta) */
+function avalMenu(cursos){ return clamp(AVAL.menu.base + AVAL.menu.porCurso * CURSOS.filter(c => c.preco > 0 && cursoNivel(cursos, c.id) >= 1).length, 1, 5); }
 /* as avaliações guardadas: [espera, agil, prato, menu, amb], com uma casa decimal, as últimas AVAL.max; null (v8.6.7) é o critério que o cliente não viu */
 function normAval(a){
   return (Array.isArray(a) ? a : []).filter(r => Array.isArray(r) && r.length === AVAL_CRIT.length).slice(-AVAL.max)
@@ -1181,7 +1261,7 @@ function tabelaDe(e){
 /* um empréstimo novo de v, pagando em dia: as parcelas e os juros somados */
 function simulaEmprestimo(v, j){ const t = tabelaDe(normEmprestimo({ resto:v, amort:Math.ceil(v / BANCO.parcelas), j })); return { parcelas:t, juros:t.reduce((a, p) => a + p, 0) - v }; }
 const CAIXA_MAX = 14;                                 // livro-caixa (v7.2): quantos dias da carreira ficam guardados
-const VERSAO = 'v8.6.8';                               // vai no resumo do Caixa
+const VERSAO = 'v8.6.9';                               // vai no resumo do Caixa
 const DIVULGA_DIA = 3;                                // antes disso, o movimento é o da inauguração (sem custo)
 function divulgaAberta(n){ return DEV.on || n >= DIVULGA_DIA; }   // no modo dev, desde o dia 1
 function divulgaOf(id){ return DIVULGA.find(d => d.id === id) || DIVULGA[1]; }
@@ -1532,7 +1612,7 @@ function normSave(s){
   const dia = +s.dia >= 1 ? Math.round(+s.dia) : Math.max(clamp(Math.round(+s.maxDay) || 1, 1, 7), feitos.length ? Math.max(...feitos) + 1 : 1);
   const estrelas = isFinite(+s.estrelas) && s.estrelas != null ? Math.max(0, Math.round(+s.estrelas)) : Object.keys(stars).reduce((a, k) => a + clamp(Math.round(+stars[k]) || 0, 0, 3), 0);
   const bank = isFinite(+s.bank) ? Math.round(+s.bank) : 0;
-  const dev = salaoDevolucao(s.salao), out = { dia, estrelas, lucroTot: Math.round(+s.lucroTot) || 0, pontosTot: Math.max(0, Math.round(+s.pontosTot) || 0), aval: normAval(s.aval), avalCom: normAvalCom(s.avalCom), neg: clamp(Math.round(+s.neg) || 0, 0, BANCO.neg), emp: normEmprestimo(s.emp), corta: s.corta !== false, fechou: Math.max(0, Math.round(+s.fechou) || 0), bank: bank + dev + devMaq, up, torneira:true, salao: normSalao(dev ? null : s.salao), divulga: divulgaOf(s.divulga).id, treino: !!s.treino, decor: normDecor(s.decor), manut: normManut(s.manut), caixa: normCaixa(s.caixa), caixaPend: normPend(s.caixaPend) };
+  const dev = salaoDevolucao(s.salao), out = { dia, estrelas, lucroTot: Math.round(+s.lucroTot) || 0, pontosTot: Math.max(0, Math.round(+s.pontosTot) || 0), aval: normAval(s.aval), avalCom: normAvalCom(s.avalCom), neg: clamp(Math.round(+s.neg) || 0, 0, BANCO.neg), emp: normEmprestimo(s.emp), corta: s.corta !== false, fechou: Math.max(0, Math.round(+s.fechou) || 0), bank: bank + dev + devMaq, up, torneira:true, salao: normSalao(dev ? null : s.salao), divulga: divulgaOf(s.divulga).id, treino: !!s.treino, decor: normDecor(s.decor), cursos: normCursos(s.cursos), cursoDia: Math.max(0, Math.round(+s.cursoDia) || 0), cardV: 1, avisoCard: !!s.avisoCard, manut: normManut(s.manut), caixa: normCaixa(s.caixa), caixaPend: normPend(s.caixaPend) };
   out.equipe = normEquipe(s.equipe, pontoOf(out.salao.ponto));
   // v8.6.4: as notas do Gurugol de antes (de 1 a 5 pelo serviço) passam para a escala da Garagem, uma vez só (avalEsc)
   if (s.avalEsc !== 2){
@@ -1552,6 +1632,15 @@ function loadSave(){
     const s2 = JSON.parse(lsGet(saveKey()) || 'null');
     if (DEV.on) return normSave(s2 || { bank:DEV.bank });
     if (s2 && typeof s2 === 'object'){
+      // v8.6.9: save de antes do cardápio que cresce (sem cardV): a campanha recomeça do dia 1, com um aviso no menu (se já tinha jogado);
+      // o ranking, a abertura e a Missão zero ficam
+      if (s2.cardV !== 1){
+        const jogou = (+s2.dia > 1) || (+s2.maxDay > 1) || (+s2.lucroTot > 0) || (Array.isArray(s2.caixa) && s2.caixa.length > 0) || (s2.stars && Object.keys(s2.stars).length > 0);
+        const n = normSave({ treino: s2.treino });
+        n.avisoCard = !!jogou;
+        writeSave(n);
+        return n;
+      }
       const n = normSave(s2);
       if ((s2.salao && !Array.isArray(s2.salao.mesas)) || !s2.torneira) writeSave(n);   // salão antigo ou máquina de suco convertidos (com a devolução): só uma vez
       return n;
@@ -1597,12 +1686,12 @@ class Group {
     if (this.vip) this.people.forEach(p => { p.shades = true; });
     // a conta (v8.3.8): cada pessoa paga o que pediu, pelo cardápio do ponto: o prato e, às vezes, um 2º item (extras;
     // nunca no treino); o prato especial do VIP soma VIP.dish
-    this.dishes = this.people.map(() => pick(T.prefere));
+    this.dishes = this.people.map(() => pedePrato(type, game));   // v8.6.9: pelo gosto do tipo, entre os pratos que a cozinha sabe
     this.dish = this.dishes[0];
     // o entregador (v8.6) não come no salão: leva o prato numa marmita, pela fila de retirada, sem 2º item
     this.retira = type === 'entregador';
-    this.extras = this.people.map(() => !this.retira && game.mode !== 'treino' && Math.random() < T.mais ? pick(MAIS.pratos) : null);
-    this.bill = this.dishes.concat(this.extras).reduce((v, k) => v + (k ? precoPrato(k, game.ponto) : 0), 0) + (this.vip ? VIP.dish : 0);
+    this.extras = this.people.map(() => !this.retira && game.mode !== 'treino' && Math.random() < T.mais ? pedePrato(type, game, true) : null);
+    this.bill = this.dishes.concat(this.extras).reduce((v, k) => v + (k ? precoPrato(k, game.ponto, game.cursos) : 0), 0) + (this.vip ? VIP.dish : 0);
     this.hearts = 5;
     this.x = DOOR.x; this.y = DOOR.y;
     this.path = []; this.moving = false; this.walkPh = 0;
@@ -1745,6 +1834,8 @@ class Kitchen {
   constructor(game){ this.game = game; this.reset(); }
   reset(){ this.queue = []; this.cooking = []; this.plates = [null,null,null,null]; this.pid = 0; this.slots = STAFF.tonhao.levels[this.game.save.equipe.tonhao].slots; this.sinkN = 0; this.clean = Infinity; this.noPlate = false; this.washT = 0; }
   get chef(){ return STAFF.tonhao.levels[this.game.save.equipe.tonhao]; }
+  /* a chance de caprichar: x CURSO_AV.crit nos pratos de um curso avançado que o Tonhão já fez (v8.6.9) */
+  chefCrit(dish){ return this.chef.crit * (pratoAv(dish, this.game.cursos) ? CURSO_AV.crit : 1); }
   submit(ticket){
     const g = this.game, grp = ticket.group;
     let time = rand(4,7) * this.chef.cook;
@@ -1783,13 +1874,13 @@ class Kitchen {
   }
   /* a marmita pronta vai para a janela de prontos (sem prato limpo); os ingredientes e a embalagem saem agora */
   marmitaPronta(t, slot){
-    const g = this.game, crit = g.mode !== 'treino' && Math.random() < this.chef.crit;
+    const g = this.game, crit = g.mode !== 'treino' && Math.random() < this.chefCrit(t.dish);
     const fx = AVAL.prato[g.save.equipe.tonhao], q = crit ? 5 : rand(fx[0], fx[1]);
     this.plates[slot] = { id:++this.pid, kind:'marmita', mid:++g.marmitaId, dish:t.dish, dono:t.dono, slot, age:0, crit, q };
     g.usos.fogao++; g.usos.geladeira++;
     Sfx.bell();
     g.addText(PLATE_SLOTS[slot].x, PLATE_SLOTS[slot].y - 34, 'Marmita!', PAL.mostarda, 16);
-    const cost = Math.round(precoPrato(t.dish, g.ponto) * INGRED.prato * (g.quebrado('geladeira') ? manutOf('geladeira').ingred : 1)) + MARMITA.embalagem;
+    const cost = Math.round(precoPrato(t.dish, g.ponto, g.cursos) * INGRED.prato * (g.quebrado('geladeira') ? manutOf('geladeira').ingred : 1)) + MARMITA.embalagem;
     g.custo += cost; g.addText(PLATE_SLOTS[slot].x, PLATE_SLOTS[slot].y - 54, '-' + cost, PAL.perigo, 12);
   }
   update(dt){
@@ -1805,7 +1896,7 @@ class Kitchen {
         if (free >= 0 && this.clean <= 0) this.noPlate = true;
         if (free >= 0 && this.clean > 0){
           this.clean--;
-          const crit = this.game.mode !== 'treino' && Math.random() < this.chef.crit;
+          const crit = this.game.mode !== 'treino' && Math.random() < this.chefCrit(t.dish);
           // a nota do prato (v8.4): o caprichado vale 5; os outros caem na faixa de acerto do cozinheiro
           const fx = AVAL.prato[this.game.save.equipe.tonhao], q = crit ? 5 : rand(fx[0], fx[1]);
           this.plates[free] = { id:++this.pid, table:t.table, group:t.group, dish:t.dish, slot:free, age:0, crit, q, vip:!!(t.group && t.group.vip) };
@@ -2398,7 +2489,7 @@ class Game {
     this.hooks = {};
     this.save = loadSave();
     this.up = this.save.up;
-    this.tablesKey = ''; this.salaoMsg = ''; this.salaoSel = -1; this.estoqueSel = -1; this.salaoUndo = [];
+    this.tablesKey = ''; this.salaoMsg = ''; this.cursoMsg = ''; this.salaoSel = -1; this.estoqueSel = -1; this.salaoUndo = [];
     this.buildTables();
     this.bia = new Waitress(this);
     this.kitchen = new Kitchen(this);
@@ -2415,6 +2506,8 @@ class Game {
   setState(s){ this.state = s; if (this.hooks.state) this.hooks.state(s); }
   get proxDia(){ return this.save.dia; }   // campanha (v8.3): o próximo dia da carreira
   get ponto(){ return pontoOf(this.save.salao.ponto); }
+  /* os cursos do Tonhão que valem no modo (v8.6.9): na Missão zero só o PF e a coxinha; no Turno sem fim, os 4 básicos */
+  get cursos(){ return this.mode === 'treino' ? {} : this.mode === 'semfim' ? CURSOS_SEMFIM : this.save.cursos; }
   get bebida(){ return bebidaOf(this.ponto); }   // o que se serve na espera (v7.7)
 
   resetDay(n, treino){
@@ -2776,7 +2869,7 @@ class Game {
   }
   /* o entregador leva a marmita e paga: o preço do prato com a gorjeta dos corações; a Efood fica com MARMITA.efood do preço */
   entregaMarmita(g, m){
-    const preco = precoPrato(m.dish, this.ponto), bruto = Math.round(preco * (1 + GORJETA[g.hearts])), taxa = Math.round(preco * MARMITA.efood);
+    const preco = precoPrato(m.dish, this.ponto, this.cursos), bruto = Math.round(preco * (1 + GORJETA[g.hearts])), taxa = Math.round(preco * MARMITA.efood);
     const x = g.x, y = g.y;
     this.efood += taxa; this.stats.marmitas++; this.stats.served++;
     g.pratoQ = m.q || 0; if (m.crit) g.capricho = true;
@@ -3022,7 +3115,7 @@ class Game {
     // depois do pedido, sem comer, mais o cardápio; o entregador bravo não levou a marmita. Quem comeu (ou pagou) dá os 5
     const st = g.state, comeu = !bravo || st === 'eating' || st === 'wantBill';
     const ve = g.retira ? [1, 1, !bravo, 0, 0] : !bravo || comeu ? [1, 1, 1, 1, 1] : st === 'queue' || st === 'toTable' ? [1, 0, 0, 0, 0] : st === 'wantOrder' ? [1, 1, 0, 0, 1] : [1, 1, 0, 1, 1];
-    const s = [5 - A.porCoracao * (g.retira ? g.perdMesa : g.perdFila), bravo ? 1 : 5 - A.porCoracao * g.perdMesa, g.pratoQ || 1, avalMenu(), amb]
+    const s = [5 - A.porCoracao * (g.retira ? g.perdMesa : g.perdFila), bravo ? 1 : 5 - A.porCoracao * g.perdMesa, g.pratoQ || 1, avalMenu(this.cursos), amb]
       .map((v, i) => ve[i] ? clamp(Math.round(v * 10) / 10, 1, 5) : null);
     // v8.6.4: a nota no Gurugol fica na escala do ponto (o serviço 5 vale o teto), mais o humor de quem avalia; v8.6.7: o humor
     // e a folga são fração da faixa do ponto (teto − 1), e a cor certa, a corrente e o caprichado aumentam a chance de encantar
@@ -3187,7 +3280,7 @@ class Game {
     this.shopNext = Math.max(1, n || this.day.n + 1);
     this.shopBought = this.boughtFor === this.shopNext;
     if (DEV.on && this.save.bank < DEV.bank){ this.save.bank = DEV.bank; writeSave(this.save); }   // modo dev: o dinheiro não acaba
-    this.salaoSel = -1; this.estoqueSel = -1; this.salaoUndo = []; this.salaoMsg = '';
+    this.salaoSel = -1; this.estoqueSel = -1; this.salaoUndo = []; this.salaoMsg = ''; this.cursoMsg = '';
     this.resetDay(this.shopNext);   // o salão ao fundo já mostra o dia que vem
     this.setState('shop');
   }
@@ -3272,6 +3365,23 @@ class Game {
     caixaGasto(this.save, 'mel', u.cost);
     writeSave(this.save);
     Sfx.coin();
+    return true;
+  }
+  /* cursos do Tonhão (v8.6.9): o próximo degrau do curso (o básico, ou o avançado se o básico já foi feito), ou null se está completo */
+  cursoProx(id){
+    const c = cursoOf(id), n = c ? cursoNivel(this.save.cursos, id) : 2;
+    if (!c || n >= 2) return null;
+    return n >= 1 ? { nivel:2, nome:c.av.nome, preco:c.av.preco } : { nivel:1, nome:c.nome, preco:c.preco };
+  }
+  /* um curso por lojinha: depois de comprar um, os outros esperam o próximo dia */
+  get cursoTrava(){ return !DEV.on && this.save.cursoDia === this.shopNext; }
+  buyCurso(id){
+    const p = this.cursoProx(id);
+    if (!p || this.cursoTrava || this.save.bank < p.preco) return false;
+    this.save.bank -= p.preco; caixaGasto(this.save, 'mel', p.preco);
+    this.save.cursos[id] = p.nivel; this.save.cursoDia = this.shopNext;
+    this.cursoMsg = 'O Tonhão foi fazer o curso de ' + p.nome + '!';
+    writeSave(this.save); Sfx.coin();
     return true;
   }
   /* salão (v7.4): refaz as mesas e os obstáculos dos caminhos quando o salão muda. Os números seguem a ordem no
@@ -3888,24 +3998,28 @@ function drawMarmita(ctx,k,x,y,s){
 }
 /* a comida do prato (sem o prato), centrada em (0, 0) */
 function drawComida(ctx,k){
+  const pr = CARDAPIO[k], cat = pr ? pr.cat : 'chapa', cor = pr ? pr.cor : '#D9A25B';   // v8.6.9: os pratos novos usam o desenho da categoria, na cor do prato (as artes de verdade vêm na v8.6.10)
   if (k === 'pf'){
     ell(ctx,-5,-1,5.5,4.2); fs(ctx,'#FFF6DA',1.6);
     ell(ctx,4,-3.5,5,3.4); fs(ctx,'#5B2E1A',1.6);
     rr(ctx,-3,1.5,12,5,2.5); fs(ctx,'#A0522D',1.6);
     ell(ctx,-7,5,3.4,2.2); fs(ctx,'#fff',1.4); circ(ctx,-7,5,1.2); ctx.fillStyle = '#F5B800'; ctx.fill();
-  } else if (k === 'pastel'){
-    rr(ctx,-11,-6,22,12,5.5); fs(ctx,'#E5A33C',2);
+  } else if (cat === 'pastel'){
+    rr(ctx,-11,-6,22,12,5.5); fs(ctx,cor,2);
     ctx.fillStyle = '#F4C874'; rr(ctx,-8,-4,10,3,1.5); ctx.fill();
     ctx.strokeStyle = '#B97A1E'; ctx.lineWidth = 1.2;
     for (let i=-8;i<=8;i+=4){ ctx.beginPath(); ctx.moveTo(i,4.6); ctx.lineTo(i,6.2); ctx.stroke(); }
-  } else if (k === 'coxinha'){
+  } else if (cat === 'frito'){
     ctx.beginPath(); ctx.moveTo(0,-10);
     ctx.bezierCurveTo(11,-5, 10,5, 3,8); ctx.lineTo(-3,8);
-    ctx.bezierCurveTo(-10,5, -11,-5, 0,-10); ctx.closePath(); fs(ctx,'#E8912A',2);
+    ctx.bezierCurveTo(-10,5, -11,-5, 0,-10); ctx.closePath(); fs(ctx,cor,2);
     ctx.fillStyle = '#F7C168'; ell(ctx,-3,-2,2.2,3.6); ctx.fill();
-  } else { // misto-quente
-    ctx.beginPath(); ctx.moveTo(-12,5); ctx.lineTo(-1,5); ctx.lineTo(-6.5,-7); ctx.closePath(); fs(ctx,'#D9A25B',2);
-    ctx.beginPath(); ctx.moveTo(1,5); ctx.lineTo(12,5); ctx.lineTo(6.5,-7); ctx.closePath(); fs(ctx,'#D9A25B',2);
+  } else if (cat === 'assado'){
+    circ(ctx,0,0,9.5); fs(ctx,cor,2);
+    ctx.strokeStyle = 'rgba(90,50,20,.45)'; ctx.lineWidth = 1.2; ctx.beginPath(); ctx.moveTo(-4,-3); ctx.lineTo(4,3); ctx.moveTo(4,-3); ctx.lineTo(-4,3); ctx.stroke();
+  } else { // misto-quente (e os da chapa)
+    ctx.beginPath(); ctx.moveTo(-12,5); ctx.lineTo(-1,5); ctx.lineTo(-6.5,-7); ctx.closePath(); fs(ctx,cor,2);
+    ctx.beginPath(); ctx.moveTo(1,5); ctx.lineTo(12,5); ctx.lineTo(6.5,-7); ctx.closePath(); fs(ctx,cor,2);
     ctx.fillStyle = '#F6D44A'; ctx.fillRect(-10,1.5,8.5,2); ctx.fillRect(2,1.5,8.5,2);
   }
 }
@@ -4285,7 +4399,8 @@ function drawWallCommon(ctx,g,t){
   ctx.setLineDash([5,4]); rr(ctx,-166,-19,332,38,4); ctx.strokeStyle = PAL.formica; ctx.lineWidth = 2; ctx.stroke(); ctx.setLineDash([]);
   txt(ctx,'CARDÁPIO DA CASA',0,-10,10,PAL.faixa,'center',FB);
   const pt = g && g.ponto;   // os preços do cardápio (v8.3.8)
-  txt(ctx,'PF R$ ' + precoPrato('pf', pt) + ' · Pastel R$ ' + precoPrato('pastel', pt) + ' · Cafezinho R$ ' + DRINK_PRICE.coffee,0,6,16,PAL.formica,'center',FD,0,322);
+  const cu = g && g.cursos;   // v8.6.9: a placa mostra o que a cozinha faz de início
+  txt(ctx,'PF R$ ' + precoPrato('pf', pt, cu) + ' · Coxinha R$ ' + precoPrato('coxinha', pt, cu) + ' · Cafezinho R$ ' + DRINK_PRICE.coffee,0,6,16,PAL.formica,'center',FD,0,322);
   ctx.restore();
 
   // relógio
@@ -4453,7 +4568,7 @@ function drawGiz(ctx,x,y,s,g){
   rr(ctx,-20,-50,40,32,2); fs(ctx,'#2E3B35',1.4);
   txt(ctx,'HOJE',0,-43,7,'rgba(255,255,255,.85)','center',FB);
   const pt = g && g.ponto;
-  txt(ctx,'PF R$ ' + precoPrato('pf', pt),0,-33,9,'#FFF3C9','center',FB);
+  txt(ctx,'PF R$ ' + precoPrato('pf', pt, g && g.cursos),0,-33,9,'#FFF3C9','center',FB);
   ctx.strokeStyle = 'rgba(255,255,255,.7)'; ctx.lineWidth = 1; ctx.beginPath(); ctx.moveTo(-12,-26); ctx.quadraticCurveTo(0,-23,12,-26); ctx.stroke();
   circ(ctx,13,-22,1.6); ctx.fillStyle = '#F7B6C8'; ctx.fill();
   rr(ctx,-20,-16,40,3,1); fs(ctx,PAL.madeiraEsc,1);
@@ -6601,6 +6716,9 @@ function buildMenu(){
     if (sv.emp.resto) info.push('banco: faltam ' + fmt(sv.emp.resto));
   }
   $('menu-info').textContent = info.join(' · ');
+  // v8.6.9: o aviso de uma vez só para quem tinha campanha antes do cardápio que cresce (save.avisoCard, apagado ao fechar)
+  $('menu-aviso').style.display = sv.avisoCard ? '' : 'none';
+  $('menu-aviso-txt').textContent = 'Novidade: o cardápio agora cresce com os cursos do Tonhão. Por isso, a campanha recomeçou do dia 1.';
   $('btn-play').textContent = sv.fechou ? 'Recomeçar do zero' : novo ? 'Começar o dia 1' : 'Continuar: dia ' + n;
   $('btn-play').className = 'btn ' + (treinoPrimeiro() ? 'alt' : 'go');
   $('btn-treino').className = 'btn ' + (treinoPrimeiro() ? 'go' : 'alt');
@@ -6686,7 +6804,7 @@ function buildTips(){
       drawPerson(c,{skin:4,hair:3,hairC:'#1B1512',pants:'#2F3E5C',shades:true},28,60,{shirt:CHAIRS[2].c,mood:0,s:0.85});
       drawVipBadge(c,40,14,0);
     }],
-    ['A meta do dia é o lucro: o que a freguesia paga (cada um paga o que pediu: ' + listaE(Object.keys(CARDAPIO).map(k => CARDAPIO[k].nome + ' R$ ' + precoPrato(k))) + '; alguns pedem um 2º item) menos os ingredientes (' + Math.round(INGRED.prato * 100) + '% de cada prato), as contas (luz e gás crescem com o salão; a garagem não paga aluguel), a folha e a divulgação. O dia começa no vermelho! Do dia 3 em diante, escolha a divulgação na lojinha: mais gente só vale se couber.', c => {
+    ['A meta do dia é o lucro: o que a freguesia paga (cada um paga o que pediu: de início, ' + listaE(['pf', 'coxinha'].map(k => CARDAPIO[k].nome + ' R$ ' + precoPrato(k))) + '; os cursos do Tonhão acrescentam pratos; alguns pedem um 2º item) menos os ingredientes (' + Math.round(INGRED.prato * 100) + '% de cada prato), as contas (luz e gás crescem com o salão; a garagem não paga aluguel), a folha e a divulgação. O dia começa no vermelho! Do dia 3 em diante, escolha a divulgação na lojinha: mais gente só vale se couber.', c => {
       rr(c,8,12,30,40,3); fs(c,'#fff',2);
       for (let i=0;i<4;i++){ c.fillStyle = PAL.cromoEsc; c.fillRect(13,19+i*7,14,2.4); c.fillRect(30,19+i*7,4,2.4); }
       c.strokeStyle = PAL.perigo; c.lineWidth = 2.4; c.beginPath(); c.moveTo(13,47); c.lineTo(34,47); c.stroke();
@@ -6713,9 +6831,13 @@ function buildTips(){
     drawBanco(c);
   }]);
   // v8.4: as avaliações do Gurugol
-  tips.push(['Cada grupo que sai avalia a lanchonete no Gurugol, de 1 a 5, em 5 critérios: espera por mesa e agilidade (cada coração perdido tira 1 ponto; cor certa, corrente e prato caprichado ajudam), qualidade da comida (o Tonhão com aumento acerta mais), diversidade do cardápio e ambiente (TV, som, torneira, ventilador, cafezinho, as plantas, o cantinho da Rosa e a toalha xadrez; lixeira cheia atrapalha). A nota é a média das últimas ' + AVAL.max + ' avaliações e aparece a partir da ' + AVAL.min + 'ª; a aba Gurugol da lojinha mostra os últimos comentários. Na Garagem, lugar simples, o atendimento perfeito vale ' + fmtNota(AVAL.teto[0]) + ' ★ (um cliente encantado dá um pouco mais); cada ponto melhor sobe a nota, até 5 ★ no Terraço Suíça. Nota alta traz até ' + Math.round(AVAL.mov * 100) + '% mais gente; nota baixa afasta.', c => {
+  tips.push(['Cada grupo que sai avalia a lanchonete no Gurugol, de 1 a 5, em 5 critérios: espera por mesa e agilidade (cada coração perdido tira 1 ponto; cor certa, corrente e prato caprichado ajudam), qualidade da comida (o Tonhão com aumento acerta mais), diversidade do cardápio (cada curso do Tonhão soma) e ambiente (TV, som, torneira, ventilador, cafezinho, as plantas, o cantinho da Rosa e a toalha xadrez; lixeira cheia atrapalha). A nota é a média das últimas ' + AVAL.max + ' avaliações e aparece a partir da ' + AVAL.min + 'ª; a aba Gurugol da lojinha mostra os últimos comentários. Na Garagem, lugar simples, o atendimento perfeito vale ' + fmtNota(AVAL.teto[0]) + ' ★ (um cliente encantado dá um pouco mais); cada ponto melhor sobe a nota, até 5 ★ no Terraço Suíça. Nota alta traz até ' + Math.round(AVAL.mov * 100) + '% mais gente; nota baixa afasta.', c => {
     for (let i=0;i<5;i++) star(c,8 + i*12,22,5.5,i < 3 ? PAL.mostarda : '#d8cfb8');
     txt(c,'3,0',32,48,18,PAL.tinta,'center',FD);
+  }]);
+  // v8.6.9: os cursos do Tonhão e os gostos da freguesia
+  tips.push(['A cozinha começa sabendo PF e coxinha. Na aba Cursos, o Tonhão aprende pratos novos (um curso por dia); o curso avançado deixa os pratos mais caros e caprichados. Cada tipo de cliente tem o seu gosto, e o entregador muda de ideia ao longo do dia.', c => {
+    drawDish(c,'pf',18,30,0.9); drawDish(c,'coxinha',46,30,0.9); txt(c,'+',32,34,14,PAL.faixa,'center',FD);
   }]);
   tips.forEach(t => {
     const li = document.createElement('li');
@@ -7200,6 +7322,27 @@ function buildDecor(grid){
   grid.appendChild(c);
 }
 /* aba Divulgação (v7): escolha do dia, paga junto com a folha (no fim do dia, desde a v8.2.2); e o resumo das contas do dia */
+/* aba Cursos (v8.6.9): um cartão por curso do Tonhão; feito o básico, o cartão vira o do avançado. Um curso por lojinha */
+function cursoIcon(c){
+  return tipCanvas(x => { x.translate(32,32); drawDish(x, c.pratos[0] || c.av.pratos[0], 0, 4, 1.7); });
+}
+function buildCursos(grid){
+  const sv = game.save, bank = sv.bank, cur = sv.cursos;
+  if (game.cursoMsg) grid.appendChild(el('p', 'cursomsg', game.cursoMsg));
+  const pratos = (l, cu) => l.map(k => CARDAPIO[k].nome + ' ' + fmt(precoPrato(k, game.ponto, cu || cur))).join(' · ');
+  CURSOS.forEach(c => {
+    const n = cursoNivel(cur, c.id), p = game.cursoProx(c.id), av = n >= 1;
+    const card = el('div', 'item' + (!p ? ' own' : ''));
+    card.appendChild(cursoIcon(c));
+    card.appendChild(el('b', null, av ? c.av.nome : 'Curso de ' + c.nome));
+    if (!p) card.appendChild(el('span', null, 'Curso completo. ' + pratos(c.av.pratos) + '.'));
+    else if (!av) card.appendChild(el('span', null, 'O Tonhão aprende: ' + pratos(c.pratos) + '. +' + String(AVAL.menu.porCurso).replace('.', ',') + ' ★ na Diversidade do cardápio.'));
+    else card.appendChild(el('span', null, 'Receitas: ' + c.av.receita + '. +' + Math.round((CURSO_AV.preco - 1) * 100) + '% no preço destes pratos e o Tonhão capricha mais (×' + String(CURSO_AV.crit).replace('.', ',') + ').'));
+    if (p && game.cursoTrava) card.appendChild(el('span', 'cursos-lista', 'O Tonhão já está num curso. Volte depois do próximo dia.'));
+    card.appendChild(p ? shopBtn('Comprar ' + fmt(p.preco), 'btn', !game.cursoTrava && bank >= p.preco, () => game.buyCurso(c.id), p.preco) : shopBtn('Curso completo', 'btn', false, () => false));
+    grid.appendChild(card);
+  });
+}
 function buildDivulga(grid){
   const n = game.shopNext, open = divulgaAberta(n), cur = game.save.divulga;
   DIVULGA.forEach(d => {
@@ -7417,11 +7560,12 @@ function buildShop(){
   $('btn-shop-go').textContent = 'Começar o dia ' + game.shopNext;
   const f = payroll(game.save.equipe), dv = divulgaAberta(game.shopNext) ? divulgaOf(game.save.divulga) : null;
   $('shop-folha').textContent = (f ? 'Folha ' + fmt(f) : 'Sem folha') + (dv ? ' + ' + dv.name.toLowerCase() + ' ' + fmt(dv.cost) : '') + ', contas ' + fmt(contasDia(game.tables)) + (sv.emp.resto ? ', parcela do banco ' + fmt(game.devido) + (sv.emp.atr ? ' (com a atrasada)' : '') : '') + ' e ingredientes: tudo pago no fim do dia, que só rende completo. A meta é o lucro.';
-  grid.className = 'shopgrid' + (shopTab === 'salao' || shopTab === 'caixa' || shopTab === 'melhorias' || shopTab === 'gurugol' || shopTab === 'decor' ? ' ' + shopTab : '');
+  grid.className = 'shopgrid' + (shopTab === 'salao' || shopTab === 'caixa' || shopTab === 'melhorias' || shopTab === 'gurugol' || shopTab === 'decor' || shopTab === 'cursos' ? ' ' + shopTab : '');
   ['salao', 'caixa'].forEach(k => $('ov-shop').classList[shopTab === k ? 'add' : 'remove'](k));
   if (shopTab === 'equipe') return buildEquipe(grid);
   if (shopTab === 'salao') return buildSalao(grid);
   if (shopTab === 'decor') return buildDecor(grid);
+  if (shopTab === 'cursos') return buildCursos(grid);
   if (shopTab === 'divulga') return buildDivulga(grid);
   if (shopTab === 'manut') return buildManut(grid);
   if (shopTab === 'banco') return buildBanco(grid);
@@ -7806,6 +7950,7 @@ on('btn-falencia-menu', () => game.setState('menu'));
 on('btn-endless-rank',  () => { Sfx.tap(); openRank('ov-endless'); });
 on('btn-endless-again', () => { Sfx.init(); Sfx.resume(); Sfx.tap(); game.startEndless(); });
 on('btn-endless-menu',  () => { game.setState('menu'); });
+on('btn-aviso',      () => { Sfx.tap(); game.save.avisoCard = false; writeSave(game.save); buildMenu(); });   // v8.6.9: fecha o aviso do cardápio que cresce
 /* Recomeçar do zero (v8.3): o 1º toque pede confirmação; o 2º apaga a carreira */
 on('btn-reset',      () => {
   Sfx.init();
@@ -7889,7 +8034,7 @@ try { Rank.init(); } catch(e) {}
 game.setState('menu');
 if (!aberturaVista() && !DEV.on) abrirAbertura('auto');   // v8.5: a abertura toca sozinha uma vez
 window.__game = game;
-window.__lcc = { DECOR, DECOR_GRUPOS, TOALHA, decorOf, normDecor, decorOn, FILA_ACOES, filaMax, MARMITA, RETIRADA, marmitaMao, drawMarmita, prateleiraPos, EFOOD_COR, AVAL_BRAVO, QUEUE, setShopTab: v => { shopTab = v; buildShop(); }, TREINO, TREINO_PASSOS, TREINO_COR, Treino, treinoLugar, treinoPrimeiro, playCareer, buildMenu, introBanco, buildFalencia, BANCO, normEmprestimo, parcelaDe, devidoDe, jurosDe, tabelaDe, simulaEmprestimo, SEMANA, semanaOf, diaOf, FILA_JUSTA, PORTA, CHAIRS, PAT, CONTAS, INGRED, CARDAPIO, precoPrato, MAIS, PONTOS_ACAO, GORJETA, DRINK_PRICE, MOVIMENTO, movimentoSalao, DIVULGA, DIVULGA_DIA, divulgaOf, contasDia, bomGoal, SALAO, PONTOS, pontoOf, MESA, mesaBox, mesaPreco, salaoLugares, mesaProblema, salaoCaminho, salaoProblema, salaoOrdena, salaoAuto, salaoVaga, salaoPerto, salaoKit, salaoDevolucao, SALAO_SEMFIM, normSalao, setObst, OBST, pathOk, MAQUINA, BEBIDA_ESPERA, bebidaOf, MANUT, manutOf, manutChance, manutPreco, normManut, CLIMA, CLIMA_DIA, introManut, normPend, CALCADA, TW, HUDX, esperaAp, tableApproach, CRIT, STAFF, DANI_TASKS, DANI_HANDS, daniTaskOk, TRASH, WASH, payroll, FOLHA_CORTE, folhaCorta, folhaCortes, folhaItens, listaE, pratosDe, couvertEffect, couvertOk, ambienteEffect, dishStock, normSave, Helper, JUICE, KITCHEN_SLOTS, handLayout, trayOk, Game, Group, Table, Kitchen, Waitress, BIA_SPEED, DAYS, UPGRADES, CUSTOMER_TYPES, LAYOUT, PAL, Sfx, findPath, render, Rank, sortRows, cleanName, normName, CMD, ENDLESS, VIP, MULTA, rk, renderRank, openRank, closeRank, LS, lsGet, lsSet, loadSave, DEV, saveKey, devSync, divulgaAberta, CAIXA_MAX, VERSAO, normCaixa, caixaResumo, caixaTotais, copyText, PRATO, pratoPerde, pratoVapor, AVAL, AVAL_CRIT, AVAL_BRAVO, avalMenu, avalTeto, avalEscala, avalFrac, AVAL_SIMPLES, AVAL_DECOR, normAval, avalNota, avalMedias, avalGeral, avalMovimento, avalMinimo, avalComentario, fmtNota, notaFaixa, gurugolCaixa, AVAL_COM, normAvalCom, buildGurugol, ABERTURA, Abertura, AB_CENAS, AB_ALT, AB_BASE, abEsc, AB_VIVO, aberturaVista, aberturaSom, drawAbertura, abrirAbertura, aberturaAtual: () => abertura };
+window.__lcc = { DECOR, DECOR_GRUPOS, TOALHA, decorOf, normDecor, decorOn, FILA_ACOES, filaMax, MARMITA, RETIRADA, marmitaMao, drawMarmita, prateleiraPos, EFOOD_COR, AVAL_BRAVO, QUEUE, setShopTab: v => { shopTab = v; buildShop(); }, TREINO, TREINO_PASSOS, TREINO_COR, Treino, treinoLugar, treinoPrimeiro, playCareer, buildMenu, introBanco, buildFalencia, BANCO, normEmprestimo, parcelaDe, devidoDe, jurosDe, tabelaDe, simulaEmprestimo, SEMANA, semanaOf, diaOf, FILA_JUSTA, PORTA, CHAIRS, PAT, CONTAS, INGRED, CARDAPIO, precoPrato, CURSOS, CURSO_AV, CURSOS_SEMFIM, cursoOf, cursoNivel, normCursos, pratoAv, pratoSabido, pratosSabidos, GOSTOS, GOSTOS_CAT, pedePrato, MAIS, PONTOS_ACAO, GORJETA, DRINK_PRICE, MOVIMENTO, movimentoSalao, DIVULGA, DIVULGA_DIA, divulgaOf, contasDia, bomGoal, SALAO, PONTOS, pontoOf, MESA, mesaBox, mesaPreco, salaoLugares, mesaProblema, salaoCaminho, salaoProblema, salaoOrdena, salaoAuto, salaoVaga, salaoPerto, salaoKit, salaoDevolucao, SALAO_SEMFIM, normSalao, setObst, OBST, pathOk, MAQUINA, BEBIDA_ESPERA, bebidaOf, MANUT, manutOf, manutChance, manutPreco, normManut, CLIMA, CLIMA_DIA, introManut, normPend, CALCADA, TW, HUDX, esperaAp, tableApproach, CRIT, STAFF, DANI_TASKS, DANI_HANDS, daniTaskOk, TRASH, WASH, payroll, FOLHA_CORTE, folhaCorta, folhaCortes, folhaItens, listaE, pratosDe, couvertEffect, couvertOk, ambienteEffect, dishStock, normSave, Helper, JUICE, KITCHEN_SLOTS, handLayout, trayOk, Game, Group, Table, Kitchen, Waitress, BIA_SPEED, DAYS, UPGRADES, CUSTOMER_TYPES, LAYOUT, PAL, Sfx, findPath, render, Rank, sortRows, cleanName, normName, CMD, ENDLESS, VIP, MULTA, rk, renderRank, openRank, closeRank, LS, lsGet, lsSet, loadSave, DEV, saveKey, devSync, divulgaAberta, CAIXA_MAX, VERSAO, normCaixa, caixaResumo, caixaTotais, copyText, PRATO, pratoPerde, pratoVapor, AVAL, AVAL_CRIT, AVAL_BRAVO, avalMenu, avalTeto, avalEscala, avalFrac, AVAL_SIMPLES, AVAL_DECOR, normAval, avalNota, avalMedias, avalGeral, avalMovimento, avalMinimo, avalComentario, fmtNota, notaFaixa, gurugolCaixa, AVAL_COM, normAvalCom, buildGurugol, ABERTURA, Abertura, AB_CENAS, AB_ALT, AB_BASE, abEsc, AB_VIVO, aberturaVista, aberturaSom, drawAbertura, abrirAbertura, aberturaAtual: () => abertura };
 window.requestAnimationFrame(frame);
 
 })();

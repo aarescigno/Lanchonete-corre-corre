@@ -8,7 +8,7 @@ function mkCtx(){
     return ()=>{};
   }, set:(o,k,v)=>{o[k]=v;return true;}});
 }
-// opts: {claude: stub|undefined, online:bool (v8.3.3: liga o ranking compartilhado, que o jogo deixa desligado), store: initial localStorage object, noStorage:bool, rm:boolean, imprevistos:bool}
+// opts: {claude: stub|undefined, online:bool (v8.3.3: liga o ranking compartilhado, que o jogo deixa desligado), store: initial localStorage object, noStorage:bool, rm:boolean, imprevistos:bool, saveAntigo:bool (v8.6.9: não marca o save injetado como do cardápio novo)}
 module.exports=function load(opts){
   opts=opts||{};
   const code=fs.readFileSync(__dirname+'/'+(process.env.GAMEJS||'game.js'),'utf8');
@@ -29,7 +29,9 @@ module.exports=function load(opts){
   }
   const doc={getElementById:id=>els[id]||(els[id]=mkEl(id)), createElement:t=>{const e=mkEl(t); e.tagName=String(t).toUpperCase(); return e;}, addEventListener(){}, hidden:false};
   const win={innerWidth:960,innerHeight:600,devicePixelRatio:1,addEventListener(){},requestAnimationFrame(){},matchMedia:()=>({matches:!!opts.rm})};
-  const store=Object.assign(opts.abertura?{}:{lcc2_abertura:'1'}, opts.store||{});   // v8.5: abertura já vista, a não ser que o teste peça (opts.abertura)
+  const store=Object.assign(opts.abertura?{}:{lcc2_abertura:'1'}, opts.store||{});
+  // v8.6.9: um save injetado sem cardV valeria como antigo e recomeçaria do dia 1; os testes que não são do save antigo ganham o cardV (opts.saveAntigo: deixa como veio)
+  if(!opts.saveAntigo&&store.lcc2_save){ try{ const o=JSON.parse(store.lcc2_save); if(o&&typeof o==='object'&&o.cardV==null){ o.cardV=1; store.lcc2_save=JSON.stringify(o); } }catch(e){} }   // v8.5: abertura já vista, a não ser que o teste peça (opts.abertura)
   const ls = opts.noStorage ? undefined : { getItem:k=>Object.prototype.hasOwnProperty.call(store,k)?store[k]:null, setItem:(k,v)=>{store[k]=String(v)}, removeItem:k=>{delete store[k]} };
   if (opts.throwStorage) { /* acessos lançam */ }
   const sandbox={window:win,document:doc,console,Math,Date,JSON,Object,Array,Set,Number,String,Infinity,isFinite,parseInt,parseFloat,setTimeout,clearTimeout,Promise,RegExp,Error,TypeError};
