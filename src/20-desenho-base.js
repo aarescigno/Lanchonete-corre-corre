@@ -73,7 +73,7 @@ function mmssUp(s){ s = Math.max(0, Math.floor(s)); return Math.floor(s/60) + ':
 function mmss(s){ s = Math.max(0, Math.ceil(s)); return Math.floor(s/60) + ':' + String(s%60).padStart(2,'0'); }
 
 /* ---------- pratos ---------- */
-function drawDish(ctx,k,x,y,s,empty){
+function drawDish(ctx,k,x,y,s,empty,carne,av){
   ctx.save(); ctx.translate(x,y); ctx.scale(s,s);
   ell(ctx,0,0,15,10.5); fs(ctx,'#fff',2.4);
   ell(ctx,0,0,9.5,6); ctx.lineWidth = 1.2; ctx.strokeStyle = '#d4d0c4'; ctx.stroke();
@@ -81,7 +81,7 @@ function drawDish(ctx,k,x,y,s,empty){
     ctx.fillStyle = '#b9772f'; circ(ctx,-3,1,1.6); ctx.fill(); circ(ctx,4,-1,1.2); ctx.fill();
     ctx.restore(); return;
   }
-  drawComida(ctx,k);
+  drawComida(ctx,k,carne,av);
   ctx.restore();
 }
 /* marmita (v8.6): a quentinha de alumínio com a tampa de papelão e o desenho da comida em cima; (x, y) é o meio da tampa */
@@ -93,34 +93,126 @@ function drawMarmita(ctx,k,x,y,s){
   ctx.save(); ctx.translate(0,-6); ctx.scale(0.95,0.62); drawComida(ctx,k); ctx.restore();
   ctx.restore();
 }
-/* a comida do prato (sem o prato), centrada em (0, 0) */
-function drawComida(ctx,k){
-  const pr = CARDAPIO[k], cat = pr ? pr.cat : 'chapa', cor = pr ? pr.cor : '#D9A25B';   // v8.6.9: os pratos novos usam o desenho da categoria, na cor do prato (as artes de verdade vêm na v8.6.10)
+/* a comida do prato (sem o prato), centrada em (0, 0). v8.6.10: um desenho para cada prato; `av` (o detalhe do curso avançado) vem do
+   curso do jogo (COMIDA_CURSOS, posto pelo render) quando não é dado; `carne` é a proteína do PF com as Carnes variadas */
+let COMIDA_CURSOS = null;
+function drawCarne(ctx,carne){
+  if (carne === 'frango'){
+    rr(ctx,-3,1.5,12,5,2.5); fs(ctx,'#E9C98F',1.6);
+    ctx.strokeStyle = '#8A5426'; ctx.lineWidth = 1.2; ctx.beginPath();
+    for (let x=-0.5;x<=6;x+=3){ ctx.moveTo(x,2.3); ctx.lineTo(x+2,5.7); } ctx.stroke();
+  } else if (carne === 'peixe'){
+    ctx.beginPath(); ctx.moveTo(-4,4); ctx.quadraticCurveTo(2,-0.5,9,2.5); ctx.quadraticCurveTo(10.5,5.5,8,7); ctx.quadraticCurveTo(2,8.5,-4,4); ctx.closePath(); fs(ctx,'#D9902F',1.6);
+    ctx.fillStyle = '#F2C06A'; for (const d of [[0,4],[3,4.2],[6,4.8],[2,6.2]]){ circ(ctx,d[0],d[1],0.7); ctx.fill(); }
+  } else {
+    rr(ctx,-3,1.5,12,5,2.5); fs(ctx,'#A0522D',1.6);
+    if (carne === 'cavalo'){ ell(ctx,3,3,4.6,2.8); fs(ctx,'#fff',1.3); circ(ctx,3,3,1.5); ctx.fillStyle = '#F5B800'; ctx.fill(); }
+  }
+}
+const DESENHO_BASE = { empadaPalmito:'empada', kibeAbobora:'kibe', esfihaSoja:'esfihaA', pastelPalmito:'pastel', coxinhaJaca:'coxinha', mistoVegano:'misto' };
+function drawComida(ctx,k,carne,av){
+  const pr = CARDAPIO[k], cat = pr ? pr.cat : 'chapa', cor = pr ? pr.cor : '#D9A25B';
+  if (av === undefined || av === null) av = pratoAv(k, COMIDA_CURSOS) && !(pr && pr.semAv);
+  const kk = DESENHO_BASE[k] || k;   // os pratos veganos e vegetarianos reusam o desenho do prato com carne
+  let dx = 0, dy = 0;   // onde fica o detalhe do avançado
   if (cat === 'pf'){
     ell(ctx,-5,-1,5.5,4.2); fs(ctx,'#FFF6DA',1.6);
     ell(ctx,4,-3.5,5,3.4); fs(ctx,'#5B2E1A',1.6);
-    if (k === 'pf'){ rr(ctx,-3,1.5,12,5,2.5); fs(ctx,'#A0522D',1.6); }
+    if (k === 'pf') drawCarne(ctx,av ? carne : 'bife');
     else { ctx.fillStyle = '#7A4A2B'; [[-1,3],[2,5],[5,3],[8,5],[3,2]].forEach(g => { circ(ctx,g[0],g[1],1.9); ctx.fill(); }); }   // v8.6.11: a soja refogada, grumos marrons
-    if (k !== 'pfVegano'){ ell(ctx,-7,5,3.4,2.2); fs(ctx,'#fff',1.4); circ(ctx,-7,5,1.2); ctx.fillStyle = '#F5B800'; ctx.fill(); }
-  } else if (cat === 'pastel'){
-    rr(ctx,-11,-6,22,12,5.5); fs(ctx,cor,2);
-    ctx.fillStyle = '#F4C874'; rr(ctx,-8,-4,10,3,1.5); ctx.fill();
-    ctx.strokeStyle = '#B97A1E'; ctx.lineWidth = 1.2;
-    for (let i=-8;i<=8;i+=4){ ctx.beginPath(); ctx.moveTo(i,4.6); ctx.lineTo(i,6.2); ctx.stroke(); }
+    if (k !== 'pfVegano' && !(k === 'pf' && av && carne === 'cavalo')){ ell(ctx,-7,5,3.4,2.2); fs(ctx,'#fff',1.4); circ(ctx,-7,5,1.2); ctx.fillStyle = '#F5B800'; ctx.fill(); }
+    if (pr && pr.veg) drawVegSelo(ctx, pr.vegano);
+    return;
+  } else if (kk === 'risoles'){
+    ctx.beginPath(); ctx.arc(0,3,10.5,Math.PI,0); ctx.closePath(); fs(ctx,cor,2);
+    ctx.fillStyle = '#F7C168'; ell(ctx,-3.5,-1.5,2,3); ctx.fill();
+    ctx.fillStyle = 'rgba(120,70,20,.5)'; for (const d of [[3,0],[5,2],[1,2.2]]){ circ(ctx,d[0],d[1],0.7); ctx.fill(); }
+    dx = 5; dy = -4.5;
+  } else if (kk === 'kibe'){
+    // o kibe frito: fuso simétrico de pontas bem pontudas, casca áspera (sem risquinhos)
+    ctx.beginPath(); ctx.moveTo(-13,0); ctx.bezierCurveTo(-6,-11,6,-11,13,0); ctx.bezierCurveTo(6,11,-6,11,-13,0); ctx.closePath(); ctx.lineJoin = 'miter'; fs(ctx,cor,2); ctx.lineJoin = 'round';
+    ctx.fillStyle = 'rgba(40,20,5,.5)'; for (const d of [[-6,-1.5],[-2,-4],[2,-3],[6,-1],[-6,2],[-1,3.5],[3,3],[7,1.5],[0,0]]){ circ(ctx,d[0],d[1],0.75); ctx.fill(); }
+    ctx.fillStyle = 'rgba(240,190,110,.55)'; for (const d of [[-3,0.5],[3,-0.5],[-9,0],[9,0],[0,-6],[0,6]]){ circ(ctx,d[0],d[1],0.55); ctx.fill(); }
+    dx = 0; dy = -4.5;
+  } else if (kk === 'bolinho'){
+    // o bolinho japonês: uma bolinha de massa frita, empanada e áspera, com manchas escuras do recheio
+    circ(ctx,0,0,9); fs(ctx,cor,2);
+    ctx.fillStyle = 'rgba(70,35,10,.55)'; for (const d of [[-4,-3],[3,-4.5],[5,1],[-1,3.5],[-6,2]]){ ell(ctx,d[0],d[1],1.5,1); ctx.fill(); }
+    ctx.fillStyle = 'rgba(255,235,170,.7)'; for (const d of [[-1,-1],[4,3],[-5,-0.5],[1,-5.5]]){ circ(ctx,d[0],d[1],0.6); ctx.fill(); }
+    dx = 0; dy = -7.5;
+  } else if (kk === 'empada'){
+    ctx.beginPath(); ctx.moveTo(-8,-1); ctx.lineTo(8,-1); ctx.lineTo(6,7); ctx.lineTo(-6,7); ctx.closePath(); fs(ctx,'#D9A55B',2);
+    ctx.strokeStyle = 'rgba(90,50,20,.45)'; ctx.lineWidth = 1; ctx.beginPath(); ctx.moveTo(-4,1); ctx.lineTo(-3,6); ctx.moveTo(0,1); ctx.lineTo(0,6); ctx.moveTo(4,1); ctx.lineTo(3,6); ctx.stroke();
+    ell(ctx,0,-2,9.5,5.5); fs(ctx,cor,2);
+    ctx.fillStyle = 'rgba(90,50,20,.6)'; circ(ctx,0,-2,1); ctx.fill();
+    dx = -3.5; dy = -3.5;
+  } else if (kk === 'esfihaA'){
+    // a esfiha aberta: borda de massa dourada e, por cima da massa clara, montinhos de carne moída com tomate e cebola, deixando a massa aparecer
+    circ(ctx,0,0,10.5); fs(ctx,'#DDA054',2);
+    circ(ctx,0,0,6.6); ctx.fillStyle = '#F3D9A0'; ctx.fill();
+    ctx.fillStyle = '#7E4B2F'; for (let i=0;i<20;i++){ const r = 5.3*Math.sqrt((i+0.5)/20), a = i*2.39996; ctx.beginPath(); ctx.ellipse(Math.cos(a)*r,Math.sin(a)*r,1.32,0.95,a*1.7,0,TAU); ctx.fill(); }   // 20 pedacinhos de carne moída que se tocam, cobrindo mais da metade da massa
+    for (const g of [-160,-138,-116,-94,-72,-50,-28,-6,176,18,36,54,72,90,108,126,144,162]){ const a = g*Math.PI/180; ctx.beginPath(); ctx.ellipse(Math.cos(a)*5.7,Math.sin(a)*5.7,1.3,0.95,a+1.57,0,TAU); ctx.fill(); }   // mais pedacinhos encostados na borda, em arco por cima e por baixo
+    ctx.fillStyle = '#C8452B'; for (const d of [[-1.2,-1.8],[3.4,2.6],[-3.2,4]]){ rr(ctx,d[0]-1,d[1]-0.7,2.1,1.4,0.5); ctx.fill(); }
+    ctx.fillStyle = '#FFF4D6'; for (const d of [[-0.5,-5],[-5.4,-0.8],[5.2,-2.6]]){ circ(ctx,d[0],d[1],0.9); ctx.fill(); }
+    dx = 0; dy = 0;
+  } else if (kk === 'esfihaF'){
+    ctx.beginPath(); ctx.moveTo(0,-10); ctx.lineTo(10.5,7); ctx.lineTo(-10.5,7); ctx.closePath(); ctx.lineJoin = 'round'; fs(ctx,cor,2);
+    ctx.strokeStyle = 'rgba(90,50,20,.5)'; ctx.lineWidth = 1.1; ctx.beginPath();
+    ctx.moveTo(0,-5); ctx.lineTo(0,1); ctx.moveTo(-5,4); ctx.lineTo(0,1); ctx.moveTo(5,4); ctx.lineTo(0,1); ctx.stroke();
+    dx = 0; dy = 4;
+  } else if (kk === 'bauru'){
+    rr(ctx,-12,2,24,5.5,2.5); fs(ctx,cor,2);
+    ctx.beginPath(); ctx.moveTo(-11,2);
+    for (let x=-11;x<=11;x+=2.75){ ctx.quadraticCurveTo(x+1.4,4.6,x+2.75,2); } ctx.closePath(); fs(ctx,'#6FAE3E',1.3);
+    rr(ctx,-10.5,-2.2,21,4,1.8); fs(ctx,'#B04A3E',1.4);
+    ctx.fillStyle = '#FFF6DA'; for (const x of [-6,0,6]){ circ(ctx,x,-0.2,0.8); ctx.fill(); }
+    rr(ctx,-12,-9,24,7,3.5); fs(ctx,cor,2);
+    ctx.fillStyle = 'rgba(255,230,160,.6)'; ell(ctx,-4,-6.5,4,1.2); ctx.fill();
+    dx = 0; dy = -2.5;
+  } else if (kk === 'paoChapa'){
+    ell(ctx,0,0,12.5,6.2); fs(ctx,cor,2);
+    ctx.strokeStyle = 'rgba(120,70,20,.5)'; ctx.lineWidth = 1.1; ctx.beginPath(); ctx.moveTo(-4,-3.5); ctx.lineTo(-1,0.5); ctx.moveTo(1,-4); ctx.lineTo(4,0); ctx.stroke();
+    rr(ctx,-9,0,18,3.2,1.6); fs(ctx,'#F6D44A',1.3);
+    dx = 0; dy = 0;
+  } else if (k === 'pastelQ' || k === 'pastelP' || cat === 'pastel'){
+    // o pastel: retângulo de massa frita e bolhosa, de cantos quase retos
+    rr(ctx,-12,-7,24,14,2.2); fs(ctx,cor,2);
+    ctx.fillStyle = '#F4C874'; rr(ctx,-9.5,-5,12,3,1.2); ctx.fill();
+    ctx.fillStyle = 'rgba(150,90,20,.45)'; for (const d of [[-7,2],[-2,3.5],[4,2.5],[8,-2],[1,-3],[-8,-0.5],[7,4.5]]){ circ(ctx,d[0],d[1],0.9); ctx.fill(); }
+    if (k === 'pastelQ'){
+      ctx.strokeStyle = '#F6D44A'; ctx.lineWidth = 2; ctx.lineCap = 'round'; ctx.beginPath(); ctx.moveTo(8,-1); ctx.quadraticCurveTo(12,-3,13,-7); ctx.stroke(); ctx.lineCap = 'butt';
+    } else if (k === 'pastelP'){
+      ctx.fillStyle = '#C8302B'; circ(ctx,4,-1.5,1.7); ctx.fill(); ctx.fillStyle = '#5E9B3A'; circ(ctx,6.6,1,0.8); ctx.fill();
+    }
   } else if (cat === 'frito'){
     ctx.beginPath(); ctx.moveTo(0,-10);
     ctx.bezierCurveTo(11,-5, 10,5, 3,8); ctx.lineTo(-3,8);
     ctx.bezierCurveTo(-10,5, -11,-5, 0,-10); ctx.closePath(); fs(ctx,cor,2);
     ctx.fillStyle = '#F7C168'; ell(ctx,-3,-2,2.2,3.6); ctx.fill();
+    dx = 0; dy = -8;
   } else if (cat === 'assado'){
     circ(ctx,0,0,9.5); fs(ctx,cor,2);
-    ctx.strokeStyle = 'rgba(90,50,20,.45)'; ctx.lineWidth = 1.2; ctx.beginPath(); ctx.moveTo(-4,-3); ctx.lineTo(4,3); ctx.moveTo(4,-3); ctx.lineTo(-4,3); ctx.stroke();
-  } else { // misto-quente (e os da chapa)
-    ctx.beginPath(); ctx.moveTo(-12,5); ctx.lineTo(-1,5); ctx.lineTo(-6.5,-7); ctx.closePath(); fs(ctx,cor,2);
-    ctx.beginPath(); ctx.moveTo(1,5); ctx.lineTo(12,5); ctx.lineTo(6.5,-7); ctx.closePath(); fs(ctx,cor,2);
-    ctx.fillStyle = '#F6D44A'; ctx.fillRect(-10,1.5,8.5,2); ctx.fillRect(2,1.5,8.5,2);
+  } else { // misto quente: duas metades de pão tostado empilhadas, com presunto e queijo à mostra
+    rr(ctx,-11,0.5,22,6.5,2.2); fs(ctx,cor,2);
+    ctx.fillStyle = '#E58C8C'; ctx.fillRect(-9.5,1.4,19,1.6);
+    ctx.fillStyle = '#F6D44A'; ctx.fillRect(-9.5,3,19,2.2); ell(ctx,6,6,2.2,1.6); ctx.fill();
+    rr(ctx,-9,-7.5,22,6.5,2.2); fs(ctx,cor,2);
+    ctx.fillStyle = '#E58C8C'; ctx.fillRect(-7.5,-6.6,19,1.6);
+    ctx.fillStyle = '#F6D44A'; ctx.fillRect(-7.5,-5,19,2.2);
+    dx = 0; dy = 0;
   }
   if (pr && pr.veg) drawVegSelo(ctx, pr.vegano);
+  if (!av) return;
+  // o detalhe do curso avançado (v8.6.10): um por curso
+  if (cat === 'frito'){ circ(ctx,dx,dy,1.9); fs(ctx,'#FFFDF4',1.1); }                                  // fritos: a pontinha de catupiry
+  else if (cat === 'assado'){ circ(ctx,dx,dy,2.3); fs(ctx,'#2B2B2B',1); ctx.fillStyle = '#9A9A9A'; circ(ctx,dx,dy,0.7); ctx.fill(); }   // assados: a azeitona
+  else if (cat === 'chapa'){                                                                           // chapa: as listras da grelha
+    ctx.strokeStyle = 'rgba(50,25,8,.6)'; ctx.lineWidth = 1.3; ctx.beginPath();
+    for (const x of [-6,-2,2,6]){ ctx.moveTo(x-1.6,dy-3.4); ctx.lineTo(x+1.6,dy+3.4); } ctx.stroke();
+  } else if (cat === 'pastel'){                                                                        // pastel: as bolhinhas da massa de feira
+    ctx.fillStyle = 'rgba(255,240,200,.85)'; ctx.strokeStyle = '#B97A1E'; ctx.lineWidth = 0.7;
+    for (const d of [[-3,2],[3,-3],[6,2],[-6,-2]]){ circ(ctx,d[0],d[1],1.3); ctx.fill(); ctx.stroke(); }
+  }
 }
 /* o selo dos pratos sem carne (v8.6.11): um "v" verde nos vegetarianos e uma folhinha nos veganos, no canto do prato */
 function drawVegSelo(ctx,vegano){
@@ -149,7 +241,7 @@ function drawTorneira(ctx,x,y,s){
   ctx.restore();
 }
 /* ---------- ícones (HUD / mãos) ---------- */
-function drawIcon(ctx,k,x,y,s,extra,extra2){
+function drawIcon(ctx,k,x,y,s,extra,extra2,extra3){
   ctx.save(); ctx.translate(x,y); ctx.scale(s,s);
   if (k === 'ticket'){
     const tc = (typeof extra === 'string' && extra.charAt(0) === '#') ? extra : null;
@@ -160,7 +252,7 @@ function drawIcon(ctx,k,x,y,s,extra,extra2){
     ctx.strokeStyle = PAL.tinta; ctx.lineWidth = 1.2; ctx.strokeRect(-8,-11,16,tc ? 6 : 3);
   } else if (k === 'dish'){
     if (extra2) drawTray(ctx,0,2,1,extra2);
-    drawDish(ctx,extra||'pf',0,2,0.95);
+    drawDish(ctx,extra||'pf',0,2,0.95,false,extra3);
   } else if (k === 'marmita'){
     drawMarmita(ctx,extra||'pf',0,1,0.95);
   } else if (k === 'coffee'){

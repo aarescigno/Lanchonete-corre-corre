@@ -114,5 +114,17 @@ function normB(A){ return A.L.normSave({}).bank; }
   // desenho de todos os pratos
   let erro=''; Object.keys(L.CARDAPIO).forEach(k=>{ try{ [0.52,0.85,1.1].forEach(s=>L.drawDish(H.ctx,k,0,0,s)); }catch(e){ erro=k+': '+e.message; } });
   ok(!erro,'todo prato do cardápio desenha sem erro '+erro); }
+
+// ---------- v8.6.10: os desenhos e as Carnes variadas ----------
+{ const c=new Proxy({},{get:(o,k)=>k in o?o[k]:(()=>{}),set:(o,k,v)=>{o[k]=v;return true;}}); let erro=null;
+  try{ Object.keys(C).forEach(k=>{ [false,true].forEach(av=>{ L.drawDish(c,k,10,10,1,false,'bife',av); L.drawDish(c,k,10,10,0.52,true,'bife',av); L.drawMarmita(c,k,10,10,1); }); }); L.CARNES.forEach(cn=>L.drawDish(c,'pf',10,10,1,false,cn,true)); }catch(e){ erro=e; }
+  ok(!erro && L.CARNES.join()==='bife,frango,peixe,cavalo','todo prato do CARDAPIO desenha sem erro (comum, avançado e na marmita) e as 4 proteínas do PF');
+  novo();
+  const gr=()=>new L.Group(g,'familia',1,0,false);
+  ok(Array.from({length:40},gr).every(x=>x.carnes.length===x.size && x.carnes.every(cn=>cn==='bife')),'sem o avançado do PF, todo PF vem com bife');
+  novo({cursos:{pf:2}});
+  const vistos=new Set(); Array.from({length:200},gr).forEach(x=>x.carnes.forEach(cn=>vistos.add(cn)));
+  ok(['bife','frango','peixe','cavalo'].every(cn=>vistos.has(cn)) && vistos.size===4,'com Carnes variadas, o PF sorteia as 4 proteínas'); }
+
 console.log('total =',total,' fails =',fails);
 process.exit(fails?1:0);
