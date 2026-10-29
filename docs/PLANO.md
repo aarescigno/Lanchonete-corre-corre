@@ -343,6 +343,27 @@ Também: rever o `smoke7` (toque) e o `smoke10` (fila justa e porta), mais `bala
 
 ---
 
+## Etapa 2c-r — Rebalanceamento do Gurugol (v8.6.7 e v8.6.8)
+**Objetivo:** corrigir os pontos desbalanceados do `docs/RELATORIO-GURUGOL.md` com as decisões da entrevista de 29/10 (texto em `docs/PROPOSTAS.md`). Cada sessão termina com o `balance.js` (`DUMP=1 AVAL_MOV=1`, com e sem equipe e com o bot afiado) e a nota mínima recalibrada.
+
+### Sessão 2c-r1 — As regras da nota (v8.6.7)
+- **Cada um avalia só o que viveu:** a avaliação guarda `null` nos critérios que o cliente não chegou a ver, e cada critério tem a sua média (com a sua contagem); a nota da lanchonete é a média das médias. Sugestão: a Espera conta sempre; Agilidade e Ambiente só para quem sentou; Cardápio só para quem fez o pedido; Comida só para quem comeu (o entregador avalia a marmita). Quem desiste na calçada avalia só a Espera. Mexe em `normAval` e `avalMedias` (o save antigo, sem `null`, continua valendo) e na caixa do fim do dia e na aba Gurugol (o número de avaliações de cada critério).
+- **Humor proporcional ao teto:** o humor e os encantados passam a ser fração da faixa do ponto (`teto − 1`), não um valor absoluto; o limite de cada avaliação continua `teto + folga` (também proporcional) e, no Terraço, 5. Calibrar para o serviço perfeito ficar perto do teto na média e o Terraço poder cravar 5 num dia especial.
+- **Bônus da Agilidade vira chance de encantar:** a cor certa, a corrente e o caprichado deixam de somar na Agilidade (que fica só pelos corações) e aumentam a chance de o cliente sair encantado (`humor.encanta`).
+- **Prato quente:** o prato que fica no balcão da cozinha esperando a Bia esfria e perde nota na Comida (como as marmitas da v8.6); o caprichado quente continua 5. Mostrar o prato esfriando (vapor que some).
+- **Faixa bronze** na caixa do fim do dia (`notaFaixa`), antes da prata: a partir de 3,0 (o teto da Garagem; sugestão) ou 3,25 (a decidir). Prata, ouro e diamante ficam como estão.
+- **Nota mínima para sair de um ponto:** 95% do teto (Garagem ~2,9 ★, área industrial ~3,6, Avenida Brasil ~4,2); entra de fato na etapa 3, mas a calibração é desta sessão.
+
+### Sessão 2c-r2 — Cardápio que cresce com os cursos do Tonhão (v8.6.8)
+- A Garagem começa com **2 itens** (PF e coxinha; sugestão) e a Diversidade do cardápio sobe a cada item novo (`avalMenu` pelos itens que a cozinha sabe, com o teto de 5 só com o cardápio cheio).
+- **Cursos do Tonhão** (aba nova na lojinha ou na Melhorias): cada prato novo é um curso de **R$ 150 a 250**; o **curso avançado** (~o dobro) aumenta a chance de caprichado daquele prato.
+- Progressão: salgados clássicos na Garagem (coxinha, misto quente, kibe, empada, esfiha), depois pastéis (carne, queijo, frango), depois PFs clássicos (arroz, feijão, bife e batata frita; frango grelhado; parmegiana; feijoada de sábado). Quais entram em cada ponto e os preços de venda são da sessão.
+- Mexe em `CARDAPIO`, `MAIS.pratos` (o 2º item só entre os que a cozinha sabe), `save` (os cursos feitos), Missão zero e Como jogar; o `bot.js` e o `carreira.js` passam a comprar cursos.
+
+**Decisões em aberto:** os critérios de cada tipo de saída (a sugestão acima); bronze em 3,0 ou 3,25; o peso do Ambiente (o critério que mais separa quem gasta de quem não gasta) e a oscilação da nota (4 avaliações por dia, janela de 30), que ficaram fora da entrevista.
+
+---
+
 ## Etapa 2d — Abertura animada do Modo História: o sonho da Bia (v8.5)
 **Objetivo:** pedido do usuário em 22/10 (texto em `docs/PROPOSTAS.md`): uma animação de abertura do Modo História que conta **de onde a Bia tirou a ideia** e o **profundo desejo de ter um restaurante com a estrela do Michelzão**. Vem antes dos pontos e do modo jogável para dar o coração da história já cedo; nas etapas 5 e 6 ela vira o prólogo do Modo História.
 

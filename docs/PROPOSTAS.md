@@ -4,6 +4,27 @@ Registro das ideias e dos retornos de quem jogou, com o texto original, e de ond
 
 ---
 
+## 29/10/2026 — Usuário: entrevista sobre o relatório do Gurugol
+**Origem:** entrevista no chat sobre o `docs/RELATORIO-GURUGOL.md` (as perguntas da seção 8). Respostas do usuário (as escolhidas entre as opções e o texto dele):
+
+> Bravo: "Cada pessoa pode avaliar só o que experienciou, se não viu o cardápio sua nota não conta pra media. Imagino que isso gere as 5 notas do Gurugol contabilizadas de forma diferente, mas pode ser isso mesmo se for para balancear a pessoas que desistem no caminho"
+
+> Humor: "Terraço pode chegar a 5" (humor proporcional ao teto e, no Terraço, o serviço perfeito com encantados crava 5).
+
+> Cardápio: "Começa de baixo e cresce, com, na garagem, opções de salgados brasileiros clássicos diferentes, evoluindo para pastéis, e para PFs de varias formas clássicas brasileiras, como o arroz feijão bife batata frita etc. A nota por ter coisas no cardápio vai crescendo conforme várias opções vão se adicionando. O preço para adicionar é o curso de tal comida que o Tonhão fará. Com opção de fazer o curso avançado que aumenta a chance de prato ótimo para esse em específico". Começo e preço: "2 itens · R$ 150–250" (o avançado, o dobro).
+
+> Comida: "Prato quente" (o prato que espera no balcão esfria e perde nota).
+
+> Nota mínima para sair da Garagem: "~95% do teto" (~2,9 ★).
+
+> Faixas da caixa do fim do dia: "Mantém absolutas, mas pode adicionar uma nota bronze para acima de 3 ou de 3,25, que tal?"
+
+> Bônus da Agilidade: "Vira chance de encantar" (cor certa, corrente e caprichado aumentam a chance de o cliente sair encantado).
+
+**Destino:** nova **etapa 2c-r** do `docs/PLANO.md` (2 sessões: as regras da nota, v8.6.7, e o cardápio com os cursos do Tonhão, v8.6.8). As decisões estão também no fim do `docs/RELATORIO-GURUGOL.md`. Ficaram de fora da entrevista: o peso do Ambiente e a oscilação da nota (4 avaliações por dia, janela de 30).
+
+---
+
 ## 29/10/2026 — Usuário: rever o rebalanceamento com a decoração
 **Origem:** pedido do usuário no chat, depois do merge da v8.6.5: "Reveja o rebalanceamento agora que entrou um novo Merge de estética", com o resumo da sessão da decoração (a proposta aceita da decoração no Ambiente, adiada para não conflitar com o teto da v8.6.4).
 
