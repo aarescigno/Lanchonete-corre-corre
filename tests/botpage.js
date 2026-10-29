@@ -47,7 +47,7 @@ function baseBot(g,L,opts){
     // busca de uma vez todos os sucos que couberem (a fila de ações conta como já nas mãos)
     if(need>carry && !has(a=>a.type==='juice')){
       let k=0; const sim=b.hands.slice();
-      while(k<need-carry && b.acts.length+k<6 && L.handLayout(sim.concat([{kind:'juice'}]),b.tray)){ sim.push({kind:'juice'}); k++; }
+      while(k<need-carry && b.acts.length+k<L.filaMax(g.up) && L.handLayout(sim.concat([{kind:'juice'}]),b.tray)){ sim.push({kind:'juice'}); k++; }
       for(let i=0;i<k;i++) g.tapStation('juice',910,350);
       if(k) return;
     }
@@ -135,7 +135,7 @@ function afiado(g,L){
     const need=jt.reduce((n,t)=>n+t.group.juicePending,0)-b.juiceN();
     if(need>0&&can('juice')) add(18+sw('juice'),()=>{
       let n=0; const sim=b.hands.slice();
-      while(n<need&&n<6&&L.handLayout(sim.concat([{kind:'juice'}]),b.tray)){ sim.push({kind:'juice'}); n++; }
+      while(n<need&&n<L.filaMax(g.up)&&L.handLayout(sim.concat([{kind:'juice'}]),b.tray)){ sim.push({kind:'juice'}); n++; }
       for(let i=0;i<n;i++) g.tapStation('juice',910,350);
     });
     // lixo e suco da espera (v7.5: a máquina no lugar da água)

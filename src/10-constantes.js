@@ -515,7 +515,7 @@ function tabelaDe(e){
 /* um empréstimo novo de v, pagando em dia: as parcelas e os juros somados */
 function simulaEmprestimo(v, j){ const t = tabelaDe(normEmprestimo({ resto:v, amort:Math.ceil(v / BANCO.parcelas), j })); return { parcelas:t, juros:t.reduce((a, p) => a + p, 0) - v }; }
 const CAIXA_MAX = 14;                                 // livro-caixa (v7.2): quantos dias da carreira ficam guardados
-const VERSAO = 'v8.6.2';                               // vai no resumo do Caixa
+const VERSAO = 'v8.6.3';                               // vai no resumo do Caixa
 const DIVULGA_DIA = 3;                                // antes disso, o movimento é o da inauguração (sem custo)
 function divulgaAberta(n){ return DEV.on || n >= DIVULGA_DIA; }   // no modo dev, desde o dia 1
 function divulgaOf(id){ return DIVULGA.find(d => d.id === id) || DIVULGA[1]; }
@@ -543,12 +543,17 @@ const ENDLESS = { n:0, groups:0, types:['estudante','vovos','familia','executiva
 /* Bia (v7.3): velocidade de base em px/s e o ganho de cada nível dos tênis */
 const BIA_SPEED = { base:300, tenis:1.1, corrida:1.2 };
 
+/* fila de ações da Bia (v8.6.3): 5 quadrinhos de base (eram 6) e o Livrinho de Sudoku acrescenta 3 */
+const FILA_ACOES = { base:5, sudoku:3 };
+function filaMax(up){ return FILA_ACOES.base + (up && up.sudoku ? FILA_ACOES.sudoku : 0); }
+
 const UPGRADES = [
   { id:'tenis',      name:'Tênis novos',          desc:'A Bia anda 10% mais rápido. Depois, libera os Tênis de corrida.', cost:150 },
   { id:'corrida',    name:'Tênis de corrida',     desc:'2º nível dos tênis: a Bia anda 20% mais rápido (em vez de 10%).', cost:350, req:'tenis' },
   { id:'maquina',    name:'Água da torneira',     desc:'Na calçada: torneira e copos americanos num caixote. Quem espera pede água; a Bia enche e leva, de graça, e quem bebe perde a paciência 40% mais devagar.', cost:80, devolve:100 },   // a Máquina de suco (R$ 180) até a v7.6: devolve a diferença
   { id:'cafeteira',  name:'Cafeteira de 2 bocas', desc:'O cafezinho devolve +2 corações.',             cost:200 },
   { id:'bandeja',    name:'Bandeja',              desc:'Leva 2 pratos, 3 bebidas, prato + bebida ou 2 pilhas de louça.', cost:220 },
+  { id:'sudoku',     name:'Livrinho de Sudoku',   desc:'A fila de ações da Bia ganha 3 quadrinhos (de 5 para 8 tarefas já marcadas).', cost:200 },   // v8.6.3
   { id:'ventilador', name:'Ventilador de teto',   desc:'A freguesia come 15% mais rápido.', cost:250 },   // v8.3.10: o cheiro da lixeira cheia voltou a incomodar
   { id:'triturador', name:'Triturador de lixo',   desc:'Mói os restos da lixeira: tira 1 do lixo a cada 30 s. Ainda é preciso esvaziar de vez em quando.', cost:180 },
   { id:'pratos',     name:'Jogo de pratos',       desc:'+1 prato limpo na cozinha (do dia 3 em diante). Leve quantos quiser, fora da melhoria do dia.', cost:300, multi:true }   // v8.3.6: acumula e não conta no limite de 1 por dia

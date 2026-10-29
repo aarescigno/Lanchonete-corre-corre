@@ -300,7 +300,7 @@ table.rank tr.me td{background:#fbe7a8}
 
     <div class="ov show" id="ov-menu">
       <div class="panel menu-panel">
-        <span class="vtag" id="vtag" aria-label="Versão 8.6.2">v8.6.2</span>
+        <span class="vtag" id="vtag" aria-label="Versão 8.6.3">v8.6.3</span>
         <h1 class="title">Lanchonete <br>Corre-Corre</h1>
         <p class="tag">Ajude a Bia a atender a freguesia da esquina antes que o cafezinho esfrie!</p>
         <div class="lbl" id="menu-dia">Carreira: dia 1</div>
@@ -510,7 +510,8 @@ table.rank tr.me td{background:#fbe7a8}
       <div class="panel">
         <h2>Versões</h2>
         <ul class="verlist">
-          <li><b>v8.6.2</b><span class="cur">versão atual</span><br>28/10/2026 &mdash; Abertura mais caprichada no hospital: a Rosa, deitada, ganha o corpo sob o cobertor (ombros, peito e os pés levantando o pano) e abre os olhos para a Bia enquanto fala; a cortina do leito desce até o chão. No banco, o pote de moedas não some mais quando a Bia chega: ela o deixa no chão.</li>
+          <li><b>v8.6.3</b><span class="cur">versão atual</span><br>29/10/2026 &mdash; Livrinho de Sudoku, uma melhoria nova da lojinha (R$ 200): a fila de ações da Bia ganha 3 quadrinhos. Em compensação, a fila de base ficou com 5 quadrinhos, e não mais 6; com o livrinho, são 8 tarefas já marcadas.</li>
+          <li><b>v8.6.2</b><br>28/10/2026 &mdash; Abertura mais caprichada no hospital: a Rosa, deitada, ganha o corpo sob o cobertor (ombros, peito e os pés levantando o pano) e abre os olhos para a Bia enquanto fala; a cortina do leito desce até o chão. No banco, o pote de moedas não some mais quando a Bia chega: ela o deixa no chão.</li>
           <li><b>v8.6.1</b><br>28/10/2026 &mdash; Abertura revista: a Rosa, a Bia, o Tonhão e o Bráulio ganham alturas que combinam em todas as cenas, e o fogão de casa desce para a cintura da Rosa. A Rosa mexe a panela por cima com a colher de pau, a Bia prova o molho com a colherinha na boca, e a pétala do segredo cai da mão da Rosa e deixa o molho dourado. A Rosa entra pela porta da Casa Aurora, o corredor do hospital ganha a porta da enfermaria, o banco tem fachada nova e o papel do APROVADO voa até a mão da Bia. As pessoas piscam, mexem a boca quando falam e olham para onde andam.<br><a href="versoes/v8.6.1.html" target="_blank" rel="noopener">Abrir a v8.6.1</a></li>
           <li><b>v8.6</b><br>28/10/2026 &mdash; Marmitas: o entregador de moto não senta mais no salão. Ele espera no balcão de retirada, no alto da calçada, e o pedido dele (pelo app Efood) vai sozinho ao Tonhão, que faz o prato numa marmita: ocupa uma boca do fogão, mas não usa prato limpo. A Bia (ou a Dani, com a tarefa nova) leva a marmita pronta ao balcão e o entregador paga na hora, com a gorjeta dos corações; a Efood fica com 15% do prato, e a embalagem custa R$ 2. No "+ marmita" da janela de pedidos dá para adiantar até 2 marmitas de PF, que ficam na prateleira do balcão e esfriam em 60 s; quem pede PF leva uma na hora.<br><a href="versoes/v8.6.html" target="_blank" rel="noopener">Abrir a v8.6</a></li>
           <li><b>v8.5.1</b><br>26/10/2026 &mdash; Abertura mais delicada no hospital: depois da última fala da Rosa, a cortina do leito se fecha, e uma cena nova mostra a Bia sozinha e triste no corredor, com a rosa da mãe na mão.<br><a href="versoes/v8.5.1.html" target="_blank" rel="noopener">Abrir a v8.5.1</a></li>
@@ -1088,7 +1089,7 @@ function tabelaDe(e){
 /* um empréstimo novo de v, pagando em dia: as parcelas e os juros somados */
 function simulaEmprestimo(v, j){ const t = tabelaDe(normEmprestimo({ resto:v, amort:Math.ceil(v / BANCO.parcelas), j })); return { parcelas:t, juros:t.reduce((a, p) => a + p, 0) - v }; }
 const CAIXA_MAX = 14;                                 // livro-caixa (v7.2): quantos dias da carreira ficam guardados
-const VERSAO = 'v8.6.2';                               // vai no resumo do Caixa
+const VERSAO = 'v8.6.3';                               // vai no resumo do Caixa
 const DIVULGA_DIA = 3;                                // antes disso, o movimento é o da inauguração (sem custo)
 function divulgaAberta(n){ return DEV.on || n >= DIVULGA_DIA; }   // no modo dev, desde o dia 1
 function divulgaOf(id){ return DIVULGA.find(d => d.id === id) || DIVULGA[1]; }
@@ -1116,12 +1117,17 @@ const ENDLESS = { n:0, groups:0, types:['estudante','vovos','familia','executiva
 /* Bia (v7.3): velocidade de base em px/s e o ganho de cada nível dos tênis */
 const BIA_SPEED = { base:300, tenis:1.1, corrida:1.2 };
 
+/* fila de ações da Bia (v8.6.3): 5 quadrinhos de base (eram 6) e o Livrinho de Sudoku acrescenta 3 */
+const FILA_ACOES = { base:5, sudoku:3 };
+function filaMax(up){ return FILA_ACOES.base + (up && up.sudoku ? FILA_ACOES.sudoku : 0); }
+
 const UPGRADES = [
   { id:'tenis',      name:'Tênis novos',          desc:'A Bia anda 10% mais rápido. Depois, libera os Tênis de corrida.', cost:150 },
   { id:'corrida',    name:'Tênis de corrida',     desc:'2º nível dos tênis: a Bia anda 20% mais rápido (em vez de 10%).', cost:350, req:'tenis' },
   { id:'maquina',    name:'Água da torneira',     desc:'Na calçada: torneira e copos americanos num caixote. Quem espera pede água; a Bia enche e leva, de graça, e quem bebe perde a paciência 40% mais devagar.', cost:80, devolve:100 },   // a Máquina de suco (R$ 180) até a v7.6: devolve a diferença
   { id:'cafeteira',  name:'Cafeteira de 2 bocas', desc:'O cafezinho devolve +2 corações.',             cost:200 },
   { id:'bandeja',    name:'Bandeja',              desc:'Leva 2 pratos, 3 bebidas, prato + bebida ou 2 pilhas de louça.', cost:220 },
+  { id:'sudoku',     name:'Livrinho de Sudoku',   desc:'A fila de ações da Bia ganha 3 quadrinhos (de 5 para 8 tarefas já marcadas).', cost:200 },   // v8.6.3
   { id:'ventilador', name:'Ventilador de teto',   desc:'A freguesia come 15% mais rápido.', cost:250 },   // v8.3.10: o cheiro da lixeira cheia voltou a incomodar
   { id:'triturador', name:'Triturador de lixo',   desc:'Mói os restos da lixeira: tira 1 do lixo a cada 30 s. Ainda é preciso esvaziar de vez em quando.', cost:180 },
   { id:'pratos',     name:'Jogo de pratos',       desc:'+1 prato limpo na cozinha (do dia 3 em diante). Leve quantos quiser, fora da melhoria do dia.', cost:300, multi:true }   // v8.3.6: acumula e não conta no limite de 1 por dia
@@ -1797,7 +1803,7 @@ class Waitress {
   get emptying(){ return !!(this.doing && this.doing.type === 'trash' && !this.hands.length && this.g.trash > 0); }   // esvaziando a lixeira (v8.5.2: a tampa abre e fecha)
   get washing(){ return !!(this.doing && this.doing.type === 'sink' && this.doing.wash > 0); }
   enqueue(a){
-    if (this.acts.length >= 6){ this.g.addText(this.x, this.y - 82, 'Fila cheia!', PAL.alerta, 15); return false; }
+    if (this.acts.length >= filaMax(this.g.up)){ this.g.addText(this.x, this.y - 82, 'Fila cheia!', PAL.alerta, 15); return false; }
     a.t0 = this.g.anim;   // para o selo da fila surgir com um pulinho
     this.acts.push(a);
     return true;
@@ -3341,7 +3347,7 @@ class Game {
     const xd = x - HUDX.dir;
     if (xd >= 832 && xd <= 891 && y >= 542) return { k:'pause' };
     if (xd >= 891 && xd <= 952 && y >= 542) return { k:'sound' };
-    for (let i=0;i<6;i++){
+    for (let i=0;i<filaMax(this.up);i++){
       const sx = 358 + i*52 + HUDX.fila;
       if (x >= sx && x < sx + 52 && y >= 542) return { k:'slot', i };
     }
@@ -3466,7 +3472,7 @@ const TREINO_PASSOS = [
     feito:g => g.treino.grupo.state === 'wantOrder' },
   { id:'anotar', alvo:g => [treinoMesaR(g)], tit:'Chamaram!',
     txt:'O balão com "!" é o grupo chamando a Bia. Toque na mesa para ela anotar o pedido.', feito:g => g.treino.grupo.state !== 'wantOrder' && g.treino.grupo.state !== 'reading' },
-  { id:'fila', ok:true, tela:true, alvo:g => [{ x:HUDX.dir + 696, y:546, w:96, h:52 }, { x:HUDX.fila + 354, y:546, w:316, h:52 }], tit:'Mãos e fila de ações',
+  { id:'fila', ok:true, tela:true, alvo:g => [{ x:HUDX.dir + 696, y:546, w:96, h:52 }, { x:HUDX.fila + 354, y:546, w:52 * filaMax(g.up) + 4, h:52 }], tit:'Mãos e fila de ações',
     txt:'A comanda está nas mãos da Bia (MÃOS, lá embaixo). Cada toque vira uma tarefa na FILA, ao lado: a Bia faz uma depois da outra. Um toque no quadrinho cancela a tarefa.' },
   { id:'cozinha', alvo:treinoSt('order'), tit:'Leve o pedido ao Tonhão',
     txt:'Toque na cozinha, no Chef Tonhão, para entregar a comanda.', feito:g => g.kitchen.progressFor(g.treino.grupo) >= 0 || !!treinoPrato(g) },
@@ -5102,7 +5108,7 @@ function drawHud(ctx,g,tm){
   // fila de ações (no meio da tela larga)
   ctx.save(); ctx.translate(HUDX.fila, 0);
   ctx.save(); ctx.translate(342,570); ctx.rotate(-Math.PI/2); txt(ctx,'FILA',0,0,11,'#cfc7b0','center',FB); ctx.restore();
-  for (let i=0;i<6;i++){
+  for (let i=0;i<filaMax(g.up);i++){
     const sx = 360 + i*52, a = g.bia.acts[i];
     glowSprite(ctx,g,'acao' + i,ctx => {
       rr(ctx,sx,548,48,46,8); fs(ctx,a ? PAL.creme : '#3b362e',2.4);
@@ -6369,7 +6375,7 @@ function buildTips(){
       c.save(); c.translate(51,44); c.scale(0.5,0.5); drawChair(c,0,0,1,false,true); c.restore();
       rr(c,38,32,26,13,2); fs(c,'#F7F4EB',2);
     }],
-    ['Toque nas mesas, na cozinha, nos pratos prontos, no cafezinho, nos sucos e na pia: a Bia faz tudo em ordem, na fila de ações, e um número em cada lugar mostra a vez dela. Dá para pedir 2 coisas na mesma mesa; para cancelar, toque no quadrinho da fila.', c => {
+    ['Toque nas mesas, na cozinha, nos pratos prontos, no cafezinho, nos sucos e na pia: a Bia faz tudo em ordem, na fila de ações (5 tarefas marcadas; o Livrinho de Sudoku, na lojinha, acrescenta 3), e um número em cada lugar mostra a vez dela. Dá para pedir 2 coisas na mesma mesa; para cancelar, toque no quadrinho da fila.', c => {
       [['hat',14,16],['dish',32,16],['coffee',50,16],['dirty',14,46],['ticket',32,46],['coin',50,46]].forEach(a => { rr(c,a[1]-10,a[2]-10,20,22,5); fs(c,PAL.creme,1.8); drawIcon(c,a[0],a[1],a[2]+1,0.6,'pastel'); });
     }],
     ['Ciclo da mesa: anote, leve à cozinha, busque o prato, entregue, cobre e recolha a louça. Na pia, um toque deixa a louça e outro, sem louça na mão, lava (2,5 s por pilha). Do dia 3 em diante, sem prato limpo o Tonhão espera; sozinha a Bia não dá conta: contrate ajuda.', c => {
@@ -6516,6 +6522,14 @@ function upgradeIcon(id){
       rr(c,-11,-14,22,16,3); fs(c,'#8E99A6',2); rr(c,-13,-17,26,5,2); fs(c,PAL.cromo,1.6);
       rr(c,-10,2,20,12,3); fs(c,PAL.inox,1.8);
       for (let i=0;i<3;i++){ c.save(); c.translate(0,8); c.rotate(i*TAU/3); rr(c,-1.2,-5,2.4,5,1); fs(c,PAL.cromoEsc,1); c.restore(); }
+    } else if (id === 'sudoku'){
+      // livrinho de Sudoku: capa azul com a lombada, a página com a grade 3×3 e alguns números
+      rr(c,-13,-16,26,32,3); fs(c,'#2F5D8C',2); c.fillStyle = '#244A70'; c.fillRect(-13,-16,5,32);
+      rr(c,-6,-12,16,16,1.5); fs(c,'#fff',1.4);
+      c.strokeStyle = PAL.tinta; c.lineWidth = 0.9;
+      for (let i=1;i<3;i++){ const d = -6 + i*5.33; c.beginPath(); c.moveTo(d,-12); c.lineTo(d,4); c.moveTo(-6,-12 + i*5.33); c.lineTo(10,-12 + i*5.33); c.stroke(); }
+      [[-3.3,-9,'5'],[7.4,-3.7,'3'],[2,1.7,'8']].forEach(n => txt(c,n[2],n[0],n[1],5.5,PAL.tinta,'center',FB));
+      txt(c,'SUDOKU',3,10,5,'#fff','center',FD);
     } else if (id === 'ventilador'){
       for (let i=0;i<4;i++){ c.save(); c.rotate(i*Math.PI/2 + 0.4); ell(c,0,-8,4.5,9); fs(c,i%2?PAL.cromo:'#e8edf1',1.8); c.restore(); }
       circ(c,0,0,3.5); fs(c,PAL.mostarda,1.8);
@@ -7536,7 +7550,7 @@ try { Rank.init(); } catch(e) {}
 game.setState('menu');
 if (!aberturaVista() && !DEV.on) abrirAbertura('auto');   // v8.5: a abertura toca sozinha uma vez
 window.__game = game;
-window.__lcc = { MARMITA, RETIRADA, marmitaMao, drawMarmita, prateleiraPos, EFOOD_COR, AVAL_BRAVO, QUEUE, setShopTab: v => { shopTab = v; buildShop(); }, TREINO, TREINO_PASSOS, TREINO_COR, Treino, treinoLugar, treinoPrimeiro, playCareer, buildMenu, introBanco, buildFalencia, BANCO, normEmprestimo, parcelaDe, devidoDe, jurosDe, tabelaDe, simulaEmprestimo, SEMANA, semanaOf, diaOf, FILA_JUSTA, PORTA, CHAIRS, PAT, CONTAS, INGRED, CARDAPIO, precoPrato, MAIS, PONTOS_ACAO, GORJETA, DRINK_PRICE, MOVIMENTO, movimentoSalao, DIVULGA, DIVULGA_DIA, divulgaOf, contasDia, bomGoal, SALAO, PONTOS, pontoOf, MESA, mesaBox, mesaPreco, salaoLugares, mesaProblema, salaoCaminho, salaoProblema, salaoOrdena, salaoAuto, salaoVaga, salaoPerto, salaoKit, salaoDevolucao, SALAO_SEMFIM, normSalao, setObst, OBST, pathOk, MAQUINA, BEBIDA_ESPERA, bebidaOf, MANUT, manutOf, manutChance, manutPreco, normManut, CLIMA, CLIMA_DIA, introManut, normPend, CALCADA, TW, HUDX, esperaAp, tableApproach, CRIT, STAFF, DANI_TASKS, DANI_HANDS, daniTaskOk, TRASH, WASH, payroll, FOLHA_CORTE, folhaCorta, folhaCortes, folhaItens, listaE, pratosDe, couvertEffect, couvertOk, ambienteEffect, dishStock, normSave, Helper, JUICE, KITCHEN_SLOTS, handLayout, trayOk, Game, Group, Table, Kitchen, Waitress, BIA_SPEED, DAYS, UPGRADES, CUSTOMER_TYPES, LAYOUT, PAL, Sfx, findPath, render, Rank, sortRows, cleanName, normName, CMD, ENDLESS, VIP, MULTA, rk, renderRank, openRank, closeRank, LS, lsGet, lsSet, loadSave, DEV, saveKey, devSync, divulgaAberta, CAIXA_MAX, VERSAO, normCaixa, caixaResumo, caixaTotais, copyText, AVAL, AVAL_CRIT, AVAL_BRAVO, avalMenu, normAval, avalNota, avalMedias, avalGeral, avalMovimento, avalComentario, fmtNota, notaFaixa, gurugolCaixa, AVAL_COM, normAvalCom, buildGurugol, ABERTURA, Abertura, AB_CENAS, AB_ALT, AB_BASE, abEsc, AB_VIVO, aberturaVista, aberturaSom, drawAbertura, abrirAbertura, aberturaAtual: () => abertura };
+window.__lcc = { FILA_ACOES, filaMax, MARMITA, RETIRADA, marmitaMao, drawMarmita, prateleiraPos, EFOOD_COR, AVAL_BRAVO, QUEUE, setShopTab: v => { shopTab = v; buildShop(); }, TREINO, TREINO_PASSOS, TREINO_COR, Treino, treinoLugar, treinoPrimeiro, playCareer, buildMenu, introBanco, buildFalencia, BANCO, normEmprestimo, parcelaDe, devidoDe, jurosDe, tabelaDe, simulaEmprestimo, SEMANA, semanaOf, diaOf, FILA_JUSTA, PORTA, CHAIRS, PAT, CONTAS, INGRED, CARDAPIO, precoPrato, MAIS, PONTOS_ACAO, GORJETA, DRINK_PRICE, MOVIMENTO, movimentoSalao, DIVULGA, DIVULGA_DIA, divulgaOf, contasDia, bomGoal, SALAO, PONTOS, pontoOf, MESA, mesaBox, mesaPreco, salaoLugares, mesaProblema, salaoCaminho, salaoProblema, salaoOrdena, salaoAuto, salaoVaga, salaoPerto, salaoKit, salaoDevolucao, SALAO_SEMFIM, normSalao, setObst, OBST, pathOk, MAQUINA, BEBIDA_ESPERA, bebidaOf, MANUT, manutOf, manutChance, manutPreco, normManut, CLIMA, CLIMA_DIA, introManut, normPend, CALCADA, TW, HUDX, esperaAp, tableApproach, CRIT, STAFF, DANI_TASKS, DANI_HANDS, daniTaskOk, TRASH, WASH, payroll, FOLHA_CORTE, folhaCorta, folhaCortes, folhaItens, listaE, pratosDe, couvertEffect, couvertOk, ambienteEffect, dishStock, normSave, Helper, JUICE, KITCHEN_SLOTS, handLayout, trayOk, Game, Group, Table, Kitchen, Waitress, BIA_SPEED, DAYS, UPGRADES, CUSTOMER_TYPES, LAYOUT, PAL, Sfx, findPath, render, Rank, sortRows, cleanName, normName, CMD, ENDLESS, VIP, MULTA, rk, renderRank, openRank, closeRank, LS, lsGet, lsSet, loadSave, DEV, saveKey, devSync, divulgaAberta, CAIXA_MAX, VERSAO, normCaixa, caixaResumo, caixaTotais, copyText, AVAL, AVAL_CRIT, AVAL_BRAVO, avalMenu, normAval, avalNota, avalMedias, avalGeral, avalMovimento, avalComentario, fmtNota, notaFaixa, gurugolCaixa, AVAL_COM, normAvalCom, buildGurugol, ABERTURA, Abertura, AB_CENAS, AB_ALT, AB_BASE, abEsc, AB_VIVO, aberturaVista, aberturaSom, drawAbertura, abrirAbertura, aberturaAtual: () => abertura };
 window.requestAnimationFrame(frame);
 
 })();

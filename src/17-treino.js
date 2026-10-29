@@ -32,7 +32,7 @@ const TREINO_PASSOS = [
     feito:g => g.treino.grupo.state === 'wantOrder' },
   { id:'anotar', alvo:g => [treinoMesaR(g)], tit:'Chamaram!',
     txt:'O balão com "!" é o grupo chamando a Bia. Toque na mesa para ela anotar o pedido.', feito:g => g.treino.grupo.state !== 'wantOrder' && g.treino.grupo.state !== 'reading' },
-  { id:'fila', ok:true, tela:true, alvo:g => [{ x:HUDX.dir + 696, y:546, w:96, h:52 }, { x:HUDX.fila + 354, y:546, w:316, h:52 }], tit:'Mãos e fila de ações',
+  { id:'fila', ok:true, tela:true, alvo:g => [{ x:HUDX.dir + 696, y:546, w:96, h:52 }, { x:HUDX.fila + 354, y:546, w:52 * filaMax(g.up) + 4, h:52 }], tit:'Mãos e fila de ações',
     txt:'A comanda está nas mãos da Bia (MÃOS, lá embaixo). Cada toque vira uma tarefa na FILA, ao lado: a Bia faz uma depois da outra. Um toque no quadrinho cancela a tarefa.' },
   { id:'cozinha', alvo:treinoSt('order'), tit:'Leve o pedido ao Tonhão',
     txt:'Toque na cozinha, no Chef Tonhão, para entregar a comanda.', feito:g => g.kitchen.progressFor(g.treino.grupo) >= 0 || !!treinoPrato(g) },

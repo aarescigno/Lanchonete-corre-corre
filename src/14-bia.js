@@ -68,7 +68,7 @@ class Waitress {
   get emptying(){ return !!(this.doing && this.doing.type === 'trash' && !this.hands.length && this.g.trash > 0); }   // esvaziando a lixeira (v8.5.2: a tampa abre e fecha)
   get washing(){ return !!(this.doing && this.doing.type === 'sink' && this.doing.wash > 0); }
   enqueue(a){
-    if (this.acts.length >= 6){ this.g.addText(this.x, this.y - 82, 'Fila cheia!', PAL.alerta, 15); return false; }
+    if (this.acts.length >= filaMax(this.g.up)){ this.g.addText(this.x, this.y - 82, 'Fila cheia!', PAL.alerta, 15); return false; }
     a.t0 = this.g.anim;   // para o selo da fila surgir com um pulinho
     this.acts.push(a);
     return true;

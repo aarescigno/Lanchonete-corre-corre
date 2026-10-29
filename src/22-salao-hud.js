@@ -265,7 +265,7 @@ function drawHud(ctx,g,tm){
   // fila de ações (no meio da tela larga)
   ctx.save(); ctx.translate(HUDX.fila, 0);
   ctx.save(); ctx.translate(342,570); ctx.rotate(-Math.PI/2); txt(ctx,'FILA',0,0,11,'#cfc7b0','center',FB); ctx.restore();
-  for (let i=0;i<6;i++){
+  for (let i=0;i<filaMax(g.up);i++){
     const sx = 360 + i*52, a = g.bia.acts[i];
     glowSprite(ctx,g,'acao' + i,ctx => {
       rr(ctx,sx,548,48,46,8); fs(ctx,a ? PAL.creme : '#3b362e',2.4);
