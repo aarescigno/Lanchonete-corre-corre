@@ -44,19 +44,19 @@ g.save=L.normSave({dia:3,bank:500}); g.up=g.save.up; g.buildTables(); g.startDay
   gr.perdFila=2; gr.perdMesa=1; gr.pratoQ=4.2; gr.corCerta=true; gr.coffee=true;
   g.avaliar(gr,0,0); const r=g.avals[0].s;
   ok(r[0]===3.5,'espera: 2 corações perdidos lá fora tiram 1,5');
-  ok(r[1]===4.8,'agilidade: 1 coração na mesa (−0,75) e a cor certa (+0,5)');
+  ok(r[1]===4.3,'agilidade: 1 coração na mesa (−0,75); a cor certa não soma mais (v8.6.7)');
   ok(r[2]===4.2 && r[3]===4.5,'prato e cardápio');
   ok(r[4]===A.amb.base+A.amb.cafe,'ambiente: a base e o cafezinho');
   const v=g.avals[0].r, d=v.map((x,i)=>x-L.avalEscala(r[i],3)), h=d[0];   // r[0] é o menor: não passa do teto + folga
-  ok(v.every((x,i)=>Math.abs(x-Math.min(3+A.humor.folga,L.avalEscala(r[i],3)+h))<0.11) && h>=-A.humor.var-0.06 && h<=A.humor.var+A.humor.extra[1]+0.06,'no Gurugol: a escala da Garagem mais o humor do cliente, até 3,8 ('+v+')');
-  { let mx=0; for(let i=0;i<300;i++){ g.avaliar(gr,0,0); mx=Math.max(mx,...g.avals[g.avals.length-1].r); } g.avals.length=1; ok(mx<=3+A.humor.folga+1e-9,'nenhum critério passa de 3,8 na Garagem ('+mx+')'); }
+  ok(v.every((x,i)=>Math.abs(x-Math.min(3+A.humor.folga*2,L.avalEscala(r[i],3)+h))<0.11) && h>=-A.humor.var*2-0.06 && h<=(A.humor.var+A.humor.extra[1])*2+0.06,'no Gurugol: a escala da Garagem mais o humor do cliente, até 3,8 ('+v+')');
+  { let mx=0; for(let i=0;i<300;i++){ g.avaliar(gr,0,0); mx=Math.max(mx,...g.avals[g.avals.length-1].r); } g.avals.length=1; ok(mx<=3+A.humor.folga*2+1e-9,'nenhum critério passa de 3,8 na Garagem ('+mx+')'); }
   gr.corrente=true; gr.capricho=true; gr.perdMesa=0; g.avaliar(gr,0,0); ok(g.avals[1].s[1]===5,'agilidade não passa de 5');
   gr.perdMesa=0; gr.state='ordered'; gr.hearts=3; gr.perdMesa=2; gr.gain(1); ok(gr.perdMesa===1,'coração devolvido na mesa compensa um perdido');
   gr.state='queue'; gr.hearts=3; gr.perdFila=2; gr.gain(1); ok(gr.perdFila===1,'e na espera também');
   g.trash=L.TRASH.cap; g.avaliar(gr,0,0); ok(g.avals[2].s[4]===A.amb.base+A.amb.cafe+A.amb.lixo,'lixeira cheia tira do ambiente'); g.trash=0;
   const n0=g.avals.length; gr.hearts=1; gr.perdFila=5; gr.pratoQ=0; g.angryLeave(gr); const rb=g.avals[n0].r;
   ok(g.avals[n0].s[0]===1.3 && rb[0]===1.2,'na Garagem, a espera 1,3 do serviço vira 1,2 (sem humor para quem saiu bravo)');
-  ok(g.avals.length===n0+1 && rb[1]===1 && rb[2]===1,'quem desiste na fila: espera baixa, agilidade e prato 1');
+  ok(g.avals.length===n0+1 && rb.slice(1).every(v=>v===null),'quem desiste na fila avalia só a espera (v8.6.7): os outros critérios ficam null');
   ok(L.AVAL_BRAVO.fila.includes(g.avals[n0].txt),'e reclama de ter desistido'); }
 { g.kitchen.submit({group:g.spawn({type:'estudante',color:0,vip:false,av:true}),table:null}); g.kitchen.clean=9; g.kitchen.queue[0].time=0.01; g.kitchen.update(0.1);
   const p=g.kitchen.plates.find(Boolean), fx=A.prato[g.save.equipe.tonhao];
@@ -73,6 +73,33 @@ g.save=L.normSave({dia:3,bank:500}); g.up=g.save.up; g.buildTables(); g.startDay
   g.kitchen.plates[0]={id:99,table:null,group:gp,dish:'pf',slot:0,age:L.PRATO.quente+L.PRATO.rampa,crit:false,q:4,vip:false}; g.bia.perform({type:'plate',pid:99});
   ok(Math.abs(g.bia.hands[0].q-(4-L.PRATO.perde))<1e-9 && g.bia.hands[0].fria,'o prato que esfriou de vez perde 1,5 e vem "fria"'); }
 
+// v8.6.7: cada um avalia só o que viveu (null: não viu); médias por critério com contagem; humor pela faixa do ponto; nota mínima
+{ const m=L.avalMedias([[5,4,null,null,null],[3,4,5,2,1],[null,null,null,null,3]]);
+  ok(m.n===3 && m.cnt.join()==='2,2,1,1,2' && m.crit.join()==='4,4,5,2,2' && Math.abs(m.nota-3.4)<1e-9,'médias por critério só de quem viu, e a nota é a média das médias ('+m.crit+' '+m.nota+')');
+  ok(L.avalMedias([[5,null,null,null,null]]).crit[1]===null && L.avalMedias([[5,null,null,null,null]]).nota===5,'critério que ninguém viu fica null e não entra na nota');
+  ok(L.avalNota([4,null,2,null,null])===3,'nota de uma avaliação: só os critérios vistos');
+  ok(L.normAval([[3,null,2.44,1,5],[1,2,3]]).length===1 && L.normAval([[3,null,2.44,1,5]])[0].join()==='3,,2.4,1,5','normAval guarda null (e o save antigo, sem null, continua valendo)');
+  ok(L.avalComentario([null,null,null,null,2])!=='' && L.AVAL_CRIT[4].ruim.includes(L.avalComentario([null,null,null,null,2])),'comentário com critérios null'); }
+{ g.save=L.normSave({dia:3,bank:500}); g.up=g.save.up; g.buildTables(); g.startDay(3); g.begin();
+  const quem=(estado,extra)=>{ const gr=g.spawn({type:'estudante',color:0,vip:false,av:true}); Object.assign(gr,extra||{}); gr.state=estado; gr.perdFila=1; gr.perdMesa=1; gr.pratoQ=3; g.avals.length=0; g.angryLeave(gr); return g.avals[0]&&g.avals[0].r.map(v=>v===null?'-':'x').join(''); };
+  ok(quem('queue')==='x----','bravo na fila: só a Espera');
+  ok(quem('wantOrder')==='xx--x','bravo antes do pedido: Espera, Agilidade e Ambiente');
+  ok(quem('ordered')==='xx-xx','bravo depois do pedido, sem comer: mais o Cardápio');
+  ok(quem('wantBill')==='xxxxx' && quem('eating')==='xxxxx','bravo que já comeu: os 5');
+  ok(quem('retirada',{retira:true})==='xx---','entregador bravo (sem a marmita): Espera e Agilidade');
+  { const gr=g.spawn({type:'estudante',color:0,vip:false,av:true}); gr.retira=true; gr.pratoQ=4; gr.perdMesa=0; g.avals.length=0; g.avaliar(gr,0,0); ok(g.avals[0].r.map(v=>v===null?'-':'x').join('')==='xxx--','entregador que levou a marmita: Espera, Agilidade e Comida'); }
+  { const gr=g.spawn({type:'estudante',color:0,vip:false,av:true}); gr.pratoQ=4; g.avals.length=0; g.avaliar(gr,0,0); ok(g.avals[0].r.every(v=>v!==null),'quem comeu e pagou: os 5'); }
+  // humor pela faixa do ponto: no Terraço (teto 5), limite 5; a Garagem (teto 3) segue com folga de 0,8
+  const lim=(nivel)=>{ Object.defineProperty(g,'ponto',{get:()=>({nivel}),configurable:true}); const gr=g.spawn({type:'estudante',color:0,vip:false,av:true}); gr.pratoQ=5; gr.corCerta=true; gr.corrente=true; gr.capricho=true; let mx=0,mn=9; g.avals.length=0; for(let i=0;i<400;i++){ g.avaliar(gr,0,0); const r=g.avals[g.avals.length-1].r; mx=Math.max(mx,r[0]); mn=Math.min(mn,r[0]); } return [mx,mn]; };
+  const t=lim(4); ok(t[0]===5 && t[1]<5 && t[1]>=5-A.humor.var*4-0.06,'Terraço: o humor chega a 5 e desce em fração da faixa ('+t+')');
+  const b=lim(3); ok(b[0]<=5 && b[0]>4.3 && b[1]<4.3,'Avenida Brasil: o encantado passa do teto 4,3 (até 5) e o humor ruim fica abaixo dele ('+b+')');
+  delete g.ponto; }
+{ const mn=[3,3.7,4.3,5].map(t=>L.avalMinimo({nivel:[3,3.7,4.3,5].indexOf(t)+1}));
+  ok(mn.join()==='2.9,3.6,4.1,4.8','nota mínima: 95% do teto, arredondada para cima ('+mn+')'); }
+{ // a chance de encantar sobe com a cor certa, a corrente e o caprichado
+  const taxa=(f)=>{ const gr=g.spawn({type:'estudante',color:0,vip:false,av:true}); gr.pratoQ=5; f(gr); gr.perdMesa=0; gr.perdFila=0; let n=0; const base=L.avalEscala(5,3); g.avals.length=0; for(let i=0;i<2000;i++){ g.avaliar(gr,0,0); const r=g.avals[g.avals.length-1].r[3]; if(r>L.avalEscala(g.avals[g.avals.length-1].s[3],3)+A.humor.var*2+0.15) n++; } g.avals.length=0; return n/2000; };
+  const sem=taxa(()=>{}), com=taxa(gr=>{ gr.corCerta=true; gr.corrente=true; gr.capricho=true; });
+  ok(com>sem+0.15,'cor certa, corrente e caprichado aumentam a chance de encantar ('+sem.toFixed(2)+' → '+com.toFixed(2)+')'); }
 // só a carreira avalia
 { g.save=L.normSave({bank:500}); g.up=g.save.up; g.buildTables(); g.resetDay(0); g.setState('playing');
   const gr=g.spawn({type:'estudante',color:0,vip:false,av:true}); g.avaliar(gr,0,0); ok(g.avals.length===0,'Turno sem fim não avalia'); }
@@ -90,7 +117,7 @@ let st=0; while(g.state==='playing'&&st<30000){ bot(); g.update(0.05); st++; }
   const gb=els['end-stats'].children[0];
   ok(gb.className==='guru' && /^Gurugol: .*Espera por mesa \d,\d/.test(gb.getAttribute('aria-label')) && /^Hoje, em \d+ avaliações: espera por mesa/.test(els['end-aval'].title),'fim do dia: a caixa do Gurugol à esquerda dos quadros');
   ok(gb.children.filter(c=>c.className==='guru-crit').length===5,'uma barra por critério');
-  ok(L.notaFaixa(3.94)==='pura' && L.notaFaixa(3.96)==='prata' && L.notaFaixa(4.44)==='prata' && L.notaFaixa(4.5)==='ouro' && L.notaFaixa(4.8)==='ouro' && L.notaFaixa(4.85)==='diamante','faixas: pura, prata (4 a 4,4), ouro (4,5 a 4,8) e diamante (acima de 4,8)');
+  ok(L.notaFaixa(2.94)==='pura' && L.notaFaixa(2.96)==='bronze' && L.notaFaixa(3)==='bronze' && L.notaFaixa(3.94)==='bronze' && L.notaFaixa(3.96)==='prata' && L.notaFaixa(4.44)==='prata' && L.notaFaixa(4.5)==='ouro' && L.notaFaixa(4.8)==='ouro' && L.notaFaixa(4.85)==='diamante','faixas: pura, bronze (3 a 3,9), prata (4 a 4,4), ouro (4,5 a 4,8) e diamante (acima de 4,8)');
   ok(/Gurugol sem nota \(\d+\/8\)/.test(L.caixaResumo(g.save)),'resumo do caixa: sem nota ainda'); }
 g.save.aval=L.normAval(cinco(30));
 ok(g.gurugol.nota===5 && /Gurugol 5,0 \(espera por mesa 5,0/.test(L.caixaResumo(g.save)),'com 8 ou mais: a nota no HUD e no resumo');

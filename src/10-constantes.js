@@ -468,12 +468,19 @@ function movimentoSalao(lugares){ return 1 + MOVIMENTO.porLugar * Math.max(0, lu
    O movimento vai pela fração do teto: neutro na metade (2 ★ na Garagem) e +mov no teto.
    v8.6.6, decoração no ambiente: a base caiu de 3 para 2 (a Garagem pelada é "meio sem graça"); cada planta à mostra
    (DECOR, grupo plantas) soma amb.planta, cada peça do cantinho da Rosa amb.rosa, e quem senta numa mesa com a toalha
-   xadrez, amb.toalha. Sem enfeite, a TV, o som, a torneira, o ventilador e o cafezinho levam o ambiente só até 4,5 */
+   xadrez, amb.toalha. Sem enfeite, a TV, o som, a torneira, o ventilador e o cafezinho levam o ambiente só até 4,5
+   v8.6.7, as regras da nota: (1) cada um avalia só o que viveu, e o critério que não viu fica null (quem desistiu na fila só dá a
+   Espera; quem saiu bravo antes do pedido, Espera, Agilidade e Ambiente; depois do pedido, sem comer, mais o Cardápio; quem comeu,
+   os 5; o entregador, Espera, Agilidade e Comida, e sem a marmita só Espera e Agilidade); cada critério tem a sua média, com a sua
+   contagem, e a nota é a média das médias. (2) O humor e os encantados são fração da faixa do ponto (teto − 1), não um valor
+   absoluto. (3) A cor certa, a corrente e o caprichado não somam mais na Agilidade: aumentam a chance de encantar (AVAL.bonus).
+   (4) A nota mínima para sair de um ponto é AVAL.minimo (95%) do teto (avalMinimo), que só vale de verdade na etapa 3 */
 const AVAL = {
   max:30, min:8, porDia:4, porCoracao:0.75, mov:0.1,
   teto:[3, 3.7, 4.3, 5],
-  humor:{ var:0.3, encanta:0.2, extra:[0.6, 1.2], folga:0.8 },
-  bonus:{ cor:0.5, corrente:0.5, crit:0.5, max:1.5 },
+  humor:{ var:0.15, encanta:0.15, extra:[0.3, 0.6], folga:0.4 },   // frações da faixa do ponto (teto − 1)
+  bonus:{ cor:0.1, corrente:0.1, crit:0.1 },   // v8.6.7: chance a mais de o cliente sair encantado
+  minimo:0.95,
   prato:[[2.5, 4.5], [3, 4.7], [3.5, 5]],
   menu:{ base:1.5, porPrato:0.75 },
   amb:{ base:2, tv:0.5, som:0.5, maquina:0.5, ventilador:0.5, cafe:0.5, couvert:1, lixo:-1, planta:0.3, rosa:0.25, toalha:0.5 }
@@ -492,10 +499,10 @@ const AVAL_CRIT = [
 ];
 /* a nota do cardápio: pelos pratos que a cozinha faz (na Garagem, os 4 do CARDAPIO) */
 function avalMenu(){ return clamp(AVAL.menu.base + AVAL.menu.porPrato * Object.keys(CARDAPIO).length, 1, 5); }
-/* as avaliações guardadas: [espera, agil, prato, menu, amb], com uma casa decimal, as últimas AVAL.max */
+/* as avaliações guardadas: [espera, agil, prato, menu, amb], com uma casa decimal, as últimas AVAL.max; null (v8.6.7) é o critério que o cliente não viu */
 function normAval(a){
   return (Array.isArray(a) ? a : []).filter(r => Array.isArray(r) && r.length === AVAL_CRIT.length).slice(-AVAL.max)
-    .map(r => r.map(v => clamp(Math.round((+v || 1) * 10) / 10, 1, 5)));
+    .map(r => r.map(v => v == null ? null : clamp(Math.round((+v || 1) * 10) / 10, 1, 5)));
 }
 /* os últimos comentários (v8.4.2, aba Gurugol da lojinha): { d: o dia, n: a nota ×10, t: o texto, k: o tipo do grupo, v: VIP } */
 const AVAL_COM = 30;
@@ -503,13 +510,18 @@ function normAvalCom(a){
   return (Array.isArray(a) ? a : []).filter(c => c && typeof c === 'object' && typeof c.t === 'string' && c.t).slice(-AVAL_COM)
     .map(c => { const o = { d:Math.max(1, Math.round(+c.d) || 1), n:clamp(Math.round(+c.n) || 10, 10, 50), t:c.t.slice(0, 60), k:CUSTOMER_TYPES[c.k] ? c.k : 'estudante' }; if (c.v) o.v = 1; return o; });
 }
-function avalNota(r){ return r.reduce((a, v) => a + v, 0) / r.length; }
-/* médias de uma lista de avaliações: a nota e cada critério (null se a lista estiver vazia) */
+/* a nota de uma avaliação: a média dos critérios que o cliente viu */
+function avalNota(r){ const v = r.filter(x => x != null); return v.reduce((a, x) => a + x, 0) / (v.length || 1); }
+/* médias de uma lista de avaliações (null se vazia): n (avaliações), crit (a média de cada critério, null se ninguém o viu),
+   cnt (quantas avaliações viram cada critério) e a nota, a média das médias dos critérios vistos */
 function avalMedias(lista){
   if (!lista.length) return null;
-  const crit = AVAL_CRIT.map((c, i) => lista.reduce((a, r) => a + r[i], 0) / lista.length);
-  return { n:lista.length, nota:avalNota(crit), crit };
+  const cnt = AVAL_CRIT.map((c, i) => lista.reduce((a, r) => a + (r[i] == null ? 0 : 1), 0));
+  const crit = AVAL_CRIT.map((c, i) => cnt[i] ? lista.reduce((a, r) => a + (r[i] == null ? 0 : r[i]), 0) / cnt[i] : null);
+  return { n:lista.length, nota:avalNota(crit), crit, cnt };
 }
+/* a nota mínima para sair de um ponto (v8.6.7): AVAL.minimo do teto, arredondada para cima em uma casa */
+function avalMinimo(ponto){ return Math.ceil(Math.round(avalTeto(ponto) * AVAL.minimo * 1000) / 100) / 10; }
 /* a nota da lanchonete (as médias das últimas AVAL.max), ou null antes das AVAL.min primeiras */
 function avalGeral(lista){ return lista.length >= AVAL.min ? avalMedias(lista) : null; }
 /* o teto do ponto (v8.6.4): a nota que o serviço perfeito vale lá */
@@ -545,8 +557,8 @@ function avalComentario(r, bravo, lixo, nivel, decor, fria){
   if (bom && AVAL_SIMPLES[(nivel || 1) - 1] && Math.random() < 0.3) return pick(AVAL_SIMPLES[(nivel || 1) - 1]);
   // v8.6.6: com o ambiente bom (4 ou mais), às vezes elogia um enfeite que viu (decor: os ids, e 'toalha')
   if (bom && decor && decor.length && r[AVAL_CRIT.findIndex(c => c.id === 'amb')] >= 4 && Math.random() < 0.35) return AVAL_DECOR[pick(decor)];
-  let k = 0;
-  r.forEach((v, i) => { if (bom ? v > r[k] : v < r[k]) k = i; });
+  let k = r.findIndex(v => v != null);
+  r.forEach((v, i) => { if (v != null && (bom ? v > r[k] : v < r[k])) k = i; });
   if (!bom && lixo && AVAL_CRIT[k].id === 'amb') return 'Que cheiro de lixo!';
   if (!bom && fria && AVAL_CRIT[k].id === 'prato') return 'Comida meio fria.';   // v8.6.8: o prato esfriou no balcão
   return pick(AVAL_CRIT[k][bom ? 'bom' : 'ruim']);

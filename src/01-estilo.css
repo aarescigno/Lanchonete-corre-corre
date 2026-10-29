@@ -72,17 +72,18 @@ p{margin:calc(var(--u)*6) 0;font-size:max(12px,calc(var(--u)*16));line-height:1.
 .guru-num{font-family:var(--fd);font-weight:400;font-size:max(26px,calc(var(--u)*34));color:#F7EFD8;-webkit-text-stroke:calc(var(--u)*1) var(--tinta);paint-order:stroke fill}
 .guru-est{font-size:max(16px,calc(var(--u)*20));color:var(--mostarda)}
 .guru small{display:block;text-align:center;font-size:max(9px,calc(var(--u)*10));line-height:1.1;color:#cfc7b0;margin-top:calc(var(--u)*1)}
-.guru-num.prata,.guru-num.ouro,.guru-num.diamante{-webkit-text-stroke:0;color:transparent;-webkit-background-clip:text;background-clip:text;background-size:220% 100%;filter:drop-shadow(calc(var(--u)*1.5) calc(var(--u)*1.5) 0 #0B1424)}
+.guru-num.bronze,.guru-num.prata,.guru-num.ouro,.guru-num.diamante{-webkit-text-stroke:0;color:transparent;-webkit-background-clip:text;background-clip:text;background-size:220% 100%;filter:drop-shadow(calc(var(--u)*1.5) calc(var(--u)*1.5) 0 #0B1424)}
+.guru-num.bronze{background-image:linear-gradient(100deg,#7A4417 0%,#E8A66B 22%,#B26A2E 40%,#F8CFA0 52%,#A55E25 66%,#DB9A5E 85%,#6B3A12 100%)}
 .guru-num.prata{background-image:linear-gradient(100deg,#8D96A0 0%,#E9EEF2 22%,#9AA4AE 40%,#FFFFFF 52%,#A7B0B9 66%,#D8DEE4 85%,#7F8892 100%)}
 .guru-num.ouro{background-image:linear-gradient(100deg,#A8741A 0%,#FFE48A 22%,#D9A22B 40%,#FFF6C8 52%,#C98E1F 66%,#FFD75E 85%,#9C6914 100%)}
 .guru-num.diamante{background-image:linear-gradient(100deg,#9FE7FF 0%,#FFFFFF 15%,#C7B8FF 30%,#E6FBFF 45%,#FFFFFF 52%,#A7F3E4 65%,#FFD6F5 80%,#B9EFFF 100%);filter:drop-shadow(0 0 calc(var(--u)*5) rgba(190,240,255,.85)) drop-shadow(calc(var(--u)*1.5) calc(var(--u)*1.5) 0 #0B1424)}
-.guru-num.pronto.prata,.guru-num.pronto.ouro{animation:guruReflexo 2.4s ease-in-out infinite}
+.guru-num.pronto.bronze,.guru-num.pronto.prata,.guru-num.pronto.ouro{animation:guruReflexo 2.4s ease-in-out infinite}
 .guru-num.pronto.diamante{animation:guruReflexo 1.6s linear infinite}
 @keyframes guruReflexo{0%{background-position:100% 0}100%{background-position:-120% 0}}
 .guru-brilho{position:absolute;pointer-events:none;font-size:max(10px,calc(var(--u)*13));color:#FFF3B0;text-shadow:0 0 4px #FFE27A;animation:guruBrilho 1.6s ease-in-out infinite;opacity:0}
 .guru-num.diamante~.guru-brilho{color:#FFFFFF;text-shadow:0 0 5px #9FE7FF,0 0 9px #C7B8FF}
 @keyframes guruBrilho{0%,100%{opacity:0;transform:scale(.3) rotate(0)}45%{opacity:1;transform:scale(1.15) rotate(45deg)}70%{opacity:.6;transform:scale(.8) rotate(80deg)}}
-@media (prefers-reduced-motion:reduce){.guru-num.pronto.prata,.guru-num.pronto.ouro,.guru-num.pronto.diamante{animation:none;background-position:30% 0}.guru-brilho{animation:none;opacity:.9}}
+@media (prefers-reduced-motion:reduce){.guru-num.pronto.bronze,.guru-num.pronto.prata,.guru-num.pronto.ouro,.guru-num.pronto.diamante{animation:none;background-position:30% 0}.guru-brilho{animation:none;opacity:.9}}
 .stats .tot{border-top:2px solid var(--tinta);padding-top:2px}
 .cx-aval{display:flex;flex-direction:column;gap:2px;margin-top:calc(var(--u)*6)}
 .aval{display:block}
