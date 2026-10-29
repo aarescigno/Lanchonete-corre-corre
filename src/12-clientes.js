@@ -127,7 +127,7 @@ function normSave(s){
   out.equipe = normEquipe(s.equipe, pontoOf(out.salao.ponto));
   // v8.6.4: as notas do Gurugol de antes (de 1 a 5 pelo serviço) passam para a escala da Garagem, uma vez só (avalEsc)
   if (s.avalEsc !== 2){
-    const t = AVAL.teto[0], esc = v => Math.round(avalEscala(v, t) * 10) / 10;
+    const t = AVAL.teto[0], esc = v => v == null ? null : Math.round(avalEscala(v, t) * 10) / 10;
     out.aval = normAval(out.aval.map(r => r.map(esc)));
     out.avalCom.forEach(c => { c.n = Math.round(esc(c.n / 10) * 10); });
     out.caixa.forEach(r => { if (r.av) r.av = Math.round(esc(r.av / 10) * 10); });
