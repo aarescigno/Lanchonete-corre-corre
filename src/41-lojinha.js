@@ -560,7 +560,7 @@ function caixaResumo(save){
   const ga = avalGeral(save.aval);
   out.push('Agora: dia ' + save.dia + ' · ' + fmt(save.bank) + (save.emp.resto ? ' (banco: faltam ' + save.emp.resto + ')' : '') + ' · lucro acumulado ' + save.lucroTot + ' · Tonhão nível ' + (eq.tonhao + 1) + ', ' + (eq.dani ? 'Dani nível ' + eq.dani : 'sem Dani') + (eq.couvert ? ', couvert' : '') + (eq.tv ? ', TV' : '') + (eq.som ? ', som' : '') +
     ' · ' + divulgaOf(save.divulga).name.toLowerCase() + ' · ' + pontoOf(sal.ponto).nome.replace(/ da .*/, '').toLowerCase() + ' com ' + sal.mesas.length + ' mesas e ' + salaoLugares(sal.mesas) + ' lugares · melhorias: ' + (ups.join(', ') || 'nenhuma') +
-    ' · Gurugol ' + (ga ? fmtNota(ga.nota) + ' (' + AVAL_CRIT.map((c, i) => c.nome.toLowerCase() + ' ' + fmtNota(ga.crit[i])).join(', ') + ')' : 'sem nota (' + save.aval.length + '/' + AVAL.min + ')'));
+    ' · Gurugol ' + (ga ? fmtNota(ga.nota) + ' (' + AVAL_CRIT.map((c, i) => c.nome.toLowerCase() + ' ' + fmtNota(ga.crit[i]) + ' em ' + ga.cnt[i]).join(', ') + ')' : 'sem nota (' + save.aval.length + '/' + AVAL.min + ')'));
   return out.join('\n');
 }
 /* copia para a área de transferência; se o navegador não deixar, devolve false (a aba mostra o texto para copiar à mão) */
