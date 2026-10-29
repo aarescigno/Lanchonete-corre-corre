@@ -343,24 +343,28 @@ Também: rever o `smoke7` (toque) e o `smoke10` (fila justa e porta), mais `bala
 
 ---
 
-## Etapa 2c-r — Rebalanceamento do Gurugol (v8.6.7 e v8.6.8)
-**Objetivo:** corrigir os pontos desbalanceados do `docs/RELATORIO-GURUGOL.md` com as decisões da entrevista de 29/10 (texto em `docs/PROPOSTAS.md`). Cada sessão termina com o `balance.js` (`DUMP=1 AVAL_MOV=1`, com e sem equipe e com o bot afiado) e a nota mínima recalibrada.
+## Etapa 2c-r — Rebalanceamento do Gurugol (v8.6.7 a v8.6.9)
+**Objetivo:** corrigir os pontos desbalanceados do `docs/RELATORIO-GURUGOL.md` com as decisões da entrevista de 29/10 (texto em `docs/PROPOSTAS.md`). Cada sessão termina com o `balance.js` (`DUMP=1 AVAL_MOV=1`, com e sem equipe e com o bot afiado) e a nota mínima recalibrada. **Na calibração, mostre ao usuário os números do `balance.js` antes e depois de cada ajuste;** se não fechar em 2 ou 3 rodadas, pare e avise (o usuário pode trocar de modelo só para essa parte).
 
 ### Sessão 2c-r1 — As regras da nota (v8.6.7)
-- **Cada um avalia só o que viveu:** a avaliação guarda `null` nos critérios que o cliente não chegou a ver, e cada critério tem a sua média (com a sua contagem); a nota da lanchonete é a média das médias. Sugestão: a Espera conta sempre; Agilidade e Ambiente só para quem sentou; Cardápio só para quem fez o pedido; Comida só para quem comeu (o entregador avalia a marmita). Quem desiste na calçada avalia só a Espera. Mexe em `normAval` e `avalMedias` (o save antigo, sem `null`, continua valendo) e na caixa do fim do dia e na aba Gurugol (o número de avaliações de cada critério).
+- **Cada um avalia só o que viveu:** a avaliação guarda `null` nos critérios que o cliente não chegou a ver, e cada critério tem a sua média (com a sua contagem); a nota da lanchonete é a média das médias. **Decidido (29/10):** desistiu na calçada, só a Espera; saiu bravo antes do pedido, Espera, Agilidade e Ambiente; bravo depois do pedido, sem comer, mais o Cardápio; quem comeu, os 5; o entregador, Espera, Agilidade e Comida (a marmita; quem não levou a marmita, só Espera e Agilidade). Mexe em `normAval` e `avalMedias` (o save antigo, sem `null`, continua valendo) e na caixa do fim do dia e na aba Gurugol (o número de avaliações de cada critério).
 - **Humor proporcional ao teto:** o humor e os encantados passam a ser fração da faixa do ponto (`teto − 1`), não um valor absoluto; o limite de cada avaliação continua `teto + folga` (também proporcional) e, no Terraço, 5. Calibrar para o serviço perfeito ficar perto do teto na média e o Terraço poder cravar 5 num dia especial.
 - **Bônus da Agilidade vira chance de encantar:** a cor certa, a corrente e o caprichado deixam de somar na Agilidade (que fica só pelos corações) e aumentam a chance de o cliente sair encantado (`humor.encanta`).
-- **Prato quente:** o prato que fica no balcão da cozinha esperando a Bia esfria e perde nota na Comida (como as marmitas da v8.6); o caprichado quente continua 5. Mostrar o prato esfriando (vapor que some).
-- **Faixa bronze** na caixa do fim do dia (`notaFaixa`), antes da prata: a partir de 3,0 (o teto da Garagem; sugestão) ou 3,25 (a decidir). Prata, ouro e diamante ficam como estão.
+- **Faixa bronze** na caixa do fim do dia (`notaFaixa`), antes da prata: **a partir de 3,0** (o teto da Garagem; decidido em 29/10), com brilho de bronze. Prata, ouro e diamante ficam como estão.
 - **Nota mínima para sair de um ponto:** 95% do teto (Garagem ~2,9 ★, área industrial ~3,6, Avenida Brasil ~4,2); entra de fato na etapa 3, mas a calibração é desta sessão.
 
-### Sessão 2c-r2 — Cardápio que cresce com os cursos do Tonhão (v8.6.8)
+### Sessão 2c-r2 — Prato quente (v8.6.8)
+- O prato que fica no balcão da cozinha esperando a Bia esfria e perde nota na Comida (como as marmitas da v8.6, `esfriar`); o caprichado entregue quente continua 5. Sugestão: quente até ~8 s no balcão, depois perde até ~1,5 de serviço em ~20 s.
+- Mostrar o prato esfriando (o vapor que some aos poucos; sem animação com `prefers-reduced-motion`) e comentário próprio ("Comida meio fria." já existe).
+- Mexe em `13-cozinha.js` (a hora em que o prato fica pronto), `14-bia.js`/`16-jogo.js` (a entrega), `22-salao-hud.js` (o vapor) e no smoke 25; calibrar com o `balance.js` (o bot deixa prato no balcão quando está ocupado).
+
+### Sessão 2c-r3 — Cardápio que cresce com os cursos do Tonhão (v8.6.9)
 - A Garagem começa com **2 itens** (PF e coxinha; sugestão) e a Diversidade do cardápio sobe a cada item novo (`avalMenu` pelos itens que a cozinha sabe, com o teto de 5 só com o cardápio cheio).
 - **Cursos do Tonhão** (aba nova na lojinha ou na Melhorias): cada prato novo é um curso de **R$ 150 a 250**; o **curso avançado** (~o dobro) aumenta a chance de caprichado daquele prato.
 - Progressão: salgados clássicos na Garagem (coxinha, misto quente, kibe, empada, esfiha), depois pastéis (carne, queijo, frango), depois PFs clássicos (arroz, feijão, bife e batata frita; frango grelhado; parmegiana; feijoada de sábado). Quais entram em cada ponto e os preços de venda são da sessão.
 - Mexe em `CARDAPIO`, `MAIS.pratos` (o 2º item só entre os que a cozinha sabe), `save` (os cursos feitos), Missão zero e Como jogar; o `bot.js` e o `carreira.js` passam a comprar cursos.
 
-**Decisões em aberto:** os critérios de cada tipo de saída (a sugestão acima); bronze em 3,0 ou 3,25; o peso do Ambiente (o critério que mais separa quem gasta de quem não gasta) e a oscilação da nota (4 avaliações por dia, janela de 30), que ficaram fora da entrevista.
+**Decisões em aberto:** o peso do Ambiente (o critério que mais separa quem gasta de quem não gasta) e a oscilação da nota (4 avaliações por dia, janela de 30), que ficaram fora da entrevista.
 
 ---
 
