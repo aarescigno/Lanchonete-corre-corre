@@ -167,9 +167,9 @@ function buildTips(){
     drawBanco(c);
   }]);
   // v8.4: as avaliações do Gurugol
-  tips.push(['Cada grupo que sai avalia a lanchonete no Gurugol, de 1 a 5, em 5 critérios: espera por mesa e agilidade (cada coração perdido tira 1 ponto; cor certa, corrente e prato caprichado ajudam), qualidade da comida (o Tonhão com aumento acerta mais), diversidade do cardápio e ambiente (TV, som, torneira, ventilador, cafezinho; lixeira cheia atrapalha). A nota é a média das últimas ' + AVAL.max + ' avaliações e aparece a partir da ' + AVAL.min + 'ª; a aba Gurugol da lojinha mostra os últimos comentários. Nota alta traz até ' + Math.round(AVAL.mov * 100) + '% mais gente; nota baixa afasta.', c => {
-    for (let i=0;i<5;i++) star(c,8 + i*12,22,5.5,i < 4 ? PAL.mostarda : '#d8cfb8');
-    txt(c,'4,5',32,48,18,PAL.tinta,'center',FD);
+  tips.push(['Cada grupo que sai avalia a lanchonete no Gurugol, de 1 a 5, em 5 critérios: espera por mesa e agilidade (cada coração perdido tira 1 ponto; cor certa, corrente e prato caprichado ajudam), qualidade da comida (o Tonhão com aumento acerta mais), diversidade do cardápio e ambiente (TV, som, torneira, ventilador, cafezinho; lixeira cheia atrapalha). A nota é a média das últimas ' + AVAL.max + ' avaliações e aparece a partir da ' + AVAL.min + 'ª; a aba Gurugol da lojinha mostra os últimos comentários. Na Garagem, lugar simples, o atendimento perfeito vale ' + fmtNota(AVAL.teto[0]) + ' ★ (um cliente encantado dá um pouco mais); cada ponto melhor sobe a nota, até 5 ★ no Terraço Suíça. Nota alta traz até ' + Math.round(AVAL.mov * 100) + '% mais gente; nota baixa afasta.', c => {
+    for (let i=0;i<5;i++) star(c,8 + i*12,22,5.5,i < 3 ? PAL.mostarda : '#d8cfb8');
+    txt(c,'3,0',32,48,18,PAL.tinta,'center',FD);
   }]);
   tips.forEach(t => {
     const li = document.createElement('li');

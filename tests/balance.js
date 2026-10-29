@@ -55,7 +55,7 @@ function jogaDia(n,man){
   let st=0; while(g.state==='playing'&&st<30000){ bot(); g.update(0.05); st++; }
   const r=g.result; r.rev=rev; r.bankFim=g.save.bank;
   jogaDia.av=g.save.aval.slice();
-  if(process.env.DUMP) console.log('DUMP',n,r.money,r.lost,r.fat);   // v8.3.9: DUMP=1 lista lucro, perdidos e faturamento de cada dia jogado
+  if(process.env.DUMP) console.log('DUMP',n,r.money,r.lost,r.fat,r.aval&&r.aval.dia?r.aval.dia.nota.toFixed(2):'-',r.aval&&r.aval.geral?r.aval.geral.nota.toFixed(2):'-');   // v8.3.9: DUMP=1 lista lucro, perdidos e faturamento de cada dia jogado (v8.6.4: e a nota do Gurugol no dia e a geral)
   return r;
 }
 for(let k=0;k<N;k++){

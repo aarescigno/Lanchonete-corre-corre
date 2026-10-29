@@ -14,7 +14,16 @@ ok(JSON.stringify(L.normAval([[9,0,'x',3.14,2],[1,2],'lixo']))==='[[5,1,1,3.1,2]
 ok(L.avalGeral(cinco(7))===null && L.avalGeral(cinco(8)).nota===5,'sem nota até a 8ª');
 ok(L.avalGeral(L.normAval(um(50).concat(cinco(30)))).nota===5,'as 30 últimas (as 50 de 1 ★ antes delas saem)');
 { const m=L.avalMedias([[5,4,3,2,1],[3,4,5,2,1]]); ok(m.n===2 && m.crit.join()==='4,4,4,2,1' && Math.abs(m.nota-3)<1e-9,'médias por critério e a nota (pesos iguais)'); }
-ok(L.avalMovimento([])===1 && Math.abs(L.avalMovimento(cinco(20))-1.1)<1e-9 && Math.abs(L.avalMovimento(um(20))-0.9)<1e-9 && L.avalMovimento(Array.from({length:20},()=>[3,3,3,3,3]))===1,'movimento: 1 ★ −10%, 3 ★ igual, 5 ★ +10%');
+const tres=n=>Array.from({length:n},()=>[3,3,3,3,3]), dois=n=>Array.from({length:n},()=>[2,2,2,2,2]);
+ok(L.avalMovimento([])===1 && Math.abs(L.avalMovimento(tres(20))-1.1)<1e-9 && Math.abs(L.avalMovimento(cinco(20))-1.1)<1e-9 && Math.abs(L.avalMovimento(um(20))-0.9)<1e-9 && Math.abs(L.avalMovimento(dois(20))-1)<1e-9,'movimento na Garagem: 1 ★ −10%, 2 ★ igual, 3 ★ (o teto) ou mais +10%');
+// v8.6.4: teto por ponto
+ok(A.teto.join()==='3,3.7,4.3,5' && L.avalTeto(L.PONTOS[0])===3 && L.avalTeto({nivel:4})===5 && L.avalTeto({nivel:2})===3.7,'teto: Garagem 3, área industrial 3,7, Avenida Brasil 4,3, Terraço Suíça 5');
+ok(L.avalEscala(5,3)===3 && L.avalEscala(1,3)===1 && L.avalEscala(3,3)===2 && L.avalEscala(5,5)===5,'o serviço 5 vale o teto; 1 continua 1');
+ok(Math.abs(L.avalMovimento(Array.from({length:20},()=>[4.3,4.3,4.3,4.3,4.3]),{nivel:4})-1.065)<1e-9 && Math.abs(L.avalMovimento(tres(20),{nivel:4})-1)<1e-9,'no Terraço: neutro em 3 ★, +10% só com 5 ★');
+{ const s=L.normSave({aval:cinco(10),avalCom:[{d:1,n:46,t:'Bom!',k:'familia'}],caixa:[{d:1,av:44}]});
+  ok(s.avalEsc===2 && s.aval[0].join()==='3,3,3,3,3' && s.avalCom[0].n===28 && s.caixa[0].av===27,'save antigo: as notas passam para a escala da Garagem (4,6 vira 2,8)');
+  const s2=L.normSave(JSON.parse(JSON.stringify(s))); ok(s2.aval[0].join()==='3,3,3,3,3' && s2.avalCom[0].n===28,'e só uma vez'); }
+ok(L.AVAL_SIMPLES[0].length>=2,'comentários de lugar simples na Garagem');
 ok(L.fmtNota(4.25)==='4,3' && L.fmtNota(null)==='–','nota com vírgula');
 ok(Math.abs(L.avalMenu()-4.5)<1e-9,'cardápio da Garagem (4 pratos): 4,5');
 ok(L.avalComentario([5,5,5,5,5])!=='' && L.AVAL_BRAVO.fila.includes(L.avalComentario([1,1,1,4,3],'fila')),'comentário (e o de quem desistiu na fila)');
@@ -33,17 +42,21 @@ ok(N(cinco(8))>N([]) && N(um(8))<N([]),'nota alta traz mais grupos; baixa, menos
 g.save=L.normSave({dia:3,bank:500}); g.up=g.save.up; g.buildTables(); g.startDay(3); g.begin();
 { const gr=g.spawn({type:'estudante',color:0,vip:false,av:true});
   gr.perdFila=2; gr.perdMesa=1; gr.pratoQ=4.2; gr.corCerta=true; gr.coffee=true;
-  g.avaliar(gr,0,0); const r=g.avals[0].r;
+  g.avaliar(gr,0,0); const r=g.avals[0].s;
   ok(r[0]===3.5,'espera: 2 corações perdidos lá fora tiram 1,5');
   ok(r[1]===4.8,'agilidade: 1 coração na mesa (−0,75) e a cor certa (+0,5)');
   ok(r[2]===4.2 && r[3]===4.5,'prato e cardápio');
   ok(r[4]===A.amb.base+A.amb.cafe,'ambiente: a base e o cafezinho');
-  gr.corrente=true; gr.capricho=true; gr.perdMesa=0; g.avaliar(gr,0,0); ok(g.avals[1].r[1]===5,'agilidade não passa de 5');
+  const v=g.avals[0].r, d=v.map((x,i)=>x-L.avalEscala(r[i],3)), h=d[0];   // r[0] é o menor: não passa do teto + folga
+  ok(v.every((x,i)=>Math.abs(x-Math.min(3+A.humor.folga,L.avalEscala(r[i],3)+h))<0.11) && h>=-A.humor.var-0.06 && h<=A.humor.var+A.humor.extra[1]+0.06,'no Gurugol: a escala da Garagem mais o humor do cliente, até 3,8 ('+v+')');
+  { let mx=0; for(let i=0;i<300;i++){ g.avaliar(gr,0,0); mx=Math.max(mx,...g.avals[g.avals.length-1].r); } g.avals.length=1; ok(mx<=3+A.humor.folga+1e-9,'nenhum critério passa de 3,8 na Garagem ('+mx+')'); }
+  gr.corrente=true; gr.capricho=true; gr.perdMesa=0; g.avaliar(gr,0,0); ok(g.avals[1].s[1]===5,'agilidade não passa de 5');
   gr.perdMesa=0; gr.state='ordered'; gr.hearts=3; gr.perdMesa=2; gr.gain(1); ok(gr.perdMesa===1,'coração devolvido na mesa compensa um perdido');
   gr.state='queue'; gr.hearts=3; gr.perdFila=2; gr.gain(1); ok(gr.perdFila===1,'e na espera também');
-  g.trash=L.TRASH.cap; g.avaliar(gr,0,0); ok(g.avals[2].r[4]===A.amb.base+A.amb.cafe+A.amb.lixo,'lixeira cheia tira do ambiente'); g.trash=0;
+  g.trash=L.TRASH.cap; g.avaliar(gr,0,0); ok(g.avals[2].s[4]===A.amb.base+A.amb.cafe+A.amb.lixo,'lixeira cheia tira do ambiente'); g.trash=0;
   const n0=g.avals.length; gr.hearts=1; gr.perdFila=5; gr.pratoQ=0; g.angryLeave(gr); const rb=g.avals[n0].r;
-  ok(g.avals.length===n0+1 && rb[1]===1 && rb[2]===1 && rb[0]===1.3,'quem desiste na fila: espera baixa, agilidade e prato 1');
+  ok(g.avals[n0].s[0]===1.3 && rb[0]===1.2,'na Garagem, a espera 1,3 do serviço vira 1,2 (sem humor para quem saiu bravo)');
+  ok(g.avals.length===n0+1 && rb[1]===1 && rb[2]===1,'quem desiste na fila: espera baixa, agilidade e prato 1');
   ok(L.AVAL_BRAVO.fila.includes(g.avals[n0].txt),'e reclama de ter desistido'); }
 { g.kitchen.submit({group:g.spawn({type:'estudante',color:0,vip:false,av:true}),table:null}); g.kitchen.clean=9; g.kitchen.queue[0].time=0.01; g.kitchen.update(0.1);
   const p=g.kitchen.plates.find(Boolean), fx=A.prato[g.save.equipe.tonhao];

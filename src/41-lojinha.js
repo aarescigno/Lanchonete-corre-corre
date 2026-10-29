@@ -598,8 +598,10 @@ function buildGurugol(grid){
   if (!na){ grid.appendChild(el('p', 'rank-empty', 'Ainda ninguém avaliou a lanchonete no Gurugol: cada grupo que sai avalia, e os comentários aparecem aqui.')); return; }
   const esq = el('div', 'guru-lado');
   esq.appendChild(gurugolCaixa({ geral:ga, dia:avalMedias(sv.aval), n:na }, ga ? 'média das últimas ' + na + ' avaliações' : 'sem nota: ' + na + ' de ' + AVAL.min + ' avaliações'));
-  const mv = Math.round((avalMovimento(sv.aval) - 1) * 100);
-  esq.appendChild(el('p', 'small', ga ? (mv >= 0 ? 'Nota boa traz mais gente: ' : 'Nota baixa afasta a freguesia: ') + (mv > 0 ? '+' : '') + mv + '% de movimento.' : 'A nota aparece a partir da ' + AVAL.min + 'ª avaliação e mexe no movimento: até +' + Math.round(AVAL.mov * 100) + '% com 5 ★.'));
+  const mv = Math.round((avalMovimento(sv.aval, game.ponto) - 1) * 100), teto = fmtNota(avalTeto(game.ponto));
+  esq.appendChild(el('p', 'small', ga ? (mv >= 0 ? 'Nota boa traz mais gente: ' : 'Nota baixa afasta a freguesia: ') + (mv > 0 ? '+' : '') + mv + '% de movimento.' : 'A nota aparece a partir da ' + AVAL.min + 'ª avaliação e mexe no movimento: até +' + Math.round(AVAL.mov * 100) + '% com ' + teto + ' ★.'));
+  // v8.6.4: o teto do ponto
+  esq.appendChild(el('p', 'small', avalTeto(game.ponto) < 5 ? 'Aqui, o atendimento perfeito vale ' + teto + ' ★ (um cliente encantado dá um pouco mais). Pontos melhores sobem a nota, até 5 ★ no Terraço Suíça.' : 'Aqui, o atendimento perfeito vale 5 ★.'));
   grid.appendChild(esq);
   const lista = el('ul', 'guru-coms'); lista.setAttribute('aria-label', 'Últimos comentários');
   com.forEach(c => {

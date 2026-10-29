@@ -101,8 +101,8 @@ novo(4);
 { const e=entregador('pf'); e.avalia=true; e.perdMesa=2; e.hearts=3;
   const m={kind:'marmita',dish:'pf',dono:e,age:0,q:4.2}; g.entregaMarmita(e,m);
   const a=g.avals[g.avals.length-1];
-  ok(a && a.k==='entregador' && a.r[0]===5-2*L.AVAL.porCoracao && a.r[1]===5-2*L.AVAL.porCoracao,'espera e agilidade pelos corações perdidos no balcão ('+a.r.slice(0,2)+')');
-  ok(a.r[2]===4.2,'a nota da marmita');
+  ok(a && a.k==='entregador' && a.s[0]===5-2*L.AVAL.porCoracao && a.s[1]===5-2*L.AVAL.porCoracao,'espera e agilidade pelos corações perdidos no balcão ('+a.s.slice(0,2)+')');
+  ok(a.s[2]===4.2,'a nota da marmita');
   const b=entregador('pf'); b.avalia=true; b.hearts=1; b.patLeft=0.01; b.x=L.RETIRADA.fila[0].x; b.y=L.RETIRADA.fila[0].y; b.path=[]; roda(0.1);
   const c=g.avals[g.avals.length-1];
   ok(b.angry && L.AVAL_BRAVO.retirada.includes(c.txt),'o entregador bravo reclama da marmita ("'+c.txt+'")'); }

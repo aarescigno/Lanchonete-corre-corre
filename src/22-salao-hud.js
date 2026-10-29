@@ -254,7 +254,8 @@ function drawHud(ctx,g,tm){
     rr(ctx,334,550,124,44,9); fs(ctx,'#3b362e',2);
     txt(ctx,'Gurugol',396,561,11,'#cfc7b0','center',FB);
     if (av){
-      txt(ctx,fmtNota(av.nota),372,582,19,av.nota >= 4 ? '#7fd69a' : av.nota >= 3 ? '#FFF7DC' : '#FF9C8A','center',FD,3);
+      const fr = avalFrac(av.nota, avalTeto(g.ponto));   // v8.6.4: a cor vai pelo teto do ponto
+      txt(ctx,fmtNota(av.nota),372,582,19,fr >= 0.75 ? '#7fd69a' : fr >= 0.5 ? '#FFF7DC' : '#FF9C8A','center',FD,3);
       for (let i=0;i<5;i++){
         const f = clamp(av.nota - i, 0, 1);
         starFill(ctx,398 + i*11,582,5.5,'#5b554a');
