@@ -49,10 +49,11 @@ Cada parte é um trecho exato do arquivo final (o JS fica todo dentro de um `(fu
 - Quando o usuário mandar "Ajustes feitos no editor de desenhos" (linhas `-`/`+` com arquivo:linha), aplique em `src/` como vierem.
 
 ## Git
-- **Sem branches parados:** todo trabalho termina com PR para o `claude/main` (o branch padrão), merge e o branch apagado, para o `claude/main` ser sempre a versão mais nova (o GitHub Pages publica a partir dele, e o workflow confere `python3 montar.py --check`).
+- **Sem branches parados:** todo trabalho termina com PR para o `claude/main` (o branch padrão) e merge, para o `claude/main` ser sempre a versão mais nova (o GitHub Pages publica a partir dele, e o workflow confere `python3 montar.py --check`).
+- **Não tente apagar branches:** o GitHub recusa o `git push --delete` daqui; o usuário apaga à mão. Depois do merge, só avise que o branch pode ser apagado.
 
 ## Publicar (Artifact do claude.ai)
-- **Só quando o usuário mandar:** publicar no artifact custa tokens (cada chamada relê a conversa inteira). Não publique por conta própria ao terminar uma versão: termine o trabalho no GitHub (PR, merge, branch apagado, como em **Git**, que não muda) e avise que a versão está pronta para publicar. Publique quando o usuário pedir (ex.: "publica o artefato").
+- **Só quando o usuário mandar:** publicar no artifact custa tokens (cada chamada relê a conversa inteira). Não publique por conta própria ao terminar uma versão: termine o trabalho no GitHub (PR e merge, como em **Git**, que não muda) e avise que a versão está pronta para publicar. Publique quando o usuário pedir (ex.: "publica o artefato").
 - **Publicar barato:** não leia a página inteira antes (`read` sem `path` traz ~100 mil tokens). A 1ª publicação da sessão é recusada e salva a versão no ar num arquivo (o caminho vem na recusa); desde 22/10, publicar de novo sem ler esse arquivo inteiro também é recusado. Em vez de ler (~100 mil tokens), compare no terminal esse arquivo com o `versoes/vN-fonte.html` da última versão publicada (`diff`: só o invólucro do publicador na 1ª linha e `</body></html>` no fim podem mudar). Se for igual, peça ao usuário para confirmar e publique com `force:true` (gastou ~5 mil tokens na v7.6). Se houver mudanças de outra pessoa, junte em `src/` antes.
 - Depois de publicar, registre o número da versão do artifact em `docs/RESUMO.md` (com PR, como o resto).
 - Rode `python3 montar.py` antes; o que se publica é o `lanchonete.html` montado.
