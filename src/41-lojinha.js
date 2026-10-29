@@ -481,14 +481,22 @@ function buildCursos(grid){
   const sv = game.save, bank = sv.bank, cur = sv.cursos;
   if (game.cursoMsg) grid.appendChild(el('p', 'cursomsg', game.cursoMsg));
   const pratos = (l, cu) => l.map(k => CARDAPIO[k].nome + ' ' + fmt(precoPrato(k, game.ponto, cu || cur))).join(' · ');
+  // v8.6.11: o prato que precisa do básico de outro curso (dep) fica apagado até esse curso ser feito
+  const falta = k => { const d = CARDAPIO[k].dep; return d && cursoNivel(cur, d) < 1 ? cursoOf(d) : null; };
+  const apagado = l => l.filter(falta).map(k => CARDAPIO[k].nome + ': precisa do curso de ' + falta(k).nome).join('; ') + '.';
   CURSOS.forEach(c => {
     const n = cursoNivel(cur, c.id), p = game.cursoProx(c.id), av = n >= 1;
     const card = el('div', 'item' + (!p ? ' own' : ''));
     card.appendChild(cursoIcon(c));
     card.appendChild(el('b', null, av ? c.av.nome : 'Curso de ' + c.nome));
-    if (!p) card.appendChild(el('span', null, 'Curso completo. ' + pratos(c.av.pratos) + '.'));
-    else if (!av) card.appendChild(el('span', null, 'O Tonhão aprende: ' + pratos(c.pratos) + '. +' + String(AVAL.menu.porCurso).replace('.', ',') + ' ★ na Diversidade do cardápio.'));
-    else card.appendChild(el('span', null, 'Receitas: ' + c.av.receita + '. +' + Math.round((CURSO_AV.preco - 1) * 100) + '% no preço destes pratos e o Tonhão capricha mais (×' + String(CURSO_AV.crit).replace('.', ',') + ').'));
+    const lis = av ? c.av.pratos.filter(k => CARDAPIO[k].nivel === 2) : c.pratos, mov = c.id === 'veg' ? ' +' + Math.round(VEG.mov * 100) + '% de movimento.' : '';
+    if (!p) card.appendChild(el('span', null, 'Curso completo. ' + pratos(c.av.pratos.filter(k => !falta(k))) + '.' + mov));
+    else if (!av) card.appendChild(el('span', null, 'O Tonhão aprende: ' + pratos(lis.filter(k => !falta(k))) + '. +' + String(AVAL.menu.porCurso).replace('.', ',') + ' ★ na Diversidade do cardápio.' + mov));
+    else card.appendChild(el('span', null, 'Receitas: ' + c.av.receita + '. ' + (lis.length ? 'Pratos novos: ' + pratos(lis.filter(k => !falta(k))) + '. ' : '') + '+' + Math.round((CURSO_AV.preco - 1) * 100) + '% no preço dos pratos do curso e o Tonhão capricha mais (×' + String(CURSO_AV.crit).replace('.', ',') + ').' + mov));
+    if (c.id === 'veg' && lis.some(falta)) card.appendChild(el('span', 'cursos-lista apagado', apagado(lis)));
+    // o curso de que um prato vegetariano depende avisa o que passa a valer com ele
+    const libera = Object.keys(CARDAPIO).filter(k => CARDAPIO[k].dep === c.id && CARDAPIO[k].veg && cursoNivel(cur, CARDAPIO[k].curso) >= (CARDAPIO[k].nivel || 1));
+    if (n < 1 && libera.length) card.appendChild(el('span', 'cursos-lista', libera.map(k => '+ ' + CARDAPIO[k].nome + (CARDAPIO[k].vegano ? ' (vegano)' : ' (vegetariano)')).join(' ')));
     if (p && game.cursoTrava) card.appendChild(el('span', 'cursos-lista', 'O Tonhão já está num curso. Volte depois do próximo dia.'));
     card.appendChild(p ? shopBtn('Comprar ' + fmt(p.preco), 'btn', !game.cursoTrava && bank >= p.preco, () => game.buyCurso(c.id), p.preco) : shopBtn('Curso completo', 'btn', false, () => false));
     grid.appendChild(card);

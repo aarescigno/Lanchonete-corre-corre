@@ -197,11 +197,14 @@ class Group {
     if (this.vip) this.people.forEach(p => { p.shades = true; });
     // a conta (v8.3.8): cada pessoa paga o que pediu, pelo cardápio do ponto: o prato e, às vezes, um 2º item (extras;
     // nunca no treino); o prato especial do VIP soma VIP.dish
-    this.dishes = this.people.map(() => pedePrato(type, game));   // v8.6.9: pelo gosto do tipo, entre os pratos que a cozinha sabe
+    // v8.6.11: ~10% das pessoas são vegetarianas (nunca o entregador, nem na Missão zero) e pedem só prato sem carne
+    this.people.forEach(p => { p.veg = type !== 'entregador' && game.mode !== 'treino' && Math.random() < VEG.chance; });
+    this.dishes = this.people.map(p => pedePrato(type, game, false, p.veg));   // v8.6.9: pelo gosto do tipo, entre os pratos que a cozinha sabe
+    this.semVeg = this.people.some((p, i) => p.veg && CARDAPIO[this.dishes[i]].carne);   // sem prato vegetariano: Cardápio 1 no Gurugol
     this.dish = this.dishes[0];
     // o entregador (v8.6) não come no salão: leva o prato numa marmita, pela fila de retirada, sem 2º item
     this.retira = type === 'entregador';
-    this.extras = this.people.map(() => !this.retira && game.mode !== 'treino' && Math.random() < T.mais ? pedePrato(type, game, true) : null);
+    this.extras = this.people.map(p => !this.retira && game.mode !== 'treino' && Math.random() < T.mais ? pedePrato(type, game, true, p.veg) : null);
     this.bill = this.dishes.concat(this.extras).reduce((v, k) => v + (k ? precoPrato(k, game.ponto, game.cursos) : 0), 0) + (this.vip ? VIP.dish : 0);
     this.hearts = 5;
     this.x = DOOR.x; this.y = DOOR.y;

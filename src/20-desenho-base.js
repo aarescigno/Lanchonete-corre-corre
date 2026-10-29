@@ -96,11 +96,12 @@ function drawMarmita(ctx,k,x,y,s){
 /* a comida do prato (sem o prato), centrada em (0, 0) */
 function drawComida(ctx,k){
   const pr = CARDAPIO[k], cat = pr ? pr.cat : 'chapa', cor = pr ? pr.cor : '#D9A25B';   // v8.6.9: os pratos novos usam o desenho da categoria, na cor do prato (as artes de verdade vêm na v8.6.10)
-  if (k === 'pf'){
+  if (cat === 'pf'){
     ell(ctx,-5,-1,5.5,4.2); fs(ctx,'#FFF6DA',1.6);
     ell(ctx,4,-3.5,5,3.4); fs(ctx,'#5B2E1A',1.6);
-    rr(ctx,-3,1.5,12,5,2.5); fs(ctx,'#A0522D',1.6);
-    ell(ctx,-7,5,3.4,2.2); fs(ctx,'#fff',1.4); circ(ctx,-7,5,1.2); ctx.fillStyle = '#F5B800'; ctx.fill();
+    if (k === 'pf'){ rr(ctx,-3,1.5,12,5,2.5); fs(ctx,'#A0522D',1.6); }
+    else { ctx.fillStyle = '#7A4A2B'; [[-1,3],[2,5],[5,3],[8,5],[3,2]].forEach(g => { circ(ctx,g[0],g[1],1.9); ctx.fill(); }); }   // v8.6.11: a soja refogada, grumos marrons
+    if (k !== 'pfVegano'){ ell(ctx,-7,5,3.4,2.2); fs(ctx,'#fff',1.4); circ(ctx,-7,5,1.2); ctx.fillStyle = '#F5B800'; ctx.fill(); }
   } else if (cat === 'pastel'){
     rr(ctx,-11,-6,22,12,5.5); fs(ctx,cor,2);
     ctx.fillStyle = '#F4C874'; rr(ctx,-8,-4,10,3,1.5); ctx.fill();
@@ -119,6 +120,20 @@ function drawComida(ctx,k){
     ctx.beginPath(); ctx.moveTo(1,5); ctx.lineTo(12,5); ctx.lineTo(6.5,-7); ctx.closePath(); fs(ctx,cor,2);
     ctx.fillStyle = '#F6D44A'; ctx.fillRect(-10,1.5,8.5,2); ctx.fillRect(2,1.5,8.5,2);
   }
+  if (pr && pr.veg) drawVegSelo(ctx, pr.vegano);
+}
+/* o selo dos pratos sem carne (v8.6.11): um "v" verde nos vegetarianos e uma folhinha nos veganos, no canto do prato */
+function drawVegSelo(ctx,vegano){
+  ctx.save(); ctx.translate(9,-7);
+  if (vegano){
+    ctx.beginPath(); ctx.moveTo(-4,3); ctx.quadraticCurveTo(-4,-4,4,-4); ctx.quadraticCurveTo(4,4,-4,3); ctx.closePath(); fs(ctx,'#3E9B5A',1.6);
+    ctx.strokeStyle = '#E9F5E4'; ctx.lineWidth = 1; ctx.beginPath(); ctx.moveTo(-3,2.5); ctx.lineTo(2,-2); ctx.stroke();
+  } else {
+    circ(ctx,0,0,5.2); fs(ctx,'#FFFFFF',1.6);
+    ctx.strokeStyle = '#2E8B3E'; ctx.lineWidth = 2.2; ctx.lineCap = 'round'; ctx.lineJoin = 'round';
+    ctx.beginPath(); ctx.moveTo(-2.6,-2); ctx.lineTo(0,2.6); ctx.lineTo(2.6,-2); ctx.stroke(); ctx.lineCap = 'butt'; ctx.lineJoin = 'miter';
+  }
+  ctx.restore();
 }
 
 /* torneira de parede (v7.7, a água da espera da Garagem): cano, registro de borboleta e bica; (x, y) é a ponta da bica */
