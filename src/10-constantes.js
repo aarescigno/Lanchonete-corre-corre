@@ -389,6 +389,12 @@ const MAQUINA = { pede:2.5, slow:0.4 };
    da janela de pedidos (STATIONS.adiantar), o Tonhão faz uma marmita de `prato` sem dono (até `vagas` ao mesmo tempo), que fica na prateleira
    do balcão e esfria em `validade` s (aí vai para o lixo); o entregador que pede esse prato leva uma na hora. A prateleira
    tem mais `reserva` vaga, a da encomenda feita para quem está esperando. Ideias para depois: prateleira de 4 e estufa */
+/* prato quente (v8.6.8): o prato que espera no balcão da cozinha fica quente até `quente` s; depois perde nota de comida
+   (até `perde`, em `rampa` s). `friaDe` é a perda a partir da qual o cliente reclama que veio frio */
+const PRATO = { quente:8, perde:1.5, rampa:20, friaDe:0.5 };
+function pratoPerde(age){ return PRATO.perde * clamp((age - PRATO.quente) / PRATO.rampa, 0, 1); }
+/* quanto do vapor ainda resta (1 quente, 0 frio de vez) */
+function pratoVapor(age){ return 1 - clamp((age - PRATO.quente) / PRATO.rampa, 0, 1); }
 const MARMITA = { embalagem:2, efood:0.15, vagas:2, reserva:1, validade:60, prato:'pf', fila:3 };
 const MULTA = 10;                                     // grupo que vai embora bravo (com 0 corações) desconta isto do dia
 const VIP = { pat:0.75, tip:0.1, perfect:40, angry:10, dish:12, cook:1.8, types:['estudante','vovos','familia','executiva'] };   // dish: o prato especial soma R$ 12 à conta e leva 1,8× o tempo; perfect: pontos (v8.3.8)
@@ -533,7 +539,7 @@ const AVAL_DECOR = {
   foto:'Que foto bonita na parede!', giz:'Adorei o quadro de giz!', placa:'"Comida é afeto": é isso mesmo!',
   toalha:'A toalha xadrez dá um charme!'
 };
-function avalComentario(r, bravo, lixo, nivel, decor){
+function avalComentario(r, bravo, lixo, nivel, decor, fria){
   if (bravo) return pick(AVAL_BRAVO[bravo]);
   const bom = Math.round(avalNota(r) * 10) >= 40;   // pela nota com uma casa (3,96 vira 4,0)
   if (bom && AVAL_SIMPLES[(nivel || 1) - 1] && Math.random() < 0.3) return pick(AVAL_SIMPLES[(nivel || 1) - 1]);
@@ -542,6 +548,7 @@ function avalComentario(r, bravo, lixo, nivel, decor){
   let k = 0;
   r.forEach((v, i) => { if (bom ? v > r[k] : v < r[k]) k = i; });
   if (!bom && lixo && AVAL_CRIT[k].id === 'amb') return 'Que cheiro de lixo!';
+  if (!bom && fria && AVAL_CRIT[k].id === 'prato') return 'Comida meio fria.';   // v8.6.8: o prato esfriou no balcão
   return pick(AVAL_CRIT[k][bom ? 'bom' : 'ruim']);
 }
 /* banco (v8.3): empréstimo pago em `parcelas` no fim de cada dia (um por vez, até o crédito do ponto).
@@ -578,7 +585,7 @@ function tabelaDe(e){
 /* um empréstimo novo de v, pagando em dia: as parcelas e os juros somados */
 function simulaEmprestimo(v, j){ const t = tabelaDe(normEmprestimo({ resto:v, amort:Math.ceil(v / BANCO.parcelas), j })); return { parcelas:t, juros:t.reduce((a, p) => a + p, 0) - v }; }
 const CAIXA_MAX = 14;                                 // livro-caixa (v7.2): quantos dias da carreira ficam guardados
-const VERSAO = 'v8.6.6';                               // vai no resumo do Caixa
+const VERSAO = 'v8.6.8';                               // vai no resumo do Caixa
 const DIVULGA_DIA = 3;                                // antes disso, o movimento é o da inauguração (sem custo)
 function divulgaAberta(n){ return DEV.on || n >= DIVULGA_DIA; }   // no modo dev, desde o dia 1
 function divulgaOf(id){ return DIVULGA.find(d => d.id === id) || DIVULGA[1]; }

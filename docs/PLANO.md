@@ -356,7 +356,7 @@ Também: rever o `smoke7` (toque) e o `smoke10` (fila justa e porta), mais `bala
 
 **Modelo:** Sonnet, esforço alto. Mexe em 4 regras da nota e tem calibração por tentativa e erro; se a calibração não fechar em 2 ou 3 rodadas, trocar para o Opus só nessa parte (como diz o objetivo).
 
-### Sessão 2c-r2 — Prato quente (v8.6.8)
+### Sessão 2c-r2 — Prato quente (v8.6.8) — **feito em 29/10** (`docs/spec-v8.6.8.md`; antes da 2c-r1, que ainda falta)
 - O prato que fica no balcão da cozinha esperando a Bia esfria e perde nota na Comida (como as marmitas da v8.6, `esfriar`); o caprichado entregue quente continua 5. Sugestão: quente até ~8 s no balcão, depois perde até ~1,5 de serviço em ~20 s.
 - Mostrar o prato esfriando (o vapor que some aos poucos; sem animação com `prefers-reduced-motion`) e comentário próprio ("Comida meio fria." já existe).
 - Mexe em `13-cozinha.js` (a hora em que o prato fica pronto), `14-bia.js`/`16-jogo.js` (a entrega), `22-salao-hud.js` (o vapor) e no smoke 25; calibrar com o `balance.js` (o bot deixa prato no balcão quando está ocupado).

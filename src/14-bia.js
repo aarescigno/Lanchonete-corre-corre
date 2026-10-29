@@ -215,7 +215,8 @@ class Waitress {
       const p = g.kitchen.plates[slot];
       g.kitchen.plates[slot] = null;
       if (p.kind === 'marmita'){ this.hands.push(marmitaMao(p)); Sfx.blip(); return; }
-      this.hands.push({ kind:'dish', table:p.table, group:p.group, dish:p.dish, crit:p.crit, q:p.q, vip:p.vip });
+      const perde = pratoPerde(p.age);   // v8.6.8: esfriou no balcão
+      this.hands.push({ kind:'dish', table:p.table, group:p.group, dish:p.dish, crit:p.crit, q:Math.max(1, (p.q || 1) - perde), fria:perde >= PRATO.friaDe, vip:p.vip });
       Sfx.blip();
       return;
     }
@@ -339,7 +340,7 @@ class Waitress {
       grp.timer = rand(grp.T.eat[0], grp.T.eat[1]) * (g.up.ventilador ? 0.85 : 1);
       grp.eatTotal = grp.timer;
       grp.gain(dish.crit ? 2 : 1);
-      grp.pratoQ = dish.q || 0; if (dish.crit) grp.capricho = true;
+      grp.pratoQ = dish.q || 0; grp.fria = !!dish.fria; if (dish.crit) grp.capricho = true;
       g.score('deliver', cx, cy - 40, 0, grp);
       if (dish.crit){
         const b = grp.vip ? CRIT.vipBonus : CRIT.bonus;

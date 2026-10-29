@@ -769,6 +769,14 @@ function drawKitchen(ctx,g,t){
       if (pc) drawTray(ctx,s.x,s.y+2+bounce,1.0,pc);
       if (p.vip){ ctx.strokeStyle = PAL.mostarda; ctx.lineWidth = 3; ell(ctx,s.x,s.y+bounce,17,9); ctx.stroke(); }
       drawDish(ctx,p.dish,s.x,s.y+bounce,1.1);
+      // v8.6.8: o vapor some aos poucos enquanto o prato espera (parado, sem balançar, com movimento reduzido)
+      const vp = pratoVapor(p.age);
+      if (vp > 0.02){
+        ctx.save(); ctx.strokeStyle = 'rgba(120,130,140,' + (0.75*vp).toFixed(2) + ')'; ctx.lineWidth = 2; ctx.lineCap = 'round';
+        [-7,0,7].forEach((dx,j) => { const w = RM ? 0 : Math.sin(t*3 + j*2 + i)*2, y0 = s.y-14+bounce;
+          ctx.beginPath(); ctx.moveTo(s.x+dx, y0); ctx.quadraticCurveTo(s.x+dx+3+w, y0-6, s.x+dx, y0-11*vp-3); ctx.stroke(); });
+        ctx.restore();
+      }
       if (p.crit) txt(ctx,'★',s.x-13,s.y-14+bounce,15,PAL.mostarda,'center',FD);
       circ(ctx,s.x+12,s.y-14+bounce,9); fs(ctx,'#fff',2);
       txt(ctx,String(p.table),s.x+12,s.y-13+bounce,12,PAL.tinta,'center',FD);

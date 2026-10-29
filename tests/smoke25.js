@@ -60,7 +60,18 @@ g.save=L.normSave({dia:3,bank:500}); g.up=g.save.up; g.buildTables(); g.startDay
   ok(L.AVAL_BRAVO.fila.includes(g.avals[n0].txt),'e reclama de ter desistido'); }
 { g.kitchen.submit({group:g.spawn({type:'estudante',color:0,vip:false,av:true}),table:null}); g.kitchen.clean=9; g.kitchen.queue[0].time=0.01; g.kitchen.update(0.1);
   const p=g.kitchen.plates.find(Boolean), fx=A.prato[g.save.equipe.tonhao];
-  ok(p && (p.crit ? p.q===5 : p.q>=fx[0] && p.q<=fx[1]),'prato pronto com a nota da faixa do Tonhão (caprichado: 5)'); }
+  ok(p && (p.crit ? p.q===5 : p.q>=fx[0] && p.q<=fx[1]),'prato pronto com a nota da faixa do Tonhão (caprichado: 5)');
+  // v8.6.8, prato quente: quente até 8 s no balcão; depois perde até 1,5 em 20 s
+  const P=L.PRATO;
+  ok(L.pratoPerde(0)===0 && L.pratoPerde(P.quente)===0 && Math.abs(L.pratoPerde(P.quente+P.rampa/2)-P.perde/2)<1e-9 && L.pratoPerde(999)===P.perde,'prato: quente até 8 s, perde até 1,5 em 20 s');
+  ok(L.pratoVapor(P.quente)===1 && L.pratoVapor(P.quente+P.rampa)===0,'o vapor some aos poucos');
+  p.q=5; p.crit=true; p.age=P.quente; g.bia.hands=[]; g.bia.perform({type:'plate',pid:p.id});
+  ok(g.bia.hands[0].q===5 && !g.bia.hands[0].fria,'caprichado entregue quente continua 5');
+  const gf=g.spawn({type:'estudante',color:0,vip:false,av:true}); gf.fria=true; gf.pratoQ=2; gf.perdFila=0; gf.perdMesa=0;
+  ok(L.avalComentario([4,4,2,3,3],'',false,1,[],true)==='Comida meio fria.' && L.AVAL_CRIT[2].ruim.includes(L.avalComentario([4,4,2,3,3])),'o prato frio reclama de "Comida meio fria."'); }
+{ g.kitchen.plates=[null,null,null,null]; g.bia.hands=[]; const gp=g.spawn({type:'estudante',color:0,vip:false,av:true});
+  g.kitchen.plates[0]={id:99,table:null,group:gp,dish:'pf',slot:0,age:L.PRATO.quente+L.PRATO.rampa,crit:false,q:4,vip:false}; g.bia.perform({type:'plate',pid:99});
+  ok(Math.abs(g.bia.hands[0].q-(4-L.PRATO.perde))<1e-9 && g.bia.hands[0].fria,'o prato que esfriou de vez perde 1,5 e vem "fria"'); }
 
 // só a carreira avalia
 { g.save=L.normSave({bank:500}); g.up=g.save.up; g.buildTables(); g.resetDay(0); g.setState('playing');
