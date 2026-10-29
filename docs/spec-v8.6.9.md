@@ -28,3 +28,5 @@ Etapa 2c-r3a (`docs/PLANO.md`). Os desenhos próprios dos pratos vêm na 2c-r3b 
 
 Fechou quase: o que sobrou de queda vem dos dias 6 e 7, que o plano não deixa mexer, e a variação entre rodadas é de ±4 pontos. O ticket médio caiu ~25% (PF passou de ~65% para ~25% dos pedidos do estudante), por isso o lucro de equipe completa foi de R$ 267 para ~R$ 220 por dia.
 - Nota geral do Gurugol (`carreira.js`, bot afiado, 10 dias): 2,3 no dia 2 a 2,6 no dia 10, ou seja, **abaixo da nota mínima de 2,9** da Garagem. O bot compra os cursos devagar (só com o preço mais a reserva de R$ 300): fica para a etapa 3, onde a nota mínima passa a valer, ver com o usuário se as metas ou a nota base mudam.
+
+**Próximo passo:** depois da 2c-r3c (v8.6.11) haverá uma rodada de balanceamento (2c-r3d, v8.6.12) para fechar a calibração e a nota mínima.

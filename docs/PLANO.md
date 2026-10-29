@@ -49,6 +49,7 @@ Origem: retorno do Renan Martorelli (beta-tester) e conversa com o Arthur (15/10
 | 2c-r3a | Cardápio que cresce: cursos do Tonhão e gostos dos clientes | v8.6.9 | feita (29/10; calibração quase fechada, ver `docs/spec-v8.6.9.md`) |
 | 2c-r3b | Desenhos dos pratos novos, dos avançados e das carnes do PF | v8.6.10 | a fazer (planejada em 29/10) |
 | 2c-r3c | Vegetarianos e veganos | v8.6.11 | a fazer (planejada em 29/10) |
+| 2c-r3d | Rodada de balanceamento do cardápio (metas dos dias 2 a 7, ticket médio, nota mínima do Gurugol) | v8.6.12 | a fazer (combinada em 29/10, depois da 2c-r3c) |
 | 2f | A campanha vira o Modo História: estrutura e capítulos da Garagem | v8.7 | a fazer |
 | 3a | Mudança de ponto e Lanchonete na área industrial (e o capítulo dela) | v9 | a fazer |
 | 3b | Restaurante na Avenida Brasil (e o capítulo dela) | v9.1 | a fazer |
@@ -401,6 +402,8 @@ As receitas dos avançados aparecem no cartão da lojinha e na fala do Tonhão; 
 - **Calibração** (mostre ao usuário antes e depois): rode `node balance.js` sem equipe e com `EQUIPE=auto`, e `BOT=afiado EQUIPE=auto DUMP=1 AVAL_MOV=1`, no `claude/main` antes de mexer (a base, depois da 2c-r2) e depois. Alvo: com equipe, até 5 pontos abaixo da base nos dias 3 a 7; sem equipe, até 8. Se cair mais, baixe as metas dos dias 2 a 5 em 5% (`METAS`) por rodada, no máximo 2 rodadas; se não fechar, pare e avise. A nota mínima (2,9 na Garagem) não muda: confira no `carreira.js` com o bot afiado que a nota geral passa de 2,9 até o dia 10; se não passar, só avise.
 
 **Modelo:** Sonnet, esforço alto. Mexe em muitas partes (cardápio, pedido, cozinha, save, lojinha, bot) e tem calibração; as decisões estão tomadas.
+
+**Sobra da 2c-r3a para a rodada de balanceamento (2c-r3d, depois da 2c-r3c):** a 2c-r3a fechou com as metas dos dias 2 a 5 −10% e a calibração quase fechada (sem equipe ~54% contra 63,7% de antes; com equipe ~88% contra 93,7%; alvos −8 e −5), porque o ticket médio caiu ~25% e os dias 6 e 7 não foram mexidos. A nota geral do Gurugol com o bot afiado ficou em 2,3 a 2,6 até o dia 10, abaixo dos 2,9 da Garagem. A 2c-r3d, já com os vegetarianos e veganos no jogo, volta a medir tudo (`balance.js` sem equipe, `EQUIPE=auto`, `BOT=afiado`, e o `carreira.js` com o bot afiado) e ajusta as metas dos dias 2 a 7, o ticket médio (preços ou pesos dos gostos) e a nota mínima. Planejar com o Opus: decisão de design e balanceamento por tentativa e erro.
 
 #### Sessão 2c-r3b — Os desenhos dos pratos (v8.6.10)
 - Em `drawComida` (`20-desenho-base.js`), um desenho próprio para cada prato da 2c-r3a, que se reconheça no prato da mesa (escala 0,52), no balão (0,85), no balcão (1,1) e na marmita: risoles (meia-lua empanada), kibe (fuso marrom com risquinhos), bolinho japonês (bolinho de massa frita recheado de carne moída, dourado e comprido), empada (forminha com tampa dourada), esfiha aberta (círculo com recheio vermelho à mostra), esfiha fechada (triângulo), misto (o de hoje), bauru (pão de forma com rosbife e alface à mostra), pão na chapa (pão francês aberto com manteiga), pastel de carne (o de hoje), de queijo (com fio amarelo) e de pizza (com pontinho vermelho de tomate).
