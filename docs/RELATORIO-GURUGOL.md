@@ -103,12 +103,12 @@ Um bravo na mesa chega à metade do teto, e a faixa de 2 ★ é a que a Garagem 
 
 | Pergunta | Decisão |
 |---|---|
-| Nota do bravo | Cada um avalia só o que viveu: os critérios que o cliente não viu ficam fora da média (cada critério com a sua contagem) |
+| Nota do bravo | Cada um avalia só o que viveu: os critérios que o cliente não viu ficam fora da média (cada critério com a sua contagem). Calçada: só Espera; bravo antes do pedido: Espera, Agilidade, Ambiente; bravo depois do pedido: + Cardápio; comeu: os 5; entregador: Espera, Agilidade e Comida |
 | Humor | Proporcional ao teto; no Terraço o perfeito com encantados chega a 5 |
 | Cardápio | Começa com 2 itens e cresce com os cursos do Tonhão (R$ 150 a 250; o avançado aumenta o caprichado daquele prato) |
 | Comida | Prato quente: o que espera no balcão esfria e perde nota |
 | Nota mínima para sair da Garagem | 95% do teto (~2,9 ★) |
-| Faixas | Ficam absolutas, com uma faixa bronze nova a partir de 3,0 ou 3,25 |
+| Faixas | Ficam absolutas, com uma faixa bronze nova a partir de 3,0 |
 | Bônus da Agilidade | Vira chance de sair encantado |
 
 Fora da entrevista: o peso do Ambiente (ponto 6) e a oscilação da nota (ponto 9). Plano: etapa 2c-r do `docs/PLANO.md`.

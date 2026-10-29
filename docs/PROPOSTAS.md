@@ -21,7 +21,9 @@ Registro das ideias e dos retornos de quem jogou, com o texto original, e de ond
 
 > Bônus da Agilidade: "Vira chance de encantar" (cor certa, corrente e caprichado aumentam a chance de o cliente sair encantado).
 
-**Destino:** nova **etapa 2c-r** do `docs/PLANO.md` (2 sessões: as regras da nota, v8.6.7, e o cardápio com os cursos do Tonhão, v8.6.8). As decisões estão também no fim do `docs/RELATORIO-GURUGOL.md`. Ficaram de fora da entrevista: o peso do Ambiente e a oscilação da nota (4 avaliações por dia, janela de 30).
+> Depois, as 2 decisões que faltavam: bronze "3,0" e os critérios "Pelo que viveu" (calçada: só Espera; bravo antes do pedido: Espera, Agilidade, Ambiente; bravo depois do pedido: + Cardápio; comeu: os 5; entregador: Espera, Agilidade e Comida).
+
+**Destino:** nova **etapa 2c-r** do `docs/PLANO.md` (3 sessões: as regras da nota, v8.6.7; o prato quente, v8.6.8; e o cardápio com os cursos do Tonhão, v8.6.9). As decisões estão também no fim do `docs/RELATORIO-GURUGOL.md`. Ficaram de fora da entrevista: o peso do Ambiente e a oscilação da nota (4 avaliações por dia, janela de 30).
 
 ---
 
