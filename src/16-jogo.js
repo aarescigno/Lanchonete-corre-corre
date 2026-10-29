@@ -622,15 +622,19 @@ class Game {
     if (this.mode !== 'carreira' || !g.avalia) return;
     const A = AVAL, eq = this.save.equipe, bravo = g.angry ? (g.retira ? 'retirada' : g.state === 'queue' ? 'fila' : 'mesa') : '';
     const bonus = Math.min(A.bonus.max, (g.corCerta ? A.bonus.cor : 0) + (g.corrente ? A.bonus.corrente : 0) + (g.capricho ? A.bonus.crit : 0));
+    // v8.6.6: a decoração à mostra e a toalha da mesa em que o grupo sentou (g.table ainda vale aqui, também para quem sai bravo)
+    const decor = DECOR.filter(d => decorOn(this, d.id)).map(d => d.id), toalha = !!(g.table && g.table.toalha);
+    if (toalha) decor.push('toalha');
     const amb = A.amb.base + (eq.tv ? A.amb.tv : 0) + (eq.som ? A.amb.som : 0) + (this.up.maquina ? A.amb.maquina : 0) + (this.up.ventilador ? A.amb.ventilador : 0) +
-      (g.coffee ? A.amb.cafe : 0) + (eq.couvert ? A.amb.couvert : 0) + (this.trashFull ? A.amb.lixo : 0);
+      (g.coffee ? A.amb.cafe : 0) + (eq.couvert ? A.amb.couvert : 0) + (this.trashFull ? A.amb.lixo : 0) +
+      decor.reduce((a, id) => a + (id === 'toalha' ? A.amb.toalha : A.amb[decorOf(id).grupo === 'plantas' ? 'planta' : 'rosa']), 0);
     // o entregador (v8.6): a espera no balcão conta na espera e na agilidade
     const s = [5 - A.porCoracao * (g.retira ? g.perdMesa : g.perdFila), bravo ? 1 : 5 - A.porCoracao * g.perdMesa + bonus, g.pratoQ || 1, avalMenu(), amb]
       .map(v => clamp(Math.round(v * 10) / 10, 1, 5));
     // v8.6.4: a nota no Gurugol fica na escala do ponto (o serviço 5 vale o teto), mais o humor de quem avalia
     const teto = avalTeto(this.ponto), h = bravo ? 0 : rand(-A.humor.var, A.humor.var) + (Math.random() < A.humor.encanta ? rand(A.humor.extra[0], A.humor.extra[1]) : 0);
     const r = s.map(v => clamp(Math.round((avalEscala(v, teto) + h) * 10) / 10, 1, Math.min(5, teto + A.humor.folga)));
-    const txt = avalComentario(s, bravo, this.trashFull, this.ponto.nivel), nota = avalNota(r), f = avalFrac(nota, teto);
+    const txt = avalComentario(s, bravo, this.trashFull, this.ponto.nivel, decor), nota = avalNota(r), f = avalFrac(nota, teto);
     this.avals.push({ r, s, txt, k:g.type, v:g.vip });
     // balãozinho branco (sobe devagar, acima dos textos da conta)
     this.fx.push({ k:'text', box:true, x, y, vy:-12, life:2.8, max:2.8, text:fmtNota(nota) + '★ ' + txt, color:f >= 0.75 ? PAL.ok : f >= 0.5 ? PAL.alerta : PAL.perigo, size:13 });

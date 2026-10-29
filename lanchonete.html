@@ -303,7 +303,7 @@ table.rank tr.me td{background:#fbe7a8}
 
     <div class="ov show" id="ov-menu">
       <div class="panel menu-panel">
-        <span class="vtag" id="vtag" aria-label="Versão 8.6.5">v8.6.5</span>
+        <span class="vtag" id="vtag" aria-label="Versão 8.6.6">v8.6.6</span>
         <h1 class="title">Lanchonete <br>Corre-Corre</h1>
         <p class="tag">Ajude a Bia a atender a freguesia da esquina antes que o cafezinho esfrie!</p>
         <div class="lbl" id="menu-dia">Carreira: dia 1</div>
@@ -514,7 +514,8 @@ table.rank tr.me td{background:#fbe7a8}
       <div class="panel">
         <h2>Versões</h2>
         <ul class="verlist">
-          <li><b>v8.6.5</b><span class="cur">versão atual</span><br>29/10/2026 &mdash; Decoração da Garagem: uma aba nova na lojinha, com enfeites comprados à vontade (fora da melhoria do dia). Plantas: a espada-de-são-jorge no vaso e a muda na lata (que vinham de graça) e uma samambaia pendurada na parede. Cantinho da Rosa: a foto da mãe da Bia, o quadro de giz com o prato do dia e a plaquinha &ldquo;Comida é afeto&rdquo;. E a toalha xadrez, com porta-guardanapo e florzinha, mesa por mesa. Comprado, o enfeite pode ser guardado e posto de volta. Por enquanto é só para deixar a garagem bonita.</li>
+          <li><b>v8.6.6</b><span class="cur">versão atual</span><br>29/10/2026 &mdash; A decoração conta no Gurugol: a garagem sem enfeite nenhum ficou &ldquo;meio sem graça&rdquo; no ambiente, e cada planta, cada peça do cantinho da Rosa e a toalha xadrez (para quem senta na mesa dela) deixam o ambiente melhor. Com tudo enfeitado, a nota da Garagem chega perto dos 3 ★, e os clientes às vezes elogiam um enfeite (&ldquo;Que samambaia bonita!&rdquo;).</li>
+          <li><b>v8.6.5</b><br>29/10/2026 &mdash; Decoração da Garagem: uma aba nova na lojinha, com enfeites comprados à vontade (fora da melhoria do dia). Plantas: a espada-de-são-jorge no vaso e a muda na lata (que vinham de graça) e uma samambaia pendurada na parede. Cantinho da Rosa: a foto da mãe da Bia, o quadro de giz com o prato do dia e a plaquinha &ldquo;Comida é afeto&rdquo;. E a toalha xadrez, com porta-guardanapo e florzinha, mesa por mesa. Comprado, o enfeite pode ser guardado e posto de volta. Por enquanto é só para deixar a garagem bonita.<br><a href="versoes/v8.6.5.html" target="_blank" rel="noopener">Abrir a v8.6.5</a></li>
           <li><b>v8.6.4</b><br>29/10/2026 &mdash; Notas do Gurugol com teto por ponto: numa garagem, ninguém dá 5 estrelas. Na Garagem, o atendimento perfeito vale 3,0 ★, e um cliente encantado dá um pouco mais (num dia especial, a nota do dia chega a 3,5 ou 3,8). Cada ponto melhor sobe o teto: 3,7 na área industrial, 4,3 na Avenida Brasil e 5 no Terraço Suíça. As notas que você já tinha passaram para a escala nova.</li>
           <li><b>v8.6.3</b><br>29/10/2026 &mdash; Livrinho de Sudoku, uma melhoria nova da lojinha (R$ 200): a fila de ações da Bia ganha 3 quadrinhos. Em compensação, a fila de base ficou com 5 quadrinhos, e não mais 6; com o livrinho, são 8 tarefas já marcadas.<br><a href="versoes/v8.6.3.html" target="_blank" rel="noopener">Abrir a v8.6.3</a></li>
           <li><b>v8.6.2</b><br>28/10/2026 &mdash; Abertura mais caprichada no hospital: a Rosa, deitada, ganha o corpo sob o cobertor (ombros, peito e os pés levantando o pano) e abre os olhos para a Bia enquanto fala; a cortina do leito desce até o chão. No banco, o pote de moedas não some mais quando a Bia chega: ela o deixa no chão.</li>
@@ -814,7 +815,7 @@ function salaoDevolucao(s){
 const SALAO_SEMFIM = [2,2,2,4,2,4];
 /* ============================================================
    DECORAÇÃO (v8.6.5, pedido do usuário): enfeites da Garagem, comprados na aba Decoração da lojinha, à vontade (fora
-   da melhoria do dia). Por enquanto só visuais: o peso no Ambiente do Gurugol fica para uma próxima etapa.
+   da melhoria do dia). Desde a v8.6.6, contam no Ambiente do Gurugol (AVAL.amb: planta, rosa e toalha).
    - plantas: as espadas-de-são-jorge da calçada (da v7.7, que vinham de graça) e a samambaia na parede;
    - cantinho da Rosa: a foto da mãe da Bia, o quadro de giz com o prato do dia e a plaquinha "Comida é afeto".
    Comprado, o enfeite pode ser guardado e posto de volta de graça: save.decor[id] = 1 (à mostra) ou 0 (guardado).
@@ -1039,7 +1040,10 @@ function movimentoSalao(lugares){ return 1 + MOVIMENTO.porLugar * Math.max(0, lu
    Cada cliente tem o seu humor (de −humor.var a +humor.var) e, às vezes (`humor.encanta`), sai encantado e dá de
    humor.extra a mais, até `humor.folga` acima do teto: num dia especial, a Garagem chega a 3,5 ou 3,8. Quem sai bravo não
    tem humor.
-   O movimento vai pela fração do teto: neutro na metade (2 ★ na Garagem) e +mov no teto */
+   O movimento vai pela fração do teto: neutro na metade (2 ★ na Garagem) e +mov no teto.
+   v8.6.6, decoração no ambiente: a base caiu de 3 para 2 (a Garagem pelada é "meio sem graça"); cada planta à mostra
+   (DECOR, grupo plantas) soma amb.planta, cada peça do cantinho da Rosa amb.rosa, e quem senta numa mesa com a toalha
+   xadrez, amb.toalha. Sem enfeite, a TV, o som, a torneira, o ventilador e o cafezinho levam o ambiente só até 4,5 */
 const AVAL = {
   max:30, min:8, porDia:4, porCoracao:0.75, mov:0.1,
   teto:[3, 3.7, 4.3, 5],
@@ -1047,7 +1051,7 @@ const AVAL = {
   bonus:{ cor:0.5, corrente:0.5, crit:0.5, max:1.5 },
   prato:[[2.5, 4.5], [3, 4.7], [3.5, 5]],
   menu:{ base:1.5, porPrato:0.75 },
-  amb:{ base:3, tv:0.5, som:0.5, maquina:0.5, ventilador:0.5, cafe:0.5, couvert:1, lixo:-1 }
+  amb:{ base:2, tv:0.5, som:0.5, maquina:0.5, ventilador:0.5, cafe:0.5, couvert:1, lixo:-1, planta:0.3, rosa:0.25, toalha:0.5 }
 };
 const AVAL_CRIT = [
   { id:'espera', nome:'Espera por mesa',
@@ -1104,10 +1108,18 @@ const AVAL_SIMPLES = [
   ['Muito bom! Só falta aquele toque de requinte.']
 ];
 const AVAL_BRAVO = { fila:['Desisti de esperar!', 'Nem consegui sentar.'], mesa:['Fui embora sem comer!', 'Nunca mais volto!'], retirada:['Cadê a marmita?!', 'Saí sem o pedido!'] };   // retirada (v8.6): o entregador
-function avalComentario(r, bravo, lixo, nivel){
+/* elogios do ambiente que citam a decoração (v8.6.6), por enfeite (a toalha, só de quem sentou numa mesa com ela) */
+const AVAL_DECOR = {
+  espada:'Que plantinha linda na entrada!', lata:'Adorei a mudinha na lata!', samambaia:'Que samambaia bonita!',
+  foto:'Que foto bonita na parede!', giz:'Adorei o quadro de giz!', placa:'"Comida é afeto": é isso mesmo!',
+  toalha:'A toalha xadrez dá um charme!'
+};
+function avalComentario(r, bravo, lixo, nivel, decor){
   if (bravo) return pick(AVAL_BRAVO[bravo]);
   const bom = Math.round(avalNota(r) * 10) >= 40;   // pela nota com uma casa (3,96 vira 4,0)
   if (bom && AVAL_SIMPLES[(nivel || 1) - 1] && Math.random() < 0.3) return pick(AVAL_SIMPLES[(nivel || 1) - 1]);
+  // v8.6.6: com o ambiente bom (4 ou mais), às vezes elogia um enfeite que viu (decor: os ids, e 'toalha')
+  if (bom && decor && decor.length && r[AVAL_CRIT.findIndex(c => c.id === 'amb')] >= 4 && Math.random() < 0.35) return AVAL_DECOR[pick(decor)];
   let k = 0;
   r.forEach((v, i) => { if (bom ? v > r[k] : v < r[k]) k = i; });
   if (!bom && lixo && AVAL_CRIT[k].id === 'amb') return 'Que cheiro de lixo!';
@@ -1147,7 +1159,7 @@ function tabelaDe(e){
 /* um empréstimo novo de v, pagando em dia: as parcelas e os juros somados */
 function simulaEmprestimo(v, j){ const t = tabelaDe(normEmprestimo({ resto:v, amort:Math.ceil(v / BANCO.parcelas), j })); return { parcelas:t, juros:t.reduce((a, p) => a + p, 0) - v }; }
 const CAIXA_MAX = 14;                                 // livro-caixa (v7.2): quantos dias da carreira ficam guardados
-const VERSAO = 'v8.6.5';                               // vai no resumo do Caixa
+const VERSAO = 'v8.6.6';                               // vai no resumo do Caixa
 const DIVULGA_DIA = 3;                                // antes disso, o movimento é o da inauguração (sem custo)
 function divulgaAberta(n){ return DEV.on || n >= DIVULGA_DIA; }   // no modo dev, desde o dia 1
 function divulgaOf(id){ return DIVULGA.find(d => d.id === id) || DIVULGA[1]; }
@@ -2976,15 +2988,19 @@ class Game {
     if (this.mode !== 'carreira' || !g.avalia) return;
     const A = AVAL, eq = this.save.equipe, bravo = g.angry ? (g.retira ? 'retirada' : g.state === 'queue' ? 'fila' : 'mesa') : '';
     const bonus = Math.min(A.bonus.max, (g.corCerta ? A.bonus.cor : 0) + (g.corrente ? A.bonus.corrente : 0) + (g.capricho ? A.bonus.crit : 0));
+    // v8.6.6: a decoração à mostra e a toalha da mesa em que o grupo sentou (g.table ainda vale aqui, também para quem sai bravo)
+    const decor = DECOR.filter(d => decorOn(this, d.id)).map(d => d.id), toalha = !!(g.table && g.table.toalha);
+    if (toalha) decor.push('toalha');
     const amb = A.amb.base + (eq.tv ? A.amb.tv : 0) + (eq.som ? A.amb.som : 0) + (this.up.maquina ? A.amb.maquina : 0) + (this.up.ventilador ? A.amb.ventilador : 0) +
-      (g.coffee ? A.amb.cafe : 0) + (eq.couvert ? A.amb.couvert : 0) + (this.trashFull ? A.amb.lixo : 0);
+      (g.coffee ? A.amb.cafe : 0) + (eq.couvert ? A.amb.couvert : 0) + (this.trashFull ? A.amb.lixo : 0) +
+      decor.reduce((a, id) => a + (id === 'toalha' ? A.amb.toalha : A.amb[decorOf(id).grupo === 'plantas' ? 'planta' : 'rosa']), 0);
     // o entregador (v8.6): a espera no balcão conta na espera e na agilidade
     const s = [5 - A.porCoracao * (g.retira ? g.perdMesa : g.perdFila), bravo ? 1 : 5 - A.porCoracao * g.perdMesa + bonus, g.pratoQ || 1, avalMenu(), amb]
       .map(v => clamp(Math.round(v * 10) / 10, 1, 5));
     // v8.6.4: a nota no Gurugol fica na escala do ponto (o serviço 5 vale o teto), mais o humor de quem avalia
     const teto = avalTeto(this.ponto), h = bravo ? 0 : rand(-A.humor.var, A.humor.var) + (Math.random() < A.humor.encanta ? rand(A.humor.extra[0], A.humor.extra[1]) : 0);
     const r = s.map(v => clamp(Math.round((avalEscala(v, teto) + h) * 10) / 10, 1, Math.min(5, teto + A.humor.folga)));
-    const txt = avalComentario(s, bravo, this.trashFull, this.ponto.nivel), nota = avalNota(r), f = avalFrac(nota, teto);
+    const txt = avalComentario(s, bravo, this.trashFull, this.ponto.nivel, decor), nota = avalNota(r), f = avalFrac(nota, teto);
     this.avals.push({ r, s, txt, k:g.type, v:g.vip });
     // balãozinho branco (sobe devagar, acima dos textos da conta)
     this.fx.push({ k:'text', box:true, x, y, vy:-12, life:2.8, max:2.8, text:fmtNota(nota) + '★ ' + txt, color:f >= 0.75 ? PAL.ok : f >= 0.5 ? PAL.alerta : PAL.perigo, size:13 });
@@ -6593,7 +6609,7 @@ function buildTips(){
   const ul = $('tips');
   clearEl(ul);
   const tips = [
-    ['A freguesia espera lá fora, na calçada. Arraste o grupo até uma mesa livre (ou toque no grupo e depois na mesa). Grupos grandes precisam das mesas de 4 lugares. Na lojinha, aba Salão, compre mesas e arraste-as para arrumar a garagem: mais lugares trazem mais clientes. Na aba Decoração, plantas, o cantinho da Rosa e toalhas deixam a garagem mais bonita.', c => {
+    ['A freguesia espera lá fora, na calçada. Arraste o grupo até uma mesa livre (ou toque no grupo e depois na mesa). Grupos grandes precisam das mesas de 4 lugares. Na lojinha, aba Salão, compre mesas e arraste-as para arrumar a garagem: mais lugares trazem mais clientes. Na aba Decoração, plantas, o cantinho da Rosa e toalhas deixam a garagem mais bonita e melhoram o ambiente no Gurugol.', c => {
       drawPerson(c,{skin:3,hair:3,hairC:'#1B1512',pants:'#2F3E5C'},12,52,{shirt:CHAIRS[1].c,mood:0,s:0.8});
       c.strokeStyle = PAL.alerta; c.lineWidth = 3; c.setLineDash([4,4]); c.beginPath(); c.moveTo(22,40); c.lineTo(40,30); c.stroke(); c.setLineDash([]);
       c.beginPath(); c.moveTo(42,28); c.lineTo(35,28); c.lineTo(40,35); c.closePath(); c.fillStyle = PAL.alerta; c.fill();
@@ -6660,7 +6676,7 @@ function buildTips(){
     drawBanco(c);
   }]);
   // v8.4: as avaliações do Gurugol
-  tips.push(['Cada grupo que sai avalia a lanchonete no Gurugol, de 1 a 5, em 5 critérios: espera por mesa e agilidade (cada coração perdido tira 1 ponto; cor certa, corrente e prato caprichado ajudam), qualidade da comida (o Tonhão com aumento acerta mais), diversidade do cardápio e ambiente (TV, som, torneira, ventilador, cafezinho; lixeira cheia atrapalha). A nota é a média das últimas ' + AVAL.max + ' avaliações e aparece a partir da ' + AVAL.min + 'ª; a aba Gurugol da lojinha mostra os últimos comentários. Na Garagem, lugar simples, o atendimento perfeito vale ' + fmtNota(AVAL.teto[0]) + ' ★ (um cliente encantado dá um pouco mais); cada ponto melhor sobe a nota, até 5 ★ no Terraço Suíça. Nota alta traz até ' + Math.round(AVAL.mov * 100) + '% mais gente; nota baixa afasta.', c => {
+  tips.push(['Cada grupo que sai avalia a lanchonete no Gurugol, de 1 a 5, em 5 critérios: espera por mesa e agilidade (cada coração perdido tira 1 ponto; cor certa, corrente e prato caprichado ajudam), qualidade da comida (o Tonhão com aumento acerta mais), diversidade do cardápio e ambiente (TV, som, torneira, ventilador, cafezinho, as plantas, o cantinho da Rosa e a toalha xadrez; lixeira cheia atrapalha). A nota é a média das últimas ' + AVAL.max + ' avaliações e aparece a partir da ' + AVAL.min + 'ª; a aba Gurugol da lojinha mostra os últimos comentários. Na Garagem, lugar simples, o atendimento perfeito vale ' + fmtNota(AVAL.teto[0]) + ' ★ (um cliente encantado dá um pouco mais); cada ponto melhor sobe a nota, até 5 ★ no Terraço Suíça. Nota alta traz até ' + Math.round(AVAL.mov * 100) + '% mais gente; nota baixa afasta.', c => {
     for (let i=0;i<5;i++) star(c,8 + i*12,22,5.5,i < 3 ? PAL.mostarda : '#d8cfb8');
     txt(c,'3,0',32,48,18,PAL.tinta,'center',FD);
   }]);
@@ -7133,14 +7149,14 @@ function buildDecor(grid){
   const dec = game.save.decor, bank = game.save.bank;
   DECOR.forEach(d => {
     const tem = d.id in dec, on = !!dec[d.id];
-    const c = decorCard(DECOR_GRUPOS.find(x => x.id === d.grupo).nome, upgradeIcon('d-' + d.id), d.name, d.desc + (tem && !on ? ' Guardado.' : ''));
+    const c = decorCard(DECOR_GRUPOS.find(x => x.id === d.grupo).nome, upgradeIcon('d-' + d.id), d.name, d.desc + ' Melhora o ambiente no Gurugol.' + (tem && !on ? ' Guardado.' : ''));
     if (on) c.classList.add('own');
     c.appendChild(!tem ? shopBtn('Comprar ' + fmt(d.cost), 'btn', bank >= d.cost, () => game.buyDecor(d.id), d.cost)
       : shopBtn(on ? 'Guardar' : 'Pôr de volta', on ? 'btn alt' : 'btn', true, () => game.mostraDecor(d.id, !on)));
     grid.appendChild(c);
   });
   const todas = game.save.salao.mesas.concat(game.estoque), sem = game.semToalha.length, v = sem * TOALHA.cost;
-  const c = decorCard('Mesas', upgradeIcon('d-toalha'), 'Toalha xadrez', 'Com o porta-guardanapo e a florzinha. ' + fmt(TOALHA.cost) + ' por mesa; vai junto com a mesa. ' +
+  const c = decorCard('Mesas', upgradeIcon('d-toalha'), 'Toalha xadrez', 'Com o porta-guardanapo e a florzinha; melhora o ambiente no Gurugol para quem senta nela. ' + fmt(TOALHA.cost) + ' por mesa; vai junto com a mesa. ' +
     (todas.length - sem) + ' de ' + todas.length + (todas.length > 1 ? ' mesas têm' : ' mesa tem') + '; no Salão, toque numa mesa para pôr só nela.');
   if (!sem) c.classList.add('own');
   c.appendChild(shopBtn(!sem ? 'Todas as mesas têm' : 'Pôr em ' + (sem > 1 ? 'todas (' + sem + ')' : '1 mesa') + ': ' + fmt(v), 'btn', sem > 0 && bank >= v, () => game.buyToalhas(), v));
@@ -7835,7 +7851,7 @@ try { Rank.init(); } catch(e) {}
 game.setState('menu');
 if (!aberturaVista() && !DEV.on) abrirAbertura('auto');   // v8.5: a abertura toca sozinha uma vez
 window.__game = game;
-window.__lcc = { DECOR, DECOR_GRUPOS, TOALHA, decorOf, normDecor, decorOn, FILA_ACOES, filaMax, MARMITA, RETIRADA, marmitaMao, drawMarmita, prateleiraPos, EFOOD_COR, AVAL_BRAVO, QUEUE, setShopTab: v => { shopTab = v; buildShop(); }, TREINO, TREINO_PASSOS, TREINO_COR, Treino, treinoLugar, treinoPrimeiro, playCareer, buildMenu, introBanco, buildFalencia, BANCO, normEmprestimo, parcelaDe, devidoDe, jurosDe, tabelaDe, simulaEmprestimo, SEMANA, semanaOf, diaOf, FILA_JUSTA, PORTA, CHAIRS, PAT, CONTAS, INGRED, CARDAPIO, precoPrato, MAIS, PONTOS_ACAO, GORJETA, DRINK_PRICE, MOVIMENTO, movimentoSalao, DIVULGA, DIVULGA_DIA, divulgaOf, contasDia, bomGoal, SALAO, PONTOS, pontoOf, MESA, mesaBox, mesaPreco, salaoLugares, mesaProblema, salaoCaminho, salaoProblema, salaoOrdena, salaoAuto, salaoVaga, salaoPerto, salaoKit, salaoDevolucao, SALAO_SEMFIM, normSalao, setObst, OBST, pathOk, MAQUINA, BEBIDA_ESPERA, bebidaOf, MANUT, manutOf, manutChance, manutPreco, normManut, CLIMA, CLIMA_DIA, introManut, normPend, CALCADA, TW, HUDX, esperaAp, tableApproach, CRIT, STAFF, DANI_TASKS, DANI_HANDS, daniTaskOk, TRASH, WASH, payroll, FOLHA_CORTE, folhaCorta, folhaCortes, folhaItens, listaE, pratosDe, couvertEffect, couvertOk, ambienteEffect, dishStock, normSave, Helper, JUICE, KITCHEN_SLOTS, handLayout, trayOk, Game, Group, Table, Kitchen, Waitress, BIA_SPEED, DAYS, UPGRADES, CUSTOMER_TYPES, LAYOUT, PAL, Sfx, findPath, render, Rank, sortRows, cleanName, normName, CMD, ENDLESS, VIP, MULTA, rk, renderRank, openRank, closeRank, LS, lsGet, lsSet, loadSave, DEV, saveKey, devSync, divulgaAberta, CAIXA_MAX, VERSAO, normCaixa, caixaResumo, caixaTotais, copyText, AVAL, AVAL_CRIT, AVAL_BRAVO, avalMenu, avalTeto, avalEscala, avalFrac, AVAL_SIMPLES, normAval, avalNota, avalMedias, avalGeral, avalMovimento, avalComentario, fmtNota, notaFaixa, gurugolCaixa, AVAL_COM, normAvalCom, buildGurugol, ABERTURA, Abertura, AB_CENAS, AB_ALT, AB_BASE, abEsc, AB_VIVO, aberturaVista, aberturaSom, drawAbertura, abrirAbertura, aberturaAtual: () => abertura };
+window.__lcc = { DECOR, DECOR_GRUPOS, TOALHA, decorOf, normDecor, decorOn, FILA_ACOES, filaMax, MARMITA, RETIRADA, marmitaMao, drawMarmita, prateleiraPos, EFOOD_COR, AVAL_BRAVO, QUEUE, setShopTab: v => { shopTab = v; buildShop(); }, TREINO, TREINO_PASSOS, TREINO_COR, Treino, treinoLugar, treinoPrimeiro, playCareer, buildMenu, introBanco, buildFalencia, BANCO, normEmprestimo, parcelaDe, devidoDe, jurosDe, tabelaDe, simulaEmprestimo, SEMANA, semanaOf, diaOf, FILA_JUSTA, PORTA, CHAIRS, PAT, CONTAS, INGRED, CARDAPIO, precoPrato, MAIS, PONTOS_ACAO, GORJETA, DRINK_PRICE, MOVIMENTO, movimentoSalao, DIVULGA, DIVULGA_DIA, divulgaOf, contasDia, bomGoal, SALAO, PONTOS, pontoOf, MESA, mesaBox, mesaPreco, salaoLugares, mesaProblema, salaoCaminho, salaoProblema, salaoOrdena, salaoAuto, salaoVaga, salaoPerto, salaoKit, salaoDevolucao, SALAO_SEMFIM, normSalao, setObst, OBST, pathOk, MAQUINA, BEBIDA_ESPERA, bebidaOf, MANUT, manutOf, manutChance, manutPreco, normManut, CLIMA, CLIMA_DIA, introManut, normPend, CALCADA, TW, HUDX, esperaAp, tableApproach, CRIT, STAFF, DANI_TASKS, DANI_HANDS, daniTaskOk, TRASH, WASH, payroll, FOLHA_CORTE, folhaCorta, folhaCortes, folhaItens, listaE, pratosDe, couvertEffect, couvertOk, ambienteEffect, dishStock, normSave, Helper, JUICE, KITCHEN_SLOTS, handLayout, trayOk, Game, Group, Table, Kitchen, Waitress, BIA_SPEED, DAYS, UPGRADES, CUSTOMER_TYPES, LAYOUT, PAL, Sfx, findPath, render, Rank, sortRows, cleanName, normName, CMD, ENDLESS, VIP, MULTA, rk, renderRank, openRank, closeRank, LS, lsGet, lsSet, loadSave, DEV, saveKey, devSync, divulgaAberta, CAIXA_MAX, VERSAO, normCaixa, caixaResumo, caixaTotais, copyText, AVAL, AVAL_CRIT, AVAL_BRAVO, avalMenu, avalTeto, avalEscala, avalFrac, AVAL_SIMPLES, AVAL_DECOR, normAval, avalNota, avalMedias, avalGeral, avalMovimento, avalComentario, fmtNota, notaFaixa, gurugolCaixa, AVAL_COM, normAvalCom, buildGurugol, ABERTURA, Abertura, AB_CENAS, AB_ALT, AB_BASE, abEsc, AB_VIVO, aberturaVista, aberturaSom, drawAbertura, abrirAbertura, aberturaAtual: () => abertura };
 window.requestAnimationFrame(frame);
 
 })();

@@ -4,6 +4,13 @@ Registro das ideias e dos retornos de quem jogou, com o texto original, e de ond
 
 ---
 
+## 29/10/2026 — Usuário: rever o rebalanceamento com a decoração
+**Origem:** pedido do usuário no chat, depois do merge da v8.6.5: "Reveja o rebalanceamento agora que entrou um novo Merge de estética", com o resumo da sessão da decoração (a proposta aceita da decoração no Ambiente, adiada para não conflitar com o teto da v8.6.4).
+
+**Destino:** feito na **v8.6.6** (`docs/spec-v8.6.6.md`), com os valores da proposta.
+
+---
+
 ## 29/10/2026 — Usuário: decoração da Garagem
 **Origem:** pedido do usuário no chat (sugeri 4 opções: plantas, parede e luz, mesas arrumadas e o cantinho da Rosa):
 

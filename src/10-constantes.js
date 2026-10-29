@@ -234,7 +234,7 @@ function salaoDevolucao(s){
 const SALAO_SEMFIM = [2,2,2,4,2,4];
 /* ============================================================
    DECORAÇÃO (v8.6.5, pedido do usuário): enfeites da Garagem, comprados na aba Decoração da lojinha, à vontade (fora
-   da melhoria do dia). Por enquanto só visuais: o peso no Ambiente do Gurugol fica para uma próxima etapa.
+   da melhoria do dia). Desde a v8.6.6, contam no Ambiente do Gurugol (AVAL.amb: planta, rosa e toalha).
    - plantas: as espadas-de-são-jorge da calçada (da v7.7, que vinham de graça) e a samambaia na parede;
    - cantinho da Rosa: a foto da mãe da Bia, o quadro de giz com o prato do dia e a plaquinha "Comida é afeto".
    Comprado, o enfeite pode ser guardado e posto de volta de graça: save.decor[id] = 1 (à mostra) ou 0 (guardado).
@@ -459,7 +459,10 @@ function movimentoSalao(lugares){ return 1 + MOVIMENTO.porLugar * Math.max(0, lu
    Cada cliente tem o seu humor (de −humor.var a +humor.var) e, às vezes (`humor.encanta`), sai encantado e dá de
    humor.extra a mais, até `humor.folga` acima do teto: num dia especial, a Garagem chega a 3,5 ou 3,8. Quem sai bravo não
    tem humor.
-   O movimento vai pela fração do teto: neutro na metade (2 ★ na Garagem) e +mov no teto */
+   O movimento vai pela fração do teto: neutro na metade (2 ★ na Garagem) e +mov no teto.
+   v8.6.6, decoração no ambiente: a base caiu de 3 para 2 (a Garagem pelada é "meio sem graça"); cada planta à mostra
+   (DECOR, grupo plantas) soma amb.planta, cada peça do cantinho da Rosa amb.rosa, e quem senta numa mesa com a toalha
+   xadrez, amb.toalha. Sem enfeite, a TV, o som, a torneira, o ventilador e o cafezinho levam o ambiente só até 4,5 */
 const AVAL = {
   max:30, min:8, porDia:4, porCoracao:0.75, mov:0.1,
   teto:[3, 3.7, 4.3, 5],
@@ -467,7 +470,7 @@ const AVAL = {
   bonus:{ cor:0.5, corrente:0.5, crit:0.5, max:1.5 },
   prato:[[2.5, 4.5], [3, 4.7], [3.5, 5]],
   menu:{ base:1.5, porPrato:0.75 },
-  amb:{ base:3, tv:0.5, som:0.5, maquina:0.5, ventilador:0.5, cafe:0.5, couvert:1, lixo:-1 }
+  amb:{ base:2, tv:0.5, som:0.5, maquina:0.5, ventilador:0.5, cafe:0.5, couvert:1, lixo:-1, planta:0.3, rosa:0.25, toalha:0.5 }
 };
 const AVAL_CRIT = [
   { id:'espera', nome:'Espera por mesa',
@@ -524,10 +527,18 @@ const AVAL_SIMPLES = [
   ['Muito bom! Só falta aquele toque de requinte.']
 ];
 const AVAL_BRAVO = { fila:['Desisti de esperar!', 'Nem consegui sentar.'], mesa:['Fui embora sem comer!', 'Nunca mais volto!'], retirada:['Cadê a marmita?!', 'Saí sem o pedido!'] };   // retirada (v8.6): o entregador
-function avalComentario(r, bravo, lixo, nivel){
+/* elogios do ambiente que citam a decoração (v8.6.6), por enfeite (a toalha, só de quem sentou numa mesa com ela) */
+const AVAL_DECOR = {
+  espada:'Que plantinha linda na entrada!', lata:'Adorei a mudinha na lata!', samambaia:'Que samambaia bonita!',
+  foto:'Que foto bonita na parede!', giz:'Adorei o quadro de giz!', placa:'"Comida é afeto": é isso mesmo!',
+  toalha:'A toalha xadrez dá um charme!'
+};
+function avalComentario(r, bravo, lixo, nivel, decor){
   if (bravo) return pick(AVAL_BRAVO[bravo]);
   const bom = Math.round(avalNota(r) * 10) >= 40;   // pela nota com uma casa (3,96 vira 4,0)
   if (bom && AVAL_SIMPLES[(nivel || 1) - 1] && Math.random() < 0.3) return pick(AVAL_SIMPLES[(nivel || 1) - 1]);
+  // v8.6.6: com o ambiente bom (4 ou mais), às vezes elogia um enfeite que viu (decor: os ids, e 'toalha')
+  if (bom && decor && decor.length && r[AVAL_CRIT.findIndex(c => c.id === 'amb')] >= 4 && Math.random() < 0.35) return AVAL_DECOR[pick(decor)];
   let k = 0;
   r.forEach((v, i) => { if (bom ? v > r[k] : v < r[k]) k = i; });
   if (!bom && lixo && AVAL_CRIT[k].id === 'amb') return 'Que cheiro de lixo!';
@@ -567,7 +578,7 @@ function tabelaDe(e){
 /* um empréstimo novo de v, pagando em dia: as parcelas e os juros somados */
 function simulaEmprestimo(v, j){ const t = tabelaDe(normEmprestimo({ resto:v, amort:Math.ceil(v / BANCO.parcelas), j })); return { parcelas:t, juros:t.reduce((a, p) => a + p, 0) - v }; }
 const CAIXA_MAX = 14;                                 // livro-caixa (v7.2): quantos dias da carreira ficam guardados
-const VERSAO = 'v8.6.5';                               // vai no resumo do Caixa
+const VERSAO = 'v8.6.6';                               // vai no resumo do Caixa
 const DIVULGA_DIA = 3;                                // antes disso, o movimento é o da inauguração (sem custo)
 function divulgaAberta(n){ return DEV.on || n >= DIVULGA_DIA; }   // no modo dev, desde o dia 1
 function divulgaOf(id){ return DIVULGA.find(d => d.id === id) || DIVULGA[1]; }
