@@ -4,6 +4,33 @@ Registro das ideias e dos retornos de quem jogou, com o texto original, e de ond
 
 ---
 
+## 29/10/2026 — Usuário: sabatina para planejar a 2c-r3 (cardápio e cursos do Tonhão)
+**Origem:** perguntas no chat, para deixar a sessão pronta para o Sonnet. Respostas do usuário (as escolhidas entre as opções e o texto dele):
+
+> Começo: "PF e coxinha". Pastel: "Curso na Garagem". Save antigo: "Volta para 2", e depois "Recomeça a campanha".
+
+> Cursos: "curso salgados fritos com risolis, kibe e bolinho japonês, curso salgados assados com empada, esfiha aberta e fechada de carne, curso Chapa 1: misto quente, Bauru, pão na chapa." "pastel vira curso de pastel de feira: com esses 3 sabores aí. cada curso tem sua versão avançada para fazer para deixar mais requintadinho". Preço: "R$ 150 a 250".
+
+> Avançado: "em vez de dobrar a chance do nível do tonhão, multiplique por 1,5 a chance do nível". "O avançado aumenta em 15% o preço, mas temos que definir os sabores/receitas \"avançadas\" para a lore do jogo".
+
+> Pedidos: "cada tipo de cliente tem seu estilo, famílias com crianças, por exemplo, tendem a pegar mais PF, idosos gostam mais de coisas assadas ou PF, estudantes gostam de salgados, entregadores pegam salgados no primeiro terço do turno, PF no segundo terço e salgado/frituras no terceiro terço. vamos ponderar para os outros perfis. coisas parecidas". Depois, a tabela de pesos sugerida.
+
+> Diversidade: "Por curso", 2,0 + 0,6 por curso básico; o avançado não conta.
+
+> PF: "o avançado da coxinha entra junto dos salgados fritos avançado. PF tem 2 upgrades: opções vegetarianas como curso básico único que adiciona mais uma opção ao ramo dos PFs (15 pratos total então para nota 5) e um sprite próprio com Proteínas de soja refogada em vez do bife (grumos marronzinhos tipo carne moída refogada mesmo) e curso avançado carnes variadas, que, além dos benefícios do curso avançado, adiciona 3 sprites estéticos de carnes diferentes no prato, selecionados aleatoriamente por quem pede PF (filé de Frango grelhado, peixe frito, bife a cavalo)". Carnes variadas: R$ 400, PF +15%.
+
+> Preços: "Fritos: risoles 6, kibe 7, bolinho japonês 8. Assados: empada 9, esfiha aberta 7, fechada 7. Chapa: misto 10, bauru 12, pão na chapa 7. Pastel: carne 10, queijo 10, pizza 11."
+
+> Vegetariano: "o curso vegetariano pode adicionar opções vegetarianas para salgados como empada de palmito, bolinho japonês e kibe (com um \"v\" estilizado em verde sobre o prato), o que faz ele valer tanto quanto ou até mais é por aumentar atratividade da lanchonete por conta da inclusão de pessoas que não consomem carnes. o curso avançado do vegetariano é curso pratos veganos, que adiciona versão veg em quase todos os pratos (temos que ver quais são possíveis), com uma folhinha verde pequena em cima do prato pronto." PF veg R$ 23, curso R$ 150; clientes vegetarianos (~10%) que, sem o curso, pedem "pão na chapa ou pastel de queijo se a cozinha souber; se não, pede uma coxinha de qualquer jeito e dá Cardápio 1"; Pratos veganos R$ 300.
+
+> Receitas dos avançados: "Fritos: 'coxinha massa de batata com catupiry' (vale para coxinha), risoles de camarão, kibe com coalhada, bolinho japonês com queijo). Assados: 'Massa podre da vó Nilza' (empada de frango com azeitona, esfihas com coalhada e limão). Chapa: 'Pão francês da padaria e requeijão de corte', misto quente de presunto parma e mussarela de búfala, Bauru clássico com rosbife e picles. Pastel: 'Pastel de feira de verdade' (carne com ovo e azeitona, queijo com orégano, pizza com calabresa). PF: 'Carnes variadas'."
+
+> Lojinha: "Aba 'Cursos', 1 curso por dia". Sessões: "3 sessões", "Regras · Desenhos · Veg".
+
+**Destino:** a sessão 2c-r3 do `docs/PLANO.md` virou 3 partes: 2c-r3a (cursos e gostos, v8.6.9), 2c-r3b (desenhos, v8.6.10) e 2c-r3c (vegetarianos e veganos, v8.6.11). Decidido por mim, sem pergunta: a Nilza é a avó da Bia (mãe da Rosa e do Tonhão); o bolinho japonês ficou de fora dos pratos veg (na última resposta, o usuário o tirou da lista); a empada de palmito e o kibe de abóbora só aparecem com o curso de assados e o de fritos; o "+ marmita" continua fazendo PF.
+
+---
+
 ## 29/10/2026 — Usuário: entrevista sobre o relatório do Gurugol
 **Origem:** entrevista no chat sobre o `docs/RELATORIO-GURUGOL.md` (as perguntas da seção 8). Respostas do usuário (as escolhidas entre as opções e o texto dele):
 
