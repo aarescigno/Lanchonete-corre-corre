@@ -203,7 +203,7 @@ function salaoCor(mesas){
   return n.indexOf(Math.min.apply(null, n));
 }
 function salaoKit(ponto){ return salaoAuto(SALAO.kit.map((seats, c) => ({ x:0, y:0, seats, c:c % 4 })), ponto); }
-/* save do salão: { ponto, mesas:[{ x, y, seats, c }], estoque:[{ seats, c }] }. O estoque (v8.3.5) guarda mesas
+/* save do salão: { ponto, mesas:[{ x, y, seats, c, t? }], estoque:[{ seats, c, t? }] } (t: a toalha, v8.6.4). O estoque (v8.3.5) guarda mesas
    fora do salão: não abrem no dia nem pagam luz e gás, mas contam no teto de lugares. Mesa estragada sai; passou
    do teto, saem as do estoque e depois as últimas do salão; arranjo inválido vira o automático (e, se nem assim,
    o kit inicial) */
@@ -211,9 +211,9 @@ function normSalao(s){
   s = (s && typeof s === 'object') ? s : {};
   const ponto = pontoOf(s.ponto);
   const lista = l => (Array.isArray(l) ? l : []).filter(m => m && typeof m === 'object' && (+m.seats === 2 || +m.seats === 4))
-    .map((m, i) => ({ x:Math.round(+m.x) || 0, y:Math.round(+m.y) || 0, seats:+m.seats, c:(+m.c >= 0 && +m.c <= 3) ? Math.round(+m.c) : i % 4 }));
+    .map((m, i) => Object.assign({ x:Math.round(+m.x) || 0, y:Math.round(+m.y) || 0, seats:+m.seats, c:(+m.c >= 0 && +m.c <= 3) ? Math.round(+m.c) : i % 4 }, m.t ? { t:1 } : {}));
   let mesas = lista(s.mesas);
-  const estoque = lista(s.estoque).map(m => ({ seats:m.seats, c:m.c })), tot = () => salaoLugares(mesas) + salaoLugares(estoque);
+  const estoque = lista(s.estoque).map(m => Object.assign({ seats:m.seats, c:m.c }, m.t ? { t:1 } : {})), tot = () => salaoLugares(mesas) + salaoLugares(estoque);
   while (tot() > ponto.lugares && estoque.length) estoque.pop();
   while (salaoLugares(mesas) > ponto.lugares) mesas.pop();
   mesas = salaoOrdena(mesas);
@@ -232,6 +232,37 @@ function salaoDevolucao(s){
 }
 /* Turno sem fim (v7.4): salão fixo de 6 mesas e 16 lugares (o de antes), igual para todo mundo no ranking */
 const SALAO_SEMFIM = [2,2,2,4,2,4];
+/* ============================================================
+   DECORAÇÃO (v8.6.4, pedido do usuário): enfeites da Garagem, comprados na aba Decoração da lojinha, à vontade (fora
+   da melhoria do dia). Por enquanto só visuais: o peso no Ambiente do Gurugol fica para uma próxima etapa.
+   - plantas: as espadas-de-são-jorge da calçada (da v7.7, que vinham de graça) e a samambaia na parede;
+   - cantinho da Rosa: a foto da mãe da Bia, o quadro de giz com o prato do dia e a plaquinha "Comida é afeto".
+   Comprado, o enfeite pode ser guardado e posto de volta de graça: save.decor[id] = 1 (à mostra) ou 0 (guardado).
+   A toalha xadrez (com o porta-guardanapo e a florzinha) é de cada mesa: { t:1 } na mesa do salão ou do estoque,
+   vai junto quando a mesa muda de lugar e some quando ela é vendida
+   ============================================================ */
+const DECOR = [
+  { id:'espada',    grupo:'plantas', name:'Espada-de-são-jorge', desc:'No vaso de barro, na calçada, ao lado da espera.', cost:15 },
+  { id:'lata',      grupo:'plantas', name:'Muda na lata',        desc:'Uma espada menor numa lata de tinta reaproveitada, encostada no muro.', cost:8 },
+  { id:'samambaia', grupo:'plantas', name:'Samambaia',           desc:'Pendurada num suporte na parede da garagem, ao lado da janela.', cost:30 },
+  { id:'foto',      grupo:'rosa',    name:'Foto da dona Rosa',   desc:'A mãe da Bia sorrindo, num porta-retrato na parede.', cost:10 },
+  { id:'giz',       grupo:'rosa',    name:'Quadro de giz',       desc:'No cavalete, perto do portão, com o prato do dia escrito à mão.', cost:25 },
+  { id:'placa',     grupo:'rosa',    name:'Plaquinha',           desc:'"Comida é afeto", pintada à mão, embaixo do letreiro.', cost:15 }
+];
+const DECOR_GRUPOS = [
+  { id:'plantas', nome:'Plantas' },
+  { id:'rosa',    nome:'Cantinho da Rosa' }
+];
+const TOALHA = { cost:12 };   // por mesa
+function decorOf(id){ return DECOR.find(d => d.id === id); }
+/* save.decor: { id: 1 à mostra, 0 guardado }; só os enfeites que existem */
+function normDecor(d){
+  const out = {};
+  if (d && typeof d === 'object') DECOR.forEach(x => { if (x.id in d) out[x.id] = d[x.id] ? 1 : 0; });
+  return out;
+}
+/* o enfeite id está à mostra no jogo g? (no menu e na Missão zero, o save do jogo) */
+function decorOn(g, id){ return !!(g && g.save && g.save.decor && g.save.decor[id]); }
 
 /* gorjeta pelos corações na hora da conta (v8.3.8; antes, com 5 corações a conta saía 50% maior): no máximo +10%;
    com 1 ou 2 o grupo reclama e ganha desconto */
@@ -515,7 +546,7 @@ function tabelaDe(e){
 /* um empréstimo novo de v, pagando em dia: as parcelas e os juros somados */
 function simulaEmprestimo(v, j){ const t = tabelaDe(normEmprestimo({ resto:v, amort:Math.ceil(v / BANCO.parcelas), j })); return { parcelas:t, juros:t.reduce((a, p) => a + p, 0) - v }; }
 const CAIXA_MAX = 14;                                 // livro-caixa (v7.2): quantos dias da carreira ficam guardados
-const VERSAO = 'v8.6.3';                               // vai no resumo do Caixa
+const VERSAO = 'v8.6.4';                               // vai no resumo do Caixa
 const DIVULGA_DIA = 3;                                // antes disso, o movimento é o da inauguração (sem custo)
 function divulgaAberta(n){ return DEV.on || n >= DIVULGA_DIA; }   // no modo dev, desde o dia 1
 function divulgaOf(id){ return DIVULGA.find(d => d.id === id) || DIVULGA[1]; }

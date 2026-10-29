@@ -878,7 +878,7 @@ class Game {
     const sem = this.mode === 'semfim', sal = this.save.salao, key = sem ? 'semfim' : JSON.stringify(sal);
     if (key === this.tablesKey) return;
     const mesas = sem ? (this.semfimMesas || (this.semfimMesas = salaoAuto(SALAO_SEMFIM.map((seats, i) => ({ seats, c:i % 4 })), PONTOS[0]))) : sal.mesas;
-    const defs = mesas.map((m, i) => ({ id:i + 1, cx:m.x, cy:m.y, seats:m.seats, color:m.c }));
+    const defs = mesas.map((m, i) => ({ id:i + 1, cx:m.x, cy:m.y, seats:m.seats, color:m.c, toalha:!!m.t }));
     this.tables = defs.map(d => new Table(d));
     setObst(defs);
     this.tablesKey = key;
@@ -964,16 +964,51 @@ class Game {
     const mesas = this.save.salao.mesas, m = mesas[i];
     if (!m) return false;
     if (mesas.length <= 1) return this.salaoNao('O salão precisa de pelo menos 1 mesa.');
-    return this.salaoSet(mesas.filter(x => x !== m), true, this.estoque.concat([{ seats:m.seats, c:m.c }]));
+    return this.salaoSet(mesas.filter(x => x !== m), true, this.estoque.concat([Object.assign({ seats:m.seats, c:m.c }, m.t ? { t:1 } : {})]));
   }
   /* editor (v8.3.5): a mesa k do estoque volta para o salão em (x, y), ou no primeiro lugar livre se não vier lugar */
   tirarMesa(k, x, y){
     const p = this.ponto, mesas = this.save.salao.mesas, m = this.estoque[k];
     if (!m) return false;
     if (x == null){ const v = salaoVaga(mesas, m.seats, p); if (!v) return this.salaoNao('Não há lugar livre no salão: abra espaço ou guarde outra mesa.'); x = v.x; y = v.y; }
-    const l = mesas.concat([{ x, y, seats:m.seats, c:m.c, sel:1 }]), why = salaoProblema(l, p);
+    const l = mesas.concat([Object.assign({ x, y, seats:m.seats, c:m.c, sel:1 }, m.t ? { t:1 } : {})]), why = salaoProblema(l, p);
     if (why) return this.salaoNao(why);
     return this.salaoSet(l, true, this.estoque.filter(e => e !== m));
+  }
+  /* decoração (v8.6.4): enfeite novo (fica à mostra), à vontade e fora da melhoria do dia */
+  buyDecor(id){
+    const d = decorOf(id), dec = this.save.decor;
+    if (!d || id in dec || this.save.bank < d.cost) return false;
+    this.save.bank -= d.cost; caixaGasto(this.save, 'sal', d.cost);
+    dec[id] = 1;
+    writeSave(this.save); Sfx.coin();
+    return true;
+  }
+  /* guardar ou pôr de volta um enfeite já comprado (de graça) */
+  mostraDecor(id, on){
+    const dec = this.save.decor;
+    if (!(id in dec)) return false;
+    dec[id] = on ? 1 : 0;
+    writeSave(this.save);
+    return true;
+  }
+  /* toalha xadrez na mesa i (do salão ou do estoque) */
+  buyToalha(i, est){
+    const m = (est ? this.estoque : this.save.salao.mesas)[i];
+    if (!m || m.t) return false;
+    if (this.save.bank < TOALHA.cost) return this.salaoNao('Falta dinheiro.');
+    this.save.bank -= TOALHA.cost; caixaGasto(this.save, 'sal', TOALHA.cost);
+    m.t = 1; Sfx.coin();
+    return this.salaoSaved();
+  }
+  /* toalha em todas as mesas que ainda não têm (salão e estoque) */
+  get semToalha(){ return this.save.salao.mesas.concat(this.estoque).filter(m => !m.t); }
+  buyToalhas(){
+    const l = this.semToalha, v = l.length * TOALHA.cost;
+    if (!l.length || this.save.bank < v) return false;
+    this.save.bank -= v; caixaGasto(this.save, 'sal', v);
+    l.forEach(m => { m.t = 1; }); Sfx.coin();
+    return this.salaoSaved();
   }
   arrumarSalao(){
     const l = salaoAuto(this.save.salao.mesas, this.ponto);

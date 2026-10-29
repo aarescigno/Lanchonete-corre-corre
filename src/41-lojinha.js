@@ -81,6 +81,22 @@ function upgradeIcon(id){
       for (let i=1;i<3;i++){ const d = -6 + i*5.33; c.beginPath(); c.moveTo(d,-12); c.lineTo(d,4); c.moveTo(-6,-12 + i*5.33); c.lineTo(10,-12 + i*5.33); c.stroke(); }
       [[-3.3,-9,'5'],[7.4,-3.7,'3'],[2,1.7,'8']].forEach(n => txt(c,n[2],n[0],n[1],5.5,PAL.tinta,'center',FB));
       txt(c,'SUDOKU',3,10,5,'#fff','center',FD);
+    } else if (id === 'd-espada'){   // decoração (v8.6.4): os próprios enfeites, menores
+      c.scale(0.42,0.42); drawVasoEspada(c,0,50);
+    } else if (id === 'd-lata'){
+      c.scale(0.62,0.62); drawLataEspada(c,0,30);
+    } else if (id === 'd-samambaia'){
+      c.scale(0.78,0.78); drawSamambaia(c,0,-4,1);
+    } else if (id === 'd-foto'){
+      drawFotoRosa(c,0,3,0.8);
+    } else if (id === 'd-giz'){
+      c.scale(0.68,0.68); drawGiz(c,0,30,1,game);
+    } else if (id === 'd-placa'){
+      c.rotate(-0.12); c.strokeStyle = 'rgba(34,32,28,.6)'; c.lineWidth = 1.2; c.beginPath(); c.moveTo(-12,-6); c.lineTo(0,-16); c.lineTo(12,-6); c.stroke();
+      rr(c,-19,-7,38,18,3); fs(c,'#F4E2C0',2);
+      c.beginPath(); c.moveTo(0,8); c.bezierCurveTo(-11,0,-6,-9,0,-3); c.bezierCurveTo(6,-9,11,0,0,8); c.closePath(); c.fillStyle = PAL.perigo; c.fill();
+    } else if (id === 'd-toalha'){
+      drawToalha(c,-17,6,34); drawToalhaEnfeites(c,0,6,17);
     } else if (id === 'ventilador'){
       for (let i=0;i<4;i++){ c.save(); c.rotate(i*Math.PI/2 + 0.4); ell(c,0,-8,4.5,9); fs(c,i%2?PAL.cromo:'#e8edf1',1.8); c.restore(); }
       circ(c,0,0,3.5); fs(c,PAL.mostarda,1.8);
@@ -239,7 +255,7 @@ function edHit(p, pad){
 function edMesas(){
   const d = edDrag, l = game.save.salao.mesas.slice();
   if (!d || !d.moved) return l;
-  if (d.est) return d.inEst ? l : l.concat([{ x:d.x, y:d.y, seats:game.estoque[d.i].seats, c:game.estoque[d.i].c }]);
+  if (d.est) return d.inEst ? l : l.concat([{ x:d.x, y:d.y, seats:game.estoque[d.i].seats, c:game.estoque[d.i].c, t:game.estoque[d.i].t }]);
   if (d.inEst){ l.splice(d.i, 1); return l; }
   l[d.i] = Object.assign({}, l[d.i], { x:d.x, y:d.y });
   return l;
@@ -264,7 +280,7 @@ function drawEstoque(c){
   }
   est.forEach((m, i) => {
     if (d && d.est && d.i === i) return;   // a arrastada vai desenhada por cima
-    const q = sl[i], t = new Table({ id:'', cx:q.x, cy:q.y - 4 * q.k, seats:m.seats, color:m.c });
+    const q = sl[i], t = new Table({ id:'', cx:q.x, cy:q.y - 4 * q.k, seats:m.seats, color:m.c, toalha:m.t });
     t.open = true;
     c.save(); c.translate(q.x, q.y); c.scale(q.k, q.k); c.translate(-q.x, -q.y);
     drawTable(c, game, t, 0, true);
@@ -277,20 +293,20 @@ function drawEditor(cv){
   if (!c) return;
   c.setTransform(ED.k, 0, 0, ED.k, -ED.x * ED.k, -ED.y * ED.k);
   c.lineJoin = 'round'; c.lineCap = 'round';
-  drawFloor(c, game); drawWall(c, game, 0); drawKitchen(c, game, 0);
+  drawFloor(c, game); edDesenho = true; drawWall(c, game, 0); edDesenho = false; drawKitchen(c, game, 0);
   const a = game.ponto.area;
   c.save(); c.setLineDash([8,6]); c.strokeStyle = 'rgba(31,79,163,.5)'; c.lineWidth = 2; rr(c,a.x0,a.y0,a.x1-a.x0,a.y1-a.y0,10); c.stroke(); c.restore();
   drawEstoque(c);
   const d = edDrag && edDrag.moved ? edDrag : null;
   game.save.salao.mesas.forEach((m, i) => {
     if (d && !d.est && d.i === i) return;
-    const t = new Table({ id:i + 1, cx:m.x, cy:m.y, seats:m.seats, color:m.c });
+    const t = new Table({ id:i + 1, cx:m.x, cy:m.y, seats:m.seats, color:m.c, toalha:m.t });
     t.open = true;
     drawTable(c, game, t, 0, true);
     if (i === game.salaoSel) edMarca(c, edRect(m), false, false);
   });
   if (d){   // a mesa arrastada, por cima de tudo
-    const m = d.est ? game.estoque[d.i] : game.save.salao.mesas[d.i], t = new Table({ id:d.est ? '' : d.i + 1, cx:d.x, cy:d.y, seats:m.seats, color:m.c });
+    const m = d.est ? game.estoque[d.i] : game.save.salao.mesas[d.i], t = new Table({ id:d.est ? '' : d.i + 1, cx:d.x, cy:d.y, seats:m.seats, color:m.c, toalha:m.t });
     t.open = true;
     drawTable(c, game, t, 0, true);
     edMarca(c, edRect({ x:d.x, y:d.y, seats:m.seats }), true, !d.ok);
@@ -368,15 +384,17 @@ function buildSalao(grid){
   box.appendChild(cv); edEvents(cv);
   // mesa escolhida: cor das cadeiras, guardar no estoque, virar mesa de 4 e vender (balãozinho em cima do salão)
   const m = mesas[sel], me = est[ks];
+  let pop = null, tops = null;   // tops: o alto do balãozinho aberto para baixo e para cima (em % do editor)
   if (m || me){
-    let pop;
     if (m){
       const up = m.y + 230 > ED.y + ED.h;
       pop = el('div', 'ed-pop' + (up ? ' up' : ''));
       pop.style.left = clamp((m.x - ED.x) / ED.w * 100, 18, 82) + '%';
-      pop.style.top = ((up ? m.y - 66 : m.y + 72) - ED.y) / ED.h * 100 + '%';
+      tops = [m.y + 72, m.y - 66].map(y => (y - ED.y) / ED.h * 100);
+      pop.style.top = tops[up ? 1 : 0] + '%';
       pop.appendChild(el('b', null, 'Mesa ' + (sel + 1) + ' · ' + m.seats + ' lugares'));
       pop.appendChild(edCores(m, k => game.pintarMesa(sel, k)));
+      if (!m.t) pop.appendChild(edBtn('Toalha xadrez: ' + fmt(TOALHA.cost), 'btn', bank >= TOALHA.cost, () => game.buyToalha(sel), TOALHA.cost));   // v8.6.4
       if (m.seats === 2) pop.appendChild(edBtn('Virar mesa de 4: ' + fmt(SALAO.virar), 'btn', tot + 2 <= p.lugares && bank >= SALAO.virar, () => game.virarMesa(sel), SALAO.virar));
       pop.appendChild(edBtn('Guardar no estoque', 'btn alt', mesas.length > 1, () => game.guardarMesa(sel)));
       pop.appendChild(edBtn('Vender por ' + fmt(mesaPreco(m.seats) * SALAO.venda), 'btn alt', mesas.length > 1, () => game.venderMesa(sel)));
@@ -385,9 +403,11 @@ function buildSalao(grid){
       const q = estSlots(est.length)[ks], up = q.y + 230 > ED.y + ED.h;
       pop = el('div', 'ed-pop est' + (up ? ' up' : ''));
       pop.style.left = (EST.x1 + 6 - ED.x) / ED.w * 100 + '%';
-      pop.style.top = ((up ? q.y + q.h / 2 : q.y - q.h / 2) - ED.y) / ED.h * 100 + '%';
+      tops = [q.y - q.h / 2, q.y + q.h / 2].map(y => (y - ED.y) / ED.h * 100);
+      pop.style.top = tops[up ? 1 : 0] + '%';
       pop.appendChild(el('b', null, 'Mesa no estoque · ' + me.seats + ' lugares'));
       pop.appendChild(edCores(me, k => game.pintarMesa(ks, k, true)));
+      if (!me.t) pop.appendChild(edBtn('Toalha xadrez: ' + fmt(TOALHA.cost), 'btn', bank >= TOALHA.cost, () => game.buyToalha(ks, true), TOALHA.cost));
       pop.appendChild(edBtn('Pôr no salão', 'btn', true, () => game.tirarMesa(ks)));
       if (me.seats === 2) pop.appendChild(edBtn('Virar mesa de 4: ' + fmt(SALAO.virar), 'btn', tot + 2 <= p.lugares && bank >= SALAO.virar, () => game.virarMesa(ks, true), SALAO.virar));
       pop.appendChild(edBtn('Vender por ' + fmt(mesaPreco(me.seats) * SALAO.venda), 'btn alt', true, () => game.venderMesa(ks, true)));
@@ -414,6 +434,43 @@ function buildSalao(grid){
   ed.appendChild(side);
   grid.appendChild(ed);
   drawEditor(cv);
+  // v8.6.4: o balãozinho que não cabe para o lado escolhido (telas baixas, o botão da toalha) abre para o outro, se
+  // lá couber mais dele
+  // lá couber mais dele; se não cabe de nenhum jeito, os botões vão em 2 colunas
+  if (pop && box.clientHeight){
+    const H = box.clientHeight, y = tops.map(t => t / 100 * H);
+    const fora = () => { const h = pop.offsetHeight; return [Math.max(0, y[0] + h - H), Math.max(0, h - y[1])]; };   // de fora, para baixo e para cima
+    let f = fora();
+    if (f[0] && f[1]){ pop.classList.add('largo'); f = fora(); }
+    const up = pop.classList.contains('up') ? 1 : 0;
+    if (f[up] > f[1 - up]){ pop.classList.toggle('up'); pop.style.top = tops[1 - up] + '%'; }
+    const W = box.clientWidth, w = pop.offsetWidth;   // e não passa das bordas (o da mesa do salão fica centrado na mesa)
+    if (!me && w < W) pop.style.left = clamp(parseFloat(pop.style.left) / 100 * W, w / 2 + 4, W - w / 2 - 4) / W * 100 + '%';
+  }
+}
+/* aba Decoração (v8.6.4): os enfeites da Garagem (DECOR), comprados à vontade; comprado, guarda e põe de volta de
+   graça. E a toalha xadrez, em todas as mesas de uma vez (uma a uma, no editor do salão) */
+function decorCard(grupo, icon, title, desc){
+  const card = el('div', 'item'); card.appendChild(el('i', 'dgrupo', grupo));
+  card.appendChild(icon); card.appendChild(el('b', null, title)); card.appendChild(el('span', null, desc));
+  return card;
+}
+function buildDecor(grid){
+  const dec = game.save.decor, bank = game.save.bank;
+  DECOR.forEach(d => {
+    const tem = d.id in dec, on = !!dec[d.id];
+    const c = decorCard(DECOR_GRUPOS.find(x => x.id === d.grupo).nome, upgradeIcon('d-' + d.id), d.name, d.desc + (tem && !on ? ' Guardado.' : ''));
+    if (on) c.classList.add('own');
+    c.appendChild(!tem ? shopBtn('Comprar ' + fmt(d.cost), 'btn', bank >= d.cost, () => game.buyDecor(d.id), d.cost)
+      : shopBtn(on ? 'Guardar' : 'Pôr de volta', on ? 'btn alt' : 'btn', true, () => game.mostraDecor(d.id, !on)));
+    grid.appendChild(c);
+  });
+  const todas = game.save.salao.mesas.concat(game.estoque), sem = game.semToalha.length, v = sem * TOALHA.cost;
+  const c = decorCard('Mesas', upgradeIcon('d-toalha'), 'Toalha xadrez', 'Com o porta-guardanapo e a florzinha. ' + fmt(TOALHA.cost) + ' por mesa; vai junto com a mesa. ' +
+    (todas.length - sem) + ' de ' + todas.length + (todas.length > 1 ? ' mesas têm' : ' mesa tem') + '; no Salão, toque numa mesa para pôr só nela.');
+  if (!sem) c.classList.add('own');
+  c.appendChild(shopBtn(!sem ? 'Todas as mesas têm' : 'Pôr em ' + (sem > 1 ? 'todas (' + sem + ')' : '1 mesa') + ': ' + fmt(v), 'btn', sem > 0 && bank >= v, () => game.buyToalhas(), v));
+  grid.appendChild(c);
 }
 /* aba Divulgação (v7): escolha do dia, paga junto com a folha (no fim do dia, desde a v8.2.2); e o resumo das contas do dia */
 function buildDivulga(grid){
@@ -631,10 +688,11 @@ function buildShop(){
   $('btn-shop-go').textContent = 'Começar o dia ' + game.shopNext;
   const f = payroll(game.save.equipe), dv = divulgaAberta(game.shopNext) ? divulgaOf(game.save.divulga) : null;
   $('shop-folha').textContent = (f ? 'Folha ' + fmt(f) : 'Sem folha') + (dv ? ' + ' + dv.name.toLowerCase() + ' ' + fmt(dv.cost) : '') + ', contas ' + fmt(contasDia(game.tables)) + (sv.emp.resto ? ', parcela do banco ' + fmt(game.devido) + (sv.emp.atr ? ' (com a atrasada)' : '') : '') + ' e ingredientes: tudo pago no fim do dia, que só rende completo. A meta é o lucro.';
-  grid.className = 'shopgrid' + (shopTab === 'salao' || shopTab === 'caixa' || shopTab === 'melhorias' || shopTab === 'gurugol' ? ' ' + shopTab : '');
+  grid.className = 'shopgrid' + (shopTab === 'salao' || shopTab === 'caixa' || shopTab === 'melhorias' || shopTab === 'gurugol' || shopTab === 'decor' ? ' ' + shopTab : '');
   ['salao', 'caixa'].forEach(k => $('ov-shop').classList[shopTab === k ? 'add' : 'remove'](k));
   if (shopTab === 'equipe') return buildEquipe(grid);
   if (shopTab === 'salao') return buildSalao(grid);
+  if (shopTab === 'decor') return buildDecor(grid);
   if (shopTab === 'divulga') return buildDivulga(grid);
   if (shopTab === 'manut') return buildManut(grid);
   if (shopTab === 'banco') return buildBanco(grid);

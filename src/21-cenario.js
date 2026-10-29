@@ -62,7 +62,7 @@ function drawGaragem(ctx){
   ctx.restore();
 }
 function drawWall(ctx,g,t){
-  if (garagem(g)) drawGaragem(ctx);
+  if (garagem(g)){ drawGaragem(ctx); drawDecorParede(ctx,g); }
   else drawAzulejo(ctx);
   drawWallCommon(ctx,g,t);
 }
@@ -177,23 +177,108 @@ function drawCalcada(ctx,g,tm){
     ctx.fillStyle = g && g.up && g.up.maquina ? '#FFE0A6' : '#4a5a6a'; ctx.fillRect(-7,-5,14,8); ctx.restore();
   }
   // plantas da casa da Bia (nível 1, v7.7): espada-de-são-jorge no vaso de barro, no canto de baixo, e uma menor
-  // numa lata de tinta reaproveitada, encostada no muro (o banquinho de plástico da v7.5 fica para o nível 2)
-  const vx = x0 + 40, vy = 536;
-  shadowEll(ctx,vx,vy-11,12,3,0.18);
-  drawEspada(ctx,vx,vy-32,0.85);
-  ctx.beginPath(); ctx.moveTo(vx-11,vy-36); ctx.lineTo(vx+11,vy-36); ctx.lineTo(vx+8,vy-12); ctx.lineTo(vx-8,vy-12); ctx.closePath(); fs(ctx,'#C9673B',2);
-  rr(ctx,vx-13,vy-40,26,6,2); fs(ctx,'#B85A30',2);
-  const lx = x0 + 44, ly = 132;
-  shadowEll(ctx,lx,ly+1,10,3,0.18);
-  drawEspada(ctx,lx,ly-18,0.68);
-  rr(ctx,lx-9,ly-20,18,20,2); fs(ctx,PAL.cromo,2);
-  ctx.fillStyle = 'rgba(216,67,47,.55)'; ctx.fillRect(lx-8,ly-14,16,7);   // o rótulo desbotado da lata
+  // numa lata de tinta reaproveitada, encostada no muro (o banquinho de plástico da v7.5 fica para o nível 2).
+  // Desde a v8.6.4, compradas na aba Decoração (DECOR)
+  if (decorOn(g,'espada')) drawVasoEspada(ctx,x0 + 40,536);
+  if (decorOn(g,'lata')) drawLataEspada(ctx,x0 + 44,132);
   // portão de enrolar aberto, na borda do salão: trilho no alto e soleira no chão
   ctx.fillStyle = '#ABA394'; ctx.fillRect(-6,92,12,448);
   ctx.strokeStyle = 'rgba(34,32,28,.4)'; ctx.lineWidth = 1.5; ctx.beginPath(); ctx.moveTo(0,96); ctx.lineTo(0,540); ctx.stroke();
   rr(ctx,-12,0,24,92,4); fs(ctx,PAL.cromo,2.5);
   ctx.strokeStyle = 'rgba(34,32,28,.35)'; ctx.lineWidth = 1.2;
   for (let y=10;y<86;y+=8){ ctx.beginPath(); ctx.moveTo(-9,y); ctx.lineTo(9,y); ctx.stroke(); }
+}
+/* espada-de-são-jorge no vaso de barro e na lata de tinta (v7.7); (x, y) é o chão, no pé do vaso */
+function drawVasoEspada(ctx,vx,vy){
+  shadowEll(ctx,vx,vy-11,12,3,0.18);
+  drawEspada(ctx,vx,vy-32,0.85);
+  ctx.beginPath(); ctx.moveTo(vx-11,vy-36); ctx.lineTo(vx+11,vy-36); ctx.lineTo(vx+8,vy-12); ctx.lineTo(vx-8,vy-12); ctx.closePath(); fs(ctx,'#C9673B',2);
+  rr(ctx,vx-13,vy-40,26,6,2); fs(ctx,'#B85A30',2);
+}
+function drawLataEspada(ctx,lx,ly){
+  shadowEll(ctx,lx,ly+1,10,3,0.18);
+  drawEspada(ctx,lx,ly-18,0.68);
+  rr(ctx,lx-9,ly-20,18,20,2); fs(ctx,PAL.cromo,2);
+  ctx.fillStyle = 'rgba(216,67,47,.55)'; ctx.fillRect(lx-8,ly-14,16,7);   // o rótulo desbotado da lata
+}
+/* ============================================================
+   DECORAÇÃO DA GARAGEM (v8.6.4): na parede, à esquerda da janela, a samambaia pendurada e a foto da Rosa; embaixo
+   do letreiro, a plaquinha; no chão, perto do portão, o quadro de giz no cavalete. Desenhados com a parede (antes
+   das pessoas). As funções servem também para os ícones da lojinha
+   ============================================================ */
+let edDesenho = false;   // o editor do salão desenha a parede: o quadro de giz ficaria atrás do estoque
+function drawDecorParede(ctx,g){
+  if (decorOn(g,'samambaia')) drawSamambaia(ctx,42,30,1);
+  if (decorOn(g,'foto')) drawFotoRosa(ctx,88,36,1);
+  if (decorOn(g,'placa')) drawPlaquinha(ctx,234,68,1);
+  if (decorOn(g,'giz') && !edDesenho) drawGiz(ctx,62,150,1,g);
+}
+/* samambaia num vaso de barro pendurado por 3 correntinhas num suporte de ferro na parede; (x, y) é a boca do vaso */
+function drawSamambaia(ctx,x,y,s){
+  ctx.save(); ctx.translate(x,y); ctx.scale(s,s);
+  ctx.strokeStyle = PAL.cromoEsc; ctx.lineWidth = 2.4; ctx.beginPath(); ctx.moveTo(-14,-24); ctx.lineTo(4,-24); ctx.stroke();
+  rr(ctx,-18,-29,5,10,1.5); fs(ctx,PAL.cromoEsc,1.2);
+  ctx.strokeStyle = 'rgba(34,32,28,.55)'; ctx.lineWidth = 1;
+  [-9,0,9].forEach(dx => { ctx.beginPath(); ctx.moveTo(0,-23); ctx.lineTo(dx,0); ctx.stroke(); });
+  // folhas: arcos que caem dos dois lados, com os folíolos
+  const folha = (ang, len, cor) => {
+    ctx.save(); ctx.rotate(ang);
+    ctx.beginPath(); ctx.moveTo(0,0); ctx.quadraticCurveTo(len*0.5,-len*0.25,len,len*0.35); ctx.strokeStyle = cor; ctx.lineWidth = 2; ctx.stroke();
+    for (let k=0.15;k<0.95;k+=0.12){
+      const px = len*k, py = -len*0.25*2*k*(1-k) + len*0.35*k*k, w = 4.5*(1-k*0.6);
+      ctx.beginPath(); ctx.moveTo(px,py); ctx.lineTo(px-1.5,py-w); ctx.moveTo(px,py); ctx.lineTo(px+1.5,py+w); ctx.lineWidth = 1.6; ctx.stroke();
+    }
+    ctx.restore();
+  };
+  [[-2.5,22,'#3E8A47'],[-2.1,26,'#4E9F52'],[-1.7,20,'#3E8A47'],[-1.3,16,'#5DB061'],[-0.7,20,'#4E9F52'],[-0.25,24,'#3E8A47'],[0.15,20,'#5DB061']].forEach(f => {
+    ctx.save(); ctx.translate(0,1); folha(f[0] + Math.PI/2 - 1.57, f[1], f[2]); ctx.restore();
+  });
+  [[1.9,24,'#4E9F52'],[2.4,20,'#3E8A47'],[2.9,26,'#5DB061']].forEach(f => { ctx.save(); ctx.translate(0,1); ctx.scale(-1,1); folha(Math.PI - f[0], f[1], f[2]); ctx.restore(); });
+  ctx.beginPath(); ctx.moveTo(-10,0); ctx.lineTo(10,0); ctx.lineTo(7,13); ctx.lineTo(-7,13); ctx.closePath(); fs(ctx,'#C9673B',1.8);
+  rr(ctx,-11,-2,22,4,1.5); fs(ctx,'#B85A30',1.6);
+  ctx.restore();
+}
+/* foto da Rosa, a mãe da Bia (a mesma da abertura: coque, a rosa no cabelo, roupa rosa), num porta-retrato de
+   madeira pendurado num prego; (x, y) é o centro */
+function drawFotoRosa(ctx,x,y,s){
+  ctx.save(); ctx.translate(x,y); ctx.scale(s,s);
+  ctx.strokeStyle = 'rgba(34,32,28,.6)'; ctx.lineWidth = 1; ctx.beginPath(); ctx.moveTo(-9,-21); ctx.lineTo(0,-28); ctx.lineTo(9,-21); ctx.stroke();
+  circ(ctx,0,-28,1.6); fs(ctx,PAL.cromoEsc,1);
+  rr(ctx,-17,-22,34,42,3); fs(ctx,PAL.madeira,2.2);
+  ctx.save(); rr(ctx,-12,-17,24,32,1.5); ctx.fillStyle = '#F6E7C9'; ctx.fill(); ctx.clip();
+  ctx.fillStyle = 'rgba(242,194,61,.35)'; circ(ctx,0,-4,14); ctx.fill();
+  drawPerson(ctx,{ skin:3, hair:2, hairC:'#1B1512', pants:'#4A4036' },0,30,{ s:0.62, shirt:'#C8506A', mood:0, noShadow:true });
+  ctx.restore();
+  abFlor(ctx,8,-12,2.2);
+  rr(ctx,-12,-17,24,32,1.5); ctx.strokeStyle = PAL.madeiraEsc; ctx.lineWidth = 1.4; ctx.stroke();
+  ctx.restore();
+}
+/* plaquinha "Comida é afeto": tábua clara pintada à mão, pendurada no letreiro por 2 cordinhas; (x, y) é o centro */
+function drawPlaquinha(ctx,x,y,s){
+  ctx.save(); ctx.translate(x,y); ctx.scale(s,s); ctx.rotate(0.03);
+  ctx.strokeStyle = 'rgba(34,32,28,.6)'; ctx.lineWidth = 1; ctx.beginPath(); ctx.moveTo(-34,-7); ctx.lineTo(-30,-14); ctx.moveTo(34,-7); ctx.lineTo(30,-14); ctx.stroke();
+  rr(ctx,-46,-8,92,16,3); fs(ctx,'#F4E2C0',2);
+  txt(ctx,'Comida é afeto',-4,0.5,10,PAL.faixa,'center',FB);
+  const hx = 37, hy = 0;
+  ctx.beginPath(); ctx.moveTo(hx,hy+3.5); ctx.bezierCurveTo(hx-6,hy-1,hx-3,hy-6,hx,hy-2.5); ctx.bezierCurveTo(hx+3,hy-6,hx+6,hy-1,hx,hy+3.5); ctx.closePath(); ctx.fillStyle = PAL.perigo; ctx.fill();
+  ctx.restore();
+}
+/* quadro de giz num cavalete de madeira, com o prato do dia escrito à mão; (x, y) é o chão, entre os pés */
+function drawGiz(ctx,x,y,s,g){
+  ctx.save(); ctx.translate(x,y); ctx.scale(s,s);
+  shadowEll(ctx,0,0,26,4,0.18);
+  ctx.strokeStyle = PAL.madeiraEsc; ctx.lineWidth = 3.2;
+  ctx.beginPath(); ctx.moveTo(-16,-50); ctx.lineTo(-22,0); ctx.moveTo(16,-50); ctx.lineTo(22,0); ctx.moveTo(0,-46); ctx.lineTo(0,-2); ctx.stroke();
+  rr(ctx,-24,-54,48,40,3); fs(ctx,PAL.madeira,2.2);
+  rr(ctx,-20,-50,40,32,2); fs(ctx,'#2E3B35',1.4);
+  txt(ctx,'HOJE',0,-43,7,'rgba(255,255,255,.85)','center',FB);
+  const pt = g && g.ponto;
+  txt(ctx,'PF R$ ' + precoPrato('pf', pt),0,-33,9,'#FFF3C9','center',FB);
+  ctx.strokeStyle = 'rgba(255,255,255,.7)'; ctx.lineWidth = 1; ctx.beginPath(); ctx.moveTo(-12,-26); ctx.quadraticCurveTo(0,-23,12,-26); ctx.stroke();
+  circ(ctx,13,-22,1.6); ctx.fillStyle = '#F7B6C8'; ctx.fill();
+  rr(ctx,-20,-16,40,3,1); fs(ctx,PAL.madeiraEsc,1);
+  ctx.fillStyle = '#fff'; ctx.fillRect(-14,-17.5,6,2);   // o toquinho de giz
+  ctx.restore();
 }
 /* espada-de-são-jorge (v7.7): folhas compridas e pontudas, verde-escuras com faixas claras e a borda amarela;
    (x, y) é a terra do vaso */

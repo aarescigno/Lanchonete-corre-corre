@@ -4,6 +4,25 @@ Registro das ideias e dos retornos de quem jogou, com o texto original, e de ond
 
 ---
 
+## 29/10/2026 — Usuário: decoração da Garagem
+**Origem:** pedido do usuário no chat (eu sugeri 4 opções: plantas, parede e luz, mesas arrumadas e o cantinho da Rosa):
+
+> Precisamos adicionar upgrades de estética no salão da garagem, sugira 4 opções de como fazer isso. Eu pensei em uma que é tirar a planta que já está e dar a opção de colocar ela
+
+> vamos com a 1, 3 e 4, com o critério Ambiente. É, eu já imaginava que tivesse alguma coisa sobre avaliação do ambiente nas notas do Google. Mas se não tem, é importante ter. Porque já tem lá o critério, já tem lá a barrinha que preenche com a nota, né? E ela então dá um número aleatório, né? Ou um número fixo. Isso tem que ser corrigido.
+
+> Guarda essa mudança da nota do Google para depois, porque eu estou numa outra branch trabalhando sobre o geral de avaliações. Eu não quero que interfira um trabalho com o outro. Implementa só a parte estética e a possibilidade de upgrades de estética também. Então, as florzinhas e essas outras coisas bonitinhas, os sprites e o design e o menu de upgrades e a compra dos upgrades. A parte da influência disso segura para uma próxima etapa.
+
+(O critério Ambiente já existia desde a v8.4 e não é sorteado: base 3 e +0,5 por TV, som, torneira, ventilador e cafezinho, +1 o couvert, −1 com a lixeira cheia. Como quase todo mundo tem as mesmas coisas, parece fixo.)
+
+| Proposta | Destino |
+|---|---|
+| Plantas (as espadas viram compra) e samambaia | feito na **v8.6.4** (`docs/spec-v8.6.4.md`) |
+| Mesas arrumadas: toalha xadrez, porta-guardanapo e florzinha | feito na **v8.6.4** |
+| Cantinho da Rosa: foto, quadro de giz, plaquinha "Comida é afeto" | feito na **v8.6.4** |
+| Parede pintada e varal de luz (a opção 2) | não escolhida |
+| Decoração conta no Ambiente do Gurugol (base 2 e cada enfeite soma; toalha só para o grupo daquela mesa) | **adiada** a pedido do usuário (ele mexe nas avaliações em outro branch); anotada no `docs/PLANO.md`, na 4b |
+
 ## 29/10/2026 — Usuário: Livrinho de Sudoku
 **Origem:** pedido do usuário no chat:
 

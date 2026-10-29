@@ -38,8 +38,10 @@ function drawTableBody(ctx,t,open,g,tm){
       leg(x0+7,t.cy+14,t.cy+32,1); leg(x0+w-7,t.cy+14,t.cy+32,1);          // pernas da frente
       oct(x0,t.cy-18,w,30,8); fs(ctx,top,2.6);                               // tampo
       ctx.strokeStyle = 'rgba(34,32,28,.12)'; ctx.lineWidth = 1.2; oct(x0+5,t.cy-14,w-10,22,5); ctx.stroke();
-      ell(ctx,x0+w/2,t.cy-3,3,1.8); ctx.fillStyle = 'rgba(34,32,28,.35)'; ctx.fill();
+      if (t.toalha) drawToalha(ctx,x0,t.cy,w);
+      else { ell(ctx,x0+w/2,t.cy-3,3,1.8); ctx.fillStyle = 'rgba(34,32,28,.35)'; ctx.fill(); }
     }
+    if (t.toalha) drawToalhaEnfeites(ctx,t.cx,t.cy,hw);
     if (t.id === '') return;   // mesa no estoque do editor (v8.3.5): sem número
     circ(ctx,t.cx-hw+14,t.cy-1,8.5); fs(ctx,PAL.mostarda,2);
     txt(ctx,String(t.id),t.cx-hw+14,t.cy,12,PAL.tinta,'center',FD);
@@ -55,6 +57,39 @@ function drawTableBody(ctx,t,open,g,tm){
   txt(ctx,String(t.id),t.cx-hw+14,t.cy,12,PAL.tinta,'center',FD);
 }
 
+/* toalha xadrez (v8.6.4, aba Decoração): por cima do tampo da mesa quadrada (x0 é a borda esquerda, w a largura),
+   com a aba da frente caindo em ondas */
+function drawToalha(ctx,x0,cy,w){
+  const a = x0 - 3, b = x0 + w + 3, y0 = cy - 20, y1 = cy + 12, yb = cy + 19;
+  ctx.save();
+  ctx.beginPath(); ctx.moveTo(a+5,y0); ctx.lineTo(b-5,y0); ctx.quadraticCurveTo(b,y0,b,y0+5); ctx.lineTo(b+1,yb-3);
+  const n = 4, d = (b - a + 2) / n;
+  for (let i=0;i<n;i++){ const xa = b + 1 - i*d; ctx.quadraticCurveTo(xa - d/2,yb + (i % 2 ? 3 : -1),xa - d,yb - (i === n-1 ? 3 : 0)); }
+  ctx.lineTo(a,y0+5); ctx.quadraticCurveTo(a,y0,a+5,y0); ctx.closePath();
+  ctx.fillStyle = '#FFFDF7'; ctx.fill();
+  ctx.save(); ctx.clip();
+  ctx.fillStyle = 'rgba(200,60,50,.55)';
+  const q = 7;
+  for (let x = a; x < b + 2; x += q*2) ctx.fillRect(x,y0,q,yb - y0 + 4);
+  for (let y = y0; y < yb + 4; y += q*2) ctx.fillRect(a,y,b - a + 2,q);
+  ctx.fillStyle = 'rgba(34,32,28,.12)'; ctx.fillRect(a,y1,b - a + 2,yb - y1 + 4);   // a aba da frente, na sombra
+  ctx.restore();
+  ctx.strokeStyle = PAL.tinta; ctx.lineWidth = 2.2; ctx.stroke();
+  ctx.strokeStyle = 'rgba(34,32,28,.3)'; ctx.lineWidth = 1.2; ctx.beginPath(); ctx.moveTo(a+1,y1); ctx.lineTo(b+1,y1); ctx.stroke();
+  ctx.restore();
+}
+/* na mesa com toalha: o porta-guardanapo no canto de trás, à direita, e a florzinha num copinho, no meio de trás */
+function drawToalhaEnfeites(ctx,cx,cy,hw){
+  const px = cx + hw - 13, py = cy - 13;
+  ctx.beginPath(); ctx.moveTo(px-6,py); ctx.lineTo(px-4,py-10); ctx.lineTo(px+4,py-10); ctx.lineTo(px+6,py); ctx.closePath(); fs(ctx,'#fff',1.4);
+  rr(ctx,px-7,py-6,14,7,1.5); fs(ctx,PAL.cromo,1.6);
+  const fx = cx + (hw > 60 ? -hw*0.15 : 4), fy = cy - 13;
+  ctx.strokeStyle = '#3E8A47'; ctx.lineWidth = 1.6; ctx.beginPath(); ctx.moveTo(fx,fy-4); ctx.quadraticCurveTo(fx-2,fy-12,fx+1,fy-18); ctx.stroke();
+  ell(ctx,fx+3,fy-11,3,1.5); ctx.fillStyle = '#4E9F52'; ctx.fill();
+  for (let i=0;i<5;i++){ const a = i*TAU/5; ell(ctx,fx+1+Math.cos(a)*3,fy-19+Math.sin(a)*3,2.4,2.4); ctx.fillStyle = '#F7F4EB'; ctx.fill(); }
+  circ(ctx,fx+1,fy-19,1.8); fs(ctx,PAL.mostarda,1);
+  rr(ctx,fx-4,fy-6,8,8,2); ctx.fillStyle = 'rgba(191,227,242,.8)'; ctx.fill(); ctx.strokeStyle = PAL.tinta; ctx.lineWidth = 1.4; ctx.stroke();
+}
 function drawTable(ctx,g,t,tm,menu){
   const open = t.open || menu;
   const grp = t.group;
