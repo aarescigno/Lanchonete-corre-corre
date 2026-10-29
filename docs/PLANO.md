@@ -48,7 +48,7 @@ Origem: retorno do Renan Martorelli (beta-tester) e conversa com o Arthur (15/10
 | 2c-r2 | Rebalanceamento do Gurugol, parte 2: prato quente | v8.6.8 | feita (29/10) |
 | 2c-r3a | Cardápio que cresce: cursos do Tonhão e gostos dos clientes | v8.6.9 | feita (29/10; calibração quase fechada, ver `docs/spec-v8.6.9.md`) |
 | 2c-r3b | Desenhos dos pratos novos, dos avançados e das carnes do PF | v8.6.10 | a fazer (planejada em 29/10) |
-| 2c-r3c | Vegetarianos e veganos | v8.6.11 | a fazer (planejada em 29/10) |
+| 2c-r3c | Vegetarianos e veganos | v8.6.11 | feita (29/10; ver `docs/spec-v8.6.11.md`) |
 | 2c-r3d | Rodada de balanceamento do cardápio (metas dos dias 2 a 7, ticket médio, nota mínima do Gurugol) | v8.6.12 | a fazer (combinada em 29/10, depois da 2c-r3c) |
 | 2f | A campanha vira o Modo História: estrutura e capítulos da Garagem | v8.7 | a fazer |
 | 3a | Mudança de ponto e Lanchonete na área industrial (e o capítulo dela) | v9 | a fazer |

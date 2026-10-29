@@ -148,7 +148,7 @@ function afiado(g,L){
 }
 // v8.6.9: cursos do Tonhão. A ordem é uma lista de ids: a 1ª vez que o id aparece é o degrau 1 (o básico; no PF, o avançado, que não tem
 // básico), a 2ª é o avançado. Padrão: os 4 básicos, depois os avançados (CURSOS=chapa,pastel,... troca a lista inteira)
-const CURSOS_ORDEM=['pastel','chapa','fritos','assados','pf','fritos','pastel','chapa','assados'];
+const CURSOS_ORDEM=['pastel','veg','chapa','fritos','assados','pf','fritos','pastel','chapa','assados','veg'];   // v8.6.11: o Vegetariano logo depois do pastel, os Pratos veganos no fim
 function proximoCurso(L,cursos,ordem){
   const vistos={};
   for(const id of ordem){ vistos[id]=(vistos[id]||0)+1; const alvo=id==='pf'?2:vistos[id]; if(L.cursoNivel(cursos,id)<alvo&&!(id==='pf'&&vistos[id]>1)) return {id,nivel:alvo}; }

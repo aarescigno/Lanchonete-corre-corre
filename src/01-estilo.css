@@ -94,6 +94,7 @@ p{margin:calc(var(--u)*6) 0;font-size:max(12px,calc(var(--u)*16));line-height:1.
 .shopgrid.salao{grid-template-columns:1fr}
 .shopgrid.cursos{width:calc(var(--u)*980)}   /* v8.6.9: 5 cartões, 3 por fileira */
 .shopgrid .cursomsg{grid-column:1/-1;margin:0;font-weight:700;color:var(--ok,#3E9B5A)}
+.item .cursos-lista.apagado{font-weight:400;opacity:.6}
 .item .cursos-lista{grid-column:1 / -1;font-weight:700}   /* o aviso do curso do dia, na largura do cartão */
 .shopgrid.melhorias,.shopgrid.decor{grid-template-columns:repeat(4,1fr);width:calc(var(--u)*980)}   /* v8.3.10: 7 cartões em 2 fileiras (com o Triturador); v8.6.5: e a Decoração */
 @media (max-width:600px) and (min-height:461px){.shopgrid.melhorias,.shopgrid.decor,.shopgrid.cursos{grid-template-columns:repeat(2,1fr)}}
