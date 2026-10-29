@@ -147,7 +147,7 @@ function drawComida(ctx,k,carne,av){
     circ(ctx,0,0,10.5); fs(ctx,'#DDA054',2);
     circ(ctx,0,0,6.6); ctx.fillStyle = '#F3D9A0'; ctx.fill();
     ctx.fillStyle = '#7E4B2F'; for (let i=0;i<20;i++){ const r = 5.3*Math.sqrt((i+0.5)/20), a = i*2.39996; ctx.beginPath(); ctx.ellipse(Math.cos(a)*r,Math.sin(a)*r,1.32,0.95,a*1.7,0,TAU); ctx.fill(); }   // 20 pedacinhos de carne moída que se tocam, cobrindo mais da metade da massa
-    for (const g of [-160,-138,-116,-94,-72,-50,-28,-6,176]){ const a = g*Math.PI/180; ctx.beginPath(); ctx.ellipse(Math.cos(a)*5.7,Math.sin(a)*5.7,1.3,0.95,a+1.57,0,TAU); ctx.fill(); }   // mais pedacinhos encostados na borda, principalmente em cima
+    for (const g of [-160,-138,-116,-94,-72,-50,-28,-6,176,18,36,54,72,90,108,126,144,162]){ const a = g*Math.PI/180; ctx.beginPath(); ctx.ellipse(Math.cos(a)*5.7,Math.sin(a)*5.7,1.3,0.95,a+1.57,0,TAU); ctx.fill(); }   // mais pedacinhos encostados na borda, em arco por cima e por baixo
     ctx.fillStyle = '#C8452B'; for (const d of [[-1.2,-1.8],[3.4,2.6],[-3.2,4]]){ rr(ctx,d[0]-1,d[1]-0.7,2.1,1.4,0.5); ctx.fill(); }
     ctx.fillStyle = '#FFF4D6'; for (const d of [[-0.5,-5],[-5.4,-0.8],[5.2,-2.6]]){ circ(ctx,d[0],d[1],0.9); ctx.fill(); }
     dx = 0; dy = 0;
