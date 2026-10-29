@@ -41,7 +41,7 @@ ok(N(cinco(8))>N([]) && N(um(8))<N([]),'nota alta traz mais grupos; baixa, menos
 // critérios de um grupo
 g.save=L.normSave({dia:3,bank:500}); g.up=g.save.up; g.buildTables(); g.startDay(3); g.begin();
 { const gr=g.spawn({type:'estudante',color:0,vip:false,av:true});
-  gr.perdFila=2; gr.perdMesa=1; gr.pratoQ=4.2; gr.corCerta=true; gr.coffee=true;
+  gr.perdFila=2; gr.perdMesa=1; gr.pratoQ=4.2; gr.corCerta=true; gr.coffee=true; gr.semVeg=false;   // v8.6.13: sem o vegetariano sorteado (Cardápio 1)
   g.avaliar(gr,0,0); const r=g.avals[0].s;
   ok(r[0]===3.5,'espera: 2 corações perdidos lá fora tiram 1,5');
   ok(r[1]===4.3,'agilidade: 1 coração na mesa (−0,75); a cor certa não soma mais (v8.6.7)');
@@ -95,7 +95,7 @@ g.save=L.normSave({dia:3,bank:500}); g.up=g.save.up; g.buildTables(); g.startDay
   const b=lim(3); ok(b[0]<=5 && b[0]>4.3 && b[1]<4.3,'Avenida Brasil: o encantado passa do teto 4,3 (até 5) e o humor ruim fica abaixo dele ('+b+')');
   delete g.ponto; }
 { const mn=[3,3.7,4.3,5].map(t=>L.avalMinimo({nivel:[3,3.7,4.3,5].indexOf(t)+1}));
-  ok(mn.join()==='2.9,3.6,4.1,4.8','nota mínima: 95% do teto, arredondada para cima ('+mn+')'); }
+  ok(mn.join()==='2.7,3.4,3.9,4.5','nota mínima: 90% do teto, arredondada para cima (v8.6.13; '+mn+')'); }
 { // a chance de encantar sobe com a cor certa, a corrente e o caprichado
   const taxa=(f)=>{ const gr=g.spawn({type:'estudante',color:0,vip:false,av:true}); gr.pratoQ=5; f(gr); gr.perdMesa=0; gr.perdFila=0; let n=0; const base=L.avalEscala(5,3); g.avals.length=0; for(let i=0;i<2000;i++){ g.avaliar(gr,0,0); const r=g.avals[g.avals.length-1].r[3]; if(r>L.avalEscala(g.avals[g.avals.length-1].s[3],3)+A.humor.var*2+0.15) n++; } g.avals.length=0; return n/2000; };
   const sem=taxa(()=>{}), com=taxa(gr=>{ gr.corCerta=true; gr.corrente=true; gr.capricho=true; });

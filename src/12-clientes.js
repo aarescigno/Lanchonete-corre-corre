@@ -205,7 +205,7 @@ class Group {
     this.carnes = this.people.map(() => pratoAv('pf', game.cursos) ? pick(CARNES) : 'bife');   // v8.6.10: Carnes variadas
     // o entregador (v8.6) não come no salão: leva o prato numa marmita, pela fila de retirada, sem 2º item
     this.retira = type === 'entregador';
-    this.extras = this.people.map(p => !this.retira && game.mode !== 'treino' && Math.random() < T.mais ? pedePrato(type, game, true, p.veg) : null);
+    this.extras = this.people.map((p, i) => !this.retira && game.mode !== 'treino' && Math.random() < (CARDAPIO[this.dishes[i]].cat === 'pf' ? T.mais : Math.max(T.mais, MAIS.salgado)) ? pedePrato(type, game, true, p.veg) : null);
     this.bill = this.dishes.concat(this.extras).reduce((v, k) => v + (k ? precoPrato(k, game.ponto, game.cursos) : 0), 0) + (this.vip ? VIP.dish : 0);
     this.hearts = 5;
     this.x = DOOR.x; this.y = DOOR.y;
