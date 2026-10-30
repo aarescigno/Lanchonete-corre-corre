@@ -58,7 +58,7 @@ Origem: retorno do Renan Martorelli (beta-tester) e conversa com o Arthur (15/10
 | 2h | A Dani sobe de nível com trabalho e cursos (XP e aumento que consolida) | v8.9 | feita em 30/10 |
 | 2c-r5 | Ajustes da lojinha: TV e som em Melhorias, toalha no Salão, ícones da equipe (Tonhão de corpo inteiro) e cartão da Manutenção com cor | v8.9.1 | feita em 30/10 (`docs/spec-v8.9.1.md`) |
 | 3a | Mudança de ponto e Lanchonete na área industrial (e os caps. 4 e 5) | v9 | feita em 30/10 (`docs/spec-v9.md`) |
-| 2c-r6 | Retorno de beta-tester: cardápio fácil de achar (cartão Cardápio com os cursos, conversa do dia 2, selo "novo", reclamação dos clientes) | v9.0.1 | a fazer (planejada em 30/10; **é a próxima**, antes da 3b) |
+| 2c-r6 | Retorno de beta-tester: cardápio fácil de achar (cartão Cardápio com os cursos, conversa do dia 2, selo "novo", reclamação dos clientes) e balão do Tonhão embaixo do Pular | v9.0.1 | a fazer (planejada em 30/10; **é a próxima**, antes da 3b) |
 | 3b | Restaurante na Avenida Brasil, o Joca (e o capítulo dela) | v9.1 | a fazer |
 | 4a | Terraço Suíça e VIPs exigentes (e o capítulo dele) | v10 | a fazer |
 | 4b | Nível de luxo | v10.1 | a fazer |
@@ -348,6 +348,7 @@ Origem: retorno de uma beta-tester (30/10, `docs/PROPOSTAS.md`): não ficou clar
 - **Selo "novo"** no cartão Cardápio quando houver curso ao alcance do caixa (some ao abrir o cartão e volta quando outro curso couber no bolso).
 - **Reclamação dos clientes:** enquanto o Tonhão não fez nenhum curso básico, a reclamação de cardápio no Gurugol cita os pratos.
 - **Fica de fora:** dica embaixo da nota do Gurugol e aviso no resumo do fim do dia (o usuário não escolheu).
+- **Balão embaixo do Pular** (outro retorno de 30/10): a fala do Tonhão sai da janela da cozinha, no canto de cima à direita, e o balão fica embaixo do botão Pular (conferido em 30/10 na tela larga, 1220×600 e 1600×800, e no celular deitado, 740×360; no celular em pé o botão fica acima do canvas e não cobre). O botão continua onde está (o mesmo lugar do Pular da abertura); quem desvia é o balão.
 
 ### O que muda, parte por parte
 **`src/10-constantes.js`**
@@ -387,6 +388,11 @@ Origem: retorno de uma beta-tester (30/10, `docs/PROPOSTAS.md`): não ficou clar
 - Variável `let shopEntra = null;` e, na troca para a tela `shop` (linha ~34): `shopGrupo = 'lanchonete'; shopTab = shopEntra; shopEntra = null;`.
 - `fluxoHistoria(fim)`: depois das conversas de capítulo (`depois` e `antes`, que continuam primeiro), e antes do `fim()`: se `sv.convCard === 'pend'`, toca `HIST_CARDAPIO.fez` se `cursoFeito(sv.cursos)`, senão `HIST_CARDAPIO.falas`; ao terminar (ou ao pular): `sv.convCard = 1`, `writeSave`, `shopEntra = 'cardapio'` e `fim()`. A conversa usa o mesmo `Conversa`/`ov-conversa` de hoje (o `falar` recebe a lista de falas; se hoje ele só aceita `'antes'`/`'depois'`, acrescente um jeito de passar as falas direto).
 
+**Balão que desvia do Pular (`src/43-telas.js` e `src/26-conversa.js`)**
+- `43-telas.js`: `function convEvita()` devolve o retângulo do `#btn-conv-pular` em coordenadas do canvas, com 8 de folga em volta: pega o `getBoundingClientRect()` do botão e o do `canvas`, e converte como o `toLogical` (x por `TW / largura`, y por `H / altura`). Devolve `null` se o botão não tiver tamanho (testes no node) ou se ficar fora do canvas (celular em pé). No laço, logo antes do `drawConversa` (linha ~253), `game.conversa.evita = convEvita();` (medir a cada quadro acompanha a troca de tamanho da tela).
+- `26-conversa.js`, `drawConversa`: depois de calcular `x`, `y`, `w` e `h` do balão, se `conv.evita` cruzar o balão, empurre o balão para a esquerda: `x = Math.max(16, ev.x - w)`. Se mesmo assim ainda cruzar (tela estreita), desça o balão: `y = ev.y + ev.h`. O `bx` (a ponta) é recalculado depois disso, como hoje (ela continua apontando para a cabeça de quem fala). As falas da Bia e da Dani não mudam quando o balão já não cruza o botão.
+- Confira também, nas capturas, as cenas da abertura com balão perto do Pular dela (`#ov-abertura`); se alguma cruzar, use o mesmo `convEvita` com o botão da abertura.
+
 **Textos que apontam para o lugar antigo dos cursos**
 - `src/40-interface.js` (Como jogar, ~linha 187): "Na aba Cursos, o Tonhão aprende..." vira "No Cardápio da lojinha, o Tonhão aprende...". Procure outros "aba Cursos" e "cursos do Tonhão na lojinha" em `src/` (menos a lista do painel `#ov-ver`, que é histórico) e aponte para o Cardápio.
 
@@ -395,16 +401,17 @@ Origem: retorno de uma beta-tester (30/10, `docs/PROPOSTAS.md`): não ficou clar
   1. Lojinha, grupo Lanchonete: o 1º cartão é `data-sec="cardapio"`. Ao abrir, aparecem "No cardápio hoje (2 pratos)" e os cursos ("Comprar R$ 150" no Pastel de feira). A seção Tonhão não tem botão de comprar curso, mostra "Cursos de cardápio concluídos" e "Nenhum ainda", e "Ver cursos" abre o Cardápio (`shopTab === 'cardapio'`).
   2. Selo: com R$ 200 no caixa, o cartão tem a classe `novo`; depois de abrir e voltar, não tem; com o caixa em R$ 300 (o curso de Salgados fritos, R$ 220, passa a caber), volta. Com R$ 100, não aparece. No dia em que o curso já foi comprado (`cursoTrava`), não aparece.
   3. Conversa: com `load({historia:true})`, ao fechar o dia 2, `save.convCard === 'pend'`. O fluxo toca a conversa, com a 1ª fala "Tio, hoje um monte de gente perguntou se só tem PF e coxinha...". No fim, `convCard === 1` e a lojinha abre com `shopTab === 'cardapio'`. Com `cursos:{pastel:1}`, a 1ª fala é "O pessoal adorou o prato novo!". Sem a História (`load()` padrão), `convCard` nunca fica `'pend'`. Fechar o dia 3 depois não toca de novo.
-  4. Comentário: `avalComentario` com o Cardápio como pior critério, `bom` falso e `pouco` verdadeiro sai de `AVAL_POUCO`; com `pouco` falso sai de "Pouca opção no cardápio." / "Queria mais pratos."; com `semVeg` verdadeiro continua "Não tinha nada vegetariano.".
+  4. Balão e Pular: com `game.conversa.evita = {x:TW-150, y:0, w:150, h:80}` e a 1ª fala do cap. 1 (do Tonhão), o retângulo desenhado do balão não cruza o `evita` (exponha o retângulo calculado em `conv.caixa = {x, y, w, h}` no `drawConversa` para o teste conferir); com `evita` nulo, o balão fica onde fica hoje.
+  5. Comentário: `avalComentario` com o Cardápio como pior critério, `bom` falso e `pouco` verdadeiro sai de `AVAL_POUCO`; com `pouco` falso sai de "Pouca opção no cardápio." / "Queria mais pratos."; com `semVeg` verdadeiro continua "Não tinha nada vegetariano.".
 - **Testes que compravam curso pela seção Tonhão** (veja `smoke15`, `smoke26`, `smoke33`, `smoke35`, `shot_v8_3.py` e `shot_v8_6_15.py`; procure `'tonhao'`, `'cursos'` e "Comprar" perto de curso): passe a abrir `'cardapio'`. Não mude o que eles conferem.
 - **`carreira.js`:** a linha 74 fecha as conversas de capítulo entre os dias; feche também a do cardápio (`if (g.save.convCard === 'pend') g.save.convCard = 1;`). Os números do `carreira.js` e do `balance.js` não podem mudar (nada no jogo mudou de valor): rode os dois e compare com a v9 (`docs/spec-v9.md`).
 - `./run_all.sh --tudo` verde (o `menu_fit` confere a lojinha com o 6º cartão).
-- Captura `shot_v9_0_1.py` em `capturas/v9.0.1`: grupo Lanchonete com o selo, seção Cardápio, seção Tonhão (sem curso e com 2 cursos feitos) e o balão da 1ª fala da conversa, em tela larga e no celular (390×844). Confira com recortes ampliados (PIL `crop`) do cartão com o selo e do topo da seção Cardápio.
+- Captura `shot_v9_0_1.py` em `capturas/v9.0.1`: grupo Lanchonete com o selo, seção Cardápio, seção Tonhão (sem curso e com 2 cursos feitos) e o balão da 1ª fala da conversa do cardápio e a 1ª fala do cap. 1 (Tonhão, conferindo que o Pular não cobre o balão), em 1220×600, 1600×800, no celular deitado (740×360) e em pé (390×844). Confira com recortes ampliados (PIL `crop`) do cartão com o selo e do topo da seção Cardápio.
 
 ### Fechamento
-- Versão **v9.0.1**: guarde a v9 em `versoes/v9-fonte.html` e `versoes/v9.html`, atualize o `vtag`, a `VERSAO` e o painel `#ov-ver` ("v9.0.1 — 30/10/2026 — Ficou mais fácil achar os cursos do Tonhão: eles moram no cartão Cardápio, o primeiro da lojinha, com um selo "novo" quando algum cabe no caixa. No fim do dia 2 do Modo História, a Bia avisa que a freguesia quer mais opções, e quem ainda só tem PF e coxinha ouve isso no Gurugol."). Escreva `docs/spec-v9.0.1.md`, atualize `docs/RESUMO.md`, `docs/PARTES.md` (seção Cardápio nova, `HIST_CARDAPIO`, `AVAL_POUCO`) e esta tabela, e marque o destino do retorno em `docs/PROPOSTAS.md`. PR para o `claude/main` com merge; avise que está pronta para publicar (não publique sem o usuário pedir).
+- Versão **v9.0.1**: guarde a v9 em `versoes/v9-fonte.html` e `versoes/v9.html`, atualize o `vtag`, a `VERSAO` e o painel `#ov-ver` ("v9.0.1 — 30/10/2026 — Ficou mais fácil achar os cursos do Tonhão: eles moram no cartão Cardápio, o primeiro da lojinha, com um selo "novo" quando algum cabe no caixa. No fim do dia 2 do Modo História, a Bia avisa que a freguesia quer mais opções, e quem ainda só tem PF e coxinha ouve isso no Gurugol. E o balão do Tonhão nas conversas não fica mais embaixo do botão Pular."). Escreva `docs/spec-v9.0.1.md`, atualize `docs/RESUMO.md`, `docs/PARTES.md` (seção Cardápio nova, `HIST_CARDAPIO`, `AVAL_POUCO`) e esta tabela, e marque o destino do retorno em `docs/PROPOSTAS.md`. PR para o `claude/main` com merge; avise que está pronta para publicar (não publique sem o usuário pedir).
 
-Modelo: Sonnet, esforço médio (o plano está fechado; o trabalho é mudar a lojinha, uma conversa e um comentário, ajustar testes antigos e checar a tela).
+Modelo: Sonnet, esforço médio (o plano está fechado; o trabalho é mudar a lojinha, uma conversa, o balão e um comentário, ajustar testes antigos e checar a tela).
 
 ## Etapa 3 — Pontos: área industrial (3a, v9) e Avenida Brasil (3b, v9.1)
 **Objetivo:** a primeira decisão grande de dinheiro, mudar de ponto, que é subir o nível do salão. Valores na tabela da etapa 1d. Desde a revisão de 28/10, cada ponto é também um capítulo do Modo História (etapa 2f).

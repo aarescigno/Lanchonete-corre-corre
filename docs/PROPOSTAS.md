@@ -4,6 +4,13 @@ Registro das ideias e dos retornos de quem jogou, com o texto original, e de ond
 
 ---
 
+## 30/10/2026 — beta-tester (via usuário): a fala do Tonhão fica embaixo do Pular
+**Texto:** "Outro feedback que foi dado é que as falas do Tonhão ficam embaixo do botão de pular. Temos que dar um jeito."
+**Conferido (30/10):** o balão do Tonhão sai da janela da cozinha (canto de cima à direita) e fica embaixo do Pular em 1220×600, 1600×800 e no celular deitado (740×360); no celular em pé, não.
+**Destino:** etapa 2c-r6 (v9.0.1) em `docs/PLANO.md`: o botão fica onde está e o balão desvia dele (vai para a esquerda e, se não couber, desce).
+
+---
+
 ## 30/10/2026 — beta-tester (via usuário): não achou como aumentar o cardápio
 **Texto (resumo do usuário):** "Recebi um feedback de uma beta tester. Ela disse que não fica claro que ela tem que comprar os cursos do Tonhão para aumentar o cardápio. Ela procurou e não achou a opção de melhorar cardápio ou coisa assim." O usuário sugeriu um menu de upgrade só para o cardápio (os cursos do Tonhão e, no futuro, os de barista da Dani) ou uma conversa na história ("Nossa, tio, estão reclamando da falta de cardápio" / "Ah, é verdade, né? Acho que vou fazer alguns cursos"), por volta do dia 2 a 4.
 **Entrevista (30/10):** cartão Cardápio (1º do grupo Lanchonete) com os cursos; na seção Tonhão fica só a lista dos cursos de cardápio concluídos; cursos abertos desde o dia 1 (sem trava); conversa no fim do dia 2, com a Rosa ("a Rosa fazia um pastel que era uma beleza"), e uma versão curta para quem já fez curso; depois, a lojinha abre no Cardápio; selo "novo" quando algum curso cabe no caixa; reclamação dos clientes que cita "só PF e coxinha" enquanto não houver curso básico. Os cursos da Dani ficam na Dani por ora. A dica no Gurugol e o aviso no fim do dia ficaram de fora.
