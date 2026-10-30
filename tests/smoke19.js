@@ -74,7 +74,7 @@ ok(!g.result.passed && /sem estrelas/.test(els['end-msg'].textContent),'sem a me
 const b3=g.save.bank; els['btn-next'].fire('click'); ok(g.state==='shop' && g.shopNext===4 && g.save.bank===b3,'"Próximo dia" abre a lojinha do dia 4 com o mesmo dinheiro, mesmo sem a meta');
 
 // ---------- prejuízo no dia completo: desde a v8.3, o caixa fica negativo ----------
-novo(60,{dani:2},'boca'); abre(3); g.money=0; g.custo=0; const f4=g.paid; g.finishDay(); ok(g.save.bank===60-g.contas-f4 && g.save.bank<0,'prejuízo maior que o dinheiro: o caixa fica negativo ('+g.save.bank+')');
+novo(30,{dani:2},'boca'); abre(3); g.money=0; g.custo=0; const f4=g.paid; g.finishDay(); ok(g.save.bank===30-g.contas-f4 && g.save.bank<0,'prejuízo maior que o dinheiro: o caixa fica negativo ('+g.save.bank+')');
 
 // ---------- turno sem fim: a folha também sai no fim ----------
 novo(500,{dani:2},'boca'); g.startEndless(); g.begin(); const fe=g.paid;

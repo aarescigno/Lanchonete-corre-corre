@@ -322,6 +322,7 @@ table.rank tr.me td{background:#fbe7a8}
 .item .tonxp{grid-column:1 / -1;font-weight:700;font-size:.9em}   /* v8.8: experiência do Tonhão */
 .item .tonxp-bar{height:8px;border-radius:4px;background:rgba(0,0,0,.15);margin-top:3px;overflow:hidden}
 .item .tonxp-bar i{display:block;height:100%;background:#f5a623}
+.item .tonxp small{display:block;font-weight:400;font-size:.85em;opacity:.8;margin-top:2px}   /* v8.9: o trabalho da Dani */
 </style>
 <div id="app">
   <div id="stage">
@@ -329,7 +330,7 @@ table.rank tr.me td{background:#fbe7a8}
 
     <div class="ov show" id="ov-menu">
       <div class="panel menu-panel">
-        <span class="vtag" id="vtag" aria-label="Versão 8.8">v8.8</span>
+        <span class="vtag" id="vtag" aria-label="Versão 8.9">v8.9</span>
         <h1 class="title">Lanchonete <br>Corre-Corre</h1>
         <p class="tag">Ajude a Bia a atender a freguesia da esquina antes que o cafezinho esfrie!</p>
         <div class="lbl" id="menu-dia">História</div>
@@ -541,7 +542,8 @@ table.rank tr.me td{background:#fbe7a8}
       <div class="panel">
         <h2>Versões</h2>
         <ul class="verlist">
-          <li><b>v8.8</b><span class="cur">versão atual</span><br>30/10/2026 &mdash; O Tonhão sobe de nível com a experiência dos cursos: cada curso básico dá +1 de XP e cada avançado +2. Com a XP do nível seguinte ele fica pronto para subir, e o aumento de salário confirma o nível novo (o aumento fica apagado, dizendo quanto falta, sem a XP). Agora são 5 níveis, o último com o Tonhão bem mais rápido e caprichado, e o nível pago é definitivo: o botão Reduzir saiu. Só a falta de dinheiro para a folha o derruba, e a XP fica. Saves antigos voltam ao nível que os cursos já feitos permitem.<br><a href="versoes/v8.7.html" target="_blank" rel="noopener">Abrir a v8.7</a></li>
+          <li><b>v8.9</b><span class="cur">versão atual</span><br>30/10/2026 &mdash; A Dani sobe de nível com a experiência: cada 30 tarefas que ela faz (lixo, pratos, louça, cafezinho, água e marmitas) dão +1 de XP, e os 3 cursos dela na lojinha (Atendimento ao cliente, Organização da cozinha e Barista iniciante) dão +2 cada. Com a XP do nível seguinte ela fica pronta para subir, e o aumento de salário confirma o nível novo. O &ldquo;Reduzir&rdquo; saiu. O fim do dia mostra as tarefas dela e a experiência.</li>
+          <li><b>v8.8</b><br>30/10/2026 &mdash; O Tonhão sobe de nível com a experiência dos cursos: cada curso básico dá +1 de XP e cada avançado +2. Com a XP do nível seguinte ele fica pronto para subir, e o aumento de salário confirma o nível novo (o aumento fica apagado, dizendo quanto falta, sem a XP). Agora são 5 níveis, o último com o Tonhão bem mais rápido e caprichado, e o nível pago é definitivo: o botão Reduzir saiu. Só a falta de dinheiro para a folha o derruba, e a XP fica. Saves antigos voltam ao nível que os cursos já feitos permitem.<br><a href="versoes/v8.7.html" target="_blank" rel="noopener">Abrir a v8.7</a></li>
           <li><b>v8.7</b><br>30/10/2026 &mdash; O Modo História chega: a carreira virou a história da Bia, em capítulos com conversas (balões sobre o salão) e um objetivo cada. O primeiro dia já começa com a dívida da reforma da garagem (R$ 1.000, 10 parcelas de R$ 100 mais 1% ao dia sobre o saldo, a 1ª no fim do dia 2). Capítulo 1, A garagem da Rosa: fechar 2 dias no azul. Capítulo 2, A Dani chega: a Dani entra de graça como aprendiz e o Gurugol tem de chegar a 2,4. Capítulo 3, Casa cheia: quitar a reforma, nota 2,7 e R$ 800 no caixa. Sem prazo: o capítulo segue até cumprir. Os aumentos da Dani ficaram mais baratos (R$ 25, 40 e 55 por dia). O botão História do menu virou Ver abertura. Quem tinha uma campanha de antes recomeça do dia 1, com aviso.<br><a href="versoes/v8.6.15.html" target="_blank" rel="noopener">Abrir a v8.6.15</a></li>
           <li><b>v8.6.15</b><br>30/10/2026 &mdash; Lojinha mais arrumada: em vez de 10 abas numa fileira, 4 grupos (Lanchonete, Equipe, Dinheiro e Gurugol). Cada grupo mostra cartões com ícone e nome, e o toque no cartão abre a seção, com o botão Voltar. Os itens da Bia (tênis, bandeja e Sudoku) ficaram na seção dela; o Tonhão reúne o aumento e os cursos; o músico e a TV e som foram para a Divulgação.<br><a href="versoes/v8.6.14.html" target="_blank" rel="noopener">Abrir a v8.6.14</a></li>
           <li><b>v8.6.14</b><br>30/10/2026 &mdash; Melhorias à vontade: acabou o limite de 1 melhoria por dia na lojinha; o limite agora é o dinheiro (o curso do Tonhão segue 1 por dia). E no fim do dia, a caixa do Gurugol perdeu o número entre parênteses depois de cada critério.</li>
@@ -717,9 +719,28 @@ function tonhaoNivelXp(cursos){
   STAFF.tonhao.levels.forEach((l, i) => { if (x >= l.xp) n = i; });
   return n;
 }
+/* experiência da Dani (v8.9): +1 a cada `tarefas` tarefas que ela termina (save.daniTar, o total da carreira) e +2 por curso dela
+   (save.daniCursos: { id:1 }); máximo 6 de cursos */
+const DANI_XP = { tarefas:5, curso:2 };
+const DANI_CURSOS = [
+  { id:'atend',   nome:'Atendimento ao cliente', preco:120 },
+  { id:'cozinha', nome:'Organização da cozinha', preco:150 },
+  { id:'barista', nome:'Barista iniciante',      preco:180 }
+];
+function daniXp(save){
+  const s = save || {};
+  return DANI_XP.curso * DANI_CURSOS.filter(c => s.daniCursos && s.daniCursos[c.id]).length + Math.floor(Math.max(0, +s.daniTar || 0) / DANI_XP.tarefas);
+}
+/* o maior nível (índice 1 a 4) cuja xp cabe na experiência dela; o 1 (aprendiz) vale desde que ela chega */
+function daniNivelXp(save){
+  const x = daniXp(save); let n = 1;
+  STAFF.dani.levels.forEach((l, i) => { if (l && x >= l.xp) n = i; });
+  return n;
+}
 /* o prato é do avançado de algum curso que já foi feito? */
 function pratoAv(k, cursos){ return CURSOS.some(c => cursoNivel(cursos, c.id) >= 2 && c.av.pratos.indexOf(k) >= 0); }
 /* o save: só os níveis que existem (o PF só tem o avançado, 2) */
+function normDaniCursos(c){ const o = {}; DANI_CURSOS.forEach(x => { if (c && c[x.id]) o[x.id] = 1; }); return o; }
 function normCursos(c){
   const o = {};
   CURSOS.forEach(x => { const n = Math.min(2, Math.floor(+(c && c[x.id]) || 0)); if (n >= (x.preco > 0 ? 1 : 2)) o[x.id] = n; });
@@ -1033,7 +1054,8 @@ const STAFF = {
   tonhao:  { levels:[ { slots:3, cook:1, crit:0.05, wash:0, pay:0, xp:0 }, { slots:3, cook:0.85, crit:0.12, wash:7, pay:15, xp:2 }, { slots:3, cook:0.7, crit:0.2, wash:4, pay:20, xp:5 },
                       { slots:3, cook:0.62, crit:0.26, wash:3, pay:25, xp:9 }, { slots:3, cook:0.55, crit:0.32, wash:2.5, pay:30, xp:14 } ] },
   // Dani (v8.7): entra de graça no cap. 2 como aprendiz (nível 1, sem salário); os níveis 2 a 4 são os aumentos da lojinha
-  dani:    { levels:[ null, { speed:0.4, tasks:1, pay:0 }, { speed:0.5, tasks:2, pay:25 }, { speed:0.65, tasks:2, pay:40 }, { speed:0.8, tasks:3, pay:55 } ] },
+  // v8.9: o nível também é experiência (xp: o trabalho dela e os cursos, ver DANI_XP); o aumento só consolida o nível
+  dani:    { levels:[ null, { speed:0.4, tasks:1, pay:0, xp:0 }, { speed:0.5, tasks:2, pay:15, xp:4 }, { speed:0.65, tasks:2, pay:20, xp:8 }, { speed:0.8, tasks:3, pay:25, xp:13 } ] },
   // couvert artístico: só do nível 3 do salão em diante (Avenida Brasil, etapa 3 do plano)
   couvert: { pay:80, fee:3, effect:0.2, feeCut:0.5, nivel:3 },
   // ambiente da Garagem (v7.4.3): TV e som ligados o dia todo; o custo é a conta de luz (pay) e entra na folha
@@ -1378,7 +1400,7 @@ const HISTORIA = [
 ];
 const HIST_NOMES = { bia:'Bia', tonhao:'Tonhão', dani:'Dani' };
 const CAIXA_MAX = 14;                                 // livro-caixa (v7.2): quantos dias da carreira ficam guardados
-const VERSAO = 'v8.8';                               // vai no resumo do Caixa
+const VERSAO = 'v8.9';                               // vai no resumo do Caixa
 const DIVULGA_DIA = 3;                                // antes disso, o movimento é o da inauguração (sem custo)
 function divulgaAberta(n){ return DEV.on || n >= DIVULGA_DIA; }   // no modo dev, desde o dia 1
 function divulgaOf(id){ return DIVULGA.find(d => d.id === id) || DIVULGA[1]; }
@@ -1738,7 +1760,7 @@ function normSave(s){
   const hist = s.histV === 1, novoHist = !hist && HIST.on && !DEV.on && !saveJogou(s), capMax = HISTORIA.length + 1;
   const cap = hist ? clamp(Math.round(+s.cap) || capMax, 1, capMax) : novoHist ? 1 : capMax;
   const conversa = cap > HISTORIA.length ? null : hist ? (s.conversa === 'antes' || s.conversa === 'depois' ? s.conversa : null) : novoHist ? 'antes' : null;
-  const dev = salaoDevolucao(s.salao), out = { dia, estrelas, lucroTot: Math.round(+s.lucroTot) || 0, pontosTot: Math.max(0, Math.round(+s.pontosTot) || 0), aval: normAval(s.aval), avalCom: normAvalCom(s.avalCom), neg: clamp(Math.round(+s.neg) || 0, 0, BANCO.neg), emp: normEmprestimo(novoHist ? { resto:REFORMA.valor, amort:REFORMA.amort, j:REFORMA.juros, ini:REFORMA.ini, ref:true } : s.emp), corta: s.corta !== false, fechou: Math.max(0, Math.round(+s.fechou) || 0), bank: bank + dev + devMaq, up, torneira:true, salao: normSalao(dev ? null : s.salao), divulga: divulgaOf(s.divulga).id, treino: !!s.treino, decor: normDecor(s.decor), cursos: normCursos(s.cursos), cursoDia: Math.max(0, Math.round(+s.cursoDia) || 0), tonXp: s.tonXp === 1 ? 1 : 0, cardV: 1, avisoCard: !!s.avisoCard, histV: 1, avisoHist: !!s.avisoHist, cap, capDia: Math.max(1, Math.round(+s.capDia) || 1), capAzul: Math.max(0, Math.round(+s.capAzul) || 0), conversa, manut: normManut(s.manut), caixa: normCaixa(s.caixa), caixaPend: normPend(s.caixaPend) };
+  const dev = salaoDevolucao(s.salao), out = { dia, estrelas, lucroTot: Math.round(+s.lucroTot) || 0, pontosTot: Math.max(0, Math.round(+s.pontosTot) || 0), aval: normAval(s.aval), avalCom: normAvalCom(s.avalCom), neg: clamp(Math.round(+s.neg) || 0, 0, BANCO.neg), emp: normEmprestimo(novoHist ? { resto:REFORMA.valor, amort:REFORMA.amort, j:REFORMA.juros, ini:REFORMA.ini, ref:true } : s.emp), corta: s.corta !== false, fechou: Math.max(0, Math.round(+s.fechou) || 0), bank: bank + dev + devMaq, up, torneira:true, salao: normSalao(dev ? null : s.salao), divulga: divulgaOf(s.divulga).id, treino: !!s.treino, decor: normDecor(s.decor), cursos: normCursos(s.cursos), cursoDia: Math.max(0, Math.round(+s.cursoDia) || 0), tonXp: s.tonXp === 1 ? 1 : 0, daniTar: Math.max(0, Math.round(+s.daniTar) || 0), daniCursos: normDaniCursos(s.daniCursos), daniCursoDia: Math.max(0, Math.round(+s.daniCursoDia) || 0), daniXp: s.daniXp === 1 ? 1 : 0, cardV: 1, avisoCard: !!s.avisoCard, histV: 1, avisoHist: !!s.avisoHist, cap, capDia: Math.max(1, Math.round(+s.capDia) || 1), capAzul: Math.max(0, Math.round(+s.capAzul) || 0), conversa, manut: normManut(s.manut), caixa: normCaixa(s.caixa), caixaPend: normPend(s.caixaPend) };
   out.equipe = normEquipe(s.equipe, pontoOf(out.salao.ponto));
   // v8.6.4: as notas do Gurugol de antes (de 1 a 5 pelo serviço) passam para a escala da Garagem, uma vez só (avalEsc)
   if (s.avalEsc !== 2){
@@ -1771,6 +1793,9 @@ function loadSave(){
       const n = normSave(s2);
       if (s2.tonXp !== 1){   // v8.8: o nível do Tonhão passa a depender da experiência dos cursos: rebaixa uma vez só
         n.equipe.tonhao = Math.min(n.equipe.tonhao, tonhaoNivelXp(n.cursos)); n.tonXp = 1; writeSave(n);
+      }
+      if (s2.daniXp !== 1){   // v8.9: o nível da Dani também passa a depender da experiência: rebaixa uma vez só
+        n.equipe.dani = Math.min(n.equipe.dani, n.equipe.dani ? daniNivelXp(n) : 0); n.daniXp = 1; writeSave(n);
       }
       if ((s2.salao && !Array.isArray(s2.salao.mesas)) || !s2.torneira) writeSave(n);   // salão antigo ou máquina de suco convertidos (com a devolução): só uma vez
       return n;
@@ -2455,6 +2480,7 @@ class Helper {
     this.x = DANI_HOME.x; this.y = DANI_HOME.y; this.dir = -1;
     this.hands = []; this.plan = null; this.path = []; this.phase = 'idle'; this.timer = 0;
     this.walkPh = 0; this.moving = false; this.thinkT = 0;
+    this.feitas = 0;   // v8.9: tarefas que terminou no dia (a experiência dela)
   }
   get level(){ return this.g.save.equipe.dani; }
   get active(){ return this.level > 0; }
@@ -2552,7 +2578,7 @@ class Helper {
       });
       if (this.hands.length) Sfx.blip();
     } else if (st.type === 'retirada'){
-      g.levaMarmitas(this);   // a que não coube fica na mão: a Dani espera no balcão abrir uma vaga (ou a marmita esfriar)
+      if (g.levaMarmitas(this)) this.feitas++;   // a que não coube fica na mão: a Dani espera no balcão abrir uma vaga (ou a marmita esfriar)
     } else if (st.type === 'clear'){
       const t = st.t;
       if (!t.dirty || this.hands.length >= DANI_HANDS) return;
@@ -2562,9 +2588,10 @@ class Helper {
       const n = this.hands.filter(h => h.kind === 'dirty').length;
       this.hands = this.hands.filter(h => h.kind !== 'dirty');
       g.kitchen.sinkN += n;
-      if (st.wash && g.washPiles(1)){ g.addText(this.x, this.y - 82, 'Dani lavou!', PAL.faixa, 14); Sfx.wash(); }
+      if (n) this.feitas++;
+      if (st.wash && g.washPiles(1)){ g.addText(this.x, this.y - 82, 'Dani lavou!', PAL.faixa, 14); Sfx.wash(); this.feitas++; }
     } else if (st.type === 'trash'){
-      if (g.trash > 0){ g.trash = 0; g.stats.emptied++; g.addText(this.x, this.y - 82, 'Lixo pra fora!', PAL.ok, 14); Sfx.noise(0.3, 0.1, 0, 400); }
+      if (g.trash > 0){ g.trash = 0; this.feitas++; g.stats.emptied++; g.addText(this.x, this.y - 82, 'Lixo pra fora!', PAL.ok, 14); Sfx.noise(0.3, 0.1, 0, 400); }
     } else if (st.type === 'maquina'){
       const o = st.o; o.dani = false;
       if (g.maq.indexOf(o) < 0 || o.t > 0) return;
@@ -2574,7 +2601,7 @@ class Helper {
     } else if (st.type === 'suco'){
       const grp = st.grp, n = this.hands.filter(h => h.kind === 'suco' && h.group === grp).length;
       this.hands = this.hands.filter(h => !(h.kind === 'suco' && h.group === grp));
-      if (n && g.sucoAp(grp, this)) g.entregaSuco(grp, n, this.x, this.y);
+      if (n && g.sucoAp(grp, this)){ g.entregaSuco(grp, n, this.x, this.y); this.feitas++; }
     } else if (st.type === 'coffee'){
       if (this.hands.length < DANI_HANDS) this.hands.push({ kind:'coffee' });
     } else if (st.type === 'serve'){
@@ -2582,7 +2609,7 @@ class Helper {
       if (grp) grp.daniCoffee = false;
       if (!h || !grp || !grp.seated || grp.coffee) return;
       this.hands.splice(this.hands.indexOf(h), 1);
-      grp.coffee = true; grp.gain(g.up.cafeteira ? 2 : 1); g.usos.cafeteira++;
+      grp.coffee = true; this.feitas++; grp.gain(g.up.cafeteira ? 2 : 1); g.usos.cafeteira++;
       grp.bebConta += DRINK_PRICE.coffee; g.pontos += PONTOS_ACAO.coffee; g.addText(t.cx, t.cy - 40, '+' + DRINK_PRICE.coffee + ' na conta', PAL.ok, 16); Sfx.coin();
     }
   }
@@ -3380,6 +3407,7 @@ class Game {
     // v8.3: tudo sai mesmo sem dinheiro (o caixa pode ficar negativo), junto com a parcela do empréstimo
     const income = fat - Math.round(this.custo) - this.contas - this.paid - this.paidDiv;
     sv.bank += income;
+    sv.daniTar += this.dani.feitas;   // v8.9: o trabalho da Dani vira experiência (só o dia completo)
     const atr0 = !!sv.emp.atr, devido = this.devido, par = this.pagaParcela(), atrasou = !atr0 && !!sv.emp.atr, tomou = atr0 && !!sv.emp.atr;
     // v8.3.1: atrasou de novo (não deu para a atrasada e a do dia): o banco toma a lanchonete e a carreira acaba
     if (tomou) sv.fechou = d.n;
@@ -3412,7 +3440,7 @@ class Game {
     if (tomou) row.tom = 1;
     caixaAdd(sv, row);
     writeSave(sv);
-    this.result = { day:d.n, money:m, fat, pontos:Math.round(this.pontos), custo:Math.round(this.custo), contas:this.contas, div:this.paidDiv, divName:this.div ? this.div.name : '', meta:d.meta, bom:bomGoal(d), expert:d.expert, passed, stars, served:this.stats.served, lost:this.stats.lost, lostBy:this.stats.lostBy, lotadoT:Math.round(this.stats.lotadoT), atraso:Math.round(this.atraso), full:this.stats.full, chain:this.stats.chain, vip:this.stats.vip, vipLost:this.stats.vipLost, marmitas:this.stats.marmitas, efood:this.efood, esfriou:this.stats.esfriou, sobra:this.marmitas().filter(o => o.onde !== 'fogao').length, juice:this.stats.juice, juiceMiss:this.stats.juiceMiss, sucoEsp:this.stats.sucoEsp, bebida:this.bebida.id, trash:this.stats.trash, washed:this.stats.washed, income, paid:this.paid, reason:this.reason, conserto:this.conserto, consertos:this.stats.consertos, quebras:this.quebras.filter(q => q.on).map(q => ({ id:q.id, fixed:q.fixed })), clima:this.clima, manut:Object.assign({}, this.manut), par, forcado, neg:sv.neg, emp:Object.assign({}, sv.emp), atrasou, tomou, devido, cap, aval:{ dia:avDia, geral:avalGeral(sv.aval), n:sv.aval.length, coment, teto:avalTeto(this.ponto) } };
+    this.result = { daniFeitas:this.dani.feitas, day:d.n, money:m, fat, pontos:Math.round(this.pontos), custo:Math.round(this.custo), contas:this.contas, div:this.paidDiv, divName:this.div ? this.div.name : '', meta:d.meta, bom:bomGoal(d), expert:d.expert, passed, stars, served:this.stats.served, lost:this.stats.lost, lostBy:this.stats.lostBy, lotadoT:Math.round(this.stats.lotadoT), atraso:Math.round(this.atraso), full:this.stats.full, chain:this.stats.chain, vip:this.stats.vip, vipLost:this.stats.vipLost, marmitas:this.stats.marmitas, efood:this.efood, esfriou:this.stats.esfriou, sobra:this.marmitas().filter(o => o.onde !== 'fogao').length, juice:this.stats.juice, juiceMiss:this.stats.juiceMiss, sucoEsp:this.stats.sucoEsp, bebida:this.bebida.id, trash:this.stats.trash, washed:this.stats.washed, income, paid:this.paid, reason:this.reason, conserto:this.conserto, consertos:this.stats.consertos, quebras:this.quebras.filter(q => q.on).map(q => ({ id:q.id, fixed:q.fixed })), clima:this.clima, manut:Object.assign({}, this.manut), par, forcado, neg:sv.neg, emp:Object.assign({}, sv.emp), atrasou, tomou, devido, cap, aval:{ dia:avDia, geral:avalGeral(sv.aval), n:sv.aval.length, coment, teto:avalTeto(this.ponto) } };
     if (tomou){ this.setState('falencia'); Sfx.lose(); return; }
     this.setState('dayend');
     if (passed) Sfx.win(); else Sfx.lose();
@@ -3437,6 +3465,7 @@ class Game {
   setStaff(key, val){
     const eq = this.save.equipe, old = eq[key];
     if (key === 'tonhao' && !DEV.on && (val > tonhaoNivelXp(this.save.cursos) || val < old)) return false;   // v8.8: só com a xp dos cursos, e o nível pago é definitivo
+    if (key === 'dani' && !DEV.on && (val > daniNivelXp(this.save) || val < old)) return false;   // v8.9: só com a experiência, e o nível pago é definitivo
     if (key === 'couvert' && val && !couvertOk(this.ponto)) return false;
     eq[key] = val;
     if (payroll(eq) > this.save.bank && payroll(eq) > payroll(Object.assign({}, eq, { [key]:old }))){ eq[key] = old; return false; }
@@ -3562,6 +3591,20 @@ class Game {
     const nx = tonhaoNivelXp(this.save.cursos);
     if (nx > this.save.equipe.tonhao) this.cursoMsg += ' Ele já pode subir para o nível ' + (nx + 1) + ': pague o aumento no cartão dele.';
     writeSave(this.save); Sfx.coin();
+    return true;
+  }
+  /* cursos da Dani (v8.9): +DANI_XP.curso de experiência cada; um por lojinha, à parte do curso do Tonhão; só depois que ela chega */
+  get daniCursoTrava(){ return !DEV.on && this.save.daniCursoDia === this.shopNext; }
+  get daniChegou(){ return DEV.on || this.save.cap >= 2 || this.save.equipe.dani > 0; }
+  buyDaniCurso(id){
+    const c = DANI_CURSOS.find(x => x.id === id), sv = this.save;
+    if (!c || !this.daniChegou || sv.daniCursos[id] || this.daniCursoTrava || sv.bank < c.preco) return false;
+    sv.bank -= c.preco; caixaGasto(sv, 'mel', c.preco);
+    sv.daniCursos[id] = 1; sv.daniCursoDia = this.shopNext;
+    this.cursoMsg = 'A Dani foi fazer o curso de ' + c.nome + '!';
+    const nx = daniNivelXp(sv);
+    if (nx > sv.equipe.dani && sv.equipe.dani > 0) this.cursoMsg += ' Ela já pode subir para o nível ' + (nx - 1) + ': pague o aumento no cartão dela.';
+    writeSave(sv); Sfx.coin();
     return true;
   }
   /* salão (v7.4): refaz as mesas e os obstáculos dos caminhos quando o salão muda. Os números seguem a ordem no
@@ -7196,6 +7239,10 @@ function buildTips(){
   tips.push(['A cozinha começa sabendo PF e coxinha. Na aba Cursos, o Tonhão aprende pratos novos (um curso por dia); o curso avançado deixa os pratos mais caros e caprichados. O Tonhão sobe de nível com experiência: cada curso dá XP e, quando ele estiver pronto, o aumento de salário confirma o nível novo. Cada tipo de cliente tem o seu gosto, e o entregador muda de ideia ao longo do dia.', c => {
     drawDish(c,'pf',18,30,0.9); drawDish(c,'coxinha',46,30,0.9); txt(c,'+',32,34,14,PAL.faixa,'center',FD);
   }]);
+  // v8.9: a experiência da Dani
+  tips.push(['A Dani aprende trabalhando: cada tarefa conta, e os cursos dela ajudam. Quando estiver pronta, o aumento confirma o nível novo.', c => {
+    txt(c,'+1 XP',32,36,15,PAL.faixa,'center',FD);
+  }]);
   // v8.6.11: vegetarianos e veganos
   tips.push(['Uma em cada dez pessoas é vegetariana e só pede prato sem carne. Sem opção no cardápio, ela leva uma coxinha, reclama no Gurugol e a Diversidade do cardápio cai para 1. O curso Vegetariano do Tonhão resolve (e traz mais clientes); o avançado, Pratos veganos, completa.', c => {
     drawDish(c,'pfVeg',18,30,0.9); drawDish(c,'coxinhaJaca',46,30,0.9);
@@ -7457,11 +7504,38 @@ function buildDani(grid){
   }
   const dMax = D.length - 1;
   if (!lv && !cap2){ grid.appendChild(c); return; }
+  // v8.9: o nível vem da experiência (trabalho e cursos); o aumento de salário só consolida o nível que ela já tem
+  const xp = daniXp(game.save), pronto = DEV.on || lv < 1 || xp >= (D[lv+1] || D[dMax]).xp;
+  if (lv){
+    const xl = el('div', 'tonxp');
+    xl.appendChild(el('span', null, lv < dMax ? 'Experiência: ' + xp + ' de ' + D[lv+1].xp + ' para o nível ' + lv : 'Experiência: ' + xp + ' · nível máximo'));
+    if (lv < dMax){ const bar = el('div', 'tonxp-bar'), fi = el('i'); fi.style.width = Math.round(clamp((xp - D[lv].xp) / (D[lv+1].xp - D[lv].xp), 0, 1) * 100) + '%'; bar.appendChild(fi); xl.appendChild(bar); }
+    const falta = DANI_XP.tarefas - ((+game.save.daniTar || 0) % DANI_XP.tarefas);
+    xl.appendChild(el('small', null, 'Trabalho: ' + falta + (falta > 1 ? ' tarefas' : ' tarefa') + ' até o próximo ponto'));
+    c.appendChild(xl);
+  }
   c.appendChild(lv < dMax ? staffNext(lv ? 'Com o aumento:' : 'Se contratar (aprendiz):', dRows(D[lv], D[lv+1])) : staffNext('Nível máximo:', dRows(null, D[dMax])));
   duo = el('div', 'duo');
-  if (lv < dMax) duo.appendChild(shopBtn(lv ? 'Aumento: ' + fmt(D[lv+1].pay - D[lv].pay) + '/dia' : 'Contratar', 'btn', canPay(D[lv+1].pay - (lv ? D[lv].pay : 0)), () => game.setStaff('dani', lv + 1)));
-  if (lv > 1) duo.appendChild(shopBtn('Reduzir', 'btn alt', true, () => game.setStaff('dani', lv - 1)));
+  if (lv < dMax){
+    duo.appendChild(shopBtn(lv ? 'Aumento: +' + fmt(D[lv+1].pay - D[lv].pay) + '/dia' : 'Contratar', 'btn', pronto && canPay(D[lv+1].pay - (lv ? D[lv].pay : 0)), () => game.setStaff('dani', lv + 1)));
+    if (lv && !pronto) c.appendChild(el('span', 'cursos-lista', 'Faltam ' + (D[lv+1].xp - xp) + ' de experiência: ela aprende trabalhando e com os cursos (+' + DANI_XP.curso + ' cada).'));
+  }
   c.appendChild(duo); grid.appendChild(c);
+  if (game.daniChegou) buildDaniCursos(grid);
+}
+/* cursos da Dani (v8.9): três cartões, +2 de experiência cada; um por lojinha, à parte do curso do Tonhão */
+function buildDaniCursos(grid){
+  const sv = game.save, bank = sv.bank;
+  if (game.cursoMsg) grid.appendChild(el('p', 'cursomsg', game.cursoMsg));
+  DANI_CURSOS.forEach(c => {
+    const feito = !!sv.daniCursos[c.id], card = el('div', 'item' + (feito ? ' own' : ''));
+    card.appendChild(upgradeIcon('dani'));
+    card.appendChild(el('b', null, 'Curso de ' + c.nome));
+    card.appendChild(el('span', 'cursos-lista', '+' + DANI_XP.curso + ' de experiência'));
+    if (!feito && game.daniCursoTrava) card.appendChild(el('span', 'cursos-lista', 'A Dani já está num curso. Volte depois do próximo dia.'));
+    card.appendChild(feito ? shopBtn('Curso feito', 'btn', false, () => false) : shopBtn('Comprar ' + fmt(c.preco), 'btn', !game.daniCursoTrava && bank >= c.preco, () => game.buyDaniCurso(c.id), c.preco));
+    grid.appendChild(card);
+  });
 }
 /* TV e som e o couvert (v7.4.3), agora na Divulgação (v8.6.15) */
 function buildAmbiente(grid){
@@ -8017,7 +8091,7 @@ function buildShop(){
   nav.hidden = !aberta || shopGrupo === 'gurugol'; $('shop-sec').textContent = aberta ? aberta.nome : '';
   ['salao', 'caixa'].forEach(k => $('ov-shop').classList[shopTab === k ? 'add' : 'remove'](k));
   if (!aberta){ grid.className = 'shopcards'; return shopCartoes(grid, SHOP_GRUPOS.find(x => x.id === shopGrupo)); }
-  grid.className = 'shopgrid' + (shopTab === 'tonhao' ? ' cursos' : ['salao', 'caixa', 'melhorias', 'gurugol', 'decor'].indexOf(shopTab) >= 0 ? ' ' + shopTab : '');
+  grid.className = 'shopgrid' + (shopTab === 'tonhao' || shopTab === 'dani' ? ' cursos' : ['salao', 'caixa', 'melhorias', 'gurugol', 'decor'].indexOf(shopTab) >= 0 ? ' ' + shopTab : '');
   aberta.build(grid);
 }
 (function(){ const box = $('shop-tabs'); if (box) Array.prototype.forEach.call(box.querySelectorAll('button'), b => b.addEventListener('click', () => { Sfx.init(); Sfx.tap(); shopGrupoAbrir(b.getAttribute('data-v')); }));
@@ -8129,6 +8203,11 @@ function buildEnd(){
   if (r.atrasou) msg += ' Faltou dinheiro para a parcela do banco: ficou atrasada. Amanhã, no fim do dia, o caixa precisa ter ' + fmt(game.devido) + ' (a atrasada e a do dia), senão o banco toma a lanchonete!';
   if (r.forcado) msg += ' O caixa fechou no negativo pelo ' + (BANCO.neg + 1) + 'º dia seguido: o banco cobriu ' + fmt(r.forcado) + ', com juros de ' + Math.round(BANCO.forcado * 100) + '% ao dia sobre o saldo, em ' + sv.emp.n + ' parcelas (a próxima, ' + fmt(game.parcela) + ').';
   else if (sv.bank < 0) msg += ' Caixa no negativo há ' + sv.neg + (sv.neg > 1 ? ' dias' : ' dia') + (sv.neg >= BANCO.neg ? ': se fechar amanhã no negativo, o banco cobre à força.' : ' (pode ficar até ' + BANCO.neg + ').');
+  // v8.9: o trabalho e a experiência da Dani
+  if (sv.equipe.dani > 0){
+    msg += ' Dani: ' + (r.daniFeitas || 0) + ((r.daniFeitas || 0) === 1 ? ' tarefa' : ' tarefas') + ' hoje · experiência ' + daniXp(sv) + '.';
+    if (daniNivelXp(sv) > sv.equipe.dani) msg += ' A Dani já pode subir para o nível ' + (daniNivelXp(sv) - 1) + '!';
+  }
   // Modo História (v8.7): o objetivo do capítulo no fim do dia
   if (r.cap) msg += ' Capítulo ' + r.cap.n + ', ' + r.cap.titulo + ': ' + (r.cap.ok ? '✓ Objetivo cumprido!' : r.cap.itens.map(it => (it.ok ? '✓ ' : '') + it.txt).join(' · '));
   $('end-msg').textContent = msg;
@@ -8507,7 +8586,7 @@ try { Rank.init(); } catch(e) {}
 game.setState('menu');
 if (!aberturaVista() && !DEV.on) abrirAbertura('auto');   // v8.5: a abertura toca sozinha uma vez
 window.__game = game;
-window.__lcc = { DECOR, DECOR_GRUPOS, TOALHA, decorOf, normDecor, decorOn, FILA_ACOES, filaMax, MARMITA, RETIRADA, marmitaMao, drawMarmita, prateleiraPos, EFOOD_COR, AVAL_BRAVO, QUEUE, setShopTab: v => shopAbrir(v), setShopGrupo: g => shopGrupoAbrir(g), shopSecoes: () => SHOP_GRUPOS.map(g => g.secoes.slice()), TREINO, TREINO_PASSOS, TREINO_COR, Treino, treinoLugar, treinoPrimeiro, playCareer, buildMenu, introBanco, buildFalencia, BANCO, normEmprestimo, parcelaDe, devidoDe, jurosDe, tabelaDe, simulaEmprestimo, SEMANA, semanaOf, diaOf, FILA_JUSTA, PORTA, CHAIRS, PAT, CONTAS, INGRED, CARDAPIO, precoPrato, CURSOS, CURSO_AV, CURSO_XP, tonhaoXp, tonhaoNivelXp, CURSOS_SEMFIM, cursoOf, cursoNivel, normCursos, pratoAv, CARNES, drawDish, pratoSabido, pratosSabidos, GOSTOS, GOSTOS_CAT, pedePrato, VEG, vegMov, drawDish, MAIS, PONTOS_ACAO, GORJETA, DRINK_PRICE, MOVIMENTO, movimentoSalao, DIVULGA, DIVULGA_DIA, divulgaOf, contasDia, bomGoal, SALAO, PONTOS, pontoOf, MESA, mesaBox, mesaPreco, salaoLugares, mesaProblema, salaoCaminho, salaoProblema, salaoOrdena, salaoAuto, salaoVaga, salaoPerto, salaoKit, salaoDevolucao, SALAO_SEMFIM, normSalao, setObst, OBST, pathOk, MAQUINA, BEBIDA_ESPERA, bebidaOf, MANUT, manutOf, manutChance, manutPreco, normManut, CLIMA, CLIMA_DIA, introManut, normPend, CALCADA, TW, HUDX, esperaAp, tableApproach, CRIT, STAFF, DANI_TASKS, DANI_HANDS, daniTaskOk, TRASH, WASH, payroll, FOLHA_CORTE, folhaCorta, folhaCortes, folhaItens, listaE, pratosDe, couvertEffect, couvertOk, ambienteEffect, dishStock, normSave, Helper, JUICE, KITCHEN_SLOTS, handLayout, trayOk, Game, Group, Table, Kitchen, Waitress, BIA_SPEED, DAYS, UPGRADES, CUSTOMER_TYPES, LAYOUT, PAL, Sfx, findPath, render, Rank, sortRows, cleanName, normName, CMD, ENDLESS, VIP, MULTA, rk, renderRank, openRank, closeRank, LS, lsGet, lsSet, loadSave, DEV, saveKey, devSync, divulgaAberta, CAIXA_MAX, VERSAO, normCaixa, caixaResumo, caixaTotais, copyText, PRATO, pratoPerde, pratoVapor, AVAL, AVAL_CRIT, AVAL_BRAVO, avalMenu, avalTeto, avalEscala, avalFrac, AVAL_SIMPLES, AVAL_DECOR, normAval, avalNota, avalMedias, avalGeral, avalMovimento, avalMinimo, avalComentario, fmtNota, notaFaixa, gurugolCaixa, AVAL_COM, normAvalCom, buildGurugol, ABERTURA, Abertura, AB_CENAS, AB_ALT, AB_BASE, abEsc, AB_VIVO, aberturaVista, aberturaSom, drawAbertura, abrirAbertura, HISTORIA, REFORMA, HIST, carencia, Conversa, drawConversa, falar, fluxoHistoria, aberturaAtual: () => abertura };
+window.__lcc = { DECOR, DECOR_GRUPOS, TOALHA, decorOf, normDecor, decorOn, FILA_ACOES, filaMax, MARMITA, RETIRADA, marmitaMao, drawMarmita, prateleiraPos, EFOOD_COR, AVAL_BRAVO, QUEUE, setShopTab: v => shopAbrir(v), setShopGrupo: g => shopGrupoAbrir(g), shopSecoes: () => SHOP_GRUPOS.map(g => g.secoes.slice()), TREINO, TREINO_PASSOS, TREINO_COR, Treino, treinoLugar, treinoPrimeiro, playCareer, buildMenu, introBanco, buildFalencia, BANCO, normEmprestimo, parcelaDe, devidoDe, jurosDe, tabelaDe, simulaEmprestimo, SEMANA, semanaOf, diaOf, FILA_JUSTA, PORTA, CHAIRS, PAT, CONTAS, INGRED, CARDAPIO, precoPrato, CURSOS, CURSO_AV, CURSO_XP, tonhaoXp, tonhaoNivelXp, daniXp, daniNivelXp, DANI_XP, DANI_CURSOS, CURSOS_SEMFIM, cursoOf, cursoNivel, normCursos, pratoAv, CARNES, drawDish, pratoSabido, pratosSabidos, GOSTOS, GOSTOS_CAT, pedePrato, VEG, vegMov, drawDish, MAIS, PONTOS_ACAO, GORJETA, DRINK_PRICE, MOVIMENTO, movimentoSalao, DIVULGA, DIVULGA_DIA, divulgaOf, contasDia, bomGoal, SALAO, PONTOS, pontoOf, MESA, mesaBox, mesaPreco, salaoLugares, mesaProblema, salaoCaminho, salaoProblema, salaoOrdena, salaoAuto, salaoVaga, salaoPerto, salaoKit, salaoDevolucao, SALAO_SEMFIM, normSalao, setObst, OBST, pathOk, MAQUINA, BEBIDA_ESPERA, bebidaOf, MANUT, manutOf, manutChance, manutPreco, normManut, CLIMA, CLIMA_DIA, introManut, normPend, CALCADA, TW, HUDX, esperaAp, tableApproach, CRIT, STAFF, DANI_TASKS, DANI_HANDS, daniTaskOk, TRASH, WASH, payroll, FOLHA_CORTE, folhaCorta, folhaCortes, folhaItens, listaE, pratosDe, couvertEffect, couvertOk, ambienteEffect, dishStock, normSave, Helper, JUICE, KITCHEN_SLOTS, handLayout, trayOk, Game, Group, Table, Kitchen, Waitress, BIA_SPEED, DAYS, UPGRADES, CUSTOMER_TYPES, LAYOUT, PAL, Sfx, findPath, render, Rank, sortRows, cleanName, normName, CMD, ENDLESS, VIP, MULTA, rk, renderRank, openRank, closeRank, LS, lsGet, lsSet, loadSave, DEV, saveKey, devSync, divulgaAberta, CAIXA_MAX, VERSAO, normCaixa, caixaResumo, caixaTotais, copyText, PRATO, pratoPerde, pratoVapor, AVAL, AVAL_CRIT, AVAL_BRAVO, avalMenu, avalTeto, avalEscala, avalFrac, AVAL_SIMPLES, AVAL_DECOR, normAval, avalNota, avalMedias, avalGeral, avalMovimento, avalMinimo, avalComentario, fmtNota, notaFaixa, gurugolCaixa, AVAL_COM, normAvalCom, buildGurugol, ABERTURA, Abertura, AB_CENAS, AB_ALT, AB_BASE, abEsc, AB_VIVO, aberturaVista, aberturaSom, drawAbertura, abrirAbertura, HISTORIA, REFORMA, HIST, carencia, Conversa, drawConversa, falar, fluxoHistoria, aberturaAtual: () => abertura };
 window.requestAnimationFrame(frame);
 
 })();

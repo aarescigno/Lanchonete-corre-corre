@@ -317,3 +317,4 @@ table.rank tr.me td{background:#fbe7a8}
 .item .tonxp{grid-column:1 / -1;font-weight:700;font-size:.9em}   /* v8.8: experiência do Tonhão */
 .item .tonxp-bar{height:8px;border-radius:4px;background:rgba(0,0,0,.15);margin-top:3px;overflow:hidden}
 .item .tonxp-bar i{display:block;height:100%;background:#f5a623}
+.item .tonxp small{display:block;font-weight:400;font-size:.85em;opacity:.8;margin-top:2px}   /* v8.9: o trabalho da Dani */

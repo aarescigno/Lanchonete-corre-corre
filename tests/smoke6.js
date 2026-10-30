@@ -20,9 +20,9 @@ ok(L.payroll({tonhao:2,dani:4,couvert:true})===TP(2)+DP(4)+SP.couvert.pay,'folha
 ok(DP(3)>DP(2) && DP(4)>DP(3),'Dani: cada nível paga mais ('+DP(2)+', '+DP(3)+', '+DP(4)+')');
 ok(L.payroll({tonhao:0,dani:0,tv:true,som:true})===SP.tv.pay+SP.som.pay,'folha: luz da TV '+SP.tv.pay+' + som '+SP.som.pay);
 { reset({tonhao:1,dani:2,tv:true,som:true},1000); g.save.divulga='boca'; g.startDay(3); g.begin(); ok(g.save.bank===1000 && g.paid===TP(1)+DP(2)+SP.tv.pay+SP.som.pay,'folha (com a luz da TV e do som) reservada ao abrir a lanchonete; só sai no fim do dia (v8.2.2)'); }
-{ reset({tonhao:1,dani:2,tv:true,som:true},30); g.save.divulga='boca'; g.startDay(3); g.begin(); ok(!eq().som && !eq().tv && eq().dani===1 && eq().tonhao===1 && g.paid===TP(1) && g.save.bank===30 && g.unpaid.join()==='som,TV,aumento da Dani','sem dinheiro para todos: desliga som e TV, tira o aumento da Dani (ela fica aprendiz), paga o resto'); }
+{ reset({tonhao:1,dani:2,tv:true,som:true},20); g.save.divulga='boca'; g.startDay(3); g.begin(); ok(!eq().som && !eq().tv && eq().dani===1 && eq().tonhao===1 && g.paid===TP(1) && g.save.bank===20 && g.unpaid.join()==='som,TV,aumento da Dani','sem dinheiro para todos: desliga som e TV, tira o aumento da Dani (ela fica aprendiz), paga o resto'); }
 { const b=DP(2)+SP.tv.pay; reset({tonhao:0,dani:2,tv:true,som:true},b); g.save.divulga='boca'; g.startDay(3); g.begin(); ok(!eq().som && eq().tv && eq().dani===2 && g.paid===b && g.save.bank===b,'som sai antes da TV, e a TV antes da Dani'); }
-{ reset({},DP(4)-1); ok(!g.setStaff('dani',4) && eq().dani===0,'não contrata quem o dinheiro acumulado não paga'); ok(g.setStaff('dani',2),'contrata a Dani com cofre suficiente'); }
+{ reset({},DP(4)-1); g.save.daniTar=4*L.DANI_XP.tarefas; ok(!g.setStaff('dani',4) && eq().dani===0,'não contrata quem o dinheiro acumulado não paga'); ok(g.setStaff('dani',2),'contrata a Dani com cofre suficiente'); }
 { reset({},0); g.save.divulga='boca'; g.startDay(3); g.begin(); g.money=1000; g.custo=100; g.finishDay(); const c=L.contasDia(g.tables);
   ok(g.result.income===1000-100-c && g.save.bank===1000-100-c && g.save.lucroTot===1000-100-c,'o faturamento vai para o dinheiro acumulado, menos ingredientes e contas (v7); o lucro soma no acumulado da campanha (v8.3)'); }
 
