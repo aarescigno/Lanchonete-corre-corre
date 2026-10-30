@@ -348,7 +348,7 @@ v8.9.1: guardar a v8.9 em `versoes/` (`v8.9-fonte.html` e `v8.9.html`), `vtag`, 
 - O ranking da carreira segue a regra da 2b, com o ponto alcançado ao lado.
 - O "cardápio maior" dos pontos de cima mexe na diversidade do cardápio do Gurugol (`avalMenu`).
 
-### Sessão 3a — Mudança de ponto e Lanchonete na área industrial (v9)
+### Sessão 3a — Mudança de ponto e Lanchonete na área industrial (v9) — FEITA em 30/10 (`docs/spec-v9.md`; cardápio ×1,5 e `grupos` 0,8 calibrados em vez de ×1,2; o smoke é o `smoke38`)
 > **Planejada com o usuário em 30/10** (respostas em `docs/PROPOSTAS.md`): as decisões abaixo estão tomadas. Depende da 2f (v8.7): `HISTORIA`, `Conversa`, `capObj`, `#ov-continua`, a reforma e a Dani aprendiz. **O Joca saiu desta etapa:** entra na 3b (Avenida Brasil), contratado com salário.
 
 #### Decisões tomadas (30/10)
