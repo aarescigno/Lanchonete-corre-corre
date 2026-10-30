@@ -5,5 +5,12 @@
     "cowork-plugin-management@knowledge-work-plugins": false,
     "data@knowledge-work-plugins": false,
     "nimble@knowledge-work-plugins": false
+  },
+  "permissions": {
+    "deny": [
+      "Read(./lanchonete.html)",
+      "Read(./versoes/**)",
+      "Read(./capturas/**)"
+    ]
   }
 }

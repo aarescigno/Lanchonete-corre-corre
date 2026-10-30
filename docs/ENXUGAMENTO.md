@@ -81,3 +81,18 @@ python3 ../montar.py --check
 ```
 
 Os números devem bater com a tabela de **Meta**, e os testes e a montagem seguem iguais (nada em `src/` muda).
+
+## Resultado (30/10/2026)
+
+| Medida | Antes | Depois |
+|---|---|---|
+| `CLAUDE.md` (todo turno) | 22,5 KB | 10,8 KB (o resto ficou em `docs/TESTES.md` e `docs/PARTES.md`) |
+| `PLANO.md` ativo | 104 KB | 54 KB (as etapas 1a a 2e foram para `docs/PLANO-FEITO.md`) |
+| `PROPOSTAS.md` ativo | 81 KB | 24 KB (os 53 retornos entregues foram para `docs/PROPOSTAS-FEITAS.md`) |
+| Leitura da "próxima etapa" | até 28 mil tokens | ~1 a 2 mil (`tests/indice.sh PLANO` + Read por faixa) |
+| Read de `lanchonete.html`, `versoes/`, `capturas/` | possível | bloqueado em `.claude/settings.json` |
+
+- O índice por linhas é gerado na hora por `tests/indice.sh` em vez de uma tabela fixa no topo dos docs, para não ficar velho a cada edição.
+- Retorno novo: `ferramentas/anota.py` põe a entrada no topo do `PROPOSTAS.md` sem ler o arquivo (mantém a ordem "mais novos no topo").
+- O `CLAUDE.md` ficou acima da meta de 6 a 8 KB porque **Regras**, **Economia**, **Modelo**, **Git** e **Publicar** foram mantidos inteiros, como o passo 1 pede.
+- O `PLANO.md` ficou acima de ~30 KB porque as etapas abertas (2c-r4, 2f, 3, 4, 6, 7) já vêm com as decisões detalhadas; com `indice.sh`, ninguém precisa ler tudo.
