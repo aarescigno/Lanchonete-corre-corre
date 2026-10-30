@@ -19,10 +19,12 @@ ok(g.buy('corrida')&&g.save.bank===1500&&g.up.corrida,'na mesma visita já compr
 // lojinha: o cartão dos tênis vira o de corrida; a grade continua com 6
 const cartoes=()=>els['shop-grid'].children.map(c=>c.children[1].textContent);
 novo(); g.goShop(2); L.setShopTab('melhorias');
-ok(cartoes().length===8&&cartoes()[0]==='Tênis novos'&&!cartoes().includes('Tênis de corrida'),'antes: Tênis novos na grade de 8 (com o Triturador, v8.3.10, e o Livrinho de Sudoku, v8.6.3)');
-novo({tenis:true}); g.goShop(3); L.setShopTab('melhorias');
-ok(cartoes().length===8&&cartoes()[0]==='Tênis de corrida'&&!cartoes().includes('Tênis novos'),'com os Tênis novos: o cartão vira Tênis de corrida');
-novo({tenis:true,corrida:true}); g.goShop(4); L.setShopTab('melhorias');
+ok(cartoes().length===5&&!cartoes().includes('Tênis novos')&&!cartoes().includes('Bandeja'),'Melhorias sem os itens da Bia (v8.6.15): 5 cartões');
+L.setShopTab('bia');
+ok(cartoes().length===3&&cartoes()[0]==='Tênis novos'&&!cartoes().includes('Tênis de corrida'),'antes: Tênis novos na seção da Bia (com Bandeja e Sudoku)');
+novo({tenis:true}); g.goShop(3); L.setShopTab('bia');
+ok(cartoes().length===3&&cartoes()[0]==='Tênis de corrida'&&!cartoes().includes('Tênis novos'),'com os Tênis novos: o cartão vira Tênis de corrida');
+novo({tenis:true,corrida:true}); g.goShop(4); L.setShopTab('bia');
 ok(cartoes()[0]==='Tênis de corrida'&&els['shop-grid'].children[0].children[3].textContent==='Já comprado','Tênis de corrida já comprados');
 
 // selos da fila

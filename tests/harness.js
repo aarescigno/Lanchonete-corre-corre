@@ -27,7 +27,7 @@ module.exports=function load(opts){
       getBoundingClientRect(){return{left:0,top:0,width:960,height:600}}, getContext(){return ctx}};
     return e;
   }
-  const doc={getElementById:id=>els[id]||(els[id]=mkEl(id)), createElement:t=>{const e=mkEl(t); e.tagName=String(t).toUpperCase(); return e;}, addEventListener(){}, hidden:false};
+  const doc={createTextNode:t=>{const e=mkEl('#text'); e.textContent=String(t); return e;}, getElementById:id=>els[id]||(els[id]=mkEl(id)), createElement:t=>{const e=mkEl(t); e.tagName=String(t).toUpperCase(); return e;}, addEventListener(){}, hidden:false};
   const win={innerWidth:960,innerHeight:600,devicePixelRatio:1,addEventListener(){},requestAnimationFrame(){},matchMedia:()=>({matches:!!opts.rm})};
   const store=Object.assign(opts.abertura?{}:{lcc2_abertura:'1'}, opts.store||{});
   // v8.6.9: um save injetado sem cardV valeria como antigo e recomeçaria do dia 1; os testes que não são do save antigo ganham o cardV (opts.saveAntigo: deixa como veio)
