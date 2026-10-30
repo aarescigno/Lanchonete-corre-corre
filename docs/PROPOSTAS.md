@@ -4,6 +4,17 @@ Registro das ideias e dos retornos de quem jogou, com o texto original, e de ond
 
 ---
 
+## 30/10/2026 — Usuário: level up da Dani (e, bem no futuro, do Joca)
+> "Beleza, agora vamos pensar num sistema de level up para Dani também. E futuramente a gente pensa num level up pro Joca. Mas bem futuramente, lá só depois que ele entrar, né?"
+
+Respostas na sessão de planejamento. De onde vem a XP: **"Os dois [trabalho e cursos] e, futuramente eu estou pensando para Dani ganhando experiência né ela se tornar a barista ou confeiteira nos níveis mais altos e o Joca assumir tarefas mais basais assim, junto com mais 1 funcionário a planejar"**. Níveis: **"4 níveis e futuramente o upgrade no que ela mais se identifica, café de vários tipos e qualidade, sobremesas de café etc de café"**.
+
+**Destino:** etapa **2h** (v8.9), depois da 2g e antes da 3a, em `docs/PLANO.md` (XP do trabalho a cada 30 tarefas, 3 cursos de +2; mesmas regras do Tonhão para o aumento, o "Reduzir" e os saves antigos). A Dani barista/confeiteira, o Joca com as tarefas básicas e o level up dele, e o funcionário novo foram para as Ideias guardadas.
+
+---
+
+---
+
 ## 30/10/2026 — Usuário: clientes novos da área industrial
 **Origem:** depois de planejar a 3a, o usuário pediu: "Me ajude a pensar em novos tipos de clientes para frequentarem nessa etapa." A sessão propôs 5 ideias (turma da fábrica com o apito do meio-dia, motorista de caminhão, encomenda do setor, conta rachada, fiscal da vigilância sanitária). Resposta:
 
