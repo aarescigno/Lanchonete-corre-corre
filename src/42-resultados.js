@@ -5,9 +5,11 @@ function notaFaixa(n){ n = Math.round(n * 10) / 10; return n > 4.8 ? 'diamante' 
 const GURU_BRILHOS = { pura:0, bronze:0, prata:0, ouro:3, diamante:7 };
 let guruAnim = 0;   // a animação em curso (abrir de novo o fim do dia cancela a anterior)
 /* caixa do Gurugol no fim do dia (v8.4.1): uma barra por critério, que enche até a nota dele, e embaixo a nota contando
-   de 0 até o valor, com a cor da faixa; ouro e diamante soltam brilhinhos. Com prefers-reduced-motion, já aparece pronta */
+   de 0 até o valor, com a cor da faixa; ouro e diamante soltam brilhinhos. Com prefers-reduced-motion, já aparece pronta.
+   Depois da v8.8: a barra vai pelo teto do ponto (a.teto): o atendimento perfeito a enche (na Garagem, 3 ★), e o encantado não passa dela */
 function gurugolCaixa(a, sub, semCnt){
-  const m = a.geral || a.dia, box = el('div', 'guru');
+  const m = a.geral || a.dia, box = el('div', 'guru'), teto = a.teto || 5;
+  const larg = i => clamp(avalFrac(m.crit[i] || 1, teto), 0, 1) * 100;
   box.setAttribute('role', 'img');
   box.setAttribute('aria-label', 'Gurugol: ' + (a.geral ? fmtNota(m.nota) + ' estrelas' : 'sem nota ainda, ' + a.n + ' de ' + AVAL.min + ' avaliações' + (sub ? '' : '; hoje ' + fmtNota(m.nota))) + '. ' + AVAL_CRIT.map((c, i) => c.nome + ' ' + fmtNota(m.crit[i]) + (m.cnt ? ' em ' + m.cnt[i] : '')).join(', ') + '.');
   box.appendChild(el('b', 'guru-tit', 'Gurugol'));
@@ -15,7 +17,7 @@ function gurugolCaixa(a, sub, semCnt){
     const row = el('div', 'guru-crit');
     row.appendChild(el('span', null, c.nome + (m.cnt && !semCnt ? ' (' + m.cnt[i] + ')' : '')));   // v8.6.7: quantas avaliações viram o critério
     const bar = el('div', 'guru-bar'), f = el('i');
-    f.style.width = RM ? ((m.crit[i] || 0) / 5 * 100) + '%' : '0%';
+    f.style.width = RM ? larg(i) + '%' : '0%';
     bar.appendChild(f); row.appendChild(bar); box.appendChild(row);
     return f;
   });
@@ -39,7 +41,7 @@ function gurugolCaixa(a, sub, semCnt){
     if (id !== guruAnim) return;
     if (!t0) t0 = t;
     const s = (t - t0) / 1000;
-    fills.forEach((f, i) => { const p = clamp((s - 0.15 * i) / 0.7, 0, 1); f.style.width = ((m.crit[i] || 0) / 5 * 100 * (1 - Math.pow(1 - p, 3))) + '%'; });
+    fills.forEach((f, i) => { const p = clamp((s - 0.15 * i) / 0.7, 0, 1); f.style.width = (larg(i) * (1 - Math.pow(1 - p, 3))) + '%'; });
     const p = clamp((s - 0.5) / 1.3, 0, 1), v = m.nota * (1 - Math.pow(1 - p, 3));
     num.textContent = fmtNota(v); num.className = 'guru-num ' + notaFaixa(v);
     if (p >= 1 && !feito){ feito = true; num.className += ' pronto'; brilhos(); }

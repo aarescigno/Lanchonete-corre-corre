@@ -3440,7 +3440,7 @@ class Game {
     if (tomou) row.tom = 1;
     caixaAdd(sv, row);
     writeSave(sv);
-    this.result = { daniFeitas:this.dani.feitas, day:d.n, money:m, fat, pontos:Math.round(this.pontos), custo:Math.round(this.custo), contas:this.contas, div:this.paidDiv, divName:this.div ? this.div.name : '', meta:d.meta, bom:bomGoal(d), expert:d.expert, passed, stars, served:this.stats.served, lost:this.stats.lost, lostBy:this.stats.lostBy, lotadoT:Math.round(this.stats.lotadoT), atraso:Math.round(this.atraso), full:this.stats.full, chain:this.stats.chain, vip:this.stats.vip, vipLost:this.stats.vipLost, marmitas:this.stats.marmitas, efood:this.efood, esfriou:this.stats.esfriou, sobra:this.marmitas().filter(o => o.onde !== 'fogao').length, juice:this.stats.juice, juiceMiss:this.stats.juiceMiss, sucoEsp:this.stats.sucoEsp, bebida:this.bebida.id, trash:this.stats.trash, washed:this.stats.washed, income, paid:this.paid, reason:this.reason, conserto:this.conserto, consertos:this.stats.consertos, quebras:this.quebras.filter(q => q.on).map(q => ({ id:q.id, fixed:q.fixed })), clima:this.clima, manut:Object.assign({}, this.manut), par, forcado, neg:sv.neg, emp:Object.assign({}, sv.emp), atrasou, tomou, devido, cap, aval:{ dia:avDia, geral:avalGeral(sv.aval), n:sv.aval.length, coment } };
+    this.result = { daniFeitas:this.dani.feitas, day:d.n, money:m, fat, pontos:Math.round(this.pontos), custo:Math.round(this.custo), contas:this.contas, div:this.paidDiv, divName:this.div ? this.div.name : '', meta:d.meta, bom:bomGoal(d), expert:d.expert, passed, stars, served:this.stats.served, lost:this.stats.lost, lostBy:this.stats.lostBy, lotadoT:Math.round(this.stats.lotadoT), atraso:Math.round(this.atraso), full:this.stats.full, chain:this.stats.chain, vip:this.stats.vip, vipLost:this.stats.vipLost, marmitas:this.stats.marmitas, efood:this.efood, esfriou:this.stats.esfriou, sobra:this.marmitas().filter(o => o.onde !== 'fogao').length, juice:this.stats.juice, juiceMiss:this.stats.juiceMiss, sucoEsp:this.stats.sucoEsp, bebida:this.bebida.id, trash:this.stats.trash, washed:this.stats.washed, income, paid:this.paid, reason:this.reason, conserto:this.conserto, consertos:this.stats.consertos, quebras:this.quebras.filter(q => q.on).map(q => ({ id:q.id, fixed:q.fixed })), clima:this.clima, manut:Object.assign({}, this.manut), par, forcado, neg:sv.neg, emp:Object.assign({}, sv.emp), atrasou, tomou, devido, cap, aval:{ dia:avDia, geral:avalGeral(sv.aval), n:sv.aval.length, coment, teto:avalTeto(this.ponto) } };
     if (tomou){ this.setState('falencia'); Sfx.lose(); return; }
     this.setState('dayend');
     if (passed) Sfx.win(); else Sfx.lose();
@@ -8031,7 +8031,7 @@ function buildGurugol(grid){
   const sv = game.save, ga = avalGeral(sv.aval), na = sv.aval.length, com = sv.avalCom.slice().reverse();
   if (!na){ grid.appendChild(el('p', 'rank-empty', 'Ainda ninguém avaliou a lanchonete no Gurugol: cada grupo que sai avalia, e os comentários aparecem aqui.')); return; }
   const esq = el('div', 'guru-lado');
-  esq.appendChild(gurugolCaixa({ geral:ga, dia:avalMedias(sv.aval), n:na }, ga ? 'média das últimas ' + na + ' avaliações' : 'sem nota: ' + na + ' de ' + AVAL.min + ' avaliações'));
+  esq.appendChild(gurugolCaixa({ geral:ga, dia:avalMedias(sv.aval), n:na, teto:avalTeto(game.ponto) }, ga ? 'média das últimas ' + na + ' avaliações' : 'sem nota: ' + na + ' de ' + AVAL.min + ' avaliações'));
   const mv = Math.round((avalMovimento(sv.aval, game.ponto) - 1) * 100), teto = fmtNota(avalTeto(game.ponto));
   esq.appendChild(el('p', 'small', ga ? (mv >= 0 ? 'Nota boa traz mais gente: ' : 'Nota baixa afasta a freguesia: ') + (mv > 0 ? '+' : '') + mv + '% de movimento.' : 'A nota aparece a partir da ' + AVAL.min + 'ª avaliação e mexe no movimento: até +' + Math.round(AVAL.mov * 100) + '% com ' + teto + ' ★.'));
   // v8.6.4: o teto do ponto
@@ -8104,9 +8104,11 @@ function notaFaixa(n){ n = Math.round(n * 10) / 10; return n > 4.8 ? 'diamante' 
 const GURU_BRILHOS = { pura:0, bronze:0, prata:0, ouro:3, diamante:7 };
 let guruAnim = 0;   // a animação em curso (abrir de novo o fim do dia cancela a anterior)
 /* caixa do Gurugol no fim do dia (v8.4.1): uma barra por critério, que enche até a nota dele, e embaixo a nota contando
-   de 0 até o valor, com a cor da faixa; ouro e diamante soltam brilhinhos. Com prefers-reduced-motion, já aparece pronta */
+   de 0 até o valor, com a cor da faixa; ouro e diamante soltam brilhinhos. Com prefers-reduced-motion, já aparece pronta.
+   Depois da v8.8: a barra vai pelo teto do ponto (a.teto): o atendimento perfeito a enche (na Garagem, 3 ★), e o encantado não passa dela */
 function gurugolCaixa(a, sub, semCnt){
-  const m = a.geral || a.dia, box = el('div', 'guru');
+  const m = a.geral || a.dia, box = el('div', 'guru'), teto = a.teto || 5;
+  const larg = i => clamp(avalFrac(m.crit[i] || 1, teto), 0, 1) * 100;
   box.setAttribute('role', 'img');
   box.setAttribute('aria-label', 'Gurugol: ' + (a.geral ? fmtNota(m.nota) + ' estrelas' : 'sem nota ainda, ' + a.n + ' de ' + AVAL.min + ' avaliações' + (sub ? '' : '; hoje ' + fmtNota(m.nota))) + '. ' + AVAL_CRIT.map((c, i) => c.nome + ' ' + fmtNota(m.crit[i]) + (m.cnt ? ' em ' + m.cnt[i] : '')).join(', ') + '.');
   box.appendChild(el('b', 'guru-tit', 'Gurugol'));
@@ -8114,7 +8116,7 @@ function gurugolCaixa(a, sub, semCnt){
     const row = el('div', 'guru-crit');
     row.appendChild(el('span', null, c.nome + (m.cnt && !semCnt ? ' (' + m.cnt[i] + ')' : '')));   // v8.6.7: quantas avaliações viram o critério
     const bar = el('div', 'guru-bar'), f = el('i');
-    f.style.width = RM ? ((m.crit[i] || 0) / 5 * 100) + '%' : '0%';
+    f.style.width = RM ? larg(i) + '%' : '0%';
     bar.appendChild(f); row.appendChild(bar); box.appendChild(row);
     return f;
   });
@@ -8138,7 +8140,7 @@ function gurugolCaixa(a, sub, semCnt){
     if (id !== guruAnim) return;
     if (!t0) t0 = t;
     const s = (t - t0) / 1000;
-    fills.forEach((f, i) => { const p = clamp((s - 0.15 * i) / 0.7, 0, 1); f.style.width = ((m.crit[i] || 0) / 5 * 100 * (1 - Math.pow(1 - p, 3))) + '%'; });
+    fills.forEach((f, i) => { const p = clamp((s - 0.15 * i) / 0.7, 0, 1); f.style.width = (larg(i) * (1 - Math.pow(1 - p, 3))) + '%'; });
     const p = clamp((s - 0.5) / 1.3, 0, 1), v = m.nota * (1 - Math.pow(1 - p, 3));
     num.textContent = fmtNota(v); num.className = 'guru-num ' + notaFaixa(v);
     if (p >= 1 && !feito){ feito = true; num.className += ' pronto'; brilhos(); }
