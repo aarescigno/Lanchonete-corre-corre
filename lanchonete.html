@@ -310,7 +310,7 @@ table.rank tr.me td{background:#fbe7a8}
 
     <div class="ov show" id="ov-menu">
       <div class="panel menu-panel">
-        <span class="vtag" id="vtag" aria-label="Versão 8.6.13">v8.6.13</span>
+        <span class="vtag" id="vtag" aria-label="Versão 8.6.14">v8.6.14</span>
         <h1 class="title">Lanchonete <br>Corre-Corre</h1>
         <p class="tag">Ajude a Bia a atender a freguesia da esquina antes que o cafezinho esfrie!</p>
         <div class="lbl" id="menu-dia">Carreira: dia 1</div>
@@ -415,7 +415,7 @@ table.rank tr.me td{background:#fbe7a8}
     <div class="ov" id="ov-shop">
       <div class="panel">
         <h2>Garagem da mãe da Bia</h2>
-        <p>Dinheiro acumulado: <span class="bank" id="shop-bank">R$ 0</span><span class="livre" id="shop-livre"></span> &middot; <span id="shop-limit">Você pode levar 1 melhoria por dia.</span></p>
+        <p>Dinheiro acumulado: <span class="bank" id="shop-bank">R$ 0</span><span class="livre" id="shop-livre"></span> &middot; <span id="shop-limit">Melhorias à vontade, se o dinheiro der. Cursos: 1 por dia.</span></p>
         <div class="rankbar"><div class="seg" id="shop-tabs" role="group" aria-label="Lojinha">
           <button type="button" data-v="melhorias" aria-pressed="true">Melhorias</button>
           <button type="button" data-v="equipe" aria-pressed="false">Equipe</button>
@@ -523,7 +523,8 @@ table.rank tr.me td{background:#fbe7a8}
       <div class="panel">
         <h2>Versões</h2>
         <ul class="verlist">
-          <li><b>v8.6.13</b><span class="cur">versão atual</span><br>29/10/2026 &mdash; Rodada de balanceamento do cardápio: quem pede salgado quase sempre pede dois, então os cursos do Tonhão não derrubam mais o lucro do dia; as metas da sexta e do sábado da 1ª semana ficaram um pouco mais baixas.</li>
+          <li><b>v8.6.14</b><span class="cur">versão atual</span><br>30/10/2026 &mdash; Melhorias à vontade: acabou o limite de 1 melhoria por dia na lojinha; o limite agora é o dinheiro (o curso do Tonhão segue 1 por dia). E no fim do dia, a caixa do Gurugol perdeu o número entre parênteses depois de cada critério.<br><a href="versoes/v8.6.13.html" target="_blank" rel="noopener">Abrir a v8.6.13</a></li>
+          <li><b>v8.6.13</b><br>29/10/2026 &mdash; Rodada de balanceamento do cardápio: quem pede salgado quase sempre pede dois, então os cursos do Tonhão não derrubam mais o lucro do dia; as metas da sexta e do sábado da 1ª semana ficaram um pouco mais baixas.</li>
           <li><b>v8.6.12</b><br>29/10/2026 &mdash; Os pratos ganham desenhos de verdade: risoles, kibe, bolinho japonês, empada, esfihas, bauru, pão na chapa, pastéis retangulares e o misto quente em duas metades. Quem faz o curso avançado vê um detalhe nos pratos (catupiry, azeitona, listras da chapa, bolhas do pastel), e o PF com Carnes variadas vem com bife, frango, peixe ou bife a cavalo.</li>
           <li><b>v8.6.11</b><br>29/10/2026 &mdash; Vegetarianos e veganos: cerca de uma em cada dez pessoas é vegetariana e só pede prato sem carne; sem opção no cardápio, ela reclama no Gurugol (Diversidade do cardápio 1). O novo curso Vegetariano do Tonhão ensina o PF vegetariano, a empada de palmito e o kibe de abóbora, soma na Diversidade e traz +5% de clientes; o avançado, Pratos veganos, traz mais cinco pratos e mais +5%. Os pratos sem carne têm um &ldquo;v&rdquo; verde (e uma folhinha nos veganos).</li>
           <li><b>v8.6.9</b><br>29/10/2026 &mdash; O cardápio cresce: a cozinha começa sabendo só PF e coxinha, e na aba Cursos da lojinha o Tonhão aprende pratos novos (pastel, chapa, salgados fritos e assados; um curso por dia). Cada curso tem a versão avançada, que deixa os pratos mais caros e mais caprichados. Cada tipo de cliente tem o seu gosto, e o entregador muda de ideia ao longo do dia. A Diversidade do cardápio no Gurugol sobe com cada curso. Quem já tinha uma campanha recomeça do dia 1.</li>
@@ -932,8 +933,8 @@ function salaoDevolucao(s){
 /* Turno sem fim (v7.4): salão fixo de 6 mesas e 16 lugares (o de antes), igual para todo mundo no ranking */
 const SALAO_SEMFIM = [2,2,2,4,2,4];
 /* ============================================================
-   DECORAÇÃO (v8.6.5, pedido do usuário): enfeites da Garagem, comprados na aba Decoração da lojinha, à vontade (fora
-   da melhoria do dia). Desde a v8.6.6, contam no Ambiente do Gurugol (AVAL.amb: planta, rosa e toalha).
+   DECORAÇÃO (v8.6.5, pedido do usuário): enfeites da Garagem, comprados na aba Decoração da lojinha, à vontade.
+   Desde a v8.6.6, contam no Ambiente do Gurugol (AVAL.amb: planta, rosa e toalha).
    - plantas: as espadas-de-são-jorge da calçada (da v7.7, que vinham de graça) e a samambaia na parede;
    - cantinho da Rosa: a foto da mãe da Bia, o quadro de giz com o prato do dia e a plaquinha "Comida é afeto".
    Comprado, o enfeite pode ser guardado e posto de volta de graça: save.decor[id] = 1 (à mostra) ou 0 (guardado).
@@ -1298,7 +1299,7 @@ function tabelaDe(e){
 /* um empréstimo novo de v, pagando em dia: as parcelas e os juros somados */
 function simulaEmprestimo(v, j){ const t = tabelaDe(normEmprestimo({ resto:v, amort:Math.ceil(v / BANCO.parcelas), j })); return { parcelas:t, juros:t.reduce((a, p) => a + p, 0) - v }; }
 const CAIXA_MAX = 14;                                 // livro-caixa (v7.2): quantos dias da carreira ficam guardados
-const VERSAO = 'v8.6.13';                               // vai no resumo do Caixa
+const VERSAO = 'v8.6.14';                               // vai no resumo do Caixa
 const DIVULGA_DIA = 3;                                // antes disso, o movimento é o da inauguração (sem custo)
 function divulgaAberta(n){ return DEV.on || n >= DIVULGA_DIA; }   // no modo dev, desde o dia 1
 function divulgaOf(id){ return DIVULGA.find(d => d.id === id) || DIVULGA[1]; }
@@ -1339,7 +1340,7 @@ const UPGRADES = [
   { id:'sudoku',     name:'Livrinho de Sudoku',   desc:'A fila de ações da Bia ganha 3 quadrinhos (de 5 para 8 tarefas já marcadas).', cost:200 },   // v8.6.3
   { id:'ventilador', name:'Ventilador de teto',   desc:'A freguesia come 15% mais rápido.', cost:250 },   // v8.3.10: o cheiro da lixeira cheia voltou a incomodar
   { id:'triturador', name:'Triturador de lixo',   desc:'Mói os restos da lixeira: tira 1 do lixo a cada 30 s. Ainda é preciso esvaziar de vez em quando.', cost:180 },
-  { id:'pratos',     name:'Jogo de pratos',       desc:'+1 prato limpo na cozinha (do dia 3 em diante). Leve quantos quiser, fora da melhoria do dia.', cost:300, multi:true }   // v8.3.6: acumula e não conta no limite de 1 por dia
+  { id:'pratos',     name:'Jogo de pratos',       desc:'+1 prato limpo na cozinha (do dia 3 em diante). Leve quantos quiser.', cost:300, multi:true }   // v8.3.6: acumula
 ];
 
 /* ============================================================
@@ -2538,7 +2539,7 @@ class Game {
     this.fx = [];
     this.sel = null; this.drag = null; this.hover = null; this.hoverOk = false;
     this.cam = CALCADA.w;   // onde o mundo começa na tela larga (v7.6: a calçada inteira à vista, sem rolar)
-    this.shopBought = false; this.shopNext = 1; this.boughtFor = 0;
+    this.shopNext = 1;
     this.soundBtnT = 0;
     this.mode = 'carreira';
     this.treino = null; this.salvo = null;   // Missão zero (v8.2): o passo a passo e o save de verdade, guardado enquanto ela dura
@@ -3316,10 +3317,9 @@ class Game {
     this.setState('endlessend');
     Sfx.lose();
   }
-  /* lojinha antes do dia n (a partir do dia 2): 1 melhoria por dia, mesmo se a lojinha abrir de novo para o mesmo dia (o Jogo de pratos fica de fora) */
+  /* lojinha antes do dia n (a partir do dia 2): melhorias à vontade, se o dinheiro der (v8.6.14: sem o limite de 1 por dia; só o curso do Tonhão segue 1 por lojinha) */
   goShop(n){
     this.shopNext = Math.max(1, n || this.day.n + 1);
-    this.shopBought = this.boughtFor === this.shopNext;
     if (DEV.on && this.save.bank < DEV.bank){ this.save.bank = DEV.bank; writeSave(this.save); }   // modo dev: o dinheiro não acaba
     this.salaoSel = -1; this.estoqueSel = -1; this.salaoUndo = []; this.salaoMsg = ''; this.cursoMsg = '';
     this.resetDay(this.shopNext);   // o salão ao fundo já mostra o dia que vem
@@ -3399,10 +3399,10 @@ class Game {
   }
   buy(id){
     const u = UPGRADES.find(x => x.id === id);
-    if (!u || (!u.multi && (this.shopBought || this.up[id])) || (u.req && !this.up[u.req]) || this.save.bank < u.cost) return false;
+    if (!u || (!u.multi && this.up[id]) || (u.req && !this.up[u.req]) || this.save.bank < u.cost) return false;
     this.save.bank -= u.cost;
-    if (u.multi) this.up[id] = pratosDe(this.up) + 1;   // Jogo de pratos (v8.3.6): acumula, fora da melhoria do dia
-    else { this.up[id] = true; this.shopBought = true; this.boughtFor = this.shopNext; }
+    if (u.multi) this.up[id] = pratosDe(this.up) + 1;   // Jogo de pratos (v8.3.6): acumula
+    else this.up[id] = true;
     caixaGasto(this.save, 'mel', u.cost);
     writeSave(this.save);
     Sfx.coin();
@@ -3528,7 +3528,7 @@ class Game {
     if (why) return this.salaoNao(why);
     return this.salaoSet(l, true, this.estoque.filter(e => e !== m));
   }
-  /* decoração (v8.6.5): enfeite novo (fica à mostra), à vontade e fora da melhoria do dia */
+  /* decoração (v8.6.5): enfeite novo (fica à mostra), à vontade */
   buyDecor(id){
     const d = decorOf(id), dec = this.save.decor;
     if (!d || id in dec || this.save.bank < d.cost) return false;
@@ -3585,7 +3585,7 @@ class Game {
   /* Recomeçar do zero (v8.3, com confirmação no menu): a carreira volta ao dia 1; a Missão zero continua feita */
   resetProgress(){
     this.save = normSave(DEV.on ? { bank:DEV.bank, treino:this.save.treino } : { treino:this.save.treino });   // também depois que o banco tomou a lanchonete (v8.3.1)
-    this.up = this.save.up; this.boughtFor = 0;
+    this.up = this.save.up;
     this.buildTables();
     this.kitchen.reset(); this.dani.reset();
     writeSave(this.save);
@@ -3595,7 +3595,7 @@ class Game {
     DEV.on = !!on; lsSet(LS.dev, DEV.on ? '1' : '0');
     this.save = loadSave();
     if (DEV.on){ this.save.bank = DEV.bank; writeSave(this.save); }
-    this.up = this.save.up; this.boughtFor = 0;
+    this.up = this.save.up;
     this.buildTables();
     this.kitchen.reset(); this.dani.reset();
   }
@@ -7717,7 +7717,7 @@ function buildShop(){
     ? ' · faltam ' + fmt(-game.livre) + ' para a folha: o dia ' + game.shopNext + ' abre sem ' + listaE(corte)
     : negFim ? ' · faltam ' + fmt(-game.livre) + ' para a folha: o caixa pode fechar no negativo'
     : ' · livre ' + fmt(game.livre) + ' (' + fmt(comp) + ' reservados para ' + listaE(folhaItens(game.save.equipe, game.div)) + ')');
-  $('shop-limit').textContent = DEV.on ? 'Modo dev: tudo liberado; melhorias de graça, ligue e desligue à vontade.' : game.shopBought ? 'Melhoria do dia ' + game.shopNext + ' já escolhida (pratos à vontade).' : 'Você pode levar 1 melhoria antes do dia ' + game.shopNext + ' (pratos à vontade).';
+  $('shop-limit').textContent = DEV.on ? 'Modo dev: tudo liberado; melhorias de graça, ligue e desligue à vontade.' : 'Melhorias à vontade, se o dinheiro der. Cursos: 1 por dia.';
   $('btn-shop-go').textContent = 'Começar o dia ' + game.shopNext;
   const f = payroll(game.save.equipe), dv = divulgaAberta(game.shopNext) ? divulgaOf(game.save.divulga) : null;
   $('shop-folha').textContent = (f ? 'Folha ' + fmt(f) : 'Sem folha') + (dv ? ' + ' + dv.name.toLowerCase() + ' ' + fmt(dv.cost) : '') + ', contas ' + fmt(contasDia(game.tables)) + (sv.emp.resto ? ', parcela do banco ' + fmt(game.devido) + (sv.emp.atr ? ' (com a atrasada)' : '') : '') + ' e ingredientes: tudo pago no fim do dia, que só rende completo. A meta é o lucro.';
@@ -7734,7 +7734,7 @@ function buildShop(){
   if (shopTab === 'caixa') return buildCaixa(grid);
   // os Tênis de corrida (v7.3) só aparecem depois dos Tênis novos, no lugar deles (a grade continua com 6); no modo dev, todas
   UPGRADES.filter(u => DEV.on || (u.req ? game.up[u.req] : !(game.up[u.id] && UPGRADES.some(v => v.req === u.id)))).forEach(u => {
-    const own = !!game.up[u.id], tem = u.multi ? pratosDe(game.up) : 0, fecha = !u.multi && (own || game.shopBought);   // o Jogo de pratos (v8.3.6) segue à venda
+    const own = !!game.up[u.id], tem = u.multi ? pratosDe(game.up) : 0, fecha = !u.multi && own;   // o Jogo de pratos (v8.3.6) segue à venda
     const card = el('div', 'item' + (own && !u.multi ? ' own' : ''));
     card.appendChild(upgradeIcon(u.id));
     card.appendChild(el('b', null, u.name));
@@ -7758,14 +7758,14 @@ const GURU_BRILHOS = { pura:0, bronze:0, prata:0, ouro:3, diamante:7 };
 let guruAnim = 0;   // a animação em curso (abrir de novo o fim do dia cancela a anterior)
 /* caixa do Gurugol no fim do dia (v8.4.1): uma barra por critério, que enche até a nota dele, e embaixo a nota contando
    de 0 até o valor, com a cor da faixa; ouro e diamante soltam brilhinhos. Com prefers-reduced-motion, já aparece pronta */
-function gurugolCaixa(a, sub){
+function gurugolCaixa(a, sub, semCnt){
   const m = a.geral || a.dia, box = el('div', 'guru');
   box.setAttribute('role', 'img');
   box.setAttribute('aria-label', 'Gurugol: ' + (a.geral ? fmtNota(m.nota) + ' estrelas' : 'sem nota ainda, ' + a.n + ' de ' + AVAL.min + ' avaliações' + (sub ? '' : '; hoje ' + fmtNota(m.nota))) + '. ' + AVAL_CRIT.map((c, i) => c.nome + ' ' + fmtNota(m.crit[i]) + (m.cnt ? ' em ' + m.cnt[i] : '')).join(', ') + '.');
   box.appendChild(el('b', 'guru-tit', 'Gurugol'));
   const fills = AVAL_CRIT.map((c, i) => {
     const row = el('div', 'guru-crit');
-    row.appendChild(el('span', null, c.nome + (m.cnt ? ' (' + m.cnt[i] + ')' : '')));   // v8.6.7: quantas avaliações viram o critério
+    row.appendChild(el('span', null, c.nome + (m.cnt && !semCnt ? ' (' + m.cnt[i] + ')' : '')));   // v8.6.7: quantas avaliações viram o critério
     const bar = el('div', 'guru-bar'), f = el('i');
     f.style.width = RM ? ((m.crit[i] || 0) / 5 * 100) + '%' : '0%';
     bar.appendChild(f); row.appendChild(bar); box.appendChild(row);
@@ -7823,7 +7823,7 @@ function buildEnd(){
   const a = r.aval;
   guruAnim++;
   if (a && a.dia){
-    st.appendChild(gurugolCaixa(a));
+    st.appendChild(gurugolCaixa(a, undefined, true));
     av.title = 'Hoje, em ' + a.dia.n + (a.dia.n > 1 ? ' avaliações: ' : ' avaliação: ') + AVAL_CRIT.map((c, i) => c.nome.toLowerCase() + ' ' + fmtNota(a.dia.crit[i]) + ' (' + a.dia.cnt[i] + ')').join(', ');
     if (a.coment.length) av.appendChild(el('i', null, a.coment.map(t => '“' + t + '”').join(' ')));
   }

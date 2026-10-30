@@ -54,11 +54,11 @@ for(let n=1;n<=8;n++){
   els['btn-next'].fire('click');
   ok(g.state==='shop','shop after day '+n);
   // buy one
-  const u=L.UPGRADES.find(u=>!g.up[u.id]&&g.save.bank>=u.cost); if(u){ ok(g.buy(u.id),'buy '+u.id); ok(!g.buy(L.UPGRADES.find(x=>!g.up[x.id]&&!x.multi)?.id||'x'),'second buy blocked'); }
+  const u=L.UPGRADES.find(u=>!g.up[u.id]&&g.save.bank>=u.cost); if(u){ ok(g.buy(u.id),'buy '+u.id); const u2=L.UPGRADES.find(x=>!g.up[x.id]&&!x.multi&&!x.req&&g.save.bank>=x.cost); if(u2) ok(g.buy(u2.id),'segunda melhoria na mesma lojinha (v8.6.14)'); }
   L.render(g,ctx);
   ok(g.shopNext===n+1,'lojinha para o dia '+(n+1));
   els['btn-shop-go'].fire('click'); ok(g.state==='intro'&&g.day.n===n+1,'lojinha leva à introdução do dia '+(n+1));
-  g.goShop(n+1); ok(g.shopBought===!!(u&&!u.multi),'reabrir a lojinha do mesmo dia não libera outra compra');
+  g.goShop(n+1); ok(g.state==='shop','reabrir a lojinha do mesmo dia');
 }
 ok(!els['btn-again'],'sem "Repetir dia" (v8.3)');
 els['btn-shop-menu'].fire('click'); ok(g.state==='menu','lojinha tem menu principal');

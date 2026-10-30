@@ -6,14 +6,14 @@ const GURU_BRILHOS = { pura:0, bronze:0, prata:0, ouro:3, diamante:7 };
 let guruAnim = 0;   // a animação em curso (abrir de novo o fim do dia cancela a anterior)
 /* caixa do Gurugol no fim do dia (v8.4.1): uma barra por critério, que enche até a nota dele, e embaixo a nota contando
    de 0 até o valor, com a cor da faixa; ouro e diamante soltam brilhinhos. Com prefers-reduced-motion, já aparece pronta */
-function gurugolCaixa(a, sub){
+function gurugolCaixa(a, sub, semCnt){
   const m = a.geral || a.dia, box = el('div', 'guru');
   box.setAttribute('role', 'img');
   box.setAttribute('aria-label', 'Gurugol: ' + (a.geral ? fmtNota(m.nota) + ' estrelas' : 'sem nota ainda, ' + a.n + ' de ' + AVAL.min + ' avaliações' + (sub ? '' : '; hoje ' + fmtNota(m.nota))) + '. ' + AVAL_CRIT.map((c, i) => c.nome + ' ' + fmtNota(m.crit[i]) + (m.cnt ? ' em ' + m.cnt[i] : '')).join(', ') + '.');
   box.appendChild(el('b', 'guru-tit', 'Gurugol'));
   const fills = AVAL_CRIT.map((c, i) => {
     const row = el('div', 'guru-crit');
-    row.appendChild(el('span', null, c.nome + (m.cnt ? ' (' + m.cnt[i] + ')' : '')));   // v8.6.7: quantas avaliações viram o critério
+    row.appendChild(el('span', null, c.nome + (m.cnt && !semCnt ? ' (' + m.cnt[i] + ')' : '')));   // v8.6.7: quantas avaliações viram o critério
     const bar = el('div', 'guru-bar'), f = el('i');
     f.style.width = RM ? ((m.crit[i] || 0) / 5 * 100) + '%' : '0%';
     bar.appendChild(f); row.appendChild(bar); box.appendChild(row);
@@ -71,7 +71,7 @@ function buildEnd(){
   const a = r.aval;
   guruAnim++;
   if (a && a.dia){
-    st.appendChild(gurugolCaixa(a));
+    st.appendChild(gurugolCaixa(a, undefined, true));
     av.title = 'Hoje, em ' + a.dia.n + (a.dia.n > 1 ? ' avaliações: ' : ' avaliação: ') + AVAL_CRIT.map((c, i) => c.nome.toLowerCase() + ' ' + fmtNota(a.dia.crit[i]) + ' (' + a.dia.cnt[i] + ')').join(', ');
     if (a.coment.length) av.appendChild(el('i', null, a.coment.map(t => '“' + t + '”').join(' ')));
   }

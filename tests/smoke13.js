@@ -29,7 +29,7 @@ novo(0);
 ok(!g.buyMesa(2) && /Falta dinheiro/.test(g.salaoMsg) && mesas().length===4,'sem dinheiro, não compra');
 novo(1000);
 ok(g.buyMesa(2) && g.save.bank===1000-S.mesa2 && mesas().length===5 && lug()===12,'compra mesa de 2 (R$ '+S.mesa2+')');
-ok(!g.shopBought && g.save.caixaPend.sal===S.mesa2,'móveis não contam no limite de 1 melhoria e entram no caixa');
+ok(g.save.caixaPend.sal===S.mesa2,'móveis entram no caixa');
 ok(g.salaoSel>=0 && mesas()[g.salaoSel].seats===2 && !L.salaoProblema(mesas(),P),'a mesa nova entra num lugar livre e fica escolhida no editor');
 ok(g.state==='shop' && g.tables.length===5,'o salão ao fundo acompanha');
 ok(g.buyMesa(4) && g.save.bank===1000-S.mesa2-S.mesa4 && lug()===16,'compra mesa de 4 (R$ '+S.mesa4+'): 16 lugares');

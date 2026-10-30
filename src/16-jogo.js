@@ -17,7 +17,7 @@ class Game {
     this.fx = [];
     this.sel = null; this.drag = null; this.hover = null; this.hoverOk = false;
     this.cam = CALCADA.w;   // onde o mundo começa na tela larga (v7.6: a calçada inteira à vista, sem rolar)
-    this.shopBought = false; this.shopNext = 1; this.boughtFor = 0;
+    this.shopNext = 1;
     this.soundBtnT = 0;
     this.mode = 'carreira';
     this.treino = null; this.salvo = null;   // Missão zero (v8.2): o passo a passo e o save de verdade, guardado enquanto ela dura
@@ -795,10 +795,9 @@ class Game {
     this.setState('endlessend');
     Sfx.lose();
   }
-  /* lojinha antes do dia n (a partir do dia 2): 1 melhoria por dia, mesmo se a lojinha abrir de novo para o mesmo dia (o Jogo de pratos fica de fora) */
+  /* lojinha antes do dia n (a partir do dia 2): melhorias à vontade, se o dinheiro der (v8.6.14: sem o limite de 1 por dia; só o curso do Tonhão segue 1 por lojinha) */
   goShop(n){
     this.shopNext = Math.max(1, n || this.day.n + 1);
-    this.shopBought = this.boughtFor === this.shopNext;
     if (DEV.on && this.save.bank < DEV.bank){ this.save.bank = DEV.bank; writeSave(this.save); }   // modo dev: o dinheiro não acaba
     this.salaoSel = -1; this.estoqueSel = -1; this.salaoUndo = []; this.salaoMsg = ''; this.cursoMsg = '';
     this.resetDay(this.shopNext);   // o salão ao fundo já mostra o dia que vem
@@ -878,10 +877,10 @@ class Game {
   }
   buy(id){
     const u = UPGRADES.find(x => x.id === id);
-    if (!u || (!u.multi && (this.shopBought || this.up[id])) || (u.req && !this.up[u.req]) || this.save.bank < u.cost) return false;
+    if (!u || (!u.multi && this.up[id]) || (u.req && !this.up[u.req]) || this.save.bank < u.cost) return false;
     this.save.bank -= u.cost;
-    if (u.multi) this.up[id] = pratosDe(this.up) + 1;   // Jogo de pratos (v8.3.6): acumula, fora da melhoria do dia
-    else { this.up[id] = true; this.shopBought = true; this.boughtFor = this.shopNext; }
+    if (u.multi) this.up[id] = pratosDe(this.up) + 1;   // Jogo de pratos (v8.3.6): acumula
+    else this.up[id] = true;
     caixaGasto(this.save, 'mel', u.cost);
     writeSave(this.save);
     Sfx.coin();
@@ -1007,7 +1006,7 @@ class Game {
     if (why) return this.salaoNao(why);
     return this.salaoSet(l, true, this.estoque.filter(e => e !== m));
   }
-  /* decoração (v8.6.5): enfeite novo (fica à mostra), à vontade e fora da melhoria do dia */
+  /* decoração (v8.6.5): enfeite novo (fica à mostra), à vontade */
   buyDecor(id){
     const d = decorOf(id), dec = this.save.decor;
     if (!d || id in dec || this.save.bank < d.cost) return false;
@@ -1064,7 +1063,7 @@ class Game {
   /* Recomeçar do zero (v8.3, com confirmação no menu): a carreira volta ao dia 1; a Missão zero continua feita */
   resetProgress(){
     this.save = normSave(DEV.on ? { bank:DEV.bank, treino:this.save.treino } : { treino:this.save.treino });   // também depois que o banco tomou a lanchonete (v8.3.1)
-    this.up = this.save.up; this.boughtFor = 0;
+    this.up = this.save.up;
     this.buildTables();
     this.kitchen.reset(); this.dani.reset();
     writeSave(this.save);
@@ -1074,7 +1073,7 @@ class Game {
     DEV.on = !!on; lsSet(LS.dev, DEV.on ? '1' : '0');
     this.save = loadSave();
     if (DEV.on){ this.save.bank = DEV.bank; writeSave(this.save); }
-    this.up = this.save.up; this.boughtFor = 0;
+    this.up = this.save.up;
     this.buildTables();
     this.kitchen.reset(); this.dani.reset();
   }
