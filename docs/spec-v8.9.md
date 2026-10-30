@@ -27,7 +27,7 @@ O bot faz ~3 tarefas por dia como aprendiz; 1 XP a cada ~1,5 dia dá **5** taref
 Pela regra do plano, o passo 1→2 baixou de R$ 25 para **R$ 15**; os outros não rendem nem com R$ 5 e foram ao piso (nível de baixo + R$ 5): **0 / 15 / 20 / 25**. Como na 2g, o bot não vê o ganho no Gurugol; o "Reduzir" saiu mesmo assim.
 
 ## Testes
-- `smoke36` (novo, 38): XP, nível por XP, aumento, tarefas no dia completo, cursos e trava, lojinha, fim do dia, folha que não cabe, `loadSave`, modo dev.
+- `smoke37` (novo, 38): XP, nível por XP, aumento, tarefas no dia completo, cursos e trava, lojinha, fim do dia, folha que não cabe, `loadSave`, modo dev.
 - Ajustados: `smoke6`, `smoke17`, `smoke19`, `smoke24` (diárias novas), `smoke15` (`daniXp:1` no save) e `smoke34` (aumento com XP, sem "Reduzir").
 - `carreira.js`: `capT` limita também a Dani pela XP; o bot compra os cursos dela depois do curso do Tonhão, com reserva de R$ 150; linhas novas `DANI` (dia em que chega a cada nível, tarefas por dia, XP no fim do dia). `emprestimo.js`: `capT` da Dani.
 - `node carreira.js 20`: caps. 1 a 3 nos dias 2 / 3 / 14 (v8.8: 2 / 3 / 14); 10 de 20 carreiras chegam a R$ 800 (v8.8: 4); 0 dia no negativo. `balance.js 40`: sem equipe passou 25, 32, 29, 23 e 22 de 40; `EQUIPE=auto`: 40 em todos os dias (acima do alvo de 85–95%, pois a Dani cheia custa R$ 25 em vez de R$ 55).
