@@ -97,6 +97,11 @@ function upgradeIcon(id){
       c.beginPath(); c.moveTo(0,8); c.bezierCurveTo(-11,0,-6,-9,0,-3); c.bezierCurveTo(6,-9,11,0,0,8); c.closePath(); c.fillStyle = PAL.perigo; c.fill();
     } else if (id === 'd-toalha'){
       drawToalha(c,-17,6,34); drawToalhaEnfeites(c,0,6,17);
+    } else if (id === 'g-salao'){   // v8.6.15: cartão Salão (mesa redonda com duas cadeiras)
+      ell(c,0,4,15,8); fs(c,PAL.formica,2); rr(c,-3,10,6,8,1); fs(c,PAL.madeiraEsc,1.4);
+      [-1,1].forEach(d => { rr(c,d*19-5,-6,10,10,2); fs(c,CHAIRS[d > 0 ? 3 : 1].c,1.6); });
+    } else if (id === 'bia'){
+      drawBia(c,{},0,24,{ s:0.8 });
     } else if (id === 'ventilador'){
       for (let i=0;i<4;i++){ c.save(); c.rotate(i*Math.PI/2 + 0.4); ell(c,0,-8,4.5,9); fs(c,i%2?PAL.cromo:'#e8edf1',1.8); c.restore(); }
       circ(c,0,0,3.5); fs(c,PAL.mostarda,1.8);
@@ -106,7 +111,37 @@ function upgradeIcon(id){
     }
   });
 }
-let shopTab = 'melhorias';
+/* v8.6.15: a lojinha tem 4 grupos; cada um mostra cartões (ícone e nome) e o cartão abre a seção. shopTab = a seção aberta (null = os cartões do grupo) */
+let shopGrupo = 'lanchonete', shopTab = null;
+const SHOP_GRUPOS = [
+  { id:'lanchonete', nome:'Lanchonete', secoes:['melhorias', 'salao', 'decor', 'manut', 'divulga'] },
+  { id:'equipe', nome:'Equipe', secoes:['bia', 'tonhao', 'dani'] },
+  { id:'dinheiro', nome:'Dinheiro', secoes:['banco', 'caixa'] },
+  { id:'gurugol', nome:'Gurugol', secoes:['gurugol'] }];
+const SHOP_SECOES = {
+  melhorias:{ nome:'Melhorias', icon:'ventilador', build:g => buildMelhorias(g) },
+  salao:{ nome:'Salão', icon:'g-salao', build:g => buildSalao(g) },
+  decor:{ nome:'Decoração', icon:'d-samambaia', build:g => buildDecor(g) },
+  manut:{ nome:'Manutenção', icon:'m-fogao', build:g => buildManut(g) },
+  divulga:{ nome:'Divulgação', icon:'div-redes', build:g => buildDivulga(g) },
+  bia:{ nome:'Bia', icon:'bia', build:g => buildBia(g) },
+  tonhao:{ nome:'Tonhão', icon:'tonhao', build:g => buildTonhao(g) },
+  dani:{ nome:'Dani', icon:'dani', build:g => buildDani(g) },
+  banco:{ nome:'Banco', icon:'banco', build:g => buildBanco(g) },
+  caixa:{ nome:'Caixa', icon:'contas', build:g => buildCaixa(g) },
+  gurugol:{ nome:'Gurugol', icon:'contas', build:g => buildGurugol(g) }};
+const SHOP_ANTIGAS = { equipe:'tonhao', cursos:'tonhao' };   // nomes das abas antigas, para os testes e capturas
+function shopGrupoDe(sec){ const g = SHOP_GRUPOS.find(x => x.secoes.indexOf(sec) >= 0); return g ? g.id : 'lanchonete'; }
+function shopAbrir(sec){ sec = SHOP_ANTIGAS[sec] || sec; shopGrupo = shopGrupoDe(sec); shopTab = sec; buildShop(); }
+function shopGrupoAbrir(g){ shopGrupo = g; shopTab = g === 'gurugol' ? 'gurugol' : null; buildShop(); }
+function shopCartoes(grid, grupo){
+  grupo.secoes.forEach(id => {
+    const sc = SHOP_SECOES[id], b = el('button', null); b.type = 'button'; b.setAttribute('data-sec', id);
+    b.appendChild(upgradeIcon(sc.icon)); b.appendChild(el('b', null, sc.nome));
+    b.addEventListener('click', () => { Sfx.init(); Sfx.tap(); shopTab = id; buildShop(); });
+    grid.appendChild(b);
+  });
+}
 /* v8.1: compra que usa o dinheiro já reservado para a folha (o que fica de fora ao abrir o dia aumenta): o botão fica
    em alerta e o 1º toque só avisa o que vai ficar de fora; o 2º compra */
 function folhaAviso(b, cost){
@@ -153,7 +188,8 @@ function staffNext(title, rows){
   });
   return box;
 }
-function buildEquipe(grid){
+function buildBia(grid){ upgradeCartoes(grid, true); }
+function buildTonhao(grid){
   const eq = game.save.equipe, bank = game.save.bank, T = STAFF.tonhao.levels, D = STAFF.dani.levels, C = STAFF.couvert;
   const canPay = extra => payroll(eq) + extra <= bank;
   const pc = v => Math.round(v*100) + '%', sec = v => String(Math.round(v*10)/10).replace('.', ',') + ' s';
@@ -169,6 +205,13 @@ function buildEquipe(grid){
   if (eq.tonhao < 2) duo.appendChild(shopBtn('Aumento', 'btn', canPay(T[eq.tonhao+1].pay - T[eq.tonhao].pay), () => game.setStaff('tonhao', eq.tonhao + 1)));
   if (eq.tonhao > 0) duo.appendChild(shopBtn('Reduzir', 'btn alt', true, () => game.setStaff('tonhao', eq.tonhao - 1)));
   c.appendChild(duo); grid.appendChild(c);
+  buildCursos(grid);
+}
+function buildDani(grid){
+  const eq = game.save.equipe, bank = game.save.bank, T = STAFF.tonhao.levels, D = STAFF.dani.levels, C = STAFF.couvert;
+  const canPay = extra => payroll(eq) + extra <= bank;
+  const pc = v => Math.round(v*100) + '%', sec = v => String(Math.round(v*10)/10).replace('.', ',') + ' s';
+  let c, duo;
   // Dani: só mostra as tarefas que ela já pode exercer (e só depois de contratada)
   const lv = eq.dani, sp = D[lv] || D[1];
   const avail = DANI_TASKS.filter(t => daniTaskOk(t.id, game.up));
@@ -197,6 +240,13 @@ function buildEquipe(grid){
   if (lv < 3) duo.appendChild(shopBtn(lv ? 'Promover' : 'Contratar', 'btn', canPay(D[lv+1].pay - (lv ? D[lv].pay : 0)), () => game.setStaff('dani', lv + 1)));
   if (lv > 0) duo.appendChild(shopBtn('Dispensar', 'btn alt', true, () => game.setStaff('dani', 0)));
   c.appendChild(duo); grid.appendChild(c);
+}
+/* TV e som e o couvert (v7.4.3), agora na Divulgação (v8.6.15) */
+function buildAmbiente(grid){
+  const eq = game.save.equipe, bank = game.save.bank, T = STAFF.tonhao.levels, D = STAFF.dani.levels, C = STAFF.couvert;
+  const canPay = extra => payroll(eq) + extra <= bank;
+  const pc = v => Math.round(v*100) + '%', sec = v => String(Math.round(v*10)/10).replace('.', ',') + ' s';
+  let c, duo;
   // TV e som (v7.4.3): cada um liga e desliga à parte; o custo é a conta de luz do dia
   const TV = STAFF.tv, SOM = STAFF.som;
   c = staffCard(upgradeIcon('ambiente'), 'TV e som', 'Com a TV ligada, a paciência nas mesas cai ' + Math.round(TV.effect*100) + '% mais devagar; com o som, mais ' + Math.round(SOM.effect*100) + '%. O custo é a luz do dia.');
@@ -515,6 +565,7 @@ function buildDivulga(grid){
   const c = staffCard(upgradeIcon('contas'), 'Contas do dia ' + n,
     (p.aluguel ? 'Aluguel ' + fmt(p.aluguel) + ' + l' : 'Sem aluguel (' + p.nome.replace(/^Garagem/, 'a garagem') + '). L') + 'uz e gás de ' + sal.length + ' mesas (' + fmt(CONTAS.mesa) + ' cada) e ' + sal.reduce((a, t) => a + t.seats, 0) + ' lugares (' + fmt(CONTAS.lugar) + ' cada) = ' + fmt(contasDia(game.tables, p)) + ', no fim do dia. Ingredientes: ' + Math.round(INGRED.prato * 100) + '% da conta de cada prato que fica pronto e ' + fmt(INGRED.suco) + ' por suco.');
   grid.appendChild(c);
+  buildAmbiente(grid);
 }
 /* aba Manutenção (v8): o estado de cada equipamento, o risco de quebrar e a revisão (volta a 100%) */
 function buildManut(grid){
@@ -700,10 +751,29 @@ function buildGurugol(grid){
   if (!com.length) lista.appendChild(el('li', 'rank-empty', 'Os comentários aparecem depois do próximo dia.'));
   grid.appendChild(lista);
 }
+const BIA_IDS = ['tenis', 'corrida', 'bandeja', 'sudoku'];
+function buildMelhorias(grid){ upgradeCartoes(grid, false); }
+function upgradeCartoes(grid, bia){
+  // os Tênis de corrida (v7.3) só aparecem depois dos Tênis novos, no lugar deles (a grade continua com 6); no modo dev, todas
+  UPGRADES.filter(u => (BIA_IDS.indexOf(u.id) >= 0) === bia).filter(u => DEV.on || (u.req ? game.up[u.req] : !(game.up[u.id] && UPGRADES.some(v => v.req === u.id)))).forEach(u => {
+    const own = !!game.up[u.id], tem = u.multi ? pratosDe(game.up) : 0, fecha = !u.multi && own;   // o Jogo de pratos (v8.3.6) segue à venda
+    const card = el('div', 'item' + (own && !u.multi ? ' own' : ''));
+    card.appendChild(upgradeIcon(u.id));
+    card.appendChild(el('b', null, u.name));
+    card.appendChild(el('span', null, (tem ? 'Você tem ' + tem + '. ' : '') + u.desc));
+    const b = el('button', 'btn', DEV.on ? (own ? 'Desligar' : 'Ligar') : fecha && own ? 'Já comprado' : ('Comprar ' + fmt(u.cost)));
+    b.type = 'button';
+    if (!DEV.on && (fecha || game.save.bank < u.cost)) b.disabled = true;
+    else if (!DEV.on) folhaAviso(b, u.cost);
+    b.addEventListener('click', () => { if (folhaPede(b)) return; if (DEV.on ? game.devToggle(u.id) : game.buy(u.id)) buildShop(); });
+    card.appendChild(b);
+    grid.appendChild(card);
+  });
+}
 function buildShop(){
   const grid = $('shop-grid');
   clearEl(grid);
-  segSync('shop-tabs', shopTab);
+  segSync('shop-tabs', shopGrupo);
   $('shop-bank').textContent = fmt(game.save.bank);
   $('shop-bank').className = 'bank' + (game.save.bank < 0 ? ' neg' : '');   // v8.3: no negativo, em vermelho
   // v8.1: o que já está comprometido com a abertura do dia não está livre para gastar
@@ -719,32 +789,14 @@ function buildShop(){
   $('btn-shop-go').textContent = 'Começar o dia ' + game.shopNext;
   const f = payroll(game.save.equipe), dv = divulgaAberta(game.shopNext) ? divulgaOf(game.save.divulga) : null;
   $('shop-folha').textContent = (f ? 'Folha ' + fmt(f) : 'Sem folha') + (dv ? ' + ' + dv.name.toLowerCase() + ' ' + fmt(dv.cost) : '') + ', contas ' + fmt(contasDia(game.tables)) + (sv.emp.resto ? ', parcela do banco ' + fmt(game.devido) + (sv.emp.atr ? ' (com a atrasada)' : '') : '') + ' e ingredientes: tudo pago no fim do dia, que só rende completo. A meta é o lucro.';
-  grid.className = 'shopgrid' + (shopTab === 'salao' || shopTab === 'caixa' || shopTab === 'melhorias' || shopTab === 'gurugol' || shopTab === 'decor' || shopTab === 'cursos' ? ' ' + shopTab : '');
+  // v8.6.15: sem seção aberta, os cartões do grupo; com ela, o botão Voltar (o Gurugol abre direto, sem cartões)
+  const nav = $('shop-nav'), aberta = shopTab ? SHOP_SECOES[shopTab] : null;
+  nav.hidden = !aberta || shopGrupo === 'gurugol'; $('shop-sec').textContent = aberta ? aberta.nome : '';
   ['salao', 'caixa'].forEach(k => $('ov-shop').classList[shopTab === k ? 'add' : 'remove'](k));
-  if (shopTab === 'equipe') return buildEquipe(grid);
-  if (shopTab === 'salao') return buildSalao(grid);
-  if (shopTab === 'decor') return buildDecor(grid);
-  if (shopTab === 'cursos') return buildCursos(grid);
-  if (shopTab === 'divulga') return buildDivulga(grid);
-  if (shopTab === 'manut') return buildManut(grid);
-  if (shopTab === 'banco') return buildBanco(grid);
-  if (shopTab === 'gurugol') return buildGurugol(grid);
-  if (shopTab === 'caixa') return buildCaixa(grid);
-  // os Tênis de corrida (v7.3) só aparecem depois dos Tênis novos, no lugar deles (a grade continua com 6); no modo dev, todas
-  UPGRADES.filter(u => DEV.on || (u.req ? game.up[u.req] : !(game.up[u.id] && UPGRADES.some(v => v.req === u.id)))).forEach(u => {
-    const own = !!game.up[u.id], tem = u.multi ? pratosDe(game.up) : 0, fecha = !u.multi && own;   // o Jogo de pratos (v8.3.6) segue à venda
-    const card = el('div', 'item' + (own && !u.multi ? ' own' : ''));
-    card.appendChild(upgradeIcon(u.id));
-    card.appendChild(el('b', null, u.name));
-    card.appendChild(el('span', null, (tem ? 'Você tem ' + tem + '. ' : '') + u.desc));
-    const b = el('button', 'btn', DEV.on ? (own ? 'Desligar' : 'Ligar') : fecha && own ? 'Já comprado' : ('Comprar ' + fmt(u.cost)));
-    b.type = 'button';
-    if (!DEV.on && (fecha || game.save.bank < u.cost)) b.disabled = true;
-    else if (!DEV.on) folhaAviso(b, u.cost);
-    b.addEventListener('click', () => { if (folhaPede(b)) return; if (DEV.on ? game.devToggle(u.id) : game.buy(u.id)) buildShop(); });
-    card.appendChild(b);
-    grid.appendChild(card);
-  });
+  if (!aberta){ grid.className = 'shopcards'; return shopCartoes(grid, SHOP_GRUPOS.find(x => x.id === shopGrupo)); }
+  grid.className = 'shopgrid' + (shopTab === 'tonhao' ? ' cursos' : ['salao', 'caixa', 'melhorias', 'gurugol', 'decor'].indexOf(shopTab) >= 0 ? ' ' + shopTab : '');
+  aberta.build(grid);
 }
-(function(){ const box = $('shop-tabs'); if (box) Array.prototype.forEach.call(box.querySelectorAll('button'), b => b.addEventListener('click', () => { Sfx.init(); Sfx.tap(); shopTab = b.getAttribute('data-v'); buildShop(); })); })();
+(function(){ const box = $('shop-tabs'); if (box) Array.prototype.forEach.call(box.querySelectorAll('button'), b => b.addEventListener('click', () => { Sfx.init(); Sfx.tap(); shopGrupoAbrir(b.getAttribute('data-v')); }));
+  const vo = $('btn-shop-voltar'); if (vo) vo.addEventListener('click', () => { Sfx.init(); Sfx.tap(); shopTab = null; buildShop(); }); })();
 

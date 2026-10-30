@@ -40,7 +40,7 @@ ok(L.contasDia(g.tables,{aluguel:120})===120+C.base+4*C.mesa+10*C.lugar,'aluguel
   g.save.bank=500; ok(g.setDivulga('redes') && g.save.divulga==='redes' && g.div.id==='redes','com dinheiro, escolhe redes (e o dia ao fundo já usa)');
   { const f=L.payroll({tonhao:2,dani:3}); reset({tonhao:2,dani:3},f+RED-1,'panfleto'); g.goShop(4); ok(!g.setDivulga('redes'),'a folha conta: R$ '+f+' + R$ '+RED+' não cabem em R$ '+(f+RED-1)); }
   let err=null; try{ L.setShopTab('divulga'); }catch(e){ err=e; } const grid=els['shop-grid'];
-  ok(!err && grid.children.length===4 && /Contas do dia 4/.test(JSON.stringify(grid.children[3].children.map(c=>c.textContent))),'aba Divulgação: 3 opções e as contas do dia'+(err?': '+err:''));
+  ok(!err && grid.children.length===5 && /Contas do dia 4/.test(JSON.stringify(grid.children[3].children.map(c=>c.textContent))),'aba Divulgação: 3 opções, as contas do dia e a TV e som (v8.6.15)'+(err?': '+err:''));
   L.setShopTab('melhorias'); }
 
 // ingredientes: o prato pronto custa, mesmo que o grupo vá embora; o suco entregue também
