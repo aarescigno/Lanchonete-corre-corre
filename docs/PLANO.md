@@ -191,6 +191,7 @@ v8.7: guardar a v8.6.13 em `versoes/`, `vtag`, `VERSAO`, `#ov-ver`, `docs/spec-v
 ---
 
 ## Etapa 2g — O Tonhão sobe de nível com os cursos (v8.8)
+> **Feita em 30/10 (v8.8)**, ver `docs/spec-v8.8.md`. Desvio: as diárias dos níveis 3 a 5 baixaram para 20 / 25 / 30 pela conferência do "Reduzir"; o bot da carreira compra o curso antes dos móveis, com reserva de R$ 150.
 > **Planejada com o usuário em 30/10** (texto em `docs/PROPOSTAS.md`), para vir **antes da 3a**. Hoje o nível do Tonhão é só salário: paga o aumento e ele melhora. Passa a ser **experiência (XP)**: cada curso dá XP; com a XP do nível seguinte, ele fica **pronto para subir**, e o aumento de salário **consolida** o nível. Vale para a Garagem e a área industrial; na Avenida Brasil e no Terraço o processo vai ser outro (ver Ideias guardadas).
 
 #### Decisões tomadas (30/10)
