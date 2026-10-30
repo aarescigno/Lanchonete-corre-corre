@@ -93,7 +93,7 @@ dia(3,{maquina:true});
   ok(near(g.custo-c0,2*L.INGRED.suco) && g.stats.sucoEsp===2,'ingrediente: R$ '+L.INGRED.suco+' por copo');
   const t=g.tables.find(t=>t.free&&t.seats>=s.size); g.seatGroup(s,t); run(3,true);
   s.setState('wantBill'); s.hearts=5; s.juiceWant=0; g.lastKind=null; const m0=g.money; g.collectBill(s,t);
-  ok(g.money-m0===Math.round(s.bill*1.1)+2*L.JUICE.price,'na conta: +R$ '+(2*L.JUICE.price)+' dos sucos da espera (fora dos corações e da gorjeta)'); }
+  ok(g.money-m0===Math.round(s.bill*1.1)+2*g.bebida.preco && g.bebida.preco===12,'na conta: +R$ '+(2*g.bebida.preco)+' dos sucos da espera (R$ 12 cada, v9; fora dos corações e da gorjeta)'); }
 
 // cancelamento, mãos cheias, entrega na mesa e quem vai embora
 dia(3,{maquina:true});

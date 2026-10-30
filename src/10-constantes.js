@@ -142,8 +142,11 @@ const GOSTOS = {
   executiva:  [4, 0, 2, 1, 0],
   familia:    [4, 1, 0, 1, 2],
   vovos:      [3, 0, 3, 1, 0],
-  entregador: [[0, 3, 2, 1, 0], [1, 0, 0, 0, 0], [0, 4, 1, 0, 1]]
+  entregador: [[0, 3, 2, 1, 0], [1, 0, 0, 0, 0], [0, 4, 1, 0, 1]],
+  turma:      [5, 1, 0, 1, 1],
+  motorista:  [4, 1, 2, 1, 0]
 };
+GOSTOS.encomenda = GOSTOS.turma;
 /* o que a pessoa pede: sorteia a categoria pelos pesos do tipo (só entre as que têm algum prato que a cozinha sabe) e depois um prato
    sabido dela, com a mesma chance. Sem categoria possível, PF (com semPf, o 2º item, coxinha) */
 function pedePrato(tipo, game, semPf, veg){
@@ -173,7 +176,7 @@ function pedePrato(tipo, game, semPf, veg){
 const MAIS = { cozinha:0.4, salgado:0.8 };   // v8.6.9: o 2º item sai de pedePrato(..., true), pelos gostos do tipo, sem o PF
 /* pontos de atendimento (v8.3.8): as ações da Bia não dão mais dinheiro, dão pontos (a nota da lanchonete virá
    deles). A corrente e a cor certa também viram pontos */
-const PONTOS_ACAO = { sit:10, take:15, deliver:20, clear:10, coffee:5, juice:5, bill:20, cor:15, marmita:20 };
+const PONTOS_ACAO = { sit:10, take:15, deliver:20, clear:10, coffee:5, juice:5, bill:20, cor:15, marmita:20, lote:20 };
 
 /* calçada (v7.5): o mundo vai de -CALCADA.w (a rua) até W; a espera fica lá fora, no lugar da fila de antes.
    Tela larga (v7.6): a tela tem TW px e mostra o mundo inteiro, sem rolar (Game.cam = CALCADA.w: onde o mundo
@@ -203,6 +206,8 @@ const STATIONS = {
   maquina:{ ap:{x:-26,y:498}, rect:{x:-110,y:452,w:62,h:84 } }  // bebida da espera (v7.5), na calçada: na Garagem, a torneira (v7.7)
 };
 const PLATE_SLOTS = [ {x:806,y:270}, {x:848,y:270}, {x:890,y:270}, {x:932,y:270} ];
+/* v9: o balcão de pratos tem as vagas do ponto (ponto.pratos): 4 na Garagem, 5 na área industrial (mais juntas). Muda o mesmo array no lugar */
+function plateSlotsFor(n){ PLATE_SLOTS.length = 0; for (let i = 0; i < n; i++) PLATE_SLOTS.push({ x:(n >= 5 ? 792 + 36 * i : 806 + 42 * i), y:270 }); }
 const BOUNDS = { x0:16 - CALCADA.w, y0:112, x1:744, y1:528 };
 const LAYOUT = { W, H, TW, HUDX, CALCADA, QUEUE, RETIRADA, DOOR, STATIONS, PLATE_SLOTS, BOUNDS };
 /* ============================================================
@@ -214,7 +219,12 @@ const LAYOUT = { W, H, TW, HUDX, CALCADA, QUEUE, RETIRADA, DOOR, STATIONS, PLATE
    empréstimo no banco (v8.3)
    ============================================================ */
 const PONTOS = [
-  { id:'garagem', nome:'Garagem da mãe da Bia', nivel:1, lugares:16, aluguel:0, mudanca:0, credito:1000, cardapio:1, area:{ x0:196, y0:150, x1:684, y1:500 }, espera:4, assento:'pe', bebida:'agua' }
+  { id:'garagem', nome:'Garagem da mãe da Bia', nivel:1, lugares:16, aluguel:0, mudanca:0, credito:1000, cardapio:1, area:{ x0:196, y0:150, x1:684, y1:500 }, espera:4, assento:'pe', bebida:'agua', pratos:4, prateleira:2 },
+  // v9: a primeira mudança. tipos: os pesos do sorteio da clientela (no lugar do day.types); encomenda: a chance diária da encomenda do setor;
+  // apito: o pico do meio do dia (as primeiras `max` turmas chegam juntas a partir de `quando` do turno, uma a cada `gap` s, avisadas `aviso` s antes);
+  // patPressa: a paciência de quem vem sozinho ou em dupla; vip: a chance de VIP; metaF: o fator das metas e da expert; prateleira: as vagas do balcão de retirada
+  { id:'industrial', nome:'Lanchonete na área industrial', nivel:2, lugares:20, aluguel:120, mudanca:800, credito:2000, cardapio:1.2, area:{ x0:196, y0:150, x1:684, y1:500 }, espera:5, assento:'pe', bebida:'suco', pratos:5, prateleira:4,
+    tipos:{ estudante:1, executiva:1, familia:0.5, vovos:0.7, entregador:2, turma:2, motorista:1 }, encomenda:0.6, apito:{ quando:0.45, max:3, gap:[8, 12], aviso:10 }, patPressa:0.85, vip:0.3, metaF:1.25 }
 ];
 function pontoOf(id){ return PONTOS.find(p => p.id === id) || PONTOS[0]; }
 /* ============================================================
@@ -378,6 +388,10 @@ const DECOR = [
   { id:'espada',    grupo:'plantas', name:'Espada-de-são-jorge', desc:'No vaso de barro, na calçada, ao lado da espera.', cost:15 },
   { id:'lata',      grupo:'plantas', name:'Muda na lata',        desc:'Uma espada menor numa lata de tinta reaproveitada, encostada no muro.', cost:8 },
   { id:'samambaia', grupo:'plantas', name:'Samambaia',           desc:'Pendurada num suporte na parede da garagem, ao lado da janela.', cost:30 },
+  // v9, só na área industrial: as plantas da calçada (+0,1 cada no Ambiente)
+  { id:'violeta',   grupo:'plantas', name:'Violetas',            desc:'Vasinhos de violeta na janela do lado de dentro.', cost:20, nivel:2, amb:0.1 },
+  { id:'anturio',   grupo:'plantas', name:'Antúrio',             desc:'Um antúrio vermelho no vaso, no chão, perto da porta.', cost:30, nivel:2, amb:0.1 },
+  { id:'pendente',  grupo:'plantas', name:'Samambaia pendurada', desc:'Pendurada no toldo da entrada.', cost:40, nivel:2, amb:0.1 },
   { id:'foto',      grupo:'rosa',    name:'Foto da dona Rosa',   desc:'A mãe da Bia sorrindo, num porta-retrato na parede.', cost:10 },
   { id:'giz',       grupo:'rosa',    name:'Quadro de giz',       desc:'No cavalete, perto do portão, com o prato do dia escrito à mão.', cost:25 },
   { id:'placa',     grupo:'rosa',    name:'Plaquinha',           desc:'"Comida é afeto", pintada à mão, embaixo do letreiro.', cost:15 }
@@ -417,7 +431,12 @@ const CUSTOMER_TYPES = {
   executiva:  { label:'Executiva',   pat:0.65, eat:[5,7],     read:[3,4],   size:[1,1], mais:0.1, tip:0.1 },
   familia:    { label:'Família',     pat:0.95, eat:[7,9],     read:[5,6],   size:[3,4], mais:0.35,  tip:0 },
   vovos:      { label:'Vovô e vovó', pat:1.8,  eat:[8,9],     read:[4,6],   size:[2,2], mais:0.25,  tip:0 },
-  entregador: { label:'Entregador',  pat:0.5,  eat:[3.5,5],   read:[3,3.5], size:[1,1], mais:0.1, tip:0 }
+  entregador: { label:'Entregador',  pat:0.5,  eat:[3.5,5],   read:[3,3.5], size:[1,1], mais:0.1, tip:0, retira:true },
+  // v9, só na área industrial (PONTOS[1].tipos): a turma da fábrica (o apito), o motorista de caminhão (pede o cafezinho no fim) e a
+  // encomenda do setor (uma pessoa que busca `lote` marmitas na fila de retirada, sem Efood)
+  turma:      { label:'Turma da fábrica',      pat:0.8, eat:[4,5.5], read:[3,4], size:[3,4], mais:0.15, tip:0, ind:true },
+  motorista:  { label:'Motorista de caminhão', pat:1.4, eat:[6,8],   read:[3,4], size:[1,1], mais:0.6,  tip:0.1, pedeCafe:0.8, cafeTip:0.05, ind:true },
+  encomenda:  { label:'Encomenda do setor',    pat:2,   eat:[3.5,5], read:[3,3.5], size:[1,1], mais:0, tip:0.1, retira:true, lote:[4, 6], efood:0, ind:true }
 };
 /* cliente VIP: modificador de grupo (qualquer tipo menos entregador). Fura a fila, tem menos
    paciência, paga gorjeta extra e dá bônus se sair com 5 corações; bravo, a multa dobra. */
@@ -441,6 +460,14 @@ const STAFF = {
   tv:      { pay:3, effect:0.05 },
   som:     { pay:2, effect:0.05 }
 };
+/* v9, área industrial: as 3 televisões com sertanejo (instalar uma vez; depois, por dia: 0 desligadas, 1 com anúncios, 2 sem anúncios),
+   o fogão industrial, a espera sentada e a jarra de suco (a melhoria `maquina` do ponto). Quem usa o quê: nivel === 2 */
+const INDUSTRIAL = {
+  tvs:{ instalar:120, modos:[ null, { nome:'com anúncios', pay:9, effect:0.1 }, { nome:'sem anúncios', pay:29, effect:0.15 } ] },
+  fogao:{ cost:400, emerg:160, fator:0.5, slots:1 },
+  assento:{ cadeira:{ nome:'Cadeirinhas de plástico', cost:60 }, banco:{ nome:'Banquinhos de madeira', cost:90 }, slow:0.15 }
+};
+function tvsModo(eq){ return INDUSTRIAL.tvs.modos[eq && eq.tvs] || null; }
 const DANI_TASKS = [
   { id:'lixo',   name:'Tirar o lixo',   short:'Lixo' },
   { id:'pratos', name:'Retirar pratos sujos', short:'Recolher' },
@@ -450,6 +477,8 @@ const DANI_TASKS = [
   { id:'marmita', name:'Levar as marmitas', short:'Marmita' }   // v8.6: da janela de prontos ao balcão de retirada
 ];
 /* tarefa que a Dani já pode exercer (a do suco da espera depende da máquina) */
+/* a tarefa como o ponto a chama (v9: na área industrial a espera é suco, não água) */
+function daniTaskDe(t, ponto){ return t.id === 'suco' && (ponto || PONTOS[0]).nivel >= 2 ? Object.assign({}, t, { name:'Levar o suco da espera', short:'Suco' }) : t; }
 function daniTaskOk(id, up){ const t = DANI_TASKS.find(d => d.id === id); return !!t && (!t.need || !!(up && up[t.need])); }
 /* prato caprichado (acerto crítico do Tonhão): +1 coração e bônus na entrega */
 const CRIT = { bonus:10, vipBonus:20 };   // pontos (v8.3.8; eram R$)
@@ -459,7 +488,8 @@ function couvertEffect(eq){ return STAFF.couvert.effect * (eq.taxa ? 1 - STAFF.c
 function couvertOk(ponto){ return DEV.on || (ponto || PONTOS[0]).nivel >= STAFF.couvert.nivel; }   // no modo dev, em qualquer ponto
 /* ambiente do salão: quanto a paciência nas mesas cai mais devagar (TV, som e couvert se somam) */
 function ambienteEffect(eq){
-  return (eq.tv ? STAFF.tv.effect : 0) + (eq.som ? STAFF.som.effect : 0) + (eq.couvert ? couvertEffect(eq) : 0);
+  const tm = tvsModo(eq);
+  return (eq.tv ? STAFF.tv.effect : 0) + (eq.som ? STAFF.som.effect : 0) + (eq.couvert ? couvertEffect(eq) : 0) + (tm ? tm.effect : 0);
 }
 function payroll(eq){
   let v = STAFF.tonhao.levels[eq.tonhao].pay;
@@ -467,16 +497,17 @@ function payroll(eq){
   if (eq.couvert) v += STAFF.couvert.pay;
   if (eq.tv) v += STAFF.tv.pay;
   if (eq.som) v += STAFF.som.pay;
+  const tm = tvsModo(eq); if (tm) v += tm.pay;
   return v;
 }
 /* v8.1: dinheiro comprometido. A folha e a divulgação ficam reservadas ao abrir o dia (e saem no fim dele); o que não
    couber fica de fora, nesta ordem (a divulgação vira boca a boca antes de tudo) */
-const FOLHA_CORTE = [['couvert', 'Couvert'], ['som', 'som'], ['tv', 'TV'], ['dani', 'aumento da Dani'], ['tonhao', 'aumento do Tonhão']];
+const FOLHA_CORTE = [['couvert', 'Couvert'], ['som', 'som'], ['tv', 'TV'], ['tvs', 'TVs'], ['dani', 'aumento da Dani'], ['tonhao', 'aumento do Tonhão']];
 /* tira de eq o próximo item da folha (o Tonhão e a Dani perdem 1 nível de aumento; a Dani não sai da equipe) e devolve o nome; nada a tirar: null */
 function folhaCorta(eq){
   const c = FOLHA_CORTE.find(k => k[0] === 'tonhao' ? eq.tonhao > 0 : k[0] === 'dani' ? eq.dani > 1 : eq[k[0]]);
   if (!c) return null;
-  if (c[0] === 'tonhao' || c[0] === 'dani') eq[c[0]]--; else eq[c[0]] = false;
+  if (c[0] === 'tonhao' || c[0] === 'dani') eq[c[0]]--; else eq[c[0]] = c[0] === 'tvs' ? 0 : false;
   return c[1];
 }
 /* o que fica de fora ao abrir o dia com `bank` no caixa (sem mexer em eq) */
@@ -497,6 +528,7 @@ function folhaItens(eq, div){
   if (eq.couvert) out.push('couvert');
   if (eq.tv) out.push('TV');
   if (eq.som) out.push('som');
+  if (eq.tvs) out.push('TVs');
   if (div && div.cost) out.push(div.name.toLowerCase());
   return out;
 }
@@ -622,13 +654,15 @@ const AVAL = {
   minimo:0.9,
   prato:[[2.5, 4.5], [3, 4.7], [3.5, 5], [3.8, 5], [4, 5]],   // v8.8: 5 níveis do Tonhão
   menu:{ base:2, porCurso:0.6 },   // v8.6.9: pelos cursos básicos que o Tonhão fez (a Diversidade do cardápio)
-  amb:{ base:2, tv:0.5, som:0.5, maquina:0.5, ventilador:0.5, cafe:0.5, couvert:1, lixo:-1, planta:0.3, rosa:0.25, toalha:0.5 }
+  amb:{ base:2, tv:0.5, som:0.5, maquina:0.5, ventilador:0.5, cafe:0.5, couvert:1, lixo:-1, planta:0.3, rosa:0.25, toalha:0.5, tvs:0.5, tvsPlus:0.75 }
 };
 const AVAL_CRIT = [
   { id:'espera', nome:'Espera por mesa',
     bom:['Sentei rapidinho!', 'Nem precisei esperar.', 'Mesa na hora!'], ruim:['Esperei muito por uma mesa.', 'A espera lá fora não andava.', 'Fiquei um tempão na calçada.'] },
   { id:'agil', nome:'Agilidade',
-    bom:['A comida veio rapidinho!', 'Atendimento nota 10!', 'A Bia é um foguete!'], ruim:['Demoraram para anotar o pedido.', 'Esqueceram da gente na mesa.', 'A conta demorou demais.'] },
+    bom:['A comida veio rapidinho!', 'Atendimento nota 10!', 'A Bia é um foguete!'], ruim:['Demoraram para anotar o pedido.', 'Esqueceram da gente na mesa.', 'A conta demorou demais.'],
+    // v9: comentários próprios dos tipos da área industrial (50% das vezes, quando o grupo é do tipo)
+    tipo:{ turma:{ bom:['Deu tempo de almoçar com calma!'], ruim:['Quase perdi a volta do intervalo.'] }, encomenda:{ bom:['Chegou tudo certinho pro setor!'], ruim:['Faltou marmita pra metade do pessoal.'] } } },
   { id:'prato', nome:'Qualidade da comida',
     bom:['O PF estava caprichado!', 'Comida de mãe!', 'Que tempero!'], ruim:['O prato veio sem graça.', 'Comida meio fria.', 'Faltou tempero.'] },
   { id:'menu', nome:'Diversidade do cardápio',
@@ -688,11 +722,14 @@ const AVAL_BRAVO = { fila:['Desisti de esperar!', 'Nem consegui sentar.'], mesa:
 const AVAL_DECOR = {
   espada:'Que plantinha linda na entrada!', lata:'Adorei a mudinha na lata!', samambaia:'Que samambaia bonita!',
   foto:'Que foto bonita na parede!', giz:'Adorei o quadro de giz!', placa:'"Comida é afeto": é isso mesmo!',
-  toalha:'A toalha xadrez dá um charme!'
+  toalha:'A toalha xadrez dá um charme!',
+  violeta:'Que violetas lindas na janela!', anturio:'Adorei o antúrio na entrada!', pendente:'A samambaia no toldo ficou linda!'
 };
-function avalComentario(r, bravo, lixo, nivel, decor, fria, semVeg){
+function avalComentario(r, bravo, lixo, nivel, decor, fria, semVeg, tipo){
   if (bravo) return pick(AVAL_BRAVO[bravo]);
   const bom = Math.round(avalNota(r) * 10) >= 40;   // pela nota com uma casa (3,96 vira 4,0)
+  const tp = tipo && AVAL_CRIT[1].tipo[tipo];   // v9: a turma e a encomenda têm comentário próprio de agilidade (50%)
+  if (tp && Math.random() < 0.5) return pick(tp[bom ? 'bom' : 'ruim']);
   if (bom && AVAL_SIMPLES[(nivel || 1) - 1] && Math.random() < 0.3) return pick(AVAL_SIMPLES[(nivel || 1) - 1]);
   // v8.6.6: com o ambiente bom (4 ou mais), às vezes elogia um enfeite que viu (decor: os ids, e 'toalha')
   if (bom && decor && decor.length && r[AVAL_CRIT.findIndex(c => c.id === 'amb')] >= 4 && Math.random() < 0.35) return AVAL_DECOR[pick(decor)];
@@ -743,7 +780,7 @@ function simulaEmprestimo(v, j){ const t = tabelaDe(normEmprestimo({ resto:v, am
 /* ============================================================
    MODO HISTÓRIA (v8.7): a campanha em capítulos. Cada capítulo tem um objetivo, que vale no fim de um dia (sem prazo: se não
    cumpriu, o capítulo segue), e conversas (balões sobre o salão) antes e depois. fala: { q:'bia'|'tonhao'|'dani', s:texto,
-   nota?:rubrica em itálico }. save.cap (1 a 3; 4 = Garagem completa), save.capDia, save.capAzul, save.conversa ('antes'/'depois'/null).
+   nota?:rubrica em itálico }. save.cap (1 a 5; 4 espera a mudança de ponto; 6 = área industrial completa), save.capDia, save.capAzul, save.conversa ('antes'/'depois'/null).
    REFORMA: o empréstimo da reforma da garagem, que o save novo já traz (1ª parcela no fim do dia ini)
    ============================================================ */
 const HIST = { on: !(typeof window !== 'undefined' && window.__semHist) };   // os testes antigos ligam window.__semHist: save novo sem a História
@@ -775,11 +812,31 @@ const HISTORIA = [
       { q:'bia', s:'Reforma quitada e R$ 800 guardados!' },
       { q:'tonhao', nota:'cheirando o pote de cominho', s:'Cominho com açafrão... a Rosa ia rir de mim agora.' },
       { q:'bia', s:'Por quê, tio?' },
-      { q:'tonhao', s:'Um dia eu te conto da Casa Aurora.' }] }
+      { q:'tonhao', s:'Um dia eu te conto da Casa Aurora.' }] },
+  // v9: os capítulos do primeiro ponto novo. O cap. 4 só começa na mudança (na lojinha); até lá save.cap fica em 4, "à espera"
+  { cap:4, titulo:'Ponto novo', ponto:'industrial', obj:{ azul:3 },
+    antes:[
+      { q:'bia', s:'Olha o tamanho disso, tio! Vinte lugares!' },
+      { q:'tonhao', s:'E aluguel todo dia. Aqui o almoço é corrido: o pessoal da fábrica tem hora pra voltar.' },
+      { q:'bia', s:'Então é servir rápido e fechar no azul.' }],
+    depois:[
+      { q:'tonhao', s:'Três dias no azul pagando aluguel. Tá provado, Bia.' },
+      { q:'bia', s:'E a moto não para de chegar pedindo marmita!' }] },
+  { cap:5, titulo:'Hora do almoço', ponto:'industrial', obj:{ marmitas:6, nota:3.4, caixa:2000 },
+    antes:[
+      { q:'dani', s:'Os motoqueiros já sabem o meu nome!' },
+      { q:'tonhao', s:'Marmita bem fechada e na hora. Quem sai da fábrica volta amanhã.' },
+      { q:'bia', s:'E se a nota subir, dá pra sonhar com a Avenida Brasil.' }],
+    depois:[
+      { q:'bia', s:'R$ 2.000 guardados! Dá pra Avenida Brasil, tio.' },
+      { q:'tonhao', nota:'largando a colher', s:'Na Avenida Brasil tem o restaurante do Bráulio.' },
+      { q:'bia', s:'O chef de bigode da Casa Aurora?' },
+      { q:'tonhao', s:'Ele mesmo. A estrela veio do molho da sua mãe... e ele nunca conseguiu repetir.' },
+      { q:'dani', s:'Então é lá que a gente vai abrir!' }] }
 ];
 const HIST_NOMES = { bia:'Bia', tonhao:'Tonhão', dani:'Dani' };
 const CAIXA_MAX = 14;                                 // livro-caixa (v7.2): quantos dias da carreira ficam guardados
-const VERSAO = 'v8.9.1';                             // vai no resumo do Caixa
+const VERSAO = 'v9';                             // vai no resumo do Caixa
 const DIVULGA_DIA = 3;                                // antes disso, o movimento é o da inauguração (sem custo)
 function divulgaAberta(n){ return DEV.on || n >= DIVULGA_DIA; }   // no modo dev, desde o dia 1
 function divulgaOf(id){ return DIVULGA.find(d => d.id === id) || DIVULGA[1]; }
@@ -790,8 +847,8 @@ function divulgaOf(id){ return DIVULGA.find(d => d.id === id) || DIVULGA[1]; }
 const BEBIDA_ESPERA = {
   agua: { id:'agua', icon:'agua', preco:0, ingred:0, prep:0, take:1, fim:'Água na espera',
           pede:n => n > 1 ? n + ' águas, por favor!' : 'Uma água, por favor!', pega:n => n > 1 ? n + ' copos!' : 'Água!', entrega:n => n > 1 ? 'Águas entregues!' : 'Água entregue!' },
-  suco: { id:'suco', icon:'juice', preco:JUICE.price, ingred:INGRED.suco, prep:3, take:0.5, fim:'Sucos da espera',
-          pede:n => n > 1 ? n + ' sucos no tablet!' : 'Suco no tablet!', pega:n => n > 1 ? n + ' sucos!' : 'Suco!', entrega:n => n > 1 ? 'Sucos entregues!' : 'Suco entregue!' }
+  suco: { id:'suco', icon:'juice', preco:12, ingred:INGRED.suco, prep:3, take:0.5, fim:'Sucos da espera',
+          pede:n => n > 1 ? n + ' sucos, por favor!' : 'Um suco, por favor!', pega:n => n > 1 ? n + ' sucos!' : 'Suco!', entrega:n => n > 1 ? 'Sucos entregues!' : 'Suco entregue!' }
 };
 function bebidaOf(ponto){ return BEBIDA_ESPERA[(ponto || PONTOS[0]).bebida] || BEBIDA_ESPERA.agua; }
 /* contas do dia: o aluguel do ponto (v7.4; a Garagem é da família), mais cada mesa aberta e cada lugar dela */
@@ -814,7 +871,8 @@ function filaMax(up){ return FILA_ACOES.base + (up && up.sudoku ? FILA_ACOES.sud
 const UPGRADES = [
   { id:'tenis',      name:'Tênis novos',          desc:'A Bia anda 10% mais rápido. Depois, libera os Tênis de corrida.', cost:150 },
   { id:'corrida',    name:'Tênis de corrida',     desc:'2º nível dos tênis: a Bia anda 20% mais rápido (em vez de 10%).', cost:350, req:'tenis' },
-  { id:'maquina',    name:'Água da torneira',     desc:'Na calçada: torneira e copos americanos num caixote. Quem espera pede água; a Bia enche e leva, de graça, e quem bebe perde a paciência 40% mais devagar.', cost:80, devolve:100 },   // a Máquina de suco (R$ 180) até a v7.6: devolve a diferença
+  { id:'maquina',    name:'Água da torneira',     desc:'Na calçada: torneira e copos americanos num caixote. Quem espera pede água; a Bia enche e leva, de graça, e quem bebe perde a paciência 40% mais devagar.', cost:80, devolve:100,
+    ind:{ name:'Jarra de suco', desc:'Num caixote ao lado da porta, com copos. Quem espera pede suco no balão; a Bia leva, R$ 12 na conta do grupo, e quem bebe perde a paciência 40% mais devagar.', cost:120 } },   // v9: o ponto da área industrial troca o nome, o texto e o preço   // a Máquina de suco (R$ 180) até a v7.6: devolve a diferença
   { id:'cafeteira',  name:'Cafeteira de 2 bocas', desc:'O cafezinho devolve +2 corações.',             cost:200 },
   { id:'bandeja',    name:'Bandeja',              desc:'Leva 2 pratos, 3 bebidas, prato + bebida ou 2 pilhas de louça.', cost:220 },
   { id:'sudoku',     name:'Livrinho de Sudoku',   desc:'A fila de ações da Bia ganha 3 quadrinhos (de 5 para 8 tarefas já marcadas).', cost:200 },   // v8.6.3
@@ -823,6 +881,11 @@ const UPGRADES = [
   { id:'pratos',     name:'Jogo de pratos',       desc:'+1 prato limpo na cozinha (do dia 3 em diante). Leve quantos quiser.', cost:300, multi:true }   // v8.3.6: acumula
 ];
 
+/* a melhoria como o ponto a vende (a Água da torneira vira a Jarra de suco na área industrial) */
+function upgradeDe(u, ponto){ return u.ind && (ponto || PONTOS[0]).nivel >= 2 ? Object.assign({}, u, u.ind) : u; }
+/* v9: o fogão industrial gasta metade do desgaste e o conserto de emergência custa mais */
+function manutFator(id, up){ return id === 'fogao' && up && up.fogaoInd ? INDUSTRIAL.fogao.fator : 1; }
+function manutEmerg(q, up){ return q.id === 'fogao' && up && up.fogaoInd ? INDUSTRIAL.fogao.emerg : q.emerg; }
 /* ============================================================
    MANUTENÇÃO (v8): fogão, geladeira e cafeteira vão de 100% a 0%. Cada dia jogado
    na carreira gasta `base` pontos e mais `uso` por prato que fica pronto (fogão e

@@ -4,7 +4,7 @@ const H=require('./harness.js')(); const {g,L,ctx,els}=H;
 let fails=0,total=0; const ok=(c,m)=>{ total++; if(!c){fails++;console.log('FAIL:',m);} else console.log('ok  :',m); };
 const novo=s=>{ g.save=L.normSave(Object.assign({bank:500,dia:5},s||{})); g.up=g.save.up; g.boughtFor=0; g.shopBought=false; g.buildTables(); };
 
-ok(L.DECOR.length===6 && L.DECOR.every(d=>d.cost>0 && L.DECOR_GRUPOS.some(x=>x.id===d.grupo)),'6 enfeites, cada um com preço e grupo');
+ok(L.DECOR.length===9 && L.DECOR.filter(d=>!d.nivel).length===6 && L.DECOR.every(d=>d.cost>0 && L.DECOR_GRUPOS.some(x=>x.id===d.grupo)),'6 enfeites, cada um com preço e grupo');
 ok(JSON.stringify(L.normDecor({espada:1,foto:0,xyz:1}))==='{"espada":1,"foto":0}' && JSON.stringify(L.normDecor(null))==='{}','normDecor: só os enfeites que existem, 1 à mostra e 0 guardado');
 
 // as plantas da v7.7 saíram: o jogo começa sem enfeite nenhum

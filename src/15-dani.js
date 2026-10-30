@@ -37,13 +37,13 @@ class Helper {
      que a Bia já vai pegar */
   marmitaAlvo(){
     const g = this.g, livres = g.prateleira.filter(m => !m.dono).length;
-    const ps = g.kitchen.plates.filter(p => p && p.kind === 'marmita' && !p.dani && !g.bia.acts.some(a => a.type === 'plate' && a.pid === p.id) && (p.dono || livres < MARMITA.vagas));
+    const ps = g.kitchen.plates.filter(p => p && p.kind === 'marmita' && !p.dani && !g.bia.acts.some(a => a.type === 'plate' && a.pid === p.id) && (p.dono || livres < g.vagas));
     ps.sort((a,b) => !!b.dono - !!a.dono);
     return ps[0] || null;
   }
   coffeeTarget(){
     if (this.g.quebrado('cafeteira')) return null;   // cafeteira parada (v8)
-    const c = this.g.tables.filter(t => t.group && t.group.seated && !t.group.coffee && t.group.hearts <= 4 && !t.group.daniCoffee && !this.biaWants(t));
+    const c = this.g.tables.filter(t => t.group && t.group.seated && !t.group.coffee && (t.group.hearts <= 4 || t.group.cafeBalao) && !t.group.daniCoffee && !this.biaWants(t));
     c.sort((a,b) => a.group.hearts - b.group.hearts);
     return c[0] || null;
   }
@@ -105,7 +105,7 @@ class Helper {
       [st.p].concat(k.plates.filter(p => p && p !== st.p && p.kind === 'marmita')).forEach(p => {
         const i = k.plates.indexOf(p);
         if (i < 0 || this.hands.length >= DANI_HANDS || g.bia.acts.some(a => a.type === 'plate' && a.pid === p.id)) return;
-        if (!p.dono && livres >= MARMITA.vagas) return;
+        if (!p.dono && livres >= g.vagas) return;
         if (!p.dono) livres++;
         k.plates[i] = null; this.hands.push(marmitaMao(p));
       });

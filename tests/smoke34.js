@@ -96,7 +96,7 @@ const cap3=(resto,nota,bank)=>{ g.save.emp=resto?L.normEmprestimo({resto,amort:1
 els['btn-next'].fire('click');
 ok(g.conversa && g.conversa.falas===L.HISTORIA[2].depois,'toca a conversa de depois do cap. 3');
 passa(H);
-ok(g.save.cap===4 && g.save.conversa===null && mostra(els,'ov-continua') && !g.conversa && /próxima versão/.test(html) && /Fim dos capítulos da Garagem/.test(html),'depois dela, o cartão "Continua na próxima versão" (cap. 4, Garagem completa)');
+ok(g.save.cap===4 && g.save.conversa===null && mostra(els,'ov-continua') && !g.conversa && /mudança para a área industrial/.test(html) && /Fim dos capítulos da Garagem/.test(html),'depois dela, o cartão "Fim dos capítulos da Garagem" com a mudança na lojinha (cap. 4, Garagem completa)');
 els['btn-continua'].fire('click'); ok(g.state==='shop' && !mostra(els,'ov-continua'),'Seguir jogando abre a lojinha');
 els['btn-shop-go'].fire('click'); ok(g.capLinha()==='' && !/Capítulo/.test(els['intro-manut'].textContent),'o dia seguinte não tem objetivo');
 joga(H,400,0); ok(g.result.cap===null && g.save.conversa===null && !/Capítulo/.test(els['end-msg'].textContent),'nem o fim do dia');

@@ -1,9 +1,11 @@
 /* ============================================================
    COZINHA (Chef Tonhão)
    ============================================================ */
+/* as bocas do fogão: as do Tonhão e, na área industrial, a do fogão industrial (v9) */
+function cozinhaSlots(g){ return STAFF.tonhao.levels[g.save.equipe.tonhao].slots + (g.up.fogaoInd ? INDUSTRIAL.fogao.slots : 0); }
 class Kitchen {
   constructor(game){ this.game = game; this.reset(); }
-  reset(){ this.queue = []; this.cooking = []; this.plates = [null,null,null,null]; this.pid = 0; this.slots = STAFF.tonhao.levels[this.game.save.equipe.tonhao].slots; this.sinkN = 0; this.clean = Infinity; this.noPlate = false; this.washT = 0; }
+  reset(){ this.queue = []; this.cooking = []; this.plates = PLATE_SLOTS.map(() => null); this.pid = 0; this.slots = cozinhaSlots(this.game); this.sinkN = 0; this.clean = Infinity; this.noPlate = false; this.washT = 0; }
   get chef(){ return STAFF.tonhao.levels[this.game.save.equipe.tonhao]; }
   /* a chance de caprichar: x CURSO_AV.crit nos pratos de um curso avançado que o Tonhão já fez (v8.6.9) */
   chefCrit(dish){ return this.chef.crit * (pratoAv(dish, this.game.cursos) ? CURSO_AV.crit : 1); }

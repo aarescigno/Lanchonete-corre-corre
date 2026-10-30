@@ -3,8 +3,11 @@
    ============================================================ */
 /* o ponto é a Garagem (v7.4)? Muda o piso, a parede, as mesas e as cadeiras */
 function garagem(g){ return !!(g && g.ponto && g.ponto.id === 'garagem'); }
+/* a área industrial (v9): piso de cimento queimado, parede de tijolinho pintado e o portão de enrolar */
+function industrial(g){ return !!(g && g.ponto && g.ponto.id === 'industrial'); }
 function drawFloor(ctx,g){
   if (garagem(g)) return drawCimento(ctx);
+  if (industrial(g)) return drawCimentoInd(ctx);
   for (let j=0;j<12;j++){
     for (let i=0;i<25;i++){
       const y = 90 + j*40;
@@ -63,8 +66,133 @@ function drawGaragem(ctx){
 }
 function drawWall(ctx,g,t){
   if (garagem(g)){ drawGaragem(ctx); drawDecorParede(ctx,g); }
+  else if (industrial(g)){ drawParedeInd(ctx,g,t); }
   else drawAzulejo(ctx);
   drawWallCommon(ctx,g,t);
+  if (industrial(g) && g.up && g.up.tvs && g.state !== 'menu') drawTvsParede(ctx,g,t);
+}
+/* ============================================================
+   ÁREA INDUSTRIAL (v9): cimento queimado cinza (mais escuro e liso que o da Garagem), parede de tijolinho pintado de
+   branco, o portão de enrolar aberto em cima da porta, a janela com os galpões e a chaminé ao fundo e o letreiro em placa
+   de metal com lâmpadas. As violetas ficam no parapeito da janela
+   ============================================================ */
+function drawCimentoInd(ctx){
+  ctx.fillStyle = '#B3B7BA'; ctx.fillRect(0,90,W,450);
+  for (let i=0;i<70;i++){
+    const x = (i*211.7) % W, y = 100 + (i*127.3) % 430, r = 14 + (i*41) % 30;
+    ctx.fillStyle = i % 3 ? 'rgba(255,255,255,.07)' : 'rgba(40,46,52,.07)';
+    ell(ctx,x,y,r*1.6,r); ctx.fill();
+  }
+  ctx.strokeStyle = 'rgba(34,32,28,.16)'; ctx.lineWidth = 1.5;
+  for (let x=190;x<W;x+=190){ ctx.beginPath(); ctx.moveTo(x,92); ctx.lineTo(x,540); ctx.stroke(); }
+  for (let y=250;y<540;y+=160){ ctx.beginPath(); ctx.moveTo(0,y); ctx.lineTo(W,y); ctx.stroke(); }
+}
+function drawParedeInd(ctx,g,t){
+  ctx.fillStyle = '#F2EFE8'; ctx.fillRect(0,0,W,92);
+  ctx.strokeStyle = 'rgba(120,96,84,.2)'; ctx.lineWidth = 1;
+  for (let y=0, r=0; y<82; y+=11, r++){
+    ctx.beginPath(); ctx.moveTo(0,y); ctx.lineTo(W,y); ctx.stroke();
+    for (let x=(r % 2)*17; x<W; x+=34){ ctx.beginPath(); ctx.moveTo(x,y); ctx.lineTo(x,Math.min(82,y+11)); ctx.stroke(); }
+  }
+  ctx.fillStyle = '#9CA2A8'; ctx.fillRect(0,82,W,10);
+  ctx.strokeStyle = PAL.tinta; ctx.lineWidth = 2.5;
+  ctx.beginPath(); ctx.moveTo(0,82); ctx.lineTo(W,82); ctx.moveTo(0,92); ctx.lineTo(W,92); ctx.stroke();
+  // a porta de aço, com o portão de enrolar aberto em cima (o rolo cinza com as ripas) e o aviso ABERTO
+  rr(ctx,8,2,80,24,3); fs(ctx,'#8E959C',2.6);
+  ctx.strokeStyle = 'rgba(34,32,28,.4)'; ctx.lineWidth = 1.2; for (let y=7;y<24;y+=4){ ctx.beginPath(); ctx.moveTo(10,y); ctx.lineTo(86,y); ctx.stroke(); }
+  rr(ctx,14,26,68,64,3); fs(ctx,'#6C737B',2.6);
+  rr(ctx,20,32,56,36,2); fs(ctx,'#BFE3F2',2);
+  ctx.fillStyle = 'rgba(255,255,255,.5)'; ctx.beginPath(); ctx.moveTo(26,66); ctx.lineTo(36,34); ctx.lineTo(44,34); ctx.lineTo(34,66); ctx.closePath(); ctx.fill();
+  rr(ctx,24,72,48,12,3); fs(ctx,PAL.mostarda,2); txt(ctx,'ABERTO',48,78.5,8.5,PAL.tinta,'center',FD,0,42);
+  // janela com a vista: céu, galpões e a chaminé com fumaça
+  const x0 = 100, x1 = 160;
+  ctx.save(); ctx.beginPath(); ctx.rect(x0,14,x1-x0,50); ctx.clip();
+  ctx.fillStyle = '#BFE3F2'; ctx.fillRect(x0,14,x1-x0,50);
+  ctx.fillStyle = '#A9B3BB'; ctx.fillRect(x0,44,22,20); ctx.fillRect(x0+22,38,22,26); ctx.fillRect(x0+46,46,14,18);
+  ctx.fillStyle = '#8B959E'; ctx.beginPath(); ctx.moveTo(x0,44); ctx.lineTo(x0+11,36); ctx.lineTo(x0+22,44); ctx.closePath(); ctx.fill(); ctx.beginPath(); ctx.moveTo(x0+22,38); ctx.lineTo(x0+33,30); ctx.lineTo(x0+44,38); ctx.closePath(); ctx.fill();
+  ctx.fillStyle = '#C7523F'; ctx.fillRect(x0+48,22,6,26); ctx.fillStyle = '#F2EFE8'; ctx.fillRect(x0+48,28,6,3);
+  const fm = g.state === 'menu' || RM ? 0 : (t * 4) % 12;
+  [[x0+51,20-fm*0.3,3.5],[x0+54,15-fm*0.4,4.5],[x0+58,9-fm*0.3,5.5]].forEach((q,i) => { circ(ctx,q[0],q[1],q[2]); ctx.fillStyle = 'rgba(255,255,255,' + (0.75 - i*0.15) + ')'; ctx.fill(); });
+  ctx.restore();
+  ctx.strokeStyle = PAL.cromoEsc; ctx.lineWidth = 3; ctx.beginPath(); ctx.moveTo((x0+x1)/2,14); ctx.lineTo((x0+x1)/2,64); ctx.moveTo(x0,39); ctx.lineTo(x1,39); ctx.stroke();
+  ctx.strokeStyle = PAL.tinta; ctx.lineWidth = 2.5; ctx.strokeRect(x0,14,x1-x0,50);
+  rr(ctx,x0-5,64,x1-x0+10,6,2); fs(ctx,'#ABA394',1.5);
+  if (decorOn(g,'violeta')) drawVioleta(ctx,130,64,0.95);
+  // letreiro: placa de metal com rebites e lâmpadas piscando devagar em volta
+  rr(ctx,170,8,134,50,5); fs(ctx,'#7C858E',3);
+  rr(ctx,176,14,122,38,3); fs(ctx,'#2B3440',2);
+  txt(ctx,'LANCHONETE',237,26,10.5,'#E8EEF2','center',FB,0,108);
+  txt(ctx,'Corre-Corre',237,41,17,'#FFD36B','center',FD,0,112);
+  for (let i=0;i<9;i++){
+    const on = RM || g.state === 'menu' ? 1 : (Math.floor(t*2) + i) % 2;
+    [[172 + i*16.5,11],[172 + i*16.5,55]].forEach(p => { circ(ctx,p[0],p[1],2.3); ctx.fillStyle = on ? '#FFE9A6' : '#B8A56A'; ctx.fill(); ctx.strokeStyle = PAL.tinta; ctx.lineWidth = 1; ctx.stroke(); });
+  }
+}
+/* as 3 televisores no alto da parede, abaixo do cartaz, com a notinha musical (v9); instaladas e ligadas pelo modo do dia */
+function drawTvsParede(ctx,g,t){
+  const modo = g.save.equipe.tvs || 0;
+  [360,480,600].forEach((x,i) => {
+    rr(ctx,x-24,52,48,29,3); fs(ctx,'#2A2E36',2);
+    rr(ctx,x-21,55,42,23,2); fs(ctx,modo ? ['#1E4FA8','#7B4FB5','#C2562B'][i] : '#1B1F27',1);
+    if (modo){
+      ctx.fillStyle = 'rgba(255,255,255,.18)'; ctx.beginPath(); ctx.moveTo(x-21,55); ctx.lineTo(x-8,55); ctx.lineTo(x-21,70); ctx.closePath(); ctx.fill();
+      circ(ctx,x-9,66,4); fs(ctx,SKINS[i+1],1); rr(ctx,x-14,69,10,8,2); fs(ctx,'#C2362B',1);
+      txt(ctx,modo === 2 ? 'SEM ANÚNCIOS' : 'SERTANEJO',x+6,60,5,'#fff','center',FD,0,34);
+      if (modo === 1 && Math.floor(t / 8) % 2) txt(ctx,'ANÚNCIO',x+6,72,6,'#FFD36B','center',FD,0,34);
+      else txt(ctx,'♪',x+10,72,10,'#fff','center',FB);
+    }
+    ctx.fillStyle = PAL.tinta; ctx.fillRect(x-3,81,6,2);
+  });
+  if (modo && !RM && g.state !== 'menu'){ const q = (t*0.5) % 1; ctx.globalAlpha = 1 - q; txt(ctx,'♪',542 + Math.sin(q*6)*4,50 - q*10,11,PAL.faixa,'center',FB); ctx.globalAlpha = 1; }
+}
+/* violetas em vasinhos de barro no parapeito (x, y: o pé do vaso do meio) */
+function drawVioleta(ctx,x,y,s){
+  ctx.save(); ctx.translate(x,y); ctx.scale(s || 1,s || 1);
+  [-14,0,14].forEach((dx,i) => {
+    ctx.beginPath(); ctx.moveTo(dx-6,-9); ctx.lineTo(dx+6,-9); ctx.lineTo(dx+4.5,0); ctx.lineTo(dx-4.5,0); ctx.closePath(); fs(ctx,'#C9743F',1.6);
+    ell(ctx,dx-4,-11,5,2.6); fs(ctx,'#4E8F4A',1.2); ell(ctx,dx+4,-11,5,2.6); fs(ctx,'#4E8F4A',1.2);
+    [[-3,-14],[3,-15],[0,-18]].forEach(q => { circ(ctx,dx+q[0],q[1],2.8); fs(ctx,i === 1 ? '#9B5BD0' : '#7B4FB5',1.2); circ(ctx,dx+q[0],q[1],0.9); ctx.fillStyle = '#F2C94C'; ctx.fill(); });
+  });
+  ctx.restore();
+}
+/* antúrio no vaso, no chão: folhas grandes em coração e duas flores vermelhas (x, y: o chão) */
+function drawAnturio(ctx,x,y,s){
+  ctx.save(); ctx.translate(x,y); ctx.scale(s || 1,s || 1);
+  shadowEll(ctx,0,-1,15,3.5,0.18);
+  [[-12,-34,-0.4],[12,-34,0.4],[0,-40,0]].forEach(q => {
+    ctx.save(); ctx.translate(q[0]*0.4,-14); ctx.rotate(q[2]); ctx.strokeStyle = '#3E8A47'; ctx.lineWidth = 2; ctx.beginPath(); ctx.moveTo(0,0); ctx.lineTo(q[0]*0.6,q[1]+14); ctx.stroke();
+    ctx.translate(q[0]*0.6,q[1]+14); ctx.beginPath(); ctx.moveTo(0,4); ctx.bezierCurveTo(-11,-2,-7,-13,0,-8); ctx.bezierCurveTo(7,-13,11,-2,0,4); fs(ctx,'#3E8A47',1.4); ctx.restore();
+  });
+  [[-7,-42],[8,-38]].forEach(q => { ctx.beginPath(); ctx.moveTo(q[0],q[1]+6); ctx.bezierCurveTo(q[0]-9,q[1],q[0]-6,q[1]-10,q[0],q[1]-6); ctx.bezierCurveTo(q[0]+6,q[1]-10,q[0]+9,q[1],q[0],q[1]+6); fs(ctx,'#D8432F',1.4); ctx.strokeStyle = '#F4E2A0'; ctx.lineWidth = 2; ctx.beginPath(); ctx.moveTo(q[0],q[1]+3); ctx.lineTo(q[0]+1,q[1]-7); ctx.stroke(); });
+  ctx.beginPath(); ctx.moveTo(-11,-16); ctx.lineTo(11,-16); ctx.lineTo(8,-1); ctx.lineTo(-8,-1); ctx.closePath(); fs(ctx,'#B85A30',2);
+  rr(ctx,-12,-19,24,5,2); fs(ctx,'#C9673B',1.6);
+  ctx.restore();
+}
+/* jarra de suco: vidro com suco de laranja, tampa e uma torneirinha (x, y: o pé) */
+function drawJarraSuco(ctx,x,y,s,nivel){
+  ctx.save(); ctx.translate(x,y); ctx.scale(s || 1,s || 1);
+  const n = nivel == null ? 0.7 : nivel;
+  rr(ctx,-13,-46,26,44,7); fs(ctx,'rgba(214,236,246,.85)',2.2);
+  ctx.save(); rr(ctx,-11,-44,22,40,5); ctx.clip(); ctx.fillStyle = 'rgba(242,140,40,.85)'; ctx.fillRect(-11,-44 + 40*(1 - n),22,40*n); ctx.fillStyle = 'rgba(255,255,255,.35)'; ctx.fillRect(-9,-42,3,34); ctx.restore();
+  rr(ctx,-10,-52,20,7,3); fs(ctx,PAL.cromo,1.8);
+  rr(ctx,10,-14,10,6,2); fs(ctx,PAL.cromoEsc,1.6);
+  [[-6,-30],[4,-22],[0,-38]].forEach(q => { ell(ctx,q[0],q[1],4,3); ctx.strokeStyle = 'rgba(255,255,255,.55)'; ctx.lineWidth = 1.2; ctx.stroke(); });
+  ctx.restore();
+}
+/* cadeirinha de plástico vermelha e banquinho de madeira, vistos de frente (x, y: o chão) */
+function drawCadeirinha(ctx,x,y,s){
+  ctx.save(); ctx.translate(x,y); ctx.scale(s || 1,s || 1);
+  ctx.strokeStyle = PAL.tinta; ctx.lineWidth = 1.6; ctx.fillStyle = '#B7322B';
+  rr(ctx,-9,-26,18,12,3); ctx.fill(); ctx.stroke();
+  rr(ctx,-10,-15,20,5,2); ctx.fill(); ctx.stroke();
+  ctx.strokeStyle = '#8F2520'; ctx.lineWidth = 2.2; [[-8,-10,-9,0],[8,-10,9,0]].forEach(l => { ctx.beginPath(); ctx.moveTo(l[0],l[1]); ctx.lineTo(l[2],l[3]); ctx.stroke(); });
+  ctx.restore();
+}
+function drawBanquinho(ctx,x,y,s){
+  ctx.save(); ctx.translate(x,y); ctx.scale(s || 1,s || 1);
+  ctx.strokeStyle = PAL.madeiraEsc; ctx.lineWidth = 2.6; [[-8,-12,-10,0],[8,-12,10,0]].forEach(l => { ctx.beginPath(); ctx.moveTo(l[0],l[1]); ctx.lineTo(l[2],l[3]); ctx.stroke(); });
+  ell(ctx,0,-14,11,4.5); fs(ctx,PAL.madeira,2);
+  ctx.restore();
 }
 function drawAzulejo(ctx){
   ctx.fillStyle = PAL.azulejo; ctx.fillRect(0,0,W,92);
@@ -142,10 +270,21 @@ function drawCalcada(ctx,g,tm){
   for (let x=x0 + 26 + 58; x<0; x+=58){ ctx.beginPath(); ctx.moveTo(x,92); ctx.lineTo(x,540); ctx.stroke(); }
   for (let y=150; y<540; y+=58){ ctx.beginPath(); ctx.moveTo(x0 + 26,y); ctx.lineTo(0,y); ctx.stroke(); }
   // muro da casa (no alto), com janela, e o toldo listrado por cima da espera
-  ctx.fillStyle = '#EFC9A4'; ctx.fillRect(x0 + 26,0,-x0 - 26,82);
+  const ind = industrial(g);
+  ctx.fillStyle = ind ? '#E4E0D6' : '#EFC9A4'; ctx.fillRect(x0 + 26,0,-x0 - 26,82);
+  if (ind){   // v9: o muro do galpão, de tijolinho pintado, a faixa amarela de carga e descarga no meio-fio e o poste
+    ctx.strokeStyle = 'rgba(120,96,84,.2)'; ctx.lineWidth = 1;
+    for (let y=0, r=0; y<82; y+=11, r++){ ctx.beginPath(); ctx.moveTo(x0 + 26,y); ctx.lineTo(0,y); ctx.stroke(); for (let x=x0 + 26 + (r % 2)*17; x<0; x+=34){ ctx.beginPath(); ctx.moveTo(x,y); ctx.lineTo(x,Math.min(82,y+11)); ctx.stroke(); } }
+    ctx.fillStyle = '#F2C230'; ctx.fillRect(x0 + 26,96,10,444);
+    ctx.fillStyle = 'rgba(34,32,28,.55)'; for (let y=98;y<540;y+=24) ctx.fillRect(x0 + 26,y,10,8);
+    ctx.save(); ctx.translate(x0 + 52,300); ctx.rotate(-Math.PI/2); txt(ctx,'CARGA E DESCARGA',0,0,9,'rgba(160,116,10,.9)','center',FD); ctx.restore();
+    ctx.fillStyle = PAL.cromoEsc; ctx.fillRect(x0 + 96,440,5,100); rr(ctx,x0 + 84,432,30,8,3); fs(ctx,PAL.cromo,1.8);
+    ell(ctx,x0 + 98,538,12,3.5); ctx.fillStyle = 'rgba(34,32,28,.18)'; ctx.fill();
+    ctx.fillStyle = 'rgba(255,230,150,.2)'; ctx.beginPath(); ctx.moveTo(x0 + 88,440); ctx.lineTo(x0 + 110,440); ctx.lineTo(x0 + 124,520); ctx.lineTo(x0 + 74,520); ctx.closePath(); ctx.fill();
+  }
   rr(ctx,x0 + 70,10,64,44,3); fs(ctx,'#BFE3F2',2.5);
   ctx.strokeStyle = PAL.tinta; ctx.lineWidth = 2; ctx.beginPath(); ctx.moveTo(x0 + 102,10); ctx.lineTo(x0 + 102,54); ctx.stroke();
-  rr(ctx,x0 + 170,18,40,20,3); fs(ctx,'#fff',2); txt(ctx,'Nº 27',x0 + 190,28.5,10,PAL.faixa,'center',FD);
+  rr(ctx,x0 + 170,18,40,20,3); fs(ctx,'#fff',2); txt(ctx,ind ? 'Nº 410' : 'Nº 27',x0 + 190,28.5,10,PAL.faixa,'center',FD);
   ctx.fillStyle = '#C7A27E'; ctx.fillRect(x0 + 26,74,-x0 - 26,8);
   const tx0 = x0 + 30, tx1 = -12, n = 8, tw = (tx1 - tx0) / n;
   for (let i=0;i<n;i++){
@@ -155,9 +294,15 @@ function drawCalcada(ctx,g,tm){
   }
   ctx.strokeStyle = PAL.tinta; ctx.lineWidth = 2.5; ctx.beginPath(); ctx.moveTo(tx0,62); ctx.lineTo(tx1,62); ctx.stroke();
   // lugares de espera
-  const ponto = g && g.ponto ? g.ponto : PONTOS[0], max = ponto.espera, tablet = bebidaOf(ponto).prep > 0;
+  const ponto = g && g.ponto ? g.ponto : PONTOS[0], max = ponto.espera, sent = !!(g && g.sentado), banco = !!(g && g.up && g.up.assento === 'banco');
   for (let i=0;i<max;i++){
     const y = QUEUE.ys[i], x = QUEUE.x;
+    if (ponto.assento === 'pe' && sent){   // v9: cadeirinhas de plástico ou banquinhos de madeira, uma por lugar de pessoa
+      ctx.fillStyle = 'rgba(34,32,28,.06)'; rr(ctx,x-70,y-72,140,84,12); ctx.fill();
+      for (let k=0;k<4;k++){ shadowEll(ctx,x-45 + k*30,y+6,11,3,0.16); (banco ? drawBanquinho : drawCadeirinha)(ctx,x-45 + k*30,y+6,1.05); }
+      circ(ctx,x-62,y-26,9); fs(ctx,'#fff',1.8); txt(ctx,String(i+1),x-62,y-25.5,11,PAL.faixa,'center',FD);
+      continue;
+    }
     if (ponto.assento === 'pe'){
       // de pé: faixa amarela pintada no concreto (meio gasta) e o número no chão
       ctx.save(); ctx.strokeStyle = 'rgba(226,170,40,.75)'; ctx.lineWidth = 3; ctx.setLineDash([12,7]);
@@ -171,17 +316,14 @@ function drawCalcada(ctx,g,tm){
     rr(ctx,x-58,y-10,116,10,3); fs(ctx,PAL.madeira,2.2);
     ctx.strokeStyle = 'rgba(34,32,28,.3)'; ctx.lineWidth = 1; ctx.beginPath(); ctx.moveTo(x-56,y-5); ctx.lineTo(x+56,y-5); ctx.stroke();
     circ(ctx,x-62,y-26,9); fs(ctx,'#fff',1.8); txt(ctx,String(i+1),x-62,y-25.5,11,PAL.faixa,'center',FD);
-    if (!tablet) continue;
-    const px = x + 90;
-    ctx.fillStyle = PAL.cromoEsc; ctx.fillRect(px-2,y-30,4,36); ell(ctx,px,y+6,9,3); fs(ctx,PAL.cromoEsc,1.4);
-    ctx.save(); ctx.translate(px,y-36); ctx.rotate(-0.18); rr(ctx,-10,-8,20,14,3); fs(ctx,PAL.tinta,1.6);
-    ctx.fillStyle = g && g.up && g.up.maquina ? '#FFE0A6' : '#4a5a6a'; ctx.fillRect(-7,-5,14,8); ctx.restore();
   }
   // plantas da casa da Bia (nível 1, v7.7): espada-de-são-jorge no vaso de barro, no canto de baixo, e uma menor
   // numa lata de tinta reaproveitada, encostada no muro (o banquinho de plástico da v7.5 fica para o nível 2).
   // Desde a v8.6.5, compradas na aba Decoração (DECOR)
   if (decorOn(g,'espada')) drawVasoEspada(ctx,x0 + 40,536);
   if (decorOn(g,'lata')) drawLataEspada(ctx,x0 + 44,132);
+  if (ind && decorOn(g,'anturio')) drawAnturio(ctx,-38,534,1);   // v9: o antúrio no chão, perto do portão, e a samambaia pendurada no toldo
+  if (ind && decorOn(g,'pendente')) drawSamambaia(ctx,x0 + 150,124,0.8);
   // portão de enrolar aberto, na borda do salão: trilho no alto e soleira no chão
   ctx.fillStyle = '#ABA394'; ctx.fillRect(-6,92,12,448);
   ctx.strokeStyle = 'rgba(34,32,28,.4)'; ctx.lineWidth = 1.5; ctx.beginPath(); ctx.moveTo(0,96); ctx.lineTo(0,540); ctx.stroke();
@@ -295,26 +437,20 @@ function drawEspada(ctx,x,y,s){
   });
   ctx.restore();
 }
-/* estação da bebida da espera: na Garagem (v7.7), a torneira; senão, a máquina de suco da v7.5 */
+/* estação da bebida da espera: na Garagem (v7.7), a torneira; na área industrial (v9), a jarra de suco num caixote */
 function drawMaquina(ctx,g,t,menu){
   if (g.bebida.id === 'agua') return drawTorneiraEspera(ctx,g,t,menu);
   const r = STATIONS.maquina.rect, x = r.x + r.w / 2, y = r.y + r.h;
-  shadowEll(ctx,x,y-2,34,6,0.2);
-  rr(ctx,x-28,y-70,56,68,8); fs(ctx,'#F2F2EE',2.5);
-  rr(ctx,x-20,y-64,40,30,6); fs(ctx,'rgba(214,236,246,.9)',2);
-  const prep = !menu && g.maq.some(o => o.t > 0);
-  const lv = 0.45 + 0.2 * Math.sin(prep && !RM ? t * 5 : 0);
-  ctx.fillStyle = 'rgba(242,140,40,.75)'; rr(ctx,x-17,y-36 - 24*lv,34,24*lv,4); ctx.fill();
-  if (prep && !RM){ for (let i=0;i<3;i++){ circ(ctx,x-8+i*8,y-40 - ((t*30 + i*9) % 18),2); ctx.fillStyle = 'rgba(255,255,255,.7)'; ctx.fill(); } }
-  rr(ctx,x-6,y-34,12,8,2); fs(ctx,PAL.cromoEsc,1.6);
-  rr(ctx,x-24,y-18,48,8,3); fs(ctx,PAL.cromo,1.8);
-  txt(ctx,'SUCOS',x,y-75,9,PAL.formica,'center',FD);
+  shadowEll(ctx,x,y-2,36,6,0.2);
+  rr(ctx,x-32,y-26,64,24,3); fs(ctx,PAL.madeira,2.2);   // o caixote de feira
+  ctx.strokeStyle = 'rgba(34,32,28,.3)'; ctx.lineWidth = 1.2; [-10,10].forEach(dx => { ctx.beginPath(); ctx.moveTo(x+dx,y-24); ctx.lineTo(x+dx,y-4); ctx.stroke(); });
+  const prep = !menu && g.maq.some(o => o.t > 0), pr = menu ? 0 : g.maqPronto().reduce((a,o) => a + o.n, 0);
+  drawJarraSuco(ctx,x-12,y-24,0.95,0.55 + (prep && !RM ? 0.12 * Math.sin(t*5) : 0));
+  for (let i=0;i<3;i++){ const cx = x+10+i*9; rr(ctx,cx-3.5,y-35,7,11,2); fs(ctx,i < pr ? 'rgba(242,140,40,.85)' : 'rgba(214,236,246,.9)',1.4); }   // os copos; cheios os que estão prontos
   if (menu) return;
-  const pr = g.maqPronto().reduce((a,o) => a + o.n, 0);
-  for (let i=0;i<Math.min(pr,4);i++) drawIcon(ctx,'juice',x-15+i*10,y-22,0.42);
   if (pr){
     const p = RM ? 1 : 1 + 0.08 * Math.sin(t*7);
-    ctx.save(); ctx.translate(x+28,y-62); ctx.scale(p,p); circ(ctx,0,0,11); fs(ctx,PAL.ok,2); txt(ctx,String(pr),0,1,13,'#fff','center',FD); ctx.restore();   // copos prontos
+    ctx.save(); ctx.translate(x+30,y-50); ctx.scale(p,p); circ(ctx,0,0,11); fs(ctx,PAL.ok,2); txt(ctx,String(pr),0,1,13,'#fff','center',FD); ctx.restore();   // copos prontos
   }
   const a0 = g.bia.acts[0];
   if (a0 && a0.type === 'maquina' && a0.leg !== 2){ ctx.save(); const a = 0.55 + 0.4*Math.sin(t*8); ctx.strokeStyle = 'rgba(242,179,61,' + a + ')'; ctx.lineWidth = 5; rr(ctx,r.x,r.y,r.w,r.h,8); ctx.stroke(); ctx.restore(); }
@@ -370,9 +506,16 @@ function drawMarmitaSelo(ctx,m,x,y){
   ctx.fillStyle = f > 0.5 ? PAL.ok : f > 0.25 ? PAL.mostarda : PAL.perigo; ctx.fill();
 }
 /* onde fica cada marmita da prateleira: as sem dono nos lugares das adiantadas; as encomendas no da reserva */
+/* o x de cada vaga da prateleira (v9): as da Garagem e, com mais vagas, igualmente espaçadas no tampo; a última é a da encomenda */
+function prateleiraXs(n){
+  if (n <= MARMITA.vagas) return RETIRADA.vagas;
+  const B = RETIRADA.balcao, a = B.x0 + 8, st = (B.x1 - B.x0 - 16) / n;
+  return Array.from({ length:n + 1 }, (_, i) => a + st * i);
+}
 function prateleiraPos(g){
   let l = 0, e = 0;
-  return g.prateleira.map(m => m.dono ? { m, x:RETIRADA.vagas[MARMITA.vagas] + 8 * e++ } : { m, x:RETIRADA.vagas[Math.min(l++, MARMITA.vagas - 1)] });
+  const n = g.vagas, xs = prateleiraXs(n);
+  return g.prateleira.map(m => m.dono ? { m, x:xs[n] + 8 * e++ } : { m, x:xs[Math.min(l++, n - 1)] });
 }
 function drawRetirada(ctx,g,t){
   const B = RETIRADA.balcao, w = B.x1 - B.x0, y = B.y;
@@ -386,11 +529,11 @@ function drawRetirada(ctx,g,t){
   rr(ctx,B.x0 - 4,y,w + 8,12,4); fs(ctx,'#E3C79A',2.4);   // o tampo
   if (g.state === 'menu') return;
   // a vaga da encomenda, tracejada
-  const xr = RETIRADA.vagas[MARMITA.vagas];
+  const xr = prateleiraXs(g.vagas)[g.vagas], ps = g.vagas > MARMITA.vagas ? 0.58 : 0.68;
   ctx.save(); ctx.setLineDash([3,2]); ctx.strokeStyle = 'rgba(226,106,44,.8)'; ctx.lineWidth = 1.4; rr(ctx,xr - 10,y - 9,20,13,3); ctx.stroke(); ctx.restore();
   prateleiraPos(g).forEach(o => {
-    drawMarmita(ctx,o.m.dish,o.x,y - 4,0.68);
-    drawMarmitaSelo(ctx,o.m,o.x + 8,y - 14);
+    drawMarmita(ctx,o.m.dish,o.x,y - 4,ps);
+    drawMarmitaSelo(ctx,o.m,o.x + 6,y - 14);
   });
   const a0 = g.bia.acts[0];
   if (a0 && a0.type === 'retirada'){ ctx.save(); const al = 0.55 + 0.4*Math.sin(t*8); ctx.strokeStyle = 'rgba(242,179,61,' + al + ')'; ctx.lineWidth = 5; const r = STATIONS.retirada.rect; rr(ctx,r.x,r.y,r.w,r.h,8); ctx.stroke(); ctx.restore(); }
@@ -729,12 +872,12 @@ function drawKitchen(ctx,g,t){
   });
   // adiantar marmitas (v8.6): o botãozinho com a quentinha, o "+" e as sem dono (adiantadas) de MARMITA.vagas
   if (g.marmitaOk && g.state !== 'menu') glowSprite(ctx,g,'adiantar',ctx => {
-    const n = g.marmitasLivres, cheio = n >= MARMITA.vagas, q = STATIONS.adiantar.rect;
+    const n = g.marmitasLivres, cheio = n >= g.vagas, q = STATIONS.adiantar.rect;
     ctx.save(); if (cheio) ctx.globalAlpha = 0.55;
     rr(ctx,q.x + 4,q.y + 3,q.w - 8,q.h - 10,7); fs(ctx,'#FFFBEA',2);
     drawMarmita(ctx,MARMITA.prato,q.x + 26,q.y + 16,0.55);
     circ(ctx,q.x + 13,q.y + 10,5.5); fs(ctx,cheio ? PAL.cromoEsc : PAL.ok,1.4); txt(ctx,'+',q.x + 13,q.y + 10.5,10,'#fff','center',FD);
-    txt(ctx,n + '/' + MARMITA.vagas,q.x + 41,q.y + 17,10,PAL.tinta,'left',FD);
+    txt(ctx,n + '/' + g.vagas,q.x + 41,q.y + 17,10,PAL.tinta,'left',FD);
     ctx.restore();
   });
   glow('order'); glow('adiantar');
@@ -751,7 +894,7 @@ function drawKitchen(ctx,g,t){
   }
   ctx.save(); ctx.translate(942,220); ctx.fillStyle = PAL.mostarda; ctx.beginPath(); ctx.arc(0,2,7,Math.PI,0); ctx.lineTo(8,6); ctx.lineTo(-8,6); ctx.closePath(); fs(ctx,PAL.mostarda,2); circ(ctx,0,-6,2); fs(ctx,PAL.cromo,1.5); ctx.restore();
   rr(ctx,r.x+8,r.y+r.h-14,r.w-12,12,3); fs(ctx,PAL.cromo,2.2);
-  for (let i=0;i<4;i++){
+  for (let i=0;i<PLATE_SLOTS.length;i++){
     const s = PLATE_SLOTS[i], p = g.kitchen.plates[i];
     ell(ctx,s.x,s.y+4,19,10); ctx.fillStyle = 'rgba(34,32,28,.12)'; ctx.fill();
     if (p && p.kind === 'marmita') glowSprite(ctx,g,p,ctx => {

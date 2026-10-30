@@ -205,7 +205,7 @@ class Waitress {
     const g = this.g;
     if (a.type === 'table') return this.doTable(g.tables[a.id-1]);
     if (a.type === 'order'){ if (!this.submitTickets()) this.fail('?'); return; }
-    if (a.type === 'adiantar'){ this.submitTickets(); if (!g.adiantar(this.x, this.y - 104)) this.fail(g.marmitaOk ? 'Já tem ' + MARMITA.vagas + ' marmitas!' : '?'); return; }   // v8.6 (leva as comandas da mão junto)
+    if (a.type === 'adiantar'){ this.submitTickets(); if (!g.adiantar(this.x, this.y - 104)) this.fail(g.marmitaOk ? 'Já tem ' + g.vagas + ' marmitas!' : '?'); return; }   // v8.6 (leva as comandas da mão junto)
     if (a.type === 'retirada'){ if (!g.levaMarmitas(this)) this.fail(this.hands.some(h => h.kind === 'marmita') ? 'Prateleira cheia!' : '?'); return; }
     if (a.type === 'plate'){
       this.submitTickets();
