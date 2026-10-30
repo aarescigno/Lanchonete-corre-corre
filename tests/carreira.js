@@ -72,6 +72,7 @@ for(let k=0;k<N;k++){
     r.lucro.push(g.result.money); r.con.push(g.result.conserto); r.qb.push(g.result.quebras.length); if(g.result.clima==='chuva') r.chuva++; if(g.result.clima==='feriado') r.fer++; r.fim.push(g.save.bank); if(g.result.passed) r.pass++; semMesa=g.result.lostBy.semMesa; r.lug.push(L.salaoLugares(g.save.salao.mesas)); if(g.save.bank<0) negs++; if(g.result.forcado) forcs++; if(!chegou&&g.save.bank>=MUDA) chegou=n; if(process.env.MESAS) console.log(n, g.save.salao.mesas.map(m=>m.seats).sort().join(''), 'semMesa', semMesa);
     // v8.7: o que a interface faz entre os dias: a conversa de depois fecha o capítulo (e abre o seguinte); a de antes só passa
     while(g.save.conversa){ if(g.save.conversa==='depois'){ capDia[g.save.cap].push(n); g.avancaCap(); } else g.save.conversa=null; }
+    if(g.save.convCard==='pend') g.save.convCard=1;   // v9.0.1: a conversa do cardápio
     if(g.state==='falencia'){ fechou++; break; }
     (g.ponto.nivel>=2?lucroInd:lucroGar).push(g.result.money); if(mudaDia[mudaDia.length-1]!==undefined&&n-mudaDia[mudaDia.length-1]<=5&&n>mudaDia[mudaDia.length-1]&&g.save.bank<0) negPos.push(n);
   }

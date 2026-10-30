@@ -58,7 +58,7 @@ Origem: retorno do Renan Martorelli (beta-tester) e conversa com o Arthur (15/10
 | 2h | A Dani sobe de nível com trabalho e cursos (XP e aumento que consolida) | v8.9 | feita em 30/10 |
 | 2c-r5 | Ajustes da lojinha: TV e som em Melhorias, toalha no Salão, ícones da equipe (Tonhão de corpo inteiro) e cartão da Manutenção com cor | v8.9.1 | feita em 30/10 (`docs/spec-v8.9.1.md`) |
 | 3a | Mudança de ponto e Lanchonete na área industrial (e os caps. 4 e 5) | v9 | feita em 30/10 (`docs/spec-v9.md`) |
-| 2c-r6 | Retorno de beta-tester: cardápio fácil de achar (cartão Cardápio com os cursos, conversa do dia 2, selo "novo", reclamação dos clientes) e balão do Tonhão embaixo do Pular | v9.0.1 | a fazer (planejada em 30/10; **é a próxima**, antes da 3b) |
+| 2c-r6 | Retorno de beta-tester: cardápio fácil de achar (cartão Cardápio com os cursos, conversa do dia 2, selo "novo", reclamação dos clientes) e balão do Tonhão embaixo do Pular | v9.0.1 | feita em 30/10 (`docs/spec-v9.0.1.md`); **a próxima é a 3b** |
 | 3b | Restaurante na Avenida Brasil, o Joca (e o capítulo dela) | v9.1 | a fazer |
 | 4a | Terraço Suíça e VIPs exigentes (e o capítulo dele) | v10 | a fazer |
 | 4b | Nível de luxo | v10.1 | a fazer |

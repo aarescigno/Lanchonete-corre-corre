@@ -120,6 +120,8 @@ function daniNivelXp(save){
 function pratoAv(k, cursos){ return CURSOS.some(c => cursoNivel(cursos, c.id) >= 2 && c.av.pratos.indexOf(k) >= 0); }
 /* o save: só os níveis que existem (o PF só tem o avançado, 2) */
 function normDaniCursos(c){ const o = {}; DANI_CURSOS.forEach(x => { if (c && c[x.id]) o[x.id] = 1; }); return o; }
+/* v9.0.1: o Tonhão já fez algum curso (o básico de qualquer um ou o avançado do PF) */
+function cursoFeito(cursos){ return CURSOS.some(c => c.preco > 0 ? cursoNivel(cursos, c.id) >= 1 : cursoNivel(cursos, c.id) >= 2); }
 function normCursos(c){
   const o = {};
   CURSOS.forEach(x => { const n = Math.min(2, Math.floor(+(c && c[x.id]) || 0)); if (n >= (x.preco > 0 ? 1 : 2)) o[x.id] = n; });
@@ -718,6 +720,7 @@ const AVAL_SIMPLES = [
   ['Atendimento ótimo, mas o lugar ainda é simples.', 'Comida boa, salão sem luxo.'],
   ['Muito bom! Só falta aquele toque de requinte.']
 ];
+const AVAL_POUCO = ['Só tem PF e coxinha?', 'Queria um pastel, mas não tem...', 'Sempre a mesma coisa no cardápio.'];   // v9.0.1: o Tonhão ainda não fez curso básico
 const AVAL_BRAVO = { fila:['Desisti de esperar!', 'Nem consegui sentar.'], mesa:['Fui embora sem comer!', 'Nunca mais volto!'], retirada:['Cadê a marmita?!', 'Saí sem o pedido!'] };   // retirada (v8.6): o entregador
 /* elogios do ambiente que citam a decoração (v8.6.6), por enfeite (a toalha, só de quem sentou numa mesa com ela) */
 const AVAL_DECOR = {
@@ -726,7 +729,7 @@ const AVAL_DECOR = {
   toalha:'A toalha xadrez dá um charme!',
   violeta:'Que violetas lindas na janela!', anturio:'Adorei o antúrio na entrada!', pendente:'A samambaia no toldo ficou linda!'
 };
-function avalComentario(r, bravo, lixo, nivel, decor, fria, semVeg, tipo){
+function avalComentario(r, bravo, lixo, nivel, decor, fria, semVeg, tipo, pouco){
   if (bravo) return pick(AVAL_BRAVO[bravo]);
   const bom = Math.round(avalNota(r) * 10) >= 40;   // pela nota com uma casa (3,96 vira 4,0)
   const tp = tipo && AVAL_CRIT[1].tipo[tipo];   // v9: a turma e a encomenda têm comentário próprio de agilidade (50%)
@@ -737,6 +740,7 @@ function avalComentario(r, bravo, lixo, nivel, decor, fria, semVeg, tipo){
   let k = r.findIndex(v => v != null);
   r.forEach((v, i) => { if (v != null && (bom ? v > r[k] : v < r[k])) k = i; });
   if (!bom && semVeg){ const m = AVAL_CRIT.findIndex(c => c.id === 'menu'); if (r[m] != null && r[m] <= r[k]) return 'Não tinha nada vegetariano.'; }   // v8.6.11
+  if (!bom && pouco){ const m = AVAL_CRIT.findIndex(c => c.id === 'menu'); if (r[m] != null && r[m] <= r[k]) return pick(AVAL_POUCO); }   // v9.0.1
   if (!bom && lixo && AVAL_CRIT[k].id === 'amb') return 'Que cheiro de lixo!';
   if (!bom && fria && AVAL_CRIT[k].id === 'prato') return 'Comida meio fria.';   // v8.6.8: o prato esfriou no balcão
   return pick(AVAL_CRIT[k][bom ? 'bom' : 'ruim']);
@@ -835,9 +839,18 @@ const HISTORIA = [
       { q:'tonhao', s:'Ele mesmo. A estrela veio do molho da sua mãe... e ele nunca conseguiu repetir.' },
       { q:'dani', s:'Então é lá que a gente vai abrir!' }] }
 ];
+/* v9.0.1: a conversa do cardápio, no fim do dia `dia` (ou do 1º dia completo depois dele, para saves antigos), só no Modo História.
+   falas: o Tonhão ainda não fez curso; fez: já fez algum (básico de qualquer curso ou o avançado do PF). save.convCard: 'pend' | 1 (vista) */
+const HIST_CARDAPIO = { dia:2,
+  falas:[ { q:'bia', s:'Tio, hoje um monte de gente perguntou se só tem PF e coxinha...' },
+          { q:'tonhao', s:'É... a Rosa fazia um pastel que era uma beleza. Eu nunca aprendi.' },
+          { q:'bia', s:'Então faz um curso! Tem uns baratinhos.' },
+          { q:'tonhao', s:'Tá bom, tá bom. Vê aí no Cardápio da lojinha o que cabe no bolso.' } ],
+  fez:[ { q:'bia', s:'O pessoal adorou o prato novo!' },
+        { q:'tonhao', s:'Então vou fazer mais cursos. Tá tudo no Cardápio da lojinha.' } ] };
 const HIST_NOMES = { bia:'Bia', tonhao:'Tonhão', dani:'Dani' };
 const CAIXA_MAX = 14;                                 // livro-caixa (v7.2): quantos dias da carreira ficam guardados
-const VERSAO = 'v9';                             // vai no resumo do Caixa
+const VERSAO = 'v9.0.1';                             // vai no resumo do Caixa
 const DIVULGA_DIA = 3;                                // antes disso, o movimento é o da inauguração (sem custo)
 function divulgaAberta(n){ return DEV.on || n >= DIVULGA_DIA; }   // no modo dev, desde o dia 1
 function divulgaOf(id){ return DIVULGA.find(d => d.id === id) || DIVULGA[1]; }

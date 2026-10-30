@@ -99,6 +99,10 @@ p{margin:calc(var(--u)*6) 0;font-size:max(12px,calc(var(--u)*16));line-height:1.
 .shopcards button:focus-visible{outline:3px solid var(--mostarda);outline-offset:2px}
 .shopcards canvas{width:calc(var(--u)*60);height:calc(var(--u)*60);min-width:40px;min-height:40px}
 .shopcards button.alerta{background:#FBE7B0;border-color:#C98A12}   /* v8.9.1: Manutenção com equipamento no amarelo */
+.shopcards button.novo{position:relative}
+.shopcards button.novo::after{content:'novo';position:absolute;top:calc(var(--u)*4);right:calc(var(--u)*4);background:var(--mostarda);color:var(--tinta);font-size:max(10px,calc(var(--u)*11));font-weight:700;padding:1px 6px;border-radius:99px;line-height:1.3}   /* v9.0.1: curso novo que cabe no caixa */
+.seg button.novo{position:relative}
+.seg button.novo::after{content:'novo';position:absolute;top:-6px;right:-4px;background:var(--mostarda);color:var(--tinta);font-size:10px;font-weight:700;padding:0 5px;border-radius:99px;line-height:1.4}
 .shopcards button.perigo{background:#F6C9C3;border-color:var(--perigo);color:#7A1D16}   /* e no vermelho */
 .shopnav{display:flex;align-items:center;justify-content:center;gap:calc(var(--u)*14);margin:calc(var(--u)*4) 0}
 .shopnav[hidden]{display:none}
