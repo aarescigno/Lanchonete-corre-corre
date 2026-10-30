@@ -98,6 +98,8 @@ p{margin:calc(var(--u)*6) 0;font-size:max(12px,calc(var(--u)*16));line-height:1.
 .shopcards button{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:calc(var(--u)*4);background:var(--creme);border:calc(var(--u)*3) solid var(--tinta);border-radius:calc(var(--u)*14);padding:calc(var(--u)*10) calc(var(--u)*8);min-height:max(84px,calc(var(--u)*110));cursor:pointer;color:var(--tinta);font-family:var(--fd);font-size:max(14px,calc(var(--u)*18))}
 .shopcards button:focus-visible{outline:3px solid var(--mostarda);outline-offset:2px}
 .shopcards canvas{width:calc(var(--u)*60);height:calc(var(--u)*60);min-width:40px;min-height:40px}
+.shopcards button.alerta{background:#FBE7B0;border-color:#C98A12}   /* v8.9.1: Manutenção com equipamento no amarelo */
+.shopcards button.perigo{background:#F6C9C3;border-color:var(--perigo);color:#7A1D16}   /* e no vermelho */
 .shopnav{display:flex;align-items:center;justify-content:center;gap:calc(var(--u)*14);margin:calc(var(--u)*4) 0}
 .shopnav[hidden]{display:none}
 .shopnav b{font-family:var(--fd);font-weight:400;font-size:max(15px,calc(var(--u)*20))}

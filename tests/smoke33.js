@@ -27,7 +27,15 @@ ok(cartoes().join()==='bia,tonhao,dani','trocar de grupo vai aos cartões dele')
 L.setShopTab('cursos'); ok(els['shop-sec'].textContent==='Tonhão' && /Curso de /.test(txt(grid())) && /Tonhão · nível/.test(txt(grid())),'setShopTab("cursos") cai em Equipe › Tonhão (aumento e cursos)');
 L.setShopTab('bia'); { const t=nomes(); ok(t.includes('Tênis de corrida') && t.includes('Bandeja') && t.includes('Livrinho de Sudoku'),'Bia: Tênis (de corrida, pois já tem os novos), Bandeja e Sudoku'); }
 L.setShopTab('melhorias'); { const t=nomes(); ok(!t.includes('Bandeja') && !t.some(n=>/Tênis|Sudoku/.test(n)) && t.includes('Jogo de pratos') && t.includes('Ventilador de teto'),'Melhorias sem os itens da Bia'); }
-L.setShopTab('divulga'); ok(/TV e som/.test(txt(grid())) && /Contas do dia/.test(txt(grid())),'Divulgação tem a TV e som');
+L.setShopTab('melhorias'); ok(/TV e som/.test(txt(grid())) && /Ventilador de teto/.test(txt(grid())),'Melhorias tem a TV e som');
+L.setShopTab('divulga'); ok(!/TV e som/.test(txt(grid())) && /Contas do dia/.test(txt(grid())),'Divulgação não tem a TV e som');
+// v8.9.1: cartão Manutenção muda de cor com o pior equipamento
+{ const mc=()=>{ L.setShopGrupo('lanchonete'); return grid().children.find(c=>c.getAttribute('data-sec')==='manut'); };
+  const cls=c=>[...c.classList._s].join(' '), ids=Object.keys(g.manut);
+  ids.forEach(k=>g.manut[k]=1); let c=mc(); ok(!/alerta|perigo/.test(cls(c)),'Manutenção normal: sem cor');
+  g.manut[ids[0]]=0.6; c=mc(); ok(/alerta/.test(cls(c)) && !/perigo/.test(cls(c)) && c.getAttribute('aria-label')==='Manutenção: precisa de revisão','Manutenção amarela');
+  g.manut[ids[0]]=0.3; c=mc(); ok(/perigo/.test(cls(c)) && c.getAttribute('aria-label')==='Manutenção: risco de quebra','Manutenção vermelha');
+  ids.forEach(k=>g.manut[k]=1); }
 L.setShopTab('tonhao'); ok(!/TV e som/.test(txt(grid())),'Tonhão não tem a TV e som');
 L.setShopTab('dani'); ok(!/TV e som/.test(txt(grid())) && /Dani · nível/.test(txt(grid())),'Dani: só ela');
 L.setShopTab('banco'); ok(els['shop-sec'].textContent==='Banco' && /Empréstimo/.test(txt(grid())),'setShopTab("banco") acerta o grupo Dinheiro');
