@@ -8,7 +8,7 @@ Origem: retorno do Renan Martorelli (beta-tester) e conversa com o Arthur (15/10
 - **Modelo e esforço (desde 29/10, ver `CLAUDE.md`):** cada etapa ou sessão termina com uma linha **Modelo:**. Quando ela pede "planejar com o Opus antes", a primeira sessão (com o Opus) fecha as **decisões em aberto** com o usuário, escreve no plano os valores, textos e falas decididos, apaga a lista de decisões em aberto e troca a linha para só o modelo da execução. A sessão de execução (Sonnet ou Haiku) não decide nada de design: se achar uma decisão que ficou aberta, para e pergunta ao usuário.
 - Antes de programar, se ainda houver **decisões em aberto** na etapa (cada uma já tem uma sugestão), a sessão confirma com o usuário.
 - No fim, a sessão marca a etapa como feita na tabela abaixo (com a versão e a data) e anota o que mudou no plano.
-- Ordem: cada etapa depende só das anteriores. A 1a vem primeiro (mexe no equilíbrio de base). A 1c teve prioridade sobre as demais, por ser retorno do beta-tester Renan (pedido do usuário em 21/10). A 1d-1 (v7.4), a 1d-2 (v7.5), a 2 (v8) e a 2b (v8.3) foram feitas. **Ordem revista com o usuário em 22/10:** 2b (campanha contínua e banco), 2c (avaliações dos clientes), 2d (abertura animada do Modo História), 3a (área industrial), 3b (Avenida Brasil) e 4 (Terraço Suíça). A campanha vem antes dos pontos para a carreira não ser refeita duas vezes, e as avaliações viram a "experiência" que abre os pontos novos e a reputação da etapa 4. A 2c (v8.4) e a 2d (v8.5) foram feitas em 26/10. **Ordem revista com o usuário em 28/10** (texto em `docs/PROPOSTAS.md`): as propostas que estavam só no log e nas Ideias guardadas viraram etapas. Ficou assim: 2e (entregadores com fila própria e marmitas), 2f (a campanha vira o Modo História), 3a (área industrial), 3b (Avenida Brasil), 4a (Terraço Suíça), 4b (nível de luxo), 4c (eventos de bairro), 6 (crítico do Michelzão e final) e 7 (polimento). A marmita vem antes da área industrial, que terá mais entregadores. A campanha e o Modo História viraram uma coisa só: a 2f monta a estrutura e os capítulos da Garagem, cada ponto traz o seu capítulo, e a antiga etapa 5 deixou de existir. A 2e (v8.6) foi feita em 28/10, e a 2d-r (v8.6.1) também, com as 5 partes juntas a pedido do usuário. **A próxima é a 2c-r2 (prato quente, v8.6.8) e depois a 2c-r3, em 3 partes (a: cursos e gostos, v8.6.9; b: desenhos dos pratos, v8.6.10; c: vegetarianos e veganos, v8.6.11), planejada na sabatina de 29/10; a 2f segue depois delas.** A 2c-r3 (a, b e c) e a rodada de balanceamento 2c-r3d (v8.6.13) foram feitas em 29/10; a 2c-r1 (v8.6.7) também. **A próxima é a 2c-r4, em 2 sessões com o Sonnet (a: sem o limite de 1 melhoria por dia e sem o "(n)" do Gurugol, v8.6.14; b: lojinha em grupos, v8.6.15; pedido do usuário de 30/10), depois a 2f.** A etapa 7 fica **a rever** com o usuário antes de começar.
+- Ordem: cada etapa depende só das anteriores. A 1a vem primeiro (mexe no equilíbrio de base). A 1c teve prioridade sobre as demais, por ser retorno do beta-tester Renan (pedido do usuário em 21/10). A 1d-1 (v7.4), a 1d-2 (v7.5), a 2 (v8) e a 2b (v8.3) foram feitas. **Ordem revista com o usuário em 22/10:** 2b (campanha contínua e banco), 2c (avaliações dos clientes), 2d (abertura animada do Modo História), 3a (área industrial), 3b (Avenida Brasil) e 4 (Terraço Suíça). A campanha vem antes dos pontos para a carreira não ser refeita duas vezes, e as avaliações viram a "experiência" que abre os pontos novos e a reputação da etapa 4. A 2c (v8.4) e a 2d (v8.5) foram feitas em 26/10. **Ordem revista com o usuário em 28/10** (texto em `docs/PROPOSTAS.md`): as propostas que estavam só no log e nas Ideias guardadas viraram etapas. Ficou assim: 2e (entregadores com fila própria e marmitas), 2f (a campanha vira o Modo História), 3a (área industrial), 3b (Avenida Brasil), 4a (Terraço Suíça), 4b (nível de luxo), 4c (eventos de bairro), 6 (crítico do Michelzão e final) e 7 (polimento). A marmita vem antes da área industrial, que terá mais entregadores. A campanha e o Modo História viraram uma coisa só: a 2f monta a estrutura e os capítulos da Garagem, cada ponto traz o seu capítulo, e a antiga etapa 5 deixou de existir. A 2e (v8.6) foi feita em 28/10, e a 2d-r (v8.6.1) também, com as 5 partes juntas a pedido do usuário. **A próxima é a 2c-r2 (prato quente, v8.6.8) e depois a 2c-r3, em 3 partes (a: cursos e gostos, v8.6.9; b: desenhos dos pratos, v8.6.10; c: vegetarianos e veganos, v8.6.11), planejada na sabatina de 29/10; a 2f segue depois delas.** A 2c-r3 (a, b e c) e a rodada de balanceamento 2c-r3d (v8.6.13) foram feitas em 29/10; a 2c-r1 (v8.6.7) também. **A próxima é a 2c-r4, em 2 sessões com o Sonnet (a: sem o limite de 1 melhoria por dia e sem o "(n)" do Gurugol, v8.6.14; b: lojinha em grupos, v8.6.15; pedido do usuário de 30/10), depois a 2f, já planejada com o usuário em 30/10.** A etapa 7 fica **a rever** com o usuário antes de começar.
 
 ## Situação
 | # | Etapa | Versão | Situação |
@@ -623,35 +623,70 @@ A fileira `#shop-tabs` (`02-telas.html`) passa a ter 4 botões; ao tocar num gru
 ---
 
 ## Etapa 2f — A campanha vira o Modo História (v8.7)
-> Decidido na revisão de 28/10: a campanha (Carreira) e o Modo História viram uma coisa só, com um save só. A campanha já começa na Garagem com a dívida do banco, que é a história da abertura (v8.5). Esta etapa monta a estrutura e o capítulo da Garagem; os capítulos dos outros pontos entram nas etapas 3a, 3b e 4a, e o final na etapa 6. Substitui a antiga etapa 5.
+> Decidido na revisão de 28/10: a campanha (Carreira) e o Modo História viram uma coisa só, com um save só. Esta etapa monta a estrutura e os 3 capítulos da Garagem; os capítulos dos outros pontos entram nas etapas 3a, 3b e 4a, e o final na etapa 6. Substitui a antiga etapa 5. **Planejada com o usuário em 30/10** (respostas em `docs/PROPOSTAS.md`): as decisões abaixo estão tomadas.
 
-**Objetivo:** "o sonho da Bia de ter um restaurante estrelado, começando do zero". Os dias da campanha passam a contar a história em capítulos, com a abertura animada como prólogo.
+**Objetivo:** "o sonho da Bia de ter um restaurante estrelado, começando do zero". Os dias da campanha contam a história em capítulos, com a abertura animada como prólogo e a dívida da reforma da garagem desde o dia 1.
 
-**Entra:**
-- **Menu:** o botão História abre a campanha (no lugar do "Em breve" da v8.5). Na 1ª vez, toca a abertura e segue para a Missão zero ou o dia 1; depois, "Continuar". Decidir o que fica do botão Carreira.
-- **Capítulos** (`HISTORIA = [{ cap, titulo, ponto, objetivo, falas }]`): cada um tem um objetivo (lucro acumulado, nota do Gurugol, contratar alguém, quitar parte da dívida) e um cartão de conversa curto antes e depois (Bia, Tonhão, Dani), com 2 a 4 falas em balões sobre o cenário. Os dias continuam os da campanha (`DAYS`, `SEMANA`).
-- **Capítulos da Garagem** (sugestão; textos a decidir com o usuário):
-  - Cap. 1, "A garagem da Rosa": os primeiros dias, aprender o ciclo e fechar no azul.
-  - Cap. 2, "A Dani chega": contratar a Dani e pagar parte da dívida.
-  - Cap. 3, "Casa cheia": a nota do Gurugol e o dinheiro da mudança para a área industrial.
-- **A dívida de abertura** é o empréstimo da reforma da garagem (cena 8 da abertura), "nos conformes da vigilância sanitária", com prazo para quitar, usando o banco da v8.3 (`BANCO`). Sai o Seu Zé como credor.
-- **A trama** (guardada desde a v8.5): a receita da Casa Aurora era o toque do Tonhão, de cominho com açafrão, e a pétala de rosa da Dona Rosa; o chef Bráulio ficou com a fama e nunca conseguiu repetir o molho. Ela se revela aos poucos, nos capítulos dos pontos.
-- **Save antigo:** a campanha que já está em curso vira a história no capítulo que corresponde ao dia e ao dinheiro.
-- Tom só emocionante, sem a piscadela da meritocracia (decidido na 2d).
+### Decisões tomadas (30/10)
+- **A Carreira some; tudo é a História.** Um save só (`lcc2_save`), os dias continuam os da campanha (`DAYS`, `SEMANA`).
+- **Objetivo não cumprido:** o capítulo continua, dia após dia, até cumprir. Sem prazo e sem game over próprio (o que pune é só o banco, como na v8.3.1).
+- **Dívida da reforma:** R$ 1.000 em 10 parcelas de R$ 100, juros de 1% ao dia sobre o saldo, a 1ª parcela no fim do dia 2 (quita no fim do dia 11 sem amortizar). O atraso da v8.3.1 vale (2 dias atrasados: o banco toma a lanchonete).
+- **A Dani entra de graça, como o Tonhão:** no começo do cap. 2 chega como aprendiz, sem salário, e sobe de nível com aumentos na lojinha (ideia do usuário).
+- **Trama:** na Garagem, só uma pista no fim do cap. 3 (o Tonhão e o cominho com açafrão). O Bráulio não é citado.
+- **Conversas:** balões sobre o salão (o dia parado e escurecido ao fundo), não um painel.
+- **Save antigo:** recomeça do dia 1, com aviso, como a v8.6.9 fez com os cursos.
+- **1ª vez:** abertura → Missão zero (se ainda não fez) → conversa do cap. 1 → dia 1.
+- **Depois do cap. 3:** os dias seguem como hoje, sem objetivo, com um cartão "Continua na próxima versão".
 
-**Fora:** os capítulos dos outros pontos (3a, 3b, 4a), o crítico do Michelzão e o final (etapa 6).
+### Capítulos (`HISTORIA` em `10-constantes.js`)
+`const HISTORIA = [{ cap, titulo, ponto:'garagem', obj:{...}, objTxt, antes:[falas], depois:[falas] }]`; fala = `{ q:'bia'|'tonhao'|'dani', s:'texto', nota?:'rubrica' }` (a `nota` sai em itálico pequeno, acima do texto, no mesmo balão). `save.cap` (1 a 3; 4 = Garagem completa), `save.capDia` (o dia em que o capítulo começou), `save.capAzul` (dias no azul do cap. 1), `save.conversa` (`'antes'`/`'depois'` pendente, ou null).
 
-**Partes:** `02-telas.html` (menu e painel de conversa), `10-constantes.js` (`HISTORIA`), `16-jogo.js` (capítulo, objetivos), `18-abertura.js` (fim da abertura vai para a história), `40-interface.js` (menu), `42-resultados.js` (objetivo do capítulo no fim do dia), `43-telas.js`, `30-ranking.js`.
+**Cap. 1, "A garagem da Rosa"** — objetivo `{ azul:2 }`: fechar 2 dias no azul (lucro do dia > 0; não precisam ser seguidos). Texto: "Fechar 2 dias no azul (x de 2)".
+- Antes: Tonhão "Panela no fogo, avental no lugar. Abre o portão, Bia!" / Bia "A garagem da mãe... Ela ia gostar de ver isso cheio de gente." / Tonhão "Então vamos encher! E fechar o dia no azul, que o banco não espera."
+- Depois: Bia "Dois dias no azul, tio!" / Tonhão "Isso! Agora é aguentar a parcela todo dia."
 
-**Testes:** smoke novo (abertura e depois dia 1, objetivo cumprido e não cumprido, conversa antes e depois, save antigo da campanha, dívida de abertura). O bot joga os capítulos da Garagem.
+**Cap. 2, "A Dani chega"** — ao começar, a Dani entra na equipe no nível 1 (aprendiz). Objetivo `{ nota:2.4 }`: nota geral do Gurugol (`avalGeral(save.aval)`) de 2,4 ou mais no fim de um dia. Texto: "Nota do Gurugol 2,4 (agora x,x)".
+- Antes: Bia "Não dou conta da mesa e da pia ao mesmo tempo..." / Tonhão "Pedi ajuda pra Dani, filha da vizinha. Ela vem aprender com a gente." / Dani "Sou meio lenta ainda, mas aprendo rápido!"
+- Depois: Dani "Ouvi um freguês dizer que aqui é tudo limpinho!" / Bia "O Gurugol subiu, tio! Já tá em 2,4." / Tonhão "Devagar e sempre."
+  (as falas de depois foram aprovadas para "3 dias no azul"; o objetivo escolhido virou a nota, e só o texto delas foi trocado para combinar)
 
-**Decisões em aberto:**
-- O botão Carreira some ou continua como "campanha sem conversas" (sugestão: some; a História é a campanha)?
-- Objetivo não cumprido: o capítulo continua até cumprir (sugestão, como a meta do dia na v8.3) ou há um prazo?
-- A dívida de abertura: valor e prazo (sugestão: R$ 1.000 em parcelas, com o atraso da v8.3.1 valendo game over)?
-- Quanto da trama do Bráulio e da receita aparece na Garagem (sugestão: só uma pista, como a pétala da abertura)?
+**Cap. 3, "Casa cheia"** — objetivo `{ quitar:true, nota:2.7, caixa:800 }`, tudo ao mesmo tempo no fim de um dia: sem dívida no banco (`save.emp.resto === 0`), nota geral 2,7 e R$ 800 no caixa. Texto: "Quitar a reforma (faltam R$ x) · nota 2,7 (agora x,x) · R$ 800 no caixa (agora R$ x)", cada item com ✓ quando cumprido.
+- Antes: Bia "O Gurugol tá cheio de comentário sobre a gente!" / Dani "Tem freguês perguntando se a gente vai abrir num lugar maior." / Tonhão "Primeiro quita a reforma. Depois junta pra mudança."
+- Depois: Bia "Reforma quitada e R$ 800 guardados!" / Tonhão (nota: "cheirando o pote de cominho") "Cominho com açafrão... a Rosa ia rir de mim agora." / Bia "Por quê, tio?" / Tonhão "Um dia eu te conto da Casa Aurora."
+- Em seguida, o cartão (painel simples, um botão "Seguir jogando"): **"Fim dos capítulos da Garagem. Continua na próxima versão: a área industrial."** `save.cap = 4`; os dias seguem sem objetivo.
 
-**Modelo:** planejar com o Opus (esforço alto) numa sessão curta antes: fechar as 4 decisões em aberto e escrever as falas dos 3 capítulos. Com isso, executar com o Sonnet, esforço alto (muitas partes ao mesmo tempo e o save antigo).
+### O que muda, parte por parte
+- **`10-constantes.js`:** `HISTORIA` (acima) e `REFORMA = { valor:1000, amort:100, juros:0.01, ini:2 }`. `STAFF.dani.levels` vira `[ null, { speed:0.4, tasks:1, pay:0 }, { speed:0.5, tasks:2, pay:25 }, { speed:0.65, tasks:2, pay:40 }, { speed:0.8, tasks:3, pay:55 } ]` (o nível 1 é a aprendiz nova; os níveis 2 a 4 são os antigos 1 a 3, mais baratos). `normEmprestimo` guarda `ini` (sem parcela nem juros antes do dia `ini`) e `ref:true` (é a reforma). Nota do dia 3 (`DAYS[2].note`): tirar "contrate ajuda na lojinha" (fica "O movimento aumentou e agora só há 4 pratos limpos. A executiva..."). `FOLHA_CORTE` perde a Dani (ela não sai da folha; os aumentos dela, sim, podem ser cortados como o do Tonhão: volta ao nível 1).
+- **`12-clientes.js` (`normSave`):** campos `cap`, `capDia`, `capAzul`, `conversa`, `histV:1`. Save sem `histV` e com jogo (dia > 1 ou dinheiro diferente do inicial) recomeça do dia 1 guardando só `treino`, e liga `avisoHist` (como o `cardV`/`avisoCard` da v8.6.9). Save novo: `emp` = a reforma (`resto:1000, amort:100, j:0.01, ini:2, ref:true`), `cap:1`, `conversa:'antes'`, `eq.dani:0`.
+- **`16-jogo.js`:** `capObj(sv)` devolve `{ ok, itens:[{txt, ok}] }` do capítulo atual; no fim do dia (onde fecha o resultado, perto da linha 785), conta `capAzul`, confere o objetivo e, se cumpriu, marca `sv.conversa = 'depois'` e põe `cap` e `objetivo` no `this.result`. `avancaCap(sv)`: cap+1, `capDia`, `conversa:'antes'`; ao entrar no cap. 2, `eq.dani = Math.max(eq.dani, 1)`. As parcelas e os juros respeitam `emp.ini`. `podeEmprestar` já é um por vez: com a reforma, só o empréstimo à força soma (como hoje).
+- **`19-conversa.js` (parte nova):** classe `Conversa(falas, fim)`: uma fala por vez, toque/clique/Enter/espaço passa, "Pular" fica à vista, `fim()` no final. Com `prefers-reduced-motion`, sem animação de entrada.
+- **`26-conversa.js` (parte nova):** `drawConversa(g, conv)`: o salão do dia como fundo (o `render` normal, parado), um véu escuro (`rgba(0,0,0,.45)`) e o balão saindo de quem fala (Bia onde ela está; Tonhão na janela da cozinha; Dani onde ela está, ou ao lado da Bia se ainda não entrou). Reaproveitar o balão de fala das cenas da abertura (`25-abertura.js`), com o nome de quem fala e "toque para seguir" pequeno.
+- **`02-telas.html`:** sai o painel "Em breve: o Modo História"; entra `#ov-continua` (o cartão do fim do cap. 3); o botão "História" vira **"Ver abertura"**; o rótulo `#menu-dia` passa a dizer "História"; o botão Carreira do seletor do ranking (`data-v="carreira"`) passa a dizer "História"; nova entrada da v8.7 no `#ov-ver`.
+- **`18-abertura.js` / `43-telas.js`:** o fim da abertura que tocou sozinha (save novo) segue para a Missão zero (se `!save.treino`) ou para a conversa do cap. 1; vista pelo "Ver abertura", volta ao menu. "Continuar": se `save.conversa === 'antes'`, toca a conversa antes da introdução do dia; a de `'depois'` toca ao fechar a tela de fim do dia, antes da lojinha (e, no cap. 3, depois dela vem o `#ov-continua`). Ao terminar a Missão zero vinda da 1ª vez, segue para a conversa do cap. 1.
+- **`40-interface.js`:** rótulo do menu "História · cap. 2, A Dani chega · dia 5" (`save.cap = 4`: "História · Garagem completa · dia 15"; `fechou`: "História: o banco fechou no dia N"); aviso `avisoHist`: "Novidade: a campanha virou o Modo História, com a dívida da reforma da garagem. Por isso, recomeçou do dia 1."; "Como jogar": trocar "Carreira" por "História" e explicar capítulos, objetivo e a reforma em 2 frases.
+- **`41-lojinha.js`:** aba Banco, com a reforma, título "Reforma da garagem" e "1ª parcela no fim do dia 2" enquanto `dia < ini`; aba Equipe, a Dani mostra "Aprendiz (sem salário)" e "Aumento: R$ 25/dia" (como o card do Tonhão), sem botão de dispensar; antes do cap. 2, o card da Dani diz "Chega no capítulo 2".
+- **`42-resultados.js`:** no fim do dia, uma linha do capítulo: "Capítulo 2, A Dani chega: nota do Gurugol 2,4 (agora 2,3)" ou "✓ Objetivo cumprido!". Na introdução do dia (`22-salao-hud.js` ou onde fica a nota do dia), a mesma linha do objetivo.
+- **`30-ranking.js`:** o tipo interno continua `'carreira'` (coleção `ranking-campanha`), só os textos dizem "História".
+
+### Testes
+- **`tests/smoke32.js` (novo):** (1) save novo: reforma de R$ 1.000, sem parcela no fim do dia 1, R$ 100 + juros no fim do dia 2; (2) fim da abertura automática vai à Missão zero e depois à conversa do cap. 1 (com `save.treino`, direto à conversa); (3) a conversa passa fala a fala com toque e com "Pular" e grava `conversa:null`; (4) cap. 1 com 1 dia no azul continua, com 2 avança e marca `'depois'`; (5) entrar no cap. 2 põe a Dani no nível 1 com folha R$ 0; (6) cap. 2 não cumprido (nota 2,3) continua; cumprido (2,4) avança; (7) cap. 3 só cumpre com os 3 itens juntos (testar faltando cada um); depois dele, `cap:4`, o `#ov-continua` e o dia seguinte sem objetivo; (8) save da v8.6.13 (sem `histV`) recomeça com aviso e mantém `treino`; (9) a reforma bloqueia empréstimo novo e o atraso de 2 dias fecha a lanchonete; (10) o menu diz "História" e o botão "Ver abertura" toca a abertura e volta ao menu.
+- Ajustar os smokes antigos que esperam a Dani nos níveis 1 a 3 com salários de 40 a 60, o "Carreira" no menu, o "Em breve" e o save novo sem dívida (o `harness.js` pode ganhar `load({semReforma:true})` para os testes antigos de banco).
+- **`bot.js`/`balance.js`/`carreira.js`:** os níveis da Dani mudaram de índice (o bot paga a Dani "de hoje" = nível 2). O `carreira.js` joga a História e mostra o dia em que cada capítulo foi cumprido (linha `HISTORIA`).
+- **Alvos e como decidir:**
+  - `node carreira.js 3` (padrão e `MOVEIS=quatro`, `DIAS=20`): **0 dias no negativo** nos dias 1 a 14. Se houver, `REFORMA.ini` passa a 3; se ainda houver, `amort` 80.
+  - Cap. 1 cumprido no dia 2 em 3/3; cap. 2 até o dia 5 em ≥ 2/3.
+  - Cap. 3: com `MOVEIS=quatro`, até o dia 14 em ≥ 2/3; com o bot padrão, até o dia 20 em ≥ 2/3. Se o padrão não chegar, baixar a nota do cap. 3 para 2,6 (não mexer no caixa nem na quitação, que o usuário escolheu "mais difícil").
+  - `node balance.js` com `EQUIPE=auto`: alvo ~85–95% (a Dani mais barata dá ~R$ 15 a 40 por dia). Se passar de 95%, subir as metas dos dias 3 a 7 em 10% (arredondar para 5).
+- Capturas: `tests/shot_v8_7.py` em `capturas/v8.7` (menu, conversa do cap. 1 e a do cap. 3 com a rubrica, fim do dia com o objetivo, aba Banco com a reforma, aba Equipe com a aprendiz, `#ov-continua`, celular).
+
+### Fechamento
+v8.7: guardar a v8.6.13 em `versoes/`, `vtag`, `VERSAO`, `#ov-ver`, `docs/spec-v8.7.md`, `docs/RESUMO.md`, CLAUDE.md (partes novas `19-conversa.js` e `26-conversa.js`, smoke 32, alvos novos do `carreira.js`), PR e merge.
+
+**Fora:** os capítulos dos outros pontos (3a, 3b, 4a), o crítico do Michelzão e o final (etapa 6), desenho novo de objetos (o pote de cominho fica só na rubrica da fala).
+
+**Lojinha:** a 2c-r4b (v8.6.15) reorganiza a lojinha em 4 grupos com cartões antes desta etapa; onde se lê "aba Banco" e "aba Equipe", aplique nos cartões equivalentes (o do banco e o da Dani).
+
+**Modelo:** Sonnet, esforço alto. Tudo decidido, mas mexe em muitas partes ao mesmo tempo, no save e nos smokes antigos, e o balanceamento da dívida pode pedir uma rodada de ajuste.
 
 ---
 
