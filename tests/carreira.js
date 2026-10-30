@@ -14,20 +14,20 @@
 //   Com MANUT=com|cuida, mostra por dia: quebras (média), chuva/feriado (dias), revisão e conserto (R$) e o dinheiro final.
 //   MANUT_CFG='{"equip":{"fogao":{"preco":300}}}' e CLIMA_CFG='{"chuva":{"chance":0.1}}' trocam L.MANUT / L.CLIMA em runtime (sem mexer em src/)
 const N=+process.argv[2]||10, DIV=process.argv[3]||'panfleto';
-const H=require('./harness.js')(); const {g,L}=H; const BOT=require('./bot.js'), bot=BOT(g,L,{afiado:process.env.BOT==='afiado',conserto:process.env.CONSERTO==='todos'?'todos':!!process.env.CONSERTO});   // BOT=afiado: o jogador perfeito (v8.6.9: para conferir a nota do Gurugol)
+/* v8.7: joga a História (reforma, capítulos e a Dani de graça no cap. 2); HIST=0 joga sem ela */ const H=require('./harness.js')({historia:process.env.HIST!=='0'}); const {g,L}=H; const BOT=require('./bot.js'), bot=BOT(g,L,{afiado:process.env.BOT==='afiado',conserto:process.env.CONSERTO==='todos'?'todos':!!process.env.CONSERTO});   // BOT=afiado: o jogador perfeito (v8.6.9: para conferir a nota do Gurugol)
 const MODO=process.env.MANUT||'sem'; if(!['sem','com','cuida','amarelo','vermelho'].includes(MODO)) throw new Error('MANUT=sem|com|cuida|amarelo|vermelho');
 L.MANUT.on=MODO!=='sem';
 if(process.env.MANUT_CFG){ const c=JSON.parse(process.env.MANUT_CFG); const eq=c.equip; delete c.equip; Object.assign(L.MANUT,c); if(eq) for(const id in eq) Object.assign(L.manutOf(id),eq[id]); }
 if(process.env.CLIMA_CFG){ const c=JSON.parse(process.env.CLIMA_CFG); for(const k in c) Object.assign(L.CLIMA[k],c[k]); }
 const order=['tenis','maquina','cafeteira','bandeja','ventilador','pratos','corrida'];
-const FULL=[{tonhao:2,dani:3,tv:true,som:true},{tonhao:2,dani:3,tv:true},{tonhao:2,dani:3},{tonhao:1,dani:2},{tonhao:0,dani:1},{}];
+const FULL=[{tonhao:2,dani:4,tv:true,som:true},{tonhao:2,dani:4,tv:true},{tonhao:2,dani:4},{tonhao:1,dani:3},{tonhao:0,dani:2},{}];
 // ajuste rápido sem mexer em src/: CONTAS='{"mesa":40}' INGRED='{"prato":0.6}' node carreira.js
 if(process.env.MOVIMENTO) Object.assign(L.MOVIMENTO,JSON.parse(process.env.MOVIMENTO));   // MOVIMENTO='{"porLugar":0.04}'
 if(process.env.CONTAS) Object.assign(L.CONTAS,JSON.parse(process.env.CONTAS));
 if(process.env.INGRED) Object.assign(L.INGRED,JSON.parse(process.env.INGRED));
 if(process.env.CARDAPIO){ const c=JSON.parse(process.env.CARDAPIO); for(const k in c) L.CARDAPIO[k].preco=c[k]; }   // v8.3.8: CARDAPIO='{"pf":25}' testa os preços dos pratos
 if(process.env.MAIS) Object.assign(L.MAIS,JSON.parse(process.env.MAIS));   // v8.3.8: MAIS='{"cada":0.6}' testa o 2º pedido
-const ND=+process.env.DIAS||14, MUDA=800; /* v8.6.9: cursoDias guarda o dia em que cada curso foi comprado (id+nível) */ const cursoDias={}; const rows={}, chega=[]; let negs=0, forcs=0;
+const ND=+process.env.DIAS||14, MUDA=800; /* v8.6.9: cursoDias guarda o dia em que cada curso foi comprado (id+nível) */ const cursoDias={}; const rows={}, chega=[]; let negs=0, forcs=0, fechou=0; const capDia={1:[],2:[],3:[]};   // v8.7: o dia em que cada capítulo foi cumprido
 for(let k=0;k<N;k++){
   g.save=L.normSave({}); g.up=g.save.up; g.boughtFor=0; g.buildTables(); let semMesa=0, chegou=0;
   for(let n=1;n<=ND;n++){
@@ -40,10 +40,11 @@ for(let k=0;k<N;k++){
         if(!(u && g.save.bank>=uc.cost+(n>=3?300:0) && g.buy(u))) break; }
       if(process.env.MOVEIS!=='0') BOT.moveis(g,L,semMesa,n>=3?300:0,process.env.MOVEIS);
       if(process.env.CURSOS!=='0'){ const cu=BOT.cursos(g,L,n>=3?300:0,process.env.CURSOS?process.env.CURSOS.split(','):undefined); if(cu) (cursoDias[cu]=cursoDias[cu]||[]).push(n); }   // v8.6.9: 1 curso por lojinha, se sobrar o preço mais a reserva (CURSOS=0 não compra)
-      if(n>=3){
-        const e=FULL.find(e=>L.payroll(L.normSave({equipe:e}).equipe)+(L.divulgaOf(DIV).cost)<=g.save.bank)||{};
+      if(n>=3 || g.save.cap>=2){
+        const e0=n>=3?(FULL.find(e=>L.payroll(L.normSave({equipe:e}).equipe)+(L.divulgaOf(DIV).cost)<=g.save.bank)||{}):{};
+        const e=Object.assign({},e0,L.HIST.on?{dani:g.save.cap>=2?Math.max(1,e0.dani||0):0}:{});   // v8.7: a Dani só chega no cap. 2 (aprendiz, sem salário)
         g.save.equipe=L.normSave({equipe:Object.assign({daniTasks:['pratos','lavar','lixo']},e)}).equipe;
-        g.save.divulga=DIV;
+        if(n>=3) g.save.divulga=DIV;
       }
       r.shop.push(g.save.bank);
     }
@@ -53,11 +54,15 @@ for(let k=0;k<N;k++){
     let st=0; while(g.state==='playing'&&st<30000){ bot(); g.update(0.05); st++; }
     { const ge=L.avalGeral(g.save.aval); r.nota.push(ge?ge.nota:null); }   // v8.6.9: a nota geral do Gurugol no fim do dia
     r.lucro.push(g.result.money); r.con.push(g.result.conserto); r.qb.push(g.result.quebras.length); if(g.result.clima==='chuva') r.chuva++; if(g.result.clima==='feriado') r.fer++; r.fim.push(g.save.bank); if(g.result.passed) r.pass++; semMesa=g.result.lostBy.semMesa; r.lug.push(L.salaoLugares(g.save.salao.mesas)); if(g.save.bank<0) negs++; if(g.result.forcado) forcs++; if(!chegou&&g.save.bank>=MUDA) chegou=n; if(process.env.MESAS) console.log(n, g.save.salao.mesas.map(m=>m.seats).sort().join(''), 'semMesa', semMesa);
+    // v8.7: o que a interface faz entre os dias: a conversa de depois fecha o capítulo (e abre o seguinte); a de antes só passa
+    while(g.save.conversa){ if(g.save.conversa==='depois'){ capDia[g.save.cap].push(n); g.avancaCap(); } else g.save.conversa=null; }
+    if(g.state==='falencia'){ fechou++; break; }
   }
   chega.push(chegou||Infinity);
 }
 const avg=a=>a.length?Math.round(a.reduce((x,y)=>x+y,0)/a.length):'-';
 for(let n=1;n<=ND;n++){ const r=rows[n], d=L.diaOf(n); console.log('Dia',n+(d.semana?' ('+d.semana.slice(0,3)+')':''),'meta',d.meta,'| dinheiro na lojinha',avg(r.shop),'| depois da folha',avg(r.after),'| folha',avg(r.eq),'| lucro',avg(r.lucro),'| lugares',avg(r.lug),'| passou',r.pass+'/'+N,'| Gurugol geral',(()=>{ const v=r.nota.filter(x=>x!=null); return v.length?(v.reduce((a,b)=>a+b,0)/v.length).toFixed(2):'-'; })()); }
+if(L.HIST.on){ const md=a=>a.length?a.sort((x,y)=>x-y)[Math.floor(a.length/2)]:'-'; console.log('HISTORIA | cap. 1 no dia',md(capDia[1]),'('+capDia[1].length+'/'+N+')','· cap. 2 no dia',md(capDia[2]),'('+capDia[2].length+'/'+N+')','· cap. 3 no dia',md(capDia[3]),'('+capDia[3].length+'/'+N+', até o dia 14: '+capDia[3].filter(d=>d<=14).length+')','| banco tomou a lanchonete',fechou+'/'+N); }
 { const ch=chega.filter(isFinite).sort((a,b)=>a-b); console.log('CAMPANHA',ND,'dias | chegou a R$',MUDA,'em',ch.length+'/'+N,'carreiras, no dia',ch.length?'mediano '+ch[Math.floor(ch.length/2)]:'-','| dias fechando no negativo',negs,'| empréstimos à força',forcs); }
 { const ks=Object.keys(cursoDias); if(ks.length) console.log('CURSOS (v8.6.9) | dia mediano da compra:',ks.map(k=>{ const d=cursoDias[k].sort((a,b)=>a-b); return k+' dia '+d[Math.floor(d.length/2)]+' ('+d.length+'/'+N+')'; }).join(' · ')); }
 if(MODO!=='sem'){

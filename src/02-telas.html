@@ -5,10 +5,10 @@
 
     <div class="ov show" id="ov-menu">
       <div class="panel menu-panel">
-        <span class="vtag" id="vtag" aria-label="Versão 8.6.15">v8.6.15</span>
+        <span class="vtag" id="vtag" aria-label="Versão 8.7">v8.7</span>
         <h1 class="title">Lanchonete <br>Corre-Corre</h1>
         <p class="tag">Ajude a Bia a atender a freguesia da esquina antes que o cafezinho esfrie!</p>
-        <div class="lbl" id="menu-dia">Carreira: dia 1</div>
+        <div class="lbl" id="menu-dia">História</div>
         <p class="small menu-info" id="menu-info"></p>
         <p class="small menu-aviso" id="menu-aviso" style="display:none"><span id="menu-aviso-txt"></span> <button class="link" id="btn-aviso" type="button">Entendi</button></p>
         <div class="chips" id="daychips" role="group" aria-label="Modo dev: escolha o dia" style="display:none"></div>
@@ -16,7 +16,7 @@
           <div class="row tight">
             <button class="btn go" id="btn-play">Continuar</button>
             <button class="btn alt" id="btn-treino">Missão zero</button>
-            <button class="btn alt" id="btn-historia">História</button>
+            <button class="btn alt" id="btn-historia">Ver abertura</button>
           </div>
           <div class="row tight">
             <button class="btn" id="btn-endless">Turno sem fim</button>
@@ -60,12 +60,16 @@
       <button class="btn alt ab-pular" id="btn-ab-pular">Pular</button>
     </div>
 
-    <div class="ov" id="ov-historia">
+    <div class="ov" id="ov-conversa">
+      <button class="btn alt ab-pular" id="btn-conv-pular">Pular</button>
+    </div>
+
+    <div class="ov" id="ov-continua">
       <div class="panel">
-        <h2>Em breve: o Modo História</h2>
-        <p>A Bia já abriu a garagem. A caminhada até a estrela do Michelzão vira um modo de jogo em breve.</p>
-        <p class="small">Enquanto isso, a carreira continua no menu, em Continuar.</p>
-        <div class="row"><button class="btn go" id="btn-historia-menu">Menu</button><button class="btn alt" id="btn-historia-rever">Ver de novo</button></div>
+        <h2>Fim dos capítulos da Garagem</h2>
+        <p>Continua na próxima versão: a área industrial.</p>
+        <p class="small">Enquanto isso, a lanchonete segue aberta: os dias continuam, sem objetivo, e a história espera por você.</p>
+        <div class="row"><button class="btn go" id="btn-continua">Seguir jogando</button></div>
       </div>
     </div>
 
@@ -158,7 +162,7 @@
         <p class="small" id="rank-source" role="status">Ranking deste aparelho</p>
         <div class="rankbar">
           <div class="seg" id="rank-tabs" role="group" aria-label="Modo">
-            <button type="button" data-v="carreira" aria-pressed="true">Carreira</button>
+            <button type="button" data-v="carreira" aria-pressed="true">História</button>
             <button type="button" data-v="semfim" aria-pressed="false">Turno sem fim</button>
           </div>
         </div>
@@ -213,7 +217,8 @@
       <div class="panel">
         <h2>Versões</h2>
         <ul class="verlist">
-          <li><b>v8.6.15</b><span class="cur">versão atual</span><br>30/10/2026 &mdash; Lojinha mais arrumada: em vez de 10 abas numa fileira, 4 grupos (Lanchonete, Equipe, Dinheiro e Gurugol). Cada grupo mostra cartões com ícone e nome, e o toque no cartão abre a seção, com o botão Voltar. Os itens da Bia (tênis, bandeja e Sudoku) ficaram na seção dela; o Tonhão reúne o aumento e os cursos; o músico e a TV e som foram para a Divulgação.<br><a href="versoes/v8.6.14.html" target="_blank" rel="noopener">Abrir a v8.6.14</a></li>
+          <li><b>v8.7</b><span class="cur">versão atual</span><br>30/10/2026 &mdash; O Modo História chega: a carreira virou a história da Bia, em capítulos com conversas (balões sobre o salão) e um objetivo cada. O primeiro dia já começa com a dívida da reforma da garagem (R$ 1.000, 10 parcelas de R$ 100 mais 1% ao dia sobre o saldo, a 1ª no fim do dia 2). Capítulo 1, A garagem da Rosa: fechar 2 dias no azul. Capítulo 2, A Dani chega: a Dani entra de graça como aprendiz e o Gurugol tem de chegar a 2,4. Capítulo 3, Casa cheia: quitar a reforma, nota 2,7 e R$ 800 no caixa. Sem prazo: o capítulo segue até cumprir. Os aumentos da Dani ficaram mais baratos (R$ 25, 40 e 55 por dia). O botão História do menu virou Ver abertura. Quem tinha uma campanha de antes recomeça do dia 1, com aviso.<br><a href="versoes/v8.6.15.html" target="_blank" rel="noopener">Abrir a v8.6.15</a></li>
+          <li><b>v8.6.15</b><br>30/10/2026 &mdash; Lojinha mais arrumada: em vez de 10 abas numa fileira, 4 grupos (Lanchonete, Equipe, Dinheiro e Gurugol). Cada grupo mostra cartões com ícone e nome, e o toque no cartão abre a seção, com o botão Voltar. Os itens da Bia (tênis, bandeja e Sudoku) ficaram na seção dela; o Tonhão reúne o aumento e os cursos; o músico e a TV e som foram para a Divulgação.<br><a href="versoes/v8.6.14.html" target="_blank" rel="noopener">Abrir a v8.6.14</a></li>
           <li><b>v8.6.14</b><br>30/10/2026 &mdash; Melhorias à vontade: acabou o limite de 1 melhoria por dia na lojinha; o limite agora é o dinheiro (o curso do Tonhão segue 1 por dia). E no fim do dia, a caixa do Gurugol perdeu o número entre parênteses depois de cada critério.</li>
           <li><b>v8.6.13</b><br>29/10/2026 &mdash; Rodada de balanceamento do cardápio: quem pede salgado quase sempre pede dois, então os cursos do Tonhão não derrubam mais o lucro do dia; as metas da sexta e do sábado da 1ª semana ficaram um pouco mais baixas.</li>
           <li><b>v8.6.12</b><br>29/10/2026 &mdash; Os pratos ganham desenhos de verdade: risoles, kibe, bolinho japonês, empada, esfihas, bauru, pão na chapa, pastéis retangulares e o misto quente em duas metades. Quem faz o curso avançado vê um detalhe nos pratos (catupiry, azeitona, listras da chapa, bolhas do pastel), e o PF com Carnes variadas vem com bife, frango, peixe ou bife a cavalo.</li>
@@ -279,6 +284,7 @@
     <div class="devbadge" id="devbadge" style="display:none">Modo dev</div>
     <p class="sr" id="treino-live" role="status" aria-live="polite"></p>
     <p class="sr" id="ab-live" role="status" aria-live="polite"></p>
+    <p class="sr" id="conv-live" role="status" aria-live="polite"></p>
   </div>
   <div id="rotate" role="status">Gire o celular para jogar melhor</div>
 </div>

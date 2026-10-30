@@ -18,6 +18,9 @@ html,body{margin:0;padding:0;height:100%;width:100%;overflow:hidden;background:#
 #ov-abertura{background:transparent;pointer-events:none;align-items:flex-start;justify-content:flex-end}
 #ov-abertura{gap:calc(var(--u)*8)}
 #ov-abertura .btn{pointer-events:auto;font-size:max(13px,calc(var(--u)*18));min-height:44px;padding:calc(var(--u)*4) calc(var(--u)*18)}
+/* conversa do Modo História (v8.7): igual à abertura, só o Pular por cima (o toque vai ao canvas) */
+#ov-conversa{background:transparent;pointer-events:none;align-items:flex-start;justify-content:flex-end}
+#ov-conversa .btn{pointer-events:auto;font-size:max(13px,calc(var(--u)*18));min-height:44px;padding:calc(var(--u)*4) calc(var(--u)*18)}
 #ov-menu{background:linear-gradient(90deg,rgba(34,32,28,.0),rgba(34,32,28,0));justify-content:flex-start;padding-left:calc(var(--u)*34)}
 .panel{background:var(--azulejo);color:var(--tinta);border:calc(var(--u)*4) solid var(--tinta);border-radius:calc(var(--u)*18);box-shadow:calc(var(--u)*6) calc(var(--u)*6) 0 var(--tinta);padding:calc(var(--u)*18) calc(var(--u)*26);max-width:96%;max-height:97%;overflow:auto;text-align:center;position:relative}
 .panel::before{content:"";position:absolute;left:0;right:0;top:calc(var(--u)*0);height:calc(var(--u)*10);background:var(--faixa);opacity:.0}
