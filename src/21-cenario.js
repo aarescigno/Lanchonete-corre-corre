@@ -519,7 +519,6 @@ function drawAmbiente(ctx,g,tm){
   if (eq.tv) drawTv(ctx,146,y-2,tm);
 }
 /* água saborizada na entrada (jarra com frutas numa mesinha) */
-function ctx2chef(c){ c.beginPath(); c.arc(-5,-17,5,0,TAU); c.arc(0,-20,6,0,TAU); c.arc(5,-17,5,0,TAU); fs(c,'#fff',1.6); }
 /* v8.3.10: mistura duas cores '#rrggbb' (f de 0 a 1) */
 function mixCor(a,b,f){
   const pa = parseInt(a.slice(1),16), pb = parseInt(b.slice(1),16);

@@ -45,11 +45,15 @@ novo({bank:5}); g.goShop(5); ok(!g.buyToalha(0) && !g.save.salao.mesas[0].t,'sem
 const cartoes=()=>els['shop-grid'].children;
 novo({decor:{espada:1,foto:0}}); g.goShop(5); L.setShopTab('decor'); {
   const c=cartoes(), nome=i=>c[i].children[2].textContent, btn=i=>c[i].children[c[i].children.length-1].textContent;
-  ok(c.length===7,'7 cartões: 6 enfeites e a toalha');
+  ok(c.length===6,'6 cartões: só os enfeites (a toalha foi para o Salão, v8.9.1)');
   ok(nome(0)==='Espada-de-são-jorge' && btn(0)==='Guardar','espada comprada: Guardar');
   ok(btn(1)==='Comprar R$ 8','lata: Comprar R$ 8');
   ok(btn(3)==='Pôr de volta','foto guardada: Pôr de volta');
-  ok(nome(6)==='Toalha xadrez' && /Pôr em todas/.test(btn(6)),'toalha: Pôr em todas'); }
+  ok(!c.some((x,i)=>nome(i)==='Toalha xadrez'),'Decoração sem a toalha'); }
+// v8.9.1: a toalha em todas as mesas, no painel do Salão
+{ const tx=e=>(e.textContent||'')+(e.children||[]).map(tx).join(' ');
+  novo({}); g.goShop(5); L.setShopTab('salao'); ok(/Toalha xadrez em (todas|1 mesa)/.test(tx(els['shop-grid'])),'Salão: botão da toalha em todas');
+  g.buyToalhas(); L.setShopTab('salao'); ok(/Toalha xadrez: todas têm/.test(tx(els['shop-grid'])),'Salão: com todas, "todas têm"'); }
 
 // desenho: tudo à mostra, com e sem toalha, no dia, no editor e nos ícones
 novo({decor:{espada:1,lata:1,samambaia:1,foto:1,giz:1,placa:1}}); g.save.salao.mesas.forEach(m=>{ m.t=1; }); g.buildTables(); g.startDay(5); g.begin();

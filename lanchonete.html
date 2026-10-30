@@ -103,6 +103,8 @@ p{margin:calc(var(--u)*6) 0;font-size:max(12px,calc(var(--u)*16));line-height:1.
 .shopcards button{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:calc(var(--u)*4);background:var(--creme);border:calc(var(--u)*3) solid var(--tinta);border-radius:calc(var(--u)*14);padding:calc(var(--u)*10) calc(var(--u)*8);min-height:max(84px,calc(var(--u)*110));cursor:pointer;color:var(--tinta);font-family:var(--fd);font-size:max(14px,calc(var(--u)*18))}
 .shopcards button:focus-visible{outline:3px solid var(--mostarda);outline-offset:2px}
 .shopcards canvas{width:calc(var(--u)*60);height:calc(var(--u)*60);min-width:40px;min-height:40px}
+.shopcards button.alerta{background:#FBE7B0;border-color:#C98A12}   /* v8.9.1: Manutenção com equipamento no amarelo */
+.shopcards button.perigo{background:#F6C9C3;border-color:var(--perigo);color:#7A1D16}   /* e no vermelho */
 .shopnav{display:flex;align-items:center;justify-content:center;gap:calc(var(--u)*14);margin:calc(var(--u)*4) 0}
 .shopnav[hidden]{display:none}
 .shopnav b{font-family:var(--fd);font-weight:400;font-size:max(15px,calc(var(--u)*20))}
@@ -330,7 +332,7 @@ table.rank tr.me td{background:#fbe7a8}
 
     <div class="ov show" id="ov-menu">
       <div class="panel menu-panel">
-        <span class="vtag" id="vtag" aria-label="Versão 8.9">v8.9</span>
+        <span class="vtag" id="vtag" aria-label="Versão 8.9.1">v8.9.1</span>
         <h1 class="title">Lanchonete <br>Corre-Corre</h1>
         <p class="tag">Ajude a Bia a atender a freguesia da esquina antes que o cafezinho esfrie!</p>
         <div class="lbl" id="menu-dia">História</div>
@@ -542,7 +544,8 @@ table.rank tr.me td{background:#fbe7a8}
       <div class="panel">
         <h2>Versões</h2>
         <ul class="verlist">
-          <li><b>v8.9</b><span class="cur">versão atual</span><br>30/10/2026 &mdash; A Dani sobe de nível com a experiência: cada 30 tarefas que ela faz (lixo, pratos, louça, cafezinho, água e marmitas) dão +1 de XP, e os 3 cursos dela na lojinha (Atendimento ao cliente, Organização da cozinha e Barista iniciante) dão +2 cada. Com a XP do nível seguinte ela fica pronta para subir, e o aumento de salário confirma o nível novo. O &ldquo;Reduzir&rdquo; saiu. O fim do dia mostra as tarefas dela e a experiência.</li>
+          <li><b>v8.9.1</b><span class="cur">versão atual</span><br>30/10/2026 &mdash; Ajustes da lojinha: a TV e som foi para Melhorias, a toalha xadrez em todas as mesas foi para o Salão, os cartões da Bia, do Tonhão (agora de corpo inteiro, com a touca) e da Dani mostram a figura inteira, e o cartão da Manutenção fica amarelo ou vermelho quando um equipamento precisa de revisão ou corre risco de quebrar.</li>
+          <li><b>v8.9</b><br>30/10/2026 &mdash; A Dani sobe de nível com a experiência: cada 30 tarefas que ela faz (lixo, pratos, louça, cafezinho, água e marmitas) dão +1 de XP, e os 3 cursos dela na lojinha (Atendimento ao cliente, Organização da cozinha e Barista iniciante) dão +2 cada. Com a XP do nível seguinte ela fica pronta para subir, e o aumento de salário confirma o nível novo. O &ldquo;Reduzir&rdquo; saiu. O fim do dia mostra as tarefas dela e a experiência.</li>
           <li><b>v8.8</b><br>30/10/2026 &mdash; O Tonhão sobe de nível com a experiência dos cursos: cada curso básico dá +1 de XP e cada avançado +2. Com a XP do nível seguinte ele fica pronto para subir, e o aumento de salário confirma o nível novo (o aumento fica apagado, dizendo quanto falta, sem a XP). Agora são 5 níveis, o último com o Tonhão bem mais rápido e caprichado, e o nível pago é definitivo: o botão Reduzir saiu. Só a falta de dinheiro para a folha o derruba, e a XP fica. Saves antigos voltam ao nível que os cursos já feitos permitem.<br><a href="versoes/v8.7.html" target="_blank" rel="noopener">Abrir a v8.7</a></li>
           <li><b>v8.7</b><br>30/10/2026 &mdash; O Modo História chega: a carreira virou a história da Bia, em capítulos com conversas (balões sobre o salão) e um objetivo cada. O primeiro dia já começa com a dívida da reforma da garagem (R$ 1.000, 10 parcelas de R$ 100 mais 1% ao dia sobre o saldo, a 1ª no fim do dia 2). Capítulo 1, A garagem da Rosa: fechar 2 dias no azul. Capítulo 2, A Dani chega: a Dani entra de graça como aprendiz e o Gurugol tem de chegar a 2,4. Capítulo 3, Casa cheia: quitar a reforma, nota 2,7 e R$ 800 no caixa. Sem prazo: o capítulo segue até cumprir. Os aumentos da Dani ficaram mais baratos (R$ 25, 40 e 55 por dia). O botão História do menu virou Ver abertura. Quem tinha uma campanha de antes recomeça do dia 1, com aviso.<br><a href="versoes/v8.6.15.html" target="_blank" rel="noopener">Abrir a v8.6.15</a></li>
           <li><b>v8.6.15</b><br>30/10/2026 &mdash; Lojinha mais arrumada: em vez de 10 abas numa fileira, 4 grupos (Lanchonete, Equipe, Dinheiro e Gurugol). Cada grupo mostra cartões com ícone e nome, e o toque no cartão abre a seção, com o botão Voltar. Os itens da Bia (tênis, bandeja e Sudoku) ficaram na seção dela; o Tonhão reúne o aumento e os cursos; o músico e a TV e som foram para a Divulgação.<br><a href="versoes/v8.6.14.html" target="_blank" rel="noopener">Abrir a v8.6.14</a></li>
@@ -1400,7 +1403,7 @@ const HISTORIA = [
 ];
 const HIST_NOMES = { bia:'Bia', tonhao:'Tonhão', dani:'Dani' };
 const CAIXA_MAX = 14;                                 // livro-caixa (v7.2): quantos dias da carreira ficam guardados
-const VERSAO = 'v8.9';                               // vai no resumo do Caixa
+const VERSAO = 'v8.9.1';                             // vai no resumo do Caixa
 const DIVULGA_DIA = 3;                                // antes disso, o movimento é o da inauguração (sem custo)
 function divulgaAberta(n){ return DEV.on || n >= DIVULGA_DIA; }   // no modo dev, desde o dia 1
 function divulgaOf(id){ return DIVULGA.find(d => d.id === id) || DIVULGA[1]; }
@@ -5173,7 +5176,6 @@ function drawAmbiente(ctx,g,tm){
   if (eq.tv) drawTv(ctx,146,y-2,tm);
 }
 /* água saborizada na entrada (jarra com frutas numa mesinha) */
-function ctx2chef(c){ c.beginPath(); c.arc(-5,-17,5,0,TAU); c.arc(0,-20,6,0,TAU); c.arc(5,-17,5,0,TAU); fs(c,'#fff',1.6); }
 /* v8.3.10: mistura duas cores '#rrggbb' (f de 0 a 1) */
 function mixCor(a,b,f){
   const pa = parseInt(a.slice(1),16), pb = parseInt(b.slice(1),16);
@@ -7271,13 +7273,13 @@ function upgradeIcon(id){
       rr(c,-13,5,31,5,2.5); fs(c,'#fff',1.8);
       c.strokeStyle = PAL.tinta; c.lineWidth = 1; for (let x=-8;x<=12;x+=5){ c.beginPath(); c.moveTo(x,6); c.lineTo(x-1,10); c.stroke(); }
       c.lineWidth = 1.4; c.beginPath(); c.moveTo(-3,-6); c.lineTo(0,-8); c.moveTo(0,-4); c.lineTo(3,-6); c.stroke();
+    } else if (id === 'bia'){
+      c.scale(1/1.5,1/1.5); drawBia(c,{},0,27,{ s:0.62 });   // v8.9.1: a figura inteira, sem corte
     } else if (id === 'tonhao'){
-      c.translate(0,4); rr(c,-13,-2,26,14,3); fs(c,'#555',2);
-      for (let i=-1;i<=1;i++){ circ(c,i*8,-6,3.5); fs(c,PAL.alerta,1.4); }
-      ctx2chef(c);
+      c.scale(1/1.5,1/1.5); abTonhao(c,0,27,0.42,{ t:0, mood:0, g:1 });
     } else if (id === 'dani'){
-      drawPerson(c,DANI_LOOK,0,18,{ shirt:'#F7EFD8', mood:0, s:0.75 });
-      c.beginPath(); c.moveTo(-6,-4); c.lineTo(6,-4); c.lineTo(8,9); c.lineTo(-8,9); c.closePath(); fs(c,'#7B4FB5',1.6);
+      c.scale(1/1.5,1/1.5); drawPerson(c,DANI_LOOK,0,27,{ shirt:'#F7EFD8', mood:0, s:0.74 });
+      c.beginPath(); c.moveTo(-4.2,5.6); c.lineTo(4.2,5.6); c.lineTo(6,18.1); c.lineTo(-6,18.1); c.closePath(); fs(c,'#7B4FB5',1.4);
     } else if (id === 'couvert'){
       c.rotate(-0.5); ell(c,0,4,10,8); fs(c,'#B5733A',2); circ(c,0,4,3); c.fillStyle = PAL.tinta; c.fill(); rr(c,8,1,20,4,1); fs(c,PAL.madeiraEsc,1.4); c.rotate(0.5);
       txt(c,'♪',-12,-12,14,PAL.faixa,'center',FB);
@@ -7357,8 +7359,6 @@ function upgradeIcon(id){
     } else if (id === 'g-salao'){   // v8.6.15: cartão Salão (mesa redonda com duas cadeiras)
       ell(c,0,4,15,8); fs(c,PAL.formica,2); rr(c,-3,10,6,8,1); fs(c,PAL.madeiraEsc,1.4);
       [-1,1].forEach(d => { rr(c,d*19-5,-6,10,10,2); fs(c,CHAIRS[d > 0 ? 3 : 1].c,1.6); });
-    } else if (id === 'bia'){
-      drawBia(c,{},0,24,{ s:0.8 });
     } else if (id === 'ventilador'){
       for (let i=0;i<4;i++){ c.save(); c.rotate(i*Math.PI/2 + 0.4); ell(c,0,-8,4.5,9); fs(c,i%2?PAL.cromo:'#e8edf1',1.8); c.restore(); }
       circ(c,0,0,3.5); fs(c,PAL.mostarda,1.8);
@@ -7395,6 +7395,11 @@ function shopCartoes(grid, grupo){
   grupo.secoes.forEach(id => {
     const sc = SHOP_SECOES[id], b = el('button', null); b.type = 'button'; b.setAttribute('data-sec', id);
     b.appendChild(upgradeIcon(sc.icon)); b.appendChild(el('b', null, sc.nome));
+    if (id === 'manut'){   // v8.9.1: a cor segue o pior equipamento, com as faixas das barras
+      const pior = Math.min.apply(null, MANUT.equip.map(q => game.manut[q.id]));
+      if (pior < MANUT.vermelho){ b.classList.add('perigo'); b.setAttribute('aria-label', 'Manutenção: risco de quebra'); }
+      else if (pior < MANUT.verde){ b.classList.add('alerta'); b.setAttribute('aria-label', 'Manutenção: precisa de revisão'); }
+    }
     b.addEventListener('click', () => { Sfx.init(); Sfx.tap(); shopTab = id; buildShop(); });
     grid.appendChild(b);
   });
@@ -7537,15 +7542,13 @@ function buildDaniCursos(grid){
     grid.appendChild(card);
   });
 }
-/* TV e som e o couvert (v7.4.3), agora na Divulgação (v8.6.15) */
-function buildAmbiente(grid){
-  const eq = game.save.equipe, bank = game.save.bank, T = STAFF.tonhao.levels, D = STAFF.dani.levels, C = STAFF.couvert;
+/* TV e som (Melhorias, v8.9.1) e o couvert (Divulgação) */
+function buildTvSom(grid){
+  const eq = game.save.equipe, bank = game.save.bank;
   const canPay = extra => payroll(eq) + extra <= bank;
-  const pc = v => Math.round(v*100) + '%', sec = v => String(Math.round(v*10)/10).replace('.', ',') + ' s';
-  let c, duo;
   // TV e som (v7.4.3): cada um liga e desliga à parte; o custo é a conta de luz do dia
   const TV = STAFF.tv, SOM = STAFF.som;
-  c = staffCard(upgradeIcon('ambiente'), 'TV e som', 'Com a TV ligada, a paciência nas mesas cai ' + Math.round(TV.effect*100) + '% mais devagar; com o som, mais ' + Math.round(SOM.effect*100) + '%. O custo é a luz do dia.');
+  const c = staffCard(upgradeIcon('ambiente'), 'TV e som', 'Com a TV ligada, a paciência nas mesas cai ' + Math.round(TV.effect*100) + '% mais devagar; com o som, mais ' + Math.round(SOM.effect*100) + '%. O custo é a luz do dia.');
   [['tv', 'TV de tubo na Rede Esfera'], ['som', 'Som na rádio Velha Brasil FM']].forEach(a => {
     const on = eq[a[0]], b = el('button', 'toggle', (on ? 'Ligado: ' : 'Ligar: ') + a[1] + ' · ' + fmt(STAFF[a[0]].pay) + '/dia'); b.type = 'button';
     b.setAttribute('aria-pressed', on ? 'true' : 'false');
@@ -7554,6 +7557,11 @@ function buildAmbiente(grid){
     c.appendChild(b);
   });
   grid.appendChild(c);
+}
+function buildCouvert(grid){
+  const eq = game.save.equipe, bank = game.save.bank, C = STAFF.couvert;
+  const canPay = extra => payroll(eq) + extra <= bank;
+  let c, duo;
   // Couvert: só do nível 3 do salão em diante
   if (!couvertOk(game.ponto)) return;
   const ef = Math.round(couvertEffect(Object.assign({}, eq, { taxa:true })) * 100);
@@ -7771,12 +7779,16 @@ function buildSalao(grid){
   side.appendChild(el('span', 'ed-ponto', p.nome + (p.aluguel ? ': aluguel ' + fmt(p.aluguel) + ' por dia.' : ': sem aluguel.')));
   side.appendChild(edBtn('Mesa de 2: ' + fmt(SALAO.mesa2), 'btn', tot + 2 <= p.lugares && bank >= SALAO.mesa2, () => game.buyMesa(2), SALAO.mesa2));
   side.appendChild(edBtn('Mesa de 4: ' + fmt(SALAO.mesa4), 'btn', tot + 4 <= p.lugares && bank >= SALAO.mesa4, () => game.buyMesa(4), SALAO.mesa4));
+  // v8.9.1: a toalha xadrez em todas as mesas (antes na Decoração); mesa a mesa, no balãozinho
+  const todas = mesas.concat(est), sem = game.semToalha.length, vt = sem * TOALHA.cost;
+  side.appendChild(edBtn(!sem ? 'Toalha xadrez: todas têm' : 'Toalha xadrez em ' + (sem > 1 ? 'todas (' + sem + ')' : '1 mesa') + ': ' + fmt(vt), 'btn', sem > 0 && bank >= vt, () => game.buyToalhas(), vt));
   side.appendChild(edBtn('Arrumação automática', 'btn alt', true, () => game.arrumarSalao()));
   side.appendChild(edBtn('Desfazer', 'btn alt', game.salaoUndo.length > 0, () => game.desfazerSalao()));
   side.appendChild(el('span', game.salaoMsg ? 'msg' : 'ed-dica', game.salaoMsg || (tot >= p.lugares ? (nEst ? 'Salão e estoque estão no teto de ' + p.lugares + ' lugares.' : 'O salão está no teto de ' + p.lugares + ' lugares.') + ' Para rearrumar, arraste mesas para o estoque e de volta.' : 'Arraste as mesas, até para o estoque; toque numa para trocar a cor das cadeiras, virar mesa de 4 ou vender. Grupos de 3 ou 4 só sentam nas mesas de 4.')));
   side.appendChild(el('span', 'ed-contas', 'Luz e gás: ' + fmt(contasDia(game.tables, p)) + ' por dia (' + fmt(CONTAS.mesa) + ' por mesa e ' + fmt(CONTAS.lugar) + ' por lugar).'));
   const mov = Math.round((movimentoSalao(lug) - 1) * 100);
   side.appendChild(el('span', 'ed-contas', 'Cada lugar acima de ' + MOVIMENTO.kit + ' traz ' + Math.round(MOVIMENTO.porLugar * 100) + '% mais clientes' + (mov > 0 ? ' (hoje, +' + mov + '%).' : '.')));
+  side.appendChild(el('span', 'ed-contas', 'Toalha xadrez: ' + fmt(TOALHA.cost) + ' por mesa; melhora o ambiente no Gurugol para quem senta nela. ' + (todas.length - sem) + ' de ' + todas.length + (todas.length > 1 ? ' mesas têm.' : ' mesa tem.')));
   ed.appendChild(side);
   grid.appendChild(ed);
   drawEditor(cv);
@@ -7795,7 +7807,7 @@ function buildSalao(grid){
   }
 }
 /* aba Decoração (v8.6.5): os enfeites da Garagem (DECOR), comprados à vontade; comprado, guarda e põe de volta de
-   graça. E a toalha xadrez, em todas as mesas de uma vez (uma a uma, no editor do salão) */
+   graça. */
 function decorCard(grupo, icon, title, desc){
   const card = el('div', 'item'); card.appendChild(el('i', 'dgrupo', grupo));
   card.appendChild(icon); card.appendChild(el('b', null, title)); card.appendChild(el('span', null, desc));
@@ -7811,12 +7823,6 @@ function buildDecor(grid){
       : shopBtn(on ? 'Guardar' : 'Pôr de volta', on ? 'btn alt' : 'btn', true, () => game.mostraDecor(d.id, !on)));
     grid.appendChild(c);
   });
-  const todas = game.save.salao.mesas.concat(game.estoque), sem = game.semToalha.length, v = sem * TOALHA.cost;
-  const c = decorCard('Mesas', upgradeIcon('d-toalha'), 'Toalha xadrez', 'Com o porta-guardanapo e a florzinha; melhora o ambiente no Gurugol para quem senta nela. ' + fmt(TOALHA.cost) + ' por mesa; vai junto com a mesa. ' +
-    (todas.length - sem) + ' de ' + todas.length + (todas.length > 1 ? ' mesas têm' : ' mesa tem') + '; no Salão, toque numa mesa para pôr só nela.');
-  if (!sem) c.classList.add('own');
-  c.appendChild(shopBtn(!sem ? 'Todas as mesas têm' : 'Pôr em ' + (sem > 1 ? 'todas (' + sem + ')' : '1 mesa') + ': ' + fmt(v), 'btn', sem > 0 && bank >= v, () => game.buyToalhas(), v));
-  grid.appendChild(c);
 }
 /* aba Divulgação (v7): escolha do dia, paga junto com a folha (no fim do dia, desde a v8.2.2); e o resumo das contas do dia */
 /* aba Cursos (v8.6.9): um cartão por curso do Tonhão; feito o básico, o cartão vira o do avançado. Um curso por lojinha */
@@ -7862,7 +7868,7 @@ function buildDivulga(grid){
   const c = staffCard(upgradeIcon('contas'), 'Contas do dia ' + n,
     (p.aluguel ? 'Aluguel ' + fmt(p.aluguel) + ' + l' : 'Sem aluguel (' + p.nome.replace(/^Garagem/, 'a garagem') + '). L') + 'uz e gás de ' + sal.length + ' mesas (' + fmt(CONTAS.mesa) + ' cada) e ' + sal.reduce((a, t) => a + t.seats, 0) + ' lugares (' + fmt(CONTAS.lugar) + ' cada) = ' + fmt(contasDia(game.tables, p)) + ', no fim do dia. Ingredientes: ' + Math.round(INGRED.prato * 100) + '% da conta de cada prato que fica pronto e ' + fmt(INGRED.suco) + ' por suco.');
   grid.appendChild(c);
-  buildAmbiente(grid);
+  buildCouvert(grid);
 }
 /* aba Manutenção (v8): o estado de cada equipamento, o risco de quebrar e a revisão (volta a 100%) */
 function buildManut(grid){
@@ -8049,7 +8055,7 @@ function buildGurugol(grid){
   grid.appendChild(lista);
 }
 const BIA_IDS = ['tenis', 'corrida', 'bandeja', 'sudoku'];
-function buildMelhorias(grid){ upgradeCartoes(grid, false); }
+function buildMelhorias(grid){ upgradeCartoes(grid, false); buildTvSom(grid); }
 function upgradeCartoes(grid, bia){
   // os Tênis de corrida (v7.3) só aparecem depois dos Tênis novos, no lugar deles (a grade continua com 6); no modo dev, todas
   UPGRADES.filter(u => (BIA_IDS.indexOf(u.id) >= 0) === bia).filter(u => DEV.on || (u.req ? game.up[u.req] : !(game.up[u.id] && UPGRADES.some(v => v.req === u.id)))).forEach(u => {

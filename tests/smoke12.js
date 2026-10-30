@@ -19,7 +19,7 @@ ok(g.buy('corrida')&&g.save.bank===1500&&g.up.corrida,'na mesma visita já compr
 // lojinha: o cartão dos tênis vira o de corrida; a grade continua com 6
 const cartoes=()=>els['shop-grid'].children.map(c=>c.children[1].textContent);
 novo(); g.goShop(2); L.setShopTab('melhorias');
-ok(cartoes().length===5&&!cartoes().includes('Tênis novos')&&!cartoes().includes('Bandeja'),'Melhorias sem os itens da Bia (v8.6.15): 5 cartões');
+ok(cartoes().length===6&&!cartoes().includes('Tênis novos')&&!cartoes().includes('Bandeja'),'Melhorias sem os itens da Bia (v8.6.15): 5 melhorias e a TV e som');
 L.setShopTab('bia');
 ok(cartoes().length===3&&cartoes()[0]==='Tênis novos'&&!cartoes().includes('Tênis de corrida'),'antes: Tênis novos na seção da Bia (com Bandeja e Sudoku)');
 novo({tenis:true}); g.goShop(3); L.setShopTab('bia');
