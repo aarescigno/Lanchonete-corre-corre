@@ -10,7 +10,7 @@ const H=require(T+'harness.js')({imprevistos:!!process.env.IMPREV}); const {g,L}
 const N=+process.argv[2]||10, ND=+process.argv[3]||14, EST=process.argv[4]||'nenhum', V=+process.env.VALOR||1000, DIA0=+process.env.DIA0||2;
 const order=['tenis','maquina','cafeteira','bandeja','ventilador','pratos','corrida'];
 const FULL=[{tonhao:4,dani:4,tv:true,som:true},{tonhao:3,dani:4,tv:true,som:true},{tonhao:2,dani:4,tv:true,som:true},{tonhao:2,dani:4,tv:true},{tonhao:2,dani:4},{tonhao:1,dani:3},{tonhao:0,dani:2},{}];   // v8.8: capT limita o Tonhão pela XP dos cursos
-const capT=e=>Object.assign({},e,{tonhao:Math.min(e.tonhao||0,L.tonhaoNivelXp(g.save.cursos))});
+const capT=e=>Object.assign({},e,{tonhao:Math.min(e.tonhao||0,L.tonhaoNivelXp(g.save.cursos)),dani:Math.min(e.dani||0,L.daniNivelXp(g.save))});   // v8.9: e a Dani, pela XP dela
 if(process.env.BANCO_CFG) Object.assign(L.BANCO,JSON.parse(process.env.BANCO_CFG));
 const res=[]; let fechou=0, juros=0, emps=0;
 for(let k=0;k<N;k++){

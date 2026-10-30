@@ -13,6 +13,7 @@ class Helper {
     this.x = DANI_HOME.x; this.y = DANI_HOME.y; this.dir = -1;
     this.hands = []; this.plan = null; this.path = []; this.phase = 'idle'; this.timer = 0;
     this.walkPh = 0; this.moving = false; this.thinkT = 0;
+    this.feitas = 0;   // v8.9: tarefas que terminou no dia (a experiência dela)
   }
   get level(){ return this.g.save.equipe.dani; }
   get active(){ return this.level > 0; }
@@ -110,7 +111,7 @@ class Helper {
       });
       if (this.hands.length) Sfx.blip();
     } else if (st.type === 'retirada'){
-      g.levaMarmitas(this);   // a que não coube fica na mão: a Dani espera no balcão abrir uma vaga (ou a marmita esfriar)
+      if (g.levaMarmitas(this)) this.feitas++;   // a que não coube fica na mão: a Dani espera no balcão abrir uma vaga (ou a marmita esfriar)
     } else if (st.type === 'clear'){
       const t = st.t;
       if (!t.dirty || this.hands.length >= DANI_HANDS) return;
@@ -120,9 +121,10 @@ class Helper {
       const n = this.hands.filter(h => h.kind === 'dirty').length;
       this.hands = this.hands.filter(h => h.kind !== 'dirty');
       g.kitchen.sinkN += n;
-      if (st.wash && g.washPiles(1)){ g.addText(this.x, this.y - 82, 'Dani lavou!', PAL.faixa, 14); Sfx.wash(); }
+      if (n) this.feitas++;
+      if (st.wash && g.washPiles(1)){ g.addText(this.x, this.y - 82, 'Dani lavou!', PAL.faixa, 14); Sfx.wash(); this.feitas++; }
     } else if (st.type === 'trash'){
-      if (g.trash > 0){ g.trash = 0; g.stats.emptied++; g.addText(this.x, this.y - 82, 'Lixo pra fora!', PAL.ok, 14); Sfx.noise(0.3, 0.1, 0, 400); }
+      if (g.trash > 0){ g.trash = 0; this.feitas++; g.stats.emptied++; g.addText(this.x, this.y - 82, 'Lixo pra fora!', PAL.ok, 14); Sfx.noise(0.3, 0.1, 0, 400); }
     } else if (st.type === 'maquina'){
       const o = st.o; o.dani = false;
       if (g.maq.indexOf(o) < 0 || o.t > 0) return;
@@ -132,7 +134,7 @@ class Helper {
     } else if (st.type === 'suco'){
       const grp = st.grp, n = this.hands.filter(h => h.kind === 'suco' && h.group === grp).length;
       this.hands = this.hands.filter(h => !(h.kind === 'suco' && h.group === grp));
-      if (n && g.sucoAp(grp, this)) g.entregaSuco(grp, n, this.x, this.y);
+      if (n && g.sucoAp(grp, this)){ g.entregaSuco(grp, n, this.x, this.y); this.feitas++; }
     } else if (st.type === 'coffee'){
       if (this.hands.length < DANI_HANDS) this.hands.push({ kind:'coffee' });
     } else if (st.type === 'serve'){
@@ -140,7 +142,7 @@ class Helper {
       if (grp) grp.daniCoffee = false;
       if (!h || !grp || !grp.seated || grp.coffee) return;
       this.hands.splice(this.hands.indexOf(h), 1);
-      grp.coffee = true; grp.gain(g.up.cafeteira ? 2 : 1); g.usos.cafeteira++;
+      grp.coffee = true; this.feitas++; grp.gain(g.up.cafeteira ? 2 : 1); g.usos.cafeteira++;
       grp.bebConta += DRINK_PRICE.coffee; g.pontos += PONTOS_ACAO.coffee; g.addText(t.cx, t.cy - 40, '+' + DRINK_PRICE.coffee + ' na conta', PAL.ok, 16); Sfx.coin();
     }
   }

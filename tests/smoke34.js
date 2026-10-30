@@ -19,7 +19,7 @@ const notaDe=(g,v,n)=>{ g.save.aval=Array(n||10).fill([v,v,v,v,v]); };
   ok(sv.histV===1 && sv.cap===1 && sv.conversa==='antes' && sv.capAzul===0 && sv.capDia===1,'save novo: capítulo 1, conversa de antes pendente');
   ok(e.resto===1000 && e.amort===100 && e.j===0.01 && e.ini===2 && e.ref===true && e.n===10,'a reforma: R$ 1.000, 10 parcelas de R$ 100, 1% ao dia, a partir do dia 2');
   ok(L.REFORMA.valor===1000 && L.carencia(e,1) && !L.carencia(e,2) && L.parcelaDe(e,1)===0 && L.parcelaDe(e,2)===110 && L.jurosDe(e,1)===0 && L.jurosDe(e,2)===10,'dia 1 sem parcela nem juros; dia 2: R$ 100 + R$ 10 de juros');
-  ok(sv.equipe.dani===0 && L.STAFF.dani.levels.length===5 && L.STAFF.dani.levels[1].pay===0 && [2,3,4].map(i=>L.STAFF.dani.levels[i].pay).join()==='25,40,55','a Dani só chega no cap. 2; níveis: aprendiz (R$ 0) e aumentos de R$ 25, 40 e 55');
+  ok(sv.equipe.dani===0 && L.STAFF.dani.levels.length===5 && L.STAFF.dani.levels[1].pay===0 && [2,3,4].map(i=>L.STAFF.dani.levels[i].pay).join()==='15,20,25','a Dani só chega no cap. 2; níveis: aprendiz (R$ 0) e aumentos de R$ 15, 20 e 25');
   sv.conversa=null; sv.bank=5000;
   g.startDay(1); ok(/Capítulo 1, A garagem da Rosa: Fechar 2 dias no azul \(0 de 2\)/.test(els['intro-manut'].textContent) && /só vence no fim do dia 2/.test(els['intro-manut'].textContent),'a introdução do dia 1 traz o objetivo e a carência da reforma');
   joga(H,200,0); ok(g.result.par===0 && g.save.emp.resto===1000 && g.save.bank===5000+200-g.contas-g.paid,'fim do dia 1: nenhuma parcela, a dívida segue em R$ 1.000');
@@ -75,9 +75,9 @@ toque(els); toque(els);
 ok(g.conversa && g.conversa.falas===L.HISTORIA[1].antes && g.save.cap===2 && g.save.equipe.dani===1 && g.save.capDia===g.save.dia && g.save.capAzul===0,'acabou, o cap. 2 começa e a conversa de antes dele toca em seguida');
 ok(g.dani.active && L.payroll(g.save.equipe)===0,'a Dani chega de graça: aprendiz, folha R$ 0');
 passa(H); ok(!g.conversa && g.state==='shop' && g.save.conversa===null,'depois das conversas, a lojinha');
-L.setShopGrupo('equipe'); L.setShopTab('dani'); ok(/aprendiz \(sem salário\)/.test(txt(els['shop-grid'])) && /Aumento: R\$ 25\/dia/.test(txt(els['shop-grid'])) && !/Dispensar/.test(txt(els['shop-grid'])),'o card da Dani: aprendiz sem salário, aumento de R$ 25/dia, sem Dispensar');
-ok(g.setStaff('dani',2) && L.payroll(g.save.equipe)===25 && g.save.equipe.dani===2,'o aumento custa R$ 25/dia');
-ok(g.setStaff('dani',1) && L.payroll(g.save.equipe)===0,'e dá para voltar ao nível de aprendiz');
+L.setShopGrupo('equipe'); L.setShopTab('dani'); ok(/aprendiz \(sem salário\)/.test(txt(els['shop-grid'])) && /Aumento: \+R\$ 15\/dia/.test(txt(els['shop-grid'])) && !/Dispensar/.test(txt(els['shop-grid'])),'o card da Dani: aprendiz sem salário, aumento de R$ 25/dia, sem Dispensar');
+ok(!g.setStaff('dani',2),'v8.9: sem experiência o aumento da Dani é recusado'); g.save.daniTar=4*L.DANI_XP.tarefas; ok(g.setStaff('dani',2) && L.payroll(g.save.equipe)===15 && g.save.equipe.dani===2,'o aumento custa R$ 15/dia');
+ok(!g.setStaff('dani',1) && g.save.equipe.dani===2,'v8.9: o nível pago é definitivo (sem "Reduzir")'); g.save.equipe.dani=1; g.save.daniTar=0;   // volta a aprendiz para o resto do teste
 { const eq={tonhao:0,dani:3,tv:false,som:false,couvert:false}; ok(L.folhaCortes(eq,null,10).join()==='aumento da Dani,aumento da Dani' && eq.dani===3,'sem dinheiro, a folha corta os aumentos da Dani (volta a aprendiz), nunca ela'); }
 // ---------- 6. cap. 2: nota do Gurugol 2,4 ----------
 g.save.bank=5000; notaDe(g,2.3);

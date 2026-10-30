@@ -239,6 +239,7 @@ v8.8: guardar a v8.7 em `versoes/`, `vtag`, `VERSAO`, `#ov-ver`, `docs/spec-v8.8
 ---
 
 ## Etapa 2h — A Dani sobe de nível com trabalho e cursos (v8.9)
+> **Feita em 30/10 (v8.9)**, ver `docs/spec-v8.9.md`. Desvios: `DANI_XP.tarefas` ficou 5 (a calibração pelo bot); as diárias baixaram para 15 / 20 / 25 pela conferência do "Reduzir"; a numeração das mensagens segue o título do cartão (o 1º aumento é "para o nível 1").
 > **Planejada com o usuário em 30/10** (texto em `docs/PROPOSTAS.md`), depois da 2g e **antes da 3a**. Mesma ideia do Tonhão: a experiência (XP) deixa a Dani **pronta para subir**, e o aumento de salário **consolida** o nível. A XP dela vem **de dois jeitos**: do trabalho (ela aprende fazendo) e de cursos dela na lojinha. Depende da 2g (v8.8): reaproveita a regra do aumento, a barrinha de experiência e a conferência do "Reduzir".
 
 #### Decisões tomadas (30/10)

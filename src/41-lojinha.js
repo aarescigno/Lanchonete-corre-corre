@@ -247,11 +247,38 @@ function buildDani(grid){
   }
   const dMax = D.length - 1;
   if (!lv && !cap2){ grid.appendChild(c); return; }
+  // v8.9: o nível vem da experiência (trabalho e cursos); o aumento de salário só consolida o nível que ela já tem
+  const xp = daniXp(game.save), pronto = DEV.on || lv < 1 || xp >= (D[lv+1] || D[dMax]).xp;
+  if (lv){
+    const xl = el('div', 'tonxp');
+    xl.appendChild(el('span', null, lv < dMax ? 'Experiência: ' + xp + ' de ' + D[lv+1].xp + ' para o nível ' + lv : 'Experiência: ' + xp + ' · nível máximo'));
+    if (lv < dMax){ const bar = el('div', 'tonxp-bar'), fi = el('i'); fi.style.width = Math.round(clamp((xp - D[lv].xp) / (D[lv+1].xp - D[lv].xp), 0, 1) * 100) + '%'; bar.appendChild(fi); xl.appendChild(bar); }
+    const falta = DANI_XP.tarefas - ((+game.save.daniTar || 0) % DANI_XP.tarefas);
+    xl.appendChild(el('small', null, 'Trabalho: ' + falta + (falta > 1 ? ' tarefas' : ' tarefa') + ' até o próximo ponto'));
+    c.appendChild(xl);
+  }
   c.appendChild(lv < dMax ? staffNext(lv ? 'Com o aumento:' : 'Se contratar (aprendiz):', dRows(D[lv], D[lv+1])) : staffNext('Nível máximo:', dRows(null, D[dMax])));
   duo = el('div', 'duo');
-  if (lv < dMax) duo.appendChild(shopBtn(lv ? 'Aumento: ' + fmt(D[lv+1].pay - D[lv].pay) + '/dia' : 'Contratar', 'btn', canPay(D[lv+1].pay - (lv ? D[lv].pay : 0)), () => game.setStaff('dani', lv + 1)));
-  if (lv > 1) duo.appendChild(shopBtn('Reduzir', 'btn alt', true, () => game.setStaff('dani', lv - 1)));
+  if (lv < dMax){
+    duo.appendChild(shopBtn(lv ? 'Aumento: +' + fmt(D[lv+1].pay - D[lv].pay) + '/dia' : 'Contratar', 'btn', pronto && canPay(D[lv+1].pay - (lv ? D[lv].pay : 0)), () => game.setStaff('dani', lv + 1)));
+    if (lv && !pronto) c.appendChild(el('span', 'cursos-lista', 'Faltam ' + (D[lv+1].xp - xp) + ' de experiência: ela aprende trabalhando e com os cursos (+' + DANI_XP.curso + ' cada).'));
+  }
   c.appendChild(duo); grid.appendChild(c);
+  if (game.daniChegou) buildDaniCursos(grid);
+}
+/* cursos da Dani (v8.9): três cartões, +2 de experiência cada; um por lojinha, à parte do curso do Tonhão */
+function buildDaniCursos(grid){
+  const sv = game.save, bank = sv.bank;
+  if (game.cursoMsg) grid.appendChild(el('p', 'cursomsg', game.cursoMsg));
+  DANI_CURSOS.forEach(c => {
+    const feito = !!sv.daniCursos[c.id], card = el('div', 'item' + (feito ? ' own' : ''));
+    card.appendChild(upgradeIcon('dani'));
+    card.appendChild(el('b', null, 'Curso de ' + c.nome));
+    card.appendChild(el('span', 'cursos-lista', '+' + DANI_XP.curso + ' de experiência'));
+    if (!feito && game.daniCursoTrava) card.appendChild(el('span', 'cursos-lista', 'A Dani já está num curso. Volte depois do próximo dia.'));
+    card.appendChild(feito ? shopBtn('Curso feito', 'btn', false, () => false) : shopBtn('Comprar ' + fmt(c.preco), 'btn', !game.daniCursoTrava && bank >= c.preco, () => game.buyDaniCurso(c.id), c.preco));
+    grid.appendChild(card);
+  });
 }
 /* TV e som e o couvert (v7.4.3), agora na Divulgação (v8.6.15) */
 function buildAmbiente(grid){
@@ -807,7 +834,7 @@ function buildShop(){
   nav.hidden = !aberta || shopGrupo === 'gurugol'; $('shop-sec').textContent = aberta ? aberta.nome : '';
   ['salao', 'caixa'].forEach(k => $('ov-shop').classList[shopTab === k ? 'add' : 'remove'](k));
   if (!aberta){ grid.className = 'shopcards'; return shopCartoes(grid, SHOP_GRUPOS.find(x => x.id === shopGrupo)); }
-  grid.className = 'shopgrid' + (shopTab === 'tonhao' ? ' cursos' : ['salao', 'caixa', 'melhorias', 'gurugol', 'decor'].indexOf(shopTab) >= 0 ? ' ' + shopTab : '');
+  grid.className = 'shopgrid' + (shopTab === 'tonhao' || shopTab === 'dani' ? ' cursos' : ['salao', 'caixa', 'melhorias', 'gurugol', 'decor'].indexOf(shopTab) >= 0 ? ' ' + shopTab : '');
   aberta.build(grid);
 }
 (function(){ const box = $('shop-tabs'); if (box) Array.prototype.forEach.call(box.querySelectorAll('button'), b => b.addEventListener('click', () => { Sfx.init(); Sfx.tap(); shopGrupoAbrir(b.getAttribute('data-v')); }));

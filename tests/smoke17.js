@@ -13,7 +13,7 @@ const SP=L.STAFF, DANI=SP.dani.levels[2].pay, TV=SP.tv.pay, PAN=L.divulgaOf('pan
 // ---------- regras ----------
 { const eq={tonhao:1,dani:2,tv:true,som:true,couvert:false};
   ok(L.folhaCortes(eq,null,1000).length===0,'com dinheiro, nada fica de fora');
-  ok(L.folhaCortes(eq,null,30).join()==='som,TV,aumento da Dani' && eq.dani===2 && eq.tv,'folhaCortes segue a ordem do payDay e não mexe na equipe');
+  ok(L.folhaCortes(eq,null,20).join()==='som,TV,aumento da Dani' && eq.dani===2 && eq.tv,'folhaCortes segue a ordem do payDay e não mexe na equipe');
   ok(L.folhaCortes(eq,L.divulgaOf('redes'),L.payroll(eq)+RED-1).join()==='redes sociais','a divulgação sai antes da equipe');
   ok(L.folhaItens(eq,L.divulgaOf('panfleto')).join()==='aumento do Tonhão,aumento da Dani,TV,som,panfletos','folhaItens lista o que se paga ao abrir');
   ok(L.listaE(['TV','Dani'])==='TV e Dani' && L.listaE(['a','b','c'])==='a, b e c','listaE junta com "e"'); }
@@ -43,10 +43,10 @@ novo(159,{},'boca'); g.goShop(3);
 ok(g.compromisso===0 && els['shop-livre'].textContent==='','sem folha, o alto fica como antes');
 
 // ---------- melhorias, manutenção e divulgação ----------
-novo(240,{dani:2},'panfleto'); g.goShop(3); L.setShopTab('melhorias');
+novo(230,{dani:2},'panfleto'); g.goShop(3); L.setShopTab('melhorias');
 ok(g.compromisso===DANI+PAN && new RegExp('R\\$ '+(DANI+PAN)+' reservados para aumento da Dani e panfletos').test(els['shop-livre'].textContent),'a divulgação entra no reservado');
-{ const u=L.UPGRADES.find(x=>x.cost>240-DANI-PAN&&x.cost<=240), b=botao(new RegExp('^Comprar R\\$ '+u.cost+'$'));
+{ const u=L.UPGRADES.find(x=>x.cost>230-DANI-PAN&&x.cost<=230), b=botao(new RegExp('^Comprar R\\$ '+u.cost+'$'));
   ok(b && b.classList.contains('warn') && /sem panfletos/.test(b.getAttribute('data-aviso')),'melhoria que come a folha: alerta ('+u.name+')');
-  b.fire('click'); ok(!g.up[u.id],'1º toque não compra'); b.fire('click'); ok(g.up[u.id] && g.save.bank===240-u.cost,'2º toque compra'); }
+  b.fire('click'); ok(!g.up[u.id],'1º toque não compra'); b.fire('click'); ok(g.up[u.id] && g.save.bank===230-u.cost,'2º toque compra'); }
 console.log('total =',total,' fails =',fails);
 process.exit(fails?1:0);

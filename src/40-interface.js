@@ -180,6 +180,10 @@ function buildTips(){
   tips.push(['A cozinha começa sabendo PF e coxinha. Na aba Cursos, o Tonhão aprende pratos novos (um curso por dia); o curso avançado deixa os pratos mais caros e caprichados. O Tonhão sobe de nível com experiência: cada curso dá XP e, quando ele estiver pronto, o aumento de salário confirma o nível novo. Cada tipo de cliente tem o seu gosto, e o entregador muda de ideia ao longo do dia.', c => {
     drawDish(c,'pf',18,30,0.9); drawDish(c,'coxinha',46,30,0.9); txt(c,'+',32,34,14,PAL.faixa,'center',FD);
   }]);
+  // v8.9: a experiência da Dani
+  tips.push(['A Dani aprende trabalhando: cada tarefa conta, e os cursos dela ajudam. Quando estiver pronta, o aumento confirma o nível novo.', c => {
+    txt(c,'+1 XP',32,36,15,PAL.faixa,'center',FD);
+  }]);
   // v8.6.11: vegetarianos e veganos
   tips.push(['Uma em cada dez pessoas é vegetariana e só pede prato sem carne. Sem opção no cardápio, ela leva uma coxinha, reclama no Gurugol e a Diversidade do cardápio cai para 1. O curso Vegetariano do Tonhão resolve (e traz mais clientes); o avançado, Pratos veganos, completa.', c => {
     drawDish(c,'pfVeg',18,30,0.9); drawDish(c,'coxinhaJaca',46,30,0.9);

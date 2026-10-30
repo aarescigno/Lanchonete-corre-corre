@@ -21,7 +21,9 @@ if(process.env.MANUT_CFG){ const c=JSON.parse(process.env.MANUT_CFG); const eq=c
 if(process.env.CLIMA_CFG){ const c=JSON.parse(process.env.CLIMA_CFG); for(const k in c) Object.assign(L.CLIMA[k],c[k]); }
 const order=['tenis','maquina','cafeteira','bandeja','ventilador','pratos','corrida'];
 const FULL=[{tonhao:4,dani:4,tv:true,som:true},{tonhao:3,dani:4,tv:true,som:true},{tonhao:2,dani:4,tv:true,som:true},{tonhao:2,dani:4,tv:true},{tonhao:2,dani:4},{tonhao:1,dani:3},{tonhao:0,dani:2},{}];   // v8.8: o Tonhão só sobe até onde a XP dos cursos deixa (capT)
-const capT=e=>Object.assign({},e,{tonhao:Math.min(e.tonhao||0,L.tonhaoNivelXp(g.save.cursos))}), nivDia=[[],[],[],[],[]], vistoT=new Set();
+const capT=e=>Object.assign({},e,{tonhao:Math.min(e.tonhao||0,L.tonhaoNivelXp(g.save.cursos)),dani:Math.min(e.dani||0,L.daniNivelXp(g.save))}), nivDia=[[],[],[],[],[]], vistoT=new Set();   // v8.9: a Dani também só sobe até onde a XP dela deixa
+const xpDani={}, nivDani=[[],[],[],[]], vistoD=new Set(), tarNiv=[[],[],[],[]], daniCursoDias={};   // v8.9: o dia em que ela chega a cada nível, as tarefas por dia em cada nível e o dia de cada curso dela
+const daniCursos=(reserva)=>{ if(!g.daniChegou) return ''; const c=L.DANI_CURSOS.find(x=>!g.save.daniCursos[x.id]); return c&&g.save.bank-c.preco>=reserva&&g.buyDaniCurso(c.id)?c.id:''; };
 // ajuste rápido sem mexer em src/: CONTAS='{"mesa":40}' INGRED='{"prato":0.6}' node carreira.js
 if(process.env.MOVIMENTO) Object.assign(L.MOVIMENTO,JSON.parse(process.env.MOVIMENTO));   // MOVIMENTO='{"porLugar":0.04}'
 if(process.env.CONTAS) Object.assign(L.CONTAS,JSON.parse(process.env.CONTAS));
@@ -40,12 +42,14 @@ for(let k=0;k<N;k++){
       for(;;){ const u=order.find(id=>!g.up[id]); const uc=u&&L.UPGRADES.find(x=>x.id===u);   // v8.6.14: sem o limite de 1 por dia, compra na ordem tudo o que o dinheiro der, guardando a reserva
         if(!(u && g.save.bank>=uc.cost+(n>=3?300:0) && g.buy(u))) break; }
       if(process.env.CURSOS!=='0'){ const cu=BOT.cursos(g,L,n>=3?(+process.env.RCURSO>=0?+process.env.RCURSO:150):0,process.env.CURSOS?process.env.CURSOS.split(','):undefined); if(cu) (cursoDias[cu]=cursoDias[cu]||[]).push(n); }   // v8.6.9: 1 curso por lojinha, se sobrar o preço mais a reserva (CURSOS=0 não compra)   // v8.8: o curso vem antes dos móveis, com reserva de R$ 150 (RCURSO=n troca): a XP é o que sobe o Tonhão
+      if(process.env.CURSOS!=='0'){ const dc=daniCursos(n>=3?(+process.env.RCURSO>=0?+process.env.RCURSO:150):0); if(dc) (daniCursoDias[dc]=daniCursoDias[dc]||[]).push(n); }   // v8.9: depois do curso do Tonhão, o da Dani (um por lojinha, à parte)
       if(process.env.MOVEIS!=='0') BOT.moveis(g,L,semMesa,n>=3?300:0,process.env.MOVEIS);
       if(n>=3 || g.save.cap>=2){
         const e0=n>=3?(FULL.map(capT).find(e=>L.payroll(L.normSave({equipe:e}).equipe)+(L.divulgaOf(DIV).cost)<=g.save.bank)||{}):{};
         const e=Object.assign({},e0,L.HIST.on?{dani:g.save.cap>=2?Math.max(1,e0.dani||0):0}:{});   // v8.7: a Dani só chega no cap. 2 (aprendiz, sem salário)
         g.save.equipe=L.normSave({equipe:Object.assign({daniTasks:['pratos','lavar','lixo']},e)}).equipe;
         if(n>=3) g.save.divulga=DIV;
+        for(let t=1;t<=g.save.equipe.dani;t++) if(!vistoD.has(k+':'+t)){ vistoD.add(k+':'+t); nivDani[t-1].push(n); }   // v8.9
         for(let t=0;t<=g.save.equipe.tonhao;t++) if(!vistoT.has(k+':'+t)){ vistoT.add(k+':'+t); nivDia[t].push(n); }   // v8.8: o dia em que ele chega a cada nível
       }
       r.shop.push(g.save.bank);
@@ -54,6 +58,9 @@ for(let k=0;k<N;k++){
     if(MODO!=='sem') r.est.push(L.MANUT.equip.map(q=>g.save.manut[q.id]));   // estado antes do dia (v8.3.11)
     g.startDay(n); g.begin(); r.after.push(g.save.bank-g.paid-g.paidDiv); r.eq.push(g.paid);   // v8.2.2: a folha só sai no fim do dia; "depois da folha" é o que sobra além dela
     let st=0; while(g.state==='playing'&&st<30000){ bot(); g.update(0.05); st++; }
+    if(process.env.DBGD) console.log('dbg',n,'tar',g.save.daniTar,'feitas',g.result.daniFeitas,'cursos',Object.keys(g.save.daniCursos).length,'nivel',g.save.equipe.dani);
+    (xpDani[n]=xpDani[n]||[]).push([L.daniXp(g.save),g.save.equipe.dani]);   // v8.9: a XP dela e o nível pago no fim de cada dia
+    if(g.save.equipe.dani>0) tarNiv[g.save.equipe.dani-1].push(g.result.daniFeitas);   // v8.9: tarefas da Dani no dia, pelo nível dela
     { const ge=L.avalGeral(g.save.aval); r.nota.push(ge?ge.nota:null); }   // v8.6.9: a nota geral do Gurugol no fim do dia
     r.lucro.push(g.result.money); r.con.push(g.result.conserto); r.qb.push(g.result.quebras.length); if(g.result.clima==='chuva') r.chuva++; if(g.result.clima==='feriado') r.fer++; r.fim.push(g.save.bank); if(g.result.passed) r.pass++; semMesa=g.result.lostBy.semMesa; r.lug.push(L.salaoLugares(g.save.salao.mesas)); if(g.save.bank<0) negs++; if(g.result.forcado) forcs++; if(!chegou&&g.save.bank>=MUDA) chegou=n; if(process.env.MESAS) console.log(n, g.save.salao.mesas.map(m=>m.seats).sort().join(''), 'semMesa', semMesa);
     // v8.7: o que a interface faz entre os dias: a conversa de depois fecha o capítulo (e abre o seguinte); a de antes só passa
@@ -65,6 +72,8 @@ for(let k=0;k<N;k++){
 const avg=a=>a.length?Math.round(a.reduce((x,y)=>x+y,0)/a.length):'-';
 for(let n=1;n<=ND;n++){ const r=rows[n], d=L.diaOf(n); console.log('Dia',n+(d.semana?' ('+d.semana.slice(0,3)+')':''),'meta',d.meta,'| dinheiro na lojinha',avg(r.shop),'| depois da folha',avg(r.after),'| folha',avg(r.eq),'| lucro',avg(r.lucro),'| lugares',avg(r.lug),'| passou',r.pass+'/'+N,'| Gurugol geral',(()=>{ const v=r.nota.filter(x=>x!=null); return v.length?(v.reduce((a,b)=>a+b,0)/v.length).toFixed(2):'-'; })()); }
 if(L.HIST.on){ const md=a=>a.length?a.sort((x,y)=>x-y)[Math.floor(a.length/2)]:'-'; console.log('HISTORIA | cap. 1 no dia',md(capDia[1]),'('+capDia[1].length+'/'+N+')','· cap. 2 no dia',md(capDia[2]),'('+capDia[2].length+'/'+N+')','· cap. 3 no dia',md(capDia[3]),'('+capDia[3].length+'/'+N+', até o dia 14: '+capDia[3].filter(d=>d<=14).length+')','| banco tomou a lanchonete',fechou+'/'+N); }
+console.log('DANI | dia médio em que chega ao nível (aprendiz = 1) '+nivDani.map((a,i)=>(i+1)+': '+(a.length?(a.reduce((x,y)=>x+y,0)/a.length).toFixed(1)+' ('+a.length+'/'+N+')':'nunca')).join(' · ')+' | tarefas por dia '+tarNiv.map((a,i)=>(i+1)+': '+(a.length?(a.reduce((x,y)=>x+y,0)/a.length).toFixed(0):'-')).join(' · ')+' | cursos '+Object.keys(daniCursoDias).map(k=>{ const d=daniCursoDias[k].sort((a,b)=>a-b); return k+' dia '+d[Math.floor(d.length/2)]+' ('+d.length+'/'+N+')'; }).join(' · '));
+console.log('DANI | XP e nível pago no fim do dia '+[5,7,9,11,13,16].filter(n=>xpDani[n]).map(n=>n+': '+(xpDani[n].reduce((x,y)=>x+y[0],0)/xpDani[n].length).toFixed(1)+' XP, nível '+(xpDani[n].reduce((x,y)=>x+y[1],0)/xpDani[n].length).toFixed(1)).join(' · '));
 console.log('TONHAO | dia médio em que chega ao nível '+nivDia.map((a,i)=>(i+1)+': '+(a.length?(a.reduce((x,y)=>x+y,0)/a.length).toFixed(1)+' ('+a.length+'/'+N+')':'nunca')).join(' · '));
 { const ch=chega.filter(isFinite).sort((a,b)=>a-b); console.log('CAMPANHA',ND,'dias | chegou a R$',MUDA,'em',ch.length+'/'+N,'carreiras, no dia',ch.length?'mediano '+ch[Math.floor(ch.length/2)]:'-','| dias fechando no negativo',negs,'| empréstimos à força',forcs); }
 { const ks=Object.keys(cursoDias); if(ks.length) console.log('CURSOS (v8.6.9) | dia mediano da compra:',ks.map(k=>{ const d=cursoDias[k].sort((a,b)=>a-b); return k+' dia '+d[Math.floor(d.length/2)]+' ('+d.length+'/'+N+')'; }).join(' · ')); }
