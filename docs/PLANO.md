@@ -53,7 +53,7 @@ Origem: retorno do Renan Martorelli (beta-tester) e conversa com o Arthur (15/10
 | 2c-r3d | Rodada de balanceamento do cardápio (metas dos dias 2 a 7, ticket médio, nota mínima do Gurugol) | v8.6.13 | feita (29/10; salgado se pede de dois, metas dos dias 6 e 7, nota mínima 90% do teto; ver `docs/spec-v8.6.13.md`) |
 | 2c-r4a | Melhorias sem o limite de 1 por dia e o fim do dia sem o (n) do Gurugol | v8.6.14 | feita (30/10; ver `docs/spec-v8.6.14.md`) |
 | 2c-r4b | Lojinha em 4 grupos com cartões | v8.6.15 | feita (30/10; ver `docs/spec-v8.6.15.md`) |
-| 2f | A campanha vira o Modo História: estrutura e capítulos da Garagem | v8.7 | a fazer |
+| 2f | A campanha vira o Modo História: estrutura e capítulos da Garagem | v8.7 | feita (30/10; ver `docs/spec-v8.7.md`; alvos do `carreira.js` e do `balance.js` batidos sem mexer nos valores) |
 | 3a | Mudança de ponto e Lanchonete na área industrial (e os caps. 4 e 5) | v9 | a fazer (planejada em 30/10) |
 | 3b | Restaurante na Avenida Brasil, o Joca (e o capítulo dela) | v9.1 | a fazer |
 | 4a | Terraço Suíça e VIPs exigentes (e o capítulo dele) | v10 | a fazer |
@@ -121,7 +121,7 @@ A fileira `#shop-tabs` (`02-telas.html`) passa a ter 4 botões; ao tocar num gru
 
 ---
 
-## Etapa 2f — A campanha vira o Modo História (v8.7)
+## Etapa 2f — A campanha vira o Modo História (v8.7) — FEITA em 30/10 (`docs/spec-v8.7.md`)
 > Decidido na revisão de 28/10: a campanha (Carreira) e o Modo História viram uma coisa só, com um save só. Esta etapa monta a estrutura e os 3 capítulos da Garagem; os capítulos dos outros pontos entram nas etapas 3a, 3b e 4a, e o final na etapa 6. Substitui a antiga etapa 5. **Planejada com o usuário em 30/10** (respostas em `docs/PROPOSTAS.md`): as decisões abaixo estão tomadas.
 
 **Objetivo:** "o sonho da Bia de ter um restaurante estrelado, começando do zero". Os dias da campanha contam a história em capítulos, com a abertura animada como prólogo e a dívida da reforma da garagem desde o dia 1.
@@ -257,7 +257,7 @@ O cap. 4 começa ao mudar (`avancaCap` no momento da mudança, e a conversa `'an
 - **Modo dev:** o cartão "Mudança" aparece sempre, sem custo nem nota mínima.
 
 #### Testes
-- **`tests/smoke33.js` (novo):** (1) antes do cap. 4 não há cartão Mudança; com `cap:4`, aparece e fica apagado sem R$ 800 ou sem nota 2,7 (testar cada um); (2) mudar: −R$ 800, `ponto:'industrial'`, TV/som/torneira fora, mesas levadas, arranjo válido, 20 lugares, 5 vagas de prato, `cap` 4 e `conversa:'antes'`; (3) aluguel de R$ 120 no fim do dia e preços ×1,2; (4) clientela: em 200 grupos sorteados, entregadores ≈ o dobro da Garagem e VIPs ≈ 0,3×; (5) fogão industrial: 4 bocas e metade do desgaste; (6) TVs: instalar, os 3 modos, custo na folha e paciência; (7) assento: espera 15% mais devagar; jarra cobra R$ 12; (8) plantas somam +0,1 cada no Ambiente; (9) cap. 4 com 2 dias no azul continua, com 3 avança; (10) cap. 5: 6 marmitas com nota 3,3 não marca; com 3,4 marca (a); depois R$ 2.000 cumpre; `cap:6` e o `#ov-continua` novo; (11) save da v8.7 sem `ponto` carrega como Garagem.
+- **`tests/smoke35.js` (novo):** (1) antes do cap. 4 não há cartão Mudança; com `cap:4`, aparece e fica apagado sem R$ 800 ou sem nota 2,7 (testar cada um); (2) mudar: −R$ 800, `ponto:'industrial'`, TV/som/torneira fora, mesas levadas, arranjo válido, 20 lugares, 5 vagas de prato, `cap` 4 e `conversa:'antes'`; (3) aluguel de R$ 120 no fim do dia e preços ×1,2; (4) clientela: em 200 grupos sorteados, entregadores ≈ o dobro da Garagem e VIPs ≈ 0,3×; (5) fogão industrial: 4 bocas e metade do desgaste; (6) TVs: instalar, os 3 modos, custo na folha e paciência; (7) assento: espera 15% mais devagar; jarra cobra R$ 12; (8) plantas somam +0,1 cada no Ambiente; (9) cap. 4 com 2 dias no azul continua, com 3 avança; (10) cap. 5: 6 marmitas com nota 3,3 não marca; com 3,4 marca (a); depois R$ 2.000 cumpre; `cap:6` e o `#ov-continua` novo; (11) save da v8.7 sem `ponto` carrega como Garagem.
 - Ajustar smokes antigos que esperam 4 vagas fixas de prato ou o texto antigo do `#ov-continua`.
 - **`carreira.js`:** o bot muda de ponto assim que pode (e compra fogão industrial, TVs com anúncios, cadeirinhas e jarra quando sobra R$ 300 acima da folha); `DIAS=35`. Linha `HISTORIA` com o dia de cada capítulo e o dia da mudança.
 - **Alvos e como decidir:**
@@ -269,7 +269,7 @@ O cap. 4 começa ao mudar (`avancaCap` no momento da mudança, e a conversa `'an
 - Capturas: `tests/shot_v9.py` em `capturas/v9` (cartão Mudança apagado e aceso, confirmação, salão da área industrial com tudo comprado, calçada com cadeirinhas, jarra e plantas, TVs ligadas, fim do dia com o aluguel, conversa do cap. 5 com a rubrica, `#ov-continua`, celular).
 
 #### Fechamento
-v9: guardar a v8.7 em `versoes/`, `vtag`, `VERSAO`, `#ov-ver`, `docs/spec-v9.md`, `docs/RESUMO.md`, CLAUDE.md (smoke 33, `PONTO=` no balance, `DIAS=35` no carreira), PR e merge.
+v9: guardar a v8.7 em `versoes/`, `vtag`, `VERSAO`, `#ov-ver`, `docs/spec-v9.md`, `docs/RESUMO.md`, CLAUDE.md (smoke 35, `PONTO=` no balance, `DIAS=35` no carreira), PR e merge.
 
 **Fora:** o Joca (vai para a 3b), a Avenida Brasil, eventos de bairro (4c), o nível de luxo.
 

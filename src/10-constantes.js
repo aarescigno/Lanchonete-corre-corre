@@ -399,7 +399,8 @@ const STAFF = {
   // Tonhão: cozinha mais rápido (cook = fator do tempo), mais pratos caprichados (crit) e,
   // com aumento, lava 1 pilha da pia a cada `wash` segundos
   tonhao:  { levels:[ { slots:3, cook:1, crit:0.05, wash:0, pay:0 }, { slots:3, cook:0.85, crit:0.12, wash:7, pay:15 }, { slots:3, cook:0.7, crit:0.2, wash:4, pay:30 } ] },
-  dani:    { levels:[ null, { speed:0.5, tasks:2, pay:40 }, { speed:0.65, tasks:2, pay:50 }, { speed:0.8, tasks:3, pay:60 } ] },
+  // Dani (v8.7): entra de graça no cap. 2 como aprendiz (nível 1, sem salário); os níveis 2 a 4 são os aumentos da lojinha
+  dani:    { levels:[ null, { speed:0.4, tasks:1, pay:0 }, { speed:0.5, tasks:2, pay:25 }, { speed:0.65, tasks:2, pay:40 }, { speed:0.8, tasks:3, pay:55 } ] },
   // couvert artístico: só do nível 3 do salão em diante (Avenida Brasil, etapa 3 do plano)
   couvert: { pay:80, fee:3, effect:0.2, feeCut:0.5, nivel:3 },
   // ambiente da Garagem (v7.4.3): TV e som ligados o dia todo; o custo é a conta de luz (pay) e entra na folha
@@ -436,12 +437,12 @@ function payroll(eq){
 }
 /* v8.1: dinheiro comprometido. A folha e a divulgação ficam reservadas ao abrir o dia (e saem no fim dele); o que não
    couber fica de fora, nesta ordem (a divulgação vira boca a boca antes de tudo) */
-const FOLHA_CORTE = [['couvert', 'Couvert'], ['som', 'som'], ['tv', 'TV'], ['dani', 'Dani'], ['tonhao', 'aumento do Tonhão']];
-/* tira de eq o próximo item da folha (o Tonhão perde 1 nível de aumento) e devolve o nome; nada a tirar: null */
+const FOLHA_CORTE = [['couvert', 'Couvert'], ['som', 'som'], ['tv', 'TV'], ['dani', 'aumento da Dani'], ['tonhao', 'aumento do Tonhão']];
+/* tira de eq o próximo item da folha (o Tonhão e a Dani perdem 1 nível de aumento; a Dani não sai da equipe) e devolve o nome; nada a tirar: null */
 function folhaCorta(eq){
-  const c = FOLHA_CORTE.find(k => eq[k[0]]);
+  const c = FOLHA_CORTE.find(k => k[0] === 'tonhao' ? eq.tonhao > 0 : k[0] === 'dani' ? eq.dani > 1 : eq[k[0]]);
   if (!c) return null;
-  if (c[0] === 'tonhao') eq.tonhao--; else eq[c[0]] = c[0] === 'dani' ? 0 : false;
+  if (c[0] === 'tonhao' || c[0] === 'dani') eq[c[0]]--; else eq[c[0]] = false;
   return c[1];
 }
 /* o que fica de fora ao abrir o dia com `bank` no caixa (sem mexer em eq) */
@@ -458,7 +459,7 @@ function folhaCortes(eq, div, bank){
 function folhaItens(eq, div){
   const out = [];
   if (eq.tonhao) out.push('aumento do Tonhão');
-  if (eq.dani) out.push('Dani');
+  if (eq.dani > 1) out.push('aumento da Dani');
   if (eq.couvert) out.push('couvert');
   if (eq.tv) out.push('TV');
   if (eq.som) out.push('som');
@@ -505,7 +506,7 @@ const VIP = { pat:0.75, tip:0.1, perfect:40, angry:10, dish:12, cook:1.8, types:
 const DAYS = [
   { n:1, groups:5,  types:['estudante','vovos'],                                   nu:null,         meta:30, expert:60,  time:150, speed:0.60, note:'A freguesia espera lá fora, na calçada: arraste cada grupo até uma mesa livre.' },
   { n:2, groups:8,  types:['estudante','vovos','familia'],                         nu:'familia',    meta:108, expert:220,  time:160, speed:0.60, note:'Chegou a família! Grupos de 3 ou 4 só cabem nas mesas de 4 lugares. Na lojinha, aba Salão, dá para comprar mesas e arrumar o salão.' },
-  { n:3, groups:13, types:['estudante','vovos','familia','executiva'],             nu:'executiva',  meta:135, expert:230,  time:170, speed:0.60, juice:0.3, note:'O movimento aumentou e agora só há 4 pratos limpos: sozinha a Bia não dá conta, contrate ajuda na lojinha. A executiva tem pouca paciência, mas deixa boa gorjeta. E abriu o balcão de sucos: quem pede suco quer receber antes da conta!' },
+  { n:3, groups:13, types:['estudante','vovos','familia','executiva'],             nu:'executiva',  meta:135, expert:230,  time:170, speed:0.60, juice:0.3, note:'O movimento aumentou e agora só há 4 pratos limpos: sozinha a Bia não dá conta. A executiva tem pouca paciência, mas deixa boa gorjeta. E abriu o balcão de sucos: quem pede suco quer receber antes da conta!' },
   { n:4, groups:15, types:['estudante','vovos','familia','executiva','entregador'], nu:'entregador', meta:63, expert:110, time:180, speed:0.58, juice:0.3, note:'Chegou o entregador de moto! Ele não senta: espera no balcão de retirada, no alto da calçada, e leva o prato numa marmita. O pedido vai sozinho ao Tonhão; leve a marmita pronta ao balcão. Tem pressa! Para adiantar, toque no "+ marmita" da janela de pedidos.' },
   { n:5, groups:16, types:['estudante','vovos','familia','executiva','entregador'], nu:null,         meta:90, expert:140, time:190, speed:0.56, vip:0.15, juice:0.3, note:'Chegou cliente VIP (de óculos escuros e plaquinha dourada)! Fura a fila e tem menos paciência, mas pede o prato especial (mais caro), dá gorjeta e, se sair com 5 corações, pontos a mais. Se sair bravo, a multa dobra.' },
   { n:6, groups:16, types:['estudante','vovos','familia','executiva','entregador'], nu:null,         meta:140, expert:280, time:200, speed:0.54, vip:0.15, juice:0.3, note:'Sexta-feira: ninguém quer esperar.' },
@@ -685,14 +686,18 @@ function normEmprestimo(e){
   const amort = Math.max(1, Math.round(+e.amort) || Math.ceil(resto / clamp(Math.round(+e.n) || 1, 1, BANCO.parcelas)));
   const j = e.amort ? clamp(+e.j || 0, 0, 1) : 0, out = { resto, amort, j, n:Math.ceil(resto / amort) };
   if (e.atr) out.atr = true;
+  if (+e.ini > 0) out.ini = Math.round(+e.ini);   // v8.7: sem parcela nem juros antes do dia ini
+  if (e.ref) out.ref = true;                       // v8.7: é a reforma da garagem
   return out;
 }
 /* juros do dia sobre o saldo */
-function jurosDe(e){ return e.resto ? Math.round(e.resto * e.j) : 0; }
+function jurosDe(e, dia){ return e.resto && !carencia(e, dia) ? Math.round(e.resto * e.j) : 0; }
+/* v8.7: a reforma só cobra a partir do dia ini (dia: o dia que fecha; sem dia, vale sempre) */
+function carencia(e, dia){ return !!(e.ini && dia != null && dia < e.ini); }
 /* a parcela do fim do dia: a amortização (a última fecha a conta) mais os juros do dia */
-function parcelaDe(e){ return e.resto ? Math.min(e.resto, e.amort) + jurosDe(e) : 0; }
+function parcelaDe(e, dia){ return e.resto && !carencia(e, dia) ? Math.min(e.resto, e.amort) + jurosDe(e, dia) : 0; }
 /* o que o banco cobra no fim do dia: com uma parcela atrasada, 2 amortizações e os juros (os de ontem já foram para o saldo) */
-function devidoDe(e){ return e.resto ? Math.min(e.resto, e.amort * (e.atr ? 2 : 1)) + jurosDe(e) : 0; }
+function devidoDe(e, dia){ return e.resto && !carencia(e, dia) ? Math.min(e.resto, e.amort * (e.atr ? 2 : 1)) + jurosDe(e, dia) : 0; }
 /* as parcelas que faltam, pagando em dia (para mostrar na aba Banco) */
 function tabelaDe(e){
   const out = []; let r = e.resto;
@@ -701,8 +706,46 @@ function tabelaDe(e){
 }
 /* um empréstimo novo de v, pagando em dia: as parcelas e os juros somados */
 function simulaEmprestimo(v, j){ const t = tabelaDe(normEmprestimo({ resto:v, amort:Math.ceil(v / BANCO.parcelas), j })); return { parcelas:t, juros:t.reduce((a, p) => a + p, 0) - v }; }
+/* ============================================================
+   MODO HISTÓRIA (v8.7): a campanha em capítulos. Cada capítulo tem um objetivo, que vale no fim de um dia (sem prazo: se não
+   cumpriu, o capítulo segue), e conversas (balões sobre o salão) antes e depois. fala: { q:'bia'|'tonhao'|'dani', s:texto,
+   nota?:rubrica em itálico }. save.cap (1 a 3; 4 = Garagem completa), save.capDia, save.capAzul, save.conversa ('antes'/'depois'/null).
+   REFORMA: o empréstimo da reforma da garagem, que o save novo já traz (1ª parcela no fim do dia ini)
+   ============================================================ */
+const HIST = { on: !(typeof window !== 'undefined' && window.__semHist) };   // os testes antigos ligam window.__semHist: save novo sem a História
+const REFORMA = { valor:1000, amort:100, juros:0.01, ini:2 };
+const HISTORIA = [
+  { cap:1, titulo:'A garagem da Rosa', ponto:'garagem', obj:{ azul:2 },
+    antes:[
+      { q:'tonhao', s:'Panela no fogo, avental no lugar. Abre o portão, Bia!' },
+      { q:'bia', s:'A garagem da mãe... Ela ia gostar de ver isso cheio de gente.' },
+      { q:'tonhao', s:'Então vamos encher! E fechar o dia no azul, que o banco não espera.' }],
+    depois:[
+      { q:'bia', s:'Dois dias no azul, tio!' },
+      { q:'tonhao', s:'Isso! Agora é aguentar a parcela todo dia.' }] },
+  { cap:2, titulo:'A Dani chega', ponto:'garagem', obj:{ nota:2.4 },
+    antes:[
+      { q:'bia', s:'Não dou conta da mesa e da pia ao mesmo tempo...' },
+      { q:'tonhao', s:'Pedi ajuda pra Dani, filha da vizinha. Ela vem aprender com a gente.' },
+      { q:'dani', s:'Sou meio lenta ainda, mas aprendo rápido!' }],
+    depois:[
+      { q:'dani', s:'Ouvi um freguês dizer que aqui é tudo limpinho!' },
+      { q:'bia', s:'O Gurugol subiu, tio! Já tá em 2,4.' },
+      { q:'tonhao', s:'Devagar e sempre.' }] },
+  { cap:3, titulo:'Casa cheia', ponto:'garagem', obj:{ quitar:true, nota:2.7, caixa:800 },
+    antes:[
+      { q:'bia', s:'O Gurugol tá cheio de comentário sobre a gente!' },
+      { q:'dani', s:'Tem freguês perguntando se a gente vai abrir num lugar maior.' },
+      { q:'tonhao', s:'Primeiro quita a reforma. Depois junta pra mudança.' }],
+    depois:[
+      { q:'bia', s:'Reforma quitada e R$ 800 guardados!' },
+      { q:'tonhao', nota:'cheirando o pote de cominho', s:'Cominho com açafrão... a Rosa ia rir de mim agora.' },
+      { q:'bia', s:'Por quê, tio?' },
+      { q:'tonhao', s:'Um dia eu te conto da Casa Aurora.' }] }
+];
+const HIST_NOMES = { bia:'Bia', tonhao:'Tonhão', dani:'Dani' };
 const CAIXA_MAX = 14;                                 // livro-caixa (v7.2): quantos dias da carreira ficam guardados
-const VERSAO = 'v8.6.15';                               // vai no resumo do Caixa
+const VERSAO = 'v8.7';                               // vai no resumo do Caixa
 const DIVULGA_DIA = 3;                                // antes disso, o movimento é o da inauguração (sem custo)
 function divulgaAberta(n){ return DEV.on || n >= DIVULGA_DIA; }   // no modo dev, desde o dia 1
 function divulgaOf(id){ return DIVULGA.find(d => d.id === id) || DIVULGA[1]; }

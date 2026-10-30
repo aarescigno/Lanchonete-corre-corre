@@ -25,7 +25,7 @@ const est0=g.save.estrelas, lt0=g.save.lucroTot;
 joga(0,0); ok(!g.result.passed && g.result.stars===0 && g.save.dia===3 && g.save.estrelas===est0,'meta não batida: sem estrelas, mas o próximo é o 3');
 ok(/sem estrelas/.test(els['end-msg'].textContent) && els['btn-next'].style.display!=='none','o fim do dia diz e o "Próximo dia" continua');
 ok(g.save.lucroTot===lt0+g.result.money,'o prejuízo também entra no lucro acumulado');
-g.setState('menu'); ok(/Continuar: dia 3/.test(els['btn-play'].textContent) && /Carreira: dia 3/.test(els['menu-dia'].textContent),'menu: "Continuar: dia 3"');
+g.setState('menu'); ok(/Continuar: dia 3/.test(els['btn-play'].textContent) && /História · Garagem completa · dia 3/.test(els['menu-dia'].textContent),'menu: "Continuar: dia 3"');
 ok(/★/.test(els['menu-info'].textContent) && /lucro acumulado/.test(els['menu-info'].textContent),'menu: caixa, estrelas e lucro acumulado');
 // largar no meio não avança
 cont(); els['btn-shop-go'].fire('click'); els['btn-start'].fire('click'); g.pause(); els['btn-pause-menu'].fire('click');
@@ -117,13 +117,13 @@ ok(!g.quitar(),'sem empréstimo, nada a quitar');
 { const v=1000, total=v*(1+L.BANCO.juros); ok(total>v && L.BANCO.forcado>L.BANCO.juros,'juros sobre o valor; à força, mais caro'); }
 
 // ---------- folha sem dinheiro: a chave ----------
-novo({dia:4,bank:30,equipe:{dani:1,tv:true}});
+novo({dia:4,bank:30,equipe:{dani:2,tv:true}});
 cont(); ok(g.save.corta===true && g.cortesSe(0).length>0 && /abre sem/.test(els['shop-livre'].textContent),'chave ligada (padrão): a folha que não cabe fica de fora');
 els['btn-shop-go'].fire('click'); els['btn-start'].fire('click'); ok(g.unpaid.length>0,'e fica, ao abrir');
-novo({dia:4,bank:30,equipe:{dani:1,tv:true}}); g.setCorta(false);
+novo({dia:4,bank:30,equipe:{dani:2,tv:true}}); g.setCorta(false);
 cont(); ok(!g.cortesSe(0).length && /caixa pode fechar no negativo/.test(els['shop-livre'].textContent),'chave desligada: nada sai, o aviso é o negativo');
 L.setShopTab('banco'); ok(/Desligado: cortar a folha/.test(txt(els['shop-grid'])),'a aba Banco mostra a chave desligada');
-els['btn-shop-go'].fire('click'); els['btn-start'].fire('click'); const fp=g.paid; ok(!g.unpaid.length && g.save.equipe.dani===1 && g.save.equipe.tv && fp===L.payroll(g.save.equipe),'paga tudo');
+els['btn-shop-go'].fire('click'); els['btn-start'].fire('click'); const fp=g.paid; ok(!g.unpaid.length && g.save.equipe.dani===2 && g.save.equipe.tv && fp===L.payroll(g.save.equipe),'paga tudo');
 g.schedule=[]; g.nextIdx=0; g.finishDay(); ok(g.save.bank===30-g.contas-fp-g.paidDiv && g.save.bank<0,'e o caixa fecha no negativo');
 ok(JSON.parse(store[L.LS.save]).corta===false,'a chave fica gravada');
 

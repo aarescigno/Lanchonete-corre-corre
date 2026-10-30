@@ -57,7 +57,7 @@ novo(); g.startDay(5); g.begin(); g.schedule=[{t:1e9,type:'estudante',color:0}];
   ok(L.normSave({pontosTot:-5}).pontosTot===0 && L.normSave({}).pontosTot===0 && L.normSave({pontosTot:42}).pontosTot===42,'save: pontosTot nunca negativo; padrão 0'); }
 // ---------- custos ----------
 ok(L.CONTAS.base===20 && L.INGRED.prato===0.35 && L.DRINK_PRICE.coffee===3 && L.JUICE.price===8,'custos: gás e geladeira R$ 20/dia, ingredientes 35%, cafezinho R$ 3, suco R$ 8');
-ok(L.payroll({tonhao:2,dani:3,tv:true,som:true})===95,'folha completa da Garagem: R$ 95 por dia');
+ok(L.payroll({tonhao:2,dani:4,tv:true,som:true})===90,'folha completa da Garagem: R$ 90 por dia (v8.7: Dani mais barata)');
 ok(L.DAYS.map(d=>d.meta).join()==='30,108,135,63,90,140,170','metas de lucro realistas (R$ 30 a 170; v8.3.9; dias 2 a 5 -10% na v8.6.9; 6 e 7 na v8.6.13)');
 ok(L.DAYS.map(d=>d.expert).join()==='60,220,230,110,140,280,310','3 estrelas pelo jogo perfeito (v8.3.9): R$ 60 a 310');
 ok(L.bomGoal(L.DAYS[0])===50,'dia 1: 2 estrelas com R$ 50');

@@ -102,6 +102,8 @@ function buildEnd(){
   if (r.atrasou) msg += ' Faltou dinheiro para a parcela do banco: ficou atrasada. Amanhã, no fim do dia, o caixa precisa ter ' + fmt(game.devido) + ' (a atrasada e a do dia), senão o banco toma a lanchonete!';
   if (r.forcado) msg += ' O caixa fechou no negativo pelo ' + (BANCO.neg + 1) + 'º dia seguido: o banco cobriu ' + fmt(r.forcado) + ', com juros de ' + Math.round(BANCO.forcado * 100) + '% ao dia sobre o saldo, em ' + sv.emp.n + ' parcelas (a próxima, ' + fmt(game.parcela) + ').';
   else if (sv.bank < 0) msg += ' Caixa no negativo há ' + sv.neg + (sv.neg > 1 ? ' dias' : ' dia') + (sv.neg >= BANCO.neg ? ': se fechar amanhã no negativo, o banco cobre à força.' : ' (pode ficar até ' + BANCO.neg + ').');
+  // Modo História (v8.7): o objetivo do capítulo no fim do dia
+  if (r.cap) msg += ' Capítulo ' + r.cap.n + ', ' + r.cap.titulo + ': ' + (r.cap.ok ? '✓ Objetivo cumprido!' : r.cap.itens.map(it => (it.ok ? '✓ ' : '') + it.txt).join(' · '));
   $('end-msg').textContent = msg;
   $('btn-next').textContent = 'Lojinha e dia ' + game.proxDia;
   buildSaveForm($('end-save'), 'carreira');

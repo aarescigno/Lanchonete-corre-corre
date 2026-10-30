@@ -17,7 +17,7 @@ function drawTouchFx(ctx,g){
 function render(g, ctx){
   COMIDA_CURSOS = g.cursos;   // v8.6.10: os pratos do curso avançado ganham o detalhe
   const tm = g.anim;
-  const menu = g.state === 'menu';
+  const menu = g.state === 'menu' && !g.conversa;   // v8.7: na conversa, o salão aparece como no dia (com a Bia)
   ctx.save();
   ctx.lineJoin = 'round'; ctx.lineCap = 'round';
   ctx.save();

@@ -32,17 +32,15 @@ const toque=els=>els['c'].fire('pointerdown',{preventDefault(){},pointerId:1,cli
   ok(!L.aberturaAtual() && mostra(els,'ov-menu') && !mostra(els,'ov-abertura'),'depois da última cena, sozinha, volta ao menu');
   ok(JSON.stringify(g.save)===sv && g.state===st,'não mexe no save nem no estado do jogo');
 }
-// já vista: não toca sozinha; pelo botão História, termina no cartão "Em breve"
+// já vista: não toca sozinha; pelo botão "Ver abertura" (v8.7), termina e volta ao menu
 { const H=load({abertura:true, store:{lcc2_abertura:'1'}}), {g,L,els}=H;
   ok(!L.aberturaAtual() && mostra(els,'ov-menu'),'já vista: abre direto no menu');
+  ok(/id="btn-historia">Ver abertura</.test(require('fs').readFileSync(__dirname+'/../lanchonete.html','utf8')),'o botão do menu diz "Ver abertura"');
   els['btn-historia'].fire('click');
-  const ab=L.aberturaAtual(); ok(ab && ab.origem==='menu' && ab.i===0 && mostra(els,'ov-abertura'),'o botão História toca a abertura do começo');
+  const ab=L.aberturaAtual(); ok(ab && ab.origem==='menu' && ab.i===0 && mostra(els,'ov-abertura'),'o botão toca a abertura do começo');
   toque(els); toque(els); ok(ab.i===2,'o toque segue');
   els['btn-ab-pular'].fire('click');
-  ok(!L.aberturaAtual() && mostra(els,'ov-historia') && !mostra(els,'ov-menu'),'Pular termina no cartão "Em breve: o Modo História"');
-  els['btn-historia-rever'].fire('click'); ok(L.aberturaAtual() && L.aberturaAtual().i===0,'Ver de novo recomeça');
-  els['btn-ab-pular'].fire('click'); els['btn-historia-menu'].fire('click');
-  ok(mostra(els,'ov-menu') && !mostra(els,'ov-historia') && g.state==='menu','Menu volta ao menu');
+  ok(!L.aberturaAtual() && mostra(els,'ov-menu') && g.state==='menu','Pular volta ao menu (sem o cartão "Em breve")');
   // o toque no canvas, sem abertura, volta a ser do jogo
   ok(!L.aberturaAtual(),'sem abertura depois do menu');
 }

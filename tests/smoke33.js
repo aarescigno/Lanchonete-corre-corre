@@ -7,7 +7,7 @@ const grid=()=>els['shop-grid'];
 const nomes=()=>grid().children.map(c=>c.children[1].textContent);
 const cartoes=()=>grid().children.map(c=>c.getAttribute('data-sec'));
 const voltar=els['btn-shop-voltar'];
-g.save=L.normSave({bank:5000,maxDay:3,up:{tenis:true}}); g.up=g.save.up; g.buildTables(); g.save.equipe.dani=1; g.goShop(3);
+g.save=L.normSave({bank:5000,maxDay:3,up:{tenis:true}}); g.up=g.save.up; g.buildTables(); g.save.equipe.dani=2; g.goShop(3);
 // abre em Lanchonete, nos cartões
 ok(grid().className==='shopcards' && cartoes().join()==='melhorias,salao,decor,manut,divulga','abre em Lanchonete, nos 5 cartões na ordem');
 ok(nomes().join()==='Melhorias,Salão,Decoração,Manutenção,Divulgação','nomes dos cartões da Lanchonete');

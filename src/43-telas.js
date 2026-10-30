@@ -18,7 +18,7 @@ game.hooks.state = function(s){
       const en = game.encerrado; game.encerrado = null;
       $('intro-note').textContent = (en ? 'Você largou o dia no meio: ' + en.n + (en.n > 1 ? ' grupos foram' : ' grupo foi') + ' embora bravo' + (en.n > 1 ? 's' : '') + ' (multa de ' + fmt(en.multa) + '; agora você tem ' + fmt(en.bank) + '). ' : '') + (d.note || 'Sente a freguesia, anote os pedidos e mantenha todo mundo feliz!') + (d.n === 1 && !game.save.treino ? ' Primeira vez? No menu, a Missão zero é um treino passo a passo.' : '');
     }
-    $('intro-manut').textContent = [introBanco(), introManut()].filter(Boolean).join(' ');
+    $('intro-manut').textContent = [game.mode === 'carreira' ? game.capLinha() : '', introBanco(), introManut()].filter(Boolean).join(' ');
     showOnly(['ov-intro']);
   }
   else if (s === 'playing') showOnly([]);
@@ -45,6 +45,7 @@ function introBanco(){
     out.push('Caixa no negativo (' + fmt(sv.bank) + ')' + (sv.neg ? ' há ' + sv.neg + (sv.neg > 1 ? ' dias' : ' dia') : '') + ': ' + (falta > 0 ? 'mais ' + (falta + 1) + ' dias seguidos fechando no negativo (contando hoje) e' : 'se fechar hoje no negativo,') + ' o banco cobre o que falta, à força, com juros de ' + Math.round(BANCO.forcado * 100) + '% ao dia.');
   }
   if (sv.emp.atr) out.push('Parcela do banco atrasada! No fim do dia, o caixa precisa ter ' + fmt(game.devido) + ' (a atrasada e a de hoje), senão o banco toma a lanchonete.');   // v8.3.1
+  else if (sv.emp.resto && carencia(sv.emp, game.day.n)) out.push('Reforma da garagem: faltam ' + fmt(sv.emp.resto) + '. A 1ª parcela (' + fmt(parcelaDe(sv.emp, sv.emp.ini)) + ') só vence no fim do dia ' + sv.emp.ini + '.');
   else if (sv.emp.resto) out.push('Parcela do banco no fim do dia: ' + fmt(game.parcela) + ' (' + fmt(game.jurosHoje) + ' de juros; ' + (sv.emp.n > 1 ? 'faltam ' + sv.emp.n : 'a última') + '; se não couber no caixa, fica atrasada).');
   return out.join(' ');
 }
@@ -64,13 +65,34 @@ function introManut(){
 function playCareer(n){
   if (n === 0) return game.startTreino();
   if (game.save.fechou) game.resetProgress();   // v8.3.1: o banco tomou a lanchonete; só resta recomeçar
-  n = game.proxDia;
-  if (n >= 2 || DEV.on) game.goShop(n); else game.startDay(n);
+  fluxoHistoria(() => { const p = game.proxDia; if (p >= 2 || DEV.on) game.goShop(p); else game.startDay(p); });
+}
+/* conversas do Modo História (v8.7): balões sobre o salão do dia que vem, parado e escurecido; um toque passa, Pular fecha */
+function convLive(){ const e = $('conv-live'); if (e) e.textContent = game.conversa ? game.conversa.texto() : ''; }
+function falar(tipo, depois){
+  const c = HISTORIA[game.save.cap - 1], falas = c && c[tipo];
+  if (!falas || !falas.length) return depois();
+  game.resetDay(game.proxDia);
+  game.conversa = new Conversa(falas, () => { game.conversa = null; convLive(); depois(); }, RM);
+  game.conversa.onFala = convLive; convLive();
+  showOnly(['ov-conversa']);
+}
+/* toca a conversa pendente (a de depois fecha o capítulo e abre o seguinte, com a de antes) e só então chama fim();
+   ao fechar o último capítulo, o cartão "Continua na próxima versão" vem antes */
+let contFim = null;
+function fluxoHistoria(fim){
+  const sv = game.save;
+  if (sv.conversa === 'depois') return falar('depois', () => {
+    if (game.avancaCap()){ contFim = fim; showOnly(['ov-continua']); } else fluxoHistoria(fim);
+  });
+  if (sv.conversa === 'antes') return falar('antes', () => { game.save.conversa = null; writeSave(game.save); fim(); });
+  fim();
 }
 /* Missão zero: o texto do pop-up também vai para quem usa leitor de tela */
 game.hooks.treino = tr => { const e = $('treino-live'), p = tr.passo; if (e) e.textContent = p ? p.tit + '. ' + tr.texto() : ''; };
 function on(id, fn){ const e = $(id); if (e) e.addEventListener('click', fn); }
-/* abertura do Modo História (v8.5): pelo botão História, termina no cartão "Em breve"; sozinha (a 1ª vez), volta ao menu */
+/* abertura do Modo História (v8.5): pelo botão Ver abertura, volta ao menu; sozinha (a 1ª vez, com a história ainda por começar),
+   segue para a Missão zero (se ainda não fez) ou para a conversa do cap. 1 (v8.7) */
 let abertura = null;
 function abLive(){ const e = $('ab-live'); if (e) e.textContent = abertura ? abertura.texto() : ''; }
 function abrirAbertura(origem){
@@ -78,15 +100,20 @@ function abrirAbertura(origem){
   lsSet(LS.abertura, '1');
   abertura = new Abertura(origem, RM);
   abertura.onCena = ab => { aberturaSom(ab.cena); abLive(); };
-  abertura.onFim = ab => { abertura = null; abLive(); if (ab.origem === 'menu') showOnly(['ov-historia']); else game.setState('menu'); };
+  abertura.onFim = ab => {
+    abertura = null; abLive();
+    const sv = game.save;
+    if (ab.origem === 'auto' && sv.cap === 1 && sv.conversa === 'antes' && sv.dia === 1 && !sv.fechou) playCareer(sv.treino ? undefined : 0);
+    else game.setState('menu');
+  };
   aberturaSom(abertura.cena); abLive();
   showOnly(['ov-abertura']);
 }
 on('btn-historia',   () => { Sfx.tap(); abrirAbertura('menu'); });
 on('btn-ab-voltar',  () => { Sfx.tap(); if (abertura) abertura.voltar(); });
 on('btn-ab-pular',   () => { Sfx.tap(); if (abertura) abertura.pular(); });
-on('btn-historia-rever', () => { Sfx.tap(); abrirAbertura('menu'); });
-on('btn-historia-menu',  () => { Sfx.tap(); game.setState('menu'); });
+on('btn-conv-pular', () => { Sfx.tap(); if (game.conversa) game.conversa.pular(); });
+on('btn-continua',   () => { Sfx.tap(); const f = contFim; contFim = null; if (f) f(); });
 on('btn-play',       () => { Sfx.init(); Sfx.resume(); Sfx.tap(); playCareer(); });
 on('btn-treino',     () => { Sfx.init(); Sfx.resume(); Sfx.tap(); playCareer(0); });
 on('btn-how',        () => { Sfx.init(); Sfx.resume(); Sfx.tap(); buildTips(); showOnly(['ov-how']); });
@@ -128,7 +155,7 @@ on('btn-falencia-menu', () => game.setState('menu'));
 on('btn-endless-rank',  () => { Sfx.tap(); openRank('ov-endless'); });
 on('btn-endless-again', () => { Sfx.init(); Sfx.resume(); Sfx.tap(); game.startEndless(); });
 on('btn-endless-menu',  () => { game.setState('menu'); });
-on('btn-aviso',      () => { Sfx.tap(); game.save.avisoCard = false; writeSave(game.save); buildMenu(); });   // v8.6.9: fecha o aviso do cardápio que cresce
+on('btn-aviso',      () => { Sfx.tap(); game.save.avisoCard = false; game.save.avisoHist = false; writeSave(game.save); buildMenu(); });   // fecha o aviso de novidade (v8.6.9: cardápio que cresce; v8.7: Modo História)
 /* Recomeçar do zero (v8.3): o 1º toque pede confirmação; o 2º apaga a carreira */
 on('btn-reset',      () => {
   Sfx.init();
@@ -143,7 +170,7 @@ on('btn-treino-dia1', () => { Sfx.tap(); playCareer(); });
 on('btn-treino-menu', () => game.setState('menu'));
 on('btn-pause-menu', () => { game.encerrar(); game.encerrado = null; game.setState('menu'); });
 on('btn-end-menu',   () => game.setState('menu'));
-on('btn-next',       () => game.goShop(game.proxDia));
+on('btn-next',       () => fluxoHistoria(() => game.goShop(game.proxDia)));
 on('btn-shop-go',    () => { Sfx.tap(); game.startDay(game.shopNext); });
 on('btn-shop-menu',  () => game.setState('menu'));
 
@@ -162,6 +189,7 @@ canvas.addEventListener('pointerdown', e => {
   Sfx.init(); Sfx.resume();
   e.preventDefault();
   if (abertura){ Sfx.tap(); abertura.seguir(); return; }   // abertura: o toque passa para a próxima cena
+  if (game.conversa){ Sfx.tap(); game.conversa.seguir(); return; }   // conversa (v8.7): o toque passa para a próxima fala
   try { canvas.setPointerCapture(e.pointerId); } catch(err) {}
   const p = toLogical(e); game.onDown(p.x, p.y, touchPad(e));
 });
@@ -177,6 +205,12 @@ window.addEventListener('keydown', e => {
     if (k === 'Escape'){ abertura.pular(); e.preventDefault(); }
     else if (k === 'ArrowLeft'){ abertura.voltar(); e.preventDefault(); }
     else if ((k === 'Enter' || k === ' ' || k === 'Spacebar' || k === 'ArrowRight') && !(e.target && e.target.tagName === 'BUTTON')){ abertura.seguir(); e.preventDefault(); }
+    return;
+  }
+  // conversa (v8.7): Esc pula; Enter, espaço e a seta para a direita seguem
+  if (game.conversa){
+    if (k === 'Escape'){ game.conversa.pular(); e.preventDefault(); }
+    else if ((k === 'Enter' || k === ' ' || k === 'Spacebar' || k === 'ArrowRight') && !(e.target && e.target.tagName === 'BUTTON')){ game.conversa.seguir(); e.preventDefault(); }
     return;
   }
   // Missão zero: Enter segue o pop-up de explicação
@@ -204,6 +238,7 @@ function frame(ts){
   game.update(dt);
   ctx.setTransform(canvas.width / TW, 0, 0, canvas.height / H, 0, 0);
   render(game, ctx);
+  if (game.conversa){ game.conversa.update(dt); drawConversa(ctx, game, game.conversa); }
 }
 
 try { if (document.fonts && document.fonts.load) { document.fonts.load('20px "Bagel Fat One"'); document.fonts.load('14px Rubik'); } } catch(e) {}
@@ -212,7 +247,7 @@ try { Rank.init(); } catch(e) {}
 game.setState('menu');
 if (!aberturaVista() && !DEV.on) abrirAbertura('auto');   // v8.5: a abertura toca sozinha uma vez
 window.__game = game;
-window.__lcc = { DECOR, DECOR_GRUPOS, TOALHA, decorOf, normDecor, decorOn, FILA_ACOES, filaMax, MARMITA, RETIRADA, marmitaMao, drawMarmita, prateleiraPos, EFOOD_COR, AVAL_BRAVO, QUEUE, setShopTab: v => shopAbrir(v), setShopGrupo: g => shopGrupoAbrir(g), shopSecoes: () => SHOP_GRUPOS.map(g => g.secoes.slice()), TREINO, TREINO_PASSOS, TREINO_COR, Treino, treinoLugar, treinoPrimeiro, playCareer, buildMenu, introBanco, buildFalencia, BANCO, normEmprestimo, parcelaDe, devidoDe, jurosDe, tabelaDe, simulaEmprestimo, SEMANA, semanaOf, diaOf, FILA_JUSTA, PORTA, CHAIRS, PAT, CONTAS, INGRED, CARDAPIO, precoPrato, CURSOS, CURSO_AV, CURSOS_SEMFIM, cursoOf, cursoNivel, normCursos, pratoAv, CARNES, drawDish, pratoSabido, pratosSabidos, GOSTOS, GOSTOS_CAT, pedePrato, VEG, vegMov, drawDish, MAIS, PONTOS_ACAO, GORJETA, DRINK_PRICE, MOVIMENTO, movimentoSalao, DIVULGA, DIVULGA_DIA, divulgaOf, contasDia, bomGoal, SALAO, PONTOS, pontoOf, MESA, mesaBox, mesaPreco, salaoLugares, mesaProblema, salaoCaminho, salaoProblema, salaoOrdena, salaoAuto, salaoVaga, salaoPerto, salaoKit, salaoDevolucao, SALAO_SEMFIM, normSalao, setObst, OBST, pathOk, MAQUINA, BEBIDA_ESPERA, bebidaOf, MANUT, manutOf, manutChance, manutPreco, normManut, CLIMA, CLIMA_DIA, introManut, normPend, CALCADA, TW, HUDX, esperaAp, tableApproach, CRIT, STAFF, DANI_TASKS, DANI_HANDS, daniTaskOk, TRASH, WASH, payroll, FOLHA_CORTE, folhaCorta, folhaCortes, folhaItens, listaE, pratosDe, couvertEffect, couvertOk, ambienteEffect, dishStock, normSave, Helper, JUICE, KITCHEN_SLOTS, handLayout, trayOk, Game, Group, Table, Kitchen, Waitress, BIA_SPEED, DAYS, UPGRADES, CUSTOMER_TYPES, LAYOUT, PAL, Sfx, findPath, render, Rank, sortRows, cleanName, normName, CMD, ENDLESS, VIP, MULTA, rk, renderRank, openRank, closeRank, LS, lsGet, lsSet, loadSave, DEV, saveKey, devSync, divulgaAberta, CAIXA_MAX, VERSAO, normCaixa, caixaResumo, caixaTotais, copyText, PRATO, pratoPerde, pratoVapor, AVAL, AVAL_CRIT, AVAL_BRAVO, avalMenu, avalTeto, avalEscala, avalFrac, AVAL_SIMPLES, AVAL_DECOR, normAval, avalNota, avalMedias, avalGeral, avalMovimento, avalMinimo, avalComentario, fmtNota, notaFaixa, gurugolCaixa, AVAL_COM, normAvalCom, buildGurugol, ABERTURA, Abertura, AB_CENAS, AB_ALT, AB_BASE, abEsc, AB_VIVO, aberturaVista, aberturaSom, drawAbertura, abrirAbertura, aberturaAtual: () => abertura };
+window.__lcc = { DECOR, DECOR_GRUPOS, TOALHA, decorOf, normDecor, decorOn, FILA_ACOES, filaMax, MARMITA, RETIRADA, marmitaMao, drawMarmita, prateleiraPos, EFOOD_COR, AVAL_BRAVO, QUEUE, setShopTab: v => shopAbrir(v), setShopGrupo: g => shopGrupoAbrir(g), shopSecoes: () => SHOP_GRUPOS.map(g => g.secoes.slice()), TREINO, TREINO_PASSOS, TREINO_COR, Treino, treinoLugar, treinoPrimeiro, playCareer, buildMenu, introBanco, buildFalencia, BANCO, normEmprestimo, parcelaDe, devidoDe, jurosDe, tabelaDe, simulaEmprestimo, SEMANA, semanaOf, diaOf, FILA_JUSTA, PORTA, CHAIRS, PAT, CONTAS, INGRED, CARDAPIO, precoPrato, CURSOS, CURSO_AV, CURSOS_SEMFIM, cursoOf, cursoNivel, normCursos, pratoAv, CARNES, drawDish, pratoSabido, pratosSabidos, GOSTOS, GOSTOS_CAT, pedePrato, VEG, vegMov, drawDish, MAIS, PONTOS_ACAO, GORJETA, DRINK_PRICE, MOVIMENTO, movimentoSalao, DIVULGA, DIVULGA_DIA, divulgaOf, contasDia, bomGoal, SALAO, PONTOS, pontoOf, MESA, mesaBox, mesaPreco, salaoLugares, mesaProblema, salaoCaminho, salaoProblema, salaoOrdena, salaoAuto, salaoVaga, salaoPerto, salaoKit, salaoDevolucao, SALAO_SEMFIM, normSalao, setObst, OBST, pathOk, MAQUINA, BEBIDA_ESPERA, bebidaOf, MANUT, manutOf, manutChance, manutPreco, normManut, CLIMA, CLIMA_DIA, introManut, normPend, CALCADA, TW, HUDX, esperaAp, tableApproach, CRIT, STAFF, DANI_TASKS, DANI_HANDS, daniTaskOk, TRASH, WASH, payroll, FOLHA_CORTE, folhaCorta, folhaCortes, folhaItens, listaE, pratosDe, couvertEffect, couvertOk, ambienteEffect, dishStock, normSave, Helper, JUICE, KITCHEN_SLOTS, handLayout, trayOk, Game, Group, Table, Kitchen, Waitress, BIA_SPEED, DAYS, UPGRADES, CUSTOMER_TYPES, LAYOUT, PAL, Sfx, findPath, render, Rank, sortRows, cleanName, normName, CMD, ENDLESS, VIP, MULTA, rk, renderRank, openRank, closeRank, LS, lsGet, lsSet, loadSave, DEV, saveKey, devSync, divulgaAberta, CAIXA_MAX, VERSAO, normCaixa, caixaResumo, caixaTotais, copyText, PRATO, pratoPerde, pratoVapor, AVAL, AVAL_CRIT, AVAL_BRAVO, avalMenu, avalTeto, avalEscala, avalFrac, AVAL_SIMPLES, AVAL_DECOR, normAval, avalNota, avalMedias, avalGeral, avalMovimento, avalMinimo, avalComentario, fmtNota, notaFaixa, gurugolCaixa, AVAL_COM, normAvalCom, buildGurugol, ABERTURA, Abertura, AB_CENAS, AB_ALT, AB_BASE, abEsc, AB_VIVO, aberturaVista, aberturaSom, drawAbertura, abrirAbertura, HISTORIA, REFORMA, HIST, carencia, Conversa, drawConversa, falar, fluxoHistoria, aberturaAtual: () => abertura };
 window.requestAnimationFrame(frame);
 
 })();

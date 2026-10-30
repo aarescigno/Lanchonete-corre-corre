@@ -9,7 +9,7 @@ const novo=(bank,equipe,divulga)=>{ g.save=L.normSave({maxDay:7,bank,equipe,divu
 const abre=n=>{ g.startDay(n); g.begin(); };
 
 // ---------- ao abrir, nada sai do dinheiro ----------
-novo(500,{dani:1},'redes'); abre(4);
+novo(500,{dani:2},'redes'); abre(4);
 ok(g.paid>0 && g.paidDiv>0 && g.save.bank===500,'folha ('+g.paid+') e divulgação ('+g.paidDiv+') ficam reservadas, sem sair do dinheiro');
 ok(g.lucro===-(g.contas+g.paid+g.paidDiv),'o lucro do dia começa no vermelho, como antes');
 
@@ -59,14 +59,14 @@ novo(500,{},'boca'); g.startEndless(); g.begin(); g.spawn({type:'estudante',colo
 
 // ---------- conserto na hora: pago fica pago ----------
 { const H2=load({imprevistos:true}), g2=H2.g, L2=H2.L;
-  g2.save=L2.normSave({maxDay:7,bank:400,equipe:{dani:1}}); g2.up=g2.save.up; g2.buildTables(); g2.startDay(4); g2.begin();
+  g2.save=L2.normSave({maxDay:7,bank:400,equipe:{dani:2}}); g2.up=g2.save.up; g2.buildTables(); g2.startDay(4); g2.begin();
   const eq=L2.MANUT.equip[0]; g2.quebras=[{id:eq.id,t:0,on:true,fixed:false}];
   ok(g2.consertar(eq.id) && g2.save.bank===400-eq.emerg,'o conserto sai na hora');
   g2.pause(); H2.els['btn-restart'].fire('click');
   ok(g2.save.bank===400-eq.emerg && g2.manut[eq.id]===1,'reiniciar não devolve o conserto, e o equipamento continua novo'); }
 
 // ---------- dia completo: paga tudo no fim e guarda o resto ----------
-novo(300,{dani:1},'boca'); abre(3); g.money=250; g.custo=120; const c3=g.contas, f3=g.paid; g.finishDay();
+novo(300,{dani:2},'boca'); abre(3); g.money=250; g.custo=120; const c3=g.contas, f3=g.paid; g.finishDay();
 ok(g.save.bank===300+250-120-c3-f3 && g.result.income===250-120-c3-f3,'no fim do dia sai a folha, junto com contas e ingredientes: '+g.save.bank);
 ok(g.result.money===g.result.income,'o que entra no dinheiro é o lucro do dia (sem conserto)');
 const r=g.save.caixa[g.save.caixa.length-1]; ok(r.folha===f3 && r.saldo===g.save.bank,'a linha do caixa tem a folha e o saldo');
@@ -74,10 +74,10 @@ ok(!g.result.passed && /sem estrelas/.test(els['end-msg'].textContent),'sem a me
 const b3=g.save.bank; els['btn-next'].fire('click'); ok(g.state==='shop' && g.shopNext===4 && g.save.bank===b3,'"Próximo dia" abre a lojinha do dia 4 com o mesmo dinheiro, mesmo sem a meta');
 
 // ---------- prejuízo no dia completo: desde a v8.3, o caixa fica negativo ----------
-novo(60,{dani:1},'boca'); abre(3); g.money=0; g.custo=0; const f4=g.paid; g.finishDay(); ok(g.save.bank===60-g.contas-f4 && g.save.bank<0,'prejuízo maior que o dinheiro: o caixa fica negativo ('+g.save.bank+')');
+novo(60,{dani:2},'boca'); abre(3); g.money=0; g.custo=0; const f4=g.paid; g.finishDay(); ok(g.save.bank===60-g.contas-f4 && g.save.bank<0,'prejuízo maior que o dinheiro: o caixa fica negativo ('+g.save.bank+')');
 
 // ---------- turno sem fim: a folha também sai no fim ----------
-novo(500,{dani:1},'boca'); g.startEndless(); g.begin(); const fe=g.paid;
+novo(500,{dani:2},'boca'); g.startEndless(); g.begin(); const fe=g.paid;
 ok(g.save.bank===500,'turno sem fim: nada sai ao abrir'); g.pause(); ok(els['pause-note'].textContent==='','e a pausa não fala de dia');
 g.money=400; g.custo=100; g.finishEndless(); ok(g.save.bank===500+400-100-g.contas-fe,'no fim do turno, sai a folha junto: '+g.save.bank);
 

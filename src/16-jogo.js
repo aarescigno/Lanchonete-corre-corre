@@ -20,6 +20,7 @@ class Game {
     this.shopNext = 1;
     this.soundBtnT = 0;
     this.mode = 'carreira';
+    this.conversa = null;   // Modo História (v8.7): a conversa em andamento (19-conversa.js)
     this.treino = null; this.salvo = null;   // Missão zero (v8.2): o passo a passo e o save de verdade, guardado enquanto ela dura
     this.resetDay(1);
   }
@@ -775,6 +776,14 @@ class Game {
     let forcado = 0;
     if (sv.bank >= 0 || tomou) sv.neg = 0;
     else if (++sv.neg > BANCO.neg){ forcado = Math.ceil(-sv.bank / 10) * 10; this.emprestar(forcado, true); }
+    // Modo História (v8.7): o dia no azul conta no cap. 1; cumpriu o objetivo do capítulo, a conversa de depois fica pendente
+    let cap = null;
+    if (!tomou && sv.cap <= HISTORIA.length){
+      if (sv.cap === 1 && m > 0) sv.capAzul++;
+      const ob = this.capObj(sv);
+      cap = { n:sv.cap, titulo:HISTORIA[sv.cap - 1].titulo, itens:ob.itens, ok:ob.ok };
+      if (ob.ok) sv.conversa = 'depois';
+    }
     const row = { d:d.n, fat, ingr:Math.round(this.custo), contas:this.contas, folha:this.paid, div:this.paidDiv, lucro:m, meta:d.meta, ok:passed, st:stars, perd:this.stats.lost, saldo:sv.bank };
     if (avDia) row.av = Math.round(avDia.nota * 10);
     if (forcado) row.forc = 1;
@@ -782,7 +791,7 @@ class Game {
     if (tomou) row.tom = 1;
     caixaAdd(sv, row);
     writeSave(sv);
-    this.result = { day:d.n, money:m, fat, pontos:Math.round(this.pontos), custo:Math.round(this.custo), contas:this.contas, div:this.paidDiv, divName:this.div ? this.div.name : '', meta:d.meta, bom:bomGoal(d), expert:d.expert, passed, stars, served:this.stats.served, lost:this.stats.lost, lostBy:this.stats.lostBy, lotadoT:Math.round(this.stats.lotadoT), atraso:Math.round(this.atraso), full:this.stats.full, chain:this.stats.chain, vip:this.stats.vip, vipLost:this.stats.vipLost, marmitas:this.stats.marmitas, efood:this.efood, esfriou:this.stats.esfriou, sobra:this.marmitas().filter(o => o.onde !== 'fogao').length, juice:this.stats.juice, juiceMiss:this.stats.juiceMiss, sucoEsp:this.stats.sucoEsp, bebida:this.bebida.id, trash:this.stats.trash, washed:this.stats.washed, income, paid:this.paid, reason:this.reason, conserto:this.conserto, consertos:this.stats.consertos, quebras:this.quebras.filter(q => q.on).map(q => ({ id:q.id, fixed:q.fixed })), clima:this.clima, manut:Object.assign({}, this.manut), par, forcado, neg:sv.neg, emp:Object.assign({}, sv.emp), atrasou, tomou, devido, aval:{ dia:avDia, geral:avalGeral(sv.aval), n:sv.aval.length, coment } };
+    this.result = { day:d.n, money:m, fat, pontos:Math.round(this.pontos), custo:Math.round(this.custo), contas:this.contas, div:this.paidDiv, divName:this.div ? this.div.name : '', meta:d.meta, bom:bomGoal(d), expert:d.expert, passed, stars, served:this.stats.served, lost:this.stats.lost, lostBy:this.stats.lostBy, lotadoT:Math.round(this.stats.lotadoT), atraso:Math.round(this.atraso), full:this.stats.full, chain:this.stats.chain, vip:this.stats.vip, vipLost:this.stats.vipLost, marmitas:this.stats.marmitas, efood:this.efood, esfriou:this.stats.esfriou, sobra:this.marmitas().filter(o => o.onde !== 'fogao').length, juice:this.stats.juice, juiceMiss:this.stats.juiceMiss, sucoEsp:this.stats.sucoEsp, bebida:this.bebida.id, trash:this.stats.trash, washed:this.stats.washed, income, paid:this.paid, reason:this.reason, conserto:this.conserto, consertos:this.stats.consertos, quebras:this.quebras.filter(q => q.on).map(q => ({ id:q.id, fixed:q.fixed })), clima:this.clima, manut:Object.assign({}, this.manut), par, forcado, neg:sv.neg, emp:Object.assign({}, sv.emp), atrasou, tomou, devido, cap, aval:{ dia:avDia, geral:avalGeral(sv.aval), n:sv.aval.length, coment } };
     if (tomou){ this.setState('falencia'); Sfx.lose(); return; }
     this.setState('dayend');
     if (passed) Sfx.win(); else Sfx.lose();
@@ -822,9 +831,37 @@ class Game {
   /* banco (v8.3): o empréstimo entra no dinheiro na hora e soma `juros` ao que se deve, em BANCO.parcelas no fim de cada
      dia. Na lojinha, um por vez e até o crédito do ponto; à força (no fim do dia, depois de BANCO.neg dias no negativo),
      soma ao que já se devia, com juros maiores, e as parcelas recomeçam */
-  get parcela(){ return parcelaDe(this.save.emp); }
-  get devido(){ return devidoDe(this.save.emp); }   // v8.3.1: com a atrasada, se houver
-  get jurosHoje(){ return jurosDe(this.save.emp); }
+  get parcela(){ return parcelaDe(this.save.emp, this.day.n); }
+  get devido(){ return devidoDe(this.save.emp, this.day.n); }   // v8.3.1: com a atrasada, se houver
+  get jurosHoje(){ return jurosDe(this.save.emp, this.day.n); }
+  /* Modo História (v8.7): o objetivo do capítulo de agora, item a item ({ ok, itens:[{ txt, ok }] }); null depois do último capítulo */
+  capObj(sv){
+    sv = sv || this.save;
+    const c = HISTORIA[sv.cap - 1];
+    if (!c) return null;
+    const o = c.obj, itens = [], ge = avalGeral(sv.aval), nota = ge ? Math.round(ge.nota * 10) / 10 : null;
+    if (o.azul) itens.push({ txt:'Fechar ' + o.azul + ' dias no azul (' + Math.min(sv.capAzul, o.azul) + ' de ' + o.azul + ')', ok:sv.capAzul >= o.azul });
+    if (o.quitar) itens.push({ txt:sv.emp.resto ? 'Quitar a reforma (faltam ' + fmt(sv.emp.resto) + ')' : 'Reforma quitada', ok:!sv.emp.resto });
+    if (o.nota) itens.push({ txt:'Nota do Gurugol ' + fmtNota(o.nota) + ' (agora ' + fmtNota(ge ? ge.nota : null) + ')', ok:nota != null && nota >= o.nota });
+    if (o.caixa) itens.push({ txt:fmt(o.caixa) + ' no caixa (agora ' + fmt(sv.bank) + ')', ok:sv.bank >= o.caixa });
+    itens.forEach((it, i) => { it.txt = i ? it.txt.replace(/^(?!R\$)./, x => x.toLowerCase()) : it.txt; });
+    return { ok:itens.every(it => it.ok), itens };
+  }
+  /* o objetivo numa linha: itens separados por " · ", os cumpridos com ✓ */
+  capLinha(sv){
+    const ob = this.capObj(sv), c = HISTORIA[(sv || this.save).cap - 1];
+    return ob ? 'Capítulo ' + c.cap + ', ' + c.titulo + ': ' + ob.itens.map(it => (it.ok ? '✓ ' : '') + it.txt).join(' · ') : '';
+  }
+  /* o capítulo termina (a conversa de depois já tocou): o seguinte começa; ao entrar no 2, a Dani chega como aprendiz.
+     Devolve true se acabaram os capítulos (cap passa de HISTORIA.length) */
+  avancaCap(){
+    const sv = this.save;
+    sv.cap++; sv.capDia = sv.dia; sv.capAzul = 0;
+    sv.conversa = sv.cap <= HISTORIA.length ? 'antes' : null;
+    if (sv.cap === 2){ sv.equipe.dani = Math.max(sv.equipe.dani, 1); this.dani.reset(); }
+    writeSave(sv);
+    return sv.cap > HISTORIA.length;
+  }
   podeEmprestar(v){ return !this.save.emp.resto && v > 0 && v <= this.ponto.credito; }
   emprestar(v, forcado){
     const sv = this.save;
@@ -841,7 +878,7 @@ class Game {
   /* parcela do fim do dia (v8.3.1): sai só se couber no dinheiro, com a atrasada, se houver; senão, fica atrasada
      (emp.atr) e nada sai, e os juros do dia vão para o saldo (v8.3.2). Devolve o que foi pago */
   pagaParcela(){
-    const sv = this.save, e = sv.emp, v = this.devido, jur = jurosDe(e);
+    const sv = this.save, e = sv.emp, v = this.devido, jur = jurosDe(e, this.day.n);
     if (!v) return 0;
     if (sv.bank < v){ sv.emp = normEmprestimo(Object.assign({}, e, { resto:e.resto + jur, atr:true })); return 0; }
     sv.bank -= v; caixaGasto(sv, 'par', v); caixaGasto(sv, 'jur', jur);
