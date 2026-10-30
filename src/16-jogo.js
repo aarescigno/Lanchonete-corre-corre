@@ -171,6 +171,13 @@ class Game {
     if (!this.salvo) return;
     this.save = this.salvo; this.salvo = null; this.up = this.save.up; this.treino = null;
   }
+  /* "Pular tutorial": sai da Missão zero, marca como feita (não volta a abrir sozinha) e vai ao menu */
+  pularTreino(){
+    this.sairTreino();
+    this.save.treino = true; writeSave(this.save);
+    this.setState('menu');
+    Sfx.tap();
+  }
   /* último passo: a Missão zero fica marcada como feita no save de verdade */
   acabouTreino(){
     this.sairTreino();
@@ -1197,6 +1204,9 @@ class Game {
     if (this.state !== 'playing') return;
     pad = pad || 0;
     const h = this.hudHit(sx, y);
+    // Missão zero: "Pular tutorial" (em todos os balões) volta direto ao menu principal
+    const pu = this.treino && this.treino.pular;
+    if (pu && sx >= pu.x && sx <= pu.x + pu.w && y >= pu.y && y <= pu.y + pu.h){ this.pularTreino(); return; }
     // Missão zero: com o pop-up de explicação, qualquer toque (menos a pausa e o som) segue para o próximo passo
     if (this.treino && this.treino.para && !(h && (h.k === 'pause' || h.k === 'sound'))){ this.treino.seguir(); return; }
     if (h){

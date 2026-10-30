@@ -59,6 +59,11 @@ function drawTreino(ctx,g,tm){
   y += U.tit / 2 + 10 + U.linha / 2;
   linhas.forEach(l => { txt(ctx, l, r.x + U.pad, y, U.corpo, PAL.tinta, 'left', FB); y += U.linha; });
   const fy = r.y + r.h - U.pad - 11;
+  // "Pular tutorial": canto de cima do cartão; o retângulo fica em tr.pular para o toque (Game.onDown)
+  const pw = 122, ph = 24, pr = { x:r.x + r.w - 12 - pw, y:r.y + 10, w:pw, h:ph };
+  tr.pular = pr;
+  rr(ctx, pr.x, pr.y, pr.w, pr.h, 8); fs(ctx, '#efe6d2', 2);
+  txt(ctx, 'Pular tutorial ⏭', pr.x + pr.w / 2, pr.y + pr.h / 2, 13, PAL.tinta, 'center', FB);
   txt(ctx, 'Missão zero · passo ' + (tr.i + 1) + ' de ' + tr.total, r.x + U.pad, fy, 13, '#6b6355', 'left', FB);
   if (p.ok){
     const bw = 150, bx = r.x + r.w - U.pad - bw, by = fy - 17;
