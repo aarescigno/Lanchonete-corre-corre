@@ -54,10 +54,11 @@ Origem: retorno do Renan Martorelli (beta-tester) e conversa com o Arthur (15/10
 | 2c-r4a | Melhorias sem o limite de 1 por dia e o fim do dia sem o (n) do Gurugol | v8.6.14 | feita (30/10; ver `docs/spec-v8.6.14.md`) |
 | 2c-r4b | Lojinha em 4 grupos com cartões | v8.6.15 | feita (30/10; ver `docs/spec-v8.6.15.md`) |
 | 2f | A campanha vira o Modo História: estrutura e capítulos da Garagem | v8.7 | feita (30/10; ver `docs/spec-v8.7.md`; alvos do `carreira.js` e do `balance.js` batidos sem mexer nos valores) |
-| 2g | O Tonhão sobe de nível com os cursos (XP e aumento que consolida; 5 níveis) | v8.8 | a fazer (planejada em 30/10; vem antes da 3a) |
+| 2g | O Tonhão sobe de nível com os cursos (XP e aumento que consolida; 5 níveis) | v8.8 | feita em 30/10 (`docs/spec-v8.8.md`) |
 | 2h | A Dani sobe de nível com trabalho e cursos (XP e aumento que consolida) | v8.9 | feita em 30/10 |
 | 2c-r5 | Ajustes da lojinha: TV e som em Melhorias, toalha no Salão, ícones da equipe (Tonhão de corpo inteiro) e cartão da Manutenção com cor | v8.9.1 | feita em 30/10 (`docs/spec-v8.9.1.md`) |
-| 3a | Mudança de ponto e Lanchonete na área industrial (e os caps. 4 e 5) | v9 | a fazer (planejada em 30/10) |
+| 3a | Mudança de ponto e Lanchonete na área industrial (e os caps. 4 e 5) | v9 | feita em 30/10 (`docs/spec-v9.md`) |
+| 2c-r6 | Retorno de beta-tester: cardápio fácil de achar (cartão Cardápio com os cursos, conversa do dia 2, selo "novo", reclamação dos clientes) | v9.0.1 | a fazer (planejada em 30/10; **é a próxima**, antes da 3b) |
 | 3b | Restaurante na Avenida Brasil, o Joca (e o capítulo dela) | v9.1 | a fazer |
 | 4a | Terraço Suíça e VIPs exigentes (e o capítulo dele) | v10 | a fazer |
 | 4b | Nível de luxo | v10.1 | a fazer |
@@ -336,6 +337,75 @@ v8.9.1: guardar a v8.9 em `versoes/` (`v8.9-fonte.html` e `v8.9.html`), `vtag`, 
 
 ---
 
+## Etapa 2c-r6 — Cardápio fácil de achar: cartão Cardápio, conversa do dia 2, selo "novo" e reclamação dos clientes (v9.0.1)
+Origem: retorno de uma beta-tester (30/10, `docs/PROPOSTAS.md`): não ficou claro que os cursos do Tonhão aumentam o cardápio; ela procurou uma opção de "melhorar o cardápio" e não achou (hoje os cursos ficam em Lojinha › Equipe › Tonhão, abaixo do nível dele). Planejada com o usuário em 30/10 (entrevista); as decisões abaixo estão tomadas. Nada muda no balanceamento: os cursos continuam abertos desde o dia 1, com os mesmos preços, a mesma regra de 1 curso por dia e a mesma XP.
+
+### Decisões tomadas (30/10)
+- **Cartão Cardápio:** os cursos do Tonhão saem da seção Tonhão e vão para uma seção nova, **Cardápio**, que é o 1º cartão do grupo Lanchonete. Na seção Tonhão fica só a lista dos "Cursos de cardápio concluídos".
+- **Cursos da Dani:** ficam na Dani por ora (eles não trazem pratos). O Cardápio fica pronto para receber as bebidas da Dani numa etapa futura (ver Ideias guardadas).
+- **Sem trava:** quem já sabe compra no dia 1. A conversa e o selo só chamam a atenção.
+- **Conversa no fim do dia 2** (só no Modo História), com a Rosa; se a pessoa já fez algum curso, toca a versão curta. Depois das duas versões, a lojinha abre direto no Cardápio.
+- **Selo "novo"** no cartão Cardápio quando houver curso ao alcance do caixa (some ao abrir o cartão e volta quando outro curso couber no bolso).
+- **Reclamação dos clientes:** enquanto o Tonhão não fez nenhum curso básico, a reclamação de cardápio no Gurugol cita os pratos.
+- **Fica de fora:** dica embaixo da nota do Gurugol e aviso no resumo do fim do dia (o usuário não escolheu).
+
+### O que muda, parte por parte
+**`src/10-constantes.js`**
+- Depois de `HISTORIA`, a conversa avulsa do cardápio (fala no formato das de `HISTORIA`):
+  ```js
+  /* v9.0.1: a conversa do cardápio, no fim do dia `dia` (ou do 1º dia completo depois dele, para saves antigos), só no Modo História.
+     falas: o Tonhão ainda não fez curso; fez: já fez algum (básico de qualquer curso ou o avançado do PF). save.convCard: 'pend' | 1 (vista) */
+  const HIST_CARDAPIO = { dia:2,
+    falas:[ { q:'bia', s:'Tio, hoje um monte de gente perguntou se só tem PF e coxinha...' },
+            { q:'tonhao', s:'É... a Rosa fazia um pastel que era uma beleza. Eu nunca aprendi.' },
+            { q:'bia', s:'Então faz um curso! Tem uns baratinhos.' },
+            { q:'tonhao', s:'Tá bom, tá bom. Vê aí no Cardápio da lojinha o que cabe no bolso.' } ],
+    fez:[ { q:'bia', s:'O pessoal adorou o prato novo!' },
+          { q:'tonhao', s:'Então vou fazer mais cursos. Tá tudo no Cardápio da lojinha.' } ] };
+  ```
+- `function cursoFeito(cursos)`: true se algum curso tem o básico (`c.preco > 0 && cursoNivel(cursos, c.id) >= 1`) ou se o PF tem o avançado (`cursoNivel(cursos, 'pf') >= 2`).
+- Junto de `AVAL_BRAVO`: `const AVAL_POUCO = ['Só tem PF e coxinha?', 'Queria um pastel, mas não tem...', 'Sempre a mesma coisa no cardápio.'];`
+- `avalComentario(..., tipo, pouco)`: novo último parâmetro. Logo depois da linha do `semVeg` (que continua com prioridade): `if (!bom && pouco){ const m = índice de 'menu'; if (r[m] != null && r[m] <= r[k]) return pick(AVAL_POUCO); }` (a mesma regra do `semVeg`: só quando o Cardápio é o pior critério).
+
+**`src/16-jogo.js`**
+- Na chamada de `avalComentario` (~linha 721), passe `pouco = !CURSOS.some(c => c.preco > 0 && cursoNivel(this.save.cursos, c.id) >= 1)` (só os básicos; o avançado do PF não conta, porque não traz prato novo).
+- No fim do dia, logo depois do bloco do Modo História (~linha 858–871): `if (!tomou && HIST.on && !DEV.on && sv.histV === 1 && d.n >= HIST_CARDAPIO.dia && !sv.convCard) sv.convCard = 'pend';` (saves antigos que já passaram do dia 2 veem a conversa no próximo fim de dia, de propósito: é o caso da beta-tester).
+- Getter `get cardapioNovo()`: a lista das chaves `id + nível` (ex.: `'pastel1'`, `'pf2'`) dos cursos com `cursoProx(id)`, com `!this.cursoTrava` e `this.save.bank >= p.preco`, que **não** estão em `this.save.cardVisto`; o selo acende se a lista não estiver vazia. `cardVer()`: junta essas chaves em `save.cardVisto` e grava o save.
+- `save.convCard` e `save.cardVisto` entram na normalização do save (`12-clientes.js`, onde está o `normCursos`): `convCard` vale `'pend'`, `1` ou nada; `cardVisto` é uma lista de textos (padrão `[]`). O `resetProgress` zera os dois.
+
+**`src/41-lojinha.js`**
+- `SHOP_SECOES.cardapio = { nome:'Cardápio', icon:'cardapio', build:g => buildCardapio(g) }` e `SHOP_GRUPOS` Lanchonete: `['cardapio', 'melhorias', 'salao', 'decor', 'manut', 'divulga']`. `SHOP_ANTIGAS.cursos` passa a `'cardapio'`.
+- Ícone `'cardapio'` no `upgradeIcon`: um pastel e uma coxinha lado a lado com `drawDish` (como o `cursoIcon`).
+- `shopCartoes`: no cartão `cardapio`, se `game.cardapioNovo` acender, classe `novo` e `aria-label` "Cardápio: tem curso novo que cabe no caixa". Ao tocar no cartão, chame `game.cardVer()` antes do `buildShop()`. Na fileira de grupos, o grupo Lanchonete leva a mesma classe `novo` quando outro grupo está aberto e o selo está aceso.
+- `buildCardapio(grid)`: (1) um `staffCard` com o ícone `cardapio`, título "No cardápio hoje (N pratos)" e o texto com `pratosSabidos(cursos)` e os preços (`precoPrato(k, game.ponto, cursos)`, separados por " · "), mais a linha "Diversidade do cardápio no Gurugol: x,x ★ (cada curso básico dá +0,6)" (`avalMenu`, uma casa, vírgula); (2) o `buildCursos(grid)` de hoje, sem mudar; (3) no fim, `el('span', 'cursos-lista', 'Cada curso também dá experiência ao Tonhão (Equipe › Tonhão).')`.
+- `buildTonhao`: troque `buildCursos(grid)` por `buildCursosFeitos(grid)`, um `staffCard` com o ícone `cardapio` e o título "Cursos de cardápio concluídos". Para cada curso feito, uma linha: "Curso de X (básico)" e, com o avançado, "c.av.nome (avançado)"; o PF só aparece com o avançado. Sem nenhum: "Nenhum ainda. Os cursos ficam no Cardápio da lojinha." Sempre com o botão "Ver cursos", que chama `shopAbrir('cardapio')`. A frase do "Faltam N de experiência" ganha no fim " Os cursos ficam no Cardápio."
+
+**`src/01-estilo.css`**
+- `.shopcards button.novo` e a aba do grupo com `.novo`: selo amarelo "novo" (pílula pequena no canto de cima à direita, `::after` com `content:'novo'`), parado (sem animação, o que já respeita o `prefers-reduced-motion`). Os 6 cartões do grupo Lanchonete devem caber como os 5 de hoje (2 colunas no celular).
+
+**`src/43-telas.js`**
+- Variável `let shopEntra = null;` e, na troca para a tela `shop` (linha ~34): `shopGrupo = 'lanchonete'; shopTab = shopEntra; shopEntra = null;`.
+- `fluxoHistoria(fim)`: depois das conversas de capítulo (`depois` e `antes`, que continuam primeiro), e antes do `fim()`: se `sv.convCard === 'pend'`, toca `HIST_CARDAPIO.fez` se `cursoFeito(sv.cursos)`, senão `HIST_CARDAPIO.falas`; ao terminar (ou ao pular): `sv.convCard = 1`, `writeSave`, `shopEntra = 'cardapio'` e `fim()`. A conversa usa o mesmo `Conversa`/`ov-conversa` de hoje (o `falar` recebe a lista de falas; se hoje ele só aceita `'antes'`/`'depois'`, acrescente um jeito de passar as falas direto).
+
+**Textos que apontam para o lugar antigo dos cursos**
+- `src/40-interface.js` (Como jogar, ~linha 187): "Na aba Cursos, o Tonhão aprende..." vira "No Cardápio da lojinha, o Tonhão aprende...". Procure outros "aba Cursos" e "cursos do Tonhão na lojinha" em `src/` (menos a lista do painel `#ov-ver`, que é histórico) e aponte para o Cardápio.
+
+### Testes
+- **`smoke39.js` (novo):**
+  1. Lojinha, grupo Lanchonete: o 1º cartão é `data-sec="cardapio"`. Ao abrir, aparecem "No cardápio hoje (2 pratos)" e os cursos ("Comprar R$ 150" no Pastel de feira). A seção Tonhão não tem botão de comprar curso, mostra "Cursos de cardápio concluídos" e "Nenhum ainda", e "Ver cursos" abre o Cardápio (`shopTab === 'cardapio'`).
+  2. Selo: com R$ 200 no caixa, o cartão tem a classe `novo`; depois de abrir e voltar, não tem; com o caixa em R$ 300 (o curso de Salgados fritos, R$ 220, passa a caber), volta. Com R$ 100, não aparece. No dia em que o curso já foi comprado (`cursoTrava`), não aparece.
+  3. Conversa: com `load({historia:true})`, ao fechar o dia 2, `save.convCard === 'pend'`. O fluxo toca a conversa, com a 1ª fala "Tio, hoje um monte de gente perguntou se só tem PF e coxinha...". No fim, `convCard === 1` e a lojinha abre com `shopTab === 'cardapio'`. Com `cursos:{pastel:1}`, a 1ª fala é "O pessoal adorou o prato novo!". Sem a História (`load()` padrão), `convCard` nunca fica `'pend'`. Fechar o dia 3 depois não toca de novo.
+  4. Comentário: `avalComentario` com o Cardápio como pior critério, `bom` falso e `pouco` verdadeiro sai de `AVAL_POUCO`; com `pouco` falso sai de "Pouca opção no cardápio." / "Queria mais pratos."; com `semVeg` verdadeiro continua "Não tinha nada vegetariano.".
+- **Testes que compravam curso pela seção Tonhão** (veja `smoke15`, `smoke26`, `smoke33`, `smoke35`, `shot_v8_3.py` e `shot_v8_6_15.py`; procure `'tonhao'`, `'cursos'` e "Comprar" perto de curso): passe a abrir `'cardapio'`. Não mude o que eles conferem.
+- **`carreira.js`:** a linha 74 fecha as conversas de capítulo entre os dias; feche também a do cardápio (`if (g.save.convCard === 'pend') g.save.convCard = 1;`). Os números do `carreira.js` e do `balance.js` não podem mudar (nada no jogo mudou de valor): rode os dois e compare com a v9 (`docs/spec-v9.md`).
+- `./run_all.sh --tudo` verde (o `menu_fit` confere a lojinha com o 6º cartão).
+- Captura `shot_v9_0_1.py` em `capturas/v9.0.1`: grupo Lanchonete com o selo, seção Cardápio, seção Tonhão (sem curso e com 2 cursos feitos) e o balão da 1ª fala da conversa, em tela larga e no celular (390×844). Confira com recortes ampliados (PIL `crop`) do cartão com o selo e do topo da seção Cardápio.
+
+### Fechamento
+- Versão **v9.0.1**: guarde a v9 em `versoes/v9-fonte.html` e `versoes/v9.html`, atualize o `vtag`, a `VERSAO` e o painel `#ov-ver` ("v9.0.1 — 30/10/2026 — Ficou mais fácil achar os cursos do Tonhão: eles moram no cartão Cardápio, o primeiro da lojinha, com um selo "novo" quando algum cabe no caixa. No fim do dia 2 do Modo História, a Bia avisa que a freguesia quer mais opções, e quem ainda só tem PF e coxinha ouve isso no Gurugol."). Escreva `docs/spec-v9.0.1.md`, atualize `docs/RESUMO.md`, `docs/PARTES.md` (seção Cardápio nova, `HIST_CARDAPIO`, `AVAL_POUCO`) e esta tabela, e marque o destino do retorno em `docs/PROPOSTAS.md`. PR para o `claude/main` com merge; avise que está pronta para publicar (não publique sem o usuário pedir).
+
+Modelo: Sonnet, esforço médio (o plano está fechado; o trabalho é mudar a lojinha, uma conversa e um comentário, ajustar testes antigos e checar a tela).
+
 ## Etapa 3 — Pontos: área industrial (3a, v9) e Avenida Brasil (3b, v9.1)
 **Objetivo:** a primeira decisão grande de dinheiro, mudar de ponto, que é subir o nível do salão. Valores na tabela da etapa 1d. Desde a revisão de 28/10, cada ponto é também um capítulo do Modo História (etapa 2f).
 
@@ -598,6 +668,7 @@ v9: guardar a v8.9 em `versoes/`, `vtag`, `VERSAO`, `#ov-ver`, `docs/spec-v9.md`
 ---
 
 ## Ideias guardadas (sem etapa ainda)
+- **Bebidas da Dani no Cardápio** (entrevista de 30/10, da etapa 2c-r6): quando o curso de barista da Dani passar a trazer bebidas (cafezinho coado, pingado, cappuccino), os cursos dela que trazem itens entram no cartão Cardápio da lojinha, com o rosto da Dani, ao lado dos do Tonhão; os de Atendimento e Organização da cozinha ficam na seção Dani. Pede etapa própria, com preço, balanceamento e desenho das bebidas.
 - **Virou a etapa 2e (revisão de 28/10), feita na v8.6.** **Entregadores: fila própria e marmitas** (pedido do usuário em 27/10; texto em `docs/PROPOSTAS.md`): hoje o entregador de moto entra na fila como qualquer cliente, senta e come no salão. A ideia é ele **não comer no lugar**: chega pela porta (ou por um balcão de retirada) e entra numa **fila própria de retirada**, separada da fila de mesas, e leva a comida embora. O prato dele é a **marmita**, e para liberá-la pede um **fluxo de preparação**: o Tonhão faz a marmita (tempo e ingredientes próprios, talvez com embalagem como custo), ela fica pronta num ponto de retirada (balcão ou prateleira, com limite de vagas) e a Bia (ou a Dani) entrega ao entregador quando a marmita está pronta. Quem não é atendido a tempo vai embora (paciência curta, como hoje); retirada rápida paga bem. Decidir: se a marmita é um item do cardápio ou um modo de preparo de qualquer prato; se dá para **adiantar marmitas** em horário calmo (estoque no balcão) para liberar os entregadores sem parar o salão; custo da embalagem e preço (taxa de retirada?); como aparece na chuva, quando mais clientes viram entregadores (`CLIMA`), e na sexta, quando vêm mais; efeito nas avaliações do Gurugol (`AVAL`: a espera do entregador conta como agilidade). Combina com o balcão de pratos e com os funcionários extras (Joca).
 - **Conta rachada** (pensada com o usuário em 30/10, reservada para a 3b, Avenida Brasil): um jeito de pagar que pode cair em qualquer grupo de colegas (turma, executivas): cada um paga a sua parte, e a Bia leva 2 ou 3 maquininhas em vez de uma conta só. Mais trabalho, mas cada pessoa deixa um pouco de gorjeta. Decidir: a chance, quantas maquininhas, o tempo de cada uma e a gorjeta por pessoa.
 - **Fiscal da vigilância sanitária** (pensada com o usuário em 30/10, reservada para a 3b ou para a 4c, eventos de bairro): uma visita surpresa, como evento, que repara na mesa suja, na lixeira cheia e na pia lotada. Aprovado, selo e um tanto a mais na nota do Gurugol; reprovado, multa. Ensaia o crítico do Michelzão (etapa 6). Decidir: a frequência, o que se confere, o valor da multa e do bônus, e se há aviso (ex.: "Dizem que a vigilância está na rua").

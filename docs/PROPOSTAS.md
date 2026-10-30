@@ -4,6 +4,13 @@ Registro das ideias e dos retornos de quem jogou, com o texto original, e de ond
 
 ---
 
+## 30/10/2026 — beta-tester (via usuário): não achou como aumentar o cardápio
+**Texto (resumo do usuário):** "Recebi um feedback de uma beta tester. Ela disse que não fica claro que ela tem que comprar os cursos do Tonhão para aumentar o cardápio. Ela procurou e não achou a opção de melhorar cardápio ou coisa assim." O usuário sugeriu um menu de upgrade só para o cardápio (os cursos do Tonhão e, no futuro, os de barista da Dani) ou uma conversa na história ("Nossa, tio, estão reclamando da falta de cardápio" / "Ah, é verdade, né? Acho que vou fazer alguns cursos"), por volta do dia 2 a 4.
+**Entrevista (30/10):** cartão Cardápio (1º do grupo Lanchonete) com os cursos; na seção Tonhão fica só a lista dos cursos de cardápio concluídos; cursos abertos desde o dia 1 (sem trava); conversa no fim do dia 2, com a Rosa ("a Rosa fazia um pastel que era uma beleza"), e uma versão curta para quem já fez curso; depois, a lojinha abre no Cardápio; selo "novo" quando algum curso cabe no caixa; reclamação dos clientes que cita "só PF e coxinha" enquanto não houver curso básico. Os cursos da Dani ficam na Dani por ora. A dica no Gurugol e o aviso no fim do dia ficaram de fora.
+**Destino:** etapa 2c-r6 (v9.0.1) em `docs/PLANO.md`, a próxima. As bebidas da Dani no Cardápio foram para as Ideias guardadas.
+
+---
+
 ## 30/10/2026 — Usuário: ajustes da lojinha (TV e som, toalha, equipe, manutenção)
 > "No menu de upgrades, transfira TV e som para a aba melhorias. Quando eu vou em equipe, os sprites da Bia e da Dani estão cortados. Então, no encaixe ali da equipe e o card da Bia e o card da Dani. A manutenção o card da manutenção ele pode mudar de cor se ficar no amarelo ou no vermelho. O próprio card já demonstra se já tem alguma coisa crítica ou não. E a toalha xadrez... que está ali na melhoria melhorias, não. Da decoração, a toalha xadrez tem que ir para o salão para poder comprar no salão."
 > "Aproveita e inclua nesse planejamento para o sprite do Tonhão tá esquisito. Coloca um chapéu de cozinheiro ou o rosto dele mesmo com um chapéu. Ou, similar ao como tá da Bia e da Dani."
