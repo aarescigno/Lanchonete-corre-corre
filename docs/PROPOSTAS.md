@@ -4,6 +4,17 @@ Registro das ideias e dos retornos de quem jogou, com o texto original, e de ond
 
 ---
 
+## 30/10/2026 — Usuário: clientes novos da área industrial
+**Origem:** depois de planejar a 3a, o usuário pediu: "Me ajude a pensar em novos tipos de clientes para frequentarem nessa etapa." A sessão propôs 5 ideias (turma da fábrica com o apito do meio-dia, motorista de caminhão, encomenda do setor, conta rachada, fiscal da vigilância sanitária). Resposta:
+
+> "Planeje a implementação da 1, 2 e 3. E reserve a 4 e a 5 nas ideias para a próxima etapa."
+
+**Destino:** a **turma da fábrica** (com o apito), o **motorista de caminhão** (com o cafezinho no fim) e a **encomenda do setor** (lote de 4 a 6 marmitas, avisada na introdução do dia, prateleira de 4) entraram na sessão **3a** do `docs/PLANO.md`, com valores, visual, testes e alvos decididos pela sessão. O apito substitui o "pico do meio do dia" e o `ponto.tipos` substitui o `mix`. A **conta rachada** e o **fiscal da vigilância sanitária** foram para as Ideias guardadas, citadas no planejamento da 3b.
+
+---
+
+---
+
 ## 30/10/2026 — Usuário: o Tonhão sobe de nível com experiência dos cursos
 > "Eu quero implementar, antes de avançar para a área industrial, uma modificação no Tonhão. Em vez de eu comprar aumentos de salário para o Tonhão, e isso ser o aumento das habilidades dele, eu quero ter um sistema parecido com um sistema de experiência, né, de XP. Que à medida que ele vai fazendo cursos, ele vai juntando XP e faz um upgrade. E aí, esse upgrade, ele, para consolidar, tem que ter um aumento de salário, entendeu? Então ele precisaria fazer pelo menos 2 cursos para ir para o Tonhão nível 2. E aí, liberar o Tonhão nível 2, que eu pago o salário e ele fica nível 2. E aí tem que fazer mais cursos para chegar no Tonhão nível 3, sabe? E aí talvez a gente tenha que criar mais níveis de Tonhão, pensando até nos cursos avançados, né? Isso por enquanto na etapa da garagem e da industrial, né? Depois Avenida Brasil e Terraço Suíça seria diferente o processo, né? Porque aí não vai vender coxinha nos restaurantes de luxo, né? Mas isso é pro futuro. Guarda aí pro futuro."
 
