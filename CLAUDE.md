@@ -39,7 +39,7 @@ O JS fica todo dentro de um `(function(){ ... })()` que abre em `02-telas.html` 
 
 ## Testes (`cd tests`)
 - `./run_all.sh` monta `lanchonete.html`, gera `game.js` e `botpage.js`, confere a sintaxe e roda todos os smokes (só o resumo); `--tudo` acrescenta `menu_fit` e `balance`.
-- `node balance.js [N]` (bot por dia; alvos: sem equipe ~40–70% das metas nos dias 3 a 7, `EQUIPE=auto` ~85–95%), `node carreira.js [N]` (campanha de 14 dias), `node emprestimo.js` (estratégias de empréstimo), `python3 menu_fit.py` (o menu não rola), `python3 shot_vX.py` (capturas em `capturas/vX`).
+- `node balance.js [N]` (bot por dia; alvos: sem equipe ~40–70% das metas nos dias 3 a 7, `EQUIPE=auto` ~85–95%; `PONTO=industrial` joga os dias 8 a 10 na área industrial, v9), `node carreira.js [N]` (campanha de 14 dias; `DIAS=35` chega à área industrial e mostra os caps. 4 e 5; `MUDA=0` fica na Garagem; `PONTO_CFG='{"cardapio":1.4}'` troca números do ponto novo; o smoke da v9 é o `smoke38`), `node emprestimo.js` (estratégias de empréstimo), `python3 menu_fit.py` (o menu não rola), `python3 shot_vX.py` (capturas em `capturas/vX`).
 - O `harness.js` desliga os imprevistos (`load({imprevistos:true})` liga), marca a abertura como vista e desliga o Modo História (sem reforma nem conversas; `load({historia:true})` liga, como no `smoke34`). `node carreira.js` joga a História (`HIST=0` sem ela) e mostra a linha `HISTORIA`.
 - Variáveis de ambiente, alvos e histórico do balanceamento, coordenadas da tela nos smokes e o que cada `shot_*.py` captura: `docs/TESTES.md` (só quando o assunto pedir).
 
