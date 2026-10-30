@@ -18,6 +18,7 @@ Registro das ideias e dos retornos de quem jogou, com o texto original, e de ond
 > Dani aprendiz de graça, com aumentos de R$ 25, 40 e 55: "Aprovo (Recomendado)". Objetivo do cap. 2: "Nota do Gurugol 2,4". Falas novas dos caps. 2 e 3: "Aprovo".
 
 **Destino:** etapa **2f** do `docs/PLANO.md` (v8.7), com as decisões tomadas, as falas dos 3 capítulos e os alvos do `carreira.js`. A Dani de graça como aprendiz (ideia do usuário) entra nela. Decidido por mim, sem pergunta: as falas de depois do cap. 2 trocadas para combinar com o objetivo da nota; o botão História vira "Ver abertura"; partes novas `19-conversa.js` e `26-conversa.js`; a reforma começa a cobrar no dia 2, com juros de 1% ao dia.
+
 ---
 
 ## 30/10/2026 — Usuário: o "(n)" do Gurugol e a lojinha com abas demais
