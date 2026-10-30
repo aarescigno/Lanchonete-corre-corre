@@ -220,8 +220,9 @@ function buildDani(grid){
     ['Lava 1 pilha', a && sec(WASH.perPile / a.speed), sec(WASH.perPile / b.speed)],
     ['Tarefas', a && String(a.tasks), String(b.tasks)],
     ['Diária', a && fmt(a.pay), fmt(b.pay)]];
-  c = staffCard(upgradeIcon('dani'), lv ? 'Dani · nível ' + lv + ' de 3' : 'Dani (ajudante)',
-    lv ? '' : 'Ajudante da Bia, mais lenta que ela (velocidade em % da dela). Tem 2 mãos: leva 2 itens por vez. Pode ' + avail.map(t => t.name.toLowerCase()).join(', ').replace(/, ([^,]*)$/, ' e $1') + '.');
+  const cap2 = game.save.cap >= 2 || DEV.on || lv > 0;   // v8.7: a Dani chega no capítulo 2 (no modo dev, desde o início)
+  c = staffCard(upgradeIcon('dani'), lv ? 'Dani · ' + (lv === 1 ? 'aprendiz (sem salário)' : 'nível ' + (lv - 1) + ' de 3') : 'Dani (ajudante)',
+    lv ? '' : (cap2 ? '' : 'Chega no capítulo 2. ') + 'Ajudante da Bia, mais lenta que ela (velocidade em % da dela). Tem 2 mãos: leva 2 itens por vez. Pode ' + avail.map(t => t.name.toLowerCase()).join(', ').replace(/, ([^,]*)$/, ' e $1') + '.');
   if (lv){
     const sel = eq.daniTasks.filter(id => daniTaskOk(id, game.up)).length;
     const tasks = el('div', 'tasks');
@@ -235,10 +236,12 @@ function buildDani(grid){
     c.appendChild(el('span', 'full', 'Tarefas (' + Math.min(sel, sp.tasks) + ' de ' + sp.tasks + '):'));
     c.appendChild(tasks);
   }
-  c.appendChild(lv < 3 ? staffNext((lv ? 'Se promover (nível ' : 'Se contratar (nível ') + (lv + 1) + '):', dRows(D[lv], D[lv+1])) : staffNext('Nível máximo:', dRows(null, D[3])));
+  const dMax = D.length - 1;
+  if (!lv && !cap2){ grid.appendChild(c); return; }
+  c.appendChild(lv < dMax ? staffNext(lv ? 'Com o aumento:' : 'Se contratar (aprendiz):', dRows(D[lv], D[lv+1])) : staffNext('Nível máximo:', dRows(null, D[dMax])));
   duo = el('div', 'duo');
-  if (lv < 3) duo.appendChild(shopBtn(lv ? 'Promover' : 'Contratar', 'btn', canPay(D[lv+1].pay - (lv ? D[lv].pay : 0)), () => game.setStaff('dani', lv + 1)));
-  if (lv > 0) duo.appendChild(shopBtn('Dispensar', 'btn alt', true, () => game.setStaff('dani', 0)));
+  if (lv < dMax) duo.appendChild(shopBtn(lv ? 'Aumento: ' + fmt(D[lv+1].pay - D[lv].pay) + '/dia' : 'Contratar', 'btn', canPay(D[lv+1].pay - (lv ? D[lv].pay : 0)), () => game.setStaff('dani', lv + 1)));
+  if (lv > 1) duo.appendChild(shopBtn('Reduzir', 'btn alt', true, () => game.setStaff('dani', lv - 1)));
   c.appendChild(duo); grid.appendChild(c);
 }
 /* TV e som e o couvert (v7.4.3), agora na Divulgação (v8.6.15) */
@@ -591,11 +594,11 @@ function buildBanco(grid){
   const sv = game.save, e = sv.emp, cr = game.ponto.credito, pc = Math.round(BANCO.juros * 100);
   // v8.3.2, amortização: juros ao dia sobre o saldo; cada parcela é a amortização fixa mais os juros do dia
   const vs = BANCO.valores.filter(v => v <= cr), sim = simulaEmprestimo(vs[vs.length - 1], BANCO.juros);
-  let c = staffCard(upgradeIcon('banco'), 'Empréstimo', pc + '% ao dia sobre o saldo; cada parcela paga 1/' + BANCO.parcelas + ' do valor mais os juros. ' + (e.resto ? 'Amortizar antes corta os juros.' : fmt(vs[vs.length - 1]) + ' viram ' + sim.parcelas.join(', ').replace(/, ([^,]*)$/, ' e $1') + ' (' + fmt(sim.juros) + ' de juros). Até ' + fmt(cr) + ', um por vez.') + ' Atrasar 2 dias fecha a lanchonete.');
+  let c = staffCard(upgradeIcon('banco'), e.ref ? 'Reforma da garagem' : 'Empréstimo', e.ref ? 'Parcelas de ' + fmt(e.amort) + ' mais ' + Math.round(e.j * 100) + '% ao dia sobre o saldo. Amortizar antes corta os juros.' : pc + '% ao dia sobre o saldo; cada parcela paga 1/' + BANCO.parcelas + ' do valor mais os juros. ' + (e.resto ? 'Amortizar antes corta os juros.' : fmt(vs[vs.length - 1]) + ' viram ' + sim.parcelas.join(', ').replace(/, ([^,]*)$/, ' e $1') + ' (' + fmt(sim.juros) + ' de juros). Até ' + fmt(cr) + ', um por vez.') + ' Atrasar 2 dias fecha a lanchonete.');
   if (e.resto){
     c.classList.add(e.atr ? 'atr' : 'own');
     const tab = tabelaDe(e);
-    c.appendChild(el('span', 'full', 'Faltam ' + fmt(e.resto) + (e.j !== BANCO.juros && e.j ? ' (' + Math.round(e.j * 100) + '% ao dia)' : '') + '. ' + (e.atr ? 'Parcela atrasada! No fim do dia ' + game.shopNext + ', o caixa precisa ter ' + fmt(game.devido) + '.' : 'Fim do dia ' + game.shopNext + ': ' + fmt(game.parcela) + ' (' + Math.min(e.resto, e.amort) + ' + ' + game.jurosHoje + ' de juros)' + (tab.length > 1 ? '; depois, ' + tab.slice(1).join(', ').replace(/, ([^,]*)$/, ' e $1') : '') + '.')));
+    c.appendChild(el('span', 'full', 'Faltam ' + fmt(e.resto) + (e.j !== BANCO.juros && e.j ? ' (' + Math.round(e.j * 100) + '% ao dia)' : '') + '. ' + (e.atr ? 'Parcela atrasada! No fim do dia ' + game.shopNext + ', o caixa precisa ter ' + fmt(game.devido) + '.' : carencia(e, game.shopNext) ? '1ª parcela no fim do dia ' + e.ini + ': ' + fmt(parcelaDe(e, e.ini)) + ' (' + Math.min(e.resto, e.amort) + ' + ' + jurosDe(e, e.ini) + ' de juros)' : 'Fim do dia ' + game.shopNext + ': ' + fmt(game.parcela) + ' (' + Math.min(e.resto, e.amort) + ' + ' + game.jurosHoje + ' de juros)' + (tab.length > 1 ? '; depois, ' + tab.slice(1).join(', ').replace(/, ([^,]*)$/, ' e $1') : '') + '.')));
     const duo = el('div', 'duo'), a1 = Math.min(e.resto, e.amort);
     if (e.resto > a1) duo.appendChild(shopBtn('Amortizar ' + fmt(a1), 'btn', sv.bank >= a1, () => game.amortizar(a1), a1));
     duo.appendChild(shopBtn('Quitar: ' + fmt(e.resto), 'btn', sv.bank >= e.resto, () => game.quitar(), e.resto));

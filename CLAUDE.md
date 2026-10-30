@@ -1,6 +1,6 @@
 # Lanchonete Corre-Corre
 
-Jogo de navegador de gerenciamento de restaurante, em um único arquivo HTML com canvas 2D, em português do Brasil. Versão atual: **v8.6.15**. Estado do projeto, histórico, artifact e ranking: `docs/RESUMO.md`. Roteiro, uma etapa por sessão: `docs/PLANO.md` (quando o pedido for "a próxima etapa", leia só a etapa da vez). Retornos de jogadores (texto original e destino): `docs/PROPOSTAS.md`; registre lá cada retorno novo.
+Jogo de navegador de gerenciamento de restaurante, em um único arquivo HTML com canvas 2D, em português do Brasil. Versão atual: **v8.7**. Estado do projeto, histórico, artifact e ranking: `docs/RESUMO.md`. Roteiro, uma etapa por sessão: `docs/PLANO.md` (quando o pedido for "a próxima etapa", leia só a etapa da vez). Retornos de jogadores (texto original e destino): `docs/PROPOSTAS.md`; registre lá cada retorno novo.
 
 ## Regras do projeto
 - **Jogo original:** os personagens são a Bia (garçonete) e o Chef Tonhão. Não usar nomes, arte nem logos de jogos existentes, nem citar "Diner Dash" ou "Flo" na interface.
@@ -14,8 +14,8 @@ Jogo de navegador de gerenciamento de restaurante, em um único arquivo HTML com
 ## Partes do código (`src/`, juntadas em ordem pelo nome)
 O JS fica todo dentro de um `(function(){ ... })()` que abre em `02-telas.html` e fecha em `43-telas.js`; as partes `.js` não rodam sozinhas.
 - `0x` topo, CSS e telas (`00-topo.html`, `01-estilo.css`, `02-telas.html` com o menu, a lojinha e os painéis `#ov-*`)
-- `1x` lógica: `10-constantes.js` (cardápio, metas, `MANUT`, `AVAL`, `DECOR`, cursos...), `11-base.js`, `12-clientes.js`, `13-cozinha.js` (Tonhão), `14-bia.js`, `15-dani.js`, `16-jogo.js` (classe `Game`), `17-treino.js` (Missão zero), `18-abertura.js`
-- `2x` desenho: `20-desenho-base.js`, `21-cenario.js`, `22-salao-hud.js`, `23-render.js`, `24-treino.js`, `25-abertura.js`
+- `1x` lógica: `10-constantes.js` (cardápio, metas, `MANUT`, `AVAL`, `DECOR`, cursos...), `11-base.js`, `12-clientes.js`, `13-cozinha.js` (Tonhão), `14-bia.js`, `15-dani.js`, `16-jogo.js` (classe `Game`), `17-treino.js` (Missão zero), `18-abertura.js`, `19-conversa.js` (as conversas do Modo História)
+- `2x` desenho: `20-desenho-base.js`, `21-cenario.js`, `22-salao-hud.js`, `23-render.js`, `24-treino.js`, `25-abertura.js`, `26-conversa.js`
 - `3x`/`4x` interface: `30-ranking.js`, `40-interface.js` (menu, Como jogar), `41-lojinha.js`, `42-resultados.js` (fim do dia), `43-telas.js` (troca de telas, entrada, laço)
 - Para achar seções e funções: `tests/mapa.sh [filtro]`. O que cada parte tem, versão a versão: `docs/PARTES.md` (só quando precisar).
 
@@ -40,7 +40,7 @@ O JS fica todo dentro de um `(function(){ ... })()` que abre em `02-telas.html` 
 ## Testes (`cd tests`)
 - `./run_all.sh` monta `lanchonete.html`, gera `game.js` e `botpage.js`, confere a sintaxe e roda todos os smokes (só o resumo); `--tudo` acrescenta `menu_fit` e `balance`.
 - `node balance.js [N]` (bot por dia; alvos: sem equipe ~40–70% das metas nos dias 3 a 7, `EQUIPE=auto` ~85–95%), `node carreira.js [N]` (campanha de 14 dias), `node emprestimo.js` (estratégias de empréstimo), `python3 menu_fit.py` (o menu não rola), `python3 shot_vX.py` (capturas em `capturas/vX`).
-- O `harness.js` desliga os imprevistos (`load({imprevistos:true})` liga) e marca a abertura como vista.
+- O `harness.js` desliga os imprevistos (`load({imprevistos:true})` liga), marca a abertura como vista e desliga o Modo História (sem reforma nem conversas; `load({historia:true})` liga, como no `smoke34`). `node carreira.js` joga a História (`HIST=0` sem ela) e mostra a linha `HISTORIA`.
 - Variáveis de ambiente, alvos e histórico do balanceamento, coordenadas da tela nos smokes e o que cada `shot_*.py` captura: `docs/TESTES.md` (só quando o assunto pedir).
 
 ## Editor de desenhos (`ferramentas/`)

@@ -23,6 +23,9 @@ html,body{margin:0;padding:0;height:100%;width:100%;overflow:hidden;background:#
 #ov-abertura{background:transparent;pointer-events:none;align-items:flex-start;justify-content:flex-end}
 #ov-abertura{gap:calc(var(--u)*8)}
 #ov-abertura .btn{pointer-events:auto;font-size:max(13px,calc(var(--u)*18));min-height:44px;padding:calc(var(--u)*4) calc(var(--u)*18)}
+/* conversa do Modo História (v8.7): igual à abertura, só o Pular por cima (o toque vai ao canvas) */
+#ov-conversa{background:transparent;pointer-events:none;align-items:flex-start;justify-content:flex-end}
+#ov-conversa .btn{pointer-events:auto;font-size:max(13px,calc(var(--u)*18));min-height:44px;padding:calc(var(--u)*4) calc(var(--u)*18)}
 #ov-menu{background:linear-gradient(90deg,rgba(34,32,28,.0),rgba(34,32,28,0));justify-content:flex-start;padding-left:calc(var(--u)*34)}
 .panel{background:var(--azulejo);color:var(--tinta);border:calc(var(--u)*4) solid var(--tinta);border-radius:calc(var(--u)*18);box-shadow:calc(var(--u)*6) calc(var(--u)*6) 0 var(--tinta);padding:calc(var(--u)*18) calc(var(--u)*26);max-width:96%;max-height:97%;overflow:auto;text-align:center;position:relative}
 .panel::before{content:"";position:absolute;left:0;right:0;top:calc(var(--u)*0);height:calc(var(--u)*10);background:var(--faixa);opacity:.0}
@@ -323,10 +326,10 @@ table.rank tr.me td{background:#fbe7a8}
 
     <div class="ov show" id="ov-menu">
       <div class="panel menu-panel">
-        <span class="vtag" id="vtag" aria-label="Versão 8.6.15">v8.6.15</span>
+        <span class="vtag" id="vtag" aria-label="Versão 8.7">v8.7</span>
         <h1 class="title">Lanchonete <br>Corre-Corre</h1>
         <p class="tag">Ajude a Bia a atender a freguesia da esquina antes que o cafezinho esfrie!</p>
-        <div class="lbl" id="menu-dia">Carreira: dia 1</div>
+        <div class="lbl" id="menu-dia">História</div>
         <p class="small menu-info" id="menu-info"></p>
         <p class="small menu-aviso" id="menu-aviso" style="display:none"><span id="menu-aviso-txt"></span> <button class="link" id="btn-aviso" type="button">Entendi</button></p>
         <div class="chips" id="daychips" role="group" aria-label="Modo dev: escolha o dia" style="display:none"></div>
@@ -334,7 +337,7 @@ table.rank tr.me td{background:#fbe7a8}
           <div class="row tight">
             <button class="btn go" id="btn-play">Continuar</button>
             <button class="btn alt" id="btn-treino">Missão zero</button>
-            <button class="btn alt" id="btn-historia">História</button>
+            <button class="btn alt" id="btn-historia">Ver abertura</button>
           </div>
           <div class="row tight">
             <button class="btn" id="btn-endless">Turno sem fim</button>
@@ -378,12 +381,16 @@ table.rank tr.me td{background:#fbe7a8}
       <button class="btn alt ab-pular" id="btn-ab-pular">Pular</button>
     </div>
 
-    <div class="ov" id="ov-historia">
+    <div class="ov" id="ov-conversa">
+      <button class="btn alt ab-pular" id="btn-conv-pular">Pular</button>
+    </div>
+
+    <div class="ov" id="ov-continua">
       <div class="panel">
-        <h2>Em breve: o Modo História</h2>
-        <p>A Bia já abriu a garagem. A caminhada até a estrela do Michelzão vira um modo de jogo em breve.</p>
-        <p class="small">Enquanto isso, a carreira continua no menu, em Continuar.</p>
-        <div class="row"><button class="btn go" id="btn-historia-menu">Menu</button><button class="btn alt" id="btn-historia-rever">Ver de novo</button></div>
+        <h2>Fim dos capítulos da Garagem</h2>
+        <p>Continua na próxima versão: a área industrial.</p>
+        <p class="small">Enquanto isso, a lanchonete segue aberta: os dias continuam, sem objetivo, e a história espera por você.</p>
+        <div class="row"><button class="btn go" id="btn-continua">Seguir jogando</button></div>
       </div>
     </div>
 
@@ -476,7 +483,7 @@ table.rank tr.me td{background:#fbe7a8}
         <p class="small" id="rank-source" role="status">Ranking deste aparelho</p>
         <div class="rankbar">
           <div class="seg" id="rank-tabs" role="group" aria-label="Modo">
-            <button type="button" data-v="carreira" aria-pressed="true">Carreira</button>
+            <button type="button" data-v="carreira" aria-pressed="true">História</button>
             <button type="button" data-v="semfim" aria-pressed="false">Turno sem fim</button>
           </div>
         </div>
@@ -531,7 +538,8 @@ table.rank tr.me td{background:#fbe7a8}
       <div class="panel">
         <h2>Versões</h2>
         <ul class="verlist">
-          <li><b>v8.6.15</b><span class="cur">versão atual</span><br>30/10/2026 &mdash; Lojinha mais arrumada: em vez de 10 abas numa fileira, 4 grupos (Lanchonete, Equipe, Dinheiro e Gurugol). Cada grupo mostra cartões com ícone e nome, e o toque no cartão abre a seção, com o botão Voltar. Os itens da Bia (tênis, bandeja e Sudoku) ficaram na seção dela; o Tonhão reúne o aumento e os cursos; o músico e a TV e som foram para a Divulgação.<br><a href="versoes/v8.6.14.html" target="_blank" rel="noopener">Abrir a v8.6.14</a></li>
+          <li><b>v8.7</b><span class="cur">versão atual</span><br>30/10/2026 &mdash; O Modo História chega: a carreira virou a história da Bia, em capítulos com conversas (balões sobre o salão) e um objetivo cada. O primeiro dia já começa com a dívida da reforma da garagem (R$ 1.000, 10 parcelas de R$ 100 mais 1% ao dia sobre o saldo, a 1ª no fim do dia 2). Capítulo 1, A garagem da Rosa: fechar 2 dias no azul. Capítulo 2, A Dani chega: a Dani entra de graça como aprendiz e o Gurugol tem de chegar a 2,4. Capítulo 3, Casa cheia: quitar a reforma, nota 2,7 e R$ 800 no caixa. Sem prazo: o capítulo segue até cumprir. Os aumentos da Dani ficaram mais baratos (R$ 25, 40 e 55 por dia). O botão História do menu virou Ver abertura. Quem tinha uma campanha de antes recomeça do dia 1, com aviso.<br><a href="versoes/v8.6.15.html" target="_blank" rel="noopener">Abrir a v8.6.15</a></li>
+          <li><b>v8.6.15</b><br>30/10/2026 &mdash; Lojinha mais arrumada: em vez de 10 abas numa fileira, 4 grupos (Lanchonete, Equipe, Dinheiro e Gurugol). Cada grupo mostra cartões com ícone e nome, e o toque no cartão abre a seção, com o botão Voltar. Os itens da Bia (tênis, bandeja e Sudoku) ficaram na seção dela; o Tonhão reúne o aumento e os cursos; o músico e a TV e som foram para a Divulgação.<br><a href="versoes/v8.6.14.html" target="_blank" rel="noopener">Abrir a v8.6.14</a></li>
           <li><b>v8.6.14</b><br>30/10/2026 &mdash; Melhorias à vontade: acabou o limite de 1 melhoria por dia na lojinha; o limite agora é o dinheiro (o curso do Tonhão segue 1 por dia). E no fim do dia, a caixa do Gurugol perdeu o número entre parênteses depois de cada critério.</li>
           <li><b>v8.6.13</b><br>29/10/2026 &mdash; Rodada de balanceamento do cardápio: quem pede salgado quase sempre pede dois, então os cursos do Tonhão não derrubam mais o lucro do dia; as metas da sexta e do sábado da 1ª semana ficaram um pouco mais baixas.</li>
           <li><b>v8.6.12</b><br>29/10/2026 &mdash; Os pratos ganham desenhos de verdade: risoles, kibe, bolinho japonês, empada, esfihas, bauru, pão na chapa, pastéis retangulares e o misto quente em duas metades. Quem faz o curso avançado vê um detalhe nos pratos (catupiry, azeitona, listras da chapa, bolhas do pastel), e o PF com Carnes variadas vem com bife, frango, peixe ou bife a cavalo.</li>
@@ -597,6 +605,7 @@ table.rank tr.me td{background:#fbe7a8}
     <div class="devbadge" id="devbadge" style="display:none">Modo dev</div>
     <p class="sr" id="treino-live" role="status" aria-live="polite"></p>
     <p class="sr" id="ab-live" role="status" aria-live="polite"></p>
+    <p class="sr" id="conv-live" role="status" aria-live="polite"></p>
   </div>
   <div id="rotate" role="status">Gire o celular para jogar melhor</div>
 </div>
@@ -1005,7 +1014,8 @@ const STAFF = {
   // Tonhão: cozinha mais rápido (cook = fator do tempo), mais pratos caprichados (crit) e,
   // com aumento, lava 1 pilha da pia a cada `wash` segundos
   tonhao:  { levels:[ { slots:3, cook:1, crit:0.05, wash:0, pay:0 }, { slots:3, cook:0.85, crit:0.12, wash:7, pay:15 }, { slots:3, cook:0.7, crit:0.2, wash:4, pay:30 } ] },
-  dani:    { levels:[ null, { speed:0.5, tasks:2, pay:40 }, { speed:0.65, tasks:2, pay:50 }, { speed:0.8, tasks:3, pay:60 } ] },
+  // Dani (v8.7): entra de graça no cap. 2 como aprendiz (nível 1, sem salário); os níveis 2 a 4 são os aumentos da lojinha
+  dani:    { levels:[ null, { speed:0.4, tasks:1, pay:0 }, { speed:0.5, tasks:2, pay:25 }, { speed:0.65, tasks:2, pay:40 }, { speed:0.8, tasks:3, pay:55 } ] },
   // couvert artístico: só do nível 3 do salão em diante (Avenida Brasil, etapa 3 do plano)
   couvert: { pay:80, fee:3, effect:0.2, feeCut:0.5, nivel:3 },
   // ambiente da Garagem (v7.4.3): TV e som ligados o dia todo; o custo é a conta de luz (pay) e entra na folha
@@ -1042,12 +1052,12 @@ function payroll(eq){
 }
 /* v8.1: dinheiro comprometido. A folha e a divulgação ficam reservadas ao abrir o dia (e saem no fim dele); o que não
    couber fica de fora, nesta ordem (a divulgação vira boca a boca antes de tudo) */
-const FOLHA_CORTE = [['couvert', 'Couvert'], ['som', 'som'], ['tv', 'TV'], ['dani', 'Dani'], ['tonhao', 'aumento do Tonhão']];
-/* tira de eq o próximo item da folha (o Tonhão perde 1 nível de aumento) e devolve o nome; nada a tirar: null */
+const FOLHA_CORTE = [['couvert', 'Couvert'], ['som', 'som'], ['tv', 'TV'], ['dani', 'aumento da Dani'], ['tonhao', 'aumento do Tonhão']];
+/* tira de eq o próximo item da folha (o Tonhão e a Dani perdem 1 nível de aumento; a Dani não sai da equipe) e devolve o nome; nada a tirar: null */
 function folhaCorta(eq){
-  const c = FOLHA_CORTE.find(k => eq[k[0]]);
+  const c = FOLHA_CORTE.find(k => k[0] === 'tonhao' ? eq.tonhao > 0 : k[0] === 'dani' ? eq.dani > 1 : eq[k[0]]);
   if (!c) return null;
-  if (c[0] === 'tonhao') eq.tonhao--; else eq[c[0]] = c[0] === 'dani' ? 0 : false;
+  if (c[0] === 'tonhao' || c[0] === 'dani') eq[c[0]]--; else eq[c[0]] = false;
   return c[1];
 }
 /* o que fica de fora ao abrir o dia com `bank` no caixa (sem mexer em eq) */
@@ -1064,7 +1074,7 @@ function folhaCortes(eq, div, bank){
 function folhaItens(eq, div){
   const out = [];
   if (eq.tonhao) out.push('aumento do Tonhão');
-  if (eq.dani) out.push('Dani');
+  if (eq.dani > 1) out.push('aumento da Dani');
   if (eq.couvert) out.push('couvert');
   if (eq.tv) out.push('TV');
   if (eq.som) out.push('som');
@@ -1111,7 +1121,7 @@ const VIP = { pat:0.75, tip:0.1, perfect:40, angry:10, dish:12, cook:1.8, types:
 const DAYS = [
   { n:1, groups:5,  types:['estudante','vovos'],                                   nu:null,         meta:30, expert:60,  time:150, speed:0.60, note:'A freguesia espera lá fora, na calçada: arraste cada grupo até uma mesa livre.' },
   { n:2, groups:8,  types:['estudante','vovos','familia'],                         nu:'familia',    meta:108, expert:220,  time:160, speed:0.60, note:'Chegou a família! Grupos de 3 ou 4 só cabem nas mesas de 4 lugares. Na lojinha, aba Salão, dá para comprar mesas e arrumar o salão.' },
-  { n:3, groups:13, types:['estudante','vovos','familia','executiva'],             nu:'executiva',  meta:135, expert:230,  time:170, speed:0.60, juice:0.3, note:'O movimento aumentou e agora só há 4 pratos limpos: sozinha a Bia não dá conta, contrate ajuda na lojinha. A executiva tem pouca paciência, mas deixa boa gorjeta. E abriu o balcão de sucos: quem pede suco quer receber antes da conta!' },
+  { n:3, groups:13, types:['estudante','vovos','familia','executiva'],             nu:'executiva',  meta:135, expert:230,  time:170, speed:0.60, juice:0.3, note:'O movimento aumentou e agora só há 4 pratos limpos: sozinha a Bia não dá conta. A executiva tem pouca paciência, mas deixa boa gorjeta. E abriu o balcão de sucos: quem pede suco quer receber antes da conta!' },
   { n:4, groups:15, types:['estudante','vovos','familia','executiva','entregador'], nu:'entregador', meta:63, expert:110, time:180, speed:0.58, juice:0.3, note:'Chegou o entregador de moto! Ele não senta: espera no balcão de retirada, no alto da calçada, e leva o prato numa marmita. O pedido vai sozinho ao Tonhão; leve a marmita pronta ao balcão. Tem pressa! Para adiantar, toque no "+ marmita" da janela de pedidos.' },
   { n:5, groups:16, types:['estudante','vovos','familia','executiva','entregador'], nu:null,         meta:90, expert:140, time:190, speed:0.56, vip:0.15, juice:0.3, note:'Chegou cliente VIP (de óculos escuros e plaquinha dourada)! Fura a fila e tem menos paciência, mas pede o prato especial (mais caro), dá gorjeta e, se sair com 5 corações, pontos a mais. Se sair bravo, a multa dobra.' },
   { n:6, groups:16, types:['estudante','vovos','familia','executiva','entregador'], nu:null,         meta:140, expert:280, time:200, speed:0.54, vip:0.15, juice:0.3, note:'Sexta-feira: ninguém quer esperar.' },
@@ -1291,14 +1301,18 @@ function normEmprestimo(e){
   const amort = Math.max(1, Math.round(+e.amort) || Math.ceil(resto / clamp(Math.round(+e.n) || 1, 1, BANCO.parcelas)));
   const j = e.amort ? clamp(+e.j || 0, 0, 1) : 0, out = { resto, amort, j, n:Math.ceil(resto / amort) };
   if (e.atr) out.atr = true;
+  if (+e.ini > 0) out.ini = Math.round(+e.ini);   // v8.7: sem parcela nem juros antes do dia ini
+  if (e.ref) out.ref = true;                       // v8.7: é a reforma da garagem
   return out;
 }
 /* juros do dia sobre o saldo */
-function jurosDe(e){ return e.resto ? Math.round(e.resto * e.j) : 0; }
+function jurosDe(e, dia){ return e.resto && !carencia(e, dia) ? Math.round(e.resto * e.j) : 0; }
+/* v8.7: a reforma só cobra a partir do dia ini (dia: o dia que fecha; sem dia, vale sempre) */
+function carencia(e, dia){ return !!(e.ini && dia != null && dia < e.ini); }
 /* a parcela do fim do dia: a amortização (a última fecha a conta) mais os juros do dia */
-function parcelaDe(e){ return e.resto ? Math.min(e.resto, e.amort) + jurosDe(e) : 0; }
+function parcelaDe(e, dia){ return e.resto && !carencia(e, dia) ? Math.min(e.resto, e.amort) + jurosDe(e, dia) : 0; }
 /* o que o banco cobra no fim do dia: com uma parcela atrasada, 2 amortizações e os juros (os de ontem já foram para o saldo) */
-function devidoDe(e){ return e.resto ? Math.min(e.resto, e.amort * (e.atr ? 2 : 1)) + jurosDe(e) : 0; }
+function devidoDe(e, dia){ return e.resto && !carencia(e, dia) ? Math.min(e.resto, e.amort * (e.atr ? 2 : 1)) + jurosDe(e, dia) : 0; }
 /* as parcelas que faltam, pagando em dia (para mostrar na aba Banco) */
 function tabelaDe(e){
   const out = []; let r = e.resto;
@@ -1307,8 +1321,46 @@ function tabelaDe(e){
 }
 /* um empréstimo novo de v, pagando em dia: as parcelas e os juros somados */
 function simulaEmprestimo(v, j){ const t = tabelaDe(normEmprestimo({ resto:v, amort:Math.ceil(v / BANCO.parcelas), j })); return { parcelas:t, juros:t.reduce((a, p) => a + p, 0) - v }; }
+/* ============================================================
+   MODO HISTÓRIA (v8.7): a campanha em capítulos. Cada capítulo tem um objetivo, que vale no fim de um dia (sem prazo: se não
+   cumpriu, o capítulo segue), e conversas (balões sobre o salão) antes e depois. fala: { q:'bia'|'tonhao'|'dani', s:texto,
+   nota?:rubrica em itálico }. save.cap (1 a 3; 4 = Garagem completa), save.capDia, save.capAzul, save.conversa ('antes'/'depois'/null).
+   REFORMA: o empréstimo da reforma da garagem, que o save novo já traz (1ª parcela no fim do dia ini)
+   ============================================================ */
+const HIST = { on: !(typeof window !== 'undefined' && window.__semHist) };   // os testes antigos ligam window.__semHist: save novo sem a História
+const REFORMA = { valor:1000, amort:100, juros:0.01, ini:2 };
+const HISTORIA = [
+  { cap:1, titulo:'A garagem da Rosa', ponto:'garagem', obj:{ azul:2 },
+    antes:[
+      { q:'tonhao', s:'Panela no fogo, avental no lugar. Abre o portão, Bia!' },
+      { q:'bia', s:'A garagem da mãe... Ela ia gostar de ver isso cheio de gente.' },
+      { q:'tonhao', s:'Então vamos encher! E fechar o dia no azul, que o banco não espera.' }],
+    depois:[
+      { q:'bia', s:'Dois dias no azul, tio!' },
+      { q:'tonhao', s:'Isso! Agora é aguentar a parcela todo dia.' }] },
+  { cap:2, titulo:'A Dani chega', ponto:'garagem', obj:{ nota:2.4 },
+    antes:[
+      { q:'bia', s:'Não dou conta da mesa e da pia ao mesmo tempo...' },
+      { q:'tonhao', s:'Pedi ajuda pra Dani, filha da vizinha. Ela vem aprender com a gente.' },
+      { q:'dani', s:'Sou meio lenta ainda, mas aprendo rápido!' }],
+    depois:[
+      { q:'dani', s:'Ouvi um freguês dizer que aqui é tudo limpinho!' },
+      { q:'bia', s:'O Gurugol subiu, tio! Já tá em 2,4.' },
+      { q:'tonhao', s:'Devagar e sempre.' }] },
+  { cap:3, titulo:'Casa cheia', ponto:'garagem', obj:{ quitar:true, nota:2.7, caixa:800 },
+    antes:[
+      { q:'bia', s:'O Gurugol tá cheio de comentário sobre a gente!' },
+      { q:'dani', s:'Tem freguês perguntando se a gente vai abrir num lugar maior.' },
+      { q:'tonhao', s:'Primeiro quita a reforma. Depois junta pra mudança.' }],
+    depois:[
+      { q:'bia', s:'Reforma quitada e R$ 800 guardados!' },
+      { q:'tonhao', nota:'cheirando o pote de cominho', s:'Cominho com açafrão... a Rosa ia rir de mim agora.' },
+      { q:'bia', s:'Por quê, tio?' },
+      { q:'tonhao', s:'Um dia eu te conto da Casa Aurora.' }] }
+];
+const HIST_NOMES = { bia:'Bia', tonhao:'Tonhão', dani:'Dani' };
 const CAIXA_MAX = 14;                                 // livro-caixa (v7.2): quantos dias da carreira ficam guardados
-const VERSAO = 'v8.6.15';                               // vai no resumo do Caixa
+const VERSAO = 'v8.7';                               // vai no resumo do Caixa
 const DIVULGA_DIA = 3;                                // antes disso, o movimento é o da inauguração (sem custo)
 function divulgaAberta(n){ return DEV.on || n >= DIVULGA_DIA; }   // no modo dev, desde o dia 1
 function divulgaOf(id){ return DIVULGA.find(d => d.id === id) || DIVULGA[1]; }
@@ -1605,7 +1657,7 @@ function saveKey(){ return DEV.on ? LS.devSave : LS.save; }
 function normEquipe(e, ponto){
   e = (e && typeof e === 'object') ? e : {};
   const tasks = Array.isArray(e.daniTasks) ? e.daniTasks.map(t => t === 'agua' ? 'suco' : t).filter(t => DANI_TASKS.some(d => d.id === t)) : ['pratos','lavar'];   // v7.5: a tarefa da água vira a do suco da espera
-  return { tonhao: clamp(Math.round(+e.tonhao)||0,0,2), dani: clamp(Math.round(+e.dani)||0,0,3), daniTasks: tasks.filter((t,i) => tasks.indexOf(t) === i).slice(0,3), couvert: !!e.couvert && couvertOk(ponto), taxa: !!e.taxa, tv: !!e.tv, som: !!e.som };
+  return { tonhao: clamp(Math.round(+e.tonhao)||0,0,2), dani: clamp(Math.round(+e.dani)||0,0,STAFF.dani.levels.length - 1), daniTasks: tasks.filter((t,i) => tasks.indexOf(t) === i).slice(0,3), couvert: !!e.couvert && couvertOk(ponto), taxa: !!e.taxa, tv: !!e.tv, som: !!e.som };
 }
 /* livro-caixa (v7.2): uma linha por dia jogado na carreira (os últimos CAIXA_MAX). As compras da lojinha
    (melhorias e salão) ficam em caixaPend e entram na linha do dia seguinte, junto com o saldo ao fim dele.
@@ -1642,6 +1694,10 @@ function caixaAdd(s, row){
   s.caixa = (Array.isArray(s.caixa) ? s.caixa : []).concat([Object.assign(row, p)]).slice(-CAIXA_MAX);
   s.caixaPend = normPend({});
 }
+/* o save já tem jogo (v8.6.9/v8.7): passou do dia 1, tem lucro, caixa ou estrelas */
+function saveJogou(s){
+  return (+s.dia > 1) || (+s.maxDay > 1) || (+s.lucroTot > 0) || (Array.isArray(s.caixa) && s.caixa.length > 0) || (!!s.stars && typeof s.stars === 'object' && Object.keys(s.stars).length > 0);
+}
 function normSave(s){
   const up = (s.up && typeof s.up === 'object') ? s.up : {};
   if (up.jukebox){ up.agua = true; delete up.jukebox; }   // a Jukebox virou Água saborizada na v5
@@ -1659,7 +1715,12 @@ function normSave(s){
   const dia = +s.dia >= 1 ? Math.round(+s.dia) : Math.max(clamp(Math.round(+s.maxDay) || 1, 1, 7), feitos.length ? Math.max(...feitos) + 1 : 1);
   const estrelas = isFinite(+s.estrelas) && s.estrelas != null ? Math.max(0, Math.round(+s.estrelas)) : Object.keys(stars).reduce((a, k) => a + clamp(Math.round(+stars[k]) || 0, 0, 3), 0);
   const bank = isFinite(+s.bank) ? Math.round(+s.bank) : 0;
-  const dev = salaoDevolucao(s.salao), out = { dia, estrelas, lucroTot: Math.round(+s.lucroTot) || 0, pontosTot: Math.max(0, Math.round(+s.pontosTot) || 0), aval: normAval(s.aval), avalCom: normAvalCom(s.avalCom), neg: clamp(Math.round(+s.neg) || 0, 0, BANCO.neg), emp: normEmprestimo(s.emp), corta: s.corta !== false, fechou: Math.max(0, Math.round(+s.fechou) || 0), bank: bank + dev + devMaq, up, torneira:true, salao: normSalao(dev ? null : s.salao), divulga: divulgaOf(s.divulga).id, treino: !!s.treino, decor: normDecor(s.decor), cursos: normCursos(s.cursos), cursoDia: Math.max(0, Math.round(+s.cursoDia) || 0), cardV: 1, avisoCard: !!s.avisoCard, manut: normManut(s.manut), caixa: normCaixa(s.caixa), caixaPend: normPend(s.caixaPend) };
+  // Modo História (v8.7): save novo (sem jogo, fora do modo dev) começa o cap. 1, com a conversa de antes e a dívida da reforma;
+  // save com histV e o do modo dev seguem como vierem (dev e testes: cap 4, sem objetivo)
+  const hist = s.histV === 1, novoHist = !hist && HIST.on && !DEV.on && !saveJogou(s), capMax = HISTORIA.length + 1;
+  const cap = hist ? clamp(Math.round(+s.cap) || capMax, 1, capMax) : novoHist ? 1 : capMax;
+  const conversa = cap > HISTORIA.length ? null : hist ? (s.conversa === 'antes' || s.conversa === 'depois' ? s.conversa : null) : novoHist ? 'antes' : null;
+  const dev = salaoDevolucao(s.salao), out = { dia, estrelas, lucroTot: Math.round(+s.lucroTot) || 0, pontosTot: Math.max(0, Math.round(+s.pontosTot) || 0), aval: normAval(s.aval), avalCom: normAvalCom(s.avalCom), neg: clamp(Math.round(+s.neg) || 0, 0, BANCO.neg), emp: normEmprestimo(novoHist ? { resto:REFORMA.valor, amort:REFORMA.amort, j:REFORMA.juros, ini:REFORMA.ini, ref:true } : s.emp), corta: s.corta !== false, fechou: Math.max(0, Math.round(+s.fechou) || 0), bank: bank + dev + devMaq, up, torneira:true, salao: normSalao(dev ? null : s.salao), divulga: divulgaOf(s.divulga).id, treino: !!s.treino, decor: normDecor(s.decor), cursos: normCursos(s.cursos), cursoDia: Math.max(0, Math.round(+s.cursoDia) || 0), cardV: 1, avisoCard: !!s.avisoCard, histV: 1, avisoHist: !!s.avisoHist, cap, capDia: Math.max(1, Math.round(+s.capDia) || 1), capAzul: Math.max(0, Math.round(+s.capAzul) || 0), conversa, manut: normManut(s.manut), caixa: normCaixa(s.caixa), caixaPend: normPend(s.caixaPend) };
   out.equipe = normEquipe(s.equipe, pontoOf(out.salao.ponto));
   // v8.6.4: as notas do Gurugol de antes (de 1 a 5 pelo serviço) passam para a escala da Garagem, uma vez só (avalEsc)
   if (s.avalEsc !== 2){
@@ -1679,12 +1740,13 @@ function loadSave(){
     const s2 = JSON.parse(lsGet(saveKey()) || 'null');
     if (DEV.on) return normSave(s2 || { bank:DEV.bank });
     if (s2 && typeof s2 === 'object'){
-      // v8.6.9: save de antes do cardápio que cresce (sem cardV): a campanha recomeça do dia 1, com um aviso no menu (se já tinha jogado);
-      // o ranking, a abertura e a Missão zero ficam
-      if (s2.cardV !== 1){
-        const jogou = (+s2.dia > 1) || (+s2.maxDay > 1) || (+s2.lucroTot > 0) || (Array.isArray(s2.caixa) && s2.caixa.length > 0) || (s2.stars && Object.keys(s2.stars).length > 0);
+      // v8.6.9 / v8.7: save de antes do cardápio que cresce (sem cardV) ou do Modo História (sem histV): a campanha recomeça
+      // do dia 1, com um aviso no menu (se já tinha jogado); o ranking, a abertura e a Missão zero ficam
+      if (s2.cardV !== 1 || s2.histV !== 1){
+        const jogou = saveJogou(s2);
         const n = normSave({ treino: s2.treino });
-        n.avisoCard = !!jogou;
+        n.avisoCard = !!jogou && s2.cardV !== 1;
+        n.avisoHist = !!jogou && s2.cardV === 1;
         writeSave(n);
         return n;
       }
@@ -2551,6 +2613,7 @@ class Game {
     this.shopNext = 1;
     this.soundBtnT = 0;
     this.mode = 'carreira';
+    this.conversa = null;   // Modo História (v8.7): a conversa em andamento (19-conversa.js)
     this.treino = null; this.salvo = null;   // Missão zero (v8.2): o passo a passo e o save de verdade, guardado enquanto ela dura
     this.resetDay(1);
   }
@@ -3306,6 +3369,14 @@ class Game {
     let forcado = 0;
     if (sv.bank >= 0 || tomou) sv.neg = 0;
     else if (++sv.neg > BANCO.neg){ forcado = Math.ceil(-sv.bank / 10) * 10; this.emprestar(forcado, true); }
+    // Modo História (v8.7): o dia no azul conta no cap. 1; cumpriu o objetivo do capítulo, a conversa de depois fica pendente
+    let cap = null;
+    if (!tomou && sv.cap <= HISTORIA.length){
+      if (sv.cap === 1 && m > 0) sv.capAzul++;
+      const ob = this.capObj(sv);
+      cap = { n:sv.cap, titulo:HISTORIA[sv.cap - 1].titulo, itens:ob.itens, ok:ob.ok };
+      if (ob.ok) sv.conversa = 'depois';
+    }
     const row = { d:d.n, fat, ingr:Math.round(this.custo), contas:this.contas, folha:this.paid, div:this.paidDiv, lucro:m, meta:d.meta, ok:passed, st:stars, perd:this.stats.lost, saldo:sv.bank };
     if (avDia) row.av = Math.round(avDia.nota * 10);
     if (forcado) row.forc = 1;
@@ -3313,7 +3384,7 @@ class Game {
     if (tomou) row.tom = 1;
     caixaAdd(sv, row);
     writeSave(sv);
-    this.result = { day:d.n, money:m, fat, pontos:Math.round(this.pontos), custo:Math.round(this.custo), contas:this.contas, div:this.paidDiv, divName:this.div ? this.div.name : '', meta:d.meta, bom:bomGoal(d), expert:d.expert, passed, stars, served:this.stats.served, lost:this.stats.lost, lostBy:this.stats.lostBy, lotadoT:Math.round(this.stats.lotadoT), atraso:Math.round(this.atraso), full:this.stats.full, chain:this.stats.chain, vip:this.stats.vip, vipLost:this.stats.vipLost, marmitas:this.stats.marmitas, efood:this.efood, esfriou:this.stats.esfriou, sobra:this.marmitas().filter(o => o.onde !== 'fogao').length, juice:this.stats.juice, juiceMiss:this.stats.juiceMiss, sucoEsp:this.stats.sucoEsp, bebida:this.bebida.id, trash:this.stats.trash, washed:this.stats.washed, income, paid:this.paid, reason:this.reason, conserto:this.conserto, consertos:this.stats.consertos, quebras:this.quebras.filter(q => q.on).map(q => ({ id:q.id, fixed:q.fixed })), clima:this.clima, manut:Object.assign({}, this.manut), par, forcado, neg:sv.neg, emp:Object.assign({}, sv.emp), atrasou, tomou, devido, aval:{ dia:avDia, geral:avalGeral(sv.aval), n:sv.aval.length, coment } };
+    this.result = { day:d.n, money:m, fat, pontos:Math.round(this.pontos), custo:Math.round(this.custo), contas:this.contas, div:this.paidDiv, divName:this.div ? this.div.name : '', meta:d.meta, bom:bomGoal(d), expert:d.expert, passed, stars, served:this.stats.served, lost:this.stats.lost, lostBy:this.stats.lostBy, lotadoT:Math.round(this.stats.lotadoT), atraso:Math.round(this.atraso), full:this.stats.full, chain:this.stats.chain, vip:this.stats.vip, vipLost:this.stats.vipLost, marmitas:this.stats.marmitas, efood:this.efood, esfriou:this.stats.esfriou, sobra:this.marmitas().filter(o => o.onde !== 'fogao').length, juice:this.stats.juice, juiceMiss:this.stats.juiceMiss, sucoEsp:this.stats.sucoEsp, bebida:this.bebida.id, trash:this.stats.trash, washed:this.stats.washed, income, paid:this.paid, reason:this.reason, conserto:this.conserto, consertos:this.stats.consertos, quebras:this.quebras.filter(q => q.on).map(q => ({ id:q.id, fixed:q.fixed })), clima:this.clima, manut:Object.assign({}, this.manut), par, forcado, neg:sv.neg, emp:Object.assign({}, sv.emp), atrasou, tomou, devido, cap, aval:{ dia:avDia, geral:avalGeral(sv.aval), n:sv.aval.length, coment } };
     if (tomou){ this.setState('falencia'); Sfx.lose(); return; }
     this.setState('dayend');
     if (passed) Sfx.win(); else Sfx.lose();
@@ -3353,9 +3424,37 @@ class Game {
   /* banco (v8.3): o empréstimo entra no dinheiro na hora e soma `juros` ao que se deve, em BANCO.parcelas no fim de cada
      dia. Na lojinha, um por vez e até o crédito do ponto; à força (no fim do dia, depois de BANCO.neg dias no negativo),
      soma ao que já se devia, com juros maiores, e as parcelas recomeçam */
-  get parcela(){ return parcelaDe(this.save.emp); }
-  get devido(){ return devidoDe(this.save.emp); }   // v8.3.1: com a atrasada, se houver
-  get jurosHoje(){ return jurosDe(this.save.emp); }
+  get parcela(){ return parcelaDe(this.save.emp, this.day.n); }
+  get devido(){ return devidoDe(this.save.emp, this.day.n); }   // v8.3.1: com a atrasada, se houver
+  get jurosHoje(){ return jurosDe(this.save.emp, this.day.n); }
+  /* Modo História (v8.7): o objetivo do capítulo de agora, item a item ({ ok, itens:[{ txt, ok }] }); null depois do último capítulo */
+  capObj(sv){
+    sv = sv || this.save;
+    const c = HISTORIA[sv.cap - 1];
+    if (!c) return null;
+    const o = c.obj, itens = [], ge = avalGeral(sv.aval), nota = ge ? Math.round(ge.nota * 10) / 10 : null;
+    if (o.azul) itens.push({ txt:'Fechar ' + o.azul + ' dias no azul (' + Math.min(sv.capAzul, o.azul) + ' de ' + o.azul + ')', ok:sv.capAzul >= o.azul });
+    if (o.quitar) itens.push({ txt:sv.emp.resto ? 'Quitar a reforma (faltam ' + fmt(sv.emp.resto) + ')' : 'Reforma quitada', ok:!sv.emp.resto });
+    if (o.nota) itens.push({ txt:'Nota do Gurugol ' + fmtNota(o.nota) + ' (agora ' + fmtNota(ge ? ge.nota : null) + ')', ok:nota != null && nota >= o.nota });
+    if (o.caixa) itens.push({ txt:fmt(o.caixa) + ' no caixa (agora ' + fmt(sv.bank) + ')', ok:sv.bank >= o.caixa });
+    itens.forEach((it, i) => { it.txt = i ? it.txt.replace(/^(?!R\$)./, x => x.toLowerCase()) : it.txt; });
+    return { ok:itens.every(it => it.ok), itens };
+  }
+  /* o objetivo numa linha: itens separados por " · ", os cumpridos com ✓ */
+  capLinha(sv){
+    const ob = this.capObj(sv), c = HISTORIA[(sv || this.save).cap - 1];
+    return ob ? 'Capítulo ' + c.cap + ', ' + c.titulo + ': ' + ob.itens.map(it => (it.ok ? '✓ ' : '') + it.txt).join(' · ') : '';
+  }
+  /* o capítulo termina (a conversa de depois já tocou): o seguinte começa; ao entrar no 2, a Dani chega como aprendiz.
+     Devolve true se acabaram os capítulos (cap passa de HISTORIA.length) */
+  avancaCap(){
+    const sv = this.save;
+    sv.cap++; sv.capDia = sv.dia; sv.capAzul = 0;
+    sv.conversa = sv.cap <= HISTORIA.length ? 'antes' : null;
+    if (sv.cap === 2){ sv.equipe.dani = Math.max(sv.equipe.dani, 1); this.dani.reset(); }
+    writeSave(sv);
+    return sv.cap > HISTORIA.length;
+  }
   podeEmprestar(v){ return !this.save.emp.resto && v > 0 && v <= this.ponto.credito; }
   emprestar(v, forcado){
     const sv = this.save;
@@ -3372,7 +3471,7 @@ class Game {
   /* parcela do fim do dia (v8.3.1): sai só se couber no dinheiro, com a atrasada, se houver; senão, fica atrasada
      (emp.atr) e nada sai, e os juros do dia vão para o saldo (v8.3.2). Devolve o que foi pago */
   pagaParcela(){
-    const sv = this.save, e = sv.emp, v = this.devido, jur = jurosDe(e);
+    const sv = this.save, e = sv.emp, v = this.devido, jur = jurosDe(e, this.day.n);
     if (!v) return 0;
     if (sv.bank < v){ sv.emp = normEmprestimo(Object.assign({}, e, { resto:e.resto + jur, atr:true })); return 0; }
     sv.bank -= v; caixaGasto(sv, 'par', v); caixaGasto(sv, 'jur', jur);
@@ -3951,6 +4050,33 @@ class Abertura {
 /* a frase da trilha de cada cena (respeita o botão de som, como o resto do áudio) */
 function aberturaSom(c){ (c.som || []).forEach(n => Sfx.tone(n[0], n[2], 'triangle', 0.045, n[1])); }
 
+/* ============================================================
+   CONVERSAS DO MODO HISTÓRIA (v8.7)
+   Falas (HISTORIA em 10-constantes.js) em balões sobre o salão parado; o desenho fica em 26-conversa.js. Um toque, clique,
+   Enter ou espaço passa para a próxima fala, "Pular" fecha a conversa; no fim, fim() segue o fluxo (tela de 43-telas.js).
+   Com movimento reduzido, o balão aparece direto, sem a entrada animada.
+   ============================================================ */
+class Conversa {
+  constructor(falas, fim, rm){
+    this.falas = falas; this.fim = fim; this.rm = !!rm;
+    this.i = 0; this.t = 0; this.acabou = false;
+    this.onFala = null;   // chamado a cada fala nova (o leitor de tela)
+  }
+  get fala(){ return this.falas[this.i]; }
+  // quanto o balão já entrou, de 0 a 1 (com movimento reduzido, sempre 1)
+  get entra(){ return this.rm ? 1 : clamp(this.t / 0.18, 0, 1); }
+  // a fala para o leitor de tela
+  texto(){ const f = this.fala; return f ? HIST_NOMES[f.q] + ': ' + (f.nota ? f.nota + '. ' : '') + f.s : ''; }
+  update(dt){ if (!this.acabou) this.t += dt; }
+  seguir(){
+    if (this.acabou) return;
+    if (this.i + 1 >= this.falas.length) return this.terminar();
+    this.i++; this.t = 0;
+    if (this.onFala) this.onFala(this);
+  }
+  pular(){ this.terminar(); }
+  terminar(){ if (this.acabou) return; this.acabou = true; if (this.fim) this.fim(this); }
+}
 /* ============================================================
    DESENHO — helpers
    ============================================================ */
@@ -5821,7 +5947,7 @@ function drawTouchFx(ctx,g){
 function render(g, ctx){
   COMIDA_CURSOS = g.cursos;   // v8.6.10: os pratos do curso avançado ganham o detalhe
   const tm = g.anim;
-  const menu = g.state === 'menu';
+  const menu = g.state === 'menu' && !g.conversa;   // v8.7: na conversa, o salão aparece como no dia (com a Bia)
   ctx.save();
   ctx.lineJoin = 'round'; ctx.lineCap = 'round';
   ctx.save();
@@ -6676,6 +6802,38 @@ function drawAbertura(c,ab){
   c.restore();
 }
 /* ============================================================
+   DESENHO DA CONVERSA (v8.7): o salão do dia parado e escurecido ao fundo, com o balão saindo de quem fala
+   ============================================================ */
+const CONV_UI = { texto:21, linha:27, nome:16, nota:15, w:420 };
+/* onde fica a cabeça de quem fala, na tela: [x, y] (a Bia e a Dani onde estão; o Tonhão na janela da cozinha) */
+function convCabeca(g, q){
+  if (q === 'tonhao') return [930 + g.cam, 140];
+  if (q === 'dani' && g.dani.active) return [g.dani.x + g.cam, g.dani.y - 82];
+  if (q === 'dani') return [g.bia.x + g.cam + 70, g.bia.y - 82];   // ainda não chegou: ao lado da Bia
+  return [g.bia.x + g.cam, g.bia.y - 86];
+}
+function drawConversa(c, g, conv){
+  const f = conv.fala, U = CONV_UI;
+  c.fillStyle = 'rgba(0,0,0,.45)'; c.fillRect(0, 0, TW, H);
+  if (!f) return;
+  const a = convCabeca(g, f.q), ent = conv.entra;
+  const lin = treinoLinhas(c, f.s, U.w, U.texto);
+  const cab = 30 + (f.nota ? 22 : 0), h = cab + lin.length * U.linha + 30;
+  c.font = U.texto + 'px ' + FB;
+  const w = Math.max(220, Math.max.apply(null, lin.map(l => c.measureText(l).width)) + 40);
+  const x = clamp(a[0] - w/2, 16, TW - 16 - w), y = Math.max(12, a[1] - 24 - h) + (1 - ent) * 12;
+  const bx = clamp(a[0], x + 26, x + w - 26);
+  c.save(); c.globalAlpha = ent;
+  c.beginPath(); c.moveTo(bx - 12, y + h - 2); c.lineTo(a[0], Math.max(a[1], y + h + 14)); c.lineTo(bx + 12, y + h - 2); c.closePath(); fs(c, '#fff', 3);
+  rr(c, x, y, w, h, 16); fs(c, '#fff', 3);
+  c.fillStyle = '#fff'; c.fillRect(bx - 10, y + h - 4, 20, 5);
+  txt(c, HIST_NOMES[f.q], x + 18, y + 18, U.nome, f.q === 'tonhao' ? PAL.perigo : f.q === 'dani' ? '#7B4FB5' : PAL.ok, 'left', FD);
+  if (f.nota) txt(c, '(' + f.nota + ')', x + 18, y + 40, 'italic ' + U.nota, '#6b6457', 'left', FB);
+  lin.forEach((l, i) => txt(c, l, x + 18, y + cab + 6 + U.linha * (i + 0.5), U.texto, PAL.tinta, 'left', FB));
+  txt(c, 'toque para seguir', x + w - 14, y + h - 12, 12, '#9a917f', 'right', FB);
+  c.restore();
+}
+/* ============================================================
    RANKING (db compartilhado do artifact, com fallback local)
    v8.3.3: o jogo é offline por enquanto (pedido do usuário): Rank.online = false deixa o ranking só no aparelho, sem
    tocar no db nem no user do artifact. O compartilhado volta nos ajustes finais (etapa 7 do plano): basta ligar
@@ -6828,7 +6986,7 @@ const game = new Game(canvas, ctx);
 /* quem nunca fez a Missão zero (e ainda está no dia 1) encontra o botão dela em destaque */
 function treinoPrimeiro(){ return !game.save.treino && game.proxDia <= 1 && !DEV.on; }
 
-const SCREENS = ['ov-menu','ov-how','ov-intro','ov-treino','ov-pause','ov-end','ov-shop','ov-falencia','ov-endless','ov-rank','ov-ver','ov-app','ov-abertura','ov-historia'];
+const SCREENS = ['ov-menu','ov-how','ov-intro','ov-treino','ov-pause','ov-end','ov-shop','ov-falencia','ov-endless','ov-rank','ov-ver','ov-app','ov-abertura','ov-conversa','ov-continua'];
 function showOnly(ids){
   SCREENS.forEach(id => { const el = $(id); if (!el) return; if (ids.indexOf(id) >= 0) el.classList.add('show'); else el.classList.remove('show'); });
 }
@@ -6865,7 +7023,9 @@ function fit(){
 let resetPede = false;   // "Recomeçar do zero": o 1º toque pede confirmação
 function buildMenu(){
   const sv = game.save, n = game.proxDia, novo = n <= 1 && !sv.caixa.length;
-  $('menu-dia').textContent = sv.fechou ? 'Carreira: fechou no dia ' + sv.fechou : novo ? 'Carreira' : 'Carreira: dia ' + n;
+  // v8.7: a carreira é a História ("História · cap. 2, A Dani chega · dia 5"; fim dos capítulos: "Garagem completa")
+  const capC = HISTORIA[sv.cap - 1];
+  $('menu-dia').textContent = sv.fechou ? 'História: o banco fechou no dia ' + sv.fechou : novo ? 'História' : 'História · ' + (capC ? 'cap. ' + capC.cap + ', ' + capC.titulo : 'Garagem completa') + ' · dia ' + n;
   const info = [];
   if (sv.fechou) info.push('O banco tomou a lanchonete por falta de pagamento.', sv.estrelas + ' ★', 'lucro acumulado ' + fmt(sv.lucroTot));   // v8.3.1
   else if (novo) info.push('A Bia vai abrir a lanchonete na garagem da mãe.' + (treinoPrimeiro() ? ' Primeira vez? Comece pela Missão zero, um treino passo a passo.' : ''));
@@ -6875,8 +7035,8 @@ function buildMenu(){
   }
   $('menu-info').textContent = info.join(' · ');
   // v8.6.9: o aviso de uma vez só para quem tinha campanha antes do cardápio que cresce (save.avisoCard, apagado ao fechar)
-  $('menu-aviso').style.display = sv.avisoCard ? '' : 'none';
-  $('menu-aviso-txt').textContent = 'Novidade: o cardápio agora cresce com os cursos do Tonhão. Por isso, a campanha recomeçou do dia 1.';
+  $('menu-aviso').style.display = sv.avisoCard || sv.avisoHist ? '' : 'none';
+  $('menu-aviso-txt').textContent = sv.avisoHist ? 'Novidade: a campanha virou o Modo História, com a dívida da reforma da garagem. Por isso, recomeçou do dia 1.' : 'Novidade: o cardápio agora cresce com os cursos do Tonhão. Por isso, a campanha recomeçou do dia 1.';
   $('btn-play').textContent = sv.fechou ? 'Recomeçar do zero' : novo ? 'Começar o dia 1' : 'Continuar: dia ' + n;
   $('btn-play').className = 'btn ' + (treinoPrimeiro() ? 'alt' : 'go');
   $('btn-treino').className = 'btn ' + (treinoPrimeiro() ? 'go' : 'alt');
@@ -6984,7 +7144,7 @@ function buildTips(){
     drawPerson(c,{skin:2,hair:0,hairC:'#1B1512',pants:'#2F3E5C',acc:'helmet'},16,60,{shirt:CHAIRS[0].c,mood:0,s:0.55});
   }]);
   // v8.3: a campanha e o banco
-  tips.push(['A carreira segue dia após dia, levando tudo o que veio antes: dinheiro, móveis, equipe, melhorias e o desgaste. Meta não batida deixa o dia sem estrelas, mas o dia seguinte vem. Faltou dinheiro? O caixa pode ficar negativo ' + BANCO.neg + ' dias seguidos (no ' + (BANCO.neg + 1) + 'º, o banco cobre à força) e a aba Banco da lojinha empresta, com juros de ' + Math.round(BANCO.juros * 100) + '% ao dia sobre o que falta (amortizar antes corta os juros). Não atrase: parcela sem pagar 2 dias seguidos, e o banco toma a lanchonete!', c => {
+  tips.push(['A História tem capítulos, cada um com um objetivo (sem prazo: o capítulo segue até você cumprir). A dívida da reforma da garagem vem desde o dia 1: R$ ' + REFORMA.valor + ' em ' + Math.round(REFORMA.valor / REFORMA.amort) + ' parcelas, a 1ª no fim do dia ' + REFORMA.ini + '. Os dias seguem um após o outro, levando tudo o que veio antes: dinheiro, móveis, equipe, melhorias e o desgaste. Meta não batida deixa o dia sem estrelas, mas o dia seguinte vem. Faltou dinheiro? O caixa pode ficar negativo ' + BANCO.neg + ' dias seguidos (no ' + (BANCO.neg + 1) + 'º, o banco cobre à força) e a aba Banco da lojinha empresta, com juros de ' + Math.round(BANCO.juros * 100) + '% ao dia sobre o que falta (amortizar antes corta os juros). Não atrase: parcela sem pagar 2 dias seguidos, e o banco toma a lanchonete!', c => {
     c.translate(32,34); c.scale(1.4,1.4);
     drawBanco(c);
   }]);
@@ -7231,8 +7391,9 @@ function buildDani(grid){
     ['Lava 1 pilha', a && sec(WASH.perPile / a.speed), sec(WASH.perPile / b.speed)],
     ['Tarefas', a && String(a.tasks), String(b.tasks)],
     ['Diária', a && fmt(a.pay), fmt(b.pay)]];
-  c = staffCard(upgradeIcon('dani'), lv ? 'Dani · nível ' + lv + ' de 3' : 'Dani (ajudante)',
-    lv ? '' : 'Ajudante da Bia, mais lenta que ela (velocidade em % da dela). Tem 2 mãos: leva 2 itens por vez. Pode ' + avail.map(t => t.name.toLowerCase()).join(', ').replace(/, ([^,]*)$/, ' e $1') + '.');
+  const cap2 = game.save.cap >= 2 || DEV.on || lv > 0;   // v8.7: a Dani chega no capítulo 2 (no modo dev, desde o início)
+  c = staffCard(upgradeIcon('dani'), lv ? 'Dani · ' + (lv === 1 ? 'aprendiz (sem salário)' : 'nível ' + (lv - 1) + ' de 3') : 'Dani (ajudante)',
+    lv ? '' : (cap2 ? '' : 'Chega no capítulo 2. ') + 'Ajudante da Bia, mais lenta que ela (velocidade em % da dela). Tem 2 mãos: leva 2 itens por vez. Pode ' + avail.map(t => t.name.toLowerCase()).join(', ').replace(/, ([^,]*)$/, ' e $1') + '.');
   if (lv){
     const sel = eq.daniTasks.filter(id => daniTaskOk(id, game.up)).length;
     const tasks = el('div', 'tasks');
@@ -7246,10 +7407,12 @@ function buildDani(grid){
     c.appendChild(el('span', 'full', 'Tarefas (' + Math.min(sel, sp.tasks) + ' de ' + sp.tasks + '):'));
     c.appendChild(tasks);
   }
-  c.appendChild(lv < 3 ? staffNext((lv ? 'Se promover (nível ' : 'Se contratar (nível ') + (lv + 1) + '):', dRows(D[lv], D[lv+1])) : staffNext('Nível máximo:', dRows(null, D[3])));
+  const dMax = D.length - 1;
+  if (!lv && !cap2){ grid.appendChild(c); return; }
+  c.appendChild(lv < dMax ? staffNext(lv ? 'Com o aumento:' : 'Se contratar (aprendiz):', dRows(D[lv], D[lv+1])) : staffNext('Nível máximo:', dRows(null, D[dMax])));
   duo = el('div', 'duo');
-  if (lv < 3) duo.appendChild(shopBtn(lv ? 'Promover' : 'Contratar', 'btn', canPay(D[lv+1].pay - (lv ? D[lv].pay : 0)), () => game.setStaff('dani', lv + 1)));
-  if (lv > 0) duo.appendChild(shopBtn('Dispensar', 'btn alt', true, () => game.setStaff('dani', 0)));
+  if (lv < dMax) duo.appendChild(shopBtn(lv ? 'Aumento: ' + fmt(D[lv+1].pay - D[lv].pay) + '/dia' : 'Contratar', 'btn', canPay(D[lv+1].pay - (lv ? D[lv].pay : 0)), () => game.setStaff('dani', lv + 1)));
+  if (lv > 1) duo.appendChild(shopBtn('Reduzir', 'btn alt', true, () => game.setStaff('dani', lv - 1)));
   c.appendChild(duo); grid.appendChild(c);
 }
 /* TV e som e o couvert (v7.4.3), agora na Divulgação (v8.6.15) */
@@ -7602,11 +7765,11 @@ function buildBanco(grid){
   const sv = game.save, e = sv.emp, cr = game.ponto.credito, pc = Math.round(BANCO.juros * 100);
   // v8.3.2, amortização: juros ao dia sobre o saldo; cada parcela é a amortização fixa mais os juros do dia
   const vs = BANCO.valores.filter(v => v <= cr), sim = simulaEmprestimo(vs[vs.length - 1], BANCO.juros);
-  let c = staffCard(upgradeIcon('banco'), 'Empréstimo', pc + '% ao dia sobre o saldo; cada parcela paga 1/' + BANCO.parcelas + ' do valor mais os juros. ' + (e.resto ? 'Amortizar antes corta os juros.' : fmt(vs[vs.length - 1]) + ' viram ' + sim.parcelas.join(', ').replace(/, ([^,]*)$/, ' e $1') + ' (' + fmt(sim.juros) + ' de juros). Até ' + fmt(cr) + ', um por vez.') + ' Atrasar 2 dias fecha a lanchonete.');
+  let c = staffCard(upgradeIcon('banco'), e.ref ? 'Reforma da garagem' : 'Empréstimo', e.ref ? 'Parcelas de ' + fmt(e.amort) + ' mais ' + Math.round(e.j * 100) + '% ao dia sobre o saldo. Amortizar antes corta os juros.' : pc + '% ao dia sobre o saldo; cada parcela paga 1/' + BANCO.parcelas + ' do valor mais os juros. ' + (e.resto ? 'Amortizar antes corta os juros.' : fmt(vs[vs.length - 1]) + ' viram ' + sim.parcelas.join(', ').replace(/, ([^,]*)$/, ' e $1') + ' (' + fmt(sim.juros) + ' de juros). Até ' + fmt(cr) + ', um por vez.') + ' Atrasar 2 dias fecha a lanchonete.');
   if (e.resto){
     c.classList.add(e.atr ? 'atr' : 'own');
     const tab = tabelaDe(e);
-    c.appendChild(el('span', 'full', 'Faltam ' + fmt(e.resto) + (e.j !== BANCO.juros && e.j ? ' (' + Math.round(e.j * 100) + '% ao dia)' : '') + '. ' + (e.atr ? 'Parcela atrasada! No fim do dia ' + game.shopNext + ', o caixa precisa ter ' + fmt(game.devido) + '.' : 'Fim do dia ' + game.shopNext + ': ' + fmt(game.parcela) + ' (' + Math.min(e.resto, e.amort) + ' + ' + game.jurosHoje + ' de juros)' + (tab.length > 1 ? '; depois, ' + tab.slice(1).join(', ').replace(/, ([^,]*)$/, ' e $1') : '') + '.')));
+    c.appendChild(el('span', 'full', 'Faltam ' + fmt(e.resto) + (e.j !== BANCO.juros && e.j ? ' (' + Math.round(e.j * 100) + '% ao dia)' : '') + '. ' + (e.atr ? 'Parcela atrasada! No fim do dia ' + game.shopNext + ', o caixa precisa ter ' + fmt(game.devido) + '.' : carencia(e, game.shopNext) ? '1ª parcela no fim do dia ' + e.ini + ': ' + fmt(parcelaDe(e, e.ini)) + ' (' + Math.min(e.resto, e.amort) + ' + ' + jurosDe(e, e.ini) + ' de juros)' : 'Fim do dia ' + game.shopNext + ': ' + fmt(game.parcela) + ' (' + Math.min(e.resto, e.amort) + ' + ' + game.jurosHoje + ' de juros)' + (tab.length > 1 ? '; depois, ' + tab.slice(1).join(', ').replace(/, ([^,]*)$/, ' e $1') : '') + '.')));
     const duo = el('div', 'duo'), a1 = Math.min(e.resto, e.amort);
     if (e.resto > a1) duo.appendChild(shopBtn('Amortizar ' + fmt(a1), 'btn', sv.bank >= a1, () => game.amortizar(a1), a1));
     duo.appendChild(shopBtn('Quitar: ' + fmt(e.resto), 'btn', sv.bank >= e.resto, () => game.quitar(), e.resto));
@@ -7915,6 +8078,8 @@ function buildEnd(){
   if (r.atrasou) msg += ' Faltou dinheiro para a parcela do banco: ficou atrasada. Amanhã, no fim do dia, o caixa precisa ter ' + fmt(game.devido) + ' (a atrasada e a do dia), senão o banco toma a lanchonete!';
   if (r.forcado) msg += ' O caixa fechou no negativo pelo ' + (BANCO.neg + 1) + 'º dia seguido: o banco cobriu ' + fmt(r.forcado) + ', com juros de ' + Math.round(BANCO.forcado * 100) + '% ao dia sobre o saldo, em ' + sv.emp.n + ' parcelas (a próxima, ' + fmt(game.parcela) + ').';
   else if (sv.bank < 0) msg += ' Caixa no negativo há ' + sv.neg + (sv.neg > 1 ? ' dias' : ' dia') + (sv.neg >= BANCO.neg ? ': se fechar amanhã no negativo, o banco cobre à força.' : ' (pode ficar até ' + BANCO.neg + ').');
+  // Modo História (v8.7): o objetivo do capítulo no fim do dia
+  if (r.cap) msg += ' Capítulo ' + r.cap.n + ', ' + r.cap.titulo + ': ' + (r.cap.ok ? '✓ Objetivo cumprido!' : r.cap.itens.map(it => (it.ok ? '✓ ' : '') + it.txt).join(' · '));
   $('end-msg').textContent = msg;
   $('btn-next').textContent = 'Lojinha e dia ' + game.proxDia;
   buildSaveForm($('end-save'), 'carreira');
@@ -8062,7 +8227,7 @@ game.hooks.state = function(s){
       const en = game.encerrado; game.encerrado = null;
       $('intro-note').textContent = (en ? 'Você largou o dia no meio: ' + en.n + (en.n > 1 ? ' grupos foram' : ' grupo foi') + ' embora bravo' + (en.n > 1 ? 's' : '') + ' (multa de ' + fmt(en.multa) + '; agora você tem ' + fmt(en.bank) + '). ' : '') + (d.note || 'Sente a freguesia, anote os pedidos e mantenha todo mundo feliz!') + (d.n === 1 && !game.save.treino ? ' Primeira vez? No menu, a Missão zero é um treino passo a passo.' : '');
     }
-    $('intro-manut').textContent = [introBanco(), introManut()].filter(Boolean).join(' ');
+    $('intro-manut').textContent = [game.mode === 'carreira' ? game.capLinha() : '', introBanco(), introManut()].filter(Boolean).join(' ');
     showOnly(['ov-intro']);
   }
   else if (s === 'playing') showOnly([]);
@@ -8089,6 +8254,7 @@ function introBanco(){
     out.push('Caixa no negativo (' + fmt(sv.bank) + ')' + (sv.neg ? ' há ' + sv.neg + (sv.neg > 1 ? ' dias' : ' dia') : '') + ': ' + (falta > 0 ? 'mais ' + (falta + 1) + ' dias seguidos fechando no negativo (contando hoje) e' : 'se fechar hoje no negativo,') + ' o banco cobre o que falta, à força, com juros de ' + Math.round(BANCO.forcado * 100) + '% ao dia.');
   }
   if (sv.emp.atr) out.push('Parcela do banco atrasada! No fim do dia, o caixa precisa ter ' + fmt(game.devido) + ' (a atrasada e a de hoje), senão o banco toma a lanchonete.');   // v8.3.1
+  else if (sv.emp.resto && carencia(sv.emp, game.day.n)) out.push('Reforma da garagem: faltam ' + fmt(sv.emp.resto) + '. A 1ª parcela (' + fmt(parcelaDe(sv.emp, sv.emp.ini)) + ') só vence no fim do dia ' + sv.emp.ini + '.');
   else if (sv.emp.resto) out.push('Parcela do banco no fim do dia: ' + fmt(game.parcela) + ' (' + fmt(game.jurosHoje) + ' de juros; ' + (sv.emp.n > 1 ? 'faltam ' + sv.emp.n : 'a última') + '; se não couber no caixa, fica atrasada).');
   return out.join(' ');
 }
@@ -8108,13 +8274,34 @@ function introManut(){
 function playCareer(n){
   if (n === 0) return game.startTreino();
   if (game.save.fechou) game.resetProgress();   // v8.3.1: o banco tomou a lanchonete; só resta recomeçar
-  n = game.proxDia;
-  if (n >= 2 || DEV.on) game.goShop(n); else game.startDay(n);
+  fluxoHistoria(() => { const p = game.proxDia; if (p >= 2 || DEV.on) game.goShop(p); else game.startDay(p); });
+}
+/* conversas do Modo História (v8.7): balões sobre o salão do dia que vem, parado e escurecido; um toque passa, Pular fecha */
+function convLive(){ const e = $('conv-live'); if (e) e.textContent = game.conversa ? game.conversa.texto() : ''; }
+function falar(tipo, depois){
+  const c = HISTORIA[game.save.cap - 1], falas = c && c[tipo];
+  if (!falas || !falas.length) return depois();
+  game.resetDay(game.proxDia);
+  game.conversa = new Conversa(falas, () => { game.conversa = null; convLive(); depois(); }, RM);
+  game.conversa.onFala = convLive; convLive();
+  showOnly(['ov-conversa']);
+}
+/* toca a conversa pendente (a de depois fecha o capítulo e abre o seguinte, com a de antes) e só então chama fim();
+   ao fechar o último capítulo, o cartão "Continua na próxima versão" vem antes */
+let contFim = null;
+function fluxoHistoria(fim){
+  const sv = game.save;
+  if (sv.conversa === 'depois') return falar('depois', () => {
+    if (game.avancaCap()){ contFim = fim; showOnly(['ov-continua']); } else fluxoHistoria(fim);
+  });
+  if (sv.conversa === 'antes') return falar('antes', () => { game.save.conversa = null; writeSave(game.save); fim(); });
+  fim();
 }
 /* Missão zero: o texto do pop-up também vai para quem usa leitor de tela */
 game.hooks.treino = tr => { const e = $('treino-live'), p = tr.passo; if (e) e.textContent = p ? p.tit + '. ' + tr.texto() : ''; };
 function on(id, fn){ const e = $(id); if (e) e.addEventListener('click', fn); }
-/* abertura do Modo História (v8.5): pelo botão História, termina no cartão "Em breve"; sozinha (a 1ª vez), volta ao menu */
+/* abertura do Modo História (v8.5): pelo botão Ver abertura, volta ao menu; sozinha (a 1ª vez, com a história ainda por começar),
+   segue para a Missão zero (se ainda não fez) ou para a conversa do cap. 1 (v8.7) */
 let abertura = null;
 function abLive(){ const e = $('ab-live'); if (e) e.textContent = abertura ? abertura.texto() : ''; }
 function abrirAbertura(origem){
@@ -8122,15 +8309,20 @@ function abrirAbertura(origem){
   lsSet(LS.abertura, '1');
   abertura = new Abertura(origem, RM);
   abertura.onCena = ab => { aberturaSom(ab.cena); abLive(); };
-  abertura.onFim = ab => { abertura = null; abLive(); if (ab.origem === 'menu') showOnly(['ov-historia']); else game.setState('menu'); };
+  abertura.onFim = ab => {
+    abertura = null; abLive();
+    const sv = game.save;
+    if (ab.origem === 'auto' && sv.cap === 1 && sv.conversa === 'antes' && sv.dia === 1 && !sv.fechou) playCareer(sv.treino ? undefined : 0);
+    else game.setState('menu');
+  };
   aberturaSom(abertura.cena); abLive();
   showOnly(['ov-abertura']);
 }
 on('btn-historia',   () => { Sfx.tap(); abrirAbertura('menu'); });
 on('btn-ab-voltar',  () => { Sfx.tap(); if (abertura) abertura.voltar(); });
 on('btn-ab-pular',   () => { Sfx.tap(); if (abertura) abertura.pular(); });
-on('btn-historia-rever', () => { Sfx.tap(); abrirAbertura('menu'); });
-on('btn-historia-menu',  () => { Sfx.tap(); game.setState('menu'); });
+on('btn-conv-pular', () => { Sfx.tap(); if (game.conversa) game.conversa.pular(); });
+on('btn-continua',   () => { Sfx.tap(); const f = contFim; contFim = null; if (f) f(); });
 on('btn-play',       () => { Sfx.init(); Sfx.resume(); Sfx.tap(); playCareer(); });
 on('btn-treino',     () => { Sfx.init(); Sfx.resume(); Sfx.tap(); playCareer(0); });
 on('btn-how',        () => { Sfx.init(); Sfx.resume(); Sfx.tap(); buildTips(); showOnly(['ov-how']); });
@@ -8172,7 +8364,7 @@ on('btn-falencia-menu', () => game.setState('menu'));
 on('btn-endless-rank',  () => { Sfx.tap(); openRank('ov-endless'); });
 on('btn-endless-again', () => { Sfx.init(); Sfx.resume(); Sfx.tap(); game.startEndless(); });
 on('btn-endless-menu',  () => { game.setState('menu'); });
-on('btn-aviso',      () => { Sfx.tap(); game.save.avisoCard = false; writeSave(game.save); buildMenu(); });   // v8.6.9: fecha o aviso do cardápio que cresce
+on('btn-aviso',      () => { Sfx.tap(); game.save.avisoCard = false; game.save.avisoHist = false; writeSave(game.save); buildMenu(); });   // fecha o aviso de novidade (v8.6.9: cardápio que cresce; v8.7: Modo História)
 /* Recomeçar do zero (v8.3): o 1º toque pede confirmação; o 2º apaga a carreira */
 on('btn-reset',      () => {
   Sfx.init();
@@ -8187,7 +8379,7 @@ on('btn-treino-dia1', () => { Sfx.tap(); playCareer(); });
 on('btn-treino-menu', () => game.setState('menu'));
 on('btn-pause-menu', () => { game.encerrar(); game.encerrado = null; game.setState('menu'); });
 on('btn-end-menu',   () => game.setState('menu'));
-on('btn-next',       () => game.goShop(game.proxDia));
+on('btn-next',       () => fluxoHistoria(() => game.goShop(game.proxDia)));
 on('btn-shop-go',    () => { Sfx.tap(); game.startDay(game.shopNext); });
 on('btn-shop-menu',  () => game.setState('menu'));
 
@@ -8206,6 +8398,7 @@ canvas.addEventListener('pointerdown', e => {
   Sfx.init(); Sfx.resume();
   e.preventDefault();
   if (abertura){ Sfx.tap(); abertura.seguir(); return; }   // abertura: o toque passa para a próxima cena
+  if (game.conversa){ Sfx.tap(); game.conversa.seguir(); return; }   // conversa (v8.7): o toque passa para a próxima fala
   try { canvas.setPointerCapture(e.pointerId); } catch(err) {}
   const p = toLogical(e); game.onDown(p.x, p.y, touchPad(e));
 });
@@ -8221,6 +8414,12 @@ window.addEventListener('keydown', e => {
     if (k === 'Escape'){ abertura.pular(); e.preventDefault(); }
     else if (k === 'ArrowLeft'){ abertura.voltar(); e.preventDefault(); }
     else if ((k === 'Enter' || k === ' ' || k === 'Spacebar' || k === 'ArrowRight') && !(e.target && e.target.tagName === 'BUTTON')){ abertura.seguir(); e.preventDefault(); }
+    return;
+  }
+  // conversa (v8.7): Esc pula; Enter, espaço e a seta para a direita seguem
+  if (game.conversa){
+    if (k === 'Escape'){ game.conversa.pular(); e.preventDefault(); }
+    else if ((k === 'Enter' || k === ' ' || k === 'Spacebar' || k === 'ArrowRight') && !(e.target && e.target.tagName === 'BUTTON')){ game.conversa.seguir(); e.preventDefault(); }
     return;
   }
   // Missão zero: Enter segue o pop-up de explicação
@@ -8248,6 +8447,7 @@ function frame(ts){
   game.update(dt);
   ctx.setTransform(canvas.width / TW, 0, 0, canvas.height / H, 0, 0);
   render(game, ctx);
+  if (game.conversa){ game.conversa.update(dt); drawConversa(ctx, game, game.conversa); }
 }
 
 try { if (document.fonts && document.fonts.load) { document.fonts.load('20px "Bagel Fat One"'); document.fonts.load('14px Rubik'); } } catch(e) {}
@@ -8256,7 +8456,7 @@ try { Rank.init(); } catch(e) {}
 game.setState('menu');
 if (!aberturaVista() && !DEV.on) abrirAbertura('auto');   // v8.5: a abertura toca sozinha uma vez
 window.__game = game;
-window.__lcc = { DECOR, DECOR_GRUPOS, TOALHA, decorOf, normDecor, decorOn, FILA_ACOES, filaMax, MARMITA, RETIRADA, marmitaMao, drawMarmita, prateleiraPos, EFOOD_COR, AVAL_BRAVO, QUEUE, setShopTab: v => shopAbrir(v), setShopGrupo: g => shopGrupoAbrir(g), shopSecoes: () => SHOP_GRUPOS.map(g => g.secoes.slice()), TREINO, TREINO_PASSOS, TREINO_COR, Treino, treinoLugar, treinoPrimeiro, playCareer, buildMenu, introBanco, buildFalencia, BANCO, normEmprestimo, parcelaDe, devidoDe, jurosDe, tabelaDe, simulaEmprestimo, SEMANA, semanaOf, diaOf, FILA_JUSTA, PORTA, CHAIRS, PAT, CONTAS, INGRED, CARDAPIO, precoPrato, CURSOS, CURSO_AV, CURSOS_SEMFIM, cursoOf, cursoNivel, normCursos, pratoAv, CARNES, drawDish, pratoSabido, pratosSabidos, GOSTOS, GOSTOS_CAT, pedePrato, VEG, vegMov, drawDish, MAIS, PONTOS_ACAO, GORJETA, DRINK_PRICE, MOVIMENTO, movimentoSalao, DIVULGA, DIVULGA_DIA, divulgaOf, contasDia, bomGoal, SALAO, PONTOS, pontoOf, MESA, mesaBox, mesaPreco, salaoLugares, mesaProblema, salaoCaminho, salaoProblema, salaoOrdena, salaoAuto, salaoVaga, salaoPerto, salaoKit, salaoDevolucao, SALAO_SEMFIM, normSalao, setObst, OBST, pathOk, MAQUINA, BEBIDA_ESPERA, bebidaOf, MANUT, manutOf, manutChance, manutPreco, normManut, CLIMA, CLIMA_DIA, introManut, normPend, CALCADA, TW, HUDX, esperaAp, tableApproach, CRIT, STAFF, DANI_TASKS, DANI_HANDS, daniTaskOk, TRASH, WASH, payroll, FOLHA_CORTE, folhaCorta, folhaCortes, folhaItens, listaE, pratosDe, couvertEffect, couvertOk, ambienteEffect, dishStock, normSave, Helper, JUICE, KITCHEN_SLOTS, handLayout, trayOk, Game, Group, Table, Kitchen, Waitress, BIA_SPEED, DAYS, UPGRADES, CUSTOMER_TYPES, LAYOUT, PAL, Sfx, findPath, render, Rank, sortRows, cleanName, normName, CMD, ENDLESS, VIP, MULTA, rk, renderRank, openRank, closeRank, LS, lsGet, lsSet, loadSave, DEV, saveKey, devSync, divulgaAberta, CAIXA_MAX, VERSAO, normCaixa, caixaResumo, caixaTotais, copyText, PRATO, pratoPerde, pratoVapor, AVAL, AVAL_CRIT, AVAL_BRAVO, avalMenu, avalTeto, avalEscala, avalFrac, AVAL_SIMPLES, AVAL_DECOR, normAval, avalNota, avalMedias, avalGeral, avalMovimento, avalMinimo, avalComentario, fmtNota, notaFaixa, gurugolCaixa, AVAL_COM, normAvalCom, buildGurugol, ABERTURA, Abertura, AB_CENAS, AB_ALT, AB_BASE, abEsc, AB_VIVO, aberturaVista, aberturaSom, drawAbertura, abrirAbertura, aberturaAtual: () => abertura };
+window.__lcc = { DECOR, DECOR_GRUPOS, TOALHA, decorOf, normDecor, decorOn, FILA_ACOES, filaMax, MARMITA, RETIRADA, marmitaMao, drawMarmita, prateleiraPos, EFOOD_COR, AVAL_BRAVO, QUEUE, setShopTab: v => shopAbrir(v), setShopGrupo: g => shopGrupoAbrir(g), shopSecoes: () => SHOP_GRUPOS.map(g => g.secoes.slice()), TREINO, TREINO_PASSOS, TREINO_COR, Treino, treinoLugar, treinoPrimeiro, playCareer, buildMenu, introBanco, buildFalencia, BANCO, normEmprestimo, parcelaDe, devidoDe, jurosDe, tabelaDe, simulaEmprestimo, SEMANA, semanaOf, diaOf, FILA_JUSTA, PORTA, CHAIRS, PAT, CONTAS, INGRED, CARDAPIO, precoPrato, CURSOS, CURSO_AV, CURSOS_SEMFIM, cursoOf, cursoNivel, normCursos, pratoAv, CARNES, drawDish, pratoSabido, pratosSabidos, GOSTOS, GOSTOS_CAT, pedePrato, VEG, vegMov, drawDish, MAIS, PONTOS_ACAO, GORJETA, DRINK_PRICE, MOVIMENTO, movimentoSalao, DIVULGA, DIVULGA_DIA, divulgaOf, contasDia, bomGoal, SALAO, PONTOS, pontoOf, MESA, mesaBox, mesaPreco, salaoLugares, mesaProblema, salaoCaminho, salaoProblema, salaoOrdena, salaoAuto, salaoVaga, salaoPerto, salaoKit, salaoDevolucao, SALAO_SEMFIM, normSalao, setObst, OBST, pathOk, MAQUINA, BEBIDA_ESPERA, bebidaOf, MANUT, manutOf, manutChance, manutPreco, normManut, CLIMA, CLIMA_DIA, introManut, normPend, CALCADA, TW, HUDX, esperaAp, tableApproach, CRIT, STAFF, DANI_TASKS, DANI_HANDS, daniTaskOk, TRASH, WASH, payroll, FOLHA_CORTE, folhaCorta, folhaCortes, folhaItens, listaE, pratosDe, couvertEffect, couvertOk, ambienteEffect, dishStock, normSave, Helper, JUICE, KITCHEN_SLOTS, handLayout, trayOk, Game, Group, Table, Kitchen, Waitress, BIA_SPEED, DAYS, UPGRADES, CUSTOMER_TYPES, LAYOUT, PAL, Sfx, findPath, render, Rank, sortRows, cleanName, normName, CMD, ENDLESS, VIP, MULTA, rk, renderRank, openRank, closeRank, LS, lsGet, lsSet, loadSave, DEV, saveKey, devSync, divulgaAberta, CAIXA_MAX, VERSAO, normCaixa, caixaResumo, caixaTotais, copyText, PRATO, pratoPerde, pratoVapor, AVAL, AVAL_CRIT, AVAL_BRAVO, avalMenu, avalTeto, avalEscala, avalFrac, AVAL_SIMPLES, AVAL_DECOR, normAval, avalNota, avalMedias, avalGeral, avalMovimento, avalMinimo, avalComentario, fmtNota, notaFaixa, gurugolCaixa, AVAL_COM, normAvalCom, buildGurugol, ABERTURA, Abertura, AB_CENAS, AB_ALT, AB_BASE, abEsc, AB_VIVO, aberturaVista, aberturaSom, drawAbertura, abrirAbertura, HISTORIA, REFORMA, HIST, carencia, Conversa, drawConversa, falar, fluxoHistoria, aberturaAtual: () => abertura };
 window.requestAnimationFrame(frame);
 
 })();

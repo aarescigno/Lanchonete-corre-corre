@@ -53,7 +53,7 @@ Origem: retorno do Renan Martorelli (beta-tester) e conversa com o Arthur (15/10
 | 2c-r3d | Rodada de balanceamento do cardápio (metas dos dias 2 a 7, ticket médio, nota mínima do Gurugol) | v8.6.13 | feita (29/10; salgado se pede de dois, metas dos dias 6 e 7, nota mínima 90% do teto; ver `docs/spec-v8.6.13.md`) |
 | 2c-r4a | Melhorias sem o limite de 1 por dia e o fim do dia sem o (n) do Gurugol | v8.6.14 | feita (30/10; ver `docs/spec-v8.6.14.md`) |
 | 2c-r4b | Lojinha em 4 grupos com cartões | v8.6.15 | feita (30/10; ver `docs/spec-v8.6.15.md`) |
-| 2f | A campanha vira o Modo História: estrutura e capítulos da Garagem | v8.7 | a fazer |
+| 2f | A campanha vira o Modo História: estrutura e capítulos da Garagem | v8.7 | feita (30/10; ver `docs/spec-v8.7.md`; alvos do `carreira.js` e do `balance.js` batidos sem mexer nos valores) |
 | 3a | Mudança de ponto e Lanchonete na área industrial (e o capítulo dela) | v9 | a fazer |
 | 3b | Restaurante na Avenida Brasil (e o capítulo dela) | v9.1 | a fazer |
 | 4a | Terraço Suíça e VIPs exigentes (e o capítulo dele) | v10 | a fazer |
@@ -121,7 +121,7 @@ A fileira `#shop-tabs` (`02-telas.html`) passa a ter 4 botões; ao tocar num gru
 
 ---
 
-## Etapa 2f — A campanha vira o Modo História (v8.7)
+## Etapa 2f — A campanha vira o Modo História (v8.7) — FEITA em 30/10 (`docs/spec-v8.7.md`)
 > Decidido na revisão de 28/10: a campanha (Carreira) e o Modo História viram uma coisa só, com um save só. Esta etapa monta a estrutura e os 3 capítulos da Garagem; os capítulos dos outros pontos entram nas etapas 3a, 3b e 4a, e o final na etapa 6. Substitui a antiga etapa 5. **Planejada com o usuário em 30/10** (respostas em `docs/PROPOSTAS.md`): as decisões abaixo estão tomadas.
 
 **Objetivo:** "o sonho da Bia de ter um restaurante estrelado, começando do zero". Os dias da campanha contam a história em capítulos, com a abertura animada como prólogo e a dívida da reforma da garagem desde o dia 1.
