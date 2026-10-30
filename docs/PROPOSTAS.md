@@ -4,6 +4,11 @@ Registro das ideias e dos retornos de quem jogou, com o texto original, e de ond
 
 ---
 
+## 30/10/2026 — usuário: barras do Gurugol na Garagem
+"esse é o relatório do gurugol do nível 1 que fiz com perfeição a espera e a agilidade, achei injusto não ter nota máxima neles, por que isso acontece?" Causa: o teto da Garagem (3 ★) vale para cada critério, e a barra ia até 5. Destino: feito (só o visual) — a barra do card do Gurugol (fim do dia e lojinha) enche pelo teto do ponto, sem mostrar o bônus do encantado; números, movimento e metas sem mudança.
+
+---
+
 ## 30/10/2026 — Usuário: level up da Dani (e, bem no futuro, do Joca)
 > "Beleza, agora vamos pensar num sistema de level up para Dani também. E futuramente a gente pensa num level up pro Joca. Mas bem futuramente, lá só depois que ele entrar, né?"
 
