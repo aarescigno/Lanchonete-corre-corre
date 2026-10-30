@@ -8,7 +8,7 @@ Origem: retorno do Renan Martorelli (beta-tester) e conversa com o Arthur (15/10
 - **Modelo e esforço (desde 29/10, ver `CLAUDE.md`):** cada etapa ou sessão termina com uma linha **Modelo:**. Quando ela pede "planejar com o Opus antes", a primeira sessão (com o Opus) fecha as **decisões em aberto** com o usuário, escreve no plano os valores, textos e falas decididos, apaga a lista de decisões em aberto e troca a linha para só o modelo da execução. A sessão de execução (Sonnet ou Haiku) não decide nada de design: se achar uma decisão que ficou aberta, para e pergunta ao usuário.
 - Antes de programar, se ainda houver **decisões em aberto** na etapa (cada uma já tem uma sugestão), a sessão confirma com o usuário.
 - No fim, a sessão marca a etapa como feita na tabela abaixo (com a versão e a data) e anota o que mudou no plano.
-- Ordem: cada etapa depende só das anteriores. A 1a vem primeiro (mexe no equilíbrio de base). A 1c teve prioridade sobre as demais, por ser retorno do beta-tester Renan (pedido do usuário em 21/10). A 1d-1 (v7.4), a 1d-2 (v7.5), a 2 (v8) e a 2b (v8.3) foram feitas. **Ordem revista com o usuário em 22/10:** 2b (campanha contínua e banco), 2c (avaliações dos clientes), 2d (abertura animada do Modo História), 3a (área industrial), 3b (Avenida Brasil) e 4 (Terraço Suíça). A campanha vem antes dos pontos para a carreira não ser refeita duas vezes, e as avaliações viram a "experiência" que abre os pontos novos e a reputação da etapa 4. A 2c (v8.4) e a 2d (v8.5) foram feitas em 26/10. **Ordem revista com o usuário em 28/10** (texto em `docs/PROPOSTAS.md`): as propostas que estavam só no log e nas Ideias guardadas viraram etapas. Ficou assim: 2e (entregadores com fila própria e marmitas), 2f (a campanha vira o Modo História), 3a (área industrial), 3b (Avenida Brasil), 4a (Terraço Suíça), 4b (nível de luxo), 4c (eventos de bairro), 6 (crítico do Michelzão e final) e 7 (polimento). A marmita vem antes da área industrial, que terá mais entregadores. A campanha e o Modo História viraram uma coisa só: a 2f monta a estrutura e os capítulos da Garagem, cada ponto traz o seu capítulo, e a antiga etapa 5 deixou de existir. A 2e (v8.6) foi feita em 28/10, e a 2d-r (v8.6.1) também, com as 5 partes juntas a pedido do usuário. **A próxima é a 2c-r2 (prato quente, v8.6.8) e depois a 2c-r3, em 3 partes (a: cursos e gostos, v8.6.9; b: desenhos dos pratos, v8.6.10; c: vegetarianos e veganos, v8.6.11), planejada na sabatina de 29/10; a 2f segue depois delas.** A 2c-r3 (a, b e c) e a rodada de balanceamento 2c-r3d (v8.6.13) foram feitas em 29/10; a 2c-r1 (v8.6.7) também. **A próxima é a 2f.** A etapa 7 fica **a rever** com o usuário antes de começar.
+- Ordem: cada etapa depende só das anteriores. A 1a vem primeiro (mexe no equilíbrio de base). A 1c teve prioridade sobre as demais, por ser retorno do beta-tester Renan (pedido do usuário em 21/10). A 1d-1 (v7.4), a 1d-2 (v7.5), a 2 (v8) e a 2b (v8.3) foram feitas. **Ordem revista com o usuário em 22/10:** 2b (campanha contínua e banco), 2c (avaliações dos clientes), 2d (abertura animada do Modo História), 3a (área industrial), 3b (Avenida Brasil) e 4 (Terraço Suíça). A campanha vem antes dos pontos para a carreira não ser refeita duas vezes, e as avaliações viram a "experiência" que abre os pontos novos e a reputação da etapa 4. A 2c (v8.4) e a 2d (v8.5) foram feitas em 26/10. **Ordem revista com o usuário em 28/10** (texto em `docs/PROPOSTAS.md`): as propostas que estavam só no log e nas Ideias guardadas viraram etapas. Ficou assim: 2e (entregadores com fila própria e marmitas), 2f (a campanha vira o Modo História), 3a (área industrial), 3b (Avenida Brasil), 4a (Terraço Suíça), 4b (nível de luxo), 4c (eventos de bairro), 6 (crítico do Michelzão e final) e 7 (polimento). A marmita vem antes da área industrial, que terá mais entregadores. A campanha e o Modo História viraram uma coisa só: a 2f monta a estrutura e os capítulos da Garagem, cada ponto traz o seu capítulo, e a antiga etapa 5 deixou de existir. A 2e (v8.6) foi feita em 28/10, e a 2d-r (v8.6.1) também, com as 5 partes juntas a pedido do usuário. **A próxima é a 2c-r2 (prato quente, v8.6.8) e depois a 2c-r3, em 3 partes (a: cursos e gostos, v8.6.9; b: desenhos dos pratos, v8.6.10; c: vegetarianos e veganos, v8.6.11), planejada na sabatina de 29/10; a 2f segue depois delas.** A 2c-r3 (a, b e c) e a rodada de balanceamento 2c-r3d (v8.6.13) foram feitas em 29/10; a 2c-r1 (v8.6.7) também. **A próxima é a 2c-r4 (lojinha em grupos, v8.6.14, pedido do usuário de 30/10), depois a 2f.** A etapa 7 fica **a rever** com o usuário antes de começar.
 
 ## Situação
 | # | Etapa | Versão | Situação |
@@ -50,6 +50,7 @@ Origem: retorno do Renan Martorelli (beta-tester) e conversa com o Arthur (15/10
 | 2c-r3b | Desenhos dos pratos novos, dos avançados e das carnes do PF | v8.6.12 | feita (29/10; grade de desenhos aprovada pelo usuário, ver `docs/spec-v8.6.12.md`; saiu como v8.6.12 porque a 2c-r3c já tinha tomado a v8.6.11) |
 | 2c-r3c | Vegetarianos e veganos | v8.6.11 | feita (29/10; ver `docs/spec-v8.6.11.md`) |
 | 2c-r3d | Rodada de balanceamento do cardápio (metas dos dias 2 a 7, ticket médio, nota mínima do Gurugol) | v8.6.13 | feita (29/10; salgado se pede de dois, metas dos dias 6 e 7, nota mínima 90% do teto; ver `docs/spec-v8.6.13.md`) |
+| 2c-r4 | Lojinha em grupos com cartões, melhorias sem o limite de 1 por dia e o fim do dia sem o (n) do Gurugol | v8.6.14 | a fazer |
 | 2f | A campanha vira o Modo História: estrutura e capítulos da Garagem | v8.7 | a fazer |
 | 3a | Mudança de ponto e Lanchonete na área industrial (e o capítulo dela) | v9 | a fazer |
 | 3b | Restaurante na Avenida Brasil (e o capítulo dela) | v9.1 | a fazer |
@@ -563,6 +564,47 @@ As receitas dos avançados aparecem no cartão da lojinha e na fala do Tonhão; 
 
 **Modelo:** planejar com o Opus (esforço alto) antes, para fechar quais pratos entram na Garagem, os preços de venda e dos cursos e a chance do curso avançado; executar com o Sonnet, esforço alto (mexe no cardápio, no save, na Missão zero, no Como jogar e no bot).
 
+
+## Etapa 2c-r4 — Lojinha em grupos e fim do dia mais limpo (v8.6.14)
+> Pedido do usuário de 30/10 (texto em `docs/PROPOSTAS.md`), decidido na entrevista da mesma data. Vem antes da 2f. Sem decisões em aberto.
+
+**Objetivo:** a lojinha tem 10 abas numa fileira, cansativa de olhar. Elas viram 4 grupos, e cada grupo abre cartões para escolher a seção. As melhorias deixam de ter o limite de 1 por dia. No fim do dia, a caixa do Gurugol perde o número entre parênteses.
+
+### 1. Fim do dia: sem o "(n)" do Gurugol
+- O número depois de cada critério, como "Agilidade (4)", é quantas avaliações do dia deram nota àquele critério (v8.6.7). **Sai só da caixa do fim do dia.** Continua na aba Gurugol da lojinha, no `aria-label` e no `title`.
+- `src/42-resultados.js`: `gurugolCaixa` (linha `c.nome + (m.cnt ? ' (' + m.cnt[i] + ')' : '')`) ganha uma opção (ex.: `semCnt`) que o fim do dia passa e a aba Gurugol não passa.
+
+### 2. Lojinha em 4 grupos com cartões
+A fileira `#shop-tabs` (`02-telas.html`) passa a ter 4 botões; ao tocar num grupo, a área da lojinha mostra os **cartões das seções** do grupo; ao tocar num cartão, abre a seção, com um botão **"‹ Voltar"** no alto que volta aos cartões do grupo. **Cartão: só ícone e nome** (sem resumo nem selo), ícones de `upgradeIcon` (`41-lojinha.js`) ou um novo no mesmo estilo.
+
+| Grupo | Cartões (nesta ordem) | Conteúdo |
+|---|---|---|
+| **Lanchonete** | Melhorias · Salão · Decoração · Manutenção · Divulgação | Melhorias: Água da torneira, Cafeteira de 2 bocas, Ventilador de teto, Triturador de lixo, Jogo de pratos. Divulgação: a de hoje, mais o músico (couvert) e a TV e som, que saem da aba Equipe. Salão, Decoração e Manutenção ficam como estão. |
+| **Equipe** | Bia · Tonhão · Dani | Bia: Tênis novos (e os de corrida), Bandeja, Livrinho de Sudoku (saem de Melhorias). Tonhão: o aumento (nível 1 a 3) e os Cursos (a aba Cursos inteira). Dani: contratar, nível e tarefas. |
+| **Dinheiro** | Banco · Caixa | Como estão. |
+| **Gurugol** | — | Abre direto a aba Gurugol, sem cartões. |
+
+- Estado: `shopTab` continua guardando a seção (`melhorias`, `bia`, `tonhao`, `dani`, `salao`, …) e entra `shopGrupo` (`lanchonete`, `equipe`, `dinheiro`, `gurugol`); `shopTab = null` mostra os cartões. A lojinha abre em **Lanchonete, nos cartões**. Trocar de grupo vai aos cartões dele.
+- `buildEquipe` se divide em `buildBia`, `buildTonhao` (aumento + o conteúdo de `buildCursos`) e `buildDani`; os cartões do músico e da TV vão para `buildDivulga`. `buildMelhorias` filtra os ids da Bia (`tenis`, `corrida`, `bandeja`, `sudoku`).
+- `window.__lcc.setShopTab(v)` segue funcionando com o nome da seção (acerta o grupo sozinho), para os smokes e scripts de captura antigos; entra `setShopGrupo(g)`.
+- CSS (`01-estilo.css`): `.shopcards` (grade de cartões grandes, 3 por fileira; 2 no celular em pé) e o botão Voltar. O menu da lojinha não pode rolar (`menu_fit.py`).
+
+### 3. Melhorias sem o limite de 1 por dia
+- O limite agora é o dinheiro. **Os cursos do Tonhão continuam 1 por lojinha** (`cursoTrava`, sem mudança).
+- `src/16-jogo.js`: em `buy`, sai `this.shopBought` da condição e das atribuições; saem `shopBought` e `boughtFor` do jogo (construtor, `goShop`, linha 801). Os Tênis de corrida continuam pedindo os Tênis novos (`req`).
+- `src/41-lojinha.js`: o texto `#shop-limit` vira "Melhorias à vontade, se o dinheiro der. Cursos: 1 por dia." (modo dev igual); sai o `fecha` por `game.shopBought`. Tirar "fora da melhoria do dia" da descrição do Jogo de pratos (`10-constantes.js`) e de qualquer texto do Como jogar (`40-interface.js`) e da Missão zero (`17-treino.js`) que fale em 1 melhoria por dia (grep "melhoria do dia", "1 melhoria", "uma melhoria").
+- Bot (`tests/bot.js`, `carreira.js`, `balance.js`): o bot compra **na ordem de sempre, todas as que o dinheiro der, guardando a folha do dia** (mesma reserva que já usa). **Só medir, sem reajustar preços** (decisão do usuário): rodar `balance.js` (sem equipe, `EQUIPE=auto`, `BOT=afiado`) e `carreira.js`, anotar os números novos na spec e no `CLAUDE.md` e avisar o usuário; se ficar fácil demais, o reajuste é outra conversa.
+
+### Testes
+- Ajustar os smokes que conferem o limite: `smoke.js:61`, `smoke12.js` (corrida depois dos tênis continua; "uma melhoria por visita" sai), `smoke13.js:32`, `smoke23.js:23 e 32`, `smoke29.js:24`, `smoke30.js:19`: passam a conferir que **dá para comprar 2 melhorias na mesma lojinha** e que **o 2º curso no mesmo dia continua recusado**.
+- Smoke novo `smoke32.js`: a lojinha abre em Lanchonete nos cartões (5 cartões); cada grupo mostra os seus cartões na ordem da tabela; Gurugol abre direto; Voltar volta aos cartões; `setShopTab('cursos')` cai em Equipe › Tonhão; a Bia mostra Tênis, Bandeja e Sudoku e Melhorias não; o músico e a TV aparecem em Divulgação e não em Dani/Tonhão; a caixa do fim do dia não tem "(" nos critérios e a aba Gurugol tem.
+- `python3 menu_fit.py` e uma captura nova `shot_v8_6_14.py` (cartões dos 4 grupos, Bia, Tonhão, fim do dia) em `capturas/v8.6.14`.
+
+**Partes:** `02-telas.html`, `01-estilo.css`, `10-constantes.js` (texto do Jogo de pratos), `16-jogo.js` (`buy`, `shopBought`), `17-treino.js` e `40-interface.js` (só textos, se houver), `41-lojinha.js` (grupos, cartões, divisão da Equipe), `42-resultados.js` (`gurugolCaixa`), `43-telas.js` (`__lcc`), `tests/`.
+
+**Modelo:** Sonnet, esforço médio: plano fechado, mas mexe na lojinha inteira e em vários smokes.
+
+---
 
 ## Etapa 2f — A campanha vira o Modo História (v8.7)
 > Decidido na revisão de 28/10: a campanha (Carreira) e o Modo História viram uma coisa só, com um save só. A campanha já começa na Garagem com a dívida do banco, que é a história da abertura (v8.5). Esta etapa monta a estrutura e o capítulo da Garagem; os capítulos dos outros pontos entram nas etapas 3a, 3b e 4a, e o final na etapa 6. Substitui a antiga etapa 5.
