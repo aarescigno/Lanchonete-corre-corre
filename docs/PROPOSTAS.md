@@ -4,6 +4,14 @@ Registro das ideias e dos retornos de quem jogou, com o texto original, e de ond
 
 ---
 
+## 30/10/2026 — Usuário: ajustes da lojinha (TV e som, toalha, equipe, manutenção)
+> "No menu de upgrades, transfira TV e som para a aba melhorias. Quando eu vou em equipe, os sprites da Bia e da Dani estão cortados. Então, no encaixe ali da equipe e o card da Bia e o card da Dani. A manutenção o card da manutenção ele pode mudar de cor se ficar no amarelo ou no vermelho. O próprio card já demonstra se já tem alguma coisa crítica ou não. E a toalha xadrez... que está ali na melhoria melhorias, não. Da decoração, a toalha xadrez tem que ir para o salão para poder comprar no salão."
+> "Aproveita e inclua nesse planejamento para o sprite do Tonhão tá esquisito. Coloca um chapéu de cozinheiro ou o rosto dele mesmo com um chapéu. Ou, similar ao como tá da Bia e da Dani."
+
+**Destino:** etapa **2c-r5** (v8.9.1) no `docs/PLANO.md`, antes da 3a, para o Sonnet executar. O couvert fica na Divulgação; o Tonhão vira de corpo inteiro com a touca (o desenho da abertura).
+
+---
+
 ## 30/10/2026 — usuário: barras do Gurugol na Garagem
 "esse é o relatório do gurugol do nível 1 que fiz com perfeição a espera e a agilidade, achei injusto não ter nota máxima neles, por que isso acontece?" Causa: o teto da Garagem (3 ★) vale para cada critério, e a barra ia até 5. Destino: feito (só o visual) — a barra do card do Gurugol (fim do dia e lojinha) enche pelo teto do ponto, sem mostrar o bônus do encantado; números, movimento e metas sem mudança.
 

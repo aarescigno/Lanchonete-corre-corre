@@ -55,7 +55,8 @@ Origem: retorno do Renan Martorelli (beta-tester) e conversa com o Arthur (15/10
 | 2c-r4b | Lojinha em 4 grupos com cartões | v8.6.15 | feita (30/10; ver `docs/spec-v8.6.15.md`) |
 | 2f | A campanha vira o Modo História: estrutura e capítulos da Garagem | v8.7 | feita (30/10; ver `docs/spec-v8.7.md`; alvos do `carreira.js` e do `balance.js` batidos sem mexer nos valores) |
 | 2g | O Tonhão sobe de nível com os cursos (XP e aumento que consolida; 5 níveis) | v8.8 | a fazer (planejada em 30/10; vem antes da 3a) |
-| 2h | A Dani sobe de nível com trabalho e cursos (XP e aumento que consolida) | v8.9 | a fazer (planejada em 30/10; depois da 2g, antes da 3a) |
+| 2h | A Dani sobe de nível com trabalho e cursos (XP e aumento que consolida) | v8.9 | feita em 30/10 |
+| 2c-r5 | Ajustes da lojinha: TV e som em Melhorias, toalha no Salão, ícones da equipe (Tonhão de corpo inteiro) e cartão da Manutenção com cor | v8.9.1 | a fazer (planejada em 30/10; antes da 3a) |
 | 3a | Mudança de ponto e Lanchonete na área industrial (e os caps. 4 e 5) | v9 | a fazer (planejada em 30/10) |
 | 3b | Restaurante na Avenida Brasil, o Joca (e o capítulo dela) | v9.1 | a fazer |
 | 4a | Terraço Suíça e VIPs exigentes (e o capítulo dele) | v10 | a fazer |
@@ -276,6 +277,62 @@ v8.9: guardar a v8.8 em `versoes/`, `vtag`, `VERSAO`, `#ov-ver`, `docs/spec-v8.9
 **Fora:** a Dani barista/confeiteira, o Joca e o funcionário novo (Ideias guardadas).
 
 **Modelo:** Sonnet, esforço médio. Tudo decidido; a calibração de `DANI_XP.tarefas` e a conferência do "Reduzir" têm regra escrita.
+
+---
+
+## Etapa 2c-r5 — Ajustes da lojinha: TV e som em Melhorias, toalha no Salão, cartões da equipe e da Manutenção (v8.9.1)
+> **Planejada em 30/10** (pedido do usuário, texto em `docs/PROPOSTAS.md`), **antes da 3a**. Só a lojinha (`src/41-lojinha.js`, `src/01-estilo.css`) e os testes; nenhuma regra de jogo muda, nem o balanceamento (não precisa de `balance.js`).
+
+#### Decisões tomadas (30/10)
+1. **TV e som vão para Melhorias** (Lanchonete › Melhorias). O **couvert artístico fica na Divulgação**, como hoje (o pedido foi só TV e som).
+2. **Toalha xadrez sai da Decoração e vai para o Salão.** A Decoração fica com os 6 enfeites. No Salão, a toalha "em todas as mesas" entra no painel da direita (`.ed-side`), logo abaixo do botão "Mesa de 4". A toalha mesa a mesa, no balãozinho da mesa, continua como está.
+3. **Cartões do grupo Equipe:** hoje os desenhos da Bia (boné e pés) e da Dani (cabelo) saem cortados no ícone. Cada figura passa a caber inteira no ícone, com folga.
+4. **Tonhão de corpo inteiro com a touca de cozinheiro**, como a Bia e a Dani (hoje o ícone é um fogão com a touca por cima e fica estranho). Usar o desenho da abertura, `abTonhao` (`src/25-abertura.js:78`), que já tem a touca. O mesmo ícone vale no cartão do Tonhão dentro da seção (`buildTonhao`).
+5. **O cartão Manutenção muda de cor** conforme o pior equipamento, com as mesmas faixas das barras (`MANUT.verde` 0,7 e `MANUT.vermelho` 0,4):
+   - algum equipamento **abaixo de 0,4**: cartão **vermelho** (classe `perigo`);
+   - senão, algum **abaixo de 0,7**: cartão **amarelo** (classe `alerta`);
+   - senão, a cor normal.
+   Vale em qualquer dia (as barras também já mudam de cor antes do `MANUT.dia`). O texto do cartão não muda; para leitores de tela, `aria-label` = "Manutenção: precisa de revisão" (amarelo) ou "Manutenção: risco de quebra" (vermelho).
+
+#### O que muda, parte por parte (`src/41-lojinha.js`, salvo onde diz)
+- **TV e som:** dividir `buildAmbiente` em duas funções:
+  - `buildTvSom(grid)`: o cartão "TV e som" com os 2 botões (o trecho de hoje, sem mudar textos);
+  - `buildCouvert(grid)`: o "Couvert artístico" (com o `if (!couvertOk(game.ponto)) return;`).
+  `buildMelhorias` vira `function buildMelhorias(grid){ upgradeCartoes(grid, false); buildTvSom(grid); }`. Em `buildDivulga`, trocar `buildAmbiente(grid)` por `buildCouvert(grid)`. Apagar as variáveis que sobrarem sem uso (`T`, `D`, `pc`, `sec`...). Atualizar o comentário do topo (`/* TV e som (Melhorias, v8.9.1) e o couvert (Divulgação) */`).
+- **Toalha:** em `buildDecor`, apagar o bloco do cartão da toalha (das linhas `const todas = ...` até o `grid.appendChild(c)` do fim) e tirar "E a toalha xadrez..." do comentário. Em `buildSalao`, logo depois do `side.appendChild(edBtn('Mesa de 4: ...'))`, acrescentar:
+  ```js
+  // v8.9.1: a toalha xadrez em todas as mesas (antes na Decoração); mesa a mesa, no balãozinho
+  const todas = mesas.concat(est), sem = game.semToalha.length, vt = sem * TOALHA.cost;
+  side.appendChild(edBtn(!sem ? 'Toalha xadrez: todas têm' : 'Toalha xadrez em ' + (sem > 1 ? 'todas (' + sem + ')' : '1 mesa') + ': ' + fmt(vt), 'btn', sem > 0 && bank >= vt, () => game.buyToalhas(), vt));
+  ```
+  e, no texto de `ed-contas` de baixo (depois da linha do movimento), mais uma linha `ed-contas`: **"Toalha xadrez: " + fmt(TOALHA.cost) + " por mesa; melhora o ambiente no Gurugol para quem senta nela. " + (todas.length − sem) + " de " + todas.length + " mesas têm."** (singular "mesa tem" com 1, como hoje). Conferir que `edBtn` aceita o 5º argumento `cost` (aceita: mesma assinatura do `shopBtn`).
+- **Ícones da equipe (`upgradeIcon`):** o ícone é um canvas de 64×64 com `translate(32,32); scale(1.5,1.5)`, ou seja, cabe de −21 a +21 em cada eixo. Para `bia`, `dani` e `tonhao`, desfazer a escala no começo do ramo (`c.scale(1/1.5,1/1.5)`, então cabe de −32 a +32) e desenhar a figura inteira com **pelo menos 2 px de folga** em cima e embaixo (do alto do boné/cabelo/touca ao pé, incluindo a sombra). Valores de partida, a ajustar pela captura:
+  - `bia`: `drawBia(c,{},0,27,{ s:0.62 })`;
+  - `dani`: `drawPerson(c,DANI_LOOK,0,27,{ shirt:'#F7EFD8', mood:0, s:0.62 })` e o avental roxo redesenhado na mesma escala (hoje está em coordenadas da escala antiga: multiplicar as coordenadas por 1,5 × 0,62/0,75 ≈ 1,24, ou redesenhar conferindo na captura);
+  - `tonhao`: `abTonhao(c,0,27,0.5,{ t:0 })` (o ramo de hoje, com fogão e `ctx2chef`, sai; se `ctx2chef` ficar sem uso, apagar de `src/21-cenario.js:522`).
+  Regra para fechar os números: aumentar `y` ou baixar `s` até a figura caber com a folga; entre os que cabem, a figura maior. As três devem ficar com altura parecida (a Dani pode ser um pouco menor que a Bia, como no jogo; o Tonhão, um pouco maior). Se `abTonhao` depender de algo da abertura que quebre fora dela (erro no console), passe as opções que faltarem (`g:1`, `mood:0`) em vez de mexer na abertura.
+- **Cartão da Manutenção:** em `shopCartoes`, depois de criar o botão, quando `id === 'manut'`:
+  ```js
+  const pior = Math.min.apply(null, MANUT.equip.map(q => game.manut[q.id]));
+  if (pior < MANUT.vermelho){ b.classList.add('perigo'); b.setAttribute('aria-label', 'Manutenção: risco de quebra'); }
+  else if (pior < MANUT.verde){ b.classList.add('alerta'); b.setAttribute('aria-label', 'Manutenção: precisa de revisão'); }
+  ```
+- **`src/01-estilo.css`** (logo depois da linha `.shopcards canvas{...}`):
+  ```css
+  .shopcards button.alerta{background:#FBE7B0;border-color:#C98A12}   /* v8.9.1: Manutenção com equipamento no amarelo */
+  .shopcards button.perigo{background:#F6C9C3;border-color:var(--perigo);color:#7A1D16}   /* e no vermelho */
+  ```
+
+#### Testes
+- **`tests/smoke33.js`:** a linha `'Divulgação tem a TV e som'` vira duas: Melhorias tem "TV e som" e "Ventilador de teto"; Divulgação **não** tem "TV e som" e tem "Contas do dia". Acrescentar: (a) com `g.manut` todo em 1, o cartão `manut` (no grupo Lanchonete) não tem `alerta` nem `perigo`; com um equipamento em 0,6, tem `alerta`; com um em 0,3, tem `perigo` (e o `aria-label` certo). Ver como o smoke lê as classes dos botões no `harness.js` (os elementos falsos têm `classList`); se não der, conferir o `className`.
+- **`tests/smoke30.js`:** a Decoração passa a ter **6 cartões** (era 7: tirar o teste do `nome(6)==='Toalha xadrez'`); acrescentar que no Salão o painel tem um botão com "Toalha xadrez em todas" e que clicar nele chama a compra (ou só conferir o texto e usar `g.buyToalhas()` como já faz a linha 39).
+- `tests/run_all.sh --tudo` verde (o `menu_fit` não muda; o `balance` deve dar o mesmo da v8.9).
+- **Capturas:** `tests/shot_v8_9_1.py` em `capturas/v8.9.1`, no modelo do `shot_v8_6_15.py` (tela larga 1220×600 e celular deitado 740×360): grupo Equipe (Bia, Tonhão e Dani inteiros), seção Tonhão (ícone do cartão), grupo Lanchonete com a Manutenção normal, amarela (`g.manut.fogao=0.6`) e vermelha (`0.3`), Melhorias rolada até a TV e som, Salão com o botão da toalha, Decoração com 6 cartões. Conferir recortes ampliados (PIL `crop`) dos ícones da equipe: nada cortado.
+
+#### Fechamento
+v8.9.1: guardar a v8.9 em `versoes/` (`v8.9-fonte.html` e `v8.9.html`), `vtag`, `VERSAO`, lista do `#ov-ver`, `docs/spec-v8.9.1.md` (curto), `docs/RESUMO.md`, marcar a etapa como feita na tabela da Situação, PR para o `claude/main` e merge. Não publicar no artifact sem o usuário pedir.
+
+**Modelo:** Sonnet, esforço médio. Tudo decidido; só os números dos ícones são por tentativa, com a regra escrita acima.
 
 ---
 
