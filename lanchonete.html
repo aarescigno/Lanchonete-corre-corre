@@ -2785,6 +2785,13 @@ class Game {
     if (!this.salvo) return;
     this.save = this.salvo; this.salvo = null; this.up = this.save.up; this.treino = null;
   }
+  /* "Pular tutorial": sai da Missão zero, marca como feita (não volta a abrir sozinha) e vai ao menu */
+  pularTreino(){
+    this.sairTreino();
+    this.save.treino = true; writeSave(this.save);
+    this.setState('menu');
+    Sfx.tap();
+  }
   /* último passo: a Missão zero fica marcada como feita no save de verdade */
   acabouTreino(){
     this.sairTreino();
@@ -3811,6 +3818,9 @@ class Game {
     if (this.state !== 'playing') return;
     pad = pad || 0;
     const h = this.hudHit(sx, y);
+    // Missão zero: "Pular tutorial" (em todos os balões) volta direto ao menu principal
+    const pu = this.treino && this.treino.pular;
+    if (pu && sx >= pu.x && sx <= pu.x + pu.w && y >= pu.y && y <= pu.y + pu.h){ this.pularTreino(); return; }
     // Missão zero: com o pop-up de explicação, qualquer toque (menos a pausa e o som) segue para o próximo passo
     if (this.treino && this.treino.para && !(h && (h.k === 'pause' || h.k === 'sound'))){ this.treino.seguir(); return; }
     if (h){
@@ -6177,6 +6187,11 @@ function drawTreino(ctx,g,tm){
   y += U.tit / 2 + 10 + U.linha / 2;
   linhas.forEach(l => { txt(ctx, l, r.x + U.pad, y, U.corpo, PAL.tinta, 'left', FB); y += U.linha; });
   const fy = r.y + r.h - U.pad - 11;
+  // "Pular tutorial": canto de cima do cartão; o retângulo fica em tr.pular para o toque (Game.onDown)
+  const pw = 122, ph = 24, pr = { x:r.x + r.w - 12 - pw, y:r.y + 10, w:pw, h:ph };
+  tr.pular = pr;
+  rr(ctx, pr.x, pr.y, pr.w, pr.h, 8); fs(ctx, '#efe6d2', 2);
+  txt(ctx, 'Pular tutorial ⏭', pr.x + pr.w / 2, pr.y + pr.h / 2, 13, PAL.tinta, 'center', FB);
   txt(ctx, 'Missão zero · passo ' + (tr.i + 1) + ' de ' + tr.total, r.x + U.pad, fy, 13, '#6b6355', 'left', FB);
   if (p.ok){
     const bw = 150, bx = r.x + r.w - U.pad - bw, by = fy - 17;
