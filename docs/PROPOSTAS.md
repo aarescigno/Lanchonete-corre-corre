@@ -4,6 +4,23 @@ Registro das ideias e dos retornos de quem jogou, com o texto original, e de ond
 
 ---
 
+## 30/10/2026 — Usuário: entrevista para planejar a 2f (a campanha vira o Modo História)
+**Origem:** perguntas no chat, para deixar a sessão pronta para o Sonnet. Respostas do usuário (as escolhidas entre as opções e o texto dele):
+
+> Menu: "Só a História (Recomendado)". Objetivo não cumprido: "Continua até cumprir (Recomendado)". Dívida: "R$ 1.000, 10 parcelas (Recomendado)". Trama: "Só uma pista (Recomendado)".
+
+> Objetivos: "Mais difícil" (o cap. 3 pede quitar a reforma, nota 2,7 e R$ 800). Fim do cap. 3: "Segue jogando (Recomendado)". Conversas: "Balões sobre o salão (Recomendado)". Save antigo: "Recomeça". 1ª vez: "Missão zero, depois cap. 1 (Recomendado)". Falas do cap. 1: "Aprovo".
+
+> Cap. 2 (sobre contratar a Dani e pagar 3 parcelas): "Não necessariamente estará com 3 parcelas pagas ao se contratar a Dani né? E se a pessoa escolher contratar a Dani só depois de quitar a dívida?"
+
+> Cap. 3: "Então, e se a Dani não estiver no dia? Talvez a Dani já deva entrar no 3o dia de graça nerfada, mas grátis, tipo o Tonhão que começa funcional, mas fica cada vez melhor conforme upa ele."
+
+> Dani aprendiz de graça, com aumentos de R$ 25, 40 e 55: "Aprovo (Recomendado)". Objetivo do cap. 2: "Nota do Gurugol 2,4". Falas novas dos caps. 2 e 3: "Aprovo".
+
+**Destino:** etapa **2f** do `docs/PLANO.md` (v8.7), com as decisões tomadas, as falas dos 3 capítulos e os alvos do `carreira.js`. A Dani de graça como aprendiz (ideia do usuário) entra nela. Decidido por mim, sem pergunta: as falas de depois do cap. 2 trocadas para combinar com o objetivo da nota; o botão História vira "Ver abertura"; partes novas `19-conversa.js` e `26-conversa.js`; a reforma começa a cobrar no dia 2, com juros de 1% ao dia.
+
+---
+
 ## 29/10/2026 — Usuário: sabatina para planejar a 2c-r3 (cardápio e cursos do Tonhão)
 **Origem:** perguntas no chat, para deixar a sessão pronta para o Sonnet. Respostas do usuário (as escolhidas entre as opções e o texto dele):
 
