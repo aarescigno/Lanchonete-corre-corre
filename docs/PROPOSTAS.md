@@ -18,6 +18,21 @@ Registro das ideias e dos retornos de quem jogou, com o texto original, e de ond
 > Dani aprendiz de graça, com aumentos de R$ 25, 40 e 55: "Aprovo (Recomendado)". Objetivo do cap. 2: "Nota do Gurugol 2,4". Falas novas dos caps. 2 e 3: "Aprovo".
 
 **Destino:** etapa **2f** do `docs/PLANO.md` (v8.7), com as decisões tomadas, as falas dos 3 capítulos e os alvos do `carreira.js`. A Dani de graça como aprendiz (ideia do usuário) entra nela. Decidido por mim, sem pergunta: as falas de depois do cap. 2 trocadas para combinar com o objetivo da nota; o botão História vira "Ver abertura"; partes novas `19-conversa.js` e `26-conversa.js`; a reforma começa a cobrar no dia 2, com juros de 1% ao dia.
+## 30/10/2026 — Usuário: o "(n)" do Gurugol e a lojinha com abas demais
+**Quem:** o usuário (Arthur), no chat:
+
+> As notas do Gurugol após cada dia estão com um número depois da categoria, tipo agilidade (4). Pra que esses números? Da pra tirar.
+>
+> No menu entre os níveis tem muitas abas em cima, está cansativo de olhar e procurar, melhor fazer agrupamentos e submenus, tipo: melhorias da lanchonete, melhorias dos funcionários (Bia, Tonhão, Dani) etc. Me entreviste para esses ajustes
+
+**Entrevista (30/10):** 4 grupos, Lanchonete (Melhorias, Salão, Decoração, Manutenção e Divulgação: "divulgação não encaixa no grupo dinheiro, está mais para lanchonete mesmo"), Equipe (Bia, Tonhão, Dani), Dinheiro (Banco, Caixa) e Gurugol sozinho; Equipe por pessoa, e "rompa com esse limite de 1 por dia, o limite é o dinheiro só e o número de cursos que dá pra fazer por dia"; submenu em cartões, só ícone e nome; as melhorias que não são de uma pessoa, o músico e a TV ficam na Lanchonete; tirar o limite e só medir o balanço; o "(n)" sai só do fim do dia.
+
+| Ideia | Destino |
+|---|---|
+| Tirar o "(n)" dos critérios do Gurugol | Sessão 2c-r4a (v8.6.14): só da caixa do fim do dia; fica na aba Gurugol |
+| Agrupar as abas da lojinha com submenus | Sessão 2c-r4b (v8.6.15): 4 grupos com cartões |
+| Melhorias da Bia, do Tonhão e da Dani por pessoa | Sessão 2c-r4b: Equipe › Bia, Tonhão (aumento e cursos), Dani |
+| Sem o limite de 1 melhoria por dia | Sessão 2c-r4a: o limite é o dinheiro; cursos seguem 1 por dia; balanço só medido |
 
 ---
 
