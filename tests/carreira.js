@@ -36,8 +36,8 @@ for(let k=0;k<N;k++){
       g.goShop(n);
       if(MODO==='cuida'){ const b0=g.save.bank; g.revisarTudo(); r.rev.push(b0-g.save.bank); }
       if(MODO==='amarelo'||MODO==='vermelho'){ const lim=MODO==='amarelo'?L.MANUT.verde:L.MANUT.vermelho, b0=g.save.bank; L.MANUT.equip.forEach(q=>{ if(g.save.manut[q.id]<lim) g.revisar(q.id); }); r.rev.push(b0-g.save.bank); }   // v8.3.12: amarelo = revisa quem saiu do verde; vermelho = só quem já está no vermelho
-      const u=order.find(id=>!g.up[id]); const uc=L.UPGRADES.find(x=>x.id===u);
-      if(u && g.save.bank>=uc.cost+(n>=3?300:0)) g.buy(u);
+      for(;;){ const u=order.find(id=>!g.up[id]); const uc=u&&L.UPGRADES.find(x=>x.id===u);   // v8.6.14: sem o limite de 1 por dia, compra na ordem tudo o que o dinheiro der, guardando a reserva
+        if(!(u && g.save.bank>=uc.cost+(n>=3?300:0) && g.buy(u))) break; }
       if(process.env.MOVEIS!=='0') BOT.moveis(g,L,semMesa,n>=3?300:0,process.env.MOVEIS);
       if(process.env.CURSOS!=='0'){ const cu=BOT.cursos(g,L,n>=3?300:0,process.env.CURSOS?process.env.CURSOS.split(','):undefined); if(cu) (cursoDias[cu]=cursoDias[cu]||[]).push(n); }   // v8.6.9: 1 curso por lojinha, se sobrar o preço mais a reserva (CURSOS=0 não compra)
       if(n>=3){

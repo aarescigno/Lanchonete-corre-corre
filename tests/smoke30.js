@@ -16,7 +16,7 @@ novo(); g.goShop(5); { const d=L.decorOf('samambaia'), b0=g.save.bank;
   ok(g.save.caixaPend.sal===d.cost,'o gasto entra no caixa do salão');
   ok(!g.buyDecor('samambaia') && g.save.bank===b0-d.cost,'não compra o mesmo enfeite 2 vezes');
   ok(g.buyDecor('foto') && g.buyDecor('giz') && g.buyDecor('placa') && g.buyDecor('espada') && g.buyDecor('lata'),'compra todos no mesmo dia');
-  ok(!g.shopBought && g.buy('bandeja'),'e a melhoria do dia continua livre');
+  ok(g.buy('bandeja'),'e a bandeja também');
   ok(!g.buyDecor('nada'),'enfeite que não existe não compra'); }
 novo({bank:5}); ok(!g.buyDecor('giz') && g.save.bank===5,'sem dinheiro não compra');
 

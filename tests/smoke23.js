@@ -17,20 +17,20 @@ ok(L.dishStock({endless:true},{pratos:2})===7,'Turno sem fim: 5 +2');
 
 novo(2000);
 ok(g.buy('tenis'),'compra a melhoria do dia');
-ok(!g.buy('cafeteira'),'2ª melhoria no mesmo dia: bloqueada');
+ok(g.buy('cafeteira'),'2ª melhoria no mesmo dia: liberada (v8.6.14)');
 ok(g.buy('pratos') && g.buy('pratos') && g.buy('pratos'),'Jogo de pratos 3 vezes, depois da melhoria do dia');
-ok(g.up.pratos===3 && g.save.bank===2000-150-900,'3 jogos e o dinheiro certo');
-ok(g.shopBought && g.boughtFor===3,'o dia segue com a melhoria escolhida');
+const cafe=L.UPGRADES.find(x=>x.id==='cafeteira').cost;
+ok(g.up.pratos===3 && g.save.bank===2000-150-cafe-900,'3 jogos e o dinheiro certo');
 L.setShopTab('melhorias');
 { const c=cartao('Jogo de pratos'); ok(c && /^Você tem 3\./.test(c.children[2].textContent),'cartão mostra "Você tem 3."');
   const b=c.children[3]; ok(b.textContent==='Comprar R$ 300' && !b.disabled,'botão do Jogo de pratos ativo');
-  const cf=cartao('Cafeteira').children[3]; ok(cf.disabled,'cafeteira desabilitada (melhoria do dia já escolhida)'); }
-ok(/pratos à vontade/.test(els['shop-limit'].textContent),'aviso do limite cita o Jogo de pratos');
+  const cf=cartao('Cafeteira').children[3]; ok(cf.disabled,'cafeteira já comprada: botão desabilitado'); }
+ok(/à vontade/.test(els['shop-limit'].textContent),'aviso do limite: melhorias à vontade');
 g.resetDay(3); ok(g.kitchen.clean===7,'dia 3 abre com 7 pratos limpos');
 
 novo(500);
-ok(g.buy('pratos') && !g.shopBought,'só o Jogo de pratos: a melhoria do dia continua livre');
-ok(g.buy('tenis'),'e a melhoria do dia ainda pode ser comprada');
+ok(g.buy('pratos'),'compra o Jogo de pratos');
+ok(g.buy('tenis'),'e outra melhoria também');
 ok(!g.buy('pratos'),'sem dinheiro: bloqueado ('+g.save.bank+')');
 ok(/jogo de pratos/.test(L.caixaResumo(g.save)),'resumo do caixa cita o jogo de pratos');
 

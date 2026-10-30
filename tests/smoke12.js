@@ -11,11 +11,10 @@ novo({tenis:true}); ok(Math.abs(g.bia.speed-330)<1e-9,'Tênis novos: 330 (+10%)'
 novo({tenis:true,corrida:true}); ok(Math.abs(g.bia.speed-360)<1e-9,'Tênis de corrida: 360 (+20%, não soma com os +10%)');
 { const u=L.UPGRADES.find(x=>x.id==='corrida'); ok(u&&u.req==='tenis'&&u.cost===350,'Tênis de corrida: R$ 350, pedem os Tênis novos'); }
 
-// compra: corrida só depois dos tênis, uma melhoria por visita
+// compra: corrida só depois dos tênis, sem limite por visita
 novo(); g.goShop(2); ok(!g.buy('corrida'),'sem os Tênis novos não compra os de corrida');
 ok(g.buy('tenis')&&g.save.bank===1850,'compra os Tênis novos');
-ok(!g.buy('corrida'),'na mesma visita não leva a 2ª melhoria');
-g.goShop(3); ok(g.buy('corrida')&&g.save.bank===1500&&g.up.corrida,'na visita seguinte compra os Tênis de corrida');
+ok(g.buy('corrida')&&g.save.bank===1500&&g.up.corrida,'na mesma visita já compra os Tênis de corrida (v8.6.14)');
 
 // lojinha: o cartão dos tênis vira o de corrida; a grade continua com 6
 const cartoes=()=>els['shop-grid'].children.map(c=>c.children[1].textContent);
