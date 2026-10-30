@@ -57,7 +57,7 @@ const joga=(H,fat,custo)=>{ const {g,els}=H; if(g.state==='shop') els['btn-shop-
 
 // ---------- 3. aluguel e preços ----------
 { const H=jogo(4,true), {g,L}=H; g.resetDay(10);
-  ok(g.ponto.aluguel===120 && g.contas===0 && L.precoPrato('pf',g.ponto,g.cursos)===30,'PF custa R$ 30 (cardápio ×1,2)');
+  ok(g.ponto.aluguel===120 && g.contas===0 && L.precoPrato('pf',g.ponto,g.cursos)===38 && L.PONTOS[1].cardapio===1.5,'PF custa R$ 38 (cardápio ×1,5; calibrado na v9, o plano dizia ×1,2)');
   g.begin(); const garagemContas=L.CONTAS.base+g.tables.filter(t=>t.open).length*L.CONTAS.mesa+g.tables.filter(t=>t.open).reduce((a,t)=>a+t.seats,0)*L.CONTAS.lugar;
   ok(g.contas===garagemContas+120,'as contas do dia somam o aluguel de R$ 120');
   g.schedule=[]; g.nextIdx=0; g.money=1000; g.custo=0; const b0=g.save.bank; g.finishDay();

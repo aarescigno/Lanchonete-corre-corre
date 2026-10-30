@@ -440,7 +440,7 @@ table.rank tr.me td{background:#fbe7a8}
 
     <div class="ov" id="ov-shop">
       <div class="panel">
-        <h2>Garagem da mãe da Bia</h2>
+        <h2 id="shop-ponto">Garagem da mãe da Bia</h2>
         <p>Dinheiro acumulado: <span class="bank" id="shop-bank">R$ 0</span><span class="livre" id="shop-livre"></span> &middot; <span id="shop-limit">Melhorias à vontade, se o dinheiro der. Cursos: 1 por dia.</span></p>
         <div class="rankbar"><div class="seg" id="shop-tabs" role="group" aria-label="Lojinha">
           <button type="button" data-v="lanchonete" aria-pressed="true">Lanchonete</button>
@@ -844,11 +844,12 @@ const LAYOUT = { W, H, TW, HUDX, CALCADA, QUEUE, RETIRADA, DOOR, STATIONS, PLATE
    ============================================================ */
 const PONTOS = [
   { id:'garagem', nome:'Garagem da mãe da Bia', nivel:1, lugares:16, aluguel:0, mudanca:0, credito:1000, cardapio:1, area:{ x0:196, y0:150, x1:684, y1:500 }, espera:4, assento:'pe', bebida:'agua', pratos:4, prateleira:2 },
-  // v9: a primeira mudança. tipos: os pesos do sorteio da clientela (no lugar do day.types); encomenda: a chance diária da encomenda do setor;
+  // v9: a primeira mudança (a área é a da Garagem alargada em 36 px à esquerda: 20 lugares não cabiam na arrumação automática). tipos: os pesos do sorteio da clientela (no lugar do day.types); encomenda: a chance diária da encomenda do setor;
   // apito: o pico do meio do dia (as primeiras `max` turmas chegam juntas a partir de `quando` do turno, uma a cada `gap` s, avisadas `aviso` s antes);
-  // patPressa: a paciência de quem vem sozinho ou em dupla; vip: a chance de VIP; metaF: o fator das metas e da expert; prateleira: as vagas do balcão de retirada
-  { id:'industrial', nome:'Lanchonete na área industrial', nivel:2, lugares:20, aluguel:120, mudanca:800, credito:2000, cardapio:1.2, area:{ x0:196, y0:150, x1:684, y1:500 }, espera:5, assento:'pe', bebida:'suco', pratos:5, prateleira:4,
-    tipos:{ estudante:1, executiva:1, familia:0.5, vovos:0.7, entregador:2, turma:2, motorista:1 }, encomenda:0.6, apito:{ quando:0.45, max:3, gap:[8, 12], aviso:10 }, patPressa:0.85, vip:0.3, metaF:1.25 }
+  // patPressa: a paciência de quem vem sozinho ou em dupla; vip: a chance de VIP; metaF: o fator das metas e da expert; prateleira: as vagas do balcão de retirada;
+  // grupos: o fator dos grupos do dia (os 20 lugares já trazem +60% de movimento; sem ele, nem o bot afiado fechava o dia sem perder ninguém)
+  { id:'industrial', nome:'Lanchonete na área industrial', nivel:2, lugares:20, aluguel:120, mudanca:800, credito:2000, cardapio:1.5, area:{ x0:160, y0:150, x1:684, y1:500 }, espera:5, assento:'pe', bebida:'suco', pratos:5, prateleira:4,
+    tipos:{ estudante:1, executiva:1, familia:0.5, vovos:0.7, entregador:2, turma:2, motorista:1 }, encomenda:0.6, apito:{ quando:0.45, max:3, gap:[8, 12], aviso:10 }, patPressa:0.85, vip:0.3, metaF:1.25, grupos:0.8 }
 ];
 function pontoOf(id){ return PONTOS.find(p => p.id === id) || PONTOS[0]; }
 /* ============================================================
@@ -2828,7 +2829,7 @@ class Game {
     const lug = this.tables.filter(t => t.open).reduce((a, t) => a + t.seats, 0);
     const cl = CLIMA[this.clima];
     // a nota do Gurugol (v8.4) traz mais ou menos gente
-    const N = Math.max(3, Math.round(day.groups * this.divF * movimentoSalao(lug) * (cl ? cl.groups : 1) * avalMovimento(this.save.aval, this.ponto) * vegMov(this.cursos))), vipP = (day.vip || 0) * (this.div ? this.div.vip : 1) * (this.ponto.vip == null ? 1 : this.ponto.vip);
+    const N = Math.max(3, Math.round(day.groups * this.divF * movimentoSalao(lug) * (cl ? cl.groups : 1) * avalMovimento(this.save.aval, this.ponto) * vegMov(this.cursos) * (this.ponto.grupos || 1))), vipP = (day.vip || 0) * (this.div ? this.div.vip : 1) * (this.ponto.vip == null ? 1 : this.ponto.vip);
     const gap = day.speed * day.time / N;
     let t = 3;
     const forced = day.nu ? randi(1, Math.min(3, N-1)) : -1;
@@ -3239,7 +3240,7 @@ class Game {
   spawn(s){
     s = s || this.schedule[this.nextIdx++];
     const g = new Group(this, s.type, ++this.gid, s.color, s.vip, s);
-    g.avalia = !!s.av;
+    g.avalia = !!s.av; g.doApito = !!s.apito;   // doApito: uma das turmas que chegam com o apito da fábrica
     this.groups.push(g);
     if (g.retira){
       this.retirada.push(g); g.setState('retirada'); this.reslotRetirada();
@@ -8549,6 +8550,7 @@ function buildShop(){
   const grid = $('shop-grid');
   clearEl(grid);
   segSync('shop-tabs', shopGrupo);
+  $('shop-ponto').textContent = game.ponto.nome;   // v9: o nome do ponto
   $('shop-bank').textContent = fmt(game.save.bank);
   $('shop-bank').className = 'bank' + (game.save.bank < 0 ? ' neg' : '');   // v8.3: no negativo, em vermelho
   // v8.1: o que já está comprometido com a abertura do dia não está livre para gastar

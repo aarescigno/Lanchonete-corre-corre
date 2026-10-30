@@ -220,11 +220,12 @@ const LAYOUT = { W, H, TW, HUDX, CALCADA, QUEUE, RETIRADA, DOOR, STATIONS, PLATE
    ============================================================ */
 const PONTOS = [
   { id:'garagem', nome:'Garagem da mãe da Bia', nivel:1, lugares:16, aluguel:0, mudanca:0, credito:1000, cardapio:1, area:{ x0:196, y0:150, x1:684, y1:500 }, espera:4, assento:'pe', bebida:'agua', pratos:4, prateleira:2 },
-  // v9: a primeira mudança. tipos: os pesos do sorteio da clientela (no lugar do day.types); encomenda: a chance diária da encomenda do setor;
+  // v9: a primeira mudança (a área é a da Garagem alargada em 36 px à esquerda: 20 lugares não cabiam na arrumação automática). tipos: os pesos do sorteio da clientela (no lugar do day.types); encomenda: a chance diária da encomenda do setor;
   // apito: o pico do meio do dia (as primeiras `max` turmas chegam juntas a partir de `quando` do turno, uma a cada `gap` s, avisadas `aviso` s antes);
-  // patPressa: a paciência de quem vem sozinho ou em dupla; vip: a chance de VIP; metaF: o fator das metas e da expert; prateleira: as vagas do balcão de retirada
-  { id:'industrial', nome:'Lanchonete na área industrial', nivel:2, lugares:20, aluguel:120, mudanca:800, credito:2000, cardapio:1.2, area:{ x0:196, y0:150, x1:684, y1:500 }, espera:5, assento:'pe', bebida:'suco', pratos:5, prateleira:4,
-    tipos:{ estudante:1, executiva:1, familia:0.5, vovos:0.7, entregador:2, turma:2, motorista:1 }, encomenda:0.6, apito:{ quando:0.45, max:3, gap:[8, 12], aviso:10 }, patPressa:0.85, vip:0.3, metaF:1.25 }
+  // patPressa: a paciência de quem vem sozinho ou em dupla; vip: a chance de VIP; metaF: o fator das metas e da expert; prateleira: as vagas do balcão de retirada;
+  // grupos: o fator dos grupos do dia (os 20 lugares já trazem +60% de movimento; sem ele, nem o bot afiado fechava o dia sem perder ninguém)
+  { id:'industrial', nome:'Lanchonete na área industrial', nivel:2, lugares:20, aluguel:120, mudanca:800, credito:2000, cardapio:1.5, area:{ x0:160, y0:150, x1:684, y1:500 }, espera:5, assento:'pe', bebida:'suco', pratos:5, prateleira:4,
+    tipos:{ estudante:1, executiva:1, familia:0.5, vovos:0.7, entregador:2, turma:2, motorista:1 }, encomenda:0.6, apito:{ quando:0.45, max:3, gap:[8, 12], aviso:10 }, patPressa:0.85, vip:0.3, metaF:1.25, grupos:0.8 }
 ];
 function pontoOf(id){ return PONTOS.find(p => p.id === id) || PONTOS[0]; }
 /* ============================================================

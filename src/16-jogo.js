@@ -97,7 +97,7 @@ class Game {
     const lug = this.tables.filter(t => t.open).reduce((a, t) => a + t.seats, 0);
     const cl = CLIMA[this.clima];
     // a nota do Gurugol (v8.4) traz mais ou menos gente
-    const N = Math.max(3, Math.round(day.groups * this.divF * movimentoSalao(lug) * (cl ? cl.groups : 1) * avalMovimento(this.save.aval, this.ponto) * vegMov(this.cursos))), vipP = (day.vip || 0) * (this.div ? this.div.vip : 1) * (this.ponto.vip == null ? 1 : this.ponto.vip);
+    const N = Math.max(3, Math.round(day.groups * this.divF * movimentoSalao(lug) * (cl ? cl.groups : 1) * avalMovimento(this.save.aval, this.ponto) * vegMov(this.cursos) * (this.ponto.grupos || 1))), vipP = (day.vip || 0) * (this.div ? this.div.vip : 1) * (this.ponto.vip == null ? 1 : this.ponto.vip);
     const gap = day.speed * day.time / N;
     let t = 3;
     const forced = day.nu ? randi(1, Math.min(3, N-1)) : -1;
@@ -508,7 +508,7 @@ class Game {
   spawn(s){
     s = s || this.schedule[this.nextIdx++];
     const g = new Group(this, s.type, ++this.gid, s.color, s.vip, s);
-    g.avalia = !!s.av;
+    g.avalia = !!s.av; g.doApito = !!s.apito;   // doApito: uma das turmas que chegam com o apito da fábrica
     this.groups.push(g);
     if (g.retira){
       this.retirada.push(g); g.setState('retirada'); this.reslotRetirada();

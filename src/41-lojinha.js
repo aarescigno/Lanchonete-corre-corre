@@ -899,6 +899,7 @@ function buildShop(){
   const grid = $('shop-grid');
   clearEl(grid);
   segSync('shop-tabs', shopGrupo);
+  $('shop-ponto').textContent = game.ponto.nome;   // v9: o nome do ponto
   $('shop-bank').textContent = fmt(game.save.bank);
   $('shop-bank').className = 'bank' + (game.save.bank < 0 ? ' neg' : '');   // v8.3: no negativo, em vermelho
   // v8.1: o que já está comprometido com a abertura do dia não está livre para gastar
