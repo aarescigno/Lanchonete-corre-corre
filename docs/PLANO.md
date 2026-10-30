@@ -54,8 +54,8 @@ Origem: retorno do Renan Martorelli (beta-tester) e conversa com o Arthur (15/10
 | 2c-r4a | Melhorias sem o limite de 1 por dia e o fim do dia sem o (n) do Gurugol | v8.6.14 | feita (30/10; ver `docs/spec-v8.6.14.md`) |
 | 2c-r4b | Lojinha em 4 grupos com cartões | v8.6.15 | feita (30/10; ver `docs/spec-v8.6.15.md`) |
 | 2f | A campanha vira o Modo História: estrutura e capítulos da Garagem | v8.7 | a fazer |
-| 3a | Mudança de ponto e Lanchonete na área industrial (e o capítulo dela) | v9 | a fazer |
-| 3b | Restaurante na Avenida Brasil (e o capítulo dela) | v9.1 | a fazer |
+| 3a | Mudança de ponto e Lanchonete na área industrial (e os caps. 4 e 5) | v9 | a fazer (planejada em 30/10) |
+| 3b | Restaurante na Avenida Brasil, o Joca (e o capítulo dela) | v9.1 | a fazer |
 | 4a | Terraço Suíça e VIPs exigentes (e o capítulo dele) | v10 | a fazer |
 | 4b | Nível de luxo | v10.1 | a fazer |
 | 4c | Eventos de bairro: festa junina e jogo do Brasil | v10.2 | a fazer |
@@ -194,36 +194,97 @@ v8.7: guardar a v8.6.13 em `versoes/`, `vtag`, `VERSAO`, `#ov-ver`, `docs/spec-v
 
 ### Vale para a 3a e a 3b
 - **Mudança** na lojinha (aba "Ponto"): custo único, aluguel dali em diante e os móveis levados junto. O editor abre no ponto novo com a arrumação automática.
-- Para mudar, é preciso o dinheiro da mudança **e a nota mínima do Gurugol** (etapa 2c; o usuário pediu 4,5 ★ para sair da Garagem, que exige jogar muito bem: o bot afiado ficava entre 4,35 e 4,5. Desde a v8.6.4, com o teto de 3 ★ da Garagem, o equivalente é **~2,8 ★**: o afiado fica entre 2,73 e 2,92; a decidir com o usuário). Ao mudar, as avaliações antigas continuam na média, e a nota sobe aos poucos até o teto novo.
+- Para mudar, é preciso o dinheiro da mudança **e a nota mínima do Gurugol** (etapa 2c; o usuário pediu 4,5 ★ para sair da Garagem, que exige jogar muito bem: o bot afiado ficava entre 4,35 e 4,5. Desde a v8.6.4, com o teto de 3 ★ da Garagem, o equivalente é ~2,8 ★. **Decidido em 30/10:** `avalMinimo`, 90% do teto: 2,7 para sair da Garagem e 3,4 da área industrial). Ao mudar, as avaliações antigas continuam na média, e a nota sobe aos poucos até o teto novo.
 - Cada ponto traz: multiplicador do cardápio (sugestão: ×1 e ×1,4), mistura de clientes, área útil, cadeiras de espera, visual (piso, fachada, letreiro, vista da janela, calçada) e o **capítulo da história** do ponto.
-- **Ao mudar, o ambiente e a bebida da espera são trocados** pelos do ponto novo (decidido em 21/10): a TV e o som da Garagem saem do save (`equipe.tv`, `equipe.som`), como o couvert abaixo do nível 3. A torneira sai do mesmo jeito (sugestão).
+- **Ao mudar, o ambiente e a bebida da espera são trocados** pelos do ponto novo (decidido em 21/10): a TV e o som da Garagem saem do save (`equipe.tv`, `equipe.som`), como o couvert abaixo do nível 3. A torneira sai do mesmo jeito (decidido em 30/10).
 - **Modo dev** (v7.5.1): os pontos entram liberados, para testar.
 - O ranking da carreira segue a regra da 2b, com o ponto alcançado ao lado.
 - O "cardápio maior" dos pontos de cima mexe na diversidade do cardápio do Gurugol (`avalMenu`).
 
 ### Sessão 3a — Mudança de ponto e Lanchonete na área industrial (v9)
-- `PONTOS` ganha a **Lanchonete na área industrial** (nível 2: 20 lugares, aluguel R$ 120, mudança R$ 800). Clientela: trabalhadores com pressa e entregadores (que já usam a fila de retirada da etapa 2e).
-- **Destravados:**
-  - o 2º garçom, o **Joca** (pedido do usuário em 22/10);
-  - **fogão industrial** (+1 boca: 4 pratos ao mesmo tempo), comprado na aba Manutenção no lugar do fogão da Garagem e que desgasta mais devagar (era a ideia guardada "equipamento melhor");
-  - balcão de pratos com 5 vagas;
-  - **ambiente:** 3 televisores com playlist de sertanejo (com anúncios: 10%, pagando a luz; sem anúncios: 15%, por R$ 20/dia mais a luz);
-  - **espera:** cadeirinhas de plástico ou banquinhos de madeira e jarra de suco (a base é `BEBIDA_ESPERA.suco`, R$ 12 na conta);
-  - **decoração da calçada:** violetas em vasinhos (ou um antúrio, uma samambaia pendurada).
-- **Capítulo da área industrial** na história (falas a decidir com o usuário).
-- **Rebalancear as melhorias** (pendência da v8.3.6): com o aluguel, rever o preço das melhorias e o limite de 1 por dia.
+> **Planejada com o usuário em 30/10** (respostas em `docs/PROPOSTAS.md`): as decisões abaixo estão tomadas. Depende da 2f (v8.7): `HISTORIA`, `Conversa`, `capObj`, `#ov-continua`, a reforma e a Dani aprendiz. **O Joca saiu desta etapa:** entra na 3b (Avenida Brasil), contratado com salário.
 
-**Modelo:** planejar com o Opus antes (as decisões em aberto da etapa 3 e o que o Joca faz, salário e visual, valores dos destravados, falas do capítulo); executar com o Sonnet, esforço alto (sistema novo de mudança de ponto e o 2º garçom).
+#### Decisões tomadas (30/10)
+- **A mudança é para sempre:** não dá para voltar à Garagem.
+- **Quando aparece:** depois do cap. 3 (`save.cap >= 4`), o cartão **"Mudança"** entra na lojinha (no grupo do banco/contas da 2c-r4b). Para mudar: R$ 800 no caixa **e** nota do Gurugol ≥ `avalMinimo(garagem)` (2,7) no dia. Sem um dos dois, o cartão mostra o que falta ("Falta R$ x" / "Nota 2,7 (agora x,x)") e o botão fica apagado. O cartão `#ov-continua` do fim do cap. 3 muda de texto: **"Fim dos capítulos da Garagem. Quando quiser, a mudança para a área industrial está na lojinha."**
+- **O que vai junto:** mesas e cadeiras (o editor abre no ponto novo com a arrumação automática), pratos, cursos, equipe, melhorias que não são do ponto, desgaste e o empréstimo. **Saem do save, sem devolver dinheiro:** TV, som (`equipe.tv`, `equipe.som`) e a Água da torneira (`up.maquina`). O limite do banco (`credito`) sobe de R$ 1.000 para R$ 2.000.
+- **Gurugol:** as avaliações antigas continuam na média; as novas já vêm na escala do teto 3,7, e a nota sobe aos poucos. Nota mínima para sair da área industrial: `avalMinimo` = **3,4** (90% de 3,7).
+- **Balcão de pratos com 5 vagas:** vem com o ponto (5ª vaga em `PLATE_SLOTS`, só quando `ponto.pratos === 5`; o `plates` do `13-cozinha.js` passa a ter o tamanho do ponto).
+
+#### O ponto (`PONTOS[1]` em `10-constantes.js`)
+`{ id:'industrial', nome:'Lanchonete na área industrial', nivel:2, lugares:20, aluguel:120, mudanca:800, credito:2000, cardapio:1.2, area:(a da Garagem; se 20 lugares não couberem no arranjo automático, alargar x0 para 160), espera:5, assento:'pe', bebida:'suco', pratos:5, mix:{ entregador:2, familia:0.5, vovos:0.7 }, patPressa:0.85, vip:0.3, metaF:1.25 }`
+- **Aluguel:** R$ 120 nas contas do fim do dia (linha "Aluguel" no fim do dia e no livro-caixa). Segue a regra da v8.2.2: só o dia completo cobra, junto com a folha; dia interrompido não paga aluguel.
+- **Cardápio ×1,2:** `precoPrato` já multiplica pelo ponto.
+- **Clientela "pressa e entrega":** `mix` multiplica o peso de cada tipo no sorteio do grupo (o entregador vem o dobro; família pela metade; vovós 0,7; os outros 1). Grupos de 1 e 2 pessoas têm paciência ×`patPressa` (0,85). A chance de VIP vai ×`vip` (0,3). O pico do meio do dia: os grupos do 2º terço do turno ×1,2 e os do 1º e 3º ×0,9 (o total fica igual).
+- **Metas:** as metas e o `expert` de cada dia ×`metaF` (1,25), arredondado para 5. Alvo: o bot afiado continua tirando 3 ★ (ver Testes).
+
+#### Itens da área industrial (lojinha; só aparecem com `ponto.nivel === 2`)
+- **Fogão industrial** (cartão de manutenção): **R$ 400**, compra única. 4 bocas (`slots` do Tonhão + 1) e gasta **metade** do fogão da Garagem por dia (`base` e `uso` × 0,5). Conserto de emergência R$ 160. `save.up.fogaoInd`; o selo e o desgaste continuam no mesmo `MANUT.fogao`.
+- **3 televisores com sertanejo** (no lugar do cartão "TV e som"): instalar **R$ 120**, uma vez. Depois, um seletor por dia: desligadas / **com anúncios** (paciência nas mesas 10% mais devagar, luz R$ 9/dia) / **sem anúncios** (15%, R$ 20 + R$ 9 = R$ 29/dia). O custo entra na folha do dia, como a TV da Garagem. Ambiente do Gurugol (`AVAL.amb`): `tvs:0.5` com anúncios, `tvsPlus:0.75` sem (decidido na sessão de planejamento).
+- **Espera lá fora** (5 lugares): **cadeirinhas de plástico R$ 60** ou **banquinhos de madeira R$ 90** (um ou outro; trocar paga o novo). Quem espera sentado perde a paciência na espera **15% mais devagar** (as duas iguais; o banquinho é só mais bonito). Sem nenhum, de pé como na Garagem. `save.up.assento = 'cadeira'|'banco'`.
+- **Jarra de suco** (a mesma melhoria `maquina`, com nome, desenho e preço do ponto): **R$ 120**. O grupo pede no balão, a Bia leva, R$ 12 na conta (`BEBIDA_ESPERA.suco`), paciência 40% mais devagar como a água. A tarefa "Levar a água da espera" da Dani vira "Levar o suco da espera".
+- **Plantas da calçada** (só na área industrial, cada uma uma compra): **violetas em vasinhos R$ 20, antúrio R$ 30, samambaia pendurada R$ 40**. Cada uma soma **+0,1** ao Ambiente do Gurugol (`AVAL.amb.violeta/anturio/samambaia = 0.1`). A espada-de-são-jorge e as plantas da Garagem vão junto (são do save, não do ponto).
+- **Preço das melhorias:** sem mudança (o limite de 1 por dia já saiu na 2c-r4a). Só conferir no `carreira.js` se o jogador ainda junta para os itens acima.
+
+#### Visual (`21-cenario.js`)
+- Piso de cimento queimado cinza, parede de tijolinho aparente pintado de branco, letreiro **"Lanchonete Corre-Corre"** em placa de metal com lâmpadas, portão de enrolar aberto em cima da porta, vista da janela com galpões e uma chaminé ao fundo, calçada com faixa amarela de carga e descarga e um poste.
+- Os 3 televisores no alto da parede (desenhados só depois de instalados), com uma notinha musical quando ligados.
+- Cadeirinhas de plástico vermelhas / banquinhos de madeira na espera; jarra de suco num caixote com copos; violetas na janela, antúrio no chão perto da porta, samambaia pendurada no toldo.
+- O menu e o card do ponto dizem o nome do ponto. `prefers-reduced-motion`: sem notinha animada.
+
+#### Capítulos (`HISTORIA`, `ponto:'industrial'`)
+O cap. 4 começa ao mudar (`avancaCap` no momento da mudança, e a conversa `'antes'` toca no dia seguinte, antes da introdução). `save.cap` vai até 6 (6 = área industrial completa). O que já existe da 2f (falas, rubrica, `capObj`, linha do objetivo no fim do dia e na introdução) vale igual.
+
+**Cap. 4, "Ponto novo"** — objetivo `{ azul:3 }`: 3 dias no azul na área industrial (não precisam ser seguidos; o aluguel já entra no lucro). Texto: "Fechar 3 dias no azul pagando o aluguel (x de 3)".
+- Antes: Bia "Olha o tamanho disso, tio! Vinte lugares!" / Tonhão "E aluguel todo dia. Aqui o almoço é corrido: o pessoal da fábrica tem hora pra voltar." / Bia "Então é servir rápido e fechar no azul."
+- Depois: Tonhão "Três dias no azul pagando aluguel. Tá provado, Bia." / Bia "E a moto não para de chegar pedindo marmita!"
+
+**Cap. 5, "Hora do almoço"** — objetivo em 2 itens, que ficam ✓ quando cumpridos (o 1º não se perde depois): (a) num mesmo dia, **6 marmitas entregues a tempo e nota 3,4 no fim dele** (`{ marmitas:6, nota:3.4 }`, guardado em `save.capFeito`); (b) **R$ 2.000 no caixa** no fim de um dia (pode ser o mesmo dia ou depois). Cumpre quando os 2 estão ✓. Texto: "6 marmitas e nota 3,4 no mesmo dia (hoje: x marmitas, nota x,x) · R$ 2.000 no caixa (agora R$ x)".
+- Antes: Dani "Os motoqueiros já sabem o meu nome!" / Tonhão "Marmita bem fechada e na hora. Quem sai da fábrica volta amanhã." / Bia "E se a nota subir, dá pra sonhar com a Avenida Brasil."
+- Depois: Bia "R$ 2.000 guardados! Dá pra Avenida Brasil, tio." / Tonhão (nota: "largando a colher") "Na Avenida Brasil tem o restaurante do Bráulio." / Bia "O chef de bigode da Casa Aurora?" / Tonhão "Ele mesmo. A estrela veio do molho da sua mãe... e ele nunca conseguiu repetir." / Dani "Então é lá que a gente vai abrir!"
+- Em seguida, o `#ov-continua` com **"Fim dos capítulos da área industrial. Continua na próxima versão: a Avenida Brasil."** `save.cap = 6`; os dias seguem sem objetivo.
+
+#### O que muda, parte por parte
+- **`10-constantes.js`:** `PONTOS[1]` (acima); `PLATE_SLOTS` com a 5ª vaga; `UPGRADES`/itens novos (fogão industrial, TVs, assento, plantas) com `nivel:2`; `AVAL.amb` com `tvs`, `tvsPlus`, `violeta`, `anturio`, `samambaia`; `HISTORIA` caps. 4 e 5; `MANUT.fogao` lendo o fator do fogão industrial.
+- **`12-clientes.js`:** `normSave` com `ponto` (padrão `'garagem'`), `up.fogaoInd`, `up.assento`, `equipe.tvs` (0 desligadas, 1 com anúncios, 2 sem), plantas e `capFeito`; o sorteio de tipo com `ponto.mix`, VIP com `ponto.vip`, paciência ×`patPressa` para grupos de 1 e 2, paciência na espera ×0,85 com assento.
+- **`13-cozinha.js`:** `plates` do tamanho de `ponto.pratos`; `slots` +1 com `up.fogaoInd`.
+- **`16-jogo.js`:** `mudarPonto(sv)` (confere dinheiro e nota, desconta R$ 800, troca `ponto`, tira TV/som/torneira, arranjo automático, `avancaCap`); aluguel nas contas do dia; metas ×`metaF`; pico do meio do dia; contagem de marmitas a tempo no dia (para o cap. 5); `capObj` com `azul` contado só no capítulo atual, `marmitas`, `nota` e `caixa`.
+- **`20/21-*.js`:** o cenário da área industrial (acima), escolhido pelo `ponto` do save.
+- **`41-lojinha.js`:** cartão "Mudança" (com o que falta, e uma confirmação: "Mudar para a Lanchonete na área industrial por R$ 800? Aluguel de R$ 120 por dia. Não dá para voltar."); cartões novos da área industrial; o card "TV e som" some fora da Garagem.
+- **`42-resultados.js`:** linha "Aluguel R$ 120" nas contas; a linha do capítulo para os caps. 4 e 5.
+- **`40-interface.js`:** rótulo do menu com o ponto ("História · cap. 4, Ponto novo · dia 18"); `save.cap = 6`: "História · área industrial completa · dia N"; "Como jogar" ganha 1 frase sobre a mudança de ponto.
+- **`30-ranking.js`:** o ponto alcançado ao lado do resultado (regra da 2b).
+- **Modo dev:** o cartão "Mudança" aparece sempre, sem custo nem nota mínima.
+
+#### Testes
+- **`tests/smoke33.js` (novo):** (1) antes do cap. 4 não há cartão Mudança; com `cap:4`, aparece e fica apagado sem R$ 800 ou sem nota 2,7 (testar cada um); (2) mudar: −R$ 800, `ponto:'industrial'`, TV/som/torneira fora, mesas levadas, arranjo válido, 20 lugares, 5 vagas de prato, `cap` 4 e `conversa:'antes'`; (3) aluguel de R$ 120 no fim do dia e preços ×1,2; (4) clientela: em 200 grupos sorteados, entregadores ≈ o dobro da Garagem e VIPs ≈ 0,3×; (5) fogão industrial: 4 bocas e metade do desgaste; (6) TVs: instalar, os 3 modos, custo na folha e paciência; (7) assento: espera 15% mais devagar; jarra cobra R$ 12; (8) plantas somam +0,1 cada no Ambiente; (9) cap. 4 com 2 dias no azul continua, com 3 avança; (10) cap. 5: 6 marmitas com nota 3,3 não marca; com 3,4 marca (a); depois R$ 2.000 cumpre; `cap:6` e o `#ov-continua` novo; (11) save da v8.7 sem `ponto` carrega como Garagem.
+- Ajustar smokes antigos que esperam 4 vagas fixas de prato ou o texto antigo do `#ov-continua`.
+- **`carreira.js`:** o bot muda de ponto assim que pode (e compra fogão industrial, TVs com anúncios, cadeirinhas e jarra quando sobra R$ 300 acima da folha); `DIAS=35`. Linha `HISTORIA` com o dia de cada capítulo e o dia da mudança.
+- **Alvos e como decidir:**
+  - Mudar deve se pagar em **3 a 5 dias** (lucro médio por dia na área industrial − o da Garagem ≥ R$ 160). Se demorar mais que 5, `cardapio` 1,25; se pagar em menos de 3, aluguel R$ 150.
+  - `node carreira.js 3` (padrão e `MOVEIS=quatro`): **0 dias no negativo** nos 5 dias depois da mudança; se houver, `mudanca` 700.
+  - Cap. 4 cumprido em até 5 dias depois da mudança em 3/3; cap. 5 em até 15 dias depois da mudança em ≥ 2/3. Se o cap. 5 não chegar, as marmitas baixam para 5 (não mexer na nota 3,4 nem nos R$ 2.000).
+  - Bot afiado (`balance.js` com o ponto industrial, `PONTO=industrial`): 3 ★ em ≥ 2 de 3 dias; se não, `metaF` 1,2; se passar com folga (todos os dias acima de `expert` em 15%), `metaF` 1,3.
+  - Bot com perdas (o padrão sem equipe): a mudança **não** deve compensar (lucro na área industrial ≤ o da Garagem + R$ 40).
+- Capturas: `tests/shot_v9.py` em `capturas/v9` (cartão Mudança apagado e aceso, confirmação, salão da área industrial com tudo comprado, calçada com cadeirinhas, jarra e plantas, TVs ligadas, fim do dia com o aluguel, conversa do cap. 5 com a rubrica, `#ov-continua`, celular).
+
+#### Fechamento
+v9: guardar a v8.7 em `versoes/`, `vtag`, `VERSAO`, `#ov-ver`, `docs/spec-v9.md`, `docs/RESUMO.md`, CLAUDE.md (smoke 33, `PONTO=` no balance, `DIAS=35` no carreira), PR e merge.
+
+**Fora:** o Joca (vai para a 3b), a Avenida Brasil, eventos de bairro (4c), o nível de luxo.
+
+**Modelo:** Sonnet, esforço alto. Tudo decidido, mas é sistema novo (mudança de ponto, clientela por ponto, cenário inteiro novo) e mexe em muitas partes; a calibração da mudança pode pedir 2 ou 3 rodadas.
 
 ### Sessão 3b — Restaurante na Avenida Brasil (v9.1)
 - `PONTOS` ganha o **Restaurante na Avenida Brasil** (nível 3: 24 lugares, aluguel R$ 400, mudança R$ 2.000). Clientela: executivas, famílias e mais VIPs.
+- **O Joca** (decidido em 30/10: saiu da 3a), o 2º ajudante, **contratado com salário** (sugestão: R$ 45/dia no nível 1, aumentos para R$ 60 e R$ 75). O que ele faz (calçada e retirada, o mesmo que a Dani, ou garçom), níveis e visual (sem estereótipo, com crachá como a Dani): a decidir no planejamento da 3b.
 - **Destravados:** confeiteiro (sobremesas), balcão de coquetelaria com profissional de drinks, um prato novo no cardápio, balcão de pratos com 6 vagas.
   - **ambiente:** o **couvert artístico** (já pronto no código desde a v5, escondido abaixo do nível 3 desde a v7.4.4: basta o ponto ter `nivel:3`);
   - **espera:** sofás e águas saborizadas diferentes;
   - **decoração da calçada:** tulipas, orquídeas ou copos-de-leite.
 - **Capítulo da Avenida Brasil** na história.
 
-**Modelo:** Sonnet, esforço médio, desde que a 3a deixe pronto o molde de um ponto novo e o planejamento já traga valores e falas da Avenida Brasil.
+**Modelo:** planejar com o Opus antes (o Joca, os valores e as falas da Avenida Brasil); executar com o Sonnet, esforço alto (o 2º ajudante é sistema novo), ou médio se a 3a deixar o molde de ponto pronto e o Joca for simples.
 
 **Fora:** Terraço Suíça, VIP exigente e o final da história.
 
@@ -236,7 +297,7 @@ v8.7: guardar a v8.6.13 em `versoes/`, `vtag`, `VERSAO`, `#ov-ver`, `docs/spec-v
 - O jogador deve ter que escolher entre mudar e (equipe + melhorias + móveis).
 - **Achado da v7.4, resolvido na v7.4.1** (`docs/spec-v7.4.1.md`): na v7.4, mesa a mais não dava lucro; com 4 pratos limpos, +6% de grupos por lugar acima de 10 e a fila justa a 60%, mesas de 4 com equipe se pagam em 1 a 3 dias. Conferir no ponto novo se os 20 e 24 lugares também rendem.
 
-**Decisões em aberto:** a mudança é permanente ou dá para voltar; o que cada destravado custa; o que o Joca faz (o mesmo que a Dani ou só a calçada e a fila de retirada), salário, níveis e visual (sem estereótipo, com crachá como a Dani); preço e efeito de cada bebida da espera e se o assento também segura a paciência; o valor da luz das TVs do nível 2; as falas de cada capítulo.
+**Decisões em aberto (só da 3b; as da 3a foram tomadas em 30/10):** o que cada destravado da Avenida Brasil custa; o que o Joca faz, níveis e visual; preço e efeito das águas saborizadas e dos sofás (a 3a fez o assento segurar a paciência em 15%); as falas dos capítulos da Avenida Brasil (o Bráulio já foi citado no fim do cap. 5).
 
 ---
 
@@ -382,7 +443,7 @@ v8.7: guardar a v8.6.13 em `versoes/`, `vtag`, `VERSAO`, `#ov-ver`, `docs/spec-v
 - **Feito na v8.3.10.** **Triturador de lixo** (pedido do usuário em 24/10; texto e números em `docs/PROPOSTAS.md`): R$ 180, 1 gominho a cada 30 s; o Ventilador perdeu o efeito do cheiro.
 - Cardápio com preço escolhido pelo jogador (o Arthur achou estranho só mexer em preço; talvez nunca).
 - **Virou o fogão industrial da etapa 3a (revisão de 28/10).** Equipamento melhor no lugar da manutenção (fogão industrial etc.).
-- **Vai na etapa 3a (o Joca).** Mais funcionários: um segundo garçom, além da Dani. **Pedido do usuário em 22/10:** a partir do nível 2 ou 3, dá para contratar um **segundo ajudante, o Joca** (o 2º garçom da etapa 3; texto em `docs/PROPOSTAS.md`). Decidir: se o Joca faz as mesmas tarefas da Dani ou outras (por exemplo, cuidar só da calçada: levar o grupo à mesa e servir a espera), salário, níveis e visual (sem estereótipo, com crachá como a Dani).
+- **Vai na etapa 3b (o Joca; mudou da 3a em 30/10).** Mais funcionários: um segundo garçom, além da Dani. **Pedido do usuário em 22/10:** a partir do nível 2 ou 3, dá para contratar um **segundo ajudante, o Joca** (o 2º garçom da etapa 3; texto em `docs/PROPOSTAS.md`). Decidir: se o Joca faz as mesmas tarefas da Dani ou outras (por exemplo, cuidar só da calçada: levar o grupo à mesa e servir a espera), salário, níveis e visual (sem estereótipo, com crachá como a Dani).
 - **Virou a etapa 4c (revisão de 28/10).** Eventos de bairro: festa junina, jogo do Brasil.
 - **Virou a etapa 2c (revisão de 22/10).** **Avaliações dos clientes como meta para avançar** (pedido do usuário em 21/10; texto em `docs/PROPOSTAS.md`): uma nota parecida com as avaliações de mapa na internet, que sobe ou desce pela média das **últimas 200 avaliações** de quem passou. Cada grupo avalia 5 critérios:
   - **espera por mesa:** cada coração perdido na fila tira 1 ponto;

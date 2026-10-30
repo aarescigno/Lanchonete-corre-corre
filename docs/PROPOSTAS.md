@@ -4,6 +4,23 @@ Registro das ideias e dos retornos de quem jogou, com o texto original, e de ond
 
 ---
 
+## 30/10/2026 — Usuário: entrevista para planejar a 3a (área industrial)
+**Origem:** perguntas no chat, com a 2f em execução noutra sessão, para deixar a 3a pronta para o Sonnet. Respostas do usuário:
+
+> Mudança: "Para sempre (Recomendado)". Joca: "Na real deixa sem o Joca por enquanto o Joca entra na na próximo nível que é o nível da da paulista/avenida Brasil etc". Como o Joca entra: "Contratado, com salário (Recomendado)". Capítulos: "2 capítulos (Recomendado)".
+
+> Fogão industrial: "R$ 400, gasta ½ (Recomendado)". Balcão de 5 vagas: "Vem com o ponto (Recomendado)". TVs: "Luz R$ 9 e R$ 20 (Recomendado)". Espera: "Assento segura a paciência (Recomendado)".
+
+> Cardápio: "×1,2 (Recomendado)". Clientela: "Pressa e entrega (Recomendado)". Gurugol: "Mantém e sobe aos poucos (Recomendado)". Liberar a mudança: "Depois do cap. 3 (Recomendado)".
+
+> Objetivos dos caps. 4 e 5: "Proposta (Recomendado)". Trama: "Já cita o Bráulio". Plantas da calçada: "Compra na lojinha", e depois "Um pouco na nota". O que vai na mudança: "Como o plano (Recomendado)". Falas dos caps. 4 e 5: "Aprovo (Recomendado)".
+
+**Destino:** sessão **3a** do `docs/PLANO.md` (v9), com as decisões, os valores, as falas e os alvos. O **Joca** passou para a **3b** (Avenida Brasil), contratado com salário. Decidido por mim, sem pergunta: os valores de Ambiente das TVs (0,5 e 0,75), a mistura exata da clientela (entregador ×2, família ×0,5, vovós ×0,7, VIP ×0,3, paciência ×0,85 para grupos de 1 e 2, pico de ×1,2 no meio do dia), as metas ×1,25, o visual do ponto, o crédito de R$ 2.000 no banco e as regras de calibração do `carreira.js`.
+
+---
+
+---
+
 ## 30/10/2026 — Usuário: entrevista para planejar a 2f (a campanha vira o Modo História)
 **Origem:** perguntas no chat, para deixar a sessão pronta para o Sonnet. Respostas do usuário (as escolhidas entre as opções e o texto dele):
 
