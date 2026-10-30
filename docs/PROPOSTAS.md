@@ -15,10 +15,10 @@ Registro das ideias e dos retornos de quem jogou, com o texto original, e de ond
 
 | Ideia | Destino |
 |---|---|
-| Tirar o "(n)" dos critérios do Gurugol | Etapa 2c-r4 (v8.6.14): só da caixa do fim do dia; fica na aba Gurugol |
-| Agrupar as abas da lojinha com submenus | Etapa 2c-r4: 4 grupos com cartões |
-| Melhorias da Bia, do Tonhão e da Dani por pessoa | Etapa 2c-r4: Equipe › Bia, Tonhão (aumento e cursos), Dani |
-| Sem o limite de 1 melhoria por dia | Etapa 2c-r4: o limite é o dinheiro; cursos seguem 1 por dia; balanço só medido |
+| Tirar o "(n)" dos critérios do Gurugol | Sessão 2c-r4a (v8.6.14): só da caixa do fim do dia; fica na aba Gurugol |
+| Agrupar as abas da lojinha com submenus | Sessão 2c-r4b (v8.6.15): 4 grupos com cartões |
+| Melhorias da Bia, do Tonhão e da Dani por pessoa | Sessão 2c-r4b: Equipe › Bia, Tonhão (aumento e cursos), Dani |
+| Sem o limite de 1 melhoria por dia | Sessão 2c-r4a: o limite é o dinheiro; cursos seguem 1 por dia; balanço só medido |
 
 ---
 
