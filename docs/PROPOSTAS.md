@@ -4,6 +4,15 @@ Registro das ideias e dos retornos de quem jogou, com o texto original, e de ond
 
 ---
 
+## 30/10/2026 — Usuário: o Tonhão sobe de nível com experiência dos cursos
+> "Eu quero implementar, antes de avançar para a área industrial, uma modificação no Tonhão. Em vez de eu comprar aumentos de salário para o Tonhão, e isso ser o aumento das habilidades dele, eu quero ter um sistema parecido com um sistema de experiência, né, de XP. Que à medida que ele vai fazendo cursos, ele vai juntando XP e faz um upgrade. E aí, esse upgrade, ele, para consolidar, tem que ter um aumento de salário, entendeu? Então ele precisaria fazer pelo menos 2 cursos para ir para o Tonhão nível 2. E aí, liberar o Tonhão nível 2, que eu pago o salário e ele fica nível 2. E aí tem que fazer mais cursos para chegar no Tonhão nível 3, sabe? E aí talvez a gente tenha que criar mais níveis de Tonhão, pensando até nos cursos avançados, né? Isso por enquanto na etapa da garagem e da industrial, né? Depois Avenida Brasil e Terraço Suíça seria diferente o processo, né? Porque aí não vai vender coxinha nos restaurantes de luxo, né? Mas isso é pro futuro. Guarda aí pro futuro."
+
+Respostas na sessão de planejamento: **5 níveis** (básico +1 XP, avançado +2; níveis 2 a 5 com 2, 5, 9 e 14 de XP; diárias R$ 15, 30, 45 e 60). Sobre o "Reduzir": "cada nível que eu tomei aumenta ele quase que se paga na sua qualidade [...] e ajuda o bot pelo menos a ganhar mais dinheiro, então talvez se isso for verdade esse upgrade dele ser definitivo e não ter retorno, mas precisaria avaliar isso". Saves antigos: **rebaixa ao nível da XP**.
+
+**Destino:** etapa **2g** (v8.8), antes da 3a, em `docs/PLANO.md` (o "Reduzir" sai se o `balance.js` mostrar que cada nível rende a diária dele). Os cozinheiros da Avenida Brasil e do Terraço foram para as Ideias guardadas.
+
+---
+
 ## 30/10/2026 — Usuário: entrevista para planejar a 3a (área industrial)
 **Origem:** perguntas no chat, com a 2f em execução noutra sessão, para deixar a 3a pronta para o Sonnet. Respostas do usuário:
 
