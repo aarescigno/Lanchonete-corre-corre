@@ -20,7 +20,8 @@ L.MANUT.on=MODO!=='sem';
 if(process.env.MANUT_CFG){ const c=JSON.parse(process.env.MANUT_CFG); const eq=c.equip; delete c.equip; Object.assign(L.MANUT,c); if(eq) for(const id in eq) Object.assign(L.manutOf(id),eq[id]); }
 if(process.env.CLIMA_CFG){ const c=JSON.parse(process.env.CLIMA_CFG); for(const k in c) Object.assign(L.CLIMA[k],c[k]); }
 const order=['tenis','maquina','cafeteira','bandeja','ventilador','pratos','corrida'];
-const FULL=[{tonhao:2,dani:4,tv:true,som:true},{tonhao:2,dani:4,tv:true},{tonhao:2,dani:4},{tonhao:1,dani:3},{tonhao:0,dani:2},{}];
+const FULL=[{tonhao:4,dani:4,tv:true,som:true},{tonhao:3,dani:4,tv:true,som:true},{tonhao:2,dani:4,tv:true,som:true},{tonhao:2,dani:4,tv:true},{tonhao:2,dani:4},{tonhao:1,dani:3},{tonhao:0,dani:2},{}];   // v8.8: o Tonhão só sobe até onde a XP dos cursos deixa (capT)
+const capT=e=>Object.assign({},e,{tonhao:Math.min(e.tonhao||0,L.tonhaoNivelXp(g.save.cursos))}), nivDia=[[],[],[],[],[]], vistoT=new Set();
 // ajuste rápido sem mexer em src/: CONTAS='{"mesa":40}' INGRED='{"prato":0.6}' node carreira.js
 if(process.env.MOVIMENTO) Object.assign(L.MOVIMENTO,JSON.parse(process.env.MOVIMENTO));   // MOVIMENTO='{"porLugar":0.04}'
 if(process.env.CONTAS) Object.assign(L.CONTAS,JSON.parse(process.env.CONTAS));
@@ -38,13 +39,14 @@ for(let k=0;k<N;k++){
       if(MODO==='amarelo'||MODO==='vermelho'){ const lim=MODO==='amarelo'?L.MANUT.verde:L.MANUT.vermelho, b0=g.save.bank; L.MANUT.equip.forEach(q=>{ if(g.save.manut[q.id]<lim) g.revisar(q.id); }); r.rev.push(b0-g.save.bank); }   // v8.3.12: amarelo = revisa quem saiu do verde; vermelho = só quem já está no vermelho
       for(;;){ const u=order.find(id=>!g.up[id]); const uc=u&&L.UPGRADES.find(x=>x.id===u);   // v8.6.14: sem o limite de 1 por dia, compra na ordem tudo o que o dinheiro der, guardando a reserva
         if(!(u && g.save.bank>=uc.cost+(n>=3?300:0) && g.buy(u))) break; }
+      if(process.env.CURSOS!=='0'){ const cu=BOT.cursos(g,L,n>=3?(+process.env.RCURSO>=0?+process.env.RCURSO:150):0,process.env.CURSOS?process.env.CURSOS.split(','):undefined); if(cu) (cursoDias[cu]=cursoDias[cu]||[]).push(n); }   // v8.6.9: 1 curso por lojinha, se sobrar o preço mais a reserva (CURSOS=0 não compra)   // v8.8: o curso vem antes dos móveis, com reserva de R$ 150 (RCURSO=n troca): a XP é o que sobe o Tonhão
       if(process.env.MOVEIS!=='0') BOT.moveis(g,L,semMesa,n>=3?300:0,process.env.MOVEIS);
-      if(process.env.CURSOS!=='0'){ const cu=BOT.cursos(g,L,n>=3?300:0,process.env.CURSOS?process.env.CURSOS.split(','):undefined); if(cu) (cursoDias[cu]=cursoDias[cu]||[]).push(n); }   // v8.6.9: 1 curso por lojinha, se sobrar o preço mais a reserva (CURSOS=0 não compra)
       if(n>=3 || g.save.cap>=2){
-        const e0=n>=3?(FULL.find(e=>L.payroll(L.normSave({equipe:e}).equipe)+(L.divulgaOf(DIV).cost)<=g.save.bank)||{}):{};
+        const e0=n>=3?(FULL.map(capT).find(e=>L.payroll(L.normSave({equipe:e}).equipe)+(L.divulgaOf(DIV).cost)<=g.save.bank)||{}):{};
         const e=Object.assign({},e0,L.HIST.on?{dani:g.save.cap>=2?Math.max(1,e0.dani||0):0}:{});   // v8.7: a Dani só chega no cap. 2 (aprendiz, sem salário)
         g.save.equipe=L.normSave({equipe:Object.assign({daniTasks:['pratos','lavar','lixo']},e)}).equipe;
         if(n>=3) g.save.divulga=DIV;
+        for(let t=0;t<=g.save.equipe.tonhao;t++) if(!vistoT.has(k+':'+t)){ vistoT.add(k+':'+t); nivDia[t].push(n); }   // v8.8: o dia em que ele chega a cada nível
       }
       r.shop.push(g.save.bank);
     }
@@ -63,6 +65,7 @@ for(let k=0;k<N;k++){
 const avg=a=>a.length?Math.round(a.reduce((x,y)=>x+y,0)/a.length):'-';
 for(let n=1;n<=ND;n++){ const r=rows[n], d=L.diaOf(n); console.log('Dia',n+(d.semana?' ('+d.semana.slice(0,3)+')':''),'meta',d.meta,'| dinheiro na lojinha',avg(r.shop),'| depois da folha',avg(r.after),'| folha',avg(r.eq),'| lucro',avg(r.lucro),'| lugares',avg(r.lug),'| passou',r.pass+'/'+N,'| Gurugol geral',(()=>{ const v=r.nota.filter(x=>x!=null); return v.length?(v.reduce((a,b)=>a+b,0)/v.length).toFixed(2):'-'; })()); }
 if(L.HIST.on){ const md=a=>a.length?a.sort((x,y)=>x-y)[Math.floor(a.length/2)]:'-'; console.log('HISTORIA | cap. 1 no dia',md(capDia[1]),'('+capDia[1].length+'/'+N+')','· cap. 2 no dia',md(capDia[2]),'('+capDia[2].length+'/'+N+')','· cap. 3 no dia',md(capDia[3]),'('+capDia[3].length+'/'+N+', até o dia 14: '+capDia[3].filter(d=>d<=14).length+')','| banco tomou a lanchonete',fechou+'/'+N); }
+console.log('TONHAO | dia médio em que chega ao nível '+nivDia.map((a,i)=>(i+1)+': '+(a.length?(a.reduce((x,y)=>x+y,0)/a.length).toFixed(1)+' ('+a.length+'/'+N+')':'nunca')).join(' · '));
 { const ch=chega.filter(isFinite).sort((a,b)=>a-b); console.log('CAMPANHA',ND,'dias | chegou a R$',MUDA,'em',ch.length+'/'+N,'carreiras, no dia',ch.length?'mediano '+ch[Math.floor(ch.length/2)]:'-','| dias fechando no negativo',negs,'| empréstimos à força',forcs); }
 { const ks=Object.keys(cursoDias); if(ks.length) console.log('CURSOS (v8.6.9) | dia mediano da compra:',ks.map(k=>{ const d=cursoDias[k].sort((a,b)=>a-b); return k+' dia '+d[Math.floor(d.length/2)]+' ('+d.length+'/'+N+')'; }).join(' · ')); }
 if(MODO!=='sem'){

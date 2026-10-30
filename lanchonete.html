@@ -319,6 +319,9 @@ table.rank tr.me td{background:#fbe7a8}
   .menu-btns .row.tight{display:contents}
   .menu-panel .links .link{margin-top:calc(var(--u)*4)}
 }
+.item .tonxp{grid-column:1 / -1;font-weight:700;font-size:.9em}   /* v8.8: experiência do Tonhão */
+.item .tonxp-bar{height:8px;border-radius:4px;background:rgba(0,0,0,.15);margin-top:3px;overflow:hidden}
+.item .tonxp-bar i{display:block;height:100%;background:#f5a623}
 </style>
 <div id="app">
   <div id="stage">
@@ -326,7 +329,7 @@ table.rank tr.me td{background:#fbe7a8}
 
     <div class="ov show" id="ov-menu">
       <div class="panel menu-panel">
-        <span class="vtag" id="vtag" aria-label="Versão 8.7">v8.7</span>
+        <span class="vtag" id="vtag" aria-label="Versão 8.8">v8.8</span>
         <h1 class="title">Lanchonete <br>Corre-Corre</h1>
         <p class="tag">Ajude a Bia a atender a freguesia da esquina antes que o cafezinho esfrie!</p>
         <div class="lbl" id="menu-dia">História</div>
@@ -538,7 +541,8 @@ table.rank tr.me td{background:#fbe7a8}
       <div class="panel">
         <h2>Versões</h2>
         <ul class="verlist">
-          <li><b>v8.7</b><span class="cur">versão atual</span><br>30/10/2026 &mdash; O Modo História chega: a carreira virou a história da Bia, em capítulos com conversas (balões sobre o salão) e um objetivo cada. O primeiro dia já começa com a dívida da reforma da garagem (R$ 1.000, 10 parcelas de R$ 100 mais 1% ao dia sobre o saldo, a 1ª no fim do dia 2). Capítulo 1, A garagem da Rosa: fechar 2 dias no azul. Capítulo 2, A Dani chega: a Dani entra de graça como aprendiz e o Gurugol tem de chegar a 2,4. Capítulo 3, Casa cheia: quitar a reforma, nota 2,7 e R$ 800 no caixa. Sem prazo: o capítulo segue até cumprir. Os aumentos da Dani ficaram mais baratos (R$ 25, 40 e 55 por dia). O botão História do menu virou Ver abertura. Quem tinha uma campanha de antes recomeça do dia 1, com aviso.<br><a href="versoes/v8.6.15.html" target="_blank" rel="noopener">Abrir a v8.6.15</a></li>
+          <li><b>v8.8</b><span class="cur">versão atual</span><br>30/10/2026 &mdash; O Tonhão sobe de nível com a experiência dos cursos: cada curso básico dá +1 de XP e cada avançado +2. Com a XP do nível seguinte ele fica pronto para subir, e o aumento de salário confirma o nível novo (o aumento fica apagado, dizendo quanto falta, sem a XP). Agora são 5 níveis, o último com o Tonhão bem mais rápido e caprichado, e o nível pago é definitivo: o botão Reduzir saiu. Só a falta de dinheiro para a folha o derruba, e a XP fica. Saves antigos voltam ao nível que os cursos já feitos permitem.<br><a href="versoes/v8.7.html" target="_blank" rel="noopener">Abrir a v8.7</a></li>
+          <li><b>v8.7</b><br>30/10/2026 &mdash; O Modo História chega: a carreira virou a história da Bia, em capítulos com conversas (balões sobre o salão) e um objetivo cada. O primeiro dia já começa com a dívida da reforma da garagem (R$ 1.000, 10 parcelas de R$ 100 mais 1% ao dia sobre o saldo, a 1ª no fim do dia 2). Capítulo 1, A garagem da Rosa: fechar 2 dias no azul. Capítulo 2, A Dani chega: a Dani entra de graça como aprendiz e o Gurugol tem de chegar a 2,4. Capítulo 3, Casa cheia: quitar a reforma, nota 2,7 e R$ 800 no caixa. Sem prazo: o capítulo segue até cumprir. Os aumentos da Dani ficaram mais baratos (R$ 25, 40 e 55 por dia). O botão História do menu virou Ver abertura. Quem tinha uma campanha de antes recomeça do dia 1, com aviso.<br><a href="versoes/v8.6.15.html" target="_blank" rel="noopener">Abrir a v8.6.15</a></li>
           <li><b>v8.6.15</b><br>30/10/2026 &mdash; Lojinha mais arrumada: em vez de 10 abas numa fileira, 4 grupos (Lanchonete, Equipe, Dinheiro e Gurugol). Cada grupo mostra cartões com ícone e nome, e o toque no cartão abre a seção, com o botão Voltar. Os itens da Bia (tênis, bandeja e Sudoku) ficaram na seção dela; o Tonhão reúne o aumento e os cursos; o músico e a TV e som foram para a Divulgação.<br><a href="versoes/v8.6.14.html" target="_blank" rel="noopener">Abrir a v8.6.14</a></li>
           <li><b>v8.6.14</b><br>30/10/2026 &mdash; Melhorias à vontade: acabou o limite de 1 melhoria por dia na lojinha; o limite agora é o dinheiro (o curso do Tonhão segue 1 por dia). E no fim do dia, a caixa do Gurugol perdeu o número entre parênteses depois de cada critério.</li>
           <li><b>v8.6.13</b><br>29/10/2026 &mdash; Rodada de balanceamento do cardápio: quem pede salgado quase sempre pede dois, então os cursos do Tonhão não derrubam mais o lucro do dia; as metas da sexta e do sábado da 1ª semana ficaram um pouco mais baixas.</li>
@@ -702,6 +706,17 @@ const CURSO_AV = { preco:1.15, crit:1.5 };
 function cursoOf(id){ return CURSOS.find(c => c.id === id) || null; }
 /* nível do curso: 0 (nada), 1 (básico) ou 2 (avançado); o PF não tem básico, então já nasce no 1 */
 function cursoNivel(cursos, id){ const n = Math.max(0, Math.min(2, Math.floor(+(cursos && cursos[id]) || 0))); return id === 'pf' ? Math.max(1, n) : n; }
+/* experiência do Tonhão (v8.8): +1 por curso básico, +2 por avançado (o PF só tem o avançado); máximo 17 */
+const CURSO_XP = { basico:1, avancado:2 };
+function tonhaoXp(cursos){
+  return CURSOS.reduce((a, c) => { const n = cursoNivel(cursos, c.id); return a + (n >= 2 ? (c.preco > 0 ? CURSO_XP.basico : 0) + CURSO_XP.avancado : n >= 1 && c.preco > 0 ? CURSO_XP.basico : 0); }, 0);
+}
+/* o maior nível (índice) cuja xp cabe na experiência dos cursos */
+function tonhaoNivelXp(cursos){
+  const x = tonhaoXp(cursos); let n = 0;
+  STAFF.tonhao.levels.forEach((l, i) => { if (x >= l.xp) n = i; });
+  return n;
+}
 /* o prato é do avançado de algum curso que já foi feito? */
 function pratoAv(k, cursos){ return CURSOS.some(c => cursoNivel(cursos, c.id) >= 2 && c.av.pratos.indexOf(k) >= 0); }
 /* o save: só os níveis que existem (o PF só tem o avançado, 2) */
@@ -1013,7 +1028,10 @@ const CUSTOMER_TYPES = {
 const STAFF = {
   // Tonhão: cozinha mais rápido (cook = fator do tempo), mais pratos caprichados (crit) e,
   // com aumento, lava 1 pilha da pia a cada `wash` segundos
-  tonhao:  { levels:[ { slots:3, cook:1, crit:0.05, wash:0, pay:0 }, { slots:3, cook:0.85, crit:0.12, wash:7, pay:15 }, { slots:3, cook:0.7, crit:0.2, wash:4, pay:30 } ] },
+  // v8.8: o nível é experiência (xp, dos cursos: CURSO_XP); com a xp do nível seguinte ele fica pronto para subir e o aumento
+  // de salário consolida o nível. Só a falta de dinheiro para a folha o derruba (folhaCorta), e a xp fica
+  tonhao:  { levels:[ { slots:3, cook:1, crit:0.05, wash:0, pay:0, xp:0 }, { slots:3, cook:0.85, crit:0.12, wash:7, pay:15, xp:2 }, { slots:3, cook:0.7, crit:0.2, wash:4, pay:20, xp:5 },
+                      { slots:3, cook:0.62, crit:0.26, wash:3, pay:25, xp:9 }, { slots:3, cook:0.55, crit:0.32, wash:2.5, pay:30, xp:14 } ] },
   // Dani (v8.7): entra de graça no cap. 2 como aprendiz (nível 1, sem salário); os níveis 2 a 4 são os aumentos da lojinha
   dani:    { levels:[ null, { speed:0.4, tasks:1, pay:0 }, { speed:0.5, tasks:2, pay:25 }, { speed:0.65, tasks:2, pay:40 }, { speed:0.8, tasks:3, pay:55 } ] },
   // couvert artístico: só do nível 3 do salão em diante (Avenida Brasil, etapa 3 do plano)
@@ -1201,7 +1219,7 @@ const AVAL = {
   humor:{ var:0.15, encanta:0.15, extra:[0.3, 0.6], folga:0.4 },   // frações da faixa do ponto (teto − 1)
   bonus:{ cor:0.1, corrente:0.1, crit:0.1 },   // v8.6.7: chance a mais de o cliente sair encantado
   minimo:0.9,
-  prato:[[2.5, 4.5], [3, 4.7], [3.5, 5]],
+  prato:[[2.5, 4.5], [3, 4.7], [3.5, 5], [3.8, 5], [4, 5]],   // v8.8: 5 níveis do Tonhão
   menu:{ base:2, porCurso:0.6 },   // v8.6.9: pelos cursos básicos que o Tonhão fez (a Diversidade do cardápio)
   amb:{ base:2, tv:0.5, som:0.5, maquina:0.5, ventilador:0.5, cafe:0.5, couvert:1, lixo:-1, planta:0.3, rosa:0.25, toalha:0.5 }
 };
@@ -1360,7 +1378,7 @@ const HISTORIA = [
 ];
 const HIST_NOMES = { bia:'Bia', tonhao:'Tonhão', dani:'Dani' };
 const CAIXA_MAX = 14;                                 // livro-caixa (v7.2): quantos dias da carreira ficam guardados
-const VERSAO = 'v8.7';                               // vai no resumo do Caixa
+const VERSAO = 'v8.8';                               // vai no resumo do Caixa
 const DIVULGA_DIA = 3;                                // antes disso, o movimento é o da inauguração (sem custo)
 function divulgaAberta(n){ return DEV.on || n >= DIVULGA_DIA; }   // no modo dev, desde o dia 1
 function divulgaOf(id){ return DIVULGA.find(d => d.id === id) || DIVULGA[1]; }
@@ -1657,7 +1675,7 @@ function saveKey(){ return DEV.on ? LS.devSave : LS.save; }
 function normEquipe(e, ponto){
   e = (e && typeof e === 'object') ? e : {};
   const tasks = Array.isArray(e.daniTasks) ? e.daniTasks.map(t => t === 'agua' ? 'suco' : t).filter(t => DANI_TASKS.some(d => d.id === t)) : ['pratos','lavar'];   // v7.5: a tarefa da água vira a do suco da espera
-  return { tonhao: clamp(Math.round(+e.tonhao)||0,0,2), dani: clamp(Math.round(+e.dani)||0,0,STAFF.dani.levels.length - 1), daniTasks: tasks.filter((t,i) => tasks.indexOf(t) === i).slice(0,3), couvert: !!e.couvert && couvertOk(ponto), taxa: !!e.taxa, tv: !!e.tv, som: !!e.som };
+  return { tonhao: clamp(Math.round(+e.tonhao)||0,0,STAFF.tonhao.levels.length - 1), dani: clamp(Math.round(+e.dani)||0,0,STAFF.dani.levels.length - 1), daniTasks: tasks.filter((t,i) => tasks.indexOf(t) === i).slice(0,3), couvert: !!e.couvert && couvertOk(ponto), taxa: !!e.taxa, tv: !!e.tv, som: !!e.som };
 }
 /* livro-caixa (v7.2): uma linha por dia jogado na carreira (os últimos CAIXA_MAX). As compras da lojinha
    (melhorias e salão) ficam em caixaPend e entram na linha do dia seguinte, junto com o saldo ao fim dele.
@@ -1720,7 +1738,7 @@ function normSave(s){
   const hist = s.histV === 1, novoHist = !hist && HIST.on && !DEV.on && !saveJogou(s), capMax = HISTORIA.length + 1;
   const cap = hist ? clamp(Math.round(+s.cap) || capMax, 1, capMax) : novoHist ? 1 : capMax;
   const conversa = cap > HISTORIA.length ? null : hist ? (s.conversa === 'antes' || s.conversa === 'depois' ? s.conversa : null) : novoHist ? 'antes' : null;
-  const dev = salaoDevolucao(s.salao), out = { dia, estrelas, lucroTot: Math.round(+s.lucroTot) || 0, pontosTot: Math.max(0, Math.round(+s.pontosTot) || 0), aval: normAval(s.aval), avalCom: normAvalCom(s.avalCom), neg: clamp(Math.round(+s.neg) || 0, 0, BANCO.neg), emp: normEmprestimo(novoHist ? { resto:REFORMA.valor, amort:REFORMA.amort, j:REFORMA.juros, ini:REFORMA.ini, ref:true } : s.emp), corta: s.corta !== false, fechou: Math.max(0, Math.round(+s.fechou) || 0), bank: bank + dev + devMaq, up, torneira:true, salao: normSalao(dev ? null : s.salao), divulga: divulgaOf(s.divulga).id, treino: !!s.treino, decor: normDecor(s.decor), cursos: normCursos(s.cursos), cursoDia: Math.max(0, Math.round(+s.cursoDia) || 0), cardV: 1, avisoCard: !!s.avisoCard, histV: 1, avisoHist: !!s.avisoHist, cap, capDia: Math.max(1, Math.round(+s.capDia) || 1), capAzul: Math.max(0, Math.round(+s.capAzul) || 0), conversa, manut: normManut(s.manut), caixa: normCaixa(s.caixa), caixaPend: normPend(s.caixaPend) };
+  const dev = salaoDevolucao(s.salao), out = { dia, estrelas, lucroTot: Math.round(+s.lucroTot) || 0, pontosTot: Math.max(0, Math.round(+s.pontosTot) || 0), aval: normAval(s.aval), avalCom: normAvalCom(s.avalCom), neg: clamp(Math.round(+s.neg) || 0, 0, BANCO.neg), emp: normEmprestimo(novoHist ? { resto:REFORMA.valor, amort:REFORMA.amort, j:REFORMA.juros, ini:REFORMA.ini, ref:true } : s.emp), corta: s.corta !== false, fechou: Math.max(0, Math.round(+s.fechou) || 0), bank: bank + dev + devMaq, up, torneira:true, salao: normSalao(dev ? null : s.salao), divulga: divulgaOf(s.divulga).id, treino: !!s.treino, decor: normDecor(s.decor), cursos: normCursos(s.cursos), cursoDia: Math.max(0, Math.round(+s.cursoDia) || 0), tonXp: s.tonXp === 1 ? 1 : 0, cardV: 1, avisoCard: !!s.avisoCard, histV: 1, avisoHist: !!s.avisoHist, cap, capDia: Math.max(1, Math.round(+s.capDia) || 1), capAzul: Math.max(0, Math.round(+s.capAzul) || 0), conversa, manut: normManut(s.manut), caixa: normCaixa(s.caixa), caixaPend: normPend(s.caixaPend) };
   out.equipe = normEquipe(s.equipe, pontoOf(out.salao.ponto));
   // v8.6.4: as notas do Gurugol de antes (de 1 a 5 pelo serviço) passam para a escala da Garagem, uma vez só (avalEsc)
   if (s.avalEsc !== 2){
@@ -1751,6 +1769,9 @@ function loadSave(){
         return n;
       }
       const n = normSave(s2);
+      if (s2.tonXp !== 1){   // v8.8: o nível do Tonhão passa a depender da experiência dos cursos: rebaixa uma vez só
+        n.equipe.tonhao = Math.min(n.equipe.tonhao, tonhaoNivelXp(n.cursos)); n.tonXp = 1; writeSave(n);
+      }
       if ((s2.salao && !Array.isArray(s2.salao.mesas)) || !s2.torneira) writeSave(n);   // salão antigo ou máquina de suco convertidos (com a devolução): só uma vez
       return n;
     }
@@ -3408,6 +3429,7 @@ class Game {
   /* equipe: mudanças à vontade na lojinha, desde que o dinheiro acumulado pague a folha do próximo dia */
   setStaff(key, val){
     const eq = this.save.equipe, old = eq[key];
+    if (key === 'tonhao' && !DEV.on && (val > tonhaoNivelXp(this.save.cursos) || val < old)) return false;   // v8.8: só com a xp dos cursos, e o nível pago é definitivo
     if (key === 'couvert' && val && !couvertOk(this.ponto)) return false;
     eq[key] = val;
     if (payroll(eq) > this.save.bank && payroll(eq) > payroll(Object.assign({}, eq, { [key]:old }))){ eq[key] = old; return false; }
@@ -3530,6 +3552,8 @@ class Game {
     this.save.bank -= p.preco; caixaGasto(this.save, 'mel', p.preco);
     this.save.cursos[id] = p.nivel; this.save.cursoDia = this.shopNext;
     this.cursoMsg = 'O Tonhão foi fazer o curso de ' + p.nome + '!';
+    const nx = tonhaoNivelXp(this.save.cursos);
+    if (nx > this.save.equipe.tonhao) this.cursoMsg += ' Ele já pode subir para o nível ' + (nx + 1) + ': pague o aumento no cartão dele.';
     writeSave(this.save); Sfx.coin();
     return true;
   }
@@ -7154,7 +7178,7 @@ function buildTips(){
     txt(c,'3,0',32,48,18,PAL.tinta,'center',FD);
   }]);
   // v8.6.9: os cursos do Tonhão e os gostos da freguesia
-  tips.push(['A cozinha começa sabendo PF e coxinha. Na aba Cursos, o Tonhão aprende pratos novos (um curso por dia); o curso avançado deixa os pratos mais caros e caprichados. Cada tipo de cliente tem o seu gosto, e o entregador muda de ideia ao longo do dia.', c => {
+  tips.push(['A cozinha começa sabendo PF e coxinha. Na aba Cursos, o Tonhão aprende pratos novos (um curso por dia); o curso avançado deixa os pratos mais caros e caprichados. O Tonhão sobe de nível com experiência: cada curso dá XP e, quando ele estiver pronto, o aumento de salário confirma o nível novo. Cada tipo de cliente tem o seu gosto, e o entregador muda de ideia ao longo do dia.', c => {
     drawDish(c,'pf',18,30,0.9); drawDish(c,'coxinha',46,30,0.9); txt(c,'+',32,34,14,PAL.faixa,'center',FD);
   }]);
   // v8.6.11: vegetarianos e veganos
@@ -7370,11 +7394,20 @@ function buildTonhao(grid){
     ['Caprichados ★', a && pc(a.crit), pc(b.crit)],
     ['Pia', a && (a.wash ? '1 pilha/' + a.wash + ' s' : 'não'), b.wash ? '1 pilha/' + b.wash + ' s' : 'não'],
     ['Diária', a && fmt(a.pay), fmt(b.pay)]];
-  let c = staffCard(upgradeIcon('tonhao'), 'Tonhão · nível ' + (eq.tonhao + 1) + ' de 3', 'Prato caprichado ★ vale +1♥ e +' + CRIT.bonus + ' pontos.');
-  c.appendChild(eq.tonhao < 2 ? staffNext('Com o aumento (nível ' + (eq.tonhao + 2) + '):', tRows(T[eq.tonhao], T[eq.tonhao+1])) : staffNext('Nível máximo:', tRows(null, T[2])));
+  // v8.8: o nível vem da experiência dos cursos; o aumento de salário só consolida o nível que a xp já permite
+  const top = T.length - 1, xp = tonhaoXp(game.save.cursos), pronto = DEV.on || xp >= (T[eq.tonhao + 1] || T[top]).xp;
+  let c = staffCard(upgradeIcon('tonhao'), 'Tonhão · nível ' + (eq.tonhao + 1) + ' de ' + T.length, 'Prato caprichado ★ vale +1♥ e +' + CRIT.bonus + ' pontos.');
+  const xl = el('div', 'tonxp');
+  xl.appendChild(el('span', null, eq.tonhao < top ? 'Experiência: ' + xp + ' de ' + T[eq.tonhao + 1].xp + ' para o nível ' + (eq.tonhao + 2) : 'Experiência: ' + xp + ' · nível máximo'));
+  if (eq.tonhao < top){ const bar = el('div', 'tonxp-bar'), fi = el('i'); fi.style.width = Math.round(clamp((xp - T[eq.tonhao].xp) / (T[eq.tonhao + 1].xp - T[eq.tonhao].xp), 0, 1) * 100) + '%'; bar.appendChild(fi); xl.appendChild(bar); }
+  c.appendChild(xl);
+  c.appendChild(eq.tonhao < top ? staffNext('Com o aumento (nível ' + (eq.tonhao + 2) + '):', tRows(T[eq.tonhao], T[eq.tonhao+1])) : staffNext('Nível máximo:', tRows(null, T[top])));
   let duo = el('div', 'duo');
-  if (eq.tonhao < 2) duo.appendChild(shopBtn('Aumento', 'btn', canPay(T[eq.tonhao+1].pay - T[eq.tonhao].pay), () => game.setStaff('tonhao', eq.tonhao + 1)));
-  if (eq.tonhao > 0) duo.appendChild(shopBtn('Reduzir', 'btn alt', true, () => game.setStaff('tonhao', eq.tonhao - 1)));
+  if (eq.tonhao < top){
+    const dif = T[eq.tonhao+1].pay - T[eq.tonhao].pay;
+    duo.appendChild(shopBtn('Aumento: +' + fmt(dif) + '/dia', 'btn', pronto && canPay(dif), () => game.setStaff('tonhao', eq.tonhao + 1)));
+    if (!pronto) c.appendChild(el('span', 'cursos-lista', 'Faltam ' + (T[eq.tonhao+1].xp - xp) + ' de experiência: cada curso básico dá +1 e cada avançado +2.'));
+  }
   c.appendChild(duo); grid.appendChild(c);
   buildCursos(grid);
 }
@@ -7713,6 +7746,7 @@ function buildCursos(grid){
     const card = el('div', 'item' + (!p ? ' own' : ''));
     card.appendChild(cursoIcon(c, av));
     card.appendChild(el('b', null, av ? c.av.nome : 'Curso de ' + c.nome));
+    if (p) card.appendChild(el('span', 'cursos-lista', '+' + (av || c.preco <= 0 ? CURSO_XP.avancado : CURSO_XP.basico) + ' de experiência'));
     const lis = av ? c.av.pratos.filter(k => CARDAPIO[k].nivel === 2) : c.pratos, mov = c.id === 'veg' ? ' +' + Math.round(VEG.mov * 100) + '% de movimento.' : '';
     if (!p) card.appendChild(el('span', null, 'Curso completo. ' + pratos(c.av.pratos.filter(k => !falta(k))) + '.' + mov));
     else if (!av) card.appendChild(el('span', null, 'O Tonhão aprende: ' + pratos(lis.filter(k => !falta(k))) + '. +' + String(AVAL.menu.porCurso).replace('.', ',') + ' ★ na Diversidade do cardápio.' + mov));
@@ -8456,7 +8490,7 @@ try { Rank.init(); } catch(e) {}
 game.setState('menu');
 if (!aberturaVista() && !DEV.on) abrirAbertura('auto');   // v8.5: a abertura toca sozinha uma vez
 window.__game = game;
-window.__lcc = { DECOR, DECOR_GRUPOS, TOALHA, decorOf, normDecor, decorOn, FILA_ACOES, filaMax, MARMITA, RETIRADA, marmitaMao, drawMarmita, prateleiraPos, EFOOD_COR, AVAL_BRAVO, QUEUE, setShopTab: v => shopAbrir(v), setShopGrupo: g => shopGrupoAbrir(g), shopSecoes: () => SHOP_GRUPOS.map(g => g.secoes.slice()), TREINO, TREINO_PASSOS, TREINO_COR, Treino, treinoLugar, treinoPrimeiro, playCareer, buildMenu, introBanco, buildFalencia, BANCO, normEmprestimo, parcelaDe, devidoDe, jurosDe, tabelaDe, simulaEmprestimo, SEMANA, semanaOf, diaOf, FILA_JUSTA, PORTA, CHAIRS, PAT, CONTAS, INGRED, CARDAPIO, precoPrato, CURSOS, CURSO_AV, CURSOS_SEMFIM, cursoOf, cursoNivel, normCursos, pratoAv, CARNES, drawDish, pratoSabido, pratosSabidos, GOSTOS, GOSTOS_CAT, pedePrato, VEG, vegMov, drawDish, MAIS, PONTOS_ACAO, GORJETA, DRINK_PRICE, MOVIMENTO, movimentoSalao, DIVULGA, DIVULGA_DIA, divulgaOf, contasDia, bomGoal, SALAO, PONTOS, pontoOf, MESA, mesaBox, mesaPreco, salaoLugares, mesaProblema, salaoCaminho, salaoProblema, salaoOrdena, salaoAuto, salaoVaga, salaoPerto, salaoKit, salaoDevolucao, SALAO_SEMFIM, normSalao, setObst, OBST, pathOk, MAQUINA, BEBIDA_ESPERA, bebidaOf, MANUT, manutOf, manutChance, manutPreco, normManut, CLIMA, CLIMA_DIA, introManut, normPend, CALCADA, TW, HUDX, esperaAp, tableApproach, CRIT, STAFF, DANI_TASKS, DANI_HANDS, daniTaskOk, TRASH, WASH, payroll, FOLHA_CORTE, folhaCorta, folhaCortes, folhaItens, listaE, pratosDe, couvertEffect, couvertOk, ambienteEffect, dishStock, normSave, Helper, JUICE, KITCHEN_SLOTS, handLayout, trayOk, Game, Group, Table, Kitchen, Waitress, BIA_SPEED, DAYS, UPGRADES, CUSTOMER_TYPES, LAYOUT, PAL, Sfx, findPath, render, Rank, sortRows, cleanName, normName, CMD, ENDLESS, VIP, MULTA, rk, renderRank, openRank, closeRank, LS, lsGet, lsSet, loadSave, DEV, saveKey, devSync, divulgaAberta, CAIXA_MAX, VERSAO, normCaixa, caixaResumo, caixaTotais, copyText, PRATO, pratoPerde, pratoVapor, AVAL, AVAL_CRIT, AVAL_BRAVO, avalMenu, avalTeto, avalEscala, avalFrac, AVAL_SIMPLES, AVAL_DECOR, normAval, avalNota, avalMedias, avalGeral, avalMovimento, avalMinimo, avalComentario, fmtNota, notaFaixa, gurugolCaixa, AVAL_COM, normAvalCom, buildGurugol, ABERTURA, Abertura, AB_CENAS, AB_ALT, AB_BASE, abEsc, AB_VIVO, aberturaVista, aberturaSom, drawAbertura, abrirAbertura, HISTORIA, REFORMA, HIST, carencia, Conversa, drawConversa, falar, fluxoHistoria, aberturaAtual: () => abertura };
+window.__lcc = { DECOR, DECOR_GRUPOS, TOALHA, decorOf, normDecor, decorOn, FILA_ACOES, filaMax, MARMITA, RETIRADA, marmitaMao, drawMarmita, prateleiraPos, EFOOD_COR, AVAL_BRAVO, QUEUE, setShopTab: v => shopAbrir(v), setShopGrupo: g => shopGrupoAbrir(g), shopSecoes: () => SHOP_GRUPOS.map(g => g.secoes.slice()), TREINO, TREINO_PASSOS, TREINO_COR, Treino, treinoLugar, treinoPrimeiro, playCareer, buildMenu, introBanco, buildFalencia, BANCO, normEmprestimo, parcelaDe, devidoDe, jurosDe, tabelaDe, simulaEmprestimo, SEMANA, semanaOf, diaOf, FILA_JUSTA, PORTA, CHAIRS, PAT, CONTAS, INGRED, CARDAPIO, precoPrato, CURSOS, CURSO_AV, CURSO_XP, tonhaoXp, tonhaoNivelXp, CURSOS_SEMFIM, cursoOf, cursoNivel, normCursos, pratoAv, CARNES, drawDish, pratoSabido, pratosSabidos, GOSTOS, GOSTOS_CAT, pedePrato, VEG, vegMov, drawDish, MAIS, PONTOS_ACAO, GORJETA, DRINK_PRICE, MOVIMENTO, movimentoSalao, DIVULGA, DIVULGA_DIA, divulgaOf, contasDia, bomGoal, SALAO, PONTOS, pontoOf, MESA, mesaBox, mesaPreco, salaoLugares, mesaProblema, salaoCaminho, salaoProblema, salaoOrdena, salaoAuto, salaoVaga, salaoPerto, salaoKit, salaoDevolucao, SALAO_SEMFIM, normSalao, setObst, OBST, pathOk, MAQUINA, BEBIDA_ESPERA, bebidaOf, MANUT, manutOf, manutChance, manutPreco, normManut, CLIMA, CLIMA_DIA, introManut, normPend, CALCADA, TW, HUDX, esperaAp, tableApproach, CRIT, STAFF, DANI_TASKS, DANI_HANDS, daniTaskOk, TRASH, WASH, payroll, FOLHA_CORTE, folhaCorta, folhaCortes, folhaItens, listaE, pratosDe, couvertEffect, couvertOk, ambienteEffect, dishStock, normSave, Helper, JUICE, KITCHEN_SLOTS, handLayout, trayOk, Game, Group, Table, Kitchen, Waitress, BIA_SPEED, DAYS, UPGRADES, CUSTOMER_TYPES, LAYOUT, PAL, Sfx, findPath, render, Rank, sortRows, cleanName, normName, CMD, ENDLESS, VIP, MULTA, rk, renderRank, openRank, closeRank, LS, lsGet, lsSet, loadSave, DEV, saveKey, devSync, divulgaAberta, CAIXA_MAX, VERSAO, normCaixa, caixaResumo, caixaTotais, copyText, PRATO, pratoPerde, pratoVapor, AVAL, AVAL_CRIT, AVAL_BRAVO, avalMenu, avalTeto, avalEscala, avalFrac, AVAL_SIMPLES, AVAL_DECOR, normAval, avalNota, avalMedias, avalGeral, avalMovimento, avalMinimo, avalComentario, fmtNota, notaFaixa, gurugolCaixa, AVAL_COM, normAvalCom, buildGurugol, ABERTURA, Abertura, AB_CENAS, AB_ALT, AB_BASE, abEsc, AB_VIVO, aberturaVista, aberturaSom, drawAbertura, abrirAbertura, HISTORIA, REFORMA, HIST, carencia, Conversa, drawConversa, falar, fluxoHistoria, aberturaAtual: () => abertura };
 window.requestAnimationFrame(frame);
 
 })();

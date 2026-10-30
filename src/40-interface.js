@@ -177,7 +177,7 @@ function buildTips(){
     txt(c,'3,0',32,48,18,PAL.tinta,'center',FD);
   }]);
   // v8.6.9: os cursos do Tonhão e os gostos da freguesia
-  tips.push(['A cozinha começa sabendo PF e coxinha. Na aba Cursos, o Tonhão aprende pratos novos (um curso por dia); o curso avançado deixa os pratos mais caros e caprichados. Cada tipo de cliente tem o seu gosto, e o entregador muda de ideia ao longo do dia.', c => {
+  tips.push(['A cozinha começa sabendo PF e coxinha. Na aba Cursos, o Tonhão aprende pratos novos (um curso por dia); o curso avançado deixa os pratos mais caros e caprichados. O Tonhão sobe de nível com experiência: cada curso dá XP e, quando ele estiver pronto, o aumento de salário confirma o nível novo. Cada tipo de cliente tem o seu gosto, e o entregador muda de ideia ao longo do dia.', c => {
     drawDish(c,'pf',18,30,0.9); drawDish(c,'coxinha',46,30,0.9); txt(c,'+',32,34,14,PAL.faixa,'center',FD);
   }]);
   // v8.6.11: vegetarianos e veganos

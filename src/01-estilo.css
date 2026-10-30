@@ -314,3 +314,6 @@ table.rank tr.me td{background:#fbe7a8}
   .menu-btns .row.tight{display:contents}
   .menu-panel .links .link{margin-top:calc(var(--u)*4)}
 }
+.item .tonxp{grid-column:1 / -1;font-weight:700;font-size:.9em}   /* v8.8: experiência do Tonhão */
+.item .tonxp-bar{height:8px;border-radius:4px;background:rgba(0,0,0,.15);margin-top:3px;overflow:hidden}
+.item .tonxp-bar i{display:block;height:100%;background:#f5a623}

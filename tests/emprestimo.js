@@ -9,7 +9,8 @@ const T='./';
 const H=require(T+'harness.js')({imprevistos:!!process.env.IMPREV}); const {g,L}=H; const BOT=require(T+'bot.js'), bot=BOT(g,L,{});
 const N=+process.argv[2]||10, ND=+process.argv[3]||14, EST=process.argv[4]||'nenhum', V=+process.env.VALOR||1000, DIA0=+process.env.DIA0||2;
 const order=['tenis','maquina','cafeteira','bandeja','ventilador','pratos','corrida'];
-const FULL=[{tonhao:2,dani:4,tv:true,som:true},{tonhao:2,dani:4,tv:true},{tonhao:2,dani:4},{tonhao:1,dani:3},{tonhao:0,dani:2},{}];
+const FULL=[{tonhao:4,dani:4,tv:true,som:true},{tonhao:3,dani:4,tv:true,som:true},{tonhao:2,dani:4,tv:true,som:true},{tonhao:2,dani:4,tv:true},{tonhao:2,dani:4},{tonhao:1,dani:3},{tonhao:0,dani:2},{}];   // v8.8: capT limita o Tonhão pela XP dos cursos
+const capT=e=>Object.assign({},e,{tonhao:Math.min(e.tonhao||0,L.tonhaoNivelXp(g.save.cursos))});
 if(process.env.BANCO_CFG) Object.assign(L.BANCO,JSON.parse(process.env.BANCO_CFG));
 const res=[]; let fechou=0, juros=0, emps=0;
 for(let k=0;k<N;k++){
@@ -28,7 +29,7 @@ for(let k=0;k<N;k++){
       if(EST==='nenhum') BOT.moveis(g,L,semMesa,res0,process.env.MOVEIS);
       else { let i=0; while(i++<6 && BOT.moveis(g,L,semMesa,res0,process.env.MOVEIS)); }
       if(n>=2+(EST==='nenhum'?1:0)){
-        const e=FULL.find(e=>L.payroll(L.normSave({equipe:e}).equipe)+40<=g.save.bank)||{};
+        const e=FULL.map(capT).find(e=>L.payroll(L.normSave({equipe:e}).equipe)+40<=g.save.bank)||{};
         g.save.equipe=L.normSave({equipe:Object.assign({daniTasks:['pratos','lavar','lixo']},e)}).equipe;
         if(n>=3) g.save.divulga='panfleto';
       }

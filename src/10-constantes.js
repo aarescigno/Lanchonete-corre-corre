@@ -87,6 +87,17 @@ const CURSO_AV = { preco:1.15, crit:1.5 };
 function cursoOf(id){ return CURSOS.find(c => c.id === id) || null; }
 /* nível do curso: 0 (nada), 1 (básico) ou 2 (avançado); o PF não tem básico, então já nasce no 1 */
 function cursoNivel(cursos, id){ const n = Math.max(0, Math.min(2, Math.floor(+(cursos && cursos[id]) || 0))); return id === 'pf' ? Math.max(1, n) : n; }
+/* experiência do Tonhão (v8.8): +1 por curso básico, +2 por avançado (o PF só tem o avançado); máximo 17 */
+const CURSO_XP = { basico:1, avancado:2 };
+function tonhaoXp(cursos){
+  return CURSOS.reduce((a, c) => { const n = cursoNivel(cursos, c.id); return a + (n >= 2 ? (c.preco > 0 ? CURSO_XP.basico : 0) + CURSO_XP.avancado : n >= 1 && c.preco > 0 ? CURSO_XP.basico : 0); }, 0);
+}
+/* o maior nível (índice) cuja xp cabe na experiência dos cursos */
+function tonhaoNivelXp(cursos){
+  const x = tonhaoXp(cursos); let n = 0;
+  STAFF.tonhao.levels.forEach((l, i) => { if (x >= l.xp) n = i; });
+  return n;
+}
 /* o prato é do avançado de algum curso que já foi feito? */
 function pratoAv(k, cursos){ return CURSOS.some(c => cursoNivel(cursos, c.id) >= 2 && c.av.pratos.indexOf(k) >= 0); }
 /* o save: só os níveis que existem (o PF só tem o avançado, 2) */
@@ -398,7 +409,10 @@ const CUSTOMER_TYPES = {
 const STAFF = {
   // Tonhão: cozinha mais rápido (cook = fator do tempo), mais pratos caprichados (crit) e,
   // com aumento, lava 1 pilha da pia a cada `wash` segundos
-  tonhao:  { levels:[ { slots:3, cook:1, crit:0.05, wash:0, pay:0 }, { slots:3, cook:0.85, crit:0.12, wash:7, pay:15 }, { slots:3, cook:0.7, crit:0.2, wash:4, pay:30 } ] },
+  // v8.8: o nível é experiência (xp, dos cursos: CURSO_XP); com a xp do nível seguinte ele fica pronto para subir e o aumento
+  // de salário consolida o nível. Só a falta de dinheiro para a folha o derruba (folhaCorta), e a xp fica
+  tonhao:  { levels:[ { slots:3, cook:1, crit:0.05, wash:0, pay:0, xp:0 }, { slots:3, cook:0.85, crit:0.12, wash:7, pay:15, xp:2 }, { slots:3, cook:0.7, crit:0.2, wash:4, pay:20, xp:5 },
+                      { slots:3, cook:0.62, crit:0.26, wash:3, pay:25, xp:9 }, { slots:3, cook:0.55, crit:0.32, wash:2.5, pay:30, xp:14 } ] },
   // Dani (v8.7): entra de graça no cap. 2 como aprendiz (nível 1, sem salário); os níveis 2 a 4 são os aumentos da lojinha
   dani:    { levels:[ null, { speed:0.4, tasks:1, pay:0 }, { speed:0.5, tasks:2, pay:25 }, { speed:0.65, tasks:2, pay:40 }, { speed:0.8, tasks:3, pay:55 } ] },
   // couvert artístico: só do nível 3 do salão em diante (Avenida Brasil, etapa 3 do plano)
@@ -586,7 +600,7 @@ const AVAL = {
   humor:{ var:0.15, encanta:0.15, extra:[0.3, 0.6], folga:0.4 },   // frações da faixa do ponto (teto − 1)
   bonus:{ cor:0.1, corrente:0.1, crit:0.1 },   // v8.6.7: chance a mais de o cliente sair encantado
   minimo:0.9,
-  prato:[[2.5, 4.5], [3, 4.7], [3.5, 5]],
+  prato:[[2.5, 4.5], [3, 4.7], [3.5, 5], [3.8, 5], [4, 5]],   // v8.8: 5 níveis do Tonhão
   menu:{ base:2, porCurso:0.6 },   // v8.6.9: pelos cursos básicos que o Tonhão fez (a Diversidade do cardápio)
   amb:{ base:2, tv:0.5, som:0.5, maquina:0.5, ventilador:0.5, cafe:0.5, couvert:1, lixo:-1, planta:0.3, rosa:0.25, toalha:0.5 }
 };
@@ -745,7 +759,7 @@ const HISTORIA = [
 ];
 const HIST_NOMES = { bia:'Bia', tonhao:'Tonhão', dani:'Dani' };
 const CAIXA_MAX = 14;                                 // livro-caixa (v7.2): quantos dias da carreira ficam guardados
-const VERSAO = 'v8.7';                               // vai no resumo do Caixa
+const VERSAO = 'v8.8';                               // vai no resumo do Caixa
 const DIVULGA_DIA = 3;                                // antes disso, o movimento é o da inauguração (sem custo)
 function divulgaAberta(n){ return DEV.on || n >= DIVULGA_DIA; }   // no modo dev, desde o dia 1
 function divulgaOf(id){ return DIVULGA.find(d => d.id === id) || DIVULGA[1]; }

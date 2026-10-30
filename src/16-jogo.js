@@ -815,6 +815,7 @@ class Game {
   /* equipe: mudanças à vontade na lojinha, desde que o dinheiro acumulado pague a folha do próximo dia */
   setStaff(key, val){
     const eq = this.save.equipe, old = eq[key];
+    if (key === 'tonhao' && !DEV.on && (val > tonhaoNivelXp(this.save.cursos) || val < old)) return false;   // v8.8: só com a xp dos cursos, e o nível pago é definitivo
     if (key === 'couvert' && val && !couvertOk(this.ponto)) return false;
     eq[key] = val;
     if (payroll(eq) > this.save.bank && payroll(eq) > payroll(Object.assign({}, eq, { [key]:old }))){ eq[key] = old; return false; }
@@ -937,6 +938,8 @@ class Game {
     this.save.bank -= p.preco; caixaGasto(this.save, 'mel', p.preco);
     this.save.cursos[id] = p.nivel; this.save.cursoDia = this.shopNext;
     this.cursoMsg = 'O Tonhão foi fazer o curso de ' + p.nome + '!';
+    const nx = tonhaoNivelXp(this.save.cursos);
+    if (nx > this.save.equipe.tonhao) this.cursoMsg += ' Ele já pode subir para o nível ' + (nx + 1) + ': pague o aumento no cartão dele.';
     writeSave(this.save); Sfx.coin();
     return true;
   }

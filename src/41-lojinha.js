@@ -199,11 +199,20 @@ function buildTonhao(grid){
     ['Caprichados ★', a && pc(a.crit), pc(b.crit)],
     ['Pia', a && (a.wash ? '1 pilha/' + a.wash + ' s' : 'não'), b.wash ? '1 pilha/' + b.wash + ' s' : 'não'],
     ['Diária', a && fmt(a.pay), fmt(b.pay)]];
-  let c = staffCard(upgradeIcon('tonhao'), 'Tonhão · nível ' + (eq.tonhao + 1) + ' de 3', 'Prato caprichado ★ vale +1♥ e +' + CRIT.bonus + ' pontos.');
-  c.appendChild(eq.tonhao < 2 ? staffNext('Com o aumento (nível ' + (eq.tonhao + 2) + '):', tRows(T[eq.tonhao], T[eq.tonhao+1])) : staffNext('Nível máximo:', tRows(null, T[2])));
+  // v8.8: o nível vem da experiência dos cursos; o aumento de salário só consolida o nível que a xp já permite
+  const top = T.length - 1, xp = tonhaoXp(game.save.cursos), pronto = DEV.on || xp >= (T[eq.tonhao + 1] || T[top]).xp;
+  let c = staffCard(upgradeIcon('tonhao'), 'Tonhão · nível ' + (eq.tonhao + 1) + ' de ' + T.length, 'Prato caprichado ★ vale +1♥ e +' + CRIT.bonus + ' pontos.');
+  const xl = el('div', 'tonxp');
+  xl.appendChild(el('span', null, eq.tonhao < top ? 'Experiência: ' + xp + ' de ' + T[eq.tonhao + 1].xp + ' para o nível ' + (eq.tonhao + 2) : 'Experiência: ' + xp + ' · nível máximo'));
+  if (eq.tonhao < top){ const bar = el('div', 'tonxp-bar'), fi = el('i'); fi.style.width = Math.round(clamp((xp - T[eq.tonhao].xp) / (T[eq.tonhao + 1].xp - T[eq.tonhao].xp), 0, 1) * 100) + '%'; bar.appendChild(fi); xl.appendChild(bar); }
+  c.appendChild(xl);
+  c.appendChild(eq.tonhao < top ? staffNext('Com o aumento (nível ' + (eq.tonhao + 2) + '):', tRows(T[eq.tonhao], T[eq.tonhao+1])) : staffNext('Nível máximo:', tRows(null, T[top])));
   let duo = el('div', 'duo');
-  if (eq.tonhao < 2) duo.appendChild(shopBtn('Aumento', 'btn', canPay(T[eq.tonhao+1].pay - T[eq.tonhao].pay), () => game.setStaff('tonhao', eq.tonhao + 1)));
-  if (eq.tonhao > 0) duo.appendChild(shopBtn('Reduzir', 'btn alt', true, () => game.setStaff('tonhao', eq.tonhao - 1)));
+  if (eq.tonhao < top){
+    const dif = T[eq.tonhao+1].pay - T[eq.tonhao].pay;
+    duo.appendChild(shopBtn('Aumento: +' + fmt(dif) + '/dia', 'btn', pronto && canPay(dif), () => game.setStaff('tonhao', eq.tonhao + 1)));
+    if (!pronto) c.appendChild(el('span', 'cursos-lista', 'Faltam ' + (T[eq.tonhao+1].xp - xp) + ' de experiência: cada curso básico dá +1 e cada avançado +2.'));
+  }
   c.appendChild(duo); grid.appendChild(c);
   buildCursos(grid);
 }
@@ -542,6 +551,7 @@ function buildCursos(grid){
     const card = el('div', 'item' + (!p ? ' own' : ''));
     card.appendChild(cursoIcon(c, av));
     card.appendChild(el('b', null, av ? c.av.nome : 'Curso de ' + c.nome));
+    if (p) card.appendChild(el('span', 'cursos-lista', '+' + (av || c.preco <= 0 ? CURSO_XP.avancado : CURSO_XP.basico) + ' de experiência'));
     const lis = av ? c.av.pratos.filter(k => CARDAPIO[k].nivel === 2) : c.pratos, mov = c.id === 'veg' ? ' +' + Math.round(VEG.mov * 100) + '% de movimento.' : '';
     if (!p) card.appendChild(el('span', null, 'Curso completo. ' + pratos(c.av.pratos.filter(k => !falta(k))) + '.' + mov));
     else if (!av) card.appendChild(el('span', null, 'O Tonhão aprende: ' + pratos(lis.filter(k => !falta(k))) + '. +' + String(AVAL.menu.porCurso).replace('.', ',') + ' ★ na Diversidade do cardápio.' + mov));
