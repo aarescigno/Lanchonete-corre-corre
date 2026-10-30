@@ -26,6 +26,9 @@ function baseBot(g,L,opts){
     if(b.hands.some(h=>h.kind==='ticket') && !has(a=>a.type==='order')) return g.tapStation('order',800,150);
     const d=b.hands.find(h=>h.kind==='dish');
     if(d && !has(a=>a.type==='table'&&a.id===d.table)) return g.tapTable(g.tables[d.table-1]);
+    // v9: o motorista que acabou de comer espera o cafezinho: leva se já está na mão, senão busca
+    const mt=g.tables.find(t=>t.group&&t.group.cafeBalao&&!t.group.daniCoffee);
+    if(mt){ if(b.hands.some(h=>h.kind==='coffee')){ if(!has(a=>a.type==='table'&&a.id===mt.id)) return g.tapTable(mt); } else if(can('coffee')&&!has(a=>a.type==='coffee')) return g.tapStation('coffee',810,350); }
     // sucos: leva os que estiver carregando e busca mais se alguma mesa ainda espera
     const jt=g.tables.filter(t=>t.group&&t.group.juiceOpen&&t.group.juicePending>0);
     if(b.hands.some(h=>h.kind==='juice')){ const t=jt.find(t=>!has(a=>a.type==='table'&&a.id===t.id)); if(t) return g.tapTable(t); }
@@ -40,7 +43,7 @@ function baseBot(g,L,opts){
       if(!t.open||has(a=>a.type==='table'&&a.id===t.id)||(g.dani&&g.dani.targets(t))) continue;
       if(t.dirty||(t.group&&(t.group.state==='wantOrder'||t.group.state==='wantBill'))){ if(can(t.dirty?'dirty':'ticket')||t.group&&t.group.state==='wantBill') return g.tapTable(t); }
     }
-    for(let i=0;i<4;i++){ const p=g.kitchen.plates[i]; if(p&&!p.dani&&can('dish')&&!has(a=>a.type==='plate'&&a.pid===p.id)) return g.tapStation('plates',L.LAYOUT.PLATE_SLOTS[i].x,L.LAYOUT.PLATE_SLOTS[i].y); }
+    for(let i=0;i<L.LAYOUT.PLATE_SLOTS.length;i++){ const p=g.kitchen.plates[i]; if(p&&!p.dani&&can('dish')&&!has(a=>a.type==='plate'&&a.pid===p.id)) return g.tapStation('plates',L.LAYOUT.PLATE_SLOTS[i].x,L.LAYOUT.PLATE_SLOTS[i].y); }
     const need=jt.reduce((n,t)=>n+t.group.juicePending,0), carry=b.hands.filter(h=>h.kind==='juice').length+b.acts.filter(a=>a.type==='juice').length;
     // busca de uma vez todos os sucos que couberem (a fila de ações conta como já nas mãos)
     if(need>carry && !has(a=>a.type==='juice')){
@@ -82,10 +85,13 @@ function afiado(g,L){
     // marmitas (v8.6): a do entregador que espera, na mão ou pronta na janela; a sem dono vai para a prateleira com folga.
     // Adiantar (PEDIDOS sem comanda) quando não há nada mais urgente
     const RT=ST.retirada, livres=g.prateleira?g.prateleira.filter(m=>!m.dono).length:0;
-    b.hands.filter(h=>h.kind==='marmita').forEach(h=>add(h.dono?ttl(h.dono)-from(RT.ap):(livres<L.MARMITA.vagas?30:Infinity),()=>g.tapStation('retirada')));
+    b.hands.filter(h=>h.kind==='marmita').forEach(h=>add(h.dono?ttl(h.dono)-from(RT.ap):(livres<g.vagas?30:Infinity),()=>g.tapStation('retirada')));
     k.plates.forEach((p,i)=>{ if(!p||p.kind!=='marmita'||p.dani||!can('marmita')) return;
-      add(p.dono?ttl(p.dono)-sw('plates')-walk(ST.plates.ap.x,ST.plates.ap.y,RT.ap.x,RT.ap.y):(livres<L.MARMITA.vagas?32:Infinity),()=>g.tapStation('plates',SL[i].x,SL[i].y)); });
-    if(g.marmitaOk&&g.marmitasLivres<1&&g.clock>45&&!b.hands.some(h=>h.kind==='ticket')) add(36+sw('order'),()=>g.tapStation('adiantar'));
+      add(p.dono?ttl(p.dono)-sw('plates')-walk(ST.plates.ap.x,ST.plates.ap.y,RT.ap.x,RT.ap.y):(livres<g.vagas?32:Infinity),()=>g.tapStation('plates',SL[i].x,SL[i].y)); });
+    // v9: com a encomenda do setor avisada (e ainda sem chegar), adianta PF até o tamanho do lote (a encomenda reaproveita as sem dono)
+    const encPend=g.encomendaDia&&!g.groups.some(x=>x.lote)&&g.schedule.some(s=>s.type==='encomenda'&&g.nextIdx<=g.schedule.indexOf(s));
+    const livresMax=encPend?Math.min(g.vagas,g.encomendaDia.lote-1):1;
+    if(g.marmitaOk&&g.marmitasLivres<livresMax&&(g.clock>45||encPend)&&!b.hands.some(h=>h.kind==='ticket')) add(encPend?20+sw('order'):36+sw('order'),()=>g.tapStation('adiantar'));
     // pratos e comandas que a Bia carrega
     b.hands.filter(h=>h.kind==='dish').forEach(h=>{ const t=g.tables[h.table-1]; add(ttl(h.group)-tw(t),()=>g.tapTable(t)); });
     const tk=b.hands.filter(h=>h.kind==='ticket');
@@ -111,9 +117,9 @@ function afiado(g,L){
       }
     }
     // cafezinho: a quem está com 2 corações ou menos (e ainda não tomou)
-    const coffeeT=g.tables.filter(t=>t.group&&!t.group.coffee&&isFinite(ttl(t.group))&&t.group.hearts<=2);
+    const coffeeT=g.tables.filter(t=>t.group&&!t.group.coffee&&isFinite(ttl(t.group))&&(t.group.hearts<=2||t.group.cafeBalao));   // v9: o motorista que espera o cafezinho
     if(b.hasCoffee()){
-      const ts=g.tables.filter(t=>t.group&&t.group.seated&&!t.group.coffee).sort((a,c)=>ttl(a.group)-ttl(c.group));
+      const ts=g.tables.filter(t=>t.group&&t.group.seated&&!t.group.coffee).sort((a,c)=>(!!c.group.cafeBalao)-(!!a.group.cafeBalao)||ttl(a.group)-ttl(c.group));
       if(ts.length) add(ttl(ts[0].group)-tw(ts[0]),()=>g.tapTable(ts[0]));
       else add(30,()=>g.tapStation('trash',723,500));
     } else if(coffeeT.length&&can('coffee')){

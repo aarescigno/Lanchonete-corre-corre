@@ -48,7 +48,7 @@ function buildMenu(){
   const sv = game.save, n = game.proxDia, novo = n <= 1 && !sv.caixa.length;
   // v8.7: a carreira é a História ("História · cap. 2, A Dani chega · dia 5"; fim dos capítulos: "Garagem completa")
   const capC = HISTORIA[sv.cap - 1];
-  $('menu-dia').textContent = sv.fechou ? 'História: o banco fechou no dia ' + sv.fechou : novo ? 'História' : 'História · ' + (capC ? 'cap. ' + capC.cap + ', ' + capC.titulo : 'Garagem completa') + ' · dia ' + n;
+  $('menu-dia').textContent = sv.fechou ? 'História: o banco fechou no dia ' + sv.fechou : novo ? 'História' : 'História · ' + (capC && capC.ponto === sv.salao.ponto ? 'cap. ' + capC.cap + ', ' + capC.titulo : sv.cap > HISTORIA.length ? 'área industrial completa' : 'Garagem completa') + ' · dia ' + n;
   const info = [];
   if (sv.fechou) info.push('O banco tomou a lanchonete por falta de pagamento.', sv.estrelas + ' ★', 'lucro acumulado ' + fmt(sv.lucroTot));   // v8.3.1
   else if (novo) info.push('A Bia vai abrir a lanchonete na garagem da mãe.' + (treinoPrimeiro() ? ' Primeira vez? Comece pela Missão zero, um treino passo a passo.' : ''));
@@ -175,6 +175,13 @@ function buildTips(){
   tips.push(['Cada grupo que sai avalia a lanchonete no Gurugol, de 1 a 5, em 5 critérios: espera por mesa e agilidade (cada coração perdido tira 1 ponto; cor certa, corrente e prato caprichado ajudam), qualidade da comida (o Tonhão com aumento acerta mais), diversidade do cardápio (cada curso do Tonhão soma) e ambiente (TV, som, torneira, ventilador, cafezinho, as plantas, o cantinho da Rosa e a toalha xadrez; lixeira cheia atrapalha). A nota é a média das últimas ' + AVAL.max + ' avaliações e aparece a partir da ' + AVAL.min + 'ª; a aba Gurugol da lojinha mostra os últimos comentários. Na Garagem, lugar simples, o atendimento perfeito vale ' + fmtNota(AVAL.teto[0]) + ' ★ (um cliente encantado dá um pouco mais); cada ponto melhor sobe a nota, até 5 ★ no Terraço Suíça. Nota alta traz até ' + Math.round(AVAL.mov * 100) + '% mais gente; nota baixa afasta.', c => {
     for (let i=0;i<5;i++) star(c,8 + i*12,22,5.5,i < 3 ? PAL.mostarda : '#d8cfb8');
     txt(c,'3,0',32,48,18,PAL.tinta,'center',FD);
+  }]);
+  // v9: a mudança de ponto
+  tips.push(['Depois do capítulo 3, a lojinha (Dinheiro › Mudança) oferece a Lanchonete na área industrial: 20 lugares, cardápio 20% mais caro e aluguel de ' + fmt(PONTOS[1].aluguel) + ' por dia, e a mudança custa ' + fmt(PONTOS[1].mudanca) + ' e pede nota ' + fmtNota(avalMinimo(PONTOS[0])) + ' no Gurugol. Não dá para voltar. Lá vêm a turma da fábrica (com o apito do meio do dia), o motorista de caminhão (que pede cafezinho) e a encomenda do setor, de 4 a 6 marmitas.', c => {
+    c.translate(32,34); c.scale(1.2,1.2);
+    rr(c,-18,-4,36,22,2); fs(c,'#B9B4A6',2); rr(c,9,-20,8,18,1); fs(c,PAL.inox,1.6);
+    c.beginPath(); c.moveTo(-18,-4); c.lineTo(-9,-13); c.lineTo(0,-4); c.lineTo(9,-13); c.lineTo(18,-4); c.fillStyle = '#9AA0A6'; c.fill(); c.strokeStyle = PAL.tinta; c.lineWidth = 1.6; c.stroke();
+    rr(c,-6,6,12,12,1); fs(c,PAL.cromo,1.6); c.fillStyle = PAL.mostarda; c.fillRect(-18,18,36,3);
   }]);
   // v8.6.9: os cursos do Tonhão e os gostos da freguesia
   tips.push(['A cozinha começa sabendo PF e coxinha. Na aba Cursos, o Tonhão aprende pratos novos (um curso por dia); o curso avançado deixa os pratos mais caros e caprichados. O Tonhão sobe de nível com experiência: cada curso dá XP e, quando ele estiver pronto, o aumento de salário confirma o nível novo. Cada tipo de cliente tem o seu gosto, e o entregador muda de ideia ao longo do dia.', c => {

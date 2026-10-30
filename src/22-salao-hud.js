@@ -214,6 +214,13 @@ function drawTableOverlay(ctx,g,t,tm,menu){
     txt(ctx,'×' + grp.juicePending,14,0,13,PAL.tinta,'center',FD);
     ctx.restore();
   }
+  if (grp.cafeBalao){   // v9: o motorista que acabou de comer espera o cafezinho antes da conta
+    const cp = RM ? 1 : 1 + 0.1*Math.sin(tm*9), cy = t.cy + 2 + (grp.juiceOpen && grp.juicePending > 0 ? 34 : 0);
+    ctx.save(); ctx.translate(bx + 4,cy); ctx.scale(cp,cp);
+    rr(ctx,-14,-15,34,28,9); fs(ctx,'#fff',2.2);
+    drawIcon(ctx,'coffee',3,0,0.75);
+    ctx.restore();
+  }
 }
 
 function drawCluster(ctx,grp,x,y,tm,o){

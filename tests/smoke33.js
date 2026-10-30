@@ -15,7 +15,7 @@ ok(grid().children.every(c=>c.children[0].tagName==='CANVAS' && c.children.lengt
 ok(els['shop-nav'].hidden===true,'nos cartões, sem o botão Voltar');
 // grupos
 L.setShopGrupo('equipe'); ok(cartoes().join()==='bia,tonhao,dani' && nomes().join()==='Bia,Tonhão,Dani','Equipe: Bia, Tonhão e Dani');
-L.setShopGrupo('dinheiro'); ok(cartoes().join()==='banco,caixa' && nomes().join()==='Banco,Caixa','Dinheiro: Banco e Caixa');
+L.setShopGrupo('dinheiro'); ok(cartoes().join()==='banco,mudanca,caixa' && nomes().join()==='Banco,Mudança,Caixa','Dinheiro: Banco, Mudança (cap. 4 em diante, v9) e Caixa');
 L.setShopGrupo('gurugol'); ok(grid().className.indexOf('shopgrid')===0 && els['shop-nav'].hidden===true && /Ainda ninguém avaliou/.test(txt(grid())),'Gurugol abre direto, sem cartões nem Voltar');
 // abrir seção e voltar
 L.setShopGrupo('lanchonete'); grid().children[0].fire('click');

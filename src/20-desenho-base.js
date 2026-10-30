@@ -321,7 +321,7 @@ function drawPerson(ctx,p,x,y,o){
   if (sit) ctx.translate(0, 12);
   if (!sit && !o.noShadow) shadowEll(ctx,0,0,13,4,0.2);
   const skin = SKINS[p.skin];
-  const shirt = o.shirt || '#888';
+  const shirt = p.shirt || o.shirt || '#888';   // v9: a turma, o motorista e a encomenda têm roupa própria
   // pernas
   if (!sit){
     const sw = moving ? Math.sin(ph) * 4 : 0;
@@ -351,6 +351,12 @@ function drawPerson(ctx,p,x,y,o){
   ctx.moveTo(-11,-32+bob); ctx.lineTo(11,-32+bob); ctx.lineTo(13.5,-12); ctx.lineTo(-13.5,-12); ctx.closePath();
   fs(ctx,shirt,2.5);
   ctx.fillStyle = 'rgba(255,255,255,.22)'; ctx.fillRect(-9,-30+bob,5,16);
+  // v9: macacão (zíper e bolso), camisa xadrez ou polo, crachá e o protetor de ouvido no pescoço
+  if (p.macacao){ ctx.strokeStyle = 'rgba(255,255,255,.45)'; ctx.lineWidth = 1.4; ctx.beginPath(); ctx.moveTo(0,-31+bob); ctx.lineTo(0,-13); ctx.stroke(); rr(ctx,3,-24+bob,7,6,1); ctx.strokeStyle = 'rgba(0,0,0,.3)'; ctx.stroke(); }
+  if (p.camisa === 'xadrez'){ ctx.strokeStyle = 'rgba(0,0,0,.28)'; ctx.lineWidth = 1.6; [-6,0,6].forEach(dx => { ctx.beginPath(); ctx.moveTo(dx,-31+bob); ctx.lineTo(dx*1.2,-13); ctx.stroke(); }); [-26,-20,-14].forEach(yy => { ctx.beginPath(); ctx.moveTo(-12,yy+bob); ctx.lineTo(12,yy+bob); ctx.stroke(); }); }
+  if (p.camisa === 'polo'){ ctx.beginPath(); ctx.moveTo(-5,-32+bob); ctx.lineTo(0,-26+bob); ctx.lineTo(5,-32+bob); ctx.closePath(); fs(ctx,'#fff',1.4); }
+  if (p.fone && !o.back){ ctx.strokeStyle = '#E8A73A'; ctx.lineWidth = 2.4; ctx.beginPath(); ctx.arc(0,-33+bob,10,0.15,Math.PI-0.15); ctx.stroke(); [-10,10].forEach(dx => { rr(ctx,dx-3.5,-34+bob,7,9,3); fs(ctx,'#5A5A63',1.4); }); }
+  if (p.cracha && !o.back){ ctx.strokeStyle = 'rgba(255,255,255,.7)'; ctx.lineWidth = 1; ctx.beginPath(); ctx.moveTo(-5,-32+bob); ctx.lineTo(-4,-24+bob); ctx.stroke(); rr(ctx,-8,-24+bob,8,10,1.5); fs(ctx,'#fff',1.3); ctx.fillStyle = '#2F5FA8'; ctx.fillRect(-7,-23+bob,6,3); ctx.fillStyle = 'rgba(34,32,28,.5)'; ctx.fillRect(-7,-18+bob,5,1.2); ctx.fillRect(-7,-16+bob,4,1.2); }
   if (p.acc === 'backpack'){ ctx.strokeStyle = '#B9791B'; ctx.lineWidth = 2.4; ctx.beginPath(); ctx.moveTo(-7,-31+bob); ctx.lineTo(-8,-14); ctx.moveTo(7,-31+bob); ctx.lineTo(8,-14); ctx.stroke(); }
   // braços
   ctx.lineCap = 'round';
@@ -370,6 +376,8 @@ function drawPerson(ctx,p,x,y,o){
   ctx.beginPath(); ctx.moveTo(11,-30+bob); bD.forEach(q => ctx.lineTo(q[0],q[1])); ctx.stroke();
   circ(ctx,mE[0],mE[1] + hE,3.6); fs(ctx,skin,1.8);
   circ(ctx,mD[0],mD[1] + hD,3.6); fs(ctx,skin,1.8);
+  if (p.acc === 'chave'){ ctx.strokeStyle = '#B58A1B'; ctx.lineWidth = 1.6; circ(ctx,mD[0] + 3,mD[1] + 8,2.6); ctx.stroke(); ctx.fillStyle = '#D9A21E'; ctx.fillRect(mD[0] + 2.2,mD[1] + 10,1.6,6); ctx.fillRect(mD[0] + 3.8,mD[1] + 13,2.6,1.4); }
+  if (p.sacola){ rr(ctx,mE[0] - 8,mE[1] + 1,17,14,3); fs(ctx,'#2F7D86',1.8); ctx.strokeStyle = 'rgba(255,255,255,.75)'; ctx.lineWidth = 1.3; ctx.beginPath(); ctx.moveTo(mE[0] - 8,mE[1] + 6); ctx.lineTo(mE[0] + 9,mE[1] + 6); ctx.stroke(); }
   if (p.acc === 'laptop'){ rr(ctx,-10,-22+bob,20,13,2); fs(ctx,'#9aa5b1',2); ctx.fillStyle = '#d9e4ee'; ctx.fillRect(-7,-20+bob,14,8); }
   if (p.acc === 'book'){ rr(ctx,-20,-22,9,12,1.5); fs(ctx,PAL.faixa,1.8); }
   if (p.acc === 'cane'){ ctx.strokeStyle = PAL.madeiraEsc; ctx.lineWidth = 3; ctx.beginPath(); ctx.moveTo(21,0); ctx.lineTo(21,-20); ctx.arc(18,-20,3,0,-Math.PI,true); ctx.stroke(); }
@@ -384,7 +392,10 @@ function drawPerson(ctx,p,x,y,o){
     return;
   }
   // cabelo frente
-  if (p.acc === 'helmet'){
+  if (p.bone){   // v9: o boné do motorista (cúpula e aba)
+    ctx.beginPath(); ctx.arc(0,hy-1,12.4,Math.PI,0); ctx.closePath(); fs(ctx,p.boneC || PAL.perigo,2.4);
+    rr(ctx,-13,hy-3.5,26,3.5,1.7); fs(ctx,p.boneC || PAL.perigo,1.8);
+  } else if (p.acc === 'helmet'){
     ctx.beginPath(); ctx.arc(0,hy-1,12.5,Math.PI,0); ctx.closePath(); fs(ctx,PAL.faixa,2.5);
     ctx.fillStyle = 'rgba(255,255,255,.35)'; ell(ctx,-4,hy-8,3.5,2); ctx.fill();
     rr(ctx,-13,hy-3,26,3.5,1.5); fs(ctx,'#1b1b1b',1.6);

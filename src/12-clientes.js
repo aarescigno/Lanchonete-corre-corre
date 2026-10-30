@@ -26,6 +26,13 @@ function makePeople(type, size){
       if (i < 2) out.push(newPerson({ hair: pick([0,1,2,3,5,6,4]), glasses: Math.random()<0.2 }));
       else out.push(newPerson({ kid:true, hair: pick([0,1,2,5,6]) }));
     }
+  } else if (type === 'turma'){   // v9: macacão azul-marinho ou cinza com crachá; um ou outro com protetor de ouvido no pescoço
+    for (let i=0;i<size;i++) out.push(newPerson({ shirt: pick(['#26335A', '#5E6470']), macacao:true, cracha:true, fone: Math.random()<0.3, hair: pick([0,1,2,3,5,6,4]), glasses: Math.random()<0.15 }));
+  } else if (type === 'motorista'){   // v9: boné, camisa xadrez ou polo da transportadora e a chave do caminhão; homem ou mulher (50%)
+    const mulher = Math.random() < 0.5;
+    out.push(newPerson({ bone:true, boneC: pick(['#C2362B', '#2F5FA8', '#3E7B4A']), camisa: Math.random() < 0.5 ? 'xadrez' : 'polo', shirt: pick(['#B8442F', '#2F5FA8', '#D9A21E', '#3E7B4A']), acc:'chave', hair: mulher ? pick([2,3,5,6]) : pick([0,1,4]), mulher }));
+  } else if (type === 'encomenda'){   // v9: crachá e uma sacola térmica
+    out.push(newPerson({ cracha:true, sacola:true, shirt: pick(['#2F7D86', '#8A4F9E', '#3E7B4A']), hair: pick([0,1,2,3,5,6]), glasses: Math.random()<0.3 }));
   } else { // entregador
     out.push(newPerson({ hair:0, acc:'helmet' }));
   }
@@ -69,7 +76,7 @@ function saveKey(){ return DEV.on ? LS.devSave : LS.save; }
 function normEquipe(e, ponto){
   e = (e && typeof e === 'object') ? e : {};
   const tasks = Array.isArray(e.daniTasks) ? e.daniTasks.map(t => t === 'agua' ? 'suco' : t).filter(t => DANI_TASKS.some(d => d.id === t)) : ['pratos','lavar'];   // v7.5: a tarefa da água vira a do suco da espera
-  return { tonhao: clamp(Math.round(+e.tonhao)||0,0,STAFF.tonhao.levels.length - 1), dani: clamp(Math.round(+e.dani)||0,0,STAFF.dani.levels.length - 1), daniTasks: tasks.filter((t,i) => tasks.indexOf(t) === i).slice(0,3), couvert: !!e.couvert && couvertOk(ponto), taxa: !!e.taxa, tv: !!e.tv, som: !!e.som };
+  return { tonhao: clamp(Math.round(+e.tonhao)||0,0,STAFF.tonhao.levels.length - 1), dani: clamp(Math.round(+e.dani)||0,0,STAFF.dani.levels.length - 1), daniTasks: tasks.filter((t,i) => tasks.indexOf(t) === i).slice(0,3), couvert: !!e.couvert && couvertOk(ponto), taxa: !!e.taxa, tv: !!e.tv && ponto.nivel < 2, som: !!e.som && ponto.nivel < 2, tvs: ponto.nivel >= 2 ? clamp(Math.round(+e.tvs) || 0, 0, INDUSTRIAL.tvs.modos.length - 1) : 0 };
 }
 /* livro-caixa (v7.2): uma linha por dia jogado na carreira (os últimos CAIXA_MAX). As compras da lojinha
    (melhorias e salão) ficam em caixaPend e entram na linha do dia seguinte, junto com o saldo ao fim dele.
@@ -117,6 +124,8 @@ function normSave(s){
   // a Máquina de suco virou a Água da torneira na v7.7 (mais barata): quem já tinha recebe a diferença, uma vez
   const devMaq = up.maquina && !s.torneira ? UPGRADES.find(u => u.id === 'maquina').devolve : 0;
   if (up.chapa){ up.pratos = true; delete up.chapa; }     // a Chapa nova virou Jogo de pratos (a velocidade da cozinha é do Tonhão)
+  ['tvs', 'fogaoInd'].forEach(k => { if (up[k]) up[k] = true; else delete up[k]; });   // v9: itens da área industrial
+  if (up.assento !== 'cadeira' && up.assento !== 'banco') delete up.assento;
   if ('pratos' in up){ const n = pratosDe(up); if (n) up.pratos = n; else delete up.pratos; }   // v8.3.6: os Jogos de pratos viram um número
   // salão da v6 à v7.3 (v7.4): o que foi gasto em cadeiras e mesas volta para o dinheiro, numa linha do caixa, e o
   // jogo começa na Garagem com o kit
@@ -130,10 +139,12 @@ function normSave(s){
   // Modo História (v8.7): save novo (sem jogo, fora do modo dev) começa o cap. 1, com a conversa de antes e a dívida da reforma;
   // save com histV e o do modo dev seguem como vierem (dev e testes: cap 4, sem objetivo)
   const hist = s.histV === 1, novoHist = !hist && HIST.on && !DEV.on && !saveJogou(s), capMax = HISTORIA.length + 1;
-  const cap = hist ? clamp(Math.round(+s.cap) || capMax, 1, capMax) : novoHist ? 1 : capMax;
-  const conversa = cap > HISTORIA.length ? null : hist ? (s.conversa === 'antes' || s.conversa === 'depois' ? s.conversa : null) : novoHist ? 'antes' : null;
-  const dev = salaoDevolucao(s.salao), out = { dia, estrelas, lucroTot: Math.round(+s.lucroTot) || 0, pontosTot: Math.max(0, Math.round(+s.pontosTot) || 0), aval: normAval(s.aval), avalCom: normAvalCom(s.avalCom), neg: clamp(Math.round(+s.neg) || 0, 0, BANCO.neg), emp: normEmprestimo(novoHist ? { resto:REFORMA.valor, amort:REFORMA.amort, j:REFORMA.juros, ini:REFORMA.ini, ref:true } : s.emp), corta: s.corta !== false, fechou: Math.max(0, Math.round(+s.fechou) || 0), bank: bank + dev + devMaq, up, torneira:true, salao: normSalao(dev ? null : s.salao), divulga: divulgaOf(s.divulga).id, treino: !!s.treino, decor: normDecor(s.decor), cursos: normCursos(s.cursos), cursoDia: Math.max(0, Math.round(+s.cursoDia) || 0), tonXp: s.tonXp === 1 ? 1 : 0, daniTar: Math.max(0, Math.round(+s.daniTar) || 0), daniCursos: normDaniCursos(s.daniCursos), daniCursoDia: Math.max(0, Math.round(+s.daniCursoDia) || 0), daniXp: s.daniXp === 1 ? 1 : 0, cardV: 1, avisoCard: !!s.avisoCard, histV: 1, avisoHist: !!s.avisoHist, cap, capDia: Math.max(1, Math.round(+s.capDia) || 1), capAzul: Math.max(0, Math.round(+s.capAzul) || 0), conversa, manut: normManut(s.manut), caixa: normCaixa(s.caixa), caixaPend: normPend(s.caixaPend) };
+  const cap = hist ? clamp(Math.round(+s.cap) || capMax, 1, capMax) : novoHist ? 1 : 4;   // v9: dev e testes ficam no cap. 4 (sem objetivo na Garagem; a mudança de ponto está livre)
+  const pendente = cap === 4 && pontoOf(s.salao && s.salao.ponto).nivel < 2;   // v9: o cap. 4 só começa na mudança de ponto
+  const conversa = cap > HISTORIA.length || pendente ? null : hist ? (s.conversa === 'antes' || s.conversa === 'depois' ? s.conversa : null) : novoHist ? 'antes' : null;
+  const dev = salaoDevolucao(s.salao), out = { dia, estrelas, lucroTot: Math.round(+s.lucroTot) || 0, pontosTot: Math.max(0, Math.round(+s.pontosTot) || 0), aval: normAval(s.aval), avalCom: normAvalCom(s.avalCom), neg: clamp(Math.round(+s.neg) || 0, 0, BANCO.neg), emp: normEmprestimo(novoHist ? { resto:REFORMA.valor, amort:REFORMA.amort, j:REFORMA.juros, ini:REFORMA.ini, ref:true } : s.emp), corta: s.corta !== false, fechou: Math.max(0, Math.round(+s.fechou) || 0), bank: bank + dev + devMaq, up, torneira:true, salao: normSalao(dev ? null : s.salao), divulga: divulgaOf(s.divulga).id, treino: !!s.treino, decor: normDecor(s.decor), cursos: normCursos(s.cursos), cursoDia: Math.max(0, Math.round(+s.cursoDia) || 0), tonXp: s.tonXp === 1 ? 1 : 0, daniTar: Math.max(0, Math.round(+s.daniTar) || 0), daniCursos: normDaniCursos(s.daniCursos), daniCursoDia: Math.max(0, Math.round(+s.daniCursoDia) || 0), daniXp: s.daniXp === 1 ? 1 : 0, cardV: 1, avisoCard: !!s.avisoCard, histV: 1, avisoHist: !!s.avisoHist, cap, capDia: Math.max(1, Math.round(+s.capDia) || 1), capAzul: Math.max(0, Math.round(+s.capAzul) || 0), capFeito: s.capFeito === 1 ? 1 : 0, capMarm: Math.max(0, Math.round(+s.capMarm) || 0), conversa, manut: normManut(s.manut), caixa: normCaixa(s.caixa), caixaPend: normPend(s.caixaPend) };
   out.equipe = normEquipe(s.equipe, pontoOf(out.salao.ponto));
+  if (!up.tvs) out.equipe.tvs = 0;
   // v8.6.4: as notas do Gurugol de antes (de 1 a 5 pelo serviço) passam para a escala da Garagem, uma vez só (avalEsc)
   if (s.avalEsc !== 2){
     const t = AVAL.teto[0], esc = v => v == null ? null : Math.round(avalEscala(v, t) * 10) / 10;
@@ -200,8 +211,9 @@ class Table {
 /* ============================================================
    GRUPO DE CLIENTES
    ============================================================ */
+const T0 = g => !!g.T.ind;
 class Group {
-  constructor(game, type, id, color, vip){
+  constructor(game, type, id, color, vip, s){
     const T = CUSTOMER_TYPES[type];
     this.game = game; this.id = id; this.type = type; this.T = T;
     this.size = randi(T.size[0], T.size[1]);
@@ -214,15 +226,20 @@ class Group {
     // a conta (v8.3.8): cada pessoa paga o que pediu, pelo cardápio do ponto: o prato e, às vezes, um 2º item (extras;
     // nunca no treino); o prato especial do VIP soma VIP.dish
     // v8.6.11: ~10% das pessoas são vegetarianas (nunca o entregador, nem na Missão zero) e pedem só prato sem carne
-    this.people.forEach(p => { p.veg = type !== 'entregador' && game.mode !== 'treino' && Math.random() < VEG.chance; });
+    this.people.forEach(p => { p.veg = !T.retira && game.mode !== 'treino' && Math.random() < VEG.chance; });
     this.dishes = this.people.map(p => pedePrato(type, game, false, p.veg));   // v8.6.9: pelo gosto do tipo, entre os pratos que a cozinha sabe
+    // v9, a encomenda do setor: `lote` marmitas, cada uma sorteada pelos gostos da turma; entregues: quantas já foram para o balcão
+    this.lote = T.lote ? (s && s.lote) || randi(T.lote[0], T.lote[1]) : 0; this.entregues = 0; this.pagoLote = 0;
+    if (this.lote) this.dishes = Array.from({ length:this.lote }, () => pedePrato(type, game, false, false));
+    this.faltam = this.lote ? this.dishes.slice() : [];   // as marmitas do lote que ainda não chegaram ao balcão
+    this.cafePede = !!T.pedeCafe && game.mode === 'carreira' && Math.random() < T.pedeCafe;   // v9: o motorista pede o cafezinho ao terminar de comer
     this.semVeg = this.people.some((p, i) => p.veg && CARDAPIO[this.dishes[i]].carne);   // sem prato vegetariano: Cardápio 1 no Gurugol
     this.dish = this.dishes[0];
     this.carnes = this.people.map(() => pratoAv('pf', game.cursos) ? pick(CARNES) : 'bife');   // v8.6.10: Carnes variadas
     // o entregador (v8.6) não come no salão: leva o prato numa marmita, pela fila de retirada, sem 2º item
-    this.retira = type === 'entregador';
+    this.retira = !!T.retira;
     this.extras = this.people.map((p, i) => !this.retira && game.mode !== 'treino' && Math.random() < (CARDAPIO[this.dishes[i]].cat === 'pf' ? T.mais : Math.max(T.mais, MAIS.salgado)) ? pedePrato(type, game, true, p.veg) : null);
-    this.bill = this.dishes.concat(this.extras).reduce((v, k) => v + (k ? precoPrato(k, game.ponto, game.cursos) : 0), 0) + (this.vip ? VIP.dish : 0);
+    this.bill = (this.lote ? [] : this.dishes).concat(this.extras).reduce((v, k) => v + (k ? precoPrato(k, game.ponto, game.cursos) : 0), 0) + (this.vip ? VIP.dish : 0);
     this.hearts = 5;
     this.x = DOOR.x; this.y = DOOR.y;
     this.path = []; this.moving = false; this.walkPh = 0;
@@ -243,6 +260,9 @@ class Group {
     if (!b) return Infinity;
     let m = b * this.T.pat;
     if (this.vip) m *= VIP.pat;
+    const g0 = this.game, pt = g0.ponto;
+    if (pt.patPressa && this.size <= 2 && !T0(this)) m *= pt.patPressa;   // v9: quem vem sozinho ou em dupla tem pressa (a turma, o motorista e a encomenda, não)
+    if (this.state === 'queue' && g0.mode === 'carreira' && g0.up.assento) m /= 1 - INDUSTRIAL.assento.slow;   // v9: espera sentado
     if (this.state === 'queue' && this.sucoN) m /= 1 - MAQUINA.slow * Math.min(1, this.sucoN / this.size);
     const g = this.game, eq = g.save.equipe;
     const amb = ambienteEffect(eq);
@@ -265,6 +285,8 @@ class Group {
     if (this.state === 'queue' || this.state === 'toTable'){ const k = Math.min(d, this.perdFila); this.perdFila -= k; d -= k; }
     this.perdMesa = Math.max(0, this.perdMesa - d);
   }
+  /* v9: o motorista que acabou de comer e ainda não tomou o cafezinho (o balão mostra a xícara) */
+  get cafeBalao(){ return this.cafePede && !this.coffee && this.state === 'eating' && this.esperaSuco; }
   get juicePending(){ return Math.max(0, this.juiceWant - this.juiceGot); }
   /* o pedido de suco aparece quando a comanda é anotada; sem ele, o grupo não pede a conta (v8.5.2) */
   get juiceOpen(){ return this.juiceWant > 0 && (this.state === 'ordered' || this.state === 'eating' || this.state === 'wantBill'); }
@@ -343,7 +365,7 @@ class Group {
         this.timer -= dt;
         if (this.timer > 0) break;
         // acabou de comer: quem pediu suco espera por ele (perdendo a paciência) antes de pedir a conta (v8.5.2)
-        if (this.juicePending > 0){
+        if (this.juicePending > 0 || (this.cafePede && !this.coffee)){
           if (!this.esperaSuco){ this.esperaSuco = true; this.patLeft = this.patPer(); }
           this.tick(dt); break;
         }

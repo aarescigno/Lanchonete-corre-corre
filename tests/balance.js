@@ -13,11 +13,14 @@ if(!['sem','com','cuida'].includes(MODO)) throw new Error('MANUT=sem|com|cuida')
 const bot=require('./bot.js')(g,L,{afiado:process.env.BOT==='afiado',conserto:process.env.CONSERTO==='todos'?'todos':!!process.env.CONSERTO});   // BOT=afiado: o jogador perfeito
 L.MANUT.on=MODO!=='sem';
 if(process.env.MANUT_CFG){ const c=JSON.parse(process.env.MANUT_CFG); const eq=c.equip; delete c.equip; Object.assign(L.MANUT,c); if(eq) for(const id in eq) Object.assign(L.manutOf(id),eq[id]); }
+if(process.env.PONTO_CFG){ const c=JSON.parse(process.env.PONTO_CFG); for(const k in c){ if(c[k]&&typeof c[k]==='object'&&!Array.isArray(c[k])) Object.assign(L.PONTOS[1][k],c[k]); else L.PONTOS[1][k]=c[k]; } }   // v9: PONTO_CFG='{"cardapio":1.3,"aluguel":100}' troca números da área industrial em runtime
 if(process.env.CLIMA_CFG){ const c=JSON.parse(process.env.CLIMA_CFG); for(const k in c) Object.assign(L.CLIMA[k],c[k]); }
 const N=+process.argv[2]||20;
+// v9: PONTO=industrial joga os dias no ponto da área industrial (salão de 20 lugares, fogão industrial, TVs com anúncios, cadeirinhas; DIAS padrão 8,9,10)
+const PONTO=process.env.PONTO||'garagem', IND=PONTO==='industrial';
 // EQUIPE='{"tonhao":1,"dani":1,"daniTasks":["pratos","lavar"]}' node balance.js 40
 // EQUIPE=auto: a equipe que um jogador consegue pagar em cada dia (contratando aos poucos)
-const FULL={tonhao:2,dani:4,daniTasks:['pratos','lavar','lixo'],tv:true,som:true};   // na Garagem, TV e som no lugar do couvert (v7.4.3)
+const FULL=IND?{tonhao:2,dani:4,daniTasks:['pratos','lavar','lixo'],tvs:1}:{tonhao:2,dani:4,daniTasks:['pratos','lavar','lixo'],tv:true,som:true};   // na Garagem, TV e som no lugar do couvert (v7.4.3)
 const AUTO={2:{},3:FULL,4:FULL,5:FULL,6:FULL,7:FULL};   // do dia 3 em diante o dinheiro acumulado já paga a equipe completa
 const EQ0=process.env.EQUIPE==='auto'?null:(process.env.EQUIPE?JSON.parse(process.env.EQUIPE):{});
 const eqFor=n=>EQ0||AUTO[n]||(n>7?FULL:{});   // v8.3: do dia 8 em diante, a equipe completa
@@ -32,9 +35,9 @@ if(process.env.METAS){ const mt=JSON.parse(process.env.METAS); for(const k in mt
 // salão (v7.4): por padrão, o de quem compra móveis como o bot da carreira.js (kit de 10 lugares, +1 mesa de 2 por
 // lojinha até 16); MOVEIS=kit fica no kit; MOVEIS='[2,2,4,4]' usa essas mesas todo dia (arrumação automática)
 const MOV={1:[2,2,2,4],2:[2,2,2,4,2],3:[2,2,2,4,2,2],4:[2,2,2,2,2,2,4]};   // ([2,2,2,4,2,2,2] não cabia na arrumação automática e voltava ao kit)
-const movFor=n=>process.env.MOVEIS==='kit'?MOV[1]:(process.env.MOVEIS?JSON.parse(process.env.MOVEIS):MOV[Math.min(n,4)]);
+const movFor=n=>IND&&!process.env.MOVEIS?[4,4,4,4,2,2]:process.env.MOVEIS==='kit'?MOV[1]:(process.env.MOVEIS?JSON.parse(process.env.MOVEIS):MOV[Math.min(n,4)]);
 const order=process.env.ORDEM?process.env.ORDEM.split(','):['tenis','maquina','cafeteira','bandeja','ventilador','pratos'];   // ORDEM=pratos,tenis,...: ordem de compra das melhorias
-const DIAS=process.env.DIAS?process.env.DIAS.split(',').map(Number):[1,2,3,4,5,6,7];   // DIAS=1,2: só esses dias (v8.3: DIAS=8,9,14 testa os dias da campanha)
+const DIAS=process.env.DIAS?process.env.DIAS.split(',').map(Number):IND?[8,9,10]:[1,2,3,4,5,6,7];   // DIAS=1,2: só esses dias (v8.3: DIAS=8,9,14 testa os dias da campanha)
 const NMAX=Math.max(...DIAS);
 // v8.6.9, cursos do Tonhão: CURSOS=bot (padrão) o dia d começa com as d−1 primeiras compras da ordem do bot (1 curso por lojinha);
 // CURSOS=todos (os 4 básicos e todos os avançados); CURSOS=0 (nenhum: só PF e coxinha); CURSOS=chapa,pastel,... troca a ordem do bot
@@ -43,12 +46,13 @@ const cursosFor=n=>CUR==='0'?{}:CUR==='todos'?BOTM.cursosApos(L,99):BOTM.cursosA
 const R={}; DIAS.forEach(n=>R[n]=[]);
 // um dia de uma rodada; man: o estado de equipamentos que vem do dia anterior (null: tudo novo)
 function jogaDia(n,man){
-  g.up={}; g.save.up=g.up; order.slice(0,n-1).forEach(id=>g.up[id]=true);
+  g.up={}; g.save.up=g.up; order.slice(0,IND?order.length:n-1).forEach(id=>g.up[id]=true);
+  if(IND){ g.up.fogaoInd=true; g.up.tvs=true; g.up.assento='cadeira'; }
   g.save.cursos=cursosFor(n);
-  if(L.normSave){ g.save.equipe=L.normSave({equipe:eqFor(n)}).equipe; g.save.bank=1e6; }
+  if(L.normSave){ g.save.equipe=L.normSave({equipe:eqFor(n),salao:{ponto:PONTO},up:IND?{tvs:true}:{}}).equipe; g.save.bank=1e6; }
   const dec=process.env.DECOR==='tudo';   // v8.6.6: DECOR=tudo põe todos os enfeites à mostra e toalha em todas as mesas (o bot não compra decoração)
   g.save.decor=L.normDecor?L.normDecor(dec?Object.fromEntries(L.DECOR.map(d=>[d.id,1])):{}):{};
-  g.save.salao=L.normSalao({mesas:movFor(n).map((seats,c)=>({x:0,y:0,seats,c:c%4,t:dec?1:0}))});
+  g.save.salao=L.normSalao({ponto:PONTO,mesas:movFor(n).map((seats,c)=>({x:0,y:0,seats,c:c%4,t:dec?1:0}))});
   if(L.salaoLugares(g.save.salao.mesas)!==movFor(n).reduce((x,y)=>x+y,0)) throw new Error('salão '+JSON.stringify(movFor(n))+' não cabe na arrumação automática (voltou ao kit)');
   if(process.env.DIV) g.save.divulga=process.env.DIV;   // DIV=boca|panfleto|redes
   if(process.env.MULT){ const d=L.divulgaOf(g.save.divulga); d.groups=[+process.env.MULT,+process.env.MULT]; }   // MULT=0.7: fração fixa dos grupos do dia
@@ -72,7 +76,7 @@ for(let k=0;k<N;k++){
 const tot={rev:0,lucro:0,quebras:0,dias:0};
 for(const n of DIAS){
   const res=R[n];
-  const m=res.map(r=>r.money), mean=m.reduce((a,b)=>a+b,0)/N, d=L.diaOf(n);
+  const m=res.map(r=>r.money), mean=m.reduce((a,b)=>a+b,0)/N, d=g.diaPonto(L.diaOf(n));   // v9: com as metas do ponto
   const avg=k=>(res.reduce((a,r)=>a+(r[k]||0),0)/N).toFixed(0);
   const pass=res.filter(r=>r.passed).length, exp=res.filter(r=>r.money>=d.expert).length;
   const so=m.slice().sort((a,b)=>a-b), q=f=>so[Math.min(so.length-1,Math.floor(f*so.length))];

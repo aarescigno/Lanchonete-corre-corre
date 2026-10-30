@@ -97,6 +97,27 @@ function upgradeIcon(id){
       c.beginPath(); c.moveTo(0,8); c.bezierCurveTo(-11,0,-6,-9,0,-3); c.bezierCurveTo(6,-9,11,0,0,8); c.closePath(); c.fillStyle = PAL.perigo; c.fill();
     } else if (id === 'd-toalha'){
       drawToalha(c,-17,6,34); drawToalhaEnfeites(c,0,6,17);
+    } else if (id === 'd-violeta'){
+      c.scale(0.9,0.9); drawVioleta(c,0,12,1);
+    } else if (id === 'd-anturio'){
+      c.scale(0.8,0.8); drawAnturio(c,0,22,1);
+    } else if (id === 'd-pendente'){
+      c.scale(0.78,0.78); drawSamambaia(c,0,-4,1);
+    } else if (id === 'jarra'){
+      c.scale(0.8,0.8); drawJarraSuco(c,0,22,1);
+    } else if (id === 'tvs'){
+      [[-14,-6],[0,-6],[14,-6]].forEach((p,i) => { rr(c,p[0]-7,p[1]-5,14,10,2); fs(c,PAL.tinta,1.4); rr(c,p[0]-5.5,p[1]-3.5,11,7,1.5); fs(c,['#1E4FA8','#3E9B4F','#E8A0B4'][i],1); });
+      txt(c,'♪',-2,14,14,PAL.faixa,'center',FB);
+    } else if (id === 'fogao-ind'){
+      rr(c,-18,-14,36,28,3); fs(c,PAL.inox,2);
+      [[-10,-7],[0,-7],[10,-7],[-10,4],[0,4],[10,4]].forEach(p => { circ(c,p[0],p[1],4.2); fs(c,'#555',1.5); circ(c,p[0],p[1],1.6); fs(c,PAL.alerta,1); });
+      for (let i=0;i<5;i++){ circ(c,-12 + i*6,11,1.3); fs(c,PAL.cromoEsc,1); }
+    } else if (id === 'assento'){
+      drawCadeirinha(c,-9,14,0.9); drawBanquinho(c,12,14,0.9);
+    } else if (id === 'mudanca'){   // a fábrica: galpão com a chaminé e a faixa de carga
+      rr(c,-16,-4,32,20,2); fs(c,'#B9B4A6',2); rr(c,8,-18,7,16,1); fs(c,PAL.inox,1.6);
+      c.beginPath(); c.moveTo(-16,-4); c.lineTo(-8,-12); c.lineTo(0,-4); c.lineTo(8,-12); c.lineTo(16,-4); c.fillStyle = '#9AA0A6'; c.fill(); c.strokeStyle = PAL.tinta; c.lineWidth = 1.6; c.stroke();
+      rr(c,-6,6,12,10,1); fs(c,PAL.cromo,1.6); c.fillStyle = PAL.mostarda; c.fillRect(-16,16,32,2.5);
     } else if (id === 'g-salao'){   // v8.6.15: cartão Salão (mesa redonda com duas cadeiras)
       ell(c,0,4,15,8); fs(c,PAL.formica,2); rr(c,-3,10,6,8,1); fs(c,PAL.madeiraEsc,1.4);
       [-1,1].forEach(d => { rr(c,d*19-5,-6,10,10,2); fs(c,CHAIRS[d > 0 ? 3 : 1].c,1.6); });
@@ -114,7 +135,7 @@ let shopGrupo = 'lanchonete', shopTab = null;
 const SHOP_GRUPOS = [
   { id:'lanchonete', nome:'Lanchonete', secoes:['melhorias', 'salao', 'decor', 'manut', 'divulga'] },
   { id:'equipe', nome:'Equipe', secoes:['bia', 'tonhao', 'dani'] },
-  { id:'dinheiro', nome:'Dinheiro', secoes:['banco', 'caixa'] },
+  { id:'dinheiro', nome:'Dinheiro', secoes:['banco', 'mudanca', 'caixa'] },
   { id:'gurugol', nome:'Gurugol', secoes:['gurugol'] }];
 const SHOP_SECOES = {
   melhorias:{ nome:'Melhorias', icon:'ventilador', build:g => buildMelhorias(g) },
@@ -126,14 +147,18 @@ const SHOP_SECOES = {
   tonhao:{ nome:'Tonhão', icon:'tonhao', build:g => buildTonhao(g) },
   dani:{ nome:'Dani', icon:'dani', build:g => buildDani(g) },
   banco:{ nome:'Banco', icon:'banco', build:g => buildBanco(g) },
+  mudanca:{ nome:'Mudança', icon:'mudanca', build:g => buildMudanca(g) },
   caixa:{ nome:'Caixa', icon:'contas', build:g => buildCaixa(g) },
   gurugol:{ nome:'Gurugol', icon:'contas', build:g => buildGurugol(g) }};
 const SHOP_ANTIGAS = { equipe:'tonhao', cursos:'tonhao' };   // nomes das abas antigas, para os testes e capturas
 function shopGrupoDe(sec){ const g = SHOP_GRUPOS.find(x => x.secoes.indexOf(sec) >= 0); return g ? g.id : 'lanchonete'; }
 function shopAbrir(sec){ sec = SHOP_ANTIGAS[sec] || sec; shopGrupo = shopGrupoDe(sec); shopTab = sec; buildShop(); }
 function shopGrupoAbrir(g){ shopGrupo = g; shopTab = g === 'gurugol' ? 'gurugol' : null; buildShop(); }
+/* as seções do grupo que aparecem agora: a Mudança só depois do cap. 3 (v9) e enquanto há ponto para onde ir */
+function shopSecoesVis(grupo){ return grupo.secoes.filter(id => id !== 'mudanca' || game.mudancaVisivel); }
+let mudarPede = false;   // o 1º toque em "Mudar" pede a confirmação
 function shopCartoes(grid, grupo){
-  grupo.secoes.forEach(id => {
+  shopSecoesVis(grupo).forEach(id => {
     const sc = SHOP_SECOES[id], b = el('button', null); b.type = 'button'; b.setAttribute('data-sec', id);
     b.appendChild(upgradeIcon(sc.icon)); b.appendChild(el('b', null, sc.nome));
     if (id === 'manut'){   // v8.9.1: a cor segue o pior equipamento, com as faixas das barras
@@ -226,7 +251,7 @@ function buildDani(grid){
   let c, duo;
   // Dani: só mostra as tarefas que ela já pode exercer (e só depois de contratada)
   const lv = eq.dani, sp = D[lv] || D[1];
-  const avail = DANI_TASKS.filter(t => daniTaskOk(t.id, game.up));
+  const avail = DANI_TASKS.filter(t => daniTaskOk(t.id, game.up)).map(t => daniTaskDe(t, game.ponto));
   const dRows = (a, b) => [
     ['Velocidade', a && pc(a.speed), pc(b.speed)],
     ['Lava 1 pilha', a && sec(WASH.perPile / a.speed), sec(WASH.perPile / b.speed)],
@@ -556,7 +581,7 @@ function decorCard(grupo, icon, title, desc){
 }
 function buildDecor(grid){
   const dec = game.save.decor, bank = game.save.bank;
-  DECOR.forEach(d => {
+  DECOR.filter(d => !d.nivel || game.ponto.nivel >= d.nivel || DEV.on).forEach(d => {
     const tem = d.id in dec, on = !!dec[d.id];
     const c = decorCard(DECOR_GRUPOS.find(x => x.id === d.grupo).nome, upgradeIcon('d-' + d.id), d.name, d.desc + ' Melhora o ambiente no Gurugol.' + (tem && !on ? ' Guardado.' : ''));
     if (on) c.classList.add('own');
@@ -614,6 +639,13 @@ function buildDivulga(grid){
 /* aba Manutenção (v8): o estado de cada equipamento, o risco de quebrar e a revisão (volta a 100%) */
 function buildManut(grid){
   const m = game.manut, n = game.shopNext;
+  if (game.ponto.nivel >= 2){   // v9: o fogão industrial (4 bocas, metade do desgaste)
+    const F = INDUSTRIAL.fogao, own = !!game.up.fogaoInd;
+    const c = staffCard(upgradeIcon('fogao-ind'), 'Fogão industrial', 'Uma boca a mais para o Tonhão e metade do desgaste do fogão por dia. O conserto de emergência passa a custar ' + fmt(F.emerg) + '.');
+    if (own) c.classList.add('own');
+    c.appendChild(shopBtn(own ? 'Já comprado' : DEV.on ? 'Ligar' : 'Comprar ' + fmt(F.cost), 'btn', DEV.on || (!own && game.save.bank >= F.cost), () => DEV.on ? game.devInd('fogaoInd') : game.comprarInd('fogaoInd'), DEV.on ? 0 : F.cost));
+    grid.appendChild(c);
+  }
   MANUT.equip.forEach(q => {
     const e = m[q.id], v = manutPreco(q.id, e), risco = n >= MANUT.dia ? manutChance(e) : 0;
     const c = staffCard(upgradeIcon('m-' + q.id), q.name,
@@ -628,6 +660,55 @@ function buildManut(grid){
   const tot = MANUT.equip.reduce((a, q) => a + manutPreco(q.id, m[q.id]), 0);
   const c = staffCard(upgradeIcon('contas'), 'Revisar tudo', 'A visita técnica tem custo, e quanto mais desgastado, mais cara a manutenção.');
   c.appendChild(shopBtn(!tot ? 'Tudo em dia' : DEV.on ? 'Revisar tudo (grátis)' : 'Revisar tudo: ' + fmt(tot), 'btn', !!tot && (DEV.on || game.save.bank >= tot), () => game.revisarTudo(), DEV.on ? 0 : tot));
+  grid.appendChild(c);
+}
+/* v9, área industrial: as 3 televisões com sertanejo (instalar uma vez; depois, um modo por dia) */
+function buildTvs(grid){
+  const eq = game.save.equipe, bank = game.save.bank, I = INDUSTRIAL.tvs, own = !!game.up.tvs;
+  const c = staffCard(upgradeIcon('tvs'), '3 televisores com sertanejo', own
+    ? 'Escolha por dia: com anúncios, a paciência nas mesas cai ' + Math.round(I.modos[1].effect * 100) + '% mais devagar (luz ' + fmt(I.modos[1].pay) + '/dia); sem anúncios, ' + Math.round(I.modos[2].effect * 100) + '% (' + fmt(I.modos[2].pay) + '/dia, com a assinatura).'
+    : 'Três TVs no alto da parede, ligadas num canal de sertanejo. Instaladas, você escolhe por dia: com anúncios (' + fmt(I.modos[1].pay) + '/dia) ou sem (' + fmt(I.modos[2].pay) + '/dia).');
+  if (own) c.classList.add('own');
+  if (!own) c.appendChild(shopBtn(DEV.on ? 'Instalar (grátis)' : 'Instalar ' + fmt(I.instalar), 'btn', DEV.on || bank >= I.instalar, () => game.comprarInd('tvs'), DEV.on ? 0 : I.instalar));
+  else [[0, 'Desligadas'], [1, 'Com anúncios · ' + fmt(I.modos[1].pay) + '/dia'], [2, 'Sem anúncios · ' + fmt(I.modos[2].pay) + '/dia']].forEach(a => {
+    const on = (eq.tvs || 0) === a[0], b = el('button', 'toggle', (on ? 'Ligado: ' : '') + a[1]); b.type = 'button';
+    b.setAttribute('aria-pressed', on ? 'true' : 'false');
+    const extra = (a[0] ? I.modos[a[0]].pay : 0) - (eq.tvs ? I.modos[eq.tvs].pay : 0);
+    if (!on && extra > 0 && payroll(eq) + extra > bank) b.disabled = true;
+    b.addEventListener('click', () => { Sfx.init(); if (!game.setStaff('tvs', a[0])) Sfx.boing(); buildShop(); });
+    c.appendChild(b);
+  });
+  grid.appendChild(c);
+}
+/* v9: onde se espera lá fora: de pé (de graça), cadeirinhas de plástico ou banquinhos de madeira (um ou outro; trocar paga o novo) */
+function buildAssento(grid){
+  const A = INDUSTRIAL.assento, bank = game.save.bank, cur = game.up.assento || '';
+  const c = staffCard(upgradeIcon('assento'), 'Espera sentada', 'Quem espera lá fora sentado perde a paciência ' + Math.round(A.slow * 100) + '% mais devagar. As duas opções valem igual; o banquinho é só mais bonito. Trocar paga o novo.');
+  if (cur) c.classList.add('own');
+  const duo = el('div', 'duo');
+  ['cadeira', 'banco'].forEach(k => duo.appendChild(shopBtn(cur === k ? 'Tem: ' + A[k].nome : A[k].nome + ' ' + fmt(A[k].cost), 'btn', DEV.on || (cur !== k && bank >= A[k].cost), () => game.comprarInd('assento', k), DEV.on ? 0 : A[k].cost)));
+  c.appendChild(duo); grid.appendChild(c);
+}
+/* aba Mudança (v9): o próximo ponto, o que falta para mudar e a confirmação (não dá para voltar) */
+function buildMudanca(grid){
+  const p = game.proximoPonto, f = game.mudancaFalta, de = game.ponto;
+  if (!p) return;
+  const c = staffCard(upgradeIcon('mudanca'), 'Mudança: ' + p.nome,
+    p.lugares + ' lugares (hoje, ' + de.lugares + '), cardápio ' + Math.round((p.cardapio / de.cardapio - 1) * 100) + '% mais caro, limite do banco de ' + fmt(p.credito) + ', mais uma vaga de prato e a freguesia da fábrica e da estrada. Aluguel de ' + fmt(p.aluguel) + ' por dia. Leva as mesas, os pratos, os cursos, a equipe e as melhorias; a TV, o som e a torneira ficam. Não dá para voltar.');
+  const falta = f ? [f.din ? 'Falta ' + fmt(f.din) : '', f.nota ? 'Nota ' + fmtNota(f.nota) + ' (agora ' + fmtNota(game.notaGurugol) + ')' : ''].filter(Boolean).join(' · ') : '';
+  if (!f && mudarPede){
+    c.appendChild(el('span', 'full', 'Mudar para a ' + p.nome + ' por ' + fmt(p.mudanca) + '? Aluguel de ' + fmt(p.aluguel) + ' por dia. Não dá para voltar.'));
+    const duo = el('div', 'duo');
+    duo.appendChild(shopBtn(DEV.on ? 'Sim, mudar' : 'Sim, mudar: ' + fmt(p.mudanca), 'btn', true, () => { mudarPede = false; shopTab = null; return game.mudarPonto(); }, DEV.on ? 0 : p.mudanca));
+    const nao = el('button', 'btn alt', 'Agora não'); nao.type = 'button'; nao.addEventListener('click', () => { Sfx.tap(); mudarPede = false; buildShop(); });
+    duo.appendChild(nao); c.appendChild(duo);
+  } else {
+    if (f) c.appendChild(el('span', 'full', falta + '.'));
+    const b = el('button', 'btn', f ? falta : DEV.on ? 'Mudar (modo dev: grátis)' : 'Mudar: ' + fmt(p.mudanca)); b.type = 'button';
+    if (f) b.disabled = true;
+    b.addEventListener('click', () => { Sfx.init(); Sfx.tap(); mudarPede = true; buildShop(); });
+    c.appendChild(b);
+  }
   grid.appendChild(c);
 }
 /* aba Banco (v8.3): o empréstimo (ou o que falta pagar dele), o caixa no negativo e a chave da folha sem dinheiro */
@@ -796,19 +877,19 @@ function buildGurugol(grid){
   grid.appendChild(lista);
 }
 const BIA_IDS = ['tenis', 'corrida', 'bandeja', 'sudoku'];
-function buildMelhorias(grid){ upgradeCartoes(grid, false); buildTvSom(grid); }
+function buildMelhorias(grid){ upgradeCartoes(grid, false); if (game.ponto.nivel >= 2) { buildTvs(grid); buildAssento(grid); } else buildTvSom(grid); }
 function upgradeCartoes(grid, bia){
   // os Tênis de corrida (v7.3) só aparecem depois dos Tênis novos, no lugar deles (a grade continua com 6); no modo dev, todas
   UPGRADES.filter(u => (BIA_IDS.indexOf(u.id) >= 0) === bia).filter(u => DEV.on || (u.req ? game.up[u.req] : !(game.up[u.id] && UPGRADES.some(v => v.req === u.id)))).forEach(u => {
     const own = !!game.up[u.id], tem = u.multi ? pratosDe(game.up) : 0, fecha = !u.multi && own;   // o Jogo de pratos (v8.3.6) segue à venda
-    const card = el('div', 'item' + (own && !u.multi ? ' own' : ''));
-    card.appendChild(upgradeIcon(u.id));
-    card.appendChild(el('b', null, u.name));
-    card.appendChild(el('span', null, (tem ? 'Você tem ' + tem + '. ' : '') + u.desc));
-    const b = el('button', 'btn', DEV.on ? (own ? 'Desligar' : 'Ligar') : fecha && own ? 'Já comprado' : ('Comprar ' + fmt(u.cost)));
+    const card = el('div', 'item' + (own && !u.multi ? ' own' : '')), pv = upgradeDe(u, game.ponto);   // v9: a Água da torneira vira a Jarra de suco
+    card.appendChild(upgradeIcon(pv !== u ? 'jarra' : u.id));
+    card.appendChild(el('b', null, pv.name));
+    card.appendChild(el('span', null, (tem ? 'Você tem ' + tem + '. ' : '') + pv.desc));
+    const b = el('button', 'btn', DEV.on ? (own ? 'Desligar' : 'Ligar') : fecha && own ? 'Já comprado' : ('Comprar ' + fmt(pv.cost)));
     b.type = 'button';
-    if (!DEV.on && (fecha || game.save.bank < u.cost)) b.disabled = true;
-    else if (!DEV.on) folhaAviso(b, u.cost);
+    if (!DEV.on && (fecha || game.save.bank < pv.cost)) b.disabled = true;
+    else if (!DEV.on) folhaAviso(b, pv.cost);
     b.addEventListener('click', () => { if (folhaPede(b)) return; if (DEV.on ? game.devToggle(u.id) : game.buy(u.id)) buildShop(); });
     card.appendChild(b);
     grid.appendChild(card);
@@ -818,6 +899,7 @@ function buildShop(){
   const grid = $('shop-grid');
   clearEl(grid);
   segSync('shop-tabs', shopGrupo);
+  $('shop-ponto').textContent = game.ponto.nome;   // v9: o nome do ponto
   $('shop-bank').textContent = fmt(game.save.bank);
   $('shop-bank').className = 'bank' + (game.save.bank < 0 ? ' neg' : '');   // v8.3: no negativo, em vermelho
   // v8.1: o que já está comprometido com a abertura do dia não está livre para gastar
@@ -837,6 +919,7 @@ function buildShop(){
   const nav = $('shop-nav'), aberta = shopTab ? SHOP_SECOES[shopTab] : null;
   nav.hidden = !aberta || shopGrupo === 'gurugol'; $('shop-sec').textContent = aberta ? aberta.nome : '';
   ['salao', 'caixa'].forEach(k => $('ov-shop').classList[shopTab === k ? 'add' : 'remove'](k));
+  if (shopTab !== 'mudanca') mudarPede = false;
   if (!aberta){ grid.className = 'shopcards'; return shopCartoes(grid, SHOP_GRUPOS.find(x => x.id === shopGrupo)); }
   grid.className = 'shopgrid' + (shopTab === 'tonhao' || shopTab === 'dani' ? ' cursos' : ['salao', 'caixa', 'melhorias', 'gurugol', 'decor'].indexOf(shopTab) >= 0 ? ' ' + shopTab : '');
   aberta.build(grid);

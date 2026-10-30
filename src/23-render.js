@@ -57,7 +57,7 @@ function render(g, ctx){
         const sq = grp.boing > 0 && !RM ? 1 + Math.sin(grp.boing*22)*0.08 : 1;
         ctx.translate(grp.x, grp.y); ctx.scale(1/sq, sq); ctx.translate(-grp.x, -grp.y);
         const parado = !grp.path.length;   // no lugar: sentado ou de pé, conforme o ponto (na Garagem, de pé)
-        glowSprite(ctx,g,grp,ctx => drawCluster(ctx,grp,grp.x,grp.y,tm,{ sit:parado && g.ponto.assento !== 'pe', bebe:parado }));
+        glowSprite(ctx,g,grp,ctx => drawCluster(ctx,grp,grp.x,grp.y,tm,{ sit:parado && g.sentado, bebe:parado }));
         ctx.restore();
       }});
     } else if (grp.state === 'retirada'){   // v8.6: o entregador no balcão de retirada, de pé

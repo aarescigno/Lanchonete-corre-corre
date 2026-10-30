@@ -348,7 +348,13 @@ v8.9.1: guardar a v8.9 em `versoes/` (`v8.9-fonte.html` e `v8.9.html`), `vtag`, 
 - O ranking da carreira segue a regra da 2b, com o ponto alcançado ao lado.
 - O "cardápio maior" dos pontos de cima mexe na diversidade do cardápio do Gurugol (`avalMenu`).
 
-### Sessão 3a — Mudança de ponto e Lanchonete na área industrial (v9)
+### Checagens de fim de sessão (valem para toda etapa que mexe em ponto, cenário, lojinha ou menu; a 3b e a 4 repetem)
+- **Cenário:** capturas do salão do ponto em jogo (`tests/shot_vX.py`; sem playwright de Python, `pip install --target /tmp/pwpy playwright` e `PYTHONPATH=/tmp/pwpy`) com gente de cada tipo novo, tudo comprado e o apito/aviso na tela; conferir em recorte ampliado (PIL `crop`): parede, janela, letreiro, calçada (espera, jarra, plantas), TVs, balcão de pratos e de retirada com as vagas do ponto, roupas e acessórios da clientela nova, balões novos. Nenhum erro de página (`ERRORS: []`) e `prefers-reduced-motion` sem animação. Celular deitado (740×360) do salão.
+- **Lojinha:** capturas do cartão novo apagado (falta dinheiro, falta nota, os dois), aceso e na confirmação; das abas Melhorias, Manutenção, Decoração e Dinheiro do ponto novo (nomes, preços e textos do ponto, o cartão que sai, o título com o nome do ponto); nada cortado nem sem rolar; o modo dev libera tudo sem custo.
+- **Menu e telas:** `python3 menu_fit.py` verde (o menu não rola em nenhum tamanho; por isso o menu não ganhou linha nova com o nome do ponto); rótulo da História (cap., ponto, dia); cartão de fim de capítulos; conversas dos capítulos novos; fim do dia (aluguel e linha do capítulo) e painel Versões.
+- **Teste de balanceamento** (com o ponto novo; cada alvo tem a regra de ajuste no plano da etapa): `PONTO=<ponto> node balance.js 40` com `BOT=afiado EQUIPE=auto` (passa 85–90% das metas; 3★ em ~60% dos dias), com `EQUIPE=auto` comum (~100% nos dias 8+), e sem equipe (a mudança **não** pode compensar); `node carreira.js 8` (e `MOVEIS=quatro`) com `DIAS=35`: dia da mudança, caps no prazo, 0 dias no negativo e o ganho por dia contra a Garagem (`MUDA=0`), que dá o prazo de volta do investimento; `DBGF=1` para ver grupos servidos e lotado por dia. Pontos a medir antes de mexer em `cardapio`, `aluguel`, `grupos` ou `metaF`: use `PONTO_CFG='{...}'` em vez de editar `src/`. Os números medidos vão no `docs/spec-vN.md`.
+
+### Sessão 3a — Mudança de ponto e Lanchonete na área industrial (v9) — FEITA em 30/10 (`docs/spec-v9.md`; cardápio ×1,5 e `grupos` 0,8 calibrados em vez de ×1,2; o smoke é o `smoke38`)
 > **Planejada com o usuário em 30/10** (respostas em `docs/PROPOSTAS.md`): as decisões abaixo estão tomadas. Depende da 2f (v8.7): `HISTORIA`, `Conversa`, `capObj`, `#ov-continua`, a reforma e a Dani aprendiz. **O Joca saiu desta etapa:** entra na 3b (Avenida Brasil), contratado com salário.
 
 #### Decisões tomadas (30/10)
@@ -359,9 +365,9 @@ v8.9.1: guardar a v8.9 em `versoes/` (`v8.9-fonte.html` e `v8.9.html`), `vtag`, 
 - **Balcão de pratos com 5 vagas:** vem com o ponto (5ª vaga em `PLATE_SLOTS`, só quando `ponto.pratos === 5`; o `plates` do `13-cozinha.js` passa a ter o tamanho do ponto).
 
 #### O ponto (`PONTOS[1]` em `10-constantes.js`)
-`{ id:'industrial', nome:'Lanchonete na área industrial', nivel:2, lugares:20, aluguel:120, mudanca:800, credito:2000, cardapio:1.2, area:(a da Garagem; se 20 lugares não couberem no arranjo automático, alargar x0 para 160), espera:5, assento:'pe', bebida:'suco', pratos:5, prateleira:4, tipos:{ estudante:1, executiva:1, familia:0.5, vovos:0.7, entregador:2, turma:2, motorista:1 }, encomenda:0.6, apito:{ quando:0.45, max:3, gap:[8,12], aviso:10 }, patPressa:0.85, vip:0.3, metaF:1.25 }`
+`{ id:'industrial', nome:'Lanchonete na área industrial', nivel:2, lugares:20, aluguel:120, mudanca:800, credito:2000, cardapio:1.5 (decidido em 30/10 com as medições da v9: com 1,2 a mudança dava lucro menor que a Garagem), area:(a da Garagem com x0 160: 20 lugares não cabiam com 196), espera:5, assento:'pe', bebida:'suco', pratos:5, prateleira:4, tipos:{ estudante:1, executiva:1, familia:0.5, vovos:0.7, entregador:2, turma:2, motorista:1 }, grupos:0.8 (fator dos grupos do dia, v9), encomenda:0.6, apito:{ quando:0.45, max:3, gap:[8,12], aviso:10 }, patPressa:0.85, vip:0.3, metaF:1.25 }`
 - **Aluguel:** R$ 120 nas contas do fim do dia (linha "Aluguel" no fim do dia e no livro-caixa). Segue a regra da v8.2.2: só o dia completo cobra, junto com a folha; dia interrompido não paga aluguel.
-- **Cardápio ×1,2:** `precoPrato` já multiplica pelo ponto.
+- **Cardápio ×1,5** (mantido pelo usuário em 30/10; o plano dizia ×1,2): `precoPrato` já multiplica pelo ponto.
 - **Clientela "pressa e entrega":** na área industrial, o tipo de cada grupo sai de `ponto.tipos` (pesos), no lugar do `day.types` da Garagem; o tipo da semana (`day.tipo`) e o clima continuam valendo por cima. Grupos de 1 e 2 pessoas têm paciência ×`patPressa` (0,85). A chance de VIP vai ×`vip` (0,3). O pico do meio do dia é o **apito da fábrica** (abaixo). Os 3 clientes novos estão em "Clientes da área industrial".
 - **Metas:** as metas e o `expert` de cada dia ×`metaF` (1,25), arredondado para 5. Alvo: o bot afiado continua tirando 3 ★ (ver Testes).
 
@@ -385,7 +391,7 @@ Três tipos novos em `CUSTOMER_TYPES` e `GOSTOS`, que só vêm na área industri
 - **Quando:** no máximo 1 por dia, com chance `ponto.encomenda` (60%), por volta de 30% do turno. **Avisada na introdução do dia:** "Encomenda do setor de montagem: x marmitas, lá pelo começo da tarde." Assim dá para adiantar marmitas no "+ marmita".
 - **Prateleira de 4:** na área industrial, a prateleira do balcão de retirada tem `ponto.prateleira` (4) vagas, no lugar de `MARMITA.vagas` (2). A reserva continua 1.
 - **Entrega:** a Bia (ou a Dani) leva as marmitas ao balcão uma a uma, como hoje; a pessoa da encomenda fica no balcão até receber todas (as marmitas adiantadas do mesmo prato servem). Cada marmita entregue conta nas marmitas do dia (o cap. 5).
-- **Pagamento:** cada marmita paga o preço do prato (×1,2) menos a embalagem; o lote completo dá **+20 pontos** (`PONTOS_ACAO.lote`) e a gorjeta de 10%. Se a paciência acaba com parte entregue, paga só as entregues, sem gorjeta, e sai insatisfeita (1 coração; avalia com agilidade baixa), mas **não conta como perdida** para a 3ª estrela; com nenhuma entregue, sai brava como o entregador (multa e conta como perdida).
+- **Pagamento:** cada marmita paga o preço do prato (×1,5) menos a embalagem; o lote completo dá **+20 pontos** (`PONTOS_ACAO.lote`) e a gorjeta de 10%. Se a paciência acaba com parte entregue, paga só as entregues, sem gorjeta, e sai insatisfeita (1 coração; avalia com agilidade baixa), mas **não conta como perdida** para a 3ª estrela; com nenhuma entregue, sai brava como o entregador (multa e conta como perdida).
 - Comentários (o mesmo `tipo` da Agilidade): bom "Chegou tudo certinho pro setor!", ruim "Faltou marmita pra metade do pessoal."
 
 #### Itens da área industrial (lojinha; só aparecem com `ponto.nivel === 2`)
@@ -432,7 +438,7 @@ O cap. 4 começa ao mudar (`avancaCap` no momento da mudança, e a conversa `'an
 - **`bot.js`:** o bot serve o café do motorista (quando a Bia está livre) e trata a encomenda como entregadores em fila (leva as marmitas do lote; adianta o PF no "+ marmita" quando há encomenda avisada).
 - **`carreira.js`:** o bot muda de ponto assim que pode (e compra fogão industrial, TVs com anúncios, cadeirinhas e jarra quando sobra R$ 300 acima da folha); `DIAS=35`. Linha `HISTORIA` com o dia de cada capítulo e o dia da mudança.
 - **Alvos e como decidir:**
-  - Mudar deve se pagar em **3 a 5 dias** (lucro médio por dia na área industrial − o da Garagem ≥ R$ 160). Se demorar mais que 5, `cardapio` 1,25; se pagar em menos de 3, aluguel R$ 150.
+  - Mudar deve se pagar em **3 a 5 dias** (lucro médio por dia na área industrial − o da Garagem ≥ R$ 160). Se demorar mais que 5, `cardapio` 1,25; se pagar em menos de 3, aluguel R$ 150. **Medido na v9 com `cardapio` 1,5: +R$ 140 por dia, volta em ~6 dias; fica assim (decisão do usuário).**
   - `node carreira.js 3` (padrão e `MOVEIS=quatro`): **0 dias no negativo** nos 5 dias depois da mudança; se houver, `mudanca` 700.
   - Cap. 4 cumprido em até 5 dias depois da mudança em 3/3; cap. 5 em até 15 dias depois da mudança em ≥ 2/3. Se o cap. 5 não chegar, as marmitas baixam para 5 (não mexer na nota 3,4 nem nos R$ 2.000).
   - Bot afiado (`balance.js` com o ponto industrial, `PONTO=industrial`): 3 ★ em ≥ 2 de 3 dias; se não, `metaF` 1,2; se passar com folga (todos os dias acima de `expert` em 15%), `metaF` 1,3.
@@ -448,7 +454,7 @@ v9: guardar a v8.9 em `versoes/`, `vtag`, `VERSAO`, `#ov-ver`, `docs/spec-v9.md`
 **Modelo:** Sonnet, esforço alto. Tudo decidido, mas é sistema novo (mudança de ponto, clientela por ponto, cenário inteiro novo) e mexe em muitas partes; a calibração da mudança pode pedir 2 ou 3 rodadas.
 
 ### Sessão 3b — Restaurante na Avenida Brasil (v9.1)
-- `PONTOS` ganha o **Restaurante na Avenida Brasil** (nível 3: 24 lugares, aluguel R$ 400, mudança R$ 2.000). Clientela: executivas, famílias e mais VIPs.
+- `PONTOS` ganha o **Restaurante na Avenida Brasil** (nível 3: 24 lugares, aluguel R$ 400, mudança R$ 2.000). Clientela: executivas, famílias e mais VIPs. **Cardápio:** a área industrial ficou em ×1,5; o da Avenida parte de um valor acima disso e se calibra pelas **Checagens de fim de sessão** (ganho por dia contra o ponto anterior ≥ ~R$ 160 e volta em 3 a 5 dias; lembre que 24 lugares trazem +84% de movimento, e que um fator `grupos` pode ser preciso). Rode as checagens de cenário, lojinha, menu e balanceamento no fim da sessão.
 - **O Joca** (decidido em 30/10: saiu da 3a), o 2º ajudante, **contratado com salário** (sugestão: R$ 45/dia no nível 1, aumentos para R$ 60 e R$ 75). O que ele faz (calçada e retirada, o mesmo que a Dani, ou garçom), níveis e visual (sem estereótipo, com crachá como a Dani): a decidir no planejamento da 3b.
 - **Destravados:** confeiteiro (sobremesas), balcão de coquetelaria com profissional de drinks, um prato novo no cardápio, balcão de pratos com 6 vagas.
   - **ambiente:** o **couvert artístico** (já pronto no código desde a v5, escondido abaixo do nível 3 desde a v7.4.4: basta o ponto ter `nivel:3`);

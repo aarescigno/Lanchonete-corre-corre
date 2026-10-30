@@ -79,7 +79,7 @@ function buildEnd(){
   }
   // as contas do dia (v7), do faturamento ao lucro, num quadro ao lado
   const neg = v => v ? '-' + fmt(v) : '-';
-  const conta = [['Faturamento', fmt(r.fat)],['Ingredientes', neg(r.custo)],['Contas do dia', neg(r.contas)],['Folha', neg(r.paid)]];
+  const conta = [['Faturamento', fmt(r.fat)],['Ingredientes', neg(r.custo)]].concat(r.aluguel ? [['Aluguel', neg(r.aluguel)],['Luz e gás', neg(r.contas - r.aluguel)]] : [['Contas do dia', neg(r.contas)]]).concat([['Folha', neg(r.paid)]]);   // v9: o aluguel do ponto à parte
   if (r.divName) conta.push([r.divName, neg(r.div)]);
   if (r.conserto) conta.push(['Conserto na hora', neg(r.conserto)]);
   conta.push(['Lucro do dia', fmt(r.money), 'tot']);
