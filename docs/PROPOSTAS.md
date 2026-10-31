@@ -4,6 +4,14 @@ Registro das ideias e dos retornos de quem jogou, com o texto original, e de ond
 
 ---
 
+## 31/10 (noite) — usuário: a equipe passa o bastão (Dani → Joca → Cami) e o Anselmo na Avenida
+> "É pra Dani começar com doces no meio da área industrial, demonstrando desejo e fazendo cursos, Dani recomenda o Joca, conhecido dela dos tempos de colégio, para seu posto quando termina o curso básico de confeitaria. Joca inicia no nível 2 ou 3 da Dani e progride até mesmo nível máximo da Dani em questão de atendimento. Na avenida, ele passa esse bastão para a Cami, que consegue ir além com cursos especializados que a tornam extremamente ágil. Anselmo entra no nível da avenida também"
+
+Respostas às perguntas da sessão: o Joca **vira barista** na Avenida; entra no **nível 2** da Dani; a Cami chega **nas tarefas**, e os cursos a deixam mais rápida e abrem os modos ("Minhas mesas" na Avenida, "Ajuda em tudo" no Terraço).
+Destino: `docs/PLANO.md`, seção "A equipe ponto a ponto" e sessões 3b-2 (Dani confeiteira e Joca, v9.2), 3b-3 (vitrine, Joca barista e Cami, v9.3), 3b-4 (fiscal, v9.4), 3b-5 (Anselmo, v9.5) e 3b-6 (Cami em "Minhas mesas", v9.6); a Cami saiu da 4a, que fica com o "Ajuda em tudo". O Joca deixou de ser primo da Dani (é do colégio dela). Decidido sem pergunta: a conversa da Dani no 4º dia na área industrial, a do Joca no fim do dia do curso dela, a da Cami no fim do dia do espresso, os números e o visual da Cami e a regra de quem faz o básico (o ajudante mais novo do dia).
+
+---
+
 ## 31/10 — usuário: entrevista da equipe ponto a ponto (Dani, Joca, Anselmo, Cami e o Tonhão)
 Entrevista para planejar as 4 mensagens de 31/10 abaixo (respostas escolhidas pelo usuário):
 - **Doces da Dani:** começam na **área industrial** (a Garagem fica como está, a Dani só assistente).
