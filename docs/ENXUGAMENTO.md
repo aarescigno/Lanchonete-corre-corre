@@ -96,3 +96,104 @@ Os números devem bater com a tabela de **Meta**, e os testes e a montagem segue
 - Retorno novo: `ferramentas/anota.py` põe a entrada no topo do `PROPOSTAS.md` sem ler o arquivo (mantém a ordem "mais novos no topo").
 - O `CLAUDE.md` ficou acima da meta de 6 a 8 KB porque **Regras**, **Economia**, **Modelo**, **Git** e **Publicar** foram mantidos inteiros, como o passo 1 pede.
 - O `PLANO.md` ficou acima de ~30 KB porque as etapas abertas (2c-r4, 2f, 3, 4, 6, 7) já vêm com as decisões detalhadas; com `indice.sh`, ninguém precisa ler tudo.
+
+---
+
+# Rodada 2 (planejada em 31/10/2026, para uma sessão com o Haiku)
+
+Para começar, peça: **"faça a rodada 2 do docs/ENXUGAMENTO.md"**. A sessão lê só esta seção (`grep -n '^# \|^## ' docs/ENXUGAMENTO.md` e Read por faixa). Tudo abaixo já está decidido; só mexe em docs e em `ferramentas/`, nunca em `src/`.
+
+## Diagnóstico (31/10)
+
+| Arquivo | 30/10 (depois da rodada 1) | 31/10 | Meta da rodada 2 |
+|---|---|---|---|
+| `docs/PLANO.md` | 54 KB | 129 KB | ≤ 55 KB |
+| `docs/RESUMO.md` | 46 KB | 53 KB | ≤ 38 KB |
+| `docs/PROPOSTAS.md` | 24 KB | 35 KB | ≤ 22 KB |
+| `CLAUDE.md` | 10,8 KB | 11,5 KB | ≤ 12 KB (só ganha 1 regra) |
+
+Causa: a rodada 1 arquivou uma vez, mas o fechamento de etapa não manda arquivar. As etapas feitas em 30/10 (2c-r4, 2f, 2g, 2h, 2c-r5, 2c-r6, 3a) ficaram inteiras no `PLANO.md` (~73 KB), e a tabela **Situação** tem 45 linhas de etapas feitas (~6 KB, lida em toda "próxima etapa").
+
+## Passo 1 — `ferramentas/arquiva.py` (move seções inteiras entre docs, sem ler)
+
+Uso: `python3 ferramentas/arquiva.py ORIGEM DESTINO [--topo] "início do cabeçalho" ["outro" ...]`
+- Cada argumento é o começo exato de uma linha de cabeçalho (`## ...` ou `### ...`) da ORIGEM. A seção vai dessa linha até antes do próximo cabeçalho de nível igual ou maior (para `###`, para no próximo `###`, `##` ou `#`; para `##`, no próximo `##` ou `#`).
+- `assert` de que cada início casa com **exatamente uma** linha; se algum falhar, nada é gravado.
+- Sem `--topo`: as seções vão para o **fim** do DESTINO, na ordem dos argumentos. Com `--topo`: entram antes do primeiro `## ` do DESTINO (para arquivos com os mais novos no topo), na ordem dos argumentos.
+- Linhas em branco: o DESTINO fica com uma linha em branco entre seções; a ORIGEM não fica com duas linhas em branco seguidas no lugar do corte.
+- No fim, imprime o tamanho em KB da ORIGEM e do DESTINO, antes e depois.
+
+## Passo 2 — `PLANO.md` → `PLANO-FEITO.md` (fim do arquivo, em ordem)
+
+```bash
+python3 ferramentas/arquiva.py docs/PLANO.md docs/PLANO-FEITO.md \
+  "## Etapa 2c-r4" "## Etapa 2f" "## Etapa 2g" "## Etapa 2h" \
+  "## Etapa 2c-r5" "## Etapa 2c-r6" "### Sessão 3a"
+```
+Depois, à mão (Edit):
+- Na **Etapa 3** do `PLANO.md`, logo depois da linha `**Objetivo:** ...`, acrescentar: `- A sessão 3a (feita em 30/10, v9) está no \`docs/PLANO-FEITO.md\`.` As seções **Vale para a 3a e a 3b** e **Checagens de fim de sessão** ficam (a 3b e a 4 usam).
+- **Tabela Situação:** ficam no `PLANO.md` o cabeçalho da tabela e as linhas da **2c-r5** em diante (2c-r5, 3a, 2c-r6 e todas as "a fazer", a 5 e a 7). As linhas de cima (da `0` até a `2h`, com as "—" do meio) vão para o `PLANO-FEITO.md` numa seção nova `## Situação das etapas feitas`, com o mesmo cabeçalho de tabela, logo antes de `## Etapa 1a` (script Python com substituição exata, sem reler o arquivo).
+- **Como usar** do `PLANO.md`:
+  - no item **Ler por faixa**, trocar "As etapas feitas (1a a 2e)" por "As etapas feitas" (o resto da frase fica);
+  - trocar o item "No fim, a sessão marca a etapa como feita na tabela abaixo (com a versão e a data) e anota o que mudou no plano." por: "No fim, a sessão marca a etapa como feita na tabela abaixo (com a versão e a data), move o texto dela para o `docs/PLANO-FEITO.md` com `ferramentas/arquiva.py` e leva para a seção **Situação das etapas feitas** de lá as linhas da tabela além das 3 últimas feitas."
+
+## Passo 3 — `RESUMO.md` → `HISTORICO.md` (fim do arquivo)
+
+```bash
+python3 ferramentas/arquiva.py docs/RESUMO.md docs/HISTORICO.md "## Alterações feitas no Claude Code (14/10/2026)"
+```
+No `RESUMO.md`, onde a seção estava, deixar uma linha: `- As alterações de 14/10/2026 estão no fim do \`docs/HISTORICO.md\`.` (dentro da seção anterior, **Versões**, como último item).
+
+## Passo 4 — `PROPOSTAS.md` → `PROPOSTAS-FEITAS.md` (`--topo`, mais novos no topo)
+
+Os 13 retornos com destino já entregue (decidido em 31/10; os que têm partes ainda abertas ficam):
+```bash
+python3 ferramentas/arquiva.py docs/PROPOSTAS.md docs/PROPOSTAS-FEITAS.md --topo \
+  "## 31/10/2026 — usuário: espalhar as conversas" \
+  "## 31/10/2026 — usuário: diálogo ao liberar a divulgação" \
+  "## 30/10/2026 — beta-tester (via usuário): a fala do Tonhão" \
+  "## 30/10/2026 — beta-tester (via usuário): não achou como aumentar" \
+  "## 30/10/2026 — Usuário: ajustes da lojinha" \
+  "## 30/10/2026 — usuário: barras do Gurugol" \
+  "## 30/10/2026 — Usuário: level up da Dani" \
+  "## 30/10/2026 — Usuário: clientes novos da área industrial" \
+  "## 30/10/2026 — Usuário: o Tonhão sobe de nível" \
+  "## 30/10/2026 — Usuário: entrevista para planejar a 3a" \
+  "## 30/10/2026 — Usuário: entrevista para planejar a 2f" \
+  "## 26/10/2026 — Usuário: a morte da Rosa" \
+  "## 26/10/2026 — Usuário: o roteiro da abertura"
+```
+(São 13 argumentos; se algum não casar por diferença de caixa ou de traço, copie o início exato com `tests/indice.sh PROPOSTAS`.) Ficam no `PROPOSTAS.md`: "a lojinha abre aos poucos" (2c-r7), o "(n)" do Gurugol, a revisão de 28/10, o "jogo offline" (ranking volta na etapa 7) e os de 22/10, 21/10 e 15/10 (destinos nas etapas 3, 4 e nas Ideias).
+
+## Passo 5 — Regra no `CLAUDE.md` (para não inchar de novo)
+
+Na seção **Economia de tokens**, trocar a frase "O que já foi feito está em `docs/PLANO-FEITO.md` e `docs/PROPOSTAS-FEITAS.md` (só para consulta)." por:
+"**Fechar etapa arquivando:** ao terminar uma etapa, mova o texto dela do `PLANO.md` para o `docs/PLANO-FEITO.md` e os retornos entregues do `PROPOSTAS.md` para o `docs/PROPOSTAS-FEITAS.md` com `python3 ferramentas/arquiva.py` (sem ler os arquivos); na tabela Situação ficam só as 3 últimas feitas. Os arquivos `-FEITO(S)` são só para consulta."
+
+## Conferir e fechar
+
+```bash
+wc -c CLAUDE.md docs/PLANO.md docs/RESUMO.md docs/PROPOSTAS.md
+tests/indice.sh PLANO | head -30; tests/indice.sh PROPOSTAS | wc -l
+grep -c '^|' docs/PLANO.md
+python3 montar.py --check
+```
+- Os tamanhos batem com a coluna **Meta** do diagnóstico. Se o `PLANO.md` passar de 55 KB, conferir se alguma etapa feita ficou para trás (`grep -n 'FEITA\|feita em' docs/PLANO.md`) e movê-la também.
+- Nada some: `wc -c` da soma (ORIGEM + DESTINO) antes e depois difere só pelas linhas acrescentadas.
+- Preencher a tabela **Resultado da rodada 2** abaixo, commit, PR para o `claude/main` e merge (regra de **Git** do `CLAUDE.md`). Não precisa rodar o `run_all.sh` (nada em `src/` muda; o `montar.py --check` basta).
+
+## Fora desta rodada (decidido)
+- **Plugins e conectores da conta** (passo do usuário, não da sessão): nas sessões na nuvem vêm carregados os conectores Gmail, Drive, Calendar, Docs, Sheets e Slides, os plugins `data`, `productivity` e `cowork-plugin-management` e as skills `questao-*`, apesar do `.claude/settings.json`. São alguns milhares de tokens por turno. Se não usar em outro lugar, desligue em https://claude.ai/customize/connectors (conectores) e nas skills/plugins da conta; se usar, aceite o custo.
+- **`capturas/` fora do git:** não economiza tokens e o histórico do git não diminui; fica como está.
+
+## Resultado da rodada 2
+(preencher ao terminar)
+
+| Medida | Antes (31/10) | Depois |
+|---|---|---|
+| `PLANO.md` | 129 KB | |
+| `RESUMO.md` | 53 KB | |
+| `PROPOSTAS.md` | 35 KB | |
+| `CLAUDE.md` | 11,5 KB | |
+
+Modelo: Haiku, esforço baixo — tudo decidido; é um script de corte por cabeçalho e trocas de texto exatas.
