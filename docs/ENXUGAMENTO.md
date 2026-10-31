@@ -186,14 +186,15 @@ python3 montar.py --check
 - **Plugins e conectores da conta** (passo do usuário, não da sessão): nas sessões na nuvem vêm carregados os conectores Gmail, Drive, Calendar, Docs, Sheets e Slides, os plugins `data`, `productivity` e `cowork-plugin-management` e as skills `questao-*`, apesar do `.claude/settings.json`. São alguns milhares de tokens por turno. Se não usar em outro lugar, desligue em https://claude.ai/customize/connectors (conectores) e nas skills/plugins da conta; se usar, aceite o custo.
 - **`capturas/` fora do git:** não economiza tokens e o histórico do git não diminui; fica como está.
 
-## Resultado da rodada 2
-(preencher ao terminar)
+## Resultado da rodada 2 (31/10/2026)
 
 | Medida | Antes (31/10) | Depois |
 |---|---|---|
-| `PLANO.md` | 129 KB | |
-| `RESUMO.md` | 53 KB | |
-| `PROPOSTAS.md` | 35 KB | |
-| `CLAUDE.md` | 11,5 KB | |
+| `PLANO.md` | 129 KB | 51,1 KB |
+| `RESUMO.md` | 53 KB | 37,8 KB |
+| `PROPOSTAS.md` | 35 KB | 20,4 KB |
+| `CLAUDE.md` | 11,5 KB | 11,8 KB |
+
+O que a rodada fez: `ferramentas/arquiva.py` criado (o passo 1 o usa, mas ele ainda não existia no repositório). Foram para `PLANO-FEITO.md` as etapas 2c-r4 a 2c-r6 e a 3a, com a seção **Situação das etapas feitas**; para `HISTORICO.md` a seção de 14/10 (o `RESUMO.md` aponta para ela); para `PROPOSTAS-FEITAS.md` os 13 retornos entregues. O cabeçalho do `PLANO-FEITO.md` passou a dizer 1a a 3a. `montar.py --check` passa (nada em `src/` mudou).
 
 Modelo: Haiku, esforço baixo — tudo decidido; é um script de corte por cabeçalho e trocas de texto exatas.

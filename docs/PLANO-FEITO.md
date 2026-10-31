@@ -1,8 +1,55 @@
 # Plano: etapas já feitas
 
-Etapas concluídas (1a a 2e), movidas de `docs/PLANO.md` em 30/10/2026 sem editar o texto. Só para consulta; a situação de cada uma está na tabela do `PLANO.md`.
+Etapas concluídas (1a a 3a), movidas de `docs/PLANO.md` em 30/10/2026 e 31/10/2026 (rodada 2 do enxugamento) sem editar o texto. Só para consulta; a situação de cada uma está na tabela do `PLANO.md`.
 
 ---
+
+## Situação das etapas feitas
+
+| # | Etapa | Versão | Situação |
+|---|---|---|---|
+| 0 | Contas: lucro, ingredientes, contas do dia, divulgação | v7 | feita (15/10) |
+| 1a | Jogo justo: dá para não perder ninguém | v7.1 | feita (15/10) |
+| 1b | Livro-caixa e ajuste fino com jogadores | v7.2 | feita (15/10) |
+| 1c | Retorno do Renan: Bia mais ágil e selos da fila | v7.3 | feita (21/10) |
+| 1d-1 | Garagem da Bia, móveis e editor do salão | v7.4 | feita (21/10) |
+| — | Ajuste fora do plano: salão cheio chama gente, 4 pratos, fila justa a 60% | v7.4.1 | feita (21/10) |
+| — | Fora do plano: TV e som na Garagem, couvert só no nível 3 | v7.4.4 | feita (21/10) |
+| 1d-2 | Tela que rola até a calçada, espera lá fora e máquina de suco | v7.5 | feita (21/10) |
+| — | Retorno de jogador: tela larga, tudo à vista sem rolar | v7.6 | feita (22/10) |
+| — | Fora do plano: espera da Garagem de pé, Água da torneira e espada-de-são-jorge | v7.7 | feita (22/10) |
+| 2 | Manutenção e imprevistos | v8 | feita (22/10) |
+| — | Retorno do usuário: dinheiro comprometido com a folha à vista na lojinha | v8.1 | feita (22/10) |
+| — | Pedido do usuário: Missão zero, o dia 0 de treino com pop-ups | v8.2 | feita (22/10) |
+| — | Pedido do usuário: rejogar o dia (Reiniciar ou Menu na pausa) sem perder o dinheiro | v8.2.1 | feita (22/10) |
+| — | Pedido do usuário: só o dia completo rende (folha no fim do dia; interromper não paga nem ganha) | v8.2.2 | feita (22/10) |
+| — | Pedido do usuário: largar o dia com gente na espera ou nas mesas cobra a multa de quem sai bravo | v8.2.3 | feita (22/10) |
+| 2b | Carreira como campanha contínua, dinheiro no negativo e empréstimo no banco | v8.3 | feita (23/10) |
+| — | Pedido do usuário: parcela atrasada 2 dias seguidos, o banco toma a lanchonete (game over) | v8.3.1 | feita (23/10) |
+| — | Pedido do usuário: amortização (SAC, 3% ao dia sobre o saldo) e empréstimo neutro a um pouco desvantajoso | v8.3.2 | feita (23/10) |
+| — | Pedido do usuário: jogo offline por enquanto (ranking só no aparelho; o compartilhado volta na etapa 7) | v8.3.3 | feita (23/10) |
+| — | Pedido do usuário: balão com o prato na mesa quando a comida fica pronta | v8.3.4 | feita (23/10) |
+| — | Pedido do usuário: estoque no editor do salão, para rearrumar o salão cheio | v8.3.5 | feita (23/10) |
+| — | Pedido do usuário: Jogo de pratos sem limite, fora da melhoria do dia | v8.3.6 | feita (23/10) |
+| — | Retorno do usuário: a 3ª estrela pede não perder ninguém, e a tela passa a dizer isso | v8.3.7 | feita (23/10) |
+| — | Retorno do usuário: preços de verdade (cardápio, 2º item, gorjeta de até 10%, ações viram pontos de atendimento, custos e metas de garagem) | v8.3.8 | feita (23/10) |
+| — | Retorno do usuário: jogo perfeito no dia 1 deu 1 estrela; metas e 3 estrelas pelo bot afiado | v8.3.9 | feita (23/10) |
+| 2c | Avaliações dos clientes (nota de 0 a 5 ★, 5 critérios) | v8.4 | feita (26/10) |
+| 2d | Abertura animada do Modo História: o sonho da Bia | v8.5 | feita (26/10) |
+| 2d-r | Revisão estética da abertura, em 5 partes com checagem do usuário | v8.6.1 | feita (28/10, as 5 partes juntas) |
+| 2e | Entregadores com fila própria e marmitas | v8.6 | feita (28/10) |
+| — | Pedido do usuário: decoração da Garagem (plantas, cantinho da Rosa, toalha xadrez), só visual | v8.6.5 | feita (29/10) |
+| 2c-r1 | Rebalanceamento do Gurugol, parte 1: as regras da nota (null, humor pelo teto, chance de encantar, bronze, nota mínima) | v8.6.7 | feita (29/10) |
+| 2c-r2 | Rebalanceamento do Gurugol, parte 2: prato quente | v8.6.8 | feita (29/10) |
+| 2c-r3a | Cardápio que cresce: cursos do Tonhão e gostos dos clientes | v8.6.9 | feita (29/10; calibração quase fechada, ver `docs/spec-v8.6.9.md`) |
+| 2c-r3b | Desenhos dos pratos novos, dos avançados e das carnes do PF | v8.6.12 | feita (29/10; grade de desenhos aprovada pelo usuário, ver `docs/spec-v8.6.12.md`; saiu como v8.6.12 porque a 2c-r3c já tinha tomado a v8.6.11) |
+| 2c-r3c | Vegetarianos e veganos | v8.6.11 | feita (29/10; ver `docs/spec-v8.6.11.md`) |
+| 2c-r3d | Rodada de balanceamento do cardápio (metas dos dias 2 a 7, ticket médio, nota mínima do Gurugol) | v8.6.13 | feita (29/10; salgado se pede de dois, metas dos dias 6 e 7, nota mínima 90% do teto; ver `docs/spec-v8.6.13.md`) |
+| 2c-r4a | Melhorias sem o limite de 1 por dia e o fim do dia sem o (n) do Gurugol | v8.6.14 | feita (30/10; ver `docs/spec-v8.6.14.md`) |
+| 2c-r4b | Lojinha em 4 grupos com cartões | v8.6.15 | feita (30/10; ver `docs/spec-v8.6.15.md`) |
+| 2f | A campanha vira o Modo História: estrutura e capítulos da Garagem | v8.7 | feita (30/10; ver `docs/spec-v8.7.md`; alvos do `carreira.js` e do `balance.js` batidos sem mexer nos valores) |
+| 2g | O Tonhão sobe de nível com os cursos (XP e aumento que consolida; 5 níveis) | v8.8 | feita em 30/10 (`docs/spec-v8.8.md`) |
+| 2h | A Dani sobe de nível com trabalho e cursos (XP e aumento que consolida) | v8.9 | feita em 30/10 |
 
 ## Etapa 1a — Jogo justo: dá para não perder ninguém (v7.1)
 > **Feita em 15/10 (v7.1, `docs/spec-v7.1.md`).** Decisões: A + B; no Turno sem fim vale o ritmo da fila justa, sem o piso; ícone "aguardando mesa" sim. A medição mostrou que, com a equipe, a maior parte das perdas era a espera pelo prato, e não a fila. O que sobra é o limite de louça nos dias de 6 mesas: o bot afiado só chega ao alvo (0 perdidos em 94% dos dias) comprando o Jogo de pratos primeiro. A louça não mudou; se jogadores reclamarem da espera pelo prato, a etapa 1b pode rever `dishStock` ou a mecânica D. Metas sem mudança.
@@ -504,3 +551,446 @@ As receitas dos avançados aparecem no cartão da lojinha e na fala do Tonhão; 
 ---
 
 **Modelo:** planejar com o Opus (esforço alto) antes, para fechar quais pratos entram na Garagem, os preços de venda e dos cursos e a chance do curso avançado; executar com o Sonnet, esforço alto (mexe no cardápio, no save, na Missão zero, no Como jogar e no bot).
+
+## Etapa 2c-r4 — Lojinha em grupos e fim do dia mais limpo (v8.6.14 e v8.6.15, em 2 sessões)
+> Pedido do usuário de 30/10 (texto em `docs/PROPOSTAS.md`), decidido na entrevista da mesma data. Vem antes da 2f. **Sem decisões em aberto:** as duas sessões são de execução, com o Sonnet. Cada sessão é uma versão completa (testes verdes, `docs/spec-vN.md`, `RESUMO.md`, `CLAUDE.md` se mudar algo dos testes, PR com merge no `claude/main`; publicar no artifact só se o usuário pedir). Se a sessão achar algo que o plano não decide, para e pergunta.
+
+**Objetivo:** a lojinha tem 10 abas numa fileira, cansativa de olhar. As melhorias deixam de ter o limite de 1 por dia (a), e as abas viram 4 grupos com cartões (b). No fim do dia, a caixa do Gurugol perde o número entre parênteses (a).
+
+### Sessão 2c-r4a — Sem o limite de 1 melhoria por dia e sem o "(n)" no fim do dia (v8.6.14)
+Vem primeiro porque mexe na regra e no balanço; a 2c-r4b só reorganiza a tela.
+
+#### Fim do dia: sem o "(n)" do Gurugol
+- O número depois de cada critério, como "Agilidade (4)", é quantas avaliações do dia deram nota àquele critério (v8.6.7). **Sai só da caixa do fim do dia.** Continua na aba Gurugol da lojinha, no `aria-label` e no `title`.
+- `src/42-resultados.js`: `gurugolCaixa` (linha `c.nome + (m.cnt ? ' (' + m.cnt[i] + ')' : '')`) ganha uma opção (ex.: `semCnt`) que o fim do dia passa e a aba Gurugol não passa.
+
+#### Melhorias sem o limite de 1 por dia
+- O limite agora é o dinheiro. **Os cursos do Tonhão continuam 1 por lojinha** (`cursoTrava`, sem mudança).
+- `src/16-jogo.js`: em `buy`, sai `this.shopBought` da condição e das atribuições; saem `shopBought` e `boughtFor` do jogo (construtor, `goShop`, linha 801). Os Tênis de corrida continuam pedindo os Tênis novos (`req`).
+- `src/41-lojinha.js`: o texto `#shop-limit` vira "Melhorias à vontade, se o dinheiro der. Cursos: 1 por dia." (modo dev igual); sai o `fecha` por `game.shopBought`. Tirar "fora da melhoria do dia" da descrição do Jogo de pratos (`10-constantes.js`) e de qualquer texto do Como jogar (`40-interface.js`) e da Missão zero (`17-treino.js`) que fale em 1 melhoria por dia (grep "melhoria do dia", "1 melhoria", "uma melhoria").
+- Bot (`tests/bot.js`, `carreira.js`, `balance.js`): o bot compra **na ordem de sempre, todas as que o dinheiro der, guardando a folha do dia** (mesma reserva que já usa). **Só medir, sem reajustar preços** (decisão do usuário): rodar `balance.js` (sem equipe, `EQUIPE=auto`, `BOT=afiado`) e `carreira.js`, anotar os números novos na spec e no `CLAUDE.md` e avisar o usuário; se ficar fácil demais, o reajuste é outra conversa.
+
+**Testes:**
+- Ajustar os smokes que conferem o limite: `smoke.js:61`, `smoke12.js` (corrida depois dos tênis continua; "uma melhoria por visita" sai), `smoke13.js:32`, `smoke23.js:23 e 32`, `smoke29.js:24`, `smoke30.js:19`: passam a conferir que **dá para comprar 2 melhorias na mesma lojinha** e que **o 2º curso no mesmo dia continua recusado**.
+- Smoke novo `smoke32.js`: compra Tênis, Bandeja e Ventilador na mesma lojinha com dinheiro; recusa sem dinheiro; Tênis de corrida antes dos Tênis novos é recusado; 2º curso no mesmo dia recusado; a caixa do fim do dia não tem "(" nos nomes dos critérios e a aba Gurugol tem.
+- `balance.js` sem equipe, `EQUIPE=auto` e `BOT=afiado`, e `carreira.js`: anotar antes e depois na spec.
+
+**Partes:** `10-constantes.js` (texto do Jogo de pratos), `16-jogo.js` (`buy`, `shopBought`, `boughtFor`), `17-treino.js` e `40-interface.js` (só textos, se houver), `41-lojinha.js` (`#shop-limit`, `fecha`), `42-resultados.js` (`gurugolCaixa`), `tests/` (`bot.js`, `carreira.js`, smokes).
+
+**Modelo:** Sonnet, esforço médio: regra simples e plano fechado; o trabalho maior é ajustar smokes e rodar o balanço.
+
+### Sessão 2c-r4b — Lojinha em 4 grupos com cartões (v8.6.15)
+Depende da 2c-r4a (sem o limite, a seção da Bia não precisa de aviso de "melhoria do dia").
+
+#### O que muda
+A fileira `#shop-tabs` (`02-telas.html`) passa a ter 4 botões; ao tocar num grupo, a área da lojinha mostra os **cartões das seções** do grupo; ao tocar num cartão, abre a seção, com um botão **"‹ Voltar"** no alto que volta aos cartões do grupo. **Cartão: só ícone e nome** (sem resumo nem selo), ícones de `upgradeIcon` (`41-lojinha.js`) ou um novo no mesmo estilo.
+
+| Grupo | Cartões (nesta ordem) | Conteúdo |
+|---|---|---|
+| **Lanchonete** | Melhorias · Salão · Decoração · Manutenção · Divulgação | Melhorias: Água da torneira, Cafeteira de 2 bocas, Ventilador de teto, Triturador de lixo, Jogo de pratos. Divulgação: a de hoje, mais o músico (couvert) e a TV e som, que saem da aba Equipe. Salão, Decoração e Manutenção ficam como estão. |
+| **Equipe** | Bia · Tonhão · Dani | Bia: Tênis novos (e os de corrida), Bandeja, Livrinho de Sudoku (saem de Melhorias). Tonhão: o aumento (nível 1 a 3) e os Cursos (a aba Cursos inteira). Dani: contratar, nível e tarefas. |
+| **Dinheiro** | Banco · Caixa | Como estão. |
+| **Gurugol** | — | Abre direto a aba Gurugol, sem cartões. |
+
+- Estado: `shopTab` continua guardando a seção (`melhorias`, `bia`, `tonhao`, `dani`, `salao`, …) e entra `shopGrupo` (`lanchonete`, `equipe`, `dinheiro`, `gurugol`); `shopTab = null` mostra os cartões. A lojinha abre em **Lanchonete, nos cartões**. Trocar de grupo vai aos cartões dele.
+- `buildEquipe` se divide em `buildBia`, `buildTonhao` (aumento + o conteúdo de `buildCursos`) e `buildDani`; os cartões do músico e da TV vão para `buildDivulga`. `buildMelhorias` filtra os ids da Bia (`tenis`, `corrida`, `bandeja`, `sudoku`).
+- `window.__lcc.setShopTab(v)` segue funcionando com o nome da seção (acerta o grupo sozinho), para os smokes e scripts de captura antigos; entra `setShopGrupo(g)`.
+- CSS (`01-estilo.css`): `.shopcards` (grade de cartões grandes, 3 por fileira; 2 no celular em pé) e o botão Voltar. O menu da lojinha não pode rolar (`menu_fit.py`).
+
+**Testes:**
+- Smoke novo `smoke33.js`: a lojinha abre em Lanchonete nos cartões (5 cartões); cada grupo mostra os seus cartões na ordem da tabela; Gurugol abre direto; Voltar volta aos cartões; trocar de grupo vai aos cartões; `setShopTab('cursos')` cai em Equipe › Tonhão; a Bia mostra Tênis, Bandeja e Sudoku e Melhorias não; o músico e a TV aparecem em Divulgação e não em Tonhão nem em Dani.
+- Os smokes antigos que usam `setShopTab` continuam verdes sem mudança.
+- `python3 menu_fit.py` e uma captura nova `shot_v8_6_15.py` (cartões dos 4 grupos, Bia, Tonhão, Divulgação; tela larga e celular em pé) em `capturas/v8.6.15`, conferida por recortes.
+
+**Partes:** `02-telas.html` (`#shop-tabs`), `01-estilo.css` (`.shopcards`, Voltar), `41-lojinha.js` (grupos, cartões, `buildBia`/`buildTonhao`/`buildDani`, músico e TV em `buildDivulga`, filtro em Melhorias), `43-telas.js` (`__lcc`), `tests/`.
+
+**Modelo:** Sonnet, esforço médio: só interface, com a tabela de grupos e os nomes já decididos.
+
+---
+
+## Etapa 2f — A campanha vira o Modo História (v8.7) — FEITA em 30/10 (`docs/spec-v8.7.md`)
+> Decidido na revisão de 28/10: a campanha (Carreira) e o Modo História viram uma coisa só, com um save só. Esta etapa monta a estrutura e os 3 capítulos da Garagem; os capítulos dos outros pontos entram nas etapas 3a, 3b e 4a, e o final na etapa 6. Substitui a antiga etapa 5. **Planejada com o usuário em 30/10** (respostas em `docs/PROPOSTAS.md`): as decisões abaixo estão tomadas.
+
+**Objetivo:** "o sonho da Bia de ter um restaurante estrelado, começando do zero". Os dias da campanha contam a história em capítulos, com a abertura animada como prólogo e a dívida da reforma da garagem desde o dia 1.
+
+### Decisões tomadas (30/10)
+- **A Carreira some; tudo é a História.** Um save só (`lcc2_save`), os dias continuam os da campanha (`DAYS`, `SEMANA`).
+- **Objetivo não cumprido:** o capítulo continua, dia após dia, até cumprir. Sem prazo e sem game over próprio (o que pune é só o banco, como na v8.3.1).
+- **Dívida da reforma:** R$ 1.000 em 10 parcelas de R$ 100, juros de 1% ao dia sobre o saldo, a 1ª parcela no fim do dia 2 (quita no fim do dia 11 sem amortizar). O atraso da v8.3.1 vale (2 dias atrasados: o banco toma a lanchonete).
+- **A Dani entra de graça, como o Tonhão:** no começo do cap. 2 chega como aprendiz, sem salário, e sobe de nível com aumentos na lojinha (ideia do usuário).
+- **Trama:** na Garagem, só uma pista no fim do cap. 3 (o Tonhão e o cominho com açafrão). O Bráulio não é citado.
+- **Conversas:** balões sobre o salão (o dia parado e escurecido ao fundo), não um painel.
+- **Save antigo:** recomeça do dia 1, com aviso, como a v8.6.9 fez com os cursos.
+- **1ª vez:** abertura → Missão zero (se ainda não fez) → conversa do cap. 1 → dia 1.
+- **Depois do cap. 3:** os dias seguem como hoje, sem objetivo, com um cartão "Continua na próxima versão".
+
+### Capítulos (`HISTORIA` em `10-constantes.js`)
+`const HISTORIA = [{ cap, titulo, ponto:'garagem', obj:{...}, objTxt, antes:[falas], depois:[falas] }]`; fala = `{ q:'bia'|'tonhao'|'dani', s:'texto', nota?:'rubrica' }` (a `nota` sai em itálico pequeno, acima do texto, no mesmo balão). `save.cap` (1 a 3; 4 = Garagem completa), `save.capDia` (o dia em que o capítulo começou), `save.capAzul` (dias no azul do cap. 1), `save.conversa` (`'antes'`/`'depois'` pendente, ou null).
+
+**Cap. 1, "A garagem da Rosa"** — objetivo `{ azul:2 }`: fechar 2 dias no azul (lucro do dia > 0; não precisam ser seguidos). Texto: "Fechar 2 dias no azul (x de 2)".
+- Antes: Tonhão "Panela no fogo, avental no lugar. Abre o portão, Bia!" / Bia "A garagem da mãe... Ela ia gostar de ver isso cheio de gente." / Tonhão "Então vamos encher! E fechar o dia no azul, que o banco não espera."
+- Depois: Bia "Dois dias no azul, tio!" / Tonhão "Isso! Agora é aguentar a parcela todo dia."
+
+**Cap. 2, "A Dani chega"** — ao começar, a Dani entra na equipe no nível 1 (aprendiz). Objetivo `{ nota:2.4 }`: nota geral do Gurugol (`avalGeral(save.aval)`) de 2,4 ou mais no fim de um dia. Texto: "Nota do Gurugol 2,4 (agora x,x)".
+- Antes: Bia "Não dou conta da mesa e da pia ao mesmo tempo..." / Tonhão "Pedi ajuda pra Dani, filha da vizinha. Ela vem aprender com a gente." / Dani "Sou meio lenta ainda, mas aprendo rápido!"
+- Depois: Dani "Ouvi um freguês dizer que aqui é tudo limpinho!" / Bia "O Gurugol subiu, tio! Já tá em 2,4." / Tonhão "Devagar e sempre."
+  (as falas de depois foram aprovadas para "3 dias no azul"; o objetivo escolhido virou a nota, e só o texto delas foi trocado para combinar)
+
+**Cap. 3, "Casa cheia"** — objetivo `{ quitar:true, nota:2.7, caixa:800 }`, tudo ao mesmo tempo no fim de um dia: sem dívida no banco (`save.emp.resto === 0`), nota geral 2,7 e R$ 800 no caixa. Texto: "Quitar a reforma (faltam R$ x) · nota 2,7 (agora x,x) · R$ 800 no caixa (agora R$ x)", cada item com ✓ quando cumprido.
+- Antes: Bia "O Gurugol tá cheio de comentário sobre a gente!" / Dani "Tem freguês perguntando se a gente vai abrir num lugar maior." / Tonhão "Primeiro quita a reforma. Depois junta pra mudança."
+- Depois: Bia "Reforma quitada e R$ 800 guardados!" / Tonhão (nota: "cheirando o pote de cominho") "Cominho com açafrão... a Rosa ia rir de mim agora." / Bia "Por quê, tio?" / Tonhão "Um dia eu te conto da Casa Aurora."
+- Em seguida, o cartão (painel simples, um botão "Seguir jogando"): **"Fim dos capítulos da Garagem. Continua na próxima versão: a área industrial."** `save.cap = 4`; os dias seguem sem objetivo.
+
+### O que muda, parte por parte
+- **`10-constantes.js`:** `HISTORIA` (acima) e `REFORMA = { valor:1000, amort:100, juros:0.01, ini:2 }`. `STAFF.dani.levels` vira `[ null, { speed:0.4, tasks:1, pay:0 }, { speed:0.5, tasks:2, pay:25 }, { speed:0.65, tasks:2, pay:40 }, { speed:0.8, tasks:3, pay:55 } ]` (o nível 1 é a aprendiz nova; os níveis 2 a 4 são os antigos 1 a 3, mais baratos). `normEmprestimo` guarda `ini` (sem parcela nem juros antes do dia `ini`) e `ref:true` (é a reforma). Nota do dia 3 (`DAYS[2].note`): tirar "contrate ajuda na lojinha" (fica "O movimento aumentou e agora só há 4 pratos limpos. A executiva..."). `FOLHA_CORTE` perde a Dani (ela não sai da folha; os aumentos dela, sim, podem ser cortados como o do Tonhão: volta ao nível 1).
+- **`12-clientes.js` (`normSave`):** campos `cap`, `capDia`, `capAzul`, `conversa`, `histV:1`. Save sem `histV` e com jogo (dia > 1 ou dinheiro diferente do inicial) recomeça do dia 1 guardando só `treino`, e liga `avisoHist` (como o `cardV`/`avisoCard` da v8.6.9). Save novo: `emp` = a reforma (`resto:1000, amort:100, j:0.01, ini:2, ref:true`), `cap:1`, `conversa:'antes'`, `eq.dani:0`.
+- **`16-jogo.js`:** `capObj(sv)` devolve `{ ok, itens:[{txt, ok}] }` do capítulo atual; no fim do dia (onde fecha o resultado, perto da linha 785), conta `capAzul`, confere o objetivo e, se cumpriu, marca `sv.conversa = 'depois'` e põe `cap` e `objetivo` no `this.result`. `avancaCap(sv)`: cap+1, `capDia`, `conversa:'antes'`; ao entrar no cap. 2, `eq.dani = Math.max(eq.dani, 1)`. As parcelas e os juros respeitam `emp.ini`. `podeEmprestar` já é um por vez: com a reforma, só o empréstimo à força soma (como hoje).
+- **`19-conversa.js` (parte nova):** classe `Conversa(falas, fim)`: uma fala por vez, toque/clique/Enter/espaço passa, "Pular" fica à vista, `fim()` no final. Com `prefers-reduced-motion`, sem animação de entrada.
+- **`26-conversa.js` (parte nova):** `drawConversa(g, conv)`: o salão do dia como fundo (o `render` normal, parado), um véu escuro (`rgba(0,0,0,.45)`) e o balão saindo de quem fala (Bia onde ela está; Tonhão na janela da cozinha; Dani onde ela está, ou ao lado da Bia se ainda não entrou). Reaproveitar o balão de fala das cenas da abertura (`25-abertura.js`), com o nome de quem fala e "toque para seguir" pequeno.
+- **`02-telas.html`:** sai o painel "Em breve: o Modo História"; entra `#ov-continua` (o cartão do fim do cap. 3); o botão "História" vira **"Ver abertura"**; o rótulo `#menu-dia` passa a dizer "História"; o botão Carreira do seletor do ranking (`data-v="carreira"`) passa a dizer "História"; nova entrada da v8.7 no `#ov-ver`.
+- **`18-abertura.js` / `43-telas.js`:** o fim da abertura que tocou sozinha (save novo) segue para a Missão zero (se `!save.treino`) ou para a conversa do cap. 1; vista pelo "Ver abertura", volta ao menu. "Continuar": se `save.conversa === 'antes'`, toca a conversa antes da introdução do dia; a de `'depois'` toca ao fechar a tela de fim do dia, antes da lojinha (e, no cap. 3, depois dela vem o `#ov-continua`). Ao terminar a Missão zero vinda da 1ª vez, segue para a conversa do cap. 1.
+- **`40-interface.js`:** rótulo do menu "História · cap. 2, A Dani chega · dia 5" (`save.cap = 4`: "História · Garagem completa · dia 15"; `fechou`: "História: o banco fechou no dia N"); aviso `avisoHist`: "Novidade: a campanha virou o Modo História, com a dívida da reforma da garagem. Por isso, recomeçou do dia 1."; "Como jogar": trocar "Carreira" por "História" e explicar capítulos, objetivo e a reforma em 2 frases.
+- **`41-lojinha.js`:** aba Banco, com a reforma, título "Reforma da garagem" e "1ª parcela no fim do dia 2" enquanto `dia < ini`; aba Equipe, a Dani mostra "Aprendiz (sem salário)" e "Aumento: R$ 25/dia" (como o card do Tonhão), sem botão de dispensar; antes do cap. 2, o card da Dani diz "Chega no capítulo 2".
+- **`42-resultados.js`:** no fim do dia, uma linha do capítulo: "Capítulo 2, A Dani chega: nota do Gurugol 2,4 (agora 2,3)" ou "✓ Objetivo cumprido!". Na introdução do dia (`22-salao-hud.js` ou onde fica a nota do dia), a mesma linha do objetivo.
+- **`30-ranking.js`:** o tipo interno continua `'carreira'` (coleção `ranking-campanha`), só os textos dizem "História".
+
+### Testes
+- **`tests/smoke32.js` (novo):** (1) save novo: reforma de R$ 1.000, sem parcela no fim do dia 1, R$ 100 + juros no fim do dia 2; (2) fim da abertura automática vai à Missão zero e depois à conversa do cap. 1 (com `save.treino`, direto à conversa); (3) a conversa passa fala a fala com toque e com "Pular" e grava `conversa:null`; (4) cap. 1 com 1 dia no azul continua, com 2 avança e marca `'depois'`; (5) entrar no cap. 2 põe a Dani no nível 1 com folha R$ 0; (6) cap. 2 não cumprido (nota 2,3) continua; cumprido (2,4) avança; (7) cap. 3 só cumpre com os 3 itens juntos (testar faltando cada um); depois dele, `cap:4`, o `#ov-continua` e o dia seguinte sem objetivo; (8) save da v8.6.13 (sem `histV`) recomeça com aviso e mantém `treino`; (9) a reforma bloqueia empréstimo novo e o atraso de 2 dias fecha a lanchonete; (10) o menu diz "História" e o botão "Ver abertura" toca a abertura e volta ao menu.
+- Ajustar os smokes antigos que esperam a Dani nos níveis 1 a 3 com salários de 40 a 60, o "Carreira" no menu, o "Em breve" e o save novo sem dívida (o `harness.js` pode ganhar `load({semReforma:true})` para os testes antigos de banco).
+- **`bot.js`/`balance.js`/`carreira.js`:** os níveis da Dani mudaram de índice (o bot paga a Dani "de hoje" = nível 2). O `carreira.js` joga a História e mostra o dia em que cada capítulo foi cumprido (linha `HISTORIA`).
+- **Alvos e como decidir:**
+  - `node carreira.js 3` (padrão e `MOVEIS=quatro`, `DIAS=20`): **0 dias no negativo** nos dias 1 a 14. Se houver, `REFORMA.ini` passa a 3; se ainda houver, `amort` 80.
+  - Cap. 1 cumprido no dia 2 em 3/3; cap. 2 até o dia 5 em ≥ 2/3.
+  - Cap. 3: com `MOVEIS=quatro`, até o dia 14 em ≥ 2/3; com o bot padrão, até o dia 20 em ≥ 2/3. Se o padrão não chegar, baixar a nota do cap. 3 para 2,6 (não mexer no caixa nem na quitação, que o usuário escolheu "mais difícil").
+  - `node balance.js` com `EQUIPE=auto`: alvo ~85–95% (a Dani mais barata dá ~R$ 15 a 40 por dia). Se passar de 95%, subir as metas dos dias 3 a 7 em 10% (arredondar para 5).
+- Capturas: `tests/shot_v8_7.py` em `capturas/v8.7` (menu, conversa do cap. 1 e a do cap. 3 com a rubrica, fim do dia com o objetivo, aba Banco com a reforma, aba Equipe com a aprendiz, `#ov-continua`, celular).
+
+### Fechamento
+v8.7: guardar a v8.6.13 em `versoes/`, `vtag`, `VERSAO`, `#ov-ver`, `docs/spec-v8.7.md`, `docs/RESUMO.md`, CLAUDE.md (partes novas `19-conversa.js` e `26-conversa.js`, smoke 32, alvos novos do `carreira.js`), PR e merge.
+
+**Fora:** os capítulos dos outros pontos (3a, 3b, 4a), o crítico do Michelzão e o final (etapa 6), desenho novo de objetos (o pote de cominho fica só na rubrica da fala).
+
+**Lojinha:** a 2c-r4b (v8.6.15) reorganiza a lojinha em 4 grupos com cartões antes desta etapa; onde se lê "aba Banco" e "aba Equipe", aplique nos cartões equivalentes (o do banco e o da Dani).
+
+**Modelo:** Sonnet, esforço alto. Tudo decidido, mas mexe em muitas partes ao mesmo tempo, no save e nos smokes antigos, e o balanceamento da dívida pode pedir uma rodada de ajuste.
+
+---
+
+## Etapa 2g — O Tonhão sobe de nível com os cursos (v8.8)
+> **Feita em 30/10 (v8.8)**, ver `docs/spec-v8.8.md`. Desvio: as diárias dos níveis 3 a 5 baixaram para 20 / 25 / 30 pela conferência do "Reduzir"; o bot da carreira compra o curso antes dos móveis, com reserva de R$ 150.
+> **Planejada com o usuário em 30/10** (texto em `docs/PROPOSTAS.md`), para vir **antes da 3a**. Hoje o nível do Tonhão é só salário: paga o aumento e ele melhora. Passa a ser **experiência (XP)**: cada curso dá XP; com a XP do nível seguinte, ele fica **pronto para subir**, e o aumento de salário **consolida** o nível. Vale para a Garagem e a área industrial; na Avenida Brasil e no Terraço o processo vai ser outro (ver Ideias guardadas).
+
+#### Decisões tomadas (30/10)
+- **5 níveis** (eram 3). **XP:** curso básico **+1**, curso avançado **+2** (o "Carnes variadas" do PF conta como avançado, +2; o PF não tem básico). XP máxima: 5 básicos + 6 avançados = **17**.
+- **XP para cada nível:** nível 2 com **2**, nível 3 com **5**, nível 4 com **9**, nível 5 com **14**. Os níveis 4 e 5 só chegam com cursos avançados.
+- **O aumento consolida:** com a XP, o botão "Aumento" acende; sem ela, fica apagado e diz quanto falta. Pode pagar o aumento no mesmo dia do curso. Sem dinheiro para a folha (chave "cortar" ligada), o Tonhão cai 1 nível como hoje (`folhaCorta`), mas a XP fica: dá para pagar o aumento de novo depois, sem refazer cursos.
+- **"Reduzir": sai, se o aumento se paga** (pedido do usuário: o nível pago é definitivo). A sessão confere no `balance.js` (abaixo) que cada nível rende ao menos a diária dele; se algum não render, baixa a diária desse passo de R$ 5 em R$ 5 até render, e então tira o "Reduzir". Assim o nível pago é sempre para sempre (só a falta de dinheiro derruba).
+- **Saves antigos são rebaixados à XP:** quem pagou aumento sem ter os cursos volta ao nível que a XP dos cursos já feitos permite (e a diária cai junto). Uma vez só, na leitura do save guardado (`loadSave`), marcada com `tonXp:1`. O `normSave` **não** rebaixa (os testes e bots montam equipes à mão).
+- **Modo dev:** o aumento ignora a XP (qualquer nível, como hoje).
+
+#### Os níveis (`STAFF.tonhao.levels`, `10-constantes.js`)
+| Nível | XP | Rapidez (`cook`) | Caprichados (`crit`) | Pia (`wash`, s por pilha) | Diária (`pay`) | Faixa do prato no Gurugol (`AVAL.prato`) |
+|---|---|---|---|---|---|---|
+| 1 | 0 | 1 | 0,05 | não | R$ 0 | 2,5 a 4,5 |
+| 2 | 2 | 0,85 | 0,12 | 7 | R$ 15 | 3 a 4,7 |
+| 3 | 5 | 0,7 | 0,2 | 4 | R$ 30 | 3,5 a 5 |
+| 4 | 9 | 0,62 | 0,26 | 3 | R$ 45 | 3,8 a 5 |
+| 5 | 14 | 0,55 | 0,32 | 2,5 | R$ 60 | 4 a 5 |
+- `slots` continua 3 em todos (a 4ª boca vem do fogão industrial da 3a). Cada nível ganha o campo `xp`.
+
+#### O que muda, parte por parte
+- **`10-constantes.js`:** os 5 níveis acima; `AVAL.prato` com 5 faixas; `CURSO_XP = { basico:1, avancado:2 }`; `tonhaoXp(cursos)` (soma: +1 por curso com `preco > 0` e nível ≥ 1, +2 por nível 2; o PF só conta o avançado); `tonhaoNivelXp(cursos)` (o maior índice de nível cuja `xp` cabe). O comentário do `STAFF.tonhao` explica a regra nova.
+- **`12-clientes.js`:** `normSave` aceita `tonhao` de 0 a 4 (`STAFF.tonhao.levels.length - 1`); `loadSave` faz a rebaixa única (`tonXp`).
+- **`16-jogo.js`:** `setStaff('tonhao', v)` recusa `v` acima de `tonhaoNivelXp` (fora do modo dev) e, sem o "Reduzir", recusa baixar. `buyCurso`: se o curso deixou o Tonhão pronto para subir, `cursoMsg` ganha **" Ele já pode subir para o nível N: pague o aumento no cartão dele."**
+- **`41-lojinha.js` (`buildTonhao`):** título **"Tonhão · nível N de 5"**; uma linha **"Experiência: X de Y para o nível N+1"** com uma barrinha (no nível 5: **"Experiência: X · nível máximo"**). Abaixo, a comparação de hoje (`tRows`). Botão: com XP, **"Aumento: +R$ 15/dia"** (a diferença de diária), aceso se a folha couber; sem XP, apagado, com a frase **"Faltam Z de experiência: cada curso básico dá +1 e cada avançado +2."** Sem o botão "Reduzir" (se a conferência abaixo mandar tirar). Nos cartões de curso (`buildCursos`), ao lado do preço: **"+1 de experiência"** ou **"+2 de experiência"**.
+- **`40-interface.js` (Como jogar):** a frase do Tonhão vira **"O Tonhão sobe de nível com experiência: cada curso dá XP e, quando ele estiver pronto, o aumento de salário confirma o nível novo."**
+- **`42-resultados.js`:** nada novo (a folha já mostra a diária).
+- O resumo do Caixa (`41-lojinha.js:644`) já diz "Tonhão nível N"; conferir que vai até 5.
+
+#### Testes
+- **`tests/smoke35.js` (novo; o smoke da 2h é o 36 e o da 3a, o 37):** (1) `tonhaoXp`: nada = 0; pastel e chapa básicos = 2; pastel básico e avançado = 3; PF avançado = 2; tudo = 17; (2) `tonhaoNivelXp` nos limites: 1→nível 1, 2→nível 2, 4→2, 5→3, 9→4, 13→4, 14→5; (3) sem cursos, `setStaff('tonhao',1)` recusa; depois de 2 cursos, aceita e a folha sobe R$ 15; pedir o nível 3 com XP 2 recusa; (4) `buyCurso` que completa a XP põe a frase "já pode subir" no `cursoMsg`; (5) lojinha: título "nível 1 de 5", linha de experiência, botão apagado com "Faltam 2"; com XP, "Aumento: +R$ 15/dia" aceso; sem "Reduzir"; cartão de curso com "+1 de experiência"; (6) folha que não cabe derruba 1 nível e o aumento volta a acender sem curso novo; (7) `loadSave` de um save guardado com `tonhao:2` e 1 curso volta ao nível 1 e grava `tonXp:1`; carregar de novo não mexe; save com `tonhao:2` e 5 de XP fica no 3; (8) nível 5: `cook` 0,55 nos tempos da cozinha e faixa 4 a 5 no `AVAL.prato`; (9) modo dev: aumento sem XP.
+- Ajustar os smokes que esperam 3 níveis (`smoke6` no laço `[0,1,2]` está certo; procurar `de 3` e `levels[2]` como "máximo") e os que pagam aumento sem cursos pela lojinha (dar `cursos` no save do teste).
+- **`balance.js`:** `FULL` continua `tonhao:2` (os alvos de hoje não mudam). Conferência do "Reduzir": `EQUIPE='{"tonhao":k}' node balance.js 40` para k = 0 a 4 (com `dani:4`), olhando o lucro médio dos dias 3 a 7. **Cada passo (k → k+1) deve render ≥ R$ 15 a mais por dia** em ≥ 4 dos 5 dias. Se render, tira o "Reduzir"; se um passo não render, baixa a diária dele de R$ 5 em R$ 5 (sem passar da diária do nível de baixo + R$ 5) e confere de novo. Anotar a tabela em `docs/spec-v8.8.md`.
+- **`carreira.js` e `emprestimo.js`:** o bot não pode mais pôr o Tonhão acima da XP: no `FULL`, o `tonhao` vira `Math.min(tonhao, L.tonhaoNivelXp(g.save.cursos))`, e o `FULL` passa a começar com `tonhao:4` (`{tonhao:4,dani:4,tv,som}`, `{tonhao:3,...}`, depois os de hoje). A linha `HISTORIA` (ou uma linha nova `TONHAO`) mostra o dia médio em que ele chega a cada nível. **Alvos:** nível 2 até o dia 6 e nível 3 até o dia 12, em média (`node carreira.js 3`); os caps. 1 a 3 no mesmo dia da v8.7 ±2; 0 dia no negativo a mais que na v8.7. Se o nível 3 passar do dia 12, `xp` do nível 3 vira 4; não mexer no preço dos cursos.
+- Capturas: `tests/shot_v8_8.py` em `capturas/v8.8` (cartão do Tonhão sem XP, pronto para subir, nível 5; cartão de curso com o "+1 de experiência"; celular).
+
+#### Fechamento
+v8.8: guardar a v8.7 em `versoes/`, `vtag`, `VERSAO`, `#ov-ver`, `docs/spec-v8.8.md` (com a tabela da conferência do "Reduzir"), `docs/RESUMO.md`, CLAUDE.md (smoke 35), PR e merge.
+
+**Fora:** a progressão dos cozinheiros da Avenida Brasil e do Terraço (Ideias guardadas); cursos novos.
+
+**Modelo:** Sonnet, esforço médio. Tudo decidido; a única conta é a conferência do "Reduzir" no `balance.js`, com a regra escrita acima.
+
+---
+
+## Etapa 2h — A Dani sobe de nível com trabalho e cursos (v8.9)
+> **Feita em 30/10 (v8.9)**, ver `docs/spec-v8.9.md`. Desvios: `DANI_XP.tarefas` ficou 5 (a calibração pelo bot); as diárias baixaram para 15 / 20 / 25 pela conferência do "Reduzir"; a numeração das mensagens segue o título do cartão (o 1º aumento é "para o nível 1"); o smoke da Dani é o `smoke37` (o 36 foi tomado pela v8.8.1, "Pular tutorial"), então o smoke da 3a passa a ser o 38.
+> **Planejada com o usuário em 30/10** (texto em `docs/PROPOSTAS.md`), depois da 2g e **antes da 3a**. Mesma ideia do Tonhão: a experiência (XP) deixa a Dani **pronta para subir**, e o aumento de salário **consolida** o nível. A XP dela vem **de dois jeitos**: do trabalho (ela aprende fazendo) e de cursos dela na lojinha. Depende da 2g (v8.8): reaproveita a regra do aumento, a barrinha de experiência e a conferência do "Reduzir".
+
+#### Decisões tomadas (30/10)
+- **Os 4 níveis de hoje** (aprendiz, 2, 3 e 4), com a velocidade, as tarefas e as diárias de hoje (`STAFF.dani.levels`: R$ 0, 25, 40, 55). Muda só o jeito de subir. Cada nível ganha o campo `xp`: **aprendiz 0, nível 2 com 4, nível 3 com 8, nível 4 com 13**.
+- **XP do trabalho:** cada tarefa que ela termina conta 1 (`save.daniTar`, o total da carreira): lixo esvaziado, viagem de pratos sujos, pilha lavada, cafezinho servido, água/suco da espera levado, marmita levada ao balcão. **A cada `DANI_XP.tarefas` tarefas, +1 XP** (valor inicial **30**; ver Testes). Só o dia completo conta (regra da v8.2.2): as tarefas do dia entram no save no fim do dia, junto com a folha.
+- **XP dos cursos:** 3 cursos dela, **+2 XP cada** (6 no total, então o nível 4 sempre pede trabalho). Só dão XP, sem outro efeito por enquanto:
+  - **Atendimento ao cliente** — R$ 120
+  - **Organização da cozinha** — R$ 150
+  - **Barista iniciante** — R$ 180 (a semente da Dani barista; ver Ideias guardadas)
+  
+  Um curso da Dani por lojinha, com a trava própria (`save.daniCursoDia`), à parte da do Tonhão: no mesmo dia dá para fazer um curso de cada um. Os cursos só aparecem depois que ela chega (cap. 2; no modo dev, sempre).
+- **Igual ao Tonhão (2g):** o aumento acende com a XP e pode ser pago no mesmo dia; sem dinheiro para a folha ela cai 1 nível (nunca abaixo de aprendiz) e a XP fica; o **"Reduzir" sai** se a conferência abaixo mostrar que cada nível rende a diária dele (senão, baixa a diária desse passo de R$ 5 em R$ 5 até render); saves antigos são **rebaixados ao nível da XP** (os cursos não existiam, então a XP de um save antigo é 0 e ela volta a aprendiz), uma vez só no `loadSave`, marcada com `daniXp:1`; o `normSave` não rebaixa; modo dev ignora a XP.
+
+#### O que muda, parte por parte
+- **`10-constantes.js`:** `xp` em cada nível de `STAFF.dani.levels`; `DANI_XP = { tarefas:30, curso:2 }`; `DANI_CURSOS = [{ id:'atend', nome:'Atendimento ao cliente', preco:120 }, { id:'cozinha', nome:'Organização da cozinha', preco:150 }, { id:'barista', nome:'Barista iniciante', preco:180 }]`; `daniXp(save)` (= 2 × cursos feitos + `floor(daniTar / DANI_XP.tarefas)`) e `daniNivelXp(save)` (o maior nível cuja `xp` cabe, no mínimo 1 quando ela já chegou).
+- **`12-clientes.js`:** `normSave` com `daniTar` (inteiro ≥ 0), `daniCursos` (`{ id:1 }`) e `daniCursoDia`; `loadSave` com a rebaixa única (`daniXp`).
+- **`15-dani.js`:** `this.feitas` (zera no `reset` do dia) +1 onde cada tarefa termina (as 6 acima; uma pilha lavada conta 1, uma viagem de pratos conta 1 mesmo com 2 pilhas).
+- **`16-jogo.js`:** no fim do dia completo, `save.daniTar += dani.feitas`; `setStaff('dani', v)` recusa acima de `daniNivelXp` (fora do modo dev) e, sem o "Reduzir", recusa baixar (contratar a aprendiz continua livre, de graça, no cap. 2); `buyDaniCurso(id)` (desconta, `caixaGasto(..., 'mel', ...)`, grava a trava; mensagem **"A Dani foi fazer o curso de X!"** e, se ficou pronta, **" Ela já pode subir para o nível N: pague o aumento no cartão dela."**).
+- **`41-lojinha.js` (`buildDani`):** título como hoje ("Dani · aprendiz (sem salário)" / "nível N de 3"); a linha **"Experiência: X de Y para o nível N"** com a barrinha da 2g e, embaixo, em letra menor, **"Trabalho: Z tarefas até o próximo ponto"**; botão **"Aumento: +R$ 15/dia"** aceso com XP, ou apagado com **"Faltam Z de experiência: ela aprende trabalhando e com os cursos (+2 cada)."**; sem "Reduzir" (se a conferência mandar). Logo abaixo do cartão dela, os 3 cartões de curso da Dani (no estilo dos do Tonhão, com **"+2 de experiência"**; feito: **"Curso feito"**; trava: **"A Dani já está num curso. Volte depois do próximo dia."**).
+- **`42-resultados.js` (fim do dia):** com a Dani na equipe, uma linha **"Dani: N tarefas hoje · experiência X"**; se ficou pronta, **"A Dani já pode subir para o nível N!"**.
+- **`40-interface.js` (Como jogar):** **"A Dani aprende trabalhando: cada tarefa conta, e os cursos dela ajudam. Quando estiver pronta, o aumento confirma o nível novo."**
+
+#### Testes
+- **`tests/smoke36.js` (novo; o smoke da 3a passa a ser o 37):** (1) `daniXp`: nada = 0; 29 tarefas = 0; 30 = 1; 1 curso + 60 tarefas = 4; (2) `daniNivelXp`: 3→1, 4→2, 8→3, 12→3, 13→4; (3) aumento recusado sem XP, aceito com XP, a folha sobe a diferença; (4) um dia completo com a Dani lavando soma as tarefas em `daniTar`; dia interrompido não soma; (5) curso: desconta, +2 XP, trava do dia (um da Dani e um do Tonhão no mesmo dia, sim; dois da Dani, não); antes do cap. 2 os cursos não aparecem; (6) lojinha: linha de experiência, "Faltam", "+2 de experiência", sem "Reduzir"; (7) fim do dia com a linha da Dani e o "já pode subir"; (8) folha que não cabe derruba 1 nível (não abaixo de aprendiz) e a XP fica; (9) `loadSave` de save antigo com `dani:4` volta a aprendiz e grava `daniXp:1`; (10) modo dev: aumento sem XP.
+- Ajustar os smokes que pagam aumento da Dani pela lojinha sem XP (dar `daniTar` ou `daniCursos` no save do teste).
+- **Calibrar `DANI_XP.tarefas`:** `node carreira.js 3` com uma linha nova **`DANI`** (tarefas por dia em média, por nível, e o dia médio em que ela chega a cada nível). Escolher o número redondo (de 5 em 5) que dê **1 XP a cada ~1,5 dia** trabalhado como aprendiz. Alvos, com o bot fazendo os cursos dela quando sobra o preço + a reserva de R$ 300: **nível 2 até o dia 7, nível 3 até o dia 11, nível 4 até o dia 16**. Se o nível 4 passar do dia 16, `xp` do nível 4 vira 12; não mexer no preço dos cursos.
+- **Conferência do "Reduzir":** como na 2g, `EQUIPE='{"tonhao":2,"dani":k}' node balance.js 40` para k = 1 a 4, lucro médio dos dias 3 a 7: cada passo deve render a diferença de diária (R$ 25, 15, 15) em ≥ 4 dos 5 dias. Tabela em `docs/spec-v8.9.md`.
+- **`carreira.js` e `emprestimo.js`:** o `dani` do `FULL` vira `Math.min(dani, L.daniNivelXp(g.save))` (como o Tonhão na 2g); o bot compra os cursos da Dani (na ordem acima) depois do curso do Tonhão do dia. Os caps. 1 a 3 no mesmo dia da v8.8 ±2; nenhum dia no negativo a mais.
+- Capturas: `tests/shot_v8_9.py` em `capturas/v8.9` (cartão da Dani aprendiz com a barrinha, pronta para subir, cursos dela, linha do fim do dia, celular).
+
+#### Fechamento
+v8.9: guardar a v8.8 em `versoes/`, `vtag`, `VERSAO`, `#ov-ver`, `docs/spec-v8.9.md`, `docs/RESUMO.md`, CLAUDE.md (smoke 36, linha `DANI` do `carreira.js`), PR e merge.
+
+**Fora:** a Dani barista/confeiteira, o Joca e o funcionário novo (Ideias guardadas).
+
+**Modelo:** Sonnet, esforço médio. Tudo decidido; a calibração de `DANI_XP.tarefas` e a conferência do "Reduzir" têm regra escrita.
+
+---
+
+## Etapa 2c-r5 — Ajustes da lojinha: TV e som em Melhorias, toalha no Salão, cartões da equipe e da Manutenção (v8.9.1)
+> **Planejada em 30/10** (pedido do usuário, texto em `docs/PROPOSTAS.md`), **antes da 3a**. Só a lojinha (`src/41-lojinha.js`, `src/01-estilo.css`) e os testes; nenhuma regra de jogo muda, nem o balanceamento (não precisa de `balance.js`).
+
+#### Decisões tomadas (30/10)
+1. **TV e som vão para Melhorias** (Lanchonete › Melhorias). O **couvert artístico fica na Divulgação**, como hoje (o pedido foi só TV e som).
+2. **Toalha xadrez sai da Decoração e vai para o Salão.** A Decoração fica com os 6 enfeites. No Salão, a toalha "em todas as mesas" entra no painel da direita (`.ed-side`), logo abaixo do botão "Mesa de 4". A toalha mesa a mesa, no balãozinho da mesa, continua como está.
+3. **Cartões do grupo Equipe:** hoje os desenhos da Bia (boné e pés) e da Dani (cabelo) saem cortados no ícone. Cada figura passa a caber inteira no ícone, com folga.
+4. **Tonhão de corpo inteiro com a touca de cozinheiro**, como a Bia e a Dani (hoje o ícone é um fogão com a touca por cima e fica estranho). Usar o desenho da abertura, `abTonhao` (`src/25-abertura.js:78`), que já tem a touca. O mesmo ícone vale no cartão do Tonhão dentro da seção (`buildTonhao`).
+5. **O cartão Manutenção muda de cor** conforme o pior equipamento, com as mesmas faixas das barras (`MANUT.verde` 0,7 e `MANUT.vermelho` 0,4):
+   - algum equipamento **abaixo de 0,4**: cartão **vermelho** (classe `perigo`);
+   - senão, algum **abaixo de 0,7**: cartão **amarelo** (classe `alerta`);
+   - senão, a cor normal.
+   Vale em qualquer dia (as barras também já mudam de cor antes do `MANUT.dia`). O texto do cartão não muda; para leitores de tela, `aria-label` = "Manutenção: precisa de revisão" (amarelo) ou "Manutenção: risco de quebra" (vermelho).
+
+#### O que muda, parte por parte (`src/41-lojinha.js`, salvo onde diz)
+- **TV e som:** dividir `buildAmbiente` em duas funções:
+  - `buildTvSom(grid)`: o cartão "TV e som" com os 2 botões (o trecho de hoje, sem mudar textos);
+  - `buildCouvert(grid)`: o "Couvert artístico" (com o `if (!couvertOk(game.ponto)) return;`).
+  `buildMelhorias` vira `function buildMelhorias(grid){ upgradeCartoes(grid, false); buildTvSom(grid); }`. Em `buildDivulga`, trocar `buildAmbiente(grid)` por `buildCouvert(grid)`. Apagar as variáveis que sobrarem sem uso (`T`, `D`, `pc`, `sec`...). Atualizar o comentário do topo (`/* TV e som (Melhorias, v8.9.1) e o couvert (Divulgação) */`).
+- **Toalha:** em `buildDecor`, apagar o bloco do cartão da toalha (das linhas `const todas = ...` até o `grid.appendChild(c)` do fim) e tirar "E a toalha xadrez..." do comentário. Em `buildSalao`, logo depois do `side.appendChild(edBtn('Mesa de 4: ...'))`, acrescentar:
+  ```js
+  // v8.9.1: a toalha xadrez em todas as mesas (antes na Decoração); mesa a mesa, no balãozinho
+  const todas = mesas.concat(est), sem = game.semToalha.length, vt = sem * TOALHA.cost;
+  side.appendChild(edBtn(!sem ? 'Toalha xadrez: todas têm' : 'Toalha xadrez em ' + (sem > 1 ? 'todas (' + sem + ')' : '1 mesa') + ': ' + fmt(vt), 'btn', sem > 0 && bank >= vt, () => game.buyToalhas(), vt));
+  ```
+  e, no texto de `ed-contas` de baixo (depois da linha do movimento), mais uma linha `ed-contas`: **"Toalha xadrez: " + fmt(TOALHA.cost) + " por mesa; melhora o ambiente no Gurugol para quem senta nela. " + (todas.length − sem) + " de " + todas.length + " mesas têm."** (singular "mesa tem" com 1, como hoje). Conferir que `edBtn` aceita o 5º argumento `cost` (aceita: mesma assinatura do `shopBtn`).
+- **Ícones da equipe (`upgradeIcon`):** o ícone é um canvas de 64×64 com `translate(32,32); scale(1.5,1.5)`, ou seja, cabe de −21 a +21 em cada eixo. Para `bia`, `dani` e `tonhao`, desfazer a escala no começo do ramo (`c.scale(1/1.5,1/1.5)`, então cabe de −32 a +32) e desenhar a figura inteira com **pelo menos 2 px de folga** em cima e embaixo (do alto do boné/cabelo/touca ao pé, incluindo a sombra). Valores de partida, a ajustar pela captura:
+  - `bia`: `drawBia(c,{},0,27,{ s:0.62 })`;
+  - `dani`: `drawPerson(c,DANI_LOOK,0,27,{ shirt:'#F7EFD8', mood:0, s:0.62 })` e o avental roxo redesenhado na mesma escala (hoje está em coordenadas da escala antiga: multiplicar as coordenadas por 1,5 × 0,62/0,75 ≈ 1,24, ou redesenhar conferindo na captura);
+  - `tonhao`: `abTonhao(c,0,27,0.5,{ t:0 })` (o ramo de hoje, com fogão e `ctx2chef`, sai; se `ctx2chef` ficar sem uso, apagar de `src/21-cenario.js:522`).
+  Regra para fechar os números: aumentar `y` ou baixar `s` até a figura caber com a folga; entre os que cabem, a figura maior. As três devem ficar com altura parecida (a Dani pode ser um pouco menor que a Bia, como no jogo; o Tonhão, um pouco maior). Se `abTonhao` depender de algo da abertura que quebre fora dela (erro no console), passe as opções que faltarem (`g:1`, `mood:0`) em vez de mexer na abertura.
+- **Cartão da Manutenção:** em `shopCartoes`, depois de criar o botão, quando `id === 'manut'`:
+  ```js
+  const pior = Math.min.apply(null, MANUT.equip.map(q => game.manut[q.id]));
+  if (pior < MANUT.vermelho){ b.classList.add('perigo'); b.setAttribute('aria-label', 'Manutenção: risco de quebra'); }
+  else if (pior < MANUT.verde){ b.classList.add('alerta'); b.setAttribute('aria-label', 'Manutenção: precisa de revisão'); }
+  ```
+- **`src/01-estilo.css`** (logo depois da linha `.shopcards canvas{...}`):
+  ```css
+  .shopcards button.alerta{background:#FBE7B0;border-color:#C98A12}   /* v8.9.1: Manutenção com equipamento no amarelo */
+  .shopcards button.perigo{background:#F6C9C3;border-color:var(--perigo);color:#7A1D16}   /* e no vermelho */
+  ```
+
+#### Testes
+- **`tests/smoke33.js`:** a linha `'Divulgação tem a TV e som'` vira duas: Melhorias tem "TV e som" e "Ventilador de teto"; Divulgação **não** tem "TV e som" e tem "Contas do dia". Acrescentar: (a) com `g.manut` todo em 1, o cartão `manut` (no grupo Lanchonete) não tem `alerta` nem `perigo`; com um equipamento em 0,6, tem `alerta`; com um em 0,3, tem `perigo` (e o `aria-label` certo). Ver como o smoke lê as classes dos botões no `harness.js` (os elementos falsos têm `classList`); se não der, conferir o `className`.
+- **`tests/smoke30.js`:** a Decoração passa a ter **6 cartões** (era 7: tirar o teste do `nome(6)==='Toalha xadrez'`); acrescentar que no Salão o painel tem um botão com "Toalha xadrez em todas" e que clicar nele chama a compra (ou só conferir o texto e usar `g.buyToalhas()` como já faz a linha 39).
+- `tests/run_all.sh --tudo` verde (o `menu_fit` não muda; o `balance` deve dar o mesmo da v8.9).
+- **Capturas:** `tests/shot_v8_9_1.py` em `capturas/v8.9.1`, no modelo do `shot_v8_6_15.py` (tela larga 1220×600 e celular deitado 740×360): grupo Equipe (Bia, Tonhão e Dani inteiros), seção Tonhão (ícone do cartão), grupo Lanchonete com a Manutenção normal, amarela (`g.manut.fogao=0.6`) e vermelha (`0.3`), Melhorias rolada até a TV e som, Salão com o botão da toalha, Decoração com 6 cartões. Conferir recortes ampliados (PIL `crop`) dos ícones da equipe: nada cortado.
+
+#### Fechamento
+v8.9.1: guardar a v8.9 em `versoes/` (`v8.9-fonte.html` e `v8.9.html`), `vtag`, `VERSAO`, lista do `#ov-ver`, `docs/spec-v8.9.1.md` (curto), `docs/RESUMO.md`, marcar a etapa como feita na tabela da Situação, PR para o `claude/main` e merge. Não publicar no artifact sem o usuário pedir.
+
+**Modelo:** Sonnet, esforço médio. Tudo decidido; só os números dos ícones são por tentativa, com a regra escrita acima.
+
+---
+
+## Etapa 2c-r6 — Cardápio fácil de achar: cartão Cardápio, conversa do dia 2, selo "novo" e reclamação dos clientes (v9.0.1)
+Origem: retorno de uma beta-tester (30/10, `docs/PROPOSTAS.md`): não ficou claro que os cursos do Tonhão aumentam o cardápio; ela procurou uma opção de "melhorar o cardápio" e não achou (hoje os cursos ficam em Lojinha › Equipe › Tonhão, abaixo do nível dele). Planejada com o usuário em 30/10 (entrevista); as decisões abaixo estão tomadas. Nada muda no balanceamento: os cursos continuam abertos desde o dia 1, com os mesmos preços, a mesma regra de 1 curso por dia e a mesma XP.
+
+### Decisões tomadas (30/10)
+- **Cartão Cardápio:** os cursos do Tonhão saem da seção Tonhão e vão para uma seção nova, **Cardápio**, que é o 1º cartão do grupo Lanchonete. Na seção Tonhão fica só a lista dos "Cursos de cardápio concluídos".
+- **Cursos da Dani:** ficam na Dani por ora (eles não trazem pratos). O Cardápio fica pronto para receber as bebidas da Dani numa etapa futura (ver Ideias guardadas).
+- **Sem trava:** quem já sabe compra no dia 1. A conversa e o selo só chamam a atenção.
+- **Conversa no fim do dia 2** (só no Modo História), com a Rosa; se a pessoa já fez algum curso, toca a versão curta. Depois das duas versões, a lojinha abre direto no Cardápio.
+- **Selo "novo"** no cartão Cardápio quando houver curso ao alcance do caixa (some ao abrir o cartão e volta quando outro curso couber no bolso).
+- **Reclamação dos clientes:** enquanto o Tonhão não fez nenhum curso básico, a reclamação de cardápio no Gurugol cita os pratos.
+- **Fica de fora:** dica embaixo da nota do Gurugol e aviso no resumo do fim do dia (o usuário não escolheu).
+- **Balão embaixo do Pular** (outro retorno de 30/10): a fala do Tonhão sai da janela da cozinha, no canto de cima à direita, e o balão fica embaixo do botão Pular (conferido em 30/10 na tela larga, 1220×600 e 1600×800, e no celular deitado, 740×360; no celular em pé o botão fica acima do canvas e não cobre). O botão continua onde está (o mesmo lugar do Pular da abertura); quem desvia é o balão.
+
+### O que muda, parte por parte
+**`src/10-constantes.js`**
+- Depois de `HISTORIA`, a conversa avulsa do cardápio (fala no formato das de `HISTORIA`):
+  ```js
+  /* v9.0.1: a conversa do cardápio, no fim do dia `dia` (ou do 1º dia completo depois dele, para saves antigos), só no Modo História.
+     falas: o Tonhão ainda não fez curso; fez: já fez algum (básico de qualquer curso ou o avançado do PF). save.convCard: 'pend' | 1 (vista) */
+  const HIST_CARDAPIO = { dia:2,
+    falas:[ { q:'bia', s:'Tio, hoje um monte de gente perguntou se só tem PF e coxinha...' },
+            { q:'tonhao', s:'É... a Rosa fazia um pastel que era uma beleza. Eu nunca aprendi.' },
+            { q:'bia', s:'Então faz um curso! Tem uns baratinhos.' },
+            { q:'tonhao', s:'Tá bom, tá bom. Vê aí no Cardápio da lojinha o que cabe no bolso.' } ],
+    fez:[ { q:'bia', s:'O pessoal adorou o prato novo!' },
+          { q:'tonhao', s:'Então vou fazer mais cursos. Tá tudo no Cardápio da lojinha.' } ] };
+  ```
+- `function cursoFeito(cursos)`: true se algum curso tem o básico (`c.preco > 0 && cursoNivel(cursos, c.id) >= 1`) ou se o PF tem o avançado (`cursoNivel(cursos, 'pf') >= 2`).
+- Junto de `AVAL_BRAVO`: `const AVAL_POUCO = ['Só tem PF e coxinha?', 'Queria um pastel, mas não tem...', 'Sempre a mesma coisa no cardápio.'];`
+- `avalComentario(..., tipo, pouco)`: novo último parâmetro. Logo depois da linha do `semVeg` (que continua com prioridade): `if (!bom && pouco){ const m = índice de 'menu'; if (r[m] != null && r[m] <= r[k]) return pick(AVAL_POUCO); }` (a mesma regra do `semVeg`: só quando o Cardápio é o pior critério).
+
+**`src/16-jogo.js`**
+- Na chamada de `avalComentario` (~linha 721), passe `pouco = !CURSOS.some(c => c.preco > 0 && cursoNivel(this.save.cursos, c.id) >= 1)` (só os básicos; o avançado do PF não conta, porque não traz prato novo).
+- No fim do dia, logo depois do bloco do Modo História (~linha 858–871): `if (!tomou && HIST.on && !DEV.on && sv.histV === 1 && d.n >= HIST_CARDAPIO.dia && !sv.convCard) sv.convCard = 'pend';` (saves antigos que já passaram do dia 2 veem a conversa no próximo fim de dia, de propósito: é o caso da beta-tester).
+- Getter `get cardapioNovo()`: a lista das chaves `id + nível` (ex.: `'pastel1'`, `'pf2'`) dos cursos com `cursoProx(id)`, com `!this.cursoTrava` e `this.save.bank >= p.preco`, que **não** estão em `this.save.cardVisto`; o selo acende se a lista não estiver vazia. `cardVer()`: junta essas chaves em `save.cardVisto` e grava o save.
+- `save.convCard` e `save.cardVisto` entram na normalização do save (`12-clientes.js`, onde está o `normCursos`): `convCard` vale `'pend'`, `1` ou nada; `cardVisto` é uma lista de textos (padrão `[]`). O `resetProgress` zera os dois.
+
+**`src/41-lojinha.js`**
+- `SHOP_SECOES.cardapio = { nome:'Cardápio', icon:'cardapio', build:g => buildCardapio(g) }` e `SHOP_GRUPOS` Lanchonete: `['cardapio', 'melhorias', 'salao', 'decor', 'manut', 'divulga']`. `SHOP_ANTIGAS.cursos` passa a `'cardapio'`.
+- Ícone `'cardapio'` no `upgradeIcon`: um pastel e uma coxinha lado a lado com `drawDish` (como o `cursoIcon`).
+- `shopCartoes`: no cartão `cardapio`, se `game.cardapioNovo` acender, classe `novo` e `aria-label` "Cardápio: tem curso novo que cabe no caixa". Ao tocar no cartão, chame `game.cardVer()` antes do `buildShop()`. Na fileira de grupos, o grupo Lanchonete leva a mesma classe `novo` quando outro grupo está aberto e o selo está aceso.
+- `buildCardapio(grid)`: (1) um `staffCard` com o ícone `cardapio`, título "No cardápio hoje (N pratos)" e o texto com `pratosSabidos(cursos)` e os preços (`precoPrato(k, game.ponto, cursos)`, separados por " · "), mais a linha "Diversidade do cardápio no Gurugol: x,x ★ (cada curso básico dá +0,6)" (`avalMenu`, uma casa, vírgula); (2) o `buildCursos(grid)` de hoje, sem mudar; (3) no fim, `el('span', 'cursos-lista', 'Cada curso também dá experiência ao Tonhão (Equipe › Tonhão).')`.
+- `buildTonhao`: troque `buildCursos(grid)` por `buildCursosFeitos(grid)`, um `staffCard` com o ícone `cardapio` e o título "Cursos de cardápio concluídos". Para cada curso feito, uma linha: "Curso de X (básico)" e, com o avançado, "c.av.nome (avançado)"; o PF só aparece com o avançado. Sem nenhum: "Nenhum ainda. Os cursos ficam no Cardápio da lojinha." Sempre com o botão "Ver cursos", que chama `shopAbrir('cardapio')`. A frase do "Faltam N de experiência" ganha no fim " Os cursos ficam no Cardápio."
+
+**`src/01-estilo.css`**
+- `.shopcards button.novo` e a aba do grupo com `.novo`: selo amarelo "novo" (pílula pequena no canto de cima à direita, `::after` com `content:'novo'`), parado (sem animação, o que já respeita o `prefers-reduced-motion`). Os 6 cartões do grupo Lanchonete devem caber como os 5 de hoje (2 colunas no celular).
+
+**`src/43-telas.js`**
+- Variável `let shopEntra = null;` e, na troca para a tela `shop` (linha ~34): `shopGrupo = 'lanchonete'; shopTab = shopEntra; shopEntra = null;`.
+- `fluxoHistoria(fim)`: depois das conversas de capítulo (`depois` e `antes`, que continuam primeiro), e antes do `fim()`: se `sv.convCard === 'pend'`, toca `HIST_CARDAPIO.fez` se `cursoFeito(sv.cursos)`, senão `HIST_CARDAPIO.falas`; ao terminar (ou ao pular): `sv.convCard = 1`, `writeSave`, `shopEntra = 'cardapio'` e `fim()`. A conversa usa o mesmo `Conversa`/`ov-conversa` de hoje (o `falar` recebe a lista de falas; se hoje ele só aceita `'antes'`/`'depois'`, acrescente um jeito de passar as falas direto).
+
+**Balão que desvia do Pular (`src/43-telas.js` e `src/26-conversa.js`)**
+- `43-telas.js`: `function convEvita()` devolve o retângulo do `#btn-conv-pular` em coordenadas do canvas, com 8 de folga em volta: pega o `getBoundingClientRect()` do botão e o do `canvas`, e converte como o `toLogical` (x por `TW / largura`, y por `H / altura`). Devolve `null` se o botão não tiver tamanho (testes no node) ou se ficar fora do canvas (celular em pé). No laço, logo antes do `drawConversa` (linha ~253), `game.conversa.evita = convEvita();` (medir a cada quadro acompanha a troca de tamanho da tela).
+- `26-conversa.js`, `drawConversa`: depois de calcular `x`, `y`, `w` e `h` do balão, se `conv.evita` cruzar o balão, empurre o balão para a esquerda: `x = Math.max(16, ev.x - w)`. Se mesmo assim ainda cruzar (tela estreita), desça o balão: `y = ev.y + ev.h`. O `bx` (a ponta) é recalculado depois disso, como hoje (ela continua apontando para a cabeça de quem fala). As falas da Bia e da Dani não mudam quando o balão já não cruza o botão.
+- Confira também, nas capturas, as cenas da abertura com balão perto do Pular dela (`#ov-abertura`); se alguma cruzar, use o mesmo `convEvita` com o botão da abertura.
+
+**Textos que apontam para o lugar antigo dos cursos**
+- `src/40-interface.js` (Como jogar, ~linha 187): "Na aba Cursos, o Tonhão aprende..." vira "No Cardápio da lojinha, o Tonhão aprende...". Procure outros "aba Cursos" e "cursos do Tonhão na lojinha" em `src/` (menos a lista do painel `#ov-ver`, que é histórico) e aponte para o Cardápio.
+
+### Testes
+- **`smoke39.js` (novo):**
+  1. Lojinha, grupo Lanchonete: o 1º cartão é `data-sec="cardapio"`. Ao abrir, aparecem "No cardápio hoje (2 pratos)" e os cursos ("Comprar R$ 150" no Pastel de feira). A seção Tonhão não tem botão de comprar curso, mostra "Cursos de cardápio concluídos" e "Nenhum ainda", e "Ver cursos" abre o Cardápio (`shopTab === 'cardapio'`).
+  2. Selo: com R$ 200 no caixa, o cartão tem a classe `novo`; depois de abrir e voltar, não tem; com o caixa em R$ 300 (o curso de Salgados fritos, R$ 220, passa a caber), volta. Com R$ 100, não aparece. No dia em que o curso já foi comprado (`cursoTrava`), não aparece.
+  3. Conversa: com `load({historia:true})`, ao fechar o dia 2, `save.convCard === 'pend'`. O fluxo toca a conversa, com a 1ª fala "Tio, hoje um monte de gente perguntou se só tem PF e coxinha...". No fim, `convCard === 1` e a lojinha abre com `shopTab === 'cardapio'`. Com `cursos:{pastel:1}`, a 1ª fala é "O pessoal adorou o prato novo!". Sem a História (`load()` padrão), `convCard` nunca fica `'pend'`. Fechar o dia 3 depois não toca de novo.
+  4. Balão e Pular: com `game.conversa.evita = {x:TW-150, y:0, w:150, h:80}` e a 1ª fala do cap. 1 (do Tonhão), o retângulo desenhado do balão não cruza o `evita` (exponha o retângulo calculado em `conv.caixa = {x, y, w, h}` no `drawConversa` para o teste conferir); com `evita` nulo, o balão fica onde fica hoje.
+  5. Comentário: `avalComentario` com o Cardápio como pior critério, `bom` falso e `pouco` verdadeiro sai de `AVAL_POUCO`; com `pouco` falso sai de "Pouca opção no cardápio." / "Queria mais pratos."; com `semVeg` verdadeiro continua "Não tinha nada vegetariano.".
+- **Testes que compravam curso pela seção Tonhão** (veja `smoke15`, `smoke26`, `smoke33`, `smoke35`, `shot_v8_3.py` e `shot_v8_6_15.py`; procure `'tonhao'`, `'cursos'` e "Comprar" perto de curso): passe a abrir `'cardapio'`. Não mude o que eles conferem.
+- **`carreira.js`:** a linha 74 fecha as conversas de capítulo entre os dias; feche também a do cardápio (`if (g.save.convCard === 'pend') g.save.convCard = 1;`). Os números do `carreira.js` e do `balance.js` não podem mudar (nada no jogo mudou de valor): rode os dois e compare com a v9 (`docs/spec-v9.md`).
+- `./run_all.sh --tudo` verde (o `menu_fit` confere a lojinha com o 6º cartão).
+- Captura `shot_v9_0_1.py` em `capturas/v9.0.1`: grupo Lanchonete com o selo, seção Cardápio, seção Tonhão (sem curso e com 2 cursos feitos) e o balão da 1ª fala da conversa do cardápio e a 1ª fala do cap. 1 (Tonhão, conferindo que o Pular não cobre o balão), em 1220×600, 1600×800, no celular deitado (740×360) e em pé (390×844). Confira com recortes ampliados (PIL `crop`) do cartão com o selo e do topo da seção Cardápio.
+
+### Fechamento
+- Versão **v9.0.1**: guarde a v9 em `versoes/v9-fonte.html` e `versoes/v9.html`, atualize o `vtag`, a `VERSAO` e o painel `#ov-ver` ("v9.0.1 — 30/10/2026 — Ficou mais fácil achar os cursos do Tonhão: eles moram no cartão Cardápio, o primeiro da lojinha, com um selo "novo" quando algum cabe no caixa. No fim do dia 2 do Modo História, a Bia avisa que a freguesia quer mais opções, e quem ainda só tem PF e coxinha ouve isso no Gurugol. E o balão do Tonhão nas conversas não fica mais embaixo do botão Pular."). Escreva `docs/spec-v9.0.1.md`, atualize `docs/RESUMO.md`, `docs/PARTES.md` (seção Cardápio nova, `HIST_CARDAPIO`, `AVAL_POUCO`) e esta tabela, e marque o destino do retorno em `docs/PROPOSTAS.md`. PR para o `claude/main` com merge; avise que está pronta para publicar (não publique sem o usuário pedir).
+
+Modelo: Sonnet, esforço médio (o plano está fechado; o trabalho é mudar a lojinha, uma conversa, o balão e um comentário, ajustar testes antigos e checar a tela).
+
+### Sessão 3a — Mudança de ponto e Lanchonete na área industrial (v9) — FEITA em 30/10 (`docs/spec-v9.md`; cardápio ×1,5 e `grupos` 0,8 calibrados em vez de ×1,2; o smoke é o `smoke38`)
+> **Planejada com o usuário em 30/10** (respostas em `docs/PROPOSTAS.md`): as decisões abaixo estão tomadas. Depende da 2f (v8.7): `HISTORIA`, `Conversa`, `capObj`, `#ov-continua`, a reforma e a Dani aprendiz. **O Joca saiu desta etapa:** entra na 3b (Avenida Brasil), contratado com salário.
+
+#### Decisões tomadas (30/10)
+- **A mudança é para sempre:** não dá para voltar à Garagem.
+- **Quando aparece:** depois do cap. 3 (`save.cap >= 4`), o cartão **"Mudança"** entra na lojinha (no grupo do banco/contas da 2c-r4b). Para mudar: R$ 800 no caixa **e** nota do Gurugol ≥ `avalMinimo(garagem)` (2,7) no dia. Sem um dos dois, o cartão mostra o que falta ("Falta R$ x" / "Nota 2,7 (agora x,x)") e o botão fica apagado. O cartão `#ov-continua` do fim do cap. 3 muda de texto: **"Fim dos capítulos da Garagem. Quando quiser, a mudança para a área industrial está na lojinha."**
+- **O que vai junto:** mesas e cadeiras (o editor abre no ponto novo com a arrumação automática), pratos, cursos, equipe, melhorias que não são do ponto, desgaste e o empréstimo. **Saem do save, sem devolver dinheiro:** TV, som (`equipe.tv`, `equipe.som`) e a Água da torneira (`up.maquina`). O limite do banco (`credito`) sobe de R$ 1.000 para R$ 2.000.
+- **Gurugol:** as avaliações antigas continuam na média; as novas já vêm na escala do teto 3,7, e a nota sobe aos poucos. Nota mínima para sair da área industrial: `avalMinimo` = **3,4** (90% de 3,7).
+- **Balcão de pratos com 5 vagas:** vem com o ponto (5ª vaga em `PLATE_SLOTS`, só quando `ponto.pratos === 5`; o `plates` do `13-cozinha.js` passa a ter o tamanho do ponto).
+
+#### O ponto (`PONTOS[1]` em `10-constantes.js`)
+`{ id:'industrial', nome:'Lanchonete na área industrial', nivel:2, lugares:20, aluguel:120, mudanca:800, credito:2000, cardapio:1.5 (decidido em 30/10 com as medições da v9: com 1,2 a mudança dava lucro menor que a Garagem), area:(a da Garagem com x0 160: 20 lugares não cabiam com 196), espera:5, assento:'pe', bebida:'suco', pratos:5, prateleira:4, tipos:{ estudante:1, executiva:1, familia:0.5, vovos:0.7, entregador:2, turma:2, motorista:1 }, grupos:0.8 (fator dos grupos do dia, v9), encomenda:0.6, apito:{ quando:0.45, max:3, gap:[8,12], aviso:10 }, patPressa:0.85, vip:0.3, metaF:1.25 }`
+- **Aluguel:** R$ 120 nas contas do fim do dia (linha "Aluguel" no fim do dia e no livro-caixa). Segue a regra da v8.2.2: só o dia completo cobra, junto com a folha; dia interrompido não paga aluguel.
+- **Cardápio ×1,5** (mantido pelo usuário em 30/10; o plano dizia ×1,2): `precoPrato` já multiplica pelo ponto.
+- **Clientela "pressa e entrega":** na área industrial, o tipo de cada grupo sai de `ponto.tipos` (pesos), no lugar do `day.types` da Garagem; o tipo da semana (`day.tipo`) e o clima continuam valendo por cima. Grupos de 1 e 2 pessoas têm paciência ×`patPressa` (0,85). A chance de VIP vai ×`vip` (0,3). O pico do meio do dia é o **apito da fábrica** (abaixo). Os 3 clientes novos estão em "Clientes da área industrial".
+- **Metas:** as metas e o `expert` de cada dia ×`metaF` (1,25), arredondado para 5. Alvo: o bot afiado continua tirando 3 ★ (ver Testes).
+
+#### Clientes da área industrial (planejados com o usuário em 30/10)
+Três tipos novos em `CUSTOMER_TYPES` e `GOSTOS`, que só vêm na área industrial (nem na Garagem, nem no Turno sem fim, nem na Missão zero). Nenhum deles é VIP (`VIP.types` não muda). O vegetariano (v8.6.11) vale para todos eles, como para os outros. Visual sem estereótipo: em cada grupo, gente de várias cores, idades e gêneros, sorteados como nos tipos de hoje.
+
+**1. Turma da fábrica** (`turma`)
+- `{ label:'Turma da fábrica', pat:0.8, eat:[4,5.5], read:[3,4], size:[3,4], mais:0.15, tip:0 }`; `GOSTOS.turma = [5, 1, 0, 1, 1]` (quase todo mundo no PF). Não sofre o `patPressa` (só vale para 1 e 2 pessoas).
+- Visual: macacão azul-marinho ou cinza com crachá no peito; um ou outro com protetor de ouvido pendurado no pescoço.
+- **O apito da fábrica** (`ponto.apito`): no `buildSchedule`, as primeiras `max` (3) turmas do dia saem do lugar sorteado e chegam juntas a partir de `quando` (45%) do turno, uma a cada 8 a 12 s (`gap`). `aviso` (10) s antes, o texto **"A fábrica vai apitar!"** sobe na calçada; na hora, **"Apitou!"** com um som de apito (dois tons, curto). As outras turmas do dia chegam como qualquer grupo. Com `prefers-reduced-motion`, o texto aparece parado.
+- Comentários próprios no Gurugol: o critério Agilidade (`AVAL_CRIT`) ganha `tipo:{ turma:{ bom:[...], ruim:[...] }, encomenda:{...} }`; quando o grupo é desse tipo, a frase sai dali em 50% das vezes. Turma: bom "Deu tempo de almoçar com calma!", ruim "Quase perdi a volta do intervalo."
+
+**2. Motorista de caminhão** (`motorista`)
+- `{ label:'Motorista de caminhão', pat:1.4, eat:[6,8], read:[3,4], size:[1,1], mais:0.6, tip:0.1 }`; `GOSTOS.motorista = [4, 1, 2, 1, 0]` (PF e assados). Não sofre o `patPressa` (tem tempo).
+- **Horário:** o peso do motorista no sorteio vai ×2 nos primeiros e nos últimos 20% do turno e ×0,3 no meio (as horas fracas).
+- **Cafezinho no fim:** ao terminar de comer, 80% de chance de o balão mostrar o cafezinho (`pedeCafe:0.8`). Servido antes da conta: os R$ 3 de sempre na conta e a gorjeta dele vai de 10% a 15%. Sem café, nada se perde.
+- Visual: boné e camisa xadrez ou polo da transportadora, chave do caminhão na mão; homem ou mulher, sorteado a cada vez (50%).
+
+**3. Encomenda do setor** (`encomenda`)
+- `{ label:'Encomenda do setor', pat:2, size:[1,1], retira:true, lote:[4,6], tip:0.1 }`: uma pessoa com crachá e uma sacola térmica, que vem buscar `lote` marmitas para a equipe dela. Usa a fila de retirada, com paciência ×2 em relação ao entregador (`PAT.retirada × pat`). Cada marmita sorteia o prato pelos gostos da turma (`GOSTOS.turma`). Não paga Efood (vem a pé, não pelo app): `efood` 0.
+- **Quando:** no máximo 1 por dia, com chance `ponto.encomenda` (60%), por volta de 30% do turno. **Avisada na introdução do dia:** "Encomenda do setor de montagem: x marmitas, lá pelo começo da tarde." Assim dá para adiantar marmitas no "+ marmita".
+- **Prateleira de 4:** na área industrial, a prateleira do balcão de retirada tem `ponto.prateleira` (4) vagas, no lugar de `MARMITA.vagas` (2). A reserva continua 1.
+- **Entrega:** a Bia (ou a Dani) leva as marmitas ao balcão uma a uma, como hoje; a pessoa da encomenda fica no balcão até receber todas (as marmitas adiantadas do mesmo prato servem). Cada marmita entregue conta nas marmitas do dia (o cap. 5).
+- **Pagamento:** cada marmita paga o preço do prato (×1,5) menos a embalagem; o lote completo dá **+20 pontos** (`PONTOS_ACAO.lote`) e a gorjeta de 10%. Se a paciência acaba com parte entregue, paga só as entregues, sem gorjeta, e sai insatisfeita (1 coração; avalia com agilidade baixa), mas **não conta como perdida** para a 3ª estrela; com nenhuma entregue, sai brava como o entregador (multa e conta como perdida).
+- Comentários (o mesmo `tipo` da Agilidade): bom "Chegou tudo certinho pro setor!", ruim "Faltou marmita pra metade do pessoal."
+
+#### Itens da área industrial (lojinha; só aparecem com `ponto.nivel === 2`)
+- **Fogão industrial** (cartão de manutenção): **R$ 400**, compra única. 4 bocas (`slots` do Tonhão + 1) e gasta **metade** do fogão da Garagem por dia (`base` e `uso` × 0,5). Conserto de emergência R$ 160. `save.up.fogaoInd`; o selo e o desgaste continuam no mesmo `MANUT.fogao`.
+- **3 televisores com sertanejo** (no lugar do cartão "TV e som"): instalar **R$ 120**, uma vez. Depois, um seletor por dia: desligadas / **com anúncios** (paciência nas mesas 10% mais devagar, luz R$ 9/dia) / **sem anúncios** (15%, R$ 20 + R$ 9 = R$ 29/dia). O custo entra na folha do dia, como a TV da Garagem. Ambiente do Gurugol (`AVAL.amb`): `tvs:0.5` com anúncios, `tvsPlus:0.75` sem (decidido na sessão de planejamento).
+- **Espera lá fora** (5 lugares): **cadeirinhas de plástico R$ 60** ou **banquinhos de madeira R$ 90** (um ou outro; trocar paga o novo). Quem espera sentado perde a paciência na espera **15% mais devagar** (as duas iguais; o banquinho é só mais bonito). Sem nenhum, de pé como na Garagem. `save.up.assento = 'cadeira'|'banco'`.
+- **Jarra de suco** (a mesma melhoria `maquina`, com nome, desenho e preço do ponto): **R$ 120**. O grupo pede no balão, a Bia leva, R$ 12 na conta (`BEBIDA_ESPERA.suco`), paciência 40% mais devagar como a água. A tarefa "Levar a água da espera" da Dani vira "Levar o suco da espera".
+- **Plantas da calçada** (só na área industrial, cada uma uma compra): **violetas em vasinhos R$ 20, antúrio R$ 30, samambaia pendurada R$ 40**. Cada uma soma **+0,1** ao Ambiente do Gurugol (`AVAL.amb.violeta/anturio/samambaia = 0.1`). A espada-de-são-jorge e as plantas da Garagem vão junto (são do save, não do ponto).
+- **Preço das melhorias:** sem mudança (o limite de 1 por dia já saiu na 2c-r4a). Só conferir no `carreira.js` se o jogador ainda junta para os itens acima.
+
+#### Visual (`21-cenario.js`)
+- Piso de cimento queimado cinza, parede de tijolinho aparente pintado de branco, letreiro **"Lanchonete Corre-Corre"** em placa de metal com lâmpadas, portão de enrolar aberto em cima da porta, vista da janela com galpões e uma chaminé ao fundo, calçada com faixa amarela de carga e descarga e um poste.
+- Os 3 televisores no alto da parede (desenhados só depois de instalados), com uma notinha musical quando ligados.
+- Cadeirinhas de plástico vermelhas / banquinhos de madeira na espera; jarra de suco num caixote com copos; violetas na janela, antúrio no chão perto da porta, samambaia pendurada no toldo.
+- O menu e o card do ponto dizem o nome do ponto. `prefers-reduced-motion`: sem notinha animada.
+
+#### Capítulos (`HISTORIA`, `ponto:'industrial'`)
+O cap. 4 começa ao mudar (`avancaCap` no momento da mudança, e a conversa `'antes'` toca no dia seguinte, antes da introdução). `save.cap` vai até 6 (6 = área industrial completa). O que já existe da 2f (falas, rubrica, `capObj`, linha do objetivo no fim do dia e na introdução) vale igual.
+
+**Cap. 4, "Ponto novo"** — objetivo `{ azul:3 }`: 3 dias no azul na área industrial (não precisam ser seguidos; o aluguel já entra no lucro). Texto: "Fechar 3 dias no azul pagando o aluguel (x de 3)".
+- Antes: Bia "Olha o tamanho disso, tio! Vinte lugares!" / Tonhão "E aluguel todo dia. Aqui o almoço é corrido: o pessoal da fábrica tem hora pra voltar." / Bia "Então é servir rápido e fechar no azul."
+- Depois: Tonhão "Três dias no azul pagando aluguel. Tá provado, Bia." / Bia "E a moto não para de chegar pedindo marmita!"
+
+**Cap. 5, "Hora do almoço"** — objetivo em 2 itens, que ficam ✓ quando cumpridos (o 1º não se perde depois): (a) num mesmo dia, **6 marmitas entregues a tempo e nota 3,4 no fim dele** (`{ marmitas:6, nota:3.4 }`, guardado em `save.capFeito`); (b) **R$ 2.000 no caixa** no fim de um dia (pode ser o mesmo dia ou depois). Cumpre quando os 2 estão ✓. Texto: "6 marmitas e nota 3,4 no mesmo dia (hoje: x marmitas, nota x,x) · R$ 2.000 no caixa (agora R$ x)".
+- Antes: Dani "Os motoqueiros já sabem o meu nome!" / Tonhão "Marmita bem fechada e na hora. Quem sai da fábrica volta amanhã." / Bia "E se a nota subir, dá pra sonhar com a Avenida Brasil."
+- Depois: Bia "R$ 2.000 guardados! Dá pra Avenida Brasil, tio." / Tonhão (nota: "largando a colher") "Na Avenida Brasil tem o restaurante do Bráulio." / Bia "O chef de bigode da Casa Aurora?" / Tonhão "Ele mesmo. A estrela veio do molho da sua mãe... e ele nunca conseguiu repetir." / Dani "Então é lá que a gente vai abrir!"
+- Em seguida, o `#ov-continua` com **"Fim dos capítulos da área industrial. Continua na próxima versão: a Avenida Brasil."** `save.cap = 6`; os dias seguem sem objetivo.
+
+#### O que muda, parte por parte
+- **`10-constantes.js`:** `PONTOS[1]` (acima); `PLATE_SLOTS` com a 5ª vaga; `UPGRADES`/itens novos (fogão industrial, TVs, assento, plantas) com `nivel:2`; `AVAL.amb` com `tvs`, `tvsPlus`, `violeta`, `anturio`, `samambaia`; `HISTORIA` caps. 4 e 5; `MANUT.fogao` lendo o fator do fogão industrial.
+- **`12-clientes.js`:** os 3 tipos novos no `Group` (turma de 3 ou 4; motorista com o pedido de café; encomenda com `lote`, a lista de pratos e o que já foi entregue); `normSave` com `ponto` (padrão `'garagem'`), `up.fogaoInd`, `up.assento`, `equipe.tvs` (0 desligadas, 1 com anúncios, 2 sem), plantas e `capFeito`; o sorteio de tipo com `ponto.tipos`, VIP com `ponto.vip`, paciência ×`patPressa` para grupos de 1 e 2, paciência na espera ×0,85 com assento.
+- **`13-cozinha.js`:** `plates` do tamanho de `ponto.pratos`; `slots` +1 com `up.fogaoInd`.
+- **`16-jogo.js`:** `mudarPonto(sv)` (confere dinheiro e nota, desconta R$ 800, troca `ponto`, tira TV/som/torneira, arranjo automático, `avancaCap`); aluguel nas contas do dia; metas ×`metaF`; o apito da fábrica e o horário do motorista no `buildSchedule`; a encomenda do dia (sorteio, aviso na introdução, lote no balcão, pagamento parcial); contagem de marmitas a tempo no dia (para o cap. 5); `capObj` com `azul` contado só no capítulo atual, `marmitas`, `nota` e `caixa`.
+- **`20/21-*.js`:** o cenário da área industrial (acima), escolhido pelo `ponto` do save.
+- **`41-lojinha.js`:** cartão "Mudança" (com o que falta, e uma confirmação: "Mudar para a Lanchonete na área industrial por R$ 800? Aluguel de R$ 120 por dia. Não dá para voltar."); cartões novos da área industrial; o card "TV e som" some fora da Garagem.
+- **`42-resultados.js`:** linha "Aluguel R$ 120" nas contas; a linha do capítulo para os caps. 4 e 5.
+- **`40-interface.js`:** rótulo do menu com o ponto ("História · cap. 4, Ponto novo · dia 18"); `save.cap = 6`: "História · área industrial completa · dia N"; "Como jogar" ganha 1 frase sobre a mudança de ponto.
+- **`30-ranking.js`:** o ponto alcançado ao lado do resultado (regra da 2b).
+- **Modo dev:** o cartão "Mudança" aparece sempre, sem custo nem nota mínima.
+
+#### Testes
+- **`tests/smoke37.js` (novo):** (1) antes do cap. 4 não há cartão Mudança; com `cap:4`, aparece e fica apagado sem R$ 800 ou sem nota 2,7 (testar cada um); (2) mudar: −R$ 800, `ponto:'industrial'`, TV/som/torneira fora, mesas levadas, arranjo válido, 20 lugares, 5 vagas de prato, `cap` 4 e `conversa:'antes'`; (3) aluguel de R$ 120 no fim do dia e preços ×1,2; (4) clientela: em 200 grupos sorteados, entregadores ≈ o dobro da Garagem e VIPs ≈ 0,3×; (5) fogão industrial: 4 bocas e metade do desgaste; (6) TVs: instalar, os 3 modos, custo na folha e paciência; (7) assento: espera 15% mais devagar; jarra cobra R$ 12; (8) plantas somam +0,1 cada no Ambiente; (9) cap. 4 com 2 dias no azul continua, com 3 avança; (10) cap. 5: 6 marmitas com nota 3,3 não marca; com 3,4 marca (a); depois R$ 2.000 cumpre; `cap:6` e o `#ov-continua` novo; (11) save da v8.7 sem `ponto` carrega como Garagem; (12) turma: 3 ou 4 pessoas, as 3 primeiras do dia chegam juntas a partir de 45% do turno com o aviso 10 s antes, e nenhuma turma, motorista ou encomenda na Garagem; (13) motorista: mais nas pontas do turno que no meio (em 200 dias sorteados), pede café ao terminar e a gorjeta vai a 15% com o café; (14) encomenda: no máximo 1 por dia, aviso na introdução, prateleira de 4, lote completo paga tudo + 20 pontos sem Efood, lote pela metade paga as entregues e não conta como perdida, nenhuma entregue conta; (15) as marmitas da encomenda contam no cap. 5.
+- Ajustar smokes antigos que esperam 4 vagas fixas de prato ou o texto antigo do `#ov-continua`.
+- **`bot.js`:** o bot serve o café do motorista (quando a Bia está livre) e trata a encomenda como entregadores em fila (leva as marmitas do lote; adianta o PF no "+ marmita" quando há encomenda avisada).
+- **`carreira.js`:** o bot muda de ponto assim que pode (e compra fogão industrial, TVs com anúncios, cadeirinhas e jarra quando sobra R$ 300 acima da folha); `DIAS=35`. Linha `HISTORIA` com o dia de cada capítulo e o dia da mudança.
+- **Alvos e como decidir:**
+  - Mudar deve se pagar em **3 a 5 dias** (lucro médio por dia na área industrial − o da Garagem ≥ R$ 160). Se demorar mais que 5, `cardapio` 1,25; se pagar em menos de 3, aluguel R$ 150. **Medido na v9 com `cardapio` 1,5: +R$ 140 por dia, volta em ~6 dias; fica assim (decisão do usuário).**
+  - `node carreira.js 3` (padrão e `MOVEIS=quatro`): **0 dias no negativo** nos 5 dias depois da mudança; se houver, `mudanca` 700.
+  - Cap. 4 cumprido em até 5 dias depois da mudança em 3/3; cap. 5 em até 15 dias depois da mudança em ≥ 2/3. Se o cap. 5 não chegar, as marmitas baixam para 5 (não mexer na nota 3,4 nem nos R$ 2.000).
+  - Bot afiado (`balance.js` com o ponto industrial, `PONTO=industrial`): 3 ★ em ≥ 2 de 3 dias; se não, `metaF` 1,2; se passar com folga (todos os dias acima de `expert` em 15%), `metaF` 1,3.
+  - **Clientes novos:** o apito não pode virar derrota certa. Com o bot afiado, as turmas do apito perdem ≤ 1 grupo em 3 dias; se perderem mais, `apito.max` 2. A encomenda é entregue completa em ≥ 2 de 3 dias com o bot afiado; se não, `lote` [3,5].
+  - Bot com perdas (o padrão sem equipe): a mudança **não** deve compensar (lucro na área industrial ≤ o da Garagem + R$ 40).
+- Capturas: `tests/shot_v9.py` em `capturas/v9` (cartão Mudança apagado e aceso, confirmação, salão da área industrial com tudo comprado, o apito com as turmas chegando, o motorista com o balão do café, a encomenda no balcão de retirada, calçada com cadeirinhas, jarra e plantas, TVs ligadas, fim do dia com o aluguel, conversa do cap. 5 com a rubrica, `#ov-continua`, celular).
+
+#### Fechamento
+v9: guardar a v8.9 em `versoes/`, `vtag`, `VERSAO`, `#ov-ver`, `docs/spec-v9.md`, `docs/RESUMO.md`, CLAUDE.md (smoke 37, `PONTO=` no balance, `DIAS=35` no carreira), PR e merge.
+
+**Fora:** o Joca (vai para a 3b), a Avenida Brasil, eventos de bairro (4c), o nível de luxo.
+
+**Modelo:** Sonnet, esforço alto. Tudo decidido, mas é sistema novo (mudança de ponto, clientela por ponto, cenário inteiro novo) e mexe em muitas partes; a calibração da mudança pode pedir 2 ou 3 rodadas.
