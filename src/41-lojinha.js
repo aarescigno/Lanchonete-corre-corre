@@ -121,6 +121,8 @@ function upgradeIcon(id){
     } else if (id === 'g-salao'){   // v8.6.15: cartão Salão (mesa redonda com duas cadeiras)
       ell(c,0,4,15,8); fs(c,PAL.formica,2); rr(c,-3,10,6,8,1); fs(c,PAL.madeiraEsc,1.4);
       [-1,1].forEach(d => { rr(c,d*19-5,-6,10,10,2); fs(c,CHAIRS[d > 0 ? 3 : 1].c,1.6); });
+    } else if (id === 'cardapio'){   // v9.0.1: um pastel e uma coxinha lado a lado
+      c.scale(0.55,0.55); drawDish(c, 'pastel', -26, 4, 1.7, false, 'frango', false); drawDish(c, 'coxinha', 26, 4, 1.7, false, 'frango', false);
     } else if (id === 'ventilador'){
       for (let i=0;i<4;i++){ c.save(); c.rotate(i*Math.PI/2 + 0.4); ell(c,0,-8,4.5,9); fs(c,i%2?PAL.cromo:'#e8edf1',1.8); c.restore(); }
       circ(c,0,0,3.5); fs(c,PAL.mostarda,1.8);
@@ -133,11 +135,12 @@ function upgradeIcon(id){
 /* v8.6.15: a lojinha tem 4 grupos; cada um mostra cartões (ícone e nome) e o cartão abre a seção. shopTab = a seção aberta (null = os cartões do grupo) */
 let shopGrupo = 'lanchonete', shopTab = null;
 const SHOP_GRUPOS = [
-  { id:'lanchonete', nome:'Lanchonete', secoes:['melhorias', 'salao', 'decor', 'manut', 'divulga'] },
+  { id:'lanchonete', nome:'Lanchonete', secoes:['cardapio', 'melhorias', 'salao', 'decor', 'manut', 'divulga'] },
   { id:'equipe', nome:'Equipe', secoes:['bia', 'tonhao', 'dani'] },
   { id:'dinheiro', nome:'Dinheiro', secoes:['banco', 'mudanca', 'caixa'] },
   { id:'gurugol', nome:'Gurugol', secoes:['gurugol'] }];
 const SHOP_SECOES = {
+  cardapio:{ nome:'Cardápio', icon:'cardapio', build:g => buildCardapio(g) },
   melhorias:{ nome:'Melhorias', icon:'ventilador', build:g => buildMelhorias(g) },
   salao:{ nome:'Salão', icon:'g-salao', build:g => buildSalao(g) },
   decor:{ nome:'Decoração', icon:'d-samambaia', build:g => buildDecor(g) },
@@ -150,7 +153,7 @@ const SHOP_SECOES = {
   mudanca:{ nome:'Mudança', icon:'mudanca', build:g => buildMudanca(g) },
   caixa:{ nome:'Caixa', icon:'contas', build:g => buildCaixa(g) },
   gurugol:{ nome:'Gurugol', icon:'contas', build:g => buildGurugol(g) }};
-const SHOP_ANTIGAS = { equipe:'tonhao', cursos:'tonhao' };   // nomes das abas antigas, para os testes e capturas
+const SHOP_ANTIGAS = { equipe:'tonhao', cursos:'cardapio' };   // nomes das abas antigas, para os testes e capturas
 function shopGrupoDe(sec){ const g = SHOP_GRUPOS.find(x => x.secoes.indexOf(sec) >= 0); return g ? g.id : 'lanchonete'; }
 function shopAbrir(sec){ sec = SHOP_ANTIGAS[sec] || sec; shopGrupo = shopGrupoDe(sec); shopTab = sec; buildShop(); }
 function shopGrupoAbrir(g){ shopGrupo = g; shopTab = g === 'gurugol' ? 'gurugol' : null; buildShop(); }
@@ -166,7 +169,8 @@ function shopCartoes(grid, grupo){
       if (pior < MANUT.vermelho){ b.classList.add('perigo'); b.setAttribute('aria-label', 'Manutenção: risco de quebra'); }
       else if (pior < MANUT.verde){ b.classList.add('alerta'); b.setAttribute('aria-label', 'Manutenção: precisa de revisão'); }
     }
-    b.addEventListener('click', () => { Sfx.init(); Sfx.tap(); shopTab = id; buildShop(); });
+    if (id === 'cardapio' && game.cardapioNovo.length){ b.classList.add('novo'); b.setAttribute('aria-label', 'Cardápio: tem curso novo que cabe no caixa'); }
+    b.addEventListener('click', () => { Sfx.init(); Sfx.tap(); if (id === 'cardapio') game.cardVer(); shopTab = id; buildShop(); });
     grid.appendChild(b);
   });
 }
@@ -239,10 +243,19 @@ function buildTonhao(grid){
   if (eq.tonhao < top){
     const dif = T[eq.tonhao+1].pay - T[eq.tonhao].pay;
     duo.appendChild(shopBtn('Aumento: +' + fmt(dif) + '/dia', 'btn', pronto && canPay(dif), () => game.setStaff('tonhao', eq.tonhao + 1)));
-    if (!pronto) c.appendChild(el('span', 'cursos-lista', 'Faltam ' + (T[eq.tonhao+1].xp - xp) + ' de experiência: cada curso básico dá +1 e cada avançado +2.'));
+    if (!pronto) c.appendChild(el('span', 'cursos-lista', 'Faltam ' + (T[eq.tonhao+1].xp - xp) + ' de experiência: cada curso básico dá +1 e cada avançado +2. Os cursos ficam no Cardápio.'));
   }
   c.appendChild(duo); grid.appendChild(c);
-  buildCursos(grid);
+  buildCursosFeitos(grid);
+}
+/* v9.0.1: na seção Tonhão, só a lista dos cursos concluídos; comprar é no Cardápio */
+function buildCursosFeitos(grid){
+  const cur = game.save.cursos, l = [];
+  CURSOS.forEach(c => { const n = cursoNivel(cur, c.id); if (c.preco > 0 && n >= 1) l.push('Curso de ' + c.nome + ' (básico)'); if (n >= 2) l.push(c.av.nome + ' (avançado)'); });
+  const card = staffCard(upgradeIcon('cardapio'), 'Cursos de cardápio concluídos', l.length ? '' : 'Nenhum ainda. Os cursos ficam no Cardápio da lojinha.');
+  l.forEach(t => card.appendChild(el('span', null, t)));
+  card.appendChild(shopBtn('Ver cursos', 'btn', true, () => { shopAbrir('cardapio'); return true; }));
+  grid.appendChild(card);
 }
 function buildDani(grid){
   const eq = game.save.equipe, bank = game.save.bank, T = STAFF.tonhao.levels, D = STAFF.dani.levels, C = STAFF.couvert;
@@ -595,6 +608,15 @@ function buildDecor(grid){
 function cursoIcon(c, av){
   return tipCanvas(x => { x.translate(32,32); drawDish(x, c.pratos[0] || c.av.pratos[0], 0, 4, 1.7, false, 'frango', av || !c.pratos[0]); });
 }
+/* seção Cardápio (v9.0.1): o que se serve hoje, a diversidade no Gurugol e os cursos do Tonhão */
+function buildCardapio(grid){
+  const cur = game.save.cursos, sab = pratosSabidos(cur), vir = n => String(n).replace('.', ',');
+  const c = staffCard(upgradeIcon('cardapio'), 'No cardápio hoje (' + sab.length + ' pratos)',
+    sab.map(k => CARDAPIO[k].nome + ' ' + fmt(precoPrato(k, game.ponto, cur))).join(' · ') + '. Diversidade do cardápio no Gurugol: ' + vir(Math.round(avalMenu(cur) * 10) / 10) + ' ★ (cada curso básico dá +' + vir(AVAL.menu.porCurso) + ').');
+  grid.appendChild(c);
+  buildCursos(grid);
+  grid.appendChild(el('span', 'cursos-lista', 'Cada curso também dá experiência ao Tonhão (Equipe › Tonhão).'));
+}
 function buildCursos(grid){
   const sv = game.save, bank = sv.bank, cur = sv.cursos;
   if (game.cursoMsg) grid.appendChild(el('p', 'cursomsg', game.cursoMsg));
@@ -899,6 +921,7 @@ function buildShop(){
   const grid = $('shop-grid');
   clearEl(grid);
   segSync('shop-tabs', shopGrupo);
+  (function(){ const box = $('shop-tabs'); if (box) Array.prototype.forEach.call(box.querySelectorAll('button'), t => { if (t.getAttribute('data-v') === 'lanchonete') t.classList[shopGrupo !== 'lanchonete' && game.cardapioNovo.length ? 'add' : 'remove']('novo'); }); })();   // v9.0.1
   $('shop-ponto').textContent = game.ponto.nome;   // v9: o nome do ponto
   $('shop-bank').textContent = fmt(game.save.bank);
   $('shop-bank').className = 'bank' + (game.save.bank < 0 ? ' neg' : '');   // v8.3: no negativo, em vermelho
@@ -921,7 +944,7 @@ function buildShop(){
   ['salao', 'caixa'].forEach(k => $('ov-shop').classList[shopTab === k ? 'add' : 'remove'](k));
   if (shopTab !== 'mudanca') mudarPede = false;
   if (!aberta){ grid.className = 'shopcards'; return shopCartoes(grid, SHOP_GRUPOS.find(x => x.id === shopGrupo)); }
-  grid.className = 'shopgrid' + (shopTab === 'tonhao' || shopTab === 'dani' ? ' cursos' : ['salao', 'caixa', 'melhorias', 'gurugol', 'decor'].indexOf(shopTab) >= 0 ? ' ' + shopTab : '');
+  grid.className = 'shopgrid' + (shopTab === 'tonhao' || shopTab === 'dani' || shopTab === 'cardapio' ? ' cursos' : ['salao', 'caixa', 'melhorias', 'gurugol', 'decor'].indexOf(shopTab) >= 0 ? ' ' + shopTab : '');
   aberta.build(grid);
 }
 (function(){ const box = $('shop-tabs'); if (box) Array.prototype.forEach.call(box.querySelectorAll('button'), b => b.addEventListener('click', () => { Sfx.init(); Sfx.tap(); shopGrupoAbrir(b.getAttribute('data-v')); }));

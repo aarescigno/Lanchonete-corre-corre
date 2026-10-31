@@ -18,7 +18,10 @@ function drawConversa(c, g, conv){
   const cab = 30 + (f.nota ? 22 : 0), h = cab + lin.length * U.linha + 30;
   c.font = U.texto + 'px ' + FB;
   const w = Math.max(220, Math.max.apply(null, lin.map(l => c.measureText(l).width)) + 40);
-  const x = clamp(a[0] - w/2, 16, TW - 16 - w), y = Math.max(12, a[1] - 24 - h) + (1 - ent) * 12;
+  let x = clamp(a[0] - w/2, 16, TW - 16 - w), y = Math.max(12, a[1] - 24 - h) + (1 - ent) * 12;
+  const ev = conv.evita, cruza = () => ev && x < ev.x + ev.w && x + w > ev.x && y < ev.y + ev.h && y + h > ev.y;
+  if (cruza()){ x = Math.max(16, ev.x - w); if (cruza()) y = ev.y + ev.h; }   // v9.0.1: o balão desvia do botão Pular
+  conv.caixa = { x, y, w, h };
   const bx = clamp(a[0], x + 26, x + w - 26);
   c.save(); c.globalAlpha = ent;
   c.beginPath(); c.moveTo(bx - 12, y + h - 2); c.lineTo(a[0], Math.max(a[1], y + h + 14)); c.lineTo(bx + 12, y + h - 2); c.closePath(); fs(c, '#fff', 3);
