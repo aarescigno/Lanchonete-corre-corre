@@ -114,6 +114,8 @@ function buildEnd(){
     msg += ' Joca: ' + (r.jocaFeitas || 0) + ((r.jocaFeitas || 0) === 1 ? ' tarefa' : ' tarefas') + ' hoje · experiência ' + jocaXp(sv) + '.';
     if (jocaNivelXp(sv) > sv.equipe.joca) msg += ' O Joca já pode subir para o nível ' + (jocaNivelXp(sv) - 1) + '!';
   }
+  if (sv.equipe.cami > 0) msg += ' Cami: ' + (r.camiFeitas || 0) + ((r.camiFeitas || 0) === 1 ? ' tarefa' : ' tarefas') + ' hoje.';   // v9.3
+  if (r.cafesEsp) msg += ' Espressos e cappuccinos: ' + r.cafesEsp + '.';
   if (r.doces || r.docesMarm) msg += ' Doces: ' + (r.doces || 0) + ' na mesa' + (r.docesMarm ? ' e ' + r.docesMarm + ' na marmita' : '') + '.';
   // Modo História (v8.7): o objetivo do capítulo no fim do dia
   if (r.cap) msg += ' Capítulo ' + r.cap.n + ', ' + r.cap.titulo + ': ' + (r.cap.ok ? '✓ Objetivo cumprido!' : r.cap.itens.map(it => (it.ok ? '✓ ' : '') + it.txt).join(' · '));

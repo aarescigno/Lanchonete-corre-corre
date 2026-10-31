@@ -113,7 +113,8 @@ const DANI_CURSOS = [
   { id:'atend',   nome:'Atendimento ao cliente', preco:120 },
   { id:'cozinha', nome:'Organização da cozinha', preco:150 },
   { id:'barista', nome:'Barista iniciante',      preco:180 },
-  { id:'confCaseira', nome:'Confeitaria caseira', preco:180, nivel:2, item:true }   // v9.2: a geladeirinha de doces (DOCES)
+  { id:'confCaseira', nome:'Confeitaria caseira', preco:180, nivel:2, item:true },   // v9.2: a geladeirinha de doces (DOCES)
+  { id:'confGourmet', nome:'Confeitaria gourmet', preco:350, nivel:3, dep:'confCaseira', item:true }   // v9.3: a vitrine refrigerada e os doces gourmet (só depois da caseira)
 ];
 /* v9.2: o curso aparece no ponto de `nivel` em diante (no modo dev, sempre) */
 function cursoDaniVis(c, ponto){ return devLivre() || (c.nivel || 1) <= (ponto || PONTOS[0]).nivel; }
@@ -140,6 +141,20 @@ const JOCA_CURSOS = [
   { id:'espresso', nome:'Barista: espresso',      preco:350, nivel:3, item:true }
 ];
 const JOCA_HOME = { x:640, y:515 };
+/* v9.3, a Cami (atendimento; o Joca passa o bastão para ela na Avenida): chega no nível 1 e sobe só por curso (o salário sobe junto):
+   nível = 1 + cursos feitos. O 2º curso abre o modo "Minhas mesas" (3b-6): até lá fica em "Em breve" (CAMI_MESA_ON) e o nível máximo é 2 */
+const CAMI_HOME = { x:590, y:515 };
+const CAMI_CURSOS = [
+  { id:'agil', nome:'Atendimento ágil',     preco:400, nivel:3 },
+  { id:'mesa', nome:'Atendimento de mesa',  preco:600, nivel:3, dep:'agil' }
+];
+const CAMI_MESA_ON = false;   // vira true na 3b-6 (Minhas mesas)
+function normCamiCursos(c){ const o = {}; CAMI_CURSOS.forEach(x => { if (c && c[x.id]) o[x.id] = 1; }); return o; }
+/* o nível dela pelos cursos: 1 + os feitos (o 2º só conta com o 1º) */
+function camiNivelCursos(save){
+  const c = (save && save.camiCursos) || {};
+  return 1 + (c.agil ? 1 : 0) + (c.agil && c.mesa ? 1 : 0);
+}
 function jocaXp(save){
   const s = save || {};
   return JOCA_XP.curso * JOCA_CURSOS.filter(c => s.jocaCursos && s.jocaCursos[c.id]).length + Math.floor(Math.max(0, +s.jocaTar || 0) / JOCA_XP.tarefas);
@@ -210,7 +225,7 @@ function pedePrato(tipo, game, semPf, veg){
 const MAIS = { cozinha:0.4, salgado:0.8 };   // v8.6.9: o 2º item sai de pedePrato(..., true), pelos gostos do tipo, sem o PF
 /* pontos de atendimento (v8.3.8): as ações da Bia não dão mais dinheiro, dão pontos (a nota da lanchonete virá
    deles). A corrente e a cor certa também viram pontos */
-const PONTOS_ACAO = { sit:10, take:15, deliver:20, clear:10, coffee:5, juice:5, bill:20, cor:15, marmita:20, lote:20, doce:5 };
+const PONTOS_ACAO = { sit:10, take:15, deliver:20, clear:10, coffee:5, juice:5, bill:20, cor:15, marmita:20, lote:20, doce:5, cafeEsp:5 };
 
 /* calçada (v7.5): o mundo vai de -CALCADA.w (a rua) até W; a espera fica lá fora, no lugar da fila de antes.
    Tela larga (v7.6): a tela tem TW px e mostra o mundo inteiro, sem rolar (Game.cam = CALCADA.w: onde o mundo
@@ -235,6 +250,7 @@ const DOOR  = { x:-300, y:106 };                     // de onde a freguesia vem 
    o som, `dir` px (para a direita) */
 const HUDX = { fila:CALCADA.w / 2, dir:CALCADA.w };
 const STATIONS = {
+  espresso:{ ap:{x:744,y:350}, rect:{x:694,y:318,w:46,h:56} },   // v9.3: a máquina de espresso (curso do Joca), no chão ao lado da bancada do café, na mesma boca de atendimento
   order:  { ap:{x:744,y:150}, rect:{x:766,y:96, w:194,h:108} },
   plates: { ap:{x:744,y:256}, rect:{x:766,y:206,w:194,h:98 } },
   coffee: { ap:{x:744,y:350}, rect:{x:766,y:306,w:97, h:88 } },
@@ -509,6 +525,8 @@ const STAFF = {
   dani:    { levels:[ null, { speed:0.4, tasks:1, pay:0, xp:0 }, { speed:0.5, tasks:2, pay:15, xp:4 }, { speed:0.65, tasks:2, pay:20, xp:8 }, { speed:0.8, tasks:3, pay:25, xp:13 } ] },
   // Joca (v9.2): o conhecido da Dani; entra na área industrial no nível 2 (R$ 45/dia) e sobe até o 4, como ela; faz o básico da casa
   joca:    { levels:[ null, null, { speed:0.5, tasks:2, pay:45, xp:0 }, { speed:0.65, tasks:2, pay:60, xp:6 }, { speed:0.8, tasks:3, pay:75, xp:12 } ] },
+  // Cami (v9.3): garçonete de rodízio que o Joca indica; entra na Avenida já rápida e fica com o básico. Sobe só por curso (CAMI_CURSOS)
+  cami:    { levels:[ null, { speed:0.9, tasks:3, pay:120 }, { speed:1.1, tasks:4, pay:140 }, { speed:1.25, tasks:4, pay:160, mesas:true } ] },
   // couvert artístico: só do nível 3 do salão em diante (Avenida Brasil, etapa 3 do plano)
   couvert: { pay:80, fee:3, effect:0.2, feeCut:0.5, nivel:3 },
   // ambiente da Garagem (v7.4.3): TV e som ligados o dia todo; o custo é a conta de luz (pay) e entra na folha
@@ -539,7 +557,7 @@ const DANI_TASKS = [
 ];
 /* v9.2: as tarefas básicas da casa (lixo, pratos sujos, louça, água/suco da espera, marmitas): ficam com o ajudante mais novo do dia */
 const BASICAS = ['lixo', 'pratos', 'lavar', 'suco', 'marmita'];
-const DANI_PADRAO = ['pratos', 'lavar'], JOCA_PADRAO = ['lixo', 'lavar'];
+const DANI_PADRAO = ['pratos', 'lavar'], JOCA_PADRAO = ['lixo', 'lavar'], CAMI_PADRAO = ['lixo', 'pratos', 'lavar'];
 /* tarefa que a Dani já pode exercer (a do suco da espera depende da máquina) */
 /* a tarefa como o ponto a chama (v9: na área industrial a espera é suco, não água; v9.1: na Avenida, água saborizada) */
 function daniTaskDe(t, ponto){
@@ -547,7 +565,7 @@ function daniTaskDe(t, ponto){
   if (t.id !== 'suco' || n < 2) return t;
   return n === 2 ? Object.assign({}, t, { name:'Levar o suco da espera', short:'Suco' }) : Object.assign({}, t, { name:'Levar a água saborizada', short:'Água' });   // v9.1: pela bebida do ponto
 }
-function daniTaskOk(id, up){ const t = DANI_TASKS.find(d => d.id === id); return !!t && (!t.need || !!(up && up[t.need])); }
+function daniTaskOk(id, up){ const t = DANI_TASKS.find(d => d.id === id); return !!t && (!t.need || !!(up && up[t.need])) && !(id === 'cafe' && up && up.espresso); }   // v9.3: com o espresso, o cafezinho é do Joca
 /* prato caprichado (acerto crítico do Tonhão): +1 coração e bônus na entrega */
 const CRIT = { bonus:10, vipBonus:20 };   // pontos (v8.3.8; eram R$)
 const WASH = { base:0.3, perPile:2.5 };               // segundos na pia
@@ -563,6 +581,7 @@ function payroll(eq){
   let v = STAFF.tonhao.levels[eq.tonhao].pay;
   if (eq.dani) v += STAFF.dani.levels[eq.dani].pay;
   if (eq.joca && !eq.jocaFora) v += STAFF.joca.levels[eq.joca].pay;   // v9.2
+  if (eq.cami && !eq.camiFora) v += STAFF.cami.levels[eq.cami].pay;   // v9.3
   if (eq.couvert) v += STAFF.couvert.pay;
   if (eq.tv) v += STAFF.tv.pay;
   if (eq.som) v += STAFF.som.pay;
@@ -571,16 +590,17 @@ function payroll(eq){
 }
 /* v8.1: dinheiro comprometido. A folha e a divulgação ficam reservadas ao abrir o dia (e saem no fim dele); o que não
    couber fica de fora, nesta ordem (a divulgação vira boca a boca antes de tudo) */
-const FOLHA_CORTE = [['couvert', 'Couvert'], ['som', 'som'], ['tv', 'TV'], ['tvs', 'TVs'], ['jocaUp', 'aumento do Joca'], ['dani', 'aumento da Dani'], ['tonhao', 'aumento do Tonhão'], ['jocaFora', 'o Joca']];   // v9.2: a ordem final ganha o Anselmo e a Cami na 3b-3 e na 3b-5
+const FOLHA_CORTE = [['couvert', 'Couvert'], ['som', 'som'], ['tv', 'TV'], ['tvs', 'TVs'], ['camiFora', 'a Cami'], ['jocaUp', 'aumento do Joca'], ['dani', 'aumento da Dani'], ['tonhao', 'aumento do Tonhão'], ['jocaFora', 'o Joca']];   // v9.3: a Cami; a ordem final ganha o Anselmo (antes dela) na 3b-5
 /* tira de eq o próximo item da folha (o Tonhão e a Dani perdem 1 nível de aumento; a Dani não sai da equipe) e devolve o nome; nada a tirar: null */
 function folhaCorta(eq){
-  const c = FOLHA_CORTE.find(k => k[0] === 'tonhao' ? eq.tonhao > 0 : k[0] === 'dani' ? eq.dani > 1 : k[0] === 'jocaUp' ? eq.joca > 2 && !eq.jocaFora : k[0] === 'jocaFora' ? eq.joca > 0 && !eq.jocaFora : eq[k[0]]);
+  const c = FOLHA_CORTE.find(k => k[0] === 'tonhao' ? eq.tonhao > 0 : k[0] === 'dani' ? eq.dani > 1 : k[0] === 'jocaUp' ? eq.joca > 2 && !eq.jocaFora : k[0] === 'jocaFora' ? eq.joca > 0 && !eq.jocaFora : k[0] === 'camiFora' ? eq.cami > 0 && !eq.camiFora : eq[k[0]]);
   if (!c) return null;
   if (c[0] === 'tonhao' || c[0] === 'dani') eq[c[0]]--;
   else if (c[0] === 'jocaUp') eq.joca--;   // o Joca perde 1 nível de aumento (não sai da equipe)
   else if (c[0] === 'jocaFora') eq.jocaFora = true;   // "não vem": só neste dia (normEquipe não guarda), continua contratado
+  else if (c[0] === 'camiFora') eq.camiFora = true;   // v9.3: idem para a Cami
   else eq[c[0]] = c[0] === 'tvs' ? 0 : false;
-  return c[0] === 'jocaFora' ? 'o Joca (sem salário hoje)' : c[1];
+  return c[0] === 'jocaFora' ? 'o Joca (sem salário hoje)' : c[0] === 'camiFora' ? 'a Cami (sem salário hoje)' : c[1];
 }
 /* o que fica de fora ao abrir o dia com `bank` no caixa (sem mexer em eq) */
 function folhaCortes(eq, div, bank){
@@ -598,6 +618,7 @@ function folhaItens(eq, div){
   if (eq.tonhao) out.push('aumento do Tonhão');
   if (eq.dani > 1) out.push('aumento da Dani');
   if (eq.joca > 0) out.push('Joca');
+  if (eq.cami > 0) out.push('Cami');
   if (eq.couvert) out.push('couvert');
   if (eq.tv) out.push('TV');
   if (eq.som) out.push('som');
@@ -619,7 +640,7 @@ function dishStock(day, up){
 /* sucos: alguns grupos pedem junto com a comida; cada copo entregue vale JUICE.price */
 const JUICE = { price:8, prep:0.6 };
 /* valor de cada bebida; jogar uma na lixeira custa metade dele (a da espera, 'suco', vale o preço da BEBIDA_ESPERA) */
-const DRINK_PRICE = { coffee:3, juice:JUICE.price, doce:7, pote:7 };   // v9.2: o doce (e o pote da marmita) também custa R$ 7 se for para o lixo (metade)
+const DRINK_PRICE = { coffee:3, juice:JUICE.price, doce:7, pote:7, cafeesp:10 };   // v9.2: o doce (e o pote da marmita) também custa R$ 7 se for para o lixo (metade)
 /* bebida da espera (v7.5, melhoria no lugar da Água saborizada; o que se serve vem do ponto, BEBIDA_ESPERA): `pede` s
    depois de chegar ao lugar lá fora, o grupo pede 1 copo por pessoa; a Bia (ou a Dani) pega na estação e entrega,
    e quem bebe perde a paciência da espera `slow` mais devagar. Quem sai da espera antes cancela o que não foi pego */
@@ -727,7 +748,7 @@ const AVAL = {
   minimo:0.9,
   prato:[[2.5, 4.5], [3, 4.7], [3.5, 5], [3.8, 5], [4, 5]],   // v8.8: 5 níveis do Tonhão
   menu:{ base:2, porCurso:0.6 },   // v8.6.9: pelos cursos básicos que o Tonhão fez (a Diversidade do cardápio)
-  amb:{ base:2, tv:0.5, som:0.5, maquina:0.5, ventilador:0.5, cafe:0.5, couvert:1, lixo:-1, planta:0.3, rosa:0.25, toalha:0.5, tvs:0.5, tvsPlus:0.75 }
+  amb:{ base:2, tv:0.5, som:0.5, maquina:0.5, ventilador:0.5, cafe:0.5, couvert:1, lixo:-1, planta:0.3, rosa:0.25, toalha:0.5, tvs:0.5, tvsPlus:0.75, doce:0.25 }
 };
 const AVAL_CRIT = [
   { id:'espera', nome:'Espera por mesa',
@@ -959,9 +980,22 @@ const HIST_DIVULGA = {
           { q:'bia', s:'Vou ver na Divulgação da lojinha o que compensa.' } ] };
 /* v9.2, doces da Confeitaria caseira (a geladeirinha de doces): cada doce vale R$ 7 na conta (ingrediente R$ 2); ao terminar de comer, o grupo
    pode pedir `randi(1, size)` doces (chance por tipo, VIP +vip; nunca o entregador); a marmita vem "+ doce" em `marmita` das vezes */
-const DOCES = { preco:7, ingred:2, vip:0.2, marmita:0.3,
+/* v9.3: com o curso Confeitaria gourmet (up.confGourmet) a vitrine refrigerada serve os gourmet, que saem do sorteio dos caseiros: R$ 16 cada
+   (ingrediente R$ 4) e +AVAL.amb.doce no Ambiente de quem comeu. `todos` dá o índice do desenho (0 a 2 caseiros, 3 a 5 gourmet) */
+const DOCES = { preco:7, ingred:2, vip:0.2, marmita:0.3, gourmetPreco:16, gourmetIngred:4,
   caseira:[ { id:'bolo', nome:'Bolo de pote' }, { id:'brigadeiro', nome:'Brigadeiro de colher' }, { id:'pudim', nome:'Pudim' } ],
+  gourmet:[ { id:'shortcake', nome:'Shortcake de morango' }, { id:'torta', nome:'Torta de limão' }, { id:'brigGourmet', nome:'Brigadeiro gourmet' } ],
   pede:{ familia:0.5, vovos:0.6, estudante:0.3, executiva:0.2, negocios:0.4, turma:0.3, motorista:0.3 } };
+DOCES.todos = DOCES.caseira.concat(DOCES.gourmet);
+function docesLista(up){ return up && up.confGourmet ? DOCES.gourmet : DOCES.caseira; }
+function docePreco(up){ return up && up.confGourmet ? DOCES.gourmetPreco : DOCES.preco; }
+function doceIngred(up){ return up && up.confGourmet ? DOCES.gourmetIngred : DOCES.ingred; }
+function doceIdx(id){ return Math.max(0, DOCES.todos.findIndex(d => d.id === id)); }
+/* v9.3, cafés da máquina de espresso (curso do Joca, só na Avenida): pedidos de fim de refeição, como os doces. prep: segundos para tirar; preco: R$ na conta */
+const CAFES = { ingred:2, vip:0.1,
+  lista:[ { id:'espresso', nome:'Espresso', preco:8, prep:0.8 }, { id:'cappuccino', nome:'Cappuccino', preco:12, prep:1.2 } ],
+  pede:{ executiva:0.5, negocios:0.6, vovos:0.4, familia:0.2, estudante:0.3 } };
+function cafeDe(id){ return CAFES.lista.find(c => c.id === id) || CAFES.lista[0]; }
 /* v9.0.4: a lojinha abre aos poucos no Modo História. Cada cartão: dia mínimo, garantia (ate), as reclamações do Gurugol
    no dia do gatilho e a conversa do fim do dia. save.libera[id]: 0 fechado | 'pend' | 1 aberto (selo "novo") | 2 aberto e visto */
 const liberaTres = (av, i, lim) => av.filter(a => a.s && a.s[i] != null && a.s[i] <= lim).length >= 3;   // v9.1.1: 3 notas do dia no critério i, até lim
@@ -1004,6 +1038,13 @@ const LIBERA = [
             { q:'dani', s:'Lembra do Joca, do meu colégio? Tá procurando serviço e é trabalhador.' },
             { q:'tonhao', s:'Esse salão é grande demais pra vocês duas, mesmo.' },
             { q:'joca', s:'Lixo, louça, mesa suja: pode deixar comigo!' },
+            { q:'bia', s:'Tá na lojinha, em Equipe.' } ] },
+  // v9.3, Avenida: no fim do dia do curso de espresso do Joca, ele indica a Cami e passa o bastão do básico
+  { id:'cami', nivel:3, dia:1, ate:999, gatilho:(st, av, g) => !!(g.save.jocaCursos && g.save.jocaCursos.espresso), reclama:['Tinha pouca gente pra cuidar de tanta mesa.', 'A louça acumulou enquanto o café saía.'],
+    falas:[ { q:'joca', s:'Agora que eu tô na máquina de café, a louça vai acumular...' },
+            { q:'bia', s:'E o salão daqui não perdoa.' },
+            { q:'joca', s:'Tem a Cami, do meu curso de barista. Ela era garçonete de rodízio: rápida que só!' },
+            { q:'cami', s:'Me mostra onde fica tudo que eu dou conta!' },
             { q:'bia', s:'Tá na lojinha, em Equipe.' } ] } ];
 function liberaOf(id){ return LIBERA.find(l => l.id === id) || null; }
 /* v9.1.1: o dia da carreira em que o save chegou ao ponto de agora (save.pontoDia); n = o dia que terminou (padrão: o anterior ao save.dia,
@@ -1011,9 +1052,9 @@ function liberaOf(id){ return LIBERA.find(l => l.id === id) || null; }
 function diaNoPonto(sv, n){ return (n == null ? sv.dia - 1 : n) - sv.pontoDia + 1; }
 const BIA_IDS = ['tenis', 'corrida', 'bandeja', 'sudoku'];
 function upgradeCartao(id){ return BIA_IDS.indexOf(id) >= 0 ? 'bia' : 'melhorias'; }
-const HIST_NOMES = { bia:'Bia', tonhao:'Tonhão', dani:'Dani', joca:'Joca' };
+const HIST_NOMES = { bia:'Bia', tonhao:'Tonhão', dani:'Dani', joca:'Joca', cami:'Cami' };
 const CAIXA_MAX = 14;                                 // livro-caixa (v7.2): quantos dias da carreira ficam guardados
-const VERSAO = 'v9.2.1';                            // vai no resumo do Caixa
+const VERSAO = 'v9.3';                            // vai no resumo do Caixa
 const DIVULGA_DIA = 4;                                // antes disso, o movimento é o da inauguração (sem custo); v9.0.2: dia 4, e o padrão é o boca a boca
 function divulgaAberta(n, sv){ return devLivre() || n >= DIVULGA_DIA && !(sv && sv.convDiv === 'pend'); }   // no modo dev, desde o dia 1; v9.0.3: no Modo História, só depois da conversa
 function divulgaOf(id){ return DIVULGA.find(d => d.id === id) || DIVULGA[0]; }   // v9.0.2: sem escolha, boca a boca
