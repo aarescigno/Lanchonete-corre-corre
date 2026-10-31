@@ -1,0 +1,64 @@
+# Lanchonete Corre-Corre
+
+Jogo de navegador de gerenciamento de restaurante, em um único arquivo HTML com canvas 2D, em português do Brasil. Versão atual: **v9**. Estado do projeto, histórico, artifact e ranking: `docs/RESUMO.md`. Roteiro, uma etapa por sessão: `docs/PLANO.md` (quando o pedido for "a próxima etapa", leia só a etapa da vez). Retornos de jogadores (texto original e destino): `docs/PROPOSTAS.md`; registre lá cada retorno novo.
+
+## Regras do projeto
+- **Jogo original:** os personagens são a Bia (garçonete) e o Chef Tonhão. Não usar nomes, arte nem logos de jogos existentes, nem citar "Diner Dash" ou "Flo" na interface.
+- **Código em partes, publicado em arquivo único:** edite só em `src/` (veja abaixo); `python3 montar.py` junta as partes em `lanchonete.html`, que tem HTML, CSS e JS inline e é o que se publica (o único recurso externo é o Google Fonts). Nunca edite `lanchonete.html` à mão: ele é gerado, mas fica no git (artifact, app e testes usam ele). Antes de publicar ou fazer commit, monte (`tests/run_all.sh` já monta).
+- **Sem invólucro:** o arquivo montado não tem `<!doctype>`, `<html>`, `<head>` nem `<body>` (o publicador envolve) e começa com `<title>`.
+- **Nome fixo:** o nome do arquivo não muda. Versões antigas vão para `versoes/vN-fonte.html` (exato) e `versoes/vN.html` (com a 1ª linha de `versoes/v1.html` como invólucro).
+- **Palavras do dia a dia:** na interface, prefira os termos mais comuns no Brasil (ex.: "QUEBRADO", e não "FORA DE SERVIÇO").
+- **Diversidade e movimento:** clientes diversos, sem estereótipos; respeitar `prefers-reduced-motion`.
+- **Código:** a lógica (`Game.update`) fica separada do desenho (`render`); `window.__game` e `window.__lcc` ficam expostos para os testes.
+
+## Partes do código (`src/`, juntadas em ordem pelo nome)
+O JS fica todo dentro de um `(function(){ ... })()` que abre em `02-telas.html` e fecha em `43-telas.js`; as partes `.js` não rodam sozinhas.
+- `0x` topo, CSS e telas (`00-topo.html`, `01-estilo.css`, `02-telas.html` com o menu, a lojinha e os painéis `#ov-*`)
+- `1x` lógica: `10-constantes.js` (cardápio, metas, `MANUT`, `AVAL`, `DECOR`, cursos...), `11-base.js`, `12-clientes.js`, `13-cozinha.js` (Tonhão), `14-bia.js`, `15-dani.js`, `16-jogo.js` (classe `Game`), `17-treino.js` (Missão zero), `18-abertura.js`, `19-conversa.js` (as conversas do Modo História)
+- `2x` desenho: `20-desenho-base.js`, `21-cenario.js`, `22-salao-hud.js`, `23-render.js`, `24-treino.js`, `25-abertura.js`, `26-conversa.js`
+- `3x`/`4x` interface: `30-ranking.js`, `40-interface.js` (menu, Como jogar), `41-lojinha.js`, `42-resultados.js` (fim do dia), `43-telas.js` (troca de telas, entrada, laço)
+- Para achar seções e funções: `tests/mapa.sh [filtro]`. O que cada parte tem, versão a versão: `docs/PARTES.md` (só quando precisar).
+
+## Economia de tokens
+- **Leia só a parte que interessa** em `src/`, e não `lanchonete.html` (~200 KB, ~100 mil tokens pelo Read). `tests/mapa.sh [filtro]` mostra parte e linha de seções, classes e funções.
+- **Buscas:** grep e Glob em `src/`, `tests/` e `docs/`; deixe de fora `lanchonete.html` (cópia montada), `versoes/` (versões antigas inteiras, ~1,4 MB) e `capturas/`.
+- **Edições grandes:** use scripts Python com substituição exata (`assert s.count(a)==1`), em vez de reler o arquivo.
+- **Testes:** `tests/run_all.sh` (só o resumo de cada teste); `--tudo` acrescenta `menu_fit` e `balance`. Não rode `node smokeN.js` sem `| tail`.
+- **Capturas:** confira recortes ampliados (PIL `crop`) só do trecho alterado, em vez de várias telas inteiras.
+- **Docs:** leia `docs/spec-vN.md` e `docs/HISTORICO.md` só quando o assunto pedir.
+- **Docs grandes por faixa:** nunca leia `docs/PLANO.md`, `docs/PROPOSTAS.md` ou `docs/RESUMO.md` inteiros. `tests/indice.sh PLANO|PROPOSTAS|RESUMO [filtro]` mostra cada seção com as linhas; leia só a faixa com `offset` e `limit`. **Fechar etapa arquivando:** ao terminar uma etapa, mova o texto dela do `PLANO.md` para o `docs/PLANO-FEITO.md` e os retornos entregues do `PROPOSTAS.md` para o `docs/PROPOSTAS-FEITAS.md` com `python3 ferramentas/arquiva.py` (sem ler os arquivos); na tabela Situação ficam só as 3 últimas feitas. Os arquivos `-FEITO(S)` são só para consulta.
+- **Anexar sem reler:** retorno novo vai no topo do `docs/PROPOSTAS.md` com `python3 ferramentas/anota.py docs/PROPOSTAS.md <<'EOF' ... EOF` (a entrada começa com `## data — quem: assunto`), sem ler o arquivo. No `RESUMO.md`, para a linha de versão, leia só a faixa da seção (`tests/indice.sh RESUMO`) ou o `tail`.
+- **Bloqueado no Read** (`.claude/settings.json`): `lanchonete.html`, `versoes/**` e `capturas/**`. Pelo Bash (montar, testes, `diff` de publicação, PIL) continua liberado.
+- **Hábitos:** uma etapa por sessão; sessão nova (ou `/clear`) depois de umas 15 trocas; varreduras largas com o agente `Explore`, mudança pontual com `tests/mapa.sh` e Read por faixa.
+
+## Modelo e esforço por sessão (economia de custo)
+- **Regra geral:** todo plano a ser implementado é primeiro planejado pelo Opus e separado em blocos (sessões) para serem executados por modelos mais baratos (Sonnet ou Haiku). O único objetivo é economizar o gasto do plano: o Opus não executa o que um modelo mais barato dá conta de fazer.
+- **Planejar com Opus, executar com o mais barato que der conta:** o planejamento de uma etapa (escrever ou revisar a etapa em `docs/PLANO.md`, desenhar regras de jogo, balanceamento novo, arquitetura) fica com o Opus, em esforço alto. A execução de uma sessão já planejada pode ir para o Sonnet (o padrão para código de jogo, desenho no canvas e testes) ou para o Haiku (só tarefas mecânicas: trocar textos, números, docs, registrar retornos em `docs/PROPOSTAS.md`, montar e publicar).
+- **Ao planejar uma etapa, deixe as decisões tomadas:** o plano já diz o que fazer, não as opções. Valores (preços, tempos, metas), nomes e textos da interface, partes de `src/` e funções que mudam, o que cada smoke novo confere e o alvo do `balance.js`. Assim o modelo mais fraco só executa, sem precisar raciocinar sobre o jogo. O que ficar em aberto, diga como decidir (ex.: "se o balance passar de 95%, baixe X para Y").
+- **Cada etapa ou sessão do plano termina com uma linha** `Modelo: Sonnet, esforço médio` (ou o que couber) e o motivo em poucas palavras. Critério: Haiku em esforço baixo para mudanças mecânicas e localizadas; Sonnet em esforço médio para o código com plano detalhado; Sonnet em esforço alto ou Opus quando a sessão ainda tem decisão de design, balanceamento por tentativa e erro, depuração difícil ou mexe em muitas partes ao mesmo tempo.
+- **Na hora de executar,** antes de começar, se a sessão pedir mais (ou menos) do que o modelo indicado, avise o usuário em uma linha e sugira a troca, em vez de seguir gastando.
+
+## Testes (`cd tests`)
+- `./run_all.sh` monta `lanchonete.html`, gera `game.js` e `botpage.js`, confere a sintaxe e roda todos os smokes (só o resumo); `--tudo` acrescenta `menu_fit` e `balance`.
+- `node balance.js [N]` (bot por dia; alvos: sem equipe ~40–70% das metas nos dias 3 a 7, `EQUIPE=auto` ~85–95%; `PONTO=industrial` joga os dias 8 a 10 na área industrial, v9), `node carreira.js [N]` (campanha de 14 dias; `DIAS=35` chega à área industrial e mostra os caps. 4 e 5; `MUDA=0` fica na Garagem; `PONTO_CFG='{"cardapio":1.4}'` troca números do ponto novo; o smoke da v9 é o `smoke38`), `node emprestimo.js` (estratégias de empréstimo), `python3 menu_fit.py` (o menu não rola), `python3 shot_vX.py` (capturas em `capturas/vX`).
+- O `harness.js` desliga os imprevistos (`load({imprevistos:true})` liga), marca a abertura como vista e desliga o Modo História (sem reforma nem conversas; `load({historia:true})` liga, como no `smoke34`). `node carreira.js` joga a História (`HIST=0` sem ela) e mostra a linha `HISTORIA`.
+- Variáveis de ambiente, alvos e histórico do balanceamento, coordenadas da tela nos smokes e o que cada `shot_*.py` captura: `docs/TESTES.md` (só quando o assunto pedir).
+
+## Editor de desenhos (`ferramentas/`)
+- `python3 ferramentas/editor.py` abre em http://localhost:8765 o editor das cenas da abertura: o jogo roda escondido (com um gancho `window.__ed` só no arquivo do editor, nunca no jogo) e cada número das funções de `src/25-abertura.js` vira valor arrastável (pontos x,y na cena, números no código, setas). "Salvar em src/" grava o arquivo e monta o `lanchonete.html`; sem o servidor (`--so-montar`, arquivo aberto direto), baixa o arquivo ou copia as mudanças para colar no chat. Outros arquivos: `python3 ferramentas/editor.py src/20-desenho-base.js`. Só edita números dentro de funções (as cenas de `AB_CENAS` e as `function`), não as `const` soltas como `AB_CHAO`.
+- **Artifact do editor:** https://claude.ai/artifact/AbUM3hC22aaTmxAVYq5b2F (privado; sem salvar nem baixar, só "Copiar mudanças"). Para atualizar: `python3 ferramentas/editor.py --artifact` e publique `ferramentas/editor-artifact.html` nesse `url` (só quando o usuário pedir ou quando as cenas mudarem e ele for usar o editor; o editor carrega o jogo inteiro, então as cenas são as da hora em que foi publicado).
+- Quando o usuário mandar "Ajustes feitos no editor de desenhos" (linhas `-`/`+` com arquivo:linha), aplique em `src/` como vierem.
+
+## Git
+- **Sem branches parados:** todo trabalho termina com PR para o `claude/main` (o branch padrão) e merge, para o `claude/main` ser sempre a versão mais nova (o GitHub Pages publica a partir dele, e o workflow confere `python3 montar.py --check`).
+- **Não tente apagar branches:** o GitHub recusa o `git push --delete` daqui; o usuário apaga à mão. Depois do merge, só avise que o branch pode ser apagado.
+
+## Publicar (Artifact do claude.ai)
+- **Só quando o usuário mandar:** publicar no artifact custa tokens (cada chamada relê a conversa inteira). Não publique por conta própria ao terminar uma versão: termine o trabalho no GitHub (PR e merge, como em **Git**, que não muda) e avise que a versão está pronta para publicar. Publique quando o usuário pedir (ex.: "publica o artefato").
+- **Publicar barato:** não leia a página inteira antes (`read` sem `path` traz ~100 mil tokens). A 1ª publicação da sessão é recusada e salva a versão no ar num arquivo (o caminho vem na recusa); desde 22/10, publicar de novo sem ler esse arquivo inteiro também é recusado. Em vez de ler (~100 mil tokens), compare no terminal esse arquivo com o `versoes/vN-fonte.html` da última versão publicada (`diff`: só o invólucro do publicador na 1ª linha e `</body></html>` no fim podem mudar). Se for igual, peça ao usuário para confirmar e publique com `force:true` (gastou ~5 mil tokens na v7.6). Se houver mudanças de outra pessoa, junte em `src/` antes.
+- Depois de publicar, registre o número da versão do artifact em `docs/RESUMO.md` (com PR, como o resto).
+- Rode `python3 montar.py` antes; o que se publica é o `lanchonete.html` montado.
+- **URL:** https://claude.ai/artifact/MJxrgDg8S4akvg47SoQAvj. Publique `lanchonete.html` nesse `url`.
+- **Capacidades:** omita `capabilities`, para manter o db do ranking e o `user` (desde a v8.3.3 o jogo é offline e não os usa; quando o ranking compartilhado voltar, nos ajustes finais, será preciso declarar a leitura da coleção `ranking-campanha`, ver `docs/RESUMO.md`).
+- **Arquivos extras:** os já publicados continuam lá. Envie em `files` só o `versoes/vN.html` novo, porque o painel Versões tem um link para ele.
+- **Nova versão:** guarde a atual em `versoes/`, atualize o selo `vtag`, a constante `VERSAO` (vai no resumo do Caixa) e a lista do painel `#ov-ver`, escreva `docs/spec-vN.md` e atualize `docs/RESUMO.md`.

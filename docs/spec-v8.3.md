@@ -1,0 +1,33 @@
+# v8.3 — Carreira contínua e banco (etapa 2b do plano)
+
+Pedido do usuário em 22/10 ("novo dia, novo acúmulo, novo serviço, nova vida"; ver `docs/PLANO.md`, etapa 2b). Decisões confirmadas em 23/10, todas as sugeridas no plano: meta não batida segue sem estrelas; no 4º dia negativo, o banco empresta à força; empréstimo de 10% em 5 parcelas, até R$ 1.000 na Garagem; a folha que não cabe no dinheiro continua podendo ficar de fora, como opção na lojinha; ranking pelo lucro acumulado, com o dia alcançado; Reiniciar no meio do dia continua como na v8.2.3.
+
+## Antes (v8.2.3)
+A carreira era uma lista de 7 dias: o jogador escolhia o dia no menu (chips 0 a 7), só abria o seguinte batendo a meta e podia repetir qualquer dia ("Repetir dia"). O dinheiro nunca ficava negativo (`Math.max(0, ...)`). O ranking da carreira somava o melhor faturamento de cada dia (`save.best`).
+
+## Agora
+- **Campanha:** o menu tem "Continuar: dia N" (ou "Começar o dia 1"), que abre o próximo dia (`save.dia`), com a lojinha antes, do dia 2 em diante. Saem os chips de dia, o "Repetir dia" e a tela final do dia 7 (`#ov-final`). O fim do dia tem "Lojinha e dia N+1" sempre, com ou sem a meta. Tudo continua de um dia para o outro: dinheiro, móveis, equipe, melhorias e desgaste.
+- **Meta:** continua (lucro, 2 estrelas e expert), mas não trava: sem a meta, o dia fica sem estrelas ("o dia fica sem estrelas, mas a lanchonete abre amanhã de novo"). O save soma as estrelas (`save.estrelas`) e o lucro de cada dia (`save.lucroTot`, pode ser negativo); a linha do caixa guarda as estrelas do dia (`st`, ★ na coluna Dia).
+- **Dias 8 em diante:** `diaOf(n)` dá o perfil do dia 7 (sem a gripe do Tonhão, agora `DAYS[6].gripe`), com o dia da semana (`SEMANA`; o dia 1 é domingo, o 6 é sexta): fator `f` nos grupos e nas metas (segunda 0,85, terça 0,9, quarta e quinta 1, domingo 1,05, sexta 1,1, sábado 1,15) e mais gente de um tipo (domingo e sábado, famílias; quinta, executivas; sexta, entregadores). A introdução mostra "Dia 12 · Quinta-feira" e a nota do dia. O fim do dia 7 avisa que acabou a semana de inauguração.
+- **Caixa no negativo:** contas, ingredientes, folha, divulgação, parcelas e a multa de largar o dia saem mesmo sem dinheiro. `save.neg` conta os dias seguidos que fecham no negativo (fechar no positivo zera). Pode fechar no negativo por `BANCO.neg` (3) dias; se fechar no negativo de novo (o 4º), o banco cobre o que falta (arredondado a R$ 10), à força, com juros de `BANCO.forcado` (20%), somados ao que já se devia, em 5 parcelas. Avisos no menu, na introdução (quantos dias faltam), no alto da lojinha (dinheiro em vermelho) e no fim do dia. No negativo, nada se compra.
+- **Banco** (aba nova na lojinha): empréstimo de R$ 200, R$ 500 ou R$ 1.000 (até `PONTOS.credito`, R$ 1.000 na Garagem), com juros de `BANCO.juros` (10%) sobre o valor, em `BANCO.parcelas` (5) parcelas pagas no fim de cada dia, depois das contas (fora do lucro do dia, que é a meta). Um por vez (`save.emp = { resto, n }`); "Quitar agora" paga o resto de uma vez, sem desconto. A introdução e a linha da folha da lojinha lembram a parcela; o fim do dia mostra "Parcela do banco" e "Banco (à força)".
+- **Folha sem dinheiro:** chave na aba Banco (`save.corta`, ligada por padrão): ligada, o que não cabe no dinheiro fica de fora ao abrir o dia, como antes (divulgação, couvert, som, TV, Dani e aumento do Tonhão); desligada, paga tudo e o caixa pode ficar negativo (o aviso da compra que come a folha passa a ser "caixa no negativo").
+- **Caixa:** coluna Banco (empréstimo recebido, +, e parcelas pagas, −), "Banco (parcelas)" no "para onde foi" e no resumo para o WhatsApp (que ganha o dia, o que falta ao banco e o lucro acumulado). As linhas guardam dias acima de 7.
+- **Recomeçar do zero** (no lugar de "Zerar progresso"): o 1º toque pede confirmação ("Confirmar: apagar a carreira e voltar ao dia 1?"), o 2º apaga; a Missão zero continua feita. Some para quem ainda não jogou.
+- **Missão zero:** botão próprio no menu (em destaque para quem nunca treinou); no fim, "Começar o dia 1" vira "Continuar: dia N" no meio da campanha.
+- **Ranking da carreira:** o lucro acumulado (`save.lucroTot`), com o último dia jogado; só entra acima de zero. Como a conta mudou, vai para uma coleção nova, `ranking-campanha` (e a lista `campanha` do `lcc2_ranking` no aparelho); a antiga (`ranking-carreira`, faturamento dos melhores dias) fica guardada e não aparece.
+- **Save antigo:** segue do maior dia alcançado (`maxDay`, ou o dia seguinte ao último com estrela), com o dinheiro que tem e as estrelas somadas; `maxDay`, `best` e `stars` saem do save. No modo dev, chips de 1 a 10 levam o save dev a qualquer dia.
+- **Turno sem fim:** não deixa o caixa abaixo de zero (nem de onde estava, se já estava no negativo).
+- "Como jogar" ganha a dica da campanha e do banco.
+
+## Calibração
+- `carreira.js` (14 dias, 6 carreiras): chega a R$ 800 no dia 3 (mediana), como antes; nenhum dia fechou no negativo. Dias 8 a 14 com o bot: lucro de ~R$ 900 a 1.400, metas de R$ 510 a 690.
+- `balance.js` (DIAS=8 a 14, 30 a 40 rodadas): sem equipe, 60% a 83% das metas por dia; com `EQUIPE=auto`, 87% a 97% (dias 3 a 7: ~80% a 100%, como antes). O domingo estava em 53% e 73% com `f` 1,1 e 25% de famílias; foi para 1,05 e 20%.
+- Dia ruim (script à parte, dias 4 e 5 sem atender ninguém, com a equipe completa): o caixa vai a −R$ 70 ou −R$ 540 e volta ao positivo no dia seguinte, com a folha cortada ou não. Um dia ruim não trava a carreira.
+- O empréstimo sempre custa mais do que esperar (10% sobre o valor; à força, 20%).
+
+## Testes
+- `tests/smoke20.js` (83 checagens): sequência e Continuar, meta não batida, largar no meio não avança, dias 8+ (domingo a sábado, famílias no domingo), save antigo, 3 dias no negativo e o 4º à força, parcelas, empréstimo (limite, um por vez, 5 parcelas, quitar), caixa e resumo, chave da folha, turno sem fim, Missão zero no meio da campanha, Recomeçar com confirmação, ranking (lucro acumulado, lista nova, antiga guardada, negativo não entra).
+- Atualizados: `smoke` (8 dias seguidos), `smoke3` (coleção nova, save da v1), `smoke6`, `smoke9`, `smoke11`, `smoke15` (modo dev com os chips), `smoke18` (botão Missão zero), `smoke19` (multa pode deixar negativo, "Próximo dia" sem a meta).
+- `carreira.js` joga a campanha (`DIAS`, padrão 14) e mostra em que dia chega a R$ 800, os dias no negativo e os empréstimos à força; `balance.js` aceita `DIAS` acima de 7.
+- Capturas: `python3 tests/shot_v8_3.py` (menu novo e no dia 9, aba Banco sem e com empréstimo no negativo, introdução no negativo, fim do dia sem a meta, Caixa com a coluna Banco; PC e celular).

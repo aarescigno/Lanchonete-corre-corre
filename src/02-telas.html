@@ -1,0 +1,301 @@
+</style>
+<div id="app">
+  <div id="stage">
+    <canvas id="c" width="1220" height="600" role="img" aria-label="Lanchonete Corre-Corre: área do jogo"></canvas>
+
+    <div class="ov show" id="ov-menu">
+      <div class="panel menu-panel">
+        <span class="vtag" id="vtag" aria-label="Versão 9.0.3">v9.0.3</span>
+        <h1 class="title">Lanchonete <br>Corre-Corre</h1>
+        <p class="tag">Ajude a Bia a atender a freguesia da esquina antes que o cafezinho esfrie!</p>
+        <div class="lbl" id="menu-dia">História</div>
+        <p class="small menu-info" id="menu-info"></p>
+        <p class="small menu-aviso" id="menu-aviso" style="display:none"><span id="menu-aviso-txt"></span> <button class="link" id="btn-aviso" type="button">Entendi</button></p>
+        <div class="chips" id="daychips" role="group" aria-label="Modo dev: escolha o dia" style="display:none"></div>
+        <div class="menu-btns">
+          <div class="row tight">
+            <button class="btn go" id="btn-play">Continuar</button>
+            <button class="btn alt" id="btn-treino">Missão zero</button>
+            <button class="btn alt" id="btn-historia">Ver abertura</button>
+          </div>
+          <div class="row tight">
+            <button class="btn" id="btn-endless">Turno sem fim</button>
+            <button class="btn alt" id="btn-how">Como jogar</button>
+            <button class="btn alt" id="btn-rank">Ranking</button>
+          </div>
+        </div>
+        <div class="links">
+          <button class="link" id="btn-reset">Recomeçar do zero</button>
+          <button class="link" id="btn-dev-off" style="display:none">Sair do modo dev</button>
+          <button class="ver-ico" id="btn-app" title="Instalar no celular" aria-label="Instalar no celular (Android e iPhone)">
+            <svg viewBox="0 0 24 24" width="22" height="22" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><rect x="6.5" y="2.5" width="11" height="19" rx="2.5"/><path d="M10.5 18.5h3"/><path d="M12 6.5v7"/><path d="M9 10.8l3 3 3-3"/></svg>
+          </button>
+          <button class="ver-ico" id="btn-ver" title="Versões anteriores" aria-label="Versões anteriores">
+            <svg viewBox="0 0 24 24" width="22" height="22" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M3.5 12a8.5 8.5 0 1 0 2.6-6.1"/><path d="M3 4.5v4h4"/><path d="M12 7.5V12l3 2"/></svg>
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <div class="ov" id="ov-how">
+      <div class="panel">
+        <h2>Como jogar</h2>
+        <ul id="tips"></ul>
+        <div class="row"><button class="btn" id="btn-how-close">Entendi!</button></div>
+      </div>
+    </div>
+
+    <div class="ov" id="ov-intro">
+      <div class="panel">
+        <h2 id="intro-title">Dia 1</h2>
+        <p id="intro-goal"></p>
+        <p class="small" id="intro-note"></p>
+        <p class="small" id="intro-manut"></p>
+        <div class="row"><button class="btn go" id="btn-start">Abrir a lanchonete</button><button class="btn alt" id="btn-intro-menu">Menu</button></div>
+      </div>
+    </div>
+
+    <div class="ov" id="ov-abertura">
+      <button class="btn alt ab-voltar" id="btn-ab-voltar">Voltar</button>
+      <button class="btn alt ab-pular" id="btn-ab-pular">Pular</button>
+    </div>
+
+    <div class="ov" id="ov-conversa">
+      <button class="btn alt ab-pular" id="btn-conv-pular">Pular</button>
+    </div>
+
+    <div class="ov" id="ov-continua">
+      <div class="panel">
+        <h2 id="cont-h">Fim dos capítulos da Garagem</h2>
+        <p id="cont-p">Quando quiser, a mudança para a área industrial está na lojinha.</p>
+        <p class="small" id="cont-s">Enquanto isso, a lanchonete segue aberta: os dias continuam, sem objetivo.</p>
+        <div class="row"><button class="btn go" id="btn-continua">Seguir jogando</button></div>
+      </div>
+    </div>
+
+    <div class="ov" id="ov-treino">
+      <div class="panel">
+        <h2>Missão zero completa!</h2>
+        <p>Agora você conhece o ciclo da Bia: sentar na cor certa, anotar, levar ao Tonhão, servir, cafezinho, cobrar, recolher a louça, lavar e tirar o lixo.</p>
+        <p class="small">Dá para treinar de novo quando quiser: no menu, toque em Missão zero.</p>
+        <div class="row"><button class="btn go" id="btn-treino-dia1">Começar o dia 1</button><button class="btn alt" id="btn-treino-menu">Menu</button></div>
+      </div>
+    </div>
+
+    <div class="ov" id="ov-pause">
+      <div class="panel">
+        <h2>Pausa</h2>
+        <p>Respire fundo. O cafezinho espera.</p>
+        <p class="small" id="pause-note"></p>
+        <div class="row">
+          <button class="btn go" id="btn-resume">Continuar</button>
+          <button class="btn alt" id="btn-restart">Reiniciar</button>
+          <button class="btn alt" id="btn-pause-menu">Menu</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="ov" id="ov-end">
+      <div class="panel">
+        <h2 id="end-title">Fim do dia</h2>
+        <div class="stars" id="end-stars" aria-label="Estrelas"></div>
+        <p id="end-money"></p>
+        <div class="stats2" id="end-stats"></div>
+        <p class="small"><span class="aval" id="end-aval"></span><span id="end-msg"></span></p>
+        <div id="end-save"></div>
+        <div class="row">
+          <button class="btn go" id="btn-next">Próximo dia</button>
+          <button class="btn alt" id="btn-end-rank">Ranking</button>
+          <button class="btn alt" id="btn-end-menu">Menu principal</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="ov" id="ov-shop">
+      <div class="panel">
+        <h2 id="shop-ponto">Garagem da mãe da Bia</h2>
+        <p>Dinheiro acumulado: <span class="bank" id="shop-bank">R$ 0</span><span class="livre" id="shop-livre"></span> &middot; <span id="shop-limit">Melhorias à vontade, se o dinheiro der. Cursos: 1 por dia.</span></p>
+        <div class="rankbar"><div class="seg" id="shop-tabs" role="group" aria-label="Lojinha">
+          <button type="button" data-v="lanchonete" aria-pressed="true">Lanchonete</button>
+          <button type="button" data-v="equipe" aria-pressed="false">Equipe</button>
+          <button type="button" data-v="dinheiro" aria-pressed="false">Dinheiro</button>
+          <button type="button" data-v="gurugol" aria-pressed="false">Gurugol</button>
+        </div></div>
+        <div class="shopnav" id="shop-nav" hidden><button type="button" class="btn alt" id="btn-shop-voltar">&lsaquo; Voltar</button><b id="shop-sec"></b></div>
+        <div class="shopgrid" id="shop-grid"></div>
+        <p class="small" id="shop-folha"></p>
+        <div class="row"><button class="btn go" id="btn-shop-go">Começar o dia</button><button class="btn alt" id="btn-shop-menu">Menu principal</button></div>
+      </div>
+    </div>
+
+    <div class="ov" id="ov-falencia">
+      <div class="panel">
+        <h2>O banco tomou a lanchonete</h2>
+        <p id="falencia-msg"></p>
+        <div class="stats" id="falencia-stats"></div>
+        <div id="falencia-save"></div>
+        <div class="row">
+          <button class="btn go" id="btn-falencia-zero">Recomeçar do zero</button>
+          <button class="btn alt" id="btn-falencia-rank">Ranking</button>
+          <button class="btn alt" id="btn-falencia-menu">Menu</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="ov" id="ov-endless">
+      <div class="panel">
+        <h2>Turno encerrado!</h2>
+        <p id="endless-msg">A reputação da lanchonete chegou a zero.</p>
+        <div class="stats" id="endless-stats"></div>
+        <div id="endless-save"></div>
+        <div class="row">
+          <button class="btn go" id="btn-endless-again">Jogar de novo</button>
+          <button class="btn alt" id="btn-endless-rank">Ranking</button>
+          <button class="btn alt" id="btn-endless-menu">Menu</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="ov" id="ov-rank">
+      <div class="panel" style="width:calc(var(--u)*660)">
+        <h2>Ranking</h2>
+        <p class="small" id="rank-source" role="status">Ranking deste aparelho</p>
+        <div class="rankbar">
+          <div class="seg" id="rank-tabs" role="group" aria-label="Modo">
+            <button type="button" data-v="carreira" aria-pressed="true">História</button>
+            <button type="button" data-v="semfim" aria-pressed="false">Turno sem fim</button>
+          </div>
+        </div>
+        <div class="rankbar">
+          <span class="sl">Ordenar por</span>
+          <div class="seg" id="rank-by" role="group" aria-label="Ordenar por">
+            <button type="button" data-v="nome" aria-pressed="false">Nome</button>
+            <button type="button" data-v="pontos" aria-pressed="true">Pontos</button>
+          </div>
+          <div class="seg" id="rank-dir" role="group" aria-label="Sentido">
+            <button type="button" data-v="asc" aria-pressed="false">Crescente</button>
+            <button type="button" data-v="desc" aria-pressed="true">Decrescente</button>
+          </div>
+        </div>
+        <div class="rank-wrap" id="rank-wrap"></div>
+        <div class="row"><button class="btn go" id="btn-rank-back">Voltar</button></div>
+      </div>
+    </div>
+
+    <div class="ov" id="ov-app">
+      <div class="panel app-panel">
+        <h2>Instalar no celular</h2>
+        <p class="small">O jogo vira um app na tela inicial, em tela cheia e sem precisar de internet. Abra este endereço no celular:</p>
+        <div class="app-url"><a id="app-link" href="https://aarescigno.github.io/Lanchonete-corre-corre/" target="_blank" rel="noopener">aarescigno.github.io/Lanchonete-corre-corre</a><button class="btn alt" type="button" id="btn-app-copy">Copiar endereço</button></div>
+        <p class="small savemsg" id="app-msg" role="status"></p>
+        <div class="app-cols">
+          <section aria-labelledby="app-and">
+            <h3 id="app-and">Android</h3>
+            <ol>
+              <li>Abra o endereço no <b>Chrome</b>.</li>
+              <li>Toque no menu <b>&#8942;</b> (canto de cima).</li>
+              <li>Toque em <b>Instalar app</b> (ou <b>Adicionar à tela inicial</b>).</li>
+              <li>Confirme em <b>Instalar</b>.</li>
+            </ol>
+          </section>
+          <section aria-labelledby="app-ios">
+            <h3 id="app-ios">iPhone e iPad</h3>
+            <ol>
+              <li>Abra o endereço no <b>Safari</b>.</li>
+              <li>Toque em <span class="nw"><b>Compartilhar</b> <svg viewBox="0 0 24 24" width="17" height="17" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M8 8.5H6.5v12h11v-12H16"/><path d="M12 14.5v-12"/><path d="M8.5 6L12 2.5 15.5 6"/></svg>.</span></li>
+              <li>Toque em <b>Adicionar à Tela de Início</b> (role a lista, se precisar).</li>
+              <li>Toque em <b>Adicionar</b>.</li>
+            </ol>
+          </section>
+        </div>
+        <p class="small">Pronto: abra pelo ícone do hambúrguer na tela inicial e jogue com o celular deitado. No app, o ranking fica só no aparelho.</p>
+        <div class="row"><button class="btn go" id="btn-app-close">Voltar</button></div>
+      </div>
+    </div>
+
+    <div class="ov" id="ov-ver">
+      <div class="panel">
+        <h2>Versões</h2>
+        <ul class="verlist">
+          <li><b>v9.0.3</b><span class="cur">versão atual</span><br>31/10/2026 &mdash; As conversas do Modo História ficaram mais espalhadas: no máximo uma por fim de dia. A do cardápio vem no fim do dia 1, e a da divulgação espera um dia sem conversa de capítulo (até lá, o movimento da inauguração continua, de graça).</li>
+          <li><b>v9.0.2</b><br>31/10/2026 &mdash; A divulgação agora começa no dia 4, e no boca a boca: de graça, mas vem menos gente e o movimento varia. No fim do dia 3 do Modo História, o Tonhão avisa que a festa da inauguração acabou e a Bia pensa em fazer panfletos; a lojinha abre direto na Divulgação.<br><a href="versoes/v9.0.2.html" target="_blank" rel="noopener">Abrir a v9.0.2</a></li>
+          <li><b>v9.0.1</b><br>30/10/2026 &mdash; Ficou mais fácil achar os cursos do Tonhão: eles moram no cartão Cardápio, o primeiro da lojinha, com um selo "novo" quando algum cabe no caixa. No fim do dia 2 do Modo História, a Bia avisa que a freguesia quer mais opções, e quem ainda só tem PF e coxinha ouve isso no Gurugol. E o balão do Tonhão nas conversas não fica mais embaixo do botão Pular.<br><a href="versoes/v9.0.1.html" target="_blank" rel="noopener">Abrir a v9.0.1</a></li>
+          <li><b>v9</b><br>30/10/2026 &mdash; A primeira mudança de ponto: depois do capítulo 3, a lojinha (Dinheiro &rsaquo; Mudança) oferece a Lanchonete na área industrial, por R$ 800 e com nota 2,7 no Gurugol; não dá para voltar. Lá são 20 lugares, cardápio mais caro, aluguel de R$ 120 por dia e uma vaga a mais no balcão de pratos, e a freguesia muda: a turma da fábrica (que chega junto quando a fábrica apita), o motorista de caminhão (que pede cafezinho no fim) e a encomenda do setor (de 4 a 6 marmitas, avisada de manhã). A lojinha ganha o fogão industrial, 3 TVs com sertanejo, espera sentada (cadeirinhas ou banquinhos), a jarra de suco e plantas novas; a TV, o som e a torneira da Garagem ficam para trás. E a História ganha os capítulos 4 (Ponto novo) e 5 (Hora do almoço).</li>
+          <li><b>v8.9.1</b><br>30/10/2026 &mdash; Ajustes da lojinha: a TV e som foi para Melhorias, a toalha xadrez em todas as mesas foi para o Salão, os cartões da Bia, do Tonhão (agora de corpo inteiro, com a touca) e da Dani mostram a figura inteira, e o cartão da Manutenção fica amarelo ou vermelho quando um equipamento precisa de revisão ou corre risco de quebrar.</li>
+          <li><b>v8.9</b><br>30/10/2026 &mdash; A Dani sobe de nível com a experiência: cada 30 tarefas que ela faz (lixo, pratos, louça, cafezinho, água e marmitas) dão +1 de XP, e os 3 cursos dela na lojinha (Atendimento ao cliente, Organização da cozinha e Barista iniciante) dão +2 cada. Com a XP do nível seguinte ela fica pronta para subir, e o aumento de salário confirma o nível novo. O &ldquo;Reduzir&rdquo; saiu. O fim do dia mostra as tarefas dela e a experiência.</li>
+          <li><b>v8.8</b><br>30/10/2026 &mdash; O Tonhão sobe de nível com a experiência dos cursos: cada curso básico dá +1 de XP e cada avançado +2. Com a XP do nível seguinte ele fica pronto para subir, e o aumento de salário confirma o nível novo (o aumento fica apagado, dizendo quanto falta, sem a XP). Agora são 5 níveis, o último com o Tonhão bem mais rápido e caprichado, e o nível pago é definitivo: o botão Reduzir saiu. Só a falta de dinheiro para a folha o derruba, e a XP fica. Saves antigos voltam ao nível que os cursos já feitos permitem.<br><a href="versoes/v8.7.html" target="_blank" rel="noopener">Abrir a v8.7</a></li>
+          <li><b>v8.7</b><br>30/10/2026 &mdash; O Modo História chega: a carreira virou a história da Bia, em capítulos com conversas (balões sobre o salão) e um objetivo cada. O primeiro dia já começa com a dívida da reforma da garagem (R$ 1.000, 10 parcelas de R$ 100 mais 1% ao dia sobre o saldo, a 1ª no fim do dia 2). Capítulo 1, A garagem da Rosa: fechar 2 dias no azul. Capítulo 2, A Dani chega: a Dani entra de graça como aprendiz e o Gurugol tem de chegar a 2,4. Capítulo 3, Casa cheia: quitar a reforma, nota 2,7 e R$ 800 no caixa. Sem prazo: o capítulo segue até cumprir. Os aumentos da Dani ficaram mais baratos (R$ 25, 40 e 55 por dia). O botão História do menu virou Ver abertura. Quem tinha uma campanha de antes recomeça do dia 1, com aviso.<br><a href="versoes/v8.6.15.html" target="_blank" rel="noopener">Abrir a v8.6.15</a></li>
+          <li><b>v8.6.15</b><br>30/10/2026 &mdash; Lojinha mais arrumada: em vez de 10 abas numa fileira, 4 grupos (Lanchonete, Equipe, Dinheiro e Gurugol). Cada grupo mostra cartões com ícone e nome, e o toque no cartão abre a seção, com o botão Voltar. Os itens da Bia (tênis, bandeja e Sudoku) ficaram na seção dela; o Tonhão reúne o aumento e os cursos; o músico e a TV e som foram para a Divulgação.<br><a href="versoes/v8.6.14.html" target="_blank" rel="noopener">Abrir a v8.6.14</a></li>
+          <li><b>v8.6.14</b><br>30/10/2026 &mdash; Melhorias à vontade: acabou o limite de 1 melhoria por dia na lojinha; o limite agora é o dinheiro (o curso do Tonhão segue 1 por dia). E no fim do dia, a caixa do Gurugol perdeu o número entre parênteses depois de cada critério.</li>
+          <li><b>v8.6.13</b><br>29/10/2026 &mdash; Rodada de balanceamento do cardápio: quem pede salgado quase sempre pede dois, então os cursos do Tonhão não derrubam mais o lucro do dia; as metas da sexta e do sábado da 1ª semana ficaram um pouco mais baixas.</li>
+          <li><b>v8.6.12</b><br>29/10/2026 &mdash; Os pratos ganham desenhos de verdade: risoles, kibe, bolinho japonês, empada, esfihas, bauru, pão na chapa, pastéis retangulares e o misto quente em duas metades. Quem faz o curso avançado vê um detalhe nos pratos (catupiry, azeitona, listras da chapa, bolhas do pastel), e o PF com Carnes variadas vem com bife, frango, peixe ou bife a cavalo.</li>
+          <li><b>v8.6.11</b><br>29/10/2026 &mdash; Vegetarianos e veganos: cerca de uma em cada dez pessoas é vegetariana e só pede prato sem carne; sem opção no cardápio, ela reclama no Gurugol (Diversidade do cardápio 1). O novo curso Vegetariano do Tonhão ensina o PF vegetariano, a empada de palmito e o kibe de abóbora, soma na Diversidade e traz +5% de clientes; o avançado, Pratos veganos, traz mais cinco pratos e mais +5%. Os pratos sem carne têm um &ldquo;v&rdquo; verde (e uma folhinha nos veganos).</li>
+          <li><b>v8.6.9</b><br>29/10/2026 &mdash; O cardápio cresce: a cozinha começa sabendo só PF e coxinha, e na aba Cursos da lojinha o Tonhão aprende pratos novos (pastel, chapa, salgados fritos e assados; um curso por dia). Cada curso tem a versão avançada, que deixa os pratos mais caros e mais caprichados. Cada tipo de cliente tem o seu gosto, e o entregador muda de ideia ao longo do dia. A Diversidade do cardápio no Gurugol sobe com cada curso. Quem já tinha uma campanha recomeça do dia 1.</li>
+          <li><b>v8.6.8</b><br>29/10/2026 &mdash; Prato quente: o prato que fica esperando no balcão da cozinha solta vapor e, depois de uns 8 segundos, vai esfriando (o vapor some aos poucos). Quem recebe o prato frio dá nota menor na comida e pode reclamar: &ldquo;Comida meio fria.&rdquo; Prato levado logo à mesa continua quentinho.<br><a href="versoes/v8.6.8.html" target="_blank" rel="noopener">Abrir a v8.6.8</a></li>
+          <li><b>v8.6.7</b><br>29/10/2026 &mdash; Regras da nota do Gurugol: cada cliente avalia só o que viveu (quem desistiu na fila dá só a Espera; quem saiu bravo antes do pedido, Espera, Agilidade e Ambiente), e cada critério mostra quantas avaliações o viram. O humor dos clientes e os encantados passam a valer pela faixa do ponto, a cor certa, a corrente e o prato caprichado aumentam a chance de encantar, e a nota ganhou a faixa bronze a partir de 3,0 ★.</li>
+          <li><b>v8.6.6</b><br>29/10/2026 &mdash; A decoração conta no Gurugol: a garagem sem enfeite nenhum ficou &ldquo;meio sem graça&rdquo; no ambiente, e cada planta, cada peça do cantinho da Rosa e a toalha xadrez (para quem senta na mesa dela) deixam o ambiente melhor. Com tudo enfeitado, a nota da Garagem chega perto dos 3 ★, e os clientes às vezes elogiam um enfeite (&ldquo;Que samambaia bonita!&rdquo;).</li>
+          <li><b>v8.6.5</b><br>29/10/2026 &mdash; Decoração da Garagem: uma aba nova na lojinha, com enfeites comprados à vontade (fora da melhoria do dia). Plantas: a espada-de-são-jorge no vaso e a muda na lata (que vinham de graça) e uma samambaia pendurada na parede. Cantinho da Rosa: a foto da mãe da Bia, o quadro de giz com o prato do dia e a plaquinha &ldquo;Comida é afeto&rdquo;. E a toalha xadrez, com porta-guardanapo e florzinha, mesa por mesa. Comprado, o enfeite pode ser guardado e posto de volta. Por enquanto é só para deixar a garagem bonita.<br><a href="versoes/v8.6.5.html" target="_blank" rel="noopener">Abrir a v8.6.5</a></li>
+          <li><b>v8.6.4</b><br>29/10/2026 &mdash; Notas do Gurugol com teto por ponto: numa garagem, ninguém dá 5 estrelas. Na Garagem, o atendimento perfeito vale 3,0 ★, e um cliente encantado dá um pouco mais (num dia especial, a nota do dia chega a 3,5 ou 3,8). Cada ponto melhor sobe o teto: 3,7 na área industrial, 4,3 na Avenida Brasil e 5 no Terraço Suíça. As notas que você já tinha passaram para a escala nova.</li>
+          <li><b>v8.6.3</b><br>29/10/2026 &mdash; Livrinho de Sudoku, uma melhoria nova da lojinha (R$ 200): a fila de ações da Bia ganha 3 quadrinhos. Em compensação, a fila de base ficou com 5 quadrinhos, e não mais 6; com o livrinho, são 8 tarefas já marcadas.<br><a href="versoes/v8.6.3.html" target="_blank" rel="noopener">Abrir a v8.6.3</a></li>
+          <li><b>v8.6.2</b><br>28/10/2026 &mdash; Abertura mais caprichada no hospital: a Rosa, deitada, ganha o corpo sob o cobertor (ombros, peito e os pés levantando o pano) e abre os olhos para a Bia enquanto fala; a cortina do leito desce até o chão. No banco, o pote de moedas não some mais quando a Bia chega: ela o deixa no chão.</li>
+          <li><b>v8.6.1</b><br>28/10/2026 &mdash; Abertura revista: a Rosa, a Bia, o Tonhão e o Bráulio ganham alturas que combinam em todas as cenas, e o fogão de casa desce para a cintura da Rosa. A Rosa mexe a panela por cima com a colher de pau, a Bia prova o molho com a colherinha na boca, e a pétala do segredo cai da mão da Rosa e deixa o molho dourado. A Rosa entra pela porta da Casa Aurora, o corredor do hospital ganha a porta da enfermaria, o banco tem fachada nova e o papel do APROVADO voa até a mão da Bia. As pessoas piscam, mexem a boca quando falam e olham para onde andam.<br><a href="versoes/v8.6.1.html" target="_blank" rel="noopener">Abrir a v8.6.1</a></li>
+          <li><b>v8.6</b><br>28/10/2026 &mdash; Marmitas: o entregador de moto não senta mais no salão. Ele espera no balcão de retirada, no alto da calçada, e o pedido dele (pelo app Efood) vai sozinho ao Tonhão, que faz o prato numa marmita: ocupa uma boca do fogão, mas não usa prato limpo. A Bia (ou a Dani, com a tarefa nova) leva a marmita pronta ao balcão e o entregador paga na hora, com a gorjeta dos corações; a Efood fica com 15% do prato, e a embalagem custa R$ 2. No "+ marmita" da janela de pedidos dá para adiantar até 2 marmitas de PF, que ficam na prateleira do balcão e esfriam em 60 s; quem pede PF leva uma na hora.<br><a href="versoes/v8.6.html" target="_blank" rel="noopener">Abrir a v8.6</a></li>
+          <li><b>v8.5.1</b><br>26/10/2026 &mdash; Abertura mais delicada no hospital: depois da última fala da Rosa, a cortina do leito se fecha, e uma cena nova mostra a Bia sozinha e triste no corredor, com a rosa da mãe na mão.<br><a href="versoes/v8.5.1.html" target="_blank" rel="noopener">Abrir a v8.5.1</a></li>
+          <li><b>v8.5</b><br>26/10/2026 &mdash; O sonho da Bia: a abertura animada do Modo História, em 9 cenas, da cozinha da mãe, a Rosa, até a inauguração da Lanchonete Corre-Corre na garagem. Toca sozinha na primeira vez que o jogo abre; depois, no botão História do menu. Um toque passa a cena, o Voltar (ou a seta para a esquerda) volta um quadro e o Pular fica sempre à vista. O Modo História jogável vem em breve.<br><a href="versoes/v8.5.html" target="_blank" rel="noopener">Abrir a v8.5</a></li>
+          <li><b>v8.4.2</b><br>26/10/2026 &mdash; Aba Gurugol na lojinha: a nota com as barrinhas e os últimos 30 comentários da freguesia, do mais novo para o mais velho, com as estrelas, quem escreveu e o dia. Os critérios agora se chamam Qualidade da comida e Diversidade do cardápio.<br><a href="versoes/v8.4.2.html" target="_blank" rel="noopener">Abrir a v8.4.2</a></li>
+          <li><b>v8.4.1</b><br>26/10/2026 &mdash; Caixa do Gurugol no fim do dia: uma barrinha por critério vai enchendo até a nota dele, e embaixo a nota conta até o valor. Abaixo de 4 ela é pura; de 4 a 4,4, prateada; de 4,5 a 4,8, dourada e com brilhinhos de estrela; acima de 4,8, brilha como diamante, com mais brilhos.<br><a href="versoes/v8.4.1.html" target="_blank" rel="noopener">Abrir a v8.4.1</a></li>
+          <li><b>v8.4</b><br>26/10/2026 &mdash; Avaliações no Gurugol: cada grupo que sai avalia a lanchonete de 1 a 5 em espera por mesa, agilidade, prato, cardápio e ambiente, com um balãozinho de comentário. A nota é a média das últimas 100 avaliações e aparece a partir da 20ª, no HUD, no fim do dia e no Caixa. Nota alta traz até 10% mais gente; nota baixa afasta até 10%.<br><a href="versoes/v8.4.html" target="_blank" rel="noopener">Abrir a v8.4</a></li>
+          <li><b>v8.3.11</b><br>24/10/2026 &mdash; Desgaste sem sorteio: fogão, geladeira e cafeteira só vão gastando enquanto estão no verde e no amarelo. No vermelho (abaixo de 40%) há 50% de chance de quebrar no dia, e no limite (15% ou menos) quebra com certeza. A aba Manutenção e a introdução do dia avisam do risco de quebra durante o expediente (sem porcentagem) e do alto risco no limite.<br><a href="versoes/v8.3.11.html" target="_blank" rel="noopener">Abrir a v8.3.11</a></li>
+          <li><b>v8.3.10</b><br>24/10/2026 &mdash; Triturador de lixo: melhoria nova da lojinha (R$ 180) que mói 1 do lixo a cada 30 s, mas ainda é preciso esvaziar de vez em quando. A lixeira vai do cinza ao verde conforme enche e, cheia, ganha um saco preto ao lado e fumacinha verde. O Ventilador agora só faz a freguesia comer mais rápido: o cheiro da lixeira cheia volta a incomodar.<br><a href="versoes/v8.3.10.html" target="_blank" rel="noopener">Abrir a v8.3.10</a></li>
+          <li><b>v8.3.9</b><br>23/10/2026 &mdash; Estrelas que premiam o jogo bem feito: com os preços novos, o lucro dos primeiros dias depende muito de quem aparece, e quem não perdia ninguém às vezes levava só 1 estrela. As metas e o lucro das 3 estrelas foram recalculados pelo jogo perfeito: no dia 1, meta R$ 30, 2 estrelas R$ 50 e 3 estrelas R$ 60.<br><a href="versoes/v8.3.9.html" target="_blank" rel="noopener">Abrir a v8.3.9</a></li>
+          <li><b>v8.3.8</b><br>23/10/2026 &mdash; Preços de verdade: cada cliente paga o que pediu no cardápio da Garagem (PF R$ 25, misto R$ 12, pastel R$ 10, coxinha R$ 8, cafezinho R$ 3), e alguns pedem um 2º item. Os corações viram gorjeta de até 10%. Sentar, anotar, entregar, recolher, a cor certa e a corrente rendem pontos de atendimento, e não mais dinheiro. Contas, folha, divulgação, ingredientes, revisões e metas ficaram do tamanho de uma garagem.<br><a href="versoes/v8.3.8.html" target="_blank" rel="noopener">Abrir a v8.3.8</a></li>
+          <li><b>v8.3.7</b><br>23/10/2026 &mdash; 3ª estrela mais clara: no lugar de "expert", a introdução do dia, a barra de lucro e o fim do dia dizem "3 estrelas", sempre com "sem perder ninguém". Quando um cliente vai embora, a barra avisa que a 3ª estrela foi perdida.<br><a href="versoes/v8.3.7.html" target="_blank" rel="noopener">Abrir a v8.3.7</a></li>
+          <li><b>v8.3.6</b><br>23/10/2026 &mdash; Jogo de pratos sem limite: na lojinha, ele fica sempre à venda, quantas vezes você quiser (cada um põe +1 prato limpo na cozinha), e não conta como a melhoria do dia. As outras melhorias seguem 1 por dia.<br><a href="versoes/v8.3.6.html" target="_blank" rel="noopener">Abrir a v8.3.6</a></li>
+          <li><b>v8.3.5</b><br>23/10/2026 &mdash; Estoque no editor do salão: arraste uma mesa para o estoque, à esquerda, para abrir espaço e rearrumar o salão cheio, e depois arraste de volta (ou toque nela e em "Pôr no salão"). Mesa no estoque não abre no dia nem paga luz e gás, mas conta no teto de lugares.<br><a href="versoes/v8.3.5.html" target="_blank" rel="noopener">Abrir a v8.3.5</a></li>
+          <li><b>v8.3.4</b><br>23/10/2026 &mdash; Comida pronta: quando o prato sai no balcão, a mesa que pediu mostra um balão verde com o prato. Na mão da Bia ou da Dani, o balão fica branco até a entrega.<br><a href="versoes/v8.3.4.html" target="_blank" rel="noopener">Abrir a v8.3.4</a></li>
+          <li><b>v8.3.3</b><br>23/10/2026 &mdash; Jogo offline: o ranking fica só neste aparelho, sem conexão. O ranking compartilhado volta nos ajustes finais do jogo.<br><a href="versoes/v8.3.3.html" target="_blank" rel="noopener">Abrir a v8.3.3</a></li>
+          <li><b>v8.3.2</b><br>23/10/2026 &mdash; Empréstimo com amortização: juros de 3% ao dia sobre o que falta, e cada parcela paga 1/5 do valor mais os juros do dia (as parcelas vão diminuindo). Na aba Banco, "Amortizar" adianta uma parcela e "Quitar" paga o saldo, cortando os juros que viriam. Parcela atrasada leva os juros do dia para o saldo. O caixa mostra quanto foi de juros.<br><a href="versoes/v8.3.2.html" target="_blank" rel="noopener">Abrir a v8.3.2</a></li>
+          <li><b>v8.3.1</b><br>23/10/2026 &mdash; Atrasar o banco tem preço: a parcela que não couber no dinheiro do fim do dia fica atrasada, com aviso. Se no fim do dia seguinte não der para pagar a atrasada e a do dia, o banco toma a lanchonete e a carreira acaba (só resta recomeçar do zero).<br><a href="versoes/v8.3.1.html" target="_blank" rel="noopener">Abrir a v8.3.1</a></li>
+          <li><b>v8.3</b><br>23/10/2026 &mdash; Carreira contínua: "Continuar" no menu abre o próximo dia, levando tudo o que veio antes (dinheiro, móveis, equipe, melhorias e desgaste); sai a escolha de dia e o "Repetir dia". Meta não batida fica sem estrelas, mas o dia seguinte vem. Depois do dia 7, os dias seguem com o movimento de cada dia da semana. O caixa pode ficar negativo por 3 dias seguidos (no 4º, o banco cobre à força, com juros de 20%), e a nova aba Banco da lojinha empresta até R$ 1.000 com juros de 10%, em 5 parcelas no fim de cada dia. O ranking da carreira passa a ser o lucro acumulado, com o dia alcançado. No menu, "Recomeçar do zero" (com confirmação).<br><a href="versoes/v8.3.html" target="_blank" rel="noopener">Abrir a v8.3</a></li>
+          <li><b>v8.2.3</b><br>22/10/2026 &mdash; Largar o dia no meio tem preço: ao Reiniciar ou sair pelo Menu com gente na espera ou nas mesas, cada grupo vai embora bravo, como se tivesse zerado os corações, e a multa sai do dinheiro acumulado (R$ 30 por grupo, mais R$ 30 se for VIP). A pausa avisa quanto vai custar, e o caixa mostra a linha do dia largado.<br><a href="versoes/v8.2.3.html" target="_blank" rel="noopener">Abrir a v8.2.3</a></li>
+          <li><b>v8.2.2</b><br>22/10/2026 &mdash; Só o dia completo rende: a folha e a divulgação passam a ser pagas no fim do dia, junto com as contas e os ingredientes (ao abrir, elas só ficam reservadas). Reiniciar ou sair pelo Menu no meio do dia não paga nem ganha nada: o dia não conta.<br><a href="versoes/v8.2.2.html" target="_blank" rel="noopener">Abrir a v8.2.2</a></li>
+          <li><b>v8.2.1</b><br>22/10/2026 &mdash; Rejogar sem perder o dinheiro: Reiniciar ou sair pelo Menu no meio de um dia guarda o que o dia já rendeu no dinheiro acumulado (contas, folha e divulgação contam só a parte do dia que passou; o resto da folha volta). O caixa mostra a linha do dia interrompido. Terminar o dia e repetir já guardava o dinheiro.<br><a href="versoes/v8.2.1.html" target="_blank" rel="noopener">Abrir a v8.2.1</a></li>
+          <li><b>v8.2</b><br>22/10/2026 &mdash; Missão zero: o dia 0 é um treino com uma mesa só e pop-ups passo a passo, mostrando tudo o que a Bia faz: sentar o grupo na mesa da mesma cor (bônus), esperar o cardápio, anotar, levar ao Tonhão, servir, cafezinho (e os bônus dele em dinheiro e corações), cobrar, recolher a louça, lavar e tirar o lixo. Ninguém perde a paciência e nada conta para a carreira. Quem nunca treinou já encontra o dia 0 escolhido no menu.<br><a href="versoes/v8.2.html" target="_blank" rel="noopener">Abrir a v8.2</a></li>
+          <li><b>v8.1.2</b><br>22/10/2026 &mdash; A espera lá fora na ordem certa: quem chegou primeiro fica embaixo, no lugar 1, e quem chega depois vai ficando acima. Quando alguém sai, a fila desce.<br><a href="versoes/v8.1.2.html" target="_blank" rel="noopener">Abrir a v8.1.2</a></li>
+          <li><b>v8.1.1</b><br>22/10/2026 &mdash; Menos balões nas mesas: ficam só o cardápio (escolhendo), a exclamação (chamando para pedir) e o dinheiro (pedindo a conta). Esperando a comida ou comendo, a mesa fica sem balão.<br><a href="versoes/v8.1.1.html" target="_blank" rel="noopener">Abrir a v8.1.1</a></li>
+          <li><b>v8.1</b><br>22/10/2026 &mdash; Dinheiro comprometido: na lojinha, ao lado do dinheiro acumulado, aparece quanto está livre e quanto já está reservado para a folha e a divulgação do dia (Dani, TV, som, panfletos...). Compra que usaria esse dinheiro fica com um ⚠ e pede um 2º toque, dizendo o que fica de fora no dia.<br><a href="versoes/v8.1.html" target="_blank" rel="noopener">Abrir a v8.1</a></li>
+          <li><b>v8</b><br>22/10/2026 &mdash; Manutenção e imprevistos: o fogão, a geladeira e a cafeteira se gastam a cada dia (mais em dia cheio) e, do dia 4 em diante, o que está gasto pode quebrar no meio do dia (fogão falhando: o Tonhão cozinha mais devagar; geladeira: ingredientes mais caros; cafeteira: sem cafezinho). Um toque na plaquinha chama o técnico na hora; na lojinha, aba Manutenção, a revisão deixa tudo novo. E, de vez em quando, chuva (menos gente, mais entregadores) ou feriado (mais gente). O caixa ganhou a coluna Manutenção.<br><a href="versoes/v8.html" target="_blank" rel="noopener">Abrir a v8</a></li>
+          <li><b>v7.7</b><br>22/10/2026 &mdash; A espera lá fora com a cara da Garagem: quem espera fica de pé, numa faixa pintada no chão, e a Máquina de suco virou a Água da torneira (R$ 80; quem tinha a máquina recebe R$ 100 de volta): quem espera pede água, a Bia enche os copos americanos na torneira e leva, de graça. Na calçada, as plantas da casa da Bia: espada-de-são-jorge no vaso de barro e numa lata. Bancos, sucos e o resto vêm com os próximos pontos.<br><a href="versoes/v7.7.html" target="_blank" rel="noopener">Abrir a v7.7</a></li>
+          <li><b>v7.6</b><br>22/10/2026 &mdash; Tudo na mesma tela: a tela ficou mais larga e mostra a calçada, o salão e a cozinha juntos, sem rolar (sem abinhas nem arrastar o fundo). No celular deitado, tudo fica do mesmo tamanho de antes.<br><a href="versoes/v7.6.html" target="_blank" rel="noopener">Abrir a v7.6</a></li>
+          <li><b>v7.5.1</b><br>21/10/2026 &mdash; Modo dev, para testar: 10 toques no selo da versão ligam e desligam. O jogo fica igual, com "Modo dev" na tela, os 7 dias liberados, R$ 10.000 que não acabam e tudo liberado na lojinha (até antes do dia 1): melhorias de graça, liga e desliga; equipe completa, couvert e divulgação. Usa um save à parte e fica fora do ranking.<br><a href="versoes/v7.5.1.html" target="_blank" rel="noopener">Abrir a v7.5.1</a></li>
+          <li><b>v7.5</b><br>21/10/2026 &mdash; A espera foi para a calçada: a tela rola (arraste o fundo, use as abinhas do alto ou arraste o grupo até a borda; 2 toques no grupo levam ao salão), 4 bancos lá fora com tablet, toldo e vaso, e a Máquina de suco no lugar da Água saborizada: quem espera pede no tablet, a Bia (ou a Dani) leva e o suco entra na conta.<br><a href="versoes/v7.5.html" target="_blank" rel="noopener">Abrir a v7.5</a></li>
+          <li><b>v7.4.4</b><br>21/10/2026 &mdash; Na Garagem, TV e som no lugar do couvert: a TV de tubo na Rede Esfera e o som na rádio Velha Brasil FM deixam a paciência nas mesas cair 5% mais devagar cada um, pagando só a luz (aba Equipe). O couvert artístico fica para o restaurante da Avenida Brasil.<br><a href="versoes/v7.4.4.html" target="_blank" rel="noopener">Abrir a v7.4.4</a></li>
+          <li><b>v7.4.3</b><br>21/10/2026 &mdash; Entre os dias, na aba Salão: toque numa mesa para trocar a cor das cadeiras, de graça.<br><a href="versoes/v7.4.3.html" target="_blank" rel="noopener">Abrir a v7.4.3</a></li>
+          <li><b>v7.4.2</b><br>21/10/2026 &mdash; Quem espera a comida mostra uma panela no fogo (não confunde mais com o cardápio); um visto verde avisa que o prato já está no balcão.<br><a href="versoes/v7.4.2.html" target="_blank" rel="noopener">Abrir a v7.4.2</a></li>
+          <li><b>v7.4.1</b><br>21/10/2026 &mdash; Salão cheio chama gente: cada lugar acima de 10 traz 6% mais clientes; 4 pratos limpos do dia 3 em diante; com o salão cheio, a fila perde a paciência um pouco mais rápido.<br><a href="versoes/v7.4.1.html" target="_blank" rel="noopener">Abrir a v7.4.1</a></li>
+          <li><b>v7.4</b><br>21/10/2026 &mdash; Garagem da Bia e do tio Tonhão: o salão começa numa garagem sem aluguel, com 4 mesas; na lojinha, compre mesas (até 16 lugares) e arraste-as para arrumar o salão.<br><a href="versoes/v7.4.html" target="_blank" rel="noopener">Abrir a v7.4</a></li>
+          <li><b>v7.3</b><br>21/10/2026 &mdash; Bia mais ágil: anda mais rápido e ganha os Tênis de corrida; no salão, um selo (1º, 2º...) mostra a vez de cada lugar na fila dela.<br><a href="versoes/v7.3.html" target="_blank" rel="noopener">Abrir a v7.3</a></li>
+          <li><b>v7.2</b><br>15/10/2026 &mdash; Livro-caixa: a aba Caixa da lojinha mostra os últimos 14 dias, para onde foi o dinheiro e um resumo para copiar e mandar no WhatsApp.<br><a href="versoes/v7.2.html" target="_blank" rel="noopener">Abrir a v7.2</a></li>
+          <li><b>v7.1</b><br>15/10/2026 &mdash; Jogo justo: sem mesa que sirva, a fila espera com calma e não passa de 1 coração; com o salão lotado, quem chega espera um pouco na porta.<br><a href="versoes/v7.1.html" target="_blank" rel="noopener">Abrir a v7.1</a></li>
+          <li><b>v7</b><br>15/10/2026 &mdash; Contas: a meta é o lucro; ingredientes, aluguel, luz e gás, e divulgação (boca a boca, panfletos ou redes sociais).<br><a href="versoes/v7.html" target="_blank" rel="noopener">Abrir a v7</a></li>
+          <li><b>v6</b><br>14/10/2026 &mdash; Salão: compre cadeiras e mesas e escolha 2 ou 4 lugares em cada mesa.<br><a href="versoes/v6.html" target="_blank" rel="noopener">Abrir a v6</a></li>
+          <li><b>v5</b><br>14/10/2026 &mdash; Equipe: aumento do Tonhão, a ajudante Dani e couvert artístico; louça limitada, lixeira que enche e água saborizada.<br><a href="versoes/v5.html" target="_blank" rel="noopener">Abrir a v5</a></li>
+          <li><b>v4</b><br>14/10/2026 &mdash; Balcão de sucos e bandeja na lojinha (2 pratos ou 3 bebidas numa mão).<br><a href="versoes/v4.html" target="_blank" rel="noopener">Abrir a v4</a></li>
+          <li><b>v3</b><br>14/10/2026 &mdash; Clientes VIP: furam a fila, têm menos paciência e pagam gorjeta extra.<br><a href="versoes/v3.html" target="_blank" rel="noopener">Abrir a v3</a></li>
+          <li><b>v2</b><br>14/10/2026 &mdash; Comandas coloridas, humor por cor, fila lotada, Turno sem fim e ranking compartilhado.<br><a href="versoes/v2.html" target="_blank" rel="noopener">Abrir a v2</a></li>
+          <li><b>v1</b><br>13/10/2026 &mdash; Primeira versão: carreira de 7 dias, lojinha, corrente e bônus de cor.<br><a href="versoes/v1.html" target="_blank" rel="noopener">Abrir a v1</a></li>
+        </ul>
+        <div class="row"><button class="btn go" id="btn-ver-close">Fechar</button></div>
+      </div>
+    </div>
+    <div class="devbadge" id="devbadge" style="display:none">Modo dev</div>
+    <p class="sr" id="treino-live" role="status" aria-live="polite"></p>
+    <p class="sr" id="ab-live" role="status" aria-live="polite"></p>
+    <p class="sr" id="conv-live" role="status" aria-live="polite"></p>
+  </div>
+  <div id="rotate" role="status">Gire o celular para jogar melhor</div>
+</div>
+<script>
+(function(){
+'use strict';
+
