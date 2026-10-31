@@ -4,10 +4,30 @@ Etapas concluídas (1a a 3a), movidas de `docs/PLANO.md` em 30/10/2026 e 31/10/2
 
 ---
 
+### Sessão 3b-5 — O Anselmo e os drinks da Avenida (v9.5)
+**O Anselmo** (coqueteleiro): era o coqueteleiro do restaurante do Bráulio, saiu porque lá era muito difícil trabalhar e achou a casa nova depois de conversar com o Tonhão. Entra **só na Avenida** (`ponto.nivel >= 3`; no modo dev, em qualquer ponto), **já com habilidade**: não passa por aprendiz e não faz as tarefas da lista; fica no balcão de drinks.
+- `STAFF.anselmo = { levels:[ null, null, { speed:0.8, pay:90, xp:0 }, { speed:1.0, pay:130, xp:0 } ] }`: contratar já põe no **nível 2** (R$ 90/dia). O nível 3 vem dos cursos do Terraço (4a); na Avenida ele não sobe pelo trabalho. Save: `equipe.anselmo` (0, 2 ou 3). `FOLHA_CORTE`: o **Anselmo não vem** (`anselmo`: `eq.anselmoFora = true` só naquele dia, como o `jocaFora`) logo depois das TVs e antes da Cami (a ordem em "A equipe ponto a ponto"); `normEquipe` e `payroll` contam ele.
+- **Balcão de drinks** (vem com a contratação): estação `STATIONS.drinks` na parede do fundo, à esquerda da vitrine da Dani: `rect:{ x:620, y:92, w:60, h:50 }`, `ap:{ x:700, y:150 }` (no corredor à direita das mesas, fora da `area` do ponto, que vai até x 684: um `ap` em x 650 ficaria em cima das cadeiras da 1ª fileira; na `STATION_KEYS`, com `estacaoOn('drinks')` só com o Anselmo), com **2 vagas** de copo pronto. O Anselmo fica atrás dele (`ANSELMO_HOME = { x:650, y:118 }`), com o desenho de chacoalhar a coqueteleira enquanto prepara (parado com `prefers-reduced-motion`). Não é um `Helper`: é uma fila de preparo em `16-jogo.js`, um drink por vez, **4 s / `speed`** cada (`DRINKS.prep`).
+- **Quem pede** (`DRINKS.pede`), **ao sentar**, junto com o pedido: `{ executiva:0.35, negocios:0.5, familia:0.15, vovos:0.15, estudante:0.25 }`, VIP +0,2, nunca o entregador; `randi(1, size)` drinks, cada um sorteado entre os 3. Sem o Anselmo, ninguém pede. O pedido vai para a fila dele quando a Bia anota; o copo pronto fica no balcão, a Bia pega (toque, 2 por mão com a bandeja) e leva. O grupo come normalmente, mas só pede a conta depois de receber os drinks (como o suco da mesa); drink não entregue sai da conta e o grupo perde paciência como no suco pendente.
+- **Os drinks** (`DRINKS.itens`; nomes inventados, sem dizer se têm álcool): **"Pôr do Sol da Avenida"** (laranja e vermelho, em degradê), **"Brisa de Maracujá"** (amarelo, com hortelã) e **"Esmeralda"** (verde, com rodela de limão). **R$ 22** cada (ingrediente R$ 6), +5 pontos (`PONTOS_ACAO.drink`), devolve 1 coração e +0,25 no Ambiente de quem tomou (`AVAL.amb.drink`).
+- **Visual** (sem estereótipo, com crachá): homem de uns 45 anos, pele negra retinta, cabeça raspada e barba grisalha curta, camisa branca de manga dobrada com colete preto, gravata-borboleta bordô e crachá "ANSELMO".
+- **Lojinha (Equipe):** cartão do Anselmo ao lado da Cami: nível, salário, "Drinks no balcão" e, no lugar dos cursos, "Cursos no Terraço Suíça". No Modo História abre pelo `LIBERA` (abaixo); fora dele, aberto na Avenida.
+- **Conversa** (`LIBERA`, `id:'anselmo'`, `nivel:3`, `dia:3`, `ate:6`); gatilho: Ambiente ≤ 3,5 em 3 avaliações do dia (`tres(4, 3.5)`, como o da Decoração, que usa 2,5); reclamações: "Não tem nem um drinkzinho aqui?", "No restaurante da frente tem drink." Falas: Tonhão "Bia, lembra do Anselmo, o dos drinks do Bráulio? Encontrei ele na feira." / Anselmo "Seu Tonhão me contou da casa nova. Lá no Bráulio não dava mais: era grito o dia inteiro." / Bia "Aqui ninguém grita. Só a chapa, de vez em quando." / Anselmo "Me dá um balcão e eu faço o drink mais bonito da Avenida." / Bia "Tá na lojinha, em Equipe." `HIST_NOMES.anselmo = 'Anselmo'`, `convCabeca` com ele e cor do nome própria (bordô `#8E3B46`).
+- Gurugol: comentário bom "O drink do balcão é uma obra de arte!"; ruim (esperou o drink e perdeu coração) "Pedi um drink e ele nunca veio."
+
+**Partes:** `10-constantes.js` (`STAFF.anselmo`, `DRINKS`, `STATIONS.drinks`, `PONTOS_ACAO`, `AVAL`, `LIBERA`, `HIST_NOMES`), `12-clientes.js` (pedido ao sentar), `16-jogo.js` (fila de preparo, folha), `19-conversa.js`, `20-desenho-base.js` (Anselmo, os 3 drinks), `21-cenario.js` (balcão), `22-salao-hud.js` (balão do drink), `41-lojinha.js` (cartão), `42-resultados.js` (drinks no fim do dia).
+
+**Testes:** **`tests/smoke46.js` (novo):** (1) cartão do Anselmo só na Avenida; contratar põe nível 2 e R$ 90 na folha; (2) sem ele ninguém pede drink; com ele, as chances por tipo (em 300 grupos) e nunca o entregador; (3) a fila: um drink por vez, 4 s / 0,8, no máximo 2 copos no balcão; (4) o grupo só pede a conta depois dos drinks e paga R$ 22 cada; não entregue sai da conta; (5) Ambiente +0,25; (6) corte da folha: ele é o primeiro a não vir; (7) conversa do `LIBERA` no 3º a 6º dia na Avenida; (8) save da v9.4 sem Anselmo carrega igual. `bot.js`: contrata o Anselmo e leva os drinks. `balance.js` `PONTO=avenida EQUIPE=auto`: o alvo de 85–95% continua; se passar de 95%, drinks R$ 18. `carreira.js`: o ganho por dia com ele menos o salário fica ≥ R$ 30; se não, `DRINKS.pede` +0,1 em cada tipo. Capturas `tests/shot_v9_5.py`: o Anselmo no balcão (preparando e parado), os 3 drinks, balão do drink, cartão dele, conversa.
+
+**Fechamento:** v9.5 (`versoes/`, `vtag`, `VERSAO`, `#ov-ver`, `docs/spec-v9.5.md`, `RESUMO.md`), PR e merge.
+
+**Modelo:** Sonnet, esforço médio. Segue o molde do suco da mesa e do cartão do Joca, com números e textos fechados.
+
 ## Situação das etapas feitas
 
 | # | Etapa | Versão | Situação |
 |---|---|---|---|
+| 3b-2d | Painel do modo dev: qualquer dia, ponto, nota, equipe e cursos; lojinha de verdade; acelerar e encerrar o dia | v9.2.1 | feita em 31/10 (`docs/spec-v9.2.1.md`) |
 | 0 | Contas: lucro, ingredientes, contas do dia, divulgação | v7 | feita (15/10) |
 | 1a | Jogo justo: dá para não perder ninguém | v7.1 | feita (15/10) |
 | 1b | Livro-caixa e ajuste fino com jogadores | v7.2 | feita (15/10) |

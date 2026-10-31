@@ -120,6 +120,7 @@ function buildEnd(){
     if (jocaNivelXp(sv) > sv.equipe.joca) msg += ' O Joca já pode subir para o nível ' + (jocaNivelXp(sv) - 1) + '!';
   }
   if (sv.equipe.cami > 0) msg += ' Cami: ' + (r.camiFeitas || 0) + ((r.camiFeitas || 0) === 1 ? ' tarefa' : ' tarefas') + ' hoje.';   // v9.3
+  if (sv.equipe.anselmo > 0 || r.drinks) msg += ' Drinks do Anselmo: ' + (r.drinks || 0) + '.';   // v9.5
   if (r.cafesEsp) msg += ' Espressos e cappuccinos: ' + r.cafesEsp + '.';
   if (r.doces || r.docesMarm) msg += ' Doces: ' + (r.doces || 0) + ' na mesa' + (r.docesMarm ? ' e ' + r.docesMarm + ' na marmita' : '') + '.';
   // Modo História (v8.7): o objetivo do capítulo no fim do dia

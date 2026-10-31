@@ -27,9 +27,10 @@ const eqFor0=n=>EQ0||AUTO[n]||(n>7?FULL:{});   // v8.3: do dia 8 em diante, a eq
 // v9.2: CONFEITARIA=1 liga o curso da Dani (os doces e a marmita "+ doce"; a Dani serve os doces); JOCA=2|3|4 contrata o Joca nesse nível (com ele, a Dani fica com cafezinho, doces e marmitas)
 const CONF=process.env.CONFEITARIA==='1'||!!process.env.JOCA, JOCAN=+process.env.JOCA||0;
 // v9.3 (PONTO=avenida): GOURMET=1 liga a Confeitaria gourmet (vitrine, R$ 16); ESPRESSO=1 liga o espresso do Joca (ele fica com o café fixo, o resto do básico nas vagas que sobram); CAMI=1|2 contrata a Cami nesse nível (ela fica com o básico)
-const GOURMET=process.env.GOURMET==='1', ESPRESSO=process.env.ESPRESSO==='1', CAMIN=+process.env.CAMI||0;
+const GOURMET=process.env.GOURMET==='1', ESPRESSO=process.env.ESPRESSO==='1', CAMIN=+process.env.CAMI||0, ANSELMO=process.env.ANSELMO==='1';   // v9.5: ANSELMO=1 contrata o Anselmo (nível 2, drinks)
 const eqFor=n=>{ const e=Object.assign({},eqFor0(n)); if(!(IND||AV)||!CONF||n<3) return e;
   if(JOCAN){ e.joca=JOCAN; e.jocaTasks=['lixo','pratos','lavar']; e.daniTasks=['cafe','doce','marmita']; } else e.daniTasks=['pratos','lavar','doce'];
+  if(AV&&ANSELMO) e.anselmo=2;
   if(AV&&CAMIN){ e.cami=CAMIN; e.camiTasks=['lixo','pratos','lavar']; } if(process.env.DANIT) e.daniTasks=process.env.DANIT.split(','); return e; };   // DANIT=pratos,lavar,lixo: as tarefas da Dani nesse teste
 // ajuste rápido sem mexer em src/: INGRED='{"prato":0.7}' CONTAS='{"mesa":40}' node balance.js
 if(process.env.MOVIMENTO) Object.assign(L.MOVIMENTO,JSON.parse(process.env.MOVIMENTO));   // MOVIMENTO='{"porLugar":0.04}'
