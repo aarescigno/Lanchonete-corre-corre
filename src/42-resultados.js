@@ -65,6 +65,10 @@ function buildEnd(){
   // imprevistos (v8): o que quebrou (e se foi consertado na hora) e o clima do dia
   if (r.quebras && r.quebras.length) rows.push(['Quebrou', r.quebras.map(q => manutOf(q.id).name.toLowerCase() + (q.fixed ? ' (consertado)' : '')).join(', ')]);
   if (r.clima) rows.push(['Imprevisto', CLIMA[r.clima].nome]);
+  if (r.vig){   // v9.4: a visita da vigilância sanitária
+    const fl = [r.vig.falhas.suja ? 'mesa suja' : '', r.vig.falhas.lixo ? 'lixeira cheia' : '', r.vig.falhas.pia ? 'pia lotada' : ''].filter(x => x);
+    rows.push(['Vigilância', r.vig.res === 'aprovado' ? 'Aprovado! Selo por ' + FISCAL.selo + ' dias (+' + FISCAL.seloPts + ' pontos)' : (r.vig.res === 'advertencia' ? 'Advertência' : 'Multa') + ': ' + fl.join(' e ')]);
+  }
   // marmitas (v8.6): as entregues (e a parte da Efood), as que esfriaram e as que sobraram no fim do dia
   if (r.marmitas || r.esfriou || r.sobra) rows.splice(2, 0, ['Marmitas', r.marmitas + ' entregue' + (r.marmitas === 1 ? '' : 's') + (r.efood ? ' (Efood −' + fmt(r.efood) + ')' : '') + (r.esfriou ? ' · ' + r.esfriou + ' esfri' + (r.esfriou > 1 ? 'aram' : 'ou') : '') + (r.sobra ? ' · ' + r.sobra + ' sobr' + (r.sobra > 1 ? 'aram' : 'ou') : '')]);
   if (r.vip || r.vipLost) rows.splice(2, 0, ['VIPs', r.vip + ' atendido' + (r.vip === 1 ? '' : 's') + (r.vipLost ? ' · ' + r.vipLost + ' bravo' + (r.vipLost > 1 ? 's' : '') : '')]);
@@ -82,6 +86,7 @@ function buildEnd(){
   const conta = [['Faturamento', fmt(r.fat)],['Ingredientes', neg(r.custo)]].concat(r.aluguel ? [['Aluguel', neg(r.aluguel)],['Luz e gás', neg(r.contas - r.aluguel)]] : [['Contas do dia', neg(r.contas)]]).concat([['Folha', neg(r.paid)]]);   // v9: o aluguel do ponto à parte
   if (r.divName) conta.push([r.divName, neg(r.div)]);
   if (r.conserto) conta.push(['Conserto na hora', neg(r.conserto)]);
+  if (r.multaVig) conta.push(['Multa da vigilância', neg(r.multaVig)]);
   conta.push(['Lucro do dia', fmt(r.money), 'tot']);
   if (r.par) conta.push(['Parcela do banco', neg(r.par)]);   // v8.3: fora do lucro (a meta), mas sai do dinheiro
   if (r.forcado) conta.push(['Banco (à força)', '+' + fmt(r.forcado)]);

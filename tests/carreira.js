@@ -38,7 +38,7 @@ if(process.env.CONTAS) Object.assign(L.CONTAS,JSON.parse(process.env.CONTAS));
 if(process.env.INGRED) Object.assign(L.INGRED,JSON.parse(process.env.INGRED));
 if(process.env.CARDAPIO){ const c=JSON.parse(process.env.CARDAPIO); for(const k in c) L.CARDAPIO[k].preco=c[k]; }   // v8.3.8: CARDAPIO='{"pf":25}' testa os preços dos pratos
 if(process.env.MAIS) Object.assign(L.MAIS,JSON.parse(process.env.MAIS));   // v8.3.8: MAIS='{"cada":0.6}' testa o 2º pedido
-const jocaDia=[], espDia=[], camiDia=[]; const ND=+process.env.DIAS||14, MUDA=800; /* v8.6.9: cursoDias guarda o dia em que cada curso foi comprado (id+nível) */ const cursoDias={}; const rows={}, chega=[]; let negs=0, forcs=0, fechou=0; const capDia={1:[],2:[],3:[],4:[],5:[],6:[],7:[]}, mudaDia=[], mudaAv=[], lucroGar=[], lucroInd=[], lucroAv=[], negPos=[], negPosAv=[];   // v8.7: o dia em que cada capítulo foi cumprido
+const vigs={aprovado:0,advertencia:0,multa:0}; /* v9.4: as visitas do fiscal (só com MANUT=com e na Avenida) */ const jocaDia=[], espDia=[], camiDia=[]; const ND=+process.env.DIAS||14, MUDA=800; /* v8.6.9: cursoDias guarda o dia em que cada curso foi comprado (id+nível) */ const cursoDias={}; const rows={}, chega=[]; let negs=0, forcs=0, fechou=0; const capDia={1:[],2:[],3:[],4:[],5:[],6:[],7:[]}, mudaDia=[], mudaAv=[], lucroGar=[], lucroInd=[], lucroAv=[], negPos=[], negPosAv=[];   // v8.7: o dia em que cada capítulo foi cumprido
 for(let k=0;k<N;k++){
   g.save=L.normSave({}); g.up=g.save.up; g.boughtFor=0; g.buildTables(); let semMesa=0, chegou=0, vermVisto=false, runAbre={}; if(process.env.LIBERA==='0') for(const x of L.LIBERA) g.save.libera[x.id]=2;
   for(let n=1;n<=ND;n++){
@@ -95,6 +95,7 @@ for(let k=0;k<N;k++){
     (xpDani[n]=xpDani[n]||[]).push([L.daniXp(g.save),g.save.equipe.dani]);   // v8.9: a XP dela e o nível pago no fim de cada dia
     if(g.save.equipe.dani>0) tarNiv[g.save.equipe.dani-1].push(g.result.daniFeitas);   // v8.9: tarefas da Dani no dia, pelo nível dela
     { const ge=L.avalGeral(g.save.aval); r.nota.push(ge?ge.nota:null); }   // v8.6.9: a nota geral do Gurugol no fim do dia
+    if(g.result.vig) vigs[g.result.vig.res]++;
     r.lucro.push(g.result.money); r.con.push(g.result.conserto); r.qb.push(g.result.quebras.length); if(g.result.clima==='chuva') r.chuva++; if(g.result.clima==='feriado') r.fer++; r.fim.push(g.save.bank); if(g.result.passed) r.pass++; semMesa=g.result.lostBy.semMesa; r.lug.push(L.salaoLugares(g.save.salao.mesas)); if(g.save.bank<0) negs++; if(g.result.forcado) forcs++; if(!chegou&&g.save.bank>=MUDA) chegou=n; if(process.env.MESAS) console.log(n, g.save.salao.mesas.map(m=>m.seats).sort().join(''), 'semMesa', semMesa);
     // v8.7: o que a interface faz entre os dias: a conversa de depois fecha o capítulo (e abre o seguinte); a de antes só passa
     if(!vermVisto && Math.min.apply(null,L.MANUT.equip.map(q=>g.save.manut[q.id]))<L.MANUT.vermelho){ vermVisto=true; libVerm.push(manutAbre); }   // v9.0.5: a 1ª barra vermelha: o cartão já estava aberto na lojinha desse dia?
@@ -121,6 +122,7 @@ console.log('DANI | XP e nível pago no fim do dia '+[5,7,9,11,13,16].filter(n=>
 console.log('TONHAO | dia médio em que chega ao nível '+nivDia.map((a,i)=>(i+1)+': '+(a.length?(a.reduce((x,y)=>x+y,0)/a.length).toFixed(1)+' ('+a.length+'/'+N+')':'nunca')).join(' · '));
 console.log('LUCRO acumulado nos '+ND+' dias (média por carreira): R$',Math.round(Object.keys(rows).reduce((a,n)=>a+rows[n].lucro.reduce((x,y)=>x+y,0),0)/N));
 { const ch=chega.filter(isFinite).sort((a,b)=>a-b); console.log('CAMPANHA',ND,'dias | chegou a R$',MUDA,'em',ch.length+'/'+N,'carreiras, no dia',ch.length?'mediano '+ch[Math.floor(ch.length/2)]:'-','| dias fechando no negativo',negs,'| empréstimos à força',forcs); }
+{ const nv=vigs.aprovado+vigs.advertencia+vigs.multa; if(nv||L.MANUT.on) console.log('FISCAL (v9.4) |',nv,'visitas em',N,'carreiras · aprovado',vigs.aprovado,'· advertência',vigs.advertencia,'· multa',vigs.multa,nv?'('+Math.round(vigs.multa/nv*100)+'% das visitas)':''); }
 console.log('PONTOS | lucro médio por dia: Garagem R$',avg(lucroGar),'('+lucroGar.length+' dias) · área industrial R$',avg(lucroInd),'('+lucroInd.length+') · Avenida R$',avg(lucroAv),'('+lucroAv.length+') | ganho por dia da Avenida sobre a área industrial R$',lucroAv.length&&lucroInd.length?avg(lucroAv)-avg(lucroInd):'-','| carreiras com dia no negativo nos 5 dias depois da mudança: industrial',new Set(negPos).size?negPos.length+' dias':'0','· Avenida',negPosAv.length?negPosAv.length+' dias':'0');   // v9.1
 { const ks=Object.keys(cursoDias); if(ks.length) console.log('CURSOS (v8.6.9) | dia mediano da compra:',ks.map(k=>{ const d=cursoDias[k].sort((a,b)=>a-b); return k+' dia '+d[Math.floor(d.length/2)]+' ('+d.length+'/'+N+')'; }).join(' · ')); }
 if(MODO!=='sem'){
