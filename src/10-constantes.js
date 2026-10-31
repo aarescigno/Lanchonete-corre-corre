@@ -85,7 +85,7 @@ const CURSOS = [
     av:{ nome:'Parmegiana da casa', preco:600, receita:'molho de tomate de 6 horas e queijo gratinado na hora', pratos:['parmegiana'] } }
 ];
 /* v9.1: o curso está ao alcance neste ponto? (nivel:3 só da Avenida Brasil em diante; no modo dev, sempre) */
-function cursoOk(c, ponto){ return !c.nivel || DEV.on || (ponto || PONTOS[0]).nivel >= c.nivel; }
+function cursoOk(c, ponto){ return !c.nivel || devLivre() || (ponto || PONTOS[0]).nivel >= c.nivel; }
 /* vegetarianos (v8.6.11): chance de cada pessoa (menos o entregador) ser vegetariana; quem não é pede o PF sem carne em pfTroca das
    vezes que pede PF; mov: o curso Vegetariano traz +5% de movimento no básico e mais +5% no avançado */
 const VEG = { chance:0.1, pfTroca:0.2, mov:0.05 };
@@ -116,7 +116,7 @@ const DANI_CURSOS = [
   { id:'confCaseira', nome:'Confeitaria caseira', preco:180, nivel:2, item:true }   // v9.2: a geladeirinha de doces (DOCES)
 ];
 /* v9.2: o curso aparece no ponto de `nivel` em diante (no modo dev, sempre) */
-function cursoDaniVis(c, ponto){ return DEV.on || (c.nivel || 1) <= (ponto || PONTOS[0]).nivel; }
+function cursoDaniVis(c, ponto){ return devLivre() || (c.nivel || 1) <= (ponto || PONTOS[0]).nivel; }
 function daniXp(save){
   const s = save || {};
   return DANI_XP.curso * DANI_CURSOS.filter(c => s.daniCursos && s.daniCursos[c.id]).length + Math.floor(Math.max(0, +s.daniTar || 0) / DANI_XP.tarefas);
@@ -553,7 +553,7 @@ const CRIT = { bonus:10, vipBonus:20 };   // pontos (v8.3.8; eram R$)
 const WASH = { base:0.3, perPile:2.5 };               // segundos na pia
 const TRASH = { cap:6, empty:2, smell:0.3, tritura:30 };   // lixeira: capacidade, tempo para esvaziar, cheiro quando cheia, segundos do Triturador por gominho (v8.3.10)
 function couvertEffect(eq){ return STAFF.couvert.effect * (eq.taxa ? 1 - STAFF.couvert.feeCut : 1); }
-function couvertOk(ponto){ return DEV.on || (ponto || PONTOS[0]).nivel >= STAFF.couvert.nivel; }   // no modo dev, em qualquer ponto
+function couvertOk(ponto){ return devLivre() || (ponto || PONTOS[0]).nivel >= STAFF.couvert.nivel; }   // no modo dev, em qualquer ponto
 /* ambiente do salão: quanto a paciência nas mesas cai mais devagar (TV, som e couvert se somam) */
 function ambienteEffect(eq){
   const tm = tvsModo(eq);
@@ -1013,9 +1013,9 @@ const BIA_IDS = ['tenis', 'corrida', 'bandeja', 'sudoku'];
 function upgradeCartao(id){ return BIA_IDS.indexOf(id) >= 0 ? 'bia' : 'melhorias'; }
 const HIST_NOMES = { bia:'Bia', tonhao:'Tonhão', dani:'Dani', joca:'Joca' };
 const CAIXA_MAX = 14;                                 // livro-caixa (v7.2): quantos dias da carreira ficam guardados
-const VERSAO = 'v9.2';                             // vai no resumo do Caixa
+const VERSAO = 'v9.2.1';                            // vai no resumo do Caixa
 const DIVULGA_DIA = 4;                                // antes disso, o movimento é o da inauguração (sem custo); v9.0.2: dia 4, e o padrão é o boca a boca
-function divulgaAberta(n, sv){ return DEV.on || n >= DIVULGA_DIA && !(sv && sv.convDiv === 'pend'); }   // no modo dev, desde o dia 1; v9.0.3: no Modo História, só depois da conversa
+function divulgaAberta(n, sv){ return devLivre() || n >= DIVULGA_DIA && !(sv && sv.convDiv === 'pend'); }   // no modo dev, desde o dia 1; v9.0.3: no Modo História, só depois da conversa
 function divulgaOf(id){ return DIVULGA.find(d => d.id === id) || DIVULGA[0]; }   // v9.0.2: sem escolha, boca a boca
 /* o que se serve na espera, por nível do salão (v7.7, PONTOS.bebida). preco: R$ por copo na conta do grupo; ingred:
    custo de cada copo; prep: s até ficar pronto na estação; take: s da Bia (ou da Dani) para pegar ali.

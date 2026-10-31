@@ -53,6 +53,7 @@ Etapas concluídas (1a a 3a), movidas de `docs/PLANO.md` em 30/10/2026 e 31/10/2
 | 2c-r6 | Retorno de beta-tester: cardápio fácil de achar (cartão Cardápio com os cursos, conversa do dia 2, selo "novo", reclamação dos clientes) e balão do Tonhão embaixo do Pular | v9.0.1 | feita em 30/10 (`docs/spec-v9.0.1.md`); depois, v9.0.2 e v9.0.3 fora do plano |
 | 2c-r7a | A lojinha abre aos poucos: cartões que aparecem com reclamação e conversa (Bia, Melhorias, Manutenção, Salão, Decoração) | v9.0.4 | feita em 31/10 (`docs/spec-v9.0.4.md`) |
 | 2c-r7b | Rebalanceamento e a melhor ordem de liberação dos cartões | v9.0.5 | feita em 31/10 sem versão nova: a ordem A (rascunho) ficou; a fila de uma conversa por fim de dia faz os 5 cartões abrirem até a lojinha do dia 11 (`docs/spec-v9.0.4.md`, fim) |
+| 3b-1 | Restaurante na Avenida Brasil: os caps. 6 e 7, o almoço de negócios, a parmegiana, os sofás, as águas saborizadas e as flores | v9.1 | feita em 31/10 (`docs/spec-v9.1.md`; a 5ª vaga de espera da área industrial ganhou posição; metas ×1,7) |
 
 ## Etapa 1a — Jogo justo: dá para não perder ninguém (v7.1)
 > **Feita em 15/10 (v7.1, `docs/spec-v7.1.md`).** Decisões: A + B; no Turno sem fim vale o ritmo da fila justa, sem o piso; ícone "aguardando mesa" sim. A medição mostrou que, com a equipe, a maior parte das perdas era a espera pelo prato, e não a fila. O que sobra é o limite de louça nos dias de 6 mesas: o bot afiado só chega ao alvo (0 perdidos em 94% dos dias) comprando o Jogo de pratos primeiro. A louça não mudou; se jogadores reclamarem da espera pelo prato, a etapa 1b pode rever `dishStock` ou a mecânica D. Metas sem mudança.
@@ -1267,3 +1268,56 @@ Modelo: Sonnet, esforço alto (balanceamento por tentativa com critérios fechad
 **Fechamento:** v9.2 (`versoes/`, `vtag`, `VERSAO`, `#ov-ver`, `docs/spec-v9.2.md`, `RESUMO.md`), PR e merge.
 
 **Modelo:** Sonnet, esforço alto. Tudo decidido, mas o 2º ajudante mexe na classe da Dani, os dois não podem se atrapalhar e entra o pedido de fim de refeição; pede depuração com o bot. Se passar de umas 15 trocas, feche o Joca como v9.2 e deixe os doces para uma v9.2.1 com o mesmo plano.
+
+### Sessão 3b-2d — Painel do modo dev (v9.2.1; planejada em 31/10)
+Pedido do usuário: o modo dev (10 toques no selo; save à parte, `DEV` em `12-clientes.js`) deve deixar testar **todos os níveis, pontos, upgrades, cursos e equipe** e **avançar rápido**, sem jogar dias inteiros, para a 3b-3 em diante, o Terraço e os eventos já serem testados por ele. **O jogo normal não muda; o modo dev nunca grava no save normal** (`saveKey()` já separa; nada novo grava fora dele).
+
+**O que já existe e fica:** chips dos dias 1 a 10 no menu (o `smoke15` usa), R$ 10.000 que voltam no `goShop`, lojinha sem custo e sem trava (`DEV.on` em `cursoOk`, `cursoDaniVis`, `couvertOk`, `divulgaAberta`, `mudancaFalta`, `cartaoAberto`, níveis da equipe, cursos, melhorias `devToggle`, fogão `devInd`), sem História e sem ranking.
+
+**1. Modo dev "de verdade" (`12-clientes.js`, `16-jogo.js`, `41-lojinha.js`, `10-constantes.js`).** `DEV` ganha `real:false` e `vel:1` (só na memória; `setDev` volta os dois a `false` e `1`). Nova função logo depois de `DEV`: `function devLivre(){ return DEV.on && !DEV.real; }`. Troque `DEV.on` por `devLivre()` **em toda checagem de custo, trava ou liberação**: `cursoOk`, `cursoDaniVis`, `couvertOk`, `divulgaAberta`, `normSave` (só o `divulga: ... 'boca'`), `consertar`/`revisar` (159, 163, 175, 176), o reabastecer de R$ 10.000 do `goShop`, `setStaff` (954–956), `mudancaFalta`, `mudancaVisivel`, `mudarPonto` (o custo), `buy` (1057–1058), `cartaoAberto` (1126), `cursoTrava`, `daniCursoTrava`, `daniChegou`, `jocaCursoTrava`, o curso do Joca (1203), a decoração (1320) e, na `41-lojinha.js`, todos os `DEV.on` de preço, botão grátis, "Ligar/Desligar" e `shop-limit` (259, 297, 318, 368, 675, 761, 772, 777, 787, 804, 811, 824, 829, 1004, 1010–1014, 1038; os números são da v9.2, confira pelo `grep -n "DEV.on" src/`). **Ficam com `DEV.on`:** `saveKey`, `loadSave` (184), a História (`normSave` 160, `16-jogo` 903–905, 982, 1003, 1037), `resetProgress`, `setDev`, `devInd`, `devToggle`, `treinoPrimeiro`, menu, selo e ranking. Com `DEV.real`, o `shop-limit` diz: **"Modo dev com preços de verdade: paga e espera como no jogo."**
+
+**2. Ações do dev na classe `Game` (`16-jogo.js`, logo depois de `setDev`; todas devolvem `false` com `!DEV.on` e gravam com `writeSave`):**
+- `devDia(n)`: `n` entre 1 e 99; `save.dia = n`, `save.pontoDia = Math.min(save.pontoDia, n)`; na lojinha, `shopNext = n` e `resetDay(n)`.
+- `devPonto(id)`: vai direto a qualquer ponto de `PONTOS` (subir ou descer). Tire o miolo do `mudarPonto` (da troca de `salao.ponto` até `normEquipe`, sem o custo, sem o capítulo e sem o `Sfx`) para `trocaPonto(para)`, usado pelos dois; `devPonto` faz `trocaPonto`, `tablesKey = ''`, `buildTables()`, `kitchen/dani/joca.reset()` e, na lojinha, `resetDay(shopNext)`.
+- `devNota(v)`: `save.aval` = `AVAL.max` avaliações iguais com todos os critérios em `min(v, avalTeto(this.ponto))`; `v === 0` limpa (`save.aval = []`).
+- `devEquipe(modo)`: `'max'` põe Tonhão, Dani e Joca no último nível de `STAFF` (Dani com as tarefas `['pratos','lavar','suco']`, Joca com `['lixo','lavar','pratos']`), todos os `CURSOS` no nível 2 (o que o `normCursos` aceita), todos os `DANI_CURSOS` e `JOCA_CURSOS`; `'zero'` volta Tonhão 0, Dani 1 (com `DANI_PADRAO`), Joca 0 e cursos vazios (`normCursos({})`, `{}`, `{}`). Depois, `normEquipe(save.equipe, this.ponto)`, `kitchen/dani/joca.reset()`, `cursoDia = daniCursoDia = jocaCursoDia = 0`.
+- `devMelhorias(on)`: `true` liga todas as `UPGRADES` (como o `devToggle`: `multi` vira 1); `false` tira todas (e o fogão industrial, `fogaoInd`); depois `kitchen.slots = cozinhaSlots(this)`.
+- `devCaixa(v)`: `save.bank = v` (só faz diferença com `DEV.real`).
+- `devReal(on)`: `DEV.real = !!on`; ao desligar, o banco volta a no mínimo `DEV.bank`.
+- `devFimDia()`: só com `mode === 'carreira'` e `state` `'playing'` ou `'paused'` (que antes volta a `'playing'`): `clock = 0` (o fim de dia normal acontece no próximo `update`).
+
+**3. Velocidade (`43-telas.js`).** Nova `function passoJogo(dt){ const k = DEV.on && game.state === 'playing' ? DEV.vel : 1; for (let i = 0; i < k; i++) game.update(dt); }`; o `frame` chama `passoJogo(dt)` no lugar de `game.update(dt)`. `DEV.vel` é 1, 2 ou 4.
+
+**4. Painel do dev (`02-telas.html`, `01-estilo.css`, `40-interface.js`, `43-telas.js`).**
+- O `#devbadge` vira `<button class="devbadge" id="devbadge" type="button" aria-label="Abrir o painel do modo dev">Modo dev · painel</button>` (sem o `pointer-events:none`; `min-height:max(28px, calc(var(--u)*30))`). Toque: `abrirDev()`; com o jogo rodando (`playing`), antes `game.pause()`, e o `#ov-pause` fica por baixo.
+- Painel `#ov-dev` depois dos outros `#ov-*`, por cima deles (não usa `showOnly`: liga e desliga só ele; `z-index` acima dos `.ov`). `<div class="panel dev-panel">` com rolagem própria (`max-height:90%; overflow:auto`), título **"Painel do dev"** e as seções, cada uma com um `<div class="lbl">`, montadas por `buildDev()` (`40-interface.js`) com `el(...)`, `.btn` e `.chip` que já existem:
+  1. **Dia** (no menu e na lojinha): "Dia N" e os botões **−10, −1, +1, +10** (`devDia`).
+  2. **Ponto** (menu e lojinha): um botão por ponto de `PONTOS`, com o `nome`; o atual com `aria-pressed="true"`. O Terraço entra sozinho quando estiver em `PONTOS`.
+  3. **Nota do Gurugol** (menu e lojinha): "Agora: X ★" (ou "sem nota") e os botões **2,0 · 2,7 · 3,4 · 4,0 · Teto · Limpar** (`devNota`; Teto = `avalTeto(ponto)`; Limpar = 0).
+  4. **Equipe, cursos e melhorias** (menu e lojinha): **"Tudo no máximo"** (`devEquipe('max')` + `devMelhorias(true)`) e **"Do começo"** (`devEquipe('zero')` + `devMelhorias(false)`).
+  5. **Lojinha de verdade** (menu e lojinha): **"Preços e travas de verdade: desligado"** / **"…: ligado"** (`devReal`) e, com ele ligado, **Caixa: R$ 0 · R$ 500 · R$ 2.000 · R$ 10.000** (`devCaixa`).
+  6. **No dia** (só com o jogo pausado no meio de um dia da carreira): **Velocidade 1× · 2× · 4×** (`DEV.vel`, o atual com `aria-pressed`) e **"Encerrar o dia agora"** (`devFimDia()`, fecha o painel e continua o jogo).
+  - Rodapé: **"Fechar"** (`fecharDev()`: esconde o `#ov-dev` e, conforme o `state`, `buildMenu()` ou `buildShop()`; na pausa, a pausa continua).
+  - Cada toque: `Sfx.tap()` e `buildDev()` de novo (os números mudam na hora).
+- `window.__lcc` ganha `abrirDev, fecharDev, buildDev, passoJogo, devLivre`.
+
+**5. Versão v9.2.1.** `versoes/v9.2-fonte.html` e `versoes/v9.2.html`, selo `vtag`, `VERSAO = 'v9.2.1'`, `docs/spec-v9.2.1.md`, `docs/RESUMO.md` e, no `#ov-ver`: **"v9.2.1 — 31/10/2026 — Modo dev com painel, para testar: um toque em "Modo dev · painel" escolhe qualquer dia, qualquer ponto, a nota do Gurugol, a equipe e os cursos no máximo (ou do começo) e as melhorias; liga a lojinha com preços e travas de verdade e, no meio do dia, acelera o jogo (2× ou 4×) ou encerra o dia. O jogo normal não muda."** (e o link "Abrir a v9.2" na entrada da v9.2).
+
+**6. Smoke novo `tests/smoke44.js`** (no `run_all.sh`), confere:
+1. Fora do modo dev: as `dev*` devolvem `false` e não mexem no save; `#devbadge` e `#ov-dev` escondidos; `passoJogo` faz um `update` só.
+2. Liga o dev guardando antes o `localStorage` do save normal (`LS.save`); no fim, ele está igual.
+3. `devDia(35)` → `proxDia === 35`; `devDia(0)` → 1; `devDia(120)` → 99; na lojinha, `shopNext` acompanha.
+4. `devPonto('avenida')` → `ponto.nivel === 3`, `pontoDia === dia`, sem `equipe.tv`, `up.tvs` nem `up.maquina`; `devPonto('garagem')` e `devPonto('industrial')` também funcionam; `salaoProblema` sem problema em cada um.
+5. `devNota(3.4)` na área industrial → `notaGurugol === 3.4`; `devNota(5)` na Garagem → 3 (o teto); `devNota(0)` → `null`.
+6. `devEquipe('max')` → níveis máximos e todos os cursos; `'zero'` → Tonhão 0, Dani 1, Joca 0, sem cursos.
+7. `devMelhorias(true)` → toda `UPGRADES` em `up`; `false` → nenhuma.
+8. `devReal(true)`, `devCaixa(0)`, `devNota(2)` → `mudancaFalta` com `din` e `nota`; `buy` de uma melhoria falha; `goShop` não devolve os R$ 10.000; `devReal(false)` → `mudancaFalta === null` e banco ≥ 10.000.
+9. Num dia da carreira: `DEV.vel = 4`, `passoJogo(0.05)` → o `clock` cai ~0,2 s; `devFimDia()` e alguns `update` → `state === 'dayend'`.
+10. Painel: `abrirDev()` no menu mostra Dia, Ponto, Nota, Equipe e Lojinha de verdade, sem "No dia"; os botões de ponto são `PONTOS.length`; tocar "+10" muda o "Dia N"; na pausa de um dia, "No dia" aparece; `fecharDev()` esconde o painel.
+11. `setDev(false)`: `DEV.vel === 1`, `DEV.real === false` e o save normal igual ao do item 2.
+
+**Checagens:** `./run_all.sh --tudo` verde (o `menu_fit` não muda: o menu não ganhou linha); capturas do painel no menu, na lojinha e na pausa (desktop e 740×360, sem cortar, rolando por dentro), conferidas em recorte. Sem balanceamento (o jogo normal não muda).
+
+**Modelo:** Sonnet, esforço médio: plano fechado, código mecânico em várias partes, sem decisão de jogo.
+
+---

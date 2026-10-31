@@ -200,7 +200,7 @@ table.cx .rs{font-size:inherit}
 .vtag{position:absolute;top:calc(var(--u)*10);right:calc(var(--u)*14);font:800 max(11px,calc(var(--u)*13)) var(--fb);color:#5b5446;background:var(--creme);border:calc(var(--u)*2) solid var(--tinta);border-radius:999px;padding:0 calc(var(--u)*9);line-height:1.6}
 .vtag{-webkit-user-select:none;user-select:none;touch-action:manipulation;-webkit-tap-highlight-color:transparent}
 .vtag.dev{background:var(--alerta);color:#fff}
-.devbadge{position:absolute;left:50%;top:calc(var(--u)*4);transform:translateX(-50%);z-index:20;pointer-events:none;font:800 max(10px,calc(var(--u)*13)) var(--fb);letter-spacing:.08em;text-transform:uppercase;color:#fff;background:var(--alerta);border:calc(var(--u)*2) solid var(--tinta);border-radius:999px;padding:0 calc(var(--u)*10);line-height:1.5;opacity:.92}
+.devbadge{position:absolute;left:50%;top:calc(var(--u)*4);transform:translateX(-50%);z-index:20;cursor:pointer;min-height:max(28px,calc(var(--u)*30));font:800 max(10px,calc(var(--u)*13)) var(--fb);letter-spacing:.08em;text-transform:uppercase;color:#fff;background:var(--alerta);border:calc(var(--u)*2) solid var(--tinta);border-radius:999px;padding:0 calc(var(--u)*10);line-height:1.5;opacity:.92}
 .menu-panel .row.tight{margin-top:calc(var(--u)*8);gap:calc(var(--u)*10)}
 .menu-panel .row.tight .btn{padding-left:calc(var(--u)*15);padding-right:calc(var(--u)*15)}   /* v8.5: cabem Continuar, Missão zero e História na 1ª linha */
 .menu-panel .btn{font-size:max(14px,calc(var(--u)*20));padding:calc(var(--u)*6) calc(var(--u)*14)}
@@ -324,3 +324,12 @@ table.rank tr.me td{background:#fbe7a8}
 .item .tonxp-bar{height:8px;border-radius:4px;background:rgba(0,0,0,.15);margin-top:3px;overflow:hidden}
 .item .tonxp-bar i{display:block;height:100%;background:#f5a623}
 .item .tonxp small{display:block;font-weight:400;font-size:.85em;opacity:.8;margin-top:2px}   /* v8.9: o trabalho da Dani */
+/* v9.2.1: painel do modo dev (por cima de tudo; rola por dentro) */
+.ov-dev{z-index:30}
+.dev-panel{max-height:90%;overflow:auto;width:min(96%,calc(var(--u)*640));text-align:left}
+.dev-panel h2{text-align:center}
+.dev-panel .row{flex-wrap:wrap;justify-content:flex-start;gap:calc(var(--u)*6);margin-top:calc(var(--u)*6)}
+.dev-panel .btn{font-size:max(12px,calc(var(--u)*15));min-height:max(36px,calc(var(--u)*38));padding:0 calc(var(--u)*12)}
+.dev-panel .btn[aria-pressed="true"]{background:var(--faixa);color:#fff}
+.dev-panel .dev-now{font-weight:700;margin-top:calc(var(--u)*4)}
+.dev-panel > .row:last-child{justify-content:center}
