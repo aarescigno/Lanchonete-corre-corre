@@ -18,7 +18,7 @@ const N=+process.argv[2]||10, DIV=process.argv[3]||'panfleto';
 const MODO=process.env.MANUT||'sem'; if(!['sem','com','cuida','amarelo','vermelho'].includes(MODO)) throw new Error('MANUT=sem|com|cuida|amarelo|vermelho');
 L.MANUT.on=MODO!=='sem';
 if(process.env.MANUT_CFG){ const c=JSON.parse(process.env.MANUT_CFG); const eq=c.equip; delete c.equip; Object.assign(L.MANUT,c); if(eq) for(const id in eq) Object.assign(L.manutOf(id),eq[id]); }
-if(process.env.PONTO_CFG){ const c=JSON.parse(process.env.PONTO_CFG); for(const k in c){ if(c[k]&&typeof c[k]==='object'&&!Array.isArray(c[k])) Object.assign(L.PONTOS[1][k],c[k]); else L.PONTOS[1][k]=c[k]; } }   // v9: PONTO_CFG='{"cardapio":1.3,"aluguel":100}' troca números da área industrial em runtime
+if(process.env.PONTO_CFG){ const c=JSON.parse(process.env.PONTO_CFG), P=L.PONTOS.find(p=>p.id===(process.env.PONTO_ALVO||process.env.PONTO||'industrial'))||L.PONTOS[1]; for(const k in c){ if(c[k]&&typeof c[k]==='object'&&!Array.isArray(c[k])) Object.assign(P[k],c[k]); else P[k]=c[k]; } }   // v9: PONTO_CFG='{"cardapio":1.3,"aluguel":100}' troca números do ponto em runtime (v9.1: o ponto de PONTO_ALVO ou PONTO; padrão: a área industrial; PONTO_ALVO=avenida)
 if(process.env.CLIMA_CFG){ const c=JSON.parse(process.env.CLIMA_CFG); for(const k in c) Object.assign(L.CLIMA[k],c[k]); }
 // v9.0.5: a ordem de liberação dos cartões da lojinha (LIBERA): LIBERA=0 deixa tudo aberto (o jogo da v9.0.3, a base de comparação);
 //   LIBERA_ORDEM=bia,salao,melhorias,manut,decor reordena (dia e garantia seguem a posição: 2/4, 3/5, 3/5, 4/6, 5/7);
@@ -38,7 +38,7 @@ if(process.env.CONTAS) Object.assign(L.CONTAS,JSON.parse(process.env.CONTAS));
 if(process.env.INGRED) Object.assign(L.INGRED,JSON.parse(process.env.INGRED));
 if(process.env.CARDAPIO){ const c=JSON.parse(process.env.CARDAPIO); for(const k in c) L.CARDAPIO[k].preco=c[k]; }   // v8.3.8: CARDAPIO='{"pf":25}' testa os preços dos pratos
 if(process.env.MAIS) Object.assign(L.MAIS,JSON.parse(process.env.MAIS));   // v8.3.8: MAIS='{"cada":0.6}' testa o 2º pedido
-const ND=+process.env.DIAS||14, MUDA=800; /* v8.6.9: cursoDias guarda o dia em que cada curso foi comprado (id+nível) */ const cursoDias={}; const rows={}, chega=[]; let negs=0, forcs=0, fechou=0; const capDia={1:[],2:[],3:[],4:[],5:[]}, mudaDia=[], lucroGar=[], lucroInd=[], negPos=[];   // v8.7: o dia em que cada capítulo foi cumprido
+const ND=+process.env.DIAS||14, MUDA=800; /* v8.6.9: cursoDias guarda o dia em que cada curso foi comprado (id+nível) */ const cursoDias={}; const rows={}, chega=[]; let negs=0, forcs=0, fechou=0; const capDia={1:[],2:[],3:[],4:[],5:[],6:[],7:[]}, mudaDia=[], mudaAv=[], lucroGar=[], lucroInd=[], lucroAv=[], negPos=[], negPosAv=[];   // v8.7: o dia em que cada capítulo foi cumprido
 for(let k=0;k<N;k++){
   g.save=L.normSave({}); g.up=g.save.up; g.boughtFor=0; g.buildTables(); let semMesa=0, chegou=0, vermVisto=false, runAbre={}; if(process.env.LIBERA==='0') for(const x of L.LIBERA) g.save.libera[x.id]=2;
   for(let n=1;n<=ND;n++){
@@ -46,9 +46,12 @@ for(let k=0;k<N;k++){
     if(n>=2){
       g.goShop(n);
       // v9: a área industrial: o bot muda assim que pode (R$ 800 e a nota); MUDA=0 fica na Garagem
-      if(process.env.MUDA!=='0' && g.mudancaVisivel && !g.mudancaFalta && g.mudarPonto()) mudaDia.push(n);
+      // v9.1: MUDA=0 fica na Garagem; MUDA=1 muda só para a área industrial; sem MUDA (ou outro valor) o bot segue até a Avenida Brasil
+      if(process.env.MUDA!=='0' && !(process.env.MUDA==='1'&&g.ponto.nivel>=2) && g.mudancaVisivel && !g.mudancaFalta && g.mudarPonto()) (g.ponto.nivel===3?mudaAv:mudaDia).push(n);
       if(g.ponto.nivel>=2){ const F=L.INDUSTRIAL.fogao, sobra=c=>g.save.bank-L.payroll(g.save.equipe)-c>=300;   // fogão industrial, TVs com anúncios, cadeirinhas e a jarra (a Água da torneira, mais cara) quando sobra R$ 300 acima da folha
-        if(!g.up.fogaoInd&&sobra(F.cost)) g.comprarInd('fogaoInd'); if(!g.up.tvs&&sobra(L.INDUSTRIAL.tvs.instalar)) g.comprarInd('tvs'); if(!g.up.assento&&sobra(L.INDUSTRIAL.assento.cadeira.cost)) g.comprarInd('assento','cadeira'); }
+        if(!g.up.fogaoInd&&sobra(F.cost)) g.comprarInd('fogaoInd'); if(g.ponto.nivel===2){ if(!g.up.tvs&&sobra(L.INDUSTRIAL.tvs.instalar)) g.comprarInd('tvs'); if(!g.up.assento&&sobra(L.INDUSTRIAL.assento.cadeira.cost)) g.comprarInd('assento','cadeira'); } }
+      if(g.ponto.nivel===3){ const sobra4=c=>g.save.bank-L.payroll(g.save.equipe)-c>=400;   // v9.1: os sofás e o curso de restaurante quando sobra R$ 400 acima da folha (as águas saborizadas entram na ordem das melhorias)
+        if(!g.up.assento&&sobra4(L.AVENIDA.sofa.cost)) g.comprarInd('assento','sofa'); const pr=g.cursoProx('restaurante'); if(pr&&!g.cursoTrava&&process.env.CURSOS!=='0'&&sobra4(pr.preco)) { g.buyCurso('restaurante'); (cursoDias['restaurante'+pr.nivel]=cursoDias['restaurante'+pr.nivel]||[]).push(n); } }
       if(MODO==='cuida'){ const b0=g.save.bank; g.revisarTudo(); r.rev.push(b0-g.save.bank); }
       if(MODO==='amarelo'||MODO==='vermelho'){ const lim=MODO==='amarelo'?L.MANUT.verde:L.MANUT.vermelho, b0=g.save.bank; L.MANUT.equip.forEach(q=>{ if(g.save.manut[q.id]<lim) g.revisar(q.id); }); r.rev.push(b0-g.save.bank); }   // v8.3.12: amarelo = revisa quem saiu do verde; vermelho = só quem já está no vermelho
       for(;;){ const u=order.find(id=>!g.up[id]); const uc=u&&L.UPGRADES.find(x=>x.id===u);   // v8.6.14: sem o limite de 1 por dia, compra na ordem tudo o que o dinheiro der, guardando a reserva
@@ -61,7 +64,8 @@ for(let k=0;k<N;k++){
         const e=Object.assign({},e0,L.HIST.on?{dani:g.save.cap>=2?Math.max(1,e0.dani||0):0}:{});   // v8.7: a Dani só chega no cap. 2 (aprendiz, sem salário)
         g.save.equipe=L.normSave({equipe:Object.assign({daniTasks:['pratos','lavar','lixo']},e)}).equipe;
         if(n>=3) g.save.divulga=DIV;
-        if(g.up.tvs&&L.payroll(Object.assign({},g.save.equipe,{tvs:1}))+(L.divulgaOf(DIV).cost)<=g.save.bank) g.save.equipe.tvs=1;   // v9: as TVs com anúncios
+        if(g.up.tvs&&g.ponto.nivel===2&&L.payroll(Object.assign({},g.save.equipe,{tvs:1}))+(L.divulgaOf(DIV).cost)<=g.save.bank) g.save.equipe.tvs=1;   // v9: as TVs com anúncios
+        if(g.ponto.nivel>=3&&L.payroll(Object.assign({},g.save.equipe,{couvert:true,taxa:true}))+(L.divulgaOf(DIV).cost)+400<=g.save.bank) Object.assign(g.save.equipe,{couvert:true,taxa:true});   // v9.1: o couvert artístico com a taxa
         for(let t=1;t<=g.save.equipe.dani;t++) if(!vistoD.has(k+':'+t)){ vistoD.add(k+':'+t); nivDani[t-1].push(n); }   // v8.9
         for(let t=0;t<=g.save.equipe.tonhao;t++) if(!vistoT.has(k+':'+t)){ vistoT.add(k+':'+t); nivDia[t].push(n); }   // v8.8: o dia em que ele chega a cada nível
       }
@@ -85,7 +89,7 @@ for(let k=0;k<N;k++){
       if(!falou){ const man=L.LIBERA.find(x=>x.primeiro&&sv.libera[x.id]==='pend'), outra=L.LIBERA.find(x=>sv.libera[x.id]==='pend'), ab=x=>{ sv.libera[x.id]=2; runAbre[x.id]=n+1; };
         if(man) ab(man); else if(sv.convCard==='pend') sv.convCard=1; else if(sv.convDiv==='pend') sv.convDiv=1; else if(outra) ab(outra); } }
     if(g.state==='falencia'){ fechou++; break; }
-    (g.ponto.nivel>=2?lucroInd:lucroGar).push(g.result.money); if(mudaDia[mudaDia.length-1]!==undefined&&n-mudaDia[mudaDia.length-1]<=5&&n>mudaDia[mudaDia.length-1]&&g.save.bank<0) negPos.push(n);
+    (g.ponto.nivel===3?lucroAv:g.ponto.nivel===2?lucroInd:lucroGar).push(g.result.money); if(mudaDia[mudaDia.length-1]!==undefined&&n-mudaDia[mudaDia.length-1]<=5&&n>mudaDia[mudaDia.length-1]&&g.save.bank<0&&g.ponto.nivel===2) negPos.push(n); if(mudaAv[mudaAv.length-1]!==undefined&&n-mudaAv[mudaAv.length-1]<=5&&n>mudaAv[mudaAv.length-1]&&g.save.bank<0&&g.ponto.nivel===3) negPosAv.push(n);
   }
   chega.push(chegou||Infinity); for(const x of L.LIBERA) if(runAbre[x.id]) (libAbre[x.id]=libAbre[x.id]||[]).push(runAbre[x.id]); libTudo.push(L.LIBERA.every(x=>(g.save.libera[x.id]>=1)&&(process.env.LIBERA==='0'||runAbre[x.id]<=9)));
 }
@@ -95,12 +99,13 @@ if(process.env.LIBERA!=='0'||true){   // v9.0.5: a linha LIBERA
   console.log('LIBERA',process.env.LIBERA==='0'?'(tudo aberto)':L.LIBERA.map(x=>x.id+' '+x.dia+'/'+x.ate).join(', '),'| dia médio em que abre',L.LIBERA.map(x=>x.id+' '+(libAbre[x.id]?av(libAbre[x.id]).toFixed(1)+' ('+libAbre[x.id].length+'/'+N+')':'-')).join(' · '),'| cartões à vista por dia (1 a 10)',[1,2,3,4,5,6,7,8,9,10].map(n=>libVis[n]?av(libVis[n]).toFixed(1):'-').join(' '),'| pendentes juntos (máx.)',Math.max.apply(null,libPend.filter(Boolean).map(a=>Math.max.apply(null,a))),'| todos abertos até o dia 9',libTudo.filter(Boolean).length+'/'+N,'| Manutenção aberta antes da 1ª barra vermelha',libVerm.filter(Boolean).length+'/'+libVerm.length);
 }
 for(let n=1;n<=ND;n++){ const r=rows[n], d=L.diaOf(n); console.log('Dia',n+(d.semana?' ('+d.semana.slice(0,3)+')':''),'meta',d.meta,'| dinheiro na lojinha',avg(r.shop),'| depois da folha',avg(r.after),'| folha',avg(r.eq),'| lucro',avg(r.lucro),'| lugares',avg(r.lug),'| passou',r.pass+'/'+N,'| Gurugol geral',(()=>{ const v=r.nota.filter(x=>x!=null); return v.length?(v.reduce((a,b)=>a+b,0)/v.length).toFixed(2):'-'; })()); }
-if(L.HIST.on){ const md=a=>a.length?a.sort((x,y)=>x-y)[Math.floor(a.length/2)]:'-'; console.log('HISTORIA | cap. 1 no dia',md(capDia[1]),'('+capDia[1].length+'/'+N+')','· cap. 2 no dia',md(capDia[2]),'('+capDia[2].length+'/'+N+')','· cap. 3 no dia',md(capDia[3]),'('+capDia[3].length+'/'+N+', até o dia 14: '+capDia[3].filter(d=>d<=14).length+')','· cap. 4 no dia',md(capDia[4]),'('+capDia[4].length+'/'+N+')','· cap. 5 no dia',md(capDia[5]),'('+capDia[5].length+'/'+N+')','| mudou no dia',md(mudaDia),'('+mudaDia.length+'/'+N+')','| banco tomou a lanchonete',fechou+'/'+N); }
+if(L.HIST.on){ const md=a=>a.length?a.sort((x,y)=>x-y)[Math.floor(a.length/2)]:'-'; console.log('HISTORIA | cap. 1 no dia',md(capDia[1]),'('+capDia[1].length+'/'+N+')','· cap. 2 no dia',md(capDia[2]),'('+capDia[2].length+'/'+N+')','· cap. 3 no dia',md(capDia[3]),'('+capDia[3].length+'/'+N+', até o dia 14: '+capDia[3].filter(d=>d<=14).length+')','· cap. 4 no dia',md(capDia[4]),'('+capDia[4].length+'/'+N+')','· cap. 5 no dia',md(capDia[5]),'('+capDia[5].length+'/'+N+')','· cap. 6 no dia',md(capDia[6]),'('+capDia[6].length+'/'+N+')','· cap. 7 no dia',md(capDia[7]),'('+capDia[7].length+'/'+N+')','| mudou no dia',md(mudaDia),'('+mudaDia.length+'/'+N+')','e para a Avenida no dia',md(mudaAv),'('+mudaAv.length+'/'+N+')','| banco tomou a lanchonete',fechou+'/'+N); }
 console.log('DANI | dia médio em que chega ao nível (aprendiz = 1) '+nivDani.map((a,i)=>(i+1)+': '+(a.length?(a.reduce((x,y)=>x+y,0)/a.length).toFixed(1)+' ('+a.length+'/'+N+')':'nunca')).join(' · ')+' | tarefas por dia '+tarNiv.map((a,i)=>(i+1)+': '+(a.length?(a.reduce((x,y)=>x+y,0)/a.length).toFixed(0):'-')).join(' · ')+' | cursos '+Object.keys(daniCursoDias).map(k=>{ const d=daniCursoDias[k].sort((a,b)=>a-b); return k+' dia '+d[Math.floor(d.length/2)]+' ('+d.length+'/'+N+')'; }).join(' · '));
 console.log('DANI | XP e nível pago no fim do dia '+[5,7,9,11,13,16].filter(n=>xpDani[n]).map(n=>n+': '+(xpDani[n].reduce((x,y)=>x+y[0],0)/xpDani[n].length).toFixed(1)+' XP, nível '+(xpDani[n].reduce((x,y)=>x+y[1],0)/xpDani[n].length).toFixed(1)).join(' · '));
 console.log('TONHAO | dia médio em que chega ao nível '+nivDia.map((a,i)=>(i+1)+': '+(a.length?(a.reduce((x,y)=>x+y,0)/a.length).toFixed(1)+' ('+a.length+'/'+N+')':'nunca')).join(' · '));
 console.log('LUCRO acumulado nos '+ND+' dias (média por carreira): R$',Math.round(Object.keys(rows).reduce((a,n)=>a+rows[n].lucro.reduce((x,y)=>x+y,0),0)/N));
 { const ch=chega.filter(isFinite).sort((a,b)=>a-b); console.log('CAMPANHA',ND,'dias | chegou a R$',MUDA,'em',ch.length+'/'+N,'carreiras, no dia',ch.length?'mediano '+ch[Math.floor(ch.length/2)]:'-','| dias fechando no negativo',negs,'| empréstimos à força',forcs); }
+console.log('PONTOS | lucro médio por dia: Garagem R$',avg(lucroGar),'('+lucroGar.length+' dias) · área industrial R$',avg(lucroInd),'('+lucroInd.length+') · Avenida R$',avg(lucroAv),'('+lucroAv.length+') | ganho por dia da Avenida sobre a área industrial R$',lucroAv.length&&lucroInd.length?avg(lucroAv)-avg(lucroInd):'-','| carreiras com dia no negativo nos 5 dias depois da mudança: industrial',new Set(negPos).size?negPos.length+' dias':'0','· Avenida',negPosAv.length?negPosAv.length+' dias':'0');   // v9.1
 { const ks=Object.keys(cursoDias); if(ks.length) console.log('CURSOS (v8.6.9) | dia mediano da compra:',ks.map(k=>{ const d=cursoDias[k].sort((a,b)=>a-b); return k+' dia '+d[Math.floor(d.length/2)]+' ('+d.length+'/'+N+')'; }).join(' · ')); }
 if(MODO!=='sem'){
   let tl=0,tr=0,tq=0,tc=0; const NM=L.MANUT.dia;

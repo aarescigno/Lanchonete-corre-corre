@@ -13,7 +13,7 @@ ok(L.tonhaoXp({})===0,'sem cursos: 0 de XP');
 ok(L.tonhaoXp({pastel:1,chapa:1})===2,'pastel e chapa básicos: 2');
 ok(L.tonhaoXp({pastel:2})===3,'pastel básico e avançado: 3');
 ok(L.tonhaoXp({pf:2})===2,'PF avançado: 2 (não tem básico)');
-{ const t={}; C.forEach(c=>t[c.id]=2); ok(L.tonhaoXp(t)===17,'tudo: 17'); }
+{ const t={}; C.forEach(c=>t[c.id]=2); ok(L.tonhaoXp(t)===20,'tudo: 20 (com o curso de restaurante da v9.1)'); }
 // (2) tonhaoNivelXp
 [[0,0],[1,0],[2,1],[4,1],[5,2],[9,3],[13,3],[14,4]].forEach(([x,n])=>{
   const cu={}; let r=x; C.forEach(c=>{ if(r<=0) return; if(c.preco>0 && r>=1){ cu[c.id]=1; r-=1; } });
@@ -39,7 +39,7 @@ novo({}); { const t=txt(grid());
   L.setShopTab('cardapio'); ok(/\+1 de experiência/.test(txt(grid())),'cartão de curso com "+1 de experiência" (no Cardápio)'); L.setShopTab('tonhao'); }
 novo({pastel:1,chapa:1}); { const b=botao(grid().children.find(c=>/Tonhão ·/.test(txt(c)))); ok(b && !b.disabled && b.textContent==='Aumento: +R$ 15/dia','com XP: "Aumento: +R$ 15/dia" aceso'); }
 novo({pastel:1,chapa:1},{tonhao:1}); ok(/Experiência: 2 de 5 para o nível 3/.test(txt(grid())),'no nível 2 a barra aponta o nível 3');
-{ const t={}; C.forEach(c=>t[c.id]=2); novo(t,{tonhao:4}); ok(/nível 5 de 5/.test(txt(grid())) && /Experiência: 17 · nível máximo/.test(txt(grid())),'nível 5: nível máximo'); }
+{ const t={}; C.forEach(c=>t[c.id]=2); novo(t,{tonhao:4}); ok(/nível 5 de 5/.test(txt(grid())) && /Experiência: 20 · nível máximo/.test(txt(grid())),'nível 5: nível máximo'); }
 // (6) folha que não cabe derruba 1 nível e a XP fica
 novo({pastel:1,chapa:1},{tonhao:1},10); g.save.corta=true; g.startDay(3); g.begin();
 ok(g.save.equipe.tonhao===0,'sem dinheiro para a folha: cai 1 nível');
