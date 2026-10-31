@@ -280,6 +280,18 @@ function drawIcon(ctx,k,x,y,s,extra,extra2,extra3){
     ctx.beginPath(); ctx.moveTo(-6.2,-4); ctx.lineTo(6.2,-4); ctx.lineTo(4.6,9.5); ctx.lineTo(-4.6,9.5); ctx.closePath(); ctx.fillStyle = '#F39A1E'; ctx.fill();
     ctx.fillStyle = 'rgba(255,255,255,.45)'; ctx.fillRect(-4.5,-2,2,9);
     circ(ctx,-6,-10,3.2); fs(ctx,'#F6C343',1.4);
+  } else if (k === 'doce'){
+    // v9.2, doce da geladeirinha: potinho de vidro com tampa; extra = o índice em DOCES.caseira (0 bolo de pote, 1 brigadeiro de colher, 2 pudim)
+    const di = extra === 0 || extra === 2 ? extra : 1;
+    ell(ctx,0,10,9,2.6); fs(ctx,'rgba(255,255,255,.7)',1.4);
+    ctx.beginPath(); ctx.moveTo(-8,-6); ctx.lineTo(8,-6); ctx.lineTo(7,10); ctx.lineTo(-7,10); ctx.closePath(); fs(ctx,'rgba(255,255,255,.88)',2);
+    if (di === 1){ ctx.fillStyle = '#5A3425'; ctx.beginPath(); ctx.moveTo(-6.4,-2); ctx.lineTo(6.4,-2); ctx.lineTo(5.8,8.8); ctx.lineTo(-5.8,8.8); ctx.closePath(); ctx.fill();
+      ctx.fillStyle = '#F3C94B'; [[-3,0],[1,-0.5],[3.5,1.5],[-1,2.5]].forEach(q => ctx.fillRect(q[0],q[1] - 1,1.6,1.6)); }   // brigadeiro com granulado
+    else if (di === 2){ ctx.fillStyle = '#F2B83A'; ctx.beginPath(); ctx.moveTo(-6.4,-2); ctx.lineTo(6.4,-2); ctx.lineTo(5.8,8.8); ctx.lineTo(-5.8,8.8); ctx.closePath(); ctx.fill();
+      ctx.fillStyle = '#8A4B1E'; ctx.fillRect(-6.4,-2,12.8,3); }   // pudim com a calda de caramelo
+    else { ctx.fillStyle = '#E9B8CB'; ctx.fillRect(-6,3,12,5.8); ctx.fillStyle = '#FFF7E3'; ctx.fillRect(-6.4,-2,12.8,4.6); circ(ctx,0,-3.6,2.4); fs(ctx,'#D8334A',1); }   // bolo de pote: massa, creme e uma cereja
+    rr(ctx,-8.6,-9,17.2,4,1.8); fs(ctx,'#D8334A',1.6);   // a tampinha
+    ctx.fillStyle = 'rgba(255,255,255,.55)'; ctx.fillRect(-5,-4,1.8,11);
   } else if (k === 'saborizada'){
     // v9.1, água saborizada: copo alto com a água na cor do sabor (extra: o índice em SABORES), canudo e a fruta ou a folha na borda
     const sb = SABORES[extra] || SABORES[0];

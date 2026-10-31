@@ -35,7 +35,7 @@ ok(!g.buyDaniCurso('cozinha'),'trava: dois cursos da Dani na mesma lojinha, não
 g.save.cursoDia=0; ok(g.buyCurso('pastel') && g.save.daniCursoDia===g.shopNext,'um da Dani e um do Tonhão no mesmo dia, sim');
 g.save.daniCursoDia=0; g.cursoMsg=''; g.save.daniTar=2*T; ok(g.buyDaniCurso('cozinha') && /Ela já pode subir para o nível 1/.test(g.cursoMsg),'o curso que completa a XP avisa que já pode subir');
 ok(!g.buyDaniCurso('cozinha'),'curso já feito: não compra de novo');
-ok(D.length===3 && D.map(c=>c.preco).join()==='120,150,180','3 cursos: R$ 120, 150 e 180');
+ok(D.filter(c=>!c.nivel).length===3 && D.filter(c=>!c.nivel).map(c=>c.preco).join()==='120,150,180','3 cursos: R$ 120, 150 e 180');
 // (6) lojinha
 novo({}); { const t=txt(grid());
   ok(/Dani · aprendiz \(sem salário\)/.test(t) && /Experiência: 0 de 4 para o nível 1/.test(t) && new RegExp('Trabalho: '+T+' tarefas até o próximo ponto').test(t),'título, linha de experiência e de trabalho');
