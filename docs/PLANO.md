@@ -14,11 +14,10 @@ Origem: retorno do Renan Martorelli (beta-tester) e conversa com o Arthur (15/10
 ## Situação
 | # | Etapa | Versão | Situação |
 |---|---|---|---|
-| 2c-r7a | A lojinha abre aos poucos: cartões que aparecem com reclamação e conversa (Bia, Melhorias, Manutenção, Salão, Decoração) | v9.0.4 | feita em 31/10 (`docs/spec-v9.0.4.md`) |
 | 2c-r7b | Rebalanceamento e a melhor ordem de liberação dos cartões | v9.0.5 | feita em 31/10 sem versão nova: a ordem A (rascunho) ficou; a fila de uma conversa por fim de dia faz os 5 cartões abrirem até a lojinha do dia 11 (`docs/spec-v9.0.4.md`, fim) |
 | 3b-1 | Restaurante na Avenida Brasil: os caps. 6 e 7, o almoço de negócios, a parmegiana, os sofás, as águas saborizadas e as flores | v9.1 | feita em 31/10 (`docs/spec-v9.1.md`; a 5ª vaga de espera da área industrial ganhou posição; metas ×1,7) |
-| 3b-1r | Realinhamento: o `LIBERA` depois da Garagem (base do Joca e do Anselmo) e o Cantinho da Rosa desenhado nos pontos novos | v9.1.1 | a fazer; **a próxima: a 3b-1r** |
-| 3b-2 | A Dani confeiteira e o Joca, na área industrial | v9.2 | a fazer |
+| 3b-1r | Realinhamento: o `LIBERA` depois da Garagem (base do Joca e do Anselmo) e o Cantinho da Rosa desenhado nos pontos novos | v9.1.1 | feita em 31/10 (`docs/spec-v9.1.1.md`) |
+| 3b-2 | A Dani confeiteira e o Joca, na área industrial | v9.2 | a fazer; **a próxima: a 3b-2** |
 | 3b-3 | A Avenida: a vitrine da Dani, o Joca barista e a Cami | v9.3 | a fazer |
 | 3b-4 | Fiscal da vigilância sanitária | v9.4 | a fazer |
 | 3b-5 | O Anselmo e os drinks da Avenida | v9.5 | a fazer |
@@ -56,28 +55,6 @@ Origem: retorno do Renan Martorelli (beta-tester) e conversa com o Arthur (15/10
 > **Revista na entrevista da equipe (31/10):** cada ajudante se especializa **por curso pago em cada ponto**, e o curso já traz o equipamento. O **Joca** entra na **área industrial** e vira **barista** na Avenida (o cafezinho passa da Dani para ele); os **doces da Dani** começam na área industrial (caseiros, na mesa e na marmita) e ficam gourmet na Avenida; o **Anselmo**, coqueteleiro que saiu do restaurante do Bráulio, entra na Avenida (sessão 3b-5), e a 4a fica com os upgrades dele. O que é do Terraço está na 4a ("Equipe do Terraço").
 > **Revista de novo em 31/10, à noite** (pedido do usuário, em `docs/PROPOSTAS.md`): a Dani começa os doces no meio da área industrial e, com o curso feito, indica o Joca (do colégio dela) para o posto; o Joca entra no nível 2 da Dani e sobe até o 4; na Avenida ele vira barista e passa o bastão para a Cami, que sobe com cursos e chega ao modo "Minhas mesas"; o Anselmo segue na Avenida. A seção "A equipe ponto a ponto" abaixo vale no lugar do que dizia o contrário acima.
 > Ordem: 3b-1 (o ponto e os capítulos) → 3b-1r (realinhamento) → 3b-2 (Dani confeiteira e Joca, área industrial) → 3b-3 (vitrine, Joca barista e Cami, Avenida) → 3b-4 (o fiscal) → 3b-5 (o Anselmo) → 3b-6 (a Cami em "Minhas mesas"). Cada uma é uma versão, com PR e merge.
-
-### Sessão 3b-1r — Realinhamento depois da v9.1 (v9.1.1)
-> **Por quê** (revisão de 31/10): o plano da equipe (hoje 3b-2 a 3b-6) foi escrito ao mesmo tempo que a v9.1, e os dois não se cruzaram. O `LIBERA` da v9.0.4 só funciona na Garagem (o fim do dia só roda com `sv.cap < 4`, conta o dia da carreira e `cartaoAberto` abre tudo do cap. 4 em diante), mas o Joca e o Anselmo abrem por ele "no 2º/3º dia no ponto". E a v9.1 deixou o Cantinho da Rosa e a samambaia sem desenho fora da Garagem (compra-se, conta no Ambiente e não aparece). Esta sessão arruma a base, para a 3b-2 só usar.
-
-**1. O `LIBERA` depois da Garagem** (`10-constantes.js`, `12-clientes.js`, `16-jogo.js`, `43-telas.js`):
-- **`save.pontoDia`** (novo): o `save.dia` em que o save chegou ao ponto de agora. `mudarPonto` grava `sv.pontoDia = sv.dia`. `normSave`: inteiro ≥ 1; save sem ele, com o ponto de nível ≥ 2, recebe `dia - 1` (conta como 2º dia no ponto); na Garagem, 1. Função `diaNoPonto(sv) = sv.dia - sv.pontoDia + 1` (o dia que está terminando; exposta no `window.__lcc`).
-- **Entrada do `LIBERA` com `nivel`** (opcional): sem `nivel`, tudo como hoje (dia da carreira, só com `cap < 4`, e do cap. 4 em diante aberto). Com `nivel`: só vale com `ponto.nivel >= nivel`, e `dia`/`ate` contam pelo `diaNoPonto`, em qualquer capítulo.
-- **Fim do dia** (`16-jogo.js`, o bloco "a lojinha abre aos poucos"): o `sv.cap < 4` sai da condição geral e passa a valer só para as entradas sem `nivel`.
-- **`cartaoAberto(id)`**: a regra "do cap. 4 em diante, tudo aberto" vale só para as entradas sem `nivel`. Com `nivel`: no modo dev, aberto; fora do Modo História (ou `histV !== 1`), aberto com `ponto.nivel >= nivel`; no Modo História, aberto com `libera[id] >= 1`.
-- **`normLibera`**: entrada com `nivel` que falta num save antigo fica **0** (nunca 2, nem no "antigo").
-- **`liberaGatilho`**: troca o `if` por id por um campo `gatilho` opcional na entrada (`gatilho(st, av, g)`; sem ele, só a garantia do `ate`); as 5 entradas de hoje passam a usar o campo, com as mesmas regras.
-- **Conversa** (`43-telas.js`, `fluxoHistoria`): a pendente do `LIBERA` já sai uma por fim de dia; conferir que sai também depois do cap. 4, e que `shopGrupoDe(id)` aceita um id novo (a 3b-2 manda `'joca'` para a Equipe).
-
-**2. O Cantinho da Rosa e a samambaia nos pontos novos** (`21-cenario.js`): `drawDecorParede` passa a desenhar em todo ponto (hoje só em `garagem(g)`), com as posições por nível: Garagem como hoje; **área industrial e Avenida**: foto da Rosa `(330, 74, 0.8)` e samambaia `(630, 78, 0.8)` (na faixa de parede embaixo do cartaz de preços), plaquinha `(237, 68, 1)` na área industrial e `(242, 68, 1)` na Avenida (embaixo do letreiro), quadro de giz `(62, 150, 1)` (no chão, perto da porta). As descrições do `DECOR` que dizem "garagem" e "portão" passam a "parede" e "porta". O ajuste fino das posições é do usuário, no editor de desenhos (avise no fim; publique o artifact do editor só se ele pedir).
-
-**Testes:** **`tests/smoke42b.js` (novo; entra na lista do `run_all.sh` depois do smoke42):** (1) `pontoDia` gravado na mudança, `normSave` de save sem ele (Garagem: 1; área industrial: `dia - 1`); (2) com uma entrada de teste empurrada no `LIBERA` pelo `window.__lcc` (`{ id:'teste', nivel:2, dia:2, ate:4, gatilho:() => false, falas:[...] }`): não vale na Garagem; na área industrial, fica `'pend'` no fim do 4º dia no ponto (garantia) mesmo com `cap >= 4`, e `cartaoAberto('teste')` só depois da conversa; com o gatilho verdadeiro, no 2º dia; (3) as 5 entradas antigas abrem como antes (o smoke41 continua verde) e seguem abertas do cap. 4 em diante; (4) save antigo sem a chave `teste`: fica 0; (5) modo dev e `HIST` desligado abrem a de teste pelo nível. Capturas `tests/shot_v9_1_1.py`: a parede da área industrial e da Avenida com o Cantinho da Rosa e a samambaia (recorte ampliado), sem encostar no cartaz, no letreiro, na janela e no relógio; se encostar, desloque até 20 px para o lado livre.
-
-**3. Teste instável:** o `tests/smoke.js` falha em ~1 de cada 5 rodadas ("day 8 ended (state falencia)", sorteio do dia). Dê ao save do teste dinheiro para não falir até o dia 9 (ou fixe o `Math.random` com semente, como os outros smokes que precisam), sem mudar o jogo; rode 10 vezes seguidas, todas verdes.
-
-**Fechamento:** v9.1.1 (`versoes/`, `vtag`, `VERSAO`, `#ov-ver`, `docs/spec-v9.1.1.md`, `RESUMO.md`), PR e merge.
-
-**Modelo:** Sonnet, esforço médio. Regras e posições fechadas; mexe em 4 partes, mas pouco em cada, e o smoke usa a entrada de teste.
 
 ### A equipe ponto a ponto (pedido do usuário de 31/10, à noite; vale para a 3b-2, a 3b-3 e a 3b-6)
 - **Quem faz o básico:** as tarefas básicas (lixo, pratos sujos, louça, água/suco da espera, marmitas) ficam sempre com **o ajudante mais novo que veio no dia**, nesta ordem: Cami, Joca, Dani. Quem passou o bastão fica só com a especialidade: a **Dani** com os doces (e o cafezinho, até o Joca aprender o espresso); o **Joca**, depois do espresso, com os cafés. Se o mais novo faltou no dia (folha), o básico volta para o anterior naquele dia. Função `donoBasico(g)` em `15-dani.js`; o cartão de quem passou o bastão mostra só a especialidade, com o texto "As tarefas da casa ficaram com o Joca." (ou "com a Cami.").

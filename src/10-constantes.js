@@ -409,7 +409,7 @@ const SALAO_SEMFIM = [2,2,2,4,2,4];
 const DECOR = [
   { id:'espada',    grupo:'plantas', name:'Espada-de-são-jorge', desc:'No vaso de barro, na calçada, ao lado da espera.', cost:15 },
   { id:'lata',      grupo:'plantas', name:'Muda na lata',        desc:'Uma espada menor numa lata de tinta reaproveitada, encostada no muro.', cost:8 },
-  { id:'samambaia', grupo:'plantas', name:'Samambaia',           desc:'Pendurada num suporte na parede da garagem, ao lado da janela.', cost:30 },
+  { id:'samambaia', grupo:'plantas', name:'Samambaia',           desc:'Pendurada num suporte na parede, ao lado da janela.', cost:30 },
   // v9, só a partir da área industrial: as plantas da calçada (+0,1 cada no Ambiente)
   { id:'violeta',   grupo:'plantas', name:'Violetas',            desc:'Vasinhos de violeta na janela do lado de dentro.', cost:20, nivel:2, amb:0.1 },
   { id:'anturio',   grupo:'plantas', name:'Antúrio',             desc:'Um antúrio vermelho no vaso, no chão, perto da porta.', cost:30, nivel:2, amb:0.1 },
@@ -419,7 +419,7 @@ const DECOR = [
   { id:'copo',      grupo:'plantas', name:'Copos-de-leite',      desc:'Num vaso alto, ao lado da espera.', cost:50, nivel:3, amb:0.15 },
   { id:'orquidea',  grupo:'plantas', name:'Orquídeas',           desc:'Numa mesinha, perto da porta.', cost:60, nivel:3, amb:0.15 },
   { id:'foto',      grupo:'rosa',    name:'Foto da dona Rosa',   desc:'A mãe da Bia sorrindo, num porta-retrato na parede.', cost:10 },
-  { id:'giz',       grupo:'rosa',    name:'Quadro de giz',       desc:'No cavalete, perto do portão, com o prato do dia escrito à mão.', cost:25 },
+  { id:'giz',       grupo:'rosa',    name:'Quadro de giz',       desc:'No cavalete, perto da porta, com o prato do dia escrito à mão.', cost:25 },
   { id:'placa',     grupo:'rosa',    name:'Plaquinha',           desc:'"Comida é afeto", pintada à mão, embaixo do letreiro.', cost:15 }
 ];
 const DECOR_GRUPOS = [
@@ -919,37 +919,43 @@ const HIST_DIVULGA = {
           { q:'bia', s:'Vou ver na Divulgação da lojinha o que compensa.' } ] };
 /* v9.0.4: a lojinha abre aos poucos no Modo História. Cada cartão: dia mínimo, garantia (ate), as reclamações do Gurugol
    no dia do gatilho e a conversa do fim do dia. save.libera[id]: 0 fechado | 'pend' | 1 aberto (selo "novo") | 2 aberto e visto */
+const liberaTres = (av, i, lim) => av.filter(a => a.s && a.s[i] != null && a.s[i] <= lim).length >= 3;   // v9.1.1: 3 notas do dia no critério i, até lim
+/* v9.1.1: entrada com `nivel` só vale com ponto.nivel >= nivel e conta `dia`/`ate` pelo diaNoPonto (em qualquer capítulo); sem `nivel`, pelo dia da carreira
+   e só com cap < 4. `gatilho(st, av, g)` (stats do dia, notas cruas do dia, o jogo) diz se a reclamação aconteceu; sem ele, só a garantia (`ate`) */
 const LIBERA = [
-  { id:'bia', dia:2, ate:4, reclama:['A moça corre pra lá e pra cá e não dá conta!', 'Demorou um século pra anotarem o pedido.'],
+  { id:'bia', dia:2, ate:4, gatilho:(st, av) => st.bravoMesa >= 1 || liberaTres(av, 1, 3), reclama:['A moça corre pra lá e pra cá e não dá conta!', 'Demorou um século pra anotarem o pedido.'],
     falas:[ { q:'bia', s:'Hoje um freguês disse que eu corro pra lá e pra cá e não dou conta.' },
             { q:'tonhao', nota:'olhando o pé dela', s:'Também, com esse chinelo! Compra um tênis decente, Bia.' },
             { q:'bia', s:'E uma bandeja, pra levar dois pratos de uma vez...' },
             { q:'tonhao', s:'Tá tudo na lojinha, em Equipe, no seu nome.' } ] },
-  { id:'melhorias', dia:3, ate:5, reclama:['Esperei no sol sem nem um copo d\'água.', 'Que calor aqui dentro!'], lixo:'Que cheiro de lixo!',
+  { id:'melhorias', dia:3, ate:5, gatilho:(st, av) => !!st.lixoCheio || liberaTres(av, 0, 3), reclama:['Esperei no sol sem nem um copo d\'água.', 'Que calor aqui dentro!'], lixo:'Que cheiro de lixo!',
     falas:[ { q:'bia', s:'Tio, um moço reclamou que esperou no sol sem nem um copo d\'água.' },
             { q:'tonhao', s:'Dá pra pôr uma torneira lá fora. E um ventilador aqui, que a cozinha tá um forno.' },
             { q:'bia', s:'E um triturador, pra lixeira não encher tão rápido!' },
             { q:'tonhao', s:'Calma, uma coisa de cada vez. Vê nas Melhorias o que cabe no bolso.' } ] },
-  { id:'manut', dia:3, ate:5, primeiro:true, reclama:['O café veio com gosto de queimado.', 'A comida demorou... o fogão tá fraco?'],
+  { id:'manut', dia:3, ate:5, primeiro:true, gatilho:(st, av, g) => Math.min.apply(null, MANUT.equip.map(q => g.manut[q.id])) < MANUT.verde, reclama:['O café veio com gosto de queimado.', 'A comida demorou... o fogão tá fraco?'],
     falas:[ { q:'tonhao', nota:'batendo na lateral do fogão', s:'Esse fogão tá com a chama amarela. Coisa boa não é.' },
             { q:'bia', s:'Vai quebrar?' },
             { q:'tonhao', s:'Se ninguém olhar, um dia quebra no meio do almoço. Melhor chamar o técnico antes.' },
             { q:'bia', s:'Vou ver na Manutenção quanto custa a revisão.' } ] },
-  { id:'salao', dia:4, ate:6, reclama:['Nem consegui sentar.', 'Só tem quatro mesinhas?'],
+  { id:'salao', dia:4, ate:6, gatilho:(st) => st.lostBy.semMesa >= 1 || st.lotadoT >= 90, reclama:['Nem consegui sentar.', 'Só tem quatro mesinhas?'],
     falas:[ { q:'bia', s:'Hoje teve gente indo embora da fila: não tinha mesa pra todo mundo.' },
             { q:'tonhao', s:'Na garagem ainda cabem umas mesinhas. Cadeira de plástico é baratinha.' },
             { q:'bia', s:'Vou ver no Salão onde encaixar.' } ] },
-  { id:'decor', dia:5, ate:7, reclama:['Parece uma garagem.', 'Lugar meio sem graça.'],
+  { id:'decor', dia:5, ate:7, gatilho:(st, av) => liberaTres(av, 4, 2.5), reclama:['Parece uma garagem.', 'Lugar meio sem graça.'],
     falas:[ { q:'bia', s:'Escreveram no Gurugol: "parece uma garagem".' },
             { q:'tonhao', s:'Mas é uma garagem!' },
             { q:'bia', s:'Uma plantinha, a foto da mãe na parede... fica com cara de casa.' },
             { q:'tonhao', nota:'sorrindo', s:'Isso a Rosa ia gostar. Vê na Decoração.' } ] } ];
 function liberaOf(id){ return LIBERA.find(l => l.id === id) || null; }
+/* v9.1.1: o dia da carreira em que o save chegou ao ponto de agora (save.pontoDia); n = o dia que terminou (padrão: o anterior ao save.dia,
+   porque o fim do dia já avançou o save.dia). O 1º dia no ponto é 1 */
+function diaNoPonto(sv, n){ return (n == null ? sv.dia - 1 : n) - sv.pontoDia + 1; }
 const BIA_IDS = ['tenis', 'corrida', 'bandeja', 'sudoku'];
 function upgradeCartao(id){ return BIA_IDS.indexOf(id) >= 0 ? 'bia' : 'melhorias'; }
 const HIST_NOMES = { bia:'Bia', tonhao:'Tonhão', dani:'Dani' };
 const CAIXA_MAX = 14;                                 // livro-caixa (v7.2): quantos dias da carreira ficam guardados
-const VERSAO = 'v9.1';                             // vai no resumo do Caixa
+const VERSAO = 'v9.1.1';                             // vai no resumo do Caixa
 const DIVULGA_DIA = 4;                                // antes disso, o movimento é o da inauguração (sem custo); v9.0.2: dia 4, e o padrão é o boca a boca
 function divulgaAberta(n, sv){ return DEV.on || n >= DIVULGA_DIA && !(sv && sv.convDiv === 'pend'); }   // no modo dev, desde o dia 1; v9.0.3: no Modo História, só depois da conversa
 function divulgaOf(id){ return DIVULGA.find(d => d.id === id) || DIVULGA[0]; }   // v9.0.2: sem escolha, boca a boca
