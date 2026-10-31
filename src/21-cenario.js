@@ -753,6 +753,7 @@ function drawRetirada(ctx,g,t){
   // a vaga da encomenda, tracejada
   const xr = prateleiraXs(g.vagas)[g.vagas], ps = g.vagas > MARMITA.vagas ? 0.58 : 0.68;
   ctx.save(); ctx.setLineDash([3,2]); ctx.strokeStyle = 'rgba(226,106,44,.8)'; ctx.lineWidth = 1.4; rr(ctx,xr - 10,y - 9,20,13,3); ctx.stroke(); ctx.restore();
+  for (let i = 0; i < g.potes; i++) drawIcon(ctx,'doce',B.x0 + 4 + 11 * i,y - 6,0.46,1);   // v9.2: os potes de doce à espera dos entregadores
   prateleiraPos(g).forEach(o => {
     drawMarmita(ctx,o.m.dish,o.x,y - 4,ps);
     drawMarmitaSelo(ctx,o.m,o.x + 6,y - 14);
@@ -763,6 +764,8 @@ function drawRetirada(ctx,g,t){
 /* o balão do entregador (v8.6): a marmita dele no fogão (anel do preparo), pronta na janela (verde, pulsando) ou a
    caminho (na mão da Bia ou da Dani) */
 function drawRetiradaBalao(ctx,g,grp,tm){
+  const dq = grp.docesMarm - grp.docesMarmDados;   // v9.2: "+ doce" na marmita (o pote na prateleira ou o doce da geladeirinha)
+  if (dq > 0 && !grp.path.length){ ctx.save(); ctx.translate(grp.x - 24,grp.y - 92); drawBubble(ctx,0,0,13,'#fff'); drawIcon(ctx,'doce',0,1,0.6,1); if (dq > 1) txt(ctx,'×' + dq,13,-10,9,PAL.tinta,'center',FD); ctx.restore(); }
   const o = g.marmitas().find(q => q.m.dono === grp);
   if (!o || grp.path.length) return;
   const pronta = o.onde === 'pronta', p = pronta && !RM ? 1 + 0.1 * Math.sin(tm*8) : 1;
@@ -776,7 +779,7 @@ function drawRetiradaBalao(ctx,g,grp,tm){
 /* espuminha saindo da pia enquanto alguém (Bia, Dani ou Tonhão) lava a louça */
 function drawEspuma(ctx,g,t){
   const k = g.kitchen;
-  if (!(g.bia.washing || g.dani.washing || (k.chef.wash > 0 && k.sinkN > 0))) return;
+  if (!(g.bia.washing || g.dani.washing || g.joca.washing || (k.chef.wash > 0 && k.sinkN > 0))) return;
   ctx.save();
   ctx.fillStyle = 'rgba(255,255,255,.92)'; ctx.strokeStyle = 'rgba(120,180,215,.9)'; ctx.lineWidth = 1.4;
   [[808,452,7],[822,447,9],[838,452,8],[854,446,9],[868,452,8],[878,456,6]].forEach(c => { circ(ctx,c[0],c[1],c[2]); ctx.fill(); ctx.stroke(); });
@@ -789,6 +792,18 @@ function drawEspuma(ctx,g,t){
   }
   ctx.restore();
 }
+/* geladeirinha branca de porta de vidro com potinhos de doce (v9.2) */
+function drawGeladeiraDoces(ctx,g){
+  const r = STATIONS.doces.rect, x = r.x, y = r.y;
+  shadowEll(ctx,x + r.w/2,y + r.h + 1,r.w/2 - 2,3.5,0.2);
+  rr(ctx,x + 2,y,r.w - 4,r.h,6); fs(ctx,'#F4F7F8',2.2);
+  rr(ctx,x + 7,y + 6,r.w - 18,r.h - 14,4); fs(ctx,'#CFE7EE',1.6);
+  ctx.fillStyle = 'rgba(34,32,28,.35)'; ctx.fillRect(x + 8,y + r.h/2 - 1,r.w - 20,2);
+  [0,1,2].forEach(i => { drawIcon(ctx,'doce',x + 13 + i * 8.5,y + 17,0.4,i); drawIcon(ctx,'doce',x + 13 + i * 8.5,y + 34,0.4,(i + 1) % 3); });
+  rr(ctx,x + r.w - 10,y + 12,3.2,17,1.6); fs(ctx,PAL.cromo,1.2);
+  const n = g.docesRet ? g.docesRet() - g.potes : 0;
+  if (n > 0) { circ(ctx,x + r.w - 8,y + 3,6.5); fs(ctx,PAL.mostarda,1.4); txt(ctx,String(n),x + r.w - 8,y + 3.5,9,PAL.tinta,'center',FD); }   // doce de marmita pedido e ainda sem pote no balcão
+}
 /* lixeira de pedal no chão do salão, encostada no balcão */
 /* Dani: cabelo cacheado, avental roxo e crachá com o nome */
 const DANI_LOOK = { skin:3, hair:5, hairC:'#2F1D12', pants:'#3C5A4A', kid:false, elder:false, acc:null, glasses:false };
@@ -798,6 +813,19 @@ function drawDani(ctx,d,tm){
   ctx.beginPath(); ctx.moveTo(d.x-8,d.y-30+bob); ctx.lineTo(d.x+8,d.y-30+bob); ctx.lineTo(d.x+11,d.y-12); ctx.lineTo(d.x-11,d.y-12); ctx.closePath(); fs(ctx,'#7B4FB5',2.2);
   rr(ctx,d.x-14,d.y-84,28,12,5); fs(ctx,'#fff',1.6); txt(ctx,'Dani',d.x,d.y-77.5,9,'#7B4FB5','center',FD);
   d.hands.forEach((h,i) => drawHandItem(ctx,h.kind === 'coffee' ? { kind:'coffee' } : h,d.x + (i ? 18 : -18),d.y - 28,0.7));   // sem o número da mesa em cima do café
+}
+/* Joca (v9.2): rapaz de uns 20 anos, pele parda, cabelo cacheado preto curto, óculos redondos, camiseta cinza, avental azul-marinho e crachá;
+   os níveis 3 e 4 mudam o avental (faixa branca; azul mais vivo com bolso) */
+const JOCA_LOOK = { skin:4, hair:0, hairC:'#1B1512', pants:'#4A4D55', kid:false, elder:false, acc:null, glasses:true };
+const JOCA_AVENTAL = [null, null, '#243B63', '#1F4E8C', '#17639E'];
+function drawJoca(ctx,d,tm){
+  drawPerson(ctx,JOCA_LOOK,d.x,d.y,{ shirt:'#B9BDC4', moving:d.moving, ph:d.walkPh, mood:0, t:tm, lava:d.washing && !RM });
+  const bob = (d.moving && !RM) ? -Math.abs(Math.sin(d.walkPh)) * 2.4 : 0, lv = d.level;
+  ctx.beginPath(); ctx.moveTo(d.x-8,d.y-30+bob); ctx.lineTo(d.x+8,d.y-30+bob); ctx.lineTo(d.x+11,d.y-12); ctx.lineTo(d.x-11,d.y-12); ctx.closePath(); fs(ctx,JOCA_AVENTAL[lv] || JOCA_AVENTAL[2],2.2);
+  if (lv >= 3){ ctx.fillStyle = '#fff'; ctx.fillRect(d.x-9.5,d.y-17+bob,19,2.2); }
+  if (lv >= 4){ rr(ctx,d.x+1,d.y-26+bob,7,6,1.5); fs(ctx,'#fff',1.2); }
+  rr(ctx,d.x-15,d.y-84,30,12,5); fs(ctx,'#fff',1.6); txt(ctx,'JOCA',d.x,d.y-77.5,9,'#2C7A7B','center',FD);
+  d.hands.forEach((h,i) => drawHandItem(ctx,h.kind === 'coffee' ? { kind:'coffee' } : h,d.x + (i ? 18 : -18),d.y - 28,0.7));
 }
 /* couvert artístico: músico num banquinho, muda de instrumento conforme o dia */
 const MUSICOS = [
@@ -911,7 +939,7 @@ function drawTrash(ctx,on,t,g){
   const x = 723, y = 530;
   const lv = g && g.state !== 'menu' ? g.trash : 0, cheia = lv >= TRASH.cap;
   const f = Math.min(1, lv / TRASH.cap);   // v8.3.10: a lata vai do cinza ao esverdeado conforme enche
-  const ab = g && g.state !== 'menu' && (g.bia.emptying || g.dani.emptying) ? (RM ? 0.6 : 0.65 + 0.6*Math.sin(t*7)) : null;   // esvaziando: tampa abrindo e fechando
+  const ab = g && g.state !== 'menu' && (g.bia.emptying || g.dani.emptying || g.joca.emptying) ? (RM ? 0.6 : 0.65 + 0.6*Math.sin(t*7)) : null;   // esvaziando: tampa abrindo e fechando
   if (cheia) drawSacoLixo(ctx,x-23,y-3);   // à esquerda, atrás da lata (à direita fica a parede da cozinha)
   shadowEll(ctx,x,y,20,5,0.18);
   ctx.beginPath(); ctx.moveTo(x-15,y-40); ctx.lineTo(x+15,y-40); ctx.lineTo(x+12,y-2); ctx.lineTo(x-12,y-2); ctx.closePath(); fs(ctx,mixCor(TRASH_COR.vazia,TRASH_COR.cheia,f),2.4);
@@ -1102,7 +1130,9 @@ function drawKitchen(ctx,g,t){
     txt(ctx,n + '/' + g.vagas,q.x + 41,q.y + 17,10,PAL.tinta,'left',FD);
     ctx.restore();
   });
-  glow('order'); glow('adiantar');
+  // v9.2, a geladeirinha de doces (curso Confeitaria caseira), ao lado da janela de pedidos
+  if (g.up.confCaseira && g.state !== 'menu') glowSprite(ctx,g,'doces',ctx => drawGeladeiraDoces(ctx,g));
+  glow('order'); glow('adiantar'); glow('doces');
 
   // --- janela de prontos
   r = STATIONS.plates.rect;

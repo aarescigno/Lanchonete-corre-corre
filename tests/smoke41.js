@@ -14,11 +14,11 @@ const aval=(s)=>({ r:s.slice(), s, txt:'x', k:'estudante' });
 
 // ---------- 1. regras e dados ----------
 { const {L}=load();
-  ok(L.LIBERA.map(l=>l.id).join()==='bia,melhorias,manut,salao,decor','cinco cartões em LIBERA, na ordem');
-  ok(L.LIBERA.every(l=>l.dia<=l.ate && l.reclama.length>=2 && l.falas.length>=3 && l.falas.every(f=>['bia','tonhao'].includes(f.q))),'cada um tem dia mínimo, garantia, reclamações e conversa (Bia e Tonhão)');
+  ok(L.LIBERA.filter(l=>!l.nivel).map(l=>l.id).join()==='bia,melhorias,manut,salao,decor','cinco cartões em LIBERA, na ordem');
+  ok(L.LIBERA.filter(l=>!l.nivel).every(l=>l.dia<=l.ate && l.reclama.length>=2 && l.falas.length>=3 && l.falas.every(f=>['bia','tonhao'].includes(f.q))),'cada um tem dia mínimo, garantia, reclamações e conversa (Bia e Tonhão)');
   ok(L.upgradeCartao('tenis')==='bia' && L.upgradeCartao('ventilador')==='melhorias','upgradeCartao separa Bia de Melhorias');
-  ok(Object.values(L.normSave({dia:9}).libera).every(v=>v===2),'save antigo (dia 9, sem libera): tudo aberto e visto');
-  ok(Object.values(L.normSave({dia:3,libera:{bia:1,manut:'pend'}}).libera).join()==='1,0,pend,0,0','libera guardado é respeitado; chave que falta vira 0'); }
+  ok(Object.entries(L.normSave({dia:9}).libera).filter(([k])=>!L.liberaOf(k).nivel).every(([k,v])=>v===2),'save antigo (dia 9, sem libera): tudo aberto e visto');
+  ok(Object.entries(L.normSave({dia:3,libera:{bia:1,manut:'pend'}}).libera).filter(([k])=>!L.liberaOf(k).nivel).map(e=>e[1]).join()==='1,0,pend,0,0','libera guardado é respeitado; chave que falta vira 0'); }
 { const {L}=nova();
   ok(Object.values(L.normSave({}).libera).every(v=>v===0),'save novo na História: tudo fechado'); }
 

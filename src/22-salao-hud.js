@@ -198,7 +198,7 @@ function drawTableOverlay(ctx,g,t,tm,menu){
   } else if (grp.state === 'ordered'){
     // comida pronta (v8.3.4): o prato do grupo no balão; verde pulsando no balcão, branco na mão da Bia ou da Dani
     const pr = g.kitchen.plates.find(p => p && p.group === grp);
-    if (pr || [g.bia, g.dani].some(q => q.hands.some(h => h.kind === 'dish' && h.group === grp))){
+    if (pr || [g.bia, g.dani, g.joca].some(q => q.hands.some(h => h.kind === 'dish' && h.group === grp))){
       if (pr) ctx.scale(pul,pul);
       drawBubble(ctx,0,0,18,pr ? PAL.ok : '#fff'); drawDish(ctx,grp.dish,0,0,0.85,false,grp.carnes && grp.carnes[0]);
     }
@@ -212,6 +212,14 @@ function drawTableOverlay(ctx,g,t,tm,menu){
     rr(ctx,-14,-15,40,28,9); fs(ctx,'#fff',2.2);
     drawIcon(ctx,'juice',-3,0,0.75);
     txt(ctx,'×' + grp.juicePending,14,0,13,PAL.tinta,'center',FD);
+    ctx.restore();
+  }
+  if (grp.doceBalao){   // v9.2: terminou de comer e espera os doces (os que faltam, em ordem)
+    const falta = grp.doces.slice(grp.docesDados), dp = RM ? 1 : 1 + 0.1*Math.sin(tm*9), w = 14 + 20 * falta.length;
+    const cy = t.cy + 2 + (grp.juiceOpen && grp.juicePending > 0 ? 34 : 0) + (grp.cafeBalao ? 34 : 0);
+    ctx.save(); ctx.translate(bx + 4,cy); ctx.scale(dp,dp);
+    rr(ctx,-14,-15,w + 6,28,9); fs(ctx,'#fff',2.2);
+    falta.forEach((id, i) => drawIcon(ctx,'doce',3 + 20 * i,1,0.72,DOCES.caseira.findIndex(d => d.id === id)));
     ctx.restore();
   }
   if (grp.cafeBalao){   // v9: o motorista que acabou de comer espera o cafezinho antes da conta
@@ -371,7 +379,7 @@ function filaPos(g,a){
 function drawPedidoEspera(ctx,g,grp,tm){
   if (!grp.pediu || grp.path.length) return;
   const o = g.maq.find(q => q.group === grp);
-  const leva = [g.bia, g.dani].some(p => p.hands.some(h => h.kind === 'suco' && h.group === grp));
+  const leva = [g.bia, g.dani, g.joca].some(p => p.hands.some(h => h.kind === 'suco' && h.group === grp));
   if (!o && !leva) return;
   const x = QUEUE.x + 90, y = QUEUE.ys[grp.slot] - 64, pronto = o && o.t <= 0;
   const p = pronto && !RM ? 1 + 0.1 * Math.sin(tm*8) : 1;
@@ -398,6 +406,7 @@ function drawHandItem(ctx,h,x,y,s,noTag){
   else if (h.kind === 'ticket') drawIcon(ctx,'ticket',x,y,s,cmdColor(h.group));
   else if (h.kind === 'marmita'){ drawMarmita(ctx,h.dish,x,y,s * 0.95); if (!noTag) drawMarmitaSelo(ctx,h,x + 12*s,y - 11*s); }   // v8.6
   else if (h.kind === 'suco'){ drawIcon(ctx,h.group ? h.group.game.bebida.icon : 'juice',x,y,s,h.group && h.group.sabor); if (h.group){ circ(ctx,x+8*s,y+9*s,4.5*s); fs(ctx,CHAIRS[h.group.color].c,1.2); } }   // da espera: a cor de quem pediu
+  else if (h.kind === 'doce') drawIcon(ctx,'doce',x,y,s,DOCES.caseira.findIndex(d => d.id === h.id));   // v9.2
   else drawIcon(ctx,h.kind,x,y,s);
   if (h.table && noTag){ circ(ctx,x+5,y-9,5.5); fs(ctx,'#fff',1.4); txt(ctx,String(h.table),x+5,y-8.5,8,PAL.tinta,'center',FD); }
   else if (h.table){ circ(ctx,x+12,y-11,8); fs(ctx,'#fff',1.8); txt(ctx,String(h.table),x+12,y-10,11,PAL.tinta,'center',FD); }
@@ -411,6 +420,7 @@ function drawActIcon(ctx,g,a,x,y){
   else if (a.type === 'adiantar'){ drawIcon(ctx,'marmita',x,y,1.0); circ(ctx,x-12,y-10,6.5); fs(ctx,PAL.ok,1.6); txt(ctx,'+',x-12,y-9.5,11,'#fff','center',FD); }   // v8.6
   else if (a.type === 'coffee') drawIcon(ctx,'coffee',x,y,1.05);
   else if (a.type === 'juice') drawIcon(ctx,'juice',x,y+1,1.0);
+  else if (a.type === 'doces') drawIcon(ctx,'doce',x,y,1.05,1);   // v9.2
   else if (a.type === 'sink') drawIcon(ctx,'drop',x,y,1.05);
   else if (a.type === 'trash') drawIcon(ctx,'trash',x,y,1.0);
   else if (a.type === 'retirada'){ drawIcon(ctx,'marmita',x,y,1.0); circ(ctx,x+13,y+11,7); fs(ctx,EFOOD_COR,1.6); txt(ctx,'E',x+13,y+11.5,9,'#fff','center',FD); }   // o balcão de retirada (v8.6)
@@ -427,7 +437,7 @@ function drawActIcon(ctx,g,a,x,y){
     if (p){ circ(ctx,x+13,y-12,8); fs(ctx,'#fff',1.8); txt(ctx,String(p.table),x+13,y-11,11,PAL.tinta,'center',FD); }
   } else if (a.type === 'table'){
     const t = g.tables[a.id-1], v = g.bia.verbFor(t);
-    const k = v === 'deliver' ? 'dish' : v === 'clear' ? 'dirty' : v === 'take' ? 'ticket' : v === 'bill' ? 'coin' : v === 'coffee' ? 'coffee' : v === 'juice' ? 'juice' : 'table';
+    const k = v === 'deliver' ? 'dish' : v === 'clear' ? 'dirty' : v === 'take' ? 'ticket' : v === 'bill' ? 'coin' : v === 'coffee' ? 'coffee' : v === 'juice' ? 'juice' : v === 'doce' ? 'doce' : 'table';
     drawIcon(ctx,k,x,y-1,k==='table'?1.0:0.95, k === 'ticket' ? cc : (t && t.group ? t.group.dish : 'pf'), k === 'dish' ? cc : null);
     circ(ctx,x+14,y+11,9); fs(ctx,'#fff',1.8); txt(ctx,String(a.id),x+14,y+12,12,PAL.tinta,'center',FD);
   }
