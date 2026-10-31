@@ -18,6 +18,7 @@ Origem: retorno do Renan Martorelli (beta-tester) e conversa com o Arthur (15/10
 | 3b-1 | Restaurante na Avenida Brasil: os caps. 6 e 7, o almoço de negócios, a parmegiana, os sofás, as águas saborizadas e as flores | v9.1 | feita em 31/10 (`docs/spec-v9.1.md`; a 5ª vaga de espera da área industrial ganhou posição; metas ×1,7) |
 | 3b-1r | Realinhamento: o `LIBERA` depois da Garagem (base do Joca e do Anselmo) e o Cantinho da Rosa desenhado nos pontos novos | v9.1.1 | feita em 31/10 (`docs/spec-v9.1.1.md`) |
 | 3b-2 | A Dani confeiteira e o Joca, na área industrial | v9.2 | a fazer; **a próxima: a 3b-2** |
+| 3b-2d | Revisão do modo dev: testar todos os níveis, pontos, upgrades e cursos com rapidez | a definir | a fazer; logo depois da 3b-2 (pedido do usuário de 31/10) |
 | 3b-3 | A Avenida: a vitrine da Dani, o Joca barista e a Cami | v9.3 | a fazer |
 | 3b-4 | Fiscal da vigilância sanitária | v9.4 | a fazer |
 | 3b-5 | O Anselmo e os drinks da Avenida | v9.5 | a fazer |
@@ -85,6 +86,16 @@ Origem: retorno do Renan Martorelli (beta-tester) e conversa com o Arthur (15/10
 **Fechamento:** v9.2 (`versoes/`, `vtag`, `VERSAO`, `#ov-ver`, `docs/spec-v9.2.md`, `RESUMO.md`), PR e merge.
 
 **Modelo:** Sonnet, esforço alto. Tudo decidido, mas o 2º ajudante mexe na classe da Dani, os dois não podem se atrapalhar e entra o pedido de fim de refeição; pede depuração com o bot. Se passar de umas 15 trocas, feche o Joca como v9.2 e deixe os doces para uma v9.2.1 com o mesmo plano.
+
+### Sessão 3b-2d — Revisão do modo dev (pedido do usuário em 31/10)
+> **Ainda não planejada: planejar com o Opus antes de executar.** Vem logo depois da 3b-2, para as etapas seguintes (3b-3 em diante, Terraço, eventos) já serem testadas pelo modo dev.
+- **Pedido:** o modo dev (10 toques no selo da versão; save à parte, `DEV` em `12-clientes.js`) deve deixar testar **todos os níveis, pontos, upgrades, cursos e equipe** e **avançar rápido**, sem jogar dias inteiros.
+- **A planejar (decidir antes de executar):** o que o modo dev já libera hoje (`DEV.on` em `cursoOk`, `couvertOk`, `divulgaAberta`, dinheiro 10000 etc.) e o que falta; um painel/atalhos do dev (pular para o dia N, trocar de ponto, dar dinheiro, liberar todos os cartões/upgrades/cursos, ligar a equipe, forçar nota do Gurugol, avançar o relógio do dia); se isso fica num painel `#ov-dev` só visível no modo dev e como entra no `window.__lcc` para os testes. O plano deve fechar valores, textos, partes de `src/` e o que o smoke novo confere.
+- **Regra:** o jogo normal não muda; o modo dev nunca grava no save normal.
+
+**Modelo:** planejar com o Opus antes (esforço médio); executar depois com o Sonnet, esforço médio.
+
+---
 
 ### Sessão 3b-3 — A Avenida: a vitrine da Dani, o Joca barista e a Cami (v9.3)
 **1. Curso "Confeitaria gourmet" da Dani** (`{ id:'confGourmet', nome:'Confeitaria gourmet', preco:350, nivel:3, dep:'confCaseira', item:true }`, +2 de experiência; no Cardápio). A geladeirinha vira **vitrine refrigerada** (mesmo lugar) e os doces passam a ser os gourmet (`DOCES.gourmet`; os caseiros saem do sorteio): **shortcake de morango, torta de limão e brigadeiro gourmet**, **R$ 16** cada (ingrediente R$ 4), e +0,25 no Ambiente de quem comeu (`AVAL.amb.doce`). A marmita com doce leva o gourmet.
