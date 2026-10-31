@@ -166,7 +166,7 @@ const joga=(H,fat,custo)=>{ const {g,els}=H; if(g.state==='shop') els['btn-shop-
   ok(/mudança para a área industrial/.test(txt(H2.els['ov-continua'])+'') || true,'—'); }
 
 // ---------- 12. turma e o apito da fábrica ----------
-{ const H=jogo(4,true,{ bank:5000 }), {g,L}=H; let achou=0, juntas=0;
+{ const H=jogo(4,true,{ bank:5000, divulga:'panfleto' }), {g,L}=H; let achou=0, juntas=0;   // v9.0.2: com panfletos (o boca a boca sorteia menos turmas)
   for (let k=0;k<12;k++){
     g.resetDay(10); const sc=g.schedule, ts=sc.filter(s=>s.apito);
     if (!ts.length) continue; achou++;

@@ -73,6 +73,7 @@ for(let k=0;k<N;k++){
     // v8.7: o que a interface faz entre os dias: a conversa de depois fecha o capítulo (e abre o seguinte); a de antes só passa
     while(g.save.conversa){ if(g.save.conversa==='depois'){ capDia[g.save.cap].push(n); g.avancaCap(); } else g.save.conversa=null; }
     if(g.save.convCard==='pend') g.save.convCard=1;   // v9.0.1: a conversa do cardápio
+    if(g.save.convDiv==='pend') g.save.convDiv=1;     // v9.0.2: a conversa da divulgação
     if(g.state==='falencia'){ fechou++; break; }
     (g.ponto.nivel>=2?lucroInd:lucroGar).push(g.result.money); if(mudaDia[mudaDia.length-1]!==undefined&&n-mudaDia[mudaDia.length-1]<=5&&n>mudaDia[mudaDia.length-1]&&g.save.bank<0) negPos.push(n);
   }

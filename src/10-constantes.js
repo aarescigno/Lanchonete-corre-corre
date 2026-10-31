@@ -608,7 +608,7 @@ function bomGoal(d){ return Math.round((d.meta + d.expert) / 50) * 25; }
    CONTAS (v7): a meta do dia é o lucro. Ingredientes saem de cada prato que fica
    pronto (e de cada suco entregue), as contas do dia crescem com o salão (e com o
    aluguel do ponto; a Garagem não paga) e,
-   do dia 3 em diante, a divulgação decide quanta gente aparece
+   do dia 4 em diante (v9.0.2; antes, do dia 3), a divulgação decide quanta gente aparece
    ============================================================ */
 const CONTAS = { base:20, mesa:3, lugar:1 };         // por dia: o aluguel do ponto + gás e geladeira (base) + a luz de cada mesa aberta e de cada lugar (v8.3.8)
 const INGRED = { prato:0.35, suco:3 };               // prato: fração da conta (cobrada quando fica pronto); suco: R$ por copo entregue
@@ -848,12 +848,20 @@ const HIST_CARDAPIO = { dia:2,
           { q:'tonhao', s:'Tá bom, tá bom. Vê aí no Cardápio da lojinha o que cabe no bolso.' } ],
   fez:[ { q:'bia', s:'O pessoal adorou o prato novo!' },
         { q:'tonhao', s:'Então vou fazer mais cursos. Tá tudo no Cardápio da lojinha.' } ] };
+/* v9.0.2: a conversa da divulgação, no fim do dia anterior ao DIVULGA_DIA, só no Modo História (a lojinha abre na Divulgação).
+   save.convDiv: 'pend' | 1 (vista) */
+const HIST_DIVULGA = {
+  falas:[ { q:'tonhao', s:'A festa da inauguração acabou, Bia. Daqui pra frente, quem vem é porque ouviu falar da gente.' },
+          { q:'bia', s:'No boca a boca? Então vai ter dia fraco...' },
+          { q:'bia', s:'E se a gente fizer panfleto? Eu entrego no ponto de ônibus antes de abrir!' },
+          { q:'tonhao', nota:'coçando a cabeça', s:'Panfleto custa, mas traz o movimento de sempre. E tem as redes sociais, pra quem tem lugar pra tanta gente.' },
+          { q:'bia', s:'Vou ver na Divulgação da lojinha o que compensa.' } ] };
 const HIST_NOMES = { bia:'Bia', tonhao:'Tonhão', dani:'Dani' };
 const CAIXA_MAX = 14;                                 // livro-caixa (v7.2): quantos dias da carreira ficam guardados
-const VERSAO = 'v9.0.1';                             // vai no resumo do Caixa
-const DIVULGA_DIA = 3;                                // antes disso, o movimento é o da inauguração (sem custo)
+const VERSAO = 'v9.0.2';                             // vai no resumo do Caixa
+const DIVULGA_DIA = 4;                                // antes disso, o movimento é o da inauguração (sem custo); v9.0.2: dia 4, e o padrão é o boca a boca
 function divulgaAberta(n){ return DEV.on || n >= DIVULGA_DIA; }   // no modo dev, desde o dia 1
-function divulgaOf(id){ return DIVULGA.find(d => d.id === id) || DIVULGA[1]; }
+function divulgaOf(id){ return DIVULGA.find(d => d.id === id) || DIVULGA[0]; }   // v9.0.2: sem escolha, boca a boca
 /* o que se serve na espera, por nível do salão (v7.7, PONTOS.bebida). preco: R$ por copo na conta do grupo; ingred:
    custo de cada copo; prep: s até ficar pronto na estação; take: s da Bia (ou da Dani) para pegar ali.
    agua (nível 1, Garagem): água da torneira em copo americano, de graça; pedida no balão, a Bia enche na hora.

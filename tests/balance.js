@@ -54,7 +54,7 @@ function jogaDia(n,man){
   g.save.decor=L.normDecor?L.normDecor(dec?Object.fromEntries(L.DECOR.map(d=>[d.id,1])):{}):{};
   g.save.salao=L.normSalao({ponto:PONTO,mesas:movFor(n).map((seats,c)=>({x:0,y:0,seats,c:c%4,t:dec?1:0}))});
   if(L.salaoLugares(g.save.salao.mesas)!==movFor(n).reduce((x,y)=>x+y,0)) throw new Error('salão '+JSON.stringify(movFor(n))+' não cabe na arrumação automática (voltou ao kit)');
-  if(process.env.DIV) g.save.divulga=process.env.DIV;   // DIV=boca|panfleto|redes
+  g.save.divulga=process.env.DIV||'panfleto';   // DIV=boca|panfleto|redes (v9.0.2: o padrão do jogo é boca a boca; o bot escolhe panfletos)
   if(process.env.MULT){ const d=L.divulgaOf(g.save.divulga); d.groups=[+process.env.MULT,+process.env.MULT]; }   // MULT=0.7: fração fixa dos grupos do dia
   g.save.aval=[];   // v8.4: cada dia sem avaliações de antes (a nota não mexe no movimento; AVAL_MOV=1 liga, com a nota do dia anterior)
   if(process.env.AVAL_MOV&&jogaDia.av) g.save.aval=jogaDia.av.slice();

@@ -4,6 +4,13 @@ Registro das ideias e dos retornos de quem jogou, com o texto original, e de ond
 
 ---
 
+## 31/10/2026 — usuário: diálogo ao liberar a divulgação
+> "Quando libera a divulgação, deveria ter um diálogo (talvez pelo dia 4?) explicando que dá pra divulgar pra aumentar a frequentação, e, por padrão iniciar no modo boca a boca, com história sobre possibilidade de fazer panfletagem etc."
+
+**Destino:** feito na v9.0.2 (`docs/spec-v9.0.2.md`): a divulgação abre no dia 4, começa no boca a boca e, no Modo História, a conversa do fim do dia 3 (Tonhão e Bia) fala do fim da inauguração, dos panfletos e das redes sociais; a lojinha abre na Divulgação.
+
+---
+
 ## 30/10/2026 — beta-tester (via usuário): a fala do Tonhão fica embaixo do Pular
 **Texto:** "Outro feedback que foi dado é que as falas do Tonhão ficam embaixo do botão de pular. Temos que dar um jeito."
 **Conferido (30/10):** o balão do Tonhão sai da janela da cozinha (canto de cima à direita) e fica embaixo do Pular em 1220×600, 1600×800 e no celular deitado (740×360); no celular em pé, não.

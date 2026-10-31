@@ -31,7 +31,7 @@ novo(); { joga(1); joga(2); g.save.bank=2000; const s0=g.save.bank;
   const r=joga(3), c=g.save.caixa, last=c[c.length-1];
   ok(last.d===3&&last.mel===mel&&last.sal===sal,'a linha do dia 3 traz as compras feitas antes dele');
   ok(g.save.caixaPend.mel===0&&g.save.caixaPend.sal===0,'depois do dia, as pendentes zeram');
-  ok(last.folha===L.STAFF.tonhao.levels[1].pay&&last.div===L.divulgaOf('redes').cost,'equipe e divulgação do dia na linha');
+  ok(last.folha===L.STAFF.tonhao.levels[1].pay&&last.div===(L.divulgaAberta(3)?L.divulgaOf('redes').cost:0),'equipe e divulgação do dia na linha');
   ok(s0-last.mel-last.sal-last.folha-last.div+last.fat-last.ingr-last.contas===last.saldo,'saldo anterior − compras − equipe − divulgação + faturou − ingredientes − contas = saldo');
   ok(somaOk(last),'a conta do lucro fecha no dia 3'); }
 
@@ -49,7 +49,7 @@ novo(); { joga(1); g.goShop(2); g.save.bank+=200; g.buy('tenis'); joga(2);
   ok(lines.length===5&&/^Dia 1 [✓✗]: fatura \d+ − ingred\. \d+ − contas \d+ − equipe \d+ = lucro -?\d+ \(meta \d+\).* · saldo \d+$/.test(lines[1]),'resumo: uma linha por dia com a conta do lucro ('+lines[1]+')');
   ok(/compras 150/.test(lines[2]),'resumo: as compras aparecem na linha do dia');
   ok(/^Para onde foi \(2 dias\): ingredientes \d+, contas \d+.*melhorias 150/.test(lines[3]),'resumo: para onde foi o dinheiro');
-  ok(/Agora: dia \d+ · R\$ \d+ · lucro acumulado -?\d+ · Tonhão nível 1, sem Dani · panfletos · garagem com 4 mesas e 10 lugares · melhorias: tênis novos/.test(t),'resumo: dinheiro, equipe, divulgação, salão e melhorias de agora');
+  ok(/Agora: dia \d+ · R\$ \d+ · lucro acumulado -?\d+ · Tonhão nível 1, sem Dani · boca a boca · garagem com 4 mesas e 10 lugares · melhorias: tênis novos/.test(t),'resumo: dinheiro, equipe, divulgação, salão e melhorias de agora');
   const vazio=L.caixaResumo(L.normSave({})); ok(vazio.split('\n').length===2&&!/Para onde/.test(vazio),'resumo sem dias: só o cabeçalho e o agora'); }
 
 // aba Caixa

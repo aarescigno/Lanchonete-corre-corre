@@ -43,7 +43,7 @@ novo(159,{},'boca'); g.goShop(3);
 ok(g.compromisso===0 && els['shop-livre'].textContent==='','sem folha, o alto fica como antes');
 
 // ---------- melhorias, manutenção e divulgação ----------
-novo(230,{dani:2},'panfleto'); g.goShop(3); L.setShopTab('melhorias');
+novo(230,{dani:2},'panfleto'); g.goShop(4); L.setShopTab('melhorias');
 ok(g.compromisso===DANI+PAN && new RegExp('R\\$ '+(DANI+PAN)+' reservados para aumento da Dani e panfletos').test(els['shop-livre'].textContent),'a divulgação entra no reservado');
 { const u=L.UPGRADES.find(x=>x.cost>230-DANI-PAN&&x.cost<=230), b=botao(new RegExp('^Comprar R\\$ '+u.cost+'$'));
   ok(b && b.classList.contains('warn') && /sem panfletos/.test(b.getAttribute('data-aviso')),'melhoria que come a folha: alerta ('+u.name+')');
