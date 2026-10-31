@@ -55,6 +55,7 @@ Etapas concluídas (1a a 3a), movidas de `docs/PLANO.md` em 30/10/2026 e 31/10/2
 | 2c-r7b | Rebalanceamento e a melhor ordem de liberação dos cartões | v9.0.5 | feita em 31/10 sem versão nova: a ordem A (rascunho) ficou; a fila de uma conversa por fim de dia faz os 5 cartões abrirem até a lojinha do dia 11 (`docs/spec-v9.0.4.md`, fim) |
 | 3b-1 | Restaurante na Avenida Brasil: os caps. 6 e 7, o almoço de negócios, a parmegiana, os sofás, as águas saborizadas e as flores | v9.1 | feita em 31/10 (`docs/spec-v9.1.md`; a 5ª vaga de espera da área industrial ganhou posição; metas ×1,7) |
 | 3b-1r | Realinhamento: o `LIBERA` depois da Garagem (base do Joca e do Anselmo) e o Cantinho da Rosa desenhado nos pontos novos | v9.1.1 | feita em 31/10 (`docs/spec-v9.1.1.md`) |
+| 3b-2 | A Dani confeiteira e o Joca, na área industrial | v9.2 | feita em 31/10 (`docs/spec-v9.2.md`; a geladeirinha ficou em (696, 206), abaixo da geladeira grande) |
 
 ## Etapa 1a — Jogo justo: dá para não perder ninguém (v7.1)
 > **Feita em 15/10 (v7.1, `docs/spec-v7.1.md`).** Decisões: A + B; no Turno sem fim vale o ritmo da fila justa, sem o piso; ícone "aguardando mesa" sim. A medição mostrou que, com a equipe, a maior parte das perdas era a espera pelo prato, e não a fila. O que sobra é o limite de louça nos dias de 6 mesas: o bot afiado só chega ao alvo (0 perdidos em 94% dos dias) comprando o Jogo de pratos primeiro. A louça não mudou; se jogadores reclamarem da espera pelo prato, a etapa 1b pode rever `dishStock` ou a mecânica D. Metas sem mudança.
@@ -1339,3 +1340,14 @@ Pedido do usuário: o modo dev (10 toques no selo; save à parte, `DEV` em `12-c
 **Fechamento:** v9.3 (`versoes/`, `vtag`, `VERSAO`, `#ov-ver`, `docs/spec-v9.3.md`, `RESUMO.md`), PR e merge.
 
 **Modelo:** Sonnet, esforço alto. Decidido, mas o 3º ajudante e a regra do básico pedem cuidado com o bot e com as marcas de quem pega o quê.
+
+### Sessão 3b-4 — Fiscal da vigilância sanitária (v9.4)
+- **Quando:** só na Avenida (`nivel >= 3`) e na carreira, do 2º dia no ponto em diante, com chance de **15% por dia** (`FISCAL.chance`), sorteada com o clima (`manut.sorteio`, para não mudar ao rejogar). Nunca na Missão zero nem no Turno sem fim. **Avisado na introdução do dia:** "Dizem que a vigilância sanitária está rondando a Avenida." (sem dizer a hora).
+- **A visita:** num momento entre 30% e 70% do turno, o fiscal (`FISCAL`, não é grupo e não ocupa mesa) entra pela porta, anda até o meio do salão e fica **20 s** (`FISCAL.visita`) olhando, com a prancheta; depois sai. Visual: colete azul-claro com "VIGILÂNCIA" escrito, prancheta e caneta; homem ou mulher, sorteado.
+- **O que ele confere durante a visita** (cada um é uma falha): (1) alguma mesa ficou **suja por mais de 8 s seguidos**; (2) a **lixeira esteve cheia**; (3) a **pia chegou a 4 pilhas** ou mais. Um ícone pequeno de cada falha aparece em cima dele quando acontece.
+- **Resultado** (texto grande no salão quando ele sai): **0 falhas, "Aprovado!"**: selo "Aprovado pela vigilância" na parede por 7 dias (`save.selo`, o último dia do selo), que soma **+0,5 no Ambiente** do Gurugol (`AVAL.amb.selo`) e +30 pontos; **1 falha, "Advertência"**: só o aviso, sem multa; **2 ou 3 falhas, "Multa!"**: **R$ 150** nas contas do dia (linha "Multa da vigilância" no fim do dia e no livro-caixa).
+- Gurugol: no dia aprovado, comentário "Vi o selo da vigilância: lugar limpinho!"
+- **Testes:** **`tests/smoke45.js` (novo):** (1) não vem na Garagem nem na área industrial; na Avenida, ~15% dos dias em 400 sorteios, e o mesmo sorteio ao rejogar; (2) aviso na introdução; (3) cada falha detectada (mesa suja 8 s, lixeira cheia, pia com 4); (4) 0, 1 e 2 falhas dão selo, advertência e multa; (5) o selo soma +0,5 no Ambiente por 7 dias e some; (6) multa no fim do dia e no livro-caixa; (7) save sem `selo` carrega. `bot.js`: nada novo (só medir). `carreira.js`: quantas visitas e o resultado de cada uma; com o bot comum, a multa não pode passar de 1 em cada 3 visitas (se passar, a mesa suja vira 12 s). Capturas `tests/shot_v9_4.py`: o fiscal no salão com as falhas, o selo, o fim do dia com a multa.
+- **Fechamento:** v9.4 (`versoes/`, `vtag`, `VERSAO`, `#ov-ver`, `docs/spec-v9.4.md`, `RESUMO.md`), PR e merge.
+
+**Modelo:** Sonnet, esforço médio. Evento pequeno, com regras e números fechados, que segue o molde do clima e do texto de fim do dia.

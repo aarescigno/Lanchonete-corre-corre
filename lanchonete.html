@@ -345,7 +345,7 @@ table.rank tr.me td{background:#fbe7a8}
 
     <div class="ov show" id="ov-menu">
       <div class="panel menu-panel">
-        <span class="vtag" id="vtag" aria-label="Versão 9.3">v9.3</span>
+        <span class="vtag" id="vtag" aria-label="Versão 9.4">v9.4</span>
         <h1 class="title">Lanchonete <br>Corre-Corre</h1>
         <p class="tag">Ajude a Bia a atender a freguesia da esquina antes que o cafezinho esfrie!</p>
         <div class="lbl" id="menu-dia">História</div>
@@ -557,7 +557,8 @@ table.rank tr.me td{background:#fbe7a8}
       <div class="panel">
         <h2>Versões</h2>
         <ul class="verlist">
-          <li><b>v9.3</b><span class="cur">versão atual</span><br>31/10/2026 &mdash; A Avenida ganha mais gente e mais sabor: o curso de Confeitaria gourmet (R$ 350) troca a geladeirinha por uma vitrine refrigerada, com shortcake de morango, torta de limão e brigadeiro gourmet a R$ 16. O curso de espresso do Joca traz a máquina de espresso (espresso R$ 8 e cappuccino R$ 12, pedidos no fim da refeição), e o cafezinho passa para ele. E chega a Cami, garçonete de rodízio indicada pelo Joca, que cuida das tarefas da casa e sobe de nível com cursos.</li>
+          <li><b>v9.4</b><span class="cur">versão atual</span><br>31/10/2026 &mdash; Cuidado: a vigilância sanitária ronda a Avenida! Do 2º dia no ponto em diante, em 15% dos dias, um fiscal de colete azul entra no meio do expediente e fica 20 segundos olhando, de prancheta na mão. Ele confere três coisas: mesa suja por mais de 8 segundos, lixeira cheia e pia com 4 pilhas ou mais. Nenhuma falha: &ldquo;Aprovado!&rdquo;, selo na parede por 7 dias (+0,5 no Ambiente do Gurugol) e +30 pontos. Uma falha: só uma advertência. Duas ou três: multa de R$ 150 nas contas do dia. O dia avisa na introdução, sem dizer a hora.</li>
+          <li><b>v9.3</b><br>31/10/2026 &mdash; A Avenida ganha mais gente e mais sabor: o curso de Confeitaria gourmet (R$ 350) troca a geladeirinha por uma vitrine refrigerada, com shortcake de morango, torta de limão e brigadeiro gourmet a R$ 16. O curso de espresso do Joca traz a máquina de espresso (espresso R$ 8 e cappuccino R$ 12, pedidos no fim da refeição), e o cafezinho passa para ele. E chega a Cami, garçonete de rodízio indicada pelo Joca, que cuida das tarefas da casa e sobe de nível com cursos.</li>
           <li><b>v9.2.1</b><br>31/10/2026 &mdash; Modo dev com painel, para testar: um toque em &ldquo;Modo dev · painel&rdquo; escolhe qualquer dia, qualquer ponto, a nota do Gurugol, a equipe e os cursos no máximo (ou do começo) e as melhorias; liga a lojinha com preços e travas de verdade e, no meio do dia, acelera o jogo (2× ou 4×) ou encerra o dia. O jogo normal não muda.</li>
           <li><b>v9.2</b><br>31/10/2026 &mdash; Doces e um ajudante novo na área industrial: no 4º dia no ponto, a Dani conta que faz brigadeiro desde pequena, e o Cardápio da lojinha ganha o curso de Confeitaria caseira (R$ 180). Com ele, a geladeirinha de doces aparece ao lado da janela de pedidos (bolo de pote, brigadeiro de colher e pudim, R$ 7 cada): quem termina de comer pode pedir doce e só pede a conta depois de recebê-lo, e a marmita do entregador pode vir com &ldquo;+ doce&rdquo;. A Dani também serve os doces (tarefa nova). Ao terminar o curso, ela indica o Joca, do colégio dela: um ajudante de R$ 45 por dia (sobe até o nível 3, com a experiência e os cursos) que cuida do básico da casa (lixo, pratos, louça, água e marmitas) e deixa a Dani só com o cafezinho e os doces.<br><a href="versoes/v9.2.html" target="_blank" rel="noopener">Abrir a v9.2</a></li>
           <li><b>v9.1.1</b><br>31/10/2026 &mdash; Arrumação por dentro: o Cantinho da Rosa (a foto, a samambaia, a plaquinha e o quadro de giz) agora aparece também na área industrial e na Avenida. E a lojinha passou a abrir os cartões novos pelos dias no ponto, em qualquer capítulo.</li>
@@ -1402,7 +1403,7 @@ const AVAL = {
   minimo:0.9,
   prato:[[2.5, 4.5], [3, 4.7], [3.5, 5], [3.8, 5], [4, 5]],   // v8.8: 5 níveis do Tonhão
   menu:{ base:2, porCurso:0.6 },   // v8.6.9: pelos cursos básicos que o Tonhão fez (a Diversidade do cardápio)
-  amb:{ base:2, tv:0.5, som:0.5, maquina:0.5, ventilador:0.5, cafe:0.5, couvert:1, lixo:-1, planta:0.3, rosa:0.25, toalha:0.5, tvs:0.5, tvsPlus:0.75, doce:0.25 }
+  amb:{ base:2, tv:0.5, som:0.5, maquina:0.5, ventilador:0.5, cafe:0.5, couvert:1, lixo:-1, planta:0.3, rosa:0.25, toalha:0.5, tvs:0.5, tvsPlus:0.75, doce:0.25, selo:0.5 }
 };
 const AVAL_CRIT = [
   { id:'espera', nome:'Espera por mesa',
@@ -1708,7 +1709,7 @@ const BIA_IDS = ['tenis', 'corrida', 'bandeja', 'sudoku'];
 function upgradeCartao(id){ return BIA_IDS.indexOf(id) >= 0 ? 'bia' : 'melhorias'; }
 const HIST_NOMES = { bia:'Bia', tonhao:'Tonhão', dani:'Dani', joca:'Joca', cami:'Cami' };
 const CAIXA_MAX = 14;                                 // livro-caixa (v7.2): quantos dias da carreira ficam guardados
-const VERSAO = 'v9.3';                            // vai no resumo do Caixa
+const VERSAO = 'v9.4';                            // vai no resumo do Caixa
 const DIVULGA_DIA = 4;                                // antes disso, o movimento é o da inauguração (sem custo); v9.0.2: dia 4, e o padrão é o boca a boca
 function divulgaAberta(n, sv){ return devLivre() || n >= DIVULGA_DIA && !(sv && sv.convDiv === 'pend'); }   // no modo dev, desde o dia 1; v9.0.3: no Modo História, só depois da conversa
 function divulgaOf(id){ return DIVULGA.find(d => d.id === id) || DIVULGA[0]; }   // v9.0.2: sem escolha, boca a boca
@@ -1804,6 +1805,7 @@ function normManut(m){
   const s = m.sorteio;
   if (s && typeof s === 'object' && +s.d >= 1) out.sorteio = { d:Math.round(+s.d), clima:CLIMA[s.clima] ? s.clima : '',
     quebra:(Array.isArray(s.quebra) ? s.quebra : []).filter(x => x && manutOf(x.id)).map(x => ({ id:x.id, f:clamp(+x.f || 0.3, 0, 1) })) };
+  if (out.sorteio && s.fiscal && isFinite(+s.fiscal.f)) out.sorteio.fiscal = { f:clamp(+s.fiscal.f, FISCAL.quando[0], FISCAL.quando[1]) };   // v9.4
   return out;
 }
 /* imprevistos sem culpa (v8), do dia `dia` em diante na carreira: raros e avisados na introdução.
@@ -1813,6 +1815,11 @@ const CLIMA = {
   feriado: { nome:'Feriado',      chance:0.10, groups:1.25, tipo:'familia',    tipoP:0.25, aviso:'Feriado: a cidade saiu de casa! Mais gente e mais famílias.' }
 };
 const CLIMA_DIA = 3;
+/* fiscal da vigilância sanitária (v9.4): só na Avenida (nivel >= 3), do `dia`-ésimo dia no ponto em diante, com `chance` por dia (sorteada com o clima, em
+   manut.sorteio.fiscal, para não mudar ao rejogar). Entra num momento entre `quando` do turno, fica `visita` s olhando e confere 3 coisas: mesa suja por mais de
+   `mesaSuja` s seguidos, lixeira cheia e pia com `pia` pilhas ou mais. 0 falhas: selo por `selo` dias (+`seloPts` pontos; AVAL.amb.selo no Ambiente); 1: advertência; 2 ou 3: multa */
+const FISCAL = { nivel:3, dia:2, chance:0.15, quando:[0.3, 0.7], visita:20, mesaSuja:8, pia:4, multa:150, selo:7, seloPts:30,
+  aviso:'Dizem que a vigilância sanitária está rondando a Avenida.', coment:'Vi o selo da vigilância: lugar limpinho!' };
 
 /* ============================================================
    UTILIDADES
@@ -2043,6 +2050,7 @@ function normCaixa(c){
   return (Array.isArray(c) ? c : []).filter(r => r && typeof r === 'object' && +r.d >= 1).slice(-CAIXA_MAX)
     .map(r => {
       const o = { d:Math.max(1, n(r.d)), fat:n(r.fat), ingr:n(r.ingr), contas:n(r.contas), folha:n(r.folha), div:n(r.div), lucro:n(r.lucro), meta:n(r.meta), ok:!!r.ok, perd:n(r.perd), mel:n(r.mel), sal:n(r.sal), man:n(r.man), saldo:n(r.saldo) };
+      if (n(r.vig)) o.vig = n(r.vig);   // v9.4: a multa da vigilância (já somada em `contas`)
       if (n(r.dev)) o.dev = n(r.dev);   // linha "Devolução do salão" (v7.4): o que o salão antigo custou, de volta
       if (o.dev && r.devK === 'maquina') o.devK = 'maquina';   // ou a da máquina de suco, que virou torneira (v7.7)
       if (n(r.int)){ o.int = n(r.int); o.mul = n(r.mul); }   // dia encerrado no meio (v8.2.3): grupos que saíram bravos e a multa
@@ -2113,6 +2121,7 @@ function normSave(s){
   const conversa = cap > HISTORIA.length || pendente ? null : hist ? (s.conversa === 'antes' || s.conversa === 'depois' ? s.conversa : null) : novoHist ? 'antes' : null;
   const dev = salaoDevolucao(s.salao), out = { dia, estrelas, lucroTot: Math.round(+s.lucroTot) || 0, pontosTot: Math.max(0, Math.round(+s.pontosTot) || 0), aval: normAval(s.aval), avalCom: normAvalCom(s.avalCom), neg: clamp(Math.round(+s.neg) || 0, 0, BANCO.neg), emp: normEmprestimo(novoHist ? { resto:REFORMA.valor, amort:REFORMA.amort, j:REFORMA.juros, ini:REFORMA.ini, ref:true } : s.emp), corta: s.corta !== false, fechou: Math.max(0, Math.round(+s.fechou) || 0), bank: bank + dev + devMaq, up, torneira:true, salao: normSalao(dev ? null : s.salao), divulga: dia < DIVULGA_DIA && !devLivre() ? 'boca' : divulgaOf(s.divulga).id, treino: !!s.treino, decor: normDecor(s.decor), cursos: normCursos(s.cursos), cursoDia: Math.max(0, Math.round(+s.cursoDia) || 0), tonXp: s.tonXp === 1 ? 1 : 0, daniTar: Math.max(0, Math.round(+s.daniTar) || 0), daniCursos: normDaniCursos(s.daniCursos), daniCursoDia: Math.max(0, Math.round(+s.daniCursoDia) || 0), jocaTar: Math.max(0, Math.round(+s.jocaTar) || 0), jocaCursos: normJocaCursos(s.jocaCursos), jocaCursoDia: Math.max(0, Math.round(+s.jocaCursoDia) || 0), camiCursos: normCamiCursos(s.camiCursos), camiCursoDia: Math.max(0, Math.round(+s.camiCursoDia) || 0), daniXp: s.daniXp === 1 ? 1 : 0, cardV: 1, libera: normLibera(s.libera, !novoHist), pontoDia: pontoDiaDe(s, dia), convCard: s.convCard === 'pend' ? 'pend' : s.convCard === 1 ? 1 : 0, convDiv: s.convDiv === 'pend' ? 'pend' : s.convDiv === 1 ? 1 : 0, cardVisto: Array.isArray(s.cardVisto) ? s.cardVisto.filter(x => typeof x === 'string').slice(0, 40) : [], avisoCard: !!s.avisoCard, histV: 1, avisoHist: !!s.avisoHist, cap, capDia: Math.max(1, Math.round(+s.capDia) || 1), capAzul: Math.max(0, Math.round(+s.capAzul) || 0), capFeito: s.capFeito === 1 ? 1 : 0, capMarm: Math.max(0, Math.round(+s.capMarm) || 0), conversa, manut: normManut(s.manut), caixa: normCaixa(s.caixa), caixaPend: normPend(s.caixaPend) };
   out.equipe = normEquipe(s.equipe, pontoOf(out.salao.ponto));
+  out.selo = Math.max(0, Math.round(+s.selo) || 0);   // v9.4: o último dia do selo da vigilância (0: sem selo)
   if (!up.tvs) out.equipe.tvs = 0;
   if (out.daniCursos.confCaseira) up.confCaseira = true; else delete up.confCaseira;   // v9.2: a geladeirinha de doces vem do curso da Dani
   if (out.daniCursos.confGourmet && out.daniCursos.confCaseira) up.confGourmet = true; else delete up.confGourmet;   // v9.3: a vitrine gourmet (só com a caseira)
@@ -3144,6 +3153,74 @@ class Helper {
 }
 
 /* ============================================================
+   FISCAL DA VIGILÂNCIA SANITÁRIA (v9.4): só na Avenida, sorteado ao começar o dia (Game.sortear) e avisado na introdução.
+   Num momento do turno (`t`), entra pela porta, anda até o meio do salão e fica FISCAL.visita s olhando, com a prancheta; confere
+   mesa suja por mais de FISCAL.mesaSuja s seguidos, lixeira cheia e pia com FISCAL.pia pilhas ou mais (cada falha põe um ícone em cima
+   dele). Ao terminar, o resultado sai em texto grande (Game.fiscalFim) e ele volta para a rua. Não é grupo e não ocupa mesa.
+   ============================================================ */
+const FISCAL_PONTOS = [{ x:430, y:330 }, { x:330, y:330 }, { x:530, y:330 }, { x:430, y:250 }, { x:430, y:420 }, { x:300, y:250 }, { x:560, y:420 }, { x:120, y:330 }];
+class Fiscal {
+  constructor(game, f){
+    this.game = game;
+    this.t = f * game.day.time;   // em que segundo de jogo ele entra
+    this.st = 'espera';           // espera, entra, olha, sai, fim
+    this.x = DOOR.x; this.y = DOOR.y; this.path = []; this.moving = false; this.walkPh = 0;
+    this.resta = FISCAL.visita;
+    this.falhas = { suja:false, lixo:false, pia:false };
+    this.sujaT = {};
+    this.res = '';                // aprovado, advertencia ou multa (ao fim da visita)
+    const mulher = Math.random() < 0.5;
+    this.look = { skin:randi(0, 5), hair:mulher ? 1 : 0, hairC:pick(HAIRC.slice(0, 3)), pants:'#2F3E5C', kid:false, elder:false, acc:null, glasses:Math.random() < 0.4 };
+    this.alvo = FISCAL_PONTOS[FISCAL_PONTOS.length - 1];
+  }
+  get ativo(){ return this.st === 'entra' || this.st === 'olha' || this.st === 'sai'; }
+  get nFalhas(){ return (this.falhas.suja ? 1 : 0) + (this.falhas.lixo ? 1 : 0) + (this.falhas.pia ? 1 : 0); }
+  moveAlong(dt, sp){ Group.prototype.moveAlong.call(this, dt, sp); }
+  falha(k, msg){
+    const g = this.game;
+    if (this.falhas[k]) return;
+    this.falhas[k] = true;
+    g.addText(this.x, this.y - 96, msg, PAL.perigo, 15);
+    Sfx.boing();
+  }
+  update(dt){
+    const g = this.game;
+    if (this.st === 'espera'){
+      if (g.elapsed < this.t) return;
+      // o primeiro ponto livre e alcançável do salão (sem mesa em cima e com caminho)
+      const de = { x:DOOR.x, y:DOOR.y };
+      this.alvo = FISCAL_PONTOS.find(p => !inObst(p.x, p.y) && pathOk(de, p)) || FISCAL_PONTOS[FISCAL_PONTOS.length - 1];
+      this.path = findPath(de, this.alvo);
+      this.st = 'entra';
+      g.addText(QUEUE.x, DOOR.y + 36, 'Vigilância sanitária!', PAL.alerta, 20);
+      Sfx.tone(660, 0.12, 'triangle', 0.05); Sfx.tone(880, 0.18, 'triangle', 0.05, 0.14);
+    } else if (this.st === 'entra'){
+      this.moveAlong(dt, 70);
+      if (!this.path.length) this.st = 'olha';
+    } else if (this.st === 'olha'){
+      this.moving = false;
+      this.resta -= dt;
+      g.tables.forEach(t => {
+        if (!t.open) return;
+        this.sujaT[t.id] = t.dirty ? (this.sujaT[t.id] || 0) + dt : 0;
+        if (this.sujaT[t.id] > FISCAL.mesaSuja) this.falha('suja', 'Mesa suja!');
+      });
+      if (g.trashFull) this.falha('lixo', 'Lixeira cheia!');
+      if (g.kitchen.sinkN >= FISCAL.pia) this.falha('pia', 'Pia lotada!');
+      if (this.resta <= 0){
+        const n = this.nFalhas;
+        this.res = n === 0 ? 'aprovado' : n === 1 ? 'advertencia' : 'multa';
+        this.path = findPath({ x:this.x, y:this.y }, { x:DOOR.x, y:DOOR.y });
+        this.st = 'sai';
+        g.fiscalFim(this);
+      }
+    } else if (this.st === 'sai'){
+      this.moveAlong(dt, 80);
+      if (!this.path.length) this.st = 'fim';
+    }
+  }
+}
+/* ============================================================
    JOGO
    ============================================================ */
 class Game {
@@ -3190,6 +3267,8 @@ class Game {
     this.clima = so ? so.clima : '';
     this.quebras = so ? so.quebra.map(q => ({ id:q.id, t:q.f * this.day.time, on:false, fixed:false })) : [];
     this.usos = { fogao:0, geladeira:0, cafeteira:0 };
+    this.fiscal = so && so.fiscal && !treino && this.ponto.nivel >= FISCAL.nivel ? new Fiscal(this, so.fiscal.f) : null;   // v9.4
+    this.multaVig = 0; this.aprovado = false;
     // divulgação (v7, do dia 4 em diante na carreira; v9.0.2): quanto da freguesia do dia aparece
     this.div = divulgaAberta(n, this.save) ? divulgaOf(this.save.divulga) : null;
     this.divF = this.div ? rand(this.div.groups[0], this.div.groups[1]) : 1;
@@ -3290,6 +3369,8 @@ class Game {
     if (n >= CLIMA_DIA){ const r = Math.random(); if (r < CLIMA.chuva.chance) clima = 'chuva'; else if (r < CLIMA.chuva.chance + CLIMA.feriado.chance) clima = 'feriado'; }
     const quebra = n >= MANUT.dia ? MANUT.equip.filter(q => Math.random() < manutChance(m[q.id])).map(q => ({ id:q.id, f:rand(MANUT.quando[0], MANUT.quando[1]) })) : [];
     m.sorteio = { d:n, clima, quebra };
+    // v9.4: o fiscal da vigilância (só na Avenida, do 2º dia no ponto em diante), sorteado junto e guardado até o dia acabar
+    if (this.ponto.nivel >= FISCAL.nivel && diaNoPonto(this.save, n) >= FISCAL.dia && Math.random() < FISCAL.chance) m.sorteio.fiscal = { f:rand(FISCAL.quando[0], FISCAL.quando[1]) };
     writeSave(this.save);
   }
   /* equipamento quebrado agora (e sem conserto) */
@@ -3395,7 +3476,22 @@ class Game {
     if (isFinite(this.kitchen.clean) && (this.mode !== 'carreira' || this.day.n <= 5)) this.fx.push({ k:'text', box:true, aviso:'pratos', x:TW/2 - this.cam, y:250, vy:-6, life:3.5, max:3.5, text:'Não se esqueça de lavar os pratos!', color:PAL.faixa, size:16 });
   }
   /* lucro do dia (a meta): faturamento − ingredientes − contas − folha − divulgação */
-  get fixo(){ return this.contas + this.paid + this.paidDiv + this.conserto; }
+  get fixo(){ return this.contas + this.paid + this.paidDiv + this.conserto + (this.multaVig || 0); }
+  /* o selo da vigilância vale hoje (v9.4): aprovado hoje, ou o último dia do selo ainda não passou */
+  get seloOn(){ return !!this.aprovado || (this.mode === 'carreira' && (this.save.selo || 0) >= (this.day ? this.day.n : 0)); }
+  /* o fiscal terminou a visita (v9.4): aprovado (selo, +pontos), advertência ou multa nas contas do dia */
+  fiscalFim(f){
+    const x = f.x, y = f.y - 118;
+    if (f.res === 'aprovado'){
+      this.aprovado = true; this.pontos += FISCAL.seloPts;
+      this.addText(x, y, 'Aprovado!', PAL.ok, 28); this.addSparks(x, f.y - 60, 12, PAL.ok); Sfx.coin();
+    } else if (f.res === 'advertencia'){
+      this.addText(x, y, 'Advertência', PAL.alerta, 24);
+    } else {
+      this.multaVig = FISCAL.multa;
+      this.addText(x, y, 'Multa! -' + fmt(FISCAL.multa), PAL.perigo, 26); Sfx.boing();
+    }
+  }
   get lucro(){ return this.money - this.custo - this.fixo; }
   get trashFull(){ return this.trash >= TRASH.cap; }
   /* os ajudantes (v9.2: Dani e Joca) */
@@ -3896,7 +3992,7 @@ class Game {
     // v8.6.6: a decoração à mostra e a toalha da mesa em que o grupo sentou (g.table ainda vale aqui, também para quem sai bravo)
     const decor = DECOR.filter(d => decorOn(this, d.id)).map(d => d.id), toalha = !!(g.table && g.table.toalha);
     if (toalha) decor.push('toalha');
-    const amb = A.amb.base + (eq.tv ? A.amb.tv : 0) + (eq.som ? A.amb.som : 0) + (this.up.maquina ? A.amb.maquina : 0) + (this.up.ventilador ? A.amb.ventilador : 0) + (eq.tvs === 1 ? A.amb.tvs : eq.tvs === 2 ? A.amb.tvsPlus : 0) +
+    const amb = A.amb.base + (eq.tv ? A.amb.tv : 0) + (eq.som ? A.amb.som : 0) + (this.seloOn ? A.amb.selo : 0) + (this.up.maquina ? A.amb.maquina : 0) + (this.up.ventilador ? A.amb.ventilador : 0) + (eq.tvs === 1 ? A.amb.tvs : eq.tvs === 2 ? A.amb.tvsPlus : 0) +
       (g.coffee ? A.amb.cafe : 0) + (this.up.confGourmet && (g.docesDados > 0 || g.docesMarmDados > 0) ? A.amb.doce : 0) + (eq.couvert ? A.amb.couvert : 0) + (this.trashFull ? A.amb.lixo : 0) +
       decor.reduce((a, id) => a + (id === 'toalha' ? A.amb.toalha : decorOf(id).amb != null ? decorOf(id).amb : A.amb[decorOf(id).grupo === 'plantas' ? 'planta' : 'rosa']), 0);
     // o entregador (v8.6): a espera no balcão conta na espera e na agilidade
@@ -3914,6 +4010,7 @@ class Game {
     let txt = avalComentario(s, bravo, this.trashFull, this.ponto.nivel, decor, g.fria, g.semVeg, g.type, !CURSOS.some(c => c.preco > 0 && cursoNivel(this.save.cursos, c.id) >= 1)), nota = avalNota(r), f = avalFrac(nota, teto);
     if (!bravo && g.doces && g.doces.length && Math.random() < 0.4) txt = g.perdDoce > 0 ? 'A sobremesa demorou mais que o almoço.' : g.docesFalta ? txt : 'A sobremesa da casa é uma delícia!';   // v9.2
     if (!bravo && g.cafes && g.cafes.length && !g.cafesFalta && g.cafes.indexOf('cappuccino') >= 0 && Math.random() < 0.4) txt = 'Que cappuccino caprichado!';   // v9.3
+    if (!bravo && this.aprovado && Math.random() < 0.3) txt = FISCAL.coment;   // v9.4: no dia aprovado
     if (bravo === 'mesa') this.stats.bravoMesa++;   // v9.0.4: gatilho do cartão da Bia
     this.avals.push({ r, s, txt, k:g.type, v:g.vip });
     // balãozinho branco (sobe devagar, acima dos textos da conta)
@@ -3982,6 +4079,7 @@ class Game {
       this.addPuff(eq.badge.x, eq.badge.y, 8);
       Sfx.boing(); Sfx.tone(180, 0.25, 'sawtooth', 0.04, 0.12);
     });
+    if (this.fiscal) this.fiscal.update(dt);   // v9.4
     this.groups.forEach(g => g.update(dt));
     this.groups = this.groups.filter(g => !g.done);
     this.maq.forEach(o => { if (o.t > 0){ o.t -= dt; if (o.t <= 0){ Sfx.tone(1568, 0.12, 'sine', 0.05); this.addGlow('maquina'); } } });
@@ -4031,8 +4129,9 @@ class Game {
     // v8.2.2: só o dia completo rende. O faturamento vai para o dinheiro acumulado, menos ingredientes, contas, folha e
     // divulgação, que só são pagas agora (o conserto na hora já saiu); dia interrompido na pausa não paga nem ganha nada.
     // v8.3: tudo sai mesmo sem dinheiro (o caixa pode ficar negativo), junto com a parcela do empréstimo
-    const income = fat - Math.round(this.custo) - this.contas - this.paid - this.paidDiv;
+    const income = fat - Math.round(this.custo) - this.contas - this.paid - this.paidDiv - this.multaVig;
     sv.bank += income;
+    if (this.aprovado) sv.selo = d.n + FISCAL.selo - 1;   // v9.4: o selo vale por FISCAL.selo dias, contando hoje
     sv.daniTar += this.dani.feitas;   // v8.9: o trabalho da Dani vira experiência (só o dia completo)
     sv.jocaTar += this.joca.feitas;   // v9.2: e o do Joca
     const atr0 = !!sv.emp.atr, devido = this.devido, par = this.pagaParcela(), atrasou = !atr0 && !!sv.emp.atr, tomou = atr0 && !!sv.emp.atr;
@@ -4087,7 +4186,8 @@ class Game {
         sv.avalCom = normAvalCom(sv.avalCom);
       }
     }
-    const row = { d:d.n, fat, ingr:Math.round(this.custo), contas:this.contas, folha:this.paid, div:this.paidDiv, lucro:m, meta:d.meta, ok:passed, st:stars, perd:this.stats.lost, saldo:sv.bank };
+    const row = { d:d.n, fat, ingr:Math.round(this.custo), contas:this.contas + this.multaVig, folha:this.paid, div:this.paidDiv, lucro:m, meta:d.meta, ok:passed, st:stars, perd:this.stats.lost, saldo:sv.bank };
+    if (this.multaVig) row.vig = this.multaVig;
     if (avDia) row.av = Math.round(avDia.nota * 10);
     if (forcado) row.forc = 1;
     if (atrasou) row.atr = 1;
@@ -4095,6 +4195,7 @@ class Game {
     caixaAdd(sv, row);
     writeSave(sv);
     this.result = { daniFeitas:this.dani.feitas, jocaFeitas:this.joca.feitas, camiFeitas:this.cami.feitas, cafesEsp:this.stats.cafesEsp, doces:this.stats.doces, docesMarm:this.stats.docesMarm, day:d.n, money:m, fat, pontos:Math.round(this.pontos), custo:Math.round(this.custo), contas:this.contas, aluguel:this.ponto.aluguel, div:this.paidDiv, divName:this.div ? this.div.name : '', meta:d.meta, bom:bomGoal(d), expert:d.expert, passed, stars, served:this.stats.served, lost:this.stats.lost, lostBy:this.stats.lostBy, lotadoT:Math.round(this.stats.lotadoT), atraso:Math.round(this.atraso), full:this.stats.full, chain:this.stats.chain, vip:this.stats.vip, vipLost:this.stats.vipLost, marmitas:this.stats.marmitas, efood:this.efood, esfriou:this.stats.esfriou, sobra:this.marmitas().filter(o => o.onde !== 'fogao').length, juice:this.stats.juice, juiceMiss:this.stats.juiceMiss, sucoEsp:this.stats.sucoEsp, bebida:this.bebida.id, trash:this.stats.trash, washed:this.stats.washed, income, paid:this.paid, reason:this.reason, conserto:this.conserto, consertos:this.stats.consertos, quebras:this.quebras.filter(q => q.on).map(q => ({ id:q.id, fixed:q.fixed })), clima:this.clima, manut:Object.assign({}, this.manut), par, forcado, neg:sv.neg, emp:Object.assign({}, sv.emp), atrasou, tomou, devido, cap, aval:{ dia:avDia, geral:avalGeral(sv.aval), n:sv.aval.length, coment, teto:avalTeto(this.ponto) } };
+    this.result.multaVig = this.multaVig; this.result.vig = this.fiscal && this.fiscal.res ? { res:this.fiscal.res, falhas:Object.assign({}, this.fiscal.falhas) } : null;   // v9.4
     if (tomou){ this.setState('falencia'); Sfx.lose(); return; }
     this.setState('dayend');
     if (passed) Sfx.win(); else Sfx.lose();
@@ -5910,6 +6011,34 @@ function drawParedeAv(ctx,g,t){
   // as luminárias pendentes (nos vãos entre o cartaz, o relógio e a placa da cozinha)
   drawPendente(ctx,664,22,0.8,t,g.state === 'menu');
   drawPendente(ctx,763,26,0.9,t,g.state === 'menu');
+  if (g.seloOn && g.state !== 'menu') drawSeloVig(ctx,356,70);   // v9.4
+}
+/* selo "Aprovado pela vigilância" (v9.4), na meia-parede de azulejo */
+function drawSeloVig(ctx,x,y){
+  rr(ctx,x-38,y-13,76,26,5); fs(ctx,'#FFFDF5',2);
+  ctx.strokeStyle = PAL.ok; ctx.lineWidth = 1.4; rr(ctx,x-35,y-10,70,20,3.5); ctx.stroke();
+  circ(ctx,x-24,y,8); fs(ctx,PAL.ok,1.4);
+  ctx.strokeStyle = '#fff'; ctx.lineWidth = 2.4; ctx.beginPath(); ctx.moveTo(x-28,y); ctx.lineTo(x-25,y+3.5); ctx.lineTo(x-20,y-3.5); ctx.stroke();
+  txt(ctx,'VIGILÂNCIA',x+8,y-3.5,7,PAL.tinta,'center',FD,0,46);
+  txt(ctx,'Aprovado',x+8,y+5.5,7.5,PAL.ok,'center',FD,0,46);
+}
+/* o fiscal da vigilância (v9.4): colete azul-claro com "VIGILÂNCIA", prancheta e caneta; as falhas viram ícones em cima dele */
+function drawFiscal(ctx,f,tm){
+  drawPerson(ctx,f.look,f.x,f.y,{ shirt:'#F4F1E8', moving:f.moving, ph:f.walkPh, mood:0, t:tm });
+  const bob = (f.moving && !RM) ? -Math.abs(Math.sin(f.walkPh)) * 2.4 : 0;
+  ctx.beginPath(); ctx.moveTo(f.x-8,f.y-30+bob); ctx.lineTo(f.x+8,f.y-30+bob); ctx.lineTo(f.x+11,f.y-12); ctx.lineTo(f.x-11,f.y-12); ctx.closePath(); fs(ctx,'#9FD3EE',2.2);
+  ctx.fillStyle = '#fff'; ctx.fillRect(f.x-9.5,f.y-20+bob,19,2.2);
+  rr(ctx,f.x+9,f.y-36+bob,13,17,2); fs(ctx,'#8A5A33',1.6);
+  rr(ctx,f.x+11,f.y-33+bob,9,12,1); fs(ctx,'#fff',1);
+  ctx.strokeStyle = '#2C5AA0'; ctx.lineWidth = 1.2; ctx.beginPath(); ctx.moveTo(f.x+12.5,f.y-29+bob); ctx.lineTo(f.x+18.5,f.y-29+bob); ctx.moveTo(f.x+12.5,f.y-26+bob); ctx.lineTo(f.x+18.5,f.y-26+bob); ctx.stroke();
+  rr(ctx,f.x-31,f.y-84,62,12,5); fs(ctx,'#fff',1.6); txt(ctx,'VIGILÂNCIA',f.x,f.y-77.5,8,'#2C6E9B','center',FD,0,56);
+  ['suja','lixo','pia'].filter(k => f.falhas[k]).forEach((k,i,l) => {
+    const ix = f.x + (i - (l.length - 1) / 2) * 24, iy = f.y - 102 + (RM ? 0 : Math.sin(tm * 6 + i) * 1.5);
+    circ(ctx,ix,iy,10); fs(ctx,'#fff',2); ctx.strokeStyle = PAL.perigo; ctx.lineWidth = 2; ctx.stroke();
+    if (k === 'suja'){ rr(ctx,ix-6,iy-3,12,6,2); fs(ctx,PAL.madeira,1.2); ell(ctx,ix+1,iy-0.5,2.6,1.6); fs(ctx,'#5B3A21',0.8); }
+    else if (k === 'lixo'){ ctx.beginPath(); ctx.moveTo(ix-4,iy-2); ctx.lineTo(ix+4,iy-2); ctx.lineTo(ix+3,iy+5); ctx.lineTo(ix-3,iy+5); ctx.closePath(); fs(ctx,'#8E99A6',1.2); ctx.fillStyle = '#B9C2CC'; ctx.fillRect(ix-5,iy-4.5,10,2.2); }
+    else { ell(ctx,ix,iy+3,5.5,1.8); fs(ctx,'#E6DCC4',1); ell(ctx,ix,iy,5.5,1.8); fs(ctx,'#fff',1); ell(ctx,ix,iy-3,5.5,1.8); fs(ctx,'#E6DCC4',1); }
+  });
 }
 /* pedra portuguesa em ondas preto e branco (a calçada da Avenida; x0: onde o piso começa) */
 function drawPedraPort(ctx,x0){
@@ -7520,6 +7649,7 @@ function render(g, ctx){
   if (g.up.maquina) items.push({ y:STATIONS.maquina.rect.y + STATIONS.maquina.rect.h, f:() => glowSprite(ctx,g,'maquina',ctx => drawMaquina(ctx,g,tm,menu)) });
   if (g.save.equipe.couvert && !menu) items.push({ y:528, f:() => drawMusico(ctx,g,tm) });
   if ((g.save.equipe.tv || g.save.equipe.som) && !menu) items.push({ y:532, f:() => drawAmbiente(ctx,g,tm) });
+  if (g.fiscal && g.fiscal.ativo && !menu) items.push({ y:g.fiscal.y, f:() => drawFiscal(ctx,g.fiscal,tm) });   // v9.4
   if (g.dani.active && !menu) items.push({ y:g.dani.y, f:() => drawDani(ctx,g.dani,tm) });
   if (g.joca.active && !menu) items.push({ y:g.joca.y, f:() => drawJoca(ctx,g.joca,tm) });   // v9.2
   if (g.cami.active && !menu) items.push({ y:g.cami.y, f:() => drawCami(ctx,g.cami,tm) });   // v9.3
@@ -9756,7 +9886,8 @@ function buildCaixa(grid){
     }
     const dia = el('td', null, 'Dia ' + r.d + (r.st ? ' ' + '★'.repeat(r.st) : '')); tr.appendChild(dia);
     if (r.av) dia.title = 'Gurugol no dia: ' + fmtNota(r.av / 10) + ' ★';
-    [r.fat, r.ingr, r.contas, r.folha + r.div].forEach(v => tr.appendChild(cxTd(v)));
+    const cs = [r.fat, r.ingr, r.contas, r.folha + r.div].map(v => cxTd(v)); cs.forEach(c => tr.appendChild(c));
+    if (r.vig) cs[2].title = 'Inclui a multa da vigilância: ' + fmt(r.vig);   // v9.4
     const lu = cxTd(r.lucro, r.ok ? 'pos' : 'neg'); lu.title = (r.ok ? 'Passou' : 'Não passou') + ' da meta de ' + fmt(r.meta) + (r.perd ? '; ' + r.perd + (r.perd > 1 ? ' perdidos' : ' perdido') : '');
     tr.appendChild(lu);
     tr.appendChild(r.mel + r.sal ? cxTd(r.mel + r.sal) : el('td', 'n', '–'));
@@ -9942,6 +10073,10 @@ function buildEnd(){
   // imprevistos (v8): o que quebrou (e se foi consertado na hora) e o clima do dia
   if (r.quebras && r.quebras.length) rows.push(['Quebrou', r.quebras.map(q => manutOf(q.id).name.toLowerCase() + (q.fixed ? ' (consertado)' : '')).join(', ')]);
   if (r.clima) rows.push(['Imprevisto', CLIMA[r.clima].nome]);
+  if (r.vig){   // v9.4: a visita da vigilância sanitária
+    const fl = [r.vig.falhas.suja ? 'mesa suja' : '', r.vig.falhas.lixo ? 'lixeira cheia' : '', r.vig.falhas.pia ? 'pia lotada' : ''].filter(x => x);
+    rows.push(['Vigilância', r.vig.res === 'aprovado' ? 'Aprovado! Selo por ' + FISCAL.selo + ' dias (+' + FISCAL.seloPts + ' pontos)' : (r.vig.res === 'advertencia' ? 'Advertência' : 'Multa') + ': ' + fl.join(' e ')]);
+  }
   // marmitas (v8.6): as entregues (e a parte da Efood), as que esfriaram e as que sobraram no fim do dia
   if (r.marmitas || r.esfriou || r.sobra) rows.splice(2, 0, ['Marmitas', r.marmitas + ' entregue' + (r.marmitas === 1 ? '' : 's') + (r.efood ? ' (Efood −' + fmt(r.efood) + ')' : '') + (r.esfriou ? ' · ' + r.esfriou + ' esfri' + (r.esfriou > 1 ? 'aram' : 'ou') : '') + (r.sobra ? ' · ' + r.sobra + ' sobr' + (r.sobra > 1 ? 'aram' : 'ou') : '')]);
   if (r.vip || r.vipLost) rows.splice(2, 0, ['VIPs', r.vip + ' atendido' + (r.vip === 1 ? '' : 's') + (r.vipLost ? ' · ' + r.vipLost + ' bravo' + (r.vipLost > 1 ? 's' : '') : '')]);
@@ -9959,6 +10094,7 @@ function buildEnd(){
   const conta = [['Faturamento', fmt(r.fat)],['Ingredientes', neg(r.custo)]].concat(r.aluguel ? [['Aluguel', neg(r.aluguel)],['Luz e gás', neg(r.contas - r.aluguel)]] : [['Contas do dia', neg(r.contas)]]).concat([['Folha', neg(r.paid)]]);   // v9: o aluguel do ponto à parte
   if (r.divName) conta.push([r.divName, neg(r.div)]);
   if (r.conserto) conta.push(['Conserto na hora', neg(r.conserto)]);
+  if (r.multaVig) conta.push(['Multa da vigilância', neg(r.multaVig)]);
   conta.push(['Lucro do dia', fmt(r.money), 'tot']);
   if (r.par) conta.push(['Parcela do banco', neg(r.par)]);   // v8.3: fora do lucro (a meta), mas sai do dinheiro
   if (r.forcado) conta.push(['Banco (à força)', '+' + fmt(r.forcado)]);
@@ -10186,6 +10322,7 @@ function introManut(){
   if (!MANUT.on || game.mode !== 'carreira') return '';
   const m = game.manut, cl = CLIMA[game.clima], out = [];
   if (cl) out.push(cl.aviso);
+  if (game.fiscal) out.push(FISCAL.aviso);   // v9.4
   const lista = c => game.day.n >= MANUT.dia ? MANUT.equip.filter(q => manutChance(m[q.id]) === c).map(q => q.name.toLowerCase()) : [];
   const frase = (l, txt) => l.length ? ' ' + l.join(' e ').replace(/^./, x => x.toUpperCase()) + ': ' + txt + '.' : '';
   const vai = lista(1), pode = lista(MANUT.chanceVermelho);
@@ -10409,7 +10546,7 @@ try { Rank.init(); } catch(e) {}
 game.setState('menu');
 if (!aberturaVista() && !DEV.on) abrirAbertura('auto');   // v8.5: a abertura toca sozinha uma vez
 window.__game = game;
-window.__lcc = { abrirDev, fecharDev, buildDev, passoJogo, devLivre, diaNoPonto, manutEmerg, manutFator, daniTaskDe, plateSlotsFor, queueYsFor, assentoSlow, AVENIDA, SABORES, cursoOk, INDUSTRIAL, PLATE_SLOTS, cozinhaSlots, upgradeDe, DECOR, DECOR_GRUPOS, TOALHA, decorOf, normDecor, decorOn, FILA_ACOES, filaMax, MARMITA, RETIRADA, marmitaMao, drawMarmita, prateleiraPos, EFOOD_COR, AVAL_BRAVO, QUEUE, setShopTab: v => shopAbrir(v), setShopGrupo: g => shopGrupoAbrir(g), shopSecoes: () => SHOP_GRUPOS.map(g => shopSecoesVis(g)), TREINO, TREINO_PASSOS, TREINO_COR, Treino, treinoLugar, treinoPrimeiro, playCareer, buildMenu, introBanco, buildFalencia, BANCO, normEmprestimo, parcelaDe, devidoDe, jurosDe, tabelaDe, simulaEmprestimo, SEMANA, semanaOf, diaOf, FILA_JUSTA, PORTA, CHAIRS, PAT, CONTAS, INGRED, CARDAPIO, precoPrato, CURSOS, CURSO_AV, CURSO_XP, tonhaoXp, tonhaoNivelXp, daniXp, daniNivelXp, DANI_XP, DANI_CURSOS, CURSOS_SEMFIM, cursoOf, cursoNivel, normCursos, pratoAv, CARNES, drawDish, pratoSabido, pratosSabidos, GOSTOS, GOSTOS_CAT, pedePrato, VEG, vegMov, drawDish, MAIS, PONTOS_ACAO, GORJETA, DRINK_PRICE, MOVIMENTO, movimentoSalao, DIVULGA, DIVULGA_DIA, divulgaOf, contasDia, bomGoal, SALAO, PONTOS, pontoOf, MESA, mesaBox, mesaPreco, salaoLugares, mesaProblema, salaoCaminho, salaoProblema, salaoOrdena, salaoAuto, salaoVaga, salaoPerto, salaoKit, salaoDevolucao, SALAO_SEMFIM, normSalao, setObst, OBST, pathOk, MAQUINA, BEBIDA_ESPERA, bebidaOf, MANUT, manutOf, manutChance, manutPreco, normManut, CLIMA, CLIMA_DIA, introManut, normPend, CALCADA, TW, HUDX, esperaAp, tableApproach, CRIT, STAFF, DANI_TASKS, DANI_HANDS, daniTaskOk, TRASH, WASH, payroll, FOLHA_CORTE, folhaCorta, folhaCortes, folhaItens, listaE, pratosDe, couvertEffect, couvertOk, ambienteEffect, dishStock, normSave, Helper, JUICE, KITCHEN_SLOTS, handLayout, trayOk, Game, Group, Table, Kitchen, Waitress, BIA_SPEED, DAYS, UPGRADES, CUSTOMER_TYPES, LAYOUT, PAL, Sfx, findPath, render, Rank, sortRows, cleanName, normName, CMD, ENDLESS, VIP, MULTA, rk, renderRank, openRank, closeRank, LS, lsGet, lsSet, loadSave, DEV, saveKey, devSync, divulgaAberta, CAIXA_MAX, VERSAO, normCaixa, caixaResumo, caixaTotais, copyText, PRATO, pratoPerde, pratoVapor, AVAL, AVAL_CRIT, AVAL_BRAVO, avalMenu, cursosItem, DOCES, CAFES, cafeDe, docesLista, docePreco, doceIngred, doceIdx, CAMI_CURSOS, CAMI_HOME, CAMI_LOOK, camiNivelCursos, normCamiCursos, drawCami, drawEspresso, JOCA_XP, JOCA_CURSOS, JOCA_HOME, jocaXp, jocaNivelXp, BASICAS, donoBasico, cursoDaniVis, JOCA_LOOK, drawJoca, avalTeto, avalEscala, avalFrac, AVAL_SIMPLES, AVAL_DECOR, normAval, avalNota, avalMedias, avalGeral, avalMovimento, avalMinimo, avalComentario, fmtNota, notaFaixa, gurugolCaixa, AVAL_COM, normAvalCom, buildGurugol, ABERTURA, Abertura, AB_CENAS, AB_ALT, AB_BASE, abEsc, AB_VIVO, aberturaVista, aberturaSom, drawAbertura, abrirAbertura, HISTORIA, HIST_CARDAPIO, HIST_DIVULGA, LIBERA, liberaOf, HIST_NOMES, normEquipe, upgradeCartao, cursoFeito, AVAL_POUCO, REFORMA, HIST, carencia, Conversa, drawConversa, falar, fluxoHistoria, aberturaAtual: () => abertura };
+window.__lcc = { FISCAL, Fiscal, FISCAL_PONTOS, abrirDev, fecharDev, buildDev, passoJogo, devLivre, diaNoPonto, manutEmerg, manutFator, daniTaskDe, plateSlotsFor, queueYsFor, assentoSlow, AVENIDA, SABORES, cursoOk, INDUSTRIAL, PLATE_SLOTS, cozinhaSlots, upgradeDe, DECOR, DECOR_GRUPOS, TOALHA, decorOf, normDecor, decorOn, FILA_ACOES, filaMax, MARMITA, RETIRADA, marmitaMao, drawMarmita, prateleiraPos, EFOOD_COR, AVAL_BRAVO, QUEUE, setShopTab: v => shopAbrir(v), setShopGrupo: g => shopGrupoAbrir(g), shopSecoes: () => SHOP_GRUPOS.map(g => shopSecoesVis(g)), TREINO, TREINO_PASSOS, TREINO_COR, Treino, treinoLugar, treinoPrimeiro, playCareer, buildMenu, introBanco, buildFalencia, BANCO, normEmprestimo, parcelaDe, devidoDe, jurosDe, tabelaDe, simulaEmprestimo, SEMANA, semanaOf, diaOf, FILA_JUSTA, PORTA, CHAIRS, PAT, CONTAS, INGRED, CARDAPIO, precoPrato, CURSOS, CURSO_AV, CURSO_XP, tonhaoXp, tonhaoNivelXp, daniXp, daniNivelXp, DANI_XP, DANI_CURSOS, CURSOS_SEMFIM, cursoOf, cursoNivel, normCursos, pratoAv, CARNES, drawDish, pratoSabido, pratosSabidos, GOSTOS, GOSTOS_CAT, pedePrato, VEG, vegMov, drawDish, MAIS, PONTOS_ACAO, GORJETA, DRINK_PRICE, MOVIMENTO, movimentoSalao, DIVULGA, DIVULGA_DIA, divulgaOf, contasDia, bomGoal, SALAO, PONTOS, pontoOf, MESA, mesaBox, mesaPreco, salaoLugares, mesaProblema, salaoCaminho, salaoProblema, salaoOrdena, salaoAuto, salaoVaga, salaoPerto, salaoKit, salaoDevolucao, SALAO_SEMFIM, normSalao, setObst, OBST, pathOk, MAQUINA, BEBIDA_ESPERA, bebidaOf, MANUT, manutOf, manutChance, manutPreco, normManut, CLIMA, CLIMA_DIA, introManut, normPend, CALCADA, TW, HUDX, esperaAp, tableApproach, CRIT, STAFF, DANI_TASKS, DANI_HANDS, daniTaskOk, TRASH, WASH, payroll, FOLHA_CORTE, folhaCorta, folhaCortes, folhaItens, listaE, pratosDe, couvertEffect, couvertOk, ambienteEffect, dishStock, normSave, Helper, JUICE, KITCHEN_SLOTS, handLayout, trayOk, Game, Group, Table, Kitchen, Waitress, BIA_SPEED, DAYS, UPGRADES, CUSTOMER_TYPES, LAYOUT, PAL, Sfx, findPath, render, Rank, sortRows, cleanName, normName, CMD, ENDLESS, VIP, MULTA, rk, renderRank, openRank, closeRank, LS, lsGet, lsSet, loadSave, DEV, saveKey, devSync, divulgaAberta, CAIXA_MAX, VERSAO, normCaixa, caixaResumo, caixaTotais, copyText, PRATO, pratoPerde, pratoVapor, AVAL, AVAL_CRIT, AVAL_BRAVO, avalMenu, cursosItem, DOCES, CAFES, cafeDe, docesLista, docePreco, doceIngred, doceIdx, CAMI_CURSOS, CAMI_HOME, CAMI_LOOK, camiNivelCursos, normCamiCursos, drawCami, drawEspresso, JOCA_XP, JOCA_CURSOS, JOCA_HOME, jocaXp, jocaNivelXp, BASICAS, donoBasico, cursoDaniVis, JOCA_LOOK, drawJoca, avalTeto, avalEscala, avalFrac, AVAL_SIMPLES, AVAL_DECOR, normAval, avalNota, avalMedias, avalGeral, avalMovimento, avalMinimo, avalComentario, fmtNota, notaFaixa, gurugolCaixa, AVAL_COM, normAvalCom, buildGurugol, ABERTURA, Abertura, AB_CENAS, AB_ALT, AB_BASE, abEsc, AB_VIVO, aberturaVista, aberturaSom, drawAbertura, abrirAbertura, HISTORIA, HIST_CARDAPIO, HIST_DIVULGA, LIBERA, liberaOf, HIST_NOMES, normEquipe, upgradeCartao, cursoFeito, AVAL_POUCO, REFORMA, HIST, carencia, Conversa, drawConversa, falar, fluxoHistoria, aberturaAtual: () => abertura };
 window.requestAnimationFrame(frame);
 
 })();

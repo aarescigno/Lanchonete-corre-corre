@@ -45,6 +45,8 @@ class Game {
     this.clima = so ? so.clima : '';
     this.quebras = so ? so.quebra.map(q => ({ id:q.id, t:q.f * this.day.time, on:false, fixed:false })) : [];
     this.usos = { fogao:0, geladeira:0, cafeteira:0 };
+    this.fiscal = so && so.fiscal && !treino && this.ponto.nivel >= FISCAL.nivel ? new Fiscal(this, so.fiscal.f) : null;   // v9.4
+    this.multaVig = 0; this.aprovado = false;
     // divulgação (v7, do dia 4 em diante na carreira; v9.0.2): quanto da freguesia do dia aparece
     this.div = divulgaAberta(n, this.save) ? divulgaOf(this.save.divulga) : null;
     this.divF = this.div ? rand(this.div.groups[0], this.div.groups[1]) : 1;
@@ -145,6 +147,8 @@ class Game {
     if (n >= CLIMA_DIA){ const r = Math.random(); if (r < CLIMA.chuva.chance) clima = 'chuva'; else if (r < CLIMA.chuva.chance + CLIMA.feriado.chance) clima = 'feriado'; }
     const quebra = n >= MANUT.dia ? MANUT.equip.filter(q => Math.random() < manutChance(m[q.id])).map(q => ({ id:q.id, f:rand(MANUT.quando[0], MANUT.quando[1]) })) : [];
     m.sorteio = { d:n, clima, quebra };
+    // v9.4: o fiscal da vigilância (só na Avenida, do 2º dia no ponto em diante), sorteado junto e guardado até o dia acabar
+    if (this.ponto.nivel >= FISCAL.nivel && diaNoPonto(this.save, n) >= FISCAL.dia && Math.random() < FISCAL.chance) m.sorteio.fiscal = { f:rand(FISCAL.quando[0], FISCAL.quando[1]) };
     writeSave(this.save);
   }
   /* equipamento quebrado agora (e sem conserto) */
@@ -250,7 +254,22 @@ class Game {
     if (isFinite(this.kitchen.clean) && (this.mode !== 'carreira' || this.day.n <= 5)) this.fx.push({ k:'text', box:true, aviso:'pratos', x:TW/2 - this.cam, y:250, vy:-6, life:3.5, max:3.5, text:'Não se esqueça de lavar os pratos!', color:PAL.faixa, size:16 });
   }
   /* lucro do dia (a meta): faturamento − ingredientes − contas − folha − divulgação */
-  get fixo(){ return this.contas + this.paid + this.paidDiv + this.conserto; }
+  get fixo(){ return this.contas + this.paid + this.paidDiv + this.conserto + (this.multaVig || 0); }
+  /* o selo da vigilância vale hoje (v9.4): aprovado hoje, ou o último dia do selo ainda não passou */
+  get seloOn(){ return !!this.aprovado || (this.mode === 'carreira' && (this.save.selo || 0) >= (this.day ? this.day.n : 0)); }
+  /* o fiscal terminou a visita (v9.4): aprovado (selo, +pontos), advertência ou multa nas contas do dia */
+  fiscalFim(f){
+    const x = f.x, y = f.y - 118;
+    if (f.res === 'aprovado'){
+      this.aprovado = true; this.pontos += FISCAL.seloPts;
+      this.addText(x, y, 'Aprovado!', PAL.ok, 28); this.addSparks(x, f.y - 60, 12, PAL.ok); Sfx.coin();
+    } else if (f.res === 'advertencia'){
+      this.addText(x, y, 'Advertência', PAL.alerta, 24);
+    } else {
+      this.multaVig = FISCAL.multa;
+      this.addText(x, y, 'Multa! -' + fmt(FISCAL.multa), PAL.perigo, 26); Sfx.boing();
+    }
+  }
   get lucro(){ return this.money - this.custo - this.fixo; }
   get trashFull(){ return this.trash >= TRASH.cap; }
   /* os ajudantes (v9.2: Dani e Joca) */
@@ -751,7 +770,7 @@ class Game {
     // v8.6.6: a decoração à mostra e a toalha da mesa em que o grupo sentou (g.table ainda vale aqui, também para quem sai bravo)
     const decor = DECOR.filter(d => decorOn(this, d.id)).map(d => d.id), toalha = !!(g.table && g.table.toalha);
     if (toalha) decor.push('toalha');
-    const amb = A.amb.base + (eq.tv ? A.amb.tv : 0) + (eq.som ? A.amb.som : 0) + (this.up.maquina ? A.amb.maquina : 0) + (this.up.ventilador ? A.amb.ventilador : 0) + (eq.tvs === 1 ? A.amb.tvs : eq.tvs === 2 ? A.amb.tvsPlus : 0) +
+    const amb = A.amb.base + (eq.tv ? A.amb.tv : 0) + (eq.som ? A.amb.som : 0) + (this.seloOn ? A.amb.selo : 0) + (this.up.maquina ? A.amb.maquina : 0) + (this.up.ventilador ? A.amb.ventilador : 0) + (eq.tvs === 1 ? A.amb.tvs : eq.tvs === 2 ? A.amb.tvsPlus : 0) +
       (g.coffee ? A.amb.cafe : 0) + (this.up.confGourmet && (g.docesDados > 0 || g.docesMarmDados > 0) ? A.amb.doce : 0) + (eq.couvert ? A.amb.couvert : 0) + (this.trashFull ? A.amb.lixo : 0) +
       decor.reduce((a, id) => a + (id === 'toalha' ? A.amb.toalha : decorOf(id).amb != null ? decorOf(id).amb : A.amb[decorOf(id).grupo === 'plantas' ? 'planta' : 'rosa']), 0);
     // o entregador (v8.6): a espera no balcão conta na espera e na agilidade
@@ -769,6 +788,7 @@ class Game {
     let txt = avalComentario(s, bravo, this.trashFull, this.ponto.nivel, decor, g.fria, g.semVeg, g.type, !CURSOS.some(c => c.preco > 0 && cursoNivel(this.save.cursos, c.id) >= 1)), nota = avalNota(r), f = avalFrac(nota, teto);
     if (!bravo && g.doces && g.doces.length && Math.random() < 0.4) txt = g.perdDoce > 0 ? 'A sobremesa demorou mais que o almoço.' : g.docesFalta ? txt : 'A sobremesa da casa é uma delícia!';   // v9.2
     if (!bravo && g.cafes && g.cafes.length && !g.cafesFalta && g.cafes.indexOf('cappuccino') >= 0 && Math.random() < 0.4) txt = 'Que cappuccino caprichado!';   // v9.3
+    if (!bravo && this.aprovado && Math.random() < 0.3) txt = FISCAL.coment;   // v9.4: no dia aprovado
     if (bravo === 'mesa') this.stats.bravoMesa++;   // v9.0.4: gatilho do cartão da Bia
     this.avals.push({ r, s, txt, k:g.type, v:g.vip });
     // balãozinho branco (sobe devagar, acima dos textos da conta)
@@ -837,6 +857,7 @@ class Game {
       this.addPuff(eq.badge.x, eq.badge.y, 8);
       Sfx.boing(); Sfx.tone(180, 0.25, 'sawtooth', 0.04, 0.12);
     });
+    if (this.fiscal) this.fiscal.update(dt);   // v9.4
     this.groups.forEach(g => g.update(dt));
     this.groups = this.groups.filter(g => !g.done);
     this.maq.forEach(o => { if (o.t > 0){ o.t -= dt; if (o.t <= 0){ Sfx.tone(1568, 0.12, 'sine', 0.05); this.addGlow('maquina'); } } });
@@ -886,8 +907,9 @@ class Game {
     // v8.2.2: só o dia completo rende. O faturamento vai para o dinheiro acumulado, menos ingredientes, contas, folha e
     // divulgação, que só são pagas agora (o conserto na hora já saiu); dia interrompido na pausa não paga nem ganha nada.
     // v8.3: tudo sai mesmo sem dinheiro (o caixa pode ficar negativo), junto com a parcela do empréstimo
-    const income = fat - Math.round(this.custo) - this.contas - this.paid - this.paidDiv;
+    const income = fat - Math.round(this.custo) - this.contas - this.paid - this.paidDiv - this.multaVig;
     sv.bank += income;
+    if (this.aprovado) sv.selo = d.n + FISCAL.selo - 1;   // v9.4: o selo vale por FISCAL.selo dias, contando hoje
     sv.daniTar += this.dani.feitas;   // v8.9: o trabalho da Dani vira experiência (só o dia completo)
     sv.jocaTar += this.joca.feitas;   // v9.2: e o do Joca
     const atr0 = !!sv.emp.atr, devido = this.devido, par = this.pagaParcela(), atrasou = !atr0 && !!sv.emp.atr, tomou = atr0 && !!sv.emp.atr;
@@ -942,7 +964,8 @@ class Game {
         sv.avalCom = normAvalCom(sv.avalCom);
       }
     }
-    const row = { d:d.n, fat, ingr:Math.round(this.custo), contas:this.contas, folha:this.paid, div:this.paidDiv, lucro:m, meta:d.meta, ok:passed, st:stars, perd:this.stats.lost, saldo:sv.bank };
+    const row = { d:d.n, fat, ingr:Math.round(this.custo), contas:this.contas + this.multaVig, folha:this.paid, div:this.paidDiv, lucro:m, meta:d.meta, ok:passed, st:stars, perd:this.stats.lost, saldo:sv.bank };
+    if (this.multaVig) row.vig = this.multaVig;
     if (avDia) row.av = Math.round(avDia.nota * 10);
     if (forcado) row.forc = 1;
     if (atrasou) row.atr = 1;
@@ -950,6 +973,7 @@ class Game {
     caixaAdd(sv, row);
     writeSave(sv);
     this.result = { daniFeitas:this.dani.feitas, jocaFeitas:this.joca.feitas, camiFeitas:this.cami.feitas, cafesEsp:this.stats.cafesEsp, doces:this.stats.doces, docesMarm:this.stats.docesMarm, day:d.n, money:m, fat, pontos:Math.round(this.pontos), custo:Math.round(this.custo), contas:this.contas, aluguel:this.ponto.aluguel, div:this.paidDiv, divName:this.div ? this.div.name : '', meta:d.meta, bom:bomGoal(d), expert:d.expert, passed, stars, served:this.stats.served, lost:this.stats.lost, lostBy:this.stats.lostBy, lotadoT:Math.round(this.stats.lotadoT), atraso:Math.round(this.atraso), full:this.stats.full, chain:this.stats.chain, vip:this.stats.vip, vipLost:this.stats.vipLost, marmitas:this.stats.marmitas, efood:this.efood, esfriou:this.stats.esfriou, sobra:this.marmitas().filter(o => o.onde !== 'fogao').length, juice:this.stats.juice, juiceMiss:this.stats.juiceMiss, sucoEsp:this.stats.sucoEsp, bebida:this.bebida.id, trash:this.stats.trash, washed:this.stats.washed, income, paid:this.paid, reason:this.reason, conserto:this.conserto, consertos:this.stats.consertos, quebras:this.quebras.filter(q => q.on).map(q => ({ id:q.id, fixed:q.fixed })), clima:this.clima, manut:Object.assign({}, this.manut), par, forcado, neg:sv.neg, emp:Object.assign({}, sv.emp), atrasou, tomou, devido, cap, aval:{ dia:avDia, geral:avalGeral(sv.aval), n:sv.aval.length, coment, teto:avalTeto(this.ponto) } };
+    this.result.multaVig = this.multaVig; this.result.vig = this.fiscal && this.fiscal.res ? { res:this.fiscal.res, falhas:Object.assign({}, this.fiscal.falhas) } : null;   // v9.4
     if (tomou){ this.setState('falencia'); Sfx.lose(); return; }
     this.setState('dayend');
     if (passed) Sfx.win(); else Sfx.lose();
