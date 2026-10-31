@@ -50,6 +50,7 @@ Etapas concluídas (1a a 3a), movidas de `docs/PLANO.md` em 30/10/2026 e 31/10/2
 | 2f | A campanha vira o Modo História: estrutura e capítulos da Garagem | v8.7 | feita (30/10; ver `docs/spec-v8.7.md`; alvos do `carreira.js` e do `balance.js` batidos sem mexer nos valores) |
 | 2g | O Tonhão sobe de nível com os cursos (XP e aumento que consolida; 5 níveis) | v8.8 | feita em 30/10 (`docs/spec-v8.8.md`) |
 | 2h | A Dani sobe de nível com trabalho e cursos (XP e aumento que consolida) | v8.9 | feita em 30/10 |
+| 2c-r6 | Retorno de beta-tester: cardápio fácil de achar (cartão Cardápio com os cursos, conversa do dia 2, selo "novo", reclamação dos clientes) e balão do Tonhão embaixo do Pular | v9.0.1 | feita em 30/10 (`docs/spec-v9.0.1.md`); depois, v9.0.2 e v9.0.3 fora do plano |
 
 ## Etapa 1a — Jogo justo: dá para não perder ninguém (v7.1)
 > **Feita em 15/10 (v7.1, `docs/spec-v7.1.md`).** Decisões: A + B; no Turno sem fim vale o ritmo da fila justa, sem o piso; ícone "aguardando mesa" sim. A medição mostrou que, com a equipe, a maior parte das perdas era a espera pelo prato, e não a fila. O que sobra é o limite de louça nos dias de 6 mesas: o bot afiado só chega ao alvo (0 perdidos em 94% dos dias) comprando o Jogo de pratos primeiro. A louça não mudou; se jogadores reclamarem da espera pelo prato, a etapa 1b pode rever `dishStock` ou a mecânica D. Metas sem mudança.
@@ -1115,3 +1116,58 @@ O momento separado para conferir a ordem e o equilíbrio. Nada de cartão novo n
 **Fechamento:** se `LIBERA` mudou, v9.0.5 (como na v9.0.4: `versoes/`, `vtag`, `VERSAO`, `#ov-ver` "v9.0.5 — A ordem em que a lojinha abre foi conferida e ajustada."); se não mudou, só o spec e a tabela acima, sem versão nova. `./run_all.sh --tudo` verde, PR com merge.
 
 Modelo: Sonnet, esforço alto (balanceamento por tentativa com critérios fechados e conversa com o usuário no fim).
+
+### Sessão 3b-1 — Restaurante na Avenida Brasil (v9.1) — FEITA em 31/10 (`docs/spec-v9.1.md`; `queueYsFor` conserta a 5ª vaga de espera da área industrial; metas ×1,7; VIP ×2 do sorteio)
+**Mudança generalizada** (a 3a amarrou partes ao "nível 2" e ao cap. 4; aqui vale para qualquer ponto):
+- `mudancaVisivel`: o cartão aparece com `save.cap >=` o 1º capítulo do próximo ponto (`HISTORIA.find(c => c.ponto === para.id).cap`: 4 para a área industrial, 6 para a Avenida); no modo dev, sempre.
+- `mudarPonto`: o `if (sv.cap === 4)` vira "se o capítulo de agora é do ponto novo" (`HISTORIA[sv.cap - 1].ponto === para.id`). Ao sair da área industrial **saem do save, sem devolver**: as TVs (`up.tvs`, `equipe.tvs = 0`), o assento (`up.assento`) e a jarra (`up.maquina`). **Vão junto:** fogão industrial, mesas (arrumação automática), pratos, cursos, equipe, melhorias, decoração (as plantas da Garagem e da área industrial também aparecem na Avenida), empréstimo.
+- `normSave`: o "cap. 4 pendente" (`12-clientes.js:149`) vira "o capítulo de agora é de outro ponto que não o do save" (vale para o 4 e o 6).
+- Itens da área industrial (TVs, cadeirinhas/banquinhos, jarra, `normEquipe.tvs`, `buildMelhorias`, o seletor das TVs) passam de `nivel >= 2` para `nivel === 2`; o fogão industrial e as plantas `nivel:2` continuam à venda de 2 em diante. `upgradeDe` troca o `ind` por `porNivel:{ 2:{...}, 3:{...} }`; `daniTaskDe` chama a tarefa pela bebida do ponto ("Levar a água saborizada", curto "Água").
+- O cartão de fim de capítulos (`contTexto`, `43-telas.js`) sai do texto fixo: o último capítulo de cada ponto ganha `fim:{ h, p }` em `HISTORIA` (a Garagem e a área industrial com os textos de hoje).
+- O "Como jogar" (`40-interface.js:184`) diz "cardápio 20% mais caro" (errado desde a v9): use a porcentagem de `PONTOS[1].cardapio` e acrescente 1 frase da Avenida (o cartão Mudança depois do cap. 5).
+
+**O ponto** (`PONTOS[2]`): `{ id:'avenida', nome:'Restaurante na Avenida Brasil', nivel:3, lugares:24, aluguel:400, mudanca:2000, credito:4000, cardapio:2.0, area:{ x0:160, y0:150, x1:684, y1:500 }, espera:6, assento:'pe', bebida:'saborizada', pratos:6, prateleira:4, tipos:{ estudante:0.5, executiva:2, familia:1.5, vovos:1, entregador:1, negocios:1.5 }, vip:2, metaF:1.6, grupos:0.7 }`
+- Nota mínima para sair (Terraço, 4a): `avalMinimo` = 3,9 (teto 4,3). Para chegar: 3,4 da área industrial e R$ 2.000.
+- Se 24 lugares não couberem na arrumação automática: `y0` 140 e `y1` 510; ainda não, `x0` 140. Se a espera de 6 não couber na calçada com os sofás, 5.
+- **6 vagas no balcão de pratos:** `plateSlotsFor(6)` com x = 786 + 32·i (confira no recorte que o 6º prato não sai do balcão).
+- Sem `patPressa`, sem apito e sem encomenda (a turma, o motorista e a encomenda não vêm). VIP ×2.
+
+**Cliente novo: Almoço de negócios** (`negocios`, só na Avenida; não é VIP; vale o vegetariano): `{ label:'Almoço de negócios', pat:0.8, eat:[7,9], read:[4,5], size:[3,4], mais:0.2, tip:0.15 }`, `GOSTOS.negocios = [5, 0, 1, 1, 0]`. Visual: blazer ou camisa social de cores sóbrias e variadas (cinza, azul, vinho, bege), um com pasta ou notebook debaixo do braço; gente de várias cores, idades e gêneros. Comentário próprio na Agilidade (`AVAL_CRIT.tipo`): bom "Deu pra fechar o negócio com calma!", ruim "A reunião atrasou por causa do almoço."
+
+**Prato novo e curso de restaurante** (a "Cozinha de restaurante" das ideias guardadas): curso do Tonhão `{ id:'restaurante', nome:'Cozinha de restaurante', preco:400, pratos:['parmegiana'], nivel:3, av:{ nome:'Parmegiana da casa', preco:600, receita:'molho de tomate de 6 horas e queijo gratinado na hora', pratos:['parmegiana'] } }`; `CARDAPIO.parmegiana = { nome:'Filé à parmegiana', preco:30, cat:'pf', curso:'restaurante', carne:true, cor:'#B5432E' }` (R$ 60 na Avenida). O curso só aparece no cartão Cardápio com `ponto.nivel >= 3` (`nivel:3` no curso; no modo dev, sempre). Conta na experiência do Tonhão e na Diversidade do cardápio como os outros. Desenho do prato no estilo das artes da v8.6.10 (filé empanado com molho vermelho e queijo, arroz e batata).
+
+**Itens da Avenida** (lojinha; só com `ponto.nivel === 3`):
+- **Couvert artístico:** já existe (`STAFF.couvert`, R$ 80/dia, 20%, taxa de R$ 3 que corta pela metade); aparece sozinho com `nivel:3`. Só conferir o músico no salão de 24 lugares.
+- **Sofás** (o assento da espera): **"Sofás com almofadas", R$ 250**, compra única. Quem espera sentado no sofá perde a paciência **25% mais devagar** (`AVENIDA.sofa = { cost:250, slow:0.25 }`; `up.assento = 'sofa'`). Desenho: 2 sofás de 3 lugares, verde-musgo, almofadas coloridas.
+- **Águas saborizadas** (a melhoria `maquina` da Avenida, `porNivel[3]`): **R$ 200**. `BEBIDA_ESPERA.saborizada = { preco:14, ingred:3, prep:2, take:0.5 }`, o resto como o suco. Cada grupo sorteia um sabor (limão, morango ou hortelã), que só muda a cor do copo e do balão. Paciência 40% mais devagar (`MAQUINA.slow`, igual). Desenho: mesinha de canto com 3 garrafas de vidro coloridas e copos.
+- **Flores da calçada** (`DECOR`, grupo plantas, `nivel:3`, +0,15 no Ambiente cada): **tulipas R$ 40, copos-de-leite R$ 50, orquídeas R$ 60**.
+- O cartão "TVs" some da Avenida (o ambiente é o couvert).
+
+**Visual** (`21-cenario.js`, `avenida(g)` ao lado do `industrial(g)`): piso de taco de madeira em espinha de peixe, meia-parede de azulejo verde-água com papel de parede creme em cima, luminárias pendentes, janela grande com prédios e um ipê-amarelo da avenida, letreiro **"Corre-Corre · Restaurante"** em letras douradas sobre toldo listrado vinho e creme, calçada de pedra portuguesa em ondas preto e branco, sofás, mesinha das águas e as flores na calçada (tulipas em jardineira, copos-de-leite num vaso alto, orquídea numa mesinha perto da porta). `prefers-reduced-motion` como nos outros pontos.
+
+**Capítulos** (`HISTORIA`, `ponto:'avenida'`): o cap. 6 começa na mudança (como o 4); até lá `save.cap` fica em 6, "à espera". `save.cap = 8` = Avenida completa. O Bráulio é só citado (ele fala na etapa 6).
+- **Cap. 6, "Do outro lado da rua"** — `obj:{ azul:3 }`.
+  - Antes: Bia "Avenida Brasil, tio! Olha o movimento dessa calçada." / Tonhão (olhando pela janela) "E ali, do outro lado da rua... o restaurante do Bráulio." / Bia "Então ele vai ver a gente crescer de pertinho." / Dani "E aqui cabe até música ao vivo!"
+  - Depois: Tonhão "Três dias no azul com aluguel de gente grande." / Bia "O pessoal do Bráulio passou duas vezes espiando pela janela." / Tonhão (rindo) "Deixa espiar."
+- **Cap. 7, "Nota de restaurante"** — `obj:{ nota:3.9, caixa:5000 }` (o texto do objetivo já sai do `capObj`).
+  - Antes: Bia "Aqui o Gurugol é mais exigente. Restaurante é outra régua." / Tonhão "Então capricha: prato bonito, mesa limpa e ninguém esperando." / Dani "E guardar dinheiro. Ouvi falar de um terraço lá no alto..."
+  - Depois: Bia "Nota 3,9 e R$ 5.000 guardados!" / Tonhão (tirando o avental) "O Bráulio veio jantar aqui ontem. Pediu PF." / Bia "E aí?" / Tonhão "Comeu tudo e não disse nada. Mas raspou o prato." / Dani "Próxima parada: o Terraço Suíça!"
+  - `fim:{ h:'Fim dos capítulos da Avenida Brasil', p:'Continua na próxima versão: o Terraço Suíça.' }`.
+
+**O que muda, parte por parte:** `10-constantes.js` (`PONTOS[2]`, `negocios`, `GOSTOS`, `AVAL_CRIT.tipo`, `CURSOS`/`CARDAPIO`, `AVENIDA`, `BEBIDA_ESPERA.saborizada`, `UPGRADES.maquina.porNivel`, `DECOR` das flores com `AVAL.amb`, `HISTORIA` caps. 6 e 7 e os `fim`, `plateSlotsFor`); `12-clientes.js` (`normSave`, `normEquipe`, o assento com `slow` por tipo, o sabor da água); `16-jogo.js` (`mudancaVisivel`, `mudarPonto`, `comprarInd` ou uma `comprarAv` para os sofás); `20/21-*.js` (cenário, clientes novos, sofás, águas, flores, prato); `41-lojinha.js` (cartões da Avenida, curso com `nivel:3`, a confirmação "Mudar para o Restaurante na Avenida Brasil por R$ 2.000? Aluguel de R$ 400 por dia. Não dá para voltar."); `40-interface.js` (rótulo "História · cap. 6, Do outro lado da rua · dia N" e "Avenida Brasil completa"; "Como jogar"); `43-telas.js` (`contTexto`).
+
+**Testes:**
+- **`tests/smoke42.js` (novo):** (1) na área industrial com `cap` 5 não há cartão Mudança; com `cap` 6 aparece, apagado sem R$ 2.000 ou sem nota 3,4 (cada um); (2) mudar: −R$ 2.000, `ponto:'avenida'`, TVs/assento/jarra fora, fogão industrial e plantas ficam, 24 lugares com arranjo válido, 6 vagas de prato, `cap` 6 com `conversa:'antes'`; (3) aluguel R$ 400 e preços ×2,0 (PF R$ 50); (4) clientela: em 200 grupos, `negocios` aparece, nenhuma turma/motorista/encomenda, VIPs ≈ 2× os da Garagem; (5) sofás: espera 25% mais devagar; (6) água saborizada R$ 14 na conta, 3 sabores; (7) flores +0,15 cada no Ambiente; (8) couvert à venda só na Avenida (fora do modo dev); (9) curso Cozinha de restaurante só na Avenida, ensina o Filé à parmegiana (R$ 60; R$ 69 com o avançado); (10) cap. 6 com 3 dias no azul avança; cap. 7 com nota 3,9 e R$ 5.000 cumpre, `cap` 8 e o cartão de fim novo; (11) save da v9 na área industrial (sem nada novo) carrega igual, e um com `cap` 6 fica "à espera".
+- Ajustar smokes antigos que esperam 5 vagas fixas, o texto do `#ov-continua`, `cap` 6 como "fim" ou o `ind` de `UPGRADES.maquina`.
+- **`bot.js`/`carreira.js`:** o bot muda para a Avenida assim que pode e compra sofás, águas e o curso de restaurante quando sobra R$ 400 acima da folha; liga o couvert com a taxa. `DIAS=50` chega à Avenida. Linha `HISTORIA` com os caps. 6 e 7.
+- **Calibração** (as Checagens de fim de sessão, com `PONTO=avenida`; meça com `PONTO_CFG` antes de editar `src/`):
+  - **Volta do investimento em 5 a 8 dias** (ganho médio por dia na Avenida − o da área industrial ≥ R$ 250, medido com `MUDA=1`, novo no `carreira.js`: o bot muda só para a área industrial). Mais de 8 dias: `cardapio` +0,1 por vez, até 2,3; menos de 4: `aluguel` 450.
+  - **0 dias no negativo** nos 5 dias depois da mudança (padrão e `MOVEIS=quatro`). Se houver: o cartão Mudança passa a pedir a mudança **e o 1º aluguel** (R$ 2.400 no caixa; texto "Falta R$ x (a mudança e o 1º aluguel)").
+  - Cap. 6 em até 5 dias depois da mudança em 3/3; cap. 7 em até 15 dias em ≥ 2/3. Se o cap. 7 não chegar, `caixa` 4000 (não mexer na nota 3,9).
+  - Bot afiado com equipe: 3★ em ≥ 2 de 3 dias; se não, `metaF` 1,5; com folga (todos os dias acima do `expert` em 15%), 1,7. 24 lugares sem perder ninguém: se o afiado perde mais de 1 grupo por dia, `grupos` 0,65.
+  - Sem equipe, a mudança **não** compensa (lucro na Avenida ≤ o da área industrial + R$ 40).
+- Capturas `tests/shot_v9_1.py` em `capturas/v9_1`: cartão Mudança apagado e aceso, confirmação, salão da Avenida com tudo comprado e 24 lugares, mesa de negócios, VIP, calçada com sofás, águas e flores, couvert, 6 pratos no balcão, parmegiana, fim do dia com o aluguel, conversa do cap. 7, `#ov-continua`, celular deitado.
+
+**Fechamento:** guardar a v9.0.4 em `versoes/`, `vtag`, `VERSAO` 'v9.1', `#ov-ver`, `docs/spec-v9.1.md`, `docs/RESUMO.md`, CLAUDE.md (smoke42, `PONTO=avenida`, `DIAS=50`), PR e merge.
+
+**Modelo:** Sonnet, esforço alto. Tudo decidido, mas é um ponto inteiro (cenário, cliente, itens, capítulos), a generalização da mudança mexe em várias partes, e a calibração pode pedir 2 ou 3 rodadas.
