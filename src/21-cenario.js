@@ -67,8 +67,8 @@ function drawGaragem(ctx){
 }
 function drawWall(ctx,g,t){
   if (garagem(g)){ drawGaragem(ctx); drawDecorParede(ctx,g); }
-  else if (industrial(g)){ drawParedeInd(ctx,g,t); }
-  else if (avenida(g)){ drawParedeAv(ctx,g,t); }
+  else if (industrial(g)){ drawParedeInd(ctx,g,t); drawDecorParede(ctx,g); }
+  else if (avenida(g)){ drawParedeAv(ctx,g,t); drawDecorParede(ctx,g); }
   else drawAzulejo(ctx);
   drawWallCommon(ctx,g,t);
   if (industrial(g) && g.up && g.up.tvs && g.state !== 'menu') drawTvsParede(ctx,g,t);
@@ -563,11 +563,19 @@ function drawLataEspada(ctx,lx,ly){
    das pessoas). As funções servem também para os ícones da lojinha
    ============================================================ */
 let edDesenho = false;   // o editor do salão desenha a parede: o quadro de giz ficaria atrás do estoque
+/* v9.1.1: em todo ponto; posições (x, y, escala) por nível: Garagem, área industrial e Avenida (a foto e a samambaia na faixa de parede
+   embaixo do cartaz de preços, a plaquinha embaixo do letreiro, o quadro de giz no chão, perto da porta) */
+const DECOR_POS = [
+  { samambaia:[42,30,1],   foto:[88,36,1],    placa:[234,68,1], giz:[62,150,1] },
+  { samambaia:[630,78,.8], foto:[308,74,.8],  placa:[237,68,1], giz:[62,150,1] },   // a foto 22 px à esquerda: encostava na 1ª TV
+  { samambaia:[630,78,.8], foto:[330,74,.8],  placa:[242,68,1], giz:[62,150,1] }
+];
 function drawDecorParede(ctx,g){
-  if (decorOn(g,'samambaia')) drawSamambaia(ctx,42,30,1);
-  if (decorOn(g,'foto')) drawFotoRosa(ctx,88,36,1);
-  if (decorOn(g,'placa')) drawPlaquinha(ctx,234,68,1);
-  if (decorOn(g,'giz') && !edDesenho) drawGiz(ctx,62,150,1,g);
+  const P = DECOR_POS[Math.max(0, Math.min(2, ((g && g.ponto && g.ponto.nivel) || 1) - 1))];
+  if (decorOn(g,'samambaia')) drawSamambaia(ctx,P.samambaia[0],P.samambaia[1],P.samambaia[2]);
+  if (decorOn(g,'foto')) drawFotoRosa(ctx,P.foto[0],P.foto[1],P.foto[2]);
+  if (decorOn(g,'placa')) drawPlaquinha(ctx,P.placa[0],P.placa[1],P.placa[2]);
+  if (decorOn(g,'giz') && !edDesenho) drawGiz(ctx,P.giz[0],P.giz[1],P.giz[2],g);
 }
 /* samambaia num vaso de barro pendurado por 3 correntinhas num suporte de ferro na parede; (x, y) é a boca do vaso */
 function drawSamambaia(ctx,x,y,s){
