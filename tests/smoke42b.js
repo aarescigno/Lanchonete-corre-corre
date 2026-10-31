@@ -11,6 +11,7 @@ const gat={ v:false };
 const entrada=L=>{ if(!L.LIBERA.some(l=>l.id==='teste')) L.LIBERA.push({ id:'teste', nivel:2, dia:2, ate:4, gatilho:()=>gat.v, reclama:['Teste.'], falas:[{ q:'bia', s:'Conversa de teste.' },{ q:'tonhao', s:'Segunda fala.' }] }); };
 const J=(cap,ponto,sv)=>{ const H=nova(); entrada(H.L); const {g,L}=H;
   g.save=L.normSave(Object.assign({ histV:1, cap, dia:10, maxDay:10, bank:5000, up:{ tenis:true }, equipe:{ tonhao:1, dani:1 }, salao:{ ponto:ponto||'garagem' }, convCard:1, convDiv:1 }, sv||{}));
+  g.save.libera.confeitaria=2; g.save.libera.joca=2;   // v9.2: as entradas reais do ponto ficam fora do teste
   g.up=g.save.up; g.tablesKey=''; g.buildTables(); g.goShop(10); return H; };
 
 // ---------- 1. pontoDia ----------

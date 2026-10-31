@@ -109,6 +109,12 @@ function buildEnd(){
     msg += ' Dani: ' + (r.daniFeitas || 0) + ((r.daniFeitas || 0) === 1 ? ' tarefa' : ' tarefas') + ' hoje · experiência ' + daniXp(sv) + '.';
     if (daniNivelXp(sv) > sv.equipe.dani) msg += ' A Dani já pode subir para o nível ' + (daniNivelXp(sv) - 1) + '!';
   }
+  // v9.2: o Joca (trabalho e experiência) e os doces do dia
+  if (sv.equipe.joca > 0){
+    msg += ' Joca: ' + (r.jocaFeitas || 0) + ((r.jocaFeitas || 0) === 1 ? ' tarefa' : ' tarefas') + ' hoje · experiência ' + jocaXp(sv) + '.';
+    if (jocaNivelXp(sv) > sv.equipe.joca) msg += ' O Joca já pode subir para o nível ' + (jocaNivelXp(sv) - 1) + '!';
+  }
+  if (r.doces || r.docesMarm) msg += ' Doces: ' + (r.doces || 0) + ' na mesa' + (r.docesMarm ? ' e ' + r.docesMarm + ' na marmita' : '') + '.';
   // Modo História (v8.7): o objetivo do capítulo no fim do dia
   if (r.cap) msg += ' Capítulo ' + r.cap.n + ', ' + r.cap.titulo + ': ' + (r.cap.ok ? '✓ Objetivo cumprido!' : r.cap.itens.map(it => (it.ok ? '✓ ' : '') + it.txt).join(' · '));
   $('end-msg').textContent = msg;

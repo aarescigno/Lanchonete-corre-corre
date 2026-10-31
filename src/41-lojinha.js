@@ -21,6 +21,9 @@ function upgradeIcon(id){
     } else if (id === 'dani'){
       c.scale(1/1.5,1/1.5); drawPerson(c,DANI_LOOK,0,27,{ shirt:'#F7EFD8', mood:0, s:0.74 });
       c.beginPath(); c.moveTo(-4.2,5.6); c.lineTo(4.2,5.6); c.lineTo(6,18.1); c.lineTo(-6,18.1); c.closePath(); fs(c,'#7B4FB5',1.4);
+    } else if (id === 'joca'){
+      c.scale(1/1.5,1/1.5); drawPerson(c,JOCA_LOOK,0,27,{ shirt:'#B9BDC4', mood:0, s:0.74 });
+      c.beginPath(); c.moveTo(-4.2,5.6); c.lineTo(4.2,5.6); c.lineTo(6,18.1); c.lineTo(-6,18.1); c.closePath(); fs(c,'#243B63',1.4);
     } else if (id === 'couvert'){
       c.rotate(-0.5); ell(c,0,4,10,8); fs(c,'#B5733A',2); circ(c,0,4,3); c.fillStyle = PAL.tinta; c.fill(); rr(c,8,1,20,4,1); fs(c,PAL.madeiraEsc,1.4); c.rotate(0.5);
       txt(c,'♪',-12,-12,14,PAL.faixa,'center',FB);
@@ -155,7 +158,7 @@ function upgradeIcon(id){
 let shopGrupo = 'lanchonete', shopTab = null;
 const SHOP_GRUPOS = [
   { id:'lanchonete', nome:'Lanchonete', secoes:['cardapio', 'melhorias', 'salao', 'decor', 'manut', 'divulga'] },
-  { id:'equipe', nome:'Equipe', secoes:['bia', 'tonhao', 'dani'] },
+  { id:'equipe', nome:'Equipe', secoes:['bia', 'tonhao', 'dani', 'joca'] },
   { id:'dinheiro', nome:'Dinheiro', secoes:['banco', 'mudanca', 'caixa'] },
   { id:'gurugol', nome:'Gurugol', secoes:['gurugol'] }];
 const SHOP_SECOES = {
@@ -168,6 +171,7 @@ const SHOP_SECOES = {
   bia:{ nome:'Bia', icon:'bia', build:g => buildBia(g) },
   tonhao:{ nome:'Tonhão', icon:'tonhao', build:g => buildTonhao(g) },
   dani:{ nome:'Dani', icon:'dani', build:g => buildDani(g) },
+  joca:{ nome:'Joca', icon:'joca', build:g => buildJoca(g) },
   banco:{ nome:'Banco', icon:'banco', build:g => buildBanco(g) },
   mudanca:{ nome:'Mudança', icon:'mudanca', build:g => buildMudanca(g) },
   caixa:{ nome:'Caixa', icon:'contas', build:g => buildCaixa(g) },
@@ -294,17 +298,19 @@ function buildDani(grid){
   c = staffCard(upgradeIcon('dani'), lv ? 'Dani · ' + (lv === 1 ? 'aprendiz (sem salário)' : 'nível ' + (lv - 1) + ' de 3') : 'Dani (ajudante)',
     lv ? '' : (cap2 ? '' : 'Chega no capítulo 2. ') + 'Ajudante da Bia, mais lenta que ela (velocidade em % da dela). Tem 2 mãos: leva 2 itens por vez. Pode ' + avail.map(t => t.name.toLowerCase()).join(', ').replace(/, ([^,]*)$/, ' e $1') + '.');
   if (lv){
-    const sel = eq.daniTasks.filter(id => daniTaskOk(id, game.up)).length;
+    const sel = eq.daniTasks.filter(id => daniTaskOk(id, game.up) && (donoBasico(game) === 'dani' || BASICAS.indexOf(id) < 0)).length;   // v9.2: as básicas do Joca não ocupam vaga
     const tasks = el('div', 'tasks');
     avail.forEach(t => {
       const on = eq.daniTasks.indexOf(t.id) >= 0;
       const b = el('button', null, t.short); b.type = 'button'; b.title = t.name; b.setAttribute('aria-pressed', on ? 'true' : 'false');
       if (!on && sel >= sp.tasks) b.disabled = true;
+      if (BASICAS.indexOf(t.id) >= 0 && donoBasico(game) !== 'dani'){ b.disabled = true; b.title = t.name + ' (com o ' + 'Joca)'; }   // v9.2: o básico é do ajudante mais novo
       b.addEventListener('click', () => { Sfx.tap(); game.toggleDaniTask(t.id); buildShop(); });
       tasks.appendChild(b);
     });
     c.appendChild(el('span', 'full', 'Tarefas (' + Math.min(sel, sp.tasks) + ' de ' + sp.tasks + '):'));
     c.appendChild(tasks);
+    if (donoBasico(game) === 'joca') c.appendChild(el('span', 'cursos-lista', 'As tarefas da casa ficaram com o Joca.'));
   }
   const dMax = D.length - 1;
   if (!lv && !cap2){ grid.appendChild(c); return; }
@@ -327,11 +333,63 @@ function buildDani(grid){
   c.appendChild(duo); grid.appendChild(c);
   if (game.daniChegou) buildDaniCursos(grid);
 }
+/* o cartão do Joca (v9.2): o ajudante do básico, níveis 2 a 4 (nível 1 a 3 na tela), com os cursos de atendimento dele */
+function buildJoca(grid){
+  const eq = game.save.equipe, sv = game.save, bank = sv.bank, J = STAFF.joca.levels, jMax = J.length - 1;
+  const canPay = extra => payroll(eq) + extra <= bank;
+  const pc = v => Math.round(v*100) + '%', sec = v => String(Math.round(v*10)/10).replace('.', ',') + ' s';
+  const lv = eq.joca, sp = J[lv] || J[2];
+  const avail = BASICAS.filter(id => daniTaskOk(id, game.up)).map(id => daniTaskDe(DANI_TASKS.find(d => d.id === id), game.ponto));
+  const jRows = (a, b) => [
+    ['Velocidade', a && pc(a.speed), pc(b.speed)],
+    ['Lava 1 pilha', a && sec(WASH.perPile / a.speed), sec(WASH.perPile / b.speed)],
+    ['Tarefas', a && String(a.tasks), String(b.tasks)],
+    ['Diária', a && fmt(a.pay), fmt(b.pay)]];
+  const c = staffCard(upgradeIcon('joca'), lv ? 'Joca · nível ' + (lv - 1) + ' de 3' : 'Joca (ajudante)',
+    lv ? '' : 'Conhecido da Dani, dos tempos de colégio. Cuida do básico da casa: ' + avail.map(t => t.name.toLowerCase()).join(', ').replace(/, ([^,]*)$/, ' e $1') + '. Tem 2 mãos, como a Dani. Com ele, a Dani fica só com a especialidade dela.');
+  if (lv){
+    const sel = eq.jocaTasks.filter(id => daniTaskOk(id, game.up)).length, tasks = el('div', 'tasks');
+    avail.forEach(t => {
+      const on = eq.jocaTasks.indexOf(t.id) >= 0;
+      const b = el('button', null, t.short); b.type = 'button'; b.title = t.name; b.setAttribute('aria-pressed', on ? 'true' : 'false');
+      if (!on && sel >= sp.tasks) b.disabled = true;
+      b.addEventListener('click', () => { Sfx.tap(); game.toggleJocaTask(t.id); buildShop(); });
+      tasks.appendChild(b);
+    });
+    c.appendChild(el('span', 'full', 'Tarefas (' + Math.min(sel, sp.tasks) + ' de ' + sp.tasks + '):'));
+    c.appendChild(tasks);
+    const xp = jocaXp(sv), xl = el('div', 'tonxp');
+    xl.appendChild(el('span', null, lv < jMax ? 'Experiência: ' + xp + ' de ' + J[lv+1].xp + ' para o nível ' + lv : 'Experiência: ' + xp + ' · nível máximo'));
+    if (lv < jMax){ const bar = el('div', 'tonxp-bar'), fi = el('i'); fi.style.width = Math.round(clamp((xp - J[lv].xp) / (J[lv+1].xp - J[lv].xp), 0, 1) * 100) + '%'; bar.appendChild(fi); xl.appendChild(bar); }
+    const falta = JOCA_XP.tarefas - ((+sv.jocaTar || 0) % JOCA_XP.tarefas);
+    xl.appendChild(el('small', null, 'Trabalho: ' + falta + (falta > 1 ? ' tarefas' : ' tarefa') + ' até o próximo ponto'));
+    c.appendChild(xl);
+  }
+  const xp = jocaXp(sv), pronto = DEV.on || lv < 2 || xp >= (J[lv+1] || J[jMax]).xp;
+  c.appendChild(lv < jMax ? staffNext(lv ? 'Com o aumento:' : 'Se contratar (nível 1):', jRows(J[lv] || null, J[lv ? lv+1 : 2])) : staffNext('Nível máximo:', jRows(null, J[jMax])));
+  const duo = el('div', 'duo');
+  if (lv < jMax){
+    const prox = lv ? J[lv+1] : J[2], dif = prox.pay - (lv ? J[lv].pay : 0);
+    duo.appendChild(shopBtn(lv ? 'Aumento: +' + fmt(dif) + '/dia' : 'Contratar', 'btn', pronto && canPay(dif), () => game.setStaff('joca', lv ? lv + 1 : 2)));
+    if (lv && !pronto) c.appendChild(el('span', 'cursos-lista', 'Faltam ' + (J[lv+1].xp - xp) + ' de experiência: ele aprende trabalhando e com os cursos (+' + JOCA_XP.curso + ' cada).'));
+  }
+  c.appendChild(duo); grid.appendChild(c);
+  if (game.cursoMsg) grid.appendChild(el('p', 'cursomsg', game.cursoMsg));
+  JOCA_CURSOS.filter(q => !q.item && cursoDaniVis(q, game.ponto)).forEach(q => {
+    const feito = !!sv.jocaCursos[q.id], card = el('div', 'item' + (feito ? ' own' : ''));
+    card.appendChild(upgradeIcon('joca'));
+    card.appendChild(el('b', null, 'Curso de ' + q.nome));
+    card.appendChild(el('span', 'cursos-lista', '+' + JOCA_XP.curso + ' de experiência'));
+    if (!feito && game.jocaCursoTrava) card.appendChild(el('span', 'cursos-lista', 'O Joca já está num curso. Volte depois do próximo dia.'));
+    card.appendChild(feito ? shopBtn('Curso feito', 'btn', false, () => false) : shopBtn('Comprar ' + fmt(q.preco), 'btn', lv > 0 && !game.jocaCursoTrava && bank >= q.preco, () => game.buyJocaCurso(q.id), q.preco));
+    grid.appendChild(card);
+  });
+}
 /* cursos da Dani (v8.9): três cartões, +2 de experiência cada; um por lojinha, à parte do curso do Tonhão */
 function buildDaniCursos(grid){
   const sv = game.save, bank = sv.bank;
   if (game.cursoMsg) grid.appendChild(el('p', 'cursomsg', game.cursoMsg));
-  DANI_CURSOS.forEach(c => {
+  DANI_CURSOS.filter(c => !c.item && cursoDaniVis(c, game.ponto)).forEach(c => {   // v9.2: os cursos de item ficam no Cardápio
     const feito = !!sv.daniCursos[c.id], card = el('div', 'item' + (feito ? ' own' : ''));
     card.appendChild(upgradeIcon('dani'));
     card.appendChild(el('b', null, 'Curso de ' + c.nome));
@@ -632,9 +690,10 @@ function cursoIcon(c, av){
 function buildCardapio(grid){
   const cur = game.save.cursos, sab = pratosSabidos(cur), vir = n => String(n).replace('.', ',');
   const c = staffCard(upgradeIcon('cardapio'), 'No cardápio hoje (' + sab.length + ' pratos)',
-    sab.map(k => CARDAPIO[k].nome + ' ' + fmt(precoPrato(k, game.ponto, cur))).join(' · ') + '. Diversidade do cardápio no Gurugol: ' + vir(Math.round(avalMenu(cur) * 10) / 10) + ' ★ (cada curso básico dá +' + vir(AVAL.menu.porCurso) + ').');
+    sab.map(k => CARDAPIO[k].nome + ' ' + fmt(precoPrato(k, game.ponto, cur))).join(' · ') + '. Diversidade do cardápio no Gurugol: ' + vir(Math.round(avalMenu(cur, cursosItem(game.save)) * 10) / 10) + ' ★ (cada curso básico dá +' + vir(AVAL.menu.porCurso) + ').');
   grid.appendChild(c);
   buildCursos(grid);
+  buildCursosAjudantes(grid);
   grid.appendChild(el('span', 'cursos-lista', 'Cada curso também dá experiência ao Tonhão (Equipe › Tonhão).'));
 }
 function buildCursos(grid){
@@ -660,6 +719,20 @@ function buildCursos(grid){
     if (n < 1 && libera.length) card.appendChild(el('span', 'cursos-lista', libera.map(k => '+ ' + CARDAPIO[k].nome + (CARDAPIO[k].vegano ? ' (vegano)' : ' (vegetariano)')).join(' ')));
     if (p && game.cursoTrava) card.appendChild(el('span', 'cursos-lista', 'O Tonhão já está num curso. Volte depois do próximo dia.'));
     card.appendChild(p ? shopBtn('Comprar ' + fmt(p.preco), 'btn', !game.cursoTrava && bank >= p.preco, () => game.buyCurso(c.id), p.preco) : shopBtn('Curso completo', 'btn', false, () => false));
+    grid.appendChild(card);
+  });
+}
+/* v9.2: os cursos de cardápio dos ajudantes (com o rosto de quem faz): a Confeitaria caseira da Dani na área industrial */
+function buildCursosAjudantes(grid){
+  const sv = game.save, bank = sv.bank;
+  DANI_CURSOS.filter(c => c.item && cursoDaniVis(c, game.ponto) && game.cartaoAberto('confeitaria') && game.daniChegou).forEach(c => {
+    const feito = !!sv.daniCursos[c.id], card = el('div', 'item' + (feito ? ' own' : ''));
+    card.appendChild(upgradeIcon('dani'));
+    card.appendChild(el('b', null, 'Curso de ' + c.nome));
+    card.appendChild(el('span', 'cursos-lista', '+' + DANI_XP.curso + ' de experiência para a Dani'));
+    card.appendChild(el('span', null, 'A Dani faz ' + DOCES.caseira.map(d => d.nome.toLowerCase()).join(', ').replace(/, ([^,]*)$/, ' e $1') + ' na geladeirinha de doces: ' + fmt(DOCES.preco) + ' cada, na mesa e na marmita. +' + String(AVAL.menu.porCurso).replace('.', ',') + ' ★ na Diversidade do cardápio.'));
+    if (!feito && game.daniCursoTrava) card.appendChild(el('span', 'cursos-lista', 'A Dani já está num curso. Volte depois do próximo dia.'));
+    card.appendChild(feito ? shopBtn('Curso feito', 'btn', false, () => false) : shopBtn('Comprar ' + fmt(c.preco), 'btn', !game.daniCursoTrava && bank >= c.preco, () => game.buyDaniCurso(c.id), c.preco));
     grid.appendChild(card);
   });
 }
@@ -972,7 +1045,7 @@ function buildShop(){
   ['salao', 'caixa'].forEach(k => $('ov-shop').classList[shopTab === k ? 'add' : 'remove'](k));
   if (shopTab !== 'mudanca') mudarPede = false;
   if (!aberta){ grid.className = 'shopcards'; return shopCartoes(grid, SHOP_GRUPOS.find(x => x.id === shopGrupo)); }
-  grid.className = 'shopgrid' + (shopTab === 'tonhao' || shopTab === 'dani' || shopTab === 'cardapio' ? ' cursos' : ['salao', 'caixa', 'melhorias', 'gurugol', 'decor'].indexOf(shopTab) >= 0 ? ' ' + shopTab : '');
+  grid.className = 'shopgrid' + (shopTab === 'tonhao' || shopTab === 'dani' || shopTab === 'joca' || shopTab === 'cardapio' ? ' cursos' : ['salao', 'caixa', 'melhorias', 'gurugol', 'decor'].indexOf(shopTab) >= 0 ? ' ' + shopTab : '');
   aberta.build(grid);
 }
 (function(){ const box = $('shop-tabs'); if (box) Array.prototype.forEach.call(box.querySelectorAll('button'), b => b.addEventListener('click', () => { Sfx.init(); Sfx.tap(); shopGrupoAbrir(b.getAttribute('data-v')); }));
