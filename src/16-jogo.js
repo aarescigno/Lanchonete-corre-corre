@@ -156,11 +156,11 @@ class Game {
     const q = this.quebras.find(x => x.id === id && x.on && !x.fixed), eq = manutOf(id);
     if (!q || !eq) return false;
     const em = manutEmerg(eq, this.up);
-    if (!DEV.on && this.save.bank - this.paid - this.paidDiv < em){ this.addText(eq.badge.x, eq.badge.y - 26, 'Falta dinheiro!', PAL.perigo, 14); Sfx.boing(); return false; }
+    if (!devLivre() && this.save.bank - this.paid - this.paidDiv < em){ this.addText(eq.badge.x, eq.badge.y - 26, 'Falta dinheiro!', PAL.perigo, 14); Sfx.boing(); return false; }
     q.fixed = true; this.manut[id] = 1;
     const so = this.manut.sorteio;
     if (so) so.quebra = so.quebra.filter(x => x.id !== id);
-    if (!DEV.on){ this.conserto += em; this.save.bank -= em; caixaGasto(this.save, 'man', em); }
+    if (!devLivre()){ this.conserto += em; this.save.bank -= em; caixaGasto(this.save, 'man', em); }
     writeSave(this.save);
     this.stats.consertos++;
     this.addText(eq.badge.x, eq.badge.y - 26, eq.name + ' consertado! -' + em, PAL.ok, 15);
@@ -172,8 +172,8 @@ class Game {
   revisar(id){
     if (!this.cartaoAberto('manut')) return false;
     const e = this.manut[id], v = manutPreco(id, e);
-    if (!manutOf(id) || !v || (!DEV.on && this.save.bank < v)) return false;
-    if (!DEV.on){ this.save.bank -= v; caixaGasto(this.save, 'man', v); }
+    if (!manutOf(id) || !v || (!devLivre() && this.save.bank < v)) return false;
+    if (!devLivre()){ this.save.bank -= v; caixaGasto(this.save, 'man', v); }
     this.manut[id] = 1;
     const so = this.manut.sorteio;
     if (so) so.quebra = so.quebra.filter(q => q.id !== id);
@@ -943,7 +943,7 @@ class Game {
   /* lojinha antes do dia n (a partir do dia 2): melhorias à vontade, se o dinheiro der (v8.6.14: sem o limite de 1 por dia; só o curso do Tonhão segue 1 por lojinha) */
   goShop(n){
     this.shopNext = Math.max(1, n || this.day.n + 1);
-    if (DEV.on && this.save.bank < DEV.bank){ this.save.bank = DEV.bank; writeSave(this.save); }   // modo dev: o dinheiro não acaba
+    if (devLivre() && this.save.bank < DEV.bank){ this.save.bank = DEV.bank; writeSave(this.save); }   // modo dev: o dinheiro não acaba
     this.salaoSel = -1; this.estoqueSel = -1; this.salaoUndo = []; this.salaoMsg = ''; this.cursoMsg = '';
     this.resetDay(this.shopNext);   // o salão ao fundo já mostra o dia que vem
     this.setState('shop');
@@ -951,9 +951,9 @@ class Game {
   /* equipe: mudanças à vontade na lojinha, desde que o dinheiro acumulado pague a folha do próximo dia */
   setStaff(key, val){
     const eq = this.save.equipe, old = eq[key];
-    if (key === 'tonhao' && !DEV.on && (val > tonhaoNivelXp(this.save.cursos) || val < old)) return false;   // v8.8: só com a xp dos cursos, e o nível pago é definitivo
-    if (key === 'dani' && !DEV.on && (val > daniNivelXp(this.save) || val < old)) return false;   // v8.9: só com a experiência, e o nível pago é definitivo
-    if (key === 'joca' && !DEV.on && (val > jocaNivelXp(this.save) || val < old)) return false;   // v9.2: como a Dani (a experiência manda; o nível pago é definitivo)
+    if (key === 'tonhao' && !devLivre() && (val > tonhaoNivelXp(this.save.cursos) || val < old)) return false;   // v8.8: só com a xp dos cursos, e o nível pago é definitivo
+    if (key === 'dani' && !devLivre() && (val > daniNivelXp(this.save) || val < old)) return false;   // v8.9: só com a experiência, e o nível pago é definitivo
+    if (key === 'joca' && !devLivre() && (val > jocaNivelXp(this.save) || val < old)) return false;   // v9.2: como a Dani (a experiência manda; o nível pago é definitivo)
     if (key === 'joca' && val && !this.cartaoAberto('joca')) return false;
     if (key === 'couvert' && val && !couvertOk(this.ponto)) return false;
     if (key === 'tvs' && val && (!this.up.tvs || this.ponto.nivel !== 2)) return false;   // v9: só com as TVs instaladas
@@ -1015,27 +1015,32 @@ class Game {
   get mudancaFalta(){
     const p = this.proximoPonto;
     if (!p) return { fim:true };
-    if (DEV.on) return null;
+    if (devLivre()) return null;
     const sv = this.save, nm = avalMinimo(this.ponto), din = Math.max(0, p.mudanca - sv.bank), nota = this.notaGurugol != null && this.notaGurugol >= nm ? 0 : nm;
     return din || nota ? { din, nota } : null;
   }
   /* v9.1: o cartão aparece com o capítulo de agora a partir do 1º capítulo do próximo ponto (4 para a área industrial, 6 para a Avenida) */
   get mudancaVisivel(){
     const p = this.proximoPonto, c1 = p && HISTORIA.find(c => c.ponto === p.id);
-    return !!p && this.save.salao.ponto === this.ponto.id && (DEV.on || this.save.cap >= (c1 ? c1.cap : 4));
+    return !!p && this.save.salao.ponto === this.ponto.id && (devLivre() || this.save.cap >= (c1 ? c1.cap : 4));
   }
-  mudarPonto(){
-    const sv = this.save, para = this.proximoPonto;
-    if (!para || !this.mudancaVisivel || this.mudancaFalta) return false;
-    if (!DEV.on){ sv.bank -= para.mudanca; caixaGasto(sv, 'sal', para.mudanca); }
+  /* v9.2.1: o miolo da mudança (a troca de ponto, sem custo, capítulo nem som), usado pelo mudarPonto e pelo modo dev */
+  trocaPonto(para){
+    const sv = this.save;
     sv.salao.ponto = para.id; sv.pontoDia = sv.dia;   // v9.1.1: o dia em que chegou ao ponto novo
     sv.equipe.tv = false; sv.equipe.som = false; delete this.up.maquina;
     delete this.up.tvs; delete this.up.assento; sv.equipe.tvs = 0;   // v9.1: ao sair da área industrial, as TVs, o assento e a jarra saem sem devolver (o fogão industrial e as mesas vão junto)
     const r = salaoAuto(sv.salao.mesas, para); if (r) sv.salao.mesas = r;
     sv.salao = normSalao(sv.salao);
+    sv.equipe = normEquipe(sv.equipe, para);
+  }
+  mudarPonto(){
+    const sv = this.save, para = this.proximoPonto;
+    if (!para || !this.mudancaVisivel || this.mudancaFalta) return false;
+    if (!devLivre()){ sv.bank -= para.mudanca; caixaGasto(sv, 'sal', para.mudanca); }
+    this.trocaPonto(para);
     const chap = HISTORIA[sv.cap - 1];   // v9.1: o capítulo de agora é do ponto novo? Então começa (o 4 na área industrial, o 6 na Avenida)
     if (chap && chap.ponto === para.id){ sv.capDia = sv.dia; sv.capAzul = 0; sv.capFeito = 0; sv.conversa = HIST.on && !DEV.on ? 'antes' : null; }
-    sv.equipe = normEquipe(sv.equipe, para);
     this.tablesKey = ''; this.buildTables();
     writeSave(sv);
     this.resetDay(this.shopNext);
@@ -1054,8 +1059,8 @@ class Game {
     else if (id === 'assento' && nv === 2 && (tipo === 'cadeira' || tipo === 'banco') && this.up.assento !== tipo) cost = I.assento[tipo].cost;
     else if (id === 'assento' && nv === 3 && tipo === 'sofa' && this.up.assento !== 'sofa') cost = AVENIDA.sofa.cost;
     else return false;
-    if (!DEV.on && this.save.bank < cost) return false;
-    if (!DEV.on){ this.save.bank -= cost; caixaGasto(this.save, 'mel', cost); }
+    if (!devLivre() && this.save.bank < cost) return false;
+    if (!devLivre()){ this.save.bank -= cost; caixaGasto(this.save, 'mel', cost); }
     if (id === 'assento') this.up.assento = tipo; else this.up[id] = true;
     this.kitchen.slots = cozinhaSlots(this);
     writeSave(this.save); Sfx.coin();
@@ -1123,7 +1128,7 @@ class Game {
   /* v9.0.4: a lojinha abre aos poucos no Modo História (LIBERA); fora dele, no modo dev e do cap. 4 em diante, tudo aberto */
   cartaoAberto(id){
     const L = liberaOf(id);
-    if (!L || DEV.on) return true;
+    if (!L || devLivre()) return true;
     if (id === 'joca' && !this.save.daniCursos.confCaseira && !(this.save.equipe.joca > 0)) return false;   // v9.2: o Joca vem com o curso de confeitaria da Dani
     if (L.nivel){   // v9.1.1: o cartão de um ponto: fora da História, abre com o nível; nela, pela conversa
       if (!HIST.on || this.save.histV !== 1) return this.ponto.nivel >= L.nivel;
@@ -1169,7 +1174,7 @@ class Game {
     this.save.cardVisto = (this.save.cardVisto || []).concat(n); writeSave(this.save);
   }
   /* um curso por lojinha: depois de comprar um, os outros esperam o próximo dia */
-  get cursoTrava(){ return !DEV.on && this.save.cursoDia === this.shopNext; }
+  get cursoTrava(){ return !devLivre() && this.save.cursoDia === this.shopNext; }
   buyCurso(id){
     const p = this.cursoProx(id);
     if (!p || this.cursoTrava || this.save.bank < p.preco) return false;
@@ -1182,8 +1187,8 @@ class Game {
     return true;
   }
   /* cursos da Dani (v8.9): +DANI_XP.curso de experiência cada; um por lojinha, à parte do curso do Tonhão; só depois que ela chega */
-  get daniCursoTrava(){ return !DEV.on && this.save.daniCursoDia === this.shopNext; }
-  get daniChegou(){ return DEV.on || this.save.cap >= 2 || this.save.equipe.dani > 0; }
+  get daniCursoTrava(){ return !devLivre() && this.save.daniCursoDia === this.shopNext; }
+  get daniChegou(){ return devLivre() || this.save.cap >= 2 || this.save.equipe.dani > 0; }
   buyDaniCurso(id){
     const c = DANI_CURSOS.find(x => x.id === id), sv = this.save;
     if (!c || !cursoDaniVis(c, this.ponto) || (c.id === 'confCaseira' && !this.cartaoAberto('confeitaria')) || !this.daniChegou || sv.daniCursos[id] || this.daniCursoTrava || sv.bank < c.preco) return false;
@@ -1197,10 +1202,10 @@ class Game {
     return true;
   }
   /* cursos do Joca (v9.2): como os da Dani, à parte (jocaCursoDia) */
-  get jocaCursoTrava(){ return !DEV.on && this.save.jocaCursoDia === this.shopNext; }
+  get jocaCursoTrava(){ return !devLivre() && this.save.jocaCursoDia === this.shopNext; }
   buyJocaCurso(id){
     const c = JOCA_CURSOS.find(x => x.id === id), sv = this.save;
-    if (!c || !cursoDaniVis(c, this.ponto) || !(sv.equipe.joca > 0 || DEV.on) || sv.jocaCursos[id] || this.jocaCursoTrava || sv.bank < c.preco) return false;
+    if (!c || !cursoDaniVis(c, this.ponto) || !(sv.equipe.joca > 0 || devLivre()) || sv.jocaCursos[id] || this.jocaCursoTrava || sv.bank < c.preco) return false;
     sv.bank -= c.preco; caixaGasto(sv, 'mel', c.preco);
     sv.jocaCursos[id] = 1; sv.jocaCursoDia = this.shopNext;
     this.cursoMsg = 'O Joca foi fazer o curso de ' + c.nome + '!';
@@ -1317,7 +1322,7 @@ class Game {
   buyDecor(id){
     if (!this.cartaoAberto('decor')) return false;
     const d = decorOf(id), dec = this.save.decor;
-    if (!d || id in dec || this.save.bank < d.cost || (d.nivel && this.ponto.nivel < d.nivel && !DEV.on)) return false;
+    if (!d || id in dec || this.save.bank < d.cost || (d.nivel && this.ponto.nivel < d.nivel && !devLivre())) return false;
     this.save.bank -= d.cost; caixaGasto(this.save, 'sal', d.cost);
     dec[id] = 1;
     writeSave(this.save); Sfx.coin();
@@ -1386,6 +1391,69 @@ class Game {
     this.up = this.save.up;
     this.buildTables();
     this.kitchen.reset(); this.dani.reset(); this.joca.reset();
+    DEV.real = false; DEV.vel = 1;
+  }
+  /* ---------- v9.2.1: ações do painel do modo dev (só com DEV.on; gravam no save do dev) ---------- */
+  devRecarrega(){ this.tablesKey = ''; this.buildTables(); this.kitchen.reset(); this.dani.reset(); this.joca.reset(); if (this.state === 'shop') this.resetDay(this.shopNext); }
+  devDia(n){
+    if (!DEV.on) return false;
+    n = clamp(Math.round(+n) || 1, 1, 99);
+    const sv = this.save; sv.dia = n; sv.pontoDia = Math.min(sv.pontoDia, n);
+    writeSave(sv);
+    if (this.state === 'shop'){ this.shopNext = n; this.resetDay(n); }
+    return true;
+  }
+  devPonto(id){
+    const para = PONTOS.find(p => p.id === id);
+    if (!DEV.on || !para) return false;
+    this.trocaPonto(para);
+    this.devRecarrega();
+    return true;
+  }
+  devNota(v){
+    if (!DEV.on) return false;
+    v = +v || 0;
+    if (v <= 0) this.save.aval = [];
+    else { const x = Math.min(v, avalTeto(this.ponto)); this.save.aval = normAval(Array.from({ length:AVAL.max }, () => AVAL_CRIT.map(() => x))); }
+    writeSave(this.save); return true;
+  }
+  devEquipe(modo){
+    if (!DEV.on) return false;
+    const sv = this.save, e = sv.equipe;
+    if (modo === 'max'){
+      e.tonhao = STAFF.tonhao.levels.length - 1; e.dani = STAFF.dani.levels.length - 1; e.joca = STAFF.joca.levels.length - 1;
+      e.daniTasks = ['pratos', 'lavar', 'suco']; e.jocaTasks = ['lixo', 'lavar', 'pratos'];
+      const c = {}; CURSOS.forEach(x => { c[x.id] = 2; }); sv.cursos = normCursos(c);
+      const d = {}; DANI_CURSOS.forEach(x => { d[x.id] = true; }); sv.daniCursos = normDaniCursos(d);
+      const j = {}; JOCA_CURSOS.forEach(x => { j[x.id] = true; }); sv.jocaCursos = normJocaCursos(j);
+    } else {
+      e.tonhao = 0; e.dani = 1; e.joca = 0; e.daniTasks = DANI_PADRAO.slice(); e.jocaTasks = JOCA_PADRAO.slice();
+      sv.cursos = normCursos({}); sv.daniCursos = normDaniCursos({}); sv.jocaCursos = normJocaCursos({});
+    }
+    sv.equipe = normEquipe(e, this.ponto);
+    if (sv.daniCursos.confCaseira) this.up.confCaseira = true; else delete this.up.confCaseira;
+    sv.cursoDia = sv.daniCursoDia = sv.jocaCursoDia = 0;
+    this.kitchen.reset(); this.dani.reset(); this.joca.reset();
+    writeSave(sv); return true;
+  }
+  devMelhorias(on){
+    if (!DEV.on) return false;
+    Object.keys(this.up).forEach(k => { if (k !== 'confCaseira') delete this.up[k]; });
+    if (on) UPGRADES.forEach(u => { this.up[u.id] = u.multi ? 1 : true; });
+    this.kitchen.slots = cozinhaSlots(this);
+    writeSave(this.save); return true;
+  }
+  devCaixa(v){ if (!DEV.on) return false; this.save.bank = Math.max(0, Math.round(+v) || 0); writeSave(this.save); return true; }
+  devReal(on){
+    if (!DEV.on) return false;
+    DEV.real = !!on;
+    if (!DEV.real && this.save.bank < DEV.bank){ this.save.bank = DEV.bank; writeSave(this.save); }
+    return true;
+  }
+  devFimDia(){
+    if (!DEV.on || this.mode !== 'carreira' || (this.state !== 'playing' && this.state !== 'paused')) return false;
+    if (this.state === 'paused') this.setState('playing');
+    this.clock = 0; return true;
   }
   /* liga ou desliga uma melhoria de graça; os Tênis de corrida andam junto com os Tênis novos */
   /* liga ou desliga de graça um item da área industrial (fogão industrial) no modo dev */

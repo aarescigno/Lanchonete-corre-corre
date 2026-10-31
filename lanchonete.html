@@ -205,7 +205,7 @@ table.cx .rs{font-size:inherit}
 .vtag{position:absolute;top:calc(var(--u)*10);right:calc(var(--u)*14);font:800 max(11px,calc(var(--u)*13)) var(--fb);color:#5b5446;background:var(--creme);border:calc(var(--u)*2) solid var(--tinta);border-radius:999px;padding:0 calc(var(--u)*9);line-height:1.6}
 .vtag{-webkit-user-select:none;user-select:none;touch-action:manipulation;-webkit-tap-highlight-color:transparent}
 .vtag.dev{background:var(--alerta);color:#fff}
-.devbadge{position:absolute;left:50%;top:calc(var(--u)*4);transform:translateX(-50%);z-index:20;pointer-events:none;font:800 max(10px,calc(var(--u)*13)) var(--fb);letter-spacing:.08em;text-transform:uppercase;color:#fff;background:var(--alerta);border:calc(var(--u)*2) solid var(--tinta);border-radius:999px;padding:0 calc(var(--u)*10);line-height:1.5;opacity:.92}
+.devbadge{position:absolute;left:50%;top:calc(var(--u)*4);transform:translateX(-50%);z-index:20;cursor:pointer;min-height:max(28px,calc(var(--u)*30));font:800 max(10px,calc(var(--u)*13)) var(--fb);letter-spacing:.08em;text-transform:uppercase;color:#fff;background:var(--alerta);border:calc(var(--u)*2) solid var(--tinta);border-radius:999px;padding:0 calc(var(--u)*10);line-height:1.5;opacity:.92}
 .menu-panel .row.tight{margin-top:calc(var(--u)*8);gap:calc(var(--u)*10)}
 .menu-panel .row.tight .btn{padding-left:calc(var(--u)*15);padding-right:calc(var(--u)*15)}   /* v8.5: cabem Continuar, Missão zero e História na 1ª linha */
 .menu-panel .btn{font-size:max(14px,calc(var(--u)*20));padding:calc(var(--u)*6) calc(var(--u)*14)}
@@ -329,6 +329,15 @@ table.rank tr.me td{background:#fbe7a8}
 .item .tonxp-bar{height:8px;border-radius:4px;background:rgba(0,0,0,.15);margin-top:3px;overflow:hidden}
 .item .tonxp-bar i{display:block;height:100%;background:#f5a623}
 .item .tonxp small{display:block;font-weight:400;font-size:.85em;opacity:.8;margin-top:2px}   /* v8.9: o trabalho da Dani */
+/* v9.2.1: painel do modo dev (por cima de tudo; rola por dentro) */
+.ov-dev{z-index:30}
+.dev-panel{max-height:90%;overflow:auto;width:min(96%,calc(var(--u)*640));text-align:left}
+.dev-panel h2{text-align:center}
+.dev-panel .row{flex-wrap:wrap;justify-content:flex-start;gap:calc(var(--u)*6);margin-top:calc(var(--u)*6)}
+.dev-panel .btn{font-size:max(12px,calc(var(--u)*15));min-height:max(36px,calc(var(--u)*38));padding:0 calc(var(--u)*12)}
+.dev-panel .btn[aria-pressed="true"]{background:var(--faixa);color:#fff}
+.dev-panel .dev-now{font-weight:700;margin-top:calc(var(--u)*4)}
+.dev-panel > .row:last-child{justify-content:center}
 </style>
 <div id="app">
   <div id="stage">
@@ -336,7 +345,7 @@ table.rank tr.me td{background:#fbe7a8}
 
     <div class="ov show" id="ov-menu">
       <div class="panel menu-panel">
-        <span class="vtag" id="vtag" aria-label="Versão 9.2">v9.2</span>
+        <span class="vtag" id="vtag" aria-label="Versão 9.2.1">v9.2.1</span>
         <h1 class="title">Lanchonete <br>Corre-Corre</h1>
         <p class="tag">Ajude a Bia a atender a freguesia da esquina antes que o cafezinho esfrie!</p>
         <div class="lbl" id="menu-dia">História</div>
@@ -548,7 +557,8 @@ table.rank tr.me td{background:#fbe7a8}
       <div class="panel">
         <h2>Versões</h2>
         <ul class="verlist">
-          <li><b>v9.2</b><span class="cur">versão atual</span><br>31/10/2026 &mdash; Doces e um ajudante novo na área industrial: no 4º dia no ponto, a Dani conta que faz brigadeiro desde pequena, e o Cardápio da lojinha ganha o curso de Confeitaria caseira (R$ 180). Com ele, a geladeirinha de doces aparece ao lado da janela de pedidos (bolo de pote, brigadeiro de colher e pudim, R$ 7 cada): quem termina de comer pode pedir doce e só pede a conta depois de recebê-lo, e a marmita do entregador pode vir com &ldquo;+ doce&rdquo;. A Dani também serve os doces (tarefa nova). Ao terminar o curso, ela indica o Joca, do colégio dela: um ajudante de R$ 45 por dia (sobe até o nível 3, com a experiência e os cursos) que cuida do básico da casa (lixo, pratos, louça, água e marmitas) e deixa a Dani só com o cafezinho e os doces.</li>
+          <li><b>v9.2.1</b><span class="cur">versão atual</span><br>31/10/2026 &mdash; Modo dev com painel, para testar: um toque em &ldquo;Modo dev · painel&rdquo; escolhe qualquer dia, qualquer ponto, a nota do Gurugol, a equipe e os cursos no máximo (ou do começo) e as melhorias; liga a lojinha com preços e travas de verdade e, no meio do dia, acelera o jogo (2× ou 4×) ou encerra o dia. O jogo normal não muda.</li>
+          <li><b>v9.2</b><br>31/10/2026 &mdash; Doces e um ajudante novo na área industrial: no 4º dia no ponto, a Dani conta que faz brigadeiro desde pequena, e o Cardápio da lojinha ganha o curso de Confeitaria caseira (R$ 180). Com ele, a geladeirinha de doces aparece ao lado da janela de pedidos (bolo de pote, brigadeiro de colher e pudim, R$ 7 cada): quem termina de comer pode pedir doce e só pede a conta depois de recebê-lo, e a marmita do entregador pode vir com &ldquo;+ doce&rdquo;. A Dani também serve os doces (tarefa nova). Ao terminar o curso, ela indica o Joca, do colégio dela: um ajudante de R$ 45 por dia (sobe até o nível 3, com a experiência e os cursos) que cuida do básico da casa (lixo, pratos, louça, água e marmitas) e deixa a Dani só com o cafezinho e os doces.<br><a href="versoes/v9.2.html" target="_blank" rel="noopener">Abrir a v9.2</a></li>
           <li><b>v9.1.1</b><br>31/10/2026 &mdash; Arrumação por dentro: o Cantinho da Rosa (a foto, a samambaia, a plaquinha e o quadro de giz) agora aparece também na área industrial e na Avenida. E a lojinha passou a abrir os cartões novos pelos dias no ponto, em qualquer capítulo.</li>
           <li><b>v9.1</b><br>31/10/2026 &mdash; O segundo ponto novo: depois do capítulo 5, a lojinha (Dinheiro &rsaquo; Mudança) oferece o Restaurante na Avenida Brasil, por R$ 2000 e com nota 3,4 no Gurugol. Tem 24 lugares, 6 vagas de prato e 6 lugares de espera, cardápio mais caro e aluguel de R$ 400 por dia. Lá vêm o almoço de negócios (colegas de blazer e camisa social, que pedem bastante PF) e mais clientes VIP, e a turma da fábrica, o motorista e a encomenda ficam para trás. Na calçada, sofás com almofadas (a espera passa mais devagar), as águas saborizadas de limão, morango e hortelã e as flores (tulipas, copos-de-leite e orquídeas); o couvert artístico e o curso Cozinha de restaurante (o filé à parmegiana) aparecem. Os capítulos 6 e 7 contam a chegada ao lado do restaurante do Bráulio. Também arrumamos a 5ª vaga de espera da área industrial, que não aparecia.</li>
           <li><b>v9.0.4</b><br>31/10/2026 &mdash; A lojinha abre aos poucos no Modo História: no começo só aparecem o Cardápio, o Tonhão, o Banco e o Caixa. Bia, Melhorias, Manutenção, Salão e Decoração surgem quando a freguesia reclama de alguma coisa, com uma conversa da Bia e do Tonhão e um selo &ldquo;novo&rdquo; no cartão.</li>
@@ -623,7 +633,14 @@ table.rank tr.me td{background:#fbe7a8}
         <div class="row"><button class="btn go" id="btn-ver-close">Fechar</button></div>
       </div>
     </div>
-    <div class="devbadge" id="devbadge" style="display:none">Modo dev</div>
+    <button class="devbadge" id="devbadge" type="button" style="display:none" aria-label="Abrir o painel do modo dev">Modo dev · painel</button>
+    <div class="ov ov-dev" id="ov-dev">
+      <div class="panel dev-panel">
+        <h2>Painel do dev</h2>
+        <div id="dev-body"></div>
+        <div class="row"><button class="btn go" id="btn-dev-close" type="button">Fechar</button></div>
+      </div>
+    </div>
     <p class="sr" id="treino-live" role="status" aria-live="polite"></p>
     <p class="sr" id="ab-live" role="status" aria-live="polite"></p>
     <p class="sr" id="conv-live" role="status" aria-live="polite"></p>
@@ -721,7 +738,7 @@ const CURSOS = [
     av:{ nome:'Parmegiana da casa', preco:600, receita:'molho de tomate de 6 horas e queijo gratinado na hora', pratos:['parmegiana'] } }
 ];
 /* v9.1: o curso está ao alcance neste ponto? (nivel:3 só da Avenida Brasil em diante; no modo dev, sempre) */
-function cursoOk(c, ponto){ return !c.nivel || DEV.on || (ponto || PONTOS[0]).nivel >= c.nivel; }
+function cursoOk(c, ponto){ return !c.nivel || devLivre() || (ponto || PONTOS[0]).nivel >= c.nivel; }
 /* vegetarianos (v8.6.11): chance de cada pessoa (menos o entregador) ser vegetariana; quem não é pede o PF sem carne em pfTroca das
    vezes que pede PF; mov: o curso Vegetariano traz +5% de movimento no básico e mais +5% no avançado */
 const VEG = { chance:0.1, pfTroca:0.2, mov:0.05 };
@@ -752,7 +769,7 @@ const DANI_CURSOS = [
   { id:'confCaseira', nome:'Confeitaria caseira', preco:180, nivel:2, item:true }   // v9.2: a geladeirinha de doces (DOCES)
 ];
 /* v9.2: o curso aparece no ponto de `nivel` em diante (no modo dev, sempre) */
-function cursoDaniVis(c, ponto){ return DEV.on || (c.nivel || 1) <= (ponto || PONTOS[0]).nivel; }
+function cursoDaniVis(c, ponto){ return devLivre() || (c.nivel || 1) <= (ponto || PONTOS[0]).nivel; }
 function daniXp(save){
   const s = save || {};
   return DANI_XP.curso * DANI_CURSOS.filter(c => s.daniCursos && s.daniCursos[c.id]).length + Math.floor(Math.max(0, +s.daniTar || 0) / DANI_XP.tarefas);
@@ -1189,7 +1206,7 @@ const CRIT = { bonus:10, vipBonus:20 };   // pontos (v8.3.8; eram R$)
 const WASH = { base:0.3, perPile:2.5 };               // segundos na pia
 const TRASH = { cap:6, empty:2, smell:0.3, tritura:30 };   // lixeira: capacidade, tempo para esvaziar, cheiro quando cheia, segundos do Triturador por gominho (v8.3.10)
 function couvertEffect(eq){ return STAFF.couvert.effect * (eq.taxa ? 1 - STAFF.couvert.feeCut : 1); }
-function couvertOk(ponto){ return DEV.on || (ponto || PONTOS[0]).nivel >= STAFF.couvert.nivel; }   // no modo dev, em qualquer ponto
+function couvertOk(ponto){ return devLivre() || (ponto || PONTOS[0]).nivel >= STAFF.couvert.nivel; }   // no modo dev, em qualquer ponto
 /* ambiente do salão: quanto a paciência nas mesas cai mais devagar (TV, som e couvert se somam) */
 function ambienteEffect(eq){
   const tm = tvsModo(eq);
@@ -1649,9 +1666,9 @@ const BIA_IDS = ['tenis', 'corrida', 'bandeja', 'sudoku'];
 function upgradeCartao(id){ return BIA_IDS.indexOf(id) >= 0 ? 'bia' : 'melhorias'; }
 const HIST_NOMES = { bia:'Bia', tonhao:'Tonhão', dani:'Dani', joca:'Joca' };
 const CAIXA_MAX = 14;                                 // livro-caixa (v7.2): quantos dias da carreira ficam guardados
-const VERSAO = 'v9.2';                             // vai no resumo do Caixa
+const VERSAO = 'v9.2.1';                            // vai no resumo do Caixa
 const DIVULGA_DIA = 4;                                // antes disso, o movimento é o da inauguração (sem custo); v9.0.2: dia 4, e o padrão é o boca a boca
-function divulgaAberta(n, sv){ return DEV.on || n >= DIVULGA_DIA && !(sv && sv.convDiv === 'pend'); }   // no modo dev, desde o dia 1; v9.0.3: no Modo História, só depois da conversa
+function divulgaAberta(n, sv){ return devLivre() || n >= DIVULGA_DIA && !(sv && sv.convDiv === 'pend'); }   // no modo dev, desde o dia 1; v9.0.3: no Modo História, só depois da conversa
 function divulgaOf(id){ return DIVULGA.find(d => d.id === id) || DIVULGA[0]; }   // v9.0.2: sem escolha, boca a boca
 /* o que se serve na espera, por nível do salão (v7.7, PONTOS.bebida). preco: R$ por copo na conta do grupo; ingred:
    custo de cada copo; prep: s até ficar pronto na estação; take: s da Bia (ou da Dani) para pegar ali.
@@ -1965,7 +1982,8 @@ function lsSet(k, v){
 /* modo dev (v7.5.1): 10 toques no selo da versão ligam e desligam. O jogo fica igual, com um save à parte (o progresso
    de verdade fica guardado e volta ao sair), qualquer dia à escolha no menu (v8.3), R$ 10.000 que não acabam (a lojinha repõe) e tudo
    liberado na lojinha, até antes do dia 1: melhorias de graça (liga e desliga), couvert e divulgação. Ranking de fora */
-const DEV = { on: lsGet(LS.dev) === '1', bank: 10000, toques: 10 };
+const DEV = { on: lsGet(LS.dev) === '1', bank: 10000, toques: 10, real:false, vel:1 };   // v9.2.1: real = preços e travas de verdade; vel = velocidade (só na memória)
+function devLivre(){ return DEV.on && !DEV.real; }
 function saveKey(){ return DEV.on ? LS.devSave : LS.save; }
 /* o couvert só vale do nível 3 do salão em diante: num ponto abaixo, sai */
 function normEquipe(e, ponto){
@@ -2050,7 +2068,7 @@ function normSave(s){
   const cap = hist ? clamp(Math.round(+s.cap) || capMax, 1, capMax) : novoHist ? 1 : 4;   // v9: dev e testes ficam no cap. 4 (sem objetivo na Garagem; a mudança de ponto está livre)
   const capPonto = HISTORIA[cap - 1], pendente = !!capPonto && capPonto.ponto !== pontoOf(s.salao && s.salao.ponto).id;   // v9, v9.1: o capítulo de um ponto só começa na mudança para ele (o 4 e o 6)
   const conversa = cap > HISTORIA.length || pendente ? null : hist ? (s.conversa === 'antes' || s.conversa === 'depois' ? s.conversa : null) : novoHist ? 'antes' : null;
-  const dev = salaoDevolucao(s.salao), out = { dia, estrelas, lucroTot: Math.round(+s.lucroTot) || 0, pontosTot: Math.max(0, Math.round(+s.pontosTot) || 0), aval: normAval(s.aval), avalCom: normAvalCom(s.avalCom), neg: clamp(Math.round(+s.neg) || 0, 0, BANCO.neg), emp: normEmprestimo(novoHist ? { resto:REFORMA.valor, amort:REFORMA.amort, j:REFORMA.juros, ini:REFORMA.ini, ref:true } : s.emp), corta: s.corta !== false, fechou: Math.max(0, Math.round(+s.fechou) || 0), bank: bank + dev + devMaq, up, torneira:true, salao: normSalao(dev ? null : s.salao), divulga: dia < DIVULGA_DIA && !DEV.on ? 'boca' : divulgaOf(s.divulga).id, treino: !!s.treino, decor: normDecor(s.decor), cursos: normCursos(s.cursos), cursoDia: Math.max(0, Math.round(+s.cursoDia) || 0), tonXp: s.tonXp === 1 ? 1 : 0, daniTar: Math.max(0, Math.round(+s.daniTar) || 0), daniCursos: normDaniCursos(s.daniCursos), daniCursoDia: Math.max(0, Math.round(+s.daniCursoDia) || 0), jocaTar: Math.max(0, Math.round(+s.jocaTar) || 0), jocaCursos: normJocaCursos(s.jocaCursos), jocaCursoDia: Math.max(0, Math.round(+s.jocaCursoDia) || 0), daniXp: s.daniXp === 1 ? 1 : 0, cardV: 1, libera: normLibera(s.libera, !novoHist), pontoDia: pontoDiaDe(s, dia), convCard: s.convCard === 'pend' ? 'pend' : s.convCard === 1 ? 1 : 0, convDiv: s.convDiv === 'pend' ? 'pend' : s.convDiv === 1 ? 1 : 0, cardVisto: Array.isArray(s.cardVisto) ? s.cardVisto.filter(x => typeof x === 'string').slice(0, 40) : [], avisoCard: !!s.avisoCard, histV: 1, avisoHist: !!s.avisoHist, cap, capDia: Math.max(1, Math.round(+s.capDia) || 1), capAzul: Math.max(0, Math.round(+s.capAzul) || 0), capFeito: s.capFeito === 1 ? 1 : 0, capMarm: Math.max(0, Math.round(+s.capMarm) || 0), conversa, manut: normManut(s.manut), caixa: normCaixa(s.caixa), caixaPend: normPend(s.caixaPend) };
+  const dev = salaoDevolucao(s.salao), out = { dia, estrelas, lucroTot: Math.round(+s.lucroTot) || 0, pontosTot: Math.max(0, Math.round(+s.pontosTot) || 0), aval: normAval(s.aval), avalCom: normAvalCom(s.avalCom), neg: clamp(Math.round(+s.neg) || 0, 0, BANCO.neg), emp: normEmprestimo(novoHist ? { resto:REFORMA.valor, amort:REFORMA.amort, j:REFORMA.juros, ini:REFORMA.ini, ref:true } : s.emp), corta: s.corta !== false, fechou: Math.max(0, Math.round(+s.fechou) || 0), bank: bank + dev + devMaq, up, torneira:true, salao: normSalao(dev ? null : s.salao), divulga: dia < DIVULGA_DIA && !devLivre() ? 'boca' : divulgaOf(s.divulga).id, treino: !!s.treino, decor: normDecor(s.decor), cursos: normCursos(s.cursos), cursoDia: Math.max(0, Math.round(+s.cursoDia) || 0), tonXp: s.tonXp === 1 ? 1 : 0, daniTar: Math.max(0, Math.round(+s.daniTar) || 0), daniCursos: normDaniCursos(s.daniCursos), daniCursoDia: Math.max(0, Math.round(+s.daniCursoDia) || 0), jocaTar: Math.max(0, Math.round(+s.jocaTar) || 0), jocaCursos: normJocaCursos(s.jocaCursos), jocaCursoDia: Math.max(0, Math.round(+s.jocaCursoDia) || 0), daniXp: s.daniXp === 1 ? 1 : 0, cardV: 1, libera: normLibera(s.libera, !novoHist), pontoDia: pontoDiaDe(s, dia), convCard: s.convCard === 'pend' ? 'pend' : s.convCard === 1 ? 1 : 0, convDiv: s.convDiv === 'pend' ? 'pend' : s.convDiv === 1 ? 1 : 0, cardVisto: Array.isArray(s.cardVisto) ? s.cardVisto.filter(x => typeof x === 'string').slice(0, 40) : [], avisoCard: !!s.avisoCard, histV: 1, avisoHist: !!s.avisoHist, cap, capDia: Math.max(1, Math.round(+s.capDia) || 1), capAzul: Math.max(0, Math.round(+s.capAzul) || 0), capFeito: s.capFeito === 1 ? 1 : 0, capMarm: Math.max(0, Math.round(+s.capMarm) || 0), conversa, manut: normManut(s.manut), caixa: normCaixa(s.caixa), caixaPend: normPend(s.caixaPend) };
   out.equipe = normEquipe(s.equipe, pontoOf(out.salao.ponto));
   if (!up.tvs) out.equipe.tvs = 0;
   if (out.daniCursos.confCaseira) up.confCaseira = true; else delete up.confCaseira;   // v9.2: a geladeirinha de doces vem do curso da Dani
@@ -3173,11 +3191,11 @@ class Game {
     const q = this.quebras.find(x => x.id === id && x.on && !x.fixed), eq = manutOf(id);
     if (!q || !eq) return false;
     const em = manutEmerg(eq, this.up);
-    if (!DEV.on && this.save.bank - this.paid - this.paidDiv < em){ this.addText(eq.badge.x, eq.badge.y - 26, 'Falta dinheiro!', PAL.perigo, 14); Sfx.boing(); return false; }
+    if (!devLivre() && this.save.bank - this.paid - this.paidDiv < em){ this.addText(eq.badge.x, eq.badge.y - 26, 'Falta dinheiro!', PAL.perigo, 14); Sfx.boing(); return false; }
     q.fixed = true; this.manut[id] = 1;
     const so = this.manut.sorteio;
     if (so) so.quebra = so.quebra.filter(x => x.id !== id);
-    if (!DEV.on){ this.conserto += em; this.save.bank -= em; caixaGasto(this.save, 'man', em); }
+    if (!devLivre()){ this.conserto += em; this.save.bank -= em; caixaGasto(this.save, 'man', em); }
     writeSave(this.save);
     this.stats.consertos++;
     this.addText(eq.badge.x, eq.badge.y - 26, eq.name + ' consertado! -' + em, PAL.ok, 15);
@@ -3189,8 +3207,8 @@ class Game {
   revisar(id){
     if (!this.cartaoAberto('manut')) return false;
     const e = this.manut[id], v = manutPreco(id, e);
-    if (!manutOf(id) || !v || (!DEV.on && this.save.bank < v)) return false;
-    if (!DEV.on){ this.save.bank -= v; caixaGasto(this.save, 'man', v); }
+    if (!manutOf(id) || !v || (!devLivre() && this.save.bank < v)) return false;
+    if (!devLivre()){ this.save.bank -= v; caixaGasto(this.save, 'man', v); }
     this.manut[id] = 1;
     const so = this.manut.sorteio;
     if (so) so.quebra = so.quebra.filter(q => q.id !== id);
@@ -3960,7 +3978,7 @@ class Game {
   /* lojinha antes do dia n (a partir do dia 2): melhorias à vontade, se o dinheiro der (v8.6.14: sem o limite de 1 por dia; só o curso do Tonhão segue 1 por lojinha) */
   goShop(n){
     this.shopNext = Math.max(1, n || this.day.n + 1);
-    if (DEV.on && this.save.bank < DEV.bank){ this.save.bank = DEV.bank; writeSave(this.save); }   // modo dev: o dinheiro não acaba
+    if (devLivre() && this.save.bank < DEV.bank){ this.save.bank = DEV.bank; writeSave(this.save); }   // modo dev: o dinheiro não acaba
     this.salaoSel = -1; this.estoqueSel = -1; this.salaoUndo = []; this.salaoMsg = ''; this.cursoMsg = '';
     this.resetDay(this.shopNext);   // o salão ao fundo já mostra o dia que vem
     this.setState('shop');
@@ -3968,9 +3986,9 @@ class Game {
   /* equipe: mudanças à vontade na lojinha, desde que o dinheiro acumulado pague a folha do próximo dia */
   setStaff(key, val){
     const eq = this.save.equipe, old = eq[key];
-    if (key === 'tonhao' && !DEV.on && (val > tonhaoNivelXp(this.save.cursos) || val < old)) return false;   // v8.8: só com a xp dos cursos, e o nível pago é definitivo
-    if (key === 'dani' && !DEV.on && (val > daniNivelXp(this.save) || val < old)) return false;   // v8.9: só com a experiência, e o nível pago é definitivo
-    if (key === 'joca' && !DEV.on && (val > jocaNivelXp(this.save) || val < old)) return false;   // v9.2: como a Dani (a experiência manda; o nível pago é definitivo)
+    if (key === 'tonhao' && !devLivre() && (val > tonhaoNivelXp(this.save.cursos) || val < old)) return false;   // v8.8: só com a xp dos cursos, e o nível pago é definitivo
+    if (key === 'dani' && !devLivre() && (val > daniNivelXp(this.save) || val < old)) return false;   // v8.9: só com a experiência, e o nível pago é definitivo
+    if (key === 'joca' && !devLivre() && (val > jocaNivelXp(this.save) || val < old)) return false;   // v9.2: como a Dani (a experiência manda; o nível pago é definitivo)
     if (key === 'joca' && val && !this.cartaoAberto('joca')) return false;
     if (key === 'couvert' && val && !couvertOk(this.ponto)) return false;
     if (key === 'tvs' && val && (!this.up.tvs || this.ponto.nivel !== 2)) return false;   // v9: só com as TVs instaladas
@@ -4032,27 +4050,32 @@ class Game {
   get mudancaFalta(){
     const p = this.proximoPonto;
     if (!p) return { fim:true };
-    if (DEV.on) return null;
+    if (devLivre()) return null;
     const sv = this.save, nm = avalMinimo(this.ponto), din = Math.max(0, p.mudanca - sv.bank), nota = this.notaGurugol != null && this.notaGurugol >= nm ? 0 : nm;
     return din || nota ? { din, nota } : null;
   }
   /* v9.1: o cartão aparece com o capítulo de agora a partir do 1º capítulo do próximo ponto (4 para a área industrial, 6 para a Avenida) */
   get mudancaVisivel(){
     const p = this.proximoPonto, c1 = p && HISTORIA.find(c => c.ponto === p.id);
-    return !!p && this.save.salao.ponto === this.ponto.id && (DEV.on || this.save.cap >= (c1 ? c1.cap : 4));
+    return !!p && this.save.salao.ponto === this.ponto.id && (devLivre() || this.save.cap >= (c1 ? c1.cap : 4));
   }
-  mudarPonto(){
-    const sv = this.save, para = this.proximoPonto;
-    if (!para || !this.mudancaVisivel || this.mudancaFalta) return false;
-    if (!DEV.on){ sv.bank -= para.mudanca; caixaGasto(sv, 'sal', para.mudanca); }
+  /* v9.2.1: o miolo da mudança (a troca de ponto, sem custo, capítulo nem som), usado pelo mudarPonto e pelo modo dev */
+  trocaPonto(para){
+    const sv = this.save;
     sv.salao.ponto = para.id; sv.pontoDia = sv.dia;   // v9.1.1: o dia em que chegou ao ponto novo
     sv.equipe.tv = false; sv.equipe.som = false; delete this.up.maquina;
     delete this.up.tvs; delete this.up.assento; sv.equipe.tvs = 0;   // v9.1: ao sair da área industrial, as TVs, o assento e a jarra saem sem devolver (o fogão industrial e as mesas vão junto)
     const r = salaoAuto(sv.salao.mesas, para); if (r) sv.salao.mesas = r;
     sv.salao = normSalao(sv.salao);
+    sv.equipe = normEquipe(sv.equipe, para);
+  }
+  mudarPonto(){
+    const sv = this.save, para = this.proximoPonto;
+    if (!para || !this.mudancaVisivel || this.mudancaFalta) return false;
+    if (!devLivre()){ sv.bank -= para.mudanca; caixaGasto(sv, 'sal', para.mudanca); }
+    this.trocaPonto(para);
     const chap = HISTORIA[sv.cap - 1];   // v9.1: o capítulo de agora é do ponto novo? Então começa (o 4 na área industrial, o 6 na Avenida)
     if (chap && chap.ponto === para.id){ sv.capDia = sv.dia; sv.capAzul = 0; sv.capFeito = 0; sv.conversa = HIST.on && !DEV.on ? 'antes' : null; }
-    sv.equipe = normEquipe(sv.equipe, para);
     this.tablesKey = ''; this.buildTables();
     writeSave(sv);
     this.resetDay(this.shopNext);
@@ -4071,8 +4094,8 @@ class Game {
     else if (id === 'assento' && nv === 2 && (tipo === 'cadeira' || tipo === 'banco') && this.up.assento !== tipo) cost = I.assento[tipo].cost;
     else if (id === 'assento' && nv === 3 && tipo === 'sofa' && this.up.assento !== 'sofa') cost = AVENIDA.sofa.cost;
     else return false;
-    if (!DEV.on && this.save.bank < cost) return false;
-    if (!DEV.on){ this.save.bank -= cost; caixaGasto(this.save, 'mel', cost); }
+    if (!devLivre() && this.save.bank < cost) return false;
+    if (!devLivre()){ this.save.bank -= cost; caixaGasto(this.save, 'mel', cost); }
     if (id === 'assento') this.up.assento = tipo; else this.up[id] = true;
     this.kitchen.slots = cozinhaSlots(this);
     writeSave(this.save); Sfx.coin();
@@ -4140,7 +4163,7 @@ class Game {
   /* v9.0.4: a lojinha abre aos poucos no Modo História (LIBERA); fora dele, no modo dev e do cap. 4 em diante, tudo aberto */
   cartaoAberto(id){
     const L = liberaOf(id);
-    if (!L || DEV.on) return true;
+    if (!L || devLivre()) return true;
     if (id === 'joca' && !this.save.daniCursos.confCaseira && !(this.save.equipe.joca > 0)) return false;   // v9.2: o Joca vem com o curso de confeitaria da Dani
     if (L.nivel){   // v9.1.1: o cartão de um ponto: fora da História, abre com o nível; nela, pela conversa
       if (!HIST.on || this.save.histV !== 1) return this.ponto.nivel >= L.nivel;
@@ -4186,7 +4209,7 @@ class Game {
     this.save.cardVisto = (this.save.cardVisto || []).concat(n); writeSave(this.save);
   }
   /* um curso por lojinha: depois de comprar um, os outros esperam o próximo dia */
-  get cursoTrava(){ return !DEV.on && this.save.cursoDia === this.shopNext; }
+  get cursoTrava(){ return !devLivre() && this.save.cursoDia === this.shopNext; }
   buyCurso(id){
     const p = this.cursoProx(id);
     if (!p || this.cursoTrava || this.save.bank < p.preco) return false;
@@ -4199,8 +4222,8 @@ class Game {
     return true;
   }
   /* cursos da Dani (v8.9): +DANI_XP.curso de experiência cada; um por lojinha, à parte do curso do Tonhão; só depois que ela chega */
-  get daniCursoTrava(){ return !DEV.on && this.save.daniCursoDia === this.shopNext; }
-  get daniChegou(){ return DEV.on || this.save.cap >= 2 || this.save.equipe.dani > 0; }
+  get daniCursoTrava(){ return !devLivre() && this.save.daniCursoDia === this.shopNext; }
+  get daniChegou(){ return devLivre() || this.save.cap >= 2 || this.save.equipe.dani > 0; }
   buyDaniCurso(id){
     const c = DANI_CURSOS.find(x => x.id === id), sv = this.save;
     if (!c || !cursoDaniVis(c, this.ponto) || (c.id === 'confCaseira' && !this.cartaoAberto('confeitaria')) || !this.daniChegou || sv.daniCursos[id] || this.daniCursoTrava || sv.bank < c.preco) return false;
@@ -4214,10 +4237,10 @@ class Game {
     return true;
   }
   /* cursos do Joca (v9.2): como os da Dani, à parte (jocaCursoDia) */
-  get jocaCursoTrava(){ return !DEV.on && this.save.jocaCursoDia === this.shopNext; }
+  get jocaCursoTrava(){ return !devLivre() && this.save.jocaCursoDia === this.shopNext; }
   buyJocaCurso(id){
     const c = JOCA_CURSOS.find(x => x.id === id), sv = this.save;
-    if (!c || !cursoDaniVis(c, this.ponto) || !(sv.equipe.joca > 0 || DEV.on) || sv.jocaCursos[id] || this.jocaCursoTrava || sv.bank < c.preco) return false;
+    if (!c || !cursoDaniVis(c, this.ponto) || !(sv.equipe.joca > 0 || devLivre()) || sv.jocaCursos[id] || this.jocaCursoTrava || sv.bank < c.preco) return false;
     sv.bank -= c.preco; caixaGasto(sv, 'mel', c.preco);
     sv.jocaCursos[id] = 1; sv.jocaCursoDia = this.shopNext;
     this.cursoMsg = 'O Joca foi fazer o curso de ' + c.nome + '!';
@@ -4334,7 +4357,7 @@ class Game {
   buyDecor(id){
     if (!this.cartaoAberto('decor')) return false;
     const d = decorOf(id), dec = this.save.decor;
-    if (!d || id in dec || this.save.bank < d.cost || (d.nivel && this.ponto.nivel < d.nivel && !DEV.on)) return false;
+    if (!d || id in dec || this.save.bank < d.cost || (d.nivel && this.ponto.nivel < d.nivel && !devLivre())) return false;
     this.save.bank -= d.cost; caixaGasto(this.save, 'sal', d.cost);
     dec[id] = 1;
     writeSave(this.save); Sfx.coin();
@@ -4403,6 +4426,69 @@ class Game {
     this.up = this.save.up;
     this.buildTables();
     this.kitchen.reset(); this.dani.reset(); this.joca.reset();
+    DEV.real = false; DEV.vel = 1;
+  }
+  /* ---------- v9.2.1: ações do painel do modo dev (só com DEV.on; gravam no save do dev) ---------- */
+  devRecarrega(){ this.tablesKey = ''; this.buildTables(); this.kitchen.reset(); this.dani.reset(); this.joca.reset(); if (this.state === 'shop') this.resetDay(this.shopNext); }
+  devDia(n){
+    if (!DEV.on) return false;
+    n = clamp(Math.round(+n) || 1, 1, 99);
+    const sv = this.save; sv.dia = n; sv.pontoDia = Math.min(sv.pontoDia, n);
+    writeSave(sv);
+    if (this.state === 'shop'){ this.shopNext = n; this.resetDay(n); }
+    return true;
+  }
+  devPonto(id){
+    const para = PONTOS.find(p => p.id === id);
+    if (!DEV.on || !para) return false;
+    this.trocaPonto(para);
+    this.devRecarrega();
+    return true;
+  }
+  devNota(v){
+    if (!DEV.on) return false;
+    v = +v || 0;
+    if (v <= 0) this.save.aval = [];
+    else { const x = Math.min(v, avalTeto(this.ponto)); this.save.aval = normAval(Array.from({ length:AVAL.max }, () => AVAL_CRIT.map(() => x))); }
+    writeSave(this.save); return true;
+  }
+  devEquipe(modo){
+    if (!DEV.on) return false;
+    const sv = this.save, e = sv.equipe;
+    if (modo === 'max'){
+      e.tonhao = STAFF.tonhao.levels.length - 1; e.dani = STAFF.dani.levels.length - 1; e.joca = STAFF.joca.levels.length - 1;
+      e.daniTasks = ['pratos', 'lavar', 'suco']; e.jocaTasks = ['lixo', 'lavar', 'pratos'];
+      const c = {}; CURSOS.forEach(x => { c[x.id] = 2; }); sv.cursos = normCursos(c);
+      const d = {}; DANI_CURSOS.forEach(x => { d[x.id] = true; }); sv.daniCursos = normDaniCursos(d);
+      const j = {}; JOCA_CURSOS.forEach(x => { j[x.id] = true; }); sv.jocaCursos = normJocaCursos(j);
+    } else {
+      e.tonhao = 0; e.dani = 1; e.joca = 0; e.daniTasks = DANI_PADRAO.slice(); e.jocaTasks = JOCA_PADRAO.slice();
+      sv.cursos = normCursos({}); sv.daniCursos = normDaniCursos({}); sv.jocaCursos = normJocaCursos({});
+    }
+    sv.equipe = normEquipe(e, this.ponto);
+    if (sv.daniCursos.confCaseira) this.up.confCaseira = true; else delete this.up.confCaseira;
+    sv.cursoDia = sv.daniCursoDia = sv.jocaCursoDia = 0;
+    this.kitchen.reset(); this.dani.reset(); this.joca.reset();
+    writeSave(sv); return true;
+  }
+  devMelhorias(on){
+    if (!DEV.on) return false;
+    Object.keys(this.up).forEach(k => { if (k !== 'confCaseira') delete this.up[k]; });
+    if (on) UPGRADES.forEach(u => { this.up[u.id] = u.multi ? 1 : true; });
+    this.kitchen.slots = cozinhaSlots(this);
+    writeSave(this.save); return true;
+  }
+  devCaixa(v){ if (!DEV.on) return false; this.save.bank = Math.max(0, Math.round(+v) || 0); writeSave(this.save); return true; }
+  devReal(on){
+    if (!DEV.on) return false;
+    DEV.real = !!on;
+    if (!DEV.real && this.save.bank < DEV.bank){ this.save.bank = DEV.bank; writeSave(this.save); }
+    return true;
+  }
+  devFimDia(){
+    if (!DEV.on || this.mode !== 'carreira' || (this.state !== 'playing' && this.state !== 'paused')) return false;
+    if (this.state === 'paused') this.setState('playing');
+    this.clock = 0; return true;
   }
   /* liga ou desliga uma melhoria de graça; os Tênis de corrida andam junto com os Tênis novos */
   /* liga ou desliga de graça um item da área industrial (fogão industrial) no modo dev */
@@ -8251,6 +8337,59 @@ function devSync(){
   if (o) o.style.display = DEV.on ? '' : 'none';
 }
 
+/* ---------- v9.2.1: painel do modo dev (#ov-dev; liga e desliga só ele, por cima das outras telas) ---------- */
+function abrirDev(){
+  if (!DEV.on) return;
+  if (game.state === 'playing') game.pause();
+  buildDev(); $('ov-dev').classList.add('show');
+}
+function fecharDev(){
+  $('ov-dev').classList.remove('show');
+  if (game.state === 'menu') buildMenu(); else if (game.state === 'shop') buildShop();
+}
+function buildDev(){
+  const body = $('dev-body'); clearEl(body);
+  const nota = v => (Math.round(v * 10) / 10).toString().replace('.', ',');
+  const secao = (titulo, agora) => {
+    body.appendChild(el('div', 'lbl', titulo));
+    if (agora) body.appendChild(el('div', 'dev-now', agora));
+    const r = el('div', 'row'); body.appendChild(r); return r;
+  };
+  const botao = (r, txt, fn, premido) => {
+    const b = el('button', 'btn alt', txt); b.type = 'button';
+    if (premido != null) b.setAttribute('aria-pressed', premido ? 'true' : 'false');
+    b.addEventListener('click', () => { Sfx.init(); Sfx.tap(); fn(); buildDev(); });
+    r.appendChild(b); return b;
+  };
+  const emDia = game.state === 'paused' && game.mode === 'carreira';
+  const dia = game.state === 'shop' ? game.shopNext : game.proxDia;
+  let r = secao('Dia', 'Dia ' + dia);
+  [[-10, '−10'], [-1, '−1'], [1, '+1'], [10, '+10']].forEach(([d, t]) => botao(r, t, () => game.devDia(dia + d)));
+  r = secao('Ponto');
+  PONTOS.forEach(p => botao(r, p.nome, () => game.devPonto(p.id), p.id === game.ponto.id));
+  const ng = game.notaGurugol;
+  r = secao('Nota do Gurugol', 'Agora: ' + (ng != null ? nota(ng) + ' ★' : 'sem nota'));
+  [2, 2.7, 3.4, 4].forEach(v => botao(r, nota(v), () => game.devNota(v)));
+  botao(r, 'Teto', () => game.devNota(avalTeto(game.ponto)));
+  botao(r, 'Limpar', () => game.devNota(0));
+  r = secao('Equipe, cursos e melhorias');
+  botao(r, 'Tudo no máximo', () => { game.devEquipe('max'); game.devMelhorias(true); });
+  botao(r, 'Do começo', () => { game.devEquipe('zero'); game.devMelhorias(false); });
+  r = secao('Lojinha de verdade');
+  botao(r, 'Preços e travas de verdade: ' + (DEV.real ? 'ligado' : 'desligado'), () => game.devReal(!DEV.real), DEV.real);
+  if (DEV.real){
+    body.appendChild(el('div', 'dev-now', 'Caixa: ' + fmt(game.save.bank)));
+    const r2 = el('div', 'row'); body.appendChild(r2);
+    [0, 500, 2000, 10000].forEach(v => botao(r2, fmt(v), () => game.devCaixa(v)));
+  }
+  if (emDia){
+    r = secao('No dia', 'Velocidade ' + DEV.vel + '×');
+    [1, 2, 4].forEach(v => botao(r, 'Velocidade ' + v + '×', () => { DEV.vel = v; }, DEV.vel === v));
+    const b = botao(r, 'Encerrar o dia agora', () => {}, null);
+    b.addEventListener('click', () => { if (game.devFimDia()) fecharDev(); });
+  }
+}
+
 /* ---------- Como jogar ---------- */
 function tipCanvas(draw){
   const cv = document.createElement('canvas');
@@ -8625,7 +8764,7 @@ function buildTonhao(grid){
     ['Pia', a && (a.wash ? '1 pilha/' + a.wash + ' s' : 'não'), b.wash ? '1 pilha/' + b.wash + ' s' : 'não'],
     ['Diária', a && fmt(a.pay), fmt(b.pay)]];
   // v8.8: o nível vem da experiência dos cursos; o aumento de salário só consolida o nível que a xp já permite
-  const top = T.length - 1, xp = tonhaoXp(game.save.cursos), pronto = DEV.on || xp >= (T[eq.tonhao + 1] || T[top]).xp;
+  const top = T.length - 1, xp = tonhaoXp(game.save.cursos), pronto = devLivre() || xp >= (T[eq.tonhao + 1] || T[top]).xp;
   let c = staffCard(upgradeIcon('tonhao'), 'Tonhão · nível ' + (eq.tonhao + 1) + ' de ' + T.length, 'Prato caprichado ★ vale +1♥ e +' + CRIT.bonus + ' pontos.');
   const xl = el('div', 'tonxp');
   xl.appendChild(el('span', null, eq.tonhao < top ? 'Experiência: ' + xp + ' de ' + T[eq.tonhao + 1].xp + ' para o nível ' + (eq.tonhao + 2) : 'Experiência: ' + xp + ' · nível máximo'));
@@ -8663,7 +8802,7 @@ function buildDani(grid){
     ['Lava 1 pilha', a && sec(WASH.perPile / a.speed), sec(WASH.perPile / b.speed)],
     ['Tarefas', a && String(a.tasks), String(b.tasks)],
     ['Diária', a && fmt(a.pay), fmt(b.pay)]];
-  const cap2 = game.save.cap >= 2 || DEV.on || lv > 0;   // v8.7: a Dani chega no capítulo 2 (no modo dev, desde o início)
+  const cap2 = game.save.cap >= 2 || devLivre() || lv > 0;   // v8.7: a Dani chega no capítulo 2 (no modo dev, desde o início)
   c = staffCard(upgradeIcon('dani'), lv ? 'Dani · ' + (lv === 1 ? 'aprendiz (sem salário)' : 'nível ' + (lv - 1) + ' de 3') : 'Dani (ajudante)',
     lv ? '' : (cap2 ? '' : 'Chega no capítulo 2. ') + 'Ajudante da Bia, mais lenta que ela (velocidade em % da dela). Tem 2 mãos: leva 2 itens por vez. Pode ' + avail.map(t => t.name.toLowerCase()).join(', ').replace(/, ([^,]*)$/, ' e $1') + '.');
   if (lv){
@@ -8684,7 +8823,7 @@ function buildDani(grid){
   const dMax = D.length - 1;
   if (!lv && !cap2){ grid.appendChild(c); return; }
   // v8.9: o nível vem da experiência (trabalho e cursos); o aumento de salário só consolida o nível que ela já tem
-  const xp = daniXp(game.save), pronto = DEV.on || lv < 1 || xp >= (D[lv+1] || D[dMax]).xp;
+  const xp = daniXp(game.save), pronto = devLivre() || lv < 1 || xp >= (D[lv+1] || D[dMax]).xp;
   if (lv){
     const xl = el('div', 'tonxp');
     xl.appendChild(el('span', null, lv < dMax ? 'Experiência: ' + xp + ' de ' + D[lv+1].xp + ' para o nível ' + lv : 'Experiência: ' + xp + ' · nível máximo'));
@@ -8734,7 +8873,7 @@ function buildJoca(grid){
     xl.appendChild(el('small', null, 'Trabalho: ' + falta + (falta > 1 ? ' tarefas' : ' tarefa') + ' até o próximo ponto'));
     c.appendChild(xl);
   }
-  const xp = jocaXp(sv), pronto = DEV.on || lv < 2 || xp >= (J[lv+1] || J[jMax]).xp;
+  const xp = jocaXp(sv), pronto = devLivre() || lv < 2 || xp >= (J[lv+1] || J[jMax]).xp;
   c.appendChild(lv < jMax ? staffNext(lv ? 'Com o aumento:' : 'Se contratar (nível 1):', jRows(J[lv] || null, J[lv ? lv+1 : 2])) : staffNext('Nível máximo:', jRows(null, J[jMax])));
   const duo = el('div', 'duo');
   if (lv < jMax){
@@ -9041,7 +9180,7 @@ function decorCard(grupo, icon, title, desc){
 }
 function buildDecor(grid){
   const dec = game.save.decor, bank = game.save.bank;
-  DECOR.filter(d => !d.nivel || game.ponto.nivel >= d.nivel || DEV.on).forEach(d => {
+  DECOR.filter(d => !d.nivel || game.ponto.nivel >= d.nivel || devLivre()).forEach(d => {
     const tem = d.id in dec, on = !!dec[d.id];
     const c = decorCard(DECOR_GRUPOS.find(x => x.id === d.grupo).nome, upgradeIcon('d-' + d.id), d.name, d.desc + ' Melhora o ambiente no Gurugol.' + (tem && !on ? ' Guardado.' : ''));
     if (on) c.classList.add('own');
@@ -9127,7 +9266,7 @@ function buildManut(grid){
     const F = INDUSTRIAL.fogao, own = !!game.up.fogaoInd;
     const c = staffCard(upgradeIcon('fogao-ind'), 'Fogão industrial', 'Uma boca a mais para o Tonhão e metade do desgaste do fogão por dia. O conserto de emergência passa a custar ' + fmt(F.emerg) + '.');
     if (own) c.classList.add('own');
-    c.appendChild(shopBtn(own ? 'Já comprado' : DEV.on ? 'Ligar' : 'Comprar ' + fmt(F.cost), 'btn', DEV.on || (!own && game.save.bank >= F.cost), () => DEV.on ? game.devInd('fogaoInd') : game.comprarInd('fogaoInd'), DEV.on ? 0 : F.cost));
+    c.appendChild(shopBtn(own ? 'Já comprado' : devLivre() ? 'Ligar' : 'Comprar ' + fmt(F.cost), 'btn', devLivre() || (!own && game.save.bank >= F.cost), () => devLivre() ? game.devInd('fogaoInd') : game.comprarInd('fogaoInd'), devLivre() ? 0 : F.cost));
     grid.appendChild(c);
   }
   MANUT.equip.forEach(q => {
@@ -9138,12 +9277,12 @@ function buildManut(grid){
     const fill = el('i'); fill.style.width = Math.round(e * 100) + '%'; fill.style.background = e >= MANUT.verde ? PAL.ok : e >= MANUT.vermelho ? PAL.mostarda : PAL.perigo; bar.appendChild(fill);
     c.appendChild(bar);
     if (e >= 0.995) c.classList.add('own');
-    c.appendChild(shopBtn(!v ? 'Em dia' : DEV.on ? 'Revisão (grátis)' : 'Revisão: ' + fmt(v), 'btn', !!v && (DEV.on || game.save.bank >= v), () => game.revisar(q.id), DEV.on ? 0 : v));
+    c.appendChild(shopBtn(!v ? 'Em dia' : devLivre() ? 'Revisão (grátis)' : 'Revisão: ' + fmt(v), 'btn', !!v && (devLivre() || game.save.bank >= v), () => game.revisar(q.id), devLivre() ? 0 : v));
     grid.appendChild(c);
   });
   const tot = MANUT.equip.reduce((a, q) => a + manutPreco(q.id, m[q.id]), 0);
   const c = staffCard(upgradeIcon('contas'), 'Revisar tudo', 'A visita técnica tem custo, e quanto mais desgastado, mais cara a manutenção.');
-  c.appendChild(shopBtn(!tot ? 'Tudo em dia' : DEV.on ? 'Revisar tudo (grátis)' : 'Revisar tudo: ' + fmt(tot), 'btn', !!tot && (DEV.on || game.save.bank >= tot), () => game.revisarTudo(), DEV.on ? 0 : tot));
+  c.appendChild(shopBtn(!tot ? 'Tudo em dia' : devLivre() ? 'Revisar tudo (grátis)' : 'Revisar tudo: ' + fmt(tot), 'btn', !!tot && (devLivre() || game.save.bank >= tot), () => game.revisarTudo(), devLivre() ? 0 : tot));
   grid.appendChild(c);
 }
 /* v9, área industrial: as 3 televisões com sertanejo (instalar uma vez; depois, um modo por dia) */
@@ -9153,7 +9292,7 @@ function buildTvs(grid){
     ? 'Escolha por dia: com anúncios, a paciência nas mesas cai ' + Math.round(I.modos[1].effect * 100) + '% mais devagar (luz ' + fmt(I.modos[1].pay) + '/dia); sem anúncios, ' + Math.round(I.modos[2].effect * 100) + '% (' + fmt(I.modos[2].pay) + '/dia, com a assinatura).'
     : 'Três TVs no alto da parede, ligadas num canal de sertanejo. Instaladas, você escolhe por dia: com anúncios (' + fmt(I.modos[1].pay) + '/dia) ou sem (' + fmt(I.modos[2].pay) + '/dia).');
   if (own) c.classList.add('own');
-  if (!own) c.appendChild(shopBtn(DEV.on ? 'Instalar (grátis)' : 'Instalar ' + fmt(I.instalar), 'btn', DEV.on || bank >= I.instalar, () => game.comprarInd('tvs'), DEV.on ? 0 : I.instalar));
+  if (!own) c.appendChild(shopBtn(devLivre() ? 'Instalar (grátis)' : 'Instalar ' + fmt(I.instalar), 'btn', devLivre() || bank >= I.instalar, () => game.comprarInd('tvs'), devLivre() ? 0 : I.instalar));
   else [[0, 'Desligadas'], [1, 'Com anúncios · ' + fmt(I.modos[1].pay) + '/dia'], [2, 'Sem anúncios · ' + fmt(I.modos[2].pay) + '/dia']].forEach(a => {
     const on = (eq.tvs || 0) === a[0], b = el('button', 'toggle', (on ? 'Ligado: ' : '') + a[1]); b.type = 'button';
     b.setAttribute('aria-pressed', on ? 'true' : 'false');
@@ -9170,14 +9309,14 @@ function buildAssento(grid){
     const S = AVENIDA.sofa, own = game.up.assento === 'sofa', bank0 = game.save.bank;
     const c0 = staffCard(upgradeIcon('sofas'), S.nome, 'Dois sofás de 3 lugares na calçada, verde-musgo e com almofadas. Quem espera sentado neles perde a paciência ' + Math.round(S.slow * 100) + '% mais devagar. Compra única.');
     if (own) c0.classList.add('own');
-    c0.appendChild(shopBtn(own ? 'Já comprado' : DEV.on ? 'Instalar (grátis)' : 'Comprar ' + fmt(S.cost), 'btn', !own && (DEV.on || bank0 >= S.cost), () => game.comprarInd('assento', 'sofa'), DEV.on ? 0 : S.cost));
+    c0.appendChild(shopBtn(own ? 'Já comprado' : devLivre() ? 'Instalar (grátis)' : 'Comprar ' + fmt(S.cost), 'btn', !own && (devLivre() || bank0 >= S.cost), () => game.comprarInd('assento', 'sofa'), devLivre() ? 0 : S.cost));
     grid.appendChild(c0); return;
   }
   const A = INDUSTRIAL.assento, bank = game.save.bank, cur = game.up.assento || '';
   const c = staffCard(upgradeIcon('assento'), 'Espera sentada', 'Quem espera lá fora sentado perde a paciência ' + Math.round(A.slow * 100) + '% mais devagar. As duas opções valem igual; o banquinho é só mais bonito. Trocar paga o novo.');
   if (cur) c.classList.add('own');
   const duo = el('div', 'duo');
-  ['cadeira', 'banco'].forEach(k => duo.appendChild(shopBtn(cur === k ? 'Tem: ' + A[k].nome : A[k].nome + ' ' + fmt(A[k].cost), 'btn', DEV.on || (cur !== k && bank >= A[k].cost), () => game.comprarInd('assento', k), DEV.on ? 0 : A[k].cost)));
+  ['cadeira', 'banco'].forEach(k => duo.appendChild(shopBtn(cur === k ? 'Tem: ' + A[k].nome : A[k].nome + ' ' + fmt(A[k].cost), 'btn', devLivre() || (cur !== k && bank >= A[k].cost), () => game.comprarInd('assento', k), devLivre() ? 0 : A[k].cost)));
   c.appendChild(duo); grid.appendChild(c);
 }
 /* aba Mudança (v9): o próximo ponto, o que falta para mudar e a confirmação (não dá para voltar) */
@@ -9190,12 +9329,12 @@ function buildMudanca(grid){
   if (!f && mudarPede){
     c.appendChild(el('span', 'full', 'Mudar para ' + (p.art || 'a') + ' ' + p.nome + ' por ' + fmt(p.mudanca) + '? Aluguel de ' + fmt(p.aluguel) + ' por dia. Não dá para voltar.'));
     const duo = el('div', 'duo');
-    duo.appendChild(shopBtn(DEV.on ? 'Sim, mudar' : 'Sim, mudar: ' + fmt(p.mudanca), 'btn', true, () => { mudarPede = false; shopTab = null; return game.mudarPonto(); }, DEV.on ? 0 : p.mudanca));
+    duo.appendChild(shopBtn(devLivre() ? 'Sim, mudar' : 'Sim, mudar: ' + fmt(p.mudanca), 'btn', true, () => { mudarPede = false; shopTab = null; return game.mudarPonto(); }, devLivre() ? 0 : p.mudanca));
     const nao = el('button', 'btn alt', 'Agora não'); nao.type = 'button'; nao.addEventListener('click', () => { Sfx.tap(); mudarPede = false; buildShop(); });
     duo.appendChild(nao); c.appendChild(duo);
   } else {
     if (f) c.appendChild(el('span', 'full', falta + '.'));
-    const b = el('button', 'btn', f ? falta : DEV.on ? 'Mudar (modo dev: grátis)' : 'Mudar: ' + fmt(p.mudanca)); b.type = 'button';
+    const b = el('button', 'btn', f ? falta : devLivre() ? 'Mudar (modo dev: grátis)' : 'Mudar: ' + fmt(p.mudanca)); b.type = 'button';
     if (f) b.disabled = true;
     b.addEventListener('click', () => { Sfx.init(); Sfx.tap(); mudarPede = true; buildShop(); });
     c.appendChild(b);
@@ -9370,17 +9509,17 @@ function buildGurugol(grid){
 function buildMelhorias(grid){ upgradeCartoes(grid, false); const nv = game.ponto.nivel; if (nv === 2) { buildTvs(grid); buildAssento(grid); } else if (nv >= 3) buildAssento(grid); else buildTvSom(grid); }   // v9.1: as TVs são só da área industrial; na Avenida, os sofás
 function upgradeCartoes(grid, bia){
   // os Tênis de corrida (v7.3) só aparecem depois dos Tênis novos, no lugar deles (a grade continua com 6); no modo dev, todas
-  UPGRADES.filter(u => (BIA_IDS.indexOf(u.id) >= 0) === bia).filter(u => DEV.on || (u.req ? game.up[u.req] : !(game.up[u.id] && UPGRADES.some(v => v.req === u.id)))).forEach(u => {
+  UPGRADES.filter(u => (BIA_IDS.indexOf(u.id) >= 0) === bia).filter(u => devLivre() || (u.req ? game.up[u.req] : !(game.up[u.id] && UPGRADES.some(v => v.req === u.id)))).forEach(u => {
     const own = !!game.up[u.id], tem = u.multi ? pratosDe(game.up) : 0, fecha = !u.multi && own;   // o Jogo de pratos (v8.3.6) segue à venda
     const card = el('div', 'item' + (own && !u.multi ? ' own' : '')), pv = upgradeDe(u, game.ponto);   // v9: a Água da torneira vira a Jarra de suco
     card.appendChild(upgradeIcon(pv !== u ? (game.ponto.nivel >= 3 ? 'aguas' : 'jarra') : u.id));
     card.appendChild(el('b', null, pv.name));
     card.appendChild(el('span', null, (tem ? 'Você tem ' + tem + '. ' : '') + pv.desc));
-    const b = el('button', 'btn', DEV.on ? (own ? 'Desligar' : 'Ligar') : fecha && own ? 'Já comprado' : ('Comprar ' + fmt(pv.cost)));
+    const b = el('button', 'btn', devLivre() ? (own ? 'Desligar' : 'Ligar') : fecha && own ? 'Já comprado' : ('Comprar ' + fmt(pv.cost)));
     b.type = 'button';
-    if (!DEV.on && (fecha || game.save.bank < pv.cost)) b.disabled = true;
-    else if (!DEV.on) folhaAviso(b, pv.cost);
-    b.addEventListener('click', () => { if (folhaPede(b)) return; if (DEV.on ? game.devToggle(u.id) : game.buy(u.id)) buildShop(); });
+    if (!devLivre() && (fecha || game.save.bank < pv.cost)) b.disabled = true;
+    else if (!devLivre()) folhaAviso(b, pv.cost);
+    b.addEventListener('click', () => { if (folhaPede(b)) return; if (devLivre() ? game.devToggle(u.id) : game.buy(u.id)) buildShop(); });
     card.appendChild(b);
     grid.appendChild(card);
   });
@@ -9404,7 +9543,7 @@ function buildShop(){
     ? ' · faltam ' + fmt(-game.livre) + ' para a folha: o dia ' + game.shopNext + ' abre sem ' + listaE(corte)
     : negFim ? ' · faltam ' + fmt(-game.livre) + ' para a folha: o caixa pode fechar no negativo'
     : ' · livre ' + fmt(game.livre) + ' (' + fmt(comp) + ' reservados para ' + listaE(folhaItens(game.save.equipe, game.div)) + ')');
-  $('shop-limit').textContent = DEV.on ? 'Modo dev: tudo liberado; melhorias de graça, ligue e desligue à vontade.' : 'Melhorias à vontade, se o dinheiro der. Cursos: 1 por dia.';
+  $('shop-limit').textContent = devLivre() ? 'Modo dev: tudo liberado; melhorias de graça, ligue e desligue à vontade.' : 'Melhorias à vontade, se o dinheiro der. Cursos: 1 por dia.';
   $('btn-shop-go').textContent = 'Começar o dia ' + game.shopNext;
   const f = payroll(game.save.equipe), dv = divulgaAberta(game.shopNext, game.save) ? divulgaOf(game.save.divulga) : null;
   $('shop-folha').textContent = (f ? 'Folha ' + fmt(f) : 'Sem folha') + (dv ? ' + ' + dv.name.toLowerCase() + ' ' + fmt(dv.cost) : '') + ', contas ' + fmt(contasDia(game.tables)) + (sv.emp.resto ? ', parcela do banco ' + fmt(game.devido) + (sv.emp.atr ? ' (com a atrasada)' : '') : '') + ' e ingredientes: tudo pago no fim do dia, que só rende completo. A meta é o lucro.';
@@ -9829,6 +9968,8 @@ function devSet(on){ game.setDev(on); game.setState('menu'); }
   });
 })();
 on('btn-dev-off',    () => { Sfx.tap(); devSet(false); });
+on('devbadge',       () => { Sfx.init(); Sfx.tap(); abrirDev(); });
+on('btn-dev-close',  () => { Sfx.tap(); fecharDev(); });
 /* instalar no celular: passo a passo; já instalado (tela cheia ou standalone), o ícone some */
 on('btn-app',        () => { Sfx.init(); Sfx.tap(); $('app-msg').textContent = ''; showOnly(['ov-app']); });
 on('btn-app-close',  () => { Sfx.tap(); showOnly(['ov-menu']); });
@@ -9927,6 +10068,8 @@ window.addEventListener('resize', fit);
 window.addEventListener('orientationchange', fit);
 
 /* ---------- laço principal ---------- */
+/* v9.2.1: o modo dev acelera o dia (DEV.vel: 1, 2 ou 4 passos por quadro); fora dele é um passo só */
+function passoJogo(dt){ const k = DEV.on && game.state === 'playing' ? DEV.vel : 1; for (let i = 0; i < k; i++) game.update(dt); }
 let last = 0;
 function frame(ts){
   window.requestAnimationFrame(frame);
@@ -9936,7 +10079,7 @@ function frame(ts){
   dt = Math.min(dt, 0.05);
   const ab = abertura;
   if (ab){ ab.update(dt); if (!ab.fim){ ctx.setTransform(canvas.width / TW, 0, 0, canvas.height / H, 0, 0); drawAbertura(ctx, ab); return; } }
-  game.update(dt);
+  passoJogo(dt);
   ctx.setTransform(canvas.width / TW, 0, 0, canvas.height / H, 0, 0);
   render(game, ctx);
   if (game.conversa){ game.conversa.evita = convEvita(); game.conversa.update(dt); drawConversa(ctx, game, game.conversa); }
@@ -9948,7 +10091,7 @@ try { Rank.init(); } catch(e) {}
 game.setState('menu');
 if (!aberturaVista() && !DEV.on) abrirAbertura('auto');   // v8.5: a abertura toca sozinha uma vez
 window.__game = game;
-window.__lcc = { diaNoPonto, manutEmerg, manutFator, daniTaskDe, plateSlotsFor, queueYsFor, assentoSlow, AVENIDA, SABORES, cursoOk, INDUSTRIAL, PLATE_SLOTS, cozinhaSlots, upgradeDe, DECOR, DECOR_GRUPOS, TOALHA, decorOf, normDecor, decorOn, FILA_ACOES, filaMax, MARMITA, RETIRADA, marmitaMao, drawMarmita, prateleiraPos, EFOOD_COR, AVAL_BRAVO, QUEUE, setShopTab: v => shopAbrir(v), setShopGrupo: g => shopGrupoAbrir(g), shopSecoes: () => SHOP_GRUPOS.map(g => shopSecoesVis(g)), TREINO, TREINO_PASSOS, TREINO_COR, Treino, treinoLugar, treinoPrimeiro, playCareer, buildMenu, introBanco, buildFalencia, BANCO, normEmprestimo, parcelaDe, devidoDe, jurosDe, tabelaDe, simulaEmprestimo, SEMANA, semanaOf, diaOf, FILA_JUSTA, PORTA, CHAIRS, PAT, CONTAS, INGRED, CARDAPIO, precoPrato, CURSOS, CURSO_AV, CURSO_XP, tonhaoXp, tonhaoNivelXp, daniXp, daniNivelXp, DANI_XP, DANI_CURSOS, CURSOS_SEMFIM, cursoOf, cursoNivel, normCursos, pratoAv, CARNES, drawDish, pratoSabido, pratosSabidos, GOSTOS, GOSTOS_CAT, pedePrato, VEG, vegMov, drawDish, MAIS, PONTOS_ACAO, GORJETA, DRINK_PRICE, MOVIMENTO, movimentoSalao, DIVULGA, DIVULGA_DIA, divulgaOf, contasDia, bomGoal, SALAO, PONTOS, pontoOf, MESA, mesaBox, mesaPreco, salaoLugares, mesaProblema, salaoCaminho, salaoProblema, salaoOrdena, salaoAuto, salaoVaga, salaoPerto, salaoKit, salaoDevolucao, SALAO_SEMFIM, normSalao, setObst, OBST, pathOk, MAQUINA, BEBIDA_ESPERA, bebidaOf, MANUT, manutOf, manutChance, manutPreco, normManut, CLIMA, CLIMA_DIA, introManut, normPend, CALCADA, TW, HUDX, esperaAp, tableApproach, CRIT, STAFF, DANI_TASKS, DANI_HANDS, daniTaskOk, TRASH, WASH, payroll, FOLHA_CORTE, folhaCorta, folhaCortes, folhaItens, listaE, pratosDe, couvertEffect, couvertOk, ambienteEffect, dishStock, normSave, Helper, JUICE, KITCHEN_SLOTS, handLayout, trayOk, Game, Group, Table, Kitchen, Waitress, BIA_SPEED, DAYS, UPGRADES, CUSTOMER_TYPES, LAYOUT, PAL, Sfx, findPath, render, Rank, sortRows, cleanName, normName, CMD, ENDLESS, VIP, MULTA, rk, renderRank, openRank, closeRank, LS, lsGet, lsSet, loadSave, DEV, saveKey, devSync, divulgaAberta, CAIXA_MAX, VERSAO, normCaixa, caixaResumo, caixaTotais, copyText, PRATO, pratoPerde, pratoVapor, AVAL, AVAL_CRIT, AVAL_BRAVO, avalMenu, cursosItem, DOCES, JOCA_XP, JOCA_CURSOS, JOCA_HOME, jocaXp, jocaNivelXp, BASICAS, donoBasico, cursoDaniVis, JOCA_LOOK, drawJoca, avalTeto, avalEscala, avalFrac, AVAL_SIMPLES, AVAL_DECOR, normAval, avalNota, avalMedias, avalGeral, avalMovimento, avalMinimo, avalComentario, fmtNota, notaFaixa, gurugolCaixa, AVAL_COM, normAvalCom, buildGurugol, ABERTURA, Abertura, AB_CENAS, AB_ALT, AB_BASE, abEsc, AB_VIVO, aberturaVista, aberturaSom, drawAbertura, abrirAbertura, HISTORIA, HIST_CARDAPIO, HIST_DIVULGA, LIBERA, liberaOf, HIST_NOMES, normEquipe, upgradeCartao, cursoFeito, AVAL_POUCO, REFORMA, HIST, carencia, Conversa, drawConversa, falar, fluxoHistoria, aberturaAtual: () => abertura };
+window.__lcc = { abrirDev, fecharDev, buildDev, passoJogo, devLivre, diaNoPonto, manutEmerg, manutFator, daniTaskDe, plateSlotsFor, queueYsFor, assentoSlow, AVENIDA, SABORES, cursoOk, INDUSTRIAL, PLATE_SLOTS, cozinhaSlots, upgradeDe, DECOR, DECOR_GRUPOS, TOALHA, decorOf, normDecor, decorOn, FILA_ACOES, filaMax, MARMITA, RETIRADA, marmitaMao, drawMarmita, prateleiraPos, EFOOD_COR, AVAL_BRAVO, QUEUE, setShopTab: v => shopAbrir(v), setShopGrupo: g => shopGrupoAbrir(g), shopSecoes: () => SHOP_GRUPOS.map(g => shopSecoesVis(g)), TREINO, TREINO_PASSOS, TREINO_COR, Treino, treinoLugar, treinoPrimeiro, playCareer, buildMenu, introBanco, buildFalencia, BANCO, normEmprestimo, parcelaDe, devidoDe, jurosDe, tabelaDe, simulaEmprestimo, SEMANA, semanaOf, diaOf, FILA_JUSTA, PORTA, CHAIRS, PAT, CONTAS, INGRED, CARDAPIO, precoPrato, CURSOS, CURSO_AV, CURSO_XP, tonhaoXp, tonhaoNivelXp, daniXp, daniNivelXp, DANI_XP, DANI_CURSOS, CURSOS_SEMFIM, cursoOf, cursoNivel, normCursos, pratoAv, CARNES, drawDish, pratoSabido, pratosSabidos, GOSTOS, GOSTOS_CAT, pedePrato, VEG, vegMov, drawDish, MAIS, PONTOS_ACAO, GORJETA, DRINK_PRICE, MOVIMENTO, movimentoSalao, DIVULGA, DIVULGA_DIA, divulgaOf, contasDia, bomGoal, SALAO, PONTOS, pontoOf, MESA, mesaBox, mesaPreco, salaoLugares, mesaProblema, salaoCaminho, salaoProblema, salaoOrdena, salaoAuto, salaoVaga, salaoPerto, salaoKit, salaoDevolucao, SALAO_SEMFIM, normSalao, setObst, OBST, pathOk, MAQUINA, BEBIDA_ESPERA, bebidaOf, MANUT, manutOf, manutChance, manutPreco, normManut, CLIMA, CLIMA_DIA, introManut, normPend, CALCADA, TW, HUDX, esperaAp, tableApproach, CRIT, STAFF, DANI_TASKS, DANI_HANDS, daniTaskOk, TRASH, WASH, payroll, FOLHA_CORTE, folhaCorta, folhaCortes, folhaItens, listaE, pratosDe, couvertEffect, couvertOk, ambienteEffect, dishStock, normSave, Helper, JUICE, KITCHEN_SLOTS, handLayout, trayOk, Game, Group, Table, Kitchen, Waitress, BIA_SPEED, DAYS, UPGRADES, CUSTOMER_TYPES, LAYOUT, PAL, Sfx, findPath, render, Rank, sortRows, cleanName, normName, CMD, ENDLESS, VIP, MULTA, rk, renderRank, openRank, closeRank, LS, lsGet, lsSet, loadSave, DEV, saveKey, devSync, divulgaAberta, CAIXA_MAX, VERSAO, normCaixa, caixaResumo, caixaTotais, copyText, PRATO, pratoPerde, pratoVapor, AVAL, AVAL_CRIT, AVAL_BRAVO, avalMenu, cursosItem, DOCES, JOCA_XP, JOCA_CURSOS, JOCA_HOME, jocaXp, jocaNivelXp, BASICAS, donoBasico, cursoDaniVis, JOCA_LOOK, drawJoca, avalTeto, avalEscala, avalFrac, AVAL_SIMPLES, AVAL_DECOR, normAval, avalNota, avalMedias, avalGeral, avalMovimento, avalMinimo, avalComentario, fmtNota, notaFaixa, gurugolCaixa, AVAL_COM, normAvalCom, buildGurugol, ABERTURA, Abertura, AB_CENAS, AB_ALT, AB_BASE, abEsc, AB_VIVO, aberturaVista, aberturaSom, drawAbertura, abrirAbertura, HISTORIA, HIST_CARDAPIO, HIST_DIVULGA, LIBERA, liberaOf, HIST_NOMES, normEquipe, upgradeCartao, cursoFeito, AVAL_POUCO, REFORMA, HIST, carencia, Conversa, drawConversa, falar, fluxoHistoria, aberturaAtual: () => abertura };
 window.requestAnimationFrame(frame);
 
 })();
