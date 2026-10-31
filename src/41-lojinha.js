@@ -256,7 +256,7 @@ function buildTonhao(grid){
     ['Pia', a && (a.wash ? '1 pilha/' + a.wash + ' s' : 'não'), b.wash ? '1 pilha/' + b.wash + ' s' : 'não'],
     ['Diária', a && fmt(a.pay), fmt(b.pay)]];
   // v8.8: o nível vem da experiência dos cursos; o aumento de salário só consolida o nível que a xp já permite
-  const top = T.length - 1, xp = tonhaoXp(game.save.cursos), pronto = DEV.on || xp >= (T[eq.tonhao + 1] || T[top]).xp;
+  const top = T.length - 1, xp = tonhaoXp(game.save.cursos), pronto = devLivre() || xp >= (T[eq.tonhao + 1] || T[top]).xp;
   let c = staffCard(upgradeIcon('tonhao'), 'Tonhão · nível ' + (eq.tonhao + 1) + ' de ' + T.length, 'Prato caprichado ★ vale +1♥ e +' + CRIT.bonus + ' pontos.');
   const xl = el('div', 'tonxp');
   xl.appendChild(el('span', null, eq.tonhao < top ? 'Experiência: ' + xp + ' de ' + T[eq.tonhao + 1].xp + ' para o nível ' + (eq.tonhao + 2) : 'Experiência: ' + xp + ' · nível máximo'));
@@ -294,7 +294,7 @@ function buildDani(grid){
     ['Lava 1 pilha', a && sec(WASH.perPile / a.speed), sec(WASH.perPile / b.speed)],
     ['Tarefas', a && String(a.tasks), String(b.tasks)],
     ['Diária', a && fmt(a.pay), fmt(b.pay)]];
-  const cap2 = game.save.cap >= 2 || DEV.on || lv > 0;   // v8.7: a Dani chega no capítulo 2 (no modo dev, desde o início)
+  const cap2 = game.save.cap >= 2 || devLivre() || lv > 0;   // v8.7: a Dani chega no capítulo 2 (no modo dev, desde o início)
   c = staffCard(upgradeIcon('dani'), lv ? 'Dani · ' + (lv === 1 ? 'aprendiz (sem salário)' : 'nível ' + (lv - 1) + ' de 3') : 'Dani (ajudante)',
     lv ? '' : (cap2 ? '' : 'Chega no capítulo 2. ') + 'Ajudante da Bia, mais lenta que ela (velocidade em % da dela). Tem 2 mãos: leva 2 itens por vez. Pode ' + avail.map(t => t.name.toLowerCase()).join(', ').replace(/, ([^,]*)$/, ' e $1') + '.');
   if (lv){
@@ -315,7 +315,7 @@ function buildDani(grid){
   const dMax = D.length - 1;
   if (!lv && !cap2){ grid.appendChild(c); return; }
   // v8.9: o nível vem da experiência (trabalho e cursos); o aumento de salário só consolida o nível que ela já tem
-  const xp = daniXp(game.save), pronto = DEV.on || lv < 1 || xp >= (D[lv+1] || D[dMax]).xp;
+  const xp = daniXp(game.save), pronto = devLivre() || lv < 1 || xp >= (D[lv+1] || D[dMax]).xp;
   if (lv){
     const xl = el('div', 'tonxp');
     xl.appendChild(el('span', null, lv < dMax ? 'Experiência: ' + xp + ' de ' + D[lv+1].xp + ' para o nível ' + lv : 'Experiência: ' + xp + ' · nível máximo'));
@@ -365,7 +365,7 @@ function buildJoca(grid){
     xl.appendChild(el('small', null, 'Trabalho: ' + falta + (falta > 1 ? ' tarefas' : ' tarefa') + ' até o próximo ponto'));
     c.appendChild(xl);
   }
-  const xp = jocaXp(sv), pronto = DEV.on || lv < 2 || xp >= (J[lv+1] || J[jMax]).xp;
+  const xp = jocaXp(sv), pronto = devLivre() || lv < 2 || xp >= (J[lv+1] || J[jMax]).xp;
   c.appendChild(lv < jMax ? staffNext(lv ? 'Com o aumento:' : 'Se contratar (nível 1):', jRows(J[lv] || null, J[lv ? lv+1 : 2])) : staffNext('Nível máximo:', jRows(null, J[jMax])));
   const duo = el('div', 'duo');
   if (lv < jMax){
@@ -672,7 +672,7 @@ function decorCard(grupo, icon, title, desc){
 }
 function buildDecor(grid){
   const dec = game.save.decor, bank = game.save.bank;
-  DECOR.filter(d => !d.nivel || game.ponto.nivel >= d.nivel || DEV.on).forEach(d => {
+  DECOR.filter(d => !d.nivel || game.ponto.nivel >= d.nivel || devLivre()).forEach(d => {
     const tem = d.id in dec, on = !!dec[d.id];
     const c = decorCard(DECOR_GRUPOS.find(x => x.id === d.grupo).nome, upgradeIcon('d-' + d.id), d.name, d.desc + ' Melhora o ambiente no Gurugol.' + (tem && !on ? ' Guardado.' : ''));
     if (on) c.classList.add('own');
@@ -758,7 +758,7 @@ function buildManut(grid){
     const F = INDUSTRIAL.fogao, own = !!game.up.fogaoInd;
     const c = staffCard(upgradeIcon('fogao-ind'), 'Fogão industrial', 'Uma boca a mais para o Tonhão e metade do desgaste do fogão por dia. O conserto de emergência passa a custar ' + fmt(F.emerg) + '.');
     if (own) c.classList.add('own');
-    c.appendChild(shopBtn(own ? 'Já comprado' : DEV.on ? 'Ligar' : 'Comprar ' + fmt(F.cost), 'btn', DEV.on || (!own && game.save.bank >= F.cost), () => DEV.on ? game.devInd('fogaoInd') : game.comprarInd('fogaoInd'), DEV.on ? 0 : F.cost));
+    c.appendChild(shopBtn(own ? 'Já comprado' : devLivre() ? 'Ligar' : 'Comprar ' + fmt(F.cost), 'btn', devLivre() || (!own && game.save.bank >= F.cost), () => devLivre() ? game.devInd('fogaoInd') : game.comprarInd('fogaoInd'), devLivre() ? 0 : F.cost));
     grid.appendChild(c);
   }
   MANUT.equip.forEach(q => {
@@ -769,12 +769,12 @@ function buildManut(grid){
     const fill = el('i'); fill.style.width = Math.round(e * 100) + '%'; fill.style.background = e >= MANUT.verde ? PAL.ok : e >= MANUT.vermelho ? PAL.mostarda : PAL.perigo; bar.appendChild(fill);
     c.appendChild(bar);
     if (e >= 0.995) c.classList.add('own');
-    c.appendChild(shopBtn(!v ? 'Em dia' : DEV.on ? 'Revisão (grátis)' : 'Revisão: ' + fmt(v), 'btn', !!v && (DEV.on || game.save.bank >= v), () => game.revisar(q.id), DEV.on ? 0 : v));
+    c.appendChild(shopBtn(!v ? 'Em dia' : devLivre() ? 'Revisão (grátis)' : 'Revisão: ' + fmt(v), 'btn', !!v && (devLivre() || game.save.bank >= v), () => game.revisar(q.id), devLivre() ? 0 : v));
     grid.appendChild(c);
   });
   const tot = MANUT.equip.reduce((a, q) => a + manutPreco(q.id, m[q.id]), 0);
   const c = staffCard(upgradeIcon('contas'), 'Revisar tudo', 'A visita técnica tem custo, e quanto mais desgastado, mais cara a manutenção.');
-  c.appendChild(shopBtn(!tot ? 'Tudo em dia' : DEV.on ? 'Revisar tudo (grátis)' : 'Revisar tudo: ' + fmt(tot), 'btn', !!tot && (DEV.on || game.save.bank >= tot), () => game.revisarTudo(), DEV.on ? 0 : tot));
+  c.appendChild(shopBtn(!tot ? 'Tudo em dia' : devLivre() ? 'Revisar tudo (grátis)' : 'Revisar tudo: ' + fmt(tot), 'btn', !!tot && (devLivre() || game.save.bank >= tot), () => game.revisarTudo(), devLivre() ? 0 : tot));
   grid.appendChild(c);
 }
 /* v9, área industrial: as 3 televisões com sertanejo (instalar uma vez; depois, um modo por dia) */
@@ -784,7 +784,7 @@ function buildTvs(grid){
     ? 'Escolha por dia: com anúncios, a paciência nas mesas cai ' + Math.round(I.modos[1].effect * 100) + '% mais devagar (luz ' + fmt(I.modos[1].pay) + '/dia); sem anúncios, ' + Math.round(I.modos[2].effect * 100) + '% (' + fmt(I.modos[2].pay) + '/dia, com a assinatura).'
     : 'Três TVs no alto da parede, ligadas num canal de sertanejo. Instaladas, você escolhe por dia: com anúncios (' + fmt(I.modos[1].pay) + '/dia) ou sem (' + fmt(I.modos[2].pay) + '/dia).');
   if (own) c.classList.add('own');
-  if (!own) c.appendChild(shopBtn(DEV.on ? 'Instalar (grátis)' : 'Instalar ' + fmt(I.instalar), 'btn', DEV.on || bank >= I.instalar, () => game.comprarInd('tvs'), DEV.on ? 0 : I.instalar));
+  if (!own) c.appendChild(shopBtn(devLivre() ? 'Instalar (grátis)' : 'Instalar ' + fmt(I.instalar), 'btn', devLivre() || bank >= I.instalar, () => game.comprarInd('tvs'), devLivre() ? 0 : I.instalar));
   else [[0, 'Desligadas'], [1, 'Com anúncios · ' + fmt(I.modos[1].pay) + '/dia'], [2, 'Sem anúncios · ' + fmt(I.modos[2].pay) + '/dia']].forEach(a => {
     const on = (eq.tvs || 0) === a[0], b = el('button', 'toggle', (on ? 'Ligado: ' : '') + a[1]); b.type = 'button';
     b.setAttribute('aria-pressed', on ? 'true' : 'false');
@@ -801,14 +801,14 @@ function buildAssento(grid){
     const S = AVENIDA.sofa, own = game.up.assento === 'sofa', bank0 = game.save.bank;
     const c0 = staffCard(upgradeIcon('sofas'), S.nome, 'Dois sofás de 3 lugares na calçada, verde-musgo e com almofadas. Quem espera sentado neles perde a paciência ' + Math.round(S.slow * 100) + '% mais devagar. Compra única.');
     if (own) c0.classList.add('own');
-    c0.appendChild(shopBtn(own ? 'Já comprado' : DEV.on ? 'Instalar (grátis)' : 'Comprar ' + fmt(S.cost), 'btn', !own && (DEV.on || bank0 >= S.cost), () => game.comprarInd('assento', 'sofa'), DEV.on ? 0 : S.cost));
+    c0.appendChild(shopBtn(own ? 'Já comprado' : devLivre() ? 'Instalar (grátis)' : 'Comprar ' + fmt(S.cost), 'btn', !own && (devLivre() || bank0 >= S.cost), () => game.comprarInd('assento', 'sofa'), devLivre() ? 0 : S.cost));
     grid.appendChild(c0); return;
   }
   const A = INDUSTRIAL.assento, bank = game.save.bank, cur = game.up.assento || '';
   const c = staffCard(upgradeIcon('assento'), 'Espera sentada', 'Quem espera lá fora sentado perde a paciência ' + Math.round(A.slow * 100) + '% mais devagar. As duas opções valem igual; o banquinho é só mais bonito. Trocar paga o novo.');
   if (cur) c.classList.add('own');
   const duo = el('div', 'duo');
-  ['cadeira', 'banco'].forEach(k => duo.appendChild(shopBtn(cur === k ? 'Tem: ' + A[k].nome : A[k].nome + ' ' + fmt(A[k].cost), 'btn', DEV.on || (cur !== k && bank >= A[k].cost), () => game.comprarInd('assento', k), DEV.on ? 0 : A[k].cost)));
+  ['cadeira', 'banco'].forEach(k => duo.appendChild(shopBtn(cur === k ? 'Tem: ' + A[k].nome : A[k].nome + ' ' + fmt(A[k].cost), 'btn', devLivre() || (cur !== k && bank >= A[k].cost), () => game.comprarInd('assento', k), devLivre() ? 0 : A[k].cost)));
   c.appendChild(duo); grid.appendChild(c);
 }
 /* aba Mudança (v9): o próximo ponto, o que falta para mudar e a confirmação (não dá para voltar) */
@@ -821,12 +821,12 @@ function buildMudanca(grid){
   if (!f && mudarPede){
     c.appendChild(el('span', 'full', 'Mudar para ' + (p.art || 'a') + ' ' + p.nome + ' por ' + fmt(p.mudanca) + '? Aluguel de ' + fmt(p.aluguel) + ' por dia. Não dá para voltar.'));
     const duo = el('div', 'duo');
-    duo.appendChild(shopBtn(DEV.on ? 'Sim, mudar' : 'Sim, mudar: ' + fmt(p.mudanca), 'btn', true, () => { mudarPede = false; shopTab = null; return game.mudarPonto(); }, DEV.on ? 0 : p.mudanca));
+    duo.appendChild(shopBtn(devLivre() ? 'Sim, mudar' : 'Sim, mudar: ' + fmt(p.mudanca), 'btn', true, () => { mudarPede = false; shopTab = null; return game.mudarPonto(); }, devLivre() ? 0 : p.mudanca));
     const nao = el('button', 'btn alt', 'Agora não'); nao.type = 'button'; nao.addEventListener('click', () => { Sfx.tap(); mudarPede = false; buildShop(); });
     duo.appendChild(nao); c.appendChild(duo);
   } else {
     if (f) c.appendChild(el('span', 'full', falta + '.'));
-    const b = el('button', 'btn', f ? falta : DEV.on ? 'Mudar (modo dev: grátis)' : 'Mudar: ' + fmt(p.mudanca)); b.type = 'button';
+    const b = el('button', 'btn', f ? falta : devLivre() ? 'Mudar (modo dev: grátis)' : 'Mudar: ' + fmt(p.mudanca)); b.type = 'button';
     if (f) b.disabled = true;
     b.addEventListener('click', () => { Sfx.init(); Sfx.tap(); mudarPede = true; buildShop(); });
     c.appendChild(b);
@@ -1001,17 +1001,17 @@ function buildGurugol(grid){
 function buildMelhorias(grid){ upgradeCartoes(grid, false); const nv = game.ponto.nivel; if (nv === 2) { buildTvs(grid); buildAssento(grid); } else if (nv >= 3) buildAssento(grid); else buildTvSom(grid); }   // v9.1: as TVs são só da área industrial; na Avenida, os sofás
 function upgradeCartoes(grid, bia){
   // os Tênis de corrida (v7.3) só aparecem depois dos Tênis novos, no lugar deles (a grade continua com 6); no modo dev, todas
-  UPGRADES.filter(u => (BIA_IDS.indexOf(u.id) >= 0) === bia).filter(u => DEV.on || (u.req ? game.up[u.req] : !(game.up[u.id] && UPGRADES.some(v => v.req === u.id)))).forEach(u => {
+  UPGRADES.filter(u => (BIA_IDS.indexOf(u.id) >= 0) === bia).filter(u => devLivre() || (u.req ? game.up[u.req] : !(game.up[u.id] && UPGRADES.some(v => v.req === u.id)))).forEach(u => {
     const own = !!game.up[u.id], tem = u.multi ? pratosDe(game.up) : 0, fecha = !u.multi && own;   // o Jogo de pratos (v8.3.6) segue à venda
     const card = el('div', 'item' + (own && !u.multi ? ' own' : '')), pv = upgradeDe(u, game.ponto);   // v9: a Água da torneira vira a Jarra de suco
     card.appendChild(upgradeIcon(pv !== u ? (game.ponto.nivel >= 3 ? 'aguas' : 'jarra') : u.id));
     card.appendChild(el('b', null, pv.name));
     card.appendChild(el('span', null, (tem ? 'Você tem ' + tem + '. ' : '') + pv.desc));
-    const b = el('button', 'btn', DEV.on ? (own ? 'Desligar' : 'Ligar') : fecha && own ? 'Já comprado' : ('Comprar ' + fmt(pv.cost)));
+    const b = el('button', 'btn', devLivre() ? (own ? 'Desligar' : 'Ligar') : fecha && own ? 'Já comprado' : ('Comprar ' + fmt(pv.cost)));
     b.type = 'button';
-    if (!DEV.on && (fecha || game.save.bank < pv.cost)) b.disabled = true;
-    else if (!DEV.on) folhaAviso(b, pv.cost);
-    b.addEventListener('click', () => { if (folhaPede(b)) return; if (DEV.on ? game.devToggle(u.id) : game.buy(u.id)) buildShop(); });
+    if (!devLivre() && (fecha || game.save.bank < pv.cost)) b.disabled = true;
+    else if (!devLivre()) folhaAviso(b, pv.cost);
+    b.addEventListener('click', () => { if (folhaPede(b)) return; if (devLivre() ? game.devToggle(u.id) : game.buy(u.id)) buildShop(); });
     card.appendChild(b);
     grid.appendChild(card);
   });
@@ -1035,7 +1035,7 @@ function buildShop(){
     ? ' · faltam ' + fmt(-game.livre) + ' para a folha: o dia ' + game.shopNext + ' abre sem ' + listaE(corte)
     : negFim ? ' · faltam ' + fmt(-game.livre) + ' para a folha: o caixa pode fechar no negativo'
     : ' · livre ' + fmt(game.livre) + ' (' + fmt(comp) + ' reservados para ' + listaE(folhaItens(game.save.equipe, game.div)) + ')');
-  $('shop-limit').textContent = DEV.on ? 'Modo dev: tudo liberado; melhorias de graça, ligue e desligue à vontade.' : 'Melhorias à vontade, se o dinheiro der. Cursos: 1 por dia.';
+  $('shop-limit').textContent = devLivre() ? 'Modo dev: tudo liberado; melhorias de graça, ligue e desligue à vontade.' : 'Melhorias à vontade, se o dinheiro der. Cursos: 1 por dia.';
   $('btn-shop-go').textContent = 'Começar o dia ' + game.shopNext;
   const f = payroll(game.save.equipe), dv = divulgaAberta(game.shopNext, game.save) ? divulgaOf(game.save.divulga) : null;
   $('shop-folha').textContent = (f ? 'Folha ' + fmt(f) : 'Sem folha') + (dv ? ' + ' + dv.name.toLowerCase() + ' ' + fmt(dv.cost) : '') + ', contas ' + fmt(contasDia(game.tables)) + (sv.emp.resto ? ', parcela do banco ' + fmt(game.devido) + (sv.emp.atr ? ' (com a atrasada)' : '') : '') + ' e ingredientes: tudo pago no fim do dia, que só rende completo. A meta é o lucro.';
