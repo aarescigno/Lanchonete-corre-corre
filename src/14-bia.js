@@ -9,12 +9,12 @@
      nunca juntos na bandeja. O suco da espera (v7.5, 'suco') conta como bebida, e a marmita (v8.6), como prato.
    ============================================================ */
 const KITCHEN_SLOTS = 3;
-const DRINKS = { coffee:1, juice:1, suco:1, doce:1, cafeesp:1 };   // v9.2: o doce da geladeirinha conta como bebida nas mãos
+const BEBIDAS_MAO = { coffee:1, juice:1, suco:1, doce:1, cafeesp:1, drink:1 };   // v9.2 (v9.5: o drink do Anselmo): o doce da geladeirinha conta como bebida nas mãos
 function trayOk(items){
   let d = 0, k = 0, s = 0;
   for (const h of items){
     if (h.kind === 'dish' || h.kind === 'marmita') d++;
-    else if (DRINKS[h.kind]) k++;
+    else if (BEBIDAS_MAO[h.kind]) k++;
     else if (h.kind === 'dirty') s++;
     else return false;                 // comanda não vai na bandeja
   }
@@ -136,7 +136,7 @@ class Waitress {
       return WASH.base + WASH.perPile * a.wash;
     }
     if (a.type === 'trash'){
-      const drinks = this.hands.filter(h => DRINKS[h.kind]).length;
+      const drinks = this.hands.filter(h => BEBIDAS_MAO[h.kind]).length;
       if (!this.hands.length && g.trash > 0) return TRASH.empty;
       // não cabe e só há bebidas nas mãos: joga tudo e esvazia em seguida
       if (drinks && drinks === this.hands.length && drinks > TRASH.cap - g.trash) return 0.3 + TRASH.empty;
@@ -192,6 +192,7 @@ class Waitress {
   hasCoffee(){ return this.hands.some(h => h.kind === 'coffee'); }
   doceN(){ return this.hands.filter(h => h.kind === 'doce').length; }
   cafeEspN(){ return this.hands.filter(h => h.kind === 'cafeesp').length; }   // v9.3
+  drinkN(grp){ return this.hands.filter(h => h.kind === 'drink' && (!grp || h.group === grp)).length; }   // v9.5
   /* O que a Bia faria agora nessa mesa (ignorando mãos cheias)? Usado no HUD e na execução */
   verbFor(t){
     if (!t) return null;
@@ -200,6 +201,7 @@ class Waitress {
     if (grp && grp.juicePending > 0 && grp.juiceOpen && this.juiceN() > 0) return 'juice';
     if (grp && grp.docesFalta > 0 && grp.esperaSuco && this.doceN() > 0) return 'doce';   // v9.2
     if (grp && grp.cafesFalta > 0 && grp.esperaSuco && this.cafeEspN() > 0) return 'cafeesp';   // v9.3
+    if (grp && grp.drinkOpen && this.drinkN(grp) > 0) return 'drink';   // v9.5
     if (t.dirty) return 'clear';
     if (grp && grp.state === 'wantOrder') return 'take';
     if (grp && grp.state === 'wantBill') return 'bill';
@@ -238,6 +240,13 @@ class Waitress {
       Sfx.blip(); g.addText(this.x, this.y - 82, 'Doce!', PAL.madeira, 14);
       return;
     }
+    if (a.type === 'drinks'){   // v9.5: o balcão do Anselmo: pega os copos prontos que couberem (do pedido mais antigo para o mais novo)
+      let k = 0;
+      while (g.drinkPronto.length && this.canTake('drink')){ const o = g.drinkPronto.shift(); this.hands.push({ kind:'drink', id:o.id, group:o.grp }); k++; }
+      if (!k) return this.fail(g.drinkPronto.length ? 'Mãos cheias!' : (g.drinkQ.length || g.drinkJob ? 'Ainda não ficou pronto!' : '?'));
+      Sfx.blip(); g.addText(this.x, this.y - 82, k > 1 ? 'Drinks!' : drinkDe(this.hands[this.hands.length - 1].id).nome + '!', PAL.alerta, 14);
+      return;
+    }
     if (a.type === 'espresso'){   // v9.3: a máquina de espresso (o café do pedido que ainda ninguém levou, senão qualquer um)
       if (!this.canTake('cafeesp')) return this.fail('Mãos cheias!');
       this.hands.push({ kind:'cafeesp', id:a.item || g.cafeEspItem() }); g.custo += CAFES.ingred;
@@ -253,7 +262,7 @@ class Waitress {
       return;
     }
     if (a.type === 'trash'){
-      const lixo = this.hands.filter(h => DRINKS[h.kind]);
+      const lixo = this.hands.filter(h => BEBIDAS_MAO[h.kind]);
       if (!lixo.length){
         // mãos vazias: esvazia a lixeira
         if (!this.hands.length && g.trash > 0){ g.trash = 0; g.stats.emptied++; g.addText(this.x, this.y - 82, 'Lixo pra fora!', PAL.ok, 15); Sfx.noise(0.3, 0.1, 0, 400); return; }
@@ -359,11 +368,20 @@ class Waitress {
     if (n) this.g.entregaCafes(grp, n, t.cx, t.cy);
     return n;
   }
+  /* v9.5: entrega os drinks do Anselmo que a Bia carrega para essa mesa */
+  serveDrink(t){
+    const grp = t && t.group;
+    if (!grp || !grp.drinkOpen) return 0;
+    const n = Math.min(grp.drinksFalta, this.drinkN(grp));
+    for (let k=0;k<n;k++) this.hands.splice(this.hands.findIndex(h => h.kind === 'drink' && h.group === grp), 1);
+    if (n) this.g.entregaDrinks(grp, n, t.cx, t.cy);
+    return n;
+  }
   doTable(t){
     const g = this.g;
-    const served = this.serveJuice(t) + this.serveDoce(t) + this.serveCafeEsp(t);
+    const served = this.serveJuice(t) + this.serveDoce(t) + this.serveCafeEsp(t) + this.serveDrink(t);
     let v = this.verbFor(t);
-    if (v === 'juice' || v === 'doce' || v === 'cafeesp') v = null;
+    if (v === 'juice' || v === 'doce' || v === 'cafeesp' || v === 'drink') v = null;
     if (!v && served) return;
     const grp = t && t.group;
     const cx = t ? t.cx : this.x, cy = t ? t.cy : this.y;
@@ -394,6 +412,7 @@ class Waitress {
       g.assignCmd(grp);
       this.hands.push({ kind:'ticket', table:t.id, group:grp });
       grp.setState('ordered');
+      g.drinkPedir(grp);   // v9.5: os drinks vão para a fila do Anselmo
       grp.gain(1);
       g.score('take', cx, cy - 40, 0, grp);
       Sfx.blip();

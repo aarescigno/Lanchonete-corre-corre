@@ -311,6 +311,19 @@ function drawIcon(ctx,k,x,y,s,extra,extra2,extra3){
     else { ctx.fillStyle = '#E9B8CB'; ctx.fillRect(-6,3,12,5.8); ctx.fillStyle = '#FFF7E3'; ctx.fillRect(-6.4,-2,12.8,4.6); circ(ctx,0,-3.6,2.4); fs(ctx,'#D8334A',1); }   // bolo de pote: massa, creme e uma cereja
     rr(ctx,-8.6,-9,17.2,4,1.8); fs(ctx,'#D8334A',1.6);   // a tampinha
     ctx.fillStyle = 'rgba(255,255,255,.55)'; ctx.fillRect(-5,-4,1.8,11);
+  } else if (k === 'drink'){
+    // v9.5, drinks do Anselmo (extra = índice em DRINKS.itens): 0 Pôr do Sol da Avenida (laranja e vermelho em degradê), 1 Brisa de Maracujá (amarelo com hortelã), 2 Esmeralda (verde com rodela de limão)
+    const di = extra || 0;
+    ell(ctx,0,10,9,2.6); fs(ctx,'rgba(255,255,255,.75)',1.4);
+    ctx.save(); ctx.beginPath(); ctx.moveTo(-8,-9); ctx.lineTo(8,-9); ctx.lineTo(2.6,9); ctx.lineTo(-2.6,9); ctx.closePath(); ctx.clip();
+    if (di === 0){ const gr = ctx.createLinearGradient(0,-9,0,9); gr.addColorStop(0,'#F6A21E'); gr.addColorStop(1,'#D8334A'); ctx.fillStyle = gr; }
+    else ctx.fillStyle = di === 1 ? '#F4D13A' : '#3BB273';
+    ctx.fillRect(-9,-5,18,15); ctx.restore();
+    ctx.beginPath(); ctx.moveTo(-8,-9); ctx.lineTo(8,-9); ctx.lineTo(2.6,9); ctx.lineTo(-2.6,9); ctx.closePath(); fs(ctx,'rgba(255,255,255,.28)',1.8);
+    ctx.fillStyle = 'rgba(255,255,255,.6)'; ctx.fillRect(-5.6,-7,1.6,9);
+    if (di === 1){ ctx.fillStyle = '#2F9E5A'; ctx.beginPath(); ctx.ellipse(-2,-11,3.2,1.8,-0.6,0,TAU); ctx.fill(); ctx.beginPath(); ctx.ellipse(2.4,-11.6,3.2,1.8,0.6,0,TAU); ctx.fill(); }
+    if (di === 2){ circ(ctx,8,-8,4.2); fs(ctx,'#B7E34A',1.3); ctx.strokeStyle = '#F4FAD0'; ctx.lineWidth = 0.9; ctx.beginPath(); ctx.moveTo(8,-12); ctx.lineTo(8,-4); ctx.moveTo(4,-8); ctx.lineTo(12,-8); ctx.stroke(); }
+    if (di === 0){ ctx.strokeStyle = PAL.perigo; ctx.lineWidth = 1.6; ctx.beginPath(); ctx.moveTo(3,-8); ctx.lineTo(6,-15); ctx.stroke(); }
   } else if (k === 'cafeesp'){
     // v9.3, cafés da máquina de espresso: 0 espresso (xicrinha com creminha), 1 cappuccino (xícara maior com espuma e coração)
     const cap = extra === 1;

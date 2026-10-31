@@ -52,7 +52,7 @@ function seatPositions(t){
   ];
 }
 function tableHalfW(t){ return t.seats === 2 ? 36 : 62; }
-const STATION_KEYS = ['adiantar','order','plates','coffee','juice','sink','trash','maquina','retirada','doces','espresso'];
+const STATION_KEYS = ['adiantar','order','plates','coffee','juice','sink','trash','maquina','retirada','doces','espresso','drinks'];
 function tableRect(t){ return { x:t.cx - t.hx - 10, y:t.cy - 62, w:t.hx*2 + 20, h:132 }; }
 function queueRect(g){ return { x:QUEUE.x - 74, y:QUEUE.ys[g.slot] - 76, w:148, h:90 }; }
 /* onde a Bia (ou a Dani) para ao levar o suco a quem espera: ao lado do tablet do lugar */
@@ -85,7 +85,8 @@ function normEquipe(e, ponto){
   const tasks = Array.isArray(e.daniTasks) ? e.daniTasks.map(t => t === 'agua' ? 'suco' : t).filter(t => DANI_TASKS.some(d => d.id === t)) : ['pratos','lavar'];   // v7.5: a tarefa da água vira a do suco da espera
   const jt = Array.isArray(e.jocaTasks) ? e.jocaTasks.filter(t => BASICAS.indexOf(t) >= 0) : JOCA_PADRAO.slice(), jn = Math.round(+e.joca) || 0;   // v9.2: o Joca (0 ou 2 a 4) só tem tarefa básica
   const ct = Array.isArray(e.camiTasks) ? e.camiTasks.filter(t => BASICAS.indexOf(t) >= 0) : CAMI_PADRAO.slice(), cn = Math.round(+e.cami) || 0;   // v9.3: a Cami (0 ou 1 a 3) também só tem tarefa básica
-  return { cami: cn >= 1 ? Math.min(cn, STAFF.cami.levels.length - 1) : 0, camiTasks: ct.filter((t,i) => ct.indexOf(t) === i).slice(0,4), joca: jn >= 2 ? Math.min(jn, STAFF.joca.levels.length - 1) : 0, jocaTasks: jt.filter((t,i) => jt.indexOf(t) === i).slice(0,3), tonhao: clamp(Math.round(+e.tonhao)||0,0,STAFF.tonhao.levels.length - 1), dani: clamp(Math.round(+e.dani)||0,0,STAFF.dani.levels.length - 1), daniTasks: tasks.filter((t,i) => tasks.indexOf(t) === i).slice(0,3), couvert: !!e.couvert && couvertOk(ponto), taxa: !!e.taxa, tv: !!e.tv && ponto.nivel < 2, som: !!e.som && ponto.nivel < 2, tvs: ponto.nivel === 2 ? clamp(Math.round(+e.tvs) || 0, 0, INDUSTRIAL.tvs.modos.length - 1) : 0 };   // v9.1: as TVs são só da área industrial
+  const an = Math.round(+e.anselmo) || 0;   // v9.5: o Anselmo (0, 2 ou 3), só na Avenida (no modo dev, em qualquer ponto)
+  return { anselmo: an >= 2 && (ponto.nivel >= 3 || devLivre()) ? Math.min(an, STAFF.anselmo.levels.length - 1) : 0, cami: cn >= 1 ? Math.min(cn, STAFF.cami.levels.length - 1) : 0, camiTasks: ct.filter((t,i) => ct.indexOf(t) === i).slice(0,4), joca: jn >= 2 ? Math.min(jn, STAFF.joca.levels.length - 1) : 0, jocaTasks: jt.filter((t,i) => jt.indexOf(t) === i).slice(0,3), tonhao: clamp(Math.round(+e.tonhao)||0,0,STAFF.tonhao.levels.length - 1), dani: clamp(Math.round(+e.dani)||0,0,STAFF.dani.levels.length - 1), daniTasks: tasks.filter((t,i) => tasks.indexOf(t) === i).slice(0,3), couvert: !!e.couvert && couvertOk(ponto), taxa: !!e.taxa, tv: !!e.tv && ponto.nivel < 2, som: !!e.som && ponto.nivel < 2, tvs: ponto.nivel === 2 ? clamp(Math.round(+e.tvs) || 0, 0, INDUSTRIAL.tvs.modos.length - 1) : 0 };   // v9.1: as TVs são só da área industrial
 }
 /* livro-caixa (v7.2): uma linha por dia jogado na carreira (os últimos CAIXA_MAX). As compras da lojinha
    (melhorias e salão) ficam em caixaPend e entram na linha do dia seguinte, junto com o saldo ao fim dele.
@@ -267,6 +268,7 @@ class Group {
     this.retira = !!T.retira;
     // v9.2, doces: o que pediu depois de comer (sorteado no fim da refeição), os já entregues, os corações perdidos esperando e, no entregador, as marmitas "+ doce"
     this.doces = null; this.docesDados = 0; this.perdDoce = 0;
+    this.drinks = game.mode === 'carreira' && anselmoOn(game.save.equipe, game.ponto) && !T.retira ? this.sorteiaDrinks() : []; this.drinksDados = 0; this.drinksPedidos = false; this.perdDrink = 0;   // v9.5: os drinks do Anselmo (ids de DRINKS.itens), pedidos ao sentar; pedidos: já foram para a fila dele
     this.cafes = null; this.cafesDados = 0;   // v9.3: os cafés da máquina de espresso (ids de CAFES.lista) pedidos no fim da refeição, e os já entregues
     this.docesMarm = this.retira && game.mode === 'carreira' && game.up.confCaseira ? (this.lote ? this.dishes : [0]).filter(() => Math.random() < DOCES.marmita).length : 0; this.docesMarmDados = 0;
     this.extras = this.people.map((p, i) => !this.retira && game.mode !== 'treino' && Math.random() < (CARDAPIO[this.dishes[i]].cat === 'pf' ? T.mais : Math.max(T.mais, MAIS.salgado)) ? pedePrato(type, game, true, p.veg) : null);
@@ -327,6 +329,13 @@ class Group {
     const p = (DOCES.pede[this.type] || 0) + (this.vip ? DOCES.vip : 0);
     return Math.random() < p ? Array.from({ length:randi(1, this.size) }, () => pick(docesLista(g.up)).id) : [];
   }
+  /* v9.5: os drinks que o grupo pediu e ainda não recebeu; só vale depois que a Bia anotou (eles vão para a fila do Anselmo) */
+  get drinksFalta(){ return this.drinksPedidos ? this.drinks.length - this.drinksDados : 0; }
+  get drinkOpen(){ return this.drinksFalta > 0 && (this.state === 'ordered' || this.state === 'eating' || this.state === 'wantBill'); }
+  sorteiaDrinks(){
+    const p = (DRINKS.pede[this.type] || 0) + (this.vip ? DRINKS.vip : 0);
+    return Math.random() < p ? Array.from({ length:randi(1, this.size) }, () => pick(DRINKS.itens).id) : [];
+  }
   /* v9.3: os cafés (espresso ou cappuccino) que o grupo pediu e ainda não recebeu */
   get cafesFalta(){ return this.cafes ? this.cafes.length - this.cafesDados : 0; }
   get cafeEspBalao(){ return this.cafesFalta > 0 && this.state === 'eating' && this.esperaSuco; }
@@ -372,7 +381,7 @@ class Group {
     this.patLeft -= dt;
     if (this.patLeft <= 0){
       this.hearts--;
-      if (this.state === 'queue') this.perdFila++; else { this.perdMesa++; if (this.esperaSuco && (this.docesFalta > 0 || this.cafesFalta > 0)) this.perdDoce++; }
+      if (this.state === 'queue') this.perdFila++; else { this.perdMesa++; if (this.esperaSuco && (this.docesFalta > 0 || this.cafesFalta > 0)) this.perdDoce++; if (this.drinksFalta > 0) this.perdDrink++; }
       if (this.hearts <= 0) this.game.angryLeave(this);
       else this.patLeft += this.patPer();
     }
@@ -416,7 +425,7 @@ class Group {
         // acabou de comer: quem pediu suco espera por ele (perdendo a paciência) antes de pedir a conta (v8.5.2)
         if (!this.doces) this.doces = this.sorteiaDoces();   // v9.2
         if (!this.cafes) this.cafes = this.sorteiaCafes();   // v9.3
-        if (this.juicePending > 0 || (this.cafePede && !this.coffee) || this.docesFalta > 0 || this.cafesFalta > 0){
+        if (this.juicePending > 0 || (this.cafePede && !this.coffee) || this.docesFalta > 0 || this.cafesFalta > 0 || this.drinksFalta > 0){
           if (!this.esperaSuco){ this.esperaSuco = true; this.patLeft = this.patPer(); }
           this.tick(dt); break;
         }

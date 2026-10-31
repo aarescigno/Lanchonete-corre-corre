@@ -27,6 +27,10 @@ function upgradeIcon(id){
     } else if (id === 'cami'){
       c.scale(1/1.5,1/1.5); drawPerson(c,CAMI_LOOK,0,27,{ shirt:'#8A1F3D', mood:0, s:0.74 });
       c.beginPath(); c.moveTo(-4.2,7.4); c.lineTo(4.2,7.4); c.lineTo(5.6,18.1); c.lineTo(-5.6,18.1); c.closePath(); fs(c,'#1E1D21',1.4);
+    } else if (id === 'anselmo'){
+      c.scale(1/1.5,1/1.5); drawPerson(c,ANSELMO_LOOK,0,27,{ shirt:'#FFFFFF', mood:0, s:0.74 });
+      c.beginPath(); c.moveTo(-4.2,5.6); c.lineTo(4.2,5.6); c.lineTo(6,18.1); c.lineTo(-6,18.1); c.closePath(); fs(c,'#1E1D21',1.4);
+      c.beginPath(); c.moveTo(0,5); c.lineTo(-3.4,3); c.lineTo(-3.4,7); c.closePath(); fs(c,'#8E3B46',1); c.beginPath(); c.moveTo(0,5); c.lineTo(3.4,3); c.lineTo(3.4,7); c.closePath(); fs(c,'#8E3B46',1);
     } else if (id === 'couvert'){
       c.rotate(-0.5); ell(c,0,4,10,8); fs(c,'#B5733A',2); circ(c,0,4,3); c.fillStyle = PAL.tinta; c.fill(); rr(c,8,1,20,4,1); fs(c,PAL.madeiraEsc,1.4); c.rotate(0.5);
       txt(c,'♪',-12,-12,14,PAL.faixa,'center',FB);
@@ -161,7 +165,7 @@ function upgradeIcon(id){
 let shopGrupo = 'lanchonete', shopTab = null;
 const SHOP_GRUPOS = [
   { id:'lanchonete', nome:'Lanchonete', secoes:['cardapio', 'melhorias', 'salao', 'decor', 'manut', 'divulga'] },
-  { id:'equipe', nome:'Equipe', secoes:['bia', 'tonhao', 'dani', 'joca', 'cami'] },
+  { id:'equipe', nome:'Equipe', secoes:['bia', 'tonhao', 'dani', 'joca', 'cami', 'anselmo'] },
   { id:'dinheiro', nome:'Dinheiro', secoes:['banco', 'mudanca', 'caixa'] },
   { id:'gurugol', nome:'Gurugol', secoes:['gurugol'] }];
 const SHOP_SECOES = {
@@ -176,6 +180,7 @@ const SHOP_SECOES = {
   dani:{ nome:'Dani', icon:'dani', build:g => buildDani(g) },
   joca:{ nome:'Joca', icon:'joca', build:g => buildJoca(g) },
   cami:{ nome:'Cami', icon:'cami', build:g => buildCami(g) },
+  anselmo:{ nome:'Anselmo', icon:'anselmo', build:g => buildAnselmo(g) },
   banco:{ nome:'Banco', icon:'banco', build:g => buildBanco(g) },
   mudanca:{ nome:'Mudança', icon:'mudanca', build:g => buildMudanca(g) },
   caixa:{ nome:'Caixa', icon:'contas', build:g => buildCaixa(g) },
@@ -435,6 +440,22 @@ function buildCami(grid){
     card.appendChild(feito ? shopBtn('Curso feito', 'btn', false, () => false) : breve ? shopBtn('Em breve', 'btn', false, () => false) : shopBtn('Comprar ' + fmt(q.preco), 'btn', lv > 0 && !game.camiCursoTrava && (!q.dep || !!sv.camiCursos[q.dep]) && bank >= q.preco, () => game.buyCamiCurso(q.id), q.preco));
     grid.appendChild(card);
   });
+}
+/* o cartão do Anselmo (v9.5): coqueteleiro, só na Avenida; chega no nível 2 (R$ 90/dia) e cuida do balcão de drinks; não faz as tarefas da lista */
+function buildAnselmo(grid){
+  const eq = game.save.equipe, bank = game.save.bank, A = STAFF.anselmo.levels;
+  const canPay = extra => payroll(eq) + extra <= bank;
+  const pc = v => Math.round(v*100) + '%', sec = v => String(Math.round(v*10)/10).replace('.', ',') + ' s';
+  const lv = eq.anselmo, sp = A[lv] || A[2];
+  const c = staffCard(upgradeIcon('anselmo'), lv ? 'Anselmo · nível ' + (lv - 1) + ' de ' + (A.length - 2) : 'Anselmo (coqueteleiro)',
+    lv ? '' : 'Era o coqueteleiro do restaurante do Bráulio e já chega com habilidade: não faz as tarefas da casa, só o balcão de drinks. Os grupos pedem drinks ao sentar (' + DRINKS.itens.map(d => d.nome).join(', ') + ') e cada um custa ' + fmt(DRINKS.preco) + ' na conta.');
+  const rows = (a, b) => [['Velocidade', a && pc(a.speed), pc(b.speed)], ['Cada drink', a && sec(DRINKS.prep / a.speed), sec(DRINKS.prep / b.speed)], ['Diária', a && fmt(a.pay), fmt(b.pay)]];
+  c.appendChild(lv ? staffNext('Nível ' + (lv - 1) + ':', rows(null, sp)) : staffNext('Se contratar (nível 1):', rows(null, A[2])));
+  if (lv) c.appendChild(el('span', 'cursos-lista', 'Drinks no balcão: fica atrás dele e entrega os copos prontos (' + DRINKS.vagas + ' de cada vez) para a Bia levar às mesas. +' + DRINKS.preco + ' na conta e +' + AVAL.amb.drink.toString().replace('.', ',') + ' ★ no Ambiente.'));
+  c.appendChild(el('span', 'cursos-lista', 'Cursos no Terraço Suíça: os próximos níveis dele chegam lá.'));
+  const duo = el('div', 'duo');
+  if (!lv) duo.appendChild(shopBtn('Contratar', 'btn', canPay(A[2].pay), () => game.setStaff('anselmo', 2)));
+  c.appendChild(duo); grid.appendChild(c);
 }
 function buildDaniCursos(grid){
   const sv = game.save, bank = sv.bank;
@@ -1112,7 +1133,7 @@ function buildShop(){
   ['salao', 'caixa'].forEach(k => $('ov-shop').classList[shopTab === k ? 'add' : 'remove'](k));
   if (shopTab !== 'mudanca') mudarPede = false;
   if (!aberta){ grid.className = 'shopcards'; return shopCartoes(grid, SHOP_GRUPOS.find(x => x.id === shopGrupo)); }
-  grid.className = 'shopgrid' + (shopTab === 'tonhao' || shopTab === 'dani' || shopTab === 'joca' || shopTab === 'cami' || shopTab === 'cardapio' ? ' cursos' : ['salao', 'caixa', 'melhorias', 'gurugol', 'decor'].indexOf(shopTab) >= 0 ? ' ' + shopTab : '');
+  grid.className = 'shopgrid' + (shopTab === 'tonhao' || shopTab === 'dani' || shopTab === 'joca' || shopTab === 'cami' || shopTab === 'anselmo' || shopTab === 'cardapio' ? ' cursos' : ['salao', 'caixa', 'melhorias', 'gurugol', 'decor'].indexOf(shopTab) >= 0 ? ' ' + shopTab : '');
   aberta.build(grid);
 }
 (function(){ const box = $('shop-tabs'); if (box) Array.prototype.forEach.call(box.querySelectorAll('button'), b => b.addEventListener('click', () => { Sfx.init(); Sfx.tap(); shopGrupoAbrir(b.getAttribute('data-v')); }));

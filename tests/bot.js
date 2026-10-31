@@ -47,6 +47,10 @@ function baseBot(g,L,opts){
       for(let i=0;i<k;i++) g.tapStation('espresso',717,345);
       if(k) return;
     }
+    // v9.5, drinks do Anselmo: leva os que carrega à mesa de cada um; pega os copos prontos no balcão quando cabe
+    const dkt=g.tables.filter(t=>t.group&&t.group.drinkOpen&&b.hands.some(h=>h.kind==='drink'&&h.group===t.group));
+    if(dkt.length){ const t=dkt.find(t=>!has(a=>a.type==='table'&&a.id===t.id)); if(t) return g.tapTable(t); }
+    else if(g.drinkPronto.length&&can('drink')&&!has(a=>a.type==='drinks')) return g.tapStation('drinks',650,120);
     // sucos: leva os que estiver carregando e busca mais se alguma mesa ainda espera
     const jt=g.tables.filter(t=>t.group&&t.group.juiceOpen&&t.group.juicePending>0);
     if(b.hands.some(h=>h.kind==='juice')){ const t=jt.find(t=>!has(a=>a.type==='table'&&a.id===t.id)); if(t) return g.tapTable(t); }
@@ -162,6 +166,10 @@ function afiado(g,L){
       while(k<needC && b.acts.length+k<L.filaMax(g.up) && L.handLayout(sim.concat([{kind:'cafeesp'}]),b.tray)){ sim.push({kind:'cafeesp'}); k++; }
       for(let i=0;i<k;i++) g.tapStation('espresso',717,345);
     });
+    // v9.5, drinks do Anselmo: leva os que carrega; busca os prontos no balcão
+    const dkb=g.tables.filter(t=>t.group&&t.group.drinkOpen&&b.hands.some(h=>h.kind==='drink'&&h.group===t.group));
+    if(dkb.length) add(ttl(dkb[0].group)-tw(dkb[0]),()=>g.tapTable(dkb[0]));
+    if(g.drinkPronto.length&&can('drink')&&!has(a=>a.type==='drinks')){ const o=g.drinkPronto[0], to=g.tables.find(t=>t.group===o.grp); add((to?ttl(o.grp):20)-sw('drinks')-(to?walk(ST.drinks.ap.x,ST.drinks.ap.y,to.cx,to.cy):0),()=>g.tapStation('drinks',650,120)); }
     // louça: largar na pia a que está na mão; lavar quando faltam pratos (ou se ninguém mais lava)
     if(dirtyN) add(Math.min(10,plateNeed-6)+sw('sink'),()=>g.tapStation('sink',850,450));
     else if(k.sinkN>0&&!ajd(g,h=>h.washing)){
