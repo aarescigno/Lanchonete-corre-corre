@@ -22,6 +22,7 @@ Origem: retorno do Renan Martorelli (beta-tester) e conversa com o Arthur (15/10
 | 3b-4 | Fiscal da vigilância sanitária | v9.4 | a fazer |
 | 3b-5 | O Anselmo e os drinks da Avenida | v9.5 | a fazer |
 | 3b-6 | A Cami em "Minhas mesas" | v9.6 | a fazer |
+| 3b-7 | Rebalanceamento da escada completa (Garagem, área industrial e Avenida), antes do Terraço | v9.6.1 | a fazer; depois da 3b-6 |
 | 4a | Terraço Suíça e VIPs exigentes (e o capítulo dele) | v10 | a fazer |
 | 4b | Nível de luxo | v10.1 | a fazer |
 | 4c | Eventos de bairro: festa junina e jogo do Brasil | v10.2 | a fazer |
@@ -142,6 +143,19 @@ O curso "Atendimento de mesa" da Cami (3b-3) passa a se comprar e abre o **modo 
 - **Fechamento:** v9.6 (`versoes/`, `vtag`, `VERSAO`, `#ov-ver`, `docs/spec-v9.6.md`, `RESUMO.md`), PR e merge. Ao fechar a 3b, arquive a etapa (`ferramentas/arquiva.py`).
 
 **Modelo:** Sonnet, esforço alto. Regras fechadas, mas é uma 2ª garçonete com IA própria, dividindo grupos com a Bia.
+
+---
+
+### Sessão 3b-7 — Rebalanceamento da escada completa (v9.6.1)
+**Por que aqui:** a 3b-2 a 3b-6 mexem em receita, custo e nota do Gurugol (Dani, Joca, Cami, fiscal, drinks do Anselmo). Rebalancear antes desfaria o ajuste (como a v8.6.4 e a v8.6.6 precisaram de revisão). E o Terraço (4a) é o ponto mais sensível: os números da escada precisam estar firmes antes, para saber se a dificuldade dele vem do desenho ou de um desajuste herdado. É a primeira vez que a escada fica completa e dá para olhar a curva inteira.
+- **Medir primeiro (sem mudar nada):** `node carreira.js` com `DIAS=50` (campanha até a Avenida), `node balance.js` (dias 3 a 7, sem equipe e `EQUIPE=auto`) e `PONTO=industrial` e `PONTO=avenida` (dias 8 a 10, `EQUIPE=auto`). Anotar no `docs/spec-v9.6.1.md` a tabela: dia, meta, % da meta, nota do Gurugol, dinheiro, e quando cada mudança de ponto fica possível.
+- **Alvos:** sem equipe ~40–70% das metas nos dias 3 a 7; `EQUIPE=auto` ~85–95% (também nos pontos); nota do Gurugol perto do teto do ponto, com `avalMinimo` (2,7 para sair da Garagem e 3,4 da área industrial) alcançável sem fazer tudo perfeito; a mudança de ponto chega em dias de campanha parecidos com os de antes da 3b (sem pular nem travar).
+- **O que se pode mexer, só em números:** metas por dia e por ponto (`10-constantes.js`), multiplicadores do cardápio dos pontos, aluguel e custo da mudança, `MANUT`, `AVAL` (teto, bônus, `avalMinimo`) e custos/preços da equipe e dos cursos. **Não mexer** em regras, textos, cenário nem na ordem das etapas.
+- **Como decidir (um número por vez, medindo de novo):** fora da faixa para cima, subir meta ou custo do que sobra; para baixo, o contrário. Se o `EQUIPE=auto` passar de 95%, mexer primeiro nas metas do ponto, não nos preços. Se a nota não alcançar o `avalMinimo`, mexer no `AVAL` do ponto, não no mínimo. Mudar no máximo 3 números por rodada de medição; registrar cada um (antes, depois, motivo) na spec.
+- **Testes:** `tests/run_all.sh --tudo` verde; ajustar só os valores esperados dos smokes que citem número mexido (sem relaxar conferência). Save da v9.6 carrega igual.
+- **Fechamento:** v9.6.1 (`versoes/`, `vtag`, `VERSAO`, `#ov-ver`, `docs/spec-v9.6.1.md`, `RESUMO.md`), PR e merge. Se não mudar nenhum número (a escada já estiver na faixa), vale como a 2c-r7b: sem versão nova, só o registro na spec.
+
+**Modelo:** Opus, esforço médio. Balanceamento por tentativa, olhando a escada toda; as regras já estão fechadas acima. Se a medição já mostrar tudo na faixa, é só registrar, e o Sonnet dá conta.
 
 ---
 
