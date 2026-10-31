@@ -66,7 +66,7 @@ class Game {
     this.bia.reset();
     this.dani.reset();
     this.fx = [];
-    this.stats = { served:0, lost:0, chain:0, spawned:0, full:0, vip:0, vipLost:0, juice:0, juiceMiss:0, trash:0, washed:0, emptied:0, sucoEsp:0, crit:0, consertos:0, quebras:0, lostBy:{ semMesa:0, comMesa:0, pedido:0, prato:0, conta:0, retirada:0 }, lotadoT:0, marmitas:0, esfriou:0 };
+    this.stats = { served:0, lost:0, chain:0, spawned:0, full:0, vip:0, vipLost:0, juice:0, juiceMiss:0, trash:0, washed:0, emptied:0, sucoEsp:0, crit:0, consertos:0, quebras:0, lostBy:{ semMesa:0, comMesa:0, pedido:0, prato:0, conta:0, retirada:0 }, lotadoT:0, bravoMesa:0, lixoCheio:false, marmitas:0, esfriou:0 };
     this.lastKind = null; this.chainN = 0;
     this.ending = false; this.endTimer = 0; this.reason = '';
     this.sel = null; this.drag = null; this.hover = null;
@@ -169,6 +169,7 @@ class Game {
   }
   /* revisão na lojinha: volta a 100% e tira a quebra já sorteada para o equipamento */
   revisar(id){
+    if (!this.cartaoAberto('manut')) return false;
     const e = this.manut[id], v = manutPreco(id, e);
     if (!manutOf(id) || !v || (!DEV.on && this.save.bank < v)) return false;
     if (!DEV.on){ this.save.bank -= v; caixaGasto(this.save, 'man', v); }
@@ -254,7 +255,7 @@ class Game {
   /* alguém além da Bia lava a louça (Dani com a tarefa, ou o Tonhão com aumento) */
   get otherWasher(){ return this.dani.does('lavar') || this.kitchen.chef.wash > 0; }
   /* restos no lixo: +n, até encher */
-  addTrash(n){ this.trash = Math.min(TRASH.cap, this.trash + n); }
+  addTrash(n){ this.trash = Math.min(TRASH.cap, this.trash + n); if (this.trashFull) this.stats.lixoCheio = true; }
   /* lava até n pilhas da pia: devolve pratos limpos e joga os restos no lixo */
   washPiles(n){
     n = Math.min(n, this.kitchen.sinkN);
@@ -719,6 +720,7 @@ class Game {
     const h = bravo ? 0 : (rand(-A.humor.var, A.humor.var) + (Math.random() < encanta ? rand(A.humor.extra[0], A.humor.extra[1]) : 0)) * faixa;
     const r = s.map(v => v == null ? null : clamp(Math.round((avalEscala(v, teto) + h) * 10) / 10, 1, lim));
     const txt = avalComentario(s, bravo, this.trashFull, this.ponto.nivel, decor, g.fria, g.semVeg, g.type, !CURSOS.some(c => c.preco > 0 && cursoNivel(this.save.cursos, c.id) >= 1)), nota = avalNota(r), f = avalFrac(nota, teto);
+    if (bravo === 'mesa') this.stats.bravoMesa++;   // v9.0.4: gatilho do cartão da Bia
     this.avals.push({ r, s, txt, k:g.type, v:g.vip });
     // balãozinho branco (sobe devagar, acima dos textos da conta)
     this.fx.push({ k:'text', box:true, x, y, vy:-12, life:2.8, max:2.8, text:fmtNota(nota) + '★ ' + txt, color:f >= 0.75 ? PAL.ok : f >= 0.5 ? PAL.alerta : PAL.perigo, size:13 });
@@ -850,6 +852,7 @@ class Game {
     sv.avalCom = normAvalCom(sv.avalCom.concat(this.avals.map(a => ({ d:d.n, n:Math.round(avalNota(a.r) * 10), t:a.txt, k:a.k, v:a.v }))));
     const ord = this.avals.slice().sort((a, b) => avalNota(b.r) - avalNota(a.r)), coment = [];
     if (ord.length) [ord[0], ord[ord.length - 1], pick(ord)].forEach(a => { if (!coment.includes(a.txt)) coment.push(a.txt); });
+    const avsDia = this.avals;   // v9.0.4: o gatilho dos cartões da lojinha lê as notas cruas do dia
     this.avals = [];   // já estão no save (a nota do HUD não conta duas vezes)
     // caixa no negativo: BANCO.neg dias seguidos podem; no seguinte, o banco cobre o que falta, à força
     let forcado = 0;
@@ -871,6 +874,21 @@ class Game {
     }
     if (!tomou && HIST.on && !DEV.on && sv.histV === 1 && d.n >= HIST_CARDAPIO.dia && !sv.convCard) sv.convCard = 'pend';   // v9.0.1: saves antigos que já passaram do dia 2 veem a conversa no próximo fim de dia
     if (!tomou && HIST.on && !DEV.on && sv.histV === 1 && d.n === DIVULGA_DIA - 1 && !sv.convDiv) sv.convDiv = 'pend';   // v9.0.2: a conversa da divulgação
+    if (!tomou && HIST.on && !DEV.on && sv.histV === 1 && sv.cap < 4){   // v9.0.4: a lojinha abre aos poucos: pelo gatilho do dia ou pela garantia
+      const novas = [];
+      LIBERA.forEach(L => {
+        if (sv.libera[L.id] !== 0 || d.n < L.dia) return;
+        const g = this.liberaGatilho(L.id, avsDia);
+        if (!g && d.n < L.ate) return;
+        sv.libera[L.id] = 'pend';
+        if (g) novas.push(L.id === 'melhorias' && this.stats.lixoCheio ? L.lixo : pick(L.reclama));
+      });
+      if (novas.length){
+        novas.forEach(t => { coment.unshift(t); sv.avalCom.push({ d:d.n, n:20, t, k:'estudante' }); });
+        coment.length = Math.min(coment.length, 3);
+        sv.avalCom = normAvalCom(sv.avalCom);
+      }
+    }
     const row = { d:d.n, fat, ingr:Math.round(this.custo), contas:this.contas, folha:this.paid, div:this.paidDiv, lucro:m, meta:d.meta, ok:passed, st:stars, perd:this.stats.lost, saldo:sv.bank };
     if (avDia) row.av = Math.round(avDia.nota * 10);
     if (forcado) row.forc = 1;
@@ -1051,9 +1069,26 @@ class Game {
     else return false;
     writeSave(this.save); return true;
   }
+  /* v9.0.4: a lojinha abre aos poucos no Modo História (LIBERA); fora dele, no modo dev e do cap. 4 em diante, tudo aberto */
+  cartaoAberto(id){
+    if (!liberaOf(id) || DEV.on || !HIST.on || this.save.histV !== 1 || this.save.cap >= 4) return true;
+    return this.save.libera[id] >= 1;
+  }
+  get liberaNovo(){ return LIBERA.filter(L => this.save.libera[L.id] === 1).map(L => L.id); }
+  liberaVer(id){ if (this.save.libera[id] === 1){ this.save.libera[id] = 2; writeSave(this.save); } }
+  /* gatilho do dia para cada cartão (v9.0.4): a reclamação que faz a Bia ter a ideia */
+  liberaGatilho(id, av){
+    const st = this.stats, tres = (i, lim) => av.filter(a => a.s && a.s[i] != null && a.s[i] <= lim).length >= 3;
+    if (id === 'bia') return st.bravoMesa >= 1 || tres(1, 3);
+    if (id === 'melhorias') return st.lixoCheio || tres(0, 3);
+    if (id === 'manut') return Math.min.apply(null, MANUT.equip.map(q => this.manut[q.id])) < MANUT.verde;
+    if (id === 'salao') return st.lostBy.semMesa >= 1 || st.lotadoT >= 90;
+    if (id === 'decor') return tres(4, 2.5);
+    return false;
+  }
   buy(id){
     const u = UPGRADES.find(x => x.id === id);
-    if (!u) return false;
+    if (!u || !this.cartaoAberto(upgradeCartao(id))) return false;
     const cost = upgradeDe(u, this.ponto).cost;
     if ((!u.multi && this.up[id]) || (u.req && !this.up[u.req]) || this.save.bank < cost) return false;
     this.save.bank -= cost;
@@ -1139,6 +1174,7 @@ class Game {
   /* mesa nova com as cadeiras (2 ou 4 lugares), até o teto do ponto (contando o estoque): entra no primeiro lugar
      livre, ou o salão é rearrumado sozinho se não houver; se nem assim couber, vai para o estoque */
   buyMesa(seats){
+    if (!this.cartaoAberto('salao')) return false;
     const p = this.ponto, mesas = this.save.salao.mesas, price = mesaPreco(seats);
     if (this.lugaresTot + seats > p.lugares) return this.salaoNao('A garagem tem lugar para ' + p.lugares + ' pessoas, no máximo.');
     if (this.save.bank < price) return this.salaoNao('Falta dinheiro.');
@@ -1212,6 +1248,7 @@ class Game {
   }
   /* decoração (v8.6.5): enfeite novo (fica à mostra), à vontade */
   buyDecor(id){
+    if (!this.cartaoAberto('decor')) return false;
     const d = decorOf(id), dec = this.save.decor;
     if (!d || id in dec || this.save.bank < d.cost || (d.nivel && this.ponto.nivel < d.nivel && !DEV.on)) return false;
     this.save.bank -= d.cost; caixaGasto(this.save, 'sal', d.cost);
@@ -1229,6 +1266,7 @@ class Game {
   }
   /* toalha xadrez na mesa i (do salão ou do estoque) */
   buyToalha(i, est){
+    if (!this.cartaoAberto('salao')) return false;
     const m = (est ? this.estoque : this.save.salao.mesas)[i];
     if (!m || m.t) return false;
     if (this.save.bank < TOALHA.cost) return this.salaoNao('Falta dinheiro.');
@@ -1239,6 +1277,7 @@ class Game {
   /* toalha em todas as mesas que ainda não têm (salão e estoque) */
   get semToalha(){ return this.save.salao.mesas.concat(this.estoque).filter(m => !m.t); }
   buyToalhas(){
+    if (!this.cartaoAberto('salao')) return false;
     const l = this.semToalha, v = l.length * TOALHA.cost;
     if (!l.length || this.save.bank < v) return false;
     this.save.bank -= v; caixaGasto(this.save, 'sal', v);
