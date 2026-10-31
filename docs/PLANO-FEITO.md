@@ -994,3 +994,124 @@ v9: guardar a v8.9 em `versoes/`, `vtag`, `VERSAO`, `#ov-ver`, `docs/spec-v9.md`
 **Fora:** o Joca (vai para a 3b), a Avenida Brasil, eventos de bairro (4c), o nível de luxo.
 
 **Modelo:** Sonnet, esforço alto. Tudo decidido, mas é sistema novo (mudança de ponto, clientela por ponto, cenário inteiro novo) e mexe em muitas partes; a calibração da mudança pode pedir 2 ou 3 rodadas.
+
+## Etapa 2c-r7 — A lojinha abre aos poucos (v9.0.4 e v9.0.5, em 2 sessões)
+Origem: pedido do usuário (31/10, `docs/PROPOSTAS.md`): a lojinha não deve assustar quem chega nela pela primeira vez. Os cartões aparecem com o tempo, quando a freguesia reclama de alguma coisa e a Bia tem a ideia de investir nela, como já acontece com o Cardápio (conversa do fim do dia 1) e a Divulgação (conversa do fim do dia 3). Planejada com o usuário em 31/10; as decisões abaixo estão tomadas. A **sessão a** monta o sistema com a ordem-rascunho; a **sessão b** é o momento separado de rebalanceamento: compara ordens com o bot e fecha a ordem com o usuário.
+
+### Decisões tomadas (31/10)
+- **Gatilho misto:** cada cartão tem um **dia mínimo** e uma **garantia**. Do dia mínimo em diante, ele fica pendente no fim do dia em que acontece a reclamação ligada a ele; se ela não vier, fica pendente no fim do dia da garantia de qualquer jeito.
+- **Pendente → conversa → aberto:** pendente, o cartão continua escondido (como a Divulgação na v9.0.3). A conversa dele toca no próximo fim de dia livre, pela fila de hoje (uma conversa por fim de dia; as de capítulo primeiro). No fim, a lojinha abre direto nele.
+- **Escondido:** antes de abrir, o cartão nem aparece (sem cadeado). Aberto, ganha o selo "novo" até ser tocado (o mesmo selo do Cardápio), e o grupo dele também, quando outro grupo está aberto.
+- **Só os cartões:** quando um cartão abre, todos os itens dele aparecem juntos (Melhorias inteira, Bia inteira). Itens não são liberados um a um.
+- **Só no Modo História:** fora dele (`HIST.on` falso ou save sem a História), no modo dev, no Turno sem fim e do cap. 4 em diante (área industrial), tudo aberto. **Saves de antes da v9.0.4** abrem com tudo aberto, sem conversa (ninguém perde cartão que já usava).
+- **Sempre abertos:** Cardápio, Tonhão, Banco, Caixa e Gurugol. Dani (cap. 2), Divulgação (dia 4 e conversa) e Mudança (cap. 3) seguem as regras de hoje. **Liberados por esta etapa:** Bia, Melhorias, Manutenção, Salão e Decoração.
+- **Antes da 3b**, para o Joca e o que a Avenida Brasil trouxer à lojinha já nascerem nesse sistema.
+
+### Ordem-rascunho (a sessão b confirma ou troca)
+Na 1ª lojinha (fim do dia 1) ficam à vista: Lanchonete › Cardápio; Equipe › Tonhão; Dinheiro › Banco e Caixa; Gurugol.
+
+| Ordem | Cartão | Dia mínimo | Gatilho no dia (reclamação) | Garantia |
+|---|---|---|---|---|
+| 1 | `bia` (Equipe › Bia) | 2 | algum grupo saiu bravo da mesa (`bravo === 'mesa'`) ou 3+ avaliações do dia com Agilidade `s[1] <= 3` | 4 |
+| 2 | `melhorias` | 3 | a lixeira encheu em algum momento do dia, ou 3+ avaliações com Espera `s[0] <= 3` | 5 |
+| 3 | `manut` | 3 | no fim do dia, o pior equipamento está abaixo de `MANUT.verde` (barra amarela) | 5 |
+| 4 | `salao` | 4 | alguém desistiu da fila sem mesa (`lostBy.semMesa >= 1`) ou `stats.lotadoT >= 90` | 6 |
+| 5 | `decor` | 5 | 3+ avaliações com Ambiente `s[4] <= 2.5` (na Garagem quase sempre: o Ambiente começa em 2; na prática abre no dia mínimo) | 7 |
+
+`s` é a lista de notas cruas de cada avaliação (escala 1 a 5, a do `avalComentario`), guardada hoje em `this.avals[].s`. A Manutenção não espera a fila: se ela e outro cartão estiverem pendentes, a dela toca primeiro (a quebra só acontece no vermelho, e da amarela até lá são alguns dias). Sequência típica: fim do dia 1, Cardápio; dia 2, cap. 1 → 2; dia 3, Divulgação; dia 4, Bia; dia 5, Manutenção ou Melhorias; e assim até a Decoração, por volta do dia 8.
+
+### Sessão 2c-r7a — Cartões que abrem com reclamação e conversa (v9.0.4)
+**`src/10-constantes.js`**
+- Depois de `HIST_DIVULGA`:
+  ```js
+  /* v9.0.4: a lojinha abre aos poucos no Modo História. Cada cartão: dia mínimo, garantia (ate), as reclamações do Gurugol
+     no dia do gatilho e a conversa do fim do dia. save.libera[id]: 0 fechado | 'pend' | 1 aberto (selo "novo") | 2 aberto e visto */
+  const LIBERA = [
+    { id:'bia', dia:2, ate:4, reclama:['A moça corre pra lá e pra cá e não dá conta!', 'Demorou um século pra anotarem o pedido.'],
+      falas:[ { q:'bia', s:'Hoje um freguês disse que eu corro pra lá e pra cá e não dou conta.' },
+              { q:'tonhao', nota:'olhando o pé dela', s:'Também, com esse chinelo! Compra um tênis decente, Bia.' },
+              { q:'bia', s:'E uma bandeja, pra levar dois pratos de uma vez...' },
+              { q:'tonhao', s:'Tá tudo na lojinha, em Equipe, no seu nome.' } ] },
+    { id:'melhorias', dia:3, ate:5, reclama:['Esperei no sol sem nem um copo d\'água.', 'Que calor aqui dentro!'], lixo:'Que cheiro de lixo!',
+      falas:[ { q:'bia', s:'Tio, um moço reclamou que esperou no sol sem nem um copo d\'água.' },
+              { q:'tonhao', s:'Dá pra pôr uma torneira lá fora. E um ventilador aqui, que a cozinha tá um forno.' },
+              { q:'bia', s:'E um triturador, pra lixeira não encher tão rápido!' },
+              { q:'tonhao', s:'Calma, uma coisa de cada vez. Vê nas Melhorias o que cabe no bolso.' } ] },
+    { id:'manut', dia:3, ate:5, primeiro:true, reclama:['O café veio com gosto de queimado.', 'A comida demorou... o fogão tá fraco?'],
+      falas:[ { q:'tonhao', nota:'batendo na lateral do fogão', s:'Esse fogão tá com a chama amarela. Coisa boa não é.' },
+              { q:'bia', s:'Vai quebrar?' },
+              { q:'tonhao', s:'Se ninguém olhar, um dia quebra no meio do almoço. Melhor chamar o técnico antes.' },
+              { q:'bia', s:'Vou ver na Manutenção quanto custa a revisão.' } ] },
+    { id:'salao', dia:4, ate:6, reclama:['Nem consegui sentar.', 'Só tem quatro mesinhas?'],
+      falas:[ { q:'bia', s:'Hoje teve gente indo embora da fila: não tinha mesa pra todo mundo.' },
+              { q:'tonhao', s:'Na garagem ainda cabem umas mesinhas. Cadeira de plástico é baratinha.' },
+              { q:'bia', s:'Vou ver no Salão onde encaixar.' } ] },
+    { id:'decor', dia:5, ate:7, reclama:['Parece uma garagem.', 'Lugar meio sem graça.'],
+      falas:[ { q:'bia', s:'Escreveram no Gurugol: "parece uma garagem".' },
+              { q:'tonhao', s:'Mas é uma garagem!' },
+              { q:'bia', s:'Uma plantinha, a foto da mãe na parede... fica com cara de casa.' },
+              { q:'tonhao', nota:'sorrindo', s:'Isso a Rosa ia gostar. Vê na Decoração.' } ] } ];
+  function liberaOf(id){ return LIBERA.find(l => l.id === id) || null; }
+  ```
+- Mova `BIA_IDS` de `41-lojinha.js` para cá (a lógica precisa dele) e acrescente `function upgradeCartao(id){ return BIA_IDS.indexOf(id) >= 0 ? 'bia' : 'melhorias'; }`.
+
+**`src/12-clientes.js` (`normSave`)**
+- `libera`: objeto com uma chave por `LIBERA` (valores `0`, `'pend'`, `1` ou `2`). Save novo: tudo `0`. Save sem `s.libera` que não é novo (já tem `s.dia`): tudo `2`. O `resetProgress` zera.
+
+**`src/16-jogo.js`**
+- `cartaoAberto(id)`: `true` se o id não está em `LIBERA`, ou com `DEV.on`, `!HIST.on`, `this.save.histV !== 1`, `this.save.cap >= 4`, ou `this.save.libera[id] >= 1`.
+- `buy(id)` recusa se `!this.cartaoAberto(upgradeCartao(id))`; `buyMesa`, `buyToalha` e `buyToalhas` recusam sem `salao`; `buyDecor` sem `decor`; `revisar` sem `manut` (o conserto de emergência na plaquinha continua valendo sempre).
+- Durante o dia: `this.stats.lixoCheio = true` quando `this.trashFull` (no `update`, onde o lixo enche).
+- Fim do dia, junto das linhas do `convCard`/`convDiv` (~linha 872), com as mesmas condições (`!tomou && HIST.on && !DEV.on && sv.histV === 1`) e `sv.cap < 4`: para cada `L` de `LIBERA` com `sv.libera[L.id] === 0` e `d.n >= L.dia`, calcule o gatilho (tabela acima, sobre `this.avals`, `this.stats` e `this.manut`). Se o gatilho veio ou `d.n >= L.ate`, `sv.libera[L.id] = 'pend'`. Quando foi pelo gatilho, ponha uma das `L.reclama` (no `melhorias`, `L.lixo` se a lixeira encheu) na frente do `coment` do resultado (com 3, sai o último) e no `sv.avalCom`. Pode ficar mais de um pendente no mesmo dia.
+- `get liberaNovo()`: a lista dos ids com `sv.libera[id] === 1`; `liberaVer(id)`: `1 → 2` e grava o save.
+
+**`src/43-telas.js` (`fluxoHistoria`)**
+- Depois das de capítulo e antes do `fim()`, a ordem das extras passa a ser: a da Manutenção pendente (a que tem `primeiro`), Cardápio, Divulgação e as outras de `LIBERA` na ordem da lista. Uma só por fim de dia, como hoje. Ao terminar (ou ao pular): `sv.libera[id] = 1`, `writeSave`, `shopEntra = id`, `fim()`.
+- Na entrada da lojinha com `shopEntra`, o grupo aberto é o do cartão (`shopGrupoDe`), não sempre o Lanchonete.
+
+**`src/41-lojinha.js`**
+- `shopSecoesVis`: também filtra `game.cartaoAberto(id)`.
+- `shopCartoes`: cartão com `game.liberaNovo` contendo o id ganha a classe `novo` e o `aria-label` "Nome: novo na lojinha"; ao tocar, `game.liberaVer(id)`. A fileira de grupos: o grupo leva `novo` (quando outro grupo está aberto) se tiver cartão novo, generalizando o código de hoje do Cardápio.
+- `shopAbrir(sec)` para um cartão fechado (ex.: o "Ver cursos" ou algum atalho antigo) abre os cartões do grupo, sem a seção.
+
+**`src/40-interface.js` (Como jogar)**
+- Uma frase: "No Modo História, a lojinha abre aos poucos: quando a freguesia reclama de alguma coisa, a Bia descobre o que comprar." Procure em Como jogar e nas dicas textos que mandam a pessoa a um cartão que pode estar fechado no começo; mantenha-os (valem para depois), sem prometer o cartão no dia 1.
+
+**Testes**
+- **`smoke41.js` (novo)**, com `load({historia:true})`:
+  1. Lojinha depois do dia 1: grupo Lanchonete só com Cardápio; Equipe só com Tonhão; Dinheiro com Banco e Caixa. `game.buy('tenis')` e `game.buyMesa(2)` recusam.
+  2. Gatilho: no dia 2, com um grupo saindo bravo da mesa, `libera.bia === 'pend'` e o `coment` do resultado começa com uma das `reclama` da Bia; sem gatilho, no dia 4 vira `'pend'` pela garantia (e o `coment` não ganha a reclamação).
+  3. Fluxo: com `bia` pendente e sem capítulo, toca a 1ª fala "Hoje um freguês disse...", depois `libera.bia === 1`, a lojinha abre em Equipe › Bia e o cartão tem `novo`; tocar nele deixa `2` e tira o selo. Com capítulo na troca de dia, a conversa da Bia espera para a seguinte.
+  4. Manutenção primeiro: com `manut` e `salao` pendentes juntos, toca a da Manutenção.
+  5. Sem a História (`load()` padrão), modo dev e save com `cap: 4`: todos os cartões à vista e `buy` funciona. Save antigo (com `dia: 9` e sem `libera`): tudo `2`.
+- Testes antigos que compram Melhorias, mesas ou enfeites com a História ligada (`smoke34`, `smoke38`, `smoke39`, `smoke40` e os `shot_*.py`): ponha `libera` com tudo `2` no save do teste. Não mude o que eles conferem.
+- **`carreira.js`:** fecha as conversas pendentes entre os dias (como a do cardápio, linha ~74): `'pend'` → `2`. O bot já compra pelo `game.buy`, que recusa cartão fechado: os números mudam um pouco (é esperado; a sessão b compara). Rode `node carreira.js 20` e anote no spec os dias dos capítulos e da mudança, ao lado dos da v9.0.3.
+- `./run_all.sh --tudo` verde (o `balance.js` não liga a História, então não pode mudar).
+- Captura `shot_v9_0_4.py` em `capturas/v9.0.4`: a 1ª lojinha (grupos Lanchonete, Equipe e Dinheiro), a conversa da Bia e a lojinha aberta em Equipe com o selo, em 1220×600 e no celular em pé (390×844). Confira com recortes ampliados (PIL `crop`) dos cartões com o selo.
+
+**Fechamento:** v9.0.4. Guarde a v9.0.3 em `versoes/`, atualize `vtag`, `VERSAO` e o painel `#ov-ver` ("v9.0.4 — A lojinha abre aos poucos no Modo História: Bia, Melhorias, Manutenção, Salão e Decoração aparecem quando a freguesia reclama, com uma conversa da Bia e do Tonhão."), escreva `docs/spec-v9.0.4.md`, atualize `docs/RESUMO.md`, `docs/PARTES.md` (`LIBERA`, `cartaoAberto`) e a tabela. PR com merge; avise que está pronta para publicar.
+
+Modelo: Sonnet, esforço médio (plano fechado: dados novos, um filtro na lojinha, a fila de conversas e testes).
+
+### Sessão 2c-r7b — Rebalanceamento e a melhor ordem de liberação (v9.0.5, se algum valor mudar)
+O momento separado para conferir a ordem e o equilíbrio. Nada de cartão novo nem de texto novo; só os números de `LIBERA` (ordem, `dia`, `ate`) e, se preciso, o que está dito abaixo.
+
+**Ferramentas (`tests/`, sem mexer em `src/`)**
+- `carreira.js` ganha: `LIBERA=0` (tudo aberto, o jogo da v9.0.3: a base de comparação); `LIBERA_ORDEM=bia,salao,...` (reordena a lista); `LIBERA_CFG='{"salao":{"dia":3,"ate":5}}'` (troca dia e garantia); e uma linha `LIBERA | cartão: dia médio em que abre (n/N) · cartões à vista por dia, dias 1 a 10 · cartões novos no mesmo dia (máx.) · Manutenção aberta antes da 1ª barra vermelha (n/N)`.
+
+**Ordens a comparar** (`node carreira.js 40` em cada, mais a base `LIBERA=0`):
+- **A** (rascunho): bia, melhorias, manut, salao, decor.
+- **B** (mesas antes): bia, salao, melhorias, manut, decor (o `dia`/`ate` de cada posição seguem a coluna da tabela: 2/4, 3/5, 3/5, 4/6, 5/7).
+- **C** (enfeites antes, porque são baratos e sobem o Ambiente para as notas dos caps. 2 e 3): decor, bia, melhorias, manut, salao.
+
+**Critérios (decididos):**
+1. Obrigatórios, contra a base: dia médio do cap. 3 cumprido e da mudança no máximo **+1 dia**; dias no negativo no máximo **+10%** (relativo); lucro acumulado no dia 14 no mínimo **90%**; Manutenção aberta antes da 1ª barra vermelha em **100%** das rodadas.
+2. Curva: no máximo **1 cartão novo por fim de dia**; todos os cinco abertos **até o dia 9** em pelo menos 90% das rodadas.
+3. Entre as ordens que passam, a de cap. 3 mais cedo; empate (diferença menor que 0,3 dia), a **A** (a narrativa foi escrita nela).
+4. **Se nenhuma passar:** baixe em 1 o `ate` de todos os cartões (nunca abaixo do `dia`) e rode de novo as três. Se ainda assim nenhuma passar, pare e mostre a tabela ao usuário, sem mexer em metas, preços nem capítulos.
+
+**Checagem com o usuário:** monte no `docs/spec-v9.0.5.md` (ou no spec da v9.0.4, se nada mudar) a tabela das três ordens com os números e a curva de cartões por dia. Gere `shot_v9_0_5.py` em `capturas/v9.0.5` com a lojinha no fim dos dias 1 a 8 da ordem escolhida (1220×600), e peça ao usuário para jogar os 7 primeiros dias no Modo História e dizer: (a) se a 1ª lojinha ficou leve; (b) se alguma conversa chegou tarde demais (ex.: queria mesa antes); (c) se alguma chegou junto demais de outra. Se ele pedir troca, aplique a ordem ou o dia que ele escolher e rode o `carreira.js` só para conferir os critérios 1 e 2.
+
+**Fechamento:** se `LIBERA` mudou, v9.0.5 (como na v9.0.4: `versoes/`, `vtag`, `VERSAO`, `#ov-ver` "v9.0.5 — A ordem em que a lojinha abre foi conferida e ajustada."); se não mudou, só o spec e a tabela acima, sem versão nova. `./run_all.sh --tudo` verde, PR com merge.
+
+Modelo: Sonnet, esforço alto (balanceamento por tentativa com critérios fechados e conversa com o usuário no fim).
