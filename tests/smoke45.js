@@ -13,7 +13,7 @@ const joga=(H,fat)=>{ const {g,els}=H; if(g.state==='shop') els['btn-shop-go'].f
 const cursos=(H,o)=>{ const {g}=H; Object.keys(o).forEach(k=>{ g.save[k]=Object.assign(g.save[k]||{},o[k]); }); const dc=g.save.daniCursos, jc=g.save.jocaCursos;
   if(dc.confCaseira) g.up.confCaseira=true; if(dc.confGourmet&&dc.confCaseira) g.up.confGourmet=true; if(jc.espresso) g.up.espresso=true; };
 // dia aberto na Avenida, sem chegadas
-const aberto=(sv,o,cur)=>{ const H=jogo(6,'avenida',Object.assign({ pontoDia:5, libera:{ confeitaria:2, joca:2, cami:2 } },sv||{}),o), {g}=H; if(cur) cursos(H,cur); g.begin(); g.mode='carreira'; g.schedule.forEach(s=>{ s.t=9999; }); return H; };
+const aberto=(sv,o,cur)=>{ const H=jogo(6,'avenida',Object.assign({ pontoDia:5, libera:{ confeitaria:2, joca:2, cami:2, anselmo:2 } },sv||{}),o), {g}=H; if(cur) cursos(H,cur); g.begin(); g.mode='carreira'; g.schedule.forEach(s=>{ s.t=9999; }); return H; };
 const mesa=(H,cafes,doces,tipo)=>{ const {g,L}=H, t=g.tables[0]; const m=new L.Group(g,tipo||'executiva',++g.gid,0,false); m.juiceWant=0; m.cafePede=false; t.group=m; m.table=t; m.setState('eating'); m.timer=0.01; m.hearts=4; m.doces=doces||[]; m.cafes=cafes||[]; g.groups.push(m); m.update(0.05); return m; };
 const AV={ daniCursos:{ confCaseira:1 } }, ESP={ daniCursos:{ confCaseira:1 }, jocaCursos:{ espresso:1 } };
 
@@ -60,9 +60,9 @@ const AV={ daniCursos:{ confCaseira:1 } }, ESP={ daniCursos:{ confCaseira:1 }, j
   let e2=''; try { H.L.render(g,H.ctx); g.up.confGourmet=false; H.L.render(g,H.ctx); } catch(e){ e2=String(e); } ok(!e2,'e a caseira também '+e2); }
 
 // ---------- 5. espresso: só na Avenida, com o Joca contratado ----------
-{ let H=jogo(6,'industrial',{ pontoDia:5, equipe:{ tonhao:1, dani:2, joca:2 }, daniCursos:{ confCaseira:1 }, libera:{ confeitaria:2, joca:2 } }), g=H.g; g.save.bank=5000;
+{ let H=jogo(6,'industrial',{ pontoDia:5, equipe:{ tonhao:1, dani:2, joca:2 }, daniCursos:{ confCaseira:1 }, libera:{ confeitaria:2, joca:2, anselmo:2 } }), g=H.g; g.save.bank=5000;
   ok(!g.buyJocaCurso('espresso'),'na área industrial o espresso não existe');
-  H=jogo(6,'avenida',{ pontoDia:5, equipe:{ tonhao:1, dani:2 }, daniCursos:{ confCaseira:1 }, libera:{ confeitaria:2, joca:2 } }); g=H.g; g.save.bank=5000;
+  H=jogo(6,'avenida',{ pontoDia:5, equipe:{ tonhao:1, dani:2 }, daniCursos:{ confCaseira:1 }, libera:{ confeitaria:2, joca:2, anselmo:2 } }); g=H.g; g.save.bank=5000;
   ok(!g.buyJocaCurso('espresso'),'sem o Joca contratado, não se compra');
   g.save.equipe.joca=2; const b0=g.save.bank; g.save.jocaCursoDia=0;
   ok(g.buyJocaCurso('espresso') && g.save.jocaCursos.espresso===1 && g.up.espresso===true && b0-g.save.bank===350 && H.L.jocaXp(g.save)===2,'com o Joca: R$ 350, liga a máquina e dá +2 de experiência');
@@ -110,8 +110,8 @@ const AV={ daniCursos:{ confCaseira:1 } }, ESP={ daniCursos:{ confCaseira:1 }, j
   const S=aberto({ equipe:{ tonhao:1, dani:3, joca:3, daniTasks:['cafe'], jocaTasks:['lixo','lavar'] } },null,AV).g; ok(S.dani.tasks.join()==='cafe' && S.joca.tasks.join()==='lixo,lavar','sem o curso de espresso: a Dani segue com o cafezinho e o Joca com o básico'); }
 
 // ---------- 9. a Cami: conversa, contratação, folha ----------
-{ let H=jogo(6,'avenida',{ pontoDia:5, equipe:{ tonhao:1, dani:3, joca:3 }, daniCursos:{ confCaseira:1 }, libera:{ confeitaria:2, joca:2 } }), g=H.g; joga(H,400); ok(g.save.libera.cami===0,'sem o espresso, a Cami não vem');
-  H=jogo(6,'avenida',{ pontoDia:5, equipe:{ tonhao:1, dani:3, joca:3 }, daniCursos:{ confCaseira:1 }, jocaCursos:{ espresso:1 }, libera:{ confeitaria:2, joca:2 } }); g=H.g; cursos(H,{}); joga(H,400);
+{ let H=jogo(6,'avenida',{ pontoDia:5, equipe:{ tonhao:1, dani:3, joca:3 }, daniCursos:{ confCaseira:1 }, libera:{ confeitaria:2, joca:2, anselmo:2 } }), g=H.g; joga(H,400); ok(g.save.libera.cami===0,'sem o espresso, a Cami não vem');
+  H=jogo(6,'avenida',{ pontoDia:5, equipe:{ tonhao:1, dani:3, joca:3 }, daniCursos:{ confCaseira:1 }, jocaCursos:{ espresso:1 }, libera:{ confeitaria:2, joca:2, anselmo:2 } }); g=H.g; cursos(H,{}); joga(H,400);
   ok(g.save.libera.cami==='pend' && !g.cartaoAberto('cami'),'espresso feito: a conversa da Cami fica pendente no fim do dia');
   H.els['btn-next'].fire('click'); let n=0; while(!(g.conversa && /louça vai acumular/.test(g.conversa.fala.s)) && n<30){ toque(H.els); n++; } ok(g.conversa && /louça vai acumular/.test(g.conversa.fala.s),'a conversa toca no fim do dia do curso');
   passa(H); ok(g.save.libera.cami===1 && g.cartaoAberto('cami') && g.liberaNovo.includes('cami'),'depois dela: o cartão da Cami abre, com selo');
@@ -140,7 +140,7 @@ const AV={ daniCursos:{ confCaseira:1 } }, ESP={ daniCursos:{ confCaseira:1 }, j
   const m=mesa(H,['espresso','cappuccino']); for(let i=0;i<1400 && m.cafesFalta>0;i++){ g.update(0.05); m.patLeft=99; } ok(m.cafesFalta===0 && g.joca.feitas>=1,'os três no dia: o Joca leva os cafés, sem briga'); }
 
 // ---------- 11. os cursos e os níveis da Cami ----------
-{ const H=aberto({ equipe:{ tonhao:1, dani:3, joca:3, cami:1 }, libera:{ confeitaria:2, joca:2, cami:2 } },null,ESP), {g,L}=H; const sv=g.save, C=L.STAFF.cami.levels;
+{ const H=aberto({ equipe:{ tonhao:1, dani:3, joca:3, cami:1 }, libera:{ confeitaria:2, joca:2, cami:2, anselmo:2 } },null,ESP), {g,L}=H; const sv=g.save, C=L.STAFF.cami.levels;
   ok(C[1].speed===0.9 && C[1].tasks===3 && C[1].pay===120 && C[2].speed===1.1 && C[2].tasks===4 && C[2].pay===140 && C[3].speed===1.25 && C[3].pay===160 && C[3].mesas===true,'STAFF.cami como no plano (0,9/1,1/1,25; 3/4/4; R$ 120/140/160; mesas no 3)');
   ok(L.CAMI_CURSOS.length===2 && L.CAMI_CURSOS[0].preco===400 && L.CAMI_CURSOS[1].preco===600 && L.CAMI_CURSOS[1].dep==='agil','cursos: Atendimento ágil R$ 400 e Atendimento de mesa R$ 600 (precisa do ágil)');
   g.save.bank=5000; sv.camiCursoDia=0; g.cursoMsg=''; const f0=L.payroll(sv.equipe);
@@ -159,7 +159,7 @@ const AV={ daniCursos:{ confCaseira:1 } }, ESP={ daniCursos:{ confCaseira:1 }, j
   ok(eq.cami===2 && eq.camiFora===true && L.payroll(eq)===L.STAFF.tonhao.levels[0].pay+L.STAFF.dani.levels[1].pay,'a Cami fora não entra na folha (continua contratada)');
   const N=L.normEquipe(eq,L.PONTOS[2]); ok(N.camiFora===undefined && N.jocaFora===undefined,'normEquipe não guarda o "não vem"');
   ok(L.folhaItens({ tonhao:0, dani:1, joca:3, cami:1 }).join()==='Joca,Cami','folhaItens lista a Cami');
-  const H=jogo(6,'avenida',{ pontoDia:5, libera:{ confeitaria:2, joca:2, cami:2 }, equipe:{ tonhao:1, dani:2, joca:3, cami:1 }, bank:80, daniCursos:{ confCaseira:1 }, jocaCursos:{ espresso:1 } }), {g}=H; g.save.corta=true; g.begin();
+  const H=jogo(6,'avenida',{ pontoDia:5, libera:{ confeitaria:2, joca:2, cami:2, anselmo:2 }, equipe:{ tonhao:1, dani:2, joca:3, cami:1 }, bank:80, daniCursos:{ confCaseira:1 }, jocaCursos:{ espresso:1 } }), {g}=H; g.save.corta=true; g.begin();
   ok(g.save.equipe.camiFora===true && g.unpaid.some(u=>/Cami/.test(u)) && !g.cami.active,'sem dinheiro: a Cami não vem hoje (antes de cortar o aumento do Joca), avisa e fica de fora');
   g.save.bank=5000; g.resetDay(11); g.begin(); ok(g.save.equipe.camiFora===false && g.cami.active,'no dia seguinte, com dinheiro, ela volta'); }
 
