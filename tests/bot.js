@@ -38,6 +38,15 @@ function baseBot(g,L,opts){
       for(let i=0;i<k;i++) g.tapStation('doces',714,120);
       if(k) return;
     }
+    // v9.3, cafés da máquina de espresso: o mesmo (busca se ninguém faz a tarefa "Café", do Joca)
+    const ct=g.tables.filter(t=>t.group&&t.group.esperaSuco&&t.group.cafesFalta>0);
+    if(b.hands.some(h=>h.kind==='cafeesp')){ const t=ct.find(t=>!has(a=>a.type==='table'&&a.id===t.id)); if(t) return g.tapTable(t); }
+    else if(ct.length&&!ajd(g,h=>h.does('cafe'))){
+      const needC=ct.reduce((n,t)=>n+t.group.cafesFalta,0)-b.acts.filter(a=>a.type==='espresso').length; let k=0; const sim=b.hands.slice();
+      while(k<needC && b.acts.length+k<L.filaMax(g.up) && L.handLayout(sim.concat([{kind:'cafeesp'}]),b.tray)){ sim.push({kind:'cafeesp'}); k++; }
+      for(let i=0;i<k;i++) g.tapStation('espresso',717,345);
+      if(k) return;
+    }
     // sucos: leva os que estiver carregando e busca mais se alguma mesa ainda espera
     const jt=g.tables.filter(t=>t.group&&t.group.juiceOpen&&t.group.juicePending>0);
     if(b.hands.some(h=>h.kind==='juice')){ const t=jt.find(t=>!has(a=>a.type==='table'&&a.id===t.id)); if(t) return g.tapTable(t); }
@@ -144,6 +153,14 @@ function afiado(g,L){
       const needD=dtb.reduce((n,t)=>n+t.group.docesFalta,0); let k=0; const sim=b.hands.slice();   // todos os doces que couberem de uma vez
       while(k<needD && b.acts.length+k<L.filaMax(g.up) && L.handLayout(sim.concat([{kind:'doce'}]),b.tray)){ sim.push({kind:'doce'}); k++; }
       for(let i=0;i<k;i++) g.tapStation('doces',714,120);
+    });
+    // v9.3, cafés da máquina de espresso
+    const ctb=g.tables.filter(t=>t.group&&t.group.esperaSuco&&t.group.cafesFalta>0);
+    if(b.hands.some(h=>h.kind==='cafeesp')){ if(ctb.length) add(ttl(ctb[0].group)-tw(ctb[0]),()=>g.tapTable(ctb[0])); }
+    else if(ctb.length&&can('cafeesp')&&!ajd(g,h=>h.does('cafe'))) add(ttl(ctb[0].group)-sw('espresso')-walk(ST.espresso.ap.x,ST.espresso.ap.y,ctb[0].cx,ctb[0].cy),()=>{
+      const needC=ctb.reduce((n,t)=>n+t.group.cafesFalta,0); let k=0; const sim=b.hands.slice();
+      while(k<needC && b.acts.length+k<L.filaMax(g.up) && L.handLayout(sim.concat([{kind:'cafeesp'}]),b.tray)){ sim.push({kind:'cafeesp'}); k++; }
+      for(let i=0;i<k;i++) g.tapStation('espresso',717,345);
     });
     // louça: largar na pia a que está na mão; lavar quando faltam pratos (ou se ninguém mais lava)
     if(dirtyN) add(Math.min(10,plateNeed-6)+sw('sink'),()=>g.tapStation('sink',850,450));

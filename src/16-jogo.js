@@ -13,7 +13,7 @@ class Game {
     this.buildTables();
     this.bia = new Waitress(this);
     this.kitchen = new Kitchen(this);
-    this.dani = new Helper(this, 'dani'); this.joca = new Helper(this, 'joca');
+    this.dani = new Helper(this, 'dani'); this.joca = new Helper(this, 'joca'); this.cami = new Helper(this, 'cami');
     this.fx = [];
     this.sel = null; this.drag = null; this.hover = null; this.hoverOk = false;
     this.cam = CALCADA.w;   // onde o mundo começa na tela larga (v7.6: a calçada inteira à vista, sem rolar)
@@ -65,9 +65,9 @@ class Game {
     this.maq = []; this.maqId = 0;   // pedidos do tablet da espera na máquina de suco: { id, group, n, t (preparo que falta) }
     this.retirada = []; this.prateleira = []; this.marmitaId = 0; this.efood = 0; this.potes = 0;   // v8.6: os entregadores no balcão, as marmitas na prateleira e a parte da Efood
     this.bia.reset();
-    this.dani.reset(); this.joca.reset();
+    this.dani.reset(); this.joca.reset(); this.cami.reset();
     this.fx = [];
-    this.stats = { served:0, lost:0, chain:0, spawned:0, full:0, vip:0, vipLost:0, juice:0, juiceMiss:0, trash:0, washed:0, emptied:0, sucoEsp:0, doces:0, docesMarm:0, crit:0, consertos:0, quebras:0, lostBy:{ semMesa:0, comMesa:0, pedido:0, prato:0, conta:0, retirada:0 }, lotadoT:0, bravoMesa:0, lixoCheio:false, marmitas:0, esfriou:0 };
+    this.stats = { served:0, lost:0, chain:0, spawned:0, full:0, vip:0, vipLost:0, juice:0, juiceMiss:0, trash:0, washed:0, emptied:0, sucoEsp:0, doces:0, docesMarm:0, cafesEsp:0, crit:0, consertos:0, quebras:0, lostBy:{ semMesa:0, comMesa:0, pedido:0, prato:0, conta:0, retirada:0 }, lotadoT:0, bravoMesa:0, lixoCheio:false, marmitas:0, esfriou:0 };
     this.lastKind = null; this.chainN = 0;
     this.ending = false; this.endTimer = 0; this.reason = '';
     this.sel = null; this.drag = null; this.hover = null;
@@ -226,7 +226,7 @@ class Game {
      o que não couber no dinheiro sai (a divulgação vira boca a boca, depois couvert, som, TV, Dani e aumento do Tonhão).
      v8.3: com a chave da folha desligada (save.corta), nada sai: paga tudo no fim do dia, e o caixa pode ficar negativo */
   payDay(){
-    const eq = this.save.equipe; this.unpaid = []; eq.jocaFora = false;   // v9.2: "não vem" vale só no dia em que a folha corta
+    const eq = this.save.equipe; this.unpaid = []; eq.jocaFora = false; eq.camiFora = false;   // v9.2: "não vem" vale só no dia em que a folha corta
     const divCost = () => this.div ? this.div.cost : 0;
     while (this.save.corta && payroll(eq) + divCost() > this.save.bank){
       if (divCost()){
@@ -240,7 +240,7 @@ class Game {
     this.contas = contasDia(this.tables, this.ponto);
     writeSave(this.save);
     this.kitchen.slots = cozinhaSlots(this);
-    this.dani.reset(); this.joca.reset();
+    this.dani.reset(); this.joca.reset(); this.cami.reset();
   }
   begin(){
     this.payDay(); this.setState('playing');
@@ -254,7 +254,7 @@ class Game {
   get lucro(){ return this.money - this.custo - this.fixo; }
   get trashFull(){ return this.trash >= TRASH.cap; }
   /* os ajudantes (v9.2: Dani e Joca) */
-  get ajud(){ return [this.dani, this.joca]; }
+  get ajud(){ return [this.dani, this.joca, this.cami]; }   // v9.3: e a Cami
   /* alguém além da Bia lava a louça (Dani ou Joca com a tarefa, ou o Tonhão com aumento) */
   get otherWasher(){ return this.ajud.some(h => h.does('lavar')) || this.kitchen.chef.wash > 0; }
   /* restos no lixo: +n, até encher */
@@ -391,7 +391,7 @@ class Game {
     const k = this.kitchen, out = [];
     k.queue.concat(k.cooking).forEach(t => { if (t.marmita) out.push({ m:t, onde:'fogao' }); });
     k.plates.forEach(p => { if (p && p.kind === 'marmita') out.push({ m:p, onde:'pronta' }); });
-    [this.bia, this.dani, this.joca].forEach(q => q.hands.forEach(h => { if (h.kind === 'marmita') out.push({ m:h, onde:'mao', quem:q }); }));
+    [this.bia, this.dani, this.joca, this.cami].forEach(q => q.hands.forEach(h => { if (h.kind === 'marmita') out.push({ m:h, onde:'mao', quem:q }); }));
     this.prateleira.forEach(m => out.push({ m, onde:'prateleira' }));
     return out;
   }
@@ -444,18 +444,39 @@ class Game {
   docesRetFalta(){ return Math.max(0, this.docesRet() - this.potes - this.ajud.reduce((a, q) => a + q.hands.filter(h => h.kind === 'doce' && h.ret).length, 0)); }
   /* a marmita sai com o pote que estiver no balcão (se a marmita pediu "+ doce"): devolve R$ do doce ou 0 */
   usaPote(g){
-    if (g.docesMarm > g.docesMarmDados && this.potes > 0){ this.potes--; g.docesMarmDados++; this.stats.docesMarm++; this.addText(g.x, g.y - 120, '+ doce!', PAL.mostarda, 15); return DOCES.preco; }
+    if (g.docesMarm > g.docesMarmDados && this.potes > 0){ this.potes--; g.docesMarmDados++; this.stats.docesMarm++; this.addText(g.x, g.y - 120, '+ doce!', PAL.mostarda, 15); return docePreco(this.up); }
     return 0;
   }
-  /* entrega n doces à mesa do grupo (a Bia ou a Dani): +1 coração e +R$ 7 na conta cada, +5 pontos */
+  /* entrega n doces à mesa do grupo (a Bia ou a Dani): +1 coração e +R$ 7 na conta cada (R$ 16 os gourmet, v9.3), +5 pontos */
   entregaDoces(grp, n, x, y){
+    const pr = docePreco(this.up);
     grp.docesDados += n; this.stats.doces += n;
-    grp.gain(n); grp.bebConta += DOCES.preco * n;
+    grp.gain(n); grp.bebConta += pr * n;
     this.pontos += PONTOS_ACAO.doce * n;
-    this.addText(x + 24, y - 52, '+' + DOCES.preco * n + ' na conta', PAL.ok, 14);
+    this.addText(x + 24, y - 52, '+' + pr * n + ' na conta', PAL.ok, 14);
     this.addText(x - 24, y - 30, '+' + PONTOS_ACAO.doce * n + ' pts', PAL.faixa, 14);
     if (!grp.docesFalta) this.addText(x, y - 96, n > 1 ? 'Doces entregues!' : 'Doce entregue!', PAL.alerta, 15);
     Sfx.tone(988, 0.07, 'sine', 0.05); Sfx.tone(1318, 0.12, 'sine', 0.05, 0.07);
+  }
+  /* v9.3, cafés da máquina de espresso: o café que ainda falta levar a alguma mesa (os pedidos menos o que alguém já carrega); sem pedido, qualquer um */
+  cafeEspItem(){
+    const nas = [this.bia].concat(this.ajud).reduce((a, q) => a.concat(q.hands.filter(h => h.kind === 'cafeesp').map(h => h.id)), []);
+    for (const t of this.tables){
+      const grp = t.group; if (!grp || !grp.cafes) continue;
+      for (const id of grp.cafes.slice(grp.cafesDados)){ const i = nas.indexOf(id); if (i >= 0) nas.splice(i, 1); else return id; }
+    }
+    return pick(CAFES.lista).id;
+  }
+  /* entrega n cafés à mesa do grupo (a Bia ou o Joca): +1 coração cada, o preço do pedido (R$ 8 o espresso, R$ 12 o cappuccino) na conta, +5 pontos */
+  entregaCafes(grp, n, x, y){
+    const ids = grp.cafes.slice(grp.cafesDados, grp.cafesDados + n), tot = ids.reduce((a, id) => a + cafeDe(id).preco, 0);
+    grp.cafesDados += n; this.stats.cafesEsp += n;
+    grp.gain(n); grp.bebConta += tot;
+    this.pontos += PONTOS_ACAO.cafeEsp * n;
+    this.addText(x + 24, y - 52, '+' + tot + ' na conta', PAL.ok, 14);
+    this.addText(x - 24, y - 30, '+' + PONTOS_ACAO.cafeEsp * n + ' pts', PAL.faixa, 14);
+    if (!grp.cafesFalta) this.addText(x, y - 96, n > 1 ? 'Cafés entregues!' : 'Café entregue!', PAL.alerta, 15);
+    Sfx.tone(784, 0.07, 'sine', 0.05); Sfx.tone(1047, 0.12, 'sine', 0.05, 0.07);
   }
   /* o entregador leva a marmita e paga: o preço do prato com a gorjeta dos corações; a Efood fica com MARMITA.efood do preço */
   entregaMarmita(g, m){
@@ -517,12 +538,12 @@ class Game {
   /* a marmita sem dono esfria em MARMITA.validade s (contados desde que ficou pronta): vai para o lixo */
   esfriar(dt){
     this.prateleira.forEach(m => { m.age += dt; });
-    [this.bia, this.dani, this.joca].forEach(q => q.hands.forEach(h => { if (h.kind === 'marmita') h.age += dt; }));
+    [this.bia, this.dani, this.joca, this.cami].forEach(q => q.hands.forEach(h => { if (h.kind === 'marmita') h.age += dt; }));
     const fria = m => m && !m.dono && m.age >= MARMITA.validade, k = this.kitchen;
     const joga = (x, y) => { this.stats.esfriou++; this.addTrash(1); this.addText(x, y, 'Esfriou!', PAL.perigo, 14); Sfx.tone(220, 0.15, 'triangle', 0.05); };
     k.plates.forEach((p, i) => { if (p && p.kind === 'marmita' && fria(p)){ k.plates[i] = null; joga(PLATE_SLOTS[i].x, PLATE_SLOTS[i].y - 34); } });
     this.prateleira.filter(fria).forEach(m => { joga(RETIRADA.vagas[Math.min(2, this.prateleira.indexOf(m))], RETIRADA.balcao.y - 20); this.prateleira.splice(this.prateleira.indexOf(m), 1); });
-    [this.bia, this.dani, this.joca].forEach(q => q.hands.filter(fria).forEach(h => { q.hands.splice(q.hands.indexOf(h), 1); joga(q.x, q.y - 82); }));
+    [this.bia, this.dani, this.joca, this.cami].forEach(q => q.hands.filter(fria).forEach(h => { q.hands.splice(q.hands.indexOf(h), 1); joga(q.x, q.y - 82); }));
   }
 
   /* ---------- fluxo de grupos ---------- */
@@ -731,7 +752,7 @@ class Game {
     const decor = DECOR.filter(d => decorOn(this, d.id)).map(d => d.id), toalha = !!(g.table && g.table.toalha);
     if (toalha) decor.push('toalha');
     const amb = A.amb.base + (eq.tv ? A.amb.tv : 0) + (eq.som ? A.amb.som : 0) + (this.up.maquina ? A.amb.maquina : 0) + (this.up.ventilador ? A.amb.ventilador : 0) + (eq.tvs === 1 ? A.amb.tvs : eq.tvs === 2 ? A.amb.tvsPlus : 0) +
-      (g.coffee ? A.amb.cafe : 0) + (eq.couvert ? A.amb.couvert : 0) + (this.trashFull ? A.amb.lixo : 0) +
+      (g.coffee ? A.amb.cafe : 0) + (this.up.confGourmet && (g.docesDados > 0 || g.docesMarmDados > 0) ? A.amb.doce : 0) + (eq.couvert ? A.amb.couvert : 0) + (this.trashFull ? A.amb.lixo : 0) +
       decor.reduce((a, id) => a + (id === 'toalha' ? A.amb.toalha : decorOf(id).amb != null ? decorOf(id).amb : A.amb[decorOf(id).grupo === 'plantas' ? 'planta' : 'rosa']), 0);
     // o entregador (v8.6): a espera no balcão conta na espera e na agilidade
     // v8.6.7: cada um avalia só o que viveu (null: não viu). Bravo: da fila, só a espera; antes do pedido, mais agilidade e ambiente;
@@ -747,6 +768,7 @@ class Game {
     const r = s.map(v => v == null ? null : clamp(Math.round((avalEscala(v, teto) + h) * 10) / 10, 1, lim));
     let txt = avalComentario(s, bravo, this.trashFull, this.ponto.nivel, decor, g.fria, g.semVeg, g.type, !CURSOS.some(c => c.preco > 0 && cursoNivel(this.save.cursos, c.id) >= 1)), nota = avalNota(r), f = avalFrac(nota, teto);
     if (!bravo && g.doces && g.doces.length && Math.random() < 0.4) txt = g.perdDoce > 0 ? 'A sobremesa demorou mais que o almoço.' : g.docesFalta ? txt : 'A sobremesa da casa é uma delícia!';   // v9.2
+    if (!bravo && g.cafes && g.cafes.length && !g.cafesFalta && g.cafes.indexOf('cappuccino') >= 0 && Math.random() < 0.4) txt = 'Que cappuccino caprichado!';   // v9.3
     if (bravo === 'mesa') this.stats.bravoMesa++;   // v9.0.4: gatilho do cartão da Bia
     this.avals.push({ r, s, txt, k:g.type, v:g.vip });
     // balãozinho branco (sobe devagar, acima dos textos da conta)
@@ -825,7 +847,7 @@ class Game {
       if (this.trituraT >= TRASH.tritura){ this.trituraT = 0; this.trash--; Sfx.noise(0.15, 0.05, 0, 300); }
     } else this.trituraT = 0;
     this.bia.update(dt);
-    this.dani.update(dt); this.joca.update(dt);
+    this.dani.update(dt); this.joca.update(dt); this.cami.update(dt);
     this.kitchen.update(dt);
     this.esfriar(dt);
     this.updateFx(dt);
@@ -927,7 +949,7 @@ class Game {
     if (tomou) row.tom = 1;
     caixaAdd(sv, row);
     writeSave(sv);
-    this.result = { daniFeitas:this.dani.feitas, jocaFeitas:this.joca.feitas, doces:this.stats.doces, docesMarm:this.stats.docesMarm, day:d.n, money:m, fat, pontos:Math.round(this.pontos), custo:Math.round(this.custo), contas:this.contas, aluguel:this.ponto.aluguel, div:this.paidDiv, divName:this.div ? this.div.name : '', meta:d.meta, bom:bomGoal(d), expert:d.expert, passed, stars, served:this.stats.served, lost:this.stats.lost, lostBy:this.stats.lostBy, lotadoT:Math.round(this.stats.lotadoT), atraso:Math.round(this.atraso), full:this.stats.full, chain:this.stats.chain, vip:this.stats.vip, vipLost:this.stats.vipLost, marmitas:this.stats.marmitas, efood:this.efood, esfriou:this.stats.esfriou, sobra:this.marmitas().filter(o => o.onde !== 'fogao').length, juice:this.stats.juice, juiceMiss:this.stats.juiceMiss, sucoEsp:this.stats.sucoEsp, bebida:this.bebida.id, trash:this.stats.trash, washed:this.stats.washed, income, paid:this.paid, reason:this.reason, conserto:this.conserto, consertos:this.stats.consertos, quebras:this.quebras.filter(q => q.on).map(q => ({ id:q.id, fixed:q.fixed })), clima:this.clima, manut:Object.assign({}, this.manut), par, forcado, neg:sv.neg, emp:Object.assign({}, sv.emp), atrasou, tomou, devido, cap, aval:{ dia:avDia, geral:avalGeral(sv.aval), n:sv.aval.length, coment, teto:avalTeto(this.ponto) } };
+    this.result = { daniFeitas:this.dani.feitas, jocaFeitas:this.joca.feitas, camiFeitas:this.cami.feitas, cafesEsp:this.stats.cafesEsp, doces:this.stats.doces, docesMarm:this.stats.docesMarm, day:d.n, money:m, fat, pontos:Math.round(this.pontos), custo:Math.round(this.custo), contas:this.contas, aluguel:this.ponto.aluguel, div:this.paidDiv, divName:this.div ? this.div.name : '', meta:d.meta, bom:bomGoal(d), expert:d.expert, passed, stars, served:this.stats.served, lost:this.stats.lost, lostBy:this.stats.lostBy, lotadoT:Math.round(this.stats.lotadoT), atraso:Math.round(this.atraso), full:this.stats.full, chain:this.stats.chain, vip:this.stats.vip, vipLost:this.stats.vipLost, marmitas:this.stats.marmitas, efood:this.efood, esfriou:this.stats.esfriou, sobra:this.marmitas().filter(o => o.onde !== 'fogao').length, juice:this.stats.juice, juiceMiss:this.stats.juiceMiss, sucoEsp:this.stats.sucoEsp, bebida:this.bebida.id, trash:this.stats.trash, washed:this.stats.washed, income, paid:this.paid, reason:this.reason, conserto:this.conserto, consertos:this.stats.consertos, quebras:this.quebras.filter(q => q.on).map(q => ({ id:q.id, fixed:q.fixed })), clima:this.clima, manut:Object.assign({}, this.manut), par, forcado, neg:sv.neg, emp:Object.assign({}, sv.emp), atrasou, tomou, devido, cap, aval:{ dia:avDia, geral:avalGeral(sv.aval), n:sv.aval.length, coment, teto:avalTeto(this.ponto) } };
     if (tomou){ this.setState('falencia'); Sfx.lose(); return; }
     this.setState('dayend');
     if (passed) Sfx.win(); else Sfx.lose();
@@ -955,6 +977,8 @@ class Game {
     if (key === 'dani' && !devLivre() && (val > daniNivelXp(this.save) || val < old)) return false;   // v8.9: só com a experiência, e o nível pago é definitivo
     if (key === 'joca' && !devLivre() && (val > jocaNivelXp(this.save) || val < old)) return false;   // v9.2: como a Dani (a experiência manda; o nível pago é definitivo)
     if (key === 'joca' && val && !this.cartaoAberto('joca')) return false;
+    if (key === 'cami' && val && !this.cartaoAberto('cami')) return false;
+    if (key === 'cami' && !devLivre() && (val > camiNivelCursos(this.save) || val < old)) return false;   // v9.3: ela sobe só por curso, e o nível pago é definitivo
     if (key === 'couvert' && val && !couvertOk(this.ponto)) return false;
     if (key === 'tvs' && val && (!this.up.tvs || this.ponto.nivel !== 2)) return false;   // v9: só com as TVs instaladas
     eq[key] = val;
@@ -1002,7 +1026,7 @@ class Game {
     sv.cap++; sv.capDia = sv.dia; sv.capAzul = 0; sv.capFeito = 0;
     const c = HISTORIA[sv.cap - 1], ativo = !!c && c.ponto === sv.salao.ponto && HIST.on && !DEV.on;
     sv.conversa = ativo ? 'antes' : null;
-    if (sv.cap === 2){ sv.equipe.dani = Math.max(sv.equipe.dani, 1); this.dani.reset(); this.joca.reset(); }
+    if (sv.cap === 2){ sv.equipe.dani = Math.max(sv.equipe.dani, 1); this.dani.reset(); this.joca.reset(); this.cami.reset(); }
     writeSave(sv);
     return !ativo;
   }
@@ -1125,11 +1149,21 @@ class Game {
     else return false;
     writeSave(this.save); return true;
   }
+  toggleCamiTask(id){   // v9.3
+    const eq = this.save.equipe, i = eq.camiTasks.indexOf(id);
+    const max = eq.cami ? STAFF.cami.levels[eq.cami].tasks : STAFF.cami.levels[1].tasks;
+    if (i >= 0) eq.camiTasks.splice(i, 1);
+    else if (BASICAS.indexOf(id) < 0 || !daniTaskOk(id, this.up)) return false;
+    else if (eq.camiTasks.filter(t => daniTaskOk(t, this.up)).length < max) eq.camiTasks.push(id);
+    else return false;
+    writeSave(this.save); return true;
+  }
   /* v9.0.4: a lojinha abre aos poucos no Modo História (LIBERA); fora dele, no modo dev e do cap. 4 em diante, tudo aberto */
   cartaoAberto(id){
     const L = liberaOf(id);
     if (!L || devLivre()) return true;
     if (id === 'joca' && !this.save.daniCursos.confCaseira && !(this.save.equipe.joca > 0)) return false;   // v9.2: o Joca vem com o curso de confeitaria da Dani
+    if (id === 'cami' && !this.save.jocaCursos.espresso && !(this.save.equipe.cami > 0)) return false;   // v9.3: a Cami vem com o curso de espresso do Joca
     if (L.nivel){   // v9.1.1: o cartão de um ponto: fora da História, abre com o nível; nela, pela conversa
       if (!HIST.on || this.save.histV !== 1) return this.ponto.nivel >= L.nivel;
       return this.save.libera[id] >= 1;
@@ -1191,10 +1225,11 @@ class Game {
   get daniChegou(){ return devLivre() || this.save.cap >= 2 || this.save.equipe.dani > 0; }
   buyDaniCurso(id){
     const c = DANI_CURSOS.find(x => x.id === id), sv = this.save;
-    if (!c || !cursoDaniVis(c, this.ponto) || (c.id === 'confCaseira' && !this.cartaoAberto('confeitaria')) || !this.daniChegou || sv.daniCursos[id] || this.daniCursoTrava || sv.bank < c.preco) return false;
+    if (!c || !cursoDaniVis(c, this.ponto) || (c.id === 'confCaseira' && !this.cartaoAberto('confeitaria')) || (c.dep && !sv.daniCursos[c.dep]) || !this.daniChegou || sv.daniCursos[id] || this.daniCursoTrava || sv.bank < c.preco) return false;
     sv.bank -= c.preco; caixaGasto(sv, 'mel', c.preco);
     sv.daniCursos[id] = 1; sv.daniCursoDia = this.shopNext;
     if (id === 'confCaseira') this.up.confCaseira = true;   // v9.2: a geladeirinha de doces e a tarefa "Servir doces" (daniTaskOk)
+    if (id === 'confGourmet') this.up.confGourmet = true;   // v9.3: a vitrine refrigerada e os doces gourmet
     this.cursoMsg = 'A Dani foi fazer o curso de ' + c.nome + '!';
     const nx = daniNivelXp(sv);
     if (nx > sv.equipe.dani && sv.equipe.dani > 0) this.cursoMsg += ' Ela já pode subir para o nível ' + (nx - 1) + ': pague o aumento no cartão dela.';
@@ -1208,9 +1243,22 @@ class Game {
     if (!c || !cursoDaniVis(c, this.ponto) || !(sv.equipe.joca > 0 || devLivre()) || sv.jocaCursos[id] || this.jocaCursoTrava || sv.bank < c.preco) return false;
     sv.bank -= c.preco; caixaGasto(sv, 'mel', c.preco);
     sv.jocaCursos[id] = 1; sv.jocaCursoDia = this.shopNext;
+    if (id === 'espresso') this.up.espresso = true;   // v9.3: a máquina de espresso; o cafezinho passa da Dani para o Joca
     this.cursoMsg = 'O Joca foi fazer o curso de ' + c.nome + '!';
     const nx = jocaNivelXp(sv);
     if (nx > sv.equipe.joca && sv.equipe.joca > 0) this.cursoMsg += ' Ele já pode subir para o nível ' + (nx - 1) + ': pague o aumento no cartão dele.';
+    writeSave(sv); Sfx.coin();
+    return true;
+  }
+  /* cursos da Cami (v9.3): cada um sobe um nível dela (e o salário); um por lojinha; o de mesa fica "Em breve" até a 3b-6 */
+  get camiCursoTrava(){ return !devLivre() && this.save.camiCursoDia === this.shopNext; }
+  buyCamiCurso(id){
+    const c = CAMI_CURSOS.find(x => x.id === id), sv = this.save;
+    if (!c || !cursoDaniVis(c, this.ponto) || !(sv.equipe.cami > 0 || devLivre()) || sv.camiCursos[id] || (c.dep && !sv.camiCursos[c.dep]) || (id === 'mesa' && !CAMI_MESA_ON) || this.camiCursoTrava || sv.bank < c.preco) return false;
+    sv.bank -= c.preco; caixaGasto(sv, 'mel', c.preco);
+    sv.camiCursos[id] = 1; sv.camiCursoDia = this.shopNext;
+    if (sv.equipe.cami > 0) sv.equipe.cami = Math.min(STAFF.cami.levels.length - 1, Math.max(sv.equipe.cami, camiNivelCursos(sv)));
+    this.cursoMsg = 'A Cami foi fazer o curso de ' + c.nome + '!';
     writeSave(sv); Sfx.coin();
     return true;
   }
@@ -1380,7 +1428,7 @@ class Game {
     this.save = normSave(DEV.on ? { bank:DEV.bank, treino:this.save.treino } : { treino:this.save.treino });   // também depois que o banco tomou a lanchonete (v8.3.1)
     this.up = this.save.up;
     this.buildTables();
-    this.kitchen.reset(); this.dani.reset(); this.joca.reset();
+    this.kitchen.reset(); this.dani.reset(); this.joca.reset(); this.cami.reset();
     writeSave(this.save);
   }
   /* modo dev: troca de save (o de verdade fica guardado). Ao entrar, o dinheiro volta a R$ 10.000 */
@@ -1390,11 +1438,11 @@ class Game {
     if (DEV.on){ this.save.bank = DEV.bank; writeSave(this.save); }
     this.up = this.save.up;
     this.buildTables();
-    this.kitchen.reset(); this.dani.reset(); this.joca.reset();
+    this.kitchen.reset(); this.dani.reset(); this.joca.reset(); this.cami.reset();
     DEV.real = false; DEV.vel = 1;
   }
   /* ---------- v9.2.1: ações do painel do modo dev (só com DEV.on; gravam no save do dev) ---------- */
-  devRecarrega(){ this.tablesKey = ''; this.buildTables(); this.kitchen.reset(); this.dani.reset(); this.joca.reset(); if (this.state === 'shop') this.resetDay(this.shopNext); }
+  devRecarrega(){ this.tablesKey = ''; this.buildTables(); this.kitchen.reset(); this.dani.reset(); this.joca.reset(); this.cami.reset(); if (this.state === 'shop') this.resetDay(this.shopNext); }
   devDia(n){
     if (!DEV.on) return false;
     n = clamp(Math.round(+n) || 1, 1, 99);
@@ -1422,23 +1470,26 @@ class Game {
     const sv = this.save, e = sv.equipe;
     if (modo === 'max'){
       e.tonhao = STAFF.tonhao.levels.length - 1; e.dani = STAFF.dani.levels.length - 1; e.joca = STAFF.joca.levels.length - 1;
-      e.daniTasks = ['pratos', 'lavar', 'suco']; e.jocaTasks = ['lixo', 'lavar', 'pratos'];
+      e.daniTasks = ['pratos', 'lavar', 'suco']; e.jocaTasks = ['lixo', 'lavar', 'pratos']; e.cami = STAFF.cami.levels.length - 1; e.camiTasks = ['lixo', 'lavar', 'pratos', 'suco'];
       const c = {}; CURSOS.forEach(x => { c[x.id] = 2; }); sv.cursos = normCursos(c);
       const d = {}; DANI_CURSOS.forEach(x => { d[x.id] = true; }); sv.daniCursos = normDaniCursos(d);
       const j = {}; JOCA_CURSOS.forEach(x => { j[x.id] = true; }); sv.jocaCursos = normJocaCursos(j);
+      const cm = {}; CAMI_CURSOS.forEach(x => { cm[x.id] = true; }); sv.camiCursos = normCamiCursos(cm);
     } else {
-      e.tonhao = 0; e.dani = 1; e.joca = 0; e.daniTasks = DANI_PADRAO.slice(); e.jocaTasks = JOCA_PADRAO.slice();
-      sv.cursos = normCursos({}); sv.daniCursos = normDaniCursos({}); sv.jocaCursos = normJocaCursos({});
+      e.tonhao = 0; e.dani = 1; e.joca = 0; e.daniTasks = DANI_PADRAO.slice(); e.jocaTasks = JOCA_PADRAO.slice(); e.cami = 0; e.camiTasks = CAMI_PADRAO.slice();
+      sv.cursos = normCursos({}); sv.daniCursos = normDaniCursos({}); sv.jocaCursos = normJocaCursos({}); sv.camiCursos = normCamiCursos({});
     }
     sv.equipe = normEquipe(e, this.ponto);
     if (sv.daniCursos.confCaseira) this.up.confCaseira = true; else delete this.up.confCaseira;
-    sv.cursoDia = sv.daniCursoDia = sv.jocaCursoDia = 0;
-    this.kitchen.reset(); this.dani.reset(); this.joca.reset();
+    if (sv.daniCursos.confGourmet && sv.daniCursos.confCaseira) this.up.confGourmet = true; else delete this.up.confGourmet;
+    if (sv.jocaCursos.espresso) this.up.espresso = true; else delete this.up.espresso;
+    sv.cursoDia = sv.daniCursoDia = sv.jocaCursoDia = sv.camiCursoDia = 0;
+    this.kitchen.reset(); this.dani.reset(); this.joca.reset(); this.cami.reset();
     writeSave(sv); return true;
   }
   devMelhorias(on){
     if (!DEV.on) return false;
-    Object.keys(this.up).forEach(k => { if (k !== 'confCaseira') delete this.up[k]; });
+    Object.keys(this.up).forEach(k => { if (['confCaseira', 'confGourmet', 'espresso'].indexOf(k) < 0) delete this.up[k]; });
     if (on) UPGRADES.forEach(u => { this.up[u.id] = u.multi ? 1 : true; });
     this.kitchen.slots = cozinhaSlots(this);
     writeSave(this.save); return true;
@@ -1490,7 +1541,7 @@ class Game {
     return best;
   }
   /* a bebida da espera só com a melhoria; o balcão de retirada (v8.6), só no dia com entregador */
-  estacaoOn(k){ return k === 'maquina' ? !!this.up.maquina : k === 'doces' ? !!this.up.confCaseira : k === 'retirada' || k === 'adiantar' ? this.marmitaOk : true; }
+  estacaoOn(k){ return k === 'maquina' ? !!this.up.maquina : k === 'doces' ? !!this.up.confCaseira : k === 'espresso' ? !!this.up.espresso : k === 'retirada' || k === 'adiantar' ? this.marmitaOk : true; }
   tableAt(x, y, pad){
     let best = null, bd = Infinity;
     for (const t of this.tables){ const d = rectDist(x, y, tableRect(t)); if (d <= (pad || 0) && d < bd){ bd = d; best = t; } }
