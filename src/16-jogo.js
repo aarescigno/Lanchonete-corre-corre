@@ -875,12 +875,15 @@ class Game {
     }
     if (!tomou && HIST.on && !DEV.on && sv.histV === 1 && d.n >= HIST_CARDAPIO.dia && !sv.convCard) sv.convCard = 'pend';   // v9.0.1: saves antigos que já passaram do dia 2 veem a conversa no próximo fim de dia
     if (!tomou && HIST.on && !DEV.on && sv.histV === 1 && d.n === DIVULGA_DIA - 1 && !sv.convDiv) sv.convDiv = 'pend';   // v9.0.2: a conversa da divulgação
-    if (!tomou && HIST.on && !DEV.on && sv.histV === 1 && sv.cap < 4){   // v9.0.4: a lojinha abre aos poucos: pelo gatilho do dia ou pela garantia
+    if (!tomou && HIST.on && !DEV.on && sv.histV === 1){   // v9.0.4: a lojinha abre aos poucos: pelo gatilho do dia ou pela garantia (v9.1.1: com `nivel`, pelo dia no ponto, em qualquer capítulo; sem, só com cap < 4)
       const novas = [];
       LIBERA.forEach(L => {
-        if (sv.libera[L.id] !== 0 || d.n < L.dia) return;
+        if (sv.libera[L.id] !== 0) return;
+        if (L.nivel ? this.ponto.nivel < L.nivel : sv.cap >= 4) return;
+        const dn = L.nivel ? diaNoPonto(sv, d.n) : d.n;
+        if (dn < L.dia) return;
         const g = this.liberaGatilho(L.id, avsDia);
-        if (!g && d.n < L.ate) return;
+        if (!g && dn < L.ate) return;
         sv.libera[L.id] = 'pend';
         if (g) novas.push(L.id === 'melhorias' && this.stats.lixoCheio ? L.lixo : pick(L.reclama));
       });
@@ -996,7 +999,7 @@ class Game {
     const sv = this.save, para = this.proximoPonto;
     if (!para || !this.mudancaVisivel || this.mudancaFalta) return false;
     if (!DEV.on){ sv.bank -= para.mudanca; caixaGasto(sv, 'sal', para.mudanca); }
-    sv.salao.ponto = para.id;
+    sv.salao.ponto = para.id; sv.pontoDia = sv.dia;   // v9.1.1: o dia em que chegou ao ponto novo
     sv.equipe.tv = false; sv.equipe.som = false; delete this.up.maquina;
     delete this.up.tvs; delete this.up.assento; sv.equipe.tvs = 0;   // v9.1: ao sair da área industrial, as TVs, o assento e a jarra saem sem devolver (o fogão industrial e as mesas vão junto)
     const r = salaoAuto(sv.salao.mesas, para); if (r) sv.salao.mesas = r;
@@ -1081,20 +1084,21 @@ class Game {
   }
   /* v9.0.4: a lojinha abre aos poucos no Modo História (LIBERA); fora dele, no modo dev e do cap. 4 em diante, tudo aberto */
   cartaoAberto(id){
-    if (!liberaOf(id) || DEV.on || !HIST.on || this.save.histV !== 1 || this.save.cap >= 4) return true;
+    const L = liberaOf(id);
+    if (!L || DEV.on) return true;
+    if (L.nivel){   // v9.1.1: o cartão de um ponto: fora da História, abre com o nível; nela, pela conversa
+      if (!HIST.on || this.save.histV !== 1) return this.ponto.nivel >= L.nivel;
+      return this.save.libera[id] >= 1;
+    }
+    if (!HIST.on || this.save.histV !== 1 || this.save.cap >= 4) return true;
     return this.save.libera[id] >= 1;
   }
   get liberaNovo(){ return LIBERA.filter(L => this.save.libera[L.id] === 1).map(L => L.id); }
   liberaVer(id){ if (this.save.libera[id] === 1){ this.save.libera[id] = 2; writeSave(this.save); } }
   /* gatilho do dia para cada cartão (v9.0.4): a reclamação que faz a Bia ter a ideia */
   liberaGatilho(id, av){
-    const st = this.stats, tres = (i, lim) => av.filter(a => a.s && a.s[i] != null && a.s[i] <= lim).length >= 3;
-    if (id === 'bia') return st.bravoMesa >= 1 || tres(1, 3);
-    if (id === 'melhorias') return st.lixoCheio || tres(0, 3);
-    if (id === 'manut') return Math.min.apply(null, MANUT.equip.map(q => this.manut[q.id])) < MANUT.verde;
-    if (id === 'salao') return st.lostBy.semMesa >= 1 || st.lotadoT >= 90;
-    if (id === 'decor') return tres(4, 2.5);
-    return false;
+    const L = liberaOf(id);
+    return !!(L && L.gatilho && L.gatilho(this.stats, av, this));
   }
   buy(id){
     const u = UPGRADES.find(x => x.id === id);
