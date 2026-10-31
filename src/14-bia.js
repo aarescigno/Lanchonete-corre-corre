@@ -9,7 +9,7 @@
      nunca juntos na bandeja. O suco da espera (v7.5, 'suco') conta como bebida, e a marmita (v8.6), como prato.
    ============================================================ */
 const KITCHEN_SLOTS = 3;
-const DRINKS = { coffee:1, juice:1, suco:1 };
+const DRINKS = { coffee:1, juice:1, suco:1, doce:1 };   // v9.2: o doce da geladeirinha conta como bebida nas mãos
 function trayOk(items){
   let d = 0, k = 0, s = 0;
   for (const h of items){
@@ -130,7 +130,7 @@ class Waitress {
       // tudo o que estiver na pia. Só 1 pessoa lava por vez: se a Dani está lavando, a Bia
       // não lava (o Tonhão lava à parte). Decidido na chegada: a.wash = pilhas a lavar
       const carry = this.hands.some(h => h.kind === 'dirty');
-      a.busy = !carry && g.dani.washing;
+      a.busy = !carry && g.ajud.some(h => h.washing);
       a.wash = carry || a.busy ? 0 : g.kitchen.sinkN;
       return WASH.base + WASH.perPile * a.wash;
     }
@@ -189,12 +189,14 @@ class Waitress {
     return true;
   }
   hasCoffee(){ return this.hands.some(h => h.kind === 'coffee'); }
+  doceN(){ return this.hands.filter(h => h.kind === 'doce').length; }
   /* O que a Bia faria agora nessa mesa (ignorando mãos cheias)? Usado no HUD e na execução */
   verbFor(t){
     if (!t) return null;
     const grp = t.group;
     if (grp && this.hands.some(h => h.kind === 'dish' && h.group === grp) && grp.state === 'ordered') return 'deliver';
     if (grp && grp.juicePending > 0 && grp.juiceOpen && this.juiceN() > 0) return 'juice';
+    if (grp && grp.docesFalta > 0 && grp.esperaSuco && this.doceN() > 0) return 'doce';   // v9.2
     if (t.dirty) return 'clear';
     if (grp && grp.state === 'wantOrder') return 'take';
     if (grp && grp.state === 'wantBill') return 'bill';
@@ -225,6 +227,12 @@ class Waitress {
       this.hands.push({ kind:'juice' });
       Sfx.tone(700, 0.08, 'sine', 0.05); Sfx.tone(930, 0.1, 'sine', 0.05, 0.07);
       g.addText(this.x, this.y - 82, 'Suco!', PAL.alerta, 14);
+      return;
+    }
+    if (a.type === 'doces'){   // v9.2: a geladeirinha de doces
+      if (!this.canTake('doce')) return this.fail('Mãos cheias!');
+      this.hands.push({ kind:'doce', id:pick(DOCES.caseira).id }); g.custo += DOCES.ingred;
+      Sfx.blip(); g.addText(this.x, this.y - 82, 'Doce!', PAL.madeira, 14);
       return;
     }
     if (a.type === 'coffee'){
@@ -268,7 +276,7 @@ class Waitress {
         return;
       }
       if (a.wash === undefined) this.duration(a);
-      if (!a.wash) return this.fail(a.busy && g.kitchen.sinkN ? 'A Dani está lavando!' : '?');
+      if (!a.wash) return this.fail(a.busy && g.kitchen.sinkN ? (g.ajud.some(h => h.washing && h.quem === 'joca') ? 'O Joca está lavando!' : 'A Dani está lavando!') : '?');
       const w = g.washPiles(a.wash);
       g.addText(this.x, this.y - 82, w > 1 ? 'Lavou ' + w + ' pilhas!' : 'Lavou!', PAL.faixa, 15);
       Sfx.wash();
@@ -324,11 +332,20 @@ class Waitress {
     Sfx.tone(880, 0.07, 'sine', 0.05); Sfx.tone(1175, 0.12, 'sine', 0.05, 0.07);
     return n;
   }
+  /* entrega os doces que a Bia carrega para essa mesa (v9.2); devolve quantos entregou */
+  serveDoce(t){
+    const grp = t && t.group;
+    if (!grp || !grp.esperaSuco || grp.docesFalta <= 0) return 0;
+    const n = Math.min(grp.docesFalta, this.doceN());
+    for (let k=0;k<n;k++) this.hands.splice(this.hands.findIndex(h => h.kind === 'doce'), 1);
+    if (n) this.g.entregaDoces(grp, n, t.cx, t.cy);
+    return n;
+  }
   doTable(t){
     const g = this.g;
-    const served = this.serveJuice(t);
+    const served = this.serveJuice(t) + this.serveDoce(t);
     let v = this.verbFor(t);
-    if (v === 'juice') v = null;
+    if (v === 'juice' || v === 'doce') v = null;
     if (!v && served) return;
     const grp = t && t.group;
     const cx = t ? t.cx : this.x, cy = t ? t.cy : this.y;

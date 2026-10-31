@@ -7,6 +7,8 @@ function convCabeca(g, q){
   if (q === 'tonhao') return [930 + g.cam, 140];
   if (q === 'dani' && g.dani.active) return [g.dani.x + g.cam, g.dani.y - 82];
   if (q === 'dani') return [g.bia.x + g.cam + 70, g.bia.y - 82];   // ainda não chegou: ao lado da Bia
+  if (q === 'joca' && g.joca.active) return [g.joca.x + g.cam, g.joca.y - 82];   // v9.2
+  if (q === 'joca') return [g.bia.x + g.cam - 70, g.bia.y - 82];
   return [g.bia.x + g.cam, g.bia.y - 86];
 }
 function drawConversa(c, g, conv){
@@ -27,7 +29,7 @@ function drawConversa(c, g, conv){
   c.beginPath(); c.moveTo(bx - 12, y + h - 2); c.lineTo(a[0], Math.max(a[1], y + h + 14)); c.lineTo(bx + 12, y + h - 2); c.closePath(); fs(c, '#fff', 3);
   rr(c, x, y, w, h, 16); fs(c, '#fff', 3);
   c.fillStyle = '#fff'; c.fillRect(bx - 10, y + h - 4, 20, 5);
-  txt(c, HIST_NOMES[f.q], x + 18, y + 18, U.nome, f.q === 'tonhao' ? PAL.perigo : f.q === 'dani' ? '#7B4FB5' : PAL.ok, 'left', FD);
+  txt(c, HIST_NOMES[f.q], x + 18, y + 18, U.nome, f.q === 'tonhao' ? PAL.perigo : f.q === 'dani' ? '#7B4FB5' : f.q === 'joca' ? '#2C7A7B' : PAL.ok, 'left', FD);
   if (f.nota) txt(c, '(' + f.nota + ')', x + 18, y + 40, 'italic ' + U.nota, '#6b6457', 'left', FB);
   lin.forEach((l, i) => txt(c, l, x + 18, y + cab + 6 + U.linha * (i + 0.5), U.texto, PAL.tinta, 'left', FB));
   txt(c, 'toque para seguir', x + w - 14, y + h - 12, 12, '#9a917f', 'right', FB);

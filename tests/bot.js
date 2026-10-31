@@ -29,18 +29,27 @@ function baseBot(g,L,opts){
     // v9: o motorista que acabou de comer espera o cafezinho: leva se já está na mão, senão busca
     const mt=g.tables.find(t=>t.group&&t.group.cafeBalao&&!t.group.daniCoffee);
     if(mt){ if(b.hands.some(h=>h.kind==='coffee')){ if(!has(a=>a.type==='table'&&a.id===mt.id)) return g.tapTable(mt); } else if(can('coffee')&&!has(a=>a.type==='coffee')) return g.tapStation('coffee',810,350); }
+    // v9.2, doces: leva os que carrega a quem espera; busca (até o que cabe) se alguém pediu e nenhum ajudante faz a tarefa "Doce"
+    const dt=g.tables.filter(t=>t.group&&t.group.esperaSuco&&t.group.docesFalta>0);
+    if(b.hands.some(h=>h.kind==='doce')){ const t=dt.find(t=>!has(a=>a.type==='table'&&a.id===t.id)); if(t) return g.tapTable(t); }
+    else if(dt.length&&!ajd(g,h=>h.does('doce'))){   // busca de uma vez todos os doces que couberem (como os sucos)
+      const needD=dt.reduce((n,t)=>n+t.group.docesFalta,0)-b.acts.filter(a=>a.type==='doces').length; let k=0; const sim=b.hands.slice();
+      while(k<needD && b.acts.length+k<L.filaMax(g.up) && L.handLayout(sim.concat([{kind:'doce'}]),b.tray)){ sim.push({kind:'doce'}); k++; }
+      for(let i=0;i<k;i++) g.tapStation('doces',714,120);
+      if(k) return;
+    }
     // sucos: leva os que estiver carregando e busca mais se alguma mesa ainda espera
     const jt=g.tables.filter(t=>t.group&&t.group.juiceOpen&&t.group.juicePending>0);
     if(b.hands.some(h=>h.kind==='juice')){ const t=jt.find(t=>!has(a=>a.type==='table'&&a.id===t.id)); if(t) return g.tapTable(t); }
     if(b.hands.some(h=>h.kind==='dirty') && !has(a=>a.type==='sink')) return g.tapStation('sink',850,450);
     // lixeira quase cheia e mãos vazias: esvazia (se a Dani não estiver cuidando disso)
-    if(g.trash!==undefined && g.trash>=L.TRASH.cap-1 && !b.hands.length && !has(a=>a.type==='trash') && !(g.dani&&g.dani.does('lixo'))) return g.tapStation('trash',723,500);
+    if(g.trash!==undefined && g.trash>=L.TRASH.cap-1 && !b.hands.length && !has(a=>a.type==='trash') && !ajd(g,h=>h.does('lixo'))) return g.tapStation('trash',723,500);
     // louça esperando na pia (2º toque, sem louça na mão): lava se ninguém mais lava, ou se faltam
     // pratos e a pia acumulou; nunca enquanto a Dani lava (só 1 pessoa lava por vez)
     const helper=g.otherWasher!==undefined?g.otherWasher:(g.dani&&g.dani.does('lavar'));
-    if(g.kitchen.sinkN>0 && (!helper || (g.kitchen.clean<=0 && g.kitchen.sinkN>=2)) && !has(a=>a.type==='sink') && !b.hands.some(h=>h.kind==='dirty') && !(g.dani&&g.dani.washing)) return g.tapStation('sink',850,450);
+    if(g.kitchen.sinkN>0 && (!helper || (g.kitchen.clean<=0 && g.kitchen.sinkN>=2)) && !has(a=>a.type==='sink') && !b.hands.some(h=>h.kind==='dirty') && !ajd(g,h=>h.washing)) return g.tapStation('sink',850,450);
     for(const t of g.tables){
-      if(!t.open||has(a=>a.type==='table'&&a.id===t.id)||(g.dani&&g.dani.targets(t))) continue;
+      if(!t.open||has(a=>a.type==='table'&&a.id===t.id)||ajd(g,h=>h.targets(t))) continue;
       if(t.dirty||(t.group&&(t.group.state==='wantOrder'||t.group.state==='wantBill'))){ if(can(t.dirty?'dirty':'ticket')||t.group&&t.group.state==='wantBill') return g.tapTable(t); }
     }
     for(let i=0;i<L.LAYOUT.PLATE_SLOTS.length;i++){ const p=g.kitchen.plates[i]; if(p&&!p.dani&&can('dish')&&!has(a=>a.type==='plate'&&a.pid===p.id)) return g.tapStation('plates',L.LAYOUT.PLATE_SLOTS[i].x,L.LAYOUT.PLATE_SLOTS[i].y); }
@@ -53,10 +62,12 @@ function baseBot(g,L,opts){
       if(k) return;
     }
     // suco da espera pronto na máquina (v7.5), quando não há mais nada: busca e leva (se a Dani não estiver cuidando disso)
-    if(g.up&&g.up.maquina&&g.maqLivre&&g.maqLivre()&&!b.acts.length&&can('suco')&&!(g.dani&&g.dani.does('suco'))) return g.tapStation('maquina');
+    if(g.up&&g.up.maquina&&g.maqLivre&&g.maqLivre()&&!b.acts.length&&can('suco')&&!ajd(g,h=>h.does('suco'))) return g.tapStation('maquina');
   };
 }
 
+// v9.2: algum ajudante (Dani ou Joca) cumpre o teste fn?
+function ajd(g,fn){ return (g.ajud||(g.dani?[g.dani]:[])).some(fn); }
 // Bot afiado (v7.1): faz uma ação de cada vez, sempre a mais urgente. A urgência é o tempo que o grupo
 // ainda aguenta (corações × paciência) menos a caminhada até lá. Senta qualquer grupo da fila que caiba
 // (o mais apressado primeiro, na menor mesa), serve cafezinho a quem está por um fio e lava a louça
@@ -103,11 +114,11 @@ function afiado(g,L){
     const ordered=g.tables.filter(t=>t.group&&t.group.state==='ordered').map(t=>ttl(t.group));
     const plateNeed=k.clean<=0?Math.min(Infinity,...ordered):Infinity;
     for(const t of g.tables){
-      if(!t.open||(dani&&dani.targets(t))) continue;
+      if(!t.open||ajd(g,h=>h.targets(t))) continue;
       const grp=t.group;
       if(grp&&grp.state==='wantOrder'&&can('ticket')) add(ttl(grp)-tw(t),()=>g.tapTable(t));
       else if(grp&&grp.state==='wantBill'){
-        if(grp.juicePending>0&&b.juiceN()===0&&!dani) { /* conta mesmo assim, mais tarde */ add(ttl(grp)-tw(t)+4,()=>g.tapTable(t)); }
+        if(grp.juicePending>0&&b.juiceN()===0&&!ajd(g,h=>h.active)) { /* conta mesmo assim, mais tarde */ add(ttl(grp)-tw(t)+4,()=>g.tapTable(t)); }
         else add(ttl(grp)-tw(t),()=>g.tapTable(t));
       }
       else if(t.dirty&&can('dirty')){
@@ -126,9 +137,17 @@ function afiado(g,L){
       const t=coffeeT.sort((a,c)=>ttl(a.group)-ttl(c.group))[0];
       add(ttl(t.group)-sw('coffee')-walk(ST.coffee.ap.x,ST.coffee.ap.y,t.cx,t.cy)+2,()=>g.tapStation('coffee',810,350));
     }
+    // v9.2, doces: leva os que carrega; busca se alguém terminou de comer e espera (e nenhum ajudante faz a tarefa "Doce")
+    const dtb=g.tables.filter(t=>t.group&&t.group.esperaSuco&&t.group.docesFalta>0);
+    if(b.hands.some(h=>h.kind==='doce')){ if(dtb.length) add(ttl(dtb[0].group)-tw(dtb[0]),()=>g.tapTable(dtb[0])); }
+    else if(dtb.length&&can('doce')&&!ajd(g,h=>h.does('doce'))) add(ttl(dtb[0].group)-sw('doces')-walk(ST.doces.ap.x,ST.doces.ap.y,dtb[0].cx,dtb[0].cy),()=>{
+      const needD=dtb.reduce((n,t)=>n+t.group.docesFalta,0); let k=0; const sim=b.hands.slice();   // todos os doces que couberem de uma vez
+      while(k<needD && b.acts.length+k<L.filaMax(g.up) && L.handLayout(sim.concat([{kind:'doce'}]),b.tray)){ sim.push({kind:'doce'}); k++; }
+      for(let i=0;i<k;i++) g.tapStation('doces',714,120);
+    });
     // louça: largar na pia a que está na mão; lavar quando faltam pratos (ou se ninguém mais lava)
     if(dirtyN) add(Math.min(10,plateNeed-6)+sw('sink'),()=>g.tapStation('sink',850,450));
-    else if(k.sinkN>0&&!(dani&&dani.washing)){
+    else if(k.sinkN>0&&!ajd(g,h=>h.washing)){
       const helper=g.otherWasher;
       if(k.clean<=0) add(plateNeed-6-sw('sink')-L.WASH.base,()=>g.tapStation('sink',850,450));
       else if(!helper) add(25+sw('sink'),()=>g.tapStation('sink',850,450));
@@ -143,8 +162,8 @@ function afiado(g,L){
       for(let i=0;i<n;i++) g.tapStation('juice',910,350);
     });
     // lixo e suco da espera (v7.5: a máquina no lugar da água)
-    if(g.trash>=L.TRASH.cap-1&&!b.hands.length&&!(dani&&dani.does('lixo'))) add(g.trashFull?12:22,()=>g.tapStation('trash',723,500));
-    const mo=g.up.maquina&&!(dani&&dani.does('suco'))&&g.maqLivre();
+    if(g.trash>=L.TRASH.cap-1&&!b.hands.length&&!ajd(g,h=>h.does('lixo'))) add(g.trashFull?12:22,()=>g.tapStation('trash',723,500));
+    const mo=g.up.maquina&&!ajd(g,h=>h.does('suco'))&&g.maqLivre();
     // a ida lá fora é longa: só com folga (nada mais urgente) ou para quem espera por um fio
     if(mo&&can('suco')){ const tg=ttl(mo.group), trip=sw('maquina')+walk(ST.maquina.ap.x,ST.maquina.ap.y,mo.group.x,mo.group.y); add(tg<12?tg-trip:40,()=>g.tapStation('maquina')); }
     if(!cands.length) return;

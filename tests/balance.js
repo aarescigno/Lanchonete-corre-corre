@@ -23,7 +23,11 @@ const PONTO=process.env.PONTO||'garagem', IND=PONTO==='industrial', AV=PONTO==='
 const FULL=AV?{tonhao:2,dani:4,daniTasks:['pratos','lavar','lixo'],couvert:true,taxa:true}:IND?{tonhao:2,dani:4,daniTasks:['pratos','lavar','lixo'],tvs:1}:{tonhao:2,dani:4,daniTasks:['pratos','lavar','lixo'],tv:true,som:true};   // na Garagem, TV e som no lugar do couvert (v7.4.3)
 const AUTO={2:{},3:FULL,4:FULL,5:FULL,6:FULL,7:FULL};   // do dia 3 em diante o dinheiro acumulado já paga a equipe completa
 const EQ0=process.env.EQUIPE==='auto'?null:(process.env.EQUIPE?JSON.parse(process.env.EQUIPE):{});
-const eqFor=n=>EQ0||AUTO[n]||(n>7?FULL:{});   // v8.3: do dia 8 em diante, a equipe completa
+const eqFor0=n=>EQ0||AUTO[n]||(n>7?FULL:{});   // v8.3: do dia 8 em diante, a equipe completa
+// v9.2: CONFEITARIA=1 liga o curso da Dani (os doces e a marmita "+ doce"; a Dani serve os doces); JOCA=2|3|4 contrata o Joca nesse nível (com ele, a Dani fica com cafezinho, doces e marmitas)
+const CONF=process.env.CONFEITARIA==='1'||!!process.env.JOCA, JOCAN=+process.env.JOCA||0;
+const eqFor=n=>{ const e=Object.assign({},eqFor0(n)); if(!(IND||AV)||!CONF||n<3) return e;
+  if(JOCAN){ e.joca=JOCAN; e.jocaTasks=['lixo','pratos','lavar']; e.daniTasks=['cafe','doce','marmita']; } else e.daniTasks=['pratos','lavar','doce']; if(process.env.DANIT) e.daniTasks=process.env.DANIT.split(','); return e; };   // DANIT=pratos,lavar,lixo: as tarefas da Dani nesse teste
 // ajuste rápido sem mexer em src/: INGRED='{"prato":0.7}' CONTAS='{"mesa":40}' node balance.js
 if(process.env.MOVIMENTO) Object.assign(L.MOVIMENTO,JSON.parse(process.env.MOVIMENTO));   // MOVIMENTO='{"porLugar":0.04}'
 if(process.env.CONTAS) Object.assign(L.CONTAS,JSON.parse(process.env.CONTAS));
@@ -50,6 +54,7 @@ function jogaDia(n,man){
   if(IND){ g.up.fogaoInd=true; g.up.tvs=true; g.up.assento='cadeira'; }
   if(AV){ g.up.fogaoInd=true; g.up.assento='sofa'; }
   g.save.cursos=cursosFor(n);
+  if(CONF&&(IND||AV)){ g.save.daniCursos.confCaseira=1; g.up.confCaseira=true; }   // v9.2
   if(AV&&CUR!=='0') g.save.cursos.restaurante=1;   // v9.1: o curso de restaurante (a parmegiana)
   if(L.normSave){ g.save.equipe=L.normSave({equipe:eqFor(n),salao:{ponto:PONTO},up:IND?{tvs:true}:{}}).equipe; g.save.bank=1e6; }
   const dec=process.env.DECOR==='tudo';   // v8.6.6: DECOR=tudo põe todos os enfeites à mostra e toalha em todas as mesas (o bot não compra decoração)
