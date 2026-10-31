@@ -1,0 +1,38 @@
+/* editor de desenhos: esconde o jogo (ele roda por baixo, só para emprestar as funções de desenho) */
+body > *:not(#ed){ display:none !important; }
+html, body{ margin:0 !important; padding:0 !important; height:100% !important; overflow:hidden !important; background:#1d1b18 !important; touch-action:auto !important; }
+#ed{ --fundo:#1d1b18; --painel:#2a2722; --borda:#45403a; --texto:#ece4d4; --fraco:#a59c8c; --ponto:#f2c23d; --sel:#3ec7ff; --mud:#7ee08a;
+  position:fixed; inset:0; display:flex; flex-direction:column; font:14px/1.4 system-ui, sans-serif; color:var(--texto); background:var(--fundo); }
+#ed button, #ed select{ font:inherit; color:var(--texto); background:#3a362f; border:1px solid var(--borda); border-radius:6px; padding:4px 10px; cursor:pointer; }
+#ed button:hover{ background:#4a453c; }
+#ed button.on{ background:#5b4a1a; border-color:var(--ponto); }
+#ed .barra{ display:flex; flex-wrap:wrap; gap:8px; align-items:center; padding:8px 12px; background:var(--painel); border-bottom:1px solid var(--borda); }
+#ed .barra label{ display:flex; gap:6px; align-items:center; color:var(--fraco); }
+#ed input[type=range]{ width:200px; }
+#ed .meio{ flex:1; display:flex; min-height:0; }
+#ed .cena{ flex:1; overflow:auto; position:relative; padding:12px; }
+#ed .tela{ position:relative; display:inline-block; }
+#ed .tela canvas{ display:block; }
+#ed .tela canvas.sobre{ position:absolute; left:0; top:0; cursor:crosshair; touch-action:none; }
+#ed .info{ padding:4px 12px; color:var(--fraco); background:var(--painel); border-top:1px solid var(--borda); min-height:22px; font-family:ui-monospace, monospace; font-size:12px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+#ed .codigo{ width:46%; max-width:720px; min-width:300px; display:flex; flex-direction:column; border-left:1px solid var(--borda); background:#191714; }
+#ed .codigo .titulo{ padding:6px 10px; background:var(--painel); border-bottom:1px solid var(--borda); display:flex; gap:8px; align-items:center; }
+#ed .codigo pre{ flex:1; margin:0; overflow:auto; padding:8px 0; font:12px/1.55 ui-monospace, Menlo, Consolas, monospace; tab-size:2; }
+#ed .codigo .ln{ display:block; padding:0 10px 0 0; white-space:pre; }
+#ed .codigo .ln.mudou{ background:rgba(126,224,138,.08); }
+#ed .codigo .nr{ display:inline-block; width:44px; text-align:right; margin-right:12px; color:#6b6457; user-select:none; }
+#ed .codigo .c{ color:#7d7565; }
+#ed .codigo .s{ color:#d9a86c; }
+#ed .n{ color:#9fd0ff; cursor:ew-resize; border-radius:3px; padding:0 1px; }
+#ed .n:hover{ background:#2f4a63; }
+#ed .n.mud{ color:var(--mud); font-weight:bold; }
+#ed .n.sel{ background:#1f6f95; color:#fff; outline:1px solid var(--sel); }
+#ed .mudancas{ max-height:30%; overflow:auto; border-top:1px solid var(--borda); background:var(--painel); padding:6px 12px; font:12px/1.5 ui-monospace, monospace; }
+#ed .mudancas .vazio{ color:var(--fraco); font-family:system-ui, sans-serif; }
+#ed .mudancas .menos{ color:#ff9a8a; white-space:pre; }
+#ed .mudancas .mais{ color:var(--mud); white-space:pre; }
+#ed .mudancas b{ color:var(--texto); font-family:system-ui, sans-serif; }
+#ed .ajuda{ color:var(--fraco); font-size:12px; }
+#ed .aviso{ position:fixed; right:16px; bottom:16px; background:#2f5a35; color:#fff; padding:8px 14px; border-radius:8px; box-shadow:0 4px 16px rgba(0,0,0,.4); opacity:0; transition:opacity .25s; pointer-events:none; }
+#ed .aviso.ver{ opacity:1; }
+@media (max-width: 900px){ #ed .meio{ flex-direction:column; } #ed .codigo{ width:auto; max-width:none; min-width:0; height:40%; border-left:0; border-top:1px solid var(--borda); } }
