@@ -6,12 +6,13 @@
    leva 1 item em cada mão.
    ============================================================ */
 const DANI_HOME = { x:700, y:470 };
-/* v9.2: quem cuida das tarefas básicas da casa (BASICAS) no dia: o ajudante mais novo que veio (Joca, depois Dani; a Cami entra na 3b-3) */
-function donoBasico(g){ const eq = g.save.equipe; return eq.joca > 0 && !eq.jocaFora ? 'joca' : eq.dani > 0 ? 'dani' : null; }
+/* v9.2, v9.3: quem cuida das tarefas básicas da casa (BASICAS) no dia: o ajudante mais novo que veio (Cami, depois Joca, depois Dani) */
+function donoBasico(g){ const eq = g.save.equipe; return eq.cami > 0 && !eq.camiFora ? 'cami' : eq.joca > 0 && !eq.jocaFora ? 'joca' : eq.dani > 0 ? 'dani' : null; }
+const AJUD_NOME = { dani:'Dani', joca:'Joca', cami:'Cami' };
 const DANI_HANDS = 2;   // 2 mãos: no máximo 2 itens por vez (cada pilha de louça, a de uma mesa, ocupa 1 mão)
 class Helper {
-  constructor(g, quem){ this.g = g; this.quem = quem || 'dani'; this.reset(); }   // v9.2: 'dani' ou 'joca'
-  get home(){ return this.quem === 'joca' ? JOCA_HOME : DANI_HOME; }
+  constructor(g, quem){ this.g = g; this.quem = quem || 'dani'; this.reset(); }   // v9.2: 'dani' ou 'joca'; v9.3: ou 'cami'
+  get home(){ return this.quem === 'cami' ? CAMI_HOME : this.quem === 'joca' ? JOCA_HOME : DANI_HOME; }
   reset(){
     this.x = this.home.x; this.y = this.home.y; this.dir = -1;
     this.hands = []; this.plan = null; this.path = []; this.phase = 'idle'; this.timer = 0;
@@ -19,19 +20,24 @@ class Helper {
     this.feitas = 0;   // v8.9: tarefas que terminou no dia (a experiência dela)
   }
   get level(){ return this.g.save.equipe[this.quem]; }
-  get active(){ return this.level > 0 && !(this.quem === 'joca' && this.g.save.equipe.jocaFora); }
+  get active(){ const eq = this.g.save.equipe; return this.level > 0 && !(this.quem === 'joca' && eq.jocaFora) && !(this.quem === 'cami' && eq.camiFora); }
   get spec(){ return STAFF[this.quem].levels[this.level]; }
   get speed(){ return this.g.bia.speed * this.spec.speed; }   // proporcional à Bia de agora (com os tênis)
   /* v9.2: o Joca só tem tarefa básica; a Dani perde as básicas quando o Joca vem (ficam com ele) e segue com o cafezinho e os doces */
   get tasks(){
     if (!this.active) return [];
-    const eq = this.g.save.equipe, joca = this.quem === 'joca', dono = donoBasico(this.g);
-    let l = (joca ? eq.jocaTasks : eq.daniTasks).filter(t => daniTaskOk(t, this.g.up) && (!joca || BASICAS.indexOf(t) >= 0));
-    if (!joca && dono !== 'dani') l = l.filter(t => BASICAS.indexOf(t) < 0);   // as básicas ficam com o Joca e não ocupam vaga dela
+    const eq = this.g.save.equipe, up = this.g.up, dono = donoBasico(this.g), basica = t => BASICAS.indexOf(t) >= 0;
+    if (this.quem === 'cami') return eq.camiTasks.filter(t => daniTaskOk(t, up) && basica(t)).slice(0, this.spec.tasks);
+    if (this.quem === 'joca'){   // v9.3: com o espresso, o café (cafezinho e espresso) é dele, fixo na 1ª vaga; sem a Cami, o básico nas vagas que sobram
+      const cafe = up.espresso ? ['cafe'] : [];
+      return dono !== 'joca' ? cafe : cafe.concat(eq.jocaTasks.filter(t => daniTaskOk(t, up) && basica(t))).slice(0, this.spec.tasks);
+    }
+    let l = eq.daniTasks.filter(t => daniTaskOk(t, up));
+    if (dono !== 'dani') l = l.filter(t => !basica(t));   // as básicas ficam com o ajudante mais novo e não ocupam vaga dela
     return l.slice(0, this.spec.tasks);
   }
   does(t){ return this.tasks.indexOf(t) >= 0; }
-  get nome(){ return this.quem === 'joca' ? 'Joca' : 'Dani'; }
+  get nome(){ return AJUD_NOME[this.quem]; }
   /* esvaziando a lixeira agora (a tampa abre e fecha) */
   get emptying(){ return !!(this.phase === 'do' && this.plan && this.plan.type === 'trash' && this.g.trash > 0); }
   /* lavando na pia agora (a Bia não lava junto) */
@@ -59,6 +65,13 @@ class Helper {
     c.sort((a,b) => a.group.hearts - b.group.hearts);
     return c[0] || null;
   }
+  /* v9.3: cafés da máquina de espresso que já levo na mão para o grupo, e a mesa que mais precisa do próximo */
+  cafeClaimed(grp){ return this.hands.filter(h => h.kind === 'cafeesp' && h.group === grp).length; }
+  cafeEspAlvo(){
+    const c = this.g.tables.filter(t => t.group && t.group.seated && t.group.esperaSuco && t.group.cafesFalta - this.cafeClaimed(t.group) > 0);
+    c.sort((a,b) => a.group.hearts - b.group.hearts);
+    return c[0] || null;
+  }
   coffeeTarget(){
     if (this.g.quebrado('cafeteira')) return null;   // cafeteira parada (v8)
     const c = this.g.tables.filter(t => t.group && t.group.seated && !t.group.coffee && (t.group.hearts <= 4 || t.group.cafeBalao) && !t.group.daniCoffee && !this.biaWants(t));
@@ -83,6 +96,20 @@ class Helper {
       if (hg) return this.go(this.nearestAp(hg.group.table), { type:'servedoce', grp:hg.group });
       if (dm.some(h => h.ret) && g.docesRet() > g.potes) return this.go(STATIONS.retirada.ap, { type:'retirada' });
       this.hands = this.hands.filter(h => h.kind !== 'doce');   // sem destino (outro já levou): joga fora
+    }
+    // cafés da máquina de espresso na mão (v9.3): leva à mesa de quem pediu
+    const cm = this.hands.filter(h => h.kind === 'cafeesp');
+    if (cm.length){
+      const hg = cm.find(h => h.group && h.group.seated && h.group.cafesFalta > 0 && h.group.table);
+      if (hg) return this.go(this.nearestAp(hg.group.table), { type:'servecafe', grp:hg.group });
+      this.hands = this.hands.filter(h => h.kind !== 'cafeesp');   // sem destino (outro já levou): joga fora
+    }
+    if (this.does('cafe') && g.up.espresso && this.hands.length < DANI_HANDS){
+      const t = this.cafeEspAlvo();
+      if (t){
+        const grp = t.group, k = Math.min(DANI_HANDS - this.hands.length, grp.cafesFalta - this.cafeClaimed(grp));
+        return this.go(STATIONS.espresso.ap, { type:'espresso', grp, ids:grp.cafes.slice(grp.cafesDados + this.cafeClaimed(grp), grp.cafesDados + this.cafeClaimed(grp) + k) });
+      }
     }
     // marmita na mão (v8.6): leva ao balcão de retirada; pronta na janela e cabendo na prateleira (ou com dono): vai buscar
     if (this.hands.some(h => h.kind === 'marmita')) return this.go(STATIONS.retirada.ap, { type:'retirada' });
@@ -124,6 +151,7 @@ class Helper {
     }
     if (st.type === 'trash') return TRASH.empty;
     if (st.type === 'maquina') return this.g.bebida.take;
+    if (st.type === 'espresso') return st.ids.reduce((a, id) => a + cafeDe(id).prep, 0);   // v9.3: o tempo de tirar cada café
     return 0.35;
   }
   perform(st){
@@ -143,13 +171,21 @@ class Helper {
       if (this.hands.length) Sfx.blip();
     } else if (st.type === 'doces'){   // v9.2: pega os doces na geladeirinha (para a mesa de quem pediu ou para o balcão)
       const k = Math.min(st.k, DANI_HANDS - this.hands.length);
-      for (let i=0;i<k;i++){ this.hands.push({ kind:'doce', group:st.grp || null, ret:!!st.ret, id:pick(DOCES.caseira).id }); g.custo += DOCES.ingred; }
+      for (let i=0;i<k;i++){ this.hands.push({ kind:'doce', group:st.grp || null, ret:!!st.ret, id:pick(docesLista(g.up)).id }); g.custo += doceIngred(g.up); }
       if (k) Sfx.blip();
     } else if (st.type === 'servedoce'){
       const grp = st.grp, mine = this.hands.filter(h => h.kind === 'doce' && h.group === grp);
       const n = grp && grp.table && grp.seated && grp.esperaSuco ? Math.min(mine.length, grp.docesFalta) : 0;
       for (let i=0;i<n;i++) this.hands.splice(this.hands.indexOf(mine[i]), 1);
       if (n){ g.entregaDoces(grp, n, grp.table.cx, grp.table.cy); this.feitas++; }
+    } else if (st.type === 'espresso'){   // v9.3: tira os cafés do pedido (a máquina de espresso)
+      st.ids.forEach(id => { if (this.hands.length < DANI_HANDS){ this.hands.push({ kind:'cafeesp', group:st.grp, id }); g.custo += CAFES.ingred; } });
+      if (this.hands.length) Sfx.blip();
+    } else if (st.type === 'servecafe'){
+      const grp = st.grp, mine = this.hands.filter(h => h.kind === 'cafeesp' && h.group === grp);
+      const n = grp && grp.table && grp.seated && grp.esperaSuco ? Math.min(mine.length, grp.cafesFalta) : 0;
+      for (let i=0;i<n;i++) this.hands.splice(this.hands.indexOf(mine[i]), 1);
+      if (n){ g.entregaCafes(grp, n, grp.table.cx, grp.table.cy); this.feitas++; }
     } else if (st.type === 'retirada'){
       if (g.levaMarmitas(this)) this.feitas++;   // a que não coube fica na mão: a Dani espera no balcão abrir uma vaga (ou a marmita esfriar)
     } else if (st.type === 'clear'){

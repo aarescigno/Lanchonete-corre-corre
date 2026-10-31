@@ -87,6 +87,7 @@ function render(g, ctx){
   if ((g.save.equipe.tv || g.save.equipe.som) && !menu) items.push({ y:532, f:() => drawAmbiente(ctx,g,tm) });
   if (g.dani.active && !menu) items.push({ y:g.dani.y, f:() => drawDani(ctx,g.dani,tm) });
   if (g.joca.active && !menu) items.push({ y:g.joca.y, f:() => drawJoca(ctx,g.joca,tm) });   // v9.2
+  if (g.cami.active && !menu) items.push({ y:g.cami.y, f:() => drawCami(ctx,g.cami,tm) });   // v9.3
   items.sort((a,c) => a.y - c.y).forEach(it => it.f());
   if (g.clima === 'chuva' && !menu) drawChuvaPingos(ctx,tm);
   if (!menu) drawConsertos(ctx,g,tm);
