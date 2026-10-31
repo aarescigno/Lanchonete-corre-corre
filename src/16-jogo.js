@@ -340,12 +340,14 @@ class Game {
   addMoney(v){ this.money = Math.max(0, this.money + v); }
   /* v8.3.8: cada ação da Bia rende pontos de atendimento (PONTOS_ACAO, mais a corrente), e não dinheiro; din é o que o
      cliente paga por ela (a conta, o cafezinho, o suco), que vai para o dinheiro do dia */
-  score(kind, x, y, din, grp){
+  score(kind, x, y, din, grp, semCorrente){   // v9.6: semCorrente (as ações da Cami): a sequência é só da Bia
     let bonus = 0;
+    if (!semCorrente){
     if (kind === this.lastKind) this.chainN++; else { this.chainN = 1; this.lastKind = kind; }
     if (this.chainN >= 2) bonus = Math.min(160, 10 * Math.pow(2, this.chainN - 2));
     if (bonus && grp) grp.corrente = true;   // a mesa atendida em corrente avalia melhor a agilidade (v8.4)
     this.stats.chain = Math.max(this.stats.chain, this.chainN);
+    }
     const p = PONTOS_ACAO[kind] || 0;
     this.pontos += p + bonus;
     if (din){ this.addMoney(din); this.addText(x, y, '+R$ ' + din, PAL.ok, 18); }
@@ -355,11 +357,11 @@ class Game {
       this.addSparks(x, y, 6, PAL.alerta);
     }
   }
-  collectBill(g, t){
+  collectBill(g, t, semCorrente){
     // v8.3.8: os corações viram gorjeta (no máximo +10%; com 1 ou 2, desconto), mais a da executiva e a do VIP;
     // v8.5.2: o suco e o cafezinho da mesa entram aqui também, pelo preço (bebConta)
     const amount = Math.round(g.bill * (1 + GORJETA[g.hearts] + g.T.tip + (g.vip ? VIP.tip : 0) + (g.cafePede && g.coffee ? g.T.cafeTip : 0))) + g.bebConta;
-    this.score('bill', t.cx, t.cy - 50, amount, g);
+    this.score('bill', t.cx, t.cy - 50, amount, g, semCorrente);
     if (this.treino) this.treino.conta = { v:amount, h:g.hearts, base:g.bill, beb:g.bebConta };   // a gorjeta é só da comida (base)
     if (g.sucoConta){ const v = this.bebida.preco * g.sucoConta; this.addMoney(v); this.addText(t.cx - 34, t.cy - 100, 'Suco da espera +' + v, PAL.alerta, 14); }
     if (g.T.tip > 0 || g.vip) this.addText(t.cx + 20, t.cy - 76, 'Gorjeta!', PAL.mostarda, 15);
@@ -390,6 +392,22 @@ class Game {
     g.table = null;
     g.setState('leaving');
     g.path = findPath({x:g.x, y:g.y}, {x:DOOR.x, y:DOOR.y});
+  }
+  /* v9.6: o prato chega à mesa (pela Bia ou pela Cami, que não entra na sequência) */
+  entregaPrato(grp, dish, t, semCorrente){
+    const cx = t.cx, cy = t.cy;
+    grp.setState('eating');
+    grp.timer = rand(grp.T.eat[0], grp.T.eat[1]) * (this.up.ventilador ? 0.85 : 1);
+    grp.eatTotal = grp.timer;
+    grp.gain(dish.crit ? 2 : 1);
+    grp.pratoQ = dish.q || 0; grp.fria = !!dish.fria; if (dish.crit) grp.capricho = true;
+    this.score('deliver', cx, cy - 40, 0, grp, semCorrente);
+    if (dish.crit){
+      const b = grp.vip ? CRIT.vipBonus : CRIT.bonus;
+      this.pontos += b; this.stats.crit++;
+      this.addText(cx, cy - 92, 'Caprichado! +' + b + ' pts', PAL.mostarda, 16);
+    }
+    Sfx.ok();
   }
   exitPoint(t){ return tableApproach(t)[0]; }
   /* Turno sem fim: a cada 8 grupos que saem com 5 corações, volta 1 estrela */
@@ -771,7 +789,7 @@ class Game {
     if (g.retira) this.soltaMarmitas(g);
     this.kitchen.purge(g);
     this.bia.purgeGroup(g);
-    this.ajud.forEach(a => { a.hands = a.hands.filter(h => h.group !== g); });
+    this.ajud.forEach(a => { a.hands.filter(h => h.kind === 'dish' && h.group === g).forEach(() => { this.kitchen.sinkN++; }); a.hands = a.hands.filter(h => h.group !== g); });   // v9.6: o prato na mão da Cami vai para a pia
     this.maqCancela(g); this.drinkCancela(g);
     this.releaseCmd(g);
     if (this.sel === g) this.sel = null;
@@ -1214,6 +1232,27 @@ class Game {
     else return false;
     writeSave(this.save); return true;
   }
+  /* v9.6: o modo da Cami no cartão: 'tarefas' ou 'mesas' ("Minhas mesas", só com o curso de mesa e pelo menos 1 mesa marcada) */
+  setCamiModo(m){
+    const eq = this.save.equipe;
+    if (m !== 'tarefas' && m !== 'mesas') return false;
+    if (m === 'mesas' && !(eq.cami > 0 && STAFF.cami.levels[eq.cami].mesas && camiMesasN(this.save) > 0)) return false;
+    eq.camiModo = m; writeSave(this.save); return true;
+  }
+  get camiMesasOn(){ return camiModoMesas(this.save); }
+  /* v9.6, editor do salão: marca (ou desmarca) a mesa i como da Cami (até CAMI_MESAS_MAX; precisa do curso de mesa dela) */
+  camiMesa(i){
+    const mesas = this.save.salao.mesas, m = mesas[i], sv = this.save;
+    if (!m) return false;
+    if (!m.cami){
+      if (!devLivre() && !(sv.equipe.cami > 0 && STAFF.cami.levels[sv.equipe.cami].mesas)) return this.salaoNao('A Cami precisa do curso de Atendimento de mesa.');
+      if (camiMesasN(sv) >= CAMI_MESAS_MAX) return this.salaoNao('A Cami fica com até ' + CAMI_MESAS_MAX + ' mesas.');
+    }
+    const l = mesas.slice(); l[i] = Object.assign({}, m, { sel:1 });
+    if (m.cami) delete l[i].cami; else l[i].cami = 1;
+    if (!camiMesasN({ salao:{ mesas:l } }) && sv.equipe.camiModo === 'mesas') sv.equipe.camiModo = 'tarefas';   // sem mesa marcada, volta às tarefas
+    return this.salaoSet(l, true);
+  }
   toggleCamiTask(id){   // v9.3
     const eq = this.save.equipe, i = eq.camiTasks.indexOf(id);
     const max = eq.cami ? STAFF.cami.levels[eq.cami].tasks : STAFF.cami.levels[1].tasks;
@@ -1315,11 +1354,11 @@ class Game {
     writeSave(sv); Sfx.coin();
     return true;
   }
-  /* cursos da Cami (v9.3): cada um sobe um nível dela (e o salário); um por lojinha; o de mesa fica "Em breve" até a 3b-6 */
+  /* cursos da Cami (v9.3): cada um sobe um nível dela (e o salário); um por lojinha; o de mesa (v9.6) abre o modo "Minhas mesas" */
   get camiCursoTrava(){ return !devLivre() && this.save.camiCursoDia === this.shopNext; }
   buyCamiCurso(id){
     const c = CAMI_CURSOS.find(x => x.id === id), sv = this.save;
-    if (!c || !cursoDaniVis(c, this.ponto) || !(sv.equipe.cami > 0 || devLivre()) || sv.camiCursos[id] || (c.dep && !sv.camiCursos[c.dep]) || (id === 'mesa' && !CAMI_MESA_ON) || this.camiCursoTrava || sv.bank < c.preco) return false;
+    if (!c || !cursoDaniVis(c, this.ponto) || !(sv.equipe.cami > 0 || devLivre()) || sv.camiCursos[id] || (c.dep && !sv.camiCursos[c.dep]) || this.camiCursoTrava || sv.bank < c.preco) return false;
     sv.bank -= c.preco; caixaGasto(sv, 'mel', c.preco);
     sv.camiCursos[id] = 1; sv.camiCursoDia = this.shopNext;
     if (sv.equipe.cami > 0) sv.equipe.cami = Math.min(STAFF.cami.levels.length - 1, Math.max(sv.equipe.cami, camiNivelCursos(sv)));
@@ -1333,7 +1372,7 @@ class Game {
     const sem = this.mode === 'semfim', sal = this.save.salao, key = sem ? 'semfim' : JSON.stringify(sal);
     if (key === this.tablesKey) return;
     const mesas = sem ? (this.semfimMesas || (this.semfimMesas = salaoAuto(SALAO_SEMFIM.map((seats, i) => ({ seats, c:i % 4 })), PONTOS[0]))) : sal.mesas;
-    const defs = mesas.map((m, i) => ({ id:i + 1, cx:m.x, cy:m.y, seats:m.seats, color:m.c, toalha:!!m.t }));
+    const defs = mesas.map((m, i) => ({ id:i + 1, cx:m.x, cy:m.y, seats:m.seats, color:m.c, toalha:!!m.t, cami:!!m.cami }));
     this.tables = defs.map(d => new Table(d));
     setObst(defs);
     this.tablesKey = key;
@@ -1645,6 +1684,7 @@ class Game {
       for (let j=0;j<PLATE_SLOTS.length;j++) if (pl[j] && (i < 0 || Math.abs(x - PLATE_SLOTS[j].x) < Math.abs(x - PLATE_SLOTS[i].x))) i = j;
       if (i < 0) return false;
       const pid = pl[i].id;
+      if (pl[i].group && pl[i].group.cami){ this.addText(PLATE_SLOTS[i].x, PLATE_SLOTS[i].y - 34, 'É da Cami!', PAL.alerta, 14); Sfx.boing(); return false; }   // v9.6
       if (this.bia.acts.some(a => a.type === 'plate' && a.pid === pid)) return false;
       if (this.bia.enqueue({ type:'plate', pid })){ Sfx.tap(); this.addGlow(pl[i]); return true; }
       return false;

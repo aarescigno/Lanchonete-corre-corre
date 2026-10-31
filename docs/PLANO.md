@@ -14,10 +14,9 @@ Origem: retorno do Renan Martorelli (beta-tester) e conversa com o Arthur (15/10
 ## Situação
 | # | Etapa | Versão | Situação |
 |---|---|---|---|
-| 3b-3 | A Avenida: a vitrine da Dani, o Joca barista e a Cami | v9.3 | feita em 31/10 (`docs/spec-v9.3.md`; a máquina de espresso ficou no chão ao lado da bancada do café; `smoke45`, não 44; a Cami só chega ao nível 2 até a 3b-6) |
 | 3b-4 | Fiscal da vigilância sanitária | v9.4 | feita em 31/10 (`docs/spec-v9.4.md`; nova parte `15-fiscal.js`; `smoke46`; a mesa suja ficou em 8 s: o bot passou em 6 de 6 visitas) |
 | 3b-5 | O Anselmo e os drinks da Avenida | v9.5 | feita em 31/10 (`docs/spec-v9.5.md`; `smoke47`, não 46; `DRINKS.pede` +0,1 pela regra do plano) |
-| 3b-6 | A Cami em "Minhas mesas" | v9.6 | a fazer |
+| 3b-6 | A Cami em "Minhas mesas" | v9.6 | feita em 31/10 (`docs/spec-v9.6.md`; `smoke48`, não 47; `CAMI_MESAS_MAX` ficou 3: a Avenida já passava de 95% antes, o ajuste é da 3b-7) |
 | 3b-7 | Rebalanceamento da escada completa (Garagem, área industrial e Avenida), antes do Terraço | v9.6.1 | a fazer; depois da 3b-6 |
 | 4a | Terraço Suíça e VIPs exigentes (e o capítulo dele) | v10 | a fazer |
 | 4b | Nível de luxo | v10.1 | a fazer |
@@ -58,24 +57,11 @@ Origem: retorno do Renan Martorelli (beta-tester) e conversa com o Arthur (15/10
 - **Folha** (`FOLHA_CORTE`, a ordem final depois da 3b-5): couvert, som, TV, TVs, **o Anselmo não vem**, **a Cami não vem**, **aumento do Joca**, aumento da Dani, aumento do Tonhão, **o Joca não vem**. "Não vem" marca `eq.<quem>Fora = true` só naquele dia: `payroll` não conta, o ajudante não entra no dia, `normEquipe` não guarda o `...Fora` (continua contratado). Cada sessão põe a sua parte nessa ordem.
 - **Cursos:** um por dia por ajudante (`daniCursoDia`, `jocaCursoDia`, `camiCursoDia`). Os que trazem item (confeitarias, espresso) ficam no **cartão Cardápio**, com o rosto de quem faz, ao lado dos do Tonhão, e contam na Diversidade do Gurugol (`avalMenu`); os de atendimento ficam no cartão do ajudante, em Equipe. Só aparecem no ponto do `nivel` deles (no modo dev, sempre).
 
-### Sessão 3b-6 — A Cami em "Minhas mesas" (v9.6)
-O curso "Atendimento de mesa" da Cami (3b-3) passa a se comprar e abre o **modo "Minhas mesas"** no cartão dela (o outro modo é "Tarefas"; "Ajuda em tudo" vem no Terraço, 4a).
-- **Quais mesas:** no editor do salão, o jogador marca até **3 mesas** como da Cami (`salao.mesas[i].cami = 1`; um avental vinho pequeno no tampo, no editor e no jogo). Sem mesa marcada, o modo não fica disponível ("Marque as mesas dela no Salão").
-- **O que ela faz nelas,** com a velocidade do nível dela (1,25 × a da Bia sem tênis): anota o pedido, leva à janela, pega o prato pronto daquela mesa, entrega, leva a conta e recolhe os pratos sujos dela. O jogador continua pondo os grupos nas mesas (sentar é sempre o arrasto). Cada ação dela marca o grupo (`group.cami`), e a Bia não pega o que está marcado; o que a Bia já pegou, a Cami deixa. Ela carrega 2 itens (não usa bandeja) e não faz suco, café, doce nem drink (esses seguem com quem faz).
-- **No modo "Minhas mesas" o básico** volta para o Joca (ou a Dani), pela regra do `donoBasico` (a Cami deixa de contar como a mais nova).
-- **Pontos e gorjeta:** as ações dela dão os mesmos pontos (`PONTOS_ACAO`) e a mesma gorjeta das da Bia; a sequência (`chain`) é só da Bia.
-- **Testes:** **`tests/smoke47.js` (novo):** (1) curso só depois do Atendimento ágil, na Avenida; (2) marcar no editor até 3 mesas, sem mesa o modo fica apagado; (3) um grupo numa mesa da Cami vai do pedido à conta sem a Bia; (4) a Bia e a Cami nunca pegam o mesmo item, nada se perde; (5) o básico volta para o Joca nesse modo; (6) save da v9.5 carrega igual. `bot.js`: marca as 3 mesas mais perto da janela e liga o modo. `balance.js PONTO=avenida EQUIPE=auto`: 85–95%; se passar de 95%, a Cami nesse modo fica com 2 mesas. Capturas `tests/shot_v9_6.py`: a Cami atendendo, o avental no tampo, o cartão com os 2 modos.
-- **Fechamento:** v9.6 (`versoes/`, `vtag`, `VERSAO`, `#ov-ver`, `docs/spec-v9.6.md`, `RESUMO.md`), PR e merge. Ao fechar a 3b, arquive a etapa (`ferramentas/arquiva.py`).
-
-**Modelo:** Sonnet, esforço alto. Regras fechadas, mas é uma 2ª garçonete com IA própria, dividindo grupos com a Bia.
-
----
-
 ### Sessão 3b-7 — Rebalanceamento da escada completa (v9.6.1)
 **Por que aqui:** a 3b-2 a 3b-6 mexem em receita, custo e nota do Gurugol (Dani, Joca, Cami, fiscal, drinks do Anselmo). Rebalancear antes desfaria o ajuste (como a v8.6.4 e a v8.6.6 precisaram de revisão). E o Terraço (4a) é o ponto mais sensível: os números da escada precisam estar firmes antes, para saber se a dificuldade dele vem do desenho ou de um desajuste herdado. É a primeira vez que a escada fica completa e dá para olhar a curva inteira.
 - **Medir primeiro (sem mudar nada):** `node carreira.js` com `DIAS=50` (campanha até a Avenida), `node balance.js` (dias 3 a 7, sem equipe e `EQUIPE=auto`) e `PONTO=industrial` e `PONTO=avenida` (dias 8 a 10, `EQUIPE=auto`). Anotar no `docs/spec-v9.6.1.md` a tabela: dia, meta, % da meta, nota do Gurugol, dinheiro, e quando cada mudança de ponto fica possível.
 - **Alvos:** sem equipe ~40–70% das metas nos dias 3 a 7; `EQUIPE=auto` ~85–95% (também nos pontos); nota do Gurugol perto do teto do ponto, com `avalMinimo` (2,7 para sair da Garagem e 3,4 da área industrial) alcançável sem fazer tudo perfeito; a mudança de ponto chega em dias de campanha parecidos com os de antes da 3b (sem pular nem travar).
-- **O que se pode mexer, só em números:** metas por dia e por ponto (`10-constantes.js`), multiplicadores do cardápio dos pontos, aluguel e custo da mudança, `MANUT`, `AVAL` (teto, bônus, `avalMinimo`) e custos/preços da equipe e dos cursos. **Não mexer** em regras, textos, cenário nem na ordem das etapas.
+- **O que se pode mexer, só em números:** metas por dia e por ponto (`10-constantes.js`), multiplicadores do cardápio dos pontos, aluguel e custo da mudança, `MANUT`, `AVAL` (teto, bônus, `avalMinimo`) e custos/preços da equipe e dos cursos. Da 3b-6 vem uma pendência: a Avenida já passa de 95% mesmo sem o modo "Minhas mesas" da Cami (3 mesas, `CAMI_MESAS_MAX`); se o rebalanceamento não baixar isso pelas metas, baixe o teto para 2 mesas (`docs/spec-v9.6.md`). **Não mexer** em regras, textos, cenário nem na ordem das etapas.
 - **Como decidir (um número por vez, medindo de novo):** fora da faixa para cima, subir meta ou custo do que sobra; para baixo, o contrário. Se o `EQUIPE=auto` passar de 95%, mexer primeiro nas metas do ponto, não nos preços. Se a nota não alcançar o `avalMinimo`, mexer no `AVAL` do ponto, não no mínimo. Mudar no máximo 3 números por rodada de medição; registrar cada um (antes, depois, motivo) na spec.
 - **Testes:** `tests/run_all.sh --tudo` verde; ajustar só os valores esperados dos smokes que citem número mexido (sem relaxar conferência). Save da v9.6 carrega igual.
 - **Fechamento:** v9.6.1 (`versoes/`, `vtag`, `VERSAO`, `#ov-ver`, `docs/spec-v9.6.1.md`, `RESUMO.md`), PR e merge. Se não mudar nenhum número (a escada já estiver na faixa), vale como a 2c-r7b: sem versão nova, só o registro na spec.

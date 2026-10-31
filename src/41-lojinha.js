@@ -400,7 +400,7 @@ function buildJoca(grid){
 /* cursos da Dani (v8.9): três cartões, +2 de experiência cada; um por lojinha, à parte do curso do Tonhão */
 /* o cartão da Cami (v9.3): atendimento, chega no nível 1 e sobe só por curso (o salário sobe junto); fica com o básico da casa */
 function buildCami(grid){
-  const eq = game.save.equipe, sv = game.save, bank = sv.bank, C = STAFF.cami.levels, cMax = CAMI_MESA_ON ? C.length - 1 : 2;
+  const eq = game.save.equipe, sv = game.save, bank = sv.bank, C = STAFF.cami.levels, cMax = C.length - 1;
   const canPay = extra => payroll(eq) + extra <= bank;
   const pc = v => Math.round(v*100) + '%', sec = v => String(Math.round(v*10)/10).replace('.', ',') + ' s';
   const lv = eq.cami, sp = C[lv] || C[1];
@@ -412,7 +412,20 @@ function buildCami(grid){
     ['Diária', a && fmt(a.pay), fmt(b.pay)]];
   const c = staffCard(upgradeIcon('cami'), lv ? 'Cami · nível ' + lv + ' de ' + cMax : 'Cami (ajudante)',
     lv ? '' : 'Garçonete de rodízio, indicada pelo Joca. Já chega rápida e fica com as tarefas da casa: ' + avail.map(t => t.name.toLowerCase()).join(', ').replace(/, ([^,]*)$/, ' e $1') + '. Tem 2 mãos. Sobe de nível só com cursos, e a diária sobe junto.');
-  if (lv){
+  const temMesa = !!(lv && sp.mesas), nMesas = camiMesasN(sv), emMesas = camiModoMesas(sv);
+  if (temMesa){   // v9.6: o curso de mesa abre o 2º modo
+    const modos = el('div', 'tasks');
+    [['tarefas', 'Tarefas', true], ['mesas', 'Minhas mesas', nMesas > 0]].forEach(m => {
+      const b = el('button', null, m[1]); b.type = 'button'; b.setAttribute('aria-pressed', (m[0] === 'mesas') === emMesas ? 'true' : 'false');
+      if (!m[2]) b.disabled = true;
+      b.addEventListener('click', () => { Sfx.tap(); game.setCamiModo(m[0]); buildShop(); });
+      modos.appendChild(b);
+    });
+    c.appendChild(el('span', 'full', 'Modo:'));
+    c.appendChild(modos);
+    c.appendChild(el('span', 'cursos-lista', nMesas ? 'Minhas mesas: ela cuida de ' + nMesas + ' de ' + CAMI_MESAS_MAX + ' mesas, do pedido à conta (anota, leva à janela, pega o prato, entrega, cobra e recolhe a louça). Marque as mesas dela no Salão. Nesse modo o básico da casa volta para o Joca (ou a Dani); suco, café, doce e drink seguem com quem faz.' : 'Marque as mesas dela no Salão (toque numa mesa e escolha "Mesa da Cami") para usar o modo "Minhas mesas".'));
+  }
+  if (lv && !emMesas){
     const sel = eq.camiTasks.filter(id => daniTaskOk(id, game.up)).length, tasks = el('div', 'tasks');
     avail.forEach(t => {
       const on = eq.camiTasks.indexOf(t.id) >= 0;
@@ -430,14 +443,14 @@ function buildCami(grid){
   c.appendChild(duo); grid.appendChild(c);
   if (game.cursoMsg) grid.appendChild(el('p', 'cursomsg', game.cursoMsg));
   CAMI_CURSOS.filter(q => cursoDaniVis(q, game.ponto)).forEach(q => {
-    const feito = !!sv.camiCursos[q.id], breve = q.id === 'mesa' && !CAMI_MESA_ON, card = el('div', 'item' + (feito ? ' own' : ''));
+    const feito = !!sv.camiCursos[q.id], card = el('div', 'item' + (feito ? ' own' : ''));
     const alvo = q.id === 'agil' ? 2 : 3, n = C[alvo];
     card.appendChild(upgradeIcon('cami'));
     card.appendChild(el('b', null, 'Curso de ' + q.nome));
     card.appendChild(el('span', 'cursos-lista', 'Nível ' + alvo + ': velocidade ' + pc(n.speed) + ', ' + n.tasks + ' tarefas, diária ' + fmt(n.pay) + (q.id === 'mesa' ? '. Abre o modo "Minhas mesas".' : '.')));
-    if (!feito && !breve && game.camiCursoTrava) card.appendChild(el('span', 'cursos-lista', 'A Cami já está num curso. Volte depois do próximo dia.'));
+    if (!feito && game.camiCursoTrava) card.appendChild(el('span', 'cursos-lista', 'A Cami já está num curso. Volte depois do próximo dia.'));
     if (!feito && q.dep && !sv.camiCursos[q.dep]) card.appendChild(el('span', 'cursos-lista apagado', 'Precisa do curso de ' + CAMI_CURSOS.find(x => x.id === q.dep).nome + '.'));
-    card.appendChild(feito ? shopBtn('Curso feito', 'btn', false, () => false) : breve ? shopBtn('Em breve', 'btn', false, () => false) : shopBtn('Comprar ' + fmt(q.preco), 'btn', lv > 0 && !game.camiCursoTrava && (!q.dep || !!sv.camiCursos[q.dep]) && bank >= q.preco, () => game.buyCamiCurso(q.id), q.preco));
+    card.appendChild(feito ? shopBtn('Curso feito', 'btn', false, () => false) : shopBtn('Comprar ' + fmt(q.preco), 'btn', lv > 0 && !game.camiCursoTrava && (!q.dep || !!sv.camiCursos[q.dep]) && bank >= q.preco, () => game.buyCamiCurso(q.id), q.preco));
     grid.appendChild(card);
   });
 }
@@ -582,13 +595,13 @@ function drawEditor(cv){
   const d = edDrag && edDrag.moved ? edDrag : null;
   game.save.salao.mesas.forEach((m, i) => {
     if (d && !d.est && d.i === i) return;
-    const t = new Table({ id:i + 1, cx:m.x, cy:m.y, seats:m.seats, color:m.c, toalha:m.t });
+    const t = new Table({ id:i + 1, cx:m.x, cy:m.y, seats:m.seats, color:m.c, toalha:m.t, cami:m.cami });
     t.open = true;
     drawTable(c, game, t, 0, true);
     if (i === game.salaoSel) edMarca(c, edRect(m), false, false);
   });
   if (d){   // a mesa arrastada, por cima de tudo
-    const m = d.est ? game.estoque[d.i] : game.save.salao.mesas[d.i], t = new Table({ id:d.est ? '' : d.i + 1, cx:d.x, cy:d.y, seats:m.seats, color:m.c, toalha:m.t });
+    const m = d.est ? game.estoque[d.i] : game.save.salao.mesas[d.i], t = new Table({ id:d.est ? '' : d.i + 1, cx:d.x, cy:d.y, seats:m.seats, color:m.c, toalha:m.t, cami:m.cami });
     t.open = true;
     drawTable(c, game, t, 0, true);
     edMarca(c, edRect({ x:d.x, y:d.y, seats:m.seats }), true, !d.ok);
@@ -677,6 +690,7 @@ function buildSalao(grid){
       pop.appendChild(el('b', null, 'Mesa ' + (sel + 1) + ' · ' + m.seats + ' lugares'));
       pop.appendChild(edCores(m, k => game.pintarMesa(sel, k)));
       if (!m.t) pop.appendChild(edBtn('Toalha xadrez: ' + fmt(TOALHA.cost), 'btn', bank >= TOALHA.cost, () => game.buyToalha(sel), TOALHA.cost));   // v8.6.5
+      if (devLivre() || (game.save.equipe.cami > 0 && STAFF.cami.levels[game.save.equipe.cami].mesas)) pop.appendChild(edBtn(m.cami ? 'Tirar da Cami' : 'Mesa da Cami (' + camiMesasN(game.save) + ' de ' + CAMI_MESAS_MAX + ')', 'btn' + (m.cami ? ' alt' : ''), m.cami || camiMesasN(game.save) < CAMI_MESAS_MAX, () => game.camiMesa(sel)));   // v9.6
       if (m.seats === 2) pop.appendChild(edBtn('Virar mesa de 4: ' + fmt(SALAO.virar), 'btn', tot + 2 <= p.lugares && bank >= SALAO.virar, () => game.virarMesa(sel), SALAO.virar));
       pop.appendChild(edBtn('Guardar no estoque', 'btn alt', mesas.length > 1, () => game.guardarMesa(sel)));
       pop.appendChild(edBtn('Vender por ' + fmt(mesaPreco(m.seats) * SALAO.venda), 'btn alt', mesas.length > 1, () => game.venderMesa(sel)));
