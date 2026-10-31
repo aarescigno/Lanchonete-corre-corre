@@ -4,6 +4,12 @@ Registro das ideias e dos retornos de quem jogou, com o texto original, e de ond
 
 ---
 
+## 31/10 — usuário: Anselmo, o coqueteleiro
+Texto original: "Anselmo. Esse vai ser o nome da pessoa coqueteleira. Porque o especialista em cafés vai ser o Joca, mas o Anselmo vai fazer os melhores coquetéis do mundo. E ele pode entrar já, talvez, na Avenida Brasil e vai receber upgrades para chegar até o nível top, que é o que vai ser o terraço suíça, né?"
+Destino: Ideias guardadas do `docs/PLANO.md` (completa a entrada de especialização da equipe); decidir se entra na 3b-2 ou na 4a.
+
+---
+
 ## 31/10 — usuário: Dani confeiteira, Joca coqueteleiro/barista e a Cami (atendimento) no Terraço
 Texto original: "Ah tá, então pode deixar a Dani como confeiteira e o Joca mais pra frente entra como coqueteleiro ou como barista, né? Porque a ideia é que no terraço suíça tenha alguém especializado em fazer cafés gourmet especial, etc, né? Vários processos, e alguém para fazer doces muito especiais e tal. E o chef Tonhão, que vai preparar pratos de alto estirpe após vários cursos, etc. E vai ter que ter alguém para ajudar a Bia na pegada do dia a dia ali. Talvez seja um terceiro assistente. A Cami, essa terceira assistente, vai ser especializada em atendimento de pessoas. Então ela vai ser muito rápida. Vai ser mais rápida que a Bia, talvez. Ou tão rápida quanto a Bia, sabe? Coisa que o Joca e a Dani não conseguem ser. Porque a especialidade deles é outra e eles estão descobrindo."
 Destino: Ideias guardadas do `docs/PLANO.md` (substitui a entrada anterior); decidir no planejamento da 4a.
