@@ -11,6 +11,7 @@ function convCabeca(g, q){
   if (q === 'joca') return [g.bia.x + g.cam - 70, g.bia.y - 82];
   if (q === 'cami' && g.cami.active) return [g.cami.x + g.cam, g.cami.y - 82];   // v9.3
   if (q === 'cami') return [g.bia.x + g.cam + 70, g.bia.y - 82];
+  if (q === 'anselmo') return [ANSELMO_HOME.x + g.cam, ANSELMO_HOME.y - 82];   // v9.5: atrás do balcão (se ainda não chegou, no mesmo lugar)
   return [g.bia.x + g.cam, g.bia.y - 86];
 }
 function drawConversa(c, g, conv){
@@ -31,7 +32,7 @@ function drawConversa(c, g, conv){
   c.beginPath(); c.moveTo(bx - 12, y + h - 2); c.lineTo(a[0], Math.max(a[1], y + h + 14)); c.lineTo(bx + 12, y + h - 2); c.closePath(); fs(c, '#fff', 3);
   rr(c, x, y, w, h, 16); fs(c, '#fff', 3);
   c.fillStyle = '#fff'; c.fillRect(bx - 10, y + h - 4, 20, 5);
-  txt(c, HIST_NOMES[f.q], x + 18, y + 18, U.nome, f.q === 'tonhao' ? PAL.perigo : f.q === 'dani' ? '#7B4FB5' : f.q === 'joca' ? '#2C7A7B' : f.q === 'cami' ? '#6B46C1' : PAL.ok, 'left', FD);
+  txt(c, HIST_NOMES[f.q], x + 18, y + 18, U.nome, f.q === 'tonhao' ? PAL.perigo : f.q === 'dani' ? '#7B4FB5' : f.q === 'joca' ? '#2C7A7B' : f.q === 'cami' ? '#6B46C1' : f.q === 'anselmo' ? '#8E3B46' : PAL.ok, 'left', FD);
   if (f.nota) txt(c, '(' + f.nota + ')', x + 18, y + 40, 'italic ' + U.nota, '#6b6457', 'left', FB);
   lin.forEach((l, i) => txt(c, l, x + 18, y + cab + 6 + U.linha * (i + 0.5), U.texto, PAL.tinta, 'left', FB));
   txt(c, 'toque para seguir', x + w - 14, y + h - 12, 12, '#9a917f', 'right', FB);

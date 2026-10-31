@@ -894,6 +894,37 @@ function drawCami(ctx,d,tm){
   rr(ctx,d.x-15,d.y-84,30,12,5); fs(ctx,'#fff',1.6); txt(ctx,'CAMI',d.x,d.y-77.5,9,'#6B46C1','center',FD);
   d.hands.forEach((h,i) => drawHandItem(ctx,h.kind === 'coffee' ? { kind:'coffee' } : h,d.x + (i ? 18 : -18),d.y - 28,0.7));
 }
+/* Anselmo (v9.5): coqueteleiro de uns 45 anos, pele negra retinta, cabeça raspada e barba grisalha curta, camisa branca de manga dobrada, colete preto,
+   gravata-borboleta bordô e crachá "ANSELMO". d.busy: chacoalha a coqueteleira (parado com prefers-reduced-motion) */
+const ANSELMO_LOOK = { skin:5, hair:4, hairC:'#1B1512', pants:'#1E1D21', kid:false, elder:false, acc:null, glasses:false };
+function drawAnselmo(ctx,d,tm){
+  drawPerson(ctx,ANSELMO_LOOK,d.x,d.y,{ shirt:'#FFFFFF', moving:false, mood:0, t:tm });
+  const hy = d.y - 42;
+  ctx.strokeStyle = '#B9B4AC'; ctx.lineWidth = 3.4; ctx.lineCap = 'round'; ctx.beginPath(); ctx.arc(d.x,hy + 1,10.2,Math.PI * 0.18,Math.PI * 0.82); ctx.stroke();   // a barba grisalha
+  ctx.beginPath(); ctx.moveTo(d.x-8,d.y-30); ctx.lineTo(d.x+8,d.y-30); ctx.lineTo(d.x+10,d.y-12); ctx.lineTo(d.x-10,d.y-12); ctx.closePath(); fs(ctx,'#1E1D21',2.2);   // o colete
+  ctx.fillStyle = '#FFFFFF'; ctx.beginPath(); ctx.moveTo(d.x-3,d.y-30); ctx.lineTo(d.x,d.y-20); ctx.lineTo(d.x+3,d.y-30); ctx.closePath(); ctx.fill();
+  ctx.beginPath(); ctx.moveTo(d.x,d.y-31); ctx.lineTo(d.x-6,d.y-35); ctx.lineTo(d.x-6,d.y-27); ctx.closePath(); fs(ctx,'#8E3B46',1.3);   // a gravata-borboleta
+  ctx.beginPath(); ctx.moveTo(d.x,d.y-31); ctx.lineTo(d.x+6,d.y-35); ctx.lineTo(d.x+6,d.y-27); ctx.closePath(); fs(ctx,'#8E3B46',1.3);
+  rr(ctx,d.x-19,d.y-84,38,12,5); fs(ctx,'#fff',1.6); txt(ctx,'ANSELMO',d.x,d.y-77.5,8,'#8E3B46','center',FD);
+  // a coqueteleira na mão direita, chacoalhando enquanto prepara
+  const sh = d.busy && !RM ? Math.sin(tm * 18) * 3 : 0;
+  ctx.save(); ctx.translate(d.x + 15,d.y - 40 + sh); ctx.rotate(d.busy && !RM ? 0.5 : 0.2);
+  rr(ctx,-4,-9,8,18,2.5); fs(ctx,PAL.inox,1.6); rr(ctx,-3,-12,6,4,2); fs(ctx,PAL.cromo,1.2); ctx.fillStyle = 'rgba(255,255,255,.5)'; ctx.fillRect(-2.4,-6,1.4,12);
+  ctx.restore();
+}
+/* o balcão de drinks (v9.5) na parede do fundo: prateleira com garrafas, o Anselmo atrás do tampo e, no tampo, os copos prontos (até DRINKS.vagas) */
+function drawBalcaoDrinks(ctx,g,tm){
+  const r = STATIONS.drinks.rect, x = r.x, y = r.y;
+  shadowEll(ctx,x + r.w/2,y + r.h + 1,r.w/2,3.5,0.22);
+  rr(ctx,x,y,r.w,18,3); fs(ctx,'#6A4326',2);   // a prateleira
+  [['#2F9E5A',6],['#F6A21E',16],['#D8334A',26],['#3F7FD0',36],['#F4D13A',46]].forEach(b => { rr(ctx,x + b[1],y - 6,6,15,2); fs(ctx,b[0],1.2); ctx.fillStyle = 'rgba(255,255,255,.5)'; ctx.fillRect(x + b[1] + 1.2,y - 3,1.2,8); });
+  drawAnselmo(ctx,{ x:ANSELMO_HOME.x, y:ANSELMO_HOME.y, busy:!!g.drinkJob },tm);
+  rr(ctx,x - 2,y + 22,r.w + 4,r.h - 22,4); fs(ctx,'#8A5A34',2.4);   // a frente do balcão
+  rr(ctx,x - 4,y + 18,r.w + 8,7,3); fs(ctx,'#B8814F',2);   // o tampo
+  ctx.fillStyle = 'rgba(255,255,255,.16)'; ctx.fillRect(x + 4,y + 30,r.w - 8,2);
+  txt(ctx,'DRINKS',x + r.w/2,y + 38,8,'#FFE6A8','center',FD);
+  for (let i = 0; i < DRINKS.vagas; i++){ const p = g.drinkPronto[i]; if (p) drawIcon(ctx,'drink',x + 16 + i * 26,y + 14,0.7,drinkIdx(p.id)); }
+}
 /* couvert artístico: músico num banquinho, muda de instrumento conforme o dia */
 const MUSICOS = [
   { look:{ skin:1, hair:1, hairC:'#5B3A21', pants:'#4A4036', glasses:false }, shirt:'#E0559A', inst:'violao' },
@@ -1201,7 +1232,9 @@ function drawKitchen(ctx,g,t){
   if (g.up.confCaseira && g.state !== 'menu') glowSprite(ctx,g,'doces',ctx => drawGeladeiraDoces(ctx,g));
   // v9.3, a máquina de espresso (curso Barista do Joca), no chão ao lado da bancada do café
   if (g.up.espresso && g.state !== 'menu') glowSprite(ctx,g,'espresso',ctx => drawEspresso(ctx,g,t));
-  glow('order'); glow('adiantar'); glow('doces'); glow('espresso');
+  // v9.5, o balcão de drinks do Anselmo (só na Avenida)
+  if (g.anselmoAtivo && g.state !== 'menu') glowSprite(ctx,g,'drinks',ctx => drawBalcaoDrinks(ctx,g,t));
+  glow('order'); glow('adiantar'); glow('doces'); glow('espresso'); glow('drinks');
 
   // --- janela de prontos
   r = STATIONS.plates.rect;
