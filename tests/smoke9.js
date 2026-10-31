@@ -1,12 +1,13 @@
-// v7, Contas: a meta é o lucro; ingredientes por prato e suco, contas do dia pelo salão aberto, divulgação do dia 3 em diante.
+// v7, Contas: a meta é o lucro; ingredientes por prato e suco, contas do dia pelo salão aberto, divulgação do dia 4 em diante (v9.0.2; antes, do dia 3).
 const H=require('./harness.js')(); const {g,L,ctx,els}=H;
 let fails=0,total=0; const ok=(c,m)=>{ total++; if(!c){fails++;console.log('FAIL:',m);} else console.log('ok  :',m); };
 const C=L.CONTAS, I=L.INGRED, PAN=L.divulgaOf('panfleto').cost, RED=L.divulgaOf('redes').cost, TP=n=>L.STAFF.tonhao.levels[n].pay;
 const reset=(e,bank,div)=>{ g.save.equipe=L.normSave({equipe:e||{}}).equipe; g.save.bank=bank==null?5000:bank; g.save.divulga=div||'panfleto'; g.up={}; g.save.up=g.up; };
 
 // save
-ok(L.normSave({}).divulga==='panfleto' && L.normSave({divulga:'xyz'}).divulga==='panfleto' && L.normSave({divulga:'redes'}).divulga==='redes','save: divulgação padrão panfletos, inválida vira panfletos');
-ok(L.DIVULGA.map(d=>d.id).join()==='boca,panfleto,redes' && L.DIVULGA_DIA===3,'3 opções de divulgação, a partir do dia 3');
+ok(L.normSave({}).divulga==='boca' && L.normSave({dia:5,divulga:'xyz'}).divulga==='boca' && L.normSave({dia:5,divulga:'redes'}).divulga==='redes','save: divulgação padrão boca a boca, inválida vira boca a boca (v9.0.2)');
+ok(L.normSave({dia:3,divulga:'redes'}).divulga==='boca','antes do dia 4, o save fica no boca a boca');
+ok(L.DIVULGA.map(d=>d.id).join()==='boca,panfleto,redes' && L.DIVULGA_DIA===4,'3 opções de divulgação, a partir do dia 4');
 
 // contas do dia: aluguel + base (gás e geladeira, v8.3.8) + mesas abertas + lugares
 reset(); g.resetDay(1);
@@ -17,7 +18,7 @@ ok(L.contasDia(g.tables,{aluguel:120})===120+C.base+4*C.mesa+10*C.lugar,'aluguel
 { g.goShop(5); g.save.bank=1000; const before=L.contasDia(g.tables,g.ponto); g.buyMesa(2); ok(L.contasDia(g.tables,g.ponto)===before+C.mesa+2*C.lugar,'mesa nova soma 1 mesa e 2 lugares às contas'); g.save.salao=L.normSalao({}); g.buildTables(); }
 
 // divulgação e grupos do dia
-{ reset(); g.resetDay(2); ok(!g.div && g.schedule.length===L.DAYS[1].groups,'dia 2: sem divulgação, grupos de sempre');
+{ reset(); g.resetDay(3); ok(!g.div && g.schedule.length===L.DAYS[2].groups,'dia 3: sem divulgação, grupos de sempre');
   const n=L.DAYS[4].groups;
   reset({},5000,'panfleto'); g.resetDay(5); ok(g.div.id==='panfleto' && g.schedule.length===n,'panfletos: os '+n+' grupos do dia');
   reset({},5000,'redes'); g.resetDay(5); ok(g.schedule.length===Math.round(n*1.2),'redes sociais: +20% de grupos');
@@ -27,15 +28,15 @@ ok(L.contasDia(g.tables,{aluguel:120})===120+C.base+4*C.mesa+10*C.lugar,'aluguel
   ok(vr>vp*1.15,'redes sociais: mais VIPs ('+(vr/3).toFixed(1)+'% contra '+(vp/3).toFixed(1)+'%)'); }
 
 // pagamento ao abrir: folha + divulgação; sem dinheiro, a divulgação vira boca a boca antes de dispensar alguém
-{ reset({},1000,'panfleto'); g.startDay(3); g.begin(); ok(g.save.bank===1000 && g.paidDiv===PAN && g.paid===0,'panfletos: R$ '+PAN+' reservados ao abrir (pagos no fim do dia)');
+{ reset({},1000,'panfleto'); g.startDay(4); g.begin(); ok(g.save.bank===1000 && g.paidDiv===PAN && g.paid===0,'panfletos: R$ '+PAN+' reservados ao abrir (pagos no fim do dia)');
   ok(g.contas===L.contasDia(g.tables) && Math.round(g.lucro)===-(g.contas+PAN),'o dia começa no vermelho: −(contas + divulgação)');
-  reset({tonhao:2},TP(2)+RED-1,'redes'); g.startDay(3); g.begin();
+  reset({tonhao:2},TP(2)+RED-1,'redes'); g.startDay(4); g.begin();
   ok(g.save.divulga==='boca' && g.paidDiv===0 && g.paid===TP(2) && g.save.bank===TP(2)+RED-1 && g.unpaid[0]==='Redes sociais' && g.save.equipe.tonhao===2,'sem dinheiro: redes viram boca a boca e o Tonhão fica');
-  ok(g.schedule.length<=Math.round(L.DAYS[2].groups*0.9),'boca a boca: agenda refeita com menos grupos'); }
+  ok(g.schedule.length<=Math.round(L.DAYS[3].groups*0.9),'boca a boca: agenda refeita com menos grupos'); }
 
 // lojinha: escolher a divulgação
-{ reset({},0,'panfleto'); g.goShop(2); ok(!g.setDivulga('boca'),'antes do dia 3 não há divulgação');
-  g.goShop(3); ok(!g.setDivulga('redes') && g.save.divulga==='panfleto','sem dinheiro, não escolhe redes');
+{ reset({},0,'panfleto'); g.goShop(3); ok(!g.setDivulga('boca'),'antes do dia 4 não há divulgação');
+  g.goShop(4); ok(!g.setDivulga('redes') && g.save.divulga==='panfleto','sem dinheiro, não escolhe redes');
   ok(g.setDivulga('boca') && g.save.divulga==='boca','boca a boca é sempre possível');
   g.save.bank=500; ok(g.setDivulga('redes') && g.save.divulga==='redes' && g.div.id==='redes','com dinheiro, escolhe redes (e o dia ao fundo já usa)');
   { const f=L.payroll({tonhao:2,dani:3}); reset({tonhao:2,dani:3},f+RED-1,'panfleto'); g.goShop(4); ok(!g.setDivulga('redes'),'a folha conta: R$ '+f+' + R$ '+RED+' não cabem em R$ '+(f+RED-1)); }

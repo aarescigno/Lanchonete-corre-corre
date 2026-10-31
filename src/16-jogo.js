@@ -45,7 +45,7 @@ class Game {
     this.clima = so ? so.clima : '';
     this.quebras = so ? so.quebra.map(q => ({ id:q.id, t:q.f * this.day.time, on:false, fixed:false })) : [];
     this.usos = { fogao:0, geladeira:0, cafeteira:0 };
-    // divulgação (v7, do dia 3 em diante na carreira): quanto da freguesia do dia aparece
+    // divulgação (v7, do dia 4 em diante na carreira; v9.0.2): quanto da freguesia do dia aparece
     this.div = divulgaAberta(n) ? divulgaOf(this.save.divulga) : null;
     this.divF = this.div ? rand(this.div.groups[0], this.div.groups[1]) : 1;
     this.clock = this.day.time;
@@ -870,6 +870,7 @@ class Game {
       if (ob.ok) sv.conversa = 'depois';
     }
     if (!tomou && HIST.on && !DEV.on && sv.histV === 1 && d.n >= HIST_CARDAPIO.dia && !sv.convCard) sv.convCard = 'pend';   // v9.0.1: saves antigos que já passaram do dia 2 veem a conversa no próximo fim de dia
+    if (!tomou && HIST.on && !DEV.on && sv.histV === 1 && d.n === DIVULGA_DIA - 1 && !sv.convDiv) sv.convDiv = 'pend';   // v9.0.2: a conversa da divulgação
     const row = { d:d.n, fat, ingr:Math.round(this.custo), contas:this.contas, folha:this.paid, div:this.paidDiv, lucro:m, meta:d.meta, ok:passed, st:stars, perd:this.stats.lost, saldo:sv.bank };
     if (avDia) row.av = Math.round(avDia.nota * 10);
     if (forcado) row.forc = 1;

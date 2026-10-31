@@ -117,10 +117,10 @@ ok(!g.quitar(),'sem empréstimo, nada a quitar');
 { const v=1000, total=v*(1+L.BANCO.juros); ok(total>v && L.BANCO.forcado>L.BANCO.juros,'juros sobre o valor; à força, mais caro'); }
 
 // ---------- folha sem dinheiro: a chave ----------
-novo({dia:4,bank:30,equipe:{dani:2,tv:true}});
+novo({dia:4,bank:30,equipe:{dani:2,tv:true},divulga:'panfleto'});
 cont(); ok(g.save.corta===true && g.cortesSe(0).length>0 && /abre sem/.test(els['shop-livre'].textContent),'chave ligada (padrão): a folha que não cabe fica de fora');
 els['btn-shop-go'].fire('click'); els['btn-start'].fire('click'); ok(g.unpaid.length>0,'e fica, ao abrir');
-novo({dia:4,bank:30,equipe:{dani:2,tv:true}}); g.setCorta(false);
+novo({dia:4,bank:30,equipe:{dani:2,tv:true},divulga:'panfleto'}); g.setCorta(false);
 cont(); ok(!g.cortesSe(0).length && /caixa pode fechar no negativo/.test(els['shop-livre'].textContent),'chave desligada: nada sai, o aviso é o negativo');
 L.setShopTab('banco'); ok(/Desligado: cortar a folha/.test(txt(els['shop-grid'])),'a aba Banco mostra a chave desligada');
 els['btn-shop-go'].fire('click'); els['btn-start'].fire('click'); const fp=g.paid; ok(!g.unpaid.length && g.save.equipe.dani===2 && g.save.equipe.tv && fp===L.payroll(g.save.equipe),'paga tudo');

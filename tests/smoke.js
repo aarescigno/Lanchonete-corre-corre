@@ -47,6 +47,7 @@ function playDay(n){
   return r;
 }
 // v8.3: a carreira é uma campanha; o próximo dia vem de qualquer jeito (a meta não batida só fica sem estrelas)
+g.save.divulga='panfleto';   // v9.0.2: o padrão é boca a boca; o bot fica nos panfletos (o boca a boca pode quebrar a lanchonete no dia 8)
 for(let n=1;n<=8;n++){
   const r=playDay(n);
   if(!r.passed) console.log('meta nao atingida no dia',n);

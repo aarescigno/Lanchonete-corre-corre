@@ -34,7 +34,7 @@ ok(L.avalComentario([4,4,4,4,1],'',true)==='Que cheiro de lixo!','ambiente ruim 
 { const s=L.normSave({aval:cinco(120)}); ok(s.aval.length===30,'save: aval normalizado'); ok(L.normSave({}).aval.length===0,'save novo: sem avaliações'); }
 
 // movimento do dia pela nota
-g.save=L.normSave({dia:7,bank:500}); g.up=g.save.up; g.buildTables();
+g.save=L.normSave({dia:7,bank:500,divulga:'panfleto'}); g.up=g.save.up; g.buildTables();
 const N=av=>{ g.save.aval=av; g.resetDay(7); return g.schedule.length; };
 ok(N(cinco(8))>N([]) && N(um(8))<N([]),'nota alta traz mais grupos; baixa, menos');
 

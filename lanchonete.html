@@ -336,7 +336,7 @@ table.rank tr.me td{background:#fbe7a8}
 
     <div class="ov show" id="ov-menu">
       <div class="panel menu-panel">
-        <span class="vtag" id="vtag" aria-label="Versão 9.0.1">v9.0.1</span>
+        <span class="vtag" id="vtag" aria-label="Versão 9.0.2">v9.0.2</span>
         <h1 class="title">Lanchonete <br>Corre-Corre</h1>
         <p class="tag">Ajude a Bia a atender a freguesia da esquina antes que o cafezinho esfrie!</p>
         <div class="lbl" id="menu-dia">História</div>
@@ -548,7 +548,8 @@ table.rank tr.me td{background:#fbe7a8}
       <div class="panel">
         <h2>Versões</h2>
         <ul class="verlist">
-          <li><b>v9.0.1</b><span class="cur">versão atual</span><br>30/10/2026 &mdash; Ficou mais fácil achar os cursos do Tonhão: eles moram no cartão Cardápio, o primeiro da lojinha, com um selo "novo" quando algum cabe no caixa. No fim do dia 2 do Modo História, a Bia avisa que a freguesia quer mais opções, e quem ainda só tem PF e coxinha ouve isso no Gurugol. E o balão do Tonhão nas conversas não fica mais embaixo do botão Pular.</li>
+          <li><b>v9.0.2</b><span class="cur">versão atual</span><br>31/10/2026 &mdash; A divulgação agora começa no dia 4, e no boca a boca: de graça, mas vem menos gente e o movimento varia. No fim do dia 3 do Modo História, o Tonhão avisa que a festa da inauguração acabou e a Bia pensa em fazer panfletos; a lojinha abre direto na Divulgação.</li>
+          <li><b>v9.0.1</b><br>30/10/2026 &mdash; Ficou mais fácil achar os cursos do Tonhão: eles moram no cartão Cardápio, o primeiro da lojinha, com um selo "novo" quando algum cabe no caixa. No fim do dia 2 do Modo História, a Bia avisa que a freguesia quer mais opções, e quem ainda só tem PF e coxinha ouve isso no Gurugol. E o balão do Tonhão nas conversas não fica mais embaixo do botão Pular.<br><a href="versoes/v9.0.1.html" target="_blank" rel="noopener">Abrir a v9.0.1</a></li>
           <li><b>v9</b><br>30/10/2026 &mdash; A primeira mudança de ponto: depois do capítulo 3, a lojinha (Dinheiro &rsaquo; Mudança) oferece a Lanchonete na área industrial, por R$ 800 e com nota 2,7 no Gurugol; não dá para voltar. Lá são 20 lugares, cardápio mais caro, aluguel de R$ 120 por dia e uma vaga a mais no balcão de pratos, e a freguesia muda: a turma da fábrica (que chega junto quando a fábrica apita), o motorista de caminhão (que pede cafezinho no fim) e a encomenda do setor (de 4 a 6 marmitas, avisada de manhã). A lojinha ganha o fogão industrial, 3 TVs com sertanejo, espera sentada (cadeirinhas ou banquinhos), a jarra de suco e plantas novas; a TV, o som e a torneira da Garagem ficam para trás. E a História ganha os capítulos 4 (Ponto novo) e 5 (Hora do almoço).</li>
           <li><b>v8.9.1</b><br>30/10/2026 &mdash; Ajustes da lojinha: a TV e som foi para Melhorias, a toalha xadrez em todas as mesas foi para o Salão, os cartões da Bia, do Tonhão (agora de corpo inteiro, com a touca) e da Dani mostram a figura inteira, e o cartão da Manutenção fica amarelo ou vermelho quando um equipamento precisa de revisão ou corre risco de quebrar.</li>
           <li><b>v8.9</b><br>30/10/2026 &mdash; A Dani sobe de nível com a experiência: cada 30 tarefas que ela faz (lixo, pratos, louça, cafezinho, água e marmitas) dão +1 de XP, e os 3 cursos dela na lojinha (Atendimento ao cliente, Organização da cozinha e Barista iniciante) dão +2 cada. Com a XP do nível seguinte ela fica pronta para subir, e o aumento de salário confirma o nível novo. O &ldquo;Reduzir&rdquo; saiu. O fim do dia mostra as tarefas dela e a experiência.</li>
@@ -1238,7 +1239,7 @@ function bomGoal(d){ return Math.round((d.meta + d.expert) / 50) * 25; }
    CONTAS (v7): a meta do dia é o lucro. Ingredientes saem de cada prato que fica
    pronto (e de cada suco entregue), as contas do dia crescem com o salão (e com o
    aluguel do ponto; a Garagem não paga) e,
-   do dia 3 em diante, a divulgação decide quanta gente aparece
+   do dia 4 em diante (v9.0.2; antes, do dia 3), a divulgação decide quanta gente aparece
    ============================================================ */
 const CONTAS = { base:20, mesa:3, lugar:1 };         // por dia: o aluguel do ponto + gás e geladeira (base) + a luz de cada mesa aberta e de cada lugar (v8.3.8)
 const INGRED = { prato:0.35, suco:3 };               // prato: fração da conta (cobrada quando fica pronto); suco: R$ por copo entregue
@@ -1478,12 +1479,20 @@ const HIST_CARDAPIO = { dia:2,
           { q:'tonhao', s:'Tá bom, tá bom. Vê aí no Cardápio da lojinha o que cabe no bolso.' } ],
   fez:[ { q:'bia', s:'O pessoal adorou o prato novo!' },
         { q:'tonhao', s:'Então vou fazer mais cursos. Tá tudo no Cardápio da lojinha.' } ] };
+/* v9.0.2: a conversa da divulgação, no fim do dia anterior ao DIVULGA_DIA, só no Modo História (a lojinha abre na Divulgação).
+   save.convDiv: 'pend' | 1 (vista) */
+const HIST_DIVULGA = {
+  falas:[ { q:'tonhao', s:'A festa da inauguração acabou, Bia. Daqui pra frente, quem vem é porque ouviu falar da gente.' },
+          { q:'bia', s:'No boca a boca? Então vai ter dia fraco...' },
+          { q:'bia', s:'E se a gente fizer panfleto? Eu entrego no ponto de ônibus antes de abrir!' },
+          { q:'tonhao', nota:'coçando a cabeça', s:'Panfleto custa, mas traz o movimento de sempre. E tem as redes sociais, pra quem tem lugar pra tanta gente.' },
+          { q:'bia', s:'Vou ver na Divulgação da lojinha o que compensa.' } ] };
 const HIST_NOMES = { bia:'Bia', tonhao:'Tonhão', dani:'Dani' };
 const CAIXA_MAX = 14;                                 // livro-caixa (v7.2): quantos dias da carreira ficam guardados
-const VERSAO = 'v9.0.1';                             // vai no resumo do Caixa
-const DIVULGA_DIA = 3;                                // antes disso, o movimento é o da inauguração (sem custo)
+const VERSAO = 'v9.0.2';                             // vai no resumo do Caixa
+const DIVULGA_DIA = 4;                                // antes disso, o movimento é o da inauguração (sem custo); v9.0.2: dia 4, e o padrão é o boca a boca
 function divulgaAberta(n){ return DEV.on || n >= DIVULGA_DIA; }   // no modo dev, desde o dia 1
-function divulgaOf(id){ return DIVULGA.find(d => d.id === id) || DIVULGA[1]; }
+function divulgaOf(id){ return DIVULGA.find(d => d.id === id) || DIVULGA[0]; }   // v9.0.2: sem escolha, boca a boca
 /* o que se serve na espera, por nível do salão (v7.7, PONTOS.bebida). preco: R$ por copo na conta do grupo; ingred:
    custo de cada copo; prep: s até ficar pronto na estação; take: s da Bia (ou da Dani) para pegar ali.
    agua (nível 1, Garagem): água da torneira em copo americano, de graça; pedida no balão, a Bia enche na hora.
@@ -1856,7 +1865,7 @@ function normSave(s){
   const cap = hist ? clamp(Math.round(+s.cap) || capMax, 1, capMax) : novoHist ? 1 : 4;   // v9: dev e testes ficam no cap. 4 (sem objetivo na Garagem; a mudança de ponto está livre)
   const pendente = cap === 4 && pontoOf(s.salao && s.salao.ponto).nivel < 2;   // v9: o cap. 4 só começa na mudança de ponto
   const conversa = cap > HISTORIA.length || pendente ? null : hist ? (s.conversa === 'antes' || s.conversa === 'depois' ? s.conversa : null) : novoHist ? 'antes' : null;
-  const dev = salaoDevolucao(s.salao), out = { dia, estrelas, lucroTot: Math.round(+s.lucroTot) || 0, pontosTot: Math.max(0, Math.round(+s.pontosTot) || 0), aval: normAval(s.aval), avalCom: normAvalCom(s.avalCom), neg: clamp(Math.round(+s.neg) || 0, 0, BANCO.neg), emp: normEmprestimo(novoHist ? { resto:REFORMA.valor, amort:REFORMA.amort, j:REFORMA.juros, ini:REFORMA.ini, ref:true } : s.emp), corta: s.corta !== false, fechou: Math.max(0, Math.round(+s.fechou) || 0), bank: bank + dev + devMaq, up, torneira:true, salao: normSalao(dev ? null : s.salao), divulga: divulgaOf(s.divulga).id, treino: !!s.treino, decor: normDecor(s.decor), cursos: normCursos(s.cursos), cursoDia: Math.max(0, Math.round(+s.cursoDia) || 0), tonXp: s.tonXp === 1 ? 1 : 0, daniTar: Math.max(0, Math.round(+s.daniTar) || 0), daniCursos: normDaniCursos(s.daniCursos), daniCursoDia: Math.max(0, Math.round(+s.daniCursoDia) || 0), daniXp: s.daniXp === 1 ? 1 : 0, cardV: 1, convCard: s.convCard === 'pend' ? 'pend' : s.convCard === 1 ? 1 : 0, cardVisto: Array.isArray(s.cardVisto) ? s.cardVisto.filter(x => typeof x === 'string').slice(0, 40) : [], avisoCard: !!s.avisoCard, histV: 1, avisoHist: !!s.avisoHist, cap, capDia: Math.max(1, Math.round(+s.capDia) || 1), capAzul: Math.max(0, Math.round(+s.capAzul) || 0), capFeito: s.capFeito === 1 ? 1 : 0, capMarm: Math.max(0, Math.round(+s.capMarm) || 0), conversa, manut: normManut(s.manut), caixa: normCaixa(s.caixa), caixaPend: normPend(s.caixaPend) };
+  const dev = salaoDevolucao(s.salao), out = { dia, estrelas, lucroTot: Math.round(+s.lucroTot) || 0, pontosTot: Math.max(0, Math.round(+s.pontosTot) || 0), aval: normAval(s.aval), avalCom: normAvalCom(s.avalCom), neg: clamp(Math.round(+s.neg) || 0, 0, BANCO.neg), emp: normEmprestimo(novoHist ? { resto:REFORMA.valor, amort:REFORMA.amort, j:REFORMA.juros, ini:REFORMA.ini, ref:true } : s.emp), corta: s.corta !== false, fechou: Math.max(0, Math.round(+s.fechou) || 0), bank: bank + dev + devMaq, up, torneira:true, salao: normSalao(dev ? null : s.salao), divulga: dia < DIVULGA_DIA && !DEV.on ? 'boca' : divulgaOf(s.divulga).id, treino: !!s.treino, decor: normDecor(s.decor), cursos: normCursos(s.cursos), cursoDia: Math.max(0, Math.round(+s.cursoDia) || 0), tonXp: s.tonXp === 1 ? 1 : 0, daniTar: Math.max(0, Math.round(+s.daniTar) || 0), daniCursos: normDaniCursos(s.daniCursos), daniCursoDia: Math.max(0, Math.round(+s.daniCursoDia) || 0), daniXp: s.daniXp === 1 ? 1 : 0, cardV: 1, convCard: s.convCard === 'pend' ? 'pend' : s.convCard === 1 ? 1 : 0, convDiv: s.convDiv === 'pend' ? 'pend' : s.convDiv === 1 ? 1 : 0, cardVisto: Array.isArray(s.cardVisto) ? s.cardVisto.filter(x => typeof x === 'string').slice(0, 40) : [], avisoCard: !!s.avisoCard, histV: 1, avisoHist: !!s.avisoHist, cap, capDia: Math.max(1, Math.round(+s.capDia) || 1), capAzul: Math.max(0, Math.round(+s.capAzul) || 0), capFeito: s.capFeito === 1 ? 1 : 0, capMarm: Math.max(0, Math.round(+s.capMarm) || 0), conversa, manut: normManut(s.manut), caixa: normCaixa(s.caixa), caixaPend: normPend(s.caixaPend) };
   out.equipe = normEquipe(s.equipe, pontoOf(out.salao.ponto));
   if (!up.tvs) out.equipe.tvs = 0;
   // v8.6.4: as notas do Gurugol de antes (de 1 a 5 pelo serviço) passam para a escala da Garagem, uma vez só (avalEsc)
@@ -2796,7 +2805,7 @@ class Game {
     this.clima = so ? so.clima : '';
     this.quebras = so ? so.quebra.map(q => ({ id:q.id, t:q.f * this.day.time, on:false, fixed:false })) : [];
     this.usos = { fogao:0, geladeira:0, cafeteira:0 };
-    // divulgação (v7, do dia 3 em diante na carreira): quanto da freguesia do dia aparece
+    // divulgação (v7, do dia 4 em diante na carreira; v9.0.2): quanto da freguesia do dia aparece
     this.div = divulgaAberta(n) ? divulgaOf(this.save.divulga) : null;
     this.divF = this.div ? rand(this.div.groups[0], this.div.groups[1]) : 1;
     this.clock = this.day.time;
@@ -3621,6 +3630,7 @@ class Game {
       if (ob.ok) sv.conversa = 'depois';
     }
     if (!tomou && HIST.on && !DEV.on && sv.histV === 1 && d.n >= HIST_CARDAPIO.dia && !sv.convCard) sv.convCard = 'pend';   // v9.0.1: saves antigos que já passaram do dia 2 veem a conversa no próximo fim de dia
+    if (!tomou && HIST.on && !DEV.on && sv.histV === 1 && d.n === DIVULGA_DIA - 1 && !sv.convDiv) sv.convDiv = 'pend';   // v9.0.2: a conversa da divulgação
     const row = { d:d.n, fat, ingr:Math.round(this.custo), contas:this.contas, folha:this.paid, div:this.paidDiv, lucro:m, meta:d.meta, ok:passed, st:stars, perd:this.stats.lost, saldo:sv.bank };
     if (avDia) row.av = Math.round(avDia.nota * 10);
     if (forcado) row.forc = 1;
@@ -7624,7 +7634,7 @@ function buildTips(){
       drawPerson(c,{skin:4,hair:3,hairC:'#1B1512',pants:'#2F3E5C',shades:true},28,60,{shirt:CHAIRS[2].c,mood:0,s:0.85});
       drawVipBadge(c,40,14,0);
     }],
-    ['A meta do dia é o lucro: o que a freguesia paga (cada um paga o que pediu: de início, ' + listaE(['pf', 'coxinha'].map(k => CARDAPIO[k].nome + ' R$ ' + precoPrato(k))) + '; os cursos do Tonhão acrescentam pratos; alguns pedem um 2º item, e quem pede salgado quase sempre pede dois) menos os ingredientes (' + Math.round(INGRED.prato * 100) + '% de cada prato), as contas (luz e gás crescem com o salão; a garagem não paga aluguel), a folha e a divulgação. O dia começa no vermelho! Do dia 3 em diante, escolha a divulgação na lojinha: mais gente só vale se couber.', c => {
+    ['A meta do dia é o lucro: o que a freguesia paga (cada um paga o que pediu: de início, ' + listaE(['pf', 'coxinha'].map(k => CARDAPIO[k].nome + ' R$ ' + precoPrato(k))) + '; os cursos do Tonhão acrescentam pratos; alguns pedem um 2º item, e quem pede salgado quase sempre pede dois) menos os ingredientes (' + Math.round(INGRED.prato * 100) + '% de cada prato), as contas (luz e gás crescem com o salão; a garagem não paga aluguel), a folha e a divulgação. O dia começa no vermelho! Do dia ' + DIVULGA_DIA + ' em diante, escolha a divulgação na lojinha (de início, boca a boca: grátis, mas vem menos gente): mais gente só vale se couber.', c => {
       rr(c,8,12,30,40,3); fs(c,'#fff',2);
       for (let i=0;i<4;i++){ c.fillStyle = PAL.cromoEsc; c.fillRect(13,19+i*7,14,2.4); c.fillRect(30,19+i*7,4,2.4); }
       c.strokeStyle = PAL.perigo; c.lineWidth = 2.4; c.beginPath(); c.moveTo(13,47); c.lineTo(34,47); c.stroke();
@@ -8975,7 +8985,8 @@ function fluxoHistoria(fim){
     if (game.avancaCap()){ contFim = fim; contTexto(); showOnly(['ov-continua']); } else fluxoHistoria(fim);
   });
   if (sv.conversa === 'antes') return falar('antes', () => { game.save.conversa = null; writeSave(game.save); fluxoHistoria(fim); });   // v9.0.1: depois dela, ainda pode vir a do cardápio
-  if (sv.convCard === 'pend') return falar(cursoFeito(sv.cursos) ? HIST_CARDAPIO.fez : HIST_CARDAPIO.falas, () => { sv.convCard = 1; writeSave(sv); shopEntra = 'cardapio'; fim(); });
+  if (sv.convCard === 'pend') return falar(cursoFeito(sv.cursos) ? HIST_CARDAPIO.fez : HIST_CARDAPIO.falas, () => { sv.convCard = 1; writeSave(sv); shopEntra = 'cardapio'; fluxoHistoria(fim); });
+  if (sv.convDiv === 'pend') return falar(HIST_DIVULGA.falas, () => { sv.convDiv = 1; writeSave(sv); shopEntra = 'divulga'; fim(); });   // v9.0.2
   fim();
 }
 /* Missão zero: o texto do pop-up também vai para quem usa leitor de tela */
@@ -9145,7 +9156,7 @@ try { Rank.init(); } catch(e) {}
 game.setState('menu');
 if (!aberturaVista() && !DEV.on) abrirAbertura('auto');   // v8.5: a abertura toca sozinha uma vez
 window.__game = game;
-window.__lcc = { manutEmerg, manutFator, daniTaskDe, plateSlotsFor, INDUSTRIAL, PLATE_SLOTS, cozinhaSlots, upgradeDe, DECOR, DECOR_GRUPOS, TOALHA, decorOf, normDecor, decorOn, FILA_ACOES, filaMax, MARMITA, RETIRADA, marmitaMao, drawMarmita, prateleiraPos, EFOOD_COR, AVAL_BRAVO, QUEUE, setShopTab: v => shopAbrir(v), setShopGrupo: g => shopGrupoAbrir(g), shopSecoes: () => SHOP_GRUPOS.map(g => shopSecoesVis(g)), TREINO, TREINO_PASSOS, TREINO_COR, Treino, treinoLugar, treinoPrimeiro, playCareer, buildMenu, introBanco, buildFalencia, BANCO, normEmprestimo, parcelaDe, devidoDe, jurosDe, tabelaDe, simulaEmprestimo, SEMANA, semanaOf, diaOf, FILA_JUSTA, PORTA, CHAIRS, PAT, CONTAS, INGRED, CARDAPIO, precoPrato, CURSOS, CURSO_AV, CURSO_XP, tonhaoXp, tonhaoNivelXp, daniXp, daniNivelXp, DANI_XP, DANI_CURSOS, CURSOS_SEMFIM, cursoOf, cursoNivel, normCursos, pratoAv, CARNES, drawDish, pratoSabido, pratosSabidos, GOSTOS, GOSTOS_CAT, pedePrato, VEG, vegMov, drawDish, MAIS, PONTOS_ACAO, GORJETA, DRINK_PRICE, MOVIMENTO, movimentoSalao, DIVULGA, DIVULGA_DIA, divulgaOf, contasDia, bomGoal, SALAO, PONTOS, pontoOf, MESA, mesaBox, mesaPreco, salaoLugares, mesaProblema, salaoCaminho, salaoProblema, salaoOrdena, salaoAuto, salaoVaga, salaoPerto, salaoKit, salaoDevolucao, SALAO_SEMFIM, normSalao, setObst, OBST, pathOk, MAQUINA, BEBIDA_ESPERA, bebidaOf, MANUT, manutOf, manutChance, manutPreco, normManut, CLIMA, CLIMA_DIA, introManut, normPend, CALCADA, TW, HUDX, esperaAp, tableApproach, CRIT, STAFF, DANI_TASKS, DANI_HANDS, daniTaskOk, TRASH, WASH, payroll, FOLHA_CORTE, folhaCorta, folhaCortes, folhaItens, listaE, pratosDe, couvertEffect, couvertOk, ambienteEffect, dishStock, normSave, Helper, JUICE, KITCHEN_SLOTS, handLayout, trayOk, Game, Group, Table, Kitchen, Waitress, BIA_SPEED, DAYS, UPGRADES, CUSTOMER_TYPES, LAYOUT, PAL, Sfx, findPath, render, Rank, sortRows, cleanName, normName, CMD, ENDLESS, VIP, MULTA, rk, renderRank, openRank, closeRank, LS, lsGet, lsSet, loadSave, DEV, saveKey, devSync, divulgaAberta, CAIXA_MAX, VERSAO, normCaixa, caixaResumo, caixaTotais, copyText, PRATO, pratoPerde, pratoVapor, AVAL, AVAL_CRIT, AVAL_BRAVO, avalMenu, avalTeto, avalEscala, avalFrac, AVAL_SIMPLES, AVAL_DECOR, normAval, avalNota, avalMedias, avalGeral, avalMovimento, avalMinimo, avalComentario, fmtNota, notaFaixa, gurugolCaixa, AVAL_COM, normAvalCom, buildGurugol, ABERTURA, Abertura, AB_CENAS, AB_ALT, AB_BASE, abEsc, AB_VIVO, aberturaVista, aberturaSom, drawAbertura, abrirAbertura, HISTORIA, HIST_CARDAPIO, cursoFeito, AVAL_POUCO, REFORMA, HIST, carencia, Conversa, drawConversa, falar, fluxoHistoria, aberturaAtual: () => abertura };
+window.__lcc = { manutEmerg, manutFator, daniTaskDe, plateSlotsFor, INDUSTRIAL, PLATE_SLOTS, cozinhaSlots, upgradeDe, DECOR, DECOR_GRUPOS, TOALHA, decorOf, normDecor, decorOn, FILA_ACOES, filaMax, MARMITA, RETIRADA, marmitaMao, drawMarmita, prateleiraPos, EFOOD_COR, AVAL_BRAVO, QUEUE, setShopTab: v => shopAbrir(v), setShopGrupo: g => shopGrupoAbrir(g), shopSecoes: () => SHOP_GRUPOS.map(g => shopSecoesVis(g)), TREINO, TREINO_PASSOS, TREINO_COR, Treino, treinoLugar, treinoPrimeiro, playCareer, buildMenu, introBanco, buildFalencia, BANCO, normEmprestimo, parcelaDe, devidoDe, jurosDe, tabelaDe, simulaEmprestimo, SEMANA, semanaOf, diaOf, FILA_JUSTA, PORTA, CHAIRS, PAT, CONTAS, INGRED, CARDAPIO, precoPrato, CURSOS, CURSO_AV, CURSO_XP, tonhaoXp, tonhaoNivelXp, daniXp, daniNivelXp, DANI_XP, DANI_CURSOS, CURSOS_SEMFIM, cursoOf, cursoNivel, normCursos, pratoAv, CARNES, drawDish, pratoSabido, pratosSabidos, GOSTOS, GOSTOS_CAT, pedePrato, VEG, vegMov, drawDish, MAIS, PONTOS_ACAO, GORJETA, DRINK_PRICE, MOVIMENTO, movimentoSalao, DIVULGA, DIVULGA_DIA, divulgaOf, contasDia, bomGoal, SALAO, PONTOS, pontoOf, MESA, mesaBox, mesaPreco, salaoLugares, mesaProblema, salaoCaminho, salaoProblema, salaoOrdena, salaoAuto, salaoVaga, salaoPerto, salaoKit, salaoDevolucao, SALAO_SEMFIM, normSalao, setObst, OBST, pathOk, MAQUINA, BEBIDA_ESPERA, bebidaOf, MANUT, manutOf, manutChance, manutPreco, normManut, CLIMA, CLIMA_DIA, introManut, normPend, CALCADA, TW, HUDX, esperaAp, tableApproach, CRIT, STAFF, DANI_TASKS, DANI_HANDS, daniTaskOk, TRASH, WASH, payroll, FOLHA_CORTE, folhaCorta, folhaCortes, folhaItens, listaE, pratosDe, couvertEffect, couvertOk, ambienteEffect, dishStock, normSave, Helper, JUICE, KITCHEN_SLOTS, handLayout, trayOk, Game, Group, Table, Kitchen, Waitress, BIA_SPEED, DAYS, UPGRADES, CUSTOMER_TYPES, LAYOUT, PAL, Sfx, findPath, render, Rank, sortRows, cleanName, normName, CMD, ENDLESS, VIP, MULTA, rk, renderRank, openRank, closeRank, LS, lsGet, lsSet, loadSave, DEV, saveKey, devSync, divulgaAberta, CAIXA_MAX, VERSAO, normCaixa, caixaResumo, caixaTotais, copyText, PRATO, pratoPerde, pratoVapor, AVAL, AVAL_CRIT, AVAL_BRAVO, avalMenu, avalTeto, avalEscala, avalFrac, AVAL_SIMPLES, AVAL_DECOR, normAval, avalNota, avalMedias, avalGeral, avalMovimento, avalMinimo, avalComentario, fmtNota, notaFaixa, gurugolCaixa, AVAL_COM, normAvalCom, buildGurugol, ABERTURA, Abertura, AB_CENAS, AB_ALT, AB_BASE, abEsc, AB_VIVO, aberturaVista, aberturaSom, drawAbertura, abrirAbertura, HISTORIA, HIST_CARDAPIO, HIST_DIVULGA, cursoFeito, AVAL_POUCO, REFORMA, HIST, carencia, Conversa, drawConversa, falar, fluxoHistoria, aberturaAtual: () => abertura };
 window.requestAnimationFrame(frame);
 
 })();
