@@ -74,6 +74,7 @@ for(let k=0;k<N;k++){
     while(g.save.conversa){ if(g.save.conversa==='depois'){ capDia[g.save.cap].push(n); g.avancaCap(); } else g.save.conversa=null; }
     if(g.save.convCard==='pend') g.save.convCard=1;   // v9.0.1: a conversa do cardápio
     if(g.save.convDiv==='pend') g.save.convDiv=1;     // v9.0.2: a conversa da divulgação
+    for(const k in g.save.libera) if(g.save.libera[k]==='pend') g.save.libera[k]=2;   // v9.0.4: as conversas dos cartões da lojinha
     if(g.state==='falencia'){ fechou++; break; }
     (g.ponto.nivel>=2?lucroInd:lucroGar).push(g.result.money); if(mudaDia[mudaDia.length-1]!==undefined&&n-mudaDia[mudaDia.length-1]<=5&&n>mudaDia[mudaDia.length-1]&&g.save.bank<0) negPos.push(n);
   }

@@ -856,9 +856,39 @@ const HIST_DIVULGA = {
           { q:'bia', s:'E se a gente fizer panfleto? Eu entrego no ponto de ônibus antes de abrir!' },
           { q:'tonhao', nota:'coçando a cabeça', s:'Panfleto custa, mas traz o movimento de sempre. E tem as redes sociais, pra quem tem lugar pra tanta gente.' },
           { q:'bia', s:'Vou ver na Divulgação da lojinha o que compensa.' } ] };
+/* v9.0.4: a lojinha abre aos poucos no Modo História. Cada cartão: dia mínimo, garantia (ate), as reclamações do Gurugol
+   no dia do gatilho e a conversa do fim do dia. save.libera[id]: 0 fechado | 'pend' | 1 aberto (selo "novo") | 2 aberto e visto */
+const LIBERA = [
+  { id:'bia', dia:2, ate:4, reclama:['A moça corre pra lá e pra cá e não dá conta!', 'Demorou um século pra anotarem o pedido.'],
+    falas:[ { q:'bia', s:'Hoje um freguês disse que eu corro pra lá e pra cá e não dou conta.' },
+            { q:'tonhao', nota:'olhando o pé dela', s:'Também, com esse chinelo! Compra um tênis decente, Bia.' },
+            { q:'bia', s:'E uma bandeja, pra levar dois pratos de uma vez...' },
+            { q:'tonhao', s:'Tá tudo na lojinha, em Equipe, no seu nome.' } ] },
+  { id:'melhorias', dia:3, ate:5, reclama:['Esperei no sol sem nem um copo d\'água.', 'Que calor aqui dentro!'], lixo:'Que cheiro de lixo!',
+    falas:[ { q:'bia', s:'Tio, um moço reclamou que esperou no sol sem nem um copo d\'água.' },
+            { q:'tonhao', s:'Dá pra pôr uma torneira lá fora. E um ventilador aqui, que a cozinha tá um forno.' },
+            { q:'bia', s:'E um triturador, pra lixeira não encher tão rápido!' },
+            { q:'tonhao', s:'Calma, uma coisa de cada vez. Vê nas Melhorias o que cabe no bolso.' } ] },
+  { id:'manut', dia:3, ate:5, primeiro:true, reclama:['O café veio com gosto de queimado.', 'A comida demorou... o fogão tá fraco?'],
+    falas:[ { q:'tonhao', nota:'batendo na lateral do fogão', s:'Esse fogão tá com a chama amarela. Coisa boa não é.' },
+            { q:'bia', s:'Vai quebrar?' },
+            { q:'tonhao', s:'Se ninguém olhar, um dia quebra no meio do almoço. Melhor chamar o técnico antes.' },
+            { q:'bia', s:'Vou ver na Manutenção quanto custa a revisão.' } ] },
+  { id:'salao', dia:4, ate:6, reclama:['Nem consegui sentar.', 'Só tem quatro mesinhas?'],
+    falas:[ { q:'bia', s:'Hoje teve gente indo embora da fila: não tinha mesa pra todo mundo.' },
+            { q:'tonhao', s:'Na garagem ainda cabem umas mesinhas. Cadeira de plástico é baratinha.' },
+            { q:'bia', s:'Vou ver no Salão onde encaixar.' } ] },
+  { id:'decor', dia:5, ate:7, reclama:['Parece uma garagem.', 'Lugar meio sem graça.'],
+    falas:[ { q:'bia', s:'Escreveram no Gurugol: "parece uma garagem".' },
+            { q:'tonhao', s:'Mas é uma garagem!' },
+            { q:'bia', s:'Uma plantinha, a foto da mãe na parede... fica com cara de casa.' },
+            { q:'tonhao', nota:'sorrindo', s:'Isso a Rosa ia gostar. Vê na Decoração.' } ] } ];
+function liberaOf(id){ return LIBERA.find(l => l.id === id) || null; }
+const BIA_IDS = ['tenis', 'corrida', 'bandeja', 'sudoku'];
+function upgradeCartao(id){ return BIA_IDS.indexOf(id) >= 0 ? 'bia' : 'melhorias'; }
 const HIST_NOMES = { bia:'Bia', tonhao:'Tonhão', dani:'Dani' };
 const CAIXA_MAX = 14;                                 // livro-caixa (v7.2): quantos dias da carreira ficam guardados
-const VERSAO = 'v9.0.3';                             // vai no resumo do Caixa
+const VERSAO = 'v9.0.4';                             // vai no resumo do Caixa
 const DIVULGA_DIA = 4;                                // antes disso, o movimento é o da inauguração (sem custo); v9.0.2: dia 4, e o padrão é o boca a boca
 function divulgaAberta(n, sv){ return DEV.on || n >= DIVULGA_DIA && !(sv && sv.convDiv === 'pend'); }   // no modo dev, desde o dia 1; v9.0.3: no Modo História, só depois da conversa
 function divulgaOf(id){ return DIVULGA.find(d => d.id === id) || DIVULGA[0]; }   // v9.0.2: sem escolha, boca a boca

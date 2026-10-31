@@ -17,8 +17,8 @@ Origem: retorno do Renan Martorelli (beta-tester) e conversa com o Arthur (15/10
 | 2c-r5 | Ajustes da lojinha: TV e som em Melhorias, toalha no Salão, ícones da equipe (Tonhão de corpo inteiro) e cartão da Manutenção com cor | v8.9.1 | feita em 30/10 (`docs/spec-v8.9.1.md`) |
 | 3a | Mudança de ponto e Lanchonete na área industrial (e os caps. 4 e 5) | v9 | feita em 30/10 (`docs/spec-v9.md`) |
 | 2c-r6 | Retorno de beta-tester: cardápio fácil de achar (cartão Cardápio com os cursos, conversa do dia 2, selo "novo", reclamação dos clientes) e balão do Tonhão embaixo do Pular | v9.0.1 | feita em 30/10 (`docs/spec-v9.0.1.md`); depois, v9.0.2 e v9.0.3 fora do plano |
-| 2c-r7a | A lojinha abre aos poucos: cartões que aparecem com reclamação e conversa (Bia, Melhorias, Manutenção, Salão, Decoração) | v9.0.4 | a fazer; **a próxima** |
-| 2c-r7b | Rebalanceamento e a melhor ordem de liberação dos cartões | v9.0.5 | a fazer |
+| 2c-r7a | A lojinha abre aos poucos: cartões que aparecem com reclamação e conversa (Bia, Melhorias, Manutenção, Salão, Decoração) | v9.0.4 | feita em 31/10 (`docs/spec-v9.0.4.md`) |
+| 2c-r7b | Rebalanceamento e a melhor ordem de liberação dos cartões | v9.0.5 | a fazer; **a próxima** |
 | 3b | Restaurante na Avenida Brasil, o Joca (e o capítulo dela) | v9.1 | a fazer |
 | 4a | Terraço Suíça e VIPs exigentes (e o capítulo dele) | v10 | a fazer |
 | 4b | Nível de luxo | v10.1 | a fazer |

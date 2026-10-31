@@ -155,10 +155,10 @@ const SHOP_SECOES = {
   gurugol:{ nome:'Gurugol', icon:'contas', build:g => buildGurugol(g) }};
 const SHOP_ANTIGAS = { equipe:'tonhao', cursos:'cardapio' };   // nomes das abas antigas, para os testes e capturas
 function shopGrupoDe(sec){ const g = SHOP_GRUPOS.find(x => x.secoes.indexOf(sec) >= 0); return g ? g.id : 'lanchonete'; }
-function shopAbrir(sec){ sec = SHOP_ANTIGAS[sec] || sec; shopGrupo = shopGrupoDe(sec); shopTab = sec; buildShop(); }
+function shopAbrir(sec){ sec = SHOP_ANTIGAS[sec] || sec; shopGrupo = shopGrupoDe(sec); shopTab = game.cartaoAberto(sec) ? sec : null; buildShop(); }   // v9.0.4: cartão fechado abre só o grupo
 function shopGrupoAbrir(g){ shopGrupo = g; shopTab = g === 'gurugol' ? 'gurugol' : null; buildShop(); }
 /* as seções do grupo que aparecem agora: a Mudança só depois do cap. 3 (v9) e enquanto há ponto para onde ir */
-function shopSecoesVis(grupo){ return grupo.secoes.filter(id => id !== 'mudanca' || game.mudancaVisivel); }
+function shopSecoesVis(grupo){ return grupo.secoes.filter(id => (id !== 'mudanca' || game.mudancaVisivel) && game.cartaoAberto(id)); }   // v9.0.4: e o cartão já aberto
 let mudarPede = false;   // o 1º toque em "Mudar" pede a confirmação
 function shopCartoes(grid, grupo){
   shopSecoesVis(grupo).forEach(id => {
@@ -170,7 +170,8 @@ function shopCartoes(grid, grupo){
       else if (pior < MANUT.verde){ b.classList.add('alerta'); b.setAttribute('aria-label', 'Manutenção: precisa de revisão'); }
     }
     if (id === 'cardapio' && game.cardapioNovo.length){ b.classList.add('novo'); b.setAttribute('aria-label', 'Cardápio: tem curso novo que cabe no caixa'); }
-    b.addEventListener('click', () => { Sfx.init(); Sfx.tap(); if (id === 'cardapio') game.cardVer(); shopTab = id; buildShop(); });
+    if (game.liberaNovo.indexOf(id) >= 0){ b.classList.add('novo'); b.setAttribute('aria-label', sc.nome + ': novo na lojinha'); }   // v9.0.4
+    b.addEventListener('click', () => { Sfx.init(); Sfx.tap(); if (id === 'cardapio') game.cardVer(); game.liberaVer(id); shopTab = id; buildShop(); });
     grid.appendChild(b);
   });
 }
@@ -898,7 +899,6 @@ function buildGurugol(grid){
   if (!com.length) lista.appendChild(el('li', 'rank-empty', 'Os comentários aparecem depois do próximo dia.'));
   grid.appendChild(lista);
 }
-const BIA_IDS = ['tenis', 'corrida', 'bandeja', 'sudoku'];
 function buildMelhorias(grid){ upgradeCartoes(grid, false); if (game.ponto.nivel >= 2) { buildTvs(grid); buildAssento(grid); } else buildTvSom(grid); }
 function upgradeCartoes(grid, bia){
   // os Tênis de corrida (v7.3) só aparecem depois dos Tênis novos, no lugar deles (a grade continua com 6); no modo dev, todas
@@ -921,7 +921,9 @@ function buildShop(){
   const grid = $('shop-grid');
   clearEl(grid);
   segSync('shop-tabs', shopGrupo);
-  (function(){ const box = $('shop-tabs'); if (box) Array.prototype.forEach.call(box.querySelectorAll('button'), t => { if (t.getAttribute('data-v') === 'lanchonete') t.classList[shopGrupo !== 'lanchonete' && game.cardapioNovo.length ? 'add' : 'remove']('novo'); }); })();   // v9.0.1
+  (function(){ const box = $('shop-tabs'); if (box) Array.prototype.forEach.call(box.querySelectorAll('button'), t => {   // v9.0.1: selo "novo" no grupo fechado; v9.0.4: também por cartão novo da lojinha
+    const gid = t.getAttribute('data-v'), g = SHOP_GRUPOS.find(x => x.id === gid);
+    t.classList[gid !== shopGrupo && ((gid === 'lanchonete' && game.cardapioNovo.length) || (g && g.secoes.some(id => game.liberaNovo.indexOf(id) >= 0))) ? 'add' : 'remove']('novo'); }); })();
   $('shop-ponto').textContent = game.ponto.nome;   // v9: o nome do ponto
   $('shop-bank').textContent = fmt(game.save.bank);
   $('shop-bank').className = 'bank' + (game.save.bank < 0 ? ' neg' : '');   // v8.3: no negativo, em vermelho
