@@ -183,7 +183,7 @@ python3 montar.py --check
 - Preencher a tabela **Resultado da rodada 2** abaixo, commit, PR para o `claude/main` e merge (regra de **Git** do `CLAUDE.md`). Não precisa rodar o `run_all.sh` (nada em `src/` muda; o `montar.py --check` basta).
 
 ## Fora desta rodada (decidido)
-- **Plugins e conectores da conta** (passo do usuário, não da sessão): nas sessões na nuvem vêm carregados os conectores Gmail, Drive, Calendar, Docs, Sheets e Slides, os plugins `data`, `productivity` e `cowork-plugin-management` e as skills `questao-*`, apesar do `.claude/settings.json`. São alguns milhares de tokens por turno. Se não usar em outro lugar, desligue em https://claude.ai/customize/connectors (conectores) e nas skills/plugins da conta; se usar, aceite o custo.
+- **Plugins e conectores da conta: não desligar** (revisto em 31/10). Os conectores (Gmail, Drive, Calendar, Docs, Sheets, Slides) e os plugins `data`, `productivity` e `cowork-plugin-management` vêm da conta do claude.ai e ignoram o `.claude/settings.json` nas sessões na nuvem (o nome do marketplace, `knowledge-work-plugins`, confere; o arquivo é que não vale para plugins sincronizados), e não há como escolher conectores por ambiente. O custo é de uns 5 mil tokens por turno, quase tudo em cache (as ferramentas dos conectores entram só pelo nome); o usuário usa os conectores em outros trabalhos, e desligar e religar a cada sessão não compensa. Única exceção que vale: se os plugins `data` e `productivity` não forem usados em lugar nenhum, removê-los da conta uma vez acaba também com os avisos de servidor MCP que não conecta (amplitude, atlassian etc.).
 - **`capturas/` fora do git:** não economiza tokens e o histórico do git não diminui; fica como está.
 
 ## Resultado da rodada 2 (31/10/2026)
