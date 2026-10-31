@@ -290,6 +290,34 @@ function drawParedeAv(ctx,g,t){
   // as luminárias pendentes (nos vãos entre o cartaz, o relógio e a placa da cozinha)
   drawPendente(ctx,664,22,0.8,t,g.state === 'menu');
   drawPendente(ctx,763,26,0.9,t,g.state === 'menu');
+  if (g.seloOn && g.state !== 'menu') drawSeloVig(ctx,356,70);   // v9.4
+}
+/* selo "Aprovado pela vigilância" (v9.4), na meia-parede de azulejo */
+function drawSeloVig(ctx,x,y){
+  rr(ctx,x-38,y-13,76,26,5); fs(ctx,'#FFFDF5',2);
+  ctx.strokeStyle = PAL.ok; ctx.lineWidth = 1.4; rr(ctx,x-35,y-10,70,20,3.5); ctx.stroke();
+  circ(ctx,x-24,y,8); fs(ctx,PAL.ok,1.4);
+  ctx.strokeStyle = '#fff'; ctx.lineWidth = 2.4; ctx.beginPath(); ctx.moveTo(x-28,y); ctx.lineTo(x-25,y+3.5); ctx.lineTo(x-20,y-3.5); ctx.stroke();
+  txt(ctx,'VIGILÂNCIA',x+8,y-3.5,7,PAL.tinta,'center',FD,0,46);
+  txt(ctx,'Aprovado',x+8,y+5.5,7.5,PAL.ok,'center',FD,0,46);
+}
+/* o fiscal da vigilância (v9.4): colete azul-claro com "VIGILÂNCIA", prancheta e caneta; as falhas viram ícones em cima dele */
+function drawFiscal(ctx,f,tm){
+  drawPerson(ctx,f.look,f.x,f.y,{ shirt:'#F4F1E8', moving:f.moving, ph:f.walkPh, mood:0, t:tm });
+  const bob = (f.moving && !RM) ? -Math.abs(Math.sin(f.walkPh)) * 2.4 : 0;
+  ctx.beginPath(); ctx.moveTo(f.x-8,f.y-30+bob); ctx.lineTo(f.x+8,f.y-30+bob); ctx.lineTo(f.x+11,f.y-12); ctx.lineTo(f.x-11,f.y-12); ctx.closePath(); fs(ctx,'#9FD3EE',2.2);
+  ctx.fillStyle = '#fff'; ctx.fillRect(f.x-9.5,f.y-20+bob,19,2.2);
+  rr(ctx,f.x+9,f.y-36+bob,13,17,2); fs(ctx,'#8A5A33',1.6);
+  rr(ctx,f.x+11,f.y-33+bob,9,12,1); fs(ctx,'#fff',1);
+  ctx.strokeStyle = '#2C5AA0'; ctx.lineWidth = 1.2; ctx.beginPath(); ctx.moveTo(f.x+12.5,f.y-29+bob); ctx.lineTo(f.x+18.5,f.y-29+bob); ctx.moveTo(f.x+12.5,f.y-26+bob); ctx.lineTo(f.x+18.5,f.y-26+bob); ctx.stroke();
+  rr(ctx,f.x-31,f.y-84,62,12,5); fs(ctx,'#fff',1.6); txt(ctx,'VIGILÂNCIA',f.x,f.y-77.5,8,'#2C6E9B','center',FD,0,56);
+  ['suja','lixo','pia'].filter(k => f.falhas[k]).forEach((k,i,l) => {
+    const ix = f.x + (i - (l.length - 1) / 2) * 24, iy = f.y - 102 + (RM ? 0 : Math.sin(tm * 6 + i) * 1.5);
+    circ(ctx,ix,iy,10); fs(ctx,'#fff',2); ctx.strokeStyle = PAL.perigo; ctx.lineWidth = 2; ctx.stroke();
+    if (k === 'suja'){ rr(ctx,ix-6,iy-3,12,6,2); fs(ctx,PAL.madeira,1.2); ell(ctx,ix+1,iy-0.5,2.6,1.6); fs(ctx,'#5B3A21',0.8); }
+    else if (k === 'lixo'){ ctx.beginPath(); ctx.moveTo(ix-4,iy-2); ctx.lineTo(ix+4,iy-2); ctx.lineTo(ix+3,iy+5); ctx.lineTo(ix-3,iy+5); ctx.closePath(); fs(ctx,'#8E99A6',1.2); ctx.fillStyle = '#B9C2CC'; ctx.fillRect(ix-5,iy-4.5,10,2.2); }
+    else { ell(ctx,ix,iy+3,5.5,1.8); fs(ctx,'#E6DCC4',1); ell(ctx,ix,iy,5.5,1.8); fs(ctx,'#fff',1); ell(ctx,ix,iy-3,5.5,1.8); fs(ctx,'#E6DCC4',1); }
+  });
 }
 /* pedra portuguesa em ondas preto e branco (a calçada da Avenida; x0: onde o piso começa) */
 function drawPedraPort(ctx,x0){
