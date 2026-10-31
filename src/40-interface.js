@@ -91,6 +91,59 @@ function devSync(){
   if (o) o.style.display = DEV.on ? '' : 'none';
 }
 
+/* ---------- v9.2.1: painel do modo dev (#ov-dev; liga e desliga só ele, por cima das outras telas) ---------- */
+function abrirDev(){
+  if (!DEV.on) return;
+  if (game.state === 'playing') game.pause();
+  buildDev(); $('ov-dev').classList.add('show');
+}
+function fecharDev(){
+  $('ov-dev').classList.remove('show');
+  if (game.state === 'menu') buildMenu(); else if (game.state === 'shop') buildShop();
+}
+function buildDev(){
+  const body = $('dev-body'); clearEl(body);
+  const nota = v => (Math.round(v * 10) / 10).toString().replace('.', ',');
+  const secao = (titulo, agora) => {
+    body.appendChild(el('div', 'lbl', titulo));
+    if (agora) body.appendChild(el('div', 'dev-now', agora));
+    const r = el('div', 'row'); body.appendChild(r); return r;
+  };
+  const botao = (r, txt, fn, premido) => {
+    const b = el('button', 'btn alt', txt); b.type = 'button';
+    if (premido != null) b.setAttribute('aria-pressed', premido ? 'true' : 'false');
+    b.addEventListener('click', () => { Sfx.init(); Sfx.tap(); fn(); buildDev(); });
+    r.appendChild(b); return b;
+  };
+  const emDia = game.state === 'paused' && game.mode === 'carreira';
+  const dia = game.state === 'shop' ? game.shopNext : game.proxDia;
+  let r = secao('Dia', 'Dia ' + dia);
+  [[-10, '−10'], [-1, '−1'], [1, '+1'], [10, '+10']].forEach(([d, t]) => botao(r, t, () => game.devDia(dia + d)));
+  r = secao('Ponto');
+  PONTOS.forEach(p => botao(r, p.nome, () => game.devPonto(p.id), p.id === game.ponto.id));
+  const ng = game.notaGurugol;
+  r = secao('Nota do Gurugol', 'Agora: ' + (ng != null ? nota(ng) + ' ★' : 'sem nota'));
+  [2, 2.7, 3.4, 4].forEach(v => botao(r, nota(v), () => game.devNota(v)));
+  botao(r, 'Teto', () => game.devNota(avalTeto(game.ponto)));
+  botao(r, 'Limpar', () => game.devNota(0));
+  r = secao('Equipe, cursos e melhorias');
+  botao(r, 'Tudo no máximo', () => { game.devEquipe('max'); game.devMelhorias(true); });
+  botao(r, 'Do começo', () => { game.devEquipe('zero'); game.devMelhorias(false); });
+  r = secao('Lojinha de verdade');
+  botao(r, 'Preços e travas de verdade: ' + (DEV.real ? 'ligado' : 'desligado'), () => game.devReal(!DEV.real), DEV.real);
+  if (DEV.real){
+    body.appendChild(el('div', 'dev-now', 'Caixa: ' + fmt(game.save.bank)));
+    const r2 = el('div', 'row'); body.appendChild(r2);
+    [0, 500, 2000, 10000].forEach(v => botao(r2, fmt(v), () => game.devCaixa(v)));
+  }
+  if (emDia){
+    r = secao('No dia', 'Velocidade ' + DEV.vel + '×');
+    [1, 2, 4].forEach(v => botao(r, 'Velocidade ' + v + '×', () => { DEV.vel = v; }, DEV.vel === v));
+    const b = botao(r, 'Encerrar o dia agora', () => {}, null);
+    b.addEventListener('click', () => { if (game.devFimDia()) fecharDev(); });
+  }
+}
+
 /* ---------- Como jogar ---------- */
 function tipCanvas(draw){
   const cv = document.createElement('canvas');
