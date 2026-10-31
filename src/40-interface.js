@@ -167,6 +167,10 @@ function buildTips(){
     drawPerson(c,{skin:2,hair:0,hairC:'#1B1512',pants:'#2F3E5C',acc:'helmet'},16,60,{shirt:CHAIRS[0].c,mood:0,s:0.55});
   }]);
   // v8.3: a campanha e o banco
+  tips.push(['No Modo História, a lojinha abre aos poucos: quando a freguesia reclama de alguma coisa, a Bia descobre o que comprar.', c => {
+    rr(c,10,12,44,28,6); fs(c,PAL.cromo,1.8); txt(c,'!',32,35,22,PAL.perigo,'center',FD);   // v9.0.4: o balão da reclamação
+    rr(c,16,44,32,10,3); fs(c,PAL.ok,1.4);
+  }]);
   tips.push(['A História tem capítulos, cada um com um objetivo (sem prazo: o capítulo segue até você cumprir). A dívida da reforma da garagem vem desde o dia 1: R$ ' + REFORMA.valor + ' em ' + Math.round(REFORMA.valor / REFORMA.amort) + ' parcelas, a 1ª no fim do dia ' + REFORMA.ini + '. Os dias seguem um após o outro, levando tudo o que veio antes: dinheiro, móveis, equipe, melhorias e o desgaste. Meta não batida deixa o dia sem estrelas, mas o dia seguinte vem. Faltou dinheiro? O caixa pode ficar negativo ' + BANCO.neg + ' dias seguidos (no ' + (BANCO.neg + 1) + 'º, o banco cobre à força) e a aba Banco da lojinha empresta, com juros de ' + Math.round(BANCO.juros * 100) + '% ao dia sobre o que falta (amortizar antes corta os juros). Não atrase: parcela sem pagar 2 dias seguidos, e o banco toma a lanchonete!', c => {
     c.translate(32,34); c.scale(1.4,1.4);
     drawBanco(c);
