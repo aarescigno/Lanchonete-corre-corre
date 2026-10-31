@@ -841,7 +841,7 @@ const HISTORIA = [
 ];
 /* v9.0.1: a conversa do cardápio, no fim do dia `dia` (ou do 1º dia completo depois dele, para saves antigos), só no Modo História.
    falas: o Tonhão ainda não fez curso; fez: já fez algum (básico de qualquer curso ou o avançado do PF). save.convCard: 'pend' | 1 (vista) */
-const HIST_CARDAPIO = { dia:2,
+const HIST_CARDAPIO = { dia:1,   // v9.0.3: no fim do dia 1 (antes, do dia 2), que não tinha conversa
   falas:[ { q:'bia', s:'Tio, hoje um monte de gente perguntou se só tem PF e coxinha...' },
           { q:'tonhao', s:'É... a Rosa fazia um pastel que era uma beleza. Eu nunca aprendi.' },
           { q:'bia', s:'Então faz um curso! Tem uns baratinhos.' },
@@ -849,7 +849,7 @@ const HIST_CARDAPIO = { dia:2,
   fez:[ { q:'bia', s:'O pessoal adorou o prato novo!' },
         { q:'tonhao', s:'Então vou fazer mais cursos. Tá tudo no Cardápio da lojinha.' } ] };
 /* v9.0.2: a conversa da divulgação, no fim do dia anterior ao DIVULGA_DIA, só no Modo História (a lojinha abre na Divulgação).
-   save.convDiv: 'pend' | 1 (vista) */
+   save.convDiv: 'pend' | 1 (vista). v9.0.3: enquanto pendente, a divulgação não abre (o movimento da inauguração segue) */
 const HIST_DIVULGA = {
   falas:[ { q:'tonhao', s:'A festa da inauguração acabou, Bia. Daqui pra frente, quem vem é porque ouviu falar da gente.' },
           { q:'bia', s:'No boca a boca? Então vai ter dia fraco...' },
@@ -858,9 +858,9 @@ const HIST_DIVULGA = {
           { q:'bia', s:'Vou ver na Divulgação da lojinha o que compensa.' } ] };
 const HIST_NOMES = { bia:'Bia', tonhao:'Tonhão', dani:'Dani' };
 const CAIXA_MAX = 14;                                 // livro-caixa (v7.2): quantos dias da carreira ficam guardados
-const VERSAO = 'v9.0.2';                             // vai no resumo do Caixa
+const VERSAO = 'v9.0.3';                             // vai no resumo do Caixa
 const DIVULGA_DIA = 4;                                // antes disso, o movimento é o da inauguração (sem custo); v9.0.2: dia 4, e o padrão é o boca a boca
-function divulgaAberta(n){ return DEV.on || n >= DIVULGA_DIA; }   // no modo dev, desde o dia 1
+function divulgaAberta(n, sv){ return DEV.on || n >= DIVULGA_DIA && !(sv && sv.convDiv === 'pend'); }   // no modo dev, desde o dia 1; v9.0.3: no Modo História, só depois da conversa
 function divulgaOf(id){ return DIVULGA.find(d => d.id === id) || DIVULGA[0]; }   // v9.0.2: sem escolha, boca a boca
 /* o que se serve na espera, por nível do salão (v7.7, PONTOS.bebida). preco: R$ por copo na conta do grupo; ingred:
    custo de cada copo; prep: s até ficar pronto na estação; take: s da Bia (ou da Dani) para pegar ali.

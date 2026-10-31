@@ -4,6 +4,13 @@ Registro das ideias e dos retornos de quem jogou, com o texto original, e de ond
 
 ---
 
+## 31/10/2026 — usuário: espalhar as conversas
+> "ideal seria espalhar esses diálogos. Estão todos concentrados no dia 3, parece."
+
+**Destino:** feito na v9.0.3 (`docs/spec-v9.0.3.md`): no máximo uma conversa por fim de dia; cardápio no fim do dia 1; a da divulgação espera um fim de dia sem capítulo (e a divulgação só abre depois dela).
+
+---
+
 ## 31/10/2026 — usuário: diálogo ao liberar a divulgação
 > "Quando libera a divulgação, deveria ter um diálogo (talvez pelo dia 4?) explicando que dá pra divulgar pra aumentar a frequentação, e, por padrão iniciar no modo boca a boca, com história sobre possibilidade de fazer panfletagem etc."
 

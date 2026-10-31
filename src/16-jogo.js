@@ -46,7 +46,7 @@ class Game {
     this.quebras = so ? so.quebra.map(q => ({ id:q.id, t:q.f * this.day.time, on:false, fixed:false })) : [];
     this.usos = { fogao:0, geladeira:0, cafeteira:0 };
     // divulgação (v7, do dia 4 em diante na carreira; v9.0.2): quanto da freguesia do dia aparece
-    this.div = divulgaAberta(n) ? divulgaOf(this.save.divulga) : null;
+    this.div = divulgaAberta(n, this.save) ? divulgaOf(this.save.divulga) : null;
     this.divF = this.div ? rand(this.div.groups[0], this.div.groups[1]) : 1;
     this.clock = this.day.time;
     this.cmdFree = CMD.map((c,i) => i);
@@ -1037,7 +1037,7 @@ class Game {
   /* divulgação (v7): escolhida na lojinha, paga junto com a folha ao abrir o dia */
   setDivulga(id){
     const d = DIVULGA.find(x => x.id === id);
-    if (!d || !divulgaAberta(this.shopNext) || (d.cost && this.payroll() + d.cost > this.save.bank)) return false;
+    if (!d || !divulgaAberta(this.shopNext, this.save) || (d.cost && this.payroll() + d.cost > this.save.bank)) return false;
     this.save.divulga = id; writeSave(this.save);
     if (this.state === 'shop') this.resetDay(this.shopNext);
     Sfx.ok(); return true;

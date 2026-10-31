@@ -336,7 +336,7 @@ table.rank tr.me td{background:#fbe7a8}
 
     <div class="ov show" id="ov-menu">
       <div class="panel menu-panel">
-        <span class="vtag" id="vtag" aria-label="Versão 9.0.2">v9.0.2</span>
+        <span class="vtag" id="vtag" aria-label="Versão 9.0.3">v9.0.3</span>
         <h1 class="title">Lanchonete <br>Corre-Corre</h1>
         <p class="tag">Ajude a Bia a atender a freguesia da esquina antes que o cafezinho esfrie!</p>
         <div class="lbl" id="menu-dia">História</div>
@@ -548,7 +548,8 @@ table.rank tr.me td{background:#fbe7a8}
       <div class="panel">
         <h2>Versões</h2>
         <ul class="verlist">
-          <li><b>v9.0.2</b><span class="cur">versão atual</span><br>31/10/2026 &mdash; A divulgação agora começa no dia 4, e no boca a boca: de graça, mas vem menos gente e o movimento varia. No fim do dia 3 do Modo História, o Tonhão avisa que a festa da inauguração acabou e a Bia pensa em fazer panfletos; a lojinha abre direto na Divulgação.</li>
+          <li><b>v9.0.3</b><span class="cur">versão atual</span><br>31/10/2026 &mdash; As conversas do Modo História ficaram mais espalhadas: no máximo uma por fim de dia. A do cardápio vem no fim do dia 1, e a da divulgação espera um dia sem conversa de capítulo (até lá, o movimento da inauguração continua, de graça).</li>
+          <li><b>v9.0.2</b><br>31/10/2026 &mdash; A divulgação agora começa no dia 4, e no boca a boca: de graça, mas vem menos gente e o movimento varia. No fim do dia 3 do Modo História, o Tonhão avisa que a festa da inauguração acabou e a Bia pensa em fazer panfletos; a lojinha abre direto na Divulgação.<br><a href="versoes/v9.0.2.html" target="_blank" rel="noopener">Abrir a v9.0.2</a></li>
           <li><b>v9.0.1</b><br>30/10/2026 &mdash; Ficou mais fácil achar os cursos do Tonhão: eles moram no cartão Cardápio, o primeiro da lojinha, com um selo "novo" quando algum cabe no caixa. No fim do dia 2 do Modo História, a Bia avisa que a freguesia quer mais opções, e quem ainda só tem PF e coxinha ouve isso no Gurugol. E o balão do Tonhão nas conversas não fica mais embaixo do botão Pular.<br><a href="versoes/v9.0.1.html" target="_blank" rel="noopener">Abrir a v9.0.1</a></li>
           <li><b>v9</b><br>30/10/2026 &mdash; A primeira mudança de ponto: depois do capítulo 3, a lojinha (Dinheiro &rsaquo; Mudança) oferece a Lanchonete na área industrial, por R$ 800 e com nota 2,7 no Gurugol; não dá para voltar. Lá são 20 lugares, cardápio mais caro, aluguel de R$ 120 por dia e uma vaga a mais no balcão de pratos, e a freguesia muda: a turma da fábrica (que chega junto quando a fábrica apita), o motorista de caminhão (que pede cafezinho no fim) e a encomenda do setor (de 4 a 6 marmitas, avisada de manhã). A lojinha ganha o fogão industrial, 3 TVs com sertanejo, espera sentada (cadeirinhas ou banquinhos), a jarra de suco e plantas novas; a TV, o som e a torneira da Garagem ficam para trás. E a História ganha os capítulos 4 (Ponto novo) e 5 (Hora do almoço).</li>
           <li><b>v8.9.1</b><br>30/10/2026 &mdash; Ajustes da lojinha: a TV e som foi para Melhorias, a toalha xadrez em todas as mesas foi para o Salão, os cartões da Bia, do Tonhão (agora de corpo inteiro, com a touca) e da Dani mostram a figura inteira, e o cartão da Manutenção fica amarelo ou vermelho quando um equipamento precisa de revisão ou corre risco de quebrar.</li>
@@ -1472,7 +1473,7 @@ const HISTORIA = [
 ];
 /* v9.0.1: a conversa do cardápio, no fim do dia `dia` (ou do 1º dia completo depois dele, para saves antigos), só no Modo História.
    falas: o Tonhão ainda não fez curso; fez: já fez algum (básico de qualquer curso ou o avançado do PF). save.convCard: 'pend' | 1 (vista) */
-const HIST_CARDAPIO = { dia:2,
+const HIST_CARDAPIO = { dia:1,   // v9.0.3: no fim do dia 1 (antes, do dia 2), que não tinha conversa
   falas:[ { q:'bia', s:'Tio, hoje um monte de gente perguntou se só tem PF e coxinha...' },
           { q:'tonhao', s:'É... a Rosa fazia um pastel que era uma beleza. Eu nunca aprendi.' },
           { q:'bia', s:'Então faz um curso! Tem uns baratinhos.' },
@@ -1480,7 +1481,7 @@ const HIST_CARDAPIO = { dia:2,
   fez:[ { q:'bia', s:'O pessoal adorou o prato novo!' },
         { q:'tonhao', s:'Então vou fazer mais cursos. Tá tudo no Cardápio da lojinha.' } ] };
 /* v9.0.2: a conversa da divulgação, no fim do dia anterior ao DIVULGA_DIA, só no Modo História (a lojinha abre na Divulgação).
-   save.convDiv: 'pend' | 1 (vista) */
+   save.convDiv: 'pend' | 1 (vista). v9.0.3: enquanto pendente, a divulgação não abre (o movimento da inauguração segue) */
 const HIST_DIVULGA = {
   falas:[ { q:'tonhao', s:'A festa da inauguração acabou, Bia. Daqui pra frente, quem vem é porque ouviu falar da gente.' },
           { q:'bia', s:'No boca a boca? Então vai ter dia fraco...' },
@@ -1489,9 +1490,9 @@ const HIST_DIVULGA = {
           { q:'bia', s:'Vou ver na Divulgação da lojinha o que compensa.' } ] };
 const HIST_NOMES = { bia:'Bia', tonhao:'Tonhão', dani:'Dani' };
 const CAIXA_MAX = 14;                                 // livro-caixa (v7.2): quantos dias da carreira ficam guardados
-const VERSAO = 'v9.0.2';                             // vai no resumo do Caixa
+const VERSAO = 'v9.0.3';                             // vai no resumo do Caixa
 const DIVULGA_DIA = 4;                                // antes disso, o movimento é o da inauguração (sem custo); v9.0.2: dia 4, e o padrão é o boca a boca
-function divulgaAberta(n){ return DEV.on || n >= DIVULGA_DIA; }   // no modo dev, desde o dia 1
+function divulgaAberta(n, sv){ return DEV.on || n >= DIVULGA_DIA && !(sv && sv.convDiv === 'pend'); }   // no modo dev, desde o dia 1; v9.0.3: no Modo História, só depois da conversa
 function divulgaOf(id){ return DIVULGA.find(d => d.id === id) || DIVULGA[0]; }   // v9.0.2: sem escolha, boca a boca
 /* o que se serve na espera, por nível do salão (v7.7, PONTOS.bebida). preco: R$ por copo na conta do grupo; ingred:
    custo de cada copo; prep: s até ficar pronto na estação; take: s da Bia (ou da Dani) para pegar ali.
@@ -2806,7 +2807,7 @@ class Game {
     this.quebras = so ? so.quebra.map(q => ({ id:q.id, t:q.f * this.day.time, on:false, fixed:false })) : [];
     this.usos = { fogao:0, geladeira:0, cafeteira:0 };
     // divulgação (v7, do dia 4 em diante na carreira; v9.0.2): quanto da freguesia do dia aparece
-    this.div = divulgaAberta(n) ? divulgaOf(this.save.divulga) : null;
+    this.div = divulgaAberta(n, this.save) ? divulgaOf(this.save.divulga) : null;
     this.divF = this.div ? rand(this.div.groups[0], this.div.groups[1]) : 1;
     this.clock = this.day.time;
     this.cmdFree = CMD.map((c,i) => i);
@@ -3797,7 +3798,7 @@ class Game {
   /* divulgação (v7): escolhida na lojinha, paga junto com a folha ao abrir o dia */
   setDivulga(id){
     const d = DIVULGA.find(x => x.id === id);
-    if (!d || !divulgaAberta(this.shopNext) || (d.cost && this.payroll() + d.cost > this.save.bank)) return false;
+    if (!d || !divulgaAberta(this.shopNext, this.save) || (d.cost && this.payroll() + d.cost > this.save.bank)) return false;
     this.save.divulga = id; writeSave(this.save);
     if (this.state === 'shop') this.resetDay(this.shopNext);
     Sfx.ok(); return true;
@@ -8338,7 +8339,7 @@ function buildCursos(grid){
   });
 }
 function buildDivulga(grid){
-  const n = game.shopNext, open = divulgaAberta(n), cur = game.save.divulga;
+  const n = game.shopNext, open = divulgaAberta(n, game.save), cur = game.save.divulga;
   DIVULGA.forEach(d => {
     const on = open && cur === d.id;
     const c = staffCard(upgradeIcon('div-' + d.id), d.name, (d.cost ? fmt(d.cost) + ' por dia. ' : 'Grátis. ') + d.desc);
@@ -8630,7 +8631,7 @@ function buildShop(){
     : ' · livre ' + fmt(game.livre) + ' (' + fmt(comp) + ' reservados para ' + listaE(folhaItens(game.save.equipe, game.div)) + ')');
   $('shop-limit').textContent = DEV.on ? 'Modo dev: tudo liberado; melhorias de graça, ligue e desligue à vontade.' : 'Melhorias à vontade, se o dinheiro der. Cursos: 1 por dia.';
   $('btn-shop-go').textContent = 'Começar o dia ' + game.shopNext;
-  const f = payroll(game.save.equipe), dv = divulgaAberta(game.shopNext) ? divulgaOf(game.save.divulga) : null;
+  const f = payroll(game.save.equipe), dv = divulgaAberta(game.shopNext, game.save) ? divulgaOf(game.save.divulga) : null;
   $('shop-folha').textContent = (f ? 'Folha ' + fmt(f) : 'Sem folha') + (dv ? ' + ' + dv.name.toLowerCase() + ' ' + fmt(dv.cost) : '') + ', contas ' + fmt(contasDia(game.tables)) + (sv.emp.resto ? ', parcela do banco ' + fmt(game.devido) + (sv.emp.atr ? ' (com a atrasada)' : '') : '') + ' e ingredientes: tudo pago no fim do dia, que só rende completo. A meta é o lucro.';
   // v8.6.15: sem seção aberta, os cartões do grupo; com ela, o botão Voltar (o Gurugol abre direto, sem cartões)
   const nav = $('shop-nav'), aberta = shopTab ? SHOP_SECOES[shopTab] : null;
@@ -8979,13 +8980,16 @@ function contTexto(){
   $('cont-p').textContent = ind ? 'Continua na próxima versão: a Avenida Brasil.' : 'Quando quiser, a mudança para a área industrial está na lojinha.';
   $('cont-s').textContent = ind ? 'Enquanto isso, a lanchonete segue aberta: os dias continuam, sem objetivo, e a história espera por você.' : 'Enquanto isso, a lanchonete segue aberta: os dias continuam, sem objetivo.';
 }
-function fluxoHistoria(fim){
+/* v9.0.3: no máximo uma conversa por vez: a de capítulo (depois, e a de antes do seguinte) vem primeiro; a do cardápio e a da
+   divulgação, só numa troca de dia sem conversa de capítulo (falou), e uma de cada vez; a outra espera, pendente */
+function fluxoHistoria(fim, falou){
   const sv = game.save;
   if (sv.conversa === 'depois') return falar('depois', () => {
-    if (game.avancaCap()){ contFim = fim; contTexto(); showOnly(['ov-continua']); } else fluxoHistoria(fim);
+    if (game.avancaCap()){ contFim = fim; contTexto(); showOnly(['ov-continua']); } else fluxoHistoria(fim, true);
   });
-  if (sv.conversa === 'antes') return falar('antes', () => { game.save.conversa = null; writeSave(game.save); fluxoHistoria(fim); });   // v9.0.1: depois dela, ainda pode vir a do cardápio
-  if (sv.convCard === 'pend') return falar(cursoFeito(sv.cursos) ? HIST_CARDAPIO.fez : HIST_CARDAPIO.falas, () => { sv.convCard = 1; writeSave(sv); shopEntra = 'cardapio'; fluxoHistoria(fim); });
+  if (sv.conversa === 'antes') return falar('antes', () => { game.save.conversa = null; writeSave(game.save); fluxoHistoria(fim, true); });
+  if (falou) return fim();
+  if (sv.convCard === 'pend') return falar(cursoFeito(sv.cursos) ? HIST_CARDAPIO.fez : HIST_CARDAPIO.falas, () => { sv.convCard = 1; writeSave(sv); shopEntra = 'cardapio'; fim(); });
   if (sv.convDiv === 'pend') return falar(HIST_DIVULGA.falas, () => { sv.convDiv = 1; writeSave(sv); shopEntra = 'divulga'; fim(); });   // v9.0.2
   fim();
 }

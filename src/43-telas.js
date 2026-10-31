@@ -93,13 +93,16 @@ function contTexto(){
   $('cont-p').textContent = ind ? 'Continua na próxima versão: a Avenida Brasil.' : 'Quando quiser, a mudança para a área industrial está na lojinha.';
   $('cont-s').textContent = ind ? 'Enquanto isso, a lanchonete segue aberta: os dias continuam, sem objetivo, e a história espera por você.' : 'Enquanto isso, a lanchonete segue aberta: os dias continuam, sem objetivo.';
 }
-function fluxoHistoria(fim){
+/* v9.0.3: no máximo uma conversa por vez: a de capítulo (depois, e a de antes do seguinte) vem primeiro; a do cardápio e a da
+   divulgação, só numa troca de dia sem conversa de capítulo (falou), e uma de cada vez; a outra espera, pendente */
+function fluxoHistoria(fim, falou){
   const sv = game.save;
   if (sv.conversa === 'depois') return falar('depois', () => {
-    if (game.avancaCap()){ contFim = fim; contTexto(); showOnly(['ov-continua']); } else fluxoHistoria(fim);
+    if (game.avancaCap()){ contFim = fim; contTexto(); showOnly(['ov-continua']); } else fluxoHistoria(fim, true);
   });
-  if (sv.conversa === 'antes') return falar('antes', () => { game.save.conversa = null; writeSave(game.save); fluxoHistoria(fim); });   // v9.0.1: depois dela, ainda pode vir a do cardápio
-  if (sv.convCard === 'pend') return falar(cursoFeito(sv.cursos) ? HIST_CARDAPIO.fez : HIST_CARDAPIO.falas, () => { sv.convCard = 1; writeSave(sv); shopEntra = 'cardapio'; fluxoHistoria(fim); });
+  if (sv.conversa === 'antes') return falar('antes', () => { game.save.conversa = null; writeSave(game.save); fluxoHistoria(fim, true); });
+  if (falou) return fim();
+  if (sv.convCard === 'pend') return falar(cursoFeito(sv.cursos) ? HIST_CARDAPIO.fez : HIST_CARDAPIO.falas, () => { sv.convCard = 1; writeSave(sv); shopEntra = 'cardapio'; fim(); });
   if (sv.convDiv === 'pend') return falar(HIST_DIVULGA.falas, () => { sv.convDiv = 1; writeSave(sv); shopEntra = 'divulga'; fim(); });   // v9.0.2
   fim();
 }
