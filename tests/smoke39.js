@@ -1,4 +1,4 @@
-// v9.0.1, etapa 2c-r6: cartão Cardápio na lojinha (cursos do Tonhão), selo "novo", conversa do cardápio no dia 2,
+// v9.0.1, etapa 2c-r6: cartão Cardápio na lojinha (cursos do Tonhão), selo "novo", conversa do cardápio no dia 2 (dia 1 desde a v9.0.3),
 // balão que desvia do botão Pular e comentário do Gurugol quando o cardápio é pequeno.
 const load=require('./harness.js'), fs=require('fs');
 let fails=0,total=0; const ok=(c,m)=>{ total++; if(!c){fails++;console.log('FAIL:',m);} else console.log('ok  :',m); };
@@ -49,11 +49,8 @@ const joga=(H,fat)=>{ const {g,els}=H; if(g.state==='shop') els['btn-shop-go'].f
 // ---------- 3. a conversa do cardápio ----------
 { const H=nova(), {g,L,els}=H, sv=g.save;
   sv.conversa=null; sv.bank=5000; sv.convCard=0;
-  g.startDay(1); joga(H,400); els['btn-next'].fire('click'); passa(H);
-  ok(sv.convCard===0 || sv.convCard===undefined || !sv.convCard,'depois do dia 1, sem conversa do cardápio');
-  g.startDay(2);
-  joga(H,400);
-  ok(g.save.convCard==='pend','ao fechar o dia 2, convCard fica pendente');
+  g.startDay(1); joga(H,400);
+  ok(g.save.convCard==='pend','ao fechar o dia 1, convCard fica pendente (v9.0.3)');
   els['btn-next'].fire('click'); ate(H,/Tio, hoje/);
   ok(g.conversa && /Tio, hoje um monte de gente perguntou se só tem PF e coxinha/.test(g.conversa.fala.s),'toca a conversa, com a 1ª fala certa');
   let cap=0; while(g.conversa && cap<20){ if(g.save.conversa==='depois'||g.save.conversa==='antes'){} toque(els); cap++; }
@@ -61,7 +58,7 @@ const joga=(H,fat)=>{ const {g,els}=H; if(g.state==='shop') els['btn-shop-go'].f
   g.startDay(3); joga(H,400); els['btn-next'].fire('click'); passa(H);
   ok(g.save.convCard===1,'fechar o dia 3 depois não toca de novo'); }
 { const H=nova(), {g,L,els}=H;
-  g.save.conversa=null; g.save.bank=5000; g.save.cursos=L.normCursos({pastel:1}); g.startDay(1); joga(H,400); g.startDay(2); joga(H,400); els['btn-next'].fire('click'); ate(H,/O pessoal adorou/);
+  g.save.conversa=null; g.save.bank=5000; g.save.cursos=L.normCursos({pastel:1}); g.startDay(1); joga(H,400); els['btn-next'].fire('click'); ate(H,/O pessoal adorou/);
   ok(g.conversa && /O pessoal adorou o prato novo!/.test(g.conversa.fala.s),'com um curso feito, toca a versão curta'); }
 { const H=load(), {g,L,els}=H;
   g.save.bank=5000; g.startDay(1); joga(H,400); g.startDay(2); joga(H,400);
