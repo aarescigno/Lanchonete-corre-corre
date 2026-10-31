@@ -4,6 +4,14 @@ Registro das ideias e dos retornos de quem jogou, com o texto original, e de ond
 
 ---
 
+## 31/10/2026 — Usuário: planejamento da etapa 3b (Avenida Brasil)
+Respostas na sessão de planejamento (perguntas de escolha):
+> Joca: "O básico; a Dani se especializa (Recomendado)". Sobremesas: "Dani confeiteira + vitrine (Recomendado)". Coquetelaria: "Fica para a 4a (Recomendado)". Conta rachada e fiscal: "Só o fiscal".
+
+**Destino:** etapa **3b** do `docs/PLANO.md`, em 3 sessões: **3b-1** (v9.1, o Restaurante na Avenida Brasil, o cliente "Almoço de negócios", o curso Cozinha de restaurante com o Filé à parmegiana, sofás, águas saborizadas, flores, couvert, 6 vagas de prato e os caps. 6 e 7), **3b-2** (v9.2, o Joca com as tarefas básicas, salário e experiência pelo trabalho; a vitrine de sobremesas e o curso de Confeitaria da Dani) e **3b-3** (v9.3, o fiscal da vigilância sanitária). A coquetelaria com o profissional de drinks foi para a **4a**; a conta rachada continua nas Ideias guardadas. Decidido por mim, sem pergunta: os números do ponto (a calibrar), o cliente novo, o prato e o curso, os preços dos itens, os níveis e o visual do Joca, as regras do fiscal e as falas dos capítulos.
+
+---
+
 ## 31/10/2026 — usuário: a lojinha abre aos poucos
 > "vamos planejar uma forma de ser gradual a apresentação das abas do mercado, tipo por dias de trabalho aparecer reclamações específicas de clientes que tragam a ideia para a bia de investir em tais coisas. imagino que os que possam ir aparecendo com o tempo são a estética, compra de mais cadeiras etc... tipo o que acontece com o tonhão, mas realmente ir incrementando com o tempo as coisas para poder comprar. Importante separar nesse plano um momento para rebalanceamento e checagem de qual ordem é melhor ir liberando. O objetivo é o menu de melhorias não ficar overwhelming pra quem chega nele de primeira."
 
