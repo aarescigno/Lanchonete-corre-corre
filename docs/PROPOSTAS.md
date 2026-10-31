@@ -4,27 +4,45 @@ Registro das ideias e dos retornos de quem jogou, com o texto original, e de ond
 
 ---
 
+## 31/10 — usuário: entrevista da equipe ponto a ponto (Dani, Joca, Anselmo, Cami e o Tonhão)
+Entrevista para planejar as 4 mensagens de 31/10 abaixo (respostas escolhidas pelo usuário):
+- **Doces da Dani:** começam na **área industrial** (a Garagem fica como está, a Dani só assistente).
+- **Joca:** entra na 3b-2, **já liberado na área industrial** (a ordem das sessões não muda).
+- **Anselmo:** **sessão nova 3b-4** (v9.4), depois do fiscal; a 4a fica com os upgrades dele.
+- **Cami:** entra **no Terraço (4a)**; pode ter **qualquer das 3 funções** (cuidar de uma parte do salão, tarefas escolhidas como a Dani ou ajudar a Bia em tudo): o jogador escolhe o modo no cartão. **No fim da história (etapa 6) vira gerente de salão.**
+- **Café da Dani:** ela faz o cafezinho até o Joca aprender o café na Avenida; daí o café **passa ao Joca** e a Dani fica com os doces (o curso Barista iniciante dela continua valendo como experiência).
+- **Café do Joca** (o "grid" do áudio): **Avenida, máquina de espresso** (espresso e cappuccino); **Terraço, cafés de método** (coado no filtro, prensa francesa, cold brew), com etapas.
+- **Especialização:** **curso pago por ponto**, como os da Dani hoje; o curso já traz o equipamento (geladeirinha, vitrine, máquina).
+- **Doces na área industrial:** na **mesa** (depois do almoço) **e na marmita** ("+ doce").
+- **Coquetéis do Anselmo:** pedidos **na mesa, ao sentar** (como o suco); no Terraço soma o balcãozinho da espera. **Nomes inventados, sem dizer se têm álcool.**
+- **Tonhão no Terraço:** **cursos de alta gastronomia e um ajudante de cozinha** (nome e visual no planejamento da 4a).
+- **Números aprovados como ponto de partida** (o `balance.js` calibra): doces R$ 7 (industrial) / R$ 16 (Avenida) / R$ 30 (Terraço); cafés R$ 8 e R$ 12 (Avenida) / R$ 20 (Terraço); drinks R$ 22 (Avenida) / R$ 35 (Terraço); Anselmo R$ 90/dia; Cami R$ 120/dia (90% da velocidade da Bia); ajudante de cozinha R$ 80/dia (Tonhão 25% mais rápido); cursos de R$ 180 a R$ 800.
+- **Ordem aprovada:** 3b-1 Avenida (v9.1) → 3b-2 Joca + Dani confeiteira + café e confeitaria da Avenida (v9.2) → 3b-3 fiscal (v9.3) → 3b-4 Anselmo (v9.4); a 4a junta Cami, ajudante de cozinha, os cursos de topo e o Anselmo lá fora.
+Destino: sessões 3b-2 (reescrita) e 3b-4 (nova) do `docs/PLANO.md`; o que é do Terraço, na 4a ("Equipe do Terraço"); a Cami gerente, na etapa 6. As ideias guardadas "Especialização e progressão da equipe", "Bebidas da Dani no Cardápio" e "Cozinheiros da Avenida Brasil e do Terraço Suíça" saíram das Ideias guardadas (viraram etapa).
+
+---
+
 ## 31/10 — usuário: progressão ponto a ponto de Dani, Joca e Anselmo
 Texto original: "E aí fica nesse esquema, né? A Dani já entrou desde a garagem e ela vai crescendo, né? Assistente, aí ela cresce como confeiteira júnior, com alguns docinhos, né? Bolo de pote, essas coisas assim. E aí sobe para Avenida Brasil. Ali ela vira, faz uns doces diferentes, tipo shortcake e outros docinhos gourmets assim, né? Esses assim mais caros, entremês, sei lá, né? E aí quando ela chega na Terra Suíça, ela faz os doces mais caros de todos, né? É, eu acho que o entremê fica pro terraço Suíça. E a gente vai ponderando isso. Já o Joca, ele entra na área industrial. Depois pro grid, pro café na Avenida Brasil. E vira o mega barista de cafés top no Terra Suíça. O Anselmo entra na Avenida Brasil como coqueteleiro, já com alguma habilidade e tal. É o coqueteleiro antigo do restaurante do Braulio, que saiu de lá e falou: não, era muito difícil trabalhar lá e acho um novo espaço por ter conversado com o Tonhão, sabe? E aí, quando passa por Terra Suíça, ele ganha vários upgrades para virar os melhores coquetéis que tem."
-Destino: Ideias guardadas do `docs/PLANO.md`. Atenção: o Joca na área industrial muda a 3b-2 (hoje ele entra na Avenida).
+Destino: entrevista de 31/10 (entrada acima): sessões 3b-2 e 3b-4 e a 4a do `docs/PLANO.md`.
 
 ---
 
 ## 31/10 — usuário: Anselmo, o coqueteleiro
 Texto original: "Anselmo. Esse vai ser o nome da pessoa coqueteleira. Porque o especialista em cafés vai ser o Joca, mas o Anselmo vai fazer os melhores coquetéis do mundo. E ele pode entrar já, talvez, na Avenida Brasil e vai receber upgrades para chegar até o nível top, que é o que vai ser o terraço suíça, né?"
-Destino: Ideias guardadas do `docs/PLANO.md` (completa a entrada de especialização da equipe); decidir se entra na 3b-2 ou na 4a.
+Destino: entrevista de 31/10 (entrada acima): sessões 3b-2 e 3b-4 e a 4a do `docs/PLANO.md`.
 
 ---
 
 ## 31/10 — usuário: Dani confeiteira, Joca coqueteleiro/barista e a Cami (atendimento) no Terraço
 Texto original: "Ah tá, então pode deixar a Dani como confeiteira e o Joca mais pra frente entra como coqueteleiro ou como barista, né? Porque a ideia é que no terraço suíça tenha alguém especializado em fazer cafés gourmet especial, etc, né? Vários processos, e alguém para fazer doces muito especiais e tal. E o chef Tonhão, que vai preparar pratos de alto estirpe após vários cursos, etc. E vai ter que ter alguém para ajudar a Bia na pegada do dia a dia ali. Talvez seja um terceiro assistente. A Cami, essa terceira assistente, vai ser especializada em atendimento de pessoas. Então ela vai ser muito rápida. Vai ser mais rápida que a Bia, talvez. Ou tão rápida quanto a Bia, sabe? Coisa que o Joca e a Dani não conseguem ser. Porque a especialidade deles é outra e eles estão descobrindo."
-Destino: Ideias guardadas do `docs/PLANO.md` (substitui a entrada anterior); decidir no planejamento da 4a.
+Destino: entrevista de 31/10 (entrada acima): sessões 3b-2 e 3b-4 e a 4a do `docs/PLANO.md`.
 
 ---
 
 ## 31/10 — usuário: especialização e progressão da equipe (Dani, Joca e assistente)
 Texto original: "adiciona aí para mim nas ideias, que assim como a Dani vai progredir de função, né, com alguma outra coisa que ele especialize e tal, o Joca também vai passar por esse processo, né, e ele encontre uma função aí dentro. Não sei se a Dani vira barista, ele vira da doceria ou vice-versa, e aí tem uma outra pessoa entra como assistente, que na última instância, no último momento lá, também pode receber um upgrade ou ficar essa última pessoa aí como assistente só também."
-Destino: Ideias guardadas do `docs/PLANO.md` (sem etapa ainda); decidir quando planejar a 3b-2/4a.
+Destino: entrevista de 31/10 (entrada acima): sessões 3b-2 e 3b-4 e a 4a do `docs/PLANO.md`.
 
 ---
 
