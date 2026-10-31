@@ -56,7 +56,8 @@ class Game {
     this.gid = 0;
     this.groups = []; this.queue = [];
     this.buildTables();
-    plateSlotsFor(this.ponto.pratos || 4);   // v9: 4 vagas no balcão de pratos na Garagem, 5 na área industrial
+    queueYsFor(this.ponto.espera || 4);   // v9.1: 4, 5 ou 6 lugares de espera na calçada
+    plateSlotsFor(this.ponto.pratos || 4);   // v9: 4 vagas no balcão de pratos na Garagem, 5 na área industrial, 6 na Avenida (v9.1)
     this.tables.forEach(t => { t.open = true; t.group = null; t.dirty = false; t.dirtyN = 0; });   // v7.4: todas as mesas abrem desde o dia 1
     this.kitchen.reset();
     this.kitchen.clean = dishStock(this.day, this.up);
@@ -923,7 +924,7 @@ class Game {
     if (key === 'tonhao' && !DEV.on && (val > tonhaoNivelXp(this.save.cursos) || val < old)) return false;   // v8.8: só com a xp dos cursos, e o nível pago é definitivo
     if (key === 'dani' && !DEV.on && (val > daniNivelXp(this.save) || val < old)) return false;   // v8.9: só com a experiência, e o nível pago é definitivo
     if (key === 'couvert' && val && !couvertOk(this.ponto)) return false;
-    if (key === 'tvs' && val && (!this.up.tvs || this.ponto.nivel < 2)) return false;   // v9: só com as TVs instaladas
+    if (key === 'tvs' && val && (!this.up.tvs || this.ponto.nivel !== 2)) return false;   // v9: só com as TVs instaladas
     eq[key] = val;
     if (payroll(eq) > this.save.bank && payroll(eq) > payroll(Object.assign({}, eq, { [key]:old }))){ eq[key] = old; return false; }
     writeSave(this.save); this.kitchen.slots = cozinhaSlots(this);
@@ -986,16 +987,22 @@ class Game {
     const sv = this.save, nm = avalMinimo(this.ponto), din = Math.max(0, p.mudanca - sv.bank), nota = this.notaGurugol != null && this.notaGurugol >= nm ? 0 : nm;
     return din || nota ? { din, nota } : null;
   }
-  get mudancaVisivel(){ return !!this.proximoPonto && this.save.salao.ponto === this.ponto.id && (DEV.on || this.save.cap >= 4); }
+  /* v9.1: o cartão aparece com o capítulo de agora a partir do 1º capítulo do próximo ponto (4 para a área industrial, 6 para a Avenida) */
+  get mudancaVisivel(){
+    const p = this.proximoPonto, c1 = p && HISTORIA.find(c => c.ponto === p.id);
+    return !!p && this.save.salao.ponto === this.ponto.id && (DEV.on || this.save.cap >= (c1 ? c1.cap : 4));
+  }
   mudarPonto(){
     const sv = this.save, para = this.proximoPonto;
     if (!para || !this.mudancaVisivel || this.mudancaFalta) return false;
     if (!DEV.on){ sv.bank -= para.mudanca; caixaGasto(sv, 'sal', para.mudanca); }
     sv.salao.ponto = para.id;
     sv.equipe.tv = false; sv.equipe.som = false; delete this.up.maquina;
+    delete this.up.tvs; delete this.up.assento; sv.equipe.tvs = 0;   // v9.1: ao sair da área industrial, as TVs, o assento e a jarra saem sem devolver (o fogão industrial e as mesas vão junto)
     const r = salaoAuto(sv.salao.mesas, para); if (r) sv.salao.mesas = r;
     sv.salao = normSalao(sv.salao);
-    if (sv.cap === 4){ sv.capDia = sv.dia; sv.capAzul = 0; sv.capFeito = 0; sv.conversa = HIST.on && !DEV.on ? 'antes' : null; }
+    const chap = HISTORIA[sv.cap - 1];   // v9.1: o capítulo de agora é do ponto novo? Então começa (o 4 na área industrial, o 6 na Avenida)
+    if (chap && chap.ponto === para.id){ sv.capDia = sv.dia; sv.capAzul = 0; sv.capFeito = 0; sv.conversa = HIST.on && !DEV.on ? 'antes' : null; }
     sv.equipe = normEquipe(sv.equipe, para);
     this.tablesKey = ''; this.buildTables();
     writeSave(sv);
@@ -1003,14 +1010,17 @@ class Game {
     Sfx.win();
     return true;
   }
-  /* itens da área industrial (v9): TVs (instalar), fogão industrial e o assento da espera ('cadeira' ou 'banco'; trocar paga o novo) */
+  /* itens da área industrial (v9): TVs (instalar), fogão industrial e o assento da espera ('cadeira' ou 'banco'; trocar paga o novo);
+     v9.1: o fogão vale de 2 em diante; as TVs e a cadeirinha/banquinho só no nível 2; o sofá só na Avenida */
   comprarInd(id, tipo){
-    if (this.ponto.nivel < 2) return false;
+    const nv = this.ponto.nivel;
+    if (nv < 2) return false;
     const I = INDUSTRIAL;
     let cost;
-    if (id === 'tvs' && !this.up.tvs) cost = I.tvs.instalar;
+    if (id === 'tvs' && nv === 2 && !this.up.tvs) cost = I.tvs.instalar;
     else if (id === 'fogaoInd' && !this.up.fogaoInd) cost = I.fogao.cost;
-    else if (id === 'assento' && I.assento[tipo] && this.up.assento !== tipo) cost = I.assento[tipo].cost;
+    else if (id === 'assento' && nv === 2 && (tipo === 'cadeira' || tipo === 'banco') && this.up.assento !== tipo) cost = I.assento[tipo].cost;
+    else if (id === 'assento' && nv === 3 && tipo === 'sofa' && this.up.assento !== 'sofa') cost = AVENIDA.sofa.cost;
     else return false;
     if (!DEV.on && this.save.bank < cost) return false;
     if (!DEV.on){ this.save.bank -= cost; caixaGasto(this.save, 'mel', cost); }
@@ -1102,7 +1112,7 @@ class Game {
   /* cursos do Tonhão (v8.6.9): o próximo degrau do curso (o básico, ou o avançado se o básico já foi feito), ou null se está completo */
   cursoProx(id){
     const c = cursoOf(id), n = c ? cursoNivel(this.save.cursos, id) : 2;
-    if (!c || n >= 2) return null;
+    if (!c || n >= 2 || !cursoOk(c, this.ponto)) return null;   // v9.1: o curso de restaurante só da Avenida em diante
     return n >= 1 ? { nivel:2, nome:c.av.nome, preco:c.av.preco } : { nivel:1, nome:c.nome, preco:c.preco };
   }
   /* v9.0.1: as chaves (id + nível) dos cursos ao alcance do caixa que o cartão Cardápio ainda não mostrou; o selo "novo" acende se houver */

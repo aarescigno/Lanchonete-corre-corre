@@ -10,11 +10,11 @@ const txt=e=>(e.textContent||'')+(e.children||[]).map(txt).join(' ');
 const BAS={pastel:1,chapa:1,fritos:1,assados:1};
 
 // ---------- o cardápio e os cursos ----------
-ok(Object.keys(C).length===22,'22 pratos no cardápio (14 + 8 sem carne da v8.6.11)');
+ok(Object.keys(C).length===23,'23 pratos no cardápio (14 + 8 sem carne da v8.6.11 + a parmegiana da v9.1)');
 ok(Object.keys(C).every(k=>C[k].cat && ['pf','frito','assado','chapa','pastel'].includes(C[k].cat) && (C[k].curso===null || L.cursoOf(C[k].curso))),'cada prato tem categoria e curso (ou nenhum)');
 ok(C.pf.preco===25 && C.coxinha.preco===8 && C.risoles.preco===6 && C.kibe.preco===7 && C.bolinho.preco===8 && C.empada.preco===9 && C.esfihaA.preco===7 && C.esfihaF.preco===7 && C.misto.preco===10 && C.bauru.preco===12 && C.paoChapa.preco===7 && C.pastel.preco===10 && C.pastelQ.preco===10 && C.pastelP.preco===11,'os preços dos 14 pratos');
 ok(Object.keys(C).filter(k=>!C[k].carne&&!C[k].veg).sort().join()==='paoChapa,pastelQ' && Object.keys(C).filter(k=>!C[k].carne).length===10,'sem carne de fábrica: só o pão na chapa e o pastel de queijo (mais os 8 pratos do curso Vegetariano)');
-ok(L.CURSOS.map(c=>c.id+':'+c.preco+':'+c.av.preco).join()==='pastel:150:300,chapa:180:360,fritos:220:440,assados:250:500,pf:0:400,veg:150:300','cursos e preços: pastel 150/300, chapa 180/360, fritos 220/440, assados 250/500, PF só o avançado 400, Vegetariano 150/300');
+ok(L.CURSOS.map(c=>c.id+':'+c.preco+':'+c.av.preco).join()==='pastel:150:300,chapa:180:360,fritos:220:440,assados:250:500,pf:0:400,veg:150:300,restaurante:400:600','cursos e preços: pastel 150/300, chapa 180/360, fritos 220/440, assados 250/500, PF só o avançado 400, Vegetariano 150/300, Cozinha de restaurante 400/600 (v9.1)');
 novo();
 ok(L.pratosSabidos(g.save.cursos).join()==='pf,coxinha','save novo: a cozinha só sabe PF e coxinha');
 ok(Math.abs(L.avalMenu(g.save.cursos)-2)<1e-9,'Diversidade do cardápio: 2,0 de início');

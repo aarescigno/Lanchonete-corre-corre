@@ -118,6 +118,25 @@ function upgradeIcon(id){
       rr(c,-16,-4,32,20,2); fs(c,'#B9B4A6',2); rr(c,8,-18,7,16,1); fs(c,PAL.inox,1.6);
       c.beginPath(); c.moveTo(-16,-4); c.lineTo(-8,-12); c.lineTo(0,-4); c.lineTo(8,-12); c.lineTo(16,-4); c.fillStyle = '#9AA0A6'; c.fill(); c.strokeStyle = PAL.tinta; c.lineWidth = 1.6; c.stroke();
       rr(c,-6,6,12,10,1); fs(c,PAL.cromo,1.6); c.fillStyle = PAL.mostarda; c.fillRect(-16,16,32,2.5);
+    } else if (id === 'mudanca-av'){   // v9.1: o restaurante da avenida: fachada com o toldo listrado vinho e creme
+      rr(c,-16,-6,32,22,2); fs(c,'#EDE3CF',2); rr(c,-6,4,12,12,1.5); fs(c,'#BFE3F2',1.6); rr(c,-14,-1,7,8,1); fs(c,'#BFE3F2',1.2); rr(c,7,-1,7,8,1); fs(c,'#BFE3F2',1.2);
+      for (let i=0;i<6;i++){ c.beginPath(); c.moveTo(-17 + i*5.7,-14); c.lineTo(-17 + (i+1)*5.7,-14); c.lineTo(-17 + (i+1)*5.7,-6); c.quadraticCurveTo(-17 + (i+0.5)*5.7,-2,-17 + i*5.7,-6); c.closePath(); fs(c,i % 2 ? '#F6EBD3' : '#7A1F3A',1.2); }
+      circ(c,13,-17,4); c.fillStyle = '#F2C230'; c.fill();
+    } else if (id === 'aguas'){   // v9.1: as águas saborizadas: três garrafas numa mesinha redonda
+      ell(c,0,10,17,5); fs(c,PAL.madeira,1.8);
+      SABORES.forEach((s,i) => drawGarrafa(c,-10 + i*10,12 + (i === 1 ? 1 : 0),s.cor,i));
+    } else if (id === 'sofas'){   // v9.1: o sofá verde-musgo com as almofadas
+      rr(c,-17,-8,34,15,5); fs(c,'#4C683F',2); rr(c,-13,-1,26,10,3); fs(c,'#6E8E5B',1.6);
+      rr(c,-19,-3,7,14,3); fs(c,'#58774A',1.6); rr(c,12,-3,7,14,3); fs(c,'#58774A',1.6);
+      c.save(); c.translate(-6,-5); c.rotate(-0.18); rr(c,-4,-4,8,8,2); fs(c,'#E8B43A',1.2); c.restore();
+      c.save(); c.translate(7,-5); c.rotate(0.18); rr(c,-4,-4,8,8,2); fs(c,'#D9644A',1.2); c.restore();
+      c.fillStyle = PAL.madeiraEsc; c.fillRect(-14,9,3,4); c.fillRect(11,9,3,4);
+    } else if (id === 'd-tulipa'){
+      c.scale(0.62,0.62); drawTulipas(c,0,12,1);
+    } else if (id === 'd-copo'){
+      c.scale(0.62,0.62); drawCopoLeite(c,0,26,1);
+    } else if (id === 'd-orquidea'){
+      c.scale(0.62,0.62); drawOrquidea(c,0,26,1);
     } else if (id === 'g-salao'){   // v8.6.15: cartão Salão (mesa redonda com duas cadeiras)
       ell(c,0,4,15,8); fs(c,PAL.formica,2); rr(c,-3,10,6,8,1); fs(c,PAL.madeiraEsc,1.4);
       [-1,1].forEach(d => { rr(c,d*19-5,-6,10,10,2); fs(c,CHAIRS[d > 0 ? 3 : 1].c,1.6); });
@@ -163,7 +182,7 @@ let mudarPede = false;   // o 1º toque em "Mudar" pede a confirmação
 function shopCartoes(grid, grupo){
   shopSecoesVis(grupo).forEach(id => {
     const sc = SHOP_SECOES[id], b = el('button', null); b.type = 'button'; b.setAttribute('data-sec', id);
-    b.appendChild(upgradeIcon(sc.icon)); b.appendChild(el('b', null, sc.nome));
+    b.appendChild(upgradeIcon(id === 'mudanca' && game.proximoPonto && game.proximoPonto.id === 'avenida' ? 'mudanca-av' : sc.icon)); b.appendChild(el('b', null, sc.nome));   // v9.1: o ícone segue o ponto de destino
     if (id === 'manut'){   // v8.9.1: a cor segue o pior equipamento, com as faixas das barras
       const pior = Math.min.apply(null, MANUT.equip.map(q => game.manut[q.id]));
       if (pior < MANUT.vermelho){ b.classList.add('perigo'); b.setAttribute('aria-label', 'Manutenção: risco de quebra'); }
@@ -625,7 +644,7 @@ function buildCursos(grid){
   // v8.6.11: o prato que precisa do básico de outro curso (dep) fica apagado até esse curso ser feito
   const falta = k => { const d = CARDAPIO[k].dep; return d && cursoNivel(cur, d) < 1 ? cursoOf(d) : null; };
   const apagado = l => l.filter(falta).map(k => CARDAPIO[k].nome + ': precisa do curso de ' + falta(k).nome).join('; ') + '.';
-  CURSOS.forEach(c => {
+  CURSOS.filter(c => cursoOk(c, game.ponto)).forEach(c => {   // v9.1: o curso de restaurante só aparece da Avenida em diante
     const n = cursoNivel(cur, c.id), p = game.cursoProx(c.id), av = n >= 1;
     const card = el('div', 'item' + (!p ? ' own' : ''));
     card.appendChild(cursoIcon(c, av));
@@ -705,6 +724,13 @@ function buildTvs(grid){
 }
 /* v9: onde se espera lá fora: de pé (de graça), cadeirinhas de plástico ou banquinhos de madeira (um ou outro; trocar paga o novo) */
 function buildAssento(grid){
+  if (game.ponto.nivel >= 3){   // v9.1: os sofás da Avenida (compra única)
+    const S = AVENIDA.sofa, own = game.up.assento === 'sofa', bank0 = game.save.bank;
+    const c0 = staffCard(upgradeIcon('sofas'), S.nome, 'Dois sofás de 3 lugares na calçada, verde-musgo e com almofadas. Quem espera sentado neles perde a paciência ' + Math.round(S.slow * 100) + '% mais devagar. Compra única.');
+    if (own) c0.classList.add('own');
+    c0.appendChild(shopBtn(own ? 'Já comprado' : DEV.on ? 'Instalar (grátis)' : 'Comprar ' + fmt(S.cost), 'btn', !own && (DEV.on || bank0 >= S.cost), () => game.comprarInd('assento', 'sofa'), DEV.on ? 0 : S.cost));
+    grid.appendChild(c0); return;
+  }
   const A = INDUSTRIAL.assento, bank = game.save.bank, cur = game.up.assento || '';
   const c = staffCard(upgradeIcon('assento'), 'Espera sentada', 'Quem espera lá fora sentado perde a paciência ' + Math.round(A.slow * 100) + '% mais devagar. As duas opções valem igual; o banquinho é só mais bonito. Trocar paga o novo.');
   if (cur) c.classList.add('own');
@@ -716,11 +742,11 @@ function buildAssento(grid){
 function buildMudanca(grid){
   const p = game.proximoPonto, f = game.mudancaFalta, de = game.ponto;
   if (!p) return;
-  const c = staffCard(upgradeIcon('mudanca'), 'Mudança: ' + p.nome,
-    p.lugares + ' lugares (hoje, ' + de.lugares + '), cardápio ' + Math.round((p.cardapio / de.cardapio - 1) * 100) + '% mais caro, limite do banco de ' + fmt(p.credito) + ', mais uma vaga de prato e a freguesia da fábrica e da estrada. Aluguel de ' + fmt(p.aluguel) + ' por dia. Leva as mesas, os pratos, os cursos, a equipe e as melhorias; a TV, o som e a torneira ficam. Não dá para voltar.');
+  const c = staffCard(upgradeIcon(p.id === 'avenida' ? 'mudanca-av' : 'mudanca'), 'Mudança: ' + p.nome,
+    p.lugares + ' lugares (hoje, ' + de.lugares + '), cardápio ' + Math.round((p.cardapio / de.cardapio - 1) * 100) + '% mais caro, limite do banco de ' + fmt(p.credito) + ', mais uma vaga de prato e ' + (p.traz || 'mais movimento') + '. Aluguel de ' + fmt(p.aluguel) + ' por dia. Leva as mesas, os pratos, os cursos, a equipe e as melhorias; ' + (de.deixa || 'o resto fica') + '. Não dá para voltar.');
   const falta = f ? [f.din ? 'Falta ' + fmt(f.din) : '', f.nota ? 'Nota ' + fmtNota(f.nota) + ' (agora ' + fmtNota(game.notaGurugol) + ')' : ''].filter(Boolean).join(' · ') : '';
   if (!f && mudarPede){
-    c.appendChild(el('span', 'full', 'Mudar para a ' + p.nome + ' por ' + fmt(p.mudanca) + '? Aluguel de ' + fmt(p.aluguel) + ' por dia. Não dá para voltar.'));
+    c.appendChild(el('span', 'full', 'Mudar para ' + (p.art || 'a') + ' ' + p.nome + ' por ' + fmt(p.mudanca) + '? Aluguel de ' + fmt(p.aluguel) + ' por dia. Não dá para voltar.'));
     const duo = el('div', 'duo');
     duo.appendChild(shopBtn(DEV.on ? 'Sim, mudar' : 'Sim, mudar: ' + fmt(p.mudanca), 'btn', true, () => { mudarPede = false; shopTab = null; return game.mudarPonto(); }, DEV.on ? 0 : p.mudanca));
     const nao = el('button', 'btn alt', 'Agora não'); nao.type = 'button'; nao.addEventListener('click', () => { Sfx.tap(); mudarPede = false; buildShop(); });
@@ -899,13 +925,13 @@ function buildGurugol(grid){
   if (!com.length) lista.appendChild(el('li', 'rank-empty', 'Os comentários aparecem depois do próximo dia.'));
   grid.appendChild(lista);
 }
-function buildMelhorias(grid){ upgradeCartoes(grid, false); if (game.ponto.nivel >= 2) { buildTvs(grid); buildAssento(grid); } else buildTvSom(grid); }
+function buildMelhorias(grid){ upgradeCartoes(grid, false); const nv = game.ponto.nivel; if (nv === 2) { buildTvs(grid); buildAssento(grid); } else if (nv >= 3) buildAssento(grid); else buildTvSom(grid); }   // v9.1: as TVs são só da área industrial; na Avenida, os sofás
 function upgradeCartoes(grid, bia){
   // os Tênis de corrida (v7.3) só aparecem depois dos Tênis novos, no lugar deles (a grade continua com 6); no modo dev, todas
   UPGRADES.filter(u => (BIA_IDS.indexOf(u.id) >= 0) === bia).filter(u => DEV.on || (u.req ? game.up[u.req] : !(game.up[u.id] && UPGRADES.some(v => v.req === u.id)))).forEach(u => {
     const own = !!game.up[u.id], tem = u.multi ? pratosDe(game.up) : 0, fecha = !u.multi && own;   // o Jogo de pratos (v8.3.6) segue à venda
     const card = el('div', 'item' + (own && !u.multi ? ' own' : '')), pv = upgradeDe(u, game.ponto);   // v9: a Água da torneira vira a Jarra de suco
-    card.appendChild(upgradeIcon(pv !== u ? 'jarra' : u.id));
+    card.appendChild(upgradeIcon(pv !== u ? (game.ponto.nivel >= 3 ? 'aguas' : 'jarra') : u.id));
     card.appendChild(el('b', null, pv.name));
     card.appendChild(el('span', null, (tem ? 'Você tem ' + tem + '. ' : '') + pv.desc));
     const b = el('button', 'btn', DEV.on ? (own ? 'Desligar' : 'Ligar') : fecha && own ? 'Já comprado' : ('Comprar ' + fmt(pv.cost)));

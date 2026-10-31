@@ -49,7 +49,7 @@ const joga=(H,fat,custo)=>{ const {g,els}=H; if(g.state==='shop') els['btn-shop-
   ok(sv.cap===4 && sv.conversa==='antes' && sv.capAzul===0,'o cap. 4 começa, com a conversa de antes pendente');
   g.resetDay(10); ok(L.PLATE_SLOTS.length===5 && g.kitchen.plates.length===5 && g.vagas===4,'balcão de pratos com 5 vagas e prateleira de 4');
   ok(g.ponto.credito===2000 && !g.podeEmprestar(500),'o limite do banco sobe para R$ 2.000 (com a dívida em aberto, sem outro empréstimo)');
-  ok(!g.mudancaVisivel && g.proximoPonto===null,'não dá para voltar nem mudar de novo (sem outro ponto)');
+  ok(!g.mudancaVisivel && g.proximoPonto && g.proximoPonto.id==='avenida','não dá para voltar; o próximo ponto é a Avenida, mas o cartão espera o cap. 6 (v9.1)');
   // a arrumação automática
   ok(L.PLATE_SLOTS.every((s,i)=>i===0 || s.x>L.PLATE_SLOTS[i-1].x) && L.PLATE_SLOTS[4].x<=960,'as 5 vagas de prato cabem na janela');
   // Turno sem fim e Missão zero ficam na Garagem

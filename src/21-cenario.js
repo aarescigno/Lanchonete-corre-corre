@@ -8,6 +8,7 @@ function industrial(g){ return !!(g && g.ponto && g.ponto.id === 'industrial'); 
 function drawFloor(ctx,g){
   if (garagem(g)) return drawCimento(ctx);
   if (industrial(g)) return drawCimentoInd(ctx);
+  if (avenida(g)) return drawTacoAv(ctx);   // v9.1
   for (let j=0;j<12;j++){
     for (let i=0;i<25;i++){
       const y = 90 + j*40;
@@ -67,6 +68,7 @@ function drawGaragem(ctx){
 function drawWall(ctx,g,t){
   if (garagem(g)){ drawGaragem(ctx); drawDecorParede(ctx,g); }
   else if (industrial(g)){ drawParedeInd(ctx,g,t); }
+  else if (avenida(g)){ drawParedeAv(ctx,g,t); }
   else drawAzulejo(ctx);
   drawWallCommon(ctx,g,t);
   if (industrial(g) && g.up && g.up.tvs && g.state !== 'menu') drawTvsParede(ctx,g,t);
@@ -194,6 +196,200 @@ function drawBanquinho(ctx,x,y,s){
   ell(ctx,0,-14,11,4.5); fs(ctx,PAL.madeira,2);
   ctx.restore();
 }
+/* ============================================================
+   AVENIDA BRASIL (v9.1): piso de taco de madeira em espinha de peixe, papel de parede creme com meia-parede de azulejo verde-água,
+   a porta de vidro, a janela grande com os prédios da avenida e um ipê-amarelo, o letreiro dourado sob o toldo listrado vinho e
+   creme e as luminárias pendentes. Na calçada, pedra portuguesa em ondas preto e branco, os sofás da espera, a mesinha das
+   águas saborizadas e as flores (tulipas, copos-de-leite e orquídeas)
+   ============================================================ */
+function avenida(g){ return !!(g && g.ponto && g.ponto.id === 'avenida'); }
+let TACO_AV = null;   // o piso pintado uma vez só, num canvas à parte
+function pintaTaco(c){
+  const tons = ['#B98A5A', '#C49A68', '#AD7F50', '#BF9262'];
+  c.fillStyle = '#9C6F43'; c.fillRect(0,90,W,450);
+  const s = 14;
+  for (let iy = 0; iy * s < 470; iy++){
+    for (let ix = 0; ix * s < W + 20; ix++){
+      const cx = ix * s + (iy % 2) * s / 2, cy = 90 + iy * s, d = (ix + iy) % 2 ? 1 : -1;
+      c.save(); c.translate(cx,cy); c.rotate(d * Math.PI / 4);
+      c.fillStyle = tons[(ix * 7 + iy * 3 + (ix * iy) % 5) % tons.length]; c.fillRect(-11,-3.4,22,6.8);
+      c.strokeStyle = 'rgba(60,35,15,.38)'; c.lineWidth = 0.8; c.strokeRect(-11,-3.4,22,6.8);
+      c.restore();
+    }
+  }
+  c.fillStyle = 'rgba(255,240,210,.06)'; for (let i = 0; i < 40; i++){ ell(c,(i * 173) % W,100 + (i * 97) % 430,60,26); c.fill(); }   // um brilho de cera
+}
+function drawTacoAv(ctx){
+  if (TACO_AV === null){
+    try { const cv = document.createElement('canvas'); cv.width = W; cv.height = 450; const c = cv.getContext('2d'); c.translate(0,-90); c.beginPath(); c.rect(0,90,W,450); c.clip(); pintaTaco(c); TACO_AV = cv; } catch(e) { TACO_AV = 0; }
+  }
+  ctx.save(); ctx.beginPath(); ctx.rect(0,90,W,450); ctx.clip();
+  if (TACO_AV) ctx.drawImage(TACO_AV,0,90); else pintaTaco(ctx);
+  ctx.restore();
+}
+/* ipê-amarelo da avenida: tronco fino, copa de flores amarelas e pétalas no chão (x, y: o pé) */
+function drawIpe(ctx,x,y,s){
+  ctx.save(); ctx.translate(x,y); ctx.scale(s || 1,s || 1);
+  ctx.strokeStyle = '#6B4A2B'; ctx.lineWidth = 3.4; ctx.beginPath(); ctx.moveTo(0,0); ctx.lineTo(1,-20); ctx.moveTo(1,-14); ctx.lineTo(-8,-26); ctx.moveTo(1,-16); ctx.lineTo(9,-27); ctx.stroke();
+  [[-9,-30,9,'#E9B418'],[9,-31,9,'#F2C230'],[0,-37,10,'#F7D24A'],[-3,-27,7,'#F2C230'],[7,-24,6,'#E9B418']].forEach(c => { circ(ctx,c[0],c[1],c[2]); ctx.fillStyle = c[3]; ctx.fill(); });
+  ctx.fillStyle = '#F7D24A'; [[-14,-1],[-8,1],[4,0],[11,-2]].forEach(p => { circ(ctx,p[0],p[1],1.4); ctx.fill(); });
+  ctx.restore();
+}
+/* luminária pendente: fio, cúpula de latão e a luz quente embaixo (x: o fio; y: a ponta do fio) */
+function drawPendente(ctx,x,y,s,t,menu){
+  ctx.save(); ctx.translate(x,0);
+  ctx.strokeStyle = PAL.tinta; ctx.lineWidth = 1.4; ctx.beginPath(); ctx.moveTo(0,0); ctx.lineTo(0,y); ctx.stroke();
+  ctx.beginPath(); ctx.moveTo(-5*s,y); ctx.lineTo(5*s,y); ctx.lineTo(11*s,y + 12*s); ctx.lineTo(-11*s,y + 12*s); ctx.closePath(); fs(ctx,'#C9953A',1.8);
+  ell(ctx,0,y + 13*s,8*s,2.6*s); ctx.fillStyle = '#FFE9A6'; ctx.fill();
+  ctx.fillStyle = 'rgba(255,226,150,.16)'; ctx.beginPath(); ctx.moveTo(-9*s,y + 14*s); ctx.lineTo(9*s,y + 14*s); ctx.lineTo(22*s,92); ctx.lineTo(-22*s,92); ctx.closePath(); ctx.fill();
+  ctx.restore();
+}
+function drawParedeAv(ctx,g,t){
+  // papel de parede creme com listras finas e a meia-parede de azulejo verde-água
+  ctx.fillStyle = '#F3E9D2'; ctx.fillRect(0,0,W,92);
+  ctx.strokeStyle = 'rgba(160,120,70,.16)'; ctx.lineWidth = 3; for (let x=10;x<W;x+=22){ ctx.beginPath(); ctx.moveTo(x,0); ctx.lineTo(x,56); ctx.stroke(); }
+  ctx.fillStyle = '#9ED3C4'; ctx.fillRect(0,58,W,24);
+  ctx.strokeStyle = 'rgba(255,255,255,.6)'; ctx.lineWidth = 1;
+  for (let x=0;x<=W;x+=24){ ctx.beginPath(); ctx.moveTo(x,58); ctx.lineTo(x,82); ctx.stroke(); }
+  ctx.beginPath(); ctx.moveTo(0,70); ctx.lineTo(W,70); ctx.stroke();
+  ctx.fillStyle = 'rgba(255,255,255,.22)'; for (let x=3;x<W;x+=48) ctx.fillRect(x,60,8,8);
+  ctx.fillStyle = '#8A5A33'; ctx.fillRect(0,55,W,5);
+  ctx.fillStyle = '#6B4426'; ctx.fillRect(0,82,W,10);
+  ctx.strokeStyle = PAL.tinta; ctx.lineWidth = 2.5; ctx.beginPath(); ctx.moveTo(0,55); ctx.lineTo(W,55); ctx.moveTo(0,82); ctx.lineTo(W,82); ctx.moveTo(0,92); ctx.lineTo(W,92); ctx.stroke();
+  // a porta de vidro com moldura de madeira, maçaneta de latão e o aviso ABERTO
+  rr(ctx,10,4,84,88,4); fs(ctx,'#5B3A21',3);
+  rr(ctx,17,11,70,52,3); fs(ctx,'#BFE3F2',2);
+  ctx.fillStyle = 'rgba(255,255,255,.5)'; ctx.beginPath(); ctx.moveTo(24,60); ctx.lineTo(37,14); ctx.lineTo(46,14); ctx.lineTo(33,60); ctx.closePath(); ctx.fill();
+  rr(ctx,17,66,70,20,3); fs(ctx,'#7A5230',2);
+  circ(ctx,78,70,3.2); fs(ctx,'#D9A93A',1.6);
+  rr(ctx,30,67,44,11,3); fs(ctx,PAL.mostarda,2); txt(ctx,'ABERTO',52,73,8.5,PAL.tinta,'center',FD,0,38);
+  // a janela grande com os prédios da avenida e o ipê-amarelo
+  const x0 = 104, x1 = 176;
+  ctx.save(); ctx.beginPath(); ctx.rect(x0,10,x1-x0,52); ctx.clip();
+  ctx.fillStyle = '#BFE3F2'; ctx.fillRect(x0,10,x1-x0,52);
+  [[x0,34,16,28,'#C9BFAE'],[x0+14,24,18,38,'#B3A89A'],[x0+30,38,14,24,'#D6CBB8'],[x0+42,28,16,34,'#BDB1A0']].forEach(b => {
+    ctx.fillStyle = b[4]; ctx.fillRect(b[0],b[1],b[2],b[3]);
+    ctx.fillStyle = 'rgba(70,90,110,.55)'; for (let yy=b[1]+4;yy<b[1]+b[3]-4;yy+=7) for (let xx=b[0]+3;xx<b[0]+b[2]-3;xx+=6) ctx.fillRect(xx,yy,3,4);
+  });
+  drawIpe(ctx,x1-12,62,0.95);
+  ctx.restore();
+  ctx.strokeStyle = '#fff'; ctx.lineWidth = 3; ctx.beginPath(); ctx.moveTo((x0+x1)/2,10); ctx.lineTo((x0+x1)/2,62); ctx.moveTo(x0,36); ctx.lineTo(x1,36); ctx.stroke();
+  ctx.strokeStyle = PAL.tinta; ctx.lineWidth = 2.5; ctx.strokeRect(x0,10,x1-x0,52);
+  rr(ctx,x0-5,62,x1-x0+10,6,2); fs(ctx,'#E6DCC4',1.5);
+  if (decorOn(g,'violeta')) drawVioleta(ctx,(x0+x1)/2,62,0.95);
+  // o letreiro dourado sobre o toldo listrado vinho e creme
+  const ax0 = 184, ax1 = 300, n = 8, aw = (ax1 - ax0) / n;
+  for (let i=0;i<n;i++){
+    ctx.beginPath(); ctx.moveTo(ax0 + i*aw,3); ctx.lineTo(ax0 + (i+1)*aw,3); ctx.lineTo(ax0 + (i+1)*aw,20); ctx.quadraticCurveTo(ax0 + (i+0.5)*aw,29,ax0 + i*aw,20); ctx.closePath();
+    fs(ctx,i % 2 ? '#F6EBD3' : '#7A1F3A',1.8);
+  }
+  rr(ctx,ax0+4,28,ax1-ax0-8,29,4); fs(ctx,'#2A1A1F',2.4);
+  ctx.strokeStyle = '#D9A93A'; ctx.lineWidth = 1.4; rr(ctx,ax0+7,30.5,ax1-ax0-14,24,3); ctx.stroke();
+  txt(ctx,'Corre-Corre',(ax0+ax1)/2,40,15,'#F2C94C','center',FD,0,100);
+  txt(ctx,'· RESTAURANTE ·',(ax0+ax1)/2,52,6.5,'#F6EBD3','center',FB,0,92);
+  // as luminárias pendentes (nos vãos entre o cartaz, o relógio e a placa da cozinha)
+  drawPendente(ctx,664,22,0.8,t,g.state === 'menu');
+  drawPendente(ctx,763,26,0.9,t,g.state === 'menu');
+}
+/* pedra portuguesa em ondas preto e branco (a calçada da Avenida; x0: onde o piso começa) */
+function drawPedraPort(ctx,x0){
+  ctx.fillStyle = '#EDE9DD'; ctx.fillRect(x0,0,-x0,540);
+  ctx.save(); ctx.beginPath(); ctx.rect(x0,0,-x0,540); ctx.clip();
+  ctx.strokeStyle = '#2A2A2E'; ctx.lineWidth = 9; ctx.lineCap = 'butt';
+  for (let y0=122;y0<580;y0+=36){
+    ctx.beginPath();
+    for (let x=x0;x<=0;x+=6){ const y = y0 + 9*Math.sin((x - x0) / 15 + y0 * 0.05); if (x === x0) ctx.moveTo(x,y); else ctx.lineTo(x,y); }
+    ctx.stroke();
+  }
+  ctx.lineCap = 'round';
+  ctx.strokeStyle = 'rgba(120,114,100,.35)'; ctx.lineWidth = 0.8;
+  for (let x=x0;x<=0;x+=9){ ctx.beginPath(); ctx.moveTo(x,92); ctx.lineTo(x,540); ctx.stroke(); }
+  for (let y=96;y<540;y+=9){ ctx.beginPath(); ctx.moveTo(x0,y); ctx.lineTo(0,y); ctx.stroke(); }
+  ctx.restore();
+}
+/* o sofá da espera: um estofado verde-musgo de 3 lugares (3 grupos), com braços dos lados, costas e as almofadas coloridas
+   (x: o meio; yTop e yBot: onde ele começa e termina; seams: os y das divisões entre os lugares) */
+function drawSofaAv(ctx,x,yTop,yBot,seams,idx){
+  const w = 150, h = yBot - yTop;
+  shadowEll(ctx,x,yBot + 2,w/2 - 2,7,0.2);
+  rr(ctx,x - w/2,yTop,w,h,12); fs(ctx,'#4C683F',2.4);   // o corpo (as costas)
+  rr(ctx,x - w/2 + 9,yTop + 14,w - 18,h - 20,9); fs(ctx,'#6E8E5B',2);   // o assento
+  ctx.strokeStyle = 'rgba(30,45,25,.5)'; ctx.lineWidth = 1.6;
+  seams.forEach(y => { ctx.beginPath(); ctx.moveTo(x - w/2 + 12,y); ctx.lineTo(x + w/2 - 12,y); ctx.stroke(); });
+  ctx.fillStyle = 'rgba(255,255,255,.1)'; ctx.fillRect(x - w/2 + 14,yTop + 18,6,h - 28);
+  rr(ctx,x - w/2 - 2,yTop + 8,13,h - 10,6); fs(ctx,'#58774A',2);   // os braços
+  rr(ctx,x + w/2 - 11,yTop + 8,13,h - 10,6); fs(ctx,'#58774A',2);
+  [['#E8B43A',-1],['#D9644A',1],['#F4E8D0',-1]].forEach((c,i) => {   // almofadas
+    const py = yTop + 24 + (i * (h - 48) / 2);
+    ctx.save(); ctx.translate(x + c[1] * (w/2 - 22),py); ctx.rotate(c[1] * 0.18); rr(ctx,-8,-8,16,16,4); fs(ctx,c[0],1.6); ctx.restore();
+  });
+}
+/* a mesinha das águas saborizadas (a melhoria `maquina` da Avenida): mesa redonda de madeira com 3 garrafas de vidro (limão, morango
+   e hortelã) e copos; a bolinha verde diz quantos copos pediram */
+function drawGarrafa(ctx,x,y,cor,sabor){
+  rr(ctx,x-5,y-27,10,27,3); fs(ctx,'rgba(214,236,246,.85)',1.8);
+  ctx.save(); rr(ctx,x-4,y-26,8,25,2); ctx.clip(); ctx.fillStyle = cor; ctx.fillRect(x-4,y-20,8,19); ctx.fillStyle = 'rgba(255,255,255,.4)'; ctx.fillRect(x-3,y-19,1.8,16); ctx.restore();
+  rr(ctx,x-2.2,y-33,4.4,7,1.5); fs(ctx,PAL.cromo,1.4);
+  if (sabor === 0){ circ(ctx,x,y-12,2.8); fs(ctx,'#F2E04A',1); }
+  else if (sabor === 1){ ctx.beginPath(); ctx.moveTo(x-2.6,y-14); ctx.bezierCurveTo(x-3.4,y-9,x,y-8,x,y-8); ctx.bezierCurveTo(x,y-8,x+3.4,y-9,x+2.6,y-14); ctx.closePath(); fs(ctx,'#D8334A',1); }
+  else { ell(ctx,x,y-11,3.2,1.6); fs(ctx,'#3E9B5A',1); }
+}
+function drawAguasEspera(ctx,g,t,menu){
+  const r = STATIONS.maquina.rect, x = r.x + r.w / 2, y = r.y + r.h;
+  shadowEll(ctx,x,y-2,32,6,0.2);
+  ctx.strokeStyle = PAL.madeiraEsc; ctx.lineWidth = 3; [[-12,-22,-14,-2],[12,-22,14,-2],[0,-22,0,-1]].forEach(l => { ctx.beginPath(); ctx.moveTo(x+l[0],y+l[1]); ctx.lineTo(x+l[2],y+l[3]); ctx.stroke(); });
+  ell(ctx,x,y-24,28,8); fs(ctx,PAL.madeira,2.2);   // o tampo redondo
+  const prep = !menu && g.maq.some(o => o.t > 0), pr = menu ? 0 : g.maqPronto().reduce((a,o) => a + o.n, 0);
+  SABORES.forEach((s,i) => drawGarrafa(ctx,x - 15 + i*13,y - 24 + (i === 1 ? 2 : 0) - (prep && !RM ? Math.abs(Math.sin(t*5 + i)) * 1.5 : 0),s.cor,i));
+  for (let i=0;i<3;i++){ const cx = x - 9 + i*9; rr(ctx,cx-3,y-26,6,8,1.5); fs(ctx,i < pr ? SABORES[i].cor : 'rgba(214,236,246,.9)',1.2); }
+  if (menu) return;
+  if (pr){
+    const p = RM ? 1 : 1 + 0.08 * Math.sin(t*7);
+    ctx.save(); ctx.translate(x+28,y-50); ctx.scale(p,p); circ(ctx,0,0,11); fs(ctx,PAL.ok,2); txt(ctx,String(pr),0,1,13,'#fff','center',FD); ctx.restore();
+  }
+  const a0 = g.bia.acts[0];
+  if (a0 && a0.type === 'maquina' && a0.leg !== 2){ ctx.save(); const a = 0.55 + 0.4*Math.sin(t*8); ctx.strokeStyle = 'rgba(242,179,61,' + a + ')'; ctx.lineWidth = 5; rr(ctx,r.x,r.y,r.w,r.h,8); ctx.stroke(); ctx.restore(); }
+}
+/* as flores da calçada (x, y: o chão): tulipas numa jardineira, copos-de-leite num vaso alto e orquídeas numa mesinha */
+function drawTulipas(ctx,x,y,s){
+  ctx.save(); ctx.translate(x,y); ctx.scale(s || 1,s || 1);
+  shadowEll(ctx,0,2,36,5,0.18);
+  const cores = ['#E2457A','#F2B33D','#F4E8D0','#C2362B','#9B5BD0','#F28AA8','#F2B33D'];
+  for (let i=0;i<7;i++){
+    const px = -27 + i*9, ph = 22 + (i*5) % 8;
+    ctx.strokeStyle = '#3E8A47'; ctx.lineWidth = 1.8; ctx.beginPath(); ctx.moveTo(px,-12); ctx.lineTo(px + (i%2 ? 1 : -1),-ph); ctx.stroke();
+    ctx.beginPath(); ctx.moveTo(px - 4.2,-ph - 1); ctx.quadraticCurveTo(px - 4.6,-ph - 10,px - 1.6,-ph - 9); ctx.lineTo(px,-ph - 5); ctx.lineTo(px + 1.6,-ph - 9); ctx.quadraticCurveTo(px + 4.6,-ph - 10,px + 4.2,-ph - 1); ctx.closePath(); fs(ctx,cores[i],1.2);
+    ctx.fillStyle = '#4E8F4A'; ell(ctx,px + 3,-14,5,1.8); ctx.fill();
+  }
+  rr(ctx,-34,-14,68,14,3); fs(ctx,'#8A5A33',2);
+  ctx.strokeStyle = 'rgba(34,32,28,.3)'; ctx.lineWidth = 1; ctx.beginPath(); ctx.moveTo(-34,-8); ctx.lineTo(34,-8); ctx.stroke();
+  ctx.restore();
+}
+function drawCopoLeite(ctx,x,y,s){
+  ctx.save(); ctx.translate(x,y); ctx.scale(s || 1,s || 1);
+  shadowEll(ctx,0,1,15,4,0.18);
+  [[-9,-52,-0.3],[0,-62,0],[9,-50,0.3]].forEach(f => {
+    ctx.strokeStyle = '#3E8A47'; ctx.lineWidth = 2; ctx.beginPath(); ctx.moveTo(f[2]*12,-30); ctx.lineTo(f[0],f[1] + 6); ctx.stroke();
+    ctx.save(); ctx.translate(f[0],f[1]); ctx.rotate(f[2]);
+    ctx.beginPath(); ctx.moveTo(0,8); ctx.bezierCurveTo(-11,3,-8,-11,0,-9); ctx.bezierCurveTo(8,-11,11,3,0,8); ctx.closePath(); fs(ctx,'#FFFDF4',1.5);
+    ctx.fillStyle = '#F2C94C'; ctx.fillRect(-0.9,-1,1.8,8); ctx.restore();
+  });
+  ctx.fillStyle = '#4E8F4A'; [[-6,-26,-0.6],[6,-28,0.6]].forEach(l => { ctx.save(); ctx.translate(l[0],l[1]); ctx.rotate(l[2]); ell(ctx,0,0,3,10); ctx.fill(); ctx.restore(); });
+  ctx.beginPath(); ctx.moveTo(-11,-34); ctx.lineTo(11,-34); ctx.lineTo(8,0); ctx.lineTo(-8,0); ctx.closePath(); fs(ctx,'#F4F1E8',2);   // o vaso alto, branco
+  rr(ctx,-12,-37,24,5,2); fs(ctx,'#E3DECF',1.6);
+  ctx.restore();
+}
+function drawOrquidea(ctx,x,y,s){
+  ctx.save(); ctx.translate(x,y); ctx.scale(s || 1,s || 1);
+  shadowEll(ctx,0,1,17,4,0.18);
+  ctx.strokeStyle = PAL.madeiraEsc; ctx.lineWidth = 2.6; [[-10,-26,-12,0],[10,-26,12,0]].forEach(l => { ctx.beginPath(); ctx.moveTo(l[0],l[1]); ctx.lineTo(l[2],l[3]); ctx.stroke(); });
+  ell(ctx,0,-27,17,5); fs(ctx,PAL.madeira,2);   // a mesinha
+  rr(ctx,-7,-38,14,11,3); fs(ctx,'#F4F1E8',1.8);   // o vaso
+  ctx.fillStyle = '#4E8F4A'; [[-6,-39,-0.5],[6,-39,0.5]].forEach(l => { ctx.save(); ctx.translate(l[0],l[1]); ctx.rotate(l[2]); ell(ctx,0,0,2.6,9); ctx.fill(); ctx.restore(); });
+  ctx.strokeStyle = '#4E8F4A'; ctx.lineWidth = 1.6; ctx.beginPath(); ctx.moveTo(0,-38); ctx.quadraticCurveTo(-3,-52,5,-62); ctx.stroke();
+  [[5,-62],[2,-55],[-1,-48]].forEach((q,i) => { for (let k=0;k<5;k++){ const a = k*TAU/5 + i; ctx.save(); ctx.translate(q[0],q[1]); ctx.rotate(a); ell(ctx,0,-4.2,2.4,4); ctx.fillStyle = i === 1 ? '#D78AD9' : '#B766C9'; ctx.fill(); ctx.restore(); } circ(ctx,q[0],q[1],1.7); fs(ctx,'#F4E8A0',0.8); });
+  ctx.restore();
+}
 function drawAzulejo(ctx){
   ctx.fillStyle = PAL.azulejo; ctx.fillRect(0,0,W,92);
   ctx.strokeStyle = '#E3E1D4'; ctx.lineWidth = 1;
@@ -264,14 +460,17 @@ function drawCalcada(ctx,g,tm){
   ctx.fillStyle = '#F7EFD8'; for (let y=20;y<540;y+=60) ctx.fillRect(x0 - 50,y,4,30);
   ctx.fillStyle = '#B4B0A6'; ctx.fillRect(x0 + 18,0,8,540);
   ctx.strokeStyle = PAL.tinta; ctx.lineWidth = 2; ctx.beginPath(); ctx.moveTo(x0 + 18,0); ctx.lineTo(x0 + 18,540); ctx.stroke();
-  // piso de concreto, em placas
-  ctx.fillStyle = '#DAD6CC'; ctx.fillRect(x0 + 26,0,-x0 - 26,540);
-  ctx.strokeStyle = 'rgba(34,32,28,.12)'; ctx.lineWidth = 1.5;
-  for (let x=x0 + 26 + 58; x<0; x+=58){ ctx.beginPath(); ctx.moveTo(x,92); ctx.lineTo(x,540); ctx.stroke(); }
-  for (let y=150; y<540; y+=58){ ctx.beginPath(); ctx.moveTo(x0 + 26,y); ctx.lineTo(0,y); ctx.stroke(); }
+  // piso de concreto, em placas (v9.1: na Avenida, pedra portuguesa em ondas preto e branco)
+  if (avenida(g)) drawPedraPort(ctx,x0 + 26);
+  else {
+    ctx.fillStyle = '#DAD6CC'; ctx.fillRect(x0 + 26,0,-x0 - 26,540);
+    ctx.strokeStyle = 'rgba(34,32,28,.12)'; ctx.lineWidth = 1.5;
+    for (let x=x0 + 26 + 58; x<0; x+=58){ ctx.beginPath(); ctx.moveTo(x,92); ctx.lineTo(x,540); ctx.stroke(); }
+    for (let y=150; y<540; y+=58){ ctx.beginPath(); ctx.moveTo(x0 + 26,y); ctx.lineTo(0,y); ctx.stroke(); }
+  }
   // muro da casa (no alto), com janela, e o toldo listrado por cima da espera
-  const ind = industrial(g);
-  ctx.fillStyle = ind ? '#E4E0D6' : '#EFC9A4'; ctx.fillRect(x0 + 26,0,-x0 - 26,82);
+  const ind = industrial(g), av = avenida(g);
+  ctx.fillStyle = ind ? '#E4E0D6' : av ? '#EDE3CF' : '#EFC9A4'; ctx.fillRect(x0 + 26,0,-x0 - 26,82);
   if (ind){   // v9: o muro do galpão, de tijolinho pintado, a faixa amarela de carga e descarga no meio-fio e o poste
     ctx.strokeStyle = 'rgba(120,96,84,.2)'; ctx.lineWidth = 1;
     for (let y=0, r=0; y<82; y+=11, r++){ ctx.beginPath(); ctx.moveTo(x0 + 26,y); ctx.lineTo(0,y); ctx.stroke(); for (let x=x0 + 26 + (r % 2)*17; x<0; x+=34){ ctx.beginPath(); ctx.moveTo(x,y); ctx.lineTo(x,Math.min(82,y+11)); ctx.stroke(); } }
@@ -284,19 +483,30 @@ function drawCalcada(ctx,g,tm){
   }
   rr(ctx,x0 + 70,10,64,44,3); fs(ctx,'#BFE3F2',2.5);
   ctx.strokeStyle = PAL.tinta; ctx.lineWidth = 2; ctx.beginPath(); ctx.moveTo(x0 + 102,10); ctx.lineTo(x0 + 102,54); ctx.stroke();
-  rr(ctx,x0 + 170,18,40,20,3); fs(ctx,'#fff',2); txt(ctx,ind ? 'Nº 410' : 'Nº 27',x0 + 190,28.5,10,PAL.faixa,'center',FD);
+  rr(ctx,x0 + 170,18,40,20,3); fs(ctx,'#fff',2); txt(ctx,ind ? 'Nº 410' : av ? 'Nº 1500' : 'Nº 27',x0 + 190,28.5,10,PAL.faixa,'center',FD);
   ctx.fillStyle = '#C7A27E'; ctx.fillRect(x0 + 26,74,-x0 - 26,8);
   const tx0 = x0 + 30, tx1 = -12, n = 8, tw = (tx1 - tx0) / n;
   for (let i=0;i<n;i++){
     ctx.beginPath(); ctx.moveTo(tx0 + i*tw,62); ctx.lineTo(tx0 + (i+1)*tw,62); ctx.lineTo(tx0 + (i+1)*tw,92);
     ctx.quadraticCurveTo(tx0 + (i+0.5)*tw,104,tx0 + i*tw,92); ctx.closePath();
-    fs(ctx,i % 2 ? '#fff' : PAL.formica,2);
+    fs(ctx,av ? (i % 2 ? '#F6EBD3' : '#7A1F3A') : (i % 2 ? '#fff' : PAL.formica),2);
   }
   ctx.strokeStyle = PAL.tinta; ctx.lineWidth = 2.5; ctx.beginPath(); ctx.moveTo(tx0,62); ctx.lineTo(tx1,62); ctx.stroke();
   // lugares de espera
   const ponto = g && g.ponto ? g.ponto : PONTOS[0], max = ponto.espera, sent = !!(g && g.sentado), banco = !!(g && g.up && g.up.assento === 'banco');
+  if (av && sent){   // v9.1: os sofás da Avenida, de 3 lugares cada (do de baixo para o de cima)
+    for (let b=0;b<max;b+=3){
+      const last = Math.min(b + 2,max - 1), seams = [];
+      for (let k=b;k<last;k++) seams.push(Math.round((QUEUE.ys[k] + QUEUE.ys[k+1]) / 2) - 28);
+      drawSofaAv(ctx,QUEUE.x,QUEUE.ys[last] - 46,QUEUE.ys[b] + 12,seams,b / 3);
+    }
+  }
   for (let i=0;i<max;i++){
     const y = QUEUE.ys[i], x = QUEUE.x;
+    if (av && sent){
+      circ(ctx,x-62,y-26,9); fs(ctx,'#fff',1.8); txt(ctx,String(i+1),x-62,y-25.5,11,PAL.faixa,'center',FD);
+      continue;
+    }
     if (ponto.assento === 'pe' && sent){   // v9: cadeirinhas de plástico ou banquinhos de madeira, uma por lugar de pessoa
       ctx.fillStyle = 'rgba(34,32,28,.06)'; rr(ctx,x-70,y-72,140,84,12); ctx.fill();
       for (let k=0;k<4;k++){ shadowEll(ctx,x-45 + k*30,y+6,11,3,0.16); (banco ? drawBanquinho : drawCadeirinha)(ctx,x-45 + k*30,y+6,1.05); }
@@ -322,8 +532,11 @@ function drawCalcada(ctx,g,tm){
   // Desde a v8.6.5, compradas na aba Decoração (DECOR)
   if (decorOn(g,'espada')) drawVasoEspada(ctx,x0 + 40,536);
   if (decorOn(g,'lata')) drawLataEspada(ctx,x0 + 44,132);
-  if (ind && decorOn(g,'anturio')) drawAnturio(ctx,-38,534,1);   // v9: o antúrio no chão, perto do portão, e a samambaia pendurada no toldo
-  if (ind && decorOn(g,'pendente')) drawSamambaia(ctx,x0 + 66,120,0.8);
+  if ((ind || av) && decorOn(g,'anturio')) drawAnturio(ctx,-38,534,1);   // v9: o antúrio no chão, perto do portão, e a samambaia pendurada no toldo
+  if ((ind || av) && decorOn(g,'pendente')) drawSamambaia(ctx,x0 + 66,120,0.8);
+  if (av && decorOn(g,'tulipa')) drawTulipas(ctx,x0 + 112,138,1);   // v9.1: as flores da Avenida: tulipas na jardineira, copos-de-leite no vaso alto e a orquídea na mesinha
+  if (av && decorOn(g,'copo')) drawCopoLeite(ctx,x0 + 38,300,1);
+  if (av && decorOn(g,'orquidea')) drawOrquidea(ctx,114,132,1);   // perto da porta, encostada na meia-parede (já dentro do salão)
   // portão de enrolar aberto, na borda do salão: trilho no alto e soleira no chão
   ctx.fillStyle = '#ABA394'; ctx.fillRect(-6,92,12,448);
   ctx.strokeStyle = 'rgba(34,32,28,.4)'; ctx.lineWidth = 1.5; ctx.beginPath(); ctx.moveTo(0,96); ctx.lineTo(0,540); ctx.stroke();
@@ -437,9 +650,10 @@ function drawEspada(ctx,x,y,s){
   });
   ctx.restore();
 }
-/* estação da bebida da espera: na Garagem (v7.7), a torneira; na área industrial (v9), a jarra de suco num caixote */
+/* estação da bebida da espera: na Garagem (v7.7), a torneira; na área industrial (v9), a jarra de suco num caixote; na Avenida (v9.1), a mesinha das águas */
 function drawMaquina(ctx,g,t,menu){
   if (g.bebida.id === 'agua') return drawTorneiraEspera(ctx,g,t,menu);
+  if (g.bebida.id === 'saborizada') return drawAguasEspera(ctx,g,t,menu);   // v9.1
   const r = STATIONS.maquina.rect, x = r.x + r.w / 2, y = r.y + r.h;
   shadowEll(ctx,x,y-2,36,6,0.2);
   rr(ctx,x-32,y-26,64,24,3); fs(ctx,PAL.madeira,2.2);   // o caixote de feira
