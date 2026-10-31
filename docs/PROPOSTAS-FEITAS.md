@@ -4,6 +4,13 @@ Retornos com destino já feito, movidos de `docs/PROPOSTAS.md` em 30/10/2026 sem
 
 ---
 
+## 31/10/2026 — usuário: a lojinha abre aos poucos
+> "vamos planejar uma forma de ser gradual a apresentação das abas do mercado, tipo por dias de trabalho aparecer reclamações específicas de clientes que tragam a ideia para a bia de investir em tais coisas. imagino que os que possam ir aparecendo com o tempo são a estética, compra de mais cadeiras etc... tipo o que acontece com o tonhão, mas realmente ir incrementando com o tempo as coisas para poder comprar. Importante separar nesse plano um momento para rebalanceamento e checagem de qual ordem é melhor ir liberando. O objetivo é o menu de melhorias não ficar overwhelming pra quem chega nele de primeira."
+
+**Destino:** etapa **2c-r7** do `docs/PLANO.md`, antes da 3b, em 2 sessões: a (v9.0.4) cartões Bia, Melhorias, Manutenção, Salão e Decoração escondidos até a reclamação (com dia mínimo e garantia) e a conversa da Bia e do Tonhão; b (v9.0.5) comparação de 3 ordens com o `carreira.js` e checagem com o usuário. Decidido na entrevista: gatilho misto, cartão escondido (sem cadeado), só cartões (os itens de dentro aparecem juntos), só no Modo História.
+
+---
+
 ## 31/10/2026 — usuário: espalhar as conversas
 > "ideal seria espalhar esses diálogos. Estão todos concentrados no dia 3, parece."
 
