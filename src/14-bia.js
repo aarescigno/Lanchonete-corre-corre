@@ -9,7 +9,7 @@
      nunca juntos na bandeja. O suco da espera (v7.5, 'suco') conta como bebida, e a marmita (v8.6), como prato.
    ============================================================ */
 const KITCHEN_SLOTS = 3;
-const DRINKS = { coffee:1, juice:1, suco:1, doce:1 };   // v9.2: o doce da geladeirinha conta como bebida nas mãos
+const DRINKS = { coffee:1, juice:1, suco:1, doce:1, cafeesp:1 };   // v9.2: o doce da geladeirinha conta como bebida nas mãos
 function trayOk(items){
   let d = 0, k = 0, s = 0;
   for (const h of items){
@@ -123,6 +123,7 @@ class Waitress {
       return (t && t.group && t.group.state === 'wantOrder') ? 0.6 : 0.35;
     }
     if (a.type === 'juice') return JUICE.prep;
+    if (a.type === 'espresso'){ a.item = this.g.cafeEspItem(); return cafeDe(a.item).prep; }   // v9.3: 0,8 s o espresso, 1,2 s o cappuccino
     if (a.type === 'maquina') return a.leg === 2 ? 0.35 : this.g.bebida.take;
     const g = this.g;
     if (a.type === 'sink'){
@@ -190,6 +191,7 @@ class Waitress {
   }
   hasCoffee(){ return this.hands.some(h => h.kind === 'coffee'); }
   doceN(){ return this.hands.filter(h => h.kind === 'doce').length; }
+  cafeEspN(){ return this.hands.filter(h => h.kind === 'cafeesp').length; }   // v9.3
   /* O que a Bia faria agora nessa mesa (ignorando mãos cheias)? Usado no HUD e na execução */
   verbFor(t){
     if (!t) return null;
@@ -197,6 +199,7 @@ class Waitress {
     if (grp && this.hands.some(h => h.kind === 'dish' && h.group === grp) && grp.state === 'ordered') return 'deliver';
     if (grp && grp.juicePending > 0 && grp.juiceOpen && this.juiceN() > 0) return 'juice';
     if (grp && grp.docesFalta > 0 && grp.esperaSuco && this.doceN() > 0) return 'doce';   // v9.2
+    if (grp && grp.cafesFalta > 0 && grp.esperaSuco && this.cafeEspN() > 0) return 'cafeesp';   // v9.3
     if (t.dirty) return 'clear';
     if (grp && grp.state === 'wantOrder') return 'take';
     if (grp && grp.state === 'wantBill') return 'bill';
@@ -231,8 +234,14 @@ class Waitress {
     }
     if (a.type === 'doces'){   // v9.2: a geladeirinha de doces
       if (!this.canTake('doce')) return this.fail('Mãos cheias!');
-      this.hands.push({ kind:'doce', id:pick(DOCES.caseira).id }); g.custo += DOCES.ingred;
+      this.hands.push({ kind:'doce', id:pick(docesLista(g.up)).id }); g.custo += doceIngred(g.up);
       Sfx.blip(); g.addText(this.x, this.y - 82, 'Doce!', PAL.madeira, 14);
+      return;
+    }
+    if (a.type === 'espresso'){   // v9.3: a máquina de espresso (o café do pedido que ainda ninguém levou, senão qualquer um)
+      if (!this.canTake('cafeesp')) return this.fail('Mãos cheias!');
+      this.hands.push({ kind:'cafeesp', id:a.item || g.cafeEspItem() }); g.custo += CAFES.ingred;
+      Sfx.blip(); g.addText(this.x, this.y - 82, cafeDe(this.hands[this.hands.length - 1].id).nome + '!', PAL.madeira, 14);
       return;
     }
     if (a.type === 'coffee'){
@@ -257,7 +266,7 @@ class Waitress {
       const fora = lixo;
       fora.forEach(h => this.hands.splice(this.hands.indexOf(h), 1));
       g.addTrash(fora.length);
-      const fine = fora.reduce((v,h) => v + (h.kind === 'suco' ? g.bebida.preco : DRINK_PRICE[h.kind]) / 2, 0);
+      const fine = fora.reduce((v,h) => v + (h.kind === 'suco' ? g.bebida.preco : h.kind === 'doce' ? docePreco(g.up) : h.kind === 'cafeesp' ? cafeDe(h.id).preco : DRINK_PRICE[h.kind]) / 2, 0);
       g.addMoney(-fine);
       g.stats.trash += fora.length;
       g.addText(this.x, this.y - 82, 'No lixo!', PAL.perigo, 15);
@@ -276,7 +285,7 @@ class Waitress {
         return;
       }
       if (a.wash === undefined) this.duration(a);
-      if (!a.wash) return this.fail(a.busy && g.kitchen.sinkN ? (g.ajud.some(h => h.washing && h.quem === 'joca') ? 'O Joca está lavando!' : 'A Dani está lavando!') : '?');
+      if (!a.wash) return this.fail(a.busy && g.kitchen.sinkN ? (g.ajud.some(h => h.washing) ? ({ dani:'A Dani', joca:'O Joca', cami:'A Cami' })[g.ajud.find(h => h.washing).quem] + ' está lavando!' : '?') : '?');
       const w = g.washPiles(a.wash);
       g.addText(this.x, this.y - 82, w > 1 ? 'Lavou ' + w + ' pilhas!' : 'Lavou!', PAL.faixa, 15);
       Sfx.wash();
@@ -341,11 +350,20 @@ class Waitress {
     if (n) this.g.entregaDoces(grp, n, t.cx, t.cy);
     return n;
   }
+  /* v9.3: entrega os cafés da máquina de espresso que a Bia carrega para essa mesa */
+  serveCafeEsp(t){
+    const grp = t && t.group;
+    if (!grp || !grp.esperaSuco || grp.cafesFalta <= 0) return 0;
+    const n = Math.min(grp.cafesFalta, this.cafeEspN());
+    for (let k=0;k<n;k++) this.hands.splice(this.hands.findIndex(h => h.kind === 'cafeesp'), 1);
+    if (n) this.g.entregaCafes(grp, n, t.cx, t.cy);
+    return n;
+  }
   doTable(t){
     const g = this.g;
-    const served = this.serveJuice(t) + this.serveDoce(t);
+    const served = this.serveJuice(t) + this.serveDoce(t) + this.serveCafeEsp(t);
     let v = this.verbFor(t);
-    if (v === 'juice' || v === 'doce') v = null;
+    if (v === 'juice' || v === 'doce' || v === 'cafeesp') v = null;
     if (!v && served) return;
     const grp = t && t.group;
     const cx = t ? t.cx : this.x, cy = t ? t.cy : this.y;

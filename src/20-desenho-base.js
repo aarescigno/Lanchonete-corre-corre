@@ -283,6 +283,25 @@ function drawIcon(ctx,k,x,y,s,extra,extra2,extra3){
   } else if (k === 'doce'){
     // v9.2, doce da geladeirinha: potinho de vidro com tampa; extra = o índice em DOCES.caseira (0 bolo de pote, 1 brigadeiro de colher, 2 pudim)
     const di = extra === 0 || extra === 2 ? extra : 1;
+    if (extra >= 3){
+      // v9.3, doces gourmet da vitrine, no pratinho: 3 shortcake de morango, 4 torta de limão, 5 brigadeiro gourmet
+      ell(ctx,0,9.5,11,3.2); fs(ctx,'#fff',1.6);
+      if (extra === 3){
+        rr(ctx,-6.5,-1,13,9.5,2); fs(ctx,'#F4D79E',1.4);
+        ctx.fillStyle = '#fff'; ctx.fillRect(-6.5,2.6,13,2.2); ctx.fillStyle = '#FFF2F4'; ctx.fillRect(-7,-2.6,14,2.6);
+        circ(ctx,0,-4.6,3.2); fs(ctx,'#D8334A',1.2); ctx.fillStyle = '#4C9A3A'; ctx.fillRect(-1.4,-8,2.8,1.8);
+      } else if (extra === 4){
+        ctx.beginPath(); ctx.moveTo(-8,8); ctx.lineTo(8,8); ctx.lineTo(5,-3); ctx.lineTo(-5,-3); ctx.closePath(); fs(ctx,'#E3B772',1.4);
+        ctx.fillStyle = '#F2DD4E'; ctx.beginPath(); ctx.moveTo(-6.6,5); ctx.lineTo(6.6,5); ctx.lineTo(5.3,-1); ctx.lineTo(-5.3,-1); ctx.closePath(); ctx.fill();
+        [[-3.5,-3],[0,-5],[3.5,-3]].forEach(q => { circ(ctx,q[0],q[1],2.6); fs(ctx,'#fff',1); });
+        ctx.fillStyle = '#4C9A3A'; ctx.fillRect(-1,-9,2,2.6);
+      } else {
+        ctx.beginPath(); ctx.moveTo(-8,0); ctx.lineTo(8,0); ctx.lineTo(6,9); ctx.lineTo(-6,9); ctx.closePath(); fs(ctx,'#E0B64A',1.4);
+        circ(ctx,-3.2,-2,4.4); fs(ctx,'#4A2A1C',1.2); circ(ctx,3.4,-2.4,4.4); fs(ctx,'#4A2A1C',1.2);
+        ctx.fillStyle = '#F3D56B'; [[-4.6,-3.4],[-2,-1.4],[2,-4],[4.8,-1]].forEach(q => ctx.fillRect(q[0],q[1],1.4,1.4));
+      }
+      ctx.restore(); return;
+    }
     ell(ctx,0,10,9,2.6); fs(ctx,'rgba(255,255,255,.7)',1.4);
     ctx.beginPath(); ctx.moveTo(-8,-6); ctx.lineTo(8,-6); ctx.lineTo(7,10); ctx.lineTo(-7,10); ctx.closePath(); fs(ctx,'rgba(255,255,255,.88)',2);
     if (di === 1){ ctx.fillStyle = '#5A3425'; ctx.beginPath(); ctx.moveTo(-6.4,-2); ctx.lineTo(6.4,-2); ctx.lineTo(5.8,8.8); ctx.lineTo(-5.8,8.8); ctx.closePath(); ctx.fill();
@@ -292,6 +311,22 @@ function drawIcon(ctx,k,x,y,s,extra,extra2,extra3){
     else { ctx.fillStyle = '#E9B8CB'; ctx.fillRect(-6,3,12,5.8); ctx.fillStyle = '#FFF7E3'; ctx.fillRect(-6.4,-2,12.8,4.6); circ(ctx,0,-3.6,2.4); fs(ctx,'#D8334A',1); }   // bolo de pote: massa, creme e uma cereja
     rr(ctx,-8.6,-9,17.2,4,1.8); fs(ctx,'#D8334A',1.6);   // a tampinha
     ctx.fillStyle = 'rgba(255,255,255,.55)'; ctx.fillRect(-5,-4,1.8,11);
+  } else if (k === 'cafeesp'){
+    // v9.3, cafés da máquina de espresso: 0 espresso (xicrinha com creminha), 1 cappuccino (xícara maior com espuma e coração)
+    const cap = extra === 1;
+    ell(ctx,0,9,12,3.4); fs(ctx,'#fff',1.8);
+    if (cap){
+      ctx.beginPath(); ctx.moveTo(-9,-4); ctx.lineTo(9,-4); ctx.lineTo(7,8); ctx.lineTo(-7,8); ctx.closePath(); fs(ctx,'#fff',2);
+      ctx.beginPath(); ctx.arc(10,1.5,4,-1.3,1.4); ctx.lineWidth = 2.2; ctx.strokeStyle = PAL.tinta; ctx.stroke();
+      ell(ctx,0,-4,8.6,2.6); fs(ctx,'#C98A55',1.2); ell(ctx,0,-4.4,6,1.7); fs(ctx,'#FFF3DC',0.8);
+      ctx.fillStyle = '#7A4527'; ctx.beginPath(); ctx.moveTo(0,-3.2); ctx.bezierCurveTo(-2.6,-5.4,-1,-6.2,0,-5); ctx.bezierCurveTo(1,-6.2,2.6,-5.4,0,-3.2); ctx.fill();
+    } else {
+      ctx.beginPath(); ctx.moveTo(-6.5,-2); ctx.lineTo(6.5,-2); ctx.lineTo(5,8); ctx.lineTo(-5,8); ctx.closePath(); fs(ctx,'#fff',2);
+      ctx.beginPath(); ctx.arc(8,3,3.2,-1.3,1.4); ctx.lineWidth = 2; ctx.strokeStyle = PAL.tinta; ctx.stroke();
+      ell(ctx,0,-2,6,2); fs(ctx,'#3A1F12',1.2); ell(ctx,0,-2.3,3.8,1.1); fs(ctx,'#C98A55',0.6);
+    }
+    ctx.strokeStyle = 'rgba(34,32,28,.4)'; ctx.lineWidth = 1.4;
+    ctx.beginPath(); ctx.moveTo(-2,-8); ctx.quadraticCurveTo(-4.5,-11,-2,-14); ctx.moveTo(2.5,-8); ctx.quadraticCurveTo(0,-11,2.5,-14); ctx.stroke();
   } else if (k === 'saborizada'){
     // v9.1, água saborizada: copo alto com a água na cor do sabor (extra: o índice em SABORES), canudo e a fruta ou a folha na borda
     const sb = SABORES[extra] || SABORES[0];

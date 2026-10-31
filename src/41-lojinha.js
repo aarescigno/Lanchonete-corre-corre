@@ -24,6 +24,9 @@ function upgradeIcon(id){
     } else if (id === 'joca'){
       c.scale(1/1.5,1/1.5); drawPerson(c,JOCA_LOOK,0,27,{ shirt:'#B9BDC4', mood:0, s:0.74 });
       c.beginPath(); c.moveTo(-4.2,5.6); c.lineTo(4.2,5.6); c.lineTo(6,18.1); c.lineTo(-6,18.1); c.closePath(); fs(c,'#243B63',1.4);
+    } else if (id === 'cami'){
+      c.scale(1/1.5,1/1.5); drawPerson(c,CAMI_LOOK,0,27,{ shirt:'#8A1F3D', mood:0, s:0.74 });
+      c.beginPath(); c.moveTo(-4.2,7.4); c.lineTo(4.2,7.4); c.lineTo(5.6,18.1); c.lineTo(-5.6,18.1); c.closePath(); fs(c,'#1E1D21',1.4);
     } else if (id === 'couvert'){
       c.rotate(-0.5); ell(c,0,4,10,8); fs(c,'#B5733A',2); circ(c,0,4,3); c.fillStyle = PAL.tinta; c.fill(); rr(c,8,1,20,4,1); fs(c,PAL.madeiraEsc,1.4); c.rotate(0.5);
       txt(c,'♪',-12,-12,14,PAL.faixa,'center',FB);
@@ -158,7 +161,7 @@ function upgradeIcon(id){
 let shopGrupo = 'lanchonete', shopTab = null;
 const SHOP_GRUPOS = [
   { id:'lanchonete', nome:'Lanchonete', secoes:['cardapio', 'melhorias', 'salao', 'decor', 'manut', 'divulga'] },
-  { id:'equipe', nome:'Equipe', secoes:['bia', 'tonhao', 'dani', 'joca'] },
+  { id:'equipe', nome:'Equipe', secoes:['bia', 'tonhao', 'dani', 'joca', 'cami'] },
   { id:'dinheiro', nome:'Dinheiro', secoes:['banco', 'mudanca', 'caixa'] },
   { id:'gurugol', nome:'Gurugol', secoes:['gurugol'] }];
 const SHOP_SECOES = {
@@ -172,6 +175,7 @@ const SHOP_SECOES = {
   tonhao:{ nome:'Tonhão', icon:'tonhao', build:g => buildTonhao(g) },
   dani:{ nome:'Dani', icon:'dani', build:g => buildDani(g) },
   joca:{ nome:'Joca', icon:'joca', build:g => buildJoca(g) },
+  cami:{ nome:'Cami', icon:'cami', build:g => buildCami(g) },
   banco:{ nome:'Banco', icon:'banco', build:g => buildBanco(g) },
   mudanca:{ nome:'Mudança', icon:'mudanca', build:g => buildMudanca(g) },
   caixa:{ nome:'Caixa', icon:'contas', build:g => buildCaixa(g) },
@@ -304,13 +308,14 @@ function buildDani(grid){
       const on = eq.daniTasks.indexOf(t.id) >= 0;
       const b = el('button', null, t.short); b.type = 'button'; b.title = t.name; b.setAttribute('aria-pressed', on ? 'true' : 'false');
       if (!on && sel >= sp.tasks) b.disabled = true;
-      if (BASICAS.indexOf(t.id) >= 0 && donoBasico(game) !== 'dani'){ b.disabled = true; b.title = t.name + ' (com o ' + 'Joca)'; }   // v9.2: o básico é do ajudante mais novo
+      if (BASICAS.indexOf(t.id) >= 0 && donoBasico(game) !== 'dani'){ b.disabled = true; b.title = t.name + ' (com ' + (donoBasico(game) === 'cami' ? 'a Cami' : 'o Joca') + ')'; }   // v9.2: o básico é do ajudante mais novo
       b.addEventListener('click', () => { Sfx.tap(); game.toggleDaniTask(t.id); buildShop(); });
       tasks.appendChild(b);
     });
     c.appendChild(el('span', 'full', 'Tarefas (' + Math.min(sel, sp.tasks) + ' de ' + sp.tasks + '):'));
     c.appendChild(tasks);
-    if (donoBasico(game) === 'joca') c.appendChild(el('span', 'cursos-lista', 'As tarefas da casa ficaram com o Joca.'));
+    if (donoBasico(game) !== 'dani') c.appendChild(el('span', 'cursos-lista', 'As tarefas da casa ficaram com ' + (donoBasico(game) === 'cami' ? 'a Cami' : 'o Joca') + '.'));
+    if (game.up.espresso) c.appendChild(el('span', 'cursos-lista', 'O cafezinho passou para o Joca, que cuida da máquina de espresso.'));
   }
   const dMax = D.length - 1;
   if (!lv && !cap2){ grid.appendChild(c); return; }
@@ -348,16 +353,18 @@ function buildJoca(grid){
   const c = staffCard(upgradeIcon('joca'), lv ? 'Joca · nível ' + (lv - 1) + ' de 3' : 'Joca (ajudante)',
     lv ? '' : 'Conhecido da Dani, dos tempos de colégio. Cuida do básico da casa: ' + avail.map(t => t.name.toLowerCase()).join(', ').replace(/, ([^,]*)$/, ' e $1') + '. Tem 2 mãos, como a Dani. Com ele, a Dani fica só com a especialidade dela.');
   if (lv){
+    const esp = game.up.espresso ? 1 : 0, cami = donoBasico(game) === 'cami', vagas = sp.tasks - esp;   // v9.3: o café (cafezinho e espresso) ocupa 1 vaga fixa
     const sel = eq.jocaTasks.filter(id => daniTaskOk(id, game.up)).length, tasks = el('div', 'tasks');
     avail.forEach(t => {
       const on = eq.jocaTasks.indexOf(t.id) >= 0;
       const b = el('button', null, t.short); b.type = 'button'; b.title = t.name; b.setAttribute('aria-pressed', on ? 'true' : 'false');
-      if (!on && sel >= sp.tasks) b.disabled = true;
+      if ((!on && sel >= vagas) || cami) b.disabled = true;
       b.addEventListener('click', () => { Sfx.tap(); game.toggleJocaTask(t.id); buildShop(); });
       tasks.appendChild(b);
     });
-    c.appendChild(el('span', 'full', 'Tarefas (' + Math.min(sel, sp.tasks) + ' de ' + sp.tasks + '):'));
-    c.appendChild(tasks);
+    if (!cami){ c.appendChild(el('span', 'full', 'Tarefas (' + Math.min(sel, vagas) + ' de ' + vagas + '):')); c.appendChild(tasks); }
+    if (esp) c.appendChild(el('span', 'cursos-lista', 'O café é dele: cafezinho e espresso' + (cami ? '.' : ', numa vaga fixa.')));
+    if (cami) c.appendChild(el('span', 'cursos-lista', 'As tarefas da casa ficaram com a Cami.'));
     const xp = jocaXp(sv), xl = el('div', 'tonxp');
     xl.appendChild(el('span', null, lv < jMax ? 'Experiência: ' + xp + ' de ' + J[lv+1].xp + ' para o nível ' + lv : 'Experiência: ' + xp + ' · nível máximo'));
     if (lv < jMax){ const bar = el('div', 'tonxp-bar'), fi = el('i'); fi.style.width = Math.round(clamp((xp - J[lv].xp) / (J[lv+1].xp - J[lv].xp), 0, 1) * 100) + '%'; bar.appendChild(fi); xl.appendChild(bar); }
@@ -386,6 +393,49 @@ function buildJoca(grid){
   });
 }
 /* cursos da Dani (v8.9): três cartões, +2 de experiência cada; um por lojinha, à parte do curso do Tonhão */
+/* o cartão da Cami (v9.3): atendimento, chega no nível 1 e sobe só por curso (o salário sobe junto); fica com o básico da casa */
+function buildCami(grid){
+  const eq = game.save.equipe, sv = game.save, bank = sv.bank, C = STAFF.cami.levels, cMax = CAMI_MESA_ON ? C.length - 1 : 2;
+  const canPay = extra => payroll(eq) + extra <= bank;
+  const pc = v => Math.round(v*100) + '%', sec = v => String(Math.round(v*10)/10).replace('.', ',') + ' s';
+  const lv = eq.cami, sp = C[lv] || C[1];
+  const avail = BASICAS.filter(id => daniTaskOk(id, game.up)).map(id => daniTaskDe(DANI_TASKS.find(d => d.id === id), game.ponto));
+  const cRows = (a, b) => [
+    ['Velocidade', a && pc(a.speed), pc(b.speed)],
+    ['Lava 1 pilha', a && sec(WASH.perPile / a.speed), sec(WASH.perPile / b.speed)],
+    ['Tarefas', a && String(a.tasks), String(b.tasks)],
+    ['Diária', a && fmt(a.pay), fmt(b.pay)]];
+  const c = staffCard(upgradeIcon('cami'), lv ? 'Cami · nível ' + lv + ' de ' + cMax : 'Cami (ajudante)',
+    lv ? '' : 'Garçonete de rodízio, indicada pelo Joca. Já chega rápida e fica com as tarefas da casa: ' + avail.map(t => t.name.toLowerCase()).join(', ').replace(/, ([^,]*)$/, ' e $1') + '. Tem 2 mãos. Sobe de nível só com cursos, e a diária sobe junto.');
+  if (lv){
+    const sel = eq.camiTasks.filter(id => daniTaskOk(id, game.up)).length, tasks = el('div', 'tasks');
+    avail.forEach(t => {
+      const on = eq.camiTasks.indexOf(t.id) >= 0;
+      const b = el('button', null, t.short); b.type = 'button'; b.title = t.name; b.setAttribute('aria-pressed', on ? 'true' : 'false');
+      if (!on && sel >= sp.tasks) b.disabled = true;
+      b.addEventListener('click', () => { Sfx.tap(); game.toggleCamiTask(t.id); buildShop(); });
+      tasks.appendChild(b);
+    });
+    c.appendChild(el('span', 'full', 'Tarefas (' + Math.min(sel, sp.tasks) + ' de ' + sp.tasks + '):'));
+    c.appendChild(tasks);
+  }
+  c.appendChild(lv < cMax ? staffNext(lv ? 'Com o próximo curso:' : 'Se contratar (nível 1):', cRows(C[lv] || null, C[lv ? lv + 1 : 1])) : staffNext('Nível máximo:', cRows(null, C[cMax])));
+  const duo = el('div', 'duo');
+  if (!lv) duo.appendChild(shopBtn('Contratar', 'btn', canPay(C[1].pay), () => game.setStaff('cami', 1)));
+  c.appendChild(duo); grid.appendChild(c);
+  if (game.cursoMsg) grid.appendChild(el('p', 'cursomsg', game.cursoMsg));
+  CAMI_CURSOS.filter(q => cursoDaniVis(q, game.ponto)).forEach(q => {
+    const feito = !!sv.camiCursos[q.id], breve = q.id === 'mesa' && !CAMI_MESA_ON, card = el('div', 'item' + (feito ? ' own' : ''));
+    const alvo = q.id === 'agil' ? 2 : 3, n = C[alvo];
+    card.appendChild(upgradeIcon('cami'));
+    card.appendChild(el('b', null, 'Curso de ' + q.nome));
+    card.appendChild(el('span', 'cursos-lista', 'Nível ' + alvo + ': velocidade ' + pc(n.speed) + ', ' + n.tasks + ' tarefas, diária ' + fmt(n.pay) + (q.id === 'mesa' ? '. Abre o modo "Minhas mesas".' : '.')));
+    if (!feito && !breve && game.camiCursoTrava) card.appendChild(el('span', 'cursos-lista', 'A Cami já está num curso. Volte depois do próximo dia.'));
+    if (!feito && q.dep && !sv.camiCursos[q.dep]) card.appendChild(el('span', 'cursos-lista apagado', 'Precisa do curso de ' + CAMI_CURSOS.find(x => x.id === q.dep).nome + '.'));
+    card.appendChild(feito ? shopBtn('Curso feito', 'btn', false, () => false) : breve ? shopBtn('Em breve', 'btn', false, () => false) : shopBtn('Comprar ' + fmt(q.preco), 'btn', lv > 0 && !game.camiCursoTrava && (!q.dep || !!sv.camiCursos[q.dep]) && bank >= q.preco, () => game.buyCamiCurso(q.id), q.preco));
+    grid.appendChild(card);
+  });
+}
 function buildDaniCursos(grid){
   const sv = game.save, bank = sv.bank;
   if (game.cursoMsg) grid.appendChild(el('p', 'cursomsg', game.cursoMsg));
@@ -724,18 +774,34 @@ function buildCursos(grid){
 }
 /* v9.2: os cursos de cardápio dos ajudantes (com o rosto de quem faz): a Confeitaria caseira da Dani na área industrial */
 function buildCursosAjudantes(grid){
-  const sv = game.save, bank = sv.bank;
+  const sv = game.save, bank = sv.bank, vir = n => String(n).replace('.', ',');
   DANI_CURSOS.filter(c => c.item && cursoDaniVis(c, game.ponto) && game.cartaoAberto('confeitaria') && game.daniChegou).forEach(c => {
-    const feito = !!sv.daniCursos[c.id], card = el('div', 'item' + (feito ? ' own' : ''));
+    const feito = !!sv.daniCursos[c.id], card = el('div', 'item' + (feito ? ' own' : '')), gourmet = c.id === 'confGourmet', falta = !!c.dep && !sv.daniCursos[c.dep];
     card.appendChild(upgradeIcon('dani'));
     card.appendChild(el('b', null, 'Curso de ' + c.nome));
     card.appendChild(el('span', 'cursos-lista', '+' + DANI_XP.curso + ' de experiência para a Dani'));
-    card.appendChild(el('span', null, 'A Dani faz ' + DOCES.caseira.map(d => d.nome.toLowerCase()).join(', ').replace(/, ([^,]*)$/, ' e $1') + ' na geladeirinha de doces: ' + fmt(DOCES.preco) + ' cada, na mesa e na marmita. +' + String(AVAL.menu.porCurso).replace('.', ',') + ' ★ na Diversidade do cardápio.'));
+    card.appendChild(el('span', null, gourmet
+      ? 'A geladeirinha vira vitrine refrigerada e a Dani passa a fazer ' + DOCES.gourmet.map(d => d.nome.toLowerCase()).join(', ').replace(/, ([^,]*)$/, ' e $1') + ': ' + fmt(DOCES.gourmetPreco) + ' cada, na mesa e na marmita, e +' + vir(AVAL.amb.doce) + ' ★ no Ambiente de quem comeu. +' + vir(AVAL.menu.porCurso) + ' ★ na Diversidade do cardápio.'
+      : 'A Dani faz ' + DOCES.caseira.map(d => d.nome.toLowerCase()).join(', ').replace(/, ([^,]*)$/, ' e $1') + ' na geladeirinha de doces: ' + fmt(DOCES.preco) + ' cada, na mesa e na marmita. +' + vir(AVAL.menu.porCurso) + ' ★ na Diversidade do cardápio.'));
+    if (!feito && falta) card.appendChild(el('span', 'cursos-lista apagado', 'Precisa do curso de ' + cursoDaniNome(c.dep) + '.'));
     if (!feito && game.daniCursoTrava) card.appendChild(el('span', 'cursos-lista', 'A Dani já está num curso. Volte depois do próximo dia.'));
-    card.appendChild(feito ? shopBtn('Curso feito', 'btn', false, () => false) : shopBtn('Comprar ' + fmt(c.preco), 'btn', !game.daniCursoTrava && bank >= c.preco, () => game.buyDaniCurso(c.id), c.preco));
+    card.appendChild(feito ? shopBtn('Curso feito', 'btn', false, () => false) : shopBtn('Comprar ' + fmt(c.preco), 'btn', !falta && !game.daniCursoTrava && bank >= c.preco, () => game.buyDaniCurso(c.id), c.preco));
+    grid.appendChild(card);
+  });
+  // v9.3: o espresso do Joca (só na Avenida, com o Joca contratado)
+  JOCA_CURSOS.filter(c => c.item && cursoDaniVis(c, game.ponto) && game.cartaoAberto('joca')).forEach(c => {
+    const feito = !!sv.jocaCursos[c.id], card = el('div', 'item' + (feito ? ' own' : ''));
+    card.appendChild(upgradeIcon('joca'));
+    card.appendChild(el('b', null, 'Curso ' + c.nome.charAt(0).toLowerCase() + c.nome.slice(1)));
+    card.appendChild(el('span', 'cursos-lista', '+' + JOCA_XP.curso + ' de experiência para o Joca'));
+    card.appendChild(el('span', null, 'O Joca vira barista: traz a máquina de espresso, com ' + CAFES.lista.map(d => d.nome.toLowerCase() + ' ' + fmt(d.preco)).join(' e ') + ', pedidos no fim da refeição. O cafezinho passa da Dani para ele. +' + vir(AVAL.menu.porCurso) + ' ★ na Diversidade do cardápio.'));
+    if (!feito && !(sv.equipe.joca > 0) && !devLivre()) card.appendChild(el('span', 'cursos-lista apagado', 'Precisa do Joca contratado.'));
+    if (!feito && game.jocaCursoTrava) card.appendChild(el('span', 'cursos-lista', 'O Joca já está num curso. Volte depois do próximo dia.'));
+    card.appendChild(feito ? shopBtn('Curso feito', 'btn', false, () => false) : shopBtn('Comprar ' + fmt(c.preco), 'btn', (sv.equipe.joca > 0 || devLivre()) && !game.jocaCursoTrava && bank >= c.preco, () => game.buyJocaCurso(c.id), c.preco));
     grid.appendChild(card);
   });
 }
+function cursoDaniNome(id){ const c = DANI_CURSOS.find(x => x.id === id); return c ? c.nome : id; }
 function buildDivulga(grid){
   const n = game.shopNext, open = divulgaAberta(n, game.save), cur = game.save.divulga;
   DIVULGA.forEach(d => {
@@ -1045,7 +1111,7 @@ function buildShop(){
   ['salao', 'caixa'].forEach(k => $('ov-shop').classList[shopTab === k ? 'add' : 'remove'](k));
   if (shopTab !== 'mudanca') mudarPede = false;
   if (!aberta){ grid.className = 'shopcards'; return shopCartoes(grid, SHOP_GRUPOS.find(x => x.id === shopGrupo)); }
-  grid.className = 'shopgrid' + (shopTab === 'tonhao' || shopTab === 'dani' || shopTab === 'joca' || shopTab === 'cardapio' ? ' cursos' : ['salao', 'caixa', 'melhorias', 'gurugol', 'decor'].indexOf(shopTab) >= 0 ? ' ' + shopTab : '');
+  grid.className = 'shopgrid' + (shopTab === 'tonhao' || shopTab === 'dani' || shopTab === 'joca' || shopTab === 'cami' || shopTab === 'cardapio' ? ' cursos' : ['salao', 'caixa', 'melhorias', 'gurugol', 'decor'].indexOf(shopTab) >= 0 ? ' ' + shopTab : '');
   aberta.build(grid);
 }
 (function(){ const box = $('shop-tabs'); if (box) Array.prototype.forEach.call(box.querySelectorAll('button'), b => b.addEventListener('click', () => { Sfx.init(); Sfx.tap(); shopGrupoAbrir(b.getAttribute('data-v')); }));
