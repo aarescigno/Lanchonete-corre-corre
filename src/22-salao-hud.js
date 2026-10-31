@@ -90,6 +90,12 @@ function drawToalhaEnfeites(ctx,cx,cy,hw){
   circ(ctx,fx+1,fy-19,1.8); fs(ctx,PAL.mostarda,1);
   rr(ctx,fx-4,fy-6,8,8,2); ctx.fillStyle = 'rgba(191,227,242,.8)'; ctx.fill(); ctx.strokeStyle = PAL.tinta; ctx.lineWidth = 1.4; ctx.stroke();
 }
+/* v9.6: avental vinho pequeno (a mesa é da Cami): babador com bolsinho e a tira do pescoço */
+function drawAventalCami(ctx,x,y){
+  ctx.beginPath(); ctx.moveTo(x-4,y-9); ctx.quadraticCurveTo(x,y-14,x+4,y-9); ctx.strokeStyle = '#5E1428'; ctx.lineWidth = 1.4; ctx.stroke();
+  ctx.beginPath(); ctx.moveTo(x-4,y-9); ctx.lineTo(x+4,y-9); ctx.lineTo(x+7,y+6); ctx.lineTo(x-7,y+6); ctx.closePath(); fs(ctx,'#8A1F3D',1.8);
+  rr(ctx,x-3.5,y,7,4.2,1.2); fs(ctx,'#B4405E',1);
+}
 function drawTable(ctx,g,t,tm,menu){
   const open = t.open || menu;
   const grp = t.group;
@@ -110,6 +116,7 @@ function drawTable(ctx,g,t,tm,menu){
   seats.forEach((s,i) => { if (!s.front) drawChair(ctx,s.x,s.y,t.color,false,plast); });
   if (showPpl) seats.forEach((s,i) => { if (!s.front && i < grp.people.length) drawSeatPerson(ctx,g,grp,i,s,tm); });
   drawTableBody(ctx,t,true,g,tm);
+  if (t.cami && (menu || g.camiMesasOn)) drawAventalCami(ctx,t.cx + t.hx - 22,t.cy - 4);   // v9.6: o avental vinho da Cami no tampo
   // toalhinha da comanda (do pedido até o grupo sair)
   if (grp && grp.cmd >= 0 && grp.seated){
     const hw = t.hx - 4, mx = t.cx - hw + 28, mw = (t.cx + hw - 3) - mx;

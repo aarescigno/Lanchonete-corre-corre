@@ -345,7 +345,7 @@ table.rank tr.me td{background:#fbe7a8}
 
     <div class="ov show" id="ov-menu">
       <div class="panel menu-panel">
-        <span class="vtag" id="vtag" aria-label="Versão 9.5">v9.5</span>
+        <span class="vtag" id="vtag" aria-label="Versão 9.6">v9.6</span>
         <h1 class="title">Lanchonete <br>Corre-Corre</h1>
         <p class="tag">Ajude a Bia a atender a freguesia da esquina antes que o cafezinho esfrie!</p>
         <div class="lbl" id="menu-dia">História</div>
@@ -557,7 +557,8 @@ table.rank tr.me td{background:#fbe7a8}
       <div class="panel">
         <h2>Versões</h2>
         <ul class="verlist">
-          <li><b>v9.5</b><span class="cur">versão atual</span><br>31/10/2026 &mdash; Drinks na Avenida! O Anselmo, coqueteleiro que saiu do restaurante do Bráulio, chega à lojinha (Equipe) e cuida do balcão de drinks, na parede do fundo. Os grupos pedem drinks ao sentar (Pôr do Sol da Avenida, Brisa de Maracujá e Esmeralda, R$ 22 cada): ele prepara um por vez, e a Bia leva os copos prontos às mesas. O grupo só pede a conta depois de receber os drinks.</li>
+          <li><b>v9.6</b><span class="cur">versão atual</span><br>31/10/2026 &mdash; A Cami ganha as mesas dela! Com o curso de Atendimento de mesa (R$ 600), o cartão dela ganha o modo &ldquo;Minhas mesas&rdquo;: no Salão, toque numa mesa e marque até 3 como da Cami (um avental vinho no tampo). Ela cuida do grupo dessas mesas do pedido à conta: anota, leva à janela, pega o prato pronto, entrega, cobra e recolhe a louça. A Bia deixa o prato dela em paz, e o básico da casa volta para o Joca.</li>
+          <li><b>v9.5</b><br>31/10/2026 &mdash; Drinks na Avenida! O Anselmo, coqueteleiro que saiu do restaurante do Bráulio, chega à lojinha (Equipe) e cuida do balcão de drinks, na parede do fundo. Os grupos pedem drinks ao sentar (Pôr do Sol da Avenida, Brisa de Maracujá e Esmeralda, R$ 22 cada): ele prepara um por vez, e a Bia leva os copos prontos às mesas. O grupo só pede a conta depois de receber os drinks.</li>
           <li><b>v9.4</b><br>31/10/2026 &mdash; Cuidado: a vigilância sanitária ronda a Avenida! Do 2º dia no ponto em diante, em 15% dos dias, um fiscal de colete azul entra no meio do expediente e fica 20 segundos olhando, de prancheta na mão. Ele confere três coisas: mesa suja por mais de 8 segundos, lixeira cheia e pia com 4 pilhas ou mais. Nenhuma falha: &ldquo;Aprovado!&rdquo;, selo na parede por 7 dias (+0,5 no Ambiente do Gurugol) e +30 pontos. Uma falha: só uma advertência. Duas ou três: multa de R$ 150 nas contas do dia. O dia avisa na introdução, sem dizer a hora.</li>
           <li><b>v9.3</b><br>31/10/2026 &mdash; A Avenida ganha mais gente e mais sabor: o curso de Confeitaria gourmet (R$ 350) troca a geladeirinha por uma vitrine refrigerada, com shortcake de morango, torta de limão e brigadeiro gourmet a R$ 16. O curso de espresso do Joca traz a máquina de espresso (espresso R$ 8 e cappuccino R$ 12, pedidos no fim da refeição), e o cafezinho passa para ele. E chega a Cami, garçonete de rodízio indicada pelo Joca, que cuida das tarefas da casa e sobe de nível com cursos.</li>
           <li><b>v9.2.1</b><br>31/10/2026 &mdash; Modo dev com painel, para testar: um toque em &ldquo;Modo dev · painel&rdquo; escolhe qualquer dia, qualquer ponto, a nota do Gurugol, a equipe e os cursos no máximo (ou do começo) e as melhorias; liga a lojinha com preços e travas de verdade e, no meio do dia, acelera o jogo (2× ou 4×) ou encerra o dia. O jogo normal não muda.</li>
@@ -798,14 +799,22 @@ const JOCA_CURSOS = [
 ];
 const JOCA_HOME = { x:640, y:515 };
 /* v9.3, a Cami (atendimento; o Joca passa o bastão para ela na Avenida): chega no nível 1 e sobe só por curso (o salário sobe junto):
-   nível = 1 + cursos feitos. O 2º curso abre o modo "Minhas mesas" (3b-6): até lá fica em "Em breve" (CAMI_MESA_ON) e o nível máximo é 2 */
+   nível = 1 + cursos feitos. O 2º curso (v9.6) abre o modo "Minhas mesas": o jogador marca até CAMI_MESAS_MAX mesas como dela no editor do salão
+   (`salao.mesas[i].cami = 1`) e, no cartão, escolhe entre "Tarefas" e "Minhas mesas" (`equipe.camiModo`) */
 const CAMI_HOME = { x:590, y:515 };
 const CAMI_CURSOS = [
   { id:'agil', nome:'Atendimento ágil',     preco:400, nivel:3 },
   { id:'mesa', nome:'Atendimento de mesa',  preco:600, nivel:3, dep:'agil' }
 ];
 const ANSELMO_HOME = { x:650, y:118 };   // v9.5: atrás do balcão de drinks
-const CAMI_MESA_ON = false;   // vira true na 3b-6 (Minhas mesas)
+const CAMI_MESAS_MAX = 3;   // v9.6: quantas mesas o jogador pode marcar como da Cami
+/* v9.6: quantas mesas do salão estão marcadas como da Cami */
+function camiMesasN(save){ return ((save && save.salao && save.salao.mesas) || []).filter(m => m.cami).length; }
+/* v9.6: a Cami está no modo "Minhas mesas" (nível 3, o modo escolhido e pelo menos 1 mesa marcada)? */
+function camiModoMesas(save){
+  const eq = save && save.equipe;
+  return !!eq && eq.camiModo === 'mesas' && eq.cami > 0 && !!STAFF.cami.levels[eq.cami].mesas && camiMesasN(save) > 0;
+}
 function normCamiCursos(c){ const o = {}; CAMI_CURSOS.forEach(x => { if (c && c[x.id]) o[x.id] = 1; }); return o; }
 /* o nível dela pelos cursos: 1 + os feitos (o 2º só conta com o 1º) */
 function camiNivelCursos(save){
@@ -1075,8 +1084,9 @@ function normSalao(s){
   s = (s && typeof s === 'object') ? s : {};
   const ponto = pontoOf(s.ponto);
   const lista = l => (Array.isArray(l) ? l : []).filter(m => m && typeof m === 'object' && (+m.seats === 2 || +m.seats === 4))
-    .map((m, i) => Object.assign({ x:Math.round(+m.x) || 0, y:Math.round(+m.y) || 0, seats:+m.seats, c:(+m.c >= 0 && +m.c <= 3) ? Math.round(+m.c) : i % 4 }, m.t ? { t:1 } : {}));
+    .map((m, i) => Object.assign({ x:Math.round(+m.x) || 0, y:Math.round(+m.y) || 0, seats:+m.seats, c:(+m.c >= 0 && +m.c <= 3) ? Math.round(+m.c) : i % 4 }, m.t ? { t:1 } : {}, m.cami ? { cami:1 } : {}));
   let mesas = lista(s.mesas);
+  { let n = 0; mesas.forEach(m => { if (m.cami && ++n > CAMI_MESAS_MAX) delete m.cami; }); }   // v9.6: até 3 mesas da Cami
   const estoque = lista(s.estoque).map(m => Object.assign({ seats:m.seats, c:m.c }, m.t ? { t:1 } : {})), tot = () => salaoLugares(mesas) + salaoLugares(estoque);
   while (tot() > ponto.lugares && estoque.length) estoque.pop();
   while (salaoLugares(mesas) > ponto.lugares) mesas.pop();
@@ -1733,7 +1743,7 @@ const BIA_IDS = ['tenis', 'corrida', 'bandeja', 'sudoku'];
 function upgradeCartao(id){ return BIA_IDS.indexOf(id) >= 0 ? 'bia' : 'melhorias'; }
 const HIST_NOMES = { bia:'Bia', tonhao:'Tonhão', dani:'Dani', joca:'Joca', cami:'Cami', anselmo:'Anselmo' };
 const CAIXA_MAX = 14;                                 // livro-caixa (v7.2): quantos dias da carreira ficam guardados
-const VERSAO = 'v9.5';                            // vai no resumo do Caixa
+const VERSAO = 'v9.6';                            // vai no resumo do Caixa
 const DIVULGA_DIA = 4;                                // antes disso, o movimento é o da inauguração (sem custo); v9.0.2: dia 4, e o padrão é o boca a boca
 function divulgaAberta(n, sv){ return devLivre() || n >= DIVULGA_DIA && !(sv && sv.convDiv === 'pend'); }   // no modo dev, desde o dia 1; v9.0.3: no Modo História, só depois da conversa
 function divulgaOf(id){ return DIVULGA.find(d => d.id === id) || DIVULGA[0]; }   // v9.0.2: sem escolha, boca a boca
@@ -2065,7 +2075,7 @@ function normEquipe(e, ponto){
   const jt = Array.isArray(e.jocaTasks) ? e.jocaTasks.filter(t => BASICAS.indexOf(t) >= 0) : JOCA_PADRAO.slice(), jn = Math.round(+e.joca) || 0;   // v9.2: o Joca (0 ou 2 a 4) só tem tarefa básica
   const ct = Array.isArray(e.camiTasks) ? e.camiTasks.filter(t => BASICAS.indexOf(t) >= 0) : CAMI_PADRAO.slice(), cn = Math.round(+e.cami) || 0;   // v9.3: a Cami (0 ou 1 a 3) também só tem tarefa básica
   const an = Math.round(+e.anselmo) || 0;   // v9.5: o Anselmo (0, 2 ou 3), só na Avenida (no modo dev, em qualquer ponto)
-  return { anselmo: an >= 2 && (ponto.nivel >= 3 || devLivre()) ? Math.min(an, STAFF.anselmo.levels.length - 1) : 0, cami: cn >= 1 ? Math.min(cn, STAFF.cami.levels.length - 1) : 0, camiTasks: ct.filter((t,i) => ct.indexOf(t) === i).slice(0,4), joca: jn >= 2 ? Math.min(jn, STAFF.joca.levels.length - 1) : 0, jocaTasks: jt.filter((t,i) => jt.indexOf(t) === i).slice(0,3), tonhao: clamp(Math.round(+e.tonhao)||0,0,STAFF.tonhao.levels.length - 1), dani: clamp(Math.round(+e.dani)||0,0,STAFF.dani.levels.length - 1), daniTasks: tasks.filter((t,i) => tasks.indexOf(t) === i).slice(0,3), couvert: !!e.couvert && couvertOk(ponto), taxa: !!e.taxa, tv: !!e.tv && ponto.nivel < 2, som: !!e.som && ponto.nivel < 2, tvs: ponto.nivel === 2 ? clamp(Math.round(+e.tvs) || 0, 0, INDUSTRIAL.tvs.modos.length - 1) : 0 };   // v9.1: as TVs são só da área industrial
+  return { anselmo: an >= 2 && (ponto.nivel >= 3 || devLivre()) ? Math.min(an, STAFF.anselmo.levels.length - 1) : 0, cami: cn >= 1 ? Math.min(cn, STAFF.cami.levels.length - 1) : 0, camiTasks: ct.filter((t,i) => ct.indexOf(t) === i).slice(0,4), camiModo: e.camiModo === 'mesas' ? 'mesas' : 'tarefas', joca: jn >= 2 ? Math.min(jn, STAFF.joca.levels.length - 1) : 0, jocaTasks: jt.filter((t,i) => jt.indexOf(t) === i).slice(0,3), tonhao: clamp(Math.round(+e.tonhao)||0,0,STAFF.tonhao.levels.length - 1), dani: clamp(Math.round(+e.dani)||0,0,STAFF.dani.levels.length - 1), daniTasks: tasks.filter((t,i) => tasks.indexOf(t) === i).slice(0,3), couvert: !!e.couvert && couvertOk(ponto), taxa: !!e.taxa, tv: !!e.tv && ponto.nivel < 2, som: !!e.som && ponto.nivel < 2, tvs: ponto.nivel === 2 ? clamp(Math.round(+e.tvs) || 0, 0, INDUSTRIAL.tvs.modos.length - 1) : 0 };   // v9.1: as TVs são só da área industrial
 }
 /* livro-caixa (v7.2): uma linha por dia jogado na carreira (os últimos CAIXA_MAX). As compras da lojinha
    (melhorias e salão) ficam em caixaPend e entram na linha do dia seguinte, junto com o saldo ao fim dele.
@@ -2209,6 +2219,7 @@ class Table {
   constructor(d){
     this.id = d.id; this.cx = d.cx; this.cy = d.cy; this.seats = d.seats; this.color = d.color; this.toalha = !!d.toalha;
     this.hx = tableHalfW(d);
+    this.cami = !!d.cami;   // v9.6: mesa da Cami (modo "Minhas mesas")
     this.open = false; this.group = null; this.dirty = false; this.dirtyN = 0;
   }
   get free(){ return this.open && !this.group && !this.dirty; }
@@ -2222,6 +2233,7 @@ class Group {
   constructor(game, type, id, color, vip, s){
     const T = CUSTOMER_TYPES[type];
     this.game = game; this.id = id; this.type = type; this.T = T;
+    this.cami = false;   // v9.6: a Cami já cuidou de algo deste grupo (a Bia não pega o prato dele)
     this.size = randi(T.size[0], T.size[1]);
     this.color = color;
     this.vip = !!vip && VIP.types.includes(type);
@@ -2738,6 +2750,7 @@ class Waitress {
       this.submitTickets();
       const slot = g.kitchen.plates.findIndex(p => p && p.id === a.pid);
       if (slot < 0) return this.fail('?');
+      if (g.kitchen.plates[slot].group && g.kitchen.plates[slot].group.cami) return this.fail('É da Cami!');   // v9.6: o prato do grupo que a Cami atende
       if (!this.canTake('dish')) return this.fail('Mãos cheias!');
       const p = g.kitchen.plates[slot];
       g.kitchen.plates[slot] = null;
@@ -2909,18 +2922,7 @@ class Waitress {
       const i = this.hands.findIndex(h => h.kind === 'dish' && h.group === grp);
       const dish = this.hands[i];
       this.hands.splice(i,1);
-      grp.setState('eating');
-      grp.timer = rand(grp.T.eat[0], grp.T.eat[1]) * (g.up.ventilador ? 0.85 : 1);
-      grp.eatTotal = grp.timer;
-      grp.gain(dish.crit ? 2 : 1);
-      grp.pratoQ = dish.q || 0; grp.fria = !!dish.fria; if (dish.crit) grp.capricho = true;
-      g.score('deliver', cx, cy - 40, 0, grp);
-      if (dish.crit){
-        const b = grp.vip ? CRIT.vipBonus : CRIT.bonus;
-        g.pontos += b; g.stats.crit++;
-        g.addText(cx, cy - 92, 'Caprichado! +' + b + ' pts', PAL.mostarda, 16);
-      }
-      Sfx.ok();
+      g.entregaPrato(grp, dish, t);
     } else if (v === 'clear'){
       if (!this.canTake('dirty')) return this.fail('Mãos cheias!');
       this.hands.push({ kind:'dirty', n:t.dirtyN });
@@ -2963,7 +2965,7 @@ class Waitress {
    ============================================================ */
 const DANI_HOME = { x:700, y:470 };
 /* v9.2, v9.3: quem cuida das tarefas básicas da casa (BASICAS) no dia: o ajudante mais novo que veio (Cami, depois Joca, depois Dani) */
-function donoBasico(g){ const eq = g.save.equipe; return eq.cami > 0 && !eq.camiFora ? 'cami' : eq.joca > 0 && !eq.jocaFora ? 'joca' : eq.dani > 0 ? 'dani' : null; }
+function donoBasico(g){ const eq = g.save.equipe; return eq.cami > 0 && !eq.camiFora && !camiModoMesas(g.save) ? 'cami'   /* v9.6: no modo "Minhas mesas" o básico volta para o Joca (ou a Dani) */ : eq.joca > 0 && !eq.jocaFora ? 'joca' : eq.dani > 0 ? 'dani' : null; }
 const AJUD_NOME = { dani:'Dani', joca:'Joca', cami:'Cami' };
 const DANI_HANDS = 2;   // 2 mãos: no máximo 2 itens por vez (cada pilha de louça, a de uma mesa, ocupa 1 mão)
 class Helper {
@@ -2983,7 +2985,7 @@ class Helper {
   get tasks(){
     if (!this.active) return [];
     const eq = this.g.save.equipe, up = this.g.up, dono = donoBasico(this.g), basica = t => BASICAS.indexOf(t) >= 0;
-    if (this.quem === 'cami') return eq.camiTasks.filter(t => daniTaskOk(t, up) && basica(t)).slice(0, this.spec.tasks);
+    if (this.quem === 'cami') return camiModoMesas(this.g.save) ? [] : eq.camiTasks.filter(t => daniTaskOk(t, up) && basica(t)).slice(0, this.spec.tasks);
     if (this.quem === 'joca'){   // v9.3: com o espresso, o café (cafezinho e espresso) é dele, fixo na 1ª vaga; sem a Cami, o básico nas vagas que sobram
       const cafe = up.espresso ? ['cafe'] : [];
       return dono !== 'joca' ? cafe : cafe.concat(eq.jocaTasks.filter(t => daniTaskOk(t, up) && basica(t))).slice(0, this.spec.tasks);
@@ -3034,7 +3036,38 @@ class Helper {
     c.sort((a,b) => a.group.hearts - b.group.hearts);
     return c[0] || null;
   }
+  /* v9.6, "Minhas mesas": as mesas abertas dela (marcadas no editor do salão) */
+  get mesasModo(){ return this.quem === 'cami' && camiModoMesas(this.g.save); }
+  mesasCami(){ return this.g.tables.filter(t => t.cami && t.open); }
+  /* v9.6: a Cami cuida do grupo de cada mesa dela do pedido à conta, com 2 itens nas mãos e sem bandeja: leva o prato de quem já pediu,
+     manda as comandas (1 ou 2) à janela, cobra a conta, pega o prato pronto e recolhe a louça suja (até a pia). Cada ação marca o
+     grupo (`group.cami`): a Bia não pega o prato dele. Suco, café, doce e drink seguem com quem faz */
+  thinkMesas(){
+    const g = this.g, k = g.kitchen, hs = this.hands, mine = this.mesasCami(), semBia = t => !this.biaWants(t);
+    const dish = hs.find(h => h.kind === 'dish');
+    if (dish){
+      const grp = dish.group, t = grp && grp.table;
+      if (t && t.cami && grp.state === 'ordered'){ grp.cami = true; return this.go(this.nearestAp(t), { type:'entrega', t }); }
+      hs.splice(hs.indexOf(dish), 1); k.sinkN++; return;   // sem destino: o prato vai para a pia
+    }
+    const tks = hs.filter(h => h.kind === 'ticket');
+    const pedido = mine.filter(t => t.group && t.group.state === 'wantOrder' && semBia(t)).sort((a, b) => a.group.hearts - b.group.hearts)[0];
+    if (tks.length && (hs.length >= DANI_HANDS || !pedido)) return this.go(STATIONS.order.ap, { type:'pedidos' });
+    const conta = mine.filter(t => t.group && t.group.state === 'wantBill' && semBia(t)).sort((a, b) => a.group.hearts - b.group.hearts)[0];
+    if (conta){ conta.group.cami = true; return this.go(this.nearestAp(conta), { type:'conta', t:conta }); }
+    if (hs.length < DANI_HANDS){
+      const p = k.plates.find(q => q && q.kind !== 'marmita' && q.group && q.group.table && q.group.table.cami && !q.camiVai
+        && !g.bia.acts.some(a => a.type === 'plate' && a.pid === q.id));   // a Bia já a caminho do prato: a Cami deixa
+      if (p){ p.camiVai = true; p.group.cami = true; return this.go(STATIONS.plates.ap, { type:'pegaPrato', p }); }
+      if (pedido){ pedido.group.cami = true; return this.go(this.nearestAp(pedido), { type:'anota', t:pedido }); }
+      const sujo = mine.filter(t => t.dirty && semBia(t))[0];
+      if (sujo) return this.go(this.nearestAp(sujo), { type:'clear', t:sujo });
+    }
+    if (hs.some(h => h.kind === 'dirty')) return this.go(STATIONS.sink.ap, { type:'sink' });
+    if (Math.hypot(this.x - this.home.x, this.y - this.home.y) > 4) return this.go(this.home, null);
+  }
   think(){
+    if (this.mesasModo) return this.thinkMesas();
     const g = this.g, k = g.kitchen;
     const dirty = this.hands.filter(h => h.kind === 'dirty').length;
     const coffee = this.hands.find(h => h.kind === 'coffee');
@@ -3106,13 +3139,46 @@ class Helper {
       return (drop ? WASH.base : 0) + (st.wash ? WASH.perPile / this.spec.speed : 0);
     }
     if (st.type === 'trash') return TRASH.empty;
+    if (st.type === 'anota') return 0.6;   // v9.6: anotar o pedido leva o mesmo tempo que para a Bia
     if (st.type === 'maquina') return this.g.bebida.take;
     if (st.type === 'espresso') return st.ids.reduce((a, id) => a + cafeDe(id).prep, 0);   // v9.3: o tempo de tirar cada café
     return 0.35;
   }
   perform(st){
     const g = this.g;
-    if (st.type === 'pegaMarmita'){
+    if (st.type === 'anota'){   // v9.6: anota o pedido (a comanda vai na mão dela até a janela)
+      const t = st.t, grp = t.group;
+      if (!grp || grp.state !== 'wantOrder' || this.hands.length >= DANI_HANDS) return;
+      g.assignCmd(grp);
+      this.hands.push({ kind:'ticket', table:t.id, group:grp });
+      grp.setState('ordered'); g.drinkPedir(grp); grp.gain(1);
+      g.score('take', t.cx, t.cy - 40, 0, grp, true);
+      this.feitas++; Sfx.blip();
+    } else if (st.type === 'pedidos'){   // v9.6: as comandas na janela do Tonhão
+      const tk = this.hands.filter(h => h.kind === 'ticket');
+      if (!tk.length) return;
+      tk.forEach(q => g.kitchen.submit(q));
+      this.hands = this.hands.filter(h => h.kind !== 'ticket');
+      g.addText(this.x + 10, this.y - 82, tk.length > 1 ? 'Pedidos enviados!' : 'Pedido enviado!', PAL.faixa, 14);
+      this.feitas++; Sfx.ok();
+    } else if (st.type === 'pegaPrato'){   // v9.6: o prato pronto do grupo dela
+      const p = st.p, slot = g.kitchen.plates.indexOf(p);
+      p.camiVai = false;
+      if (slot < 0 || this.hands.length >= DANI_HANDS) return;
+      g.kitchen.plates[slot] = null;
+      const perde = pratoPerde(p.age);
+      this.hands.push({ kind:'dish', table:p.table, group:p.group, dish:p.dish, crit:p.crit, q:Math.max(1, (p.q || 1) - perde), fria:perde >= PRATO.friaDe, vip:p.vip });
+      Sfx.blip();
+    } else if (st.type === 'entrega'){   // v9.6
+      const t = st.t, grp = t.group, i = this.hands.findIndex(h => h.kind === 'dish' && h.group === grp);
+      if (i < 0 || !grp || grp.state !== 'ordered') return;
+      const dish = this.hands.splice(i, 1)[0];
+      g.entregaPrato(grp, dish, t, true); this.feitas++;
+    } else if (st.type === 'conta'){   // v9.6
+      const t = st.t, grp = t.group;
+      if (!grp || grp.state !== 'wantBill') return;
+      g.collectBill(grp, t, true); this.feitas++;
+    } else if (st.type === 'pegaMarmita'){
       // pega a marmita escolhida e, se houver, mais uma (as 2 mãos)
       st.p.dani = false;
       const k = g.kitchen;
@@ -3614,12 +3680,14 @@ class Game {
   addMoney(v){ this.money = Math.max(0, this.money + v); }
   /* v8.3.8: cada ação da Bia rende pontos de atendimento (PONTOS_ACAO, mais a corrente), e não dinheiro; din é o que o
      cliente paga por ela (a conta, o cafezinho, o suco), que vai para o dinheiro do dia */
-  score(kind, x, y, din, grp){
+  score(kind, x, y, din, grp, semCorrente){   // v9.6: semCorrente (as ações da Cami): a sequência é só da Bia
     let bonus = 0;
+    if (!semCorrente){
     if (kind === this.lastKind) this.chainN++; else { this.chainN = 1; this.lastKind = kind; }
     if (this.chainN >= 2) bonus = Math.min(160, 10 * Math.pow(2, this.chainN - 2));
     if (bonus && grp) grp.corrente = true;   // a mesa atendida em corrente avalia melhor a agilidade (v8.4)
     this.stats.chain = Math.max(this.stats.chain, this.chainN);
+    }
     const p = PONTOS_ACAO[kind] || 0;
     this.pontos += p + bonus;
     if (din){ this.addMoney(din); this.addText(x, y, '+R$ ' + din, PAL.ok, 18); }
@@ -3629,11 +3697,11 @@ class Game {
       this.addSparks(x, y, 6, PAL.alerta);
     }
   }
-  collectBill(g, t){
+  collectBill(g, t, semCorrente){
     // v8.3.8: os corações viram gorjeta (no máximo +10%; com 1 ou 2, desconto), mais a da executiva e a do VIP;
     // v8.5.2: o suco e o cafezinho da mesa entram aqui também, pelo preço (bebConta)
     const amount = Math.round(g.bill * (1 + GORJETA[g.hearts] + g.T.tip + (g.vip ? VIP.tip : 0) + (g.cafePede && g.coffee ? g.T.cafeTip : 0))) + g.bebConta;
-    this.score('bill', t.cx, t.cy - 50, amount, g);
+    this.score('bill', t.cx, t.cy - 50, amount, g, semCorrente);
     if (this.treino) this.treino.conta = { v:amount, h:g.hearts, base:g.bill, beb:g.bebConta };   // a gorjeta é só da comida (base)
     if (g.sucoConta){ const v = this.bebida.preco * g.sucoConta; this.addMoney(v); this.addText(t.cx - 34, t.cy - 100, 'Suco da espera +' + v, PAL.alerta, 14); }
     if (g.T.tip > 0 || g.vip) this.addText(t.cx + 20, t.cy - 76, 'Gorjeta!', PAL.mostarda, 15);
@@ -3664,6 +3732,22 @@ class Game {
     g.table = null;
     g.setState('leaving');
     g.path = findPath({x:g.x, y:g.y}, {x:DOOR.x, y:DOOR.y});
+  }
+  /* v9.6: o prato chega à mesa (pela Bia ou pela Cami, que não entra na sequência) */
+  entregaPrato(grp, dish, t, semCorrente){
+    const cx = t.cx, cy = t.cy;
+    grp.setState('eating');
+    grp.timer = rand(grp.T.eat[0], grp.T.eat[1]) * (this.up.ventilador ? 0.85 : 1);
+    grp.eatTotal = grp.timer;
+    grp.gain(dish.crit ? 2 : 1);
+    grp.pratoQ = dish.q || 0; grp.fria = !!dish.fria; if (dish.crit) grp.capricho = true;
+    this.score('deliver', cx, cy - 40, 0, grp, semCorrente);
+    if (dish.crit){
+      const b = grp.vip ? CRIT.vipBonus : CRIT.bonus;
+      this.pontos += b; this.stats.crit++;
+      this.addText(cx, cy - 92, 'Caprichado! +' + b + ' pts', PAL.mostarda, 16);
+    }
+    Sfx.ok();
   }
   exitPoint(t){ return tableApproach(t)[0]; }
   /* Turno sem fim: a cada 8 grupos que saem com 5 corações, volta 1 estrela */
@@ -4045,7 +4129,7 @@ class Game {
     if (g.retira) this.soltaMarmitas(g);
     this.kitchen.purge(g);
     this.bia.purgeGroup(g);
-    this.ajud.forEach(a => { a.hands = a.hands.filter(h => h.group !== g); });
+    this.ajud.forEach(a => { a.hands.filter(h => h.kind === 'dish' && h.group === g).forEach(() => { this.kitchen.sinkN++; }); a.hands = a.hands.filter(h => h.group !== g); });   // v9.6: o prato na mão da Cami vai para a pia
     this.maqCancela(g); this.drinkCancela(g);
     this.releaseCmd(g);
     if (this.sel === g) this.sel = null;
@@ -4488,6 +4572,27 @@ class Game {
     else return false;
     writeSave(this.save); return true;
   }
+  /* v9.6: o modo da Cami no cartão: 'tarefas' ou 'mesas' ("Minhas mesas", só com o curso de mesa e pelo menos 1 mesa marcada) */
+  setCamiModo(m){
+    const eq = this.save.equipe;
+    if (m !== 'tarefas' && m !== 'mesas') return false;
+    if (m === 'mesas' && !(eq.cami > 0 && STAFF.cami.levels[eq.cami].mesas && camiMesasN(this.save) > 0)) return false;
+    eq.camiModo = m; writeSave(this.save); return true;
+  }
+  get camiMesasOn(){ return camiModoMesas(this.save); }
+  /* v9.6, editor do salão: marca (ou desmarca) a mesa i como da Cami (até CAMI_MESAS_MAX; precisa do curso de mesa dela) */
+  camiMesa(i){
+    const mesas = this.save.salao.mesas, m = mesas[i], sv = this.save;
+    if (!m) return false;
+    if (!m.cami){
+      if (!devLivre() && !(sv.equipe.cami > 0 && STAFF.cami.levels[sv.equipe.cami].mesas)) return this.salaoNao('A Cami precisa do curso de Atendimento de mesa.');
+      if (camiMesasN(sv) >= CAMI_MESAS_MAX) return this.salaoNao('A Cami fica com até ' + CAMI_MESAS_MAX + ' mesas.');
+    }
+    const l = mesas.slice(); l[i] = Object.assign({}, m, { sel:1 });
+    if (m.cami) delete l[i].cami; else l[i].cami = 1;
+    if (!camiMesasN({ salao:{ mesas:l } }) && sv.equipe.camiModo === 'mesas') sv.equipe.camiModo = 'tarefas';   // sem mesa marcada, volta às tarefas
+    return this.salaoSet(l, true);
+  }
   toggleCamiTask(id){   // v9.3
     const eq = this.save.equipe, i = eq.camiTasks.indexOf(id);
     const max = eq.cami ? STAFF.cami.levels[eq.cami].tasks : STAFF.cami.levels[1].tasks;
@@ -4589,11 +4694,11 @@ class Game {
     writeSave(sv); Sfx.coin();
     return true;
   }
-  /* cursos da Cami (v9.3): cada um sobe um nível dela (e o salário); um por lojinha; o de mesa fica "Em breve" até a 3b-6 */
+  /* cursos da Cami (v9.3): cada um sobe um nível dela (e o salário); um por lojinha; o de mesa (v9.6) abre o modo "Minhas mesas" */
   get camiCursoTrava(){ return !devLivre() && this.save.camiCursoDia === this.shopNext; }
   buyCamiCurso(id){
     const c = CAMI_CURSOS.find(x => x.id === id), sv = this.save;
-    if (!c || !cursoDaniVis(c, this.ponto) || !(sv.equipe.cami > 0 || devLivre()) || sv.camiCursos[id] || (c.dep && !sv.camiCursos[c.dep]) || (id === 'mesa' && !CAMI_MESA_ON) || this.camiCursoTrava || sv.bank < c.preco) return false;
+    if (!c || !cursoDaniVis(c, this.ponto) || !(sv.equipe.cami > 0 || devLivre()) || sv.camiCursos[id] || (c.dep && !sv.camiCursos[c.dep]) || this.camiCursoTrava || sv.bank < c.preco) return false;
     sv.bank -= c.preco; caixaGasto(sv, 'mel', c.preco);
     sv.camiCursos[id] = 1; sv.camiCursoDia = this.shopNext;
     if (sv.equipe.cami > 0) sv.equipe.cami = Math.min(STAFF.cami.levels.length - 1, Math.max(sv.equipe.cami, camiNivelCursos(sv)));
@@ -4607,7 +4712,7 @@ class Game {
     const sem = this.mode === 'semfim', sal = this.save.salao, key = sem ? 'semfim' : JSON.stringify(sal);
     if (key === this.tablesKey) return;
     const mesas = sem ? (this.semfimMesas || (this.semfimMesas = salaoAuto(SALAO_SEMFIM.map((seats, i) => ({ seats, c:i % 4 })), PONTOS[0]))) : sal.mesas;
-    const defs = mesas.map((m, i) => ({ id:i + 1, cx:m.x, cy:m.y, seats:m.seats, color:m.c, toalha:!!m.t }));
+    const defs = mesas.map((m, i) => ({ id:i + 1, cx:m.x, cy:m.y, seats:m.seats, color:m.c, toalha:!!m.t, cami:!!m.cami }));
     this.tables = defs.map(d => new Table(d));
     setObst(defs);
     this.tablesKey = key;
@@ -4919,6 +5024,7 @@ class Game {
       for (let j=0;j<PLATE_SLOTS.length;j++) if (pl[j] && (i < 0 || Math.abs(x - PLATE_SLOTS[j].x) < Math.abs(x - PLATE_SLOTS[i].x))) i = j;
       if (i < 0) return false;
       const pid = pl[i].id;
+      if (pl[i].group && pl[i].group.cami){ this.addText(PLATE_SLOTS[i].x, PLATE_SLOTS[i].y - 34, 'É da Cami!', PAL.alerta, 14); Sfx.boing(); return false; }   // v9.6
       if (this.bia.acts.some(a => a.type === 'plate' && a.pid === pid)) return false;
       if (this.bia.enqueue({ type:'plate', pid })){ Sfx.tap(); this.addGlow(pl[i]); return true; }
       return false;
@@ -7319,6 +7425,12 @@ function drawToalhaEnfeites(ctx,cx,cy,hw){
   circ(ctx,fx+1,fy-19,1.8); fs(ctx,PAL.mostarda,1);
   rr(ctx,fx-4,fy-6,8,8,2); ctx.fillStyle = 'rgba(191,227,242,.8)'; ctx.fill(); ctx.strokeStyle = PAL.tinta; ctx.lineWidth = 1.4; ctx.stroke();
 }
+/* v9.6: avental vinho pequeno (a mesa é da Cami): babador com bolsinho e a tira do pescoço */
+function drawAventalCami(ctx,x,y){
+  ctx.beginPath(); ctx.moveTo(x-4,y-9); ctx.quadraticCurveTo(x,y-14,x+4,y-9); ctx.strokeStyle = '#5E1428'; ctx.lineWidth = 1.4; ctx.stroke();
+  ctx.beginPath(); ctx.moveTo(x-4,y-9); ctx.lineTo(x+4,y-9); ctx.lineTo(x+7,y+6); ctx.lineTo(x-7,y+6); ctx.closePath(); fs(ctx,'#8A1F3D',1.8);
+  rr(ctx,x-3.5,y,7,4.2,1.2); fs(ctx,'#B4405E',1);
+}
 function drawTable(ctx,g,t,tm,menu){
   const open = t.open || menu;
   const grp = t.group;
@@ -7339,6 +7451,7 @@ function drawTable(ctx,g,t,tm,menu){
   seats.forEach((s,i) => { if (!s.front) drawChair(ctx,s.x,s.y,t.color,false,plast); });
   if (showPpl) seats.forEach((s,i) => { if (!s.front && i < grp.people.length) drawSeatPerson(ctx,g,grp,i,s,tm); });
   drawTableBody(ctx,t,true,g,tm);
+  if (t.cami && (menu || g.camiMesasOn)) drawAventalCami(ctx,t.cx + t.hx - 22,t.cy - 4);   // v9.6: o avental vinho da Cami no tampo
   // toalhinha da comanda (do pedido até o grupo sair)
   if (grp && grp.cmd >= 0 && grp.seated){
     const hw = t.hx - 4, mx = t.cx - hw + 28, mw = (t.cx + hw - 3) - mx;
@@ -9438,7 +9551,7 @@ function buildJoca(grid){
 /* cursos da Dani (v8.9): três cartões, +2 de experiência cada; um por lojinha, à parte do curso do Tonhão */
 /* o cartão da Cami (v9.3): atendimento, chega no nível 1 e sobe só por curso (o salário sobe junto); fica com o básico da casa */
 function buildCami(grid){
-  const eq = game.save.equipe, sv = game.save, bank = sv.bank, C = STAFF.cami.levels, cMax = CAMI_MESA_ON ? C.length - 1 : 2;
+  const eq = game.save.equipe, sv = game.save, bank = sv.bank, C = STAFF.cami.levels, cMax = C.length - 1;
   const canPay = extra => payroll(eq) + extra <= bank;
   const pc = v => Math.round(v*100) + '%', sec = v => String(Math.round(v*10)/10).replace('.', ',') + ' s';
   const lv = eq.cami, sp = C[lv] || C[1];
@@ -9450,7 +9563,20 @@ function buildCami(grid){
     ['Diária', a && fmt(a.pay), fmt(b.pay)]];
   const c = staffCard(upgradeIcon('cami'), lv ? 'Cami · nível ' + lv + ' de ' + cMax : 'Cami (ajudante)',
     lv ? '' : 'Garçonete de rodízio, indicada pelo Joca. Já chega rápida e fica com as tarefas da casa: ' + avail.map(t => t.name.toLowerCase()).join(', ').replace(/, ([^,]*)$/, ' e $1') + '. Tem 2 mãos. Sobe de nível só com cursos, e a diária sobe junto.');
-  if (lv){
+  const temMesa = !!(lv && sp.mesas), nMesas = camiMesasN(sv), emMesas = camiModoMesas(sv);
+  if (temMesa){   // v9.6: o curso de mesa abre o 2º modo
+    const modos = el('div', 'tasks');
+    [['tarefas', 'Tarefas', true], ['mesas', 'Minhas mesas', nMesas > 0]].forEach(m => {
+      const b = el('button', null, m[1]); b.type = 'button'; b.setAttribute('aria-pressed', (m[0] === 'mesas') === emMesas ? 'true' : 'false');
+      if (!m[2]) b.disabled = true;
+      b.addEventListener('click', () => { Sfx.tap(); game.setCamiModo(m[0]); buildShop(); });
+      modos.appendChild(b);
+    });
+    c.appendChild(el('span', 'full', 'Modo:'));
+    c.appendChild(modos);
+    c.appendChild(el('span', 'cursos-lista', nMesas ? 'Minhas mesas: ela cuida de ' + nMesas + ' de ' + CAMI_MESAS_MAX + ' mesas, do pedido à conta (anota, leva à janela, pega o prato, entrega, cobra e recolhe a louça). Marque as mesas dela no Salão. Nesse modo o básico da casa volta para o Joca (ou a Dani); suco, café, doce e drink seguem com quem faz.' : 'Marque as mesas dela no Salão (toque numa mesa e escolha "Mesa da Cami") para usar o modo "Minhas mesas".'));
+  }
+  if (lv && !emMesas){
     const sel = eq.camiTasks.filter(id => daniTaskOk(id, game.up)).length, tasks = el('div', 'tasks');
     avail.forEach(t => {
       const on = eq.camiTasks.indexOf(t.id) >= 0;
@@ -9468,14 +9594,14 @@ function buildCami(grid){
   c.appendChild(duo); grid.appendChild(c);
   if (game.cursoMsg) grid.appendChild(el('p', 'cursomsg', game.cursoMsg));
   CAMI_CURSOS.filter(q => cursoDaniVis(q, game.ponto)).forEach(q => {
-    const feito = !!sv.camiCursos[q.id], breve = q.id === 'mesa' && !CAMI_MESA_ON, card = el('div', 'item' + (feito ? ' own' : ''));
+    const feito = !!sv.camiCursos[q.id], card = el('div', 'item' + (feito ? ' own' : ''));
     const alvo = q.id === 'agil' ? 2 : 3, n = C[alvo];
     card.appendChild(upgradeIcon('cami'));
     card.appendChild(el('b', null, 'Curso de ' + q.nome));
     card.appendChild(el('span', 'cursos-lista', 'Nível ' + alvo + ': velocidade ' + pc(n.speed) + ', ' + n.tasks + ' tarefas, diária ' + fmt(n.pay) + (q.id === 'mesa' ? '. Abre o modo "Minhas mesas".' : '.')));
-    if (!feito && !breve && game.camiCursoTrava) card.appendChild(el('span', 'cursos-lista', 'A Cami já está num curso. Volte depois do próximo dia.'));
+    if (!feito && game.camiCursoTrava) card.appendChild(el('span', 'cursos-lista', 'A Cami já está num curso. Volte depois do próximo dia.'));
     if (!feito && q.dep && !sv.camiCursos[q.dep]) card.appendChild(el('span', 'cursos-lista apagado', 'Precisa do curso de ' + CAMI_CURSOS.find(x => x.id === q.dep).nome + '.'));
-    card.appendChild(feito ? shopBtn('Curso feito', 'btn', false, () => false) : breve ? shopBtn('Em breve', 'btn', false, () => false) : shopBtn('Comprar ' + fmt(q.preco), 'btn', lv > 0 && !game.camiCursoTrava && (!q.dep || !!sv.camiCursos[q.dep]) && bank >= q.preco, () => game.buyCamiCurso(q.id), q.preco));
+    card.appendChild(feito ? shopBtn('Curso feito', 'btn', false, () => false) : shopBtn('Comprar ' + fmt(q.preco), 'btn', lv > 0 && !game.camiCursoTrava && (!q.dep || !!sv.camiCursos[q.dep]) && bank >= q.preco, () => game.buyCamiCurso(q.id), q.preco));
     grid.appendChild(card);
   });
 }
@@ -9620,13 +9746,13 @@ function drawEditor(cv){
   const d = edDrag && edDrag.moved ? edDrag : null;
   game.save.salao.mesas.forEach((m, i) => {
     if (d && !d.est && d.i === i) return;
-    const t = new Table({ id:i + 1, cx:m.x, cy:m.y, seats:m.seats, color:m.c, toalha:m.t });
+    const t = new Table({ id:i + 1, cx:m.x, cy:m.y, seats:m.seats, color:m.c, toalha:m.t, cami:m.cami });
     t.open = true;
     drawTable(c, game, t, 0, true);
     if (i === game.salaoSel) edMarca(c, edRect(m), false, false);
   });
   if (d){   // a mesa arrastada, por cima de tudo
-    const m = d.est ? game.estoque[d.i] : game.save.salao.mesas[d.i], t = new Table({ id:d.est ? '' : d.i + 1, cx:d.x, cy:d.y, seats:m.seats, color:m.c, toalha:m.t });
+    const m = d.est ? game.estoque[d.i] : game.save.salao.mesas[d.i], t = new Table({ id:d.est ? '' : d.i + 1, cx:d.x, cy:d.y, seats:m.seats, color:m.c, toalha:m.t, cami:m.cami });
     t.open = true;
     drawTable(c, game, t, 0, true);
     edMarca(c, edRect({ x:d.x, y:d.y, seats:m.seats }), true, !d.ok);
@@ -9715,6 +9841,7 @@ function buildSalao(grid){
       pop.appendChild(el('b', null, 'Mesa ' + (sel + 1) + ' · ' + m.seats + ' lugares'));
       pop.appendChild(edCores(m, k => game.pintarMesa(sel, k)));
       if (!m.t) pop.appendChild(edBtn('Toalha xadrez: ' + fmt(TOALHA.cost), 'btn', bank >= TOALHA.cost, () => game.buyToalha(sel), TOALHA.cost));   // v8.6.5
+      if (devLivre() || (game.save.equipe.cami > 0 && STAFF.cami.levels[game.save.equipe.cami].mesas)) pop.appendChild(edBtn(m.cami ? 'Tirar da Cami' : 'Mesa da Cami (' + camiMesasN(game.save) + ' de ' + CAMI_MESAS_MAX + ')', 'btn' + (m.cami ? ' alt' : ''), m.cami || camiMesasN(game.save) < CAMI_MESAS_MAX, () => game.camiMesa(sel)));   // v9.6
       if (m.seats === 2) pop.appendChild(edBtn('Virar mesa de 4: ' + fmt(SALAO.virar), 'btn', tot + 2 <= p.lugares && bank >= SALAO.virar, () => game.virarMesa(sel), SALAO.virar));
       pop.appendChild(edBtn('Guardar no estoque', 'btn alt', mesas.length > 1, () => game.guardarMesa(sel)));
       pop.appendChild(edBtn('Vender por ' + fmt(mesaPreco(m.seats) * SALAO.venda), 'btn alt', mesas.length > 1, () => game.venderMesa(sel)));
@@ -10718,7 +10845,7 @@ try { Rank.init(); } catch(e) {}
 game.setState('menu');
 if (!aberturaVista() && !DEV.on) abrirAbertura('auto');   // v8.5: a abertura toca sozinha uma vez
 window.__game = game;
-window.__lcc = { FISCAL, Fiscal, FISCAL_PONTOS, abrirDev, fecharDev, buildDev, passoJogo, devLivre, diaNoPonto, manutEmerg, manutFator, daniTaskDe, plateSlotsFor, queueYsFor, assentoSlow, AVENIDA, SABORES, cursoOk, INDUSTRIAL, PLATE_SLOTS, cozinhaSlots, upgradeDe, DECOR, DECOR_GRUPOS, TOALHA, decorOf, normDecor, decorOn, FILA_ACOES, filaMax, MARMITA, RETIRADA, marmitaMao, drawMarmita, prateleiraPos, EFOOD_COR, AVAL_BRAVO, QUEUE, setShopTab: v => shopAbrir(v), setShopGrupo: g => shopGrupoAbrir(g), shopSecoes: () => SHOP_GRUPOS.map(g => shopSecoesVis(g)), TREINO, TREINO_PASSOS, TREINO_COR, Treino, treinoLugar, treinoPrimeiro, playCareer, buildMenu, introBanco, buildFalencia, BANCO, normEmprestimo, parcelaDe, devidoDe, jurosDe, tabelaDe, simulaEmprestimo, SEMANA, semanaOf, diaOf, FILA_JUSTA, PORTA, CHAIRS, PAT, CONTAS, INGRED, CARDAPIO, precoPrato, CURSOS, CURSO_AV, CURSO_XP, tonhaoXp, tonhaoNivelXp, daniXp, daniNivelXp, DANI_XP, DANI_CURSOS, CURSOS_SEMFIM, cursoOf, cursoNivel, normCursos, pratoAv, CARNES, drawDish, pratoSabido, pratosSabidos, GOSTOS, GOSTOS_CAT, pedePrato, VEG, vegMov, drawDish, MAIS, PONTOS_ACAO, GORJETA, DRINK_PRICE, MOVIMENTO, movimentoSalao, DIVULGA, DIVULGA_DIA, divulgaOf, contasDia, bomGoal, SALAO, PONTOS, pontoOf, MESA, mesaBox, mesaPreco, salaoLugares, mesaProblema, salaoCaminho, salaoProblema, salaoOrdena, salaoAuto, salaoVaga, salaoPerto, salaoKit, salaoDevolucao, SALAO_SEMFIM, normSalao, setObst, OBST, pathOk, MAQUINA, BEBIDA_ESPERA, bebidaOf, MANUT, manutOf, manutChance, manutPreco, normManut, CLIMA, CLIMA_DIA, introManut, normPend, CALCADA, TW, HUDX, esperaAp, tableApproach, CRIT, STAFF, DANI_TASKS, DANI_HANDS, daniTaskOk, TRASH, WASH, payroll, FOLHA_CORTE, folhaCorta, folhaCortes, folhaItens, listaE, pratosDe, couvertEffect, couvertOk, ambienteEffect, dishStock, normSave, Helper, JUICE, KITCHEN_SLOTS, handLayout, trayOk, Game, Group, Table, Kitchen, Waitress, BIA_SPEED, DAYS, UPGRADES, CUSTOMER_TYPES, LAYOUT, PAL, Sfx, findPath, render, Rank, sortRows, cleanName, normName, CMD, ENDLESS, VIP, MULTA, rk, renderRank, openRank, closeRank, LS, lsGet, lsSet, loadSave, DEV, saveKey, devSync, divulgaAberta, CAIXA_MAX, VERSAO, normCaixa, caixaResumo, caixaTotais, copyText, PRATO, pratoPerde, pratoVapor, AVAL, AVAL_CRIT, AVAL_BRAVO, avalMenu, cursosItem, DOCES, CAFES, cafeDe, DRINKS, drinkDe, drinkIdx, anselmoOn, ANSELMO_HOME, ANSELMO_LOOK, drawAnselmo, docesLista, docePreco, doceIngred, doceIdx, CAMI_CURSOS, CAMI_HOME, CAMI_LOOK, camiNivelCursos, normCamiCursos, drawCami, drawEspresso, JOCA_XP, JOCA_CURSOS, JOCA_HOME, jocaXp, jocaNivelXp, BASICAS, donoBasico, cursoDaniVis, JOCA_LOOK, drawJoca, avalTeto, avalEscala, avalFrac, AVAL_SIMPLES, AVAL_DECOR, normAval, avalNota, avalMedias, avalGeral, avalMovimento, avalMinimo, avalComentario, fmtNota, notaFaixa, gurugolCaixa, AVAL_COM, normAvalCom, buildGurugol, ABERTURA, Abertura, AB_CENAS, AB_ALT, AB_BASE, abEsc, AB_VIVO, aberturaVista, aberturaSom, drawAbertura, abrirAbertura, HISTORIA, HIST_CARDAPIO, HIST_DIVULGA, LIBERA, liberaOf, HIST_NOMES, normEquipe, upgradeCartao, cursoFeito, AVAL_POUCO, REFORMA, HIST, carencia, Conversa, drawConversa, falar, fluxoHistoria, falar, aberturaAtual: () => abertura };
+window.__lcc = { drawTable, camiMesasN, camiModoMesas, CAMI_MESAS_MAX, drawAventalCami, FISCAL, Fiscal, FISCAL_PONTOS, abrirDev, fecharDev, buildDev, passoJogo, devLivre, diaNoPonto, manutEmerg, manutFator, daniTaskDe, plateSlotsFor, queueYsFor, assentoSlow, AVENIDA, SABORES, cursoOk, INDUSTRIAL, PLATE_SLOTS, cozinhaSlots, upgradeDe, DECOR, DECOR_GRUPOS, TOALHA, decorOf, normDecor, decorOn, FILA_ACOES, filaMax, MARMITA, RETIRADA, marmitaMao, drawMarmita, prateleiraPos, EFOOD_COR, AVAL_BRAVO, QUEUE, setShopTab: v => shopAbrir(v), setShopGrupo: g => shopGrupoAbrir(g), shopSecoes: () => SHOP_GRUPOS.map(g => shopSecoesVis(g)), TREINO, TREINO_PASSOS, TREINO_COR, Treino, treinoLugar, treinoPrimeiro, playCareer, buildMenu, introBanco, buildFalencia, BANCO, normEmprestimo, parcelaDe, devidoDe, jurosDe, tabelaDe, simulaEmprestimo, SEMANA, semanaOf, diaOf, FILA_JUSTA, PORTA, CHAIRS, PAT, CONTAS, INGRED, CARDAPIO, precoPrato, CURSOS, CURSO_AV, CURSO_XP, tonhaoXp, tonhaoNivelXp, daniXp, daniNivelXp, DANI_XP, DANI_CURSOS, CURSOS_SEMFIM, cursoOf, cursoNivel, normCursos, pratoAv, CARNES, drawDish, pratoSabido, pratosSabidos, GOSTOS, GOSTOS_CAT, pedePrato, VEG, vegMov, drawDish, MAIS, PONTOS_ACAO, GORJETA, DRINK_PRICE, MOVIMENTO, movimentoSalao, DIVULGA, DIVULGA_DIA, divulgaOf, contasDia, bomGoal, SALAO, PONTOS, pontoOf, MESA, mesaBox, mesaPreco, salaoLugares, mesaProblema, salaoCaminho, salaoProblema, salaoOrdena, salaoAuto, salaoVaga, salaoPerto, salaoKit, salaoDevolucao, SALAO_SEMFIM, normSalao, setObst, OBST, pathOk, MAQUINA, BEBIDA_ESPERA, bebidaOf, MANUT, manutOf, manutChance, manutPreco, normManut, CLIMA, CLIMA_DIA, introManut, normPend, CALCADA, TW, HUDX, esperaAp, tableApproach, CRIT, STAFF, DANI_TASKS, DANI_HANDS, daniTaskOk, TRASH, WASH, payroll, FOLHA_CORTE, folhaCorta, folhaCortes, folhaItens, listaE, pratosDe, couvertEffect, couvertOk, ambienteEffect, dishStock, normSave, Helper, JUICE, KITCHEN_SLOTS, handLayout, trayOk, Game, Group, Table, Kitchen, Waitress, BIA_SPEED, DAYS, UPGRADES, CUSTOMER_TYPES, LAYOUT, PAL, Sfx, findPath, render, Rank, sortRows, cleanName, normName, CMD, ENDLESS, VIP, MULTA, rk, renderRank, openRank, closeRank, LS, lsGet, lsSet, loadSave, DEV, saveKey, devSync, divulgaAberta, CAIXA_MAX, VERSAO, normCaixa, caixaResumo, caixaTotais, copyText, PRATO, pratoPerde, pratoVapor, AVAL, AVAL_CRIT, AVAL_BRAVO, avalMenu, cursosItem, DOCES, CAFES, cafeDe, DRINKS, drinkDe, drinkIdx, anselmoOn, ANSELMO_HOME, ANSELMO_LOOK, drawAnselmo, docesLista, docePreco, doceIngred, doceIdx, CAMI_CURSOS, CAMI_HOME, CAMI_LOOK, camiNivelCursos, normCamiCursos, drawCami, drawEspresso, JOCA_XP, JOCA_CURSOS, JOCA_HOME, jocaXp, jocaNivelXp, BASICAS, donoBasico, cursoDaniVis, JOCA_LOOK, drawJoca, avalTeto, avalEscala, avalFrac, AVAL_SIMPLES, AVAL_DECOR, normAval, avalNota, avalMedias, avalGeral, avalMovimento, avalMinimo, avalComentario, fmtNota, notaFaixa, gurugolCaixa, AVAL_COM, normAvalCom, buildGurugol, ABERTURA, Abertura, AB_CENAS, AB_ALT, AB_BASE, abEsc, AB_VIVO, aberturaVista, aberturaSom, drawAbertura, abrirAbertura, HISTORIA, HIST_CARDAPIO, HIST_DIVULGA, LIBERA, liberaOf, HIST_NOMES, normEquipe, upgradeCartao, cursoFeito, AVAL_POUCO, REFORMA, HIST, carencia, Conversa, drawConversa, falar, fluxoHistoria, falar, aberturaAtual: () => abertura };
 window.requestAnimationFrame(frame);
 
 })();
