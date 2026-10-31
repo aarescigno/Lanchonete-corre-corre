@@ -170,6 +170,6 @@ const AV={ daniCursos:{ confCaseira:1 } }, ESP={ daniCursos:{ confCaseira:1 }, j
   const H=aberto({ equipe:{ tonhao:1, dani:3, joca:3, cami:1 } },null,ESP), {g}=H; g.joca.feitas=0; g.cami.feitas=3; g.stats.cafesEsp=2; joga(H,300);
   ok(/Cami: 3 tarefas hoje/.test(txt(H.els['end-msg'])) && /Espressos e cappuccinos: 2/.test(txt(H.els['end-msg'])),'o fim do dia mostra a Cami e os cafés');
   let erro=''; try { [1,2,3].forEach(lv=>{ g.save.equipe.cami=lv; g.cami.x=300; g.cami.y=300; H.L.drawCami(H.ctx,g.cami,0); }); } catch(e){ erro=String(e); } ok(!erro,'a Cami desenha nos 3 níveis sem erro '+erro);
-  ok(H.L.VERSAO==='v9.3','VERSAO é v9.3'); }
+  ok(/^v9\./.test(H.L.VERSAO),'VERSAO é v9.x (a v9.3 trouxe a Cami)'); }
 
 console.log('total =',total,' fails =',fails); process.exit(fails?1:0);
