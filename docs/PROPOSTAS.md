@@ -4,6 +4,18 @@ Registro das ideias e dos retornos de quem jogou, com o texto original, e de ond
 
 ---
 
+## 31/10 — usuário: Dani confeiteira, Joca coqueteleiro/barista e a Cami (atendimento) no Terraço
+Texto original: "Ah tá, então pode deixar a Dani como confeiteira e o Joca mais pra frente entra como coqueteleiro ou como barista, né? Porque a ideia é que no terraço suíça tenha alguém especializado em fazer cafés gourmet especial, etc, né? Vários processos, e alguém para fazer doces muito especiais e tal. E o chef Tonhão, que vai preparar pratos de alto estirpe após vários cursos, etc. E vai ter que ter alguém para ajudar a Bia na pegada do dia a dia ali. Talvez seja um terceiro assistente. A Cami, essa terceira assistente, vai ser especializada em atendimento de pessoas. Então ela vai ser muito rápida. Vai ser mais rápida que a Bia, talvez. Ou tão rápida quanto a Bia, sabe? Coisa que o Joca e a Dani não conseguem ser. Porque a especialidade deles é outra e eles estão descobrindo."
+Destino: Ideias guardadas do `docs/PLANO.md` (substitui a entrada anterior); decidir no planejamento da 4a.
+
+---
+
+## 31/10 — usuário: especialização e progressão da equipe (Dani, Joca e assistente)
+Texto original: "adiciona aí para mim nas ideias, que assim como a Dani vai progredir de função, né, com alguma outra coisa que ele especialize e tal, o Joca também vai passar por esse processo, né, e ele encontre uma função aí dentro. Não sei se a Dani vira barista, ele vira da doceria ou vice-versa, e aí tem uma outra pessoa entra como assistente, que na última instância, no último momento lá, também pode receber um upgrade ou ficar essa última pessoa aí como assistente só também."
+Destino: Ideias guardadas do `docs/PLANO.md` (sem etapa ainda); decidir quando planejar a 3b-2/4a.
+
+---
+
 ## 31/10/2026 — Usuário: planejamento da etapa 3b (Avenida Brasil)
 Respostas na sessão de planejamento (perguntas de escolha):
 > Joca: "O básico; a Dani se especializa (Recomendado)". Sobremesas: "Dani confeiteira + vitrine (Recomendado)". Coquetelaria: "Fica para a 4a (Recomendado)". Conta rachada e fiscal: "Só o fiscal".
