@@ -1371,3 +1371,16 @@ Pedido do usuário: o modo dev (10 toques no selo; save à parte, `DEV` em `12-c
 - **Fechamento:** v9.4 (`versoes/`, `vtag`, `VERSAO`, `#ov-ver`, `docs/spec-v9.4.md`, `RESUMO.md`), PR e merge.
 
 **Modelo:** Sonnet, esforço médio. Evento pequeno, com regras e números fechados, que segue o molde do clima e do texto de fim do dia.
+
+### Sessão 3b-6 — A Cami em "Minhas mesas" (v9.6)
+O curso "Atendimento de mesa" da Cami (3b-3) passa a se comprar e abre o **modo "Minhas mesas"** no cartão dela (o outro modo é "Tarefas"; "Ajuda em tudo" vem no Terraço, 4a).
+- **Quais mesas:** no editor do salão, o jogador marca até **3 mesas** como da Cami (`salao.mesas[i].cami = 1`; um avental vinho pequeno no tampo, no editor e no jogo). Sem mesa marcada, o modo não fica disponível ("Marque as mesas dela no Salão").
+- **O que ela faz nelas,** com a velocidade do nível dela (1,25 × a da Bia sem tênis): anota o pedido, leva à janela, pega o prato pronto daquela mesa, entrega, leva a conta e recolhe os pratos sujos dela. O jogador continua pondo os grupos nas mesas (sentar é sempre o arrasto). Cada ação dela marca o grupo (`group.cami`), e a Bia não pega o que está marcado; o que a Bia já pegou, a Cami deixa. Ela carrega 2 itens (não usa bandeja) e não faz suco, café, doce nem drink (esses seguem com quem faz).
+- **No modo "Minhas mesas" o básico** volta para o Joca (ou a Dani), pela regra do `donoBasico` (a Cami deixa de contar como a mais nova).
+- **Pontos e gorjeta:** as ações dela dão os mesmos pontos (`PONTOS_ACAO`) e a mesma gorjeta das da Bia; a sequência (`chain`) é só da Bia.
+- **Testes:** **`tests/smoke47.js` (novo):** (1) curso só depois do Atendimento ágil, na Avenida; (2) marcar no editor até 3 mesas, sem mesa o modo fica apagado; (3) um grupo numa mesa da Cami vai do pedido à conta sem a Bia; (4) a Bia e a Cami nunca pegam o mesmo item, nada se perde; (5) o básico volta para o Joca nesse modo; (6) save da v9.5 carrega igual. `bot.js`: marca as 3 mesas mais perto da janela e liga o modo. `balance.js PONTO=avenida EQUIPE=auto`: 85–95%; se passar de 95%, a Cami nesse modo fica com 2 mesas. Capturas `tests/shot_v9_6.py`: a Cami atendendo, o avental no tampo, o cartão com os 2 modos.
+- **Fechamento:** v9.6 (`versoes/`, `vtag`, `VERSAO`, `#ov-ver`, `docs/spec-v9.6.md`, `RESUMO.md`), PR e merge. Ao fechar a 3b, arquive a etapa (`ferramentas/arquiva.py`).
+
+**Modelo:** Sonnet, esforço alto. Regras fechadas, mas é uma 2ª garçonete com IA própria, dividindo grupos com a Bia.
+
+---

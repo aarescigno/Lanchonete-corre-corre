@@ -7,8 +7,11 @@ module.exports=function(g,L,opts){
   const ids=cs==='todos'?['fogao','geladeira','cafeteira']:['fogao'];
   return function botStep(){ for(const id of ids) if(g.quebrado(id)) g.consertar(id); base(); };
 };
+// v9.6: a Cami em "Minhas mesas" cuida do pedido à conta das mesas dela: a Bia não mexe nelas (só entrega o prato que já pegou)
+function delaCami(g){ return t=>!!(t&&t.cami&&g.camiMesasOn&&g.cami&&g.cami.active); }
 function baseBot(g,L,opts){
   if(opts&&opts.afiado) return afiado(g,L);
+  const dela=delaCami(g);
   return function botStep(){
     const b=g.bia;
     const can=k=>b.canTake?b.canTake(k):b.free()>0;
@@ -62,10 +65,10 @@ function baseBot(g,L,opts){
     const helper=g.otherWasher!==undefined?g.otherWasher:(g.dani&&g.dani.does('lavar'));
     if(g.kitchen.sinkN>0 && (!helper || (g.kitchen.clean<=0 && g.kitchen.sinkN>=2)) && !has(a=>a.type==='sink') && !b.hands.some(h=>h.kind==='dirty') && !ajd(g,h=>h.washing)) return g.tapStation('sink',850,450);
     for(const t of g.tables){
-      if(!t.open||has(a=>a.type==='table'&&a.id===t.id)||ajd(g,h=>h.targets(t))) continue;
+      if(!t.open||dela(t)||has(a=>a.type==='table'&&a.id===t.id)||ajd(g,h=>h.targets(t))) continue;
       if(t.dirty||(t.group&&(t.group.state==='wantOrder'||t.group.state==='wantBill'))){ if(can(t.dirty?'dirty':'ticket')||t.group&&t.group.state==='wantBill') return g.tapTable(t); }
     }
-    for(let i=0;i<L.LAYOUT.PLATE_SLOTS.length;i++){ const p=g.kitchen.plates[i]; if(p&&!p.dani&&can('dish')&&!has(a=>a.type==='plate'&&a.pid===p.id)) return g.tapStation('plates',L.LAYOUT.PLATE_SLOTS[i].x,L.LAYOUT.PLATE_SLOTS[i].y); }
+    for(let i=0;i<L.LAYOUT.PLATE_SLOTS.length;i++){ const p=g.kitchen.plates[i]; if(p&&!p.dani&&!(p.group&&dela(p.group.table))&&can('dish')&&!has(a=>a.type==='plate'&&a.pid===p.id)) return g.tapStation('plates',L.LAYOUT.PLATE_SLOTS[i].x,L.LAYOUT.PLATE_SLOTS[i].y); }
     const need=jt.reduce((n,t)=>n+t.group.juicePending,0), carry=b.hands.filter(h=>h.kind==='juice').length+b.acts.filter(a=>a.type==='juice').length;
     // busca de uma vez todos os sucos que couberem (a fila de ações conta como já nas mãos)
     if(need>carry && !has(a=>a.type==='juice')){
@@ -86,6 +89,7 @@ function ajd(g,fn){ return (g.ajud||(g.dani?[g.dani]:[])).some(fn); }
 // (o mais apressado primeiro, na menor mesa), serve cafezinho a quem está por um fio e lava a louça
 // quando faltam pratos. Serve para medir se dá para não perder ninguém jogando muito bem.
 function afiado(g,L){
+  const dela=delaCami(g);
   const ST=L.LAYOUT.STATIONS, SL=L.LAYOUT.PLATE_SLOTS;
   const ttl=grp=>{ if(!grp) return Infinity; const p=grp.patPer(); return isFinite(p)?grp.patLeft+(grp.hearts-1)*p:Infinity; };
   const walk=(x0,y0,x1,y1)=>Math.hypot(x1-x0,y1-y0)*1.25/g.bia.speed;
@@ -121,13 +125,13 @@ function afiado(g,L){
     const tk=b.hands.filter(h=>h.kind==='ticket');
     if(tk.length) add(Math.min(...tk.map(h=>ttl(h.group)))-sw('order')-6,()=>g.tapStation('order',800,150));
     // pratos prontos no balcão
-    k.plates.forEach((p,i)=>{ if(!p||p.kind==='marmita'||!can('dish')) return; const t=tableOf(p.group); if(!t) return;
+    k.plates.forEach((p,i)=>{ if(!p||p.kind==='marmita'||!can('dish')) return; const t=tableOf(p.group); if(!t||dela(t)) return;
       add(ttl(p.group)-sw('plates')-walk(ST.plates.ap.x,ST.plates.ap.y,t.cx,t.cy),()=>g.tapStation('plates',SL[i].x,SL[i].y)); });
     // grupos esperando nas mesas (pedido, conta) e mesas sujas
     const ordered=g.tables.filter(t=>t.group&&t.group.state==='ordered').map(t=>ttl(t.group));
     const plateNeed=k.clean<=0?Math.min(Infinity,...ordered):Infinity;
     for(const t of g.tables){
-      if(!t.open||ajd(g,h=>h.targets(t))) continue;
+      if(!t.open||dela(t)||ajd(g,h=>h.targets(t))) continue;
       const grp=t.group;
       if(grp&&grp.state==='wantOrder'&&can('ticket')) add(ttl(grp)-tw(t),()=>g.tapTable(t));
       else if(grp&&grp.state==='wantBill'){

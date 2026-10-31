@@ -118,8 +118,8 @@ const AV={ daniCursos:{ confCaseira:1 } }, ESP={ daniCursos:{ confCaseira:1 }, j
   H.L.setShopGrupo('equipe'); ok(H.L.shopSecoes()[1].includes('cami'),'o cartão da Cami fica na Equipe');
   const eq=g.save.equipe, f0=H.L.payroll(eq); g.save.bank=5000; ok(g.setStaff('cami',1) && eq.cami===1 && H.L.payroll(eq)-f0===120,'contratar põe no nível 1: R$ 120 por dia na folha');
   ok(!g.setStaff('cami',2),'o nível dela não sobe com salário: só por curso');
-  H.L.setShopTab('cami'); const t=txt(H.els['shop-grid']); ok(/Cami · nível 1 de 2/.test(t) && /Tarefas \(3 de 3\)/.test(t) && /Atendimento ágil/.test(t) && /Atendimento de mesa/.test(t),'o cartão mostra "Cami · nível 1" e os dois cursos');
-  ok(/Em breve/.test(t),'o curso de mesa aparece com "Em breve"');
+  H.L.setShopTab('cami'); const t=txt(H.els['shop-grid']); ok(/Cami · nível 1 de 3/.test(t) && /Tarefas \(3 de 3\)/.test(t) && /Atendimento ágil/.test(t) && /Atendimento de mesa/.test(t),'o cartão mostra "Cami · nível 1" e os dois cursos');
+  ok(!/Em breve/.test(t) && /Comprar R\$ 600/.test(t),'v9.6: o curso de mesa já se compra (sem "Em breve")');
   // fora da História
   const F=load(); F.g.save=F.L.normSave({ salao:{ ponto:'avenida' }, bank:5000, equipe:{ dani:2 }, jocaCursos:{ espresso:1 }, daniCursos:{ confCaseira:1 } }); F.g.up=F.g.save.up; F.g.tablesKey=''; F.g.buildTables(); F.g.goShop(10);
   ok(F.g.cartaoAberto('cami') && F.g.setStaff('cami',1),'fora da História, o cartão abre com o espresso feito'); const F2=load(); F2.g.save=F2.L.normSave({ salao:{ ponto:'avenida' }, bank:5000, equipe:{ dani:2 } }); ok(!F2.g.cartaoAberto('cami'),'fora da História, sem o espresso, fechado'); }
@@ -147,10 +147,10 @@ const AV={ daniCursos:{ confCaseira:1 } }, ESP={ daniCursos:{ confCaseira:1 }, j
   ok(!g.buyCamiCurso('mesa'),'o de mesa não se compra antes do ágil');
   ok(g.buyCamiCurso('agil') && sv.camiCursos.agil===1 && sv.equipe.cami===2 && sv.bank===5000-400 && L.payroll(sv.equipe)-f0===20 && g.cami.spec.speed===1.1,'Atendimento ágil: R$ 400, nível 2, velocidade 1,1 e salário +R$ 20');
   ok(!g.buyCamiCurso('mesa'),'trava: um curso da Cami por lojinha'); sv.camiCursoDia=0;
-  ok(!g.buyCamiCurso('mesa') && !sv.camiCursos.mesa && sv.equipe.cami===2,'o de mesa fica "Em breve" até a 3b-6 (não se compra)');
-  ok(L.camiNivelCursos(sv)===2 && L.camiNivelCursos({ camiCursos:{ agil:1, mesa:1 } })===3 && L.camiNivelCursos({ camiCursos:{ mesa:1 } })===1 && L.camiNivelCursos({})===1,'camiNivelCursos: 1 + cursos feitos (o de mesa só conta com o ágil)');
+  ok(g.buyCamiCurso('mesa') && sv.camiCursos.mesa===1 && sv.equipe.cami===3 && g.cami.spec.speed===1.25,'v9.6: com o ágil, o de mesa se compra (nível 3, velocidade 1,25)');
+  ok(L.camiNivelCursos(sv)===3 && L.camiNivelCursos({ camiCursos:{ agil:1, mesa:1 } })===3 && L.camiNivelCursos({ camiCursos:{ mesa:1 } })===1 && L.camiNivelCursos({})===1,'camiNivelCursos: 1 + cursos feitos (o de mesa só conta com o ágil)');
   const F=L.normSave({ equipe:{ cami:9 }, salao:{ ponto:'avenida' } }); ok(F.equipe.cami===3 && F.equipe.camiTasks.join()==='lixo,pratos,lavar','normEquipe: a Cami vai de 0 a 3, tarefas padrão');
-  H.L.setShopTab('cami'); const t=txt(H.els['shop-grid']); ok(/Cami · nível 2 de 2/.test(t) && /Curso feito/.test(t) && /Em breve/.test(t),'o cartão mostra o nível 2 e o curso feito');
+  H.L.setShopTab('cami'); const t=txt(H.els['shop-grid']); ok(/Cami · nível 3 de 3/.test(t) && /Curso feito/.test(t) && !/Em breve/.test(t),'o cartão mostra o nível 3 e os cursos feitos');
   const Q=L.normSave(Object.assign({}, sv, { camiCursos:{ agil:1 } })); ok(Q.camiCursos.agil===1 && Q.camiCursoDia>=0,'o save guarda camiCursos e camiCursoDia'); }
 
 // ---------- 12. a folha ----------
