@@ -142,14 +142,22 @@ const JOCA_CURSOS = [
 ];
 const JOCA_HOME = { x:640, y:515 };
 /* v9.3, a Cami (atendimento; o Joca passa o bastão para ela na Avenida): chega no nível 1 e sobe só por curso (o salário sobe junto):
-   nível = 1 + cursos feitos. O 2º curso abre o modo "Minhas mesas" (3b-6): até lá fica em "Em breve" (CAMI_MESA_ON) e o nível máximo é 2 */
+   nível = 1 + cursos feitos. O 2º curso (v9.6) abre o modo "Minhas mesas": o jogador marca até CAMI_MESAS_MAX mesas como dela no editor do salão
+   (`salao.mesas[i].cami = 1`) e, no cartão, escolhe entre "Tarefas" e "Minhas mesas" (`equipe.camiModo`) */
 const CAMI_HOME = { x:590, y:515 };
 const CAMI_CURSOS = [
   { id:'agil', nome:'Atendimento ágil',     preco:400, nivel:3 },
   { id:'mesa', nome:'Atendimento de mesa',  preco:600, nivel:3, dep:'agil' }
 ];
 const ANSELMO_HOME = { x:650, y:118 };   // v9.5: atrás do balcão de drinks
-const CAMI_MESA_ON = false;   // vira true na 3b-6 (Minhas mesas)
+const CAMI_MESAS_MAX = 3;   // v9.6: quantas mesas o jogador pode marcar como da Cami
+/* v9.6: quantas mesas do salão estão marcadas como da Cami */
+function camiMesasN(save){ return ((save && save.salao && save.salao.mesas) || []).filter(m => m.cami).length; }
+/* v9.6: a Cami está no modo "Minhas mesas" (nível 3, o modo escolhido e pelo menos 1 mesa marcada)? */
+function camiModoMesas(save){
+  const eq = save && save.equipe;
+  return !!eq && eq.camiModo === 'mesas' && eq.cami > 0 && !!STAFF.cami.levels[eq.cami].mesas && camiMesasN(save) > 0;
+}
 function normCamiCursos(c){ const o = {}; CAMI_CURSOS.forEach(x => { if (c && c[x.id]) o[x.id] = 1; }); return o; }
 /* o nível dela pelos cursos: 1 + os feitos (o 2º só conta com o 1º) */
 function camiNivelCursos(save){
@@ -419,8 +427,9 @@ function normSalao(s){
   s = (s && typeof s === 'object') ? s : {};
   const ponto = pontoOf(s.ponto);
   const lista = l => (Array.isArray(l) ? l : []).filter(m => m && typeof m === 'object' && (+m.seats === 2 || +m.seats === 4))
-    .map((m, i) => Object.assign({ x:Math.round(+m.x) || 0, y:Math.round(+m.y) || 0, seats:+m.seats, c:(+m.c >= 0 && +m.c <= 3) ? Math.round(+m.c) : i % 4 }, m.t ? { t:1 } : {}));
+    .map((m, i) => Object.assign({ x:Math.round(+m.x) || 0, y:Math.round(+m.y) || 0, seats:+m.seats, c:(+m.c >= 0 && +m.c <= 3) ? Math.round(+m.c) : i % 4 }, m.t ? { t:1 } : {}, m.cami ? { cami:1 } : {}));
   let mesas = lista(s.mesas);
+  { let n = 0; mesas.forEach(m => { if (m.cami && ++n > CAMI_MESAS_MAX) delete m.cami; }); }   // v9.6: até 3 mesas da Cami
   const estoque = lista(s.estoque).map(m => Object.assign({ seats:m.seats, c:m.c }, m.t ? { t:1 } : {})), tot = () => salaoLugares(mesas) + salaoLugares(estoque);
   while (tot() > ponto.lugares && estoque.length) estoque.pop();
   while (salaoLugares(mesas) > ponto.lugares) mesas.pop();
@@ -1077,7 +1086,7 @@ const BIA_IDS = ['tenis', 'corrida', 'bandeja', 'sudoku'];
 function upgradeCartao(id){ return BIA_IDS.indexOf(id) >= 0 ? 'bia' : 'melhorias'; }
 const HIST_NOMES = { bia:'Bia', tonhao:'Tonhão', dani:'Dani', joca:'Joca', cami:'Cami', anselmo:'Anselmo' };
 const CAIXA_MAX = 14;                                 // livro-caixa (v7.2): quantos dias da carreira ficam guardados
-const VERSAO = 'v9.5';                            // vai no resumo do Caixa
+const VERSAO = 'v9.6';                            // vai no resumo do Caixa
 const DIVULGA_DIA = 4;                                // antes disso, o movimento é o da inauguração (sem custo); v9.0.2: dia 4, e o padrão é o boca a boca
 function divulgaAberta(n, sv){ return devLivre() || n >= DIVULGA_DIA && !(sv && sv.convDiv === 'pend'); }   // no modo dev, desde o dia 1; v9.0.3: no Modo História, só depois da conversa
 function divulgaOf(id){ return DIVULGA.find(d => d.id === id) || DIVULGA[0]; }   // v9.0.2: sem escolha, boca a boca

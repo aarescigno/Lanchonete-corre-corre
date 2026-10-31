@@ -218,6 +218,7 @@ class Waitress {
       this.submitTickets();
       const slot = g.kitchen.plates.findIndex(p => p && p.id === a.pid);
       if (slot < 0) return this.fail('?');
+      if (g.kitchen.plates[slot].group && g.kitchen.plates[slot].group.cami) return this.fail('É da Cami!');   // v9.6: o prato do grupo que a Cami atende
       if (!this.canTake('dish')) return this.fail('Mãos cheias!');
       const p = g.kitchen.plates[slot];
       g.kitchen.plates[slot] = null;
@@ -389,18 +390,7 @@ class Waitress {
       const i = this.hands.findIndex(h => h.kind === 'dish' && h.group === grp);
       const dish = this.hands[i];
       this.hands.splice(i,1);
-      grp.setState('eating');
-      grp.timer = rand(grp.T.eat[0], grp.T.eat[1]) * (g.up.ventilador ? 0.85 : 1);
-      grp.eatTotal = grp.timer;
-      grp.gain(dish.crit ? 2 : 1);
-      grp.pratoQ = dish.q || 0; grp.fria = !!dish.fria; if (dish.crit) grp.capricho = true;
-      g.score('deliver', cx, cy - 40, 0, grp);
-      if (dish.crit){
-        const b = grp.vip ? CRIT.vipBonus : CRIT.bonus;
-        g.pontos += b; g.stats.crit++;
-        g.addText(cx, cy - 92, 'Caprichado! +' + b + ' pts', PAL.mostarda, 16);
-      }
-      Sfx.ok();
+      g.entregaPrato(grp, dish, t);
     } else if (v === 'clear'){
       if (!this.canTake('dirty')) return this.fail('Mãos cheias!');
       this.hands.push({ kind:'dirty', n:t.dirtyN });
