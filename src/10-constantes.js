@@ -285,17 +285,17 @@ const LAYOUT = { W, H, TW, HUDX, CALCADA, QUEUE, RETIRADA, DOOR, STATIONS, PLATE
    empréstimo no banco (v8.3)
    ============================================================ */
 const PONTOS = [
-  { id:'garagem', nome:'Garagem da mãe da Bia', nivel:1, lugares:16, aluguel:0, mudanca:0, credito:1000, cardapio:1, area:{ x0:196, y0:150, x1:684, y1:500 }, espera:4, assento:'pe', bebida:'agua', pratos:4, prateleira:2, deixa:'a TV, o som e a torneira ficam' },   // traz/deixa: o que o ponto novo traz e o que fica para trás ao sair deste (texto do cartão Mudança, v9.1)
+  { id:'garagem', nome:'Garagem da mãe da Bia', nivel:1, lugares:16, aluguel:0, mudanca:0, credito:1000, cardapio:1, area:{ x0:196, y0:150, x1:684, y1:500 }, espera:4, assento:'pe', bebida:'agua', pratos:4, prateleira:2, vip:0, deixa:'a TV, o som e a torneira ficam' },   // traz/deixa: o que o ponto novo traz e o que fica para trás ao sair deste (texto do cartão Mudança, v9.1)
   // v9: a primeira mudança (a área é a da Garagem alargada em 36 px à esquerda: 20 lugares não cabiam na arrumação automática). tipos: os pesos do sorteio da clientela (no lugar do day.types); encomenda: a chance diária da encomenda do setor;
   // apito: o pico do meio do dia (as primeiras `max` turmas chegam juntas a partir de `quando` do turno, uma a cada `gap` s, avisadas `aviso` s antes);
   // patPressa: a paciência de quem vem sozinho ou em dupla; vip: a chance de VIP; metaF: o fator das metas (v9.6.1: 1,25 → 2,3 e 1,7 → 3,2); expertF (v9.6.1): o da expert, a 3ª estrela (sem ele, o metaF); prateleira: as vagas do balcão de retirada;
   // grupos: o fator dos grupos do dia (os 20 lugares já trazem +60% de movimento; sem ele, nem o bot afiado fechava o dia sem perder ninguém)
   { id:'industrial', nome:'Lanchonete na área industrial', nivel:2, lugares:20, aluguel:120, mudanca:800, credito:2000, cardapio:1.5, area:{ x0:160, y0:150, x1:684, y1:500 }, espera:5, assento:'pe', bebida:'suco', pratos:5, prateleira:4,
-    tipos:{ estudante:1, executiva:1, familia:0.5, vovos:0.7, entregador:2, turma:2, motorista:1 }, encomenda:0.6, apito:{ quando:0.45, max:3, gap:[8, 12], aviso:10 }, patPressa:0.85, vip:0.3, metaF:2.3, expertF:1.6, grupos:0.8,
+    tipos:{ estudante:1, executiva:1, familia:0.5, vovos:0.7, entregador:2, turma:2, motorista:1 }, encomenda:0.6, apito:{ quando:0.45, max:3, gap:[8, 12], aviso:10 }, patPressa:0.85, vip:0.2, metaF:2.3, expertF:1.6, grupos:0.8,
     traz:'a freguesia da fábrica e da estrada', deixa:'as TVs, o assento da espera e a jarra de suco ficam' },
   // v9.1: o 2º ponto novo (cap. 6 e 7). Sem apito, sem encomenda e sem patPressa: a turma, o motorista e a encomenda não vêm. vip: ×2 (restaurante atrai mais VIP)
   { id:'avenida', nome:'Restaurante na Avenida Brasil', nivel:3, lugares:24, aluguel:400, mudanca:2000, credito:4000, cardapio:2.0, area:{ x0:160, y0:150, x1:684, y1:500 }, espera:6, assento:'pe', bebida:'saborizada', pratos:6, prateleira:4,
-    tipos:{ estudante:0.5, executiva:2, familia:1.5, vovos:1, entregador:1, negocios:1.5 }, vip:2, metaF:3.2, expertF:3.8, grupos:0.7,
+    tipos:{ estudante:0.5, executiva:2, familia:1.5, vovos:1, entregador:1, negocios:1.5 }, vip:2, metaF:3.0, expertF:3.6, grupos:0.7,   // v9.6.4: 3,2 e 3,8 → 3,0 e 3,6 (o VIP mais exigente deixou a Avenida abaixo do alvo)
     traz:'o almoço de negócios e mais VIPs', art:'o' }
 ];
 function pontoOf(id){ return PONTOS.find(p => p.id === id) || PONTOS[0]; }
@@ -500,6 +500,9 @@ const FILA_JUSTA = { ritmo:0.6, piso:0.5 };
    a próxima chegada espera (até `max` s cada uma; no total, até `total` do tempo do dia). O total de
    grupos do dia não muda, só o ritmo */
 const PORTA = { fila:3, max:8, total:0.2 };
+/* v9.6.4: a porta fecha quando o relógio zera (quem está na espera vai embora sem multa; quem está nas mesas e no balcão termina);
+   `max`: passados tantos segundos do relógio zerado, quem ainda estiver no salão vai embora de qualquer jeito */
+const FECHA = { max:60 };
 
 /* o gosto de cada tipo está em GOSTOS (v8.6.9); mais: chance de cada pessoa pedir um 2º item (v8.3.8);
    tip: gorjeta a mais, em fração da conta */
@@ -677,14 +680,14 @@ function pratoVapor(age){ return 1 - clamp((age - PRATO.quente) / PRATO.rampa, 0
 const MARMITA = { adiantar:false,   // v9.6.2: o '+ marmita' desligado até vir a estufa (retorno de 01/11); o código fica
   embalagem:2, efood:0.15, vagas:2, reserva:1, validade:60, prato:'pf', fila:3 };
 const MULTA = 10;                                     // grupo que vai embora bravo (com 0 corações) desconta isto do dia
-const VIP = { pat:0.75, tip:0.1, perfect:40, angry:10, dish:12, cook:1.8, types:['estudante','vovos','familia','executiva'] };   // dish: o prato especial soma R$ 12 à conta e leva 1,8× o tempo; perfect: pontos (v8.3.8)
+const VIP = { pat:0.65, tip:0.1, perfect:40, angry:10, dish:12, cook:1.8, types:['estudante','vovos','familia','executiva'] };   // dish: o prato especial soma R$ 12 à conta e leva 1,8× o tempo; perfect: pontos (v8.3.8)
 
 const DAYS = [
   { n:1, groups:5,  types:['estudante','vovos'],                                   nu:null,         meta:30, expert:60,  time:150, speed:0.60, note:'A freguesia espera lá fora, na calçada: arraste cada grupo até uma mesa livre.' },
-  { n:2, groups:8,  types:['estudante','vovos','familia'],                         nu:'familia',    meta:108, expert:220,  time:160, speed:0.60, note:'Chegou a família! Grupos de 3 ou 4 só cabem nas mesas de 4 lugares. Na lojinha, aba Salão, dá para comprar mesas e arrumar o salão.' },
+  { n:2, groups:8,  types:['estudante','vovos','familia'],                         nu:'familia',    meta:108, expert:220,  time:160, speed:0.60, note:'Chegou a família! Grupos de 3 ou 4 só cabem nas mesas de 4 lugares: se faltar mesa, eles vão embora.' },
   { n:3, groups:13, types:['estudante','vovos','familia','executiva'],             nu:'executiva',  meta:135, expert:230,  time:170, speed:0.60, juice:0.3, note:'O movimento aumentou e agora só há 4 pratos limpos: sozinha a Bia não dá conta. A executiva tem pouca paciência, mas deixa boa gorjeta. E abriu o balcão de sucos: quem pede suco quer receber antes da conta!' },
   { n:4, groups:15, types:['estudante','vovos','familia','executiva','entregador'], nu:'entregador', meta:63, expert:110, time:180, speed:0.58, juice:0.3, note:'Chegou o entregador de moto! Ele não senta: espera no balcão de retirada, no alto da calçada, e leva o prato numa marmita. O pedido vai sozinho ao Tonhão; leve a marmita pronta ao balcão. Tem pressa!' },
-  { n:5, groups:16, types:['estudante','vovos','familia','executiva','entregador'], nu:null,         meta:90, expert:140, time:190, speed:0.56, vip:0.15, juice:0.3, note:'Chegou cliente VIP (de óculos escuros e plaquinha dourada)! Fura a fila e tem menos paciência, mas pede o prato especial (mais caro), dá gorjeta e, se sair com 5 corações, pontos a mais. Se sair bravo, a multa dobra.' },
+  { n:5, groups:16, types:['estudante','vovos','familia','executiva','entregador'], nu:null,         meta:90, expert:140, time:190, speed:0.56, vip:0.15, juice:0.3, note:'O movimento cresce: fique de olho na louça e no lixo.' },
   { n:6, groups:16, types:['estudante','vovos','familia','executiva','entregador'], nu:null,         meta:140, expert:280, time:200, speed:0.54, vip:0.15, juice:0.3, note:'Sexta-feira: ninguém quer esperar.' },
   { n:7, groups:17, types:['estudante','vovos','familia','executiva','entregador'], nu:null,         meta:170, expert:310, time:220, speed:0.52, vip:0.15, juice:0.3, gripe:true, note:'Tonhão está gripado: a cozinha anda mais devagar hoje.' }
 ];
@@ -994,7 +997,7 @@ const HIST_DIVULGA = {
           { q:'bia', s:'E se a gente fizer panfleto? Eu entrego no ponto de ônibus antes de abrir!' },
           { q:'tonhao', nota:'coçando a cabeça', s:'Panfleto custa, mas traz o movimento de sempre. E tem as redes sociais, pra quem tem lugar pra tanta gente.' },
           { q:'bia', s:'Vou ver na Divulgação da lojinha o que compensa.' } ] };
-/* v9.6.2: a conversa dos entregadores, no fim do dia 4 (o 1º com motoboy), só no Modo História. save.convEnt: 'pend' | 1 (vista) */
+/* v9.6.2: a conversa dos entregadores, só no Modo História. v9.6.4: fica pendente no fim do dia anterior ao 1º com motoboy (dia 4) e toca antes de todas as outras conversas de cartão. save.convEnt: 'pend' | 1 (vista) */
 const HIST_ENTREGA = { dia:4,
   falas:[ { q:'bia', s:'Tio, que história é essa de motoqueiro no balcão pedindo marmita?' },
           { q:'tonhao', nota:'mostrando o celular', s:'Pus a gente na Efood, o aplicativo de entrega. O pedido cai direto aqui na cozinha.' },
@@ -1050,8 +1053,8 @@ const LIBERA = [
             { q:'bia', s:'Vai quebrar?' },
             { q:'tonhao', s:'Se ninguém olhar, um dia quebra no meio do almoço. Melhor chamar o técnico antes.' },
             { q:'bia', s:'Vou ver na Manutenção quanto custa a revisão.' } ] },
-  { id:'salao', dia:4, ate:6, gatilho:(st) => st.lostBy.semMesa >= 1 || st.lotadoT >= 90, reclama:['Nem consegui sentar.', 'Só tem quatro mesinhas?'],
-    falas:[ { q:'bia', s:'Hoje teve gente indo embora da fila: não tinha mesa pra todo mundo.' },
+  { id:'salao', dia:2, ate:4, gatilho:(st) => st.lostGrande >= 1 || st.lostBy.semMesa >= 1 || st.lotadoT >= 90, reclama:['Nem consegui sentar.', 'Só tem quatro mesinhas?'],   // v9.6.4: a 1ª família perdida abre o Salão
+    falas:[ { q:'bia', s:'Hoje uma família foi embora da fila: só tem uma mesa de quatro.' },
             { q:'tonhao', s:'Na garagem ainda cabem umas mesinhas. Cadeira de plástico é baratinha.' },
             { q:'bia', s:'Vou ver no Salão onde encaixar.' } ] },
   { id:'decor', dia:5, ate:7, gatilho:(st, av) => liberaTres(av, 4, 2.5), reclama:['Parece uma garagem.', 'Lugar meio sem graça.'],
@@ -1094,9 +1097,11 @@ const BIA_IDS = ['tenis', 'corrida', 'bandeja', 'sudoku'];
 function upgradeCartao(id){ return BIA_IDS.indexOf(id) >= 0 ? 'bia' : 'melhorias'; }
 const HIST_NOMES = { bia:'Bia', tonhao:'Tonhão', dani:'Dani', joca:'Joca', cami:'Cami', anselmo:'Anselmo' };
 const CAIXA_MAX = 14;                                 // livro-caixa (v7.2): quantos dias da carreira ficam guardados
-const VERSAO = 'v9.6.3';                            // vai no resumo do Caixa
+const VERSAO = 'v9.6.4';                            // vai no resumo do Caixa
 const DIVULGA_DIA = 4;                                // antes disso, o movimento é o da inauguração (sem custo); v9.0.2: dia 4, e o padrão é o boca a boca
 function divulgaAberta(n, sv){ return devLivre() || n >= DIVULGA_DIA && !(sv && sv.convDiv === 'pend'); }   // no modo dev, desde o dia 1; v9.0.3: no Modo História, só depois da conversa
+/* v9.6.4: a Efood (os entregadores) só abre depois da conversa dos entregadores, no Modo História; antes dela, nenhum tipo com `retira` vem na agenda */
+function efoodAberto(sv){ return devLivre() || !(sv && sv.convEnt === 'pend'); }
 function divulgaOf(id){ return DIVULGA.find(d => d.id === id) || DIVULGA[0]; }   // v9.0.2: sem escolha, boca a boca
 /* o que se serve na espera, por nível do salão (v7.7, PONTOS.bebida). preco: R$ por copo na conta do grupo; ingred:
    custo de cada copo; prep: s até ficar pronto na estação; take: s da Bia (ou da Dani) para pegar ali.

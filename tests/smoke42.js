@@ -72,7 +72,7 @@ const html=fs.readFileSync(__dirname+'/../lanchonete.html','utf8');
   ok(g.contas===base+400,'as contas do dia somam o aluguel de R$ 400');
   g.schedule=[]; g.nextIdx=0; g.money=2000; g.custo=0; const b0=g.save.bank; g.finishDay();
   ok(g.save.bank===b0+2000-g.contas-g.paid-g.paidDiv && g.result.aluguel===400,'o aluguel sai no fim do dia');
-  const D=g.diaPonto(L.diaOf(10)); ok(D.meta===Math.round(L.diaOf(10).meta*3.2/5)*5 && D.expert===Math.round(L.diaOf(10).expert*3.8/5)*5,'meta ×3,2 e expert ×3,8 (v9.6.1), arredondadas para 5');
+  const D=g.diaPonto(L.diaOf(10)); ok(D.meta===Math.round(L.diaOf(10).meta*3.0/5)*5 && D.expert===Math.round(L.diaOf(10).expert*3.6/5)*5,'meta ×3,0 e expert ×3,6 (v9.6.4), arredondadas para 5');
   ok(L.avalTeto(g.ponto)===4.3 && L.avalMinimo(g.ponto)===3.9,'teto 4,3 e nota mínima 3,9 (para sair, no Terraço)');
   ok(/Restaurante na Avenida Brasil/.test(g.ponto.nome) && L.PONTOS[2].espera===6 && L.PONTOS[2].pratos===6 && L.PONTOS[2].bebida==='saborizada','dados do ponto: nome, 6 de espera, 6 pratos, água saborizada'); }
 

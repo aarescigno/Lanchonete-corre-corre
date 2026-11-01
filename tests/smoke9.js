@@ -2,6 +2,7 @@
 const H=require('./harness.js')(); const {g,L,ctx,els}=H;
 let fails=0,total=0; const ok=(c,m)=>{ total++; if(!c){fails++;console.log('FAIL:',m);} else console.log('ok  :',m); };
 const C=L.CONTAS, I=L.INGRED, PAN=L.divulgaOf('panfleto').cost, RED=L.divulgaOf('redes').cost, TP=n=>L.STAFF.tonhao.levels[n].pay;
+delete L.PONTOS[0].vip;   // v9.6.4: a Garagem não tem VIP; aqui só se confere o efeito das redes sociais no VIP do dia
 const reset=(e,bank,div)=>{ g.save.equipe=L.normSave({equipe:e||{}}).equipe; g.save.bank=bank==null?5000:bank; g.save.divulga=div||'panfleto'; g.up={}; g.save.up=g.up; };
 
 // save
