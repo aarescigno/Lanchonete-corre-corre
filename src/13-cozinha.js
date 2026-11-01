@@ -5,7 +5,7 @@
 function cozinhaSlots(g){ return STAFF.tonhao.levels[g.save.equipe.tonhao].slots + (g.up.fogaoInd ? INDUSTRIAL.fogao.slots : 0); }
 class Kitchen {
   constructor(game){ this.game = game; this.reset(); }
-  reset(){ this.queue = []; this.cooking = []; this.plates = PLATE_SLOTS.map(() => null); this.pid = 0; this.slots = cozinhaSlots(this.game); this.sinkN = 0; this.clean = Infinity; this.noPlate = false; this.washT = 0; }
+  reset(){ this.queue = []; this.cooking = []; this.plates = PLATE_SLOTS.map(() => null); this.marmJ = MARMJ_SLOTS.map(() => null); this.pid = 0; this.slots = cozinhaSlots(this.game); this.sinkN = 0; this.clean = Infinity; this.noPlate = false; this.washT = 0; }
   get chef(){ return STAFF.tonhao.levels[this.game.save.equipe.tonhao]; }
   /* a chance de caprichar: x CURSO_AV.crit nos pratos de um curso avançado que o Tonhão já fez (v8.6.9) */
   chefCrit(dish){ return this.chef.crit * (pratoAv(dish, this.game.cursos) ? CURSO_AV.crit : 1); }
@@ -39,6 +39,11 @@ class Kitchen {
       return null;
     });
   }
+  /* o pronto (prato ou marmita) com esse id: { arr, i, p } ou null */
+  achaPronto(pid){
+    for (const arr of [this.plates, this.marmJ]){ const i = arr.findIndex(p => p && p.id === pid); if (i >= 0) return { arr, i, p:arr[i] }; }
+    return null;
+  }
   progressFor(group){
     const c = this.cooking.find(t => t.group === group);
     if (c) return clamp(c.p / c.time, 0, 1);
@@ -49,23 +54,29 @@ class Kitchen {
   marmitaPronta(t, slot){
     const g = this.game, crit = g.mode !== 'treino' && Math.random() < this.chefCrit(t.dish);
     const fx = AVAL.prato[g.save.equipe.tonhao], q = crit ? 5 : rand(fx[0], fx[1]);
-    this.plates[slot] = { id:++this.pid, kind:'marmita', mid:++g.marmitaId, dish:t.dish, dono:t.dono, slot, age:0, crit, q };
+    this.marmJ[slot] = { id:++this.pid, kind:'marmita', mid:++g.marmitaId, dish:t.dish, dono:t.dono, slot, age:0, crit, q };
     g.usos.fogao++; g.usos.geladeira++;
     Sfx.bell();
-    g.addText(PLATE_SLOTS[slot].x, PLATE_SLOTS[slot].y - 34, 'Marmita!', PAL.mostarda, 16);
+    g.addText(MARMJ_SLOTS[slot].x, MARMJ_SLOTS[slot].y - 30, 'Marmita!', PAL.mostarda, 16);
     const cost = Math.round(precoPrato(t.dish, g.ponto, g.cursos) * INGRED.prato * (g.quebrado('geladeira') ? manutOf('geladeira').ingred : 1)) + MARMITA.embalagem;
-    g.custo += cost; g.addText(PLATE_SLOTS[slot].x, PLATE_SLOTS[slot].y - 54, '-' + cost, PAL.perigo, 12);
+    g.custo += cost; g.addText(MARMJ_SLOTS[slot].x, MARMJ_SLOTS[slot].y - 48, '-' + cost, PAL.perigo, 12);
   }
   update(dt){
     this.noPlate = false;
     const fogo = this.game.quebrado('fogao') ? manutOf('fogao').lento : 1;   // fogão falhando (v8): cozinha mais devagar
-    while (this.cooking.length < this.slots && this.queue.length) this.cooking.push(this.queue.shift());
+    // v9.6.5: as mesas na frente: o próximo é o 1º ticket de prato; marmita só entra se (no fogão + na janela) < vagas da janela
+    while (this.cooking.length < this.slots && this.queue.length){
+      const noFogo = this.cooking.filter(t => t.marmita).length, naJanela = this.marmJ.filter(Boolean).length;
+      const i = this.queue.findIndex(t => !t.marmita || noFogo + naJanela < MARMJ_SLOTS.length);
+      if (i < 0) break;
+      this.cooking.push(this.queue.splice(i, 1)[0]);
+    }
     for (let i=this.cooking.length-1; i>=0; i--){
       const t = this.cooking[i];
       t.p = Math.min(t.time, t.p + dt * fogo);
       if (t.p >= t.time){
+        if (t.marmita){ const fm = this.marmJ.findIndex(p => !p); if (fm >= 0){ this.cooking.splice(i,1); this.marmitaPronta(t, fm); } continue; }
         const free = this.plates.findIndex(p => !p);
-        if (t.marmita){ if (free >= 0){ this.cooking.splice(i,1); this.marmitaPronta(t, free); } continue; }
         if (free >= 0 && this.clean <= 0) this.noPlate = true;
         if (free >= 0 && this.clean > 0){
           this.clean--;
@@ -85,6 +96,7 @@ class Kitchen {
       }
     }
     this.plates.forEach(p => { if (p) p.age += dt; });
+    this.marmJ.forEach(p => { if (p) p.age += dt; });
     // com aumento, o Tonhão lava 1 pilha da pia a cada chef.wash segundos
     const w = this.chef.wash;
     if (w && this.sinkN > 0){

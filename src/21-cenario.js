@@ -752,6 +752,7 @@ const EFOOD_COR = '#E26A2C';
 /* selo da marmita: a do entregador, um "E" laranja (Efood); a sem dono, o anel da validade (verde, amarelo, vermelho) */
 function drawMarmitaSelo(ctx,m,x,y){
   circ(ctx,x,y,7.5); fs(ctx,m.dono ? EFOOD_COR : '#fff',1.6);
+  if (m.jogar){ ctx.strokeStyle = PAL.perigo; ctx.lineWidth = 2.6; ctx.lineCap = 'round'; ctx.beginPath(); ctx.moveTo(x-4,y-4); ctx.lineTo(x+4,y+4); ctx.moveTo(x+4,y-4); ctx.lineTo(x-4,y+4); ctx.stroke(); return; }   // v9.6.5: o entregador desistiu: vai pro lixo
   if (m.dono){ txt(ctx,'E',x,y+0.5,10,'#fff','center',FD); return; }
   const f = clamp(1 - m.age / MARMITA.validade, 0, 1);
   ctx.beginPath(); ctx.moveTo(x,y); ctx.arc(x,y,5.5,-Math.PI/2,-Math.PI/2 + TAU*f); ctx.closePath();
@@ -1261,16 +1262,7 @@ function drawKitchen(ctx,g,t){
   for (let i=0;i<PLATE_SLOTS.length;i++){
     const s = PLATE_SLOTS[i], p = g.kitchen.plates[i];
     ell(ctx,s.x,s.y+4,19,10); ctx.fillStyle = 'rgba(34,32,28,.12)'; ctx.fill();
-    if (p && p.kind === 'marmita') glowSprite(ctx,g,p,ctx => {
-      // marmita pronta (v8.6): a do entregador com o selo da Efood; a adiantada com o anel da validade
-      const bounce = RM ? 0 : Math.max(0, 1 - p.age*3) * -8;
-      drawMarmita(ctx,p.dish,s.x,s.y+bounce,1.05);
-      if (p.crit) txt(ctx,'★',s.x-14,s.y-14+bounce,15,PAL.mostarda,'center',FD);
-      drawMarmitaSelo(ctx,p,s.x+13,s.y-14+bounce);
-      const a = 0.35 + 0.3*Math.sin(t*6 + i);
-      ctx.strokeStyle = 'rgba(242,179,61,' + a + ')'; ctx.lineWidth = 3; ell(ctx,s.x,s.y+2,21,13); ctx.stroke();
-    });
-    else if (p) glowSprite(ctx,g,p,ctx => {
+    if (p) glowSprite(ctx,g,p,ctx => {
       const bounce = RM ? 0 : Math.max(0, 1 - p.age*3) * -8;
       const pc = cmdColor(p.group);
       if (pc) drawTray(ctx,s.x,s.y+2+bounce,1.0,pc);
@@ -1289,6 +1281,19 @@ function drawKitchen(ctx,g,t){
       txt(ctx,String(p.table),s.x+12,s.y-13+bounce,12,PAL.tinta,'center',FD);
       const a = 0.35 + 0.3*Math.sin(t*6 + i);
       ctx.strokeStyle = 'rgba(242,179,61,' + a + ')'; ctx.lineWidth = 3; ell(ctx,s.x,s.y+2,21,13); ctx.stroke();
+    });
+  }
+  // v9.6.5: a fileira própria das marmitas (acima dos pratos): a do entregador com o selo da Efood; a sem dono com o anel da validade
+  for (let i=0;i<MARMJ_SLOTS.length;i++){
+    const s = MARMJ_SLOTS[i], p = g.kitchen.marmJ[i];
+    ell(ctx,s.x,s.y+3,12,6); ctx.fillStyle = 'rgba(34,32,28,.12)'; ctx.fill();
+    if (p) glowSprite(ctx,g,p,ctx => {
+      const bounce = RM ? 0 : Math.max(0, 1 - p.age*3) * -6;
+      drawMarmita(ctx,p.dish,s.x,s.y+bounce,0.62);
+      if (p.crit) txt(ctx,'★',s.x-9,s.y-8+bounce,11,PAL.mostarda,'center',FD);
+      ctx.save(); ctx.translate(s.x+8,s.y-6+bounce); ctx.scale(0.72,0.72); drawMarmitaSelo(ctx,p,0,0); ctx.restore();
+      const a = 0.35 + 0.3*Math.sin(t*6 + i);
+      ctx.strokeStyle = 'rgba(242,179,61,' + a + ')'; ctx.lineWidth = 2; ell(ctx,s.x,s.y+1,14,9); ctx.stroke();
     });
   }
   glow('plates');

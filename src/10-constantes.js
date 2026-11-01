@@ -274,8 +274,11 @@ const STATIONS = {
 const PLATE_SLOTS = [ {x:806,y:270}, {x:848,y:270}, {x:890,y:270}, {x:932,y:270} ];
 /* v9: o balcão de pratos tem as vagas do ponto (ponto.pratos): 4 na Garagem, 5 na área industrial, 6 na Avenida Brasil (mais juntas). Muda o mesmo array no lugar */
 function plateSlotsFor(n){ PLATE_SLOTS.length = 0; for (let i = 0; i < n; i++) PLATE_SLOTS.push({ x:(n >= 6 ? 791 + 29 * i : n >= 5 ? 792 + 36 * i : 806 + 42 * i), y:270 }); }   // v9.1: 6 vagas na Avenida Brasil
+/* v9.6.5: a fileira própria das marmitas na janela de PRONTOS (ponto.marmJanela vagas: 2, 3 e 3), acima da fileira dos pratos */
+const MARMJ_SLOTS = [ {x:800,y:242}, {x:826,y:242}, {x:852,y:242} ];
+function marmJSlotsFor(n){ MARMJ_SLOTS.length = 0; for (let i = 0; i < n; i++) MARMJ_SLOTS.push({ x:800 + 26 * i, y:242 }); }
 const BOUNDS = { x0:16 - CALCADA.w, y0:112, x1:744, y1:528 };
-const LAYOUT = { W, H, TW, HUDX, CALCADA, QUEUE, RETIRADA, DOOR, STATIONS, PLATE_SLOTS, BOUNDS };
+const LAYOUT = { W, H, TW, HUDX, CALCADA, QUEUE, RETIRADA, DOOR, STATIONS, PLATE_SLOTS, MARMJ_SLOTS, BOUNDS };
 /* ============================================================
    PONTOS (v7.4): o nível do salão é o ponto. Garagem, área industrial (v9) e Avenida Brasil (v9.1); o Terraço Suíça
    vem na etapa 4 do plano.
@@ -285,16 +288,16 @@ const LAYOUT = { W, H, TW, HUDX, CALCADA, QUEUE, RETIRADA, DOOR, STATIONS, PLATE
    empréstimo no banco (v8.3)
    ============================================================ */
 const PONTOS = [
-  { id:'garagem', nome:'Garagem da mãe da Bia', nivel:1, lugares:16, aluguel:0, mudanca:0, credito:1000, cardapio:1, area:{ x0:196, y0:150, x1:684, y1:500 }, espera:4, assento:'pe', bebida:'agua', pratos:4, prateleira:2, vip:0, deixa:'a TV, o som e a torneira ficam' },   // traz/deixa: o que o ponto novo traz e o que fica para trás ao sair deste (texto do cartão Mudança, v9.1)
+  { id:'garagem', nome:'Garagem da mãe da Bia', nivel:1, lugares:16, aluguel:0, mudanca:0, credito:1000, cardapio:1, area:{ x0:196, y0:150, x1:684, y1:500 }, espera:4, assento:'pe', bebida:'agua', pratos:4, marmJanela:2, prateleira:2, vip:0, deixa:'a TV, o som e a torneira ficam' },   // traz/deixa: o que o ponto novo traz e o que fica para trás ao sair deste (texto do cartão Mudança, v9.1)
   // v9: a primeira mudança (a área é a da Garagem alargada em 36 px à esquerda: 20 lugares não cabiam na arrumação automática). tipos: os pesos do sorteio da clientela (no lugar do day.types); encomenda: a chance diária da encomenda do setor;
   // apito: o pico do meio do dia (as primeiras `max` turmas chegam juntas a partir de `quando` do turno, uma a cada `gap` s, avisadas `aviso` s antes);
   // patPressa: a paciência de quem vem sozinho ou em dupla; vip: a chance de VIP; metaF: o fator das metas (v9.6.1: 1,25 → 2,3 e 1,7 → 3,2); expertF (v9.6.1): o da expert, a 3ª estrela (sem ele, o metaF); prateleira: as vagas do balcão de retirada;
   // grupos: o fator dos grupos do dia (os 20 lugares já trazem +60% de movimento; sem ele, nem o bot afiado fechava o dia sem perder ninguém)
-  { id:'industrial', nome:'Lanchonete na área industrial', nivel:2, lugares:20, aluguel:120, mudanca:800, credito:2000, cardapio:1.5, area:{ x0:160, y0:150, x1:684, y1:500 }, espera:5, assento:'pe', bebida:'suco', pratos:5, prateleira:4,
-    tipos:{ estudante:1, executiva:1, familia:0.5, vovos:0.7, entregador:2, turma:2, motorista:1 }, encomenda:0.6, apito:{ quando:0.45, max:3, gap:[8, 12], aviso:10 }, patPressa:0.85, vip:0.2, metaF:2.3, expertF:1.6, grupos:0.8,
+  { id:'industrial', nome:'Lanchonete na área industrial', nivel:2, lugares:20, aluguel:120, mudanca:800, credito:2000, cardapio:1.5, area:{ x0:160, y0:150, x1:684, y1:500 }, espera:5, assento:'pe', bebida:'suco', pratos:5, marmJanela:3, prateleira:4,
+    tipos:{ estudante:1, executiva:1, familia:0.5, vovos:0.7, entregador:2, turma:2, motorista:1 }, encomenda:0.6, apito:{ quando:0.45, max:3, gap:[8, 12], aviso:10 }, patPressa:0.85, vip:0.2, metaF:2.5, expertF:1.7, grupos:0.8,
     traz:'a freguesia da fábrica e da estrada', deixa:'as TVs, o assento da espera e a jarra de suco ficam' },
   // v9.1: o 2º ponto novo (cap. 6 e 7). Sem apito, sem encomenda e sem patPressa: a turma, o motorista e a encomenda não vêm. vip: ×2 (restaurante atrai mais VIP)
-  { id:'avenida', nome:'Restaurante na Avenida Brasil', nivel:3, lugares:24, aluguel:400, mudanca:2000, credito:4000, cardapio:2.0, area:{ x0:160, y0:150, x1:684, y1:500 }, espera:6, assento:'pe', bebida:'saborizada', pratos:6, prateleira:4,
+  { id:'avenida', nome:'Restaurante na Avenida Brasil', nivel:3, lugares:24, aluguel:400, mudanca:2000, credito:4000, cardapio:2.0, area:{ x0:160, y0:150, x1:684, y1:500 }, espera:6, assento:'pe', bebida:'saborizada', pratos:6, marmJanela:3, prateleira:4,
     tipos:{ estudante:0.5, executiva:2, familia:1.5, vovos:1, entregador:1, negocios:1.5 }, vip:2, metaF:3.0, expertF:3.6, grupos:0.7,   // v9.6.4: 3,2 e 3,8 → 3,0 e 3,6 (o VIP mais exigente deixou a Avenida abaixo do alvo)
     traz:'o almoço de negócios e mais VIPs', art:'o' }
 ];
@@ -678,7 +681,8 @@ function pratoPerde(age){ return PRATO.perde * clamp((age - PRATO.quente) / PRAT
 /* quanto do vapor ainda resta (1 quente, 0 frio de vez) */
 function pratoVapor(age){ return 1 - clamp((age - PRATO.quente) / PRATO.rampa, 0, 1); }
 const MARMITA = { adiantar:false,   // v9.6.2: o '+ marmita' desligado até vir a estufa (retorno de 01/11); o código fica
-  embalagem:2, efood:0.15, vagas:2, reserva:1, validade:60, prato:'pf', fila:3 };
+  embalagem:2, efood:0.15, vagas:2, reserva:1, validade:60, prato:'pf', fila:3,
+  gap:12 };   // v9.6.5: dois entregadores comuns chegam com pelo menos `gap` s de diferença
 const MULTA = 10;                                     // grupo que vai embora bravo (com 0 corações) desconta isto do dia
 const VIP = { pat:0.65, tip:0.1, perfect:40, angry:10, dish:12, cook:1.8, types:['estudante','vovos','familia','executiva'] };   // dish: o prato especial soma R$ 12 à conta e leva 1,8× o tempo; perfect: pontos (v8.3.8)
 
@@ -1097,7 +1101,7 @@ const BIA_IDS = ['tenis', 'corrida', 'bandeja', 'sudoku'];
 function upgradeCartao(id){ return BIA_IDS.indexOf(id) >= 0 ? 'bia' : 'melhorias'; }
 const HIST_NOMES = { bia:'Bia', tonhao:'Tonhão', dani:'Dani', joca:'Joca', cami:'Cami', anselmo:'Anselmo' };
 const CAIXA_MAX = 14;                                 // livro-caixa (v7.2): quantos dias da carreira ficam guardados
-const VERSAO = 'v9.6.4';                            // vai no resumo do Caixa
+const VERSAO = 'v9.6.5';                            // vai no resumo do Caixa
 const DIVULGA_DIA = 4;                                // antes disso, o movimento é o da inauguração (sem custo); v9.0.2: dia 4, e o padrão é o boca a boca
 function divulgaAberta(n, sv){ return devLivre() || n >= DIVULGA_DIA && !(sv && sv.convDiv === 'pend'); }   // no modo dev, desde o dia 1; v9.0.3: no Modo História, só depois da conversa
 /* v9.6.4: a Efood (os entregadores) só abre depois da conversa dos entregadores, no Modo História; antes dela, nenhum tipo com `retira` vem na agenda */
