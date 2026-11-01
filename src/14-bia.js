@@ -43,7 +43,7 @@ function handLayout(items, tray, maxTickets){
 }
 
 /* a marmita (v8.6) na mão de quem leva: o mesmo objeto, sem o lugar na janela de prontos */
-function marmitaMao(p){ return { kind:'marmita', mid:p.mid, dish:p.dish, dono:p.dono, age:p.age, crit:p.crit, q:p.q }; }
+function marmitaMao(p){ return { kind:'marmita', mid:p.mid, dish:p.dish, dono:p.dono, age:p.age, crit:p.crit, q:p.q, jogar:!!p.jogar }; }
 /* onde está quem pediu o suco da espera: o banco lá fora ou a mesa (a Bia refaz o caminho quando muda) */
 function sucoLugar(g){ return !g ? '' : g.state === 'queue' ? 'banco' + g.slot : g.table ? 'mesa' + g.table.id : 'fora'; }
 
@@ -216,12 +216,12 @@ class Waitress {
     if (a.type === 'retirada'){ if (!g.levaMarmitas(this)) this.fail(this.hands.some(h => h.kind === 'marmita') ? 'Prateleira cheia!' : '?'); return; }
     if (a.type === 'plate'){
       this.submitTickets();
-      const slot = g.kitchen.plates.findIndex(p => p && p.id === a.pid);
-      if (slot < 0) return this.fail('?');
-      if (g.kitchen.plates[slot].group && g.kitchen.plates[slot].group.cami) return this.fail('É da Cami!');   // v9.6: o prato do grupo que a Cami atende
+      const ach = g.kitchen.achaPronto(a.pid);   // v9.6.5: o prato (plates) ou a marmita (marmJ)
+      if (!ach) return this.fail('?');
+      if (ach.p.group && ach.p.group.cami) return this.fail('É da Cami!');   // v9.6: o prato do grupo que a Cami atende
       if (!this.canTake('dish')) return this.fail('Mãos cheias!');
-      const p = g.kitchen.plates[slot];
-      g.kitchen.plates[slot] = null;
+      const p = ach.p;
+      ach.arr[ach.i] = null;
       if (p.kind === 'marmita'){ this.hands.push(marmitaMao(p)); Sfx.blip(); return; }
       const perde = pratoPerde(p.age);   // v8.6.8: esfriou no balcão
       this.hands.push({ kind:'dish', table:p.table, group:p.group, dish:p.dish, crit:p.crit, q:Math.max(1, (p.q || 1) - perde), fria:perde >= PRATO.friaDe, vip:p.vip });
@@ -264,6 +264,15 @@ class Waitress {
     }
     if (a.type === 'trash'){
       const lixo = this.hands.filter(h => BEBIDAS_MAO[h.kind]);
+      const mj = this.hands.filter(h => h.kind === 'marmita' && h.jogar);   // v9.6.5: a marmita sem dono, com o X vermelho (o entregador desistiu)
+      if (!lixo.length && mj.length){
+        if (g.trash >= TRASH.cap) return this.fail('Lixo cheio!');
+        mj.forEach(h => this.hands.splice(this.hands.indexOf(h), 1));
+        g.addTrash(mj.length); g.stats.jogadas += mj.length;
+        g.addText(this.x, this.y - 82, 'Pro lixo!', PAL.perigo, 15);
+        Sfx.noise(0.18, 0.12, 0, 500); Sfx.tone(160, 0.12, 'square', 0.04);
+        return;
+      }
       if (!lixo.length){
         // mãos vazias: esvazia a lixeira
         if (!this.hands.length && g.trash > 0){ g.trash = 0; g.stats.emptied++; g.addText(this.x, this.y - 82, 'Lixo pra fora!', PAL.ok, 15); Sfx.noise(0.3, 0.1, 0, 400); return; }

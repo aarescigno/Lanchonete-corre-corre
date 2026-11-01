@@ -62,12 +62,12 @@ const joga=(H,fat,custo)=>{ const {g,els}=H; if(g.state==='shop') els['btn-shop-
   ok(g.contas===garagemContas+120,'as contas do dia somam o aluguel de R$ 120');
   g.schedule=[]; g.nextIdx=0; g.money=1000; g.custo=0; const b0=g.save.bank; g.finishDay();
   ok(g.save.bank===b0+1000-g.contas-g.paid-g.paidDiv && g.save.caixa[g.save.caixa.length-1].contas===g.contas,'o aluguel sai no fim do dia e entra no livro-caixa');
-  const D=g.diaPonto(L.diaOf(10)); ok(D.meta===Math.round(L.diaOf(10).meta*2.3/5)*5 && D.expert===Math.round(L.diaOf(10).expert*1.6/5)*5,'meta ×2,3 e expert ×1,6 (v9.6.1), arredondadas para 5');
+  const D=g.diaPonto(L.diaOf(10)); ok(D.meta===Math.round(L.diaOf(10).meta*2.5/5)*5 && D.expert===Math.round(L.diaOf(10).expert*1.7/5)*5,'meta ×2,5 e expert ×1,7 (v9.6.5), arredondadas para 5');
   const G=jogo(4,false).g; G.resetDay(10); ok(G.day.meta===L.diaOf(10).meta,'na Garagem, a meta é a de sempre'); }
 
 // ---------- 4. a clientela ----------
 { const H=jogo(4,true), {g,L}=H, I=g, tipos={}, vipI={ v:0, n:0 }; g.save.divulga='boca';
-  const conta=(game,res)=>{ for(let k=0;k<14;k++){ const sc=game.buildSchedule(game.day); sc.forEach(s=>{ res.tipos[s.type]=(res.tipos[s.type]||0)+1; res.n++; if(s.vip) res.v++; }); } return res; };
+  const conta=(game,res)=>{ for(let k=0;k<30;k++){ const sc=game.buildSchedule(game.day); sc.forEach(s=>{ res.tipos[s.type]=(res.tipos[s.type]||0)+1; res.n++; if(s.vip) res.v++; }); } return res; };
   const ri=conta(g,{ tipos:{}, v:0, n:0 });
   const G=jogo(4,false).g; G.resetDay(10); const rg=conta(G,{ tipos:{}, v:0, n:0 });
   const fr=(r,k)=>(r.tipos[k]||0)/(r.n-(r.tipos.encomenda||0));

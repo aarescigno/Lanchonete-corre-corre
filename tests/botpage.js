@@ -26,8 +26,9 @@ function baseBot(g,L,opts){
     const has=(f)=>b.acts.some(f);
     // marmitas (v8.6): a que está na mão vai ao balcão de retirada; a de quem espera no balcão, pronta na janela, vai buscar
     if(b.hands.some(h=>h.kind==='marmita') && !has(a=>a.type==='retirada')) return g.tapStation('retirada');
-    if(g.kitchen.plates){ const i=g.kitchen.plates.findIndex(p=>p&&p.kind==='marmita'&&p.dono&&!p.dani); const p=g.kitchen.plates[i];
-      if(p&&can('marmita')&&!has(a=>a.type==='plate'&&a.pid===p.id)) return g.tapStation('plates',L.LAYOUT.PLATE_SLOTS[i].x,L.LAYOUT.PLATE_SLOTS[i].y); }
+    if(g.kitchen.marmJ){ const i=g.kitchen.marmJ.findIndex(p=>p&&p.dono&&!p.dani); const p=g.kitchen.marmJ[i];
+      if(p&&can('marmita')&&!has(a=>a.type==='plate'&&a.pid===p.id)) return g.tapStation('plates',L.LAYOUT.MARMJ_SLOTS[i].x,L.LAYOUT.MARMJ_SLOTS[i].y); }
+    { const x=b.hands.find(h=>h.kind==='marmita'&&h.jogar); if(x && !has(a=>a.type==='trash')) return g.tapStation('trash',700,500); }   // v9.6.5: a marmita do X vermelho vai pro lixo
     if(b.hands.some(h=>h.kind==='ticket') && !has(a=>a.type==='order')) return g.tapStation('order',800,150);
     const d=b.hands.find(h=>h.kind==='dish');
     if(d && !has(a=>a.type==='table'&&a.id===d.table)) return g.tapTable(g.tables[d.table-1]);
@@ -115,9 +116,10 @@ function afiado(g,L){
     // marmitas (v8.6): a do entregador que espera, na mão ou pronta na janela; a sem dono vai para a prateleira com folga.
     // Adiantar (PEDIDOS sem comanda) quando não há nada mais urgente
     const RT=ST.retirada, livres=g.prateleira?g.prateleira.filter(m=>!m.dono).length:0;
-    b.hands.filter(h=>h.kind==='marmita').forEach(h=>add(h.dono?ttl(h.dono)-from(RT.ap):(livres<g.vagas?30:Infinity),()=>g.tapStation('retirada')));
-    k.plates.forEach((p,i)=>{ if(!p||p.kind!=='marmita'||p.dani||!can('marmita')) return;
-      add(p.dono?ttl(p.dono)-sw('plates')-walk(ST.plates.ap.x,ST.plates.ap.y,RT.ap.x,RT.ap.y):(livres<g.vagas?32:Infinity),()=>g.tapStation('plates',SL[i].x,SL[i].y)); });
+    b.hands.filter(h=>h.kind==='marmita'&&!h.jogar).forEach(h=>add(h.dono?ttl(h.dono)-from(RT.ap):(livres<g.vagas?30:Infinity),()=>g.tapStation('retirada')));
+    k.marmJ.forEach((p,i)=>{ if(!p||p.dani||!can('marmita')) return;   // v9.6.5: a fileira das marmitas
+      add(p.dono?ttl(p.dono)-sw('plates')-walk(ST.plates.ap.x,ST.plates.ap.y,RT.ap.x,RT.ap.y):(livres<g.vagas?32:Infinity),()=>g.tapStation('plates',L.LAYOUT.MARMJ_SLOTS[i].x,L.LAYOUT.MARMJ_SLOTS[i].y)); });
+    { const x=b.hands.find(h=>h.kind==='marmita'&&h.jogar); if(x&&!b.acts.some(a=>a.type==='trash')) add(5,()=>g.tapStation('trash',700,500)); }   // v9.6.5: a marmita do X vermelho vai pro lixo
     // v9: com a encomenda do setor avisada (e ainda sem chegar), adianta PF até o tamanho do lote (a encomenda reaproveita as sem dono)
     const encPend=g.encomendaDia&&!g.groups.some(x=>x.lote)&&g.schedule.some(s=>s.type==='encomenda'&&g.nextIdx<=g.schedule.indexOf(s));
     const livresMax=encPend?Math.min(g.vagas,g.encomendaDia.lote-1):1;
@@ -127,7 +129,7 @@ function afiado(g,L){
     const tk=b.hands.filter(h=>h.kind==='ticket');
     if(tk.length) add(Math.min(...tk.map(h=>ttl(h.group)))-sw('order')-6,()=>g.tapStation('order',800,150));
     // pratos prontos no balcão
-    k.plates.forEach((p,i)=>{ if(!p||p.kind==='marmita'||!can('dish')) return; const t=tableOf(p.group); if(!t||dela(t)) return;
+    k.plates.forEach((p,i)=>{ if(!p||!can('dish')) return; const t=tableOf(p.group); if(!t||dela(t)) return;
       add(ttl(p.group)-sw('plates')-walk(ST.plates.ap.x,ST.plates.ap.y,t.cx,t.cy),()=>g.tapStation('plates',SL[i].x,SL[i].y)); });
     // grupos esperando nas mesas (pedido, conta) e mesas sujas
     const ordered=g.tables.filter(t=>t.group&&t.group.state==='ordered').map(t=>ttl(t.group));
