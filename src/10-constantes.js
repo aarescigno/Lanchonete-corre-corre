@@ -106,13 +106,12 @@ function tonhaoNivelXp(cursos){
   return n;
 }
 /* experiência da Dani (v8.9): +1 a cada `tarefas` tarefas que ela termina (save.daniTar, o total da carreira) e +2 por curso dela
-   (save.daniCursos: { id:1 }); máximo 6 de cursos */
+   (save.daniCursos: { id:1 }); na Garagem, 4 de cursos (só atendimento; o barista saiu em 01/11: café é com o Joca, e a Dani segue nos doces) */
 const DANI_XP = { tarefas:5, curso:2 };
 /* nivel: o ponto de onde o curso aparece (padrão 1); item: o curso traz um item de cardápio (fica no cartão Cardápio, com o rosto dela) */
 const DANI_CURSOS = [
   { id:'atend',   nome:'Atendimento ao cliente', preco:120 },
   { id:'cozinha', nome:'Organização da cozinha', preco:150 },
-  { id:'barista', nome:'Barista iniciante',      preco:180 },
   { id:'confCaseira', nome:'Confeitaria caseira', preco:180, nivel:2, item:true },   // v9.2: a geladeirinha de doces (DOCES)
   { id:'confGourmet', nome:'Confeitaria gourmet', preco:350, nivel:3, dep:'confCaseira', item:true }   // v9.3: a vitrine refrigerada e os doces gourmet (só depois da caseira)
 ];

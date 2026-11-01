@@ -4,6 +4,13 @@ Registro das ideias e dos retornos de quem jogou, com o texto original, e de ond
 
 ---
 
+## 01/11 — usuário: Dani sem curso de barista
+> "Tem que tirar esse curso de barista iniciante da Dani, ela vai para o caminho do doce só. E creio que na garagem tínhamos combinado da Dani se especializar somente em atendimentos etc, não em preparos"
+
+Destino: feito em 01/11 (sem versão nova). Saiu o curso "Barista iniciante" (R$ 180) de `DANI_CURSOS`; na Garagem ficam só "Atendimento ao cliente" e "Organização da cozinha" (tarefas da casa: louça, pratos, lixo). Saves com o curso perdem esses 2 de experiência.
+
+---
+
 ## 31/10 (noite) — usuário: a equipe passa o bastão (Dani → Joca → Cami) e o Anselmo na Avenida
 > "É pra Dani começar com doces no meio da área industrial, demonstrando desejo e fazendo cursos, Dani recomenda o Joca, conhecido dela dos tempos de colégio, para seu posto quando termina o curso básico de confeitaria. Joca inicia no nível 2 ou 3 da Dani e progride até mesmo nível máximo da Dani em questão de atendimento. Na avenida, ele passa esse bastão para a Cami, que consegue ir além com cursos especializados que a tornam extremamente ágil. Anselmo entra no nível da avenida também"
 
