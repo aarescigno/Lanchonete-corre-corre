@@ -1218,9 +1218,9 @@ class Game {
   toggleDaniTask(id){
     const eq = this.save.equipe, i = eq.daniTasks.indexOf(id);
     const max = eq.dani ? STAFF.dani.levels[eq.dani].tasks : STAFF.dani.levels[1].tasks;
-    if (i >= 0) eq.daniTasks.splice(i, 1);
+    if (i >= 0){ if (this.dani.active && this.dani.tasks.indexOf(id) < 0 && daniTaskOk(id, this.up) && (BASICAS.indexOf(id) < 0 || donoBasico(this) === 'dani')) return false; eq.daniTasks.splice(i, 1); }   // v9.6.3: a guardada além das vagas só vale quando uma vaga abre
     else if (!daniTaskOk(id, this.up) || (BASICAS.indexOf(id) >= 0 && donoBasico(this) !== 'dani')) return false;   // v9.2: com o Joca, as básicas são dele
-    else if (eq.daniTasks.filter(t => daniTaskOk(t, this.up) && (donoBasico(this) === 'dani' || BASICAS.indexOf(t) < 0)).length < max) eq.daniTasks.push(id);
+    else if (this.dani.tasks.length < max) eq.daniTasks.push(id);   // v9.6.3: conta as tarefas que ela de fato faz (a lista guardada pode ter mais que as vagas)
     else return false;
     writeSave(this.save); return true;
   }

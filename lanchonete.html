@@ -345,7 +345,7 @@ table.rank tr.me td{background:#fbe7a8}
 
     <div class="ov show" id="ov-menu">
       <div class="panel menu-panel">
-        <span class="vtag" id="vtag" aria-label="Versão 9.6.2">v9.6.2</span>
+        <span class="vtag" id="vtag" aria-label="Versão 9.6.3">v9.6.3</span>
         <h1 class="title">Lanchonete <br>Corre-Corre</h1>
         <p class="tag">Ajude a Bia a atender a freguesia da esquina antes que o cafezinho esfrie!</p>
         <div class="lbl" id="menu-dia">História</div>
@@ -557,7 +557,8 @@ table.rank tr.me td{background:#fbe7a8}
       <div class="panel">
         <h2>Versões</h2>
         <ul class="verlist">
-          <li><b>v9.6.2</b><span class="cur">versão atual</span><br>01/11/2026 &mdash; A ajudante lava a louça da pia antes de recolher mais mesas; a conversa do Cardápio passa para o fim do dia 2; nova conversa dos entregadores no fim do dia 4; o &ldquo;+ marmita&rdquo; fica desligado até vir a estufa.</li>
+          <li><b>v9.6.3</b><span class="cur">versão atual</span><br>01/11/2026 &mdash; A Dani aprendiz (nível 1) faz uma tarefa só, e a lojinha agora mostra marcada só a que ela faz de verdade (antes aparecia &ldquo;Retirar pratos&rdquo; e &ldquo;Lavar a louça&rdquo; marcados).</li>
+          <li><b>v9.6.2</b><br>01/11/2026 &mdash; A ajudante lava a louça da pia antes de recolher mais mesas; a conversa do Cardápio passa para o fim do dia 2; nova conversa dos entregadores no fim do dia 4; o &ldquo;+ marmita&rdquo; fica desligado até vir a estufa.</li>
           <li><b>v9.6.1</b><br>01/11/2026 &mdash; Contas acertadas na área industrial e na Avenida: com a equipe, o lucro de lá passava a meta com folga quase todo dia, e agora as metas acompanham o movimento de cada ponto (×2,3 na área industrial e ×3,2 na Avenida). A 3ª estrela continua para quem joga sem perder ninguém. A Cami cuida de até 2 mesas no modo &ldquo;Minhas mesas&rdquo;.</li>
           <li><b>v9.6</b><br>31/10/2026 &mdash; A Cami ganha as mesas dela! Com o curso de Atendimento de mesa (R$ 600), o cartão dela ganha o modo &ldquo;Minhas mesas&rdquo;: no Salão, toque numa mesa e marque até 3 como da Cami (um avental vinho no tampo). Ela cuida do grupo dessas mesas do pedido à conta: anota, leva à janela, pega o prato pronto, entrega, cobra e recolhe a louça. A Bia deixa o prato dela em paz, e o básico da casa volta para o Joca.</li>
           <li><b>v9.5</b><br>31/10/2026 &mdash; Drinks na Avenida! O Anselmo, coqueteleiro que saiu do restaurante do Bráulio, chega à lojinha (Equipe) e cuida do balcão de drinks, na parede do fundo. Os grupos pedem drinks ao sentar (Pôr do Sol da Avenida, Brisa de Maracujá e Esmeralda, R$ 22 cada): ele prepara um por vez, e a Bia leva os copos prontos às mesas. O grupo só pede a conta depois de receber os drinks.</li>
@@ -1753,7 +1754,7 @@ const BIA_IDS = ['tenis', 'corrida', 'bandeja', 'sudoku'];
 function upgradeCartao(id){ return BIA_IDS.indexOf(id) >= 0 ? 'bia' : 'melhorias'; }
 const HIST_NOMES = { bia:'Bia', tonhao:'Tonhão', dani:'Dani', joca:'Joca', cami:'Cami', anselmo:'Anselmo' };
 const CAIXA_MAX = 14;                                 // livro-caixa (v7.2): quantos dias da carreira ficam guardados
-const VERSAO = 'v9.6.2';                            // vai no resumo do Caixa
+const VERSAO = 'v9.6.3';                            // vai no resumo do Caixa
 const DIVULGA_DIA = 4;                                // antes disso, o movimento é o da inauguração (sem custo); v9.0.2: dia 4, e o padrão é o boca a boca
 function divulgaAberta(n, sv){ return devLivre() || n >= DIVULGA_DIA && !(sv && sv.convDiv === 'pend'); }   // no modo dev, desde o dia 1; v9.0.3: no Modo História, só depois da conversa
 function divulgaOf(id){ return DIVULGA.find(d => d.id === id) || DIVULGA[0]; }   // v9.0.2: sem escolha, boca a boca
@@ -4567,9 +4568,9 @@ class Game {
   toggleDaniTask(id){
     const eq = this.save.equipe, i = eq.daniTasks.indexOf(id);
     const max = eq.dani ? STAFF.dani.levels[eq.dani].tasks : STAFF.dani.levels[1].tasks;
-    if (i >= 0) eq.daniTasks.splice(i, 1);
+    if (i >= 0){ if (this.dani.active && this.dani.tasks.indexOf(id) < 0 && daniTaskOk(id, this.up) && (BASICAS.indexOf(id) < 0 || donoBasico(this) === 'dani')) return false; eq.daniTasks.splice(i, 1); }   // v9.6.3: a guardada além das vagas só vale quando uma vaga abre
     else if (!daniTaskOk(id, this.up) || (BASICAS.indexOf(id) >= 0 && donoBasico(this) !== 'dani')) return false;   // v9.2: com o Joca, as básicas são dele
-    else if (eq.daniTasks.filter(t => daniTaskOk(t, this.up) && (donoBasico(this) === 'dani' || BASICAS.indexOf(t) < 0)).length < max) eq.daniTasks.push(id);
+    else if (this.dani.tasks.length < max) eq.daniTasks.push(id);   // v9.6.3: conta as tarefas que ela de fato faz (a lista guardada pode ter mais que as vagas)
     else return false;
     writeSave(this.save); return true;
   }
@@ -9468,10 +9469,10 @@ function buildDani(grid){
   c = staffCard(upgradeIcon('dani'), lv ? 'Dani · ' + (lv === 1 ? 'aprendiz (sem salário)' : 'nível ' + (lv - 1) + ' de 3') : 'Dani (ajudante)',
     lv ? '' : (cap2 ? '' : 'Chega no capítulo 2. ') + 'Ajudante da Bia, mais lenta que ela (velocidade em % da dela). Tem 2 mãos: leva 2 itens por vez. Pode ' + avail.map(t => t.name.toLowerCase()).join(', ').replace(/, ([^,]*)$/, ' e $1') + '.');
   if (lv){
-    const sel = eq.daniTasks.filter(id => daniTaskOk(id, game.up) && (donoBasico(game) === 'dani' || BASICAS.indexOf(id) < 0)).length;   // v9.2: as básicas do Joca não ocupam vaga
+    const feitas = game.dani.tasks, sel = feitas.length;   // v9.2: as básicas do Joca não ocupam vaga; v9.6.3: só marca o que ela de fato faz (no nível 1 é 1 tarefa, mesmo com 2 guardadas)
     const tasks = el('div', 'tasks');
     avail.forEach(t => {
-      const on = eq.daniTasks.indexOf(t.id) >= 0;
+      const on = feitas.indexOf(t.id) >= 0;
       const b = el('button', null, t.short); b.type = 'button'; b.title = t.name; b.setAttribute('aria-pressed', on ? 'true' : 'false');
       if (!on && sel >= sp.tasks) b.disabled = true;
       if (BASICAS.indexOf(t.id) >= 0 && donoBasico(game) !== 'dani'){ b.disabled = true; b.title = t.name + ' (com ' + (donoBasico(game) === 'cami' ? 'a Cami' : 'o Joca') + ')'; }   // v9.2: o básico é do ajudante mais novo

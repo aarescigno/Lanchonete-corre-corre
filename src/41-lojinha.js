@@ -307,10 +307,10 @@ function buildDani(grid){
   c = staffCard(upgradeIcon('dani'), lv ? 'Dani · ' + (lv === 1 ? 'aprendiz (sem salário)' : 'nível ' + (lv - 1) + ' de 3') : 'Dani (ajudante)',
     lv ? '' : (cap2 ? '' : 'Chega no capítulo 2. ') + 'Ajudante da Bia, mais lenta que ela (velocidade em % da dela). Tem 2 mãos: leva 2 itens por vez. Pode ' + avail.map(t => t.name.toLowerCase()).join(', ').replace(/, ([^,]*)$/, ' e $1') + '.');
   if (lv){
-    const sel = eq.daniTasks.filter(id => daniTaskOk(id, game.up) && (donoBasico(game) === 'dani' || BASICAS.indexOf(id) < 0)).length;   // v9.2: as básicas do Joca não ocupam vaga
+    const feitas = game.dani.tasks, sel = feitas.length;   // v9.2: as básicas do Joca não ocupam vaga; v9.6.3: só marca o que ela de fato faz (no nível 1 é 1 tarefa, mesmo com 2 guardadas)
     const tasks = el('div', 'tasks');
     avail.forEach(t => {
-      const on = eq.daniTasks.indexOf(t.id) >= 0;
+      const on = feitas.indexOf(t.id) >= 0;
       const b = el('button', null, t.short); b.type = 'button'; b.title = t.name; b.setAttribute('aria-pressed', on ? 'true' : 'false');
       if (!on && sel >= sp.tasks) b.disabled = true;
       if (BASICAS.indexOf(t.id) >= 0 && donoBasico(game) !== 'dani'){ b.disabled = true; b.title = t.name + ' (com ' + (donoBasico(game) === 'cami' ? 'a Cami' : 'o Joca') + ')'; }   // v9.2: o básico é do ajudante mais novo
