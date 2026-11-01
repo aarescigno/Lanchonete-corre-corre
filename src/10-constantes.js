@@ -150,7 +150,7 @@ const CAMI_CURSOS = [
   { id:'mesa', nome:'Atendimento de mesa',  preco:600, nivel:3, dep:'agil' }
 ];
 const ANSELMO_HOME = { x:650, y:118 };   // v9.5: atrás do balcão de drinks
-const CAMI_MESAS_MAX = 3;   // v9.6: quantas mesas o jogador pode marcar como da Cami
+const CAMI_MESAS_MAX = 2;   // v9.6: quantas mesas o jogador pode marcar como da Cami (v9.6.1: 3 → 2, rebalanceamento da 3b-7)
 /* v9.6: quantas mesas do salão estão marcadas como da Cami */
 function camiMesasN(save){ return ((save && save.salao && save.salao.mesas) || []).filter(m => m.cami).length; }
 /* v9.6: a Cami está no modo "Minhas mesas" (nível 3, o modo escolhido e pelo menos 1 mesa marcada)? */
@@ -289,14 +289,14 @@ const PONTOS = [
   { id:'garagem', nome:'Garagem da mãe da Bia', nivel:1, lugares:16, aluguel:0, mudanca:0, credito:1000, cardapio:1, area:{ x0:196, y0:150, x1:684, y1:500 }, espera:4, assento:'pe', bebida:'agua', pratos:4, prateleira:2, deixa:'a TV, o som e a torneira ficam' },   // traz/deixa: o que o ponto novo traz e o que fica para trás ao sair deste (texto do cartão Mudança, v9.1)
   // v9: a primeira mudança (a área é a da Garagem alargada em 36 px à esquerda: 20 lugares não cabiam na arrumação automática). tipos: os pesos do sorteio da clientela (no lugar do day.types); encomenda: a chance diária da encomenda do setor;
   // apito: o pico do meio do dia (as primeiras `max` turmas chegam juntas a partir de `quando` do turno, uma a cada `gap` s, avisadas `aviso` s antes);
-  // patPressa: a paciência de quem vem sozinho ou em dupla; vip: a chance de VIP; metaF: o fator das metas e da expert; prateleira: as vagas do balcão de retirada;
+  // patPressa: a paciência de quem vem sozinho ou em dupla; vip: a chance de VIP; metaF: o fator das metas (v9.6.1: 1,25 → 2,3 e 1,7 → 3,2); expertF (v9.6.1): o da expert, a 3ª estrela (sem ele, o metaF); prateleira: as vagas do balcão de retirada;
   // grupos: o fator dos grupos do dia (os 20 lugares já trazem +60% de movimento; sem ele, nem o bot afiado fechava o dia sem perder ninguém)
   { id:'industrial', nome:'Lanchonete na área industrial', nivel:2, lugares:20, aluguel:120, mudanca:800, credito:2000, cardapio:1.5, area:{ x0:160, y0:150, x1:684, y1:500 }, espera:5, assento:'pe', bebida:'suco', pratos:5, prateleira:4,
-    tipos:{ estudante:1, executiva:1, familia:0.5, vovos:0.7, entregador:2, turma:2, motorista:1 }, encomenda:0.6, apito:{ quando:0.45, max:3, gap:[8, 12], aviso:10 }, patPressa:0.85, vip:0.3, metaF:1.25, grupos:0.8,
+    tipos:{ estudante:1, executiva:1, familia:0.5, vovos:0.7, entregador:2, turma:2, motorista:1 }, encomenda:0.6, apito:{ quando:0.45, max:3, gap:[8, 12], aviso:10 }, patPressa:0.85, vip:0.3, metaF:2.3, expertF:1.6, grupos:0.8,
     traz:'a freguesia da fábrica e da estrada', deixa:'as TVs, o assento da espera e a jarra de suco ficam' },
   // v9.1: o 2º ponto novo (cap. 6 e 7). Sem apito, sem encomenda e sem patPressa: a turma, o motorista e a encomenda não vêm. vip: ×2 (restaurante atrai mais VIP)
   { id:'avenida', nome:'Restaurante na Avenida Brasil', nivel:3, lugares:24, aluguel:400, mudanca:2000, credito:4000, cardapio:2.0, area:{ x0:160, y0:150, x1:684, y1:500 }, espera:6, assento:'pe', bebida:'saborizada', pratos:6, prateleira:4,
-    tipos:{ estudante:0.5, executiva:2, familia:1.5, vovos:1, entregador:1, negocios:1.5 }, vip:2, metaF:1.7, grupos:0.7,
+    tipos:{ estudante:0.5, executiva:2, familia:1.5, vovos:1, entregador:1, negocios:1.5 }, vip:2, metaF:3.2, expertF:3.8, grupos:0.7,
     traz:'o almoço de negócios e mais VIPs', art:'o' }
 ];
 function pontoOf(id){ return PONTOS.find(p => p.id === id) || PONTOS[0]; }
@@ -429,7 +429,7 @@ function normSalao(s){
   const lista = l => (Array.isArray(l) ? l : []).filter(m => m && typeof m === 'object' && (+m.seats === 2 || +m.seats === 4))
     .map((m, i) => Object.assign({ x:Math.round(+m.x) || 0, y:Math.round(+m.y) || 0, seats:+m.seats, c:(+m.c >= 0 && +m.c <= 3) ? Math.round(+m.c) : i % 4 }, m.t ? { t:1 } : {}, m.cami ? { cami:1 } : {}));
   let mesas = lista(s.mesas);
-  { let n = 0; mesas.forEach(m => { if (m.cami && ++n > CAMI_MESAS_MAX) delete m.cami; }); }   // v9.6: até 3 mesas da Cami
+  { let n = 0; mesas.forEach(m => { if (m.cami && ++n > CAMI_MESAS_MAX) delete m.cami; }); }   // v9.6: até CAMI_MESAS_MAX mesas da Cami
   const estoque = lista(s.estoque).map(m => Object.assign({ seats:m.seats, c:m.c }, m.t ? { t:1 } : {})), tot = () => salaoLugares(mesas) + salaoLugares(estoque);
   while (tot() > ponto.lugares && estoque.length) estoque.pop();
   while (salaoLugares(mesas) > ponto.lugares) mesas.pop();
@@ -1086,7 +1086,7 @@ const BIA_IDS = ['tenis', 'corrida', 'bandeja', 'sudoku'];
 function upgradeCartao(id){ return BIA_IDS.indexOf(id) >= 0 ? 'bia' : 'melhorias'; }
 const HIST_NOMES = { bia:'Bia', tonhao:'Tonhão', dani:'Dani', joca:'Joca', cami:'Cami', anselmo:'Anselmo' };
 const CAIXA_MAX = 14;                                 // livro-caixa (v7.2): quantos dias da carreira ficam guardados
-const VERSAO = 'v9.6';                            // vai no resumo do Caixa
+const VERSAO = 'v9.6.1';                            // vai no resumo do Caixa
 const DIVULGA_DIA = 4;                                // antes disso, o movimento é o da inauguração (sem custo); v9.0.2: dia 4, e o padrão é o boca a boca
 function divulgaAberta(n, sv){ return devLivre() || n >= DIVULGA_DIA && !(sv && sv.convDiv === 'pend'); }   // no modo dev, desde o dia 1; v9.0.3: no Modo História, só depois da conversa
 function divulgaOf(id){ return DIVULGA.find(d => d.id === id) || DIVULGA[0]; }   // v9.0.2: sem escolha, boca a boca

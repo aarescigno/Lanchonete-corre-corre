@@ -84,11 +84,11 @@ class Game {
     this.result = null;
     this.bannerT = 0;
   }
-  /* v9: as metas do dia valem ×metaF do ponto (arredondadas para 5) */
+  /* v9: as metas do dia valem ×metaF do ponto (arredondadas para 5); v9.6.1: a expert (3ª estrela), ×expertF (sem ele, ×metaF) */
   diaPonto(d){
     const f = this.ponto.metaF; if (!f) return d;
-    const r5 = v => Math.round(v * f / 5) * 5;
-    return Object.assign({}, d, { meta:r5(d.meta), expert:r5(d.expert) });
+    const r5 = (v, k) => Math.round(v * k / 5) * 5;
+    return Object.assign({}, d, { meta:r5(d.meta, f), expert:r5(d.expert, this.ponto.expertF || f) });
   }
   /* v9: o tipo do grupo pelos pesos do ponto; o motorista vem mais nas pontas do turno (f: 0 a 1) e menos no meio */
   sorteiaTipo(w, f){
