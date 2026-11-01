@@ -2,6 +2,7 @@
 const load=require('./harness.js');
 let fails=0, total=0; const ok=(c,m)=>{ total++; if(!c){fails++;console.log('FAIL:',m);} else console.log('ok  :',m); };
 const H=load(); const {g,L}=H; const V=L.VIP;
+delete L.PONTOS[0].vip;   // v9.6.4: a Garagem não tem VIP; este teste confere a mecânica do VIP do dia, então tira o `vip:0` do ponto
 
 /* agenda: dias 1–4 sem VIP, dia 5 garante pelo menos 1, entregador nunca é VIP */
 for(let n=1;n<=4;n++){ let any=false; for(let k=0;k<30;k++){ g.resetDay(n); if(g.schedule.some(s=>s.vip)) any=true; } ok(!any,'dia '+n+' sem VIP'); }
