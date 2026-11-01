@@ -468,7 +468,8 @@ function drawWallCommon(ctx,g,t){
   circ(ctx,712,44,32); fs(ctx,PAL.cromo,3);
   circ(ctx,712,44,26); fs(ctx,'#fff',2);
   ctx.beginPath(); ctx.arc(712,44,21,-Math.PI/2,-Math.PI/2 + TAU*frac); ctx.lineWidth = 6; ctx.strokeStyle = low ? PAL.perigo : (endless ? PAL.ok : PAL.mostarda); ctx.lineCap = 'butt'; ctx.stroke(); ctx.lineCap = 'round';
-  txt(ctx, endless ? mmssUp(g.elapsed) : mmss(g ? g.clock : 0), 712, 45, 14, PAL.tinta, 'center', FD);
+  if (g && g.fechado && !endless) txt(ctx, 'FECHANDO', 712, 45, 9, PAL.alerta, 'center', FD, 0, 48);   // v9.6.4: o relógio zerou, mas ainda há gente no salão
+  else txt(ctx, endless ? mmssUp(g.elapsed) : mmss(g ? g.clock : 0), 712, 45, 14, PAL.tinta, 'center', FD);
   placaCozinha(ctx);
 }
 function placaCozinha(ctx){
@@ -566,6 +567,7 @@ function drawCalcada(ctx,g,tm){
   if (av && decorOn(g,'copo')) drawCopoLeite(ctx,x0 + 38,300,1);
   if (av && decorOn(g,'orquidea')) drawOrquidea(ctx,114,132,1);   // perto da porta, encostada na meia-parede (já dentro do salão)
   // portão de enrolar aberto, na borda do salão: trilho no alto e soleira no chão
+  if (g && g.fechado) drawPlacaFechado(ctx,QUEUE.x + 28,196,tm);   // v9.6.4
   ctx.fillStyle = '#ABA394'; ctx.fillRect(-6,92,12,448);
   ctx.strokeStyle = 'rgba(34,32,28,.4)'; ctx.lineWidth = 1.5; ctx.beginPath(); ctx.moveTo(0,96); ctx.lineTo(0,540); ctx.stroke();
   rr(ctx,-12,0,24,92,4); fs(ctx,PAL.cromo,2.5);
@@ -1072,6 +1074,14 @@ function drawTrash(ctx,on,t,g){
     }
   }
   if (on){ ctx.save(); const a = 0.55 + 0.4*Math.sin(t*8); ctx.strokeStyle = 'rgba(242,179,61,' + a + ')'; ctx.lineWidth = 5; const r = STATIONS.trash.rect; rr(ctx,r.x,r.y,r.w,r.h,8); ctx.stroke(); ctx.restore(); }
+}
+/* v9.6.4: a plaquinha "FECHADO" pendurada na calçada, ao lado do topo da fila de espera (balança de leve; parada com movimento reduzido) */
+function drawPlacaFechado(ctx,x,y,t){
+  ctx.save(); ctx.translate(x,y); ctx.rotate(RM ? -0.05 : -0.05 + Math.sin(t*2.2)*0.05);
+  ctx.strokeStyle = PAL.tinta; ctx.lineWidth = 1.6; ctx.beginPath(); ctx.moveTo(-14,-12); ctx.lineTo(0,-4); ctx.lineTo(14,-12); ctx.stroke();
+  rr(ctx,-32,-4,64,20,4); fs(ctx,PAL.perigo,2.4);
+  txt(ctx,'FECHADO',0,6.5,11,'#fff','center',FD,0,56);
+  ctx.restore();
 }
 /* placa pendurada "QUEBRADO" (v8), no aparelho parado: cordinha e etiqueta vermelha meio torta */
 function drawPlacaParada(ctx,x,y){

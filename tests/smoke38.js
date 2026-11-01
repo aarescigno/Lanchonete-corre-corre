@@ -72,7 +72,7 @@ const joga=(H,fat,custo)=>{ const {g,els}=H; if(g.state==='shop') els['btn-shop-
   const G=jogo(4,false).g; G.resetDay(10); const rg=conta(G,{ tipos:{}, v:0, n:0 });
   const fr=(r,k)=>(r.tipos[k]||0)/(r.n-(r.tipos.encomenda||0));
   ok(Math.abs(fr(ri,'entregador')-2/8.2)<0.07 && fr(ri,'entregador')>fr(rg,'entregador'),'área industrial: entregador com peso 2 (~24%), mais que na Garagem (20%)');
-  ok(ri.v/ri.n<rg.v/rg.n*0.5 && ri.v/ri.n<0.09,'VIPs na área industrial: ~0,3× (sem o VIP garantido do dia)');
+  ok(rg.v===0 && ri.v>0 && ri.v/ri.n<0.07,'VIPs: nenhum na Garagem (vip:0) e ~0,2× na área industrial, sem o VIP garantido do dia (v9.6.4)');
   ok(!rg.tipos.turma && !rg.tipos.motorista && !rg.tipos.encomenda,'a Garagem não tem turma, motorista nem encomenda');
   ok(ri.tipos.turma>0 && ri.tipos.motorista>0 && L.CUSTOMER_TYPES.turma.size[0]===3 && L.CUSTOMER_TYPES.turma.size[1]===4,'a área industrial tem turma (3 ou 4 pessoas) e motorista');
   // grupos de 1 e 2 pessoas têm pressa (×0,85); turma, motorista e encomenda, não

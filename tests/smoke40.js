@@ -19,7 +19,7 @@ const joga=(H,fat)=>{ const {g,els}=H; if(g.state==='shop') els['btn-shop-go'].f
 
 // ---------- 2. a conversa no fim do dia 3 ----------
 { const H=nova(), {g,els}=H, sv=g.save;
-  sv.conversa=null; sv.bank=5000; sv.convCard=1;
+  sv.conversa=null; sv.bank=5000; sv.convCard=1; sv.convEnt=1;
   g.startDay(1); joga(H,400); els['btn-next'].fire('click'); passa(H);
   g.startDay(2); joga(H,400); els['btn-next'].fire('click'); passa(H);
   ok(!g.save.convDiv,'depois dos dias 1 e 2, sem conversa da divulgação');
@@ -40,7 +40,7 @@ const joga=(H,fat)=>{ const {g,els}=H; if(g.state==='shop') els['btn-shop-go'].f
 { const {L}=load(); const sv={convDiv:'pend'};
   ok(!L.divulgaAberta(5,sv) && L.divulgaAberta(5,{convDiv:1}) && L.divulgaAberta(5),'com a conversa da divulgação pendente, a divulgação não abre'); }
 { const H=nova(), {g,els}=H, sv=g.save;
-  sv.conversa=null; sv.bank=5000; sv.convCard=1; sv.convDiv='pend'; sv.conversa='antes';
+  sv.conversa=null; sv.bank=5000; sv.convCard=1; sv.convEnt=1; sv.convDiv='pend'; sv.conversa='antes';
   els['btn-next'].fire('click'); ate(H,/./);
   ok(g.conversa && g.conversa.falas===L0(H).HISTORIA[sv.cap-1].antes,'conversa de capítulo pendente: ela toca primeiro');
   passa(H);
@@ -50,7 +50,7 @@ const joga=(H,fat)=>{ const {g,els}=H; if(g.state==='shop') els['btn-shop-go'].f
   ok(g.conversa && /festa da inauguração/.test(g.conversa.fala.s),'no fim de dia seguinte, sem capítulo, toca a da divulgação'); passa(H);
   ok(sv.convDiv===1 && els['shop-sec'].textContent==='Divulgação','e a lojinha abre na Divulgação'); }
 { const H=nova(), {g,els}=H, sv=g.save;
-  sv.conversa=null; sv.convCard='pend'; sv.convDiv='pend';
+  sv.conversa=null; sv.convCard='pend'; sv.convDiv="pend"; sv.convEnt=1;
   els['btn-next'].fire('click'); ate(H,/./); ok(g.conversa && /Tio, hoje|pessoal adorou/.test(g.conversa.fala.s),'cardápio e divulgação pendentes: só a do cardápio'); passa(H);
   ok(sv.convCard===1 && sv.convDiv==='pend' && g.state==='shop','a da divulgação fica para depois'); }
 console.log('smoke40: total =',total,' fails =',fails);

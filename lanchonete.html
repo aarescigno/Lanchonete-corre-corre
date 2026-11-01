@@ -345,7 +345,7 @@ table.rank tr.me td{background:#fbe7a8}
 
     <div class="ov show" id="ov-menu">
       <div class="panel menu-panel">
-        <span class="vtag" id="vtag" aria-label="Versão 9.6.3">v9.6.3</span>
+        <span class="vtag" id="vtag" aria-label="Versão 9.6.4">v9.6.4</span>
         <h1 class="title">Lanchonete <br>Corre-Corre</h1>
         <p class="tag">Ajude a Bia a atender a freguesia da esquina antes que o cafezinho esfrie!</p>
         <div class="lbl" id="menu-dia">História</div>
@@ -557,7 +557,8 @@ table.rank tr.me td{background:#fbe7a8}
       <div class="panel">
         <h2>Versões</h2>
         <ul class="verlist">
-          <li><b>v9.6.3</b><span class="cur">versão atual</span><br>01/11/2026 &mdash; A Dani aprendiz (nível 1) faz uma tarefa só, e a lojinha agora mostra marcada só a que ela faz de verdade (antes aparecia &ldquo;Retirar pratos&rdquo; e &ldquo;Lavar a louça&rdquo; marcados).</li>
+          <li><b>v9.6.4</b><span class="cur">versão atual</span><br>01/11/2026 &mdash; A porta fecha no fim do turno: quem espera lá fora vai embora sem multa e quem já está nas mesas termina e paga; no máximo 2 grupos grandes por mesa de 4 na espera; o Salão abre quando a primeira família vai embora da fila; a conversa dos entregadores vem um dia antes e a Efood só abre depois dela; e o cliente VIP some da Garagem, fica raro na área industrial e não perdoa prato frio.</li>
+          <li><b>v9.6.3</b><br>01/11/2026 &mdash; A Dani aprendiz (nível 1) faz uma tarefa só, e a lojinha agora mostra marcada só a que ela faz de verdade (antes aparecia &ldquo;Retirar pratos&rdquo; e &ldquo;Lavar a louça&rdquo; marcados).</li>
           <li><b>v9.6.2</b><br>01/11/2026 &mdash; A ajudante lava a louça da pia antes de recolher mais mesas; a conversa do Cardápio passa para o fim do dia 2; nova conversa dos entregadores no fim do dia 4; o &ldquo;+ marmita&rdquo; fica desligado até vir a estufa.</li>
           <li><b>v9.6.1</b><br>01/11/2026 &mdash; Contas acertadas na área industrial e na Avenida: com a equipe, o lucro de lá passava a meta com folga quase todo dia, e agora as metas acompanham o movimento de cada ponto (×2,3 na área industrial e ×3,2 na Avenida). A 3ª estrela continua para quem joga sem perder ninguém. A Cami cuida de até 2 mesas no modo &ldquo;Minhas mesas&rdquo;.</li>
           <li><b>v9.6</b><br>31/10/2026 &mdash; A Cami ganha as mesas dela! Com o curso de Atendimento de mesa (R$ 600), o cartão dela ganha o modo &ldquo;Minhas mesas&rdquo;: no Salão, toque numa mesa e marque até 3 como da Cami (um avental vinho no tampo). Ela cuida do grupo dessas mesas do pedido à conta: anota, leva à janela, pega o prato pronto, entrega, cobra e recolhe a louça. A Bia deixa o prato dela em paz, e o básico da casa volta para o Joca.</li>
@@ -945,17 +946,17 @@ const LAYOUT = { W, H, TW, HUDX, CALCADA, QUEUE, RETIRADA, DOOR, STATIONS, PLATE
    empréstimo no banco (v8.3)
    ============================================================ */
 const PONTOS = [
-  { id:'garagem', nome:'Garagem da mãe da Bia', nivel:1, lugares:16, aluguel:0, mudanca:0, credito:1000, cardapio:1, area:{ x0:196, y0:150, x1:684, y1:500 }, espera:4, assento:'pe', bebida:'agua', pratos:4, prateleira:2, deixa:'a TV, o som e a torneira ficam' },   // traz/deixa: o que o ponto novo traz e o que fica para trás ao sair deste (texto do cartão Mudança, v9.1)
+  { id:'garagem', nome:'Garagem da mãe da Bia', nivel:1, lugares:16, aluguel:0, mudanca:0, credito:1000, cardapio:1, area:{ x0:196, y0:150, x1:684, y1:500 }, espera:4, assento:'pe', bebida:'agua', pratos:4, prateleira:2, vip:0, deixa:'a TV, o som e a torneira ficam' },   // traz/deixa: o que o ponto novo traz e o que fica para trás ao sair deste (texto do cartão Mudança, v9.1)
   // v9: a primeira mudança (a área é a da Garagem alargada em 36 px à esquerda: 20 lugares não cabiam na arrumação automática). tipos: os pesos do sorteio da clientela (no lugar do day.types); encomenda: a chance diária da encomenda do setor;
   // apito: o pico do meio do dia (as primeiras `max` turmas chegam juntas a partir de `quando` do turno, uma a cada `gap` s, avisadas `aviso` s antes);
   // patPressa: a paciência de quem vem sozinho ou em dupla; vip: a chance de VIP; metaF: o fator das metas (v9.6.1: 1,25 → 2,3 e 1,7 → 3,2); expertF (v9.6.1): o da expert, a 3ª estrela (sem ele, o metaF); prateleira: as vagas do balcão de retirada;
   // grupos: o fator dos grupos do dia (os 20 lugares já trazem +60% de movimento; sem ele, nem o bot afiado fechava o dia sem perder ninguém)
   { id:'industrial', nome:'Lanchonete na área industrial', nivel:2, lugares:20, aluguel:120, mudanca:800, credito:2000, cardapio:1.5, area:{ x0:160, y0:150, x1:684, y1:500 }, espera:5, assento:'pe', bebida:'suco', pratos:5, prateleira:4,
-    tipos:{ estudante:1, executiva:1, familia:0.5, vovos:0.7, entregador:2, turma:2, motorista:1 }, encomenda:0.6, apito:{ quando:0.45, max:3, gap:[8, 12], aviso:10 }, patPressa:0.85, vip:0.3, metaF:2.3, expertF:1.6, grupos:0.8,
+    tipos:{ estudante:1, executiva:1, familia:0.5, vovos:0.7, entregador:2, turma:2, motorista:1 }, encomenda:0.6, apito:{ quando:0.45, max:3, gap:[8, 12], aviso:10 }, patPressa:0.85, vip:0.2, metaF:2.3, expertF:1.6, grupos:0.8,
     traz:'a freguesia da fábrica e da estrada', deixa:'as TVs, o assento da espera e a jarra de suco ficam' },
   // v9.1: o 2º ponto novo (cap. 6 e 7). Sem apito, sem encomenda e sem patPressa: a turma, o motorista e a encomenda não vêm. vip: ×2 (restaurante atrai mais VIP)
   { id:'avenida', nome:'Restaurante na Avenida Brasil', nivel:3, lugares:24, aluguel:400, mudanca:2000, credito:4000, cardapio:2.0, area:{ x0:160, y0:150, x1:684, y1:500 }, espera:6, assento:'pe', bebida:'saborizada', pratos:6, prateleira:4,
-    tipos:{ estudante:0.5, executiva:2, familia:1.5, vovos:1, entregador:1, negocios:1.5 }, vip:2, metaF:3.2, expertF:3.8, grupos:0.7,
+    tipos:{ estudante:0.5, executiva:2, familia:1.5, vovos:1, entregador:1, negocios:1.5 }, vip:2, metaF:3.0, expertF:3.6, grupos:0.7,   // v9.6.4: 3,2 e 3,8 → 3,0 e 3,6 (o VIP mais exigente deixou a Avenida abaixo do alvo)
     traz:'o almoço de negócios e mais VIPs', art:'o' }
 ];
 function pontoOf(id){ return PONTOS.find(p => p.id === id) || PONTOS[0]; }
@@ -1160,6 +1161,9 @@ const FILA_JUSTA = { ritmo:0.6, piso:0.5 };
    a próxima chegada espera (até `max` s cada uma; no total, até `total` do tempo do dia). O total de
    grupos do dia não muda, só o ritmo */
 const PORTA = { fila:3, max:8, total:0.2 };
+/* v9.6.4: a porta fecha quando o relógio zera (quem está na espera vai embora sem multa; quem está nas mesas e no balcão termina);
+   `max`: passados tantos segundos do relógio zerado, quem ainda estiver no salão vai embora de qualquer jeito */
+const FECHA = { max:60 };
 
 /* o gosto de cada tipo está em GOSTOS (v8.6.9); mais: chance de cada pessoa pedir um 2º item (v8.3.8);
    tip: gorjeta a mais, em fração da conta */
@@ -1337,14 +1341,14 @@ function pratoVapor(age){ return 1 - clamp((age - PRATO.quente) / PRATO.rampa, 0
 const MARMITA = { adiantar:false,   // v9.6.2: o '+ marmita' desligado até vir a estufa (retorno de 01/11); o código fica
   embalagem:2, efood:0.15, vagas:2, reserva:1, validade:60, prato:'pf', fila:3 };
 const MULTA = 10;                                     // grupo que vai embora bravo (com 0 corações) desconta isto do dia
-const VIP = { pat:0.75, tip:0.1, perfect:40, angry:10, dish:12, cook:1.8, types:['estudante','vovos','familia','executiva'] };   // dish: o prato especial soma R$ 12 à conta e leva 1,8× o tempo; perfect: pontos (v8.3.8)
+const VIP = { pat:0.65, tip:0.1, perfect:40, angry:10, dish:12, cook:1.8, types:['estudante','vovos','familia','executiva'] };   // dish: o prato especial soma R$ 12 à conta e leva 1,8× o tempo; perfect: pontos (v8.3.8)
 
 const DAYS = [
   { n:1, groups:5,  types:['estudante','vovos'],                                   nu:null,         meta:30, expert:60,  time:150, speed:0.60, note:'A freguesia espera lá fora, na calçada: arraste cada grupo até uma mesa livre.' },
-  { n:2, groups:8,  types:['estudante','vovos','familia'],                         nu:'familia',    meta:108, expert:220,  time:160, speed:0.60, note:'Chegou a família! Grupos de 3 ou 4 só cabem nas mesas de 4 lugares. Na lojinha, aba Salão, dá para comprar mesas e arrumar o salão.' },
+  { n:2, groups:8,  types:['estudante','vovos','familia'],                         nu:'familia',    meta:108, expert:220,  time:160, speed:0.60, note:'Chegou a família! Grupos de 3 ou 4 só cabem nas mesas de 4 lugares: se faltar mesa, eles vão embora.' },
   { n:3, groups:13, types:['estudante','vovos','familia','executiva'],             nu:'executiva',  meta:135, expert:230,  time:170, speed:0.60, juice:0.3, note:'O movimento aumentou e agora só há 4 pratos limpos: sozinha a Bia não dá conta. A executiva tem pouca paciência, mas deixa boa gorjeta. E abriu o balcão de sucos: quem pede suco quer receber antes da conta!' },
   { n:4, groups:15, types:['estudante','vovos','familia','executiva','entregador'], nu:'entregador', meta:63, expert:110, time:180, speed:0.58, juice:0.3, note:'Chegou o entregador de moto! Ele não senta: espera no balcão de retirada, no alto da calçada, e leva o prato numa marmita. O pedido vai sozinho ao Tonhão; leve a marmita pronta ao balcão. Tem pressa!' },
-  { n:5, groups:16, types:['estudante','vovos','familia','executiva','entregador'], nu:null,         meta:90, expert:140, time:190, speed:0.56, vip:0.15, juice:0.3, note:'Chegou cliente VIP (de óculos escuros e plaquinha dourada)! Fura a fila e tem menos paciência, mas pede o prato especial (mais caro), dá gorjeta e, se sair com 5 corações, pontos a mais. Se sair bravo, a multa dobra.' },
+  { n:5, groups:16, types:['estudante','vovos','familia','executiva','entregador'], nu:null,         meta:90, expert:140, time:190, speed:0.56, vip:0.15, juice:0.3, note:'O movimento cresce: fique de olho na louça e no lixo.' },
   { n:6, groups:16, types:['estudante','vovos','familia','executiva','entregador'], nu:null,         meta:140, expert:280, time:200, speed:0.54, vip:0.15, juice:0.3, note:'Sexta-feira: ninguém quer esperar.' },
   { n:7, groups:17, types:['estudante','vovos','familia','executiva','entregador'], nu:null,         meta:170, expert:310, time:220, speed:0.52, vip:0.15, juice:0.3, gripe:true, note:'Tonhão está gripado: a cozinha anda mais devagar hoje.' }
 ];
@@ -1654,7 +1658,7 @@ const HIST_DIVULGA = {
           { q:'bia', s:'E se a gente fizer panfleto? Eu entrego no ponto de ônibus antes de abrir!' },
           { q:'tonhao', nota:'coçando a cabeça', s:'Panfleto custa, mas traz o movimento de sempre. E tem as redes sociais, pra quem tem lugar pra tanta gente.' },
           { q:'bia', s:'Vou ver na Divulgação da lojinha o que compensa.' } ] };
-/* v9.6.2: a conversa dos entregadores, no fim do dia 4 (o 1º com motoboy), só no Modo História. save.convEnt: 'pend' | 1 (vista) */
+/* v9.6.2: a conversa dos entregadores, só no Modo História. v9.6.4: fica pendente no fim do dia anterior ao 1º com motoboy (dia 4) e toca antes de todas as outras conversas de cartão. save.convEnt: 'pend' | 1 (vista) */
 const HIST_ENTREGA = { dia:4,
   falas:[ { q:'bia', s:'Tio, que história é essa de motoqueiro no balcão pedindo marmita?' },
           { q:'tonhao', nota:'mostrando o celular', s:'Pus a gente na Efood, o aplicativo de entrega. O pedido cai direto aqui na cozinha.' },
@@ -1710,8 +1714,8 @@ const LIBERA = [
             { q:'bia', s:'Vai quebrar?' },
             { q:'tonhao', s:'Se ninguém olhar, um dia quebra no meio do almoço. Melhor chamar o técnico antes.' },
             { q:'bia', s:'Vou ver na Manutenção quanto custa a revisão.' } ] },
-  { id:'salao', dia:4, ate:6, gatilho:(st) => st.lostBy.semMesa >= 1 || st.lotadoT >= 90, reclama:['Nem consegui sentar.', 'Só tem quatro mesinhas?'],
-    falas:[ { q:'bia', s:'Hoje teve gente indo embora da fila: não tinha mesa pra todo mundo.' },
+  { id:'salao', dia:2, ate:4, gatilho:(st) => st.lostGrande >= 1 || st.lostBy.semMesa >= 1 || st.lotadoT >= 90, reclama:['Nem consegui sentar.', 'Só tem quatro mesinhas?'],   // v9.6.4: a 1ª família perdida abre o Salão
+    falas:[ { q:'bia', s:'Hoje uma família foi embora da fila: só tem uma mesa de quatro.' },
             { q:'tonhao', s:'Na garagem ainda cabem umas mesinhas. Cadeira de plástico é baratinha.' },
             { q:'bia', s:'Vou ver no Salão onde encaixar.' } ] },
   { id:'decor', dia:5, ate:7, gatilho:(st, av) => liberaTres(av, 4, 2.5), reclama:['Parece uma garagem.', 'Lugar meio sem graça.'],
@@ -1754,9 +1758,11 @@ const BIA_IDS = ['tenis', 'corrida', 'bandeja', 'sudoku'];
 function upgradeCartao(id){ return BIA_IDS.indexOf(id) >= 0 ? 'bia' : 'melhorias'; }
 const HIST_NOMES = { bia:'Bia', tonhao:'Tonhão', dani:'Dani', joca:'Joca', cami:'Cami', anselmo:'Anselmo' };
 const CAIXA_MAX = 14;                                 // livro-caixa (v7.2): quantos dias da carreira ficam guardados
-const VERSAO = 'v9.6.3';                            // vai no resumo do Caixa
+const VERSAO = 'v9.6.4';                            // vai no resumo do Caixa
 const DIVULGA_DIA = 4;                                // antes disso, o movimento é o da inauguração (sem custo); v9.0.2: dia 4, e o padrão é o boca a boca
 function divulgaAberta(n, sv){ return devLivre() || n >= DIVULGA_DIA && !(sv && sv.convDiv === 'pend'); }   // no modo dev, desde o dia 1; v9.0.3: no Modo História, só depois da conversa
+/* v9.6.4: a Efood (os entregadores) só abre depois da conversa dos entregadores, no Modo História; antes dela, nenhum tipo com `retira` vem na agenda */
+function efoodAberto(sv){ return devLivre() || !(sv && sv.convEnt === 'pend'); }
 function divulgaOf(id){ return DIVULGA.find(d => d.id === id) || DIVULGA[0]; }   // v9.0.2: sem escolha, boca a boca
 /* o que se serve na espera, por nível do salão (v7.7, PONTOS.bebida). preco: R$ por copo na conta do grupo; ingred:
    custo de cada copo; prep: s até ficar pronto na estação; take: s da Bia (ou da Dani) para pegar ali.
@@ -2167,6 +2173,8 @@ function normSave(s){
   const conversa = cap > HISTORIA.length || pendente ? null : hist ? (s.conversa === 'antes' || s.conversa === 'depois' ? s.conversa : null) : novoHist ? 'antes' : null;
   const dev = salaoDevolucao(s.salao), out = { dia, estrelas, lucroTot: Math.round(+s.lucroTot) || 0, pontosTot: Math.max(0, Math.round(+s.pontosTot) || 0), aval: normAval(s.aval), avalCom: normAvalCom(s.avalCom), neg: clamp(Math.round(+s.neg) || 0, 0, BANCO.neg), emp: normEmprestimo(novoHist ? { resto:REFORMA.valor, amort:REFORMA.amort, j:REFORMA.juros, ini:REFORMA.ini, ref:true } : s.emp), corta: s.corta !== false, fechou: Math.max(0, Math.round(+s.fechou) || 0), bank: bank + dev + devMaq, up, torneira:true, salao: normSalao(dev ? null : s.salao), divulga: dia < DIVULGA_DIA && !devLivre() ? 'boca' : divulgaOf(s.divulga).id, treino: !!s.treino, decor: normDecor(s.decor), cursos: normCursos(s.cursos), cursoDia: Math.max(0, Math.round(+s.cursoDia) || 0), tonXp: s.tonXp === 1 ? 1 : 0, daniTar: Math.max(0, Math.round(+s.daniTar) || 0), daniCursos: normDaniCursos(s.daniCursos), daniCursoDia: Math.max(0, Math.round(+s.daniCursoDia) || 0), jocaTar: Math.max(0, Math.round(+s.jocaTar) || 0), jocaCursos: normJocaCursos(s.jocaCursos), jocaCursoDia: Math.max(0, Math.round(+s.jocaCursoDia) || 0), camiCursos: normCamiCursos(s.camiCursos), camiCursoDia: Math.max(0, Math.round(+s.camiCursoDia) || 0), daniXp: s.daniXp === 1 ? 1 : 0, cardV: 1, libera: normLibera(s.libera, !novoHist), pontoDia: pontoDiaDe(s, dia), convCard: s.convCard === 'pend' ? 'pend' : s.convCard === 1 ? 1 : 0, convDiv: s.convDiv === 'pend' ? 'pend' : s.convDiv === 1 ? 1 : 0, convEnt: s.convEnt === 'pend' ? 'pend' : s.convEnt === 1 ? 1 : 0, cardVisto: Array.isArray(s.cardVisto) ? s.cardVisto.filter(x => typeof x === 'string').slice(0, 40) : [], avisoCard: !!s.avisoCard, histV: 1, avisoHist: !!s.avisoHist, cap, capDia: Math.max(1, Math.round(+s.capDia) || 1), capAzul: Math.max(0, Math.round(+s.capAzul) || 0), capFeito: s.capFeito === 1 ? 1 : 0, capMarm: Math.max(0, Math.round(+s.capMarm) || 0), conversa, manut: normManut(s.manut), caixa: normCaixa(s.caixa), caixaPend: normPend(s.caixaPend) };
   out.equipe = normEquipe(s.equipe, pontoOf(out.salao.ponto));
+  out.efoodNota = s.efoodNota === 1 || dia > HIST_ENTREGA.dia ? 1 : 0;   // v9.6.4: o texto do entregador na introdução já saiu (quem passou do dia 4 já viu)
+  out.vipVisto = s.vipVisto === 1 || dia > 5 ? 1 : 0;   // v9.6.4: o balão do 1º VIP da carreira
   out.selo = Math.max(0, Math.round(+s.selo) || 0);   // v9.4: o último dia do selo da vigilância (0: sem selo)
   if (!up.tvs) out.equipe.tvs = 0;
   if (out.daniCursos.confCaseira) up.confCaseira = true; else delete up.confCaseira;   // v9.2: a geladeirinha de doces vem do curso da Dani
@@ -3420,9 +3428,10 @@ class Game {
     this.bia.reset();
     this.dani.reset(); this.joca.reset(); this.cami.reset();
     this.fx = [];
-    this.stats = { served:0, lost:0, chain:0, spawned:0, full:0, vip:0, vipLost:0, juice:0, juiceMiss:0, trash:0, washed:0, emptied:0, sucoEsp:0, doces:0, docesMarm:0, cafesEsp:0, drinks:0, crit:0, consertos:0, quebras:0, lostBy:{ semMesa:0, comMesa:0, pedido:0, prato:0, conta:0, retirada:0 }, lotadoT:0, bravoMesa:0, lixoCheio:false, marmitas:0, esfriou:0 };
+    this.stats = { served:0, lost:0, chain:0, spawned:0, full:0, vip:0, vipLost:0, juice:0, juiceMiss:0, trash:0, washed:0, emptied:0, sucoEsp:0, doces:0, docesMarm:0, cafesEsp:0, drinks:0, crit:0, consertos:0, quebras:0, lostBy:{ semMesa:0, comMesa:0, pedido:0, prato:0, conta:0, retirada:0 }, lotadoT:0, bravoMesa:0, lixoCheio:false, marmitas:0, esfriou:0, lostGrande:0 };
     this.lastKind = null; this.chainN = 0;
     this.ending = false; this.endTimer = 0; this.reason = '';
+    this.fechado = false; this.fechadoT = 0;   // v9.6.4: a porta fecha quando o relógio zera; fechadoT: segundos desde então
     this.sel = null; this.drag = null; this.hover = null;
     this.cam = CALCADA.w;
     // v9, a encomenda do setor (área industrial): sorteada ao começar o dia e avisada na introdução
@@ -3446,8 +3455,17 @@ class Game {
     let r = Math.random() * l.reduce((a, x) => a + x.w, 0);
     return (l.find(x => (r -= x.w) < 0) || l[l.length - 1]).k;
   }
+  /* v9.6.4: um tipo pequeno (1 ou 2 pessoas, que não retira marmita) do dia, pelos pesos do ponto; vip: só os que podem ser VIP */
+  tipoPequeno(vip){
+    const w = this.ponto.tipos || null, base = w ? Object.keys(w) : (this.day.types || []);
+    let l = base.filter(k => CUSTOMER_TYPES[k] && CUSTOMER_TYPES[k].size[1] <= 2 && !CUSTOMER_TYPES[k].retira && (!vip || VIP.types.includes(k)));
+    if (!l.length) l = vip ? ['estudante', 'executiva'] : ['estudante'];
+    const wt = k => w ? w[k] : 1;
+    let r = Math.random() * l.reduce((a, k) => a + wt(k), 0);
+    return l.find(k => (r -= wt(k)) < 0) || l[l.length - 1];
+  }
   buildSchedule(day){
-    const out = [];
+    const out = [], efood = efoodAberto(this.save);
     const lug = this.tables.filter(t => t.open).reduce((a, t) => a + t.seats, 0);
     const cl = CLIMA[this.clima];
     // a nota do Gurugol (v8.4) traz mais ou menos gente
@@ -3461,6 +3479,7 @@ class Game {
       let type = (i === forced) ? day.nu : this.ponto.tipos ? this.sorteiaTipo(this.ponto.tipos, i / N) : pick(day.types);
       if (day.tipo && i !== forced && Math.random() < day.tipoP) type = day.tipo;   // o dia da semana (v8.3, do dia 8 em diante)
       if (cl && i !== forced && Math.random() < cl.tipoP) type = cl.tipo;   // chuva: entregadores; feriado: famílias
+      if (!efood && CUSTOMER_TYPES[type].retira) type = this.tipoPequeno();   // v9.6.4: a Efood ainda não abriu: sem entregador
       let vip = false;
       if (day.vip && (i === forcedVip || Math.random() < vipP)){
         if (!VIP.types.includes(type)) type = pick(VIP.types);
@@ -3749,7 +3768,10 @@ class Game {
     grp.setState('eating');
     grp.timer = rand(grp.T.eat[0], grp.T.eat[1]) * (this.up.ventilador ? 0.85 : 1);
     grp.eatTotal = grp.timer;
-    grp.gain(dish.crit ? 2 : 1);
+    if (grp.vip && dish.fria){   // v9.6.4: o VIP não perdoa prato frio: perde 1 coração em vez de ganhar
+      const h0 = grp.hearts; grp.hearts = Math.max(1, h0 - 1); grp.patLeft = grp.patPer(); if (grp.hearts < h0) grp.perdMesa++;
+      this.addText(cx, cy - 70, 'Isso aqui tá frio!', PAL.perigo, 16);
+    } else grp.gain(dish.crit ? 2 : 1);
     grp.pratoQ = dish.q || 0; grp.fria = !!dish.fria; if (dish.crit) grp.capricho = true;
     this.score('deliver', cx, cy - 40, 0, grp, semCorrente);
     if (dish.crit){
@@ -3974,6 +3996,12 @@ class Game {
   /* ---------- fluxo de grupos ---------- */
   /* chegada de um grupo: se a fila estiver cheia, o grupo olha, diz "Lotado!" e vai embora */
   arrive(s){
+    // v9.6.4: no máximo 2 grupos grandes (3 ou mais) na espera por mesa de 4 lugares aberta; o que passar chega como grupo pequeno
+    const T = CUSTOMER_TYPES[s.type];
+    if (!T.retira && T.size[0] >= 3 && this.mode !== 'treino'){
+      const m4 = this.tables.filter(t => t.open && t.seats >= 4).length;
+      if (this.queue.filter(g => g.size >= 3).length >= 2 * m4) s = Object.assign({}, s, { type:this.tipoPequeno(s.vip) });
+    }
     // o entregador (v8.6) vai para a fila de retirada, que tem MARMITA.fila lugares
     if (CUSTOMER_TYPES[s.type].retira ? this.retirada.length >= MARMITA.fila : this.queue.length >= this.ponto.espera) return this.bounce(s);
     return this.spawn(s);
@@ -3997,6 +4025,10 @@ class Game {
       while (i < this.queue.length && this.queue[i].vip) i++;
       this.queue.splice(i, 0, g);
       this.addText(QUEUE.x, DOOR.y + 12, 'VIP chegou!', PAL.mostarda, 22);
+      if (this.mode === 'carreira' && !this.save.vipVisto){   // v9.6.4: o 1º VIP da carreira vem explicado, num balão branco
+        this.save.vipVisto = 1; writeSave(this.save);
+        this.fx.push({ k:'text', box:true, x:TW/2 - this.cam, y:250, vy:-6, life:5, max:5, text:'Chegou cliente VIP! Fura a fila, tem pouca paciência e não perdoa prato frio.\nEm compensação, pede o prato especial e dá gorjeta.', color:PAL.faixa, size:16 });
+      }
       Sfx.tone(988, 0.1, 'sine', 0.06); Sfx.tone(1319, 0.14, 'sine', 0.06, 0.1);
     } else {
       this.queue.push(g);
@@ -4155,6 +4187,7 @@ class Game {
     this.stats.lost++;
     const by = g.state === 'queue' ? (g.semMesa ? 'semMesa' : 'comMesa') : ({ wantOrder:'pedido', ordered:'prato', eating:'prato', wantBill:'conta', retirada:'retirada' })[g.state];
     if (by) this.stats.lostBy[by]++;
+    if (g.state === 'queue' && g.size >= 3) this.stats.lostGrande++;   // v9.6.4: a família que desiste na fila abre o Salão
     this.addPuff(g.x, g.y - 20, 9);
     this.addText(g.x, g.y - 50, 'Hmpf!', PAL.perigo, 22);
     const fine = this.multa(g);
@@ -4217,6 +4250,16 @@ class Game {
     this.save.caixa = normCaixa(this.save.caixa.concat([{ d:d.n, int:gs.length, mul:antes - this.save.bank, saldo:this.save.bank }]));
     writeSave(this.save);
     return (this.encerrado = { n:gs.length, vip:gs.filter(g => g.vip).length, multa:antes - this.save.bank, bank:this.save.bank });
+  }
+  /* v9.6.4: o relógio zerou: nenhum grupo novo chega e quem está na espera lá fora vai embora calmo (sem multa, sem `lost`) */
+  fechaPorta(){
+    this.clock = 0; this.fechado = true; this.fechadoT = 0;
+    this.nextIdx = this.schedule.length;
+    this.groups.filter(g => g.state === 'queue').forEach(g => {
+      this.fx.push({ k:'text', x:g.x, y:g.y - 70, vy:RM ? 0 : -38, life:1.8, max:1.8, text:'Fechou!', color:PAL.faixa, size:16 });
+      this.timeUpLeave(g);
+    });
+    Sfx.bell();
   }
   timeUpLeave(g){
     if (g.state === 'leaving') return;
@@ -4289,12 +4332,17 @@ class Game {
     } else if (this.mode === 'treino'){
       // a Missão zero acaba no último passo do pop-up, sem relógio
     } else if (!this.ending){
-      if (this.clock <= 0){
-        this.clock = 0;
-        this.groups.slice().forEach(g => this.timeUpLeave(g));
-        this.bia.clearActs();
-        this.ending = true; this.endTimer = 2.0; this.reason = 'time';
-        Sfx.bell();
+      if (this.clock <= 0 || this.fechado){
+        // v9.6.4: a porta fecha; quem está na espera vai embora calmo, quem está nas mesas e no balcão termina (até FECHA.max s)
+        if (!this.fechado) this.fechaPorta();
+        this.clock = 0; this.fechadoT += dt;
+        const resta = this.groups.filter(g => g.state !== 'leaving');
+        if (!resta.length || this.fechadoT >= FECHA.max){
+          resta.forEach(g => this.timeUpLeave(g));
+          this.bia.clearActs();
+          this.ending = true; this.endTimer = 2.0; this.reason = 'time';
+          Sfx.bell();
+        }
       } else if (this.nextIdx >= this.schedule.length && this.groups.length === 0){
         this.ending = true; this.endTimer = 1.2; this.reason = 'done';
       }
@@ -4353,7 +4401,7 @@ class Game {
       if (ob.ok) sv.conversa = 'depois';
     }
     if (!tomou && HIST.on && !DEV.on && sv.histV === 1 && d.n >= HIST_CARDAPIO.dia && !sv.convCard) sv.convCard = 'pend';   // v9.0.1: saves antigos que já passaram do dia 2 veem a conversa no próximo fim de dia
-    if (!tomou && HIST.on && !DEV.on && sv.histV === 1 && d.n === HIST_ENTREGA.dia && !sv.convEnt) sv.convEnt = 'pend';   // v9.6.2: a conversa dos entregadores
+    if (!tomou && HIST.on && !DEV.on && sv.histV === 1 && d.n >= HIST_ENTREGA.dia - 1 && !sv.convEnt) sv.convEnt = 'pend';   // v9.6.2: a conversa dos entregadores; v9.6.4: no fim do dia anterior ao 1º com motoboy (o >= cuida dos saves antigos)
     if (!tomou && HIST.on && !DEV.on && sv.histV === 1 && d.n === DIVULGA_DIA - 1 && !sv.convDiv) sv.convDiv = 'pend';   // v9.0.2: a conversa da divulgação
     if (!tomou && HIST.on && !DEV.on && sv.histV === 1){   // v9.0.4: a lojinha abre aos poucos: pelo gatilho do dia ou pela garantia (v9.1.1: com `nivel`, pelo dia no ponto, em qualquer capítulo; sem, só com cap < 4)
       const novas = [];
@@ -4959,7 +5007,7 @@ class Game {
   devFimDia(){
     if (!DEV.on || this.mode !== 'carreira' || (this.state !== 'playing' && this.state !== 'paused')) return false;
     if (this.state === 'paused') this.setState('playing');
-    this.clock = 0; return true;
+    this.fechaPorta(); this.fechadoT = FECHA.max; return true;   // v9.6.4: o botão do modo dev encerra o dia na hora (sem esperar o salão esvaziar)
   }
   /* liga ou desliga uma melhoria de graça; os Tênis de corrida andam junto com os Tênis novos */
   /* liga ou desliga de graça um item da área industrial (fogão industrial) no modo dev */
@@ -6412,7 +6460,8 @@ function drawWallCommon(ctx,g,t){
   circ(ctx,712,44,32); fs(ctx,PAL.cromo,3);
   circ(ctx,712,44,26); fs(ctx,'#fff',2);
   ctx.beginPath(); ctx.arc(712,44,21,-Math.PI/2,-Math.PI/2 + TAU*frac); ctx.lineWidth = 6; ctx.strokeStyle = low ? PAL.perigo : (endless ? PAL.ok : PAL.mostarda); ctx.lineCap = 'butt'; ctx.stroke(); ctx.lineCap = 'round';
-  txt(ctx, endless ? mmssUp(g.elapsed) : mmss(g ? g.clock : 0), 712, 45, 14, PAL.tinta, 'center', FD);
+  if (g && g.fechado && !endless) txt(ctx, 'FECHANDO', 712, 45, 9, PAL.alerta, 'center', FD, 0, 48);   // v9.6.4: o relógio zerou, mas ainda há gente no salão
+  else txt(ctx, endless ? mmssUp(g.elapsed) : mmss(g ? g.clock : 0), 712, 45, 14, PAL.tinta, 'center', FD);
   placaCozinha(ctx);
 }
 function placaCozinha(ctx){
@@ -6510,6 +6559,7 @@ function drawCalcada(ctx,g,tm){
   if (av && decorOn(g,'copo')) drawCopoLeite(ctx,x0 + 38,300,1);
   if (av && decorOn(g,'orquidea')) drawOrquidea(ctx,114,132,1);   // perto da porta, encostada na meia-parede (já dentro do salão)
   // portão de enrolar aberto, na borda do salão: trilho no alto e soleira no chão
+  if (g && g.fechado) drawPlacaFechado(ctx,QUEUE.x + 28,196,tm);   // v9.6.4
   ctx.fillStyle = '#ABA394'; ctx.fillRect(-6,92,12,448);
   ctx.strokeStyle = 'rgba(34,32,28,.4)'; ctx.lineWidth = 1.5; ctx.beginPath(); ctx.moveTo(0,96); ctx.lineTo(0,540); ctx.stroke();
   rr(ctx,-12,0,24,92,4); fs(ctx,PAL.cromo,2.5);
@@ -7016,6 +7066,14 @@ function drawTrash(ctx,on,t,g){
     }
   }
   if (on){ ctx.save(); const a = 0.55 + 0.4*Math.sin(t*8); ctx.strokeStyle = 'rgba(242,179,61,' + a + ')'; ctx.lineWidth = 5; const r = STATIONS.trash.rect; rr(ctx,r.x,r.y,r.w,r.h,8); ctx.stroke(); ctx.restore(); }
+}
+/* v9.6.4: a plaquinha "FECHADO" pendurada na calçada, ao lado do topo da fila de espera (balança de leve; parada com movimento reduzido) */
+function drawPlacaFechado(ctx,x,y,t){
+  ctx.save(); ctx.translate(x,y); ctx.rotate(RM ? -0.05 : -0.05 + Math.sin(t*2.2)*0.05);
+  ctx.strokeStyle = PAL.tinta; ctx.lineWidth = 1.6; ctx.beginPath(); ctx.moveTo(-14,-12); ctx.lineTo(0,-4); ctx.lineTo(14,-12); ctx.stroke();
+  rr(ctx,-32,-4,64,20,4); fs(ctx,PAL.perigo,2.4);
+  txt(ctx,'FECHADO',0,6.5,11,'#fff','center',FD,0,56);
+  ctx.restore();
 }
 /* placa pendurada "QUEBRADO" (v8), no aparelho parado: cordinha e etiqueta vermelha meio torta */
 function drawPlacaParada(ctx,x,y){
@@ -7963,9 +8021,10 @@ function render(g, ctx){
       if (f.box){
         // a avaliação do Gurugol (v8.4): balão branco com a borda na cor da nota
         ctx.font = f.size + 'px ' + FB;
-        const w = ctx.measureText(f.text).width + 18, x = clamp(f.x, w/2 + 4 - g.cam, W - w/2 - 4);
-        rr(ctx,x - w/2,f.y - 13,w,26,9); ctx.fillStyle = '#FFFDF6'; ctx.fill(); ctx.lineWidth = 2.4; ctx.strokeStyle = f.color; ctx.stroke();
-        txt(ctx,f.text,x,f.y,f.size,PAL.tinta,'center',FB);
+        const ls = String(f.text).split('\n'), lh = f.size + 5;   // v9.6.4: o balão pode ter várias linhas (\n)
+        const w = Math.max.apply(null, ls.map(l => ctx.measureText(l).width)) + 18, x = clamp(f.x, w/2 + 4 - g.cam, W - w/2 - 4);
+        rr(ctx,x - w/2,f.y - 13,w,26 + (ls.length - 1)*lh,9); ctx.fillStyle = '#FFFDF6'; ctx.fill(); ctx.lineWidth = 2.4; ctx.strokeStyle = f.color; ctx.stroke();
+        ls.forEach((l, i) => txt(ctx,l,x,f.y + i*lh,f.size,PAL.tinta,'center',FB));
       } else
       txt(ctx,f.text,f.x,f.y,f.size,f.color,'center',FD,4);
       ctx.globalAlpha = 1;
@@ -9072,7 +9131,7 @@ function buildTips(){
       drawIcon(c,'ticket',12,16,0.7); drawIcon(c,'hat',30,16,0.7); drawIcon(c,'dish',48,16,0.7,'coxinha');
       drawIcon(c,'coin',16,46,0.7); drawIcon(c,'dirty',34,46,0.7); drawIcon(c,'drop',52,46,0.7);
     }],
-    ['Cada grupo tem 5 corações de paciência. Atender (sentar, anotar, entregar, cafezinho) devolve um coração. Mais corações, mais gorjeta na conta! Na espera, quem não tem mesa onde caiba (balãozinho com mesa e relógio) espera com mais calma e, na carreira, não passa de 1 coração.', c => {
+    ['Cada grupo tem 5 corações de paciência. Atender (sentar, anotar, entregar, cafezinho) devolve um coração. Mais corações, mais gorjeta na conta! Na espera, quem não tem mesa onde caiba (balãozinho com mesa e relógio) espera com mais calma e, na carreira, não passa de 1 coração. Quando o relógio zera, a porta fecha: quem espera lá fora vai embora sem multa, e quem já está sentado termina de comer.', c => {
       for (let i=0;i<5;i++) heart(c,10+i*11,20,5,i<3?'#E5384A':'rgba(255,255,255,.55)', i<3?PAL.tinta:'rgba(34,32,28,.45)');
       drawPerson(c,{skin:1,hair:1,hairC:'#5B3A21',pants:'#4A4036'},20,58,{shirt:CHAIRS[3].c,mood:0,s:0.6});
       drawPerson(c,{skin:4,hair:0,hairC:'#1B1512',pants:'#4A4036'},44,58,{shirt:CHAIRS[0].c,mood:2,s:0.6});
@@ -9094,7 +9153,7 @@ function buildTips(){
       drawIcon(c,'juice',20,38,0.8); drawIcon(c,'juice',32,36,0.8); drawIcon(c,'juice',44,38,0.8);
       rr(c,8,4,48,18,6); fs(c,'#fff',1.8); drawIcon(c,'juice',20,13,0.5); txt(c,'×3',38,13,11,PAL.tinta,'center',FD);
     }],
-    ['A partir do dia 5 aparece o cliente VIP (óculos escuros e plaquinha dourada): fura a fila e tem menos paciência, mas pede o prato especial (mais caro), dá gorjeta e, com 5 corações, pontos a mais. Bravo, a multa dobra.', c => {
+    ['Da área industrial em diante aparece, de vez em quando, o cliente VIP (óculos escuros e plaquinha dourada): fura a fila e tem pouca paciência e não perdoa prato frio, mas pede o prato especial (mais caro), dá gorjeta e, com 5 corações, pontos a mais. Bravo, a multa dobra.', c => {
       drawPerson(c,{skin:4,hair:3,hairC:'#1B1512',pants:'#2F3E5C',shades:true},28,60,{shirt:CHAIRS[2].c,mood:0,s:0.85});
       drawVipBadge(c,40,14,0);
     }],
@@ -10587,7 +10646,14 @@ game.hooks.state = function(s){
         + '. Custos do dia: ' + custos.join(' + ') + ', mais ' + Math.round(INGRED.prato * 100) + '% de cada prato em ingredientes.';
       // v8.2.3: reiniciou no meio com gente na espera ou nas mesas: a multa de quem foi embora bravo
       const en = game.encerrado; game.encerrado = null;
-      $('intro-note').textContent = (en ? 'Você largou o dia no meio: ' + en.n + (en.n > 1 ? ' grupos foram' : ' grupo foi') + ' embora bravo' + (en.n > 1 ? 's' : '') + ' (multa de ' + fmt(en.multa) + '; agora você tem ' + fmt(en.bank) + '). ' : '') + (d.note || 'Sente a freguesia, anote os pedidos e mantenha todo mundo feliz!') + (d.n === 1 && !game.save.treino ? ' Primeira vez? No menu, a Missão zero é um treino passo a passo.' : '');
+      // v9.6.4: sem a Efood aberta (conversa dos entregadores pendente), o dia 4 não fala do entregador; o texto vem uma vez, no 1º dia com a Efood aberta
+      let nota = d.note;
+      if (game.mode === 'carreira'){
+        const sv = game.save;
+        if (d.nu === 'entregador' && !efoodAberto(sv)) nota = 'Dia de movimento: a freguesia não para de chegar.';
+        else if (d.n >= HIST_ENTREGA.dia && efoodAberto(sv) && !sv.efoodNota){ nota = DAYS[3].note; sv.efoodNota = 1; writeSave(sv); }
+      }
+      $('intro-note').textContent = (en ? 'Você largou o dia no meio: ' + en.n + (en.n > 1 ? ' grupos foram' : ' grupo foi') + ' embora bravo' + (en.n > 1 ? 's' : '') + ' (multa de ' + fmt(en.multa) + '; agora você tem ' + fmt(en.bank) + '). ' : '') + (nota || 'Sente a freguesia, anote os pedidos e mantenha todo mundo feliz!') + (d.n === 1 && !game.save.treino ? ' Primeira vez? No menu, a Missão zero é um treino passo a passo.' : '');
     }
     $('intro-manut').textContent = [game.mode === 'carreira' ? game.capLinha() : '', introEncomenda(), introBanco(), introManut()].filter(Boolean).join(' ');
     showOnly(['ov-intro']);
@@ -10677,11 +10743,11 @@ function fluxoHistoria(fim, falou){
   if (sv.conversa === 'antes') return falar('antes', () => { game.save.conversa = null; writeSave(game.save); fluxoHistoria(fim, true); });
   if (falou) return fim();
   const libera = id => { const L = liberaOf(id); return falar(L.falas, () => { sv.libera[id] = 1; writeSave(sv); shopEntraG = shopGrupoDe(id); fim(); }); };   // v9.0.4
+  if (sv.convEnt === 'pend') return falar(HIST_ENTREGA.falas, () => { sv.convEnt = 1; writeSave(sv); fim(); });   // v9.6.2; v9.6.4: antes do Cardápio, da Divulgação e da Manutenção
   const man = LIBERA.find(L => L.primeiro && sv.libera[L.id] === 'pend');
   if (man) return libera(man.id);
   if (sv.convCard === 'pend') return falar(cursoFeito(sv.cursos) ? HIST_CARDAPIO.fez : HIST_CARDAPIO.falas, () => { sv.convCard = 1; writeSave(sv); shopEntra = 'cardapio'; fim(); });
   if (sv.convDiv === 'pend') return falar(HIST_DIVULGA.falas, () => { sv.convDiv = 1; writeSave(sv); shopEntra = 'divulga'; fim(); });   // v9.0.2
-  if (sv.convEnt === 'pend') return falar(HIST_ENTREGA.falas, () => { sv.convEnt = 1; writeSave(sv); fim(); });   // v9.6.2
   const outra = LIBERA.find(L => sv.libera[L.id] === 'pend');
   if (outra) return libera(outra.id);
   fim();
@@ -10857,7 +10923,7 @@ try { Rank.init(); } catch(e) {}
 game.setState('menu');
 if (!aberturaVista() && !DEV.on) abrirAbertura('auto');   // v8.5: a abertura toca sozinha uma vez
 window.__game = game;
-window.__lcc = { drawTable, camiMesasN, camiModoMesas, CAMI_MESAS_MAX, drawAventalCami, FISCAL, Fiscal, FISCAL_PONTOS, abrirDev, fecharDev, buildDev, passoJogo, devLivre, diaNoPonto, manutEmerg, manutFator, daniTaskDe, plateSlotsFor, queueYsFor, assentoSlow, AVENIDA, SABORES, cursoOk, INDUSTRIAL, PLATE_SLOTS, cozinhaSlots, upgradeDe, DECOR, DECOR_GRUPOS, TOALHA, decorOf, normDecor, decorOn, FILA_ACOES, filaMax, MARMITA, RETIRADA, marmitaMao, drawMarmita, prateleiraPos, EFOOD_COR, AVAL_BRAVO, QUEUE, setShopTab: v => shopAbrir(v), setShopGrupo: g => shopGrupoAbrir(g), shopSecoes: () => SHOP_GRUPOS.map(g => shopSecoesVis(g)), TREINO, TREINO_PASSOS, TREINO_COR, Treino, treinoLugar, treinoPrimeiro, playCareer, buildMenu, introBanco, buildFalencia, BANCO, normEmprestimo, parcelaDe, devidoDe, jurosDe, tabelaDe, simulaEmprestimo, SEMANA, semanaOf, diaOf, FILA_JUSTA, PORTA, CHAIRS, PAT, CONTAS, INGRED, CARDAPIO, precoPrato, CURSOS, CURSO_AV, CURSO_XP, tonhaoXp, tonhaoNivelXp, daniXp, daniNivelXp, DANI_XP, DANI_CURSOS, CURSOS_SEMFIM, cursoOf, cursoNivel, normCursos, pratoAv, CARNES, drawDish, pratoSabido, pratosSabidos, GOSTOS, GOSTOS_CAT, pedePrato, VEG, vegMov, drawDish, MAIS, PONTOS_ACAO, GORJETA, DRINK_PRICE, MOVIMENTO, movimentoSalao, DIVULGA, DIVULGA_DIA, divulgaOf, contasDia, bomGoal, SALAO, PONTOS, pontoOf, MESA, mesaBox, mesaPreco, salaoLugares, mesaProblema, salaoCaminho, salaoProblema, salaoOrdena, salaoAuto, salaoVaga, salaoPerto, salaoKit, salaoDevolucao, SALAO_SEMFIM, normSalao, setObst, OBST, pathOk, MAQUINA, BEBIDA_ESPERA, bebidaOf, MANUT, manutOf, manutChance, manutPreco, normManut, CLIMA, CLIMA_DIA, introManut, normPend, CALCADA, TW, HUDX, esperaAp, tableApproach, CRIT, STAFF, DANI_TASKS, DANI_HANDS, daniTaskOk, TRASH, WASH, payroll, FOLHA_CORTE, folhaCorta, folhaCortes, folhaItens, listaE, pratosDe, couvertEffect, couvertOk, ambienteEffect, dishStock, normSave, Helper, JUICE, KITCHEN_SLOTS, handLayout, trayOk, Game, Group, Table, Kitchen, Waitress, BIA_SPEED, DAYS, UPGRADES, CUSTOMER_TYPES, LAYOUT, PAL, Sfx, findPath, render, Rank, sortRows, cleanName, normName, CMD, ENDLESS, VIP, MULTA, rk, renderRank, openRank, closeRank, LS, lsGet, lsSet, loadSave, DEV, saveKey, devSync, divulgaAberta, CAIXA_MAX, VERSAO, normCaixa, caixaResumo, caixaTotais, copyText, PRATO, pratoPerde, pratoVapor, AVAL, AVAL_CRIT, AVAL_BRAVO, avalMenu, cursosItem, DOCES, CAFES, cafeDe, DRINKS, drinkDe, drinkIdx, anselmoOn, ANSELMO_HOME, ANSELMO_LOOK, drawAnselmo, docesLista, docePreco, doceIngred, doceIdx, CAMI_CURSOS, CAMI_HOME, CAMI_LOOK, camiNivelCursos, normCamiCursos, drawCami, drawEspresso, JOCA_XP, JOCA_CURSOS, JOCA_HOME, jocaXp, jocaNivelXp, BASICAS, donoBasico, cursoDaniVis, JOCA_LOOK, drawJoca, avalTeto, avalEscala, avalFrac, AVAL_SIMPLES, AVAL_DECOR, normAval, avalNota, avalMedias, avalGeral, avalMovimento, avalMinimo, avalComentario, fmtNota, notaFaixa, gurugolCaixa, AVAL_COM, normAvalCom, buildGurugol, ABERTURA, Abertura, AB_CENAS, AB_ALT, AB_BASE, abEsc, AB_VIVO, aberturaVista, aberturaSom, drawAbertura, abrirAbertura, HISTORIA, HIST_CARDAPIO, HIST_DIVULGA, HIST_ENTREGA, LIBERA, liberaOf, HIST_NOMES, normEquipe, upgradeCartao, cursoFeito, AVAL_POUCO, REFORMA, HIST, carencia, Conversa, drawConversa, falar, fluxoHistoria, falar, aberturaAtual: () => abertura };
+window.__lcc = { FECHA, efoodAberto, drawTable, camiMesasN, camiModoMesas, CAMI_MESAS_MAX, drawAventalCami, FISCAL, Fiscal, FISCAL_PONTOS, abrirDev, fecharDev, buildDev, passoJogo, devLivre, diaNoPonto, manutEmerg, manutFator, daniTaskDe, plateSlotsFor, queueYsFor, assentoSlow, AVENIDA, SABORES, cursoOk, INDUSTRIAL, PLATE_SLOTS, cozinhaSlots, upgradeDe, DECOR, DECOR_GRUPOS, TOALHA, decorOf, normDecor, decorOn, FILA_ACOES, filaMax, MARMITA, RETIRADA, marmitaMao, drawMarmita, prateleiraPos, EFOOD_COR, AVAL_BRAVO, QUEUE, setShopTab: v => shopAbrir(v), setShopGrupo: g => shopGrupoAbrir(g), shopSecoes: () => SHOP_GRUPOS.map(g => shopSecoesVis(g)), TREINO, TREINO_PASSOS, TREINO_COR, Treino, treinoLugar, treinoPrimeiro, playCareer, buildMenu, introBanco, buildFalencia, BANCO, normEmprestimo, parcelaDe, devidoDe, jurosDe, tabelaDe, simulaEmprestimo, SEMANA, semanaOf, diaOf, FILA_JUSTA, PORTA, CHAIRS, PAT, CONTAS, INGRED, CARDAPIO, precoPrato, CURSOS, CURSO_AV, CURSO_XP, tonhaoXp, tonhaoNivelXp, daniXp, daniNivelXp, DANI_XP, DANI_CURSOS, CURSOS_SEMFIM, cursoOf, cursoNivel, normCursos, pratoAv, CARNES, drawDish, pratoSabido, pratosSabidos, GOSTOS, GOSTOS_CAT, pedePrato, VEG, vegMov, drawDish, MAIS, PONTOS_ACAO, GORJETA, DRINK_PRICE, MOVIMENTO, movimentoSalao, DIVULGA, DIVULGA_DIA, divulgaOf, contasDia, bomGoal, SALAO, PONTOS, pontoOf, MESA, mesaBox, mesaPreco, salaoLugares, mesaProblema, salaoCaminho, salaoProblema, salaoOrdena, salaoAuto, salaoVaga, salaoPerto, salaoKit, salaoDevolucao, SALAO_SEMFIM, normSalao, setObst, OBST, pathOk, MAQUINA, BEBIDA_ESPERA, bebidaOf, MANUT, manutOf, manutChance, manutPreco, normManut, CLIMA, CLIMA_DIA, introManut, normPend, CALCADA, TW, HUDX, esperaAp, tableApproach, CRIT, STAFF, DANI_TASKS, DANI_HANDS, daniTaskOk, TRASH, WASH, payroll, FOLHA_CORTE, folhaCorta, folhaCortes, folhaItens, listaE, pratosDe, couvertEffect, couvertOk, ambienteEffect, dishStock, normSave, Helper, JUICE, KITCHEN_SLOTS, handLayout, trayOk, Game, Group, Table, Kitchen, Waitress, BIA_SPEED, DAYS, UPGRADES, CUSTOMER_TYPES, LAYOUT, PAL, Sfx, findPath, render, Rank, sortRows, cleanName, normName, CMD, ENDLESS, VIP, MULTA, rk, renderRank, openRank, closeRank, LS, lsGet, lsSet, loadSave, DEV, saveKey, devSync, divulgaAberta, CAIXA_MAX, VERSAO, normCaixa, caixaResumo, caixaTotais, copyText, PRATO, pratoPerde, pratoVapor, AVAL, AVAL_CRIT, AVAL_BRAVO, avalMenu, cursosItem, DOCES, CAFES, cafeDe, DRINKS, drinkDe, drinkIdx, anselmoOn, ANSELMO_HOME, ANSELMO_LOOK, drawAnselmo, docesLista, docePreco, doceIngred, doceIdx, CAMI_CURSOS, CAMI_HOME, CAMI_LOOK, camiNivelCursos, normCamiCursos, drawCami, drawEspresso, JOCA_XP, JOCA_CURSOS, JOCA_HOME, jocaXp, jocaNivelXp, BASICAS, donoBasico, cursoDaniVis, JOCA_LOOK, drawJoca, avalTeto, avalEscala, avalFrac, AVAL_SIMPLES, AVAL_DECOR, normAval, avalNota, avalMedias, avalGeral, avalMovimento, avalMinimo, avalComentario, fmtNota, notaFaixa, gurugolCaixa, AVAL_COM, normAvalCom, buildGurugol, ABERTURA, Abertura, AB_CENAS, AB_ALT, AB_BASE, abEsc, AB_VIVO, aberturaVista, aberturaSom, drawAbertura, abrirAbertura, HISTORIA, HIST_CARDAPIO, HIST_DIVULGA, HIST_ENTREGA, LIBERA, liberaOf, HIST_NOMES, normEquipe, upgradeCartao, cursoFeito, AVAL_POUCO, REFORMA, HIST, carencia, Conversa, drawConversa, falar, fluxoHistoria, falar, aberturaAtual: () => abertura };
 window.requestAnimationFrame(frame);
 
 })();

@@ -90,6 +90,7 @@ function mkStub(o){
   guard=0; while(grp.state!=='wantOrder'&&guard++<600) g.update(0.05); g.tapTable(t); guard=0; while(grp.state!=='ordered'&&guard++<200) g.update(0.05);
   ok(grp.cmd>=0&&g.cmdFree.length===5,'(tempo) comanda em uso');
   g.clock=0.05; for(let i=0;i<10;i++) g.update(0.05);
+  g.fechadoT=L.FECHA.max; g.update(0.05);   // v9.6.4: a porta fecha e quem está na mesa termina; passados FECHA.max s, vai embora de qualquer jeito
   ok(grp.cmd===-1&&g.cmdFree.length===6,'fim do expediente devolve a cor sem penalidade (lost='+g.stats.lost+')');
 }
 /* ---------- 2. fila lotada ---------- */
