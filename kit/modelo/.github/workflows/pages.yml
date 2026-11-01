@@ -1,0 +1,51 @@
+# Confere a montagem e publica o jogo no GitHub Pages a cada push no branch padrão.
+# (Ative em Settings → Pages → Source: GitHub Actions.)
+name: Jogo (GitHub Pages)
+on:
+  push:
+    paths: ['{{ARQ}}', 'src/**', 'montar.py', 'versoes/**', '.github/workflows/pages.yml']
+  pull_request:
+  workflow_dispatch:
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+concurrency:
+  group: pages
+  cancel-in-progress: true
+jobs:
+  conferir:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: { python-version: '3.12' }
+      - uses: actions/setup-node@v4
+        with: { node-version: '20' }
+      - run: python3 montar.py --check
+      - run: cd tests && ./run_all.sh
+  publicar:
+    needs: conferir
+    if: github.event_name != 'pull_request' && github.ref_name == github.event.repository.default_branch
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deploy.outputs.page_url }}
+    steps:
+      - uses: actions/checkout@v4
+      - name: Envolve o arquivo montado numa página
+        run: |
+          mkdir -p site/versoes
+          python3 - <<'PY'
+          import glob, os, shutil
+          topo = '<!doctype html><html lang="pt-BR"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"></head><body>\n'
+          corpo = open('{{ARQ}}', encoding='utf8').read()
+          open('site/index.html', 'w', encoding='utf8').write(topo + corpo + '\n</body></html>\n')
+          for f in glob.glob('versoes/*.html'):
+              shutil.copy(f, 'site/versoes/' + os.path.basename(f))
+          PY
+      - uses: actions/configure-pages@v5
+      - uses: actions/upload-pages-artifact@v3
+        with: { path: site }
+      - id: deploy
+        uses: actions/deploy-pages@v4
