@@ -4,6 +4,16 @@ Registro das ideias e dos retornos de quem jogou, com o texto original, e de ond
 
 ---
 
+## 01/11 — usuário: a Dani espera a pia encher, a conversa dos entregadores e a do Cardápio cedo demais
+> "A Dani quando está com a função de lavar pratos parece que fica esperando encher a pia para começar a lavar
+> Falta uma história sobre início de vinda de entregadores.
+> Não é bom ter história que agrega no menu do primeiro para o segundo dia, as pessoas já vão ter que explorar o menu com poucas coisas pela primeira vez, de nada adianta já colocar coisa nova em algo que é totalmente novo"
+
+Respostas às perguntas da sessão: a Dani estava com **"Retirar pratos" e "Lavar louça"**; a conversa do Cardápio vai para o **fim do dia 2**; a dos entregadores, para o **fim do dia 4**, depois do 1º motoboy. Sobre o "+ marmita": "ainda tem a melhoria da estufa para guardar essas marmitas e elas durarem mais? Se não, tirar esse botão de adiantar pelo menos por ora (deixar inativo o código)". A estufa nunca existiu (era só ideia anotada na v8.6), então o botão fica desligado.
+Destino: `docs/PLANO.md`, etapa **3c** (v9.6.2), antes da 4a. Na simulação o bot não mostrou a demora (o bot da Bia recolhe as mesas), mas no código recolher mesa vem antes de lavar a louça que já está na pia, e, voltando ao canto, ela só repensa ao chegar; na 3c, com louça na pia, lavar vem antes. Sem o "+ marmita", o bot da Garagem e da área industrial ficou igual, e o da Avenida, um pouco abaixo (a regra de ajuste está na etapa). A estufa ficou nas Ideias guardadas.
+
+---
+
 ## 01/11 — usuário: Dani sem curso de barista
 > "Tem que tirar esse curso de barista iniciante da Dani, ela vai para o caminho do doce só. E creio que na garagem tínhamos combinado da Dani se especializar somente em atendimentos etc, não em preparos"
 
