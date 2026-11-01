@@ -44,5 +44,11 @@ const dia=(dia,eq)=>{ const H=load(), {g,L}=H; g.save=L.normSave({ bank:2000, di
   ok(L.MARMITA.adiantar===false && g.marmitaOk,'dia 4: há entregador e MARMITA.adiantar é false');
   ok(!g.estacaoOn('adiantar') && g.estacaoOn('retirada'),'estacaoOn: "adiantar" falso, "retirada" verdadeiro');
   g.tapStation('adiantar'); ok(g.marmitasLivres===0,'tocar no "+ marmita" não faz marmita'); }
+// ---------- 4. Dani nível 1: uma tarefa só, e o menu mostra só ela (v9.6.3) ----------
+{ const {g}=dia(3,{ dani:1 });
+  ok(g.save.equipe.daniTasks.length===2 && g.dani.tasks.join()==='pratos','nível 1 com 2 guardadas: ela faz só a 1ª (pratos)');
+  ok(g.toggleDaniTask('lavar')===false,'não dá para ligar "lavar" com a vaga cheia');
+  ok(g.toggleDaniTask('pratos')===true && g.dani.tasks.join()==='lavar','desligando "pratos", a guardada "lavar" passa a valer');
+  ok(g.toggleDaniTask('pratos')===false && g.dani.tasks.length===1,'e "pratos" já não cabe de novo'); }
 console.log('smoke49: total =',total,' fails =',fails);
 process.exit(fails?1:0);
