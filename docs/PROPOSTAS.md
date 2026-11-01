@@ -4,6 +4,14 @@ Registro das ideias e dos retornos de quem jogou, com o texto original, e de ond
 
 ---
 
+## 01/11 (noite) — usuário: menos texto explicativo e um Manual que se revela com a história
+> Eu percebo que tem tanto no menu de melhorias quanto em novos dias aparecem descrições bem extensas, sabe? E essas descrições são muito enfadonhas de se ler, explicando, por exemplo, a explicação sobre o cliente VIP. Ah, que ele não gosta de prato frio, em compensação ele perde prato especial, perde paciência rápida, sabe? É chato ler essas coisas. Então seria bacana se tivesse tipo como tem os jogos, os bestiário, em que fala as características de cada um e tal, né? Então tem algo que é tipo tipos de clientes, e aí aparece lá o vovô, vovó, VIP, família, estudante, etc, etc. Números, características de cada um, sem colocar números matemáticos, sem colocar tipo números, só coloca paciência curta, paciência longa, demora para escolher, rápido na escolha, sabe? Que o jogo não é para fazer cálculos, o jogo é só para sentir e entender mais ou menos o perfil dos personagens. E a mesma coisa outras definições, né? Outras escritas, tipo... descrições que falam exatamente o que vai acontecer a partir de uma outra... de uma melhoria, por exemplo. Isso é extenso, não precisa. As pessoas conseguem inferir pelo título, sabe? Em suma, o que eu quero dizer é tirar quase todo o texto explicativo que tem por aí. É para o tutorial apresentar e para alguma fala no modo história explicar brevemente. E se a pessoa não entender, ela abre lá o manual. Tem um cantinho de manual que vai ter tipos de clientes, tipos de upgrades que cada um faz, tal, né? E aí, esse manual, ele vai se revelando à medida que vai avançando na história, para não ter spoiler nele. Gostaria disso implementado antes do 4A.
+
+**Decisões (com o usuário, 01/11):** etapa **3f** do `docs/PLANO.md`, em 2 sessões (3f-1, v9.6.7: o Manual; 3f-2, v9.6.8: o corte dos textos), **depois da 3d-3 e antes da 3e**. Cartões da lojinha só com nome, preço e um "?" que abre a ficha no Manual; as tabelas da equipe viram bolinhas. O que ainda não apareceu na história fica como ficha "???" trancada. O Manual entra no lugar do "Como jogar" (menu, pausa e lojinha).
+**Destino:** etapa 3f do `docs/PLANO.md`.
+
+---
+
 ## 01/11 — Renan (beta-tester, WhatsApp, repassado pelo usuário): 16 retornos de jogo
 > [01/11, 15:56] Louça suja deixar a pia mais suja
 > [01/11, 15:56] Lixo soltar mais vapores feios
