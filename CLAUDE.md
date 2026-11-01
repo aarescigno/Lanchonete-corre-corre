@@ -8,6 +8,7 @@ Jogo de navegador de gerenciamento de restaurante, em um único arquivo HTML com
 - **Sem invólucro:** o arquivo montado não tem `<!doctype>`, `<html>`, `<head>` nem `<body>` (o publicador envolve) e começa com `<title>`.
 - **Nome fixo:** o nome do arquivo não muda. Versões antigas vão para `versoes/vN-fonte.html` (exato) e `versoes/vN.html` (com a 1ª linha de `versoes/v1.html` como invólucro).
 - **Palavras do dia a dia:** na interface, prefira os termos mais comuns no Brasil (ex.: "QUEBRADO", e não "FORA DE SERVIÇO").
+- **Pouco texto na tela (desde a 3f):** o jogo é para sentir, não para calcular. Cartões da lojinha só com nome, preço em R$ e "?"; a explicação vai como ficha no Manual (`MANUAL`, sem números, revelada com a história). Quem apresenta é a Missão zero e as falas do Modo História, em frases curtas.
 - **Diversidade e movimento:** clientes diversos, sem estereótipos; respeitar `prefers-reduced-motion`.
 - **Código:** a lógica (`Game.update`) fica separada do desenho (`render`); `window.__game` e `window.__lcc` ficam expostos para os testes.
 
