@@ -5,10 +5,10 @@ Ponto de partida para um jogo novo em HTML (pensado para simuladores de gestão,
 ## Instalar
 
 ```bash
-python3 kit/instalar.py ../meu-jogo --nome "Nome do Jogo" [--arquivo meu-jogo.html] [--branch main]
+python3 instalar.py ../meu-jogo --nome "Nome do Jogo" [--arquivo meu-jogo.html] [--branch main]
 ```
 
-Ele copia `kit/modelo/` para a pasta, troca os marcadores (`{{JOGO}}`, `{{ARQ}}`, `{{CHAVE}}`, `{{BRANCH}}`, `{{DATA}}`), deixa os scripts executáveis e roda os testes (a última linha deve ser `smoke1.js: 20 verificações, fails = 0`). Não sobrescreve arquivo que já existe (`--forcar` troca).
+Rode de dentro da pasta do kit (descompactada do `kit-jogo-manager.zip` ou em `kits/jogo-manager/`). Ele copia `modelo/` para a pasta, troca os marcadores (`{{JOGO}}`, `{{ARQ}}`, `{{CHAVE}}`, `{{BRANCH}}`, `{{DATA}}`), deixa os scripts executáveis e roda os testes (a última linha deve ser `smoke1.js: 20 verificações, fails = 0`). Não sobrescreve arquivo que já existe (`--forcar` troca).
 
 Depois: commit, push, GitHub Pages em *Settings → Pages → Source: GitHub Actions*, e a 1ª sessão com o Opus usando o prompt de `docs/PROMPTS.md`.
 
