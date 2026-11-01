@@ -19,7 +19,7 @@ const roda=(H,seg,fn)=>{ const {g}=H; for(let i=0;i<seg*10;i++){ g.update(0.1); 
 
 // ---------- 1. constantes e curso ----------
 { const {L}=nova();
-  ok(L.CAMI_MESAS_MAX===3 && L.STAFF.cami.levels[3].mesas===true && L.STAFF.cami.levels[3].speed===1.25 && typeof L.CAMI_MESA_ON==='undefined','CAMI_MESAS_MAX = 3 e o "Em breve" saiu (CAMI_MESA_ON não existe mais)');
+  ok(L.CAMI_MESAS_MAX===2 && L.STAFF.cami.levels[3].mesas===true && L.STAFF.cami.levels[3].speed===1.25 && typeof L.CAMI_MESA_ON==='undefined','CAMI_MESAS_MAX = 2 (v9.6.1) e o "Em breve" saiu (CAMI_MESA_ON não existe mais)');
   let H=jogo(6,'avenida',{ pontoDia:5, equipe:{ tonhao:1, dani:3, joca:3, cami:1 }, libera:{ confeitaria:2, joca:2, cami:2 } }), g=H.g; g.save.bank=5000;
   ok(!g.buyCamiCurso('mesa'),'o curso de mesa não se compra antes do ágil');
   ok(g.buyCamiCurso('agil') && !g.buyCamiCurso('mesa'),'um curso da Cami por lojinha'); g.save.camiCursoDia=0;
@@ -31,11 +31,12 @@ const roda=(H,seg,fn)=>{ const {g}=H; for(let i=0;i<seg*10;i++){ g.update(0.1); 
   ok(sv.salao.mesas.length>=4,'o salão da Avenida tem mesas para o teste ('+sv.salao.mesas.length+')');
   ok(!g.camiMesa(0) && !sv.salao.mesas[0].cami,'sem o curso de mesa, não marca ('+g.salaoMsg+')');
   sv.equipe.cami=3; sv.camiCursos.mesa=1; g.salaoMsg='';
-  ok(g.camiMesa(0) && g.camiMesa(1) && g.camiMesa(2) && L.camiMesasN(sv)===3,'marca até 3 mesas');
-  ok(!g.camiMesa(3) && L.camiMesasN(sv)===3 && /até 3/.test(g.salaoMsg),'a 4ª é recusada: "A Cami fica com até 3 mesas"');
-  ok(g.camiMesa(sv.salao.mesas.findIndex(m=>m.cami)) && L.camiMesasN(sv)===2,'tocar de novo numa marcada tira a marca');
+  ok(g.camiMesa(0) && g.camiMesa(1) && L.camiMesasN(sv)===2,'marca até 2 mesas (v9.6.1)');
+  ok(!g.camiMesa(2) && L.camiMesasN(sv)===2 && /até 2/.test(g.salaoMsg),'a 3ª é recusada: "A Cami fica com até 2 mesas"');
+  ok(g.camiMesa(sv.salao.mesas.findIndex(m=>m.cami)) && L.camiMesasN(sv)===1,'tocar de novo numa marcada tira a marca');
+  g.camiMesa(sv.salao.mesas.findIndex(m=>!m.cami)); ok(L.camiMesasN(sv)===2,'e marcar outra volta a 2');
   const marcadas=sv.salao.mesas.map(m=>!!m.cami).join(); const N=L.normSave(JSON.parse(JSON.stringify(sv))); ok(N.salao.mesas.map(m=>!!m.cami).join()===marcadas,'o save guarda as mesas marcadas');
-  const X=JSON.parse(JSON.stringify(sv)); X.salao.mesas.forEach(m=>{ m.cami=1; }); ok(L.camiMesasN(L.normSave(X))===3,'save com mais de 3 marcadas: ficam 3');
+  const X=JSON.parse(JSON.stringify(sv)); X.salao.mesas.forEach(m=>{ m.cami=1; }); ok(L.camiMesasN(L.normSave(X))===2,'save com mais de 2 marcadas: ficam 2');
   const i=sv.salao.mesas.findIndex(m=>m.cami); ok(g.guardarMesa(i) && g.estoque.every(m=>!m.cami) && L.camiMesasN(sv)===1,'guardar a mesa no estoque tira a marca');
   const j=sv.salao.mesas.findIndex(m=>m.cami); if (g.estoque.length) g.tirarMesa(0); ok(g.pintarMesa(j,2) && sv.salao.mesas.some(m=>m.cami),'pintar a cadeira mantém a marca');
   sv.equipe.camiModo='mesas'; ok(L.camiModoMesas(sv),'com 1 mesa marcada, o modo "Minhas mesas" vale');
@@ -82,7 +83,7 @@ const roda=(H,seg,fn)=>{ const {g}=H; for(let i=0;i<seg*10;i++){ g.update(0.1); 
 
 // ---------- 7. cartão, desenho e save da v9.5 ----------
 { const H=aberto(2), {g,L}=H; L.setShopTab('cami'); let t=txt(H.els['shop-grid']);
-  ok(/Cami · nível 3 de 3/.test(t) && /Minhas mesas/.test(t) && /Tarefas/.test(t) && /cuida de 2 de 3 mesas/.test(t),'o cartão mostra os dois modos e as 2 mesas marcadas');
+  ok(/Cami · nível 3 de 3/.test(t) && /Minhas mesas/.test(t) && /Tarefas/.test(t) && /cuida de 2 de 2 mesas/.test(t),'o cartão mostra os dois modos e as 2 mesas marcadas');
   g.save.equipe.camiModo='tarefas'; g.camiMesa(0); g.camiMesa(1); L.setShopTab('cami'); t=txt(H.els['shop-grid']); ok(/Marque as mesas dela no Salão/.test(t),'sem mesa marcada: "Marque as mesas dela no Salão"');
   let erro=''; try { g.save.equipe.camiModo='mesas'; g.camiMesa(0); const tb=g.tables[0]; tb.open=true; H.L.drawTable(H.ctx,g,tb,0,false); H.L.drawTable(H.ctx,g,tb,0,true); H.L.drawAventalCami(H.ctx,100,100); } catch(e){ erro=String(e); } ok(!erro,'o avental desenha no jogo e no editor sem erro '+erro);
   const v95=L.normSave({ equipe:{ tonhao:1, dani:3, joca:3, cami:2, camiTasks:['lixo','lavar'] }, camiCursos:{ agil:1 }, salao:{ ponto:'avenida' } });

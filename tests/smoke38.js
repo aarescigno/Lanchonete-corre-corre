@@ -62,7 +62,7 @@ const joga=(H,fat,custo)=>{ const {g,els}=H; if(g.state==='shop') els['btn-shop-
   ok(g.contas===garagemContas+120,'as contas do dia somam o aluguel de R$ 120');
   g.schedule=[]; g.nextIdx=0; g.money=1000; g.custo=0; const b0=g.save.bank; g.finishDay();
   ok(g.save.bank===b0+1000-g.contas-g.paid-g.paidDiv && g.save.caixa[g.save.caixa.length-1].contas===g.contas,'o aluguel sai no fim do dia e entra no livro-caixa');
-  const D=g.diaPonto(L.diaOf(10)); ok(D.meta===Math.round(L.diaOf(10).meta*1.25/5)*5 && D.expert===Math.round(L.diaOf(10).expert*1.25/5)*5,'meta e expert ×1,25, arredondadas para 5');
+  const D=g.diaPonto(L.diaOf(10)); ok(D.meta===Math.round(L.diaOf(10).meta*2.3/5)*5 && D.expert===Math.round(L.diaOf(10).expert*1.6/5)*5,'meta ×2,3 e expert ×1,6 (v9.6.1), arredondadas para 5');
   const G=jogo(4,false).g; G.resetDay(10); ok(G.day.meta===L.diaOf(10).meta,'na Garagem, a meta é a de sempre'); }
 
 // ---------- 4. a clientela ----------
