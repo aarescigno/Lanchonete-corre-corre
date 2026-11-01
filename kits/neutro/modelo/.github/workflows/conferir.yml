@@ -1,0 +1,18 @@
+# Roda o ferramentas/testar.sh em cada PR e em cada push no branch padrão.
+# Se o projeto precisar de Node, Python etc., acrescente os "setup-*" antes do passo de testes.
+name: Conferir
+on:
+  pull_request:
+  push:
+    branches: ['{{BRANCH}}']
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  testes:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: { python-version: '3.12' }
+      - run: ferramentas/testar.sh
