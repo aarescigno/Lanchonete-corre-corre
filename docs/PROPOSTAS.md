@@ -4,6 +4,45 @@ Registro das ideias e dos retornos de quem jogou, com o texto original, e de ond
 
 ---
 
+## 01/11 — Renan (beta-tester, WhatsApp, repassado pelo usuário): 16 retornos de jogo
+> [01/11, 15:56] Louça suja deixar a pia mais suja
+> [01/11, 15:56] Lixo soltar mais vapores feios
+> [01/11, 15:58] Dar pra lavar menos do que todos os pratos de uma vez e ir liberando prato a prato para o Tonhão usar
+> [01/11, 16:01] Marmita de entregador que desistiu fica preso na mão, deixar jogar no lixo
+> [01/11, 16:04] Recado de número de pratos ficou pequeno e, talvez, desnecessário
+> [01/11, 16:06] Famílias chegando várias em fila longa sem ter liberado ainda o salão para comprar mais mesas
+> [01/11, 16:07] Quando acaba o timer não deixar mais entrar ninguém, quem está ainda fica até terminar o atendimento
+> [01/11, 16:07] Disparador para liberar upgrades de salão com a perda de uma família
+> [01/11, 16:08] História do efood muito depois que o efood já iniciou, quando iniciar o efood já aparecer essa história, se não, esperar para iniciar o efood
+> [01/11, 16:10] máximo que o jogo envia de grupos de 3 ou 4 pessoas para esperar na fila de 2x o número de mesas de 4
+> [01/11, 16:12] Gente vip demais na garagem, é pra ter nenhum, eles devem ser raros, chatos e com frequência crescente ao longo dos níveis
+> [01/11, 16:15] Se o entregador desistir, a marmita desaparecer da bancada do Tonhão também
+> [01/11, 16:23] Bancada dos doces ficou pequena e difícil de entender que é nova função
+> [01/11, 16:26] Os pedidos de marmita do horário de almoço causaram overflood de gente esperando marmita e de marmitas sobrando na bancada, sem deixar sair pratos para quem come nas mesas
+> [01/11, 16:28] É como se a UI não se expande de acordo com o gameplay
+>
+> Depois: "Vc não consegue escolher o prato que está pegando direito quando tem vários prontos, a lógica de coleta quando vc clica de qualquer jeito é sempre pegar o último prato que saiu, quando deveria ser o contrário, pegar sempre o que está esperando a mais tempo. Pq em tese é esse que está mais urgente"
+
+Usuário: "achei todos relevantes, bora agrupar, organizar e planejar correções. Tudo antes da 4a." Entrevista com o usuário em 01/11 (respostas abaixo; o plano está na etapa 3d do `docs/PLANO.md`).
+
+| Retorno | Decidido | Destino |
+|---|---|---|
+| Fim do timer | A porta fecha; quem está nas mesas (e no balcão de retirada) termina e paga; quem espera lá fora vai embora calmo, sem multa e sem nota | 3d-1 |
+| Famílias em fila longa / no máximo 2× as mesas de 4 | Grupo de 3 ou 4 além de 2 por mesa de 4 vira um grupo pequeno do dia | 3d-1 |
+| Gatilho do Salão | Abre depois da 1ª família perdida na fila, do dia 2 em diante (garantia no fim do dia 4) | 3d-1 |
+| Conversa do Efood | Vem na véspera do 1º dia com motoboy, antes das outras conversas; sem ela, não vem entregador | 3d-1 |
+| VIP | Nenhum na Garagem; ~3% por grupo na área industrial, ~30% na Avenida; paciência 0,65 e prato frio custa 1 coração (nenhum cliente senta em mesa suja, regra que já vale para todos) | 3d-1 |
+| Marmitas lotando a janela no almoço; "a UI não se expande" | Fileira própria de marmitas na janela, as mesas têm prioridade no fogão, entregadores a 12 s um do outro | 3d-2 |
+| Marmita do entregador que desistiu | Some do fogão, da janela e da prateleira; na mão da Bia, vai para o lixo com um toque na lixeira | 3d-2 |
+| Pegar o prato | Qualquer toque na janela pega o prato pronto há mais tempo | 3d-2 |
+| Pia e lixo mais sujos | Água turva, pratos e manchas na pia, mais fumaça no lixo, moscas | 3d-3 |
+| Lavar prato a prato | Cada pilha lavada volta na hora; a Bia para no fim da pilha se houver outra ação na fila | 3d-3 |
+| "Recado de número de pratos" | Sai o balão "Não se esqueça de lavar os pratos!" da abertura; o ×4 da janela fica | 3d-3 |
+| Bancada dos doces | Maior, placa DOCES, selo NOVO! até 5 doces e balão do pedido na mesa maior | 3d-3 |
+| "A UI não se expande" (geral) | Revisão da interface com o Opus antes de planejar a 4a | 3e |
+
+---
+
 ## 01/11 — usuário: Dani sem curso de barista
 > "Tem que tirar esse curso de barista iniciante da Dani, ela vai para o caminho do doce só. E creio que na garagem tínhamos combinado da Dani se especializar somente em atendimentos etc, não em preparos"
 
