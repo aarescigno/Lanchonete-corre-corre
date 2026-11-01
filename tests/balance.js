@@ -26,7 +26,7 @@ const EQ0=process.env.EQUIPE==='auto'?null:(process.env.EQUIPE?JSON.parse(proces
 const eqFor0=n=>EQ0||AUTO[n]||(n>7?FULL:{});   // v8.3: do dia 8 em diante, a equipe completa
 // v9.2: CONFEITARIA=1 liga o curso da Dani (os doces e a marmita "+ doce"; a Dani serve os doces); JOCA=2|3|4 contrata o Joca nesse nível (com ele, a Dani fica com cafezinho, doces e marmitas)
 const CONF=process.env.CONFEITARIA==='1'||!!process.env.JOCA, JOCAN=+process.env.JOCA||0;
-// v9.3 (PONTO=avenida) (v9.6: CAMI=3 liga o modo "Minhas mesas" com CAMI_MESAS=3 mesas; CAMI_MESAS=2 testa com 2): GOURMET=1 liga a Confeitaria gourmet (vitrine, R$ 16); ESPRESSO=1 liga o espresso do Joca (ele fica com o café fixo, o resto do básico nas vagas que sobram); CAMI=1|2 contrata a Cami nesse nível (ela fica com o básico)
+// v9.3 (PONTO=avenida) (v9.6: CAMI=3 liga o modo "Minhas mesas" com CAMI_MESAS=2 mesas (v9.6.1; antes 3); CAMI_MESAS=3 testa com 3): GOURMET=1 liga a Confeitaria gourmet (vitrine, R$ 16); ESPRESSO=1 liga o espresso do Joca (ele fica com o café fixo, o resto do básico nas vagas que sobram); CAMI=1|2 contrata a Cami nesse nível (ela fica com o básico)
 const GOURMET=process.env.GOURMET==='1', ESPRESSO=process.env.ESPRESSO==='1', CAMIN=+process.env.CAMI||0, ANSELMO=process.env.ANSELMO==='1';   // v9.5: ANSELMO=1 contrata o Anselmo (nível 2, drinks)
 const eqFor=n=>{ const e=Object.assign({},eqFor0(n)); if(!(IND||AV)||!CONF||n<3) return e;
   if(JOCAN){ e.joca=JOCAN; e.jocaTasks=['lixo','pratos','lavar']; e.daniTasks=['cafe','doce','marmita']; } else e.daniTasks=['pratos','lavar','doce'];
@@ -68,7 +68,7 @@ function jogaDia(n,man){
   const dec=process.env.DECOR==='tudo';   // v8.6.6: DECOR=tudo põe todos os enfeites à mostra e toalha em todas as mesas (o bot não compra decoração)
   g.save.decor=L.normDecor?L.normDecor(dec?Object.fromEntries(L.DECOR.map(d=>[d.id,1])):{}):{};
   g.save.salao=L.normSalao({ponto:PONTO,mesas:movFor(n).map((seats,c)=>({x:0,y:0,seats,c:c%4,t:dec?1:0}))});
-  if(AV&&CAMIN>=3){ const NM=+process.env.CAMI_MESAS||3, W=L.LAYOUT.STATIONS.order.ap; g.save.salao.mesas.map((m,i)=>[Math.hypot(m.x-W.x,m.y-W.y),i]).sort((a,b)=>a[0]-b[0]).slice(0,NM).forEach(q=>{ g.save.salao.mesas[q[1]].cami=1; }); }   // v9.6: CAMI_MESAS=2: quantas mesas (as mais perto da janela)
+  if(AV&&CAMIN>=3){ const NM=+process.env.CAMI_MESAS||2, W=L.LAYOUT.STATIONS.order.ap; g.save.salao.mesas.map((m,i)=>[Math.hypot(m.x-W.x,m.y-W.y),i]).sort((a,b)=>a[0]-b[0]).slice(0,NM).forEach(q=>{ g.save.salao.mesas[q[1]].cami=1; }); }   // v9.6: CAMI_MESAS=2: quantas mesas (as mais perto da janela)
   if(L.salaoLugares(g.save.salao.mesas)!==movFor(n).reduce((x,y)=>x+y,0)) throw new Error('salão '+JSON.stringify(movFor(n))+' não cabe na arrumação automática (voltou ao kit)');
   g.save.divulga=process.env.DIV||'panfleto';   // DIV=boca|panfleto|redes (v9.0.2: o padrão do jogo é boca a boca; o bot escolhe panfletos)
   if(process.env.MULT){ const d=L.divulgaOf(g.save.divulga); d.groups=[+process.env.MULT,+process.env.MULT]; }   // MULT=0.7: fração fixa dos grupos do dia
