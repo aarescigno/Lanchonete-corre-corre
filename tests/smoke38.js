@@ -67,7 +67,7 @@ const joga=(H,fat,custo)=>{ const {g,els}=H; if(g.state==='shop') els['btn-shop-
 
 // ---------- 4. a clientela ----------
 { const H=jogo(4,true), {g,L}=H, I=g, tipos={}, vipI={ v:0, n:0 }; g.save.divulga='boca';
-  const conta=(game,res)=>{ for(let k=0;k<14;k++){ const sc=game.buildSchedule(game.day); sc.forEach(s=>{ res.tipos[s.type]=(res.tipos[s.type]||0)+1; res.n++; if(s.vip) res.v++; }); } return res; };
+  const conta=(game,res)=>{ for(let k=0;k<30;k++){ const sc=game.buildSchedule(game.day); sc.forEach(s=>{ res.tipos[s.type]=(res.tipos[s.type]||0)+1; res.n++; if(s.vip) res.v++; }); } return res; };
   const ri=conta(g,{ tipos:{}, v:0, n:0 });
   const G=jogo(4,false).g; G.resetDay(10); const rg=conta(G,{ tipos:{}, v:0, n:0 });
   const fr=(r,k)=>(r.tipos[k]||0)/(r.n-(r.tipos.encomenda||0));

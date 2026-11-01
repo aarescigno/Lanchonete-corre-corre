@@ -132,10 +132,10 @@ novo(5);
 { g.clima='chuva'; let ent=0,tot=0; for(let i=0;i<40;i++){ const s=g.buildSchedule(g.day); tot+=s.length; ent+=s.filter(x=>x.type==='entregador').length; }
   ok(ent/tot>0.3,'chuva: '+(100*ent/tot).toFixed(0)+'% de entregadores');
   const bot=require('./bot.js')(g,L,{afiado:true}); let ganhou=0;
-  for(let k=0;k<10;k++){ g.save=L.normSave({bank:2000,dia:5,equipe:{tonhao:2,dani:3,daniTasks:['pratos','lavar','lixo']}}); g.up=g.save.up; g.buildTables(); g.startDay(5); g.clima='chuva'; g.schedule=g.buildSchedule(g.day); g.begin();
+  for(let k=0;k<20;k++){ g.save=L.normSave({bank:2000,dia:5,equipe:{tonhao:2,dani:3,daniTasks:['pratos','lavar','lixo']}}); g.up=g.save.up; g.buildTables(); g.startDay(5); g.clima='chuva'; g.schedule=g.buildSchedule(g.day); g.begin();
     let st=0; while(g.state==='playing'&&st<30000){ bot(); g.update(0.05); st++; if(st%50===0) L.render(g,ctx); }
     if(g.result.passed) ganhou++; }
-  ok(ganhou>=3,'chuva no dia 5: o bot afiado bate a meta em '+ganhou+'/10 (v9.6.4: sem VIP na Garagem, ele bate ~2/3 desses dias; antes ~5/6)'); }
+  ok(ganhou>=8,'chuva no dia 5: o bot afiado bate a meta em '+ganhou+'/20 (v9.6.4: sem VIP na Garagem, ele bate ~2/3 desses dias; antes ~5/6)'); }
 
 // 14. Turno sem fim: o entregador também vai ao balcão
 { g.save=L.normSave({bank:2000}); g.up=g.save.up; g.startEndless(); g.begin();

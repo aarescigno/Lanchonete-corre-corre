@@ -20,7 +20,7 @@ Retornos do Renan de 01/11 (`docs/PROPOSTAS.md`).
 
 ## Testes
 - `smoke51` (novo, 18 conferências): `marmJanela` por ponto, marmita em `marmJ` e nunca em `plates`, `marmJ` cheia deixa o fogão fazer os pratos, agenda sem 2 entregadores a menos de 12 s (40 dias), entregador que desiste (fogão, janela, prateleira, mão da Dani, mão da Bia com X e lixeira), 3 toques pegam os pratos do mais antigo ao mais novo, faixa de cima pega a marmita.
-- `smoke28` (a marmita do fogão sai sem custo; marmitas em `marmJ`), `smoke38` (metaF/expertF da área industrial), `bot.js` (marmJ e o X vermelho).
+- `smoke28` (a marmita do fogão sai sem custo; marmitas em `marmJ`; o teste da chuva no dia 5 passou a 20 rodadas, limiar 8, para não oscilar), `smoke38` (metaF/expertF da área industrial; 30 agendas no teste de tipos), `bot.js` e `botpage.js` (marmJ e o X vermelho; o bot afiado esquecia a fileira nova e deixava os entregadores sem marmita: com o conserto, a chuva volta a ~2/3 e o afiado na área industrial passa 97%). Os 3 resultados de balanceamento acima são do bot comum.
 - Capturas em `capturas/v9_6_5` (`tests/shot_v9_6_5.js`): a janela nos 3 pontos, pratos e marmitas cheios, sem sobreposição.
 
 Modelo: Sonnet, esforço alto (cozinha, ajudantes, bot e desenho ao mesmo tempo).
