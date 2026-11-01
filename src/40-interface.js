@@ -214,7 +214,7 @@ function buildTips(){
     }]
   ];
   // v8.6: o entregador e as marmitas
-  tips.push(['Do dia 4 em diante vem o entregador de moto: ele não senta, espera no balcão de retirada (no alto da calçada), e o pedido dele, pela Efood, vai sozinho ao Tonhão, que faz o prato numa marmita (sem usar prato limpo). Toque na marmita pronta e depois no balcão: ele paga na hora, com a gorjeta dos corações (a Efood fica com ' + Math.round(MARMITA.efood * 100) + '%). Tem pressa! No "+ marmita" da janela de pedidos, o Tonhão adianta até ' + MARMITA.vagas + ' marmitas de PF, que esperam na prateleira do balcão e esfriam em ' + MARMITA.validade + ' s. Embalagem: R$ ' + MARMITA.embalagem + '; marmita que ninguém leva fica no prejuízo. A Dani pode levar as marmitas.', c => {
+  tips.push(['Do dia 4 em diante vem o entregador de moto: ele não senta, espera no balcão de retirada (no alto da calçada), e o pedido dele, pela Efood, vai sozinho ao Tonhão, que faz o prato numa marmita (sem usar prato limpo). Toque na marmita pronta e depois no balcão: ele paga na hora, com a gorjeta dos corações (a Efood fica com ' + Math.round(MARMITA.efood * 100) + '%). Tem pressa!' + (MARMITA.adiantar ? ' No "+ marmita" da janela de pedidos, o Tonhão adianta até ' + MARMITA.vagas + ' marmitas de PF, que esperam na prateleira do balcão e esfriam em ' + MARMITA.validade + ' s. Embalagem: R$ ' + MARMITA.embalagem + '; marmita que ninguém leva fica no prejuízo.' : '') + ' A Dani pode levar as marmitas.', c => {
     drawMarmita(c,'pf',22,22,1.2);
     rr(c,30,38,30,18,3); fs(c,PAL.madeira,1.8); rr(c,34,42,16,8,2); fs(c,EFOOD_COR,1.2);
     drawPerson(c,{skin:2,hair:0,hairC:'#1B1512',pants:'#2F3E5C',acc:'helmet'},16,60,{shirt:CHAIRS[0].c,mood:0,s:0.55});
