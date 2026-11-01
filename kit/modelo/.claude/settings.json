@@ -1,0 +1,10 @@
+{
+  "permissions": {
+    "deny": [
+      "Read(./{{ARQ}})",
+      "Read(./tests/jogo.js)",
+      "Read(./versoes/**)",
+      "Read(./capturas/**)"
+    ]
+  }
+}
