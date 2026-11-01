@@ -29,12 +29,11 @@ const dia=(dia,eq)=>{ const H=load(), {g,L}=H; g.save=L.normSave({ bank:2000, di
   sv.conversa=null; sv.bank=5000; sv.convCard=0; sv.convEnt=0;
   g.startDay(1); joga(H,400); ok(sv.convCard!=='pend','fechar o dia 1 não deixa convCard pendente'); els['btn-next'].fire('click'); passa(H);
   g.startDay(2); joga(H,400); ok(sv.convCard==='pend','fechar o dia 2 deixa convCard pendente'); els['btn-next'].fire('click'); passa(H);
-  g.startDay(3); joga(H,400); ok(sv.convEnt!=='pend','fechar o dia 3 não deixa convEnt pendente'); els['btn-next'].fire('click'); passa(H);
-  sv.convDiv=1; sv.libera=sv.libera||{};
-  g.startDay(4); joga(H,400); ok(sv.convEnt==='pend','fechar o dia 4 deixa convEnt pendente'); els['btn-next'].fire('click');
+  g.startDay(3); joga(H,400); ok(sv.convEnt==='pend','fechar o dia 3 deixa convEnt pendente (v9.6.4: no dia anterior ao 1º motoboy)'); els['btn-next'].fire('click');
   let achou=false, n=0; while(g.conversa && n<60){ if(/Tio, que história é essa de motoqueiro/.test(g.conversa.fala.s)) achou=true; toque(els); n++; }
   ok(achou && sv.convEnt===1,'a conversa toca a 1ª fala dos entregadores e termina com convEnt 1');
-  g.startDay(5); joga(H,400); els['btn-next'].fire('click'); passa(H); ok(sv.convEnt===1,'fechar o dia 5 não repete');
+  ok(sv.convDiv==='pend','a da divulgação fica para a troca de dia seguinte (uma conversa por vez)');
+  g.startDay(4); joga(H,400); els['btn-next'].fire('click'); passa(H); ok(sv.convEnt===1,'fechar o dia 4 não repete');
   ok(L.normSave({ convEnt:'pend' }).convEnt==='pend' && L.normSave({ convEnt:1 }).convEnt===1 && L.normSave({}).convEnt===0,'normSave guarda convEnt'); }
 { const H=load(), {g}=H; g.save.bank=5000; for(let n=1;n<=5;n++){ g.startDay(n); joga(H,400); }
   ok(g.save.convEnt!=='pend' && g.save.convCard!=='pend','sem o Modo História, nada fica pendente'); }

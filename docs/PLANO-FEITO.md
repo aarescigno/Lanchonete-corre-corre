@@ -90,6 +90,7 @@ Etapas concluídas (1a a 3a), movidas de `docs/PLANO.md` em 30/10/2026 e 31/10/2
 | 3b-1 | Restaurante na Avenida Brasil: os caps. 6 e 7, o almoço de negócios, a parmegiana, os sofás, as águas saborizadas e as flores | v9.1 | feita em 31/10 (`docs/spec-v9.1.md`; a 5ª vaga de espera da área industrial ganhou posição; metas ×1,7) |
 | 3b-1r | Realinhamento: o `LIBERA` depois da Garagem (base do Joca e do Anselmo) e o Cantinho da Rosa desenhado nos pontos novos | v9.1.1 | feita em 31/10 (`docs/spec-v9.1.1.md`) |
 | 3b-2 | A Dani confeiteira e o Joca, na área industrial | v9.2 | feita em 31/10 (`docs/spec-v9.2.md`; a geladeirinha ficou em (696, 206), abaixo da geladeira grande) |
+| 3b-6 | A Cami em "Minhas mesas" | v9.6 | feita em 31/10 (`docs/spec-v9.6.md`; `smoke48`, não 47; `CAMI_MESAS_MAX` ficou 3: a Avenida já passava de 95% antes, o ajuste é da 3b-7) |
 
 ## Etapa 1a — Jogo justo: dá para não perder ninguém (v7.1)
 > **Feita em 15/10 (v7.1, `docs/spec-v7.1.md`).** Decisões: A + B; no Turno sem fim vale o ritmo da fila justa, sem o piso; ícone "aguardando mesa" sim. A medição mostrou que, com a equipe, a maior parte das perdas era a espera pelo prato, e não a fila. O que sobra é o limite de louça nos dias de 6 mesas: o bot afiado só chega ao alvo (0 perdidos em 94% dos dias) comprando o Jogo de pratos primeiro. A louça não mudou; se jogadores reclamarem da espera pelo prato, a etapa 1b pode rever `dishStock` ou a mecânica D. Metas sem mudança.
@@ -1446,3 +1447,30 @@ O curso "Atendimento de mesa" da Cami (3b-3) passa a se comprar e abre o **modo 
 **Modelo:** Sonnet, esforço médio (código com plano detalhado; o balanceamento já tem a regra de ajuste).
 
 ---
+
+### Sessão 3d-1 — A fila, o fim do turno, o VIP, o Efood e o Salão (v9.6.4)
+**Partes:** `10-constantes.js`, `16-jogo.js`, `43-telas.js`, `40-interface.js` (Como jogar), `22-salao-hud.js` (relógio), `21-cenario.js` (placa).
+1. **A porta fecha no fim do turno** (`Game.update`, onde hoje `clock <= 0` chama `timeUpLeave` para todos):
+   - Com o relógio zerado: `this.fechado = true`, `this.nextIdx = this.schedule.length` (o resto da agenda não vem) e `PORTA` deixa de valer. Quem está **na espera lá fora** (`this.queue`) vai embora calmo: `leaveCommon(g)`, sem multa, sem `stats.lost`, sem nota no Gurugol, com o texto "Fechou!" (`PAL.faixa`, 16) sobre o grupo. Quem está **nas mesas** e **no balcão de retirada** fica até terminar: come, pede a conta, paga (ou desiste, com multa, como sempre).
+   - O dia acaba (`reason = 'time'`, `endTimer = 2.0`, `Sfx.bell()`) quando não sobra grupo (os que estão saindo não contam). Trava de segurança: `FECHA = { max:60 }` em `10-constantes.js`; passados 60 s do relógio zerado, quem ainda estiver vai embora como hoje (`timeUpLeave`).
+   - O relógio do HUD mostra **"FECHANDO"** (no lugar do 0:00, mesma fonte, `PAL.alerta`) enquanto `fechado`. Na calçada, ao lado do topo da fila de espera (perto de `QUEUE.x`, y ≈ 190), uma plaquinha pendurada **"FECHADO"** (vermelha, letras brancas, no estilo da `drawPlacaParada`). O texto "Fechou!" e a placa não animam com movimento reduzido.
+   - Não muda: Turno sem fim (`semfim`) e Missão zero.
+2. **No máximo 2 grupos grandes por mesa de 4 na espera** (`Game.arrive`): se o grupo que chega é grande (`CUSTOMER_TYPES[tipo].size[0] >= 3`: família, turma, almoço de negócios) e já há na `queue` `2 × (mesas abertas de 4 lugares)` grupos com `size >= 3`, o tipo dele é trocado por um pequeno do dia: função nova `tipoPequeno()` sorteia entre os tipos do dia (`this.ponto.tipos`, com os pesos, ou `day.types`) com `size[1] <= 2`, sem `retira` e sem `ind` (o motorista vale). O VIP continua VIP (os tipos pequenos estão em `VIP.types`). Sem mesa de 4, todo grupo grande vira pequeno.
+3. **O Salão abre com a 1ª família perdida** (`LIBERA`, id `salao`): `dia:2, ate:4`; gatilho `st.lostGrande >= 1 || st.lostBy.semMesa >= 1 || st.lotadoT >= 90`. Stat nova `stats.lostGrande` (no `resetDay`), contada em `angryLeave` quando o grupo desiste na fila (`g.state === 'queue'`) com `g.size >= 3`. Falas novas:
+   - bia: "Hoje uma família foi embora da fila: só tem uma mesa de quatro."
+   - tonhao: "Na garagem ainda cabem umas mesinhas. Cadeira de plástico é baratinha."
+   - bia: "Vou ver no Salão onde encaixar."
+   - A nota do dia 2 (`DAYS[1].note`) passa a ser: "Chegou a família! Grupos de 3 ou 4 só cabem nas mesas de 4 lugares: se faltar mesa, eles vão embora."
+4. **A conversa do Efood antes dos motoboys** (`HIST_ENTREGA`, `finishDay`, `fluxoHistoria`):
+   - Marcada como pendente no fim do dia **anterior** ao 1º com motoboy: `d.n >= HIST_ENTREGA.dia - 1 && !sv.convEnt` (o `>=` cuida dos saves antigos).
+   - Em `fluxoHistoria`, a `convEnt` vem **antes** da conversa de cartão `primeiro` (Manutenção), do Cardápio e da Divulgação (as conversas de capítulo continuam na frente de tudo). A da Divulgação fica para a troca de dia seguinte (a inauguração dura mais um dia, como já acontece com a `convDiv` pendente).
+   - Função nova `efoodAberto(sv)` (ao lado de `divulgaAberta`): `devLivre() || !(sv && sv.convEnt === 'pend')`. Em `buildSchedule`, sem ela, nenhum tipo com `retira` vem: o `nu` 'entregador' forçado não vale e o entregador sorteado vira `tipoPequeno()`.
+   - Nota da introdução: num dia com `day.nu === 'entregador'` sem Efood aberto, a nota é "Dia de movimento: a freguesia não para de chegar."; o texto do entregador (`DAYS[3].note`) aparece no 1º dia com Efood aberto do dia 4 em diante, uma vez (`sv.efoodNota = 1`, guardado no `normSave`).
+5. **VIP: nenhum na Garagem, raro e chato depois**:
+   - `PONTOS`: Garagem `vip:0` (com `vip` definido, o VIP forçado do `buildSchedule` também não vem); área industrial `vip: 0.3 → 0.2` (~3% por grupo); Avenida fica `vip:2` (~30%). O Terraço (4a) terá mais.
+   - `VIP.pat: 0.75 → 0.65`.
+   - **Prato frio pesa no VIP** (`entregaPrato`): se `grp.vip && dish.fria`, em vez de ganhar 1 coração, ele perde 1 (`Math.max(1, hearts - 1)`) e diz "Isso aqui tá frio!" (`PAL.perigo`, 16) sobre a mesa.
+   - A nota do dia 5 (`DAYS[4].note`) passa a ser: "O movimento cresce: fique de olho na louça e no lixo." (o `vip:0.15` do dia continua; quem zera é o ponto). O texto do VIP vira um balão branco (como o do lembrete da louça, 5 s) quando o **1º VIP da carreira** chega: "Chegou cliente VIP! Fura a fila, tem pouca paciência e não perdoa prato frio. Em compensação, pede o prato especial e dá gorjeta." (`sv.vipVisto = 1`, no `normSave`).
+   - Como jogar (`40-interface.js`, a dica do VIP): "Da área industrial em diante aparece, de vez em quando, o cliente VIP (...)"; o resto do texto igual, trocando "tem menos paciência" por "tem pouca paciência e não perdoa prato frio".
+**Testes:** `smoke50.js`: (a) com o relógio zerado, a fila esvazia sem multa e sem `lost`, um grupo sentado ainda paga e o dia só acaba depois; com 60 s, acaba de qualquer jeito; (b) com 1 mesa de 4, a 3ª família na fila chega como tipo pequeno; (c) `stats.lostGrande` conta e abre o Salão no dia 2 com `historia:true`; (d) `convEnt` fica 'pend' no fim do dia 3, toca antes da `convDiv` e, enquanto pendente, a agenda não tem entregador; (e) Garagem sem VIP em 10 dias de agenda; área industrial com VIP raro; (f) VIP com prato frio perde coração. `run_all.sh --tudo` verde; `balance.js 40` sem equipe e com `EQUIPE=auto` (Garagem) e `PONTO=industrial` e `PONTO=avenida`, com a regra do balanceamento acima; `carreira.js 8` com `DIAS=35`.
+**Modelo:** Sonnet, esforço alto (muitas partes juntas e o balanceamento por tentativa).

@@ -126,9 +126,10 @@ function render(g, ctx){
       if (f.box){
         // a avaliação do Gurugol (v8.4): balão branco com a borda na cor da nota
         ctx.font = f.size + 'px ' + FB;
-        const w = ctx.measureText(f.text).width + 18, x = clamp(f.x, w/2 + 4 - g.cam, W - w/2 - 4);
-        rr(ctx,x - w/2,f.y - 13,w,26,9); ctx.fillStyle = '#FFFDF6'; ctx.fill(); ctx.lineWidth = 2.4; ctx.strokeStyle = f.color; ctx.stroke();
-        txt(ctx,f.text,x,f.y,f.size,PAL.tinta,'center',FB);
+        const ls = String(f.text).split('\n'), lh = f.size + 5;   // v9.6.4: o balão pode ter várias linhas (\n)
+        const w = Math.max.apply(null, ls.map(l => ctx.measureText(l).width)) + 18, x = clamp(f.x, w/2 + 4 - g.cam, W - w/2 - 4);
+        rr(ctx,x - w/2,f.y - 13,w,26 + (ls.length - 1)*lh,9); ctx.fillStyle = '#FFFDF6'; ctx.fill(); ctx.lineWidth = 2.4; ctx.strokeStyle = f.color; ctx.stroke();
+        ls.forEach((l, i) => txt(ctx,l,x,f.y + i*lh,f.size,PAL.tinta,'center',FB));
       } else
       txt(ctx,f.text,f.x,f.y,f.size,f.color,'center',FD,4);
       ctx.globalAlpha = 1;

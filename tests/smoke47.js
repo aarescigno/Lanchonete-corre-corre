@@ -7,7 +7,7 @@ const toque=els=>els['c'].fire('pointerdown',{preventDefault(){},pointerId:1,cli
 const passa=H=>{ let n=0; while(H.g.conversa && n<60){ toque(H.els); n++; } };
 const nova=o=>{ const H=load(Object.assign({historia:true},o||{})); H.doc.createTextNode=t=>({textContent:String(t),children:[]}); return H; };
 const jogo=(cap,ponto,sv,o)=>{ const H=nova(o), {g,L}=H;
-  g.save=L.normSave(Object.assign({ histV:1, cap, dia:10, maxDay:10, bank:5000, up:{ tenis:true }, equipe:{ tonhao:1, dani:2 }, salao:{ ponto:ponto||'avenida' }, convCard:1, convDiv:1 }, sv||{}));
+  g.save=L.normSave(Object.assign({ histV:1, cap, dia:10, maxDay:10, bank:5000, up:{ tenis:true }, equipe:{ tonhao:1, dani:2 }, salao:{ ponto:ponto||'avenida' }, convCard:1, convDiv:1, convEnt:1 }, sv||{}));
   g.up=g.save.up; g.tablesKey=''; g.buildTables(); g.goShop(10); return H; };
 const joga=(H,fat)=>{ const {g,els}=H; if(g.state==='shop') els['btn-shop-go'].fire('click'); if(g.state==='intro') els['btn-start'].fire('click'); g.schedule=[]; g.nextIdx=0; g.money=fat||0; g.custo=0; g.finishDay(); };
 const cursos=(H,o)=>{ const {g}=H; Object.keys(o).forEach(k=>{ g.save[k]=Object.assign(g.save[k]||{},o[k]); }); const dc=g.save.daniCursos, jc=g.save.jocaCursos;
