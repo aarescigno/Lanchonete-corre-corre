@@ -1,0 +1,33 @@
+</style>
+<div id="app">
+  <section id="tela-menu" class="tela ativa">
+    <h1>{{JOGO}}</h1>
+    <div class="barra">
+      <button id="bt-novo">Novo jogo</button>
+      <button id="bt-continuar">Continuar</button>
+    </div>
+    <p class="suave"><span id="vtag"></span></p>
+  </section>
+
+  <section id="tela-painel" class="tela">
+    <div class="barra">
+      <strong id="pn-titulo"></strong>
+      <span id="pn-caixa"></span>
+      <button id="bt-avancar">Avançar semana</button>
+      <button id="bt-menu">Menu</button>
+    </div>
+    <div class="cartao"><h2>Última rodada</h2><div id="pn-ultima" class="suave">Nada ainda.</div></div>
+    <div class="cartao"><h2>Classificação</h2><div class="quadro" id="pn-tabela"></div></div>
+    <div class="cartao"><h2>Equipe</h2><div class="quadro" id="pn-equipe"></div></div>
+  </section>
+
+  <section id="tela-fim" class="tela">
+    <h1>Fim da temporada</h1>
+    <div class="cartao" id="fim-resumo"></div>
+    <div class="barra"><button id="bt-proxima">Próxima temporada</button></div>
+  </section>
+</div>
+<div id="aviso" role="status"></div>
+<script>
+(function(){
+'use strict';
