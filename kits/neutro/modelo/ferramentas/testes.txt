@@ -1,0 +1,9 @@
+# Comandos que o ferramentas/testar.sh roda, um por linha, a partir da raiz do projeto.
+# Linhas com "tudo:" na frente só rodam com --tudo (os lentos). Comentários começam com #.
+# Cada comando deve sair com 0 quando passa; o testar.sh mostra só a última linha da saída.
+python3 ferramentas/sobras.py
+# Exemplos (descomente e ajuste):
+# npm test --silent
+# python3 -m pytest -q
+# node tests/smoke1.js
+# tudo: npx playwright test --reporter=line
