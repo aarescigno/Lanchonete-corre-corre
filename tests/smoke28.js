@@ -10,7 +10,7 @@ const novo=(dia,o)=>{ o=o||{}; g.save=L.normSave(Object.assign({bank:2000,dia},o
 const roda=(s,cond)=>{ for(let i=0;i<s/0.05;i++){ g.update(0.05); if(cond&&cond()) return true; } return false; };
 const entregador=dish=>{ const e=g.spawn({type:'entregador',color:1}); if(dish&&e.dish!==dish){ g.soltaMarmitas(e); e.dish=dish; e.dishes=[dish]; e.bill=L.precoPrato(dish); g.marmitaPara(e); } return e; };
 const paciencia=e=>{ e.patLeft=1e9; e.hearts=5; };
-const leva=()=>{ const i=g.kitchen.plates.findIndex(p=>p&&p.kind==='marmita'); if(i<0) return false; g.tapStation('plates',L.LAYOUT.PLATE_SLOTS[i].x,L.LAYOUT.PLATE_SLOTS[i].y); return true; };
+const leva=()=>{ const i=g.kitchen.marmJ.findIndex(p=>p); if(i<0) return false; g.tapStation('plates',L.LAYOUT.MARMJ_SLOTS[i].x,L.LAYOUT.MARMJ_SLOTS[i].y); return true; };
 
 // 1. o entregador vai à fila de retirada e o pedido dele vai sozinho ao Tonhão
 novo(4);
@@ -23,8 +23,8 @@ ok(g.marmitaOk,'dia 4: há entregador no dia (balcão de retirada e adiantar)');
   roda(1); ok(Math.hypot(e.x-L.RETIRADA.fila[0].x,e.y-L.RETIRADA.fila[0].y)<1,'chega ao 1º lugar da fila, ao lado do balcão');
   // 2. a marmita não usa prato limpo, mas ocupa a janela de prontos; ingredientes e embalagem saem quando fica pronta
   paciencia(e); g.kitchen.clean=0; const c0=g.custo;
-  ok(roda(15,()=>g.kitchen.plates.some(p=>p&&p.kind==='marmita')),'a marmita fica pronta mesmo sem prato limpo');
-  const p=g.kitchen.plates.find(p=>p&&p.kind==='marmita');
+  ok(roda(15,()=>g.kitchen.marmJ.some(p=>p)),'a marmita fica pronta mesmo sem prato limpo');
+  const p=g.kitchen.marmJ.find(p=>p);
   ok(g.kitchen.clean===0 && !g.kitchen.noPlate,'não gasta prato limpo');
   ok(Math.round(g.custo-c0)===Math.round(L.precoPrato('pf')*L.INGRED.prato)+M.embalagem,'custo: ingredientes do prato + embalagem de R$ '+M.embalagem+' ('+Math.round(g.custo-c0)+')');
   ok(p.dono===e,'a marmita pronta é do entregador');
@@ -45,8 +45,8 @@ novo(4);
   ok(roda(3,()=>g.bia.acts.length===0),'a Bia vai à janela de pedidos');
   ok(g.kitchen.queue.concat(g.kitchen.cooking).filter(t=>t.marmita&&!t.dono).length===M.vagas,'adianta '+M.vagas+' marmitas sem dono (a 3ª não)');
   ok(g.marmitasLivres===M.vagas,'marmitasLivres = '+M.vagas);
-  ok(roda(20,()=>g.kitchen.plates.filter(p=>p&&p.kind==='marmita').length===2),'as duas ficam prontas');
-  g.kitchen.plates.forEach((p,i)=>{ if(p&&p.kind==='marmita') g.tapStation('plates',L.LAYOUT.PLATE_SLOTS[i].x,L.LAYOUT.PLATE_SLOTS[i].y); }); g.tapStation('retirada');
+  ok(roda(20,()=>g.kitchen.marmJ.filter(p=>p).length===2),'as duas ficam prontas');
+  g.kitchen.marmJ.forEach((p,i)=>{ if(p) g.tapStation('plates',L.LAYOUT.MARMJ_SLOTS[i].x,L.LAYOUT.MARMJ_SLOTS[i].y); }); g.tapStation('retirada');
   ok(roda(20,()=>g.prateleira.length===2),'sem bandeja, uma por mão: as 2 vão para a prateleira');
   ok(g.prateleira.every(m=>m.dish===M.prato && !m.dono),'na prateleira, sem dono');
   const e=entregador('pf'), q0=g.kitchen.queue.length;
@@ -83,12 +83,12 @@ novo(4);
   ok(Math.round(m0-g.money)===L.MULTA || g.money===0,'paga a multa');
   ok(!g.kitchen.queue.some(t=>t.marmita),'a encomenda que nem começou sai do fogão');
   ok(!g.retirada.length,'sai da fila de retirada'); }
-// o que já estava no fogão fica sem dono (vira adiantada)
+// v9.6.5: o que já estava no fogão sai sem custo
 novo(4);
 { const e=entregador('pf'); roda(0.2); const t=g.kitchen.cooking.find(t=>t.marmita&&t.dono===e);
   ok(!!t,'a encomenda começou a cozinhar');
   e.hearts=1; e.patLeft=0.01; roda(0.1);
-  ok(e.angry && t.dono===null && g.kitchen.cooking.indexOf(t)>=0,'quem foi embora deixa a marmita do fogão sem dono'); }
+  ok(e.angry && g.kitchen.cooking.indexOf(t)<0 && !g.kitchen.queue.includes(t) && g.stats.jogadas===0,'v9.6.5: quem foi embora tira a marmita do fogão, sem custo'); }
 
 // 8. fila de retirada cheia: o 4º entregador não cabe
 novo(4);

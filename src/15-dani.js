@@ -54,8 +54,8 @@ class Helper {
      que a Bia já vai pegar */
   marmitaAlvo(){
     const g = this.g, livres = g.prateleira.filter(m => !m.dono).length;
-    const ps = g.kitchen.plates.filter(p => p && p.kind === 'marmita' && !p.dani && !g.bia.acts.some(a => a.type === 'plate' && a.pid === p.id) && (p.dono || livres < g.vagas));
-    ps.sort((a,b) => !!b.dono - !!a.dono);
+    const ps = g.kitchen.marmJ.filter(p => p && !p.dani && !g.bia.acts.some(a => a.type === 'plate' && a.pid === p.id) && (p.dono || livres < g.vagas));
+    ps.sort((a,b) => (!!b.dono - !!a.dono) || (b.age - a.age));   // v9.6.5: a de entregador esperando primeiro; depois a mais antiga
     return ps[0] || null;
   }
   /* v9.2: doces que já levo na mão para o grupo, e a mesa que mais precisa do próximo (a que perde mais coração primeiro) */
@@ -98,8 +98,8 @@ class Helper {
     const conta = mine.filter(t => t.group && t.group.state === 'wantBill' && semBia(t)).sort((a, b) => a.group.hearts - b.group.hearts)[0];
     if (conta){ conta.group.cami = true; return this.go(this.nearestAp(conta), { type:'conta', t:conta }); }
     if (hs.length < DANI_HANDS){
-      const p = k.plates.find(q => q && q.kind !== 'marmita' && q.group && q.group.table && q.group.table.cami && !q.camiVai
-        && !g.bia.acts.some(a => a.type === 'plate' && a.pid === q.id));   // a Bia já a caminho do prato: a Cami deixa
+      const p = k.plates.filter(q => q && q.group && q.group.table && q.group.table.cami && !q.camiVai
+        && !g.bia.acts.some(a => a.type === 'plate' && a.pid === q.id)).sort((a, b) => b.age - a.age)[0];   // v9.6.5: o mais antigo dos dela   // a Bia já a caminho do prato: a Cami deixa
       if (p){ p.camiVai = true; p.group.cami = true; return this.go(STATIONS.plates.ap, { type:'pegaPrato', p }); }
       if (pedido){ pedido.group.cami = true; return this.go(this.nearestAp(pedido), { type:'anota', t:pedido }); }
       const sujo = mine.filter(t => t.dirty && semBia(t))[0];
@@ -223,12 +223,12 @@ class Helper {
       st.p.dani = false;
       const k = g.kitchen;
       let livres = g.prateleira.filter(m => !m.dono).length;
-      [st.p].concat(k.plates.filter(p => p && p !== st.p && p.kind === 'marmita')).forEach(p => {
-        const i = k.plates.indexOf(p);
+      [st.p].concat(k.marmJ.filter(p => p && p !== st.p)).forEach(p => {
+        const i = k.marmJ.indexOf(p);
         if (i < 0 || this.hands.length >= DANI_HANDS || g.bia.acts.some(a => a.type === 'plate' && a.pid === p.id)) return;
         if (!p.dono && livres >= g.vagas) return;
         if (!p.dono) livres++;
-        k.plates[i] = null; this.hands.push(marmitaMao(p));
+        k.marmJ[i] = null; this.hands.push(marmitaMao(p));
       });
       if (this.hands.length) Sfx.blip();
     } else if (st.type === 'doces'){   // v9.2: pega os doces na geladeirinha (para a mesa de quem pediu ou para o balcão)

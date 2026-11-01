@@ -387,7 +387,12 @@ function drawFilaSelo(ctx,n,x,y,age,s){
 function filaPos(g,a){
   // mesa: à esquerda do tampo, empilhando para baixo; prato: em cima dele; estação: no canto, para a direita
   if (a.type === 'table'){ const t = g.tables[a.id-1]; return t ? { x:t.cx - t.hx - 14, y:t.cy - 10, dy:20 } : null; }
-  if (a.type === 'plate'){ const j = g.kitchen.plates.findIndex(p => p && p.id === a.pid); return j < 0 ? null : { x:PLATE_SLOTS[j].x, y:PLATE_SLOTS[j].y - 26, dy:-20 }; }
+  if (a.type === 'plate'){
+    const ac = g.kitchen.achaPronto(a.pid);   // v9.6.5: prato ou marmita
+    if (!ac) return null;
+    const sl = ac.arr === g.kitchen.marmJ ? MARMJ_SLOTS[ac.i] : PLATE_SLOTS[ac.i];
+    return { x:sl.x, y:sl.y - (ac.arr === g.kitchen.marmJ ? 20 : 26), dy:-20 };
+  }
   if (a.type === 'maquina' && a.leg === 2){
     const grp = a.group;
     if (!grp) return null;
@@ -438,7 +443,7 @@ function drawHandItem(ctx,h,x,y,s,noTag){
 }
 function drawActIcon(ctx,g,a,x,y){
   let cc = null;
-  if (a.type === 'plate'){ const p0 = g.kitchen.plates.find(q => q && q.id === a.pid); cc = p0 && p0.kind !== 'marmita' ? cmdColor(p0.group) : null; }
+  if (a.type === 'plate'){ const p0 = g.kitchen.achaPronto(a.pid); cc = p0 && p0.p.kind !== 'marmita' ? cmdColor(p0.p.group) : null; }
   else if (a.type === 'table'){ const t0 = g.tables[a.id-1]; cc = t0 ? cmdColor(t0.group) : null; }
   if (cc){ rr(ctx,x-18,550,36,5,2); fs(ctx,cc,1.4); }
   if (a.type === 'order') drawIcon(ctx,'hat',x,y,1.05);
@@ -458,7 +463,7 @@ function drawActIcon(ctx,g,a,x,y){
     else drawIcon(ctx,'drop',x+13,y+10,0.55);   // a torneira
   }
   else if (a.type === 'plate'){
-    const p = g.kitchen.plates.find(q => q && q.id === a.pid);
+    const p = (g.kitchen.achaPronto(a.pid) || {}).p;
     if (p && p.kind === 'marmita'){ drawIcon(ctx,'marmita',x,y,1.0,p.dish); drawMarmitaSelo(ctx,p,x+13,y-12); return; }
     drawIcon(ctx,'dish',x,y,1.0,p ? p.dish : 'pf',cc);
     if (p){ circ(ctx,x+13,y-12,8); fs(ctx,'#fff',1.8); txt(ctx,String(p.table),x+13,y-11,11,PAL.tinta,'center',FD); }
