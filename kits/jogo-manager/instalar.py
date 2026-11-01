@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
-"""Copia o kit (kit/modelo) para a pasta de um jogo novo, trocando os marcadores.
+"""Copia o kit (a pasta modelo/ ao lado deste arquivo) para a pasta de um jogo novo, trocando os marcadores.
 
 Uso:
-  python3 kit/instalar.py DESTINO --nome "Nome do Jogo" [--arquivo jogo.html] [--branch main] [--forcar]
+  python3 instalar.py DESTINO --nome "Nome do Jogo" [--arquivo jogo.html] [--branch main] [--forcar]
 
 - DESTINO: a pasta do repositório novo (pode já ter README, LICENSE, .git).
 - --arquivo: o nome do arquivo montado e publicado (padrão: o nome do jogo sem acento, com hífens, .html).
