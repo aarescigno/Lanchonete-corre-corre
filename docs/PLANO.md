@@ -14,10 +14,9 @@ Origem: retorno do Renan Martorelli (beta-tester) e conversa com o Arthur (15/10
 ## Situação
 | # | Etapa | Versão | Situação |
 |---|---|---|---|
-| 3b-7 | Rebalanceamento da escada completa (Garagem, área industrial e Avenida), antes do Terraço | v9.6.1 | feita em 01/11 (`docs/spec-v9.6.1.md`; `metaF` 2,3 e 3,2, `expertF` novo 1,6 e 3,8, `CAMI_MESAS_MAX` 2; a Garagem ficou como estava) |
 | 3c | Retornos de 01/11: a pia da Dani, as conversas do Cardápio e dos entregadores, o "+ marmita" desligado | v9.6.2 | feita em 01/11 (`docs/spec-v9.6.2.md`; `smoke49`; balance dentro do alvo sem mudar `metaF`) |
 | 3d-1 | Retornos do Renan (01/11): a fila, o fim do turno, o VIP, o Efood e o Salão | v9.6.4 | feita em 01/11 (`docs/spec-v9.6.4.md`; `smoke50`; Avenida `metaF` 3,2 → 3,0 e `expertF` 3,8 → 3,6; a v9.6.3 já era o ajuste da Dani) |
-| 3d-2 | Retornos do Renan: as marmitas e o prato mais antigo | v9.6.5 | a fazer |
+| 3d-2 | Retornos do Renan: as marmitas e o prato mais antigo | v9.6.5 | feita em 01/11 (`docs/spec-v9.6.5.md`; `smoke51`; `marmJ`, mesas na frente no fogão, entregadores a 12 s, marmita jogada fora; área industrial `metaF` 2,3 → 2,5 e `expertF` 1,6 → 1,7) |
 | 3d-3 | Retornos do Renan: a pia, o lixo, a lavagem e os doces | v9.6.6 | a fazer |
 | 3f-1 | O Manual (bestiário que se revela com a história) | v9.6.7 | a fazer |
 | 3f-2 | Menos texto na tela: lojinha, abertura do dia e balões | v9.6.8 | a fazer |
@@ -64,24 +63,6 @@ Origem: retorno do Renan Martorelli (beta-tester) e conversa com o Arthur (15/10
 ## Etapa 3d — Retornos do Renan de 01/11 (3d-1, v9.6.4; 3d-2, v9.6.5; 3d-3, v9.6.6)
 > **Planejada com o usuário em 01/11** (entrevista; o texto do Renan e a tabela das decisões estão em `docs/PROPOSTAS.md`). Pedido do usuário: tudo antes da 4a. Três sessões, cada uma uma versão, com PR e merge; a ordem é 3d-1 → 3d-2 → 3d-3. Depois vem a 3e (revisão da interface) e só então se planeja a 4a.
 > **Balanceamento (vale para as 3):** os alvos de sempre (sem equipe, ~40–70% das metas nos dias 3 a 7; `EQUIPE=auto`, ~85–95%; nos pontos, os da seção "Checagens de fim de sessão" da etapa 3). As mudanças deixam o jogo mais fácil; o usuário quer **manter os alvos** (mais justo, não mais fácil). Se passar da faixa: na Garagem, suba as `meta` e `expert` de `DAYS` dos dias 3 a 7 em passos de 10% (arredondando para 5); nos pontos, suba o `metaF` em passos de 0,2 (e o `expertF` na mesma proporção). Se ficar abaixo, desça do mesmo jeito. Os números medidos (antes e depois) vão no `docs/spec-vN.md`.
-
-### Sessão 3d-2 — As marmitas e o prato mais antigo (v9.6.5)
-**Partes:** `10-constantes.js`, `13-cozinha.js`, `14-bia.js`, `15-dani.js`, `16-jogo.js`, `21-cenario.js`, `17-treino.js`/`24-treino.js` (se usarem a janela), bot dos testes (`tests/`).
-1. **Fileira própria das marmitas na janela de PRONTOS** ("a UI não se expande com o gameplay"):
-   - Campo novo `marmJanela` em `PONTOS`: Garagem 2, área industrial 3, Avenida 3. Array novo `kitchen.marmJ` (tamanho `marmJanela`, `null` nas vagas livres), separado de `kitchen.plates`; `PLATE_SLOTS` fica só para os pratos.
-   - Lugar: a faixa de cima da janela, entre o rótulo PRONTOS e a fileira dos pratos: `MARMJ_SLOTS` com y = 242, x = 800, 826 e 852 (vão de 26 px), marmita em escala 0,7 com o selo da Efood. O "×4" dos pratos limpos continua onde está (884–906, 228). Conferir em recorte ampliado que nada se sobrepõe nos 3 pontos (4, 5 e 6 vagas de prato); se encostar, baixe a escala para 0,62, sem mexer na fileira dos pratos.
-   - `marmitaPronta` põe a marmita numa vaga livre de `marmJ`; sem vaga, ela espera pronta no fogão (como hoje sem vaga de prato).
-   - Trocar todos os usos de marmita em `kitchen.plates` por `kitchen.marmJ`: `Game.marmitas()` (onde 'pronta'), `esfriar`, `Helper.marmitaAlvo`, o desenho da janela, o `perform` da Bia (`type:'plate'`), o bot e os smokes (`grep -n "kind === 'marmita'" src tests`).
-2. **As mesas na frente no fogão** (`Kitchen.update`): em vez de pegar `queue.shift()`, o próximo pedido é o 1º ticket de prato da fila; um ticket de marmita só entra se `(marmitas no fogão) + (marmitas em marmJ) < marmJanela`. Se só houver marmitas na fila e o limite estiver cheio, a boca fica livre.
-3. **Entregadores espaçados** (`buildSchedule`, depois do `sort`): dois entregadores comuns (não a encomenda) chegam com pelo menos `MARMITA.gap = 12` s de diferença; o que chegaria antes vira `tipoPequeno()` (da 3d-1).
-4. **A marmita do entregador que desistiu** (`soltaMarmitas`, chamado em `leaveCommon`):
-   - No fogão (fila ou cozinhando): sai, sem custo. Na fileira `marmJ` e na prateleira da retirada: some e vai para o lixo (`addTrash(1)`, texto "Pro lixo!", stat nova `stats.jogadas`).
-   - Na mão da Dani, do Joca ou da Cami: some na hora e vai para o lixo (+1).
-   - Na mão da Bia: fica, sem dono, com um **X vermelho** no selo (`drawMarmitaSelo`). Um entregador novo do mesmo prato ainda pode ficar com ela (`marmitaPara` já procura 'mao'). Um toque na lixeira com ela na mão joga fora (+1 lixo, "Pro lixo!", sem esvaziar a lixeira nessa ação); se esfriar antes (`MARMITA.validade`), sai como hoje.
-   - O fim do dia (`42-resultados.js`, linha Marmitas) soma "· N jogada(s) fora" quando houver.
-5. **Pegar o prato mais antigo** (`tapStation`, `k === 'plates'`): qualquer toque na faixa de baixo da janela (a dos pratos) pega o prato pronto há mais tempo (`maior p.age`) entre os que não são da Cami e ainda não estão na fila de ações da Bia. Tocar de novo pega o seguinte. Só se todos forem da Cami: "É da Cami!". Toque na faixa de cima (y < 256), a das marmitas: a marmita mais antiga da `marmJ` (a de entregador esperando no balcão primeiro). Sem marmita, vale o prato. O ajudante que leva pratos (Cami em "Minhas mesas") também pega o mais antigo dos dele.
-**Testes:** `smoke51.js`: (a) marmita pronta vai para `marmJ`, nunca para `plates`; (b) com `marmJ` cheia e pedidos de mesa na fila, o fogão faz os pratos; (c) agenda sem 2 entregadores a menos de 12 s; (d) entregador vai embora: a marmita dele some do fogão, da janela e da prateleira; na mão da Bia ganha o X e sai com um toque na lixeira (+1 lixo); (e) com 3 pratos prontos em ordem, 3 toques em qualquer ponto da janela pegam os 3 do mais antigo ao mais novo. Capturas da janela nos 3 pontos com pratos e marmitas cheios (recorte ampliado). `balance.js` com `PONTO=industrial` (o pico do apito) e regra do balanceamento; `DBGF=1` para ver marmitas entregues e entregadores perdidos antes e depois.
-**Modelo:** Sonnet, esforço alto (cozinha, ajudantes, bot e desenho ao mesmo tempo; balanceamento na área industrial).
 
 ### Sessão 3d-3 — A pia, o lixo, a lavagem e os doces (v9.6.6)
 **Partes:** `14-bia.js`, `16-jogo.js`, `21-cenario.js`, `22-salao-hud.js`, `10-constantes.js`.
