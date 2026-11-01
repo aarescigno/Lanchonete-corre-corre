@@ -155,9 +155,8 @@ class Helper {
       const t = (coffee.table && coffee.table.group === coffee.group && coffee.group && coffee.group.seated && !coffee.group.coffee) ? coffee.table : this.coffeeTarget();
       if (t){ coffee.table = t; coffee.group = t.group; t.group.daniCoffee = true; return this.go(this.nearestAp(t), { type:'serve', t }); }
     }
-    // já na pia: continua lavando até acabar a louça
-    const ap = STATIONS.sink.ap;
-    if (this.canWash() && k.sinkN > 0 && !dirty && !coffee && Math.hypot(this.x - ap.x, this.y - ap.y) < 4) return this.go(ap, { type:'sink' });
+    // com louça na pia, lavar vem antes de recolher mais mesas (retorno de 01/11)
+    if (this.canWash() && k.sinkN > 0 && !coffee) return this.go(STATIONS.sink.ap, { type:'sink' });
     if (this.does('pratos') && this.hands.length < DANI_HANDS){
       const c = g.tables.filter(t => t.open && t.dirty && !this.biaWants(t));
       c.sort((a,b) => Math.hypot(a.cx-this.x,a.cy-this.y) - Math.hypot(b.cx-this.x,b.cy-this.y));
@@ -166,7 +165,6 @@ class Helper {
     // com 1 pilha na mão, pega o cafezinho no caminho da pia (a 2ª mão)
     if (dirty && !coffee && this.does('cafe') && this.hands.length < DANI_HANDS && this.coffeeTarget()) return this.go(STATIONS.coffee.ap, { type:'coffee' });
     if (dirty) return this.go(STATIONS.sink.ap, { type:'sink' });
-    if (this.canWash() && k.sinkN > 0 && !coffee) return this.go(STATIONS.sink.ap, { type:'sink' });
     if (this.does('lixo') && g.trash >= TRASH.cap - 2 && !this.hands.length) return this.go(STATIONS.trash.ap, { type:'trash' });
     if (this.does('cafe') && !coffee && this.hands.length < DANI_HANDS && this.coffeeTarget()) return this.go(STATIONS.coffee.ap, { type:'coffee' });
     if (this.does('suco') && !this.hands.length){ const o = g.maqLivre(); if (o){ o.dani = true; return this.go(STATIONS.maquina.ap, { type:'maquina', o }); } }
@@ -290,6 +288,7 @@ class Helper {
     if (!this.active) return;
     this.moving = false;
     if (this.phase === 'idle'){ this.thinkT -= dt; if (this.thinkT <= 0){ this.thinkT = 0.25; this.think(); } }
+    if (this.phase === 'walk' && !this.plan){ this.thinkT -= dt; if (this.thinkT <= 0){ this.thinkT = 0.25; this.think(); } }   // v9.6.2: na volta ao canto, repensa (louça na pia, outra tarefa)
     if (this.phase === 'walk'){
       let rem = this.speed * dt;
       while (this.path.length && rem > 0){

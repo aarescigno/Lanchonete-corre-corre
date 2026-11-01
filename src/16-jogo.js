@@ -1003,6 +1003,7 @@ class Game {
       if (ob.ok) sv.conversa = 'depois';
     }
     if (!tomou && HIST.on && !DEV.on && sv.histV === 1 && d.n >= HIST_CARDAPIO.dia && !sv.convCard) sv.convCard = 'pend';   // v9.0.1: saves antigos que já passaram do dia 2 veem a conversa no próximo fim de dia
+    if (!tomou && HIST.on && !DEV.on && sv.histV === 1 && d.n === HIST_ENTREGA.dia && !sv.convEnt) sv.convEnt = 'pend';   // v9.6.2: a conversa dos entregadores
     if (!tomou && HIST.on && !DEV.on && sv.histV === 1 && d.n === DIVULGA_DIA - 1 && !sv.convDiv) sv.convDiv = 'pend';   // v9.0.2: a conversa da divulgação
     if (!tomou && HIST.on && !DEV.on && sv.histV === 1){   // v9.0.4: a lojinha abre aos poucos: pelo gatilho do dia ou pela garantia (v9.1.1: com `nivel`, pelo dia no ponto, em qualquer capítulo; sem, só com cap < 4)
       const novas = [];
@@ -1645,7 +1646,7 @@ class Game {
     return best;
   }
   /* a bebida da espera só com a melhoria; o balcão de retirada (v8.6), só no dia com entregador */
-  estacaoOn(k){ return k === 'maquina' ? !!this.up.maquina : k === 'doces' ? !!this.up.confCaseira : k === 'espresso' ? !!this.up.espresso : k === 'drinks' ? this.anselmoAtivo : k === 'retirada' || k === 'adiantar' ? this.marmitaOk : true; }
+  estacaoOn(k){ return k === 'maquina' ? !!this.up.maquina : k === 'doces' ? !!this.up.confCaseira : k === 'espresso' ? !!this.up.espresso : k === 'drinks' ? this.anselmoAtivo : k === 'adiantar' ? MARMITA.adiantar && this.marmitaOk : k === 'retirada' ? this.marmitaOk : true; }
   tableAt(x, y, pad){
     let best = null, bd = Infinity;
     for (const t of this.tables){ const d = rectDist(x, y, tableRect(t)); if (d <= (pad || 0) && d < bd){ bd = d; best = t; } }
