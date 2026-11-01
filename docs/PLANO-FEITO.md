@@ -1398,3 +1398,51 @@ O curso "Atendimento de mesa" da Cami (3b-3) passa a se comprar e abre o **modo 
 **Modelo:** Sonnet, esforço alto. Regras fechadas, mas é uma 2ª garçonete com IA própria, dividindo grupos com a Bia.
 
 ---
+
+## Etapa 3c — Retornos de 01/11: a pia da Dani, as conversas do Cardápio e dos entregadores (v9.6.2)
+**Objetivo:** três retornos do usuário de 01/11 (texto em `docs/PROPOSTAS.md`), decididos com ele na mesma sessão. Uma sessão só.
+
+**1. A ajudante não espera a pia encher** (`src/15-dani.js`, classe `Helper`; vale para a Dani, o Joca e a Cami, que usam a mesma classe):
+- Hoje, com "Retirar pratos" e "Lavar louça", recolher mesa vem antes de lavar a louça que já está na pia (ela só lava de longe quando não há mesa suja), e, voltando ao canto, ela só repensa ao chegar. Na simulação de 01/11 o bot não mostrou a demora (o bot da Bia recolhe as mesas), mas o usuário viu com as duas tarefas.
+- Em `think()`, troque a linha "já na pia: continua lavando até acabar a louça" (`if (this.canWash() && k.sinkN > 0 && !dirty && !coffee && Math.hypot(...) < 4) ...`) por `if (this.canWash() && k.sinkN > 0 && !coffee) return this.go(STATIONS.sink.ap, { type:'sink' });`, no mesmo lugar (antes do bloco de `pratos`), com o comentário "com louça na pia, lavar vem antes de recolher mais mesas (retorno de 01/11)". Com louça na mão, ela deixa na pia e já lava; a linha de baixo, igual (`if (this.canWash() && k.sinkN > 0 && !coffee)`), fica sobrando: apague.
+- Em `update(dt)`: andando sem tarefa (`this.phase === 'walk' && !this.plan`, a volta ao canto), ela repensa a cada 0,25 s como no `idle` (`thinkT`), para largar a volta se aparecer louça ou outra tarefa.
+- Nada muda quando a Bia está lavando (`canWash()` continua falso) nem no modo "Minhas mesas" da Cami.
+
+**2. A conversa do Cardápio vai para o fim do dia 2** (a 1ª lojinha fica sem empurrão: tudo nela já é novo):
+- `HIST_CARDAPIO.dia` de 1 para **2** (`src/10-constantes.js`); o comentário passa a dizer "v9.6.2: no fim do dia 2 (antes, do dia 1), para a 1ª lojinha ficar sem empurrão". As falas ficam.
+- A regra de `src/16-jogo.js` (`d.n >= HIST_CARDAPIO.dia`) já serve. Quem já viu (`convCard` 1) não vê de novo.
+- `smoke39`: o teste do fim do dia 1 passa a conferir que o dia 1 **não** deixa `convCard` pendente e que o fim do dia 2 deixa.
+
+**3. A conversa dos entregadores, no fim do dia 4** (depois do 1º motoboy):
+- Nova `HIST_ENTREGA = { dia:4, falas:[...] }` em `src/10-constantes.js`, logo depois de `HIST_DIVULGA`, com o comentário "v9.6.2: a conversa dos entregadores, no fim do dia 4 (o 1º com motoboy), só no Modo História. save.convEnt: 'pend' | 1 (vista)". Falas:
+  - `{ q:'bia', s:'Tio, que história é essa de motoqueiro no balcão pedindo marmita?' }`
+  - `{ q:'tonhao', nota:'mostrando o celular', s:'Pus a gente na Efood, o aplicativo de entrega. O pedido cai direto aqui na cozinha.' }`
+  - `{ q:'bia', s:'E o moço espera em pé no balcão. Se demorar, vai embora bravo...' }`
+  - `{ q:'tonhao', s:'Então marmita pronta, leva logo pro balcão. A Efood fica com um pedaço, mas é freguês que nem cabe no salão.' }`
+  - `{ q:'bia', s:'E dá pra deixar umas prontas antes?' }`
+  - `{ q:'tonhao', s:'Sem estufa, esfria. Por enquanto, só sai na hora.' }`
+- `src/16-jogo.js`, junto da linha do `convDiv`: `if (!tomou && HIST.on && !DEV.on && sv.histV === 1 && d.n === HIST_ENTREGA.dia && !sv.convEnt) sv.convEnt = 'pend';` (dia exato, como a divulgação: save que já passou do dia 4 não vê).
+- `src/43-telas.js`, `fluxoHistoria`, logo depois da linha do `convDiv`: `if (sv.convEnt === 'pend') return falar(HIST_ENTREGA.falas, () => { sv.convEnt = 1; writeSave(sv); fim(); });` (sem aba própria na lojinha). Se outra conversa vier no mesmo fim de dia, esta espera o próximo, como as outras (por isso a 1ª fala não diz "hoje").
+- `src/12-clientes.js` (`normSave`): `convEnt: s.convEnt === 'pend' ? 'pend' : s.convEnt === 1 ? 1 : 0,` ao lado do `convDiv`.
+
+**4. O "+ marmita" (adiantar) fica desligado** (não há estufa; o código fica, inativo):
+- `MARMITA.adiantar: false` em `src/10-constantes.js`, com o comentário "v9.6.2: o '+ marmita' desligado até vir a estufa (retorno de 01/11); o código fica".
+- `src/16-jogo.js`, `estacaoOn`: `k === 'adiantar' ? MARMITA.adiantar && this.marmitaOk` (separado do `retirada`, que continua com `this.marmitaOk`). Confira que o desenho do botão em `src/21-cenario.js` (perto de "adiantar marmitas (v8.6)") e o `glow('adiantar')` também somem: ponha `MARMITA.adiantar &&` na condição do desenho, se o `estacaoOn` não cobrir.
+- Textos: a nota do dia 4 (`DAYS`, n:4) perde a última frase ("Para adiantar, toque no \"+ marmita\" da janela de pedidos."); a dica do Como jogar (`src/40-interface.js`, "Do dia 4 em diante vem o entregador") só põe a frase do "+ marmita" com `MARMITA.adiantar`.
+- `tests/bot.js`: a linha do `tapStation('adiantar')` só vale com `L.MARMITA.adiantar`.
+- Os smokes que usam o "+ marmita" (procure `adiantar` em `tests/smoke*.js`: 28, 41 a 48) ligam `L.MARMITA.adiantar = true` logo depois do `load()`, porque o código continua e é testado.
+
+**Testes:** `smoke49` (novo):
+- Dani nível 2 com `pratos` e `lavar`, na Garagem, parada no canto e de mãos vazias, com uma mesa suja e `sinkN` 2: depois do `think()`, `plan.type === 'sink'`. Com `sinkN` 0 e a mesa suja: `plan.type === 'clear'`.
+- A Dani voltando ao canto (`go(home, null)` a partir da pia de longe, ex.: da mesa mais distante) e `sinkN` 1: depois de `update(0.3)`, `plan.type === 'sink'`.
+- Com a Bia lavando (`bia.washing`), a Dani não vai lavar.
+- Modo História (`load({historia:true})`): fechar o dia 1 não deixa `convCard` pendente; fechar o dia 2 deixa. Fechar o dia 3 não deixa `convEnt` pendente; o dia 4 deixa; a conversa toca as falas de `HIST_ENTREGA` e termina com `convEnt` 1; fechar o dia 5 não repete; sem o Modo História, nunca fica pendente; `normSave` guarda `'pend'` e 1.
+- No dia 4, com entregador: `estacaoOn('adiantar')` falso e `estacaoOn('retirada')` verdadeiro; tocar no lugar do botão não faz marmita (`marmitasLivres` 0).
+- `balance.js` (40 rodadas): `EQUIPE=auto` na Garagem, `PONTO=industrial` e `PONTO=avenida`, alvo 85–95%. Medido em 01/11 com o bot sem o "+ marmita" (20 rodadas): Garagem e área industrial iguais; Avenida um pouco abaixo (16 a 19 de 20). Se a Avenida ficar abaixo de 85%, baixe o `metaF` dela de 3,2 para 3,1 (e 3,0 se ainda faltar); a área industrial, se ficar abaixo, de 2,3 para 2,2. Sem equipe (dias 3 a 7, 40–70%), só conferir.
+- `node carreira.js` (`DIAS=14`): a linha `HISTORIA` segue sem travar.
+
+**Nova versão** v9.6.2: `versoes/`, selo `vtag`, `VERSAO`, painel `#ov-ver` ("A ajudante lava a louça da pia antes de recolher mais mesas; a conversa do Cardápio passa para o fim do dia 2; nova conversa dos entregadores no fim do dia 4; o \"+ marmita\" fica desligado até vir a estufa"), `docs/spec-v9.6.2.md`, `RESUMO.md`. No fim, o retorno de 01/11 do `PROPOSTAS.md` vai para o `PROPOSTAS-FEITAS.md` (`ferramentas/arquiva.py`).
+
+**Modelo:** Sonnet, esforço médio (código com plano detalhado; o balanceamento já tem a regra de ajuste).
+
+---

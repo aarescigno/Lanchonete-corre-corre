@@ -19,7 +19,7 @@ const joga=(H,fat)=>{ const {g,els}=H; if(g.state==='shop') els['btn-shop-go'].f
 
 // ---------- 2. a conversa no fim do dia 3 ----------
 { const H=nova(), {g,els}=H, sv=g.save;
-  sv.conversa=null; sv.bank=5000;
+  sv.conversa=null; sv.bank=5000; sv.convCard=1;
   g.startDay(1); joga(H,400); els['btn-next'].fire('click'); passa(H);
   g.startDay(2); joga(H,400); els['btn-next'].fire('click'); passa(H);
   ok(!g.save.convDiv,'depois dos dias 1 e 2, sem conversa da divulgação');

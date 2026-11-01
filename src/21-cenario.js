@@ -1219,7 +1219,7 @@ function drawKitchen(ctx,g,t){
     rr(ctx,r.x+8,r.y+r.h-16,r.w-12,12,3); fs(ctx,PAL.cromo,2.2);
   });
   // adiantar marmitas (v8.6): o botãozinho com a quentinha, o "+" e as sem dono (adiantadas) de MARMITA.vagas
-  if (g.marmitaOk && g.state !== 'menu') glowSprite(ctx,g,'adiantar',ctx => {
+  if (MARMITA.adiantar && g.marmitaOk && g.state !== 'menu') glowSprite(ctx,g,'adiantar',ctx => {
     const n = g.marmitasLivres, cheio = n >= g.vagas, q = STATIONS.adiantar.rect;
     ctx.save(); if (cheio) ctx.globalAlpha = 0.55;
     rr(ctx,q.x + 4,q.y + 3,q.w - 8,q.h - 10,7); fs(ctx,'#FFFBEA',2);
