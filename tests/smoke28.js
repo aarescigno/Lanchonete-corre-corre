@@ -3,6 +3,7 @@
 // cheia, validade, entregador perdido, fila de retirada cheia, avaliação no Gurugol, chuva e Turno sem fim
 const H=require('./harness.js')(); const {g,L,ctx}=H;
 let fails=0,total=0; const ok=(c,m)=>{ total++; if(!c){fails++;console.log('FAIL:',m);} else console.log('ok  :',m); };
+L.MARMITA.adiantar=true;   // v9.6.2: desligado no jogo; o código segue testado
 const M=L.MARMITA, ST=L.LAYOUT.STATIONS;
 const novo=(dia,o)=>{ o=o||{}; g.save=L.normSave(Object.assign({bank:2000,dia},o.save||{})); g.up=g.save.up; g.boughtFor=0; g.buildTables(); g.startDay(dia); g.begin();
   if(!o.agenda){ g.schedule=[{t:1e9,type:'entregador',color:0}]; g.nextIdx=0; } };   // agenda: a do dia, de verdade

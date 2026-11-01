@@ -4,6 +4,16 @@ Retornos com destino já feito, movidos de `docs/PROPOSTAS.md` em 30/10/2026 sem
 
 ---
 
+## 01/11 — usuário: a Dani espera a pia encher, a conversa dos entregadores e a do Cardápio cedo demais
+> "A Dani quando está com a função de lavar pratos parece que fica esperando encher a pia para começar a lavar
+> Falta uma história sobre início de vinda de entregadores.
+> Não é bom ter história que agrega no menu do primeiro para o segundo dia, as pessoas já vão ter que explorar o menu com poucas coisas pela primeira vez, de nada adianta já colocar coisa nova em algo que é totalmente novo"
+
+Respostas às perguntas da sessão: a Dani estava com **"Retirar pratos" e "Lavar louça"**; a conversa do Cardápio vai para o **fim do dia 2**; a dos entregadores, para o **fim do dia 4**, depois do 1º motoboy. Sobre o "+ marmita": "ainda tem a melhoria da estufa para guardar essas marmitas e elas durarem mais? Se não, tirar esse botão de adiantar pelo menos por ora (deixar inativo o código)". A estufa nunca existiu (era só ideia anotada na v8.6), então o botão fica desligado.
+Destino: `docs/PLANO.md`, etapa **3c** (v9.6.2), antes da 4a. Na simulação o bot não mostrou a demora (o bot da Bia recolhe as mesas), mas no código recolher mesa vem antes de lavar a louça que já está na pia, e, voltando ao canto, ela só repensa ao chegar; na 3c, com louça na pia, lavar vem antes. Sem o "+ marmita", o bot da Garagem e da área industrial ficou igual, e o da Avenida, um pouco abaixo (a regra de ajuste está na etapa). A estufa ficou nas Ideias guardadas.
+
+---
+
 ## 31/10/2026 — usuário: a lojinha abre aos poucos
 > "vamos planejar uma forma de ser gradual a apresentação das abas do mercado, tipo por dias de trabalho aparecer reclamações específicas de clientes que tragam a ideia para a bia de investir em tais coisas. imagino que os que possam ir aparecendo com o tempo são a estética, compra de mais cadeiras etc... tipo o que acontece com o tonhão, mas realmente ir incrementando com o tempo as coisas para poder comprar. Importante separar nesse plano um momento para rebalanceamento e checagem de qual ordem é melhor ir liberando. O objetivo é o menu de melhorias não ficar overwhelming pra quem chega nele de primeira."
 

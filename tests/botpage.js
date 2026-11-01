@@ -121,7 +121,7 @@ function afiado(g,L){
     // v9: com a encomenda do setor avisada (e ainda sem chegar), adianta PF até o tamanho do lote (a encomenda reaproveita as sem dono)
     const encPend=g.encomendaDia&&!g.groups.some(x=>x.lote)&&g.schedule.some(s=>s.type==='encomenda'&&g.nextIdx<=g.schedule.indexOf(s));
     const livresMax=encPend?Math.min(g.vagas,g.encomendaDia.lote-1):1;
-    if(g.marmitaOk&&g.marmitasLivres<livresMax&&(g.clock>45||encPend)&&!b.hands.some(h=>h.kind==='ticket')) add(encPend?20+sw('order'):36+sw('order'),()=>g.tapStation('adiantar'));
+    if(L.MARMITA.adiantar&&g.marmitaOk&&g.marmitasLivres<livresMax&&(g.clock>45||encPend)&&!b.hands.some(h=>h.kind==='ticket')) add(encPend?20+sw('order'):36+sw('order'),()=>g.tapStation('adiantar'));
     // pratos e comandas que a Bia carrega
     b.hands.filter(h=>h.kind==='dish').forEach(h=>{ const t=g.tables[h.table-1]; add(ttl(h.group)-tw(t),()=>g.tapTable(t)); });
     const tk=b.hands.filter(h=>h.kind==='ticket');
