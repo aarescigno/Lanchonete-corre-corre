@@ -40,6 +40,7 @@ Etapas concluídas (1a a 3a), movidas de `docs/PLANO.md` em 30/10/2026 e 31/10/2
 
 | # | Etapa | Versão | Situação |
 |---|---|---|---|
+| 3d-3 | Retornos do Renan: a pia, o lixo, a lavagem e os doces | v9.6.6 | feita em 02/11 (`docs/spec-v9.6.6.md`; `smoke52`; balance dentro do alvo sem mudar números) |
 | 3b-4 | Fiscal da vigilância sanitária | v9.4 | feita em 31/10 (`docs/spec-v9.4.md`; nova parte `15-fiscal.js`; `smoke46`; a mesa suja ficou em 8 s: o bot passou em 6 de 6 visitas) |
 | 3b-2d | Painel do modo dev: qualquer dia, ponto, nota, equipe e cursos; lojinha de verdade; acelerar e encerrar o dia | v9.2.1 | feita em 31/10 (`docs/spec-v9.2.1.md`) |
 | 0 | Contas: lucro, ingredientes, contas do dia, divulgação | v7 | feita (15/10) |
