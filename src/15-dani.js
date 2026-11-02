@@ -144,7 +144,7 @@ class Helper {
     }
     // marmita na mão (v8.6): leva ao balcão de retirada; pronta na janela e cabendo na prateleira (ou com dono): vai buscar
     if (this.hands.some(h => h.kind === 'marmita')) return this.go(STATIONS.retirada.ap, { type:'retirada' });
-    if (this.does('marmita') && !this.hands.length){ const p = this.marmitaAlvo(); if (p){ p.dani = true; return this.go(STATIONS.plates.ap, { type:'pegaMarmita', p }); } }
+    if (this.does('marmita') && !this.hands.length){ const p = this.marmitaAlvo(); if (p){ p.dani = true; return this.go(STATIONS.marmj.ap, { type:'pegaMarmita', p }); } }
     if (this.does('doce') && this.hands.length < DANI_HANDS && g.up.confCaseira){
       const t = this.doceAlvo();
       if (t) return this.go(STATIONS.doces.ap, { type:'doces', grp:t.group, k:Math.min(DANI_HANDS - this.hands.length, t.group.docesFalta - this.docesClaimed(t.group)) });

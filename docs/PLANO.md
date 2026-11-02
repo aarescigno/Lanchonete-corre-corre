@@ -14,10 +14,9 @@ Origem: retorno do Renan Martorelli (beta-tester) e conversa com o Arthur (15/10
 ## Situação
 | # | Etapa | Versão | Situação |
 |---|---|---|---|
+| 3g-2 | A tela avisa: Gurugol em balões, mesinha das marmitas, eFood e fumaça | v9.6.11 | feita em 02/11 (`docs/spec-v9.6.11.md`; `smoke57`; geladeira fora da tela, mesinha no lugar dela, cheiro só onde a fumaça chega) |
 | 3g-1 | Conversas no fim do turno e cartões mais cedo (retornos da Letícia) | v9.6.10 | feita em 02/11 (`docs/spec-v9.6.10.md`; `smoke56`; só no Modo História) |
 | 3e-1 | A tela respira: textos flutuantes, crachás, selos, espera e lojinha | v9.6.9 | feita em 02/11 (`docs/spec-v9.6.9.md`; `smoke55`; sem mudar números do jogo) |
-| 3f-2 | Menos texto na tela: lojinha, abertura do dia e balões | v9.6.8 | feita em 02/11 (`docs/spec-v9.6.8.md`; `smoke54`; sem mudar números do jogo; o "?" em cada cartão abre a ficha no Manual) |
-| 3g-2 | A tela avisa: Gurugol em balões, mesinha das marmitas, eFood e fumaça | v9.6.11 | a fazer |
 | 4a | Terraço Suíça e VIPs exigentes (e o capítulo dele) | v10 | a fazer |
 | 4b | Nível de luxo | v10.1 | a fazer |
 | 4c | Eventos de bairro: festa junina e jogo do Brasil | v10.2 | a fazer |
@@ -56,25 +55,6 @@ Origem: retorno do Renan Martorelli (beta-tester) e conversa com o Arthur (15/10
 - **Quem faz o básico:** as tarefas básicas (lixo, pratos sujos, louça, água/suco da espera, marmitas) ficam sempre com **o ajudante mais novo que veio no dia**, nesta ordem: Cami, Joca, Dani. Quem passou o bastão fica só com a especialidade: a **Dani** com os doces (e o cafezinho, até o Joca aprender o espresso); o **Joca**, depois do espresso, com os cafés. Se o mais novo faltou no dia (folha), o básico volta para o anterior naquele dia. Função `donoBasico(g)` em `15-dani.js`; o cartão de quem passou o bastão mostra só a especialidade, com o texto "As tarefas da casa ficaram com o Joca." (ou "com a Cami.").
 - **Folha** (`FOLHA_CORTE`, a ordem final depois da 3b-5): couvert, som, TV, TVs, **o Anselmo não vem**, **a Cami não vem**, **aumento do Joca**, aumento da Dani, aumento do Tonhão, **o Joca não vem**. "Não vem" marca `eq.<quem>Fora = true` só naquele dia: `payroll` não conta, o ajudante não entra no dia, `normEquipe` não guarda o `...Fora` (continua contratado). Cada sessão põe a sua parte nessa ordem.
 - **Cursos:** um por dia por ajudante (`daniCursoDia`, `jocaCursoDia`, `camiCursoDia`). Os que trazem item (confeitarias, espresso) ficam no **cartão Cardápio**, com o rosto de quem faz, ao lado dos do Tonhão, e contam na Diversidade do Gurugol (`avalMenu`); os de atendimento ficam no cartão do ajudante, em Equipe. Só aparecem no ponto do `nivel` deles (no modo dev, sempre).
-
-## Etapa 3g — Retornos da Letícia (02/11): conversas no fim do turno, recompensa cedo e avisos na tela (3g-1, v9.6.10; 3g-2, v9.6.11)
-Texto original e diagnóstico em `docs/PROPOSTAS.md` (02/11, Letícia). Decidido com o usuário em 02/11 (entrevista). Vem **antes da 4a**. Nada muda fora do Modo História, salvo onde dito (lixo, mesinha, letreiro).
-
-### Sessão 3g-2 — A tela avisa: Gurugol em balões, mesinha das marmitas, letreiro do eFood e fumaça do lixo (v9.6.11)
-Partes: `src/42-resultados.js` (fim do dia), `src/21-cenario.js` (geladeira, mesinha, fumaça), `src/10-constantes.js` (`MARMJ_SLOTS`, `STATIONS`, `TRASH`), `src/12-clientes.js` (cheiro), `src/22-salao-hud.js` / `src/23-render.js` (letreiro e seta), `src/16-jogo.js` se preciso.
-1. **Gurugol em balões no topo do fim do dia:** os comentários do dia (até 3) viram balões grandes (fonte ≥ 15 px, rostinho do tipo de cliente `k` à esquerda), logo abaixo do título e acima das tabelas; as tabelas ficam com fonte menor (até 2 px a menos). Sem comentário, nada muda. Checar no 568×320 e no `menu_fit.py`.
-2. **Geladeira some da tela** (o desenho `drawGeladeira` deixa de ser chamado); a **manutenção dela continua escondida**, como hoje (estraga, encarece ingredientes, cartão da Manutenção e introdução do dia seguem citando).
-3. **Mesinha das marmitas no lugar dela:** uma mesinha de madeira em `rect {x:686, y:104, w:48, h:92}`. As marmitas que o Tonhão termina vão para ela, empilhadas em vez da janela: `marmJSlotsFor(n)` passa a `{ x:710, y:124 + 24*i }` (2 ou 3 vagas, como `ponto.marmJanela`). A Bia pega ali (ponto de parada `{x:700, y:150}`, o mesmo do balcão de drinks; se na captura ela ficar em cima do desenho, use `{x:700, y:206}`) e leva ao entregador, que continua no balcão de retirada. Pratos do salão seguem na janela. Na Avenida, conferir que a mesinha não encosta no balcão de drinks (620–680); se encostar, encolha a mesinha para `w:42`. Futuramente, a estufa (Ideias guardadas) fica nessa mesinha.
-4. **Letreiro do eFood:** sobre cada entregador esperando no balcão (e na fila de retirada), uma plaquinha "eFood" vermelha que pisca (0,6 s acesa / 0,4 s apagada); com `prefers-reduced-motion`, fica acesa sem piscar.
-5. **Seta nas marmitas prontas:** quando há entregador esperando e marmita dele na mesinha, uma seta piscando aponta para a mesinha, **só nos dias 4 e 5 da carreira** (os 2 primeiros com motoboy) e na Missão zero, se ela tiver entregador. Sem movimento com `prefers-reduced-motion` (seta parada).
-6. **Fumaça do lixo se espalha:** com a lixeira cheia, a fumaça verde cresce a partir dela (`TRASH.fumaca = { cresce:30, raio:900 }`: o raio vai de 0 a 900 px em 30 s) e some em 3 s ao esvaziar. O cheiro (`TRASH.smell`, paciência ÷ 1,3) passa a valer só para quem a fumaça alcança (distância à lixeira ≤ raio), em vez de para todos de uma vez. Desenho: 6 a 10 nuvens verdes translúcidas na borda do raio; com `prefers-reduced-motion`, um véu verde parado no alcance. Vale em todos os modos.
-- **`smoke57`**: comentários em balões acima das tabelas (DOM); geladeira não desenhada, mas `quebrado('geladeira')` ainda encarece; `MARMJ_SLOTS` na mesinha e a Bia leva da mesinha ao entregador (entrega completa); letreiro presente com entregador esperando; seta só nos dias 4–5; raio da fumaça cresce com o tempo, cliente fora do raio sem cheiro e dentro com cheiro; reduced-motion sem piscar.
-- `balance.js`: a fumaça deixa o cheiro mais brando no começo; aceitar até +3 pontos nas metas sem equipe; se subir mais, `cresce` vai a 20.
-- Capturas (`shot_v9_6_11.py`): fim do dia com balões, mesinha com marmitas (Garagem e Avenida), letreiro, seta, fumaça no meio e no máximo; conferir com recorte ampliado.
-
-**Modelo:** Sonnet, esforço médio (desenho no canvas e testes com plano detalhado).
-
----
 
 ## Etapa 4 — Terraço Suíça, VIPs exigentes e nível de luxo (4a, v10; 4b, v10.1)
 > Desde a revisão de 28/10, o **nível de luxo** entra junto com o Terraço (escolha do usuário), em 2 sessões: **4a** (Terraço e VIPs) e **4b** (nível de luxo).

@@ -10,7 +10,7 @@ const K=()=>g.kitchen;
 // (a) marmita pronta vai para marmJ, nunca para plates; marmJanela por ponto
 novo(4);
 ok(L.PONTOS[0].marmJanela===2 && L.PONTOS[1].marmJanela===3 && L.PONTOS[2].marmJanela===3,'marmJanela: Garagem 2, industrial 3, Avenida 3');
-ok(K().marmJ.length===2 && L.LAYOUT.MARMJ_SLOTS.length===2 && L.LAYOUT.MARMJ_SLOTS[0].y===242,'Garagem: 2 vagas de marmita na faixa de cima');
+ok(K().marmJ.length===2 && L.LAYOUT.MARMJ_SLOTS.length===2 && L.LAYOUT.MARMJ_SLOTS[0].y===124 && L.LAYOUT.MARMJ_SLOTS[0].x===710,'Garagem: 2 vagas de marmita, na mesinha');
 { const e=entregador(); ok(roda(20,()=>K().marmJ.some(Boolean)),'a marmita fica pronta');
   ok(K().marmJ.some(m=>m&&m.dono===e) && !K().plates.some(p=>p&&p.kind==='marmita'),'está em marmJ, não em plates');
   ok(g.marmitas().some(o=>o.onde==='pronta'),'marmitas() acha a pronta em marmJ'); }
@@ -65,8 +65,8 @@ novo(3);
 novo(4);
 { K().plates[0]={id:710,table:1,group:null,dish:'pf',slot:0,age:30,crit:false,q:3};
   K().marmJ[0]={id:711,kind:'marmita',dish:'pf',dono:null,slot:0,age:5,mid:1}; K().marmJ[1]={id:712,kind:'marmita',dish:'pf',dono:null,slot:1,age:9,mid:2};
-  g.tapStation('plates',800,242); ok(g.bia.acts[0].pid===712,'faixa de cima: a marmita mais antiga');
-  g.tapStation('plates',800,242); g.tapStation('plates',800,242);
-  ok(g.bia.acts.map(a=>a.pid).join()==='712,711,710','acabaram as marmitas: vale o prato'); }
+  g.tapStation('marmj',710,124); ok(g.bia.acts[0].pid===712,'mesinha: a marmita mais antiga');
+  g.tapStation('marmj',710,124); g.tapStation('marmj',710,124); g.tapStation('plates',800,242);
+  ok(g.bia.acts.map(a=>a.pid).join()==='712,711,710','acabaram as marmitas da mesinha: o toque na janela pega o prato'); }
 
 console.log('total =',total,' fails =',fails); process.exit(fails?1:0);

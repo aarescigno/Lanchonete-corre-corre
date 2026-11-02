@@ -798,6 +798,7 @@ function drawRetirada(ctx,g,t){
 /* o balão do entregador (v8.6): a marmita dele no fogão (anel do preparo), pronta na janela (verde, pulsando) ou a
    caminho (na mão da Bia ou da Dani) */
 function drawRetiradaBalao(ctx,g,grp,tm){
+  if (!grp.path.length) drawLetreiroEfood(ctx,grp,tm);   // v9.6.11
   const dq = grp.docesMarm - grp.docesMarmDados;   // v9.2: "+ doce" na marmita (o pote na prateleira ou o doce da geladeirinha)
   if (dq > 0 && !grp.path.length){ ctx.save(); ctx.translate(grp.x - 24,grp.y - 92); drawBubble(ctx,0,0,13,'#fff'); drawIcon(ctx,'doce',0,1,0.6,grp.game.up.confGourmet ? 5 : 1); if (dq > 1) txt(ctx,'×' + dq,13,-10,9,PAL.tinta,'center',FD); ctx.restore(); }
   const o = g.marmitas().find(q => q.m.dono === grp);
@@ -1128,6 +1129,50 @@ function drawFumaca(ctx,t){
 }
 /* geladeira (v8), de pé no chão encostada na parede do salão, ao lado da cozinha. Quebrada: luz apagada, a porta de baixo
    entreaberta, poça d'água no chão e uma gota caindo */
+/* v9.6.11: a mesinha das marmitas (no lugar da geladeira, que sai da tela): tampo de madeira com as pernas, as marmitas empilhadas em cima (MARMJ_SLOTS) */
+function drawMesinha(ctx,g,t){
+  const r = STATIONS.marmj.rect, x = r.x, y = r.y, w = r.w, h = r.h;
+  shadowEll(ctx,x + w/2,y + h + 3,w/2 + 4,6,0.2);
+  rr(ctx,x + 4,y + h - 14,6,16,2); fs(ctx,PAL.madeiraEsc,1.6); rr(ctx,x + w - 10,y + h - 14,6,16,2); fs(ctx,PAL.madeiraEsc,1.6);
+  rr(ctx,x,y,w,h - 6,7); fs(ctx,PAL.madeira,2.6);
+  ctx.fillStyle = 'rgba(255,255,255,.18)'; ctx.fillRect(x + 4,y + 4,w - 8,3);
+  ctx.strokeStyle = 'rgba(138,82,38,.55)'; ctx.lineWidth = 1.2; ctx.beginPath();
+  for (let i = 1; i < 4; i++){ const yy = y + (h - 6) * i / 4; ctx.moveTo(x + 5,yy); ctx.lineTo(x + w - 5,yy); }
+  ctx.stroke();
+}
+/* v9.6.11: o letreiro "eFood" sobre o entregador que espera (pisca 0,6 s acesa e 0,4 s apagada; sem movimento, fica acesa) */
+function drawLetreiroEfood(ctx,grp,tm,k){
+  const acesa = RM || (tm % 1) < 0.6;
+  ctx.save(); ctx.translate(grp.x - 34 * (k || 1),grp.y - 70); ctx.scale(k || 1,k || 1);
+  rr(ctx,-19,-8,38,16,4); fs(ctx,acesa ? '#D8432F' : '#6E2A22',1.8);
+  txt(ctx,'eFood',0,1,10,acesa ? '#fff' : '#B89A94','center',FB);
+  ctx.restore();
+}
+/* v9.6.11: a seta que pisca sobre a mesinha quando há marmita de entregador esperando (dias 4 e 5 e na Missão zero) */
+function drawSetaMesinha(ctx,g,tm){
+  const r = STATIONS.marmj.rect, a = RM ? 1 : 0.55 + 0.45 * Math.sin(tm * 9), dy = RM ? 0 : Math.sin(tm * 6) * 3;
+  ctx.save(); ctx.globalAlpha = a; ctx.translate(r.x + r.w / 2,r.y - 14 + dy);
+  ctx.beginPath(); ctx.moveTo(-9,-10); ctx.lineTo(9,-10); ctx.lineTo(9,0); ctx.lineTo(15,0); ctx.lineTo(0,14); ctx.lineTo(-15,0); ctx.lineTo(-9,0); ctx.closePath(); fs(ctx,PAL.mostarda,2);
+  ctx.restore();
+}
+/* v9.6.11: a fumaça verde da lixeira cheia se espalha (raio g.fumacaRaio): nuvens translúcidas na borda e, com prefers-reduced-motion, só um véu parado */
+function drawFumacaLixo(ctx,g,t){
+  const R = g.fumacaRaio; if (R < 8) return;
+  const c = TRASH.pos, k = R / TRASH.fumaca.raio;
+  ctx.save();
+  const gr = ctx.createRadialGradient(c.x,c.y,R * 0.2,c.x,c.y,R);
+  gr.addColorStop(0,'rgba(' + TRASH_COR.fumaca + ',' + (0.16 * Math.min(1,k * 2)).toFixed(3) + ')'); gr.addColorStop(1,'rgba(' + TRASH_COR.fumaca + ',0)');
+  ctx.fillStyle = gr; ctx.beginPath(); ctx.arc(c.x,c.y,R,0,TAU); ctx.fill();
+  if (!RM){
+    const n = 6 + Math.round(4 * k);
+    for (let i = 0; i < n; i++){
+      const ang = Math.PI + (i + 0.5) / n * Math.PI * 1.15 - 0.1, d = R * (0.8 + 0.18 * Math.sin(t * 0.8 + i * 1.9)), cx = c.x + Math.cos(ang) * d, cy = c.y + Math.sin(ang) * d, r = 22 + 10 * Math.sin(t * 1.3 + i);
+      ctx.fillStyle = 'rgba(' + TRASH_COR.fumaca + ',0.13)';
+      [[0,0,1],[r * 0.7,-r * 0.2,0.75],[-r * 0.7,r * 0.1,0.8]].forEach(p => { circ(ctx,cx + p[0],cy + p[1],r * p[2]); ctx.fill(); });
+    }
+  }
+  ctx.restore();
+}
 function drawGeladeira(ctx,g,t){
   const q = g.quebrado('geladeira'), x = 688, y = 102, w = 42, h = 94;
   shadowEll(ctx,x + w/2,y + h + 4,26,6,0.2);

@@ -65,7 +65,7 @@ class Game {
     this.tables.forEach(t => { t.open = true; t.group = null; t.dirty = false; t.dirtyN = 0; });   // v7.4: todas as mesas abrem desde o dia 1
     this.kitchen.reset();
     this.kitchen.clean = dishStock(this.day, this.up);
-    this.trash = 0; this.trituraT = 0; this.paid = 0; this.unpaid = []; this.aberto = false;
+    this.trash = 0; this.trituraT = 0; this.fumacaT = 0; this.paid = 0; this.unpaid = []; this.aberto = false;
     this.maq = []; this.maqId = 0;   // pedidos do tablet da espera na máquina de suco: { id, group, n, t (preparo que falta) }
     this.drinkQ = []; this.drinkJob = null; this.drinkPronto = []; this.drinkAnim = 0;   // v9.5: a fila do Anselmo, o que ele prepara agora ({ grp, id, t }) e os copos prontos no balcão
     this.retirada = []; this.prateleira = []; this.marmitaId = 0; this.efood = 0; this.potes = 0;   // v8.6: os entregadores no balcão, as marmitas na prateleira e a parte da Efood
@@ -287,6 +287,14 @@ class Game {
   }
   get lucro(){ return this.money - this.custo - this.fixo; }
   get trashFull(){ return this.trash >= TRASH.cap; }
+  /* v9.6.11: a seta sobre a mesinha: marmita de entregador esperando, só nos dias 4 e 5 da carreira e na Missão zero */
+  get setaMesinha(){
+    if (this.state !== 'playing' || !(this.mode === 'treino' || (this.mode === 'carreira' && this.day && (this.day.n === 4 || this.day.n === 5)))) return false;
+    return this.kitchen.marmJ.some(p => p && p.dono && p.dono.state === 'retirada');
+  }
+  /* v9.6.11: a fumaça da lixeira cheia cresce em TRASH.fumaca.cresce segundos até o raio máximo e some em 3 s ao esvaziar */
+  get fumacaRaio(){ return Math.min(1, this.fumacaT / TRASH.fumaca.cresce) * TRASH.fumaca.raio; }
+  fumacaAlcanca(x, y){ return Math.hypot(x - TRASH.pos.x, y - TRASH.pos.y) <= this.fumacaRaio; }
   /* os ajudantes (v9.2: Dani e Joca) */
   get ajud(){ return [this.dani, this.joca, this.cami]; }   // v9.3: e a Cami
   /* alguém além da Bia lava a louça (Dani ou Joca com a tarefa, ou o Tonhão com aumento) */
@@ -978,6 +986,7 @@ class Game {
       this.trituraT += dt;
       if (this.trituraT >= TRASH.tritura){ this.trituraT = 0; this.trash--; Sfx.noise(0.15, 0.05, 0, 300); }
     } else this.trituraT = 0;
+    { const F = TRASH.fumaca; this.fumacaT = this.trashFull ? Math.min(F.cresce, this.fumacaT + dt) : Math.max(0, this.fumacaT - dt * F.cresce / 3); }
     this.drinkUpdate(dt);
     this.bia.update(dt);
     this.dani.update(dt); this.joca.update(dt); this.cami.update(dt);
@@ -1039,8 +1048,8 @@ class Game {
     const avDia = avalMedias(this.avals.map(a => a.r));
     sv.aval = normAval(sv.aval.concat(this.avals.map(a => a.r)));
     sv.avalCom = normAvalCom(sv.avalCom.concat(this.avals.map(a => ({ d:d.n, n:Math.round(avalNota(a.r) * 10), t:a.txt, k:a.k, v:a.v }))));
-    const ord = this.avals.slice().sort((a, b) => avalNota(b.r) - avalNota(a.r)), coment = [];
-    if (ord.length) [ord[0], ord[ord.length - 1], pick(ord)].forEach(a => { if (!coment.includes(a.txt)) coment.push(a.txt); });
+    const ord = this.avals.slice().sort((a, b) => avalNota(b.r) - avalNota(a.r)), coment = [], comentK = [];   // v9.6.11: comentK = o tipo de cliente de cada comentário (o rostinho do balão)
+    if (ord.length) [ord[0], ord[ord.length - 1], pick(ord)].forEach(a => { if (!coment.includes(a.txt)){ coment.push(a.txt); comentK.push(a.k); } });
     if (ord.length) this.manualVer('b-gurugol');   // v9.6.7
     const avsDia = this.avals;   // v9.0.4: o gatilho dos cartões da lojinha lê as notas cruas do dia
     this.avals = [];   // já estão no save (a nota do HUD não conta duas vezes)
@@ -1080,8 +1089,8 @@ class Game {
         if (g) novas.push(L.id === 'melhorias' && this.stats.lixoCheio ? L.lixo : pick(L.reclama));
       });
       if (novas.length){
-        novas.forEach(t => { coment.unshift(t); sv.avalCom.push({ d:d.n, n:20, t, k:'estudante' }); });
-        coment.length = Math.min(coment.length, 3);
+        novas.forEach(t => { coment.unshift(t); comentK.unshift('estudante'); sv.avalCom.push({ d:d.n, n:20, t, k:'estudante' }); });
+        coment.length = comentK.length = Math.min(coment.length, 3);
         sv.avalCom = normAvalCom(sv.avalCom);
       }
     }
@@ -1093,7 +1102,7 @@ class Game {
     if (tomou) row.tom = 1;
     caixaAdd(sv, row);
     writeSave(sv);
-    this.result = { daniFeitas:this.dani.feitas, jocaFeitas:this.joca.feitas, camiFeitas:this.cami.feitas, cafesEsp:this.stats.cafesEsp, drinks:this.stats.drinks, doces:this.stats.doces, docesMarm:this.stats.docesMarm, day:d.n, money:m, fat, pontos:Math.round(this.pontos), custo:Math.round(this.custo), contas:this.contas, aluguel:this.ponto.aluguel, div:this.paidDiv, divName:this.div ? this.div.name : '', meta:d.meta, bom:bomGoal(d), expert:d.expert, passed, stars, served:this.stats.served, lost:this.stats.lost, lostBy:this.stats.lostBy, lotadoT:Math.round(this.stats.lotadoT), atraso:Math.round(this.atraso), full:this.stats.full, chain:this.stats.chain, vip:this.stats.vip, vipLost:this.stats.vipLost, marmitas:this.stats.marmitas, efood:this.efood, esfriou:this.stats.esfriou, jogadas:this.stats.jogadas, sobra:this.marmitas().filter(o => o.onde !== 'fogao').length, juice:this.stats.juice, juiceMiss:this.stats.juiceMiss, sucoEsp:this.stats.sucoEsp, bebida:this.bebida.id, trash:this.stats.trash, washed:this.stats.washed, income, paid:this.paid, reason:this.reason, conserto:this.conserto, consertos:this.stats.consertos, quebras:this.quebras.filter(q => q.on).map(q => ({ id:q.id, fixed:q.fixed })), clima:this.clima, manut:Object.assign({}, this.manut), par, forcado, neg:sv.neg, emp:Object.assign({}, sv.emp), atrasou, tomou, devido, cap, aval:{ dia:avDia, geral:avalGeral(sv.aval), n:sv.aval.length, coment, teto:avalTeto(this.ponto) } };
+    this.result = { daniFeitas:this.dani.feitas, jocaFeitas:this.joca.feitas, camiFeitas:this.cami.feitas, cafesEsp:this.stats.cafesEsp, drinks:this.stats.drinks, doces:this.stats.doces, docesMarm:this.stats.docesMarm, day:d.n, money:m, fat, pontos:Math.round(this.pontos), custo:Math.round(this.custo), contas:this.contas, aluguel:this.ponto.aluguel, div:this.paidDiv, divName:this.div ? this.div.name : '', meta:d.meta, bom:bomGoal(d), expert:d.expert, passed, stars, served:this.stats.served, lost:this.stats.lost, lostBy:this.stats.lostBy, lotadoT:Math.round(this.stats.lotadoT), atraso:Math.round(this.atraso), full:this.stats.full, chain:this.stats.chain, vip:this.stats.vip, vipLost:this.stats.vipLost, marmitas:this.stats.marmitas, efood:this.efood, esfriou:this.stats.esfriou, jogadas:this.stats.jogadas, sobra:this.marmitas().filter(o => o.onde !== 'fogao').length, juice:this.stats.juice, juiceMiss:this.stats.juiceMiss, sucoEsp:this.stats.sucoEsp, bebida:this.bebida.id, trash:this.stats.trash, washed:this.stats.washed, income, paid:this.paid, reason:this.reason, conserto:this.conserto, consertos:this.stats.consertos, quebras:this.quebras.filter(q => q.on).map(q => ({ id:q.id, fixed:q.fixed })), clima:this.clima, manut:Object.assign({}, this.manut), par, forcado, neg:sv.neg, emp:Object.assign({}, sv.emp), atrasou, tomou, devido, cap, aval:{ dia:avDia, geral:avalGeral(sv.aval), n:sv.aval.length, coment, comentK, teto:avalTeto(this.ponto) } };
     this.result.multaVig = this.multaVig; this.result.vig = this.fiscal && this.fiscal.res ? { res:this.fiscal.res, falhas:Object.assign({}, this.fiscal.falhas) } : null;   // v9.4
     if (tomou){ this.setState('falencia'); Sfx.lose(); return; }
     this.setState('dayend');
@@ -1741,7 +1750,7 @@ class Game {
     return best;
   }
   /* a bebida da espera só com a melhoria; o balcão de retirada (v8.6), só no dia com entregador */
-  estacaoOn(k){ return k === 'maquina' ? !!this.up.maquina : k === 'doces' ? !!this.up.confCaseira : k === 'espresso' ? !!this.up.espresso : k === 'drinks' ? this.anselmoAtivo : k === 'adiantar' ? MARMITA.adiantar && this.marmitaOk : k === 'retirada' ? this.marmitaOk : true; }
+  estacaoOn(k){ return k === 'maquina' ? !!this.up.maquina : k === 'doces' ? !!this.up.confCaseira : k === 'espresso' ? !!this.up.espresso : k === 'drinks' ? this.anselmoAtivo : k === 'adiantar' ? MARMITA.adiantar && this.marmitaOk : k === 'retirada' || k === 'marmj' ? this.marmitaOk : true; }
   tableAt(x, y, pad){
     let best = null, bd = Infinity;
     for (const t of this.tables){ const d = rectDist(x, y, tableRect(t)); if (d <= (pad || 0) && d < bd){ bd = d; best = t; } }
@@ -1773,16 +1782,17 @@ class Game {
     return false;
   }
   tapStation(k, x, y){
+    if (k === 'marmj'){   // v9.6.11: a mesinha das marmitas: a de entregador esperando primeiro, depois a mais antiga
+      const ms = this.kitchen.marmJ.filter(p => p && !this.bia.acts.some(a => a.type === 'plate' && a.pid === p.id));
+      const p = ms.filter(m => m.dono && m.dono.state === 'retirada').sort((a, b) => b.age - a.age)[0] || ms.sort((a, b) => b.age - a.age)[0];
+      if (p && this.bia.enqueue({ type:'plate', pid:p.id })){ Sfx.tap(); this.addGlow(p); return true; }
+      return false;
+    }
     if (k === 'plates'){
-      // v9.6.5: o toque na faixa de baixo (os pratos) pega o prato pronto há mais tempo; na faixa de cima (y < 256), a marmita mais antiga (sem marmita, vale o prato)
+      // o toque na janela pega o prato pronto há mais tempo
       const k2 = this.kitchen, livre = p => p && !this.bia.acts.some(a => a.type === 'plate' && a.pid === p.id);
       const velho = (l, nome) => l.filter(livre).filter(p => !(p.group && p.group.cami)).sort((a, b) => b.age - a.age)[0];
-      let p = null;
-      if (y != null && y < 256){
-        const ms = k2.marmJ.filter(livre);
-        p = ms.filter(m => m.dono && m.dono.state === 'retirada').sort((a, b) => b.age - a.age)[0] || ms.sort((a, b) => b.age - a.age)[0];
-      }
-      if (!p) p = velho(k2.plates);
+      let p = velho(k2.plates);
       if (!p){
         const cami = k2.plates.find(q => livre(q) && q.group && q.group.cami);
         if (cami){ const s = PLATE_SLOTS[cami.slot]; this.addText(s.x, s.y - 34, 'É da Cami!', PAL.alerta, 14); Sfx.boing(); }
