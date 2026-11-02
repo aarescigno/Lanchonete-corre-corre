@@ -308,6 +308,8 @@ class Game {
 
   /* ---------- efeitos ---------- */
   addText(x, y, text, color, size){
+    // v9.6.9: textos próximos não se empilham: o novo nasce 24 px abaixo (até 3 vezes)
+    for (let n=0;n<3 && this.fx.some(f => f.k === 'text' && !f.box && f.life > 0.7 && Math.abs(f.x - x) < 60 && Math.abs(Math.max(f.y,170) - y) < 22);n++) y += 24;
     this.fx.push({ k:'text', x, y, vy:-38, life:1.3, max:1.3, text, color:color||PAL.tinta, size:size||18 });
   }
   /* brilho de confirmação no desenho do objeto tocado (key: mesa, prato, grupo ou nome da estação/botão) */

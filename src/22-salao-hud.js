@@ -400,6 +400,7 @@ function filaPos(g,a){
     return grp.table ? { x:grp.table.cx - grp.table.hx - 14, y:grp.table.cy - 10, dy:20 } : null;
   }
   const st = STATIONS[a.type];
+  if (st && (a.type === 'doces' || a.type === 'drinks' || a.type === 'espresso')) return { x:st.rect.x - 16, y:st.rect.y + st.rect.h/2, dy:20 };   // v9.6.9: não cobre a plaquinha
   return st ? { x:st.rect.x + 12, y:st.rect.y + 6, dx:28 } : null;
 }
 /* pedido de quem espera lá fora (v7.5), ao lado do grupo (em cima do tablet, se houver): preparando (anel),

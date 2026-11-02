@@ -22,7 +22,7 @@ const SP=L.STAFF, DANI=SP.dani.levels[2].pay, TV=SP.tv.pay, PAN=L.divulgaOf('pan
 novo(159,{dani:2,tv:true},'boca'); g.goShop(3); L.setShopTab('salao');
 const RES=DANI+TV, LIV=159-RES;
 ok(g.compromisso===RES && g.livre===LIV,'R$ 159 com Dani ('+DANI+') e TV ('+TV+'): R$ '+RES+' comprometidos, R$ '+LIV+' livres');
-ok(new RegExp('livre R\\$ '+LIV).test(els['shop-livre'].textContent) && new RegExp('R\\$ '+RES+' reservados para aumento da Dani e TV').test(els['shop-livre'].textContent),'o alto da lojinha mostra o livre e o que está reservado: '+els['shop-livre'].textContent);
+ok(new RegExp('livre R\\$ '+LIV).test(els['shop-livre'].textContent),'o alto da lojinha mostra o livre (v9.6.9: sem a lista de reservados): '+els['shop-livre'].textContent);
 { const b=botao(/Mesa de 2/), p=L.SALAO.mesa2, n=g.save.salao.mesas.length;
   ok(p>LIV && p<=159,'a mesa de 2 custa mais que o livre e menos que o total');
   ok(b && !b.disabled && b.classList.contains('warn'),'o botão da mesa fica em alerta');
@@ -44,7 +44,7 @@ ok(g.compromisso===0 && els['shop-livre'].textContent==='','sem folha, o alto fi
 
 // ---------- melhorias, manutenção e divulgação ----------
 novo(230,{dani:2},'panfleto'); g.goShop(4); L.setShopTab('melhorias');
-ok(g.compromisso===DANI+PAN && new RegExp('R\\$ '+(DANI+PAN)+' reservados para aumento da Dani e panfletos').test(els['shop-livre'].textContent),'a divulgação entra no reservado');
+ok(g.compromisso===DANI+PAN,'a divulgação entra no reservado');
 { const u=L.UPGRADES.find(x=>x.cost>230-DANI-PAN&&x.cost<=230), b=botao(new RegExp('^Comprar R\\$ '+u.cost+'$'));
   ok(b && b.classList.contains('warn') && /sem panfletos/.test(b.getAttribute('data-aviso')),'melhoria que come a folha: alerta ('+u.name+')');
   b.fire('click'); ok(!g.up[u.id],'1º toque não compra'); b.fire('click'); ok(g.up[u.id] && g.save.bank===230-u.cost,'2º toque compra'); }

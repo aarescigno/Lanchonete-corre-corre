@@ -40,6 +40,7 @@ Etapas concluídas (1a a 3a), movidas de `docs/PLANO.md` em 30/10/2026 e 31/10/2
 
 | # | Etapa | Versão | Situação |
 |---|---|---|---|
+| 3e | Revisão da interface antes da 4a (levantamento, com o Opus) | — | feita em 02/11 (`tests/shot_3e.js`, `capturas/3e`; o salão comporta só 24 lugares) |
 | 3d-3 | Retornos do Renan: a pia, o lixo, a lavagem e os doces | v9.6.6 | feita em 02/11 (`docs/spec-v9.6.6.md`; `smoke52`; balance dentro do alvo sem mudar números) |
 | 3b-4 | Fiscal da vigilância sanitária | v9.4 | feita em 31/10 (`docs/spec-v9.4.md`; nova parte `15-fiscal.js`; `smoke46`; a mesa suja ficou em 8 s: o bot passou em 6 de 6 visitas) |
 | 3b-2d | Painel do modo dev: qualquer dia, ponto, nota, equipe e cursos; lojinha de verdade; acelerar e encerrar o dia | v9.2.1 | feita em 31/10 (`docs/spec-v9.2.1.md`) |
@@ -1626,3 +1627,26 @@ O curso "Atendimento de mesa" da Cami (3b-3) passa a se comprar e abre o **modo 
 ## Etapa 3f — O Manual e menos texto explicativo (3f-1, v9.6.7; 3f-2, v9.6.8)
 > **Planejada com o usuário em 01/11** (pedido e decisões em `docs/PROPOSTAS.md`, "menos texto explicativo e um Manual"). Ordem: 3d-2 → 3d-3 → **3f-1 → 3f-2** → 3e → 4a. A ideia: o jogo é para sentir, não para calcular. A explicação sai da tela e vai para um **Manual** no estilo de bestiário, que se revela com a história (sem spoiler). O tutorial (Missão zero) e as falas do Modo História continuam apresentando as coisas; os textos deles não mudam.
 > **Regra das duas sessões:** no Manual não aparece número nenhum (nem %, nem segundos, nem preço): só palavras e bolinhas. Na tela de jogo e na lojinha ficam só os valores em R$ (preço, diária, meta, multa, parcela) e as contagens que o jogador usa na hora (ex.: "Você tem 2").
+
+## Etapa 3e — Revisão da interface antes da 4a
+**Objetivo:** responder ao "a UI não se expande de acordo com o gameplay" (Renan, 01/11) antes de pôr o Terraço na tela.
+**Levantamento feito em 02/11 (Opus)**, sem versão nova: `tests/shot_3e.js` (cada ponto no pico, aos 70, 110 e 150 s, com tudo comprado, a equipe toda e o bot jogando; lojinha e menu; tela larga e celular deitado) em `capturas/3e`. O que se viu:
+- **Textos flutuantes** ("Pedido enviado!", "Sucos entregues!", "+16 na conta", "+5 pts") sobem por cima do relógio, da placa do cardápio e do balcão de drinks e se empilham uns sobre os outros: na Avenida, ilegíveis.
+- **Selos sobrepostos:** o crachá "ANSELMO" cobre a ponta da placa do cardápio; o "CAMI" e o "NOVO!" cobrem a vitrine de doces; o "JOCA" cai em cima da mesa 6; o selo da fila ("3º") das estações pequenas (doces, drinks, espresso) cobre a plaquinha delas ("DOCES").
+- **Espera da Avenida (6 lugares no sofá, a 51 px um do outro):** o grupo de 4 transborda o lugar, os corações de um grupo caem em cima do grupo de baixo e as pessoas cobrem os números dos lugares.
+- **Lojinha no celular:** a linha do dinheiro, com a lista dos aumentos reservados, ocupa 2 linhas e passa por baixo do "?".
+- **Sem problema:** HUD de baixo, fila de ações (8 casas), mãos e bandeja, balcão de prontos, café e sucos, pia, Garagem e área industrial (só os textos flutuantes).
+- **O salão está no limite:** medido com `salaoAuto`, a área (x 160 a 684, y 150 a 500) comporta no máximo 6 mesas de 4 (24 lugares, a Avenida). A 7ª mesa não cabe nem com `SALAO.gap` 30 nem com a área 50 px maior à esquerda. Por isso a 4a mudou (ver "Mapa do Terraço" na 4a).
+
+### Sessão 3e-1 — A tela respira (v9.6.9)
+Sem mudar números do jogo. Decidido com o usuário em 02/11:
+- **Textos flutuantes** (`addText` em `16-jogo.js`, desenho em `23-render.js`, `for (const f of g.fx)`): (1) nenhum sobe acima de **y = 170** (no desenho, `y = Math.max(f.y, 170)`; o que nasce acima, como o "Pedido enviado!" da janela de pedidos, aparece em 170 e para ali); (2) **empilhar para baixo:** em `addText`, se já houver um texto vivo (`life > 0.7`) a menos de 60 px em x e 22 px em y, o novo nasce 24 px abaixo (repete até achar lugar, no máximo 3 vezes); (3) os balões do Gurugol (`f.box`) seguem como estão.
+- **Crachás** (Dani, Joca, Cami e Anselmo, em `21-cenario.js`): aparecem só nos **primeiros 20 s de cada dia** (`g.elapsed < 20`; de 17 a 20 s somem aos poucos, `globalAlpha` de 1 a 0; com `prefers-reduced-motion`, somem de uma vez aos 20 s) e, no modo dev, sempre. Fora do dia (lojinha, editor), como hoje.
+- **Selo "NOVO!" da vitrine de doces** (`21-cenario.js`, ~linha 846): vai para baixo da vitrine, centrado (`translate(x + r.w/2, y + r.h + 10)`, sem girar), em vez de cobrir o lado esquerdo.
+- **Selo da fila nas estações pequenas** (`filaPos` em `22-salao-hud.js`): para `doces`, `drinks` e `espresso`, à esquerda da estação, na metade da altura (`{ x:st.rect.x - 16, y:st.rect.y + st.rect.h/2, dy:20 }`); as outras seguem no canto de cima.
+- **Espera da Avenida** (6 lugares; desenho da fila em `22-salao-hud.js` ou `23-render.js`, ache com `tests/mapa.sh espera`): com `QUEUE.max >= 5`, (1) os grupos da espera são desenhados em escala **0,85**; (2) os corações de quem espera, em escala **0,75**, ficam à direita do grupo (no lugar de em cima), na altura do balão do pedido, à esquerda dele; (3) os números dos lugares são desenhados **depois** das pessoas (ficam por cima). Com 4 ou 5 lugares, como hoje, salvo o item (3), que vale sempre.
+- **Lojinha** (`41-lojinha.js`, ~linha 1132): a linha do dinheiro perde o parêntese da lista: fica "Dinheiro acumulado: R$ 9100 · livre R$ 8750 · Melhorias à vontade, se o dinheiro der. Cursos: 1 por dia." Quem é a reserva continua na aba Equipe.
+- **Testes:** `smoke55` confere: o texto nascido em y 120 é desenhado em 170 (ou o campo calculado, se a sessão guardar `f.yd`); dois `addText` no mesmo ponto ficam a 24 px; o crachá some depois de 20 s e volta no dia seguinte; `filaPos` de `doces` fica à esquerda da vitrine; o texto da lojinha não tem "reservados para". Capturas: `node shot_3e.js avenida_pico110` e `industrial`, antes e depois, com recortes do canto do bar e da espera; `menu_fit.py` verde; `ERRORS: []`; sem mudar o `balance`.
+- **Versão:** v9.6.9, com `docs/spec-v9.6.9.md`, `VERSAO`, `vtag`, painel `#ov-ver` e `versoes/`.
+
+**Modelo:** Sonnet, esforço médio (correções localizadas no desenho, com valores decididos).
