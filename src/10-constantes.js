@@ -1101,7 +1101,7 @@ const BIA_IDS = ['tenis', 'corrida', 'bandeja', 'sudoku'];
 function upgradeCartao(id){ return BIA_IDS.indexOf(id) >= 0 ? 'bia' : 'melhorias'; }
 const HIST_NOMES = { bia:'Bia', tonhao:'Tonhão', dani:'Dani', joca:'Joca', cami:'Cami', anselmo:'Anselmo' };
 const CAIXA_MAX = 14;                                 // livro-caixa (v7.2): quantos dias da carreira ficam guardados
-const VERSAO = 'v9.6.6';                            // vai no resumo do Caixa
+const VERSAO = 'v9.6.7';                            // vai no resumo do Caixa
 const DIVULGA_DIA = 4;                                // antes disso, o movimento é o da inauguração (sem custo); v9.0.2: dia 4, e o padrão é o boca a boca
 function divulgaAberta(n, sv){ return devLivre() || n >= DIVULGA_DIA && !(sv && sv.convDiv === 'pend'); }   // no modo dev, desde o dia 1; v9.0.3: no Modo História, só depois da conversa
 /* v9.6.4: a Efood (os entregadores) só abre depois da conversa dos entregadores, no Modo História; antes dela, nenhum tipo com `retira` vem na agenda */
@@ -1215,3 +1215,150 @@ const CLIMA_DIA = 3;
 const FISCAL = { nivel:3, dia:2, chance:0.15, quando:[0.3, 0.7], visita:20, mesaSuja:8, pia:4, multa:150, selo:7, seloPts:30,
   aviso:'Dizem que a vigilância sanitária está rondando a Avenida.', coment:'Vi o selo da vigilância: lugar limpinho!' };
 
+
+/* ============================================================
+   MANUAL (v9.6.7): o bestiário do jogo. Cada ficha se revela com a história (save.manual) e a nova leva a bolinha (save.manualNovo).
+   Sem número nenhum no texto, na linha ou nos traços: só palavras e bolinhas.
+   sempre: aberta desde o começo da carreira; tipo: a chave de CUSTOMER_TYPES (ou 'vip' e 'veg') para os traços; quem: a chave de STAFF
+   ============================================================ */
+const MANUAL_ABAS = [['basico', 'Básico'], ['clientes', 'Clientes'], ['equipe', 'Equipe'], ['lojinha', 'Lojinha'], ['lugares', 'Lugares'], ['imprevistos', 'Imprevistos']];
+const MANUAL = [
+  { id:'b-sentar',   aba:'basico', nome:'Sentar a freguesia', sempre:true, linha:'Arraste o grupo da calçada até uma mesa livre. Grupo de três ou quatro só cabe em mesa de quatro.' },
+  { id:'b-mesa',     aba:'basico', nome:'O ciclo da mesa', sempre:true, linha:'Anote o pedido, leve à cozinha, entregue o prato, cobre e recolha a louça.' },
+  { id:'b-coracoes', aba:'basico', nome:'Corações', sempre:true, linha:'São a paciência do grupo. Atender devolve um coração; mais corações, mais gorjeta.' },
+  { id:'b-cores',    aba:'basico', nome:'Cores e corrente', sempre:true, linha:'Camisa da mesma cor da cadeira dá pontos a mais. Repetir a mesma ação forma uma corrente.' },
+  { id:'b-meta',     aba:'basico', nome:'A meta do dia', sempre:true, linha:'A meta é o lucro: o que a freguesia paga, menos ingredientes, contas e folha. Três estrelas: a meta mais alta, sem perder ninguém.' },
+  { id:'b-lojinha',  aba:'basico', nome:'A lojinha', sempre:true, linha:'Abre aos poucos: quando a freguesia reclama, a Bia descobre o que comprar.' },
+  { id:'b-historia', aba:'basico', nome:'Capítulos e banco', sempre:true, linha:'A história anda por capítulos, sem prazo. A reforma da garagem se paga ao banco, em parcelas.' },
+  { id:'b-louca',    aba:'basico', nome:'Louça e lixo', linha:'Sem prato limpo, o Tonhão espera. Lixeira cheia espanta a freguesia.' },
+  { id:'b-suco',     aba:'basico', nome:'Suco e cafezinho', linha:'Quem pede suco só pede a conta depois dele. O cafezinho acalma a mesa.' },
+  { id:'b-marmita',  aba:'basico', nome:'Marmitas', linha:'O pedido do entregador vai sozinho à cozinha. Leve a marmita pronta ao balcão de retirada.' },
+  { id:'b-gurugol',  aba:'basico', nome:'Gurugol', linha:'Cada grupo que sai dá a sua nota. Nota alta traz mais gente; nota baixa afasta.' },
+
+  { id:'c-estudante',  aba:'clientes', tipo:'estudante',  nome:'Estudante', linha:'Mochila nas costas e dinheiro contado.' },
+  { id:'c-vovos',      aba:'clientes', tipo:'vovos',      nome:'Vovô e vovó', linha:'Sem pressa nenhuma: escolhem com calma e comem devagar.' },
+  { id:'c-familia',    aba:'clientes', tipo:'familia',    nome:'Família', linha:'Precisa de mesa de quatro e de paciência com as crianças.' },
+  { id:'c-executiva',  aba:'clientes', tipo:'executiva',  nome:'Executiva', linha:'Sempre com pressa, mas deixa boa gorjeta.' },
+  { id:'c-entregador', aba:'clientes', tipo:'entregador', nome:'Entregador', linha:'Não senta: espera a marmita no balcão de retirada.' },
+  { id:'c-vip',        aba:'clientes', tipo:'vip',        nome:'Cliente VIP', linha:'Óculos escuros e plaquinha dourada. Pode ser qualquer cliente, menos o entregador.' },
+  { id:'c-veg',        aba:'clientes', tipo:'veg',        nome:'Vegetariano', linha:'Pode ser qualquer cliente. Só pede prato sem carne.' },
+  { id:'c-turma',      aba:'clientes', tipo:'turma',      nome:'Turma da fábrica', linha:'Chega em bando quando o apito toca.' },
+  { id:'c-motorista',  aba:'clientes', tipo:'motorista',  nome:'Motorista de caminhão', linha:'Come com calma e fecha com um cafezinho.' },
+  { id:'c-encomenda',  aba:'clientes', tipo:'encomenda',  nome:'Encomenda do setor', linha:'Busca várias marmitas de uma vez, no balcão de retirada.' },
+  { id:'c-negocios',   aba:'clientes', tipo:'negocios',   nome:'Almoço de negócios', linha:'Colegas de trabalho: mesa de quatro e conversa longa.' },
+
+  { id:'e-bia',     aba:'equipe', quem:'bia',     sempre:true, nome:'Bia', linha:'A garçonete. Anota, leva, entrega, cobra e recolhe.' },
+  { id:'e-tonhao',  aba:'equipe', quem:'tonhao',  sempre:true, nome:'Tonhão', linha:'O chef. Aprende pratos nos cursos e, com aumento, ajuda na pia.' },
+  { id:'e-dani',    aba:'equipe', quem:'dani',    nome:'Dani', linha:'Cuida da louça, do lixo e das mesas sujas; depois, dos doces.' },
+  { id:'e-joca',    aba:'equipe', quem:'joca',    nome:'Joca', linha:'O básico da casa; depois, o café espresso.' },
+  { id:'e-cami',    aba:'equipe', quem:'cami',    nome:'Cami', linha:'Garçonete de rodízio: chega rápida e, com curso, cuida das mesas dela.' },
+  { id:'e-anselmo', aba:'equipe', quem:'anselmo', nome:'Anselmo', linha:'Coqueteleiro: só o balcão de drinks.' },
+
+  { id:'l-tenis',      aba:'lojinha', nome:'Tênis novos', linha:'A Bia anda mais rápido.' },
+  { id:'l-corrida',    aba:'lojinha', nome:'Tênis de corrida', linha:'A Bia anda bem mais rápido.' },
+  { id:'l-maquina',    aba:'lojinha', nome:'Água da torneira', linha:'Quem espera lá fora pede e espera com mais calma. Suco e água saborizada entram na conta.' },
+  { id:'l-cafeteira',  aba:'lojinha', nome:'Cafeteira de duas bocas', linha:'O cafezinho acalma mais.' },
+  { id:'l-bandeja',    aba:'lojinha', nome:'Bandeja', linha:'A Bia leva mais coisas de uma vez.' },
+  { id:'l-sudoku',     aba:'lojinha', nome:'Livrinho de Sudoku', linha:'A Bia guarda mais tarefas na fila de ações.' },
+  { id:'l-ventilador', aba:'lojinha', nome:'Ventilador de teto', linha:'A freguesia come mais rápido.' },
+  { id:'l-triturador', aba:'lojinha', nome:'Triturador de lixo', linha:'A lixeira enche mais devagar.' },
+  { id:'l-pratos',     aba:'lojinha', nome:'Jogo de pratos', linha:'Mais pratos limpos na cozinha. Dá para comprar vários.' },
+  { id:'l-tvsom',      aba:'lojinha', nome:'TV e som', linha:'Distraem quem está nas mesas: a paciência dura mais. Gastam luz.' },
+  { id:'l-tvs',        aba:'lojinha', nome:'TVs com sertanejo', linha:'A paciência nas mesas dura mais; sem anúncios, mais ainda.' },
+  { id:'l-assento',    aba:'lojinha', nome:'Assento da espera', linha:'Quem espera sentado perde a paciência mais devagar.' },
+  { id:'l-couvert',    aba:'lojinha', nome:'Couvert artístico', linha:'Música ao vivo: a paciência nas mesas dura mais, e cada mesa paga o couvert.' },
+  { id:'l-fogao',      aba:'lojinha', nome:'Fogão industrial', linha:'Uma boca a mais: o Tonhão faz mais pratos ao mesmo tempo.' },
+  { id:'l-cardapio',   aba:'lojinha', nome:'Cardápio', linha:'Cursos do Tonhão e da equipe. Cada curso ensina pratos novos e dá experiência; o avançado deixa os pratos mais caros e caprichados.' },
+  { id:'l-salao',      aba:'lojinha', nome:'Salão', linha:'Compre, venda e arrume as mesas.' },
+  { id:'l-decor',      aba:'lojinha', nome:'Decoração', linha:'Enfeites que dão cara de casa e melhoram o ambiente no Gurugol.' },
+  { id:'l-manut',      aba:'lojinha', nome:'Manutenção', linha:'Revisão do fogão, da geladeira e da cafeteira, antes que quebrem.' },
+  { id:'l-divulga',    aba:'lojinha', nome:'Divulgação', linha:'Boca a boca: de graça, menos gente. Panfletos: o movimento normal. Redes sociais: mais gente e mais VIPs.' },
+  { id:'l-banco',      aba:'lojinha', nome:'Banco', linha:'Empréstimo para crescer. As parcelas saem do caixa no fim do dia; parcela atrasada é perigo.' },
+  { id:'l-mudanca',    aba:'lojinha', nome:'Mudança', linha:'Um ponto maior, com freguesia nova e aluguel.' },
+  { id:'l-caixa',      aba:'lojinha', nome:'Caixa', linha:'O que entrou e o que saiu, dia a dia.' },
+
+  { id:'p-garagem',    aba:'lugares', sempre:true, nome:'Garagem da mãe da Bia', linha:'Onde tudo começou. Sem aluguel, freguesia do bairro.' },
+  { id:'p-industrial', aba:'lugares', nome:'Área industrial', linha:'Perto das fábricas: turma no apito, motoristas e encomendas de marmita.' },
+  { id:'p-avenida',    aba:'lugares', nome:'Avenida Brasil', linha:'Restaurante de verdade: almoço de negócios, mais VIPs e a vigilância sanitária por perto.' },
+
+  { id:'i-quebra',  aba:'imprevistos', nome:'Quebra', linha:'Equipamento gasto pode quebrar no meio do dia. A plaquinha da chave chama o técnico na hora, mais caro.' },
+  { id:'i-chuva',   aba:'imprevistos', nome:'Dia de chuva', linha:'Vem menos gente e mais entregadores.' },
+  { id:'i-feriado', aba:'imprevistos', nome:'Feriado', linha:'A cidade sai de casa: mais gente e mais famílias.' },
+  { id:'i-gripe',   aba:'imprevistos', nome:'Tonhão gripado', linha:'A cozinha anda mais devagar no dia.' },
+  { id:'i-apito',   aba:'imprevistos', nome:'Apito da fábrica', linha:'A turma chega toda junta no meio do dia.' },
+  { id:'i-fiscal',  aba:'imprevistos', nome:'Vigilância sanitária', linha:'Mesa suja e pia cheia dão multa; tudo limpo dá selo.' }
+];
+const MANUAL_PONTO_NOME = { garagem:'Garagem', industrial:'Área industrial', avenida:'Avenida Brasil' };
+const MANUAL_CATS = { pf:'PF', frito:'fritos', assado:'assados', chapa:'lanches na chapa', pastel:'pastel' };
+function manualFicha(id){ return MANUAL.find(f => f.id === id) || null; }
+/* os traços de uma ficha de cliente (chips), calculados de CUSTOMER_TYPES e GOSTOS para seguirem o balanceamento sozinhos.
+   Os de equipe (bia, tonhao, dani, joca, cami, anselmo) usam opt.save (bolinhas do nível atual). opt.aberta(id): se a ficha `p-` já abriu (padrão: todas) */
+function manualBolas(cur, total){ cur = clamp(cur, 0, total); return '●'.repeat(cur) + '○'.repeat(total - cur); }
+function manualTracos(tipo, opt){
+  opt = opt || {};
+  const aberta = opt.aberta || (() => true), out = [];
+  if (tipo === 'vip') return ['paciência menor', 'fura a fila', 'pede o prato especial', 'gorjeta boa', 'prato frio tira coração'];
+  if (tipo === 'veg') return ['só prato sem carne', 'sem opção, reclama no Gurugol'];
+  if (['bia', 'tonhao', 'dani', 'joca', 'cami', 'anselmo'].indexOf(tipo) >= 0) return manualTracosEquipe(tipo, opt.save);
+  const T = CUSTOMER_TYPES[tipo]; if (!T) return out;
+  const media = a => (a[0] + a[1]) / 2;
+  out.push('Paciência: ' + (T.pat <= 0.55 ? 'muito curta' : T.pat <= 0.75 ? 'curta' : T.pat <= 1.2 ? 'média' : T.pat <= 1.6 ? 'longa' : 'muito longa'));
+  const rd = media(T.read); out.push('Escolha: ' + (rd <= 3.5 ? 'rápida' : rd <= 4.5 ? 'normal' : 'demorada'));
+  if (!T.retira){ const ea = media(T.eat); out.push('Refeição: ' + (ea <= 5 ? 'rápida' : ea <= 7 ? 'normal' : 'demorada')); }
+  const s = T.size; out.push('Grupo: ' + (s[0] === 1 && s[1] === 1 ? 'sozinho' : s[0] === 1 ? 'sozinho ou em dupla' : s[0] === 2 && s[1] === 2 ? 'em dupla' : 'de três ou quatro'));
+  if (T.tip >= 0.15) out.push('Gorjeta: ótima'); else if (T.tip >= 0.1) out.push('Gorjeta: boa');
+  if (T.retira) out.push('leva marmita');
+  if (T.pedeCafe) out.push('pede cafezinho no fim');
+  if (T.mais >= 0.3) out.push('costuma pedir mais um');
+  let g = GOSTOS[tipo] || GOSTOS.estudante;
+  if (Array.isArray(g[0])) g = g[0].map((_, i) => g.reduce((a, l) => a + l[i], 0));
+  const cats = GOSTOS_CAT.map((c, i) => ({ c, w:g[i], i })).filter(x => x.w > 0).sort((a, b) => b.w - a.w || a.i - b.i).slice(0, 2);
+  if (cats.length) out.push('Prefere: ' + cats.map(x => MANUAL_CATS[x.c]).join(' e '));
+  const onde = [];
+  if (aberta('p-garagem') && DAYS.some(d => d.types.indexOf(tipo) >= 0)) onde.push(MANUAL_PONTO_NOME.garagem);
+  PONTOS.forEach(p => { if (p.tipos && aberta('p-' + p.id) && (p.tipos[tipo] > 0 || (tipo === 'encomenda' && p.encomenda > 0))) onde.push(MANUAL_PONTO_NOME[p.id]); });
+  if (onde.length) out.push('Onde: ' + onde.join(', '));
+  return out;
+}
+/* equipe: o nível e as qualidades em bolinhas (a posição do valor atual entre os valores diferentes dessa qualidade nos níveis dele) */
+function manualTracosEquipe(quem, sv){
+  const out = [];
+  if (quem === 'bia'){
+    out.push('duas mãos');
+    if (sv && sv.up && sv.up.bandeja) out.push('com a bandeja, leva mais');
+    return out;
+  }
+  const lv = STAFF[quem].levels;
+  const primeiro = lv.findIndex(l => l), cur = sv && sv.equipe ? (sv.equipe[quem] || 0) : 0, atual = cur > 0 || quem === 'tonhao' ? lv[cur] : null;
+  const total = lv.length - primeiro;
+  out.push('Nível ' + manualBolas(atual ? cur - primeiro + 1 : 0, total));
+  [['Rapidez', 'cook', -1], ['Capricho', 'crit', 1], ['Pia', 'wash', -1], ['Rapidez', 'speed', 1], ['Tarefas', 'tasks', 1]].forEach(([rot, k, dir]) => {
+    if (!lv.some(l => l && l[k] !== undefined)) return;
+    const vals = lv.filter(l => l && l[k]).map(l => l[k]).filter((v, i, a) => a.indexOf(v) === i).sort((a, b) => dir * (a - b));
+    if (vals.length < 2 || !atual || !atual[k]) return;
+    out.push(rot + ' ' + manualBolas(vals.indexOf(atual[k]) + 1, vals.length));
+  });
+  return out;
+}
+/* o save antigo (sem `manual`) ou novo: o que a carreira já viu (sem "novo"). sv: o save já normalizado */
+function manualSemente(sv){
+  const s = new Set(MANUAL.filter(f => f.sempre).map(f => f.id)), dia = sv.dia, nv = pontoOf(sv.salao && sv.salao.ponto).nivel;
+  for (let n = 1; n < dia && n <= DAYS.length; n++) DAYS[n - 1].types.forEach(t => s.add('c-' + t));
+  PONTOS.forEach(p => {
+    if (p.nivel < 2 || p.nivel > nv) return;
+    if (p.nivel === nv && dia - sv.pontoDia < 1) return;   // chegou agora, sem ter jogado um dia nele
+    s.add('p-' + p.id);
+    Object.keys(p.tipos || {}).forEach(t => { if (p.tipos[t] > 0) s.add('c-' + t); });
+    if (p.encomenda > 0 && dia - sv.pontoDia >= 2) s.add('c-encomenda');
+    if (p.apito) s.add('i-apito');
+    if (p.nivel >= FISCAL.nivel && dia - sv.pontoDia >= FISCAL.dia) s.add('i-fiscal');
+  });
+  if (sv.vipVisto) s.add('c-vip');
+  if (dia > 3){ s.add('c-veg'); s.add('b-louca'); s.add('b-suco'); }
+  if (dia >= HIST_ENTREGA.dia && efoodAberto(sv)) s.add('b-marmita');
+  if (dia > MANUT.dia) s.add('i-quebra');
+  if (dia > 7) s.add('i-gripe');
+  if (sv.avalCom && sv.avalCom.length) s.add('b-gurugol');
+  ['dani', 'joca', 'cami', 'anselmo'].forEach(q => { if (sv.equipe && sv.equipe[q] > 0) s.add('e-' + q); });
+  return MANUAL.filter(f => s.has(f.id)).map(f => f.id);
+}

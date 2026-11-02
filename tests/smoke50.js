@@ -109,7 +109,7 @@ const passos=(g,n)=>{ for(let i=0;i<n;i++) g.update(0.05); };
   const H=dia(5,{ vipVisto:0 }), g2=H.g; g2.arrive({type:'executiva',color:0,vip:true}); let err=null; try{ H.L.render(g2,H.ctx); }catch(e){ err=e; } ok(!err,'o balão de duas linhas desenha sem erro'); }
 
 // ---------- 6. textos ----------
-{ const H=load(), {g,L}=H; ok(/Da área industrial em diante aparece/.test(JSON.stringify(Object.keys(L).length?'':'')+require('fs').readFileSync(__dirname+'/game.js','utf8')),'Como jogar: dica do VIP atualizada'); }
+{ const H=load(), {g,L}=H; const f=L.MANUAL.find(x=>x.id==='c-vip'); ok(f && /plaquinha dourada/.test(f.linha) && L.manualTracos('vip').indexOf('prato frio tira coração')>=0,'Manual: a ficha do VIP (v9.6.7, no lugar da dica do Como jogar)'); }
 
 console.log('smoke50: total = '+total+'  fails = '+fails);
 process.exit(fails?1:0);

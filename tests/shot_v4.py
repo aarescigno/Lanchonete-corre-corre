@@ -19,7 +19,7 @@ with sync_playwright() as p:
     pg.add_script_tag(content=BOT)
     pg.screenshot(path=OUT+'/01_menu.png')
     pg.click('#btn-ver'); pg.wait_for_timeout(150); pg.screenshot(path=OUT+'/02_versoes.png'); pg.click('#btn-ver-close')
-    pg.click('#btn-how'); pg.wait_for_timeout(150); pg.screenshot(path=OUT+'/03_como_jogar.png'); pg.click('#btn-how-close')
+    pg.click('#btn-manual'); pg.wait_for_timeout(150); pg.screenshot(path=OUT+'/03_como_jogar.png'); pg.click('#btn-manual-voltar')
     pg.evaluate("window.__game.save.maxDay=7; window.__game.save.bank=900; window.__game.startDay(3);"); pg.wait_for_timeout(150)
     pg.screenshot(path=OUT+'/04_intro_dia3.png')
     # mesa pedindo suco, Bia com sucos na bandeja

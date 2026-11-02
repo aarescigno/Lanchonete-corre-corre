@@ -5,7 +5,7 @@
 
     <div class="ov show" id="ov-menu">
       <div class="panel menu-panel">
-        <span class="vtag" id="vtag" aria-label="Versão 9.6.6">v9.6.6</span>
+        <span class="vtag" id="vtag" aria-label="Versão 9.6.7">v9.6.7</span>
         <h1 class="title">Lanchonete <br>Corre-Corre</h1>
         <p class="tag">Ajude a Bia a atender a freguesia da esquina antes que o cafezinho esfrie!</p>
         <div class="lbl" id="menu-dia">História</div>
@@ -20,7 +20,7 @@
           </div>
           <div class="row tight">
             <button class="btn" id="btn-endless">Turno sem fim</button>
-            <button class="btn alt" id="btn-how">Como jogar</button>
+            <button class="btn alt" id="btn-manual">Manual</button>
             <button class="btn alt" id="btn-rank">Ranking</button>
           </div>
         </div>
@@ -37,11 +37,12 @@
       </div>
     </div>
 
-    <div class="ov" id="ov-how">
+    <div class="ov" id="ov-manual">
       <div class="panel">
-        <h2>Como jogar</h2>
-        <ul id="tips"></ul>
-        <div class="row"><button class="btn" id="btn-how-close">Entendi!</button></div>
+        <h2>Manual</h2>
+        <div class="rankbar"><div class="seg" id="manual-abas" role="group" aria-label="Manual"></div></div>
+        <div id="manual-grid" role="list"></div>
+        <div class="row"><button class="btn" id="btn-manual-voltar">Voltar</button></div>
       </div>
     </div>
 
@@ -90,6 +91,7 @@
         <div class="row">
           <button class="btn go" id="btn-resume">Continuar</button>
           <button class="btn alt" id="btn-restart">Reiniciar</button>
+          <button class="btn alt" id="btn-pause-manual">Manual</button>
           <button class="btn alt" id="btn-pause-menu">Menu</button>
         </div>
       </div>
@@ -102,6 +104,7 @@
         <p id="end-money"></p>
         <div class="stats2" id="end-stats"></div>
         <p class="small"><span class="aval" id="end-aval"></span><span id="end-msg"></span></p>
+        <p class="small end-manual" id="end-manual" style="display:none"></p>
         <div id="end-save"></div>
         <div class="row">
           <button class="btn go" id="btn-next">Próximo dia</button>
@@ -113,6 +116,7 @@
 
     <div class="ov" id="ov-shop">
       <div class="panel">
+        <button type="button" class="btn alt ajuda" id="btn-shop-manual" aria-label="Manual" title="Manual">?</button>
         <h2 id="shop-ponto">Garagem da mãe da Bia</h2>
         <p>Dinheiro acumulado: <span class="bank" id="shop-bank">R$ 0</span><span class="livre" id="shop-livre"></span> &middot; <span id="shop-limit">Melhorias à vontade, se o dinheiro der. Cursos: 1 por dia.</span></p>
         <div class="rankbar"><div class="seg" id="shop-tabs" role="group" aria-label="Lojinha">
@@ -217,7 +221,8 @@
       <div class="panel">
         <h2>Versões</h2>
         <ul class="verlist">
-          <li><b>v9.6.6</b><span class="cur">versão atual</span><br>02/11/2026 &mdash; A pia e o lixo ficam bem mais sujos, com moscas; a Bia lava um prato por vez; a geladeirinha de doces fica maior, com placa e selo NOVO!, e o balão do doce na mesa fica maior. Sai o lembrete da louça.</li>
+          <li><b>v9.6.7</b><span class="cur">versão atual</span><br>02/11/2026 &mdash; O Como jogar vira o Manual: um bestiário com fichas (básico, clientes, equipe, lojinha, lugares e imprevistos) que se revelam com a história; abre pelo menu, pela pausa e pelo &quot;?&quot; da lojinha.</li>
+          <li><b>v9.6.6</b><br>02/11/2026 &mdash; A pia e o lixo ficam bem mais sujos, com moscas; a Bia lava um prato por vez; a geladeirinha de doces fica maior, com placa e selo NOVO!, e o balão do doce na mesa fica maior. Sai o lembrete da louça.</li>
           <li><b>v9.6.5</b><br>01/11/2026 &mdash; As marmitas ganham uma fileira s&oacute; delas na janela de prontos; as mesas t&ecirc;m prioridade no fog&atilde;o; os entregadores chegam mais espa&ccedil;ados; a marmita de quem desistiu vai para o lixo; e um toque na janela pega o prato mais antigo.</li>
           <li><b>v9.6.4</b><br>01/11/2026 &mdash; A porta fecha no fim do turno: quem espera lá fora vai embora sem multa e quem já está nas mesas termina e paga; no máximo 2 grupos grandes por mesa de 4 na espera; o Salão abre quando a primeira família vai embora da fila; a conversa dos entregadores vem um dia antes e a Efood só abre depois dela; e o cliente VIP some da Garagem, fica raro na área industrial e não perdoa prato frio.</li>
           <li><b>v9.6.3</b><br>01/11/2026 &mdash; A Dani aprendiz (nível 1) faz uma tarefa só, e a lojinha agora mostra marcada só a que ela faz de verdade (antes aparecia &ldquo;Retirar pratos&rdquo; e &ldquo;Lavar a louça&rdquo; marcados).</li>
