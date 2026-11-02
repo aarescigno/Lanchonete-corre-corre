@@ -64,11 +64,12 @@ const H=nova(), {g,L,els}=H;
 els['btn-play'].fire('click'); passa(H); g.save.bank=5000;
 joga(H,0,0); ok(g.result.money<0 && g.save.capAzul===0 && g.result.cap && !g.result.cap.ok && g.save.conversa===null,'dia no vermelho não conta para o cap. 1');
 ok(/Capítulo 1, A garagem da Rosa: Fechar 2 dias no azul \(0 de 2\)/.test(els['end-msg'].textContent),'o fim do dia mostra o objetivo (0 de 2)');
-els['btn-next'].fire('click'); ok(!g.conversa && g.save.convCard!=='pend','depois do dia 1, sem conversa do cardápio (v9.6.2)');
-passa(H);
+ok(g.conversa && g.conversa.falas===L.HIST_PLANTA.falas && g.state==='dayend','no fim do dia 1, toca o presente da dona Cida antes dos resultados (v9.6.10)'); passa(H);
+ok(g.save.convPlanta===1 && g.save.decor.espada===1 && g.save.convCard!=='pend','depois do dia 1, a planta à mostra e sem conversa do cardápio (v9.6.2)');
+els['btn-next'].fire('click');
 ok(g.state==='shop' && !g.conversa,'depois dela, a lojinha');
 joga(H,400,0); ok(g.save.capAzul===1 && g.save.cap===1 && g.save.conversa===null && /\(1 de 2\)/.test(els['end-msg'].textContent),'1 dia no azul: o capítulo continua (1 de 2)');
-els['btn-next'].fire('click'); L.setShopTab('dani'); ok(/Chega no capítulo 2/.test(txt(els['shop-grid'])),'antes do cap. 2, o card da Dani diz "Chega no capítulo 2"');
+els['btn-next'].fire('click'); L.setShopTab('dani'); ok(txt(els['shop-grid']).trim()==='','antes do cap. 2, a Dani não tem cartão (v9.6.10)');
 joga(H,400,0); ok(g.save.capAzul===2 && g.save.conversa==='depois' && g.result.cap.ok && /Objetivo cumprido/.test(els['end-msg'].textContent) && g.save.cap===1,'2 dias no azul: objetivo cumprido, conversa de depois pendente');
 // ---------- 5. do fim do cap. 1 ao cap. 2: depois, antes e a Dani chega ----------
 els['btn-next'].fire('click');
@@ -86,7 +87,7 @@ g.save.bank=5000; notaDe(g,2.3);
 joga(H,400,0); ok(g.result.cap.n===2 && !g.result.cap.ok && g.save.conversa===null && /Nota do Gurugol 2,4 \(agora 2,3\)/.test(els['end-msg'].textContent),'nota 2,3: o cap. 2 continua');
 els['btn-next'].fire('click'); joga(H,400,0); ok(g.save.cap===2 && g.save.conversa===null,'e continua, dia após dia, sem prazo');
 notaDe(g,2.4); joga(H,400,0); ok(g.result.cap.ok && g.save.conversa==='depois' && /Objetivo cumprido/.test(els['end-msg'].textContent),'nota 2,4: objetivo cumprido');
-els['btn-next'].fire('click'); passa(H);
+passa(H); els['btn-next'].fire('click');
 ok(g.save.cap===3 && g.state==='shop' && g.save.equipe.dani===1,'depois das conversas, o cap. 3 começa e a lojinha abre');
 // ---------- 7. cap. 3: quitar + nota 2,7 + R$ 800, tudo junto ----------
 const cap3=(resto,nota,bank)=>{ g.save.emp=resto?L.normEmprestimo({resto,amort:100,j:0.01}):{resto:0,n:0}; g.save.bank=bank; notaDe(g,nota); g.save.conversa=null; g.save.neg=0; if(g.state==='shop') els['btn-shop-go'].fire('click'); joga(H,0,0); return g.result.cap; };

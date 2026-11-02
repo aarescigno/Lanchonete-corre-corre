@@ -51,13 +51,14 @@ const joga=(H,fat)=>{ const {g,els}=H; if(g.state==='shop') els['btn-shop-go'].f
   sv.conversa=null; sv.bank=5000; sv.convCard=0;
   g.startDay(1); joga(H,0);   // dias no vermelho: a conversa do capítulo 1 (2 dias no azul) não toma o lugar
   ok(g.save.convCard!=='pend','ao fechar o dia 1, convCard não fica pendente (v9.6.2)');
-  els['btn-next'].fire('click'); passa(H); g.startDay(2); joga(H,0);
+  passa(H); els['btn-next'].fire('click'); g.startDay(2); joga(H,0);
   ok(g.save.convCard==='pend','ao fechar o dia 2, convCard fica pendente (v9.6.2)');
-  els['btn-next'].fire('click'); ate(H,/Tio, hoje/);
+  ate(H,/Tio, hoje/);
   ok(g.conversa && /Tio, hoje um monte de gente perguntou se só tem PF e coxinha/.test(g.conversa.fala.s),'toca a conversa, com a 1ª fala certa');
   let cap=0; while(g.conversa && cap<20){ if(g.save.conversa==='depois'||g.save.conversa==='antes'){} toque(els); cap++; }
+  els['btn-next'].fire('click');
   ok(g.save.convCard===1 && g.state==='shop' && els['shop-sec'].textContent==='Cardápio','no fim, convCard=1 e a lojinha abre no Cardápio');
-  g.startDay(3); joga(H,400); els['btn-next'].fire('click'); passa(H);
+  g.startDay(3); joga(H,400); passa(H); els['btn-next'].fire('click');
   ok(g.save.convCard===1,'fechar o dia 3 depois não toca de novo'); }
 { const H=nova(), {g,L,els}=H;
   g.save.conversa=null; g.save.bank=5000; g.save.cursos=L.normCursos({pastel:1}); g.startDay(2); joga(H,400); els['btn-next'].fire('click'); ate(H,/O pessoal adorou/);
