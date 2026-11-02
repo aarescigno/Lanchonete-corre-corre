@@ -1,18 +1,18 @@
 # Plano da proposta 2: "Na palma da mão" (branch `proposta/na-palma-da-mao`)
 
-> A proposta está em `docs/REDESENHO.md` (proposta 2), e o usuário a escolheu para planejar em 02/11. Este é o roteiro das sessões **neste branch**. No pedido "a próxima etapa" neste branch, faça a próxima sessão da tabela abaixo; o `docs/PLANO.md` é o roteiro do main.
+> A proposta está em `docs/REDESENHO.md` (proposta 2), e o usuário a escolheu para **explorar** em 02/11. **É uma exploração, não a substituta do jogo:** a versão que vem sendo construída desde a v1 (a "clássica", no `claude/main`) continua sendo o jogo e nunca é sobrescrita por este branch. Se a exploração der certo, ela pode virar um **jogo paralelo** (outro arquivo e outro artifact), ao lado da clássica. Este é o roteiro das sessões **neste branch**. No pedido "a próxima etapa" neste branch, faça a próxima sessão da tabela abaixo; o `docs/PLANO.md` é o roteiro do main.
 
 ## Regras do branch
-- **Sem merge no main** até o usuário avaliar e aprovar (regra do `CLAUDE.md`). Nada de PR para o `claude/main`. Cada sessão faz commit e push só em `proposta/na-palma-da-mao`.
-- **O main fica só com correções** enquanto a proposta estiver em avaliação (escolha do usuário em 02/11): a 4a (Terraço) espera a decisão sobre a proposta 2.
+- **A clássica fica intacta:** nunca há PR nem merge deste branch no `claude/main`. Cada sessão faz commit e push só em `proposta/na-palma-da-mao`. O `lanchonete.html` daqui é a montagem do branch, e nunca vai para o main, para o GitHub Pages nem para o artifact do jogo. A tag `classica-v9.6.11` marca o ponto de partida.
+- **O main segue o roteiro dele** (`docs/PLANO.md`). Em 02/11 o usuário pediu que a 4a esperasse um pouco pela exploração, mas é só uma questão de agenda: os dois podem andar juntos.
 - **Trazer as correções do main:** toda sessão começa com `git fetch origin claude/main && git merge origin/claude/main`. Em conflito numa parte reescrita aqui, vale a versão do branch, e a correção é refeita no formato novo.
-- **Versões de prévia:** `VERSAO = '10-palma.N'`, selo `vtag` "v10 palma N". A lista do painel `#ov-ver` ganha a linha da prévia. Prévias **não** vão para `versoes/`: elas são guardadas só se a proposta for aprovada. Em vez de um `spec-vN.md` por versão, há um só `docs/spec-palma.md`, com uma seção por prévia (o que entrou e os testes).
+- **Versões de prévia:** `VERSAO = 'palma.N'`, selo `vtag` "em pé · prévia N" (sem número de versão da clássica, para não parecer a sucessora). A lista do painel `#ov-ver` ganha a linha da prévia. Prévias **não** vão para `versoes/`: elas são guardadas só se a proposta for aprovada. Em vez de um `spec-vN.md` por versão, há um só `docs/spec-palma.md`, com uma seção por prévia (o que entrou e os testes).
 - **Artifact próprio:** as prévias são publicadas num artifact separado, nunca no do jogo oficial, e só quando o usuário pedir. Na 1ª publicação, sem `url`, nasce uma página nova com o título "Lanchonete em pé (prévia)"; anote o link aqui, em **Artifact da prévia**. O GitHub Pages continua mostrando o main.
 - **Artifact da prévia:** (ainda não publicado)
 
 ## Decisões (com o usuário, 02/11)
-1. **Branch:** `proposta/na-palma-da-mao`, a partir do main da v9.6.11.
-2. **No computador:** o jogo em pé no centro e o **celular da Bia ao lado, sempre aberto**. Existe uma única tela de jogo, a em pé; não fica versão deitada.
+1. **Branch:** `proposta/na-palma-da-mao`, uma cópia do main da v9.6.11 que anda separada. A clássica continua no main.
+2. **No computador:** o jogo em pé no centro e o **celular da Bia ao lado, sempre aberto**. Neste branch, a única tela de jogo é a em pé (a tela deitada continua sendo a da clássica).
 3. **A equipe:** cada pessoa **faz a sua parte sozinha, como hoje**, e **atende ao chamado** quando o jogador arrasta o rosto dela até uma tarefa; depois volta à rotina.
 4. **Tudo o que não é turno** mora no celular da Bia (lojinha, fim do dia, conversas, Manual, ranking, pausa).
 
@@ -226,5 +226,5 @@ Faixas (y, de cima para baixo), com os retângulos `{x0, y0, x1, y1}` do mundo. 
 - Capturas finais.
 - Prévia publicada no artifact próprio (quando o usuário pedir).
 - Lista do que testar num celular de verdade.
-**Avaliação:** sessão com o Opus para o usuário decidir se aprova, ajusta ou descarta. Se aprovar: planejar o merge (versão v10, `versoes/`, specs e `RESUMO.md`) e a 4a já no formato em pé.
+**Avaliação:** sessão com o Opus para o usuário decidir entre três caminhos: seguir explorando, guardar o branch como está ou fazê-lo virar um **jogo paralelo** (nome, arquivo e artifact próprios, por exemplo `lanchonete-em-pe.html`, morando ao lado da clássica sem trocar nada nela). Em qualquer caminho, a clássica não muda.
 **Modelo:** Sonnet, alto (balanceamento por tentativa); a avaliação com o usuário com o Opus.
