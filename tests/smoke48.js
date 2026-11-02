@@ -83,7 +83,7 @@ const roda=(H,seg,fn)=>{ const {g}=H; for(let i=0;i<seg*10;i++){ g.update(0.1); 
 
 // ---------- 7. cartão, desenho e save da v9.5 ----------
 { const H=aberto(2), {g,L}=H; L.setShopTab('cami'); let t=txt(H.els['shop-grid']);
-  ok(/Cami · nível 3 de 3/.test(t) && /Minhas mesas/.test(t) && /Tarefas/.test(t) && /cuida de 2 de 2 mesas/.test(t),'o cartão mostra os dois modos e as 2 mesas marcadas');
+  ok(/Cami · nível 3 de 3/.test(t) && /Minhas mesas/.test(t) && /Tarefas/.test(t) && /Mesas da Cami: 2 de 2/.test(t),'o cartão mostra os dois modos e as 2 mesas marcadas');
   g.save.equipe.camiModo='tarefas'; g.camiMesa(0); g.camiMesa(1); L.setShopTab('cami'); t=txt(H.els['shop-grid']); ok(/Marque as mesas dela no Salão/.test(t),'sem mesa marcada: "Marque as mesas dela no Salão"');
   let erro=''; try { g.save.equipe.camiModo='mesas'; g.camiMesa(0); const tb=g.tables[0]; tb.open=true; H.L.drawTable(H.ctx,g,tb,0,false); H.L.drawTable(H.ctx,g,tb,0,true); H.L.drawAventalCami(H.ctx,100,100); } catch(e){ erro=String(e); } ok(!erro,'o avental desenha no jogo e no editor sem erro '+erro);
   const v95=L.normSave({ equipe:{ tonhao:1, dani:3, joca:3, cami:2, camiTasks:['lixo','lavar'] }, camiCursos:{ agil:1 }, salao:{ ponto:'avenida' } });

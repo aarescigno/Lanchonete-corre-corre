@@ -5,25 +5,21 @@ game.hooks.state = function(s){
     const d = game.day;
     if (game.mode === 'semfim'){
       $('intro-title').textContent = 'Turno sem fim';
-      $('intro-goal').textContent = 'Todas as ' + game.tables.length + ' mesas abertas, 5 estrelas de reputação e freguesia cada vez mais rápida.';
-      $('intro-note').textContent = 'Grupo que sai bravo ou que não cabe na fila tira 1 estrela. A cada 8 contas pagas com 5 corações, você ganha 1 de volta. Com 0 estrelas, o turno acaba.';
+      $('intro-goal').textContent = 'Todas as mesas abertas e freguesia cada vez mais rápida.';
+      $('intro-note').textContent = 'Grupo bravo tira uma estrela. Sem estrelas, acabou.';
     } else {
       $('intro-title').textContent = 'Dia ' + d.n + (d.semana ? ' · ' + d.semana : '');
-      const div = game.div, custos = ['contas ' + fmt(contasDia(game.tables, game.ponto))];
-      if (payroll(game.save.equipe)) custos.push('folha ' + fmt(payroll(game.save.equipe)));
-      if (div && div.cost) custos.push(div.name.toLowerCase() + ' ' + fmt(div.cost));
-      $('intro-goal').textContent = 'Meta de lucro: ' + fmt(d.meta) + ' · 2 estrelas: ' + fmt(bomGoal(d)) + ' · 3 estrelas: ' + fmt(d.expert) + ' sem perder ninguém · ' + game.schedule.length + ' grupos' + (div ? ' (' + div.name.toLowerCase() + ')' : '') + ' · ' + mmss(d.time)
-        + '. Custos do dia: ' + custos.join(' + ') + ', mais ' + Math.round(INGRED.prato * 100) + '% de cada prato em ingredientes.';
+      $('intro-goal').textContent = 'Meta: ' + fmt(d.meta) + ' · ★★ ' + fmt(bomGoal(d)) + ' · ★★★ ' + fmt(d.expert);
       // v8.2.3: reiniciou no meio com gente na espera ou nas mesas: a multa de quem foi embora bravo
       const en = game.encerrado; game.encerrado = null;
       // v9.6.4: sem a Efood aberta (conversa dos entregadores pendente), o dia 4 não fala do entregador; o texto vem uma vez, no 1º dia com a Efood aberta
       let nota = d.note;
       if (game.mode === 'carreira'){
         const sv = game.save;
-        if (d.nu === 'entregador' && !efoodAberto(sv)) nota = 'Dia de movimento: a freguesia não para de chegar.';
+        if (d.nu === 'entregador' && !efoodAberto(sv)) nota = 'Dia de movimento!';
         else if (d.n >= HIST_ENTREGA.dia && efoodAberto(sv) && !sv.efoodNota){ nota = DAYS[3].note; sv.efoodNota = 1; writeSave(sv); }
       }
-      $('intro-note').textContent = (en ? 'Você largou o dia no meio: ' + en.n + (en.n > 1 ? ' grupos foram' : ' grupo foi') + ' embora bravo' + (en.n > 1 ? 's' : '') + ' (multa de ' + fmt(en.multa) + '; agora você tem ' + fmt(en.bank) + '). ' : '') + (nota || 'Sente a freguesia, anote os pedidos e mantenha todo mundo feliz!') + (d.n === 1 && !game.save.treino ? ' Primeira vez? No menu, a Missão zero é um treino passo a passo.' : '');
+      $('intro-note').textContent = (en ? 'Você largou o dia no meio: multa de ' + fmt(en.multa) + '. ' : '') + (nota || '') + (d.n === 1 && !game.save.treino ? ' Primeira vez? Faça a Missão zero, no menu.' : '');
     }
     $('intro-manut').textContent = [game.mode === 'carreira' ? game.capLinha() : '', introEncomenda(), introBanco(), introManut()].filter(Boolean).join(' ');
     showOnly(['ov-intro']);
@@ -34,8 +30,8 @@ game.hooks.state = function(s){
     manualBolinha();
     // v8.2.2: só o dia completo rende; interrompido, não paga nem ganha nada
     const nb = game.bravosSeSair.length, mb = game.multaSeSair;
-    $('pause-note').textContent = game.mode !== 'carreira' ? '' : 'Se reiniciar ou sair, o dia não conta: só dias completos rendem. A folha e as contas só são pagas no fim do dia.'
-      + (nb ? ' E ' + (nb > 1 ? 'os ' + nb + ' grupos' : 'o grupo') + ' na espera e nas mesas ' + (nb > 1 ? 'vão' : 'vai') + ' embora bravo' + (nb > 1 ? 's' : '') + ': multa de ' + fmt(mb) + '.' : '');
+    $('pause-note').textContent = game.mode !== 'carreira' ? '' : 'Se sair agora, o dia não conta.'
+      + (nb ? ' Quem está aqui vai embora bravo: multa de ' + fmt(mb) + '.' : '');
     showOnly(['ov-pause']);
   }
   else if (s === 'dayend'){ buildEnd(); showOnly(['ov-end']); }
@@ -57,11 +53,11 @@ function introBanco(){
   const sv = game.save, out = [];
   if (sv.bank < 0){
     const falta = BANCO.neg - sv.neg;
-    out.push('Caixa no negativo (' + fmt(sv.bank) + ')' + (sv.neg ? ' há ' + sv.neg + (sv.neg > 1 ? ' dias' : ' dia') : '') + ': ' + (falta > 0 ? 'mais ' + (falta + 1) + ' dias seguidos fechando no negativo (contando hoje) e' : 'se fechar hoje no negativo,') + ' o banco cobre o que falta, à força, com juros de ' + Math.round(BANCO.forcado * 100) + '% ao dia.');
+    out.push(falta > 0 ? 'Caixa no negativo! Mais ' + (falta + 1) + ' dias assim e o banco cobre à força, com juros.' : 'Caixa no negativo! Se fechar hoje assim, o banco cobre à força, com juros.');
   }
-  if (sv.emp.atr) out.push('Parcela do banco atrasada! No fim do dia, o caixa precisa ter ' + fmt(game.devido) + ' (a atrasada e a de hoje), senão o banco toma a lanchonete.');   // v8.3.1
-  else if (sv.emp.resto && carencia(sv.emp, game.day.n)) out.push('Reforma da garagem: faltam ' + fmt(sv.emp.resto) + '. A 1ª parcela (' + fmt(parcelaDe(sv.emp, sv.emp.ini)) + ') só vence no fim do dia ' + sv.emp.ini + '.');
-  else if (sv.emp.resto) out.push('Parcela do banco no fim do dia: ' + fmt(game.parcela) + ' (' + fmt(game.jurosHoje) + ' de juros; ' + (sv.emp.n > 1 ? 'faltam ' + sv.emp.n : 'a última') + '; se não couber no caixa, fica atrasada).');
+  if (sv.emp.atr) out.push('Parcela atrasada! Feche o dia com ' + fmt(game.devido) + ' no caixa, ou o banco toma a lanchonete.');
+  else if (sv.emp.resto && carencia(sv.emp, game.day.n)) out.push('Reforma da garagem: a 1ª parcela vence no fim do dia ' + sv.emp.ini + '.');
+  else if (sv.emp.resto) out.push('Parcela do banco hoje: ' + fmt(game.parcela) + '.');
   return out.join(' ');
 }
 /* introdução do dia (v8): o clima do dia e o estado do fogão, da geladeira e da cafeteira (com o risco de quebrar) */

@@ -15,7 +15,7 @@ ok(g.lucro===-(g.contas+g.paid+g.paidDiv),'o lucro do dia começa no vermelho, c
 
 // ---------- reiniciar no meio: não paga nem ganha ----------
 g.clock=g.day.time/2; g.money=300; g.custo=90; g.pause();
-ok(g.state==='paused' && /o dia não conta: só dias completos rendem/.test(els['pause-note'].textContent),'a pausa avisa: '+els['pause-note'].textContent);
+ok(g.state==='paused' && /Se sair agora, o dia não conta\./.test(els['pause-note'].textContent),'a pausa avisa: '+els['pause-note'].textContent);
 const cx0=g.save.caixa.length, st0=g.save.estrelas, mx0=g.save.dia, lt0=g.save.lucroTot;
 els['btn-restart'].fire('click');
 ok(g.state==='intro' && g.day.n===4,'reiniciar volta para a introdução do mesmo dia');
@@ -35,13 +35,13 @@ novo(500,{},'boca'); abre(5);
   c.setState('leaving'); const M=L.MULTA, V=L.VIP.angry, MT=2*M+V, SD=500-MT;
   ok(M===10 && g.multa(a)===M && g.multa(b)===M+V,'multa de quem sai bravo: R$ '+M+' (VIP: +'+V+')');
   ok(g.bravosSeSair.length===2 && g.multaSeSair===2*M+V,'conta quem está na espera e na mesa, não quem já está indo embora');
-  g.pause(); ok(new RegExp('E os 2 grupos na espera e nas mesas vão embora bravos: multa de R\\$ '+MT+'\\.').test(els['pause-note'].textContent),'a pausa avisa a multa: '+els['pause-note'].textContent);
+  g.pause(); ok(new RegExp('Quem está aqui vai embora bravo: multa de R\\$ '+MT+'\\.').test(els['pause-note'].textContent),'a pausa avisa a multa: '+els['pause-note'].textContent);
   const n0=g.save.caixa.length; els['btn-restart'].fire('click');
   ok(g.save.bank===SD,'reiniciar desconta a multa do dinheiro acumulado: '+g.save.bank);
   const r=g.save.caixa[g.save.caixa.length-1];
   ok(g.save.caixa.length===n0+1 && r.int===2 && r.mul===MT && r.d===5 && r.saldo===SD && !r.fat,'o caixa ganha a linha do dia largado');
   ok(L.normCaixa(g.save.caixa).slice(-1)[0].mul===MT,'a linha sobrevive ao save');
-  ok(new RegExp('Você largou o dia no meio: 2 grupos foram embora bravos \\(multa de R\\$ '+MT+'; agora você tem R\\$ '+SD+'\\)').test(els['intro-note'].textContent),'a introdução conta: '+els['intro-note'].textContent);
+  ok(new RegExp('Você largou o dia no meio: multa de R\\$ '+MT+'\\.').test(els['intro-note'].textContent),'a introdução conta: '+els['intro-note'].textContent);
   ok(new RegExp('Dia 5 largado no meio: 2 grupos foram embora bravos: −'+MT+' · saldo '+SD).test(L.caixaResumo(g.save)),'o resumo do caixa mostra a linha');
   ok(L.caixaTotais(g.save.caixa).find(t=>t.id==='mul').v===MT,'"para onde foi" soma a multa');
  }

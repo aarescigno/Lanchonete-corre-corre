@@ -25,7 +25,7 @@ ok(cartoes().length===3&&cartoes()[0]==='Tênis novos'&&!cartoes().includes('Tê
 novo({tenis:true}); g.goShop(3); L.setShopTab('bia');
 ok(cartoes().length===3&&cartoes()[0]==='Tênis de corrida'&&!cartoes().includes('Tênis novos'),'com os Tênis novos: o cartão vira Tênis de corrida');
 novo({tenis:true,corrida:true}); g.goShop(4); L.setShopTab('bia');
-ok(cartoes()[0]==='Tênis de corrida'&&els['shop-grid'].children[0].children[3].textContent==='Já comprado','Tênis de corrida já comprados');
+ok(cartoes()[0]==='Tênis de corrida'&&els['shop-grid'].children[0].children[2].textContent==='Já comprado','Tênis de corrida já comprados');
 
 // selos da fila
 novo(); g.startDay(3); g.begin();

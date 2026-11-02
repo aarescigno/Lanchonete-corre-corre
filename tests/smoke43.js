@@ -44,7 +44,7 @@ const fala=(L,id)=>L.liberaOf(id);
 // ---------- 3. o curso na lojinha: no Cardápio, com o rosto da Dani ----------
 { const H=jogo(5,'industrial',{ pontoDia:1, libera:{ confeitaria:2, joca:2 } }), {g,L,els}=H; g.save.libera.confeitaria=2;
   L.setShopTab('cardapio'); const t1=txt(els['shop-grid']);
-  ok(/Curso de Confeitaria caseira/.test(t1) && /bolo de pote, brigadeiro de colher e pudim/.test(t1) && /R\$ 7/.test(t1) && /Comprar R\$ 180/.test(t1),'o Cardápio mostra o curso (doces, R$ 7, R$ 180)');
+  ok(/Curso de Confeitaria caseira/.test(t1) && !/bolo de pote/.test(t1) && /Comprar R\$ 180/.test(t1),'o Cardápio mostra o curso, só com nome e R$ 180');
   L.setShopTab('dani'); const t2=txt(els['shop-grid']);
   ok(!/Confeitaria caseira/.test(t2) && /Atendimento ao cliente/.test(t2),'a seção da Dani só tem os cursos de atendimento');
   ok(L.avalMenu({},1)>L.avalMenu({},0),'o curso de item conta na Diversidade do cardápio (avalMenu)'); }

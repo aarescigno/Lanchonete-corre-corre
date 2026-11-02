@@ -51,8 +51,8 @@ const passos=(g,n)=>{ for(let i=0;i<n;i++) g.update(0.05); };
 
 // ---------- 3. o Salão abre com a 1ª família perdida ----------
 { const {L}=load(); const s=L.LIBERA.find(l=>l.id==='salao'); ok(s.dia===2 && s.ate===4,'Salão: dia 2, garantia no dia 4');
-  ok(L.DAYS[1].note==='Chegou a família! Grupos de 3 ou 4 só cabem nas mesas de 4 lugares: se faltar mesa, eles vão embora.','nota do dia 2 nova');
-  ok(L.DAYS[4].note==='O movimento cresce: fique de olho na louça e no lixo.','nota do dia 5 nova'); }
+  ok(L.DAYS[1].note==='Chegou a família! Ela só cabe em mesa de quatro.','nota do dia 2 nova');
+  ok(L.DAYS[4].note==='O movimento cresce.','nota do dia 5 nova'); }
 { const H=nova(), {g,els}=H, sv=g.save; sv.conversa=null; sv.bank=5000; sv.convCard=1; sv.convEnt=1; sv.convDiv=1;
   g.startDay(2); if(g.state==='intro') els['btn-start'].fire('click'); g.schedule=[]; g.nextIdx=0;
   g.arrive({type:'estudante',color:0}); const f=g.arrive({type:'familia',color:0}); g.angryLeave(g.queue[0]);   // um estudante: não conta
@@ -74,7 +74,7 @@ const passos=(g,n)=>{ for(let i=0;i<n;i++) g.update(0.05); };
   g.save.convEnt=1; let com=0; for(let k=0;k<10;k++){ g.resetDay(4); com+=g.schedule.filter(s=>s.type==='entregador').length; }
   ok(com>=10,'com a Efood aberta, o entregador do dia 4 vem ('+com+')'); }
 { const H=load({historia:true}), {g,L,els}=H; g.save.convEnt='pend'; g.save.efoodNota=0;
-  g.startDay(4); ok(/Dia de movimento: a freguesia não para de chegar/.test(els['intro-note'].textContent) && !/entregador de moto/.test(els['intro-note'].textContent),'introdução do dia 4 sem Efood: "Dia de movimento"');
+  g.startDay(4); ok(/Dia de movimento!/.test(els['intro-note'].textContent) && !/entregador de moto/.test(els['intro-note'].textContent),'introdução do dia 4 sem Efood: "Dia de movimento"');
   ok(g.save.efoodNota===0,'... e o texto do entregador ainda não foi usado');
   g.save.convEnt=1; g.startDay(5); ok(/Chegou o entregador de moto/.test(els['intro-note'].textContent) && g.save.efoodNota===1,'no 1º dia com a Efood aberta (dia 4 em diante), o texto do entregador aparece e fica marcado');
   g.startDay(6); ok(!/entregador de moto/.test(els['intro-note'].textContent),'... uma vez só'); }
@@ -104,7 +104,7 @@ const passos=(g,n)=>{ for(let i=0;i<n;i++) g.update(0.05); };
 { // o balão do 1º VIP da carreira
   const {g}=dia(5,{ vipVisto:0 }); g.fx=[];
   g.arrive({type:'executiva',color:0,vip:true});
-  const b=g.fx.find(f=>f.box); ok(b && /Chegou cliente VIP!.*não perdoa prato frio/s.test(b.text) && b.life===5 && g.save.vipVisto===1,'o 1º VIP da carreira traz o balão branco de 5 s e fica marcado');
+  const b=g.fx.find(f=>f.box); ok(b && /Chegou cliente VIP!\nFura a fila e quer tudo quentinho\./.test(b.text) && b.life===5 && g.save.vipVisto===1,'o 1º VIP da carreira traz o balão branco de 5 s e fica marcado');
   g.fx=[]; g.arrive({type:'executiva',color:1,vip:true}); ok(!g.fx.some(f=>f.box),'... o 2º VIP não repete');
   const H=dia(5,{ vipVisto:0 }), g2=H.g; g2.arrive({type:'executiva',color:0,vip:true}); let err=null; try{ H.L.render(g2,H.ctx); }catch(e){ err=e; } ok(!err,'o balão de duas linhas desenha sem erro'); }
 

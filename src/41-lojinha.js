@@ -237,6 +237,22 @@ function shopBtn(text, cls, enabled, fn, cost){
   b.addEventListener('click', () => { Sfx.init(); if (folhaPede(b)) return; if (fn()) buildShop(); else Sfx.boing(); });
   return b;
 }
+/* v9.6.8: o "?" no canto do cartão: abre a ficha dele no Manual */
+function maisAjuda(card, ficha, nome){
+  if (!ficha) return card;
+  const b = el('button', 'qm', '?'); b.type = 'button'; b.setAttribute('aria-label', 'No Manual: ' + nome); b.setAttribute('data-ficha', ficha);
+  b.addEventListener('click', () => { Sfx.init(); Sfx.tap(); abrirManual(ficha, 'shop'); });
+  card.appendChild(b); return card;
+}
+/* as linhas do quadro "agora → próximo nível" em bolinhas: defs [rótulo, campo, sentido] sobre a lista de níveis lv; a diária continua em R$ */
+function nivRows(lv, defs, a, b){
+  const f = (l, k, dir) => {
+    if (!l) return null;
+    const vals = lv.filter(x => x && x[k]).map(x => x[k]).filter((v, i, t) => t.indexOf(v) === i).sort((p, q) => dir * (p - q));
+    return manualBolas(vals.indexOf(l[k]) + 1, vals.length);
+  };
+  return defs.map(d => [d[0], a ? f(a, d[1], d[2]) : null, f(b, d[1], d[2])]).concat([['Diária', a && fmt(a.pay), fmt(b.pay)]]);
+}
 function staffCard(icon, title, desc){
   const card = el('div', 'item'); card.appendChild(icon); card.appendChild(el('b', null, title)); if (desc) card.appendChild(el('span', null, desc));
   return card;
@@ -259,16 +275,12 @@ function buildTonhao(grid){
   const canPay = extra => payroll(eq) + extra <= bank;
   const pc = v => Math.round(v*100) + '%', sec = v => String(Math.round(v*10)/10).replace('.', ',') + ' s';
   // Tonhão
-  const tRows = (a, b) => [
-    ['Rapidez', a && (a.cook === 1 ? 'normal' : '+' + pc(1 - a.cook)), b.cook === 1 ? 'normal' : '+' + pc(1 - b.cook)],
-    ['Caprichados ★', a && pc(a.crit), pc(b.crit)],
-    ['Pia', a && (a.wash ? '1 pilha/' + a.wash + ' s' : 'não'), b.wash ? '1 pilha/' + b.wash + ' s' : 'não'],
-    ['Diária', a && fmt(a.pay), fmt(b.pay)]];
+  const tRows = (a, b) => nivRows(T, [['Rapidez', 'cook', -1], ['Capricho', 'crit', 1], ['Pia', 'wash', -1]], a, b);
   // v8.8: o nível vem da experiência dos cursos; o aumento de salário só consolida o nível que a xp já permite
   const top = T.length - 1, xp = tonhaoXp(game.save.cursos), pronto = devLivre() || xp >= (T[eq.tonhao + 1] || T[top]).xp;
-  let c = staffCard(upgradeIcon('tonhao'), 'Tonhão · nível ' + (eq.tonhao + 1) + ' de ' + T.length, 'Prato caprichado ★ vale +1♥ e +' + CRIT.bonus + ' pontos.');
+  let c = staffCard(upgradeIcon('tonhao'), 'Tonhão · nível ' + (eq.tonhao + 1) + ' de ' + T.length);
   const xl = el('div', 'tonxp');
-  xl.appendChild(el('span', null, eq.tonhao < top ? 'Experiência: ' + xp + ' de ' + T[eq.tonhao + 1].xp + ' para o nível ' + (eq.tonhao + 2) : 'Experiência: ' + xp + ' · nível máximo'));
+  xl.appendChild(el('span', null, eq.tonhao < top ? (pronto ? 'Pronto para o aumento!' : 'Experiência') : 'Experiência · nível máximo'));
   if (eq.tonhao < top){ const bar = el('div', 'tonxp-bar'), fi = el('i'); fi.style.width = Math.round(clamp((xp - T[eq.tonhao].xp) / (T[eq.tonhao + 1].xp - T[eq.tonhao].xp), 0, 1) * 100) + '%'; bar.appendChild(fi); xl.appendChild(bar); }
   c.appendChild(xl);
   c.appendChild(eq.tonhao < top ? staffNext('Com o aumento (nível ' + (eq.tonhao + 2) + '):', tRows(T[eq.tonhao], T[eq.tonhao+1])) : staffNext('Nível máximo:', tRows(null, T[top])));
@@ -276,7 +288,6 @@ function buildTonhao(grid){
   if (eq.tonhao < top){
     const dif = T[eq.tonhao+1].pay - T[eq.tonhao].pay;
     duo.appendChild(shopBtn('Aumento: +' + fmt(dif) + '/dia', 'btn', pronto && canPay(dif), () => game.setStaff('tonhao', eq.tonhao + 1)));
-    if (!pronto) c.appendChild(el('span', 'cursos-lista', 'Faltam ' + (T[eq.tonhao+1].xp - xp) + ' de experiência: cada curso básico dá +1 e cada avançado +2. Os cursos ficam no Cardápio.'));
   }
   c.appendChild(duo); grid.appendChild(c);
   buildCursosFeitos(grid);
@@ -285,7 +296,7 @@ function buildTonhao(grid){
 function buildCursosFeitos(grid){
   const cur = game.save.cursos, l = [];
   CURSOS.forEach(c => { const n = cursoNivel(cur, c.id); if (c.preco > 0 && n >= 1) l.push('Curso de ' + c.nome + ' (básico)'); if (n >= 2) l.push(c.av.nome + ' (avançado)'); });
-  const card = staffCard(upgradeIcon('cardapio'), 'Cursos de cardápio concluídos', l.length ? '' : 'Nenhum ainda. Os cursos ficam no Cardápio da lojinha.');
+  const card = staffCard(upgradeIcon('cardapio'), 'Cursos de cardápio concluídos', l.length ? '' : 'Nenhum ainda.');
   l.forEach(t => card.appendChild(el('span', null, t)));
   card.appendChild(shopBtn('Ver cursos', 'btn', true, () => { shopAbrir('cardapio'); return true; }));
   grid.appendChild(card);
@@ -298,14 +309,10 @@ function buildDani(grid){
   // Dani: só mostra as tarefas que ela já pode exercer (e só depois de contratada)
   const lv = eq.dani, sp = D[lv] || D[1];
   const avail = DANI_TASKS.filter(t => daniTaskOk(t.id, game.up)).map(t => daniTaskDe(t, game.ponto));
-  const dRows = (a, b) => [
-    ['Velocidade', a && pc(a.speed), pc(b.speed)],
-    ['Lava 1 pilha', a && sec(WASH.perPile / a.speed), sec(WASH.perPile / b.speed)],
-    ['Tarefas', a && String(a.tasks), String(b.tasks)],
-    ['Diária', a && fmt(a.pay), fmt(b.pay)]];
+  const dRows = (a, b) => nivRows(D, [['Rapidez', 'speed', 1], ['Tarefas', 'tasks', 1]], a, b);
   const cap2 = game.save.cap >= 2 || devLivre() || lv > 0;   // v8.7: a Dani chega no capítulo 2 (no modo dev, desde o início)
   c = staffCard(upgradeIcon('dani'), lv ? 'Dani · ' + (lv === 1 ? 'aprendiz (sem salário)' : 'nível ' + (lv - 1) + ' de 3') : 'Dani (ajudante)',
-    lv ? '' : (cap2 ? '' : 'Chega no capítulo 2. ') + 'Ajudante da Bia, mais lenta que ela (velocidade em % da dela). Tem 2 mãos: leva 2 itens por vez. Pode ' + avail.map(t => t.name.toLowerCase()).join(', ').replace(/, ([^,]*)$/, ' e $1') + '.');
+    lv ? '' : (cap2 ? '' : 'Chega no capítulo 2.'));
   if (lv){
     const feitas = game.dani.tasks, sel = feitas.length;   // v9.2: as básicas do Joca não ocupam vaga; v9.6.3: só marca o que ela de fato faz (no nível 1 é 1 tarefa, mesmo com 2 guardadas)
     const tasks = el('div', 'tasks');
@@ -320,7 +327,7 @@ function buildDani(grid){
     c.appendChild(el('span', 'full', 'Tarefas (' + Math.min(sel, sp.tasks) + ' de ' + sp.tasks + '):'));
     c.appendChild(tasks);
     if (donoBasico(game) !== 'dani') c.appendChild(el('span', 'cursos-lista', 'As tarefas da casa ficaram com ' + (donoBasico(game) === 'cami' ? 'a Cami' : 'o Joca') + '.'));
-    if (game.up.espresso) c.appendChild(el('span', 'cursos-lista', 'O cafezinho passou para o Joca, que cuida da máquina de espresso.'));
+    if (game.up.espresso) c.appendChild(el('span', 'cursos-lista', 'O cafezinho agora é do Joca.'));
   }
   const dMax = D.length - 1;
   if (!lv && !cap2){ grid.appendChild(c); return; }
@@ -328,7 +335,7 @@ function buildDani(grid){
   const xp = daniXp(game.save), pronto = devLivre() || lv < 1 || xp >= (D[lv+1] || D[dMax]).xp;
   if (lv){
     const xl = el('div', 'tonxp');
-    xl.appendChild(el('span', null, lv < dMax ? 'Experiência: ' + xp + ' de ' + D[lv+1].xp + ' para o nível ' + lv : 'Experiência: ' + xp + ' · nível máximo'));
+    xl.appendChild(el('span', null, lv < dMax ? (pronto ? 'Pronto para o aumento!' : 'Experiência') : 'Experiência · nível máximo'));
     if (lv < dMax){ const bar = el('div', 'tonxp-bar'), fi = el('i'); fi.style.width = Math.round(clamp((xp - D[lv].xp) / (D[lv+1].xp - D[lv].xp), 0, 1) * 100) + '%'; bar.appendChild(fi); xl.appendChild(bar); }
     const falta = DANI_XP.tarefas - ((+game.save.daniTar || 0) % DANI_XP.tarefas);
     xl.appendChild(el('small', null, 'Trabalho: ' + falta + (falta > 1 ? ' tarefas' : ' tarefa') + ' até o próximo ponto'));
@@ -338,7 +345,6 @@ function buildDani(grid){
   duo = el('div', 'duo');
   if (lv < dMax){
     duo.appendChild(shopBtn(lv ? 'Aumento: +' + fmt(D[lv+1].pay - D[lv].pay) + '/dia' : 'Contratar', 'btn', pronto && canPay(D[lv+1].pay - (lv ? D[lv].pay : 0)), () => game.setStaff('dani', lv + 1)));
-    if (lv && !pronto) c.appendChild(el('span', 'cursos-lista', 'Faltam ' + (D[lv+1].xp - xp) + ' de experiência: ela aprende trabalhando e com os cursos (+' + DANI_XP.curso + ' cada).'));
   }
   c.appendChild(duo); grid.appendChild(c);
   if (game.daniChegou) buildDaniCursos(grid);
@@ -350,13 +356,9 @@ function buildJoca(grid){
   const pc = v => Math.round(v*100) + '%', sec = v => String(Math.round(v*10)/10).replace('.', ',') + ' s';
   const lv = eq.joca, sp = J[lv] || J[2];
   const avail = BASICAS.filter(id => daniTaskOk(id, game.up)).map(id => daniTaskDe(DANI_TASKS.find(d => d.id === id), game.ponto));
-  const jRows = (a, b) => [
-    ['Velocidade', a && pc(a.speed), pc(b.speed)],
-    ['Lava 1 pilha', a && sec(WASH.perPile / a.speed), sec(WASH.perPile / b.speed)],
-    ['Tarefas', a && String(a.tasks), String(b.tasks)],
-    ['Diária', a && fmt(a.pay), fmt(b.pay)]];
+  const jRows = (a, b) => nivRows(J, [['Rapidez', 'speed', 1], ['Tarefas', 'tasks', 1]], a, b);
   const c = staffCard(upgradeIcon('joca'), lv ? 'Joca · nível ' + (lv - 1) + ' de 3' : 'Joca (ajudante)',
-    lv ? '' : 'Conhecido da Dani, dos tempos de colégio. Cuida do básico da casa: ' + avail.map(t => t.name.toLowerCase()).join(', ').replace(/, ([^,]*)$/, ' e $1') + '. Tem 2 mãos, como a Dani. Com ele, a Dani fica só com a especialidade dela.');
+    lv ? '' : '');
   if (lv){
     const esp = game.up.espresso ? 1 : 0, cami = donoBasico(game) === 'cami', vagas = sp.tasks - esp;   // v9.3: o café (cafezinho e espresso) ocupa 1 vaga fixa
     const sel = eq.jocaTasks.filter(id => daniTaskOk(id, game.up)).length, tasks = el('div', 'tasks');
@@ -368,10 +370,10 @@ function buildJoca(grid){
       tasks.appendChild(b);
     });
     if (!cami){ c.appendChild(el('span', 'full', 'Tarefas (' + Math.min(sel, vagas) + ' de ' + vagas + '):')); c.appendChild(tasks); }
-    if (esp) c.appendChild(el('span', 'cursos-lista', 'O café é dele: cafezinho e espresso' + (cami ? '.' : ', numa vaga fixa.')));
+    if (esp) c.appendChild(el('span', 'cursos-lista', 'O café é dele.'));
     if (cami) c.appendChild(el('span', 'cursos-lista', 'As tarefas da casa ficaram com a Cami.'));
     const xp = jocaXp(sv), xl = el('div', 'tonxp');
-    xl.appendChild(el('span', null, lv < jMax ? 'Experiência: ' + xp + ' de ' + J[lv+1].xp + ' para o nível ' + lv : 'Experiência: ' + xp + ' · nível máximo'));
+    xl.appendChild(el('span', null, lv < jMax ? ((devLivre() || xp >= J[lv+1].xp) ? 'Pronto para o aumento!' : 'Experiência') : 'Experiência · nível máximo'));
     if (lv < jMax){ const bar = el('div', 'tonxp-bar'), fi = el('i'); fi.style.width = Math.round(clamp((xp - J[lv].xp) / (J[lv+1].xp - J[lv].xp), 0, 1) * 100) + '%'; bar.appendChild(fi); xl.appendChild(bar); }
     const falta = JOCA_XP.tarefas - ((+sv.jocaTar || 0) % JOCA_XP.tarefas);
     xl.appendChild(el('small', null, 'Trabalho: ' + falta + (falta > 1 ? ' tarefas' : ' tarefa') + ' até o próximo ponto'));
@@ -383,7 +385,6 @@ function buildJoca(grid){
   if (lv < jMax){
     const prox = lv ? J[lv+1] : J[2], dif = prox.pay - (lv ? J[lv].pay : 0);
     duo.appendChild(shopBtn(lv ? 'Aumento: +' + fmt(dif) + '/dia' : 'Contratar', 'btn', pronto && canPay(dif), () => game.setStaff('joca', lv ? lv + 1 : 2)));
-    if (lv && !pronto) c.appendChild(el('span', 'cursos-lista', 'Faltam ' + (J[lv+1].xp - xp) + ' de experiência: ele aprende trabalhando e com os cursos (+' + JOCA_XP.curso + ' cada).'));
   }
   c.appendChild(duo); grid.appendChild(c);
   if (game.cursoMsg) grid.appendChild(el('p', 'cursomsg', game.cursoMsg));
@@ -392,7 +393,7 @@ function buildJoca(grid){
     card.appendChild(upgradeIcon('joca'));
     card.appendChild(el('b', null, 'Curso de ' + q.nome));
     card.appendChild(el('span', 'cursos-lista', '+' + JOCA_XP.curso + ' de experiência'));
-    if (!feito && game.jocaCursoTrava) card.appendChild(el('span', 'cursos-lista', 'O Joca já está num curso. Volte depois do próximo dia.'));
+    if (!feito && game.jocaCursoTrava) card.appendChild(el('span', 'cursos-lista', 'Em curso'));
     card.appendChild(feito ? shopBtn('Curso feito', 'btn', false, () => false) : shopBtn('Comprar ' + fmt(q.preco), 'btn', lv > 0 && !game.jocaCursoTrava && bank >= q.preco, () => game.buyJocaCurso(q.id), q.preco));
     grid.appendChild(card);
   });
@@ -405,13 +406,9 @@ function buildCami(grid){
   const pc = v => Math.round(v*100) + '%', sec = v => String(Math.round(v*10)/10).replace('.', ',') + ' s';
   const lv = eq.cami, sp = C[lv] || C[1];
   const avail = BASICAS.filter(id => daniTaskOk(id, game.up)).map(id => daniTaskDe(DANI_TASKS.find(d => d.id === id), game.ponto));
-  const cRows = (a, b) => [
-    ['Velocidade', a && pc(a.speed), pc(b.speed)],
-    ['Lava 1 pilha', a && sec(WASH.perPile / a.speed), sec(WASH.perPile / b.speed)],
-    ['Tarefas', a && String(a.tasks), String(b.tasks)],
-    ['Diária', a && fmt(a.pay), fmt(b.pay)]];
+  const cRows = (a, b) => nivRows(C, [['Rapidez', 'speed', 1], ['Tarefas', 'tasks', 1]], a, b);
   const c = staffCard(upgradeIcon('cami'), lv ? 'Cami · nível ' + lv + ' de ' + cMax : 'Cami (ajudante)',
-    lv ? '' : 'Garçonete de rodízio, indicada pelo Joca. Já chega rápida e fica com as tarefas da casa: ' + avail.map(t => t.name.toLowerCase()).join(', ').replace(/, ([^,]*)$/, ' e $1') + '. Tem 2 mãos. Sobe de nível só com cursos, e a diária sobe junto.');
+    lv ? '' : '');
   const temMesa = !!(lv && sp.mesas), nMesas = camiMesasN(sv), emMesas = camiModoMesas(sv);
   if (temMesa){   // v9.6: o curso de mesa abre o 2º modo
     const modos = el('div', 'tasks');
@@ -423,7 +420,7 @@ function buildCami(grid){
     });
     c.appendChild(el('span', 'full', 'Modo:'));
     c.appendChild(modos);
-    c.appendChild(el('span', 'cursos-lista', nMesas ? 'Minhas mesas: ela cuida de ' + nMesas + ' de ' + CAMI_MESAS_MAX + ' mesas, do pedido à conta (anota, leva à janela, pega o prato, entrega, cobra e recolhe a louça). Marque as mesas dela no Salão. Nesse modo o básico da casa volta para o Joca (ou a Dani); suco, café, doce e drink seguem com quem faz.' : 'Marque as mesas dela no Salão (toque numa mesa e escolha "Mesa da Cami") para usar o modo "Minhas mesas".'));
+    c.appendChild(el('span', 'cursos-lista', nMesas ? 'Mesas da Cami: ' + nMesas + ' de ' + CAMI_MESAS_MAX : 'Marque as mesas dela no Salão.'));
   }
   if (lv && !emMesas){
     const sel = eq.camiTasks.filter(id => daniTaskOk(id, game.up)).length, tasks = el('div', 'tasks');
@@ -444,11 +441,10 @@ function buildCami(grid){
   if (game.cursoMsg) grid.appendChild(el('p', 'cursomsg', game.cursoMsg));
   CAMI_CURSOS.filter(q => cursoDaniVis(q, game.ponto)).forEach(q => {
     const feito = !!sv.camiCursos[q.id], card = el('div', 'item' + (feito ? ' own' : ''));
-    const alvo = q.id === 'agil' ? 2 : 3, n = C[alvo];
+    
     card.appendChild(upgradeIcon('cami'));
     card.appendChild(el('b', null, 'Curso de ' + q.nome));
-    card.appendChild(el('span', 'cursos-lista', 'Nível ' + alvo + ': velocidade ' + pc(n.speed) + ', ' + n.tasks + ' tarefas, diária ' + fmt(n.pay) + (q.id === 'mesa' ? '. Abre o modo "Minhas mesas".' : '.')));
-    if (!feito && game.camiCursoTrava) card.appendChild(el('span', 'cursos-lista', 'A Cami já está num curso. Volte depois do próximo dia.'));
+    if (!feito && game.camiCursoTrava) card.appendChild(el('span', 'cursos-lista', 'Em curso'));
     if (!feito && q.dep && !sv.camiCursos[q.dep]) card.appendChild(el('span', 'cursos-lista apagado', 'Precisa do curso de ' + CAMI_CURSOS.find(x => x.id === q.dep).nome + '.'));
     card.appendChild(feito ? shopBtn('Curso feito', 'btn', false, () => false) : shopBtn('Comprar ' + fmt(q.preco), 'btn', lv > 0 && !game.camiCursoTrava && (!q.dep || !!sv.camiCursos[q.dep]) && bank >= q.preco, () => game.buyCamiCurso(q.id), q.preco));
     grid.appendChild(card);
@@ -461,11 +457,9 @@ function buildAnselmo(grid){
   const pc = v => Math.round(v*100) + '%', sec = v => String(Math.round(v*10)/10).replace('.', ',') + ' s';
   const lv = eq.anselmo, sp = A[lv] || A[2];
   const c = staffCard(upgradeIcon('anselmo'), lv ? 'Anselmo · nível ' + (lv - 1) + ' de ' + (A.length - 2) : 'Anselmo (coqueteleiro)',
-    lv ? '' : 'Era o coqueteleiro do restaurante do Bráulio e já chega com habilidade: não faz as tarefas da casa, só o balcão de drinks. Os grupos pedem drinks ao sentar (' + DRINKS.itens.map(d => d.nome).join(', ') + ') e cada um custa ' + fmt(DRINKS.preco) + ' na conta.');
-  const rows = (a, b) => [['Velocidade', a && pc(a.speed), pc(b.speed)], ['Cada drink', a && sec(DRINKS.prep / a.speed), sec(DRINKS.prep / b.speed)], ['Diária', a && fmt(a.pay), fmt(b.pay)]];
+    lv ? '' : '');
+  const rows = (a, b) => nivRows(A, [['Rapidez', 'speed', 1]], a, b);
   c.appendChild(lv ? staffNext('Nível ' + (lv - 1) + ':', rows(null, sp)) : staffNext('Se contratar (nível 1):', rows(null, A[2])));
-  if (lv) c.appendChild(el('span', 'cursos-lista', 'Drinks no balcão: fica atrás dele e entrega os copos prontos (' + DRINKS.vagas + ' de cada vez) para a Bia levar às mesas. +' + DRINKS.preco + ' na conta e +' + AVAL.amb.drink.toString().replace('.', ',') + ' ★ no Ambiente.'));
-  c.appendChild(el('span', 'cursos-lista', 'Cursos no Terraço Suíça: os próximos níveis dele chegam lá.'));
   const duo = el('div', 'duo');
   if (!lv) duo.appendChild(shopBtn('Contratar', 'btn', canPay(A[2].pay), () => game.setStaff('anselmo', 2)));
   c.appendChild(duo); grid.appendChild(c);
@@ -478,7 +472,7 @@ function buildDaniCursos(grid){
     card.appendChild(upgradeIcon('dani'));
     card.appendChild(el('b', null, 'Curso de ' + c.nome));
     card.appendChild(el('span', 'cursos-lista', '+' + DANI_XP.curso + ' de experiência'));
-    if (!feito && game.daniCursoTrava) card.appendChild(el('span', 'cursos-lista', 'A Dani já está num curso. Volte depois do próximo dia.'));
+    if (!feito && game.daniCursoTrava) card.appendChild(el('span', 'cursos-lista', 'Em curso'));
     card.appendChild(feito ? shopBtn('Curso feito', 'btn', false, () => false) : shopBtn('Comprar ' + fmt(c.preco), 'btn', !game.daniCursoTrava && bank >= c.preco, () => game.buyDaniCurso(c.id), c.preco));
     grid.appendChild(card);
   });
@@ -490,7 +484,7 @@ function buildTvSom(grid){
   const canPay = extra => payroll(eq) + extra <= bank;
   // TV e som (v7.4.3): cada um liga e desliga à parte; o custo é a conta de luz do dia
   const TV = STAFF.tv, SOM = STAFF.som;
-  const c = staffCard(upgradeIcon('ambiente'), 'TV e som', 'Com a TV ligada, a paciência nas mesas cai ' + Math.round(TV.effect*100) + '% mais devagar; com o som, mais ' + Math.round(SOM.effect*100) + '%. O custo é a luz do dia.');
+  const c = staffCard(upgradeIcon('ambiente'), 'TV e som'); c.setAttribute('data-ficha', 'l-tvsom');
   [['tv', 'TV de tubo na Rede Esfera'], ['som', 'Som na rádio Velha Brasil FM']].forEach(a => {
     const on = eq[a[0]], b = el('button', 'toggle', (on ? 'Ligado: ' : 'Ligar: ') + a[1] + ' · ' + fmt(STAFF[a[0]].pay) + '/dia'); b.type = 'button';
     b.setAttribute('aria-pressed', on ? 'true' : 'false');
@@ -508,7 +502,7 @@ function buildCouvert(grid){
   if (!couvertOk(game.ponto)) return;
   game.manualVer('l-couvert');
   const ef = Math.round(couvertEffect(Object.assign({}, eq, { taxa:true })) * 100);
-  c = staffCard(upgradeIcon('couvert'), 'Couvert artístico', 'Música ao vivo: a paciência nas mesas cai ' + Math.round(C.effect*100) + '% mais devagar. ' + fmt(C.pay) + '/dia.');
+  c = staffCard(upgradeIcon('couvert'), 'Couvert artístico'); c.setAttribute('data-ficha', 'l-couvert');
   const tg = el('button', 'toggle', 'Cobrar couvert: ' + fmt(C.fee) + ' por pessoa (efeito cai para ' + ef + '%)'); tg.type = 'button';
   tg.setAttribute('aria-pressed', eq.taxa ? 'true' : 'false');
   tg.addEventListener('click', () => { Sfx.tap(); eq.taxa = !eq.taxa; writeSave(game.save); buildShop(); });
@@ -728,7 +722,7 @@ function buildSalao(grid){
   side.appendChild(edBtn(!sem ? 'Toalha xadrez: todas têm' : 'Toalha xadrez em ' + (sem > 1 ? 'todas (' + sem + ')' : '1 mesa') + ': ' + fmt(vt), 'btn', sem > 0 && bank >= vt, () => game.buyToalhas(), vt));
   side.appendChild(edBtn('Arrumação automática', 'btn alt', true, () => game.arrumarSalao()));
   side.appendChild(edBtn('Desfazer', 'btn alt', game.salaoUndo.length > 0, () => game.desfazerSalao()));
-  side.appendChild(el('span', game.salaoMsg ? 'msg' : 'ed-dica', game.salaoMsg || (tot >= p.lugares ? (nEst ? 'Salão e estoque estão no teto de ' + p.lugares + ' lugares.' : 'O salão está no teto de ' + p.lugares + ' lugares.') + ' Para rearrumar, arraste mesas para o estoque e de volta.' : 'Arraste as mesas, até para o estoque; toque numa para trocar a cor das cadeiras, virar mesa de 4 ou vender. Grupos de 3 ou 4 só sentam nas mesas de 4.')));
+  side.appendChild(el('span', game.salaoMsg ? 'msg' : 'ed-dica', game.salaoMsg || (tot >= p.lugares ? (nEst ? 'Salão e estoque estão no teto de ' + p.lugares + ' lugares.' : 'O salão está no teto de ' + p.lugares + ' lugares.') + ' Para rearrumar, arraste mesas para o estoque e de volta.' : 'Arraste as mesas. Toque numa mesa para mais opções.')));
   side.appendChild(el('span', 'ed-contas', 'Luz e gás: ' + fmt(contasDia(game.tables, p)) + ' por dia (' + fmt(CONTAS.mesa) + ' por mesa e ' + fmt(CONTAS.lugar) + ' por lugar).'));
   const mov = Math.round((movimentoSalao(lug) - 1) * 100);
   side.appendChild(el('span', 'ed-contas', 'Cada lugar acima de ' + MOVIMENTO.kit + ' traz ' + Math.round(MOVIMENTO.porLugar * 100) + '% mais clientes' + (mov > 0 ? ' (hoje, +' + mov + '%).' : '.')));
@@ -754,14 +748,14 @@ function buildSalao(grid){
    graça. */
 function decorCard(grupo, icon, title, desc){
   const card = el('div', 'item'); card.appendChild(el('i', 'dgrupo', grupo));
-  card.appendChild(icon); card.appendChild(el('b', null, title)); card.appendChild(el('span', null, desc));
+  card.appendChild(icon); card.appendChild(el('b', null, title)); if (desc) card.appendChild(el('span', null, desc));
   return card;
 }
 function buildDecor(grid){
   const dec = game.save.decor, bank = game.save.bank;
   DECOR.filter(d => !d.nivel || game.ponto.nivel >= d.nivel || devLivre()).forEach(d => {
     const tem = d.id in dec, on = !!dec[d.id];
-    const c = decorCard(DECOR_GRUPOS.find(x => x.id === d.grupo).nome, upgradeIcon('d-' + d.id), d.name, d.desc + ' Melhora o ambiente no Gurugol.' + (tem && !on ? ' Guardado.' : ''));
+    const c = decorCard(DECOR_GRUPOS.find(x => x.id === d.grupo).nome, upgradeIcon('d-' + d.id), d.name, tem && !on ? 'Guardado' : '');
     if (on) c.classList.add('own');
     c.appendChild(!tem ? shopBtn('Comprar ' + fmt(d.cost), 'btn', bank >= d.cost, () => game.buyDecor(d.id), d.cost)
       : shopBtn(on ? 'Guardar' : 'Pôr de volta', on ? 'btn alt' : 'btn', true, () => game.mostraDecor(d.id, !on)));
@@ -775,53 +769,40 @@ function cursoIcon(c, av){
 }
 /* seção Cardápio (v9.0.1): o que se serve hoje, a diversidade no Gurugol e os cursos do Tonhão */
 function buildCardapio(grid){
-  const cur = game.save.cursos, sab = pratosSabidos(cur), vir = n => String(n).replace('.', ',');
-  const c = staffCard(upgradeIcon('cardapio'), 'No cardápio hoje (' + sab.length + ' pratos)',
-    sab.map(k => CARDAPIO[k].nome + ' ' + fmt(precoPrato(k, game.ponto, cur))).join(' · ') + '. Diversidade do cardápio no Gurugol: ' + vir(Math.round(avalMenu(cur, cursosItem(game.save)) * 10) / 10) + ' ★ (cada curso básico dá +' + vir(AVAL.menu.porCurso) + ').');
+  const cur = game.save.cursos, sab = pratosSabidos(cur);
+  const c = staffCard(upgradeIcon('cardapio'), 'No cardápio hoje (' + sab.length + ' pratos)');
   grid.appendChild(c);
   buildCursos(grid);
   buildCursosAjudantes(grid);
-  grid.appendChild(el('span', 'cursos-lista', 'Cada curso também dá experiência ao Tonhão (Equipe › Tonhão).'));
 }
 function buildCursos(grid){
   const sv = game.save, bank = sv.bank, cur = sv.cursos;
   if (game.cursoMsg) grid.appendChild(el('p', 'cursomsg', game.cursoMsg));
-  const pratos = (l, cu) => l.map(k => CARDAPIO[k].nome + ' ' + fmt(precoPrato(k, game.ponto, cu || cur))).join(' · ');
   // v8.6.11: o prato que precisa do básico de outro curso (dep) fica apagado até esse curso ser feito
   const falta = k => { const d = CARDAPIO[k].dep; return d && cursoNivel(cur, d) < 1 ? cursoOf(d) : null; };
-  const apagado = l => l.filter(falta).map(k => CARDAPIO[k].nome + ': precisa do curso de ' + falta(k).nome).join('; ') + '.';
   CURSOS.filter(c => cursoOk(c, game.ponto)).forEach(c => {   // v9.1: o curso de restaurante só aparece da Avenida em diante
     const n = cursoNivel(cur, c.id), p = game.cursoProx(c.id), av = n >= 1;
     const card = el('div', 'item' + (!p ? ' own' : ''));
     card.appendChild(cursoIcon(c, av));
     card.appendChild(el('b', null, av ? c.av.nome : 'Curso de ' + c.nome));
     if (p) card.appendChild(el('span', 'cursos-lista', '+' + (av || c.preco <= 0 ? CURSO_XP.avancado : CURSO_XP.basico) + ' de experiência'));
-    const lis = av ? c.av.pratos.filter(k => CARDAPIO[k].nivel === 2) : c.pratos, mov = c.id === 'veg' ? ' +' + Math.round(VEG.mov * 100) + '% de movimento.' : '';
-    if (!p) card.appendChild(el('span', null, 'Curso completo. ' + pratos(c.av.pratos.filter(k => !falta(k))) + '.' + mov));
-    else if (!av) card.appendChild(el('span', null, 'O Tonhão aprende: ' + pratos(lis.filter(k => !falta(k))) + '. +' + String(AVAL.menu.porCurso).replace('.', ',') + ' ★ na Diversidade do cardápio.' + mov));
-    else card.appendChild(el('span', null, 'Receitas: ' + c.av.receita + '. ' + (lis.length ? 'Pratos novos: ' + pratos(lis.filter(k => !falta(k))) + '. ' : '') + '+' + Math.round((CURSO_AV.preco - 1) * 100) + '% no preço dos pratos do curso e o Tonhão capricha mais (×' + String(CURSO_AV.crit).replace('.', ',') + ').' + mov));
-    if (c.id === 'veg' && lis.some(falta)) card.appendChild(el('span', 'cursos-lista apagado', apagado(lis)));
-    // o curso de que um prato vegetariano depende avisa o que passa a valer com ele
-    const libera = Object.keys(CARDAPIO).filter(k => CARDAPIO[k].dep === c.id && CARDAPIO[k].veg && cursoNivel(cur, CARDAPIO[k].curso) >= (CARDAPIO[k].nivel || 1));
-    if (n < 1 && libera.length) card.appendChild(el('span', 'cursos-lista', libera.map(k => '+ ' + CARDAPIO[k].nome + (CARDAPIO[k].vegano ? ' (vegano)' : ' (vegetariano)')).join(' ')));
-    if (p && game.cursoTrava) card.appendChild(el('span', 'cursos-lista', 'O Tonhão já está num curso. Volte depois do próximo dia.'));
+    const lis = av ? c.av.pratos.filter(k => CARDAPIO[k].nivel === 2) : c.pratos;
+    if (c.id === 'veg' && lis.some(falta)) card.appendChild(el('span', 'cursos-lista apagado', 'Precisa do curso de ' + falta(lis.find(falta)).nome + '.'));
+    if (p && game.cursoTrava) card.appendChild(el('span', 'cursos-lista', 'Em curso'));
     card.appendChild(p ? shopBtn('Comprar ' + fmt(p.preco), 'btn', !game.cursoTrava && bank >= p.preco, () => game.buyCurso(c.id), p.preco) : shopBtn('Curso completo', 'btn', false, () => false));
     grid.appendChild(card);
   });
 }
 /* v9.2: os cursos de cardápio dos ajudantes (com o rosto de quem faz): a Confeitaria caseira da Dani na área industrial */
 function buildCursosAjudantes(grid){
-  const sv = game.save, bank = sv.bank, vir = n => String(n).replace('.', ',');
+  const sv = game.save, bank = sv.bank;
   DANI_CURSOS.filter(c => c.item && cursoDaniVis(c, game.ponto) && game.cartaoAberto('confeitaria') && game.daniChegou).forEach(c => {
-    const feito = !!sv.daniCursos[c.id], card = el('div', 'item' + (feito ? ' own' : '')), gourmet = c.id === 'confGourmet', falta = !!c.dep && !sv.daniCursos[c.dep];
+    const feito = !!sv.daniCursos[c.id], card = el('div', 'item' + (feito ? ' own' : '')), falta = !!c.dep && !sv.daniCursos[c.dep];
     card.appendChild(upgradeIcon('dani'));
     card.appendChild(el('b', null, 'Curso de ' + c.nome));
     card.appendChild(el('span', 'cursos-lista', '+' + DANI_XP.curso + ' de experiência para a Dani'));
-    card.appendChild(el('span', null, gourmet
-      ? 'A geladeirinha vira vitrine refrigerada e a Dani passa a fazer ' + DOCES.gourmet.map(d => d.nome.toLowerCase()).join(', ').replace(/, ([^,]*)$/, ' e $1') + ': ' + fmt(DOCES.gourmetPreco) + ' cada, na mesa e na marmita, e +' + vir(AVAL.amb.doce) + ' ★ no Ambiente de quem comeu. +' + vir(AVAL.menu.porCurso) + ' ★ na Diversidade do cardápio.'
-      : 'A Dani faz ' + DOCES.caseira.map(d => d.nome.toLowerCase()).join(', ').replace(/, ([^,]*)$/, ' e $1') + ' na geladeirinha de doces: ' + fmt(DOCES.preco) + ' cada, na mesa e na marmita. +' + vir(AVAL.menu.porCurso) + ' ★ na Diversidade do cardápio.'));
     if (!feito && falta) card.appendChild(el('span', 'cursos-lista apagado', 'Precisa do curso de ' + cursoDaniNome(c.dep) + '.'));
-    if (!feito && game.daniCursoTrava) card.appendChild(el('span', 'cursos-lista', 'A Dani já está num curso. Volte depois do próximo dia.'));
+    if (!feito && game.daniCursoTrava) card.appendChild(el('span', 'cursos-lista', 'Em curso'));
     card.appendChild(feito ? shopBtn('Curso feito', 'btn', false, () => false) : shopBtn('Comprar ' + fmt(c.preco), 'btn', !falta && !game.daniCursoTrava && bank >= c.preco, () => game.buyDaniCurso(c.id), c.preco));
     grid.appendChild(card);
   });
@@ -831,9 +812,8 @@ function buildCursosAjudantes(grid){
     card.appendChild(upgradeIcon('joca'));
     card.appendChild(el('b', null, 'Curso ' + c.nome.charAt(0).toLowerCase() + c.nome.slice(1)));
     card.appendChild(el('span', 'cursos-lista', '+' + JOCA_XP.curso + ' de experiência para o Joca'));
-    card.appendChild(el('span', null, 'O Joca vira barista: traz a máquina de espresso, com ' + CAFES.lista.map(d => d.nome.toLowerCase() + ' ' + fmt(d.preco)).join(' e ') + ', pedidos no fim da refeição. O cafezinho passa da Dani para ele. +' + vir(AVAL.menu.porCurso) + ' ★ na Diversidade do cardápio.'));
     if (!feito && !(sv.equipe.joca > 0) && !devLivre()) card.appendChild(el('span', 'cursos-lista apagado', 'Precisa do Joca contratado.'));
-    if (!feito && game.jocaCursoTrava) card.appendChild(el('span', 'cursos-lista', 'O Joca já está num curso. Volte depois do próximo dia.'));
+    if (!feito && game.jocaCursoTrava) card.appendChild(el('span', 'cursos-lista', 'Em curso'));
     card.appendChild(feito ? shopBtn('Curso feito', 'btn', false, () => false) : shopBtn('Comprar ' + fmt(c.preco), 'btn', (sv.equipe.joca > 0 || devLivre()) && !game.jocaCursoTrava && bank >= c.preco, () => game.buyJocaCurso(c.id), c.preco));
     grid.appendChild(card);
   });
@@ -843,14 +823,13 @@ function buildDivulga(grid){
   const n = game.shopNext, open = divulgaAberta(n, game.save), cur = game.save.divulga;
   DIVULGA.forEach(d => {
     const on = open && cur === d.id;
-    const c = staffCard(upgradeIcon('div-' + d.id), d.name, (d.cost ? fmt(d.cost) + ' por dia. ' : 'Grátis. ') + d.desc);
+    const c = staffCard(upgradeIcon('div-' + d.id), d.name, d.cost ? fmt(d.cost) + ' por dia' : 'Grátis');
     if (on) c.classList.add('own');
     c.appendChild(shopBtn(!open ? 'A partir do dia ' + DIVULGA_DIA : (on ? 'Escolhida' : 'Escolher'), 'btn', open && !on && (!d.cost || game.payroll() + d.cost <= game.save.bank), () => game.setDivulga(d.id)));
     grid.appendChild(c);
   });
-  const sal = game.tables.filter(t => t.open), p = game.ponto;
-  const c = staffCard(upgradeIcon('contas'), 'Contas do dia ' + n,
-    (p.aluguel ? 'Aluguel ' + fmt(p.aluguel) + ' + l' : 'Sem aluguel (' + p.nome.replace(/^Garagem/, 'a garagem') + '). L') + 'uz e gás de ' + sal.length + ' mesas (' + fmt(CONTAS.mesa) + ' cada) e ' + sal.reduce((a, t) => a + t.seats, 0) + ' lugares (' + fmt(CONTAS.lugar) + ' cada) = ' + fmt(contasDia(game.tables, p)) + ', no fim do dia. Ingredientes: ' + Math.round(INGRED.prato * 100) + '% da conta de cada prato que fica pronto e ' + fmt(INGRED.suco) + ' por suco.');
+  const p = game.ponto;
+  const c = staffCard(upgradeIcon('contas'), 'Contas do dia ' + n, 'Luz e gás: ' + fmt(contasDia(game.tables, p)) + ' por dia');
   grid.appendChild(c);
   buildCouvert(grid);
 }
@@ -860,7 +839,8 @@ function buildManut(grid){
   if (game.ponto.nivel >= 2){   // v9: o fogão industrial (4 bocas, metade do desgaste)
     game.manualVer('l-fogao');
     const F = INDUSTRIAL.fogao, own = !!game.up.fogaoInd;
-    const c = staffCard(upgradeIcon('fogao-ind'), 'Fogão industrial', 'Uma boca a mais para o Tonhão e metade do desgaste do fogão por dia. O conserto de emergência passa a custar ' + fmt(F.emerg) + '.');
+    const c = staffCard(upgradeIcon('fogao-ind'), 'Fogão industrial');
+    c.setAttribute('data-ficha', 'l-fogao');
     if (own) c.classList.add('own');
     c.appendChild(shopBtn(own ? 'Já comprado' : devLivre() ? 'Ligar' : 'Comprar ' + fmt(F.cost), 'btn', devLivre() || (!own && game.save.bank >= F.cost), () => devLivre() ? game.devInd('fogaoInd') : game.comprarInd('fogaoInd'), devLivre() ? 0 : F.cost));
     grid.appendChild(c);
@@ -877,7 +857,7 @@ function buildManut(grid){
     grid.appendChild(c);
   });
   const tot = MANUT.equip.reduce((a, q) => a + manutPreco(q.id, m[q.id]), 0);
-  const c = staffCard(upgradeIcon('contas'), 'Revisar tudo', 'A visita técnica tem custo, e quanto mais desgastado, mais cara a manutenção.');
+  const c = staffCard(upgradeIcon('contas'), 'Revisar tudo');
   c.appendChild(shopBtn(!tot ? 'Tudo em dia' : devLivre() ? 'Revisar tudo (grátis)' : 'Revisar tudo: ' + fmt(tot), 'btn', !!tot && (devLivre() || game.save.bank >= tot), () => game.revisarTudo(), devLivre() ? 0 : tot));
   grid.appendChild(c);
 }
@@ -885,9 +865,8 @@ function buildManut(grid){
 function buildTvs(grid){
   game.manualVer('l-tvs');
   const eq = game.save.equipe, bank = game.save.bank, I = INDUSTRIAL.tvs, own = !!game.up.tvs;
-  const c = staffCard(upgradeIcon('tvs'), '3 televisores com sertanejo', own
-    ? 'Escolha por dia: com anúncios, a paciência nas mesas cai ' + Math.round(I.modos[1].effect * 100) + '% mais devagar (luz ' + fmt(I.modos[1].pay) + '/dia); sem anúncios, ' + Math.round(I.modos[2].effect * 100) + '% (' + fmt(I.modos[2].pay) + '/dia, com a assinatura).'
-    : 'Três TVs no alto da parede, ligadas num canal de sertanejo. Instaladas, você escolhe por dia: com anúncios (' + fmt(I.modos[1].pay) + '/dia) ou sem (' + fmt(I.modos[2].pay) + '/dia).');
+  const c = staffCard(upgradeIcon('tvs'), '3 televisores com sertanejo');
+  c.setAttribute('data-ficha', 'l-tvs');
   if (own) c.classList.add('own');
   if (!own) c.appendChild(shopBtn(devLivre() ? 'Instalar (grátis)' : 'Instalar ' + fmt(I.instalar), 'btn', devLivre() || bank >= I.instalar, () => game.comprarInd('tvs'), devLivre() ? 0 : I.instalar));
   else [[0, 'Desligadas'], [1, 'Com anúncios · ' + fmt(I.modos[1].pay) + '/dia'], [2, 'Sem anúncios · ' + fmt(I.modos[2].pay) + '/dia']].forEach(a => {
@@ -905,13 +884,13 @@ function buildAssento(grid){
   game.manualVer('l-assento');
   if (game.ponto.nivel >= 3){   // v9.1: os sofás da Avenida (compra única)
     const S = AVENIDA.sofa, own = game.up.assento === 'sofa', bank0 = game.save.bank;
-    const c0 = staffCard(upgradeIcon('sofas'), S.nome, 'Dois sofás de 3 lugares na calçada, verde-musgo e com almofadas. Quem espera sentado neles perde a paciência ' + Math.round(S.slow * 100) + '% mais devagar. Compra única.');
+    const c0 = staffCard(upgradeIcon('sofas'), S.nome); c0.setAttribute('data-ficha', 'l-assento');
     if (own) c0.classList.add('own');
     c0.appendChild(shopBtn(own ? 'Já comprado' : devLivre() ? 'Instalar (grátis)' : 'Comprar ' + fmt(S.cost), 'btn', !own && (devLivre() || bank0 >= S.cost), () => game.comprarInd('assento', 'sofa'), devLivre() ? 0 : S.cost));
     grid.appendChild(c0); return;
   }
   const A = INDUSTRIAL.assento, bank = game.save.bank, cur = game.up.assento || '';
-  const c = staffCard(upgradeIcon('assento'), 'Espera sentada', 'Quem espera lá fora sentado perde a paciência ' + Math.round(A.slow * 100) + '% mais devagar. As duas opções valem igual; o banquinho é só mais bonito. Trocar paga o novo.');
+  const c = staffCard(upgradeIcon('assento'), 'Espera sentada'); c.setAttribute('data-ficha', 'l-assento');
   if (cur) c.classList.add('own');
   const duo = el('div', 'duo');
   ['cadeira', 'banco'].forEach(k => duo.appendChild(shopBtn(cur === k ? 'Tem: ' + A[k].nome : A[k].nome + ' ' + fmt(A[k].cost), 'btn', devLivre() || (cur !== k && bank >= A[k].cost), () => game.comprarInd('assento', k), devLivre() ? 0 : A[k].cost)));
@@ -922,7 +901,7 @@ function buildMudanca(grid){
   const p = game.proximoPonto, f = game.mudancaFalta, de = game.ponto;
   if (!p) return;
   const c = staffCard(upgradeIcon(p.id === 'avenida' ? 'mudanca-av' : 'mudanca'), 'Mudança: ' + p.nome,
-    p.lugares + ' lugares (hoje, ' + de.lugares + '), cardápio ' + Math.round((p.cardapio / de.cardapio - 1) * 100) + '% mais caro, limite do banco de ' + fmt(p.credito) + ', mais uma vaga de prato e ' + (p.traz || 'mais movimento') + '. Aluguel de ' + fmt(p.aluguel) + ' por dia. Leva as mesas, os pratos, os cursos, a equipe e as melhorias; ' + (de.deixa || 'o resto fica') + '. Não dá para voltar.');
+    'Mudança ' + fmt(p.mudanca) + ' · aluguel ' + fmt(p.aluguel) + '/dia');
   const falta = f ? [f.din ? 'Falta ' + fmt(f.din) : '', f.nota ? 'Nota ' + fmtNota(f.nota) + ' (agora ' + fmtNota(game.notaGurugol) + ')' : ''].filter(Boolean).join(' · ') : '';
   if (!f && mudarPede){
     c.appendChild(el('span', 'full', 'Mudar para ' + (p.art || 'a') + ' ' + p.nome + ' por ' + fmt(p.mudanca) + '? Aluguel de ' + fmt(p.aluguel) + ' por dia. Não dá para voltar.'));
@@ -944,7 +923,7 @@ function buildBanco(grid){
   const sv = game.save, e = sv.emp, cr = game.ponto.credito, pc = Math.round(BANCO.juros * 100);
   // v8.3.2, amortização: juros ao dia sobre o saldo; cada parcela é a amortização fixa mais os juros do dia
   const vs = BANCO.valores.filter(v => v <= cr), sim = simulaEmprestimo(vs[vs.length - 1], BANCO.juros);
-  let c = staffCard(upgradeIcon('banco'), e.ref ? 'Reforma da garagem' : 'Empréstimo', e.ref ? 'Parcelas de ' + fmt(e.amort) + ' mais ' + Math.round(e.j * 100) + '% ao dia sobre o saldo. Amortizar antes corta os juros.' : pc + '% ao dia sobre o saldo; cada parcela paga 1/' + BANCO.parcelas + ' do valor mais os juros. ' + (e.resto ? 'Amortizar antes corta os juros.' : fmt(vs[vs.length - 1]) + ' viram ' + sim.parcelas.join(', ').replace(/, ([^,]*)$/, ' e $1') + ' (' + fmt(sim.juros) + ' de juros). Até ' + fmt(cr) + ', um por vez.') + ' Atrasar 2 dias fecha a lanchonete.');
+  let c = staffCard(upgradeIcon('banco'), e.ref ? 'Reforma da garagem' : 'Empréstimo');
   if (e.resto){
     c.classList.add(e.atr ? 'atr' : 'own');
     const tab = tabelaDe(e);
@@ -964,12 +943,10 @@ function buildBanco(grid){
     c.appendChild(duo);
   }
   grid.appendChild(c);
-  c = staffCard(upgradeIcon('negativo'), 'Caixa no negativo',
-    'Folha, contas e parcelas saem no fim do dia mesmo sem dinheiro. O caixa pode fechar no negativo ' + BANCO.neg + ' dias seguidos; no ' + (BANCO.neg + 1) + 'º, o banco cobre o que falta, à força, com juros de ' + Math.round(BANCO.forcado * 100) + '% ao dia sobre todo o saldo.');
+  c = staffCard(upgradeIcon('negativo'), 'Caixa no negativo');
   c.appendChild(el('span', 'full', sv.bank < 0 ? 'Agora: ' + fmt(sv.bank) + ', no negativo há ' + sv.neg + (sv.neg === 1 ? ' dia.' : ' dias.') : 'Agora: no positivo.'));
   grid.appendChild(c);
-  c = staffCard(upgradeIcon('contas'), 'Folha sem dinheiro',
-    'Ligado, o que não couber no dinheiro fica de fora ao abrir o dia (divulgação, couvert, som, TV, Dani, aumento do Tonhão). Desligado, paga tudo e o caixa pode ficar negativo.');
+  c = staffCard(upgradeIcon('contas'), 'Folha sem dinheiro');
   const tg = el('button', 'toggle', (sv.corta ? 'Ligado' : 'Desligado') + ': cortar a folha se faltar dinheiro'); tg.type = 'button';
   tg.setAttribute('aria-pressed', sv.corta ? 'true' : 'false');
   tg.addEventListener('click', () => { Sfx.tap(); game.setCorta(!sv.corta); buildShop(); });
@@ -1114,7 +1091,8 @@ function upgradeCartoes(grid, bia){
     const card = el('div', 'item' + (own && !u.multi ? ' own' : '')), pv = upgradeDe(u, game.ponto);   // v9: a Água da torneira vira a Jarra de suco
     card.appendChild(upgradeIcon(pv !== u ? (game.ponto.nivel >= 3 ? 'aguas' : 'jarra') : u.id));
     card.appendChild(el('b', null, pv.name));
-    card.appendChild(el('span', null, (tem ? 'Você tem ' + tem + '. ' : '') + pv.desc));
+    if (tem) card.appendChild(el('span', null, 'Você tem ' + tem));
+    card.setAttribute('data-ficha', 'l-' + u.id);
     const b = el('button', 'btn', devLivre() ? (own ? 'Desligar' : 'Ligar') : fecha && own ? 'Já comprado' : ('Comprar ' + fmt(pv.cost)));
     b.type = 'button';
     if (!devLivre() && (fecha || game.save.bank < pv.cost)) b.disabled = true;
@@ -1125,6 +1103,7 @@ function upgradeCartoes(grid, bia){
   });
 }
 /* v9.6.7: as fichas do Manual abrem com os cartões que a lojinha já mostra (as seções, a equipe e os pontos); as das melhorias, ao desenhar o item */
+const FICHA_PADRAO = { tonhao:'e-tonhao', bia:'e-bia' };   // v9.6.8: as seções sem ficha própria em SEC_FICHA
 const SEC_FICHA = { cardapio:'l-cardapio', salao:'l-salao', decor:'l-decor', manut:'l-manut', divulga:'l-divulga', banco:'l-banco', mudanca:'l-mudanca', caixa:'l-caixa', dani:'e-dani', joca:'e-joca', cami:'e-cami', anselmo:'e-anselmo' };
 function manualLoja(){
   SHOP_GRUPOS.forEach(g => shopSecoesVis(g).forEach(id => { if (SEC_FICHA[id]) game.manualVer(SEC_FICHA[id]); }));
@@ -1163,6 +1142,10 @@ function buildShopTela(){
   if (!aberta){ grid.className = 'shopcards'; return shopCartoes(grid, SHOP_GRUPOS.find(x => x.id === shopGrupo)); }
   grid.className = 'shopgrid' + (shopTab === 'tonhao' || shopTab === 'dani' || shopTab === 'joca' || shopTab === 'cami' || shopTab === 'anselmo' || shopTab === 'cardapio' ? ' cursos' : ['salao', 'caixa', 'melhorias', 'gurugol', 'decor'].indexOf(shopTab) >= 0 ? ' ' + shopTab : '');
   aberta.build(grid);
+  if (shopTab !== 'caixa' && shopTab !== 'gurugol') Array.prototype.slice.call(grid.children).filter(c => (c.className || '').split(' ').indexOf('item') >= 0).forEach(card => {   // v9.6.8: o "?" no canto de cada cartão
+    const f = card.getAttribute('data-ficha') || SEC_FICHA[shopTab] || FICHA_PADRAO[shopTab], t = Array.prototype.find.call(card.children, x => x.tagName === 'B');
+    maisAjuda(card, f, t ? t.textContent : aberta.nome);
+  });
 }
 (function(){ const box = $('shop-tabs'); if (box) Array.prototype.forEach.call(box.querySelectorAll('button'), b => b.addEventListener('click', () => { Sfx.init(); Sfx.tap(); shopGrupoAbrir(b.getAttribute('data-v')); }));
   const vo = $('btn-shop-voltar'); if (vo) vo.addEventListener('click', () => { Sfx.init(); Sfx.tap(); shopTab = null; buildShop(); }); })();

@@ -38,12 +38,12 @@ ok(!g.buyDaniCurso('cozinha'),'curso já feito: não compra de novo');
 ok(D.filter(c=>!c.nivel).length===2 && D.filter(c=>!c.nivel).map(c=>c.preco).join()==='120,150','2 cursos sem nível: R$ 120 e 150 (o Barista saiu na v9.6.1)');
 // (6) lojinha
 novo({}); { const t=txt(grid());
-  ok(/Dani · aprendiz \(sem salário\)/.test(t) && /Experiência: 0 de 4 para o nível 1/.test(t) && new RegExp('Trabalho: '+T+' tarefas até o próximo ponto').test(t),'título, linha de experiência e de trabalho');
-  const b=botao(grid(),/^Aumento/); ok(b && b.disabled && /Faltam 4 de experiência/.test(t) && !/Reduzir/.test(t),'sem XP: botão apagado, "Faltam 4", sem Reduzir');
+  ok(/Dani · aprendiz \(sem salário\)/.test(t) && /Experiência/.test(t) && new RegExp('Trabalho: '+T+' tarefas até o próximo ponto').test(t),'título, linha de experiência e de trabalho');
+  const b=botao(grid(),/^Aumento/); ok(b && b.disabled && !/Faltam/.test(t) && !/Reduzir/.test(t),'sem XP: botão apagado, sem "Faltam", sem Reduzir');
   ok(/\+2 de experiência/.test(t),'cartões de curso com "+2 de experiência"'); }
 novo({daniTar:4*T}); { const b=botao(grid(),/^Aumento/); ok(b && !b.disabled && b.textContent==='Aumento: +R$ 15/dia','com XP: "Aumento: +R$ 15/dia" aceso'); }
 novo({daniTar:4*T+1,daniCursos:{atend:1}},{dani:2}); ok(new RegExp('Trabalho: '+(T-1)+' tarefas? até o próximo ponto').test(txt(grid())),'conta as tarefas que faltam para o próximo ponto');
-novo({daniCursoDia:3}); ok(/A Dani já está num curso/.test(txt(grid())),'trava: "A Dani já está num curso"');
+novo({daniCursoDia:3}); ok(/Em curso/.test(txt(grid())),'trava: "Em curso"');
 novo({daniCursos:{atend:1}}); ok(/Curso feito/.test(txt(grid())),'curso feito');
 // (7) fim do dia
 novo({daniTar:4*T},{dani:1}); g.startDay(3); g.begin(); g.dani.feitas=5; g.schedule=[]; g.nextIdx=0; g.money=0; g.custo=0; g.finishDay();
