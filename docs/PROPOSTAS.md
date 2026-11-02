@@ -9,7 +9,7 @@ Registro das ideias e dos retornos de quem jogou, com o texto original, e de ond
 
 **Decisões (com o usuário, 02/11):** no mesmo repositório, no branch `proposta/na-palma-da-mao`, sem merge no main até aprovar. No computador, o jogo em pé com o celular da Bia ao lado; a equipe faz a sua parte e atende ao chamado (arrasto do rosto); o main fica só com correções (a 4a espera a decisão).
 **Destino:** `docs/PLANO-PALMA.md` (sessões P2-1 a P2-8), no branch `proposta/na-palma-da-mao`.
-**Esclarecimento do usuário (02/11):** "Não quero perder a versão que estamos construindo desde o começo. Isso é só uma proposta para explorar uma nova interface. Só. Que pode ser um jogo paralelo depois." A clássica (main) nunca é sobrescrita; o branch não tem merge no main e, se der certo, vira um jogo paralelo; tag `classica-v9.6.11` no main.
+**Esclarecimento do usuário (02/11):** "Não quero perder a versão que estamos construindo desde o começo. Isso é só uma proposta para explorar uma nova interface. Só. Que pode ser um jogo paralelo depois." A clássica (main) nunca é sobrescrita; o branch não tem merge no main e, se der certo, vira um jogo paralelo; ponto de partida: commit `815e188` do main (v9.6.11).
 
 ---
 
