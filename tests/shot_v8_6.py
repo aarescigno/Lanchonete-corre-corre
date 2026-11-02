@@ -46,7 +46,7 @@ with sync_playwright() as p:
         pg.goto('file://'+S+'/wrapped.html'); pg.wait_for_timeout(600)
         pg.evaluate('()=>{'+FIM+'}'); pg.wait_for_timeout(2500); pg.screenshot(path=OUT+'/fim_do_dia'+name+'.png')
         pg.goto('file://'+S+'/wrapped.html'); pg.wait_for_timeout(600)
-        pg.click('#btn-how'); pg.wait_for_timeout(300)
+        pg.click('#btn-manual'); pg.wait_for_timeout(300)
         pg.evaluate("()=>{ const l=[...document.querySelectorAll('#tips li')].find(li=>li.textContent.includes('marmita')); if(l) l.scrollIntoView(); }"); pg.wait_for_timeout(200)
         pg.screenshot(path=OUT+'/como_jogar'+name+'.png')
         pg.goto('file://'+S+'/wrapped.html'); pg.wait_for_timeout(600)

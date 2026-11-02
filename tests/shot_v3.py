@@ -21,7 +21,7 @@ with sync_playwright() as p:
     pg.hover('#btn-ver'); pg.wait_for_timeout(150); pg.screenshot(path=OUT+'/00b_menu_icone_versoes.png', clip={'x':30,'y':400,'width':490,'height':140})
     pg.click('#btn-ver'); pg.wait_for_timeout(150); pg.screenshot(path=OUT+'/01_versoes.png'); pg.click('#btn-ver-close')
     m=b.new_page(viewport={'width':740,'height':360}); m.goto('file://'+S+'/wrapped.html'); m.wait_for_timeout(500); m.screenshot(path=OUT+'/00c_menu_celular.png'); m.close()
-    pg.click('#btn-how'); pg.wait_for_timeout(150); pg.screenshot(path=OUT+'/02_como_jogar.png', full_page=True)
+    pg.click('#btn-manual'); pg.wait_for_timeout(150); pg.screenshot(path=OUT+'/02_como_jogar.png', full_page=True)
     pg.evaluate("window.__game.save.maxDay=7; window.__game.startDay(5);"); pg.wait_for_timeout(150)
     pg.screenshot(path=OUT+'/03_intro_dia5.png')
     # fila com VIPs na frente e um VIP sentado

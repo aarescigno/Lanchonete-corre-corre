@@ -17,7 +17,7 @@ O JS fica todo dentro de um `(function(){ ... })()` que abre em `02-telas.html` 
 - `0x` topo, CSS e telas (`00-topo.html`, `01-estilo.css`, `02-telas.html` com o menu, a lojinha e os painéis `#ov-*`)
 - `1x` lógica: `10-constantes.js` (cardápio, metas, `MANUT`, `AVAL`, `DECOR`, cursos...), `11-base.js`, `12-clientes.js`, `13-cozinha.js` (Tonhão), `14-bia.js`, `15-dani.js`, `16-jogo.js` (classe `Game`), `17-treino.js` (Missão zero), `18-abertura.js`, `19-conversa.js` (as conversas do Modo História)
 - `2x` desenho: `20-desenho-base.js`, `21-cenario.js`, `22-salao-hud.js`, `23-render.js`, `24-treino.js`, `25-abertura.js`, `26-conversa.js`
-- `3x`/`4x` interface: `30-ranking.js`, `40-interface.js` (menu, Como jogar), `41-lojinha.js`, `42-resultados.js` (fim do dia), `43-telas.js` (troca de telas, entrada, laço)
+- `3x`/`4x` interface: `30-ranking.js`, `40-interface.js` (menu, Manual), `41-lojinha.js`, `42-resultados.js` (fim do dia), `43-telas.js` (troca de telas, entrada, laço)
 - O que cada parte tem, versão a versão: `docs/PARTES.md` (só quando precisar).
 
 ## Economia de tokens

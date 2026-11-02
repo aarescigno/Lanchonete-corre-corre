@@ -3,8 +3,8 @@ let fails=0; const ok=(c,m)=>{ if(!c){fails++;console.log('FAIL:',m);} };
 ok(g&&g.state==='menu','initial menu');
 L.render(g,ctx);
 // UI flows
-els['btn-how'].fire('click'); ok(els['ov-how'].classList.contains('show'),'howto shown');
-els['btn-how-close'].fire('click');
+els['btn-manual'].fire('click'); ok(els['ov-manual'].classList.contains('show'),'manual shown');   // v9.6.7: o Manual no lugar do Como jogar
+els['btn-manual-voltar'].fire('click');
 function botStep(g){
   const b=g.bia;
   // seat

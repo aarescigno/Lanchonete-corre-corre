@@ -485,6 +485,7 @@ function buildDaniCursos(grid){
 }
 /* TV e som (Melhorias, v8.9.1) e o couvert (Divulgação) */
 function buildTvSom(grid){
+  game.manualVer('l-tvsom');
   const eq = game.save.equipe, bank = game.save.bank;
   const canPay = extra => payroll(eq) + extra <= bank;
   // TV e som (v7.4.3): cada um liga e desliga à parte; o custo é a conta de luz do dia
@@ -505,6 +506,7 @@ function buildCouvert(grid){
   let c, duo;
   // Couvert: só do nível 3 do salão em diante
   if (!couvertOk(game.ponto)) return;
+  game.manualVer('l-couvert');
   const ef = Math.round(couvertEffect(Object.assign({}, eq, { taxa:true })) * 100);
   c = staffCard(upgradeIcon('couvert'), 'Couvert artístico', 'Música ao vivo: a paciência nas mesas cai ' + Math.round(C.effect*100) + '% mais devagar. ' + fmt(C.pay) + '/dia.');
   const tg = el('button', 'toggle', 'Cobrar couvert: ' + fmt(C.fee) + ' por pessoa (efeito cai para ' + ef + '%)'); tg.type = 'button';
@@ -856,6 +858,7 @@ function buildDivulga(grid){
 function buildManut(grid){
   const m = game.manut, n = game.shopNext;
   if (game.ponto.nivel >= 2){   // v9: o fogão industrial (4 bocas, metade do desgaste)
+    game.manualVer('l-fogao');
     const F = INDUSTRIAL.fogao, own = !!game.up.fogaoInd;
     const c = staffCard(upgradeIcon('fogao-ind'), 'Fogão industrial', 'Uma boca a mais para o Tonhão e metade do desgaste do fogão por dia. O conserto de emergência passa a custar ' + fmt(F.emerg) + '.');
     if (own) c.classList.add('own');
@@ -880,6 +883,7 @@ function buildManut(grid){
 }
 /* v9, área industrial: as 3 televisões com sertanejo (instalar uma vez; depois, um modo por dia) */
 function buildTvs(grid){
+  game.manualVer('l-tvs');
   const eq = game.save.equipe, bank = game.save.bank, I = INDUSTRIAL.tvs, own = !!game.up.tvs;
   const c = staffCard(upgradeIcon('tvs'), '3 televisores com sertanejo', own
     ? 'Escolha por dia: com anúncios, a paciência nas mesas cai ' + Math.round(I.modos[1].effect * 100) + '% mais devagar (luz ' + fmt(I.modos[1].pay) + '/dia); sem anúncios, ' + Math.round(I.modos[2].effect * 100) + '% (' + fmt(I.modos[2].pay) + '/dia, com a assinatura).'
@@ -898,6 +902,7 @@ function buildTvs(grid){
 }
 /* v9: onde se espera lá fora: de pé (de graça), cadeirinhas de plástico ou banquinhos de madeira (um ou outro; trocar paga o novo) */
 function buildAssento(grid){
+  game.manualVer('l-assento');
   if (game.ponto.nivel >= 3){   // v9.1: os sofás da Avenida (compra única)
     const S = AVENIDA.sofa, own = game.up.assento === 'sofa', bank0 = game.save.bank;
     const c0 = staffCard(upgradeIcon('sofas'), S.nome, 'Dois sofás de 3 lugares na calçada, verde-musgo e com almofadas. Quem espera sentado neles perde a paciência ' + Math.round(S.slow * 100) + '% mais devagar. Compra única.');
@@ -1104,6 +1109,7 @@ function buildMelhorias(grid){ upgradeCartoes(grid, false); const nv = game.pont
 function upgradeCartoes(grid, bia){
   // os Tênis de corrida (v7.3) só aparecem depois dos Tênis novos, no lugar deles (a grade continua com 6); no modo dev, todas
   UPGRADES.filter(u => (BIA_IDS.indexOf(u.id) >= 0) === bia).filter(u => devLivre() || (u.req ? game.up[u.req] : !(game.up[u.id] && UPGRADES.some(v => v.req === u.id)))).forEach(u => {
+    game.manualVer('l-' + u.id);   // v9.6.7: a ficha do Manual abre com o cartão
     const own = !!game.up[u.id], tem = u.multi ? pratosDe(game.up) : 0, fecha = !u.multi && own;   // o Jogo de pratos (v8.3.6) segue à venda
     const card = el('div', 'item' + (own && !u.multi ? ' own' : '')), pv = upgradeDe(u, game.ponto);   // v9: a Água da torneira vira a Jarra de suco
     card.appendChild(upgradeIcon(pv !== u ? (game.ponto.nivel >= 3 ? 'aguas' : 'jarra') : u.id));
@@ -1118,9 +1124,17 @@ function upgradeCartoes(grid, bia){
     grid.appendChild(card);
   });
 }
-function buildShop(){
+/* v9.6.7: as fichas do Manual abrem com os cartões que a lojinha já mostra (as seções, a equipe e os pontos); as das melhorias, ao desenhar o item */
+const SEC_FICHA = { cardapio:'l-cardapio', salao:'l-salao', decor:'l-decor', manut:'l-manut', divulga:'l-divulga', banco:'l-banco', mudanca:'l-mudanca', caixa:'l-caixa', dani:'e-dani', joca:'e-joca', cami:'e-cami', anselmo:'e-anselmo' };
+function manualLoja(){
+  SHOP_GRUPOS.forEach(g => shopSecoesVis(g).forEach(id => { if (SEC_FICHA[id]) game.manualVer(SEC_FICHA[id]); }));
+  game.manualPontos();
+}
+function buildShop(){ buildShopTela(); manualBolinha(); }
+function buildShopTela(){
   const grid = $('shop-grid');
   clearEl(grid);
+  manualLoja();
   segSync('shop-tabs', shopGrupo);
   (function(){ const box = $('shop-tabs'); if (box) Array.prototype.forEach.call(box.querySelectorAll('button'), t => {   // v9.0.1: selo "novo" no grupo fechado; v9.0.4: também por cartão novo da lojinha
     const gid = t.getAttribute('data-v'), g = SHOP_GRUPOS.find(x => x.id === gid);

@@ -1510,3 +1510,88 @@ O curso "Atendimento de mesa" da Cami (3b-3) passa a se comprar e abre o **modo 
    - O balão do pedido de doce na mesa (`drawTableOverlay`, `grp.doceBalao`) fica 1,4× maior que hoje, com o ícone do doce em escala 1,0 (hoje 0,72); conferir que não encobre os outros balões (o deslocamento de 34 px dos balões de baixo cresce junto).
 **Testes:** `smoke52.js`: (a) 4 pilhas na pia, a Bia lavando: 1 prato limpo a cada 2,5 s; com outra ação na fila, ela para depois da 1ª pilha e sobram 3; (b) sem o balão do lembrete na abertura do dia 3; (c) `STATIONS.doces` com o tamanho novo e o toque nela pega doce; (d) `docesTot` soma no fim do dia. Capturas (recorte ampliado): pia com 0, 2 e 6 pilhas; lixo com 4 e 6; geladeirinha caseira e gourmet com placa e selo; balão de doce numa mesa com suco e café; tudo com `prefers-reduced-motion`. `balance.js` (a lavagem um a um muda o ritmo da Bia do bot) com a regra do balanceamento.
 **Modelo:** Sonnet, esforço médio (desenho e lógica localizados, com plano detalhado).
+
+### Sessão 3f-1 — O Manual (v9.6.7)
+**Partes:** `10-constantes.js` (dados `MANUAL` e `manualTracos`), `11-base.js` (`semente`), `02-telas.html` e `01-estilo.css` (tela `#ov-manual`), `40-interface.js` (`buildManual` no lugar do `buildTips`; o Como jogar deixa de existir), `12-clientes.js` (`normSave`), `16-jogo.js` (revelação), `41-lojinha.js` (botão e registro dos cartões), `42-resultados.js` (linha "Novo no Manual"), `43-telas.js` (botões, troca de telas, `__lcc`).
+
+1. **A tela `#ov-manual`** (no lugar do `#ov-how`, também na lista `SCREENS`):
+   - Título **"Manual"**; abas em chips: **Básico, Clientes, Equipe, Lojinha, Lugares, Imprevistos**. Aba com ficha nova tem a bolinha `novo` (a mesma dos cartões da lojinha).
+   - Cada ficha é um cartão como o `.item` da lojinha: desenho num canvas de 64×64 (com o `tipCanvas` do Como jogar), o **nome** em negrito, os **traços** em chips pequenos (fundo `PAL.cromo`, texto `PAL.tinta`) e **uma linha** de texto (a do item 3). Grade de 2 colunas em tela cheia e 1 coluna abaixo de 560 px de largura; o painel rola por dentro (`overflow-y:auto`), a página não.
+   - **Ficha trancada:** o mesmo cartão com o desenho em silhueta (pinte o canvas da ficha e cubra com `source-atop` em `#3A3630`), o nome **"???"** e, no lugar da linha, **"Aparece mais adiante na história."**. Sem traços.
+   - Botão **"Voltar"** embaixo: volta para a tela de onde veio (menu, pausa ou lojinha, na mesma seção).
+   - Abrir uma ficha nova (rolar até ela, ou abrir a aba dela) a tira de `manualNovo`.
+2. **Onde se abre:**
+   - **Menu:** o botão "Como jogar" vira **"Manual"** (mesmo lugar, `id="btn-manual"`); o `menu_fit.py` tem de continuar passando.
+   - **Pausa:** botão **"Manual"** (`btn alt`) depois do "Reiniciar"; o jogo continua pausado.
+   - **Lojinha:** botão redondo **"?"** no topo do painel, ao lado do título (abre a aba Básico), e o "?" de cada cartão (é da 3f-2; a 3f-1 já deixa pronta a função `abrirManual(fichaId, volta)`, que abre a aba da ficha, rola até ela e a destaca com a classe `foco` por 1,5 s).
+   - Os 3 botões levam a classe `novo` enquanto `save.manualNovo` não estiver vazio.
+3. **As fichas** (`MANUAL` em `10-constantes.js`: lista de `{ id, aba, nome, linha, tracos?, desenho }`; ids com prefixo da aba: `b-`, `c-`, `e-`, `l-`, `p-`, `i-`). Os textos são estes, sem trocar palavras:
+   - **Básico** (os desenhos são os das dicas do Como jogar):
+     - `b-sentar` **Sentar a freguesia**: "Arraste o grupo da calçada até uma mesa livre. Grupo de 3 ou 4 só cabe em mesa de quatro." (sempre aberta)
+     - `b-mesa` **O ciclo da mesa**: "Anote o pedido, leve à cozinha, entregue o prato, cobre e recolha a louça." (sempre)
+     - `b-coracoes` **Corações**: "São a paciência do grupo. Atender devolve um coração; mais corações, mais gorjeta." (sempre)
+     - `b-cores` **Cores e corrente**: "Camisa da mesma cor da cadeira dá pontos a mais. Repetir a mesma ação forma uma corrente." (sempre)
+     - `b-meta` **A meta do dia**: "A meta é o lucro: o que a freguesia paga, menos ingredientes, contas e folha. Três estrelas: a meta mais alta, sem perder ninguém." (sempre)
+     - `b-lojinha` **A lojinha**: "Abre aos poucos: quando a freguesia reclama, a Bia descobre o que comprar." (sempre)
+     - `b-historia` **Capítulos e banco**: "A história anda por capítulos, sem prazo. A reforma da garagem se paga ao banco, em parcelas." (sempre)
+     - `b-louca` **Louça e lixo**: "Sem prato limpo, o Tonhão espera. Lixeira cheia espanta a freguesia." (abre ao começar o dia 3)
+     - `b-suco` **Suco e cafezinho**: "Quem pede suco só pede a conta depois dele. O cafezinho acalma a mesa." (dia 3)
+     - `b-marmita` **Marmitas**: "O pedido do entregador vai sozinho à cozinha. Leve a marmita pronta ao balcão de retirada." (quando a Efood abre: `efoodAberto`)
+     - `b-gurugol` **Gurugol**: "Cada grupo que sai dá a sua nota. Nota alta traz mais gente; nota baixa afasta." (quando o 1º comentário entra no Gurugol)
+   - **Clientes** (desenho: `makePeople(tipo, tamanho mínimo)` com o `drawPerson`, como nas dicas, com o `Math.random` trocado por `semente(n)` durante o desenho para o retrato ser sempre o mesmo; o VIP com `shades` e o `drawVipBadge`; o vegetariano com um prato `pfVeg` ao lado). Linha de cada um:
+     - `c-estudante` **Estudante**: "Mochila nas costas e dinheiro contado."
+     - `c-vovos` **Vovô e vovó**: "Sem pressa nenhuma: escolhem com calma e comem devagar."
+     - `c-familia` **Família**: "Precisa de mesa de quatro e de paciência com as crianças."
+     - `c-executiva` **Executiva**: "Sempre com pressa, mas deixa boa gorjeta."
+     - `c-entregador` **Entregador**: "Não senta: espera a marmita no balcão de retirada."
+     - `c-vip` **Cliente VIP**: "Óculos escuros e plaquinha dourada. Pode ser qualquer cliente, menos o entregador."
+     - `c-veg` **Vegetariano**: "Pode ser qualquer cliente. Só pede prato sem carne."
+     - `c-turma` **Turma da fábrica**: "Chega em bando quando o apito toca."
+     - `c-motorista` **Motorista de caminhão**: "Come com calma e fecha com um cafezinho."
+     - `c-encomenda` **Encomenda do setor**: "Busca várias marmitas de uma vez, no balcão de retirada."
+     - `c-negocios` **Almoço de negócios**: "Colegas de trabalho: mesa de quatro e conversa longa."
+     - **Traços** (`manualTracos(tipo)`, calculados de `CUSTOMER_TYPES`, para seguirem o balanceamento sozinhos; um chip por traço, nesta ordem):
+       - Paciência (`pat`): até 0,55 "muito curta"; até 0,75 "curta"; até 1,2 "média"; até 1,6 "longa"; acima "muito longa".
+       - Escolha (média de `read`): até 3,5 "rápida"; até 4,5 "normal"; acima "demorada".
+       - Refeição (média de `eat`): até 5 "rápida"; até 7 "normal"; acima "demorada". O entregador e a encomenda não têm (levam marmita).
+       - Grupo (`size`): [1,1] "sozinho"; [1,2] "sozinho ou em dupla"; [2,2] "em dupla"; [3,4] "de 3 ou 4".
+       - Gorjeta (`tip`): a partir de 0,15 "ótima"; a partir de 0,1 "boa"; 0, sem chip.
+       - Extras: `retira` "leva marmita"; `pedeCafe` "pede cafezinho no fim"; `mais` a partir de 0,3 "costuma pedir mais um".
+       - Prefere: as 2 categorias de maior peso em `GOSTOS[tipo]` (no entregador, a soma das 3 listas), com os nomes `pf` "PF", `frito` "fritos", `assado` "assados", `chapa` "lanches na chapa", `pastel` "pastel".
+       - Onde: os pontos já revelados (só os de fichas `p-` abertas) em que o tipo vem (Garagem: está em algum `DAYS[].types`; os outros: peso > 0 em `PONTOS[].tipos`).
+       - O VIP tem os chips fixos: "paciência menor", "fura a fila", "pede o prato especial", "gorjeta boa", "prato frio tira coração". O vegetariano: "só prato sem carne", "sem opção, reclama no Gurugol".
+   - **Equipe** (desenho: os retratos da lojinha, `upgradeIcon(id)`). Chips em **bolinhas** do nível atual (●●○○○, tantas quanto os níveis do funcionário, do 1º nível que ele tem ao último): "Nível", e as qualidades abaixo (bolinhas = posição do valor atual entre os valores diferentes dessa qualidade nos níveis dele; 0 ou ausente, sem chip):
+     - `e-bia` **Bia**: "A garçonete. Anota, leva, entrega, cobra e recolhe." Chips: "duas mãos", "com a bandeja, leva mais" (só com a bandeja comprada).
+     - `e-tonhao` **Tonhão**: "O chef. Aprende pratos nos cursos e, com aumento, ajuda na pia." Bolinhas: Nível, Rapidez (`cook`), Capricho (`crit`), Pia (`wash`; menor é melhor).
+     - `e-dani` **Dani**: "Cuida da louça, do lixo e das mesas sujas; depois, dos doces." Bolinhas: Nível, Rapidez (`speed`), Tarefas (`tasks`).
+     - `e-joca` **Joca**: "O básico da casa; depois, o café espresso." Bolinhas: Nível, Rapidez, Tarefas.
+     - `e-cami` **Cami**: "Garçonete de rodízio: chega rápida e, com curso, cuida das mesas dela." Bolinhas: Nível, Rapidez, Tarefas.
+     - `e-anselmo` **Anselmo**: "Coqueteleiro: só o balcão de drinks." Bolinhas: Nível, Rapidez.
+   - **Lojinha** (desenho: `upgradeIcon` do item ou da seção). Uma ficha por item de Melhorias e uma por seção do resto:
+     - `l-tenis` **Tênis novos**: "A Bia anda mais rápido." · `l-corrida` **Tênis de corrida**: "A Bia anda bem mais rápido."
+     - `l-maquina` (o nome do ponto atual: Água da torneira, Jarra de suco ou Águas saborizadas): "Quem espera lá fora pede e espera com mais calma. Suco e água saborizada entram na conta."
+     - `l-cafeteira` **Cafeteira de 2 bocas**: "O cafezinho acalma mais." · `l-bandeja` **Bandeja**: "A Bia leva mais coisas de uma vez." · `l-sudoku` **Livrinho de Sudoku**: "A Bia guarda mais tarefas na fila de ações." · `l-ventilador` **Ventilador de teto**: "A freguesia come mais rápido." · `l-triturador` **Triturador de lixo**: "A lixeira enche mais devagar." · `l-pratos` **Jogo de pratos**: "Mais pratos limpos na cozinha. Dá para comprar vários."
+     - `l-tvsom` **TV e som**: "Distraem quem está nas mesas: a paciência dura mais. Gastam luz." · `l-tvs` **TVs com sertanejo**: "A paciência nas mesas dura mais; sem anúncios, mais ainda." · `l-assento` **Assento da espera**: "Quem espera sentado perde a paciência mais devagar." · `l-couvert` **Couvert artístico**: "Música ao vivo: a paciência nas mesas dura mais, e cada mesa paga o couvert." · `l-fogao` **Fogão industrial**: "Uma boca a mais: o Tonhão faz mais pratos ao mesmo tempo."
+     - `l-cardapio` **Cardápio**: "Cursos do Tonhão e da equipe. Cada curso ensina pratos novos e dá experiência; o avançado deixa os pratos mais caros e caprichados." · `l-salao` **Salão**: "Compre, venda e arrume as mesas." · `l-decor` **Decoração**: "Enfeites que dão cara de casa e melhoram o ambiente no Gurugol." · `l-manut` **Manutenção**: "Revisão do fogão, da geladeira e da cafeteira, antes que quebrem." · `l-divulga` **Divulgação**: "Boca a boca: de graça, menos gente. Panfletos: o movimento normal. Redes sociais: mais gente e mais VIPs." · `l-banco` **Banco**: "Empréstimo para crescer. As parcelas saem do caixa no fim do dia; parcela atrasada é perigo." · `l-mudanca` **Mudança**: "Um ponto maior, com freguesia nova e aluguel." · `l-caixa` **Caixa**: "O que entrou e o que saiu, dia a dia."
+   - **Lugares** (desenho: o ícone `mudanca` na área industrial, o `mudanca-av` na Avenida e, na Garagem, uma casinha simples feita na sessão):
+     - `p-garagem` **Garagem da mãe da Bia**: "Onde tudo começou. Sem aluguel, freguesia do bairro."
+     - `p-industrial` **Área industrial**: "Perto das fábricas: turma no apito, motoristas e encomendas de marmita."
+     - `p-avenida` **Avenida Brasil**: "Restaurante de verdade: almoço de negócios, mais VIPs e a vigilância sanitária por perto."
+   - **Imprevistos** (desenhos: a plaquinha da chave da dica da manutenção; nuvem; bandeirinha; termômetro; apito; prancheta):
+     - `i-quebra` **Quebra**: "Equipamento gasto pode quebrar no meio do dia. A plaquinha da chave chama o técnico na hora, mais caro."
+     - `i-chuva` **Dia de chuva**: "Vem menos gente e mais entregadores." · `i-feriado` **Feriado**: "A cidade sai de casa: mais gente e mais famílias." · `i-gripe` **Tonhão gripado**: "A cozinha anda mais devagar no dia." · `i-apito` **Apito da fábrica**: "A turma chega toda junta no meio do dia." · `i-fiscal` **Vigilância sanitária**: "Mesa suja e pia cheia dão multa; tudo limpo dá selo."
+4. **A revelação** (só na carreira do Modo História; a Missão zero e o Turno sem fim não revelam nada; com o modo dev livre, `devLivre()`, tudo aberto e nada em "novo"):
+   - Save: `manual` (lista de ids revelados) e `manualNovo` (os ainda não vistos), normalizados no `normSave` (só strings de ids que existem em `MANUAL`, sem repetidos). `Game.manualVer(id)` põe nas duas listas se for novo e grava o save.
+   - Sempre abertas: as fichas `b-` marcadas "sempre", `e-bia`, `e-tonhao`, `p-garagem` (entram na lista ao começar a carreira, sem "novo").
+   - **Clientes:** ao entrar o 1º grupo do tipo no dia (`Game.spawn`, onde o tipo é sorteado; a encomenda também); `c-vip` junto com o `vipVisto`; `c-veg` ao sentar a 1ª pessoa vegetariana. Na 1ª vez de cada tipo, um texto curto na porta, como o "VIP chegou!": **"Novo no Manual!"** (`PAL.faixa`, 14, junto à espera).
+   - **Equipe:** `e-dani`, `e-joca`, `e-cami`, `e-anselmo` quando o cartão da pessoa está aberto (`cartaoAberto`).
+   - **Lojinha:** cada ficha `l-` ao desenhar o cartão dela na lojinha (as de seção, ao desenhar o cartão da seção no grupo; as de Melhorias, ao desenhar o cartão do item). Assim ela só se revela onde a lojinha já mostra.
+   - **Lugares:** `p-industrial` e `p-avenida` quando o ponto aparece na Mudança ou quando se está nele.
+   - **Básico:** `b-louca` e `b-suco` ao começar o dia 3; `b-marmita` quando `efoodAberto`; `b-gurugol` no 1º comentário.
+   - **Imprevistos:** `i-quebra` no 1º aviso de risco do `introManut` ou na 1ª quebra; `i-chuva` e `i-feriado` no aviso do clima; `i-gripe` no dia com `gripe`; `i-apito` no 1º aviso do apito; `i-fiscal` no aviso do fiscal.
+   - **Save antigo** (sem `manual`): `Game.manualSemente()` preenche (sem "novo") com as sempre abertas; os tipos de `DAYS` até o dia anterior ao `proxDia` e os `tipos` dos pontos até o atual (com as fichas `p-` deles); `c-vip` se `vipVisto`; `c-veg` e `b-louca`/`b-suco` se `proxDia > 3`; `b-marmita` se `efoodAberto`; `b-gurugol` se houver comentário; as da equipe pelos cartões abertos. As `l-` se revelam sozinhas ao abrir a lojinha.
+5. **Fim do dia** (`42-resultados.js`): se o dia revelou fichas, uma linha **"Novo no Manual: Executiva, Entregador."** (os nomes, em ordem de revelação; no máximo 3, depois "e mais N").
+6. **`11-base.js`:** `semente(n)` devolve um gerador mulberry32 (para os retratos). Expor no `__lcc`: `MANUAL`, `manualTracos`, `manualAberta`, `abrirManual`, `buildManual`, `semente`.
+
+**Testes:** `smoke53.js`: (a) carreira nova: Básico com as 7 fichas "sempre" abertas, o resto trancado com "???"; Clientes com `c-estudante` e `c-vovos` abertos depois do dia 1 e "Novo no Manual" no fim do dia; (b) `manualTracos('vovos')` dá paciência "muito longa", escolha "demorada", refeição "demorada", grupo "em dupla"; `manualTracos('executiva')`, paciência "curta" e gorjeta "boa"; (c) Turno sem fim não revela nada; (d) o 1º VIP abre `c-vip`; (e) save antigo no dia 10 da área industrial ganha a semente com `c-turma`, `p-industrial` e sem `p-avenida`; (f) `abrirManual('l-bandeja', 'shop')` abre a aba Lojinha com a ficha em foco, e Voltar volta à lojinha; (g) nenhuma ficha (aberta) tem algarismo no texto, na linha ou nos traços (`/\d/`). Ajuste os smokes que usam `btn-how`, `ov-how` ou `buildTips` (`grep -rn "btn-how\|ov-how\|buildTips" tests`). Capturas (recorte ampliado): as abas Clientes (com fichas abertas e trancadas) e Equipe em tela cheia e em 740×360. `menu_fit.py` passando. Sem mudança de jogo: o `balance` não precisa rodar.
+**Modelo:** Sonnet, esforço alto (tela nova, a revelação ligada a vários pontos do jogo e os desenhos das fichas; todos os textos e regras já estão decididos).
