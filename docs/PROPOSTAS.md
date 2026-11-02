@@ -4,6 +4,19 @@ Registro das ideias e dos retornos de quem jogou, com o texto original, e de ond
 
 ---
 
+## 02/11 — usuário: repensar a interface, a jogabilidade e a estética (3 propostas de redesenho)
+> Antes de ir para a próxima etapa, gostaria de repensar toda a forma de interface de usuário, de interface do jogo, de jogabilidade, etc. [...] Então eu queria ver agora, com tudo que está construído, se de interface e tudo mais, isso poderia ser feito de uma forma totalmente diferente e que fosse melhor do que atualmente. Então faça para mim mais 3 propostas de jogabilidade, de organização desse jogo, de estética e de forma de jogo, né? Que abrace todas as funcionalidades que já estão.
+
+**Resposta (02/11, Opus):** `docs/REDESENHO.md`, com diagnóstico, as três propostas e os esboços em `docs/redesenho/`:
+1. **A casa é o menu**: o turno quase igual, sem a barra de números; no fim do dia, o salão vira a lojinha (os objetos brilham), o caixa é um caderninho e o Gurugol chega no celular.
+2. **Na palma da mão**: o celular em pé, a equipe comandada por arrasto e tudo o que não é turno nos apps do celular da Bia.
+3. **O caderno da Bia**: semanas; dia com manhã (quadro do dia e preparo), almoço com gestos e fechamento; domingo de compras no mapa do bairro.
+
+Recomendação: a 1 com o celular da Bia da 2; a 2 inteira se o foco for o celular em pé. Decidir antes da 4a.
+**Destino:** aguardando a escolha do usuário; depois, planejar com o Opus uma etapa nova antes da 4a.
+
+---
+
 ## 02/11 — Letícia (beta-tester, WhatsApp pelo Arthur): 2ª rodada, Garagem e área industrial (v9.6.9)
 > [10:50] Ao fim do primeiro dia não tem nada para fazer de melhoria no jogo, poderia ter algo para a pessoa se sentir feliz e recompensada jogando
 > [10:51] A Dani aparece no menu equipe mesmo antes de ter entrado pra equipe
