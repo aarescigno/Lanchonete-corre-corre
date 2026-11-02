@@ -73,7 +73,9 @@ for(const lv of [0,1,2]){ reset({tonhao:lv}); g.startDay(4); g.begin(); fresh();
 { const s=L.normSave({up:{chapa:true}}); ok(s.up.pratos && !s.up.chapa && !L.UPGRADES.some(u=>u.id==='chapa'),'save antigo: Chapa nova vira Jogo de pratos'); }
 ok(L.dishStock(L.DAYS[2],{pratos:true})===5 && L.dishStock({endless:true},{pratos:true})===6 && L.dishStock(L.DAYS[1],{pratos:true})===Infinity,'Jogo de pratos: +1 prato limpo');
 { reset({}); g.startDay(3); g.begin(); const a=new L.Group(g,'estudante',1,0); a.setState('wantOrder'); const p0=a.patPer(); g.trash=L.TRASH.cap;
-  ok(a.patPer()<p0,'lixeira cheia cheira'); g.up.ventilador=true; ok(a.patPer()<p0,'v8.3.10: com o ventilador, o cheiro ainda incomoda'); g.trash=0; g.up={}; g.save.up=g.up; }
+  a.x=700; a.y=500; a.game.mode='carreira'; const queda=()=>{ a.patLeft=100; a.tick(1); return 100-a.patLeft; };
+  g.fumacaT=0; ok(Math.abs(queda()-1)<1e-9,'v9.6.11: lixeira cheia, mas a fumaça ainda não chegou: sem cheiro');
+  g.fumacaT=L.TRASH.fumaca.cresce; ok(Math.abs(queda()-(1+L.TRASH.smell))<1e-9,'lixeira cheia cheira (a fumaça alcança)'); g.up.ventilador=true; ok(Math.abs(queda()-(1+L.TRASH.smell))<1e-9,'v8.3.10: com o ventilador, o cheiro ainda incomoda'); g.trash=0; g.fumacaT=0; g.up={}; g.save.up=g.up; }
 // v8.3.10: o Triturador mói 1 do lixo a cada TRASH.tritura s; o relógio só anda com lixo
 { reset({}); g.startDay(3); g.begin(); g.schedule=[{t:1e9,type:'estudante',color:0}]; g.nextIdx=0; g.clock=1e4; const T=L.TRASH.tritura;
   g.trash=3; run(T+1); ok(g.trash===3,'sem o Triturador, o lixo fica');
@@ -103,7 +105,7 @@ ok(L.dishStock(L.DAYS[2])===4 && L.dishStock(L.DAYS[5])===4 && L.dishStock(L.DAY
   g.trash=7; g.bia.hands=[K('juice'),K('juice')]; g.tapStation('trash',723,500); run(4); ok(g.trash===0 && !g.bia.hands.length,'2 bebidas e 1 vaga: joga as duas e esvazia');
   g.trash=5; g.bia.hands=[K('juice')]; g.tapStation('trash',723,500); run(3); ok(g.trash===6,'com espaço: só joga fora, sem esvaziar');
   g.trash=L.TRASH.cap;
-  const a=new L.Group(g,'estudante',1,0); a.setState('wantOrder'); const full=a.patPer(); g.trash=0; ok(Math.abs(a.patPer()-full*(1+L.TRASH.smell))<1e-9,'lixeira cheia: paciência cai 15% mais rápido');
+  const a=new L.Group(g,'estudante',1,0); a.setState('wantOrder'); const full=a.patPer(); g.trash=0; ok(Math.abs(a.patPer()-full)<1e-9,'o cheiro da lixeira não mexe mais no patPer (v9.6.11: vale só para quem a fumaça alcança)');
   g.trash=5; g.bia.hands=[]; ok(g.bia.duration({type:'trash'})===L.TRASH.empty,'esvaziar leva 2 s'); g.tapStation('trash',723,500); run(4); ok(g.trash===0,'mãos vazias: esvazia a lixeira'); }
 
 /* Dani */

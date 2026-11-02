@@ -73,13 +73,17 @@ function buildEnd(){
   if (r.marmitas || r.esfriou || r.jogadas || r.sobra) rows.splice(2, 0, ['Marmitas', r.marmitas + ' entregue' + (r.marmitas === 1 ? '' : 's') + (r.efood ? ' (Efood −' + fmt(r.efood) + ')' : '') + (r.jogadas ? ' · ' + r.jogadas + ' jogada' + (r.jogadas > 1 ? 's' : '') + ' fora' : '') + (r.esfriou ? ' · ' + r.esfriou + ' esfri' + (r.esfriou > 1 ? 'aram' : 'ou') : '') + (r.sobra ? ' · ' + r.sobra + ' sobr' + (r.sobra > 1 ? 'aram' : 'ou') : '')]);
   if (r.vip || r.vipLost) rows.splice(2, 0, ['VIPs', r.vip + ' atendido' + (r.vip === 1 ? '' : 's') + (r.vipLost ? ' · ' + r.vipLost + ' bravo' + (r.vipLost > 1 ? 's' : '') : '')]);
   // Gurugol (v8.4): a caixa animada à esquerda dos quadros (v8.4.1); embaixo, 2 ou 3 comentários (os critérios do dia no title)
-  const av = $('end-aval'); clearEl(av); av.title = '';
+  const av = $('end-aval'); clearEl(av); av.title = ''; clearEl($('end-baloes'));
   const a = r.aval;
   guruAnim++;
   if (a && a.dia){
     st.appendChild(gurugolCaixa(a, undefined, true));
     av.title = 'Hoje, em ' + a.dia.n + (a.dia.n > 1 ? ' avaliações: ' : ' avaliação: ') + AVAL_CRIT.map((c, i) => c.nome.toLowerCase() + ' ' + fmtNota(a.dia.crit[i]) + ' (' + a.dia.cnt[i] + ')').join(', ');
-    if (a.coment.length) av.appendChild(el('i', null, a.coment.map(t => '“' + t + '”').join(' ')));
+    // v9.6.11: os comentários viram balões grandes no topo (com o rostinho de quem falou), acima das tabelas
+    if (a.coment.length){
+      const bal = $('end-baloes'); bal.setAttribute('aria-label', 'Comentários do Gurugol');
+      a.coment.forEach((t, i) => { const b = el('div', 'end-balao'); b.appendChild(rostinhoCliente((a.comentK || [])[i])); b.appendChild(el('q', null, t)); bal.appendChild(b); });
+    }
   }
   // as contas do dia (v7), do faturamento ao lucro, num quadro ao lado
   const neg = v => v ? '-' + fmt(v) : '-';
@@ -256,3 +260,13 @@ bindSeg('rank-tabs', 'tab', () => { rk.rows = []; rk.started = null; renderRank(
 bindSeg('rank-by', 'by');
 bindSeg('rank-dir', 'dir');
 
+
+/* v9.6.11: o rostinho do tipo de cliente (a 1ª pessoa do grupo, só a cabeça) no balão do Gurugol */
+function rostinhoCliente(k){
+  const cv = document.createElement('canvas'); cv.width = 72; cv.height = 72; cv.className = 'end-rosto';
+  const c = cv.getContext('2d'); c.scale(1.5, 1.5); c.lineJoin = 'round'; c.lineCap = 'round';
+  c.beginPath(); c.arc(24, 24, 22, 0, TAU); c.fillStyle = '#EFE6CF'; c.fill(); c.clip();
+  const p = makePeople(CUSTOMER_TYPES[k] ? k : 'estudante', 1)[0];
+  drawPerson(c, p, 24, 77, { mood:0, s:1.05 });
+  return cv;
+}

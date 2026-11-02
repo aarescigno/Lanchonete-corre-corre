@@ -26,8 +26,8 @@ function render(g, ctx){
   drawFloor(ctx,g);
   drawWall(ctx,g,tm);
   drawCalcada(ctx,g,tm);
+  drawMesinha(ctx,g,tm);   // v9.6.11: no lugar da geladeira (que sai da tela; a manutenção dela segue escondida)
   drawKitchen(ctx,g,tm);
-  drawGeladeira(ctx,g,tm);
   if (g.clima === 'chuva' && !menu) drawChuvaFundo(ctx,tm);
   if (g.clima === 'feriado' && !menu) drawBandeirinhas(ctx);
 
@@ -93,7 +93,9 @@ function render(g, ctx){
   if (g.cami.active && !menu) items.push({ y:g.cami.y, f:() => drawCami(ctx,g.cami,tm) });   // v9.3
   items.sort((a,c) => a.y - c.y).forEach(it => it.f());
   if (g.clima === 'chuva' && !menu) drawChuvaPingos(ctx,tm);
+  if (!menu) drawFumacaLixo(ctx,g,tm);   // v9.6.11
   if (!menu) drawConsertos(ctx,g,tm);
+  if (!menu && g.setaMesinha) drawSetaMesinha(ctx,g,tm);   // v9.6.11
 
   // camada superior: balões, corações, fila
   g.tables.forEach(t => { if (t.open || menu) drawTableOverlay(ctx,g,t,tm,menu); });

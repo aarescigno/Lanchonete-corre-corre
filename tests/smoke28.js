@@ -10,7 +10,7 @@ const novo=(dia,o)=>{ o=o||{}; g.save=L.normSave(Object.assign({bank:2000,dia},o
 const roda=(s,cond)=>{ for(let i=0;i<s/0.05;i++){ g.update(0.05); if(cond&&cond()) return true; } return false; };
 const entregador=dish=>{ const e=g.spawn({type:'entregador',color:1}); if(dish&&e.dish!==dish){ g.soltaMarmitas(e); e.dish=dish; e.dishes=[dish]; e.bill=L.precoPrato(dish); g.marmitaPara(e); } return e; };
 const paciencia=e=>{ e.patLeft=1e9; e.hearts=5; };
-const leva=()=>{ const i=g.kitchen.marmJ.findIndex(p=>p); if(i<0) return false; g.tapStation('plates',L.LAYOUT.MARMJ_SLOTS[i].x,L.LAYOUT.MARMJ_SLOTS[i].y); return true; };
+const leva=()=>{ const i=g.kitchen.marmJ.findIndex(p=>p); if(i<0) return false; g.tapStation('marmj',L.LAYOUT.MARMJ_SLOTS[i].x,L.LAYOUT.MARMJ_SLOTS[i].y); return true; };
 
 // 1. o entregador vai à fila de retirada e o pedido dele vai sozinho ao Tonhão
 novo(4);
@@ -46,7 +46,7 @@ novo(4);
   ok(g.kitchen.queue.concat(g.kitchen.cooking).filter(t=>t.marmita&&!t.dono).length===M.vagas,'adianta '+M.vagas+' marmitas sem dono (a 3ª não)');
   ok(g.marmitasLivres===M.vagas,'marmitasLivres = '+M.vagas);
   ok(roda(20,()=>g.kitchen.marmJ.filter(p=>p).length===2),'as duas ficam prontas');
-  g.kitchen.marmJ.forEach((p,i)=>{ if(p) g.tapStation('plates',L.LAYOUT.MARMJ_SLOTS[i].x,L.LAYOUT.MARMJ_SLOTS[i].y); }); g.tapStation('retirada');
+  g.kitchen.marmJ.forEach((p,i)=>{ if(p) g.tapStation('marmj',L.LAYOUT.MARMJ_SLOTS[i].x,L.LAYOUT.MARMJ_SLOTS[i].y); }); g.tapStation('retirada');
   ok(roda(20,()=>g.prateleira.length===2),'sem bandeja, uma por mão: as 2 vão para a prateleira');
   ok(g.prateleira.every(m=>m.dish===M.prato && !m.dono),'na prateleira, sem dono');
   const e=entregador('pf'), q0=g.kitchen.queue.length;
