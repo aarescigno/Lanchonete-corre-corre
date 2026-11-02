@@ -4,6 +4,33 @@ Registro das ideias e dos retornos de quem jogou, com o texto original, e de ond
 
 ---
 
+## 02/11 — Letícia (beta-tester, WhatsApp pelo Arthur): 2ª rodada, Garagem e área industrial (v9.6.9)
+> [10:50] Ao fim do primeiro dia não tem nada para fazer de melhoria no jogo, poderia ter algo para a pessoa se sentir feliz e recompensada jogando
+> [10:51] A Dani aparece no menu equipe mesmo antes de ter entrado pra equipe
+> [10:56] Fala do Tonhão ao introduzir a Dani, colocar um "Eu pedi ajuda"
+> [10:57] As falas do Gurugol ao fim do turno precisam de mais evidência do que o cálculo do saldo final, elas deixam divertido o jogo *(com captura do fim do dia 3: os comentários entre aspas ficam numa linha pequena, abaixo das tabelas)*
+> [11:01] As histórias que aparecem no dia a dia seria melhor aparecer ao fim do dia, logo antes dos resultados do dia
+> [11:02] Uma família foi perdida por tempo de espera por mesa e não desencadeou o menu de upgrade do salão
+> [11:03] O menu de melhoras da Bia também não apareceu ainda no dia 5. Tem dinheiro mas não onde gastar
+> [11:10] Quando começar a aparecer o efood, aparecer uma seta ou um indicador piscante apontando para as marmitas prontas
+> [11:11] Faltou ainda um indicador mais intenso, fazendo as fumaças verdes do lixo se espalharem para o salão
+> [11:13] A geladeira é inútil ali, né? Está só ocupando espaço? Poderia ser a saída dos pratos do efood
+> [11:15] Dia 6 e nada de upgrade da bia nem do salão
+> [11:17] Veio só no dia 7 upgrades da Bia
+> [11:18] Quando Dani estiver já em nível máximo, não faz sentido aparecer curso para ela fazer sem que eles agreguem algo ao processo
+> [11:21] Perdi uma família ali por não ter salão ainda, no dia 8. Ruim fazer tudo direito e mesmo assim perder
+> [11:29] Fica difícil perceber que chegou alguém do EFood, talvez um letreiro brilhante piscando em cima do entregador
+
+**Diagnóstico rápido (02/11, sem mudar código):**
+- **Salão e Bia tarde (11:02, 11:03, 11:15, 11:17, 11:21):** o gatilho funciona e põe o cartão como `'pend'`, mas `fluxoHistoria` (`src/43-telas.js`) toca **uma conversa por troca de dia**, e as de capítulo (antes/depois) passam na frente e encerram a vez. Os cartões pendentes ficam numa fila: entregadores → manutenção → cardápio → divulgação → `LIBERA` na ordem (bia, melhorias, salão, decor). Com os capítulos 1–3 e essas conversas, o Salão chega a esperar até o dia 8 ou depois. Além disso, a família perdida no dia 1 não conta (`dia:2`) e não fica guardada.
+- **Dani na Equipe antes de chegar (10:51):** conferir o cartão da Dani na lojinha antes de `daniChegou` (não está no `LIBERA`).
+- **Cursos da Dani no máximo (11:18):** cursos que não agregam mais nada devem sumir ou dizer que já sabe tudo.
+- **Momento das conversas (11:01):** hoje tocam na troca de dia, depois da tela de resultados; o pedido é tocar no fim do turno, antes dos resultados.
+
+**Destino:** proposta de **etapa 3g** (antes da 4a), a planejar com o Opus com o usuário. Grupos: (1) as conversas no fim do turno, antes dos resultados, e mais de uma por dia (ou as de cartão juntas numa só), garantindo Salão e Bia nos primeiros dias; a família perdida no dia 1 já conta; (2) uma recompensa no fim do dia 1 (ex.: um cartão barato aberto já no 1º dia); (3) Dani fora da Equipe antes de chegar, o "Eu pedi ajuda" na fala do Tonhão e os cursos da Dani no máximo; (4) comentários do Gurugol em destaque no fim do dia; (5) avisos dos entregadores: letreiro piscando sobre o entregador e seta nas marmitas prontas na 1ª vez, e a geladeira (enfeite?) como saída das marmitas; (6) o lixo cheio solta fumaça verde que se espalha pelo salão.
+
+---
+
 ## 02/11 — usuário: o Terraço com menos mesas e a refeição completa (revisão da interface, etapa 3e)
 - **Contexto:** o levantamento da 3e mediu que o salão comporta só 24 lugares (6 mesas de 4), e o plano da 4a pedia 28.
 - **Texto do usuário:** "Menos mesas mais finas tipo a opção 2, mas com rebalanceamento de solicitações então as pessoas vão pedir cardápios inteiros né das pessoas entram e vão comer várias vezes várias coisas vão avaliar cada as coisas e a nota vai ser diferente por conta dos vários recursos né então vai ser entrada prato principal sobremesa bebida e a nota é dada nisso. no tempo dessas coisas acontecer. menos clientes mas mais exigentes que ficam mais tempo"
