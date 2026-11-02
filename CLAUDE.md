@@ -51,6 +51,7 @@ O JS fica todo dentro de um `(function(){ ... })()` que abre em `02-telas.html` 
 
 ## Git
 - **Sem branches parados:** todo trabalho termina com PR para o `claude/main` (o branch padrão) e merge, para o `claude/main` ser sempre a versão mais nova (o GitHub Pages publica a partir dele, e o workflow confere `python3 montar.py --check`).
+- **Versões alternativas ficam fora do main:** propostas de redesenho e versões alternativas (ex.: `docs/REDESENHO.md`) vivem num branch próprio, sem PR para o `claude/main` e sem merge, até o usuário avaliar, decidir junto e aprovar. O merge só acontece com o OK dele.
 - **Não tente apagar branches:** o GitHub recusa o `git push --delete` daqui; o usuário apaga à mão. Depois do merge, só avise que o branch pode ser apagado.
 
 ## Publicar (Artifact do claude.ai)
