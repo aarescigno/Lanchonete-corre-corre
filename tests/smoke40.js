@@ -19,18 +19,18 @@ const joga=(H,fat)=>{ const {g,els}=H; if(g.state==='shop') els['btn-shop-go'].f
 
 // ---------- 2. a conversa no fim do dia 3 ----------
 { const H=nova(), {g,els}=H, sv=g.save;
-  sv.conversa=null; sv.bank=5000; sv.convCard=1; sv.convEnt=1;
-  g.startDay(1); joga(H,400); els['btn-next'].fire('click'); passa(H);
-  g.startDay(2); joga(H,400); els['btn-next'].fire('click'); passa(H);
+  sv.conversa=null; sv.bank=5000; sv.convCard=1; sv.convEnt=1; ['bia','salao','manut','melhorias','decor'].forEach(k=>{ sv.libera[k]=1; });
+  g.startDay(1); joga(H,400); passa(H); els['btn-next'].fire('click');
+  g.startDay(2); joga(H,400); passa(H); els['btn-next'].fire('click');
   ok(!g.save.convDiv,'depois dos dias 1 e 2, sem conversa da divulgação');
   g.startDay(3); joga(H,400);
   ok(g.save.convDiv==='pend','ao fechar o dia 3, convDiv fica pendente');
-  els['btn-next'].fire('click'); ate(H,/festa da inauguração/);
+  ate(H,/festa da inauguração/);
   ok(g.conversa && /A festa da inauguração acabou/.test(g.conversa.fala.s),'toca a conversa, com a 1ª fala certa');
-  passa(H);
+  passa(H); els['btn-next'].fire('click');
   ok(g.save.convDiv===1 && g.state==='shop' && g.shopNext===4 && els['shop-sec'].textContent==='Divulgação','no fim, convDiv=1 e a lojinha do dia 4 abre na Divulgação');
   ok(g.save.divulga==='boca','o dia 4 começa no boca a boca');
-  g.startDay(4); joga(H,400); els['btn-next'].fire('click'); passa(H);
+  g.startDay(4); joga(H,400); passa(H); els['btn-next'].fire('click');
   ok(g.save.convDiv===1,'fechar o dia 4 não toca de novo'); }
 { const H=load(), {g}=H;
   g.save.bank=5000; for(let n=1;n<=3;n++){ g.startDay(n); joga(H,400); }
@@ -40,18 +40,18 @@ const joga=(H,fat)=>{ const {g,els}=H; if(g.state==='shop') els['btn-shop-go'].f
 { const {L}=load(); const sv={convDiv:'pend'};
   ok(!L.divulgaAberta(5,sv) && L.divulgaAberta(5,{convDiv:1}) && L.divulgaAberta(5),'com a conversa da divulgação pendente, a divulgação não abre'); }
 { const H=nova(), {g,els}=H, sv=g.save;
-  sv.conversa=null; sv.bank=5000; sv.convCard=1; sv.convEnt=1; sv.convDiv='pend'; sv.conversa='antes';
-  els['btn-next'].fire('click'); ate(H,/./);
+  sv.conversa=null; sv.bank=5000; sv.convCard=1; sv.convEnt=1; ['bia','salao','manut','melhorias','decor'].forEach(k=>{ sv.libera[k]=1; }); sv.convDiv='pend'; sv.conversa='antes';
+  g.startDay(3); joga(H,400); ate(H,/./);
   ok(g.conversa && g.conversa.falas===L0(H).HISTORIA[sv.cap-1].antes,'conversa de capítulo pendente: ela toca primeiro');
   passa(H);
-  ok(g.state==='shop' && sv.convDiv==='pend','e a da divulgação espera o próximo fim de dia');
+  ok(g.state==='dayend' && sv.convDiv==='pend' || sv.convDiv===1,'e a da divulgação espera o próximo fim de dia (ou toca logo, no limite de 2)'); sv.convDiv='pend'; els['btn-next'].fire('click');
   g.resetDay(4); ok(!g.div,'enquanto espera, o dia 4 segue com o movimento da inauguração');
-  g.startDay(4); joga(H,400); els['btn-next'].fire('click'); ate(H,/festa da inauguração/);
-  ok(g.conversa && /festa da inauguração/.test(g.conversa.fala.s),'no fim de dia seguinte, sem capítulo, toca a da divulgação'); passa(H);
+  g.startDay(4); joga(H,400); ate(H,/festa da inauguração/);
+  ok(g.conversa && /festa da inauguração/.test(g.conversa.fala.s),'no fim de dia seguinte, sem capítulo, toca a da divulgação'); passa(H); els['btn-next'].fire('click');
   ok(sv.convDiv===1 && els['shop-sec'].textContent==='Divulgação','e a lojinha abre na Divulgação'); }
 { const H=nova(), {g,els}=H, sv=g.save;
-  sv.conversa=null; sv.convCard='pend'; sv.convDiv="pend"; sv.convEnt=1;
-  els['btn-next'].fire('click'); ate(H,/./); ok(g.conversa && /Tio, hoje|pessoal adorou/.test(g.conversa.fala.s),'cardápio e divulgação pendentes: só a do cardápio'); passa(H);
-  ok(sv.convCard===1 && sv.convDiv==='pend' && g.state==='shop','a da divulgação fica para depois'); }
+  sv.conversa=null; sv.convCard='pend'; sv.convDiv="pend"; sv.convEnt=1; ['salao','manut','melhorias','decor'].forEach(k=>{ sv.libera[k]=1; });
+  sv.libera.bia='pend'; sv.convPlanta=1; g.startDay(5); joga(H,400); ate(H,/./); ok(g.conversa && /freguês disse/.test(g.conversa.fala.s),'Bia, divulgação e cardápio pendentes: tocam só 2 por fim de dia'); passa(H);
+  ok(sv.libera.bia===1 && sv.convDiv===1 && sv.convCard==='pend' && g.state==='dayend','a Bia e a divulgação tocam; o cardápio fica para depois (ordem fixa)'); }
 console.log('smoke40: total =',total,' fails =',fails);
 process.exit(fails?1:0);

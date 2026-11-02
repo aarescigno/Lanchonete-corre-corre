@@ -14,10 +14,9 @@ Origem: retorno do Renan Martorelli (beta-tester) e conversa com o Arthur (15/10
 ## Situação
 | # | Etapa | Versão | Situação |
 |---|---|---|---|
+| 3g-1 | Conversas no fim do turno e cartões mais cedo (retornos da Letícia) | v9.6.10 | feita em 02/11 (`docs/spec-v9.6.10.md`; `smoke56`; só no Modo História) |
 | 3e-1 | A tela respira: textos flutuantes, crachás, selos, espera e lojinha | v9.6.9 | feita em 02/11 (`docs/spec-v9.6.9.md`; `smoke55`; sem mudar números do jogo) |
-| 3f-1 | O Manual (bestiário que se revela com a história) | v9.6.7 | feita em 02/11 (`docs/spec-v9.6.7.md`; `smoke53`; o Como jogar virou o Manual; sem mudar números do jogo) |
 | 3f-2 | Menos texto na tela: lojinha, abertura do dia e balões | v9.6.8 | feita em 02/11 (`docs/spec-v9.6.8.md`; `smoke54`; sem mudar números do jogo; o "?" em cada cartão abre a ficha no Manual) |
-| 3g-1 | Conversas no fim do turno e cartões mais cedo (retornos da Letícia) | v9.6.10 | a fazer |
 | 3g-2 | A tela avisa: Gurugol em balões, mesinha das marmitas, eFood e fumaça | v9.6.11 | a fazer |
 | 4a | Terraço Suíça e VIPs exigentes (e o capítulo dele) | v10 | a fazer |
 | 4b | Nível de luxo | v10.1 | a fazer |
@@ -60,29 +59,6 @@ Origem: retorno do Renan Martorelli (beta-tester) e conversa com o Arthur (15/10
 
 ## Etapa 3g — Retornos da Letícia (02/11): conversas no fim do turno, recompensa cedo e avisos na tela (3g-1, v9.6.10; 3g-2, v9.6.11)
 Texto original e diagnóstico em `docs/PROPOSTAS.md` (02/11, Letícia). Decidido com o usuário em 02/11 (entrevista). Vem **antes da 4a**. Nada muda fora do Modo História, salvo onde dito (lixo, mesinha, letreiro).
-
-### Sessão 3g-1 — As conversas no fim do turno e os cartões mais cedo (v9.6.10)
-Partes: `src/43-telas.js` (`fluxoHistoria`, troca para `dayend`), `src/16-jogo.js` (fim do dia, `LIBERA`), `src/10-constantes.js` (`LIBERA`, `HISTORIA` cap. 2, conversa nova), `src/12-clientes.js` (`loadSave`: campo novo), `src/41-lojinha.js` (cartão e cursos da Dani).
-1. **Conversas antes dos resultados.** Em `43-telas.js:37`, o `dayend` passa a ser `fluxoHistoria(() => { buildEnd(); showOnly(['ov-end']); })` (na carreira com História; fora dela, como hoje). O `btn-next` vai direto para `game.goShop(game.proxDia)`. O `playCareer` continua chamando o `fluxoHistoria` (toca o que ficou pendente de quem saiu no meio). O cartão de fim de ponto (`ov-continua`) também vem antes dos resultados (o `contFim` passa a ser o "mostrar resultados"). Na falência (`tomou`), nada muda.
-2. **Até 2 conversas por fim de dia**, além das de capítulo (o "depois" e o "antes" não contam). Ordem fixa das pendentes: entregadores (`convEnt`), Salão, Bia, Manutenção, Divulgação (`convDiv`), presente da vizinha (`convPlanta`), Cardápio (`convCard`), Melhorias, Decoração, e depois os cartões de ponto na ordem do `LIBERA` (confeitaria, joca, anselmo, cami). O `falou` vira um contador: `fluxoHistoria(fim, n)` toca a próxima enquanto `n < 2`.
-3. **Bia:** `LIBERA` bia fica `dia:2, ate:3` (gatilho no fim do dia 2; garantia no fim do dia 3).
-4. **Salão:** `dia:1, ate:3`. A família que desiste na fila já no dia 1 abre o Salão no fim do dia 1. Falas como estão.
-5. **Presente no fim do dia 1** (`HIST_PLANTA`, só no Modo História, `save.convPlanta: 0 | 'pend' | 1`, pendente no fim do dia 1). Ao terminar, `save.decor.espada = 1` (à mostra, grátis), sem abrir o cartão Decoração. Falas:
-   - Tonhão (*com um vaso na mão*): "A dona Cida, aqui do lado, mandou de presente pela inauguração."
-   - Bia: "Uma espada-de-são-jorge! Vai ficar na entrada."
-   - Tonhão: "Dizem que espanta mau-olhado. E freguês mal-humorado, quem sabe."
-6. **Decoração pelo elogio à planta:** `LIBERA` decor passa a `dia:3, ate:6`, `gatilho:(st, av, g) => g.save.decor.espada === 1 && av.some(a => a.s && a.s[4] != null && a.s[4] >= 2.5)`, `reclama:['Que plantinha bonita!', 'Gostei da plantinha na entrada.']` (o comentário entra no Gurugol do dia, como as reclamações). Falas novas:
-   - Bia: "Tio, elogiaram a plantinha da dona Cida no Gurugol!"
-   - Tonhão: "Viu? Um verdinho já muda a cara da garagem."
-   - Bia: "E se a gente pusesse mais? A foto da mãe na parede..."
-   - Tonhão (*sorrindo*): "Isso a Rosa ia gostar. Vê na Decoração."
-   Se o `carreira.js` mostrar o gatilho em menos da metade das campanhas até o dia 5, baixe o 2.5 para 2.
-7. **Dani:** no Modo História (`HIST.on && histV === 1`), o cartão dela na Equipe só aparece com `game.daniChegou` (hoje aparece um cartão vazio antes; fora da História, como hoje). Fala do Tonhão no cap. 2: "Eu pedi ajuda pra Dani, filha da vizinha. Ela vem aprender com a gente." Cursos da Dani **sem `item`** somem quando ela já está no nível máximo (`daniNivelXp(save) === STAFF.dani.levels.length - 1`); se não sobrar curso, some o título da lista.
-8. **Manual e textos:** nada de texto novo na lojinha. Conversas curtas, como acima.
-- **`smoke56`** (com `load({historia:true})`): fim do dia → conversa toca antes do `ov-end`; com 4 pendentes, só 2 tocam e as outras ficam `'pend'` para o dia seguinte, na ordem do item 2; o capítulo não conta no limite; família perdida no dia 1 → Salão pendente no fim do dia 1; Bia aberta até o fim do dia 3 sem gatilho; `convPlanta` no fim do dia 1 e `decor.espada === 1` depois; elogio → decor pendente; Dani sem cartão antes do cap. 2; cursos sem item escondidos no nível máximo; saves antigos carregam (`convPlanta` 0 vira 1 para quem já passou do dia 1).
-- `carreira.js` (História): Salão e Bia abertos até o dia 3–4 na maioria das campanhas (linha `HISTORIA`); sem mudança no `balance.js` (sem História).
-
-**Modelo:** Sonnet, esforço médio (plano detalhado, lógica de fluxo e testes).
 
 ### Sessão 3g-2 — A tela avisa: Gurugol em balões, mesinha das marmitas, letreiro do eFood e fumaça do lixo (v9.6.11)
 Partes: `src/42-resultados.js` (fim do dia), `src/21-cenario.js` (geladeira, mesinha, fumaça), `src/10-constantes.js` (`MARMJ_SLOTS`, `STATIONS`, `TRASH`), `src/12-clientes.js` (cheiro), `src/22-salao-hud.js` / `src/23-render.js` (letreiro e seta), `src/16-jogo.js` se preciso.
