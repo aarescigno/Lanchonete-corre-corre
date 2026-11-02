@@ -824,23 +824,31 @@ function drawEspuma(ctx,g,t){
   ctx.restore();
 }
 /* geladeirinha branca de porta de vidro com potinhos de doce (v9.2) */
-function drawGeladeiraDoces(ctx,g){
+function drawGeladeiraDoces(ctx,g,t){
   const r = STATIONS.doces.rect, x = r.x, y = r.y, gm = !!g.up.confGourmet;
   shadowEll(ctx,x + r.w/2,y + r.h + 1,r.w/2 - 2,3.5,0.2);
   if (gm){   // v9.3, a vitrine refrigerada (Confeitaria gourmet): moldura dourada, vidro com luz quente, doces nos pratinhos e o letreiro
     rr(ctx,x + 1,y - 2,r.w - 2,r.h + 2,6); fs(ctx,'#E9D9B0',2.2);
-    rr(ctx,x + 6,y + 8,r.w - 14,r.h - 16,4); fs(ctx,'#FFF3E4',1.6);
-    ctx.fillStyle = 'rgba(214,160,60,.9)'; ctx.fillRect(x + 7,y + r.h/2 - 1,r.w - 16,2.4);
-    [0,1,2].forEach(i => { drawIcon(ctx,'doce',x + 14 + i * 8.6,y + 19,0.4,3 + i); drawIcon(ctx,'doce',x + 14 + i * 8.6,y + 36,0.4,3 + (i + 1) % 3); });
-    ctx.fillStyle = 'rgba(255,255,255,.35)'; ctx.fillRect(x + 9,y + 10,3,r.h - 20);
-    rr(ctx,x + 4,y - 3,r.w - 8,9,3); fs(ctx,'#8A1F3D',1.6); txt(ctx,'GOURMET',x + r.w/2,y + 1.6,6.5,'#FFE6A8','center',FD);
+    rr(ctx,x + 6,y + 24,r.w - 14,r.h - 32,4); fs(ctx,'#FFF3E4',1.6);
+    ctx.fillStyle = 'rgba(214,160,60,.9)'; ctx.fillRect(x + 7,y + r.h/2 + 9,r.w - 16,2.4);
+    [0,1,2].forEach(i => { drawIcon(ctx,'doce',x + 15 + i * 11,y + 33,0.45,3 + i); drawIcon(ctx,'doce',x + 15 + i * 11,y + 50,0.45,3 + (i + 1) % 3); });
+    ctx.fillStyle = 'rgba(255,255,255,.35)'; ctx.fillRect(x + 9,y + 26,3,r.h - 36);
+    rr(ctx,x + 4,y + 13,r.w - 8,9,3); fs(ctx,'#8A1F3D',1.6); txt(ctx,'GOURMET',x + r.w/2,y + 17.6,6.5,'#FFE6A8','center',FD);
   } else {
   rr(ctx,x + 2,y,r.w - 4,r.h,6); fs(ctx,'#F4F7F8',2.2);
-  rr(ctx,x + 7,y + 6,r.w - 18,r.h - 14,4); fs(ctx,'#CFE7EE',1.6);
-  ctx.fillStyle = 'rgba(34,32,28,.35)'; ctx.fillRect(x + 8,y + r.h/2 - 1,r.w - 20,2);
-  [0,1,2].forEach(i => { drawIcon(ctx,'doce',x + 13 + i * 8.5,y + 17,0.4,i); drawIcon(ctx,'doce',x + 13 + i * 8.5,y + 34,0.4,(i + 1) % 3); });
+  rr(ctx,x + 7,y + 15,r.w - 20,r.h - 24,4); fs(ctx,'#CFE7EE',1.6);
+  ctx.fillStyle = 'rgba(34,32,28,.35)'; ctx.fillRect(x + 8,y + r.h/2 + 7,r.w - 22,2);
+  [0,1,2].forEach(i => { drawIcon(ctx,'doce',x + 15 + i * 10.5,y + 28,0.45,i); drawIcon(ctx,'doce',x + 15 + i * 10.5,y + 46,0.45,(i + 1) % 3); });
   }
-  rr(ctx,x + r.w - 10,y + 12,3.2,17,1.6); fs(ctx,PAL.cromo,1.2);
+  rr(ctx,x + r.w - 11,y + 26,3.4,20,1.7); fs(ctx,PAL.cromo,1.2);
+  // v9.6.6: a plaquinha rosa em cima, sempre
+  rr(ctx,x + 2,y + 1,r.w - 4,12,4); fs(ctx,'#D9577A',1.8); txt(ctx,'DOCES',x + r.w/2,y + 7.4,8,'#fff','center',FD);
+  // o selo NOVO! (mostarda, pulsando) até 5 doces entregues na carreira; no modo dev, nunca
+  if (!devLivre() && ((g.save && g.save.docesTot) || 0) < 5){
+    const k = RM ? 1 : 1 + 0.08 * Math.sin(t * 5);
+    ctx.save(); ctx.translate(x - 2,y + 40); ctx.rotate(-0.25); ctx.scale(k,k);
+    rr(ctx,-17,-7,34,14,5); fs(ctx,PAL.mostarda,1.6); txt(ctx,'NOVO!',0,0.6,9,PAL.tinta,'center',FD); ctx.restore();
+  }
   const n = g.docesRet ? g.docesRet() - g.potes : 0;
   if (n > 0) { circ(ctx,x + r.w - 8,y + 3,6.5); fs(ctx,PAL.mostarda,1.4); txt(ctx,String(n),x + r.w - 8,y + 3.5,9,PAL.tinta,'center',FD); }   // doce de marmita pedido e ainda sem pote no balcão
 }
@@ -1028,10 +1036,18 @@ function drawSacoLixo(ctx,x,y){
   ctx.beginPath(); ctx.moveTo(x-4,y-21); ctx.lineTo(x-7,y-28); ctx.lineTo(x,y-24); ctx.lineTo(x+7,y-28); ctx.lineTo(x+4,y-21); ctx.closePath(); fs(ctx,'#2A2A2E',1.8);
 }
 /* fumacinha verde do lixo cheio: nuvens que sobem e somem (paradas com movimento reduzido) */
-function drawFumacaVerde(ctx,x,y,t){
+/* v9.6.6: mosca (pontinho preto com asinhas) em órbita de ~10 px; parada com movimento reduzido */
+function drawMosca(ctx,x,y,t,ph){
+  const a = RM ? ph * 2.1 : t * 5.5 + ph * 2.1, mx = x + Math.cos(a) * 10, my = y + Math.sin(a * 1.3) * 6, w = RM ? 1 : 0.5 + 0.5 * Math.sin(t * 40 + ph);
+  ctx.fillStyle = 'rgba(255,255,255,.75)'; ell(ctx,mx - 2.2,my - 2,2.6,1.2 + w); ctx.fill(); ell(ctx,mx + 2.2,my - 2,2.6,1.2 + w); ctx.fill();
+  ctx.fillStyle = '#1A1816'; circ(ctx,mx,my,1.9); ctx.fill();
+}
+function drawFumacaVerde(ctx,x,y,t,big){
+  const sobe = big ? 34 : 26;
   for (let i=0;i<3;i++){
+    if (!big && i > 0) break;
     const f = RM ? (i + 0.5) / 3 : ((t * 0.5 + i / 3) % 1);
-    const px = x + Math.sin(f * 5 + i * 2) * 4, py = y - f * 26, r = 3 + f * 4;
+    const px = x + Math.sin(f * 5 + i * 2) * 4, py = y - f * sobe, r = big ? 4 + 6 * f : 2 + f * 3;
     ctx.fillStyle = 'rgba(' + TRASH_COR.fumaca + ',' + (0.7 * (1 - f) + 0.15).toFixed(2) + ')';
     circ(ctx,px,py,r); ctx.fill();
   }
@@ -1068,9 +1084,14 @@ function drawTrash(ctx,on,t,g){
   if (g && g.state !== 'menu'){
     // nível: um tracinho por gominho na lateral
     for (let i=0;i<TRASH.cap;i++){ ctx.fillStyle = i < lv ? (cheia ? PAL.perigo : (lv >= TRASH.cap - 2 ? PAL.alerta : PAL.ok)) : 'rgba(255,255,255,.35)'; ctx.fillRect(x+16,y-6-i*4.4,4,3.2); }
+    if (lv >= TRASH.cap - 2 && !cheia) drawFumacaVerde(ctx,x-2,y-50,t,false);
     if (cheia){
-      drawFumacaVerde(ctx,x-24,y-33,t);
-      drawFumacaVerde(ctx,x-2,y-50,t + 0.6);
+      drawFumacaVerde(ctx,x-24,y-33,t,true);
+      drawFumacaVerde(ctx,x-2,y-50,t + 0.6,true);
+      ctx.strokeStyle = 'rgba(110,150,60,.6)'; ctx.lineWidth = 2; ctx.lineCap = 'round';
+      [-9,9].forEach((dx,i) => { const o = RM ? 0 : Math.sin(t * 3 + i * 2) * 2.5; ctx.beginPath(); ctx.moveTo(x + dx,y - 54); ctx.bezierCurveTo(x + dx + 6 + o,y - 62,x + dx - 6 - o,y - 68,x + dx + o,y - 76); ctx.stroke(); });
+      ctx.lineCap = 'butt';
+      drawMosca(ctx,x - 4,y - 64,t,0); drawMosca(ctx,x + 8,y - 58,t,3);
       rr(ctx,x-20,y-86,40,13,4); fs(ctx,PAL.perigo,1.6); txt(ctx,'CHEIO',x,y-79,9,'#fff','center',FD);
     }
   }
@@ -1240,7 +1261,7 @@ function drawKitchen(ctx,g,t){
     ctx.restore();
   });
   // v9.2, a geladeirinha de doces (curso Confeitaria caseira), ao lado da janela de pedidos
-  if (g.up.confCaseira && g.state !== 'menu') glowSprite(ctx,g,'doces',ctx => drawGeladeiraDoces(ctx,g));
+  if (g.up.confCaseira && g.state !== 'menu') glowSprite(ctx,g,'doces',ctx => drawGeladeiraDoces(ctx,g,t));
   // v9.3, a máquina de espresso (curso Barista do Joca), no chão ao lado da bancada do café
   if (g.up.espresso && g.state !== 'menu') glowSprite(ctx,g,'espresso',ctx => drawEspresso(ctx,g,t));
   // v9.5, o balcão de drinks do Anselmo (só na Avenida)
@@ -1355,8 +1376,15 @@ function drawKitchen(ctx,g,t){
     rr(ctx,r.x+14,r.y+4,r.w-18,r.h-8,8); fs(ctx,'#C9D6DC',3);
     txt(ctx,'PIA E LOUÇA',806,410,12,PAL.faixa,'left',FB);
     rr(ctx,792,430,100,62,8); fs(ctx,PAL.inox,3);
-    rr(ctx,799,438,86,46,6); fs(ctx,'#8EC5E8',2);
+    const nPia = g.state !== 'menu' ? g.kitchen.sinkN : 0, fPia = Math.min(1, nPia / 6);
+    rr(ctx,799,438,86,46,6); fs(ctx,mixCor('#8EC5E8','#9A9468',fPia),2);
     ctx.fillStyle = 'rgba(255,255,255,.5)'; ctx.fillRect(805,444,30,3);
+    // v9.6.6: pratos sujos tortos na cuba, com manchas de molho
+    for (let i = 0; i < Math.min(3, nPia); i++){
+      const px = 818 + i * 24, py = 466 - (i % 2) * 6;
+      ctx.save(); ctx.translate(px,py); ctx.rotate((i - 1) * 0.35); ell(ctx,0,0,13,5); fs(ctx,'#F2F0E8',1.6);
+      ctx.fillStyle = '#B5651D'; circ(ctx,-4,-0.5,2.2); ctx.fill(); ctx.fillStyle = '#7A4A2A'; circ(ctx,4,0.6,1.7); ctx.fill(); ctx.restore();
+    }
     ctx.beginPath(); ctx.moveTo(842,432); ctx.lineTo(842,428); ctx.quadraticCurveTo(842,423.5,849,423.5); ctx.lineTo(856,423.5); ctx.lineWidth = 6; ctx.strokeStyle = PAL.tinta; ctx.stroke();
     ctx.lineWidth = 3; ctx.strokeStyle = PAL.cromo; ctx.stroke();
     // carrinho de louça
@@ -1364,7 +1392,8 @@ function drawKitchen(ctx,g,t){
     ctx.fillStyle = PAL.cromoEsc; ctx.fillRect(906,456,42,3);
     circ(ctx,914,484,6); fs(ctx,'#4a4a4a',2); circ(ctx,940,484,6); fs(ctx,'#4a4a4a',2);
     const n = g.kitchen.sinkN;
-    for (let i=0;i<n;i++){ ell(ctx,927,435-(i%4)*4 - (i>3?2:0),16,4); fs(ctx,i%2?'#f2f0e8':'#fff',1.8); }
+    for (let i=0;i<n;i++){ const cy = 435-(i%4)*4 - (i>3?2:0); ell(ctx,927,cy,16,4); fs(ctx,i%2?'#f2f0e8':'#fff',1.8); ctx.fillStyle = '#B5651D'; circ(ctx,921,cy,1.6); ctx.fill(); ctx.fillStyle = '#7A4A2A'; circ(ctx,933,cy + 0.4,1.3); ctx.fill(); }
+    if (n >= 4){ drawMosca(ctx,842,432,t,0); drawMosca(ctx,842,432,t,3); }
     rr(ctx,r.x+8,r.y+r.h-12,r.w-12,10,3); fs(ctx,PAL.cromo,2.2);
   });
   glow('sink');

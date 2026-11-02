@@ -166,6 +166,18 @@ class Waitress {
       }
     } else if (this.phase === 'do'){
       this.timer -= dt;
+      // v9.6.6: lavar prato a prato (cada pilha volta limpa assim que termina; com outra ação na fila, ela para ali)
+      const d = this.doing;
+      if (d && d.type === 'sink' && d.wash > 0){
+        if (d.done === undefined) d.done = 0;
+        const el = WASH.base + WASH.perPile * d.wash - this.timer;
+        while (d.done < d.wash && el >= WASH.base + WASH.perPile * (d.done + 1) - 1e-6){
+          if (!this.g.washPiles(1)){ this.timer = 0; break; }
+          d.done++;
+          this.g.addText(this.x, this.y - 100, '+1 prato', PAL.faixa, 13); Sfx.wash();
+          if (this.acts.length > 1){ this.timer = 0; break; }
+        }
+      }
       if (this.timer <= 0){
         const a = this.acts.shift();
         this.phase = 'idle'; this.doing = null;
@@ -305,9 +317,9 @@ class Waitress {
       }
       if (a.wash === undefined) this.duration(a);
       if (!a.wash) return this.fail(a.busy && g.kitchen.sinkN ? (g.ajud.some(h => h.washing) ? ({ dani:'A Dani', joca:'O Joca', cami:'A Cami' })[g.ajud.find(h => h.washing).quem] + ' está lavando!' : '?') : '?');
-      const w = g.washPiles(a.wash);
+      const w = a.done !== undefined ? a.done : g.washPiles(a.wash);
       g.addText(this.x, this.y - 82, w > 1 ? 'Lavou ' + w + ' pilhas!' : 'Lavou!', PAL.faixa, 15);
-      Sfx.wash();
+      if (a.done === undefined) Sfx.wash();
       return;
     }
   }

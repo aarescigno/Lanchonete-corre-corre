@@ -224,14 +224,14 @@ function drawTableOverlay(ctx,g,t,tm,menu){
   if (grp.doceBalao){   // v9.2: terminou de comer e espera os doces (os que faltam, em ordem)
     const falta = grp.doces.slice(grp.docesDados), dp = RM ? 1 : 1 + 0.1*Math.sin(tm*9), w = 14 + 20 * falta.length;
     const cy = t.cy + 2 + (grp.juiceOpen && grp.juicePending > 0 ? 34 : 0) + (grp.cafeBalao ? 34 : 0);
-    ctx.save(); ctx.translate(bx + 4,cy); ctx.scale(dp,dp);
+    ctx.save(); ctx.translate(bx + 4,cy + 6); ctx.scale(dp * 1.4,dp * 1.4);   // v9.6.6: 1,4× maior (o ícone sai em escala 1,0)
     rr(ctx,-14,-15,w + 6,28,9); fs(ctx,'#fff',2.2);
     falta.forEach((id, i) => drawIcon(ctx,'doce',3 + 20 * i,1,0.72,doceIdx(id)));
     ctx.restore();
   }
   if (grp.cafeEspBalao){   // v9.3: terminou de comer e espera os cafés da máquina de espresso (os que faltam, em ordem)
     const falta = grp.cafes.slice(grp.cafesDados), cp = RM ? 1 : 1 + 0.1*Math.sin(tm*9), w = 14 + 20 * falta.length;
-    const cy = t.cy + 2 + (grp.juiceOpen && grp.juicePending > 0 ? 34 : 0) + (grp.cafeBalao ? 34 : 0) + (grp.doceBalao ? 34 : 0);
+    const cy = t.cy + 2 + (grp.juiceOpen && grp.juicePending > 0 ? 34 : 0) + (grp.cafeBalao ? 34 : 0) + (grp.doceBalao ? 52 : 0);
     ctx.save(); ctx.translate(bx + 4,cy); ctx.scale(cp,cp);
     rr(ctx,-14,-15,w + 6,28,9); fs(ctx,'#fff',2.2);
     falta.forEach((id, i) => drawIcon(ctx,'cafeesp',3 + 20 * i,1,0.72,id === 'cappuccino' ? 1 : 0));
@@ -239,7 +239,7 @@ function drawTableOverlay(ctx,g,t,tm,menu){
   }
   if (grp.drinkOpen){   // v9.5: os drinks do Anselmo que faltam, em ordem (o balão pulsa depois da refeição)
     const falta = grp.drinks.slice(grp.drinksDados), dp = (RM || !grp.esperaSuco) ? 1 : 1 + 0.1*Math.sin(tm*9), w = 14 + 20 * falta.length;
-    const cy = t.cy + 2 + (grp.juiceOpen && grp.juicePending > 0 ? 34 : 0) + (grp.cafeBalao ? 34 : 0) + (grp.doceBalao ? 34 : 0) + (grp.cafeEspBalao ? 34 : 0);
+    const cy = t.cy + 2 + (grp.juiceOpen && grp.juicePending > 0 ? 34 : 0) + (grp.cafeBalao ? 34 : 0) + (grp.doceBalao ? 52 : 0) + (grp.cafeEspBalao ? 34 : 0);
     ctx.save(); ctx.translate(bx + 4,cy); ctx.scale(dp,dp);
     rr(ctx,-14,-15,w + 6,28,9); fs(ctx,'#fff',2.2);
     falta.forEach((id, i) => drawIcon(ctx,'drink',3 + 20 * i,1,0.72,drinkIdx(id)));
