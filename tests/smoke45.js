@@ -31,7 +31,7 @@ const AV={ daniCursos:{ confCaseira:1 } }, ESP={ daniCursos:{ confCaseira:1 }, j
   g.save.daniCursos.confCaseira=1; g.up.confCaseira=true; g.save.daniCursoDia=0;
   ok(g.buyDaniCurso('confGourmet') && g.save.daniCursos.confGourmet===1 && g.up.confGourmet===true && g.save.bank===5000-350,'na Avenida, com a caseira: R$ 350 e liga a vitrine (up.confGourmet)');
   ok(H.L.daniXp(g.save)===4,'cada curso vale +2 de experiência da Dani (caseira + gourmet = 4)');
-  H.L.setShopTab('cardapio'); const t=txt(H.els['shop-grid']); ok(/Confeitaria gourmet/.test(t) && /shortcake de morango, torta de limão e brigadeiro gourmet/.test(t) && /R\$ 16/.test(t),'o Cardápio mostra o curso com os 3 doces e R$ 16');
+  H.L.setShopTab('cardapio'); const t=txt(H.els['shop-grid']); ok(/Confeitaria gourmet/.test(t) && !/shortcake/.test(t) && /Comprar R\$/.test(t),'o Cardápio mostra o curso, sem a descrição');
   ok(H.L.avalMenu({},2)>H.L.avalMenu({},1),'conta na Diversidade do cardápio (avalMenu)');
   // normSave: sem a caseira, o gourmet não liga
   const N=H.L.normSave({ daniCursos:{ confGourmet:1 }, salao:{ ponto:'avenida' } }); ok(!N.up.confGourmet && !N.up.confCaseira,'save com o gourmet sem a caseira: nenhuma das duas liga'); }
@@ -66,7 +66,7 @@ const AV={ daniCursos:{ confCaseira:1 } }, ESP={ daniCursos:{ confCaseira:1 }, j
   ok(!g.buyJocaCurso('espresso'),'sem o Joca contratado, não se compra');
   g.save.equipe.joca=2; const b0=g.save.bank; g.save.jocaCursoDia=0;
   ok(g.buyJocaCurso('espresso') && g.save.jocaCursos.espresso===1 && g.up.espresso===true && b0-g.save.bank===350 && H.L.jocaXp(g.save)===2,'com o Joca: R$ 350, liga a máquina e dá +2 de experiência');
-  H.L.setShopTab('cardapio'); const t=txt(H.els['shop-grid']); ok(/espresso/i.test(t) && /espresso R\$ 8 e cappuccino R\$ 12/.test(t) && /Curso feito/.test(t),'o Cardápio mostra o curso (com o rosto do Joca) e fica "feito"');
+  H.L.setShopTab('cardapio'); const t=txt(H.els['shop-grid']); ok(/espresso/i.test(t) && !/cappuccino R\$ 12/.test(t) && /Curso feito/.test(t),'o Cardápio mostra o curso (com o rosto do Joca) e fica "feito"');
   ok(H.L.cursosItem(g.save)===2 && H.L.avalMenu({},2)>H.L.avalMenu({},1),'conta como curso de item na Diversidade'); }
 
 // ---------- 6. o pedido de café no fim da refeição ----------

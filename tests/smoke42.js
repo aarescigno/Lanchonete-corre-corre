@@ -22,10 +22,10 @@ const html=fs.readFileSync(__dirname+'/../lanchonete.html','utf8');
 { let H=jogo(5,'industrial'); H.L.setShopGrupo('dinheiro');
   ok(cartoes(H).join()==='banco,caixa' && !H.g.mudancaVisivel,'na área industrial com o cap. 5: sem o cartão Mudança');
   H=jogo(6,'industrial',{ bank:5000 }); notaDe(H.g,3.6); H.L.setShopGrupo('dinheiro'); const lista=cartoes(H).join(); H.L.setShopTab('mudanca');
-  const btn=H=>grid(H).children[0].children.filter(c=>c.tagName==='BUTTON').pop();
+  const btn=H=>grid(H).children[0].children.filter(c=>c.tagName==='BUTTON'&&!/qm/.test(c.className||'')).pop();
   ok(lista==='banco,mudanca,caixa' && /Mudança: Restaurante na Avenida Brasil/.test(txt(grid(H))),'cap. 6: o cartão Mudança aparece, para o Restaurante na Avenida Brasil');
   ok(btn(H) && /Mudar: R\$ 2000/.test(btn(H).textContent) && !btn(H).disabled && H.L.avalMinimo(H.L.PONTOS[1])===3.4,'com R$ 2.000 e nota ≥ 3,4: o botão fica aceso (nota mínima 3,4)');
-  ok(/24 lugares \(hoje, 20\)/.test(txt(grid(H))) && /cardápio 33% mais caro/.test(txt(grid(H))) && /as TVs, o assento da espera e a jarra de suco ficam/.test(txt(grid(H))) && /almoço de negócios/.test(txt(grid(H))),'o texto do cartão: 24 lugares, cardápio, o que fica e o que vem');
+  ok(/Mudança: Restaurante na Avenida Brasil/.test(txt(grid(H))) && /Mudança R\$ \d+ · aluguel R\$ \d+\/dia/.test(txt(grid(H))) && !/lugares \(hoje/.test(txt(grid(H))),'o cartão: só o nome, a mudança e o aluguel (v9.6.8)');
   H=jogo(6,'industrial',{ bank:500 }); notaDe(H.g,3.6); H.L.setShopGrupo('dinheiro'); H.L.setShopTab('mudanca');
   ok(btn(H).disabled && /Falta R\$ 1500/.test(btn(H).textContent),'sem o dinheiro: apagado, "Falta R$ 1500"');
   H=jogo(6,'industrial',{ bank:5000 }); notaDe(H.g,3.3); H.L.setShopGrupo('dinheiro'); H.L.setShopTab('mudanca');
@@ -38,7 +38,7 @@ const html=fs.readFileSync(__dirname+'/../lanchonete.html','utf8');
   ok(H.g.save.salao.ponto==='avenida','2º toque: mudou');
   // a Garagem não vê o cartão da Avenida; a mudança para a área industrial segue igual
   H=jogo(4,'garagem',{ bank:5000 }); notaDe(H.g,3); H.L.setShopGrupo('dinheiro'); H.L.setShopTab('mudanca');
-  ok(/Mudança: Lanchonete na área industrial/.test(txt(grid(H))) && /a TV, o som e a torneira ficam/.test(txt(grid(H))) && /freguesia da fábrica/.test(txt(grid(H))),'na Garagem, o cartão segue o da área industrial (v9)');
+  ok(/Mudança: Lanchonete na área industrial/.test(txt(grid(H))) && !/a TV, o som e a torneira ficam/.test(txt(grid(H))),'na Garagem, o cartão segue o da área industrial (v9)');
   // modo dev: sem custo nem nota, desde o início
   const D=load({ store:{ lcc2_dev:'1' } }); D.g.save.aval=[]; D.g.save.salao.ponto='industrial'; D.g.save.salao=D.L.normSalao(D.g.save.salao); D.g.goShop(3); const b0=D.g.save.bank;
   ok(D.g.mudancaVisivel && !D.g.mudancaFalta && D.g.mudarPonto() && D.g.save.salao.ponto==='avenida' && D.g.save.bank===b0,'modo dev: o cartão aparece sempre e a mudança é de graça'); }
@@ -144,7 +144,7 @@ const html=fs.readFileSync(__dirname+'/../lanchonete.html','utf8');
 { const H=jogo(6,'avenida',{ bank:5000 }), {g,L}=H; g.resetDay(10);
   const c=L.cursoOf('restaurante'); ok(c && c.nome==='Cozinha de restaurante' && c.preco===400 && c.pratos.join()==='parmegiana' && c.nivel===3 && c.av.nome==='Parmegiana da casa' && c.av.preco===600 && /molho de tomate de 6 horas/.test(c.av.receita),'o curso: R$ 400 e o avançado "Parmegiana da casa" R$ 600');
   ok(L.CARDAPIO.parmegiana.nome==='Filé à parmegiana' && L.CARDAPIO.parmegiana.preco===30 && L.CARDAPIO.parmegiana.cat==='pf' && L.CARDAPIO.parmegiana.carne===true,'o prato: Filé à parmegiana, R$ 30, categoria PF, com carne');
-  H.L.setShopGrupo('lanchonete'); H.L.setShopTab('cardapio'); ok(/Curso de Cozinha de restaurante/.test(txt(grid(H))) && /Filé à parmegiana R\$ 60/.test(txt(grid(H))),'o cartão aparece no Cardápio da Avenida, com a parmegiana a R$ 60');
+  H.L.setShopGrupo('lanchonete'); H.L.setShopTab('cardapio'); ok(/Curso de Cozinha de restaurante/.test(txt(grid(H))) && /Comprar R\$ /.test(txt(grid(H))),'o cartão aparece no Cardápio da Avenida, com o preço do curso');
   ok(g.buyCurso('restaurante') && g.save.bank===4600 && g.save.cursos.restaurante===1,'comprar: R$ 400');
   ok(L.precoPrato('parmegiana',g.ponto,g.cursos)===60 && L.pratoSabido('parmegiana',g.save.cursos) && !L.pratoSabido('parmegiana',{}),'ensina o Filé à parmegiana (R$ 60)');
   g.save.cursoDia=0; g.cursoMsg=''; ok(g.buyCurso('restaurante') && g.save.cursos.restaurante===2 && g.save.bank===4000,'o avançado: R$ 600');

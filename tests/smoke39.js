@@ -18,10 +18,10 @@ const joga=(H,fat)=>{ const {g,els}=H; if(g.state==='shop') els['btn-shop-go'].f
   L.setShopTab('cardapio');
   ok(els['shop-sec'].textContent==='Cardápio' && /No cardápio hoje \(2 pratos\)/.test(txt(grid())),'abre o Cardápio: "No cardápio hoje (2 pratos)"');
   ok(/Comprar R\$ 150/.test(txt(grid())) && /Curso de Pastel/.test(txt(grid())),'os cursos estão no Cardápio, com "Comprar R$ 150" no Pastel de feira');
-  ok(/Diversidade do cardápio no Gurugol/.test(txt(grid())) && /Equipe › Tonhão/.test(txt(grid())),'a diversidade no Gurugol e o aviso da experiência');
+  ok(!/Diversidade do cardápio/.test(txt(grid())) && !/Equipe › Tonhão/.test(txt(grid())),'sem a prosa da diversidade e da experiência (v9.6.8)');
   L.setShopTab('tonhao');
   ok(!/Comprar/.test(txt(grid())) && /Cursos de cardápio concluídos/.test(txt(grid())) && /Nenhum ainda/.test(txt(grid())),'a seção Tonhão não vende curso e diz "Nenhum ainda"');
-  ok(/Os cursos ficam no Cardápio\./.test(txt(grid())),'o "Faltam N de experiência" aponta para o Cardápio');
+  ok(!/Faltam/.test(txt(grid())),'sem o "Faltam N de experiência" (v9.6.8)');
   const ver=(function f(e){ if(e.tagName==='BUTTON' && e.textContent==='Ver cursos') return e; for(const c of (e.children||[])){ const r=f(c); if(r) return r; } return null; })(grid());
   ok(!!ver,'há o botão "Ver cursos"'); ver.fire('click');
   ok(els['shop-sec'].textContent==='Cardápio','"Ver cursos" abre o Cardápio');

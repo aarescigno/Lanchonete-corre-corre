@@ -166,7 +166,7 @@ const quebra=id=>{ g.quebras=[{id,t:0,on:true,fixed:false}]; };
   const B0=g.save.bank; btn(cs[0]).fire('click'); ok(g.save.manut.fogao===1 && g.save.bank<B0,'clicar em "Revisão" revisa o fogão');
   const cs2=els['shop-grid'].children; btn(cs2[3]).fire('click'); ok(g.save.manut.cafeteira===1,'"Revisar tudo" revisa o resto');
   ok(/Tudo em dia/.test(btn(els['shop-grid'].children[3]).textContent),'depois, "Tudo em dia"'); }
-{ novo(1000,7); g.goShop(2); L.setShopTab('manut'); { const t=txt(els['shop-grid'].children[0]); ok(!/risco de quebra/i.test(t) && !/não quebra/i.test(t),'antes do dia 4 a aba não fala de risco nem garante que não quebra'); ok(/visita técnica tem custo/.test(txt(els['shop-grid'].children[3])),'"Revisar tudo" avisa que a visita técnica tem custo'); } }
+{ novo(1000,7); g.goShop(2); L.setShopTab('manut'); { const t=txt(els['shop-grid'].children[0]); ok(!/risco de quebra/i.test(t) && !/não quebra/i.test(t),'antes do dia 4 a aba não fala de risco nem garante que não quebra'); ok(/Revisar tudo/.test(txt(els['shop-grid'].children[3])) && !/visita técnica/.test(txt(els['shop-grid'].children[3])),'"Revisar tudo" sem a prosa (v9.6.8)'); } }
 
 // ---------- chuva e feriado ----------
 { novo(3000,7); g.startDay(5); const dia=g.day, N=400;

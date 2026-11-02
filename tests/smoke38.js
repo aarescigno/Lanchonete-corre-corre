@@ -19,7 +19,7 @@ const joga=(H,fat,custo)=>{ const {g,els}=H; if(g.state==='shop') els['btn-shop-
   ok(cartoes(H).join()==='banco,caixa','antes do cap. 4 (cap. 3): sem o cartão Mudança');
   H=jogo(4,false,{ bank:5000 }); notaDe(H.g,3); H.L.setShopGrupo('dinheiro'); const lista=cartoes(H).join(); H.L.setShopTab('mudanca');
   ok(lista==='banco,mudanca,caixa' && /Mudança: Lanchonete na área industrial/.test(txt(grid(H))),'cap. 4: o cartão Mudança aparece, no grupo Dinheiro');
-  const btn=H=>grid(H).children[0].children.filter(c=>c.tagName==='BUTTON').pop();
+  const btn=H=>grid(H).children[0].children.filter(c=>c.tagName==='BUTTON'&&!/qm/.test(c.className||'')).pop();
   ok(btn(H) && /Mudar: R\$ 800/.test(btn(H).textContent) && !btn(H).disabled,'com R$ 800 e nota ≥ 2,7: o botão fica aceso');
   H=jogo(4,false,{ bank:500 }); notaDe(H.g,3); H.L.setShopGrupo('dinheiro'); H.L.setShopTab('mudanca');
   ok(btn(H).disabled && /Falta R\$ 300/.test(btn(H).textContent),'sem o dinheiro: apagado, "Falta R$ 300"');

@@ -67,7 +67,7 @@ ok(L.contasDia(g.tables,{aluguel:120})===120+C.base+4*C.mesa+10*C.lugar,'aluguel
   g.hooks.state('dayend'); ok(/^Prejuízo de R\$ /.test(els['end-money'].textContent),'fim do dia: "Prejuízo de R$ ..."'); }
 
 // introdução e HUD
-{ reset({tonhao:2},5000,'redes'); g.startDay(5); ok(/^Meta de lucro: /.test(els['intro-goal'].textContent) && new RegExp('redes sociais R\\$ '+RED).test(els['intro-goal'].textContent) && new RegExp('folha R\\$ '+TP(2)).test(els['intro-goal'].textContent),'introdução: meta de lucro e custos do dia');
+{ reset({tonhao:2},5000,'redes'); g.startDay(5); ok(/^Meta: R\$ \d+ · ★★ R\$ \d+ · ★★★ R\$ \d+$/.test(els['intro-goal'].textContent) && !/Custos do dia/.test(els['intro-goal'].textContent),'introdução: meta e estrelas, sem os custos (v9.6.8)');
   g.begin(); let err=null; try{ L.render(g,ctx); }catch(e){ err=e; } ok(!err && g.lucro<0,'HUD desenha o lucro negativo do começo do dia'+(err?': '+err:'')); }
 
 // Turno sem fim: pontos = os de atendimento (v8.3.8; antes, o faturamento); o dinheiro acumulado recebe o faturamento menos ingredientes e contas

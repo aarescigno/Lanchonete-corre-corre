@@ -22,9 +22,9 @@ ok(g.buy('pratos') && g.buy('pratos') && g.buy('pratos'),'Jogo de pratos 3 vezes
 const cafe=L.UPGRADES.find(x=>x.id==='cafeteira').cost;
 ok(g.up.pratos===3 && g.save.bank===2000-150-cafe-900,'3 jogos e o dinheiro certo');
 L.setShopTab('melhorias');
-{ const c=cartao('Jogo de pratos'); ok(c && /^Você tem 3\./.test(c.children[2].textContent),'cartão mostra "Você tem 3."');
+{ const c=cartao('Jogo de pratos'); ok(c && /^Você tem 3$/.test(c.children[2].textContent),'cartão mostra "Você tem 3"');
   const b=c.children[3]; ok(b.textContent==='Comprar R$ 300' && !b.disabled,'botão do Jogo de pratos ativo');
-  const cf=cartao('Cafeteira').children[3]; ok(cf.disabled,'cafeteira já comprada: botão desabilitado'); }
+  const cf=cartao('Cafeteira').children.find(x=>/btn/.test(x.className||'')); ok(cf.disabled,'cafeteira já comprada: botão desabilitado'); }
 ok(/à vontade/.test(els['shop-limit'].textContent),'aviso do limite: melhorias à vontade');
 g.resetDay(3); ok(g.kitchen.clean===7,'dia 3 abre com 7 pratos limpos');
 
