@@ -362,6 +362,12 @@ function drawGarrafa(ctx,x,y,cor,sabor){
   else if (sabor === 1){ ctx.beginPath(); ctx.moveTo(x-2.6,y-14); ctx.bezierCurveTo(x-3.4,y-9,x,y-8,x,y-8); ctx.bezierCurveTo(x,y-8,x+3.4,y-9,x+2.6,y-14); ctx.closePath(); fs(ctx,'#D8334A',1); }
   else { ell(ctx,x,y-11,3.2,1.6); fs(ctx,'#3E9B5A',1); }
 }
+/* v9.6.9: os números dos lugares da espera, por cima de quem espera (os de pé, no chão, ficam no cenário) */
+function drawLugarNums(ctx,g){
+  const ponto = g && g.ponto ? g.ponto : PONTOS[0], sent = !!(g && g.sentado);
+  if (ponto.assento === 'pe' && !sent) return;
+  for (let i=0;i<ponto.espera;i++){ const x = QUEUE.x, y = QUEUE.ys[i]; circ(ctx,x-62,y-26,9); fs(ctx,'#fff',1.8); txt(ctx,String(i+1),x-62,y-25.5,11,PAL.faixa,'center',FD); }
+}
 function drawAguasEspera(ctx,g,t,menu){
   const r = STATIONS.maquina.rect, x = r.x + r.w / 2, y = r.y + r.h;
   shadowEll(ctx,x,y-2,32,6,0.2);
@@ -533,14 +539,12 @@ function drawCalcada(ctx,g,tm){
   for (let i=0;i<max;i++){
     const y = QUEUE.ys[i], x = QUEUE.x;
     if (av && sent){
-      circ(ctx,x-62,y-26,9); fs(ctx,'#fff',1.8); txt(ctx,String(i+1),x-62,y-25.5,11,PAL.faixa,'center',FD);
-      continue;
+      continue;   // v9.6.9: o número do lugar é desenhado depois das pessoas (drawLugarNums)
     }
     if (ponto.assento === 'pe' && sent){   // v9: cadeirinhas de plástico ou banquinhos de madeira, uma por lugar de pessoa
       ctx.fillStyle = 'rgba(34,32,28,.06)'; rr(ctx,x-70,y-72,140,84,12); ctx.fill();
       for (let k=0;k<4;k++){ shadowEll(ctx,x-45 + k*30,y+6,11,3,0.16); (banco ? drawBanquinho : drawCadeirinha)(ctx,x-45 + k*30,y+6,1.05); }
-      circ(ctx,x-62,y-26,9); fs(ctx,'#fff',1.8); txt(ctx,String(i+1),x-62,y-25.5,11,PAL.faixa,'center',FD);
-      continue;
+      continue;   // v9.6.9: o número do lugar é desenhado depois das pessoas (drawLugarNums)
     }
     if (ponto.assento === 'pe'){
       // de pé: faixa amarela pintada no concreto (meio gasta) e o número no chão
@@ -554,7 +558,6 @@ function drawCalcada(ctx,g,tm){
     ctx.fillStyle = PAL.madeiraEsc; ctx.fillRect(x-52,y-4,6,12); ctx.fillRect(x+46,y-4,6,12);
     rr(ctx,x-58,y-10,116,10,3); fs(ctx,PAL.madeira,2.2);
     ctx.strokeStyle = 'rgba(34,32,28,.3)'; ctx.lineWidth = 1; ctx.beginPath(); ctx.moveTo(x-56,y-5); ctx.lineTo(x+56,y-5); ctx.stroke();
-    circ(ctx,x-62,y-26,9); fs(ctx,'#fff',1.8); txt(ctx,String(i+1),x-62,y-25.5,11,PAL.faixa,'center',FD);
   }
   // plantas da casa da Bia (nível 1, v7.7): espada-de-são-jorge no vaso de barro, no canto de baixo, e uma menor
   // numa lata de tinta reaproveitada, encostada no muro (o banquinho de plástico da v7.5 fica para o nível 2).
@@ -846,7 +849,7 @@ function drawGeladeiraDoces(ctx,g,t){
   // o selo NOVO! (mostarda, pulsando) até 5 doces entregues na carreira; no modo dev, nunca
   if (!devLivre() && ((g.save && g.save.docesTot) || 0) < 5){
     const k = RM ? 1 : 1 + 0.08 * Math.sin(t * 5);
-    ctx.save(); ctx.translate(x - 2,y + 40); ctx.rotate(-0.25); ctx.scale(k,k);
+    ctx.save(); ctx.translate(x + r.w/2,y + r.h + 10); ctx.scale(k,k);   // v9.6.9: embaixo da vitrine, sem girar
     rr(ctx,-17,-7,34,14,5); fs(ctx,PAL.mostarda,1.6); txt(ctx,'NOVO!',0,0.6,9,PAL.tinta,'center',FD); ctx.restore();
   }
   const n = g.docesRet ? g.docesRet() - g.potes : 0;
@@ -873,11 +876,13 @@ function drawEspresso(ctx,g,tm){
 /* lixeira de pedal no chão do salão, encostada no balcão */
 /* Dani: cabelo cacheado, avental roxo e crachá com o nome */
 const DANI_LOOK = { skin:3, hair:5, hairC:'#2F1D12', pants:'#3C5A4A', kid:false, elder:false, acc:null, glasses:false };
+/* v9.6.9: os crachás só aparecem nos primeiros 20 s do dia (somem aos poucos de 17 a 20 s); render() ajusta */
+let CRACHA_A = 1;
 function drawDani(ctx,d,tm){
   drawPerson(ctx,DANI_LOOK,d.x,d.y,{ shirt:'#F7EFD8', moving:d.moving, ph:d.walkPh, mood:0, t:tm, lava:d.washing && !RM });
   const bob = (d.moving && !RM) ? -Math.abs(Math.sin(d.walkPh)) * 2.4 : 0;
   ctx.beginPath(); ctx.moveTo(d.x-8,d.y-30+bob); ctx.lineTo(d.x+8,d.y-30+bob); ctx.lineTo(d.x+11,d.y-12); ctx.lineTo(d.x-11,d.y-12); ctx.closePath(); fs(ctx,'#7B4FB5',2.2);
-  rr(ctx,d.x-14,d.y-84,28,12,5); fs(ctx,'#fff',1.6); txt(ctx,'Dani',d.x,d.y-77.5,9,'#7B4FB5','center',FD);
+  if (CRACHA_A > 0){ ctx.save(); ctx.globalAlpha *= CRACHA_A; rr(ctx,d.x-14,d.y-84,28,12,5); fs(ctx,'#fff',1.6); txt(ctx,'Dani',d.x,d.y-77.5,9,'#7B4FB5','center',FD); ctx.restore(); }
   d.hands.forEach((h,i) => drawHandItem(ctx,h.kind === 'coffee' ? { kind:'coffee' } : h,d.x + (i ? 18 : -18),d.y - 28,0.7));   // sem o número da mesa em cima do café
 }
 /* Joca (v9.2): rapaz de uns 20 anos, pele parda, cabelo cacheado preto curto, óculos redondos, camiseta cinza, avental azul-marinho e crachá;
@@ -890,7 +895,7 @@ function drawJoca(ctx,d,tm){
   ctx.beginPath(); ctx.moveTo(d.x-8,d.y-30+bob); ctx.lineTo(d.x+8,d.y-30+bob); ctx.lineTo(d.x+11,d.y-12); ctx.lineTo(d.x-11,d.y-12); ctx.closePath(); fs(ctx,JOCA_AVENTAL[lv] || JOCA_AVENTAL[2],2.2);
   if (lv >= 3){ ctx.fillStyle = '#fff'; ctx.fillRect(d.x-9.5,d.y-17+bob,19,2.2); }
   if (lv >= 4){ rr(ctx,d.x+1,d.y-26+bob,7,6,1.5); fs(ctx,'#fff',1.2); }
-  rr(ctx,d.x-15,d.y-84,30,12,5); fs(ctx,'#fff',1.6); txt(ctx,'JOCA',d.x,d.y-77.5,9,'#2C7A7B','center',FD);
+  if (CRACHA_A > 0){ ctx.save(); ctx.globalAlpha *= CRACHA_A; rr(ctx,d.x-15,d.y-84,30,12,5); fs(ctx,'#fff',1.6); txt(ctx,'JOCA',d.x,d.y-77.5,9,'#2C7A7B','center',FD); ctx.restore(); }
   d.hands.forEach((h,i) => drawHandItem(ctx,h.kind === 'coffee' ? { kind:'coffee' } : h,d.x + (i ? 18 : -18),d.y - 28,0.7));
 }
 /* Cami (v9.3): mulher de uns 30 anos, pele morena clara, cabelo preto liso preso num rabo de cavalo alto, polo vinho (a cor da Avenida) com avental curto preto,
@@ -902,7 +907,7 @@ function drawCami(ctx,d,tm){
   ctx.beginPath(); ctx.moveTo(d.x-8,d.y-26+bob); ctx.lineTo(d.x+8,d.y-26+bob); ctx.lineTo(d.x+10,d.y-12); ctx.lineTo(d.x-10,d.y-12); ctx.closePath(); fs(ctx,'#1E1D21',2.2);
   if (lv >= 2){ const sw = d.moving && !RM ? Math.sin(d.walkPh) * 3 : 0; ell(ctx,d.x-5+sw,d.y-0.5,5.2,2.8); fs(ctx,'#fff',1.4); ell(ctx,d.x+5-sw,d.y-0.5,5.2,2.8); fs(ctx,'#fff',1.4); ctx.fillStyle = PAL.perigo; ctx.fillRect(d.x-8+sw,d.y-1.6,6,1.6); ctx.fillRect(d.x+2-sw,d.y-1.6,6,1.6); }   // tênis de corrida
   if (lv >= 3){ rr(ctx,d.x+1,d.y-23+bob,7,6,1.5); fs(ctx,'#fff',1.2); ctx.strokeStyle = '#2C5AA0'; ctx.lineWidth = 2; ctx.beginPath(); ctx.moveTo(d.x-12,d.y-54+bob); ctx.lineTo(d.x-8,d.y-58+bob); ctx.stroke(); }
-  rr(ctx,d.x-15,d.y-84,30,12,5); fs(ctx,'#fff',1.6); txt(ctx,'CAMI',d.x,d.y-77.5,9,'#6B46C1','center',FD);
+  if (CRACHA_A > 0){ ctx.save(); ctx.globalAlpha *= CRACHA_A; rr(ctx,d.x-15,d.y-84,30,12,5); fs(ctx,'#fff',1.6); txt(ctx,'CAMI',d.x,d.y-77.5,9,'#6B46C1','center',FD); ctx.restore(); }
   d.hands.forEach((h,i) => drawHandItem(ctx,h.kind === 'coffee' ? { kind:'coffee' } : h,d.x + (i ? 18 : -18),d.y - 28,0.7));
 }
 /* Anselmo (v9.5): coqueteleiro de uns 45 anos, pele negra retinta, cabeça raspada e barba grisalha curta, camisa branca de manga dobrada, colete preto,
@@ -916,7 +921,7 @@ function drawAnselmo(ctx,d,tm){
   ctx.fillStyle = '#FFFFFF'; ctx.beginPath(); ctx.moveTo(d.x-3,d.y-30); ctx.lineTo(d.x,d.y-20); ctx.lineTo(d.x+3,d.y-30); ctx.closePath(); ctx.fill();
   ctx.beginPath(); ctx.moveTo(d.x,d.y-31); ctx.lineTo(d.x-6,d.y-35); ctx.lineTo(d.x-6,d.y-27); ctx.closePath(); fs(ctx,'#8E3B46',1.3);   // a gravata-borboleta
   ctx.beginPath(); ctx.moveTo(d.x,d.y-31); ctx.lineTo(d.x+6,d.y-35); ctx.lineTo(d.x+6,d.y-27); ctx.closePath(); fs(ctx,'#8E3B46',1.3);
-  rr(ctx,d.x-19,d.y-84,38,12,5); fs(ctx,'#fff',1.6); txt(ctx,'ANSELMO',d.x,d.y-77.5,8,'#8E3B46','center',FD);
+  if (CRACHA_A > 0){ ctx.save(); ctx.globalAlpha *= CRACHA_A; rr(ctx,d.x-19,d.y-84,38,12,5); fs(ctx,'#fff',1.6); txt(ctx,'ANSELMO',d.x,d.y-77.5,8,'#8E3B46','center',FD); ctx.restore(); }
   // a coqueteleira na mão direita, chacoalhando enquanto prepara
   const sh = d.busy && !RM ? Math.sin(tm * 18) * 3 : 0;
   ctx.save(); ctx.translate(d.x + 15,d.y - 40 + sh); ctx.rotate(d.busy && !RM ? 0.5 : 0.2);

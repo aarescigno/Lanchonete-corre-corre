@@ -17,6 +17,7 @@ function drawTouchFx(ctx,g){
 function render(g, ctx){
   COMIDA_CURSOS = g.cursos;   // v8.6.10: os pratos do curso avançado ganham o detalhe
   const tm = g.anim;
+  CRACHA_A = (devLivre() || (g.state !== 'playing' && g.state !== 'paused') || g.elapsed < 17) ? 1 : g.elapsed >= 20 ? 0 : RM ? 0 : 1 - (g.elapsed - 17) / 3;   // v9.6.9
   const menu = g.state === 'menu' && !g.conversa;   // v8.7: na conversa, o salão aparece como no dia (com a Bia)
   ctx.save();
   ctx.lineJoin = 'round'; ctx.lineCap = 'round';
@@ -56,6 +57,7 @@ function render(g, ctx){
         if (isDrag) ctx.globalAlpha = 0.35;
         const sq = grp.boing > 0 && !RM ? 1 + Math.sin(grp.boing*22)*0.08 : 1;
         ctx.translate(grp.x, grp.y); ctx.scale(1/sq, sq); ctx.translate(-grp.x, -grp.y);
+        if (QUEUE.max >= 5){ ctx.translate(grp.x, grp.y); ctx.scale(0.85, 0.85); ctx.translate(-grp.x, -grp.y); }   // v9.6.9: a espera da Avenida (6 lugares) em escala menor
         const parado = !grp.path.length;   // no lugar: sentado ou de pé, conforme o ponto (na Garagem, de pé)
         glowSprite(ctx,g,grp,ctx => drawCluster(ctx,grp,grp.x,grp.y,tm,{ sit:parado && g.sentado, bebe:parado }));
         ctx.restore();
@@ -98,12 +100,16 @@ function render(g, ctx){
   g.queue.forEach(grp => {
     if (grp.state !== 'queue') return;
     if (g.drag && g.drag.moved && g.drag.g === grp) return;
-    if (grp.vip){ drawHearts(ctx,grp,grp.x+14,grp.y-64,tm); drawVipBadge(ctx,grp.x-45,grp.y-63,tm); }
+    if (QUEUE.max >= 5){   // v9.6.9: corações menores, à direita do grupo, na altura do balão do pedido
+      drawHearts(ctx,grp,grp.x + 52,grp.y-64,tm,0.75);
+      if (grp.vip) drawVipBadge(ctx,grp.x-45,grp.y-63,tm);
+    } else if (grp.vip){ drawHearts(ctx,grp,grp.x+14,grp.y-64,tm); drawVipBadge(ctx,grp.x-45,grp.y-63,tm); }
     else drawHearts(ctx,grp,grp.x,grp.y-64,tm);
     if (grp.aguarda && !grp.path.length) drawWaitBadge(ctx,grp.x + (grp.vip ? 63 : 50),grp.y-66,tm,grp.piso);
     if (!menu) drawPedidoEspera(ctx,g,grp,tm);
   });
   g.retirada.forEach(grp => { drawHearts(ctx,grp,grp.x,grp.y-62,tm,0.6); if (!menu) drawRetiradaBalao(ctx,g,grp,tm); });
+  drawLugarNums(ctx,g);   // v9.6.9
   if (!menu) drawFilaMarcas(ctx,g,tm);
   // "?" sobre a Bia
   if (b.qT > 0 && !menu){
@@ -131,7 +137,7 @@ function render(g, ctx){
         rr(ctx,x - w/2,f.y - 13,w,26 + (ls.length - 1)*lh,9); ctx.fillStyle = '#FFFDF6'; ctx.fill(); ctx.lineWidth = 2.4; ctx.strokeStyle = f.color; ctx.stroke();
         ls.forEach((l, i) => txt(ctx,l,x,f.y + i*lh,f.size,PAL.tinta,'center',FB));
       } else
-      txt(ctx,f.text,f.x,f.y,f.size,f.color,'center',FD,4);
+      txt(ctx,f.text,f.x,Math.max(f.y,170),f.size,f.color,'center',FD,4);   // v9.6.9: nunca acima de y 170
       ctx.globalAlpha = 1;
     } else if (f.k === 'coin'){
       if (f.delay > 0) continue;

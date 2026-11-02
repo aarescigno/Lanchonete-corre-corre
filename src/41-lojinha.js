@@ -1129,7 +1129,7 @@ function buildShopTela(){
   liv.textContent = (sv.emp.atr ? ' · parcela do banco atrasada: ' + fmt(game.devido) + ' no fim do dia, ou o banco toma a lanchonete' : '') + (negAgora ? ' · no negativo há ' + sv.neg + (sv.neg === 1 ? ' dia' : ' dias') + ' (no ' + (BANCO.neg + 1) + 'º seguido, o banco cobre à força)' : '') + (!comp ? '' : corte.length
     ? ' · faltam ' + fmt(-game.livre) + ' para a folha: o dia ' + game.shopNext + ' abre sem ' + listaE(corte)
     : negFim ? ' · faltam ' + fmt(-game.livre) + ' para a folha: o caixa pode fechar no negativo'
-    : ' · livre ' + fmt(game.livre) + ' (' + fmt(comp) + ' reservados para ' + listaE(folhaItens(game.save.equipe, game.div)) + ')');
+    : ' · livre ' + fmt(game.livre));
   $('shop-limit').textContent = devLivre() ? 'Modo dev: tudo liberado; melhorias de graça, ligue e desligue à vontade.' : 'Melhorias à vontade, se o dinheiro der. Cursos: 1 por dia.';
   $('btn-shop-go').textContent = 'Começar o dia ' + game.shopNext;
   const f = payroll(game.save.equipe), dv = divulgaAberta(game.shopNext, game.save) ? divulgaOf(game.save.divulga) : null;
