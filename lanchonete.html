@@ -197,6 +197,10 @@ table.cx .rs{font-size:inherit}
 .cx-txt{flex-basis:100%;height:calc(var(--u)*90);font:600 12px var(--fb);border:2px solid var(--tinta);border-radius:8px;padding:4px}
 .item{background:var(--creme);border:calc(var(--u)*3) solid var(--tinta);border-radius:calc(var(--u)*12);padding:calc(var(--u)*6) calc(var(--u)*8);display:grid;grid-template-columns:auto 1fr;column-gap:calc(var(--u)*8);row-gap:calc(var(--u)*3);align-items:center;align-content:start;text-align:left}
 .item.own{background:#dcefd9}
+.item{position:relative}
+.item .qm{position:absolute;top:calc(var(--u)*4);right:calc(var(--u)*4);width:26px;height:26px;min-height:0;padding:0;border-radius:50%;border:calc(var(--u)*2) solid var(--tinta);background:#fff;color:var(--tinta);font:800 14px/1 var(--fb);cursor:pointer;display:flex;align-items:center;justify-content:center;z-index:1}   /* v9.6.8: o "?" que abre a ficha no Manual */
+.item .qm:hover,.item .qm:focus-visible{background:var(--faixa);color:#fff}
+.item > b{padding-right:30px}
 .item .dgrupo{grid-column:1 / -1;font:700 max(10px,calc(var(--u)*11)) var(--fb);font-style:normal;text-transform:uppercase;letter-spacing:.04em;color:var(--faixa)}   /* v8.6.5: o grupo do enfeite */
 .item.atr{background:#F6D7D3}   /* v8.3.1: empréstimo com parcela atrasada */
 .mbar{grid-column:1 / -1;height:calc(var(--u)*10);min-height:8px;background:#E3E0D6;border:calc(var(--u)*2) solid var(--tinta);border-radius:999px;overflow:hidden;width:100%}
@@ -364,7 +368,7 @@ table.rank tr.me td{background:#fbe7a8}
 
     <div class="ov show" id="ov-menu">
       <div class="panel menu-panel">
-        <span class="vtag" id="vtag" aria-label="Versão 9.6.7">v9.6.7</span>
+        <span class="vtag" id="vtag" aria-label="Versão 9.6.8">v9.6.8</span>
         <h1 class="title">Lanchonete <br>Corre-Corre</h1>
         <p class="tag">Ajude a Bia a atender a freguesia da esquina antes que o cafezinho esfrie!</p>
         <div class="lbl" id="menu-dia">História</div>
@@ -580,7 +584,8 @@ table.rank tr.me td{background:#fbe7a8}
       <div class="panel">
         <h2>Versões</h2>
         <ul class="verlist">
-          <li><b>v9.6.7</b><span class="cur">versão atual</span><br>02/11/2026 &mdash; O Como jogar vira o Manual: um bestiário com fichas (básico, clientes, equipe, lojinha, lugares e imprevistos) que se revelam com a história; abre pelo menu, pela pausa e pelo &quot;?&quot; da lojinha.</li>
+          <li><b>v9.6.8</b><span class="cur">versão atual</span><br>02/11/2026 &mdash; Menos texto na tela: a lojinha mostra só o desenho, o nome e o pre&ccedil;o, com um &quot;?&quot; que abre a ficha no Manual; a equipe mostra as qualidades em bolinhas; a abertura do dia e os avisos ficam curtos.</li>
+          <li><b>v9.6.7</b><br>02/11/2026 &mdash; O Como jogar vira o Manual: um bestiário com fichas (básico, clientes, equipe, lojinha, lugares e imprevistos) que se revelam com a história; abre pelo menu, pela pausa e pelo &quot;?&quot; da lojinha.</li>
           <li><b>v9.6.6</b><br>02/11/2026 &mdash; A pia e o lixo ficam bem mais sujos, com moscas; a Bia lava um prato por vez; a geladeirinha de doces fica maior, com placa e selo NOVO!, e o balão do doce na mesa fica maior. Sai o lembrete da louça.</li>
           <li><b>v9.6.5</b><br>01/11/2026 &mdash; As marmitas ganham uma fileira s&oacute; delas na janela de prontos; as mesas t&ecirc;m prioridade no fog&atilde;o; os entregadores chegam mais espa&ccedil;ados; a marmita de quem desistiu vai para o lixo; e um toque na janela pega o prato mais antigo.</li>
           <li><b>v9.6.4</b><br>01/11/2026 &mdash; A porta fecha no fim do turno: quem espera lá fora vai embora sem multa e quem já está nas mesas termina e paga; no máximo 2 grupos grandes por mesa de 4 na espera; o Salão abre quando a primeira família vai embora da fila; a conversa dos entregadores vem um dia antes e a Efood só abre depois dela; e o cliente VIP some da Garagem, fica raro na área industrial e não perdoa prato frio.</li>
@@ -1148,20 +1153,20 @@ const SALAO_SEMFIM = [2,2,2,4,2,4];
    vai junto quando a mesa muda de lugar e some quando ela é vendida
    ============================================================ */
 const DECOR = [
-  { id:'espada',    grupo:'plantas', name:'Espada-de-são-jorge', desc:'No vaso de barro, na calçada, ao lado da espera.', cost:15 },
-  { id:'lata',      grupo:'plantas', name:'Muda na lata',        desc:'Uma espada menor numa lata de tinta reaproveitada, encostada no muro.', cost:8 },
-  { id:'samambaia', grupo:'plantas', name:'Samambaia',           desc:'Pendurada num suporte na parede, ao lado da janela.', cost:30 },
+  { id:'espada',    grupo:'plantas', name:'Espada-de-são-jorge', cost:15 },
+  { id:'lata',      grupo:'plantas', name:'Muda na lata',        cost:8 },
+  { id:'samambaia', grupo:'plantas', name:'Samambaia',           cost:30 },
   // v9, só a partir da área industrial: as plantas da calçada (+0,1 cada no Ambiente)
-  { id:'violeta',   grupo:'plantas', name:'Violetas',            desc:'Vasinhos de violeta na janela do lado de dentro.', cost:20, nivel:2, amb:0.1 },
-  { id:'anturio',   grupo:'plantas', name:'Antúrio',             desc:'Um antúrio vermelho no vaso, no chão, perto da porta.', cost:30, nivel:2, amb:0.1 },
-  { id:'pendente',  grupo:'plantas', name:'Samambaia pendurada', desc:'Pendurada no toldo da entrada.', cost:40, nivel:2, amb:0.1 },
+  { id:'violeta',   grupo:'plantas', name:'Violetas',            cost:20, nivel:2, amb:0.1 },
+  { id:'anturio',   grupo:'plantas', name:'Antúrio',             cost:30, nivel:2, amb:0.1 },
+  { id:'pendente',  grupo:'plantas', name:'Samambaia pendurada', cost:40, nivel:2, amb:0.1 },
   // v9.1, só na Avenida Brasil: as flores da calçada (+0,15 cada no Ambiente)
-  { id:'tulipa',    grupo:'plantas', name:'Tulipas',             desc:'Numa jardineira, ao longo da calçada.', cost:40, nivel:3, amb:0.15 },
-  { id:'copo',      grupo:'plantas', name:'Copos-de-leite',      desc:'Num vaso alto, ao lado da espera.', cost:50, nivel:3, amb:0.15 },
-  { id:'orquidea',  grupo:'plantas', name:'Orquídeas',           desc:'Numa mesinha, perto da porta.', cost:60, nivel:3, amb:0.15 },
-  { id:'foto',      grupo:'rosa',    name:'Foto da dona Rosa',   desc:'A mãe da Bia sorrindo, num porta-retrato na parede.', cost:10 },
-  { id:'giz',       grupo:'rosa',    name:'Quadro de giz',       desc:'No cavalete, perto da porta, com o prato do dia escrito à mão.', cost:25 },
-  { id:'placa',     grupo:'rosa',    name:'Plaquinha',           desc:'"Comida é afeto", pintada à mão, embaixo do letreiro.', cost:15 }
+  { id:'tulipa',    grupo:'plantas', name:'Tulipas',             cost:40, nivel:3, amb:0.15 },
+  { id:'copo',      grupo:'plantas', name:'Copos-de-leite',      cost:50, nivel:3, amb:0.15 },
+  { id:'orquidea',  grupo:'plantas', name:'Orquídeas',           cost:60, nivel:3, amb:0.15 },
+  { id:'foto',      grupo:'rosa',    name:'Foto da dona Rosa',   cost:10 },
+  { id:'giz',       grupo:'rosa',    name:'Quadro de giz',       cost:25 },
+  { id:'placa',     grupo:'rosa',    name:'Plaquinha',           cost:15 }
 ];
 const DECOR_GRUPOS = [
   { id:'plantas', nome:'Plantas' },
@@ -1374,13 +1379,13 @@ const MULTA = 10;                                     // grupo que vai embora br
 const VIP = { pat:0.65, tip:0.1, perfect:40, angry:10, dish:12, cook:1.8, types:['estudante','vovos','familia','executiva'] };   // dish: o prato especial soma R$ 12 à conta e leva 1,8× o tempo; perfect: pontos (v8.3.8)
 
 const DAYS = [
-  { n:1, groups:5,  types:['estudante','vovos'],                                   nu:null,         meta:30, expert:60,  time:150, speed:0.60, note:'A freguesia espera lá fora, na calçada: arraste cada grupo até uma mesa livre.' },
-  { n:2, groups:8,  types:['estudante','vovos','familia'],                         nu:'familia',    meta:108, expert:220,  time:160, speed:0.60, note:'Chegou a família! Grupos de 3 ou 4 só cabem nas mesas de 4 lugares: se faltar mesa, eles vão embora.' },
-  { n:3, groups:13, types:['estudante','vovos','familia','executiva'],             nu:'executiva',  meta:135, expert:230,  time:170, speed:0.60, juice:0.3, note:'O movimento aumentou e agora só há 4 pratos limpos: sozinha a Bia não dá conta. A executiva tem pouca paciência, mas deixa boa gorjeta. E abriu o balcão de sucos: quem pede suco quer receber antes da conta!' },
-  { n:4, groups:15, types:['estudante','vovos','familia','executiva','entregador'], nu:'entregador', meta:63, expert:110, time:180, speed:0.58, juice:0.3, note:'Chegou o entregador de moto! Ele não senta: espera no balcão de retirada, no alto da calçada, e leva o prato numa marmita. O pedido vai sozinho ao Tonhão; leve a marmita pronta ao balcão. Tem pressa!' },
-  { n:5, groups:16, types:['estudante','vovos','familia','executiva','entregador'], nu:null,         meta:90, expert:140, time:190, speed:0.56, vip:0.15, juice:0.3, note:'O movimento cresce: fique de olho na louça e no lixo.' },
+  { n:1, groups:5,  types:['estudante','vovos'],                                   nu:null,         meta:30, expert:60,  time:150, speed:0.60, note:'Arraste cada grupo até uma mesa livre.' },
+  { n:2, groups:8,  types:['estudante','vovos','familia'],                         nu:'familia',    meta:108, expert:220,  time:160, speed:0.60, note:'Chegou a família! Ela só cabe em mesa de quatro.' },
+  { n:3, groups:13, types:['estudante','vovos','familia','executiva'],             nu:'executiva',  meta:135, expert:230,  time:170, speed:0.60, juice:0.3, note:'Chegou a executiva! E abriu o balcão de sucos.' },
+  { n:4, groups:15, types:['estudante','vovos','familia','executiva','entregador'], nu:'entregador', meta:63, expert:110, time:180, speed:0.58, juice:0.3, note:'Chegou o entregador de moto!' },
+  { n:5, groups:16, types:['estudante','vovos','familia','executiva','entregador'], nu:null,         meta:90, expert:140, time:190, speed:0.56, vip:0.15, juice:0.3, note:'O movimento cresce.' },
   { n:6, groups:16, types:['estudante','vovos','familia','executiva','entregador'], nu:null,         meta:140, expert:280, time:200, speed:0.54, vip:0.15, juice:0.3, note:'Sexta-feira: ninguém quer esperar.' },
-  { n:7, groups:17, types:['estudante','vovos','familia','executiva','entregador'], nu:null,         meta:170, expert:310, time:220, speed:0.52, vip:0.15, juice:0.3, gripe:true, note:'Tonhão está gripado: a cozinha anda mais devagar hoje.' }
+  { n:7, groups:17, types:['estudante','vovos','familia','executiva','entregador'], nu:null,         meta:170, expert:310, time:220, speed:0.52, vip:0.15, juice:0.3, gripe:true, note:'Tonhão está gripado: a cozinha anda devagar.' }
 ];
 /* campanha (v8.3): os dias 1 a 7 são a rampa de abertura; do dia 8 em diante, cada dia tem o perfil do dia 7 (sem a gripe
    do Tonhão) com o movimento do dia da semana (o dia 1 é domingo e o 6, sexta). f: fator dos grupos e das metas;
@@ -1414,9 +1419,9 @@ function bomGoal(d){ return Math.round((d.meta + d.expert) / 50) * 25; }
 const CONTAS = { base:20, mesa:3, lugar:1 };         // por dia: o aluguel do ponto + gás e geladeira (base) + a luz de cada mesa aberta e de cada lugar (v8.3.8)
 const INGRED = { prato:0.35, suco:3 };               // prato: fração da conta (cobrada quando fica pronto); suco: R$ por copo entregue
 const DIVULGA = [
-  { id:'boca',     name:'Boca a boca',   cost:0,   groups:[0.6, 0.9], vip:1,   desc:'Vem menos gente e o movimento varia: pode ser um dia fraco.' },
-  { id:'panfleto', name:'Panfletos',     cost:20,  groups:[1, 1],     vip:1,   desc:'O movimento normal do dia.' },
-  { id:'redes',    name:'Redes sociais', cost:40,  groups:[1.2, 1.2], vip:1.5, desc:'+20% de grupos e, do dia 5 em diante, 50% mais VIPs. Precisa de lugar para tanta gente!' }
+  { id:'boca',     name:'Boca a boca',   cost:0,   groups:[0.6, 0.9], vip:1 },
+  { id:'panfleto', name:'Panfletos',     cost:20,  groups:[1, 1],     vip:1 },
+  { id:'redes',    name:'Redes sociais', cost:40,  groups:[1.2, 1.2], vip:1.5 }
 ];
 /* movimento do salão (v7.4.1): cada lugar acima dos 10 do kit traz `porLugar` a mais de grupos no dia
    (salão cheio chama gente). Sem isso, mesa a mais só dava conta de luz e gás */
@@ -1788,7 +1793,7 @@ const BIA_IDS = ['tenis', 'corrida', 'bandeja', 'sudoku'];
 function upgradeCartao(id){ return BIA_IDS.indexOf(id) >= 0 ? 'bia' : 'melhorias'; }
 const HIST_NOMES = { bia:'Bia', tonhao:'Tonhão', dani:'Dani', joca:'Joca', cami:'Cami', anselmo:'Anselmo' };
 const CAIXA_MAX = 14;                                 // livro-caixa (v7.2): quantos dias da carreira ficam guardados
-const VERSAO = 'v9.6.7';                            // vai no resumo do Caixa
+const VERSAO = 'v9.6.8';                            // vai no resumo do Caixa
 const DIVULGA_DIA = 4;                                // antes disso, o movimento é o da inauguração (sem custo); v9.0.2: dia 4, e o padrão é o boca a boca
 function divulgaAberta(n, sv){ return devLivre() || n >= DIVULGA_DIA && !(sv && sv.convDiv === 'pend'); }   // no modo dev, desde o dia 1; v9.0.3: no Modo História, só depois da conversa
 /* v9.6.4: a Efood (os entregadores) só abre depois da conversa dos entregadores, no Modo História; antes dela, nenhum tipo com `retira` vem na agenda */
@@ -1827,18 +1832,18 @@ const FILA_ACOES = { base:5, sudoku:3 };
 function filaMax(up){ return FILA_ACOES.base + (up && up.sudoku ? FILA_ACOES.sudoku : 0); }
 
 const UPGRADES = [
-  { id:'tenis',      name:'Tênis novos',          desc:'A Bia anda 10% mais rápido. Depois, libera os Tênis de corrida.', cost:150 },
-  { id:'corrida',    name:'Tênis de corrida',     desc:'2º nível dos tênis: a Bia anda 20% mais rápido (em vez de 10%).', cost:350, req:'tenis' },
-  { id:'maquina',    name:'Água da torneira',     desc:'Na calçada: torneira e copos americanos num caixote. Quem espera pede água; a Bia enche e leva, de graça, e quem bebe perde a paciência 40% mais devagar.', cost:80, devolve:100,
+  { id:'tenis',      name:'Tênis novos',          cost:150 },
+  { id:'corrida',    name:'Tênis de corrida',     cost:350, req:'tenis' },
+  { id:'maquina',    name:'Água da torneira',     cost:80, devolve:100,
     porNivel:{
-      2:{ name:'Jarra de suco', desc:'Num caixote ao lado da porta, com copos. Quem espera pede suco no balão; a Bia leva, R$ 12 na conta do grupo, e quem bebe perde a paciência 40% mais devagar.', cost:120 },   // v9: o ponto da área industrial troca o nome, o texto e o preço
-      3:{ name:'Águas saborizadas', desc:'Numa mesinha de canto, com garrafas de vidro e copos. Quem espera pede água de limão, morango ou hortelã; a Bia leva, R$ 14 na conta do grupo, e quem bebe perde a paciência 40% mais devagar.', cost:200 } } },   // v9.1: a Avenida Brasil
-  { id:'cafeteira',  name:'Cafeteira de 2 bocas', desc:'O cafezinho devolve +2 corações.',             cost:200 },
-  { id:'bandeja',    name:'Bandeja',              desc:'Leva 2 pratos, 3 bebidas, prato + bebida ou 2 pilhas de louça.', cost:220 },
-  { id:'sudoku',     name:'Livrinho de Sudoku',   desc:'A fila de ações da Bia ganha 3 quadrinhos (de 5 para 8 tarefas já marcadas).', cost:200 },   // v8.6.3
-  { id:'ventilador', name:'Ventilador de teto',   desc:'A freguesia come 15% mais rápido.', cost:250 },   // v8.3.10: o cheiro da lixeira cheia voltou a incomodar
-  { id:'triturador', name:'Triturador de lixo',   desc:'Mói os restos da lixeira: tira 1 do lixo a cada 30 s. Ainda é preciso esvaziar de vez em quando.', cost:180 },
-  { id:'pratos',     name:'Jogo de pratos',       desc:'+1 prato limpo na cozinha (do dia 3 em diante). Leve quantos quiser.', cost:300, multi:true }   // v8.3.6: acumula
+      2:{ name:'Jarra de suco', cost:120 },   // v9: o ponto da área industrial troca o nome, o texto e o preço
+      3:{ name:'Águas saborizadas', cost:200 } } },   // v9.1: a Avenida Brasil
+  { id:'cafeteira',  name:'Cafeteira de 2 bocas', cost:200 },
+  { id:'bandeja',    name:'Bandeja',              cost:220 },
+  { id:'sudoku',     name:'Livrinho de Sudoku',   cost:200 },   // v8.6.3
+  { id:'ventilador', name:'Ventilador de teto',   cost:250 },   // v8.3.10: o cheiro da lixeira cheia voltou a incomodar
+  { id:'triturador', name:'Triturador de lixo',   cost:180 },
+  { id:'pratos',     name:'Jogo de pratos',       cost:300, multi:true }   // v8.3.6: acumula
 ];
 
 /* a melhoria como o ponto a vende (a Água da torneira vira a Jarra de suco na área industrial e as Águas saborizadas na Avenida) */
@@ -4266,7 +4271,7 @@ class Game {
       this.addText(QUEUE.x, DOOR.y + 12, 'VIP chegou!', PAL.mostarda, 22);
       if (this.mode === 'carreira' && !this.save.vipVisto){   // v9.6.4: o 1º VIP da carreira vem explicado, num balão branco
         this.save.vipVisto = 1; writeSave(this.save);
-        this.fx.push({ k:'text', box:true, x:TW/2 - this.cam, y:250, vy:-6, life:5, max:5, text:'Chegou cliente VIP! Fura a fila, tem pouca paciência e não perdoa prato frio.\nEm compensação, pede o prato especial e dá gorjeta.', color:PAL.faixa, size:16 });
+        this.fx.push({ k:'text', box:true, x:TW/2 - this.cam, y:250, vy:-6, life:5, max:5, text:'Chegou cliente VIP!\nFura a fila e quer tudo quentinho.', color:PAL.faixa, size:16 });
       }
       Sfx.tone(988, 0.1, 'sine', 0.06); Sfx.tone(1319, 0.14, 'sine', 0.06, 0.1);
     } else {
@@ -9876,6 +9881,22 @@ function shopBtn(text, cls, enabled, fn, cost){
   b.addEventListener('click', () => { Sfx.init(); if (folhaPede(b)) return; if (fn()) buildShop(); else Sfx.boing(); });
   return b;
 }
+/* v9.6.8: o "?" no canto do cartão: abre a ficha dele no Manual */
+function maisAjuda(card, ficha, nome){
+  if (!ficha) return card;
+  const b = el('button', 'qm', '?'); b.type = 'button'; b.setAttribute('aria-label', 'No Manual: ' + nome); b.setAttribute('data-ficha', ficha);
+  b.addEventListener('click', () => { Sfx.init(); Sfx.tap(); abrirManual(ficha, 'shop'); });
+  card.appendChild(b); return card;
+}
+/* as linhas do quadro "agora → próximo nível" em bolinhas: defs [rótulo, campo, sentido] sobre a lista de níveis lv; a diária continua em R$ */
+function nivRows(lv, defs, a, b){
+  const f = (l, k, dir) => {
+    if (!l) return null;
+    const vals = lv.filter(x => x && x[k]).map(x => x[k]).filter((v, i, t) => t.indexOf(v) === i).sort((p, q) => dir * (p - q));
+    return manualBolas(vals.indexOf(l[k]) + 1, vals.length);
+  };
+  return defs.map(d => [d[0], a ? f(a, d[1], d[2]) : null, f(b, d[1], d[2])]).concat([['Diária', a && fmt(a.pay), fmt(b.pay)]]);
+}
 function staffCard(icon, title, desc){
   const card = el('div', 'item'); card.appendChild(icon); card.appendChild(el('b', null, title)); if (desc) card.appendChild(el('span', null, desc));
   return card;
@@ -9898,16 +9919,12 @@ function buildTonhao(grid){
   const canPay = extra => payroll(eq) + extra <= bank;
   const pc = v => Math.round(v*100) + '%', sec = v => String(Math.round(v*10)/10).replace('.', ',') + ' s';
   // Tonhão
-  const tRows = (a, b) => [
-    ['Rapidez', a && (a.cook === 1 ? 'normal' : '+' + pc(1 - a.cook)), b.cook === 1 ? 'normal' : '+' + pc(1 - b.cook)],
-    ['Caprichados ★', a && pc(a.crit), pc(b.crit)],
-    ['Pia', a && (a.wash ? '1 pilha/' + a.wash + ' s' : 'não'), b.wash ? '1 pilha/' + b.wash + ' s' : 'não'],
-    ['Diária', a && fmt(a.pay), fmt(b.pay)]];
+  const tRows = (a, b) => nivRows(T, [['Rapidez', 'cook', -1], ['Capricho', 'crit', 1], ['Pia', 'wash', -1]], a, b);
   // v8.8: o nível vem da experiência dos cursos; o aumento de salário só consolida o nível que a xp já permite
   const top = T.length - 1, xp = tonhaoXp(game.save.cursos), pronto = devLivre() || xp >= (T[eq.tonhao + 1] || T[top]).xp;
-  let c = staffCard(upgradeIcon('tonhao'), 'Tonhão · nível ' + (eq.tonhao + 1) + ' de ' + T.length, 'Prato caprichado ★ vale +1♥ e +' + CRIT.bonus + ' pontos.');
+  let c = staffCard(upgradeIcon('tonhao'), 'Tonhão · nível ' + (eq.tonhao + 1) + ' de ' + T.length);
   const xl = el('div', 'tonxp');
-  xl.appendChild(el('span', null, eq.tonhao < top ? 'Experiência: ' + xp + ' de ' + T[eq.tonhao + 1].xp + ' para o nível ' + (eq.tonhao + 2) : 'Experiência: ' + xp + ' · nível máximo'));
+  xl.appendChild(el('span', null, eq.tonhao < top ? (pronto ? 'Pronto para o aumento!' : 'Experiência') : 'Experiência · nível máximo'));
   if (eq.tonhao < top){ const bar = el('div', 'tonxp-bar'), fi = el('i'); fi.style.width = Math.round(clamp((xp - T[eq.tonhao].xp) / (T[eq.tonhao + 1].xp - T[eq.tonhao].xp), 0, 1) * 100) + '%'; bar.appendChild(fi); xl.appendChild(bar); }
   c.appendChild(xl);
   c.appendChild(eq.tonhao < top ? staffNext('Com o aumento (nível ' + (eq.tonhao + 2) + '):', tRows(T[eq.tonhao], T[eq.tonhao+1])) : staffNext('Nível máximo:', tRows(null, T[top])));
@@ -9915,7 +9932,6 @@ function buildTonhao(grid){
   if (eq.tonhao < top){
     const dif = T[eq.tonhao+1].pay - T[eq.tonhao].pay;
     duo.appendChild(shopBtn('Aumento: +' + fmt(dif) + '/dia', 'btn', pronto && canPay(dif), () => game.setStaff('tonhao', eq.tonhao + 1)));
-    if (!pronto) c.appendChild(el('span', 'cursos-lista', 'Faltam ' + (T[eq.tonhao+1].xp - xp) + ' de experiência: cada curso básico dá +1 e cada avançado +2. Os cursos ficam no Cardápio.'));
   }
   c.appendChild(duo); grid.appendChild(c);
   buildCursosFeitos(grid);
@@ -9924,7 +9940,7 @@ function buildTonhao(grid){
 function buildCursosFeitos(grid){
   const cur = game.save.cursos, l = [];
   CURSOS.forEach(c => { const n = cursoNivel(cur, c.id); if (c.preco > 0 && n >= 1) l.push('Curso de ' + c.nome + ' (básico)'); if (n >= 2) l.push(c.av.nome + ' (avançado)'); });
-  const card = staffCard(upgradeIcon('cardapio'), 'Cursos de cardápio concluídos', l.length ? '' : 'Nenhum ainda. Os cursos ficam no Cardápio da lojinha.');
+  const card = staffCard(upgradeIcon('cardapio'), 'Cursos de cardápio concluídos', l.length ? '' : 'Nenhum ainda.');
   l.forEach(t => card.appendChild(el('span', null, t)));
   card.appendChild(shopBtn('Ver cursos', 'btn', true, () => { shopAbrir('cardapio'); return true; }));
   grid.appendChild(card);
@@ -9937,14 +9953,10 @@ function buildDani(grid){
   // Dani: só mostra as tarefas que ela já pode exercer (e só depois de contratada)
   const lv = eq.dani, sp = D[lv] || D[1];
   const avail = DANI_TASKS.filter(t => daniTaskOk(t.id, game.up)).map(t => daniTaskDe(t, game.ponto));
-  const dRows = (a, b) => [
-    ['Velocidade', a && pc(a.speed), pc(b.speed)],
-    ['Lava 1 pilha', a && sec(WASH.perPile / a.speed), sec(WASH.perPile / b.speed)],
-    ['Tarefas', a && String(a.tasks), String(b.tasks)],
-    ['Diária', a && fmt(a.pay), fmt(b.pay)]];
+  const dRows = (a, b) => nivRows(D, [['Rapidez', 'speed', 1], ['Tarefas', 'tasks', 1]], a, b);
   const cap2 = game.save.cap >= 2 || devLivre() || lv > 0;   // v8.7: a Dani chega no capítulo 2 (no modo dev, desde o início)
   c = staffCard(upgradeIcon('dani'), lv ? 'Dani · ' + (lv === 1 ? 'aprendiz (sem salário)' : 'nível ' + (lv - 1) + ' de 3') : 'Dani (ajudante)',
-    lv ? '' : (cap2 ? '' : 'Chega no capítulo 2. ') + 'Ajudante da Bia, mais lenta que ela (velocidade em % da dela). Tem 2 mãos: leva 2 itens por vez. Pode ' + avail.map(t => t.name.toLowerCase()).join(', ').replace(/, ([^,]*)$/, ' e $1') + '.');
+    lv ? '' : (cap2 ? '' : 'Chega no capítulo 2.'));
   if (lv){
     const feitas = game.dani.tasks, sel = feitas.length;   // v9.2: as básicas do Joca não ocupam vaga; v9.6.3: só marca o que ela de fato faz (no nível 1 é 1 tarefa, mesmo com 2 guardadas)
     const tasks = el('div', 'tasks');
@@ -9959,7 +9971,7 @@ function buildDani(grid){
     c.appendChild(el('span', 'full', 'Tarefas (' + Math.min(sel, sp.tasks) + ' de ' + sp.tasks + '):'));
     c.appendChild(tasks);
     if (donoBasico(game) !== 'dani') c.appendChild(el('span', 'cursos-lista', 'As tarefas da casa ficaram com ' + (donoBasico(game) === 'cami' ? 'a Cami' : 'o Joca') + '.'));
-    if (game.up.espresso) c.appendChild(el('span', 'cursos-lista', 'O cafezinho passou para o Joca, que cuida da máquina de espresso.'));
+    if (game.up.espresso) c.appendChild(el('span', 'cursos-lista', 'O cafezinho agora é do Joca.'));
   }
   const dMax = D.length - 1;
   if (!lv && !cap2){ grid.appendChild(c); return; }
@@ -9967,7 +9979,7 @@ function buildDani(grid){
   const xp = daniXp(game.save), pronto = devLivre() || lv < 1 || xp >= (D[lv+1] || D[dMax]).xp;
   if (lv){
     const xl = el('div', 'tonxp');
-    xl.appendChild(el('span', null, lv < dMax ? 'Experiência: ' + xp + ' de ' + D[lv+1].xp + ' para o nível ' + lv : 'Experiência: ' + xp + ' · nível máximo'));
+    xl.appendChild(el('span', null, lv < dMax ? (pronto ? 'Pronto para o aumento!' : 'Experiência') : 'Experiência · nível máximo'));
     if (lv < dMax){ const bar = el('div', 'tonxp-bar'), fi = el('i'); fi.style.width = Math.round(clamp((xp - D[lv].xp) / (D[lv+1].xp - D[lv].xp), 0, 1) * 100) + '%'; bar.appendChild(fi); xl.appendChild(bar); }
     const falta = DANI_XP.tarefas - ((+game.save.daniTar || 0) % DANI_XP.tarefas);
     xl.appendChild(el('small', null, 'Trabalho: ' + falta + (falta > 1 ? ' tarefas' : ' tarefa') + ' até o próximo ponto'));
@@ -9977,7 +9989,6 @@ function buildDani(grid){
   duo = el('div', 'duo');
   if (lv < dMax){
     duo.appendChild(shopBtn(lv ? 'Aumento: +' + fmt(D[lv+1].pay - D[lv].pay) + '/dia' : 'Contratar', 'btn', pronto && canPay(D[lv+1].pay - (lv ? D[lv].pay : 0)), () => game.setStaff('dani', lv + 1)));
-    if (lv && !pronto) c.appendChild(el('span', 'cursos-lista', 'Faltam ' + (D[lv+1].xp - xp) + ' de experiência: ela aprende trabalhando e com os cursos (+' + DANI_XP.curso + ' cada).'));
   }
   c.appendChild(duo); grid.appendChild(c);
   if (game.daniChegou) buildDaniCursos(grid);
@@ -9989,13 +10000,9 @@ function buildJoca(grid){
   const pc = v => Math.round(v*100) + '%', sec = v => String(Math.round(v*10)/10).replace('.', ',') + ' s';
   const lv = eq.joca, sp = J[lv] || J[2];
   const avail = BASICAS.filter(id => daniTaskOk(id, game.up)).map(id => daniTaskDe(DANI_TASKS.find(d => d.id === id), game.ponto));
-  const jRows = (a, b) => [
-    ['Velocidade', a && pc(a.speed), pc(b.speed)],
-    ['Lava 1 pilha', a && sec(WASH.perPile / a.speed), sec(WASH.perPile / b.speed)],
-    ['Tarefas', a && String(a.tasks), String(b.tasks)],
-    ['Diária', a && fmt(a.pay), fmt(b.pay)]];
+  const jRows = (a, b) => nivRows(J, [['Rapidez', 'speed', 1], ['Tarefas', 'tasks', 1]], a, b);
   const c = staffCard(upgradeIcon('joca'), lv ? 'Joca · nível ' + (lv - 1) + ' de 3' : 'Joca (ajudante)',
-    lv ? '' : 'Conhecido da Dani, dos tempos de colégio. Cuida do básico da casa: ' + avail.map(t => t.name.toLowerCase()).join(', ').replace(/, ([^,]*)$/, ' e $1') + '. Tem 2 mãos, como a Dani. Com ele, a Dani fica só com a especialidade dela.');
+    lv ? '' : '');
   if (lv){
     const esp = game.up.espresso ? 1 : 0, cami = donoBasico(game) === 'cami', vagas = sp.tasks - esp;   // v9.3: o café (cafezinho e espresso) ocupa 1 vaga fixa
     const sel = eq.jocaTasks.filter(id => daniTaskOk(id, game.up)).length, tasks = el('div', 'tasks');
@@ -10007,10 +10014,10 @@ function buildJoca(grid){
       tasks.appendChild(b);
     });
     if (!cami){ c.appendChild(el('span', 'full', 'Tarefas (' + Math.min(sel, vagas) + ' de ' + vagas + '):')); c.appendChild(tasks); }
-    if (esp) c.appendChild(el('span', 'cursos-lista', 'O café é dele: cafezinho e espresso' + (cami ? '.' : ', numa vaga fixa.')));
+    if (esp) c.appendChild(el('span', 'cursos-lista', 'O café é dele.'));
     if (cami) c.appendChild(el('span', 'cursos-lista', 'As tarefas da casa ficaram com a Cami.'));
     const xp = jocaXp(sv), xl = el('div', 'tonxp');
-    xl.appendChild(el('span', null, lv < jMax ? 'Experiência: ' + xp + ' de ' + J[lv+1].xp + ' para o nível ' + lv : 'Experiência: ' + xp + ' · nível máximo'));
+    xl.appendChild(el('span', null, lv < jMax ? ((devLivre() || xp >= J[lv+1].xp) ? 'Pronto para o aumento!' : 'Experiência') : 'Experiência · nível máximo'));
     if (lv < jMax){ const bar = el('div', 'tonxp-bar'), fi = el('i'); fi.style.width = Math.round(clamp((xp - J[lv].xp) / (J[lv+1].xp - J[lv].xp), 0, 1) * 100) + '%'; bar.appendChild(fi); xl.appendChild(bar); }
     const falta = JOCA_XP.tarefas - ((+sv.jocaTar || 0) % JOCA_XP.tarefas);
     xl.appendChild(el('small', null, 'Trabalho: ' + falta + (falta > 1 ? ' tarefas' : ' tarefa') + ' até o próximo ponto'));
@@ -10022,7 +10029,6 @@ function buildJoca(grid){
   if (lv < jMax){
     const prox = lv ? J[lv+1] : J[2], dif = prox.pay - (lv ? J[lv].pay : 0);
     duo.appendChild(shopBtn(lv ? 'Aumento: +' + fmt(dif) + '/dia' : 'Contratar', 'btn', pronto && canPay(dif), () => game.setStaff('joca', lv ? lv + 1 : 2)));
-    if (lv && !pronto) c.appendChild(el('span', 'cursos-lista', 'Faltam ' + (J[lv+1].xp - xp) + ' de experiência: ele aprende trabalhando e com os cursos (+' + JOCA_XP.curso + ' cada).'));
   }
   c.appendChild(duo); grid.appendChild(c);
   if (game.cursoMsg) grid.appendChild(el('p', 'cursomsg', game.cursoMsg));
@@ -10031,7 +10037,7 @@ function buildJoca(grid){
     card.appendChild(upgradeIcon('joca'));
     card.appendChild(el('b', null, 'Curso de ' + q.nome));
     card.appendChild(el('span', 'cursos-lista', '+' + JOCA_XP.curso + ' de experiência'));
-    if (!feito && game.jocaCursoTrava) card.appendChild(el('span', 'cursos-lista', 'O Joca já está num curso. Volte depois do próximo dia.'));
+    if (!feito && game.jocaCursoTrava) card.appendChild(el('span', 'cursos-lista', 'Em curso'));
     card.appendChild(feito ? shopBtn('Curso feito', 'btn', false, () => false) : shopBtn('Comprar ' + fmt(q.preco), 'btn', lv > 0 && !game.jocaCursoTrava && bank >= q.preco, () => game.buyJocaCurso(q.id), q.preco));
     grid.appendChild(card);
   });
@@ -10044,13 +10050,9 @@ function buildCami(grid){
   const pc = v => Math.round(v*100) + '%', sec = v => String(Math.round(v*10)/10).replace('.', ',') + ' s';
   const lv = eq.cami, sp = C[lv] || C[1];
   const avail = BASICAS.filter(id => daniTaskOk(id, game.up)).map(id => daniTaskDe(DANI_TASKS.find(d => d.id === id), game.ponto));
-  const cRows = (a, b) => [
-    ['Velocidade', a && pc(a.speed), pc(b.speed)],
-    ['Lava 1 pilha', a && sec(WASH.perPile / a.speed), sec(WASH.perPile / b.speed)],
-    ['Tarefas', a && String(a.tasks), String(b.tasks)],
-    ['Diária', a && fmt(a.pay), fmt(b.pay)]];
+  const cRows = (a, b) => nivRows(C, [['Rapidez', 'speed', 1], ['Tarefas', 'tasks', 1]], a, b);
   const c = staffCard(upgradeIcon('cami'), lv ? 'Cami · nível ' + lv + ' de ' + cMax : 'Cami (ajudante)',
-    lv ? '' : 'Garçonete de rodízio, indicada pelo Joca. Já chega rápida e fica com as tarefas da casa: ' + avail.map(t => t.name.toLowerCase()).join(', ').replace(/, ([^,]*)$/, ' e $1') + '. Tem 2 mãos. Sobe de nível só com cursos, e a diária sobe junto.');
+    lv ? '' : '');
   const temMesa = !!(lv && sp.mesas), nMesas = camiMesasN(sv), emMesas = camiModoMesas(sv);
   if (temMesa){   // v9.6: o curso de mesa abre o 2º modo
     const modos = el('div', 'tasks');
@@ -10062,7 +10064,7 @@ function buildCami(grid){
     });
     c.appendChild(el('span', 'full', 'Modo:'));
     c.appendChild(modos);
-    c.appendChild(el('span', 'cursos-lista', nMesas ? 'Minhas mesas: ela cuida de ' + nMesas + ' de ' + CAMI_MESAS_MAX + ' mesas, do pedido à conta (anota, leva à janela, pega o prato, entrega, cobra e recolhe a louça). Marque as mesas dela no Salão. Nesse modo o básico da casa volta para o Joca (ou a Dani); suco, café, doce e drink seguem com quem faz.' : 'Marque as mesas dela no Salão (toque numa mesa e escolha "Mesa da Cami") para usar o modo "Minhas mesas".'));
+    c.appendChild(el('span', 'cursos-lista', nMesas ? 'Mesas da Cami: ' + nMesas + ' de ' + CAMI_MESAS_MAX : 'Marque as mesas dela no Salão.'));
   }
   if (lv && !emMesas){
     const sel = eq.camiTasks.filter(id => daniTaskOk(id, game.up)).length, tasks = el('div', 'tasks');
@@ -10083,11 +10085,10 @@ function buildCami(grid){
   if (game.cursoMsg) grid.appendChild(el('p', 'cursomsg', game.cursoMsg));
   CAMI_CURSOS.filter(q => cursoDaniVis(q, game.ponto)).forEach(q => {
     const feito = !!sv.camiCursos[q.id], card = el('div', 'item' + (feito ? ' own' : ''));
-    const alvo = q.id === 'agil' ? 2 : 3, n = C[alvo];
+    
     card.appendChild(upgradeIcon('cami'));
     card.appendChild(el('b', null, 'Curso de ' + q.nome));
-    card.appendChild(el('span', 'cursos-lista', 'Nível ' + alvo + ': velocidade ' + pc(n.speed) + ', ' + n.tasks + ' tarefas, diária ' + fmt(n.pay) + (q.id === 'mesa' ? '. Abre o modo "Minhas mesas".' : '.')));
-    if (!feito && game.camiCursoTrava) card.appendChild(el('span', 'cursos-lista', 'A Cami já está num curso. Volte depois do próximo dia.'));
+    if (!feito && game.camiCursoTrava) card.appendChild(el('span', 'cursos-lista', 'Em curso'));
     if (!feito && q.dep && !sv.camiCursos[q.dep]) card.appendChild(el('span', 'cursos-lista apagado', 'Precisa do curso de ' + CAMI_CURSOS.find(x => x.id === q.dep).nome + '.'));
     card.appendChild(feito ? shopBtn('Curso feito', 'btn', false, () => false) : shopBtn('Comprar ' + fmt(q.preco), 'btn', lv > 0 && !game.camiCursoTrava && (!q.dep || !!sv.camiCursos[q.dep]) && bank >= q.preco, () => game.buyCamiCurso(q.id), q.preco));
     grid.appendChild(card);
@@ -10100,11 +10101,9 @@ function buildAnselmo(grid){
   const pc = v => Math.round(v*100) + '%', sec = v => String(Math.round(v*10)/10).replace('.', ',') + ' s';
   const lv = eq.anselmo, sp = A[lv] || A[2];
   const c = staffCard(upgradeIcon('anselmo'), lv ? 'Anselmo · nível ' + (lv - 1) + ' de ' + (A.length - 2) : 'Anselmo (coqueteleiro)',
-    lv ? '' : 'Era o coqueteleiro do restaurante do Bráulio e já chega com habilidade: não faz as tarefas da casa, só o balcão de drinks. Os grupos pedem drinks ao sentar (' + DRINKS.itens.map(d => d.nome).join(', ') + ') e cada um custa ' + fmt(DRINKS.preco) + ' na conta.');
-  const rows = (a, b) => [['Velocidade', a && pc(a.speed), pc(b.speed)], ['Cada drink', a && sec(DRINKS.prep / a.speed), sec(DRINKS.prep / b.speed)], ['Diária', a && fmt(a.pay), fmt(b.pay)]];
+    lv ? '' : '');
+  const rows = (a, b) => nivRows(A, [['Rapidez', 'speed', 1]], a, b);
   c.appendChild(lv ? staffNext('Nível ' + (lv - 1) + ':', rows(null, sp)) : staffNext('Se contratar (nível 1):', rows(null, A[2])));
-  if (lv) c.appendChild(el('span', 'cursos-lista', 'Drinks no balcão: fica atrás dele e entrega os copos prontos (' + DRINKS.vagas + ' de cada vez) para a Bia levar às mesas. +' + DRINKS.preco + ' na conta e +' + AVAL.amb.drink.toString().replace('.', ',') + ' ★ no Ambiente.'));
-  c.appendChild(el('span', 'cursos-lista', 'Cursos no Terraço Suíça: os próximos níveis dele chegam lá.'));
   const duo = el('div', 'duo');
   if (!lv) duo.appendChild(shopBtn('Contratar', 'btn', canPay(A[2].pay), () => game.setStaff('anselmo', 2)));
   c.appendChild(duo); grid.appendChild(c);
@@ -10117,7 +10116,7 @@ function buildDaniCursos(grid){
     card.appendChild(upgradeIcon('dani'));
     card.appendChild(el('b', null, 'Curso de ' + c.nome));
     card.appendChild(el('span', 'cursos-lista', '+' + DANI_XP.curso + ' de experiência'));
-    if (!feito && game.daniCursoTrava) card.appendChild(el('span', 'cursos-lista', 'A Dani já está num curso. Volte depois do próximo dia.'));
+    if (!feito && game.daniCursoTrava) card.appendChild(el('span', 'cursos-lista', 'Em curso'));
     card.appendChild(feito ? shopBtn('Curso feito', 'btn', false, () => false) : shopBtn('Comprar ' + fmt(c.preco), 'btn', !game.daniCursoTrava && bank >= c.preco, () => game.buyDaniCurso(c.id), c.preco));
     grid.appendChild(card);
   });
@@ -10129,7 +10128,7 @@ function buildTvSom(grid){
   const canPay = extra => payroll(eq) + extra <= bank;
   // TV e som (v7.4.3): cada um liga e desliga à parte; o custo é a conta de luz do dia
   const TV = STAFF.tv, SOM = STAFF.som;
-  const c = staffCard(upgradeIcon('ambiente'), 'TV e som', 'Com a TV ligada, a paciência nas mesas cai ' + Math.round(TV.effect*100) + '% mais devagar; com o som, mais ' + Math.round(SOM.effect*100) + '%. O custo é a luz do dia.');
+  const c = staffCard(upgradeIcon('ambiente'), 'TV e som'); c.setAttribute('data-ficha', 'l-tvsom');
   [['tv', 'TV de tubo na Rede Esfera'], ['som', 'Som na rádio Velha Brasil FM']].forEach(a => {
     const on = eq[a[0]], b = el('button', 'toggle', (on ? 'Ligado: ' : 'Ligar: ') + a[1] + ' · ' + fmt(STAFF[a[0]].pay) + '/dia'); b.type = 'button';
     b.setAttribute('aria-pressed', on ? 'true' : 'false');
@@ -10147,7 +10146,7 @@ function buildCouvert(grid){
   if (!couvertOk(game.ponto)) return;
   game.manualVer('l-couvert');
   const ef = Math.round(couvertEffect(Object.assign({}, eq, { taxa:true })) * 100);
-  c = staffCard(upgradeIcon('couvert'), 'Couvert artístico', 'Música ao vivo: a paciência nas mesas cai ' + Math.round(C.effect*100) + '% mais devagar. ' + fmt(C.pay) + '/dia.');
+  c = staffCard(upgradeIcon('couvert'), 'Couvert artístico'); c.setAttribute('data-ficha', 'l-couvert');
   const tg = el('button', 'toggle', 'Cobrar couvert: ' + fmt(C.fee) + ' por pessoa (efeito cai para ' + ef + '%)'); tg.type = 'button';
   tg.setAttribute('aria-pressed', eq.taxa ? 'true' : 'false');
   tg.addEventListener('click', () => { Sfx.tap(); eq.taxa = !eq.taxa; writeSave(game.save); buildShop(); });
@@ -10367,7 +10366,7 @@ function buildSalao(grid){
   side.appendChild(edBtn(!sem ? 'Toalha xadrez: todas têm' : 'Toalha xadrez em ' + (sem > 1 ? 'todas (' + sem + ')' : '1 mesa') + ': ' + fmt(vt), 'btn', sem > 0 && bank >= vt, () => game.buyToalhas(), vt));
   side.appendChild(edBtn('Arrumação automática', 'btn alt', true, () => game.arrumarSalao()));
   side.appendChild(edBtn('Desfazer', 'btn alt', game.salaoUndo.length > 0, () => game.desfazerSalao()));
-  side.appendChild(el('span', game.salaoMsg ? 'msg' : 'ed-dica', game.salaoMsg || (tot >= p.lugares ? (nEst ? 'Salão e estoque estão no teto de ' + p.lugares + ' lugares.' : 'O salão está no teto de ' + p.lugares + ' lugares.') + ' Para rearrumar, arraste mesas para o estoque e de volta.' : 'Arraste as mesas, até para o estoque; toque numa para trocar a cor das cadeiras, virar mesa de 4 ou vender. Grupos de 3 ou 4 só sentam nas mesas de 4.')));
+  side.appendChild(el('span', game.salaoMsg ? 'msg' : 'ed-dica', game.salaoMsg || (tot >= p.lugares ? (nEst ? 'Salão e estoque estão no teto de ' + p.lugares + ' lugares.' : 'O salão está no teto de ' + p.lugares + ' lugares.') + ' Para rearrumar, arraste mesas para o estoque e de volta.' : 'Arraste as mesas. Toque numa mesa para mais opções.')));
   side.appendChild(el('span', 'ed-contas', 'Luz e gás: ' + fmt(contasDia(game.tables, p)) + ' por dia (' + fmt(CONTAS.mesa) + ' por mesa e ' + fmt(CONTAS.lugar) + ' por lugar).'));
   const mov = Math.round((movimentoSalao(lug) - 1) * 100);
   side.appendChild(el('span', 'ed-contas', 'Cada lugar acima de ' + MOVIMENTO.kit + ' traz ' + Math.round(MOVIMENTO.porLugar * 100) + '% mais clientes' + (mov > 0 ? ' (hoje, +' + mov + '%).' : '.')));
@@ -10393,14 +10392,14 @@ function buildSalao(grid){
    graça. */
 function decorCard(grupo, icon, title, desc){
   const card = el('div', 'item'); card.appendChild(el('i', 'dgrupo', grupo));
-  card.appendChild(icon); card.appendChild(el('b', null, title)); card.appendChild(el('span', null, desc));
+  card.appendChild(icon); card.appendChild(el('b', null, title)); if (desc) card.appendChild(el('span', null, desc));
   return card;
 }
 function buildDecor(grid){
   const dec = game.save.decor, bank = game.save.bank;
   DECOR.filter(d => !d.nivel || game.ponto.nivel >= d.nivel || devLivre()).forEach(d => {
     const tem = d.id in dec, on = !!dec[d.id];
-    const c = decorCard(DECOR_GRUPOS.find(x => x.id === d.grupo).nome, upgradeIcon('d-' + d.id), d.name, d.desc + ' Melhora o ambiente no Gurugol.' + (tem && !on ? ' Guardado.' : ''));
+    const c = decorCard(DECOR_GRUPOS.find(x => x.id === d.grupo).nome, upgradeIcon('d-' + d.id), d.name, tem && !on ? 'Guardado' : '');
     if (on) c.classList.add('own');
     c.appendChild(!tem ? shopBtn('Comprar ' + fmt(d.cost), 'btn', bank >= d.cost, () => game.buyDecor(d.id), d.cost)
       : shopBtn(on ? 'Guardar' : 'Pôr de volta', on ? 'btn alt' : 'btn', true, () => game.mostraDecor(d.id, !on)));
@@ -10414,53 +10413,40 @@ function cursoIcon(c, av){
 }
 /* seção Cardápio (v9.0.1): o que se serve hoje, a diversidade no Gurugol e os cursos do Tonhão */
 function buildCardapio(grid){
-  const cur = game.save.cursos, sab = pratosSabidos(cur), vir = n => String(n).replace('.', ',');
-  const c = staffCard(upgradeIcon('cardapio'), 'No cardápio hoje (' + sab.length + ' pratos)',
-    sab.map(k => CARDAPIO[k].nome + ' ' + fmt(precoPrato(k, game.ponto, cur))).join(' · ') + '. Diversidade do cardápio no Gurugol: ' + vir(Math.round(avalMenu(cur, cursosItem(game.save)) * 10) / 10) + ' ★ (cada curso básico dá +' + vir(AVAL.menu.porCurso) + ').');
+  const cur = game.save.cursos, sab = pratosSabidos(cur);
+  const c = staffCard(upgradeIcon('cardapio'), 'No cardápio hoje (' + sab.length + ' pratos)');
   grid.appendChild(c);
   buildCursos(grid);
   buildCursosAjudantes(grid);
-  grid.appendChild(el('span', 'cursos-lista', 'Cada curso também dá experiência ao Tonhão (Equipe › Tonhão).'));
 }
 function buildCursos(grid){
   const sv = game.save, bank = sv.bank, cur = sv.cursos;
   if (game.cursoMsg) grid.appendChild(el('p', 'cursomsg', game.cursoMsg));
-  const pratos = (l, cu) => l.map(k => CARDAPIO[k].nome + ' ' + fmt(precoPrato(k, game.ponto, cu || cur))).join(' · ');
   // v8.6.11: o prato que precisa do básico de outro curso (dep) fica apagado até esse curso ser feito
   const falta = k => { const d = CARDAPIO[k].dep; return d && cursoNivel(cur, d) < 1 ? cursoOf(d) : null; };
-  const apagado = l => l.filter(falta).map(k => CARDAPIO[k].nome + ': precisa do curso de ' + falta(k).nome).join('; ') + '.';
   CURSOS.filter(c => cursoOk(c, game.ponto)).forEach(c => {   // v9.1: o curso de restaurante só aparece da Avenida em diante
     const n = cursoNivel(cur, c.id), p = game.cursoProx(c.id), av = n >= 1;
     const card = el('div', 'item' + (!p ? ' own' : ''));
     card.appendChild(cursoIcon(c, av));
     card.appendChild(el('b', null, av ? c.av.nome : 'Curso de ' + c.nome));
     if (p) card.appendChild(el('span', 'cursos-lista', '+' + (av || c.preco <= 0 ? CURSO_XP.avancado : CURSO_XP.basico) + ' de experiência'));
-    const lis = av ? c.av.pratos.filter(k => CARDAPIO[k].nivel === 2) : c.pratos, mov = c.id === 'veg' ? ' +' + Math.round(VEG.mov * 100) + '% de movimento.' : '';
-    if (!p) card.appendChild(el('span', null, 'Curso completo. ' + pratos(c.av.pratos.filter(k => !falta(k))) + '.' + mov));
-    else if (!av) card.appendChild(el('span', null, 'O Tonhão aprende: ' + pratos(lis.filter(k => !falta(k))) + '. +' + String(AVAL.menu.porCurso).replace('.', ',') + ' ★ na Diversidade do cardápio.' + mov));
-    else card.appendChild(el('span', null, 'Receitas: ' + c.av.receita + '. ' + (lis.length ? 'Pratos novos: ' + pratos(lis.filter(k => !falta(k))) + '. ' : '') + '+' + Math.round((CURSO_AV.preco - 1) * 100) + '% no preço dos pratos do curso e o Tonhão capricha mais (×' + String(CURSO_AV.crit).replace('.', ',') + ').' + mov));
-    if (c.id === 'veg' && lis.some(falta)) card.appendChild(el('span', 'cursos-lista apagado', apagado(lis)));
-    // o curso de que um prato vegetariano depende avisa o que passa a valer com ele
-    const libera = Object.keys(CARDAPIO).filter(k => CARDAPIO[k].dep === c.id && CARDAPIO[k].veg && cursoNivel(cur, CARDAPIO[k].curso) >= (CARDAPIO[k].nivel || 1));
-    if (n < 1 && libera.length) card.appendChild(el('span', 'cursos-lista', libera.map(k => '+ ' + CARDAPIO[k].nome + (CARDAPIO[k].vegano ? ' (vegano)' : ' (vegetariano)')).join(' ')));
-    if (p && game.cursoTrava) card.appendChild(el('span', 'cursos-lista', 'O Tonhão já está num curso. Volte depois do próximo dia.'));
+    const lis = av ? c.av.pratos.filter(k => CARDAPIO[k].nivel === 2) : c.pratos;
+    if (c.id === 'veg' && lis.some(falta)) card.appendChild(el('span', 'cursos-lista apagado', 'Precisa do curso de ' + falta(lis.find(falta)).nome + '.'));
+    if (p && game.cursoTrava) card.appendChild(el('span', 'cursos-lista', 'Em curso'));
     card.appendChild(p ? shopBtn('Comprar ' + fmt(p.preco), 'btn', !game.cursoTrava && bank >= p.preco, () => game.buyCurso(c.id), p.preco) : shopBtn('Curso completo', 'btn', false, () => false));
     grid.appendChild(card);
   });
 }
 /* v9.2: os cursos de cardápio dos ajudantes (com o rosto de quem faz): a Confeitaria caseira da Dani na área industrial */
 function buildCursosAjudantes(grid){
-  const sv = game.save, bank = sv.bank, vir = n => String(n).replace('.', ',');
+  const sv = game.save, bank = sv.bank;
   DANI_CURSOS.filter(c => c.item && cursoDaniVis(c, game.ponto) && game.cartaoAberto('confeitaria') && game.daniChegou).forEach(c => {
-    const feito = !!sv.daniCursos[c.id], card = el('div', 'item' + (feito ? ' own' : '')), gourmet = c.id === 'confGourmet', falta = !!c.dep && !sv.daniCursos[c.dep];
+    const feito = !!sv.daniCursos[c.id], card = el('div', 'item' + (feito ? ' own' : '')), falta = !!c.dep && !sv.daniCursos[c.dep];
     card.appendChild(upgradeIcon('dani'));
     card.appendChild(el('b', null, 'Curso de ' + c.nome));
     card.appendChild(el('span', 'cursos-lista', '+' + DANI_XP.curso + ' de experiência para a Dani'));
-    card.appendChild(el('span', null, gourmet
-      ? 'A geladeirinha vira vitrine refrigerada e a Dani passa a fazer ' + DOCES.gourmet.map(d => d.nome.toLowerCase()).join(', ').replace(/, ([^,]*)$/, ' e $1') + ': ' + fmt(DOCES.gourmetPreco) + ' cada, na mesa e na marmita, e +' + vir(AVAL.amb.doce) + ' ★ no Ambiente de quem comeu. +' + vir(AVAL.menu.porCurso) + ' ★ na Diversidade do cardápio.'
-      : 'A Dani faz ' + DOCES.caseira.map(d => d.nome.toLowerCase()).join(', ').replace(/, ([^,]*)$/, ' e $1') + ' na geladeirinha de doces: ' + fmt(DOCES.preco) + ' cada, na mesa e na marmita. +' + vir(AVAL.menu.porCurso) + ' ★ na Diversidade do cardápio.'));
     if (!feito && falta) card.appendChild(el('span', 'cursos-lista apagado', 'Precisa do curso de ' + cursoDaniNome(c.dep) + '.'));
-    if (!feito && game.daniCursoTrava) card.appendChild(el('span', 'cursos-lista', 'A Dani já está num curso. Volte depois do próximo dia.'));
+    if (!feito && game.daniCursoTrava) card.appendChild(el('span', 'cursos-lista', 'Em curso'));
     card.appendChild(feito ? shopBtn('Curso feito', 'btn', false, () => false) : shopBtn('Comprar ' + fmt(c.preco), 'btn', !falta && !game.daniCursoTrava && bank >= c.preco, () => game.buyDaniCurso(c.id), c.preco));
     grid.appendChild(card);
   });
@@ -10470,9 +10456,8 @@ function buildCursosAjudantes(grid){
     card.appendChild(upgradeIcon('joca'));
     card.appendChild(el('b', null, 'Curso ' + c.nome.charAt(0).toLowerCase() + c.nome.slice(1)));
     card.appendChild(el('span', 'cursos-lista', '+' + JOCA_XP.curso + ' de experiência para o Joca'));
-    card.appendChild(el('span', null, 'O Joca vira barista: traz a máquina de espresso, com ' + CAFES.lista.map(d => d.nome.toLowerCase() + ' ' + fmt(d.preco)).join(' e ') + ', pedidos no fim da refeição. O cafezinho passa da Dani para ele. +' + vir(AVAL.menu.porCurso) + ' ★ na Diversidade do cardápio.'));
     if (!feito && !(sv.equipe.joca > 0) && !devLivre()) card.appendChild(el('span', 'cursos-lista apagado', 'Precisa do Joca contratado.'));
-    if (!feito && game.jocaCursoTrava) card.appendChild(el('span', 'cursos-lista', 'O Joca já está num curso. Volte depois do próximo dia.'));
+    if (!feito && game.jocaCursoTrava) card.appendChild(el('span', 'cursos-lista', 'Em curso'));
     card.appendChild(feito ? shopBtn('Curso feito', 'btn', false, () => false) : shopBtn('Comprar ' + fmt(c.preco), 'btn', (sv.equipe.joca > 0 || devLivre()) && !game.jocaCursoTrava && bank >= c.preco, () => game.buyJocaCurso(c.id), c.preco));
     grid.appendChild(card);
   });
@@ -10482,14 +10467,13 @@ function buildDivulga(grid){
   const n = game.shopNext, open = divulgaAberta(n, game.save), cur = game.save.divulga;
   DIVULGA.forEach(d => {
     const on = open && cur === d.id;
-    const c = staffCard(upgradeIcon('div-' + d.id), d.name, (d.cost ? fmt(d.cost) + ' por dia. ' : 'Grátis. ') + d.desc);
+    const c = staffCard(upgradeIcon('div-' + d.id), d.name, d.cost ? fmt(d.cost) + ' por dia' : 'Grátis');
     if (on) c.classList.add('own');
     c.appendChild(shopBtn(!open ? 'A partir do dia ' + DIVULGA_DIA : (on ? 'Escolhida' : 'Escolher'), 'btn', open && !on && (!d.cost || game.payroll() + d.cost <= game.save.bank), () => game.setDivulga(d.id)));
     grid.appendChild(c);
   });
-  const sal = game.tables.filter(t => t.open), p = game.ponto;
-  const c = staffCard(upgradeIcon('contas'), 'Contas do dia ' + n,
-    (p.aluguel ? 'Aluguel ' + fmt(p.aluguel) + ' + l' : 'Sem aluguel (' + p.nome.replace(/^Garagem/, 'a garagem') + '). L') + 'uz e gás de ' + sal.length + ' mesas (' + fmt(CONTAS.mesa) + ' cada) e ' + sal.reduce((a, t) => a + t.seats, 0) + ' lugares (' + fmt(CONTAS.lugar) + ' cada) = ' + fmt(contasDia(game.tables, p)) + ', no fim do dia. Ingredientes: ' + Math.round(INGRED.prato * 100) + '% da conta de cada prato que fica pronto e ' + fmt(INGRED.suco) + ' por suco.');
+  const p = game.ponto;
+  const c = staffCard(upgradeIcon('contas'), 'Contas do dia ' + n, 'Luz e gás: ' + fmt(contasDia(game.tables, p)) + ' por dia');
   grid.appendChild(c);
   buildCouvert(grid);
 }
@@ -10499,7 +10483,8 @@ function buildManut(grid){
   if (game.ponto.nivel >= 2){   // v9: o fogão industrial (4 bocas, metade do desgaste)
     game.manualVer('l-fogao');
     const F = INDUSTRIAL.fogao, own = !!game.up.fogaoInd;
-    const c = staffCard(upgradeIcon('fogao-ind'), 'Fogão industrial', 'Uma boca a mais para o Tonhão e metade do desgaste do fogão por dia. O conserto de emergência passa a custar ' + fmt(F.emerg) + '.');
+    const c = staffCard(upgradeIcon('fogao-ind'), 'Fogão industrial');
+    c.setAttribute('data-ficha', 'l-fogao');
     if (own) c.classList.add('own');
     c.appendChild(shopBtn(own ? 'Já comprado' : devLivre() ? 'Ligar' : 'Comprar ' + fmt(F.cost), 'btn', devLivre() || (!own && game.save.bank >= F.cost), () => devLivre() ? game.devInd('fogaoInd') : game.comprarInd('fogaoInd'), devLivre() ? 0 : F.cost));
     grid.appendChild(c);
@@ -10516,7 +10501,7 @@ function buildManut(grid){
     grid.appendChild(c);
   });
   const tot = MANUT.equip.reduce((a, q) => a + manutPreco(q.id, m[q.id]), 0);
-  const c = staffCard(upgradeIcon('contas'), 'Revisar tudo', 'A visita técnica tem custo, e quanto mais desgastado, mais cara a manutenção.');
+  const c = staffCard(upgradeIcon('contas'), 'Revisar tudo');
   c.appendChild(shopBtn(!tot ? 'Tudo em dia' : devLivre() ? 'Revisar tudo (grátis)' : 'Revisar tudo: ' + fmt(tot), 'btn', !!tot && (devLivre() || game.save.bank >= tot), () => game.revisarTudo(), devLivre() ? 0 : tot));
   grid.appendChild(c);
 }
@@ -10524,9 +10509,8 @@ function buildManut(grid){
 function buildTvs(grid){
   game.manualVer('l-tvs');
   const eq = game.save.equipe, bank = game.save.bank, I = INDUSTRIAL.tvs, own = !!game.up.tvs;
-  const c = staffCard(upgradeIcon('tvs'), '3 televisores com sertanejo', own
-    ? 'Escolha por dia: com anúncios, a paciência nas mesas cai ' + Math.round(I.modos[1].effect * 100) + '% mais devagar (luz ' + fmt(I.modos[1].pay) + '/dia); sem anúncios, ' + Math.round(I.modos[2].effect * 100) + '% (' + fmt(I.modos[2].pay) + '/dia, com a assinatura).'
-    : 'Três TVs no alto da parede, ligadas num canal de sertanejo. Instaladas, você escolhe por dia: com anúncios (' + fmt(I.modos[1].pay) + '/dia) ou sem (' + fmt(I.modos[2].pay) + '/dia).');
+  const c = staffCard(upgradeIcon('tvs'), '3 televisores com sertanejo');
+  c.setAttribute('data-ficha', 'l-tvs');
   if (own) c.classList.add('own');
   if (!own) c.appendChild(shopBtn(devLivre() ? 'Instalar (grátis)' : 'Instalar ' + fmt(I.instalar), 'btn', devLivre() || bank >= I.instalar, () => game.comprarInd('tvs'), devLivre() ? 0 : I.instalar));
   else [[0, 'Desligadas'], [1, 'Com anúncios · ' + fmt(I.modos[1].pay) + '/dia'], [2, 'Sem anúncios · ' + fmt(I.modos[2].pay) + '/dia']].forEach(a => {
@@ -10544,13 +10528,13 @@ function buildAssento(grid){
   game.manualVer('l-assento');
   if (game.ponto.nivel >= 3){   // v9.1: os sofás da Avenida (compra única)
     const S = AVENIDA.sofa, own = game.up.assento === 'sofa', bank0 = game.save.bank;
-    const c0 = staffCard(upgradeIcon('sofas'), S.nome, 'Dois sofás de 3 lugares na calçada, verde-musgo e com almofadas. Quem espera sentado neles perde a paciência ' + Math.round(S.slow * 100) + '% mais devagar. Compra única.');
+    const c0 = staffCard(upgradeIcon('sofas'), S.nome); c0.setAttribute('data-ficha', 'l-assento');
     if (own) c0.classList.add('own');
     c0.appendChild(shopBtn(own ? 'Já comprado' : devLivre() ? 'Instalar (grátis)' : 'Comprar ' + fmt(S.cost), 'btn', !own && (devLivre() || bank0 >= S.cost), () => game.comprarInd('assento', 'sofa'), devLivre() ? 0 : S.cost));
     grid.appendChild(c0); return;
   }
   const A = INDUSTRIAL.assento, bank = game.save.bank, cur = game.up.assento || '';
-  const c = staffCard(upgradeIcon('assento'), 'Espera sentada', 'Quem espera lá fora sentado perde a paciência ' + Math.round(A.slow * 100) + '% mais devagar. As duas opções valem igual; o banquinho é só mais bonito. Trocar paga o novo.');
+  const c = staffCard(upgradeIcon('assento'), 'Espera sentada'); c.setAttribute('data-ficha', 'l-assento');
   if (cur) c.classList.add('own');
   const duo = el('div', 'duo');
   ['cadeira', 'banco'].forEach(k => duo.appendChild(shopBtn(cur === k ? 'Tem: ' + A[k].nome : A[k].nome + ' ' + fmt(A[k].cost), 'btn', devLivre() || (cur !== k && bank >= A[k].cost), () => game.comprarInd('assento', k), devLivre() ? 0 : A[k].cost)));
@@ -10561,7 +10545,7 @@ function buildMudanca(grid){
   const p = game.proximoPonto, f = game.mudancaFalta, de = game.ponto;
   if (!p) return;
   const c = staffCard(upgradeIcon(p.id === 'avenida' ? 'mudanca-av' : 'mudanca'), 'Mudança: ' + p.nome,
-    p.lugares + ' lugares (hoje, ' + de.lugares + '), cardápio ' + Math.round((p.cardapio / de.cardapio - 1) * 100) + '% mais caro, limite do banco de ' + fmt(p.credito) + ', mais uma vaga de prato e ' + (p.traz || 'mais movimento') + '. Aluguel de ' + fmt(p.aluguel) + ' por dia. Leva as mesas, os pratos, os cursos, a equipe e as melhorias; ' + (de.deixa || 'o resto fica') + '. Não dá para voltar.');
+    'Mudança ' + fmt(p.mudanca) + ' · aluguel ' + fmt(p.aluguel) + '/dia');
   const falta = f ? [f.din ? 'Falta ' + fmt(f.din) : '', f.nota ? 'Nota ' + fmtNota(f.nota) + ' (agora ' + fmtNota(game.notaGurugol) + ')' : ''].filter(Boolean).join(' · ') : '';
   if (!f && mudarPede){
     c.appendChild(el('span', 'full', 'Mudar para ' + (p.art || 'a') + ' ' + p.nome + ' por ' + fmt(p.mudanca) + '? Aluguel de ' + fmt(p.aluguel) + ' por dia. Não dá para voltar.'));
@@ -10583,7 +10567,7 @@ function buildBanco(grid){
   const sv = game.save, e = sv.emp, cr = game.ponto.credito, pc = Math.round(BANCO.juros * 100);
   // v8.3.2, amortização: juros ao dia sobre o saldo; cada parcela é a amortização fixa mais os juros do dia
   const vs = BANCO.valores.filter(v => v <= cr), sim = simulaEmprestimo(vs[vs.length - 1], BANCO.juros);
-  let c = staffCard(upgradeIcon('banco'), e.ref ? 'Reforma da garagem' : 'Empréstimo', e.ref ? 'Parcelas de ' + fmt(e.amort) + ' mais ' + Math.round(e.j * 100) + '% ao dia sobre o saldo. Amortizar antes corta os juros.' : pc + '% ao dia sobre o saldo; cada parcela paga 1/' + BANCO.parcelas + ' do valor mais os juros. ' + (e.resto ? 'Amortizar antes corta os juros.' : fmt(vs[vs.length - 1]) + ' viram ' + sim.parcelas.join(', ').replace(/, ([^,]*)$/, ' e $1') + ' (' + fmt(sim.juros) + ' de juros). Até ' + fmt(cr) + ', um por vez.') + ' Atrasar 2 dias fecha a lanchonete.');
+  let c = staffCard(upgradeIcon('banco'), e.ref ? 'Reforma da garagem' : 'Empréstimo');
   if (e.resto){
     c.classList.add(e.atr ? 'atr' : 'own');
     const tab = tabelaDe(e);
@@ -10603,12 +10587,10 @@ function buildBanco(grid){
     c.appendChild(duo);
   }
   grid.appendChild(c);
-  c = staffCard(upgradeIcon('negativo'), 'Caixa no negativo',
-    'Folha, contas e parcelas saem no fim do dia mesmo sem dinheiro. O caixa pode fechar no negativo ' + BANCO.neg + ' dias seguidos; no ' + (BANCO.neg + 1) + 'º, o banco cobre o que falta, à força, com juros de ' + Math.round(BANCO.forcado * 100) + '% ao dia sobre todo o saldo.');
+  c = staffCard(upgradeIcon('negativo'), 'Caixa no negativo');
   c.appendChild(el('span', 'full', sv.bank < 0 ? 'Agora: ' + fmt(sv.bank) + ', no negativo há ' + sv.neg + (sv.neg === 1 ? ' dia.' : ' dias.') : 'Agora: no positivo.'));
   grid.appendChild(c);
-  c = staffCard(upgradeIcon('contas'), 'Folha sem dinheiro',
-    'Ligado, o que não couber no dinheiro fica de fora ao abrir o dia (divulgação, couvert, som, TV, Dani, aumento do Tonhão). Desligado, paga tudo e o caixa pode ficar negativo.');
+  c = staffCard(upgradeIcon('contas'), 'Folha sem dinheiro');
   const tg = el('button', 'toggle', (sv.corta ? 'Ligado' : 'Desligado') + ': cortar a folha se faltar dinheiro'); tg.type = 'button';
   tg.setAttribute('aria-pressed', sv.corta ? 'true' : 'false');
   tg.addEventListener('click', () => { Sfx.tap(); game.setCorta(!sv.corta); buildShop(); });
@@ -10753,7 +10735,8 @@ function upgradeCartoes(grid, bia){
     const card = el('div', 'item' + (own && !u.multi ? ' own' : '')), pv = upgradeDe(u, game.ponto);   // v9: a Água da torneira vira a Jarra de suco
     card.appendChild(upgradeIcon(pv !== u ? (game.ponto.nivel >= 3 ? 'aguas' : 'jarra') : u.id));
     card.appendChild(el('b', null, pv.name));
-    card.appendChild(el('span', null, (tem ? 'Você tem ' + tem + '. ' : '') + pv.desc));
+    if (tem) card.appendChild(el('span', null, 'Você tem ' + tem));
+    card.setAttribute('data-ficha', 'l-' + u.id);
     const b = el('button', 'btn', devLivre() ? (own ? 'Desligar' : 'Ligar') : fecha && own ? 'Já comprado' : ('Comprar ' + fmt(pv.cost)));
     b.type = 'button';
     if (!devLivre() && (fecha || game.save.bank < pv.cost)) b.disabled = true;
@@ -10764,6 +10747,7 @@ function upgradeCartoes(grid, bia){
   });
 }
 /* v9.6.7: as fichas do Manual abrem com os cartões que a lojinha já mostra (as seções, a equipe e os pontos); as das melhorias, ao desenhar o item */
+const FICHA_PADRAO = { tonhao:'e-tonhao', bia:'e-bia' };   // v9.6.8: as seções sem ficha própria em SEC_FICHA
 const SEC_FICHA = { cardapio:'l-cardapio', salao:'l-salao', decor:'l-decor', manut:'l-manut', divulga:'l-divulga', banco:'l-banco', mudanca:'l-mudanca', caixa:'l-caixa', dani:'e-dani', joca:'e-joca', cami:'e-cami', anselmo:'e-anselmo' };
 function manualLoja(){
   SHOP_GRUPOS.forEach(g => shopSecoesVis(g).forEach(id => { if (SEC_FICHA[id]) game.manualVer(SEC_FICHA[id]); }));
@@ -10802,6 +10786,10 @@ function buildShopTela(){
   if (!aberta){ grid.className = 'shopcards'; return shopCartoes(grid, SHOP_GRUPOS.find(x => x.id === shopGrupo)); }
   grid.className = 'shopgrid' + (shopTab === 'tonhao' || shopTab === 'dani' || shopTab === 'joca' || shopTab === 'cami' || shopTab === 'anselmo' || shopTab === 'cardapio' ? ' cursos' : ['salao', 'caixa', 'melhorias', 'gurugol', 'decor'].indexOf(shopTab) >= 0 ? ' ' + shopTab : '');
   aberta.build(grid);
+  if (shopTab !== 'caixa' && shopTab !== 'gurugol') Array.prototype.slice.call(grid.children).filter(c => (c.className || '').split(' ').indexOf('item') >= 0).forEach(card => {   // v9.6.8: o "?" no canto de cada cartão
+    const f = card.getAttribute('data-ficha') || SEC_FICHA[shopTab] || FICHA_PADRAO[shopTab], t = Array.prototype.find.call(card.children, x => x.tagName === 'B');
+    maisAjuda(card, f, t ? t.textContent : aberta.nome);
+  });
 }
 (function(){ const box = $('shop-tabs'); if (box) Array.prototype.forEach.call(box.querySelectorAll('button'), b => b.addEventListener('click', () => { Sfx.init(); Sfx.tap(); shopGrupoAbrir(b.getAttribute('data-v')); }));
   const vo = $('btn-shop-voltar'); if (vo) vo.addEventListener('click', () => { Sfx.init(); Sfx.tap(); shopTab = null; buildShop(); }); })();
@@ -11071,25 +11059,21 @@ game.hooks.state = function(s){
     const d = game.day;
     if (game.mode === 'semfim'){
       $('intro-title').textContent = 'Turno sem fim';
-      $('intro-goal').textContent = 'Todas as ' + game.tables.length + ' mesas abertas, 5 estrelas de reputação e freguesia cada vez mais rápida.';
-      $('intro-note').textContent = 'Grupo que sai bravo ou que não cabe na fila tira 1 estrela. A cada 8 contas pagas com 5 corações, você ganha 1 de volta. Com 0 estrelas, o turno acaba.';
+      $('intro-goal').textContent = 'Todas as mesas abertas e freguesia cada vez mais rápida.';
+      $('intro-note').textContent = 'Grupo bravo tira uma estrela. Sem estrelas, acabou.';
     } else {
       $('intro-title').textContent = 'Dia ' + d.n + (d.semana ? ' · ' + d.semana : '');
-      const div = game.div, custos = ['contas ' + fmt(contasDia(game.tables, game.ponto))];
-      if (payroll(game.save.equipe)) custos.push('folha ' + fmt(payroll(game.save.equipe)));
-      if (div && div.cost) custos.push(div.name.toLowerCase() + ' ' + fmt(div.cost));
-      $('intro-goal').textContent = 'Meta de lucro: ' + fmt(d.meta) + ' · 2 estrelas: ' + fmt(bomGoal(d)) + ' · 3 estrelas: ' + fmt(d.expert) + ' sem perder ninguém · ' + game.schedule.length + ' grupos' + (div ? ' (' + div.name.toLowerCase() + ')' : '') + ' · ' + mmss(d.time)
-        + '. Custos do dia: ' + custos.join(' + ') + ', mais ' + Math.round(INGRED.prato * 100) + '% de cada prato em ingredientes.';
+      $('intro-goal').textContent = 'Meta: ' + fmt(d.meta) + ' · ★★ ' + fmt(bomGoal(d)) + ' · ★★★ ' + fmt(d.expert);
       // v8.2.3: reiniciou no meio com gente na espera ou nas mesas: a multa de quem foi embora bravo
       const en = game.encerrado; game.encerrado = null;
       // v9.6.4: sem a Efood aberta (conversa dos entregadores pendente), o dia 4 não fala do entregador; o texto vem uma vez, no 1º dia com a Efood aberta
       let nota = d.note;
       if (game.mode === 'carreira'){
         const sv = game.save;
-        if (d.nu === 'entregador' && !efoodAberto(sv)) nota = 'Dia de movimento: a freguesia não para de chegar.';
+        if (d.nu === 'entregador' && !efoodAberto(sv)) nota = 'Dia de movimento!';
         else if (d.n >= HIST_ENTREGA.dia && efoodAberto(sv) && !sv.efoodNota){ nota = DAYS[3].note; sv.efoodNota = 1; writeSave(sv); }
       }
-      $('intro-note').textContent = (en ? 'Você largou o dia no meio: ' + en.n + (en.n > 1 ? ' grupos foram' : ' grupo foi') + ' embora bravo' + (en.n > 1 ? 's' : '') + ' (multa de ' + fmt(en.multa) + '; agora você tem ' + fmt(en.bank) + '). ' : '') + (nota || 'Sente a freguesia, anote os pedidos e mantenha todo mundo feliz!') + (d.n === 1 && !game.save.treino ? ' Primeira vez? No menu, a Missão zero é um treino passo a passo.' : '');
+      $('intro-note').textContent = (en ? 'Você largou o dia no meio: multa de ' + fmt(en.multa) + '. ' : '') + (nota || '') + (d.n === 1 && !game.save.treino ? ' Primeira vez? Faça a Missão zero, no menu.' : '');
     }
     $('intro-manut').textContent = [game.mode === 'carreira' ? game.capLinha() : '', introEncomenda(), introBanco(), introManut()].filter(Boolean).join(' ');
     showOnly(['ov-intro']);
@@ -11100,8 +11084,8 @@ game.hooks.state = function(s){
     manualBolinha();
     // v8.2.2: só o dia completo rende; interrompido, não paga nem ganha nada
     const nb = game.bravosSeSair.length, mb = game.multaSeSair;
-    $('pause-note').textContent = game.mode !== 'carreira' ? '' : 'Se reiniciar ou sair, o dia não conta: só dias completos rendem. A folha e as contas só são pagas no fim do dia.'
-      + (nb ? ' E ' + (nb > 1 ? 'os ' + nb + ' grupos' : 'o grupo') + ' na espera e nas mesas ' + (nb > 1 ? 'vão' : 'vai') + ' embora bravo' + (nb > 1 ? 's' : '') + ': multa de ' + fmt(mb) + '.' : '');
+    $('pause-note').textContent = game.mode !== 'carreira' ? '' : 'Se sair agora, o dia não conta.'
+      + (nb ? ' Quem está aqui vai embora bravo: multa de ' + fmt(mb) + '.' : '');
     showOnly(['ov-pause']);
   }
   else if (s === 'dayend'){ buildEnd(); showOnly(['ov-end']); }
@@ -11123,11 +11107,11 @@ function introBanco(){
   const sv = game.save, out = [];
   if (sv.bank < 0){
     const falta = BANCO.neg - sv.neg;
-    out.push('Caixa no negativo (' + fmt(sv.bank) + ')' + (sv.neg ? ' há ' + sv.neg + (sv.neg > 1 ? ' dias' : ' dia') : '') + ': ' + (falta > 0 ? 'mais ' + (falta + 1) + ' dias seguidos fechando no negativo (contando hoje) e' : 'se fechar hoje no negativo,') + ' o banco cobre o que falta, à força, com juros de ' + Math.round(BANCO.forcado * 100) + '% ao dia.');
+    out.push(falta > 0 ? 'Caixa no negativo! Mais ' + (falta + 1) + ' dias assim e o banco cobre à força, com juros.' : 'Caixa no negativo! Se fechar hoje assim, o banco cobre à força, com juros.');
   }
-  if (sv.emp.atr) out.push('Parcela do banco atrasada! No fim do dia, o caixa precisa ter ' + fmt(game.devido) + ' (a atrasada e a de hoje), senão o banco toma a lanchonete.');   // v8.3.1
-  else if (sv.emp.resto && carencia(sv.emp, game.day.n)) out.push('Reforma da garagem: faltam ' + fmt(sv.emp.resto) + '. A 1ª parcela (' + fmt(parcelaDe(sv.emp, sv.emp.ini)) + ') só vence no fim do dia ' + sv.emp.ini + '.');
-  else if (sv.emp.resto) out.push('Parcela do banco no fim do dia: ' + fmt(game.parcela) + ' (' + fmt(game.jurosHoje) + ' de juros; ' + (sv.emp.n > 1 ? 'faltam ' + sv.emp.n : 'a última') + '; se não couber no caixa, fica atrasada).');
+  if (sv.emp.atr) out.push('Parcela atrasada! Feche o dia com ' + fmt(game.devido) + ' no caixa, ou o banco toma a lanchonete.');
+  else if (sv.emp.resto && carencia(sv.emp, game.day.n)) out.push('Reforma da garagem: a 1ª parcela vence no fim do dia ' + sv.emp.ini + '.');
+  else if (sv.emp.resto) out.push('Parcela do banco hoje: ' + fmt(game.parcela) + '.');
   return out.join(' ');
 }
 /* introdução do dia (v8): o clima do dia e o estado do fogão, da geladeira e da cafeteira (com o risco de quebrar) */

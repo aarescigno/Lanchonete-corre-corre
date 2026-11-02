@@ -31,7 +31,7 @@ g.save=L.normSave({bank:1000,dia:3}); g.up=g.save.up; g.boughtFor=0; g.goShop(3)
   ok(g.save.caixaPend.mel===150,'a compra entra no Caixa, na coluna Compras');
   ok(g.cursoTrava && !g.buyCurso('chapa') && g.save.bank===b0-150,'um curso por lojinha: o segundo fica travado');
   L.setShopTab('cursos'); const t=txt(els['shop-grid']); if(process.env.V) console.log(t);
-  ok(/Receitas/.test(t)&&/Misto quente R\$ 10/.test(t)&&/Carnes variadas/.test(t)&&/já está num curso/.test(t),'aba Cursos: pratos, o avançado do PF e o aviso do curso do dia');
+  ok(/Comprar R\$/.test(t)&&!/Receitas/.test(t)&&/Em curso/.test(t),'aba Cursos: pratos, o avançado do PF e o aviso do curso do dia');
   g.goShop(4); ok(!g.cursoTrava && g.buyCurso('chapa') && g.save.cursos.chapa===1,'na lojinha seguinte, outro curso');
   g.goShop(5); ok(g.cursoProx('pastel').nivel===2 && g.cursoProx('pastel').preco===300 && g.buyCurso('pastel') && g.save.cursos.pastel===2,'feito o básico, vem o avançado (R$ 300)');
   g.goShop(6); g.save.bank=100; ok(!g.buyCurso('fritos') && g.save.cursos.fritos===undefined,'sem dinheiro, não compra');

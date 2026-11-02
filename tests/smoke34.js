@@ -21,7 +21,7 @@ const notaDe=(g,v,n)=>{ g.save.aval=Array(n||10).fill([v,v,v,v,v]); };
   ok(L.REFORMA.valor===1000 && L.carencia(e,1) && !L.carencia(e,2) && L.parcelaDe(e,1)===0 && L.parcelaDe(e,2)===110 && L.jurosDe(e,1)===0 && L.jurosDe(e,2)===10,'dia 1 sem parcela nem juros; dia 2: R$ 100 + R$ 10 de juros');
   ok(sv.equipe.dani===0 && L.STAFF.dani.levels.length===5 && L.STAFF.dani.levels[1].pay===0 && [2,3,4].map(i=>L.STAFF.dani.levels[i].pay).join()==='15,20,25','a Dani só chega no cap. 2; níveis: aprendiz (R$ 0) e aumentos de R$ 15, 20 e 25');
   sv.conversa=null; sv.bank=5000;
-  g.startDay(1); ok(/Capítulo 1, A garagem da Rosa: Fechar 2 dias no azul \(0 de 2\)/.test(els['intro-manut'].textContent) && /só vence no fim do dia 2/.test(els['intro-manut'].textContent),'a introdução do dia 1 traz o objetivo e a carência da reforma');
+  g.startDay(1); ok(/Capítulo 1, A garagem da Rosa: Fechar 2 dias no azul \(0 de 2\)/.test(els['intro-manut'].textContent) && /a 1ª parcela vence no fim do dia 2/.test(els['intro-manut'].textContent),'a introdução do dia 1 traz o objetivo e a carência da reforma');
   joga(H,200,0); ok(g.result.par===0 && g.save.emp.resto===1000 && g.save.bank===5000+200-g.contas-g.paid,'fim do dia 1: nenhuma parcela, a dívida segue em R$ 1.000');
   g.startDay(2); joga(H,400,0); ok(g.result.par===110 && g.save.emp.resto===900 && !g.save.emp.atr,'fim do dia 2: R$ 100 + R$ 10 de juros, saldo R$ 900');
   g.startDay(3); joga(H,400,0); ok(g.result.par===109 && g.save.emp.resto===800,'dia 3: juros de 1% sobre R$ 900 (R$ 9), saldo R$ 800');

@@ -60,3 +60,6 @@ O JS fica todo dentro de um `(function(){ ... })()` que abre em `02-telas.html` 
 - **Capacidades:** omita `capabilities`, para manter o db do ranking e o `user` (desde a v8.3.3 o jogo é offline e não os usa; quando o ranking compartilhado voltar, nos ajustes finais, será preciso declarar a leitura da coleção `ranking-campanha`, ver `docs/RESUMO.md`).
 - **Arquivos extras:** os já publicados continuam lá. Envie em `files` só o `versoes/vN.html` novo, porque o painel Versões tem um link para ele.
 - **Nova versão:** guarde a atual em `versoes/`, atualize o selo `vtag`, a constante `VERSAO` (vai no resumo do Caixa) e a lista do painel `#ov-ver`, escreva `docs/spec-vN.md` e atualize `docs/RESUMO.md`.
+
+## Fim de cada etapa
+- **Aviso da próxima etapa:** ao terminar uma etapa, a última mensagem descreve em poucas linhas o que a próxima etapa fará (lida só na faixa dela, pelo `tests/indice.sh`) e qual **modelo e esforço** a execução pede, conforme a linha **Modelo:** do plano (ou "planejar com o Opus antes", se ainda não estiver planejada).

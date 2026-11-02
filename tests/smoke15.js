@@ -10,6 +10,7 @@ const tag=els['vtag'], toca=n=>{ for(let i=0;i<n;i++) tag.fire('click'); };
 const vis=id=>els[id].style.display!=='none';
 const txt=e=>(e.textContent||'')+(e.children||[]).map(txt).join(' ');
 const cartoes=()=>els['shop-grid'].children;
+const btnDe=c=>c.children.find(x=>/btn/.test(x.className||''));
 const cartao=nome=>cartoes().find(c=>c.children[1] && c.children[1].textContent===nome);
 
 ok(!L.DEV.on && g.proxDia===3 && g.save.bank===420,'sem o modo dev, o save de verdade (dia 3, R$ 420)');
@@ -31,10 +32,10 @@ ok(g.state==='shop' && g.shopNext===1,'até o dia 1 abre a lojinha no modo dev')
 L.setShopTab('melhorias');
 { const nM=cartoes().length-1;   /* menos o cartão da TV e som */ L.setShopTab('bia'); ok(nM+cartoes().length===L.UPGRADES.length,'as '+L.UPGRADES.length+' melhorias nas seções Melhorias e Bia (Tênis novos e de corrida juntos)'); }
 ok(/Modo dev/.test(els['shop-limit'].textContent),'aviso de modo dev na lojinha');
-L.UPGRADES.forEach(u=>{ L.setShopTab(['tenis','corrida','bandeja','sudoku'].includes(u.id)?'bia':'melhorias'); const b=cartao(u.name).children[3]; ok(b.textContent==='Ligar' && !b.disabled,'"Ligar" '+u.name); b.fire('click'); });
+L.UPGRADES.forEach(u=>{ L.setShopTab(['tenis','corrida','bandeja','sudoku'].includes(u.id)?'bia':'melhorias'); const b=btnDe(cartao(u.name)); ok(b.textContent==='Ligar' && !b.disabled,'"Ligar" '+u.name); b.fire('click'); });
 ok(L.UPGRADES.every(u=>g.up[u.id]) && g.save.bank===10000,'todas ligadas, sem gastar');
-L.setShopTab('bia'); cartao('Tênis novos').children[3].fire('click'); ok(!g.up.tenis && !g.up.corrida,'desligar os Tênis novos desliga os de corrida');
-cartao('Tênis de corrida').children[3].fire('click'); ok(g.up.tenis && g.up.corrida,'ligar os de corrida liga os novos');
+L.setShopTab('bia'); btnDe(cartao('Tênis novos')).fire('click'); ok(!g.up.tenis && !g.up.corrida,'desligar os Tênis novos desliga os de corrida');
+btnDe(cartao('Tênis de corrida')).fire('click'); ok(g.up.tenis && g.up.corrida,'ligar os de corrida liga os novos');
 ok(L.UPGRADES.every(u=>JSON.parse(store[L.LS.devSave]).up[u.id]),'salvas no save dev');
 
 // equipe completa (e o couvert, mesmo na Garagem)
@@ -62,7 +63,7 @@ ok(tag.textContent===L.VERSAO && !tag.classList.contains('dev') && !vis('devbadg
 ok(!L.couvertOk(g.ponto) && !L.divulgaAberta(1) && !g.save.equipe.couvert,'fora do modo dev, couvert e divulgação voltam às regras');
 els['btn-play'].fire('click'); ok(g.state==='shop' && g.shopNext===3,'carreira normal');
 g.setState('menu'); ok(!vis('daychips'),'fora do modo dev, sem escolha de dia (v8.3)');
-{ g.goShop(2); L.setShopTab('bia'); const b=cartao('Bandeja').children[3]; ok(b.textContent==='Já comprado' && b.disabled,'lojinha normal fora do modo dev'); }
+{ g.goShop(2); L.setShopTab('bia'); const b=btnDe(cartao('Bandeja')); ok(b.textContent==='Já comprado' && b.disabled,'lojinha normal fora do modo dev'); }
 // link "Sair do modo dev"
 g.setState('menu'); toca(10); ok(L.DEV.on,'liga de novo'); els['btn-dev-off'].fire('click'); ok(!L.DEV.on && !vis('devbadge'),'"Sair do modo dev" no menu');
 // o modo dev fica guardado entre aberturas
