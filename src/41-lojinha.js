@@ -302,6 +302,7 @@ function buildCursosFeitos(grid){
   grid.appendChild(card);
 }
 function buildDani(grid){
+  if (HIST.on && game.save.histV === 1 && !game.daniChegou) return;   // v9.6.10: na História, o cartão dela só aparece quando ela chega (cap. 2)
   const eq = game.save.equipe, bank = game.save.bank, T = STAFF.tonhao.levels, D = STAFF.dani.levels, C = STAFF.couvert;
   const canPay = extra => payroll(eq) + extra <= bank;
   const pc = v => Math.round(v*100) + '%', sec = v => String(Math.round(v*10)/10).replace('.', ',') + ' s';
@@ -467,7 +468,9 @@ function buildAnselmo(grid){
 function buildDaniCursos(grid){
   const sv = game.save, bank = sv.bank;
   if (game.cursoMsg) grid.appendChild(el('p', 'cursomsg', game.cursoMsg));
-  DANI_CURSOS.filter(c => !c.item && cursoDaniVis(c, game.ponto)).forEach(c => {   // v9.2: os cursos de item ficam no Cardápio
+  const maxN = daniNivelXp(sv) === STAFF.dani.levels.length - 1;   // v9.6.10: no nível máximo, cursos sem item (só experiência) somem
+  const cs = DANI_CURSOS.filter(c => !c.item && cursoDaniVis(c, game.ponto) && !(maxN && !sv.daniCursos[c.id]));
+  cs.forEach(c => {   // v9.2: os cursos de item ficam no Cardápio
     const feito = !!sv.daniCursos[c.id], card = el('div', 'item' + (feito ? ' own' : ''));
     card.appendChild(upgradeIcon('dani'));
     card.appendChild(el('b', null, 'Curso de ' + c.nome));
