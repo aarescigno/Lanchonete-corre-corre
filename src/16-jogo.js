@@ -265,9 +265,6 @@ class Game {
   begin(){
     this.payDay(); this.setState('playing');
     if (this.unpaid.length) this.addText(TW/2 - this.cam, 300, 'Sem dinheiro para pagar: sem ' + listaE(this.unpaid) + ' hoje', PAL.perigo, 20);
-    // os pratos limpos são contados do dia 3 em diante: o lembrete da louça, no balão branco, logo na abertura
-    // (na campanha, só nos dias 3 a 5, enquanto o jogador se acostuma; no Turno sem fim, sempre)
-    if (isFinite(this.kitchen.clean) && (this.mode !== 'carreira' || this.day.n <= 5)) this.fx.push({ k:'text', box:true, aviso:'pratos', x:TW/2 - this.cam, y:250, vy:-6, life:3.5, max:3.5, text:'Não se esqueça de lavar os pratos!', color:PAL.faixa, size:16 });
   }
   /* lucro do dia (a meta): faturamento − ingredientes − contas − folha − divulgação */
   get fixo(){ return this.contas + this.paid + this.paidDiv + this.conserto + (this.multaVig || 0); }
@@ -1046,6 +1043,7 @@ class Game {
     // Modo História (v8.7): o dia no azul conta no cap. 1; cumpriu o objetivo do capítulo, a conversa de depois fica pendente
     let cap = null;
     sv.capMarm = this.stats.marmitas;
+    sv.docesTot = (sv.docesTot || 0) + this.stats.doces;   // v9.6.6: o selo NOVO! da geladeirinha some depois de 5 doces entregues
     if (!tomou && sv.cap <= HISTORIA.length && this.capObj(sv)){
       const co = HISTORIA[sv.cap - 1];
       if (co.obj.azul && m > 0) sv.capAzul++;
