@@ -54,9 +54,9 @@ function seatPositions(t){
 function tableHalfW(t){ return t.seats === 2 ? 36 : 62; }
 const STATION_KEYS = ['adiantar','order','marmj','plates','coffee','juice','sink','trash','maquina','retirada','doces','espresso','drinks'];
 function tableRect(t){ return { x:t.cx - t.hx - 10, y:t.cy - 62, w:t.hx*2 + 20, h:132 }; }
-function queueRect(g){ return { x:QUEUE.x - 74, y:QUEUE.ys[g.slot] - 76, w:148, h:90 }; }
+function queueRect(g){ const l = lugarEspera(g.slot); return { x:l.x - 52, y:l.y - 76, w:104, h:90 }; }
 /* onde a Bia (ou a Dani) para ao levar o suco a quem espera: ao lado do tablet do lugar */
-function esperaAp(slot){ return { x:QUEUE.x + 104, y:QUEUE.ys[slot] - 18 }; }
+function esperaAp(slot){ const l = lugarEspera(slot); return { x:l.x + 56, y:l.y + 6 }; }
 function rectDist(x, y, r){ return Math.hypot(Math.max(r.x - x, 0, x - r.x - r.w), Math.max(r.y - y, 0, y - r.y - r.h)); }
 function tableApproach(t){
   const hx = tableHalfW(t) + 28;

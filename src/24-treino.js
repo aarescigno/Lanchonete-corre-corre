@@ -4,7 +4,7 @@
    escurecido (com um buraco em cada alvo). O alvo ganha um anel tracejado e uma seta, que pulsam
    (parados com movimento reduzido). O cartão vai para o primeiro canto que não cobre o alvo
    ============================================================ */
-const TREINO_UI = { w:470, pad:20, tit:22, corpo:17, linha:23 };
+const TREINO_UI = { w:420, pad:20, tit:22, corpo:17, linha:23 };
 
 function treinoLinhas(ctx, s, maxW, size){
   ctx.font = size + 'px ' + FB;
@@ -19,8 +19,8 @@ function treinoLinhas(ctx, s, maxW, size){
 function treinoCruza(a, b, m){ return a.x < b.x + b.w + m && b.x < a.x + a.w + m && a.y < b.y + b.h + m && b.y < a.y + a.h + m; }
 /* onde fica o cartão: no alto ou embaixo, no meio ou nos cantos, sem cobrir nenhum alvo */
 function treinoLugar(alvos, w, h){
-  const L = 16, R = TW - w - 16, C = (TW - w) / 2, T = 14, B = 532 - h;
-  const opts = [[C,T],[C,B],[L,T],[R,T],[L,B],[R,B],[L,(540 - h) / 2],[R,(540 - h) / 2]];
+  const L = 16, R = TW - w - 16, C = (TW - w) / 2, T = 14, B = BARRA.y0 - 12 - h;
+  const opts = [[C,T],[C,B],[L,T],[R,T],[L,B],[R,B],[L,(BARRA.y0 - h) / 2],[R,(BARRA.y0 - h) / 2]];
   for (const o of opts){ const r = { x:o[0], y:o[1], w, h }; if (!alvos.some(a => treinoCruza(r, a, 14))) return r; }
   return { x:C, y:T, w, h };
 }

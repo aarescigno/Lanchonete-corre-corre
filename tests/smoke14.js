@@ -17,21 +17,21 @@ const sentaNaEspera=()=>{ for(let i=0;i<60 && g.queue.some(x=>x.path.length);i++
 const scr=x=>x+g.cam;   // mundo -> tela
 
 // a calçada e a espera
-ok(C.w===260 && Q.x<0 && Q.x-74>=-C.w && L.LAYOUT.BOUNDS.x0<Q.x-60,'calçada de 260 px à esquerda do salão, com a espera lá fora (x '+Q.x+')');
-ok(L.PONTOS[0].espera===4 && Q.ys.length===4,'Garagem: 4 cadeiras de espera');
-ok(ST.maquina && ST.maquina.rect.x+ST.maquina.rect.w<=0 && !ST.agua,'a máquina de suco fica na calçada (e a jarra de água saiu)');
+ok(C.y0===752 && Q.lugares.every(p=>p.y>=C.y0&&p.y<=C.y1) && L.LAYOUT.BOUNDS.y1<C.y0,'calçada embaixo do salão (y '+C.y0+' a '+C.y1+'), com a espera lá fora');
+ok(L.PONTOS[0].espera===4 && Q.lugares.length===4,'Garagem: 4 cadeiras de espera');
+ok(ST.maquina && ST.maquina.rect.y>=C.y0 && !ST.agua,'a máquina de suco fica na calçada (e a jarra de água saiu)');
 dia(3);
-ok(g.cam===C.w,'o mundo começa em x = '+C.w+' da tela');
+ok(g.cam===0,'o mundo começa em x = 0 da tela');
 { const lug=g.tables.reduce((a,t)=>a+t.seats,0); ok(g.contas===L.contasDia(g.tables,g.ponto) && lug===10,'as cadeiras de fora não contam nos lugares nem nas contas'); }
 for(let i=0;i<4;i++) chega(); sentaNaEspera();
-ok(g.queue.length===4 && g.queue.every((x,i)=>near(x.x,Q.x,0.6)&&near(x.y,Q.ys[i],0.6)),'4 grupos sentados lá fora, cada um na sua cadeira');
+ok(g.queue.length===4 && g.queue.every((x,i)=>near(x.x,Q.lugares[i].x,0.6)&&near(x.y,Q.lugares[i].y,0.6)),'4 grupos sentados lá fora, cada um na sua cadeira');
 { const f0=g.stats.full; g.arrive({type:'estudante',color:0}); ok(g.stats.full===f0+1 && g.queue.length===4,'5º grupo: espera cheia, vai embora (Lotado!)'); }
 
 // tela larga (v7.6): o mundo inteiro na tela, sem rolar
-ok(L.TW===960+C.w && L.LAYOUT.TW===L.TW,'tela de '+L.TW+' px: os 960 do salão e os '+C.w+' da calçada');
+ok(L.TW===600 && L.LAYOUT.TW===L.TW && L.LAYOUT.H===1040,'o mundo em pé: 600 × 1040');
 dia(3); const grp=chega(); sentaNaEspera();
-ok(g.cam===C.w && typeof g.setCam==='undefined' && typeof g.camGo==='undefined' && typeof g.abaOn==='undefined','sem câmera que rola nem abinhas: o mundo começa em x = '+C.w+' da tela');
-g.onDown(scr(Q.x),Q.ys[0]-20); g.onUp(scr(Q.x),Q.ys[0]-20); ok(g.sel===grp,'tocar no grupo lá fora seleciona');
+ok(g.cam===0 && typeof g.setCam==='undefined' && typeof g.camGo==='undefined' && typeof g.abaOn==='undefined','sem câmera que rola nem abinhas: o mundo começa em x = 0 da tela');
+g.onDown(scr(Q.lugares[0].x),Q.lugares[0].y-20); g.onUp(scr(Q.lugares[0].x),Q.lugares[0].y-20); ok(g.sel===grp,'tocar no grupo lá fora seleciona');
 { const t=g.tables.find(t=>t.free&&t.seats>=grp.size); g.onDown(scr(t.cx),t.cy); ok(grp.state==='toTable' && g.sel===null,'e tocar na mesa senta'); }
 g.bia.clearActs(); g.onDown(scr(ST.order.rect.x+20),ST.order.rect.y+20); ok(g.bia.acts.length===1 && g.bia.acts[0].type==='order','a cozinha está na mesma tela');
 { const r=ST.maquina.rect; g.up.maquina=true; g.bia.clearActs(); g.onDown(scr(r.x+20),r.y+20); ok(g.bia.acts.length===1 && g.bia.acts[0].type==='maquina','e a máquina de suco também'); g.up.maquina=false; g.bia.clearActs(); }
@@ -39,11 +39,11 @@ g.bia.clearActs(); g.onDown(scr(ST.order.rect.x+20),ST.order.rect.y+20); ok(g.bi
   g.onDown(scr(s.x),s.y-20); g.onMove(scr(s.x)+40,s.y); g.onMove(scr(t.cx),t.cy); ok(g.hover===t,'arrastando o grupo, a mesa sob o dedo acende'); g.onUp(scr(t.cx),t.cy); ok(s.state==='toTable','e soltar nela senta'); }
 { const s=chega(); sentaNaEspera(); g.sel=s; const t=g.tables[0], y=t.cy+120; ok(!g.pickAt(t.cx,y,0),'ponto vazio');
   const n0=g.fx.length; g.onDown(scr(t.cx),y,23); g.onMove(scr(t.cx)-100,y); g.onUp(scr(t.cx)-100,y);
-  ok(g.sel===null && g.cam===C.w && g.fx.length===n0+1,'tocar no vazio desfaz a escolha (com o anel do dedo) e a tela não rola'); }
+  ok(g.sel===null && g.cam===0 && g.fx.length===n0+1,'tocar no vazio desfaz a escolha (com o anel do dedo) e a tela não rola'); }
 g.bia.enqueue({type:'coffee'}); g.bia.enqueue({type:'order'});
-g.onDown(L.HUDX.fila+360+52+10,570); ok(g.bia.acts.length===1 && g.bia.acts[0].type==='coffee','quadrinho da fila de ações (no meio do HUD largo) cancela');
-{ const m=g.save.equipe; const mu=L.Sfx.muted; g.onDown(L.HUDX.dir+920,570); ok(L.Sfx.muted!==mu,'som no canto direito do HUD largo'); L.Sfx.muted=mu;
-  g.onDown(L.HUDX.dir+860,570); ok(g.state==='paused','pausa ao lado'); g.resume(); }
+g.onDown(67,1015); ok(g.bia.acts.length===1 && g.bia.acts[0].type==='coffee','quadrinho da fila de ações (no meio do HUD largo) cancela');
+{ const m=g.save.equipe; const mu=L.Sfx.muted; g.onDown(567,1015); ok(L.Sfx.muted!==mu,'som no canto direito do HUD largo'); L.Sfx.muted=mu;
+  g.onDown(511,1015); ok(g.state==='paused','pausa ao lado'); g.resume(); }
 g.bia.clearActs(); g.setState('paused'); g.onDown(scr(ST.order.rect.x+20),ST.order.rect.y+20); ok(!g.bia.acts.length,'pausado: nada'); g.resume();
 
 // a água da torneira (v7.7)

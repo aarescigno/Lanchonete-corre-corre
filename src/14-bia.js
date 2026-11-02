@@ -53,7 +53,7 @@ function sucoLugar(g){ return !g ? '' : g.state === 'queue' ? 'banco' + g.slot :
 class Waitress {
   constructor(game){ this.g = game; this.reset(); }
   reset(){
-    this.x = 700; this.y = 310; this.dir = -1;
+    this.x = 300; this.y = 600; this.dir = -1;
     this.hands = []; this.acts = []; this.phase = 'idle'; this.timer = 0;
     this.path = []; this.walkPh = 0; this.moving = false; this.qT = 0; this.doing = null;
   }
@@ -115,7 +115,7 @@ class Waitress {
     const ap = this.apFor(a);
     if (!ap){ this.acts.shift(); this.phase = 'idle'; this.path = []; return; }
     a.alvo = a.type === 'maquina' && a.leg === 2 ? sucoLugar(a.group) : null;   // levando o suco: se quem pediu mudar de lugar, refaz o caminho
-    this.path = findPath({x:this.x, y:this.y}, ap);
+    this.path = caminhoAte({x:this.x, y:this.y}, ap);
     this.phase = 'walk';
   }
   duration(a){
@@ -186,7 +186,7 @@ class Waitress {
       }
     }
     if (this.moving) this.walkPh += dt * 13;
-    this.x = clamp(this.x, -CALCADA.w, W); this.y = clamp(this.y, 0, H);
+    this.x = clamp(this.x, 0, W); this.y = clamp(this.y, 0, H);
   }
   fail(msg){
     this.g.addText(this.x, this.y - 82, msg, PAL.alerta, msg === '?' ? 26 : 15);

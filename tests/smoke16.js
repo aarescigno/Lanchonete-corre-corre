@@ -109,7 +109,7 @@ const quebra=id=>{ g.quebras=[{id,t:0,on:true,fixed:false}]; };
 
 // ---------- conserto pelo toque ----------
 { novo(1000,7); g.startDay(4); g.save.manut.sorteio=null; g.begin(); const B0=g.save.bank, eq=M.equip[0], bx=eq.badge.x+g.cam, by=eq.badge.y;
-  ok(g.cam===260 || g.cam===L.CALCADA.w,'câmera na tela larga: tela = mundo + '+g.cam);
+  ok(g.cam===0,'sem câmera (palma.1): tela = mundo');
   g.onDown(bx,by,0); ok(g.conserto===0 && g.save.bank===B0,'plaquinha só existe com a quebra ativa: toque no mesmo lugar não conserta nada');
   g.quebras=[{id:'fogao',t:0,on:true,fixed:false}]; g.save.manut.fogao=0.1; g.save.manut.sorteio={d:4,clima:'',quebra:[{id:'fogao',f:0.2}]};
   const antes=g.lucro; g.onDown(bx+M.badge+30,by,0); ok(g.conserto===0 && g.quebrado('fogao'),'toque fora do círculo ('+(M.badge+30)+' px): nada');

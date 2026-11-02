@@ -16,7 +16,7 @@ class Game {
     this.dani = new Helper(this, 'dani'); this.joca = new Helper(this, 'joca'); this.cami = new Helper(this, 'cami');
     this.fx = [];
     this.sel = null; this.drag = null; this.hover = null; this.hoverOk = false;
-    this.cam = CALCADA.w;   // onde o mundo começa na tela larga (v7.6: a calçada inteira à vista, sem rolar)
+    this.cam = 0;   // palma.1: o mundo em pé encaixa na tela, sem calçada à esquerda
     this.shopNext = 1;
     this.soundBtnT = 0;
     this.mode = 'carreira';
@@ -59,7 +59,7 @@ class Game {
     this.gid = 0;
     this.groups = []; this.queue = [];
     this.buildTables();
-    queueYsFor(this.ponto.espera || 4);   // v9.1: 4, 5 ou 6 lugares de espera na calçada
+    queueLugares(this.ponto.espera || 4);   // v9.1: 4, 5 ou 6 lugares de espera na calçada
     marmJSlotsFor(this.ponto.marmJanela || 2);   // v9.6.5: a fileira das marmitas na janela de prontos
     plateSlotsFor(this.ponto.pratos || 4);   // v9: 4 vagas no balcão de pratos na Garagem, 5 na área industrial, 6 na Avenida (v9.1)
     this.tables.forEach(t => { t.open = true; t.group = null; t.dirty = false; t.dirtyN = 0; });   // v7.4: todas as mesas abrem desde o dia 1
@@ -77,7 +77,7 @@ class Game {
     this.ending = false; this.endTimer = 0; this.reason = '';
     this.fechado = false; this.fechadoT = 0;   // v9.6.4: a porta fecha quando o relógio zera; fechadoT: segundos desde então
     this.sel = null; this.drag = null; this.hover = null;
-    this.cam = CALCADA.w;
+    this.cam = 0;
     // v9, a encomenda do setor (área industrial): sorteada ao começar o dia e avisada na introdução
     const pe = this.ponto.encomenda, te = CUSTOMER_TYPES.encomenda;
     this.encomendaDia = !treino && n > 0 && pe && Math.random() < pe ? { lote:randi(te.lote[0], te.lote[1]) } : null;
@@ -348,7 +348,7 @@ class Game {
         if (f.delay > 0){ f.delay -= dt; continue; }
         f.life += dt; f.vy += 300*dt; f.x += f.vx*dt; f.y += f.vy*dt;
         if (f.life > 0.45){
-          const tx = 120 - this.cam, ty = 566, dx = tx - f.x, dy = ty - f.y, d = Math.hypot(dx,dy) || 1;
+          const tx = 60 - this.cam, ty = 32, dx = tx - f.x, dy = ty - f.y, d = Math.hypot(dx,dy) || 1;
           f.vx = dx/d*420; f.vy = dy/d*420;
           if (d < 20) f.life = f.max;
         }
@@ -415,7 +415,7 @@ class Game {
     g.x = ap.x; g.y = ap.y;
     g.table = null;
     g.setState('leaving');
-    g.path = findPath({x:g.x, y:g.y}, {x:DOOR.x, y:DOOR.y});
+    g.path = caminhoSai({x:g.x, y:g.y});
   }
   /* v9.6: o prato chega à mesa (pela Bia ou pela Cami, que não entra na sequência) */
   entregaPrato(grp, dish, t, semCorrente){
@@ -678,11 +678,11 @@ class Game {
     g.avalia = !!s.av; g.doApito = !!s.apito;   // doApito: uma das turmas que chegam com o apito da fábrica
     this.groups.push(g);
     const novoMan = this.manualVer('c-' + s.type) | (s.vip ? this.manualVer('c-vip') : 0);   // v9.6.7: a 1ª vez de cada tipo abre a ficha dele no Manual
-    if (novoMan) this.addText(QUEUE.x, DOOR.y + 34, 'Novo no Manual!', PAL.faixa, 14);
+    if (novoMan) this.addText(AVISO.x, AVISO.y + 22, 'Novo no Manual!', PAL.faixa, 14);
     if (g.retira){
       this.retirada.push(g); g.setState('retirada'); this.reslotRetirada();
       this.marmitaPara(g);
-      this.addText(RETIRADA.fila[0].x, DOOR.y + 4, g.lote ? 'Encomenda: ' + g.lote + ' marmitas!' : 'Pedido na Efood!', PAL.alerta, 16);
+      this.addText(RETIRADA.fila[0].x, RETIRADA.fila[0].y - 90, g.lote ? 'Encomenda: ' + g.lote + ' marmitas!' : 'Pedido na Efood!', PAL.alerta, 16);
       Sfx.tone(784, 0.08, 'square', 0.03); Sfx.tone(1046, 0.1, 'square', 0.03, 0.08);
       this.stats.spawned++;
       return g;
@@ -692,7 +692,7 @@ class Game {
       let i = 0;
       while (i < this.queue.length && this.queue[i].vip) i++;
       this.queue.splice(i, 0, g);
-      this.addText(QUEUE.x, DOOR.y + 12, 'VIP chegou!', PAL.mostarda, 22);
+      this.addText(AVISO.x, AVISO.y, 'VIP chegou!', PAL.mostarda, 22);
       if (this.mode === 'carreira' && !this.save.vipVisto){   // v9.6.4: o 1º VIP da carreira vem explicado, num balão branco
         this.save.vipVisto = 1; writeSave(this.save);
         this.fx.push({ k:'text', box:true, x:TW/2 - this.cam, y:250, vy:-6, life:5, max:5, text:'Chegou cliente VIP!\nFura a fila e quer tudo quentinho.', color:PAL.faixa, size:16 });
@@ -709,12 +709,12 @@ class Game {
   bounce(s){
     const g = new Group(this, s.type, ++this.gid, s.color, s.vip, s);
     g.hearts = 3; g.bounced = true; g.hold = 0.9;
-    g.x = QUEUE.x - 60;   // chega à calçada, vê a espera cheia e volta para a rua
+    g.x = QUEUE.lugares[0].x; g.y = 930;   // chega à calçada, vê a espera cheia e volta para a rua
     g.setState('leaving');
     g.path = [{ x:DOOR.x, y:DOOR.y + 4 }];
     this.groups.push(g);
     this.stats.spawned++; this.stats.full++;
-    this.addText(QUEUE.x, DOOR.y + 12, 'Lotado!', PAL.perigo, 24);
+    this.addText(AVISO.x, AVISO.y, 'Lotado!', PAL.perigo, 24);
     Sfx.tone(260, 0.18, 'triangle', 0.07, 0, 170);
     if (this.mode === 'semfim'){ this.stats.lost++; this.loseStar(); }
     return null;
@@ -751,7 +751,7 @@ class Game {
     g.cmd = -1;
   }
   reslot(){
-    this.queue.forEach((g,i) => { g.slot = i; g.path = [{ x:QUEUE.x, y:QUEUE.ys[i] }]; });
+    this.queue.forEach((g,i) => { const l = lugarEspera(i); g.slot = i; g.path = [{ x:l.x, y:l.y }]; });
   }
 
   /* ---------- bebida da espera (v7.5; o que se serve vem do ponto desde a v7.7) ---------- */
@@ -815,7 +815,7 @@ class Game {
     g.gain(1);
     const pts = tableApproach(t);
     const ap = Math.hypot(pts[0].x-g.x, pts[0].y-g.y) <= Math.hypot(pts[1].x-g.x, pts[1].y-g.y) ? pts[0] : pts[1];
-    g.path = findPath({x:g.x, y:g.y}, ap);
+    g.path = caminhoEntra({x:g.x, y:g.y}, ap);
     g.path.push({ x:t.cx, y:t.cy + 30 });
     this.score('sit', t.cx, t.cy - 40, 0, g);
     if (g.color === t.color){
@@ -846,7 +846,7 @@ class Game {
     if (this.sel === g) this.sel = null;
     if (this.drag && this.drag.g === g) this.drag = null;
     g.setState('leaving');
-    g.path = findPath({x:g.x, y:g.y}, {x:DOOR.x, y:DOOR.y});
+    g.path = caminhoSai({x:g.x, y:g.y});
   }
   /* salão lotado (v7.1): todas as mesas abertas com grupo e a fila com PORTA.fila grupos ou mais */
   get lotado(){ return this.queue.length >= PORTA.fila && !this.tables.some(t => t.open && !t.group); }
@@ -958,8 +958,8 @@ class Game {
         this.clock -= dt;
         // com o salão lotado, a chegada da vez espera um pouco (e as seguintes andam junto)
         const ap = this.apito;   // v9: o aviso 10 s antes e o apito da fábrica
-        if (ap && !ap.avisou && this.elapsed >= ap.t - ap.aviso){ ap.avisou = true; this.addText(QUEUE.x, DOOR.y + 36, 'A fábrica vai apitar!', PAL.alerta, 20); this.manualVer('i-apito'); }
-        if (ap && !ap.tocou && this.elapsed >= ap.t){ ap.tocou = true; this.addText(QUEUE.x, DOOR.y + 36, 'Apitou!', PAL.perigo, 26); Sfx.tone(880, 0.16, 'square', 0.05); Sfx.tone(1175, 0.28, 'square', 0.05, 0.2); }
+        if (ap && !ap.avisou && this.elapsed >= ap.t - ap.aviso){ ap.avisou = true; this.addText(AVISO.x, AVISO.y + 24, 'A fábrica vai apitar!', PAL.alerta, 20); this.manualVer('i-apito'); }
+        if (ap && !ap.tocou && this.elapsed >= ap.t){ ap.tocou = true; this.addText(AVISO.x, AVISO.y + 24, 'Apitou!', PAL.perigo, 26); Sfx.tone(880, 0.16, 'square', 0.05); Sfx.tone(1175, 0.28, 'square', 0.05, 0.2); }
         const s = this.schedule[this.nextIdx];
         if (s && this.elapsed >= s.t + this.atraso && this.lotado && this.portaT < PORTA.max && this.atraso < PORTA.total * this.day.time){
           this.atraso += dt; this.portaT += dt;
@@ -1764,15 +1764,15 @@ class Game {
     }
     return null;
   }
-  /* HUD na tela larga (v7.6): a fila de ações anda HUDX.fila e a pausa e o som, HUDX.dir */
+  /* a barra de baixo (palma.1): os toques na pausa, no som e nos quadrinhos da fila de ações */
   hudHit(x, y){
-    if (y < 540) return null;
-    const xd = x - HUDX.dir;
-    if (xd >= 832 && xd <= 891 && y >= 542) return { k:'pause' };
-    if (xd >= 891 && xd <= 952 && y >= 542) return { k:'sound' };
+    if (y < BARRA.y0) return null;
+    const P = BARRA.pausa, S = BARRA.som, F = BARRA.fila;
+    if (x >= P.x - 2 && x < S.x - 2 && y >= BARRA.y0 + 2) return { k:'pause' };
+    if (x >= S.x - 2 && y >= BARRA.y0 + 2) return { k:'sound' };
     for (let i=0;i<filaMax(this.up);i++){
-      const sx = 358 + i*52 + HUDX.fila;
-      if (x >= sx && x < sx + 52 && y >= 542) return { k:'slot', i };
+      const sx = F.x0 + i * (F.w + F.gap);
+      if (x >= sx && x < sx + F.w + F.gap && y >= F.y - 2) return { k:'slot', i };
     }
     return { k:'hud' };
   }

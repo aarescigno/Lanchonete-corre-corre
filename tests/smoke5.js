@@ -29,7 +29,7 @@ ok(!fit([K('ticket'),K('dirty'),K('dish')],true),'mão das comandas não leva ma
 { const lay=L.handLayout([K('dish'),K('dirty')],true); ok(lay[0][0].kind==='dish'&&lay[1][0].kind==='dirty','layout: louça suja vai na mão livre'); }
 
 /* estações */
-ok(g.stationAt(910,350)==='juice' && g.stationAt(820,350)==='coffee','balcão de sucos ao lado do cafezinho');
+ok(g.stationAt(460,130)==='juice' && g.stationAt(370,130)==='coffee','balcão de sucos ao lado do cafezinho');
 
 /* upgrade */
 { const u=L.UPGRADES.find(x=>x.id==='bandeja'); ok(u && u.cost>0,'bandeja na lojinha'); ok(L.UPGRADES.length===9,'9 melhorias (com os Tênis de corrida, v7.3, o Triturador, v8.3.10, e o Livrinho de Sudoku, v8.6.3)'); }
@@ -84,7 +84,7 @@ const run=s=>{ for(let i=0;i<s*20;i++){ g.queue.forEach(x=>x.patLeft=1e9); g.gro
   ok(g.bia.hands.filter(h=>h.kind==='dish').length===3,'com bandeja: 3 pratos (2 na bandeja + 1 na mão)'); }
 
 /* lixeira: descarta as bebidas que sobraram, multa de metade do valor */
-ok(g.stationAt(722,505)==='trash' && g.tableAt(722,505)===null,'lixeira no chão, ao lado do balcão');
+ok(g.stationAt(570,330)==='trash' && g.tableAt(570,330)===null,'lixeira no chão, ao lado do balcão');
 { g.up={bandeja:true}; g.save.up=g.up; g.startDay(4); g.begin(); g.money=100;   // sem esvaziar a agenda: o dia não pode acabar no meio do teste
   g.bia.hands=[K('juice'),K('juice'),K('coffee'),K('dirty')]; g.tapStation('trash',722,505); run(6);
   ok(g.bia.hands.length===1 && g.bia.hands[0].kind==='dirty','lixeira leva só as bebidas (a louça fica)');

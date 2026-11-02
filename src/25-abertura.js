@@ -9,6 +9,7 @@ const AB_CHAO = 470;   // linha do chão das cenas (a faixa da legenda começa e
 const AB_FOGAO = 356;  // a boca do fogão de casa: na cintura da Rosa (~55% da altura dela)
 const AB_COR = { rosa:'#C8506A', petala:'#E8457A', noite:'#1E2A4A', noite2:'#3A3F6E', aurora:'#7A2E3A', ouro:'#F2C23D', molho:'#C2362B', segredo:'#F2A53A' };
 // altura de cada um na cena, em px do chão ao alto da cabeça (sem a touca), e a mesma altura no desenho em escala 1
+const AB_W = 1220, AB_H = 600;   // palma.1: a abertura continua deitada (um filme), com o tamanho do mundo de antes
 const AB_ALT = { rosa:210, bia:210, biaCrianca:130, tonhao:230, braulio:230 };
 const AB_BASE = { rosa:63, bia:73.5, biaCrianca:46, tonhao:114, braulio:115 };
 const abEsc = (q,k) => AB_ALT[q] / AB_BASE[q] * (k || 1);   // k: mais longe (< 1), como na janela ou na porta
@@ -173,9 +174,9 @@ function abBraulio(c,x,y,s,o){
 /* ---------- cenário ---------- */
 function abCeu(c,a,b,h){
   const g = c.createLinearGradient(0,0,0,h || 500); g.addColorStop(0,a); g.addColorStop(1,b);
-  c.fillStyle = g; c.fillRect(0,0,TW,h || 500);
+  c.fillStyle = g; c.fillRect(0,0,AB_W,h || 500);
 }
-function abChao(c,cor,y){ c.fillStyle = cor; c.fillRect(0,y || AB_CHAO,TW,500 - (y || AB_CHAO)); c.strokeStyle = PAL.tinta; c.lineWidth = 3; c.beginPath(); c.moveTo(0,y || AB_CHAO); c.lineTo(TW,y || AB_CHAO); c.stroke(); }
+function abChao(c,cor,y){ c.fillStyle = cor; c.fillRect(0,y || AB_CHAO,AB_W,500 - (y || AB_CHAO)); c.strokeStyle = PAL.tinta; c.lineWidth = 3; c.beginPath(); c.moveTo(0,y || AB_CHAO); c.lineTo(AB_W,y || AB_CHAO); c.stroke(); }
 function abJanela(c,x,y,w,h,ceu,T,estrela){
   rr(c,x,y,w,h,6); fs(c,ceu,3);
   if (estrela) star(c,x + w*0.62,y + h*0.35,9 + (RM ? 0 : Math.sin(T*3) * 2),AB_COR.ouro);
@@ -183,10 +184,10 @@ function abJanela(c,x,y,w,h,ceu,T,estrela){
 }
 // a cozinha de casa (cenas 1 e 7): azulejo, janela, bancada e o fogão, com a boca na cintura da Rosa
 function abCozinhaCasa(c,T,noite){
-  c.fillStyle = noite ? '#D9CBB0' : PAL.piso2; c.fillRect(0,0,TW,AB_CHAO);
+  c.fillStyle = noite ? '#D9CBB0' : PAL.piso2; c.fillRect(0,0,AB_W,AB_CHAO);
   c.fillStyle = noite ? '#C7DCD0' : PAL.piso1;
-  for (let x=0;x<TW;x+=40) for (let y=250;y<AB_CHAO;y+=40) if (((x+y)/40)%2 === 0) c.fillRect(x,y,40,40);
-  c.fillStyle = PAL.faixa; c.fillRect(0,236,TW,14);
+  for (let x=0;x<AB_W;x+=40) for (let y=250;y<AB_CHAO;y+=40) if (((x+y)/40)%2 === 0) c.fillRect(x,y,40,40);
+  c.fillStyle = PAL.faixa; c.fillRect(0,236,AB_W,14);
   abJanela(c,150,70,200,140,noite ? AB_COR.noite : '#BFE3F7',T,!!noite);
   if (!noite){ c.fillStyle = '#fff'; ell(c,215,110,26,10); c.fill(); }
   c.fillStyle = 'rgba(200,80,106,.85)'; c.fillRect(140,62,30,156); c.fillRect(330,62,30,156);   // cortininhas
@@ -320,8 +321,8 @@ const AB_CENAS = {
     return { bia:[150,AB_CHAO - AB_ALT.biaCrianca - 6], tonhao:[812,196], rosa:[rx,AB_CHAO - AB_ALT.rosa] };
   },
   tempero(c,p,T){
-    c.fillStyle = PAL.inox; c.fillRect(0,0,TW,AB_CHAO);
-    c.fillStyle = '#fff'; for (let x=0;x<TW;x+=60) for (let y=0;y<AB_CHAO;y+=30) c.fillRect(x + (y/30%2)*30,y,56,26);
+    c.fillStyle = PAL.inox; c.fillRect(0,0,AB_W,AB_CHAO);
+    c.fillStyle = '#fff'; for (let x=0;x<AB_W;x+=60) for (let y=0;y<AB_CHAO;y+=30) c.fillRect(x + (y/30%2)*30,y,56,26);
     abChao(c,'#8E99A6');
     rr(c,400,380,400,90,6); fs(c,'#C7CED6',3);                      // o fogão grande
     rr(c,390,366,420,18,4); fs(c,'#3a3a3c',2.5);
@@ -347,8 +348,8 @@ const AB_CENAS = {
     return { tonhao:[tx,AB_CHAO - 275,-60], rosa:[rx,AB_CHAO - AB_ALT.rosa] };
   },
   estrela(c,p,T){
-    c.fillStyle = '#5B2A33'; c.fillRect(0,0,TW,AB_CHAO);
-    c.fillStyle = 'rgba(242,194,61,.08)'; for (let x=0;x<TW;x+=80) c.fillRect(x,0,40,AB_CHAO);
+    c.fillStyle = '#5B2A33'; c.fillRect(0,0,AB_W,AB_CHAO);
+    c.fillStyle = 'rgba(242,194,61,.08)'; for (let x=0;x<AB_W;x+=80) c.fillRect(x,0,40,AB_CHAO);
     abChao(c,'#3B2420');
     // o lustre e o foco no chef
     c.strokeStyle = PAL.tinta; c.lineWidth = 3; c.beginPath(); c.moveTo(560,0); c.lineTo(560,40); c.stroke();
@@ -382,8 +383,8 @@ const AB_CENAS = {
     return { braulio:[590,AB_CHAO - 236,210] };
   },
   hospital(c,p,T){
-    c.fillStyle = '#CFE3DF'; c.fillRect(0,0,TW,AB_CHAO);
-    c.fillStyle = '#B8D3CE'; c.fillRect(0,300,TW,10);
+    c.fillStyle = '#CFE3DF'; c.fillRect(0,0,AB_W,AB_CHAO);
+    c.fillStyle = '#B8D3CE'; c.fillRect(0,300,AB_W,10);
     abJanela(c,880,70,220,160,AB_COR.noite,T,true);
     abChao(c,'#A9BCC4');
     // a mesinha com a rosa no copo
@@ -427,7 +428,7 @@ const AB_CENAS = {
     c.lineCap = 'butt'; c.strokeStyle = PAL.tinta; c.lineWidth = 6; c.beginPath(); c.moveTo(504,414); c.lineTo(504,AB_CHAO); c.moveTo(584,414); c.lineTo(584,AB_CHAO); c.stroke();
     abBiaCrianca(c,545,402,abEsc('biaCrianca'),{ sentada:true, mood:1, t:T, bracoE:[[-22,-24],[-31,-30]] });
     // tudo um pouco mais escuro, como de noite
-    c.fillStyle = 'rgba(30,42,74,.18)'; c.fillRect(0,0,TW,500);
+    c.fillStyle = 'rgba(30,42,74,.18)'; c.fillRect(0,0,AB_W,500);
     // depois da fala derradeira, a cortina do leito corre no trilho e cobre a cama e a Bia (a janela e a rosa ficam)
     c.fillStyle = PAL.cromoEsc; c.fillRect(0,36,730,6);
     const fecha = abSuave(abSeg(p,0.66,0.88)), cx = 30 + fecha * 690;
@@ -442,10 +443,10 @@ const AB_CENAS = {
   },
   saudade(c,p,T){
     // o corredor do hospital, à noite: a porta da enfermaria com a plaquinha, o rodapé e a Bia sozinha na cadeira
-    c.fillStyle = '#B9CFCA'; c.fillRect(0,0,TW,AB_CHAO);
-    c.fillStyle = '#A7C0BA'; c.fillRect(0,290,TW,10);
-    c.fillStyle = '#7E9A95'; c.fillRect(0,AB_CHAO - 18,TW,18);
-    c.strokeStyle = PAL.tinta; c.lineWidth = 2.5; c.beginPath(); c.moveTo(0,AB_CHAO - 18); c.lineTo(TW,AB_CHAO - 18); c.stroke();
+    c.fillStyle = '#B9CFCA'; c.fillRect(0,0,AB_W,AB_CHAO);
+    c.fillStyle = '#A7C0BA'; c.fillRect(0,290,AB_W,10);
+    c.fillStyle = '#7E9A95'; c.fillRect(0,AB_CHAO - 18,AB_W,18);
+    c.strokeStyle = PAL.tinta; c.lineWidth = 2.5; c.beginPath(); c.moveTo(0,AB_CHAO - 18); c.lineTo(AB_W,AB_CHAO - 18); c.stroke();
     rr(c,110,200,130,AB_CHAO - 200,4); fs(c,'#E9E4D8',3);                       // a porta
     rr(c,140,224,70,56,4); fs(c,'#BFD8E8',2.4);
     c.fillStyle = PAL.cromo; rr(c,214,330,18,6,3); c.fill();
@@ -471,7 +472,7 @@ const AB_CENAS = {
     c.globalAlpha = RM ? 1 : 1 - la;
     c.beginPath(); const lx = ol[0], ly = ol[1] + 8 + la * 12; c.moveTo(lx,ly - 6); c.quadraticCurveTo(lx + 5,ly + 2,lx,ly + 4); c.quadraticCurveTo(lx - 5,ly + 2,lx,ly - 6); fs(c,'#8EC5E8',1.4);
     c.globalAlpha = 1;
-    c.fillStyle = 'rgba(30,42,74,.22)'; c.fillRect(0,0,TW,500);
+    c.fillStyle = 'rgba(30,42,74,.22)'; c.fillRect(0,0,AB_W,500);
     return { bia:[500,240] };
   },
   promessa(c,p,T){
@@ -603,7 +604,7 @@ function abBalao(c,s,ax,ay,dx){
   const U = AB_UI, lin = treinoLinhas(c,s,U.falaW,U.fala);
   c.font = U.fala + 'px ' + FB;
   const w = Math.max.apply(null,lin.map(l => c.measureText(l).width)) + 34, h = lin.length * U.linha + 22;
-  const x = clamp(ax + (dx || 0) - w/2,16,TW - 16 - w), y = Math.max(10,ay - 22 - h);
+  const x = clamp(ax + (dx || 0) - w/2,16,AB_W - 16 - w), y = Math.max(10,ay - 22 - h);
   const bx = clamp(ax,x + 22,x + w - 22);
   c.beginPath(); c.moveTo(bx - 12,y + h - 2); c.lineTo(ax,Math.max(ay,y + h + 12)); c.lineTo(bx + 12,y + h - 2); c.closePath(); fs(c,'#fff',3);
   rr(c,x,y,w,h,16); fs(c,'#fff',3);
@@ -612,14 +613,14 @@ function abBalao(c,s,ax,ay,dx){
 }
 function abLegenda(c,ab){
   const U = AB_UI;
-  c.fillStyle = 'rgba(34,32,28,.92)'; c.fillRect(0,500,TW,100);
-  c.fillStyle = PAL.mostarda; c.fillRect(0,500,TW,4);
+  c.fillStyle = 'rgba(34,32,28,.92)'; c.fillRect(0,500,AB_W,100);
+  c.fillStyle = PAL.mostarda; c.fillRect(0,500,AB_W,4);
   const lin = treinoLinhas(c,ab.cena.leg,1040,U.leg), y0 = 548 - (lin.length - 1) * U.legLinha / 2 - 6;
-  lin.forEach((l,i) => txt(c,l,TW/2,y0 + i * U.legLinha,U.leg,PAL.creme,'center',FB));
+  lin.forEach((l,i) => txt(c,l,AB_W/2,y0 + i * U.legLinha,U.leg,PAL.creme,'center',FB));
   // as bolinhas das cenas e a dica do toque
-  const n = ab.n, x0 = TW/2 - (n - 1) * 9;
+  const n = ab.n, x0 = AB_W/2 - (n - 1) * 9;
   for (let i=0;i<n;i++){ circ(c,x0 + i * 18,586,i === ab.i ? 5 : 3.5); c.fillStyle = i <= ab.i ? PAL.mostarda : '#6b6457'; c.fill(); }
-  txt(c,'toque para seguir',TW - 20,586,13,'#b8ae98','right',FB);
+  txt(c,'toque para seguir',AB_W - 20,586,13,'#b8ae98','right',FB);
 }
 function drawAbertura(c,ab){
   const T = RM || ab.rm ? 0 : ab.tm;
@@ -627,12 +628,12 @@ function drawAbertura(c,ab){
   AB_VIVO.fala = {};
   if (T > 0) ab.falas().forEach(f => { const d = ab.t - f.de; if (d >= 0 && d < 1.8) AB_VIVO.fala[f.q] = Math.abs(Math.sin(d * 11)); });
   c.save();
-  c.fillStyle = PAL.tinta; c.fillRect(0,0,TW,H);
+  c.fillStyle = PAL.tinta; c.fillRect(0,0,AB_W,AB_H);
   const desenha = AB_CENAS[ab.cena.id];
   const cab = (desenha && desenha(c,ab.p,T)) || {};
   ab.falas().forEach(f => { const a = cab[f.q]; if (a) abBalao(c,f.s,a[0],a[1],a[2]); });
   abLegenda(c,ab);
   const e = ab.escuro;
-  if (e > 0){ c.fillStyle = 'rgba(16,14,12,' + e + ')'; c.fillRect(0,0,TW,H); }
+  if (e > 0){ c.fillStyle = 'rgba(16,14,12,' + e + ')'; c.fillRect(0,0,AB_W,AB_H); }
   c.restore();
 }

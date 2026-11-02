@@ -133,6 +133,17 @@ function findPath(from, to){
   for (let c = 1; c !== 0; c = prev[c]) path.push({x:nodes[c].x, y:nodes[c].y});
   return path.reverse();
 }
+/* palma.1: a porta fica na parede da frente: quem entra vem da calçada por ENTRADA.fora e ENTRADA.dentro, e quem sai faz o caminho de volta
+   até a rua (DOOR). caminhoEntra: da calçada ao ponto `ap` do salão; caminhoSai: de dentro do salão até a rua */
+function caminhoEntra(from, ap){ return [{ x:ENTRADA.fora.x, y:ENTRADA.fora.y }, { x:ENTRADA.dentro.x, y:ENTRADA.dentro.y }].concat(findPath(ENTRADA.dentro, ap)); }
+function caminhoSai(from){ return findPath(from, ENTRADA.dentro).concat([{ x:ENTRADA.fora.x, y:ENTRADA.fora.y }, { x:DOOR.x, y:DOOR.y }]); }
+/* caminhoAte: o caminho de quem anda entre o salão e a calçada (Bia, ajudantes): atravessa a porta quando os dois pontos ficam em lados diferentes da parede da frente */
+function caminhoAte(from, to){
+  const fora = p => p.y > ENTRADA.dentro.y + 10;
+  if (fora(from) === fora(to)) return findPath(from, to);
+  if (fora(to)) return findPath(from, ENTRADA.dentro).concat([{ x:ENTRADA.fora.x, y:ENTRADA.fora.y }, { x:to.x, y:to.y }]);
+  return [{ x:ENTRADA.fora.x, y:ENTRADA.fora.y }, { x:ENTRADA.dentro.x, y:ENTRADA.dentro.y }].concat(findPath(ENTRADA.dentro, to));
+}
 /* há caminho de verdade? (sem caminho, findPath devolve a linha reta, que atravessa alguma mesa) */
 function pathOk(from, to){
   let a = from;

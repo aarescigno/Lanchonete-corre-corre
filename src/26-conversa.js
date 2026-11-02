@@ -4,7 +4,7 @@
 const CONV_UI = { texto:21, linha:27, nome:16, nota:15, w:420 };
 /* onde fica a cabeça de quem fala, na tela: [x, y] (a Bia e a Dani onde estão; o Tonhão na janela da cozinha) */
 function convCabeca(g, q){
-  if (q === 'tonhao') return [930 + g.cam, 140];
+  if (q === 'tonhao') return [120 + g.cam, 86];
   if (q === 'dani' && g.dani.active) return [g.dani.x + g.cam, g.dani.y - 82];
   if (q === 'dani') return [g.bia.x + g.cam + 70, g.bia.y - 82];   // ainda não chegou: ao lado da Bia
   if (q === 'joca' && g.joca.active) return [g.joca.x + g.cam, g.joca.y - 82];   // v9.2

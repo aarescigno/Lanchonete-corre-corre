@@ -75,7 +75,7 @@ const joga=(H,fat)=>{ const {g,els}=H; if(g.state==='shop') els['btn-shop-go'].f
   const fala=HISTORIA[0].antes.find(f=>f.q==='tonhao');
   const mk=ev=>{ const c=new Conversa([fala],()=>{},true); c.evita=ev; drawConversa(ctx,g,c); return c.caixa; };
   const livre=mk(null);
-  const ev={x:TW-150,y:0,w:150,h:80};
+  const ev={x:livre.x+livre.w-100,y:Math.max(0,livre.y-20),w:150,h:80};
   const cx=mk(ev);
   const cruza=b=>b.x<ev.x+ev.w && b.x+b.w>ev.x && b.y<ev.y+ev.h && b.y+b.h>ev.y;
   ok(cruza(livre) && !cruza(cx),'sem desvio o balão do Tonhão cruza o Pular; com `evita` não cruza');

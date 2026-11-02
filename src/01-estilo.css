@@ -10,8 +10,8 @@
 *{box-sizing:border-box}
 html,body{margin:0;padding:0;height:100%;width:100%;overflow:hidden;background:#22201C;color:#22201C;font-family:var(--fb);-webkit-tap-highlight-color:transparent}
 #app{position:fixed;inset:0;display:flex;align-items:center;justify-content:center;background:#22201C;overflow:hidden}
-#stage{position:relative;width:1220px;height:600px;overflow:hidden;background:#22201C;user-select:none;-webkit-user-select:none}
-#c{display:block;width:100%;height:600px;touch-action:none;outline:none;cursor:pointer}
+#stage{position:relative;width:600px;height:1040px;overflow:hidden;background:linear-gradient(180deg,#CFC8B8 0,#CFC8B8 50%,#B8B4AA 50%,#B8B4AA 100%);user-select:none;-webkit-user-select:none}
+#c{display:block;width:600px;height:1040px;touch-action:none;outline:none;cursor:pointer}
 .ov{position:absolute;inset:0;display:none;align-items:center;justify-content:center;padding:calc(var(--u)*10);background:rgba(34,32,28,.55)}
 .ov.show{display:flex}
 /* abertura do Modo História (v8.5): o canvas desenha as cenas; por cima, só o Pular (o resto do toque vai ao canvas) */
@@ -148,8 +148,8 @@ p{margin:calc(var(--u)*6) 0;font-size:max(12px,calc(var(--u)*16));line-height:1.
 .ed-pop.up{transform:translate(-50%,-100%)}
 .ed-pop.largo{grid-template-columns:1fr 1fr}   /* v8.6.5: sem altura para os botões um embaixo do outro */
 .ed-pop.largo > b,.ed-pop.largo > .ed-cores{grid-column:1 / -1}
-.ed-pop.est{transform:none}
-.ed-pop.est.up{transform:translate(0,-100%)}
+.ed-pop.est{transform:translate(-50%,0)}
+.ed-pop.est.up{transform:translate(-50%,-100%)}
 .ed-pop b{font:800 max(11px,calc(var(--u)*13)) var(--fb);padding-right:26px}
 .ed-pop .btn{font-size:max(12px,calc(var(--u)*15));padding:calc(var(--u)*3) calc(var(--u)*10);min-height:36px}
 .ed-cores{display:flex;align-items:center;gap:calc(var(--u)*6);font:700 max(11px,calc(var(--u)*13)) var(--fb)}
@@ -294,7 +294,6 @@ table.rank tr.me td{background:#fbe7a8}
 .verlist li .cur{font-size:max(10px,calc(var(--u)*12));font-weight:800;background:var(--ok);color:#fff;border-radius:999px;padding:0 calc(var(--u)*8);margin-left:calc(var(--u)*6)}
 .verlist li a{color:var(--faixa);font-weight:800}
 #rotate{position:fixed;left:50%;bottom:6px;transform:translateX(-50%);background:var(--mostarda);color:var(--tinta);border:2px solid var(--tinta);border-radius:999px;padding:6px 14px;font:600 13px var(--fb);display:none;z-index:5;white-space:nowrap}
-@media (orientation:portrait){#rotate{display:block}}
 @media (prefers-reduced-motion:reduce){.btn{transition:none}}
 /* celular em pé: o card da Dani fica estreito e as tarefas não cabem em 2 colunas (invadiam o card do couvert) */
 @media (max-width:600px) and (min-height:461px){.item .tasks{grid-template-columns:1fr}.item .toggle{border-radius:12px}}

@@ -517,8 +517,8 @@ function buildCouvert(grid){
 /* aba Salão (v7.4): o editor (o salão desenhado em escala, sem clientes) e a loja de móveis ao lado.
    Arrastar a mesa muda o lugar dela (encaixe na grade); tocar nela abre a cor das cadeiras, "virar mesa de 4" e "vender".
    v8.3.5: o estoque, à esquerda do salão, guarda mesas (pequenas, em 2 colunas) para rearrumar com folga */
-const ED = { x:0, y:56, w:800, h:484, k:1.25 };  // pedaço do salão no editor (do pé da parede ao chão, até o balcão) e a resolução do canvas
-const EST = { x0:12, y0:118, x1:182, y1:530, top:30, k:0.55 };   // o estoque no editor (em px do salão) e a escala das mesas nele
+const ED = { x:0, y:290, w:600, h:654, k:1 };  // palma.1: pedaço do mundo em pé no editor (o salão e a calçada, onde fica o estoque) e a resolução do canvas
+const EST = { x0:8, y0:768, x1:592, y1:940, top:28, k:0.55, cols:6 };   // o estoque no editor (em px do mundo): uma faixa na calçada, embaixo do salão, e a escala das mesas nele
 let edDrag = null;
 function edPt(cv, e){
   const r = cv.getBoundingClientRect(), w = r.width || ED.w, h = r.height || ED.h;
@@ -532,7 +532,7 @@ function edPad(cv, e){
 function edRect(m){ const hx = tableHalfW(m); return { x:m.x - hx - 10, y:m.y - 62, w:hx*2 + 20, h:132 }; }
 /* casinhas do estoque: 2 colunas, pelo menos 4 fileiras (as mesas encolhem se houver mais) */
 function estSlots(n){
-  const cols = 2, rows = Math.max(4, Math.ceil(n / cols)), w = (EST.x1 - EST.x0) / cols, h = (EST.y1 - EST.y0 - EST.top) / rows, k = Math.min(EST.k, h / 140), out = [];
+  const cols = EST.cols, rows = Math.max(1, Math.ceil(n / cols)), w = (EST.x1 - EST.x0) / cols, h = (EST.y1 - EST.y0 - EST.top) / rows, k = Math.min(EST.k, h / 140, w / 130), out = [];
   for (let i = 0; i < n; i++) out.push({ x:EST.x0 + w * (i % cols + 0.5), y:EST.y0 + EST.top + h * (Math.floor(i / cols) + 0.5), w, h, k });
   return out;
 }
@@ -569,7 +569,7 @@ function drawEstoque(c){
   c.restore();
   txt(c,'ESTOQUE',(EST.x0+EST.x1)/2,EST.y0+17,17,PAL.tinta,'center',FD);
   if (!est.length){
-    ['Arraste uma', 'mesa para cá', 'e abra espaço', 'no salão.', '', 'Aqui ela não', 'abre no dia.'].forEach((t, k) => txt(c,t,(EST.x0+EST.x1)/2,EST.y0+92+k*24,15,'rgba(34,32,28,.6)','center',FB));
+    ['Arraste uma mesa para cá para abrir espaço no salão.', 'Aqui ela não abre no dia.'].forEach((t, k) => txt(c,t,(EST.x0+EST.x1)/2,EST.y0+70+k*26,15,'rgba(34,32,28,.6)','center',FB));
     return;
   }
   est.forEach((m, i) => {
@@ -587,7 +587,7 @@ function drawEditor(cv){
   if (!c) return;
   c.setTransform(ED.k, 0, 0, ED.k, -ED.x * ED.k, -ED.y * ED.k);
   c.lineJoin = 'round'; c.lineCap = 'round';
-  drawFloor(c, game); edDesenho = true; drawWall(c, game, 0); edDesenho = false; drawKitchen(c, game, 0);
+  drawProvFundo(c, game, 0); drawProvEstacoes(c, game, 0, true);   // palma.1: o cenário provisório
   const a = game.ponto.area;
   c.save(); c.setLineDash([8,6]); c.strokeStyle = 'rgba(31,79,163,.5)'; c.lineWidth = 2; rr(c,a.x0,a.y0,a.x1-a.x0,a.y1-a.y0,10); c.stroke(); c.restore();
   drawEstoque(c);
@@ -695,10 +695,10 @@ function buildSalao(grid){
       pop.appendChild(edBtn('Vender por ' + fmt(mesaPreco(m.seats) * SALAO.venda), 'btn alt', mesas.length > 1, () => game.venderMesa(sel)));
     } else {
       // v8.3.5: mesa do estoque; o balãozinho sai ao lado do estoque, por cima do salão
-      const q = estSlots(est.length)[ks], up = q.y + 230 > ED.y + ED.h;
+      const q = estSlots(est.length)[ks], up = true;   // palma.1: o estoque fica embaixo; o balãozinho abre para cima
       pop = el('div', 'ed-pop est' + (up ? ' up' : ''));
-      pop.style.left = (EST.x1 + 6 - ED.x) / ED.w * 100 + '%';
-      tops = [q.y - q.h / 2, q.y + q.h / 2].map(y => (y - ED.y) / ED.h * 100);
+      pop.style.left = clamp((q.x - ED.x) / ED.w * 100, 18, 82) + '%';
+      tops = [q.y + q.h / 2, q.y - q.h / 2].map(y => (y - ED.y) / ED.h * 100);
       pop.style.top = tops[up ? 1 : 0] + '%';
       pop.appendChild(el('b', null, 'Mesa no estoque · ' + me.seats + ' lugares'));
       pop.appendChild(edCores(me, k => game.pintarMesa(ks, k, true)));

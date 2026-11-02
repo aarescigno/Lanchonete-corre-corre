@@ -106,7 +106,7 @@ Faixas (y, de cima para baixo), com os retângulos `{x0, y0, x1, y1}` do mundo. 
 ## Sessões
 | # | Sessão | Prévia | Modelo |
 |---|---|---|---|
-| P2-1 | Esqueleto em pé | palma.1 | Sonnet, alto |
+| P2-1 | Esqueleto em pé (feita, ver `docs/spec-palma.md`) | palma.1 | Sonnet, alto |
 | P2-2 | Cenário da Garagem em pé | palma.2 | Sonnet, alto |
 | P2-3 | Área industrial e Avenida em pé | palma.3 | Sonnet, médio |
 | P2-4 | Barra nova e a equipe na mão | palma.4 | Sonnet, alto |

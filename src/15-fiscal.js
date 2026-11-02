@@ -4,7 +4,7 @@
    mesa suja por mais de FISCAL.mesaSuja s seguidos, lixeira cheia e pia com FISCAL.pia pilhas ou mais (cada falha põe um ícone em cima
    dele). Ao terminar, o resultado sai em texto grande (Game.fiscalFim) e ele volta para a rua. Não é grupo e não ocupa mesa.
    ============================================================ */
-const FISCAL_PONTOS = [{ x:430, y:330 }, { x:330, y:330 }, { x:530, y:330 }, { x:430, y:250 }, { x:430, y:420 }, { x:300, y:250 }, { x:560, y:420 }, { x:120, y:330 }];
+const FISCAL_PONTOS = [{ x:300, y:264 }, { x:180, y:264 }, { x:420, y:264 }, { x:60, y:560 }, { x:540, y:560 }, { x:300, y:722 }, { x:60, y:330 }, { x:540, y:500 }];
 class Fiscal {
   constructor(game, f){
     this.game = game;
@@ -34,11 +34,11 @@ class Fiscal {
     if (this.st === 'espera'){
       if (g.elapsed < this.t) return;
       // o primeiro ponto livre e alcançável do salão (sem mesa em cima e com caminho)
-      const de = { x:DOOR.x, y:DOOR.y };
+      const de = { x:ENTRADA.dentro.x, y:ENTRADA.dentro.y };
       this.alvo = FISCAL_PONTOS.find(p => !inObst(p.x, p.y) && pathOk(de, p)) || FISCAL_PONTOS[FISCAL_PONTOS.length - 1];
-      this.path = findPath(de, this.alvo);
+      this.path = [{ x:ENTRADA.fora.x, y:ENTRADA.fora.y }, { x:ENTRADA.dentro.x, y:ENTRADA.dentro.y }].concat(findPath(de, this.alvo));
       this.st = 'entra';
-      g.addText(QUEUE.x, DOOR.y + 36, 'Vigilância sanitária!', PAL.alerta, 20);
+      g.addText(AVISO.x, AVISO.y + 24, 'Vigilância sanitária!', PAL.alerta, 20);
       Sfx.tone(660, 0.12, 'triangle', 0.05); Sfx.tone(880, 0.18, 'triangle', 0.05, 0.14);
     } else if (this.st === 'entra'){
       this.moveAlong(dt, 70);
@@ -56,7 +56,7 @@ class Fiscal {
       if (this.resta <= 0){
         const n = this.nFalhas;
         this.res = n === 0 ? 'aprovado' : n === 1 ? 'advertencia' : 'multa';
-        this.path = findPath({ x:this.x, y:this.y }, { x:DOOR.x, y:DOOR.y });
+        this.path = caminhoSai({ x:this.x, y:this.y });
         this.st = 'sai';
         g.fiscalFim(this);
       }

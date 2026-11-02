@@ -37,7 +37,7 @@ function playDay(n){
     if(steps%10===0){ L.render(g,ctx); frames++; }
     // invariants
     ok(L.handLayout(g.bia.hands,g.bia.tray)!==null,'mãos cabem (com ou sem bandeja)'); ok(g.bia.acts.length<=6,'acts<=6');
-    ok(g.bia.x>=-L.CALCADA.w&&g.bia.x<=960&&isFinite(g.bia.x)&&isFinite(g.bia.y),'bia pos');
+    ok(g.bia.x>=0&&g.bia.x<=600&&isFinite(g.bia.x)&&isFinite(g.bia.y),'bia pos');
     for(const grp of g.groups){ ok(isFinite(grp.x)&&isFinite(grp.y),'grp pos'); ok(grp.hearts>=0&&grp.hearts<=5,'hearts'); }
     if(fails>20) break;
   }
@@ -66,7 +66,7 @@ ok(!els['btn-again'],'sem "Repetir dia" (v8.3)');
 els['btn-shop-menu'].fire('click'); ok(g.state==='menu','lojinha tem menu principal');
 els['btn-play'].fire('click'); ok(g.state==='shop'&&g.shopNext===9,'Continuar abre a lojinha do próximo dia (9)');
 // drag/select + pointer tests
-g.startDay(1); g.begin(); g.cam=0; const QX=L.LAYOUT.QUEUE.x;   // v7.5: a entrada chega na tela; com a câmera no salão, tela = mundo (a fila fica em x < 0)
+g.startDay(1); g.begin(); g.cam=0; const QX=L.LAYOUT.QUEUE.lugares[0].x;   // v7.5: a entrada chega na tela; com a câmera no salão, tela = mundo (a fila fica em x < 0)
 for(let i=0;i<200;i++) g.update(0.05);
 ok(g.queue.length>0,'queue has group');
 const q=g.queue[0];

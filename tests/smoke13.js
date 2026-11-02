@@ -12,7 +12,7 @@ ok(P.id==='garagem' && P.lugares===16 && P.aluguel===0 && P.mudanca===0 && P.esp
 ok(g.save.salao.ponto==='garagem' && mesas().map(m=>m.seats).sort().join()==='2,2,2,4' && lug()===10,'kit: 3 mesas de 2 e 1 de 4 (10 lugares)');
 ok(!L.salaoProblema(mesas(),P),'kit num arranjo válido');
 ok(g.tables.map(t=>t.id).join()==='1,2,3,4' && g.tables.every((t,i)=>t.cx===mesas()[i].x && t.cy===mesas()[i].y),'ids seguidos (tables[id-1]) e no lugar das mesas do save');
-{ const t=g.tables; ok(t[0].cy===t[1].cy && t[0].cx<t[1].cx && t[2].cy>t[0].cy && t[2].cx<t[3].cx,'números de cima para baixo, da esquerda para a direita'); }
+{ const t=g.tables; ok(t[1].cy===t[2].cy && t[1].cx<t[2].cx && t[0].cy<t[1].cy && t[3].cy>t[2].cy,'números de cima para baixo, da esquerda para a direita'); }
 ok(new Set(mesas().map(m=>m.c)).size===4,'cada mesa do kit com uma cor de cadeira');
 
 // todas as mesas abertas desde o dia 1, e menos grupos nos dias 1 e 2
@@ -50,7 +50,7 @@ novo(1000);
 novo(1000);
 { const m0=mesas()[0], m2=mesas()[2];
   ok(!g.moverMesa(2,m0.x+20,m0.y) && /Perto demais/.test(g.salaoMsg) && mesas()[2].x===m2.x,'em cima de outra mesa: recusa e a mesa volta');
-  ok(!g.moverMesa(2,100,m2.y) && /Fora do salão/.test(g.salaoMsg),'fora da área útil: recusa');
+  ok(!g.moverMesa(2,20,m2.y) && /Fora do salão/.test(g.salaoMsg),'fora da área útil: recusa');
   ok(!g.salaoUndo.length,'nada para desfazer ainda');
   const x=m2.x+50; ok(g.moverMesa(2,x,m2.y) && mesas().some(m=>m.x===x && m.y===m2.y) && g.salaoUndo.length===1,'lugar livre: a mesa muda e dá para desfazer');
   ok(g.desfazerSalao() && JSON.stringify(mesas())===JSON.stringify(L.salaoKit(P)) && !g.salaoUndo.length,'Desfazer volta o arranjo');
@@ -58,8 +58,8 @@ novo(1000);
   ok(g.arrumarSalao() && JSON.stringify(mesas())===JSON.stringify(L.salaoAuto(mesas(),P)) && g.salaoUndo.length===3,'arrumação automática (e entra no Desfazer)');
   g.buyMesa(2); ok(!g.salaoUndo.length,'compra zera o Desfazer'); }
 // caminho: uma parede de mesas encostadas separa a fila do balcão
-{ const wall=[150,260,370,480].map(y=>({x:300,y,seats:4,c:0}));
-  ok(!L.salaoCaminho(wall) && L.salaoProblema(wall,Object.assign({},P,{area:{x0:0,y0:0,x1:W=960,y1:600}}))!=='','parede de mesas: sem caminho da Bia até as mesas');
+{ const wall=[62,186,310,434,558].map(x=>({x,y:450,seats:4,c:0}));
+  ok(!L.salaoCaminho(wall) && L.salaoProblema(wall,Object.assign({},P,{area:{x0:0,y0:0,x1:W=960,y1:1040}}))!=='','parede de mesas: sem caminho da Bia até as mesas');
   ok(L.salaoCaminho(mesas()) && L.OBST.length===g.tables.length,'arranjo de verdade tem caminho, e o teste devolve os obstáculos do salão');
   ok(L.pathOk({x:744,y:150},{x:78,y:178}) && !L.pathOk({x:60,y:300},{x:600,y:300}) === false,'pathOk no salão aberto'); }
 // todas as combinações até 16 lugares: a arrumação automática cabe, com folga e caminho até cada mesa
@@ -87,9 +87,9 @@ novo(1000); L.setShopTab('salao');
 { const grid=els['shop-grid'], t=txt(grid), cv=acha(grid,e=>e.tagName==='CANVAS');
   ok(/salao/.test(grid.className) && /Lugares 10 de 16/.test(t) && /Mesa de 2: R\$ 150/.test(t) && /Mesa de 4: R\$ 250/.test(t),'aba Salão: contador de lugares e as mesas à venda');
   ok(/Arrumação automática/.test(t) && /Desfazer/.test(t) && /sem aluguel/.test(t),'botões Arrumação automática e Desfazer');
-  ok(!!cv && cv.width===1000 && cv.height===605,'editor com canvas próprio');
+  ok(!!cv && cv.width===600 && cv.height===654,'editor com canvas próprio');
   // o canvas do harness mede 960×600 na tela: tela -> salão x*800/960, 56 + y*484/600
-  const tela=(x,y)=>({clientX:x*960/800, clientY:(y-56)*600/484});
+  const tela=(x,y)=>({clientX:x*960/600, clientY:(y-290)*600/654});
   const ev=(p,o)=>Object.assign({preventDefault(){}, pointerId:1, pointerType:'mouse'},p,o||{});
   const m=mesas()[1];
   cv.fire('pointerdown',ev(tela(m.x,m.y))); cv.fire('pointerup',ev(tela(m.x,m.y)));

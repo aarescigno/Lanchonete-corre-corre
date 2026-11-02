@@ -20,9 +20,9 @@ ok(g.marmitaOk,'dia 4: há entregador no dia (balcão de retirada e adiantar)');
   ok(e.extras.every(x=>!x),'sem 2º item');
   const t=g.kitchen.queue.find(t=>t.marmita);
   ok(t && t.dono===e && t.dish==='pf' && t.enc,'a encomenda da Efood vai ao fogão, com o dono');
-  roda(1); ok(Math.hypot(e.x-L.RETIRADA.fila[0].x,e.y-L.RETIRADA.fila[0].y)<1,'chega ao 1º lugar da fila, ao lado do balcão');
+  const c00=g.custo; roda(6); ok(Math.hypot(e.x-L.RETIRADA.fila[0].x,e.y-L.RETIRADA.fila[0].y)<1,'chega ao 1º lugar da fila, ao lado do balcão');
   // 2. a marmita não usa prato limpo, mas ocupa a janela de prontos; ingredientes e embalagem saem quando fica pronta
-  paciencia(e); g.kitchen.clean=0; const c0=g.custo;
+  paciencia(e); g.kitchen.clean=0; const c0=c00;   // palma.1: a caminhada da rua até a retirada é mais longa; o custo conta desde a chegada
   ok(roda(15,()=>g.kitchen.marmJ.some(p=>p)),'a marmita fica pronta mesmo sem prato limpo');
   const p=g.kitchen.marmJ.find(p=>p);
   ok(g.kitchen.clean===0 && !g.kitchen.noPlate,'não gasta prato limpo');
@@ -69,9 +69,9 @@ novo(4);
   // a encomenda cabe na vaga da reserva
   const e=entregador('misto'); paciencia(e);
   g.bia.hands.push({kind:'marmita',dish:'misto',dono:e,age:0,q:4}); g.soltaMarmitas(e); g.bia.hands[1].dono=e;
-  e.x=-400; e.path=[{x:L.RETIRADA.fila[0].x,y:L.RETIRADA.fila[0].y}];   // ainda chegando
+  e.x=300; e.y=1060; e.path=[{x:L.RETIRADA.fila[0].x,y:L.RETIRADA.fila[0].y}];   // ainda chegando
   ok(g.levaMarmitas(g.bia)===1 && g.prateleira.length===3,'a encomenda de quem está chegando vai para a vaga da reserva');
-  ok(roda(4,()=>e.state==='leaving'),'e o entregador pega ao chegar');
+  ok(roda(8,()=>e.state==='leaving'),'e o entregador pega ao chegar');
   ok(L.prateleiraPos(g).length===2,'prateleiraPos desenha as que ficaram'); }
 
 // 7. entregador perdido: multa, 3ª estrela, a encomenda que nem começou sai do fogão
@@ -125,7 +125,7 @@ novo(2,{agenda:true});
   const h=g.pickAt(a.x+a.w/2,a.y+a.h/2,0); ok(!h || h.st!=='adiantar','dia 2: sem o "+ marmita"');
   novo(4); const h2=g.pickAt(r.x+r.w/2,r.y+r.h/2,0), h3=g.pickAt(a.x+a.w/2,a.y+a.h/2,0);
   ok(h2&&h2.st==='retirada','dia 4: toque no balcão de retirada'); ok(h3&&h3.st==='adiantar','dia 4: toque no "+ marmita" (vence a janela de pedidos)');
-  const p=g.pickAt(800,130,0); ok(p&&p.st==='order','o resto da janela continua sendo PEDIDOS'); }
+  const p=g.pickAt(120,130,0); ok(p&&p.st==='order','o resto da janela continua sendo PEDIDOS'); }
 
 // 13. chuva: mais entregadores; o dia não fica impossível (bot)
 novo(5);

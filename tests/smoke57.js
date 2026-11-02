@@ -23,22 +23,22 @@ g.avals=[]; g.save=L.normSave({bank:2000,dia:3,maxDay:3}); g.startDay(3); if(g.s
 ok(!bal.children.length,'sem comentário, nenhum balão');
 
 // (2) geladeira fora da tela, manutenção escondida segue valendo
-{ const fs=require('fs'); const src=fs.readFileSync(__dirname+'/../src/23-render.js','utf8');
-  ok(!/drawGeladeira\(ctx/.test(src) && /drawMesinha\(ctx/.test(src),'render: sem drawGeladeira, com drawMesinha');
+{ const fs=require('fs'); const src=fs.readFileSync(__dirname+'/../src/23-render.js','utf8'), cen=fs.readFileSync(__dirname+'/../src/21-cenario.js','utf8');
+  ok(!/drawGeladeira\(ctx/.test(src) && !/drawGeladeira\(ctx,g,t\);/.test(cen) && /drawMesinha\(ctx,g,t\);/.test(cen),'render: sem drawGeladeira, com drawMesinha');
   novo(4); const c0=Math.round(L.precoPrato('pf',g.ponto,g.cursos)*L.INGRED.prato);
   g.quebras=[{id:'geladeira',t:0,on:true,fixed:false}]; ok(g.quebrado('geladeira'),'a geladeira ainda quebra (escondida)'); }
 
 // (3) mesinha: vagas empilhadas; a Bia pega ali e leva ao entregador (entrega completa)
 novo(4);
-ok(L.LAYOUT.MARMJ_SLOTS.length===2 && L.LAYOUT.MARMJ_SLOTS.every((s,i)=>s.x===710 && s.y===124+24*i),'MARMJ_SLOTS: x 710, y 124+24i');
-ok(L.STATIONS.marmj.ap.x===700 && L.STATIONS.marmj.ap.y===150,'ponto de parada da mesinha');
+ok(L.LAYOUT.MARMJ_SLOTS.length===2 && L.LAYOUT.MARMJ_SLOTS.every((s,i)=>s.x===36 && s.y===252+18*i),'MARMJ_SLOTS: x 36, y 252+18i');
+ok(L.STATIONS.marmj.ap.x===90 && L.STATIONS.marmj.ap.y===268,'ponto de parada da mesinha');
 { const e=entregador(); roda(25,()=>K().marmJ.some(Boolean)); ok(K().marmJ.some(m=>m&&m.dono===e),'a marmita pronta fica na mesinha');
   const dinheiro0=g.money; g.tapStation('marmj',710,124);
   const a=g.bia.acts[0]; ok(a && a.type==='plate' && g.bia.apFor(a)===L.STATIONS.marmj.ap,'a Bia vai ao ponto da mesinha');
   roda(15,()=>g.bia.hands.some(h=>h.kind==='marmita')); ok(g.bia.hands.some(h=>h.kind==='marmita'),'pegou a marmita');
   g.tapStation('retirada',L.STATIONS.retirada.rect.x+5,L.STATIONS.retirada.rect.y+5);
   roda(20,()=>g.stats.marmitas>=1); ok(g.stats.marmitas>=1,'levou ao entregador: entrega completa'); }
-ok(L.STATIONS.marmj.rect.x+L.STATIONS.marmj.rect.w<=L.STATIONS.order.rect.x && L.STATIONS.marmj.rect.x>=L.STATIONS.drinks.rect.x+L.STATIONS.drinks.rect.w,'a mesinha não encosta no balcão de drinks nem na cozinha');
+ok(L.STATIONS.marmj.rect.y+L.STATIONS.marmj.rect.h<=L.STATIONS.doces.rect.y && L.STATIONS.marmj.rect.y>=L.STATIONS.order.rect.y+L.STATIONS.order.rect.h,'a mesinha não encosta nos doces nem na cozinha');
 
 // (4) letreiro e (5) seta: só nos dias 4 e 5
 novo(4); { entregador(); roda(25,()=>K().marmJ.some(Boolean)); ok(g.setaMesinha===true,'dia 4: seta com marmita de entregador na mesinha'); }

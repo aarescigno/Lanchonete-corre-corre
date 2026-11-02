@@ -53,17 +53,17 @@ const html=fs.readFileSync(__dirname+'/../lanchonete.html','utf8');
   ok(sv.up.fogaoInd && sv.up.tenis && sv.up.pratos===2 && sv.equipe.tonhao===1 && sv.equipe.dani===1 && sv.decor.espada===1 && sv.decor.violeta===1 && sv.decor.anturio===1,'o fogão industrial, melhorias, pratos, equipe e as plantas vão junto');
   ok(sv.salao.mesas.length===antes && g.lugaresTot===lug && L.salaoAuto([4,4,4,4,4,4].map((seats,c)=>({seats,c:c%4})),L.PONTOS[2])!==null,'as mesas vão junto e 24 lugares (6 mesas de 4) cabem na arrumação automática');
   ok(sv.cap===6 && sv.conversa==='antes' && sv.capAzul===0,'o cap. 6 começa, com a conversa de antes pendente');
-  g.resetDay(10); ok(L.PLATE_SLOTS.length===6 && g.kitchen.plates.length===6 && g.vagas===4 && L.PLATE_SLOTS.every((s,i)=>i===0 || s.x-L.PLATE_SLOTS[i-1].x>=28) && L.PLATE_SLOTS[5].x+19<=960 && L.PLATE_SLOTS[0].x-19>=766,'balcão de pratos com 6 vagas dentro da janela e prateleira de 4');
+  g.resetDay(10); ok(L.PLATE_SLOTS.length===6 && g.kitchen.plates.length===6 && g.vagas===4 && L.PLATE_SLOTS.every((s,i)=>i===0 || s.x-L.PLATE_SLOTS[i-1].x>=26) && L.PLATE_SLOTS[5].x<=332 && L.PLATE_SLOTS[0].x>=172,'balcão de pratos com 6 vagas dentro da janela e prateleira de 4');
   ok(g.ponto.credito===4000,'o limite do banco sobe para R$ 4.000');
   ok(!g.mudancaVisivel && g.proximoPonto===null,'não dá para voltar nem mudar de novo (sem outro ponto)');
   // as vagas da espera: 6 posições, todas definidas e distintas (até a v9 a 5ª vaga da área industrial não tinha posição)
-  ok(L.QUEUE.ys.length===6 && L.QUEUE.ys.every(y=>isFinite(y)) && new Set(L.QUEUE.ys).size===6 && L.QUEUE.ys[0]>L.QUEUE.ys[5] && L.QUEUE.ys[5]>=230,'6 lugares de espera com posição (de baixo para cima)');
+  ok(L.QUEUE.lugares.length===6 && L.QUEUE.lugares.every(p=>isFinite(p.x)&&isFinite(p.y)) && new Set(L.QUEUE.lugares.map(p=>p.x+','+p.y)).size===6 && L.QUEUE.lugares.every(p=>p.y>=L.CALCADA.y0 && p.y<=L.CALCADA.y1),'6 lugares de espera com posição, na calçada (2 fileiras de 3)');
   for(let i=0;i<7;i++) g.arrive({ t:0, type:'estudante', color:0, vip:false });
-  ok(g.queue.length===6 && g.queue.every((q,i)=>q.path.length===1 && isFinite(q.path[0].y) && q.path[0].y===L.QUEUE.ys[i]),'a espera comporta 6 grupos, cada um com seu lugar; o 7º não entra');
+  ok(g.queue.length===6 && g.queue.every((q,i)=>q.path.length===1 && isFinite(q.path[0].y) && q.path[0].y===L.QUEUE.lugares[i].y && q.path[0].x===L.QUEUE.lugares[i].x),'a espera comporta 6 grupos, cada um com seu lugar; o 7º não entra');
   const IH=jogo(4,'industrial'), I=IH.g; I.resetDay(10); I.begin(); for(let i=0;i<6;i++) I.arrive({ t:0, type:'estudante', color:0, vip:false });
-  ok(IH.L.QUEUE.ys.length===5 && I.queue.length===5 && I.queue.every((q,i)=>isFinite(q.path[0].y) && q.path[0].y===IH.L.QUEUE.ys[i]),'área industrial: a 5ª vaga de espera ganhou posição (conserto da v9)');
-  const GH=jogo(4,'garagem'); GH.g.resetDay(10); ok(GH.L.QUEUE.ys.join()==='476,396,316,236','Garagem: 4 lugares nas posições de sempre');
-  g.resetDay(0); ok(g.ponto.id==='garagem' && L.PLATE_SLOTS.length===4 && L.QUEUE.ys.length===4,'o Turno sem fim é sempre na Garagem'); g.resetDay(10); }
+  ok(IH.L.QUEUE.lugares.length===5 && I.queue.length===5 && I.queue.every((q,i)=>isFinite(q.path[0].y) && q.path[0].y===IH.L.QUEUE.lugares[i].y),'área industrial: a 5ª vaga de espera ganhou posição (conserto da v9)');
+  const GH=jogo(4,'garagem'); GH.g.resetDay(10); ok(GH.L.QUEUE.lugares.map(p=>p.x+':'+p.y).join()==='300:820,190:820,80:820,300:900','Garagem: 4 lugares (3 na 1ª fileira e 1 na 2ª)');
+  g.resetDay(0); ok(g.ponto.id==='garagem' && L.PLATE_SLOTS.length===4 && L.QUEUE.lugares.length===4,'o Turno sem fim é sempre na Garagem'); g.resetDay(10); }
 
 // ---------- 3. aluguel e preços ----------
 { const H=jogo(6,'avenida'), {g,L}=H; g.resetDay(10);

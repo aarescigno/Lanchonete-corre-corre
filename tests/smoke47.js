@@ -25,7 +25,7 @@ const AN={ equipe:{ tonhao:1, dani:3, joca:3, anselmo:2 } };
   ok(L.HIST_NOMES.anselmo==='Anselmo' && L.LIBERA.every(l=>l.falas.every(f=>L.HIST_NOMES[f.q])),'HIST_NOMES tem o Anselmo');
   const D=L.DRINKS; ok(D.prep===4 && D.preco===22 && D.ingred===6 && D.vagas===2 && D.itens.map(d=>d.nome).join()==='Pôr do Sol da Avenida,Brisa de Maracujá,Esmeralda' && JSON.stringify(D.pede)===JSON.stringify({ executiva:0.45, negocios:0.6, familia:0.25, vovos:0.25, estudante:0.35 }) && D.vip===0.2,'DRINKS como no plano');
   ok(L.STAFF.anselmo.levels[2].pay===90 && L.STAFF.anselmo.levels[2].speed===0.8 && L.STAFF.anselmo.levels[3].pay===130 && L.PONTOS_ACAO.drink===5 && L.AVAL.amb.drink===0.25 && L.DRINK_PRICE.drink===22,'STAFF.anselmo, pontos, Ambiente e preço do lixo');
-  const r=L.LAYOUT.STATIONS.drinks.rect; ok(r.x===620 && r.y===92 && r.w===60 && r.h===50 && L.LAYOUT.STATIONS.drinks.ap.x===700 && L.LAYOUT.STATIONS.drinks.ap.y===150 && L.ANSELMO_HOME.x===650 && L.ANSELMO_HOME.y===118,'estação do balcão e posição dele'); }
+  const r=L.LAYOUT.STATIONS.drinks.rect; ok(r.x===8 && r.y===410 && r.w===56 && r.h===120 && L.LAYOUT.STATIONS.drinks.ap.x===90 && L.LAYOUT.STATIONS.drinks.ap.y===470 && L.ANSELMO_HOME.x===36 && L.ANSELMO_HOME.y===470,'estação do balcão e posição dele'); }
 
 // ---------- 2. cartão e contratação ----------
 { let H=jogo(6,'industrial',{ pontoDia:5, libera:{ confeitaria:2, joca:2, anselmo:2 } }), g=H.g; g.save.bank=5000; ok(!g.setStaff('anselmo',2) && g.save.equipe.anselmo===0,'na área industrial, não se contrata o Anselmo');
@@ -93,6 +93,6 @@ const AN={ equipe:{ tonhao:1, dani:3, joca:3, anselmo:2 } };
 // ---------- 7. desenho e save antigo ----------
 { const H=aberto(AN), {g,L}=H; g.mode='carreira'; let erro=null; try{ g.drinkPronto=[{ grp:null, id:'por' },{ grp:null, id:'esmeralda' }]; L.drawAnselmo(H.ctx||{ },{ x:650, y:118, busy:true },0); }catch(e){ erro=e; } ok(!erro,'drawAnselmo roda sem erro'+(erro?': '+erro.message:''));
   try{ g.render && g.render(); erro=null; }catch(e){ erro=e; } ok(!erro,'o salão desenha com o balcão e os copos'+(erro?': '+erro.message:''));
-  ok(g.pickAt(650,118,0) && g.pickAt(650,118,0).st==='drinks','o balcão é um alvo de toque'); const S=aberto(AV); ok(!S.g.pickAt(650,118,0) || S.g.pickAt(650,118,0).st!=='drinks','sem o Anselmo, o balcão não existe');
+  ok(g.pickAt(36,470,0) && g.pickAt(36,470,0).st==='drinks','o balcão é um alvo de toque'); const S=aberto(AV); ok(!S.g.pickAt(36,470,0) || S.g.pickAt(36,470,0).st!=='drinks','sem o Anselmo, o balcão não existe');
   const v94=L.normSave({ salao:{ ponto:'avenida' }, equipe:{ tonhao:1, dani:2, cami:1 }, daniCursos:{ confCaseira:1 }, jocaCursos:{ espresso:1 } }); ok(v94.equipe.anselmo===0 && v94.equipe.cami===1,'save da v9.4 carrega igual, sem Anselmo'); }
 console.log('total = '+total+'  fails = '+fails); process.exit(fails?1:0);

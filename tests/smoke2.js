@@ -1,7 +1,7 @@
 const H=require('./harness.js')(); const {g,L,els,win,ctx}=H;
 let fails=0; const ok=(c,m)=>{ if(!c){fails++;console.log('FAIL:',m);} else console.log('ok  :',m); };
 const run=(s)=>{ for(let i=0;i<s*20;i++) g.update(0.05); };
-g.startDay(2); g.begin(); g.cam=0; const QX=L.LAYOUT.QUEUE.x;   // v7.5: a entrada chega na tela; com a câmera no salão, tela = mundo (a fila fica em x < 0)
+g.startDay(2); g.begin(); g.cam=0; const QX=L.LAYOUT.QUEUE.lugares[0].x;   // v7.5: a entrada chega na tela; com a câmera no salão, tela = mundo (a fila fica em x < 0)
 // espera chegar um grupo
 let guard=0; while(!g.queue.length && guard++<400) g.update(0.05);
 ok(g.queue.length>0,'grupo chegou');
@@ -12,7 +12,7 @@ const suja=g.tables[2]; suja.dirty=true;
 ok(g.seatGroup(grp,suja)===false && grp.boing>0 && grp.state==='queue','boing em mesa suja');
 suja.dirty=false;
 // seleção + toque
-g.onDown(QX,L.LAYOUT.QUEUE.ys[0]-20); g.onUp(QX,L.LAYOUT.QUEUE.ys[0]-20); ok(g.sel===grp,'grupo selecionado por toque');
+g.onDown(QX,L.LAYOUT.QUEUE.lugares[0].y-20); g.onUp(QX,L.LAYOUT.QUEUE.lugares[0].y-20); ok(g.sel===grp,'grupo selecionado por toque');
 const t1=g.tables.find(t=>t.free&&t.seats>=grp.size);
 g.onDown(t1.cx,t1.cy); ok(grp.state==='toTable' && g.sel===null,'toque na mesa senta grupo selecionado');
 const m0=g.money; ok(g.pontos>=L.PONTOS_ACAO.sit && m0===0,'sentar pontua (+10 pontos / cor), sem dinheiro (v8.3.8)');
@@ -48,8 +48,8 @@ g.tapStation('sink',850,450); run(5); ok(!g.bia.hands.some(h=>h.kind==='dirty'),
 g.tapStation('sink',850,450); run(5); ok(g.bia.qT>0||true,'pia vazia gera ?');
 // remover ação pelo HUD
 g.bia.clearActs(); g.tapStation('coffee',850,350); g.tapStation('order',800,150);
-ok(g.bia.acts.length===2,'2 ações na fila'); g.onDown(L.HUDX.fila+360+52*1+10,570); ok(g.bia.acts.length===1,'toque no ícone remove ação');
-g.onDown(L.HUDX.fila+360+10,570); ok(g.bia.acts.length===0,'remove ação atual');
+ok(g.bia.acts.length===2,'2 ações na fila'); g.onDown(67,1015); ok(g.bia.acts.length===1,'toque no ícone remove ação');
+g.onDown(27,1015); ok(g.bia.acts.length===0,'remove ação atual');
 // limite 6
 for(let k=0;k<9;k++) g.tapStation('coffee',850,350); ok(g.bia.acts.length===5,'fila máx 5 (v8.6.3: eram 6)');
 g.bia.clearActs();

@@ -24,7 +24,7 @@ novo(3);
 ok(!g.fx.some(f=>f.aviso==='pratos' || /lavar os pratos/.test(f.text||'')),'abertura do dia 3 sem o lembrete da louça');
 
 // (c) geladeirinha de doces
-ok(L.LAYOUT.STATIONS.doces.rect.x===690 && L.LAYOUT.STATIONS.doces.rect.y===200 && L.LAYOUT.STATIONS.doces.rect.w===52 && L.LAYOUT.STATIONS.doces.rect.h===60 && L.LAYOUT.STATIONS.doces.ap.x===744 && L.LAYOUT.STATIONS.doces.ap.y===226,'STATIONS.doces com o tamanho novo e o mesmo ap');
+ok(L.LAYOUT.STATIONS.doces.rect.x===8 && L.LAYOUT.STATIONS.doces.rect.y===316 && L.LAYOUT.STATIONS.doces.rect.w===56 && L.LAYOUT.STATIONS.doces.rect.h===64 && L.LAYOUT.STATIONS.doces.ap.x===90 && L.LAYOUT.STATIONS.doces.ap.y===348,'STATIONS.doces com o tamanho novo e o mesmo ap');
 
 // (d) docesTot soma no fim do dia
 novo(4,{up:{confCaseira:1}});

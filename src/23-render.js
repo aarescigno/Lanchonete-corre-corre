@@ -23,11 +23,9 @@ function render(g, ctx){
   ctx.lineJoin = 'round'; ctx.lineCap = 'round';
   ctx.save();
   ctx.translate(g.cam, 0);
-  drawFloor(ctx,g);
-  drawWall(ctx,g,tm);
-  drawCalcada(ctx,g,tm);
-  drawMesinha(ctx,g,tm);   // v9.6.11: no lugar da geladeira (que sai da tela; a manutenção dela segue escondida)
-  drawKitchen(ctx,g,tm);
+  drawProvFundo(ctx,g,tm);   // palma.1: o cenário provisório (blocos lisos); a arte vem na palma.2 e na palma.3
+  drawProvEstacoes(ctx,g,tm,menu);
+  drawProvRelogio(ctx,g);
   if (g.clima === 'chuva' && !menu) drawChuvaFundo(ctx,tm);
   if (g.clima === 'feriado' && !menu) drawBandeirinhas(ctx);
 
@@ -85,8 +83,7 @@ function render(g, ctx){
   if (menu) items.pop();
   if (g.marmitaOk && !menu) items.push({ y:RETIRADA.balcao.y + 50, f:() => glowSprite(ctx,g,'retirada',ctx => drawRetirada(ctx,g,tm)) });
   if (g.up.maquina) items.push({ y:STATIONS.maquina.rect.y + STATIONS.maquina.rect.h, f:() => glowSprite(ctx,g,'maquina',ctx => drawMaquina(ctx,g,tm,menu)) });
-  if (g.save.equipe.couvert && !menu) items.push({ y:528, f:() => drawMusico(ctx,g,tm) });
-  if ((g.save.equipe.tv || g.save.equipe.som) && !menu) items.push({ y:532, f:() => drawAmbiente(ctx,g,tm) });
+  // palma.1: o músico e o ambiente (TV e som) ficam sem desenho até a palma.2 e a palma.3
   if (g.fiscal && g.fiscal.ativo && !menu) items.push({ y:g.fiscal.y, f:() => drawFiscal(ctx,g.fiscal,tm) });   // v9.4
   if (g.dani.active && !menu) items.push({ y:g.dani.y, f:() => drawDani(ctx,g.dani,tm) });
   if (g.joca.active && !menu) items.push({ y:g.joca.y, f:() => drawJoca(ctx,g.joca,tm) });   // v9.2
@@ -135,7 +132,7 @@ function render(g, ctx){
         // a avaliação do Gurugol (v8.4): balão branco com a borda na cor da nota
         ctx.font = f.size + 'px ' + FB;
         const ls = String(f.text).split('\n'), lh = f.size + 5;   // v9.6.4: o balão pode ter várias linhas (\n)
-        const w = Math.max.apply(null, ls.map(l => ctx.measureText(l).width)) + 18, x = clamp(f.x, w/2 + 4 - g.cam, W - w/2 - 4);
+        const w = Math.max.apply(null, ls.map(l => ctx.measureText(l).width)) + 18, x = clamp(f.x, w/2 + 4, W - w/2 - 4);
         rr(ctx,x - w/2,f.y - 13,w,26 + (ls.length - 1)*lh,9); ctx.fillStyle = '#FFFDF6'; ctx.fill(); ctx.lineWidth = 2.4; ctx.strokeStyle = f.color; ctx.stroke();
         ls.forEach((l, i) => txt(ctx,l,x,f.y + i*lh,f.size,PAL.tinta,'center',FB));
       } else
@@ -158,16 +155,16 @@ function render(g, ctx){
   ctx.restore();
 
   if (menu){
-    ctx.fillStyle = 'rgba(34,32,28,.18)'; ctx.fillRect(0,92,TW,448);
-    drawBia(ctx,b,TW-170,520,{ s:2.3, wave:true, t:tm });
-    ctx.fillStyle = '#2B2823'; ctx.fillRect(0,540,TW,60);
-    ctx.fillStyle = PAL.mostarda; ctx.fillRect(0,540,TW,4);
+    ctx.fillStyle = 'rgba(34,32,28,.18)'; ctx.fillRect(0,0,W,BARRA.y0);
+    drawBia(ctx,b,470,900,{ s:2.3, wave:true, t:tm });
+    ctx.fillStyle = '#2B2823'; ctx.fillRect(0,BARRA.y0,W,BARRA.h);
+    ctx.fillStyle = PAL.mostarda; ctx.fillRect(0,BARRA.y0,W,4);
   } else {
     drawHud(ctx,g,tm);
     if (g.ending && g.state === 'playing'){
       const msg = g.reason === 'time' ? 'Fim do expediente!' : (g.reason === 'stars' ? 'Sem estrelas!' : 'Todo mundo atendido!');
-      ctx.fillStyle = 'rgba(34,32,28,.35)'; ctx.fillRect(0,230,TW,90);
-      txt(ctx,msg,TW/2,275,46,PAL.mostarda,'center',FD,7);
+      ctx.fillStyle = 'rgba(34,32,28,.35)'; ctx.fillRect(0,480,W,90);
+      txt(ctx,msg,W/2,525,40,PAL.mostarda,'center',FD,7,W - 24);
     }
     if (g.treino && g.mode === 'treino') drawTreino(ctx,g,tm);
   }

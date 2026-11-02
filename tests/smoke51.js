@@ -10,7 +10,7 @@ const K=()=>g.kitchen;
 // (a) marmita pronta vai para marmJ, nunca para plates; marmJanela por ponto
 novo(4);
 ok(L.PONTOS[0].marmJanela===2 && L.PONTOS[1].marmJanela===3 && L.PONTOS[2].marmJanela===3,'marmJanela: Garagem 2, industrial 3, Avenida 3');
-ok(K().marmJ.length===2 && L.LAYOUT.MARMJ_SLOTS.length===2 && L.LAYOUT.MARMJ_SLOTS[0].y===124 && L.LAYOUT.MARMJ_SLOTS[0].x===710,'Garagem: 2 vagas de marmita, na mesinha');
+ok(K().marmJ.length===2 && L.LAYOUT.MARMJ_SLOTS.length===2 && L.LAYOUT.MARMJ_SLOTS[0].y===252 && L.LAYOUT.MARMJ_SLOTS[0].x===36,'Garagem: 2 vagas de marmita, na mesinha');
 { const e=entregador(); ok(roda(20,()=>K().marmJ.some(Boolean)),'a marmita fica pronta');
   ok(K().marmJ.some(m=>m&&m.dono===e) && !K().plates.some(p=>p&&p.kind==='marmita'),'está em marmJ, não em plates');
   ok(g.marmitas().some(o=>o.onde==='pronta'),'marmitas() acha a pronta em marmJ'); }

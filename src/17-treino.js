@@ -19,7 +19,7 @@ function treinoNaMao(g, kind){ return g.bia.hands.some(h => h.kind === kind && (
 const TREINO_PASSOS = [
   { id:'oi', ok:true, tit:'Missão zero: o dia de treino',
     txt:'Vamos aprender todo o trabalho da Bia com uma mesa só. No treino, ninguém perde a paciência e o dinheiro não vai para a carreira.' },
-  { id:'chega', alvo:g => [{ x:QUEUE.x - 90, y:QUEUE.ys[0] - 84, w:180, h:104 }], tit:'Chegou freguesia!',
+  { id:'chega', alvo:g => [{ x:QUEUE.lugares[0].x - 60, y:QUEUE.lugares[0].y - 84, w:120, h:104 }], tit:'Chegou freguesia!',
     txt:'Quem chega espera lá fora, na calçada. Lá vêm o vovô e a vovó...', feito:g => { const grp = g.treino.grupo; return !!grp && grp.state === 'queue' && !grp.path.length; } },
   { id:'coracoes', ok:true, alvo:g => { const grp = g.treino.grupo; return [{ x:grp.x - 40, y:grp.y - 80, w:80, h:30 }]; }, tit:'Os corações são a paciência',
     txt:'Este casal chegou cansado: só 1 coração. Esperar gasta corações, e cada atendimento devolve 1. Quanto mais corações na hora da conta, mais gorjeta.' },
@@ -32,7 +32,7 @@ const TREINO_PASSOS = [
     feito:g => g.treino.grupo.state === 'wantOrder' },
   { id:'anotar', alvo:g => [treinoMesaR(g)], tit:'Chamaram!',
     txt:'O balão com "!" é o grupo chamando a Bia. Toque na mesa para ela anotar o pedido.', feito:g => g.treino.grupo.state !== 'wantOrder' && g.treino.grupo.state !== 'reading' },
-  { id:'fila', ok:true, tela:true, alvo:g => [{ x:HUDX.dir + 696, y:546, w:96, h:52 }, { x:HUDX.fila + 354, y:546, w:52 * filaMax(g.up) + 4, h:52 }], tit:'Mãos e fila de ações',
+  { id:'fila', ok:true, tela:true, alvo:g => [{ x:BARRA.maos.x - 4, y:BARRA.fila.y - 4, w:88, h:50 }, { x:BARRA.fila.x0 - 4, y:BARRA.fila.y - 4, w:(BARRA.fila.w + BARRA.fila.gap) * filaMax(g.up) + 6, h:50 }], tit:'Mãos e fila de ações',
     txt:'A comanda está nas mãos da Bia (MÃOS, lá embaixo). Cada toque vira uma tarefa na FILA, ao lado: a Bia faz uma depois da outra. Um toque no quadrinho cancela a tarefa.' },
   { id:'cozinha', alvo:treinoSt('order'), tit:'Leve o pedido ao Tonhão',
     txt:'Toque na cozinha, no Chef Tonhão, para entregar a comanda.', feito:g => g.kitchen.progressFor(g.treino.grupo) >= 0 || !!treinoPrato(g) },

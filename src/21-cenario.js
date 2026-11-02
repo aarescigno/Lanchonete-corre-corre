@@ -366,7 +366,7 @@ function drawGarrafa(ctx,x,y,cor,sabor){
 function drawLugarNums(ctx,g){
   const ponto = g && g.ponto ? g.ponto : PONTOS[0], sent = !!(g && g.sentado);
   if (ponto.assento === 'pe' && !sent) return;
-  for (let i=0;i<ponto.espera;i++){ const x = QUEUE.x, y = QUEUE.ys[i]; circ(ctx,x-62,y-26,9); fs(ctx,'#fff',1.8); txt(ctx,String(i+1),x-62,y-25.5,11,PAL.faixa,'center',FD); }
+  for (let i=0;i<ponto.espera;i++){ const l = QUEUE.lugares[i], x = l.x, y = l.y; circ(ctx,x-40,y+8,9); fs(ctx,'#fff',1.8); txt(ctx,String(i+1),x-40,y+8.5,11,PAL.faixa,'center',FD); }
 }
 function drawAguasEspera(ctx,g,t,menu){
   const r = STATIONS.maquina.rect, x = r.x + r.w / 2, y = r.y + r.h;
@@ -1059,7 +1059,7 @@ function drawFumacaVerde(ctx,x,y,t,big){
   }
 }
 function drawTrash(ctx,on,t,g){
-  const x = 723, y = 530;
+  const x = STATIONS.trash.rect.x + 22, y = STATIONS.trash.rect.y + STATIONS.trash.rect.h - 2;   // palma.1
   const lv = g && g.state !== 'menu' ? g.trash : 0, cheia = lv >= TRASH.cap;
   const f = Math.min(1, lv / TRASH.cap);   // v8.3.10: a lata vai do cinza ao esverdeado conforme enche
   const ab = g && g.state !== 'menu' && (g.bia.emptying || g.dani.emptying || g.joca.emptying) ? (RM ? 0.6 : 0.65 + 0.6*Math.sin(t*7)) : null;   // esvaziando: tampa abrindo e fechando
@@ -1122,7 +1122,7 @@ function drawPlacaParada(ctx,x,y){
 /* fumaça cinza do fogão quebrado: bolinhas que sobem e somem (paradas com movimento reduzido) */
 function drawFumaca(ctx,t){
   for (let k=0;k<3;k++) for (let i=0;i<4;i++){
-    const ph = RM ? (i/4) : ((t*0.35 + i/4 + k*0.13) % 1), x = 800 + k*44 + Math.sin(ph*6 + k*2)*7 + (RM ? 0 : 0), y = 100 - ph*52;
+    const ph = RM ? (i/4) : ((t*0.35 + i/4 + k*0.13) % 1), x = 60 + k*30 + Math.sin(ph*6 + k*2)*7 + (RM ? 0 : 0), y = 130 - ph*52;
     ctx.globalAlpha = (1 - ph)*0.9; circ(ctx,x,y,5 + ph*8); ctx.fillStyle = '#7C8187'; ctx.fill(); ctx.lineWidth = 1.6; ctx.strokeStyle = 'rgba(34,32,28,.55)'; ctx.stroke();
   }
   ctx.globalAlpha = 1;
@@ -1204,21 +1204,18 @@ function drawGeladeira(ctx,g,t){
 }
 /* chuva (v8): sobre a calçada, o céu fica mais escuro e há poças; os pingos (diagonais) caem por cima de tudo */
 function drawChuvaFundo(ctx,t){
-  const x0 = -CALCADA.w - 60;
-  ctx.fillStyle = 'rgba(52,72,104,.22)'; ctx.fillRect(x0,0,-x0,540);
-  [[-190,222,34,7],[-90,306,40,8],[-200,392,30,6],[-70,478,28,6]].forEach((p,i) => {
+  ctx.fillStyle = 'rgba(52,72,104,.22)'; ctx.fillRect(0,CALCADA.y0,W,CALCADA.y1 - CALCADA.y0);
+  [[150,850,34,7],[400,880,40,8],[260,930,30,6],[520,800,28,6]].forEach((p,i) => {
     ell(ctx,p[0],p[1],p[2],p[3]); ctx.fillStyle = 'rgba(120,160,196,.55)'; ctx.fill();
     ctx.strokeStyle = 'rgba(255,255,255,.55)'; ctx.lineWidth = 1.4; ctx.stroke();
     const ph = RM ? 0.5 : ((t*0.8 + i*0.31) % 1); ctx.globalAlpha = 1 - ph; ell(ctx,p[0] + (i%2 ? 8 : -8),p[1],4 + ph*10,1.2 + ph*2.4); ctx.stroke(); ctx.globalAlpha = 1;
   });
-  // pingos que escorrem do toldo
-  for (let i=0;i<5;i++){ const ph = RM ? 0.3 : ((t*0.9 + i*0.37) % 1), x = -234 + i*45 + 6; ctx.globalAlpha = 1 - ph; circ(ctx,x,98 + ph*30,2); ctx.fillStyle = '#9CC4E4'; ctx.fill(); ctx.globalAlpha = 1; }
 }
 function drawChuvaPingos(ctx,t){
-  const x0 = -CALCADA.w - 60, w = -x0;
+  const x0 = 0, w = W;
   ctx.save(); ctx.lineWidth = 1.6; ctx.lineCap = 'round';
-  for (let i=0;i<70;i++){
-    const sp = 520 + (i*37 % 7)*40, x = x0 + ((i*131.7) % w) + (RM ? 0 : -((t*sp) % 540)*0.22), y = RM ? ((i*97.3) % 540) : (((i*97.3) + t*sp) % 540);
+  for (let i=0;i<110;i++){
+    const sp = 520 + (i*37 % 7)*40, x = x0 + ((i*131.7) % w) + (RM ? 0 : -((t*sp) % 540)*0.22), y = RM ? ((i*97.3) % 940) : (((i*97.3) + t*sp) % 940);
     const xx = x0 + (((x - x0) % w) + w) % w;
     ctx.strokeStyle = 'rgba(205,226,246,' + (0.35 + (i%3)*0.12) + ')';
     ctx.beginPath(); ctx.moveTo(xx,y); ctx.lineTo(xx - 4,y + 13); ctx.stroke();
@@ -1227,7 +1224,7 @@ function drawChuvaPingos(ctx,t){
 }
 /* feriado (v8): fio de bandeirinhas coloridas no alto da fachada da calçada, por cima do muro */
 function drawBandeirinhas(ctx){
-  const x0 = -CALCADA.w + 30, x1 = -8, cores = ['#E2574C','#F2B33D','#3E9B5A','#3F7FD0','#8E5BB5','#F28FB0','#4FB6B0'];
+  const x0 = 30, x1 = W - 30, cores = ['#E2574C','#F2B33D','#3E9B5A','#3F7FD0','#8E5BB5','#F28FB0','#4FB6B0'];
   const pt = u => ({ x:x0 + (x1 - x0)*u, y:2 + 7*4*u*(1 - u) });
   ctx.strokeStyle = PAL.tinta; ctx.lineWidth = 1.8; ctx.beginPath();
   for (let i=0;i<=24;i++){ const p = pt(i/24); i ? ctx.lineTo(p.x,p.y) : ctx.moveTo(p.x,p.y); } ctx.stroke();
@@ -1494,3 +1491,177 @@ function drawChef(ctx,g,x,y,t){
   ctx.restore();
 }
 
+
+/* ============================================================
+   CENÁRIO PROVISÓRIO (palma.1): o mundo em pé com blocos lisos e o nome de cada estação, sem arte (a arte vem na palma.2 e na palma.3).
+   Faixas: topo 0-64, cozinha 64-224, corredor 224-296, salão 296-752, calçada 752-944. O que o jogo mostra de vivo (tickets, pratos prontos,
+   marmitas, louça na pia, lixeira, retirada, bebida da espera) continua desenhado, só que em cima dos blocos
+   ============================================================ */
+const PROV_COR = {
+  garagem:{ parede:'#CFC8B8', piso:'#D9D3C5', piso2:'#D2CBBB' },
+  industrial:{ parede:'#B9BEC4', piso:'#C6CACF', piso2:'#BEC3C8' },
+  avenida:{ parede:'#E7D9BC', piso:'#E9DCC0', piso2:'#E0D2B4' }
+};
+function drawProvFundo(ctx,g,t){
+  const c = PROV_COR[g && g.ponto ? g.ponto.id : 'garagem'] || PROV_COR.garagem;
+  // topo e cozinha: a parede; o corredor e o salão: o piso; a calçada: concreto
+  ctx.fillStyle = c.parede; ctx.fillRect(0,0,W,224);
+  ctx.fillStyle = PAL.cozinha; ctx.fillRect(0,64,W,160);
+  for (let y = 224, j = 0; y < CALCADA.y0; y += 40, j++) for (let x = 0, i = 0; x < W; x += 40, i++){ ctx.fillStyle = (i + j) % 2 ? c.piso : c.piso2; ctx.fillRect(x,y,40,Math.min(40,CALCADA.y0 - y)); }
+  ctx.fillStyle = '#B8B4AA'; ctx.fillRect(0,CALCADA.y0,W,CALCADA.y1 - CALCADA.y0 + 4);
+  ctx.strokeStyle = 'rgba(34,32,28,.12)'; ctx.lineWidth = 1;
+  for (let x = 0; x <= W; x += 60){ ctx.beginPath(); ctx.moveTo(x,CALCADA.y0); ctx.lineTo(x,CALCADA.y1); ctx.stroke(); }
+  for (let y = CALCADA.y0 + 40; y < CALCADA.y1; y += 60){ ctx.beginPath(); ctx.moveTo(0,y); ctx.lineTo(W,y); ctx.stroke(); }
+  // o balcão da frente da cozinha
+  ctx.fillStyle = PAL.inox; ctx.fillRect(0,200,W,24);
+  ctx.strokeStyle = PAL.tinta; ctx.lineWidth = 2.5; ctx.beginPath(); ctx.moveTo(0,200); ctx.lineTo(W,200); ctx.moveTo(0,224); ctx.lineTo(W,224); ctx.stroke();
+  // a parede da frente, com a porta (x 250 a 350)
+  ctx.fillStyle = c.parede; ctx.fillRect(0,CALCADA.y0 - 8,250,8); ctx.fillRect(350,CALCADA.y0 - 8,250,8);
+  ctx.strokeStyle = PAL.tinta; ctx.lineWidth = 3; ctx.beginPath(); ctx.moveTo(0,CALCADA.y0); ctx.lineTo(250,CALCADA.y0); ctx.moveTo(350,CALCADA.y0); ctx.lineTo(W,CALCADA.y0); ctx.stroke();
+  ctx.fillStyle = PAL.mostarda; ctx.fillRect(250,CALCADA.y0 - 2,100,4);
+  txt(ctx,'PORTA',300,CALCADA.y0 + 14,11,PAL.tinta,'center',FB);
+  if (g && g.fechado) drawPlacaFechado(ctx,300,CALCADA.y0 + 40,t);   // v9.6.4
+  // o meio-fio embaixo da calçada
+  ctx.fillStyle = '#8F8B80'; ctx.fillRect(0,CALCADA.y1 - 4,W,8);
+  // o letreiro do ponto (topo)
+  const nome = g && g.ponto ? g.ponto.nome : PONTOS[0].nome;
+  rr(ctx,96,12,408,40,10); fs(ctx,PAL.faixa,3);
+  txt(ctx,nome,300,32,18,'#fff','center',FD,0,392);
+}
+function drawProvRelogio(ctx,g){
+  const endless = !!(g && (g.mode === 'semfim' || g.mode === 'treino'));   // na Missão zero também conta para a frente, sem fim
+  const frac = endless ? ((g.elapsed % 60) / 60) : (g ? clamp(g.clock / g.day.time, 0, 1) : 1);
+  const low = !endless && g && g.clock < 20 && g.state === 'playing';
+  const x = 556, y = 32;
+  circ(ctx,x,y,28); fs(ctx,PAL.cromo,3);
+  circ(ctx,x,y,23); fs(ctx,'#fff',2);
+  ctx.beginPath(); ctx.arc(x,y,18,-Math.PI/2,-Math.PI/2 + TAU*frac); ctx.lineWidth = 5; ctx.strokeStyle = low ? PAL.perigo : (endless ? PAL.ok : PAL.mostarda); ctx.lineCap = 'butt'; ctx.stroke(); ctx.lineCap = 'round';
+  if (g && g.fechado && !endless) txt(ctx,'FECHANDO',x,y + 1,8,PAL.alerta,'center',FD,0,42);
+  else txt(ctx,endless ? mmssUp(g.elapsed) : mmss(g ? g.clock : 0),x,y + 1,12,PAL.tinta,'center',FD);
+}
+/* um bloco liso de estação: retângulo com o nome; `alvo` é a estação da 1ª ação da Bia (contorno que pisca) */
+function provBloco(ctx,k,cor,nome,t,alvo,tam){
+  const r = STATIONS[k].rect;
+  rr(ctx,r.x,r.y,r.w,r.h,8); fs(ctx,cor,3);
+  if (k === 'order') txt(ctx,nome,r.x + 36,r.y + 11,tam || 11,PAL.faixa,'center',FB,0,60);
+  else txt(ctx,nome,r.x + r.w/2,r.y + 11,tam || 11,PAL.faixa,'center',FB,0,r.w - 6);
+}
+function provGlow(ctx,k,alvo,t){
+  if (alvo !== k) return;
+  const r = STATIONS[k].rect, a = 0.55 + 0.4*Math.sin(t*8);
+  ctx.save(); ctx.strokeStyle = 'rgba(242,179,61,' + a + ')'; ctx.lineWidth = 6; rr(ctx,r.x - 3,r.y - 3,r.w + 6,r.h + 6,10); ctx.stroke(); ctx.restore();
+}
+function drawProvEstacoes(ctx,g,t,menu){
+  const b0 = g.bia.acts[0], alvo = b0 ? (b0.type === 'plate' ? 'plates' : b0.type === 'table' ? null : b0.type) : null;
+  // --- PEDIDOS: o Tonhão na janela e os tickets cozinhando
+  let r = STATIONS.order.rect;
+  glowSprite(ctx,g,'order',ctx => {
+    provBloco(ctx,'order','#F0DDA6','PEDIDOS',t);
+    drawChef(ctx,g,r.x + 112,r.y + 46,t);
+    if (menu) return;
+    const ck = g.kitchen.cooking, ns = g.kitchen.slots, tw = (144 - (ns-1)*4) / ns;   // 3, 4 ou 5 bocas (aumento do Tonhão)
+    for (let i=0;i<ns;i++){
+      const x = r.x + 8 + i*(tw+4), y = r.y + 80, tk = ck[i];
+      rr(ctx,x,y,tw,46,3); fs(ctx,tk ? '#FFFBEA' : 'rgba(255,251,234,.35)',2);
+      if (tk){
+        ctx.fillStyle = tk.marmita ? EFOOD_COR : cmdColor(tk.group) || PAL.faixa; ctx.fillRect(x,y,tw,9);
+        ctx.strokeStyle = PAL.tinta; ctx.lineWidth = 1.5; ctx.strokeRect(x,y,tw,9);
+        if (tk.marmita) drawMarmita(ctx,tk.dish,x+tw/2,y+25,0.8);
+        else txt(ctx,String(tk.table),x+tw/2,y+25,ns > 3 ? 15 : 19,PAL.tinta,'center',FD);
+        ctx.fillStyle = '#d9d4c4'; ctx.fillRect(x+3,y+37,tw-6,6);
+        ctx.fillStyle = tk.p >= tk.time ? PAL.ok : PAL.alerta; ctx.fillRect(x+3,y+37,(tw-6)*clamp(tk.p/tk.time,0,1),6);
+        ctx.strokeStyle = PAL.tinta; ctx.lineWidth = 1.5; ctx.strokeRect(x+3,y+37,tw-6,6);
+      }
+    }
+    if (g.quebrado('fogao')) for (let i=0;i<ns;i++){ const x = r.x + 8 + i*(tw+4); rr(ctx,x,r.y + 80,tw,46,3); ctx.fillStyle = 'rgba(96,100,104,.6)'; ctx.fill(); }
+    const qn = g.kitchen.queue.length;
+    txt(ctx,qn ? ('Na fila: ' + qn) : '',r.x + 38,r.y + 52,11,PAL.tinta,'center',FB,0,70);
+    if (g.kitchen.noPlate) txt(ctx,'Sem prato!',r.x + 38,r.y + 36,11,PAL.perigo,'center',FD,0,70);
+  });
+  provGlow(ctx,'order',alvo,t);
+  // --- PRONTOS: as vagas de prato em fileira (y 184) e a contagem de pratos limpos
+  r = STATIONS.plates.rect;
+  rr(ctx,r.x,r.y,r.w,r.h,8); fs(ctx,'#EFE8D4',3);
+  txt(ctx,'PRONTOS',r.x + 45,r.y + 11,11,PAL.faixa,'center',FB);
+  if (isFinite(g.kitchen.clean)){
+    const cn = g.kitchen.clean, warn = cn <= 0 && !RM && Math.floor(t*4) % 2;
+    txt(ctx,'limpos ×' + cn,r.x + 118,r.y + 11,11,cn <= 0 ? (warn ? '#ff8a7a' : PAL.perigo) : PAL.tinta,'center',FD,0,70);
+  }
+  for (let i=0;i<PLATE_SLOTS.length;i++){
+    const s = PLATE_SLOTS[i], p = g.kitchen.plates[i];
+    ell(ctx,s.x,s.y+4,19,10); ctx.fillStyle = 'rgba(34,32,28,.12)'; ctx.fill();
+    if (p) glowSprite(ctx,g,p,ctx => {
+      const bounce = RM ? 0 : Math.max(0, 1 - p.age*3) * -8;
+      const pc = cmdColor(p.group);
+      if (pc) drawTray(ctx,s.x,s.y+2+bounce,1.0,pc);
+      if (p.vip){ ctx.strokeStyle = PAL.mostarda; ctx.lineWidth = 3; ell(ctx,s.x,s.y+bounce,17,9); ctx.stroke(); }
+      drawDish(ctx,p.dish,s.x,s.y+bounce,1.1,false,p.group && p.group.carnes && p.group.carnes[0]);
+      const vp = pratoVapor(p.age);
+      if (vp > 0.02){
+        ctx.save(); ctx.strokeStyle = 'rgba(120,130,140,' + (0.75*vp).toFixed(2) + ')'; ctx.lineWidth = 2; ctx.lineCap = 'round';
+        [-7,0,7].forEach((dx,j) => { const w = RM ? 0 : Math.sin(t*3 + j*2 + i)*2, y0 = s.y-14+bounce;
+          ctx.beginPath(); ctx.moveTo(s.x+dx, y0); ctx.quadraticCurveTo(s.x+dx+3+w, y0-6, s.x+dx, y0-11*vp-3); ctx.stroke(); });
+        ctx.restore();
+      }
+      if (p.crit) txt(ctx,'★',s.x-13,s.y-14+bounce,15,PAL.mostarda,'center',FD);
+      circ(ctx,s.x+12,s.y-14+bounce,9); fs(ctx,'#fff',2);
+      txt(ctx,String(p.table),s.x+12,s.y-13+bounce,12,PAL.tinta,'center',FD);
+      const a = 0.35 + 0.3*Math.sin(t*6 + i);
+      ctx.strokeStyle = 'rgba(242,179,61,' + a + ')'; ctx.lineWidth = 3; ell(ctx,s.x,s.y+2,21,13); ctx.stroke();
+    });
+  }
+  provGlow(ctx,'plates',alvo,t);
+  // --- CAFÉ e SUCOS
+  glowSprite(ctx,g,'coffee',ctx => {
+    provBloco(ctx,'coffee','#DCCBA3','CAFÉ',t);
+    const q = STATIONS.coffee.rect;
+    if (g.quebrado('cafeteira')) drawPlacaParada(ctx,q.x + q.w/2 - 10,q.y + 70);
+    else for (let i=0;i<2;i++){ const cx = q.x + 26 + i*28, cy = q.y + 80; ell(ctx,cx,cy+8,8,3); fs(ctx,'#fff',1.8); rr(ctx,cx-6,cy-5,12,12,3); fs(ctx,'#fff',1.8); ctx.fillStyle = '#5B2E1A'; ctx.fillRect(cx-4.5,cy-3,9,2.5); }
+  });
+  provGlow(ctx,'coffee',alvo,t);
+  glowSprite(ctx,g,'juice',ctx => { provBloco(ctx,'juice','#F5D9A8','SUCOS',t); const q = STATIONS.juice.rect; drawIcon(ctx,'juice',q.x + 26,q.y + 80,1.0); drawIcon(ctx,'juice',q.x + 56,q.y + 80,1.0); });
+  provGlow(ctx,'juice',alvo,t);
+  // --- PIA
+  r = STATIONS.sink.rect;
+  glowSprite(ctx,g,'sink',ctx => {
+    provBloco(ctx,'sink','#C9D6DC','PIA',t);
+    const nPia = menu ? 0 : g.kitchen.sinkN, fPia = Math.min(1, nPia / 6);
+    rr(ctx,r.x + 8,r.y + 36,r.w - 16,60,6); fs(ctx,mixCor('#8EC5E8','#9A9468',fPia),2);
+    for (let i = 0; i < Math.min(4, nPia); i++){
+      ctx.save(); ctx.translate(r.x + 22 + (i % 2) * 38,r.y + 54 + Math.floor(i / 2) * 18); ctx.rotate((i - 1.5) * 0.25); ell(ctx,0,0,14,5); fs(ctx,'#F2F0E8',1.6);
+      ctx.fillStyle = '#B5651D'; circ(ctx,-4,-0.5,2.2); ctx.fill(); ctx.restore();
+    }
+    if (nPia) txt(ctx,'sujos ×' + nPia,r.x + r.w/2,r.y + 108,11,PAL.tinta,'center',FD);
+    if (nPia >= 4){ drawMosca(ctx,r.x + 20,r.y + 40,t,0); drawMosca(ctx,r.x + 20,r.y + 40,t,3); }
+  });
+  provGlow(ctx,'sink',alvo,t);
+  // espuma de lavar
+  if (!menu && (g.bia.washing || g.dani.washing || g.joca.washing || (g.kitchen.chef.wash > 0 && g.kitchen.sinkN > 0))){
+    ctx.save(); ctx.fillStyle = 'rgba(255,255,255,.92)'; ctx.strokeStyle = 'rgba(120,180,215,.9)'; ctx.lineWidth = 1.4;
+    [[r.x + 20,r.y + 56,7],[r.x + 34,r.y + 50,9],[r.x + 50,r.y + 56,8],[r.x + 64,r.y + 50,9]].forEach(c => { circ(ctx,c[0],c[1] - (RM ? 0 : (t*20 % 10)),c[2]); ctx.fill(); ctx.stroke(); });
+    ctx.restore();
+  }
+  // --- paredes laterais: marmitas, doces, drinks (esquerda); lixeira, espresso (direita)
+  r = STATIONS.marmj.rect;
+  glowSprite(ctx,g,'marmj',ctx => { drawMesinha(ctx,g,t); txt(ctx,'MARM.',r.x + r.w/2,r.y - 6,9,PAL.faixa,'center',FB); });
+  for (let i=0;i<MARMJ_SLOTS.length;i++){
+    const s = MARMJ_SLOTS[i], p = g.kitchen.marmJ[i];
+    if (p) glowSprite(ctx,g,p,ctx => {
+      const bounce = RM ? 0 : Math.max(0, 1 - p.age*3) * -6;
+      drawMarmita(ctx,p.dish,s.x,s.y+bounce,0.56);
+      if (p.crit) txt(ctx,'★',s.x-9,s.y-8+bounce,11,PAL.mostarda,'center',FD);
+      ctx.save(); ctx.translate(s.x+14,s.y-4+bounce); ctx.scale(0.66,0.66); drawMarmitaSelo(ctx,p,0,0); ctx.restore();
+      const a = 0.35 + 0.3*Math.sin(t*6 + i);
+      ctx.strokeStyle = 'rgba(242,179,61,' + a + ')'; ctx.lineWidth = 2; ell(ctx,s.x,s.y+1,14,8); ctx.stroke();
+    });
+  }
+  provGlow(ctx,'marmj',alvo,t);
+  if (g.up.confCaseira && !menu) glowSprite(ctx,g,'doces',ctx => { provBloco(ctx,'doces','#F6D7E0','DOCES',t,alvo,10); });
+  if (g.up.confCaseira && !menu) provGlow(ctx,'doces',alvo,t);
+  if (g.anselmoAtivo && !menu){
+    glowSprite(ctx,g,'drinks',ctx => { provBloco(ctx,'drinks','#CDBAE0','DRINKS',t,alvo,10); drawAnselmo(ctx,{ x:ANSELMO_HOME.x, y:ANSELMO_HOME.y, busy:!!g.drinkJob },t); });
+    provGlow(ctx,'drinks',alvo,t);
+  }
+  glowSprite(ctx,g,'trash',ctx => drawTrash(ctx, alvo === 'trash', t, g));
+  if (g.up.espresso && !menu){ glowSprite(ctx,g,'espresso',ctx => { provBloco(ctx,'espresso','#D9C7B0','ESPRESSO',t,alvo,8); }); provGlow(ctx,'espresso',alvo,t); }
+}

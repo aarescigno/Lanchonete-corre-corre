@@ -27,18 +27,20 @@ function starsHtml(box, n, total){
 
 /* ---------- escala / DPR ---------- */
 function fit(){
-  const vw = window.innerWidth || 960, vh = window.innerHeight || 600;
-  const s = Math.max(0.2, Math.min(vw / TW, vh / H));   // tela larga (v7.6)
+  // palma.1: o mundo é em pé (600 × 1040) e encaixa pela largura; o palco ocupa a janela toda e a sobra (em cima e embaixo, ou dos
+  // lados no computador) fica com a cor da parede e da rua, sem faixa preta. Os painéis (menu, lojinha) enchem o palco
+  const vw = window.innerWidth || 600, vh = window.innerHeight || 1040;
+  const s = Math.max(0.2, Math.min(vw / W, vh / H));
   const dpr = Math.min(window.devicePixelRatio || 1, 2.5);
-  // numa tela mais estreita que a do jogo (~2:1), o jogo encolhe; o palco ganha a altura que teria com a tela de antes
-  // (960 de largura), para os painéis (menu, lojinha) não ficarem apertados, e o jogo fica no meio dele
-  const sh = Math.max(H*s, Math.min(vh, H * Math.min(vw / W, vh / H)));
-  stage.style.width = Math.floor(TW*s) + 'px';
-  stage.style.height = Math.floor(sh) + 'px';
+  const cw = Math.floor(W*s), ch = Math.floor(H*s);
+  stage.style.width = vw + 'px';
+  stage.style.height = vh + 'px';
   stage.style.setProperty('--u', s + 'px');
-  canvas.style.height = Math.floor(H*s) + 'px';
-  canvas.style.marginTop = Math.floor((sh - H*s) / 2) + 'px';
-  canvas.width = Math.round(TW*s*dpr);
+  canvas.style.width = cw + 'px';
+  canvas.style.height = ch + 'px';
+  canvas.style.marginLeft = Math.floor((vw - cw) / 2) + 'px';
+  canvas.style.marginTop = Math.floor((vh - ch) / 2) + 'px';
+  canvas.width = Math.round(W*s*dpr);
   canvas.height = Math.round(H*s*dpr);
 }
 
@@ -87,7 +89,7 @@ function buildChips(){
 /* ---------- modo dev: "Modo dev" no selo da versão e no alto da tela, e o link de sair ---------- */
 function devSync(){
   const t = $('vtag'), b = $('devbadge'), o = $('btn-dev-off');
-  if (t){ t.textContent = VERSAO + (DEV.on ? ' · dev' : ''); t.classList[DEV.on ? 'add' : 'remove']('dev'); }
+  if (t){ t.textContent = VTAG + (DEV.on ? ' · dev' : ''); t.classList[DEV.on ? 'add' : 'remove']('dev'); }
   if (b) b.style.display = DEV.on ? '' : 'none';
   if (o) o.style.display = DEV.on ? '' : 'none';
 }

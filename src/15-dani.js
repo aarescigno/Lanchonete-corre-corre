@@ -5,7 +5,7 @@
    Anda mais devagar que a Bia (50%, 65% ou 80% conforme o nível) e
    leva 1 item em cada mão.
    ============================================================ */
-const DANI_HOME = { x:700, y:470 };
+const DANI_HOME = { x:520, y:300 };
 /* v9.2, v9.3: quem cuida das tarefas básicas da casa (BASICAS) no dia: o ajudante mais novo que veio (Cami, depois Joca, depois Dani) */
 function donoBasico(g){ const eq = g.save.equipe; return eq.cami > 0 && !eq.camiFora && !camiModoMesas(g.save) ? 'cami'   /* v9.6: no modo "Minhas mesas" o básico volta para o Joca (ou a Dani) */ : eq.joca > 0 && !eq.jocaFora ? 'joca' : eq.dani > 0 ? 'dani' : null; }
 const AJUD_NOME = { dani:'Dani', joca:'Joca', cami:'Cami' };
@@ -48,7 +48,7 @@ class Helper {
   biaWants(t){ return this.g.bia.acts.some(a => a.type === 'table' && a.id === t.id); }
   /* mesa para onde a Dani está indo (a Bia e o bot evitam) */
   targets(t){ return !!(this.plan && this.plan.t === t); }
-  go(pt, step){ this.plan = step; this.path = findPath({ x:this.x, y:this.y }, pt); this.phase = 'walk'; }
+  go(pt, step){ this.plan = step; this.path = caminhoAte({ x:this.x, y:this.y }, pt); this.phase = 'walk'; }
   nearestAp(t){ const p = tableApproach(t); return Math.hypot(p[0].x-this.x,p[0].y-this.y) <= Math.hypot(p[1].x-this.x,p[1].y-this.y) ? p[0] : p[1]; }
   /* marmita pronta para levar (v8.6): a de quem espera no balcão primeiro; a sem dono só se couber na prateleira. Nunca a
      que a Bia já vai pegar */

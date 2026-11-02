@@ -278,99 +278,99 @@ function starFill(ctx,x,y,r,fill){
   ctx.closePath(); ctx.fillStyle = fill; ctx.fill();
 }
 function drawHud(ctx,g,tm){
-  ctx.fillStyle = '#2B2823'; ctx.fillRect(0,540,TW,60);
-  ctx.fillStyle = PAL.mostarda; ctx.fillRect(0,540,TW,4);
-  ctx.strokeStyle = PAL.tinta; ctx.lineWidth = 2; ctx.beginPath(); ctx.moveTo(0,544); ctx.lineTo(TW,544); ctx.stroke();
+  // palma.1, a barra provisória (944 a 1040): a antiga espremida em 2 fileiras. Em cima, o dia, o lucro e o Gurugol; embaixo, a fila, as mãos, a pausa e o som
+  const Y0 = BARRA.y0;
+  ctx.fillStyle = '#2B2823'; ctx.fillRect(0,Y0,W,BARRA.h);
+  ctx.fillStyle = PAL.mostarda; ctx.fillRect(0,Y0,W,4);
+  ctx.strokeStyle = PAL.tinta; ctx.lineWidth = 2; ctx.beginPath(); ctx.moveTo(0,Y0 + 4); ctx.lineTo(W,Y0 + 4); ctx.stroke();
   const m = Math.round(g.money), d = g.day;
   if (g.mode === 'semfim'){
     // modo sem fim: reputação em 5 estrelas no lugar da meta
-    rr(ctx,12,552,74,40,10); fs(ctx,PAL.mostarda,2.8);
-    txt(ctx,'Sem fim',49,573,15,PAL.tinta,'center',FD,0,64);
-    txt(ctx,'R$ ' + m,102,564,24,'#FFF7DC','left',FD,4);
-    txt(ctx,Math.round(g.pontos) + ' pts · atendidos ' + g.stats.served,320,562,12,'#cfc7b0','right',FB,0,120);
+    rr(ctx,8,950,64,38,10); fs(ctx,PAL.mostarda,2.8);
+    txt(ctx,'Sem fim',40,969,13,PAL.tinta,'center',FD,0,56);
+    txt(ctx,'R$ ' + m,80,959,19,'#FFF7DC','left',FD,4);
     const flash = g.starFlash > 0 && !RM && Math.floor(g.starFlash*10)%2 === 0;
     for (let i=0;i<5;i++){
       const on = i < g.stars;
-      star(ctx,116 + i*24,582,10.5,on ? (flash ? '#fff' : PAL.mostarda) : '#4a453c');
+      star(ctx,92 + i*22,979,9.5,on ? (flash ? '#fff' : PAL.mostarda) : '#4a453c');
     }
-    txt(ctx,'próxima: ' + g.five + '/8 (5 corações)',232,583,10.5,'#cfc7b0','left',FB,0,104);
+    txt(ctx,'próxima: ' + g.five + '/8 (5 corações)',210,980,10.5,'#cfc7b0','left',FB,0,120);
+    txt(ctx,Math.round(g.pontos) + ' pts · atendidos ' + g.stats.served,W - 12,962,12,'#cfc7b0','right',FB,0,230);
   } else if (g.mode === 'treino'){
     // Missão zero (v8.2): o que entrou no treino e o passo do pop-up, no lugar da meta
-    rr(ctx,12,552,74,40,10); fs(ctx,PAL.mostarda,2.8);
-    txt(ctx,'Treino',49,573,17,PAL.tinta,'center',FD,0,64);
-    txt(ctx,'R$ ' + m,102,564,24,'#FFF7DC','left',FD,4);
+    rr(ctx,8,950,64,38,10); fs(ctx,PAL.mostarda,2.8);
+    txt(ctx,'Treino',40,969,15,PAL.tinta,'center',FD,0,56);
+    txt(ctx,'R$ ' + m,80,959,19,'#FFF7DC','left',FD,4);
     const tr = g.treino;
-    txt(ctx,'Missão zero' + (tr ? ' · passo ' + Math.min(tr.i + 1, tr.total) + ' de ' + tr.total : ' concluída'),102,587,12,'#cfc7b0','left',FB);
+    txt(ctx,'Missão zero' + (tr ? ' · passo ' + Math.min(tr.i + 1, tr.total) + ' de ' + tr.total : ' concluída'),80,979,12,'#cfc7b0','left',FB);
   } else {
     // dia
-    rr(ctx,12,552,74,40,10); fs(ctx,PAL.mostarda,2.8);
-    txt(ctx,'Dia ' + d.n,49,573,20,PAL.tinta,'center',FD);
+    rr(ctx,8,950,64,38,10); fs(ctx,PAL.mostarda,2.8);
+    txt(ctx,'Dia ' + d.n,40,969,18,PAL.tinta,'center',FD);
     // lucro do dia (v7): começa negativo, com as contas, a folha e a divulgação, e cai com os ingredientes
     const m = Math.round(g.lucro);
-    txt(ctx,(m < 0 ? 'R$ −' : 'R$ ') + Math.abs(m),102,564,24,m < 0 ? '#FF9C8A' : '#FFF7DC','left',FD,4);
+    txt(ctx,(m < 0 ? 'R$ −' : 'R$ ') + Math.abs(m),80,959,19,m < 0 ? '#FF9C8A' : '#FFF7DC','left',FD,4);
     const done = g.stats.served + g.stats.lost + g.stats.full;
-    // pontos de atendimento (v8.3.8): o que as ações da Bia rendem (o dinheiro vem só do que o cliente paga)
-    txt(ctx,Math.round(g.pontos) + ' pts · grupos ' + done + '/' + g.schedule.length,320,562,12,'#cfc7b0','right',FB,0,124);
-    const bx = 102, bw = 218, by = 576;
-    rr(ctx,bx,by,bw,10,5); fs(ctx,'#4a453c',2);
+    const bx = 80, bw = 250, by = 973;
+    rr(ctx,bx,by,bw,9,4.5); fs(ctx,'#4a453c',2);
     const frac = clamp(m / d.expert, 0, 1);
-    if (frac > 0){ ctx.save(); rr(ctx,bx,by,bw,10,5); ctx.clip(); ctx.fillStyle = m >= d.expert ? PAL.mostarda : (m >= d.meta ? PAL.ok : PAL.alerta); ctx.fillRect(bx,by,bw*frac,10); ctx.restore(); }
+    if (frac > 0){ ctx.save(); rr(ctx,bx,by,bw,9,4.5); ctx.clip(); ctx.fillStyle = m >= d.expert ? PAL.mostarda : (m >= d.meta ? PAL.ok : PAL.alerta); ctx.fillRect(bx,by,bw*frac,9); ctx.restore(); }
     const mx = bx + bw * d.meta / d.expert, gx = bx + bw * bomGoal(d) / d.expert;
-    ctx.strokeStyle = '#fff'; ctx.lineWidth = 2; ctx.beginPath(); ctx.moveTo(mx,by-3); ctx.lineTo(mx,by+13); ctx.stroke();
-    ctx.lineWidth = 1.5; ctx.beginPath(); ctx.moveTo(gx,by); ctx.lineTo(gx,by+10); ctx.stroke();   // 2ª estrela
-    txt(ctx,'lucro · meta R$ ' + d.meta,bx,593,11,m >= d.meta ? '#7fd69a' : '#cfc7b0','left',FB);
+    ctx.strokeStyle = '#fff'; ctx.lineWidth = 2; ctx.beginPath(); ctx.moveTo(mx,by-3); ctx.lineTo(mx,by+12); ctx.stroke();
+    ctx.lineWidth = 1.5; ctx.beginPath(); ctx.moveTo(gx,by); ctx.lineTo(gx,by+9); ctx.stroke();   // 2ª estrela
     // 3ª estrela (v8.3.7): o lucro e nenhum cliente perdido; com uma perda, o rótulo avisa que ela já foi
-    if (g.stats.lost) txt(ctx,'3ª estrela perdida',bx+bw,593,11,'#FF9C8A','right',FB);
-    else txt(ctx,'3 estrelas R$ ' + d.expert,bx+bw,593,11,m >= d.expert ? PAL.mostarda : '#cfc7b0','right',FB);
+    txt(ctx,'meta R$ ' + d.meta,bx + bw,959,11,m >= d.meta ? '#7fd69a' : '#cfc7b0','right',FB);
+    if (g.stats.lost) txt(ctx,'3ª estrela perdida',bx + bw,985,10.5,'#FF9C8A','right',FB);
+    else txt(ctx,'3 estrelas R$ ' + d.expert,bx + bw,985,10.5,m >= d.expert ? PAL.mostarda : '#cfc7b0','right',FB);
+    // pontos de atendimento (v8.3.8) e grupos do dia
+    txt(ctx,Math.round(g.pontos) + ' pts · grupos ' + done + '/' + g.schedule.length,W - 12,985,11,'#cfc7b0','right',FB,0,230);
     // nota do Gurugol (v8.4): a média das últimas avaliações; antes da AVAL.min-ésima, quantas faltam
     const av = g.gurugol;
-    rr(ctx,334,550,124,44,9); fs(ctx,'#3b362e',2);
-    txt(ctx,'Gurugol',396,561,11,'#cfc7b0','center',FB);
+    rr(ctx,344,950,248,24,9); fs(ctx,'#3b362e',2);
+    txt(ctx,'Gurugol',380,962,11,'#cfc7b0','center',FB);
     if (av){
       const fr = avalFrac(av.nota, avalTeto(g.ponto));   // v8.6.4: a cor vai pelo teto do ponto
-      txt(ctx,fmtNota(av.nota),372,582,19,fr >= 0.75 ? '#7fd69a' : fr >= 0.5 ? '#FFF7DC' : '#FF9C8A','center',FD,3);
+      txt(ctx,fmtNota(av.nota),430,963,16,fr >= 0.75 ? '#7fd69a' : fr >= 0.5 ? '#FFF7DC' : '#FF9C8A','center',FD,3);
       for (let i=0;i<5;i++){
         const f = clamp(av.nota - i, 0, 1);
-        starFill(ctx,398 + i*11,582,5.5,'#5b554a');
-        if (f > 0){ ctx.save(); ctx.beginPath(); ctx.rect(392 + i*11,575,12*f,14); ctx.clip(); starFill(ctx,398 + i*11,582,5.5,PAL.mostarda); ctx.restore(); }
+        starFill(ctx,468 + i*12,962,5.5,'#5b554a');
+        if (f > 0){ ctx.save(); ctx.beginPath(); ctx.rect(462 + i*12,955,12*f,14); ctx.clip(); starFill(ctx,468 + i*12,962,5.5,PAL.mostarda); ctx.restore(); }
       }
-    } else txt(ctx,'sem nota: ' + g.gurugolN + '/' + AVAL.min,396,582,11,'#cfc7b0','center',FB,0,116);
+    } else txt(ctx,'sem nota: ' + g.gurugolN + '/' + AVAL.min,470,962,11,'#cfc7b0','center',FB,0,140);
   }
-  // fila de ações (no meio da tela larga)
-  ctx.save(); ctx.translate(HUDX.fila, 0);
-  ctx.save(); ctx.translate(342,570); ctx.rotate(-Math.PI/2); txt(ctx,'FILA',0,0,11,'#cfc7b0','center',FB); ctx.restore();
+  // fila de ações
+  const F = BARRA.fila;
   for (let i=0;i<filaMax(g.up);i++){
-    const sx = 360 + i*52, a = g.bia.acts[i];
+    const sx = F.x0 + i * (F.w + F.gap), a = g.bia.acts[i];
     glowSprite(ctx,g,'acao' + i,ctx => {
-      rr(ctx,sx,548,48,46,8); fs(ctx,a ? PAL.creme : '#3b362e',2.4);
-      if (i === 0 && a){ rr(ctx,sx-2,546,52,50,9); ctx.strokeStyle = PAL.mostarda; ctx.lineWidth = 3; ctx.stroke(); }
-      if (a){ drawActIcon(ctx,g,a,sx+24,571); drawFilaSelo(ctx,i+1,sx+10,554,9,0.75); }
-      else { txt(ctx,String(i+1),sx+24,571,14,'#5b554a','center',FB); }
+      rr(ctx,sx,F.y,F.w,F.h,7); fs(ctx,a ? PAL.creme : '#3b362e',2.2);
+      if (i === 0 && a){ rr(ctx,sx-2,F.y-2,F.w+4,F.h+4,8); ctx.strokeStyle = PAL.mostarda; ctx.lineWidth = 3; ctx.stroke(); }
+      if (a){ drawActIcon(ctx,g,a,sx + F.w/2,F.y + F.h/2 + 3); drawFilaSelo(ctx,i+1,sx + 11,F.y + 7,9,0.65); }
+      else { txt(ctx,String(i+1),sx + F.w/2,F.y + F.h/2,13,'#5b554a','center',FB); }
     });
   }
-  ctx.restore();
-  // mãos, pausa e som (à direita)
-  ctx.save(); ctx.translate(HUDX.dir, 0);
-  const tray = g.bia.tray;
+  // mãos
+  const tray = g.bia.tray, M = BARRA.maos;
   const lay = g.bia.layout() || [g.bia.hands.slice(0,1), g.bia.hands.slice(1,2)];
-  txt(ctx,tray ? 'BANDEJA · MÃO' : 'MÃOS',748,553,10,'#cfc7b0','center',FB);
   for (let i=0;i<2;i++){
-    const hx = 700 + i*48, its = lay[i];
-    rr(ctx,hx,558,40,36,8); fs(ctx,its.length ? PAL.creme : '#3b362e',2.2);
-    if (i === 0 && tray){ ctx.fillStyle = its.length ? 'rgba(142,153,166,.45)' : 'rgba(185,194,204,.25)'; ell(ctx,hx+20,586,17,4.5); ctx.fill(); }
-    if (its.length === 1) drawHandItem(ctx,its[0],hx+20,576,0.85);
-    else its.forEach((h,k) => drawHandItem(ctx,h,hx+20+(k-(its.length-1)/2)*(its.length>2?11:14),578,its.length>2?0.5:0.6,true));
+    const hx = M.x + i * (M.w + 2), its = lay[i];
+    rr(ctx,hx,M.y,M.w,M.h,7); fs(ctx,its.length ? PAL.creme : '#3b362e',2.2);
+    if (i === 0 && tray){ ctx.fillStyle = its.length ? 'rgba(142,153,166,.45)' : 'rgba(185,194,204,.25)'; ell(ctx,hx + M.w/2,M.y + M.h - 6,15,4); ctx.fill(); }
+    if (its.length === 1) drawHandItem(ctx,its[0],hx + M.w/2,M.y + M.h/2,0.75);
+    else its.forEach((h,k) => drawHandItem(ctx,h,hx + M.w/2 + (k-(its.length-1)/2)*(its.length>2?10:12),M.y + M.h/2 + 2,its.length>2?0.45:0.55,true));
   }
+  txt(ctx,tray ? 'BANDEJA · MÃO' : 'MÃOS',M.x + M.w + 1,M.y - 6,9,'#cfc7b0','center',FB);
   // pausa e som
-  rr(ctx,836,546,52,50,10); fs(ctx,PAL.creme,2.6);
-  ctx.fillStyle = PAL.tinta; ctx.fillRect(852,560,7,22); ctx.fillRect(866,560,7,22);
+  const P = BARRA.pausa, S = BARRA.som;
+  rr(ctx,P.x,P.y,P.w,P.h,10); fs(ctx,PAL.creme,2.6);
+  ctx.fillStyle = PAL.tinta; ctx.fillRect(P.x + P.w/2 - 10,P.y + 12,7,22); ctx.fillRect(P.x + P.w/2 + 3,P.y + 12,7,22);
   glowSprite(ctx,g,'som',ctx => {
-    rr(ctx,894,546,52,50,10); fs(ctx,PAL.creme,2.6);
-    ctx.fillStyle = PAL.tinta; ctx.beginPath(); ctx.moveTo(906,566); ctx.lineTo(913,566); ctx.lineTo(922,558); ctx.lineTo(922,584); ctx.lineTo(913,576); ctx.lineTo(906,576); ctx.closePath(); ctx.fill();
-    if (!Sfx.muted){ ctx.strokeStyle = PAL.tinta; ctx.lineWidth = 2.4; ctx.beginPath(); ctx.arc(924,571,6,-0.9,0.9); ctx.stroke(); ctx.beginPath(); ctx.arc(924,571,11,-0.9,0.9); ctx.stroke(); }
-    else { ctx.strokeStyle = PAL.perigo; ctx.lineWidth = 3.2; ctx.beginPath(); ctx.moveTo(927,563); ctx.lineTo(939,579); ctx.moveTo(939,563); ctx.lineTo(927,579); ctx.stroke(); }
+    rr(ctx,S.x,S.y,S.w,S.h,10); fs(ctx,PAL.creme,2.6);
+    const cx = S.x + 14, cy = S.y + S.h/2;
+    ctx.fillStyle = PAL.tinta; ctx.beginPath(); ctx.moveTo(cx - 6,cy - 5); ctx.lineTo(cx,cy - 5); ctx.lineTo(cx + 8,cy - 12); ctx.lineTo(cx + 8,cy + 12); ctx.lineTo(cx,cy + 5); ctx.lineTo(cx - 6,cy + 5); ctx.closePath(); ctx.fill();
+    if (!Sfx.muted){ ctx.strokeStyle = PAL.tinta; ctx.lineWidth = 2.4; ctx.beginPath(); ctx.arc(cx + 10,cy,5,-0.9,0.9); ctx.stroke(); ctx.beginPath(); ctx.arc(cx + 10,cy,10,-0.9,0.9); ctx.stroke(); }
+    else { ctx.strokeStyle = PAL.perigo; ctx.lineWidth = 3.2; ctx.beginPath(); ctx.moveTo(cx + 12,cy - 8); ctx.lineTo(cx + 22,cy + 8); ctx.moveTo(cx + 22,cy - 8); ctx.lineTo(cx + 12,cy + 8); ctx.stroke(); }
   });
-  ctx.restore();
 }
 /* selo com a vez na fila (v7.3): etiqueta "1º", "2º"... (ordinal, para não confundir com o número
    da mesa); a ação atual em mostarda, as outras escuras; surge com um pulinho (parado com RM) */
@@ -410,7 +410,7 @@ function drawPedidoEspera(ctx,g,grp,tm){
   const o = g.maq.find(q => q.group === grp);
   const leva = [g.bia, g.dani, g.joca].some(p => p.hands.some(h => h.kind === 'suco' && h.group === grp));
   if (!o && !leva) return;
-  const x = QUEUE.x + 90, y = QUEUE.ys[grp.slot] - 64, pronto = o && o.t <= 0;
+  const lg = lugarEspera(grp.slot), x = lg.x + 44, y = lg.y - 64, pronto = o && o.t <= 0;
   const p = pronto && !RM ? 1 + 0.1 * Math.sin(tm*8) : 1;
   ctx.save(); ctx.translate(x,y); ctx.scale(p,p);
   drawBubble(ctx,0,0,15,pronto ? PAL.ok : g.bebida.id === 'saborizada' ? SABORES[grp.sabor].bal : '#fff');   // v9.1: o balão da água saborizada leva a cor do sabor
