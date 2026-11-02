@@ -4,6 +4,14 @@ Registro das ideias e dos retornos de quem jogou, com o texto original, e de ond
 
 ---
 
+## 02/11 — usuário: o Terraço com menos mesas e a refeição completa (revisão da interface, etapa 3e)
+- **Contexto:** o levantamento da 3e mediu que o salão comporta só 24 lugares (6 mesas de 4), e o plano da 4a pedia 28.
+- **Texto do usuário:** "Menos mesas mais finas tipo a opção 2, mas com rebalanceamento de solicitações então as pessoas vão pedir cardápios inteiros né das pessoas entram e vão comer várias vezes várias coisas vão avaliar cada as coisas e a nota vai ser diferente por conta dos vários recursos né então vai ser entrada prato principal sobremesa bebida e a nota é dada nisso. no tempo dessas coisas acontecer. menos clientes mas mais exigentes que ficam mais tempo"
+- **Também aceito:** no Terraço não há marmitas; a coquetelaria lá fora fica no lugar do balcão de retirada, e a espera vira poltronas. As 4 correções de tela (textos flutuantes, selos, espera da Avenida, lojinha no celular) vão para a sessão 3e-1.
+- **Destino:** sessão 3e-1 (v9.6.9) e "Mapa do Terraço" na 4a (`docs/PLANO.md`), a detalhar no planejamento da 4a.
+
+---
+
 ## 01/11 (noite) — usuário: menos texto explicativo e um Manual que se revela com a história
 > Eu percebo que tem tanto no menu de melhorias quanto em novos dias aparecem descrições bem extensas, sabe? E essas descrições são muito enfadonhas de se ler, explicando, por exemplo, a explicação sobre o cliente VIP. Ah, que ele não gosta de prato frio, em compensação ele perde prato especial, perde paciência rápida, sabe? É chato ler essas coisas. Então seria bacana se tivesse tipo como tem os jogos, os bestiário, em que fala as características de cada um e tal, né? Então tem algo que é tipo tipos de clientes, e aí aparece lá o vovô, vovó, VIP, família, estudante, etc, etc. Números, características de cada um, sem colocar números matemáticos, sem colocar tipo números, só coloca paciência curta, paciência longa, demora para escolher, rápido na escolha, sabe? Que o jogo não é para fazer cálculos, o jogo é só para sentir e entender mais ou menos o perfil dos personagens. E a mesma coisa outras definições, né? Outras escritas, tipo... descrições que falam exatamente o que vai acontecer a partir de uma outra... de uma melhoria, por exemplo. Isso é extenso, não precisa. As pessoas conseguem inferir pelo título, sabe? Em suma, o que eu quero dizer é tirar quase todo o texto explicativo que tem por aí. É para o tutorial apresentar e para alguma fala no modo história explicar brevemente. E se a pessoa não entender, ela abre lá o manual. Tem um cantinho de manual que vai ter tipos de clientes, tipos de upgrades que cada um faz, tal, né? E aí, esse manual, ele vai se revelando à medida que vai avançando na história, para não ter spoiler nele. Gostaria disso implementado antes do 4A.
 
