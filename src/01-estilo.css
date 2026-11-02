@@ -192,6 +192,10 @@ table.cx .rs{font-size:inherit}
 .cx-txt{flex-basis:100%;height:calc(var(--u)*90);font:600 12px var(--fb);border:2px solid var(--tinta);border-radius:8px;padding:4px}
 .item{background:var(--creme);border:calc(var(--u)*3) solid var(--tinta);border-radius:calc(var(--u)*12);padding:calc(var(--u)*6) calc(var(--u)*8);display:grid;grid-template-columns:auto 1fr;column-gap:calc(var(--u)*8);row-gap:calc(var(--u)*3);align-items:center;align-content:start;text-align:left}
 .item.own{background:#dcefd9}
+.item{position:relative}
+.item .qm{position:absolute;top:calc(var(--u)*4);right:calc(var(--u)*4);width:26px;height:26px;min-height:0;padding:0;border-radius:50%;border:calc(var(--u)*2) solid var(--tinta);background:#fff;color:var(--tinta);font:800 14px/1 var(--fb);cursor:pointer;display:flex;align-items:center;justify-content:center;z-index:1}   /* v9.6.8: o "?" que abre a ficha no Manual */
+.item .qm:hover,.item .qm:focus-visible{background:var(--faixa);color:#fff}
+.item > b{padding-right:30px}
 .item .dgrupo{grid-column:1 / -1;font:700 max(10px,calc(var(--u)*11)) var(--fb);font-style:normal;text-transform:uppercase;letter-spacing:.04em;color:var(--faixa)}   /* v8.6.5: o grupo do enfeite */
 .item.atr{background:#F6D7D3}   /* v8.3.1: empréstimo com parcela atrasada */
 .mbar{grid-column:1 / -1;height:calc(var(--u)*10);min-height:8px;background:#E3E0D6;border:calc(var(--u)*2) solid var(--tinta);border-radius:999px;overflow:hidden;width:100%}

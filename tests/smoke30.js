@@ -44,7 +44,7 @@ novo({bank:5}); g.goShop(5); ok(!g.buyToalha(0) && !g.save.salao.mesas[0].t,'sem
 // lojinha: a aba Decoração
 const cartoes=()=>els['shop-grid'].children;
 novo({decor:{espada:1,foto:0}}); g.goShop(5); L.setShopTab('decor'); {
-  const c=cartoes(), nome=i=>c[i].children[2].textContent, btn=i=>c[i].children[c[i].children.length-1].textContent;
+  const c=cartoes(), nome=i=>c[i].children[2].textContent, btn=i=>c[i].children.filter(x=>!/qm/.test(x.className||'')).pop().textContent;
   ok(c.length===6,'6 cartões: só os enfeites (a toalha foi para o Salão, v8.9.1)');
   ok(nome(0)==='Espada-de-são-jorge' && btn(0)==='Guardar','espada comprada: Guardar');
   ok(btn(1)==='Comprar R$ 8','lata: Comprar R$ 8');

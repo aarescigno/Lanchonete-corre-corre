@@ -34,12 +34,12 @@ novo({pastel:1},{},5000); g.save.cursoDia=0; g.cursoMsg='';
 ok(g.buyCurso('chapa') && /Ele já pode subir para o nível 2/.test(g.cursoMsg),'o curso que completa a XP avisa que já pode subir');
 // (5) lojinha
 novo({}); { const t=txt(grid());
-  ok(/Tonhão · nível 1 de 5/.test(t) && /Experiência: 0 de 2 para o nível 2/.test(t),'título "nível 1 de 5" e a linha de experiência');
-  const b=botao(grid().children.find(c=>/Tonhão ·/.test(txt(c)))); ok(b && b.disabled && /Faltam 2 de experiência/.test(t) && !/Reduzir/.test(t),'sem XP: botão apagado, "Faltam 2", sem Reduzir');
+  ok(/Tonhão · nível 1 de 5/.test(t) && /Experiência/.test(t) && !/Experiência: 0/.test(t),'título "nível 1 de 5" e o rótulo Experiência (v9.6.8)');
+  const b=botao(grid().children.find(c=>/Tonhão ·/.test(txt(c)))); ok(b && b.disabled && !/Faltam/.test(t) && !/Pronto para o aumento/.test(t) && !/Reduzir/.test(t),'sem XP: botão apagado, sem "Faltam", sem Reduzir');
   L.setShopTab('cardapio'); ok(/\+1 de experiência/.test(txt(grid())),'cartão de curso com "+1 de experiência" (no Cardápio)'); L.setShopTab('tonhao'); }
 novo({pastel:1,chapa:1}); { const b=botao(grid().children.find(c=>/Tonhão ·/.test(txt(c)))); ok(b && !b.disabled && b.textContent==='Aumento: +R$ 15/dia','com XP: "Aumento: +R$ 15/dia" aceso'); }
-novo({pastel:1,chapa:1},{tonhao:1}); ok(/Experiência: 2 de 5 para o nível 3/.test(txt(grid())),'no nível 2 a barra aponta o nível 3');
-{ const t={}; C.forEach(c=>t[c.id]=2); novo(t,{tonhao:4}); ok(/nível 5 de 5/.test(txt(grid())) && /Experiência: 20 · nível máximo/.test(txt(grid())),'nível 5: nível máximo'); }
+novo({pastel:1,chapa:1},{tonhao:1}); ok(/Experiência/.test(txt(grid())) && !/Pronto para o aumento/.test(txt(grid())),'no nível 2 a barra aponta o nível 3');
+{ const t={}; C.forEach(c=>t[c.id]=2); novo(t,{tonhao:4}); ok(/nível 5 de 5/.test(txt(grid())) && /Experiência · nível máximo/.test(txt(grid())),'nível 5: nível máximo'); }
 // (6) folha que não cabe derruba 1 nível e a XP fica
 novo({pastel:1,chapa:1},{tonhao:1},10); g.save.corta=true; g.startDay(3); g.begin();
 ok(g.save.equipe.tonhao===0,'sem dinheiro para a folha: cai 1 nível');

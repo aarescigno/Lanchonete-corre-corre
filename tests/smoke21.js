@@ -30,7 +30,7 @@ els['btn-next'].fire('click');
 ok(/parcela do banco atrasada/.test(els['shop-livre'].textContent) && /falta/.test(els['shop-livre'].className),'a lojinha avisa no alto');
 L.setShopTab('banco'); ok(/Parcela atrasada/.test(txt(els['shop-grid'])),'e na aba Banco');
 ok(/parcela do banco R\$ 215 \(com a atrasada\)/.test(els['shop-folha'].textContent),'a linha da folha mostra o devido');
-els['btn-shop-go'].fire('click'); ok(/Parcela do banco atrasada/.test(els['intro-manut'].textContent) && /R\$ 215/.test(els['intro-manut'].textContent),'a introdução avisa');
+els['btn-shop-go'].fire('click'); ok(/Parcela atrasada/.test(els['intro-manut'].textContent) && /R\$ 215/.test(els['intro-manut'].textContent),'a introdução avisa');
 // ---------- no dia seguinte, pagou: volta ao normal ----------
 const b6=g.save.bank; els['btn-start'].fire('click'); g.schedule=[]; g.nextIdx=0; g.money=1000; g.custo=0; const c6=g.contas; g.finishDay();
 ok(g.result.par===215 && !g.save.emp.atr && g.save.emp.n===4 && g.save.emp.resto===315 && g.save.bank===b6+1000-c6-215,'pagou a atrasada e a do dia: saldo 315 em 4 parcelas, sem atraso (atrasar custou uma parcela a mais)');

@@ -49,7 +49,7 @@ const cv=()=>acha(els['shop-grid'],e=>e.tagName==='CANVAS');
 const tela=(x,y)=>({clientX:x*960/800, clientY:(y-56)*600/484});
 const ev=(p,o)=>Object.assign({preventDefault(){}, pointerId:1, pointerType:'mouse'},p,o||{});
 const arrasta=(a,b)=>{ const c=cv(); c.fire('pointerdown',ev(tela(a.x,a.y))); c.fire('pointermove',ev(tela((a.x+b.x)/2,(a.y+b.y)/2))); c.fire('pointermove',ev(tela(b.x,b.y))); c.fire('pointerup',ev(tela(b.x,b.y))); };
-ok(/ESTOQUE|estoque/.test(txt(els['shop-grid'])),'aba Salão fala do estoque');
+ok(/Arraste as mesas\. Toque numa mesa para mais opções\./.test(txt(els['shop-grid'])),'aba Salão: a dica de uma linha (v9.6.8)');
 { const m=mesas()[0], n=mesas().length; arrasta(m,{x:100,y:300});
   ok(mesas().length===n-1 && est().length===1 && /No estoque: 1 mesa/.test(txt(els['shop-grid'])),'arrastar a mesa para o estoque'); }
 { const c=cv(); c.fire('pointerdown',ev(tela(56,195))); c.fire('pointerup',ev(tela(56,195)));
