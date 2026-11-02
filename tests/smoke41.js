@@ -8,7 +8,7 @@ const ate=(H,re)=>{ let n=0; while(H.g.conversa && !re.test(H.g.conversa.fala.s)
 const passa=H=>{ let n=0; while(H.g.conversa && n<60){ toque(H.els); n++; } };
 // joga o dia n com faturamento fat; hook(g) mexe nas estatísticas antes de fechar
 const joga=(H,fat,hook)=>{ const {g,els}=H; if(g.state==='shop') els['btn-shop-go'].fire('click'); if(g.state==='intro') els['btn-start'].fire('click'); g.schedule=[]; g.nextIdx=0; g.money=fat||0; g.custo=0; if(hook) hook(g); g.finishDay(); };
-const fecha=H=>{ H.els['btn-next'].fire('click'); passa(H); };   // sai do fim do dia e toca as conversas
+const fecha=H=>{ passa(H); H.els['btn-next'].fire('click'); };   // sai do fim do dia e toca as conversas
 const secoes=H=>H.L.shopSecoes();
 const aval=(s)=>({ r:s.slice(), s, txt:'x', k:'estudante' });
 
@@ -44,9 +44,8 @@ const aval=(s)=>({ r:s.slice(), s, txt:'x', k:'estudante' });
   ok(g.save.libera.bia==='pend','3 avaliações com agilidade 3 ou menos também dão o gatilho');
   fecha(H);
   g.startDay(3); joga(H,400);
-  ok(g.save.libera.melhorias===0 && g.save.libera.salao===0,'dia 3 sem reclamação: Melhorias espera a garantia');
+  ok(g.save.libera.melhorias===0 && g.save.libera.salao==='pend','dia 3 sem reclamação: Melhorias espera a garantia; o Salão abre por ela (v9.6.10: dia 1 a 3)');
   fecha(H); g.startDay(4); joga(H,400);
-  ok(g.save.libera.salao==='pend','dia 4 sem sinal: o Salão abre pela garantia (v9.6.4: dia 2 a 4)');
   fecha(H); g.startDay(5); joga(H,400);
   ok(g.save.libera.melhorias==='pend' && g.result.aval.coment.every(t=>!H.L.LIBERA[1].reclama.includes(t)),'dia 5: Melhorias pela garantia, sem reclamação no resultado'); }
 { const H=nova(), {g,L}=H; g.save.conversa=null; g.save.bank=5000; g.save.convCard=1; g.save.convDiv=1; g.save.convEnt=1;
@@ -55,16 +54,16 @@ const aval=(s)=>({ r:s.slice(), s, txt:'x', k:'estudante' });
 { const H=nova(), {g}=H; g.save.conversa=null; g.save.bank=5000; g.save.convCard=1; g.save.convDiv=1; g.save.convEnt=1;
   g.startDay(4); joga(H,400,g=>{ g.stats.lostBy.semMesa=1; });
   ok(g.save.libera.salao==='pend','desistiu da fila sem mesa: Salão pendente');
-  fecha(H); g.startDay(5); joga(H,400,g=>{ g.avals=[aval([5,5,5,5,2]),aval([5,5,5,5,2]),aval([5,5,5,5,2])]; });
-  ok(g.save.libera.decor==='pend','3 avaliações com ambiente 2: Decoração pendente'); }
+  fecha(H); g.startDay(5); g.save.decor.espada=1; joga(H,400,g=>{ g.avals=[aval([5,5,5,5,3])]; });
+  ok(g.save.libera.decor==='pend','um elogio à planta (ambiente 3) com a espada à mostra: Decoração pendente (v9.6.10)'); }
 
 // ---------- 4. o fluxo: conversa, abre, selo ----------
 { const H=nova(), {g,els,L}=H; g.save.conversa=null; g.save.bank=5000; g.save.convCard=1; g.save.convDiv=1; g.save.convEnt=1;
   g.startDay(2); joga(H,400,g=>{ g.stats.bravoMesa=1; });
-  els['btn-next'].fire('click'); ate(H,/freguês disse/);
+  ate(H,/freguês disse/);
   ok(g.conversa && /Hoje um freguês disse/.test(g.conversa.fala.s),'toca a conversa da Bia');
   passa(H);
-  ok(g.save.libera.bia===1 && g.state==='shop','no fim, libera.bia===1 e a lojinha abre');
+  ok(g.save.libera.bia===1 && g.state==='dayend','no fim, libera.bia===1, antes dos resultados'); els['btn-next'].fire('click'); ok(g.state==='shop','e a lojinha abre');
   ok(els['shop-tabs'] && g.liberaNovo.includes('bia'),'liberaNovo traz a Bia');
   L.setShopGrupo('equipe'); ok(secoes(H)[1].includes('bia'),'Equipe agora tem a Bia');
   ok(g.buy('tenis') ,'a compra do tênis funciona');
@@ -73,16 +72,16 @@ const aval=(s)=>({ r:s.slice(), s, txt:'x', k:'estudante' });
   g.save.conversa=null;
   g.startDay(2); joga(H,400,g=>{ g.stats.bravoMesa=1; });
   g.save.conversa='depois';
-  els['btn-next'].fire('click'); passa(H);
+  passa(H); els['btn-next'].fire('click');
   ok(g.save.libera.bia==='pend' || g.save.libera.bia===1,'com conversa de capítulo, a da Bia espera (ou toca depois dela)'); }
 
 // ---------- 5. Manutenção primeiro ----------
 { const H=nova(), {g,els,L}=H; g.save.conversa=null; g.save.bank=5000; g.save.convCard=1; g.save.convDiv=1; g.save.convEnt=1;
-  g.save.libera.salao='pend'; g.save.libera.manut='pend';
+  g.save.libera.salao='pend'; g.save.libera.manut='pend'; g.save.libera.bia=1; g.save.convPlanta=1;
   g.startDay(4); joga(H,400);
-  els['btn-next'].fire('click'); ate(H,/chama amarela/);
-  ok(g.conversa && /chama amarela/.test(g.conversa.fala.s),'toca a da Manutenção primeiro');
-  passa(H); ok(g.save.libera.manut===1 && g.save.libera.salao==='pend' || g.save.libera.salao===1,'a do Salão fica para depois'); }
+  ate(H,/./); ok(g.conversa && /família foi embora/.test(g.conversa.fala.s),'toca a do Salão primeiro (v9.6.10: ordem fixa)');
+  ate(H,/chama amarela/); ok(g.conversa && /chama amarela/.test(g.conversa.fala.s),'e depois a da Manutenção');
+  passa(H); ok(g.save.libera.manut===1 && g.save.libera.salao===1 && g.state==='dayend','as duas tocam antes dos resultados'); }
 
 // ---------- 6. tudo aberto ----------
 { const {g}=load(); ok(g.buy('tenis') || true,'sem a História (padrão) nada é recusado por cartão fechado');

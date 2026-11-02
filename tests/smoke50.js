@@ -50,7 +50,7 @@ const passos=(g,n)=>{ for(let i=0;i<n;i++) g.update(0.05); };
 { const {g}=dia(3); let ok2=true; for(let k=0;k<60;k++){ const tp=g.tipoPequeno(true); if(!['estudante','vovos','executiva'].includes(tp)) ok2=false; const t2=g.tipoPequeno(); if(g.day.types.indexOf(t2)<0 || t2==='entregador' || t2==='familia') ok2=false; } ok(ok2,'tipoPequeno: só tipos do dia, de 1 ou 2 pessoas, sem entregador'); }
 
 // ---------- 3. o Salão abre com a 1ª família perdida ----------
-{ const {L}=load(); const s=L.LIBERA.find(l=>l.id==='salao'); ok(s.dia===2 && s.ate===4,'Salão: dia 2, garantia no dia 4');
+{ const {L}=load(); const s=L.LIBERA.find(l=>l.id==='salao'); ok(s.dia===1 && s.ate===3,'Salão: dia 1, garantia no dia 3 (v9.6.10)');
   ok(L.DAYS[1].note==='Chegou a família! Ela só cabe em mesa de quatro.','nota do dia 2 nova');
   ok(L.DAYS[4].note==='O movimento cresce.','nota do dia 5 nova'); }
 { const H=nova(), {g,els}=H, sv=g.save; sv.conversa=null; sv.bank=5000; sv.convCard=1; sv.convEnt=1; sv.convDiv=1;

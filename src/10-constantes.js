@@ -1001,6 +1001,11 @@ const HIST_DIVULGA = {
           { q:'bia', s:'E se a gente fizer panfleto? Eu entrego no ponto de ônibus antes de abrir!' },
           { q:'tonhao', nota:'coçando a cabeça', s:'Panfleto custa, mas traz o movimento de sempre. E tem as redes sociais, pra quem tem lugar pra tanta gente.' },
           { q:'bia', s:'Vou ver na Divulgação da lojinha o que compensa.' } ] };
+/* v9.6.10: o presente da vizinha, no fim do dia 1 (só no Modo História): ao terminar, a espada-de-são-jorge fica à mostra, de graça. save.convPlanta: 0 | 'pend' | 1 */
+const HIST_PLANTA = { dia:1,
+  falas:[ { q:'tonhao', nota:'com um vaso na mão', s:'A dona Cida, aqui do lado, mandou de presente pela inauguração.' },
+          { q:'bia', s:'Uma espada-de-são-jorge! Vai ficar na entrada.' },
+          { q:'tonhao', s:'Dizem que espanta mau-olhado. E freguês mal-humorado, quem sabe.' } ] };
 /* v9.6.2: a conversa dos entregadores, só no Modo História. v9.6.4: fica pendente no fim do dia anterior ao 1º com motoboy (dia 4) e toca antes de todas as outras conversas de cartão. save.convEnt: 'pend' | 1 (vista) */
 const HIST_ENTREGA = { dia:4,
   falas:[ { q:'bia', s:'Tio, que história é essa de motoqueiro no balcão pedindo marmita?' },
@@ -1042,7 +1047,7 @@ const liberaTres = (av, i, lim) => av.filter(a => a.s && a.s[i] != null && a.s[i
 /* v9.1.1: entrada com `nivel` só vale com ponto.nivel >= nivel e conta `dia`/`ate` pelo diaNoPonto (em qualquer capítulo); sem `nivel`, pelo dia da carreira
    e só com cap < 4. `gatilho(st, av, g)` (stats do dia, notas cruas do dia, o jogo) diz se a reclamação aconteceu; sem ele, só a garantia (`ate`) */
 const LIBERA = [
-  { id:'bia', dia:2, ate:4, gatilho:(st, av) => st.bravoMesa >= 1 || liberaTres(av, 1, 3), reclama:['A moça corre pra lá e pra cá e não dá conta!', 'Demorou um século pra anotarem o pedido.'],
+  { id:'bia', dia:2, ate:3, gatilho:(st, av) => st.bravoMesa >= 1 || liberaTres(av, 1, 3), reclama:['A moça corre pra lá e pra cá e não dá conta!', 'Demorou um século pra anotarem o pedido.'],
     falas:[ { q:'bia', s:'Hoje um freguês disse que eu corro pra lá e pra cá e não dou conta.' },
             { q:'tonhao', nota:'olhando o pé dela', s:'Também, com esse chinelo! Compra um tênis decente, Bia.' },
             { q:'bia', s:'E uma bandeja, pra levar dois pratos de uma vez...' },
@@ -1057,14 +1062,14 @@ const LIBERA = [
             { q:'bia', s:'Vai quebrar?' },
             { q:'tonhao', s:'Se ninguém olhar, um dia quebra no meio do almoço. Melhor chamar o técnico antes.' },
             { q:'bia', s:'Vou ver na Manutenção quanto custa a revisão.' } ] },
-  { id:'salao', dia:2, ate:4, gatilho:(st) => st.lostGrande >= 1 || st.lostBy.semMesa >= 1 || st.lotadoT >= 90, reclama:['Nem consegui sentar.', 'Só tem quatro mesinhas?'],   // v9.6.4: a 1ª família perdida abre o Salão
+  { id:'salao', dia:1, ate:3, gatilho:(st) => st.lostGrande >= 1 || st.lostBy.semMesa >= 1 || st.lotadoT >= 90, reclama:['Nem consegui sentar.', 'Só tem quatro mesinhas?'],   // v9.6.4: a 1ª família perdida abre o Salão
     falas:[ { q:'bia', s:'Hoje uma família foi embora da fila: só tem uma mesa de quatro.' },
             { q:'tonhao', s:'Na garagem ainda cabem umas mesinhas. Cadeira de plástico é baratinha.' },
             { q:'bia', s:'Vou ver no Salão onde encaixar.' } ] },
-  { id:'decor', dia:5, ate:7, gatilho:(st, av) => liberaTres(av, 4, 2.5), reclama:['Parece uma garagem.', 'Lugar meio sem graça.'],
-    falas:[ { q:'bia', s:'Escreveram no Gurugol: "parece uma garagem".' },
-            { q:'tonhao', s:'Mas é uma garagem!' },
-            { q:'bia', s:'Uma plantinha, a foto da mãe na parede... fica com cara de casa.' },
+  { id:'decor', dia:3, ate:6, gatilho:(st, av, g) => g.save.decor.espada === 1 && av.some(a => a.s && a.s[4] != null && a.s[4] >= 2.5), reclama:['Que plantinha bonita!', 'Gostei da plantinha na entrada.'],   // v9.6.10: o elogio à planta da dona Cida
+    falas:[ { q:'bia', s:'Tio, elogiaram a plantinha da dona Cida no Gurugol!' },
+            { q:'tonhao', s:'Viu? Um verdinho já muda a cara da garagem.' },
+            { q:'bia', s:'E se a gente pusesse mais? A foto da mãe na parede...' },
             { q:'tonhao', nota:'sorrindo', s:'Isso a Rosa ia gostar. Vê na Decoração.' } ] },
   // v9.2, área industrial: o 4º dia no ponto abre o curso de Confeitaria caseira (cartão Cardápio); o Joca vem no fim do dia do curso
   { id:'confeitaria', nivel:2, dia:4, ate:4, reclama:[],
@@ -1101,7 +1106,7 @@ const BIA_IDS = ['tenis', 'corrida', 'bandeja', 'sudoku'];
 function upgradeCartao(id){ return BIA_IDS.indexOf(id) >= 0 ? 'bia' : 'melhorias'; }
 const HIST_NOMES = { bia:'Bia', tonhao:'Tonhão', dani:'Dani', joca:'Joca', cami:'Cami', anselmo:'Anselmo' };
 const CAIXA_MAX = 14;                                 // livro-caixa (v7.2): quantos dias da carreira ficam guardados
-const VERSAO = 'v9.6.9';                            // vai no resumo do Caixa
+const VERSAO = 'v9.6.10';                            // vai no resumo do Caixa
 const DIVULGA_DIA = 4;                                // antes disso, o movimento é o da inauguração (sem custo); v9.0.2: dia 4, e o padrão é o boca a boca
 function divulgaAberta(n, sv){ return devLivre() || n >= DIVULGA_DIA && !(sv && sv.convDiv === 'pend'); }   // no modo dev, desde o dia 1; v9.0.3: no Modo História, só depois da conversa
 /* v9.6.4: a Efood (os entregadores) só abre depois da conversa dos entregadores, no Modo História; antes dela, nenhum tipo com `retira` vem na agenda */
