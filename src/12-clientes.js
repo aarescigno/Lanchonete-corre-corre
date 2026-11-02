@@ -52,7 +52,7 @@ function seatPositions(t){
   ];
 }
 function tableHalfW(t){ return t.seats === 2 ? 36 : 62; }
-const STATION_KEYS = ['adiantar','order','plates','coffee','juice','sink','trash','maquina','retirada','doces','espresso','drinks'];
+const STATION_KEYS = ['adiantar','order','marmj','plates','coffee','juice','sink','trash','maquina','retirada','doces','espresso','drinks'];
 function tableRect(t){ return { x:t.cx - t.hx - 10, y:t.cy - 62, w:t.hx*2 + 20, h:132 }; }
 function queueRect(g){ return { x:QUEUE.x - 74, y:QUEUE.ys[g.slot] - 76, w:148, h:90 }; }
 /* onde a Bia (ou a Dani) para ao levar o suco a quem espera: ao lado do tablet do lugar */
@@ -308,7 +308,6 @@ class Group {
     const g = this.game, eq = g.save.equipe;
     const amb = ambienteEffect(eq);
     if (amb && this.state !== 'queue') m /= 1 - amb;
-    if (g.trashFull) m /= 1 + TRASH.smell;
     return m;
   }
   setState(s){ this.state = s; this.stateT = 0; this.patLeft = this.patPer(); }
@@ -387,6 +386,7 @@ class Group {
   tick(dt){
     if (this.game.mode === 'treino') return;   // na Missão zero, a paciência não acaba
     this.patLeft -= dt;
+    if (this.game.trashFull && this.game.fumacaAlcanca(this.x, this.y)) this.patLeft -= dt * TRASH.smell;   // v9.6.11: o cheiro (paciência ÷ 1,3) só vale para quem a fumaça alcança
     if (this.patLeft <= 0){
       this.hearts--;
       if (this.state === 'queue') this.perdFila++; else { this.perdMesa++; if (this.esperaSuco && (this.docesFalta > 0 || this.cafesFalta > 0)) this.perdDoce++; if (this.drinksFalta > 0) this.perdDrink++; }
