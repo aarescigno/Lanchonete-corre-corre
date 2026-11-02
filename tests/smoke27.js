@@ -35,9 +35,9 @@ novo({bandeja:true}); { const a=senta(5);
   g.angryLeave(a);
   ok(!!g.bia.layout() && !g.bia.hands.some(h=>h.kind==='dirty'||h.kind==='dish') && g.kitchen.sinkN===1,'sem lugar nas mãos: o prato vai para a pia'); }
 
-// lembrete da louça no início do dia, só nos dias 3 a 5 da campanha
+// v9.6.6: o lembrete da louça saiu (nenhum dia mostra)
 const aviso=()=>g.fx.some(f=>f.aviso==='pratos'&&f.text==='Não se esqueça de lavar os pratos!');
-for (const [d,quer] of [[1,false],[2,false],[3,true],[4,true],[5,true],[6,false],[9,false]]){ g.save=L.normSave({bank:2000,maxDay:5}); g.up=g.save.up; g.buildTables(); g.startDay(d); g.begin();
+for (const [d,quer] of [[1,false],[2,false],[3,false],[4,false],[5,false],[6,false],[9,false]]){ g.save=L.normSave({bank:2000,maxDay:5}); g.up=g.save.up; g.buildTables(); g.startDay(d); g.begin();
   ok(aviso()===quer,'dia '+d+': '+(quer?'mostra':'não mostra')+' "Não se esqueça de lavar os pratos!"'); }
 
 console.log((fails?'FALHOU':'OK')+' smoke27: '+(total-fails)+'/'+total);
