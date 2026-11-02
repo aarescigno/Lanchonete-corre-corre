@@ -84,7 +84,13 @@ p{margin:calc(var(--u)*6) 0;font-size:max(12px,calc(var(--u)*16));line-height:1.
 #btn-shop-manual.novo::after{content:'';width:calc(var(--u)*14);height:calc(var(--u)*14);min-width:9px;min-height:9px;padding:0;top:calc(var(--u)*-2);right:calc(var(--u)*-2)}
 .stars{font-size:max(30px,calc(var(--u)*56));letter-spacing:.1em;line-height:1;margin:calc(var(--u)*4) 0;text-shadow:calc(var(--u)*2) calc(var(--u)*2) 0 var(--tinta)}
 .stars .on{color:var(--mostarda)} .stars .off{color:#d9d4c4}
-.stats{display:grid;grid-template-columns:auto auto;gap:calc(var(--u)*4) calc(var(--u)*24);justify-content:center;text-align:left;margin:calc(var(--u)*8) auto;font-size:max(12px,calc(var(--u)*16));font-weight:600}
+.stats{display:grid;grid-template-columns:auto auto;gap:calc(var(--u)*4) calc(var(--u)*24);justify-content:center;text-align:left;margin:calc(var(--u)*8) auto;font-size:max(11px,calc(var(--u)*14));font-weight:600}
+/* v9.6.11: os comentários do Gurugol em balões grandes no topo do fim do dia */
+.end-baloes{display:flex;flex-direction:column;gap:calc(var(--u)*4);margin:calc(var(--u)*4) auto;max-width:calc(var(--u)*620)}
+.end-baloes:empty{display:none}
+.end-balao{display:flex;align-items:center;gap:calc(var(--u)*8);text-align:left;background:#fff;border:calc(var(--u)*2) solid var(--tinta);border-radius:calc(var(--u)*14);padding:calc(var(--u)*3) calc(var(--u)*10)}
+.end-balao q{font-style:italic;font-weight:600;font-size:max(15px,calc(var(--u)*17));line-height:1.15}
+.end-rosto{flex:none;width:max(30px,calc(var(--u)*38));height:max(30px,calc(var(--u)*38));border-radius:50%;border:calc(var(--u)*2) solid var(--tinta)}
 .stats2{display:flex;flex-wrap:wrap;justify-content:center;align-items:flex-start;column-gap:calc(var(--u)*36)}
 .stats2 .stats{margin:calc(var(--u)*6) 0}
 #end-stats .stats{row-gap:calc(var(--u)*1)}   /* v8.4: a linha do Gurugol cabe sem rolar */
@@ -368,7 +374,7 @@ table.rank tr.me td{background:#fbe7a8}
 
     <div class="ov show" id="ov-menu">
       <div class="panel menu-panel">
-        <span class="vtag" id="vtag" aria-label="Versão 9.6.10">v9.6.10</span>
+        <span class="vtag" id="vtag" aria-label="Versão 9.6.11">v9.6.11</span>
         <h1 class="title">Lanchonete <br>Corre-Corre</h1>
         <p class="tag">Ajude a Bia a atender a freguesia da esquina antes que o cafezinho esfrie!</p>
         <div class="lbl" id="menu-dia">História</div>
@@ -465,6 +471,7 @@ table.rank tr.me td{background:#fbe7a8}
         <h2 id="end-title">Fim do dia</h2>
         <div class="stars" id="end-stars" aria-label="Estrelas"></div>
         <p id="end-money"></p>
+        <div class="end-baloes" id="end-baloes"></div>
         <div class="stats2" id="end-stats"></div>
         <p class="small"><span class="aval" id="end-aval"></span><span id="end-msg"></span></p>
         <p class="small end-manual" id="end-manual" style="display:none"></p>
@@ -584,7 +591,8 @@ table.rank tr.me td{background:#fbe7a8}
       <div class="panel">
         <h2>Versões</h2>
         <ul class="verlist">
-          <li><b>v9.6.10</b><span class="cur">versão atual</span><br>02/11/2026 &mdash; As conversas do Modo História v&ecirc;m no fim do turno, antes dos resultados (at&eacute; duas por dia); a Bia e o Sal&atilde;o abrem mais cedo; a vizinha d&aacute; uma espada-de-s&atilde;o-jorge no dia 1 e o elogio &agrave; planta abre a Decora&ccedil;&atilde;o; a Dani s&oacute; tem cart&atilde;o depois que chega.</li>
+          <li><b>v9.6.11</b><span class="cur">versão atual</span><br>02/11/2026 &mdash; Os coment&aacute;rios do Gurugol viram bal&otilde;es no fim do dia; a geladeira sai da tela e d&aacute; lugar &agrave; mesinha das marmitas; o entregador ganha o letreiro eFood e uma seta mostra a marmita pronta; a fuma&ccedil;a do lixo cheio se espalha pelo sal&atilde;o.</li>
+          <li><b>v9.6.10</b><br>02/11/2026 &mdash; As conversas do Modo História v&ecirc;m no fim do turno, antes dos resultados (at&eacute; duas por dia); a Bia e o Sal&atilde;o abrem mais cedo; a vizinha d&aacute; uma espada-de-s&atilde;o-jorge no dia 1 e o elogio &agrave; planta abre a Decora&ccedil;&atilde;o; a Dani s&oacute; tem cart&atilde;o depois que chega.</li>
           <li><b>v9.6.9</b><br>02/11/2026 &mdash; A tela respira: textos flutuantes sem se empilhar nem passar do alto, crachás só no começo do dia, selos e números dos lugares da espera sem cobrir nada, lojinha com a linha do dinheiro mais curta.</li>
           <li><b>v9.6.8</b><br>02/11/2026 &mdash; Menos texto na tela: a lojinha mostra só o desenho, o nome e o pre&ccedil;o, com um &quot;?&quot; que abre a ficha no Manual; a equipe mostra as qualidades em bolinhas; a abertura do dia e os avisos ficam curtos.</li>
           <li><b>v9.6.7</b><br>02/11/2026 &mdash; O Como jogar vira o Manual: um bestiário com fichas (básico, clientes, equipe, lojinha, lugares e imprevistos) que se revelam com a história; abre pelo menu, pela pausa e pelo &quot;?&quot; da lojinha.</li>
@@ -955,6 +963,7 @@ const STATIONS = {
   drinks: { ap:{x:700,y:150}, rect:{x:620,y:92,w:60,h:50} },   // v9.5: o balcão de drinks do Anselmo, na parede do fundo (o ap fica no corredor à direita das mesas)
   espresso:{ ap:{x:744,y:350}, rect:{x:694,y:318,w:46,h:56} },   // v9.3: a máquina de espresso (curso do Joca), no chão ao lado da bancada do café, na mesma boca de atendimento
   order:  { ap:{x:744,y:150}, rect:{x:766,y:96, w:194,h:108} },
+  marmj:  { ap:{x:700,y:150}, rect:{x:686,y:104,w:48,h:92} },   // v9.6.11: a mesinha das marmitas prontas (no lugar da geladeira); a Bia pega ali e leva ao entregador
   plates: { ap:{x:744,y:256}, rect:{x:766,y:206,w:194,h:98 } },
   coffee: { ap:{x:744,y:350}, rect:{x:766,y:306,w:97, h:88 } },
   juice:  { ap:{x:744,y:350}, rect:{x:863,y:306,w:97, h:88 } },
@@ -969,8 +978,8 @@ const PLATE_SLOTS = [ {x:806,y:270}, {x:848,y:270}, {x:890,y:270}, {x:932,y:270}
 /* v9: o balcão de pratos tem as vagas do ponto (ponto.pratos): 4 na Garagem, 5 na área industrial, 6 na Avenida Brasil (mais juntas). Muda o mesmo array no lugar */
 function plateSlotsFor(n){ PLATE_SLOTS.length = 0; for (let i = 0; i < n; i++) PLATE_SLOTS.push({ x:(n >= 6 ? 791 + 29 * i : n >= 5 ? 792 + 36 * i : 806 + 42 * i), y:270 }); }   // v9.1: 6 vagas na Avenida Brasil
 /* v9.6.5: a fileira própria das marmitas na janela de PRONTOS (ponto.marmJanela vagas: 2, 3 e 3), acima da fileira dos pratos */
-const MARMJ_SLOTS = [ {x:800,y:242}, {x:826,y:242}, {x:852,y:242} ];
-function marmJSlotsFor(n){ MARMJ_SLOTS.length = 0; for (let i = 0; i < n; i++) MARMJ_SLOTS.push({ x:800 + 26 * i, y:242 }); }
+const MARMJ_SLOTS = [ {x:710,y:124}, {x:710,y:148}, {x:710,y:172} ];   // v9.6.11: na mesinha das marmitas (no lugar da geladeira), empilhadas
+function marmJSlotsFor(n){ MARMJ_SLOTS.length = 0; for (let i = 0; i < n; i++) MARMJ_SLOTS.push({ x:710, y:124 + 24 * i }); }
 const BOUNDS = { x0:16 - CALCADA.w, y0:112, x1:744, y1:528 };
 const LAYOUT = { W, H, TW, HUDX, CALCADA, QUEUE, RETIRADA, DOOR, STATIONS, PLATE_SLOTS, MARMJ_SLOTS, BOUNDS };
 /* ============================================================
@@ -1281,7 +1290,7 @@ function daniTaskOk(id, up){ const t = DANI_TASKS.find(d => d.id === id); return
 /* prato caprichado (acerto crítico do Tonhão): +1 coração e bônus na entrega */
 const CRIT = { bonus:10, vipBonus:20 };   // pontos (v8.3.8; eram R$)
 const WASH = { base:0.3, perPile:2.5 };               // segundos na pia
-const TRASH = { cap:6, empty:2, smell:0.3, tritura:30 };   // lixeira: capacidade, tempo para esvaziar, cheiro quando cheia, segundos do Triturador por gominho (v8.3.10)
+const TRASH = { cap:6, empty:2, smell:0.3, tritura:30, fumaca:{ cresce:30, raio:900 }, pos:{ x:723, y:530 } };   // v9.6.11: fumaca: cresce = segundos até o raio máximo (px); pos = onde fica a lixeira   // lixeira: capacidade, tempo para esvaziar, cheiro quando cheia, segundos do Triturador por gominho (v8.3.10)
 function couvertEffect(eq){ return STAFF.couvert.effect * (eq.taxa ? 1 - STAFF.couvert.feeCut : 1); }
 function couvertOk(ponto){ return devLivre() || (ponto || PONTOS[0]).nivel >= STAFF.couvert.nivel; }   // no modo dev, em qualquer ponto
 /* ambiente do salão: quanto a paciência nas mesas cai mais devagar (TV, som e couvert se somam) */
@@ -1800,7 +1809,7 @@ const BIA_IDS = ['tenis', 'corrida', 'bandeja', 'sudoku'];
 function upgradeCartao(id){ return BIA_IDS.indexOf(id) >= 0 ? 'bia' : 'melhorias'; }
 const HIST_NOMES = { bia:'Bia', tonhao:'Tonhão', dani:'Dani', joca:'Joca', cami:'Cami', anselmo:'Anselmo' };
 const CAIXA_MAX = 14;                                 // livro-caixa (v7.2): quantos dias da carreira ficam guardados
-const VERSAO = 'v9.6.10';                            // vai no resumo do Caixa
+const VERSAO = 'v9.6.11';                            // vai no resumo do Caixa
 const DIVULGA_DIA = 4;                                // antes disso, o movimento é o da inauguração (sem custo); v9.0.2: dia 4, e o padrão é o boca a boca
 function divulgaAberta(n, sv){ return devLivre() || n >= DIVULGA_DIA && !(sv && sv.convDiv === 'pend'); }   // no modo dev, desde o dia 1; v9.0.3: no Modo História, só depois da conversa
 /* v9.6.4: a Efood (os entregadores) só abre depois da conversa dos entregadores, no Modo História; antes dela, nenhum tipo com `retira` vem na agenda */
@@ -2256,7 +2265,7 @@ function seatPositions(t){
   ];
 }
 function tableHalfW(t){ return t.seats === 2 ? 36 : 62; }
-const STATION_KEYS = ['adiantar','order','plates','coffee','juice','sink','trash','maquina','retirada','doces','espresso','drinks'];
+const STATION_KEYS = ['adiantar','order','marmj','plates','coffee','juice','sink','trash','maquina','retirada','doces','espresso','drinks'];
 function tableRect(t){ return { x:t.cx - t.hx - 10, y:t.cy - 62, w:t.hx*2 + 20, h:132 }; }
 function queueRect(g){ return { x:QUEUE.x - 74, y:QUEUE.ys[g.slot] - 76, w:148, h:90 }; }
 /* onde a Bia (ou a Dani) para ao levar o suco a quem espera: ao lado do tablet do lugar */
@@ -2512,7 +2521,6 @@ class Group {
     const g = this.game, eq = g.save.equipe;
     const amb = ambienteEffect(eq);
     if (amb && this.state !== 'queue') m /= 1 - amb;
-    if (g.trashFull) m /= 1 + TRASH.smell;
     return m;
   }
   setState(s){ this.state = s; this.stateT = 0; this.patLeft = this.patPer(); }
@@ -2591,6 +2599,7 @@ class Group {
   tick(dt){
     if (this.game.mode === 'treino') return;   // na Missão zero, a paciência não acaba
     this.patLeft -= dt;
+    if (this.game.trashFull && this.game.fumacaAlcanca(this.x, this.y)) this.patLeft -= dt * TRASH.smell;   // v9.6.11: o cheiro (paciência ÷ 1,3) só vale para quem a fumaça alcança
     if (this.patLeft <= 0){
       this.hearts--;
       if (this.state === 'queue') this.perdFila++; else { this.perdMesa++; if (this.esperaSuco && (this.docesFalta > 0 || this.cafesFalta > 0)) this.perdDoce++; if (this.drinksFalta > 0) this.perdDrink++; }
@@ -2872,7 +2881,8 @@ class Waitress {
       return d0 <= d1 ? pts[0] : pts[1];
     }
     if (a.type === 'maquina' && a.leg === 2) return g.sucoAp(a.group, this);   // 2ª parte: levar a quem pediu
-    const st = STATIONS[a.type === 'plate' ? 'plates' : a.type];
+    const ach = a.type === 'plate' ? g.kitchen.achaPronto(a.pid) : null;   // v9.6.11: a marmita pronta fica na mesinha
+    const st = STATIONS[a.type === 'plate' ? (ach && ach.arr === g.kitchen.marmJ ? 'marmj' : 'plates') : a.type];
     return st ? st.ap : null;
   }
   begin(a){
@@ -3356,7 +3366,7 @@ class Helper {
     }
     // marmita na mão (v8.6): leva ao balcão de retirada; pronta na janela e cabendo na prateleira (ou com dono): vai buscar
     if (this.hands.some(h => h.kind === 'marmita')) return this.go(STATIONS.retirada.ap, { type:'retirada' });
-    if (this.does('marmita') && !this.hands.length){ const p = this.marmitaAlvo(); if (p){ p.dani = true; return this.go(STATIONS.plates.ap, { type:'pegaMarmita', p }); } }
+    if (this.does('marmita') && !this.hands.length){ const p = this.marmitaAlvo(); if (p){ p.dani = true; return this.go(STATIONS.marmj.ap, { type:'pegaMarmita', p }); } }
     if (this.does('doce') && this.hands.length < DANI_HANDS && g.up.confCaseira){
       const t = this.doceAlvo();
       if (t) return this.go(STATIONS.doces.ap, { type:'doces', grp:t.group, k:Math.min(DANI_HANDS - this.hands.length, t.group.docesFalta - this.docesClaimed(t.group)) });
@@ -3658,7 +3668,7 @@ class Game {
     this.tables.forEach(t => { t.open = true; t.group = null; t.dirty = false; t.dirtyN = 0; });   // v7.4: todas as mesas abrem desde o dia 1
     this.kitchen.reset();
     this.kitchen.clean = dishStock(this.day, this.up);
-    this.trash = 0; this.trituraT = 0; this.paid = 0; this.unpaid = []; this.aberto = false;
+    this.trash = 0; this.trituraT = 0; this.fumacaT = 0; this.paid = 0; this.unpaid = []; this.aberto = false;
     this.maq = []; this.maqId = 0;   // pedidos do tablet da espera na máquina de suco: { id, group, n, t (preparo que falta) }
     this.drinkQ = []; this.drinkJob = null; this.drinkPronto = []; this.drinkAnim = 0;   // v9.5: a fila do Anselmo, o que ele prepara agora ({ grp, id, t }) e os copos prontos no balcão
     this.retirada = []; this.prateleira = []; this.marmitaId = 0; this.efood = 0; this.potes = 0;   // v8.6: os entregadores no balcão, as marmitas na prateleira e a parte da Efood
@@ -3880,6 +3890,14 @@ class Game {
   }
   get lucro(){ return this.money - this.custo - this.fixo; }
   get trashFull(){ return this.trash >= TRASH.cap; }
+  /* v9.6.11: a seta sobre a mesinha: marmita de entregador esperando, só nos dias 4 e 5 da carreira e na Missão zero */
+  get setaMesinha(){
+    if (this.state !== 'playing' || !(this.mode === 'treino' || (this.mode === 'carreira' && this.day && (this.day.n === 4 || this.day.n === 5)))) return false;
+    return this.kitchen.marmJ.some(p => p && p.dono && p.dono.state === 'retirada');
+  }
+  /* v9.6.11: a fumaça da lixeira cheia cresce em TRASH.fumaca.cresce segundos até o raio máximo e some em 3 s ao esvaziar */
+  get fumacaRaio(){ return Math.min(1, this.fumacaT / TRASH.fumaca.cresce) * TRASH.fumaca.raio; }
+  fumacaAlcanca(x, y){ return Math.hypot(x - TRASH.pos.x, y - TRASH.pos.y) <= this.fumacaRaio; }
   /* os ajudantes (v9.2: Dani e Joca) */
   get ajud(){ return [this.dani, this.joca, this.cami]; }   // v9.3: e a Cami
   /* alguém além da Bia lava a louça (Dani ou Joca com a tarefa, ou o Tonhão com aumento) */
@@ -4571,6 +4589,7 @@ class Game {
       this.trituraT += dt;
       if (this.trituraT >= TRASH.tritura){ this.trituraT = 0; this.trash--; Sfx.noise(0.15, 0.05, 0, 300); }
     } else this.trituraT = 0;
+    { const F = TRASH.fumaca; this.fumacaT = this.trashFull ? Math.min(F.cresce, this.fumacaT + dt) : Math.max(0, this.fumacaT - dt * F.cresce / 3); }
     this.drinkUpdate(dt);
     this.bia.update(dt);
     this.dani.update(dt); this.joca.update(dt); this.cami.update(dt);
@@ -4632,8 +4651,8 @@ class Game {
     const avDia = avalMedias(this.avals.map(a => a.r));
     sv.aval = normAval(sv.aval.concat(this.avals.map(a => a.r)));
     sv.avalCom = normAvalCom(sv.avalCom.concat(this.avals.map(a => ({ d:d.n, n:Math.round(avalNota(a.r) * 10), t:a.txt, k:a.k, v:a.v }))));
-    const ord = this.avals.slice().sort((a, b) => avalNota(b.r) - avalNota(a.r)), coment = [];
-    if (ord.length) [ord[0], ord[ord.length - 1], pick(ord)].forEach(a => { if (!coment.includes(a.txt)) coment.push(a.txt); });
+    const ord = this.avals.slice().sort((a, b) => avalNota(b.r) - avalNota(a.r)), coment = [], comentK = [];   // v9.6.11: comentK = o tipo de cliente de cada comentário (o rostinho do balão)
+    if (ord.length) [ord[0], ord[ord.length - 1], pick(ord)].forEach(a => { if (!coment.includes(a.txt)){ coment.push(a.txt); comentK.push(a.k); } });
     if (ord.length) this.manualVer('b-gurugol');   // v9.6.7
     const avsDia = this.avals;   // v9.0.4: o gatilho dos cartões da lojinha lê as notas cruas do dia
     this.avals = [];   // já estão no save (a nota do HUD não conta duas vezes)
@@ -4673,8 +4692,8 @@ class Game {
         if (g) novas.push(L.id === 'melhorias' && this.stats.lixoCheio ? L.lixo : pick(L.reclama));
       });
       if (novas.length){
-        novas.forEach(t => { coment.unshift(t); sv.avalCom.push({ d:d.n, n:20, t, k:'estudante' }); });
-        coment.length = Math.min(coment.length, 3);
+        novas.forEach(t => { coment.unshift(t); comentK.unshift('estudante'); sv.avalCom.push({ d:d.n, n:20, t, k:'estudante' }); });
+        coment.length = comentK.length = Math.min(coment.length, 3);
         sv.avalCom = normAvalCom(sv.avalCom);
       }
     }
@@ -4686,7 +4705,7 @@ class Game {
     if (tomou) row.tom = 1;
     caixaAdd(sv, row);
     writeSave(sv);
-    this.result = { daniFeitas:this.dani.feitas, jocaFeitas:this.joca.feitas, camiFeitas:this.cami.feitas, cafesEsp:this.stats.cafesEsp, drinks:this.stats.drinks, doces:this.stats.doces, docesMarm:this.stats.docesMarm, day:d.n, money:m, fat, pontos:Math.round(this.pontos), custo:Math.round(this.custo), contas:this.contas, aluguel:this.ponto.aluguel, div:this.paidDiv, divName:this.div ? this.div.name : '', meta:d.meta, bom:bomGoal(d), expert:d.expert, passed, stars, served:this.stats.served, lost:this.stats.lost, lostBy:this.stats.lostBy, lotadoT:Math.round(this.stats.lotadoT), atraso:Math.round(this.atraso), full:this.stats.full, chain:this.stats.chain, vip:this.stats.vip, vipLost:this.stats.vipLost, marmitas:this.stats.marmitas, efood:this.efood, esfriou:this.stats.esfriou, jogadas:this.stats.jogadas, sobra:this.marmitas().filter(o => o.onde !== 'fogao').length, juice:this.stats.juice, juiceMiss:this.stats.juiceMiss, sucoEsp:this.stats.sucoEsp, bebida:this.bebida.id, trash:this.stats.trash, washed:this.stats.washed, income, paid:this.paid, reason:this.reason, conserto:this.conserto, consertos:this.stats.consertos, quebras:this.quebras.filter(q => q.on).map(q => ({ id:q.id, fixed:q.fixed })), clima:this.clima, manut:Object.assign({}, this.manut), par, forcado, neg:sv.neg, emp:Object.assign({}, sv.emp), atrasou, tomou, devido, cap, aval:{ dia:avDia, geral:avalGeral(sv.aval), n:sv.aval.length, coment, teto:avalTeto(this.ponto) } };
+    this.result = { daniFeitas:this.dani.feitas, jocaFeitas:this.joca.feitas, camiFeitas:this.cami.feitas, cafesEsp:this.stats.cafesEsp, drinks:this.stats.drinks, doces:this.stats.doces, docesMarm:this.stats.docesMarm, day:d.n, money:m, fat, pontos:Math.round(this.pontos), custo:Math.round(this.custo), contas:this.contas, aluguel:this.ponto.aluguel, div:this.paidDiv, divName:this.div ? this.div.name : '', meta:d.meta, bom:bomGoal(d), expert:d.expert, passed, stars, served:this.stats.served, lost:this.stats.lost, lostBy:this.stats.lostBy, lotadoT:Math.round(this.stats.lotadoT), atraso:Math.round(this.atraso), full:this.stats.full, chain:this.stats.chain, vip:this.stats.vip, vipLost:this.stats.vipLost, marmitas:this.stats.marmitas, efood:this.efood, esfriou:this.stats.esfriou, jogadas:this.stats.jogadas, sobra:this.marmitas().filter(o => o.onde !== 'fogao').length, juice:this.stats.juice, juiceMiss:this.stats.juiceMiss, sucoEsp:this.stats.sucoEsp, bebida:this.bebida.id, trash:this.stats.trash, washed:this.stats.washed, income, paid:this.paid, reason:this.reason, conserto:this.conserto, consertos:this.stats.consertos, quebras:this.quebras.filter(q => q.on).map(q => ({ id:q.id, fixed:q.fixed })), clima:this.clima, manut:Object.assign({}, this.manut), par, forcado, neg:sv.neg, emp:Object.assign({}, sv.emp), atrasou, tomou, devido, cap, aval:{ dia:avDia, geral:avalGeral(sv.aval), n:sv.aval.length, coment, comentK, teto:avalTeto(this.ponto) } };
     this.result.multaVig = this.multaVig; this.result.vig = this.fiscal && this.fiscal.res ? { res:this.fiscal.res, falhas:Object.assign({}, this.fiscal.falhas) } : null;   // v9.4
     if (tomou){ this.setState('falencia'); Sfx.lose(); return; }
     this.setState('dayend');
@@ -5334,7 +5353,7 @@ class Game {
     return best;
   }
   /* a bebida da espera só com a melhoria; o balcão de retirada (v8.6), só no dia com entregador */
-  estacaoOn(k){ return k === 'maquina' ? !!this.up.maquina : k === 'doces' ? !!this.up.confCaseira : k === 'espresso' ? !!this.up.espresso : k === 'drinks' ? this.anselmoAtivo : k === 'adiantar' ? MARMITA.adiantar && this.marmitaOk : k === 'retirada' ? this.marmitaOk : true; }
+  estacaoOn(k){ return k === 'maquina' ? !!this.up.maquina : k === 'doces' ? !!this.up.confCaseira : k === 'espresso' ? !!this.up.espresso : k === 'drinks' ? this.anselmoAtivo : k === 'adiantar' ? MARMITA.adiantar && this.marmitaOk : k === 'retirada' || k === 'marmj' ? this.marmitaOk : true; }
   tableAt(x, y, pad){
     let best = null, bd = Infinity;
     for (const t of this.tables){ const d = rectDist(x, y, tableRect(t)); if (d <= (pad || 0) && d < bd){ bd = d; best = t; } }
@@ -5366,16 +5385,17 @@ class Game {
     return false;
   }
   tapStation(k, x, y){
+    if (k === 'marmj'){   // v9.6.11: a mesinha das marmitas: a de entregador esperando primeiro, depois a mais antiga
+      const ms = this.kitchen.marmJ.filter(p => p && !this.bia.acts.some(a => a.type === 'plate' && a.pid === p.id));
+      const p = ms.filter(m => m.dono && m.dono.state === 'retirada').sort((a, b) => b.age - a.age)[0] || ms.sort((a, b) => b.age - a.age)[0];
+      if (p && this.bia.enqueue({ type:'plate', pid:p.id })){ Sfx.tap(); this.addGlow(p); return true; }
+      return false;
+    }
     if (k === 'plates'){
-      // v9.6.5: o toque na faixa de baixo (os pratos) pega o prato pronto há mais tempo; na faixa de cima (y < 256), a marmita mais antiga (sem marmita, vale o prato)
+      // o toque na janela pega o prato pronto há mais tempo
       const k2 = this.kitchen, livre = p => p && !this.bia.acts.some(a => a.type === 'plate' && a.pid === p.id);
       const velho = (l, nome) => l.filter(livre).filter(p => !(p.group && p.group.cami)).sort((a, b) => b.age - a.age)[0];
-      let p = null;
-      if (y != null && y < 256){
-        const ms = k2.marmJ.filter(livre);
-        p = ms.filter(m => m.dono && m.dono.state === 'retirada').sort((a, b) => b.age - a.age)[0] || ms.sort((a, b) => b.age - a.age)[0];
-      }
-      if (!p) p = velho(k2.plates);
+      let p = velho(k2.plates);
       if (!p){
         const cami = k2.plates.find(q => livre(q) && q.group && q.group.cami);
         if (cami){ const s = PLATE_SLOTS[cami.slot]; this.addText(s.x, s.y - 34, 'É da Cami!', PAL.alerta, 14); Sfx.boing(); }
@@ -7086,6 +7106,7 @@ function drawRetirada(ctx,g,t){
 /* o balão do entregador (v8.6): a marmita dele no fogão (anel do preparo), pronta na janela (verde, pulsando) ou a
    caminho (na mão da Bia ou da Dani) */
 function drawRetiradaBalao(ctx,g,grp,tm){
+  if (!grp.path.length) drawLetreiroEfood(ctx,grp,tm);   // v9.6.11
   const dq = grp.docesMarm - grp.docesMarmDados;   // v9.2: "+ doce" na marmita (o pote na prateleira ou o doce da geladeirinha)
   if (dq > 0 && !grp.path.length){ ctx.save(); ctx.translate(grp.x - 24,grp.y - 92); drawBubble(ctx,0,0,13,'#fff'); drawIcon(ctx,'doce',0,1,0.6,grp.game.up.confGourmet ? 5 : 1); if (dq > 1) txt(ctx,'×' + dq,13,-10,9,PAL.tinta,'center',FD); ctx.restore(); }
   const o = g.marmitas().find(q => q.m.dono === grp);
@@ -7416,6 +7437,50 @@ function drawFumaca(ctx,t){
 }
 /* geladeira (v8), de pé no chão encostada na parede do salão, ao lado da cozinha. Quebrada: luz apagada, a porta de baixo
    entreaberta, poça d'água no chão e uma gota caindo */
+/* v9.6.11: a mesinha das marmitas (no lugar da geladeira, que sai da tela): tampo de madeira com as pernas, as marmitas empilhadas em cima (MARMJ_SLOTS) */
+function drawMesinha(ctx,g,t){
+  const r = STATIONS.marmj.rect, x = r.x, y = r.y, w = r.w, h = r.h;
+  shadowEll(ctx,x + w/2,y + h + 3,w/2 + 4,6,0.2);
+  rr(ctx,x + 4,y + h - 14,6,16,2); fs(ctx,PAL.madeiraEsc,1.6); rr(ctx,x + w - 10,y + h - 14,6,16,2); fs(ctx,PAL.madeiraEsc,1.6);
+  rr(ctx,x,y,w,h - 6,7); fs(ctx,PAL.madeira,2.6);
+  ctx.fillStyle = 'rgba(255,255,255,.18)'; ctx.fillRect(x + 4,y + 4,w - 8,3);
+  ctx.strokeStyle = 'rgba(138,82,38,.55)'; ctx.lineWidth = 1.2; ctx.beginPath();
+  for (let i = 1; i < 4; i++){ const yy = y + (h - 6) * i / 4; ctx.moveTo(x + 5,yy); ctx.lineTo(x + w - 5,yy); }
+  ctx.stroke();
+}
+/* v9.6.11: o letreiro "eFood" sobre o entregador que espera (pisca 0,6 s acesa e 0,4 s apagada; sem movimento, fica acesa) */
+function drawLetreiroEfood(ctx,grp,tm,k){
+  const acesa = RM || (tm % 1) < 0.6;
+  ctx.save(); ctx.translate(grp.x - 34 * (k || 1),grp.y - 70); ctx.scale(k || 1,k || 1);
+  rr(ctx,-19,-8,38,16,4); fs(ctx,acesa ? '#D8432F' : '#6E2A22',1.8);
+  txt(ctx,'eFood',0,1,10,acesa ? '#fff' : '#B89A94','center',FB);
+  ctx.restore();
+}
+/* v9.6.11: a seta que pisca sobre a mesinha quando há marmita de entregador esperando (dias 4 e 5 e na Missão zero) */
+function drawSetaMesinha(ctx,g,tm){
+  const r = STATIONS.marmj.rect, a = RM ? 1 : 0.55 + 0.45 * Math.sin(tm * 9), dy = RM ? 0 : Math.sin(tm * 6) * 3;
+  ctx.save(); ctx.globalAlpha = a; ctx.translate(r.x + r.w / 2,r.y - 14 + dy);
+  ctx.beginPath(); ctx.moveTo(-9,-10); ctx.lineTo(9,-10); ctx.lineTo(9,0); ctx.lineTo(15,0); ctx.lineTo(0,14); ctx.lineTo(-15,0); ctx.lineTo(-9,0); ctx.closePath(); fs(ctx,PAL.mostarda,2);
+  ctx.restore();
+}
+/* v9.6.11: a fumaça verde da lixeira cheia se espalha (raio g.fumacaRaio): nuvens translúcidas na borda e, com prefers-reduced-motion, só um véu parado */
+function drawFumacaLixo(ctx,g,t){
+  const R = g.fumacaRaio; if (R < 8) return;
+  const c = TRASH.pos, k = R / TRASH.fumaca.raio;
+  ctx.save();
+  const gr = ctx.createRadialGradient(c.x,c.y,R * 0.2,c.x,c.y,R);
+  gr.addColorStop(0,'rgba(' + TRASH_COR.fumaca + ',' + (0.16 * Math.min(1,k * 2)).toFixed(3) + ')'); gr.addColorStop(1,'rgba(' + TRASH_COR.fumaca + ',0)');
+  ctx.fillStyle = gr; ctx.beginPath(); ctx.arc(c.x,c.y,R,0,TAU); ctx.fill();
+  if (!RM){
+    const n = 6 + Math.round(4 * k);
+    for (let i = 0; i < n; i++){
+      const ang = Math.PI + (i + 0.5) / n * Math.PI * 1.15 - 0.1, d = R * (0.8 + 0.18 * Math.sin(t * 0.8 + i * 1.9)), cx = c.x + Math.cos(ang) * d, cy = c.y + Math.sin(ang) * d, r = 22 + 10 * Math.sin(t * 1.3 + i);
+      ctx.fillStyle = 'rgba(' + TRASH_COR.fumaca + ',0.13)';
+      [[0,0,1],[r * 0.7,-r * 0.2,0.75],[-r * 0.7,r * 0.1,0.8]].forEach(p => { circ(ctx,cx + p[0],cy + p[1],r * p[2]); ctx.fill(); });
+    }
+  }
+  ctx.restore();
+}
 function drawGeladeira(ctx,g,t){
   const q = g.quebrado('geladeira'), x = 688, y = 102, w = 42, h = 94;
   shadowEll(ctx,x + w/2,y + h + 4,26,6,0.2);
@@ -8262,8 +8327,8 @@ function render(g, ctx){
   drawFloor(ctx,g);
   drawWall(ctx,g,tm);
   drawCalcada(ctx,g,tm);
+  drawMesinha(ctx,g,tm);   // v9.6.11: no lugar da geladeira (que sai da tela; a manutenção dela segue escondida)
   drawKitchen(ctx,g,tm);
-  drawGeladeira(ctx,g,tm);
   if (g.clima === 'chuva' && !menu) drawChuvaFundo(ctx,tm);
   if (g.clima === 'feriado' && !menu) drawBandeirinhas(ctx);
 
@@ -8329,7 +8394,9 @@ function render(g, ctx){
   if (g.cami.active && !menu) items.push({ y:g.cami.y, f:() => drawCami(ctx,g.cami,tm) });   // v9.3
   items.sort((a,c) => a.y - c.y).forEach(it => it.f());
   if (g.clima === 'chuva' && !menu) drawChuvaPingos(ctx,tm);
+  if (!menu) drawFumacaLixo(ctx,g,tm);   // v9.6.11
   if (!menu) drawConsertos(ctx,g,tm);
+  if (!menu && g.setaMesinha) drawSetaMesinha(ctx,g,tm);   // v9.6.11
 
   // camada superior: balões, corações, fila
   g.tables.forEach(t => { if (t.open || menu) drawTableOverlay(ctx,g,t,tm,menu); });
@@ -10894,13 +10961,17 @@ function buildEnd(){
   if (r.marmitas || r.esfriou || r.jogadas || r.sobra) rows.splice(2, 0, ['Marmitas', r.marmitas + ' entregue' + (r.marmitas === 1 ? '' : 's') + (r.efood ? ' (Efood −' + fmt(r.efood) + ')' : '') + (r.jogadas ? ' · ' + r.jogadas + ' jogada' + (r.jogadas > 1 ? 's' : '') + ' fora' : '') + (r.esfriou ? ' · ' + r.esfriou + ' esfri' + (r.esfriou > 1 ? 'aram' : 'ou') : '') + (r.sobra ? ' · ' + r.sobra + ' sobr' + (r.sobra > 1 ? 'aram' : 'ou') : '')]);
   if (r.vip || r.vipLost) rows.splice(2, 0, ['VIPs', r.vip + ' atendido' + (r.vip === 1 ? '' : 's') + (r.vipLost ? ' · ' + r.vipLost + ' bravo' + (r.vipLost > 1 ? 's' : '') : '')]);
   // Gurugol (v8.4): a caixa animada à esquerda dos quadros (v8.4.1); embaixo, 2 ou 3 comentários (os critérios do dia no title)
-  const av = $('end-aval'); clearEl(av); av.title = '';
+  const av = $('end-aval'); clearEl(av); av.title = ''; clearEl($('end-baloes'));
   const a = r.aval;
   guruAnim++;
   if (a && a.dia){
     st.appendChild(gurugolCaixa(a, undefined, true));
     av.title = 'Hoje, em ' + a.dia.n + (a.dia.n > 1 ? ' avaliações: ' : ' avaliação: ') + AVAL_CRIT.map((c, i) => c.nome.toLowerCase() + ' ' + fmtNota(a.dia.crit[i]) + ' (' + a.dia.cnt[i] + ')').join(', ');
-    if (a.coment.length) av.appendChild(el('i', null, a.coment.map(t => '“' + t + '”').join(' ')));
+    // v9.6.11: os comentários viram balões grandes no topo (com o rostinho de quem falou), acima das tabelas
+    if (a.coment.length){
+      const bal = $('end-baloes'); bal.setAttribute('aria-label', 'Comentários do Gurugol');
+      a.coment.forEach((t, i) => { const b = el('div', 'end-balao'); b.appendChild(rostinhoCliente((a.comentK || [])[i])); b.appendChild(el('q', null, t)); bal.appendChild(b); });
+    }
   }
   // as contas do dia (v7), do faturamento ao lucro, num quadro ao lado
   const neg = v => v ? '-' + fmt(v) : '-';
@@ -11077,6 +11148,16 @@ bindSeg('rank-tabs', 'tab', () => { rk.rows = []; rk.started = null; renderRank(
 bindSeg('rank-by', 'by');
 bindSeg('rank-dir', 'dir');
 
+
+/* v9.6.11: o rostinho do tipo de cliente (a 1ª pessoa do grupo, só a cabeça) no balão do Gurugol */
+function rostinhoCliente(k){
+  const cv = document.createElement('canvas'); cv.width = 72; cv.height = 72; cv.className = 'end-rosto';
+  const c = cv.getContext('2d'); c.scale(1.5, 1.5); c.lineJoin = 'round'; c.lineCap = 'round';
+  c.beginPath(); c.arc(24, 24, 22, 0, TAU); c.fillStyle = '#EFE6CF'; c.fill(); c.clip();
+  const p = makePeople(CUSTOMER_TYPES[k] ? k : 'estudante', 1)[0];
+  drawPerson(c, p, 24, 77, { mood:0, s:1.05 });
+  return cv;
+}
 /* ---------- troca de telas ---------- */
 game.hooks.state = function(s){
   if (s === 'menu'){ game.resetDay(game.proxDia); buildMenu(); devSync(); showOnly(['ov-menu']); }

@@ -261,6 +261,7 @@ const STATIONS = {
   drinks: { ap:{x:700,y:150}, rect:{x:620,y:92,w:60,h:50} },   // v9.5: o balcão de drinks do Anselmo, na parede do fundo (o ap fica no corredor à direita das mesas)
   espresso:{ ap:{x:744,y:350}, rect:{x:694,y:318,w:46,h:56} },   // v9.3: a máquina de espresso (curso do Joca), no chão ao lado da bancada do café, na mesma boca de atendimento
   order:  { ap:{x:744,y:150}, rect:{x:766,y:96, w:194,h:108} },
+  marmj:  { ap:{x:700,y:150}, rect:{x:686,y:104,w:48,h:92} },   // v9.6.11: a mesinha das marmitas prontas (no lugar da geladeira); a Bia pega ali e leva ao entregador
   plates: { ap:{x:744,y:256}, rect:{x:766,y:206,w:194,h:98 } },
   coffee: { ap:{x:744,y:350}, rect:{x:766,y:306,w:97, h:88 } },
   juice:  { ap:{x:744,y:350}, rect:{x:863,y:306,w:97, h:88 } },
@@ -275,8 +276,8 @@ const PLATE_SLOTS = [ {x:806,y:270}, {x:848,y:270}, {x:890,y:270}, {x:932,y:270}
 /* v9: o balcão de pratos tem as vagas do ponto (ponto.pratos): 4 na Garagem, 5 na área industrial, 6 na Avenida Brasil (mais juntas). Muda o mesmo array no lugar */
 function plateSlotsFor(n){ PLATE_SLOTS.length = 0; for (let i = 0; i < n; i++) PLATE_SLOTS.push({ x:(n >= 6 ? 791 + 29 * i : n >= 5 ? 792 + 36 * i : 806 + 42 * i), y:270 }); }   // v9.1: 6 vagas na Avenida Brasil
 /* v9.6.5: a fileira própria das marmitas na janela de PRONTOS (ponto.marmJanela vagas: 2, 3 e 3), acima da fileira dos pratos */
-const MARMJ_SLOTS = [ {x:800,y:242}, {x:826,y:242}, {x:852,y:242} ];
-function marmJSlotsFor(n){ MARMJ_SLOTS.length = 0; for (let i = 0; i < n; i++) MARMJ_SLOTS.push({ x:800 + 26 * i, y:242 }); }
+const MARMJ_SLOTS = [ {x:710,y:124}, {x:710,y:148}, {x:710,y:172} ];   // v9.6.11: na mesinha das marmitas (no lugar da geladeira), empilhadas
+function marmJSlotsFor(n){ MARMJ_SLOTS.length = 0; for (let i = 0; i < n; i++) MARMJ_SLOTS.push({ x:710, y:124 + 24 * i }); }
 const BOUNDS = { x0:16 - CALCADA.w, y0:112, x1:744, y1:528 };
 const LAYOUT = { W, H, TW, HUDX, CALCADA, QUEUE, RETIRADA, DOOR, STATIONS, PLATE_SLOTS, MARMJ_SLOTS, BOUNDS };
 /* ============================================================
@@ -587,7 +588,7 @@ function daniTaskOk(id, up){ const t = DANI_TASKS.find(d => d.id === id); return
 /* prato caprichado (acerto crítico do Tonhão): +1 coração e bônus na entrega */
 const CRIT = { bonus:10, vipBonus:20 };   // pontos (v8.3.8; eram R$)
 const WASH = { base:0.3, perPile:2.5 };               // segundos na pia
-const TRASH = { cap:6, empty:2, smell:0.3, tritura:30 };   // lixeira: capacidade, tempo para esvaziar, cheiro quando cheia, segundos do Triturador por gominho (v8.3.10)
+const TRASH = { cap:6, empty:2, smell:0.3, tritura:30, fumaca:{ cresce:30, raio:900 }, pos:{ x:723, y:530 } };   // v9.6.11: fumaca: cresce = segundos até o raio máximo (px); pos = onde fica a lixeira   // lixeira: capacidade, tempo para esvaziar, cheiro quando cheia, segundos do Triturador por gominho (v8.3.10)
 function couvertEffect(eq){ return STAFF.couvert.effect * (eq.taxa ? 1 - STAFF.couvert.feeCut : 1); }
 function couvertOk(ponto){ return devLivre() || (ponto || PONTOS[0]).nivel >= STAFF.couvert.nivel; }   // no modo dev, em qualquer ponto
 /* ambiente do salão: quanto a paciência nas mesas cai mais devagar (TV, som e couvert se somam) */
@@ -1106,7 +1107,7 @@ const BIA_IDS = ['tenis', 'corrida', 'bandeja', 'sudoku'];
 function upgradeCartao(id){ return BIA_IDS.indexOf(id) >= 0 ? 'bia' : 'melhorias'; }
 const HIST_NOMES = { bia:'Bia', tonhao:'Tonhão', dani:'Dani', joca:'Joca', cami:'Cami', anselmo:'Anselmo' };
 const CAIXA_MAX = 14;                                 // livro-caixa (v7.2): quantos dias da carreira ficam guardados
-const VERSAO = 'v9.6.10';                            // vai no resumo do Caixa
+const VERSAO = 'v9.6.11';                            // vai no resumo do Caixa
 const DIVULGA_DIA = 4;                                // antes disso, o movimento é o da inauguração (sem custo); v9.0.2: dia 4, e o padrão é o boca a boca
 function divulgaAberta(n, sv){ return devLivre() || n >= DIVULGA_DIA && !(sv && sv.convDiv === 'pend'); }   // no modo dev, desde o dia 1; v9.0.3: no Modo História, só depois da conversa
 /* v9.6.4: a Efood (os entregadores) só abre depois da conversa dos entregadores, no Modo História; antes dela, nenhum tipo com `retira` vem na agenda */

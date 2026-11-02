@@ -107,7 +107,8 @@ class Waitress {
       return d0 <= d1 ? pts[0] : pts[1];
     }
     if (a.type === 'maquina' && a.leg === 2) return g.sucoAp(a.group, this);   // 2ª parte: levar a quem pediu
-    const st = STATIONS[a.type === 'plate' ? 'plates' : a.type];
+    const ach = a.type === 'plate' ? g.kitchen.achaPronto(a.pid) : null;   // v9.6.11: a marmita pronta fica na mesinha
+    const st = STATIONS[a.type === 'plate' ? (ach && ach.arr === g.kitchen.marmJ ? 'marmj' : 'plates') : a.type];
     return st ? st.ap : null;
   }
   begin(a){
