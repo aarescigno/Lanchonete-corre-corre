@@ -4,6 +4,14 @@ Registro das ideias e dos retornos de quem jogou, com o texto original, e de ond
 
 ---
 
+## 02/11 — usuário: escolhe a proposta 2 ("Na palma da mão") para planejar, num branch próprio
+> Achei interessante a proposta 2, vamos planejar a execução dela, melhor fazer em outro repositório? Ou tem como deixar um branch meio que oficializado com um nome bacana para essa proposta?
+
+**Decisões (com o usuário, 02/11):** no mesmo repositório, no branch `proposta/na-palma-da-mao`, sem merge no main até aprovar. No computador, o jogo em pé com o celular da Bia ao lado; a equipe faz a sua parte e atende ao chamado (arrasto do rosto); o main fica só com correções (a 4a espera a decisão).
+**Destino:** `docs/PLANO-PALMA.md` (sessões P2-1 a P2-8), no branch `proposta/na-palma-da-mao`.
+
+---
+
 ## 02/11 — usuário: repensar a interface, a jogabilidade e a estética (3 propostas de redesenho)
 > Antes de ir para a próxima etapa, gostaria de repensar toda a forma de interface de usuário, de interface do jogo, de jogabilidade, etc. [...] Então eu queria ver agora, com tudo que está construído, se de interface e tudo mais, isso poderia ser feito de uma forma totalmente diferente e que fosse melhor do que atualmente. Então faça para mim mais 3 propostas de jogabilidade, de organização desse jogo, de estética e de forma de jogo, né? Que abrace todas as funcionalidades que já estão.
 
