@@ -39,6 +39,7 @@ class Game {
     this.mode = treino ? 'treino' : n === 0 ? 'semfim' : 'carreira';
     this.day = treino ? TREINO : n === 0 ? ENDLESS : this.diaPonto(diaOf(n));
     this.money = 0; this.custo = 0; this.contas = 0; this.paidDiv = 0; this.conserto = 0; this.pontos = 0;
+    this.manualDia = [];   // v9.6.7: as fichas do Manual reveladas durante o dia (a linha "Novo no Manual" do fim do dia)
     this.avals = [];   // avaliações do dia (v8.4): { r: as notas dos critérios, txt: o comentário }; entram no save no fim do dia
     // imprevistos (v8): o sorteio do dia (feito ao começar o dia, e guardado até ele acabar) diz o clima e o que quebra
     const so = n && this.save.manut.sorteio && this.save.manut.sorteio.d === n ? this.save.manut.sorteio : null;
@@ -265,6 +266,7 @@ class Game {
   begin(){
     this.payDay(); this.setState('playing');
     if (this.unpaid.length) this.addText(TW/2 - this.cam, 300, 'Sem dinheiro para pagar: sem ' + listaE(this.unpaid) + ' hoje', PAL.perigo, 20);
+    this.manualInicio();
   }
   /* lucro do dia (a meta): faturamento − ingredientes − contas − folha − divulgação */
   get fixo(){ return this.contas + this.paid + this.paidDiv + this.conserto + (this.multaVig || 0); }
@@ -665,6 +667,8 @@ class Game {
     const g = new Group(this, s.type, ++this.gid, s.color, s.vip, s);
     g.avalia = !!s.av; g.doApito = !!s.apito;   // doApito: uma das turmas que chegam com o apito da fábrica
     this.groups.push(g);
+    const novoMan = this.manualVer('c-' + s.type) | (s.vip ? this.manualVer('c-vip') : 0);   // v9.6.7: a 1ª vez de cada tipo abre a ficha dele no Manual
+    if (novoMan) this.addText(QUEUE.x, DOOR.y + 34, 'Novo no Manual!', PAL.faixa, 14);
     if (g.retira){
       this.retirada.push(g); g.setState('retirada'); this.reslotRetirada();
       this.marmitaPara(g);
@@ -795,6 +799,7 @@ class Game {
     this.reslot();
     this.maqCancela(g);
     t.group = g; g.table = t;
+    if (g.people.some(p => p.veg) && this.manualVer('c-veg')) this.addText(t.cx, t.cy - 70, 'Novo no Manual!', PAL.faixa, 14);   // v9.6.7
     g.setState('toTable');
     g.hearts = Math.min(5, g.hearts);
     g.gain(1);
@@ -943,7 +948,7 @@ class Game {
         this.clock -= dt;
         // com o salão lotado, a chegada da vez espera um pouco (e as seguintes andam junto)
         const ap = this.apito;   // v9: o aviso 10 s antes e o apito da fábrica
-        if (ap && !ap.avisou && this.elapsed >= ap.t - ap.aviso){ ap.avisou = true; this.addText(QUEUE.x, DOOR.y + 36, 'A fábrica vai apitar!', PAL.alerta, 20); }
+        if (ap && !ap.avisou && this.elapsed >= ap.t - ap.aviso){ ap.avisou = true; this.addText(QUEUE.x, DOOR.y + 36, 'A fábrica vai apitar!', PAL.alerta, 20); this.manualVer('i-apito'); }
         if (ap && !ap.tocou && this.elapsed >= ap.t){ ap.tocou = true; this.addText(QUEUE.x, DOOR.y + 36, 'Apitou!', PAL.perigo, 26); Sfx.tone(880, 0.16, 'square', 0.05); Sfx.tone(1175, 0.28, 'square', 0.05, 0.2); }
         const s = this.schedule[this.nextIdx];
         if (s && this.elapsed >= s.t + this.atraso && this.lotado && this.portaT < PORTA.max && this.atraso < PORTA.total * this.day.time){
@@ -957,7 +962,7 @@ class Game {
     if (!this.ending) this.quebras.forEach(q => {
       if (q.on || this.elapsed < q.t) return;
       const eq = manutOf(q.id); q.on = true; this.stats.quebras++;
-      this.addText(eq.badge.x, eq.badge.y - 30, eq.name + ' quebrou!', PAL.perigo, 17);
+      this.addText(eq.badge.x, eq.badge.y - 30, eq.name + ' quebrou!', PAL.perigo, 17); this.manualVer('i-quebra');
       this.addPuff(eq.badge.x, eq.badge.y, 8);
       Sfx.boing(); Sfx.tone(180, 0.25, 'sawtooth', 0.04, 0.12);
     });
@@ -1034,6 +1039,7 @@ class Game {
     sv.avalCom = normAvalCom(sv.avalCom.concat(this.avals.map(a => ({ d:d.n, n:Math.round(avalNota(a.r) * 10), t:a.txt, k:a.k, v:a.v }))));
     const ord = this.avals.slice().sort((a, b) => avalNota(b.r) - avalNota(a.r)), coment = [];
     if (ord.length) [ord[0], ord[ord.length - 1], pick(ord)].forEach(a => { if (!coment.includes(a.txt)) coment.push(a.txt); });
+    if (ord.length) this.manualVer('b-gurugol');   // v9.6.7
     const avsDia = this.avals;   // v9.0.4: o gatilho dos cartões da lojinha lê as notas cruas do dia
     this.avals = [];   // já estão no save (a nota do HUD não conta duas vezes)
     // caixa no negativo: BANCO.neg dias seguidos podem; no seguinte, o banco cobre o que falta, à força
@@ -1328,6 +1334,39 @@ class Game {
     }
     if (!HIST.on || this.save.histV !== 1 || this.save.cap >= 4) return true;
     return this.save.libera[id] >= 1;
+  }
+  /* v9.6.7: o Manual. Só a carreira revela fichas (a Missão zero, o Turno sem fim e o modo dev livre não); a nova leva a bolinha até ser vista */
+  get manualReal(){ return this.salvo || this.save; }   // na Missão zero, o save de verdade fica guardado em `salvo`
+  manualAberta(id){ const sv = this.manualReal; return devLivre() || (sv.manual || []).indexOf(id) >= 0; }
+  manualVer(id){
+    const sv = this.save;
+    if (this.mode !== 'carreira' || sv._treino || devLivre() || sv.manual.indexOf(id) >= 0 || !manualFicha(id)) return 0;
+    sv.manual.push(id); sv.manualNovo.push(id); writeSave(sv);
+    if (this.state === 'playing') this.manualDia.push(id);
+    return 1;
+  }
+  /* abrir uma aba do Manual (ou rolar até a ficha nova) tira a ficha de manualNovo */
+  manualVista(ids){
+    const sv = this.manualReal, n = (sv.manualNovo || []).length;
+    sv.manualNovo = (sv.manualNovo || []).filter(x => ids.indexOf(x) < 0);
+    if (sv.manualNovo.length !== n) writeSave(sv);
+  }
+  /* o que o começo do dia revela: louça e suco (dia 3), marmitas, o clima, o Tonhão gripado, o fiscal e o risco de quebra (os avisos da introdução) */
+  manualInicio(){
+    if (this.mode !== 'carreira') return;
+    const n = this.day.n;
+    if (n >= 3){ this.manualVer('b-louca'); this.manualVer('b-suco'); }
+    if (n >= HIST_ENTREGA.dia && efoodAberto(this.save)) this.manualVer('b-marmita');
+    if (this.clima === 'chuva') this.manualVer('i-chuva'); else if (this.clima === 'feriado') this.manualVer('i-feriado');
+    if (this.day.gripe) this.manualVer('i-gripe');
+    if (this.fiscal) this.manualVer('i-fiscal');
+    if (MANUT.on && n >= MANUT.dia && MANUT.equip.some(q => manutChance(this.manut[q.id]) > 0)) this.manualVer('i-quebra');
+    this.manualPontos();
+  }
+  /* os lugares: o ponto de agora e o de destino da Mudança (quando o cartão já aparece) */
+  manualPontos(){
+    this.manualVer('p-' + this.ponto.id);
+    if (this.state === 'shop' && this.mudancaVisivel && this.proximoPonto) this.manualVer('p-' + this.proximoPonto.id);
   }
   get liberaNovo(){ return LIBERA.filter(L => this.save.libera[L.id] === 1).map(L => L.id); }
   liberaVer(id){ if (this.save.libera[id] === 1){ this.save.libera[id] = 2; writeSave(this.save); } }

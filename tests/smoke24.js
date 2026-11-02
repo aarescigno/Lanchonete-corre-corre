@@ -61,10 +61,9 @@ ok(L.payroll({tonhao:2,dani:4,tv:true,som:true})===50,'folha completa da Garagem
 ok(L.DAYS.map(d=>d.meta).join()==='30,108,135,63,90,140,170','metas de lucro realistas (R$ 30 a 170; v8.3.9; dias 2 a 5 -10% na v8.6.9; 6 e 7 na v8.6.13)');
 ok(L.DAYS.map(d=>d.expert).join()==='60,220,230,110,140,280,310','3 estrelas pelo jogo perfeito (v8.3.9): R$ 60 a 310');
 ok(L.bomGoal(L.DAYS[0])===50,'dia 1: 2 estrelas com R$ 50');
-// ---------- Como jogar ----------
-{ let err=null; try{ els['btn-how'].fire('click'); }catch(e){ err=e; }
-  const tips=JSON.stringify((els['tips'].children||[]).map(li=>(li.children||[]).map(c=>c.textContent)));
-  ok(!err && /PF R\$ 25/.test(tips) && /pontos de atendimento/.test(tips),'Como jogar: os preços do cardápio e os pontos de atendimento'+(err?': '+err:'')); }
+// ---------- Manual (v9.6.7: no lugar do Como jogar; sem preços nem números) ----------
+{ let err=null; try{ els['btn-manual'].fire('click'); }catch(e){ err=e; }
+  ok(!err && els['ov-manual'].classList.contains('show') && els['manual-grid'].children.length>0,'Manual abre com as fichas do Básico'+(err?': '+err:'')); }
 
 console.log('total =',total,' fails =',fails);
 process.exit(fails?1:0);

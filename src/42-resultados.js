@@ -126,6 +126,10 @@ function buildEnd(){
   // Modo História (v8.7): o objetivo do capítulo no fim do dia
   if (r.cap) msg += ' Capítulo ' + r.cap.n + ', ' + r.cap.titulo + ': ' + (r.cap.ok ? '✓ Objetivo cumprido!' : r.cap.itens.map(it => (it.ok ? '✓ ' : '') + it.txt).join(' · '));
   $('end-msg').textContent = msg;
+  // v9.6.7: as fichas do Manual que o dia revelou (no máximo 3 nomes)
+  const mn = (game.manualDia || []).map(manualFicha).filter(Boolean).map(manualNome), fm = $('end-manual');
+  fm.textContent = mn.length ? 'Novo no Manual: ' + (mn.length > 3 ? mn.slice(0, 3).join(', ') + ' e mais ' + (mn.length - 3) : mn.join(', ')) + '.' : '';
+  fm.style.display = mn.length ? '' : 'none';
   $('btn-next').textContent = 'Lojinha e dia ' + game.proxDia;
   buildSaveForm($('end-save'), 'carreira');
 }
