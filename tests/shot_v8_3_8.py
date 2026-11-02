@@ -18,7 +18,7 @@ DIA="""()=>{ const g=window.__game, L=window.__lcc; g.save=L.normSave({maxDay:7,
   g.collectBill(a,ts[3]); g.lastKind=null; g.bia.hands=[{kind:'coffee'}]; g.bia.doTable(ts[0]); g.lastKind=null; g.bia.doTable(ts[1]);
   g.paused=true; }"""
 FIM="""()=>{ const g=window.__game; g.paused=false; g.money=640; g.custo=230; g.finishDay(); g.hooks.state('dayend'); }"""
-COMO="""()=>{ document.getElementById('btn-how').click(); }"""
+COMO="""()=>{ document.getElementById('btn-manual').click(); }"""
 with sync_playwright() as p:
     b=p.chromium.launch(executable_path=exe); errs=[]
     for name,vp,cel in [('_pc',(1220,600),False),('_celular',(740,360),True)]:
