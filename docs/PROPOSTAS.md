@@ -27,7 +27,8 @@ Registro das ideias e dos retornos de quem jogou, com o texto original, e de ond
 - **Cursos da Dani no máximo (11:18):** cursos que não agregam mais nada devem sumir ou dizer que já sabe tudo.
 - **Momento das conversas (11:01):** hoje tocam na troca de dia, depois da tela de resultados; o pedido é tocar no fim do turno, antes dos resultados.
 
-**Destino:** proposta de **etapa 3g** (antes da 4a), a planejar com o Opus com o usuário. Grupos: (1) as conversas no fim do turno, antes dos resultados, e mais de uma por dia (ou as de cartão juntas numa só), garantindo Salão e Bia nos primeiros dias; a família perdida no dia 1 já conta; (2) uma recompensa no fim do dia 1 (ex.: um cartão barato aberto já no 1º dia); (3) Dani fora da Equipe antes de chegar, o "Eu pedi ajuda" na fala do Tonhão e os cursos da Dani no máximo; (4) comentários do Gurugol em destaque no fim do dia; (5) avisos dos entregadores: letreiro piscando sobre o entregador e seta nas marmitas prontas na 1ª vez, e a geladeira (enfeite?) como saída das marmitas; (6) o lixo cheio solta fumaça verde que se espalha pelo salão.
+**Decisões (entrevista com o usuário, 02/11):** conversas no fim do turno, antes dos resultados, até 2 por dia (as de capítulo não contam); Bia com gatilho no dia 2 e garantia no 3; recompensa do dia 1: a vizinha dá uma espada-de-são-jorge, e um elogio à planta no Gurugol abre a Decoração; comentários do Gurugol em balões no topo do fim do dia; a geladeira some da tela (a manutenção dela continua escondida) e no lugar fica a mesinha das marmitas, de onde a Bia leva ao entregador no balcão; fumaça do lixo que se espalha e dá o cheiro só a quem alcança.
+**Destino:** etapa 3g do `docs/PLANO.md` (3g-1, v9.6.10; 3g-2, v9.6.11).
 
 ---
 
