@@ -1151,7 +1151,7 @@ function drawLetreiroEfood(ctx,grp,tm,k){
 /* v9.6.11: a seta que pisca sobre a mesinha quando há marmita de entregador esperando (dias 4 e 5 e na Missão zero) */
 function drawSetaMesinha(ctx,g,tm){
   const r = STATIONS.marmj.rect, a = RM ? 1 : 0.55 + 0.45 * Math.sin(tm * 9), dy = RM ? 0 : Math.sin(tm * 6) * 3;
-  ctx.save(); ctx.globalAlpha = a; ctx.translate(r.x + r.w / 2,r.y - 14 + dy);
+  ctx.save(); ctx.globalAlpha = a; ctx.translate(r.x + r.w / 2,r.y - 22 + dy);
   ctx.beginPath(); ctx.moveTo(-9,-10); ctx.lineTo(9,-10); ctx.lineTo(9,0); ctx.lineTo(15,0); ctx.lineTo(0,14); ctx.lineTo(-15,0); ctx.lineTo(-9,0); ctx.closePath(); fs(ctx,PAL.mostarda,2);
   ctx.restore();
 }
@@ -1357,14 +1357,14 @@ function drawKitchen(ctx,g,t){
   // v9.6.5: a fileira própria das marmitas (acima dos pratos): a do entregador com o selo da Efood; a sem dono com o anel da validade
   for (let i=0;i<MARMJ_SLOTS.length;i++){
     const s = MARMJ_SLOTS[i], p = g.kitchen.marmJ[i];
-    ell(ctx,s.x,s.y+3,12,6); ctx.fillStyle = 'rgba(34,32,28,.12)'; ctx.fill();
+    ell(ctx,s.x,s.y+10,20,6); ctx.fillStyle = 'rgba(34,32,28,.12)'; ctx.fill();
     if (p) glowSprite(ctx,g,p,ctx => {
       const bounce = RM ? 0 : Math.max(0, 1 - p.age*3) * -6;
-      drawMarmita(ctx,p.dish,s.x,s.y+bounce,0.62);
-      if (p.crit) txt(ctx,'★',s.x-9,s.y-8+bounce,11,PAL.mostarda,'center',FD);
-      ctx.save(); ctx.translate(s.x+8,s.y-6+bounce); ctx.scale(0.72,0.72); drawMarmitaSelo(ctx,p,0,0); ctx.restore();
+      drawMarmita(ctx,p.dish,s.x,s.y+bounce,1.1);
+      if (p.crit) txt(ctx,'★',s.x-15,s.y-12+bounce,12,PAL.mostarda,'center',FD);
+      ctx.save(); ctx.translate(s.x+14,s.y-8+bounce); ctx.scale(0.72,0.72); drawMarmitaSelo(ctx,p,0,0); ctx.restore();
       const a = 0.35 + 0.3*Math.sin(t*6 + i);
-      ctx.strokeStyle = 'rgba(242,179,61,' + a + ')'; ctx.lineWidth = 2; ell(ctx,s.x,s.y+1,14,9); ctx.stroke();
+      ctx.strokeStyle = 'rgba(242,179,61,' + a + ')'; ctx.lineWidth = 2; ell(ctx,s.x,s.y+3,20,12); ctx.stroke();
     });
   }
   glow('plates');
