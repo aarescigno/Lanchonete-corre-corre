@@ -125,7 +125,9 @@ g.setState('menu'); ok(/História · Garagem completa · dia \d+/.test(els['menu
 { const H=nova(), {g,L,els}=H; g.save.conversa=null; g.save.bank=0;
   g.startDay(1); joga(H,0,0); ok(!g.save.emp.atr && g.state==='dayend','dia 1 sem dinheiro: sem parcela, sem atraso');
   g.startDay(2); joga(H,0,0); ok(g.save.emp.atr===true && g.result.atrasou && g.state==='dayend','dia 2 sem dinheiro: a parcela da reforma atrasa');
-  g.startDay(3); joga(H,0,0); ok(g.state==='falencia' && g.save.fechou===3 && mostra(els,'ov-falencia'),'atrasou 2 dias: o banco toma a lanchonete (como na v8.3.1)'); }
+  g.startDay(3); joga(H,0,0); ok(g.state==='dayend' && g.save.socorro===1 && !g.save.emp.atr && !g.save.fechou,'atrasou 2 dias: na História, o banco dá a 2ª chance (v9.6.13)');
+  g.startDay(4); joga(H,0,0); ok(g.save.emp.atr===true && g.result.atrasou,'dia 4 sem dinheiro: atrasa de novo');
+  g.startDay(5); joga(H,0,0); ok(g.state==='falencia' && g.save.fechou===5 && mostra(els,'ov-falencia'),'atrasou 2 dias de novo: aí o banco toma a lanchonete (como na v8.3.1)'); }
 // o modo dev e os testes antigos ficam fora da História
 { const H=load({store:{lcc2_dev:'1'}}); ok(H.g.save.cap===4 && H.g.save.conversa===null && H.g.save.emp.resto===0,'modo dev: sem História nem reforma'); }
 { const H=load(); ok(H.g.save.cap===4 && H.g.save.emp.resto===0 && H.L.HIST.on===false,'harness padrão (testes antigos): sem História'); }

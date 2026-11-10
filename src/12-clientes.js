@@ -165,7 +165,7 @@ function normSave(s){
   const cap = hist ? clamp(Math.round(+s.cap) || capMax, 1, capMax) : novoHist ? 1 : 4;   // v9: dev e testes ficam no cap. 4 (sem objetivo na Garagem; a mudança de ponto está livre)
   const capPonto = HISTORIA[cap - 1], pendente = !!capPonto && capPonto.ponto !== pontoOf(s.salao && s.salao.ponto).id;   // v9, v9.1: o capítulo de um ponto só começa na mudança para ele (o 4 e o 6)
   const conversa = cap > HISTORIA.length || pendente ? null : hist ? (s.conversa === 'antes' || s.conversa === 'depois' ? s.conversa : null) : novoHist ? 'antes' : null;
-  const dev = salaoDevolucao(s.salao), out = { dia, estrelas, lucroTot: Math.round(+s.lucroTot) || 0, pontosTot: Math.max(0, Math.round(+s.pontosTot) || 0), aval: normAval(s.aval), avalCom: normAvalCom(s.avalCom), neg: clamp(Math.round(+s.neg) || 0, 0, BANCO.neg), emp: normEmprestimo(novoHist ? { resto:REFORMA.valor, amort:REFORMA.amort, j:REFORMA.juros, ini:REFORMA.ini, ref:true } : s.emp), corta: s.corta !== false, fechou: Math.max(0, Math.round(+s.fechou) || 0), bank: bank + dev + devMaq, up, torneira:true, salao: normSalao(dev ? null : s.salao), divulga: dia < DIVULGA_DIA && !devLivre() ? 'boca' : divulgaOf(s.divulga).id, treino: !!s.treino, decor: normDecor(s.decor), cursos: normCursos(s.cursos), cursoDia: Math.max(0, Math.round(+s.cursoDia) || 0), tonXp: s.tonXp === 1 ? 1 : 0, daniTar: Math.max(0, Math.round(+s.daniTar) || 0), daniCursos: normDaniCursos(s.daniCursos), daniCursoDia: Math.max(0, Math.round(+s.daniCursoDia) || 0), jocaTar: Math.max(0, Math.round(+s.jocaTar) || 0), jocaCursos: normJocaCursos(s.jocaCursos), jocaCursoDia: Math.max(0, Math.round(+s.jocaCursoDia) || 0), camiCursos: normCamiCursos(s.camiCursos), camiCursoDia: Math.max(0, Math.round(+s.camiCursoDia) || 0), daniXp: s.daniXp === 1 ? 1 : 0, cardV: 1, libera: normLibera(s.libera, !novoHist), pontoDia: pontoDiaDe(s, dia), convCard: s.convCard === 'pend' ? 'pend' : s.convCard === 1 ? 1 : 0, convDiv: s.convDiv === 'pend' ? 'pend' : s.convDiv === 1 ? 1 : 0, convPlanta: s.convPlanta === 'pend' ? 'pend' : s.convPlanta === 1 || dia > 1 ? 1 : 0, convEnt: s.convEnt === 'pend' ? 'pend' : s.convEnt === 1 ? 1 : 0, cardVisto: Array.isArray(s.cardVisto) ? s.cardVisto.filter(x => typeof x === 'string').slice(0, 40) : [], avisoCard: !!s.avisoCard, histV: 1, avisoHist: !!s.avisoHist, cap, capDia: Math.max(1, Math.round(+s.capDia) || 1), capAzul: Math.max(0, Math.round(+s.capAzul) || 0), capFeito: s.capFeito === 1 ? 1 : 0, capMarm: Math.max(0, Math.round(+s.capMarm) || 0), docesTot: Math.max(0, Math.round(+s.docesTot) || 0), conversa, manut: normManut(s.manut), caixa: normCaixa(s.caixa), caixaPend: normPend(s.caixaPend) };
+  const dev = salaoDevolucao(s.salao), out = { dia, estrelas, lucroTot: Math.round(+s.lucroTot) || 0, pontosTot: Math.max(0, Math.round(+s.pontosTot) || 0), aval: normAval(s.aval), avalCom: normAvalCom(s.avalCom), neg: clamp(Math.round(+s.neg) || 0, 0, BANCO.neg), emp: normEmprestimo(novoHist ? { resto:REFORMA.valor, amort:REFORMA.amort, j:REFORMA.juros, ini:REFORMA.ini, ref:true } : s.emp), corta: s.corta !== false, fechou: Math.max(0, Math.round(+s.fechou) || 0), bank: bank + dev + devMaq, up, torneira:true, salao: normSalao(dev ? null : s.salao), divulga: dia < DIVULGA_DIA && !devLivre() ? 'boca' : divulgaOf(s.divulga).id, treino: !!s.treino, decor: normDecor(s.decor), cursos: normCursos(s.cursos), cursoDia: Math.max(0, Math.round(+s.cursoDia) || 0), tonXp: s.tonXp === 1 ? 1 : 0, daniTar: Math.max(0, Math.round(+s.daniTar) || 0), daniCursos: normDaniCursos(s.daniCursos), daniCursoDia: Math.max(0, Math.round(+s.daniCursoDia) || 0), jocaTar: Math.max(0, Math.round(+s.jocaTar) || 0), jocaCursos: normJocaCursos(s.jocaCursos), jocaCursoDia: Math.max(0, Math.round(+s.jocaCursoDia) || 0), camiCursos: normCamiCursos(s.camiCursos), camiCursoDia: Math.max(0, Math.round(+s.camiCursoDia) || 0), daniXp: s.daniXp === 1 ? 1 : 0, cardV: 1, libera: normLibera(s.libera, !novoHist), pontoDia: pontoDiaDe(s, dia), convCard: s.convCard === 'pend' ? 'pend' : s.convCard === 1 ? 1 : 0, convDiv: s.convDiv === 'pend' ? 'pend' : s.convDiv === 1 ? 1 : 0, convPlanta: s.convPlanta === 'pend' ? 'pend' : s.convPlanta === 1 || dia > 1 ? 1 : 0, convEnt: s.convEnt === 'pend' ? 'pend' : s.convEnt === 1 ? 1 : 0, socorro: s.socorro === 1 ? 1 : 0, convSocorro: s.convSocorro === 'pend' ? 'pend' : s.convSocorro === 1 ? 1 : 0, cardVisto: Array.isArray(s.cardVisto) ? s.cardVisto.filter(x => typeof x === 'string').slice(0, 40) : [], avisoCard: !!s.avisoCard, histV: 1, avisoHist: !!s.avisoHist, cap, capDia: Math.max(1, Math.round(+s.capDia) || 1), capAzul: Math.max(0, Math.round(+s.capAzul) || 0), capFeito: s.capFeito === 1 ? 1 : 0, capMarm: Math.max(0, Math.round(+s.capMarm) || 0), docesTot: Math.max(0, Math.round(+s.docesTot) || 0), conversa, manut: normManut(s.manut), caixa: normCaixa(s.caixa), caixaPend: normPend(s.caixaPend) };
   out.equipe = normEquipe(s.equipe, pontoOf(out.salao.ponto));
   out.efoodNota = s.efoodNota === 1 || dia > HIST_ENTREGA.dia ? 1 : 0;   // v9.6.4: o texto do entregador na introdução já saiu (quem passou do dia 4 já viu)
   out.vipVisto = s.vipVisto === 1 || dia > 5 ? 1 : 0;   // v9.6.4: o balão do 1º VIP da carreira
@@ -281,7 +281,7 @@ class Group {
     this.docesMarm = this.retira && game.mode === 'carreira' && game.up.confCaseira ? (this.lote ? this.dishes : [0]).filter(() => Math.random() < DOCES.marmita).length : 0; this.docesMarmDados = 0;
     this.extras = this.people.map((p, i) => !this.retira && game.mode !== 'treino' && Math.random() < (CARDAPIO[this.dishes[i]].cat === 'pf' ? T.mais : Math.max(T.mais, MAIS.salgado)) ? pedePrato(type, game, true, p.veg) : null);
     this.bill = (this.lote ? [] : this.dishes).concat(this.extras).reduce((v, k) => v + (k ? precoPrato(k, game.ponto, game.cursos) : 0), 0) + (this.vip ? VIP.dish : 0);
-    this.hearts = 5;
+    this.hearts = 5; this.jaVouDito = false;   // v9.6.13: jaVouDito = o "Já vou!" já apareceu para este grupo
     this.x = DOOR.x; this.y = DOOR.y;
     this.path = []; this.moving = false; this.walkPh = 0;
     this.table = null; this.slot = 0;
@@ -371,6 +371,23 @@ class Group {
   }
   /* na fila: há mesa (aberta e sem grupo, mesmo suja) onde o grupo cabe? */
   get semMesa(){ return !this.game.tables.some(t => t.open && !t.group && t.seats >= this.size); }
+  /* v9.6.13, "Já vou!": o jogador já está indo atender este grupo? Na fila, só se estiver arrastando o grupo (a seleção por toque não conta);
+     na mesa, se a tarefa DA VEZ da Bia é para ele (a mesa dele, com algo a fazer ali, ou o prato dele no balcão). Só vale para segurar o ÚLTIMO
+     coração. Com o prato dele na mão e outra tarefa na frente, não vale: medido em 10/11, essa folga a mais levava o balance sem equipe de ~72% para ~79% */
+  get jaVem(){
+    const g = this.game;
+    if (this.state === 'queue') return !!(g.drag && g.drag.g === this);
+    const t = this.table, b = g.bia;
+    if (!t) return false;
+    const a = b.acts[0];
+    if (!a) return false;
+    if (a.type === 'plate'){ const ac = g.kitchen.achaPronto(a.pid); return !!(ac && ac.p.group === this); }
+    if (a.type === 'table' && a.id === t.id){
+      if (this.state === 'wantOrder' || this.state === 'wantBill') return true;
+      return b.hands.some(h => h.kind !== 'ticket' && h.kind !== 'dirty' && (h.group === this || (h.kind === 'juice' && this.juiceOpen && this.juicePending > 0)));
+    }
+    return false;
+  }
   /* paciência na fila (v7.1): sem mesa que sirva, corre no ritmo da fila justa e, na carreira,
      para no piso (1 coração, com metade da paciência dele) até abrir uma mesa */
   tickQueue(dt){
@@ -388,6 +405,11 @@ class Group {
     this.patLeft -= dt;
     if (this.game.trashFull && this.game.fumacaAlcanca(this.x, this.y)) this.patLeft -= dt * TRASH.smell;   // v9.6.11: o cheiro (paciência ÷ 1,3) só vale para quem a fumaça alcança
     if (this.patLeft <= 0){
+      if (this.hearts <= 1 && this.jaVem){   // v9.6.13: o último coração não cai com a Bia a caminho
+        this.patLeft = 0;
+        if (!this.jaVouDito){ this.jaVouDito = true; if (this.state !== 'queue') this.game.addText(this.game.bia.x, this.game.bia.y - 82, 'Já vou!', PAL.faixa, 15); }
+        return;
+      }
       this.hearts--;
       if (this.state === 'queue') this.perdFila++; else { this.perdMesa++; if (this.esperaSuco && (this.docesFalta > 0 || this.cafesFalta > 0)) this.perdDoce++; if (this.drinksFalta > 0) this.perdDrink++; }
       if (this.hearts <= 0) this.game.angryLeave(this);

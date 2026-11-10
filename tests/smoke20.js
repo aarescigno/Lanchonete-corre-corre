@@ -28,7 +28,7 @@ ok(g.save.lucroTot===lt0+g.result.money,'o prejuízo também entra no lucro acum
 g.setState('menu'); ok(/Continuar: dia 3/.test(els['btn-play'].textContent) && /História · Garagem completa · dia 3/.test(els['menu-dia'].textContent),'menu: "Continuar: dia 3"');
 ok(/★/.test(els['menu-info'].textContent) && /lucro acumulado/.test(els['menu-info'].textContent),'menu: caixa, estrelas e lucro acumulado');
 // largar no meio não avança
-cont(); els['btn-shop-go'].fire('click'); els['btn-start'].fire('click'); g.pause(); els['btn-pause-menu'].fire('click');
+cont(); els['btn-shop-go'].fire('click'); els['btn-start'].fire('click'); g.pause(); els['btn-pause-menu'].fire('click'); els['btn-pause-menu'].fire('click');
 ok(g.state==='menu' && g.save.dia===3,'largar o dia no meio não avança a carreira');
 
 // ---------- dias além do 7 ----------

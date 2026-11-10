@@ -18,14 +18,14 @@ ok(g.lucro===-(g.contas+g.paid+g.paidDiv),'o lucro do dia começa no vermelho, c
 g.clock=g.day.time/2; g.money=300; g.custo=90; g.pause();
 ok(g.state==='paused' && /Se sair agora, o dia não conta\./.test(els['pause-note'].textContent),'a pausa avisa: '+els['pause-note'].textContent);
 const cx0=g.save.caixa.length, st0=g.save.estrelas, mx0=g.save.dia, lt0=g.save.lucroTot;
-els['btn-restart'].fire('click');
+els['btn-restart'].fire('click'); els['btn-restart'].fire('click');   // v9.6.13: na carreira com o dia aberto, o 1º toque só pede confirmação
 ok(g.state==='intro' && g.day.n===4,'reiniciar volta para a introdução do mesmo dia');
 ok(g.save.bank===500,'o dinheiro fica como estava (nem folha, nem o que o dia rendeu): '+g.save.bank);
 ok(g.save.caixa.length===cx0 && g.save.estrelas===st0 && g.save.dia===mx0 && g.save.lucroTot===lt0,'nada no caixa, nas estrelas, no lucro acumulado ou no próximo dia');
 ok(!/interrompido/.test(els['intro-note'].textContent),'a introdução não fala de dia interrompido');
 
 // ---------- menu na pausa: igual ----------
-g.begin(); g.clock=0; g.money=900; g.custo=200; g.pause(); els['btn-pause-menu'].fire('click');
+g.begin(); g.clock=0; g.money=900; g.custo=200; g.pause(); els['btn-pause-menu'].fire('click'); els['btn-pause-menu'].fire('click');
 ok(g.state==='menu' && g.save.bank===500 && g.save.caixa.length===cx0,'sair pelo menu, mesmo com o relógio no fim, não conta');
 
 // ---------- v8.2.3: largar o dia com gente na espera ou nas mesas ----------
@@ -37,7 +37,7 @@ novo(500,{},'boca'); abre(5);
   ok(M===10 && g.multa(a)===M && g.multa(b)===M+V,'multa de quem sai bravo: R$ '+M+' (VIP: +'+V+')');
   ok(g.bravosSeSair.length===2 && g.multaSeSair===2*M+V,'conta quem está na espera e na mesa, não quem já está indo embora');
   g.pause(); ok(new RegExp('Quem está aqui vai embora bravo: multa de R\\$ '+MT+'\\.').test(els['pause-note'].textContent),'a pausa avisa a multa: '+els['pause-note'].textContent);
-  const n0=g.save.caixa.length; els['btn-restart'].fire('click');
+  const n0=g.save.caixa.length; els['btn-restart'].fire('click'); els['btn-restart'].fire('click');
   ok(g.save.bank===SD,'reiniciar desconta a multa do dinheiro acumulado: '+g.save.bank);
   const r=g.save.caixa[g.save.caixa.length-1];
   ok(g.save.caixa.length===n0+1 && r.int===2 && r.mul===MT && r.d===5 && r.saldo===SD && !r.fat,'o caixa ganha a linha do dia largado');
@@ -48,9 +48,9 @@ novo(500,{},'boca'); abre(5);
  }
 // sem ninguém: sem multa nem linha
 novo(500,{},'boca'); abre(5); g.pause(); ok(!/multa/.test(els['pause-note'].textContent),'sem ninguém no salão, sem multa no aviso');
-{ const n0=g.save.caixa.length; els['btn-restart'].fire('click'); ok(g.save.bank===500 && g.save.caixa.length===n0 && !/largou/.test(els['intro-note'].textContent),'sem ninguém, reiniciar não custa nada'); }
+{ const n0=g.save.caixa.length; els['btn-restart'].fire('click'); els['btn-restart'].fire('click'); ok(g.save.bank===500 && g.save.caixa.length===n0 && !/largou/.test(els['intro-note'].textContent),'sem ninguém, reiniciar não custa nada'); }
 // menu na pausa também cobra; desde a v8.3, a multa pode deixar o caixa negativo
-novo(L.MULTA,{},'boca'); abre(5); g.spawn({type:'estudante',color:0}); g.spawn({type:'estudante',color:1}); g.pause(); els['btn-pause-menu'].fire('click');
+novo(L.MULTA,{},'boca'); abre(5); g.spawn({type:'estudante',color:0}); g.spawn({type:'estudante',color:1}); g.pause(); els['btn-pause-menu'].fire('click'); els['btn-pause-menu'].fire('click');
 ok(g.state==='menu' && g.save.bank===-L.MULTA && g.save.caixa.slice(-1)[0].mul===2*L.MULTA,'Menu na pausa cobra também, e o caixa fica negativo (R$ '+2*L.MULTA+' com R$ '+L.MULTA+')');
 ok(!g.encerrado,'o aviso não fica para depois');
 // fim do dia com gente ainda lá: como antes (o tempo acabou, sem multa extra)
@@ -63,7 +63,7 @@ novo(500,{},'boca'); g.startEndless(); g.begin(); g.spawn({type:'estudante',colo
   g2.save=L2.normSave({maxDay:7,bank:400,equipe:{dani:2}}); g2.up=g2.save.up; g2.buildTables(); g2.startDay(4); g2.begin();
   const eq=L2.MANUT.equip[0]; g2.quebras=[{id:eq.id,t:0,on:true,fixed:false}];
   ok(g2.consertar(eq.id) && g2.save.bank===400-eq.emerg,'o conserto sai na hora');
-  g2.pause(); H2.els['btn-restart'].fire('click');
+  g2.pause(); H2.els['btn-restart'].fire('click'); H2.els['btn-restart'].fire('click');
   ok(g2.save.bank===400-eq.emerg && g2.manut[eq.id]===1,'reiniciar não devolve o conserto, e o equipamento continua novo'); }
 
 // ---------- dia completo: paga tudo no fim e guarda o resto ----------
