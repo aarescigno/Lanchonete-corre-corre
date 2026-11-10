@@ -211,7 +211,15 @@ function shopCartoes(grid, grupo){
 }
 /* v8.1: compra que usa o dinheiro já reservado para a folha (o que fica de fora ao abrir o dia aumenta): o botão fica
    em alerta e o 1º toque só avisa o que vai ficar de fora; o 2º compra */
-function folhaAviso(b, cost){
+function folhaAviso(b, cost, pagaBanco){
+  folhaAvisoFolha(b, cost);
+  // v9.6.13: depois dos avisos da folha (que têm prioridade; `pagaBanco` = o botão paga o próprio banco, sem aviso), avisa se a compra deixa o caixa abaixo da parcela do banco de hoje
+  if (pagaBanco || b.getAttribute('data-aviso') || !(cost > 0) || devLivre() || !(game.devido > 0) || game.save.bank - cost >= game.devido) return;
+  b.classList.add('warn');
+  b.title = 'Depois desta compra, o caixa fica abaixo da parcela do banco de hoje (' + fmt(game.devido) + '): o lucro do dia precisa cobrir.';
+  b.setAttribute('data-aviso', game.save.emp.atr ? 'Confirmar: parcela atrasada!' : 'Confirmar: pode faltar para o banco');
+}
+function folhaAvisoFolha(b, cost){
   // v8.3: com a chave da folha desligada, nada fica de fora: o aviso é o caixa no negativo no fim do dia
   if (!game.save.corta){
     if (!(cost > 0) || game.livre < 0 || game.livre - cost >= 0) return;
@@ -233,9 +241,9 @@ function folhaPede(b){
   b.setAttribute('data-ok', '1'); b.textContent = t; Sfx.tap();
   return true;
 }
-function shopBtn(text, cls, enabled, fn, cost){
+function shopBtn(text, cls, enabled, fn, cost, pagaBanco){
   const b = el('button', cls || 'btn', text); b.type = 'button';
-  if (!enabled) b.disabled = true; else folhaAviso(b, cost);
+  if (!enabled) b.disabled = true; else folhaAviso(b, cost, pagaBanco);
   b.addEventListener('click', () => { Sfx.init(); if (folhaPede(b)) return; if (fn()) buildShop(); else Sfx.boing(); });
   return b;
 }
@@ -934,8 +942,8 @@ function buildBanco(grid){
     const tab = tabelaDe(e);
     c.appendChild(el('span', 'full', 'Faltam ' + fmt(e.resto) + (e.j !== BANCO.juros && e.j ? ' (' + Math.round(e.j * 100) + '% ao dia)' : '') + '. ' + (e.atr ? 'Parcela atrasada! No fim do dia ' + game.shopNext + ', o caixa precisa ter ' + fmt(game.devido) + '.' : carencia(e, game.shopNext) ? '1ª parcela no fim do dia ' + e.ini + ': ' + fmt(parcelaDe(e, e.ini)) + ' (' + Math.min(e.resto, e.amort) + ' + ' + jurosDe(e, e.ini) + ' de juros)' : 'Fim do dia ' + game.shopNext + ': ' + fmt(game.parcela) + ' (' + Math.min(e.resto, e.amort) + ' + ' + game.jurosHoje + ' de juros)' + (tab.length > 1 ? '; depois, ' + tab.slice(1).join(', ').replace(/, ([^,]*)$/, ' e $1') : '') + '.')));
     const duo = el('div', 'duo'), a1 = Math.min(e.resto, e.amort);
-    if (e.resto > a1) duo.appendChild(shopBtn('Amortizar ' + fmt(a1), 'btn', sv.bank >= a1, () => game.amortizar(a1), a1));
-    duo.appendChild(shopBtn('Quitar: ' + fmt(e.resto), 'btn', sv.bank >= e.resto, () => game.quitar(), e.resto));
+    if (e.resto > a1) duo.appendChild(shopBtn('Amortizar ' + fmt(a1), 'btn', sv.bank >= a1, () => game.amortizar(a1), a1, true));
+    duo.appendChild(shopBtn('Quitar: ' + fmt(e.resto), 'btn', sv.bank >= e.resto, () => game.quitar(), e.resto, true));
     c.appendChild(duo);
   } else {
     const duo = el('div', 'duo');

@@ -123,6 +123,7 @@ function buildEnd(){
   const sv = game.save;
   // v8.3.1: a parcela que não coube no caixa ficou atrasada
   if (r.atrasou) diz('Faltou dinheiro para a parcela do banco: ficou atrasada. Amanhã, no fim do dia, o caixa precisa ter ' + fmt(game.devido) + ' (a atrasada e a do dia), senão o banco toma a lanchonete!', 'alerta');
+  if (r.socorro) diz('O banco segurou a parcela desta vez. Na próxima, ele toma a lanchonete.', 'alerta');   // v9.6.13
   if (r.forcado) diz('O caixa fechou no negativo pelo ' + (BANCO.neg + 1) + 'º dia seguido: o banco cobriu ' + fmt(r.forcado) + ', com juros de ' + Math.round(BANCO.forcado * 100) + '% ao dia sobre o saldo, em ' + sv.emp.n + ' parcelas (a próxima, ' + fmt(game.parcela) + ').', 'alerta');
   else if (sv.bank < 0) diz('Caixa no negativo há ' + sv.neg + (sv.neg > 1 ? ' dias' : ' dia') + (sv.neg >= BANCO.neg ? ': se fechar amanhã no negativo, o banco cobre à força.' : ' (pode ficar até ' + BANCO.neg + ').'), 'alerta');
   // v8.9 e v9.2: quem já juntou experiência para subir de nível
