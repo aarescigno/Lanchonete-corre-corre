@@ -172,9 +172,10 @@ const quebra=id=>{ g.quebras=[{id,t:0,on:true,fixed:false}]; };
 { novo(3000,7); g.startDay(5); const dia=g.day, N=400;
   const media=(clima)=>{ g.clima=clima; let n=0,ent=0,fam=0,tot=0; for(let i=0;i<N;i++){ const s=g.buildSchedule(dia); n+=s.length; s.forEach(x=>{ tot++; if(x.type==='entregador') ent++; if(x.type==='familia') fam++; }); } return {n:n/N,ent:ent/tot,fam:fam/tot}; };
   const b=media(''), c=media('chuva'), f=media('feriado');
-  ok(c.n<b.n*0.9 && near(c.n/b.n,L.CLIMA.chuva.groups,0.08),'chuva: menos grupos ('+b.n.toFixed(1)+' → '+c.n.toFixed(1)+', ×'+(c.n/b.n).toFixed(2)+')');
+  // v9.6.12: folga de 0,1 (era 0,08): o número de grupos do dia é inteiro, e com 12 grupos meio grupo já vale 4% (12 → 14 dava ×1,17 e falhava de vez em quando)
+  ok(c.n<b.n*0.9 && near(c.n/b.n,L.CLIMA.chuva.groups,0.1),'chuva: menos grupos ('+b.n.toFixed(1)+' → '+c.n.toFixed(1)+', ×'+(c.n/b.n).toFixed(2)+')');
   ok(c.ent>b.ent+0.15,'chuva: mais entregadores ('+(b.ent*100).toFixed(0)+'% → '+(c.ent*100).toFixed(0)+'%)');
-  ok(f.n>b.n*1.1 && near(f.n/b.n,L.CLIMA.feriado.groups,0.08),'feriado: mais grupos ('+b.n.toFixed(1)+' → '+f.n.toFixed(1)+', ×'+(f.n/b.n).toFixed(2)+')');
+  ok(f.n>b.n*1.1 && near(f.n/b.n,L.CLIMA.feriado.groups,0.1),'feriado: mais grupos ('+b.n.toFixed(1)+' → '+f.n.toFixed(1)+', ×'+(f.n/b.n).toFixed(2)+')');
   ok(f.fam>b.fam+0.1,'feriado: mais famílias ('+(b.fam*100).toFixed(0)+'% → '+(f.fam*100).toFixed(0)+'%)');
   ok(near(L.CLIMA.chuva.chance+L.CLIMA.feriado.chance,0.22,0.2) && L.CLIMA.chuva.groups<1 && L.CLIMA.feriado.groups>1,'chuva e feriado raros (R$ '+(L.CLIMA.chuva.chance*100)+'% e '+(L.CLIMA.feriado.chance*100)+'%)');
   // sorteio do clima pela chance

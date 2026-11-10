@@ -43,11 +43,11 @@ const txt=e=>(e.textContent||'')+(e.children||[]).map(txt).join(' ');
 
 // v8.3.7: o fim do dia diz "3 estrelas ... sem perder ninguém" e, com o lucro batido e uma perda, explica a estrela que faltou
 { const d=L.DAYS[1], fin=(m,lost)=>{ g.startDay(2); g.begin(); g.money=m+g.fixo; g.custo=0; g.stats.lost=lost; g.finishDay(); g.hooks.state('dayend'); };
-  fin(d.expert,1); const em=els['end-money'].textContent, msg=els['end-msg'].textContent;
+  fin(d.expert,1); const em=els['end-money'].textContent, msg=txt(els['end-msg']);
   ok(/3 estrelas R\$ \d+ sem perder ninguém\)$/.test(em) && !/expert/i.test(em),'linha do lucro sem "expert": '+em);
   ok(g.result.stars===2 && /1 cliente foi embora/.test(msg) && /3ª estrela/.test(msg),'expert com 1 perda: a mensagem explica a 3ª estrela');
-  fin(d.expert,2); ok(/2 clientes foram embora/.test(els['end-msg'].textContent),'com 2 perdas, no plural');
-  fin(d.expert,0); ok(g.result.stars===3 && /Perfeito/.test(els['end-msg'].textContent),'sem perda: 3 estrelas'); }
+  fin(d.expert,2); ok(/2 clientes foram embora/.test(txt(els['end-msg'])),'com 2 perdas, no plural');
+  fin(d.expert,0); ok(g.result.stars===3 && /Perfeito/.test(txt(els['end-msg'])),'sem perda: 3 estrelas'); }
 
 console.log('\n'+(total-fails)+'/'+total+' ok; fails= '+fails);
 process.exitCode = fails ? 1 : 0;
