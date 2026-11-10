@@ -8,14 +8,14 @@ Jogo de navegador de gerenciamento de restaurante, em um único arquivo HTML com
 - **Sem invólucro:** o arquivo montado não tem `<!doctype>`, `<html>`, `<head>` nem `<body>` (o publicador envolve) e começa com `<title>`.
 - **Nome fixo:** o nome do arquivo não muda. Versões antigas vão para `versoes/vN-fonte.html` (exato) e `versoes/vN.html` (com a 1ª linha de `versoes/v1.html` como invólucro).
 - **Palavras do dia a dia:** na interface, prefira os termos mais comuns no Brasil (ex.: "QUEBRADO", e não "FORA DE SERVIÇO").
-- **Pouco texto na tela (desde a 3f):** o jogo é para sentir, não para calcular. Cartões da lojinha só com nome, preço em R$ e "?"; a explicação vai como ficha no Manual (`MANUAL`, sem números, revelada com a história). Quem apresenta é a Missão zero e as falas do Modo História, em frases curtas.
+- **Pouco texto na tela (desde a 3f):** o jogo é para sentir, não para calcular. Cartões da lojinha só com nome, preço em R$ e "?"; a explicação vai como ficha no Manual (`MANUAL`, sem números, revelada com a história). Quem apresenta é a Missão zero e as falas do Modo História, em frases curtas. A Missão zero segue a mesma regra desde a v9.6.12 (sem números), e quem para nos dias 1 a 3 ganha uma dica na tela (`DICAS`).
 - **Diversidade e movimento:** clientes diversos, sem estereótipos; respeitar `prefers-reduced-motion`.
 - **Código:** a lógica (`Game.update`) fica separada do desenho (`render`); `window.__game` e `window.__lcc` ficam expostos para os testes.
 
 ## Partes do código (`src/`, juntadas em ordem pelo nome)
 O JS fica todo dentro de um `(function(){ ... })()` que abre em `02-telas.html` e fecha em `43-telas.js`; as partes `.js` não rodam sozinhas.
 - `0x` topo, CSS e telas (`00-topo.html`, `01-estilo.css`, `02-telas.html` com o menu, a lojinha e os painéis `#ov-*`)
-- `1x` lógica: `10-constantes.js` (cardápio, metas, `MANUT`, `AVAL`, `DECOR`, cursos...), `11-base.js`, `12-clientes.js`, `13-cozinha.js` (Tonhão), `14-bia.js`, `15-dani.js`, `16-jogo.js` (classe `Game`), `17-treino.js` (Missão zero), `18-abertura.js`, `19-conversa.js` (as conversas do Modo História)
+- `1x` lógica: `10-constantes.js` (cardápio, metas, `MANUT`, `AVAL`, `DECOR`, cursos...), `11-base.js`, `12-clientes.js`, `13-cozinha.js` (Tonhão), `14-bia.js`, `15-dani.js`, `16-jogo.js` (classe `Game`), `17-treino.js` (Missão zero e as dicas na hora dos dias 1 a 3), `18-abertura.js`, `19-conversa.js` (as conversas do Modo História)
 - `2x` desenho: `20-desenho-base.js`, `21-cenario.js`, `22-salao-hud.js`, `23-render.js`, `24-treino.js`, `25-abertura.js`, `26-conversa.js`
 - `3x`/`4x` interface: `30-ranking.js`, `40-interface.js` (menu, Manual), `41-lojinha.js`, `42-resultados.js` (fim do dia), `43-telas.js` (troca de telas, entrada, laço)
 - O que cada parte tem, versão a versão: `docs/PARTES.md` (só quando precisar).
