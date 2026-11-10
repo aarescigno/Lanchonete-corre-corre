@@ -47,7 +47,7 @@ novo({daniCursoDia:3}); ok(/Em curso/.test(txt(grid())),'trava: "Em curso"');
 novo({daniCursos:{atend:1}}); ok(/Curso feito/.test(txt(grid())),'curso feito');
 // (7) fim do dia
 novo({daniTar:4*T},{dani:1}); g.startDay(3); g.begin(); g.dani.feitas=5; g.schedule=[]; g.nextIdx=0; g.money=0; g.custo=0; g.finishDay();
-ok(new RegExp('Dani: 5 tarefas hoje · experiência '+L.daniXp(g.save)+'\\.').test(els['end-msg'].textContent) && /A Dani já pode subir para o nível 1!/.test(els['end-msg'].textContent),'fim do dia: tarefas, experiência e "já pode subir"');
+ok(new RegExp('Dani\\s+5 tarefas · experiência '+L.daniXp(g.save)).test(txt(els['end-stats'])) && /A Dani já pode subir para o nível 1!/.test(txt(els['end-msg'])),'fim do dia: tarefas e experiência na tabela (v9.6.12) e "já pode subir" nos recados');
 // (8) folha que não cabe derruba 1 nível e a XP fica
 novo({daniTar:8*T},{dani:3},15); g.save.corta=true; g.startDay(3); g.begin();
 ok(g.save.equipe.dani===2 && L.daniXp(g.save)===8,'sem dinheiro para a folha: cai 1 nível e a XP fica');

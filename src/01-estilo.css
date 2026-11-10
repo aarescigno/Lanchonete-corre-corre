@@ -81,6 +81,18 @@ p{margin:calc(var(--u)*6) 0;font-size:max(12px,calc(var(--u)*16));line-height:1.
 .stars .on{color:var(--mostarda)} .stars .off{color:#d9d4c4}
 .stats{display:grid;grid-template-columns:auto auto;gap:calc(var(--u)*4) calc(var(--u)*24);justify-content:center;text-align:left;margin:calc(var(--u)*8) auto;font-size:max(11px,calc(var(--u)*14));font-weight:600}
 /* v9.6.11: os comentários do Gurugol em balões grandes no topo do fim do dia */
+/* v9.6.12, fim do dia: o corpo rola e a linha de botões fica sempre à vista no pé do painel; os recados (resultado, avisos do banco,
+   quem pode subir de nível e o objetivo do capítulo) vêm em linhas curtas, acima dos balões do Gurugol */
+.end-panel{display:flex;flex-direction:column;overflow:hidden}
+.end-corpo{flex:1 1 auto;min-height:0;overflow:auto;padding:0 calc(var(--u)*4)}
+.end-pe{flex:none;margin-top:calc(var(--u)*8);padding-top:calc(var(--u)*8);border-top:calc(var(--u)*2) solid rgba(34,32,28,.14)}
+.end-recados{display:flex;flex-direction:column;align-items:center;gap:calc(var(--u)*4);margin:calc(var(--u)*4) auto calc(var(--u)*6);max-width:calc(var(--u)*780)}
+.end-recados:empty{display:none}
+.end-linha{font-size:max(12px,calc(var(--u)*15));font-weight:600;line-height:1.25;color:#4a4439}
+.end-linha.alerta{color:var(--perigo)}
+.end-linha.boa{color:#2f7d46}
+.end-linha.cap{background:var(--creme);color:var(--tinta);border:calc(var(--u)*2) solid var(--tinta);border-radius:calc(var(--u)*10);padding:calc(var(--u)*2) calc(var(--u)*12)}
+.end-linha.cap.feito{background:#DDF1E2}
 .end-baloes{display:flex;flex-direction:column;gap:calc(var(--u)*4);margin:calc(var(--u)*4) auto;max-width:calc(var(--u)*620)}
 .end-baloes:empty{display:none}
 .end-balao{display:flex;align-items:center;gap:calc(var(--u)*8);text-align:left;background:#fff;border:calc(var(--u)*2) solid var(--tinta);border-radius:calc(var(--u)*14);padding:calc(var(--u)*3) calc(var(--u)*10)}
@@ -319,6 +331,7 @@ table.rank tr.me td{background:#fbe7a8}
   #ov-shop .item b,#ov-shop .item span{grid-column:1 / -1}
   #ov-shop .shopgrid{gap:6px}
   #ov-shop h2,#shop-folha{display:none}
+  #ov-shop h2 + p{padding:0 max(50px,calc(var(--u)*58))}   /* v9.6.12: sem o título, a linha do dinheiro não passa por baixo do "?" */
   #ov-shop .item .tasks button{font-size:10px;white-space:nowrap;padding:1px 4px}
   #ov-shop .item .duo .btn{font-size:12px;padding:2px 6px}
   #ov-shop .seg button{min-height:30px}

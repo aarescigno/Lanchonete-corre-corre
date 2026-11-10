@@ -23,7 +23,7 @@ novo({dia:5,bank:600}); g.emprestar(500);   // v8.3.2: saldo 500, amortização 
 cont(); fecha(0,50); const c5=g.contas;
 ok(g.result.atrasou && !g.result.tomou && g.save.emp.atr && g.save.emp.resto===515 && g.save.emp.n===6,'caixa sem a parcela: ficou atrasada, nada saiu e os juros do dia (15) foram para o saldo');
 ok(g.save.bank===50-c5 && !g.result.par,'o dinheiro não pagou parcela');
-ok(g.state==='dayend' && /ficou atrasada/.test(els['end-msg'].textContent) && /R\$ 215/.test(els['end-msg'].textContent),'o fim do dia avisa: amanhã R$ 215');
+ok(g.state==='dayend' && /ficou atrasada/.test(txt(els['end-msg'])) && /R\$ 215/.test(txt(els['end-msg'])),'o fim do dia avisa: amanhã R$ 215');
 ok(g.save.caixa.slice(-1)[0].atr===1 && /parcela atrasada/.test(L.caixaResumo(g.save)),'o caixa marca o atraso');
 ok(g.devido===215,'devido amanhã: 2 amortizações (200) e os juros do saldo novo (15)');
 els['btn-next'].fire('click');

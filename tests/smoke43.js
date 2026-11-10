@@ -163,7 +163,7 @@ const fala=(L,id)=>L.liberaOf(id);
   ok(L.normSave({ equipe:{ joca:1 } }).equipe.joca===0 && L.normSave({ equipe:{ joca:9 } }).equipe.joca===4 && L.normSave({ equipe:{ joca:3, jocaTasks:['cafe','lixo','lixo','suco'] } }).equipe.jocaTasks.join()==='lixo,suco','normEquipe: joca 0 ou 2 a 4; só tarefa básica, sem repetir');
   ok(L.normSave({ daniCursos:{ confCaseira:1 } }).up.confCaseira===true && !L.normSave({ up:{ confCaseira:true } }).up.confCaseira,'up.confCaseira vem do curso da Dani');
   const H=aberto({ equipe:{ tonhao:1, dani:2, joca:2 } }), {g,els}=H; g.joca.feitas=7; g.stats.doces=3; g.stats.docesMarm=1; g.money=300; g.custo=0; g.schedule=[]; g.nextIdx=0; g.finishDay();
-  ok(g.save.jocaTar===7 && /Joca: 7 tarefas hoje · experiência 1/.test(txt(els['end-msg'])) && /Doces: 3 na mesa e 1 na marmita/.test(txt(els['end-msg'])),'fim do dia: o trabalho do Joca vira experiência e os doces entram no resumo'); }
+  ok(g.save.jocaTar===7 && /Joca\s+7 tarefas · experiência 1/.test(txt(els['end-stats'])) && /Doces\s+3 na mesa e 1 na marmita/.test(txt(els['end-stats'])),'fim do dia: o trabalho do Joca vira experiência e os doces entram no resumo'); }
 
 console.log('smoke43: total =',total,' fails =',fails);
 process.exit(fails?1:0);
