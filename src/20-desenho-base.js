@@ -392,6 +392,11 @@ function drawIcon(ctx,k,x,y,s,extra,extra2,extra3){
 /* ============================================================
    PESSOAS
    ============================================================ */
+/* v10: uma florzinha de 5 pétalas (casal: na lapela ou no cabelo) */
+function florCasal(ctx,x,y,cor){
+  for (let i=0;i<5;i++){ const a = i * TAU / 5; ell(ctx,x + Math.cos(a) * 2.6,y + Math.sin(a) * 2.6,2.2,2.2); ctx.fillStyle = cor || '#F28AA8'; ctx.fill(); }
+  circ(ctx,x,y,1.5); fs(ctx,'#F2C94C',0.8);
+}
 function drawPerson(ctx,p,x,y,o){
   o = o || {};
   const sc = (p.kid ? 0.74 : (p.elder ? 0.95 : 1)) * (o.s || 1);
@@ -436,6 +441,12 @@ function drawPerson(ctx,p,x,y,o){
   ctx.fillStyle = 'rgba(255,255,255,.22)'; ctx.fillRect(-9,-30+bob,5,16);
   // v9: macacão (zíper e bolso), camisa xadrez ou polo, crachá e o protetor de ouvido no pescoço
   if (p.macacao){ ctx.strokeStyle = 'rgba(255,255,255,.45)'; ctx.lineWidth = 1.4; ctx.beginPath(); ctx.moveTo(0,-31+bob); ctx.lineTo(0,-13); ctx.stroke(); rr(ctx,3,-24+bob,7,6,1); ctx.strokeStyle = 'rgba(0,0,0,.3)'; ctx.stroke(); }
+  if (p.vestido){   // v10, casal: vestido (a saia cai sobre as pernas e o cinto marca a cintura)
+    ctx.beginPath(); ctx.moveTo(-13.5,-14+bob*0.5); ctx.lineTo(13.5,-14+bob*0.5); ctx.lineTo(18,-3); ctx.quadraticCurveTo(0,0,-18,-3); ctx.closePath(); fs(ctx,shirt,2.3);
+    ctx.fillStyle = 'rgba(255,255,255,.2)'; ctx.fillRect(-12,-12,4,8);
+    ctx.fillStyle = 'rgba(0,0,0,.25)'; ctx.fillRect(-13,-15+bob*0.5,26,2.4);
+  }
+  if (p.flor === 'lapela' && !o.back) florCasal(ctx,-6,-26+bob,p.florC);   // v10: a flor na lapela
   if (p.camisa === 'xadrez'){ ctx.strokeStyle = 'rgba(0,0,0,.28)'; ctx.lineWidth = 1.6; [-6,0,6].forEach(dx => { ctx.beginPath(); ctx.moveTo(dx,-31+bob); ctx.lineTo(dx*1.2,-13); ctx.stroke(); }); [-26,-20,-14].forEach(yy => { ctx.beginPath(); ctx.moveTo(-12,yy+bob); ctx.lineTo(12,yy+bob); ctx.stroke(); }); }
   if (p.camisa === 'polo'){ ctx.beginPath(); ctx.moveTo(-5,-32+bob); ctx.lineTo(0,-26+bob); ctx.lineTo(5,-32+bob); ctx.closePath(); fs(ctx,'#fff',1.4); }
   if (p.blazer){   // v9.1, almoço de negócios: blazer (lapelas e a camisa clara em V), com gravata em alguns, e botões
@@ -479,6 +490,7 @@ function drawPerson(ctx,p,x,y,o){
     if (p.acc !== 'helmet'){ circ(ctx,0,hy,11.3); fs(ctx,p.hair === 4 && !p.elder ? skin : hc,2.2); }
     else { ctx.beginPath(); ctx.arc(0,hy-1,12.5,Math.PI,0); ctx.closePath(); fs(ctx,PAL.faixa,2.5); rr(ctx,-13,hy-3,26,3.5,1.5); fs(ctx,'#1b1b1b',1.6); circ(ctx,0,hy+2,9.5); fs(ctx,skin,1.6); }
     if (p.hair === 2){ circ(ctx,0,hy-15,6); fs(ctx,hc,2); }
+    if (p.flor === 'cabelo') florCasal(ctx,8.5,hy - 6,p.florC);   // v10
     ctx.restore();
     return;
   }
@@ -499,6 +511,7 @@ function drawPerson(ctx,p,x,y,o){
   } else if (p.elder){
     ctx.strokeStyle = hc; ctx.lineWidth = 3.5; ctx.beginPath(); ctx.arc(0,hy+1,11.5,Math.PI*0.85,Math.PI*1.1); ctx.stroke(); ctx.beginPath(); ctx.arc(0,hy+1,11.5,-Math.PI*0.1,Math.PI*0.15); ctx.stroke();
   }
+  if (p.flor === 'cabelo') florCasal(ctx,8.5,hy - 6,p.florC);   // v10, casal: a flor no cabelo
   // rosto (abertura, v8.6.1: olha vira o rosto para o lado em que anda; pisca e fala animam)
   if (o.olha) ctx.translate(o.olha * 2.5,0);
   ctx.fillStyle = PAL.tinta;

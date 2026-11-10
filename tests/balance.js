@@ -17,10 +17,10 @@ if(process.env.PONTO_CFG){ const c=JSON.parse(process.env.PONTO_CFG), P=L.PONTOS
 if(process.env.CLIMA_CFG){ const c=JSON.parse(process.env.CLIMA_CFG); for(const k in c) Object.assign(L.CLIMA[k],c[k]); }
 const N=+process.argv[2]||20;
 // v9: PONTO=industrial joga os dias no ponto da área industrial (salão de 20 lugares, fogão industrial, TVs com anúncios, cadeirinhas; DIAS padrão 8,9,10)
-const PONTO=process.env.PONTO||'garagem', IND=PONTO==='industrial', AV=PONTO==='avenida';   // v9.1: PONTO=avenida joga os dias no Restaurante na Avenida Brasil (24 lugares, fogão industrial, sofás, águas saborizadas, couvert com taxa e o curso de restaurante; DIAS padrão 8,9,10)
+const PONTO=process.env.PONTO||'garagem', IND=PONTO==='industrial', TE=PONTO==='terraco', AV=PONTO==='avenida'||TE;   /* v10: PONTO=terraco joga os dias 8 a 10 no Terraço Suíça (5 mesas de 4, fogão industrial, poltronas, couvert com taxa, o curso de restaurante, Tonhão nível 4; JOCA, ESPRESSO, CAMI, ANSELMO e GOURMET como na Avenida; AV vale para os dois pontos de cima) */ //   // v9.1: PONTO=avenida joga os dias no Restaurante na Avenida Brasil (24 lugares, fogão industrial, sofás, águas saborizadas, couvert com taxa e o curso de restaurante; DIAS padrão 8,9,10)
 // EQUIPE='{"tonhao":1,"dani":1,"daniTasks":["pratos","lavar"]}' node balance.js 40
 // EQUIPE=auto: a equipe que um jogador consegue pagar em cada dia (contratando aos poucos)
-const FULL=AV?{tonhao:2,dani:4,daniTasks:['pratos','lavar','lixo'],couvert:true,taxa:true}:IND?{tonhao:2,dani:4,daniTasks:['pratos','lavar','lixo'],tvs:1}:{tonhao:2,dani:4,daniTasks:['pratos','lavar','lixo'],tv:true,som:true};   // na Garagem, TV e som no lugar do couvert (v7.4.3)
+const FULL=TE?{tonhao:4,dani:4,daniTasks:['pratos','lavar','lixo'],couvert:true,taxa:true}:AV?{tonhao:2,dani:4,daniTasks:['pratos','lavar','lixo'],couvert:true,taxa:true}:IND?{tonhao:2,dani:4,daniTasks:['pratos','lavar','lixo'],tvs:1}:{tonhao:2,dani:4,daniTasks:['pratos','lavar','lixo'],tv:true,som:true};   // na Garagem, TV e som no lugar do couvert (v7.4.3)
 const AUTO={2:{},3:FULL,4:FULL,5:FULL,6:FULL,7:FULL};   // do dia 3 em diante o dinheiro acumulado já paga a equipe completa
 const EQ0=process.env.EQUIPE==='auto'?null:(process.env.EQUIPE?JSON.parse(process.env.EQUIPE):{});
 const eqFor0=n=>EQ0||AUTO[n]||(n>7?FULL:{});   // v8.3: do dia 8 em diante, a equipe completa
@@ -43,7 +43,7 @@ if(process.env.METAS){ const mt=JSON.parse(process.env.METAS); for(const k in mt
 // salão (v7.4): por padrão, o de quem compra móveis como o bot da carreira.js (kit de 10 lugares, +1 mesa de 2 por
 // lojinha até 16); MOVEIS=kit fica no kit; MOVEIS='[2,2,4,4]' usa essas mesas todo dia (arrumação automática)
 const MOV={1:[2,2,2,4],2:[2,2,2,4,2],3:[2,2,2,4,2,2],4:[2,2,2,2,2,2,4]};   // ([2,2,2,4,2,2,2] não cabia na arrumação automática e voltava ao kit)
-const movFor=n=>AV&&!process.env.MOVEIS?[4,4,4,4,4,4]:IND&&!process.env.MOVEIS?[4,4,4,4,2,2]:process.env.MOVEIS==='kit'?MOV[1]:(process.env.MOVEIS?JSON.parse(process.env.MOVEIS):MOV[Math.min(n,4)]);
+const movFor=n=>TE&&!process.env.MOVEIS?[4,4,4,4,4]:AV&&!process.env.MOVEIS?[4,4,4,4,4,4]:IND&&!process.env.MOVEIS?[4,4,4,4,2,2]:process.env.MOVEIS==='kit'?MOV[1]:(process.env.MOVEIS?JSON.parse(process.env.MOVEIS):MOV[Math.min(n,4)]);
 const order=process.env.ORDEM?process.env.ORDEM.split(','):['tenis','maquina','cafeteira','bandeja','ventilador','pratos'];   // ORDEM=pratos,tenis,...: ordem de compra das melhorias
 const DIAS=process.env.DIAS?process.env.DIAS.split(',').map(Number):IND||AV?[8,9,10]:[1,2,3,4,5,6,7];   // DIAS=1,2: só esses dias (v8.3: DIAS=8,9,14 testa os dias da campanha)
 const NMAX=Math.max(...DIAS);
@@ -54,9 +54,9 @@ const cursosFor=n=>CUR==='0'?{}:CUR==='todos'?BOTM.cursosApos(L,99):BOTM.cursosA
 const R={}; DIAS.forEach(n=>R[n]=[]);
 // um dia de uma rodada; man: o estado de equipamentos que vem do dia anterior (null: tudo novo)
 function jogaDia(n,man){
-  g.up={}; g.save.up=g.up; order.slice(0,IND||AV?order.length:n-1).forEach(id=>g.up[id]=true);
+  g.up={}; g.save.up=g.up; order.slice(0,IND||AV?order.length:n-1).filter(id=>!(TE&&id==='maquina')).forEach(id=>g.up[id]=true);   // v10: no Terraço não há a água da espera
   if(IND){ g.up.fogaoInd=true; g.up.tvs=true; g.up.assento='cadeira'; }
-  if(AV){ g.up.fogaoInd=true; g.up.assento='sofa'; }
+  if(AV){ g.up.fogaoInd=true; g.up.assento=TE?'poltrona':'sofa'; }
   g.save.cursos=cursosFor(n);
   if(CONF&&(IND||AV)){ g.save.daniCursos.confCaseira=1; g.up.confCaseira=true; }   // v9.2
   if(AV&&GOURMET){ g.save.daniCursos.confCaseira=1; g.up.confCaseira=true; g.save.daniCursos.confGourmet=1; g.up.confGourmet=true; }   // v9.3

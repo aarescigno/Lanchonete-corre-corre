@@ -201,7 +201,8 @@ const GOSTOS = {
   entregador: [[0, 3, 2, 1, 0], [1, 0, 0, 0, 0], [0, 4, 1, 0, 1]],
   turma:      [5, 1, 0, 1, 1],
   motorista:  [4, 1, 2, 1, 0],
-  negocios:   [5, 0, 1, 1, 0]   // v9.1
+  negocios:   [5, 0, 1, 1, 0],  // v9.1
+  casal:      [4, 1, 2, 1, 1]   // v10
 };
 GOSTOS.encomenda = GOSTOS.turma;
 /* o que a pessoa pede: sorteia a categoria pelos pesos do tipo (só entre as que têm algum prato que a cozinha sabe) e depois um prato
@@ -253,7 +254,8 @@ function queueYsFor(n){
 /* fila de retirada (v8.6): os entregadores esperam em pé no alto da calçada, à esquerda do balcão de retirada (o 1º
    encostado nele); balcao: o tampo com a prateleira das marmitas (3 vagas: x de cada uma) */
 const RETIRADA = { fila:[{ x:-114, y:160 }, { x:-160, y:160 }, { x:-206, y:160 }], balcao:{ x0:-92, x1:-14, y:112 }, vagas:[-76, -53, -30] };
-const DOOR  = { x:-300, y:106 };                     // de onde a freguesia vem (e para onde vai): a rua, à esquerda
+const DOOR  = { x:-300, y:106 };                     // de onde a freguesia vem (e para onde vai): a rua, à esquerda (v10: no Terraço, a porta do elevador, ver doorFor)
+function doorFor(ponto){ const t = ponto && ponto.id === 'terraco'; DOOR.x = t ? -230 : -300; DOOR.y = t ? 116 : 106; }
 /* HUD na tela larga (v7.6): dia e lucro à esquerda, como antes; a fila de ações anda `fila` px e as mãos, a pausa e
    o som, `dir` px (para a direita) */
 const HUDX = { fila:CALCADA.w / 2, dir:CALCADA.w };
@@ -300,7 +302,12 @@ const PONTOS = [
   // v9.1: o 2º ponto novo (cap. 6 e 7). Sem apito, sem encomenda e sem patPressa: a turma, o motorista e a encomenda não vêm. vip: ×2 (restaurante atrai mais VIP)
   { id:'avenida', nome:'Restaurante na Avenida Brasil', nivel:3, lugares:24, aluguel:400, mudanca:2000, credito:4000, cardapio:2.0, area:{ x0:160, y0:150, x1:684, y1:500 }, espera:6, assento:'pe', bebida:'saborizada', pratos:6, marmJanela:3, prateleira:4,
     tipos:{ estudante:0.5, executiva:2, familia:1.5, vovos:1, entregador:1, negocios:1.5 }, vip:2, metaF:3.0, expertF:3.6, grupos:0.7,   // v9.6.4: 3,2 e 3,8 → 3,0 e 3,6 (o VIP mais exigente deixou a Avenida abaixo do alvo)
-    traz:'o almoço de negócios e mais VIPs', art:'o' }
+    traz:'o almoço de negócios e mais VIPs', art:'o', deixa:'os sofás e as águas saborizadas ficam' },
+  // v10: o último ponto da escada (cap. 8 e 9). 20 lugares, aluguel R$ 1.000, cardápio ×2,5. Sem entregador (semRetirada), sem bebida da espera (bebida:null até a 4a-4) e com o casal;
+  // tempos: a refeição completa (bebida, entrada, prato e sobremesa; é da parte B da 4a-1, por enquanto sem efeito)
+  { id:'terraco', nome:'Terraço Suíça', nivel:4, lugares:20, aluguel:1000, mudanca:5000, credito:8000, cardapio:2.5, area:{ x0:160, y0:150, x1:684, y1:500 }, espera:6, assento:'pe', bebida:null, pratos:6, marmJanela:2, prateleira:0,
+    tipos:{ executiva:0.5, familia:1, vovos:1, negocios:1.5, casal:2 }, vip:2.5, metaF:4.0, expertF:5.0, grupos:0.45, tempos:true, semRetirada:true,
+    traz:'a refeição completa e a freguesia mais fina', art:'o' }
 ];
 function pontoOf(id){ return PONTOS.find(p => p.id === id) || PONTOS[0]; }
 /* ============================================================
@@ -330,9 +337,9 @@ function mesaProblema(mesas, i, ponto){
 }
 /* a Bia (do balcão) e a freguesia (da fila) chegam a um dos lados de cada mesa? Usa os obstáculos do arranjo
    e devolve os do salão de antes */
-function salaoCaminho(mesas){
+function salaoCaminho(mesas, ponto){
   const prev = OBST.slice();
-  setObst(mesas.map(m => ({ cx:m.x, cy:m.y, seats:m.seats })));
+  setObst(mesas.map(m => ({ cx:m.x, cy:m.y, seats:m.seats })), fixosDe(ponto));   // v10: com o piano do Terraço
   const from = [STATIONS.order.ap, { x:QUEUE.x, y:QUEUE.ys[0] }];
   const ok = mesas.every(m => tableApproach({ cx:m.x, cy:m.y, seats:m.seats }).some(p =>
     p.x >= BOUNDS.x0 && p.x <= BOUNDS.x1 && !inObst(p.x, p.y) && from.every(f => pathOk(f, p))));
@@ -344,7 +351,7 @@ function salaoProblema(mesas, ponto){
   if (!mesas.length) return 'O salão precisa de pelo menos 1 mesa.';
   if (salaoLugares(mesas) > ponto.lugares) return 'Passa de ' + ponto.lugares + ' lugares.';
   for (let i = 0; i < mesas.length; i++){ const w = mesaProblema(mesas, i, ponto); if (w) return w; }
-  return salaoCaminho(mesas) ? '' : 'A Bia não chega a todas as mesas.';
+  return salaoCaminho(mesas, ponto) ? '' : 'A Bia não chega a todas as mesas.';
 }
 /* números das mesas: de cima para baixo (mesas a menos de meia mesa de altura contam na mesma fileira), da esquerda para a direita */
 function salaoOrdena(mesas){
@@ -399,7 +406,7 @@ function salaoVaga(mesas, seats, ponto){
   for (const y of ys){
     for (let x = Math.ceil((a.x0 + hx) / S) * S; x + hx <= a.x1; x += S){
       const l = mesas.concat([{ x, y, seats }]);
-      if (!mesaProblema(l, l.length - 1, ponto) && salaoCaminho(l)) return { x, y };
+      if (!mesaProblema(l, l.length - 1, ponto) && salaoCaminho(l, ponto)) return { x, y };
     }
   }
   return null;
@@ -411,7 +418,7 @@ function salaoPerto(mesas, i, ponto){
     for (let dy = -d; dy <= d; dy++) for (let dx = -d; dx <= d; dx++){
       if (Math.max(Math.abs(dx), Math.abs(dy)) !== d) continue;
       const l = mesas.slice(); l[i] = Object.assign({}, m, { x:m.x + dx * S, y:m.y + dy * S });
-      if (!mesaProblema(l, i, ponto) && salaoCaminho(l)) return l;
+      if (!mesaProblema(l, i, ponto) && salaoCaminho(l, ponto)) return l;
     }
   }
   return null;
@@ -522,7 +529,9 @@ const CUSTOMER_TYPES = {
   motorista:  { label:'Motorista de caminhão', pat:1.4, eat:[6,8],   read:[3,4], size:[1,1], mais:0.6,  tip:0.1, pedeCafe:0.8, cafeTip:0.05, ind:true },
   encomenda:  { label:'Encomenda do setor',    pat:2,   eat:[3.5,5], read:[3,3.5], size:[1,1], mais:0, tip:0.1, retira:true, lote:[4, 6], efood:0, ind:true },
   // v9.1, só na Avenida Brasil (PONTOS[2].tipos): o almoço de negócios (3 ou 4 colegas de blazer ou camisa social; vale o vegetariano; não é VIP)
-  negocios:   { label:'Almoço de negócios',    pat:0.8, eat:[7,9],   read:[4,5], size:[3,4], mais:0.2, tip:0.15 }
+  negocios:   { label:'Almoço de negócios',    pat:0.8, eat:[7,9],   read:[4,5], size:[3,4], mais:0.2, tip:0.15 },
+  // v10, só no Terraço Suíça (PONTOS[3].tipos): o casal da data especial (duas pessoas adultas de roupa de sair; sem pressa e com gorjeta boa)
+  casal:      { label:'Casal',                 pat:1.3, eat:[8,10],  read:[4,5.5], size:[2,2], mais:0.2, tip:0.15 }
 };
 /* cliente VIP: modificador de grupo (qualquer tipo menos entregador). Fura a fila, tem menos
    paciência, paga gorjeta extra e dá bônus se sair com 5 corações; bravo, a multa dobra. */
@@ -564,7 +573,12 @@ function tvsModo(eq){ return INDUSTRIAL.tvs.modos[eq && eq.tvs] || null; }
    `slow` mais devagar). O couvert artístico (STAFF.couvert) e as flores (DECOR nivel:3) também são só daqui para cima */
 const AVENIDA = { sofa:{ nome:'Sofás com almofadas', cost:250, slow:0.25 } };
 /* quanto a espera sentada alivia a paciência: o sofá da Avenida 25%, a cadeirinha e o banquinho da área industrial 15% */
-function assentoSlow(a){ return a === 'sofa' ? AVENIDA.sofa.slow : a ? INDUSTRIAL.assento.slow : 0; }
+/* v10, Terraço Suíça: o foyer (a calçada do andar) com poltronas de veludo (compra única, `up.assento = 'poltrona'`; a espera 35% mais devagar) e o piano de cauda que
+   já vem com o ponto: obstáculo fixo dos caminhos (fora da área das mesas; quem toca chega na 4a-5) */
+const TERRACO = { poltrona:{ nome:'Poltronas do foyer', cost:600, slow:0.35 }, piano:{ x0:28, y0:404, x1:148, y1:520 } };
+function assentoSlow(a){ return a === 'sofa' ? AVENIDA.sofa.slow : a === 'poltrona' ? TERRACO.poltrona.slow : a ? INDUSTRIAL.assento.slow : 0; }
+/* obstáculos fixos do ponto (além das mesas): o piano do Terraço, no formato dos de mesaBox */
+function fixosDe(ponto){ return ponto && ponto.id === 'terraco' ? [{ x0:TERRACO.piano.x0, y0:TERRACO.piano.y0, x1:TERRACO.piano.x1, y1:TERRACO.piano.y1 }] : []; }
 const DANI_TASKS = [
   { id:'lixo',   name:'Tirar o lixo',   short:'Lixo' },
   { id:'pratos', name:'Retirar pratos sujos', short:'Recolher' },
@@ -685,7 +699,9 @@ const MARMITA = { adiantar:false,   // v9.6.2: o '+ marmita' desligado até vir 
   embalagem:2, efood:0.15, vagas:2, reserva:1, validade:60, prato:'pf', fila:3,
   gap:12 };   // v9.6.5: dois entregadores comuns chegam com pelo menos `gap` s de diferença
 const MULTA = 10;                                     // grupo que vai embora bravo (com 0 corações) desconta isto do dia
-const VIP = { pat:0.65, tip:0.1, perfect:40, angry:10, dish:12, cook:1.8, types:['estudante','vovos','familia','executiva'] };   // dish: o prato especial soma R$ 12 à conta e leva 1,8× o tempo; perfect: pontos (v8.3.8)
+const VIP = { pat:0.65, tip:0.1, perfect:40, angry:10, dish:12, cook:1.8, types:['estudante','vovos','familia','executiva','casal'] };
+/* os tipos que podem ser VIP no ponto (v10): os do ponto, se ele tem `tipos`; sem `tipos` (Garagem, Turno sem fim), os de sempre, sem o casal, que só existe no Terraço */
+function vipTipos(ponto){ const w = ponto && ponto.tipos; return VIP.types.filter(k => w ? w[k] > 0 : k !== 'casal'); }   // dish: o prato especial soma R$ 12 à conta e leva 1,8× o tempo; perfect: pontos (v8.3.8)
 
 const DAYS = [
   { n:1, groups:5,  types:['estudante','vovos'],                                   nu:null,         meta:30, expert:60,  time:150, speed:0.60, note:'Arraste cada grupo até uma mesa livre.' },
@@ -781,7 +797,8 @@ const AVAL_CRIT = [
     bom:['A comida veio rapidinho!', 'Atendimento nota 10!', 'A Bia é um foguete!'], ruim:['Demoraram para anotar o pedido.', 'Esqueceram da gente na mesa.', 'A conta demorou demais.'],
     // v9: comentários próprios dos tipos da área industrial e do almoço de negócios (50% das vezes, quando o grupo é do tipo)
     tipo:{ turma:{ bom:['Deu tempo de almoçar com calma!'], ruim:['Quase perdi a volta do intervalo.'] }, encomenda:{ bom:['Chegou tudo certinho pro setor!'], ruim:['Faltou marmita pra metade do pessoal.'] },
-      negocios:{ bom:['Deu pra fechar o negócio com calma!'], ruim:['A reunião atrasou por causa do almoço.'] } } },   // v9.1
+      negocios:{ bom:['Deu pra fechar o negócio com calma!'], ruim:['A reunião atrasou por causa do almoço.'] },   // v9.1
+      casal:{ bom:['Data especial do jeitinho que a gente sonhou!'], ruim:['Era pra ser uma data especial...'] } } },   // v10
   { id:'prato', nome:'Qualidade da comida',
     bom:['O PF estava caprichado!', 'Comida de mãe!', 'Que tempero!'], ruim:['O prato veio sem graça.', 'Comida meio fria.', 'Faltou tempero.'] },
   { id:'menu', nome:'Diversidade do cardápio',
@@ -983,7 +1000,20 @@ const HISTORIA = [
       { q:'bia', s:'E aí?' },
       { q:'tonhao', s:'Comeu tudo e não disse nada. Mas raspou o prato.' },
       { q:'dani', s:'Próxima parada: o Terraço Suíça!' }],
-    fim:{ h:'Fim dos capítulos da Avenida Brasil', p:'Continua na próxima versão: o Terraço Suíça.' } }
+    fim:{ h:'Fim dos capítulos da Avenida Brasil', p:'Quando quiser, a mudança para o Terraço Suíça está na lojinha.' } },
+  // v10: os capítulos do Terraço Suíça. O cap. 8 só começa na mudança (na lojinha); até lá save.cap fica em 8, "à espera". (O cap. 9 vem com a refeição completa, na parte B)
+  { cap:8, titulo:'Lá no alto', ponto:'terraco', obj:{ azul:3 },
+    antes:[
+      { q:'bia', s:'Último andar, tio! Dá pra ver a cidade inteira.' },
+      { q:'tonhao', nota:'olhando o piano no canto', s:'E esse piano de cauda?' },
+      { q:'bia', s:'Veio com o ponto. Um dia a gente acha quem toque.' },
+      { q:'tonhao', s:'Aqui ninguém vem com pressa. Vem pra comer do começo ao fim: bebida, entrada, prato e sobremesa.' },
+      { q:'dani', s:'E cada pedacinho vai parar no Gurugol!' }],
+    depois:[
+      { q:'bia', s:'Três dias no azul pagando esse aluguel!' },
+      { q:'tonhao', s:'Menos mesa, mais capricho. É outra cozinha.' },
+      { q:'dani', s:'Hoje uma mesa bateu palma pra sobremesa!' }],
+    fim:{ h:'Fim dos capítulos do Terraço Suíça', p:'Continua na próxima versão.' } }
 ];
 /* v9.0.1: a conversa do cardápio, no fim do dia `dia` (ou do 1º dia completo depois dele, para saves antigos), só no Modo História.
    falas: o Tonhão ainda não fez curso; fez: já fez algum (básico de qualquer curso ou o avançado do PF). save.convCard: 'pend' | 1 (vista) */
@@ -1028,7 +1058,7 @@ const HIST_ENTREGA = { dia:4,
 const DOCES = { preco:7, ingred:2, vip:0.2, marmita:0.3, gourmetPreco:16, gourmetIngred:4,
   caseira:[ { id:'bolo', nome:'Bolo de pote' }, { id:'brigadeiro', nome:'Brigadeiro de colher' }, { id:'pudim', nome:'Pudim' } ],
   gourmet:[ { id:'shortcake', nome:'Shortcake de morango' }, { id:'torta', nome:'Torta de limão' }, { id:'brigGourmet', nome:'Brigadeiro gourmet' } ],
-  pede:{ familia:0.5, vovos:0.6, estudante:0.3, executiva:0.2, negocios:0.4, turma:0.3, motorista:0.3 } };
+  pede:{ familia:0.5, vovos:0.6, estudante:0.3, executiva:0.2, negocios:0.4, turma:0.3, motorista:0.3, casal:0.6 } };
 DOCES.todos = DOCES.caseira.concat(DOCES.gourmet);
 function docesLista(up){ return up && up.confGourmet ? DOCES.gourmet : DOCES.caseira; }
 function docePreco(up){ return up && up.confGourmet ? DOCES.gourmetPreco : DOCES.preco; }
@@ -1037,12 +1067,12 @@ function doceIdx(id){ return Math.max(0, DOCES.todos.findIndex(d => d.id === id)
 /* v9.3, cafés da máquina de espresso (curso do Joca, só na Avenida): pedidos de fim de refeição, como os doces. prep: segundos para tirar; preco: R$ na conta */
 const CAFES = { ingred:2, vip:0.1,
   lista:[ { id:'espresso', nome:'Espresso', preco:8, prep:0.8 }, { id:'cappuccino', nome:'Cappuccino', preco:12, prep:1.2 } ],
-  pede:{ executiva:0.5, negocios:0.6, vovos:0.4, familia:0.2, estudante:0.3 } };
+  pede:{ executiva:0.5, negocios:0.6, vovos:0.4, familia:0.2, estudante:0.3, casal:0.5 } };
 function cafeDe(id){ return CAFES.lista.find(c => c.id === id) || CAFES.lista[0]; }
 /* v9.5, drinks do Anselmo (só na Avenida): pedidos ao sentar, junto com o prato; ele faz um por vez (prep / speed) e o copo pronto espera no balcão (`vagas`).
    pede: chance por tipo de grupo (VIP +vip); cada pessoa sorteada pede um drink entre os 3 (randi(1, size)). Nunca o entregador. preco: R$ na conta */
 const DRINKS = { prep:4, preco:22, ingred:6, vip:0.2, vagas:2,
-  pede:{ executiva:0.45, negocios:0.6, familia:0.25, vovos:0.25, estudante:0.35 },
+  pede:{ executiva:0.45, negocios:0.6, familia:0.25, vovos:0.25, estudante:0.35, casal:0.6 },
   itens:[ { id:'por', nome:'Pôr do Sol da Avenida' }, { id:'brisa', nome:'Brisa de Maracujá' }, { id:'esmeralda', nome:'Esmeralda' } ] };
 function drinkIdx(id){ return Math.max(0, DRINKS.itens.findIndex(d => d.id === id)); }
 function drinkDe(id){ return DRINKS.itens.find(d => d.id === id) || DRINKS.itens[0]; }
@@ -1225,7 +1255,7 @@ const CLIMA_DIA = 3;
    manut.sorteio.fiscal, para não mudar ao rejogar). Entra num momento entre `quando` do turno, fica `visita` s olhando e confere 3 coisas: mesa suja por mais de
    `mesaSuja` s seguidos, lixeira cheia e pia com `pia` pilhas ou mais. 0 falhas: selo por `selo` dias (+`seloPts` pontos; AVAL.amb.selo no Ambiente); 1: advertência; 2 ou 3: multa */
 const FISCAL = { nivel:3, dia:2, chance:0.15, quando:[0.3, 0.7], visita:20, mesaSuja:8, pia:4, multa:150, selo:7, seloPts:30,
-  aviso:'Dizem que a vigilância sanitária está rondando a Avenida.', coment:'Vi o selo da vigilância: lugar limpinho!' };
+  aviso:'Dizem que a vigilância sanitária está por perto.', coment:'Vi o selo da vigilância: lugar limpinho!' };
 
 
 /* ============================================================
@@ -1258,6 +1288,7 @@ const MANUAL = [
   { id:'c-motorista',  aba:'clientes', tipo:'motorista',  nome:'Motorista de caminhão', linha:'Come com calma e fecha com um cafezinho.' },
   { id:'c-encomenda',  aba:'clientes', tipo:'encomenda',  nome:'Encomenda do setor', linha:'Busca várias marmitas de uma vez, no balcão de retirada.' },
   { id:'c-negocios',   aba:'clientes', tipo:'negocios',   nome:'Almoço de negócios', linha:'Colegas de trabalho: mesa de quatro e conversa longa.' },
+  { id:'c-casal',      aba:'clientes', tipo:'casal',      nome:'Casal', linha:'Data especial: sem pressa, e a conta é generosa.' },
 
   { id:'e-bia',     aba:'equipe', quem:'bia',     sempre:true, nome:'Bia', linha:'A garçonete. Anota, leva, entrega, cobra e recolhe.' },
   { id:'e-tonhao',  aba:'equipe', quem:'tonhao',  sempre:true, nome:'Tonhão', linha:'O chef. Aprende pratos nos cursos e, com aumento, ajuda na pia.' },
@@ -1292,6 +1323,7 @@ const MANUAL = [
   { id:'p-garagem',    aba:'lugares', sempre:true, nome:'Garagem da mãe da Bia', linha:'Onde tudo começou. Sem aluguel, freguesia do bairro.' },
   { id:'p-industrial', aba:'lugares', nome:'Área industrial', linha:'Perto das fábricas: turma no apito, motoristas e encomendas de marmita.' },
   { id:'p-avenida',    aba:'lugares', nome:'Avenida Brasil', linha:'Restaurante de verdade: almoço de negócios, mais VIPs e a vigilância sanitária por perto.' },
+  { id:'p-terraco',    aba:'lugares', nome:'Terraço Suíça', linha:'O topo da cidade: poucas mesas e refeição completa, do drink à sobremesa.' },
 
   { id:'i-quebra',  aba:'imprevistos', nome:'Quebra', linha:'Equipamento gasto pode quebrar no meio do dia. A plaquinha da chave chama o técnico na hora, mais caro.' },
   { id:'i-chuva',   aba:'imprevistos', nome:'Dia de chuva', linha:'Vem menos gente e mais entregadores.' },
@@ -1300,7 +1332,7 @@ const MANUAL = [
   { id:'i-apito',   aba:'imprevistos', nome:'Apito da fábrica', linha:'A turma chega toda junta no meio do dia.' },
   { id:'i-fiscal',  aba:'imprevistos', nome:'Vigilância sanitária', linha:'Mesa suja e pia cheia dão multa; tudo limpo dá selo.' }
 ];
-const MANUAL_PONTO_NOME = { garagem:'Garagem', industrial:'Área industrial', avenida:'Avenida Brasil' };
+const MANUAL_PONTO_NOME = { garagem:'Garagem', industrial:'Área industrial', avenida:'Avenida Brasil', terraco:'Terraço Suíça' };
 const MANUAL_CATS = { pf:'PF', frito:'fritos', assado:'assados', chapa:'lanches na chapa', pastel:'pastel' };
 function manualFicha(id){ return MANUAL.find(f => f.id === id) || null; }
 /* os traços de uma ficha de cliente (chips), calculados de CUSTOMER_TYPES e GOSTOS para seguirem o balanceamento sozinhos.

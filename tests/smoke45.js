@@ -71,7 +71,7 @@ const AV={ daniCursos:{ confCaseira:1 } }, ESP={ daniCursos:{ confCaseira:1 }, j
 
 // ---------- 6. o pedido de café no fim da refeição ----------
 { const H=aberto({},null,ESP), {g,L}=H; const taxa=(tipo,vip,n)=>{ let c=0; for(let i=0;i<n;i++){ const m=new L.Group(g,tipo,++g.gid,0,!!vip); if (m.sorteiaCafes().length) c++; } return c/n; };
-  const alvo=L.CAFES.pede; ok(JSON.stringify(alvo)===JSON.stringify({ executiva:0.5, negocios:0.6, vovos:0.4, familia:0.2, estudante:0.3 }),'CAFES.pede como no plano');
+  const alvo=L.CAFES.pede; ok(JSON.stringify(alvo)===JSON.stringify({ executiva:0.5, negocios:0.6, vovos:0.4, familia:0.2, estudante:0.3, casal:0.5 }),'CAFES.pede como no plano');
   Object.keys(alvo).forEach(k=>{ const r=taxa(k,false,800); ok(Math.abs(r-alvo[k])<0.07,'café: '+k+' pede em ~'+Math.round(alvo[k]*100)+'% (medido '+Math.round(r*100)+'%)'); });
   ok(taxa('entregador',false,200)===0 && taxa('turma',false,300)===0,'o entregador e a turma nunca pedem');
   let okQ=true,max=0; for(let i=0;i<300;i++){ const m=new L.Group(g,'familia',++g.gid,0,false), d=m.sorteiaCafes(); if(d.length){ max=Math.max(max,d.length); if(d.length>m.size||d.some(x=>x!=='espresso'&&x!=='cappuccino')) okQ=false; } } ok(okQ && max>=2,'1 a size cafés, espresso ou cappuccino');

@@ -95,7 +95,7 @@ function afiado(g,L){
   const ttl=grp=>{ if(!grp) return Infinity; const p=grp.patPer(); return isFinite(p)?grp.patLeft+(grp.hearts-1)*p:Infinity; };
   const walk=(x0,y0,x1,y1)=>Math.hypot(x1-x0,y1-y0)*1.25/g.bia.speed;
   return function botStep(){
-    const b=g.bia, k=g.kitchen, dani=g.dani;
+    const b=g.bia, k=g.kitchen, dani=g.dani, has=f=>b.acts.some(f);   // v10: o `has` faltava aqui (o BOT=afiado com o Anselmo caía na linha dos drinks)
     // 1) sentar: o grupo mais apressado primeiro, na menor mesa livre que caiba (cor igual desempata)
     const q=g.queue.slice().sort((a,c)=>ttl(a)-ttl(c));
     for(const grp of q){

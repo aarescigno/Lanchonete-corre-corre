@@ -37,6 +37,16 @@ function makePeople(type, size){
       out.push(newPerson(Object.assign({ shirt: blazer ? pick(['#5F656D', '#2C4A78', '#6E2A3A', '#B7A78A']) : pick(['#CFE0EE', '#EDE6D6', '#D8C7D4', '#BFD3C8']), blazer, camisa: blazer ? null : 'social', gravata: Math.random() < 0.5 ? pick(['#B33A3A', '#2F5FA8', '#E8B43A', '#3E7B4A']) : null, glasses: Math.random() < 0.3, hair: pick([0,1,2,3,5,6]) },
         velho ? { elder:true, hair:4, hairC: pick(['#E8E8E8','#8C8C8C']), glasses:true } : {}, i === 0 ? { acc: pick(['laptop', 'pasta']) } : {})));
     }
+  } else if (type === 'casal'){   // v10: duas pessoas adultas, de qualquer gênero, idade e cor de pele (os pares variam), de roupa de sair: vestido, camisa de cor forte ou blazer; uma flor na lapela ou no cabelo de uma delas
+    const flor = randi(0, size - 1);
+    for (let i=0;i<size;i++){
+      const r = Math.random(), roupa = r < 0.35 ? 'vestido' : r < 0.7 ? 'camisa' : 'blazer', velho = Math.random() < 0.18;
+      const forte = pick(['#B3243B', '#2E5BA8', '#7B3FA0', '#1F7A5C', '#D9822B', '#C2185B', '#2F7D86']), sobrio = pick(['#2C4A78', '#6E2A3A', '#2F5D4A', '#3A3A44']);
+      out.push(newPerson(Object.assign({ shirt: roupa === 'blazer' ? sobrio : forte, glasses: Math.random() < 0.2, hair: pick([0,1,2,3,5,6]) },
+        roupa === 'vestido' ? { vestido:true } : roupa === 'camisa' ? { camisa:'social' } : { blazer:true, gravata: Math.random() < 0.3 ? pick(['#E8B43A', '#B33A3A']) : null },
+        velho ? { elder:true, hair:4, hairC: pick(['#E8E8E8','#8C8C8C']), glasses:true } : {},
+        i === flor ? { flor: roupa !== 'vestido' && Math.random() < 0.6 ? 'lapela' : 'cabelo', florC: pick(['#F28AA8', '#FFFDF4', '#F2C94C', '#D8334A']) } : {})));
+    }
   } else if (type === 'encomenda'){   // v9: crachá e uma sacola térmica
     out.push(newPerson({ cracha:true, sacola:true, shirt: pick(['#2F7D86', '#8A4F9E', '#3E7B4A']), hair: pick([0,1,2,3,5,6]), glasses: Math.random()<0.3 }));
   } else { // entregador
@@ -148,7 +158,7 @@ function normSave(s){
   const devMaq = up.maquina && !s.torneira ? UPGRADES.find(u => u.id === 'maquina').devolve : 0;
   if (up.chapa){ up.pratos = true; delete up.chapa; }     // a Chapa nova virou Jogo de pratos (a velocidade da cozinha é do Tonhão)
   ['tvs', 'fogaoInd'].forEach(k => { if (up[k]) up[k] = true; else delete up[k]; });   // v9: itens da área industrial
-  if (up.assento !== 'cadeira' && up.assento !== 'banco' && up.assento !== 'sofa') delete up.assento;   // v9.1: o sofá da Avenida
+  if (up.assento !== 'cadeira' && up.assento !== 'banco' && up.assento !== 'sofa' && up.assento !== 'poltrona') delete up.assento;   // v9.1: o sofá da Avenida; v10: as poltronas do Terraço
   if ('pratos' in up){ const n = pratosDe(up); if (n) up.pratos = n; else delete up.pratos; }   // v8.3.6: os Jogos de pratos viram um número
   // salão da v6 à v7.3 (v7.4): o que foi gasto em cadeiras e mesas volta para o dinheiro, numa linha do caixa, e o
   // jogo começa na Garagem com o kit
