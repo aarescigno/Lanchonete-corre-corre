@@ -60,6 +60,7 @@ class Game {
     this.gid = 0;
     this.groups = []; this.queue = [];
     this.buildTables();
+    doorFor(this.ponto);   // v10: no Terraço a freguesia chega e sai pelo elevador
     queueYsFor(this.ponto.espera || 4);   // v9.1: 4, 5 ou 6 lugares de espera na calçada
     marmJSlotsFor(this.ponto.marmJanela || 2);   // v9.6.5: a fileira das marmitas na janela de prontos
     plateSlotsFor(this.ponto.pratos || 4);   // v9: 4 vagas no balcão de pratos na Garagem, 5 na área industrial, 6 na Avenida (v9.1)
@@ -124,10 +125,10 @@ class Game {
       let type = (i === forced) ? day.nu : this.ponto.tipos ? this.sorteiaTipo(this.ponto.tipos, i / N) : pick(day.types);
       if (day.tipo && i !== forced && Math.random() < day.tipoP) type = day.tipo;   // o dia da semana (v8.3, do dia 8 em diante)
       if (cl && i !== forced && Math.random() < cl.tipoP) type = cl.tipo;   // chuva: entregadores; feriado: famílias
-      if (!efood && CUSTOMER_TYPES[type].retira) type = this.tipoPequeno();   // v9.6.4: a Efood ainda não abriu: sem entregador
+      if ((!efood || this.ponto.semRetirada) && CUSTOMER_TYPES[type].retira) type = this.tipoPequeno();   // v9.6.4: a Efood ainda não abriu: sem entregador (v10: no Terraço Suíça, nunca: semRetirada, também na chuva e na sexta-feira)
       let vip = false;
       if (day.vip && (i === forcedVip || Math.random() < vipP)){
-        if (!VIP.types.includes(type)) type = pick(VIP.types);
+        if (!VIP.types.includes(type) || (this.ponto.tipos && !this.ponto.tipos[type])) type = pick(vipTipos(this.ponto));   // v10: o VIP é de um tipo do ponto (no Terraço não vem estudante; casal só lá)
         vip = true;
       }
       out.push({ t, type, color: pick(colors.concat([0,1,2,3])), vip });
@@ -450,7 +451,7 @@ class Game {
 
   /* ---------- marmitas e fila de retirada (v8.6) ---------- */
   /* há entregador no dia (no Turno sem fim, sempre): o balcão de retirada aparece e dá para adiantar marmitas */
-  get marmitaOk(){ return this.mode === 'semfim' || this.retirada.length > 0 || this.schedule.some(s => s.type === 'entregador' || s.type === 'encomenda'); }
+  get marmitaOk(){ return this.mode === 'semfim' || (!this.ponto.semRetirada && (this.retirada.length > 0 || this.schedule.some(s => s.type === 'entregador' || s.type === 'encomenda'))); }   // v10: no Terraço Suíça nunca
   reslotRetirada(){ this.retirada.forEach((g,i) => { g.slot = i; g.path = [Object.assign({}, RETIRADA.fila[i])]; }); }
   /* todas as marmitas do dia, onde estiverem: { m (a marmita ou o pedido na cozinha), onde } */
   marmitas(){
@@ -722,7 +723,7 @@ class Game {
   }
   spawnEndless(){
     let type = pick(ENDLESS.types), vip = false;
-    if (this.elapsed > 60 && Math.random() < ENDLESS.vip){ vip = true; if (!VIP.types.includes(type)) type = pick(VIP.types); }
+    if (this.elapsed > 60 && Math.random() < ENDLESS.vip){ vip = true; if (!VIP.types.includes(type)) type = pick(vipTipos(this.ponto)); }
     this.arrive({ type, color: pick([0,1,2,3]), vip });
   }
   endlessInterval(){ return Math.max(3.5, 9 - this.elapsed / 30); }
@@ -1215,6 +1216,12 @@ class Game {
     sv.salao.ponto = para.id; sv.pontoDia = sv.dia;   // v9.1.1: o dia em que chegou ao ponto novo
     sv.equipe.tv = false; sv.equipe.som = false; delete this.up.maquina;
     delete this.up.tvs; delete this.up.assento; sv.equipe.tvs = 0;   // v9.1: ao sair da área industrial, as TVs, o assento e a jarra saem sem devolver (o fogão industrial e as mesas vão junto)
+    // v10: o ponto novo tem menos lugares (Terraço Suíça, 20): as últimas mesas que passam do teto (primeiro as do estoque) são vendidas, por SALAO.venda do preço (linha do caixa como a venda do editor)
+    const sal = sv.salao, est = Array.isArray(sal.estoque) ? sal.estoque : (sal.estoque = []);
+    while (salaoLugares(sal.mesas) + salaoLugares(est) > para.lugares && (est.length || sal.mesas.length > 1)){
+      const m = est.length ? est.pop() : sal.mesas.pop(), v = Math.round(mesaPreco(m.seats) * SALAO.venda);
+      sv.bank += v; caixaGasto(sv, 'sal', -v);
+    }
     const r = salaoAuto(sv.salao.mesas, para); if (r) sv.salao.mesas = r;
     sv.salao = normSalao(sv.salao);
     sv.equipe = normEquipe(sv.equipe, para);
@@ -1233,7 +1240,7 @@ class Game {
     return true;
   }
   /* itens da área industrial (v9): TVs (instalar), fogão industrial e o assento da espera ('cadeira' ou 'banco'; trocar paga o novo);
-     v9.1: o fogão vale de 2 em diante; as TVs e a cadeirinha/banquinho só no nível 2; o sofá só na Avenida */
+     v9.1: o fogão vale de 2 em diante; as TVs e a cadeirinha/banquinho só no nível 2; o sofá só na Avenida; v10: as poltronas só no Terraço */
   comprarInd(id, tipo){
     const nv = this.ponto.nivel;
     if (nv < 2) return false;
@@ -1243,6 +1250,7 @@ class Game {
     else if (id === 'fogaoInd' && !this.up.fogaoInd) cost = I.fogao.cost;
     else if (id === 'assento' && nv === 2 && (tipo === 'cadeira' || tipo === 'banco') && this.up.assento !== tipo) cost = I.assento[tipo].cost;
     else if (id === 'assento' && nv === 3 && tipo === 'sofa' && this.up.assento !== 'sofa') cost = AVENIDA.sofa.cost;
+    else if (id === 'assento' && nv === 4 && tipo === 'poltrona' && this.up.assento !== 'poltrona') cost = TERRACO.poltrona.cost;   // v10: as poltronas do foyer, só no Terraço
     else return false;
     if (!devLivre() && this.save.bank < cost) return false;
     if (!devLivre()){ this.save.bank -= cost; caixaGasto(this.save, 'mel', cost); }
@@ -1396,6 +1404,7 @@ class Game {
   buy(id){
     const u = UPGRADES.find(x => x.id === id);
     if (!u || !this.cartaoAberto(upgradeCartao(id))) return false;
+    if (id === 'maquina' && !this.ponto.bebida) return false;   // v10: o Terraço Suíça não serve bebida na espera (até a 4a-4)
     const cost = upgradeDe(u, this.ponto).cost;
     if ((!u.multi && this.up[id]) || (u.req && !this.up[u.req]) || this.save.bank < cost) return false;
     this.save.bank -= cost;
@@ -1485,7 +1494,7 @@ class Game {
     const mesas = sem ? (this.semfimMesas || (this.semfimMesas = salaoAuto(SALAO_SEMFIM.map((seats, i) => ({ seats, c:i % 4 })), PONTOS[0]))) : sal.mesas;
     const defs = mesas.map((m, i) => ({ id:i + 1, cx:m.x, cy:m.y, seats:m.seats, color:m.c, toalha:!!m.t, cami:!!m.cami }));
     this.tables = defs.map(d => new Table(d));
-    setObst(defs);
+    setObst(defs, fixosDe(this.ponto));   // v10: o piano do Terraço
     this.tablesKey = key;
   }
   /* estoque do salão (v8.3.5): mesas guardadas fora do salão, para rearrumar com folga (não abrem no dia) */
@@ -1731,7 +1740,7 @@ class Game {
   }
   devToggle(id){
     const u = UPGRADES.find(x => x.id === id);
-    if (!DEV.on || !u) return false;
+    if (!DEV.on || !u || (id === 'maquina' && !this.ponto.bebida)) return false;
     if (this.up[id]){ delete this.up[id]; UPGRADES.forEach(v => { if (v.req === id) delete this.up[v.id]; }); }
     else { this.up[id] = u.multi ? 1 : true; if (u.req) this.up[u.req] = true; }
     writeSave(this.save);

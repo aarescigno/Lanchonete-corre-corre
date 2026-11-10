@@ -55,7 +55,7 @@ const html=fs.readFileSync(__dirname+'/../lanchonete.html','utf8');
   ok(sv.cap===6 && sv.conversa==='antes' && sv.capAzul===0,'o cap. 6 começa, com a conversa de antes pendente');
   g.resetDay(10); ok(L.PLATE_SLOTS.length===6 && g.kitchen.plates.length===6 && g.vagas===4 && L.PLATE_SLOTS.every((s,i)=>i===0 || s.x-L.PLATE_SLOTS[i-1].x>=28) && L.PLATE_SLOTS[5].x+19<=960 && L.PLATE_SLOTS[0].x-19>=766,'balcão de pratos com 6 vagas dentro da janela e prateleira de 4');
   ok(g.ponto.credito===4000,'o limite do banco sobe para R$ 4.000');
-  ok(!g.mudancaVisivel && g.proximoPonto===null,'não dá para voltar nem mudar de novo (sem outro ponto)');
+  ok(!g.mudancaVisivel && g.proximoPonto && g.proximoPonto.id==='terraco','não dá para voltar, e o cartão Mudança do Terraço só aparece com o cap. 8');
   // as vagas da espera: 6 posições, todas definidas e distintas (até a v9 a 5ª vaga da área industrial não tinha posição)
   ok(L.QUEUE.ys.length===6 && L.QUEUE.ys.every(y=>isFinite(y)) && new Set(L.QUEUE.ys).size===6 && L.QUEUE.ys[0]>L.QUEUE.ys[5] && L.QUEUE.ys[5]>=230,'6 lugares de espera com posição (de baixo para cima)');
   for(let i=0;i<7;i++) g.arrive({ t:0, type:'estudante', color:0, vip:false });
@@ -165,7 +165,7 @@ const html=fs.readFileSync(__dirname+'/../lanchonete.html','utf8');
   H.els['btn-start'].fire('click'); g.schedule=[]; g.nextIdx=0; g.money=2500; g.custo=0; g.finishDay();
   ok(g.save.capAzul===3 && g.result.cap.n===6 && g.result.cap.ok && g.save.conversa==='depois','3 dias no azul: cap. 6 cumprido');
   ok(g.avancaCap()===false && g.save.cap===7 && g.save.conversa==='antes','depois do cap. 6: o cap. 7 começa com a conversa de antes');
-  ok(L.HISTORIA.length===7 && L.HISTORIA[5].titulo==='Do outro lado da rua' && L.HISTORIA[5].antes.length===4 && L.HISTORIA[5].depois.length===3 && L.HISTORIA[6].titulo==='Nota de restaurante' && L.HISTORIA[6].antes.length===3 && L.HISTORIA[6].depois.length===5,'as falas dos caps. 6 e 7');
+  ok(L.HISTORIA.length>=7 && L.HISTORIA[5].titulo==='Do outro lado da rua' && L.HISTORIA[5].antes.length===4 && L.HISTORIA[5].depois.length===3 && L.HISTORIA[6].titulo==='Nota de restaurante' && L.HISTORIA[6].antes.length===3 && L.HISTORIA[6].depois.length===5,'as falas dos caps. 6 e 7');
   ok(L.HISTORIA[5].depois[2].nota==='rindo' && L.HISTORIA[6].depois[1].nota==='tirando o avental' && L.HISTORIA[5].antes[1].nota==='olhando pela janela','as rubricas em itálico'); }
 
 // ---------- 11. cap. 7 ----------
@@ -183,11 +183,11 @@ const html=fs.readFileSync(__dirname+'/../lanchonete.html','utf8');
 { const H=jogo(7,'avenida',{ capAzul:0, caixa:[] }), {g,L,els}=H; notaDe(g,4.1,30); g.save.bank=6000; g.save.conversa=null;
   g.startDay(10); els['btn-start'].fire('click'); g.schedule=[]; g.nextIdx=0; g.money=0; g.custo=0; g.finishDay();
   ok(g.save.conversa==='depois','(cap. 7 cumprido)'); els['btn-next'].fire('click'); passa(H);
-  ok(g.save.cap===8 && mostra(els,'ov-continua') && els['cont-h'].textContent==='Fim dos capítulos da Avenida Brasil' && els['cont-p'].textContent==='Continua na próxima versão: o Terraço Suíça.','depois do cap. 7: "Fim dos capítulos da Avenida Brasil", continua no Terraço Suíça');
+  ok(g.save.cap===8 && mostra(els,'ov-continua') && els['cont-h'].textContent==='Fim dos capítulos da Avenida Brasil' && els['cont-p'].textContent==='Quando quiser, a mudança para o Terraço Suíça está na lojinha.','depois do cap. 7: "Fim dos capítulos da Avenida Brasil", a mudança para o Terraço Suíça está na lojinha');
   const H2=jogo(5,'industrial',{ bank:3000 }), g2=H2.g; notaDe(g2,3.5,30); g2.save.conversa=null; g2.save.capFeito=1; g2.startDay(10); H2.els['btn-start'].fire('click'); notaDe(g2,3.5,30); g2.schedule=[]; g2.nextIdx=0; g2.money=0; g2.custo=0; g2.finishDay();
   ok(g2.save.conversa==='depois','(cap. 5 cumprido)'); H2.els['btn-next'].fire('click'); passa(H2);
   ok(g2.save.cap===6 && g2.save.conversa===null && mostra(H2.els,'ov-continua') && H2.els['cont-h'].textContent==='Fim dos capítulos da área industrial' && /mudança para a Avenida Brasil está na lojinha/.test(H2.els['cont-p'].textContent),'depois do cap. 5: o cartão manda para a mudança para a Avenida Brasil (na lojinha)');
-  ok(/Continua na próxima versão: o Terraço Suíça\./.test(html) && /mudança para a área industrial está na lojinha/.test(html),'os textos de fim estão em HISTORIA.fim'); }
+  ok(/mudança para o Terraço Suíça está na lojinha/.test(html) && /mudança para a área industrial está na lojinha/.test(html),'os textos de fim estão em HISTORIA.fim'); }
 
 // ---------- 13. saves ----------
 { const H=nova(), {g,L}=H;
