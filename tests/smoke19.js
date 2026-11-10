@@ -3,6 +3,7 @@
 // já pago fica pago, e o equipamento consertado). Terminar o dia e "Repetir dia" guardam o que o dia rendeu. v8.2.3: quem
 // está na espera ou nas mesas ao largar o dia vai embora bravo, e cada grupo paga a multa (L.MULTA, mais VIP.angry se VIP).
 const load=require('./harness.js');
+const txt=e=>(e.textContent||'')+(e.children||[]).map(txt).join(' ');   // v9.6.12: os recados do fim do dia vêm em linhas (filhos)
 let fails=0,total=0; const ok=(c,m)=>{ total++; if(!c){fails++;console.log('FAIL:',m);} else console.log('ok  :',m); };
 const H=load(); const {g,L,els}=H;
 const novo=(bank,equipe,divulga)=>{ g.save=L.normSave({maxDay:7,bank,equipe,divulga}); g.up=g.save.up; g.boughtFor=0; g.buildTables(); };
@@ -70,7 +71,7 @@ novo(300,{dani:2},'boca'); abre(3); g.money=250; g.custo=120; const c3=g.contas,
 ok(g.save.bank===300+250-120-c3-f3 && g.result.income===250-120-c3-f3,'no fim do dia sai a folha, junto com contas e ingredientes: '+g.save.bank);
 ok(g.result.money===g.result.income,'o que entra no dinheiro é o lucro do dia (sem conserto)');
 const r=g.save.caixa[g.save.caixa.length-1]; ok(r.folha===f3 && r.saldo===g.save.bank,'a linha do caixa tem a folha e o saldo');
-ok(!g.result.passed && /sem estrelas/.test(els['end-msg'].textContent),'sem a meta, o fim do dia diz que o dia fica sem estrelas (v8.3)');
+ok(!g.result.passed && /sem estrelas/.test(txt(els['end-msg'])),'sem a meta, o fim do dia diz que o dia fica sem estrelas (v8.3)');
 const b3=g.save.bank; els['btn-next'].fire('click'); ok(g.state==='shop' && g.shopNext===4 && g.save.bank===b3,'"Próximo dia" abre a lojinha do dia 4 com o mesmo dinheiro, mesmo sem a meta');
 
 // ---------- prejuízo no dia completo: desde a v8.3, o caixa fica negativo ----------

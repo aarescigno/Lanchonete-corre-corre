@@ -23,7 +23,7 @@ ok(/Lojinha e dia 2/.test(els['btn-next'].textContent) && els['btn-next'].style.
 els['btn-next'].fire('click'); ok(g.state==='shop' && g.shopNext===2,'Próximo dia abre a lojinha do dia 2');
 const est0=g.save.estrelas, lt0=g.save.lucroTot;
 joga(0,0); ok(!g.result.passed && g.result.stars===0 && g.save.dia===3 && g.save.estrelas===est0,'meta não batida: sem estrelas, mas o próximo é o 3');
-ok(/sem estrelas/.test(els['end-msg'].textContent) && els['btn-next'].style.display!=='none','o fim do dia diz e o "Próximo dia" continua');
+ok(/sem estrelas/.test(txt(els['end-msg'])) && els['btn-next'].style.display!=='none','o fim do dia diz e o "Próximo dia" continua');
 ok(g.save.lucroTot===lt0+g.result.money,'o prejuízo também entra no lucro acumulado');
 g.setState('menu'); ok(/Continuar: dia 3/.test(els['btn-play'].textContent) && /História · Garagem completa · dia 3/.test(els['menu-dia'].textContent),'menu: "Continuar: dia 3"');
 ok(/★/.test(els['menu-info'].textContent) && /lucro acumulado/.test(els['menu-info'].textContent),'menu: caixa, estrelas e lucro acumulado');
@@ -61,19 +61,19 @@ ok(g.state==='menu' && g.save.dia===3,'largar o dia no meio não avança a carre
 novo({dia:10,bank:20});
 cont(); joga(0,0); const c10=g.contas;
 ok(g.save.bank===20-c10-g.result.div && g.save.neg===1,'prejuízo sem dinheiro: o caixa fica negativo ('+g.save.bank+'), 1º dia');
-ok(/negativo há 1 dia/.test(els['end-msg'].textContent),'o fim do dia avisa');
+ok(/negativo há 1 dia/.test(txt(els['end-msg'])),'o fim do dia avisa');
 els['btn-next'].fire('click'); ok(/no negativo há 1 dia/.test(els['shop-livre'].textContent) && /falta/.test(els['shop-livre'].className),'a lojinha avisa');
 L.setShopTab('melhorias'); ok(els['shop-grid'].children.every(c=>{ const b=c.children.find(x=>/btn/.test(x.className||'')); return !b || b.disabled; }),'no negativo, nada se compra');
 els['btn-shop-go'].fire('click'); ok(/Caixa no negativo/.test(els['intro-manut'].textContent) && /Mais 3 dias assim/.test(els['intro-manut'].textContent),'a introdução avisa quanto falta');
 joga(0,0); ok(g.save.neg===2,'2º dia no negativo');
-cont(); joga(0,0); ok(g.save.neg===3 && /amanhã/.test(els['end-msg'].textContent),'3º dia: o fim do dia avisa que amanhã o banco cobre');
+cont(); joga(0,0); ok(g.save.neg===3 && /amanhã/.test(txt(els['end-msg'])),'3º dia: o fim do dia avisa que amanhã o banco cobre');
 cont(); els['btn-shop-go'].fire('click'); ok(/Se fechar hoje assim/.test(els['intro-manut'].textContent),'a introdução do 4º dia avisa');
 const b3=g.save.bank; els['btn-start'].fire('click'); g.schedule=[]; g.nextIdx=0; const c4=g.contas; g.finishDay();
 { const deve=-(b3-c4), forc=Math.ceil(deve/10)*10, r=g.result, row=g.save.caixa.slice(-1)[0];
   ok(r.forcado===forc && g.save.bank===b3-c4+forc && g.save.bank>=0 && g.save.neg===0,'4º dia no negativo: o banco cobre '+forc+' e o caixa volta a '+g.save.bank);
   ok(g.save.emp.resto===forc && g.save.emp.j===L.BANCO.forcado && g.save.emp.n===5,'à força: saldo do que cobriu, juros de 6% ao dia, 5 parcelas (v8.3.2)');
   ok(row.emp===forc && row.forc===1 && row.saldo===g.save.bank,'a linha do caixa mostra o empréstimo à força');
-  ok(/banco cobriu/.test(els['end-msg'].textContent) && /Banco \(à força\)/.test(txt(els['end-stats'])),'o fim do dia conta');
+  ok(/banco cobriu/.test(txt(els['end-msg'])) && /Banco \(à força\)/.test(txt(els['end-stats'])),'o fim do dia conta');
   // a parcela sai no fim do dia seguinte
   const p=g.parcela, b=g.save.bank, e0=g.save.emp; ok(p===Math.min(e0.resto,Math.ceil(e0.resto/5))+Math.round(e0.resto*e0.j),'parcela: amortização (1/5) e os juros do dia sobre o saldo');
   cont(); els['btn-shop-go'].fire('click'); ok(/Parcela do banco hoje/.test(els['intro-manut'].textContent),'a introdução lembra a parcela');

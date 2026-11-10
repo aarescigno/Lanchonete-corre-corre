@@ -190,7 +190,9 @@ function shopGrupoDe(sec){ const g = SHOP_GRUPOS.find(x => x.secoes.indexOf(sec)
 function shopAbrir(sec){ sec = SHOP_ANTIGAS[sec] || sec; shopGrupo = shopGrupoDe(sec); shopTab = game.cartaoAberto(sec) ? sec : null; buildShop(); }   // v9.0.4: cartão fechado abre só o grupo
 function shopGrupoAbrir(g){ shopGrupo = g; shopTab = g === 'gurugol' ? 'gurugol' : null; buildShop(); }
 /* as seções do grupo que aparecem agora: a Mudança só depois do cap. 3 (v9) e enquanto há ponto para onde ir */
-function shopSecoesVis(grupo){ return grupo.secoes.filter(id => (id !== 'mudanca' || game.mudancaVisivel) && game.cartaoAberto(id)); }   // v9.0.4: e o cartão já aberto
+/* v9.6.12: na História, a Dani só entra na lojinha quando chega (cap. 2): nem o cartão dela no grupo Equipe, nem a seção */
+function daniNaLoja(){ return !(HIST.on && game.save.histV === 1) || game.daniChegou; }
+function shopSecoesVis(grupo){ return grupo.secoes.filter(id => (id !== 'mudanca' || game.mudancaVisivel) && (id !== 'dani' || daniNaLoja()) && game.cartaoAberto(id)); }   // v9.0.4: e o cartão já aberto
 let mudarPede = false;   // o 1º toque em "Mudar" pede a confirmação
 function shopCartoes(grid, grupo){
   shopSecoesVis(grupo).forEach(id => {
@@ -302,7 +304,7 @@ function buildCursosFeitos(grid){
   grid.appendChild(card);
 }
 function buildDani(grid){
-  if (HIST.on && game.save.histV === 1 && !game.daniChegou) return;   // v9.6.10: na História, o cartão dela só aparece quando ela chega (cap. 2)
+  if (!daniNaLoja()) return;   // v9.6.10: na História, o cartão dela só aparece quando ela chega (cap. 2)
   const eq = game.save.equipe, bank = game.save.bank, T = STAFF.tonhao.levels, D = STAFF.dani.levels, C = STAFF.couvert;
   const canPay = extra => payroll(eq) + extra <= bank;
   const pc = v => Math.round(v*100) + '%', sec = v => String(Math.round(v*10)/10).replace('.', ',') + ' s';
@@ -1136,7 +1138,8 @@ function buildShopTela(){
   $('shop-limit').textContent = devLivre() ? 'Modo dev: tudo liberado; melhorias de graça, ligue e desligue à vontade.' : 'Melhorias à vontade, se o dinheiro der. Cursos: 1 por dia.';
   $('btn-shop-go').textContent = 'Começar o dia ' + game.shopNext;
   const f = payroll(game.save.equipe), dv = divulgaAberta(game.shopNext, game.save) ? divulgaOf(game.save.divulga) : null;
-  $('shop-folha').textContent = (f ? 'Folha ' + fmt(f) : 'Sem folha') + (dv ? ' + ' + dv.name.toLowerCase() + ' ' + fmt(dv.cost) : '') + ', contas ' + fmt(contasDia(game.tables)) + (sv.emp.resto ? ', parcela do banco ' + fmt(game.devido) + (sv.emp.atr ? ' (com a atrasada)' : '') : '') + ' e ingredientes: tudo pago no fim do dia, que só rende completo. A meta é o lucro.';
+  // v9.6.12: a linha diz o que sai no fim do dia, em ordem, sem o "que só rende completo" (a pausa já avisa que dia largado não conta)
+  $('shop-folha').textContent = 'No fim do dia saem: ' + (f ? 'folha ' + fmt(f) + ', ' : '') + (dv && dv.cost ? dv.name.toLowerCase() + ' ' + fmt(dv.cost) + ', ' : '') + 'contas ' + fmt(contasDia(game.tables)) + (sv.emp.resto ? ', parcela do banco ' + fmt(game.devido) + (sv.emp.atr ? ' (com a atrasada)' : '') : '') + ' e os ingredientes. A meta é o lucro.';
   // v8.6.15: sem seção aberta, os cartões do grupo; com ela, o botão Voltar (o Gurugol abre direto, sem cartões)
   const nav = $('shop-nav'), aberta = shopTab ? SHOP_SECOES[shopTab] : null;
   nav.hidden = !aberta || shopGrupo === 'gurugol'; $('shop-sec').textContent = aberta ? aberta.nome : '';

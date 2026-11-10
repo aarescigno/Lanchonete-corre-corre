@@ -277,6 +277,19 @@ function starFill(ctx,x,y,r,fill){
   for (let i=0;i<10;i++){ const a = -Math.PI/2 + i*Math.PI/5, rad = i%2 ? r*0.45 : r; ctx.lineTo(x+Math.cos(a)*rad, y+Math.sin(a)*rad); }
   ctx.closePath(); ctx.fillStyle = fill; ctx.fill();
 }
+/* v9.6.12: a barra do lucro no HUD e onde ficam as 3 estrelas dela (meta, 2ª e 3ª; a 3ª na ponta). Com alvos colados, as
+   estrelas guardam uma distância mínima para não se cobrirem */
+const HUD_LUCRO = { x:102, y:578, w:208, h:12 };
+function hudEstrelas(d){
+  const B = HUD_LUCRO, x3 = B.x + B.w, x1 = Math.min(B.x + B.w * d.meta / d.expert, x3 - 34);
+  return [x1, clamp(B.x + B.w * bomGoal(d) / d.expert, x1 + 17, x3 - 17), x3];
+}
+/* estrela do HUD: recortada do fundo escuro (o contorno é da cor da barra de baixo) */
+function hudStar(ctx,x,y,r,fill){
+  ctx.beginPath();
+  for (let i=0;i<10;i++){ const a = -Math.PI/2 + i*Math.PI/5, rad = i%2 ? r*0.45 : r; ctx.lineTo(x+Math.cos(a)*rad, y+Math.sin(a)*rad); }
+  ctx.closePath(); ctx.fillStyle = fill; ctx.fill(); ctx.lineWidth = 2.2; ctx.strokeStyle = '#2B2823'; ctx.lineJoin = 'round'; ctx.stroke();
+}
 function drawHud(ctx,g,tm){
   ctx.fillStyle = '#2B2823'; ctx.fillRect(0,540,TW,60);
   ctx.fillStyle = PAL.mostarda; ctx.fillRect(0,540,TW,4);
@@ -308,33 +321,44 @@ function drawHud(ctx,g,tm){
     // lucro do dia (v7): começa negativo, com as contas, a folha e a divulgação, e cai com os ingredientes
     const m = Math.round(g.lucro);
     txt(ctx,(m < 0 ? 'R$ −' : 'R$ ') + Math.abs(m),102,564,24,m < 0 ? '#FF9C8A' : '#FFF7DC','left',FD,4);
-    const done = g.stats.served + g.stats.lost + g.stats.full;
-    // pontos de atendimento (v8.3.8): o que as ações da Bia rendem (o dinheiro vem só do que o cliente paga)
-    txt(ctx,Math.round(g.pontos) + ' pts · grupos ' + done + '/' + g.schedule.length,320,562,12,'#cfc7b0','right',FB,0,124);
-    const bx = 102, bw = 218, by = 576;
-    rr(ctx,bx,by,bw,10,5); fs(ctx,'#4a453c',2);
+    // v9.6.12: a barra do lucro com as 3 estrelas marcadas (acendem quando o lucro chega lá; a 3ª fica riscada quando alguém
+    // foi embora) e, ao lado do dinheiro, só o próximo alvo, em letra que dá para ler no celular. Saíram os rótulos miúdos de
+    // baixo da barra e a linha "pts · grupos" (os pontos seguem no fim do dia; no Turno sem fim, continuam aqui)
+    const bom = bomGoal(d), lost = g.stats.lost > 0;
+    const bx = HUD_LUCRO.x, bw = HUD_LUCRO.w, by = HUD_LUCRO.y, bh = HUD_LUCRO.h, cy = by + bh / 2;
+    rr(ctx,bx,by,bw,bh,6); fs(ctx,'#4a453c',2);
     const frac = clamp(m / d.expert, 0, 1);
-    if (frac > 0){ ctx.save(); rr(ctx,bx,by,bw,10,5); ctx.clip(); ctx.fillStyle = m >= d.expert ? PAL.mostarda : (m >= d.meta ? PAL.ok : PAL.alerta); ctx.fillRect(bx,by,bw*frac,10); ctx.restore(); }
-    const mx = bx + bw * d.meta / d.expert, gx = bx + bw * bomGoal(d) / d.expert;
-    ctx.strokeStyle = '#fff'; ctx.lineWidth = 2; ctx.beginPath(); ctx.moveTo(mx,by-3); ctx.lineTo(mx,by+13); ctx.stroke();
-    ctx.lineWidth = 1.5; ctx.beginPath(); ctx.moveTo(gx,by); ctx.lineTo(gx,by+10); ctx.stroke();   // 2ª estrela
-    txt(ctx,'lucro · meta R$ ' + d.meta,bx,593,11,m >= d.meta ? '#7fd69a' : '#cfc7b0','left',FB);
-    // 3ª estrela (v8.3.7): o lucro e nenhum cliente perdido; com uma perda, o rótulo avisa que ela já foi
-    if (g.stats.lost) txt(ctx,'3ª estrela perdida',bx+bw,593,11,'#FF9C8A','right',FB);
-    else txt(ctx,'3 estrelas R$ ' + d.expert,bx+bw,593,11,m >= d.expert ? PAL.mostarda : '#cfc7b0','right',FB);
-    // nota do Gurugol (v8.4): a média das últimas avaliações; antes da AVAL.min-ésima, quantas faltam
+    if (frac > 0){ ctx.save(); rr(ctx,bx,by,bw,bh,6); ctx.clip(); ctx.fillStyle = m >= d.expert ? PAL.mostarda : (m >= d.meta ? PAL.ok : PAL.alerta); ctx.fillRect(bx,by,bw*frac,bh); ctx.restore(); }
+    hudEstrelas(d).forEach((x, i) => {
+      const acesa = i === 0 ? m >= d.meta : i === 1 ? m >= bom : m >= d.expert && !lost, perdida = i === 2 && lost;
+      hudStar(ctx,x,cy,9.5,acesa ? PAL.mostarda : perdida ? '#7a3028' : '#6b6457');
+      if (perdida){ ctx.strokeStyle = '#FF9C8A'; ctx.lineWidth = 2.4; ctx.beginPath(); ctx.moveTo(x-6,cy+6); ctx.lineTo(x+6,cy-6); ctx.stroke(); }
+    });
+    // o próximo alvo: a meta, depois a 2ª estrela e a 3ª (com as estrelinhas no lugar das palavras)
+    const ax = 320, ay = 563;
+    const alvo = (n, v) => {
+      const t = 'R$ ' + v; ctx.font = '14px ' + FB; const w = ctx.measureText(t).width;
+      txt(ctx,t,ax,ay,14,'#FFF7DC','right',FB);
+      for (let k=0;k<n;k++) starFill(ctx,ax - w - 9 - k*13,ay - 0.5,6,PAL.mostarda);
+    };
+    if (m < d.meta) txt(ctx,'meta R$ ' + d.meta,ax,ay,14,'#cfc7b0','right',FB);
+    else if (m < bom) alvo(2, bom);
+    else if (lost) txt(ctx,'3ª estrela perdida',ax,ay,12.5,'#FF9C8A','right',FB);
+    else if (m < d.expert) alvo(3, d.expert);
+    else txt(ctx,'3 estrelas!',ax,ay,15,PAL.mostarda,'right',FD);
+    // nota do Gurugol (v8.4): a média das últimas avaliações; antes da AVAL.min-ésima, uma bolinha por avaliação que já chegou (v9.6.12)
     const av = g.gurugol;
     rr(ctx,334,550,124,44,9); fs(ctx,'#3b362e',2);
-    txt(ctx,'Gurugol',396,561,11,'#cfc7b0','center',FB);
+    txt(ctx,'Gurugol',396,561,12,'#cfc7b0','center',FB);
     if (av){
       const fr = avalFrac(av.nota, avalTeto(g.ponto));   // v8.6.4: a cor vai pelo teto do ponto
-      txt(ctx,fmtNota(av.nota),372,582,19,fr >= 0.75 ? '#7fd69a' : fr >= 0.5 ? '#FFF7DC' : '#FF9C8A','center',FD,3);
+      txt(ctx,fmtNota(av.nota),366,582,20,fr >= 0.75 ? '#7fd69a' : fr >= 0.5 ? '#FFF7DC' : '#FF9C8A','center',FD,3);
       for (let i=0;i<5;i++){
-        const f = clamp(av.nota - i, 0, 1);
-        starFill(ctx,398 + i*11,582,5.5,'#5b554a');
-        if (f > 0){ ctx.save(); ctx.beginPath(); ctx.rect(392 + i*11,575,12*f,14); ctx.clip(); starFill(ctx,398 + i*11,582,5.5,PAL.mostarda); ctx.restore(); }
+        const f = clamp(av.nota - i, 0, 1), sx = 396 + i*12;
+        starFill(ctx,sx,582,6.2,'#5b554a');
+        if (f > 0){ ctx.save(); ctx.beginPath(); ctx.rect(sx - 6.5,574,13*f,16); ctx.clip(); starFill(ctx,sx,582,6.2,PAL.mostarda); ctx.restore(); }
       }
-    } else txt(ctx,'sem nota: ' + g.gurugolN + '/' + AVAL.min,396,582,11,'#cfc7b0','center',FB,0,116);
+    } else for (let i=0;i<AVAL.min;i++){ circ(ctx,396 + (i - (AVAL.min - 1) / 2) * 13,582,4.5); ctx.fillStyle = i < g.gurugolN ? PAL.mostarda : '#5b554a'; ctx.fill(); }
   }
   // fila de ações (no meio da tela larga)
   ctx.save(); ctx.translate(HUDX.fila, 0);

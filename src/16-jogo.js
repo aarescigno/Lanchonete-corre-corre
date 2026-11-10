@@ -40,6 +40,7 @@ class Game {
     this.day = treino ? TREINO : n === 0 ? ENDLESS : this.diaPonto(diaOf(n));
     this.money = 0; this.custo = 0; this.contas = 0; this.paidDiv = 0; this.conserto = 0; this.pontos = 0;
     this.manualDia = [];   // v9.6.7: as fichas do Manual reveladas durante o dia (a linha "Novo no Manual" do fim do dia)
+    this.semToque = 0; this.dica = null; this.dicaCand = null; this.dicaT = 0; this.dicaDesde = 0;   // v9.6.12: as dicas na hora (17-treino.js)
     this.avals = [];   // avaliações do dia (v8.4): { r: as notas dos critérios, txt: o comentário }; entram no save no fim do dia
     // imprevistos (v8): o sorteio do dia (feito ao começar o dia, e guardado até ele acabar) diz o clima e o que quebra
     const so = n && this.save.manut.sorteio && this.save.manut.sorteio.d === n ? this.save.manut.sorteio : null;
@@ -993,6 +994,7 @@ class Game {
     this.kitchen.update(dt);
     this.esfriar(dt);
     this.updateFx(dt);
+    dicaAnda(this, dt);   // v9.6.12
 
     if (this.mode === 'semfim'){
       if (this.ending){
@@ -1809,6 +1811,7 @@ class Game {
   onDown(sx, y, pad){
     if (this.state !== 'playing') return;
     pad = pad || 0;
+    dicaToque(this);   // v9.6.12: o toque apaga a dica na hora
     const h = this.hudHit(sx, y);
     // Missão zero: "Pular tutorial" (em todos os balões) volta direto ao menu principal
     const pu = this.treino && this.treino.pular;

@@ -6,6 +6,9 @@
    Cada passo tem o texto do pop-up e o alvo (retângulos do mundo, ou da tela com `tela`). Passo com
    `ok` explica e o jogo espera um toque; passo com `feito` segue sozinho quando a condição vale.
    `segura` para o relógio da mesa (cardápio e refeição), para dar tempo de fazer o passo
+   `espera` (v9.6.12): passo em que é só aguardar (o cartão diz "Aguarde..." no lugar de "Sua vez!")
+   v9.6.12: textos em frases curtas, sem números (a regra da 3f); as explicações da cor e do cafezinho entraram nos passos
+   de fazer ("sentar" e "comendo"), e as paradas com "Continuar" caíram de 7 para 5
    ============================================================ */
 const TREINO_COR = ['vermelhas', 'azuis', 'amarelas', 'verdes'];
 const TREINO_CHEGA = 0.6;   // segundos até o grupo aparecer na rua
@@ -17,53 +20,49 @@ function treinoPrato(g){ return g.kitchen.plates.find(p => p && p.group === g.tr
 function treinoNaMao(g, kind){ return g.bia.hands.some(h => h.kind === kind && (!h.group || h.group === g.treino.grupo)); }
 
 const TREINO_PASSOS = [
-  { id:'oi', ok:true, tit:'Missão zero: o dia de treino',
-    txt:'Vamos aprender todo o trabalho da Bia com uma mesa só. No treino, ninguém perde a paciência e o dinheiro não vai para a carreira.' },
-  { id:'chega', alvo:g => [{ x:QUEUE.x - 90, y:QUEUE.ys[0] - 84, w:180, h:104 }], tit:'Chegou freguesia!',
-    txt:'Quem chega espera lá fora, na calçada. Lá vêm o vovô e a vovó...', feito:g => { const grp = g.treino.grupo; return !!grp && grp.state === 'queue' && !grp.path.length; } },
-  { id:'coracoes', ok:true, alvo:g => { const grp = g.treino.grupo; return [{ x:grp.x - 40, y:grp.y - 80, w:80, h:30 }]; }, tit:'Os corações são a paciência',
-    txt:'Este casal chegou cansado: só 1 coração. Esperar gasta corações, e cada atendimento devolve 1. Quanto mais corações na hora da conta, mais gorjeta.' },
-  { id:'cor', ok:true, alvo:g => [treinoGrupoR(g), treinoMesaR(g)], tit:'Combine as cores',
-    txt:g => 'Veja a cor das camisas: ' + CHAIRS[g.treino.grupo.color].n + '. A mesa ' + g.treino.mesa.id + ' tem cadeiras ' + TREINO_COR[g.treino.mesa.color] + '. Sentar o grupo na mesa da mesma cor dá 15 pontos a mais.' },
-  { id:'sentar', alvo:g => [treinoGrupoR(g), treinoMesaR(g)], tit:'Leve o grupo à mesa',
-    txt:g => 'Arraste o grupo até a mesa de cadeiras ' + TREINO_COR[g.treino.mesa.color] + ' (ou toque no grupo e depois na mesa).', feito:g => !!g.treino.grupo.table },
-  { id:'cardapio', alvo:g => [treinoMesaR(g)], tit:'Combinou!',
-    txt:'Sentar vale 10 pontos de atendimento e 1 coração; a cor certa, mais 15 pontos. Agora eles escolhem no cardápio (o balão com o anel). Espere eles chamarem.',
+  { id:'oi', ok:true, tit:'Missão zero: o treino',
+    txt:'Uma mesa só, para aprender o trabalho da Bia. Sem pressa: aqui ninguém perde a paciência.' },
+  { id:'chega', espera:true, alvo:g => [{ x:QUEUE.x - 90, y:QUEUE.ys[0] - 84, w:180, h:104 }], tit:'Chegou freguesia!',
+    txt:'Quem chega espera na calçada.', feito:g => { const grp = g.treino.grupo; return !!grp && grp.state === 'queue' && !grp.path.length; } },
+  { id:'coracoes', ok:true, alvo:g => { const grp = g.treino.grupo; return [{ x:grp.x - 40, y:grp.y - 80, w:80, h:30 }]; }, tit:'Corações são a paciência',
+    txt:'Este casal chegou cansado, com um coração só. Esperar gasta corações; atender devolve.' },
+  { id:'sentar', alvo:g => [treinoGrupoR(g), treinoMesaR(g)], tit:'Leve o casal à mesa',
+    txt:g => 'Arraste o casal até a mesa de cadeiras ' + TREINO_COR[g.treino.mesa.color] + ' (ou toque nele e depois na mesa). Camisa e cadeira da mesma cor: a freguesia gosta.', feito:g => !!g.treino.grupo.table },
+  { id:'cardapio', espera:true, alvo:g => [treinoMesaR(g)], tit:'Sentaram!',
+    txt:'Agora eles escolhem o prato. Espere chamarem.',
     feito:g => g.treino.grupo.state === 'wantOrder' },
   { id:'anotar', alvo:g => [treinoMesaR(g)], tit:'Chamaram!',
-    txt:'O balão com "!" é o grupo chamando a Bia. Toque na mesa para ela anotar o pedido.', feito:g => g.treino.grupo.state !== 'wantOrder' && g.treino.grupo.state !== 'reading' },
-  { id:'fila', ok:true, tela:true, alvo:g => [{ x:HUDX.dir + 696, y:546, w:96, h:52 }, { x:HUDX.fila + 354, y:546, w:52 * filaMax(g.up) + 4, h:52 }], tit:'Mãos e fila de ações',
-    txt:'A comanda está nas mãos da Bia (MÃOS, lá embaixo). Cada toque vira uma tarefa na FILA, ao lado: a Bia faz uma depois da outra. Um toque no quadrinho cancela a tarefa.' },
+    txt:'O balão com "!" chama a Bia. Toque na mesa para anotar o pedido.', feito:g => g.treino.grupo.state !== 'wantOrder' && g.treino.grupo.state !== 'reading' },
+  { id:'fila', ok:true, tela:true, alvo:g => [{ x:HUDX.dir + 696, y:546, w:96, h:52 }, { x:HUDX.fila + 354, y:546, w:52 * filaMax(g.up) + 4, h:52 }], tit:'A fila da Bia',
+    txt:'Cada toque vira uma tarefa na FILA, e a Bia faz uma por vez. O que ela carrega aparece em MÃOS. Tocar num quadrinho cancela a tarefa.' },
   { id:'cozinha', alvo:treinoSt('order'), tit:'Leve o pedido ao Tonhão',
-    txt:'Toque na cozinha, no Chef Tonhão, para entregar a comanda.', feito:g => g.kitchen.progressFor(g.treino.grupo) >= 0 || !!treinoPrato(g) },
-  { id:'preparo', alvo:treinoSt('order'), tit:'O Tonhão está cozinhando',
-    txt:'Agora é esperar o prato ficar pronto. Na carreira, a Bia aproveita esse tempo para atender as outras mesas.', feito:g => !!treinoPrato(g) || treinoNaMao(g, 'dish') },
+    txt:'Toque na cozinha para entregar a comanda.', feito:g => g.kitchen.progressFor(g.treino.grupo) >= 0 || !!treinoPrato(g) },
+  { id:'preparo', espera:true, alvo:treinoSt('order'), tit:'O Tonhão está cozinhando',
+    txt:'É só esperar. Num dia de verdade, dá tempo de atender outras mesas.', feito:g => !!treinoPrato(g) || treinoNaMao(g, 'dish') },
   { id:'prato', alvo:treinoSt('plates'), tit:'Prato pronto!',
-    txt:'Toque no prato, no balcão, para a Bia pegar.', feito:g => treinoNaMao(g, 'dish') || g.treino.grupo.state === 'eating' },
+    txt:'Toque no prato para a Bia pegar.', feito:g => treinoNaMao(g, 'dish') || g.treino.grupo.state === 'eating' },
   { id:'servir', alvo:g => [treinoMesaR(g)], tit:'Sirva a comida',
-    txt:'Toque na mesa para servir. Prato entregue vale 20 pontos e 1 coração. Dinheiro, só na conta: cada um paga o que comeu.', feito:g => g.treino.grupo.state === 'eating' },
+    txt:'Toque na mesa. Servir devolve um coração.', feito:g => g.treino.grupo.state === 'eating' },
   { id:'cafe', segura:true, alvo:treinoSt('coffee'), tit:'Hora do cafezinho',
-    txt:'Enquanto eles comem, a Bia pode levar um cafezinho. Toque na cafeteira.', feito:g => treinoNaMao(g, 'coffee') || g.treino.grupo.coffee },
+    txt:'Enquanto eles comem, toque na cafeteira.', feito:g => treinoNaMao(g, 'coffee') || g.treino.grupo.coffee },
   { id:'cafe2', segura:true, alvo:g => [treinoMesaR(g)], tit:'Sirva o cafezinho',
-    txt:'Agora toque na mesa para servir o cafezinho.', feito:g => g.treino.grupo.coffee },
-  { id:'bonus', ok:true, segura:true, alvo:g => [treinoMesaR(g)], tit:'Os bônus do cafezinho',
-    txt:'Cada cafezinho põe R$ ' + DRINK_PRICE.coffee + ' na conta, rende 5 pontos e 1 coração (2 com a Cafeteira de 2 bocas, da lojinha). E coração vale gorjeta: com 5 corações, a comida sai 10% mais cara; com 1, o grupo reclama e paga 20% menos.' },
-  { id:'comendo', alvo:g => [treinoMesaR(g)], tit:'Bom apetite',
-    txt:'Eles estão comendo. Quando acabarem, pedem a conta (balão com "$").', feito:g => g.treino.grupo.state === 'wantBill' },
+    txt:'Agora toque na mesa.', feito:g => g.treino.grupo.coffee },
+  { id:'comendo', espera:true, alvo:g => [treinoMesaR(g)], tit:'Bom apetite',
+    txt:'O cafezinho entra na conta e agrada. Quando acabarem, eles pedem a conta: o balão com "$".', feito:g => g.treino.grupo.state === 'wantBill' },
   { id:'cobrar', alvo:g => [treinoMesaR(g)], tit:'Hora de cobrar',
-    txt:'Toque na mesa para a Bia cobrar a conta.', feito:g => g.treino.grupo.paid },
+    txt:'Toque na mesa para cobrar a conta.', feito:g => g.treino.grupo.paid },
   { id:'conta', ok:true, alvo:g => [treinoMesaR(g)], tit:'Conta paga!',
-    txt:g => { const c = g.treino.conta || { v:0, h:5, base:0, beb:0 }; return 'Com ' + c.h + (c.h > 1 ? ' corações' : ' coração') + ', a comida de R$ ' + c.base + ' virou R$ ' + (c.v - c.beb) + (c.beb ? ', mais R$ ' + c.beb + ' do cafezinho: a conta deu R$ ' + c.v : '') + '. O dinheiro paga as contas da lanchonete; os pontos mostram como a Bia atendeu.'; } },
+    txt:g => { const c = g.treino.conta || { v:0 }; return 'Entraram R$ ' + c.v + '. Freguês contente paga mais: os corações viram gorjeta.'; } },
   { id:'louca', alvo:g => [treinoMesaR(g)], tit:'Recolha a louça',
-    txt:'Ficou louça suja na mesa, e mesa suja não recebe ninguém. Toque na mesa para recolher.', feito:g => !g.treino.mesa.dirty },
+    txt:'Mesa suja não recebe ninguém. Toque na mesa para recolher.', feito:g => !g.treino.mesa.dirty },
   { id:'pia', alvo:treinoSt('sink'), tit:'Leve à pia',
-    txt:'Toque na pia: a Bia deixa a louça lá.', feito:g => g.kitchen.sinkN > 0 || g.stats.washed > 0 },
+    txt:'Toque na pia para deixar a louça.', feito:g => g.kitchen.sinkN > 0 || g.stats.washed > 0 },
   { id:'lavar', alvo:treinoSt('sink'), tit:'Lave os pratos',
-    txt:'Agora, com as mãos vazias, toque na pia de novo para lavar. O prato lavado volta para a cozinha (do dia 3 em diante, os pratos limpos são contados).', feito:g => g.stats.washed > 0 },
+    txt:'De mãos vazias, toque na pia de novo. Prato limpo volta para a cozinha.', feito:g => g.stats.washed > 0 },
   { id:'lixo', alvo:treinoSt('trash'), tit:'Tire o lixo',
-    txt:'Lavar joga os restos na lixeira. Cheia, ela cheira mal e a freguesia perde a paciência mais rápido. Toque na lixeira, de mãos vazias, para tirar o lixo.', feito:g => g.stats.emptied > 0 },
-  { id:'fim', ok:true, tit:'Esse é o ciclo da Bia!',
-    txt:'Na carreira, vários grupos chegam juntos: toque em várias coisas seguidas e a Bia faz tudo em ordem. Repetir a mesma ação em sequência forma corrente, com pontos a mais. Depois de comer, alguns grupos pedem mais um salgado. Boa sorte!' }
+    txt:'Lixeira cheia cheira mal e espanta a freguesia. De mãos vazias, toque nela.', feito:g => g.stats.emptied > 0 },
+  { id:'fim', ok:true, tit:'Esse é o corre-corre!',
+    txt:'No dia de verdade, chegam vários grupos. Toque em várias coisas seguidas e a Bia faz tudo em ordem. Boa sorte!' }
 ];
 
 class Treino {
@@ -107,3 +106,58 @@ class Treino {
   }
 }
 
+/* ============================================================
+   DICAS NA HORA (v9.6.12): nos primeiros dias da carreira, quem fica parado com serviço à espera vê o próximo passo:
+   o anel e a seta da Missão zero, com duas ou três palavras (o desenho fica em 24-treino.js).
+   `dicaDe` só olha o jogo e não muda nada nele: o bot, as metas e o balanceamento não percebem.
+   A dica aparece depois de DICAS.espera s sem toque, com o mesmo pedido de pé há DICAS.firme s, e some no 1º toque.
+   Sentar um grupo não depende da Bia; as outras só valem com a fila de ações vazia. alvos: retângulos do mundo
+   ============================================================ */
+const DICAS = { dias:3, espera:4, firme:1.5, surge:0.25 };
+function dicaLigada(g){ return g.mode === 'carreira' && g.state === 'playing' && !g.ending && !g.fechado && g.day.n <= DICAS.dias && !devLivre(); }
+function dicaDe(g){
+  if (!dicaLigada(g) || g.drag) return null;
+  const b = g.bia, livre = !b.acts.length, mao = k => b.hands.find(h => h.kind === k);
+  const mesaDe = grp => grp && grp.table && grp.seated ? grp.table : null;
+  const st = (k, txt) => ({ k, txt, alvos:[STATIONS[k === 'cozinha' ? 'order' : k].rect] });
+  if (livre){
+    if (mao('ticket')) return st('cozinha', 'Leve ao Tonhão');
+    const d = mao('dish'), td = d && mesaDe(d.group);
+    if (td) return { k:'servir:' + td.id, txt:'Sirva a mesa', alvos:[tableRect(td)] };
+    if (mao('dirty')) return { k:'pia', txt:'Deixe na pia', alvos:[STATIONS.sink.rect] };
+    if (mao('juice')){ const t = g.tables.find(t => t.group && t.group.juiceOpen && t.group.juicePending > 0); if (t) return { k:'suco:' + t.id, txt:'Sirva o suco', alvos:[tableRect(t)] }; }
+  }
+  // sentar: o grupo que chegou primeiro e cabe numa mesa livre (de preferência, da cor dele)
+  const grp = g.queue.find(q => q.state === 'queue' && !q.path.length && g.tables.some(t => t.free && t.seats >= q.size));
+  if (grp){
+    const t = g.tables.filter(t => t.free && t.seats >= grp.size).sort((a, c) => (c.color === grp.color) - (a.color === grp.color) || a.seats - c.seats)[0];
+    return { k:'sentar:' + grp.id, txt:'Arraste até a mesa', alvos:[queueRect(grp), tableRect(t)], arrasta:true };
+  }
+  if (!livre) return null;
+  const pl = g.kitchen.plates.find(p => p && mesaDe(p.group) && !p.group.cami);
+  if (pl && b.canTake('dish')){ const s = PLATE_SLOTS[pl.slot]; return { k:'prato:' + pl.id, txt:'Pegue o prato', alvos:[{ x:s.x - 22, y:s.y - 24, w:44, h:44 }] }; }
+  const quer = (estado, k, txt) => { const t = g.tables.find(t => t.group && t.group.state === estado && !t.cami); return t ? { k:k + ':' + t.id, txt, alvos:[tableRect(t)] } : null; };
+  const pede = b.canTake('ticket') && quer('wantOrder', 'anotar', 'Anote o pedido');
+  if (pede) return pede;
+  const conta = quer('wantBill', 'cobrar', 'Cobre a conta');
+  if (conta) return conta;
+  const suja = b.canTake('dirty') && g.tables.find(t => t.open && t.dirty && !t.group);
+  if (suja) return { k:'louca:' + suja.id, txt:'Recolha a louça', alvos:[tableRect(suja)] };
+  if (!b.hands.length){
+    if (g.kitchen.noPlate && g.kitchen.sinkN > 0) return { k:'lavar', txt:'Lave a louça', alvos:[STATIONS.sink.rect] };
+    if (g.trashFull) return { k:'lixo', txt:'Tire o lixo', alvos:[STATIONS.trash.rect] };
+  }
+  if (b.canTake('juice') && g.tables.some(t => t.group && t.group.juiceOpen && t.group.juicePending > 0)) return { k:'fazsuco', txt:'Faça um suco', alvos:[STATIONS.juice.rect] };
+  return null;
+}
+/* chamada pelo Game.update: conta o tempo sem toque e o tempo do pedido de pé, e guarda a dica à mostra em g.dica */
+function dicaAnda(g, dt){
+  g.semToque += dt;
+  const c = dicaDe(g), k = c ? c.k : null;
+  if (k === g.dicaCand) g.dicaT += dt; else { g.dicaCand = k; g.dicaT = 0; }
+  const mostra = c && g.semToque >= DICAS.espera && g.dicaT >= DICAS.firme ? c : null;
+  if (mostra && !(g.dica && g.dica.k === mostra.k)) g.dicaDesde = g.anim;
+  g.dica = mostra;
+}
+/* qualquer toque no jogo apaga a dica e zera a espera */
+function dicaToque(g){ g.semToque = 0; g.dica = null; }

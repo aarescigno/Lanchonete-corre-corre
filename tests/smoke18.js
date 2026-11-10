@@ -14,6 +14,13 @@ const segue=id=>{ ok(passo()===id && g.treino.para,'pop-up "'+id+'" para o jogo'
 
 // ---------- menu: quem nunca treinou encontra a Missão zero em destaque (v8.3: um botão à parte) ----------
 ok(L.TREINO_PASSOS.length>=20,'passo a passo com '+L.TREINO_PASSOS.length+' passos');
+// v9.6.12: frases curtas e sem números (a regra da 3f): no máximo 5 paradas com "Continuar", nenhum texto fala de pontos nem de porcentagem
+{ const fake={ treino:{ grupo:{ color:1 }, mesa:{ id:2, color:1 }, conta:{ v:58, h:5, base:50, beb:3 } } };
+  const ts=L.TREINO_PASSOS.map(p=>typeof p.txt==='function'?p.txt(fake):p.txt);
+  ok(L.TREINO_PASSOS.filter(p=>p.ok).length<=5,'no máximo 5 paradas de explicação: '+L.TREINO_PASSOS.filter(p=>p.ok).length);
+  ok(ts.every(t=>t.length<=150),'todo texto com até 150 letras (o maior: '+Math.max.apply(null,ts.map(t=>t.length))+')');
+  ok(!ts.some(t=>/ponto|%|corrente/i.test(t)),'nenhum texto fala de pontos, corrente ou porcentagem');
+  ok(ts.filter(t=>/\d/.test(t)).length===1 && /R\$ 58/.test(ts[L.TREINO_PASSOS.findIndex(p=>p.id==='conta')]),'o único número é o valor da conta paga'); }
 ok(/go/.test(els['btn-treino'].className) && /alt/.test(els['btn-play'].className) && /Missão zero/.test(els['menu-info'].textContent),'Missão zero em destaque para quem nunca treinou');
 const real=store[L.LS.save];
 els['btn-treino'].fire('click');
@@ -27,7 +34,7 @@ segue('oi');
 ok(roda(()=>passo()==='coracoes'),'o grupo chega à calçada e o passo segue sozinho');
 const grp=g.treino.grupo;
 ok(grp && grp.type==='vovos' && grp.size===2 && grp.hearts===1 && grp.color===g.treino.mesa.color,'vovô e vovó com 1 coração e camisas da cor da mesa');
-segue('coracoes'); segue('cor');
+segue('coracoes');
 ok(passo()==='sentar' && !g.treino.para,'"sentar" espera o jogador');
 g.update(30); ok(grp.hearts===1 && grp.state==='queue','no treino, a paciência não acaba');
 const outra=g.tables.find(t=>t!==g.treino.mesa && t.seats>=2);
@@ -58,9 +65,8 @@ const tm=grp.timer; g.update(1); ok(grp.timer===tm,'a refeição espera o cafezi
 toca(st('coffee').x,st('coffee').y);
 ok(roda(()=>passo()==='cafe2'),'cafezinho na mão');
 toca(g.treino.mesa.cx,g.treino.mesa.cy);
-ok(roda(()=>passo()==='bonus'),'cafezinho servido');
+ok(roda(()=>passo()==='comendo'),'cafezinho servido (v9.6.12: sem a parada dos bônus)');
 ok(grp.coffee && grp.hearts===5 && grp.state==='eating','5 corações, ainda comendo');
-segue('bonus');
 
 // ---------- conta ----------
 ok(roda(()=>passo()==='cobrar'),'acabaram de comer: pedem a conta');
@@ -69,7 +75,7 @@ ok(roda(()=>passo()==='conta'),'conta cobrada');
 const c=g.treino.conta;
 ok(c && c.h===5 && c.base===grp.bill && c.v-c.beb===Math.round(c.base*1.1),'com 5 corações a comida sai 10% mais cara (v8.3.8): '+c.base+' -> '+(c.v-c.beb));
 ok(c.beb===L.DRINK_PRICE.coffee && c.beb===grp.bebConta,'o cafezinho vai para a conta pelo preço, fora da gorjeta (v8.5.2): '+c.beb);
-ok(new RegExp('comida de R\\$ '+c.base+' virou R\\$ '+(c.v-c.beb)+', mais R\\$ '+c.beb+' do cafezinho: a conta deu R\\$ '+c.v).test(g.treino.texto()),'o pop-up mostra a conta: '+g.treino.texto());
+ok(new RegExp('^Entraram R\\$ '+c.v+'\\.').test(g.treino.texto()) && /gorjeta/.test(g.treino.texto()),'o pop-up mostra quanto entrou e fala da gorjeta (v9.6.12): '+g.treino.texto());
 segue('conta');
 
 // ---------- louça, pia, lavar, lixo ----------

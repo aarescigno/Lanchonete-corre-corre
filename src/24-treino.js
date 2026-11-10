@@ -24,18 +24,11 @@ function treinoLugar(alvos, w, h){
   for (const o of opts){ const r = { x:o[0], y:o[1], w, h }; if (!alvos.some(a => treinoCruza(r, a, 14))) return r; }
   return { x:C, y:T, w, h };
 }
-function drawTreino(ctx,g,tm){
-  const tr = g.treino, p = tr && tr.passo;
-  if (!p) return;
-  const U = TREINO_UI, alvos = tr.alvos(), pulso = RM ? 0 : Math.sin(tm * 5);
-  ctx.save();
-  // explicação: o resto escurece, com um buraco em cada alvo
-  if (p.ok){
-    ctx.beginPath(); ctx.rect(0, 0, TW, H);
-    alvos.forEach(a => rr(ctx, a.x - 8, a.y - 8, a.w + 16, a.h + 16, 14));
-    ctx.fillStyle = 'rgba(34,32,28,.38)'; ctx.fill('evenodd');
-  }
-  // anel tracejado e seta em cada alvo
+/* anel tracejado em cada alvo e seta no 1º (pulsam; parados com movimento reduzido). Devolve o cabo da seta
+   ({ x, y, s: -1 seta em cima do alvo, 1 embaixo }), para a etiqueta da dica ficar depois dele */
+function treinoAneis(ctx, alvos, tm){
+  const pulso = RM ? 0 : Math.sin(tm * 5);
+  let cabo = null;
   alvos.forEach((a, k) => {
     rr(ctx, a.x - 8, a.y - 8, a.w + 16, a.h + 16, 14);
     ctx.setLineDash([]); ctx.lineWidth = 7; ctx.strokeStyle = 'rgba(255,255,255,.75)'; ctx.stroke();
@@ -46,7 +39,49 @@ function drawTreino(ctx,g,tm){
     ctx.beginPath(); ctx.moveTo(ax, ay); ctx.lineTo(ax - 13, ay + 20 * s); ctx.lineTo(ax - 5, ay + 20 * s); ctx.lineTo(ax - 5, ay + 34 * s);
     ctx.lineTo(ax + 5, ay + 34 * s); ctx.lineTo(ax + 5, ay + 20 * s); ctx.lineTo(ax + 13, ay + 20 * s); ctx.closePath();
     fs(ctx, PAL.mostarda, 3);
+    cabo = { x:ax, y:(cima ? a.y - 28 : a.y + a.h + 28) + 34 * s, s };   // pelo ponto mais longe do pulso: a etiqueta não balança
   });
+  return cabo;
+}
+/* DICA NA HORA (v9.6.12): o anel e a seta da Missão zero no próximo passo, com uma etiqueta de duas ou três palavras; sem cartão
+   e sem escurecer o salão. No "sentar", uma linha pontilhada liga o grupo à mesa e uma bolinha anda por ela (só a linha, com
+   movimento reduzido). Surge em DICAS.surge s. Na tela (o mundo anda g.cam) */
+const DICA_UI = { letra:17, alt:30, folga:13 };
+function drawDica(ctx,g,tm){
+  const d = g.dica;
+  if (!d) return;
+  const U = DICA_UI, alvos = d.alvos.map(q => ({ x:q.x + g.cam, y:q.y, w:q.w, h:q.h }));
+  ctx.save();
+  ctx.globalAlpha = RM ? 1 : clamp((g.anim - g.dicaDesde) / DICAS.surge, 0, 1);
+  if (d.arrasta && alvos.length > 1){
+    const a = alvos[0], c = alvos[1], x0 = a.x + a.w / 2, y0 = a.y + a.h / 2, x1 = c.x + c.w / 2, y1 = c.y + c.h / 2;
+    ctx.setLineDash([2, 12]); ctx.lineCap = 'round'; ctx.lineWidth = 6; ctx.strokeStyle = 'rgba(255,255,255,.85)';
+    ctx.beginPath(); ctx.moveTo(x0, y0); ctx.lineTo(x1, y1); ctx.stroke(); ctx.setLineDash([]);
+    if (!RM){ const p = (tm * 0.7) % 1, e = p * p * (3 - 2 * p); circ(ctx, x0 + (x1 - x0) * e, y0 + (y1 - y0) * e, 10); fs(ctx, PAL.mostarda, 3); }
+  }
+  const cabo = treinoAneis(ctx, alvos, tm);
+  if (cabo){
+    ctx.font = U.letra + 'px ' + FD;
+    const w = ctx.measureText(d.txt).width + 2 * U.folga, x = clamp(cabo.x - w / 2, 8, TW - w - 8), y = cabo.s < 0 ? cabo.y - U.alt - 4 : cabo.y + 4;
+    rr(ctx, x, y + 3, w, U.alt, 10); ctx.fillStyle = PAL.tinta; ctx.fill();
+    rr(ctx, x, y, w, U.alt, 10); fs(ctx, PAL.creme, 2.6);
+    txt(ctx, d.txt, x + w / 2, y + U.alt / 2 + 1, U.letra, PAL.tinta, 'center', FD);
+  }
+  ctx.restore();
+}
+function drawTreino(ctx,g,tm){
+  const tr = g.treino, p = tr && tr.passo;
+  if (!p) return;
+  const U = TREINO_UI, alvos = tr.alvos();
+  ctx.save();
+  // explicação: o resto escurece, com um buraco em cada alvo
+  if (p.ok){
+    ctx.beginPath(); ctx.rect(0, 0, TW, H);
+    alvos.forEach(a => rr(ctx, a.x - 8, a.y - 8, a.w + 16, a.h + 16, 14));
+    ctx.fillStyle = 'rgba(34,32,28,.38)'; ctx.fill('evenodd');
+  }
+  // anel tracejado e seta em cada alvo
+  treinoAneis(ctx, alvos, tm);
   // cartão
   const tw = U.w - 2 * U.pad, linhas = treinoLinhas(ctx, tr.texto(), tw, U.corpo);
   const h = U.pad + U.tit + 10 + linhas.length * U.linha + 14 + 34 + U.pad - 6;
@@ -70,7 +105,8 @@ function drawTreino(ctx,g,tm){
     rr(ctx, bx, by + 4, bw, 34, 10); ctx.fillStyle = PAL.tinta; ctx.fill();
     rr(ctx, bx, by, bw, 34, 10); fs(ctx, PAL.ok, 2.6);
     txt(ctx, tr.i + 1 >= tr.total ? 'Concluir ▸' : 'Continuar ▸', bx + bw / 2, by + 17, 17, '#fff', 'center', FD, 3);
-  } else txt(ctx, 'Sua vez!', r.x + r.w - U.pad, fy, 17, PAL.alerta, 'right', FD);
+  } else if (p.espera) txt(ctx, 'Aguarde...', r.x + r.w - U.pad, fy, 15, '#6b6355', 'right', FD);   // v9.6.12: passo de só esperar
+  else txt(ctx, 'Sua vez!', r.x + r.w - U.pad, fy, 17, PAL.alerta, 'right', FD);
   ctx.restore();
 }
 
