@@ -59,6 +59,14 @@ function buildEnd(){
   const st = $('end-stats');
   clearEl(st);
   const rows = [['Atendidos', r.served],['Perdidos', r.lost],['Não couberam', r.full],['Maior corrente', '×' + r.chain],['Pontos de atendimento', r.pontos || 0]];
+  // v9.6.12: o trabalho da equipe e o que ela vendeu (antes, frases soltas no rodapé), no fim da tabela
+  { const sv = game.save, tar = n => (n || 0) + ((n || 0) === 1 ? ' tarefa' : ' tarefas');
+    if (sv.equipe.dani > 0) rows.push(['Dani', tar(r.daniFeitas) + ' · experiência ' + daniXp(sv)]);   // v8.9
+    if (sv.equipe.joca > 0) rows.push(['Joca', tar(r.jocaFeitas) + ' · experiência ' + jocaXp(sv)]);   // v9.2
+    if (sv.equipe.cami > 0) rows.push(['Cami', tar(r.camiFeitas)]);   // v9.3
+    if (sv.equipe.anselmo > 0 || r.drinks) rows.push(['Drinks do Anselmo', r.drinks || 0]);   // v9.5
+    if (r.cafesEsp) rows.push(['Espressos e cappuccinos', r.cafesEsp]);
+    if (r.doces || r.docesMarm) rows.push(['Doces', (r.doces || 0) + ' na mesa' + (r.docesMarm ? ' e ' + r.docesMarm + ' na marmita' : '')]); }
   if (r.trash) rows.splice(2, 0, ['Na lixeira', r.trash + ' bebida' + (r.trash > 1 ? 's' : '')]);
   if (r.juice || r.juiceMiss) rows.splice(2, 0, ['Sucos', r.juice + ' entregue' + (r.juice === 1 ? '' : 's') + (r.juiceMiss ? ' · ' + r.juiceMiss + ' mesa' + (r.juiceMiss > 1 ? 's' : '') + ' sem suco' : '')]);
   if (r.sucoEsp){ const b = BEBIDA_ESPERA[r.bebida] || BEBIDA_ESPERA.suco; rows.splice(2, 0, [b.fim, b.preco ? r.sucoEsp + ' na conta (' + fmt(r.sucoEsp * b.preco) + ')' : r.sucoEsp + (r.sucoEsp > 1 ? ' copos' : ' copo') + ', de graça']); }
@@ -100,36 +108,31 @@ function buildEnd(){
     list.forEach(p => { box.appendChild(el('span', p[2] || null, p[0])); box.appendChild(el('b', p[2] || null, String(p[1]))); });
     st.appendChild(box);
   });
-  let msg = '';
+  /* v9.6.12: os recados em linhas curtas (cls: '' resultado, 'alerta' banco, 'boa' quem pode subir de nível, 'cap' o capítulo);
+     o trabalho da equipe e o que ela vendeu foram para a tabela (rows) */
+  const linhas = [], diz = (t, cls) => linhas.push([t, cls || '']);
   // campanha (v8.3): o dia seguinte vem de qualquer jeito; a meta não batida só fica sem estrelas
+  let msg = '';
   if (!r.passed) msg = 'Meta de ' + fmt(r.meta) + ' não batida: o dia fica sem estrelas, mas a lanchonete abre amanhã de novo.';
   else if (r.stars === 3) msg = 'Perfeito! Lucro das 3 estrelas sem perder nenhum cliente.';
   else if (r.stars === 2) msg = r.money >= r.expert ? 'Lucro das 3 estrelas batido, mas ' + (r.lost === 1 ? '1 cliente foi embora' : r.lost + ' clientes foram embora') + ': a 3ª estrela pede que ninguém saia sem ser atendido.' : 'Duas estrelas! Para a 3ª, chegue a ' + fmt(r.expert) + ' sem perder nenhum cliente.';
   else msg = 'Meta batida! Chegue a ' + fmt(r.bom) + ' para a 2ª estrela.';
-  if (r.day === DAYS.length) msg += ' Fim da semana de inauguração! Daqui em diante, cada dia tem o movimento do dia da semana.';
+  diz(msg);
+  if (r.day === DAYS.length) diz('Fim da semana de inauguração! Daqui em diante, cada dia tem o movimento do dia da semana.');
   // caixa no negativo (v8.3): quantos dias seguidos, ou o banco que cobriu à força
   const sv = game.save;
   // v8.3.1: a parcela que não coube no caixa ficou atrasada
-  if (r.atrasou) msg += ' Faltou dinheiro para a parcela do banco: ficou atrasada. Amanhã, no fim do dia, o caixa precisa ter ' + fmt(game.devido) + ' (a atrasada e a do dia), senão o banco toma a lanchonete!';
-  if (r.forcado) msg += ' O caixa fechou no negativo pelo ' + (BANCO.neg + 1) + 'º dia seguido: o banco cobriu ' + fmt(r.forcado) + ', com juros de ' + Math.round(BANCO.forcado * 100) + '% ao dia sobre o saldo, em ' + sv.emp.n + ' parcelas (a próxima, ' + fmt(game.parcela) + ').';
-  else if (sv.bank < 0) msg += ' Caixa no negativo há ' + sv.neg + (sv.neg > 1 ? ' dias' : ' dia') + (sv.neg >= BANCO.neg ? ': se fechar amanhã no negativo, o banco cobre à força.' : ' (pode ficar até ' + BANCO.neg + ').');
-  // v8.9: o trabalho e a experiência da Dani
-  if (sv.equipe.dani > 0){
-    msg += ' Dani: ' + (r.daniFeitas || 0) + ((r.daniFeitas || 0) === 1 ? ' tarefa' : ' tarefas') + ' hoje · experiência ' + daniXp(sv) + '.';
-    if (daniNivelXp(sv) > sv.equipe.dani) msg += ' A Dani já pode subir para o nível ' + (daniNivelXp(sv) - 1) + '!';
-  }
-  // v9.2: o Joca (trabalho e experiência) e os doces do dia
-  if (sv.equipe.joca > 0){
-    msg += ' Joca: ' + (r.jocaFeitas || 0) + ((r.jocaFeitas || 0) === 1 ? ' tarefa' : ' tarefas') + ' hoje · experiência ' + jocaXp(sv) + '.';
-    if (jocaNivelXp(sv) > sv.equipe.joca) msg += ' O Joca já pode subir para o nível ' + (jocaNivelXp(sv) - 1) + '!';
-  }
-  if (sv.equipe.cami > 0) msg += ' Cami: ' + (r.camiFeitas || 0) + ((r.camiFeitas || 0) === 1 ? ' tarefa' : ' tarefas') + ' hoje.';   // v9.3
-  if (sv.equipe.anselmo > 0 || r.drinks) msg += ' Drinks do Anselmo: ' + (r.drinks || 0) + '.';   // v9.5
-  if (r.cafesEsp) msg += ' Espressos e cappuccinos: ' + r.cafesEsp + '.';
-  if (r.doces || r.docesMarm) msg += ' Doces: ' + (r.doces || 0) + ' na mesa' + (r.docesMarm ? ' e ' + r.docesMarm + ' na marmita' : '') + '.';
+  if (r.atrasou) diz('Faltou dinheiro para a parcela do banco: ficou atrasada. Amanhã, no fim do dia, o caixa precisa ter ' + fmt(game.devido) + ' (a atrasada e a do dia), senão o banco toma a lanchonete!', 'alerta');
+  if (r.socorro) diz('O banco segurou a parcela desta vez. Na próxima, ele toma a lanchonete.', 'alerta');   // v9.6.13
+  if (r.forcado) diz('O caixa fechou no negativo pelo ' + (BANCO.neg + 1) + 'º dia seguido: o banco cobriu ' + fmt(r.forcado) + ', com juros de ' + Math.round(BANCO.forcado * 100) + '% ao dia sobre o saldo, em ' + sv.emp.n + ' parcelas (a próxima, ' + fmt(game.parcela) + ').', 'alerta');
+  else if (sv.bank < 0) diz('Caixa no negativo há ' + sv.neg + (sv.neg > 1 ? ' dias' : ' dia') + (sv.neg >= BANCO.neg ? ': se fechar amanhã no negativo, o banco cobre à força.' : ' (pode ficar até ' + BANCO.neg + ').'), 'alerta');
+  // v8.9 e v9.2: quem já juntou experiência para subir de nível
+  if (sv.equipe.dani > 0 && daniNivelXp(sv) > sv.equipe.dani) diz('A Dani já pode subir para o nível ' + (daniNivelXp(sv) - 1) + '!', 'boa');
+  if (sv.equipe.joca > 0 && jocaNivelXp(sv) > sv.equipe.joca) diz('O Joca já pode subir para o nível ' + (jocaNivelXp(sv) - 1) + '!', 'boa');
   // Modo História (v8.7): o objetivo do capítulo no fim do dia
-  if (r.cap) msg += ' Capítulo ' + r.cap.n + ', ' + r.cap.titulo + ': ' + (r.cap.ok ? '✓ Objetivo cumprido!' : r.cap.itens.map(it => (it.ok ? '✓ ' : '') + it.txt).join(' · '));
-  $('end-msg').textContent = msg;
+  if (r.cap) diz('Capítulo ' + r.cap.n + ', ' + r.cap.titulo + ': ' + (r.cap.ok ? '✓ Objetivo cumprido!' : r.cap.itens.map(it => (it.ok ? '✓ ' : '') + it.txt).join(' · ')), r.cap.ok ? 'cap feito' : 'cap');
+  const em = $('end-msg'); clearEl(em);
+  linhas.forEach(l => em.appendChild(el('div', 'end-linha' + (l[1] ? ' ' + l[1] : ''), l[0])));
   // v9.6.7: as fichas do Manual que o dia revelou (no máximo 3 nomes)
   const mn = (game.manualDia || []).map(manualFicha).filter(Boolean).map(manualNome), fm = $('end-manual');
   fm.textContent = mn.length ? 'Novo no Manual: ' + (mn.length > 3 ? mn.slice(0, 3).join(', ') + ' e mais ' + (mn.length - 3) : mn.join(', ')) + '.' : '';

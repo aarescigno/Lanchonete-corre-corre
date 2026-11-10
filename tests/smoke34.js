@@ -63,14 +63,14 @@ const notaDe=(g,v,n)=>{ g.save.aval=Array(n||10).fill([v,v,v,v,v]); };
 const H=nova(), {g,L,els}=H;
 els['btn-play'].fire('click'); passa(H); g.save.bank=5000;
 joga(H,0,0); ok(g.result.money<0 && g.save.capAzul===0 && g.result.cap && !g.result.cap.ok && g.save.conversa===null,'dia no vermelho não conta para o cap. 1');
-ok(/Capítulo 1, A garagem da Rosa: Fechar 2 dias no azul \(0 de 2\)/.test(els['end-msg'].textContent),'o fim do dia mostra o objetivo (0 de 2)');
+ok(/Capítulo 1, A garagem da Rosa: Fechar 2 dias no azul \(0 de 2\)/.test(txt(els['end-msg'])),'o fim do dia mostra o objetivo (0 de 2)');
 ok(g.conversa && g.conversa.falas===L.HIST_PLANTA.falas && g.state==='dayend','no fim do dia 1, toca o presente da dona Cida antes dos resultados (v9.6.10)'); passa(H);
 ok(g.save.convPlanta===1 && g.save.decor.espada===1 && g.save.convCard!=='pend','depois do dia 1, a planta à mostra e sem conversa do cardápio (v9.6.2)');
 els['btn-next'].fire('click');
 ok(g.state==='shop' && !g.conversa,'depois dela, a lojinha');
-joga(H,400,0); ok(g.save.capAzul===1 && g.save.cap===1 && g.save.conversa===null && /\(1 de 2\)/.test(els['end-msg'].textContent),'1 dia no azul: o capítulo continua (1 de 2)');
+joga(H,400,0); ok(g.save.capAzul===1 && g.save.cap===1 && g.save.conversa===null && /\(1 de 2\)/.test(txt(els['end-msg'])),'1 dia no azul: o capítulo continua (1 de 2)');
 els['btn-next'].fire('click'); L.setShopTab('dani'); ok(txt(els['shop-grid']).trim()==='','antes do cap. 2, a Dani não tem cartão (v9.6.10)');
-joga(H,400,0); ok(g.save.capAzul===2 && g.save.conversa==='depois' && g.result.cap.ok && /Objetivo cumprido/.test(els['end-msg'].textContent) && g.save.cap===1,'2 dias no azul: objetivo cumprido, conversa de depois pendente');
+joga(H,400,0); ok(g.save.capAzul===2 && g.save.conversa==='depois' && g.result.cap.ok && /Objetivo cumprido/.test(txt(els['end-msg'])) && g.save.cap===1,'2 dias no azul: objetivo cumprido, conversa de depois pendente');
 // ---------- 5. do fim do cap. 1 ao cap. 2: depois, antes e a Dani chega ----------
 els['btn-next'].fire('click');
 ok(g.conversa && g.conversa.falas===L.HISTORIA[0].depois && g.save.cap===1,'Lojinha e dia: toca antes a conversa de depois do cap. 1');
@@ -84,9 +84,9 @@ ok(!g.setStaff('dani',1) && g.save.equipe.dani===2,'v8.9: o nível pago é defin
 { const eq={tonhao:0,dani:3,tv:false,som:false,couvert:false}; ok(L.folhaCortes(eq,null,10).join()==='aumento da Dani,aumento da Dani' && eq.dani===3,'sem dinheiro, a folha corta os aumentos da Dani (volta a aprendiz), nunca ela'); }
 // ---------- 6. cap. 2: nota do Gurugol 2,4 ----------
 g.save.bank=5000; notaDe(g,2.3);
-joga(H,400,0); ok(g.result.cap.n===2 && !g.result.cap.ok && g.save.conversa===null && /Nota do Gurugol 2,4 \(agora 2,3\)/.test(els['end-msg'].textContent),'nota 2,3: o cap. 2 continua');
+joga(H,400,0); ok(g.result.cap.n===2 && !g.result.cap.ok && g.save.conversa===null && /Nota do Gurugol 2,4 \(agora 2,3\)/.test(txt(els['end-msg'])),'nota 2,3: o cap. 2 continua');
 els['btn-next'].fire('click'); joga(H,400,0); ok(g.save.cap===2 && g.save.conversa===null,'e continua, dia após dia, sem prazo');
-notaDe(g,2.4); joga(H,400,0); ok(g.result.cap.ok && g.save.conversa==='depois' && /Objetivo cumprido/.test(els['end-msg'].textContent),'nota 2,4: objetivo cumprido');
+notaDe(g,2.4); joga(H,400,0); ok(g.result.cap.ok && g.save.conversa==='depois' && /Objetivo cumprido/.test(txt(els['end-msg'])),'nota 2,4: objetivo cumprido');
 passa(H); els['btn-next'].fire('click');
 ok(g.save.cap===3 && g.state==='shop' && g.save.equipe.dani===1,'depois das conversas, o cap. 3 começa e a lojinha abre');
 // ---------- 7. cap. 3: quitar + nota 2,7 + R$ 800, tudo junto ----------
@@ -95,14 +95,14 @@ const cap3=(resto,nota,bank)=>{ g.save.emp=resto?L.normEmprestimo({resto,amort:1
   c=cap3(0,2.6,5000); ok(!c.ok && c.itens[0].ok && !c.itens[1].ok && c.itens[2].ok,'sem dívida e com caixa, mas nota 2,6: não cumpre');
   c=cap3(0,2.8,500); ok(!c.ok && c.itens[0].ok && c.itens[1].ok && !c.itens[2].ok,'sem dívida e com nota, mas só R$ 500: não cumpre');
   ok(c.itens.map(i=>i.txt).join(' · ')==='Reforma quitada · nota do Gurugol 2,7 (agora 2,8) · R$ 800 no caixa (agora R$ '+g.save.bank+')','os itens do cap. 3 na linha: ✓ quando cumpridos');
-  c=cap3(0,2.8,5000); ok(c.ok && g.save.conversa==='depois' && /Objetivo cumprido/.test(els['end-msg'].textContent),'os 3 juntos: objetivo cumprido'); }
+  c=cap3(0,2.8,5000); ok(c.ok && g.save.conversa==='depois' && /Objetivo cumprido/.test(txt(els['end-msg'])),'os 3 juntos: objetivo cumprido'); }
 els['btn-next'].fire('click');
 ok(g.conversa && g.conversa.falas===L.HISTORIA[2].depois,'toca a conversa de depois do cap. 3');
 passa(H);
 ok(g.save.cap===4 && g.save.conversa===null && mostra(els,'ov-continua') && !g.conversa && /mudança para a área industrial/.test(html) && /Fim dos capítulos da Garagem/.test(html),'depois dela, o cartão "Fim dos capítulos da Garagem" com a mudança na lojinha (cap. 4, Garagem completa)');
 els['btn-continua'].fire('click'); ok(g.state==='shop' && !mostra(els,'ov-continua'),'Seguir jogando abre a lojinha');
 els['btn-shop-go'].fire('click'); ok(g.capLinha()==='' && !/Capítulo/.test(els['intro-manut'].textContent),'o dia seguinte não tem objetivo');
-joga(H,400,0); ok(g.result.cap===null && g.save.conversa===null && !/Capítulo/.test(els['end-msg'].textContent),'nem o fim do dia');
+joga(H,400,0); ok(g.result.cap===null && g.save.conversa===null && !/Capítulo/.test(txt(els['end-msg'])),'nem o fim do dia');
 g.setState('menu'); ok(/História · Garagem completa · dia \d+/.test(els['menu-dia'].textContent),'o menu diz "Garagem completa"');
 
 // ---------- 8. menu ----------
@@ -125,7 +125,9 @@ g.setState('menu'); ok(/História · Garagem completa · dia \d+/.test(els['menu
 { const H=nova(), {g,L,els}=H; g.save.conversa=null; g.save.bank=0;
   g.startDay(1); joga(H,0,0); ok(!g.save.emp.atr && g.state==='dayend','dia 1 sem dinheiro: sem parcela, sem atraso');
   g.startDay(2); joga(H,0,0); ok(g.save.emp.atr===true && g.result.atrasou && g.state==='dayend','dia 2 sem dinheiro: a parcela da reforma atrasa');
-  g.startDay(3); joga(H,0,0); ok(g.state==='falencia' && g.save.fechou===3 && mostra(els,'ov-falencia'),'atrasou 2 dias: o banco toma a lanchonete (como na v8.3.1)'); }
+  g.startDay(3); joga(H,0,0); ok(g.state==='dayend' && g.save.socorro===1 && !g.save.emp.atr && !g.save.fechou,'atrasou 2 dias: na História, o banco dá a 2ª chance (v9.6.13)');
+  g.startDay(4); joga(H,0,0); ok(g.save.emp.atr===true && g.result.atrasou,'dia 4 sem dinheiro: atrasa de novo');
+  g.startDay(5); joga(H,0,0); ok(g.state==='falencia' && g.save.fechou===5 && mostra(els,'ov-falencia'),'atrasou 2 dias de novo: aí o banco toma a lanchonete (como na v8.3.1)'); }
 // o modo dev e os testes antigos ficam fora da História
 { const H=load({store:{lcc2_dev:'1'}}); ok(H.g.save.cap===4 && H.g.save.conversa===null && H.g.save.emp.resto===0,'modo dev: sem História nem reforma'); }
 { const H=load(); ok(H.g.save.cap===4 && H.g.save.emp.resto===0 && H.L.HIST.on===false,'harness padrão (testes antigos): sem História'); }

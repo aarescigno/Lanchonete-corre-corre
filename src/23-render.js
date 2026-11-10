@@ -170,6 +170,7 @@ function render(g, ctx){
       txt(ctx,msg,TW/2,275,46,PAL.mostarda,'center',FD,7);
     }
     if (g.treino && g.mode === 'treino') drawTreino(ctx,g,tm);
+    if (g.dica && g.state === 'playing') drawDica(ctx,g,tm);   // v9.6.12: a dica na hora (dias 1 a 3 da carreira)
   }
   ctx.restore();
 }

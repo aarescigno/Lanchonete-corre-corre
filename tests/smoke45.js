@@ -168,7 +168,7 @@ const AV={ daniCursos:{ confCaseira:1 } }, ESP={ daniCursos:{ confCaseira:1 }, j
   const {L}=nova(); const a=L.normSave(JSON.parse(antigo)); ok(a.equipe.cami===0 && a.equipe.joca===2 && a.camiCursos && Object.keys(a.camiCursos).length===0 && a.up.confCaseira && !a.up.confGourmet && !a.up.espresso,'save da v9.2: carrega igual (sem Cami, sem gourmet, sem espresso)');
   const b=L.normSave(JSON.parse(JSON.stringify(a))); ok(JSON.stringify(b.equipe)===JSON.stringify(a.equipe),'normSave é estável');
   const H=aberto({ equipe:{ tonhao:1, dani:3, joca:3, cami:1 } },null,ESP), {g}=H; g.joca.feitas=0; g.cami.feitas=3; g.stats.cafesEsp=2; joga(H,300);
-  ok(/Cami: 3 tarefas hoje/.test(txt(H.els['end-msg'])) && /Espressos e cappuccinos: 2/.test(txt(H.els['end-msg'])),'o fim do dia mostra a Cami e os cafés');
+  ok(/Cami\s+3 tarefas/.test(txt(H.els['end-stats'])) && /Espressos e cappuccinos\s+2/.test(txt(H.els['end-stats'])),'o fim do dia mostra a Cami e os cafés');
   let erro=''; try { [1,2,3].forEach(lv=>{ g.save.equipe.cami=lv; g.cami.x=300; g.cami.y=300; H.L.drawCami(H.ctx,g.cami,0); }); } catch(e){ erro=String(e); } ok(!erro,'a Cami desenha nos 3 níveis sem erro '+erro);
   ok(/^v9\./.test(H.L.VERSAO),'VERSAO é v9.x (a v9.3 trouxe a Cami)'); }
 

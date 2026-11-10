@@ -873,7 +873,7 @@ function avalComentario(r, bravo, lixo, nivel, decor, fria, semVeg, tipo, pouco)
    negativo; no dia seguinte, se fechar no negativo de novo, o banco cobre o que falta, à força, com juros `forcado`.
    v8.3.1: a parcela que não cabe no dinheiro do fim do dia fica atrasada (atr); se no fim do dia seguinte não der para
    pagar a atrasada e a do dia, o banco toma a lanchonete e a carreira acaba */
-const BANCO = { juros:0.03, parcelas:5, valores:[200, 500, 1000], neg:3, forcado:0.06 };
+const BANCO = { juros:0.03, parcelas:5, valores:[200, 500, 1000], neg:3, forcado:0.06, socorro:1 };   // v9.6.13: socorro = a 2ª chance do banco na História (0 desliga)
 /* empréstimo no save: resto (o saldo devedor), amort (a amortização de cada parcela), j (juros ao dia), atr (parcela
    atrasada) e n (parcelas que faltam, calculado). Save da v8.3 ({ resto, n }, com os juros já somados): amort = resto ÷ n, sem juros */
 function normEmprestimo(e){
@@ -1002,6 +1002,12 @@ const HIST_DIVULGA = {
           { q:'bia', s:'E se a gente fizer panfleto? Eu entrego no ponto de ônibus antes de abrir!' },
           { q:'tonhao', nota:'coçando a cabeça', s:'Panfleto custa, mas traz o movimento de sempre. E tem as redes sociais, pra quem tem lugar pra tanta gente.' },
           { q:'bia', s:'Vou ver na Divulgação da lojinha o que compensa.' } ] };
+/* v9.6.13: a 2ª chance do banco, só no Modo História e uma vez por carreira (BANCO.socorro): em vez de tomar a lanchonete, o banco segura a parcela atrasada.
+   save.socorro: 0 | 1 (já usou); save.convSocorro: 0 | 'pend' | 1 */
+const HIST_SOCORRO = {
+  falas:[ { q:'tonhao', nota:'desligando o telefone', s:'Falei com o gerente do banco, Bia. Ele segurou a parcela desta vez.' },
+          { q:'bia', s:'Ufa... achei que a gente ia perder tudo.' },
+          { q:'tonhao', s:'Só desta vez. Na próxima, ele toma a lanchonete. Olha o caixa antes de comprar.' } ] };
 /* v9.6.10: o presente da vizinha, no fim do dia 1 (só no Modo História): ao terminar, a espada-de-são-jorge fica à mostra, de graça. save.convPlanta: 0 | 'pend' | 1 */
 const HIST_PLANTA = { dia:1,
   falas:[ { q:'tonhao', nota:'com um vaso na mão', s:'A dona Cida, aqui do lado, mandou de presente pela inauguração.' },
@@ -1107,7 +1113,7 @@ const BIA_IDS = ['tenis', 'corrida', 'bandeja', 'sudoku'];
 function upgradeCartao(id){ return BIA_IDS.indexOf(id) >= 0 ? 'bia' : 'melhorias'; }
 const HIST_NOMES = { bia:'Bia', tonhao:'Tonhão', dani:'Dani', joca:'Joca', cami:'Cami', anselmo:'Anselmo' };
 const CAIXA_MAX = 14;                                 // livro-caixa (v7.2): quantos dias da carreira ficam guardados
-const VERSAO = 'v9.6.11';                            // vai no resumo do Caixa
+const VERSAO = 'v9.6.13';                            // vai no resumo do Caixa
 const DIVULGA_DIA = 4;                                // antes disso, o movimento é o da inauguração (sem custo); v9.0.2: dia 4, e o padrão é o boca a boca
 function divulgaAberta(n, sv){ return devLivre() || n >= DIVULGA_DIA && !(sv && sv.convDiv === 'pend'); }   // no modo dev, desde o dia 1; v9.0.3: no Modo História, só depois da conversa
 /* v9.6.4: a Efood (os entregadores) só abre depois da conversa dos entregadores, no Modo História; antes dela, nenhum tipo com `retira` vem na agenda */

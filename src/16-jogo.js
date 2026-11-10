@@ -40,6 +40,7 @@ class Game {
     this.day = treino ? TREINO : n === 0 ? ENDLESS : this.diaPonto(diaOf(n));
     this.money = 0; this.custo = 0; this.contas = 0; this.paidDiv = 0; this.conserto = 0; this.pontos = 0;
     this.manualDia = [];   // v9.6.7: as fichas do Manual reveladas durante o dia (a linha "Novo no Manual" do fim do dia)
+    this.semToque = 0; this.dica = null; this.dicaCand = null; this.dicaT = 0; this.dicaDesde = 0;   // v9.6.12: as dicas na hora (17-treino.js)
     this.avals = [];   // avaliações do dia (v8.4): { r: as notas dos critérios, txt: o comentário }; entram no save no fim do dia
     // imprevistos (v8): o sorteio do dia (feito ao começar o dia, e guardado até ele acabar) diz o clima e o que quebra
     const so = n && this.save.manut.sorteio && this.save.manut.sorteio.d === n ? this.save.manut.sorteio : null;
@@ -993,6 +994,7 @@ class Game {
     this.kitchen.update(dt);
     this.esfriar(dt);
     this.updateFx(dt);
+    dicaAnda(this, dt);   // v9.6.12
 
     if (this.mode === 'semfim'){
       if (this.ending){
@@ -1038,7 +1040,11 @@ class Game {
     if (this.aprovado) sv.selo = d.n + FISCAL.selo - 1;   // v9.4: o selo vale por FISCAL.selo dias, contando hoje
     sv.daniTar += this.dani.feitas;   // v8.9: o trabalho da Dani vira experiência (só o dia completo)
     sv.jocaTar += this.joca.feitas;   // v9.2: e o do Joca
-    const atr0 = !!sv.emp.atr, devido = this.devido, par = this.pagaParcela(), atrasou = !atr0 && !!sv.emp.atr, tomou = atr0 && !!sv.emp.atr;
+    const atr0 = !!sv.emp.atr, devido = this.devido, par = this.pagaParcela(), atrasou = !atr0 && !!sv.emp.atr, tomaria = atr0 && !!sv.emp.atr;
+    // v9.6.13: a 2ª chance do banco (só na História, uma vez): a dívida continua, só o atraso some
+    const socorro = tomaria && HIST.on && sv.histV === 1 && BANCO.socorro > 0 && !sv.socorro;
+    if (socorro){ sv.socorro = 1; sv.convSocorro = 'pend'; sv.emp = normEmprestimo(Object.assign({}, sv.emp, { atr:false })); }
+    const tomou = tomaria && !socorro;
     // v8.3.1: atrasou de novo (não deu para a atrasada e a do dia): o banco toma a lanchonete e a carreira acaba
     if (tomou) sv.fechou = d.n;
     this.desgastar(); delete sv.manut.sorteio;
@@ -1102,7 +1108,7 @@ class Game {
     if (tomou) row.tom = 1;
     caixaAdd(sv, row);
     writeSave(sv);
-    this.result = { daniFeitas:this.dani.feitas, jocaFeitas:this.joca.feitas, camiFeitas:this.cami.feitas, cafesEsp:this.stats.cafesEsp, drinks:this.stats.drinks, doces:this.stats.doces, docesMarm:this.stats.docesMarm, day:d.n, money:m, fat, pontos:Math.round(this.pontos), custo:Math.round(this.custo), contas:this.contas, aluguel:this.ponto.aluguel, div:this.paidDiv, divName:this.div ? this.div.name : '', meta:d.meta, bom:bomGoal(d), expert:d.expert, passed, stars, served:this.stats.served, lost:this.stats.lost, lostBy:this.stats.lostBy, lotadoT:Math.round(this.stats.lotadoT), atraso:Math.round(this.atraso), full:this.stats.full, chain:this.stats.chain, vip:this.stats.vip, vipLost:this.stats.vipLost, marmitas:this.stats.marmitas, efood:this.efood, esfriou:this.stats.esfriou, jogadas:this.stats.jogadas, sobra:this.marmitas().filter(o => o.onde !== 'fogao').length, juice:this.stats.juice, juiceMiss:this.stats.juiceMiss, sucoEsp:this.stats.sucoEsp, bebida:this.bebida.id, trash:this.stats.trash, washed:this.stats.washed, income, paid:this.paid, reason:this.reason, conserto:this.conserto, consertos:this.stats.consertos, quebras:this.quebras.filter(q => q.on).map(q => ({ id:q.id, fixed:q.fixed })), clima:this.clima, manut:Object.assign({}, this.manut), par, forcado, neg:sv.neg, emp:Object.assign({}, sv.emp), atrasou, tomou, devido, cap, aval:{ dia:avDia, geral:avalGeral(sv.aval), n:sv.aval.length, coment, comentK, teto:avalTeto(this.ponto) } };
+    this.result = { daniFeitas:this.dani.feitas, jocaFeitas:this.joca.feitas, camiFeitas:this.cami.feitas, cafesEsp:this.stats.cafesEsp, drinks:this.stats.drinks, doces:this.stats.doces, docesMarm:this.stats.docesMarm, day:d.n, money:m, fat, pontos:Math.round(this.pontos), custo:Math.round(this.custo), contas:this.contas, aluguel:this.ponto.aluguel, div:this.paidDiv, divName:this.div ? this.div.name : '', meta:d.meta, bom:bomGoal(d), expert:d.expert, passed, stars, served:this.stats.served, lost:this.stats.lost, lostBy:this.stats.lostBy, lotadoT:Math.round(this.stats.lotadoT), atraso:Math.round(this.atraso), full:this.stats.full, chain:this.stats.chain, vip:this.stats.vip, vipLost:this.stats.vipLost, marmitas:this.stats.marmitas, efood:this.efood, esfriou:this.stats.esfriou, jogadas:this.stats.jogadas, sobra:this.marmitas().filter(o => o.onde !== 'fogao').length, juice:this.stats.juice, juiceMiss:this.stats.juiceMiss, sucoEsp:this.stats.sucoEsp, bebida:this.bebida.id, trash:this.stats.trash, washed:this.stats.washed, income, paid:this.paid, reason:this.reason, conserto:this.conserto, consertos:this.stats.consertos, quebras:this.quebras.filter(q => q.on).map(q => ({ id:q.id, fixed:q.fixed })), clima:this.clima, manut:Object.assign({}, this.manut), par, forcado, neg:sv.neg, emp:Object.assign({}, sv.emp), atrasou, tomou, socorro, devido, cap, aval:{ dia:avDia, geral:avalGeral(sv.aval), n:sv.aval.length, coment, comentK, teto:avalTeto(this.ponto) } };
     this.result.multaVig = this.multaVig; this.result.vig = this.fiscal && this.fiscal.res ? { res:this.fiscal.res, falhas:Object.assign({}, this.fiscal.falhas) } : null;   // v9.4
     if (tomou){ this.setState('falencia'); Sfx.lose(); return; }
     this.setState('dayend');
@@ -1809,6 +1815,7 @@ class Game {
   onDown(sx, y, pad){
     if (this.state !== 'playing') return;
     pad = pad || 0;
+    dicaToque(this);   // v9.6.12: o toque apaga a dica na hora
     const h = this.hudHit(sx, y);
     // Missão zero: "Pular tutorial" (em todos os balões) volta direto ao menu principal
     const pu = this.treino && this.treino.pular;
