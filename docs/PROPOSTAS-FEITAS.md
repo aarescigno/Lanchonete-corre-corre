@@ -4,6 +4,29 @@ Retornos com destino já feito, movidos de `docs/PROPOSTAS.md` em 30/10/2026 sem
 
 ---
 
+## 10/11 — usuário: revisão geral do projeto (estética e ensino) e análise de frustração
+> Revise todo o projeto e implementações até o momento, pondere otimizações estéticas e de funcionalidade didáticas. Pode me entrevistar para o que precisar, mas estou em viajem e preciso que você faça a maior parte das decisões, com relatório final
+> [depois] Pode usar de agentes sonnet ou opus para implementar seus planejamentos, com objetivo de otimizar gastos. Após isso, faça análise de jogabilidade, procurando pontos que jogadores podem se frustrar desnecessariamente, e corrija esses pontos identificados
+
+**Entrevista (10/11):** seguir com o Fable nesta sessão; revisar e já implementar; "didáticas" = ensinar a jogar; ignorar o `docs/REDESENHO.md` (ideia antiga).
+**Decisões (10/11, tomadas na sessão):** Missão zero em frases curtas e sem números; dicas na hora só nos dias 1 a 3 e só para quem para; estrelas na barra do lucro no lugar dos rótulos miúdos (saem "pts · grupos" do HUD da carreira); botões do fim do dia sempre à vista; "Já vou!" só no último coração; aviso de 2º toque na compra que come a parcela; segunda chance do banco uma vez por carreira, só na História (`BANCO.socorro`); confirmação na pausa.
+**Destino:** v9.6.12 (`docs/spec-v9.6.12.md`) e v9.6.13 (`docs/spec-v9.6.13.md`). O que ficou como recomendação está em "Ideias pendentes" do `docs/RESUMO.md`.
+
+---
+
+## 02/11 — usuário: repensar a interface, a jogabilidade e a estética (3 propostas de redesenho)
+> Antes de ir para a próxima etapa, gostaria de repensar toda a forma de interface de usuário, de interface do jogo, de jogabilidade, etc. [...] Então eu queria ver agora, com tudo que está construído, se de interface e tudo mais, isso poderia ser feito de uma forma totalmente diferente e que fosse melhor do que atualmente. Então faça para mim mais 3 propostas de jogabilidade, de organização desse jogo, de estética e de forma de jogo, né? Que abrace todas as funcionalidades que já estão.
+
+**Resposta (02/11, Opus):** `docs/REDESENHO.md`, com diagnóstico, as três propostas e os esboços em `docs/redesenho/`:
+1. **A casa é o menu**: o turno quase igual, sem a barra de números; no fim do dia, o salão vira a lojinha (os objetos brilham), o caixa é um caderninho e o Gurugol chega no celular.
+2. **Na palma da mão**: o celular em pé, a equipe comandada por arrasto e tudo o que não é turno nos apps do celular da Bia.
+3. **O caderno da Bia**: semanas; dia com manhã (quadro do dia e preparo), almoço com gestos e fechamento; domingo de compras no mapa do bairro.
+
+Recomendação: a 1 com o celular da Bia da 2; a 2 inteira se o foco for o celular em pé. Decidir antes da 4a.
+**Destino:** descartado pelo usuário em 10/11 ("ideia antiga"); o `docs/REDESENHO.md` e os esboços saíram do repositório (ficam no histórico do git).
+
+---
+
 ## 01/11 — Renan (beta-tester, WhatsApp, repassado pelo usuário): 16 retornos de jogo
 > [01/11, 15:56] Louça suja deixar a pia mais suja
 > [01/11, 15:56] Lixo soltar mais vapores feios
