@@ -150,7 +150,8 @@ function drawTable(ctx,g,t,tm,menu){
     const n = grp.size, hw = t.hx - 4;
     for (let i=0;i<n;i++){
       const px = t.cx - hw + 36 + (i+0.5) * ((hw*2 - 46) / n);
-      drawDish(ctx, grp.dishes[i], px, t.cy + 3, 0.52, grp.state === 'wantBill', grp.carnes && grp.carnes[i]);
+      const ent = grp.tempos && !grp.principalDado;   // v10: na refeição completa, a entrada na mesa e depois o principal
+      drawDish(ctx, ent ? (grp.extras[i] || grp.dishes[i]) : grp.dishes[i], px, t.cy + 3, 0.52, grp.state === 'wantBill', !ent && grp.carnes && grp.carnes[i]);
     }
   }
   if (t.dirty){
@@ -204,6 +205,28 @@ function drawHearts(ctx,grp,x,y,tm,k){
     } else heart(ctx,hx,y,5.4*(k || 1),'rgba(255,255,255,.55)','rgba(34,32,28,.45)');
   }
 }
+/* v10, a trilha dos tempos (a refeição completa, sem texto): 4 marcas sob os corações, na ordem bebida, entrada, principal, sobremesa. Pendente: contorno cinza;
+   o que o grupo espera agora: pulsa (parado com prefers-reduced-motion); servido: cheio, verde, amarelo ou vermelho pela nota; o que a casa não serve: um tracinho */
+function drawTempoTrilha(ctx,grp,x,y,tm){
+  const ms = tempoMarcas(grp);
+  if (!ms) return;
+  ms.forEach((m,i) => {
+    const mx = x + (i - 1.5) * 16;
+    if (m.est === 'nao'){ ctx.strokeStyle = 'rgba(34,32,28,.55)'; ctx.lineWidth = 2.4; ctx.lineCap = 'round'; ctx.beginPath(); ctx.moveTo(mx-4,y); ctx.lineTo(mx+4,y); ctx.stroke(); return; }
+    const p = m.est === 'vez' && !RM ? 1 + 0.16*Math.sin(tm*8) : 1, cheio = m.est === 'servida', fill = cheio ? PAL[m.cor] : m.est === 'vez' ? '#fff' : 'rgba(255,255,255,.55)';
+    ctx.save(); ctx.translate(mx,y); ctx.scale(p,p);
+    circ(ctx,0,0,6.4); fs(ctx,fill,cheio ? 1.8 : 1.6);
+    if (!cheio){ ctx.strokeStyle = m.est === 'vez' ? PAL.faixa : 'rgba(34,32,28,.5)'; ctx.lineWidth = m.est === 'vez' ? 2.2 : 1.6; ctx.beginPath(); ctx.arc(0,0,6.4,0,TAU); ctx.stroke(); }
+    // o desenhinho de cada tempo: taça, cúpula (entrada), prato e fatia de bolo
+    const ink = cheio ? '#fff' : m.est === 'vez' ? PAL.tinta : 'rgba(34,32,28,.5)';
+    ctx.strokeStyle = ink; ctx.fillStyle = ink; ctx.lineWidth = 1.3; ctx.lineCap = 'round'; ctx.lineJoin = 'round';
+    if (m.id === 'beb'){ ctx.beginPath(); ctx.moveTo(-2.6,-3); ctx.lineTo(2.6,-3); ctx.lineTo(0,0.4); ctx.closePath(); ctx.fill(); ctx.beginPath(); ctx.moveTo(0,0.4); ctx.lineTo(0,3.2); ctx.moveTo(-1.8,3.2); ctx.lineTo(1.8,3.2); ctx.stroke(); }
+    else if (m.id === 'entrada'){ ctx.beginPath(); ctx.arc(0,1.2,3.3,Math.PI,0); ctx.closePath(); ctx.fill(); ctx.beginPath(); ctx.moveTo(-3.8,2.4); ctx.lineTo(3.8,2.4); ctx.stroke(); }
+    else if (m.id === 'principal'){ ctx.beginPath(); ctx.arc(0,0,3.6,0,TAU); ctx.stroke(); ctx.beginPath(); ctx.arc(0,0,1.4,0,TAU); ctx.fill(); }
+    else { ctx.beginPath(); ctx.moveTo(-3.6,2.6); ctx.lineTo(3.6,2.6); ctx.lineTo(3.6,-0.8); ctx.lineTo(-3.6,-2.6); ctx.closePath(); ctx.fill(); }
+    ctx.restore();
+  });
+}
 function drawTableOverlay(ctx,g,t,tm,menu){
   const grp = t.group;
   const bx = t.cx + t.hx + 6, by = t.cy - 44;
@@ -214,6 +237,7 @@ function drawTableOverlay(ctx,g,t,tm,menu){
   }
   if (!grp || grp.state === 'toTable' || grp.state === 'leaving' || !t.open) return;
   drawHearts(ctx,grp,t.cx,t.cy-70,tm);
+  if (grp.tempos) drawTempoTrilha(ctx,grp,t.cx,t.cy-54,tm);   // v10
   if (grp.vip) drawVipBadge(ctx,t.cx-60,t.cy-70,tm);
   const pul = RM ? 1 : 1 + 0.12*Math.sin(tm*7);
   ctx.save(); ctx.translate(bx,by);
@@ -229,7 +253,7 @@ function drawTableOverlay(ctx,g,t,tm,menu){
     const pr = g.kitchen.plates.find(p => p && p.group === grp);
     if (pr || [g.bia, g.dani, g.joca].some(q => q.hands.some(h => h.kind === 'dish' && h.group === grp))){
       if (pr) ctx.scale(pul,pul);
-      drawBubble(ctx,0,0,18,pr ? PAL.ok : '#fff'); drawDish(ctx,grp.dish,0,0,0.85,false,grp.carnes && grp.carnes[0]);
+      drawBubble(ctx,0,0,18,pr ? PAL.ok : '#fff'); drawDish(ctx,grp.pratoVez,0,0,0.85,false,grp.carnes && grp.carnes[0]);   // v10: o prato do tempo da vez
     }
   }
   ctx.restore();

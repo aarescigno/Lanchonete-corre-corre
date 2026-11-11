@@ -1,6 +1,7 @@
 // v10, etapa 4a-1 (parte A): o Terraço Suíça. O cartão Mudança (cap. 8), o que vai, o que sai e a venda das mesas que sobram, o aluguel e os preços,
 // a clientela (o casal, sem estudante, entregador, turma, motorista nem encomenda; VIP só de tipo do ponto), as poltronas do foyer, o piano como
-// obstáculo fixo, o cap. 8 e o cartão de fim, o save da v9.6.13 e as fichas do Manual. (A parte B acrescenta a refeição completa neste arquivo.)
+// obstáculo fixo, o cap. 8, o save da v9.6.13 e as fichas do Manual. A parte B acrescenta a refeição completa (o pedido em dois tempos, a cozinha, a bebida e a
+// sobremesa, as notas de cada tempo e o Gurugol, a refeição completa e a trilha dos tempos), o cap. 9 com o cartão de fim e a ficha b-tempos.
 const load=require('./harness.js'), fs=require('fs');
 let fails=0,total=0; const ok=(c,m)=>{ total++; if(!c){fails++;console.log('FAIL:',m);} else console.log('ok  :',m); };
 const txt=e=>(e.textContent||'')+(e.children||[]).map(txt).join(' ');
@@ -19,6 +20,15 @@ const html=fs.readFileSync(__dirname+'/../lanchonete.html','utf8');
 const btn=H=>grid(H).children[0].children.filter(c=>c.tagName==='BUTTON'&&!/qm/.test(c.className||'')).pop();
 // a Avenida com 6 mesas de 4 (24 lugares) e, se pedido, mais uma de 4 no estoque
 const salaoAv=(L,est)=>({ ponto:'avenida', mesas:L.salaoAuto([4,4,4,4,4,4].map((seats,c)=>({ seats, c:c%4 })),L.PONTOS[2]), estoque:est?[{ seats:4, c:0 }]:[] });
+
+// um dia de Terraço aberto, com a equipe toda por padrão (Anselmo e a confeitaria da Dani); sem mesas fora dos 5 lugares de sempre
+const terr=(sv,cap)=>{ const H=jogo(cap||8,'terraco',Object.assign({ bank:5000, v10:1, daniCursos:{ confCaseira:1 }, up:{ tenis:true, fogaoInd:true }, equipe:{ tonhao:3, dani:2, anselmo:2 } },sv||{})); H.g.startDay(10); H.els['btn-start'].fire('click'); H.g.schedule=[]; H.g.nextIdx=0; return H; };
+const sentar=(g,type,vip)=>{ const grp=g.spawn({ type:type||'casal', color:0, vip:!!vip, av:true }), t=g.tables.find(q=>q.free&&q.seats>=grp.size); g.seatGroup(grp,t); grp.setState('wantOrder'); return { grp, t }; };
+// a Bia anota e leva a comanda à janela
+const pedir=(H,grp,t)=>{ const b=H.g.bia; b.hands=[]; b.perform({ type:'table', id:t.id }); b.perform({ type:'order' }); };
+const preco=(L,g,k)=>k?L.precoPrato(k,g.ponto,g.cursos):0;
+const roda=(g,s)=>{ for(let i=0;i<Math.round(s/0.05);i++) g.update(0.05); };
+const pegaPrato=(H,grp)=>{ const g=H.g, p=g.kitchen.plates.find(q=>q&&q.group===grp); if(!p) return null; g.bia.hands=[]; g.bia.perform({ type:'plate', pid:p.id }); return p; };
 
 // ---------- 1. o cartão Mudança (cap. 8 em diante) ----------
 { let H=jogo(7,'avenida',{ bank:9000 }); notaDe(H.g,4.2); H.L.setShopGrupo('dinheiro');
@@ -133,7 +143,7 @@ const salaoAv=(L,est)=>({ ponto:'avenida', mesas:L.salaoAuto([4,4,4,4,4,4].map((
   ok(L.salaoAuto([4,4,4,4,4].map((seats,c)=>({ seats, c:c%4 })),g.ponto)!==null,'5 mesas de 4 cabem na arrumação automática do Terraço');
   const AvH=jogo(8,'avenida',{ bank:2000 }); ok(AvH.g.tables.length>0 && !AvH.L.OBST.some(o=>o.x0===P.x0 && o.y1===P.y1),'na Avenida o piano não existe (os obstáculos são refeitos)'); }
 
-// ---------- 7. o desenho sem erro ----------
+// ---------- 6b. o desenho sem erro ----------
 { const H=jogo(8,'terraco',{ bank:3000, up:{ tenis:true, fogaoInd:true, assento:'poltrona' }, equipe:{ tonhao:3, dani:2, joca:2, cami:1, anselmo:2, couvert:true }, decor:{ tulipa:1, copo:1, orquidea:1, violeta:1, anturio:1, pendente:1, espada:1, lata:1, foto:1, placa:1, giz:1, samambaia:1 } }), {g,L}=H;
   let erro=''; try {
     g.startDay(10); H.els['btn-start'].fire('click'); for(const t of ['casal','casal','familia','vovos','negocios','executiva','casal']) g.arrive({ t:0, type:t, color:0, vip:t==='casal' });
@@ -150,7 +160,142 @@ const salaoAv=(L,est)=>({ ponto:'avenida', mesas:L.salaoAuto([4,4,4,4,4,4].map((
   ok(!e2,'com movimento reduzido também renderiza sem erro'+(e2?': '+e2:''));
   ok(/mudanca-te/.test(html) && /Poltronas do foyer/.test(html) && /Terraço Suíça/.test(html),'o arquivo montado tem o ícone, as poltronas e o nome do ponto'); }
 
-// ---------- 13. o cap. 8 ----------
+// ---------- 7. o pedido da refeição completa ----------
+{ const H=terr(), {g,L}=H; let semEntrada=0, semPf=0, contaErrada=0, veg=0, n=0;
+  for(let k=0;k<300;k++){ const q=new L.Group(g,['casal','familia','vovos','negocios','executiva'][k%5],++g.gid,0,false); n++;
+    ok2: { if(!q.tempos){ semPf+=1000; break ok2; }
+      q.people.forEach((p,i)=>{ if(L.CARDAPIO[q.dishes[i]].cat!=='pf') semPf++; if(p.veg){ veg++; } else if(!q.extras[i]) semEntrada++; });
+      const soma=q.dishes.concat(q.extras).reduce((v,x)=>v+preco(L,g,x),0)+(q.vip?L.VIP.dish:0); if(q.bill!==soma) contaErrada++; } }
+  ok(n===300 && semEntrada===0 && semPf===0 && contaErrada===0 && veg>0,'o grupo do Terraço: uma entrada para cada pessoa (menos o vegetariano sem opção) e o principal da categoria PF; a conta soma os dois');
+  const q=new L.Group(g,'familia',++g.gid,0,false); ok(q.tempos===true && q.tempo===0 && q.notaT.length===4 && q.notaT.every(v=>v===null) && L.TEMPOS.entrada.cook===0.6 && L.TEMPOS.entrada.eat===0.5 && L.TEMPOS.pts===30 && L.PONTOS_ACAO.completa===30,'grupo com `tempos`: começa na entrada (tempo 0), notas vazias; TEMPOS e os 30 pontos');
+  // o principal com os pratos que a cozinha sabe: parmegiana (curso Cozinha de restaurante) e o PF vegetariano
+  const G2=terr({ cursos:{ restaurante:1, veg:1 } }).g; const vistos={}; for(let k=0;k<400;k++){ const q2=new L.Group(G2,'negocios',++G2.gid,0,false); q2.dishes.forEach(d=>{ vistos[d]=(vistos[d]||0)+1; }); }
+  ok(Object.keys(vistos).every(d=>L.CARDAPIO[d].cat==='pf') && vistos.pf>0 && vistos.parmegiana>0 && vistos.pfVeg>0,'o principal sai de PF, PF vegetariano e parmegiana (os que a cozinha sabe)');
+  const vg=L.pedePrincipal('casal',G2,true); ok(!L.CARDAPIO[vg].carne,'vegetariano: o principal é sem carne');
+  const G3=terr().g; ok(L.pedePrincipal('casal',G3,true)==='pf','vegetariano sem prato vegetariano: o PF (e o grupo reclama no Cardápio)');
+  const q3=new L.Group(G3,'casal',++G3.gid,0,false); q3.people.forEach(p=>{ p.veg=true; });
+  // na Missão zero e no Turno sem fim não há tempos
+  const Z=load({}); Z.g.startTreino && Z.g.startTreino(); const qz=new L.Group(Z.g,'vovos',1,0,false); ok(!qz.tempos,'na Missão zero o grupo não tem tempos'); }
+
+// ---------- 8. a cozinha em dois pedidos ----------
+{ const H=terr(), {g,L}=H, k=g.kitchen; k.clean=5; k.slots=3;
+  const { grp, t }=sentar(g,'casal'); grp.extras=['coxinha','coxinha']; grp.dishes=['pf','pf']; grp.dish='pf'; grp.bill=2*preco(L,g,'coxinha')+2*preco(L,g,'pf');
+  const c0=g.custo, cook=k.chef.cook; pedir(H,grp,t);
+  const e=k.queue.concat(k.cooking).filter(q=>q.group===grp);
+  ok(e.length===1 && e[0].tempo===0 && e[0].dish==='coxinha' && grp.state==='ordered' && e[0].time>=4*cook*0.6-1e-9 && e[0].time<=7*cook*0.6+1e-9,'a comanda entra na cozinha como o pedido da entrada: tempo ×0,6 (sem o 2º item nem o ×VIP)');
+  let guarda=false; for(let i=0;i<400 && !k.plates.some(q=>q&&q.group===grp);i++){ g.update(0.05); }
+  const pe=k.plates.find(q=>q&&q.group===grp);
+  ok(pe && pe.tempo===0 && k.clean===5,'a entrada pronta ocupa uma vaga do balcão mas não gasta prato limpo');
+  ok(Math.round(g.custo-c0)===Math.round(2*preco(L,g,'coxinha')*L.INGRED.prato),'ingrediente da entrada: sobre o valor das entradas');
+  ok(g.kitchen.queue.concat(k.cooking).every(q=>q.group!==grp),'o principal ainda não foi para a cozinha (só depois da entrada entregue)');
+  const mao=pegaPrato(H,grp); ok(g.bia.hands.length===1 && g.bia.hands[0].tempo===0 && g.bia.hands[0].dish==='coxinha','o prato na mão leva o tempo (a entrada)');
+  const cx=g.custo; g.bia.perform({ type:'table', id:t.id });
+  ok(grp.state==='eating' && grp.tempo===0 && grp.notaT[1]!=null && grp.entradaDada,'entregue a entrada: o grupo come e a nota da entrada fica guardada');
+  const pr=k.queue.concat(k.cooking).filter(q=>q.group===grp);
+  ok(pr.length===1 && pr[0].tempo===1 && pr[0].dish==='pf' && pr[0].time>=4*cook-1e-9 && pr[0].time<=7*cook+1e-9,'a cozinha recebe sozinha o principal (tempo normal)');
+  ok(grp.timer>=L.CUSTOMER_TYPES.casal.eat[0]*0.5*0.85-1e-9 && grp.timer<=L.CUSTOMER_TYPES.casal.eat[1]*0.5+1e-9,'a entrada come em metade do tempo da refeição');
+  roda(g,grp.timer+0.2);
+  ok(grp.state==='ordered' && grp.tempo===1 && !grp.esperaSuco,'acabada a entrada, o grupo volta a esperar (tempo 1: o principal)');
+  for(let i=0;i<400 && !k.plates.some(q=>q&&q.group===grp);i++) g.update(0.05);
+  const pp=k.plates.find(q=>q&&q.group===grp), cp=g.custo; ok(pp && pp.tempo===1 && pp.dish==='pf' && k.clean===4,'o principal pronto gasta um prato limpo');
+  pegaPrato(H,grp); g.bia.perform({ type:'table', id:t.id });
+  ok(grp.state==='eating' && grp.tempo===1 && grp.principalDado && grp.notaT[2]!=null,'principal entregue: o grupo come de verdade');
+  // ingrediente do principal (sobre o valor dos principais), medido quando o prato fica pronto
+  const H2=terr(), g2=H2.g; g2.kitchen.clean=5; const s2=sentar(g2,'casal',true); s2.grp.extras=['coxinha','coxinha']; s2.grp.dishes=['pf','pf']; s2.grp.dish='pf'; s2.grp.bill=0; const cc=g2.custo;
+  g2.kitchen.submitTempo(s2.grp,s2.t.id,1); for(let i=0;i<600 && !g2.kitchen.plates.some(q=>q&&q.group===s2.grp);i++) g2.update(0.05);
+  ok(Math.round(g2.custo-cc)===Math.round((2*preco(L,g2,'pf')+L.VIP.dish)*L.INGRED.prato),'ingrediente do principal: sobre o valor dos principais mais o prato do VIP');
+  { const vc=g2.kitchen.chef.cook; const tq=g2.kitchen.queue.concat(g2.kitchen.cooking), v=new L.Group(g2,'casal',++g2.gid,0,true); const k2=g2.kitchen; k2.queue=[]; k2.cooking=[]; k2.submitTempo(v,1,1); const it=k2.queue[0]; ok(it.time>=4*vc*L.VIP.cook-1e-9 && it.time<=7*vc*L.VIP.cook+1e-9,'o principal do VIP leva o ×VIP; a entrada dele, não'); k2.queue=[]; k2.submitTempo(v,1,0); ok(k2.queue[0].time<=7*vc*0.6+1e-9,'(entrada do VIP sem o ×VIP)'); }
+  // o principal fura a fila das entradas que ainda não começaram
+  const H3=terr(), g3=H3.g, k3=g3.kitchen; k3.slots=1; const A=new L.Group(g3,'casal',++g3.gid,0,false), B=new L.Group(g3,'casal',++g3.gid,0,false), C=new L.Group(g3,'casal',++g3.gid,0,false), D=new L.Group(g3,'casal',++g3.gid,0,false);
+  k3.submitTempo(B,1,0); k3.update(0.01); k3.submitTempo(C,2,0); k3.submitTempo(D,3,0); k3.submitTempo(A,4,1);
+  ok(k3.cooking[0].group===B && k3.queue.map(q=>q.group).join()===[A,C,D].join() && k3.queue[0].tempo===1,'o principal entra na fila na frente das entradas que ainda não começaram');
+  // o grupo que vai embora tira os dois pedidos da cozinha
+  g3.leaveCommon(C); ok(k3.queue.every(q=>q.group!==C),'quem sai tira o pedido da cozinha'); }
+
+// ---------- 9. bebida e sobremesa ----------
+{ const H=terr(), {g,L}=H; const q=sentar(g,'familia').grp; const w=terr({ equipe:{ tonhao:3, dani:2 } }); const q2=sentar(w.g,'familia').grp;
+  ok(q.drinks.length===q.size && q.juiceWant===0 && !q.drinks.some(d=>!d),'com o Anselmo: um drink por pessoa e ninguém pede suco');
+  ok(q2.drinks.length===0 && q2.juiceWant===q2.size,'sem o Anselmo: um suco por pessoa (o balcão de sucos de sempre)');
+  // o drink só vai para a fila do Anselmo quando a Bia anota; cada um volta como coração e entra na conta
+  pedir(H,q,g.tables.find(t=>t.group===q)); ok(g.drinkQ.length===q.size,'os drinks entram na fila do Anselmo ao anotar');
+  const dq=terr(), gq=dq.g; q.state; 
+  // a sobremesa: um doce por pessoa ao terminar o principal; sem a confeitaria, nenhum
+  const fim=(gg,grp)=>{ grp.setState('eating'); grp.tempo=1; grp.principalDado=true; grp.timer=0.01; gg.update(0.05); gg.update(0.05); };
+  const d1=sentar(g,'casal').grp; fim(g,d1); ok(d1.doces && d1.doces.length===d1.size && d1.esperaSuco,'com a confeitaria: um doce por pessoa ao terminar o principal (sem sorteio) e o grupo espera por eles');
+  const sc=terr({ daniCursos:{} }); const d2=sentar(sc.g,'casal').grp; fim(sc.g,d2); ok(d2.doces && d2.doces.length===0,'sem a confeitaria: não há sobremesa');
+  let todos=true; for(let i=0;i<60;i++){ const x=new L.Group(g,'executiva',++g.gid,0,false); x.setState('eating'); x.tempo=1; x.timer=0; x.update(0); if(!x.doces || x.doces.length!==x.size) todos=false; } ok(todos,'(sem sorteio: sempre, em 60 grupos)');
+  // o café do Joca segue por chance (como hoje)
+  const jj=terr({ equipe:{ tonhao:3, dani:2, anselmo:2, joca:2 }, up:{ tenis:true, fogaoInd:true }, jocaCursos:{ espresso:1 } }).g; let cs=0; ok(jj.up.espresso,'(o Joca tem o espresso)'); for(let i=0;i<200;i++){ const x=new L.Group(jj,'casal',++jj.gid,0,false); x.setState('eating'); x.tempo=1; x.timer=0; x.update(0); if(x.cafes && x.cafes.length) cs++; }
+  ok(cs>40 && cs<160,'o café do Joca segue por chance (casal ~50%), depois da sobremesa'); }
+
+// ---------- 10. as notas de cada tempo e o Gurugol ----------
+{ const H=terr(), {g,L}=H, mk=(sv)=>{ const R=terr(sv); const s=sentar(R.g,'casal'); const q=s.grp; q.extras=['coxinha','coxinha']; q.dishes=['pf','pf']; q.dish='pf'; return { R, g:R.g, q, t:s.t }; };
+  const entrega=(x,tempo,qv)=>{ x.g.bia.hands=[{ kind:'dish', table:x.t.id, group:x.q, dish:'pf', q:qv, tempo }]; x.q.setState('ordered'); x.q.tempo=tempo; x.g.bia.perform({ type:'table', id:x.t.id }); };
+  let x=mk(); x.q.perdTempo[1]=1; entrega(x,1,4.4); ok(Math.abs(x.q.notaT[2]-3.4)<1e-9,'coração perdido esperando o principal tira 1 da nota dele (4,4 → 3,4)');
+  x=mk(); x.q.perdTempo[0]=2; entrega(x,0,4); ok(Math.abs(x.q.notaT[1]-2)<1e-9,'dois corações perdidos esperando a entrada: −2 (4 → 2)');
+  x=mk(); entrega(x,0,5); ok(x.q.notaT[1]===5,'sem perda, a nota é a do prato');
+  x=mk(); x.q.perdTempo[0]=9; entrega(x,0,3); ok(x.q.notaT[1]===1,'a nota não passa de 1 para baixo');
+  // bebida: 5; −1 por coração perdido só esperando; −1 se veio depois do principal
+  x=mk(); x.q.drinksDados=0; x.q.juiceGot=x.q.juiceWant; x.q.drinks=[]; x.q.juiceWant=0; x.q.notaBeb(); ok(x.q.notaT[0]===null,'(sem bebida pedida, nada de nota)');
+  x=mk({ equipe:{ tonhao:3, dani:2 } }); x.q=x.q; { const q=x.q; q.juiceGot=q.juiceWant-1; const b=x.g.bia; b.hands=[{ kind:'juice' }]; q.setState('ordered'); b.perform({ type:'table', id:x.t.id }); ok(q.juicePending===0 && q.notaT[0]===5,'suco entregue antes do principal: nota 5'); }
+  x=mk({ equipe:{ tonhao:3, dani:2 } }); { const q=x.q; q.juiceGot=q.juiceWant-1; q.principalDado=true; const b=x.g.bia; b.hands=[{ kind:'juice' }]; q.setState('ordered'); b.perform({ type:'table', id:x.t.id }); ok(q.notaT[0]===4,'a bebida que chegou depois do principal: −1'); }
+  x=mk({ equipe:{ tonhao:3, dani:2 } }); { const q=x.q; q.juiceGot=q.juiceWant-1; q.principalDado=true; q.perdBeb=2; const b=x.g.bia; b.hands=[{ kind:'juice' }]; q.setState('ordered'); b.perform({ type:'table', id:x.t.id }); ok(q.notaT[0]===2,'…e −1 por coração perdido só esperando a bebida (5 − 2 − 1)'); }
+  x=mk(); { const q=x.q; q.perdBeb=0; q.drinksPedidos=true; q.drinksDados=0; q.setState('eating'); q.esperaSuco=true; q.patLeft=0.001; q.hearts=3; const pb=q.perdBeb, pt=q.perdTempo.slice(); q.tick(0.01); ok(q.perdBeb===pb+1 && q.perdTempo[0]===pt[0] && q.perdTempo[1]===pt[1],'coração perdido esperando só a bebida (depois da refeição) conta na bebida'); q.setState('ordered'); q.tempo=1; q.patLeft=0.001; q.tick(0.01); ok(q.perdTempo[1]===1,'e esperando o principal, na nota do principal'); }
+  // sobremesa: 5 − corações perdidos esperando (perdDoce)
+  x=mk(); { const q=x.q; q.doces=['pudim','pudim']; q.docesDados=0; q.perdDoce=2; q.setState('eating'); q.esperaSuco=true; x.g.entregaDoces(q,2,x.t.cx,x.t.cy); ok(q.notaT[3]===3,'sobremesa: 5 menos 1 por coração perdido esperando (5 − 2)'); }
+  // o Gurugol: a comida é a média dos tempos servidos; o cardápio perde 1 sem a confeitaria e 0,5 sem o Anselmo
+  const gur=(sv,notas)=>{ const R=terr(sv), s=sentar(R.g,'casal'), q=s.grp; q.notaT=notas.slice(); q.semVeg=false; q.setState('wantBill'); q.hearts=5; q.avalia=true; R.g.collectBill(q,s.t); const a=R.g.avals[R.g.avals.length-1]; a.base=R.L.avalMenu(R.g.cursos, R.L.cursosItem(R.g.save)); return a; };
+  const lim=v=>Math.max(1,Math.min(5,Math.round(v*10)/10));
+  const a1=gur({},[5,4,3,2]);
+  ok(a1 && a1.s[2]===3.5 && a1.s[3]===lim(a1.base),'Gurugol no Terraço: a comida é a média dos tempos servidos ([5,4,3,2] → 3,5); o cardápio sem perda com a equipe toda');
+  const a2=gur({ daniCursos:{} },[5,4,3,null]); ok(a2.s[2]===4 && a2.s[3]===lim(a2.base-1),'sem a confeitaria: o cardápio perde 1 (e a média só dos tempos servidos: [5,4,3] → 4)');
+  const a3=gur({ equipe:{ tonhao:3, dani:2 } },[5,4,3,2]); ok(a3.s[3]===lim(a3.base-0.5),'sem o Anselmo no dia: o cardápio perde 0,5');
+  const a4=gur({ daniCursos:{}, equipe:{ tonhao:3, dani:2 } },[5,4,3,null]); ok(a4.s[3]===lim(a4.base-1.5),'sem os dois: perde 1,5');
+  // os comentários novos
+  const com=(f,n)=>{ const set=new Set(); for(let i=0;i<n;i++){ const R=terr(f.sv), s=sentar(R.g,'casal'), q=s.grp; f.pre(q); q.setState('wantBill'); q.hearts=5; q.avalia=true; R.g.collectBill(q,s.t); set.add(R.g.avals[R.g.avals.length-1].txt); } return set; };
+  const c1=com({ sv:{}, pre:q=>{ q.notaT=[5,5,5,5]; } },150), c2=com({ sv:{}, pre:q=>{ q.notaT=[5,5,5,5]; q.perdTempo[1]=1; } },150), c3=com({ sv:{ daniCursos:{} }, pre:q=>{ q.notaT=[5,5,5,null]; } },150), c4=com({ sv:{ equipe:{ tonhao:3, dani:2 } }, pre:q=>{ q.notaT=[3,3,3,3]; } },150);
+  ok(c1.has('Do drink à sobremesa, tudo no tempo certo!') && c1.has('Refeição completa de verdade!'),'comentário: tudo servido com nota 4 ou mais');
+  ok(c2.has('Um tempão entre a entrada e o prato.'),'comentário: coração perdido esperando o principal');
+  ok(c3.has('Faltou a sobremesa para fechar.') && c4.has('Faltou uma carta de drinks.'),'comentários: sem sobremesa e sem o Anselmo'); }
+
+// ---------- 11. a refeição completa e a trilha dos tempos ----------
+{ const H=terr(), {g,L}=H;
+  const cobra=(notas)=>{ const s=sentar(g,'casal'), q=s.grp; q.notaT=notas.slice(); q.setState('wantBill'); q.hearts=5; g.lastKind=''; const p0=g.pontos, c0=g.stats.completas; g.collectBill(q,s.t); return { pts:g.pontos-p0, comp:g.stats.completas-c0, q }; };
+  const a=cobra([5,5,4,null]), b=cobra([5,5,4,5]);
+  ok(a.comp===0 && b.comp===1 && b.pts-a.pts===30 && g.stats.completas===1,'a refeição completa (as 4 coisas servidas) conta em stats.completas e dá 30 pontos');
+  ok(g.fx.some(f=>f.k==='text' && f.text==='Refeição completa!') && g.fx.some(f=>f.k==='spark'),'o texto "Refeição completa!" com faíscas');
+  // a trilha: o estado das 4 marcas
+  const s=sentar(g,'familia'), q=s.grp; q.extras=['coxinha','coxinha','coxinha','coxinha']; const est=()=>L.tempoMarcas(q).map(m=>m.est[0]).join('');
+  ok(est()==='pppp' && L.tempoMarcas(q).length===4,'antes de pedir: as 4 marcas pendentes');
+  pedir(H,q,s.t); ok(est()==='vvpp','pediu: a bebida e a entrada são "da vez"; o principal e a sobremesa, pendentes');
+  q.notaT[0]=5; ok(est()==='svpp' && L.tempoMarcas(q)[0].cor==='ok','bebida servida: cheia e verde');
+  q.notaT[1]=3; q.setState('eating'); ok(est()==='ssp'+'p' && L.tempoMarcas(q)[1].cor==='alerta','entrada servida com 3: amarela');
+  q.setState('ordered'); q.tempo=1; ok(est()==='ssvp','esperando o principal: ele é o da vez');
+  q.notaT[2]=2; q.setState('eating'); q.esperaSuco=true; q.doces=['pudim']; q.docesDados=0; ok(est()==='sssv' && L.tempoMarcas(q)[2].cor==='perigo','principal com 2: vermelho; a sobremesa é a da vez');
+  q.notaT[3]=4; ok(est()==='ssss' && L.tempoMarcas(q).map(m=>m.cor).join()==='ok,alerta,perigo,ok','tudo servido: 4 marcas cheias, uma cor pela nota (4 ok, 3 amarelo, 2 vermelho)');
+  const sc=terr({ daniCursos:{}, equipe:{ tonhao:3, dani:2 } }), q2=sentar(sc.g,'casal').grp; ok(sc.L.tempoMarcas(q2).map(m=>m.est).join()==='nao,pendente,pendente,nao' || sc.L.tempoMarcas(q2)[3].est==='nao','o que a casa não serve: um tracinho (a sobremesa; a bebida, só se nem o suco existisse)');
+  const A=terr({ equipe:{ tonhao:3, dani:2 } }); A.g.save.salao.ponto; const av=jogo(8,'avenida',{ bank:2000 }).g; av.startDay(10); const qa=new L.Group(av,'familia',++av.gid,0,false); ok(L.tempoMarcas(qa)===null,'sem `tempos` (Avenida): sem trilha');
+  // desenho: a trilha e o balão com o prato do tempo da vez, sem erro, com e sem movimento reduzido
+  let erro=''; try { sentar(g,'casal'); const t0=g.tables.find(t=>t.group); L.drawTempoTrilha(H.ctx,t0.group,100,100,1.5); L.render(g,H.ctx); g.up.assento=null; for(let i=0;i<40;i++) g.update(0.05); L.render(g,H.ctx); } catch(e){ erro=String(e.stack); }
+  ok(!erro,'desenha a trilha dos tempos sem erro'+(erro?': '+erro:''));
+  const RMH=load({ rm:true, historia:true }); RMH.doc.createTextNode=t=>({textContent:String(t),children:[]}); let e2=''; try { const R=terr.call(null); const gg=RMH.g; gg.save=RMH.L.normSave({ histV:1, cap:8, dia:10, maxDay:10, bank:5000, v10:1, salao:{ ponto:'terraco' } }); gg.tablesKey=''; gg.buildTables(); gg.startDay(10); RMH.els['btn-start'].fire('click'); gg.schedule=[]; const s2=sentar(gg,'casal'); RMH.L.drawTempoTrilha(RMH.ctx,s2.grp,100,100,2); RMH.L.render(gg,RMH.ctx); } catch(e){ e2=String(e.stack); }
+  ok(!e2,'com movimento reduzido também desenha sem erro'+(e2?': '+e2:'')); }
+
+// ---------- 12. fora do Terraço nada muda ----------
+{ const av=jogo(8,'avenida',{ bank:2000, equipe:{ tonhao:3, dani:2, anselmo:2 }, daniCursos:{ confCaseira:1 } }), {g,L}=av; g.startDay(10); av.els['btn-start'].fire('click'); g.schedule=[]; g.kitchen.clean=5;
+  let tem=0, soma=true; for(let i=0;i<200;i++){ const q=new L.Group(g,['familia','negocios','executiva','vovos'][i%4],++g.gid,0,false); if(q.tempos) tem++; const b=q.dishes.concat(q.extras).reduce((v,x)=>v+(x?L.precoPrato(x,g.ponto,g.cursos):0),0)+(q.vip?L.VIP.dish:0); if(q.bill!==b) soma=false; }
+  ok(!tem && soma,'na Avenida: grupo sem `tempos` e a conta de sempre (pratos mais o 2º item sorteado)');
+  const { grp, t }=sentar(g,'familia'); grp.extras=[null,null,null,null].slice(0,grp.size); grp.dishes=grp.dishes.map(()=>'pf'); grp.dish='pf'; grp.bill=grp.size*L.precoPrato('pf',g.ponto,g.cursos);
+  const c0=g.custo; pedir(av,grp,t); const it=g.kitchen.queue.concat(g.kitchen.cooking).find(q=>q.group===grp);
+  ok(it && it.tempo===undefined && it.dish==='pf','a cozinha recebe um pedido só, sem tempo');
+  for(let i=0;i<500 && !g.kitchen.plates.some(q=>q&&q.group===grp);i++) g.update(0.05);
+  ok(g.kitchen.clean===4 && Math.round(g.custo-c0)===Math.round(grp.bill*L.INGRED.prato),'gasta prato limpo e o ingrediente é sobre a conta toda');
+  pegaPrato(av,grp); g.bia.perform({ type:'table', id:t.id }); ok(grp.state==='eating' && grp.tempo===0 && !grp.principalDado,'entregue o prato: come e depois vai para a conta (sem voltar a esperar)');
+  roda(g,grp.timer+3); ok(['wantBill','leaving'].includes(grp.state) || grp.esperaSuco,'acabou de comer: conta (ou os pedidos de bebida e doce de sempre)');
+  const E=load({}); const qe=new E.L.Group(E.g,'estudante',1,0,false); ok(!qe.tempos,'Turno sem fim e Garagem: nada de tempos');
+  const dev=load({ store:{ lcc2_dev:'1' } }); dev.g.save.salao.ponto='terraco'; dev.g.save.salao=dev.L.normSalao(dev.g.save.salao); dev.g.tablesKey=''; dev.g.buildTables(); dev.g.startDay(3); const qd=new dev.L.Group(dev.g,'casal',1,0,false); ok(qd.tempos===true,'(o modo dev no Terraço também joga em tempos)'); }
+
+// ---------- 13. o cap. 8 e o cap. 9 ----------
 { const H=jogo(8,'terraco',{ bank:3000, capAzul:0, caixa:[], conversa:'antes' }), {g,L,els}=H; g.save.conversa=null;
   ok(L.HISTORIA[7].titulo==='Lá no alto' && L.HISTORIA[7].ponto==='terraco' && L.HISTORIA[7].obj.azul===3 && L.HISTORIA[7].antes.length===5 && L.HISTORIA[7].depois.length===3,'o cap. 8, "Lá no alto": 3 dias no azul, 5 falas antes e 3 depois');
   ok(L.HISTORIA[7].antes[1].nota==='olhando o piano no canto' && L.HISTORIA[7].antes[1].s==='E esse piano de cauda?' && L.HISTORIA[7].depois[2].s==='Hoje uma mesa bateu palma pra sobremesa!' && L.HISTORIA[6].fim.p==='Quando quiser, a mudança para o Terraço Suíça está na lojinha.','as falas e o `fim` do cap. 7');
@@ -158,9 +303,31 @@ const salaoAv=(L,est)=>({ ponto:'avenida', mesas:L.salaoAuto([4,4,4,4,4,4].map((
   for(let k=0;k<3;k++){ g.save.dia=10+k; g.startDay(10+k); els['btn-start'].fire('click'); g.schedule=[]; g.nextIdx=0; g.money=2500; g.custo=0; g.finishDay(); }
   ok(g.save.capAzul===3 && g.result.cap.n===8 && g.result.cap.ok && g.save.conversa==='depois','3 dias no azul pagando o aluguel: cap. 8 cumprido');
   els['btn-next'].fire('click'); passa(H);
-  ok(g.save.cap===9 && mostra(els,'ov-continua') && els['cont-h'].textContent==='Fim dos capítulos do Terraço Suíça','depois do cap. 8: o cartão de fim de capítulos do Terraço');
-  g.setState('menu'); ok(/Terraço Suíça completo/.test(els['menu-dia'].textContent),'o menu diz "Terraço Suíça completo"');
+  ok(g.save.cap===9 && g.save.conversa===null && !mostra(els,'ov-continua') && L.HISTORIA[7].fim===undefined,'depois do cap. 8: o cap. 9 começa (a conversa de antes toca em seguida) e não há cartão de fim (o cap. 8 não tem mais o `fim`)');
+  g.setState('menu'); ok(/cap\. 9, Do começo ao fim/.test(els['menu-dia'].textContent),'o menu diz "cap. 9, Do começo ao fim"');
   const H2=jogo(8,'terraco'); H2.g.setState('menu'); ok(/cap\. 8, Lá no alto/.test(H2.els['menu-dia'].textContent),'menu no Terraço: "cap. 8, Lá no alto"'); }
+
+{ // o cap. 9, "Do começo ao fim": 6 refeições completas e nota 4,5 no mesmo dia
+  const C=L9=>L9, H=jogo(9,'terraco',{ bank:3000, v10:1, capAzul:0, caixa:[], conversa:'antes' }), {g,L,els}=H, c=L.HISTORIA[8];
+  ok(c.cap===9 && c.titulo==='Do começo ao fim' && c.ponto==='terraco' && c.obj.completas===6 && c.obj.nota===4.5 && c.antes.length===3 && c.depois.length===5,'o cap. 9, "Do começo ao fim": 6 refeições completas e nota 4,5; 3 falas antes e 5 depois');
+  ok(c.antes[0].s==='Refeição completa é como música: não pode faltar nota.' && c.antes[2].s==='Se faltar a sobremesa, eu choro.' && c.depois[1].nota==='guardando o pote de cominho' && c.depois[3].s==='Ele mesmo. Dizem que o crítico chega sem avisar.' && c.depois[4].s==='Então é deixar tudo brilhando!','as falas do cap. 9');
+  ok(c.fim.h==='Fim dos capítulos do Terraço Suíça' && c.fim.p==='Continua na próxima versão: o crítico do Michelzão.','o `fim` final');
+  passa(H); g.save.conversa=null; g.save.aval=[]; g.startDay(10); ok(/Capítulo 9, Do começo ao fim: 6 refeições completas e nota 4,5 no mesmo dia \(no último dia: 0 completas, nota —\)/.test(els['intro-manut'].textContent) || /Capítulo 9, Do começo ao fim: 6 refeições completas e nota 4,5 no mesmo dia/.test(els['intro-manut'].textContent),'a introdução traz o objetivo do cap. 9');
+  const dia=(comp,nota)=>{ g.save.aval=Array(10).fill([nota,nota,nota,nota,nota]); g.save.dia=10; g.startDay(10); els['btn-start'].fire('click'); g.schedule=[]; g.nextIdx=0; g.money=3000; g.custo=0; g.stats.completas=comp; g.finishDay(); };
+  dia(5,4.7); ok(!g.save.capFeito && g.save.capComp===5 && !g.result.cap.ok && /5 completas, nota 4,7/.test(g.result.cap.itens[0].txt),'5 completas com nota 4,7: ainda não (o item mostra "hoje: 5 completas, nota 4,7")');
+  dia(8,4.3); ok(!g.save.capFeito && g.save.capComp===8,'8 completas mas nota 4,3: ainda não');
+  g.save.conversa=null; dia(6,4.5); ok(g.save.capFeito===1 && g.result.cap.ok && g.save.conversa==='depois' && /6 refeições completas e nota 4,5 no mesmo dia \(hoje: 6 completas, nota 4,5\)/.test(g.result.cap.itens[0].txt),'6 completas e nota 4,5 no mesmo dia: cumprido (a conversa de depois fica pendente)');
+  els['btn-next'].fire('click'); passa(H);
+  ok(g.save.cap===10 && mostra(els,'ov-continua') && els['cont-h'].textContent==='Fim dos capítulos do Terraço Suíça' && /o crítico do Michelzão/.test(els['cont-p'].textContent),'depois do cap. 9: o cartão de fim de capítulos, "Continua na próxima versão: o crítico do Michelzão."');
+  g.setState('menu'); ok(/Terraço Suíça completo/.test(els['menu-dia'].textContent),'o menu diz "Terraço Suíça completo"');
+  ok(!/\d+ de \d+/.test(L.HISTORIA[8].obj.completas+''),'(sem texto solto)'); }
+{ // o save que terminou o cap. 8 na parte A (cap 9, sem o campo v10) começa o cap. 9 com a conversa de antes; o que já tem v10 não repete
+  const H=nova(), {L}=H;
+  const a=L.normSave({ histV:1, cap:9, dia:20, bank:4000, conversa:null, salao:{ ponto:'terraco' } }); ok(a.conversa==='antes' && a.cap===9 && a.v10===1,'save da parte A no cap. 9 (sem v10): começa o cap. 9 com a conversa de antes');
+  const b=L.normSave(JSON.parse(JSON.stringify(a))); ok(b.conversa==='antes' && JSON.stringify(L.normSave(JSON.parse(JSON.stringify(b))))===JSON.stringify(b),'e normalizar de novo não muda nada');
+  const c=L.normSave({ histV:1, cap:9, dia:20, bank:4000, conversa:null, v10:1, salao:{ ponto:'terraco' } }); ok(c.conversa===null,'quem já ouviu a conversa (v10 no save) não ouve de novo');
+  const d=L.normSave({ histV:1, cap:10, dia:20, bank:4000, salao:{ ponto:'terraco' } }); ok(d.conversa===null && d.cap===10,'cap. 10 (história acabou): sem conversa');
+  const e=L.normSave({ histV:1, cap:9, dia:20, conversa:'depois', capComp:4, salao:{ ponto:'terraco' } }); ok(e.conversa==='depois' && e.capComp===4,'a conversa de depois e o capComp se mantêm'); }
 
 // ---------- 14. saves e Manual ----------
 { const H=nova(), {g,L}=H;
@@ -180,7 +347,10 @@ const salaoAv=(L,est)=>({ ponto:'avenida', mesas:L.salaoAuto([4,4,4,4,4,4].map((
 { const H=jogo(8,'avenida',{ bank:9000, manual:[] }), {g}=H; g.goShop(10); g.manualInicio && g.manualInicio();
   ok(g.save.manual.indexOf('p-terraco')>=0,'a ficha p-terraco abre quando o cartão Mudança aparece na lojinha (ver o ponto novo)');
   const T=jogo(8,'terraco',{ manual:[] }).g; T.resetDay(10); T.begin(); ok(T.save.manual.indexOf('p-terraco')>=0,'e no 1º dia no Terraço');
-  T.arrive({ t:0, type:'casal', color:0, vip:false }); ok(T.save.manual.indexOf('c-casal')>=0,'a ficha c-casal abre na 1ª vez que um casal chega'); }
+  T.arrive({ t:0, type:'casal', color:0, vip:false }); ok(T.save.manual.indexOf('c-casal')>=0,'a ficha c-casal abre na 1ª vez que um casal chega');
+  ok(T.save.manual.indexOf('b-tempos')>=0 && T.save.manualNovo.indexOf('b-tempos')>=0,'a ficha b-tempos abre no 1º dia no Terraço (como novidade)');
+  const A=jogo(8,'avenida',{ manual:[] }).g; A.resetDay(10); A.begin(); ok(A.save.manual.indexOf('b-tempos')<0,'e não abre fora do Terraço');
+  const f=H.L.MANUAL.find(x=>x.id==='b-tempos'); ok(f && f.aba==='basico' && f.nome==='Refeição completa' && f.linha==='No Terraço, cada mesa pede bebida, entrada, prato e sobremesa. Cada tempo conta no Gurugol.' && !/\d/.test(f.linha),'a ficha b-tempos (aba Básico, sem número)'); }
 
 console.log('total =',total,' fails =',fails);
 process.exit(fails?1:0);

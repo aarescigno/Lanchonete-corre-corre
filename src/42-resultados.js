@@ -59,6 +59,7 @@ function buildEnd(){
   const st = $('end-stats');
   clearEl(st);
   const rows = [['Atendidos', r.served],['Perdidos', r.lost],['Não couberam', r.full],['Maior corrente', '×' + r.chain],['Pontos de atendimento', r.pontos || 0]];
+  if (game.ponto.tempos) rows.splice(1, 0, ['Refeições completas', r.completas || 0]);   // v10: só no Terraço Suíça
   // v9.6.12: o trabalho da equipe e o que ela vendeu (antes, frases soltas no rodapé), no fim da tabela
   { const sv = game.save, tar = n => (n || 0) + ((n || 0) === 1 ? ' tarefa' : ' tarefas');
     if (sv.equipe.dani > 0) rows.push(['Dani', tar(r.daniFeitas) + ' · experiência ' + daniXp(sv)]);   // v8.9
