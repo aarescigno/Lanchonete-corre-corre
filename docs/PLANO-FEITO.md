@@ -40,6 +40,7 @@ Etapas concluídas (1a a 3a), movidas de `docs/PLANO.md` em 30/10/2026 e 31/10/2
 
 | # | Etapa | Versão | Situação |
 |---|---|---|---|
+| R2 | Menos sustos: "Já vou!", banco sem armadilha e pausa que confirma (análise de frustração) | v9.6.13 | feita em 10/11 (`docs/spec-v9.6.13.md`; `smoke59`) |
 | R1 | Revisão geral: Missão zero enxuta, dicas na hora, HUD com estrelas, fim do dia | v9.6.12 | feita em 10/11 (`docs/spec-v9.6.12.md`; `smoke58`; sem mudar números do jogo) |
 | 3g-2 | A tela avisa: Gurugol em balões, mesinha das marmitas, eFood e fumaça | v9.6.11 | feita em 02/11 (`docs/spec-v9.6.11.md`; `smoke57`; geladeira fora da tela, mesinha no lugar dela, cheiro só onde a fumaça chega) |
 | 3g-1 | Conversas no fim do turno e cartões mais cedo (retornos da Letícia) | v9.6.10 | feita em 02/11 (`docs/spec-v9.6.10.md`; `smoke56`; só no Modo História) |
@@ -1406,6 +1407,7 @@ O curso "Atendimento de mesa" da Cami (3b-3) passa a se comprar e abre o **modo 
 **Modelo:** Sonnet, esforço alto. Regras fechadas, mas é uma 2ª garçonete com IA própria, dividindo grupos com a Bia.
 
 ---
+- **Ordem (11/11):** a próxima é a **4a-4** (o salão e o bar do Terraço), depois a 4a-5 (planejadas em 10/11), 4b, 4c, 6 e 7 (a rever). A 4a-1 (v10), a 4a-2 (v10.1) e a 4a-3 (v10.2) foram feitas em 11/11. As revisões R1 (v9.6.12) e R2 (v9.6.13) foram feitas em 10/11, fora da ordem, a pedido do usuário. O histórico da ordem está no fim do `docs/PLANO-FEITO.md`.
 
 ## Etapa 3c — Retornos de 01/11: a pia da Dani, as conversas do Cardápio e dos entregadores (v9.6.2)
 **Objetivo:** três retornos do usuário de 01/11 (texto em `docs/PROPOSTAS.md`), decididos com ele na mesma sessão. Uma sessão só.
@@ -1786,3 +1788,25 @@ Partes: `src/42-resultados.js` (fim do dia), `src/21-cenario.js` (geladeira, mes
 **Fechamento:** v10.1 (`versoes/`, `vtag`, `VERSAO`, `#ov-ver`, `docs/spec-v10.1.md`, `RESUMO.md`, `TESTES.md`), PR e merge.
 
 **Modelo:** Sonnet, esforço alto. Regras fechadas, mas é um modificador de cliente que mexe em sentar, cozinha, conta, nota e no dia seguinte.
+
+### Sessão 4a-3 — A cozinha do Terraço: alta gastronomia, a Lia e a alta confeitaria (v10.2)
+**Objetivo:** "lá não se vende coxinha": os cursos do Terraço trocam o cardápio por pratos finos, a cozinha ganha uma ajudante e a Dani chega ao topo dos doces.
+
+- **Cursos do Tonhão** (`CURSOS`, `nivel:4`):
+  - `{ id:'entradas', nome:'Entradas finas', preco:600, nivel:4, pratos:['bruschetta', 'bacalhau', 'quiche'], av:{ nome:'Entradas de chef', preco:900, receita:'bruschetta de tomate confitado, bolinho de bacalhau cremoso e quiche de alho-poró na massa folhada', pratos:['bruschetta', 'bacalhau', 'quiche'] } }`
+  - `{ id:'alta', nome:'Alta gastronomia', preco:900, nivel:4, pratos:['risoto', 'peixe', 'medalhao'], av:{ nome:'Menu do chef', preco:1400, receita:'risoto de cogumelos frescos, peixe do dia na manteiga de ervas e medalhão ao molho madeira', pratos:['risoto', 'peixe', 'medalhao'] } }`
+  - `CARDAPIO` (todos com `fino:true`): `bruschetta` ("Bruschetta", 14, `chapa`, sem carne, `veg`), `bacalhau` ("Bolinho de bacalhau", 16, `frito`), `quiche` ("Quiche de alho-poró", 15, `assado`, sem carne, `veg`), `risoto` ("Risoto de cogumelos", 38, `pf`, sem carne, `veg`), `peixe` ("Peixe do dia", 42, `pf`), `medalhao` ("Medalhão ao molho madeira", 46, `pf`). No Terraço: R$ 35, 40 e 38; R$ 95, 105 e 115.
+  - **Regra do prato fino:** em ponto de nível 4, se a cozinha sabe alguma entrada fina, a entrada é sorteada só entre as finas (peso: o gosto do tipo pela categoria, mais 1); o mesmo vale para o principal. Contam na experiência do Tonhão e na Diversidade do cardápio como os outros cursos. Desenhos dos 6 pratos no estilo das artes da v8.6.10.
+- **Lia, a ajudante de cozinha:** `STAFF.lia = { pay:80, cook:0.75 }`; `equipe.lia` (0 ou 1; contratar é definitivo, como o Anselmo); só no Terraço (`nivel >= 4`; no modo dev, em qualquer ponto). Com ela no dia, todo pedido da cozinha leva `cook` × o tempo. `FOLHA_CORTE`: **a Lia não vem** (`liaFora`), logo depois das TVs e antes do Anselmo; `payroll`, `folhaItens` e `normEquipe` contam ela.
+  - Visual (com crachá "LIA"): mulher de uns 30 anos, pele parda, cabelo crespo preso num coque alto sob um lenço amarelo-mostarda, dólmã branca de mangas dobradas e avental cinza. Fica na cozinha, ao lado do Tonhão, mexendo uma panela (parada com `prefers-reduced-motion`).
+  - Cartão em Equipe, ao lado do Anselmo: nome, salário e "A cozinha anda mais rápido". Abre pelo `LIBERA` (`id:'lia'`, `nivel:4`, `dia:1`, `ate:999`; gatilho: o Tonhão fez o básico de `entradas` ou de `alta`; reclamações "A comida demorou entre um prato e outro." e "Cozinha lenta para um terraço."). Falas: Tonhão (secando as mãos no avental) "Bia, no curso tinha uma moça que cortava cebola mais rápido que eu." / Bia "Mais rápido que o senhor? Duvido." / Tonhão "A Lia. Tá procurando cozinha pra trabalhar. Com mais duas mãos, a entrada e o prato saem juntinhos." / Lia "O chef Tonhão me falou do terraço. Onde eu guardo as facas?" / Bia "Tá na lojinha, em Equipe." `HIST_NOMES.lia = 'Lia'`, cor do nome verde-oliva `#5E7A3A`, `convCabeca` com ela.
+  - Manual: `e-lia` ("Lia", "Ajudante de cozinha: com ela, tudo sai mais rápido."; traço "cozinha mais rápida").
+- **Dani, curso "Alta confeitaria"** (`DANI_CURSOS`: `{ id:'confAlta', nome:'Alta confeitaria', preco:600, nivel:4, dep:'confGourmet', item:true }`): `DOCES.alta = [ { id:'entremet', nome:'Entremet de chocolate' }, { id:'milfolhas', nome:'Mil-folhas' }, { id:'macaron', nome:'Macarons' } ]`, `altaPreco:30`, `altaIngred:7`; com `up.confAlta` os doces da vitrine passam a ser esses, e quem comeu dá `AVAL.amb.doceAlta = 0.4` no Ambiente (no lugar do 0,25). Comentário: "O entremet da casa é de outro mundo!". 3 ícones novos de doce.
+
+**Partes:** `10-constantes.js` (`CARDAPIO`, `CURSOS`, a regra do fino no `pedePrato` e no `pedePrincipal`, `STAFF.lia`, `FOLHA_CORTE`, `LIBERA`, `HIST_NOMES`, `DANI_CURSOS`, `DOCES`, `AVAL.amb`, `MANUAL`), `12-clientes.js` (`normEquipe`), `13-cozinha.js` (o tempo com a Lia), `16-jogo.js` (`setStaff`, folha, `buyDaniCurso`), `19-conversa.js` e `26-conversa.js`, `20-desenho-base.js` (6 pratos e 3 doces), `21-cenario.js` (a Lia na cozinha), `41-lojinha.js` (cursos, cartão da Lia), `42-resultados.js`.
+
+**Testes:** **`tests/smoke62.js` (novo):** (1) os dois cursos só no Terraço; preços no ponto; (2) com `entradas`, a entrada só sai entre as finas; com `alta`, o principal; sem eles, como antes; o vegetariano acha opção nos dois; (3) experiência do Tonhão e Diversidade contam os cursos novos; (4) a conversa da Lia no fim do dia do curso; contratar: R$ 80 na folha, cozinha 25% mais rápida; é a primeira da equipe a não vir no corte; só no Terraço; (5) Alta confeitaria: depende da gourmet, doces a R$ 30, +0,4 no Ambiente; (6) save da v10.1 carrega igual. `bot.js`: compra os cursos (entradas, alta, alta confeitaria) e contrata a Lia quando sobra dinheiro acima da folha. `PONTO=terraco node balance.js` ganha as chaves `ALTA=1` (os dois cursos e a alta confeitaria) e `LIA=1`; anote o que cada uma soma; o alvo da equipe toda só se recalibra na 4a-5. Capturas `tests/shot_v10_2.js`: os 6 pratos e os 3 doces (no balcão, na mesa e no cartão Cardápio), a Lia na cozinha, o cartão dela, a conversa.
+
+**Fechamento:** v10.2 (`versoes/`, `vtag`, `VERSAO`, `#ov-ver`, `docs/spec-v10.2.md`, `RESUMO.md`, `TESTES.md`), PR e merge.
+
+**Modelo:** Sonnet, esforço médio. Segue os moldes do curso de restaurante, do cartão do Anselmo e da confeitaria gourmet, com números e textos fechados; o trabalho maior são os desenhos.

@@ -61,7 +61,15 @@ const CARDAPIO = {
   esfihaSoja:   { nome:'Esfiha de soja',    preco:7,  cat:'assado', curso:'veg', carne:false, cor:'#A9743A', veg:true, vegano:true, dep:'assados', nivel:2, semAv:true },
   mistoVegano:  { nome:'Misto vegano',      preco:10, cat:'chapa',  curso:'veg', carne:false, cor:'#D9B27A', veg:true, vegano:true, dep:'chapa',   nivel:2, semAv:true },
   // v9.1, o curso Cozinha de restaurante (só com ponto.nivel >= 3): o filé à parmegiana, da categoria PF (R$ 60 na Avenida Brasil)
-  parmegiana:   { nome:'Filé à parmegiana', preco:30, cat:'pf',     curso:'restaurante', carne:true, cor:'#B5432E' }
+  parmegiana:   { nome:'Filé à parmegiana', preco:30, cat:'pf',     curso:'restaurante', carne:true, cor:'#B5432E' },
+  /* v10.2, a alta gastronomia do Terraço (fino:true: entra na regra do prato fino de pedePrato e pedePrincipal; as entradas são das categorias
+     chapa/frito/assado, os principais da categoria pf, sem pfv, para o risoto não ser trocado pelo PF vegetariano) */
+  bruschetta:   { nome:'Bruschetta',                preco:14, cat:'chapa',  curso:'entradas', carne:false, cor:'#D9A25B', veg:true, fino:true },
+  bacalhau:     { nome:'Bolinho de bacalhau',       preco:16, cat:'frito',  curso:'entradas', carne:true,  cor:'#E2A64A', fino:true },
+  quiche:       { nome:'Quiche de alho-poró',       preco:15, cat:'assado', curso:'entradas', carne:false, cor:'#E3B25A', veg:true, fino:true },
+  risoto:       { nome:'Risoto de cogumelos',       preco:38, cat:'pf',     curso:'alta',     carne:false, cor:'#E8D9A8', veg:true, fino:true },
+  peixe:        { nome:'Peixe do dia',              preco:42, cat:'pf',     curso:'alta',     carne:true,  cor:'#D9A25B', fino:true },
+  medalhao:     { nome:'Medalhão ao molho madeira', preco:46, cat:'pf',     curso:'alta',     carne:true,  cor:'#8A4B2A', fino:true }
 };
 /* os cursos do Tonhão (v8.6.9): um por lojinha. O básico ensina os pratos; o avançado ("mais requintadinha") soma CURSO_AV.preco ao
    preço de venda dos pratos dele e CURSO_AV.crit à chance de caprichado. O PF não tem básico (preco 0): o avançado aparece desde o início.
@@ -82,7 +90,12 @@ const CURSOS = [
       pratos:['pfVeg', 'empadaPalmito', 'kibeAbobora', 'pfVegano', 'coxinhaJaca', 'pastelPalmito', 'esfihaSoja', 'mistoVegano'] } },
   // v9.1: só aparece no cartão Cardápio com ponto.nivel >= 3 (nivel:3; no modo dev, sempre; cursoOk)
   { id:'restaurante', nome:'Cozinha de restaurante', preco:400, pratos:['parmegiana'], nivel:3,
-    av:{ nome:'Parmegiana da casa', preco:600, receita:'molho de tomate de 6 horas e queijo gratinado na hora', pratos:['parmegiana'] } }
+    av:{ nome:'Parmegiana da casa', preco:600, receita:'molho de tomate de 6 horas e queijo gratinado na hora', pratos:['parmegiana'] } },
+  // v10.2: os cursos do Terraço (nivel:4): as entradas finas e a alta gastronomia (pratos fino:true, ver a regra do prato fino em pedePrato e pedePrincipal)
+  { id:'entradas', nome:'Entradas finas', preco:600, pratos:['bruschetta', 'bacalhau', 'quiche'], nivel:4,
+    av:{ nome:'Entradas de chef', preco:900, receita:'bruschetta de tomate confitado, bolinho de bacalhau cremoso e quiche de alho-poró na massa folhada', pratos:['bruschetta', 'bacalhau', 'quiche'] } },
+  { id:'alta', nome:'Alta gastronomia', preco:900, pratos:['risoto', 'peixe', 'medalhao'], nivel:4,
+    av:{ nome:'Menu do chef', preco:1400, receita:'risoto de cogumelos frescos, peixe do dia na manteiga de ervas e medalhão ao molho madeira', pratos:['risoto', 'peixe', 'medalhao'] } }
 ];
 /* v9.1: o curso está ao alcance neste ponto? (nivel:3 só da Avenida Brasil em diante; no modo dev, sempre) */
 function cursoOk(c, ponto){ return !c.nivel || devLivre() || (ponto || PONTOS[0]).nivel >= c.nivel; }
@@ -113,7 +126,8 @@ const DANI_CURSOS = [
   { id:'atend',   nome:'Atendimento ao cliente', preco:120 },
   { id:'cozinha', nome:'Organização da cozinha', preco:150 },
   { id:'confCaseira', nome:'Confeitaria caseira', preco:180, nivel:2, item:true },   // v9.2: a geladeirinha de doces (DOCES)
-  { id:'confGourmet', nome:'Confeitaria gourmet', preco:350, nivel:3, dep:'confCaseira', item:true }   // v9.3: a vitrine refrigerada e os doces gourmet (só depois da caseira)
+  { id:'confGourmet', nome:'Confeitaria gourmet', preco:350, nivel:3, dep:'confCaseira', item:true },   // v9.3: a vitrine refrigerada e os doces gourmet (só depois da caseira)
+  { id:'confAlta', nome:'Alta confeitaria', preco:600, nivel:4, dep:'confGourmet', item:true }   // v10.2: o entremet, o mil-folhas e os macarons do Terraço (DOCES.alta)
 ];
 /* v9.2: o curso aparece no ponto de `nivel` em diante (no modo dev, sempre) */
 function cursoDaniVis(c, ponto){ return devLivre() || (c.nivel || 1) <= (ponto || PONTOS[0]).nivel; }
@@ -209,13 +223,16 @@ GOSTOS.encomenda = GOSTOS.turma;
    sabido dela, com a mesma chance. Sem categoria possível, PF (com semPf, o 2º item, coxinha) */
 function pedePrato(tipo, game, semPf, veg){
   // v8.6.11: veg (a pessoa é vegetariana) pede só prato sem carne; sem opção, o 2º item some e o prato é uma coxinha (e o grupo reclama)
-  const sab = pratosSabidos(game.cursos).filter(k => !veg || !CARDAPIO[k].carne);
+  let sab = pratosSabidos(game.cursos).filter(k => !veg || !CARDAPIO[k].carne);
+  // v10.2, a regra do prato fino: no Terraço (nivel 4), se a cozinha sabe alguma entrada fina, a entrada sai só entre as finas (peso do gosto da categoria + 1)
+  const fino = !!semPf && game.mode === 'carreira' && !!game.ponto && game.ponto.nivel >= 4 && sab.some(k => CARDAPIO[k].fino && CARDAPIO[k].cat !== 'pf');
+  if (fino) sab = sab.filter(k => CARDAPIO[k].fino && CARDAPIO[k].cat !== 'pf');
   let w = GOSTOS[tipo] || GOSTOS.estudante;
   if (Array.isArray(w[0])){
     const t = game.day && game.day.time > 0 ? clamp(1 - game.clock / game.day.time, 0, 0.999) : Math.random();
     w = w[Math.floor(t * 3)];
   }
-  const cats = GOSTOS_CAT.map((c, i) => ({ w:semPf && c === 'pf' ? 0 : w[i], l:sab.filter(k => CARDAPIO[k].cat === c && (veg || !CARDAPIO[k].pfv)) })).filter(x => x.w > 0 && x.l.length);
+  const cats = GOSTOS_CAT.map((c, i) => ({ w:semPf && c === 'pf' ? 0 : w[i] + (fino ? 1 : 0), l:sab.filter(k => CARDAPIO[k].cat === c && (veg || !CARDAPIO[k].pfv)) })).filter(x => x.w > 0 && x.l.length);
   if (!cats.length){
     if (veg){ const alt = sab.filter(k => !semPf || CARDAPIO[k].cat !== 'pf'); return alt.length ? pick(alt) : semPf ? null : 'coxinha'; }
     return semPf ? 'coxinha' : 'pf';
@@ -242,7 +259,9 @@ const TEMPOS = { entrada:{ cook:0.6, eat:0.5 }, porCoracao:1, semSobremesa:1, se
 /* o prato principal da refeição completa: da categoria PF (PF, PF vegetariano, parmegiana). Vegetariano: só sem carne (sem opção, o PF, e o grupo reclama);
    quem não é, troca o PF pelo vegetariano em VEG.pfTroca das vezes, como no pedePrato */
 function pedePrincipal(tipo, game, veg){
-  const sab = pratosSabidos(game.cursos).filter(k => CARDAPIO[k].cat === 'pf');
+  let sab = pratosSabidos(game.cursos).filter(k => CARDAPIO[k].cat === 'pf');
+  const fi = game.ponto && game.ponto.nivel >= 4 ? sab.filter(k => CARDAPIO[k].fino) : [];   // v10.2, a regra do prato fino: sabendo algum principal fino, só entre os finos
+  if (fi.length) sab = fi;
   if (veg){ const v = sab.filter(k => !CARDAPIO[k].carne); return v.length ? pick(v) : 'pf'; }
   const c = sab.filter(k => !CARDAPIO[k].pfv), k = c.length ? pick(c) : 'pf';
   if (k === 'pf' && Math.random() < VEG.pfTroca){ const pv = sab.filter(x => CARDAPIO[x].pfv); if (pv.length) return pick(pv); }
@@ -569,6 +588,8 @@ const STAFF = {
   cami:    { levels:[ null, { speed:0.9, tasks:3, pay:120 }, { speed:1.1, tasks:4, pay:140 }, { speed:1.25, tasks:4, pay:160, mesas:true } ] },
   // Anselmo (v9.5): coqueteleiro, só na Avenida; entra já no nível 2 (R$ 90/dia), não faz tarefas da lista; o nível 3 vem dos cursos do Terraço (4a)
   anselmo: { levels:[ null, null, { speed:0.8, pay:90, xp:0 }, { speed:1.0, pay:130, xp:0 } ] },
+  // Lia (v10.2): ajudante de cozinha, só no Terraço; com ela no dia todo pedido da cozinha leva `cook` × o tempo. Contratar é definitivo (equipe.lia: 0 ou 1)
+  lia:     { pay:80, cook:0.75 },
   // couvert artístico: só do nível 3 do salão em diante (Avenida Brasil, etapa 3 do plano)
   couvert: { pay:80, fee:3, effect:0.2, feeCut:0.5, nivel:3 },
   // ambiente da Garagem (v7.4.3): TV e som ligados o dia todo; o custo é a conta de luz (pay) e entra na folha
@@ -630,6 +651,7 @@ function payroll(eq){
   if (eq.joca && !eq.jocaFora) v += STAFF.joca.levels[eq.joca].pay;   // v9.2
   if (eq.cami && !eq.camiFora) v += STAFF.cami.levels[eq.cami].pay;   // v9.3
   if (eq.anselmo && !eq.anselmoFora) v += STAFF.anselmo.levels[eq.anselmo].pay;   // v9.5
+  if (eq.lia && !eq.liaFora) v += STAFF.lia.pay;   // v10.2
   if (eq.couvert) v += STAFF.couvert.pay;
   if (eq.tv) v += STAFF.tv.pay;
   if (eq.som) v += STAFF.som.pay;
@@ -638,18 +660,19 @@ function payroll(eq){
 }
 /* v8.1: dinheiro comprometido. A folha e a divulgação ficam reservadas ao abrir o dia (e saem no fim dele); o que não
    couber fica de fora, nesta ordem (a divulgação vira boca a boca antes de tudo) */
-const FOLHA_CORTE = [['couvert', 'Couvert'], ['som', 'som'], ['tv', 'TV'], ['tvs', 'TVs'], ['anselmoFora', 'o Anselmo'], ['camiFora', 'a Cami'], ['jocaUp', 'aumento do Joca'], ['dani', 'aumento da Dani'], ['tonhao', 'aumento do Tonhão'], ['jocaFora', 'o Joca']];   // v9.3: a Cami; v9.5: o Anselmo vem antes dela
+const FOLHA_CORTE = [['couvert', 'Couvert'], ['som', 'som'], ['tv', 'TV'], ['tvs', 'TVs'], ['liaFora', 'a Lia'], ['anselmoFora', 'o Anselmo'], ['camiFora', 'a Cami'], ['jocaUp', 'aumento do Joca'], ['dani', 'aumento da Dani'], ['tonhao', 'aumento do Tonhão'], ['jocaFora', 'o Joca']];   // v9.3: a Cami; v9.5: o Anselmo vem antes dela
 /* tira de eq o próximo item da folha (o Tonhão e a Dani perdem 1 nível de aumento; a Dani não sai da equipe) e devolve o nome; nada a tirar: null */
 function folhaCorta(eq){
-  const c = FOLHA_CORTE.find(k => k[0] === 'tonhao' ? eq.tonhao > 0 : k[0] === 'dani' ? eq.dani > 1 : k[0] === 'jocaUp' ? eq.joca > 2 && !eq.jocaFora : k[0] === 'jocaFora' ? eq.joca > 0 && !eq.jocaFora : k[0] === 'camiFora' ? eq.cami > 0 && !eq.camiFora : k[0] === 'anselmoFora' ? eq.anselmo > 0 && !eq.anselmoFora : eq[k[0]]);
+  const c = FOLHA_CORTE.find(k => k[0] === 'tonhao' ? eq.tonhao > 0 : k[0] === 'dani' ? eq.dani > 1 : k[0] === 'jocaUp' ? eq.joca > 2 && !eq.jocaFora : k[0] === 'jocaFora' ? eq.joca > 0 && !eq.jocaFora : k[0] === 'camiFora' ? eq.cami > 0 && !eq.camiFora : k[0] === 'anselmoFora' ? eq.anselmo > 0 && !eq.anselmoFora : k[0] === 'liaFora' ? eq.lia > 0 && !eq.liaFora : eq[k[0]]);
   if (!c) return null;
   if (c[0] === 'tonhao' || c[0] === 'dani') eq[c[0]]--;
   else if (c[0] === 'jocaUp') eq.joca--;   // o Joca perde 1 nível de aumento (não sai da equipe)
   else if (c[0] === 'jocaFora') eq.jocaFora = true;   // "não vem": só neste dia (normEquipe não guarda), continua contratado
   else if (c[0] === 'camiFora') eq.camiFora = true;   // v9.3: idem para a Cami
   else if (c[0] === 'anselmoFora') eq.anselmoFora = true;   // v9.5: e para o Anselmo
+  else if (c[0] === 'liaFora') eq.liaFora = true;   // v10.2: e para a Lia (vem logo depois das TVs)
   else eq[c[0]] = c[0] === 'tvs' ? 0 : false;
-  return c[0] === 'jocaFora' ? 'o Joca (sem salário hoje)' : c[0] === 'camiFora' ? 'a Cami (sem salário hoje)' : c[0] === 'anselmoFora' ? 'o Anselmo (sem salário hoje)' : c[1];
+  return c[0] === 'jocaFora' ? 'o Joca (sem salário hoje)' : c[0] === 'camiFora' ? 'a Cami (sem salário hoje)' : c[0] === 'anselmoFora' ? 'o Anselmo (sem salário hoje)' : c[0] === 'liaFora' ? 'a Lia (sem salário hoje)' : c[1];
 }
 /* o que fica de fora ao abrir o dia com `bank` no caixa (sem mexer em eq) */
 function folhaCortes(eq, div, bank){
@@ -669,6 +692,7 @@ function folhaItens(eq, div){
   if (eq.joca > 0) out.push('Joca');
   if (eq.cami > 0) out.push('Cami');
   if (eq.anselmo > 0) out.push('Anselmo');
+  if (eq.lia > 0) out.push('Lia');
   if (eq.couvert) out.push('couvert');
   if (eq.tv) out.push('TV');
   if (eq.som) out.push('som');
@@ -813,7 +837,7 @@ const AVAL = {
   minimo:0.9,
   prato:[[2.5, 4.5], [3, 4.7], [3.5, 5], [3.8, 5], [4, 5]],   // v8.8: 5 níveis do Tonhão
   menu:{ base:2, porCurso:0.6 },   // v8.6.9: pelos cursos básicos que o Tonhão fez (a Diversidade do cardápio)
-  amb:{ base:2, tv:0.5, som:0.5, maquina:0.5, ventilador:0.5, cafe:0.5, couvert:1, lixo:-1, planta:0.3, rosa:0.25, toalha:0.5, tvs:0.5, tvsPlus:0.75, doce:0.25, selo:0.5, drink:0.25, louca:0.5 }
+  amb:{ base:2, tv:0.5, som:0.5, maquina:0.5, ventilador:0.5, cafe:0.5, couvert:1, lixo:-1, planta:0.3, rosa:0.25, toalha:0.5, tvs:0.5, tvsPlus:0.75, doce:0.25, doceAlta:0.4, selo:0.5, drink:0.25, louca:0.5 }
 };
 const AVAL_CRIT = [
   { id:'espera', nome:'Espera por mesa',
@@ -1100,11 +1124,14 @@ const HIST_ENTREGA = { dia:4,
 const DOCES = { preco:7, ingred:2, vip:0.2, marmita:0.3, gourmetPreco:16, gourmetIngred:4,
   caseira:[ { id:'bolo', nome:'Bolo de pote' }, { id:'brigadeiro', nome:'Brigadeiro de colher' }, { id:'pudim', nome:'Pudim' } ],
   gourmet:[ { id:'shortcake', nome:'Shortcake de morango' }, { id:'torta', nome:'Torta de limão' }, { id:'brigGourmet', nome:'Brigadeiro gourmet' } ],
+  alta:[ { id:'entremet', nome:'Entremet de chocolate' }, { id:'milfolhas', nome:'Mil-folhas' }, { id:'macaron', nome:'Macarons' } ], altaPreco:30, altaIngred:7,   // v10.2: a alta confeitaria do Terraço (índices 6 a 8 do desenho)
   pede:{ familia:0.5, vovos:0.6, estudante:0.3, executiva:0.2, negocios:0.4, turma:0.3, motorista:0.3, casal:0.6 } };
-DOCES.todos = DOCES.caseira.concat(DOCES.gourmet);
-function docesLista(up){ return up && up.confGourmet ? DOCES.gourmet : DOCES.caseira; }
-function docePreco(up){ return up && up.confGourmet ? DOCES.gourmetPreco : DOCES.preco; }
-function doceIngred(up){ return up && up.confGourmet ? DOCES.gourmetIngred : DOCES.ingred; }
+DOCES.todos = DOCES.caseira.concat(DOCES.gourmet, DOCES.alta);
+function docesLista(up){ return up && up.confAlta ? DOCES.alta : up && up.confGourmet ? DOCES.gourmet : DOCES.caseira; }
+function docePreco(up){ return up && up.confAlta ? DOCES.altaPreco : up && up.confGourmet ? DOCES.gourmetPreco : DOCES.preco; }
+function doceIngred(up){ return up && up.confAlta ? DOCES.altaIngred : up && up.confGourmet ? DOCES.gourmetIngred : DOCES.ingred; }
+/* o índice do desenho do doce que representa a vitrine (o ícone da fila, do balão e da bandeja) */
+function doceIcone(up){ return up && up.confAlta ? 8 : up && up.confGourmet ? 5 : 1; }
 function doceIdx(id){ return Math.max(0, DOCES.todos.findIndex(d => d.id === id)); }
 /* v9.3, cafés da máquina de espresso (curso do Joca, só na Avenida): pedidos de fim de refeição, como os doces. prep: segundos para tirar; preco: R$ na conta */
 const CAFES = { ingred:2, vip:0.1,
@@ -1120,6 +1147,9 @@ function drinkIdx(id){ return Math.max(0, DRINKS.itens.findIndex(d => d.id === i
 function drinkDe(id){ return DRINKS.itens.find(d => d.id === id) || DRINKS.itens[0]; }
 /* o Anselmo trabalha hoje? (contratado, não cortado da folha e no ponto certo: Avenida; no modo dev, em qualquer um) */
 function anselmoOn(eq, ponto){ return !!eq && eq.anselmo > 0 && !eq.anselmoFora && ((ponto || PONTOS[0]).nivel >= 3 || devLivre()); }
+/* v10.2: a Lia trabalha hoje? (contratada, não cortada da folha e no Terraço; no modo dev, em qualquer ponto) */
+function liaOn(eq, ponto){ return !!eq && eq.lia > 0 && !eq.liaFora && ((ponto || PONTOS[0]).nivel >= 4 || devLivre()); }
+const LIA_HOME = { x:868, y:203, s:0.72 };   // v10.2: na janela dos pedidos, ao lado do Tonhão (s: a escala, menor que a da Bia, para caber abaixo das comandas)
 /* v9.0.4: a lojinha abre aos poucos no Modo História. Cada cartão: dia mínimo, garantia (ate), as reclamações do Gurugol
    no dia do gatilho e a conversa do fim do dia. save.libera[id]: 0 fechado | 'pend' | 1 aberto (selo "novo") | 2 aberto e visto */
 const liberaTres = (av, i, lim) => av.filter(a => a.s && a.s[i] != null && a.s[i] <= lim).length >= 3;   // v9.1.1: 3 notas do dia no critério i, até lim
@@ -1176,6 +1206,13 @@ const LIBERA = [
             { q:'bia', s:'E o salão daqui não perdoa.' },
             { q:'joca', s:'Tem a Cami, do meu curso de barista. Ela era garçonete de rodízio: rápida que só!' },
             { q:'cami', s:'Me mostra onde fica tudo que eu dou conta!' },
+            { q:'bia', s:'Tá na lojinha, em Equipe.' } ] },
+  // v10.2, Terraço: a Lia, colega do Tonhão no curso de alta gastronomia, chega depois do básico de um dos cursos dele
+  { id:'lia', nivel:4, dia:1, ate:999, gatilho:(st, av, g) => cursoNivel(g.save.cursos, 'entradas') >= 1 || cursoNivel(g.save.cursos, 'alta') >= 1, reclama:['A comida demorou entre um prato e outro.', 'Cozinha lenta para um terraço.'],
+    falas:[ { q:'tonhao', nota:'secando as mãos no avental', s:'Bia, no curso tinha uma moça que cortava cebola mais rápido que eu.' },
+            { q:'bia', s:'Mais rápido que o senhor? Duvido.' },
+            { q:'tonhao', s:'A Lia. Tá procurando cozinha pra trabalhar. Com mais duas mãos, a entrada e o prato saem juntinhos.' },
+            { q:'lia', s:'O chef Tonhão me falou do terraço. Onde eu guardo as facas?' },
             { q:'bia', s:'Tá na lojinha, em Equipe.' } ] } ];
 function liberaOf(id){ return LIBERA.find(l => l.id === id) || null; }
 /* v9.1.1: o dia da carreira em que o save chegou ao ponto de agora (save.pontoDia); n = o dia que terminou (padrão: o anterior ao save.dia,
@@ -1183,9 +1220,9 @@ function liberaOf(id){ return LIBERA.find(l => l.id === id) || null; }
 function diaNoPonto(sv, n){ return (n == null ? sv.dia - 1 : n) - sv.pontoDia + 1; }
 const BIA_IDS = ['tenis', 'corrida', 'bandeja', 'sudoku'];
 function upgradeCartao(id){ return BIA_IDS.indexOf(id) >= 0 ? 'bia' : 'melhorias'; }
-const HIST_NOMES = { bia:'Bia', tonhao:'Tonhão', dani:'Dani', joca:'Joca', cami:'Cami', anselmo:'Anselmo' };
+const HIST_NOMES = { bia:'Bia', tonhao:'Tonhão', dani:'Dani', joca:'Joca', cami:'Cami', anselmo:'Anselmo', lia:'Lia' };
 const CAIXA_MAX = 14;                                 // livro-caixa (v7.2): quantos dias da carreira ficam guardados
-const VERSAO = 'v10.1';                              // vai no resumo do Caixa
+const VERSAO = 'v10.2';                              // vai no resumo do Caixa
 const DIVULGA_DIA = 4;                                // antes disso, o movimento é o da inauguração (sem custo); v9.0.2: dia 4, e o padrão é o boca a boca
 function divulgaAberta(n, sv){ return devLivre() || n >= DIVULGA_DIA && !(sv && sv.convDiv === 'pend'); }   // no modo dev, desde o dia 1; v9.0.3: no Modo História, só depois da conversa
 /* v9.6.4: a Efood (os entregadores) só abre depois da conversa dos entregadores, no Modo História; antes dela, nenhum tipo com `retira` vem na agenda */
@@ -1341,6 +1378,7 @@ const MANUAL = [
   { id:'e-joca',    aba:'equipe', quem:'joca',    nome:'Joca', linha:'O básico da casa; depois, o café espresso.' },
   { id:'e-cami',    aba:'equipe', quem:'cami',    nome:'Cami', linha:'Garçonete de rodízio: chega rápida e, com curso, cuida das mesas dela.' },
   { id:'e-anselmo', aba:'equipe', quem:'anselmo', nome:'Anselmo', linha:'Coqueteleiro: só o balcão de drinks.' },
+  { id:'e-lia',     aba:'equipe', quem:'lia',     nome:'Lia', linha:'Ajudante de cozinha: com ela, tudo sai mais rápido.' },   // v10.2
 
   { id:'l-tenis',      aba:'lojinha', nome:'Tênis novos', linha:'A Bia anda mais rápido.' },
   { id:'l-corrida',    aba:'lojinha', nome:'Tênis de corrida', linha:'A Bia anda bem mais rápido.' },
@@ -1390,6 +1428,7 @@ function manualTracos(tipo, opt){
   if (tipo === 'vip') return ['paciência menor', 'fura a fila', 'pede o prato especial', 'gorjeta boa', 'prato frio tira coração'];
   if (tipo === 'veg') return ['só prato sem carne', 'sem opção, reclama no Gurugol'];
   if (tipo === 'exigente') return ['pede o prato da casa', 'bebida antes da entrada', 'repara em mesa suja', 'sempre avalia no Gurugol', 'gorjeta ótima'];   // v10.1
+  if (tipo === 'lia') return ['cozinha mais rápida'];   // v10.2
   if (['bia', 'tonhao', 'dani', 'joca', 'cami', 'anselmo'].indexOf(tipo) >= 0) return manualTracosEquipe(tipo, opt.save);
   const T = CUSTOMER_TYPES[tipo]; if (!T) return out;
   const media = a => (a[0] + a[1]) / 2;
@@ -1451,6 +1490,6 @@ function manualSemente(sv){
   if (dia > MANUT.dia) s.add('i-quebra');
   if (dia > 7) s.add('i-gripe');
   if (sv.avalCom && sv.avalCom.length) s.add('b-gurugol');
-  ['dani', 'joca', 'cami', 'anselmo'].forEach(q => { if (sv.equipe && sv.equipe[q] > 0) s.add('e-' + q); });
+  ['dani', 'joca', 'cami', 'anselmo', 'lia'].forEach(q => { if (sv.equipe && sv.equipe[q] > 0) s.add('e-' + q); });
   return MANUAL.filter(f => s.has(f.id)).map(f => f.id);
 }
