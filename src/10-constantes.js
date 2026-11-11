@@ -234,7 +234,20 @@ function pedePrato(tipo, game, semPf, veg){
 const MAIS = { cozinha:0.4, salgado:0.8 };   // v8.6.9: o 2º item sai de pedePrato(..., true), pelos gostos do tipo, sem o PF
 /* pontos de atendimento (v8.3.8): as ações da Bia não dão mais dinheiro, dão pontos (a nota da lanchonete virá
    deles). A corrente e a cor certa também viram pontos */
-const PONTOS_ACAO = { sit:10, take:15, deliver:20, clear:10, coffee:5, juice:5, bill:20, cor:15, marmita:20, lote:20, doce:5, cafeEsp:5, drink:5 };
+const PONTOS_ACAO = { sit:10, take:15, deliver:20, clear:10, coffee:5, juice:5, bill:20, cor:15, marmita:20, lote:20, doce:5, cafeEsp:5, drink:5, completa:30 };
+/* v10, a refeição completa (pontos com `tempos`, só na carreira): bebida, entrada, prato principal e sobremesa. A entrada cozinha em `cook` do tempo e
+   come em `eat` do tempo da refeição; cada coração perdido esperando um tempo tira `porCoracao` da nota dele; sem a confeitaria o cardápio do Gurugol
+   perde `semSobremesa`, e sem o Anselmo no dia, `semBar`; `pts`: os pontos da refeição completa (as 4 coisas servidas) */
+const TEMPOS = { entrada:{ cook:0.6, eat:0.5 }, porCoracao:1, semSobremesa:1, semBar:0.5, pts:30 };
+/* o prato principal da refeição completa: da categoria PF (PF, PF vegetariano, parmegiana). Vegetariano: só sem carne (sem opção, o PF, e o grupo reclama);
+   quem não é, troca o PF pelo vegetariano em VEG.pfTroca das vezes, como no pedePrato */
+function pedePrincipal(tipo, game, veg){
+  const sab = pratosSabidos(game.cursos).filter(k => CARDAPIO[k].cat === 'pf');
+  if (veg){ const v = sab.filter(k => !CARDAPIO[k].carne); return v.length ? pick(v) : 'pf'; }
+  const c = sab.filter(k => !CARDAPIO[k].pfv), k = c.length ? pick(c) : 'pf';
+  if (k === 'pf' && Math.random() < VEG.pfTroca){ const pv = sab.filter(x => CARDAPIO[x].pfv); if (pv.length) return pick(pv); }
+  return k;
+}
 
 /* calçada (v7.5): o mundo vai de -CALCADA.w (a rua) até W; a espera fica lá fora, no lugar da fila de antes.
    Tela larga (v7.6): a tela tem TW px e mostra o mundo inteiro, sem rolar (Game.cam = CALCADA.w: onde o mundo

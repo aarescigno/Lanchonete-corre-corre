@@ -264,7 +264,12 @@ class Group {
     this.size = randi(T.size[0], T.size[1]);
     this.color = color;
     this.vip = !!vip && VIP.types.includes(type);
-    this.juiceWant = Math.random() < (game.day.juice || 0) ? randi(1, this.size) : 0;
+    // v10, a refeição completa: no Terraço (ponto com `tempos`, só na carreira) cada mesa pede bebida, entrada, prato principal e sobremesa;
+    // tempo: o que o grupo espera em 'ordered' (0 a entrada, 1 o principal); notaT: a nota de cada tempo (bebida, entrada, principal, sobremesa; null: não serviu);
+    // perdTempo: corações perdidos esperando a entrada e o principal; perdBeb: perdidos esperando só a bebida (depois da refeição)
+    this.tempos = game.mode === 'carreira' && !!game.ponto.tempos && !T.retira;
+    this.tempo = 0; this.notaT = [null, null, null, null]; this.perdTempo = [0, 0]; this.perdBeb = 0; this.entradaDada = false; this.principalDado = false;
+    this.juiceWant = this.tempos ? (anselmoOn(game.save.equipe, game.ponto) ? 0 : this.size) : Math.random() < (game.day.juice || 0) ? randi(1, this.size) : 0;   // v10: sem o Anselmo, um suco por pessoa
     this.juiceGot = 0;
     this.sabor = randi(0, SABORES.length - 1);   // v9.1: o sabor da água saborizada (só muda a cor do copo e do balão)
     this.people = makePeople(type, this.size);
@@ -273,7 +278,7 @@ class Group {
     // nunca no treino); o prato especial do VIP soma VIP.dish
     // v8.6.11: ~10% das pessoas são vegetarianas (nunca o entregador, nem na Missão zero) e pedem só prato sem carne
     this.people.forEach(p => { p.veg = !T.retira && game.mode !== 'treino' && Math.random() < VEG.chance; });
-    this.dishes = this.people.map(p => pedePrato(type, game, false, p.veg));   // v8.6.9: pelo gosto do tipo, entre os pratos que a cozinha sabe
+    this.dishes = this.people.map(p => this.tempos ? pedePrincipal(type, game, p.veg) : pedePrato(type, game, false, p.veg));   // v10: no Terraço, o principal (PF, PF vegetariano ou parmegiana); v8.6.9: pelo gosto do tipo, entre os pratos que a cozinha sabe
     // v9, a encomenda do setor: `lote` marmitas, cada uma sorteada pelos gostos da turma; entregues: quantas já foram para o balcão
     this.lote = T.lote ? (s && s.lote) || randi(T.lote[0], T.lote[1]) : 0; this.entregues = 0; this.pagoLote = 0;
     if (this.lote) this.dishes = Array.from({ length:this.lote }, () => pedePrato(type, game, false, false));
@@ -289,8 +294,9 @@ class Group {
     this.drinks = game.mode === 'carreira' && anselmoOn(game.save.equipe, game.ponto) && !T.retira ? this.sorteiaDrinks() : []; this.drinksDados = 0; this.drinksPedidos = false; this.perdDrink = 0;   // v9.5: os drinks do Anselmo (ids de DRINKS.itens), pedidos ao sentar; pedidos: já foram para a fila dele
     this.cafes = null; this.cafesDados = 0;   // v9.3: os cafés da máquina de espresso (ids de CAFES.lista) pedidos no fim da refeição, e os já entregues
     this.docesMarm = this.retira && game.mode === 'carreira' && game.up.confCaseira ? (this.lote ? this.dishes : [0]).filter(() => Math.random() < DOCES.marmita).length : 0; this.docesMarmDados = 0;
-    this.extras = this.people.map((p, i) => !this.retira && game.mode !== 'treino' && Math.random() < (CARDAPIO[this.dishes[i]].cat === 'pf' ? T.mais : Math.max(T.mais, MAIS.salgado)) ? pedePrato(type, game, true, p.veg) : null);
+    this.extras = this.tempos ? this.people.map(p => pedePrato(type, game, true, p.veg)) : this.people.map((p, i) => !this.retira && game.mode !== 'treino' && Math.random() < (CARDAPIO[this.dishes[i]].cat === 'pf' ? T.mais : Math.max(T.mais, MAIS.salgado)) ? pedePrato(type, game, true, p.veg) : null);
     this.bill = (this.lote ? [] : this.dishes).concat(this.extras).reduce((v, k) => v + (k ? precoPrato(k, game.ponto, game.cursos) : 0), 0) + (this.vip ? VIP.dish : 0);
+    if (this.tempos && !this.extras.some(Boolean)) this.tempo = 1;   // sem entrada que a cozinha saiba fazer (só vegetarianos sem opção): começa pelo principal
     this.hearts = 5; this.jaVouDito = false;   // v9.6.13: jaVouDito = o "Já vou!" já apareceu para este grupo
     this.x = DOOR.x; this.y = DOOR.y;
     this.path = []; this.moving = false; this.walkPh = 0;
@@ -343,6 +349,7 @@ class Group {
   sorteiaDoces(){
     const g = this.game;
     if (!g.up.confCaseira || this.retira || g.mode !== 'carreira') return [];
+    if (this.tempos) return Array.from({ length:this.size }, () => pick(docesLista(g.up)).id);   // v10: na refeição completa, um doce por pessoa
     const p = (DOCES.pede[this.type] || 0) + (this.vip ? DOCES.vip : 0);
     return Math.random() < p ? Array.from({ length:randi(1, this.size) }, () => pick(docesLista(g.up)).id) : [];
   }
@@ -350,6 +357,7 @@ class Group {
   get drinksFalta(){ return this.drinksPedidos ? this.drinks.length - this.drinksDados : 0; }
   get drinkOpen(){ return this.drinksFalta > 0 && (this.state === 'ordered' || this.state === 'eating' || this.state === 'wantBill'); }
   sorteiaDrinks(){
+    if (this.tempos) return Array.from({ length:this.size }, () => pick(DRINKS.itens).id);   // v10: um drink por pessoa
     const p = (DRINKS.pede[this.type] || 0) + (this.vip ? DRINKS.vip : 0);
     return Math.random() < p ? Array.from({ length:randi(1, this.size) }, () => pick(DRINKS.itens).id) : [];
   }
@@ -363,6 +371,19 @@ class Group {
     return Math.random() < p ? Array.from({ length:randi(1, this.size) }, () => pick(CAFES.lista).id) : [];
   }
   get juicePending(){ return Math.max(0, this.juiceWant - this.juiceGot); }
+  /* v10, a refeição completa: o prato do tempo da vez (o balão e a mão) e a bebida que ainda falta (drinks ou sucos); a bebida entregue vira nota */
+  get pratoVez(){ return this.tempos && this.tempo === 0 ? (this.extras.find(Boolean) || this.dish) : this.dish; }
+  get bebFalta(){ return this.drinksFalta + this.juicePending; }
+  notaBeb(){
+    if (!this.tempos || this.notaT[0] != null || this.bebFalta > 0 || !(this.drinks.length || this.juiceWant)) return;
+    this.notaT[0] = clamp(5 - this.perdBeb - (this.principalDado ? 1 : 0), 1, 5);   // 1 por coração perdido só esperando a bebida e 1 se ela veio depois do principal
+  }
+  notaPrato(tempo, q){   // a nota do prato do tempo (0 entrada, 1 principal): a do prato (já com o frio) menos TEMPOS.porCoracao por coração perdido esperando
+    this.notaT[tempo + 1] = clamp(Math.round(((q || 1) - TEMPOS.porCoracao * this.perdTempo[tempo]) * 10) / 10, 1, 5);
+  }
+  /* a nota da comida no Gurugol: a média das notas dos tempos servidos (null se nada foi servido) */
+  get notaComida(){ const v = this.notaT.filter(x => x != null); return v.length ? v.reduce((a, b) => a + b, 0) / v.length : null; }
+  get completa(){ return this.tempos && this.notaT.every(x => x != null); }
   /* o pedido de suco aparece quando a comanda é anotada; sem ele, o grupo não pede a conta (v8.5.2) */
   get juiceOpen(){ return this.juiceWant > 0 && (this.state === 'ordered' || this.state === 'eating' || this.state === 'wantBill'); }
   get seated(){ return this.state==='reading' || this.state==='wantOrder' || this.state==='ordered' || this.state==='eating' || this.state==='wantBill'; }
@@ -421,7 +442,7 @@ class Group {
         return;
       }
       this.hearts--;
-      if (this.state === 'queue') this.perdFila++; else { this.perdMesa++; if (this.esperaSuco && (this.docesFalta > 0 || this.cafesFalta > 0)) this.perdDoce++; if (this.drinksFalta > 0) this.perdDrink++; }
+      if (this.state === 'queue') this.perdFila++; else { this.perdMesa++; if (this.tempos){ if (this.state === 'ordered') this.perdTempo[this.tempo]++; else if (this.esperaSuco && this.bebFalta > 0) this.perdBeb++; } if (this.esperaSuco && (this.docesFalta > 0 || this.cafesFalta > 0)) this.perdDoce++; if (this.drinksFalta > 0) this.perdDrink++; }
       if (this.hearts <= 0) this.game.angryLeave(this);
       else this.patLeft += this.patPer();
     }
@@ -462,6 +483,7 @@ class Group {
         if (this.game.treinoSegura) break;   // na Missão zero, a refeição espera o cafezinho
         this.timer -= dt;
         if (this.timer > 0) break;
+        if (this.tempos && this.tempo === 0){ this.tempo = 1; this.setState('ordered'); break; }   // v10: acabou a entrada: espera o principal (a cozinha já o recebeu)
         // acabou de comer: quem pediu suco espera por ele (perdendo a paciência) antes de pedir a conta (v8.5.2)
         if (!this.doces) this.doces = this.sorteiaDoces();   // v9.2
         if (!this.cafes) this.cafes = this.sorteiaCafes();   // v9.3
