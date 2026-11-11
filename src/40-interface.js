@@ -49,7 +49,7 @@ function buildMenu(){
   const sv = game.save, n = game.proxDia, novo = n <= 1 && !sv.caixa.length;
   // v8.7: a carreira é a História ("História · cap. 2, A Dani chega · dia 5"; fim dos capítulos: "Garagem completa")
   const capC = HISTORIA[sv.cap - 1];
-  $('menu-dia').textContent = sv.fechou ? 'História: o banco fechou no dia ' + sv.fechou : novo ? 'História' : 'História · ' + (capC && capC.ponto === sv.salao.ponto ? 'cap. ' + capC.cap + ', ' + capC.titulo : ({ industrial:'área industrial completa', avenida:'Avenida Brasil completa' })[(HISTORIA[Math.min(sv.cap, HISTORIA.length + 1) - 2] || {}).ponto] || 'Garagem completa') + ' · dia ' + n;   // v9.1: o ponto do último capítulo feito
+  $('menu-dia').textContent = sv.fechou ? 'História: o banco fechou no dia ' + sv.fechou : novo ? 'História' : 'História · ' + (capC && capC.ponto === sv.salao.ponto ? 'cap. ' + capC.cap + ', ' + capC.titulo : ({ industrial:'área industrial completa', avenida:'Avenida Brasil completa', terraco:'Terraço Suíça completo' })[(HISTORIA[Math.min(sv.cap, HISTORIA.length + 1) - 2] || {}).ponto] || 'Garagem completa') + ' · dia ' + n;   // v9.1: o ponto do último capítulo feito
   const info = [];
   if (sv.fechou) info.push('O banco tomou a lanchonete por falta de pagamento.', sv.estrelas + ' ★', 'lucro acumulado ' + fmt(sv.lucroTot));   // v8.3.1
   else if (novo) info.push('A Bia vai abrir a lanchonete na garagem da mãe.' + (treinoPrimeiro() ? ' Primeira vez? Comece pela Missão zero, um treino passo a passo.' : ''));
@@ -255,11 +255,11 @@ const DES_BASICO = {
 /* o ícone da lojinha de cada ficha `l-` (o da Água da torneira e do assento segue o ponto) */
 const MANUAL_ICO = { 'l-tenis':'tenis', 'l-corrida':'corrida', 'l-cafeteira':'cafeteira', 'l-bandeja':'bandeja', 'l-sudoku':'sudoku', 'l-ventilador':'ventilador', 'l-triturador':'triturador', 'l-pratos':'pratos',
   'l-tvsom':'ambiente', 'l-tvs':'tvs', 'l-couvert':'couvert', 'l-fogao':'fogao-ind', 'l-cardapio':'cardapio', 'l-salao':'g-salao', 'l-decor':'d-samambaia', 'l-manut':'m-fogao', 'l-divulga':'div-redes', 'l-banco':'banco', 'l-mudanca':'mudanca', 'l-caixa':'contas',
-  'p-industrial':'mudanca', 'p-avenida':'mudanca-av' };
+  'p-industrial':'mudanca', 'p-avenida':'mudanca-av', 'p-terraco':'mudanca-te' };
 function manualIcone(f){
   const nv = game.ponto.nivel;
   if (f.id === 'l-maquina') return nv >= 3 ? 'aguas' : nv === 2 ? 'jarra' : 'maquina';
-  if (f.id === 'l-assento') return nv >= 3 ? 'sofas' : 'assento';
+  if (f.id === 'l-assento') return nv === 4 ? 'poltronas' : nv === 3 ? 'sofas' : 'assento';
   if (f.id.indexOf('e-') === 0) return f.quem;
   return MANUAL_ICO[f.id] || null;
 }

@@ -4,6 +4,23 @@ Registro das ideias e dos retornos de quem jogou, com o texto original, e de ond
 
 ---
 
+## 10/11 — usuário: planejar a 4a com o Fable e decidir por conta
+> "Bora de próxima etapa, com Fable mesmo para planejamento, use de agentes para aplicar o planejado, terei pouco tempo para te responder, então tome boa parte das decisões por conta"
+
+**Decisões tomadas na sessão (sem pergunta, a pedido do usuário):**
+- A 4a virou 5 sessões: 4a-1 (o Terraço e a refeição completa, v10), 4a-2 (o VIP exigente e a reputação, v10.1), 4a-3 (alta gastronomia, a Lia e a alta confeitaria, v10.2), 4a-4 (a Cami em tudo, cafés especiais e coquetéis de autor, v10.3) e 4a-5 (música, flores e rebalanceamento, v10.4). A 4b passa a v10.5 e a 4c a v10.6.
+- **Refeição em tempos:** bebida, entrada, principal e sobremesa com os sistemas que já existem; a cozinha faz a entrada e, entregue ela, o principal; cada tempo tem nota e a trilha de 4 marcas sob os corações mostra o andamento.
+- **Números:** cardápio ×2,5, aluguel R$ 1.000, mudança R$ 5.000, 20 lugares, sem entregadores; poltronas do foyer R$ 600; quarteto R$ 150/dia, pianista R$ 120 mais R$ 30 da afinação.
+- **Nomes:** o cliente novo é o Casal; a ajudante de cozinha é a Lia; os cursos são Entradas finas, Alta gastronomia, Alta confeitaria, Atendimento de salão, Cafés especiais, Coquetelaria clássica e Coquetelaria de autor.
+- **O exigente:** todo VIP do Terraço; plaquinha de duas estrelas e chapéu, lenço ou echarpe; sempre avalia, com peso 2; bravo, tira 10% do movimento do dia seguinte.
+- O piano vem com o ponto, fechado, e só ganha quem toque na 4a-5.
+
+**Destino:** `docs/PLANO.md`, "4a — Terraço Suíça: decisões de 10/11" e sessões 4a-1 a 4a-5. Qualquer decisão pode ser revista antes da sessão dela.
+
+---
+
+---
+
 ## 02/11 — Letícia (beta-tester, WhatsApp pelo Arthur): 2ª rodada, Garagem e área industrial (v9.6.9)
 > [10:50] Ao fim do primeiro dia não tem nada para fazer de melhoria no jogo, poderia ter algo para a pessoa se sentir feliz e recompensada jogando
 > [10:51] A Dani aparece no menu equipe mesmo antes de ter entrado pra equipe

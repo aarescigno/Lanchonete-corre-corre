@@ -9,8 +9,22 @@ class Kitchen {
   get chef(){ return STAFF.tonhao.levels[this.game.save.equipe.tonhao]; }
   /* a chance de caprichar: x CURSO_AV.crit nos pratos de um curso avançado que o Tonhão já fez (v8.6.9) */
   chefCrit(dish){ return this.chef.crit * (pratoAv(dish, this.game.cursos) ? CURSO_AV.crit : 1); }
+  /* v10, a refeição completa: a comanda vira dois pedidos em sequência. Entra o da entrada (tempo 0: ×TEMPOS.entrada.cook, sem o ×VIP nem o 2º item, ocupa vaga
+     do balcão mas não gasta prato limpo; ingrediente sobre o valor das entradas). Entregue a entrada, entra o do principal (tempo 1: tempo normal, ×VIP, gasta prato
+     limpo; ingrediente sobre o valor dos principais e o prato do VIP), na frente das entradas que ainda não começaram */
+  submitTempo(grp, table, tempo){
+    const g = this.game, pr = k => k ? precoPrato(k, g.ponto, g.cursos) : 0;
+    let time = rand(4,7) * this.chef.cook;
+    if (tempo === 0) time *= TEMPOS.entrada.cook; else if (grp.vip) time *= VIP.cook;
+    if (g.day.gripe) time *= 1.25;
+    const base = tempo === 0 ? grp.extras.reduce((v, k) => v + pr(k), 0) : grp.dishes.reduce((v, k) => v + pr(k), 0) + (grp.vip ? VIP.dish : 0);
+    const t = { group:grp, table, time, p:0, dish:tempo === 0 ? grp.pratoVez : grp.dish, tempo, base };
+    const i = tempo === 0 ? -1 : this.queue.findIndex(q => q.tempo === 0);
+    if (i < 0) this.queue.push(t); else this.queue.splice(i, 0, t);
+  }
   submit(ticket){
     const g = this.game, grp = ticket.group;
+    if (grp.tempos) return this.submitTempo(grp, ticket.table, grp.tempo);
     let time = rand(4,7) * this.chef.cook;
     if (grp.vip) time *= VIP.cook;              // prato especial do VIP
     time *= 1 + MAIS.cozinha * grp.extras.filter(Boolean).length / grp.size;   // o 2º item de quem pediu mais (v8.3.8)
@@ -77,20 +91,21 @@ class Kitchen {
       if (t.p >= t.time){
         if (t.marmita){ const fm = this.marmJ.findIndex(p => !p); if (fm >= 0){ this.cooking.splice(i,1); this.marmitaPronta(t, fm); } continue; }
         const free = this.plates.findIndex(p => !p);
-        if (free >= 0 && this.clean <= 0) this.noPlate = true;
-        if (free >= 0 && this.clean > 0){
-          this.clean--;
+        const entrada = t.tempo === 0;   // v10: a entrada não gasta prato limpo
+        if (free >= 0 && !entrada && this.clean <= 0) this.noPlate = true;
+        if (free >= 0 && (entrada || this.clean > 0)){
+          if (!entrada) this.clean--;
           const crit = this.game.mode !== 'treino' && Math.random() < this.chefCrit(t.dish);
           // a nota do prato (v8.4): o caprichado vale 5; os outros caem na faixa de acerto do cozinheiro
           const fx = AVAL.prato[this.game.save.equipe.tonhao], q = crit ? 5 : rand(fx[0], fx[1]);
-          this.plates[free] = { id:++this.pid, table:t.table, group:t.group, dish:t.dish, slot:free, age:0, crit, q, vip:!!(t.group && t.group.vip) };
+          this.plates[free] = { id:++this.pid, table:t.table, group:t.group, dish:t.dish, slot:free, age:0, crit, q, vip:!!(t.group && t.group.vip), tempo:t.tempo };
           this.cooking.splice(i,1);
           this.game.usos.fogao++; this.game.usos.geladeira++;
           Sfx.bell();
           this.game.addText(PLATE_SLOTS[free].x, PLATE_SLOTS[free].y - 34, 'Pronto!', PAL.mostarda, 16);
           // ingredientes (v7): o prato pronto já custou, mesmo que o grupo vá embora antes de comer
           // geladeira quebrada (v8): ingredientes mais caros enquanto ela não for consertada
-          const cost = t.group ? Math.round(t.group.bill * INGRED.prato * (this.game.quebrado('geladeira') ? manutOf('geladeira').ingred : 1)) : 0;
+          const cost = t.group ? Math.round((t.base != null ? t.base : t.group.bill) * INGRED.prato * (this.game.quebrado('geladeira') ? manutOf('geladeira').ingred : 1)) : 0;
           if (cost){ this.game.custo += cost; this.game.addText(PLATE_SLOTS[free].x, PLATE_SLOTS[free].y - 54, '-' + cost, PAL.perigo, 12); }
         }
       }

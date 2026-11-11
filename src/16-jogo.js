@@ -60,6 +60,7 @@ class Game {
     this.gid = 0;
     this.groups = []; this.queue = [];
     this.buildTables();
+    doorFor(this.ponto);   // v10: no Terraço a freguesia chega e sai pelo elevador
     queueYsFor(this.ponto.espera || 4);   // v9.1: 4, 5 ou 6 lugares de espera na calçada
     marmJSlotsFor(this.ponto.marmJanela || 2);   // v9.6.5: a fileira das marmitas na janela de prontos
     plateSlotsFor(this.ponto.pratos || 4);   // v9: 4 vagas no balcão de pratos na Garagem, 5 na área industrial, 6 na Avenida (v9.1)
@@ -73,7 +74,7 @@ class Game {
     this.bia.reset();
     this.dani.reset(); this.joca.reset(); this.cami.reset();
     this.fx = [];
-    this.stats = { served:0, lost:0, chain:0, spawned:0, full:0, vip:0, vipLost:0, juice:0, juiceMiss:0, trash:0, washed:0, emptied:0, sucoEsp:0, doces:0, docesMarm:0, cafesEsp:0, drinks:0, crit:0, consertos:0, quebras:0, lostBy:{ semMesa:0, comMesa:0, pedido:0, prato:0, conta:0, retirada:0 }, lotadoT:0, bravoMesa:0, lixoCheio:false, marmitas:0, esfriou:0, jogadas:0, lostGrande:0 };
+    this.stats = { served:0, lost:0, chain:0, spawned:0, full:0, vip:0, vipLost:0, juice:0, juiceMiss:0, trash:0, washed:0, emptied:0, sucoEsp:0, doces:0, docesMarm:0, cafesEsp:0, drinks:0, crit:0, consertos:0, quebras:0, lostBy:{ semMesa:0, comMesa:0, pedido:0, prato:0, conta:0, retirada:0 }, lotadoT:0, bravoMesa:0, lixoCheio:false, marmitas:0, esfriou:0, jogadas:0, lostGrande:0, completas:0 };
     this.lastKind = null; this.chainN = 0;
     this.ending = false; this.endTimer = 0; this.reason = '';
     this.fechado = false; this.fechadoT = 0;   // v9.6.4: a porta fecha quando o relógio zera; fechadoT: segundos desde então
@@ -124,10 +125,10 @@ class Game {
       let type = (i === forced) ? day.nu : this.ponto.tipos ? this.sorteiaTipo(this.ponto.tipos, i / N) : pick(day.types);
       if (day.tipo && i !== forced && Math.random() < day.tipoP) type = day.tipo;   // o dia da semana (v8.3, do dia 8 em diante)
       if (cl && i !== forced && Math.random() < cl.tipoP) type = cl.tipo;   // chuva: entregadores; feriado: famílias
-      if (!efood && CUSTOMER_TYPES[type].retira) type = this.tipoPequeno();   // v9.6.4: a Efood ainda não abriu: sem entregador
+      if ((!efood || this.ponto.semRetirada) && CUSTOMER_TYPES[type].retira) type = this.tipoPequeno();   // v9.6.4: a Efood ainda não abriu: sem entregador (v10: no Terraço Suíça, nunca: semRetirada, também na chuva e na sexta-feira)
       let vip = false;
       if (day.vip && (i === forcedVip || Math.random() < vipP)){
-        if (!VIP.types.includes(type)) type = pick(VIP.types);
+        if (!VIP.types.includes(type) || (this.ponto.tipos && !this.ponto.tipos[type])) type = pick(vipTipos(this.ponto));   // v10: o VIP é de um tipo do ponto (no Terraço não vem estudante; casal só lá)
         vip = true;
       }
       out.push({ t, type, color: pick(colors.concat([0,1,2,3])), vip });
@@ -406,6 +407,11 @@ class Game {
     }
     this.addCoins(t.cx, t.cy, Math.min(8, 3 + g.hearts));
     Sfx.coin();
+    if (g.completa){   // v10: bebida, entrada, principal e sobremesa servidos: refeição completa
+      this.stats.completas++; this.pontos += TEMPOS.pts;
+      this.addText(t.cx, t.cy - 124, 'Refeição completa!', PAL.mostarda, 17);
+      this.addSparks(t.cx, t.cy - 60, 14, PAL.mostarda); this.addSparks(t.cx, t.cy - 60, 8, PAL.alerta);
+    }
     this.stats.served++;
     this.cinco(g);
     this.avaliar(g, t.cx, t.cy - 146);
@@ -422,8 +428,13 @@ class Game {
   entregaPrato(grp, dish, t, semCorrente){
     const cx = t.cx, cy = t.cy;
     grp.setState('eating');
-    grp.timer = rand(grp.T.eat[0], grp.T.eat[1]) * (this.up.ventilador ? 0.85 : 1);
+    const tp = grp.tempos ? (dish.tempo || 0) : -1;   // v10, a refeição completa: 0 a entrada (come em TEMPOS.entrada.eat do tempo e a cozinha recebe o principal), 1 o principal
+    grp.timer = rand(grp.T.eat[0], grp.T.eat[1]) * (this.up.ventilador ? 0.85 : 1) * (tp === 0 ? TEMPOS.entrada.eat : 1);
     grp.eatTotal = grp.timer;
+    if (tp >= 0){
+      grp.notaPrato(tp, dish.q);
+      if (tp === 0){ grp.entradaDada = true; this.kitchen.submitTempo(grp, t.id, 1); grp.tempo = 0; } else grp.principalDado = true;
+    }
     if (grp.vip && dish.fria){   // v9.6.4: o VIP não perdoa prato frio: perde 1 coração em vez de ganhar
       const h0 = grp.hearts; grp.hearts = Math.max(1, h0 - 1); grp.patLeft = grp.patPer(); if (grp.hearts < h0) grp.perdMesa++;
       this.addText(cx, cy - 70, 'Isso aqui tá frio!', PAL.perigo, 16);
@@ -450,7 +461,7 @@ class Game {
 
   /* ---------- marmitas e fila de retirada (v8.6) ---------- */
   /* há entregador no dia (no Turno sem fim, sempre): o balcão de retirada aparece e dá para adiantar marmitas */
-  get marmitaOk(){ return this.mode === 'semfim' || this.retirada.length > 0 || this.schedule.some(s => s.type === 'entregador' || s.type === 'encomenda'); }
+  get marmitaOk(){ return this.mode === 'semfim' || (!this.ponto.semRetirada && (this.retirada.length > 0 || this.schedule.some(s => s.type === 'entregador' || s.type === 'encomenda'))); }   // v10: no Terraço Suíça nunca
   reslotRetirada(){ this.retirada.forEach((g,i) => { g.slot = i; g.path = [Object.assign({}, RETIRADA.fila[i])]; }); }
   /* todas as marmitas do dia, onde estiverem: { m (a marmita ou o pedido na cozinha), onde } */
   marmitas(){
@@ -532,7 +543,10 @@ class Game {
     this.pontos += PONTOS_ACAO.doce * n;
     this.addText(x + 24, y - 52, '+' + pr * n + ' na conta', PAL.ok, 14);
     this.addText(x - 24, y - 30, '+' + PONTOS_ACAO.doce * n + ' pts', PAL.faixa, 14);
-    if (!grp.docesFalta) this.addText(x, y - 96, n > 1 ? 'Doces entregues!' : 'Doce entregue!', PAL.alerta, 15);
+    if (!grp.docesFalta){
+      this.addText(x, y - 96, n > 1 ? 'Doces entregues!' : 'Doce entregue!', PAL.alerta, 15);
+      if (grp.tempos) grp.notaT[3] = clamp(5 - grp.perdDoce, 1, 5);   // v10: a nota da sobremesa: 1 por coração perdido esperando
+    }
     Sfx.tone(988, 0.07, 'sine', 0.05); Sfx.tone(1318, 0.12, 'sine', 0.05, 0.07);
   }
   /* v9.5, o Anselmo: trabalha hoje? Os pedidos entram na fila quando a Bia anota; ele faz um drink por vez (DRINKS.prep / speed) e o copo pronto
@@ -570,6 +584,7 @@ class Game {
     this.addText(x + 24, y - 52, '+' + tot + ' na conta', PAL.ok, 14);
     this.addText(x - 24, y - 30, '+' + PONTOS_ACAO.drink * n + ' pts', PAL.faixa, 14);
     if (!grp.drinksFalta) this.addText(x, y - 96, n > 1 ? 'Drinks entregues!' : 'Drink entregue!', PAL.alerta, 15);
+    grp.notaBeb();   // v10
     Sfx.tone(1047, 0.07, 'sine', 0.05); Sfx.tone(1397, 0.12, 'sine', 0.05, 0.07);
   }
   /* v9.3, cafés da máquina de espresso: o café que ainda falta levar a alguma mesa (os pedidos menos o que alguém já carrega); sem pedido, qualquer um */
@@ -722,7 +737,7 @@ class Game {
   }
   spawnEndless(){
     let type = pick(ENDLESS.types), vip = false;
-    if (this.elapsed > 60 && Math.random() < ENDLESS.vip){ vip = true; if (!VIP.types.includes(type)) type = pick(VIP.types); }
+    if (this.elapsed > 60 && Math.random() < ENDLESS.vip){ vip = true; if (!VIP.types.includes(type)) type = pick(vipTipos(this.ponto)); }
     this.arrive({ type, color: pick([0,1,2,3]), vip });
   }
   endlessInterval(){ return Math.max(3.5, 9 - this.elapsed / 30); }
@@ -887,7 +902,9 @@ class Game {
     // depois do pedido, sem comer, mais o cardápio; o entregador bravo não levou a marmita. Quem comeu (ou pagou) dá os 5
     const st = g.state, comeu = !bravo || st === 'eating' || st === 'wantBill';
     const ve = g.retira ? [1, 1, !bravo, 0, 0] : !bravo || comeu ? [1, 1, 1, 1, 1] : st === 'queue' || st === 'toTable' ? [1, 0, 0, 0, 0] : st === 'wantOrder' ? [1, 1, 0, 0, 1] : [1, 1, 0, 1, 1];
-    const s = [5 - A.porCoracao * (g.retira ? g.perdMesa : g.perdFila), bravo ? 1 : 5 - A.porCoracao * g.perdMesa, g.pratoQ || 1, g.semVeg ? 1 : avalMenu(this.cursos, cursosItem(this.save)), amb]
+    // v10, a refeição completa: a comida é a média das notas dos tempos servidos; o cardápio perde TEMPOS.semSobremesa sem a confeitaria e TEMPOS.semBar sem o Anselmo no dia
+    const comida = g.tempos ? (g.notaComida || 1) : (g.pratoQ || 1), menos = g.tempos ? (this.up.confCaseira ? 0 : TEMPOS.semSobremesa) + (this.anselmoAtivo ? 0 : TEMPOS.semBar) : 0;
+    const s = [5 - A.porCoracao * (g.retira ? g.perdMesa : g.perdFila), bravo ? 1 : 5 - A.porCoracao * g.perdMesa, comida, g.semVeg ? 1 : avalMenu(this.cursos, cursosItem(this.save)) - menos, amb]
       .map((v, i) => ve[i] ? clamp(Math.round(v * 10) / 10, 1, 5) : null);
     // v8.6.4: a nota no Gurugol fica na escala do ponto (o serviço 5 vale o teto), mais o humor de quem avalia; v8.6.7: o humor
     // e a folga são fração da faixa do ponto (teto − 1), e a cor certa, a corrente e o caprichado aumentam a chance de encantar
@@ -898,6 +915,12 @@ class Game {
     if (!bravo && g.doces && g.doces.length && Math.random() < 0.4) txt = g.perdDoce > 0 ? 'A sobremesa demorou mais que o almoço.' : g.docesFalta ? txt : 'A sobremesa da casa é uma delícia!';   // v9.2
     if (!bravo && g.cafes && g.cafes.length && !g.cafesFalta && g.cafes.indexOf('cappuccino') >= 0 && Math.random() < 0.4) txt = 'Que cappuccino caprichado!';   // v9.3
     if (!bravo && g.drinks && g.drinks.length && Math.random() < 0.4) txt = g.perdDrink > 0 ? 'Pedi um drink e ele nunca veio.' : !g.drinksFalta ? 'O drink do balcão é uma obra de arte!' : txt;   // v9.5
+    if (g.tempos && Math.random() < 0.4){   // v10: os comentários da refeição completa (no lugar do comum)
+      if (g.perdTempo[1] > 0) txt = 'Um tempão entre a entrada e o prato.';
+      else if (!bravo && g.completa && g.notaComida >= 4) txt = pick(['Do drink à sobremesa, tudo no tempo certo!', 'Refeição completa de verdade!']);
+      else if (!bravo && !this.up.confCaseira) txt = 'Faltou a sobremesa para fechar.';
+      else if (!bravo && !this.anselmoAtivo) txt = 'Faltou uma carta de drinks.';
+    }
     if (!bravo && this.aprovado && Math.random() < 0.3) txt = FISCAL.coment;   // v9.4: no dia aprovado
     if (bravo === 'mesa') this.stats.bravoMesa++;   // v9.0.4: gatilho do cartão da Bia
     this.avals.push({ r, s, txt, k:g.type, v:g.vip });
@@ -1065,7 +1088,7 @@ class Game {
     else if (++sv.neg > BANCO.neg){ forcado = Math.ceil(-sv.bank / 10) * 10; this.emprestar(forcado, true); }
     // Modo História (v8.7): o dia no azul conta no cap. 1; cumpriu o objetivo do capítulo, a conversa de depois fica pendente
     let cap = null;
-    sv.capMarm = this.stats.marmitas;
+    sv.capMarm = this.stats.marmitas; sv.capComp = this.stats.completas;
     sv.docesTot = (sv.docesTot || 0) + this.stats.doces;   // v9.6.6: o selo NOVO! da geladeirinha some depois de 5 doces entregues
     if (!tomou && sv.cap <= HISTORIA.length && this.capObj(sv)){
       const co = HISTORIA[sv.cap - 1];
@@ -1073,6 +1096,10 @@ class Game {
       if (co.obj.marmitas && !sv.capFeito){   // v9, cap. 5: as marmitas e a nota no mesmo dia
         const ge = avalGeral(sv.aval);
         if (this.stats.marmitas >= co.obj.marmitas && ge && Math.round(ge.nota * 10) / 10 >= co.obj.nota) sv.capFeito = 1;
+      }
+      if (co.obj.completas && !sv.capFeito){   // v10, cap. 9: as refeições completas e a nota no mesmo dia
+        const ge = avalGeral(sv.aval);
+        if (this.stats.completas >= co.obj.completas && ge && Math.round(ge.nota * 10) / 10 >= co.obj.nota) sv.capFeito = 1;
       }
       const ob = this.capObj(sv, true);
       cap = { n:sv.cap, titulo:co.titulo, itens:ob.itens, ok:ob.ok };
@@ -1108,7 +1135,7 @@ class Game {
     if (tomou) row.tom = 1;
     caixaAdd(sv, row);
     writeSave(sv);
-    this.result = { daniFeitas:this.dani.feitas, jocaFeitas:this.joca.feitas, camiFeitas:this.cami.feitas, cafesEsp:this.stats.cafesEsp, drinks:this.stats.drinks, doces:this.stats.doces, docesMarm:this.stats.docesMarm, day:d.n, money:m, fat, pontos:Math.round(this.pontos), custo:Math.round(this.custo), contas:this.contas, aluguel:this.ponto.aluguel, div:this.paidDiv, divName:this.div ? this.div.name : '', meta:d.meta, bom:bomGoal(d), expert:d.expert, passed, stars, served:this.stats.served, lost:this.stats.lost, lostBy:this.stats.lostBy, lotadoT:Math.round(this.stats.lotadoT), atraso:Math.round(this.atraso), full:this.stats.full, chain:this.stats.chain, vip:this.stats.vip, vipLost:this.stats.vipLost, marmitas:this.stats.marmitas, efood:this.efood, esfriou:this.stats.esfriou, jogadas:this.stats.jogadas, sobra:this.marmitas().filter(o => o.onde !== 'fogao').length, juice:this.stats.juice, juiceMiss:this.stats.juiceMiss, sucoEsp:this.stats.sucoEsp, bebida:this.bebida.id, trash:this.stats.trash, washed:this.stats.washed, income, paid:this.paid, reason:this.reason, conserto:this.conserto, consertos:this.stats.consertos, quebras:this.quebras.filter(q => q.on).map(q => ({ id:q.id, fixed:q.fixed })), clima:this.clima, manut:Object.assign({}, this.manut), par, forcado, neg:sv.neg, emp:Object.assign({}, sv.emp), atrasou, tomou, socorro, devido, cap, aval:{ dia:avDia, geral:avalGeral(sv.aval), n:sv.aval.length, coment, comentK, teto:avalTeto(this.ponto) } };
+    this.result = { daniFeitas:this.dani.feitas, jocaFeitas:this.joca.feitas, camiFeitas:this.cami.feitas, cafesEsp:this.stats.cafesEsp, drinks:this.stats.drinks, doces:this.stats.doces, docesMarm:this.stats.docesMarm, day:d.n, money:m, fat, pontos:Math.round(this.pontos), custo:Math.round(this.custo), contas:this.contas, aluguel:this.ponto.aluguel, div:this.paidDiv, divName:this.div ? this.div.name : '', meta:d.meta, bom:bomGoal(d), expert:d.expert, passed, stars, served:this.stats.served, lost:this.stats.lost, lostBy:this.stats.lostBy, lotadoT:Math.round(this.stats.lotadoT), atraso:Math.round(this.atraso), full:this.stats.full, chain:this.stats.chain, vip:this.stats.vip, vipLost:this.stats.vipLost, marmitas:this.stats.marmitas, completas:this.stats.completas, efood:this.efood, esfriou:this.stats.esfriou, jogadas:this.stats.jogadas, sobra:this.marmitas().filter(o => o.onde !== 'fogao').length, juice:this.stats.juice, juiceMiss:this.stats.juiceMiss, sucoEsp:this.stats.sucoEsp, bebida:this.bebida.id, trash:this.stats.trash, washed:this.stats.washed, income, paid:this.paid, reason:this.reason, conserto:this.conserto, consertos:this.stats.consertos, quebras:this.quebras.filter(q => q.on).map(q => ({ id:q.id, fixed:q.fixed })), clima:this.clima, manut:Object.assign({}, this.manut), par, forcado, neg:sv.neg, emp:Object.assign({}, sv.emp), atrasou, tomou, socorro, devido, cap, aval:{ dia:avDia, geral:avalGeral(sv.aval), n:sv.aval.length, coment, comentK, teto:avalTeto(this.ponto) } };
     this.result.multaVig = this.multaVig; this.result.vig = this.fiscal && this.fiscal.res ? { res:this.fiscal.res, falhas:Object.assign({}, this.fiscal.falhas) } : null;   // v9.4
     if (tomou){ this.setState('falencia'); Sfx.lose(); return; }
     this.setState('dayend');
@@ -1168,8 +1195,9 @@ class Game {
     const o = c.obj, itens = [], ge = avalGeral(sv.aval), nota = ge ? Math.round(ge.nota * 10) / 10 : null;
     if (o.azul) itens.push({ txt:'Fechar ' + o.azul + ' dias no azul' + (pontoOf(c.ponto).aluguel ? ' pagando o aluguel' : '') + ' (' + Math.min(sv.capAzul, o.azul) + ' de ' + o.azul + ')', ok:sv.capAzul >= o.azul });
     if (o.marmitas) itens.push({ txt:o.marmitas + ' marmitas e nota ' + fmtNota(o.nota) + ' no mesmo dia (' + (fim ? 'hoje' : 'no último dia') + ': ' + (sv.capMarm || 0) + (sv.capMarm === 1 ? ' marmita' : ' marmitas') + ', nota ' + fmtNota(ge ? ge.nota : null) + ')', ok:!!sv.capFeito });
+    if (o.completas) itens.push({ txt:o.completas + ' refeições completas e nota ' + fmtNota(o.nota) + ' no mesmo dia (' + (fim ? 'hoje' : 'no último dia') + ': ' + (sv.capComp || 0) + (sv.capComp === 1 ? ' completa' : ' completas') + ', nota ' + fmtNota(ge ? ge.nota : null) + ')', ok:!!sv.capFeito });
     if (o.quitar) itens.push({ txt:sv.emp.resto ? 'Quitar a reforma (faltam ' + fmt(sv.emp.resto) + ')' : 'Reforma quitada', ok:!sv.emp.resto });
-    if (o.nota && !o.marmitas) itens.push({ txt:'Nota do Gurugol ' + fmtNota(o.nota) + ' (agora ' + fmtNota(ge ? ge.nota : null) + ')', ok:nota != null && nota >= o.nota });
+    if (o.nota && !o.marmitas && !o.completas) itens.push({ txt:'Nota do Gurugol ' + fmtNota(o.nota) + ' (agora ' + fmtNota(ge ? ge.nota : null) + ')', ok:nota != null && nota >= o.nota });
     if (o.caixa) itens.push({ txt:fmt(o.caixa) + ' no caixa (agora ' + fmt(sv.bank) + ')', ok:sv.bank >= o.caixa });
     itens.forEach((it, i) => { it.txt = i ? it.txt.replace(/^(?!R\$)./, x => x.toLowerCase()) : it.txt; });
     return { ok:itens.every(it => it.ok), itens };
@@ -1215,6 +1243,12 @@ class Game {
     sv.salao.ponto = para.id; sv.pontoDia = sv.dia;   // v9.1.1: o dia em que chegou ao ponto novo
     sv.equipe.tv = false; sv.equipe.som = false; delete this.up.maquina;
     delete this.up.tvs; delete this.up.assento; sv.equipe.tvs = 0;   // v9.1: ao sair da área industrial, as TVs, o assento e a jarra saem sem devolver (o fogão industrial e as mesas vão junto)
+    // v10: o ponto novo tem menos lugares (Terraço Suíça, 20): as últimas mesas que passam do teto (primeiro as do estoque) são vendidas, por SALAO.venda do preço (linha do caixa como a venda do editor)
+    const sal = sv.salao, est = Array.isArray(sal.estoque) ? sal.estoque : (sal.estoque = []);
+    while (salaoLugares(sal.mesas) + salaoLugares(est) > para.lugares && (est.length || sal.mesas.length > 1)){
+      const m = est.length ? est.pop() : sal.mesas.pop(), v = Math.round(mesaPreco(m.seats) * SALAO.venda);
+      sv.bank += v; caixaGasto(sv, 'sal', -v);
+    }
     const r = salaoAuto(sv.salao.mesas, para); if (r) sv.salao.mesas = r;
     sv.salao = normSalao(sv.salao);
     sv.equipe = normEquipe(sv.equipe, para);
@@ -1233,7 +1267,7 @@ class Game {
     return true;
   }
   /* itens da área industrial (v9): TVs (instalar), fogão industrial e o assento da espera ('cadeira' ou 'banco'; trocar paga o novo);
-     v9.1: o fogão vale de 2 em diante; as TVs e a cadeirinha/banquinho só no nível 2; o sofá só na Avenida */
+     v9.1: o fogão vale de 2 em diante; as TVs e a cadeirinha/banquinho só no nível 2; o sofá só na Avenida; v10: as poltronas só no Terraço */
   comprarInd(id, tipo){
     const nv = this.ponto.nivel;
     if (nv < 2) return false;
@@ -1243,6 +1277,7 @@ class Game {
     else if (id === 'fogaoInd' && !this.up.fogaoInd) cost = I.fogao.cost;
     else if (id === 'assento' && nv === 2 && (tipo === 'cadeira' || tipo === 'banco') && this.up.assento !== tipo) cost = I.assento[tipo].cost;
     else if (id === 'assento' && nv === 3 && tipo === 'sofa' && this.up.assento !== 'sofa') cost = AVENIDA.sofa.cost;
+    else if (id === 'assento' && nv === 4 && tipo === 'poltrona' && this.up.assento !== 'poltrona') cost = TERRACO.poltrona.cost;   // v10: as poltronas do foyer, só no Terraço
     else return false;
     if (!devLivre() && this.save.bank < cost) return false;
     if (!devLivre()){ this.save.bank -= cost; caixaGasto(this.save, 'mel', cost); }
@@ -1379,6 +1414,7 @@ class Game {
     if (this.day.gripe) this.manualVer('i-gripe');
     if (this.fiscal) this.manualVer('i-fiscal');
     if (MANUT.on && n >= MANUT.dia && MANUT.equip.some(q => manutChance(this.manut[q.id]) > 0)) this.manualVer('i-quebra');
+    if (this.ponto.tempos) this.manualVer('b-tempos');   // v10: a refeição completa, no 1º dia no Terraço
     this.manualPontos();
   }
   /* os lugares: o ponto de agora e o de destino da Mudança (quando o cartão já aparece) */
@@ -1396,6 +1432,7 @@ class Game {
   buy(id){
     const u = UPGRADES.find(x => x.id === id);
     if (!u || !this.cartaoAberto(upgradeCartao(id))) return false;
+    if (id === 'maquina' && !this.ponto.bebida) return false;   // v10: o Terraço Suíça não serve bebida na espera (até a 4a-4)
     const cost = upgradeDe(u, this.ponto).cost;
     if ((!u.multi && this.up[id]) || (u.req && !this.up[u.req]) || this.save.bank < cost) return false;
     this.save.bank -= cost;
@@ -1485,7 +1522,7 @@ class Game {
     const mesas = sem ? (this.semfimMesas || (this.semfimMesas = salaoAuto(SALAO_SEMFIM.map((seats, i) => ({ seats, c:i % 4 })), PONTOS[0]))) : sal.mesas;
     const defs = mesas.map((m, i) => ({ id:i + 1, cx:m.x, cy:m.y, seats:m.seats, color:m.c, toalha:!!m.t, cami:!!m.cami }));
     this.tables = defs.map(d => new Table(d));
-    setObst(defs);
+    setObst(defs, fixosDe(this.ponto));   // v10: o piano do Terraço
     this.tablesKey = key;
   }
   /* estoque do salão (v8.3.5): mesas guardadas fora do salão, para rearrumar com folga (não abrem no dia) */
@@ -1731,7 +1768,7 @@ class Game {
   }
   devToggle(id){
     const u = UPGRADES.find(x => x.id === id);
-    if (!DEV.on || !u) return false;
+    if (!DEV.on || !u || (id === 'maquina' && !this.ponto.bebida)) return false;
     if (this.up[id]){ delete this.up[id]; UPGRADES.forEach(v => { if (v.req === id) delete this.up[v.id]; }); }
     else { this.up[id] = u.multi ? 1 : true; if (u.req) this.up[u.req] = true; }
     writeSave(this.save);

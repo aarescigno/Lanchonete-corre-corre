@@ -37,6 +37,16 @@ function makePeople(type, size){
       out.push(newPerson(Object.assign({ shirt: blazer ? pick(['#5F656D', '#2C4A78', '#6E2A3A', '#B7A78A']) : pick(['#CFE0EE', '#EDE6D6', '#D8C7D4', '#BFD3C8']), blazer, camisa: blazer ? null : 'social', gravata: Math.random() < 0.5 ? pick(['#B33A3A', '#2F5FA8', '#E8B43A', '#3E7B4A']) : null, glasses: Math.random() < 0.3, hair: pick([0,1,2,3,5,6]) },
         velho ? { elder:true, hair:4, hairC: pick(['#E8E8E8','#8C8C8C']), glasses:true } : {}, i === 0 ? { acc: pick(['laptop', 'pasta']) } : {})));
     }
+  } else if (type === 'casal'){   // v10: duas pessoas adultas, de qualquer gênero, idade e cor de pele (os pares variam), de roupa de sair: vestido, camisa de cor forte ou blazer; uma flor na lapela ou no cabelo de uma delas
+    const flor = randi(0, size - 1);
+    for (let i=0;i<size;i++){
+      const r = Math.random(), roupa = r < 0.35 ? 'vestido' : r < 0.7 ? 'camisa' : 'blazer', velho = Math.random() < 0.18;
+      const forte = pick(['#B3243B', '#2E5BA8', '#7B3FA0', '#1F7A5C', '#D9822B', '#C2185B', '#2F7D86']), sobrio = pick(['#2C4A78', '#6E2A3A', '#2F5D4A', '#3A3A44']);
+      out.push(newPerson(Object.assign({ shirt: roupa === 'blazer' ? sobrio : forte, glasses: Math.random() < 0.2, hair: pick([0,1,2,3,5,6]) },
+        roupa === 'vestido' ? { vestido:true } : roupa === 'camisa' ? { camisa:'social' } : { blazer:true, gravata: Math.random() < 0.3 ? pick(['#E8B43A', '#B33A3A']) : null },
+        velho ? { elder:true, hair:4, hairC: pick(['#E8E8E8','#8C8C8C']), glasses:true } : {},
+        i === flor ? { flor: roupa !== 'vestido' && Math.random() < 0.6 ? 'lapela' : 'cabelo', florC: pick(['#F28AA8', '#FFFDF4', '#F2C94C', '#D8334A']) } : {})));
+    }
   } else if (type === 'encomenda'){   // v9: crachá e uma sacola térmica
     out.push(newPerson({ cracha:true, sacola:true, shirt: pick(['#2F7D86', '#8A4F9E', '#3E7B4A']), hair: pick([0,1,2,3,5,6]), glasses: Math.random()<0.3 }));
   } else { // entregador
@@ -148,7 +158,7 @@ function normSave(s){
   const devMaq = up.maquina && !s.torneira ? UPGRADES.find(u => u.id === 'maquina').devolve : 0;
   if (up.chapa){ up.pratos = true; delete up.chapa; }     // a Chapa nova virou Jogo de pratos (a velocidade da cozinha é do Tonhão)
   ['tvs', 'fogaoInd'].forEach(k => { if (up[k]) up[k] = true; else delete up[k]; });   // v9: itens da área industrial
-  if (up.assento !== 'cadeira' && up.assento !== 'banco' && up.assento !== 'sofa') delete up.assento;   // v9.1: o sofá da Avenida
+  if (up.assento !== 'cadeira' && up.assento !== 'banco' && up.assento !== 'sofa' && up.assento !== 'poltrona') delete up.assento;   // v9.1: o sofá da Avenida; v10: as poltronas do Terraço
   if ('pratos' in up){ const n = pratosDe(up); if (n) up.pratos = n; else delete up.pratos; }   // v8.3.6: os Jogos de pratos viram um número
   // salão da v6 à v7.3 (v7.4): o que foi gasto em cadeiras e mesas volta para o dinheiro, numa linha do caixa, e o
   // jogo começa na Garagem com o kit
@@ -164,9 +174,11 @@ function normSave(s){
   const hist = s.histV === 1, novoHist = !hist && HIST.on && !DEV.on && !saveJogou(s), capMax = HISTORIA.length + 1;
   const cap = hist ? clamp(Math.round(+s.cap) || capMax, 1, capMax) : novoHist ? 1 : 4;   // v9: dev e testes ficam no cap. 4 (sem objetivo na Garagem; a mudança de ponto está livre)
   const capPonto = HISTORIA[cap - 1], pendente = !!capPonto && capPonto.ponto !== pontoOf(s.salao && s.salao.ponto).id;   // v9, v9.1: o capítulo de um ponto só começa na mudança para ele (o 4 e o 6)
-  const conversa = cap > HISTORIA.length || pendente ? null : hist ? (s.conversa === 'antes' || s.conversa === 'depois' ? s.conversa : null) : novoHist ? 'antes' : null;
-  const dev = salaoDevolucao(s.salao), out = { dia, estrelas, lucroTot: Math.round(+s.lucroTot) || 0, pontosTot: Math.max(0, Math.round(+s.pontosTot) || 0), aval: normAval(s.aval), avalCom: normAvalCom(s.avalCom), neg: clamp(Math.round(+s.neg) || 0, 0, BANCO.neg), emp: normEmprestimo(novoHist ? { resto:REFORMA.valor, amort:REFORMA.amort, j:REFORMA.juros, ini:REFORMA.ini, ref:true } : s.emp), corta: s.corta !== false, fechou: Math.max(0, Math.round(+s.fechou) || 0), bank: bank + dev + devMaq, up, torneira:true, salao: normSalao(dev ? null : s.salao), divulga: dia < DIVULGA_DIA && !devLivre() ? 'boca' : divulgaOf(s.divulga).id, treino: !!s.treino, decor: normDecor(s.decor), cursos: normCursos(s.cursos), cursoDia: Math.max(0, Math.round(+s.cursoDia) || 0), tonXp: s.tonXp === 1 ? 1 : 0, daniTar: Math.max(0, Math.round(+s.daniTar) || 0), daniCursos: normDaniCursos(s.daniCursos), daniCursoDia: Math.max(0, Math.round(+s.daniCursoDia) || 0), jocaTar: Math.max(0, Math.round(+s.jocaTar) || 0), jocaCursos: normJocaCursos(s.jocaCursos), jocaCursoDia: Math.max(0, Math.round(+s.jocaCursoDia) || 0), camiCursos: normCamiCursos(s.camiCursos), camiCursoDia: Math.max(0, Math.round(+s.camiCursoDia) || 0), daniXp: s.daniXp === 1 ? 1 : 0, cardV: 1, libera: normLibera(s.libera, !novoHist), pontoDia: pontoDiaDe(s, dia), convCard: s.convCard === 'pend' ? 'pend' : s.convCard === 1 ? 1 : 0, convDiv: s.convDiv === 'pend' ? 'pend' : s.convDiv === 1 ? 1 : 0, convPlanta: s.convPlanta === 'pend' ? 'pend' : s.convPlanta === 1 || dia > 1 ? 1 : 0, convEnt: s.convEnt === 'pend' ? 'pend' : s.convEnt === 1 ? 1 : 0, socorro: s.socorro === 1 ? 1 : 0, convSocorro: s.convSocorro === 'pend' ? 'pend' : s.convSocorro === 1 ? 1 : 0, cardVisto: Array.isArray(s.cardVisto) ? s.cardVisto.filter(x => typeof x === 'string').slice(0, 40) : [], avisoCard: !!s.avisoCard, histV: 1, avisoHist: !!s.avisoHist, cap, capDia: Math.max(1, Math.round(+s.capDia) || 1), capAzul: Math.max(0, Math.round(+s.capAzul) || 0), capFeito: s.capFeito === 1 ? 1 : 0, capMarm: Math.max(0, Math.round(+s.capMarm) || 0), docesTot: Math.max(0, Math.round(+s.docesTot) || 0), conversa, manut: normManut(s.manut), caixa: normCaixa(s.caixa), caixaPend: normPend(s.caixaPend) };
+  // v10: o save que já terminou o cap. 8 na parte A (cap 9, sem o campo v10) começa o cap. 9 com a conversa de antes
+  const conversa = cap > HISTORIA.length || pendente ? null : hist ? (s.conversa === 'antes' || s.conversa === 'depois' ? s.conversa : (cap === 9 && s.v10 !== 1 ? 'antes' : null)) : novoHist ? 'antes' : null;
+  const dev = salaoDevolucao(s.salao), out = { dia, estrelas, lucroTot: Math.round(+s.lucroTot) || 0, pontosTot: Math.max(0, Math.round(+s.pontosTot) || 0), aval: normAval(s.aval), avalCom: normAvalCom(s.avalCom), neg: clamp(Math.round(+s.neg) || 0, 0, BANCO.neg), emp: normEmprestimo(novoHist ? { resto:REFORMA.valor, amort:REFORMA.amort, j:REFORMA.juros, ini:REFORMA.ini, ref:true } : s.emp), corta: s.corta !== false, fechou: Math.max(0, Math.round(+s.fechou) || 0), bank: bank + dev + devMaq, up, torneira:true, salao: normSalao(dev ? null : s.salao), divulga: dia < DIVULGA_DIA && !devLivre() ? 'boca' : divulgaOf(s.divulga).id, treino: !!s.treino, decor: normDecor(s.decor), cursos: normCursos(s.cursos), cursoDia: Math.max(0, Math.round(+s.cursoDia) || 0), tonXp: s.tonXp === 1 ? 1 : 0, daniTar: Math.max(0, Math.round(+s.daniTar) || 0), daniCursos: normDaniCursos(s.daniCursos), daniCursoDia: Math.max(0, Math.round(+s.daniCursoDia) || 0), jocaTar: Math.max(0, Math.round(+s.jocaTar) || 0), jocaCursos: normJocaCursos(s.jocaCursos), jocaCursoDia: Math.max(0, Math.round(+s.jocaCursoDia) || 0), camiCursos: normCamiCursos(s.camiCursos), camiCursoDia: Math.max(0, Math.round(+s.camiCursoDia) || 0), daniXp: s.daniXp === 1 ? 1 : 0, cardV: 1, libera: normLibera(s.libera, !novoHist), pontoDia: pontoDiaDe(s, dia), convCard: s.convCard === 'pend' ? 'pend' : s.convCard === 1 ? 1 : 0, convDiv: s.convDiv === 'pend' ? 'pend' : s.convDiv === 1 ? 1 : 0, convPlanta: s.convPlanta === 'pend' ? 'pend' : s.convPlanta === 1 || dia > 1 ? 1 : 0, convEnt: s.convEnt === 'pend' ? 'pend' : s.convEnt === 1 ? 1 : 0, socorro: s.socorro === 1 ? 1 : 0, convSocorro: s.convSocorro === 'pend' ? 'pend' : s.convSocorro === 1 ? 1 : 0, cardVisto: Array.isArray(s.cardVisto) ? s.cardVisto.filter(x => typeof x === 'string').slice(0, 40) : [], avisoCard: !!s.avisoCard, histV: 1, avisoHist: !!s.avisoHist, cap, capDia: Math.max(1, Math.round(+s.capDia) || 1), capAzul: Math.max(0, Math.round(+s.capAzul) || 0), capFeito: s.capFeito === 1 ? 1 : 0, capMarm: Math.max(0, Math.round(+s.capMarm) || 0), capComp: Math.max(0, Math.round(+s.capComp) || 0), docesTot: Math.max(0, Math.round(+s.docesTot) || 0), conversa, manut: normManut(s.manut), caixa: normCaixa(s.caixa), caixaPend: normPend(s.caixaPend) };
   out.equipe = normEquipe(s.equipe, pontoOf(out.salao.ponto));
+  out.v10 = 1;
   out.efoodNota = s.efoodNota === 1 || dia > HIST_ENTREGA.dia ? 1 : 0;   // v9.6.4: o texto do entregador na introdução já saiu (quem passou do dia 4 já viu)
   out.vipVisto = s.vipVisto === 1 || dia > 5 ? 1 : 0;   // v9.6.4: o balão do 1º VIP da carreira
   out.selo = Math.max(0, Math.round(+s.selo) || 0);   // v9.4: o último dia do selo da vigilância (0: sem selo)
@@ -254,7 +266,12 @@ class Group {
     this.size = randi(T.size[0], T.size[1]);
     this.color = color;
     this.vip = !!vip && VIP.types.includes(type);
-    this.juiceWant = Math.random() < (game.day.juice || 0) ? randi(1, this.size) : 0;
+    // v10, a refeição completa: no Terraço (ponto com `tempos`, só na carreira) cada mesa pede bebida, entrada, prato principal e sobremesa;
+    // tempo: o que o grupo espera em 'ordered' (0 a entrada, 1 o principal); notaT: a nota de cada tempo (bebida, entrada, principal, sobremesa; null: não serviu);
+    // perdTempo: corações perdidos esperando a entrada e o principal; perdBeb: perdidos esperando só a bebida (depois da refeição)
+    this.tempos = game.mode === 'carreira' && !!game.ponto.tempos && !T.retira;
+    this.tempo = 0; this.notaT = [null, null, null, null]; this.perdTempo = [0, 0]; this.perdBeb = 0; this.entradaDada = false; this.principalDado = false;
+    this.juiceWant = this.tempos ? (anselmoOn(game.save.equipe, game.ponto) ? 0 : this.size) : Math.random() < (game.day.juice || 0) ? randi(1, this.size) : 0;   // v10: sem o Anselmo, um suco por pessoa
     this.juiceGot = 0;
     this.sabor = randi(0, SABORES.length - 1);   // v9.1: o sabor da água saborizada (só muda a cor do copo e do balão)
     this.people = makePeople(type, this.size);
@@ -263,7 +280,7 @@ class Group {
     // nunca no treino); o prato especial do VIP soma VIP.dish
     // v8.6.11: ~10% das pessoas são vegetarianas (nunca o entregador, nem na Missão zero) e pedem só prato sem carne
     this.people.forEach(p => { p.veg = !T.retira && game.mode !== 'treino' && Math.random() < VEG.chance; });
-    this.dishes = this.people.map(p => pedePrato(type, game, false, p.veg));   // v8.6.9: pelo gosto do tipo, entre os pratos que a cozinha sabe
+    this.dishes = this.people.map(p => this.tempos ? pedePrincipal(type, game, p.veg) : pedePrato(type, game, false, p.veg));   // v10: no Terraço, o principal (PF, PF vegetariano ou parmegiana); v8.6.9: pelo gosto do tipo, entre os pratos que a cozinha sabe
     // v9, a encomenda do setor: `lote` marmitas, cada uma sorteada pelos gostos da turma; entregues: quantas já foram para o balcão
     this.lote = T.lote ? (s && s.lote) || randi(T.lote[0], T.lote[1]) : 0; this.entregues = 0; this.pagoLote = 0;
     if (this.lote) this.dishes = Array.from({ length:this.lote }, () => pedePrato(type, game, false, false));
@@ -279,8 +296,9 @@ class Group {
     this.drinks = game.mode === 'carreira' && anselmoOn(game.save.equipe, game.ponto) && !T.retira ? this.sorteiaDrinks() : []; this.drinksDados = 0; this.drinksPedidos = false; this.perdDrink = 0;   // v9.5: os drinks do Anselmo (ids de DRINKS.itens), pedidos ao sentar; pedidos: já foram para a fila dele
     this.cafes = null; this.cafesDados = 0;   // v9.3: os cafés da máquina de espresso (ids de CAFES.lista) pedidos no fim da refeição, e os já entregues
     this.docesMarm = this.retira && game.mode === 'carreira' && game.up.confCaseira ? (this.lote ? this.dishes : [0]).filter(() => Math.random() < DOCES.marmita).length : 0; this.docesMarmDados = 0;
-    this.extras = this.people.map((p, i) => !this.retira && game.mode !== 'treino' && Math.random() < (CARDAPIO[this.dishes[i]].cat === 'pf' ? T.mais : Math.max(T.mais, MAIS.salgado)) ? pedePrato(type, game, true, p.veg) : null);
+    this.extras = this.tempos ? this.people.map(p => pedePrato(type, game, true, p.veg)) : this.people.map((p, i) => !this.retira && game.mode !== 'treino' && Math.random() < (CARDAPIO[this.dishes[i]].cat === 'pf' ? T.mais : Math.max(T.mais, MAIS.salgado)) ? pedePrato(type, game, true, p.veg) : null);
     this.bill = (this.lote ? [] : this.dishes).concat(this.extras).reduce((v, k) => v + (k ? precoPrato(k, game.ponto, game.cursos) : 0), 0) + (this.vip ? VIP.dish : 0);
+    if (this.tempos && !this.extras.some(Boolean)) this.tempo = 1;   // sem entrada que a cozinha saiba fazer (só vegetarianos sem opção): começa pelo principal
     this.hearts = 5; this.jaVouDito = false;   // v9.6.13: jaVouDito = o "Já vou!" já apareceu para este grupo
     this.x = DOOR.x; this.y = DOOR.y;
     this.path = []; this.moving = false; this.walkPh = 0;
@@ -333,6 +351,7 @@ class Group {
   sorteiaDoces(){
     const g = this.game;
     if (!g.up.confCaseira || this.retira || g.mode !== 'carreira') return [];
+    if (this.tempos) return Array.from({ length:this.size }, () => pick(docesLista(g.up)).id);   // v10: na refeição completa, um doce por pessoa
     const p = (DOCES.pede[this.type] || 0) + (this.vip ? DOCES.vip : 0);
     return Math.random() < p ? Array.from({ length:randi(1, this.size) }, () => pick(docesLista(g.up)).id) : [];
   }
@@ -340,6 +359,7 @@ class Group {
   get drinksFalta(){ return this.drinksPedidos ? this.drinks.length - this.drinksDados : 0; }
   get drinkOpen(){ return this.drinksFalta > 0 && (this.state === 'ordered' || this.state === 'eating' || this.state === 'wantBill'); }
   sorteiaDrinks(){
+    if (this.tempos) return Array.from({ length:this.size }, () => pick(DRINKS.itens).id);   // v10: um drink por pessoa
     const p = (DRINKS.pede[this.type] || 0) + (this.vip ? DRINKS.vip : 0);
     return Math.random() < p ? Array.from({ length:randi(1, this.size) }, () => pick(DRINKS.itens).id) : [];
   }
@@ -353,6 +373,19 @@ class Group {
     return Math.random() < p ? Array.from({ length:randi(1, this.size) }, () => pick(CAFES.lista).id) : [];
   }
   get juicePending(){ return Math.max(0, this.juiceWant - this.juiceGot); }
+  /* v10, a refeição completa: o prato do tempo da vez (o balão e a mão) e a bebida que ainda falta (drinks ou sucos); a bebida entregue vira nota */
+  get pratoVez(){ return this.tempos && this.tempo === 0 ? (this.extras.find(Boolean) || this.dish) : this.dish; }
+  get bebFalta(){ return this.drinksFalta + this.juicePending; }
+  notaBeb(){
+    if (!this.tempos || this.notaT[0] != null || this.bebFalta > 0 || !(this.drinks.length || this.juiceWant)) return;
+    this.notaT[0] = clamp(5 - this.perdBeb - (this.principalDado ? 1 : 0), 1, 5);   // 1 por coração perdido só esperando a bebida e 1 se ela veio depois do principal
+  }
+  notaPrato(tempo, q){   // a nota do prato do tempo (0 entrada, 1 principal): a do prato (já com o frio) menos TEMPOS.porCoracao por coração perdido esperando
+    this.notaT[tempo + 1] = clamp(Math.round(((q || 1) - TEMPOS.porCoracao * this.perdTempo[tempo]) * 10) / 10, 1, 5);
+  }
+  /* a nota da comida no Gurugol: a média das notas dos tempos servidos (null se nada foi servido) */
+  get notaComida(){ const v = this.notaT.filter(x => x != null); return v.length ? v.reduce((a, b) => a + b, 0) / v.length : null; }
+  get completa(){ return this.tempos && this.notaT.every(x => x != null); }
   /* o pedido de suco aparece quando a comanda é anotada; sem ele, o grupo não pede a conta (v8.5.2) */
   get juiceOpen(){ return this.juiceWant > 0 && (this.state === 'ordered' || this.state === 'eating' || this.state === 'wantBill'); }
   get seated(){ return this.state==='reading' || this.state==='wantOrder' || this.state==='ordered' || this.state==='eating' || this.state==='wantBill'; }
@@ -411,7 +444,7 @@ class Group {
         return;
       }
       this.hearts--;
-      if (this.state === 'queue') this.perdFila++; else { this.perdMesa++; if (this.esperaSuco && (this.docesFalta > 0 || this.cafesFalta > 0)) this.perdDoce++; if (this.drinksFalta > 0) this.perdDrink++; }
+      if (this.state === 'queue') this.perdFila++; else { this.perdMesa++; if (this.tempos){ if (this.state === 'ordered') this.perdTempo[this.tempo]++; else if (this.esperaSuco && this.bebFalta > 0) this.perdBeb++; } if (this.esperaSuco && (this.docesFalta > 0 || this.cafesFalta > 0)) this.perdDoce++; if (this.drinksFalta > 0) this.perdDrink++; }
       if (this.hearts <= 0) this.game.angryLeave(this);
       else this.patLeft += this.patPer();
     }
@@ -452,6 +485,7 @@ class Group {
         if (this.game.treinoSegura) break;   // na Missão zero, a refeição espera o cafezinho
         this.timer -= dt;
         if (this.timer > 0) break;
+        if (this.tempos && this.tempo === 0){ this.tempo = 1; this.setState('ordered'); break; }   // v10: acabou a entrada: espera o principal (a cozinha já o recebeu)
         // acabou de comer: quem pediu suco espera por ele (perdendo a paciência) antes de pedir a conta (v8.5.2)
         if (!this.doces) this.doces = this.sorteiaDoces();   // v9.2
         if (!this.cafes) this.cafes = this.sorteiaCafes();   // v9.3
@@ -470,3 +504,19 @@ class Group {
   }
 }
 
+/* v10, a trilha dos tempos (a refeição completa): o estado das 4 marcas sob os corações da mesa (bebida, entrada, principal, sobremesa), sem texto.
+   est: 'pendente' (contorno cinza), 'vez' (o que o grupo espera agora: pulsa), 'servida' (cheia: cor pela nota, ok 4 ou mais, alerta 2,5 ou mais, perigo) ou
+   'nao' (a casa não serve: um tracinho). Pura: o desenho e o smoke usam. null para o grupo sem `tempos` */
+function tempoMarcas(grp){
+  if (!grp || !grp.tempos) return null;
+  const up = grp.game.up, pedido = grp.state !== 'reading' && grp.state !== 'wantOrder' && grp.state !== 'queue' && grp.state !== 'toTable', ord = grp.state === 'ordered';
+  const cor = v => v >= 4 ? 'ok' : v >= 2.5 ? 'alerta' : 'perigo';
+  const mk = (id, nao, vez) => { const i = ['beb', 'entrada', 'principal', 'sobremesa'].indexOf(id), v = grp.notaT[i];
+    return v != null ? { id, est:'servida', cor:cor(v), nota:v } : nao ? { id, est:'nao', cor:'', nota:null } : { id, est:vez ? 'vez' : 'pendente', cor:'', nota:null }; };
+  return [
+    mk('beb', !(grp.drinks.length || grp.juiceWant), pedido && grp.bebFalta > 0),
+    mk('entrada', !grp.extras.some(Boolean), ord && grp.tempo === 0),
+    mk('principal', false, ord && grp.tempo === 1),
+    mk('sobremesa', !up.confCaseira, !!grp.doces && grp.docesFalta > 0 && grp.esperaSuco)
+  ];
+}

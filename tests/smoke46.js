@@ -26,7 +26,7 @@ const vem=g=>{ g.elapsed=g.fiscal.t; return ate(g,'olha'); };
 
 // ---------- 2. o aviso na introdução ----------
 { const H=jogo('avenida',5,10), {g,els}=H; g.save.manut.sorteio={ d:10, clima:'', quebra:[], fiscal:{ f:0.5 } }; g.startDay(10);
-  ok(g.state==='intro' && els['intro-manut'].textContent.indexOf('Dizem que a vigilância sanitária está rondando a Avenida.')>=0 && !/\d+ ?s|%/.test(H.L.FISCAL.aviso),'a introdução avisa, sem dizer a hora');
+  ok(g.state==='intro' && els['intro-manut'].textContent.indexOf('Dizem que a vigilância sanitária está por perto.')>=0 && !/\d+ ?s|%/.test(H.L.FISCAL.aviso),'a introdução avisa, sem dizer a hora');
   g.save.manut.sorteio={ d:10, clima:'', quebra:[] }; g.startDay(10); ok(els['intro-manut'].textContent.indexOf('vigilância')<0,'sem fiscal no dia, sem aviso'); }
 
 // ---------- 3. cada falha é detectada ----------
