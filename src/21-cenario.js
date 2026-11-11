@@ -910,6 +910,7 @@ function drawEspada(ctx,x,y,s){
 function drawMaquina(ctx,g,t,menu){
   if (g.bebida.id === 'agua') return drawTorneiraEspera(ctx,g,t,menu);
   if (g.bebida.id === 'saborizada') return drawAguasEspera(ctx,g,t,menu);   // v9.1
+  if (g.bebida.id === 'coquetel') return drawCarrinhoBoasVindas(ctx,g,t,menu);   // v10.3
   const r = STATIONS.maquina.rect, x = r.x + r.w / 2, y = r.y + r.h;
   shadowEll(ctx,x,y-2,36,6,0.2);
   rr(ctx,x-32,y-26,64,24,3); fs(ctx,PAL.madeira,2.2);   // o caixote de feira
@@ -1090,6 +1091,34 @@ function drawEspresso(ctx,g,tm){
     for (let i = 0; i < 2; i++){ const px = x + 12 + i * 11, ph = tm * 2 + i; ctx.beginPath(); ctx.moveTo(px,y + 2); ctx.quadraticCurveTo(px - 3 + Math.sin(ph) * 2,y - 4,px,y - 9); ctx.stroke(); }
   }
 }
+/* v10.3: o café que está sendo feito agora na máquina (a Bia ou o Joca): { f: 0 a 1, cafe } ou null */
+function espressoTrabalho(g){
+  const b = g.bia;
+  if (b.phase === 'do' && b.doing && b.doing.type === 'espresso'){ const c = cafeDe(b.doing.item); return { f:1 - b.timer / Math.max(0.1, c.prep), cafe:c }; }
+  for (const h of g.ajud){
+    if (h.active && h.phase === 'do' && h.plan && h.plan.type === 'espresso' && h.plan.ids.length){
+      const tot = h.plan.ids.reduce((a, id) => a + cafeDe(id).prep, 0), c = cafeDe(h.plan.ids[0]);
+      return { f:1 - h.timer / Math.max(0.1, tot), cafe:c };
+    }
+  }
+  return null;
+}
+/* v10.3, os cafés especiais na bancada: o filtro, a prensa e a jarra em cima da máquina e, enquanto o café é feito, o anel de progresso com uma marca por etapa
+   (moer, passar ou prensar, servir): as marcas já cumpridas acendem */
+function drawCafesEsp(ctx,g,tm){
+  const r = STATIONS.espresso.rect, x = r.x, y = r.y - 12;
+  [2, 3, 4].forEach((k, i) => { drawIcon(ctx,'cafeesp',x + 8 + i * 15,y,0.4,k); });
+  const w = g.state === 'menu' ? null : espressoTrabalho(g);
+  if (!w || !w.cafe.etapas) return;
+  const cx = x + r.w / 2, cy = y - 26, n = w.cafe.etapas;
+  circ(ctx,cx,cy,13); fs(ctx,'rgba(255,255,255,.9)',1.6);
+  drawRing(ctx,cx,cy,9,w.f,PAL.alerta);
+  for (let i = 0; i < n; i++){
+    const a = -Math.PI / 2 + TAU * i / n, on = w.f >= i / n + 0.001;
+    circ(ctx,cx + Math.cos(a) * 14.5,cy + Math.sin(a) * 14.5,2.6); fs(ctx,on ? PAL.ok : '#fff',1.2);
+  }
+  drawIcon(ctx,'cafeesp',cx,cy + 1,0.5,cafeIdx(w.cafe.id));
+}
 /* lixeira de pedal no chão do salão, encostada no balcão */
 /* Dani: cabelo cacheado, avental roxo e crachá com o nome */
 const DANI_LOOK = { skin:3, hair:5, hairC:'#2F1D12', pants:'#3C5A4A', kid:false, elder:false, acc:null, glasses:false };
@@ -1166,7 +1195,30 @@ function drawLia(ctx,d,tm){
   if (CRACHA_A > 0){ ctx.save(); ctx.globalAlpha *= CRACHA_A; rr(ctx,0-13,0-84,26,12,5); fs(ctx,'#fff',1.6); txt(ctx,'LIA',0,0-77.5,9,'#5E7A3A','center',FD); ctx.restore(); }
   ctx.restore();
 }
-/* o balcão de drinks (v9.5) na parede do fundo: prateleira com garrafas, o Anselmo atrás do tampo e, no tampo, os copos prontos (até DRINKS.vagas) */
+/* v10.3, o carrinho de boas-vindas do foyer (Terraço Suíça): carrinho dourado com tampo de madeira, toldinho listrado, garrafas e os coquetéis de autor
+   (os prontos cheios; a bolinha verde diz quantos). Só nos dias em que o Anselmo vem */
+function drawCarrinhoBoasVindas(ctx,g,t,menu){
+  const r = STATIONS.maquina.rect, x = r.x + r.w / 2, y = r.y + r.h;
+  shadowEll(ctx,x,y - 2,38,6,0.22);
+  [-26,26].forEach(dx => { circ(ctx,x + dx,y - 6,6); fs(ctx,PAL.tinta,2); circ(ctx,x + dx,y - 6,2); fs(ctx,PAL.cromo,1); });
+  rr(ctx,x - 36,y - 40,72,30,4); fs(ctx,'#C8A24A',2.2);
+  rr(ctx,x - 38,y - 46,76,8,3); fs(ctx,'#6B4423',2);
+  ctx.fillStyle = 'rgba(255,255,255,.25)'; ctx.fillRect(x - 32,y - 36,3,20);
+  for (let i = 0; i < 6; i++){ ctx.fillStyle = i % 2 ? '#fff' : '#8E3B46'; ctx.beginPath(); ctx.moveTo(x - 42 + i * 14,y - 78); ctx.lineTo(x - 28 + i * 14,y - 78); ctx.lineTo(x - 30 + i * 14,y - 66); ctx.lineTo(x - 40 + i * 14,y - 66); ctx.closePath(); ctx.fill(); }
+  ctx.strokeStyle = PAL.tinta; ctx.lineWidth = 1.6; ctx.beginPath(); ctx.moveTo(x - 42,y - 78); ctx.lineTo(x + 42,y - 78); ctx.moveTo(x - 36,y - 66); ctx.lineTo(x - 36,y - 46); ctx.moveTo(x + 36,y - 66); ctx.lineTo(x + 36,y - 46); ctx.stroke();
+  [['#BFE3F2', -22], ['#F08AA8', -14], ['#E2A92B', -6]].forEach(b => { rr(ctx,x + b[1] - 3,y - 62,6,15,2); fs(ctx,b[0],1.2); });
+  const prep = !menu && g.maq.some(o => o.t > 0), pr = menu ? 0 : g.maqPronto().reduce((a,o) => a + o.n, 0);
+  for (let i = 0; i < 3; i++){ const cx = x + 8 + i * 9; rr(ctx,cx - 3.5,y - 58,7,12,2); fs(ctx,i < pr ? ['#BFE3F2', '#F08AA8', '#E2A92B'][i] : 'rgba(214,236,246,.9)',1.4); }
+  if (prep && !RM){ ctx.fillStyle = 'rgba(255,255,255,.7)'; ctx.beginPath(); ctx.arc(x - 6,y - 54 - 3 * Math.abs(Math.sin(t * 5)),2,0,TAU); ctx.fill(); }
+  if (menu) return;
+  if (pr){
+    const p = RM ? 1 : 1 + 0.08 * Math.sin(t * 7);
+    ctx.save(); ctx.translate(x + 34,y - 62); ctx.scale(p,p); circ(ctx,0,0,11); fs(ctx,PAL.ok,2); txt(ctx,String(pr),0,1,13,'#fff','center',FD); ctx.restore();
+  }
+  const a0 = g.bia.acts[0];
+  if (a0 && a0.type === 'maquina' && a0.leg !== 2){ ctx.save(); const a = 0.55 + 0.4 * Math.sin(t * 8); ctx.strokeStyle = 'rgba(242,179,61,' + a + ')'; ctx.lineWidth = 5; rr(ctx,r.x,r.y,r.w,r.h,8); ctx.stroke(); ctx.restore(); }
+}
+/* o balcão de drinks (v9.5) na parede do fundo: prateleira com garrafas, o Anselmo atrás do tampo e, no tampo, os copos prontos (até drinkVagas: 2, ou 4 com a coquetelaria clássica) */
 function drawBalcaoDrinks(ctx,g,tm){
   const r = STATIONS.drinks.rect, x = r.x, y = r.y;
   shadowEll(ctx,x + r.w/2,y + r.h + 1,r.w/2,3.5,0.22);
@@ -1177,7 +1229,8 @@ function drawBalcaoDrinks(ctx,g,tm){
   rr(ctx,x - 4,y + 18,r.w + 8,7,3); fs(ctx,'#B8814F',2);   // o tampo
   ctx.fillStyle = 'rgba(255,255,255,.16)'; ctx.fillRect(x + 4,y + 30,r.w - 8,2);
   txt(ctx,'DRINKS',x + r.w/2,y + 38,8,'#FFE6A8','center',FD);
-  for (let i = 0; i < DRINKS.vagas; i++){ const p = g.drinkPronto[i]; if (p) drawIcon(ctx,'drink',x + 16 + i * 26,y + 14,0.7,drinkIdx(p.id)); }
+  const nv = drinkVagas(g.up);   // v10.3: 4 vagas com a clássica (copos menores e mais juntos)
+  for (let i = 0; i < nv; i++){ const p = g.drinkPronto[i]; if (p) drawIcon(ctx,'drink',nv > 2 ? x + 10 + i * 13 : x + 16 + i * 26,y + 14,nv > 2 ? 0.5 : 0.7,drinkIdx(p.id)); }
 }
 /* couvert artístico: músico num banquinho, muda de instrumento conforme o dia */
 const MUSICOS = [
@@ -1560,6 +1613,7 @@ function drawKitchen(ctx,g,t){
   if (g.up.confCaseira && g.state !== 'menu') glowSprite(ctx,g,'doces',ctx => drawGeladeiraDoces(ctx,g,t));
   // v9.3, a máquina de espresso (curso Barista do Joca), no chão ao lado da bancada do café
   if (g.up.espresso && g.state !== 'menu') glowSprite(ctx,g,'espresso',ctx => drawEspresso(ctx,g,t));
+  if (g.up.cafesEsp && g.state !== 'menu') drawCafesEsp(ctx,g,t);   // v10.3
   // v9.5, o balcão de drinks do Anselmo (só na Avenida)
   if (g.anselmoAtivo && g.state !== 'menu') glowSprite(ctx,g,'drinks',ctx => drawBalcaoDrinks(ctx,g,t));
   glow('order'); glow('adiantar'); glow('doces'); glow('espresso'); glow('drinks');

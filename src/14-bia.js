@@ -231,7 +231,7 @@ class Waitress {
       this.submitTickets();
       const ach = g.kitchen.achaPronto(a.pid);   // v9.6.5: o prato (plates) ou a marmita (marmJ)
       if (!ach) return this.fail('?');
-      if (ach.p.group && ach.p.group.cami) return this.fail('É da Cami!');   // v9.6: o prato do grupo que a Cami atende
+      if ((ach.p.group && ach.p.group.cami) || ach.p.camiVai) return this.fail('É da Cami!');   // v10.3: camiVai = ela já está indo buscar   // v9.6: o prato do grupo que a Cami atende
       if (!this.canTake('dish')) return this.fail('Mãos cheias!');
       const p = ach.p;
       ach.arr[ach.i] = null;
@@ -263,7 +263,7 @@ class Waitress {
     }
     if (a.type === 'espresso'){   // v9.3: a máquina de espresso (o café do pedido que ainda ninguém levou, senão qualquer um)
       if (!this.canTake('cafeesp')) return this.fail('Mãos cheias!');
-      this.hands.push({ kind:'cafeesp', id:a.item || g.cafeEspItem() }); g.custo += CAFES.ingred;
+      this.hands.push({ kind:'cafeesp', id:a.item || g.cafeEspItem() }); g.custo += cafeIngred(g.up);
       Sfx.blip(); g.addText(this.x, this.y - 82, cafeDe(this.hands[this.hands.length - 1].id).nome + '!', PAL.madeira, 14);
       return;
     }
@@ -298,7 +298,7 @@ class Waitress {
       const fora = lixo;
       fora.forEach(h => this.hands.splice(this.hands.indexOf(h), 1));
       g.addTrash(fora.length);
-      const fine = fora.reduce((v,h) => v + (h.kind === 'suco' ? g.bebida.preco : h.kind === 'doce' ? docePreco(g.up) : h.kind === 'cafeesp' ? cafeDe(h.id).preco : DRINK_PRICE[h.kind]) / 2, 0);
+      const fine = fora.reduce((v,h) => v + (h.kind === 'suco' ? g.bebida.preco : h.kind === 'doce' ? docePreco(g.up) : h.kind === 'cafeesp' ? cafeDe(h.id).preco : h.kind === 'drink' ? drinkPreco(g.up) : DRINK_PRICE[h.kind]) / 2, 0);
       g.addMoney(-fine);
       g.stats.trash += fora.length;
       g.addText(this.x, this.y - 82, 'No lixo!', PAL.perigo, 15);
@@ -337,7 +337,7 @@ class Waitress {
       g.entregaSuco(grp, n, this.x, this.y);
       return this.maisSuco(a);
     }
-    if (!g.up.maquina) return this.fail('?');
+    if (!g.maquinaOn) return this.fail('?');
     let k = 0;
     for (const o of g.maqPronto().filter(q => !q.dani)){
       let j = 0;

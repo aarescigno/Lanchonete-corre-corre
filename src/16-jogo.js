@@ -32,7 +32,9 @@ class Game {
   get vagas(){ return this.ponto.prateleira || MARMITA.vagas; }   // as vagas das marmitas adiantadas no balcão de retirada
   /* os cursos do Tonhão que valem no modo (v8.6.9): na Missão zero só o PF e a coxinha; no Turno sem fim, os 4 básicos */
   get cursos(){ return this.mode === 'treino' ? {} : this.mode === 'semfim' ? CURSOS_SEMFIM : this.save.cursos; }
-  get bebida(){ return bebidaOf(this.ponto); }   // o que se serve na espera (v7.7)
+  get bebida(){ return bebidaOf(this.ponto); }
+  /* v10.3: a estação da bebida da espera está servindo? (no Terraço, o carrinho de coquetéis só nos dias em que o Anselmo vem) */
+  get maquinaOn(){ return !!this.up.maquina && (this.ponto.bebida !== 'coquetel' || (!!this.up.coqAutor && this.anselmoAtivo)); }   // o que se serve na espera (v7.7)
 
   resetDay(n, treino){
     if (!treino) this.sairTreino();
@@ -64,6 +66,7 @@ class Game {
     doorFor(this.ponto);   // v10: no Terraço a freguesia chega e sai pelo elevador
     queueYsFor(this.ponto.espera || 4);   // v9.1: 4, 5 ou 6 lugares de espera na calçada
     marmJSlotsFor(this.ponto.marmJanela || 2);   // v9.6.5: a fileira das marmitas na janela de prontos
+    maquinaLugarFor(this.ponto);   // v10.3: o carrinho do Terraço
     plateSlotsFor(this.ponto.pratos || 4);   // v9: 4 vagas no balcão de pratos na Garagem, 5 na área industrial, 6 na Avenida (v9.1)
     this.tables.forEach(t => { t.open = true; t.group = null; t.dirty = false; t.dirtyN = 0; t.sujaT = 0; });   // v7.4: todas as mesas abrem desde o dia 1
     this.kitchen.reset();
@@ -591,19 +594,19 @@ class Game {
   drinkUpdate(dt){
     if (!this.anselmoAtivo){ this.drinkJob = null; return; }
     const sp = STAFF.anselmo.levels[this.save.equipe.anselmo].speed;
-    if (!this.drinkJob && this.drinkQ.length && this.drinkPronto.length < DRINKS.vagas) this.drinkJob = Object.assign(this.drinkQ.shift(), { t:0 });
+    if (!this.drinkJob && this.drinkQ.length && this.drinkPronto.length < drinkVagas(this.up)) this.drinkJob = Object.assign(this.drinkQ.shift(), { t:0 });
     if (!this.drinkJob) return;
     this.drinkAnim += dt;
     this.drinkJob.t += dt * sp;
-    if (this.drinkJob.t >= DRINKS.prep){
+    if (this.drinkJob.t >= drinkPrep(this.up)){
       this.drinkPronto.push({ grp:this.drinkJob.grp, id:this.drinkJob.id }); this.drinkJob = null;
       Sfx.tone(1318, 0.1, 'sine', 0.05); this.addGlow('drinks');
     }
   }
   /* entrega n drinks à mesa do grupo: +1 coração cada, DRINKS.preco na conta, +5 pontos */
   entregaDrinks(grp, n, x, y){
-    const tot = DRINKS.preco * n;
-    grp.drinksDados += n; this.stats.drinks += n; this.custo += DRINKS.ingred * n;
+    const tot = drinkPreco(this.up) * n;
+    grp.drinksDados += n; this.stats.drinks += n; this.custo += drinkIngred(this.up) * n;
     grp.gain(n); grp.bebConta += tot;
     this.pontos += PONTOS_ACAO.drink * n;
     this.addText(x + 24, y - 52, '+' + tot + ' na conta', PAL.ok, 14);
@@ -619,7 +622,7 @@ class Game {
       const grp = t.group; if (!grp || !grp.cafes) continue;
       for (const id of grp.cafes.slice(grp.cafesDados)){ const i = nas.indexOf(id); if (i >= 0) nas.splice(i, 1); else return id; }
     }
-    return pick(CAFES.lista).id;
+    return pick(cafesLista(this.up)).id;
   }
   /* entrega n cafés à mesa do grupo (a Bia ou o Joca): +1 coração cada, o preço do pedido (R$ 8 o espresso, R$ 12 o cappuccino) na conta, +5 pontos */
   entregaCafes(grp, n, x, y){
@@ -929,7 +932,7 @@ class Game {
     // v8.6.6: a decoração à mostra e a toalha da mesa em que o grupo sentou (g.table ainda vale aqui, também para quem sai bravo)
     const decor = DECOR.filter(d => decorOn(this, d.id)).map(d => d.id), toalha = !!(g.table && g.table.toalha);
     if (toalha) decor.push('toalha');
-    const amb = A.amb.base + (eq.tv ? A.amb.tv : 0) + (eq.som ? A.amb.som : 0) + (this.seloOn ? A.amb.selo : 0) + (this.up.maquina ? A.amb.maquina : 0) + (this.up.ventilador ? A.amb.ventilador : 0) + (eq.tvs === 1 ? A.amb.tvs : eq.tvs === 2 ? A.amb.tvsPlus : 0) +
+    const amb = A.amb.base + (eq.tv ? A.amb.tv : 0) + (eq.som ? A.amb.som : 0) + (this.seloOn ? A.amb.selo : 0) + (this.maquinaOn ? A.amb.maquina : 0) + (this.up.ventilador ? A.amb.ventilador : 0) + (eq.tvs === 1 ? A.amb.tvs : eq.tvs === 2 ? A.amb.tvsPlus : 0) +
       (g.coffee ? A.amb.cafe : 0) + (this.up.confGourmet && (g.docesDados > 0 || g.docesMarmDados > 0) ? (this.up.confAlta ? A.amb.doceAlta : A.amb.doce) : 0) + (g.drinksDados > 0 ? A.amb.drink : 0) + (this.up.louca ? A.amb.louca : 0) + (eq.couvert ? A.amb.couvert : 0) + (this.trashFull ? A.amb.lixo : 0) +
       decor.reduce((a, id) => a + (id === 'toalha' ? A.amb.toalha : decorOf(id).amb != null ? decorOf(id).amb : A.amb[decorOf(id).grupo === 'plantas' ? 'planta' : 'rosa']), 0);
     // o entregador (v8.6): a espera no balcão conta na espera e na agilidade
@@ -1390,7 +1393,8 @@ class Game {
   /* v9.6: o modo da Cami no cartão: 'tarefas' ou 'mesas' ("Minhas mesas", só com o curso de mesa e pelo menos 1 mesa marcada) */
   setCamiModo(m){
     const eq = this.save.equipe;
-    if (m !== 'tarefas' && m !== 'mesas') return false;
+    if (m !== 'tarefas' && m !== 'mesas' && m !== 'tudo') return false;
+    if (m === 'tudo' && !(eq.cami > 0 && STAFF.cami.levels[eq.cami].tudo)) return false;   // v10.3
     if (m === 'mesas' && !(eq.cami > 0 && STAFF.cami.levels[eq.cami].mesas && camiMesasN(this.save) > 0)) return false;
     eq.camiModo = m; writeSave(this.save); return true;
   }
@@ -1474,7 +1478,7 @@ class Game {
   buy(id){
     const u = UPGRADES.find(x => x.id === id);
     if (!u || !this.cartaoAberto(upgradeCartao(id))) return false;
-    if (id === 'maquina' && !this.ponto.bebida) return false;
+    if (id === 'maquina' && (!this.ponto.bebida || this.ponto.bebida === 'coquetel')) return false;   // v10.3: no Terraço o carrinho vem do curso do Anselmo
     if (u.nivel && this.ponto.nivel < u.nivel) return false;   // v10.1: a Louça fina é do Terraço   // v10: o Terraço Suíça não serve bebida na espera (até a 4a-4)
     const cost = upgradeDe(u, this.ponto).cost;
     if ((!u.multi && this.up[id]) || (u.req && !this.up[u.req]) || this.save.bank < cost) return false;
@@ -1536,13 +1540,30 @@ class Game {
   get jocaCursoTrava(){ return !devLivre() && this.save.jocaCursoDia === this.shopNext; }
   buyJocaCurso(id){
     const c = JOCA_CURSOS.find(x => x.id === id), sv = this.save;
-    if (!c || !cursoDaniVis(c, this.ponto) || !(sv.equipe.joca > 0 || devLivre()) || sv.jocaCursos[id] || this.jocaCursoTrava || sv.bank < c.preco) return false;
+    if (!c || !cursoDaniVis(c, this.ponto) || !(sv.equipe.joca > 0 || devLivre()) || sv.jocaCursos[id] || (c.dep && !sv.jocaCursos[c.dep]) || this.jocaCursoTrava || sv.bank < c.preco) return false;
     sv.bank -= c.preco; caixaGasto(sv, 'mel', c.preco);
     sv.jocaCursos[id] = 1; sv.jocaCursoDia = this.shopNext;
     if (id === 'espresso') this.up.espresso = true;   // v9.3: a máquina de espresso; o cafezinho passa da Dani para o Joca
+    if (id === 'cafesEsp') this.up.cafesEsp = true;   // v10.3
     this.cursoMsg = 'O Joca foi fazer o curso de ' + c.nome + '!';
     const nx = jocaNivelXp(sv);
     if (nx > sv.equipe.joca && sv.equipe.joca > 0) this.cursoMsg += ' Ele já pode subir para o nível ' + (nx - 1) + ': pague o aumento no cartão dele.';
+    writeSave(sv); Sfx.coin();
+    return true;
+  }
+  /* cursos do Anselmo (v10.3): um por lojinha; a clássica abre 4 vagas de copo e preparo mais rápido; a de autor sobe o nível dele (3), troca os drinks e liga o carrinho de boas-vindas */
+  get anselmoCursoTrava(){ return !devLivre() && this.save.anselmoCursoDia === this.shopNext; }
+  buyAnselmoCurso(id){
+    const c = ANSELMO_CURSOS.find(x => x.id === id), sv = this.save;
+    if (!c || !cursoDaniVis(c, this.ponto) || !(sv.equipe.anselmo > 0 || devLivre()) || sv.anselmoCursos[id] || (c.dep && !sv.anselmoCursos[c.dep]) || this.anselmoCursoTrava || sv.bank < c.preco) return false;
+    sv.bank -= c.preco; caixaGasto(sv, 'mel', c.preco);
+    sv.anselmoCursos[id] = 1; sv.anselmoCursoDia = this.shopNext;
+    if (id === 'classica') this.up.coqClassica = true;
+    if (id === 'autor'){
+      this.up.coqAutor = true; if (this.ponto.bebida === 'coquetel') this.up.maquina = true;
+      if (sv.equipe.anselmo > 0) sv.equipe.anselmo = Math.max(sv.equipe.anselmo, STAFF.anselmo.levels.length - 1);
+    }
+    this.cursoMsg = 'O Anselmo foi fazer o curso de ' + c.nome + '!';
     writeSave(sv); Sfx.coin();
     return true;
   }
@@ -1778,8 +1799,8 @@ class Game {
   devCursos(on){
     if (!DEV.on) return false;
     const sv = this.save, tudo = (lista, v) => { const o = {}; if (on) lista.forEach(x => { o[x.id] = v; }); return o; };
-    sv.cursos = normCursos(tudo(CURSOS, 2)); sv.daniCursos = normDaniCursos(tudo(DANI_CURSOS, true)); sv.jocaCursos = normJocaCursos(tudo(JOCA_CURSOS, true)); sv.camiCursos = normCamiCursos(tudo(CAMI_CURSOS, true));
-    this.devSegueCursos(); sv.cursoDia = sv.daniCursoDia = sv.jocaCursoDia = sv.camiCursoDia = 0;
+    sv.cursos = normCursos(tudo(CURSOS, 2)); sv.daniCursos = normDaniCursos(tudo(DANI_CURSOS, true)); sv.jocaCursos = normJocaCursos(tudo(JOCA_CURSOS, true)); sv.camiCursos = normCamiCursos(tudo(CAMI_CURSOS, true)); sv.anselmoCursos = normAnselmoCursos(tudo(ANSELMO_CURSOS, true));
+    this.devSegueCursos(); sv.cursoDia = sv.daniCursoDia = sv.jocaCursoDia = sv.camiCursoDia = sv.anselmoCursoDia = 0;
     this.kitchen.reset(); this.dani.reset(); this.joca.reset(); this.cami.reset();
     writeSave(sv); return true;
   }
@@ -1789,10 +1810,14 @@ class Game {
     if (sv.daniCursos.confGourmet && sv.daniCursos.confCaseira) up.confGourmet = true; else delete up.confGourmet;
     if (sv.daniCursos.confAlta && sv.daniCursos.confGourmet && sv.daniCursos.confCaseira) up.confAlta = true; else delete up.confAlta;
     if (sv.jocaCursos.espresso) up.espresso = true; else delete up.espresso;
+    if (sv.jocaCursos.espresso && sv.jocaCursos.cafesEsp) up.cafesEsp = true; else delete up.cafesEsp;   // v10.3
+    if (sv.anselmoCursos.classica) up.coqClassica = true; else delete up.coqClassica;
+    if (sv.anselmoCursos.autor) up.coqAutor = true; else delete up.coqAutor;
+    if (sv.anselmoCursos.autor && this.ponto.bebida === 'coquetel') up.maquina = true;
   }
   devMelhorias(on){
     if (!DEV.on) return false;
-    Object.keys(this.up).forEach(k => { if (['confCaseira', 'confGourmet', 'confAlta', 'espresso'].indexOf(k) < 0) delete this.up[k]; });
+    Object.keys(this.up).forEach(k => { if (['confCaseira', 'confGourmet', 'confAlta', 'espresso', 'cafesEsp', 'coqClassica', 'coqAutor'].indexOf(k) < 0 && !(k === 'maquina' && this.up.coqAutor)) delete this.up[k]; });
     if (on) UPGRADES.forEach(u => { this.up[u.id] = u.multi ? 1 : true; });
     this.kitchen.slots = cozinhaSlots(this);
     writeSave(this.save); return true;
@@ -1821,7 +1846,7 @@ class Game {
   }
   /* v10.2.1: sobe ou desce um nível da pessoa (tonhao, dani, joca, cami, anselmo ou lia), só nos níveis que existem para ela */
   devNivel(quem, delta){
-    const NIV = { tonhao:[0, 1, 2, 3, 4], dani:[0, 1, 2, 3, 4], joca:[0, 2, 3, 4], cami:[0, 1, 2, 3], anselmo:[0, 2, 3], lia:[0, 1] };
+    const NIV = { tonhao:[0, 1, 2, 3, 4], dani:[0, 1, 2, 3, 4], joca:[0, 2, 3, 4], cami:[0, 1, 2, 3, 4], anselmo:[0, 2, 3], lia:[0, 1] };
     if (!DEV.on || !NIV[quem]) return false;
     const sv = this.save, l = NIV[quem], at = l.indexOf(sv.equipe[quem]);
     if (at < 0) return false;
@@ -1870,7 +1895,7 @@ class Game {
       sv.equipe = normEquipe(e, this.ponto);
       const lista = (ids, ok) => { const o = {}; ids.forEach(id => { if (ok.some(x => x.id === id)) o[id] = true; }); return o; };
       const cs = {}; Object.keys(D.cursos).forEach(id => { if (CURSOS.some(c => c.id === id)) cs[id] = D.cursos[id]; });
-      sv.cursos = normCursos(cs); sv.daniCursos = normDaniCursos(lista(D.dani, DANI_CURSOS)); sv.jocaCursos = normJocaCursos(lista(D.joca, JOCA_CURSOS)); sv.camiCursos = normCamiCursos(lista(D.cami, CAMI_CURSOS));
+      sv.cursos = normCursos(cs); sv.daniCursos = normDaniCursos(lista(D.dani, DANI_CURSOS)); sv.jocaCursos = normJocaCursos(lista(D.joca, JOCA_CURSOS)); sv.camiCursos = normCamiCursos(lista(D.cami, CAMI_CURSOS)); sv.anselmoCursos = normAnselmoCursos(lista(D.anselmo || [], ANSELMO_CURSOS));
       Object.keys(this.up).forEach(k => delete this.up[k]);
       D.up.forEach(id => { const u = UPGRADES.find(x => x.id === id); if (u) this.up[id] = u.multi ? 1 : true; });
       this.devSegueCursos();
@@ -1958,7 +1983,7 @@ class Game {
   }
   devToggle(id){
     const u = UPGRADES.find(x => x.id === id);
-    if (!DEV.on || !u || (id === 'maquina' && !this.ponto.bebida)) return false;
+    if (!DEV.on || !u || (id === 'maquina' && (!this.ponto.bebida || this.ponto.bebida === 'coquetel'))) return false;
     if (this.up[id]){ delete this.up[id]; UPGRADES.forEach(v => { if (v.req === id) delete this.up[v.id]; }); }
     else { this.up[id] = u.multi ? 1 : true; if (u.req) this.up[u.req] = true; }
     writeSave(this.save);
@@ -1983,7 +2008,7 @@ class Game {
     return best;
   }
   /* a bebida da espera só com a melhoria; o balcão de retirada (v8.6), só no dia com entregador */
-  estacaoOn(k){ return k === 'maquina' ? !!this.up.maquina : k === 'doces' ? !!this.up.confCaseira : k === 'espresso' ? !!this.up.espresso : k === 'drinks' ? this.anselmoAtivo : k === 'adiantar' ? MARMITA.adiantar && this.marmitaOk : k === 'retirada' || k === 'marmj' ? this.marmitaOk : true; }
+  estacaoOn(k){ return k === 'maquina' ? this.maquinaOn : k === 'doces' ? !!this.up.confCaseira : k === 'espresso' ? !!this.up.espresso : k === 'drinks' ? this.anselmoAtivo : k === 'adiantar' ? MARMITA.adiantar && this.marmitaOk : k === 'retirada' || k === 'marmj' ? this.marmitaOk : true; }
   tableAt(x, y, pad){
     let best = null, bd = Infinity;
     for (const t of this.tables){ const d = rectDist(x, y, tableRect(t)); if (d <= (pad || 0) && d < bd){ bd = d; best = t; } }
@@ -2024,10 +2049,10 @@ class Game {
     if (k === 'plates'){
       // o toque na janela pega o prato pronto há mais tempo
       const k2 = this.kitchen, livre = p => p && !this.bia.acts.some(a => a.type === 'plate' && a.pid === p.id);
-      const velho = (l, nome) => l.filter(livre).filter(p => !(p.group && p.group.cami)).sort((a, b) => b.age - a.age)[0];
+      const velho = (l, nome) => l.filter(livre).filter(p => !(p.group && p.group.cami) && !p.camiVai).sort((a, b) => b.age - a.age)[0];
       let p = velho(k2.plates);
       if (!p){
-        const cami = k2.plates.find(q => livre(q) && q.group && q.group.cami);
+        const cami = k2.plates.find(q => livre(q) && ((q.group && q.group.cami) || q.camiVai));
         if (cami){ const s = PLATE_SLOTS[cami.slot]; this.addText(s.x, s.y - 34, 'É da Cami!', PAL.alerta, 14); Sfx.boing(); }
         return false;
       }

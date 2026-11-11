@@ -15,10 +15,9 @@ Origem: retorno do Renan Martorelli (beta-tester) e conversa com o Arthur (15/10
 ## Situação
 | # | Etapa | Versão | Situação |
 |---|---|---|---|
-| D-1 | Modo dev completo: jeitos, abas, pular de capítulo, dinheiro e equipe | v10.2.1 | feita em 11/11 (`docs/spec-v10.2.1.md`; `smoke63`; o `devCaixa` saiu do painel, o método ficou para o `smoke44`) |
 | 4a-3 | A cozinha do Terraço: alta gastronomia, a Lia e a alta confeitaria | v10.2 | feita em 11/11 (`docs/spec-v10.2.md`; `smoke62`; `ALTA=1` quase dobra o lucro do bot: recalibrar na 4a-5) |
 | D-2 | Modo dev completo: História (cumprir, assistir, revelar) e Hoje (forçar imprevistos) | v10.2.2 | feita em 11/11 (`docs/spec-v10.2.2.md`; `smoke64`) |
-| 4a-4 | O salão e o bar do Terraço: a Cami em tudo, cafés especiais e coquetéis de autor | v10.3 | a fazer (planejada em 10/11); `docs/spec-v10.3.md`, aprovada) |
+| 4a-4 | O salão e o bar do Terraço: a Cami em tudo, cafés especiais e coquetéis de autor | v10.3 | feita em 11/11 (`docs/spec-v10.3.md`; `smoke65`; o Terraço já passava 100% das metas com a equipe toda: recalibrar na 4a-5) |
 | 4a-5 | Música, flores e o rebalanceamento do Terraço | v10.4 | a fazer (planejada em 10/11) |
 | 4b | Nível de luxo | v10.5 | a fazer |
 | 4c | Eventos de bairro: festa junina e jogo do Brasil | v10.6 | a fazer |
@@ -86,13 +85,6 @@ Origem: retorno do Renan Martorelli (beta-tester) e conversa com o Arthur (15/10
 > - **O Terraço mede pela equipe toda** (Joca, Cami, Anselmo e a confeitaria): é ela que passa ~90% das metas.
 > - **Regra da 3f em todas as sessões:** cartão novo da lojinha só com nome, preço e "?"; toda novidade ganha ficha no `MANUAL` (sem números), revelada quando aparece na história.
 > Ordem: 4a-1 (o ponto e a refeição completa, v10) → 4a-2 (o VIP exigente e a reputação, v10.1) → 4a-3 (a cozinha: alta gastronomia, a Lia e a alta confeitaria, v10.2) → 4a-4 (o salão e o bar: Cami, Joca e Anselmo, v10.3) → 4a-5 (música, flores e rebalanceamento, v10.4). Cada uma é uma versão, com PR e merge. As "Checagens de fim de sessão" da etapa 3 valem para todas.
-
-### Sessão 4a-4 — O salão e o bar do Terraço: a Cami em tudo, os cafés do Joca e os coquetéis de autor (v10.3)
-**Objetivo:** o topo de cada ajudante do salão (entrevista de 31/10): a Cami em "Ajuda em tudo", os cafés especiais do Joca, os coquetéis de autor do Anselmo e o carrinho de boas-vindas.
-
-**Spec:** `docs/spec-v10.3.md` (aprovada; regras, critérios de aceite, partes, tarefas e testes estão lá, ver `docs/SDD.md`).
-
-**Modelo:** Sonnet, esforço alto. São três sistemas, e o modo novo da Cami é comportamento de ajudante, que pede cuidado para não atropelar o jogador.
 
 ### Sessão 4a-5 — Música, flores e o rebalanceamento do Terraço (v10.4)
 **Objetivo:** o ambiente do nível 4 (pedidos de 21 e 22/10) e a escada de números com tudo dentro.
