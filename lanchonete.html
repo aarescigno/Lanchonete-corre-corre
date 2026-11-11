@@ -396,7 +396,7 @@ table.rank tr.me td{background:#fbe7a8}
 
     <div class="ov show" id="ov-menu">
       <div class="panel menu-panel">
-        <span class="vtag" id="vtag" aria-label="Versão 10.3">v10.3</span>
+        <span class="vtag" id="vtag" aria-label="Versão 10.4">v10.4</span>
         <h1 class="title">Lanchonete <br>Corre-Corre</h1>
         <p class="tag">Ajude a Bia a atender a freguesia da esquina antes que o cafezinho esfrie!</p>
         <div class="lbl" id="menu-dia">História</div>
@@ -616,7 +616,8 @@ table.rank tr.me td{background:#fbe7a8}
       <div class="panel">
         <h2>Versões</h2>
         <ul class="verlist">
-          <li><b>v10.3</b><span class="cur">versão atual</span><br>11/11/2026 &mdash; O salão e o bar do Terraço: a Cami ajuda em todas as mesas, o Joca faz cafés especiais e o Anselmo, coquetéis de autor, com o carrinho de boas-vindas no foyer.</li>
+          <li><b>v10.4</b><span class="cur">versão atual</span><br>11/11/2026 &mdash; Música ao vivo no Terraço (quarteto de cordas ou pianista), flores finas no foyer e os números do ponto reacertados; o couvert fica só na Avenida.</li>
+          <li><b>v10.3</b><br>11/11/2026 &mdash; O salão e o bar do Terraço: a Cami ajuda em todas as mesas, o Joca faz cafés especiais e o Anselmo, coquetéis de autor, com o carrinho de boas-vindas no foyer.</li>
           <li><b>v10.2.2</b><br>11/11/2026 &mdash; Modo dev: a aba História cumpre o objetivo, assiste a qualquer conversa e revela o Manual e a lojinha; a aba Hoje escolhe o clima, a quebra, o fiscal, a gripe, o VIP e o apito do próximo dia.</li>
           <li><b>v10.2.1</b><br>11/11/2026 &mdash; Modo dev novo: dois jeitos (Livre e De verdade, que joga com o Modo História), abas, pular para o começo de qualquer capítulo (e desfazer), dinheiro e banco à mão e a equipe pessoa por pessoa.</li>
           <li><b>v10.2</b><br>11/11/2026 &mdash; A cozinha do Terraço: o Tonhão aprende entradas finas e alta gastronomia (e lá não se vende mais coxinha), a Lia chega para ajudar na cozinha e a Dani faz alta confeitaria.</li>
@@ -1087,11 +1088,11 @@ const PONTOS = [
   // v9.1: o 2º ponto novo (cap. 6 e 7). Sem apito, sem encomenda e sem patPressa: a turma, o motorista e a encomenda não vêm. vip: ×2 (restaurante atrai mais VIP)
   { id:'avenida', nome:'Restaurante na Avenida Brasil', nivel:3, lugares:24, aluguel:400, mudanca:2000, credito:4000, cardapio:2.0, area:{ x0:160, y0:150, x1:684, y1:500 }, espera:6, assento:'pe', bebida:'saborizada', pratos:6, marmJanela:3, prateleira:4,
     tipos:{ estudante:0.5, executiva:2, familia:1.5, vovos:1, entregador:1, negocios:1.5 }, vip:2, metaF:3.0, expertF:3.6, grupos:0.7,   // v9.6.4: 3,2 e 3,8 → 3,0 e 3,6 (o VIP mais exigente deixou a Avenida abaixo do alvo)
-    traz:'o almoço de negócios e mais VIPs', art:'o', deixa:'os sofás e as águas saborizadas ficam' },
+    traz:'o almoço de negócios e mais VIPs', art:'o', deixa:'os sofás, as águas saborizadas e o couvert ficam' },
   // v10: o último ponto da escada (cap. 8 e 9). 20 lugares, aluguel R$ 1.000, cardápio ×2,5. Sem entregador (semRetirada), sem bebida da espera (bebida:null até a 4a-4) e com o casal;
   // tempos: a refeição completa (bebida, entrada, prato e sobremesa; ver TEMPOS)
-  { id:'terraco', nome:'Terraço Suíça', nivel:4, lugares:20, aluguel:1200, mudanca:5000, credito:8000, cardapio:2.4, area:{ x0:160, y0:150, x1:684, y1:500 }, espera:6, assento:'pe', bebida:'coquetel', pratos:6, marmJanela:2, prateleira:0,
-    tipos:{ executiva:0.5, familia:1, vovos:1, negocios:1.5, casal:2 }, vip:2.5, metaF:9.0, expertF:6.0, grupos:0.5, tempos:true, semRetirada:true, exigente:true,   // v10 (medido em 10/11, equipe toda com o bot afiado): grupos 0,45 → 0,50 (mesas vazias em 33% do turno), metaF 4 → 9 e expertF 5 → 6 (91% das metas e 3★ em 61%), aluguel 1.000 → 1.200 e cardápio 2,5 → 2,4 (o ganho sobre a Avenida de R$ 918 caiu para ~R$ 700)
+  { id:'terraco', nome:'Terraço Suíça', nivel:4, lugares:20, aluguel:1200, mudanca:5000, credito:8000, cardapio:1.3, area:{ x0:160, y0:150, x1:684, y1:500 }, espera:6, assento:'pe', bebida:'coquetel', pratos:6, marmJanela:2, prateleira:0,
+    tipos:{ executiva:0.5, familia:1, vovos:1, negocios:1.5, casal:2 }, vip:2.5, metaF:12.0, expertF:8.5, grupos:0.5, tempos:true, semRetirada:true, exigente:true,   // v10.4 (medido em 11/11, 80 rodadas, equipe toda com JOCA=4 CONFEITARIA=1): cardápio 2,4 → 1,3 (o ganho sobre a Avenida era de R$ 2.800 por dia e foi a ~R$ 850), metaF 9 → 12 e expertF 6 → 8,5 (metas em ~90% e 3★ em ~60%);   // v10 (medido em 10/11, equipe toda com o bot afiado): grupos 0,45 → 0,50 (mesas vazias em 33% do turno), metaF 4 → 9 e expertF 5 → 6 (91% das metas e 3★ em 61%), aluguel 1.000 → 1.200 e cardápio 2,5 → 2,4 (o ganho sobre a Avenida de R$ 918 caiu para ~R$ 700)
    
     traz:'a refeição completa e a freguesia mais fina', art:'o' }
 ];
@@ -1266,6 +1267,10 @@ const DECOR = [
   { id:'tulipa',    grupo:'plantas', name:'Tulipas',             cost:40, nivel:3, amb:0.15 },
   { id:'copo',      grupo:'plantas', name:'Copos-de-leite',      cost:50, nivel:3, amb:0.15 },
   { id:'orquidea',  grupo:'plantas', name:'Orquídeas',           cost:60, nivel:3, amb:0.15 },
+  // v10.4, só no Terraço: as flores finas do foyer (+0,2 cada no Ambiente)
+  { id:'ikebana',   grupo:'plantas', name:'Ikebana',             cost:90,  nivel:4, amb:0.2 },
+  { id:'orqArranjo', grupo:'plantas', name:'Arranjo de orquídeas', cost:120, nivel:4, amb:0.2 },
+  { id:'campo',     grupo:'plantas', name:'Flores do campo',     cost:70,  nivel:4, amb:0.2 },
   { id:'foto',      grupo:'rosa',    name:'Foto da dona Rosa',   cost:10 },
   { id:'giz',       grupo:'rosa',    name:'Quadro de giz',       cost:25 },
   { id:'placa',     grupo:'rosa',    name:'Plaquinha',           cost:15 }
@@ -1363,7 +1368,12 @@ const AVENIDA = { sofa:{ nome:'Sofás com almofadas', cost:250, slow:0.25 } };
 /* quanto a espera sentada alivia a paciência: o sofá da Avenida 25%, a cadeirinha e o banquinho da área industrial 15% */
 /* v10, Terraço Suíça: o foyer (a calçada do andar) com poltronas de veludo (compra única, `up.assento = 'poltrona'`; a espera 35% mais devagar) e o piano de cauda que
    já vem com o ponto: obstáculo fixo dos caminhos (fora da área das mesas; quem toca chega na 4a-5) */
-const TERRACO = { poltrona:{ nome:'Poltronas do foyer', cost:600, slow:0.35 }, piano:{ x0:28, y0:404, x1:148, y1:520 } };
+const TERRACO = { poltrona:{ nome:'Poltronas do foyer', cost:600, slow:0.35 }, piano:{ x0:28, y0:404, x1:148, y1:520 },
+  /* v10.4: a música ao vivo (equipe.musica: 0 sem, 1 quarteto, 2 pianista; só no Terraço): effect = a paciência nas mesas cai tanto mais devagar; amb = soma no Ambiente do Gurugol; piano = a afinação por dia */
+  musica:[ null, { nome:'Quarteto de cordas', pay:150, effect:0.3, amb:0.75 }, { nome:'Pianista', pay:120, piano:30, effect:0.2, amb:1.25 } ] };
+function musicaDe(eq){ return TERRACO.musica[eq && eq.musica] || null; }
+function musicaPay(m){ return m ? m.pay + (m.piano || 0) : 0; }
+function musicaOk(ponto){ return (ponto || PONTOS[0]).nivel === 4; }   // nem no modo dev: a música é só do Terraço
 function assentoSlow(a){ return a === 'sofa' ? AVENIDA.sofa.slow : a === 'poltrona' ? TERRACO.poltrona.slow : a ? INDUSTRIAL.assento.slow : 0; }
 /* obstáculos fixos do ponto (além das mesas): o piano do Terraço, no formato dos de mesaBox */
 function fixosDe(ponto){ return ponto && ponto.id === 'terraco' ? [{ x0:TERRACO.piano.x0, y0:TERRACO.piano.y0, x1:TERRACO.piano.x1, y1:TERRACO.piano.y1 }] : []; }
@@ -1392,11 +1402,11 @@ const CRIT = { bonus:10, vipBonus:20 };   // pontos (v8.3.8; eram R$)
 const WASH = { base:0.3, perPile:2.5 };               // segundos na pia
 const TRASH = { cap:6, empty:2, smell:0.3, tritura:30, fumaca:{ cresce:30, raio:900 }, pos:{ x:723, y:530 } };   // v9.6.11: fumaca: cresce = segundos até o raio máximo (px); pos = onde fica a lixeira   // lixeira: capacidade, tempo para esvaziar, cheiro quando cheia, segundos do Triturador por gominho (v8.3.10)
 function couvertEffect(eq){ return STAFF.couvert.effect * (eq.taxa ? 1 - STAFF.couvert.feeCut : 1); }
-function couvertOk(ponto){ return devLivre() || (ponto || PONTOS[0]).nivel >= STAFF.couvert.nivel; }   // no modo dev, em qualquer ponto
+function couvertOk(ponto){ const n = (ponto || PONTOS[0]).nivel; return n === STAFF.couvert.nivel || (devLivre() && n < STAFF.couvert.nivel); }   // v10.4: só na Avenida (no modo dev, também nos níveis 1 e 2); no Terraço quem toca é a música
 /* ambiente do salão: quanto a paciência nas mesas cai mais devagar (TV, som e couvert se somam) */
 function ambienteEffect(eq){
   const tm = tvsModo(eq);
-  return (eq.tv ? STAFF.tv.effect : 0) + (eq.som ? STAFF.som.effect : 0) + (eq.couvert ? couvertEffect(eq) : 0) + (tm ? tm.effect : 0);
+  return (eq.tv ? STAFF.tv.effect : 0) + (eq.som ? STAFF.som.effect : 0) + (eq.couvert ? couvertEffect(eq) : 0) + (tm ? tm.effect : 0) + (musicaDe(eq) ? musicaDe(eq).effect : 0);
 }
 function payroll(eq){
   let v = STAFF.tonhao.levels[eq.tonhao].pay;
@@ -1406,6 +1416,7 @@ function payroll(eq){
   if (eq.anselmo && !eq.anselmoFora) v += STAFF.anselmo.levels[eq.anselmo].pay;   // v9.5
   if (eq.lia && !eq.liaFora) v += STAFF.lia.pay;   // v10.2
   if (eq.couvert) v += STAFF.couvert.pay;
+  v += musicaPay(musicaDe(eq));   // v10.4
   if (eq.tv) v += STAFF.tv.pay;
   if (eq.som) v += STAFF.som.pay;
   const tm = tvsModo(eq); if (tm) v += tm.pay;
@@ -1413,7 +1424,7 @@ function payroll(eq){
 }
 /* v8.1: dinheiro comprometido. A folha e a divulgação ficam reservadas ao abrir o dia (e saem no fim dele); o que não
    couber fica de fora, nesta ordem (a divulgação vira boca a boca antes de tudo) */
-const FOLHA_CORTE = [['couvert', 'Couvert'], ['som', 'som'], ['tv', 'TV'], ['tvs', 'TVs'], ['liaFora', 'a Lia'], ['anselmoFora', 'o Anselmo'], ['camiFora', 'a Cami'], ['jocaUp', 'aumento do Joca'], ['dani', 'aumento da Dani'], ['tonhao', 'aumento do Tonhão'], ['jocaFora', 'o Joca']];   // v9.3: a Cami; v9.5: o Anselmo vem antes dela
+const FOLHA_CORTE = [['musica', 'música'], ['couvert', 'Couvert'], ['som', 'som'], ['tv', 'TV'], ['tvs', 'TVs'], ['liaFora', 'a Lia'], ['anselmoFora', 'o Anselmo'], ['camiFora', 'a Cami'], ['jocaUp', 'aumento do Joca'], ['dani', 'aumento da Dani'], ['tonhao', 'aumento do Tonhão'], ['jocaFora', 'o Joca']];   // v9.3: a Cami; v9.5: o Anselmo vem antes dela
 /* tira de eq o próximo item da folha (o Tonhão e a Dani perdem 1 nível de aumento; a Dani não sai da equipe) e devolve o nome; nada a tirar: null */
 function folhaCorta(eq){
   const c = FOLHA_CORTE.find(k => k[0] === 'tonhao' ? eq.tonhao > 0 : k[0] === 'dani' ? eq.dani > 1 : k[0] === 'jocaUp' ? eq.joca > 2 && !eq.jocaFora : k[0] === 'jocaFora' ? eq.joca > 0 && !eq.jocaFora : k[0] === 'camiFora' ? eq.cami > 0 && !eq.camiFora : k[0] === 'anselmoFora' ? eq.anselmo > 0 && !eq.anselmoFora : k[0] === 'liaFora' ? eq.lia > 0 && !eq.liaFora : eq[k[0]]);
@@ -1424,7 +1435,7 @@ function folhaCorta(eq){
   else if (c[0] === 'camiFora') eq.camiFora = true;   // v9.3: idem para a Cami
   else if (c[0] === 'anselmoFora') eq.anselmoFora = true;   // v9.5: e para o Anselmo
   else if (c[0] === 'liaFora') eq.liaFora = true;   // v10.2: e para a Lia (vem logo depois das TVs)
-  else eq[c[0]] = c[0] === 'tvs' ? 0 : false;
+  else eq[c[0]] = c[0] === 'tvs' || c[0] === 'musica' ? 0 : false;
   return c[0] === 'jocaFora' ? 'o Joca (sem salário hoje)' : c[0] === 'camiFora' ? 'a Cami (sem salário hoje)' : c[0] === 'anselmoFora' ? 'o Anselmo (sem salário hoje)' : c[0] === 'liaFora' ? 'a Lia (sem salário hoje)' : c[1];
 }
 /* o que fica de fora ao abrir o dia com `bank` no caixa (sem mexer em eq) */
@@ -1447,6 +1458,7 @@ function folhaItens(eq, div){
   if (eq.anselmo > 0) out.push('Anselmo');
   if (eq.lia > 0) out.push('Lia');
   if (eq.couvert) out.push('couvert');
+  if (eq.musica) out.push(eq.musica === 2 ? 'pianista e afinação' : 'quarteto de cordas');   // v10.4
   if (eq.tv) out.push('TV');
   if (eq.som) out.push('som');
   if (eq.tvs) out.push('TVs');
@@ -1667,7 +1679,8 @@ const AVAL_DECOR = {
   foto:'Que foto bonita na parede!', giz:'Adorei o quadro de giz!', placa:'"Comida é afeto": é isso mesmo!',
   toalha:'A toalha xadrez dá um charme!',
   violeta:'Que violetas lindas na janela!', anturio:'Adorei o antúrio na entrada!', pendente:'A samambaia no toldo ficou linda!',
-  tulipa:'Que tulipas lindas na calçada!', copo:'Adorei os copos-de-leite!', orquidea:'Que orquídea mais delicada!'
+  tulipa:'Que tulipas lindas na calçada!', copo:'Adorei os copos-de-leite!', orquidea:'Que orquídea mais delicada!',
+  ikebana:'Que ikebana mais elegante!', orqArranjo:'O arranjo de orquídeas é um espetáculo!', campo:'Adorei as flores do campo!'
 };
 function avalComentario(r, bravo, lixo, nivel, decor, fria, semVeg, tipo, pouco){
   if (bravo) return pick(AVAL_BRAVO[bravo]);
@@ -2005,7 +2018,7 @@ const BIA_IDS = ['tenis', 'corrida', 'bandeja', 'sudoku'];
 function upgradeCartao(id){ return BIA_IDS.indexOf(id) >= 0 ? 'bia' : 'melhorias'; }
 const HIST_NOMES = { bia:'Bia', tonhao:'Tonhão', dani:'Dani', joca:'Joca', cami:'Cami', anselmo:'Anselmo', lia:'Lia' };
 const CAIXA_MAX = 14;                                 // livro-caixa (v7.2): quantos dias da carreira ficam guardados
-const VERSAO = 'v10.3';                                // vai no resumo do Caixa
+const VERSAO = 'v10.4';                                // vai no resumo do Caixa
 const DIVULGA_DIA = 4;                                // antes disso, o movimento é o da inauguração (sem custo); v9.0.2: dia 4, e o padrão é o boca a boca
 function divulgaAberta(n, sv){ return devLivre() || n >= DIVULGA_DIA && !(sv && sv.convDiv === 'pend'); }   // no modo dev, desde o dia 1; v9.0.3: no Modo História, só depois da conversa
 /* v9.6.4: a Efood (os entregadores) só abre depois da conversa dos entregadores, no Modo História; antes dela, nenhum tipo com `retira` vem na agenda */
@@ -2180,6 +2193,7 @@ const MANUAL = [
   { id:'l-tvs',        aba:'lojinha', nome:'TVs com sertanejo', linha:'A paciência nas mesas dura mais; sem anúncios, mais ainda.' },
   { id:'l-assento',    aba:'lojinha', nome:'Assento da espera', linha:'Quem espera sentado perde a paciência mais devagar.' },
   { id:'l-couvert',    aba:'lojinha', nome:'Couvert artístico', linha:'Música ao vivo: a paciência nas mesas dura mais, e cada mesa paga o couvert.' },
+  { id:'l-musica',     aba:'lojinha', nome:'Música ao vivo', linha:'Quarteto ou pianista: a paciência nas mesas dura mais e o ambiente melhora.' },
   { id:'l-fogao',      aba:'lojinha', nome:'Fogão industrial', linha:'Uma boca a mais: o Tonhão faz mais pratos ao mesmo tempo.' },
   { id:'l-cardapio',   aba:'lojinha', nome:'Cardápio', linha:'Cursos do Tonhão e da equipe. Cada curso ensina pratos novos e dá experiência; o avançado deixa os pratos mais caros e caprichados.' },
   { id:'l-salao',      aba:'lojinha', nome:'Salão', linha:'Compre, venda e arrume as mesas.' },
@@ -2514,7 +2528,7 @@ function devLivre(){ return DEV.on && !DEV.real; }
 /* v10.2.1: o Modo História liga fora do modo dev e no jeito "De verdade" do modo dev (no Livre fica desligado) */
 function histLiga(){ return HIST.on && !devLivre(); }
 function saveKey(){ return DEV.on ? LS.devSave : LS.save; }
-/* o couvert só vale do nível 3 do salão em diante: num ponto abaixo, sai */
+/* v10.4: o couvert só vale na Avenida (no modo dev, também nos níveis 1 e 2) e a música só no Terraço: fora dali, saem */
 function normEquipe(e, ponto){
   e = (e && typeof e === 'object') ? e : {};
   const tasks = Array.isArray(e.daniTasks) ? e.daniTasks.map(t => t === 'agua' ? 'suco' : t).filter(t => DANI_TASKS.some(d => d.id === t)) : ['pratos','lavar'];   // v7.5: a tarefa da água vira a do suco da espera
@@ -2522,7 +2536,7 @@ function normEquipe(e, ponto){
   const ct = Array.isArray(e.camiTasks) ? e.camiTasks.filter(t => BASICAS.indexOf(t) >= 0) : CAMI_PADRAO.slice(), cn = Math.round(+e.cami) || 0;   // v9.3: a Cami (0 ou 1 a 3) também só tem tarefa básica
   const an = Math.round(+e.anselmo) || 0;   // v9.5: o Anselmo (0, 2 ou 3), só na Avenida (no modo dev, em qualquer ponto)
   const li = Math.round(+e.lia) || 0;   // v10.2: a Lia (0 ou 1), só no Terraço (no modo dev, em qualquer ponto)
-  return { lia: li >= 1 && (ponto.nivel >= 4 || devLivre()) ? 1 : 0, anselmo: an >= 2 && (ponto.nivel >= 3 || devLivre()) ? Math.min(an, STAFF.anselmo.levels.length - 1) : 0, cami: cn >= 1 ? Math.min(cn, ponto.nivel >= 4 || devLivre() ? STAFF.cami.levels.length - 1 : STAFF.cami.levels.length - 2) : 0, camiTasks: ct.filter((t,i) => ct.indexOf(t) === i).slice(0,4), camiModo: e.camiModo === 'mesas' ? 'mesas' : e.camiModo === 'tudo' ? 'tudo' : 'tarefas', joca: jn >= 2 ? Math.min(jn, STAFF.joca.levels.length - 1) : 0, jocaTasks: jt.filter((t,i) => jt.indexOf(t) === i).slice(0,3), tonhao: clamp(Math.round(+e.tonhao)||0,0,STAFF.tonhao.levels.length - 1), dani: clamp(Math.round(+e.dani)||0,0,STAFF.dani.levels.length - 1), daniTasks: tasks.filter((t,i) => tasks.indexOf(t) === i).slice(0,3), couvert: !!e.couvert && couvertOk(ponto), taxa: !!e.taxa, tv: !!e.tv && ponto.nivel < 2, som: !!e.som && ponto.nivel < 2, tvs: ponto.nivel === 2 ? clamp(Math.round(+e.tvs) || 0, 0, INDUSTRIAL.tvs.modos.length - 1) : 0 };   // v9.1: as TVs são só da área industrial
+  return { lia: li >= 1 && (ponto.nivel >= 4 || devLivre()) ? 1 : 0, anselmo: an >= 2 && (ponto.nivel >= 3 || devLivre()) ? Math.min(an, STAFF.anselmo.levels.length - 1) : 0, cami: cn >= 1 ? Math.min(cn, ponto.nivel >= 4 || devLivre() ? STAFF.cami.levels.length - 1 : STAFF.cami.levels.length - 2) : 0, camiTasks: ct.filter((t,i) => ct.indexOf(t) === i).slice(0,4), camiModo: e.camiModo === 'mesas' ? 'mesas' : e.camiModo === 'tudo' ? 'tudo' : 'tarefas', joca: jn >= 2 ? Math.min(jn, STAFF.joca.levels.length - 1) : 0, jocaTasks: jt.filter((t,i) => jt.indexOf(t) === i).slice(0,3), tonhao: clamp(Math.round(+e.tonhao)||0,0,STAFF.tonhao.levels.length - 1), dani: clamp(Math.round(+e.dani)||0,0,STAFF.dani.levels.length - 1), daniTasks: tasks.filter((t,i) => tasks.indexOf(t) === i).slice(0,3), couvert: !!e.couvert && couvertOk(ponto), taxa: !!e.taxa && couvertOk(ponto), musica: musicaOk(ponto) ? clamp(Math.round(+e.musica) || 0, 0, TERRACO.musica.length - 1) : 0, tv: !!e.tv && ponto.nivel < 2, som: !!e.som && ponto.nivel < 2, tvs: ponto.nivel === 2 ? clamp(Math.round(+e.tvs) || 0, 0, INDUSTRIAL.tvs.modos.length - 1) : 0 };   // v9.1: as TVs são só da área industrial
 }
 /* livro-caixa (v7.2): uma linha por dia jogado na carreira (os últimos CAIXA_MAX). As compras da lojinha
    (melhorias e salão) ficam em caixaPend e entram na linha do dia seguinte, junto com o saldo ao fim dele.
@@ -4852,7 +4866,7 @@ class Game {
     const decor = DECOR.filter(d => decorOn(this, d.id)).map(d => d.id), toalha = !!(g.table && g.table.toalha);
     if (toalha) decor.push('toalha');
     const amb = A.amb.base + (eq.tv ? A.amb.tv : 0) + (eq.som ? A.amb.som : 0) + (this.seloOn ? A.amb.selo : 0) + (this.maquinaOn ? A.amb.maquina : 0) + (this.up.ventilador ? A.amb.ventilador : 0) + (eq.tvs === 1 ? A.amb.tvs : eq.tvs === 2 ? A.amb.tvsPlus : 0) +
-      (g.coffee ? A.amb.cafe : 0) + (this.up.confGourmet && (g.docesDados > 0 || g.docesMarmDados > 0) ? (this.up.confAlta ? A.amb.doceAlta : A.amb.doce) : 0) + (g.drinksDados > 0 ? A.amb.drink : 0) + (this.up.louca ? A.amb.louca : 0) + (eq.couvert ? A.amb.couvert : 0) + (this.trashFull ? A.amb.lixo : 0) +
+      (g.coffee ? A.amb.cafe : 0) + (this.up.confGourmet && (g.docesDados > 0 || g.docesMarmDados > 0) ? (this.up.confAlta ? A.amb.doceAlta : A.amb.doce) : 0) + (g.drinksDados > 0 ? A.amb.drink : 0) + (this.up.louca ? A.amb.louca : 0) + (eq.couvert ? A.amb.couvert : 0) + (musicaDe(eq) ? musicaDe(eq).amb : 0) + (this.trashFull ? A.amb.lixo : 0) +
       decor.reduce((a, id) => a + (id === 'toalha' ? A.amb.toalha : decorOf(id).amb != null ? decorOf(id).amb : A.amb[decorOf(id).grupo === 'plantas' ? 'planta' : 'rosa']), 0);
     // o entregador (v8.6): a espera no balcão conta na espera e na agilidade
     // v8.6.7: cada um avalia só o que viveu (null: não viu). Bravo: da fila, só a espera; antes do pedido, mais agilidade e ambiente;
@@ -5132,6 +5146,7 @@ class Game {
     if (key === 'lia' && !devLivre() && val < old) return false;   // v10.2: a Lia não sai
     if (key === 'lia' && val && (!(this.ponto.nivel >= 4 || devLivre()) || !this.cartaoAberto('lia') || val !== 1 || (!devLivre() && old > 0))) return false;   // v10.2: contratar é definitivo, só no Terraço
     if (key === 'couvert' && val && !couvertOk(this.ponto)) return false;
+    if (key === 'musica' && (!musicaOk(this.ponto) || !(val >= 0 && val < TERRACO.musica.length))) return false;   // v10.4: só no Terraço, 0 (sem), 1 (quarteto) ou 2 (pianista)
     if (key === 'tvs' && val && (!this.up.tvs || this.ponto.nivel !== 2)) return false;   // v9: só com as TVs instaladas
     eq[key] = val;
     if (payroll(eq) > this.save.bank && payroll(eq) > payroll(Object.assign({}, eq, { [key]:old }))){ eq[key] = old; return false; }
@@ -5764,6 +5779,12 @@ class Game {
     writeSave(sv); return true;
   }
   /* v10.2.1: sobe ou desce um nível da pessoa (tonhao, dani, joca, cami, anselmo ou lia), só nos níveis que existem para ela */
+  /* v10.4: no Terraço, passa por sem música → quarteto → pianista (de graça; fora do Terraço não faz nada) */
+  devMusica(){
+    if (!DEV.on || !musicaOk(this.ponto)) return false;
+    const eq = this.save.equipe; eq.musica = ((eq.musica || 0) + 1) % TERRACO.musica.length;
+    writeSave(this.save); return true;
+  }
   devNivel(quem, delta){
     const NIV = { tonhao:[0, 1, 2, 3, 4], dani:[0, 1, 2, 3, 4], joca:[0, 2, 3, 4], cami:[0, 1, 2, 3, 4], anselmo:[0, 2, 3], lia:[0, 1] };
     if (!DEV.on || !NIV[quem]) return false;
@@ -7617,6 +7638,94 @@ function drawArandelaTe(ctx,x,y){
   rr(ctx,x - 2.4,y + 5,4.8,9,2); fs(ctx,TE_OURO,1.4);
   ctx.beginPath(); ctx.moveTo(x - 6,y + 5); ctx.lineTo(x + 6,y + 5); ctx.lineTo(x + 4,y - 8); ctx.lineTo(x - 4,y - 8); ctx.closePath(); fs(ctx,'#F8E9BC',1.6);
 }
+/* v10.4, as flores finas do foyer (Terraço): ikebana numa mesinha de canto, arranjo de orquídeas num pedestal dourado e flores do campo num vaso de cerâmica (x, y: o chão) */
+function drawIkebana(ctx,x,y,s){
+  ctx.save(); ctx.translate(x,y); ctx.scale(s || 1,s || 1);
+  shadowEll(ctx,0,2,20,4,0.2);
+  ctx.fillStyle = '#3B2416'; ctx.fillRect(-14,-20,3,20); ctx.fillRect(11,-20,3,20);   // a mesinha de canto
+  rr(ctx,-19,-27,38,8,3); fs(ctx,'#6B452B',2); ctx.strokeStyle = TE_OURO; ctx.lineWidth = 1; ctx.beginPath(); ctx.moveTo(-16,-23); ctx.lineTo(16,-23); ctx.stroke();
+  ctx.strokeStyle = '#4E8F4A'; ctx.lineWidth = 1.8; ctx.lineCap = 'round';   // os galhos: um alto e curvo, um baixo
+  ctx.beginPath(); ctx.moveTo(-3,-33); ctx.quadraticCurveTo(-4,-52,8,-60); ctx.stroke();
+  ctx.beginPath(); ctx.moveTo(1,-33); ctx.quadraticCurveTo(10,-42,16,-40); ctx.stroke();
+  ctx.fillStyle = '#4E8F4A'; ell(ctx,12,-51,5,2); ctx.fill();
+  [[8,-61,4.2],[16,-40,3.4],[-1,-47,3]].forEach(f => { circ(ctx,f[0],f[1],f[2]); fs(ctx,'#F28AA8',1.2); circ(ctx,f[0],f[1],f[2] * 0.38); ctx.fillStyle = '#F2C94C'; ctx.fill(); });
+  ell(ctx,0,-31,13,4.5); fs(ctx,'#8FB8A8',1.8); ell(ctx,0,-33,10,2.6); ctx.fillStyle = '#5B7F72'; ctx.fill();   // o vaso baixo, verde-celadon
+  ctx.restore();
+}
+function drawArranjoOrquideas(ctx,x,y,s){
+  ctx.save(); ctx.translate(x,y); ctx.scale(s || 1,s || 1);
+  shadowEll(ctx,0,1,17,4,0.2);
+  ell(ctx,0,-3,15,4.5); fs(ctx,TE_OURO,1.8);   // o pedestal dourado: base, coluna e prato
+  ctx.beginPath(); ctx.moveTo(-6,-5); ctx.lineTo(6,-5); ctx.lineTo(4,-36); ctx.lineTo(-4,-36); ctx.closePath(); fs(ctx,TE_OURO,1.8);
+  ctx.fillStyle = 'rgba(255,255,255,.3)'; ctx.fillRect(-3,-33,1.6,26);
+  rr(ctx,-13,-41,26,6,3); fs(ctx,TE_OURO_CL,1.6);
+  rr(ctx,-9,-52,18,12,3); fs(ctx,'#F4F1E8',1.8);   // o vasinho branco
+  ctx.strokeStyle = '#3E8A47'; ctx.lineWidth = 1.6; ctx.lineCap = 'round';
+  [[-3,-82,-14],[2,-92,4],[3,-76,16]].forEach(h => { ctx.beginPath(); ctx.moveTo(0,-52); ctx.quadraticCurveTo(h[2] * 0.4,-64,h[2],h[1] + 8); ctx.stroke(); });
+  [[-14,-74,'#FFFDF4'],[4,-84,'#E7A6D6'],[16,-68,'#FFFDF4'],[-8,-64,'#B77AC9'],[10,-60,'#E7A6D6']].forEach(f => {
+    for (let k = 0; k < 5; k++){ const a = k * TAU / 5 - 1.2; ell(ctx,f[0] + Math.cos(a) * 3.4,f[1] + Math.sin(a) * 3.4,3.1,2); fs(ctx,f[2],1); }
+    circ(ctx,f[0],f[1],1.7); fs(ctx,'#F2C94C',0.8);
+  });
+  ctx.fillStyle = '#4E8F4A'; [[-8,-50,-0.9],[8,-50,0.9]].forEach(l => { ctx.save(); ctx.translate(l[0],l[1]); ctx.rotate(l[2]); ell(ctx,0,0,2.6,8); ctx.fill(); ctx.restore(); });
+  ctx.restore();
+}
+function drawFloresCampo(ctx,x,y,s){
+  ctx.save(); ctx.translate(x,y); ctx.scale(s || 1,s || 1);
+  shadowEll(ctx,0,1,17,4,0.2);
+  ctx.strokeStyle = '#4E8F4A'; ctx.lineWidth = 1.6; ctx.lineCap = 'round';
+  const fl = [[-12,-58,'#FFFDF4'],[-4,-66,'#E2457A'],[6,-62,'#F2C94C'],[13,-54,'#FFFDF4'],[0,-52,'#9B5BD0'],[-9,-48,'#F2C94C']];
+  fl.forEach(f => { ctx.beginPath(); ctx.moveTo(f[0] * 0.2,-30); ctx.lineTo(f[0],f[1] + 3); ctx.stroke(); });
+  fl.forEach(f => {
+    for (let k = 0; k < 6; k++){ const a = k * TAU / 6; ell(ctx,f[0] + Math.cos(a) * 3.2,f[1] + Math.sin(a) * 3.2,2.6,1.6); fs(ctx,f[2],0.9); }
+    circ(ctx,f[0],f[1],1.8); fs(ctx,f[2] === '#F2C94C' ? '#7A4A1B' : '#F2C94C',0.8);
+  });
+  ctx.beginPath(); ctx.moveTo(-12,-30); ctx.lineTo(12,-30); ctx.lineTo(9,0); ctx.lineTo(-9,0); ctx.closePath(); fs(ctx,'#B5683B',2);   // o vaso de cerâmica
+  rr(ctx,-14,-34,28,6,3); fs(ctx,'#C97A4A',1.8);
+  ctx.strokeStyle = '#EADFC6'; ctx.lineWidth = 1.6; ctx.beginPath(); ctx.moveTo(-10,-18); ctx.lineTo(10,-18); ctx.stroke();
+  ctx.restore();
+}
+/* v10.4, a música ao vivo do Terraço: o pianista (de costas, na banqueta do piano com a tampa aberta) e o quarteto de cordas, em fila no pé do salão */
+const PIANISTA_LOOK = { skin:2, hair:0, hairC:'#1B1512', pants:'#1E1D21', kid:false, elder:false, acc:null, glasses:false };
+const QUARTETO = [
+  { x:206, look:{ skin:1, hair:3, hairC:'#A67B43', pants:'#1E1D21', kid:false, elder:false, acc:null, glasses:true },  shirt:'#26252E', inst:'violino' },
+  { x:248, look:{ skin:5, hair:0, hairC:'#1B1512', pants:'#1E1D21', kid:false, elder:false, acc:null, glasses:false }, shirt:'#2A2F42', inst:'violino' },
+  { x:290, look:{ skin:3, hair:4, hairC:'#8C8C8C', pants:'#1E1D21', kid:false, elder:true,  acc:null, glasses:true },  shirt:'#33262B', inst:'viola' },
+  { x:332, look:{ skin:0, hair:6, hairC:'#7A2E1B', pants:'#1E1D21', kid:false, elder:false, acc:null, glasses:false }, shirt:'#1F3236', inst:'violoncelo' }
+];
+function drawNotas(ctx,x,y,tm,n){
+  if (RM){ txt(ctx,'♪',x,y - 6,14,TE_OURO_CL,'center',FB); return; }   // com movimento reduzido, parada
+  for (let i = 0; i < n; i++){ const p = (tm * 0.5 + i / n) % 1; ctx.globalAlpha = 1 - p; txt(ctx,i % 2 ? '♫' : '♪',x + Math.sin(p * 6 + i * 2) * 8 + (i - n / 2) * 10,y - p * 34,14,TE_OURO_CL,'center',FB); ctx.globalAlpha = 1; }
+}
+function drawPianista(ctx,g,tm){
+  const P = TERRACO.piano, x = P.x0 + 60, y = P.y0 + 98, k = RM ? 0 : Math.sin(tm * 6);
+  drawPerson(ctx,PIANISTA_LOOK,x,y,{ sit:true, back:true, shirt:'#1B1B22', mood:0, bob:RM ? 0 : Math.sin(tm * 2.4) * 0.8, bracoE:[[-15,-26],[-8 + k * 2.5,-39]], bracoD:[[15,-26],[8 - k * 2.5,-39]] });
+  drawNotas(ctx,x + 8,y - 78,tm,3);
+}
+function drawQuarteto(ctx,g,tm){
+  const yb = 534, K = 0.8, mv = RM ? 0 : 1;   // menores e no fim do chão, para não cobrir as cadeiras das mesas de baixo
+  QUARTETO.forEach((q,i) => {
+    const x = 0, y = 0, bow = mv * Math.sin(tm * 3 + i * 1.3);
+    ctx.save(); ctx.translate(q.x,yb); ctx.scale(K,K);
+    shadowEll(ctx,x,y,20,5,0.18);
+    ctx.strokeStyle = '#3B2416'; ctx.lineWidth = 3; ctx.beginPath(); ctx.moveTo(x - 9,y); ctx.lineTo(x - 6,y - 16); ctx.moveTo(x + 9,y); ctx.lineTo(x + 6,y - 16); ctx.stroke();
+    ell(ctx,x,y - 17,12,4); fs(ctx,'#6B452B',2);
+    const cello = q.inst === 'violoncelo';
+    drawPerson(ctx,q.look,x,y - 26,{ sit:true, shirt:q.shirt, mood:0, bob:mv * Math.sin(tm * 2 + i) * 0.8 });
+    ctx.save(); ctx.translate(x,y - 26); ctx.lineCap = 'round';
+    if (cello){   // o violoncelo entre os joelhos, o arco na horizontal
+      ctx.strokeStyle = '#5A3A1E'; ctx.lineWidth = 2.2; ctx.beginPath(); ctx.moveTo(1,-6); ctx.lineTo(1,-34); ctx.stroke();
+      ell(ctx,1,2,10,13); fs(ctx,'#B5733A',2); circ(ctx,1,-1,2.4); ctx.fillStyle = PAL.tinta; ctx.fill();
+      ctx.strokeStyle = '#D9C9A0'; ctx.lineWidth = 1.4; ctx.beginPath(); ctx.moveTo(-20 + bow * 4,6); ctx.lineTo(18 + bow * 4,2); ctx.stroke();
+    } else {      // violino e viola: no ombro esquerdo, o arco cruzando
+      const big = q.inst === 'viola';
+      ctx.save(); ctx.translate(-10,-12); ctx.rotate(-0.9); ell(ctx,0,0,big ? 9 : 7.5,big ? 4.6 : 3.8); fs(ctx,'#B5733A',1.8); rr(ctx,big ? 8 : 6.5,-1,big ? 12 : 10,2,1); fs(ctx,'#3B2416',1); ctx.restore();
+      ctx.strokeStyle = '#D9C9A0'; ctx.lineWidth = 1.4; ctx.beginPath(); ctx.moveTo(-14 + bow * 3,-2); ctx.lineTo(12 + bow * 3,-12); ctx.stroke();
+    }
+    ctx.restore();
+    ctx.restore();
+    drawNotas(ctx,q.x + 5,yb - 56,tm + i * 0.37,1);
+  });
+}
 /* o foyer no lugar da rua e do meio-fio: parede do corredor (lambri, arandelas, o elevador, o letreiro e a plaquinha "Cobertura") e o carpete */
 function drawFoyerTe(ctx,g,tm){
   const x0 = -CALCADA.w, ww = -x0;
@@ -7669,7 +7778,7 @@ function drawLugarTe(ctx,x,y,i,sent){   // (i: o número do lugar, que vai por c
   // o número do lugar é desenhado depois das pessoas (drawLugarNums), como nos outros pontos
 }
 /* o piano de cauda fechado e a banqueta (TERRACO.piano): preto, no canto de baixo à esquerda do salão */
-function drawPiano(ctx,g){
+function drawPiano(ctx,g,aberto){
   const P = TERRACO.piano, ox = P.x0, oy = P.y0;
   ctx.save(); ctx.translate(ox,oy);
   shadowEll(ctx,60,96,58,9,0.26);
@@ -7679,9 +7788,17 @@ function drawPiano(ctx,g){
   const forma = dy => { ctx.beginPath(); ctx.moveTo(6,58 + dy); ctx.lineTo(6,24 + dy); ctx.quadraticCurveTo(6,10 + dy,22,10 + dy); ctx.lineTo(84,10 + dy); ctx.quadraticCurveTo(114,10 + dy,114,30 + dy); ctx.quadraticCurveTo(114,44 + dy,98,46 + dy); ctx.quadraticCurveTo(88,47 + dy,88,56 + dy); ctx.lineTo(88,58 + dy); ctx.closePath(); };
   forma(14); fs(ctx,'#0B0B10',2.2);   // a espessura do corpo (a forma de cima repetida mais para baixo)
   ctx.fillStyle = '#0B0B10'; ctx.fillRect(6,58,82,14);
-  forma(0); fs(ctx,'#1E1E26',2.2);   // o tampo fechado
+  forma(0); fs(ctx,aberto ? '#4A3322' : '#1E1E26',2.2);   // o tampo fechado (v10.4: aberto com o pianista, e se vê o interior)
+  if (aberto){
+    ctx.strokeStyle = 'rgba(232,196,106,.6)'; ctx.lineWidth = 0.9; for (let i = 0; i < 9; i++){ ctx.beginPath(); ctx.moveTo(14 + i * 8,54); ctx.lineTo(20 + i * 10,20 + i * 1.6); ctx.stroke(); }   // as cordas
+    rr(ctx,10,60,74,8,2); fs(ctx,'#F4F0E4',1.2); ctx.fillStyle = '#16161C'; for (let i = 0; i < 12; i++) if (i % 7 !== 2 && i % 7 !== 6) ctx.fillRect(14 + i * 5.9,60,3.4,5);   // o teclado aberto
+    ctx.beginPath(); ctx.moveTo(6,24); ctx.lineTo(16,-20); ctx.lineTo(98,-20); ctx.lineTo(114,26); ctx.closePath(); fs(ctx,'#14141A',2.2);   // a tampa levantada
+    ctx.fillStyle = 'rgba(255,255,255,.14)'; ctx.beginPath(); ctx.moveTo(14,18); ctx.lineTo(22,-14); ctx.lineTo(52,-14); ctx.lineTo(30,18); ctx.closePath(); ctx.fill();
+    ctx.strokeStyle = TE_OURO; ctx.lineWidth = 2; ctx.beginPath(); ctx.moveTo(98,-18); ctx.lineTo(104,22); ctx.stroke();   // o suporte da tampa
+  } else {
   ctx.fillStyle = 'rgba(255,255,255,.12)'; ctx.beginPath(); ctx.moveTo(12,50); ctx.lineTo(12,26); ctx.quadraticCurveTo(12,16,26,16); ctx.lineTo(60,16); ctx.lineTo(30,50); ctx.closePath(); ctx.fill();   // o reflexo
   rr(ctx,10,61,74,7,2); fs(ctx,'#2E2E38',1.4); ctx.strokeStyle = TE_OURO; ctx.lineWidth = 0.9; ctx.beginPath(); ctx.moveTo(14,64.5); ctx.lineTo(80,64.5); ctx.stroke();   // a tampa do teclado, fechada
+  }
   rr(ctx,34,97,52,11,3); fs(ctx,'#3A261A',2); rr(ctx,36,98.5,48,5,2); ctx.fillStyle = 'rgba(255,255,255,.14)'; ctx.fill();   // a banqueta
   ctx.fillStyle = '#2B1A10'; ctx.fillRect(38,108,4,7); ctx.fillRect(78,108,4,7);
   ctx.restore();
@@ -7833,6 +7950,9 @@ function drawCalcada(ctx,g,tm){
   if ((ind || av || te) && decorOn(g,'pendente')) drawSamambaia(ctx,x0 + 66,120,0.8);
   if ((av || te) && decorOn(g,'tulipa')) drawTulipas(ctx,x0 + 112,138,1);   // v9.1: as flores da Avenida: tulipas na jardineira, copos-de-leite no vaso alto e a orquídea na mesinha
   if ((av || te) && decorOn(g,'copo')) drawCopoLeite(ctx,x0 + 38,300,1);
+  if (te && decorOn(g,'ikebana')) drawIkebana(ctx,x0 + 80,106,1);   // v10.4: as flores do foyer: a ikebana na mesinha ao lado do elevador, o arranjo de orquídeas no pedestal (canto de baixo) e as flores do campo perto da porta do salão
+  if (te && decorOn(g,'orqArranjo')) drawArranjoOrquideas(ctx,x0 + 22,486,1);
+  if (te && decorOn(g,'campo')) drawFloresCampo(ctx,-28,330,1);
   if ((av || te) && decorOn(g,'orquidea')) drawOrquidea(ctx,114,132,1);   // perto da porta, encostada na meia-parede (já dentro do salão)
   // portão de enrolar aberto, na borda do salão: trilho no alto e soleira no chão
   if (g && g.fechado) drawPlacaFechado(ctx,QUEUE.x + 28,196,tm);   // v9.6.4
@@ -9508,9 +9628,12 @@ function render(g, ctx){
   }});
   if (menu) items.pop();
   if (g.marmitaOk && !menu) items.push({ y:RETIRADA.balcao.y + 50, f:() => glowSprite(ctx,g,'retirada',ctx => drawRetirada(ctx,g,tm)) });
-  if (terraco(g)) items.push({ y:TERRACO.piano.y1, f:() => drawPiano(ctx,g) });   // v10: o piano de cauda (obstáculo fixo)
+  const mus = !menu && terraco(g) ? g.save.equipe.musica : 0;   // v10.4: a música ao vivo (só nos dias de jogo)
+  if (terraco(g)) items.push({ y:TERRACO.piano.y1, f:() => drawPiano(ctx,g,mus === 2) });   // v10: o piano de cauda (obstáculo fixo)
   if (g.maquinaOn) items.push({ y:STATIONS.maquina.rect.y + STATIONS.maquina.rect.h, f:() => glowSprite(ctx,g,'maquina',ctx => drawMaquina(ctx,g,tm,menu)) });
   if (g.save.equipe.couvert && !menu) items.push({ y:528, f:() => drawMusico(ctx,g,tm) });
+  if (mus === 2) items.push({ y:TERRACO.piano.y1 + 2, f:() => drawPianista(ctx,g,tm) });
+  if (mus === 1) items.push({ y:528, f:() => drawQuarteto(ctx,g,tm) });
   if ((g.save.equipe.tv || g.save.equipe.som) && !menu) items.push({ y:532, f:() => drawAmbiente(ctx,g,tm) });
   if (g.fiscal && g.fiscal.ativo && !menu) items.push({ y:g.fiscal.y, f:() => drawFiscal(ctx,g.fiscal,tm) });   // v9.4
   if (g.dani.active && !menu) items.push({ y:g.dani.y, f:() => drawDani(ctx,g.dani,tm) });
@@ -10737,11 +10860,13 @@ const DEV_HOJE = [
   ['vip', 'VIP', [['', 'Sorteio'], ['vem', 'Vem um VIP']]],
   ['apito', 'Apito da fábrica (área industrial)', [['', 'Sorteio'], ['apita', 'Apita'], ['nao', 'Não apita']]]
 ];
+const DEV_MUSICA = ['sem música', 'quarteto de cordas', 'pianista'];
 function devAbaHoje(body, secao, botao){
   DEV_HOJE.forEach(([k, titulo, ops]) => {
     const r = secao(titulo);
     ops.forEach(([v, t]) => botao(r, t, () => game.devForca(k, v), (DEV.forca[k] || '') === v));
   });
+  if (musicaOk(game.ponto)) botao(secao('Música (Terraço)', 'Agora: ' + DEV_MUSICA[game.save.equipe.musica || 0]), 'Música: trocar', () => game.devMusica());   // v10.4: sem música → quarteto → pianista
   if ((game.state === 'paused' || game.state === 'playing') && game.mode === 'carreira'){
     let r = secao('No dia', 'Velocidade ' + DEV.vel + '×');
     [1, 2, 4, 8].forEach(v => botao(r, 'Velocidade ' + v + '×', () => { DEV.vel = v; }, DEV.vel === v));
@@ -10904,7 +11029,7 @@ const DES_BASICO = {
 };
 /* o ícone da lojinha de cada ficha `l-` (o da Água da torneira e do assento segue o ponto) */
 const MANUAL_ICO = { 'l-tenis':'tenis', 'l-corrida':'corrida', 'l-cafeteira':'cafeteira', 'l-bandeja':'bandeja', 'l-sudoku':'sudoku', 'l-ventilador':'ventilador', 'l-triturador':'triturador', 'l-pratos':'pratos', 'l-louca':'louca',
-  'l-tvsom':'ambiente', 'l-tvs':'tvs', 'l-couvert':'couvert', 'l-fogao':'fogao-ind', 'l-cardapio':'cardapio', 'l-salao':'g-salao', 'l-decor':'d-samambaia', 'l-manut':'m-fogao', 'l-divulga':'div-redes', 'l-banco':'banco', 'l-mudanca':'mudanca', 'l-caixa':'contas',
+  'l-tvsom':'ambiente', 'l-tvs':'tvs', 'l-couvert':'couvert', 'l-musica':'musica', 'l-fogao':'fogao-ind', 'l-cardapio':'cardapio', 'l-salao':'g-salao', 'l-decor':'d-samambaia', 'l-manut':'m-fogao', 'l-divulga':'div-redes', 'l-banco':'banco', 'l-mudanca':'mudanca', 'l-caixa':'contas',
   'p-industrial':'mudanca', 'p-avenida':'mudanca-av', 'p-terraco':'mudanca-te' };
 function manualIcone(f){
   const nv = game.ponto.nivel;
@@ -11051,6 +11176,8 @@ function upgradeIcon(id){
     } else if (id === 'couvert'){
       c.rotate(-0.5); ell(c,0,4,10,8); fs(c,'#B5733A',2); circ(c,0,4,3); c.fillStyle = PAL.tinta; c.fill(); rr(c,8,1,20,4,1); fs(c,PAL.madeiraEsc,1.4); c.rotate(0.5);
       txt(c,'♪',-12,-12,14,PAL.faixa,'center',FB);
+    } else if (id === 'musica'){
+      c.rotate(-0.6); ell(c,0,5,9,6.5); fs(c,'#B5733A',2); ell(c,0,-3,6.5,5); fs(c,'#B5733A',2); rr(c,-1.6,-26,3.2,22,1); fs(c,'#3B2416',1.2); c.strokeStyle = PAL.tinta; c.lineWidth = 1; c.beginPath(); c.moveTo(-3,4); c.lineTo(-3,9); c.moveTo(3,4); c.lineTo(3,9); c.stroke(); c.rotate(0.6); c.strokeStyle = '#D9C9A0'; c.lineWidth = 2; c.beginPath(); c.moveTo(-14,-2); c.lineTo(12,12); c.stroke(); txt(c,'♪',12,-10,14,TE_OURO,'center',FB);
     } else if (id === 'ambiente'){
       drawTv(c,6,2,0,0.48); drawSom(c,-6,17,0,0.42); txt(c,'♪',-16,-12,12,PAL.faixa,'center',FB);
     } else if (id === 'maquina'){
@@ -11583,6 +11710,22 @@ function buildCouvert(grid){
   duo.appendChild(eq.couvert ? shopBtn('Dispensar', 'btn alt', true, () => game.setStaff('couvert', false)) : shopBtn('Contratar: ' + fmt(C.pay) + '/dia', 'btn', canPay(C.pay), () => game.setStaff('couvert', true)));
   c.appendChild(duo); grid.appendChild(c);
 }
+/* v10.4: a música ao vivo do Terraço, no lugar do couvert: sem música, quarteto de cordas ou pianista (como as TVs da área industrial) */
+function buildMusica(grid){
+  if (!musicaOk(game.ponto)) return;
+  game.manualVer('l-musica');
+  const eq = game.save.equipe, bank = game.save.bank, M = TERRACO.musica;
+  const c = staffCard(upgradeIcon('musica'), 'Música ao vivo'); c.setAttribute('data-ficha', 'l-musica');
+  [[0, 'Sem música'], [1, M[1].nome + ' · ' + fmt(musicaPay(M[1])) + '/dia'], [2, M[2].nome + ' · ' + fmt(musicaPay(M[2])) + '/dia']].forEach(a => {
+    const on = (eq.musica || 0) === a[0], b = el('button', 'toggle', (on ? 'Ligado: ' : '') + a[1]); b.type = 'button';
+    b.setAttribute('aria-pressed', on ? 'true' : 'false');
+    const extra = musicaPay(M[a[0]]) - musicaPay(musicaDe(eq));
+    if (!on && extra > 0 && payroll(eq) + extra > bank) b.disabled = true;
+    b.addEventListener('click', () => { Sfx.init(); if (!game.setStaff('musica', a[0])) Sfx.boing(); buildShop(); });
+    c.appendChild(b);
+  });
+  grid.appendChild(c);
+}
 /* aba Salão (v7.4): o editor (o salão desenhado em escala, sem clientes) e a loja de móveis ao lado.
    Arrastar a mesa muda o lugar dela (encaixe na grade); tocar nela abre a cor das cadeiras, "virar mesa de 4" e "vender".
    v8.3.5: o estoque, à esquerda do salão, guarda mesas (pequenas, em 2 colunas) para rearrumar com folga */
@@ -11917,6 +12060,7 @@ function buildDivulga(grid){
   const c = staffCard(upgradeIcon('contas'), 'Contas do dia ' + n, 'Luz e gás: ' + fmt(contasDia(game.tables, p)) + ' por dia');
   grid.appendChild(c);
   buildCouvert(grid);
+  buildMusica(grid);
 }
 /* aba Manutenção (v8): o estado de cada equipamento, o risco de quebrar e a revisão (volta a 100%) */
 function buildManut(grid){
@@ -12858,7 +13002,7 @@ try { Rank.init(); } catch(e) {}
 game.setState('menu');
 if (!aberturaVista() && !DEV.on) abrirAbertura('auto');   // v8.5: a abertura toca sozinha uma vez
 window.__game = game;
-window.__lcc = { camiModoTudo, CAMI_TUDO, cafesLista, cafeIdx, cafeIngred, ANSELMO_CURSOS, normAnselmoCursos, drinksLista, drinksTodos, drinkPreco, drinkIngred, drinkVagas, drinkPrep, MAQUINA_LUGAR, drawCafesEsp, drawCarrinhoBoasVindas, espressoTrabalho, bebExtra, devCenas, devAssistir, histLiga, DEV_CAPS, drawIcon, liaOn, drawLia, LIA_HOME, LIA_LOOK, doceIcone, drawFino, TEMPOS, tempoMarcas, pedePrincipal, drawTempoTrilha, HIST_SOCORRO, HIST_EXIGENTE, EXIGENTE, LOUCA, vipDish, vipCook, casaBoa, exigRep, HIST_PLANTA, filaPos, STATIONS, MANUAL, manualTracos, manualAberta, abrirManual, buildManual, fecharManual, semente, manualSemente, FECHA, efoodAberto, drawTable, camiMesasN, camiModoMesas, CAMI_MESAS_MAX, drawAventalCami, FISCAL, Fiscal, FISCAL_PONTOS, abrirDev, fecharDev, buildDev, passoJogo, devLivre, diaNoPonto, manutEmerg, manutFator, daniTaskDe, plateSlotsFor, queueYsFor, assentoSlow, AVENIDA, SABORES, cursoOk, INDUSTRIAL, PLATE_SLOTS, cozinhaSlots, upgradeDe, DECOR, DECOR_GRUPOS, TOALHA, decorOf, normDecor, decorOn, FILA_ACOES, filaMax, MARMITA, RETIRADA, marmitaMao, drawMarmita, prateleiraPos, EFOOD_COR, AVAL_BRAVO, QUEUE, setShopTab: v => shopAbrir(v), setShopGrupo: g => shopGrupoAbrir(g), shopSecoes: () => SHOP_GRUPOS.map(g => shopSecoesVis(g)), TREINO, TREINO_PASSOS, TREINO_COR, Treino, treinoLugar, DICAS, dicaDe, dicaLigada, drawDica, HUD_LUCRO, hudEstrelas, drawHud, daniNaLoja, treinoPrimeiro, playCareer, buildMenu, introBanco, buildFalencia, BANCO, normEmprestimo, parcelaDe, devidoDe, jurosDe, tabelaDe, simulaEmprestimo, SEMANA, semanaOf, diaOf, FILA_JUSTA, PORTA, CHAIRS, PAT, CONTAS, INGRED, CARDAPIO, precoPrato, CURSOS, CURSO_AV, CURSO_XP, tonhaoXp, tonhaoNivelXp, daniXp, daniNivelXp, DANI_XP, DANI_CURSOS, CURSOS_SEMFIM, cursoOf, cursoNivel, normCursos, pratoAv, CARNES, drawDish, pratoSabido, pratosSabidos, GOSTOS, GOSTOS_CAT, pedePrato, VEG, vegMov, drawDish, MAIS, PONTOS_ACAO, GORJETA, DRINK_PRICE, MOVIMENTO, movimentoSalao, DIVULGA, DIVULGA_DIA, divulgaOf, contasDia, bomGoal, SALAO, PONTOS, pontoOf, MESA, mesaBox, mesaPreco, salaoLugares, mesaProblema, salaoCaminho, salaoProblema, salaoOrdena, salaoAuto, salaoVaga, salaoPerto, salaoKit, salaoDevolucao, SALAO_SEMFIM, normSalao, setObst, OBST, pathOk, MAQUINA, BEBIDA_ESPERA, bebidaOf, MANUT, manutOf, manutChance, manutPreco, normManut, CLIMA, CLIMA_DIA, introManut, normPend, CALCADA, TW, HUDX, esperaAp, tableApproach, CRIT, STAFF, DANI_TASKS, DANI_HANDS, daniTaskOk, TRASH, WASH, payroll, FOLHA_CORTE, folhaCorta, folhaCortes, folhaItens, listaE, pratosDe, couvertEffect, couvertOk, ambienteEffect, dishStock, normSave, Helper, JUICE, KITCHEN_SLOTS, handLayout, trayOk, Game, Group, Table, Kitchen, Waitress, BIA_SPEED, DAYS, UPGRADES, CUSTOMER_TYPES, LAYOUT, PAL, Sfx, findPath, render, Rank, sortRows, cleanName, normName, CMD, ENDLESS, VIP, MULTA, rk, renderRank, openRank, closeRank, LS, lsGet, lsSet, loadSave, DEV, saveKey, devSync, divulgaAberta, CAIXA_MAX, VERSAO, normCaixa, caixaResumo, caixaTotais, copyText, PRATO, pratoPerde, pratoVapor, AVAL, AVAL_CRIT, AVAL_BRAVO, avalMenu, cursosItem, DOCES, CAFES, cafeDe, DRINKS, drinkDe, drinkIdx, anselmoOn, ANSELMO_HOME, ANSELMO_LOOK, drawAnselmo, docesLista, docePreco, doceIngred, doceIdx, CAMI_CURSOS, CAMI_HOME, CAMI_LOOK, camiNivelCursos, normCamiCursos, drawCami, drawEspresso, JOCA_XP, JOCA_CURSOS, JOCA_HOME, jocaXp, jocaNivelXp, BASICAS, donoBasico, cursoDaniVis, JOCA_LOOK, drawJoca, avalTeto, avalEscala, TERRACO, fixosDe, vipTipos, doorFor, DOOR, terraco, drawPiano, drawPoltrona, drawFoyerTe, drawParedeTe, drawElevadorTe, drawLugarTe, drawPerson, makePeople, drawChair, iconeMudanca, avalFrac, AVAL_SIMPLES, AVAL_DECOR, normAval, avalNota, avalMedias, avalGeral, avalMovimento, avalMinimo, avalComentario, fmtNota, notaFaixa, gurugolCaixa, AVAL_COM, normAvalCom, buildGurugol, ABERTURA, Abertura, AB_CENAS, AB_ALT, AB_BASE, abEsc, AB_VIVO, aberturaVista, aberturaSom, drawAbertura, abrirAbertura, HISTORIA, HIST_CARDAPIO, HIST_DIVULGA, HIST_ENTREGA, LIBERA, liberaOf, HIST_NOMES, normEquipe, upgradeCartao, cursoFeito, AVAL_POUCO, REFORMA, HIST, carencia, Conversa, drawConversa, falar, fluxoHistoria, falar, aberturaAtual: () => abertura };
+window.__lcc = { musicaPay, musicaDe, musicaOk, camiModoTudo, CAMI_TUDO, cafesLista, cafeIdx, cafeIngred, ANSELMO_CURSOS, normAnselmoCursos, drinksLista, drinksTodos, drinkPreco, drinkIngred, drinkVagas, drinkPrep, MAQUINA_LUGAR, drawCafesEsp, drawCarrinhoBoasVindas, espressoTrabalho, bebExtra, devCenas, devAssistir, histLiga, DEV_CAPS, drawIcon, liaOn, drawLia, LIA_HOME, LIA_LOOK, doceIcone, drawFino, TEMPOS, tempoMarcas, pedePrincipal, drawTempoTrilha, HIST_SOCORRO, HIST_EXIGENTE, EXIGENTE, LOUCA, vipDish, vipCook, casaBoa, exigRep, HIST_PLANTA, filaPos, STATIONS, MANUAL, manualTracos, manualAberta, abrirManual, buildManual, fecharManual, semente, manualSemente, FECHA, efoodAberto, drawTable, camiMesasN, camiModoMesas, CAMI_MESAS_MAX, drawAventalCami, FISCAL, Fiscal, FISCAL_PONTOS, abrirDev, fecharDev, buildDev, passoJogo, devLivre, diaNoPonto, manutEmerg, manutFator, daniTaskDe, plateSlotsFor, queueYsFor, assentoSlow, AVENIDA, SABORES, cursoOk, INDUSTRIAL, PLATE_SLOTS, cozinhaSlots, upgradeDe, DECOR, DECOR_GRUPOS, TOALHA, decorOf, normDecor, decorOn, FILA_ACOES, filaMax, MARMITA, RETIRADA, marmitaMao, drawMarmita, prateleiraPos, EFOOD_COR, AVAL_BRAVO, QUEUE, setShopTab: v => shopAbrir(v), setShopGrupo: g => shopGrupoAbrir(g), shopSecoes: () => SHOP_GRUPOS.map(g => shopSecoesVis(g)), TREINO, TREINO_PASSOS, TREINO_COR, Treino, treinoLugar, DICAS, dicaDe, dicaLigada, drawDica, HUD_LUCRO, hudEstrelas, drawHud, daniNaLoja, treinoPrimeiro, playCareer, buildMenu, introBanco, buildFalencia, BANCO, normEmprestimo, parcelaDe, devidoDe, jurosDe, tabelaDe, simulaEmprestimo, SEMANA, semanaOf, diaOf, FILA_JUSTA, PORTA, CHAIRS, PAT, CONTAS, INGRED, CARDAPIO, precoPrato, CURSOS, CURSO_AV, CURSO_XP, tonhaoXp, tonhaoNivelXp, daniXp, daniNivelXp, DANI_XP, DANI_CURSOS, CURSOS_SEMFIM, cursoOf, cursoNivel, normCursos, pratoAv, CARNES, drawDish, pratoSabido, pratosSabidos, GOSTOS, GOSTOS_CAT, pedePrato, VEG, vegMov, drawDish, MAIS, PONTOS_ACAO, GORJETA, DRINK_PRICE, MOVIMENTO, movimentoSalao, DIVULGA, DIVULGA_DIA, divulgaOf, contasDia, bomGoal, SALAO, PONTOS, pontoOf, MESA, mesaBox, mesaPreco, salaoLugares, mesaProblema, salaoCaminho, salaoProblema, salaoOrdena, salaoAuto, salaoVaga, salaoPerto, salaoKit, salaoDevolucao, SALAO_SEMFIM, normSalao, setObst, OBST, pathOk, MAQUINA, BEBIDA_ESPERA, bebidaOf, MANUT, manutOf, manutChance, manutPreco, normManut, CLIMA, CLIMA_DIA, introManut, normPend, CALCADA, TW, HUDX, esperaAp, tableApproach, CRIT, STAFF, DANI_TASKS, DANI_HANDS, daniTaskOk, TRASH, WASH, payroll, FOLHA_CORTE, folhaCorta, folhaCortes, folhaItens, listaE, pratosDe, couvertEffect, couvertOk, ambienteEffect, dishStock, normSave, Helper, JUICE, KITCHEN_SLOTS, handLayout, trayOk, Game, Group, Table, Kitchen, Waitress, BIA_SPEED, DAYS, UPGRADES, CUSTOMER_TYPES, LAYOUT, PAL, Sfx, findPath, render, Rank, sortRows, cleanName, normName, CMD, ENDLESS, VIP, MULTA, rk, renderRank, openRank, closeRank, LS, lsGet, lsSet, loadSave, DEV, saveKey, devSync, divulgaAberta, CAIXA_MAX, VERSAO, normCaixa, caixaResumo, caixaTotais, copyText, PRATO, pratoPerde, pratoVapor, AVAL, AVAL_CRIT, AVAL_BRAVO, avalMenu, cursosItem, DOCES, CAFES, cafeDe, DRINKS, drinkDe, drinkIdx, anselmoOn, ANSELMO_HOME, ANSELMO_LOOK, drawAnselmo, docesLista, docePreco, doceIngred, doceIdx, CAMI_CURSOS, CAMI_HOME, CAMI_LOOK, camiNivelCursos, normCamiCursos, drawCami, drawEspresso, JOCA_XP, JOCA_CURSOS, JOCA_HOME, jocaXp, jocaNivelXp, BASICAS, donoBasico, cursoDaniVis, JOCA_LOOK, drawJoca, avalTeto, avalEscala, TERRACO, fixosDe, vipTipos, doorFor, DOOR, terraco, drawPiano, drawPoltrona, drawFoyerTe, drawParedeTe, drawElevadorTe, drawLugarTe, drawPerson, makePeople, drawChair, iconeMudanca, avalFrac, AVAL_SIMPLES, AVAL_DECOR, normAval, avalNota, avalMedias, avalGeral, avalMovimento, avalMinimo, avalComentario, fmtNota, notaFaixa, gurugolCaixa, AVAL_COM, normAvalCom, buildGurugol, ABERTURA, Abertura, AB_CENAS, AB_ALT, AB_BASE, abEsc, AB_VIVO, aberturaVista, aberturaSom, drawAbertura, abrirAbertura, HISTORIA, HIST_CARDAPIO, HIST_DIVULGA, HIST_ENTREGA, LIBERA, liberaOf, HIST_NOMES, normEquipe, upgradeCartao, cursoFeito, AVAL_POUCO, REFORMA, HIST, carencia, Conversa, drawConversa, falar, fluxoHistoria, falar, aberturaAtual: () => abertura };
 window.requestAnimationFrame(frame);
 
 })();

@@ -153,7 +153,7 @@ ok(L.dishStock(L.DAYS[2])===4 && L.dishStock(L.DAYS[5])===4 && L.dishStock(L.DAY
 
 /* couvert: só do nível 3 do salão em diante (v7.4.3); na Garagem (nível 1) sai do save e não dá para contratar */
 ok(L.pontoOf('garagem').nivel===1 && L.STAFF.couvert.nivel===3 && !L.couvertOk(L.pontoOf('garagem')) && L.couvertOk({nivel:3}),'couvert: só do nível 3 em diante; a Garagem é nível 1');
-{ const s=L.normSave({equipe:{couvert:true,taxa:true,tv:true}}); ok(!s.equipe.couvert && s.equipe.taxa && s.equipe.tv,'save com couvert na Garagem: o couvert sai, o resto fica'); }
+{ const s=L.normSave({equipe:{couvert:true,taxa:true,tv:true}}); ok(!s.equipe.couvert && !s.equipe.taxa && s.equipe.tv,'save com couvert na Garagem: o couvert e a taxa saem (v10.4: só na Avenida), o resto fica'); }
 { reset({},5000); ok(!g.setStaff('couvert',true) && !eq().couvert,'na Garagem não dá para contratar o couvert'); }
 /* TV e som (v7.4.3): 5% cada, somados, só nas mesas */
 { reset({}); g.resetDay(3); const a=new L.Group(g,'estudante',1,0); a.setState('wantOrder'); const p0=a.patPer();
@@ -167,7 +167,7 @@ ok(L.pontoOf('garagem').nivel===1 && L.STAFF.couvert.nivel===3 && !L.couvertOk(L
   ok(Math.abs(p-p0/0.8)<1e-9,'couvert: paciência nas mesas cai 20% mais devagar');
   eq().couvert=true; eq().taxa=true; ok(Math.abs(a.patPer()-p0/0.9)<1e-9,'com taxa: eficácia cai pela metade (10%)');
   a.setState('queue'); const q=a.patPer(); eq().couvert=false; ok(q===a.patPer(),'couvert não mexe na fila'); }
-{ reset({taxa:true}); eq().couvert=true; g.startDay(3); g.begin(); g.schedule=[{t:1e9,type:'estudante',color:0}]; g.nextIdx=0;
+{ reset({}); eq().couvert=true; eq().taxa=true; g.startDay(3); g.begin(); g.schedule=[{t:1e9,type:'estudante',color:0}]; g.nextIdx=0;
   const grp=g.spawn({type:'familia',color:0}); const t=g.tables.find(x=>x.free&&x.seats>=grp.size); g.seatGroup(grp,t); grp.juiceWant=0; grp.hearts=5; grp.bill=40;
   const m0=g.money; g.lastKind='x'; g.collectBill(grp,t); ok(g.money-m0===Math.round(40*1.1)+3*grp.size,'taxa de couvert: R$ 3 por pessoa na conta'); }
 

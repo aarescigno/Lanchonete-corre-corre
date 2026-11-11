@@ -352,11 +352,11 @@ const PONTOS = [
   // v9.1: o 2º ponto novo (cap. 6 e 7). Sem apito, sem encomenda e sem patPressa: a turma, o motorista e a encomenda não vêm. vip: ×2 (restaurante atrai mais VIP)
   { id:'avenida', nome:'Restaurante na Avenida Brasil', nivel:3, lugares:24, aluguel:400, mudanca:2000, credito:4000, cardapio:2.0, area:{ x0:160, y0:150, x1:684, y1:500 }, espera:6, assento:'pe', bebida:'saborizada', pratos:6, marmJanela:3, prateleira:4,
     tipos:{ estudante:0.5, executiva:2, familia:1.5, vovos:1, entregador:1, negocios:1.5 }, vip:2, metaF:3.0, expertF:3.6, grupos:0.7,   // v9.6.4: 3,2 e 3,8 → 3,0 e 3,6 (o VIP mais exigente deixou a Avenida abaixo do alvo)
-    traz:'o almoço de negócios e mais VIPs', art:'o', deixa:'os sofás e as águas saborizadas ficam' },
+    traz:'o almoço de negócios e mais VIPs', art:'o', deixa:'os sofás, as águas saborizadas e o couvert ficam' },
   // v10: o último ponto da escada (cap. 8 e 9). 20 lugares, aluguel R$ 1.000, cardápio ×2,5. Sem entregador (semRetirada), sem bebida da espera (bebida:null até a 4a-4) e com o casal;
   // tempos: a refeição completa (bebida, entrada, prato e sobremesa; ver TEMPOS)
-  { id:'terraco', nome:'Terraço Suíça', nivel:4, lugares:20, aluguel:1200, mudanca:5000, credito:8000, cardapio:2.4, area:{ x0:160, y0:150, x1:684, y1:500 }, espera:6, assento:'pe', bebida:'coquetel', pratos:6, marmJanela:2, prateleira:0,
-    tipos:{ executiva:0.5, familia:1, vovos:1, negocios:1.5, casal:2 }, vip:2.5, metaF:9.0, expertF:6.0, grupos:0.5, tempos:true, semRetirada:true, exigente:true,   // v10 (medido em 10/11, equipe toda com o bot afiado): grupos 0,45 → 0,50 (mesas vazias em 33% do turno), metaF 4 → 9 e expertF 5 → 6 (91% das metas e 3★ em 61%), aluguel 1.000 → 1.200 e cardápio 2,5 → 2,4 (o ganho sobre a Avenida de R$ 918 caiu para ~R$ 700)
+  { id:'terraco', nome:'Terraço Suíça', nivel:4, lugares:20, aluguel:1200, mudanca:5000, credito:8000, cardapio:1.3, area:{ x0:160, y0:150, x1:684, y1:500 }, espera:6, assento:'pe', bebida:'coquetel', pratos:6, marmJanela:2, prateleira:0,
+    tipos:{ executiva:0.5, familia:1, vovos:1, negocios:1.5, casal:2 }, vip:2.5, metaF:12.0, expertF:8.5, grupos:0.5, tempos:true, semRetirada:true, exigente:true,   // v10.4 (medido em 11/11, 80 rodadas, equipe toda com JOCA=4 CONFEITARIA=1): cardápio 2,4 → 1,3 (o ganho sobre a Avenida era de R$ 2.800 por dia e foi a ~R$ 850), metaF 9 → 12 e expertF 6 → 8,5 (metas em ~90% e 3★ em ~60%);   // v10 (medido em 10/11, equipe toda com o bot afiado): grupos 0,45 → 0,50 (mesas vazias em 33% do turno), metaF 4 → 9 e expertF 5 → 6 (91% das metas e 3★ em 61%), aluguel 1.000 → 1.200 e cardápio 2,5 → 2,4 (o ganho sobre a Avenida de R$ 918 caiu para ~R$ 700)
    
     traz:'a refeição completa e a freguesia mais fina', art:'o' }
 ];
@@ -531,6 +531,10 @@ const DECOR = [
   { id:'tulipa',    grupo:'plantas', name:'Tulipas',             cost:40, nivel:3, amb:0.15 },
   { id:'copo',      grupo:'plantas', name:'Copos-de-leite',      cost:50, nivel:3, amb:0.15 },
   { id:'orquidea',  grupo:'plantas', name:'Orquídeas',           cost:60, nivel:3, amb:0.15 },
+  // v10.4, só no Terraço: as flores finas do foyer (+0,2 cada no Ambiente)
+  { id:'ikebana',   grupo:'plantas', name:'Ikebana',             cost:90,  nivel:4, amb:0.2 },
+  { id:'orqArranjo', grupo:'plantas', name:'Arranjo de orquídeas', cost:120, nivel:4, amb:0.2 },
+  { id:'campo',     grupo:'plantas', name:'Flores do campo',     cost:70,  nivel:4, amb:0.2 },
   { id:'foto',      grupo:'rosa',    name:'Foto da dona Rosa',   cost:10 },
   { id:'giz',       grupo:'rosa',    name:'Quadro de giz',       cost:25 },
   { id:'placa',     grupo:'rosa',    name:'Plaquinha',           cost:15 }
@@ -628,7 +632,12 @@ const AVENIDA = { sofa:{ nome:'Sofás com almofadas', cost:250, slow:0.25 } };
 /* quanto a espera sentada alivia a paciência: o sofá da Avenida 25%, a cadeirinha e o banquinho da área industrial 15% */
 /* v10, Terraço Suíça: o foyer (a calçada do andar) com poltronas de veludo (compra única, `up.assento = 'poltrona'`; a espera 35% mais devagar) e o piano de cauda que
    já vem com o ponto: obstáculo fixo dos caminhos (fora da área das mesas; quem toca chega na 4a-5) */
-const TERRACO = { poltrona:{ nome:'Poltronas do foyer', cost:600, slow:0.35 }, piano:{ x0:28, y0:404, x1:148, y1:520 } };
+const TERRACO = { poltrona:{ nome:'Poltronas do foyer', cost:600, slow:0.35 }, piano:{ x0:28, y0:404, x1:148, y1:520 },
+  /* v10.4: a música ao vivo (equipe.musica: 0 sem, 1 quarteto, 2 pianista; só no Terraço): effect = a paciência nas mesas cai tanto mais devagar; amb = soma no Ambiente do Gurugol; piano = a afinação por dia */
+  musica:[ null, { nome:'Quarteto de cordas', pay:150, effect:0.3, amb:0.75 }, { nome:'Pianista', pay:120, piano:30, effect:0.2, amb:1.25 } ] };
+function musicaDe(eq){ return TERRACO.musica[eq && eq.musica] || null; }
+function musicaPay(m){ return m ? m.pay + (m.piano || 0) : 0; }
+function musicaOk(ponto){ return (ponto || PONTOS[0]).nivel === 4; }   // nem no modo dev: a música é só do Terraço
 function assentoSlow(a){ return a === 'sofa' ? AVENIDA.sofa.slow : a === 'poltrona' ? TERRACO.poltrona.slow : a ? INDUSTRIAL.assento.slow : 0; }
 /* obstáculos fixos do ponto (além das mesas): o piano do Terraço, no formato dos de mesaBox */
 function fixosDe(ponto){ return ponto && ponto.id === 'terraco' ? [{ x0:TERRACO.piano.x0, y0:TERRACO.piano.y0, x1:TERRACO.piano.x1, y1:TERRACO.piano.y1 }] : []; }
@@ -657,11 +666,11 @@ const CRIT = { bonus:10, vipBonus:20 };   // pontos (v8.3.8; eram R$)
 const WASH = { base:0.3, perPile:2.5 };               // segundos na pia
 const TRASH = { cap:6, empty:2, smell:0.3, tritura:30, fumaca:{ cresce:30, raio:900 }, pos:{ x:723, y:530 } };   // v9.6.11: fumaca: cresce = segundos até o raio máximo (px); pos = onde fica a lixeira   // lixeira: capacidade, tempo para esvaziar, cheiro quando cheia, segundos do Triturador por gominho (v8.3.10)
 function couvertEffect(eq){ return STAFF.couvert.effect * (eq.taxa ? 1 - STAFF.couvert.feeCut : 1); }
-function couvertOk(ponto){ return devLivre() || (ponto || PONTOS[0]).nivel >= STAFF.couvert.nivel; }   // no modo dev, em qualquer ponto
+function couvertOk(ponto){ const n = (ponto || PONTOS[0]).nivel; return n === STAFF.couvert.nivel || (devLivre() && n < STAFF.couvert.nivel); }   // v10.4: só na Avenida (no modo dev, também nos níveis 1 e 2); no Terraço quem toca é a música
 /* ambiente do salão: quanto a paciência nas mesas cai mais devagar (TV, som e couvert se somam) */
 function ambienteEffect(eq){
   const tm = tvsModo(eq);
-  return (eq.tv ? STAFF.tv.effect : 0) + (eq.som ? STAFF.som.effect : 0) + (eq.couvert ? couvertEffect(eq) : 0) + (tm ? tm.effect : 0);
+  return (eq.tv ? STAFF.tv.effect : 0) + (eq.som ? STAFF.som.effect : 0) + (eq.couvert ? couvertEffect(eq) : 0) + (tm ? tm.effect : 0) + (musicaDe(eq) ? musicaDe(eq).effect : 0);
 }
 function payroll(eq){
   let v = STAFF.tonhao.levels[eq.tonhao].pay;
@@ -671,6 +680,7 @@ function payroll(eq){
   if (eq.anselmo && !eq.anselmoFora) v += STAFF.anselmo.levels[eq.anselmo].pay;   // v9.5
   if (eq.lia && !eq.liaFora) v += STAFF.lia.pay;   // v10.2
   if (eq.couvert) v += STAFF.couvert.pay;
+  v += musicaPay(musicaDe(eq));   // v10.4
   if (eq.tv) v += STAFF.tv.pay;
   if (eq.som) v += STAFF.som.pay;
   const tm = tvsModo(eq); if (tm) v += tm.pay;
@@ -678,7 +688,7 @@ function payroll(eq){
 }
 /* v8.1: dinheiro comprometido. A folha e a divulgação ficam reservadas ao abrir o dia (e saem no fim dele); o que não
    couber fica de fora, nesta ordem (a divulgação vira boca a boca antes de tudo) */
-const FOLHA_CORTE = [['couvert', 'Couvert'], ['som', 'som'], ['tv', 'TV'], ['tvs', 'TVs'], ['liaFora', 'a Lia'], ['anselmoFora', 'o Anselmo'], ['camiFora', 'a Cami'], ['jocaUp', 'aumento do Joca'], ['dani', 'aumento da Dani'], ['tonhao', 'aumento do Tonhão'], ['jocaFora', 'o Joca']];   // v9.3: a Cami; v9.5: o Anselmo vem antes dela
+const FOLHA_CORTE = [['musica', 'música'], ['couvert', 'Couvert'], ['som', 'som'], ['tv', 'TV'], ['tvs', 'TVs'], ['liaFora', 'a Lia'], ['anselmoFora', 'o Anselmo'], ['camiFora', 'a Cami'], ['jocaUp', 'aumento do Joca'], ['dani', 'aumento da Dani'], ['tonhao', 'aumento do Tonhão'], ['jocaFora', 'o Joca']];   // v9.3: a Cami; v9.5: o Anselmo vem antes dela
 /* tira de eq o próximo item da folha (o Tonhão e a Dani perdem 1 nível de aumento; a Dani não sai da equipe) e devolve o nome; nada a tirar: null */
 function folhaCorta(eq){
   const c = FOLHA_CORTE.find(k => k[0] === 'tonhao' ? eq.tonhao > 0 : k[0] === 'dani' ? eq.dani > 1 : k[0] === 'jocaUp' ? eq.joca > 2 && !eq.jocaFora : k[0] === 'jocaFora' ? eq.joca > 0 && !eq.jocaFora : k[0] === 'camiFora' ? eq.cami > 0 && !eq.camiFora : k[0] === 'anselmoFora' ? eq.anselmo > 0 && !eq.anselmoFora : k[0] === 'liaFora' ? eq.lia > 0 && !eq.liaFora : eq[k[0]]);
@@ -689,7 +699,7 @@ function folhaCorta(eq){
   else if (c[0] === 'camiFora') eq.camiFora = true;   // v9.3: idem para a Cami
   else if (c[0] === 'anselmoFora') eq.anselmoFora = true;   // v9.5: e para o Anselmo
   else if (c[0] === 'liaFora') eq.liaFora = true;   // v10.2: e para a Lia (vem logo depois das TVs)
-  else eq[c[0]] = c[0] === 'tvs' ? 0 : false;
+  else eq[c[0]] = c[0] === 'tvs' || c[0] === 'musica' ? 0 : false;
   return c[0] === 'jocaFora' ? 'o Joca (sem salário hoje)' : c[0] === 'camiFora' ? 'a Cami (sem salário hoje)' : c[0] === 'anselmoFora' ? 'o Anselmo (sem salário hoje)' : c[0] === 'liaFora' ? 'a Lia (sem salário hoje)' : c[1];
 }
 /* o que fica de fora ao abrir o dia com `bank` no caixa (sem mexer em eq) */
@@ -712,6 +722,7 @@ function folhaItens(eq, div){
   if (eq.anselmo > 0) out.push('Anselmo');
   if (eq.lia > 0) out.push('Lia');
   if (eq.couvert) out.push('couvert');
+  if (eq.musica) out.push(eq.musica === 2 ? 'pianista e afinação' : 'quarteto de cordas');   // v10.4
   if (eq.tv) out.push('TV');
   if (eq.som) out.push('som');
   if (eq.tvs) out.push('TVs');
@@ -932,7 +943,8 @@ const AVAL_DECOR = {
   foto:'Que foto bonita na parede!', giz:'Adorei o quadro de giz!', placa:'"Comida é afeto": é isso mesmo!',
   toalha:'A toalha xadrez dá um charme!',
   violeta:'Que violetas lindas na janela!', anturio:'Adorei o antúrio na entrada!', pendente:'A samambaia no toldo ficou linda!',
-  tulipa:'Que tulipas lindas na calçada!', copo:'Adorei os copos-de-leite!', orquidea:'Que orquídea mais delicada!'
+  tulipa:'Que tulipas lindas na calçada!', copo:'Adorei os copos-de-leite!', orquidea:'Que orquídea mais delicada!',
+  ikebana:'Que ikebana mais elegante!', orqArranjo:'O arranjo de orquídeas é um espetáculo!', campo:'Adorei as flores do campo!'
 };
 function avalComentario(r, bravo, lixo, nivel, decor, fria, semVeg, tipo, pouco){
   if (bravo) return pick(AVAL_BRAVO[bravo]);
@@ -1270,7 +1282,7 @@ const BIA_IDS = ['tenis', 'corrida', 'bandeja', 'sudoku'];
 function upgradeCartao(id){ return BIA_IDS.indexOf(id) >= 0 ? 'bia' : 'melhorias'; }
 const HIST_NOMES = { bia:'Bia', tonhao:'Tonhão', dani:'Dani', joca:'Joca', cami:'Cami', anselmo:'Anselmo', lia:'Lia' };
 const CAIXA_MAX = 14;                                 // livro-caixa (v7.2): quantos dias da carreira ficam guardados
-const VERSAO = 'v10.3';                                // vai no resumo do Caixa
+const VERSAO = 'v10.4';                                // vai no resumo do Caixa
 const DIVULGA_DIA = 4;                                // antes disso, o movimento é o da inauguração (sem custo); v9.0.2: dia 4, e o padrão é o boca a boca
 function divulgaAberta(n, sv){ return devLivre() || n >= DIVULGA_DIA && !(sv && sv.convDiv === 'pend'); }   // no modo dev, desde o dia 1; v9.0.3: no Modo História, só depois da conversa
 /* v9.6.4: a Efood (os entregadores) só abre depois da conversa dos entregadores, no Modo História; antes dela, nenhum tipo com `retira` vem na agenda */
@@ -1445,6 +1457,7 @@ const MANUAL = [
   { id:'l-tvs',        aba:'lojinha', nome:'TVs com sertanejo', linha:'A paciência nas mesas dura mais; sem anúncios, mais ainda.' },
   { id:'l-assento',    aba:'lojinha', nome:'Assento da espera', linha:'Quem espera sentado perde a paciência mais devagar.' },
   { id:'l-couvert',    aba:'lojinha', nome:'Couvert artístico', linha:'Música ao vivo: a paciência nas mesas dura mais, e cada mesa paga o couvert.' },
+  { id:'l-musica',     aba:'lojinha', nome:'Música ao vivo', linha:'Quarteto ou pianista: a paciência nas mesas dura mais e o ambiente melhora.' },
   { id:'l-fogao',      aba:'lojinha', nome:'Fogão industrial', linha:'Uma boca a mais: o Tonhão faz mais pratos ao mesmo tempo.' },
   { id:'l-cardapio',   aba:'lojinha', nome:'Cardápio', linha:'Cursos do Tonhão e da equipe. Cada curso ensina pratos novos e dá experiência; o avançado deixa os pratos mais caros e caprichados.' },
   { id:'l-salao',      aba:'lojinha', nome:'Salão', linha:'Compre, venda e arrume as mesas.' },

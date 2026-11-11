@@ -38,7 +38,7 @@ if(process.env.CONTAS) Object.assign(L.CONTAS,JSON.parse(process.env.CONTAS));
 if(process.env.INGRED) Object.assign(L.INGRED,JSON.parse(process.env.INGRED));
 if(process.env.CARDAPIO){ const c=JSON.parse(process.env.CARDAPIO); for(const k in c) L.CARDAPIO[k].preco=c[k]; }   // v8.3.8: CARDAPIO='{"pf":25}' testa os preços dos pratos
 if(process.env.MAIS) Object.assign(L.MAIS,JSON.parse(process.env.MAIS));   // v8.3.8: MAIS='{"cada":0.6}' testa o 2º pedido
-const vigs={aprovado:0,advertencia:0,multa:0}; /* v9.4: as visitas do fiscal (só com MANUT=com e na Avenida) */ const jocaDia=[], espDia=[], camiDia=[], anselmoDia=[], liaDia=[]; const ND=+process.env.DIAS||14, MUDA=800; /* v8.6.9: cursoDias guarda o dia em que cada curso foi comprado (id+nível) */ const cursoDias={}; const rows={}, chega=[]; let negs=0, forcs=0, fechou=0; const capDia={1:[],2:[],3:[],4:[],5:[],6:[],7:[],8:[],9:[]}, mudaDia=[], mudaAv=[], mudaTe=[], lucroGar=[], lucroInd=[], lucroAv=[], lucroTe=[], negPos=[], negPosAv=[], negPosTe=[];   // v8.7: o dia em que cada capítulo foi cumprido
+const vigs={aprovado:0,advertencia:0,multa:0}; /* v9.4: as visitas do fiscal (só com MANUT=com e na Avenida) */ const jocaDia=[], espDia=[], camiDia=[], anselmoDia=[], liaDia=[], musicaDia=[]; const ND=+process.env.DIAS||14, MUDA=800; /* v8.6.9: cursoDias guarda o dia em que cada curso foi comprado (id+nível) */ const cursoDias={}; const rows={}, chega=[]; let negs=0, forcs=0, fechou=0; const capDia={1:[],2:[],3:[],4:[],5:[],6:[],7:[],8:[],9:[]}, mudaDia=[], mudaAv=[], mudaTe=[], lucroGar=[], lucroInd=[], lucroAv=[], lucroTe=[], negPos=[], negPosAv=[], negPosTe=[];   // v8.7: o dia em que cada capítulo foi cumprido
 for(let k=0;k<N;k++){
   g.save=L.normSave({}); g.up=g.save.up; g.boughtFor=0; g.buildTables(); let semMesa=0, chegou=0, vermVisto=false, runAbre={}; if(process.env.LIBERA==='0') for(const x of L.LIBERA) g.save.libera[x.id]=2;
   for(let n=1;n<=ND;n++){
@@ -62,8 +62,8 @@ for(let k=0;k<N;k++){
       if(n>=3 || g.save.cap>=2){
         const e0=n>=3?(FULL.map(capT).find(e=>L.payroll(L.normSave({equipe:e}).equipe)+(L.divulgaOf(DIV).cost)<=g.save.bank)||{}):{};
         const e=Object.assign({},e0,L.HIST.on?{dani:g.save.cap>=2?Math.max(1,e0.dani||0):0}:{});   // v8.7: a Dani só chega no cap. 2 (aprendiz, sem salário)
-        const l0=g.save.equipe.lia||0, j0=g.save.equipe.joca||0, jt0=g.save.equipe.jocaTasks, c0=g.save.equipe.cami||0, ct0=g.save.equipe.camiTasks, a0=g.save.equipe.anselmo||0;   // v9.2: o Joca (contratado pelo bot) segue de um dia para o outro; v9.3: e a Cami
-        g.save.equipe=L.normSave({equipe:Object.assign({daniTasks:['pratos','lavar','lixo']},e,{joca:j0,jocaTasks:jt0,cami:c0,camiTasks:ct0})}).equipe; g.save.equipe.anselmo=g.ponto.nivel>=3?a0:0; g.save.equipe.lia=g.ponto.nivel>=4?l0:0;   /* v10.2: idem para a Lia */   // v9.5: o normSave sem salão trata como Garagem e tiraria o Anselmo
+        const l0=g.save.equipe.lia||0, j0=g.save.equipe.joca||0, jt0=g.save.equipe.jocaTasks, c0=g.save.equipe.cami||0, ct0=g.save.equipe.camiTasks, a0=g.save.equipe.anselmo||0, mu0=g.save.equipe.musica||0;   // v9.2: o Joca (contratado pelo bot) segue de um dia para o outro; v9.3: e a Cami
+        g.save.equipe=L.normSave({equipe:Object.assign({daniTasks:['pratos','lavar','lixo']},e,{joca:j0,jocaTasks:jt0,cami:c0,camiTasks:ct0})}).equipe; g.save.equipe.anselmo=g.ponto.nivel>=3?a0:0; g.save.equipe.lia=g.ponto.nivel>=4?l0:0; g.save.equipe.musica=g.ponto.nivel>=4?mu0:0;   /* v10.4: a música segue de um dia para o outro */   /* v10.2: idem para a Lia */   // v9.5: o normSave sem salão trata como Garagem e tiraria o Anselmo
         if(process.env.JOCA!=='0'&&g.cartaoAberto('joca')){   // contrata com R$ 300 de folga acima da folha e sobe quando a experiência deixa
           const sobraJ=c=>g.save.bank-L.payroll(g.save.equipe)-c>=300, lj=g.save.equipe.joca;
           if(!lj&&sobraJ(L.STAFF.joca.levels[2].pay)&&g.setStaff('joca',2)){ jocaDia.push(n); g.save.equipe.jocaTasks=['lixo','pratos','lavar']; }
@@ -77,11 +77,12 @@ for(let k=0;k<N;k++){
           if(g.save.equipe.cami&&!g.save.camiCursos.agil&&sobraC(400)) g.buyCamiCurso('agil');
         }
         if(process.env.LIA!=='0'&&g.ponto.nivel>=4&&g.cartaoAberto('lia')&&!g.save.equipe.lia&&g.save.bank-L.payroll(g.save.equipe)-L.STAFF.lia.pay>=300&&g.setStaff('lia',1)) liaDia.push(n);   // v10.2: a Lia (R$ 80 por dia) com R$ 300 de folga
+        if(process.env.MUSICA!=='0'&&g.ponto.nivel>=4&&!g.save.equipe.musica&&g.save.bank-L.payroll(g.save.equipe)-L.musicaPay(L.TERRACO.musica[+process.env.MUSICA||2])>=300&&g.setStaff('musica',+process.env.MUSICA||2)) musicaDia.push(n);   // v10.4: o pianista (R$ 150 por dia, afinação inclusa; MUSICA=1 o quarteto) com R$ 300 de folga
         if(process.env.ANSELMO!=='0'&&g.ponto.nivel>=3&&g.cartaoAberto('anselmo')&&!g.save.equipe.anselmo&&g.save.bank-L.payroll(g.save.equipe)-L.STAFF.anselmo.levels[2].pay>=300&&g.setStaff('anselmo',2)) anselmoDia.push(n);   // v9.5: o Anselmo (R$ 90 por dia) com R$ 300 de folga
         if(g.up.confCaseira&&g.save.equipe.dani>1&&process.env.DOCE!=='0'){ const dt=g.save.equipe.daniTasks.filter(t=>t!=='doce'); g.save.equipe.daniTasks=dt.slice(0,Math.max(0,L.STAFF.dani.levels[g.save.equipe.dani].tasks-1)).concat('doce'); }   // a Dani serve os doces (uma das vagas)
         if(n>=3) g.save.divulga=DIV;
         if(g.up.tvs&&g.ponto.nivel===2&&L.payroll(Object.assign({},g.save.equipe,{tvs:1}))+(L.divulgaOf(DIV).cost)<=g.save.bank) g.save.equipe.tvs=1;   // v9: as TVs com anúncios
-        if(g.ponto.nivel>=3&&L.payroll(Object.assign({},g.save.equipe,{couvert:true,taxa:true}))+(L.divulgaOf(DIV).cost)+400<=g.save.bank) Object.assign(g.save.equipe,{couvert:true,taxa:true});   // v9.1: o couvert artístico com a taxa
+        if(g.ponto.nivel===3&&L.payroll(Object.assign({},g.save.equipe,{couvert:true,taxa:true}))+(L.divulgaOf(DIV).cost)+400<=g.save.bank) Object.assign(g.save.equipe,{couvert:true,taxa:true});   // v9.1: o couvert artístico com a taxa
         for(let t=1;t<=g.save.equipe.dani;t++) if(!vistoD.has(k+':'+t)){ vistoD.add(k+':'+t); nivDani[t-1].push(n); }   // v8.9
         for(let t=0;t<=g.save.equipe.tonhao;t++) if(!vistoT.has(k+':'+t)){ vistoT.add(k+':'+t); nivDia[t].push(n); }   // v8.8: o dia em que ele chega a cada nível
       }
@@ -121,6 +122,7 @@ console.log('DANI | dia médio em que chega ao nível (aprendiz = 1) '+nivDani.m
 console.log('DANI | XP e nível pago no fim do dia '+[5,7,9,11,13,16].filter(n=>xpDani[n]).map(n=>n+': '+(xpDani[n].reduce((x,y)=>x+y[0],0)/xpDani[n].length).toFixed(1)+' XP, nível '+(xpDani[n].reduce((x,y)=>x+y[1],0)/xpDani[n].length).toFixed(1)).join(' · '));
 { const med=a=>a.length?a.sort((x,y)=>x-y)[Math.floor(a.length/2)]:'-'; console.log('AVENIDA (v9.3) | espresso comprado em',espDia.length+'/'+N,'carreiras, dia mediano',med(espDia),'| Cami contratada em',camiDia.length+'/'+N,'carreiras, dia mediano',med(camiDia)); }
 { const med=a=>a.length?a.sort((x,y)=>x-y)[Math.floor(a.length/2)]:'-'; console.log('LIA (v10.2) | contratada em',liaDia.length+'/'+N,'carreiras, dia mediano',med(liaDia)); }
+{ const med=a=>a.length?a.sort((x,y)=>x-y)[Math.floor(a.length/2)]:'-'; console.log('MUSICA (v10.4) | contratada em',musicaDia.length+'/'+N,'carreiras, dia mediano',med(musicaDia)); }
 { const med=a=>a.length?a.sort((x,y)=>x-y)[Math.floor(a.length/2)]:'-'; console.log('ANSELMO (v9.5) | contratado em',anselmoDia.length+'/'+N,'carreiras, dia mediano',med(anselmoDia)); }
 { const jd=jocaDia.sort((x,y)=>x-y); console.log('JOCA (v9.2) | contratado em',jd.length+'/'+N,'carreiras, no dia mediano',jd.length?jd[Math.floor(jd.length/2)]:'-'); }
 console.log('TONHAO | dia médio em que chega ao nível '+nivDia.map((a,i)=>(i+1)+': '+(a.length?(a.reduce((x,y)=>x+y,0)/a.length).toFixed(1)+' ('+a.length+'/'+N+')':'nunca')).join(' · '));

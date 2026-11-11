@@ -933,7 +933,7 @@ class Game {
     const decor = DECOR.filter(d => decorOn(this, d.id)).map(d => d.id), toalha = !!(g.table && g.table.toalha);
     if (toalha) decor.push('toalha');
     const amb = A.amb.base + (eq.tv ? A.amb.tv : 0) + (eq.som ? A.amb.som : 0) + (this.seloOn ? A.amb.selo : 0) + (this.maquinaOn ? A.amb.maquina : 0) + (this.up.ventilador ? A.amb.ventilador : 0) + (eq.tvs === 1 ? A.amb.tvs : eq.tvs === 2 ? A.amb.tvsPlus : 0) +
-      (g.coffee ? A.amb.cafe : 0) + (this.up.confGourmet && (g.docesDados > 0 || g.docesMarmDados > 0) ? (this.up.confAlta ? A.amb.doceAlta : A.amb.doce) : 0) + (g.drinksDados > 0 ? A.amb.drink : 0) + (this.up.louca ? A.amb.louca : 0) + (eq.couvert ? A.amb.couvert : 0) + (this.trashFull ? A.amb.lixo : 0) +
+      (g.coffee ? A.amb.cafe : 0) + (this.up.confGourmet && (g.docesDados > 0 || g.docesMarmDados > 0) ? (this.up.confAlta ? A.amb.doceAlta : A.amb.doce) : 0) + (g.drinksDados > 0 ? A.amb.drink : 0) + (this.up.louca ? A.amb.louca : 0) + (eq.couvert ? A.amb.couvert : 0) + (musicaDe(eq) ? musicaDe(eq).amb : 0) + (this.trashFull ? A.amb.lixo : 0) +
       decor.reduce((a, id) => a + (id === 'toalha' ? A.amb.toalha : decorOf(id).amb != null ? decorOf(id).amb : A.amb[decorOf(id).grupo === 'plantas' ? 'planta' : 'rosa']), 0);
     // o entregador (v8.6): a espera no balcão conta na espera e na agilidade
     // v8.6.7: cada um avalia só o que viveu (null: não viu). Bravo: da fila, só a espera; antes do pedido, mais agilidade e ambiente;
@@ -1213,6 +1213,7 @@ class Game {
     if (key === 'lia' && !devLivre() && val < old) return false;   // v10.2: a Lia não sai
     if (key === 'lia' && val && (!(this.ponto.nivel >= 4 || devLivre()) || !this.cartaoAberto('lia') || val !== 1 || (!devLivre() && old > 0))) return false;   // v10.2: contratar é definitivo, só no Terraço
     if (key === 'couvert' && val && !couvertOk(this.ponto)) return false;
+    if (key === 'musica' && (!musicaOk(this.ponto) || !(val >= 0 && val < TERRACO.musica.length))) return false;   // v10.4: só no Terraço, 0 (sem), 1 (quarteto) ou 2 (pianista)
     if (key === 'tvs' && val && (!this.up.tvs || this.ponto.nivel !== 2)) return false;   // v9: só com as TVs instaladas
     eq[key] = val;
     if (payroll(eq) > this.save.bank && payroll(eq) > payroll(Object.assign({}, eq, { [key]:old }))){ eq[key] = old; return false; }
@@ -1845,6 +1846,12 @@ class Game {
     writeSave(sv); return true;
   }
   /* v10.2.1: sobe ou desce um nível da pessoa (tonhao, dani, joca, cami, anselmo ou lia), só nos níveis que existem para ela */
+  /* v10.4: no Terraço, passa por sem música → quarteto → pianista (de graça; fora do Terraço não faz nada) */
+  devMusica(){
+    if (!DEV.on || !musicaOk(this.ponto)) return false;
+    const eq = this.save.equipe; eq.musica = ((eq.musica || 0) + 1) % TERRACO.musica.length;
+    writeSave(this.save); return true;
+  }
   devNivel(quem, delta){
     const NIV = { tonhao:[0, 1, 2, 3, 4], dani:[0, 1, 2, 3, 4], joca:[0, 2, 3, 4], cami:[0, 1, 2, 3, 4], anselmo:[0, 2, 3], lia:[0, 1] };
     if (!DEV.on || !NIV[quem]) return false;

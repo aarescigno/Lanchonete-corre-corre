@@ -1,6 +1,6 @@
 # v10.4 — Música, flores e o rebalanceamento do Terraço (etapa 4a-5)
 
-**Situação:** aprovada (11/11)
+**Situação:** entregue em 11/11
 **Origem:** `docs/PLANO.md`, sessão 4a-5 (planejada em 10/11, com as decisões da 4a em "Terraço Suíça: decisões de 10/11"); pedidos de ambiente do nível 4 de 21 e 22/10 (`docs/PROPOSTAS.md`). Levada para este formato em 11/11.
 
 ## Objetivo
@@ -69,19 +69,19 @@ No Terraço, o salão ganha música ao vivo: um quarteto de cordas ou um pianist
 - `tests/bot.js`, `tests/balance.js` e `tests/carreira.js`: a chave `MUSICA`, sem couvert no Terraço.
 
 ## Tarefas
-- [ ] T1 `tests/smoke66.js` com os critérios CA1 a CA7 (falhando), no `tests/run_all.sh`.
-- [ ] T2 Constantes: `TERRACO.musica`, `couvertOk`, `ambienteEffect`, `payroll`, `FOLHA_CORTE`, `folhaCorta`, `folhaItens`, o `deixa` da Avenida.
-- [ ] T3 Save: `normEquipe` com `musica` e o couvert só no nível 3; a troca de ponto.
-- [ ] T4 O Ambiente do Gurugol com a música.
-- [ ] T5 O cartão "Música ao vivo" na lojinha, no lugar do couvert no Terraço.
-- [ ] T6 O desenho do pianista (tampa aberta) e do quarteto, com as notinhas e o `prefers-reduced-motion`.
-- [ ] T7 As 3 flores do foyer: `DECOR`, `AVAL_DECOR` e o desenho.
-- [ ] T8 Manual: `l-musica` e as fichas do Terraço conferidas.
-- [ ] T9 Modo dev: o botão "Música: trocar".
-- [ ] T10 `bot.js`, `balance.js` e `carreira.js`: `MUSICA` (padrão 2 no Terraço), sem couvert no Terraço; a carreira contrata o pianista quando sobra R$ 300 depois da folha.
-- [ ] T11 Rebalanceamento pelos passos das Regras, com a tabela medida em Testes.
-- [ ] T12 Capturas `tests/shot_v10_4.js` com as Checagens de fim de sessão do Terraço; olhar e apagar.
-- [ ] Fechamento: `VERSAO`, `vtag`, `#ov-ver`, `docs/RESUMO.md`, `docs/TESTES.md`, esta spec como entregue, a etapa arquivada no `docs/PLANO-FEITO.md`, `tests/run_all.sh --tudo` verde, PR e merge.
+- [x] T1 `tests/smoke66.js` com os critérios CA1 a CA7 (falhando), no `tests/run_all.sh`.
+- [x] T2 Constantes: `TERRACO.musica`, `couvertOk`, `ambienteEffect`, `payroll`, `FOLHA_CORTE`, `folhaCorta`, `folhaItens`, o `deixa` da Avenida.
+- [x] T3 Save: `normEquipe` com `musica` e o couvert só no nível 3; a troca de ponto.
+- [x] T4 O Ambiente do Gurugol com a música.
+- [x] T5 O cartão "Música ao vivo" na lojinha, no lugar do couvert no Terraço.
+- [x] T6 O desenho do pianista (tampa aberta) e do quarteto, com as notinhas e o `prefers-reduced-motion`.
+- [x] T7 As 3 flores do foyer: `DECOR`, `AVAL_DECOR` e o desenho.
+- [x] T8 Manual: `l-musica` e as fichas do Terraço conferidas.
+- [x] T9 Modo dev: o botão "Música: trocar".
+- [x] T10 `bot.js`, `balance.js` e `carreira.js`: `MUSICA` (padrão 2 no Terraço), sem couvert no Terraço; a carreira contrata o pianista quando sobra R$ 300 depois da folha.
+- [x] T11 Rebalanceamento pelos passos das Regras, com a tabela medida em Testes.
+- [x] T12 Capturas `tests/shot_v10_4.js` com as Checagens de fim de sessão do Terraço; olhar e apagar.
+- [x] Fechamento: `VERSAO`, `vtag`, `#ov-ver`, `docs/RESUMO.md`, `docs/TESTES.md`, esta spec como entregue, a etapa arquivada no `docs/PLANO-FEITO.md`, `tests/run_all.sh --tudo` verde, PR e merge.
 
 ## Testes
 - **`tests/smoke66.js` (novo;** o plano o chamava de `smoke64`, número já usado pela D-2): uma checagem por critério, de CA1 a CA7.
@@ -90,9 +90,29 @@ No Terraço, o salão ganha música ao vivo: um quarteto de cordas ou um pianist
 - No fechamento: quantas checagens o `smoke66` tem e a tabela de calibração (cada mudança, antes e depois).
 
 ## Decisões em aberto
-Nenhuma. (Fechadas em 11/11: o quarteto com 30% de paciência; couvert nunca no Terraço e música só no Terraço, também no modo dev, com o botão no painel; o aluguel sobe para 1.500 e depois 1.800.)
+Nenhuma. (Fechadas em 11/11: o quarteto com 30% de paciência; couvert nunca no Terraço e música só no Terraço, também no modo dev, com o botão no painel; o aluguel sobe para 1.500 e depois 1.800. Na execução, o usuário decidiu baixar o cardápio, ver Desvios.)
+
+## Medido
+- `tests/smoke66.js`: 46 checagens (CA1 a CA7 e o desenho dos 3 modos), no `run_all.sh`. `smoke3` (flaky, passa sozinho), `smoke6`, `smoke30`, `smoke53` e `smoke60` ajustados (o número, não a regra: couvert e taxa só na Avenida, 15 enfeites, 66 fichas, cardápio e metas do Terraço).
+- Terraço, 80 rodadas, `BOT=afiado EQUIPE=auto ALTA=1 LIA=1 CAMI=4 CAFESESP=1 AUTOR=1 MUSICA=2 JOCA=4 CONFEITARIA=1` (a equipe toda de verdade; o comando do CA8 sem `JOCA`/`CONFEITARIA` não contrata Joca, Cami nem Anselmo):
+
+| Mudança | Antes | Depois |
+|---|---|---|
+| (partida: música e cursos da 4a-3/4a-4) | metas 100%, 3★ 100%, ganho sobre a Avenida ~R$ 2.800/dia | — |
+| `cardapio` 2,4 → 1,3 (decisão do usuário; com aluguel 1.200) | ganho ~R$ 2.800 | ~R$ 850 (1,6 dava 1.337, 1,6 com aluguel 1.500 dava 8 dias no negativo, 1,4 dava 970) |
+| `metaF` 9 → 12 (passo 1, em saltos medidos) | metas 98–99% | ~90% |
+| `expertF` 6 → 8,5 (passo 2) | 3★ 92% | ~60% (61% com o pianista, 69% com o quarteto) |
+| música `amb` 1 → 0,75 e 1,5 → 1,25 (passo 6) | nota 4,86 | 4,86 (o bot afiado fica no teto; na carreira a nota é ~4,7) |
+
+- `DIAS=75 node carreira.js 12`: ganho do Terraço sobre a Avenida R$ 868 por dia (Avenida sozinha, `MUDA=2`: R$ 934), 0 dias no negativo depois da mudança, nota do Gurugol ~4,7, cap. 9 em 1 a 2 dias depois do cap. 8 (12/12).
+- Outros pontos: `balance.js 40` da Garagem, da área industrial e da Avenida sem mudança (antes e depois iguais).
 
 ## Desvios
-(No fechamento.)
+- **Rebalanceamento fora dos passos da spec (pedido ao usuário e aprovado):** com as regras da 4a-3 e 4a-4 o Terraço dava ~R$ 2.800 por dia a mais que a Avenida, e o aluguel até 1.800 só levava a ~R$ 2.200. O usuário mandou baixar o cardápio do Terraço (×2,4 → ×1,3); `metaF` e `expertF` foram achados por varredura (`PONTO_CFG`) em saltos de 0,5 a 1, em vez de um passo de 0,5 por rodada, e o aluguel ficou em 1.200.
+- **O comando do CA8 da spec não contrata a equipe toda** (falta `JOCA=4 CONFEITARIA=1`); a calibração usou a equipe toda. Com o comando literal (só Tonhão, Dani, Lia e música) e os números novos, o afiado passa só 33% das metas e 2% das 3★; o `carreira.js` (bot comum, equipe contratada aos poucos) passa ~30 a 70% das metas dos últimos dias. Se isso for difícil demais para quem joga, é a primeira coisa a rever (aluguel ou `metaF`) na 4b ou no polimento.
+- **Regras corrigidas:** a música soma `amb` 0,75 (quarteto) e 1,25 (pianista), não 1 e 1,5; o Terraço passa a ter cardápio ×1,3, metas ×12 e 3ª estrela ×8,5 (aluguel 1.200, grupos 0,50).
+- **Nota do Gurugol do bot afiado ficou em 4,86** (acima de 4,8) mesmo com o passo 6 aplicado: o `balance.js` satura perto de 4,9; a carreira (4,7) está na faixa.
+- **O `smoke66` é de v10.4** (o plano dizia `smoke64`). `menu_fit.py` não rodou neste ambiente (falta o `playwright` do Python); o menu não foi mexido.
+- **Capturas** tiradas e apagadas: pianista com a tampa aberta, quarteto (depois de diminuído e baixado para não cobrir as cadeiras da mesa 3), flores no foyer, cartão da música (o ícone virou um violino) e celular deitado (740×360).
 
 **Modelo:** Sonnet, esforço alto. Os itens seguem moldes, mas o rebalanceamento é por tentativa, olhando o Terraço inteiro, e há desenho novo (pianista e quarteto).
