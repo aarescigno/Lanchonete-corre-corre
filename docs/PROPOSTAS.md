@@ -4,6 +4,13 @@ Registro das ideias e dos retornos de quem jogou, com o texto original, e de ond
 
 ---
 
+## 11/11/2026 — usuário: modo dev completo
+> "O modo dev precisa açambarcar todos esses recursos novos, tipo poder pular para qualquer etapa, adicionar dinheiro, revelar pontos da história etc. Planeje essa implementação pra já, como está está fraco"
+
+**Destino:** Etapa D do `docs/PLANO.md` (D-1, v10.2.1: jeitos Livre e De verdade com o Modo História, abas, pular para o começo de qualquer capítulo, dinheiro e banco, equipe pessoa por pessoa; D-2, v10.2.2: aba História com cumprir objetivo, assistir conversas e revelar Manual e lojinha; aba Hoje para forçar clima, quebra, fiscal, gripe, VIP e apito). Regra nova: toda etapa traz o seu gancho no painel.
+
+---
+
 ## 10/11 — usuário: planejar a 4a com o Fable e decidir por conta
 > "Bora de próxima etapa, com Fable mesmo para planejamento, use de agentes para aplicar o planejado, terei pouco tempo para te responder, então tome boa parte das decisões por conta"
 
