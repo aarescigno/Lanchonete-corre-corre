@@ -49,7 +49,7 @@ const CENAS = [
   ['conversa_cap8_depois', BASE + SALVA('terraco', "{cap:8,conversa:'depois'}") + "g.setState('menu'); L.playCareer();"],
   ['trilha_tempos', JOGO(COMP) + TEMPOS_CENA + "g.update(0.05); g.fx=[]; g.update=function(){};"],
   ['refeicao_completa', JOGO(COMP) + TG(0, 'casal', { st:'wantBill', tempo:1, nota:[5, 5, 5, 5], pos:"m.principalDado=true;" }) + "g.collectBill(g.tables[0].group||g.groups[g.groups.length-1], g.tables[0]); g.update(0.05); g.update=function(){};"],
-  ['fim_do_dia_completas', BASE + SALVA('terraco', COMP) + "g.startDay(9); g.begin(); g.schedule=[]; g.nextIdx=0; g.money=3500; g.custo=600; g.stats.served=18; g.stats.completas=7; g.finishDay();"],
+  ['fim_do_dia_completas', BASE + SALVA('terraco', COMP) + "L.LIBERA.forEach(x=>{ g.save.libera[x.id]=2; }); g.startDay(9); g.begin(); g.schedule=[]; g.nextIdx=0; g.money=3500; g.custo=600; g.stats.served=18; g.stats.completas=7; g.finishDay();"],
   ['conversa_cap9', BASE + SALVA('terraco', "{cap:9,v10:1,conversa:'antes'}") + MESAS + "g.setState('menu'); L.playCareer();"],
   ['continua_terraco', BASE + SALVA('terraco', "{cap:9,v10:1,conversa:'depois'}") + "g.setState('menu'); L.playCareer(); for(let i=0;i<40;i++) document.getElementById('c').dispatchEvent(new PointerEvent('pointerdown',{clientX:300,clientY:200,pointerType:'mouse',bubbles:true}));"],
   ['menu_terraco', BASE + SALVA('terraco', "{cap:8}") + "g.setState('menu'); L.buildMenu();"],
