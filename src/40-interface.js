@@ -104,7 +104,7 @@ function fecharDev(){
 }
 /* v10.2.1: o painel em abas. Os dois jeitos (Livre: tudo de graça e sem História; De verdade: preços, travas e o Modo História) ficam no alto,
    depois a linha "Agora" e as abas (DEV.aba, só na memória) */
-const DEV_ABAS = [['pular', 'Pular'], ['dinheiro', 'Dinheiro'], ['equipe', 'Equipe e lojinha']];
+const DEV_ABAS = [['pular', 'Pular'], ['historia', 'História'], ['hoje', 'Hoje'], ['dinheiro', 'Dinheiro'], ['equipe', 'Equipe e lojinha']];
 function buildDev(){
   const body = $('dev-body'); clearEl(body);
   const sv = game.save, nota = v => (Math.round(v * 10) / 10).toString().replace('.', ',');
@@ -135,6 +135,8 @@ function buildDev(){
     abas.appendChild(b);
   });
   if (DEV.aba === 'dinheiro') devAbaDinheiro(body, secao, botao);
+  else if (DEV.aba === 'historia') devAbaHistoria(body, secao, botao);
+  else if (DEV.aba === 'hoje') devAbaHoje(body, secao, botao);
   else if (DEV.aba === 'equipe') devAbaEquipe(body, secao, botao, nota);
   else devAbaPular(body, secao, botao, dia);
 }
@@ -159,6 +161,59 @@ function devAbaPular(body, secao, botao, dia){
     [1, 2, 4, 8].forEach(v => botao(r, 'Velocidade ' + v + '×', () => { DEV.vel = v; }, DEV.vel === v));
     const b = botao(r, 'Encerrar o dia agora', () => {}, null);
     b.addEventListener('click', () => { if (game.devFimDia()) fecharDev(); });
+  }
+}
+/* v10.2.2: a aba História (só no De verdade): cumprir o objetivo, assistir a qualquer cena, revelar o Manual e a lojinha, soltar as conversas */
+function devAbaHistoria(body, secao, botao){
+  const sv = game.save;
+  let r;
+  if (!DEV.real){
+    r = secao('História', 'A História só corre no jeito De verdade.');
+    botao(r, 'Passar para De verdade', () => game.devReal(true));
+    return;
+  }
+  r = secao('Objetivo', sv.cap > HISTORIA.length ? 'Os capítulos acabaram.' : game.capLinha());
+  if (sv.cap <= HISTORIA.length) botao(r, 'Cumprir o objetivo agora', () => {
+    if (!game.devCumpre()) return;
+    if (game.state === 'playing' || game.state === 'paused'){ fecharDev(); return; }   // o fim do dia traz a conversa
+    if (game.state !== 'menu') game.setState('menu');
+    fecharDev(); fluxoHistoria(() => game.goShop(game.proxDia));
+  });
+  r = secao('Assistir', 'Toca a cena sem mudar o jogo');
+  const sel = el('select'); sel.id = 'dev-cenas'; sel.setAttribute('aria-label', 'Cena para assistir');
+  devCenas().forEach((c, i) => { const o = el('option', null, c.rot); o.value = String(i); sel.appendChild(o); });
+  sel.value = String(DEV.cena || 0); sel.addEventListener('change', () => { DEV.cena = +sel.value; });
+  r.appendChild(sel);
+  const b = botao(r, 'Assistir', () => {}, null); b.id = 'dev-assistir';
+  b.addEventListener('click', () => { devAssistir(+sel.value || 0); });
+  r = secao('Manual');
+  botao(r, 'Manual: todas as fichas', () => game.devManual(true)); botao(r, 'Manual: só o básico', () => game.devManual(false));
+  r = secao('Lojinha');
+  botao(r, 'Lojinha: todos os cartões', () => game.devLojinha(true)); botao(r, 'Lojinha: como no começo do capítulo', () => game.devLojinha(false));
+  r = secao('Conversas soltas');
+  botao(r, 'Marcar todas como vistas', () => game.devConversas('vistas')); botao(r, 'Deixar pendentes as do dia', () => game.devConversas('pend'));
+}
+/* v10.2.2: a aba Hoje: força o imprevisto do próximo dia que começar (DEV.forca, só na memória) */
+const DEV_HOJE = [
+  ['clima', 'Clima', [['', 'Sorteio'], ['sem', 'Sem clima'], ['chuva', 'Chuva'], ['feriado', 'Feriado']]],
+  ['quebra', 'Quebra', [['', 'Sorteio'], ['nada', 'Nada quebra'], ['fogao', 'Fogão'], ['geladeira', 'Geladeira'], ['cafeteira', 'Cafeteira']]],
+  ['fiscal', 'Fiscal (Avenida em diante)', [['', 'Sorteio'], ['vem', 'Vem'], ['nao', 'Não vem']]],
+  ['gripe', 'Tonhão gripado', [['', 'Sorteio'], ['gripado', 'Gripado'], ['bem', 'Bem']]],
+  ['vip', 'VIP', [['', 'Sorteio'], ['vem', 'Vem um VIP']]],
+  ['apito', 'Apito da fábrica (área industrial)', [['', 'Sorteio'], ['apita', 'Apita'], ['nao', 'Não apita']]]
+];
+function devAbaHoje(body, secao, botao){
+  DEV_HOJE.forEach(([k, titulo, ops]) => {
+    const r = secao(titulo);
+    ops.forEach(([v, t]) => botao(r, t, () => game.devForca(k, v), (DEV.forca[k] || '') === v));
+  });
+  if ((game.state === 'paused' || game.state === 'playing') && game.mode === 'carreira'){
+    let r = secao('No dia', 'Velocidade ' + DEV.vel + '×');
+    [1, 2, 4, 8].forEach(v => botao(r, 'Velocidade ' + v + '×', () => { DEV.vel = v; }, DEV.vel === v));
+    const b = botao(r, 'Encerrar o dia agora', () => {}, null);
+    b.addEventListener('click', () => { if (game.devFimDia()) fecharDev(); });
+    r = secao('Quebrar agora');
+    [['fogao', 'Fogão'], ['geladeira', 'Geladeira'], ['cafeteira', 'Cafeteira']].forEach(([id, t]) => botao(r, t, () => game.devQuebraAgora(id)));
   }
 }
 function devAbaDinheiro(body, secao, botao){
