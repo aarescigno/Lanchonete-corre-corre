@@ -35,7 +35,7 @@ const pegaPrato=(H,grp)=>{ const g=H.g, p=g.kitchen.plates.find(q=>q&&q.group===
   ok(cartoes(H).join()==='banco,caixa' && !H.g.mudancaVisivel,'na Avenida com o cap. 7: sem o cartão Mudança');
   H=jogo(8,'avenida',{ bank:9000 }); notaDe(H.g,4.2); H.L.setShopGrupo('dinheiro'); const lista=cartoes(H).join(); H.L.setShopTab('mudanca');
   ok(H.g.mudancaVisivel && lista==='banco,mudanca,caixa' && H.g.proximoPonto.id==='terraco','com o cap. 8: o cartão Mudança aparece (para o Terraço Suíça)');
-  ok(/Mudança: Terraço Suíça/.test(txt(grid(H))) && /Mudança R\$ 5000 · aluguel R\$ 1000\/dia/.test(txt(grid(H))),'o cartão: só o nome, a mudança (R$ 5.000) e o aluguel (R$ 1.000)');
+  ok(/Mudança: Terraço Suíça/.test(txt(grid(H))) && /Mudança R\$ 5000 · aluguel R\$ 1200\/dia/.test(txt(grid(H))),'o cartão: só o nome, a mudança (R$ 5.000) e o aluguel (R$ 1.200)');
   ok(btn(H) && /Mudar: R\$ 5000/.test(btn(H).textContent) && !btn(H).disabled && H.L.avalMinimo(H.L.PONTOS[2])===3.9,'com R$ 5.000 e nota ≥ 3,9: o botão fica aceso (nota mínima 3,9)');
   H=jogo(8,'avenida',{ bank:3000 }); notaDe(H.g,4.2); H.L.setShopGrupo('dinheiro'); H.L.setShopTab('mudanca');
   ok(btn(H).disabled && /Falta R\$ 2000/.test(btn(H).textContent),'sem o dinheiro: apagado, "Falta R$ 2000"');
@@ -44,7 +44,7 @@ const pegaPrato=(H,grp)=>{ const g=H.g, p=g.kitchen.plates.find(q=>q&&q.group===
   H=jogo(8,'avenida',{ bank:100 }); notaDe(H.g,2); H.L.setShopGrupo('dinheiro'); H.L.setShopTab('mudanca');
   ok(/Falta R\$ 4900 · Nota 3,9/.test(btn(H).textContent),'sem os dois: mostra os dois');
   H=jogo(8,'avenida',{ bank:9000, salao:salaoAv(H.L) }); notaDe(H.g,4.2); H.L.setShopGrupo('dinheiro'); H.L.setShopTab('mudanca'); btn(H).fire('click');
-  ok(/Mudar para o Terraço Suíça por R\$ 5000\? Aluguel de R\$ 1000 por dia\. O Terraço tem 20 lugares: as mesas que não couberem são vendidas\. Não dá para voltar\./.test(txt(grid(H))) && H.g.save.salao.ponto==='avenida','1º toque: pede a confirmação (com a frase das mesas), nada muda');
+  ok(/Mudar para o Terraço Suíça por R\$ 5000\? Aluguel de R\$ 1200 por dia\. O Terraço tem 20 lugares: as mesas que não couberem são vendidas\. Não dá para voltar\./.test(txt(grid(H))) && H.g.save.salao.ponto==='avenida','1º toque: pede a confirmação (com a frase das mesas), nada muda');
   const ic=H.L.iconeMudanca(H.g.proximoPonto); ok(ic==='mudanca-te' && H.L.iconeMudanca(H.L.PONTOS[2])==='mudanca-av' && H.L.iconeMudanca(H.L.PONTOS[1])==='mudanca','o ícone do cartão: prédio alto para o Terraço (mudanca-te)');
   const sim=grid(H).children[0].children.find(c=>c.tagName==='DIV').children[0]; sim.fire('click');
   ok(H.g.save.salao.ponto==='terraco','2º toque: mudou');
@@ -82,12 +82,12 @@ const pegaPrato=(H,grp)=>{ const g=H.g, p=g.kitchen.plates.find(q=>q&&q.group===
 
 // ---------- 3. aluguel e preços ----------
 { const H=jogo(8,'terraco',{ bank:3000 }), {g,L}=H; g.resetDay(10);
-  ok(g.ponto.aluguel===1000 && L.precoPrato('pf',g.ponto,g.cursos)===63 && L.PONTOS[3].cardapio===2.5 && L.precoPrato('coxinha',g.ponto,g.cursos)===Math.round(L.CARDAPIO.coxinha.preco*2.5),'aluguel R$ 1.000 e cardápio ×2,5 (PF R$ 63)');
+  ok(g.ponto.aluguel===1200 && L.precoPrato('pf',g.ponto,g.cursos)===60 && L.PONTOS[3].cardapio===2.4 && L.precoPrato('coxinha',g.ponto,g.cursos)===Math.round(L.CARDAPIO.coxinha.preco*2.4),'aluguel R$ 1.200 e cardápio ×2,4 (PF R$ 60; calibrado: o plano partia de R$ 1.000 e ×2,5)');
   g.begin(); const base=L.CONTAS.base+g.tables.filter(t=>t.open).length*L.CONTAS.mesa+g.tables.filter(t=>t.open).reduce((a,t)=>a+t.seats,0)*L.CONTAS.lugar;
-  ok(g.contas===base+1000,'as contas do dia somam o aluguel de R$ 1.000');
+  ok(g.contas===base+1200,'as contas do dia somam o aluguel de R$ 1.200');
   g.schedule=[]; g.nextIdx=0; g.money=1500; g.custo=0; const b0=g.save.bank; g.finishDay();
   ok(g.save.bank===b0+1500-g.contas-g.paid-g.paidDiv && g.save.caixa[g.save.caixa.length-1].contas===g.contas,'o aluguel sai no fim do dia e entra no livro-caixa');
-  const D=g.diaPonto(L.diaOf(10)); ok(D.meta===Math.round(L.diaOf(10).meta*4/5)*5 && D.expert===Math.round(L.diaOf(10).expert*5/5)*5,'metas ×4 e expert ×5 (valores de partida), arredondadas para 5'); }
+  const D=g.diaPonto(L.diaOf(10)); ok(D.meta===Math.round(L.diaOf(10).meta*9/5)*5 && D.expert===Math.round(L.diaOf(10).expert*6/5)*5 && L.PONTOS[3].grupos===0.5,'metas ×9 e expert ×6 (calibrados em 10/11 com a equipe toda), arredondadas para 5; grupos 0,50'); }
 
 // ---------- 4. a clientela ----------
 { const H=jogo(8,'terraco',{ bank:3000, dia:10 }), {g,L}=H; g.save.divulga='boca'; g.resetDay(10);
