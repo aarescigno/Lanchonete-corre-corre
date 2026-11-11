@@ -9,6 +9,7 @@ function drawFloor(ctx,g){
   if (garagem(g)) return drawCimento(ctx);
   if (industrial(g)) return drawCimentoInd(ctx);
   if (avenida(g)) return drawTacoAv(ctx);   // v9.1
+  if (terraco(g)) return drawMarmoreTe(ctx);   // v10
   for (let j=0;j<12;j++){
     for (let i=0;i<25;i++){
       const y = 90 + j*40;
@@ -69,6 +70,7 @@ function drawWall(ctx,g,t){
   if (garagem(g)){ drawGaragem(ctx); drawDecorParede(ctx,g); }
   else if (industrial(g)){ drawParedeInd(ctx,g,t); drawDecorParede(ctx,g); }
   else if (avenida(g)){ drawParedeAv(ctx,g,t); drawDecorParede(ctx,g); }
+  else if (terraco(g)){ drawParedeTe(ctx,g,t); drawDecorParede(ctx,g); }   // v10
   else drawAzulejo(ctx);
   drawWallCommon(ctx,g,t);
   if (industrial(g) && g.up && g.up.tvs && g.state !== 'menu') drawTvsParede(ctx,g,t);
@@ -365,7 +367,7 @@ function drawGarrafa(ctx,x,y,cor,sabor){
 /* v9.6.9: os números dos lugares da espera, por cima de quem espera (os de pé, no chão, ficam no cenário) */
 function drawLugarNums(ctx,g){
   const ponto = g && g.ponto ? g.ponto : PONTOS[0], sent = !!(g && g.sentado);
-  if (ponto.assento === 'pe' && !sent) return;
+  if (ponto.assento === 'pe' && !sent && !terraco(g)) return;   // v10: o foyer do Terraço também numera os tapetes de quem espera de pé
   for (let i=0;i<ponto.espera;i++){ const x = QUEUE.x, y = QUEUE.ys[i]; circ(ctx,x-62,y-26,9); fs(ctx,'#fff',1.8); txt(ctx,String(i+1),x-62,y-25.5,11,PAL.faixa,'center',FD); }
 }
 function drawAguasEspera(ctx,g,t,menu){
@@ -422,6 +424,209 @@ function drawOrquidea(ctx,x,y,s){
   ctx.fillStyle = '#4E8F4A'; [[-6,-39,-0.5],[6,-39,0.5]].forEach(l => { ctx.save(); ctx.translate(l[0],l[1]); ctx.rotate(l[2]); ell(ctx,0,0,2.6,9); ctx.fill(); ctx.restore(); });
   ctx.strokeStyle = '#4E8F4A'; ctx.lineWidth = 1.6; ctx.beginPath(); ctx.moveTo(0,-38); ctx.quadraticCurveTo(-3,-52,5,-62); ctx.stroke();
   [[5,-62],[2,-55],[-1,-48]].forEach((q,i) => { for (let k=0;k<5;k++){ const a = k*TAU/5 + i; ctx.save(); ctx.translate(q[0],q[1]); ctx.rotate(a); ell(ctx,0,-4.2,2.4,4); ctx.fillStyle = i === 1 ? '#D78AD9' : '#B766C9'; ctx.fill(); ctx.restore(); } circ(ctx,q[0],q[1],1.7); fs(ctx,'#F4E8A0',0.8); });
+  ctx.restore();
+}
+/* ============================================================
+   TERRAÇO SUÍÇA (v10): piso de mármore claro em placas grandes (veio suave e friso escuro), parede com o janelão de ponta a ponta
+   sobre a cidade lá embaixo (céu de fim de tarde), cortinas presas dos lados, colunas finas, lambri de nogueira, porta de duas
+   folhas e pendentes dourados. A calçada vira o foyer do andar: carpete azul-petróleo com borda dourada, lambri com arandelas,
+   o letreiro "Terraço Suíça", a plaquinha "Cobertura" e a porta do elevador, por onde a freguesia chega e sai (DOOR). A espera:
+   tapetes redondos numerados ou, com as poltronas compradas, uma ilha de 4 poltronas de veludo por lugar. O piano de cauda
+   (TERRACO.piano) é obstáculo fixo e fica no canto de baixo à esquerda do salão
+   ============================================================ */
+function terraco(g){ return !!(g && g.ponto && g.ponto.id === 'terraco'); }
+const TE_OURO = '#C9953A', TE_OURO_CL = '#E8C46A';
+let MARMORE_TE = null;   // o piso pintado uma vez só, num canvas à parte
+function pintaMarmore(c){
+  c.fillStyle = '#E9E4D9'; c.fillRect(0,90,W,450);
+  const sw = 150, sh = 112, claros = ['#EDE8DE', '#E6E1D5', '#F1ECE2', '#E3DED2'];
+  for (let iy = 0; iy * sh < 470; iy++){
+    for (let ix = 0; ix * sw < W + sw; ix++){
+      const x = ix * sw - (iy % 2) * sw / 2, y = 90 + iy * sh;
+      c.fillStyle = claros[(ix * 5 + iy * 3) % 4]; c.fillRect(x,y,sw,sh);
+      c.strokeStyle = 'rgba(120,112,100,.17)'; c.lineWidth = 1.2;
+      for (let v = 0; v < 3; v++){   // o veio: curvas suaves que atravessam a placa
+        const sx = x + ((ix * 37 + iy * 11 + v * 53) % sw), a = ((ix * 13 + iy * 7 + v * 5) % 10) / 10 - 0.5;
+        c.beginPath(); c.moveTo(sx,y); c.bezierCurveTo(sx + 40 * a,y + sh * 0.3,sx - 50 * a,y + sh * 0.6,sx + 30 * a,y + sh); c.stroke();
+      }
+      c.strokeStyle = 'rgba(80,72,64,.3)'; c.lineWidth = 1.4; c.strokeRect(x,y,sw,sh);
+    }
+  }
+  c.fillStyle = 'rgba(255,255,255,.2)'; for (let i = 0; i < 30; i++){ ell(c,(i * 191) % W,100 + (i * 83) % 430,70,22); c.fill(); }   // o brilho do mármore polido
+  c.strokeStyle = '#4A433C'; c.lineWidth = 5; c.strokeRect(10,100,W - 20,432);   // o friso escuro em volta do salão, com o fio dourado
+  c.strokeStyle = TE_OURO; c.lineWidth = 1.2; c.strokeRect(16,106,W - 32,420);
+}
+function drawMarmoreTe(ctx){
+  if (MARMORE_TE === null){
+    try { const cv = document.createElement('canvas'); cv.width = W; cv.height = 450; const c = cv.getContext('2d'); c.translate(0,-90); c.beginPath(); c.rect(0,90,W,450); c.clip(); pintaMarmore(c); MARMORE_TE = cv; } catch(e) { MARMORE_TE = 0; }
+  }
+  ctx.save(); ctx.beginPath(); ctx.rect(0,90,W,450); ctx.clip();
+  if (MARMORE_TE) ctx.drawImage(MARMORE_TE,0,90); else pintaMarmore(ctx);
+  ctx.restore();
+}
+/* a cidade vista do alto: céu em degradê, o sol baixo, morros ao longe e as torres com as janelas acesas (clipado na janela) */
+function drawVistaTe(ctx,x0,y0,x1,y1){
+  ctx.save(); ctx.beginPath(); ctx.rect(x0,y0,x1 - x0,y1 - y0); ctx.clip();
+  const sk = ctx.createLinearGradient(0,y0,0,y1);
+  sk.addColorStop(0,'#5E78B8'); sk.addColorStop(0.5,'#E9A0A0'); sk.addColorStop(1,'#FAD79B');
+  ctx.fillStyle = sk; ctx.fillRect(x0,y0,x1 - x0,y1 - y0);
+  circ(ctx,x0 + 470,y1 - 8,15); ctx.fillStyle = 'rgba(255,238,176,.9)'; ctx.fill();
+  ctx.fillStyle = 'rgba(255,255,255,.35)'; [[x0 + 90,y0 + 14,26],[x0 + 330,y0 + 22,20],[x0 + 590,y0 + 12,30]].forEach(c => { ell(ctx,c[0],c[1],c[2],4); ctx.fill(); ell(ctx,c[0] + 10,c[1] - 3,c[2] * 0.6,3.4); ctx.fill(); });
+  [['#9486B0',y1 - 14,6,47,4,19],['#6F6893',y1 - 10,5,31,3,13]].forEach(h => {   // os morros ao longe, em duas camadas
+    ctx.beginPath(); ctx.moveTo(x0,y1);
+    for (let x = x0; x <= x1; x += 8) ctx.lineTo(x,h[1] - h[2] * Math.sin(x / h[3]) - h[4] * Math.sin(x / h[5] + 1));
+    ctx.lineTo(x1,y1); ctx.closePath(); ctx.fillStyle = h[0]; ctx.fill();
+  });
+  for (let i = 0, x = x0; x < x1; i++){   // as torres, de larguras e alturas variadas; algumas com janelas acesas e uma antena
+    const w = 7 + (i * 7) % 9, h = 7 + (i * 13) % 19, y = y1 - h;
+    ctx.fillStyle = i % 4 ? '#3E4466' : '#4C5378'; ctx.fillRect(x,y,w,h);
+    ctx.fillStyle = '#F6D472'; for (let k = 0; k < 3; k++) if ((i * 5 + k * 3) % 4 < 2) ctx.fillRect(x + 1.5 + (k % 2) * 3.5,y + 3 + Math.floor(k / 2) * 5 + (k % 3) * 2,2,2.4);
+    if (i % 9 === 4){ ctx.fillStyle = '#3E4466'; ctx.fillRect(x + w / 2 - 0.6,y - 6,1.2,6); }
+    x += w + 1;
+  }
+  ctx.restore();
+}
+/* cortina presa de lado (side: -1 esquerda, 1 direita): o pano em dobras caindo da cortina e o laço dourado */
+function drawCortinaTe(ctx,xBorda,side,y0,y1){
+  const w = 28, a = xBorda, b = xBorda + side * w;
+  ctx.beginPath(); ctx.moveTo(a,y0); ctx.lineTo(b,y0); ctx.bezierCurveTo(b - side * 2,y0 + 20,b - side * 8,y0 + 30,b - side * 6,y0 + 38);
+  ctx.bezierCurveTo(b - side * 5,y0 + 46,b - side * 1,y1 - 6,b,y1); ctx.lineTo(a,y1); ctx.closePath(); fs(ctx,'#7A2E45',2);
+  ctx.strokeStyle = 'rgba(40,10,22,.35)'; ctx.lineWidth = 1.3;
+  [0.25,0.5,0.75].forEach(k => { ctx.beginPath(); ctx.moveTo(a + side * w * k * 0.8,y0 + 2); ctx.quadraticCurveTo(a + side * w * k * 0.9,y0 + 34,a + side * w * k * 0.7,y1 - 2); ctx.stroke(); });
+  ctx.strokeStyle = TE_OURO; ctx.lineWidth = 2.6; ctx.beginPath(); ctx.moveTo(a,y0 + 34); ctx.quadraticCurveTo(a + side * w * 0.5,y0 + 40,b - side * 6,y0 + 36); ctx.stroke();   // o laço
+  circ(ctx,b - side * 6,y0 + 36,2.6); fs(ctx,TE_OURO_CL,1);
+}
+function drawParedeTe(ctx,g,t){
+  const menu = g.state === 'menu';
+  ctx.fillStyle = '#EFE6D2'; ctx.fillRect(0,0,W,92);
+  ctx.strokeStyle = 'rgba(190,160,100,.16)'; ctx.lineWidth = 2; for (let x = 6; x < W; x += 18){ ctx.beginPath(); ctx.moveTo(x,0); ctx.lineTo(x,66); ctx.stroke(); }
+  // o lambri de nogueira (de 66 a 92), com o friso dourado em cima e os painéis
+  ctx.fillStyle = '#5B3A26'; ctx.fillRect(0,66,W,26);
+  ctx.strokeStyle = '#7A5236'; ctx.lineWidth = 1.4; for (let x = 4; x < W; x += 44){ rr(ctx,x,71,38,16,3); ctx.stroke(); }
+  ctx.fillStyle = TE_OURO; ctx.fillRect(0,66,W,3);
+  // o janelão de ponta a ponta, com a cidade lá embaixo
+  const wx0 = 104, wx1 = 772, wy0 = 8, wy1 = 62;
+  drawVistaTe(ctx,wx0,wy0,wx1,wy1);
+  ctx.strokeStyle = '#4A3628'; ctx.lineWidth = 3; for (let k = 1; k <= 5; k++){ const x = wx0 + (wx1 - wx0) * k / 6; ctx.beginPath(); ctx.moveTo(x,wy0); ctx.lineTo(x,wy1); ctx.stroke(); }   // as colunas finas
+  ctx.strokeStyle = TE_OURO; ctx.lineWidth = 0.8; for (let k = 1; k <= 5; k++){ const x = wx0 + (wx1 - wx0) * k / 6 - 0.8; ctx.beginPath(); ctx.moveTo(x,wy0); ctx.lineTo(x,wy1); ctx.stroke(); }
+  ctx.strokeStyle = PAL.tinta; ctx.lineWidth = 2.5; ctx.strokeRect(wx0,wy0,wx1 - wx0,wy1 - wy0);
+  rr(ctx,wx0 - 6,62,wx1 - wx0 + 12,6,2); fs(ctx,'#E8DFC8',1.5);
+  [[96,'#F4EFE4'],[772,'#F4EFE4']].forEach(c => { rr(ctx,c[0],4,8,62,1.5); fs(ctx,c[1],1.6); rr(ctx,c[0] - 2,2,12,5,1.5); fs(ctx,'#E6DCC4',1.4); rr(ctx,c[0] - 2,62,12,5,1.5); fs(ctx,'#E6DCC4',1.4); });   // as colunas dos cantos
+  rr(ctx,wx0 - 4,4,wx1 - wx0 + 8,5,2); fs(ctx,TE_OURO,1.6); circ(ctx,wx0 - 4,6.5,3.4); fs(ctx,TE_OURO_CL,1.2); circ(ctx,wx1 + 4,6.5,3.4); fs(ctx,TE_OURO_CL,1.2);   // a vara da cortina
+  drawCortinaTe(ctx,wx0 + 1,1,9,64); drawCortinaTe(ctx,wx1 - 1,-1,9,64);
+  // a porta de duas folhas, com os vidros fosco, as puxadores de latão e o aviso ABERTO
+  rr(ctx,8,4,88,88,5); fs(ctx,'#3B2416',3);
+  [14,54].forEach(x => {
+    rr(ctx,x,10,38,76,3); fs(ctx,'#6B452B',2);
+    rr(ctx,x + 5,16,28,34,10); fs(ctx,'#DCE8EB',1.8); ctx.strokeStyle = TE_OURO; ctx.lineWidth = 1; ctx.beginPath(); ctx.moveTo(x + 19,17); ctx.lineTo(x + 19,49); ctx.moveTo(x + 6,33); ctx.lineTo(x + 32,33); ctx.stroke();
+    rr(ctx,x + 5,56,28,24,3); fs(ctx,'#5A3B26',1.6);
+  });
+  rr(ctx,47,42,3,22,1.5); fs(ctx,TE_OURO,1.2); rr(ctx,56,42,3,22,1.5); fs(ctx,TE_OURO,1.2);
+  rr(ctx,28,30,48,12,3); fs(ctx,TE_OURO_CL,1.8); txt(ctx,'ABERTO',52,36,8.5,PAL.tinta,'center',FD,0,42);
+  // os pendentes dourados
+  drawPendente(ctx,216,22,0.8,t,menu);
+  drawPendente(ctx,664,22,0.8,t,menu);
+  drawPendente(ctx,763,26,0.9,t,menu);
+  ctx.strokeStyle = PAL.tinta; ctx.lineWidth = 2.5; ctx.beginPath(); ctx.moveTo(0,92); ctx.lineTo(W,92); ctx.stroke();
+  if (g.seloOn && !menu) drawSeloVig(ctx,356,79);
+}
+/* a porta do elevador, no alto do foyer (centro em x = -230; DOOR fica logo abaixo): duas folhas de metal que abrem quando há gente
+   por perto (chegando ou saindo) e o mostrador do andar em cima */
+function drawElevadorTe(ctx,g){
+  const cx = -230, w = 52, x = cx - w / 2, y0 = 20, y1 = 82;
+  let ab = 0;
+  (g && g.groups ? g.groups : []).forEach(q => { ab = Math.max(ab,clamp((90 - Math.hypot(q.x - DOOR.x,q.y - DOOR.y)) / 60,0,1)); });
+  if (g && g.fiscal && g.fiscal.ativo) ab = Math.max(ab,clamp((90 - Math.hypot(g.fiscal.x - DOOR.x,g.fiscal.y - DOOR.y)) / 60,0,1));
+  rr(ctx,x - 6,2,w + 12,84,3); fs(ctx,TE_OURO,2.4);
+  rr(ctx,x - 3,5,w + 6,79,2); fs(ctx,'#2A2420',1.4);
+  rr(ctx,x + 6,7,w - 12,11,2); fs(ctx,'#14181C',1.4); txt(ctx,'COB',cx - 5,12.8,8,'#FFB84A','center',FD,0,24);
+  ctx.beginPath(); ctx.moveTo(cx + 12,15); ctx.lineTo(cx + 17,15); ctx.lineTo(cx + 14.5,10.4); ctx.closePath(); ctx.fillStyle = '#FFB84A'; ctx.fill();   // a setinha
+  ctx.save(); ctx.beginPath(); ctx.rect(x,y0,w,y1 - y0); ctx.clip();
+  const lz = ctx.createLinearGradient(0,y0,0,y1); lz.addColorStop(0,'#F4E3B0'); lz.addColorStop(1,'#CDB57C');
+  ctx.fillStyle = lz; ctx.fillRect(x,y0,w,y1 - y0);   // dentro da cabine: luz quente
+  ctx.fillStyle = 'rgba(255,255,255,.4)'; ctx.fillRect(x + 8,y0 + 8,w - 16,28);
+  [[0,-1],[1,1]].forEach(l => {   // as folhas deslizam para dentro da parede
+    const lx = l[0] ? x + w / 2 + ab * (w / 2) : x - ab * (w / 2);
+    ctx.fillStyle = '#B9C0C8'; ctx.fillRect(lx,y0,w / 2,y1 - y0);
+    ctx.fillStyle = 'rgba(255,255,255,.35)'; ctx.fillRect(lx + 4,y0,3,y1 - y0); ctx.fillRect(lx + w / 2 - 12,y0,2,y1 - y0);
+    ctx.fillStyle = 'rgba(40,46,54,.35)'; ctx.fillRect(lx + (l[0] ? 0 : w / 2 - 1.4),y0,1.4,y1 - y0);
+  });
+  ctx.restore();
+  ctx.strokeStyle = PAL.tinta; ctx.lineWidth = 1.6; ctx.strokeRect(x,y0,w,y1 - y0);
+}
+function drawArandelaTe(ctx,x,y){
+  const gr = ctx.createRadialGradient(x,y,2,x,y,36); gr.addColorStop(0,'rgba(255,224,140,.5)'); gr.addColorStop(1,'rgba(255,224,140,0)');
+  ctx.fillStyle = gr; ctx.fillRect(x - 36,y - 36,72,72);
+  rr(ctx,x - 2.4,y + 5,4.8,9,2); fs(ctx,TE_OURO,1.4);
+  ctx.beginPath(); ctx.moveTo(x - 6,y + 5); ctx.lineTo(x + 6,y + 5); ctx.lineTo(x + 4,y - 8); ctx.lineTo(x - 4,y - 8); ctx.closePath(); fs(ctx,'#F8E9BC',1.6);
+}
+/* o foyer no lugar da rua e do meio-fio: parede do corredor (lambri, arandelas, o elevador, o letreiro e a plaquinha "Cobertura") e o carpete */
+function drawFoyerTe(ctx,g,tm){
+  const x0 = -CALCADA.w, ww = -x0;
+  ctx.fillStyle = '#1F4A5A'; ctx.fillRect(x0,82,ww,458);
+  ctx.save(); ctx.beginPath(); ctx.rect(x0,82,ww,458); ctx.clip();
+  ctx.strokeStyle = 'rgba(130,190,205,.14)'; ctx.lineWidth = 1.2;
+  for (let x = x0 - 20; x < 20; x += 40) for (let y = 82; y < 560; y += 40){ ctx.beginPath(); ctx.moveTo(x + 20,y); ctx.lineTo(x + 40,y + 20); ctx.lineTo(x + 20,y + 40); ctx.lineTo(x,y + 20); ctx.closePath(); ctx.stroke(); }
+  ctx.restore();
+  ctx.strokeStyle = TE_OURO; ctx.lineWidth = 4; ctx.strokeRect(x0 + 10,104,ww - 22,428);
+  ctx.strokeStyle = 'rgba(232,196,106,.7)'; ctx.lineWidth = 1.2; ctx.strokeRect(x0 + 18,112,ww - 38,412);
+  // a parede: o alto em creme, o lambri de nogueira embaixo, o rodapé e a moldura dourada
+  ctx.fillStyle = '#E7DAB9'; ctx.fillRect(x0,0,ww,50);
+  ctx.strokeStyle = 'rgba(190,160,100,.2)'; ctx.lineWidth = 2; for (let x = x0 + 4; x < 0; x += 16){ ctx.beginPath(); ctx.moveTo(x,5); ctx.lineTo(x,50); ctx.stroke(); }
+  ctx.fillStyle = '#5B3A26'; ctx.fillRect(x0,50,ww,32);
+  ctx.strokeStyle = '#7A5236'; ctx.lineWidth = 1.4; for (let x = x0 + 4; x < 0; x += 40){ rr(ctx,x,56,34,20,3); ctx.stroke(); }
+  ctx.fillStyle = TE_OURO; ctx.fillRect(x0,50,ww,3); ctx.fillRect(x0,0,ww,5);
+  ctx.fillStyle = '#3B2416'; ctx.fillRect(x0,78,ww,6); ctx.strokeStyle = PAL.tinta; ctx.lineWidth = 2; ctx.beginPath(); ctx.moveTo(x0,84); ctx.lineTo(0,84); ctx.stroke();
+  drawElevadorTe(ctx,g);
+  drawArandelaTe(ctx,-194,28); drawArandelaTe(ctx,-66,28);
+  // o letreiro: placa escura com letras douradas e duas estrelas
+  rr(ctx,-184,9,108,38,6); fs(ctx,'#16222B',2.6);
+  ctx.strokeStyle = TE_OURO; ctx.lineWidth = 1.3; rr(ctx,-180,13,100,30,4); ctx.stroke();
+  txt(ctx,'Terraço Suíça',-129,26,17,TE_OURO_CL,'center',FD,0,92);
+  star(ctx,-136,38.5,5.2,TE_OURO_CL); star(ctx,-122,38.5,5.2,TE_OURO_CL);
+  // a plaquinha "Cobertura", no lugar do número da rua
+  rr(ctx,-60,18,46,22,3); fs(ctx,TE_OURO_CL,1.8); ctx.strokeStyle = 'rgba(90,60,20,.5)'; ctx.lineWidth = 1; rr(ctx,-57.5,20.5,41,17,2); ctx.stroke();
+  txt(ctx,'Cobertura',-37,29.5,8,PAL.tinta,'center',FD,0,38);
+}
+/* a poltrona de veludo verde-garrafa (x, y: o chão, no meio) */
+function drawPoltrona(ctx,x,y,s){
+  ctx.save(); ctx.translate(x,y); ctx.scale(s || 1,s || 1);
+  ctx.fillStyle = TE_OURO; ctx.fillRect(-10,-3,3,5); ctx.fillRect(7,-3,3,5);
+  rr(ctx,-10,-30,20,24,7); fs(ctx,'#2A5440',2);
+  [[-4,-24],[4,-24],[0,-17]].forEach(p => { circ(ctx,p[0],p[1],1.1); fs(ctx,TE_OURO_CL,0.8); });
+  rr(ctx,-13,-17,6,15,3); fs(ctx,'#2F5D45',1.8); rr(ctx,7,-17,6,15,3); fs(ctx,'#2F5D45',1.8);
+  rr(ctx,-9,-12,18,9,4); fs(ctx,'#3C7358',2);
+  ctx.fillStyle = 'rgba(255,255,255,.14)'; ctx.fillRect(-7,-27,3,10);
+  ctx.restore();
+}
+/* o lugar de espera do foyer: com as poltronas, uma ilha (tapete e 4 poltronas); sem elas, um tapete redondo numerado, de pé */
+function drawLugarTe(ctx,x,y,i,sent){   // (i: o número do lugar, que vai por cima, em drawLugarNums)
+  if (sent){
+    rr(ctx,x - 66,y - 24,132,40,16); fs(ctx,'#EADFC6',2);
+    ctx.strokeStyle = TE_OURO; ctx.lineWidth = 1.4; rr(ctx,x - 61,y - 19,122,30,12); ctx.stroke();
+    for (let k = 0; k < 4; k++){ shadowEll(ctx,x - 42 + k * 28,y + 8,13,3.5,0.18); drawPoltrona(ctx,x - 42 + k * 28,y + 8,1); }
+    return;
+  }
+  ell(ctx,x,y - 2,60,15); fs(ctx,'#EADFC6',2);
+  ctx.strokeStyle = TE_OURO; ctx.lineWidth = 1.4; ell(ctx,x,y - 2,53,11); ctx.stroke();
+  // o número do lugar é desenhado depois das pessoas (drawLugarNums), como nos outros pontos
+}
+/* o piano de cauda fechado e a banqueta (TERRACO.piano): preto, no canto de baixo à esquerda do salão */
+function drawPiano(ctx,g){
+  const P = TERRACO.piano, ox = P.x0, oy = P.y0;
+  ctx.save(); ctx.translate(ox,oy);
+  shadowEll(ctx,60,96,58,9,0.26);
+  [[12,66,5,26],[103,66,5,26],[56,70,5,24]].forEach(l => { rr(ctx,l[0],l[1],l[2],l[3],2); ctx.fillStyle = '#2B2A2E'; ctx.fill();   // as pernas e as rodinhas de latão
+    circ(ctx,l[0] + l[2] / 2,l[1] + l[3] + 1.5,2.4); fs(ctx,TE_OURO,1); });
+  ctx.strokeStyle = TE_OURO; ctx.lineWidth = 2; ctx.beginPath(); ctx.moveTo(46,92); ctx.lineTo(72,92); ctx.moveTo(59,90); ctx.lineTo(59,96); ctx.stroke();   // o pedal
+  const forma = dy => { ctx.beginPath(); ctx.moveTo(6,58 + dy); ctx.lineTo(6,24 + dy); ctx.quadraticCurveTo(6,10 + dy,22,10 + dy); ctx.lineTo(84,10 + dy); ctx.quadraticCurveTo(114,10 + dy,114,30 + dy); ctx.quadraticCurveTo(114,44 + dy,98,46 + dy); ctx.quadraticCurveTo(88,47 + dy,88,56 + dy); ctx.lineTo(88,58 + dy); ctx.closePath(); };
+  forma(14); fs(ctx,'#0B0B10',2.2);   // a espessura do corpo (a forma de cima repetida mais para baixo)
+  ctx.fillStyle = '#0B0B10'; ctx.fillRect(6,58,82,14);
+  forma(0); fs(ctx,'#1E1E26',2.2);   // o tampo fechado
+  ctx.fillStyle = 'rgba(255,255,255,.12)'; ctx.beginPath(); ctx.moveTo(12,50); ctx.lineTo(12,26); ctx.quadraticCurveTo(12,16,26,16); ctx.lineTo(60,16); ctx.lineTo(30,50); ctx.closePath(); ctx.fill();   // o reflexo
+  rr(ctx,10,61,74,7,2); fs(ctx,'#2E2E38',1.4); ctx.strokeStyle = TE_OURO; ctx.lineWidth = 0.9; ctx.beginPath(); ctx.moveTo(14,64.5); ctx.lineTo(80,64.5); ctx.stroke();   // a tampa do teclado, fechada
+  rr(ctx,34,97,52,11,3); fs(ctx,'#3A261A',2); rr(ctx,36,98.5,48,5,2); ctx.fillStyle = 'rgba(255,255,255,.14)'; ctx.fill();   // a banqueta
+  ctx.fillStyle = '#2B1A10'; ctx.fillRect(38,108,4,7); ctx.fillRect(78,108,4,7);
   ctx.restore();
 }
 function drawAzulejo(ctx){
@@ -489,7 +694,9 @@ function placaCozinha(ctx){
    Os lugares seguem o ponto (v7.7, PONTOS.assento): na Garagem, de pé, numa faixa pintada no chão com o número;
    com assento, o banco de ripas da v7.5, com o tablet num pedestal se a bebida pede preparo */
 function drawCalcada(ctx,g,tm){
-  const x0 = -CALCADA.w;
+  const x0 = -CALCADA.w, ind = industrial(g), av = avenida(g), te = terraco(g);
+  if (te) drawFoyerTe(ctx,g,tm);   // v10: o foyer do Terraço no lugar da rua, do piso, do muro e do toldo
+  else {
   // rua e meio-fio
   ctx.fillStyle = '#7E848B'; ctx.fillRect(x0 - 60,0,84,540);
   ctx.fillStyle = '#F7EFD8'; for (let y=20;y<540;y+=60) ctx.fillRect(x0 - 50,y,4,30);
@@ -504,7 +711,6 @@ function drawCalcada(ctx,g,tm){
     for (let y=150; y<540; y+=58){ ctx.beginPath(); ctx.moveTo(x0 + 26,y); ctx.lineTo(0,y); ctx.stroke(); }
   }
   // muro da casa (no alto), com janela, e o toldo listrado por cima da espera
-  const ind = industrial(g), av = avenida(g);
   ctx.fillStyle = ind ? '#E4E0D6' : av ? '#EDE3CF' : '#EFC9A4'; ctx.fillRect(x0 + 26,0,-x0 - 26,82);
   if (ind){   // v9: o muro do galpão, de tijolinho pintado, a faixa amarela de carga e descarga no meio-fio e o poste
     ctx.strokeStyle = 'rgba(120,96,84,.2)'; ctx.lineWidth = 1;
@@ -527,6 +733,7 @@ function drawCalcada(ctx,g,tm){
     fs(ctx,av ? (i % 2 ? '#F6EBD3' : '#7A1F3A') : (i % 2 ? '#fff' : PAL.formica),2);
   }
   ctx.strokeStyle = PAL.tinta; ctx.lineWidth = 2.5; ctx.beginPath(); ctx.moveTo(tx0,62); ctx.lineTo(tx1,62); ctx.stroke();
+  }
   // lugares de espera
   const ponto = g && g.ponto ? g.ponto : PONTOS[0], max = ponto.espera, sent = !!(g && g.sentado), banco = !!(g && g.up && g.up.assento === 'banco');
   if (av && sent){   // v9.1: os sofás da Avenida, de 3 lugares cada (do de baixo para o de cima)
@@ -538,6 +745,7 @@ function drawCalcada(ctx,g,tm){
   }
   for (let i=0;i<max;i++){
     const y = QUEUE.ys[i], x = QUEUE.x;
+    if (te){ drawLugarTe(ctx,x,y,i,sent); continue; }   // v10: tapete redondo ou ilha de poltronas
     if (av && sent){
       continue;   // v9.6.9: o número do lugar é desenhado depois das pessoas (drawLugarNums)
     }
@@ -564,13 +772,20 @@ function drawCalcada(ctx,g,tm){
   // Desde a v8.6.5, compradas na aba Decoração (DECOR)
   if (decorOn(g,'espada')) drawVasoEspada(ctx,x0 + 40,536);
   if (decorOn(g,'lata')) drawLataEspada(ctx,x0 + 44,132);
-  if ((ind || av) && decorOn(g,'anturio')) drawAnturio(ctx,-38,534,1);   // v9: o antúrio no chão, perto do portão, e a samambaia pendurada no toldo
-  if ((ind || av) && decorOn(g,'pendente')) drawSamambaia(ctx,x0 + 66,120,0.8);
-  if (av && decorOn(g,'tulipa')) drawTulipas(ctx,x0 + 112,138,1);   // v9.1: as flores da Avenida: tulipas na jardineira, copos-de-leite no vaso alto e a orquídea na mesinha
-  if (av && decorOn(g,'copo')) drawCopoLeite(ctx,x0 + 38,300,1);
-  if (av && decorOn(g,'orquidea')) drawOrquidea(ctx,114,132,1);   // perto da porta, encostada na meia-parede (já dentro do salão)
+  if ((ind || av || te) && decorOn(g,'anturio')) drawAnturio(ctx,-38,534,1);   // v9: o antúrio no chão, perto do portão, e a samambaia pendurada no toldo
+  if ((ind || av || te) && decorOn(g,'pendente')) drawSamambaia(ctx,x0 + 66,120,0.8);
+  if ((av || te) && decorOn(g,'tulipa')) drawTulipas(ctx,x0 + 112,138,1);   // v9.1: as flores da Avenida: tulipas na jardineira, copos-de-leite no vaso alto e a orquídea na mesinha
+  if ((av || te) && decorOn(g,'copo')) drawCopoLeite(ctx,x0 + 38,300,1);
+  if ((av || te) && decorOn(g,'orquidea')) drawOrquidea(ctx,114,132,1);   // perto da porta, encostada na meia-parede (já dentro do salão)
   // portão de enrolar aberto, na borda do salão: trilho no alto e soleira no chão
   if (g && g.fechado) drawPlacaFechado(ctx,QUEUE.x + 28,196,tm);   // v9.6.4
+  if (te){   // v10: no lugar do portão de enrolar, o batente de madeira e a soleira de latão
+    ctx.fillStyle = '#CDBF9F'; ctx.fillRect(-6,92,12,448);
+    ctx.strokeStyle = TE_OURO; ctx.lineWidth = 1.6; ctx.beginPath(); ctx.moveTo(0,96); ctx.lineTo(0,540); ctx.stroke();
+    rr(ctx,-12,0,24,92,4); fs(ctx,'#6B452B',2.5);
+    ctx.strokeStyle = TE_OURO; ctx.lineWidth = 1.2; ctx.strokeRect(-8,4,16,84);
+    return;
+  }
   ctx.fillStyle = '#ABA394'; ctx.fillRect(-6,92,12,448);
   ctx.strokeStyle = 'rgba(34,32,28,.4)'; ctx.lineWidth = 1.5; ctx.beginPath(); ctx.moveTo(0,96); ctx.lineTo(0,540); ctx.stroke();
   rr(ctx,-12,0,24,92,4); fs(ctx,PAL.cromo,2.5);
@@ -1139,6 +1354,14 @@ function drawMesinha(ctx,g,t){
   ctx.strokeStyle = 'rgba(138,82,38,.55)'; ctx.lineWidth = 1.2; ctx.beginPath();
   for (let i = 1; i < 4; i++){ const yy = y + (h - 6) * i / 4; ctx.moveTo(x + 5,yy); ctx.lineTo(x + w - 5,yy); }
   ctx.stroke();
+  if (terraco(g)){   // v10: no Terraço não há marmitas nem estação: o móvel é um aparador com um vaso de flores em cima
+    const cx = x + w / 2, by = y + 4;
+    ctx.strokeStyle = '#3E7B4F'; ctx.lineWidth = 2; ctx.lineCap = 'round';
+    [[-8,-30],[0,-36],[8,-29]].forEach(f => { ctx.beginPath(); ctx.moveTo(cx,by - 14); ctx.lineTo(cx + f[0],by + f[1]); ctx.stroke(); });
+    [[-8,-30,'#E5384A'],[0,-36,'#F2B33D'],[8,-29,'#C77DD6']].forEach(f => { circ(ctx,cx + f[0],by + f[1],5); fs(ctx,f[2],1.6); circ(ctx,cx + f[0],by + f[1],1.6); ctx.fillStyle = '#FFF3C9'; ctx.fill(); });
+    rr(ctx,cx - 8,by - 17,16,19,6); fs(ctx,'#F4F0E6',2);
+    ctx.fillStyle = 'rgba(47,111,181,.35)'; ctx.fillRect(cx - 6,by - 9,12,3);
+  }
 }
 /* v9.6.11: o letreiro "eFood" sobre o entregador que espera (pisca 0,6 s acesa e 0,4 s apagada; sem movimento, fica acesa) */
 function drawLetreiroEfood(ctx,grp,tm,k){

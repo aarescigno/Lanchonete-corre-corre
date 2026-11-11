@@ -17,10 +17,10 @@ if(process.env.PONTO_CFG){ const c=JSON.parse(process.env.PONTO_CFG), P=L.PONTOS
 if(process.env.CLIMA_CFG){ const c=JSON.parse(process.env.CLIMA_CFG); for(const k in c) Object.assign(L.CLIMA[k],c[k]); }
 const N=+process.argv[2]||20;
 // v9: PONTO=industrial joga os dias no ponto da área industrial (salão de 20 lugares, fogão industrial, TVs com anúncios, cadeirinhas; DIAS padrão 8,9,10)
-const PONTO=process.env.PONTO||'garagem', IND=PONTO==='industrial', AV=PONTO==='avenida';   // v9.1: PONTO=avenida joga os dias no Restaurante na Avenida Brasil (24 lugares, fogão industrial, sofás, águas saborizadas, couvert com taxa e o curso de restaurante; DIAS padrão 8,9,10)
+const PONTO=process.env.PONTO||'garagem', IND=PONTO==='industrial', TE=PONTO==='terraco', AV=PONTO==='avenida'||TE;   /* v10: PONTO=terraco joga os dias 8 a 10 no Terraço Suíça (5 mesas de 4, fogão industrial, poltronas, couvert com taxa, o curso de restaurante, Tonhão nível 4; JOCA, ESPRESSO, CAMI, ANSELMO e GOURMET como na Avenida; AV vale para os dois pontos de cima) */ //   // v9.1: PONTO=avenida joga os dias no Restaurante na Avenida Brasil (24 lugares, fogão industrial, sofás, águas saborizadas, couvert com taxa e o curso de restaurante; DIAS padrão 8,9,10)
 // EQUIPE='{"tonhao":1,"dani":1,"daniTasks":["pratos","lavar"]}' node balance.js 40
 // EQUIPE=auto: a equipe que um jogador consegue pagar em cada dia (contratando aos poucos)
-const FULL=AV?{tonhao:2,dani:4,daniTasks:['pratos','lavar','lixo'],couvert:true,taxa:true}:IND?{tonhao:2,dani:4,daniTasks:['pratos','lavar','lixo'],tvs:1}:{tonhao:2,dani:4,daniTasks:['pratos','lavar','lixo'],tv:true,som:true};   // na Garagem, TV e som no lugar do couvert (v7.4.3)
+const FULL=TE?{tonhao:4,dani:4,daniTasks:['pratos','lavar','lixo'],couvert:true,taxa:true}:AV?{tonhao:2,dani:4,daniTasks:['pratos','lavar','lixo'],couvert:true,taxa:true}:IND?{tonhao:2,dani:4,daniTasks:['pratos','lavar','lixo'],tvs:1}:{tonhao:2,dani:4,daniTasks:['pratos','lavar','lixo'],tv:true,som:true};   // na Garagem, TV e som no lugar do couvert (v7.4.3)
 const AUTO={2:{},3:FULL,4:FULL,5:FULL,6:FULL,7:FULL};   // do dia 3 em diante o dinheiro acumulado já paga a equipe completa
 const EQ0=process.env.EQUIPE==='auto'?null:(process.env.EQUIPE?JSON.parse(process.env.EQUIPE):{});
 const eqFor0=n=>EQ0||AUTO[n]||(n>7?FULL:{});   // v8.3: do dia 8 em diante, a equipe completa
@@ -43,7 +43,7 @@ if(process.env.METAS){ const mt=JSON.parse(process.env.METAS); for(const k in mt
 // salão (v7.4): por padrão, o de quem compra móveis como o bot da carreira.js (kit de 10 lugares, +1 mesa de 2 por
 // lojinha até 16); MOVEIS=kit fica no kit; MOVEIS='[2,2,4,4]' usa essas mesas todo dia (arrumação automática)
 const MOV={1:[2,2,2,4],2:[2,2,2,4,2],3:[2,2,2,4,2,2],4:[2,2,2,2,2,2,4]};   // ([2,2,2,4,2,2,2] não cabia na arrumação automática e voltava ao kit)
-const movFor=n=>AV&&!process.env.MOVEIS?[4,4,4,4,4,4]:IND&&!process.env.MOVEIS?[4,4,4,4,2,2]:process.env.MOVEIS==='kit'?MOV[1]:(process.env.MOVEIS?JSON.parse(process.env.MOVEIS):MOV[Math.min(n,4)]);
+const movFor=n=>TE&&!process.env.MOVEIS?[4,4,4,4,4]:AV&&!process.env.MOVEIS?[4,4,4,4,4,4]:IND&&!process.env.MOVEIS?[4,4,4,4,2,2]:process.env.MOVEIS==='kit'?MOV[1]:(process.env.MOVEIS?JSON.parse(process.env.MOVEIS):MOV[Math.min(n,4)]);
 const order=process.env.ORDEM?process.env.ORDEM.split(','):['tenis','maquina','cafeteira','bandeja','ventilador','pratos'];   // ORDEM=pratos,tenis,...: ordem de compra das melhorias
 const DIAS=process.env.DIAS?process.env.DIAS.split(',').map(Number):IND||AV?[8,9,10]:[1,2,3,4,5,6,7];   // DIAS=1,2: só esses dias (v8.3: DIAS=8,9,14 testa os dias da campanha)
 const NMAX=Math.max(...DIAS);
@@ -54,9 +54,9 @@ const cursosFor=n=>CUR==='0'?{}:CUR==='todos'?BOTM.cursosApos(L,99):BOTM.cursosA
 const R={}; DIAS.forEach(n=>R[n]=[]);
 // um dia de uma rodada; man: o estado de equipamentos que vem do dia anterior (null: tudo novo)
 function jogaDia(n,man){
-  g.up={}; g.save.up=g.up; order.slice(0,IND||AV?order.length:n-1).forEach(id=>g.up[id]=true);
+  g.up={}; g.save.up=g.up; order.slice(0,IND||AV?order.length:n-1).filter(id=>!(TE&&id==='maquina')).forEach(id=>g.up[id]=true);   // v10: no Terraço não há a água da espera
   if(IND){ g.up.fogaoInd=true; g.up.tvs=true; g.up.assento='cadeira'; }
-  if(AV){ g.up.fogaoInd=true; g.up.assento='sofa'; }
+  if(AV){ g.up.fogaoInd=true; g.up.assento=TE?'poltrona':'sofa'; }
   g.save.cursos=cursosFor(n);
   if(CONF&&(IND||AV)){ g.save.daniCursos.confCaseira=1; g.up.confCaseira=true; }   // v9.2
   if(AV&&GOURMET){ g.save.daniCursos.confCaseira=1; g.up.confCaseira=true; g.save.daniCursos.confGourmet=1; g.up.confGourmet=true; }   // v9.3
@@ -79,8 +79,8 @@ function jogaDia(n,man){
   if(MODO==='cuida'&&n>=2){ const b0=g.save.bank; g.goShop(n); g.revisarTudo(); rev=b0-g.save.bank; }   // revisa na lojinha, antes do dia
   const b1=g.save.bank;
   g.startDay(n); g.begin();
-  let st=0; while(g.state==='playing'&&st<30000){ bot(); g.update(0.05); st++; }
-  const r=g.result; r.rev=rev; r.bankFim=g.save.bank;
+  let st=0, oc=0, oc0=0; while(g.state==='playing'&&st<30000){ bot(); g.update(0.05); st++; if(g.clock>0&&g.aberto!==false){ oc0++; oc+=g.tables.filter(t=>t.open&&t.group).length/Math.max(1,g.tables.filter(t=>t.open).length); } }   // v10: ocup = fração média das mesas com grupo enquanto o relógio corre
+  const r=g.result; r.rev=rev; r.ocup=oc0?oc/oc0:0; r.bankFim=g.save.bank;
   jogaDia.av=g.save.aval.slice();
   if(process.env.DUMP) console.log('DUMP',n,r.money,r.lost,r.fat,r.aval&&r.aval.dia?r.aval.dia.nota.toFixed(2):'-',r.aval&&r.aval.geral?r.aval.geral.nota.toFixed(2):'-');   // v8.3.9: DUMP=1 lista lucro, perdidos e faturamento de cada dia jogado (v8.6.4: e a nota do Gurugol no dia e a geral)
   return r;
@@ -96,7 +96,7 @@ for(const n of DIAS){
   const avg=k=>(res.reduce((a,r)=>a+(r[k]||0),0)/N).toFixed(0);
   const pass=res.filter(r=>r.passed).length, exp=res.filter(r=>r.money>=d.expert).length;
   const so=m.slice().sort((a,b)=>a-b), q=f=>so[Math.min(so.length-1,Math.floor(f*so.length))];
-  console.log('Dia',n+(d.semana?' ('+d.semana+')':''),'meta',d.meta,'exp',d.expert,'| media',mean.toFixed(0),'p10',q(0.1),'p90',q(0.9),'min',Math.min(...m),'max',Math.max(...m),'| passou',pass+'/'+N,'expert',exp+'/'+N,'3★',res.filter(r=>r.stars===3).length+'/'+N,'| perdidos',(res.reduce((a,r)=>a+r.lost,0)/N).toFixed(1),'lotado',(res.reduce((a,r)=>a+r.full,0)/N).toFixed(1),'| causas',['semMesa','comMesa','pedido','prato','conta','retirada'].map(k=>k+' '+(res.reduce((a,r)=>a+r.lostBy[k],0)/N).toFixed(1)).join(' '),'vip',(res.reduce((a,r)=>a+r.vipLost,0)/N).toFixed(1),'lotadoT',avg('lotadoT'),'atraso',avg('atraso'),'zero',res.filter(r=>r.lost===0&&!r.full).length+'/'+N,'| fat',avg('fat'),'ingr',avg('custo'),'contas',avg('contas'),'folha',avg('paid'),'div',avg('div'),'suco da espera',avg('sucoEsp'),'| marmitas',(res.reduce((a,r)=>a+(r.marmitas||0),0)/N).toFixed(1),'efood',avg('efood'),'esfriou',(res.reduce((a,r)=>a+(r.esfriou||0),0)/N).toFixed(1),'sobra',(res.reduce((a,r)=>a+(r.sobra||0),0)/N).toFixed(1));
+  console.log('Dia',n+(d.semana?' ('+d.semana+')':''),'meta',d.meta,'exp',d.expert,'| media',mean.toFixed(0),'p10',q(0.1),'p90',q(0.9),'min',Math.min(...m),'max',Math.max(...m),'| passou',pass+'/'+N,'expert',exp+'/'+N,'3★',res.filter(r=>r.stars===3).length+'/'+N,'| perdidos',(res.reduce((a,r)=>a+r.lost,0)/N).toFixed(1),'lotado',(res.reduce((a,r)=>a+r.full,0)/N).toFixed(1),'| causas',['semMesa','comMesa','pedido','prato','conta','retirada'].map(k=>k+' '+(res.reduce((a,r)=>a+r.lostBy[k],0)/N).toFixed(1)).join(' '),'vip',(res.reduce((a,r)=>a+r.vipLost,0)/N).toFixed(1),'lotadoT',avg('lotadoT'),'ocup',(res.reduce((a,r)=>a+(r.ocup||0),0)/N*100).toFixed(0)+'%','grupos',avg('served'),'atraso',avg('atraso'),'zero',res.filter(r=>r.lost===0&&!r.full).length+'/'+N,'| fat',avg('fat'),'ingr',avg('custo'),'contas',avg('contas'),'folha',avg('paid'),'div',avg('div'),'suco da espera',avg('sucoEsp'),'| marmitas',(res.reduce((a,r)=>a+(r.marmitas||0),0)/N).toFixed(1),'efood',avg('efood'),'esfriou',(res.reduce((a,r)=>a+(r.esfriou||0),0)/N).toFixed(1),'sobra',(res.reduce((a,r)=>a+(r.sobra||0),0)/N).toFixed(1));
   { const av=res.filter(r=>r.aval&&r.aval.dia), cr=k=>(av.reduce((a,r)=>a+r.aval.dia.crit[k],0)/av.length).toFixed(2), nt=av.map(r=>r.aval.dia.nota).sort((a,b)=>a-b);   // v8.4: a nota do Gurugol no dia
     if(av.length) console.log('      Gurugol | nota do dia',(nt.reduce((a,b)=>a+b,0)/nt.length).toFixed(2),'p10',nt[Math.floor(nt.length*0.1)].toFixed(2),'p90',nt[Math.floor(nt.length*0.9)].toFixed(2),'|',L.AVAL_CRIT.map((c,k)=>c.id+' '+cr(k)).join(' '),'| avaliações',(av.reduce((a,r)=>a+r.aval.dia.n,0)/av.length).toFixed(1)); }
   if(MODO!=='sem'){

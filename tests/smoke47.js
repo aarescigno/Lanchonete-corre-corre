@@ -23,7 +23,7 @@ const AN={ equipe:{ tonhao:1, dani:3, joca:3, anselmo:2 } };
 { const {L}=nova(); const c=L.liberaOf('anselmo');
   ok(c && c.nivel===3 && c.dia===3 && c.ate===6 && typeof c.gatilho==='function' && c.falas.length===5 && c.falas.map(f=>f.q).join()==='tonhao,anselmo,bia,anselmo,bia','anselmo: nível 3, dia 3, até 6, 5 falas (Tonhão, Anselmo, Bia, Anselmo, Bia)');
   ok(L.HIST_NOMES.anselmo==='Anselmo' && L.LIBERA.every(l=>l.falas.every(f=>L.HIST_NOMES[f.q])),'HIST_NOMES tem o Anselmo');
-  const D=L.DRINKS; ok(D.prep===4 && D.preco===22 && D.ingred===6 && D.vagas===2 && D.itens.map(d=>d.nome).join()==='Pôr do Sol da Avenida,Brisa de Maracujá,Esmeralda' && JSON.stringify(D.pede)===JSON.stringify({ executiva:0.45, negocios:0.6, familia:0.25, vovos:0.25, estudante:0.35 }) && D.vip===0.2,'DRINKS como no plano');
+  const D=L.DRINKS; ok(D.prep===4 && D.preco===22 && D.ingred===6 && D.vagas===2 && D.itens.map(d=>d.nome).join()==='Pôr do Sol da Avenida,Brisa de Maracujá,Esmeralda' && JSON.stringify(D.pede)===JSON.stringify({ executiva:0.45, negocios:0.6, familia:0.25, vovos:0.25, estudante:0.35, casal:0.6 }) && D.vip===0.2,'DRINKS como no plano');
   ok(L.STAFF.anselmo.levels[2].pay===90 && L.STAFF.anselmo.levels[2].speed===0.8 && L.STAFF.anselmo.levels[3].pay===130 && L.PONTOS_ACAO.drink===5 && L.AVAL.amb.drink===0.25 && L.DRINK_PRICE.drink===22,'STAFF.anselmo, pontos, Ambiente e preço do lixo');
   const r=L.LAYOUT.STATIONS.drinks.rect; ok(r.x===620 && r.y===92 && r.w===60 && r.h===50 && L.LAYOUT.STATIONS.drinks.ap.x===700 && L.LAYOUT.STATIONS.drinks.ap.y===150 && L.ANSELMO_HOME.x===650 && L.ANSELMO_HOME.y===118,'estação do balcão e posição dele'); }
 

@@ -9,17 +9,20 @@ Origem: retorno do Renan Martorelli (beta-tester) e conversa com o Arthur (15/10
 - **Modelo e esforço (desde 29/10, ver `CLAUDE.md`):** cada etapa ou sessão termina com uma linha **Modelo:**. Quando ela pede "planejar com o Opus antes", a primeira sessão (com o Opus) fecha as **decisões em aberto** com o usuário, escreve no plano os valores, textos e falas decididos, apaga a lista de decisões em aberto e troca a linha para só o modelo da execução. A sessão de execução (Sonnet ou Haiku) não decide nada de design: se achar uma decisão que ficou aberta, para e pergunta ao usuário.
 - Antes de programar, se ainda houver **decisões em aberto** na etapa (cada uma já tem uma sugestão), a sessão confirma com o usuário.
 - No fim, a sessão marca a etapa como feita na tabela abaixo (com a versão e a data), move o texto dela para o `docs/PLANO-FEITO.md` com `ferramentas/arquiva.py` e leva para a seção **Situação das etapas feitas** de lá as linhas da tabela além das 3 últimas feitas.
-- **Ordem (10/11):** a próxima é a **4a** (Terraço Suíça, planejar com o Opus antes), depois 4b, 4c, 6 e 7 (a rever). As revisões R1 (v9.6.12) e R2 (v9.6.13) foram feitas em 10/11, fora da ordem, a pedido do usuário. O histórico da ordem está no fim do `docs/PLANO-FEITO.md`.
+- **Ordem (11/11):** a próxima é a **4a-2** (o VIP exigente e a reputação), depois 4a-3 a 4a-5 (planejadas em 10/11), 4b, 4c, 6 e 7 (a rever). A 4a-1 (v10) foi feita em 11/11. As revisões R1 (v9.6.12) e R2 (v9.6.13) foram feitas em 10/11, fora da ordem, a pedido do usuário. O histórico da ordem está no fim do `docs/PLANO-FEITO.md`.
 
 ## Situação
 | # | Etapa | Versão | Situação |
 |---|---|---|---|
+| 4a-1 | O Terraço Suíça e a refeição completa (caps. 8 e 9) | v10 | feita em 11/11 (`docs/spec-v10.md`; `smoke60`; calibrada: grupos 0,50, metaF 9, expertF 6, aluguel R$ 1.200, cardápio ×2,4) |
 | R2 | Menos sustos: "Já vou!", banco sem armadilha e pausa que confirma (análise de frustração) | v9.6.13 | feita em 10/11 (`docs/spec-v9.6.13.md`; `smoke59`) |
 | R1 | Revisão geral: Missão zero enxuta, dicas na hora, HUD com estrelas, fim do dia | v9.6.12 | feita em 10/11 (`docs/spec-v9.6.12.md`; `smoke58`; sem mudar números do jogo) |
-| 3g-2 | A tela avisa: Gurugol em balões, mesinha das marmitas, eFood e fumaça | v9.6.11 | feita em 02/11 (`docs/spec-v9.6.11.md`; `smoke57`; geladeira fora da tela, mesinha no lugar dela, cheiro só onde a fumaça chega) |
-| 4a | Terraço Suíça e VIPs exigentes (e o capítulo dele) | v10 | a fazer |
-| 4b | Nível de luxo | v10.1 | a fazer |
-| 4c | Eventos de bairro: festa junina e jogo do Brasil | v10.2 | a fazer |
+| 4a-2 | O VIP exigente e a reputação | v10.1 | a fazer (planejada em 10/11) |
+| 4a-3 | A cozinha do Terraço: alta gastronomia, a Lia e a alta confeitaria | v10.2 | a fazer (planejada em 10/11) |
+| 4a-4 | O salão e o bar do Terraço: a Cami em tudo, cafés especiais e coquetéis de autor | v10.3 | a fazer (planejada em 10/11) |
+| 4a-5 | Música, flores e o rebalanceamento do Terraço | v10.4 | a fazer (planejada em 10/11) |
+| 4b | Nível de luxo | v10.5 | a fazer |
+| 4c | Eventos de bairro: festa junina e jogo do Brasil | v10.6 | a fazer |
 | 5 | ~~Modo História, parte 1~~: juntou-se à 2f e aos capítulos da 3a, 3b e 4a (28/10) | — | — |
 | 6 | Modo História: o crítico do Michelzão e o final | v11 | a fazer |
 | 7 | Polimento: celular, jogo online, ajuste geral | v11.1 | a rever |
@@ -56,59 +59,105 @@ Origem: retorno do Renan Martorelli (beta-tester) e conversa com o Arthur (15/10
 - **Folha** (`FOLHA_CORTE`, a ordem final depois da 3b-5): couvert, som, TV, TVs, **o Anselmo não vem**, **a Cami não vem**, **aumento do Joca**, aumento da Dani, aumento do Tonhão, **o Joca não vem**. "Não vem" marca `eq.<quem>Fora = true` só naquele dia: `payroll` não conta, o ajudante não entra no dia, `normEquipe` não guarda o `...Fora` (continua contratado). Cada sessão põe a sua parte nessa ordem.
 - **Cursos:** um por dia por ajudante (`daniCursoDia`, `jocaCursoDia`, `camiCursoDia`). Os que trazem item (confeitarias, espresso) ficam no **cartão Cardápio**, com o rosto de quem faz, ao lado dos do Tonhão, e contam na Diversidade do Gurugol (`avalMenu`); os de atendimento ficam no cartão do ajudante, em Equipe. Só aparecem no ponto do `nivel` deles (no modo dev, sempre).
 
-## Etapa 4 — Terraço Suíça, VIPs exigentes e nível de luxo (4a, v10; 4b, v10.1)
-> Desde a revisão de 28/10, o **nível de luxo** entra junto com o Terraço (escolha do usuário), em 2 sessões: **4a** (Terraço e VIPs) e **4b** (nível de luxo).
+## Etapa 4 — Terraço Suíça, VIPs exigentes e nível de luxo (4a, v10 a v10.4; 4b, v10.5)
+> Desde a revisão de 28/10, o **nível de luxo** entra junto com o Terraço (escolha do usuário). A **4a** foi planejada em 10/11 e dividida em 5 sessões (4a-1 a 4a-5); a **4b** (nível de luxo) vem depois.
 
-### Sessão 4a — Terraço Suíça e VIPs exigentes (v10)
-**Objetivo:** o topo da escada de pontos (nível 4 do salão), com o cliente que o Arthur descreveu: "VIPs exigentes que entram e pedem pratos especiais".
+### 4a — Terraço Suíça: decisões de 10/11 (v10 a v10.4)
+> **Planejada em 10/11** (o usuário pediu o planejamento com o Fable e que as decisões fossem tomadas na sessão; registro em `docs/PROPOSTAS.md`). O que estava em aberto ficou assim:
+> - **Refeição em tempos:** bebida, entrada, prato principal e sobremesa, com os sistemas que já existem (drinks do Anselmo ou suco, cozinha do Tonhão, doces da Dani). A cozinha faz a entrada e, entregue a entrada, o principal. Cada tempo tem nota; regras na 4a-1.
+> - **Cardápio:** ×2,4 e aluguel R$ 1.200 (calibrados na 4a-1; a partida era ×2,5 e R$ 1.000, e a refeição completa já sobe a conta por mesa). Mudança R$ 5.000, crédito R$ 8.000. Metas: `grupos` 0,50, `metaF` 9, `expertF` 6. Os preços "no Terraço" citados nas sessões seguintes foram escritos com ×2,5: valem os que saem de `precoPrato`.
+> - **Pendência da v10:** guardar a v9.6.13 em `versoes/v9.6.13.html` (`docs/spec-v10.md` diz como); a sessão não teve permissão de escrita nessa pasta. As capturas (`capturas/vX`) ficam fora do git desde a limpeza de 10/11: os `shot_*.js` geram, confere-se e descarta-se.
+> - **Avaliação do exigente:** pesa mais: ele sempre avalia e a nota dele conta 2 vezes. Bravo, tira 10% do movimento do dia seguinte.
+> - **Visual do exigente:** plaquinha dourada com duas estrelas, sem óculos escuros, com chapéu, lenço de seda ou echarpe.
+> - **Música:** quarteto de cordas R$ 150/dia; pianista R$ 120/dia mais R$ 30/dia da afinação do piano. Um ou outro; no Terraço não há taxa de couvert.
+> - **O piano** já vem com o ponto (fechado, no canto de baixo à esquerda do salão, fora da área das mesas); quem toca chega na 4a-5.
+> - **Ajudante de cozinha:** a **Lia**, colega do Tonhão no curso de alta gastronomia.
+> - **O Terraço mede pela equipe toda** (Joca, Cami, Anselmo e a confeitaria): é ela que passa ~90% das metas.
+> - **Regra da 3f em todas as sessões:** cartão novo da lojinha só com nome, preço e "?"; toda novidade ganha ficha no `MANUAL` (sem números), revelada quando aparece na história.
+> Ordem: 4a-1 (o ponto e a refeição completa, v10) → 4a-2 (o VIP exigente e a reputação, v10.1) → 4a-3 (a cozinha: alta gastronomia, a Lia e a alta confeitaria, v10.2) → 4a-4 (o salão e o bar: Cami, Joca e Anselmo, v10.3) → 4a-5 (música, flores e rebalanceamento, v10.4). Cada uma é uma versão, com PR e merge. As "Checagens de fim de sessão" da etapa 3 valem para todas.
 
-**Entra:**
-- 4º ponto, **Terraço Suíça** (nível 4: **20 lugares**, ver "Mapa do Terraço" abaixo; aluguel R$ 1.000, mudança R$ 5.000, cardápio ×2,2 como sugestão), com VIPs frequentes e uma antessala ("foyer") com amenidades na área de espera: **poltronas individuais e coquetelaria lá fora**. A confeitaria, o café, o atendimento e os drinks vêm da 3b (a Dani confeiteira, o Joca barista, a Cami e o Anselmo com o balcão de drinks); aqui o Anselmo leva **a coquetelaria lá fora** (o balcãozinho da espera), um sistema só com o balcão do salão.
-- **Mapa do Terraço (decidido com o usuário na 3e, 02/11):**
-  - **Menos mesas, mais finas:** 20 lugares (5 mesas de 4; o salão comporta só 6), e o lugar da 6ª fica com o **piano de cauda**, no salão.
-  - **Refeição completa:** a freguesia do Terraço pede o cardápio inteiro, em tempos: **entrada, prato principal, sobremesa e bebida**, e fica mais tempo na mesa. Cada tempo recebe nota, e a avaliação do Gurugol sai da soma dos tempos (e do tempo entre um e outro). São menos clientes, mais exigentes e que ficam mais tempo. Palavras do usuário: "as pessoas vão pedir cardápios inteiros [...] vão avaliar cada uma das coisas e a nota vai ser diferente [...] entrada, prato principal, sobremesa, bebida, e a nota é dada nisso, no tempo dessas coisas acontecerem. Menos clientes, mas mais exigentes, que ficam mais tempo."
-  - **O foyer:** no Terraço não há entregadores nem marmitas; o balcão de retirada sai e a **coquetelaria lá fora** do Anselmo fica no alto da calçada, onde ele estava. Os 6 lugares da espera são **poltronas individuais** (sem o sofá), com o desenho da espera da 3e-1.
-  - Ao planejar: as regras dos tempos (quem traz cada um, quanto se espera entre eles, como cada nota pesa), o balão do pedido em tempos (um ícone por vez, no balão de hoje, sem texto), o encaixe com o VIP exigente e o prato da casa, e o `metaF` com menos mesas.
-- **VIP exigente** (só no Terraço Suíça e no fim da história):
-  - pede o **prato da casa**, que só sai caprichado ★ se o Tonhão tiver aumento (ou demora o dobro);
-  - às vezes pede uma **bebida específica** (suco ou café) antes do prato;
-  - não aceita mesa suja ao sentar;
-  - paga muito bem (bônus grande com 5 corações) e, se sair bravo, deixa **avaliação ruim**: −10% de clientes no dia seguinte.
-- **Equipe do Terraço** (entrevista de 31/10; texto em `docs/PROPOSTAS.md`). Decidido; ao planejar, falta o que está em "Decidir":
-  - **Cami** (desde a Avenida, 3b-3 e 3b-6): no Terraço, um curso abre o modo "Ajuda em tudo" (pega o que a Bia não pegou, em qualquer mesa). Decidir: nome, preço e velocidade do curso.
-  - **Ajudante de cozinha do Tonhão:** **R$ 80/dia**, o Tonhão cozinha **25% mais rápido**. Decidir: nome, visual e história.
-  - **Tonhão, alta gastronomia:** cursos próprios do Terraço depois do "Cozinha de restaurante" da Avenida (a ideia "Cozinheiros da Avenida Brasil e do Terraço Suíça": lá não se vende coxinha), que abrem os pratos finos e o prato da casa dos VIPs. Decidir: nomes, pratos, preços.
-  - **Dani, curso "Alta confeitaria"** (R$ 600): entremet, mil-folhas e macaron a **R$ 30**.
-  - **Joca, curso "Cafés especiais"** (R$ 600): coado no filtro, prensa francesa e cold brew a **R$ 20**, cada um com etapas (decidir quais e o tempo).
-  - **Anselmo, 2 cursos** (R$ 500 e R$ 800): o 2º põe no nível 3 (`speed` 1,0, R$ 130/dia), drinks a **R$ 35** e a coquetelaria lá fora. Decidir: nomes dos cursos e dos drinks novos.
-  - A 4a ficou grande: ao planejar, dividir em sessões (sugestão: o Terraço e os VIPs; a equipe do Terraço).
-- **Reputação do ponto:** é a nota do Gurugol (etapa 2c, últimas 100 avaliações). No Terraço ela muda a freguesia do dia (mais VIPs com nota alta), e na etapa 6 vira a régua do Michelzão.
-- Um item de lojinha do Terraço, por exemplo "Louça fina": prato especial mais rápido.
-- **Ambiente:** couvert com quarteto de cordas ou pianista (20% cada; diárias a definir; o pianista traz a manutenção diária do piano).
-- **Decoração da calçada:** flores muito belas e arranjos, como ikebana, arranjos de orquídeas e flores do campo em vasos de cerâmica.
-- **Desenho do nível 4** (dos pedidos de 21 e 22/10, hoje no `PLANO-FEITO.md`, "Ideias já entregues"): poltronas, tapete e balcãozinho de drinks na espera; piano de cauda e quarteto no salão; o pianista também soma ao nível de luxo (4b). `prefers-reduced-motion` e nomes de músicas inventados.
-- **Capítulo do Terraço** na história, que prepara o final (etapa 6).
-- **Manual (da 3f):** o VIP exigente, a equipe nova, os itens novos da lojinha e o Terraço entram como fichas no `MANUAL` (com a mesma regra de revelação), e os cartões novos da lojinha saem só com nome, preço e "?".
+### Sessão 4a-2 — O VIP exigente e a reputação (v10.1)
+**Objetivo:** o cliente que o Arthur descreveu: "VIPs exigentes que entram e pedem pratos especiais". No Terraço, todo VIP é exigente (`PONTOS[3].exigente = true`; `grp.exigente`).
 
-**Partes:** `10-constantes.js`, `12-clientes.js` (tipo/modificador exigente), `13-cozinha.js` (prato da casa), `16-jogo.js` (reputação), `20-desenho-base.js` (visual do exigente, sem estereótipo: chapéu/lenço e plaquinha ★★), `21-cenario.js` (Terraço, foyer, piano), `22-salao-hud.js` (balão do pedido especial).
+`EXIGENTE = { tip:0.2, generosa:0.2, casa:{ preco:40, cook:2, cookBom:1.3, nivel:3 }, sujaT:6, peso:2, bravoMov:0.9, rep:[0.6, 1.4] }`.
+- **Visual** (sem estereótipo): sem os óculos escuros do VIP; plaquinha dourada com **duas estrelas** e, em cada pessoa, um acessório sorteado (chapéu de aba, lenço de seda no pescoço ou echarpe), em cores variadas; gente de várias idades, cores e gêneros.
+- **Prato da casa** no lugar do prato especial: soma `casa.preco` à conta (em vez do `VIP.dish`) e o principal leva `casa.cook` × o tempo. Com o Tonhão no nível 4 ou 5 (`equipe.tonhao >= casa.nivel`), leva `casa.cookBom` × e sai sempre caprichado. No balão e na mão, o prato leva uma estrelinha dourada; na entrega, "Prato da casa!".
+- **Bebida primeiro:** se a entrada chegar antes de toda a bebida da mesa, ele perde 1 coração e diz "E a minha bebida?" (uma vez por grupo).
+- **Salão em ordem:** ao sentar, se houver no salão uma mesa suja há mais de `sujaT` segundos, ele não ganha o coração de sentar, perde 1 e diz "Que salão bagunçado!". Cada mesa passa a contar há quanto tempo está suja (`t.sujaT`, que a 4a-4 também usa).
+- **Paga bem:** a gorjeta dele é `tip` (em vez do `VIP.tip`) e, com 5 corações, mais `generosa` da conta, com o texto "Gorjeta generosa!", além dos pontos do VIP satisfeito.
+- **Sempre avalia** (não entra no sorteio dos 4 do dia) e a avaliação conta `peso` vezes na lista do Gurugol. Comentários próprios (metade das vezes): bom "Impecável. Voltarei." ou "Serviço à altura do endereço."; ruim "Esperava mais de um terraço." ou "Não é para tanto."; bravo "Inaceitável!".
+- **Saiu bravo:** `save.exigBravo` guarda o dia; no dia seguinte vêm `bravoMov` dos grupos, com o aviso na introdução "Um cliente exigente saiu bravo ontem: hoje vem menos gente."
+- **Reputação:** no Terraço, a chance de VIP do dia é multiplicada por um fator que vai de `rep[0]` (nota 1) a `rep[1]` (nota 5), em linha reta pela nota do Gurugol; sem nota, 1.
+- **Louça fina** (`UPGRADES`: `{ id:'louca', name:'Louça fina', cost:600, nivel:4 }`; o campo `nivel` das melhorias é novo: só aparece no ponto desse nível em diante): o prato da casa e o prato especial ficam 25% mais rápidos (`LOUCA = { cook:0.75 }`) e o Ambiente ganha `AVAL.amb.louca = 0.5`.
+- **Conversa** (`HIST_EXIGENTE`, no fim do 1º dia em que um exigente veio; `save.convExig`: 0, 'pend' ou 1; só no Modo História): Bia "Tio, viu a plaquinha de duas estrelas naquela mesa?" / Tonhão "Cliente exigente. Quer a bebida antes da entrada, o salão em ordem e o prato da casa." / Bia "E se ele gostar?" / Tonhão "Paga como ninguém. Se sair bravo, a cidade inteira fica sabendo."
+- **Manual:** `c-exigente` (aba Clientes; "VIP exigente", "Duas estrelas na plaquinha. Quer tudo no lugar e paga muito bem."; traços: "pede o prato da casa", "bebida antes da entrada", "repara em mesa suja", "sempre avalia no Gurugol", "gorjeta ótima"), revelada quando o 1º chega (`save.exigVisto`); `l-louca` ("Louça fina", "O prato da casa sai mais rápido, e a mesa fica mais bonita.").
 
-**Testes:** smoke novo (pedido especial, regras de mesa, avaliação ruim, reputação e save). `balance` no Terraço Suíça com equipe completa.
-**Metas do Terraço (da 3b-7, v9.6.1):** o ponto leva `metaF` e `expertF` próprios, calibrados como na 3b-7 (`DUMP=1` com 80 dias: `metaF` para `EQUIPE=auto` passar ~90%, `expertF` para a 3★ do bot afiado ficar em ~60%; referências: área industrial 2,3 e 1,6, Avenida 3,2 e 3,8). Na 3b-7 a equipe toda na Avenida passa 100% das metas: decidir no planejamento se o Terraço mede pela equipe toda. O ganho da área industrial sobre a Garagem ficou em ~R$ 310 por dia (a v9 mirava ~R$ 140) e o caixa do dia 50 da carreira em ~R$ 17 mil: considerar no preço da mudança do Terraço.
+**Partes:** `10-constantes.js` (`EXIGENTE`, `LOUCA`, `UPGRADES`, `AVAL.amb`, `HIST_EXIGENTE`, `MANUAL`), `12-clientes.js` (o modificador, a conta, `normSave`), `13-cozinha.js` (o prato da casa), `16-jogo.js` (sentar, entrega, conta, avaliação com peso, o dia seguinte, a reputação no `buildSchedule`, `t.sujaT`), `19-conversa.js`, `20-desenho-base.js` (acessórios e a plaquinha de duas estrelas), `22-salao-hud.js` (a estrelinha no prato), `41-lojinha.js` (a Louça fina), `43-telas.js` (o aviso do dia).
 
-**Calibração:**
-- O Terraço dá mais lucro só com equipe completa + Tonhão nível 3 + salão bem montado.
-- Para quem não está pronto, é um passo arriscado: lucro abaixo da Avenida Brasil.
+**Testes:** **`tests/smoke61.js` (novo):** (1) no Terraço o VIP é exigente e na Avenida não; (2) prato da casa: +R$ 40, ×2 com o Tonhão abaixo do nível 4 e ×1,3 e caprichado do 4 em diante; com a Louça fina, 25% mais rápido; (3) entrada antes da bebida: −1 coração, uma vez só; (4) mesa suja há mais de 6 s ao sentar: −1 coração; há menos, nada; (5) gorjeta 20% e mais 20% com 5 corações; (6) sempre avalia e a nota entra 2 vezes; (7) bravo: o dia seguinte tem 10% menos grupos e o aviso; (8) reputação: com nota 5, mais VIPs que com nota 3 (em 400 grupos); (9) Louça fina só no Terraço, +0,5 no Ambiente; (10) a conversa no fim do dia do 1º exigente; (11) save da v10 carrega igual. `bot.js`: leva a bebida do exigente antes da entrada quando ela já está pronta e não o senta com mesa suja velha. `PONTO=terraco node balance.js` com a equipe toda: o alvo de 85–95% continua; abaixo de 85%, `vip` 2,0; acima de 95%, `metaF` +0,2 por vez. Capturas `tests/shot_v10_1.js`: mesa de exigente (plaquinha e acessórios), o prato da casa no balão, "E a minha bebida?", "Gorjeta generosa!", a Louça fina na lojinha, a conversa, a ficha do Manual.
 
-**Decisões em aberto:**
-- A refeição em tempos (ver "Mapa do Terraço"): as regras e a nota de cada tempo.
-- O cardápio do Terraço: a sugestão de ×2,2 era de antes da v9.1, que pôs a Avenida em ×2 (a escada está em 1 / 1,5 / 2); subir para ×2,6 a ×3?
-- A avaliação ruim do VIP exigente pesa mais na nota do Gurugol do que a de um cliente comum?
-- O que o exigente usa para se distinguir visualmente.
-- As diárias do quarteto e do pianista e a manutenção do piano.
+**Fechamento:** v10.1 (`versoes/`, `vtag`, `VERSAO`, `#ov-ver`, `docs/spec-v10.1.md`, `RESUMO.md`, `TESTES.md`), PR e merge.
 
-**Modelo:** planejar com o Opus antes (as 3 decisões em aberto, o que falta da equipe do Terraço, regras do prato da casa e da reputação, falas do capítulo, divisão em sessões); executar com o Sonnet, esforço alto (cliente novo com regras próprias e o desenho do Terraço).
+**Modelo:** Sonnet, esforço alto. Regras fechadas, mas é um modificador de cliente que mexe em sentar, cozinha, conta, nota e no dia seguinte.
 
-### Sessão 4b — Nível de luxo (v10.1)
+### Sessão 4a-3 — A cozinha do Terraço: alta gastronomia, a Lia e a alta confeitaria (v10.2)
+**Objetivo:** "lá não se vende coxinha": os cursos do Terraço trocam o cardápio por pratos finos, a cozinha ganha uma ajudante e a Dani chega ao topo dos doces.
+
+- **Cursos do Tonhão** (`CURSOS`, `nivel:4`):
+  - `{ id:'entradas', nome:'Entradas finas', preco:600, nivel:4, pratos:['bruschetta', 'bacalhau', 'quiche'], av:{ nome:'Entradas de chef', preco:900, receita:'bruschetta de tomate confitado, bolinho de bacalhau cremoso e quiche de alho-poró na massa folhada', pratos:['bruschetta', 'bacalhau', 'quiche'] } }`
+  - `{ id:'alta', nome:'Alta gastronomia', preco:900, nivel:4, pratos:['risoto', 'peixe', 'medalhao'], av:{ nome:'Menu do chef', preco:1400, receita:'risoto de cogumelos frescos, peixe do dia na manteiga de ervas e medalhão ao molho madeira', pratos:['risoto', 'peixe', 'medalhao'] } }`
+  - `CARDAPIO` (todos com `fino:true`): `bruschetta` ("Bruschetta", 14, `chapa`, sem carne, `veg`), `bacalhau` ("Bolinho de bacalhau", 16, `frito`), `quiche` ("Quiche de alho-poró", 15, `assado`, sem carne, `veg`), `risoto` ("Risoto de cogumelos", 38, `pf`, sem carne, `veg`), `peixe` ("Peixe do dia", 42, `pf`), `medalhao` ("Medalhão ao molho madeira", 46, `pf`). No Terraço: R$ 35, 40 e 38; R$ 95, 105 e 115.
+  - **Regra do prato fino:** em ponto de nível 4, se a cozinha sabe alguma entrada fina, a entrada é sorteada só entre as finas (peso: o gosto do tipo pela categoria, mais 1); o mesmo vale para o principal. Contam na experiência do Tonhão e na Diversidade do cardápio como os outros cursos. Desenhos dos 6 pratos no estilo das artes da v8.6.10.
+- **Lia, a ajudante de cozinha:** `STAFF.lia = { pay:80, cook:0.75 }`; `equipe.lia` (0 ou 1; contratar é definitivo, como o Anselmo); só no Terraço (`nivel >= 4`; no modo dev, em qualquer ponto). Com ela no dia, todo pedido da cozinha leva `cook` × o tempo. `FOLHA_CORTE`: **a Lia não vem** (`liaFora`), logo depois das TVs e antes do Anselmo; `payroll`, `folhaItens` e `normEquipe` contam ela.
+  - Visual (com crachá "LIA"): mulher de uns 30 anos, pele parda, cabelo crespo preso num coque alto sob um lenço amarelo-mostarda, dólmã branca de mangas dobradas e avental cinza. Fica na cozinha, ao lado do Tonhão, mexendo uma panela (parada com `prefers-reduced-motion`).
+  - Cartão em Equipe, ao lado do Anselmo: nome, salário e "A cozinha anda mais rápido". Abre pelo `LIBERA` (`id:'lia'`, `nivel:4`, `dia:1`, `ate:999`; gatilho: o Tonhão fez o básico de `entradas` ou de `alta`; reclamações "A comida demorou entre um prato e outro." e "Cozinha lenta para um terraço."). Falas: Tonhão (secando as mãos no avental) "Bia, no curso tinha uma moça que cortava cebola mais rápido que eu." / Bia "Mais rápido que o senhor? Duvido." / Tonhão "A Lia. Tá procurando cozinha pra trabalhar. Com mais duas mãos, a entrada e o prato saem juntinhos." / Lia "O chef Tonhão me falou do terraço. Onde eu guardo as facas?" / Bia "Tá na lojinha, em Equipe." `HIST_NOMES.lia = 'Lia'`, cor do nome verde-oliva `#5E7A3A`, `convCabeca` com ela.
+  - Manual: `e-lia` ("Lia", "Ajudante de cozinha: com ela, tudo sai mais rápido."; traço "cozinha mais rápida").
+- **Dani, curso "Alta confeitaria"** (`DANI_CURSOS`: `{ id:'confAlta', nome:'Alta confeitaria', preco:600, nivel:4, dep:'confGourmet', item:true }`): `DOCES.alta = [ { id:'entremet', nome:'Entremet de chocolate' }, { id:'milfolhas', nome:'Mil-folhas' }, { id:'macaron', nome:'Macarons' } ]`, `altaPreco:30`, `altaIngred:7`; com `up.confAlta` os doces da vitrine passam a ser esses, e quem comeu dá `AVAL.amb.doceAlta = 0.4` no Ambiente (no lugar do 0,25). Comentário: "O entremet da casa é de outro mundo!". 3 ícones novos de doce.
+
+**Partes:** `10-constantes.js` (`CARDAPIO`, `CURSOS`, a regra do fino no `pedePrato` e no `pedePrincipal`, `STAFF.lia`, `FOLHA_CORTE`, `LIBERA`, `HIST_NOMES`, `DANI_CURSOS`, `DOCES`, `AVAL.amb`, `MANUAL`), `12-clientes.js` (`normEquipe`), `13-cozinha.js` (o tempo com a Lia), `16-jogo.js` (`setStaff`, folha, `buyDaniCurso`), `19-conversa.js` e `26-conversa.js`, `20-desenho-base.js` (6 pratos e 3 doces), `21-cenario.js` (a Lia na cozinha), `41-lojinha.js` (cursos, cartão da Lia), `42-resultados.js`.
+
+**Testes:** **`tests/smoke62.js` (novo):** (1) os dois cursos só no Terraço; preços no ponto; (2) com `entradas`, a entrada só sai entre as finas; com `alta`, o principal; sem eles, como antes; o vegetariano acha opção nos dois; (3) experiência do Tonhão e Diversidade contam os cursos novos; (4) a conversa da Lia no fim do dia do curso; contratar: R$ 80 na folha, cozinha 25% mais rápida; é a primeira da equipe a não vir no corte; só no Terraço; (5) Alta confeitaria: depende da gourmet, doces a R$ 30, +0,4 no Ambiente; (6) save da v10.1 carrega igual. `bot.js`: compra os cursos (entradas, alta, alta confeitaria) e contrata a Lia quando sobra dinheiro acima da folha. `PONTO=terraco node balance.js` ganha as chaves `ALTA=1` (os dois cursos e a alta confeitaria) e `LIA=1`; anote o que cada uma soma; o alvo da equipe toda só se recalibra na 4a-5. Capturas `tests/shot_v10_2.js`: os 6 pratos e os 3 doces (no balcão, na mesa e no cartão Cardápio), a Lia na cozinha, o cartão dela, a conversa.
+
+**Fechamento:** v10.2 (`versoes/`, `vtag`, `VERSAO`, `#ov-ver`, `docs/spec-v10.2.md`, `RESUMO.md`, `TESTES.md`), PR e merge.
+
+**Modelo:** Sonnet, esforço médio. Segue os moldes do curso de restaurante, do cartão do Anselmo e da confeitaria gourmet, com números e textos fechados; o trabalho maior são os desenhos.
+
+### Sessão 4a-4 — O salão e o bar do Terraço: a Cami em tudo, os cafés do Joca e os coquetéis de autor (v10.3)
+**Objetivo:** o topo de cada ajudante do salão (entrevista de 31/10).
+
+- **Cami, curso "Atendimento de salão"** (`CAMI_CURSOS`: `{ id:'salao', nome:'Atendimento de salão', preco:900, nivel:4, dep:'mesa' }`): nível 4, `STAFF.cami.levels[4] = { speed:1.35, tasks:4, pay:190, mesas:true, tudo:true }`, e o modo **"Ajuda em tudo"** (`equipe.camiModo = 'tudo'`; o cartão passa a ter 3 botões: "Tarefas", "Minhas mesas" e "Ajuda em tudo"). Nesse modo ela faz, em **qualquer mesa**, o que a Bia não pegou: anota o pedido, leva o prato pronto, cobra a conta e recolhe a louça, mas só o que espera há `CAMI_TUDO.espera` (3 s) ou mais e não está na fila de ações da Bia (`grp.stateT`, `p.age` e `t.sujaT`). A Bia continua podendo pegar qualquer prato (o "É da Cami!" só vale para o prato que a Cami já está indo buscar). O básico da casa volta para o Joca (ou a Dani), como em "Minhas mesas".
+- **Joca, curso "Cafés especiais"** (`JOCA_CURSOS`: `{ id:'cafesEsp', nome:'Cafés especiais', preco:600, nivel:4, dep:'espresso', item:true }`): `CAFES.metodos = [ { id:'coado', nome:'Coado no filtro', preco:20, prep:2.5, etapas:2 }, { id:'prensa', nome:'Prensa francesa', preco:20, prep:3.5, etapas:3 }, { id:'coldbrew', nome:'Cold brew', preco:20, prep:1, etapas:1 } ]`, ingrediente R$ 5. Com `up.cafesEsp`, os pedidos de café passam a ser esses. As etapas (moer, passar ou prensar, servir) aparecem como marcas no anel de progresso da bancada enquanto o café é feito; a bancada ganha o filtro, a prensa e a jarra. 3 ícones novos de café. Comentário: "Nunca tomei um coado assim!".
+- **Anselmo, dois cursos** (`ANSELMO_CURSOS`, um por dia, `save.anselmoCursos` e `anselmoCursoDia`; no cartão dele, no lugar de "Cursos no Terraço Suíça"):
+  - `{ id:'classica', nome:'Coquetelaria clássica', preco:500, nivel:4 }`: o balcão passa a ter 4 vagas de copo e o preparo fica 20% mais rápido.
+  - `{ id:'autor', nome:'Coquetelaria de autor', preco:800, nivel:4, dep:'classica', item:true }`: ele sobe para o nível 3 (`speed` 1,0, R$ 130/dia); os drinks passam a ser os de autor, a **R$ 35** (ingrediente R$ 9): **"Neblina da Serra"** (branco-azulado, com fumacinha), **"Jardim do Terraço"** (rosa, com flor) e **"Ouro da Casa"** (dourado, com raspa de laranja); e o foyer ganha o **carrinho de boas-vindas**, a bebida da espera do Terraço: `PONTOS[3].bebida = 'coquetel'`, `BEBIDA_ESPERA.coquetel = { preco:18, ingred:5, prep:3, take:0.5, fim:'Coquetéis de boas-vindas' }` (frases no molde das águas: "Um coquetel, por favor!"), ligado pelo curso (`up.maquina`) e servindo só nos dias em que o Anselmo vem. O carrinho fica no alto do foyer, onde nos outros pontos fica o balcão de retirada (a estação `maquina` muda de lugar no Terraço: `rect:{ x:-94, y:98, w:90, h:80 }`, `ap:{ x:16, y:156 }`). Nomes inventados, sem dizer se têm álcool.
+- Os cursos com item (cafés especiais, coquetelaria de autor) ficam no cartão Cardápio com o rosto de quem faz e contam na Diversidade (`cursosItem`).
+- **Manual:** as fichas `e-cami`, `e-joca` e `e-anselmo` ganham o que mudou (linha da Cami: "Garçonete de rodízio: com cursos, cuida das mesas dela ou ajuda em todas."); `l-maquina` cita o coquetel de boas-vindas.
+
+**Partes:** `10-constantes.js` (`CAMI_CURSOS`, `STAFF.cami`, `CAMI_TUDO`, `JOCA_CURSOS`, `CAFES`, `ANSELMO_CURSOS`, `DRINKS`, `BEBIDA_ESPERA`, `PONTOS[3].bebida`, a estação no Terraço, `MANUAL`), `12-clientes.js` (`normEquipe`, `normSave`), `14-bia.js`, `15-dani.js` (o modo "Ajuda em tudo", `donoBasico`), `16-jogo.js` (`setCamiModo`, `buyAnselmoCurso`, a fila dos drinks, a bebida da espera), `20-desenho-base.js` (3 cafés e 3 drinks), `21-cenario.js` (a bancada dos cafés, o carrinho do foyer), `22-salao-hud.js` (balões), `41-lojinha.js` (cartões).
+
+**Testes:** **`tests/smoke63.js` (novo):** (1) "Atendimento de salão" só no Terraço e depois do "de mesa"; nível 4, R$ 190; (2) em "Ajuda em tudo" a Cami anota, serve, cobra e recolhe em mesa não marcada, só depois de 3 s e nunca o que está na fila da Bia; a Bia pega prato de qualquer mesa; o básico fica com o Joca; (3) cafés especiais: depende do espresso, R$ 20, o tempo de cada método; (4) clássica: 4 vagas e preparo 20% mais rápido; autor: depende da clássica, nível 3 e R$ 130 na folha, drinks a R$ 35; (5) o carrinho: só com o curso e com o Anselmo no dia, R$ 18 na conta, a estação no lugar novo; (6) Diversidade conta os cursos com item; (7) save da v10.2 carrega igual. `bot.js`: compra os cursos e põe a Cami em "Ajuda em tudo". `PONTO=terraco node balance.js`: chaves `CAMI=4`, `CAFESESP=1`, `AUTOR=1`; se com a Cami em "Ajuda em tudo" a equipe toda passar de 97%, `CAMI_TUDO.espera` 5. Capturas `tests/shot_v10_3.js`: o cartão da Cami com os 3 modos, ela servindo mesa não marcada, a bancada dos cafés com as etapas, os 3 cafés e os 3 drinks novos, o carrinho no foyer com gente bebendo, o cartão do Anselmo com os cursos.
+
+**Fechamento:** v10.3 (`versoes/`, `vtag`, `VERSAO`, `#ov-ver`, `docs/spec-v10.3.md`, `RESUMO.md`, `TESTES.md`), PR e merge.
+
+**Modelo:** Sonnet, esforço alto. São três sistemas, e o modo novo da Cami é comportamento de ajudante, que pede cuidado para não atropelar o jogador.
+
+### Sessão 4a-5 — Música, flores e o rebalanceamento do Terraço (v10.4)
+**Objetivo:** o ambiente do nível 4 (pedidos de 21 e 22/10) e a escada de números com tudo dentro.
+
+- **Música** (o ambiente do Terraço; `equipe.musica`: 0 desligada, 1 quarteto, 2 pianista; um seletor como o das TVs, no lugar do cartão do couvert): `TERRACO.musica = [ null, { nome:'Quarteto de cordas', pay:150, effect:0.2, amb:1 }, { nome:'Pianista', pay:120, piano:30, effect:0.2, amb:1.5 } ]`. O pianista paga também a afinação do piano (R$ 30 por dia, na mesma linha da folha: "Pianista e afinação"). Sem taxa de couvert no Terraço. O **couvert da Avenida não vem** (`STAFF.couvert` passa a valer só com `nivel === 3`; `normEquipe` e `trocaPonto` desligam; o `deixa` da Avenida vira "os sofás, as águas saborizadas e o couvert ficam"). `FOLHA_CORTE`: a música é a primeira a sair. No 4b, o pianista soma mais ao nível de luxo.
+  - Desenho: o **pianista** senta ao piano do canto (a tampa abre) e o **quarteto** (dois violinos, viola e violoncelo, gente variada, de roupa escura) fica sentado em fila no pé do salão, à direita do piano (x 190 a 340, y 528), sem ser obstáculo. Notinhas subindo; parados com `prefers-reduced-motion`. Nomes de músicas, se aparecerem, inventados.
+- **Flores do foyer** (`DECOR`, grupo plantas, `nivel:4`, +0,2 cada no Ambiente): **Ikebana** R$ 90, **Arranjo de orquídeas** R$ 120 e **Flores do campo** (em vaso de cerâmica) R$ 70. Elogios (`AVAL_DECOR`): "Que ikebana mais elegante!", "O arranjo de orquídeas é um espetáculo!", "Adorei as flores do campo!".
+- **Manual:** `l-musica` ("Música ao vivo", "Quarteto ou pianista: a paciência nas mesas dura mais e o ambiente melhora."); as fichas do Terraço conferidas com tudo o que entrou.
+- **Rebalanceamento** (no molde da 3b-7; só números, um por vez, medindo de novo; no máximo 3 por rodada, cada um registrado na spec): `PONTO=terraco node balance.js 80` e `DIAS=75 node carreira.js 12`, com a equipe toda do Terraço (as chaves da 4a-3 e da 4a-4, a Lia e o pianista).
+  - Alvos: equipe toda 85–95% das metas e 3★ do bot afiado ~60% (`metaF` e `expertF`); o afiado perde no máximo 1 grupo por dia (`grupos`); ganho sobre a Avenida entre R$ 400 e R$ 900 por dia (acima: `aluguel` 1.200, depois 1.500); 0 dias no negativo depois da mudança; nota do Gurugol entre 4,4 e 4,8 com a equipe toda; cap. 9 em até 15 dias em pelo menos 2/3 (se não: `completas` 5).
+  - Os outros pontos não mudam: `node balance.js 40` e `PONTO=industrial|avenida` ficam nas faixas de sempre.
+- **Testes:** **`tests/smoke64.js` (novo):** (1) o seletor da música só no Terraço; diárias (150; 120 + 30); 20% de paciência cada; Ambiente +1 e +1,5; (2) o couvert some no Terraço e o save com couvert ligado chega desligado; (3) o corte da folha tira a música primeiro; (4) as 3 flores só no Terraço, +0,2 cada; (5) save da v10.3 carrega igual. `tests/run_all.sh --tudo` verde. Capturas `tests/shot_v10_4.js` com as **Checagens de fim de sessão** completas do Terraço (cenário com tudo comprado, lojinha, menu, fim do dia, celular deitado).
+
+**Fechamento:** v10.4 (`versoes/`, `vtag`, `VERSAO`, `#ov-ver`, `docs/spec-v10.4.md` com a tabela medida, `RESUMO.md`, `TESTES.md`), PR e merge.
+
+**Modelo:** Sonnet, esforço alto. Os itens seguem moldes, mas o rebalanceamento é por tentativa, olhando o Terraço inteiro.
+
+### Sessão 4b — Nível de luxo (v10.5)
 **Objetivo:** o nível de luxo de 0 a 5 (pedido do usuário em 21/10; texto em `docs/PROPOSTAS.md`), que soma o que o jogador montou em todos os pontos.
 
 **Entra:**
@@ -129,7 +178,7 @@ Origem: retorno do Renan Martorelli (beta-tester) e conversa com o Arthur (15/10
 
 ---
 
-## Etapa 4c — Eventos de bairro (v10.2)
+## Etapa 4c — Eventos de bairro (v10.6)
 > Entrou no plano na revisão de 28/10 (era ideia guardada). Vem depois do Terraço, para variar com cada ponto.
 
 **Objetivo:** dias especiais que dão variedade e testam a reserva de dinheiro, como a chuva e o feriado da v8.

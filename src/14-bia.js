@@ -237,7 +237,7 @@ class Waitress {
       ach.arr[ach.i] = null;
       if (p.kind === 'marmita'){ this.hands.push(marmitaMao(p)); Sfx.blip(); return; }
       const perde = pratoPerde(p.age);   // v8.6.8: esfriou no balcão
-      this.hands.push({ kind:'dish', table:p.table, group:p.group, dish:p.dish, crit:p.crit, q:Math.max(1, (p.q || 1) - perde), fria:perde >= PRATO.friaDe, vip:p.vip });
+      this.hands.push({ kind:'dish', table:p.table, group:p.group, dish:p.dish, crit:p.crit, q:Math.max(1, (p.q || 1) - perde), fria:perde >= PRATO.friaDe, vip:p.vip, tempo:p.tempo });
       Sfx.blip();
       return;
     }
@@ -370,6 +370,7 @@ class Waitress {
     g.score('juice', t.cx + 24, t.cy - 30, 0, grp);
     g.addText(t.cx + 24, t.cy - 52, '+' + JUICE.price * n + ' na conta', PAL.ok, 14);
     if (!grp.juicePending) g.addText(t.cx, t.cy - 96, n > 1 ? 'Sucos entregues!' : 'Suco entregue!', PAL.alerta, 15);
+    grp.notaBeb();   // v10
     Sfx.tone(880, 0.07, 'sine', 0.05); Sfx.tone(1175, 0.12, 'sine', 0.05, 0.07);
     return n;
   }
@@ -440,6 +441,8 @@ class Waitress {
       g.addText(cx, cy - 62, '+' + DRINK_PRICE.coffee + ' na conta', PAL.ok, 14);
       g.usos.cafeteira++;
       Sfx.coin();
+    } else if (grp && grp.tempos && grp.state === 'eating' && this.hands.some(h => h.kind === 'dish' && h.group === grp)){
+      this.fail('Ainda comendo!');   // v10: o principal na mão e o grupo ainda na entrada
     } else {
       this.fail('?');
     }

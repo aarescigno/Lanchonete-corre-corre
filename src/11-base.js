@@ -76,9 +76,10 @@ const Sfx = {
    ============================================================ */
 const OBST = [];
 /* obstáculos dos caminhos: refeitos quando o salão muda (mesas da lojinha e do editor) */
-function setObst(defs){
+function setObst(defs, fixos){
   OBST.length = 0;
   defs.forEach(t => OBST.push(mesaBox(t.cx, t.cy, t.seats)));
+  (fixos || []).forEach(r => OBST.push({ x0:r.x0, y0:r.y0, x1:r.x1, y1:r.y1 }));   // v10: obstáculos fixos do ponto (o piano do Terraço, ver fixosDe)
 }
 function segHits(ax,ay,bx,by,r){
   let t0 = 0, t1 = 1;

@@ -1,8 +1,18 @@
 /* ============================================================
    MESAS E CLIENTES
    ============================================================ */
-function drawChair(ctx,x,y,ci,front,plast){
+function drawChair(ctx,x,y,ci,front,plast,estof){
   const c = CHAIRS[ci];
+  if (estof){
+    // v10, Terraço Suíça: cadeira estofada de encosto alto, na cor da cadeira, com pregos dourados e pés de madeira escura
+    ctx.strokeStyle = '#2B1A10'; ctx.lineWidth = 3.5;
+    ctx.beginPath(); ctx.moveTo(x-12,y+3); ctx.lineTo(x-13,y+12); ctx.moveTo(x+12,y+3); ctx.lineTo(x+13,y+12); ctx.stroke();
+    rr(ctx,x-16,y-40,32,42,9); fs(ctx,c.c,2.5);
+    ctx.fillStyle = 'rgba(255,255,255,.2)'; ctx.fillRect(x-12,y-36,4,26);
+    ctx.save(); ctx.strokeStyle = TE_OURO_CL; ctx.lineWidth = 1.6; ctx.setLineDash([1.2,4]); rr(ctx,x-12,y-36,24,34,6); ctx.stroke(); ctx.restore();
+    ell(ctx,x,y+2,18,6); fs(ctx,c.d,2.2);
+    return;
+  }
   if (plast){
     // cadeira de plástico de bar (Garagem, v7.4): pernas da mesma cor, abertas, e encosto de aro com frisos
     // verticais vazados, que abre para cima
@@ -44,6 +54,18 @@ function drawTableBody(ctx,t,open,g,tm){
     if (t.toalha) drawToalhaEnfeites(ctx,t.cx,t.cy,hw);
     if (t.id === '') return;   // mesa no estoque do editor (v8.3.5): sem número
     circ(ctx,t.cx-hw+14,t.cy-1,8.5); fs(ctx,PAL.mostarda,2);
+    txt(ctx,String(t.id),t.cx-hw+14,t.cy,12,PAL.tinta,'center',FD);
+    return;
+  }
+  if (terraco(g)){   // v10: mesa de madeira escura, com o veio, a borda mais escura e a plaquinha dourada do número
+    rr(ctx,t.cx-hw,t.cy-15,hw*2,36,9); fs(ctx,'#2B1A10',2.6);
+    rr(ctx,t.cx-hw,t.cy-18,hw*2,34,9); fs(ctx,open ? '#6A4630' : '#8A7B70',2.6);
+    rr(ctx,t.cx-hw+4,t.cy-14,hw*2-8,26,6); fs(ctx,open ? '#5A3A26' : '#7A6C62',1.8);
+    ctx.strokeStyle = 'rgba(255,225,180,.12)'; ctx.lineWidth = 1.2;
+    [-7,0,7].forEach(dy => { ctx.beginPath(); ctx.moveTo(t.cx-hw+10,t.cy-1+dy); ctx.quadraticCurveTo(t.cx,t.cy-4+dy,t.cx+hw-10,t.cy-1+dy); ctx.stroke(); });
+    ctx.fillStyle = 'rgba(255,255,255,.14)'; rr(ctx,t.cx-hw+8,t.cy-11,hw*2-30,4,2); ctx.fill();
+    if (t.id === '') return;
+    circ(ctx,t.cx-hw+14,t.cy-1,8.5); fs(ctx,TE_OURO_CL,2);
     txt(ctx,String(t.id),t.cx-hw+14,t.cy,12,PAL.tinta,'center',FD);
     return;
   }
@@ -112,8 +134,8 @@ function drawTable(ctx,g,t,tm,menu){
   }
   if (grp && grp.seated) drawMoodRing(ctx,grp.hearts,t.cx,t.cy+66,t.hx+2,10,tm);
   // cadeiras e pessoas de trás
-  const plast = garagem(g);
-  seats.forEach((s,i) => { if (!s.front) drawChair(ctx,s.x,s.y,t.color,false,plast); });
+  const plast = garagem(g), estof = terraco(g);
+  seats.forEach((s,i) => { if (!s.front) drawChair(ctx,s.x,s.y,t.color,false,plast,estof); });
   if (showPpl) seats.forEach((s,i) => { if (!s.front && i < grp.people.length) drawSeatPerson(ctx,g,grp,i,s,tm); });
   drawTableBody(ctx,t,true,g,tm);
   if (t.cami && (menu || g.camiMesasOn)) drawAventalCami(ctx,t.cx + t.hx - 22,t.cy - 4);   // v9.6: o avental vinho da Cami no tampo
@@ -128,7 +150,8 @@ function drawTable(ctx,g,t,tm,menu){
     const n = grp.size, hw = t.hx - 4;
     for (let i=0;i<n;i++){
       const px = t.cx - hw + 36 + (i+0.5) * ((hw*2 - 46) / n);
-      drawDish(ctx, grp.dishes[i], px, t.cy + 3, 0.52, grp.state === 'wantBill', grp.carnes && grp.carnes[i]);
+      const ent = grp.tempos && !grp.principalDado;   // v10: na refeição completa, a entrada na mesa e depois o principal
+      drawDish(ctx, ent ? (grp.extras[i] || grp.dishes[i]) : grp.dishes[i], px, t.cy + 3, 0.52, grp.state === 'wantBill', !ent && grp.carnes && grp.carnes[i]);
     }
   }
   if (t.dirty){
@@ -139,7 +162,7 @@ function drawTable(ctx,g,t,tm,menu){
     }
     ctx.fillStyle = '#fff'; ell(ctx,t.cx+hw-10,t.cy+3,5,3); fs(ctx,'#fff',1.5);
   }
-  seats.forEach((s,i) => { if (s.front) drawChair(ctx,s.x,s.y,t.color,true,plast); });
+  seats.forEach((s,i) => { if (s.front) drawChair(ctx,s.x,s.y,t.color,true,plast,estof); });
   if (showPpl) seats.forEach((s,i) => { if (s.front && i < grp.people.length) drawSeatPerson(ctx,g,grp,i,s,tm); });
 }
 function drawSeatPerson(ctx,g,grp,i,s,tm){
@@ -182,6 +205,28 @@ function drawHearts(ctx,grp,x,y,tm,k){
     } else heart(ctx,hx,y,5.4*(k || 1),'rgba(255,255,255,.55)','rgba(34,32,28,.45)');
   }
 }
+/* v10, a trilha dos tempos (a refeição completa, sem texto): 4 marcas sob os corações, na ordem bebida, entrada, principal, sobremesa. Pendente: contorno cinza;
+   o que o grupo espera agora: pulsa (parado com prefers-reduced-motion); servido: cheio, verde, amarelo ou vermelho pela nota; o que a casa não serve: um tracinho */
+function drawTempoTrilha(ctx,grp,x,y,tm){
+  const ms = tempoMarcas(grp);
+  if (!ms) return;
+  ms.forEach((m,i) => {
+    const mx = x + (i - 1.5) * 16;
+    if (m.est === 'nao'){ ctx.strokeStyle = 'rgba(34,32,28,.55)'; ctx.lineWidth = 2.4; ctx.lineCap = 'round'; ctx.beginPath(); ctx.moveTo(mx-4,y); ctx.lineTo(mx+4,y); ctx.stroke(); return; }
+    const p = m.est === 'vez' && !RM ? 1 + 0.16*Math.sin(tm*8) : 1, cheio = m.est === 'servida', fill = cheio ? PAL[m.cor] : m.est === 'vez' ? '#fff' : 'rgba(255,255,255,.55)';
+    ctx.save(); ctx.translate(mx,y); ctx.scale(p,p);
+    circ(ctx,0,0,6.4); fs(ctx,fill,cheio ? 1.8 : 1.6);
+    if (!cheio){ ctx.strokeStyle = m.est === 'vez' ? PAL.faixa : 'rgba(34,32,28,.5)'; ctx.lineWidth = m.est === 'vez' ? 2.2 : 1.6; ctx.beginPath(); ctx.arc(0,0,6.4,0,TAU); ctx.stroke(); }
+    // o desenhinho de cada tempo: taça, cúpula (entrada), prato e fatia de bolo
+    const ink = cheio ? '#fff' : m.est === 'vez' ? PAL.tinta : 'rgba(34,32,28,.5)';
+    ctx.strokeStyle = ink; ctx.fillStyle = ink; ctx.lineWidth = 1.3; ctx.lineCap = 'round'; ctx.lineJoin = 'round';
+    if (m.id === 'beb'){ ctx.beginPath(); ctx.moveTo(-2.6,-3); ctx.lineTo(2.6,-3); ctx.lineTo(0,0.4); ctx.closePath(); ctx.fill(); ctx.beginPath(); ctx.moveTo(0,0.4); ctx.lineTo(0,3.2); ctx.moveTo(-1.8,3.2); ctx.lineTo(1.8,3.2); ctx.stroke(); }
+    else if (m.id === 'entrada'){ ctx.beginPath(); ctx.arc(0,1.2,3.3,Math.PI,0); ctx.closePath(); ctx.fill(); ctx.beginPath(); ctx.moveTo(-3.8,2.4); ctx.lineTo(3.8,2.4); ctx.stroke(); }
+    else if (m.id === 'principal'){ ctx.beginPath(); ctx.arc(0,0,3.6,0,TAU); ctx.stroke(); ctx.beginPath(); ctx.arc(0,0,1.4,0,TAU); ctx.fill(); }
+    else { ctx.beginPath(); ctx.moveTo(-3.6,2.6); ctx.lineTo(3.6,2.6); ctx.lineTo(3.6,-0.8); ctx.lineTo(-3.6,-2.6); ctx.closePath(); ctx.fill(); }
+    ctx.restore();
+  });
+}
 function drawTableOverlay(ctx,g,t,tm,menu){
   const grp = t.group;
   const bx = t.cx + t.hx + 6, by = t.cy - 44;
@@ -192,6 +237,7 @@ function drawTableOverlay(ctx,g,t,tm,menu){
   }
   if (!grp || grp.state === 'toTable' || grp.state === 'leaving' || !t.open) return;
   drawHearts(ctx,grp,t.cx,t.cy-70,tm);
+  if (grp.tempos) drawTempoTrilha(ctx,grp,t.cx,t.cy-54,tm);   // v10
   if (grp.vip) drawVipBadge(ctx,t.cx-60,t.cy-70,tm);
   const pul = RM ? 1 : 1 + 0.12*Math.sin(tm*7);
   ctx.save(); ctx.translate(bx,by);
@@ -207,7 +253,7 @@ function drawTableOverlay(ctx,g,t,tm,menu){
     const pr = g.kitchen.plates.find(p => p && p.group === grp);
     if (pr || [g.bia, g.dani, g.joca].some(q => q.hands.some(h => h.kind === 'dish' && h.group === grp))){
       if (pr) ctx.scale(pul,pul);
-      drawBubble(ctx,0,0,18,pr ? PAL.ok : '#fff'); drawDish(ctx,grp.dish,0,0,0.85,false,grp.carnes && grp.carnes[0]);
+      drawBubble(ctx,0,0,18,pr ? PAL.ok : '#fff'); drawDish(ctx,grp.pratoVez,0,0,0.85,false,grp.carnes && grp.carnes[0]);   // v10: o prato do tempo da vez
     }
   }
   ctx.restore();
