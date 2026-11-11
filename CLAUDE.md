@@ -10,6 +10,7 @@ Jogo de navegador de gerenciamento de restaurante, em um único arquivo HTML com
 - **Palavras do dia a dia:** na interface, prefira os termos mais comuns no Brasil (ex.: "QUEBRADO", e não "FORA DE SERVIÇO").
 - **Pouco texto na tela (desde a 3f):** o jogo é para sentir, não para calcular. Cartões da lojinha só com nome, preço em R$ e "?"; a explicação vai como ficha no Manual (`MANUAL`, sem números, revelada com a história). Quem apresenta é a Missão zero e as falas do Modo História, em frases curtas. A Missão zero segue a mesma regra desde a v9.6.12 (sem números), e quem para nos dias 1 a 3 ganha uma dica na tela (`DICAS`).
 - **Diversidade e movimento:** clientes diversos, sem estereótipos; respeitar `prefers-reduced-motion`.
+- **Modo dev acompanha o jogo:** todo recurso novo (pessoa, curso, melhoria, evento, capítulo, conversa) ganha no painel do modo dev um jeito de ligar, forçar ou assistir (Etapa D do `docs/PLANO.md`).
 - **Código:** a lógica (`Game.update`) fica separada do desenho (`render`); `window.__game` e `window.__lcc` ficam expostos para os testes.
 
 ## Partes do código (`src/`, juntadas em ordem pelo nome)
