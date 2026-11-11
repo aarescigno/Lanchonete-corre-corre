@@ -434,7 +434,7 @@ function buildJoca(grid){
 /* cursos da Dani (v8.9): três cartões, +2 de experiência cada; um por lojinha, à parte do curso do Tonhão */
 /* o cartão da Cami (v9.3): atendimento, chega no nível 1 e sobe só por curso (o salário sobe junto); fica com o básico da casa */
 function buildCami(grid){
-  const eq = game.save.equipe, sv = game.save, bank = sv.bank, C = STAFF.cami.levels, cMax = C.length - 1;
+  const eq = game.save.equipe, sv = game.save, bank = sv.bank, C = STAFF.cami.levels, cMax = (game.ponto.nivel >= 4 || devLivre()) ? C.length - 1 : C.length - 2;   // v10.3: o nível 4 é do Terraço
   const canPay = extra => payroll(eq) + extra <= bank;
   const pc = v => Math.round(v*100) + '%', sec = v => String(Math.round(v*10)/10).replace('.', ',') + ' s';
   const lv = eq.cami, sp = C[lv] || C[1];
@@ -442,20 +442,20 @@ function buildCami(grid){
   const cRows = (a, b) => nivRows(C, [['Rapidez', 'speed', 1], ['Tarefas', 'tasks', 1]], a, b);
   const c = staffCard(upgradeIcon('cami'), lv ? 'Cami · nível ' + lv + ' de ' + cMax : 'Cami (ajudante)',
     lv ? '' : '');
-  const temMesa = !!(lv && sp.mesas), nMesas = camiMesasN(sv), emMesas = camiModoMesas(sv);
-  if (temMesa){   // v9.6: o curso de mesa abre o 2º modo
-    const modos = el('div', 'tasks');
-    [['tarefas', 'Tarefas', true], ['mesas', 'Minhas mesas', nMesas > 0]].forEach(m => {
-      const b = el('button', null, m[1]); b.type = 'button'; b.setAttribute('aria-pressed', (m[0] === 'mesas') === emMesas ? 'true' : 'false');
+  const temMesa = !!(lv && sp.mesas), nMesas = camiMesasN(sv), emMesas = camiModoMesas(sv), emTudo = camiModoTudo(sv);
+  if (temMesa){   // v9.6: o curso de mesa abre o 2º modo; v10.3: o de salão, o 3º ("Ajuda em tudo")
+    const modos = el('div', 'tasks'), atual = emTudo ? 'tudo' : emMesas ? 'mesas' : 'tarefas';
+    [['tarefas', 'Tarefas', true], ['mesas', 'Minhas mesas', nMesas > 0]].concat(sp.tudo ? [['tudo', 'Ajuda em tudo', true]] : []).forEach(m => {
+      const b = el('button', null, m[1]); b.type = 'button'; b.setAttribute('aria-pressed', m[0] === atual ? 'true' : 'false');
       if (!m[2]) b.disabled = true;
       b.addEventListener('click', () => { Sfx.tap(); game.setCamiModo(m[0]); buildShop(); });
       modos.appendChild(b);
     });
     c.appendChild(el('span', 'full', 'Modo:'));
     c.appendChild(modos);
-    c.appendChild(el('span', 'cursos-lista', nMesas ? 'Mesas da Cami: ' + nMesas + ' de ' + CAMI_MESAS_MAX : 'Marque as mesas dela no Salão.'));
+    c.appendChild(el('span', 'cursos-lista', emTudo ? 'Ela ajuda em qualquer mesa que ficou esperando.' : nMesas ? 'Mesas da Cami: ' + nMesas + ' de ' + CAMI_MESAS_MAX : 'Marque as mesas dela no Salão.'));
   }
-  if (lv && !emMesas){
+  if (lv && !emMesas && !emTudo){
     const sel = eq.camiTasks.filter(id => daniTaskOk(id, game.up)).length, tasks = el('div', 'tasks');
     avail.forEach(t => {
       const on = eq.camiTasks.indexOf(t.id) >= 0;
@@ -496,6 +496,16 @@ function buildAnselmo(grid){
   const duo = el('div', 'duo');
   if (!lv) duo.appendChild(shopBtn('Contratar', 'btn', canPay(A[2].pay), () => game.setStaff('anselmo', 2)));
   c.appendChild(duo); grid.appendChild(c);
+  if (game.cursoMsg) grid.appendChild(el('p', 'cursomsg', game.cursoMsg));
+  const sv = game.save;   // v10.3: os cursos do Anselmo no Terraço (o de autor, que traz item, fica no Cardápio)
+  ANSELMO_CURSOS.filter(q => !q.item && cursoDaniVis(q, game.ponto)).forEach(q => {
+    const feito = !!sv.anselmoCursos[q.id], card = el('div', 'item' + (feito ? ' own' : ''));
+    card.appendChild(upgradeIcon('anselmo'));
+    card.appendChild(el('b', null, 'Curso de ' + q.nome));
+    if (!feito && game.anselmoCursoTrava) card.appendChild(el('span', 'cursos-lista', 'Em curso'));
+    card.appendChild(feito ? shopBtn('Curso feito', 'btn', false, () => false) : shopBtn('Comprar ' + fmt(q.preco), 'btn', (lv > 0 || devLivre()) && !game.anselmoCursoTrava && bank >= q.preco, () => game.buyAnselmoCurso(q.id), q.preco));
+    grid.appendChild(card);
+  });
 }
 /* o cartão da Lia (v10.2): ajudante de cozinha, só no Terraço; contratar é definitivo (R$ 80/dia) e a cozinha anda mais rápida */
 function buildLia(grid){
@@ -856,15 +866,27 @@ function buildCursosAjudantes(grid){
     card.appendChild(feito ? shopBtn('Curso feito', 'btn', false, () => false) : shopBtn('Comprar ' + fmt(c.preco), 'btn', !falta && !game.daniCursoTrava && bank >= c.preco, () => game.buyDaniCurso(c.id), c.preco));
     grid.appendChild(card);
   });
-  // v9.3: o espresso do Joca (só na Avenida, com o Joca contratado)
+  // v9.3: o espresso do Joca (só na Avenida, com o Joca contratado); v10.3: os cafés especiais (só no Terraço, depois do espresso)
   JOCA_CURSOS.filter(c => c.item && cursoDaniVis(c, game.ponto) && game.cartaoAberto('joca')).forEach(c => {
-    const feito = !!sv.jocaCursos[c.id], card = el('div', 'item' + (feito ? ' own' : ''));
+    const feito = !!sv.jocaCursos[c.id], card = el('div', 'item' + (feito ? ' own' : '')), falta = !!c.dep && !sv.jocaCursos[c.dep];
     card.appendChild(upgradeIcon('joca'));
     card.appendChild(el('b', null, 'Curso ' + c.nome.charAt(0).toLowerCase() + c.nome.slice(1)));
     card.appendChild(el('span', 'cursos-lista', '+' + JOCA_XP.curso + ' de experiência para o Joca'));
     if (!feito && !(sv.equipe.joca > 0) && !devLivre()) card.appendChild(el('span', 'cursos-lista apagado', 'Precisa do Joca contratado.'));
+    if (!feito && falta) card.appendChild(el('span', 'cursos-lista apagado', 'Precisa do curso ' + JOCA_CURSOS.find(x => x.id === c.dep).nome.replace('Barista: e', 'de e') + '.'));
     if (!feito && game.jocaCursoTrava) card.appendChild(el('span', 'cursos-lista', 'Em curso'));
-    card.appendChild(feito ? shopBtn('Curso feito', 'btn', false, () => false) : shopBtn('Comprar ' + fmt(c.preco), 'btn', (sv.equipe.joca > 0 || devLivre()) && !game.jocaCursoTrava && bank >= c.preco, () => game.buyJocaCurso(c.id), c.preco));
+    card.appendChild(feito ? shopBtn('Curso feito', 'btn', false, () => false) : shopBtn('Comprar ' + fmt(c.preco), 'btn', (sv.equipe.joca > 0 || devLivre()) && !falta && !game.jocaCursoTrava && bank >= c.preco, () => game.buyJocaCurso(c.id), c.preco));
+    grid.appendChild(card);
+  });
+  // v10.3: a coquetelaria de autor do Anselmo (só no Terraço, depois da clássica)
+  ANSELMO_CURSOS.filter(c => c.item && cursoDaniVis(c, game.ponto) && game.cartaoAberto('anselmo')).forEach(c => {
+    const feito = !!sv.anselmoCursos[c.id], card = el('div', 'item' + (feito ? ' own' : '')), falta = !!c.dep && !sv.anselmoCursos[c.dep];
+    card.appendChild(upgradeIcon('anselmo'));
+    card.appendChild(el('b', null, 'Curso de ' + c.nome.charAt(0).toLowerCase() + c.nome.slice(1)));
+    if (!feito && !(sv.equipe.anselmo > 0) && !devLivre()) card.appendChild(el('span', 'cursos-lista apagado', 'Precisa do Anselmo contratado.'));
+    if (!feito && falta) card.appendChild(el('span', 'cursos-lista apagado', 'Precisa do curso de ' + ANSELMO_CURSOS.find(x => x.id === c.dep).nome + '.'));
+    if (!feito && game.anselmoCursoTrava) card.appendChild(el('span', 'cursos-lista', 'Em curso'));
+    card.appendChild(feito ? shopBtn('Curso feito', 'btn', false, () => false) : shopBtn('Comprar ' + fmt(c.preco), 'btn', (sv.equipe.anselmo > 0 || devLivre()) && !falta && !game.anselmoCursoTrava && bank >= c.preco, () => game.buyAnselmoCurso(c.id), c.preco));
     grid.appendChild(card);
   });
 }
@@ -1142,7 +1164,7 @@ function buildGurugol(grid){
 function buildMelhorias(grid){ upgradeCartoes(grid, false); const nv = game.ponto.nivel; if (nv === 2) { buildTvs(grid); buildAssento(grid); } else if (nv >= 3) buildAssento(grid); else buildTvSom(grid); }   // v9.1: as TVs são só da área industrial; na Avenida, os sofás
 function upgradeCartoes(grid, bia){
   // os Tênis de corrida (v7.3) só aparecem depois dos Tênis novos, no lugar deles (a grade continua com 6); no modo dev, todas
-  UPGRADES.filter(u => (BIA_IDS.indexOf(u.id) >= 0) === bia).filter(u => u.id !== 'maquina' || game.ponto.bebida).filter(u => !u.nivel || devLivre() || game.ponto.nivel >= u.nivel).filter(u => devLivre() || (u.req ? game.up[u.req] : !(game.up[u.id] && UPGRADES.some(v => v.req === u.id)))).forEach(u => {
+  UPGRADES.filter(u => (BIA_IDS.indexOf(u.id) >= 0) === bia).filter(u => u.id !== 'maquina' || (game.ponto.bebida && game.ponto.bebida !== 'coquetel')).filter(u => !u.nivel || devLivre() || game.ponto.nivel >= u.nivel).filter(u => devLivre() || (u.req ? game.up[u.req] : !(game.up[u.id] && UPGRADES.some(v => v.req === u.id)))).forEach(u => {
     game.manualVer('l-' + u.id);   // v9.6.7: a ficha do Manual abre com o cartão
     const own = !!game.up[u.id], tem = u.multi ? pratosDe(game.up) : 0, fecha = !u.multi && own;   // o Jogo de pratos (v8.3.6) segue à venda
     const card = el('div', 'item' + (own && !u.multi ? ' own' : '')), pv = upgradeDe(u, game.ponto);   // v9: a Água da torneira vira a Jarra de suco
