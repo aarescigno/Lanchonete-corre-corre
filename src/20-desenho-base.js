@@ -44,13 +44,39 @@ function drawMoodRing(ctx,hearts,x,y,rx,ry,tm){
   ctx.restore();
 }
 /* selo VIP: plaquinha dourada com estrela e "VIP" (o texto, não só a cor, identifica o VIP) */
-function drawVipBadge(ctx,x,y,tm){
+function drawVipBadge(ctx,x,y,tm,dupla){
   const p = RM ? 1 : 1 + 0.06*Math.sin(tm*5);
   ctx.save(); ctx.translate(x,y); ctx.scale(p,p);
-  rr(ctx,-19,-9,38,18,6); fs(ctx,PAL.mostarda,2.2);
-  star(ctx,-10,0,5.5,'#fff');
-  txt(ctx,'VIP',5,1,12,PAL.tinta,'center',FD);
+  if (dupla){   // v10.1: o VIP exigente, com duas estrelas
+    rr(ctx,-26,-9,52,18,6); fs(ctx,PAL.mostarda,2.2);
+    star(ctx,-17,0,5.2,'#fff'); star(ctx,-6.5,0,5.2,'#fff');
+    txt(ctx,'VIP',12,1,12,PAL.tinta,'center',FD);
+  } else {
+    rr(ctx,-19,-9,38,18,6); fs(ctx,PAL.mostarda,2.2);
+    star(ctx,-10,0,5.5,'#fff');
+    txt(ctx,'VIP',5,1,12,PAL.tinta,'center',FD);
+  }
   ctx.restore();
+}
+/* v10.1: os acessórios do VIP exigente (sorteados em Group): chapéu de aba, lenço de seda no pescoço ou echarpe; `p.accC` é a cor */
+function acExigente(ctx,p,hy,costas){
+  const c = p.accC || '#B23A48';
+  if (p.chapeu){
+    ctx.beginPath(); ctx.arc(0,hy-3,9.8,Math.PI,0); ctx.closePath(); fs(ctx,c,2.2);
+    rr(ctx,-16,hy-4.6,32,3.8,1.9); fs(ctx,c,1.8);
+    ctx.fillStyle = 'rgba(255,255,255,.55)'; ctx.fillRect(-9.4,hy-7.6,18.8,1.8);
+  }
+  if (costas) return;
+  if (p.lenco){
+    ctx.beginPath(); ctx.moveTo(-5,hy+11); ctx.lineTo(5,hy+11); ctx.lineTo(0,hy+16.5); ctx.closePath(); fs(ctx,c,1.8);
+    circ(ctx,0,hy+11.2,2.2); fs(ctx,c,1.4);
+  }
+  if (p.echarpe){
+    ctx.strokeStyle = PAL.tinta; ctx.lineWidth = 5.6; ctx.lineCap = 'round'; ctx.beginPath(); ctx.arc(0,hy+2,11.4,Math.PI*0.16,Math.PI*0.84); ctx.stroke();
+    ctx.strokeStyle = c; ctx.lineWidth = 3.6; ctx.beginPath(); ctx.arc(0,hy+2,11.4,Math.PI*0.16,Math.PI*0.84); ctx.stroke();
+    ctx.lineWidth = 3.6; ctx.beginPath(); ctx.moveTo(6,hy+11.5); ctx.lineTo(8.5,hy+21); ctx.stroke();
+    ctx.lineCap = 'butt';
+  }
 }
 function shadowEll(ctx,x,y,rx,ry,a){
   ctx.fillStyle = 'rgba(34,32,28,' + (a||0.2) + ')'; ell(ctx,x,y,rx,ry); ctx.fill();
@@ -491,6 +517,7 @@ function drawPerson(ctx,p,x,y,o){
     else { ctx.beginPath(); ctx.arc(0,hy-1,12.5,Math.PI,0); ctx.closePath(); fs(ctx,PAL.faixa,2.5); rr(ctx,-13,hy-3,26,3.5,1.5); fs(ctx,'#1b1b1b',1.6); circ(ctx,0,hy+2,9.5); fs(ctx,skin,1.6); }
     if (p.hair === 2){ circ(ctx,0,hy-15,6); fs(ctx,hc,2); }
     if (p.flor === 'cabelo') florCasal(ctx,8.5,hy - 6,p.florC);   // v10
+    if (p.chapeu) acExigente(ctx,p,hy,true);   // v10.1
     ctx.restore();
     return;
   }
@@ -536,6 +563,7 @@ function drawPerson(ctx,p,x,y,o){
     ctx.fillStyle = 'rgba(255,255,255,.45)'; ctx.fillRect(-7,hy-1.6,2,1.4); ctx.fillRect(2.8,hy-1.6,2,1.4);
   }
   else if (p.glasses){ ctx.lineWidth = 1.5; circ(ctx,-4.4,hy+0.5,3.6); ctx.stroke(); circ(ctx,4.4,hy+0.5,3.6); ctx.stroke(); ctx.beginPath(); ctx.moveTo(-0.9,hy+0.5); ctx.lineTo(0.9,hy+0.5); ctx.stroke(); }
+  if (p.chapeu || p.lenco || p.echarpe) acExigente(ctx,p,hy,false);   // v10.1
   ctx.restore();
 }
 

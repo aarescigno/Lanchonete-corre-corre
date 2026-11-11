@@ -167,6 +167,9 @@ function upgradeIcon(id){
     } else if (id === 'ventilador'){
       for (let i=0;i<4;i++){ c.save(); c.rotate(i*Math.PI/2 + 0.4); ell(c,0,-8,4.5,9); fs(c,i%2?PAL.cromo:'#e8edf1',1.8); c.restore(); }
       circ(c,0,0,3.5); fs(c,PAL.mostarda,1.8);
+    } else if (id === 'louca'){   // v10.1: o prato fino, com a borda dourada e a estrela
+      circ(c,0,0,15); fs(c,'#fff',2); circ(c,0,0,10.5); c.strokeStyle = PAL.mostarda; c.lineWidth = 2; c.stroke();
+      star(c,0,0.5,5.2,PAL.mostarda);
     } else {
       for (let i=0;i<5;i++){ ell(c,0,8-i*4,15,4.5); fs(c,i%2?'#f2f0e8':'#fff',1.8); }
       ell(c,0,-8,9,2.2); c.strokeStyle = PAL.cromo; c.lineWidth = 1.2; c.stroke();
@@ -1120,7 +1123,7 @@ function buildGurugol(grid){
 function buildMelhorias(grid){ upgradeCartoes(grid, false); const nv = game.ponto.nivel; if (nv === 2) { buildTvs(grid); buildAssento(grid); } else if (nv >= 3) buildAssento(grid); else buildTvSom(grid); }   // v9.1: as TVs são só da área industrial; na Avenida, os sofás
 function upgradeCartoes(grid, bia){
   // os Tênis de corrida (v7.3) só aparecem depois dos Tênis novos, no lugar deles (a grade continua com 6); no modo dev, todas
-  UPGRADES.filter(u => (BIA_IDS.indexOf(u.id) >= 0) === bia).filter(u => u.id !== 'maquina' || game.ponto.bebida).filter(u => devLivre() || (u.req ? game.up[u.req] : !(game.up[u.id] && UPGRADES.some(v => v.req === u.id)))).forEach(u => {
+  UPGRADES.filter(u => (BIA_IDS.indexOf(u.id) >= 0) === bia).filter(u => u.id !== 'maquina' || game.ponto.bebida).filter(u => !u.nivel || devLivre() || game.ponto.nivel >= u.nivel).filter(u => devLivre() || (u.req ? game.up[u.req] : !(game.up[u.id] && UPGRADES.some(v => v.req === u.id)))).forEach(u => {
     game.manualVer('l-' + u.id);   // v9.6.7: a ficha do Manual abre com o cartão
     const own = !!game.up[u.id], tem = u.multi ? pratosDe(game.up) : 0, fecha = !u.multi && own;   // o Jogo de pratos (v8.3.6) segue à venda
     const card = el('div', 'item' + (own && !u.multi ? ' own' : '')), pv = upgradeDe(u, game.ponto);   // v9: a Água da torneira vira a Jarra de suco

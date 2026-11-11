@@ -238,7 +238,7 @@ function drawTableOverlay(ctx,g,t,tm,menu){
   if (!grp || grp.state === 'toTable' || grp.state === 'leaving' || !t.open) return;
   drawHearts(ctx,grp,t.cx,t.cy-70,tm);
   if (grp.tempos) drawTempoTrilha(ctx,grp,t.cx,t.cy-54,tm);   // v10
-  if (grp.vip) drawVipBadge(ctx,t.cx-60,t.cy-70,tm);
+  if (grp.vip) drawVipBadge(ctx,t.cx-60,t.cy-70,tm,grp.exigente);
   const pul = RM ? 1 : 1 + 0.12*Math.sin(tm*7);
   ctx.save(); ctx.translate(bx,by);
   if (grp.state === 'reading'){
@@ -254,6 +254,7 @@ function drawTableOverlay(ctx,g,t,tm,menu){
     if (pr || [g.bia, g.dani, g.joca].some(q => q.hands.some(h => h.kind === 'dish' && h.group === grp))){
       if (pr) ctx.scale(pul,pul);
       drawBubble(ctx,0,0,18,pr ? PAL.ok : '#fff'); drawDish(ctx,grp.pratoVez,0,0,0.85,false,grp.carnes && grp.carnes[0]);   // v10: o prato do tempo da vez
+      if (grp.exigente && grp.tempo !== 0) star(ctx,12,-13,5.5,PAL.mostarda);   // v10.1: o prato da casa
     }
   }
   ctx.restore();
@@ -501,7 +502,7 @@ function drawFilaMarcas(ctx,g,tm){
   });
 }
 function drawHandItem(ctx,h,x,y,s,noTag){
-  if (h.kind === 'dish'){ drawIcon(ctx,'dish',x,y,s,h.dish,cmdColor(h.group),h.group && h.group.carnes && h.group.carnes[0]); if (h.crit) txt(ctx,'★',x-12*s,y-12*s,13*s,PAL.mostarda,'center',FD); }
+  if (h.kind === 'dish'){ drawIcon(ctx,'dish',x,y,s,h.dish,cmdColor(h.group),h.group && h.group.carnes && h.group.carnes[0]); if (h.crit) txt(ctx,'★',x-12*s,y-12*s,13*s,PAL.mostarda,'center',FD); if (h.casa) star(ctx,x+12*s,y-12*s,6*s,PAL.mostarda); }
   else if (h.kind === 'ticket') drawIcon(ctx,'ticket',x,y,s,cmdColor(h.group));
   else if (h.kind === 'marmita'){ drawMarmita(ctx,h.dish,x,y,s * 0.95); if (!noTag) drawMarmitaSelo(ctx,h,x + 12*s,y - 11*s); }   // v8.6
   else if (h.kind === 'suco'){ drawIcon(ctx,h.group ? h.group.game.bebida.icon : 'juice',x,y,s,h.group && h.group.sabor); if (h.group){ circ(ctx,x+8*s,y+9*s,4.5*s); fs(ctx,CHAIRS[h.group.color].c,1.2); } }   // da espera: a cor de quem pediu

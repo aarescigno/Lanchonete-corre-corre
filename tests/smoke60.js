@@ -165,7 +165,7 @@ const pegaPrato=(H,grp)=>{ const g=H.g, p=g.kitchen.plates.find(q=>q&&q.group===
   for(let k=0;k<300;k++){ const q=new L.Group(g,['casal','familia','vovos','negocios','executiva'][k%5],++g.gid,0,false); n++;
     ok2: { if(!q.tempos){ semPf+=1000; break ok2; }
       q.people.forEach((p,i)=>{ if(L.CARDAPIO[q.dishes[i]].cat!=='pf') semPf++; if(p.veg){ veg++; } else if(!q.extras[i]) semEntrada++; });
-      const soma=q.dishes.concat(q.extras).reduce((v,x)=>v+preco(L,g,x),0)+(q.vip?L.VIP.dish:0); if(q.bill!==soma) contaErrada++; } }
+      const soma=q.dishes.concat(q.extras).reduce((v,x)=>v+preco(L,g,x),0)+(q.vip?L.vipDish(q):0); if(q.bill!==soma) contaErrada++; } }
   ok(n===300 && semEntrada===0 && semPf===0 && contaErrada===0 && veg>0,'o grupo do Terraço: uma entrada para cada pessoa (menos o vegetariano sem opção) e o principal da categoria PF; a conta soma os dois');
   const q=new L.Group(g,'familia',++g.gid,0,false); ok(q.tempos===true && q.tempo===0 && q.notaT.length===4 && q.notaT.every(v=>v===null) && L.TEMPOS.entrada.cook===0.6 && L.TEMPOS.entrada.eat===0.5 && L.TEMPOS.pts===30 && L.PONTOS_ACAO.completa===30,'grupo com `tempos`: começa na entrada (tempo 0), notas vazias; TEMPOS e os 30 pontos');
   // o principal com os pratos que a cozinha sabe: parmegiana (curso Cozinha de restaurante) e o PF vegetariano
@@ -203,8 +203,8 @@ const pegaPrato=(H,grp)=>{ const g=H.g, p=g.kitchen.plates.find(q=>q&&q.group===
   // ingrediente do principal (sobre o valor dos principais), medido quando o prato fica pronto
   const H2=terr(), g2=H2.g; g2.kitchen.clean=5; const s2=sentar(g2,'casal',true); s2.grp.extras=['coxinha','coxinha']; s2.grp.dishes=['pf','pf']; s2.grp.dish='pf'; s2.grp.bill=0; const cc=g2.custo;
   g2.kitchen.submitTempo(s2.grp,s2.t.id,1); for(let i=0;i<600 && !g2.kitchen.plates.some(q=>q&&q.group===s2.grp);i++) g2.update(0.05);
-  ok(Math.round(g2.custo-cc)===Math.round((2*preco(L,g2,'pf')+L.VIP.dish)*L.INGRED.prato),'ingrediente do principal: sobre o valor dos principais mais o prato do VIP');
-  { const vc=g2.kitchen.chef.cook; const tq=g2.kitchen.queue.concat(g2.kitchen.cooking), v=new L.Group(g2,'casal',++g2.gid,0,true); const k2=g2.kitchen; k2.queue=[]; k2.cooking=[]; k2.submitTempo(v,1,1); const it=k2.queue[0]; ok(it.time>=4*vc*L.VIP.cook-1e-9 && it.time<=7*vc*L.VIP.cook+1e-9,'o principal do VIP leva o ×VIP; a entrada dele, não'); k2.queue=[]; k2.submitTempo(v,1,0); ok(k2.queue[0].time<=7*vc*0.6+1e-9,'(entrada do VIP sem o ×VIP)'); }
+  ok(Math.round(g2.custo-cc)===Math.round((2*preco(L,g2,'pf')+L.vipDish(s2.grp))*L.INGRED.prato),'ingrediente do principal: sobre o valor dos principais mais o prato do VIP (o da casa)');
+  { const vc=g2.kitchen.chef.cook; const tq=g2.kitchen.queue.concat(g2.kitchen.cooking), v=new L.Group(g2,'casal',++g2.gid,0,true); const k2=g2.kitchen; k2.queue=[]; k2.cooking=[]; k2.submitTempo(v,1,1); const it=k2.queue[0]; ok(it.time>=4*vc*L.vipCook(v,g2)-1e-9 && it.time<=7*vc*L.vipCook(v,g2)+1e-9,'o principal do VIP leva o ×VIP (no Terraço, o do prato da casa); a entrada dele, não'); k2.queue=[]; k2.submitTempo(v,1,0); ok(k2.queue[0].time<=7*vc*0.6+1e-9,'(entrada do VIP sem o ×VIP)'); }
   // o principal fura a fila das entradas que ainda não começaram
   const H3=terr(), g3=H3.g, k3=g3.kitchen; k3.slots=1; const A=new L.Group(g3,'casal',++g3.gid,0,false), B=new L.Group(g3,'casal',++g3.gid,0,false), C=new L.Group(g3,'casal',++g3.gid,0,false), D=new L.Group(g3,'casal',++g3.gid,0,false);
   k3.submitTempo(B,1,0); k3.update(0.01); k3.submitTempo(C,2,0); k3.submitTempo(D,3,0); k3.submitTempo(A,4,1);
