@@ -151,7 +151,8 @@ const JOCA_XP = { tarefas:5, curso:2 };
 const JOCA_CURSOS = [
   { id:'atend',    nome:'Atendimento ao cliente', preco:120, nivel:2 },
   { id:'cozinha',  nome:'Organização da cozinha', preco:150, nivel:2 },
-  { id:'espresso', nome:'Barista: espresso',      preco:350, nivel:3, item:true }
+  { id:'espresso', nome:'Barista: espresso',      preco:350, nivel:3, item:true },
+  { id:'cafesEsp', nome:'Cafés especiais',        preco:600, nivel:4, dep:'espresso', item:true }   // v10.3: coado, prensa francesa e cold brew (CAFES.metodos)
 ];
 const JOCA_HOME = { x:640, y:515 };
 /* v9.3, a Cami (atendimento; o Joca passa o bastão para ela na Avenida): chega no nível 1 e sobe só por curso (o salário sobe junto):
@@ -160,9 +161,18 @@ const JOCA_HOME = { x:640, y:515 };
 const CAMI_HOME = { x:590, y:515 };
 const CAMI_CURSOS = [
   { id:'agil', nome:'Atendimento ágil',     preco:400, nivel:3 },
-  { id:'mesa', nome:'Atendimento de mesa',  preco:600, nivel:3, dep:'agil' }
+  { id:'mesa', nome:'Atendimento de mesa',  preco:600, nivel:3, dep:'agil' },
+  { id:'salao', nome:'Atendimento de salão', preco:900, nivel:4, dep:'mesa' }   // v10.3: o topo do salão (nível 4) e o modo "Ajuda em tudo"
 ];
+/* v10.3, modo "Ajuda em tudo" da Cami: em qualquer mesa ela faz o que a Bia não pegou, depois de `espera` segundos de espera */
+const CAMI_TUDO = { espera:3 };
 const ANSELMO_HOME = { x:650, y:118 };   // v9.5: atrás do balcão de drinks
+/* v10.3: os cursos do Anselmo (só no Terraço, um por dia: save.anselmoCursos e anselmoCursoDia). `autor` sobe o nível dele, troca os drinks e liga o carrinho de boas-vindas */
+const ANSELMO_CURSOS = [
+  { id:'classica', nome:'Coquetelaria clássica', preco:500, nivel:4 },
+  { id:'autor', nome:'Coquetelaria de autor', preco:800, nivel:4, dep:'classica', item:true }
+];
+function normAnselmoCursos(c){ const o = {}; ANSELMO_CURSOS.forEach(x => { if (c && c[x.id] && (!x.dep || c[x.dep])) o[x.id] = 1; }); return o; }
 const CAMI_MESAS_MAX = 2;   // v9.6: quantas mesas o jogador pode marcar como da Cami (v9.6.1: 3 → 2, rebalanceamento da 3b-7)
 /* v9.6: quantas mesas do salão estão marcadas como da Cami */
 function camiMesasN(save){ return ((save && save.salao && save.salao.mesas) || []).filter(m => m.cami).length; }
@@ -171,11 +181,16 @@ function camiModoMesas(save){
   const eq = save && save.equipe;
   return !!eq && eq.camiModo === 'mesas' && eq.cami > 0 && !!STAFF.cami.levels[eq.cami].mesas && camiMesasN(save) > 0;
 }
+/* v10.3: a Cami está no modo "Ajuda em tudo" (nível 4 e o modo escolhido)? */
+function camiModoTudo(save){
+  const eq = save && save.equipe;
+  return !!eq && eq.camiModo === 'tudo' && eq.cami > 0 && !!STAFF.cami.levels[eq.cami].tudo;
+}
 function normCamiCursos(c){ const o = {}; CAMI_CURSOS.forEach(x => { if (c && c[x.id]) o[x.id] = 1; }); return o; }
 /* o nível dela pelos cursos: 1 + os feitos (o 2º só conta com o 1º) */
 function camiNivelCursos(save){
   const c = (save && save.camiCursos) || {};
-  return 1 + (c.agil ? 1 : 0) + (c.agil && c.mesa ? 1 : 0);
+  return 1 + (c.agil ? 1 : 0) + (c.agil && c.mesa ? 1 : 0) + (c.agil && c.mesa && c.salao ? 1 : 0);
 }
 function jocaXp(save){
   const s = save || {};
@@ -306,6 +321,9 @@ const STATIONS = {
   doces:  { ap:{x:744,y:226}, rect:{ x:690, y:200, w:52, h:60 } },   // v9.2: a geladeirinha de doces (curso Confeitaria caseira), no chão logo abaixo da geladeira grande (o plano previa (690,92), onde já fica a geladeira)
   maquina:{ ap:{x:-26,y:498}, rect:{x:-110,y:452,w:62,h:84 } }  // bebida da espera (v7.5), na calçada: na Garagem, a torneira (v7.7)
 };
+/* v10.3: no Terraço a estação da bebida da espera (o carrinho de boas-vindas) fica no alto do foyer, onde nos outros pontos fica o balcão de retirada */
+const MAQUINA_LUGAR = { padrao:{ ap:{x:-26,y:498}, rect:{x:-110,y:452,w:62,h:84} }, terraco:{ ap:{x:16,y:156}, rect:{x:-94,y:98,w:90,h:80} } };
+function maquinaLugarFor(ponto){ const l = ponto && ponto.bebida === 'coquetel' ? MAQUINA_LUGAR.terraco : MAQUINA_LUGAR.padrao; STATIONS.maquina.ap = l.ap; STATIONS.maquina.rect = l.rect; }
 const PLATE_SLOTS = [ {x:806,y:270}, {x:848,y:270}, {x:890,y:270}, {x:932,y:270} ];
 /* v9: o balcão de pratos tem as vagas do ponto (ponto.pratos): 4 na Garagem, 5 na área industrial, 6 na Avenida Brasil (mais juntas). Muda o mesmo array no lugar */
 function plateSlotsFor(n){ PLATE_SLOTS.length = 0; for (let i = 0; i < n; i++) PLATE_SLOTS.push({ x:(n >= 6 ? 791 + 29 * i : n >= 5 ? 792 + 36 * i : 806 + 42 * i), y:270 }); }   // v9.1: 6 vagas na Avenida Brasil
@@ -337,7 +355,7 @@ const PONTOS = [
     traz:'o almoço de negócios e mais VIPs', art:'o', deixa:'os sofás e as águas saborizadas ficam' },
   // v10: o último ponto da escada (cap. 8 e 9). 20 lugares, aluguel R$ 1.000, cardápio ×2,5. Sem entregador (semRetirada), sem bebida da espera (bebida:null até a 4a-4) e com o casal;
   // tempos: a refeição completa (bebida, entrada, prato e sobremesa; ver TEMPOS)
-  { id:'terraco', nome:'Terraço Suíça', nivel:4, lugares:20, aluguel:1200, mudanca:5000, credito:8000, cardapio:2.4, area:{ x0:160, y0:150, x1:684, y1:500 }, espera:6, assento:'pe', bebida:null, pratos:6, marmJanela:2, prateleira:0,
+  { id:'terraco', nome:'Terraço Suíça', nivel:4, lugares:20, aluguel:1200, mudanca:5000, credito:8000, cardapio:2.4, area:{ x0:160, y0:150, x1:684, y1:500 }, espera:6, assento:'pe', bebida:'coquetel', pratos:6, marmJanela:2, prateleira:0,
     tipos:{ executiva:0.5, familia:1, vovos:1, negocios:1.5, casal:2 }, vip:2.5, metaF:9.0, expertF:6.0, grupos:0.5, tempos:true, semRetirada:true, exigente:true,   // v10 (medido em 10/11, equipe toda com o bot afiado): grupos 0,45 → 0,50 (mesas vazias em 33% do turno), metaF 4 → 9 e expertF 5 → 6 (91% das metas e 3★ em 61%), aluguel 1.000 → 1.200 e cardápio 2,5 → 2,4 (o ganho sobre a Avenida de R$ 918 caiu para ~R$ 700)
    
     traz:'a refeição completa e a freguesia mais fina', art:'o' }
@@ -585,7 +603,7 @@ const STAFF = {
   // Joca (v9.2): o conhecido da Dani; entra na área industrial no nível 2 (R$ 45/dia) e sobe até o 4, como ela; faz o básico da casa
   joca:    { levels:[ null, null, { speed:0.5, tasks:2, pay:45, xp:0 }, { speed:0.65, tasks:2, pay:60, xp:6 }, { speed:0.8, tasks:3, pay:75, xp:12 } ] },
   // Cami (v9.3): garçonete de rodízio que o Joca indica; entra na Avenida já rápida e fica com o básico. Sobe só por curso (CAMI_CURSOS)
-  cami:    { levels:[ null, { speed:0.9, tasks:3, pay:120 }, { speed:1.1, tasks:4, pay:140 }, { speed:1.25, tasks:4, pay:160, mesas:true } ] },
+  cami:    { levels:[ null, { speed:0.9, tasks:3, pay:120 }, { speed:1.1, tasks:4, pay:140 }, { speed:1.25, tasks:4, pay:160, mesas:true }, { speed:1.35, tasks:4, pay:190, mesas:true, tudo:true } ] },   // v10.3: o nível 4 (curso de salão, só no Terraço)
   // Anselmo (v9.5): coqueteleiro, só na Avenida; entra já no nível 2 (R$ 90/dia), não faz tarefas da lista; o nível 3 vem dos cursos do Terraço (4a)
   anselmo: { levels:[ null, null, { speed:0.8, pay:90, xp:0 }, { speed:1.0, pay:130, xp:0 } ] },
   // Lia (v10.2): ajudante de cozinha, só no Terraço; com ela no dia todo pedido da cozinha leva `cook` × o tempo. Contratar é definitivo (equipe.lia: 0 ou 1)
@@ -859,7 +877,7 @@ const AVAL_CRIT = [
 /* v9.2: os cursos de item dos ajudantes (confeitaria da Dani, espresso do Joca) também contam, `extra` deles */
 function avalMenu(cursos, extra){ return clamp(AVAL.menu.base + AVAL.menu.porCurso * (CURSOS.filter(c => c.preco > 0 && cursoNivel(cursos, c.id) >= 1).length + (extra || 0)), 1, 5); }
 function cursosItem(sv){
-  return DANI_CURSOS.filter(c => c.item && sv.daniCursos && sv.daniCursos[c.id]).length + JOCA_CURSOS.filter(c => c.item && sv.jocaCursos && sv.jocaCursos[c.id]).length;
+  return DANI_CURSOS.filter(c => c.item && sv.daniCursos && sv.daniCursos[c.id]).length + JOCA_CURSOS.filter(c => c.item && sv.jocaCursos && sv.jocaCursos[c.id]).length + ANSELMO_CURSOS.filter(c => c.item && sv.anselmoCursos && sv.anselmoCursos[c.id]).length;   // v10.3: a coquetelaria de autor
 }
 /* as avaliações guardadas: [espera, agil, prato, menu, amb], com uma casa decimal, as últimas AVAL.max; null (v8.6.7) é o critério que o cliente não viu */
 function normAval(a){
@@ -1151,14 +1169,30 @@ function doceIdx(id){ return Math.max(0, DOCES.todos.findIndex(d => d.id === id)
 const CAFES = { ingred:2, vip:0.1,
   lista:[ { id:'espresso', nome:'Espresso', preco:8, prep:0.8 }, { id:'cappuccino', nome:'Cappuccino', preco:12, prep:1.2 } ],
   pede:{ executiva:0.5, negocios:0.6, vovos:0.4, familia:0.2, estudante:0.3, casal:0.5 } };
-function cafeDe(id){ return CAFES.lista.find(c => c.id === id) || CAFES.lista[0]; }
+/* v10.3, cafés especiais (curso do Joca, só no Terraço, depois do espresso): no lugar do espresso e do cappuccino, três métodos a R$ 20 (ingrediente R$ 5). etapas: as marcas no anel da bancada */
+CAFES.metodos = [ { id:'coado', nome:'Coado no filtro', preco:20, prep:2.5, etapas:2 }, { id:'prensa', nome:'Prensa francesa', preco:20, prep:3.5, etapas:3 }, { id:'coldbrew', nome:'Cold brew', preco:20, prep:1, etapas:1 } ];
+CAFES.ingredEsp = 5;
+function cafesLista(up){ return up && up.cafesEsp ? CAFES.metodos : CAFES.lista; }
+function cafeIngred(up){ return up && up.cafesEsp ? CAFES.ingredEsp : CAFES.ingred; }
+function cafeDe(id){ return CAFES.lista.concat(CAFES.metodos).find(c => c.id === id) || CAFES.lista[0]; }
+/* o índice do desenho do café (0 espresso, 1 cappuccino, 2 coado, 3 prensa, 4 cold brew) */
+function cafeIdx(id){ return Math.max(0, CAFES.lista.concat(CAFES.metodos).findIndex(c => c.id === id)); }
 /* v9.5, drinks do Anselmo (só na Avenida): pedidos ao sentar, junto com o prato; ele faz um por vez (prep / speed) e o copo pronto espera no balcão (`vagas`).
    pede: chance por tipo de grupo (VIP +vip); cada pessoa sorteada pede um drink entre os 3 (randi(1, size)). Nunca o entregador. preco: R$ na conta */
 const DRINKS = { prep:4, preco:22, ingred:6, vip:0.2, vagas:2,
+  /* v10.3, os cursos do Anselmo no Terraço: a clássica dá 4 vagas de copo no balcão e preparo 20% mais rápido (prepClassica); a de autor troca os drinks pelos de `autor` (R$ 35, ingrediente R$ 9) */
+  vagasClassica:4, prepClassica:0.8, precoAutor:35, ingredAutor:9,
+  autor:[ { id:'neblina', nome:'Neblina da Serra' }, { id:'jardim', nome:'Jardim do Terraço' }, { id:'ouro', nome:'Ouro da Casa' } ],
   pede:{ executiva:0.45, negocios:0.6, familia:0.25, vovos:0.25, estudante:0.35, casal:0.6 },
   itens:[ { id:'por', nome:'Pôr do Sol da Avenida' }, { id:'brisa', nome:'Brisa de Maracujá' }, { id:'esmeralda', nome:'Esmeralda' } ] };
-function drinkIdx(id){ return Math.max(0, DRINKS.itens.findIndex(d => d.id === id)); }
-function drinkDe(id){ return DRINKS.itens.find(d => d.id === id) || DRINKS.itens[0]; }
+function drinksTodos(){ return DRINKS.itens.concat(DRINKS.autor); }
+function drinkIdx(id){ return Math.max(0, drinksTodos().findIndex(d => d.id === id)); }   // v10.3: 0 a 2 os da Avenida, 3 a 5 os de autor
+function drinkDe(id){ return drinksTodos().find(d => d.id === id) || DRINKS.itens[0]; }
+function drinksLista(up){ return up && up.coqAutor ? DRINKS.autor : DRINKS.itens; }
+function drinkPreco(up){ return up && up.coqAutor ? DRINKS.precoAutor : DRINKS.preco; }
+function drinkIngred(up){ return up && up.coqAutor ? DRINKS.ingredAutor : DRINKS.ingred; }
+function drinkVagas(up){ return up && up.coqClassica ? DRINKS.vagasClassica : DRINKS.vagas; }
+function drinkPrep(up){ return DRINKS.prep * (up && up.coqClassica ? DRINKS.prepClassica : 1); }
 /* o Anselmo trabalha hoje? (contratado, não cortado da folha e no ponto certo: Avenida; no modo dev, em qualquer um) */
 function anselmoOn(eq, ponto){ return !!eq && eq.anselmo > 0 && !eq.anselmoFora && ((ponto || PONTOS[0]).nivel >= 3 || devLivre()); }
 /* v10.2: a Lia trabalha hoje? (contratada, não cortada da folha e no Terraço; no modo dev, em qualquer ponto) */
@@ -1236,7 +1270,7 @@ const BIA_IDS = ['tenis', 'corrida', 'bandeja', 'sudoku'];
 function upgradeCartao(id){ return BIA_IDS.indexOf(id) >= 0 ? 'bia' : 'melhorias'; }
 const HIST_NOMES = { bia:'Bia', tonhao:'Tonhão', dani:'Dani', joca:'Joca', cami:'Cami', anselmo:'Anselmo', lia:'Lia' };
 const CAIXA_MAX = 14;                                 // livro-caixa (v7.2): quantos dias da carreira ficam guardados
-const VERSAO = 'v10.2.2';                              // vai no resumo do Caixa
+const VERSAO = 'v10.3';                                // vai no resumo do Caixa
 const DIVULGA_DIA = 4;                                // antes disso, o movimento é o da inauguração (sem custo); v9.0.2: dia 4, e o padrão é o boca a boca
 function divulgaAberta(n, sv){ return devLivre() || n >= DIVULGA_DIA && !(sv && sv.convDiv === 'pend'); }   // no modo dev, desde o dia 1; v9.0.3: no Modo História, só depois da conversa
 /* v9.6.4: a Efood (os entregadores) só abre depois da conversa dos entregadores, no Modo História; antes dela, nenhum tipo com `retira` vem na agenda */
@@ -1255,6 +1289,9 @@ const BEBIDA_ESPERA = {
   saborizada: { id:'saborizada', icon:'saborizada', preco:14, ingred:3, prep:2, take:0.5, fim:'Águas saborizadas',
           pede:n => n > 1 ? n + ' águas saborizadas, por favor!' : 'Uma água saborizada, por favor!', pega:n => n > 1 ? n + ' copos!' : 'Água saborizada!', entrega:n => n > 1 ? 'Águas entregues!' : 'Água entregue!' }
 };
+  // v10.3, Terraço Suíça: o coquetel de boas-vindas do carrinho do foyer (curso de autor do Anselmo; só nos dias em que ele vem); o sabor sorteia o drink de autor
+BEBIDA_ESPERA.coquetel = { id:'coquetel', icon:'drink', preco:18, ingred:5, prep:3, take:0.5, fim:'Coquetéis de boas-vindas',
+  pede:n => n > 1 ? n + ' coquetéis, por favor!' : 'Um coquetel, por favor!', pega:n => n > 1 ? n + ' coquetéis!' : 'Coquetel!', entrega:n => n > 1 ? 'Coquetéis entregues!' : 'Coquetel entregue!' };
 const SABORES = [ { nome:'limão', cor:'#D6E24A', bal:'#F3F7C2' }, { nome:'morango', cor:'#F0708A', bal:'#FBD2DB' }, { nome:'hortelã', cor:'#6FD3A0', bal:'#CBF0DD' } ];
 function bebidaOf(ponto){ return BEBIDA_ESPERA[(ponto || PONTOS[0]).bebida] || BEBIDA_ESPERA.agua; }
 /* contas do dia: o aluguel do ponto (v7.4; a Garagem é da família), mais cada mesa aberta e cada lugar dela */
@@ -1389,14 +1426,14 @@ const MANUAL = [
   { id:'e-bia',     aba:'equipe', quem:'bia',     sempre:true, nome:'Bia', linha:'A garçonete. Anota, leva, entrega, cobra e recolhe.' },
   { id:'e-tonhao',  aba:'equipe', quem:'tonhao',  sempre:true, nome:'Tonhão', linha:'O chef. Aprende pratos nos cursos e, com aumento, ajuda na pia.' },
   { id:'e-dani',    aba:'equipe', quem:'dani',    nome:'Dani', linha:'Cuida da louça, do lixo e das mesas sujas; depois, dos doces.' },
-  { id:'e-joca',    aba:'equipe', quem:'joca',    nome:'Joca', linha:'O básico da casa; depois, o café espresso.' },
-  { id:'e-cami',    aba:'equipe', quem:'cami',    nome:'Cami', linha:'Garçonete de rodízio: chega rápida e, com curso, cuida das mesas dela.' },
-  { id:'e-anselmo', aba:'equipe', quem:'anselmo', nome:'Anselmo', linha:'Coqueteleiro: só o balcão de drinks.' },
+  { id:'e-joca',    aba:'equipe', quem:'joca',    nome:'Joca', linha:'O básico da casa; depois, o café espresso e os cafés especiais.' },
+  { id:'e-cami',    aba:'equipe', quem:'cami',    nome:'Cami', linha:'Garçonete de rodízio: com cursos, cuida das mesas dela ou ajuda em todas.' },
+  { id:'e-anselmo', aba:'equipe', quem:'anselmo', nome:'Anselmo', linha:'Coqueteleiro: só o balcão de drinks; no Terraço, coquetéis de autor.' },
   { id:'e-lia',     aba:'equipe', quem:'lia',     nome:'Lia', linha:'Ajudante de cozinha: com ela, tudo sai mais rápido.' },   // v10.2
 
   { id:'l-tenis',      aba:'lojinha', nome:'Tênis novos', linha:'A Bia anda mais rápido.' },
   { id:'l-corrida',    aba:'lojinha', nome:'Tênis de corrida', linha:'A Bia anda bem mais rápido.' },
-  { id:'l-maquina',    aba:'lojinha', nome:'Água da torneira', linha:'Quem espera lá fora pede e espera com mais calma. Suco e água saborizada entram na conta.' },
+  { id:'l-maquina',    aba:'lojinha', nome:'Água da torneira', linha:'Quem espera lá fora pede e espera com mais calma. Suco, água saborizada e, no Terraço, o coquetel de boas-vindas entram na conta.' },
   { id:'l-cafeteira',  aba:'lojinha', nome:'Cafeteira de duas bocas', linha:'O cafezinho acalma mais.' },
   { id:'l-bandeja',    aba:'lojinha', nome:'Bandeja', linha:'A Bia leva mais coisas de uma vez.' },
   { id:'l-sudoku',     aba:'lojinha', nome:'Livrinho de Sudoku', linha:'A Bia guarda mais tarefas na fila de ações.' },

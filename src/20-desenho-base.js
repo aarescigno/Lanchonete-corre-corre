@@ -406,18 +406,34 @@ function drawIcon(ctx,k,x,y,s,extra,extra2,extra3){
     ell(ctx,0,10,9,2.6); fs(ctx,'rgba(255,255,255,.75)',1.4);
     ctx.save(); ctx.beginPath(); ctx.moveTo(-8,-9); ctx.lineTo(8,-9); ctx.lineTo(2.6,9); ctx.lineTo(-2.6,9); ctx.closePath(); ctx.clip();
     if (di === 0){ const gr = ctx.createLinearGradient(0,-9,0,9); gr.addColorStop(0,'#F6A21E'); gr.addColorStop(1,'#D8334A'); ctx.fillStyle = gr; }
-    else ctx.fillStyle = di === 1 ? '#F4D13A' : '#3BB273';
+    else ctx.fillStyle = ['#F4D13A', '#3BB273', '#BFE3F2', '#F08AA8', '#E2A92B'][di - 1] || '#3BB273';   // v10.3: 3 Neblina da Serra (branco-azulado), 4 Jardim do Terraço (rosa), 5 Ouro da Casa (dourado)
     ctx.fillRect(-9,-5,18,15); ctx.restore();
     ctx.beginPath(); ctx.moveTo(-8,-9); ctx.lineTo(8,-9); ctx.lineTo(2.6,9); ctx.lineTo(-2.6,9); ctx.closePath(); fs(ctx,'rgba(255,255,255,.28)',1.8);
     ctx.fillStyle = 'rgba(255,255,255,.6)'; ctx.fillRect(-5.6,-7,1.6,9);
     if (di === 1){ ctx.fillStyle = '#2F9E5A'; ctx.beginPath(); ctx.ellipse(-2,-11,3.2,1.8,-0.6,0,TAU); ctx.fill(); ctx.beginPath(); ctx.ellipse(2.4,-11.6,3.2,1.8,0.6,0,TAU); ctx.fill(); }
+    if (di === 3 && !RM){ ctx.strokeStyle = 'rgba(255,255,255,.85)'; ctx.lineWidth = 1.5; ctx.beginPath(); ctx.moveTo(-3,-9); ctx.quadraticCurveTo(-7,-13,-3,-17); ctx.moveTo(2,-9); ctx.quadraticCurveTo(-1,-13,3,-17); ctx.stroke(); }   // v10.3: a fumacinha
+    if (di === 3 && RM){ ctx.strokeStyle = 'rgba(255,255,255,.85)'; ctx.lineWidth = 1.5; ctx.beginPath(); ctx.moveTo(-1,-9); ctx.lineTo(-1,-15); ctx.stroke(); }
+    if (di === 4){ circ(ctx,6,-10,3.4); fs(ctx,'#fff',1); circ(ctx,6,-10,1.3); fs(ctx,'#F4C230',0.6); [[6,-14],[10,-10],[6,-6],[2,-10]].forEach(p => { circ(ctx,p[0],p[1],1.6); fs(ctx,'#fff',0.8); }); }   // a flor
+    if (di === 5){ ctx.strokeStyle = '#F28A1E'; ctx.lineWidth = 2; ctx.beginPath(); ctx.moveTo(5,-9); ctx.quadraticCurveTo(9,-14,6,-18); ctx.moveTo(8,-8); ctx.quadraticCurveTo(12,-12,11,-16); ctx.stroke(); }   // a raspa de laranja
     if (di === 2){ circ(ctx,8,-8,4.2); fs(ctx,'#B7E34A',1.3); ctx.strokeStyle = '#F4FAD0'; ctx.lineWidth = 0.9; ctx.beginPath(); ctx.moveTo(8,-12); ctx.lineTo(8,-4); ctx.moveTo(4,-8); ctx.lineTo(12,-8); ctx.stroke(); }
     if (di === 0){ ctx.strokeStyle = PAL.perigo; ctx.lineWidth = 1.6; ctx.beginPath(); ctx.moveTo(3,-8); ctx.lineTo(6,-15); ctx.stroke(); }
   } else if (k === 'cafeesp'){
     // v9.3, cafés da máquina de espresso: 0 espresso (xicrinha com creminha), 1 cappuccino (xícara maior com espuma e coração)
     const cap = extra === 1;
     ell(ctx,0,9,12,3.4); fs(ctx,'#fff',1.8);
-    if (cap){
+    if (extra === 2){   // v10.3, coado: xícara com o funil de filtro no topo e o café pingando
+      ctx.beginPath(); ctx.moveTo(-6.5,0); ctx.lineTo(6.5,0); ctx.lineTo(5,8); ctx.lineTo(-5,8); ctx.closePath(); fs(ctx,'#fff',2);
+      ctx.beginPath(); ctx.moveTo(-8,-9); ctx.lineTo(8,-9); ctx.lineTo(3,-1); ctx.lineTo(-3,-1); ctx.closePath(); fs(ctx,'#F2E3C4',1.8);
+      ell(ctx,0,-9,8,1.8); fs(ctx,'#5B3418',1.2); ctx.fillStyle = '#5B3418'; ctx.fillRect(-0.8,-1,1.6,3.5);
+    } else if (extra === 3){   // prensa francesa: jarra de vidro com o êmbolo
+      rr(ctx,-6,-8,12,16,2.5); fs(ctx,'rgba(255,255,255,.75)',2); ctx.fillStyle = '#6B3E1E'; ctx.fillRect(-4.6,-2,9.2,8.6);
+      ctx.strokeStyle = PAL.tinta; ctx.lineWidth = 2; ctx.beginPath(); ctx.moveTo(0,-8); ctx.lineTo(0,-15); ctx.stroke(); circ(ctx,0,-15.5,2.4); fs(ctx,PAL.tinta,1);
+      ctx.beginPath(); ctx.arc(8.5,0,3.4,-1.3,1.3); ctx.lineWidth = 2; ctx.stroke();
+    } else if (extra === 4){   // cold brew: jarra alta com café escuro, gelo e a rodela de laranja
+      rr(ctx,-6.5,-11,13,20,3); fs(ctx,'rgba(214,236,244,.8)',2); ctx.fillStyle = '#3A2012'; ctx.fillRect(-5.2,-5,10.4,13);
+      [[-2.5,-3],[2.5,-1]].forEach(p => { rr(ctx,p[0]-2.2,p[1]-2.2,4.4,4.4,1); fs(ctx,'rgba(255,255,255,.85)',1); });
+      ctx.strokeStyle = PAL.tinta; ctx.lineWidth = 1.8; ctx.beginPath(); ctx.moveTo(1,-6); ctx.lineTo(5,-15); ctx.stroke();
+    } else if (cap){
       ctx.beginPath(); ctx.moveTo(-9,-4); ctx.lineTo(9,-4); ctx.lineTo(7,8); ctx.lineTo(-7,8); ctx.closePath(); fs(ctx,'#fff',2);
       ctx.beginPath(); ctx.arc(10,1.5,4,-1.3,1.4); ctx.lineWidth = 2.2; ctx.strokeStyle = PAL.tinta; ctx.stroke();
       ell(ctx,0,-4,8.6,2.6); fs(ctx,'#C98A55',1.2); ell(ctx,0,-4.4,6,1.7); fs(ctx,'#FFF3DC',0.8);

@@ -91,7 +91,7 @@ const pegaPrato=(H,grp)=>{ const g=H.g, p=g.kitchen.plates.find(q=>q&&q.group===
 
 // ---------- 4. a clientela ----------
 { const H=jogo(8,'terraco',{ bank:3000, dia:10 }), {g,L}=H; g.save.divulga='boca'; g.resetDay(10);
-  ok(L.PONTOS[3].tipos.casal===2 && L.PONTOS[3].semRetirada===true && L.PONTOS[3].tempos===true && L.PONTOS[3].bebida===null,'PONTOS[3]: casal peso 2, sem retirada, com tempos (parte B) e sem bebida da espera');
+  ok(L.PONTOS[3].tipos.casal===2 && L.PONTOS[3].semRetirada===true && L.PONTOS[3].tempos===true && L.PONTOS[3].bebida==='coquetel','PONTOS[3]: casal peso 2, sem retirada, com tempos (parte B) e coquetel de boas-vindas (v10.3)');
   const cont=(game,mod)=>{ const r={ tipos:{}, n:0, vip:0, vipFora:0 }; for(let k=0;k<300;k++){ const d=mod?mod(game):game.day; const sc=game.buildSchedule(d); sc.forEach(s=>{ r.tipos[s.type]=(r.tipos[s.type]||0)+1; r.n++; if(s.vip){ r.vip++; if(!L.vipTipos(game.ponto).includes(s.type)) r.vipFora++; } }); } return r; };
   const proibidos=r=>['estudante','entregador','turma','motorista','encomenda'].every(k=>!r.tipos[k]);
   const r0=cont(g); ok(r0.tipos.casal>0 && r0.tipos.casal/r0.n>0.2 && r0.tipos.casal/r0.n<0.45 && proibidos(r0),'em 300 dias o casal aparece (~35%) e não vem estudante, entregador, turma, motorista nem encomenda');

@@ -7,7 +7,7 @@
    ============================================================ */
 const DANI_HOME = { x:700, y:470 };
 /* v9.2, v9.3: quem cuida das tarefas básicas da casa (BASICAS) no dia: o ajudante mais novo que veio (Cami, depois Joca, depois Dani) */
-function donoBasico(g){ const eq = g.save.equipe; return eq.cami > 0 && !eq.camiFora && !camiModoMesas(g.save) ? 'cami'   /* v9.6: no modo "Minhas mesas" o básico volta para o Joca (ou a Dani) */ : eq.joca > 0 && !eq.jocaFora ? 'joca' : eq.dani > 0 ? 'dani' : null; }
+function donoBasico(g){ const eq = g.save.equipe; return eq.cami > 0 && !eq.camiFora && !camiModoMesas(g.save) && !camiModoTudo(g.save) ? 'cami'   /* v9.6: no modo "Minhas mesas" o básico volta para o Joca (ou a Dani) */ : eq.joca > 0 && !eq.jocaFora ? 'joca' : eq.dani > 0 ? 'dani' : null; }
 const AJUD_NOME = { dani:'Dani', joca:'Joca', cami:'Cami' };
 const DANI_HANDS = 2;   // 2 mãos: no máximo 2 itens por vez (cada pilha de louça, a de uma mesa, ocupa 1 mão)
 class Helper {
@@ -27,7 +27,7 @@ class Helper {
   get tasks(){
     if (!this.active) return [];
     const eq = this.g.save.equipe, up = this.g.up, dono = donoBasico(this.g), basica = t => BASICAS.indexOf(t) >= 0;
-    if (this.quem === 'cami') return camiModoMesas(this.g.save) ? [] : eq.camiTasks.filter(t => daniTaskOk(t, up) && basica(t)).slice(0, this.spec.tasks);
+    if (this.quem === 'cami') return camiModoMesas(this.g.save) || camiModoTudo(this.g.save) ? [] : eq.camiTasks.filter(t => daniTaskOk(t, up) && basica(t)).slice(0, this.spec.tasks);
     if (this.quem === 'joca'){   // v9.3: com o espresso, o café (cafezinho e espresso) é dele, fixo na 1ª vaga; sem a Cami, o básico nas vagas que sobram
       const cafe = up.espresso ? ['cafe'] : [];
       return dono !== 'joca' ? cafe : cafe.concat(eq.jocaTasks.filter(t => daniTaskOk(t, up) && basica(t))).slice(0, this.spec.tasks);
@@ -80,36 +80,41 @@ class Helper {
   }
   /* v9.6, "Minhas mesas": as mesas abertas dela (marcadas no editor do salão) */
   get mesasModo(){ return this.quem === 'cami' && camiModoMesas(this.g.save); }
+  get tudoModo(){ return this.quem === 'cami' && camiModoTudo(this.g.save); }   // v10.3: "Ajuda em tudo"
   mesasCami(){ return this.g.tables.filter(t => t.cami && t.open); }
   /* v9.6: a Cami cuida do grupo de cada mesa dela do pedido à conta, com 2 itens nas mãos e sem bandeja: leva o prato de quem já pediu,
      manda as comandas (1 ou 2) à janela, cobra a conta, pega o prato pronto e recolhe a louça suja (até a pia). Cada ação marca o
      grupo (`group.cami`): a Bia não pega o prato dele. Suco, café, doce e drink seguem com quem faz */
-  thinkMesas(){
-    const g = this.g, k = g.kitchen, hs = this.hands, mine = this.mesasCami(), semBia = t => !this.biaWants(t);
+  /* v10.3, "Ajuda em tudo" (tudo = true): o mesmo serviço em qualquer mesa, mas só o que espera há CAMI_TUDO.espera s ou mais e que a Bia não pegou.
+     Não marca o grupo (`group.cami`): a Bia ainda pode pegar qualquer prato; só o que a Cami já está indo buscar (`p.camiVai`) é dela */
+  thinkMesas(tudo){
+    const g = this.g, k = g.kitchen, hs = this.hands, mine = tudo ? g.tables.filter(t => t.open && (t.group || t.dirty)) : this.mesasCami(), semBia = t => !this.biaWants(t);
+    const espera = x => !tudo || x >= CAMI_TUDO.espera, marca = grp => { if (!tudo) grp.cami = true; };
     const dish = hs.find(h => h.kind === 'dish');
     if (dish){
       const grp = dish.group, t = grp && grp.table;
-      if (t && t.cami && grp.state === 'ordered'){ grp.cami = true; return this.go(this.nearestAp(t), { type:'entrega', t }); }
+      if (t && (tudo || t.cami) && grp.state === 'ordered'){ marca(grp); return this.go(this.nearestAp(t), { type:'entrega', t }); }
       hs.splice(hs.indexOf(dish), 1); k.sinkN++; return;   // sem destino: o prato vai para a pia
     }
     const tks = hs.filter(h => h.kind === 'ticket');
-    const pedido = mine.filter(t => t.group && t.group.state === 'wantOrder' && semBia(t)).sort((a, b) => a.group.hearts - b.group.hearts)[0];
+    const pedido = mine.filter(t => t.group && t.group.state === 'wantOrder' && espera(t.group.stateT) && semBia(t)).sort((a, b) => a.group.hearts - b.group.hearts)[0];
     if (tks.length && (hs.length >= DANI_HANDS || !pedido)) return this.go(STATIONS.order.ap, { type:'pedidos' });
-    const conta = mine.filter(t => t.group && t.group.state === 'wantBill' && semBia(t)).sort((a, b) => a.group.hearts - b.group.hearts)[0];
-    if (conta){ conta.group.cami = true; return this.go(this.nearestAp(conta), { type:'conta', t:conta }); }
+    const conta = mine.filter(t => t.group && t.group.state === 'wantBill' && espera(t.group.stateT) && semBia(t)).sort((a, b) => a.group.hearts - b.group.hearts)[0];
+    if (conta){ marca(conta.group); return this.go(this.nearestAp(conta), { type:'conta', t:conta }); }
     if (hs.length < DANI_HANDS){
-      const p = k.plates.filter(q => q && q.group && q.group.table && q.group.table.cami && !q.camiVai
+      const p = k.plates.filter(q => q && q.group && q.group.table && (tudo || q.group.table.cami) && espera(q.age) && !q.camiVai
         && (!q.group.tempos || q.group.state === 'ordered') && !g.bia.acts.some(a => a.type === 'plate' && a.pid === q.id)).sort((a, b) => b.age - a.age)[0];   // v10: o principal só quando o grupo já acabou a entrada; v9.6.5: o mais antigo dos dela   // a Bia já a caminho do prato: a Cami deixa
-      if (p){ p.camiVai = true; p.group.cami = true; return this.go(STATIONS.plates.ap, { type:'pegaPrato', p }); }
-      if (pedido){ pedido.group.cami = true; return this.go(this.nearestAp(pedido), { type:'anota', t:pedido }); }
-      const sujo = mine.filter(t => t.dirty && semBia(t))[0];
+      if (p){ p.camiVai = true; marca(p.group); return this.go(STATIONS.plates.ap, { type:'pegaPrato', p }); }
+      if (pedido){ marca(pedido.group); return this.go(this.nearestAp(pedido), { type:'anota', t:pedido }); }
+      const sujo = mine.filter(t => t.dirty && espera(t.sujaT) && semBia(t))[0];
       if (sujo) return this.go(this.nearestAp(sujo), { type:'clear', t:sujo });
     }
     if (hs.some(h => h.kind === 'dirty')) return this.go(STATIONS.sink.ap, { type:'sink' });
     if (Math.hypot(this.x - this.home.x, this.y - this.home.y) > 4) return this.go(this.home, null);
   }
   think(){
-    if (this.mesasModo) return this.thinkMesas();
+    if (this.mesasModo) return this.thinkMesas(false);
+    if (this.tudoModo) return this.thinkMesas(true);
     const g = this.g, k = g.kitchen;
     const dirty = this.hands.filter(h => h.kind === 'dirty').length;
     const coffee = this.hands.find(h => h.kind === 'coffee');
@@ -241,7 +246,7 @@ class Helper {
       for (let i=0;i<n;i++) this.hands.splice(this.hands.indexOf(mine[i]), 1);
       if (n){ g.entregaDoces(grp, n, grp.table.cx, grp.table.cy); this.feitas++; }
     } else if (st.type === 'espresso'){   // v9.3: tira os cafés do pedido (a máquina de espresso)
-      st.ids.forEach(id => { if (this.hands.length < DANI_HANDS){ this.hands.push({ kind:'cafeesp', group:st.grp, id }); g.custo += CAFES.ingred; } });
+      st.ids.forEach(id => { if (this.hands.length < DANI_HANDS){ this.hands.push({ kind:'cafeesp', group:st.grp, id }); g.custo += cafeIngred(g.up); } });
       if (this.hands.length) Sfx.blip();
     } else if (st.type === 'servecafe'){
       const grp = st.grp, mine = this.hands.filter(h => h.kind === 'cafeesp' && h.group === grp);
