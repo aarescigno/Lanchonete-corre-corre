@@ -317,9 +317,10 @@ const PONTOS = [
     tipos:{ estudante:0.5, executiva:2, familia:1.5, vovos:1, entregador:1, negocios:1.5 }, vip:2, metaF:3.0, expertF:3.6, grupos:0.7,   // v9.6.4: 3,2 e 3,8 → 3,0 e 3,6 (o VIP mais exigente deixou a Avenida abaixo do alvo)
     traz:'o almoço de negócios e mais VIPs', art:'o', deixa:'os sofás e as águas saborizadas ficam' },
   // v10: o último ponto da escada (cap. 8 e 9). 20 lugares, aluguel R$ 1.000, cardápio ×2,5. Sem entregador (semRetirada), sem bebida da espera (bebida:null até a 4a-4) e com o casal;
-  // tempos: a refeição completa (bebida, entrada, prato e sobremesa; é da parte B da 4a-1, por enquanto sem efeito)
-  { id:'terraco', nome:'Terraço Suíça', nivel:4, lugares:20, aluguel:1000, mudanca:5000, credito:8000, cardapio:2.5, area:{ x0:160, y0:150, x1:684, y1:500 }, espera:6, assento:'pe', bebida:null, pratos:6, marmJanela:2, prateleira:0,
-    tipos:{ executiva:0.5, familia:1, vovos:1, negocios:1.5, casal:2 }, vip:2.5, metaF:4.0, expertF:5.0, grupos:0.45, tempos:true, semRetirada:true,
+  // tempos: a refeição completa (bebida, entrada, prato e sobremesa; ver TEMPOS)
+  { id:'terraco', nome:'Terraço Suíça', nivel:4, lugares:20, aluguel:1200, mudanca:5000, credito:8000, cardapio:2.4, area:{ x0:160, y0:150, x1:684, y1:500 }, espera:6, assento:'pe', bebida:null, pratos:6, marmJanela:2, prateleira:0,
+    tipos:{ executiva:0.5, familia:1, vovos:1, negocios:1.5, casal:2 }, vip:2.5, metaF:9.0, expertF:6.0, grupos:0.5, tempos:true, semRetirada:true,   // v10 (medido em 10/11, equipe toda com o bot afiado): grupos 0,45 → 0,50 (mesas vazias em 33% do turno), metaF 4 → 9 e expertF 5 → 6 (91% das metas e 3★ em 61%), aluguel 1.000 → 1.200 e cardápio 2,5 → 2,4 (o ganho sobre a Avenida de R$ 918 caiu para ~R$ 700)
+   
     traz:'a refeição completa e a freguesia mais fina', art:'o' }
 ];
 function pontoOf(id){ return PONTOS.find(p => p.id === id) || PONTOS[0]; }
