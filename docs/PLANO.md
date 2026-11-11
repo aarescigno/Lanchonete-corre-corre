@@ -9,15 +9,14 @@ Origem: retorno do Renan Martorelli (beta-tester) e conversa com o Arthur (15/10
 - **Modelo e esforço (desde 29/10, ver `CLAUDE.md`):** cada etapa ou sessão termina com uma linha **Modelo:**. Quando ela pede "planejar com o Opus antes", a primeira sessão (com o Opus) fecha as **decisões em aberto** com o usuário, escreve no plano os valores, textos e falas decididos, apaga a lista de decisões em aberto e troca a linha para só o modelo da execução. A sessão de execução (Sonnet ou Haiku) não decide nada de design: se achar uma decisão que ficou aberta, para e pergunta ao usuário.
 - Antes de programar, se ainda houver **decisões em aberto** na etapa (cada uma já tem uma sugestão), a sessão confirma com o usuário.
 - No fim, a sessão marca a etapa como feita na tabela abaixo (com a versão e a data), move o texto dela para o `docs/PLANO-FEITO.md` com `ferramentas/arquiva.py` e leva para a seção **Situação das etapas feitas** de lá as linhas da tabela além das 3 últimas feitas.
-- **Ordem (11/11):** a próxima é a **4a-2** (o VIP exigente e a reputação), depois 4a-3 a 4a-5 (planejadas em 10/11), 4b, 4c, 6 e 7 (a rever). A 4a-1 (v10) foi feita em 11/11. As revisões R1 (v9.6.12) e R2 (v9.6.13) foram feitas em 10/11, fora da ordem, a pedido do usuário. O histórico da ordem está no fim do `docs/PLANO-FEITO.md`.
+- **Ordem (11/11):** a próxima é a **4a-3** (a cozinha do Terraço: alta gastronomia, a Lia e a alta confeitaria), depois 4a-4 e 4a-5 (planejadas em 10/11), 4b, 4c, 6 e 7 (a rever). A 4a-1 (v10) e a 4a-2 (v10.1) foram feitas em 11/11. As revisões R1 (v9.6.12) e R2 (v9.6.13) foram feitas em 10/11, fora da ordem, a pedido do usuário. O histórico da ordem está no fim do `docs/PLANO-FEITO.md`.
 
 ## Situação
 | # | Etapa | Versão | Situação |
 |---|---|---|---|
+| 4a-2 | O VIP exigente e a reputação | v10.1 | feita em 11/11 (`docs/spec-v10.1.md`; `smoke61`; bot afiado com a equipe toda 94,6% das metas, sem mudar números) |
 | 4a-1 | O Terraço Suíça e a refeição completa (caps. 8 e 9) | v10 | feita em 11/11 (`docs/spec-v10.md`; `smoke60`; calibrada: grupos 0,50, metaF 9, expertF 6, aluguel R$ 1.200, cardápio ×2,4) |
 | R2 | Menos sustos: "Já vou!", banco sem armadilha e pausa que confirma (análise de frustração) | v9.6.13 | feita em 10/11 (`docs/spec-v9.6.13.md`; `smoke59`) |
-| R1 | Revisão geral: Missão zero enxuta, dicas na hora, HUD com estrelas, fim do dia | v9.6.12 | feita em 10/11 (`docs/spec-v9.6.12.md`; `smoke58`; sem mudar números do jogo) |
-| 4a-2 | O VIP exigente e a reputação | v10.1 | a fazer (planejada em 10/11) |
 | 4a-3 | A cozinha do Terraço: alta gastronomia, a Lia e a alta confeitaria | v10.2 | a fazer (planejada em 10/11) |
 | 4a-4 | O salão e o bar do Terraço: a Cami em tudo, cafés especiais e coquetéis de autor | v10.3 | a fazer (planejada em 10/11) |
 | 4a-5 | Música, flores e o rebalanceamento do Terraço | v10.4 | a fazer (planejada em 10/11) |
@@ -75,30 +74,6 @@ Origem: retorno do Renan Martorelli (beta-tester) e conversa com o Arthur (15/10
 > - **O Terraço mede pela equipe toda** (Joca, Cami, Anselmo e a confeitaria): é ela que passa ~90% das metas.
 > - **Regra da 3f em todas as sessões:** cartão novo da lojinha só com nome, preço e "?"; toda novidade ganha ficha no `MANUAL` (sem números), revelada quando aparece na história.
 > Ordem: 4a-1 (o ponto e a refeição completa, v10) → 4a-2 (o VIP exigente e a reputação, v10.1) → 4a-3 (a cozinha: alta gastronomia, a Lia e a alta confeitaria, v10.2) → 4a-4 (o salão e o bar: Cami, Joca e Anselmo, v10.3) → 4a-5 (música, flores e rebalanceamento, v10.4). Cada uma é uma versão, com PR e merge. As "Checagens de fim de sessão" da etapa 3 valem para todas.
-
-### Sessão 4a-2 — O VIP exigente e a reputação (v10.1)
-**Objetivo:** o cliente que o Arthur descreveu: "VIPs exigentes que entram e pedem pratos especiais". No Terraço, todo VIP é exigente (`PONTOS[3].exigente = true`; `grp.exigente`).
-
-`EXIGENTE = { tip:0.2, generosa:0.2, casa:{ preco:40, cook:2, cookBom:1.3, nivel:3 }, sujaT:6, peso:2, bravoMov:0.9, rep:[0.6, 1.4] }`.
-- **Visual** (sem estereótipo): sem os óculos escuros do VIP; plaquinha dourada com **duas estrelas** e, em cada pessoa, um acessório sorteado (chapéu de aba, lenço de seda no pescoço ou echarpe), em cores variadas; gente de várias idades, cores e gêneros.
-- **Prato da casa** no lugar do prato especial: soma `casa.preco` à conta (em vez do `VIP.dish`) e o principal leva `casa.cook` × o tempo. Com o Tonhão no nível 4 ou 5 (`equipe.tonhao >= casa.nivel`), leva `casa.cookBom` × e sai sempre caprichado. No balão e na mão, o prato leva uma estrelinha dourada; na entrega, "Prato da casa!".
-- **Bebida primeiro:** se a entrada chegar antes de toda a bebida da mesa, ele perde 1 coração e diz "E a minha bebida?" (uma vez por grupo).
-- **Salão em ordem:** ao sentar, se houver no salão uma mesa suja há mais de `sujaT` segundos, ele não ganha o coração de sentar, perde 1 e diz "Que salão bagunçado!". Cada mesa passa a contar há quanto tempo está suja (`t.sujaT`, que a 4a-4 também usa).
-- **Paga bem:** a gorjeta dele é `tip` (em vez do `VIP.tip`) e, com 5 corações, mais `generosa` da conta, com o texto "Gorjeta generosa!", além dos pontos do VIP satisfeito.
-- **Sempre avalia** (não entra no sorteio dos 4 do dia) e a avaliação conta `peso` vezes na lista do Gurugol. Comentários próprios (metade das vezes): bom "Impecável. Voltarei." ou "Serviço à altura do endereço."; ruim "Esperava mais de um terraço." ou "Não é para tanto."; bravo "Inaceitável!".
-- **Saiu bravo:** `save.exigBravo` guarda o dia; no dia seguinte vêm `bravoMov` dos grupos, com o aviso na introdução "Um cliente exigente saiu bravo ontem: hoje vem menos gente."
-- **Reputação:** no Terraço, a chance de VIP do dia é multiplicada por um fator que vai de `rep[0]` (nota 1) a `rep[1]` (nota 5), em linha reta pela nota do Gurugol; sem nota, 1.
-- **Louça fina** (`UPGRADES`: `{ id:'louca', name:'Louça fina', cost:600, nivel:4 }`; o campo `nivel` das melhorias é novo: só aparece no ponto desse nível em diante): o prato da casa e o prato especial ficam 25% mais rápidos (`LOUCA = { cook:0.75 }`) e o Ambiente ganha `AVAL.amb.louca = 0.5`.
-- **Conversa** (`HIST_EXIGENTE`, no fim do 1º dia em que um exigente veio; `save.convExig`: 0, 'pend' ou 1; só no Modo História): Bia "Tio, viu a plaquinha de duas estrelas naquela mesa?" / Tonhão "Cliente exigente. Quer a bebida antes da entrada, o salão em ordem e o prato da casa." / Bia "E se ele gostar?" / Tonhão "Paga como ninguém. Se sair bravo, a cidade inteira fica sabendo."
-- **Manual:** `c-exigente` (aba Clientes; "VIP exigente", "Duas estrelas na plaquinha. Quer tudo no lugar e paga muito bem."; traços: "pede o prato da casa", "bebida antes da entrada", "repara em mesa suja", "sempre avalia no Gurugol", "gorjeta ótima"), revelada quando o 1º chega (`save.exigVisto`); `l-louca` ("Louça fina", "O prato da casa sai mais rápido, e a mesa fica mais bonita.").
-
-**Partes:** `10-constantes.js` (`EXIGENTE`, `LOUCA`, `UPGRADES`, `AVAL.amb`, `HIST_EXIGENTE`, `MANUAL`), `12-clientes.js` (o modificador, a conta, `normSave`), `13-cozinha.js` (o prato da casa), `16-jogo.js` (sentar, entrega, conta, avaliação com peso, o dia seguinte, a reputação no `buildSchedule`, `t.sujaT`), `19-conversa.js`, `20-desenho-base.js` (acessórios e a plaquinha de duas estrelas), `22-salao-hud.js` (a estrelinha no prato), `41-lojinha.js` (a Louça fina), `43-telas.js` (o aviso do dia).
-
-**Testes:** **`tests/smoke61.js` (novo):** (1) no Terraço o VIP é exigente e na Avenida não; (2) prato da casa: +R$ 40, ×2 com o Tonhão abaixo do nível 4 e ×1,3 e caprichado do 4 em diante; com a Louça fina, 25% mais rápido; (3) entrada antes da bebida: −1 coração, uma vez só; (4) mesa suja há mais de 6 s ao sentar: −1 coração; há menos, nada; (5) gorjeta 20% e mais 20% com 5 corações; (6) sempre avalia e a nota entra 2 vezes; (7) bravo: o dia seguinte tem 10% menos grupos e o aviso; (8) reputação: com nota 5, mais VIPs que com nota 3 (em 400 grupos); (9) Louça fina só no Terraço, +0,5 no Ambiente; (10) a conversa no fim do dia do 1º exigente; (11) save da v10 carrega igual. `bot.js`: leva a bebida do exigente antes da entrada quando ela já está pronta e não o senta com mesa suja velha. `PONTO=terraco node balance.js` com a equipe toda: o alvo de 85–95% continua; abaixo de 85%, `vip` 2,0; acima de 95%, `metaF` +0,2 por vez. Capturas `tests/shot_v10_1.js`: mesa de exigente (plaquinha e acessórios), o prato da casa no balão, "E a minha bebida?", "Gorjeta generosa!", a Louça fina na lojinha, a conversa, a ficha do Manual.
-
-**Fechamento:** v10.1 (`versoes/`, `vtag`, `VERSAO`, `#ov-ver`, `docs/spec-v10.1.md`, `RESUMO.md`, `TESTES.md`), PR e merge.
-
-**Modelo:** Sonnet, esforço alto. Regras fechadas, mas é um modificador de cliente que mexe em sentar, cozinha, conta, nota e no dia seguinte.
 
 ### Sessão 4a-3 — A cozinha do Terraço: alta gastronomia, a Lia e a alta confeitaria (v10.2)
 **Objetivo:** "lá não se vende coxinha": os cursos do Terraço trocam o cardápio por pratos finos, a cozinha ganha uma ajudante e a Dani chega ao topo dos doces.

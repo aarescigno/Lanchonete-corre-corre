@@ -1571,6 +1571,7 @@ function drawKitchen(ctx,g,t){
         ctx.restore();
       }
       if (p.crit) txt(ctx,'★',s.x-13,s.y-14+bounce,15,PAL.mostarda,'center',FD);
+      if (p.casa) star(ctx,s.x-1,s.y-23+bounce,6,PAL.mostarda);   // v10.1: o prato da casa
       circ(ctx,s.x+12,s.y-14+bounce,9); fs(ctx,'#fff',2);
       txt(ctx,String(p.table),s.x+12,s.y-13+bounce,12,PAL.tinta,'center',FD);
       const a = 0.35 + 0.3*Math.sin(t*6 + i);

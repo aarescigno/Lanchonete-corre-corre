@@ -253,7 +253,7 @@ const DES_BASICO = {
   }
 };
 /* o ícone da lojinha de cada ficha `l-` (o da Água da torneira e do assento segue o ponto) */
-const MANUAL_ICO = { 'l-tenis':'tenis', 'l-corrida':'corrida', 'l-cafeteira':'cafeteira', 'l-bandeja':'bandeja', 'l-sudoku':'sudoku', 'l-ventilador':'ventilador', 'l-triturador':'triturador', 'l-pratos':'pratos',
+const MANUAL_ICO = { 'l-tenis':'tenis', 'l-corrida':'corrida', 'l-cafeteira':'cafeteira', 'l-bandeja':'bandeja', 'l-sudoku':'sudoku', 'l-ventilador':'ventilador', 'l-triturador':'triturador', 'l-pratos':'pratos', 'l-louca':'louca',
   'l-tvsom':'ambiente', 'l-tvs':'tvs', 'l-couvert':'couvert', 'l-fogao':'fogao-ind', 'l-cardapio':'cardapio', 'l-salao':'g-salao', 'l-decor':'d-samambaia', 'l-manut':'m-fogao', 'l-divulga':'div-redes', 'l-banco':'banco', 'l-mudanca':'mudanca', 'l-caixa':'contas',
   'p-industrial':'mudanca', 'p-avenida':'mudanca-av', 'p-terraco':'mudanca-te' };
 function manualIcone(f){
@@ -273,6 +273,9 @@ function manualCliente(c, f){
     if (t === 'vip'){
       drawPerson(c,{skin:4,hair:3,hairC:'#1B1512',pants:'#2F3E5C',shades:true},28,60,{shirt:CHAIRS[2].c,mood:0,s:0.85});
       drawVipBadge(c,40,14,0);
+    } else if (t === 'exigente'){   // v10.1
+      drawPerson(c,{skin:3,hair:2,hairC:'#2A1D17',pants:'#2F3E5C',chapeu:true,accC:'#2F5F8A'},28,60,{shirt:CHAIRS[1].c,mood:0,s:0.85});
+      drawVipBadge(c,42,14,0,true);
     } else if (t === 'veg'){
       drawPerson(c,makePeople('estudante',1)[0],22,60,{shirt:CHAIRS[3].c,mood:0,s:0.72});
       drawDish(c,'pfVeg',46,42,0.8);

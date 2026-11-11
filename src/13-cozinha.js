@@ -15,9 +15,9 @@ class Kitchen {
   submitTempo(grp, table, tempo){
     const g = this.game, pr = k => k ? precoPrato(k, g.ponto, g.cursos) : 0;
     let time = rand(4,7) * this.chef.cook;
-    if (tempo === 0) time *= TEMPOS.entrada.cook; else if (grp.vip) time *= VIP.cook;
+    if (tempo === 0) time *= TEMPOS.entrada.cook; else time *= vipCook(grp, g);   // v10.1: o prato especial (ou da casa) do VIP
     if (g.day.gripe) time *= 1.25;
-    const base = tempo === 0 ? grp.extras.reduce((v, k) => v + pr(k), 0) : grp.dishes.reduce((v, k) => v + pr(k), 0) + (grp.vip ? VIP.dish : 0);
+    const base = tempo === 0 ? grp.extras.reduce((v, k) => v + pr(k), 0) : grp.dishes.reduce((v, k) => v + pr(k), 0) + (grp.vip ? vipDish(grp) : 0);
     const t = { group:grp, table, time, p:0, dish:tempo === 0 ? grp.pratoVez : grp.dish, tempo, base };
     const i = tempo === 0 ? -1 : this.queue.findIndex(q => q.tempo === 0);
     if (i < 0) this.queue.push(t); else this.queue.splice(i, 0, t);
@@ -26,7 +26,7 @@ class Kitchen {
     const g = this.game, grp = ticket.group;
     if (grp.tempos) return this.submitTempo(grp, ticket.table, grp.tempo);
     let time = rand(4,7) * this.chef.cook;
-    if (grp.vip) time *= VIP.cook;              // prato especial do VIP
+    time *= vipCook(grp, g);              // prato especial do VIP (v10.1: ou da casa; a Louça fina acelera)
     time *= 1 + MAIS.cozinha * grp.extras.filter(Boolean).length / grp.size;   // o 2º item de quem pediu mais (v8.3.8)
     if (g.day.gripe) time *= 1.25;   // dia 7: o Tonhão está gripado
     if (g.mode === 'semfim') time *= 1 + Math.min(0.25, 0.01 * g.elapsed / 60);
@@ -95,10 +95,10 @@ class Kitchen {
         if (free >= 0 && !entrada && this.clean <= 0) this.noPlate = true;
         if (free >= 0 && (entrada || this.clean > 0)){
           if (!entrada) this.clean--;
-          const crit = this.game.mode !== 'treino' && Math.random() < this.chefCrit(t.dish);
+          const casa = !!(t.group && t.group.exigente && t.tempo !== 0), crit = (casa && casaBoa(t.group, this.game)) || (this.game.mode !== 'treino' && Math.random() < this.chefCrit(t.dish));   // v10.1: o prato da casa, com o Tonhão no nível 4 em diante, sai sempre caprichado
           // a nota do prato (v8.4): o caprichado vale 5; os outros caem na faixa de acerto do cozinheiro
           const fx = AVAL.prato[this.game.save.equipe.tonhao], q = crit ? 5 : rand(fx[0], fx[1]);
-          this.plates[free] = { id:++this.pid, table:t.table, group:t.group, dish:t.dish, slot:free, age:0, crit, q, vip:!!(t.group && t.group.vip), tempo:t.tempo };
+          this.plates[free] = { id:++this.pid, table:t.table, group:t.group, dish:t.dish, slot:free, age:0, crit, q, vip:!!(t.group && t.group.vip), tempo:t.tempo, casa };
           this.cooking.splice(i,1);
           this.game.usos.fogao++; this.game.usos.geladeira++;
           Sfx.bell();
