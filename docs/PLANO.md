@@ -18,7 +18,7 @@ Origem: retorno do Renan Martorelli (beta-tester) e conversa com o Arthur (15/10
 | 4a-3 | A cozinha do Terraço: alta gastronomia, a Lia e a alta confeitaria | v10.2 | feita em 11/11 (`docs/spec-v10.2.md`; `smoke62`; `ALTA=1` quase dobra o lucro do bot: recalibrar na 4a-5) |
 | D-2 | Modo dev completo: História (cumprir, assistir, revelar) e Hoje (forçar imprevistos) | v10.2.2 | feita em 11/11 (`docs/spec-v10.2.2.md`; `smoke64`) |
 | 4a-4 | O salão e o bar do Terraço: a Cami em tudo, cafés especiais e coquetéis de autor | v10.3 | feita em 11/11 (`docs/spec-v10.3.md`; `smoke65`; o Terraço já passava 100% das metas com a equipe toda: recalibrar na 4a-5) |
-| 4a-5 | Música, flores e o rebalanceamento do Terraço | v10.4 | a fazer (planejada em 10/11) |
+| 4a-5 | Música, flores e o rebalanceamento do Terraço | v10.4 | a fazer (spec aprovada em 11/11: `docs/spec-v10.4.md`) |
 | 4b | Nível de luxo | v10.5 | a fazer |
 | 4c | Eventos de bairro: festa junina e jogo do Brasil | v10.6 | a fazer |
 | 5 | ~~Modo História, parte 1~~: juntou-se à 2f e aos capítulos da 3a, 3b e 4a (28/10) | — | — |
@@ -87,18 +87,7 @@ Origem: retorno do Renan Martorelli (beta-tester) e conversa com o Arthur (15/10
 > Ordem: 4a-1 (o ponto e a refeição completa, v10) → 4a-2 (o VIP exigente e a reputação, v10.1) → 4a-3 (a cozinha: alta gastronomia, a Lia e a alta confeitaria, v10.2) → 4a-4 (o salão e o bar: Cami, Joca e Anselmo, v10.3) → 4a-5 (música, flores e rebalanceamento, v10.4). Cada uma é uma versão, com PR e merge. As "Checagens de fim de sessão" da etapa 3 valem para todas.
 
 ### Sessão 4a-5 — Música, flores e o rebalanceamento do Terraço (v10.4)
-**Objetivo:** o ambiente do nível 4 (pedidos de 21 e 22/10) e a escada de números com tudo dentro.
-
-- **Música** (o ambiente do Terraço; `equipe.musica`: 0 desligada, 1 quarteto, 2 pianista; um seletor como o das TVs, no lugar do cartão do couvert): `TERRACO.musica = [ null, { nome:'Quarteto de cordas', pay:150, effect:0.2, amb:1 }, { nome:'Pianista', pay:120, piano:30, effect:0.2, amb:1.5 } ]`. O pianista paga também a afinação do piano (R$ 30 por dia, na mesma linha da folha: "Pianista e afinação"). Sem taxa de couvert no Terraço. O **couvert da Avenida não vem** (`STAFF.couvert` passa a valer só com `nivel === 3`; `normEquipe` e `trocaPonto` desligam; o `deixa` da Avenida vira "os sofás, as águas saborizadas e o couvert ficam"). `FOLHA_CORTE`: a música é a primeira a sair. No 4b, o pianista soma mais ao nível de luxo.
-  - Desenho: o **pianista** senta ao piano do canto (a tampa abre) e o **quarteto** (dois violinos, viola e violoncelo, gente variada, de roupa escura) fica sentado em fila no pé do salão, à direita do piano (x 190 a 340, y 528), sem ser obstáculo. Notinhas subindo; parados com `prefers-reduced-motion`. Nomes de músicas, se aparecerem, inventados.
-- **Flores do foyer** (`DECOR`, grupo plantas, `nivel:4`, +0,2 cada no Ambiente): **Ikebana** R$ 90, **Arranjo de orquídeas** R$ 120 e **Flores do campo** (em vaso de cerâmica) R$ 70. Elogios (`AVAL_DECOR`): "Que ikebana mais elegante!", "O arranjo de orquídeas é um espetáculo!", "Adorei as flores do campo!".
-- **Manual:** `l-musica` ("Música ao vivo", "Quarteto ou pianista: a paciência nas mesas dura mais e o ambiente melhora."); as fichas do Terraço conferidas com tudo o que entrou.
-- **Rebalanceamento** (no molde da 3b-7; só números, um por vez, medindo de novo; no máximo 3 por rodada, cada um registrado na spec): `PONTO=terraco node balance.js 80` e `DIAS=75 node carreira.js 12`, com a equipe toda do Terraço (as chaves da 4a-3 e da 4a-4, a Lia e o pianista).
-  - Alvos: equipe toda 85–95% das metas e 3★ do bot afiado ~60% (`metaF` e `expertF`); o afiado perde no máximo 1 grupo por dia (`grupos`); ganho sobre a Avenida entre R$ 400 e R$ 900 por dia (acima: `aluguel` 1.200, depois 1.500); 0 dias no negativo depois da mudança; nota do Gurugol entre 4,4 e 4,8 com a equipe toda; cap. 9 em até 15 dias em pelo menos 2/3 (se não: `completas` 5).
-  - Os outros pontos não mudam: `node balance.js 40` e `PONTO=industrial|avenida` ficam nas faixas de sempre.
-- **Testes:** **`tests/smoke64.js` (novo):** (1) o seletor da música só no Terraço; diárias (150; 120 + 30); 20% de paciência cada; Ambiente +1 e +1,5; (2) o couvert some no Terraço e o save com couvert ligado chega desligado; (3) o corte da folha tira a música primeiro; (4) as 3 flores só no Terraço, +0,2 cada; (5) save da v10.3 carrega igual. `tests/run_all.sh --tudo` verde. Capturas `tests/shot_v10_4.js` com as **Checagens de fim de sessão** completas do Terraço (cenário com tudo comprado, lojinha, menu, fim do dia, celular deitado).
-
-**Fechamento:** v10.4 (`versoes/`, `vtag`, `VERSAO`, `#ov-ver`, `docs/spec-v10.4.md` com a tabela medida, `RESUMO.md`, `TESTES.md`), PR e merge.
+**Objetivo:** o ambiente do nível 4 (pedidos de 21 e 22/10): música ao vivo (quarteto ou pianista) no lugar do couvert, as flores do foyer e a escada de números do Terraço com a equipe toda. Spec aprovada em 11/11: `docs/spec-v10.4.md`.
 
 **Modelo:** Sonnet, esforço alto. Os itens seguem moldes, mas o rebalanceamento é por tentativa, olhando o Terraço inteiro.
 
