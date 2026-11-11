@@ -1354,6 +1354,14 @@ function drawMesinha(ctx,g,t){
   ctx.strokeStyle = 'rgba(138,82,38,.55)'; ctx.lineWidth = 1.2; ctx.beginPath();
   for (let i = 1; i < 4; i++){ const yy = y + (h - 6) * i / 4; ctx.moveTo(x + 5,yy); ctx.lineTo(x + w - 5,yy); }
   ctx.stroke();
+  if (terraco(g)){   // v10: no Terraço não há marmitas nem estação: o móvel é um aparador com um vaso de flores em cima
+    const cx = x + w / 2, by = y + 4;
+    ctx.strokeStyle = '#3E7B4F'; ctx.lineWidth = 2; ctx.lineCap = 'round';
+    [[-8,-30],[0,-36],[8,-29]].forEach(f => { ctx.beginPath(); ctx.moveTo(cx,by - 14); ctx.lineTo(cx + f[0],by + f[1]); ctx.stroke(); });
+    [[-8,-30,'#E5384A'],[0,-36,'#F2B33D'],[8,-29,'#C77DD6']].forEach(f => { circ(ctx,cx + f[0],by + f[1],5); fs(ctx,f[2],1.6); circ(ctx,cx + f[0],by + f[1],1.6); ctx.fillStyle = '#FFF3C9'; ctx.fill(); });
+    rr(ctx,cx - 8,by - 17,16,19,6); fs(ctx,'#F4F0E6',2);
+    ctx.fillStyle = 'rgba(47,111,181,.35)'; ctx.fillRect(cx - 6,by - 9,12,3);
+  }
 }
 /* v9.6.11: o letreiro "eFood" sobre o entregador que espera (pisca 0,6 s acesa e 0,4 s apagada; sem movimento, fica acesa) */
 function drawLetreiroEfood(ctx,grp,tm,k){
