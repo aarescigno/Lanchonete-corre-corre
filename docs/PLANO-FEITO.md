@@ -40,6 +40,7 @@ Etapas concluídas (1a a 3a), movidas de `docs/PLANO.md` em 30/10/2026 e 31/10/2
 
 | # | Etapa | Versão | Situação |
 |---|---|---|---|
+| 4a-1 | O Terraço Suíça e a refeição completa (caps. 8 e 9) | v10 | feita em 11/11 (`docs/spec-v10.md`; `smoke60`; calibrada: grupos 0,50, metaF 9, expertF 6, aluguel R$ 1.200, cardápio ×2,4) |
 | R2 | Menos sustos: "Já vou!", banco sem armadilha e pausa que confirma (análise de frustração) | v9.6.13 | feita em 10/11 (`docs/spec-v9.6.13.md`; `smoke59`) |
 | R1 | Revisão geral: Missão zero enxuta, dicas na hora, HUD com estrelas, fim do dia | v9.6.12 | feita em 10/11 (`docs/spec-v9.6.12.md`; `smoke58`; sem mudar números do jogo) |
 | 3g-2 | A tela avisa: Gurugol em balões, mesinha das marmitas, eFood e fumaça | v9.6.11 | feita em 02/11 (`docs/spec-v9.6.11.md`; `smoke57`; geladeira fora da tela, mesinha no lugar dela, cheiro só onde a fumaça chega) |
@@ -1810,3 +1811,54 @@ Partes: `src/42-resultados.js` (fim do dia), `src/21-cenario.js` (geladeira, mes
 **Fechamento:** v10.2 (`versoes/`, `vtag`, `VERSAO`, `#ov-ver`, `docs/spec-v10.2.md`, `RESUMO.md`, `TESTES.md`), PR e merge.
 
 **Modelo:** Sonnet, esforço médio. Segue os moldes do curso de restaurante, do cartão do Anselmo e da confeitaria gourmet, com números e textos fechados; o trabalho maior são os desenhos.
+
+### Sessão D-1 — Jeitos, abas, Pular, Dinheiro e Equipe (v10.2.1)
+**Aba Pular:**
+- **Capítulo:** botões `1` a `9` e `Fim` (= cap. 10, depois do último). Um toque chama `game.devCapitulo(n)`: liga o jeito De verdade, guarda o save dev atual em `localStorage` `lcc2_save_dev_bak` (para desfazer), monta o save do começo do capítulo pela tabela `DEV_CAPS` (abaixo), fecha o painel e toca a conversa de antes do capítulo (`fluxoHistoria` com `sv.conversa = 'antes'`, como no fim de um dia); no fim dela, a lojinha do dia (`game.goShop(sv.dia)`). No `Fim`, sem conversa: direto para a lojinha.
+- **Desfazer o pulo** (só aparece com `lcc2_save_dev_bak` guardado): volta o save guardado, apaga a cópia e recarrega (`devRecarrega`).
+- **Dia** (como hoje: −10, −1, +1, +10) e **Ponto** (como hoje: troca sem custo nem capítulo). Mostra também `Dia no ponto: N` (`diaNoPonto(sv, sv.dia)`).
+- **No dia** (só com o dia pausado na carreira): velocidade **1×, 2×, 4× e 8×** (o 8× é novo) e **Encerrar o dia agora** (como hoje).
+
+**Como o `devCapitulo(n)` monta o save** (em `src/16-jogo.js`, junto das outras ações `dev*`):
+1. `const sv = normSave({ treino:true })`; depois `sv.histV = 1; sv.cap = n; sv.dia = D.dia; sv.capDia = D.dia; sv.capAzul = 0; sv.capFeito = 0; sv.conversa = n <= HISTORIA.length ? 'antes' : null; sv.bank = D.caixa`.
+2. Ponto: `this.save = sv`, depois `trocaPonto(pontoOf(id))` para cada ponto da escada até o do capítulo (`HISTORIA[n-1].ponto`; no `Fim`, `terraco`), na ordem; depois `sv.pontoDia = D.pontoDia`. Como o `trocaPonto` mexe em `sv.conversa` quando o capítulo é do ponto, regrave `sv.conversa` e `sv.capDia` no fim.
+3. Banco: cap. 1, `emp` = a reforma inteira (`{ resto:REFORMA.valor, amort:REFORMA.amort, j:REFORMA.juros, ini:REFORMA.ini, ref:true }`); cap. 2, resto 700; cap. 3, resto 400; do cap. 4 em diante, sem empréstimo. Sempre `normEmprestimo`.
+4. Conversas soltas já vistas: `convPlanta = 1` e `decor.espada = 1` com `D.dia > HIST_PLANTA.dia`; `convCard = 1` com `D.dia > HIST_CARDAPIO.dia`; `convDiv = 1` com `D.dia >= DIVULGA_DIA`; `convEnt = 1` com `D.dia >= HIST_ENTREGA.dia`; `convExig = 1` só do cap. 9 em diante (no cap. 8 ela ainda acontece). `socorro`, `convSocorro`: 0.
+5. Cartões da lojinha (`sv.libera`): os sem `nivel` e os de `nivel` menor que o do ponto, `2` (vistos); os do `nivel` do ponto, `2` só no 2º capítulo do ponto (5, 7, 9 e Fim) e só se a pessoa do cartão está contratada na tabela (`joca`, `cami`, `anselmo`, `lia`) ou se é a `confeitaria`; os outros, `0`.
+6. Equipe, cursos e melhorias pela tabela (cada nível passa por `Math.min` com o último de `STAFF.x.levels`; depois `normEquipe`, `normCursos`, `normDaniCursos`, `normJocaCursos`, `normCamiCursos`; os `up` de `confCaseira`, `confGourmet`, `confAlta` e `espresso` seguem os cursos, como no `devEquipe`).
+7. Nota: `devNota(D.nota)` (cap. 1: sem nota, `aval = []`).
+8. Manual: `sv.manual` = as fichas da aba `basico` + `p-<id>` de cada ponto visitado; `manualNovo = []`.
+9. `writeSave`, `devRecarrega`.
+
+**Tabela `DEV_CAPS`** (constante nova em `src/10-constantes.js`, depois de `HISTORIA`; cursos do Tonhão em `{ id:nível }`; "+" = o da linha de cima mais isto):
+
+| n | dia | ponto (pontoDia) | caixa | nota | Tonhão | Dani | Joca | Cami | Anselmo | Lia | cursos do Tonhão | cursos da equipe | melhorias (`up`) |
+|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
+| 1 | 1 | garagem (1) | 0 | — | 0 | 0 | 0 | 0 | 0 | 0 | — | — | — |
+| 2 | 4 | garagem (1) | 300 | 2,2 | 0 | 1 | 0 | 0 | 0 | 0 | pastel 1 | — | tenis |
+| 3 | 8 | garagem (1) | 500 | 2,5 | 1 | 2 | 0 | 0 | 0 | 0 | + chapa 1 | — | + ventilador |
+| 4 | 13 | industrial (13) | 400 | 2,7 | 1 | 2 | 0 | 0 | 0 | 0 | + fritos 1 | — | + bandeja, triturador |
+| 5 | 17 | industrial (13) | 900 | 3,0 | 2 | 3 | 2 | 0 | 0 | 0 | + assados 1, veg 1 | Dani: confCaseira | + corrida |
+| 6 | 30 | avenida (30) | 600 | 3,2 | 2 | 3 | 2 | 0 | 0 | 0 | igual | igual | igual |
+| 7 | 34 | avenida (30) | 2500 | 3,5 | 3 | 4 | 3 | 1 | 2 | 0 | + restaurante 1 | + Dani: confGourmet; Joca: espresso | igual |
+| 8 | 46 | terraco (46) | 1500 | 3,9 | 3 | 4 | 3 | 2 | 2 | 0 | igual | igual | igual |
+| 9 | 50 | terraco (46) | 6000 | 4,2 | máx | máx | máx | 2 | 3 | 1 | + entradas 1, alta 1 | + Dani: confAlta | igual |
+| Fim | 60 | terraco (46) | 10000 | 4,6 | como "Tudo no máximo" de hoje (`devEquipe('max')` e `devMelhorias(true)`), Lia 1 |
+
+Se um id da tabela não existir (`UPGRADES`, `CURSOS`), o `devCapitulo` ignora e segue; o smoke confere que todos existem.
+
+**Aba Dinheiro** (`game.devDinheiro(v)`, soma ao caixa com piso 0; não entra no Caixa do fim do dia):
+- No Livre: só a linha "No jeito Livre, o dinheiro não acaba." e o botão **Passar para De verdade**.
+- No De verdade: `Caixa: R$ X`; **+100**, **+1.000**, **+10.000**, **−1.000** e **Zerar**.
+- **Banco:** a linha do empréstimo (`Sem empréstimo` ou `Falta R$ X · parcela R$ Y`); **Quitar** (`emp` vazio), **Pegar R$ 1.000** (`normEmprestimo` com `resto:1000`, `amort:200`, `j:BANCO.juros`, `ini: sv.dia`) e **Atrasar a parcela** (`emp.atr = true`, para testar a 2ª chance do banco e a tomada). O `devCaixa` de hoje sai (o Dinheiro o substitui).
+
+**Aba Equipe e lojinha:**
+- Uma linha por pessoa: `Tonhão: nível N [−] [+]`, e o mesmo para Dani, Joca, Cami, Anselmo (níveis 0, 2 e 3) e Lia (0 e 1). `game.devNivel(quem, delta)`: soma, limita entre 0 e o último nível (o Anselmo pula do 0 para o 2), chama `normEquipe(e, this.ponto)` e `devRecarrega`. No De verdade, a pessoa também fica com o cartão aberto (`libera[id] = 2`).
+- **Cursos:** **Todos** e **Nenhum** (do Tonhão e da equipe, como os pedaços de cursos do `devEquipe` de hoje, separados num `devCursos(on)`).
+- **Melhorias:** **Todas** e **Nenhuma** (o `devMelhorias` de hoje). **Decoração:** **Toda** e **Nenhuma** (`devDecor(on)`: todo `DECOR` do ponto, ou `{}`; a espada fica se `convPlanta` for 1). **Manutenção:** **Tudo novo** (`manut` de cada `MANUT.equip` = 1) e **Tudo gasto** (= 0,2, para testar quebras).
+- **Tudo no máximo** e **Do começo** (os de hoje) ficam no alto da aba.
+
+**Testes (`tests/smoke63.js`):** `load()` com o modo dev ligado (`game.setDev(true)`); (1) no Livre, `histLiga()` é falso e o caixa volta a R$ 10.000; (2) `devReal(true)` grava `lcc2_dev_real = '1'` e `histLiga()` fica verdadeiro com `load({historia:true})`; (3) para cada n de 1 a 10: `devCapitulo(n)` deixa `save.cap === n`, `save.salao.ponto` igual ao da tabela, `save.dia`, `save.pontoDia`, `save.bank` e os níveis da tabela, `capObj()` não nulo de 1 a 9 e nulo no Fim, `save.conversa === 'antes'` de 1 a 9; (4) todos os ids da `DEV_CAPS` existem; (5) desfazer volta o save de antes (JSON igual) e apaga `lcc2_save_dev_bak`; (6) `devDinheiro(1000)` soma 1000, `devDinheiro(-99999)` deixa 0; (7) `devNivel('anselmo', 1)` vai de 0 a 2; (8) `localStorage` `lcc2_save` (o de verdade) não mudou em nada; (9) `DEV.vel = 8` roda 8 passos por quadro (`passoJogo`). Rode `./run_all.sh` (todos verdes) e confira com uma captura recortada o painel nas 3 abas, em 900×600 e em 390×844 (cabe sem rolar a página; o painel pode rolar por dentro).
+**Fecha:** `VERSAO` e selo `v10.2.1`; no painel Versões: "Modo dev novo: dois jeitos (Livre e De verdade, que joga com o Modo História), abas, pular para o começo de qualquer capítulo (e desfazer), dinheiro e banco à mão e a equipe pessoa por pessoa."; `docs/spec-v10.2.1.md`; `RESUMO.md`; PR e merge.
+
+Modelo: Sonnet, esforço médio (plano detalhado; mexe em 5 partes, mas sem decisão de design).

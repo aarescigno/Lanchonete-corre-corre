@@ -73,7 +73,7 @@ function tableApproach(t){
   return [ {x:t.cx-hx, y:t.cy+4}, {x:t.cx+hx, y:t.cy+4} ];
 }
 /* ---------- armazenamento (localStorage com try/catch e cópia em memória) ---------- */
-const LS = { save:'lcc2_save', v1:'lcc_save_v1', rank:'lcc2_ranking', name:'lcc2_name', dev:'lcc2_dev', devSave:'lcc2_save_dev', abertura:'lcc2_abertura' };   // abertura (v8.5): '1' quando já tocou sozinha
+const LS = { save:'lcc2_save', v1:'lcc_save_v1', rank:'lcc2_ranking', name:'lcc2_name', dev:'lcc2_dev', devSave:'lcc2_save_dev', abertura:'lcc2_abertura', devReal:'lcc2_dev_real', devBak:'lcc2_save_dev_bak' };   // abertura (v8.5): '1' quando já tocou sozinha
 const MEM = {};
 function lsGet(k){
   try { const v = localStorage.getItem(k); if (v != null) return v; } catch(e) {}
@@ -86,8 +86,10 @@ function lsSet(k, v){
 /* modo dev (v7.5.1): 10 toques no selo da versão ligam e desligam. O jogo fica igual, com um save à parte (o progresso
    de verdade fica guardado e volta ao sair), qualquer dia à escolha no menu (v8.3), R$ 10.000 que não acabam (a lojinha repõe) e tudo
    liberado na lojinha, até antes do dia 1: melhorias de graça (liga e desliga), couvert e divulgação. Ranking de fora */
-const DEV = { on: lsGet(LS.dev) === '1', bank: 10000, toques: 10, real:false, vel:1 };   // v9.2.1: real = preços e travas de verdade; vel = velocidade (só na memória)
+const DEV = { on: lsGet(LS.dev) === '1', bank: 10000, toques: 10, real: lsGet(LS.dev) === '1' && lsGet(LS.devReal) === '1', vel:1, aba:'pular' };   // v9.2.1: real = preços e travas de verdade; vel = velocidade (só na memória); v10.2.1: real fica gravado (lcc2_dev_real); aba = a aba aberta do painel
 function devLivre(){ return DEV.on && !DEV.real; }
+/* v10.2.1: o Modo História liga fora do modo dev e no jeito "De verdade" do modo dev (no Livre fica desligado) */
+function histLiga(){ return HIST.on && !devLivre(); }
 function saveKey(){ return DEV.on ? LS.devSave : LS.save; }
 /* o couvert só vale do nível 3 do salão em diante: num ponto abaixo, sai */
 function normEquipe(e, ponto){

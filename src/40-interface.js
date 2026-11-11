@@ -102,47 +102,107 @@ function fecharDev(){
   $('ov-dev').classList.remove('show');
   if (game.state === 'menu') buildMenu(); else if (game.state === 'shop') buildShop();
 }
+/* v10.2.1: o painel em abas. Os dois jeitos (Livre: tudo de graça e sem História; De verdade: preços, travas e o Modo História) ficam no alto,
+   depois a linha "Agora" e as abas (DEV.aba, só na memória) */
+const DEV_ABAS = [['pular', 'Pular'], ['dinheiro', 'Dinheiro'], ['equipe', 'Equipe e lojinha']];
 function buildDev(){
   const body = $('dev-body'); clearEl(body);
-  const nota = v => (Math.round(v * 10) / 10).toString().replace('.', ',');
-  const secao = (titulo, agora) => {
-    body.appendChild(el('div', 'lbl', titulo));
-    if (agora) body.appendChild(el('div', 'dev-now', agora));
-    const r = el('div', 'row'); body.appendChild(r); return r;
-  };
+  const sv = game.save, nota = v => (Math.round(v * 10) / 10).toString().replace('.', ',');
   const botao = (r, txt, fn, premido) => {
     const b = el('button', 'btn alt', txt); b.type = 'button';
     if (premido != null) b.setAttribute('aria-pressed', premido ? 'true' : 'false');
     b.addEventListener('click', () => { Sfx.init(); Sfx.tap(); fn(); buildDev(); });
     r.appendChild(b); return b;
   };
-  const emDia = game.state === 'paused' && game.mode === 'carreira';
+  const secao = (titulo, agora) => {
+    body.appendChild(el('div', 'lbl', titulo));
+    if (agora) body.appendChild(el('div', 'dev-now', agora));
+    const r = el('div', 'row'); body.appendChild(r); return r;
+  };
   const dia = game.state === 'shop' ? game.shopNext : game.proxDia;
-  let r = secao('Dia', 'Dia ' + dia);
+  // os dois jeitos
+  let r = el('div', 'row'); r.id = 'dev-jeitos'; body.appendChild(r);
+  botao(r, 'Livre', () => game.devReal(false), !DEV.real);
+  botao(r, 'De verdade', () => game.devReal(true), DEV.real);
+  const cap = sv.cap > HISTORIA.length ? 'Fim' : sv.cap;
+  body.appendChild(el('div', 'dev-now', 'Dia ' + dia + ' · ' + game.ponto.nome + (DEV.real ? ' · Capítulo ' + cap + ' · ' + fmt(sv.bank) : '')));
+  // as abas
+  const abas = el('div', 'seg'); abas.id = 'dev-abas'; abas.setAttribute('role', 'group'); abas.setAttribute('aria-label', 'Painel do dev'); body.appendChild(abas);
+  DEV_ABAS.forEach(a => {
+    const b = el('button', null, a[1]); b.type = 'button'; b.setAttribute('data-v', a[0]);
+    b.setAttribute('aria-pressed', a[0] === DEV.aba ? 'true' : 'false');
+    b.addEventListener('click', () => { Sfx.init(); Sfx.tap(); DEV.aba = a[0]; buildDev(); });
+    abas.appendChild(b);
+  });
+  if (DEV.aba === 'dinheiro') devAbaDinheiro(body, secao, botao);
+  else if (DEV.aba === 'equipe') devAbaEquipe(body, secao, botao, nota);
+  else devAbaPular(body, secao, botao, dia);
+}
+function devAbaPular(body, secao, botao, dia){
+  const sv = game.save, emDia = (game.state === 'paused' || game.state === 'playing') && game.mode === 'carreira';
+  let r = secao('Capítulo', 'Pula para o começo do capítulo (liga o De verdade)');
+  for (let n = 1; n <= HISTORIA.length + 1; n++){
+    const b = botao(r, n > HISTORIA.length ? 'Fim' : String(n), () => {
+      if (!game.devCapitulo(n)) return;
+      if (game.state !== 'menu') game.setState('menu');
+      fecharDev(); fluxoHistoria(() => game.goShop(game.proxDia));
+    }, sv.cap === n && DEV.real);
+    b.setAttribute('aria-label', n > HISTORIA.length ? 'Capítulo: o Fim' : 'Capítulo ' + n);
+  }
+  if (lsGet(LS.devBak)) botao(r, 'Desfazer o pulo', () => { game.devDesfaz(); });
+  r = secao('Dia', 'Dia ' + dia + ' · dia no ponto: ' + diaNoPonto(sv, dia));
   [[-10, '−10'], [-1, '−1'], [1, '+1'], [10, '+10']].forEach(([d, t]) => botao(r, t, () => game.devDia(dia + d)));
   r = secao('Ponto');
   PONTOS.forEach(p => botao(r, p.nome, () => game.devPonto(p.id), p.id === game.ponto.id));
+  if (emDia){
+    r = secao('No dia', 'Velocidade ' + DEV.vel + '×');
+    [1, 2, 4, 8].forEach(v => botao(r, 'Velocidade ' + v + '×', () => { DEV.vel = v; }, DEV.vel === v));
+    const b = botao(r, 'Encerrar o dia agora', () => {}, null);
+    b.addEventListener('click', () => { if (game.devFimDia()) fecharDev(); });
+  }
+}
+function devAbaDinheiro(body, secao, botao){
+  const sv = game.save;
+  let r;
+  if (!DEV.real){
+    r = secao('Dinheiro', 'No jeito Livre, o dinheiro não acaba.');
+    botao(r, 'Passar para De verdade', () => game.devReal(true));
+    return;
+  }
+  r = secao('Caixa', 'Caixa: ' + fmt(sv.bank));
+  [[100, '+100'], [1000, '+1.000'], [10000, '+10.000'], [-1000, '−1.000']].forEach(([v, t]) => botao(r, t, () => game.devDinheiro(v)));
+  botao(r, 'Zerar', () => game.devDinheiro(-sv.bank));
+  const e = sv.emp;
+  r = secao('Banco', e.resto ? 'Falta ' + fmt(e.resto) + ' · parcela ' + fmt(parcelaDe(e, sv.dia)) + (e.atr ? ' (atrasada)' : '') : 'Sem empréstimo');
+  botao(r, 'Quitar', () => game.devBanco('quitar'));
+  botao(r, 'Pegar ' + fmt(1000), () => game.devBanco('pegar'));
+  botao(r, 'Atrasar a parcela', () => game.devBanco('atrasar'));
+}
+function devAbaEquipe(body, secao, botao, nota){
+  const sv = game.save, eq = sv.equipe;
+  let r = secao('Equipe, cursos e melhorias');
+  botao(r, 'Tudo no máximo', () => { game.devEquipe('max'); game.devMelhorias(true); });
+  botao(r, 'Do começo', () => { game.devEquipe('zero'); game.devMelhorias(false); });
+  r = secao('Pessoas');
+  [['tonhao', 'Tonhão', 1], ['dani', 'Dani', 0], ['joca', 'Joca', 0], ['cami', 'Cami', 0], ['anselmo', 'Anselmo', 0], ['lia', 'Lia', 0]].forEach(([q, nome, mais]) => {
+    const l = el('div', 'dev-pessoa'); body.appendChild(l);
+    l.appendChild(el('span', 'dev-nome', nome + ': nível ' + (eq[q] + mais)));
+    const b1 = botao(l, '−', () => game.devNivel(q, -1)); b1.setAttribute('aria-label', nome + ': baixar um nível');
+    const b2 = botao(l, '+', () => game.devNivel(q, 1)); b2.setAttribute('aria-label', nome + ': subir um nível');
+  });
+  r = secao('Cursos');
+  botao(r, 'Todos', () => game.devCursos(true)); botao(r, 'Nenhum', () => game.devCursos(false));
+  r = secao('Melhorias');
+  botao(r, 'Todas', () => game.devMelhorias(true)); botao(r, 'Nenhuma', () => game.devMelhorias(false));
+  r = secao('Decoração');
+  botao(r, 'Toda', () => game.devDecor(true)); botao(r, 'Nenhuma', () => game.devDecor(false));
+  r = secao('Manutenção');
+  botao(r, 'Tudo novo', () => game.devManut(1)); botao(r, 'Tudo gasto', () => game.devManut(0.2));
   const ng = game.notaGurugol;
   r = secao('Nota do Gurugol', 'Agora: ' + (ng != null ? nota(ng) + ' ★' : 'sem nota'));
   [2, 2.7, 3.4, 4].forEach(v => botao(r, nota(v), () => game.devNota(v)));
   botao(r, 'Teto', () => game.devNota(avalTeto(game.ponto)));
   botao(r, 'Limpar', () => game.devNota(0));
-  r = secao('Equipe, cursos e melhorias');
-  botao(r, 'Tudo no máximo', () => { game.devEquipe('max'); game.devMelhorias(true); });
-  botao(r, 'Do começo', () => { game.devEquipe('zero'); game.devMelhorias(false); });
-  r = secao('Lojinha de verdade');
-  botao(r, 'Preços e travas de verdade: ' + (DEV.real ? 'ligado' : 'desligado'), () => game.devReal(!DEV.real), DEV.real);
-  if (DEV.real){
-    body.appendChild(el('div', 'dev-now', 'Caixa: ' + fmt(game.save.bank)));
-    const r2 = el('div', 'row'); body.appendChild(r2);
-    [0, 500, 2000, 10000].forEach(v => botao(r2, fmt(v), () => game.devCaixa(v)));
-  }
-  if (emDia){
-    r = secao('No dia', 'Velocidade ' + DEV.vel + '×');
-    [1, 2, 4].forEach(v => botao(r, 'Velocidade ' + v + '×', () => { DEV.vel = v; }, DEV.vel === v));
-    const b = botao(r, 'Encerrar o dia agora', () => {}, null);
-    b.addEventListener('click', () => { if (game.devFimDia()) fecharDev(); });
-  }
 }
 
 /* ---------- Manual (v9.6.7): o bestiário do jogo; as fichas se revelam com a história ---------- */
