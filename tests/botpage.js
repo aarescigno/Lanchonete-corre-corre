@@ -9,6 +9,8 @@ function(g,L,opts){
   const ids=cs==='todos'?['fogao','geladeira','cafeteira']:['fogao'];
   return function botStep(){ for(const id of ids) if(g.quebrado(id)) g.consertar(id); base(); };
 };
+// v10, a refeição completa: o grupo só recebe o prato quando espera por ele ('ordered'); o principal pronto com o grupo ainda comendo a entrada espera no balcão
+const pront=grp=>!grp||!grp.tempos||grp.state==='ordered';
 // v9.6: a Cami em "Minhas mesas" cuida do pedido à conta das mesas dela: a Bia não mexe nelas (só entrega o prato que já pegou)
 function delaCami(g){ return t=>!!(t&&t.cami&&g.camiMesasOn&&g.cami&&g.cami.active); }
 function baseBot(g,L,opts){
@@ -30,7 +32,7 @@ function baseBot(g,L,opts){
       if(p&&can('marmita')&&!has(a=>a.type==='plate'&&a.pid===p.id)) return g.tapStation('marmj',L.LAYOUT.MARMJ_SLOTS[i].x,L.LAYOUT.MARMJ_SLOTS[i].y); }
     { const x=b.hands.find(h=>h.kind==='marmita'&&h.jogar); if(x && !has(a=>a.type==='trash')) return g.tapStation('trash',700,500); }   // v9.6.5: a marmita do X vermelho vai pro lixo
     if(b.hands.some(h=>h.kind==='ticket') && !has(a=>a.type==='order')) return g.tapStation('order',800,150);
-    const d=b.hands.find(h=>h.kind==='dish');
+    const d=b.hands.find(h=>h.kind==='dish'&&pront(h.group));
     if(d && !has(a=>a.type==='table'&&a.id===d.table)) return g.tapTable(g.tables[d.table-1]);
     // v9: o motorista que acabou de comer espera o cafezinho: leva se já está na mão, senão busca
     const mt=g.tables.find(t=>t.group&&t.group.cafeBalao&&!t.group.daniCoffee);
@@ -71,7 +73,7 @@ function baseBot(g,L,opts){
       if(!t.open||dela(t)||has(a=>a.type==='table'&&a.id===t.id)||ajd(g,h=>h.targets(t))) continue;
       if(t.dirty||(t.group&&(t.group.state==='wantOrder'||t.group.state==='wantBill'))){ if(can(t.dirty?'dirty':'ticket')||t.group&&t.group.state==='wantBill') return g.tapTable(t); }
     }
-    for(let i=0;i<L.LAYOUT.PLATE_SLOTS.length;i++){ const p=g.kitchen.plates[i]; if(p&&!p.dani&&!(p.group&&dela(p.group.table))&&can('dish')&&!has(a=>a.type==='plate'&&a.pid===p.id)) return g.tapStation('plates',L.LAYOUT.PLATE_SLOTS[i].x,L.LAYOUT.PLATE_SLOTS[i].y); }
+    for(let i=0;i<L.LAYOUT.PLATE_SLOTS.length;i++){ const p=g.kitchen.plates[i]; if(p&&!p.dani&&pront(p.group)&&!(p.group&&dela(p.group.table))&&can('dish')&&!has(a=>a.type==='plate'&&a.pid===p.id)) return g.tapStation('plates',L.LAYOUT.PLATE_SLOTS[i].x,L.LAYOUT.PLATE_SLOTS[i].y); }
     const need=jt.reduce((n,t)=>n+t.group.juicePending,0), carry=b.hands.filter(h=>h.kind==='juice').length+b.acts.filter(a=>a.type==='juice').length;
     // busca de uma vez todos os sucos que couberem (a fila de ações conta como já nas mãos)
     if(need>carry && !has(a=>a.type==='juice')){
@@ -125,11 +127,11 @@ function afiado(g,L){
     const livresMax=encPend?Math.min(g.vagas,g.encomendaDia.lote-1):1;
     if(L.MARMITA.adiantar&&g.marmitaOk&&g.marmitasLivres<livresMax&&(g.clock>45||encPend)&&!b.hands.some(h=>h.kind==='ticket')) add(encPend?20+sw('order'):36+sw('order'),()=>g.tapStation('adiantar'));
     // pratos e comandas que a Bia carrega
-    b.hands.filter(h=>h.kind==='dish').forEach(h=>{ const t=g.tables[h.table-1]; add(ttl(h.group)-tw(t),()=>g.tapTable(t)); });
+    b.hands.filter(h=>h.kind==='dish'&&pront(h.group)).forEach(h=>{ const t=g.tables[h.table-1]; add(ttl(h.group)-tw(t),()=>g.tapTable(t)); });
     const tk=b.hands.filter(h=>h.kind==='ticket');
     if(tk.length) add(Math.min(...tk.map(h=>ttl(h.group)))-sw('order')-6,()=>g.tapStation('order',800,150));
     // pratos prontos no balcão
-    k.plates.forEach((p,i)=>{ if(!p||!can('dish')) return; const t=tableOf(p.group); if(!t||dela(t)) return;
+    k.plates.forEach((p,i)=>{ if(!p||!can('dish')||!pront(p.group)) return; const t=tableOf(p.group); if(!t||dela(t)) return;
       add(ttl(p.group)-sw('plates')-walk(ST.plates.ap.x,ST.plates.ap.y,t.cx,t.cy),()=>g.tapStation('plates',SL[i].x,SL[i].y)); });
     // grupos esperando nas mesas (pedido, conta) e mesas sujas
     const ordered=g.tables.filter(t=>t.group&&t.group.state==='ordered').map(t=>ttl(t.group));

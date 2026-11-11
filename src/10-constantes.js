@@ -1014,7 +1014,7 @@ const HISTORIA = [
       { q:'tonhao', s:'Comeu tudo e não disse nada. Mas raspou o prato.' },
       { q:'dani', s:'Próxima parada: o Terraço Suíça!' }],
     fim:{ h:'Fim dos capítulos da Avenida Brasil', p:'Quando quiser, a mudança para o Terraço Suíça está na lojinha.' } },
-  // v10: os capítulos do Terraço Suíça. O cap. 8 só começa na mudança (na lojinha); até lá save.cap fica em 8, "à espera". (O cap. 9 vem com a refeição completa, na parte B)
+  // v10: os capítulos do Terraço Suíça. O cap. 8 só começa na mudança (na lojinha); até lá save.cap fica em 8, "à espera"
   { cap:8, titulo:'Lá no alto', ponto:'terraco', obj:{ azul:3 },
     antes:[
       { q:'bia', s:'Último andar, tio! Dá pra ver a cidade inteira.' },
@@ -1025,8 +1025,19 @@ const HISTORIA = [
     depois:[
       { q:'bia', s:'Três dias no azul pagando esse aluguel!' },
       { q:'tonhao', s:'Menos mesa, mais capricho. É outra cozinha.' },
-      { q:'dani', s:'Hoje uma mesa bateu palma pra sobremesa!' }],
-    fim:{ h:'Fim dos capítulos do Terraço Suíça', p:'Continua na próxima versão.' } }
+      { q:'dani', s:'Hoje uma mesa bateu palma pra sobremesa!' }] },
+  { cap:9, titulo:'Do começo ao fim', ponto:'terraco', obj:{ completas:6, nota:4.5 },
+    antes:[
+      { q:'tonhao', s:'Refeição completa é como música: não pode faltar nota.' },
+      { q:'bia', s:'Bebida, entrada, prato e sobremesa, sem ninguém esperando entre um e outro.' },
+      { q:'dani', s:'Se faltar a sobremesa, eu choro.' }],
+    depois:[
+      { q:'bia', s:'Nota 4,5, tio! No Terraço Suíça!' },
+      { q:'tonhao', nota:'guardando o pote de cominho', s:'Sabe quem ligou? O Bráulio. Disse que o Michelzão anda rondando a cidade.' },
+      { q:'bia', s:'O guia das estrelas?' },
+      { q:'tonhao', s:'Ele mesmo. Dizem que o crítico chega sem avisar.' },
+      { q:'dani', s:'Então é deixar tudo brilhando!' }],
+    fim:{ h:'Fim dos capítulos do Terraço Suíça', p:'Continua na próxima versão: o crítico do Michelzão.' } }
 ];
 /* v9.0.1: a conversa do cardápio, no fim do dia `dia` (ou do 1º dia completo depois dele, para saves antigos), só no Modo História.
    falas: o Tonhão ainda não fez curso; fez: já fez algum (básico de qualquer curso ou o avançado do PF). save.convCard: 'pend' | 1 (vista) */
@@ -1289,6 +1300,7 @@ const MANUAL = [
   { id:'b-suco',     aba:'basico', nome:'Suco e cafezinho', linha:'Quem pede suco só pede a conta depois dele. O cafezinho acalma a mesa.' },
   { id:'b-marmita',  aba:'basico', nome:'Marmitas', linha:'O pedido do entregador vai sozinho à cozinha. Leve a marmita pronta ao balcão de retirada.' },
   { id:'b-gurugol',  aba:'basico', nome:'Gurugol', linha:'Cada grupo que sai dá a sua nota. Nota alta traz mais gente; nota baixa afasta.' },
+  { id:'b-tempos',   aba:'basico', nome:'Refeição completa', linha:'No Terraço, cada mesa pede bebida, entrada, prato e sobremesa. Cada tempo conta no Gurugol.' },   // v10
 
   { id:'c-estudante',  aba:'clientes', tipo:'estudante',  nome:'Estudante', linha:'Mochila nas costas e dinheiro contado.' },
   { id:'c-vovos',      aba:'clientes', tipo:'vovos',      nome:'Vovô e vovó', linha:'Sem pressa nenhuma: escolhem com calma e comem devagar.' },
