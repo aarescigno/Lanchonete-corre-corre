@@ -560,6 +560,94 @@ function drawArandelaTe(ctx,x,y){
   rr(ctx,x - 2.4,y + 5,4.8,9,2); fs(ctx,TE_OURO,1.4);
   ctx.beginPath(); ctx.moveTo(x - 6,y + 5); ctx.lineTo(x + 6,y + 5); ctx.lineTo(x + 4,y - 8); ctx.lineTo(x - 4,y - 8); ctx.closePath(); fs(ctx,'#F8E9BC',1.6);
 }
+/* v10.4, as flores finas do foyer (Terraço): ikebana numa mesinha de canto, arranjo de orquídeas num pedestal dourado e flores do campo num vaso de cerâmica (x, y: o chão) */
+function drawIkebana(ctx,x,y,s){
+  ctx.save(); ctx.translate(x,y); ctx.scale(s || 1,s || 1);
+  shadowEll(ctx,0,2,20,4,0.2);
+  ctx.fillStyle = '#3B2416'; ctx.fillRect(-14,-20,3,20); ctx.fillRect(11,-20,3,20);   // a mesinha de canto
+  rr(ctx,-19,-27,38,8,3); fs(ctx,'#6B452B',2); ctx.strokeStyle = TE_OURO; ctx.lineWidth = 1; ctx.beginPath(); ctx.moveTo(-16,-23); ctx.lineTo(16,-23); ctx.stroke();
+  ctx.strokeStyle = '#4E8F4A'; ctx.lineWidth = 1.8; ctx.lineCap = 'round';   // os galhos: um alto e curvo, um baixo
+  ctx.beginPath(); ctx.moveTo(-3,-33); ctx.quadraticCurveTo(-4,-52,8,-60); ctx.stroke();
+  ctx.beginPath(); ctx.moveTo(1,-33); ctx.quadraticCurveTo(10,-42,16,-40); ctx.stroke();
+  ctx.fillStyle = '#4E8F4A'; ell(ctx,12,-51,5,2); ctx.fill();
+  [[8,-61,4.2],[16,-40,3.4],[-1,-47,3]].forEach(f => { circ(ctx,f[0],f[1],f[2]); fs(ctx,'#F28AA8',1.2); circ(ctx,f[0],f[1],f[2] * 0.38); ctx.fillStyle = '#F2C94C'; ctx.fill(); });
+  ell(ctx,0,-31,13,4.5); fs(ctx,'#8FB8A8',1.8); ell(ctx,0,-33,10,2.6); ctx.fillStyle = '#5B7F72'; ctx.fill();   // o vaso baixo, verde-celadon
+  ctx.restore();
+}
+function drawArranjoOrquideas(ctx,x,y,s){
+  ctx.save(); ctx.translate(x,y); ctx.scale(s || 1,s || 1);
+  shadowEll(ctx,0,1,17,4,0.2);
+  ell(ctx,0,-3,15,4.5); fs(ctx,TE_OURO,1.8);   // o pedestal dourado: base, coluna e prato
+  ctx.beginPath(); ctx.moveTo(-6,-5); ctx.lineTo(6,-5); ctx.lineTo(4,-36); ctx.lineTo(-4,-36); ctx.closePath(); fs(ctx,TE_OURO,1.8);
+  ctx.fillStyle = 'rgba(255,255,255,.3)'; ctx.fillRect(-3,-33,1.6,26);
+  rr(ctx,-13,-41,26,6,3); fs(ctx,TE_OURO_CL,1.6);
+  rr(ctx,-9,-52,18,12,3); fs(ctx,'#F4F1E8',1.8);   // o vasinho branco
+  ctx.strokeStyle = '#3E8A47'; ctx.lineWidth = 1.6; ctx.lineCap = 'round';
+  [[-3,-82,-14],[2,-92,4],[3,-76,16]].forEach(h => { ctx.beginPath(); ctx.moveTo(0,-52); ctx.quadraticCurveTo(h[2] * 0.4,-64,h[2],h[1] + 8); ctx.stroke(); });
+  [[-14,-74,'#FFFDF4'],[4,-84,'#E7A6D6'],[16,-68,'#FFFDF4'],[-8,-64,'#B77AC9'],[10,-60,'#E7A6D6']].forEach(f => {
+    for (let k = 0; k < 5; k++){ const a = k * TAU / 5 - 1.2; ell(ctx,f[0] + Math.cos(a) * 3.4,f[1] + Math.sin(a) * 3.4,3.1,2); fs(ctx,f[2],1); }
+    circ(ctx,f[0],f[1],1.7); fs(ctx,'#F2C94C',0.8);
+  });
+  ctx.fillStyle = '#4E8F4A'; [[-8,-50,-0.9],[8,-50,0.9]].forEach(l => { ctx.save(); ctx.translate(l[0],l[1]); ctx.rotate(l[2]); ell(ctx,0,0,2.6,8); ctx.fill(); ctx.restore(); });
+  ctx.restore();
+}
+function drawFloresCampo(ctx,x,y,s){
+  ctx.save(); ctx.translate(x,y); ctx.scale(s || 1,s || 1);
+  shadowEll(ctx,0,1,17,4,0.2);
+  ctx.strokeStyle = '#4E8F4A'; ctx.lineWidth = 1.6; ctx.lineCap = 'round';
+  const fl = [[-12,-58,'#FFFDF4'],[-4,-66,'#E2457A'],[6,-62,'#F2C94C'],[13,-54,'#FFFDF4'],[0,-52,'#9B5BD0'],[-9,-48,'#F2C94C']];
+  fl.forEach(f => { ctx.beginPath(); ctx.moveTo(f[0] * 0.2,-30); ctx.lineTo(f[0],f[1] + 3); ctx.stroke(); });
+  fl.forEach(f => {
+    for (let k = 0; k < 6; k++){ const a = k * TAU / 6; ell(ctx,f[0] + Math.cos(a) * 3.2,f[1] + Math.sin(a) * 3.2,2.6,1.6); fs(ctx,f[2],0.9); }
+    circ(ctx,f[0],f[1],1.8); fs(ctx,f[2] === '#F2C94C' ? '#7A4A1B' : '#F2C94C',0.8);
+  });
+  ctx.beginPath(); ctx.moveTo(-12,-30); ctx.lineTo(12,-30); ctx.lineTo(9,0); ctx.lineTo(-9,0); ctx.closePath(); fs(ctx,'#B5683B',2);   // o vaso de cerâmica
+  rr(ctx,-14,-34,28,6,3); fs(ctx,'#C97A4A',1.8);
+  ctx.strokeStyle = '#EADFC6'; ctx.lineWidth = 1.6; ctx.beginPath(); ctx.moveTo(-10,-18); ctx.lineTo(10,-18); ctx.stroke();
+  ctx.restore();
+}
+/* v10.4, a música ao vivo do Terraço: o pianista (de costas, na banqueta do piano com a tampa aberta) e o quarteto de cordas, em fila no pé do salão */
+const PIANISTA_LOOK = { skin:2, hair:0, hairC:'#1B1512', pants:'#1E1D21', kid:false, elder:false, acc:null, glasses:false };
+const QUARTETO = [
+  { x:206, look:{ skin:1, hair:3, hairC:'#A67B43', pants:'#1E1D21', kid:false, elder:false, acc:null, glasses:true },  shirt:'#26252E', inst:'violino' },
+  { x:248, look:{ skin:5, hair:0, hairC:'#1B1512', pants:'#1E1D21', kid:false, elder:false, acc:null, glasses:false }, shirt:'#2A2F42', inst:'violino' },
+  { x:290, look:{ skin:3, hair:4, hairC:'#8C8C8C', pants:'#1E1D21', kid:false, elder:true,  acc:null, glasses:true },  shirt:'#33262B', inst:'viola' },
+  { x:332, look:{ skin:0, hair:6, hairC:'#7A2E1B', pants:'#1E1D21', kid:false, elder:false, acc:null, glasses:false }, shirt:'#1F3236', inst:'violoncelo' }
+];
+function drawNotas(ctx,x,y,tm,n){
+  if (RM){ txt(ctx,'♪',x,y - 6,14,TE_OURO_CL,'center',FB); return; }   // com movimento reduzido, parada
+  for (let i = 0; i < n; i++){ const p = (tm * 0.5 + i / n) % 1; ctx.globalAlpha = 1 - p; txt(ctx,i % 2 ? '♫' : '♪',x + Math.sin(p * 6 + i * 2) * 8 + (i - n / 2) * 10,y - p * 34,14,TE_OURO_CL,'center',FB); ctx.globalAlpha = 1; }
+}
+function drawPianista(ctx,g,tm){
+  const P = TERRACO.piano, x = P.x0 + 60, y = P.y0 + 98, k = RM ? 0 : Math.sin(tm * 6);
+  drawPerson(ctx,PIANISTA_LOOK,x,y,{ sit:true, back:true, shirt:'#1B1B22', mood:0, bob:RM ? 0 : Math.sin(tm * 2.4) * 0.8, bracoE:[[-15,-26],[-8 + k * 2.5,-39]], bracoD:[[15,-26],[8 - k * 2.5,-39]] });
+  drawNotas(ctx,x + 8,y - 78,tm,3);
+}
+function drawQuarteto(ctx,g,tm){
+  const yb = 534, K = 0.8, mv = RM ? 0 : 1;   // menores e no fim do chão, para não cobrir as cadeiras das mesas de baixo
+  QUARTETO.forEach((q,i) => {
+    const x = 0, y = 0, bow = mv * Math.sin(tm * 3 + i * 1.3);
+    ctx.save(); ctx.translate(q.x,yb); ctx.scale(K,K);
+    shadowEll(ctx,x,y,20,5,0.18);
+    ctx.strokeStyle = '#3B2416'; ctx.lineWidth = 3; ctx.beginPath(); ctx.moveTo(x - 9,y); ctx.lineTo(x - 6,y - 16); ctx.moveTo(x + 9,y); ctx.lineTo(x + 6,y - 16); ctx.stroke();
+    ell(ctx,x,y - 17,12,4); fs(ctx,'#6B452B',2);
+    const cello = q.inst === 'violoncelo';
+    drawPerson(ctx,q.look,x,y - 26,{ sit:true, shirt:q.shirt, mood:0, bob:mv * Math.sin(tm * 2 + i) * 0.8 });
+    ctx.save(); ctx.translate(x,y - 26); ctx.lineCap = 'round';
+    if (cello){   // o violoncelo entre os joelhos, o arco na horizontal
+      ctx.strokeStyle = '#5A3A1E'; ctx.lineWidth = 2.2; ctx.beginPath(); ctx.moveTo(1,-6); ctx.lineTo(1,-34); ctx.stroke();
+      ell(ctx,1,2,10,13); fs(ctx,'#B5733A',2); circ(ctx,1,-1,2.4); ctx.fillStyle = PAL.tinta; ctx.fill();
+      ctx.strokeStyle = '#D9C9A0'; ctx.lineWidth = 1.4; ctx.beginPath(); ctx.moveTo(-20 + bow * 4,6); ctx.lineTo(18 + bow * 4,2); ctx.stroke();
+    } else {      // violino e viola: no ombro esquerdo, o arco cruzando
+      const big = q.inst === 'viola';
+      ctx.save(); ctx.translate(-10,-12); ctx.rotate(-0.9); ell(ctx,0,0,big ? 9 : 7.5,big ? 4.6 : 3.8); fs(ctx,'#B5733A',1.8); rr(ctx,big ? 8 : 6.5,-1,big ? 12 : 10,2,1); fs(ctx,'#3B2416',1); ctx.restore();
+      ctx.strokeStyle = '#D9C9A0'; ctx.lineWidth = 1.4; ctx.beginPath(); ctx.moveTo(-14 + bow * 3,-2); ctx.lineTo(12 + bow * 3,-12); ctx.stroke();
+    }
+    ctx.restore();
+    ctx.restore();
+    drawNotas(ctx,q.x + 5,yb - 56,tm + i * 0.37,1);
+  });
+}
 /* o foyer no lugar da rua e do meio-fio: parede do corredor (lambri, arandelas, o elevador, o letreiro e a plaquinha "Cobertura") e o carpete */
 function drawFoyerTe(ctx,g,tm){
   const x0 = -CALCADA.w, ww = -x0;
@@ -612,7 +700,7 @@ function drawLugarTe(ctx,x,y,i,sent){   // (i: o número do lugar, que vai por c
   // o número do lugar é desenhado depois das pessoas (drawLugarNums), como nos outros pontos
 }
 /* o piano de cauda fechado e a banqueta (TERRACO.piano): preto, no canto de baixo à esquerda do salão */
-function drawPiano(ctx,g){
+function drawPiano(ctx,g,aberto){
   const P = TERRACO.piano, ox = P.x0, oy = P.y0;
   ctx.save(); ctx.translate(ox,oy);
   shadowEll(ctx,60,96,58,9,0.26);
@@ -622,9 +710,17 @@ function drawPiano(ctx,g){
   const forma = dy => { ctx.beginPath(); ctx.moveTo(6,58 + dy); ctx.lineTo(6,24 + dy); ctx.quadraticCurveTo(6,10 + dy,22,10 + dy); ctx.lineTo(84,10 + dy); ctx.quadraticCurveTo(114,10 + dy,114,30 + dy); ctx.quadraticCurveTo(114,44 + dy,98,46 + dy); ctx.quadraticCurveTo(88,47 + dy,88,56 + dy); ctx.lineTo(88,58 + dy); ctx.closePath(); };
   forma(14); fs(ctx,'#0B0B10',2.2);   // a espessura do corpo (a forma de cima repetida mais para baixo)
   ctx.fillStyle = '#0B0B10'; ctx.fillRect(6,58,82,14);
-  forma(0); fs(ctx,'#1E1E26',2.2);   // o tampo fechado
+  forma(0); fs(ctx,aberto ? '#4A3322' : '#1E1E26',2.2);   // o tampo fechado (v10.4: aberto com o pianista, e se vê o interior)
+  if (aberto){
+    ctx.strokeStyle = 'rgba(232,196,106,.6)'; ctx.lineWidth = 0.9; for (let i = 0; i < 9; i++){ ctx.beginPath(); ctx.moveTo(14 + i * 8,54); ctx.lineTo(20 + i * 10,20 + i * 1.6); ctx.stroke(); }   // as cordas
+    rr(ctx,10,60,74,8,2); fs(ctx,'#F4F0E4',1.2); ctx.fillStyle = '#16161C'; for (let i = 0; i < 12; i++) if (i % 7 !== 2 && i % 7 !== 6) ctx.fillRect(14 + i * 5.9,60,3.4,5);   // o teclado aberto
+    ctx.beginPath(); ctx.moveTo(6,24); ctx.lineTo(16,-20); ctx.lineTo(98,-20); ctx.lineTo(114,26); ctx.closePath(); fs(ctx,'#14141A',2.2);   // a tampa levantada
+    ctx.fillStyle = 'rgba(255,255,255,.14)'; ctx.beginPath(); ctx.moveTo(14,18); ctx.lineTo(22,-14); ctx.lineTo(52,-14); ctx.lineTo(30,18); ctx.closePath(); ctx.fill();
+    ctx.strokeStyle = TE_OURO; ctx.lineWidth = 2; ctx.beginPath(); ctx.moveTo(98,-18); ctx.lineTo(104,22); ctx.stroke();   // o suporte da tampa
+  } else {
   ctx.fillStyle = 'rgba(255,255,255,.12)'; ctx.beginPath(); ctx.moveTo(12,50); ctx.lineTo(12,26); ctx.quadraticCurveTo(12,16,26,16); ctx.lineTo(60,16); ctx.lineTo(30,50); ctx.closePath(); ctx.fill();   // o reflexo
   rr(ctx,10,61,74,7,2); fs(ctx,'#2E2E38',1.4); ctx.strokeStyle = TE_OURO; ctx.lineWidth = 0.9; ctx.beginPath(); ctx.moveTo(14,64.5); ctx.lineTo(80,64.5); ctx.stroke();   // a tampa do teclado, fechada
+  }
   rr(ctx,34,97,52,11,3); fs(ctx,'#3A261A',2); rr(ctx,36,98.5,48,5,2); ctx.fillStyle = 'rgba(255,255,255,.14)'; ctx.fill();   // a banqueta
   ctx.fillStyle = '#2B1A10'; ctx.fillRect(38,108,4,7); ctx.fillRect(78,108,4,7);
   ctx.restore();
@@ -776,6 +872,9 @@ function drawCalcada(ctx,g,tm){
   if ((ind || av || te) && decorOn(g,'pendente')) drawSamambaia(ctx,x0 + 66,120,0.8);
   if ((av || te) && decorOn(g,'tulipa')) drawTulipas(ctx,x0 + 112,138,1);   // v9.1: as flores da Avenida: tulipas na jardineira, copos-de-leite no vaso alto e a orquídea na mesinha
   if ((av || te) && decorOn(g,'copo')) drawCopoLeite(ctx,x0 + 38,300,1);
+  if (te && decorOn(g,'ikebana')) drawIkebana(ctx,x0 + 80,106,1);   // v10.4: as flores do foyer: a ikebana na mesinha ao lado do elevador, o arranjo de orquídeas no pedestal (canto de baixo) e as flores do campo perto da porta do salão
+  if (te && decorOn(g,'orqArranjo')) drawArranjoOrquideas(ctx,x0 + 22,486,1);
+  if (te && decorOn(g,'campo')) drawFloresCampo(ctx,-28,330,1);
   if ((av || te) && decorOn(g,'orquidea')) drawOrquidea(ctx,114,132,1);   // perto da porta, encostada na meia-parede (já dentro do salão)
   // portão de enrolar aberto, na borda do salão: trilho no alto e soleira no chão
   if (g && g.fechado) drawPlacaFechado(ctx,QUEUE.x + 28,196,tm);   // v9.6.4

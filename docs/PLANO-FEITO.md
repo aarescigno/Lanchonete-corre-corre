@@ -101,6 +101,7 @@ Etapas concluídas (1a a 3a), movidas de `docs/PLANO.md` em 30/10/2026 e 31/10/2
 | 3b-6 | A Cami em "Minhas mesas" | v9.6 | feita em 31/10 (`docs/spec-v9.6.md`; `smoke48`, não 47; `CAMI_MESAS_MAX` ficou 3: a Avenida já passava de 95% antes, o ajuste é da 3b-7) |
 | 3d-2 | Retornos do Renan: as marmitas e o prato mais antigo | v9.6.5 | feita em 01/11 (`docs/spec-v9.6.5.md`; `smoke51`; `marmJ`, mesas na frente no fogão, entregadores a 12 s, marmita jogada fora; área industrial `metaF` 2,3 → 2,5 e `expertF` 1,6 → 1,7) |
 | D-1 | Modo dev completo: jeitos, abas, pular de capítulo, dinheiro e equipe | v10.2.1 | feita em 11/11 (`docs/spec-v10.2.1.md`; `smoke63`; o `devCaixa` saiu do painel, o método ficou para o `smoke44`) |
+| 4a-3 | A cozinha do Terraço: alta gastronomia, a Lia e a alta confeitaria | v10.2 | feita em 11/11 (`docs/spec-v10.2.md`; `smoke62`; `ALTA=1` quase dobra o lucro do bot: recalibrar na 4a-5) |
 
 ## Etapa 1a — Jogo justo: dá para não perder ninguém (v7.1)
 > **Feita em 15/10 (v7.1, `docs/spec-v7.1.md`).** Decisões: A + B; no Turno sem fim vale o ritmo da fila justa, sem o piso; ícone "aguardando mesa" sim. A medição mostrou que, com a equipe, a maior parte das perdas era a espera pelo prato, e não a fila. O que sobra é o limite de louça nos dias de 6 mesas: o bot afiado só chega ao alvo (0 perdidos em 94% dos dias) comprando o Jogo de pratos primeiro. A louça não mudou; se jogadores reclamarem da espera pelo prato, a etapa 1b pode rever `dishStock` ou a mecânica D. Metas sem mudança.
@@ -1912,3 +1913,8 @@ Modelo: Sonnet, esforço médio (plano detalhado; o fluxo das conversas já exis
 **Fechamento:** v10.3 (`versoes/`, `vtag`, `VERSAO`, `#ov-ver`, `docs/spec-v10.3.md`, `RESUMO.md`, `TESTES.md`), PR e merge.
 
 **Modelo:** Sonnet, esforço alto. São três sistemas, e o modo novo da Cami é comportamento de ajudante, que pede cuidado para não atropelar o jogador.
+
+### Sessão 4a-5 — Música, flores e o rebalanceamento do Terraço (v10.4)
+**Objetivo:** o ambiente do nível 4 (pedidos de 21 e 22/10): música ao vivo (quarteto ou pianista) no lugar do couvert, as flores do foyer e a escada de números do Terraço com a equipe toda. Spec aprovada em 11/11: `docs/spec-v10.4.md`.
+
+**Modelo:** Sonnet, esforço alto. Os itens seguem moldes, mas o rebalanceamento é por tentativa, olhando o Terraço inteiro.

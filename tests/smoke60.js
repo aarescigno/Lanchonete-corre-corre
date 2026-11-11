@@ -66,7 +66,7 @@ const pegaPrato=(H,grp)=>{ const g=H.g, p=g.kitchen.plates.find(q=>q&&q.group===
   ok(sv.bank===b0-5000+125,'−R$ 5.000 e a mesa que sobrou, vendida pela metade (+R$ 125)');
   ok(sv.salao.mesas.length===5 && g.lugaresTot===20 && L.salaoProblema(sv.salao.mesas,L.PONTOS[3])==='' && sv.salao.estoque.length===0,'5 mesas de 4 (20 lugares) com arranjo válido, a 6ª vendida');
   ok(!sv.up.assento && !sv.up.maquina,'os sofás e as águas saem do save');
-  ok(sv.up.fogaoInd && sv.up.tenis && sv.up.pratos===2 && sv.equipe.tonhao===3 && sv.equipe.dani===2 && sv.equipe.joca===2 && sv.equipe.cami===1 && sv.equipe.anselmo===2 && sv.equipe.couvert && sv.cursos.restaurante===1 && sv.decor.espada===1 && sv.decor.tulipa===1 && sv.decor.anturio===1,'o fogão industrial, as melhorias, os pratos, a equipe (com o Anselmo e a Cami), o couvert, os cursos e as plantas vão junto');
+  ok(sv.up.fogaoInd && sv.up.tenis && sv.up.pratos===2 && sv.equipe.tonhao===3 && sv.equipe.dani===2 && sv.equipe.joca===2 && sv.equipe.cami===1 && sv.equipe.anselmo===2 && !sv.equipe.couvert && sv.equipe.musica===0 && sv.cursos.restaurante===1 && sv.decor.espada===1 && sv.decor.tulipa===1 && sv.decor.anturio===1,'o fogão industrial, as melhorias, os pratos, a equipe (com o Anselmo e a Cami), o couvert sai (v10.4: no Terraço quem toca é a música), os cursos e as plantas vão junto');
   ok(sv.cap===8 && sv.conversa==='antes' && sv.capAzul===0,'o cap. 8 começa, com a conversa de antes pendente');
   g.resetDay(10); ok(L.PLATE_SLOTS.length===6 && g.kitchen.plates.length===6 && L.QUEUE.ys.length===6 && g.ponto.credito===8000,'6 vagas de prato e 6 de espera; o limite do banco sobe para R$ 8.000');
   ok(!g.mudancaVisivel && g.proximoPonto===null,'o Terraço é o último ponto: não há mais mudança');
@@ -82,12 +82,12 @@ const pegaPrato=(H,grp)=>{ const g=H.g, p=g.kitchen.plates.find(q=>q&&q.group===
 
 // ---------- 3. aluguel e preços ----------
 { const H=jogo(8,'terraco',{ bank:3000 }), {g,L}=H; g.resetDay(10);
-  ok(g.ponto.aluguel===1200 && L.precoPrato('pf',g.ponto,g.cursos)===60 && L.PONTOS[3].cardapio===2.4 && L.precoPrato('coxinha',g.ponto,g.cursos)===Math.round(L.CARDAPIO.coxinha.preco*2.4),'aluguel R$ 1.200 e cardápio ×2,4 (PF R$ 60; calibrado: o plano partia de R$ 1.000 e ×2,5)');
+  ok(g.ponto.aluguel===1200 && L.precoPrato('pf',g.ponto,g.cursos)===Math.round(L.CARDAPIO.pf.preco*1.3) && L.PONTOS[3].cardapio===1.3 && L.precoPrato('coxinha',g.ponto,g.cursos)===Math.round(L.CARDAPIO.coxinha.preco*1.3),'aluguel R$ 1.200 e cardápio ×1,3 (v10.4: era ×2,4; o ganho sobre a Avenida caiu de R$ 2.800 para ~R$ 850)');
   g.begin(); const base=L.CONTAS.base+g.tables.filter(t=>t.open).length*L.CONTAS.mesa+g.tables.filter(t=>t.open).reduce((a,t)=>a+t.seats,0)*L.CONTAS.lugar;
   ok(g.contas===base+1200,'as contas do dia somam o aluguel de R$ 1.200');
   g.schedule=[]; g.nextIdx=0; g.money=1500; g.custo=0; const b0=g.save.bank; g.finishDay();
   ok(g.save.bank===b0+1500-g.contas-g.paid-g.paidDiv && g.save.caixa[g.save.caixa.length-1].contas===g.contas,'o aluguel sai no fim do dia e entra no livro-caixa');
-  const D=g.diaPonto(L.diaOf(10)); ok(D.meta===Math.round(L.diaOf(10).meta*9/5)*5 && D.expert===Math.round(L.diaOf(10).expert*6/5)*5 && L.PONTOS[3].grupos===0.5,'metas ×9 e expert ×6 (calibrados em 10/11 com a equipe toda), arredondadas para 5; grupos 0,50'); }
+  const D=g.diaPonto(L.diaOf(10)); ok(D.meta===Math.round(L.diaOf(10).meta*12/5)*5 && D.expert===Math.round(L.diaOf(10).expert*8.5/5)*5 && L.PONTOS[3].grupos===0.5,'metas ×12 e expert ×8,5 (calibrados em 11/11 com a equipe toda, v10.4), arredondadas para 5; grupos 0,50'); }
 
 // ---------- 4. a clientela ----------
 { const H=jogo(8,'terraco',{ bank:3000, dia:10 }), {g,L}=H; g.save.divulga='boca'; g.resetDay(10);

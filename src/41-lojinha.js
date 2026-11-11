@@ -38,6 +38,8 @@ function upgradeIcon(id){
     } else if (id === 'couvert'){
       c.rotate(-0.5); ell(c,0,4,10,8); fs(c,'#B5733A',2); circ(c,0,4,3); c.fillStyle = PAL.tinta; c.fill(); rr(c,8,1,20,4,1); fs(c,PAL.madeiraEsc,1.4); c.rotate(0.5);
       txt(c,'♪',-12,-12,14,PAL.faixa,'center',FB);
+    } else if (id === 'musica'){
+      c.rotate(-0.6); ell(c,0,5,9,6.5); fs(c,'#B5733A',2); ell(c,0,-3,6.5,5); fs(c,'#B5733A',2); rr(c,-1.6,-26,3.2,22,1); fs(c,'#3B2416',1.2); c.strokeStyle = PAL.tinta; c.lineWidth = 1; c.beginPath(); c.moveTo(-3,4); c.lineTo(-3,9); c.moveTo(3,4); c.lineTo(3,9); c.stroke(); c.rotate(0.6); c.strokeStyle = '#D9C9A0'; c.lineWidth = 2; c.beginPath(); c.moveTo(-14,-2); c.lineTo(12,12); c.stroke(); txt(c,'♪',12,-10,14,TE_OURO,'center',FB);
     } else if (id === 'ambiente'){
       drawTv(c,6,2,0,0.48); drawSom(c,-6,17,0,0.42); txt(c,'♪',-16,-12,12,PAL.faixa,'center',FB);
     } else if (id === 'maquina'){
@@ -570,6 +572,22 @@ function buildCouvert(grid){
   duo.appendChild(eq.couvert ? shopBtn('Dispensar', 'btn alt', true, () => game.setStaff('couvert', false)) : shopBtn('Contratar: ' + fmt(C.pay) + '/dia', 'btn', canPay(C.pay), () => game.setStaff('couvert', true)));
   c.appendChild(duo); grid.appendChild(c);
 }
+/* v10.4: a música ao vivo do Terraço, no lugar do couvert: sem música, quarteto de cordas ou pianista (como as TVs da área industrial) */
+function buildMusica(grid){
+  if (!musicaOk(game.ponto)) return;
+  game.manualVer('l-musica');
+  const eq = game.save.equipe, bank = game.save.bank, M = TERRACO.musica;
+  const c = staffCard(upgradeIcon('musica'), 'Música ao vivo'); c.setAttribute('data-ficha', 'l-musica');
+  [[0, 'Sem música'], [1, M[1].nome + ' · ' + fmt(musicaPay(M[1])) + '/dia'], [2, M[2].nome + ' · ' + fmt(musicaPay(M[2])) + '/dia']].forEach(a => {
+    const on = (eq.musica || 0) === a[0], b = el('button', 'toggle', (on ? 'Ligado: ' : '') + a[1]); b.type = 'button';
+    b.setAttribute('aria-pressed', on ? 'true' : 'false');
+    const extra = musicaPay(M[a[0]]) - musicaPay(musicaDe(eq));
+    if (!on && extra > 0 && payroll(eq) + extra > bank) b.disabled = true;
+    b.addEventListener('click', () => { Sfx.init(); if (!game.setStaff('musica', a[0])) Sfx.boing(); buildShop(); });
+    c.appendChild(b);
+  });
+  grid.appendChild(c);
+}
 /* aba Salão (v7.4): o editor (o salão desenhado em escala, sem clientes) e a loja de móveis ao lado.
    Arrastar a mesa muda o lugar dela (encaixe na grade); tocar nela abre a cor das cadeiras, "virar mesa de 4" e "vender".
    v8.3.5: o estoque, à esquerda do salão, guarda mesas (pequenas, em 2 colunas) para rearrumar com folga */
@@ -904,6 +922,7 @@ function buildDivulga(grid){
   const c = staffCard(upgradeIcon('contas'), 'Contas do dia ' + n, 'Luz e gás: ' + fmt(contasDia(game.tables, p)) + ' por dia');
   grid.appendChild(c);
   buildCouvert(grid);
+  buildMusica(grid);
 }
 /* aba Manutenção (v8): o estado de cada equipamento, o risco de quebrar e a revisão (volta a 100%) */
 function buildManut(grid){

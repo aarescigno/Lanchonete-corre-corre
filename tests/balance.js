@@ -20,7 +20,7 @@ const N=+process.argv[2]||20;
 const PONTO=process.env.PONTO||'garagem', IND=PONTO==='industrial', TE=PONTO==='terraco', AV=PONTO==='avenida'||TE;   /* v10: PONTO=terraco joga os dias 8 a 10 no Terraço Suíça (5 mesas de 4, fogão industrial, poltronas, couvert com taxa, o curso de restaurante, Tonhão nível 4; JOCA, ESPRESSO, CAMI, ANSELMO e GOURMET como na Avenida; AV vale para os dois pontos de cima) */ //   // v9.1: PONTO=avenida joga os dias no Restaurante na Avenida Brasil (24 lugares, fogão industrial, sofás, águas saborizadas, couvert com taxa e o curso de restaurante; DIAS padrão 8,9,10)
 // EQUIPE='{"tonhao":1,"dani":1,"daniTasks":["pratos","lavar"]}' node balance.js 40
 // EQUIPE=auto: a equipe que um jogador consegue pagar em cada dia (contratando aos poucos)
-const FULL=TE?{tonhao:4,dani:4,daniTasks:['pratos','lavar','lixo'],couvert:true,taxa:true}:AV?{tonhao:2,dani:4,daniTasks:['pratos','lavar','lixo'],couvert:true,taxa:true}:IND?{tonhao:2,dani:4,daniTasks:['pratos','lavar','lixo'],tvs:1}:{tonhao:2,dani:4,daniTasks:['pratos','lavar','lixo'],tv:true,som:true};   // na Garagem, TV e som no lugar do couvert (v7.4.3)
+const FULL=TE?{tonhao:4,dani:4,daniTasks:['pratos','lavar','lixo']}:AV?{tonhao:2,dani:4,daniTasks:['pratos','lavar','lixo'],couvert:true,taxa:true}:IND?{tonhao:2,dani:4,daniTasks:['pratos','lavar','lixo'],tvs:1}:{tonhao:2,dani:4,daniTasks:['pratos','lavar','lixo'],tv:true,som:true};   // na Garagem, TV e som no lugar do couvert (v7.4.3)
 const AUTO={2:{},3:FULL,4:FULL,5:FULL,6:FULL,7:FULL};   // do dia 3 em diante o dinheiro acumulado já paga a equipe completa
 const EQ0=process.env.EQUIPE==='auto'?null:(process.env.EQUIPE?JSON.parse(process.env.EQUIPE):{});
 const eqFor0=n=>EQ0||AUTO[n]||(n>7?FULL:{});   // v8.3: do dia 8 em diante, a equipe completa
@@ -30,7 +30,8 @@ const CONF=process.env.CONFEITARIA==='1'||!!process.env.JOCA, JOCAN=+process.env
 const ALTA=process.env.ALTA==='1', LIA=process.env.LIA==='1';   // v10.2 (PONTO=terraco): ALTA=1 liga as Entradas finas e a Alta gastronomia (avançados) e a Alta confeitaria; LIA=1 contrata a Lia
 const GOURMET=process.env.GOURMET==='1', ESPRESSO=process.env.ESPRESSO==='1', CAMIN=+process.env.CAMI||0, ANSELMO=process.env.ANSELMO==='1', CAFESESP=process.env.CAFESESP==='1', AUTOR=process.env.AUTOR==='1';   // v10.3 (PONTO=terraco): CAMI=4 liga o curso de salão e o modo "Ajuda em tudo"; CAFESESP=1 os cafés especiais do Joca (com o espresso); AUTOR=1 a coquetelaria clássica e de autor do Anselmo (nível 3) e o carrinho
    // v9.5: ANSELMO=1 contrata o Anselmo (nível 2, drinks)
-const eqFor=n=>{ const e=Object.assign({},eqFor0(n)); if(TE&&LIA&&n>=3) e.lia=1; if(!(IND||AV)||!CONF||n<3) return e;
+const MUSICA=process.env.MUSICA!=null?+process.env.MUSICA:2;   // v10.4 (PONTO=terraco): MUSICA=0|1|2 sem música, quarteto de cordas ou pianista (padrão 2) na equipe toda
+const eqFor=n=>{ const e=Object.assign({},eqFor0(n)); if(TE&&LIA&&n>=3) e.lia=1; if(TE&&MUSICA&&e.tonhao) e.musica=MUSICA; if(!(IND||AV)||!CONF||n<3) return e;
   if(JOCAN){ e.joca=JOCAN; e.jocaTasks=['lixo','pratos','lavar']; e.daniTasks=['cafe','doce','marmita']; } else e.daniTasks=['pratos','lavar','doce'];
   if(AV&&(ANSELMO||AUTOR)) e.anselmo=AUTOR&&TE?3:2;
   if(AV&&CAMIN){ e.cami=CAMIN; e.camiTasks=['lixo','pratos','lavar']; if(CAMIN===3) e.camiModo='mesas'; if(CAMIN>=4) e.camiModo='tudo'; } if(process.env.DANIT) e.daniTasks=process.env.DANIT.split(','); return e; };   // DANIT=pratos,lavar,lixo: as tarefas da Dani nesse teste
