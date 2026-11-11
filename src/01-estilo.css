@@ -375,3 +375,11 @@ table.rank tr.me td{background:#fbe7a8}
 .dev-panel .btn[aria-pressed="true"]{background:var(--faixa);color:#fff}
 .dev-panel .dev-now{font-weight:700;margin-top:calc(var(--u)*4)}
 .dev-panel > .row:last-child{justify-content:center}
+/* v10.2.1: jeitos, abas e a linha de cada pessoa */
+.dev-panel #dev-jeitos{margin-top:0}
+.dev-panel #dev-abas{display:flex;flex-wrap:wrap;margin-top:calc(var(--u)*8);max-width:100%}
+.dev-panel #dev-abas button{font-size:max(12px,calc(var(--u)*15));min-height:max(36px,calc(var(--u)*38));padding:0 calc(var(--u)*10);flex:1 1 auto}
+.dev-panel #dev-abas button[aria-pressed="true"]{background:var(--faixa);color:#fff}
+.dev-panel .dev-pessoa{display:flex;align-items:center;gap:calc(var(--u)*6);margin-top:calc(var(--u)*4)}
+.dev-panel .dev-nome{font-weight:700;min-width:calc(var(--u)*150)}
+.dev-panel .dev-pessoa .btn{min-width:max(36px,calc(var(--u)*38));padding:0}

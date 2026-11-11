@@ -1077,6 +1077,20 @@ const HISTORIA = [
 ];
 /* v9.0.1: a conversa do cardápio, no fim do dia `dia` (ou do 1º dia completo depois dele, para saves antigos), só no Modo História.
    falas: o Tonhão ainda não fez curso; fez: já fez algum (básico de qualquer curso ou o avançado do PF). save.convCard: 'pend' | 1 (vista) */
+/* v10.2.1, modo dev: o save do começo de cada capítulo (devCapitulo). n 1 a 9 e 10 (o Fim, depois do último). Níveis da equipe: índices de STAFF (99 = o último);
+   cursos do Tonhão { id:nível }; cursos da equipe e melhorias em listas de ids */
+const DEV_CAPS = [
+  { n:1,  dia:1,  ponto:'garagem',    pdia:1,  caixa:0,     nota:0,   eq:{ tonhao:0, dani:0, joca:0, cami:0, anselmo:0, lia:0 }, cursos:{}, dani:[], joca:[], cami:[], up:[] },
+  { n:2,  dia:4,  ponto:'garagem',    pdia:1,  caixa:300,   nota:2.2, eq:{ tonhao:0, dani:1, joca:0, cami:0, anselmo:0, lia:0 }, cursos:{ pastel:1 }, dani:[], joca:[], cami:[], up:['tenis'] },
+  { n:3,  dia:8,  ponto:'garagem',    pdia:1,  caixa:500,   nota:2.5, eq:{ tonhao:1, dani:2, joca:0, cami:0, anselmo:0, lia:0 }, cursos:{ pastel:1, chapa:1 }, dani:[], joca:[], cami:[], up:['tenis', 'ventilador'] },
+  { n:4,  dia:13, ponto:'industrial', pdia:13, caixa:400,   nota:2.7, eq:{ tonhao:1, dani:2, joca:0, cami:0, anselmo:0, lia:0 }, cursos:{ pastel:1, chapa:1, fritos:1 }, dani:[], joca:[], cami:[], up:['tenis', 'ventilador', 'bandeja', 'triturador'] },
+  { n:5,  dia:17, ponto:'industrial', pdia:13, caixa:900,   nota:3.0, eq:{ tonhao:2, dani:3, joca:2, cami:0, anselmo:0, lia:0 }, cursos:{ pastel:1, chapa:1, fritos:1, assados:1, veg:1 }, dani:['confCaseira'], joca:[], cami:[], up:['tenis', 'ventilador', 'bandeja', 'triturador', 'corrida'] },
+  { n:6,  dia:30, ponto:'avenida',    pdia:30, caixa:600,   nota:3.2, eq:{ tonhao:2, dani:3, joca:2, cami:0, anselmo:0, lia:0 }, cursos:{ pastel:1, chapa:1, fritos:1, assados:1, veg:1 }, dani:['confCaseira'], joca:[], cami:[], up:['tenis', 'ventilador', 'bandeja', 'triturador', 'corrida'] },
+  { n:7,  dia:34, ponto:'avenida',    pdia:30, caixa:2500,  nota:3.5, eq:{ tonhao:3, dani:4, joca:3, cami:1, anselmo:2, lia:0 }, cursos:{ pastel:1, chapa:1, fritos:1, assados:1, veg:1, restaurante:1 }, dani:['confCaseira', 'confGourmet'], joca:['espresso'], cami:[], up:['tenis', 'ventilador', 'bandeja', 'triturador', 'corrida'] },
+  { n:8,  dia:46, ponto:'terraco',    pdia:46, caixa:1500,  nota:3.9, eq:{ tonhao:3, dani:4, joca:3, cami:2, anselmo:2, lia:0 }, cursos:{ pastel:1, chapa:1, fritos:1, assados:1, veg:1, restaurante:1 }, dani:['confCaseira', 'confGourmet'], joca:['espresso'], cami:[], up:['tenis', 'ventilador', 'bandeja', 'triturador', 'corrida'] },
+  { n:9,  dia:50, ponto:'terraco',    pdia:46, caixa:6000,  nota:4.2, eq:{ tonhao:99, dani:99, joca:99, cami:2, anselmo:3, lia:1 }, cursos:{ pastel:1, chapa:1, fritos:1, assados:1, veg:1, restaurante:1, entradas:1, alta:1 }, dani:['confCaseira', 'confGourmet', 'confAlta'], joca:['espresso'], cami:[], up:['tenis', 'ventilador', 'bandeja', 'triturador', 'corrida'] },
+  { n:10, dia:60, ponto:'terraco',    pdia:46, caixa:10000, nota:4.6, eq:null, cursos:null, dani:null, joca:null, cami:null, up:null }   // o Fim: o mesmo que "Tudo no máximo" (devEquipe('max') e devMelhorias(true)), com a Lia
+];
 const HIST_CARDAPIO = { dia:2,   // v9.6.2: no fim do dia 2 (antes, do dia 1), para a 1ª lojinha ficar sem empurrão
   falas:[ { q:'bia', s:'Tio, hoje um monte de gente perguntou se só tem PF e coxinha...' },
           { q:'tonhao', s:'É... a Rosa fazia um pastel que era uma beleza. Eu nunca aprendi.' },
@@ -1222,7 +1236,7 @@ const BIA_IDS = ['tenis', 'corrida', 'bandeja', 'sudoku'];
 function upgradeCartao(id){ return BIA_IDS.indexOf(id) >= 0 ? 'bia' : 'melhorias'; }
 const HIST_NOMES = { bia:'Bia', tonhao:'Tonhão', dani:'Dani', joca:'Joca', cami:'Cami', anselmo:'Anselmo', lia:'Lia' };
 const CAIXA_MAX = 14;                                 // livro-caixa (v7.2): quantos dias da carreira ficam guardados
-const VERSAO = 'v10.2';                              // vai no resumo do Caixa
+const VERSAO = 'v10.2.1';                              // vai no resumo do Caixa
 const DIVULGA_DIA = 4;                                // antes disso, o movimento é o da inauguração (sem custo); v9.0.2: dia 4, e o padrão é o boca a boca
 function divulgaAberta(n, sv){ return devLivre() || n >= DIVULGA_DIA && !(sv && sv.convDiv === 'pend'); }   // no modo dev, desde o dia 1; v9.0.3: no Modo História, só depois da conversa
 /* v9.6.4: a Efood (os entregadores) só abre depois da conversa dos entregadores, no Modo História; antes dela, nenhum tipo com `retira` vem na agenda */

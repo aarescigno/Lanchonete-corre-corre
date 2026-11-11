@@ -65,7 +65,8 @@ ok(L.DEV.on && g.save.bank===10000 && !L.DEV.real && L.DEV.vel===1 && L.devLivre
 // ---------- 10. o painel ----------
 { g.setState('menu'); L.abrirDev(); const p=ov();
   const t=txt(dv());
-  ok(p.classList.contains('show') && /Dia/.test(t) && /Ponto/.test(t) && /Nota do Gurugol/.test(t) && /Equipe, cursos e melhorias/.test(t) && /Lojinha de verdade/.test(t) && !/No dia/.test(t),'menu: seções Dia, Ponto, Nota, Equipe e Lojinha de verdade, sem "No dia"');
+  ok(p.classList.contains('show') && /Dia/.test(t) && /Ponto/.test(t) && /Livre/.test(t) && /De verdade/.test(t) && !/No dia/.test(t),'menu: (v10.2.1) aba Pular com Dia e Ponto, os dois jeitos, sem "No dia"');
+  L.DEV.aba='equipe'; L.buildDev(); ok(/Nota do Gurugol/.test(txt(dv())) && /Equipe, cursos e melhorias/.test(txt(dv())),'aba Equipe e lojinha: Nota e Equipe'); L.DEV.aba='pular'; L.buildDev();
   const bt=dv().children.filter(c=>c.className==='row').reduce((a,r)=>a.concat(r.children),[]);
   ok(bt.filter(b=>L.PONTOS.some(p=>p.nome===b.textContent)).length===L.PONTOS.length,'um botão por ponto');
   const d0=g.proxDia, mais10=bt.find(b=>b.textContent==='+10'); mais10.fire('click');
