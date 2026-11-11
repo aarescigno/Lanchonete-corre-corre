@@ -255,7 +255,7 @@ class Game {
      o que não couber no dinheiro sai (a divulgação vira boca a boca, depois couvert, som, TV, Dani e aumento do Tonhão).
      v8.3: com a chave da folha desligada (save.corta), nada sai: paga tudo no fim do dia, e o caixa pode ficar negativo */
   payDay(){
-    const eq = this.save.equipe; this.unpaid = []; eq.jocaFora = false; eq.camiFora = false; eq.anselmoFora = false;   // v9.2: "não vem" vale só no dia em que a folha corta
+    const eq = this.save.equipe; this.unpaid = []; eq.jocaFora = false; eq.camiFora = false; eq.anselmoFora = false; eq.liaFora = false;   // v9.2: "não vem" vale só no dia em que a folha corta
     const divCost = () => this.div ? this.div.cost : 0;
     while (this.save.corta && payroll(eq) + divCost() > this.save.bank){
       if (divCost()){
@@ -563,6 +563,7 @@ class Game {
   /* v9.5, o Anselmo: trabalha hoje? Os pedidos entram na fila quando a Bia anota; ele faz um drink por vez (DRINKS.prep / speed) e o copo pronto
      espera no balcão (no máximo DRINKS.vagas; com o balcão cheio ele para) */
   get anselmoAtivo(){ return this.mode === 'carreira' && anselmoOn(this.save.equipe, this.ponto); }
+  get liaAtiva(){ return this.mode === 'carreira' && liaOn(this.save.equipe, this.ponto); }   // v10.2: a Lia na cozinha
   drinkPedir(grp){
     if (!grp.drinks.length || grp.drinksPedidos || !this.anselmoAtivo) return;
     grp.drinksPedidos = true;
@@ -916,7 +917,7 @@ class Game {
     const decor = DECOR.filter(d => decorOn(this, d.id)).map(d => d.id), toalha = !!(g.table && g.table.toalha);
     if (toalha) decor.push('toalha');
     const amb = A.amb.base + (eq.tv ? A.amb.tv : 0) + (eq.som ? A.amb.som : 0) + (this.seloOn ? A.amb.selo : 0) + (this.up.maquina ? A.amb.maquina : 0) + (this.up.ventilador ? A.amb.ventilador : 0) + (eq.tvs === 1 ? A.amb.tvs : eq.tvs === 2 ? A.amb.tvsPlus : 0) +
-      (g.coffee ? A.amb.cafe : 0) + (this.up.confGourmet && (g.docesDados > 0 || g.docesMarmDados > 0) ? A.amb.doce : 0) + (g.drinksDados > 0 ? A.amb.drink : 0) + (this.up.louca ? A.amb.louca : 0) + (eq.couvert ? A.amb.couvert : 0) + (this.trashFull ? A.amb.lixo : 0) +
+      (g.coffee ? A.amb.cafe : 0) + (this.up.confGourmet && (g.docesDados > 0 || g.docesMarmDados > 0) ? (this.up.confAlta ? A.amb.doceAlta : A.amb.doce) : 0) + (g.drinksDados > 0 ? A.amb.drink : 0) + (this.up.louca ? A.amb.louca : 0) + (eq.couvert ? A.amb.couvert : 0) + (this.trashFull ? A.amb.lixo : 0) +
       decor.reduce((a, id) => a + (id === 'toalha' ? A.amb.toalha : decorOf(id).amb != null ? decorOf(id).amb : A.amb[decorOf(id).grupo === 'plantas' ? 'planta' : 'rosa']), 0);
     // o entregador (v8.6): a espera no balcão conta na espera e na agilidade
     // v8.6.7: cada um avalia só o que viveu (null: não viu). Bravo: da fila, só a espera; antes do pedido, mais agilidade e ambiente;
@@ -933,7 +934,7 @@ class Game {
     const h = bravo ? 0 : (rand(-A.humor.var, A.humor.var) + (Math.random() < encanta ? rand(A.humor.extra[0], A.humor.extra[1]) : 0)) * faixa;
     const r = s.map(v => v == null ? null : clamp(Math.round((avalEscala(v, teto) + h) * 10) / 10, 1, lim));
     let txt = avalComentario(s, bravo, this.trashFull, this.ponto.nivel, decor, g.fria, g.semVeg, g.type, !CURSOS.some(c => c.preco > 0 && cursoNivel(this.save.cursos, c.id) >= 1)), nota = avalNota(r), f = avalFrac(nota, teto);
-    if (!bravo && g.doces && g.doces.length && Math.random() < 0.4) txt = g.perdDoce > 0 ? 'A sobremesa demorou mais que o almoço.' : g.docesFalta ? txt : 'A sobremesa da casa é uma delícia!';   // v9.2
+    if (!bravo && g.doces && g.doces.length && Math.random() < 0.4) txt = g.perdDoce > 0 ? 'A sobremesa demorou mais que o almoço.' : g.docesFalta ? txt : this.up.confAlta ? 'O entremet da casa é de outro mundo!' : 'A sobremesa da casa é uma delícia!';   // v9.2; v10.2
     if (!bravo && g.cafes && g.cafes.length && !g.cafesFalta && g.cafes.indexOf('cappuccino') >= 0 && Math.random() < 0.4) txt = 'Que cappuccino caprichado!';   // v9.3
     if (!bravo && g.drinks && g.drinks.length && Math.random() < 0.4) txt = g.perdDrink > 0 ? 'Pedi um drink e ele nunca veio.' : !g.drinksFalta ? 'O drink do balcão é uma obra de arte!' : txt;   // v9.5
     if (g.tempos && Math.random() < 0.4){   // v10: os comentários da refeição completa (no lugar do comum)
@@ -1193,6 +1194,8 @@ class Game {
     if (key === 'cami' && val && !this.cartaoAberto('cami')) return false;
     if (key === 'cami' && !devLivre() && (val > camiNivelCursos(this.save) || val < old)) return false;   // v9.3: ela sobe só por curso, e o nível pago é definitivo
     if (key === 'anselmo' && val && (!(this.ponto.nivel >= 3 || devLivre()) || !this.cartaoAberto('anselmo') || (!devLivre() && (val !== 2 || old > 0)))) return false;   // v9.5: contratar põe no nível 2; o 3 vem dos cursos do Terraço
+    if (key === 'lia' && !devLivre() && val < old) return false;   // v10.2: a Lia não sai
+    if (key === 'lia' && val && (!(this.ponto.nivel >= 4 || devLivre()) || !this.cartaoAberto('lia') || val !== 1 || (!devLivre() && old > 0))) return false;   // v10.2: contratar é definitivo, só no Terraço
     if (key === 'couvert' && val && !couvertOk(this.ponto)) return false;
     if (key === 'tvs' && val && (!this.up.tvs || this.ponto.nivel !== 2)) return false;   // v9: só com as TVs instaladas
     eq[key] = val;
@@ -1509,6 +1512,7 @@ class Game {
     sv.daniCursos[id] = 1; sv.daniCursoDia = this.shopNext;
     if (id === 'confCaseira') this.up.confCaseira = true;   // v9.2: a geladeirinha de doces e a tarefa "Servir doces" (daniTaskOk)
     if (id === 'confGourmet') this.up.confGourmet = true;   // v9.3: a vitrine refrigerada e os doces gourmet
+    if (id === 'confAlta') this.up.confAlta = true;   // v10.2: a alta confeitaria
     this.cursoMsg = 'A Dani foi fazer o curso de ' + c.nome + '!';
     const nx = daniNivelXp(sv);
     if (nx > sv.equipe.dani && sv.equipe.dani > 0) this.cursoMsg += ' Ela já pode subir para o nível ' + (nx - 1) + ': pague o aumento no cartão dela.';
@@ -1761,6 +1765,7 @@ class Game {
     sv.equipe = normEquipe(e, this.ponto);
     if (sv.daniCursos.confCaseira) this.up.confCaseira = true; else delete this.up.confCaseira;
     if (sv.daniCursos.confGourmet && sv.daniCursos.confCaseira) this.up.confGourmet = true; else delete this.up.confGourmet;
+    if (sv.daniCursos.confAlta && sv.daniCursos.confGourmet && sv.daniCursos.confCaseira) this.up.confAlta = true; else delete this.up.confAlta;
     if (sv.jocaCursos.espresso) this.up.espresso = true; else delete this.up.espresso;
     sv.cursoDia = sv.daniCursoDia = sv.jocaCursoDia = sv.camiCursoDia = 0;
     this.kitchen.reset(); this.dani.reset(); this.joca.reset(); this.cami.reset();
@@ -1768,7 +1773,7 @@ class Game {
   }
   devMelhorias(on){
     if (!DEV.on) return false;
-    Object.keys(this.up).forEach(k => { if (['confCaseira', 'confGourmet', 'espresso'].indexOf(k) < 0) delete this.up[k]; });
+    Object.keys(this.up).forEach(k => { if (['confCaseira', 'confGourmet', 'confAlta', 'espresso'].indexOf(k) < 0) delete this.up[k]; });
     if (on) UPGRADES.forEach(u => { this.up[u.id] = u.multi ? 1 : true; });
     this.kitchen.slots = cozinhaSlots(this);
     writeSave(this.save); return true;

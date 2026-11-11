@@ -27,8 +27,9 @@ const eqFor0=n=>EQ0||AUTO[n]||(n>7?FULL:{});   // v8.3: do dia 8 em diante, a eq
 // v9.2: CONFEITARIA=1 liga o curso da Dani (os doces e a marmita "+ doce"; a Dani serve os doces); JOCA=2|3|4 contrata o Joca nesse nível (com ele, a Dani fica com cafezinho, doces e marmitas)
 const CONF=process.env.CONFEITARIA==='1'||!!process.env.JOCA, JOCAN=+process.env.JOCA||0;
 // v9.3 (PONTO=avenida) (v9.6: CAMI=3 liga o modo "Minhas mesas" com CAMI_MESAS=2 mesas (v9.6.1; antes 3); CAMI_MESAS=3 testa com 3): GOURMET=1 liga a Confeitaria gourmet (vitrine, R$ 16); ESPRESSO=1 liga o espresso do Joca (ele fica com o café fixo, o resto do básico nas vagas que sobram); CAMI=1|2 contrata a Cami nesse nível (ela fica com o básico)
+const ALTA=process.env.ALTA==='1', LIA=process.env.LIA==='1';   // v10.2 (PONTO=terraco): ALTA=1 liga as Entradas finas e a Alta gastronomia (avançados) e a Alta confeitaria; LIA=1 contrata a Lia
 const GOURMET=process.env.GOURMET==='1', ESPRESSO=process.env.ESPRESSO==='1', CAMIN=+process.env.CAMI||0, ANSELMO=process.env.ANSELMO==='1';   // v9.5: ANSELMO=1 contrata o Anselmo (nível 2, drinks)
-const eqFor=n=>{ const e=Object.assign({},eqFor0(n)); if(!(IND||AV)||!CONF||n<3) return e;
+const eqFor=n=>{ const e=Object.assign({},eqFor0(n)); if(TE&&LIA&&n>=3) e.lia=1; if(!(IND||AV)||!CONF||n<3) return e;
   if(JOCAN){ e.joca=JOCAN; e.jocaTasks=['lixo','pratos','lavar']; e.daniTasks=['cafe','doce','marmita']; } else e.daniTasks=['pratos','lavar','doce'];
   if(AV&&ANSELMO) e.anselmo=2;
   if(AV&&CAMIN){ e.cami=CAMIN; e.camiTasks=['lixo','pratos','lavar']; if(CAMIN>=3) e.camiModo='mesas'; } if(process.env.DANIT) e.daniTasks=process.env.DANIT.split(','); return e; };   // DANIT=pratos,lavar,lixo: as tarefas da Dani nesse teste
@@ -63,6 +64,7 @@ function jogaDia(n,man){
   if(AV&&(ESPRESSO||CAMIN)){ g.save.jocaCursos.espresso=1; g.up.espresso=true; }
   if(AV&&CAMIN>=2) g.save.camiCursos.agil=1;
   if(AV&&CAMIN>=3) g.save.camiCursos.mesa=1;   // v9.6: CAMI=3 liga o modo "Minhas mesas"
+  if(TE&&ALTA){ g.save.cursos.entradas=2; g.save.cursos.alta=2; g.save.daniCursos.confCaseira=1; g.save.daniCursos.confGourmet=1; g.save.daniCursos.confAlta=1; g.up.confCaseira=true; g.up.confGourmet=true; g.up.confAlta=true; }   // v10.2
   if(AV&&CUR!=='0') g.save.cursos.restaurante=1;   // v9.1: o curso de restaurante (a parmegiana)
   if(L.normSave){ g.save.equipe=L.normSave({equipe:eqFor(n),salao:{ponto:PONTO},up:IND?{tvs:true}:{}}).equipe; g.save.bank=1e6; }
   const dec=process.env.DECOR==='tudo';   // v8.6.6: DECOR=tudo põe todos os enfeites à mostra e toalha em todas as mesas (o bot não compra decoração)

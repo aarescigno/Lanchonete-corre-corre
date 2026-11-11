@@ -223,8 +223,10 @@ mk.cursosApos=function(L,k,ordem){
   return cu;
 };
 // compra o próximo curso da ordem se sobrar o preço mais a reserva (a carreira.js); devolve o id comprado ou ''
+// v10.2: no Terraço (nivel 4), depois da lista: o básico e o avançado das Entradas finas e da Alta gastronomia (só o `cursos` usa; o balance.js usa ALTA=1)
+const CURSOS_TERRACO=['entradas','alta','entradas','alta'];
 mk.cursos=function(g,L,reserva,ordem){
-  const p=proximoCurso(L,g.save.cursos,ordem||CURSOS_ORDEM); if(!p) return '';
+  const p=proximoCurso(L,g.save.cursos,(ordem||CURSOS_ORDEM).concat(g.ponto&&g.ponto.nivel>=4?CURSOS_TERRACO:[])); if(!p) return '';
   const c=g.cursoProx(p.id); if(!c||c.nivel!==p.nivel) return '';
   return g.save.bank-c.preco>=(reserva||0)&&g.buyCurso(p.id)?p.id+p.nivel:'';
 };

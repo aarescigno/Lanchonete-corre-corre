@@ -1002,7 +1002,7 @@ function drawRetirada(ctx,g,t){
   // a vaga da encomenda, tracejada
   const xr = prateleiraXs(g.vagas)[g.vagas], ps = g.vagas > MARMITA.vagas ? 0.58 : 0.68;
   ctx.save(); ctx.setLineDash([3,2]); ctx.strokeStyle = 'rgba(226,106,44,.8)'; ctx.lineWidth = 1.4; rr(ctx,xr - 10,y - 9,20,13,3); ctx.stroke(); ctx.restore();
-  for (let i = 0; i < g.potes; i++) drawIcon(ctx,'doce',B.x0 + 4 + 11 * i,y - 6,0.46,g.up.confGourmet ? 5 : 1);   // v9.2: os potes de doce à espera dos entregadores
+  for (let i = 0; i < g.potes; i++) drawIcon(ctx,'doce',B.x0 + 4 + 11 * i,y - 6,0.46,doceIcone(g.up));   // v9.2: os potes de doce à espera dos entregadores
   prateleiraPos(g).forEach(o => {
     drawMarmita(ctx,o.m.dish,o.x,y - 4,ps);
     drawMarmitaSelo(ctx,o.m,o.x + 6,y - 14);
@@ -1015,7 +1015,7 @@ function drawRetirada(ctx,g,t){
 function drawRetiradaBalao(ctx,g,grp,tm){
   if (!grp.path.length) drawLetreiroEfood(ctx,grp,tm);   // v9.6.11
   const dq = grp.docesMarm - grp.docesMarmDados;   // v9.2: "+ doce" na marmita (o pote na prateleira ou o doce da geladeirinha)
-  if (dq > 0 && !grp.path.length){ ctx.save(); ctx.translate(grp.x - 24,grp.y - 92); drawBubble(ctx,0,0,13,'#fff'); drawIcon(ctx,'doce',0,1,0.6,grp.game.up.confGourmet ? 5 : 1); if (dq > 1) txt(ctx,'×' + dq,13,-10,9,PAL.tinta,'center',FD); ctx.restore(); }
+  if (dq > 0 && !grp.path.length){ ctx.save(); ctx.translate(grp.x - 24,grp.y - 92); drawBubble(ctx,0,0,13,'#fff'); drawIcon(ctx,'doce',0,1,0.6,doceIcone(grp.game.up)); if (dq > 1) txt(ctx,'×' + dq,13,-10,9,PAL.tinta,'center',FD); ctx.restore(); }
   const o = g.marmitas().find(q => q.m.dono === grp);
   if (!o || grp.path.length) return;
   const pronta = o.onde === 'pronta', p = pronta && !RM ? 1 + 0.1 * Math.sin(tm*8) : 1;
@@ -1050,9 +1050,10 @@ function drawGeladeiraDoces(ctx,g,t){
     rr(ctx,x + 1,y - 2,r.w - 2,r.h + 2,6); fs(ctx,'#E9D9B0',2.2);
     rr(ctx,x + 6,y + 24,r.w - 14,r.h - 32,4); fs(ctx,'#FFF3E4',1.6);
     ctx.fillStyle = 'rgba(214,160,60,.9)'; ctx.fillRect(x + 7,y + r.h/2 + 9,r.w - 16,2.4);
-    [0,1,2].forEach(i => { drawIcon(ctx,'doce',x + 15 + i * 11,y + 33,0.45,3 + i); drawIcon(ctx,'doce',x + 15 + i * 11,y + 50,0.45,3 + (i + 1) % 3); });
+    const b0 = g.up.confAlta ? 6 : 3;   // v10.2: com a alta confeitaria, entremet, mil-folhas e macarons
+    [0,1,2].forEach(i => { drawIcon(ctx,'doce',x + 15 + i * 11,y + 33,0.45,b0 + i); drawIcon(ctx,'doce',x + 15 + i * 11,y + 50,0.45,b0 + (i + 1) % 3); });
     ctx.fillStyle = 'rgba(255,255,255,.35)'; ctx.fillRect(x + 9,y + 26,3,r.h - 36);
-    rr(ctx,x + 4,y + 13,r.w - 8,9,3); fs(ctx,'#8A1F3D',1.6); txt(ctx,'GOURMET',x + r.w/2,y + 17.6,6.5,'#FFE6A8','center',FD);
+    rr(ctx,x + 4,y + 13,r.w - 8,9,3); fs(ctx,'#8A1F3D',1.6); txt(ctx,g.up.confAlta ? 'ALTA' : 'GOURMET',x + r.w/2,y + 17.6,6.5,'#FFE6A8','center',FD);
   } else {
   rr(ctx,x + 2,y,r.w - 4,r.h,6); fs(ctx,'#F4F7F8',2.2);
   rr(ctx,x + 7,y + 15,r.w - 20,r.h - 24,4); fs(ctx,'#CFE7EE',1.6);
@@ -1142,6 +1143,27 @@ function drawAnselmo(ctx,d,tm){
   const sh = d.busy && !RM ? Math.sin(tm * 18) * 3 : 0;
   ctx.save(); ctx.translate(d.x + 15,d.y - 40 + sh); ctx.rotate(d.busy && !RM ? 0.5 : 0.2);
   rr(ctx,-4,-9,8,18,2.5); fs(ctx,PAL.inox,1.6); rr(ctx,-3,-12,6,4,2); fs(ctx,PAL.cromo,1.2); ctx.fillStyle = 'rgba(255,255,255,.5)'; ctx.fillRect(-2.4,-6,1.4,12);
+  ctx.restore();
+}
+/* Lia (v10.2): ajudante de cozinha de uns 30 anos, pele parda, cabelo crespo preso num coque alto sob um lenço amarelo-mostarda, dólmã branca de mangas
+   dobradas, avental cinza e crachá "LIA"; mexe uma panela (parada com prefers-reduced-motion) */
+const LIA_LOOK = { skin:3, hair:5, hairC:'#1B1512', pants:'#3A3A40', kid:false, elder:false, acc:null, glasses:false };
+function drawLia(ctx,d,tm){
+  ctx.save(); ctx.translate(d.x,d.y); ctx.scale(d.s || 1,d.s || 1);   // (0, 0) são os pés dela; d.s: a escala (na janela da cozinha ela fica menor)
+  drawPerson(ctx,LIA_LOOK,0,0,{ shirt:'#FFFFFF', moving:false, mood:0, t:tm });
+  const hy = 0 - 42;
+  circ(ctx,0,hy - 15,6.4); fs(ctx,'#1B1512',1.8);   // o coque alto
+  ctx.beginPath(); ctx.arc(0,hy - 1,12.6,Math.PI * 1.08,Math.PI * 1.92); ctx.lineTo(0 + 12,hy - 4); ctx.quadraticCurveTo(0,hy - 9,0 - 12,hy - 4); ctx.closePath(); fs(ctx,'#D9A21B',1.8);   // o lenço amarelo-mostarda
+  ctx.beginPath(); ctx.moveTo(0 - 3,hy - 12); ctx.lineTo(0 - 9,hy - 17); ctx.lineTo(0 - 7,hy - 10); ctx.closePath(); fs(ctx,'#D9A21B',1.2);   // a pontinha do nó
+  ctx.beginPath(); ctx.moveTo(0 - 8,0 - 28); ctx.lineTo(0 + 8,0 - 28); ctx.lineTo(0 + 10,0 - 12); ctx.lineTo(0 - 10,0 - 12); ctx.closePath(); fs(ctx,'#8E939B',2.2);   // o avental cinza
+  ctx.strokeStyle = '#fff'; ctx.lineWidth = 3; ctx.lineCap = 'round'; ctx.beginPath(); ctx.moveTo(0 - 11,0 - 28); ctx.lineTo(0 - 15,0 - 24); ctx.moveTo(0 + 11,0 - 28); ctx.lineTo(0 + 15,0 - 24); ctx.stroke();   // as mangas dobradas
+  // a panela na mão direita, mexida com a colher
+  const sw = !RM ? Math.sin(tm * 5) * 3 : 0;
+  ctx.save(); ctx.translate(0 + 17,0 - 24);
+  rr(ctx,-7,-3,14,9,2.5); fs(ctx,PAL.inox,1.6); rr(ctx,-9,-4,18,3,1.5); fs(ctx,PAL.cromo,1.2);
+  ctx.strokeStyle = '#8A5226'; ctx.lineWidth = 1.8; ctx.beginPath(); ctx.moveTo(sw,-4); ctx.lineTo(sw - 6,-14); ctx.stroke();
+  ctx.restore();
+  if (CRACHA_A > 0){ ctx.save(); ctx.globalAlpha *= CRACHA_A; rr(ctx,0-13,0-84,26,12,5); fs(ctx,'#fff',1.6); txt(ctx,'LIA',0,0-77.5,9,'#5E7A3A','center',FD); ctx.restore(); }
   ctx.restore();
 }
 /* o balcão de drinks (v9.5) na parede do fundo: prateleira com garrafas, o Anselmo atrás do tampo e, no tampo, os copos prontos (até DRINKS.vagas) */
@@ -1495,6 +1517,7 @@ function drawKitchen(ctx,g,t){
   glowSprite(ctx,g,'order',ctx => {
     rr(ctx,r.x+14,r.y+4,r.w-18,r.h-8,8); fs(ctx,'#F0DDA6',3);
     drawChef(ctx,g,930,172,t);
+    if (g.liaAtiva && g.state !== 'menu') drawLia(ctx,{ x:LIA_HOME.x, y:LIA_HOME.y, s:LIA_HOME.s },t);   // v10.2: a Lia ao lado do Tonhão
     if (g.kitchen.noPlate && g.state !== 'menu'){
       ctx.save(); ctx.translate(904,118); drawBubble(ctx,0,0,15,'#fff'); txt(ctx,'Sem',0,-4,9,PAL.perigo,'center',FD); txt(ctx,'prato!',0,6,9,PAL.perigo,'center',FD); ctx.restore();
     }

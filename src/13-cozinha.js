@@ -7,6 +7,8 @@ class Kitchen {
   constructor(game){ this.game = game; this.reset(); }
   reset(){ this.queue = []; this.cooking = []; this.plates = PLATE_SLOTS.map(() => null); this.marmJ = MARMJ_SLOTS.map(() => null); this.pid = 0; this.slots = cozinhaSlots(this.game); this.sinkN = 0; this.clean = Infinity; this.noPlate = false; this.washT = 0; }
   get chef(){ return STAFF.tonhao.levels[this.game.save.equipe.tonhao]; }
+  /* v10.2: com a Lia no dia, todo pedido da cozinha (prato, entrada ou marmita) leva STAFF.lia.cook × o tempo */
+  get ajuda(){ return this.game.liaAtiva ? STAFF.lia.cook : 1; }
   /* a chance de caprichar: x CURSO_AV.crit nos pratos de um curso avançado que o Tonhão já fez (v8.6.9) */
   chefCrit(dish){ return this.chef.crit * (pratoAv(dish, this.game.cursos) ? CURSO_AV.crit : 1); }
   /* v10, a refeição completa: a comanda vira dois pedidos em sequência. Entra o da entrada (tempo 0: ×TEMPOS.entrada.cook, sem o ×VIP nem o 2º item, ocupa vaga
@@ -14,7 +16,7 @@ class Kitchen {
      limpo; ingrediente sobre o valor dos principais e o prato do VIP), na frente das entradas que ainda não começaram */
   submitTempo(grp, table, tempo){
     const g = this.game, pr = k => k ? precoPrato(k, g.ponto, g.cursos) : 0;
-    let time = rand(4,7) * this.chef.cook;
+    let time = rand(4,7) * this.chef.cook * this.ajuda;
     if (tempo === 0) time *= TEMPOS.entrada.cook; else time *= vipCook(grp, g);   // v10.1: o prato especial (ou da casa) do VIP
     if (g.day.gripe) time *= 1.25;
     const base = tempo === 0 ? grp.extras.reduce((v, k) => v + pr(k), 0) : grp.dishes.reduce((v, k) => v + pr(k), 0) + (grp.vip ? vipDish(grp) : 0);
@@ -25,7 +27,7 @@ class Kitchen {
   submit(ticket){
     const g = this.game, grp = ticket.group;
     if (grp.tempos) return this.submitTempo(grp, ticket.table, grp.tempo);
-    let time = rand(4,7) * this.chef.cook;
+    let time = rand(4,7) * this.chef.cook * this.ajuda;
     time *= vipCook(grp, g);              // prato especial do VIP (v10.1: ou da casa; a Louça fina acelera)
     time *= 1 + MAIS.cozinha * grp.extras.filter(Boolean).length / grp.size;   // o 2º item de quem pediu mais (v8.3.8)
     if (g.day.gripe) time *= 1.25;   // dia 7: o Tonhão está gripado
@@ -35,7 +37,7 @@ class Kitchen {
   /* marmita (v8.6): o pedido da Efood (dono: o entregador) ou a adiantada (sem dono); o tempo de 1 prato */
   submitMarmita(dish, dono){
     const g = this.game;
-    let time = rand(4,7) * this.chef.cook;
+    let time = rand(4,7) * this.chef.cook * this.ajuda;
     if (g.day.gripe) time *= 1.25;
     if (g.mode === 'semfim') time *= 1 + Math.min(0.25, 0.01 * g.elapsed / 60);
     const t = { marmita:true, group:null, table:0, time, p:0, dish, dono:dono || null, enc:!!dono };   // enc: encomenda (cancela se o dono for embora antes de começar)

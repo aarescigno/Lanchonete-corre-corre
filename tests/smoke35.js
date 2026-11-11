@@ -13,7 +13,7 @@ ok(L.tonhaoXp({})===0,'sem cursos: 0 de XP');
 ok(L.tonhaoXp({pastel:1,chapa:1})===2,'pastel e chapa básicos: 2');
 ok(L.tonhaoXp({pastel:2})===3,'pastel básico e avançado: 3');
 ok(L.tonhaoXp({pf:2})===2,'PF avançado: 2 (não tem básico)');
-{ const t={}; C.forEach(c=>t[c.id]=2); ok(L.tonhaoXp(t)===20,'tudo: 20 (com o curso de restaurante da v9.1)'); }
+{ const t={}; C.forEach(c=>t[c.id]=2); ok(L.tonhaoXp(t)===26,'tudo: 26 (com o curso de restaurante da v9.1 e os dois do Terraço da v10.2)'); }
 // (2) tonhaoNivelXp
 [[0,0],[1,0],[2,1],[4,1],[5,2],[9,3],[13,3],[14,4]].forEach(([x,n])=>{
   const cu={}; let r=x; C.forEach(c=>{ if(r<=0) return; if(c.preco>0 && r>=1){ cu[c.id]=1; r-=1; } });
