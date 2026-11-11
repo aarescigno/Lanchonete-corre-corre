@@ -198,3 +198,16 @@ python3 montar.py --check
 O que a rodada fez: `ferramentas/arquiva.py` criado (o passo 1 o usa, mas ele ainda não existia no repositório). Foram para `PLANO-FEITO.md` as etapas 2c-r4 a 2c-r6 e a 3a, com a seção **Situação das etapas feitas**; para `HISTORICO.md` a seção de 14/10 (o `RESUMO.md` aponta para ela); para `PROPOSTAS-FEITAS.md` os 13 retornos entregues. O cabeçalho do `PLANO-FEITO.md` passou a dizer 1a a 3a. `montar.py --check` passa (nada em `src/` mudou).
 
 Modelo: Haiku, esforço baixo — tudo decidido; é um script de corte por cabeçalho e trocas de texto exatas.
+
+## Rodada 3 (11/11/2026, conferência antes da 4a-2)
+
+Conferido pelo usuário ("está enxugado direitinho?"): `PLANO.md` 41 KB (meta ≤ 55), mas `PROPOSTAS.md` 37 KB (meta ≤ 22), `RESUMO.md` 46 KB (meta ≤ 38) e `CLAUDE.md` 13,5 KB (a rodada 2 já avisava que ele só ganha regra). Feito sem tocar em `src/`: 5 retornos entregues (3b, 3e, 3f, 3g e o curso da Dani) foram para o `PROPOSTAS-FEITAS.md` com `ferramentas/arquiva.py`; as 63 linhas da tabela **Versões** de v1 a v8.9.1 foram para o fim do `HISTORICO.md` (o `RESUMO.md` deixa uma linha apontando para lá); a 4a-2 fechou arquivada (`PLANO.md` 35 KB).
+
+| Medida | Antes | Depois |
+|---|---|---|
+| `PLANO.md` | 41,5 KB | 35,3 KB (com a 4a-2 arquivada) |
+| `RESUMO.md` | 46,5 KB | ~27 KB |
+| `PROPOSTAS.md` | 37,0 KB | 27,8 KB (o resto tem destino ainda aberto: 4a-3 em diante, 4b, 4c, 6, 7 e as Ideias) |
+| `CLAUDE.md` | 13,5 KB | 13,5 KB (sem mudança: Regras, Economia, Modelo, Git e Publicar seguem inteiros) |
+
+Quando a 4a-3 a 4a-5 fecharem, vale arquivar também os retornos de 31/10 (equipe ponto a ponto) e o de 10/11 (planejar a 4a).

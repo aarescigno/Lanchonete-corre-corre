@@ -319,7 +319,7 @@ const PONTOS = [
   // v10: o último ponto da escada (cap. 8 e 9). 20 lugares, aluguel R$ 1.000, cardápio ×2,5. Sem entregador (semRetirada), sem bebida da espera (bebida:null até a 4a-4) e com o casal;
   // tempos: a refeição completa (bebida, entrada, prato e sobremesa; ver TEMPOS)
   { id:'terraco', nome:'Terraço Suíça', nivel:4, lugares:20, aluguel:1200, mudanca:5000, credito:8000, cardapio:2.4, area:{ x0:160, y0:150, x1:684, y1:500 }, espera:6, assento:'pe', bebida:null, pratos:6, marmJanela:2, prateleira:0,
-    tipos:{ executiva:0.5, familia:1, vovos:1, negocios:1.5, casal:2 }, vip:2.5, metaF:9.0, expertF:6.0, grupos:0.5, tempos:true, semRetirada:true,   // v10 (medido em 10/11, equipe toda com o bot afiado): grupos 0,45 → 0,50 (mesas vazias em 33% do turno), metaF 4 → 9 e expertF 5 → 6 (91% das metas e 3★ em 61%), aluguel 1.000 → 1.200 e cardápio 2,5 → 2,4 (o ganho sobre a Avenida de R$ 918 caiu para ~R$ 700)
+    tipos:{ executiva:0.5, familia:1, vovos:1, negocios:1.5, casal:2 }, vip:2.5, metaF:9.0, expertF:6.0, grupos:0.5, tempos:true, semRetirada:true, exigente:true,   // v10 (medido em 10/11, equipe toda com o bot afiado): grupos 0,45 → 0,50 (mesas vazias em 33% do turno), metaF 4 → 9 e expertF 5 → 6 (91% das metas e 3★ em 61%), aluguel 1.000 → 1.200 e cardápio 2,5 → 2,4 (o ganho sobre a Avenida de R$ 918 caiu para ~R$ 700)
    
     traz:'a refeição completa e a freguesia mais fina', art:'o' }
 ];
@@ -714,6 +714,17 @@ const MARMITA = { adiantar:false,   // v9.6.2: o '+ marmita' desligado até vir 
   gap:12 };   // v9.6.5: dois entregadores comuns chegam com pelo menos `gap` s de diferença
 const MULTA = 10;                                     // grupo que vai embora bravo (com 0 corações) desconta isto do dia
 const VIP = { pat:0.65, tip:0.1, perfect:40, angry:10, dish:12, cook:1.8, types:['estudante','vovos','familia','executiva','casal'] };
+/* v10.1, o VIP exigente (só no ponto com `exigente`, o Terraço Suíça: todo VIP de lá é exigente). Prato da casa no lugar do prato especial (`casa.preco` na conta; o principal
+   leva `casa.cook` × o tempo, ou `cookBom` × e sai caprichado com o Tonhão no nível `casa.nivel` em diante), bebida antes da entrada, salão em ordem (mesa suja há mais de `sujaT` s),
+   gorjeta `tip` (mais `generosa` com 5 corações), sempre avalia (a nota conta `peso` vezes), bravo tira `1 - bravoMov` do movimento do dia seguinte e a reputação (nota do Gurugol)
+   multiplica a chance de VIP de `rep[0]` (nota 1) a `rep[1]` (nota 5). LOUCA: a Louça fina deixa o prato da casa e o prato especial 25% mais rápidos */
+const EXIGENTE = { tip:0.2, generosa:0.2, casa:{ preco:40, cook:2, cookBom:1.3, nivel:3 }, sujaT:6, peso:2, bravoMov:0.9, rep:[0.6, 1.4], acc:['chapeu', 'lenco', 'echarpe'],
+  cores:['#B23A48', '#2F5F8A', '#3E7B4A', '#7A4FA0', '#C98A2B', '#2A8C8C', '#8C6A4A'], aviso:'Um cliente exigente saiu bravo ontem: hoje vem menos gente.' };
+const LOUCA = { cook:0.75 };
+const vipDish = grp => grp.exigente ? EXIGENTE.casa.preco : VIP.dish;
+function casaBoa(grp, game){ return !!grp.exigente && game.save.equipe.tonhao >= EXIGENTE.casa.nivel; }
+function vipCook(grp, game){ if (!grp.vip) return 1; return (grp.exigente ? (casaBoa(grp, game) ? EXIGENTE.casa.cookBom : EXIGENTE.casa.cook) : VIP.cook) * (game.up.louca ? LOUCA.cook : 1); }
+function exigRep(nota){ return nota == null ? 1 : EXIGENTE.rep[0] + clamp((nota - 1) / 4, 0, 1) * (EXIGENTE.rep[1] - EXIGENTE.rep[0]); }
 /* os tipos que podem ser VIP no ponto (v10): os do ponto, se ele tem `tipos`; sem `tipos` (Garagem, Turno sem fim), os de sempre, sem o casal, que só existe no Terraço */
 function vipTipos(ponto){ const w = ponto && ponto.tipos; return VIP.types.filter(k => w ? w[k] > 0 : k !== 'casal'); }   // dish: o prato especial soma R$ 12 à conta e leva 1,8× o tempo; perfect: pontos (v8.3.8)
 
@@ -802,7 +813,7 @@ const AVAL = {
   minimo:0.9,
   prato:[[2.5, 4.5], [3, 4.7], [3.5, 5], [3.8, 5], [4, 5]],   // v8.8: 5 níveis do Tonhão
   menu:{ base:2, porCurso:0.6 },   // v8.6.9: pelos cursos básicos que o Tonhão fez (a Diversidade do cardápio)
-  amb:{ base:2, tv:0.5, som:0.5, maquina:0.5, ventilador:0.5, cafe:0.5, couvert:1, lixo:-1, planta:0.3, rosa:0.25, toalha:0.5, tvs:0.5, tvsPlus:0.75, doce:0.25, selo:0.5, drink:0.25 }
+  amb:{ base:2, tv:0.5, som:0.5, maquina:0.5, ventilador:0.5, cafe:0.5, couvert:1, lixo:-1, planta:0.3, rosa:0.25, toalha:0.5, tvs:0.5, tvsPlus:0.75, doce:0.25, selo:0.5, drink:0.25, louca:0.5 }
 };
 const AVAL_CRIT = [
   { id:'espera', nome:'Espera por mesa',
@@ -1063,6 +1074,12 @@ const HIST_SOCORRO = {
   falas:[ { q:'tonhao', nota:'desligando o telefone', s:'Falei com o gerente do banco, Bia. Ele segurou a parcela desta vez.' },
           { q:'bia', s:'Ufa... achei que a gente ia perder tudo.' },
           { q:'tonhao', s:'Só desta vez. Na próxima, ele toma a lanchonete. Olha o caixa antes de comprar.' } ] };
+/* v10.1: o cliente exigente do Terraço, no fim do 1º dia em que um veio (só no Modo História). save.convExig: 0 | 'pend' | 1 */
+const HIST_EXIGENTE = {
+  falas:[ { q:'bia', s:'Tio, viu a plaquinha de duas estrelas naquela mesa?' },
+          { q:'tonhao', s:'Cliente exigente. Quer a bebida antes da entrada, o salão em ordem e o prato da casa.' },
+          { q:'bia', s:'E se ele gostar?' },
+          { q:'tonhao', s:'Paga como ninguém. Se sair bravo, a cidade inteira fica sabendo.' } ] };
 /* v9.6.10: o presente da vizinha, no fim do dia 1 (só no Modo História): ao terminar, a espada-de-são-jorge fica à mostra, de graça. save.convPlanta: 0 | 'pend' | 1 */
 const HIST_PLANTA = { dia:1,
   falas:[ { q:'tonhao', nota:'com um vaso na mão', s:'A dona Cida, aqui do lado, mandou de presente pela inauguração.' },
@@ -1168,7 +1185,7 @@ const BIA_IDS = ['tenis', 'corrida', 'bandeja', 'sudoku'];
 function upgradeCartao(id){ return BIA_IDS.indexOf(id) >= 0 ? 'bia' : 'melhorias'; }
 const HIST_NOMES = { bia:'Bia', tonhao:'Tonhão', dani:'Dani', joca:'Joca', cami:'Cami', anselmo:'Anselmo' };
 const CAIXA_MAX = 14;                                 // livro-caixa (v7.2): quantos dias da carreira ficam guardados
-const VERSAO = 'v10';                              // vai no resumo do Caixa
+const VERSAO = 'v10.1';                              // vai no resumo do Caixa
 const DIVULGA_DIA = 4;                                // antes disso, o movimento é o da inauguração (sem custo); v9.0.2: dia 4, e o padrão é o boca a boca
 function divulgaAberta(n, sv){ return devLivre() || n >= DIVULGA_DIA && !(sv && sv.convDiv === 'pend'); }   // no modo dev, desde o dia 1; v9.0.3: no Modo História, só depois da conversa
 /* v9.6.4: a Efood (os entregadores) só abre depois da conversa dos entregadores, no Modo História; antes dela, nenhum tipo com `retira` vem na agenda */
@@ -1218,7 +1235,8 @@ const UPGRADES = [
   { id:'sudoku',     name:'Livrinho de Sudoku',   cost:200 },   // v8.6.3
   { id:'ventilador', name:'Ventilador de teto',   cost:250 },   // v8.3.10: o cheiro da lixeira cheia voltou a incomodar
   { id:'triturador', name:'Triturador de lixo',   cost:180 },
-  { id:'pratos',     name:'Jogo de pratos',       cost:300, multi:true }   // v8.3.6: acumula
+  { id:'pratos',     name:'Jogo de pratos',       cost:300, multi:true },   // v8.3.6: acumula
+  { id:'louca',      name:'Louça fina',           cost:600, nivel:4 }   // v10.1: o campo `nivel` das melhorias: só aparece no ponto desse nível em diante (o Terraço Suíça)
 ];
 
 /* a melhoria como o ponto a vende (a Água da torneira vira a Jarra de suco na área industrial e as Águas saborizadas na Avenida) */
@@ -1315,6 +1333,7 @@ const MANUAL = [
   { id:'c-encomenda',  aba:'clientes', tipo:'encomenda',  nome:'Encomenda do setor', linha:'Busca várias marmitas de uma vez, no balcão de retirada.' },
   { id:'c-negocios',   aba:'clientes', tipo:'negocios',   nome:'Almoço de negócios', linha:'Colegas de trabalho: mesa de quatro e conversa longa.' },
   { id:'c-casal',      aba:'clientes', tipo:'casal',      nome:'Casal', linha:'Data especial: sem pressa, e a conta é generosa.' },
+  { id:'c-exigente',   aba:'clientes', tipo:'exigente',   nome:'VIP exigente', linha:'Duas estrelas na plaquinha. Quer tudo no lugar e paga muito bem.' },   // v10.1
 
   { id:'e-bia',     aba:'equipe', quem:'bia',     sempre:true, nome:'Bia', linha:'A garçonete. Anota, leva, entrega, cobra e recolhe.' },
   { id:'e-tonhao',  aba:'equipe', quem:'tonhao',  sempre:true, nome:'Tonhão', linha:'O chef. Aprende pratos nos cursos e, com aumento, ajuda na pia.' },
@@ -1332,6 +1351,7 @@ const MANUAL = [
   { id:'l-ventilador', aba:'lojinha', nome:'Ventilador de teto', linha:'A freguesia come mais rápido.' },
   { id:'l-triturador', aba:'lojinha', nome:'Triturador de lixo', linha:'A lixeira enche mais devagar.' },
   { id:'l-pratos',     aba:'lojinha', nome:'Jogo de pratos', linha:'Mais pratos limpos na cozinha. Dá para comprar vários.' },
+  { id:'l-louca',      aba:'lojinha', nome:'Louça fina', linha:'O prato da casa sai mais rápido, e a mesa fica mais bonita.' },   // v10.1
   { id:'l-tvsom',      aba:'lojinha', nome:'TV e som', linha:'Distraem quem está nas mesas: a paciência dura mais. Gastam luz.' },
   { id:'l-tvs',        aba:'lojinha', nome:'TVs com sertanejo', linha:'A paciência nas mesas dura mais; sem anúncios, mais ainda.' },
   { id:'l-assento',    aba:'lojinha', nome:'Assento da espera', linha:'Quem espera sentado perde a paciência mais devagar.' },
@@ -1369,6 +1389,7 @@ function manualTracos(tipo, opt){
   const aberta = opt.aberta || (() => true), out = [];
   if (tipo === 'vip') return ['paciência menor', 'fura a fila', 'pede o prato especial', 'gorjeta boa', 'prato frio tira coração'];
   if (tipo === 'veg') return ['só prato sem carne', 'sem opção, reclama no Gurugol'];
+  if (tipo === 'exigente') return ['pede o prato da casa', 'bebida antes da entrada', 'repara em mesa suja', 'sempre avalia no Gurugol', 'gorjeta ótima'];   // v10.1
   if (['bia', 'tonhao', 'dani', 'joca', 'cami', 'anselmo'].indexOf(tipo) >= 0) return manualTracosEquipe(tipo, opt.save);
   const T = CUSTOMER_TYPES[tipo]; if (!T) return out;
   const media = a => (a[0] + a[1]) / 2;
@@ -1424,6 +1445,7 @@ function manualSemente(sv){
     if (p.nivel >= FISCAL.nivel && dia - sv.pontoDia >= FISCAL.dia) s.add('i-fiscal');
   });
   if (sv.vipVisto) s.add('c-vip');
+  if (sv.exigVisto) s.add('c-exigente');   // v10.1
   if (dia > 3){ s.add('c-veg'); s.add('b-louca'); s.add('b-suco'); }
   if (dia >= HIST_ENTREGA.dia && efoodAberto(sv)) s.add('b-marmita');
   if (dia > MANUT.dia) s.add('i-quebra');

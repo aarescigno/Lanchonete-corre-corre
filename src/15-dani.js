@@ -207,7 +207,7 @@ class Helper {
       if (slot < 0 || this.hands.length >= DANI_HANDS) return;
       g.kitchen.plates[slot] = null;
       const perde = pratoPerde(p.age);
-      this.hands.push({ kind:'dish', table:p.table, group:p.group, dish:p.dish, crit:p.crit, q:Math.max(1, (p.q || 1) - perde), fria:perde >= PRATO.friaDe, vip:p.vip, tempo:p.tempo });
+      this.hands.push({ kind:'dish', table:p.table, group:p.group, dish:p.dish, crit:p.crit, q:Math.max(1, (p.q || 1) - perde), fria:perde >= PRATO.friaDe, vip:p.vip, tempo:p.tempo, casa:p.casa });
       Sfx.blip();
     } else if (st.type === 'entrega'){   // v9.6
       const t = st.t, grp = t.group, i = this.hands.findIndex(h => h.kind === 'dish' && h.group === grp);
