@@ -38,6 +38,7 @@ class Game {
     if (!treino) this.sairTreino();
     this.mode = treino ? 'treino' : n === 0 ? 'semfim' : 'carreira';
     this.day = treino ? TREINO : n === 0 ? ENDLESS : this.diaPonto(diaOf(n));
+    if (!treino && n && DEV.on && DEV.forca.gripe) this.day = Object.assign({}, this.day, { gripe:DEV.forca.gripe === 'gripado' });   // v10.2.2
     this.money = 0; this.custo = 0; this.contas = 0; this.paidDiv = 0; this.conserto = 0; this.pontos = 0;
     this.manualDia = [];   // v9.6.7: as fichas do Manual reveladas durante o dia (a linha "Novo no Manual" do fim do dia)
     this.semToque = 0; this.dica = null; this.dicaCand = null; this.dicaT = 0; this.dicaDesde = 0;   // v9.6.12: as dicas na hora (17-treino.js)
@@ -47,7 +48,7 @@ class Game {
     this.clima = so ? so.clima : '';
     this.quebras = so ? so.quebra.map(q => ({ id:q.id, t:q.f * this.day.time, on:false, fixed:false })) : [];
     this.usos = { fogao:0, geladeira:0, cafeteira:0 };
-    this.fiscal = so && so.fiscal && !treino && this.ponto.nivel >= FISCAL.nivel ? new Fiscal(this, so.fiscal.f) : null;   // v9.4
+    this.fiscal = so && so.fiscal && !treino && (this.ponto.nivel >= FISCAL.nivel || (so.fiscal.dev && devLivre())) ? new Fiscal(this, so.fiscal.f) : null;   // v9.4
     this.multaVig = 0; this.aprovado = false;
     // divulgação (v7, do dia 4 em diante na carreira; v9.0.2): quanto da freguesia do dia aparece
     this.div = divulgaAberta(n, this.save) ? divulgaOf(this.save.divulga) : null;
@@ -119,7 +120,8 @@ class Game {
     const gap = day.speed * day.time / N;
     let t = 3;
     const forced = day.nu ? randi(1, Math.min(3, N-1)) : -1;
-    const forcedVip = day.vip && !day.nu && this.ponto.vip == null ? randi(1, Math.min(3, N-1)) : -1;   // v9: no ponto com `vip`, só o sorteio
+    const vipDev = this.mode === 'carreira' && DEV.on && DEV.forca.vip === 'vem';   // v10.2.2: o 3º grupo do dia é VIP
+    const forcedVip = vipDev ? Math.min(2, N - 1) : day.vip && !day.nu && this.ponto.vip == null ? randi(1, Math.min(3, N-1)) : -1;   // v9: no ponto com `vip`, só o sorteio
     const colors = this.tables.map(x => x.color);
     for (let i=0;i<N;i++){
       let type = (i === forced) ? day.nu : this.ponto.tipos ? this.sorteiaTipo(this.ponto.tipos, i / N) : pick(day.types);
@@ -127,7 +129,7 @@ class Game {
       if (cl && i !== forced && Math.random() < cl.tipoP) type = cl.tipo;   // chuva: entregadores; feriado: famílias
       if ((!efood || this.ponto.semRetirada) && CUSTOMER_TYPES[type].retira) type = this.tipoPequeno();   // v9.6.4: a Efood ainda não abriu: sem entregador (v10: no Terraço Suíça, nunca: semRetirada, também na chuva e na sexta-feira)
       let vip = false;
-      if (day.vip && (i === forcedVip || Math.random() < vipP)){
+      if ((day.vip || vipDev) && (i === forcedVip || (day.vip && Math.random() < vipP))){
         if (!VIP.types.includes(type) || (this.ponto.tipos && !this.ponto.tipos[type])) type = pick(vipTipos(this.ponto));   // v10: o VIP é de um tipo do ponto (no Terraço não vem estudante; casal só lá)
         vip = true;
       }
@@ -136,7 +138,8 @@ class Game {
     }
     // v9: o apito da fábrica (as primeiras `max` turmas do dia chegam juntas a partir de `quando` do turno) e a encomenda do setor
     this.apito = null;
-    const ap = this.ponto.apito;
+    const ap = DEV.on && DEV.forca.apito === 'nao' ? null : this.ponto.apito;   // v10.2.2
+    if (ap && DEV.on && DEV.forca.apito === 'apita' && !out.some(s => s.type === 'turma')) out.slice(1, 1 + ap.max).forEach(s => { s.type = 'turma'; s.vip = false; });
     if (ap){
       const ts = out.map((s, i) => s.type === 'turma' ? i : -1).filter(i => i >= 0).slice(0, ap.max);
       if (ts.length){
@@ -167,14 +170,24 @@ class Game {
   sortear(n){
     const m = this.save.manut;
     if (!MANUT.on || !n){ delete m.sorteio; return; }
-    if (m.sorteio && m.sorteio.d === n) return;
+    if (m.sorteio && m.sorteio.d === n){ if (this.devForcaSorteio(m.sorteio)) writeSave(this.save); return; }
     let clima = '';
     if (n >= CLIMA_DIA){ const r = Math.random(); if (r < CLIMA.chuva.chance) clima = 'chuva'; else if (r < CLIMA.chuva.chance + CLIMA.feriado.chance) clima = 'feriado'; }
     const quebra = n >= MANUT.dia ? MANUT.equip.filter(q => Math.random() < manutChance(m[q.id])).map(q => ({ id:q.id, f:rand(MANUT.quando[0], MANUT.quando[1]) })) : [];
     m.sorteio = { d:n, clima, quebra };
     // v9.4: o fiscal da vigilância (só na Avenida, do 2º dia no ponto em diante), sorteado junto e guardado até o dia acabar
     if (this.ponto.nivel >= FISCAL.nivel && diaNoPonto(this.save, n) >= FISCAL.dia && Math.random() < FISCAL.chance) m.sorteio.fiscal = { f:rand(FISCAL.quando[0], FISCAL.quando[1]) };
+    this.devForcaSorteio(m.sorteio);
     writeSave(this.save);
+  }
+  /* v10.2.2: o modo dev força o clima, a quebra e o fiscal do dia (DEV.forca, só na memória) por cima do sorteio */
+  devForcaSorteio(so){
+    const f = DEV.on && DEV.forca; if (!f) return false;
+    const antes = JSON.stringify(so);
+    if (f.clima) so.clima = f.clima === 'sem' ? '' : f.clima;
+    if (f.quebra) so.quebra = f.quebra === 'nada' ? [] : [{ id:f.quebra, f:0.4 }];
+    if (f.fiscal === 'vem') so.fiscal = { f:0.4, dev:true }; else if (f.fiscal === 'nao') delete so.fiscal;
+    return JSON.stringify(so) !== antes;
   }
   /* equipamento quebrado agora (e sem conserto) */
   quebrado(id){ return this.quebras.some(q => q.id === id && q.on && !q.fixed); }
@@ -1722,7 +1735,7 @@ class Game {
     this.up = this.save.up;
     this.buildTables();
     this.kitchen.reset(); this.dani.reset(); this.joca.reset(); this.cami.reset();
-    DEV.real = DEV.on && lsGet(LS.devReal) === '1'; DEV.vel = 1;   // v10.2.1: o jeito De verdade fica gravado
+    DEV.real = DEV.on && lsGet(LS.devReal) === '1'; DEV.vel = 1; DEV.forca = {};   // v10.2.1: o jeito De verdade fica gravado
   }
   /* ---------- v9.2.1: ações do painel do modo dev (só com DEV.on; gravam no save do dev) ---------- */
   devRecarrega(){ this.tablesKey = ''; this.buildTables(); this.kitchen.reset(); this.dani.reset(); this.joca.reset(); this.cami.reset(); if (this.state === 'shop') this.resetDay(this.shopNext); }
@@ -1881,6 +1894,54 @@ class Game {
     lsSet(LS.devSave, bak); lsSet(LS.devBak, '');
     this.save = loadSave(); this.up = this.save.up;
     this.devRecarrega(); return true;
+  }
+  /* ---------- v10.2.2: a aba História (cumprir, revelar, conversas soltas) e a aba Hoje (forçar o imprevisto do próximo dia) ---------- */
+  /* o objetivo do capítulo conta como cumprido: a conversa de depois toca no fluxo normal (no dia em andamento, no fim dele) */
+  devCumpre(){
+    const sv = this.save;
+    if (!DEV.on || !histLiga() || sv.cap > HISTORIA.length) return false;
+    sv.conversa = 'depois'; writeSave(sv);
+    if (this.mode === 'carreira' && (this.state === 'playing' || this.state === 'paused')) this.devFimDia();
+    return true;
+  }
+  devManual(todas){
+    if (!DEV.on) return false;
+    const sv = this.save, D = DEV_CAPS[clamp(sv.cap, 1, DEV_CAPS.length) - 1], i = PONTOS.findIndex(p => p.id === D.ponto);
+    sv.manual = MANUAL.filter(f => todas || f.aba === 'basico' || PONTOS.slice(0, i + 1).some(p => f.id === 'p-' + p.id)).map(f => f.id);
+    sv.manualNovo = []; writeSave(sv); return true;
+  }
+  devLojinha(todos){
+    if (!DEV.on) return false;
+    const sv = this.save, n = clamp(sv.cap, 1, DEV_CAPS.length), pn = this.ponto.nivel, seg = n === 5 || n === 7 || n === 9 || n === 10;
+    LIBERA.forEach(L => { sv.libera[L.id] = todos || !L.nivel || L.nivel < pn ? 2 : (L.nivel === pn && seg && (L.id === 'confeitaria' || sv.equipe[L.id] > 0)) ? 2 : 0; });
+    writeSave(sv); return true;
+  }
+  devConversas(modo){
+    if (!DEV.on) return false;
+    const sv = this.save, d = sv.dia;
+    if (modo === 'vistas'){ sv.convPlanta = sv.convCard = sv.convDiv = sv.convEnt = sv.convExig = 1; }
+    else {
+      if (d > HIST_PLANTA.dia && sv.convPlanta !== 1) sv.convPlanta = 'pend';
+      if (d >= HIST_CARDAPIO.dia && sv.convCard !== 1) sv.convCard = 'pend';
+      if (d >= DIVULGA_DIA && sv.convDiv !== 1) sv.convDiv = 'pend';
+      if (d >= HIST_ENTREGA.dia - 1 && sv.convEnt !== 1) sv.convEnt = 'pend';
+      if (this.ponto.exigente && sv.convExig !== 1) sv.convExig = 'pend';
+    }
+    writeSave(sv); return true;
+  }
+  /* DEV.forca[k] = v (v vazio ou 'sorteio' volta ao sorteio); vale a partir do próximo dia que começar */
+  devForca(k, v){
+    if (!DEV.on) return false;
+    if (!v || v === 'sorteio') delete DEV.forca[k]; else DEV.forca[k] = v;
+    return true;
+  }
+  /* quebra o equipamento já (no dia em andamento, pausado ou não) */
+  devQuebraAgora(id){
+    if (!DEV.on || this.mode !== 'carreira' || !manutOf(id)) return false;
+    let q = this.quebras.find(x => x.id === id);
+    if (!q){ q = { id, t:0, on:false, fixed:false }; this.quebras.push(q); }
+    else if (!q.on || q.fixed){ q.t = 0; q.on = false; q.fixed = false; }
+    return true;
   }
   devFimDia(){
     if (!DEV.on || this.mode !== 'carreira' || (this.state !== 'playing' && this.state !== 'paused')) return false;

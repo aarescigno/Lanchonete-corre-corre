@@ -16,8 +16,7 @@ Origem: retorno do Renan Martorelli (beta-tester) e conversa com o Arthur (15/10
 |---|---|---|---|
 | D-1 | Modo dev completo: jeitos, abas, pular de capítulo, dinheiro e equipe | v10.2.1 | feita em 11/11 (`docs/spec-v10.2.1.md`; `smoke63`; o `devCaixa` saiu do painel, o método ficou para o `smoke44`) |
 | 4a-3 | A cozinha do Terraço: alta gastronomia, a Lia e a alta confeitaria | v10.2 | feita em 11/11 (`docs/spec-v10.2.md`; `smoke62`; `ALTA=1` quase dobra o lucro do bot: recalibrar na 4a-5) |
-| 4a-2 | O VIP exigente e a reputação | v10.1 | feita em 11/11 (`docs/spec-v10.1.md`; `smoke61`; bot afiado com a equipe toda 94,6% das metas, sem mudar números) |
-| D-2 | Modo dev completo: História (cumprir, assistir, revelar) e Hoje (forçar imprevistos) | v10.2.2 | a fazer (planejada em 11/11) |
+| D-2 | Modo dev completo: História (cumprir, assistir, revelar) e Hoje (forçar imprevistos) | v10.2.2 | feita em 11/11 (`docs/spec-v10.2.2.md`; `smoke64`) |
 | 4a-4 | O salão e o bar do Terraço: a Cami em tudo, cafés especiais e coquetéis de autor | v10.3 | a fazer (planejada em 10/11) |
 | 4a-5 | Música, flores e o rebalanceamento do Terraço | v10.4 | a fazer (planejada em 10/11) |
 | 4b | Nível de luxo | v10.5 | a fazer |
@@ -32,36 +31,6 @@ Origem: retorno do Renan Martorelli (beta-tester) e conversa com o Arthur (15/10
 > Pedido do usuário em 11/11: "o modo dev precisa açambarcar todos esses recursos novos, tipo poder pular para qualquer etapa, adicionar dinheiro, revelar pontos da história". Planejada no mesmo dia (Opus); vem antes da 4a-4.
 
 **Hoje (v9.2.1 a v10.2):** o painel (`buildDev`, `src/40-interface.js`) tem dia ±1/±10, ponto, nota, equipe "tudo no máximo/do começo", "preços e travas de verdade" (com caixa 0/500/2000/10000) e, no meio do dia, velocidade e encerrar. O modo dev desliga a História inteira (`HIST.on && !DEV.on`): sem capítulos, objetivos, conversas, lojinha que abre aos poucos, Manual que revela nem dicas. Não dá para testar nada do Modo História, nem forçar chuva, quebra, fiscal ou VIP exigente.
-
-### Decisões (valem para a D-1 e a D-2)
-- **Dois jeitos, no topo do painel** (linha de 2 botões, `aria-pressed`): **Livre** (o de hoje: tudo de graça, tudo aberto, sem História, dinheiro que não acaba) e **De verdade** (preços, travas **e o Modo História**: capítulos, objetivos, conversas, cartões que abrem aos poucos, Manual que revela, dicas dos dias 1 a 3). O "De verdade" é o `DEV.real` de hoje, ampliado, e passa a ficar gravado em `localStorage` (`LS.devReal = 'lcc2_dev_real'`, `'1'`/`'0'`); `DEV.vel` segue só na memória. O save do dev continua à parte (`lcc2_save_dev`) e fora do ranking; o save de verdade nunca muda.
-- **Função nova** `histLiga()` em `src/12-clientes.js`, ao lado de `devLivre`: `return HIST.on && !devLivre();`. Troque **todo** `HIST.on && !DEV.on` por `histLiga()` (hoje: `src/16-jogo.js` nas linhas das conversas pendentes do fim do dia, em `capObj`, `avancaCap` e `trocaPonto`; `src/43-telas.js` no `dayend`). **Não** troque `!DEV.on` em: abertura sozinha (`43-telas.js`, `if (!aberturaVista() && !DEV.on)`), `treinoPrimeiro` (`40-interface.js`) e `novoHist` do `normSave` (`12-clientes.js`): o save dev novo segue nascendo no cap. 4, sem História; quem quer a História usa **Pular**.
-- **Painel em abas** (uma linha de abas abaixo dos jeitos, no visual das abas do Manual, `#manual-abas`; a aba aberta fica em `DEV.aba`, na memória, padrão `'pular'`): **Pular**, **Dinheiro**, **Equipe e lojinha**, **História** (D-2) e **Hoje** (D-2). A linha "Agora" no alto de toda aba: `Dia N · <ponto> · Capítulo C` (sem capítulo no Livre) `· R$ caixa`. Na D-1, as abas História e Hoje ainda não existem; o "No dia" de hoje (velocidade e encerrar) vira o fim da aba Pular até a D-2.
-- **Todo botão do painel** grava no save dev e chama `game.devRecarrega()` quando mexe em ponto, mesas, equipe ou melhorias (como hoje). Nenhum botão mexe fora do modo dev (`if (!DEV.on) return false`).
-- **Toda etapa de jogo daqui em diante** (4a-4, 4a-5, 4b, 4c, 6, 7) traz o seu gancho no painel: o que ela cria de novo (pessoa, curso, melhoria, evento, capítulo, conversa, ficha) precisa poder ser ligado, forçado ou assistido pelo modo dev, e o smoke da etapa confere o gancho. Os ganchos já previstos estão no fim desta etapa.
-
-### Sessão D-2 — História e Hoje (v10.2.2)
-**Aba História** (só no De verdade; no Livre, a linha "A História só corre no jeito De verdade." e o botão **Passar para De verdade**):
-- `Capítulo N, título` e o objetivo (`game.capLinha()`).
-- **Cumprir o objetivo agora** (`game.devCumpre()`: `sv.conversa = 'depois'`, `writeSave`; fecha o painel e chama `fluxoHistoria(() => game.goShop(game.proxDia))`; com o dia em andamento, primeiro encerra como o `devFimDia`). Assim a conversa de depois, a de antes do próximo capítulo e a mudança de ponto (cap. 3, 5 e 7) acontecem como no jogo.
-- **Assistir:** um `<select>` com todas as cenas e o botão **Assistir**. Itens, nesta ordem e com estes rótulos: `Abertura`; para cada capítulo, `Cap. N, antes` e `Cap. N, depois`; `A plantinha da dona Cida` (`HIST_PLANTA`), `O cardápio` (`HIST_CARDAPIO.falas`), `O cardápio, depois do curso` (`.fez`), `A divulgação` (`HIST_DIVULGA`), `Os entregadores` (`HIST_ENTREGA`), `A 2ª chance do banco` (`HIST_SOCORRO`), `O cliente exigente` (`HIST_EXIGENTE`) e, para cada `LIBERA`, `Cartão: <id>`. A lista vem de uma função `devCenas()` (em `src/43-telas.js`), montada das constantes, para que capítulos e conversas novos entrem sozinhos. **Assistir não muda o save** (`devAssistir(i)`: fecha o painel, toca com `falar(falas, volta)`; `volta` refaz a tela de antes: menu, lojinha ou dia pausado). A `Abertura` usa `abrirAbertura('menu')` e volta ao menu.
-- **Revelar:** **Manual: todas as fichas** (`sv.manual` = todos os ids de `MANUAL`, `manualNovo = []`) e **Manual: só o básico** (como no passo 8 do `devCapitulo`); **Lojinha: todos os cartões** (`libera` de todos = 2) e **Lojinha: como no começo do capítulo** (o passo 5 do `devCapitulo`, sem mexer no resto).
-- **Conversas soltas:** **Marcar todas como vistas** (`convPlanta`, `convCard`, `convDiv`, `convEnt`, `convExig` = 1) e **Deixar pendentes as do dia** (as mesmas, = `'pend'` quando o dia já passou do gatilho delas; tocam no próximo fim de dia).
-
-**Aba Hoje** (vale para o **próximo dia que começar**; `DEV.forca`, na memória, zera ao sair do modo dev):
-- **Clima:** `Sorteio` (padrão), `Sem clima`, `Chuva`, `Feriado`.
-- **Quebra:** `Sorteio`, `Nada quebra`, `Fogão`, `Geladeira`, `Cafeteira` (o equipamento escolhido quebra no meio do turno, `f:0.4`).
-- **Fiscal** (Avenida em diante): `Sorteio`, `Vem`, `Não vem` (vem em `f:0.4`).
-- **Tonhão gripado:** `Sorteio`, `Gripado`, `Bem`.
-- **VIP:** `Sorteio`, `Vem um VIP` (o 3º grupo do dia vira VIP; no Terraço, é o exigente).
-- **Apito da fábrica** (área industrial): `Sorteio`, `Apita`, `Não apita`.
-- Implementação: no `sortear(n)` (`src/16-jogo.js`), depois do sorteio, se `DEV.on && DEV.forca`, troque `clima`, `quebra` e `fiscal` pelo forçado (o fiscal forçado ignora `FISCAL.nivel` só no Livre); a gripe e o apito, onde o dia lê `day.gripe` e `ponto.apito`; o VIP, onde os grupos do dia são criados (`src/12-clientes.js`, `this.vip`). O botão fica `aria-pressed` no escolhido.
-- **No dia** (com o dia pausado): velocidade e **Encerrar o dia agora** (vindos da aba Pular) e **Quebrar agora:** `Fogão`, `Geladeira`, `Cafeteira` (põe a quebra para já, no `this.quebras`, como uma sorteada).
-
-**Testes (`tests/smoke64.js`, com `load({historia:true, imprevistos:true})`):** (1) `devCapitulo(2)` e `devCumpre()` levam ao cap. 3 depois do `fluxoHistoria` (as falas passam com `seguir` até acabar); `devCapitulo(3)` e `devCumpre()` deixam o cartão da Mudança visível; (2) `devCenas().length === 1 + 2 * HISTORIA.length + 7 + LIBERA.length`; (3) `devAssistir` de três cenas não muda o save (JSON igual antes e depois); (4) revelar todas: `manual.length === MANUAL.length`; (5) com `DEV.forca` de chuva, `Fogão` e fiscal na Avenida, o `sortear(n)` dá `clima === 'chuva'`, uma quebra de `fogao` e `fiscal` presente; `Sem clima` e `Nada quebra` dão vazio; (6) `Vem um VIP` no Terraço: o 3º grupo do dia é VIP e exigente; (7) gripe forçada: `day.gripe` verdadeiro num dia que não é o 7. `./run_all.sh` verde; captura recortada das abas História e Hoje em 390×844.
-**Fecha:** `v10.2.2`; Versões: "Modo dev: a aba História cumpre o objetivo, assiste a qualquer conversa e revela o Manual e a lojinha; a aba Hoje escolhe o clima, a quebra, o fiscal, a gripe, o VIP e o apito do próximo dia."; `docs/spec-v10.2.2.md`; `RESUMO.md`; PR e merge.
-
-Modelo: Sonnet, esforço médio (plano detalhado; o fluxo das conversas já existe, é reaproveitar).
 
 ### Ganchos das próximas etapas (cada uma faz o seu)
 - **4a-4** (cafés do Joca, coquetéis de autor, a Cami em tudo): os cursos novos entram no **Todos/Nenhum**; o que for melhoria, no **Todas/Nenhuma**.
