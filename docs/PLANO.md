@@ -18,7 +18,7 @@ Origem: retorno do Renan Martorelli (beta-tester) e conversa com o Arthur (15/10
 | R1 | Metas no alvo e a música do Terraço (revisão do balanceamento de 12/11) | v10.5.1 | feita em 12/11 (`docs/spec-v10.5.1.md`; `smoke68`; trio 0,7 e pianista 0,5; a Avenida ficou em 97% das metas e o Terraço da campanha +19%, ver Desvios) |
 | R2 | O ritmo da história: conversas no cap. 3 e um capítulo novo na Avenida e outro no Terraço | v10.5.2 | feita em 12/11 (`docs/spec-v10.5.2.md`; `smoke69`; 11 capítulos; o cap. 7 leva 3 a 4 dias e o cap. 10, 3; a história acaba no dia 49) |
 | V | A vontade da freguesia: doce e espresso puxam a Dani e o Joca (garantia do Joca e da Cami) | v10.5.3 | feita em 12/11 (`docs/spec-v10.5.3.md`; `smoke70`; `VONTADE.menos` 0,3 em vez de 0,5, ver Desvios) |
-| 4c | Eventos de bairro: festa junina e jogo do Brasil (adiantada em 12/11, para dar novidade aos dias parados da Garagem) | v10.6 | a fazer |
+| 4c | Eventos de bairro: festa junina e jogo do Brasil (adiantada em 12/11, para dar novidade aos dias parados da Garagem) | v10.6 | planejada em 12/11 (`docs/spec-v10.6.md`, aprovada) |
 | 4b | Nível de luxo | v10.7 | a fazer |
 | 5 | ~~Modo História, parte 1~~: juntou-se à 2f e aos capítulos da 3a, 3b e 4a (28/10) | — | — |
 | 6 | Modo História: o crítico do Michelzão e o final | v11 | a fazer |
@@ -107,23 +107,9 @@ Origem: retorno do Renan Martorelli (beta-tester) e conversa com o Arthur (15/10
 ---
 
 ## Etapa 4c — Eventos de bairro (v10.6)
-> Entrou no plano na revisão de 28/10 (era ideia guardada). Vem depois do Terraço, para variar com cada ponto.
+**Objetivo:** um evento por semana, do dia 8 em diante (festa junina com a barraca de pratos típicos; jogo do Brasil com as três fases e o gol), avisado na véspera. Spec aprovada em 12/11: `docs/spec-v10.6.md`.
 
-**Objetivo:** dias especiais que dão variedade e testam a reserva de dinheiro, como a chuva e o feriado da v8.
-
-**Entra:**
-- **Festa junina** (em junho, ou num dia sorteado da campanha): mais famílias, pratos típicos (pamonha, milho, canjica) e enfeites de bandeirinhas.
-- **Jogo do Brasil:** antes do jogo, a casa lota; durante, quase ninguém vem (todo mundo vendo), e depois vem o pico. Com a TV ligada (Garagem e área industrial), mais paciência e mais gente.
-- Os eventos usam o sistema de `CLIMA` (sorteio, aviso na introdução do dia) e mudam com o ponto (o jogo do Brasil enche a área industrial; a festa junina pesa mais na Garagem).
-- Times, emissoras e músicas sempre inventados; sem logos reais.
-
-**Partes:** `10-constantes.js` (`EVENTOS`), `16-jogo.js` (sorteio, movimento do dia), `21-cenario.js` (enfeites), `43-telas.js` (introdução do dia).
-
-**Testes:** smoke novo (sorteio, efeito no movimento, enfeites, save). `balance.js` com os eventos.
-
-**Decisões em aberto:** quais eventos entram (sugestão: os 2); com que frequência; se o jogador pode se preparar (comprar ingredientes, decoração) antes.
-
-**Modelo:** planejar com o Opus numa sessão curta (eventos, frequência, efeito no movimento e preparo); executar com o Sonnet, esforço médio (segue o molde do `CLIMA` da v8).
+**Modelo:** Sonnet, esforço médio (regras e números fechados na spec; segue o molde do `CLIMA`, com desenho novo e calibração por receita).
 
 ---
 
