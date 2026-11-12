@@ -1,10 +1,10 @@
 # v10.5 — Salários de verdade (etapa S)
 
 **Situação:** aprovada (12/11)
-**Origem:** conversa de 11 e 12/11/2026 (pergunta do usuário: "os salários dos funcionários estão compatíveis com suas funções pensando na vida real em todos os ambientes?") e a entrevista de 12/11. Pesquisa: `docs/pesquisa-salarios.md`.
+**Origem:** conversa de 11 e 12/11/2026 (pergunta do usuário: "os salários dos funcionários estão compatíveis com suas funções pensando na vida real em todos os ambientes?") e a entrevista de 12/11; ajuste de 12/11 (pedido do usuário: o salário da Dani e do Joca acompanha a carreira deles, confeiteira e barista). Pesquisa: `docs/pesquisa-salarios.md`.
 
 ## Objetivo
-Cada pessoa da equipe e cada música passa a custar o que o cargo custaria de verdade, na mesma proporção do aluguel (cerca de 80% do custo real). O Tonhão deixa de trabalhar de graça e a Dani ganha uma ajuda de custo; a garçonete deixa de valer quase três ajudantes. Para o jogo não ficar mais difícil, o cardápio sobe para perto do preço real e as metas são acertadas pelo bot.
+Cada pessoa da equipe e cada música passa a custar o que o cargo custaria de verdade, na mesma proporção do aluguel (cerca de 80% do custo real). O Tonhão deixa de trabalhar de graça e a Dani ganha uma ajuda de custo; a garçonete deixa de valer quase três ajudantes. O salário acompanha a carreira de cada um: a Dani, de aprendiz a chef confeiteira, e o Joca, de ajudante a barista de cafés especiais, ganham mais a cada curso da especialidade, como já acontece com a Cami e o Anselmo. Para o jogo não ficar mais difícil, o cardápio sobe para perto do preço real e as metas são acertadas pelo bot.
 
 ## Fora do escopo
 - Gorjeta dos 10% para a Cami (decidido em 12/11: não entra).
@@ -17,6 +17,9 @@ Cada pessoa da equipe e cada música passa a custar o que o cargo custaria de ve
   - **Tonhão** `levels[0..4].pay`: **50 · 65 · 80 · 100 · 120** (eram 0 · 15 · 20 · 25 · 30). Começa abaixo do mercado na Garagem e chega ao de um chefe de cozinha no nível 4.
   - **Dani** `levels[1..4].pay`: **15 · 25 · 32 · 40** (eram 0 · 15 · 20 · 25). O nível 1 é a ajuda de custo de aprendiz.
   - **Joca** `levels[2..4].pay`: **65 · 78 · 90** (eram 45 · 60 · 75).
+  - **Carreira da Dani e do Joca** (ajuste de 12/11): os cursos da especialidade ganham um campo `pay` (a diária do degrau): em `DANI_CURSOS`, `confCaseira` **75** (confeiteira júnior), `confGourmet` **105** (confeiteira) e `confAlta` **145** (chef confeiteira); em `JOCA_CURSOS`, `espresso` **100** (barista) e `cafesEsp` **125** (barista de cafés especiais). Os cursos de atendimento (`atend`, `cozinha` do Joca e os da Dani sem `item`) não têm `pay`. **A diária é a do degrau mais alto que a pessoa alcançou:** `max(levels[nível].pay, maior pay dos cursos feitos)`. Função nova `diariaDani(eq, cursos)` e `diariaJoca(eq, cursos)` em `10-constantes.js`, usadas pelo `payroll`.
+  - Na folha cortada: o degrau de curso **nunca é cortado** (como a base do Tonhão). Com um curso feito, `folhaCorta` pula o "aumento da Dani" e o "aumento do Joca" quando tirar o nível não baixa a diária (a pessoa já está no degrau do curso); "o Joca não vem" continua valendo para ele. O cartão do curso na lojinha não muda (só "Comprar R$ X", como os da Cami).
+  - Botão de aumento do cartão da Dani e do Joca: mostra a diferença **real** na folha (a diária com o nível novo menos a de hoje, já com o degrau do curso); se der 0, o botão diz **"Aumento: sem custo"**.
   - **Cami** `levels[1..4].pay`: **95 · 115 · 135 · 160** (eram 120 · 140 · 160 · 190).
   - **Anselmo** `levels[2..3].pay`: **105 · 150** (eram 90 · 130).
   - **Lia** `pay`: **80** (não muda).
@@ -45,6 +48,7 @@ Cada pessoa da equipe e cada música passa a custar o que o cargo custaria de ve
 
 ## Critérios de aceite
 - **CA1** As diárias de cada nível são as das Regras (Tonhão, Dani, Joca, Cami, Anselmo, Lia, couvert com taxa de 8, trio 500, pianista 300 + 5); a folha completa da Garagem (`{tonhao:4, dani:4, tv:true, som:true}`) dá R$ 165 → `smoke67` (1)
+- **CA1b** A diária da Dani é a do degrau mais alto: nível 4 sem curso dá 40; com Confeitaria caseira, 75; gourmet, 105; alta, 145. A do Joca: nível 4 sem curso, 90; com espresso, 100; com cafés especiais, 125. Os cursos de atendimento não mudam a diária. Com a Dani no nível 2 e a caseira feita, o botão de aumento diz "Aumento: sem custo" → `smoke67` (1b)
 - **CA2** Sem dinheiro, o Tonhão no nível 0 e a Dani no nível 1 trabalham assim mesmo: `folhaCortes` com caixa 0 não os tira, e o dia abre com a folha deles reservada → `smoke67` (2)
 - **CA3** A folha mostra "Tonhão" e "Dani" (não mais "aumento do..."), o cartão da Dani no nível 1 diz "aprendiz (R$ 15/dia)" e o cartão da música diz "Trio de cordas · R$ 500/dia" e "Pianista · R$ 305/dia" → `smoke67` (3)
 - **CA4** Os preços do cardápio são `Math.round(antigo × 1,2)`: PF 30, coxinha 10, misto 12, pastel 12, bauru 14, PF vegetariano 28 → `smoke67` (4)
@@ -57,7 +61,8 @@ Cada pessoa da equipe e cada música passa a custar o que o cargo custaria de ve
 
 ## Partes
 - `src/10-constantes.js`: `CARDAPIO` (preços), `STAFF` (diárias, `couvert.fee`), `TERRACO.musica`, `folhaItens`, `DAYS` (metas), `PONTOS` (`metaF`, `expertF`, `cardapio` se a calibração pedir), `MANUAL` (`e-tonhao`, `l-musica`).
-- `src/41-lojinha.js`: o cartão da Dani (texto do nível 1, perto da linha 382) e o cartão da música (rótulos do trio).
+- `src/10-constantes.js` também: `DANI_CURSOS` e `JOCA_CURSOS` (campo `pay`), `diariaDani`, `diariaJoca`, `payroll`, `folhaCorta`, `folhaCortes`.
+- `src/41-lojinha.js`: o cartão da Dani (texto do nível 1 e botão de aumento, perto da linha 382), o do Joca (botão de aumento, perto da 421), o `canPay` (linhas ~309 e ~341) e o cartão da música (rótulos do trio).
 - `src/16-jogo.js`: só conferir `payDay` (perto da linha 273); não deve precisar mudar.
 - `tests/`: `smoke67.js` novo; `balance.js` (chave `COUVERT`, perto do `FULL` da linha 23); smokes antigos que conferem preços e diárias (`smoke24`, `smoke31`, `smoke34`, `smoke66` e outros com `payroll` ou `preco`) passam a conferir os números novos.
 
@@ -65,6 +70,7 @@ Cada pessoa da equipe e cada música passa a custar o que o cargo custaria de ve
 - [ ] T1 Medir o lucro por ponto de antes: `DIAS=65 node carreira.js 12` no código da v10.4 (linha `PONTOS`) e anotar em Testes.
 - [ ] T2 Smoke novo `tests/smoke67.js` com os CA1 a CA6 (falhando) e no `run_all.sh`.
 - [ ] T3 Diárias novas em `STAFF` e `TERRACO.musica` (trio), `couvert.fee` 8.
+- [ ] T3b Carreira: `pay` nos cursos de `DANI_CURSOS` e `JOCA_CURSOS`, `diariaDani` e `diariaJoca`, `payroll` com os cursos, `folhaCorta` pulando o aumento que não baixa a diária, botões de aumento com a diferença real.
 - [ ] T4 `folhaItens` ("Tonhão", "Dani", "trio de cordas"), cartão da Dani e cartão da música na lojinha, fichas `e-tonhao` e `l-musica`.
 - [ ] T5 Preços do `CARDAPIO` × 1,2 arredondados.
 - [ ] T6 Atualizar os smokes antigos que conferem os números velhos (cada um com o comentário "v10.5: salários e preços de verdade").
@@ -74,7 +80,8 @@ Cada pessoa da equipe e cada música passa a custar o que o cargo custaria de ve
 - [ ] Fechamento: `VERSAO`, `vtag`, `#ov-ver`, `docs/RESUMO.md`, `docs/TESTES.md`, esta spec como entregue, a linha da tabela Situação do `PLANO.md`, `tests/run_all.sh` verde, PR e merge.
 
 ## Avisos para a execução
-- Os botões de aumento da lojinha (`41-lojinha.js`, linhas ~323, ~382 e ~421) já calculam pela diferença entre níveis: com o `pay` cheio, continuam certos. O `canPay` soma `payroll` inteiro, então a base do Tonhão já entra.
+- `payroll(eq)` só recebe a equipe, mas os cursos estão no save (`save.daniCursos`, `save.jocaCursos`): dê a ele um 2º parâmetro (`payroll(eq, { dani: sv.daniCursos, joca: sv.jocaCursos })`) e passe-o em todas as chamadas (`10-constantes.js` ~708, `16-jogo.js` ~276, ~284, ~1219 e ~1223, `41-lojinha.js` ~309 e ~341); sem ele, conta como sem curso. O `balance.js` e o `carreira.js` usam a mesma função.
+- O botão de aumento do Tonhão (`41-lojinha.js`, ~323) já calcula pela diferença entre níveis e continua certo; o da Dani e o do Joca passam a usar a diferença real (CA1b). O `canPay` soma o `payroll` inteiro, então a base do Tonhão já entra.
 - `payDay` (`16-jogo.js`) para de cortar quando `folhaCorta` devolve `null`: a regra "vêm assim mesmo" já é o comportamento; o CA2 só confere.
 - Procure "R$ 25", "quarteto" e "sem salário" em `src/` (falas, Manual, dicas da Missão zero) antes de fechar: texto com o preço antigo ou com o quarteto precisa acompanhar. O comentário da linha ~265 de `10-constantes.js` cita "PF de R$ 25": atualize.
 - A calibração mexe em vários pontos: rode cada medida inteira antes do próximo ajuste, para não confundir efeitos.
