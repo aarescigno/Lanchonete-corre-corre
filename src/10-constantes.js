@@ -1022,7 +1022,7 @@ function simulaEmprestimo(v, j){ const t = tabelaDe(normEmprestimo({ resto:v, am
 /* ============================================================
    MODO HISTÓRIA (v8.7): a campanha em capítulos. Cada capítulo tem um objetivo, que vale no fim de um dia (sem prazo: se não
    cumpriu, o capítulo segue), e conversas (balões sobre o salão) antes e depois. fala: { q:'bia'|'tonhao'|'dani', s:texto,
-   nota?:rubrica em itálico }. save.cap (1 a 7; 4 e 6 esperam a mudança de ponto; 6 = área industrial completa; 8 = Avenida Brasil completa), save.capDia, save.capAzul, save.conversa ('antes'/'depois'/null).
+   nota?:rubrica em itálico }. save.cap (1 a 11; 12 = o Fim; 4, 6 e 9 esperam a mudança de ponto; v10.5.2: 11 capítulos, o 7 (Avenida) e o 10 (Terraço) são novos), save.capDia, save.capAzul, save.capVezes, save.capV (2), save.conversa ('antes'/'depois'/null).
    REFORMA: o empréstimo da reforma da garagem, que o save novo já traz (1ª parcela no fim do dia ini)
    ============================================================ */
 const HIST = { on: !(typeof window !== 'undefined' && window.__semHist) };   // os testes antigos ligam window.__semHist: save novo sem a História
@@ -1088,7 +1088,17 @@ const HISTORIA = [
       { q:'tonhao', s:'Três dias no azul com aluguel de gente grande.' },
       { q:'bia', s:'O pessoal do Bráulio passou duas vezes espiando pela janela.' },
       { q:'tonhao', nota:'rindo', s:'Deixa espiar.' }] },
-  { cap:7, titulo:'Nota de restaurante', ponto:'avenida', obj:{ nota:3.9, caixa:5000 },
+  // v10.5.2: um capítulo a mais na Avenida, para usar a Cami e os VIPs antes da nota de restaurante. Objetivo: contratar a Cami e 3 VIPs bem atendidos num dia, 3 vezes
+  { cap:7, titulo:'Salão de gente grande', ponto:'avenida', obj:{ equipe:'cami', vip:3, vezes:3 },
+    antes:[
+      { q:'bia', s:'Vinte e quatro lugares, tio. Sozinha no salão eu não dou conta.' },
+      { q:'tonhao', s:'Conheço uma garçonete de rodízio, a Cami. Rápida que só ela.' },
+      { q:'dani', s:'E aqui vem gente importante. Não pode sair ninguém de cara feia!' }],
+    depois:[
+      { q:'bia', s:'Três dias de VIP saindo feliz!' },
+      { q:'dani', s:'A Cami já sabe o nome de todo freguês.' },
+      { q:'tonhao', s:'Salão redondo. Agora é a nota subir.' }] },
+  { cap:8, titulo:'Nota de restaurante', ponto:'avenida', obj:{ nota:3.9, caixa:5000 },
     antes:[
       { q:'bia', s:'Aqui o Gurugol é mais exigente. Restaurante é outra régua.' },
       { q:'tonhao', s:'Então capricha: prato bonito, mesa limpa e ninguém esperando.' },
@@ -1100,8 +1110,8 @@ const HISTORIA = [
       { q:'tonhao', s:'Comeu tudo e não disse nada. Mas raspou o prato.' },
       { q:'dani', s:'Próxima parada: o Terraço Suíça!' }],
     fim:{ h:'Fim dos capítulos da Avenida Brasil', p:'Quando quiser, a mudança para o Terraço Suíça está na lojinha.' } },
-  // v10: os capítulos do Terraço Suíça. O cap. 8 só começa na mudança (na lojinha); até lá save.cap fica em 8, "à espera"
-  { cap:8, titulo:'Lá no alto', ponto:'terraco', obj:{ azul:3 },
+  // v10: os capítulos do Terraço Suíça. O cap. 9 só começa na mudança (na lojinha); até lá save.cap fica em 9, "à espera" (v10.5.2: eram 8 e 9)
+  { cap:9, titulo:'Lá no alto', ponto:'terraco', obj:{ azul:3 },
     antes:[
       { q:'bia', s:'Último andar, tio! Dá pra ver a cidade inteira.' },
       { q:'tonhao', nota:'olhando o piano no canto', s:'E esse piano de cauda?' },
@@ -1112,7 +1122,17 @@ const HISTORIA = [
       { q:'bia', s:'Três dias no azul pagando esse aluguel!' },
       { q:'tonhao', s:'Menos mesa, mais capricho. É outra cozinha.' },
       { q:'dani', s:'Hoje uma mesa bateu palma pra sobremesa!' }] },
-  { cap:9, titulo:'Do começo ao fim', ponto:'terraco', obj:{ completas:6, nota:4.5 },
+  // v10.5.2: um capítulo a mais no Terraço, para usar a Lia e os coquetéis antes da refeição perfeita. Objetivo: contratar a Lia e 8 coquetéis num dia, 3 vezes
+  { cap:10, titulo:'A casa completa', ponto:'terraco', obj:{ equipe:'lia', drinks:8, vezes:3 },
+    antes:[
+      { q:'tonhao', s:'Quatro tempos por mesa, Bia. Sozinho no fogão eu não venço.' },
+      { q:'bia', s:'A Lia, ajudante de cozinha, tá procurando serviço.' },
+      { q:'dani', s:'E o pessoal daqui gosta de um coquetel antes da entrada!' }],
+    depois:[
+      { q:'bia', s:'A cozinha tá voando, tio!' },
+      { q:'tonhao', nota:'provando um coquetel', s:'E o balcão de drinks não para.' },
+      { q:'dani', s:'Agora só falta a refeição perfeita.' }] },
+  { cap:11, titulo:'Do começo ao fim', ponto:'terraco', obj:{ completas:6, nota:4.5 },
     antes:[
       { q:'tonhao', s:'Refeição completa é como música: não pode faltar nota.' },
       { q:'bia', s:'Bebida, entrada, prato e sobremesa, sem ninguém esperando entre um e outro.' },
@@ -1127,7 +1147,7 @@ const HISTORIA = [
 ];
 /* v9.0.1: a conversa do cardápio, no fim do dia `dia` (ou do 1º dia completo depois dele, para saves antigos), só no Modo História.
    falas: o Tonhão ainda não fez curso; fez: já fez algum (básico de qualquer curso ou o avançado do PF). save.convCard: 'pend' | 1 (vista) */
-/* v10.2.1, modo dev: o save do começo de cada capítulo (devCapitulo). n 1 a 9 e 10 (o Fim, depois do último). Níveis da equipe: índices de STAFF (99 = o último);
+/* v10.2.1, modo dev: o save do começo de cada capítulo (devCapitulo). n 1 a 11 e 12 (o Fim, depois do último; v10.5.2). Níveis da equipe: índices de STAFF (99 = o último);
    cursos do Tonhão { id:nível }; cursos da equipe e melhorias em listas de ids */
 const DEV_CAPS = [
   { n:1,  dia:1,  ponto:'garagem',    pdia:1,  caixa:0,     nota:0,   eq:{ tonhao:0, dani:0, joca:0, cami:0, anselmo:0, lia:0 }, cursos:{}, dani:[], joca:[], cami:[], up:[] },
@@ -1136,10 +1156,12 @@ const DEV_CAPS = [
   { n:4,  dia:13, ponto:'industrial', pdia:13, caixa:400,   nota:2.7, eq:{ tonhao:1, dani:2, joca:0, cami:0, anselmo:0, lia:0 }, cursos:{ pastel:1, chapa:1, fritos:1 }, dani:[], joca:[], cami:[], up:['tenis', 'ventilador', 'bandeja', 'triturador'] },
   { n:5,  dia:17, ponto:'industrial', pdia:13, caixa:900,   nota:3.0, eq:{ tonhao:2, dani:3, joca:2, cami:0, anselmo:0, lia:0 }, cursos:{ pastel:1, chapa:1, fritos:1, assados:1, veg:1 }, dani:['confCaseira'], joca:[], cami:[], up:['tenis', 'ventilador', 'bandeja', 'triturador', 'corrida'] },
   { n:6,  dia:30, ponto:'avenida',    pdia:30, caixa:600,   nota:3.2, eq:{ tonhao:2, dani:3, joca:2, cami:0, anselmo:0, lia:0 }, cursos:{ pastel:1, chapa:1, fritos:1, assados:1, veg:1 }, dani:['confCaseira'], joca:[], cami:[], up:['tenis', 'ventilador', 'bandeja', 'triturador', 'corrida'] },
-  { n:7,  dia:34, ponto:'avenida',    pdia:30, caixa:2500,  nota:3.5, eq:{ tonhao:3, dani:4, joca:3, cami:1, anselmo:2, lia:0 }, cursos:{ pastel:1, chapa:1, fritos:1, assados:1, veg:1, restaurante:1 }, dani:['confCaseira', 'confGourmet'], joca:['espresso'], cami:[], up:['tenis', 'ventilador', 'bandeja', 'triturador', 'corrida'] },
-  { n:8,  dia:46, ponto:'terraco',    pdia:46, caixa:1500,  nota:3.9, eq:{ tonhao:3, dani:4, joca:3, cami:2, anselmo:2, lia:0 }, cursos:{ pastel:1, chapa:1, fritos:1, assados:1, veg:1, restaurante:1 }, dani:['confCaseira', 'confGourmet'], joca:['espresso'], cami:[], up:['tenis', 'ventilador', 'bandeja', 'triturador', 'corrida'] },
-  { n:9,  dia:50, ponto:'terraco',    pdia:46, caixa:6000,  nota:4.2, eq:{ tonhao:99, dani:99, joca:99, cami:2, anselmo:3, lia:1 }, cursos:{ pastel:1, chapa:1, fritos:1, assados:1, veg:1, restaurante:1, entradas:1, alta:1 }, dani:['confCaseira', 'confGourmet', 'confAlta'], joca:['espresso'], cami:[], up:['tenis', 'ventilador', 'bandeja', 'triturador', 'corrida'] },
-  { n:10, dia:60, ponto:'terraco',    pdia:46, caixa:10000, nota:4.6, eq:null, cursos:null, dani:null, joca:null, cami:null, up:null }   // o Fim: o mesmo que "Tudo no máximo" (devEquipe('max') e devMelhorias(true)), com a Lia
+  { n:7,  dia:34, ponto:'avenida',    pdia:30, caixa:1500,  nota:3.5, eq:{ tonhao:3, dani:4, joca:3, cami:0, anselmo:2, lia:0 }, cursos:{ pastel:1, chapa:1, fritos:1, assados:1, veg:1, restaurante:1 }, dani:['confCaseira', 'confGourmet'], joca:['espresso'], cami:[], up:['tenis', 'ventilador', 'bandeja', 'triturador', 'corrida'] },
+  { n:8,  dia:38, ponto:'avenida',    pdia:30, caixa:2500,  nota:3.5, eq:{ tonhao:3, dani:4, joca:3, cami:1, anselmo:2, lia:0 }, cursos:{ pastel:1, chapa:1, fritos:1, assados:1, veg:1, restaurante:1 }, dani:['confCaseira', 'confGourmet'], joca:['espresso'], cami:[], up:['tenis', 'ventilador', 'bandeja', 'triturador', 'corrida'] },
+  { n:9,  dia:50, ponto:'terraco',    pdia:50, caixa:1500,  nota:3.9, eq:{ tonhao:3, dani:4, joca:3, cami:2, anselmo:2, lia:0 }, cursos:{ pastel:1, chapa:1, fritos:1, assados:1, veg:1, restaurante:1 }, dani:['confCaseira', 'confGourmet'], joca:['espresso'], cami:[], up:['tenis', 'ventilador', 'bandeja', 'triturador', 'corrida'] },
+  { n:10, dia:54, ponto:'terraco',    pdia:50, caixa:4000,  nota:4.2, eq:{ tonhao:99, dani:99, joca:99, cami:2, anselmo:3, lia:0 }, cursos:{ pastel:1, chapa:1, fritos:1, assados:1, veg:1, restaurante:1, entradas:1, alta:1 }, dani:['confCaseira', 'confGourmet', 'confAlta'], joca:['espresso'], cami:[], up:['tenis', 'ventilador', 'bandeja', 'triturador', 'corrida'] },
+  { n:11, dia:58, ponto:'terraco',    pdia:50, caixa:6000,  nota:4.2, eq:{ tonhao:99, dani:99, joca:99, cami:2, anselmo:3, lia:1 }, cursos:{ pastel:1, chapa:1, fritos:1, assados:1, veg:1, restaurante:1, entradas:1, alta:1 }, dani:['confCaseira', 'confGourmet', 'confAlta'], joca:['espresso'], cami:[], up:['tenis', 'ventilador', 'bandeja', 'triturador', 'corrida'] },
+  { n:12, dia:64, ponto:'terraco',    pdia:50, caixa:10000, nota:4.6, eq:null, cursos:null, dani:null, joca:null, cami:null, up:null }   // o Fim: o mesmo que "Tudo no máximo" (devEquipe('max') e devMelhorias(true)), com a Lia
 ];
 const HIST_CARDAPIO = { dia:2,   // v9.6.2: no fim do dia 2 (antes, do dia 1), para a 1ª lojinha ficar sem empurrão
   falas:[ { q:'bia', s:'Tio, hoje um monte de gente perguntou se só tem PF e coxinha...' },
@@ -1168,6 +1190,18 @@ const HIST_EXIGENTE = {
           { q:'tonhao', s:'Cliente exigente. Quer a bebida antes da entrada, o salão em ordem e o prato da casa.' },
           { q:'bia', s:'E se ele gostar?' },
           { q:'tonhao', s:'Paga como ninguém. Se sair bravo, a cidade inteira fica sabendo.' } ] };
+/* v10.5.2: as conversas do meio do capítulo 3 (Garagem), só no Modo História: ficam pendentes no fim do 1º dia em que save.cap === 3 e a reforma zerou
+   (convQuit: 0 | 'pend' | 1) ou a nota geral do Gurugol chegou à nota mínima da Garagem (convTeto). Se o capítulo se cumpre no mesmo dia, passam direto a 1 */
+const HIST_QUITOU = {
+  falas:[ { q:'bia', s:'Última parcela da reforma paga, tio!' },
+          { q:'tonhao', nota:'rasgando o carnê', s:'A garagem da Rosa é nossa de novo.' },
+          { q:'dani', s:'E agora, o dinheiro vai pra onde?' },
+          { q:'bia', s:'Pro cofrinho da mudança.' } ] };
+const HIST_TETO = {
+  falas:[ { q:'dani', s:'Bia, olha o Gurugol! Nota 2,7!' },
+          { q:'bia', s:'Será que sobe mais?' },
+          { q:'tonhao', s:'Garagem tem teto, Bia. Pra nota subir de verdade, só num lugar maior.' },
+          { q:'bia', s:'Então é juntar pra mudança.' } ] };
 /* v9.6.10: o presente da vizinha, no fim do dia 1 (só no Modo História): ao terminar, a espada-de-são-jorge fica à mostra, de graça. save.convPlanta: 0 | 'pend' | 1 */
 const HIST_PLANTA = { dia:1,
   falas:[ { q:'tonhao', nota:'com um vaso na mão', s:'A dona Cida, aqui do lado, mandou de presente pela inauguração.' },
@@ -1302,7 +1336,7 @@ const BIA_IDS = ['tenis', 'corrida', 'bandeja', 'sudoku'];
 function upgradeCartao(id){ return BIA_IDS.indexOf(id) >= 0 ? 'bia' : 'melhorias'; }
 const HIST_NOMES = { bia:'Bia', tonhao:'Tonhão', dani:'Dani', joca:'Joca', cami:'Cami', anselmo:'Anselmo', lia:'Lia' };
 const CAIXA_MAX = 14;                                 // livro-caixa (v7.2): quantos dias da carreira ficam guardados
-const VERSAO = 'v10.5.1';                                // vai no resumo do Caixa
+const VERSAO = 'v10.5.2';                                // vai no resumo do Caixa
 const DIVULGA_DIA = 4;                                // antes disso, o movimento é o da inauguração (sem custo); v9.0.2: dia 4, e o padrão é o boca a boca
 function divulgaAberta(n, sv){ return devLivre() || n >= DIVULGA_DIA && !(sv && sv.convDiv === 'pend'); }   // no modo dev, desde o dia 1; v9.0.3: no Modo História, só depois da conversa
 /* v9.6.4: a Efood (os entregadores) só abre depois da conversa dos entregadores, no Modo História; antes dela, nenhum tipo com `retira` vem na agenda */

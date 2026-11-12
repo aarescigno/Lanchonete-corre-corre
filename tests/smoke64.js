@@ -21,7 +21,7 @@ ok(!g.devCumpre(),'no Livre devCumpre não faz nada'); g.devReal(true);
 
 // 2. as cenas
 { const c=L.devCenas();
-  ok(c.length===1+2*L.HISTORIA.length+7+L.LIBERA.length,'devCenas: '+c.length+' itens');
+  ok(c.length===1+2*L.HISTORIA.length+9+L.LIBERA.length,'devCenas: '+c.length+' itens');
   ok(c[0].rot==='Abertura' && c[1].rot==='Cap. 1, antes' && c[2].rot==='Cap. 1, depois' && c.some(x=>x.rot==='Cartão: bia') && c.slice(1).every(x=>x.falas && x.falas.length),'rótulos e falas'); }
 
 // 3. assistir não muda o save
@@ -52,7 +52,7 @@ ok(!('clima' in L.DEV.forca) && !('quebra' in L.DEV.forca),'Sorteio limpa a for�
 g.devForca('quebra','cafeteira'); g.sortear(n); g.resetDay(n); ok(g.quebras.some(q=>q.id==='cafeteira'),'a força vale também com o sorteio do dia já feito'); g.devForca('quebra','');
 
 // 6. VIP no Terraço: o 3º grupo é VIP e exigente
-g.devCapitulo(8); g.devForca('vip','vem'); g.resetDay(g.save.dia);
+g.devCapitulo(9); g.devForca('vip','vem'); g.resetDay(g.save.dia);
 { const s=g.buildSchedule(g.day); ok(s[2] && s[2].vip,'o 3º grupo do dia é VIP'); g.startDay?0:0;
   g.state='playing'; g.schedule=s; g.arrive(Object.assign({},s[2]));
   ok(g.groups.some(x=>x.vip && x.exigente),'no Terraço o VIP é o exigente'); }

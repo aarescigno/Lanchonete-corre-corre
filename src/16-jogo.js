@@ -1151,9 +1151,19 @@ class Game {
         const ge = avalGeral(sv.aval);
         if (this.stats.completas >= co.obj.completas && ge && Math.round(ge.nota * 10) / 10 >= co.obj.nota) sv.capFeito = 1;
       }
+      if (co.obj.vip && this.stats.vip >= co.obj.vip) sv.capVezes++;   // v10.5.2, cap. 7: o dia com VIPs que pagaram a conta (não precisam ser seguidos)
+      if (co.obj.drinks && this.stats.drinks >= co.obj.drinks) sv.capVezes++;   // v10.5.2, cap. 10: o dia com coquetéis servidos
       const ob = this.capObj(sv, true);
       cap = { n:sv.cap, titulo:co.titulo, itens:ob.itens, ok:ob.ok };
       if (ob.ok) sv.conversa = 'depois';
+    }
+    if (!tomou && histLiga() && sv.histV === 1 && sv.cap === 3){   // v10.5.2: as conversas do meio do cap. 3 (Garagem)
+      if (sv.conversa === 'depois'){ sv.convQuit = 1; sv.convTeto = 1; }   // o capítulo se cumpre hoje: a conversa de depois já diz o mesmo
+      else {
+        const ge3 = avalGeral(sv.aval), nota3 = ge3 ? Math.round(ge3.nota * 10) / 10 : null;
+        if (!sv.convQuit && !sv.emp.resto) sv.convQuit = 'pend';
+        if (!sv.convTeto && nota3 != null && nota3 >= avalMinimo(this.ponto)) sv.convTeto = 'pend';
+      }
     }
     if (!tomou && histLiga() && sv.histV === 1 && d.n >= HIST_CARDAPIO.dia && !sv.convCard) sv.convCard = 'pend';   // v9.0.1: saves antigos que já passaram do dia 2 veem a conversa no próximo fim de dia
     if (!tomou && histLiga() && sv.histV === 1 && d.n >= HIST_ENTREGA.dia - 1 && !sv.convEnt) sv.convEnt = 'pend';   // v9.6.2: a conversa dos entregadores; v9.6.4: no fim do dia anterior ao 1º com motoboy (o >= cuida dos saves antigos)
@@ -1248,6 +1258,9 @@ class Game {
     const c = HISTORIA[sv.cap - 1];
     if (!c || c.ponto !== sv.salao.ponto || !histLiga()) return null;   // v9: o cap. 4 só vale depois da mudança (e sem a História, no modo dev, não há objetivo)
     const o = c.obj, itens = [], ge = avalGeral(sv.aval), nota = ge ? Math.round(ge.nota * 10) / 10 : null;
+    if (o.equipe){ const nm = o.equipe === 'cami' ? 'Cami' : 'Lia', fem = sv.equipe[o.equipe] > 0; itens.push({ txt:fem ? nm + ' contratada' : 'Contratar a ' + nm, ok:fem }); }   // v10.5.2: contratar a Cami (cap. 7) ou a Lia (cap. 10)
+    if (o.vip) itens.push({ txt:o.vip + ' VIPs bem atendidos num dia, ' + o.vezes + ' vezes (' + Math.min(sv.capVezes, o.vezes) + ' de ' + o.vezes + ')', ok:sv.capVezes >= o.vezes });
+    if (o.drinks) itens.push({ txt:o.drinks + ' coquetéis servidos num dia, ' + o.vezes + ' vezes (' + Math.min(sv.capVezes, o.vezes) + ' de ' + o.vezes + ')', ok:sv.capVezes >= o.vezes });
     if (o.azul) itens.push({ txt:'Fechar ' + o.azul + ' dias no azul' + (pontoOf(c.ponto).aluguel ? ' pagando o aluguel' : '') + ' (' + Math.min(sv.capAzul, o.azul) + ' de ' + o.azul + ')', ok:sv.capAzul >= o.azul });
     if (o.marmitas) itens.push({ txt:o.marmitas + ' marmitas e nota ' + fmtNota(o.nota) + ' no mesmo dia (' + (fim ? 'hoje' : 'no último dia') + ': ' + (sv.capMarm || 0) + (sv.capMarm === 1 ? ' marmita' : ' marmitas') + ', nota ' + fmtNota(ge ? ge.nota : null) + ')', ok:!!sv.capFeito });
     if (o.completas) itens.push({ txt:o.completas + ' refeições completas e nota ' + fmtNota(o.nota) + ' no mesmo dia (' + (fim ? 'hoje' : 'no último dia') + ': ' + (sv.capComp || 0) + (sv.capComp === 1 ? ' completa' : ' completas') + ', nota ' + fmtNota(ge ? ge.nota : null) + ')', ok:!!sv.capFeito });
@@ -1267,7 +1280,7 @@ class Game {
      de ponto (v9: o cap. 4 começa em mudarPonto) */
   avancaCap(){
     const sv = this.save;
-    sv.cap++; sv.capDia = sv.dia; sv.capAzul = 0; sv.capFeito = 0;
+    sv.cap++; sv.capDia = sv.dia; sv.capAzul = 0; sv.capFeito = 0; sv.capVezes = 0;
     const c = HISTORIA[sv.cap - 1], ativo = !!c && c.ponto === sv.salao.ponto && histLiga();
     sv.conversa = ativo ? 'antes' : null;
     if (sv.cap === 2){ sv.equipe.dani = Math.max(sv.equipe.dani, 1); this.dani.reset(); this.joca.reset(); this.cami.reset(); }
@@ -1287,7 +1300,7 @@ class Game {
     const sv = this.save, nm = avalMinimo(this.ponto), din = Math.max(0, p.mudanca - sv.bank), nota = this.notaGurugol != null && this.notaGurugol >= nm ? 0 : nm;
     return din || nota ? { din, nota } : null;
   }
-  /* v9.1: o cartão aparece com o capítulo de agora a partir do 1º capítulo do próximo ponto (4 para a área industrial, 6 para a Avenida) */
+  /* v9.1: o cartão aparece com o capítulo de agora a partir do 1º capítulo do próximo ponto (4 para a área industrial, 6 para a Avenida, 9 para o Terraço) */
   get mudancaVisivel(){
     const p = this.proximoPonto, c1 = p && HISTORIA.find(c => c.ponto === p.id);
     return !!p && this.save.salao.ponto === this.ponto.id && (devLivre() || this.save.cap >= (c1 ? c1.cap : 4));
@@ -1313,8 +1326,8 @@ class Game {
     if (!para || !this.mudancaVisivel || this.mudancaFalta) return false;
     if (!devLivre()){ sv.bank -= para.mudanca; caixaGasto(sv, 'sal', para.mudanca); }
     this.trocaPonto(para);
-    const chap = HISTORIA[sv.cap - 1];   // v9.1: o capítulo de agora é do ponto novo? Então começa (o 4 na área industrial, o 6 na Avenida)
-    if (chap && chap.ponto === para.id){ sv.capDia = sv.dia; sv.capAzul = 0; sv.capFeito = 0; sv.conversa = histLiga() ? 'antes' : null; }
+    const chap = HISTORIA[sv.cap - 1];   // v9.1: o capítulo de agora é do ponto novo? Então começa (o 4 na área industrial, o 6 na Avenida, o 9 no Terraço)
+    if (chap && chap.ponto === para.id){ sv.capDia = sv.dia; sv.capAzul = 0; sv.capFeito = 0; sv.capVezes = 0; sv.conversa = histLiga() ? 'antes' : null; }
     this.tablesKey = ''; this.buildTables();
     writeSave(sv);
     this.resetDay(this.shopNext);
@@ -1885,7 +1898,7 @@ class Game {
     if (!DEV.on) return false;
     MANUT.equip.forEach(q => { this.save.manut[q.id] = v; }); writeSave(this.save); return true;
   }
-  /* v10.2.1: pula para o começo do capítulo n (1 a 9; 10 = o Fim, depois do último): liga o jeito De verdade, guarda o save dev de antes
+  /* v10.2.1: pula para o começo do capítulo n (1 a 11; 12 = o Fim, depois do último): liga o jeito De verdade, guarda o save dev de antes
      (devDesfaz volta a ele) e monta o save pela tabela DEV_CAPS. A tela toca a conversa de antes e abre a lojinha */
   devCapitulo(n){
     const D = DEV_CAPS[clamp(Math.round(+n) || 1, 1, DEV_CAPS.length) - 1];
@@ -1894,7 +1907,7 @@ class Game {
     this.devReal(true);
     lsSet(LS.devBak, JSON.stringify(this.save));
     const sv = normSave({ treino:true }), ativo = n <= HISTORIA.length;
-    sv.histV = 1; sv.cap = n; sv.dia = D.dia; sv.capDia = D.dia; sv.capAzul = 0; sv.capFeito = 0; sv.conversa = ativo ? 'antes' : null; sv.bank = D.caixa;
+    sv.histV = 1; sv.cap = n; sv.dia = D.dia; sv.capDia = D.dia; sv.capAzul = 0; sv.capFeito = 0; sv.capVezes = 0; sv.conversa = ativo ? 'antes' : null; sv.bank = D.caixa;
     this.save = sv; this.up = sv.up;
     for (let i = 1; i <= PONTOS.findIndex(p => p.id === D.ponto); i++) this.trocaPonto(PONTOS[i]);
     sv.pontoDia = D.pdia; sv.conversa = ativo ? 'antes' : null; sv.capDia = D.dia;
@@ -1902,7 +1915,7 @@ class Game {
     sv.emp = normEmprestimo(resto ? { resto, amort:r.amort, j:r.juros, ini:r.ini, ref:true } : {});
     sv.convPlanta = D.dia > HIST_PLANTA.dia ? 1 : 0; if (sv.convPlanta) sv.decor = normDecor({ espada:1 });
     sv.convCard = D.dia > HIST_CARDAPIO.dia ? 1 : 0; sv.convDiv = D.dia >= DIVULGA_DIA ? 1 : 0; sv.convEnt = D.dia >= HIST_ENTREGA.dia ? 1 : 0;
-    sv.convExig = n >= 9 ? 1 : 0; sv.socorro = 0; sv.convSocorro = 0;
+    sv.convExig = n >= 10 ? 1 : 0; sv.socorro = 0; sv.convSocorro = 0; sv.convQuit = sv.convTeto = n > 3 ? 1 : 0;
     sv.efoodNota = D.dia > HIST_ENTREGA.dia ? 1 : 0; sv.vipVisto = D.dia > 5 ? 1 : 0;
     // equipe, cursos e melhorias pela tabela (o Fim: tudo no máximo, com a Lia)
     if (D.eq){
@@ -1917,8 +1930,7 @@ class Game {
       this.devSegueCursos();
     } else { this.devEquipe('max'); this.devMelhorias(true); sv.equipe.lia = 1; sv.equipe.anselmo = STAFF.anselmo.levels.length - 1; sv.equipe = normEquipe(sv.equipe, this.ponto); }
     // cartões da lojinha: os de antes do ponto, vistos; os do ponto, só no 2º capítulo dele e com a pessoa contratada
-    const pn = this.ponto.nivel, seg = n === 5 || n === 7 || n === 9 || n === 10;
-    LIBERA.forEach(L => { sv.libera[L.id] = !L.nivel || L.nivel < pn ? 2 : (L.nivel === pn && seg && (L.id === 'confeitaria' || sv.equipe[L.id] > 0)) ? 2 : 0; });
+    this.devLibera(n, false);
     // Manual: o Básico e as fichas dos pontos visitados
     sv.manual = MANUAL.filter(f => f.aba === 'basico' || PONTOS.slice(0, PONTOS.findIndex(p => p.id === D.ponto) + 1).some(p => f.id === 'p-' + p.id)).map(f => f.id);
     sv.manualNovo = [];
@@ -1953,20 +1965,27 @@ class Game {
   }
   devLojinha(todos){
     if (!DEV.on) return false;
-    const sv = this.save, n = clamp(sv.cap, 1, DEV_CAPS.length), pn = this.ponto.nivel, seg = n === 5 || n === 7 || n === 9 || n === 10;
-    LIBERA.forEach(L => { sv.libera[L.id] = todos || !L.nivel || L.nivel < pn ? 2 : (L.nivel === pn && seg && (L.id === 'confeitaria' || sv.equipe[L.id] > 0)) ? 2 : 0; });
-    writeSave(sv); return true;
+    this.devLibera(clamp(this.save.cap, 1, DEV_CAPS.length), todos); return true;
+  }
+  /* v10.5.2: os cartões da lojinha no capítulo n: os de antes do ponto, abertos; os do ponto, nos capítulos seguintes ao 1º dele (5, 8, 9, 11, 12), com a pessoa
+     contratada, e o da Cami no cap. 7 e o da Lia no 10 (o objetivo é contratá-las) */
+  devLibera(n, todos){
+    const sv = this.save, pn = this.ponto.nivel, seg = n === 5 || n === 8 || n === 9 || n === 11 || n === 12;
+    LIBERA.forEach(L => { sv.libera[L.id] = todos || !L.nivel || L.nivel < pn ? 2 : (L.nivel === pn && (seg && (L.id === 'confeitaria' || sv.equipe[L.id] > 0) || (n === 7 && L.id === 'cami') || (n === 10 && L.id === 'lia'))) ? 2 : 0; });
+    writeSave(sv);
   }
   devConversas(modo){
     if (!DEV.on) return false;
     const sv = this.save, d = sv.dia;
-    if (modo === 'vistas'){ sv.convPlanta = sv.convCard = sv.convDiv = sv.convEnt = sv.convExig = 1; }
+    if (modo === 'vistas'){ sv.convPlanta = sv.convCard = sv.convDiv = sv.convEnt = sv.convExig = sv.convQuit = sv.convTeto = 1; }
     else {
       if (d > HIST_PLANTA.dia && sv.convPlanta !== 1) sv.convPlanta = 'pend';
       if (d >= HIST_CARDAPIO.dia && sv.convCard !== 1) sv.convCard = 'pend';
       if (d >= DIVULGA_DIA && sv.convDiv !== 1) sv.convDiv = 'pend';
       if (d >= HIST_ENTREGA.dia - 1 && sv.convEnt !== 1) sv.convEnt = 'pend';
       if (this.ponto.exigente && sv.convExig !== 1) sv.convExig = 'pend';
+      if (sv.convQuit !== 1) sv.convQuit = 'pend';   // v10.5.2: as do cap. 3
+      if (sv.convTeto !== 1) sv.convTeto = 'pend';
     }
     writeSave(sv); return true;
   }

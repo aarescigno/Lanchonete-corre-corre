@@ -12,9 +12,9 @@ const UP = "{tenis:true,corrida:true,maquina:true,cafeteira:true,bandeja:true,su
 const PT = {
   garagem:  { dia:7,  cap:3, eq:"{tonhao:2,dani:3}", extra:"" },
   industrial:{ dia:11, cap:5, eq:"{tonhao:2,dani:3,joca:3,tvs:1}", extra:",daniCursos:{confCaseira:1},libera:{confeitaria:2,joca:2}" },
-  avenida:  { dia:15, cap:7, eq:"{tonhao:2,dani:3,joca:3,cami:3,camiModo:'mesas',anselmo:2,tvs:1}", extra:",daniCursos:{confCaseira:1,confGourmet:1},jocaCursos:{espresso:1},camiCursos:{agil:1,mesa:1},libera:{confeitaria:2,joca:2,cami:2,anselmo:2}" },
+  avenida:  { dia:15, cap:8, eq:"{tonhao:2,dani:3,joca:3,cami:3,camiModo:'mesas',anselmo:2,tvs:1}", extra:",daniCursos:{confCaseira:1,confGourmet:1},jocaCursos:{espresso:1},camiCursos:{agil:1,mesa:1},libera:{confeitaria:2,joca:2,cami:2,anselmo:2}" },
 };
-const SALVA = id => { const p = PT[id]; return "g.save=L.normSave({dia:" + p.dia + ",bank:9000,cap:" + p.cap + ",histV:1,maxDay:" + p.dia + ",pontoDia:5,up:" + UP + ",equipe:" + p.eq + ",cursos:" + CUR + ",decor:" + DEC + ",salao:{ponto:'" + id + "'}" + p.extra + "}); g.up=g.save.up;" +
+const SALVA = id => { const p = PT[id]; return "g.save=L.normSave({dia:" + p.dia + ",bank:9000,cap:" + p.cap + ",histV:1,capV:2,maxDay:" + p.dia + ",pontoDia:5,up:" + UP + ",equipe:" + p.eq + ",cursos:" + CUR + ",decor:" + DEC + ",salao:{ponto:'" + id + "'}" + p.extra + "}); g.up=g.save.up;" +
   "{const P=L.pontoOf('" + id + "'); const n=P.lugares/4; const r=L.salaoAuto(Array.from({length:n},(_,i)=>({seats:4,c:i%4})),P); if(r){ g.save.salao.mesas=r; g.save.salao=L.normSalao(g.save.salao);} g.tablesKey=''; g.buildTables();}" +
   (id === 'avenida' ? "{ g.save.salao.mesas.slice(0,2).forEach(m=>m.cami=1); g.tablesKey=''; g.buildTables(); }" : ""); };
 const DIA = (id, seg) => BASE + SALVA(id) + "g.mode='carreira'; g.startDay(" + PT[id].dia + "); g.begin(); window.run(" + seg + ",true);";

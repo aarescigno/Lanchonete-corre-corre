@@ -1,6 +1,6 @@
 # v10.5.2 — O ritmo da história (etapa R2)
 
-**Situação:** aprovada
+**Situação:** entregue em 12/11
 **Origem:** revisão do balanceamento e da retenção pedida pelo usuário em 12/11 (decisões do mesmo dia: conversas no meio do capítulo 3 e um capítulo novo na Avenida e outro no Terraço; falas e títulos aprovados pelo usuário como estão, em 12/11).
 
 ## Objetivo
@@ -69,14 +69,14 @@ A ordem nova: 1 a 6 como hoje; **7 novo (Avenida)**; 8 = o antigo 7 ("Nota de re
 - `tests/carreira.js`: `capDia` de 1 a 11 e a linha `HISTORIA`; `tests/bot.js` se o bot precisar contratar a Cami e a Lia mais cedo.
 
 ## Tarefas
-- [ ] T1 `smoke69` com os CA1 a CA7 (falhando) e a linha dele no `run_all.sh`.
-- [ ] T2 `HISTORIA` com os dois capítulos novos; `capObj`, o fim do dia e `avancaCap` com `equipe`, `vip`, `drinks`, `vezes` e `capVezes`.
-- [ ] T3 `HIST_QUITOU` e `HIST_TETO`: pendência no fim do dia, fila do `fluxoHistoria`.
-- [ ] T4 `normSave`: campos novos e a conversão dos saves da v10.5.
-- [ ] T5 Modo dev: `DEV_CAPS`, botões e conversas.
-- [ ] T6 Smokes e capturas antigos que citam os capítulos 7 a 9 pelo número (ver Avisos) passam aos números novos.
-- [ ] T7 `carreira.js` com 11 capítulos; calibração (passos 1 a 3) anotada em Testes; capturas do CA9.
-- [ ] Fechamento: `VERSAO`, `vtag`, `#ov-ver`, `docs/RESUMO.md`, `docs/TESTES.md`, `docs/PARTES.md`, esta spec como entregue, `tests/run_all.sh` verde, PR e merge.
+- [x] T1 `smoke69` com os CA1 a CA7 (falhando) e a linha dele no `run_all.sh`.
+- [x] T2 `HISTORIA` com os dois capítulos novos; `capObj`, o fim do dia e `avancaCap` com `equipe`, `vip`, `drinks`, `vezes` e `capVezes`.
+- [x] T3 `HIST_QUITOU` e `HIST_TETO`: pendência no fim do dia, fila do `fluxoHistoria`.
+- [x] T4 `normSave`: campos novos e a conversão dos saves da v10.5.
+- [x] T5 Modo dev: `DEV_CAPS`, botões e conversas.
+- [x] T6 Smokes e capturas antigos que citam os capítulos 7 a 9 pelo número (ver Avisos) passam aos números novos.
+- [x] T7 `carreira.js` com 11 capítulos; calibração (passos 1 a 3) anotada em Testes; capturas do CA9.
+- [x] Fechamento: `VERSAO`, `vtag`, `#ov-ver`, `docs/RESUMO.md`, `docs/TESTES.md`, `docs/PARTES.md`, esta spec como entregue, `tests/run_all.sh` verde, PR e merge.
 
 ## Avisos para a execução
 - Os números de capítulo fixos no código de jogo são só `cap >= 4`, `cap === 2` e `cap >= 2` (não mudam); `mudancaVisivel` já acha o 1º capítulo do ponto pela `HISTORIA`. O que muda de número está nos testes: `carreira.js`, `smoke42`, `smoke55`, `smoke60` a `smoke67` e os `shot_v10*.js` citam capítulos de 7 a 9.
@@ -92,6 +92,13 @@ A ordem nova: 1 a 6 como hoje; **7 novo (Avenida)**; 8 = o antigo 7 ("Nota de re
 Nenhuma.
 
 ## Desvios
-(No fechamento.)
+- **Medido** (`DIAS=90 node carreira.js 8`, 12/11): cap. 3 no dia 16, cap. 6 no 37, cap. 7 no 40, cap. 8 no 41, cap. 9 no 45, cap. 10 no 48, cap. 11 no 49; mudança para a área industrial no dia 27, para a Avenida no 35 e para o Terraço no 43. O cap. 7 levou 3 a 4 dias depois do 6 (mediana 3) e o cap. 10 levou 3 dias depois do 9: dentro de 3 a 6, então `vip` 3 e `drinks` 8 ficaram. A história acabou no dia 49 (alvo 48 a 60), com 0 dias no negativo, 0 empréstimos à força e 0 lanchonetes tomadas. `smoke69`: 86 checagens verdes.
+- **Conversão de save com a conversa de depois pendente:** a Regra manda 7 → 7 e 9 → 10, mas um save da v10.5 que fechou o antigo cap. 7 (ou 9) e ainda tem `conversa: 'depois'` pendente é o capítulo cumprido, então vira o 8 (ou o 11) e a conversa de depois toca no capítulo certo. Sem isso o jogador ouviria "Três dias de VIP saindo feliz!" sem ter jogado o capítulo novo. Coberto no `smoke69` (6). Os saves sem a conversa pendente seguem a Regra.
+- **Pré-v10.5, `cap === 9 && v10 !== 1`:** a regra velha do `normSave` (a parte A da v10, sem o campo `v10`, abre "Do começo ao fim" com a conversa de antes) passou a valer para o cap. 11, que é onde "Do começo ao fim" está agora.
+- **Manual:** o texto não tem ficha que se revele por número de capítulo (os ganchos são por ponto e por dia), então nenhuma ficha mudou.
+- **Cartões da Cami e da Lia no modo dev:** nos saves do cap. 7 e do 10 (as linhas pedem Cami 0 e Lia 0) o cartão delas é aberto de propósito (`devLibera`), senão o objetivo "Contratar" não teria como ser cumprido ali; nos outros capítulos vale a regra de antes (o cartão da pessoa contratada abre do 2º capítulo do ponto em diante).
+- **Em aberto para o usuário (pergunta, não mudou nada):** no jogo de verdade, o cartão da Cami só abre depois do curso de espresso do Joca (`LIBERA.cami`, sem garantia por dia, `ate:999`), e o da Lia só depois de um curso do Tonhão (`entradas` ou `alta`). Quem não fizer esses cursos não consegue cumprir "Contratar a Cami" no cap. 7 nem "Contratar a Lia" no 10 (o bot os faz). Se quiser, uma garantia por dia (`ate`) nesses dois cartões resolve com uma linha cada.
+- **Testes e capturas antigos:** `smoke42`, `smoke60`, `smoke63`, `smoke64`, `carreira.js` e os `shot_*` passaram aos números novos (e `capV:2` nos saves montados à mão); os demais smokes que montam saves com capítulo de 7 a 9 sem `capV` seguem passando porque a conversão dá o mesmo capítulo (8 → 9) ou um que só serve de pano de fundo.
+- **Capturas (CA9):** as 6 conversas novas (as duas da Garagem e as de antes e depois dos caps. 7 e 10, 20 falas) cabem no balão sem cortar texto; as capturas foram apagadas.
 
 **Modelo:** Sonnet, esforço alto (história, save, modo dev e muitos testes renumerados ao mesmo tempo).
