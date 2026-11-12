@@ -58,9 +58,9 @@ novo(); g.startDay(5); g.begin(); g.schedule=[{t:1e9,type:'estudante',color:0}];
 // ---------- custos ----------
 ok(L.CONTAS.base===20 && L.INGRED.prato===0.35 && L.DRINK_PRICE.coffee===3 && L.JUICE.price===8,'custos: gás e geladeira R$ 20/dia, ingredientes 35%, cafezinho R$ 3, suco R$ 8');
 ok(L.payroll({tonhao:2,dani:4,tv:true,som:true})===125,'folha completa da Garagem: R$ 125 por dia (Tonhão 80 + Dani 40 + TV 3 + som 2; v10.5: salários de verdade)');
-ok(L.DAYS.map(d=>d.meta).join()==='50,160,200,90,130,205,250','metas de lucro realistas (R$ 50 a 250; v8.3.9; v10.5: × 1,1 quatro vezes, arredondadas a 5, para os salários e preços de verdade)');
+ok(L.DAYS.map(d=>d.meta).join()==='35,160,200,90,130,185,250','metas de lucro realistas (R$ 35 a 250; v8.3.9; v10.5.1: dias 1 e 6 baixados para 35 e 185; v10.5: × 1,1 quatro vezes, arredondadas a 5, para os salários e preços de verdade)');
 ok(L.DAYS.map(d=>d.expert).join()==='80,320,340,160,205,415,455','3 estrelas pelo jogo perfeito (v8.3.9; v10.5: × 1,1 quatro vezes): R$ 80 a 455');
-ok(L.bomGoal(L.DAYS[0])===75,'dia 1: 2 estrelas com R$ 75 (v10.5; era R$ 50)');
+ok(L.bomGoal(L.DAYS[0])===50,'dia 1: 2 estrelas com R$ 50 (v10.5.1: meta 35; na v10.5 era R$ 75)');
 // ---------- Manual (v9.6.7: no lugar do Como jogar; sem preços nem números) ----------
 { let err=null; try{ els['btn-manual'].fire('click'); }catch(e){ err=e; }
   ok(!err && els['ov-manual'].classList.contains('show') && els['manual-grid'].children.length>0,'Manual abre com as fichas do Básico'+(err?': '+err:'')); }

@@ -72,7 +72,7 @@ const sentar=(g,type)=>{ const grp=g.spawn({ type:type||'casal', color:0, vip:fa
 
 // ---------- 5. a ficha l-musica ----------
 { const H=jogo('terraco'), {g,L}=H; const f=L.MANUAL.find(x=>x.id==='l-musica');
-  ok(f && f.aba==='lojinha' && f.nome==='Música ao vivo' && f.linha==='Trio ou pianista: a paciência nas mesas dura mais e o ambiente melhora.','a ficha l-musica existe, na aba lojinha');
+  ok(f && f.aba==='lojinha' && f.nome==='Música ao vivo' && f.linha==='Trio ou pianista: a paciência nas mesas dura mais, o ambiente melhora e a mesa pede mais uma rodada.','a ficha l-musica existe, na aba lojinha');
   ok(!/\d/.test(f.linha),'sem números');
   g.save.manual=g.save.manual.filter(x=>x!=='l-musica'); g.mode='carreira'; loja(H,'lanchonete','divulga');
   ok(g.save.manual.indexOf('l-musica')>=0,'o cartão aparece e a ficha é revelada'); }
