@@ -4,6 +4,13 @@ Registro das ideias e dos retornos de quem jogou, com o texto original, e de ond
 
 ---
 
+## 12/11/2026 — usuário: salários da equipe compatíveis com a vida real
+> "Pensando em próximas etapas, os salários dos funcionários estão compatíveis com suas funções pensando na vida real em todos os ambientes? Gostaria que fosse mais próximo possível sem perder jogabilidade"
+
+- Destino: etapa **S — Salários de verdade (v10.5)**, `docs/spec-v10.5.md` (aprovada em 12/11, depois da entrevista) e pesquisa em `docs/pesquisa-salarios.md`. Decisões: Tonhão com salário que cresce (50 a 120), ~80% do custo real, cardápio ×1,2 (PF a R$ 30) e metas pelo bot, sem gorjeta dos 10% para a Cami, Dani com ajuda de custo (15 a 40), música mais cara (o quarteto vira trio de cordas), a base do Tonhão e da Dani nunca é cortada, e a 4b e a 4c passam a v10.6 e v10.7.
+
+---
+
 ## 11/11/2026 — usuário: modo dev completo
 > "O modo dev precisa açambarcar todos esses recursos novos, tipo poder pular para qualquer etapa, adicionar dinheiro, revelar pontos da história etc. Planeje essa implementação pra já, como está está fraco"
 
