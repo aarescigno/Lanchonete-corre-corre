@@ -301,6 +301,16 @@ function drawTableOverlay(ctx,g,t,tm,menu){
     drawIcon(ctx,'coffee',3,0,0.75);
     ctx.restore();
   }
+  const vb = grp.vontadeBalao;
+  if (vb){   // v10.5.3: a vontade da freguesia: o doce ou a xícara de espresso apagados (cinza, meia opacidade); não dá para atender e não se clica
+    const cy = t.cy + 2 + (grp.juiceOpen && grp.juicePending > 0 ? 34 : 0) + (grp.cafeBalao ? 34 : 0) + (grp.doceBalao ? 52 : 0) + (grp.cafeEspBalao ? 34 : 0) + (grp.drinkOpen ? 34 : 0);
+    ctx.save(); ctx.translate(bx + 4,cy + 6); ctx.globalAlpha = 0.5;
+    const vp = (RM ? 1 : 1 + 0.1*Math.sin(tm*9)) * (vb === 'doce' ? 1.4 : 1); ctx.scale(vp,vp);
+    rr(ctx,-14,-15,40,28,9); fs(ctx,'#d8d4cc',2.2);
+    try { ctx.filter = 'grayscale(1)'; } catch(e){}
+    drawIcon(ctx,vb === 'doce' ? 'doce' : 'cafeesp',3,1,0.72,vb === 'doce' ? doceIcone(g.up) : 0);
+    ctx.restore();
+  }
 }
 
 function drawCluster(ctx,grp,x,y,tm,o){

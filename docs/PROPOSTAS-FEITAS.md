@@ -4,6 +4,13 @@ Retornos com destino já feito, movidos de `docs/PROPOSTAS.md` em 30/10/2026 sem
 
 ---
 
+## 12/11 — usuário: garantia para o Joca e a Cami pela vontade da freguesia
+Texto original: "Precisa de garantia para Cami e Joca, e a garantia deve ser uma necessidade dos clientes, coisas que pedem bastante que faça com que os cursos sejam feitos e desencadeiem as histórias"
+Decisões do usuário (12/11): balão apagado e nota de Cardápio um pouco menor; a vontade cresce a cada dia sem o curso (até o dobro); começa junto com o cartão do curso; a garantia é uma conversa da equipe sobre a vontade da freguesia, no 3º dia e repetindo curtinha a cada 3 dias.
+Destino: `docs/spec-v10.5.3.md` (etapa V).
+
+---
+
 ## 12/11/2026 — usuário: o salário da Dani (e do Joca) acompanha a carreira
 > "Depois disso temos um ajuste! Dani é pra ser a chef de doces, essa é a progressão dela, lembra? Tem uma "progressão de carreiras" no jogo, isso saiu do plano em algum momento?"
 

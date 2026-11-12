@@ -949,7 +949,8 @@ class Game {
     const st = g.state, comeu = !bravo || st === 'eating' || st === 'wantBill';
     const ve = g.retira ? [1, 1, !bravo, 0, 0] : !bravo || comeu ? [1, 1, 1, 1, 1] : st === 'queue' || st === 'toTable' ? [1, 0, 0, 0, 0] : st === 'wantOrder' ? [1, 1, 0, 0, 1] : [1, 1, 0, 1, 1];
     // v10, a refeição completa: a comida é a média das notas dos tempos servidos; o cardápio perde TEMPOS.semSobremesa sem a confeitaria e TEMPOS.semBar sem o Anselmo no dia
-    const comida = g.tempos ? (g.notaComida || 1) : (g.pratoQ || 1), menos = g.tempos ? (this.up.confCaseira ? 0 : TEMPOS.semSobremesa) + (this.anselmoAtivo ? 0 : TEMPOS.semBar) : 0;
+    const vo = g.vontade || {};
+    const comida = g.tempos ? (g.notaComida || 1) : (g.pratoQ || 1), menos = g.tempos ? (this.up.confCaseira ? 0 : TEMPOS.semSobremesa) + (this.anselmoAtivo ? 0 : TEMPOS.semBar) : 0 + (vo.doce ? VONTADE.menos : 0) + (vo.cafe ? VONTADE.menos : 0);   // v10.5.3: a vontade que ficou sem resposta
     const s = [5 - A.porCoracao * (g.retira ? g.perdMesa : g.perdFila), bravo ? 1 : 5 - A.porCoracao * g.perdMesa, comida, g.semVeg ? 1 : avalMenu(this.cursos, cursosItem(this.save)) - menos, amb]
       .map((v, i) => ve[i] ? clamp(Math.round(v * 10) / 10, 1, 5) : null);
     // v8.6.4: a nota no Gurugol fica na escala do ponto (o serviço 5 vale o teto), mais o humor de quem avalia; v8.6.7: o humor
@@ -967,6 +968,7 @@ class Game {
       else if (!bravo && !this.up.confCaseira) txt = 'Faltou a sobremesa para fechar.';
       else if (!bravo && !this.anselmoAtivo) txt = 'Faltou uma carta de drinks.';
     }
+    if (!bravo && (vo.doce || vo.cafe) && Math.random() < VONTADE.coment) txt = pick((vo.doce ? ['Pedi sobremesa e não tinha!', 'Queria um docinho depois do almoço...'] : []).concat(vo.cafe ? ['Nem um espresso pra fechar o almoço?', 'Só tem cafezinho de garrafa?'] : []));   // v10.5.3
     if (!bravo && this.aprovado && Math.random() < 0.3) txt = FISCAL.coment;   // v9.4: no dia aprovado
     if (g.exigente && Math.random() < 0.5) txt = bravo ? 'Inaceitável!' : f >= 0.75 ? pick(['Impecável. Voltarei.', 'Serviço à altura do endereço.']) : f < 0.5 ? pick(['Esperava mais de um terraço.', 'Não é para tanto.']) : txt;   // v10.1
     if (bravo === 'mesa') this.stats.bravoMesa++;   // v9.0.4: gatilho do cartão da Bia
@@ -1168,6 +1170,10 @@ class Game {
     if (!tomou && histLiga() && sv.histV === 1 && d.n >= HIST_CARDAPIO.dia && !sv.convCard) sv.convCard = 'pend';   // v9.0.1: saves antigos que já passaram do dia 2 veem a conversa no próximo fim de dia
     if (!tomou && histLiga() && sv.histV === 1 && d.n >= HIST_ENTREGA.dia - 1 && !sv.convEnt) sv.convEnt = 'pend';   // v9.6.2: a conversa dos entregadores; v9.6.4: no fim do dia anterior ao 1º com motoboy (o >= cuida dos saves antigos)
     if (!tomou && histLiga() && sv.histV === 1 && this.stats.exigentes > 0 && !sv.convExig) sv.convExig = 'pend';   // v10.1: o 1º dia em que um exigente veio
+    if (!tomou && histLiga() && sv.histV === 1) [['doce', 'vontDoce'], ['cafe', 'vontCafe']].forEach(([q, k]) => {   // v10.5.3: a vontade da freguesia: a conversa no 3º dia de vontade e, enquanto o curso não sai, a curta a cada 3 dias
+      if (sv[k] === 'pend' || vontadeDia(sv, this.ponto, q, d.n) < VONTADE.conversa) return;
+      if (sv[k] === 0 || d.n - sv[k] >= VONTADE.repete) sv[k] = 'pend';
+    });
     if (!tomou && histLiga() && sv.histV === 1 && d.n >= HIST_PLANTA.dia && !sv.convPlanta) sv.convPlanta = 'pend';   // v9.6.10: o presente da vizinha, no fim do dia 1
     if (!tomou && histLiga() && sv.histV === 1 && d.n === DIVULGA_DIA - 1 && !sv.convDiv) sv.convDiv = 'pend';   // v9.0.2: a conversa da divulgação
     if (!tomou && histLiga() && sv.histV === 1){   // v9.0.4: a lojinha abre aos poucos: pelo gatilho do dia ou pela garantia (v9.1.1: com `nivel`, pelo dia no ponto, em qualquer capítulo; sem, só com cap < 4)
@@ -1915,6 +1921,7 @@ class Game {
     sv.emp = normEmprestimo(resto ? { resto, amort:r.amort, j:r.juros, ini:r.ini, ref:true } : {});
     sv.convPlanta = D.dia > HIST_PLANTA.dia ? 1 : 0; if (sv.convPlanta) sv.decor = normDecor({ espada:1 });
     sv.convCard = D.dia > HIST_CARDAPIO.dia ? 1 : 0; sv.convDiv = D.dia >= DIVULGA_DIA ? 1 : 0; sv.convEnt = D.dia >= HIST_ENTREGA.dia ? 1 : 0;
+    sv.vontDoce = sv.vontCafe = sv.vontDoceV = sv.vontCafeV = 0;   // v10.5.3: a vontade recomeça no capítulo
     sv.convExig = n >= 10 ? 1 : 0; sv.socorro = 0; sv.convSocorro = 0; sv.convQuit = sv.convTeto = n > 3 ? 1 : 0;
     sv.efoodNota = D.dia > HIST_ENTREGA.dia ? 1 : 0; sv.vipVisto = D.dia > 5 ? 1 : 0;
     // equipe, cursos e melhorias pela tabela (o Fim: tudo no máximo, com a Lia)
@@ -1977,7 +1984,7 @@ class Game {
   devConversas(modo){
     if (!DEV.on) return false;
     const sv = this.save, d = sv.dia;
-    if (modo === 'vistas'){ sv.convPlanta = sv.convCard = sv.convDiv = sv.convEnt = sv.convExig = sv.convQuit = sv.convTeto = 1; }
+    if (modo === 'vistas'){ sv.convPlanta = sv.convCard = sv.convDiv = sv.convEnt = sv.convExig = sv.convQuit = sv.convTeto = 1; sv.vontDoce = sv.vontCafe = Math.max(1, d - 1); sv.vontDoceV = sv.vontCafeV = 1; }
     else {
       if (d > HIST_PLANTA.dia && sv.convPlanta !== 1) sv.convPlanta = 'pend';
       if (d >= HIST_CARDAPIO.dia && sv.convCard !== 1) sv.convCard = 'pend';
@@ -1986,6 +1993,8 @@ class Game {
       if (this.ponto.exigente && sv.convExig !== 1) sv.convExig = 'pend';
       if (sv.convQuit !== 1) sv.convQuit = 'pend';   // v10.5.2: as do cap. 3
       if (sv.convTeto !== 1) sv.convTeto = 'pend';
+      if (vontadeDia(sv, this.ponto, 'doce', d - 1) > 0) sv.vontDoce = 'pend';   // v10.5.3
+      if (vontadeDia(sv, this.ponto, 'cafe', d - 1) > 0) sv.vontCafe = 'pend';
     }
     writeSave(sv); return true;
   }
