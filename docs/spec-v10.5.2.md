@@ -1,7 +1,7 @@
 # v10.5.2 — O ritmo da história (etapa R2)
 
-**Situação:** rascunho
-**Origem:** revisão do balanceamento e da retenção pedida pelo usuário em 12/11 (decisões do mesmo dia: conversas no meio do capítulo 3 e um capítulo novo na Avenida e outro no Terraço).
+**Situação:** aprovada
+**Origem:** revisão do balanceamento e da retenção pedida pelo usuário em 12/11 (decisões do mesmo dia: conversas no meio do capítulo 3 e um capítulo novo na Avenida e outro no Terraço; falas e títulos aprovados pelo usuário como estão, em 12/11).
 
 ## Objetivo
 A história para de ter um trecho mudo na Garagem e de correr nos pontos finais. No meio do capítulo 3, duas conversas marcam a reforma quitada e a nota que bateu no teto da garagem. Na Avenida e no Terraço, um capítulo a mais em cada ponto dá tempo de o jogador usar o que o ponto trouxe (a Cami e os VIPs; a Lia e os coquetéis) antes do capítulo da nota.
@@ -89,9 +89,9 @@ A ordem nova: 1 a 6 como hoje; **7 novo (Avenida)**; 8 = o antigo 7 ("Nota de re
 - No fechamento: checagens do `smoke69` e a calibração medida.
 
 ## Decisões em aberto
-- **As falas novas** (as duas conversas da Garagem e os capítulos 7 e 10) e os dois títulos ("Salão de gente grande" e "A casa completa") foram escritos pela sessão de planejar e ainda não foram lidos pelo usuário. Sugestão: aprovar como estão; se alguma fala não soar como a personagem, o usuário reescreve aqui antes da execução.
+Nenhuma.
 
 ## Desvios
 (No fechamento.)
 
-**Modelo:** planejar com o Opus antes (falta só o usuário aprovar as falas; depois disso, Sonnet, esforço alto: história, save, modo dev e muitos testes renumerados ao mesmo tempo).
+**Modelo:** Sonnet, esforço alto (história, save, modo dev e muitos testes renumerados ao mesmo tempo).
