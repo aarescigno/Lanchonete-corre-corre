@@ -4,6 +4,12 @@ Registro das ideias e dos retornos de quem jogou, com o texto original, e de ond
 
 ---
 
+## 12/11 — usuário: decisões da 4c (eventos de bairro), no planejamento
+Respostas às perguntas da sessão de planejar: frequência "1 por semana (Recomendado)"; preparo "Aviso na véspera (Recomendado)"; pratos juninos "Barraca junina na lojinha (Recomendado)"; jogo do Brasil "Gol na TV (Recomendado)".
+Destino: `docs/spec-v10.6.md` (aprovada em 12/11).
+
+---
+
 ## 12/11 — usuário: revisão do balanceamento e da retenção
 Texto original: "Revise o balanceamento do jogo" e "E analise também o quanto o jogo se torna inovador a cada etapa que se passa para a retenção dos jogadores."
 Medido na v10.5 com os bots: metas da Garagem no alvo (59% sem equipe, 92% com); área industrial e Avenida acima da faixa (97,8% e 97,5%); a música do Terraço dá prejuízo; o cap. 3 fica do dia 3 ao 16 sem conversa e a mudança da Garagem só sai entre os dias 19 e 27; na Avenida e no Terraço os capítulos fecham em 1 a 3 dias e a história acaba no dia 44.
