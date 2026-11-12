@@ -59,7 +59,7 @@ ok(g.state==='menu' && g.save.dia===3,'largar o dia no meio não avança a carre
 
 // ---------- caixa no negativo: 3 dias seguidos podem; no 4º, o banco cobre à força ----------
 novo({dia:10,bank:20});
-cont(); joga(0,0); const c10=g.contas;
+cont(); joga(0,0); const c10=g.contas+g.paid;   // v10.5: a folha do Tonhão (R$ 50) sai todo dia
 ok(g.save.bank===20-c10-g.result.div && g.save.neg===1,'prejuízo sem dinheiro: o caixa fica negativo ('+g.save.bank+'), 1º dia');
 ok(/negativo há 1 dia/.test(txt(els['end-msg'])),'o fim do dia avisa');
 els['btn-next'].fire('click'); ok(/no negativo há 1 dia/.test(els['shop-livre'].textContent) && /falta/.test(els['shop-livre'].className),'a lojinha avisa');
@@ -68,7 +68,7 @@ els['btn-shop-go'].fire('click'); ok(/Caixa no negativo/.test(els['intro-manut']
 joga(0,0); ok(g.save.neg===2,'2º dia no negativo');
 cont(); joga(0,0); ok(g.save.neg===3 && /amanhã/.test(txt(els['end-msg'])),'3º dia: o fim do dia avisa que amanhã o banco cobre');
 cont(); els['btn-shop-go'].fire('click'); ok(/Se fechar hoje assim/.test(els['intro-manut'].textContent),'a introdução do 4º dia avisa');
-const b3=g.save.bank; els['btn-start'].fire('click'); g.schedule=[]; g.nextIdx=0; const c4=g.contas; g.finishDay();
+const b3=g.save.bank; els['btn-start'].fire('click'); g.schedule=[]; g.nextIdx=0; const c4=g.contas+g.paid; g.finishDay();
 { const deve=-(b3-c4), forc=Math.ceil(deve/10)*10, r=g.result, row=g.save.caixa.slice(-1)[0];
   ok(r.forcado===forc && g.save.bank===b3-c4+forc && g.save.bank>=0 && g.save.neg===0,'4º dia no negativo: o banco cobre '+forc+' e o caixa volta a '+g.save.bank);
   ok(g.save.emp.resto===forc && g.save.emp.j===L.BANCO.forcado && g.save.emp.n===5,'à força: saldo do que cobriu, juros de 6% ao dia, 5 parcelas (v8.3.2)');
@@ -77,7 +77,7 @@ const b3=g.save.bank; els['btn-start'].fire('click'); g.schedule=[]; g.nextIdx=0
   // a parcela sai no fim do dia seguinte
   const p=g.parcela, b=g.save.bank, e0=g.save.emp; ok(p===Math.min(e0.resto,Math.ceil(e0.resto/5))+Math.round(e0.resto*e0.j),'parcela: amortização (1/5) e os juros do dia sobre o saldo');
   cont(); els['btn-shop-go'].fire('click'); ok(/Parcela do banco hoje/.test(els['intro-manut'].textContent),'a introdução lembra a parcela');
-  els['btn-start'].fire('click'); g.schedule=[]; g.nextIdx=0; g.money=1000; const cc=g.contas; g.finishDay();
+  els['btn-start'].fire('click'); g.schedule=[]; g.nextIdx=0; g.money=1000; const cc=g.contas+g.paid; g.finishDay();
   ok(g.result.par===p && g.save.bank===b+1000-cc-p && g.result.money===1000-cc,'a parcela sai do dinheiro, fora do lucro do dia');
   ok(g.save.emp.n===4 && g.save.caixa.slice(-1)[0].par===p,'faltam 4; o caixa mostra a parcela'); ok(/Parcela do banco/.test(txt(els['end-stats'])),'e o fim do dia');
 }
@@ -129,7 +129,7 @@ ok(JSON.parse(store[L.LS.save]).corta===false,'a chave fica gravada');
 
 // ---------- Turno sem fim não mexe no negativo ----------
 novo({dia:4,bank:-50}); g.startEndless(); g.begin(); g.money=0; g.custo=0; g.finishEndless(); ok(g.save.bank===-50,'turno sem fim com prejuízo: o caixa não desce além de onde estava');
-novo({dia:4,bank:-50}); g.startEndless(); g.begin(); g.money=500; g.custo=0; g.finishEndless(); ok(g.save.bank===-50+500-g.contas,'e o que ganha entra');
+novo({dia:4,bank:-50}); g.startEndless(); g.begin(); g.money=500; g.custo=0; g.finishEndless(); ok(g.save.bank===-50+500-g.contas-g.paid,'e o que ganha entra');
 
 // ---------- Missão zero no meio da campanha ----------
 novo({dia:6,bank:300}); g.startTreino(); g.acabouTreino(); ok(/Continuar: dia 6/.test(els['btn-treino-dia1'].textContent),'fim da Missão zero no dia 6: "Continuar: dia 6"');

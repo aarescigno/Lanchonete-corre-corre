@@ -22,7 +22,7 @@ const TIPOS=['estudante','executiva','familia','vovos','turma','motorista','nego
   ok(L.cursoOk(e,g.ponto) && L.cursoOk(a,g.ponto),'no Terraço, os dois cursos aparecem');
   const Ha=jogo(9,'avenida'), Hg=nova();
   ok(!Ha.L.cursoOk(Ha.L.cursoOf('entradas'),Ha.g.ponto) && !Ha.L.cursoOk(Ha.L.cursoOf('alta'),Ha.g.ponto) && !Hg.L.cursoOk(Hg.L.cursoOf('alta'),Hg.g.ponto),'na Avenida e na Garagem, não');
-  ok(FINAS.concat(ALTAS).every(k=>L.CARDAPIO[k].fino===true) && FINAS.concat(ALTAS).map(k=>L.CARDAPIO[k].preco).join()==='14,16,15,38,42,46','os 6 pratos finos, com os preços da Garagem');
+  ok(FINAS.concat(ALTAS).every(k=>L.CARDAPIO[k].fino===true) && FINAS.concat(ALTAS).map(k=>L.CARDAPIO[k].preco).join()==='17,19,18,46,50,55','os 6 pratos finos, com os preços da Garagem (v10.5: × 1,2)');
   ok(L.CARDAPIO.bruschetta.cat==='chapa' && L.CARDAPIO.bacalhau.cat==='frito' && L.CARDAPIO.quiche.cat==='assado' && ALTAS.every(k=>L.CARDAPIO[k].cat==='pf'),'categorias: entradas na chapa, no frito e no assado; principais no PF');
   ok(!L.CARDAPIO.bruschetta.carne && !L.CARDAPIO.quiche.carne && !L.CARDAPIO.risoto.carne && L.CARDAPIO.bacalhau.carne && L.CARDAPIO.peixe.carne,'sem carne: bruschetta, quiche e risoto');
   g.save.cursoDia=0; ok(g.buyCurso('entradas') && g.save.cursos.entradas===1 && g.save.bank===9000-600,'comprar o básico das entradas custa R$ 600');
@@ -30,8 +30,8 @@ const TIPOS=['estudante','executiva','familia','vovos','turma','motorista','nego
   g.save.cursoDia=0; ok(g.buyCurso('alta') && g.save.cursos.alta===1,'no dia seguinte, a alta gastronomia');
   g.save.cursoDia=0; ok(g.buyCurso('entradas') && g.save.cursos.entradas===2,'o avançado das entradas (Entradas de chef)');
   ok(L.pratoAv('bruschetta',g.save.cursos) && !L.pratoAv('risoto',g.save.cursos),'o avançado só vale para os pratos do curso');
-  ok(preco(L,g,'bruschetta')===Math.round(14*g.ponto.cardapio*1.15) && preco(L,g,'risoto')===Math.round(38*g.ponto.cardapio),'preço no Terraço (×'+g.ponto.cardapio+'): avançado ×1,15');
-  ok(L.precoPrato('medalhao',g.ponto,{})===Math.round(46*g.ponto.cardapio),'medalhão: R$ '+L.precoPrato('medalhao',g.ponto,{})+' no Terraço'); }
+  ok(preco(L,g,'bruschetta')===Math.round(17*g.ponto.cardapio*1.15) && preco(L,g,'risoto')===Math.round(46*g.ponto.cardapio),'preço no Terraço (×'+g.ponto.cardapio+'): avançado ×1,15');
+  ok(L.precoPrato('medalhao',g.ponto,{})===Math.round(55*g.ponto.cardapio),'medalhão: R$ '+L.precoPrato('medalhao',g.ponto,{})+' no Terraço'); }
 
 // ---------- 2. a regra do prato fino ----------
 { const H=terr(), {g,L}=H;
@@ -132,7 +132,7 @@ const TIPOS=['estudante','executiva','familia','vovos','turma','motorista','nego
   ok(typeof L.drawLia==='function' && L.LIA_HOME.x>766 && L.LIA_HOME.y>200,'drawLia e LIA_HOME expostos (na cozinha)');
   const sv=L.normSave(JSON.parse(JSON.stringify(g.save))); ok(sv.equipe.lia===1,'o save guarda a Lia');
   const old=L.normSave({ v10:1, dia:10, salao:{ ponto:'terraco' }, equipe:{ tonhao:1, dani:1, anselmo:2 }, daniCursos:{ confCaseira:1 } }); ok(old.equipe.lia===0 && !old.up.confAlta && old.cursos.entradas===undefined,'o save da v10.1 carrega igual, sem a Lia nem os cursos');
-  ok(/^v10\.(2|3|4)(\.|$)/.test(L.VERSAO),'VERSAO = série v10.2, v10.3 ou v10.4'); }
+  ok(/^v10\.(2|3|4|5)(\.|$)/.test(L.VERSAO),'VERSAO = série v10.2 a v10.5'); }
 
 // ---------- 8. as páginas desenham sem erro (cartão da Lia, Cardápio, os 6 pratos, a Lia na cozinha) ----------
 { const H=jogo(8,'terraco',{ v10:1, equipe:{ tonhao:3, dani:2, lia:1 }, cursos:{ entradas:2, alta:2 }, daniCursos:{ confCaseira:1, confGourmet:1, confAlta:1 } },true), {g,L,els}=H;

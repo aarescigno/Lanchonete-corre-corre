@@ -4,6 +4,20 @@ Retornos com destino já feito, movidos de `docs/PROPOSTAS.md` em 30/10/2026 sem
 
 ---
 
+## 12/11/2026 — usuário: o salário da Dani (e do Joca) acompanha a carreira
+> "Depois disso temos um ajuste! Dani é pra ser a chef de doces, essa é a progressão dela, lembra? Tem uma "progressão de carreiras" no jogo, isso saiu do plano em algum momento?"
+
+- A progressão não saiu do plano (está no jogo desde a v9.2 até a v10.3); faltava o salário acompanhar. Destino: ajuste na `docs/spec-v10.5.md` (ainda aprovada, sem execução): a diária é a do degrau mais alto. Dani: aprendiz 15 a 40, confeitaria caseira 75, gourmet 105, alta confeitaria 145. Joca: ajudante 65 a 90, espresso 100, cafés especiais 125. O degrau de curso nunca é cortado da folha.
+
+---
+
+## 12/11/2026 — usuário: salários da equipe compatíveis com a vida real
+> "Pensando em próximas etapas, os salários dos funcionários estão compatíveis com suas funções pensando na vida real em todos os ambientes? Gostaria que fosse mais próximo possível sem perder jogabilidade"
+
+- Destino: etapa **S — Salários de verdade (v10.5)**, `docs/spec-v10.5.md` (aprovada em 12/11, depois da entrevista) e pesquisa em `docs/pesquisa-salarios.md`. Decisões: Tonhão com salário que cresce (50 a 120), ~80% do custo real, cardápio ×1,2 (PF a R$ 30) e metas pelo bot, sem gorjeta dos 10% para a Cami, Dani com ajuda de custo (15 a 40), música mais cara (o quarteto vira trio de cordas), a base do Tonhão e da Dani nunca é cortada, e a 4b e a 4c passam a v10.6 e v10.7.
+
+---
+
 ## 02/11 — Letícia (beta-tester, WhatsApp pelo Arthur): 2ª rodada, Garagem e área industrial (v9.6.9)
 > [10:50] Ao fim do primeiro dia não tem nada para fazer de melhoria no jogo, poderia ter algo para a pessoa se sentir feliz e recompensada jogando
 > [10:51] A Dani aparece no menu equipe mesmo antes de ter entrado pra equipe

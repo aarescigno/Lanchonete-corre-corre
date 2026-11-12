@@ -114,14 +114,14 @@ const fala=(L,id)=>L.liberaOf(id);
   H.els['btn-next'].fire('click'); let n=0; while(!(g.conversa && /Terminei o curso/.test(g.conversa.fala.s)) && n<30){ toque(H.els); n++; } ok(g.conversa && /Terminei o curso/.test(g.conversa.fala.s),'a conversa do Joca toca no fim do dia do curso');
   passa(H); ok(g.save.libera.joca===1 && g.cartaoAberto('joca') && g.liberaNovo.includes('joca'),'depois dela: o cartão do Joca abre, com selo');
   H.L.setShopGrupo('equipe'); ok(H.L.shopSecoes()[1].includes('joca'),'o cartão do Joca fica na Equipe');
-  const eq=g.save.equipe; const f0=H.L.payroll(eq); g.save.bank=5000; ok(g.setStaff('joca',2) && eq.joca===2 && H.L.payroll(eq)-f0===45,'contratar põe no nível 2: R$ 45 por dia na folha');
+  const eq=g.save.equipe; const f0=H.L.payroll(eq); g.save.bank=5000; ok(g.setStaff('joca',2) && eq.joca===2 && H.L.payroll(eq)-f0===65,'contratar põe no nível 2: R$ 65 por dia na folha (v10.5: salários de verdade)');
   H.L.setShopTab('joca'); const t=txt(H.els['shop-grid']); ok(/Joca · nível 1 de 3/.test(t) && /Tarefas \(2 de 2\)/.test(t),'o cartão mostra "Joca · nível 1 de 3" e as tarefas');
   const F=load(); F.g.save=F.L.normSave({ salao:{ ponto:'industrial' }, bank:5000, equipe:{ dani:2 }, daniCursos:{ confCaseira:1 } }); F.g.up=F.g.save.up; F.g.tablesKey=''; F.g.buildTables(); F.g.goShop(10);
   ok(F.g.cartaoAberto('joca') && F.g.setStaff('joca',2),'fora da História, o cartão abre com a Confeitaria caseira feita'); const F2=load(); F2.g.save=F2.L.normSave({ salao:{ ponto:'industrial' }, bank:5000, equipe:{ dani:2 } }); ok(!F2.g.cartaoAberto('joca'),'fora da História, sem o curso, fechado'); }
 
 // ---------- 9. níveis e experiência ----------
 { const H=jogo(5,'industrial',{ pontoDia:1, libera:{ confeitaria:2, joca:2 }, equipe:{ tonhao:1, dani:2, joca:2 } }), {g,L}=H; const sv=g.save;
-  const J=L.STAFF.joca.levels; ok(J[2].speed===0.5 && J[2].tasks===2 && J[2].pay===45 && J[3].speed===0.65 && J[3].pay===60 && J[3].xp===6 && J[4].speed===0.8 && J[4].tasks===3 && J[4].pay===75 && J[4].xp===12,'níveis 2 a 4 como os da Dani (R$ 45, 60, 75)');
+  const J=L.STAFF.joca.levels; ok(J[2].speed===0.5 && J[2].tasks===2 && J[2].pay===65 && J[3].speed===0.65 && J[3].pay===78 && J[3].xp===6 && J[4].speed===0.8 && J[4].tasks===3 && J[4].pay===90 && J[4].xp===12,'níveis 2 a 4 como os da Dani (R$ 65, 78, 90; v10.5: salários de verdade)');
   ok(L.jocaXp(sv)===0 && !g.setStaff('joca',3),'sem experiência: o aumento não vale');
   sv.jocaTar=30; ok(L.jocaXp(sv)===6 && L.jocaNivelXp(sv)===3 && g.setStaff('joca',3) && sv.equipe.joca===3,'30 tarefas = 6 de experiência: sobe ao nível 3');
   ok(!g.setStaff('joca',2),'o nível pago é definitivo (não desce)'); sv.jocaTar=60; ok(L.jocaNivelXp(sv)===4 && g.setStaff('joca',4),'60 tarefas = 12: nível 4 (velocidade 0,8, 3 tarefas)');

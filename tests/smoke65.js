@@ -18,7 +18,7 @@ const roda=(H,seg,fn)=>{ const {g}=H; for(let i=0;i<seg*20;i++){ g.update(0.05);
 // ---------- 1. o curso de salão e o nível 4 da Cami ----------
 { const {L}=nova(), S=L.STAFF.cami.levels[4], c=L.CAMI_CURSOS.find(x=>x.id==='salao');
   ok(c && c.nome==='Atendimento de salão' && c.preco===900 && c.nivel===4 && c.dep==='mesa','CAMI_CURSOS: Atendimento de salão, R$ 900, nível 4, depois do de mesa');
-  ok(S && S.speed===1.35 && S.tasks===4 && S.pay===190 && S.mesas===true && S.tudo===true && L.STAFF.cami.levels.length===5,'nível 4 da Cami: rapidez 1,35, 4 tarefas, R$ 190, mesas e "Ajuda em tudo"');
+  ok(S && S.speed===1.35 && S.tasks===4 && S.pay===160 && S.mesas===true && S.tudo===true && L.STAFF.cami.levels.length===5,'nível 4 da Cami: rapidez 1,35, 4 tarefas, R$ 160 (v10.5), mesas e "Ajuda em tudo"');
   ok(L.CAMI_TUDO.espera===3,'CAMI_TUDO.espera = 3 s');
   ok(L.camiNivelCursos({ camiCursos:{ agil:1, mesa:1, salao:1 } })===4 && L.camiNivelCursos({ camiCursos:{ salao:1 } })===1,'o nível pelos cursos: 4 com os três, e o de salão sozinho não conta');
   let H=jogo(9,'terraco',{ pontoDia:5, equipe:{ tonhao:2, dani:3, joca:3, cami:3 }, camiCursos:{ agil:1, mesa:1 }, libera:{ cami:2 } }), g=H.g;
@@ -94,7 +94,7 @@ const roda=(H,seg,fn)=>{ const {g}=H; for(let i=0;i<seg*20;i++){ g.update(0.05);
   ok(!g.buyAnselmoCurso('autor'),'a de autor não se compra antes da clássica');
   ok(g.buyAnselmoCurso('classica') && g.up.coqClassica===true && g.save.bank===9000-500 && !g.buyAnselmoCurso('autor'),'a clássica: R$ 500; um curso do Anselmo por lojinha'); g.save.anselmoCursoDia=0;
   ok(g.buyAnselmoCurso('autor') && g.up.coqAutor===true && g.up.maquina===true && g.save.equipe.anselmo===3 && g.save.bank===9000-500-800,'a de autor: R$ 800, sobe o Anselmo ao nível 3 (R$ 130) e liga o carrinho');
-  ok(H.L.STAFF.anselmo.levels[3].pay===130 && H.L.STAFF.anselmo.levels[3].speed===1.0,'o nível 3 dele: rapidez 1,0 e R$ 130');
+  ok(H.L.STAFF.anselmo.levels[3].pay===150 && H.L.STAFF.anselmo.levels[3].speed===1.0,'o nível 3 dele: rapidez 1,0 e R$ 150 (v10.5)');
   H=jogo(8,'avenida',{ pontoDia:5, equipe:{ tonhao:2, dani:3, joca:3, cami:2, anselmo:2 }, libera:{ joca:2, confeitaria:2, anselmo:2 } }); ok(!H.g.buyAnselmoCurso('classica'),'na Avenida, os cursos do Anselmo não aparecem');
   H=jogo(9,'terraco',{ pontoDia:5, equipe:{ tonhao:2, dani:3, joca:3, cami:2, anselmo:2 }, anselmoCursos:{ classica:1, autor:1 }, libera:{ joca:2, confeitaria:2, anselmo:2 } }); g=H.g;
   ok(g.up.coqClassica && g.up.coqAutor && g.up.maquina===true,'o save com os dois cursos liga os drinks de autor e o carrinho');

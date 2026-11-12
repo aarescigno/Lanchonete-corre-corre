@@ -306,7 +306,7 @@ function staffNext(title, rows){
 function buildBia(grid){ upgradeCartoes(grid, true); }
 function buildTonhao(grid){
   const eq = game.save.equipe, bank = game.save.bank, T = STAFF.tonhao.levels, D = STAFF.dani.levels, C = STAFF.couvert;
-  const canPay = extra => payroll(eq) + extra <= bank;
+  const canPay = extra => payroll(eq, cursosPay(game.save)) + extra <= bank;
   const pc = v => Math.round(v*100) + '%', sec = v => String(Math.round(v*10)/10).replace('.', ',') + ' s';
   // Tonhão
   const tRows = (a, b) => nivRows(T, [['Rapidez', 'cook', -1], ['Capricho', 'crit', 1], ['Pia', 'wash', -1]], a, b);
@@ -338,7 +338,7 @@ function buildCursosFeitos(grid){
 function buildDani(grid){
   if (!daniNaLoja()) return;   // v9.6.10: na História, o cartão dela só aparece quando ela chega (cap. 2)
   const eq = game.save.equipe, bank = game.save.bank, T = STAFF.tonhao.levels, D = STAFF.dani.levels, C = STAFF.couvert;
-  const canPay = extra => payroll(eq) + extra <= bank;
+  const canPay = extra => payroll(eq, cursosPay(game.save)) + extra <= bank;
   const pc = v => Math.round(v*100) + '%', sec = v => String(Math.round(v*10)/10).replace('.', ',') + ' s';
   let c, duo;
   // Dani: só mostra as tarefas que ela já pode exercer (e só depois de contratada)
@@ -346,7 +346,7 @@ function buildDani(grid){
   const avail = DANI_TASKS.filter(t => daniTaskOk(t.id, game.up)).map(t => daniTaskDe(t, game.ponto));
   const dRows = (a, b) => nivRows(D, [['Rapidez', 'speed', 1], ['Tarefas', 'tasks', 1]], a, b);
   const cap2 = game.save.cap >= 2 || devLivre() || lv > 0;   // v8.7: a Dani chega no capítulo 2 (no modo dev, desde o início)
-  c = staffCard(upgradeIcon('dani'), lv ? 'Dani · ' + (lv === 1 ? 'aprendiz (sem salário)' : 'nível ' + (lv - 1) + ' de 3') : 'Dani (ajudante)',
+  c = staffCard(upgradeIcon('dani'), lv ? 'Dani · ' + (lv === 1 ? 'aprendiz (' + fmt(D[1].pay) + '/dia)' : 'nível ' + (lv - 1) + ' de 3') : 'Dani (ajudante)',
     lv ? '' : (cap2 ? '' : 'Chega no capítulo 2.'));
   if (lv){
     const feitas = game.dani.tasks, sel = feitas.length;   // v9.2: as básicas do Joca não ocupam vaga; v9.6.3: só marca o que ela de fato faz (no nível 1 é 1 tarefa, mesmo com 2 guardadas)
@@ -376,10 +376,12 @@ function buildDani(grid){
     xl.appendChild(el('small', null, 'Trabalho: ' + falta + (falta > 1 ? ' tarefas' : ' tarefa') + ' até o próximo ponto'));
     c.appendChild(xl);
   }
-  c.appendChild(lv < dMax ? staffNext(lv ? 'Com o aumento:' : 'Se contratar (aprendiz):', dRows(D[lv], D[lv+1])) : staffNext('Nível máximo:', dRows(null, D[dMax])));
+  const dp = n => n ? Object.assign({}, D[n], { pay:diariaDani({ dani:n }, game.save.daniCursos) }) : null;   // v10.5: a diária da linha já tem o degrau do curso
+  c.appendChild(lv < dMax ? staffNext(lv ? 'Com o aumento:' : 'Se contratar (aprendiz):', dRows(dp(lv), dp(lv+1))) : staffNext('Nível máximo:', dRows(null, dp(dMax))));
   duo = el('div', 'duo');
   if (lv < dMax){
-    duo.appendChild(shopBtn(lv ? 'Aumento: +' + fmt(D[lv+1].pay - D[lv].pay) + '/dia' : 'Contratar', 'btn', pronto && canPay(D[lv+1].pay - (lv ? D[lv].pay : 0)), () => game.setStaff('dani', lv + 1)));
+    const cd = game.save.daniCursos, dif = diariaDani({ dani:lv + 1 }, cd) - diariaDani({ dani:lv }, cd);   // v10.5: a diferença real na folha (com o degrau do curso)
+    duo.appendChild(shopBtn(lv ? (dif > 0 ? 'Aumento: +' + fmt(dif) + '/dia' : 'Aumento: sem custo') : 'Contratar', 'btn', pronto && canPay(dif), () => game.setStaff('dani', lv + 1)));
   }
   c.appendChild(duo); grid.appendChild(c);
   if (game.daniChegou) buildDaniCursos(grid);
@@ -387,7 +389,7 @@ function buildDani(grid){
 /* o cartão do Joca (v9.2): o ajudante do básico, níveis 2 a 4 (nível 1 a 3 na tela), com os cursos de atendimento dele */
 function buildJoca(grid){
   const eq = game.save.equipe, sv = game.save, bank = sv.bank, J = STAFF.joca.levels, jMax = J.length - 1;
-  const canPay = extra => payroll(eq) + extra <= bank;
+  const canPay = extra => payroll(eq, cursosPay(game.save)) + extra <= bank;
   const pc = v => Math.round(v*100) + '%', sec = v => String(Math.round(v*10)/10).replace('.', ',') + ' s';
   const lv = eq.joca, sp = J[lv] || J[2];
   const avail = BASICAS.filter(id => daniTaskOk(id, game.up)).map(id => daniTaskDe(DANI_TASKS.find(d => d.id === id), game.ponto));
@@ -415,11 +417,12 @@ function buildJoca(grid){
     c.appendChild(xl);
   }
   const xp = jocaXp(sv), pronto = devLivre() || lv < 2 || xp >= (J[lv+1] || J[jMax]).xp;
-  c.appendChild(lv < jMax ? staffNext(lv ? 'Com o aumento:' : 'Se contratar (nível 1):', jRows(J[lv] || null, J[lv ? lv+1 : 2])) : staffNext('Nível máximo:', jRows(null, J[jMax])));
+  const jp = n => n ? Object.assign({}, J[n], { pay:diariaJoca({ joca:n }, sv.jocaCursos) }) : null;   // v10.5: a diária da linha já tem o degrau do curso
+  c.appendChild(lv < jMax ? staffNext(lv ? 'Com o aumento:' : 'Se contratar (nível 1):', jRows(jp(lv), jp(lv ? lv+1 : 2))) : staffNext('Nível máximo:', jRows(null, jp(jMax))));
   const duo = el('div', 'duo');
   if (lv < jMax){
-    const prox = lv ? J[lv+1] : J[2], dif = prox.pay - (lv ? J[lv].pay : 0);
-    duo.appendChild(shopBtn(lv ? 'Aumento: +' + fmt(dif) + '/dia' : 'Contratar', 'btn', pronto && canPay(dif), () => game.setStaff('joca', lv ? lv + 1 : 2)));
+    const cj = sv.jocaCursos, dif = diariaJoca({ joca:lv ? lv + 1 : 2 }, cj) - diariaJoca({ joca:lv }, cj);   // v10.5: a diferença real na folha (com o degrau do curso)
+    duo.appendChild(shopBtn(lv ? (dif > 0 ? 'Aumento: +' + fmt(dif) + '/dia' : 'Aumento: sem custo') : 'Contratar', 'btn', pronto && canPay(dif), () => game.setStaff('joca', lv ? lv + 1 : 2)));
   }
   c.appendChild(duo); grid.appendChild(c);
   if (game.cursoMsg) grid.appendChild(el('p', 'cursomsg', game.cursoMsg));
@@ -437,7 +440,7 @@ function buildJoca(grid){
 /* o cartão da Cami (v9.3): atendimento, chega no nível 1 e sobe só por curso (o salário sobe junto); fica com o básico da casa */
 function buildCami(grid){
   const eq = game.save.equipe, sv = game.save, bank = sv.bank, C = STAFF.cami.levels, cMax = (game.ponto.nivel >= 4 || devLivre()) ? C.length - 1 : C.length - 2;   // v10.3: o nível 4 é do Terraço
-  const canPay = extra => payroll(eq) + extra <= bank;
+  const canPay = extra => payroll(eq, cursosPay(game.save)) + extra <= bank;
   const pc = v => Math.round(v*100) + '%', sec = v => String(Math.round(v*10)/10).replace('.', ',') + ' s';
   const lv = eq.cami, sp = C[lv] || C[1];
   const avail = BASICAS.filter(id => daniTaskOk(id, game.up)).map(id => daniTaskDe(DANI_TASKS.find(d => d.id === id), game.ponto));
@@ -485,10 +488,10 @@ function buildCami(grid){
     grid.appendChild(card);
   });
 }
-/* o cartão do Anselmo (v9.5): coqueteleiro, só na Avenida; chega no nível 2 (R$ 90/dia) e cuida do balcão de drinks; não faz as tarefas da lista */
+/* o cartão do Anselmo (v9.5): coqueteleiro, só na Avenida; chega no nível 2 (R$ 105/dia desde a v10.5) e cuida do balcão de drinks; não faz as tarefas da lista */
 function buildAnselmo(grid){
   const eq = game.save.equipe, bank = game.save.bank, A = STAFF.anselmo.levels;
-  const canPay = extra => payroll(eq) + extra <= bank;
+  const canPay = extra => payroll(eq, cursosPay(game.save)) + extra <= bank;
   const pc = v => Math.round(v*100) + '%', sec = v => String(Math.round(v*10)/10).replace('.', ',') + ' s';
   const lv = eq.anselmo, sp = A[lv] || A[2];
   const c = staffCard(upgradeIcon('anselmo'), lv ? 'Anselmo · nível ' + (lv - 1) + ' de ' + (A.length - 2) : 'Anselmo (coqueteleiro)',
@@ -512,7 +515,7 @@ function buildAnselmo(grid){
 /* o cartão da Lia (v10.2): ajudante de cozinha, só no Terraço; contratar é definitivo (R$ 80/dia) e a cozinha anda mais rápida */
 function buildLia(grid){
   const eq = game.save.equipe, bank = game.save.bank, L = STAFF.lia;
-  const canPay = extra => payroll(eq) + extra <= bank;
+  const canPay = extra => payroll(eq, cursosPay(game.save)) + extra <= bank;
   const c = staffCard(upgradeIcon('lia'), eq.lia ? 'Lia (ajudante de cozinha)' : 'Lia', '');
   const box = el('div', 'next');
   box.appendChild(el('b', null, eq.lia ? 'Na cozinha:' : 'Se contratar:'));
@@ -542,7 +545,7 @@ function buildDaniCursos(grid){
 function buildTvSom(grid){
   game.manualVer('l-tvsom');
   const eq = game.save.equipe, bank = game.save.bank;
-  const canPay = extra => payroll(eq) + extra <= bank;
+  const canPay = extra => payroll(eq, cursosPay(game.save)) + extra <= bank;
   // TV e som (v7.4.3): cada um liga e desliga à parte; o custo é a conta de luz do dia
   const TV = STAFF.tv, SOM = STAFF.som;
   const c = staffCard(upgradeIcon('ambiente'), 'TV e som'); c.setAttribute('data-ficha', 'l-tvsom');
@@ -557,7 +560,7 @@ function buildTvSom(grid){
 }
 function buildCouvert(grid){
   const eq = game.save.equipe, bank = game.save.bank, C = STAFF.couvert;
-  const canPay = extra => payroll(eq) + extra <= bank;
+  const canPay = extra => payroll(eq, cursosPay(game.save)) + extra <= bank;
   let c, duo;
   // Couvert: só do nível 3 do salão em diante
   if (!couvertOk(game.ponto)) return;
@@ -572,7 +575,7 @@ function buildCouvert(grid){
   duo.appendChild(eq.couvert ? shopBtn('Dispensar', 'btn alt', true, () => game.setStaff('couvert', false)) : shopBtn('Contratar: ' + fmt(C.pay) + '/dia', 'btn', canPay(C.pay), () => game.setStaff('couvert', true)));
   c.appendChild(duo); grid.appendChild(c);
 }
-/* v10.4: a música ao vivo do Terraço, no lugar do couvert: sem música, quarteto de cordas ou pianista (como as TVs da área industrial) */
+/* v10.4: a música ao vivo do Terraço, no lugar do couvert: sem música, trio de cordas ou pianista (como as TVs da área industrial) */
 function buildMusica(grid){
   if (!musicaOk(game.ponto)) return;
   game.manualVer('l-musica');
@@ -582,7 +585,7 @@ function buildMusica(grid){
     const on = (eq.musica || 0) === a[0], b = el('button', 'toggle', (on ? 'Ligado: ' : '') + a[1]); b.type = 'button';
     b.setAttribute('aria-pressed', on ? 'true' : 'false');
     const extra = musicaPay(M[a[0]]) - musicaPay(musicaDe(eq));
-    if (!on && extra > 0 && payroll(eq) + extra > bank) b.disabled = true;
+    if (!on && extra > 0 && payroll(eq, cursosPay(game.save)) + extra > bank) b.disabled = true;
     b.addEventListener('click', () => { Sfx.init(); if (!game.setStaff('musica', a[0])) Sfx.boing(); buildShop(); });
     c.appendChild(b);
   });
@@ -964,7 +967,7 @@ function buildTvs(grid){
     const on = (eq.tvs || 0) === a[0], b = el('button', 'toggle', (on ? 'Ligado: ' : '') + a[1]); b.type = 'button';
     b.setAttribute('aria-pressed', on ? 'true' : 'false');
     const extra = (a[0] ? I.modos[a[0]].pay : 0) - (eq.tvs ? I.modos[eq.tvs].pay : 0);
-    if (!on && extra > 0 && payroll(eq) + extra > bank) b.disabled = true;
+    if (!on && extra > 0 && payroll(eq, cursosPay(game.save)) + extra > bank) b.disabled = true;
     b.addEventListener('click', () => { Sfx.init(); if (!game.setStaff('tvs', a[0])) Sfx.boing(); buildShop(); });
     c.appendChild(b);
   });
@@ -1230,7 +1233,7 @@ function buildShopTela(){
     : ' · livre ' + fmt(game.livre));
   $('shop-limit').textContent = devLivre() ? 'Modo dev: tudo liberado; melhorias de graça, ligue e desligue à vontade.' : 'Melhorias à vontade, se o dinheiro der. Cursos: 1 por dia.';
   $('btn-shop-go').textContent = 'Começar o dia ' + game.shopNext;
-  const f = payroll(game.save.equipe), dv = divulgaAberta(game.shopNext, game.save) ? divulgaOf(game.save.divulga) : null;
+  const f = payroll(game.save.equipe, cursosPay(game.save)), dv = divulgaAberta(game.shopNext, game.save) ? divulgaOf(game.save.divulga) : null;
   // v9.6.12: a linha diz o que sai no fim do dia, em ordem, sem o "que só rende completo" (a pausa já avisa que dia largado não conta)
   $('shop-folha').textContent = 'No fim do dia saem: ' + (f ? 'folha ' + fmt(f) + ', ' : '') + (dv && dv.cost ? dv.name.toLowerCase() + ' ' + fmt(dv.cost) + ', ' : '') + 'contas ' + fmt(contasDia(game.tables)) + (sv.emp.resto ? ', parcela do banco ' + fmt(game.devido) + (sv.emp.atr ? ' (com a atrasada)' : '') : '') + ' e os ingredientes. A meta é o lucro.';
   // v8.6.15: sem seção aberta, os cartões do grupo; com ela, o botão Voltar (o Gurugol abre direto, sem cartões)

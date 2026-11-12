@@ -20,7 +20,7 @@ ok(L.normEmprestimo({resto:550,n:5,atr:true}).atr===true && L.normEmprestimo({re
 
 // ---------- não coube: fica atrasada ----------
 novo({dia:5,bank:600}); g.emprestar(500);   // v8.3.2: saldo 500, amortização 100, 3% ao dia: 115, 112, 109, 106, 103
-cont(); fecha(0,50); const c5=g.contas;
+cont(); fecha(0,50); const c5=g.contas+g.paid;   // v10.5: mais a folha do Tonhão (R$ 50)
 ok(g.result.atrasou && !g.result.tomou && g.save.emp.atr && g.save.emp.resto===515 && g.save.emp.n===6,'caixa sem a parcela: ficou atrasada, nada saiu e os juros do dia (15) foram para o saldo');
 ok(g.save.bank===50-c5 && !g.result.par,'o dinheiro não pagou parcela');
 ok(g.state==='dayend' && /ficou atrasada/.test(txt(els['end-msg'])) && /R\$ 215/.test(txt(els['end-msg'])),'o fim do dia avisa: amanhã R$ 215');
@@ -32,7 +32,7 @@ L.setShopTab('banco'); ok(/Parcela atrasada/.test(txt(els['shop-grid'])),'e na a
 ok(/parcela do banco R\$ 215 \(com a atrasada\)/.test(els['shop-folha'].textContent),'a linha da folha mostra o devido');
 els['btn-shop-go'].fire('click'); ok(/Parcela atrasada/.test(els['intro-manut'].textContent) && /R\$ 215/.test(els['intro-manut'].textContent),'a introdução avisa');
 // ---------- no dia seguinte, pagou: volta ao normal ----------
-const b6=g.save.bank; els['btn-start'].fire('click'); g.schedule=[]; g.nextIdx=0; g.money=1000; g.custo=0; const c6=g.contas; g.finishDay();
+const b6=g.save.bank; els['btn-start'].fire('click'); g.schedule=[]; g.nextIdx=0; g.money=1000; g.custo=0; const c6=g.contas+g.paid; g.finishDay();
 ok(g.result.par===215 && !g.save.emp.atr && g.save.emp.n===4 && g.save.emp.resto===315 && g.save.bank===b6+1000-c6-215,'pagou a atrasada e a do dia: saldo 315 em 4 parcelas, sem atraso (atrasar custou uma parcela a mais)');
 ok(g.state==='dayend' && !g.save.fechou,'a carreira segue');
 

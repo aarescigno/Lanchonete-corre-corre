@@ -12,22 +12,22 @@ const sentar=(g,type)=>{ const grp=g.spawn({ type:type||'casal', color:0, vip:fa
 
 // ---------- 1. a música ao vivo: cartão, diárias, paciência e Ambiente ----------
 { const {L}=nova(), M=L.TERRACO.musica;
-  ok(M[0]===null && M[1].nome==='Quarteto de cordas' && M[1].pay===150 && M[1].effect===0.3 && M[1].amb===0.75,'TERRACO.musica[1]: Quarteto de cordas, R$ 150, 30% de paciência, +0,75 no Ambiente');
-  ok(M[2].nome==='Pianista' && M[2].pay===120 && M[2].piano===30 && M[2].effect===0.2 && M[2].amb===1.25,'TERRACO.musica[2]: Pianista, R$ 120 + R$ 30 de afinação, 20% de paciência, +1,25 no Ambiente (v10.4, passo 6 do rebalanceamento: era 1 e 1,5)');
-  ok(L.ambienteEffect({ musica:1 })===0.3 && L.ambienteEffect({ musica:2 })===0.2 && L.ambienteEffect({ musica:0 })===0,'ambienteEffect: a paciência nas mesas cai 30% (quarteto) e 20% (pianista) mais devagar');
-  const base=L.payroll({ tonhao:1, dani:1, musica:0 }); ok(L.payroll({ tonhao:1, dani:1, musica:1 })-base===150 && L.payroll({ tonhao:1, dani:1, musica:2 })-base===150,'a folha soma 150 (quarteto) e 120 + 30 (pianista)');
-  ok(L.folhaItens({ musica:1 }).join()==='quarteto de cordas' && L.folhaItens({ musica:2 }).join()==='pianista e afinação','a folha mostra "quarteto de cordas" ou "pianista e afinação"'); }
+  ok(M[0]===null && M[1].nome==='Trio de cordas' && M[1].pay===500 && M[1].effect===0.35 && M[1].amb===1,'TERRACO.musica[1]: Trio de cordas, R$ 500, 35% de paciência, +1 no Ambiente (v10.5: era o quarteto, 150, 30% e 0,75)');
+  ok(M[2].nome==='Pianista' && M[2].pay===300 && M[2].piano===5 && M[2].effect===0.25 && M[2].amb===1.5,'TERRACO.musica[2]: Pianista, R$ 300 + R$ 5 de afinação, 25% de paciência, +1,5 no Ambiente (v10.5: era 120 + 30, 20% e 1,25)');
+  ok(L.ambienteEffect({ musica:1 })===0.35 && L.ambienteEffect({ musica:2 })===0.25 && L.ambienteEffect({ musica:0 })===0,'ambienteEffect: a paciência nas mesas cai 35% (trio) e 25% (pianista) mais devagar');
+  const base=L.payroll({ tonhao:1, dani:1, musica:0 }); ok(L.payroll({ tonhao:1, dani:1, musica:1 })-base===500 && L.payroll({ tonhao:1, dani:1, musica:2 })-base===305,'a folha soma 500 (trio) e 300 + 5 (pianista)');
+  ok(L.folhaItens({ tonhao:0, musica:1 }).indexOf('trio de cordas')>=0 && L.folhaItens({ tonhao:0, musica:2 }).indexOf('pianista e afinação')>=0,'a folha mostra "trio de cordas" ou "pianista e afinação"'); }
 { const H=jogo('terraco'), {g,L}=H; const t=loja(H,'lanchonete','divulga');
-  ok(/Música ao vivo/.test(t) && /Sem música/.test(t) && /Quarteto de cordas · R\$ ?150/.test(t) && /Pianista · R\$ ?150/.test(t),'no Terraço o cartão "Música ao vivo" tem os 3 botões e as diárias');
+  ok(/Música ao vivo/.test(t) && /Sem música/.test(t) && /Trio de cordas · R\$ ?500/.test(t) && /Pianista · R\$ ?305/.test(t),'no Terraço o cartão "Música ao vivo" tem os 3 botões e as diárias');
   ok(!/Couvert/.test(t),'e o couvert não aparece');
-  const b0=g.save.bank; ok(g.setStaff('musica',1) && g.save.equipe.musica===1 && g.payroll()===L.payroll(Object.assign({},g.save.equipe,{ musica:0 }))+150,'contratar o quarteto');
+  const b0=g.save.bank; ok(g.setStaff('musica',1) && g.save.equipe.musica===1 && g.payroll()===L.payroll(Object.assign({},g.save.equipe,{ musica:0 }))+500,'contratar o trio');
   ok(g.setStaff('musica',2) && g.save.equipe.musica===2,'trocar para o pianista'); ok(g.setStaff('musica',0) && g.save.equipe.musica===0,'dispensar');
   ok(!g.setStaff('musica',3) && !g.setStaff('musica',-1),'só 0, 1 ou 2');
   // o Ambiente do Gurugol: base + música
   const nota=m=>{ g.save.equipe.musica=m; g.mode='carreira'; g.avals.length=0; const x=sentar(g,'casal'); x.grp.avalia=true; x.grp.setState('wantBill'); x.grp.hearts=5; g.avaliar(x.grp,0,0); return g.avals[g.avals.length-1].s[4]; };
   g.startDay(10); H.els['btn-start'].fire('click'); g.mode='carreira';
   const a0=nota(0), a1=nota(1), a2=nota(2);
-  ok(Math.abs(a1-a0-0.75)<0.06 && Math.abs(a2-a0-1.25)<0.06,'no Ambiente do Gurugol a música soma +0,75 (quarteto) e +1,25 (pianista) ('+a0+' → '+a1+' / '+a2+')'); }
+  ok(Math.abs(a1-a0-1)<0.06 && Math.abs(a2-a0-1.5)<0.06,'no Ambiente do Gurugol a música soma +1 (trio) e +1,5 (pianista) ('+a0+' → '+a1+' / '+a2+')'); }
 { const H=jogo('avenida',{ cap:7 },7), {g}=H; const t=loja(H,'lanchonete','divulga');
   ok(!/Música ao vivo/.test(t) && /Couvert/.test(t),'na Avenida: sem o cartão da música, com o do couvert');
   ok(!g.setStaff('musica',1) && g.save.equipe.musica===0,'a música é recusada fora do Terraço');
@@ -72,7 +72,7 @@ const sentar=(g,type)=>{ const grp=g.spawn({ type:type||'casal', color:0, vip:fa
 
 // ---------- 5. a ficha l-musica ----------
 { const H=jogo('terraco'), {g,L}=H; const f=L.MANUAL.find(x=>x.id==='l-musica');
-  ok(f && f.aba==='lojinha' && f.nome==='Música ao vivo' && f.linha==='Quarteto ou pianista: a paciência nas mesas dura mais e o ambiente melhora.','a ficha l-musica existe, na aba lojinha');
+  ok(f && f.aba==='lojinha' && f.nome==='Música ao vivo' && f.linha==='Trio ou pianista: a paciência nas mesas dura mais e o ambiente melhora.','a ficha l-musica existe, na aba lojinha');
   ok(!/\d/.test(f.linha),'sem números');
   g.save.manual=g.save.manual.filter(x=>x!=='l-musica'); g.mode='carreira'; loja(H,'lanchonete','divulga');
   ok(g.save.manual.indexOf('l-musica')>=0,'o cartão aparece e a ficha é revelada'); }

@@ -67,12 +67,12 @@ const html=fs.readFileSync(__dirname+'/../lanchonete.html','utf8');
 
 // ---------- 3. aluguel e preços ----------
 { const H=jogo(6,'avenida'), {g,L}=H; g.resetDay(10);
-  ok(g.ponto.aluguel===400 && L.precoPrato('pf',g.ponto,g.cursos)===50 && L.PONTOS[2].cardapio===2 && L.precoPrato('coxinha',g.ponto,g.cursos)===16,'PF custa R$ 50 e a coxinha R$ 16 (cardápio ×2,0)');
+  ok(g.ponto.aluguel===400 && L.precoPrato('pf',g.ponto,g.cursos)===60 && L.PONTOS[2].cardapio===2 && L.precoPrato('coxinha',g.ponto,g.cursos)===20,'PF custa R$ 60 e a coxinha R$ 20 (cardápio ×2,0 sobre os preços de v10.5)');
   g.begin(); const base=L.CONTAS.base+g.tables.filter(t=>t.open).length*L.CONTAS.mesa+g.tables.filter(t=>t.open).reduce((a,t)=>a+t.seats,0)*L.CONTAS.lugar;
   ok(g.contas===base+400,'as contas do dia somam o aluguel de R$ 400');
   g.schedule=[]; g.nextIdx=0; g.money=2000; g.custo=0; const b0=g.save.bank; g.finishDay();
   ok(g.save.bank===b0+2000-g.contas-g.paid-g.paidDiv && g.result.aluguel===400,'o aluguel sai no fim do dia');
-  const D=g.diaPonto(L.diaOf(10)); ok(D.meta===Math.round(L.diaOf(10).meta*3.0/5)*5 && D.expert===Math.round(L.diaOf(10).expert*3.6/5)*5,'meta ×3,0 e expert ×3,6 (v9.6.4), arredondadas para 5');
+  const D=g.diaPonto(L.diaOf(10)); ok(D.meta===Math.round(L.diaOf(10).meta*2.8/5)*5 && D.expert===Math.round(L.diaOf(10).expert*3.4/5)*5,'meta ×2,8 e expert ×3,4 (v10.5, calibrados; eram 3,0 e 3,6), arredondadas para 5');
   ok(L.avalTeto(g.ponto)===4.3 && L.avalMinimo(g.ponto)===3.9,'teto 4,3 e nota mínima 3,9 (para sair, no Terraço)');
   ok(/Restaurante na Avenida Brasil/.test(g.ponto.nome) && L.PONTOS[2].espera===6 && L.PONTOS[2].pratos===6 && L.PONTOS[2].bebida==='saborizada','dados do ponto: nome, 6 de espera, 6 pratos, água saborizada'); }
 
@@ -143,12 +143,12 @@ const html=fs.readFileSync(__dirname+'/../lanchonete.html','utf8');
 // ---------- 9. o curso Cozinha de restaurante ----------
 { const H=jogo(6,'avenida',{ bank:5000 }), {g,L}=H; g.resetDay(10);
   const c=L.cursoOf('restaurante'); ok(c && c.nome==='Cozinha de restaurante' && c.preco===400 && c.pratos.join()==='parmegiana' && c.nivel===3 && c.av.nome==='Parmegiana da casa' && c.av.preco===600 && /molho de tomate de 6 horas/.test(c.av.receita),'o curso: R$ 400 e o avançado "Parmegiana da casa" R$ 600');
-  ok(L.CARDAPIO.parmegiana.nome==='Filé à parmegiana' && L.CARDAPIO.parmegiana.preco===30 && L.CARDAPIO.parmegiana.cat==='pf' && L.CARDAPIO.parmegiana.carne===true,'o prato: Filé à parmegiana, R$ 30, categoria PF, com carne');
+  ok(L.CARDAPIO.parmegiana.nome==='Filé à parmegiana' && L.CARDAPIO.parmegiana.preco===36 && L.CARDAPIO.parmegiana.cat==='pf' && L.CARDAPIO.parmegiana.carne===true,'o prato: Filé à parmegiana, R$ 36 (v10.5; era 30), categoria PF, com carne');
   H.L.setShopGrupo('lanchonete'); H.L.setShopTab('cardapio'); ok(/Curso de Cozinha de restaurante/.test(txt(grid(H))) && /Comprar R\$ /.test(txt(grid(H))),'o cartão aparece no Cardápio da Avenida, com o preço do curso');
   ok(g.buyCurso('restaurante') && g.save.bank===4600 && g.save.cursos.restaurante===1,'comprar: R$ 400');
-  ok(L.precoPrato('parmegiana',g.ponto,g.cursos)===60 && L.pratoSabido('parmegiana',g.save.cursos) && !L.pratoSabido('parmegiana',{}),'ensina o Filé à parmegiana (R$ 60)');
+  ok(L.precoPrato('parmegiana',g.ponto,g.cursos)===72 && L.pratoSabido('parmegiana',g.save.cursos) && !L.pratoSabido('parmegiana',{}),'ensina o Filé à parmegiana (R$ 72 na Avenida)');
   g.save.cursoDia=0; g.cursoMsg=''; ok(g.buyCurso('restaurante') && g.save.cursos.restaurante===2 && g.save.bank===4000,'o avançado: R$ 600');
-  ok(L.precoPrato('parmegiana',g.ponto,g.cursos)===69,'com o avançado, a parmegiana custa R$ 69');
+  ok(L.precoPrato('parmegiana',g.ponto,g.cursos)===83,'com o avançado, a parmegiana custa R$ 83');
   ok(L.tonhaoXp({ restaurante:1 })===1 && L.tonhaoXp({ restaurante:2 })===3,'conta na experiência do Tonhão (+1 e +2) como os outros');
   ok(L.avalMenu({ restaurante:1 })>L.avalMenu({}),'conta na Diversidade do cardápio');
   // quem pede PF pode pedir a parmegiana; vegetariano nunca

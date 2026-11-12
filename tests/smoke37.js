@@ -15,7 +15,7 @@ ok(L.daniXp({daniTar:2*T,daniCursos:{atend:1}})===4,'1 curso + 2T tarefas = 4');
 [[0,1],[3,1],[4,2],[7,2],[8,3],[12,3],[13,4]].forEach(([x,n])=>ok(L.daniNivelXp({daniTar:x*T})===n,'XP '+x+' → nível índice '+n));
 // (3) aumento
 novo({}); ok(!g.setStaff('dani',2) && g.save.equipe.dani===1,'sem XP, o aumento é recusado');
-novo({daniTar:4*T}); { const f0=g.payroll(); ok(g.setStaff('dani',2) && g.payroll()-f0===15,'com 4 de XP, aceita o aumento e a folha sobe R$ 15'); }
+novo({daniTar:4*T}); { const f0=g.payroll(); ok(g.setStaff('dani',2) && g.payroll()-f0===10,'com 4 de XP, aceita o aumento e a folha sobe R$ 10 (v10.5: de 15 para 25)'); }
 ok(!g.setStaff('dani',3),'pedir o nível seguinte com 4 de XP: recusa');
 ok(!g.setStaff('dani',1),'não dá para reduzir (o nível pago é definitivo)');
 // (4) o trabalho vira XP só no dia completo
@@ -38,10 +38,10 @@ ok(!g.buyDaniCurso('cozinha'),'curso já feito: não compra de novo');
 ok(D.filter(c=>!c.nivel).length===2 && D.filter(c=>!c.nivel).map(c=>c.preco).join()==='120,150','2 cursos sem nível: R$ 120 e 150 (o Barista saiu na v9.6.1)');
 // (6) lojinha
 novo({}); { const t=txt(grid());
-  ok(/Dani · aprendiz \(sem salário\)/.test(t) && /Experiência/.test(t) && new RegExp('Trabalho: '+T+' tarefas até o próximo ponto').test(t),'título, linha de experiência e de trabalho');
+  ok(/Dani · aprendiz \(R\$ 15\/dia\)/.test(t) && /Experiência/.test(t) && new RegExp('Trabalho: '+T+' tarefas até o próximo ponto').test(t),'título, linha de experiência e de trabalho');
   const b=botao(grid(),/^Aumento/); ok(b && b.disabled && !/Faltam/.test(t) && !/Reduzir/.test(t),'sem XP: botão apagado, sem "Faltam", sem Reduzir');
   ok(/\+2 de experiência/.test(t),'cartões de curso com "+2 de experiência"'); }
-novo({daniTar:4*T}); { const b=botao(grid(),/^Aumento/); ok(b && !b.disabled && b.textContent==='Aumento: +R$ 15/dia','com XP: "Aumento: +R$ 15/dia" aceso'); }
+novo({daniTar:4*T}); { const b=botao(grid(),/^Aumento/); ok(b && !b.disabled && b.textContent==='Aumento: +R$ 10/dia','com XP: "Aumento: +R$ 10/dia" aceso'); }
 novo({daniTar:4*T+1,daniCursos:{atend:1}},{dani:2}); ok(new RegExp('Trabalho: '+(T-1)+' tarefas? até o próximo ponto').test(txt(grid())),'conta as tarefas que faltam para o próximo ponto');
 novo({daniCursoDia:3}); ok(/Em curso/.test(txt(grid())),'trava: "Em curso"');
 novo({daniCursos:{atend:1}}); ok(/Curso feito/.test(txt(grid())),'curso feito');
@@ -49,7 +49,8 @@ novo({daniCursos:{atend:1}}); ok(/Curso feito/.test(txt(grid())),'curso feito');
 novo({daniTar:4*T},{dani:1}); g.startDay(3); g.begin(); g.dani.feitas=5; g.schedule=[]; g.nextIdx=0; g.money=0; g.custo=0; g.finishDay();
 ok(new RegExp('Dani\\s+5 tarefas · experiência '+L.daniXp(g.save)).test(txt(els['end-stats'])) && /A Dani já pode subir para o nível 1!/.test(txt(els['end-msg'])),'fim do dia: tarefas e experiência na tabela (v9.6.12) e "já pode subir" nos recados');
 // (8) folha que não cabe derruba 1 nível e a XP fica
-novo({daniTar:8*T},{dani:3},15); g.save.corta=true; g.startDay(3); g.begin();
+novo({daniTar:8*T},{dani:3},75); g.save.corta=true;   // v10.5: R$ 75 = Tonhão 50 + Dani nível 2 (25)
+ g.startDay(3); g.begin();
 ok(g.save.equipe.dani===2 && L.daniXp(g.save)===8,'sem dinheiro para a folha: cai 1 nível e a XP fica');
 novo({daniTar:T},{dani:1},0); g.save.corta=true; g.startDay(3); g.begin(); ok(g.save.equipe.dani===1,'nunca abaixo de aprendiz');
 // (9) loadSave

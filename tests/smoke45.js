@@ -116,7 +116,7 @@ const AV={ daniCursos:{ confCaseira:1 } }, ESP={ daniCursos:{ confCaseira:1 }, j
   H.els['btn-next'].fire('click'); let n=0; while(!(g.conversa && /louça vai acumular/.test(g.conversa.fala.s)) && n<30){ toque(H.els); n++; } ok(g.conversa && /louça vai acumular/.test(g.conversa.fala.s),'a conversa toca no fim do dia do curso');
   passa(H); ok(g.save.libera.cami===1 && g.cartaoAberto('cami') && g.liberaNovo.includes('cami'),'depois dela: o cartão da Cami abre, com selo');
   H.L.setShopGrupo('equipe'); ok(H.L.shopSecoes()[1].includes('cami'),'o cartão da Cami fica na Equipe');
-  const eq=g.save.equipe, f0=H.L.payroll(eq); g.save.bank=5000; ok(g.setStaff('cami',1) && eq.cami===1 && H.L.payroll(eq)-f0===120,'contratar põe no nível 1: R$ 120 por dia na folha');
+  const eq=g.save.equipe, f0=H.L.payroll(eq); g.save.bank=5000; ok(g.setStaff('cami',1) && eq.cami===1 && H.L.payroll(eq)-f0===95,'contratar põe no nível 1: R$ 95 por dia na folha (v10.5: salários de verdade)');
   ok(!g.setStaff('cami',2),'o nível dela não sobe com salário: só por curso');
   H.L.setShopTab('cami'); const t=txt(H.els['shop-grid']); ok(/Cami · nível 1 de 3/.test(t) && /Tarefas \(3 de 3\)/.test(t) && /Atendimento ágil/.test(t) && /Atendimento de mesa/.test(t),'o cartão mostra "Cami · nível 1" e os dois cursos');
   ok(!/Em breve/.test(t) && /Comprar R\$ 600/.test(t),'v9.6: o curso de mesa já se compra (sem "Em breve")');
@@ -141,7 +141,7 @@ const AV={ daniCursos:{ confCaseira:1 } }, ESP={ daniCursos:{ confCaseira:1 }, j
 
 // ---------- 11. os cursos e os níveis da Cami ----------
 { const H=aberto({ equipe:{ tonhao:1, dani:3, joca:3, cami:1 }, libera:{ confeitaria:2, joca:2, cami:2, anselmo:2 } },null,ESP), {g,L}=H; const sv=g.save, C=L.STAFF.cami.levels;
-  ok(C[1].speed===0.9 && C[1].tasks===3 && C[1].pay===120 && C[2].speed===1.1 && C[2].tasks===4 && C[2].pay===140 && C[3].speed===1.25 && C[3].pay===160 && C[3].mesas===true,'STAFF.cami como no plano (0,9/1,1/1,25; 3/4/4; R$ 120/140/160; mesas no 3)');
+  ok(C[1].speed===0.9 && C[1].tasks===3 && C[1].pay===95 && C[2].speed===1.1 && C[2].tasks===4 && C[2].pay===115 && C[3].speed===1.25 && C[3].pay===135 && C[3].mesas===true,'STAFF.cami como no plano (0,9/1,1/1,25; 3/4/4; R$ 95/115/135; mesas no 3; v10.5: salários de verdade)');
   ok(L.CAMI_CURSOS.length===3 && L.CAMI_CURSOS[0].preco===400 && L.CAMI_CURSOS[1].preco===600 && L.CAMI_CURSOS[1].dep==='agil','cursos: Atendimento ágil R$ 400 e Atendimento de mesa R$ 600 (precisa do ágil)');
   g.save.bank=5000; sv.camiCursoDia=0; g.cursoMsg=''; const f0=L.payroll(sv.equipe);
   ok(!g.buyCamiCurso('mesa'),'o de mesa não se compra antes do ágil');
@@ -158,7 +158,7 @@ const AV={ daniCursos:{ confCaseira:1 } }, ESP={ daniCursos:{ confCaseira:1 }, j
   ok(ord.join(' | ')==='Couvert | som | TV | TVs | a Cami (sem salário hoje) | aumento do Joca | aumento da Dani | aumento da Dani | aumento do Tonhão | aumento do Tonhão | o Joca (sem salário hoje)','a ordem: ... TVs, a Cami não vem, aumento do Joca, da Dani, do Tonhão, o Joca não vem');
   ok(eq.cami===2 && eq.camiFora===true && L.payroll(eq)===L.STAFF.tonhao.levels[0].pay+L.STAFF.dani.levels[1].pay,'a Cami fora não entra na folha (continua contratada)');
   const N=L.normEquipe(eq,L.PONTOS[2]); ok(N.camiFora===undefined && N.jocaFora===undefined,'normEquipe não guarda o "não vem"');
-  ok(L.folhaItens({ tonhao:0, dani:1, joca:3, cami:1 }).join()==='Joca,Cami','folhaItens lista a Cami');
+  ok(L.folhaItens({ tonhao:0, dani:1, joca:3, cami:1 }).join()==='Tonhão,Dani,Joca,Cami','folhaItens lista a Cami');
   const H=jogo(6,'avenida',{ pontoDia:5, libera:{ confeitaria:2, joca:2, cami:2, anselmo:2 }, equipe:{ tonhao:1, dani:2, joca:3, cami:1 }, bank:80, daniCursos:{ confCaseira:1 }, jocaCursos:{ espresso:1 } }), {g}=H; g.save.corta=true; g.begin();
   ok(g.save.equipe.camiFora===true && g.unpaid.some(u=>/Cami/.test(u)) && !g.cami.active,'sem dinheiro: a Cami não vem hoje (antes de cortar o aumento do Joca), avisa e fica de fora');
   g.save.bank=5000; g.resetDay(11); g.begin(); ok(g.save.equipe.camiFora===false && g.cami.active,'no dia seguinte, com dinheiro, ela volta'); }

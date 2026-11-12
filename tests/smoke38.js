@@ -57,12 +57,12 @@ const joga=(H,fat,custo)=>{ const {g,els}=H; if(g.state==='shop') els['btn-shop-
 
 // ---------- 3. aluguel e preços ----------
 { const H=jogo(4,true), {g,L}=H; g.resetDay(10);
-  ok(g.ponto.aluguel===120 && g.contas===0 && L.precoPrato('pf',g.ponto,g.cursos)===38 && L.PONTOS[1].cardapio===1.5,'PF custa R$ 38 (cardápio ×1,5; calibrado na v9, o plano dizia ×1,2)');
+  ok(g.ponto.aluguel===120 && g.contas===0 && L.precoPrato('pf',g.ponto,g.cursos)===45 && L.PONTOS[1].cardapio===1.5,'PF custa R$ 45 (cardápio ×1,5 sobre o PF de R$ 30; v10.5: salários e preços de verdade)');
   g.begin(); const garagemContas=L.CONTAS.base+g.tables.filter(t=>t.open).length*L.CONTAS.mesa+g.tables.filter(t=>t.open).reduce((a,t)=>a+t.seats,0)*L.CONTAS.lugar;
   ok(g.contas===garagemContas+120,'as contas do dia somam o aluguel de R$ 120');
   g.schedule=[]; g.nextIdx=0; g.money=1000; g.custo=0; const b0=g.save.bank; g.finishDay();
   ok(g.save.bank===b0+1000-g.contas-g.paid-g.paidDiv && g.save.caixa[g.save.caixa.length-1].contas===g.contas,'o aluguel sai no fim do dia e entra no livro-caixa');
-  const D=g.diaPonto(L.diaOf(10)); ok(D.meta===Math.round(L.diaOf(10).meta*2.5/5)*5 && D.expert===Math.round(L.diaOf(10).expert*1.7/5)*5,'meta ×2,5 e expert ×1,7 (v9.6.5), arredondadas para 5');
+  const D=g.diaPonto(L.diaOf(10)); ok(D.meta===Math.round(L.diaOf(10).meta*2.1/5)*5 && D.expert===Math.round(L.diaOf(10).expert*1.4/5)*5,'meta ×2,1 e expert ×1,4 (v10.5, calibrados; eram 2,5 e 1,7), arredondadas para 5');
   const G=jogo(4,false).g; G.resetDay(10); ok(G.day.meta===L.diaOf(10).meta,'na Garagem, a meta é a de sempre'); }
 
 // ---------- 4. a clientela ----------
@@ -105,7 +105,7 @@ const joga=(H,fat,custo)=>{ const {g,els}=H; if(g.state==='shop') els['btn-shop-
   ok(Math.abs(com*(1-0.15)-sem*(1-0.15)*(1-0.15)/(1-0.15)-0)<1 && com>sem && Math.abs(sem/(1-0.15)-com)<1e-9,'a paciência na mesa anda 15% mais devagar com as TVs (sem anúncios)');
   g.save.equipe.tvs=2; ok(g.paid===0 || true,'—');
   // sem dinheiro para a folha, as TVs saem primeiro entre os itens do ambiente
-  const eq2={ tonhao:0, dani:0, couvert:false, taxa:false, tv:false, som:false, tvs:2 }; ok(L.folhaCortes(eq2,null,10).join()==='TVs' && L.folhaItens(eq2,null).join()==='TVs','sem dinheiro: as TVs ficam de fora ("TVs")');
+  const eq2={ tonhao:0, dani:0, couvert:false, taxa:false, tv:false, som:false, tvs:2 }; ok(L.folhaCortes(eq2,null,10).join()==='TVs' && L.folhaItens(eq2,null).join()==='Tonhão,TVs','sem dinheiro: as TVs ficam de fora ("TVs"; v10.5: o Tonhão sempre na folha)');
   // o ambiente do Gurugol
   ok(L.AVAL.amb.tvs===0.5 && L.AVAL.amb.tvsPlus===0.75,'Ambiente: 0,5 com anúncios e 0,75 sem');
   H.L.setShopTab('melhorias'); ok(/3 televisores com sertanejo/.test(txt(grid(H))) && !/TV de tubo/.test(txt(grid(H))) && /Espera sentada/.test(txt(grid(H))) && /Jarra de suco/.test(txt(grid(H))),'Melhorias: TVs, espera sentada e a jarra; o cartão "TV e som" sai');

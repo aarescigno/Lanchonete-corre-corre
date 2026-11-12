@@ -16,6 +16,9 @@
 const N=+process.argv[2]||10, DIV=process.argv[3]||'panfleto';
 /* v8.7: joga a História (reforma, capítulos e a Dani de graça no cap. 2); HIST=0 joga sem ela */ const H=require('./harness.js')({historia:process.env.HIST!=='0'}); const {g,L}=H; const BOT=require('./bot.js'), bot=BOT(g,L,{afiado:process.env.BOT==='afiado',conserto:process.env.CONSERTO==='todos'?'todos':!!process.env.CONSERTO});   // BOT=afiado: o jogador perfeito (v8.6.9: para conferir a nota do Gurugol)
 const MODO=process.env.MANUT||'sem'; if(!['sem','com','cuida','amarelo','vermelho'].includes(MODO)) throw new Error('MANUT=sem|com|cuida|amarelo|vermelho');
+/* v10.5: com salários de verdade, quem muda com o caixa zerado tem a folha cortada no 1º dia (o time cai para a base). O bot só muda com a folha de hoje (e MUDA_FOLGA a mais, padrão R$ 1.500, para o couvert, a música, as TVs e o 1º dia fraco do ponto novo) sobrando depois da mudança; MUDA_FOLGA=-99999 volta ao de antes */
+const MUDA_FOLGA=g=>process.env.MUDA_FOLGA!=null&&+process.env.MUDA_FOLGA<0?-1e9:PAY(g.save.equipe)+(+process.env.MUDA_FOLGA||1500);
+const PAY=eq=>L.cursosPay?L.payroll(eq,L.cursosPay(g.save)):L.payroll(eq);   // v10.5: a folha com o degrau dos cursos da Dani e do Joca (o bot conta a folha de verdade)
 L.MANUT.on=MODO!=='sem';
 if(process.env.MANUT_CFG){ const c=JSON.parse(process.env.MANUT_CFG); const eq=c.equip; delete c.equip; Object.assign(L.MANUT,c); if(eq) for(const id in eq) Object.assign(L.manutOf(id),eq[id]); }
 if(process.env.PONTO_CFG){ const c=JSON.parse(process.env.PONTO_CFG), P=L.PONTOS.find(p=>p.id===(process.env.PONTO_ALVO||process.env.PONTO||'industrial'))||L.PONTOS[1]; for(const k in c){ if(c[k]&&typeof c[k]==='object'&&!Array.isArray(c[k])) Object.assign(P[k],c[k]); else P[k]=c[k]; } }   // v9: PONTO_CFG='{"cardapio":1.3,"aluguel":100}' troca números do ponto em runtime (v9.1: o ponto de PONTO_ALVO ou PONTO; padrão: a área industrial; PONTO_ALVO=avenida)
@@ -47,10 +50,10 @@ for(let k=0;k<N;k++){
       g.goShop(n);
       // v9: a área industrial: o bot muda assim que pode (R$ 800 e a nota); MUDA=0 fica na Garagem
       // v9.1: MUDA=0 fica na Garagem; MUDA=1 muda só para a área industrial; sem MUDA (ou outro valor) o bot segue até a Avenida Brasil
-      if(process.env.MUDA!=='0' && !(process.env.MUDA==='1'&&g.ponto.nivel>=2) && !(process.env.MUDA==='2'&&g.ponto.nivel>=3) && g.mudancaVisivel && !g.mudancaFalta && g.mudarPonto()) (g.ponto.nivel===4?mudaTe:g.ponto.nivel===3?mudaAv:mudaDia).push(n);   // v10: MUDA=2 para na Avenida; sem MUDA o bot segue até o Terraço Suíça
-      if(g.ponto.nivel>=2){ const F=L.INDUSTRIAL.fogao, sobra=c=>g.save.bank-L.payroll(g.save.equipe)-c>=300;   // fogão industrial, TVs com anúncios, cadeirinhas e a jarra (a Água da torneira, mais cara) quando sobra R$ 300 acima da folha
+      if(process.env.MUDA!=='0' && !(process.env.MUDA==='1'&&g.ponto.nivel>=2) && !(process.env.MUDA==='2'&&g.ponto.nivel>=3) && g.mudancaVisivel && !g.mudancaFalta && g.save.bank>=g.proximoPonto.mudanca+MUDA_FOLGA(g) && g.mudarPonto()) (g.ponto.nivel===4?mudaTe:g.ponto.nivel===3?mudaAv:mudaDia).push(n);   // v10: MUDA=2 para na Avenida; sem MUDA o bot segue até o Terraço Suíça
+      if(g.ponto.nivel>=2){ const F=L.INDUSTRIAL.fogao, sobra=c=>g.save.bank-PAY(g.save.equipe)-c>=300;   // fogão industrial, TVs com anúncios, cadeirinhas e a jarra (a Água da torneira, mais cara) quando sobra R$ 300 acima da folha
         if(!g.up.fogaoInd&&sobra(F.cost)) g.comprarInd('fogaoInd'); if(g.ponto.nivel===2){ if(!g.up.tvs&&sobra(L.INDUSTRIAL.tvs.instalar)) g.comprarInd('tvs'); if(!g.up.assento&&sobra(L.INDUSTRIAL.assento.cadeira.cost)) g.comprarInd('assento','cadeira'); } }
-      if(g.ponto.nivel>=3){ const sobra4=c=>g.save.bank-L.payroll(g.save.equipe)-c>=400;   // v9.1: os sofás e o curso de restaurante quando sobra R$ 400 acima da folha (as águas saborizadas entram na ordem das melhorias); v10: no Terraço, as poltronas (R$ 600)
+      if(g.ponto.nivel>=3){ const sobra4=c=>g.save.bank-PAY(g.save.equipe)-c>=400;   // v9.1: os sofás e o curso de restaurante quando sobra R$ 400 acima da folha (as águas saborizadas entram na ordem das melhorias); v10: no Terraço, as poltronas (R$ 600)
         if(!g.up.assento&&g.ponto.nivel===3&&sobra4(L.AVENIDA.sofa.cost)) g.comprarInd('assento','sofa'); if(!g.up.assento&&g.ponto.nivel===4&&sobra4(L.TERRACO.poltrona.cost)) g.comprarInd('assento','poltrona'); const pr=g.cursoProx('restaurante'); if(pr&&!g.cursoTrava&&process.env.CURSOS!=='0'&&sobra4(pr.preco)) { g.buyCurso('restaurante'); (cursoDias['restaurante'+pr.nivel]=cursoDias['restaurante'+pr.nivel]||[]).push(n); } }
       if(MODO==='cuida'){ const b0=g.save.bank; g.revisarTudo(); r.rev.push(b0-g.save.bank); }
       if(MODO==='amarelo'||MODO==='vermelho'){ const lim=MODO==='amarelo'?L.MANUT.verde:L.MANUT.vermelho, b0=g.save.bank; L.MANUT.equip.forEach(q=>{ if(g.save.manut[q.id]<lim) g.revisar(q.id); }); r.rev.push(b0-g.save.bank); }   // v8.3.12: amarelo = revisa quem saiu do verde; vermelho = só quem já está no vermelho
@@ -60,29 +63,29 @@ for(let k=0;k<N;k++){
       if(process.env.CURSOS!=='0'){ const dc=daniCursos(n>=3?(+process.env.RCURSO>=0?+process.env.RCURSO:150):0); if(dc) (daniCursoDias[dc]=daniCursoDias[dc]||[]).push(n); }   // v8.9: depois do curso do Tonhão, o da Dani (um por lojinha, à parte)
       if(process.env.MOVEIS!=='0') BOT.moveis(g,L,semMesa,n>=3?300:0,process.env.MOVEIS);
       if(n>=3 || g.save.cap>=2){
-        const e0=n>=3?(FULL.map(capT).find(e=>L.payroll(L.normSave({equipe:e}).equipe)+(L.divulgaOf(DIV).cost)<=g.save.bank)||{}):{};
+        const e0=n>=3?(FULL.map(capT).find(e=>PAY(L.normSave({equipe:e}).equipe)+(L.divulgaOf(DIV).cost)<=g.save.bank)||{}):{};
         const e=Object.assign({},e0,L.HIST.on?{dani:g.save.cap>=2?Math.max(1,e0.dani||0):0}:{});   // v8.7: a Dani só chega no cap. 2 (aprendiz, sem salário)
         const l0=g.save.equipe.lia||0, j0=g.save.equipe.joca||0, jt0=g.save.equipe.jocaTasks, c0=g.save.equipe.cami||0, ct0=g.save.equipe.camiTasks, a0=g.save.equipe.anselmo||0, mu0=g.save.equipe.musica||0;   // v9.2: o Joca (contratado pelo bot) segue de um dia para o outro; v9.3: e a Cami
         g.save.equipe=L.normSave({equipe:Object.assign({daniTasks:['pratos','lavar','lixo']},e,{joca:j0,jocaTasks:jt0,cami:c0,camiTasks:ct0})}).equipe; g.save.equipe.anselmo=g.ponto.nivel>=3?a0:0; g.save.equipe.lia=g.ponto.nivel>=4?l0:0; g.save.equipe.musica=g.ponto.nivel>=4?mu0:0;   /* v10.4: a música segue de um dia para o outro */   /* v10.2: idem para a Lia */   // v9.5: o normSave sem salão trata como Garagem e tiraria o Anselmo
         if(process.env.JOCA!=='0'&&g.cartaoAberto('joca')){   // contrata com R$ 300 de folga acima da folha e sobe quando a experiência deixa
-          const sobraJ=c=>g.save.bank-L.payroll(g.save.equipe)-c>=300, lj=g.save.equipe.joca;
+          const sobraJ=c=>g.save.bank-PAY(g.save.equipe)-c>=300, lj=g.save.equipe.joca;
           if(!lj&&sobraJ(L.STAFF.joca.levels[2].pay)&&g.setStaff('joca',2)){ jocaDia.push(n); g.save.equipe.jocaTasks=['lixo','pratos','lavar']; }
           else if(lj&&lj<4&&L.jocaNivelXp(g.save)>lj&&sobraJ(L.STAFF.joca.levels[lj+1].pay-L.STAFF.joca.levels[lj].pay)) g.setStaff('joca',lj+1);
           if(g.save.equipe.joca) for(const c of L.JOCA_CURSOS) if(!c.item&&!g.save.jocaCursos[c.id]&&g.save.bank-c.preco>=300&&g.buyJocaCurso(c.id)) break;
         }
-        if(g.ponto.nivel>=3&&g.save.equipe.joca&&process.env.ESPRESSO!=='0'&&!g.save.jocaCursos.espresso&&g.save.bank-L.payroll(g.save.equipe)-350>=300&&g.buyJocaCurso('espresso')) espDia.push(n);   // v9.3: o curso de espresso do Joca (R$ 350) na Avenida
+        if(g.ponto.nivel>=3&&g.save.equipe.joca&&process.env.ESPRESSO!=='0'&&!g.save.jocaCursos.espresso&&g.save.bank-PAY(g.save.equipe)-350>=300&&g.buyJocaCurso('espresso')) espDia.push(n);   // v9.3: o curso de espresso do Joca (R$ 350) na Avenida
         if(process.env.CAMI!=='0'&&g.cartaoAberto('cami')){   // v9.3: a Cami (R$ 120 por dia) com R$ 300 de folga; o curso ágil quando sobra R$ 400 + 300
-          const sobraC=c=>g.save.bank-L.payroll(g.save.equipe)-c>=300;
+          const sobraC=c=>g.save.bank-PAY(g.save.equipe)-c>=300;
           if(!g.save.equipe.cami&&sobraC(L.STAFF.cami.levels[1].pay)&&g.setStaff('cami',1)){ camiDia.push(n); g.save.equipe.camiTasks=['lixo','pratos','lavar']; }
           if(g.save.equipe.cami&&!g.save.camiCursos.agil&&sobraC(400)) g.buyCamiCurso('agil');
         }
-        if(process.env.LIA!=='0'&&g.ponto.nivel>=4&&g.cartaoAberto('lia')&&!g.save.equipe.lia&&g.save.bank-L.payroll(g.save.equipe)-L.STAFF.lia.pay>=300&&g.setStaff('lia',1)) liaDia.push(n);   // v10.2: a Lia (R$ 80 por dia) com R$ 300 de folga
-        if(process.env.MUSICA!=='0'&&g.ponto.nivel>=4&&!g.save.equipe.musica&&g.save.bank-L.payroll(g.save.equipe)-L.musicaPay(L.TERRACO.musica[+process.env.MUSICA||2])>=300&&g.setStaff('musica',+process.env.MUSICA||2)) musicaDia.push(n);   // v10.4: o pianista (R$ 150 por dia, afinação inclusa; MUSICA=1 o quarteto) com R$ 300 de folga
-        if(process.env.ANSELMO!=='0'&&g.ponto.nivel>=3&&g.cartaoAberto('anselmo')&&!g.save.equipe.anselmo&&g.save.bank-L.payroll(g.save.equipe)-L.STAFF.anselmo.levels[2].pay>=300&&g.setStaff('anselmo',2)) anselmoDia.push(n);   // v9.5: o Anselmo (R$ 90 por dia) com R$ 300 de folga
+        if(process.env.LIA!=='0'&&g.ponto.nivel>=4&&g.cartaoAberto('lia')&&!g.save.equipe.lia&&g.save.bank-PAY(g.save.equipe)-L.STAFF.lia.pay>=300&&g.setStaff('lia',1)) liaDia.push(n);   // v10.2: a Lia (R$ 80 por dia) com R$ 300 de folga
+        if(process.env.MUSICA!=='0'&&g.ponto.nivel>=4&&!g.save.equipe.musica&&g.save.bank-PAY(g.save.equipe)-L.musicaPay(L.TERRACO.musica[+process.env.MUSICA||2])>=300&&g.setStaff('musica',+process.env.MUSICA||2)) musicaDia.push(n);   // v10.4: o pianista (R$ 305 por dia, afinação inclusa; MUSICA=1 o trio) com R$ 300 de folga
+        if(process.env.ANSELMO!=='0'&&g.ponto.nivel>=3&&g.cartaoAberto('anselmo')&&!g.save.equipe.anselmo&&g.save.bank-PAY(g.save.equipe)-L.STAFF.anselmo.levels[2].pay>=300&&g.setStaff('anselmo',2)) anselmoDia.push(n);   // v9.5: o Anselmo (R$ 90 por dia) com R$ 300 de folga
         if(g.up.confCaseira&&g.save.equipe.dani>1&&process.env.DOCE!=='0'){ const dt=g.save.equipe.daniTasks.filter(t=>t!=='doce'); g.save.equipe.daniTasks=dt.slice(0,Math.max(0,L.STAFF.dani.levels[g.save.equipe.dani].tasks-1)).concat('doce'); }   // a Dani serve os doces (uma das vagas)
         if(n>=3) g.save.divulga=DIV;
-        if(g.up.tvs&&g.ponto.nivel===2&&L.payroll(Object.assign({},g.save.equipe,{tvs:1}))+(L.divulgaOf(DIV).cost)<=g.save.bank) g.save.equipe.tvs=1;   // v9: as TVs com anúncios
-        if(g.ponto.nivel===3&&L.payroll(Object.assign({},g.save.equipe,{couvert:true,taxa:true}))+(L.divulgaOf(DIV).cost)+400<=g.save.bank) Object.assign(g.save.equipe,{couvert:true,taxa:true});   // v9.1: o couvert artístico com a taxa
+        if(g.up.tvs&&g.ponto.nivel===2&&PAY(Object.assign({},g.save.equipe,{tvs:1}))+(L.divulgaOf(DIV).cost)<=g.save.bank) g.save.equipe.tvs=1;   // v9: as TVs com anúncios
+        if(g.ponto.nivel===3&&PAY(Object.assign({},g.save.equipe,{couvert:true,taxa:true}))+(L.divulgaOf(DIV).cost)+400<=g.save.bank) Object.assign(g.save.equipe,{couvert:true,taxa:true});   // v9.1: o couvert artístico com a taxa
         for(let t=1;t<=g.save.equipe.dani;t++) if(!vistoD.has(k+':'+t)){ vistoD.add(k+':'+t); nivDani[t-1].push(n); }   // v8.9
         for(let t=0;t<=g.save.equipe.tonhao;t++) if(!vistoT.has(k+':'+t)){ vistoT.add(k+':'+t); nivDia[t].push(n); }   // v8.8: o dia em que ele chega a cada nível
       }
