@@ -78,7 +78,7 @@ class Game {
     this.bia.reset();
     this.dani.reset(); this.joca.reset(); this.cami.reset();
     this.fx = [];
-    this.stats = { served:0, lost:0, chain:0, spawned:0, full:0, vip:0, vipLost:0, juice:0, juiceMiss:0, trash:0, washed:0, emptied:0, sucoEsp:0, doces:0, docesMarm:0, cafesEsp:0, drinks:0, crit:0, consertos:0, quebras:0, lostBy:{ semMesa:0, comMesa:0, pedido:0, prato:0, conta:0, retirada:0 }, lotadoT:0, bravoMesa:0, lixoCheio:false, marmitas:0, esfriou:0, jogadas:0, lostGrande:0, completas:0, exigentes:0 };
+    this.stats = { served:0, lost:0, chain:0, spawned:0, full:0, vip:0, vipLost:0, juice:0, juiceMiss:0, trash:0, washed:0, emptied:0, sucoEsp:0, doces:0, docesMarm:0, cafesEsp:0, drinks:0, crit:0, consertos:0, quebras:0, lostBy:{ semMesa:0, comMesa:0, pedido:0, prato:0, conta:0, retirada:0 }, lotadoT:0, bravoMesa:0, lixoCheio:false, marmitas:0, esfriou:0, jogadas:0, lostGrande:0, completas:0, exigentes:0, rodadas:0 };
     this.lastKind = null; this.chainN = 0;
     this.ending = false; this.endTimer = 0; this.reason = '';
     this.fechado = false; this.fechadoT = 0;   // v9.6.4: a porta fecha quando o relógio zera; fechadoT: segundos desde então
@@ -408,10 +408,18 @@ class Game {
   collectBill(g, t, semCorrente){
     // v8.3.8: os corações viram gorjeta (no máximo +10%; com 1 ou 2, desconto), mais a da executiva e a do VIP;
     // v8.5.2: o suco e o cafezinho da mesa entram aqui também, pelo preço (bebConta)
-    const amount = Math.round(g.bill * (1 + GORJETA[g.hearts] + g.T.tip + (g.vip ? (g.exigente ? EXIGENTE.tip + (g.hearts === 5 ? EXIGENTE.generosa : 0) : VIP.tip) : 0) + (g.cafePede && g.coffee ? g.T.cafeTip : 0))) + g.bebConta;
+    let amount = Math.round(g.bill * (1 + GORJETA[g.hearts] + g.T.tip + (g.vip ? (g.exigente ? EXIGENTE.tip + (g.hearts === 5 ? EXIGENTE.generosa : 0) : VIP.tip) : 0) + (g.cafePede && g.coffee ? g.T.cafeTip : 0))) + g.bebConta;
+    // v10.5.1: no Terraço, com música ao vivo, a mesa às vezes fica para mais uma rodada (a conta sobe e os ingredientes também)
+    const mu = musicaOk(this.ponto) ? musicaDe(this.save.equipe) : null;
+    let rodada = false;
+    if (mu && mu.rodada && Math.random() < mu.rodada.chance){
+      const extra = Math.round(amount * mu.rodada.valor);
+      amount += extra; this.custo += Math.round(extra * INGRED.prato); this.stats.rodadas++; rodada = true;
+    }
     this.score('bill', t.cx, t.cy - 50, amount, g, semCorrente);
     if (this.treino) this.treino.conta = { v:amount, h:g.hearts, base:g.bill, beb:g.bebConta };   // a gorjeta é só da comida (base)
     if (g.sucoConta){ const v = this.bebida.preco * g.sucoConta; this.addMoney(v); this.addText(t.cx - 34, t.cy - 100, 'Suco da espera +' + v, PAL.alerta, 14); }
+    if (rodada) this.addText(t.cx - 40, t.cy - 100, 'Mais uma rodada!', PAL.alerta, 15);
     if (g.T.tip > 0 || g.vip) this.addText(t.cx + 20, t.cy - 76, g.exigente && g.hearts === 5 ? 'Gorjeta generosa!' : 'Gorjeta!', PAL.mostarda, 15);
     const eq = this.save.equipe;
     if (eq.couvert && eq.taxa){

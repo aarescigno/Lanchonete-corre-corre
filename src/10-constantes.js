@@ -361,11 +361,11 @@ const PONTOS = [
   // patPressa: a paciência de quem vem sozinho ou em dupla; vip: a chance de VIP; metaF: o fator das metas (v9.6.1: 1,25 → 2,3 e 1,7 → 3,2); expertF (v9.6.1): o da expert, a 3ª estrela (sem ele, o metaF); prateleira: as vagas do balcão de retirada;
   // grupos: o fator dos grupos do dia (os 20 lugares já trazem +60% de movimento; sem ele, nem o bot afiado fechava o dia sem perder ninguém)
   { id:'industrial', nome:'Lanchonete na área industrial', nivel:2, lugares:20, aluguel:120, mudanca:800, credito:2000, cardapio:1.5, area:{ x0:160, y0:150, x1:684, y1:500 }, espera:5, assento:'pe', bebida:'suco', pratos:5, marmJanela:3, prateleira:4,
-    tipos:{ estudante:1, executiva:1, familia:0.5, vovos:0.7, entregador:2, turma:2, motorista:1 }, encomenda:0.6, apito:{ quando:0.45, max:3, gap:[8, 12], aviso:10 }, patPressa:0.85, vip:0.2, metaF:2.1, expertF:1.4, grupos:0.8,
+    tipos:{ estudante:1, executiva:1, familia:0.5, vovos:0.7, entregador:2, turma:2, motorista:1 }, encomenda:0.6, apito:{ quando:0.45, max:3, gap:[8, 12], aviso:10 }, patPressa:0.85, vip:0.2, metaF:2.3, expertF:1.5, grupos:0.8,
     traz:'a freguesia da fábrica e da estrada', deixa:'as TVs, o assento da espera e a jarra de suco ficam' },
   // v9.1: o 2º ponto novo (cap. 6 e 7). Sem apito, sem encomenda e sem patPressa: a turma, o motorista e a encomenda não vêm. vip: ×2 (restaurante atrai mais VIP)
   { id:'avenida', nome:'Restaurante na Avenida Brasil', nivel:3, lugares:24, aluguel:400, mudanca:2000, credito:4000, cardapio:2.0, area:{ x0:160, y0:150, x1:684, y1:500 }, espera:6, assento:'pe', bebida:'saborizada', pratos:6, marmJanela:3, prateleira:4,
-    tipos:{ estudante:0.5, executiva:2, familia:1.5, vovos:1, entregador:1, negocios:1.5 }, vip:2, metaF:2.8, expertF:3.4, grupos:0.7,   // v9.6.4: 3,2 e 3,8 → 3,0 e 3,6 (o VIP mais exigente deixou a Avenida abaixo do alvo)
+    tipos:{ estudante:0.5, executiva:2, familia:1.5, vovos:1, entregador:1, negocios:1.5 }, vip:2, metaF:3.1, expertF:3.4, grupos:0.7,   // v9.6.4: 3,2 e 3,8 → 3,0 e 3,6 (o VIP mais exigente deixou a Avenida abaixo do alvo)
     traz:'o almoço de negócios e mais VIPs', art:'o', deixa:'os sofás, as águas saborizadas e o couvert ficam' },
   // v10: o último ponto da escada (cap. 8 e 9). 20 lugares, aluguel R$ 1.000, cardápio ×2,5. Sem entregador (semRetirada), sem bebida da espera (bebida:null até a 4a-4) e com o casal;
   // tempos: a refeição completa (bebida, entrada, prato e sobremesa; ver TEMPOS)
@@ -649,7 +649,7 @@ const AVENIDA = { sofa:{ nome:'Sofás com almofadas', cost:250, slow:0.25 } };
    já vem com o ponto: obstáculo fixo dos caminhos (fora da área das mesas; quem toca chega na 4a-5) */
 const TERRACO = { poltrona:{ nome:'Poltronas do foyer', cost:600, slow:0.35 }, piano:{ x0:28, y0:404, x1:148, y1:520 },
   /* v10.4: a música ao vivo (equipe.musica: 0 sem, 1 trio de cordas, 2 pianista; só no Terraço): effect = a paciência nas mesas cai tanto mais devagar; amb = soma no Ambiente do Gurugol; piano = a afinação por dia */
-  musica:[ null, { nome:'Trio de cordas', pay:500, effect:0.35, amb:1 }, { nome:'Pianista', pay:300, piano:5, effect:0.25, amb:1.5 } ] };
+  musica:[ null, { nome:'Trio de cordas', pay:500, effect:0.35, amb:1, rodada:{ chance:0.5, valor:0.2 } }, { nome:'Pianista', pay:300, piano:5, effect:0.25, amb:1.5, rodada:{ chance:0.65, valor:0.2 } } ] };
 function musicaDe(eq){ return TERRACO.musica[eq && eq.musica] || null; }
 function musicaPay(m){ return m ? m.pay + (m.piano || 0) : 0; }
 function musicaOk(ponto){ return (ponto || PONTOS[0]).nivel === 4; }   // nem no modo dev: a música é só do Terraço
@@ -802,12 +802,12 @@ function exigRep(nota){ return nota == null ? 1 : EXIGENTE.rep[0] + clamp((nota 
 function vipTipos(ponto){ const w = ponto && ponto.tipos; return VIP.types.filter(k => w ? w[k] > 0 : k !== 'casal'); }   // dish: o prato especial soma R$ 12 à conta e leva 1,8× o tempo; perfect: pontos (v8.3.8)
 
 const DAYS = [
-  { n:1, groups:5,  types:['estudante','vovos'],                                   nu:null,         meta:50, expert:80,  time:150, speed:0.60, note:'Arraste cada grupo até uma mesa livre.' },
+  { n:1, groups:5,  types:['estudante','vovos'],                                   nu:null,         meta:35, expert:80,  time:150, speed:0.60, note:'Arraste cada grupo até uma mesa livre.' },
   { n:2, groups:8,  types:['estudante','vovos','familia'],                         nu:'familia',    meta:160, expert:320,  time:160, speed:0.60, note:'Chegou a família! Ela só cabe em mesa de quatro.' },
   { n:3, groups:13, types:['estudante','vovos','familia','executiva'],             nu:'executiva',  meta:200, expert:340,  time:170, speed:0.60, juice:0.3, note:'Chegou a executiva! E abriu o balcão de sucos.' },
   { n:4, groups:15, types:['estudante','vovos','familia','executiva','entregador'], nu:'entregador', meta:90, expert:160, time:180, speed:0.58, juice:0.3, note:'Chegou o entregador de moto!' },
   { n:5, groups:16, types:['estudante','vovos','familia','executiva','entregador'], nu:null,         meta:130, expert:205, time:190, speed:0.56, vip:0.15, juice:0.3, note:'O movimento cresce.' },
-  { n:6, groups:16, types:['estudante','vovos','familia','executiva','entregador'], nu:null,         meta:205, expert:415, time:200, speed:0.54, vip:0.15, juice:0.3, note:'Sexta-feira: ninguém quer esperar.' },
+  { n:6, groups:16, types:['estudante','vovos','familia','executiva','entregador'], nu:null,         meta:185, expert:415, time:200, speed:0.54, vip:0.15, juice:0.3, note:'Sexta-feira: ninguém quer esperar.' },
   { n:7, groups:17, types:['estudante','vovos','familia','executiva','entregador'], nu:null,         meta:250, expert:455, time:220, speed:0.52, vip:0.15, juice:0.3, gripe:true, note:'Tonhão está gripado: a cozinha anda devagar.' }
 ];
 /* campanha (v8.3): os dias 1 a 7 são a rampa de abertura; do dia 8 em diante, cada dia tem o perfil do dia 7 (sem a gripe
@@ -1477,7 +1477,7 @@ const MANUAL = [
   { id:'l-tvs',        aba:'lojinha', nome:'TVs com sertanejo', linha:'A paciência nas mesas dura mais; sem anúncios, mais ainda.' },
   { id:'l-assento',    aba:'lojinha', nome:'Assento da espera', linha:'Quem espera sentado perde a paciência mais devagar.' },
   { id:'l-couvert',    aba:'lojinha', nome:'Couvert artístico', linha:'Música ao vivo: a paciência nas mesas dura mais, e cada mesa paga o couvert.' },
-  { id:'l-musica',     aba:'lojinha', nome:'Música ao vivo', linha:'Trio ou pianista: a paciência nas mesas dura mais e o ambiente melhora.' },
+  { id:'l-musica',     aba:'lojinha', nome:'Música ao vivo', linha:'Trio ou pianista: a paciência nas mesas dura mais, o ambiente melhora e a mesa pede mais uma rodada.' },
   { id:'l-fogao',      aba:'lojinha', nome:'Fogão industrial', linha:'Uma boca a mais: o Tonhão faz mais pratos ao mesmo tempo.' },
   { id:'l-cardapio',   aba:'lojinha', nome:'Cardápio', linha:'Cursos do Tonhão e da equipe. Cada curso ensina pratos novos e dá experiência; o avançado deixa os pratos mais caros e caprichados.' },
   { id:'l-salao',      aba:'lojinha', nome:'Salão', linha:'Compre, venda e arrume as mesas.' },

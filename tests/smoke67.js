@@ -83,7 +83,7 @@ const loja=(H,grupo,aba)=>{ H.L.setShopGrupo(grupo); H.L.setShopTab(aba); return
 // ---------- 5. as fichas do Manual ----------
 { const L=nova().L, f=id=>L.MANUAL.find(x=>x.id===id);
   ok(f('e-tonhao').linha==='O chef. Aprende pratos nos cursos e, com aumento, cozinha mais rápido e ajuda na pia.','a ficha e-tonhao tem o texto novo');
-  ok(f('l-musica').linha==='Trio ou pianista: a paciência nas mesas dura mais e o ambiente melhora.','a ficha l-musica tem o texto novo (trio)'); }
+  ok(f('l-musica').linha==='Trio ou pianista: a paciência nas mesas dura mais, o ambiente melhora e a mesa pede mais uma rodada.','a ficha l-musica tem o texto novo (trio)'); }
 
 // ---------- 6. um save da v10.4 ----------
 { const H=nova(), {L}=H;
