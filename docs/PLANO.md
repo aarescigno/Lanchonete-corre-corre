@@ -70,7 +70,7 @@ Origem: retorno do Renan Martorelli (beta-tester) e conversa com o Arthur (15/10
 - **Cursos:** um por dia por ajudante (`daniCursoDia`, `jocaCursoDia`, `camiCursoDia`). Os que trazem item (confeitarias, espresso) ficam no **cartão Cardápio**, com o rosto de quem faz, ao lado dos do Tonhão, e contam na Diversidade do Gurugol (`avalMenu`); os de atendimento ficam no cartão do ajudante, em Equipe. Só aparecem no ponto do `nivel` deles (no modo dev, sempre).
 
 ## Etapa S — Salários de verdade (v10.5)
-**Objetivo:** cada pessoa da equipe e cada música custa o que o cargo custaria de verdade (~80% do custo real, como o aluguel); o Tonhão passa a ter salário e a Dani ajuda de custo; o cardápio sobe para perto do preço real (PF da Garagem a R$ 30) e as metas são recalibradas pelo bot. Entrevista de 12/11; pesquisa em `docs/pesquisa-salarios.md`. Spec: `docs/spec-v10.5.md` (aprovada).
+**Objetivo:** cada pessoa da equipe e cada música custa o que o cargo custaria de verdade (~80% do custo real, como o aluguel); o Tonhão passa a ter salário e a Dani ajuda de custo; o salário da Dani (confeiteira) e do Joca (barista) sobe a cada curso da carreira deles; o cardápio sobe para perto do preço real (PF da Garagem a R$ 30) e as metas são recalibradas pelo bot. Entrevista de 12/11; pesquisa em `docs/pesquisa-salarios.md`. Spec: `docs/spec-v10.5.md` (aprovada).
 
 **Modelo:** Sonnet, esforço alto (código simples, mas a calibração por tentativa mexe nos quatro pontos e em muitos smokes)
 
