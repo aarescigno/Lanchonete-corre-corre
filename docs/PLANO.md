@@ -18,8 +18,10 @@ Origem: retorno do Renan Martorelli (beta-tester) e conversa com o Arthur (15/10
 | 4a-4 | O salão e o bar do Terraço: a Cami em tudo, cafés especiais e coquetéis de autor | v10.3 | feita em 11/11 (`docs/spec-v10.3.md`; `smoke65`; o Terraço já passava 100% das metas com a equipe toda: recalibrar na 4a-5) |
 | 4a-5 | Música, flores e o rebalanceamento do Terraço | v10.4 | feita em 11/11 (`docs/spec-v10.4.md`; `smoke66`; cardápio ×1,3, metas ×12 e 3ª estrela ×8,5: o comando do CA8 não contrata a equipe toda, ver Desvios) |
 | S | Salários de verdade: equipe e música no custo real (~80%), cardápio e metas recalibrados | v10.5 | feita em 12/11 (`docs/spec-v10.5.md`; `smoke67`; a música não paga o preço no `balance.js`, ver Desvios) |
-| 4b | Nível de luxo | v10.6 | a fazer |
-| 4c | Eventos de bairro: festa junina e jogo do Brasil | v10.7 | a fazer |
+| R1 | Metas no alvo e a música do Terraço (revisão do balanceamento de 12/11) | v10.5.1 | a fazer (`docs/spec-v10.5.1.md`, aprovada) |
+| R2 | O ritmo da história: conversas no cap. 3 e um capítulo novo na Avenida e outro no Terraço | v10.5.2 | a planejar (`docs/spec-v10.5.2.md`, rascunho: falta o usuário aprovar as falas) |
+| 4c | Eventos de bairro: festa junina e jogo do Brasil (adiantada em 12/11, para dar novidade aos dias parados da Garagem) | v10.6 | a fazer |
+| 4b | Nível de luxo | v10.7 | a fazer |
 | 5 | ~~Modo História, parte 1~~: juntou-se à 2f e aos capítulos da 3a, 3b e 4a (28/10) | — | — |
 | 6 | Modo História: o crítico do Michelzão e o final | v11 | a fazer |
 | 7 | Polimento: celular, jogo online, ajuste geral | v11.1 | a rever |
@@ -68,7 +70,7 @@ Origem: retorno do Renan Martorelli (beta-tester) e conversa com o Arthur (15/10
 - **Folha** (`FOLHA_CORTE`, a ordem final depois da 3b-5): couvert, som, TV, TVs, **o Anselmo não vem**, **a Cami não vem**, **aumento do Joca**, aumento da Dani, aumento do Tonhão, **o Joca não vem**. "Não vem" marca `eq.<quem>Fora = true` só naquele dia: `payroll` não conta, o ajudante não entra no dia, `normEquipe` não guarda o `...Fora` (continua contratado). Cada sessão põe a sua parte nessa ordem.
 - **Cursos:** um por dia por ajudante (`daniCursoDia`, `jocaCursoDia`, `camiCursoDia`). Os que trazem item (confeitarias, espresso) ficam no **cartão Cardápio**, com o rosto de quem faz, ao lado dos do Tonhão, e contam na Diversidade do Gurugol (`avalMenu`); os de atendimento ficam no cartão do ajudante, em Equipe. Só aparecem no ponto do `nivel` deles (no modo dev, sempre).
 
-## Etapa 4 — Terraço Suíça, VIPs exigentes e nível de luxo (4a, v10 a v10.4; 4b, v10.6)
+## Etapa 4 — Terraço Suíça, VIPs exigentes e nível de luxo (4a, v10 a v10.4; 4b, v10.7)
 > Desde a revisão de 28/10, o **nível de luxo** entra junto com o Terraço (escolha do usuário). A **4a** foi planejada em 10/11 e dividida em 5 sessões (4a-1 a 4a-5); a **4b** (nível de luxo) vem depois.
 
 ### 4a — Terraço Suíça: decisões de 10/11 (v10 a v10.4)
@@ -85,7 +87,7 @@ Origem: retorno do Renan Martorelli (beta-tester) e conversa com o Arthur (15/10
 > - **Regra da 3f em todas as sessões:** cartão novo da lojinha só com nome, preço e "?"; toda novidade ganha ficha no `MANUAL` (sem números), revelada quando aparece na história.
 > Ordem: 4a-1 (o ponto e a refeição completa, v10) → 4a-2 (o VIP exigente e a reputação, v10.1) → 4a-3 (a cozinha: alta gastronomia, a Lia e a alta confeitaria, v10.2) → 4a-4 (o salão e o bar: Cami, Joca e Anselmo, v10.3) → 4a-5 (música, flores e rebalanceamento, v10.4). Cada uma é uma versão, com PR e merge. As "Checagens de fim de sessão" da etapa 3 valem para todas.
 
-### Sessão 4b — Nível de luxo (v10.6)
+### Sessão 4b — Nível de luxo (v10.7)
 **Objetivo:** o nível de luxo de 0 a 5 (pedido do usuário em 21/10; texto em `docs/PROPOSTAS.md`), que soma o que o jogador montou em todos os pontos.
 
 **Entra:**
@@ -106,7 +108,7 @@ Origem: retorno do Renan Martorelli (beta-tester) e conversa com o Arthur (15/10
 
 ---
 
-## Etapa 4c — Eventos de bairro (v10.7)
+## Etapa 4c — Eventos de bairro (v10.6)
 > Entrou no plano na revisão de 28/10 (era ideia guardada). Vem depois do Terraço, para variar com cada ponto.
 
 **Objetivo:** dias especiais que dão variedade e testam a reserva de dinheiro, como a chuva e o feriado da v8.
