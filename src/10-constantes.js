@@ -649,7 +649,7 @@ const AVENIDA = { sofa:{ nome:'Sofás com almofadas', cost:250, slow:0.25 } };
    já vem com o ponto: obstáculo fixo dos caminhos (fora da área das mesas; quem toca chega na 4a-5) */
 const TERRACO = { poltrona:{ nome:'Poltronas do foyer', cost:600, slow:0.35 }, piano:{ x0:28, y0:404, x1:148, y1:520 },
   /* v10.4: a música ao vivo (equipe.musica: 0 sem, 1 trio de cordas, 2 pianista; só no Terraço): effect = a paciência nas mesas cai tanto mais devagar; amb = soma no Ambiente do Gurugol; piano = a afinação por dia */
-  musica:[ null, { nome:'Trio de cordas', pay:500, effect:0.35, amb:1, rodada:{ chance:0.5, valor:0.2 } }, { nome:'Pianista', pay:300, piano:5, effect:0.25, amb:1.5, rodada:{ chance:0.65, valor:0.2 } } ] };
+  musica:[ null, { nome:'Trio de cordas', pay:500, effect:0.35, amb:1, rodada:{ chance:0.7, valor:0.2 } }, { nome:'Pianista', pay:300, piano:5, effect:0.25, amb:1.5, rodada:{ chance:0.5, valor:0.2 } } ] };
 function musicaDe(eq){ return TERRACO.musica[eq && eq.musica] || null; }
 function musicaPay(m){ return m ? m.pay + (m.piano || 0) : 0; }
 function musicaOk(ponto){ return (ponto || PONTOS[0]).nivel === 4; }   // nem no modo dev: a música é só do Terraço
@@ -1302,7 +1302,7 @@ const BIA_IDS = ['tenis', 'corrida', 'bandeja', 'sudoku'];
 function upgradeCartao(id){ return BIA_IDS.indexOf(id) >= 0 ? 'bia' : 'melhorias'; }
 const HIST_NOMES = { bia:'Bia', tonhao:'Tonhão', dani:'Dani', joca:'Joca', cami:'Cami', anselmo:'Anselmo', lia:'Lia' };
 const CAIXA_MAX = 14;                                 // livro-caixa (v7.2): quantos dias da carreira ficam guardados
-const VERSAO = 'v10.5';                                // vai no resumo do Caixa
+const VERSAO = 'v10.5.1';                                // vai no resumo do Caixa
 const DIVULGA_DIA = 4;                                // antes disso, o movimento é o da inauguração (sem custo); v9.0.2: dia 4, e o padrão é o boca a boca
 function divulgaAberta(n, sv){ return devLivre() || n >= DIVULGA_DIA && !(sv && sv.convDiv === 'pend'); }   // no modo dev, desde o dia 1; v9.0.3: no Modo História, só depois da conversa
 /* v9.6.4: a Efood (os entregadores) só abre depois da conversa dos entregadores, no Modo História; antes dela, nenhum tipo com `retira` vem na agenda */

@@ -419,7 +419,7 @@ class Game {
     this.score('bill', t.cx, t.cy - 50, amount, g, semCorrente);
     if (this.treino) this.treino.conta = { v:amount, h:g.hearts, base:g.bill, beb:g.bebConta };   // a gorjeta é só da comida (base)
     if (g.sucoConta){ const v = this.bebida.preco * g.sucoConta; this.addMoney(v); this.addText(t.cx - 34, t.cy - 100, 'Suco da espera +' + v, PAL.alerta, 14); }
-    if (rodada) this.addText(t.cx - 40, t.cy - 100, 'Mais uma rodada!', PAL.alerta, 15);
+    if (rodada) this.addText(t.cx, t.cy + 30, 'Mais uma rodada!', PAL.alerta, 15);
     if (g.T.tip > 0 || g.vip) this.addText(t.cx + 20, t.cy - 76, g.exigente && g.hearts === 5 ? 'Gorjeta generosa!' : 'Gorjeta!', PAL.mostarda, 15);
     const eq = this.save.equipe;
     if (eq.couvert && eq.taxa){

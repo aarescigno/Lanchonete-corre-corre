@@ -1,6 +1,6 @@
 # v10.5.1 — Metas no alvo e a música do Terraço (etapa R1)
 
-**Situação:** aprovada (12/11)
+**Situação:** entregue em 12/11
 **Origem:** revisão do balanceamento pedida pelo usuário em 12/11 (medições na v10.5; decisão da música pelo usuário no mesmo dia: "a música faz pedir mais", com o preço mantido).
 
 ## Objetivo
@@ -49,12 +49,12 @@ Medido na v10.5, em 12/11 (`balance.js 40`, três rodadas onde diz): dia 1 batid
 - `tests/balance.js`: mostrar `rodadas` por dia no Terraço.
 
 ## Tarefas
-- [ ] T1 `smoke68` com os CA1 a CA5 (falhando) e a linha dele no `run_all.sh`.
-- [ ] T2 Os números das metas (dias 1 e 6, área industrial, Avenida).
-- [ ] T3 A rodada: `TERRACO.musica`, `collectBill`, `stats.rodadas`, o texto na mesa e a ficha do Manual.
-- [ ] T4 `balance.js` mostra `rodadas`; calibração (passos 1 a 4), com cada medida anotada em Testes.
-- [ ] T5 `DIAS=90 node carreira.js 8` (CA9) e a captura do CA10.
-- [ ] Fechamento: `VERSAO`, `vtag`, `#ov-ver`, `docs/RESUMO.md`, `docs/TESTES.md`, esta spec como entregue, `tests/run_all.sh` verde, PR e merge.
+- [x] T1 `smoke68` com os CA1 a CA5 (falhando) e a linha dele no `run_all.sh`.
+- [x] T2 Os números das metas (dias 1 e 6, área industrial, Avenida).
+- [x] T3 A rodada: `TERRACO.musica`, `collectBill`, `stats.rodadas`, o texto na mesa e a ficha do Manual.
+- [x] T4 `balance.js` mostra `rodadas`; calibração (passos 1 a 4), com cada medida anotada em Testes.
+- [x] T5 `DIAS=90 node carreira.js 8` (CA9) e a captura do CA10.
+- [x] Fechamento: `VERSAO`, `vtag`, `#ov-ver`, `docs/RESUMO.md`, `docs/TESTES.md`, esta spec como entregue, `tests/run_all.sh` verde, PR e merge.
 
 ## Avisos para a execução
 - O comando do Terraço só contrata a equipe toda com `JOCA=4 CONFEITARIA=1` (sem eles o bot não bate nenhuma meta: é erro do comando, não do jogo).
@@ -69,6 +69,11 @@ Medido na v10.5, em 12/11 (`balance.js 40`, três rodadas onde diz): dia 1 batid
 Nenhuma.
 
 ## Desvios
-(No fechamento.)
+- **Música (passo 4):** com o mesmo `valor`, as duas `chance` iguais não fecham (o pianista custa R$ 195 a menos por dia que o trio). Com a decisão do usuário (chances diferentes), `rodada.chance` ficou **0,70 (trio)** e **0,50 (pianista)**, fora do limite de 4 passos de 0,05 (medido: trio +R$ 74; pianista +R$ 56 e +R$ 91). Regras corrigidas: trio 0,5 → 0,7; pianista 0,65 → 0,5.
+- **Avenida (CA7):** nem com `metaF` 3,4 (3 passos) a taxa saiu de 97 a 98%; ficou em 3,1 (o bot passa quase sempre, mesmo com a meta mais alta). Fica como está (3,1), fora do alvo de 88 a 94%.
+- **Terraço (CA8):** as metas passam em ~97% (alvo 85 a 95%), com e sem música: vem do balanceamento da v10.5, não da rodada.
+- **CA9:** o lucro médio por dia do Terraço foi a R$ 2.327 (+19% sobre R$ 1.961, fora de ±10%); Garagem (R$ 361, −3%), área industrial (R$ 675, +6%) e Avenida (R$ 1.089, −2%) ficaram dentro.
+- **Texto da rodada:** nasce 30 px abaixo do centro da mesa, porque no alto ele se sobrepunha à "Gorjeta!".
+- **Smokes antigos:** `smoke24`, `smoke38`, `smoke42`, `smoke66` e `smoke67` tiveram o esperado corrigido (metas, `bomGoal` do dia 1 = R$ 50, ficha).
 
 **Modelo:** Sonnet, esforço médio (números com calibração guiada e um gancho pequeno na conta).

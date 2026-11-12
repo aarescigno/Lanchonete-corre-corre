@@ -396,7 +396,7 @@ table.rank tr.me td{background:#fbe7a8}
 
     <div class="ov show" id="ov-menu">
       <div class="panel menu-panel">
-        <span class="vtag" id="vtag" aria-label="Versão 10.5">v10.5</span>
+        <span class="vtag" id="vtag" aria-label="Versão 10.5.1">v10.5.1</span>
         <h1 class="title">Lanchonete <br>Corre-Corre</h1>
         <p class="tag">Ajude a Bia a atender a freguesia da esquina antes que o cafezinho esfrie!</p>
         <div class="lbl" id="menu-dia">História</div>
@@ -616,7 +616,8 @@ table.rank tr.me td{background:#fbe7a8}
       <div class="panel">
         <h2>Versões</h2>
         <ul class="verlist">
-          <li><b>v10.5</b><span class="cur">versão atual</span><br>12/11/2026 &mdash; Salários de verdade: o Tonhão passa a ter salário, a Dani ganha uma ajuda de custo e a música do Terraço custa o que custaria ao vivo; a Dani e o Joca ganham mais a cada curso da carreira deles; o cardápio sobe para perto do preço real e as metas foram refeitas.</li>
+          <li><b>v10.5.1</b><span class="cur">versão atual</span><br>12/11/2026 &mdash; Metas no alvo: o primeiro dia e a sexta-feira da Garagem ficam mais fáceis, a área industrial e a Avenida pedem um pouco mais; no Terraço, com música ao vivo, a mesa às vezes pede mais uma rodada.</li>
+          <li><b>v10.5</b><br>12/11/2026 &mdash; Salários de verdade: o Tonhão passa a ter salário, a Dani ganha uma ajuda de custo e a música do Terraço custa o que custaria ao vivo; a Dani e o Joca ganham mais a cada curso da carreira deles; o cardápio sobe para perto do preço real e as metas foram refeitas.</li>
           <li><b>v10.4</b><br>11/11/2026 &mdash; Música ao vivo no Terraço (quarteto de cordas ou pianista), flores finas no foyer e os números do ponto reacertados; o couvert fica só na Avenida.</li>
           <li><b>v10.3</b><br>11/11/2026 &mdash; O salão e o bar do Terraço: a Cami ajuda em todas as mesas, o Joca faz cafés especiais e o Anselmo, coquetéis de autor, com o carrinho de boas-vindas no foyer.</li>
           <li><b>v10.2.2</b><br>11/11/2026 &mdash; Modo dev: a aba História cumpre o objetivo, assiste a qualquer conversa e revela o Manual e a lojinha; a aba Hoje escolhe o clima, a quebra, o fiscal, a gripe, o VIP e o apito do próximo dia.</li>
@@ -1386,7 +1387,7 @@ const AVENIDA = { sofa:{ nome:'Sofás com almofadas', cost:250, slow:0.25 } };
    já vem com o ponto: obstáculo fixo dos caminhos (fora da área das mesas; quem toca chega na 4a-5) */
 const TERRACO = { poltrona:{ nome:'Poltronas do foyer', cost:600, slow:0.35 }, piano:{ x0:28, y0:404, x1:148, y1:520 },
   /* v10.4: a música ao vivo (equipe.musica: 0 sem, 1 trio de cordas, 2 pianista; só no Terraço): effect = a paciência nas mesas cai tanto mais devagar; amb = soma no Ambiente do Gurugol; piano = a afinação por dia */
-  musica:[ null, { nome:'Trio de cordas', pay:500, effect:0.35, amb:1, rodada:{ chance:0.5, valor:0.2 } }, { nome:'Pianista', pay:300, piano:5, effect:0.25, amb:1.5, rodada:{ chance:0.65, valor:0.2 } } ] };
+  musica:[ null, { nome:'Trio de cordas', pay:500, effect:0.35, amb:1, rodada:{ chance:0.7, valor:0.2 } }, { nome:'Pianista', pay:300, piano:5, effect:0.25, amb:1.5, rodada:{ chance:0.5, valor:0.2 } } ] };
 function musicaDe(eq){ return TERRACO.musica[eq && eq.musica] || null; }
 function musicaPay(m){ return m ? m.pay + (m.piano || 0) : 0; }
 function musicaOk(ponto){ return (ponto || PONTOS[0]).nivel === 4; }   // nem no modo dev: a música é só do Terraço
@@ -2039,7 +2040,7 @@ const BIA_IDS = ['tenis', 'corrida', 'bandeja', 'sudoku'];
 function upgradeCartao(id){ return BIA_IDS.indexOf(id) >= 0 ? 'bia' : 'melhorias'; }
 const HIST_NOMES = { bia:'Bia', tonhao:'Tonhão', dani:'Dani', joca:'Joca', cami:'Cami', anselmo:'Anselmo', lia:'Lia' };
 const CAIXA_MAX = 14;                                 // livro-caixa (v7.2): quantos dias da carreira ficam guardados
-const VERSAO = 'v10.5';                                // vai no resumo do Caixa
+const VERSAO = 'v10.5.1';                                // vai no resumo do Caixa
 const DIVULGA_DIA = 4;                                // antes disso, o movimento é o da inauguração (sem custo); v9.0.2: dia 4, e o padrão é o boca a boca
 function divulgaAberta(n, sv){ return devLivre() || n >= DIVULGA_DIA && !(sv && sv.convDiv === 'pend'); }   // no modo dev, desde o dia 1; v9.0.3: no Modo História, só depois da conversa
 /* v9.6.4: a Efood (os entregadores) só abre depois da conversa dos entregadores, no Modo História; antes dela, nenhum tipo com `retira` vem na agenda */
@@ -4373,7 +4374,7 @@ class Game {
     this.score('bill', t.cx, t.cy - 50, amount, g, semCorrente);
     if (this.treino) this.treino.conta = { v:amount, h:g.hearts, base:g.bill, beb:g.bebConta };   // a gorjeta é só da comida (base)
     if (g.sucoConta){ const v = this.bebida.preco * g.sucoConta; this.addMoney(v); this.addText(t.cx - 34, t.cy - 100, 'Suco da espera +' + v, PAL.alerta, 14); }
-    if (rodada) this.addText(t.cx - 40, t.cy - 100, 'Mais uma rodada!', PAL.alerta, 15);
+    if (rodada) this.addText(t.cx, t.cy + 30, 'Mais uma rodada!', PAL.alerta, 15);
     if (g.T.tip > 0 || g.vip) this.addText(t.cx + 20, t.cy - 76, g.exigente && g.hearts === 5 ? 'Gorjeta generosa!' : 'Gorjeta!', PAL.mostarda, 15);
     const eq = this.save.equipe;
     if (eq.couvert && eq.taxa){

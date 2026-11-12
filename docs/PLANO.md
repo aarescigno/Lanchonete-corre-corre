@@ -15,10 +15,9 @@ Origem: retorno do Renan Martorelli (beta-tester) e conversa com o Arthur (15/10
 ## Situação
 | # | Etapa | Versão | Situação |
 |---|---|---|---|
-| 4a-4 | O salão e o bar do Terraço: a Cami em tudo, cafés especiais e coquetéis de autor | v10.3 | feita em 11/11 (`docs/spec-v10.3.md`; `smoke65`; o Terraço já passava 100% das metas com a equipe toda: recalibrar na 4a-5) |
 | 4a-5 | Música, flores e o rebalanceamento do Terraço | v10.4 | feita em 11/11 (`docs/spec-v10.4.md`; `smoke66`; cardápio ×1,3, metas ×12 e 3ª estrela ×8,5: o comando do CA8 não contrata a equipe toda, ver Desvios) |
 | S | Salários de verdade: equipe e música no custo real (~80%), cardápio e metas recalibrados | v10.5 | feita em 12/11 (`docs/spec-v10.5.md`; `smoke67`; a música não paga o preço no `balance.js`, ver Desvios) |
-| R1 | Metas no alvo e a música do Terraço (revisão do balanceamento de 12/11) | v10.5.1 | a fazer (`docs/spec-v10.5.1.md`, aprovada) |
+| R1 | Metas no alvo e a música do Terraço (revisão do balanceamento de 12/11) | v10.5.1 | feita em 12/11 (`docs/spec-v10.5.1.md`; `smoke68`; trio 0,7 e pianista 0,5; a Avenida ficou em 97% das metas e o Terraço da campanha +19%, ver Desvios) |
 | R2 | O ritmo da história: conversas no cap. 3 e um capítulo novo na Avenida e outro no Terraço | v10.5.2 | a planejar (`docs/spec-v10.5.2.md`, rascunho: falta o usuário aprovar as falas) |
 | 4c | Eventos de bairro: festa junina e jogo do Brasil (adiantada em 12/11, para dar novidade aos dias parados da Garagem) | v10.6 | a fazer |
 | 4b | Nível de luxo | v10.7 | a fazer |

@@ -20,7 +20,7 @@ const comecaDia=H=>{ H.g.startDay(10); H.els['btn-start'].fire('click'); H.g.mod
   ok(L.DAYS[5].meta===185 && L.DAYS[5].expert===415,'dia 6: meta 185, expert 415');
   ok(P[1].metaF===2.3 && P[1].expertF===1.5,'área industrial: metaF 2,3 e expertF 1,5');
   ok(P[2].metaF===3.1 && P[2].expertF===3.4,'Avenida: metaF 3,1 e expertF 3,4');
-  const M=L.TERRACO.musica; ok(M[1].rodada.chance===0.5 && M[1].rodada.valor===0.2 && M[2].rodada.chance===0.65 && M[2].rodada.valor===0.2,'música: rodada do trio 0,5 e do pianista 0,65 (+20%)'); }
+  const M=L.TERRACO.musica; ok(M[1].rodada.chance===0.7 && M[1].rodada.valor===0.2 && M[2].rodada.chance===0.5 && M[2].rodada.valor===0.2,'música: rodada do trio 0,7 e do pianista 0,5 (+20%)'); }
 
 // ---------- 2. a rodada no Terraço ----------
 { const H=jogo('terraco',{ equipe:{ tonhao:1, dani:1, musica:1 } }), {g}=H; comecaDia(H);
