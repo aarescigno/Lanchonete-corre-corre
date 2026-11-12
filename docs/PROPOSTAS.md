@@ -4,6 +4,14 @@ Registro das ideias e dos retornos de quem jogou, com o texto original, e de ond
 
 ---
 
+## 12/11 — usuário: preferências para a 4b (nível de luxo), antes do planejamento
+Respostas dadas na sessão da etapa S, para o planejamento da 4b com o Opus partir delas:
+- **Efeito do luxo:** mais VIPs e exigentes, e o luxo vira a nota de ambiente do Gurugol.
+- **Onde aparece:** aba nova "Luxo" na lojinha, com uma barra por atributo e o nível; os enfeites e móveis são vendidos ali, e a TV, o som e o couvert passam para lá.
+- **Enfeites e móveis:** por ponto, 2 ou 3 itens próprios de cada ponto (8 a 12 no total).
+
+---
+
 ## 11/11/2026 — usuário: modo dev completo
 > "O modo dev precisa açambarcar todos esses recursos novos, tipo poder pular para qualquer etapa, adicionar dinheiro, revelar pontos da história etc. Planeje essa implementação pra já, como está está fraco"
 
