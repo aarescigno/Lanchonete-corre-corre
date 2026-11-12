@@ -273,15 +273,15 @@ class Game {
   payDay(){
     const eq = this.save.equipe; this.unpaid = []; eq.jocaFora = false; eq.camiFora = false; eq.anselmoFora = false; eq.liaFora = false;   // v9.2: "não vem" vale só no dia em que a folha corta
     const divCost = () => this.div ? this.div.cost : 0;
-    while (this.save.corta && payroll(eq) + divCost() > this.save.bank){
+    while (this.save.corta && payroll(eq, cursosPay(this.save)) + divCost() > this.save.bank){
       if (divCost()){
         this.unpaid.push(this.div.name); this.save.divulga = 'boca';
         this.div = divulgaOf('boca'); this.divF = rand(this.div.groups[0], this.div.groups[1]);
         this.schedule = this.buildSchedule(this.day);
       }
-      else { const n = folhaCorta(eq); if (!n) break; this.unpaid.push(n); }
+      else { const n = folhaCorta(eq, cursosPay(this.save)); if (!n) break; this.unpaid.push(n); }
     }
-    this.paid = payroll(eq); this.paidDiv = divCost(); this.aberto = true;
+    this.paid = payroll(eq, cursosPay(this.save)); this.paidDiv = divCost(); this.aberto = true;
     this.contas = contasDia(this.tables, this.ponto);
     writeSave(this.save);
     this.kitchen.slots = cozinhaSlots(this);
@@ -1213,19 +1213,20 @@ class Game {
     if (key === 'lia' && !devLivre() && val < old) return false;   // v10.2: a Lia não sai
     if (key === 'lia' && val && (!(this.ponto.nivel >= 4 || devLivre()) || !this.cartaoAberto('lia') || val !== 1 || (!devLivre() && old > 0))) return false;   // v10.2: contratar é definitivo, só no Terraço
     if (key === 'couvert' && val && !couvertOk(this.ponto)) return false;
-    if (key === 'musica' && (!musicaOk(this.ponto) || !(val >= 0 && val < TERRACO.musica.length))) return false;   // v10.4: só no Terraço, 0 (sem), 1 (quarteto) ou 2 (pianista)
+    if (key === 'musica' && (!musicaOk(this.ponto) || !(val >= 0 && val < TERRACO.musica.length))) return false;   // v10.4: só no Terraço, 0 (sem), 1 (trio) ou 2 (pianista)
     if (key === 'tvs' && val && (!this.up.tvs || this.ponto.nivel !== 2)) return false;   // v9: só com as TVs instaladas
     eq[key] = val;
-    if (payroll(eq) > this.save.bank && payroll(eq) > payroll(Object.assign({}, eq, { [key]:old }))){ eq[key] = old; return false; }
+    const cp = cursosPay(this.save);
+    if (payroll(eq, cp) > this.save.bank && payroll(eq, cp) > payroll(Object.assign({}, eq, { [key]:old }), cp)){ eq[key] = old; return false; }
     writeSave(this.save); this.kitchen.slots = cozinhaSlots(this);
     Sfx.ok(); return true;
   }
-  payroll(){ return payroll(this.save.equipe); }
+  payroll(){ return payroll(this.save.equipe, cursosPay(this.save)); }
   /* v8.1: o que já está comprometido com a abertura do próximo dia (folha e divulgação) e o que sobra livre */
   get compromisso(){ return this.payroll() + (this.div ? this.div.cost : 0); }
   get livre(){ return this.save.bank - this.compromisso; }
   /* o que ficaria de fora ao abrir o próximo dia se gastar v agora (com a chave da folha desligada, nada) */
-  cortesSe(v){ return this.save.corta ? folhaCortes(this.save.equipe, this.div, this.save.bank - (v || 0)) : []; }
+  cortesSe(v){ return this.save.corta ? folhaCortes(this.save.equipe, this.div, this.save.bank - (v || 0), cursosPay(this.save)) : []; }
   setCorta(on){ this.save.corta = !!on; writeSave(this.save); return true; }
   /* banco (v8.3): o empréstimo entra no dinheiro na hora e soma `juros` ao que se deve, em BANCO.parcelas no fim de cada
      dia. Na lojinha, um por vez e até o crédito do ponto; à força (no fim do dia, depois de BANCO.neg dias no negativo),
@@ -1846,7 +1847,7 @@ class Game {
     writeSave(sv); return true;
   }
   /* v10.2.1: sobe ou desce um nível da pessoa (tonhao, dani, joca, cami, anselmo ou lia), só nos níveis que existem para ela */
-  /* v10.4: no Terraço, passa por sem música → quarteto → pianista (de graça; fora do Terraço não faz nada) */
+  /* v10.4: no Terraço, passa por sem música → trio → pianista (de graça; fora do Terraço não faz nada) */
   devMusica(){
     if (!DEV.on || !musicaOk(this.ponto)) return false;
     const eq = this.save.equipe; eq.musica = ((eq.musica || 0) + 1) % TERRACO.musica.length;

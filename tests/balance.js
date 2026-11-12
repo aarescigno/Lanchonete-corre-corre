@@ -14,13 +14,16 @@ const bot=require('./bot.js')(g,L,{afiado:process.env.BOT==='afiado',conserto:pr
 L.MANUT.on=MODO!=='sem';
 if(process.env.MANUT_CFG){ const c=JSON.parse(process.env.MANUT_CFG); const eq=c.equip; delete c.equip; Object.assign(L.MANUT,c); if(eq) for(const id in eq) Object.assign(L.manutOf(id),eq[id]); }
 if(process.env.PONTO_CFG){ const c=JSON.parse(process.env.PONTO_CFG), P=L.PONTOS.find(p=>p.id===(process.env.PONTO_ALVO||process.env.PONTO||'industrial'))||L.PONTOS[1]; for(const k in c){ if(c[k]&&typeof c[k]==='object'&&!Array.isArray(c[k])) Object.assign(P[k],c[k]); else P[k]=c[k]; } }   // v9: PONTO_CFG='{"cardapio":1.3,"aluguel":100}' troca números do ponto em runtime (v9.1: o ponto de PONTO; padrão: a área industrial)
+if(process.env.MUSICA_CFG){ const c=JSON.parse(process.env.MUSICA_CFG); for(const k in c) Object.assign(L.TERRACO.musica[k],c[k]); }   // v10.5: MUSICA_CFG='{"1":{"effect":0.4}}' troca números da música em runtime (1 trio, 2 pianista)
+if(process.env.COUVERT_CFG){ Object.assign(L.STAFF.couvert,JSON.parse(process.env.COUVERT_CFG)); }   // v10.5: COUVERT_CFG='{"effect":0.25}' troca números do couvert em runtime
 if(process.env.CLIMA_CFG){ const c=JSON.parse(process.env.CLIMA_CFG); for(const k in c) Object.assign(L.CLIMA[k],c[k]); }
 const N=+process.argv[2]||20;
 // v9: PONTO=industrial joga os dias no ponto da área industrial (salão de 20 lugares, fogão industrial, TVs com anúncios, cadeirinhas; DIAS padrão 8,9,10)
 const PONTO=process.env.PONTO||'garagem', IND=PONTO==='industrial', TE=PONTO==='terraco', AV=PONTO==='avenida'||TE;   /* v10: PONTO=terraco joga os dias 8 a 10 no Terraço Suíça (5 mesas de 4, fogão industrial, poltronas, couvert com taxa, o curso de restaurante, Tonhão nível 4; JOCA, ESPRESSO, CAMI, ANSELMO e GOURMET como na Avenida; AV vale para os dois pontos de cima) */ //   // v9.1: PONTO=avenida joga os dias no Restaurante na Avenida Brasil (24 lugares, fogão industrial, sofás, águas saborizadas, couvert com taxa e o curso de restaurante; DIAS padrão 8,9,10)
 // EQUIPE='{"tonhao":1,"dani":1,"daniTasks":["pratos","lavar"]}' node balance.js 40
 // EQUIPE=auto: a equipe que um jogador consegue pagar em cada dia (contratando aos poucos)
-const FULL=TE?{tonhao:4,dani:4,daniTasks:['pratos','lavar','lixo']}:AV?{tonhao:2,dani:4,daniTasks:['pratos','lavar','lixo'],couvert:true,taxa:true}:IND?{tonhao:2,dani:4,daniTasks:['pratos','lavar','lixo'],tvs:1}:{tonhao:2,dani:4,daniTasks:['pratos','lavar','lixo'],tv:true,som:true};   // na Garagem, TV e som no lugar do couvert (v7.4.3)
+const COUVERT=process.env.COUVERT!=null?+process.env.COUVERT:1;   // v10.5 (PONTO=avenida): COUVERT=0|1 sem o couvert (com taxa) ou com (padrão 1, como sempre)
+const FULL=TE?{tonhao:4,dani:4,daniTasks:['pratos','lavar','lixo']}:AV?(COUVERT?{tonhao:2,dani:4,daniTasks:['pratos','lavar','lixo'],couvert:true,taxa:true}:{tonhao:2,dani:4,daniTasks:['pratos','lavar','lixo']}):IND?{tonhao:2,dani:4,daniTasks:['pratos','lavar','lixo'],tvs:1}:{tonhao:2,dani:4,daniTasks:['pratos','lavar','lixo'],tv:true,som:true};   // na Garagem, TV e som no lugar do couvert (v7.4.3)
 const AUTO={2:{},3:FULL,4:FULL,5:FULL,6:FULL,7:FULL};   // do dia 3 em diante o dinheiro acumulado já paga a equipe completa
 const EQ0=process.env.EQUIPE==='auto'?null:(process.env.EQUIPE?JSON.parse(process.env.EQUIPE):{});
 const eqFor0=n=>EQ0||AUTO[n]||(n>7?FULL:{});   // v8.3: do dia 8 em diante, a equipe completa

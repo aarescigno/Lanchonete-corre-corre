@@ -9,19 +9,19 @@ const acha=(e,f)=>f(e)?e:(e.children||[]).reduce((a,c)=>a||acha(c,f),null);
 const botao=re=>acha(els['shop-grid'],e=>e.tagName==='BUTTON'&&re.test(e.textContent));
 const novo=(bank,equipe,divulga)=>{ g.save=L.normSave({maxDay:7,bank,equipe,divulga}); g.up=g.save.up; g.boughtFor=0; g.buildTables(); };
 
-const SP=L.STAFF, DANI=SP.dani.levels[2].pay, TV=SP.tv.pay, PAN=L.divulgaOf('panfleto').cost, RED=L.divulgaOf('redes').cost;
+const SP=L.STAFF, TON=SP.tonhao.levels[0].pay, DANI=SP.dani.levels[2].pay, TV=SP.tv.pay, PAN=L.divulgaOf('panfleto').cost, RED=L.divulgaOf('redes').cost;
 // ---------- regras ----------
 { const eq={tonhao:1,dani:2,tv:true,som:true,couvert:false};
   ok(L.folhaCortes(eq,null,1000).length===0,'com dinheiro, nada fica de fora');
-  ok(L.folhaCortes(eq,null,20).join()==='som,TV,aumento da Dani' && eq.dani===2 && eq.tv,'folhaCortes segue a ordem do payDay e não mexe na equipe');
+  ok(L.folhaCortes(eq,null,20).join()==='som,TV,aumento da Dani,aumento do Tonhão' && eq.dani===2 && eq.tv && eq.tonhao===1,'folhaCortes segue a ordem do payDay e não mexe na equipe (v10.5: o Tonhão entra no fim, e a base dele fica)');
   ok(L.folhaCortes(eq,L.divulgaOf('redes'),L.payroll(eq)+RED-1).join()==='redes sociais','a divulgação sai antes da equipe');
-  ok(L.folhaItens(eq,L.divulgaOf('panfleto')).join()==='aumento do Tonhão,aumento da Dani,TV,som,panfletos','folhaItens lista o que se paga ao abrir');
+  ok(L.folhaItens(eq,L.divulgaOf('panfleto')).join()==='Tonhão,Dani,TV,som,panfletos','folhaItens lista o que se paga ao abrir (v10.5: Tonhão e Dani sempre)');
   ok(L.listaE(['TV','Dani'])==='TV e Dani' && L.listaE(['a','b','c'])==='a, b e c','listaE junta com "e"'); }
 
 // ---------- o caso do jogador: R$ 159, Dani e TV, compra de mesa ----------
 novo(159,{dani:2,tv:true},'boca'); g.goShop(3); L.setShopTab('salao');
-const RES=DANI+TV, LIV=159-RES;
-ok(g.compromisso===RES && g.livre===LIV,'R$ 159 com Dani ('+DANI+') e TV ('+TV+'): R$ '+RES+' comprometidos, R$ '+LIV+' livres');
+const RES=TON+DANI+TV, LIV=159-RES;   // v10.5: a base do Tonhão (R$ 50) sempre entra
+ok(g.compromisso===RES && g.livre===LIV,'R$ 159 com Tonhão ('+TON+'), Dani ('+DANI+') e TV ('+TV+'): R$ '+RES+' comprometidos, R$ '+LIV+' livres');
 ok(new RegExp('livre R\\$ '+LIV).test(els['shop-livre'].textContent),'o alto da lojinha mostra o livre (v9.6.9: sem a lista de reservados): '+els['shop-livre'].textContent);
 { const b=botao(/Mesa de 2/), p=L.SALAO.mesa2, n=g.save.salao.mesas.length;
   ok(p>LIV && p<=159,'a mesa de 2 custa mais que o livre e menos que o total');
@@ -40,12 +40,12 @@ novo(500,{dani:2,tv:true},'boca'); g.goShop(3); L.setShopTab('salao');
 { const b=botao(/Mesa de 2/); ok(b && !b.classList.contains('warn') && !b.getAttribute('data-aviso'),'com o livre pagando a mesa, botão normal');
   const n=g.save.salao.mesas.length; b.fire('click'); ok(g.save.salao.mesas.length===n+1,'1 toque compra'); }
 novo(159,{},'boca'); g.goShop(3);
-ok(g.compromisso===0 && els['shop-livre'].textContent==='','sem folha, o alto fica como antes');
+ok(g.compromisso===TON && new RegExp('livre R\\$ '+(159-TON)).test(els['shop-livre'].textContent),'só com a base do Tonhão, o alto mostra o livre (v10.5: a folha nunca é zero)');
 
 // ---------- melhorias, manutenção e divulgação ----------
 novo(230,{dani:2},'panfleto'); g.goShop(4); L.setShopTab('melhorias');
-ok(g.compromisso===DANI+PAN,'a divulgação entra no reservado');
-{ const u=L.UPGRADES.find(x=>x.cost>230-DANI-PAN&&x.cost<=230), b=botao(new RegExp('^Comprar R\\$ '+u.cost+'$'));
+ok(g.compromisso===TON+DANI+PAN,'a divulgação entra no reservado');
+{ const u=L.UPGRADES.find(x=>x.id==='cafeteira'&&x.cost>230-TON-DANI-PAN&&x.cost<=230), b=botao(new RegExp('^Comprar R\\$ '+u.cost+'$'));
   ok(b && b.classList.contains('warn') && /sem panfletos/.test(b.getAttribute('data-aviso')),'melhoria que come a folha: alerta ('+u.name+')');
   b.fire('click'); ok(!g.up[u.id],'1º toque não compra'); b.fire('click'); ok(g.up[u.id] && g.save.bank===230-u.cost,'2º toque compra'); }
 console.log('total =',total,' fails =',fails);

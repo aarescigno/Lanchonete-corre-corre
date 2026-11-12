@@ -87,7 +87,7 @@ const pegaPrato=(H,grp)=>{ const g=H.g, p=g.kitchen.plates.find(q=>q&&q.group===
   ok(g.contas===base+1200,'as contas do dia somam o aluguel de R$ 1.200');
   g.schedule=[]; g.nextIdx=0; g.money=1500; g.custo=0; const b0=g.save.bank; g.finishDay();
   ok(g.save.bank===b0+1500-g.contas-g.paid-g.paidDiv && g.save.caixa[g.save.caixa.length-1].contas===g.contas,'o aluguel sai no fim do dia e entra no livro-caixa');
-  const D=g.diaPonto(L.diaOf(10)); ok(D.meta===Math.round(L.diaOf(10).meta*12/5)*5 && D.expert===Math.round(L.diaOf(10).expert*8.5/5)*5 && L.PONTOS[3].grupos===0.5,'metas ×12 e expert ×8,5 (calibrados em 11/11 com a equipe toda, v10.4), arredondadas para 5; grupos 0,50'); }
+  const D=g.diaPonto(L.diaOf(10)); ok(D.meta===Math.round(L.diaOf(10).meta*8/5)*5 && D.expert===Math.round(L.diaOf(10).expert*6/5)*5 && L.PONTOS[3].grupos===0.5,'metas ×8 e expert ×6 (calibrados em 12/11 com a equipe toda, v10.5; eram 12 e 8,5), arredondadas para 5; grupos 0,50'); }
 
 // ---------- 4. a clientela ----------
 { const H=jogo(8,'terraco',{ bank:3000, dia:10 }), {g,L}=H; g.save.divulga='boca'; g.resetDay(10);

@@ -12,7 +12,7 @@ const BAS={pastel:1,chapa:1,fritos:1,assados:1};
 // ---------- o cardápio e os cursos ----------
 ok(Object.keys(C).length===29,'29 pratos no cardápio (14 + 8 sem carne da v8.6.11 + a parmegiana da v9.1 + os 6 pratos finos do Terraço da v10.2)');
 ok(Object.keys(C).every(k=>C[k].cat && ['pf','frito','assado','chapa','pastel'].includes(C[k].cat) && (C[k].curso===null || L.cursoOf(C[k].curso))),'cada prato tem categoria e curso (ou nenhum)');
-ok(C.pf.preco===25 && C.coxinha.preco===8 && C.risoles.preco===6 && C.kibe.preco===7 && C.bolinho.preco===8 && C.empada.preco===9 && C.esfihaA.preco===7 && C.esfihaF.preco===7 && C.misto.preco===10 && C.bauru.preco===12 && C.paoChapa.preco===7 && C.pastel.preco===10 && C.pastelQ.preco===10 && C.pastelP.preco===11,'os preços dos 14 pratos');
+ok(C.pf.preco===30 && C.coxinha.preco===10 && C.risoles.preco===7 && C.kibe.preco===8 && C.bolinho.preco===10 && C.empada.preco===11 && C.esfihaA.preco===8 && C.esfihaF.preco===8 && C.misto.preco===12 && C.bauru.preco===14 && C.paoChapa.preco===8 && C.pastel.preco===12 && C.pastelQ.preco===12 && C.pastelP.preco===13,'os preços dos 14 pratos (v10.5: salários e preços de verdade, × 1,2)');
 ok(Object.keys(C).filter(k=>!C[k].carne&&!C[k].veg).sort().join()==='paoChapa,pastelQ' && Object.keys(C).filter(k=>!C[k].carne).length===13,'sem carne de fábrica: só o pão na chapa e o pastel de queijo (mais os 8 pratos do curso Vegetariano)');
 ok(L.CURSOS.map(c=>c.id+':'+c.preco+':'+c.av.preco).join()==='pastel:150:300,chapa:180:360,fritos:220:440,assados:250:500,pf:0:400,veg:150:300,restaurante:400:600,entradas:600:900,alta:900:1400','cursos e preços: pastel 150/300, chapa 180/360, fritos 220/440, assados 250/500, PF só o avançado 400, Vegetariano 150/300, Cozinha de restaurante 400/600 (v9.1), Entradas finas 600/900 e Alta gastronomia 900/1400 (v10.2)');
 novo();
@@ -39,11 +39,11 @@ g.save=L.normSave({bank:1000,dia:3}); g.up=g.save.up; g.boughtFor=0; g.goShop(3)
 
 // ---------- o avançado: +15% no preço, caprichado x1,5 ----------
 { const cu={fritos:2,pf:2,chapa:1};
-  ok(L.precoPrato('pf',null,cu)===29 && L.precoPrato('coxinha',null,cu)===9 && L.precoPrato('kibe',null,cu)===8,'avançado: PF 25 vai a 29, coxinha 8 a 9 (vale também para a coxinha) e kibe 7 a 8');
-  ok(L.precoPrato('bauru',null,cu)===12 && L.precoPrato('pf',null,{})===25 && L.precoPrato('coxinha',null,{})===8,'sem o avançado, o preço é o de sempre');
+  ok(L.precoPrato('pf',null,cu)===35 && L.precoPrato('coxinha',null,cu)===12 && L.precoPrato('kibe',null,cu)===9,'avançado: PF 30 vai a 35, coxinha 10 a 12 (vale também para a coxinha) e kibe 8 a 9 (v10.5)');
+  ok(L.precoPrato('bauru',null,cu)===14 && L.precoPrato('pf',null,{})===30 && L.precoPrato('coxinha',null,{})===10,'sem o avançado, o preço é o de sempre');
   novo({cursos:cu}); const k=g.kitchen, cr=k.chef.crit;
   ok(Math.abs(k.chefCrit('pf')-cr*1.5)<1e-9 && Math.abs(k.chefCrit('coxinha')-cr*1.5)<1e-9 && Math.abs(k.chefCrit('bauru')-cr)<1e-9 && Math.abs(k.chefCrit('pastel')-cr)<1e-9,'caprichado x1,5 só nos pratos do curso avançado feito');
-  const gr=new L.Group(g,'executiva',1,0,false); gr.dishes=['pf']; ok(L.precoPrato(gr.dishes[0],g.ponto,g.cursos)===29,'o jogo cobra o preço do avançado'); }
+  const gr=new L.Group(g,'executiva',1,0,false); gr.dishes=['pf']; ok(L.precoPrato(gr.dishes[0],g.ponto,g.cursos)===35,'o jogo cobra o preço do avançado'); }
 
 // ---------- quem pede o quê ----------
 { novo(); let n=0, so=true, extraPf=false;
@@ -90,13 +90,13 @@ function normB(A){ return A.L.normSave({}).bank; }
 
 // ---------- v8.6.11: vegetarianos e veganos ----------
 { const V=L.CARDAPIO;
-  ok(V.pfVeg.preco===23 && V.empadaPalmito.preco===9 && V.kibeAbobora.preco===7 && V.coxinhaJaca.preco===8 && V.pastelPalmito.preco===10 && V.esfihaSoja.preco===7 && V.mistoVegano.preco===10 && V.pfVegano.preco===23,'preços dos pratos vegetarianos e veganos');
+  ok(V.pfVeg.preco===28 && V.empadaPalmito.preco===11 && V.kibeAbobora.preco===8 && V.coxinhaJaca.preco===10 && V.pastelPalmito.preco===12 && V.esfihaSoja.preco===8 && V.mistoVegano.preco===12 && V.pfVegano.preco===28,'preços dos pratos vegetarianos e veganos (v10.5: × 1,2)');
   novo({cursos:{}}); ok(Math.abs(L.vegMov(g.save.cursos)-1)<1e-9 && !L.pratoSabido('pfVeg',{}) ,'sem o curso Vegetariano: nada de pratos sem carne a mais, movimento ×1');
   ok(Math.abs(L.vegMov({veg:1})-1.05)<1e-9 && Math.abs(L.vegMov({veg:2})-1.10)<1e-9,'o curso soma 5% de movimento, o avançado mais 5%');
   ok(L.pratoSabido('pfVeg',{veg:1}) && !L.pratoSabido('empadaPalmito',{veg:1}) && L.pratoSabido('empadaPalmito',{veg:1,assados:1}) && !L.pratoSabido('kibeAbobora',{veg:1,assados:1}) && L.pratoSabido('kibeAbobora',{veg:1,fritos:1}),'empada de palmito só com assados, kibe de abóbora só com fritos');
   ok(!L.pratoSabido('pfVegano',{veg:1}) && L.pratoSabido('pfVegano',{veg:2}) && !L.pratoSabido('coxinhaJaca',{veg:2}) && L.pratoSabido('coxinhaJaca',{veg:2,fritos:1}) && !L.pratoSabido('pastelPalmito',{veg:2,fritos:1}) && L.pratoSabido('mistoVegano',{veg:2,chapa:1}),'os veganos pedem o avançado e o básico do curso de que dependem');
   ok(Math.abs(L.avalMenu({pastel:1,chapa:1,fritos:1,assados:1,veg:1})-5)<1e-9,'com os 5 básicos, a Diversidade do cardápio é 5,0');
-  ok(L.precoPrato('pfVeg',L.PONTOS[0],{veg:2})===Math.round(23*1.15) && L.precoPrato('pfVegano',L.PONTOS[0],{veg:2})===23,'avançado: +15% no PF vegetariano, e os veganos ficam no preço comum');
+  ok(L.precoPrato('pfVeg',L.PONTOS[0],{veg:2})===Math.round(28*1.15) && L.precoPrato('pfVegano',L.PONTOS[0],{veg:2})===28,'avançado: +15% no PF vegetariano, e os veganos ficam no preço comum');
   // pedem: o vegetariano só come sem carne; sem opção, coxinha (Cardápio 1)
   novo({cursos:{veg:1,assados:1}}); let so=true, vegN=0, viuPfv=false;
   for(let i=0;i<3000;i++){ const gr=new L.Group(g,TIPOS[i%4],i,0,false); gr.people.forEach((p,j)=>{ if(p.veg){ vegN++; if(L.CARDAPIO[gr.dishes[j]].carne) so=false; if(gr.extras[j] && L.CARDAPIO[gr.extras[j]].carne) so=false; } }); if(gr.dishes.includes('pfVeg')) viuPfv=true; }

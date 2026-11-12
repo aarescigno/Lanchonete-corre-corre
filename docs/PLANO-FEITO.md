@@ -40,6 +40,7 @@ Etapas concluídas (1a a 3a), movidas de `docs/PLANO.md` em 30/10/2026 e 31/10/2
 
 | # | Etapa | Versão | Situação |
 |---|---|---|---|
+| D-2 | Modo dev completo: História (cumprir, assistir, revelar) e Hoje (forçar imprevistos) | v10.2.2 | feita em 11/11 (`docs/spec-v10.2.2.md`; `smoke64`) |
 | 4a-1 | O Terraço Suíça e a refeição completa (caps. 8 e 9) | v10 | feita em 11/11 (`docs/spec-v10.md`; `smoke60`; calibrada: grupos 0,50, metaF 9, expertF 6, aluguel R$ 1.200, cardápio ×2,4) |
 | R2 | Menos sustos: "Já vou!", banco sem armadilha e pausa que confirma (análise de frustração) | v9.6.13 | feita em 10/11 (`docs/spec-v9.6.13.md`; `smoke59`) |
 | R1 | Revisão geral: Missão zero enxuta, dicas na hora, HUD com estrelas, fim do dia | v9.6.12 | feita em 10/11 (`docs/spec-v9.6.12.md`; `smoke58`; sem mudar números do jogo) |
@@ -1918,3 +1919,8 @@ Modelo: Sonnet, esforço médio (plano detalhado; o fluxo das conversas já exis
 **Objetivo:** o ambiente do nível 4 (pedidos de 21 e 22/10): música ao vivo (quarteto ou pianista) no lugar do couvert, as flores do foyer e a escada de números do Terraço com a equipe toda. Spec aprovada em 11/11: `docs/spec-v10.4.md`.
 
 **Modelo:** Sonnet, esforço alto. Os itens seguem moldes, mas o rebalanceamento é por tentativa, olhando o Terraço inteiro.
+
+## Etapa S — Salários de verdade (v10.5)
+**Objetivo:** cada pessoa da equipe e cada música custa o que o cargo custaria de verdade (~80% do custo real, como o aluguel); o Tonhão passa a ter salário e a Dani ajuda de custo; o salário da Dani (confeiteira) e do Joca (barista) sobe a cada curso da carreira deles; o cardápio sobe para perto do preço real (PF da Garagem a R$ 30) e as metas são recalibradas pelo bot. Entrevista de 12/11; pesquisa em `docs/pesquisa-salarios.md`. Spec: `docs/spec-v10.5.md` (aprovada).
+
+**Modelo:** Sonnet, esforço alto (código simples, mas a calibração por tentativa mexe nos quatro pontos e em muitos smokes)

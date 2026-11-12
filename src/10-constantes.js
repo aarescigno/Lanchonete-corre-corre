@@ -33,43 +33,43 @@ const PANTS  = ['#2F3E5C','#4A4036','#5B5F6B','#3C5A4A','#6A3F52'];
 /* cardápio (v8.3.8, preços de verdade; v8.6.9, o cardápio cresce): R$ de cada prato na Garagem (o ponto multiplica por PONTOS.cardapio).
    A cozinha começa sabendo o PF e a coxinha (curso: null); os outros vêm dos cursos do Tonhão (CURSOS). cat: a categoria do gosto
    dos clientes (GOSTOS); carne: false marca os sem carne (usados na v8.6.11); cor: a cor do desenho provisório (as artes de
-   verdade são da v8.6.10). Pesquisa de out/2026: PF médio no Brasil R$ 31,90 (o da garagem sai mais barato), coxinha e pastel de R$ 4 a 8 */
+   verdade são da v8.6.10). Pesquisa de out/2026: PF médio no Brasil R$ 31,90 (o da garagem sai mais barato), coxinha e pastel de R$ 4 a 8. v10.5: todos os preços × 1,2, arredondados ao real (PF R$ 30, coxinha R$ 10), para pagar os salários de verdade */
 const CARDAPIO = {
-  pf:      { nome:'PF',              preco:25, cat:'pf',     curso:null,      carne:true,  cor:'#A0522D' },
-  coxinha: { nome:'Coxinha',         preco:8,  cat:'frito',  curso:null,      carne:true,  cor:'#E8912A' },
-  risoles: { nome:'Risoles',         preco:6,  cat:'frito',  curso:'fritos',  carne:true,  cor:'#D98A32' },
-  kibe:    { nome:'Kibe',            preco:7,  cat:'frito',  curso:'fritos',  carne:true,  cor:'#9A5B2B' },
-  bolinho: { nome:'Bolinho japonês', preco:8,  cat:'frito',  curso:'fritos',  carne:true,  cor:'#E2A64A' },
-  empada:  { nome:'Empada',          preco:9,  cat:'assado', curso:'assados', carne:true,  cor:'#E3A84A' },
-  esfihaA: { nome:'Esfiha aberta',   preco:7,  cat:'assado', curso:'assados', carne:true,  cor:'#C8452B' },
-  esfihaF: { nome:'Esfiha fechada',  preco:7,  cat:'assado', curso:'assados', carne:true,  cor:'#D79A4B' },
-  misto:   { nome:'Misto quente',    preco:10, cat:'chapa',  curso:'chapa',   carne:true,  cor:'#D9A25B' },
-  bauru:   { nome:'Bauru',           preco:12, cat:'chapa',  curso:'chapa',   carne:true,  cor:'#C98A4B' },
-  paoChapa:{ nome:'Pão na chapa',    preco:7,  cat:'chapa',  curso:'chapa',   carne:false, cor:'#E0B070' },
-  pastel:  { nome:'Pastel de carne', preco:10, cat:'pastel', curso:'pastel',  carne:true,  cor:'#E5A33C' },
-  pastelQ: { nome:'Pastel de queijo',preco:10, cat:'pastel', curso:'pastel',  carne:false, cor:'#EBB44E' },
-  pastelP: { nome:'Pastel de pizza', preco:11, cat:'pastel', curso:'pastel',  carne:true,  cor:'#DE9438' },
+  pf:      { nome:'PF',              preco:30, cat:'pf',     curso:null,      carne:true,  cor:'#A0522D' },
+  coxinha: { nome:'Coxinha',         preco:10, cat:'frito',  curso:null,      carne:true,  cor:'#E8912A' },
+  risoles: { nome:'Risoles',         preco:7,  cat:'frito',  curso:'fritos',  carne:true,  cor:'#D98A32' },
+  kibe:    { nome:'Kibe',            preco:8,  cat:'frito',  curso:'fritos',  carne:true,  cor:'#9A5B2B' },
+  bolinho: { nome:'Bolinho japonês', preco:10, cat:'frito',  curso:'fritos',  carne:true,  cor:'#E2A64A' },
+  empada:  { nome:'Empada',          preco:11, cat:'assado', curso:'assados', carne:true,  cor:'#E3A84A' },
+  esfihaA: { nome:'Esfiha aberta',   preco:8,  cat:'assado', curso:'assados', carne:true,  cor:'#C8452B' },
+  esfihaF: { nome:'Esfiha fechada',  preco:8,  cat:'assado', curso:'assados', carne:true,  cor:'#D79A4B' },
+  misto:   { nome:'Misto quente',    preco:12, cat:'chapa',  curso:'chapa',   carne:true,  cor:'#D9A25B' },
+  bauru:   { nome:'Bauru',           preco:14, cat:'chapa',  curso:'chapa',   carne:true,  cor:'#C98A4B' },
+  paoChapa:{ nome:'Pão na chapa',    preco:8,  cat:'chapa',  curso:'chapa',   carne:false, cor:'#E0B070' },
+  pastel:  { nome:'Pastel de carne', preco:12, cat:'pastel', curso:'pastel',  carne:true,  cor:'#E5A33C' },
+  pastelQ: { nome:'Pastel de queijo',preco:12, cat:'pastel', curso:'pastel',  carne:false, cor:'#EBB44E' },
+  pastelP: { nome:'Pastel de pizza', preco:13, cat:'pastel', curso:'pastel',  carne:true,  cor:'#DE9438' },
   /* v8.6.11, o curso Vegetariano (veg:true leva o "v" verde no desenho; dep: precisa do básico desse outro curso; pfv: PF sem carne,
      que quem não é vegetariano pede em VEG.pfTroca das vezes que pede PF) e o avançado, Pratos veganos (nivel:2, vegano:true: a
      folhinha; semAv: o avançado não sobe o preço, que já é o do prato comum) */
-  pfVeg:        { nome:'PF vegetariano',    preco:23, cat:'pf',     curso:'veg', carne:false, cor:'#A0522D', veg:true, pfv:true },
-  empadaPalmito:{ nome:'Empada de palmito', preco:9,  cat:'assado', curso:'veg', carne:false, cor:'#C9B35A', veg:true, dep:'assados' },
-  kibeAbobora:  { nome:'Kibe de abóbora',   preco:7,  cat:'frito',  curso:'veg', carne:false, cor:'#D98A32', veg:true, dep:'fritos' },
-  pfVegano:     { nome:'PF vegano',         preco:23, cat:'pf',     curso:'veg', carne:false, cor:'#A0522D', veg:true, vegano:true, pfv:true, nivel:2, semAv:true },
-  coxinhaJaca:  { nome:'Coxinha de jaca',   preco:8,  cat:'frito',  curso:'veg', carne:false, cor:'#E8B04A', veg:true, vegano:true, dep:'fritos',  nivel:2, semAv:true },
-  pastelPalmito:{ nome:'Pastel de palmito', preco:10, cat:'pastel', curso:'veg', carne:false, cor:'#E9B85A', veg:true, vegano:true, dep:'pastel',  nivel:2, semAv:true },
-  esfihaSoja:   { nome:'Esfiha de soja',    preco:7,  cat:'assado', curso:'veg', carne:false, cor:'#A9743A', veg:true, vegano:true, dep:'assados', nivel:2, semAv:true },
-  mistoVegano:  { nome:'Misto vegano',      preco:10, cat:'chapa',  curso:'veg', carne:false, cor:'#D9B27A', veg:true, vegano:true, dep:'chapa',   nivel:2, semAv:true },
+  pfVeg:        { nome:'PF vegetariano',    preco:28, cat:'pf',     curso:'veg', carne:false, cor:'#A0522D', veg:true, pfv:true },
+  empadaPalmito:{ nome:'Empada de palmito', preco:11, cat:'assado', curso:'veg', carne:false, cor:'#C9B35A', veg:true, dep:'assados' },
+  kibeAbobora:  { nome:'Kibe de abóbora',   preco:8,  cat:'frito',  curso:'veg', carne:false, cor:'#D98A32', veg:true, dep:'fritos' },
+  pfVegano:     { nome:'PF vegano',         preco:28, cat:'pf',     curso:'veg', carne:false, cor:'#A0522D', veg:true, vegano:true, pfv:true, nivel:2, semAv:true },
+  coxinhaJaca:  { nome:'Coxinha de jaca',   preco:10, cat:'frito',  curso:'veg', carne:false, cor:'#E8B04A', veg:true, vegano:true, dep:'fritos',  nivel:2, semAv:true },
+  pastelPalmito:{ nome:'Pastel de palmito', preco:12, cat:'pastel', curso:'veg', carne:false, cor:'#E9B85A', veg:true, vegano:true, dep:'pastel',  nivel:2, semAv:true },
+  esfihaSoja:   { nome:'Esfiha de soja',    preco:8,  cat:'assado', curso:'veg', carne:false, cor:'#A9743A', veg:true, vegano:true, dep:'assados', nivel:2, semAv:true },
+  mistoVegano:  { nome:'Misto vegano',      preco:12, cat:'chapa',  curso:'veg', carne:false, cor:'#D9B27A', veg:true, vegano:true, dep:'chapa',   nivel:2, semAv:true },
   // v9.1, o curso Cozinha de restaurante (só com ponto.nivel >= 3): o filé à parmegiana, da categoria PF (R$ 60 na Avenida Brasil)
-  parmegiana:   { nome:'Filé à parmegiana', preco:30, cat:'pf',     curso:'restaurante', carne:true, cor:'#B5432E' },
+  parmegiana:   { nome:'Filé à parmegiana', preco:36, cat:'pf',     curso:'restaurante', carne:true, cor:'#B5432E' },
   /* v10.2, a alta gastronomia do Terraço (fino:true: entra na regra do prato fino de pedePrato e pedePrincipal; as entradas são das categorias
      chapa/frito/assado, os principais da categoria pf, sem pfv, para o risoto não ser trocado pelo PF vegetariano) */
-  bruschetta:   { nome:'Bruschetta',                preco:14, cat:'chapa',  curso:'entradas', carne:false, cor:'#D9A25B', veg:true, fino:true },
-  bacalhau:     { nome:'Bolinho de bacalhau',       preco:16, cat:'frito',  curso:'entradas', carne:true,  cor:'#E2A64A', fino:true },
-  quiche:       { nome:'Quiche de alho-poró',       preco:15, cat:'assado', curso:'entradas', carne:false, cor:'#E3B25A', veg:true, fino:true },
-  risoto:       { nome:'Risoto de cogumelos',       preco:38, cat:'pf',     curso:'alta',     carne:false, cor:'#E8D9A8', veg:true, fino:true },
-  peixe:        { nome:'Peixe do dia',              preco:42, cat:'pf',     curso:'alta',     carne:true,  cor:'#D9A25B', fino:true },
-  medalhao:     { nome:'Medalhão ao molho madeira', preco:46, cat:'pf',     curso:'alta',     carne:true,  cor:'#8A4B2A', fino:true }
+  bruschetta:   { nome:'Bruschetta',                preco:17, cat:'chapa',  curso:'entradas', carne:false, cor:'#D9A25B', veg:true, fino:true },
+  bacalhau:     { nome:'Bolinho de bacalhau',       preco:19, cat:'frito',  curso:'entradas', carne:true,  cor:'#E2A64A', fino:true },
+  quiche:       { nome:'Quiche de alho-poró',       preco:18, cat:'assado', curso:'entradas', carne:false, cor:'#E3B25A', veg:true, fino:true },
+  risoto:       { nome:'Risoto de cogumelos',       preco:46, cat:'pf',     curso:'alta',     carne:false, cor:'#E8D9A8', veg:true, fino:true },
+  peixe:        { nome:'Peixe do dia',              preco:50, cat:'pf',     curso:'alta',     carne:true,  cor:'#D9A25B', fino:true },
+  medalhao:     { nome:'Medalhão ao molho madeira', preco:55, cat:'pf',     curso:'alta',     carne:true,  cor:'#8A4B2A', fino:true }
 };
 /* os cursos do Tonhão (v8.6.9): um por lojinha. O básico ensina os pratos; o avançado ("mais requintadinha") soma CURSO_AV.preco ao
    preço de venda dos pratos dele e CURSO_AV.crit à chance de caprichado. O PF não tem básico (preco 0): o avançado aparece desde o início.
@@ -121,13 +121,13 @@ function tonhaoNivelXp(cursos){
 /* experiência da Dani (v8.9): +1 a cada `tarefas` tarefas que ela termina (save.daniTar, o total da carreira) e +2 por curso dela
    (save.daniCursos: { id:1 }); na Garagem, 4 de cursos (só atendimento; o barista saiu em 01/11: café é com o Joca, e a Dani segue nos doces) */
 const DANI_XP = { tarefas:5, curso:2 };
-/* nivel: o ponto de onde o curso aparece (padrão 1); item: o curso traz um item de cardápio (fica no cartão Cardápio, com o rosto dela) */
+/* nivel: o ponto de onde o curso aparece (padrão 1); item: o curso traz um item de cardápio (fica no cartão Cardápio, com o rosto dela); pay (v10.5): a diária do degrau da carreira (diariaDani) */
 const DANI_CURSOS = [
   { id:'atend',   nome:'Atendimento ao cliente', preco:120 },
   { id:'cozinha', nome:'Organização da cozinha', preco:150 },
-  { id:'confCaseira', nome:'Confeitaria caseira', preco:180, nivel:2, item:true },   // v9.2: a geladeirinha de doces (DOCES)
-  { id:'confGourmet', nome:'Confeitaria gourmet', preco:350, nivel:3, dep:'confCaseira', item:true },   // v9.3: a vitrine refrigerada e os doces gourmet (só depois da caseira)
-  { id:'confAlta', nome:'Alta confeitaria', preco:600, nivel:4, dep:'confGourmet', item:true }   // v10.2: o entremet, o mil-folhas e os macarons do Terraço (DOCES.alta)
+  { id:'confCaseira', nome:'Confeitaria caseira', preco:180, nivel:2, item:true, pay:75 },   // v9.2: a geladeirinha de doces (DOCES)
+  { id:'confGourmet', nome:'Confeitaria gourmet', preco:350, nivel:3, dep:'confCaseira', item:true, pay:105 },   // v9.3: a vitrine refrigerada e os doces gourmet (só depois da caseira)
+  { id:'confAlta', nome:'Alta confeitaria', preco:600, nivel:4, dep:'confGourmet', item:true, pay:145 }   // v10.2: o entremet, o mil-folhas e os macarons do Terraço (DOCES.alta)
 ];
 /* v9.2: o curso aparece no ponto de `nivel` em diante (no modo dev, sempre) */
 function cursoDaniVis(c, ponto){ return devLivre() || (c.nivel || 1) <= (ponto || PONTOS[0]).nivel; }
@@ -144,6 +144,13 @@ function daniNivelXp(save){
 /* o prato é do avançado de algum curso que já foi feito? */
 function pratoAv(k, cursos){ return CURSOS.some(c => cursoNivel(cursos, c.id) >= 2 && c.av.pratos.indexOf(k) >= 0); }
 /* o save: só os níveis que existem (o PF só tem o avançado, 2) */
+/* v10.5: a diária da Dani é a do degrau mais alto que ela alcançou: o do nível ou o do curso de confeitaria (o que for maior); cursos = save.daniCursos */
+function diariaDani(eq, cursos){
+  if (!eq || !eq.dani) return 0;
+  let v = STAFF.dani.levels[eq.dani].pay;
+  DANI_CURSOS.forEach(c => { if (c.pay && cursos && cursos[c.id] && c.pay > v) v = c.pay; });
+  return v;
+}
 function normDaniCursos(c){ const o = {}; DANI_CURSOS.forEach(x => { if (c && c[x.id]) o[x.id] = 1; }); return o; }
 /* v9.2, o Joca (o colega de colégio da Dani): níveis 2 a 4 como os da Dani. Experiência: +1 a cada `tarefas` tarefas (save.jocaTar, só dia
    completo) e +2 por curso (save.jocaCursos); o aumento consolida o nível. espresso (item) é da 3b-3; aqui só entra na lista, escondido abaixo do nível 3 */
@@ -151,8 +158,8 @@ const JOCA_XP = { tarefas:5, curso:2 };
 const JOCA_CURSOS = [
   { id:'atend',    nome:'Atendimento ao cliente', preco:120, nivel:2 },
   { id:'cozinha',  nome:'Organização da cozinha', preco:150, nivel:2 },
-  { id:'espresso', nome:'Barista: espresso',      preco:350, nivel:3, item:true },
-  { id:'cafesEsp', nome:'Cafés especiais',        preco:600, nivel:4, dep:'espresso', item:true }   // v10.3: coado, prensa francesa e cold brew (CAFES.metodos)
+  { id:'espresso', nome:'Barista: espresso',      preco:350, nivel:3, item:true, pay:100 },
+  { id:'cafesEsp', nome:'Cafés especiais',        preco:600, nivel:4, dep:'espresso', item:true, pay:125 }   // v10.3: coado, prensa francesa e cold brew (CAFES.metodos)
 ];
 const JOCA_HOME = { x:640, y:515 };
 /* v9.3, a Cami (atendimento; o Joca passa o bastão para ela na Avenida): chega no nível 1 e sobe só por curso (o salário sobe junto):
@@ -201,6 +208,13 @@ function jocaNivelXp(save){
   const x = jocaXp(save); let n = 2;
   STAFF.joca.levels.forEach((l, i) => { if (l && x >= l.xp) n = i; });
   return n;
+}
+/* v10.5: idem para o Joca (barista: espresso 100, cafés especiais 125); cursos = save.jocaCursos */
+function diariaJoca(eq, cursos){
+  if (!eq || !eq.joca) return 0;
+  let v = STAFF.joca.levels[eq.joca].pay;
+  JOCA_CURSOS.forEach(c => { if (c.pay && cursos && cursos[c.id] && c.pay > v) v = c.pay; });
+  return v;
 }
 function normJocaCursos(c){ const o = {}; JOCA_CURSOS.forEach(x => { if (c && c[x.id]) o[x.id] = 1; }); return o; }
 /* v9.0.1: o Tonhão já fez algum curso (o básico de qualquer um ou o avançado do PF) */
@@ -262,7 +276,7 @@ function pedePrato(tipo, game, semPf, veg){
    por pessoa). Vai na mesma comanda e no mesmo prato, para não travar a mesa; a cozinha leva `cozinha` a mais de tempo
    por item a mais (em fração dos itens do grupo). Pedir depois de comer travava a mesa e derrubava o lucro */
 /* v8.6.13: quem pede salgado (qualquer prato que não é do tipo PF) pede um 2º item em `salgado` das vezes (salgado se pede
-   de dois); sem isso, cada curso trocava PF de R$ 25 por salgado de R$ 7 e derrubava o lucro do dia */
+   de dois); sem isso, cada curso trocava PF de R$ 30 por salgado de R$ 8 e derrubava o lucro do dia */
 const MAIS = { cozinha:0.4, salgado:0.8 };   // v8.6.9: o 2º item sai de pedePrato(..., true), pelos gostos do tipo, sem o PF
 /* pontos de atendimento (v8.3.8): as ações da Bia não dão mais dinheiro, dão pontos (a nota da lanchonete virá
    deles). A corrente e a cor certa também viram pontos */
@@ -347,16 +361,16 @@ const PONTOS = [
   // patPressa: a paciência de quem vem sozinho ou em dupla; vip: a chance de VIP; metaF: o fator das metas (v9.6.1: 1,25 → 2,3 e 1,7 → 3,2); expertF (v9.6.1): o da expert, a 3ª estrela (sem ele, o metaF); prateleira: as vagas do balcão de retirada;
   // grupos: o fator dos grupos do dia (os 20 lugares já trazem +60% de movimento; sem ele, nem o bot afiado fechava o dia sem perder ninguém)
   { id:'industrial', nome:'Lanchonete na área industrial', nivel:2, lugares:20, aluguel:120, mudanca:800, credito:2000, cardapio:1.5, area:{ x0:160, y0:150, x1:684, y1:500 }, espera:5, assento:'pe', bebida:'suco', pratos:5, marmJanela:3, prateleira:4,
-    tipos:{ estudante:1, executiva:1, familia:0.5, vovos:0.7, entregador:2, turma:2, motorista:1 }, encomenda:0.6, apito:{ quando:0.45, max:3, gap:[8, 12], aviso:10 }, patPressa:0.85, vip:0.2, metaF:2.5, expertF:1.7, grupos:0.8,
+    tipos:{ estudante:1, executiva:1, familia:0.5, vovos:0.7, entregador:2, turma:2, motorista:1 }, encomenda:0.6, apito:{ quando:0.45, max:3, gap:[8, 12], aviso:10 }, patPressa:0.85, vip:0.2, metaF:2.1, expertF:1.4, grupos:0.8,
     traz:'a freguesia da fábrica e da estrada', deixa:'as TVs, o assento da espera e a jarra de suco ficam' },
   // v9.1: o 2º ponto novo (cap. 6 e 7). Sem apito, sem encomenda e sem patPressa: a turma, o motorista e a encomenda não vêm. vip: ×2 (restaurante atrai mais VIP)
   { id:'avenida', nome:'Restaurante na Avenida Brasil', nivel:3, lugares:24, aluguel:400, mudanca:2000, credito:4000, cardapio:2.0, area:{ x0:160, y0:150, x1:684, y1:500 }, espera:6, assento:'pe', bebida:'saborizada', pratos:6, marmJanela:3, prateleira:4,
-    tipos:{ estudante:0.5, executiva:2, familia:1.5, vovos:1, entregador:1, negocios:1.5 }, vip:2, metaF:3.0, expertF:3.6, grupos:0.7,   // v9.6.4: 3,2 e 3,8 → 3,0 e 3,6 (o VIP mais exigente deixou a Avenida abaixo do alvo)
+    tipos:{ estudante:0.5, executiva:2, familia:1.5, vovos:1, entregador:1, negocios:1.5 }, vip:2, metaF:2.8, expertF:3.4, grupos:0.7,   // v9.6.4: 3,2 e 3,8 → 3,0 e 3,6 (o VIP mais exigente deixou a Avenida abaixo do alvo)
     traz:'o almoço de negócios e mais VIPs', art:'o', deixa:'os sofás, as águas saborizadas e o couvert ficam' },
   // v10: o último ponto da escada (cap. 8 e 9). 20 lugares, aluguel R$ 1.000, cardápio ×2,5. Sem entregador (semRetirada), sem bebida da espera (bebida:null até a 4a-4) e com o casal;
   // tempos: a refeição completa (bebida, entrada, prato e sobremesa; ver TEMPOS)
   { id:'terraco', nome:'Terraço Suíça', nivel:4, lugares:20, aluguel:1200, mudanca:5000, credito:8000, cardapio:1.3, area:{ x0:160, y0:150, x1:684, y1:500 }, espera:6, assento:'pe', bebida:'coquetel', pratos:6, marmJanela:2, prateleira:0,
-    tipos:{ executiva:0.5, familia:1, vovos:1, negocios:1.5, casal:2 }, vip:2.5, metaF:12.0, expertF:8.5, grupos:0.5, tempos:true, semRetirada:true, exigente:true,   // v10.4 (medido em 11/11, 80 rodadas, equipe toda com JOCA=4 CONFEITARIA=1): cardápio 2,4 → 1,3 (o ganho sobre a Avenida era de R$ 2.800 por dia e foi a ~R$ 850), metaF 9 → 12 e expertF 6 → 8,5 (metas em ~90% e 3★ em ~60%);   // v10 (medido em 10/11, equipe toda com o bot afiado): grupos 0,45 → 0,50 (mesas vazias em 33% do turno), metaF 4 → 9 e expertF 5 → 6 (91% das metas e 3★ em 61%), aluguel 1.000 → 1.200 e cardápio 2,5 → 2,4 (o ganho sobre a Avenida de R$ 918 caiu para ~R$ 700)
+    tipos:{ executiva:0.5, familia:1, vovos:1, negocios:1.5, casal:2 }, vip:2.5, metaF:8.0, expertF:6.0, grupos:0.5, tempos:true, semRetirada:true, exigente:true,   // v10.4 (medido em 11/11, 80 rodadas, equipe toda com JOCA=4 CONFEITARIA=1): cardápio 2,4 → 1,3 (o ganho sobre a Avenida era de R$ 2.800 por dia e foi a ~R$ 850), metaF 9 → 12 e expertF 6 → 8,5 (metas em ~90% e 3★ em ~60%);   // v10 (medido em 10/11, equipe toda com o bot afiado): grupos 0,45 → 0,50 (mesas vazias em 33% do turno), metaF 4 → 9 e expertF 5 → 6 (91% das metas e 3★ em 61%), aluguel 1.000 → 1.200 e cardápio 2,5 → 2,4 (o ganho sobre a Avenida de R$ 918 caiu para ~R$ 700)
    
     traz:'a refeição completa e a freguesia mais fina', art:'o' }
 ];
@@ -599,21 +613,22 @@ const STAFF = {
   // com aumento, lava 1 pilha da pia a cada `wash` segundos
   // v8.8: o nível é experiência (xp, dos cursos: CURSO_XP); com a xp do nível seguinte ele fica pronto para subir e o aumento
   // de salário consolida o nível. Só a falta de dinheiro para a folha o derruba (folhaCorta), e a xp fica
-  tonhao:  { levels:[ { slots:3, cook:1, crit:0.05, wash:0, pay:0, xp:0 }, { slots:3, cook:0.85, crit:0.12, wash:7, pay:15, xp:2 }, { slots:3, cook:0.7, crit:0.2, wash:4, pay:20, xp:5 },
-                      { slots:3, cook:0.62, crit:0.26, wash:3, pay:25, xp:9 }, { slots:3, cook:0.55, crit:0.32, wash:2.5, pay:30, xp:14 } ] },
-  // Dani (v8.7): entra de graça no cap. 2 como aprendiz (nível 1, sem salário); os níveis 2 a 4 são os aumentos da lojinha
+  // v10.5: o `pay` é a diária inteira do nível (50 · 65 · 80 · 100 · 120; antes era só o aumento: 0 · 15 · 20 · 25 · 30), perto de 80% do que o cargo custa de verdade
+  tonhao:  { levels:[ { slots:3, cook:1, crit:0.05, wash:0, pay:50, xp:0 }, { slots:3, cook:0.85, crit:0.12, wash:7, pay:65, xp:2 }, { slots:3, cook:0.7, crit:0.2, wash:4, pay:80, xp:5 },
+                      { slots:3, cook:0.62, crit:0.26, wash:3, pay:100, xp:9 }, { slots:3, cook:0.55, crit:0.32, wash:2.5, pay:120, xp:14 } ] },
+  // Dani (v8.7): entra no cap. 2 como aprendiz (nível 1; v10.5: ajuda de custo de R$ 15/dia); os níveis 2 a 4 são os aumentos da lojinha; os cursos de confeitaria dela dão a diária do degrau (DANI_CURSOS.pay, diariaDani)
   // v8.9: o nível também é experiência (xp: o trabalho dela e os cursos, ver DANI_XP); o aumento só consolida o nível
-  dani:    { levels:[ null, { speed:0.4, tasks:1, pay:0, xp:0 }, { speed:0.5, tasks:2, pay:15, xp:4 }, { speed:0.65, tasks:2, pay:20, xp:8 }, { speed:0.8, tasks:3, pay:25, xp:13 } ] },
-  // Joca (v9.2): o conhecido da Dani; entra na área industrial no nível 2 (R$ 45/dia) e sobe até o 4, como ela; faz o básico da casa
-  joca:    { levels:[ null, null, { speed:0.5, tasks:2, pay:45, xp:0 }, { speed:0.65, tasks:2, pay:60, xp:6 }, { speed:0.8, tasks:3, pay:75, xp:12 } ] },
+  dani:    { levels:[ null, { speed:0.4, tasks:1, pay:15, xp:0 }, { speed:0.5, tasks:2, pay:25, xp:4 }, { speed:0.65, tasks:2, pay:32, xp:8 }, { speed:0.8, tasks:3, pay:40, xp:13 } ] },
+  // Joca (v9.2): o conhecido da Dani; entra na área industrial no nível 2 (R$ 65/dia desde a v10.5) e sobe até o 4, como ela; faz o básico da casa
+  joca:    { levels:[ null, null, { speed:0.5, tasks:2, pay:65, xp:0 }, { speed:0.65, tasks:2, pay:78, xp:6 }, { speed:0.8, tasks:3, pay:90, xp:12 } ] },
   // Cami (v9.3): garçonete de rodízio que o Joca indica; entra na Avenida já rápida e fica com o básico. Sobe só por curso (CAMI_CURSOS)
-  cami:    { levels:[ null, { speed:0.9, tasks:3, pay:120 }, { speed:1.1, tasks:4, pay:140 }, { speed:1.25, tasks:4, pay:160, mesas:true }, { speed:1.35, tasks:4, pay:190, mesas:true, tudo:true } ] },   // v10.3: o nível 4 (curso de salão, só no Terraço)
-  // Anselmo (v9.5): coqueteleiro, só na Avenida; entra já no nível 2 (R$ 90/dia), não faz tarefas da lista; o nível 3 vem dos cursos do Terraço (4a)
-  anselmo: { levels:[ null, null, { speed:0.8, pay:90, xp:0 }, { speed:1.0, pay:130, xp:0 } ] },
+  cami:    { levels:[ null, { speed:0.9, tasks:3, pay:95 }, { speed:1.1, tasks:4, pay:115 }, { speed:1.25, tasks:4, pay:135, mesas:true }, { speed:1.35, tasks:4, pay:160, mesas:true, tudo:true } ] },   // v10.3: o nível 4 (curso de salão, só no Terraço)
+  // Anselmo (v9.5): coqueteleiro, só na Avenida; entra já no nível 2 (R$ 105/dia desde a v10.5), não faz tarefas da lista; o nível 3 vem dos cursos do Terraço (4a)
+  anselmo: { levels:[ null, null, { speed:0.8, pay:105, xp:0 }, { speed:1.0, pay:150, xp:0 } ] },
   // Lia (v10.2): ajudante de cozinha, só no Terraço; com ela no dia todo pedido da cozinha leva `cook` × o tempo. Contratar é definitivo (equipe.lia: 0 ou 1)
   lia:     { pay:80, cook:0.75 },
   // couvert artístico: só do nível 3 do salão em diante (Avenida Brasil, etapa 3 do plano)
-  couvert: { pay:80, fee:3, effect:0.2, feeCut:0.5, nivel:3 },
+  couvert: { pay:200, fee:8, effect:0.2, feeCut:0.5, nivel:3 },
   // ambiente da Garagem (v7.4.3): TV e som ligados o dia todo; o custo é a conta de luz (pay) e entra na folha
   tv:      { pay:3, effect:0.05 },
   som:     { pay:2, effect:0.05 }
@@ -633,8 +648,8 @@ const AVENIDA = { sofa:{ nome:'Sofás com almofadas', cost:250, slow:0.25 } };
 /* v10, Terraço Suíça: o foyer (a calçada do andar) com poltronas de veludo (compra única, `up.assento = 'poltrona'`; a espera 35% mais devagar) e o piano de cauda que
    já vem com o ponto: obstáculo fixo dos caminhos (fora da área das mesas; quem toca chega na 4a-5) */
 const TERRACO = { poltrona:{ nome:'Poltronas do foyer', cost:600, slow:0.35 }, piano:{ x0:28, y0:404, x1:148, y1:520 },
-  /* v10.4: a música ao vivo (equipe.musica: 0 sem, 1 quarteto, 2 pianista; só no Terraço): effect = a paciência nas mesas cai tanto mais devagar; amb = soma no Ambiente do Gurugol; piano = a afinação por dia */
-  musica:[ null, { nome:'Quarteto de cordas', pay:150, effect:0.3, amb:0.75 }, { nome:'Pianista', pay:120, piano:30, effect:0.2, amb:1.25 } ] };
+  /* v10.4: a música ao vivo (equipe.musica: 0 sem, 1 trio de cordas, 2 pianista; só no Terraço): effect = a paciência nas mesas cai tanto mais devagar; amb = soma no Ambiente do Gurugol; piano = a afinação por dia */
+  musica:[ null, { nome:'Trio de cordas', pay:500, effect:0.35, amb:1 }, { nome:'Pianista', pay:300, piano:5, effect:0.25, amb:1.5 } ] };
 function musicaDe(eq){ return TERRACO.musica[eq && eq.musica] || null; }
 function musicaPay(m){ return m ? m.pay + (m.piano || 0) : 0; }
 function musicaOk(ponto){ return (ponto || PONTOS[0]).nivel === 4; }   // nem no modo dev: a música é só do Terraço
@@ -672,10 +687,13 @@ function ambienteEffect(eq){
   const tm = tvsModo(eq);
   return (eq.tv ? STAFF.tv.effect : 0) + (eq.som ? STAFF.som.effect : 0) + (eq.couvert ? couvertEffect(eq) : 0) + (tm ? tm.effect : 0) + (musicaDe(eq) ? musicaDe(eq).effect : 0);
 }
-function payroll(eq){
+/* v10.5: os cursos que dão degrau de salário, no formato do 2º parâmetro do payroll (o save: save.daniCursos e save.jocaCursos) */
+function cursosPay(save){ return { dani:save && save.daniCursos, joca:save && save.jocaCursos }; }
+/* cp: { dani, joca } (cursosPay); sem ele, conta como sem curso */
+function payroll(eq, cp){
   let v = STAFF.tonhao.levels[eq.tonhao].pay;
-  if (eq.dani) v += STAFF.dani.levels[eq.dani].pay;
-  if (eq.joca && !eq.jocaFora) v += STAFF.joca.levels[eq.joca].pay;   // v9.2
+  v += diariaDani(eq, cp && cp.dani);   // v10.5: o degrau do curso de confeitaria
+  if (eq.joca && !eq.jocaFora) v += diariaJoca(eq, cp && cp.joca);   // v9.2; v10.5: o degrau do curso de barista
   if (eq.cami && !eq.camiFora) v += STAFF.cami.levels[eq.cami].pay;   // v9.3
   if (eq.anselmo && !eq.anselmoFora) v += STAFF.anselmo.levels[eq.anselmo].pay;   // v9.5
   if (eq.lia && !eq.liaFora) v += STAFF.lia.pay;   // v10.2
@@ -690,8 +708,10 @@ function payroll(eq){
    couber fica de fora, nesta ordem (a divulgação vira boca a boca antes de tudo) */
 const FOLHA_CORTE = [['musica', 'música'], ['couvert', 'Couvert'], ['som', 'som'], ['tv', 'TV'], ['tvs', 'TVs'], ['liaFora', 'a Lia'], ['anselmoFora', 'o Anselmo'], ['camiFora', 'a Cami'], ['jocaUp', 'aumento do Joca'], ['dani', 'aumento da Dani'], ['tonhao', 'aumento do Tonhão'], ['jocaFora', 'o Joca']];   // v9.3: a Cami; v9.5: o Anselmo vem antes dela
 /* tira de eq o próximo item da folha (o Tonhão e a Dani perdem 1 nível de aumento; a Dani não sai da equipe) e devolve o nome; nada a tirar: null */
-function folhaCorta(eq){
-  const c = FOLHA_CORTE.find(k => k[0] === 'tonhao' ? eq.tonhao > 0 : k[0] === 'dani' ? eq.dani > 1 : k[0] === 'jocaUp' ? eq.joca > 2 && !eq.jocaFora : k[0] === 'jocaFora' ? eq.joca > 0 && !eq.jocaFora : k[0] === 'camiFora' ? eq.cami > 0 && !eq.camiFora : k[0] === 'anselmoFora' ? eq.anselmo > 0 && !eq.anselmoFora : k[0] === 'liaFora' ? eq.lia > 0 && !eq.liaFora : eq[k[0]]);
+function folhaCorta(eq, cp){
+  /* v10.5: tirar um nível só vale se baixa a diária (quem já está no degrau do curso fica) */
+  const baixa = (f, key) => { const cs = cp && cp[key]; return f(eq, cs) > f(Object.assign({}, eq, { [key]:eq[key] - 1 }), cs); };
+  const c = FOLHA_CORTE.find(k => k[0] === 'tonhao' ? eq.tonhao > 0 : k[0] === 'dani' ? eq.dani > 1 && baixa(diariaDani, 'dani') : k[0] === 'jocaUp' ? eq.joca > 2 && !eq.jocaFora && baixa(diariaJoca, 'joca') : k[0] === 'jocaFora' ? eq.joca > 0 && !eq.jocaFora : k[0] === 'camiFora' ? eq.cami > 0 && !eq.camiFora : k[0] === 'anselmoFora' ? eq.anselmo > 0 && !eq.anselmoFora : k[0] === 'liaFora' ? eq.lia > 0 && !eq.liaFora : eq[k[0]]);
   if (!c) return null;
   if (c[0] === 'tonhao' || c[0] === 'dani') eq[c[0]]--;
   else if (c[0] === 'jocaUp') eq.joca--;   // o Joca perde 1 nível de aumento (não sai da equipe)
@@ -703,11 +723,11 @@ function folhaCorta(eq){
   return c[0] === 'jocaFora' ? 'o Joca (sem salário hoje)' : c[0] === 'camiFora' ? 'a Cami (sem salário hoje)' : c[0] === 'anselmoFora' ? 'o Anselmo (sem salário hoje)' : c[0] === 'liaFora' ? 'a Lia (sem salário hoje)' : c[1];
 }
 /* o que fica de fora ao abrir o dia com `bank` no caixa (sem mexer em eq) */
-function folhaCortes(eq, div, bank){
+function folhaCortes(eq, div, bank, cp){
   eq = Object.assign({}, eq); let dc = div ? div.cost : 0; const out = [];
-  while (payroll(eq) + dc > bank){
+  while (payroll(eq, cp) + dc > bank){
     if (dc){ out.push(div.name.toLowerCase()); dc = 0; continue; }
-    const n = folhaCorta(eq); if (!n) break;
+    const n = folhaCorta(eq, cp); if (!n) break;
     out.push(n);
   }
   return out;
@@ -715,14 +735,14 @@ function folhaCortes(eq, div, bank){
 /* o que a folha e a divulgação pagam, pelo nome (para a lojinha) */
 function folhaItens(eq, div){
   const out = [];
-  if (eq.tonhao) out.push('aumento do Tonhão');
-  if (eq.dani > 1) out.push('aumento da Dani');
+  out.push('Tonhão');   // v10.5: o salário dele entra sempre
+  if (eq.dani > 0) out.push('Dani');
   if (eq.joca > 0) out.push('Joca');
   if (eq.cami > 0) out.push('Cami');
   if (eq.anselmo > 0) out.push('Anselmo');
   if (eq.lia > 0) out.push('Lia');
   if (eq.couvert) out.push('couvert');
-  if (eq.musica) out.push(eq.musica === 2 ? 'pianista e afinação' : 'quarteto de cordas');   // v10.4
+  if (eq.musica) out.push(eq.musica === 2 ? 'pianista e afinação' : 'trio de cordas');   // v10.4
   if (eq.tv) out.push('TV');
   if (eq.som) out.push('som');
   if (eq.tvs) out.push('TVs');
@@ -782,13 +802,13 @@ function exigRep(nota){ return nota == null ? 1 : EXIGENTE.rep[0] + clamp((nota 
 function vipTipos(ponto){ const w = ponto && ponto.tipos; return VIP.types.filter(k => w ? w[k] > 0 : k !== 'casal'); }   // dish: o prato especial soma R$ 12 à conta e leva 1,8× o tempo; perfect: pontos (v8.3.8)
 
 const DAYS = [
-  { n:1, groups:5,  types:['estudante','vovos'],                                   nu:null,         meta:30, expert:60,  time:150, speed:0.60, note:'Arraste cada grupo até uma mesa livre.' },
-  { n:2, groups:8,  types:['estudante','vovos','familia'],                         nu:'familia',    meta:108, expert:220,  time:160, speed:0.60, note:'Chegou a família! Ela só cabe em mesa de quatro.' },
-  { n:3, groups:13, types:['estudante','vovos','familia','executiva'],             nu:'executiva',  meta:135, expert:230,  time:170, speed:0.60, juice:0.3, note:'Chegou a executiva! E abriu o balcão de sucos.' },
-  { n:4, groups:15, types:['estudante','vovos','familia','executiva','entregador'], nu:'entregador', meta:63, expert:110, time:180, speed:0.58, juice:0.3, note:'Chegou o entregador de moto!' },
-  { n:5, groups:16, types:['estudante','vovos','familia','executiva','entregador'], nu:null,         meta:90, expert:140, time:190, speed:0.56, vip:0.15, juice:0.3, note:'O movimento cresce.' },
-  { n:6, groups:16, types:['estudante','vovos','familia','executiva','entregador'], nu:null,         meta:140, expert:280, time:200, speed:0.54, vip:0.15, juice:0.3, note:'Sexta-feira: ninguém quer esperar.' },
-  { n:7, groups:17, types:['estudante','vovos','familia','executiva','entregador'], nu:null,         meta:170, expert:310, time:220, speed:0.52, vip:0.15, juice:0.3, gripe:true, note:'Tonhão está gripado: a cozinha anda devagar.' }
+  { n:1, groups:5,  types:['estudante','vovos'],                                   nu:null,         meta:50, expert:80,  time:150, speed:0.60, note:'Arraste cada grupo até uma mesa livre.' },
+  { n:2, groups:8,  types:['estudante','vovos','familia'],                         nu:'familia',    meta:160, expert:320,  time:160, speed:0.60, note:'Chegou a família! Ela só cabe em mesa de quatro.' },
+  { n:3, groups:13, types:['estudante','vovos','familia','executiva'],             nu:'executiva',  meta:200, expert:340,  time:170, speed:0.60, juice:0.3, note:'Chegou a executiva! E abriu o balcão de sucos.' },
+  { n:4, groups:15, types:['estudante','vovos','familia','executiva','entregador'], nu:'entregador', meta:90, expert:160, time:180, speed:0.58, juice:0.3, note:'Chegou o entregador de moto!' },
+  { n:5, groups:16, types:['estudante','vovos','familia','executiva','entregador'], nu:null,         meta:130, expert:205, time:190, speed:0.56, vip:0.15, juice:0.3, note:'O movimento cresce.' },
+  { n:6, groups:16, types:['estudante','vovos','familia','executiva','entregador'], nu:null,         meta:205, expert:415, time:200, speed:0.54, vip:0.15, juice:0.3, note:'Sexta-feira: ninguém quer esperar.' },
+  { n:7, groups:17, types:['estudante','vovos','familia','executiva','entregador'], nu:null,         meta:250, expert:455, time:220, speed:0.52, vip:0.15, juice:0.3, gripe:true, note:'Tonhão está gripado: a cozinha anda devagar.' }
 ];
 /* campanha (v8.3): os dias 1 a 7 são a rampa de abertura; do dia 8 em diante, cada dia tem o perfil do dia 7 (sem a gripe
    do Tonhão) com o movimento do dia da semana (o dia 1 é domingo e o 6, sexta). f: fator dos grupos e das metas;
@@ -1282,7 +1302,7 @@ const BIA_IDS = ['tenis', 'corrida', 'bandeja', 'sudoku'];
 function upgradeCartao(id){ return BIA_IDS.indexOf(id) >= 0 ? 'bia' : 'melhorias'; }
 const HIST_NOMES = { bia:'Bia', tonhao:'Tonhão', dani:'Dani', joca:'Joca', cami:'Cami', anselmo:'Anselmo', lia:'Lia' };
 const CAIXA_MAX = 14;                                 // livro-caixa (v7.2): quantos dias da carreira ficam guardados
-const VERSAO = 'v10.4';                                // vai no resumo do Caixa
+const VERSAO = 'v10.5';                                // vai no resumo do Caixa
 const DIVULGA_DIA = 4;                                // antes disso, o movimento é o da inauguração (sem custo); v9.0.2: dia 4, e o padrão é o boca a boca
 function divulgaAberta(n, sv){ return devLivre() || n >= DIVULGA_DIA && !(sv && sv.convDiv === 'pend'); }   // no modo dev, desde o dia 1; v9.0.3: no Modo História, só depois da conversa
 /* v9.6.4: a Efood (os entregadores) só abre depois da conversa dos entregadores, no Modo História; antes dela, nenhum tipo com `retira` vem na agenda */
@@ -1436,7 +1456,7 @@ const MANUAL = [
   { id:'c-exigente',   aba:'clientes', tipo:'exigente',   nome:'VIP exigente', linha:'Duas estrelas na plaquinha. Quer tudo no lugar e paga muito bem.' },   // v10.1
 
   { id:'e-bia',     aba:'equipe', quem:'bia',     sempre:true, nome:'Bia', linha:'A garçonete. Anota, leva, entrega, cobra e recolhe.' },
-  { id:'e-tonhao',  aba:'equipe', quem:'tonhao',  sempre:true, nome:'Tonhão', linha:'O chef. Aprende pratos nos cursos e, com aumento, ajuda na pia.' },
+  { id:'e-tonhao',  aba:'equipe', quem:'tonhao',  sempre:true, nome:'Tonhão', linha:'O chef. Aprende pratos nos cursos e, com aumento, cozinha mais rápido e ajuda na pia.' },
   { id:'e-dani',    aba:'equipe', quem:'dani',    nome:'Dani', linha:'Cuida da louça, do lixo e das mesas sujas; depois, dos doces.' },
   { id:'e-joca',    aba:'equipe', quem:'joca',    nome:'Joca', linha:'O básico da casa; depois, o café espresso e os cafés especiais.' },
   { id:'e-cami',    aba:'equipe', quem:'cami',    nome:'Cami', linha:'Garçonete de rodízio: com cursos, cuida das mesas dela ou ajuda em todas.' },
@@ -1457,7 +1477,7 @@ const MANUAL = [
   { id:'l-tvs',        aba:'lojinha', nome:'TVs com sertanejo', linha:'A paciência nas mesas dura mais; sem anúncios, mais ainda.' },
   { id:'l-assento',    aba:'lojinha', nome:'Assento da espera', linha:'Quem espera sentado perde a paciência mais devagar.' },
   { id:'l-couvert',    aba:'lojinha', nome:'Couvert artístico', linha:'Música ao vivo: a paciência nas mesas dura mais, e cada mesa paga o couvert.' },
-  { id:'l-musica',     aba:'lojinha', nome:'Música ao vivo', linha:'Quarteto ou pianista: a paciência nas mesas dura mais e o ambiente melhora.' },
+  { id:'l-musica',     aba:'lojinha', nome:'Música ao vivo', linha:'Trio ou pianista: a paciência nas mesas dura mais e o ambiente melhora.' },
   { id:'l-fogao',      aba:'lojinha', nome:'Fogão industrial', linha:'Uma boca a mais: o Tonhão faz mais pratos ao mesmo tempo.' },
   { id:'l-cardapio',   aba:'lojinha', nome:'Cardápio', linha:'Cursos do Tonhão e da equipe. Cada curso ensina pratos novos e dá experiência; o avançado deixa os pratos mais caros e caprichados.' },
   { id:'l-salao',      aba:'lojinha', nome:'Salão', linha:'Compre, venda e arrume as mesas.' },

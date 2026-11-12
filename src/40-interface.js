@@ -202,13 +202,13 @@ const DEV_HOJE = [
   ['vip', 'VIP', [['', 'Sorteio'], ['vem', 'Vem um VIP']]],
   ['apito', 'Apito da fábrica (área industrial)', [['', 'Sorteio'], ['apita', 'Apita'], ['nao', 'Não apita']]]
 ];
-const DEV_MUSICA = ['sem música', 'quarteto de cordas', 'pianista'];
+const DEV_MUSICA = ['sem música', 'trio de cordas', 'pianista'];
 function devAbaHoje(body, secao, botao){
   DEV_HOJE.forEach(([k, titulo, ops]) => {
     const r = secao(titulo);
     ops.forEach(([v, t]) => botao(r, t, () => game.devForca(k, v), (DEV.forca[k] || '') === v));
   });
-  if (musicaOk(game.ponto)) botao(secao('Música (Terraço)', 'Agora: ' + DEV_MUSICA[game.save.equipe.musica || 0]), 'Música: trocar', () => game.devMusica());   // v10.4: sem música → quarteto → pianista
+  if (musicaOk(game.ponto)) botao(secao('Música (Terraço)', 'Agora: ' + DEV_MUSICA[game.save.equipe.musica || 0]), 'Música: trocar', () => game.devMusica());   // v10.4: sem música → trioo → pianista
   if ((game.state === 'paused' || game.state === 'playing') && game.mode === 'carreira'){
     let r = secao('No dia', 'Velocidade ' + DEV.vel + '×');
     [1, 2, 4, 8].forEach(v => botao(r, 'Velocidade ' + v + '×', () => { DEV.vel = v; }, DEV.vel === v));

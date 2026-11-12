@@ -29,8 +29,8 @@ ok(L.contasDia(g.tables,{aluguel:120})===120+C.base+4*C.mesa+10*C.lugar,'aluguel
   ok(vr>vp*1.15,'redes sociais: mais VIPs ('+(vr/3).toFixed(1)+'% contra '+(vp/3).toFixed(1)+'%)'); }
 
 // pagamento ao abrir: folha + divulgação; sem dinheiro, a divulgação vira boca a boca antes de dispensar alguém
-{ reset({},1000,'panfleto'); g.startDay(4); g.begin(); ok(g.save.bank===1000 && g.paidDiv===PAN && g.paid===0,'panfletos: R$ '+PAN+' reservados ao abrir (pagos no fim do dia)');
-  ok(g.contas===L.contasDia(g.tables) && Math.round(g.lucro)===-(g.contas+PAN),'o dia começa no vermelho: −(contas + divulgação)');
+{ reset({},1000,'panfleto'); g.startDay(4); g.begin(); ok(g.save.bank===1000 && g.paidDiv===PAN && g.paid===TP(0),'panfletos: R$ '+PAN+' reservados ao abrir (pagos no fim do dia)');
+  ok(g.contas===L.contasDia(g.tables) && Math.round(g.lucro)===-(g.contas+PAN+TP(0)),'o dia começa no vermelho: −(contas + divulgação + a folha do Tonhão; v10.5: salários de verdade)');
   reset({tonhao:2},TP(2)+RED-1,'redes'); g.startDay(4); g.begin();
   ok(g.save.divulga==='boca' && g.paidDiv===0 && g.paid===TP(2) && g.save.bank===TP(2)+RED-1 && g.unpaid[0]==='Redes sociais' && g.save.equipe.tonhao===2,'sem dinheiro: redes viram boca a boca e o Tonhão fica');
   ok(g.schedule.length<=Math.round(L.DAYS[3].groups*0.9),'boca a boca: agenda refeita com menos grupos'); }
@@ -72,7 +72,7 @@ ok(L.contasDia(g.tables,{aluguel:120})===120+C.base+4*C.mesa+10*C.lugar,'aluguel
 
 // Turno sem fim: pontos = os de atendimento (v8.3.8; antes, o faturamento); o dinheiro acumulado recebe o faturamento menos ingredientes e contas
 { reset({},100); g.startEndless(); g.begin(); ok(!g.div && g.paidDiv===0,'sem fim: sem divulgação');
-  g.money=500; g.custo=80; g.pontos=321; g.finishEndless(); ok(g.endless.pontos===321 && g.endless.fat===500 && g.save.bank===100+500-80-g.contas,'sem fim: pontos de atendimento; acumulado = faturamento − ingredientes − contas'); }
+  g.money=500; g.custo=80; g.pontos=321; g.finishEndless(); ok(g.endless.pontos===321 && g.endless.fat===500 && g.save.bank===100+500-80-g.contas-g.paid,'sem fim: pontos de atendimento; acumulado = faturamento − ingredientes − contas − folha (v10.5: R$ 50 do Tonhão)'); }
 
 console.log('\n'+(total-fails)+'/'+total+' ok; fails= '+fails);
 process.exitCode = fails ? 1 : 0;

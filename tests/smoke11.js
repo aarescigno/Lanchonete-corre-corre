@@ -65,7 +65,7 @@ const acha=(e,f)=>f(e)?e:(e.children||[]).reduce((a,c)=>a||acha(c,f),null);
   ok(tb&&/Dia 2/.test(txt(tb.children[1]))&&/Dia 1/.test(txt(tb.children[2])),'o dia mais novo vem primeiro');
   ok(/Para onde foi o dinheiro nos últimos 2 dias/.test(txt(grid))&&/Melhorias R\$ 150/.test(txt(grid)),'para onde foi o dinheiro, com as melhorias');
   ok(/Compras nesta lojinha: R\$ 100 \(entram na linha do dia 3\)/.test(txt(grid)),'compras desta lojinha avisadas');
-  const bar=acha(grid,e=>e.className==='cx-bar'); ok(bar&&bar.children.length===3&&bar.children.every(s=>+s.style.flex>0),'barra empilhada (ingredientes, contas, melhorias) com '+(bar?bar.children.length:0)+' partes');
+  const bar=acha(grid,e=>e.className==='cx-bar'); ok(bar&&bar.children.length===4&&bar.children.every(s=>+s.style.flex>0),'barra empilhada (ingredientes, contas, folha, melhorias) com '+(bar?bar.children.length:0)+' partes');
   const b=acha(grid,e=>e.tagName==='BUTTON'&&e.textContent==='Copiar resumo'); ok(!!b,'botão Copiar resumo');
   b.fire('click'); await new Promise(r=>setTimeout(r,10));
   const st=acha(grid,e=>e.className==='cx-st'), ta=acha(grid,e=>e.tagName==='TEXTAREA');

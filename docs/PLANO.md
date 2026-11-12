@@ -15,10 +15,9 @@ Origem: retorno do Renan Martorelli (beta-tester) e conversa com o Arthur (15/10
 ## Situação
 | # | Etapa | Versão | Situação |
 |---|---|---|---|
-| D-2 | Modo dev completo: História (cumprir, assistir, revelar) e Hoje (forçar imprevistos) | v10.2.2 | feita em 11/11 (`docs/spec-v10.2.2.md`; `smoke64`) |
 | 4a-4 | O salão e o bar do Terraço: a Cami em tudo, cafés especiais e coquetéis de autor | v10.3 | feita em 11/11 (`docs/spec-v10.3.md`; `smoke65`; o Terraço já passava 100% das metas com a equipe toda: recalibrar na 4a-5) |
 | 4a-5 | Música, flores e o rebalanceamento do Terraço | v10.4 | feita em 11/11 (`docs/spec-v10.4.md`; `smoke66`; cardápio ×1,3, metas ×12 e 3ª estrela ×8,5: o comando do CA8 não contrata a equipe toda, ver Desvios) |
-| S | Salários de verdade: equipe e música no custo real (~80%), cardápio e metas recalibrados | v10.5 | a fazer (`docs/spec-v10.5.md` aprovada) |
+| S | Salários de verdade: equipe e música no custo real (~80%), cardápio e metas recalibrados | v10.5 | feita em 12/11 (`docs/spec-v10.5.md`; `smoke67`; a música não paga o preço no `balance.js`, ver Desvios) |
 | 4b | Nível de luxo | v10.6 | a fazer |
 | 4c | Eventos de bairro: festa junina e jogo do Brasil | v10.7 | a fazer |
 | 5 | ~~Modo História, parte 1~~: juntou-se à 2f e aos capítulos da 3a, 3b e 4a (28/10) | — | — |
@@ -68,11 +67,6 @@ Origem: retorno do Renan Martorelli (beta-tester) e conversa com o Arthur (15/10
 - **Quem faz o básico:** as tarefas básicas (lixo, pratos sujos, louça, água/suco da espera, marmitas) ficam sempre com **o ajudante mais novo que veio no dia**, nesta ordem: Cami, Joca, Dani. Quem passou o bastão fica só com a especialidade: a **Dani** com os doces (e o cafezinho, até o Joca aprender o espresso); o **Joca**, depois do espresso, com os cafés. Se o mais novo faltou no dia (folha), o básico volta para o anterior naquele dia. Função `donoBasico(g)` em `15-dani.js`; o cartão de quem passou o bastão mostra só a especialidade, com o texto "As tarefas da casa ficaram com o Joca." (ou "com a Cami.").
 - **Folha** (`FOLHA_CORTE`, a ordem final depois da 3b-5): couvert, som, TV, TVs, **o Anselmo não vem**, **a Cami não vem**, **aumento do Joca**, aumento da Dani, aumento do Tonhão, **o Joca não vem**. "Não vem" marca `eq.<quem>Fora = true` só naquele dia: `payroll` não conta, o ajudante não entra no dia, `normEquipe` não guarda o `...Fora` (continua contratado). Cada sessão põe a sua parte nessa ordem.
 - **Cursos:** um por dia por ajudante (`daniCursoDia`, `jocaCursoDia`, `camiCursoDia`). Os que trazem item (confeitarias, espresso) ficam no **cartão Cardápio**, com o rosto de quem faz, ao lado dos do Tonhão, e contam na Diversidade do Gurugol (`avalMenu`); os de atendimento ficam no cartão do ajudante, em Equipe. Só aparecem no ponto do `nivel` deles (no modo dev, sempre).
-
-## Etapa S — Salários de verdade (v10.5)
-**Objetivo:** cada pessoa da equipe e cada música custa o que o cargo custaria de verdade (~80% do custo real, como o aluguel); o Tonhão passa a ter salário e a Dani ajuda de custo; o salário da Dani (confeiteira) e do Joca (barista) sobe a cada curso da carreira deles; o cardápio sobe para perto do preço real (PF da Garagem a R$ 30) e as metas são recalibradas pelo bot. Entrevista de 12/11; pesquisa em `docs/pesquisa-salarios.md`. Spec: `docs/spec-v10.5.md` (aprovada).
-
-**Modelo:** Sonnet, esforço alto (código simples, mas a calibração por tentativa mexe nos quatro pontos e em muitos smokes)
 
 ## Etapa 4 — Terraço Suíça, VIPs exigentes e nível de luxo (4a, v10 a v10.4; 4b, v10.6)
 > Desde a revisão de 28/10, o **nível de luxo** entra junto com o Terraço (escolha do usuário). A **4a** foi planejada em 10/11 e dividida em 5 sessões (4a-1 a 4a-5); a **4b** (nível de luxo) vem depois.

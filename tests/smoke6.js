@@ -14,17 +14,17 @@ ok(L.UPGRADES.some(u=>u.id==='maquina') && !L.UPGRADES.some(u=>u.id==='agua'||u.
   g.up={}; g.save.up=g.up; ok(g.stationAt(r.x+10,r.y+10)===null,'sem a melhoria, a máquina não aparece'); }
 
 /* folha e cofre */
-ok(L.payroll(L.normSave({}).equipe)===0,'sem equipe, folha zero');
+ok(L.payroll(L.normSave({}).equipe)===50,'sem equipe, só o Tonhão no nível 0 (R$ 50; v10.5: salários de verdade)');
 const SP=L.STAFF, TP=n=>SP.tonhao.levels[n].pay, DP=n=>SP.dani.levels[n].pay;
 ok(L.payroll({tonhao:2,dani:4,couvert:true})===TP(2)+DP(4)+SP.couvert.pay,'folha: Tonhão '+TP(2)+' + Dani nível 3 '+DP(4)+' + couvert '+SP.couvert.pay);
 ok(DP(3)>DP(2) && DP(4)>DP(3),'Dani: cada nível paga mais ('+DP(2)+', '+DP(3)+', '+DP(4)+')');
-ok(L.payroll({tonhao:0,dani:0,tv:true,som:true})===SP.tv.pay+SP.som.pay,'folha: luz da TV '+SP.tv.pay+' + som '+SP.som.pay);
+ok(L.payroll({tonhao:0,dani:0,tv:true,som:true})===TP(0)+SP.tv.pay+SP.som.pay,'folha: luz da TV '+SP.tv.pay+' + som '+SP.som.pay);
 { reset({tonhao:1,dani:2,tv:true,som:true},1000); g.save.divulga='boca'; g.startDay(3); g.begin(); ok(g.save.bank===1000 && g.paid===TP(1)+DP(2)+SP.tv.pay+SP.som.pay,'folha (com a luz da TV e do som) reservada ao abrir a lanchonete; só sai no fim do dia (v8.2.2)'); }
-{ reset({tonhao:1,dani:2,tv:true,som:true},20); g.save.divulga='boca'; g.startDay(3); g.begin(); ok(!eq().som && !eq().tv && eq().dani===1 && eq().tonhao===1 && g.paid===TP(1) && g.save.bank===20 && g.unpaid.join()==='som,TV,aumento da Dani','sem dinheiro para todos: desliga som e TV, tira o aumento da Dani (ela fica aprendiz), paga o resto'); }
-{ const b=DP(2)+SP.tv.pay; reset({tonhao:0,dani:2,tv:true,som:true},b); g.save.divulga='boca'; g.startDay(3); g.begin(); ok(!eq().som && eq().tv && eq().dani===2 && g.paid===b && g.save.bank===b,'som sai antes da TV, e a TV antes da Dani'); }
-{ reset({},DP(4)-1); g.save.daniTar=4*L.DANI_XP.tarefas; ok(!g.setStaff('dani',4) && eq().dani===0,'não contrata quem o dinheiro acumulado não paga'); ok(g.setStaff('dani',2),'contrata a Dani com cofre suficiente'); }
+{ reset({tonhao:1,dani:2,tv:true,som:true},20); g.save.divulga='boca'; g.startDay(3); g.begin(); ok(!eq().som && !eq().tv && eq().dani===1 && eq().tonhao===0 && g.paid===TP(0)+DP(1) && g.save.bank===20 && g.unpaid.join()==='som,TV,aumento da Dani,aumento do Tonhão','sem dinheiro para todos: desliga som e TV, tira o aumento da Dani (ela fica aprendiz) e o do Tonhão, paga a base (v10.5: salários de verdade)'); }
+{ const b=TP(0)+DP(2)+SP.tv.pay; reset({tonhao:0,dani:2,tv:true,som:true},b); g.save.divulga='boca'; g.startDay(3); g.begin(); ok(!eq().som && eq().tv && eq().dani===2 && g.paid===b && g.save.bank===b,'som sai antes da TV, e a TV antes da Dani'); }
+{ reset({},TP(0)+DP(4)-1); g.save.daniTar=4*L.DANI_XP.tarefas; ok(!g.setStaff('dani',4) && eq().dani===0,'não contrata quem o dinheiro acumulado não paga'); ok(g.setStaff('dani',2),'contrata a Dani com cofre suficiente'); }
 { reset({},0); g.save.divulga='boca'; g.startDay(3); g.begin(); g.money=1000; g.custo=100; g.finishDay(); const c=L.contasDia(g.tables);
-  ok(g.result.income===1000-100-c && g.save.bank===1000-100-c && g.save.lucroTot===1000-100-c,'o faturamento vai para o dinheiro acumulado, menos ingredientes e contas (v7); o lucro soma no acumulado da campanha (v8.3)'); }
+  const f=g.paid; ok(g.result.income===1000-100-c-f && g.save.bank===1000-100-c-f && g.save.lucroTot===1000-100-c-f,'o faturamento vai para o dinheiro acumulado, menos ingredientes, contas e a folha do Tonhão (v7; v10.5: R$ 50); o lucro soma no acumulado da campanha (v8.3)'); }
 
 /* aumento do Tonhão */
 const fresh=()=>{ g.schedule=[{t:1e9,type:'estudante',color:0}]; g.nextIdx=0; };
@@ -161,7 +161,7 @@ ok(L.pontoOf('garagem').nivel===1 && L.STAFF.couvert.nivel===3 && !L.couvertOk(L
   eq().som=true; ok(Math.abs(a.patPer()-p0/0.9)<1e-9,'TV e som: 10% (somados)');
   eq().tv=false; ok(Math.abs(a.patPer()-p0/0.95)<1e-9,'só o som: 5%');
   eq().tv=true; a.setState('queue'); const q=a.patPer(); eq().tv=false; eq().som=false; ok(q===a.patPer(),'TV e som não mexem na fila'); }
-{ reset({},20); ok(!g.setStaff('tv',true) || L.payroll(eq())<=20,'só liga o que o dinheiro paga'); reset({},SP.som.pay); ok(!g.setStaff('tv',true) && g.setStaff('som',true) && eq().som,'TV (R$ '+SP.tv.pay+') não liga com R$ '+SP.som.pay+'; o som liga'); }
+{ reset({},20); ok(!g.setStaff('tv',true) || L.payroll(eq())<=20,'só liga o que o dinheiro paga'); reset({},TP(0)+SP.som.pay); ok(!g.setStaff('tv',true) && g.setStaff('som',true) && eq().som,'TV (R$ '+SP.tv.pay+') não liga com R$ '+SP.som.pay+'; o som liga'); }
 { reset({}); g.resetDay(3); const a=new L.Group(g,'estudante',1,0); a.setState('wantOrder'); eq().couvert=true;
   const p=a.patPer(); eq().couvert=false; const p0=a.patPer();
   ok(Math.abs(p-p0/0.8)<1e-9,'couvert: paciência nas mesas cai 20% mais devagar');
@@ -169,7 +169,7 @@ ok(L.pontoOf('garagem').nivel===1 && L.STAFF.couvert.nivel===3 && !L.couvertOk(L
   a.setState('queue'); const q=a.patPer(); eq().couvert=false; ok(q===a.patPer(),'couvert não mexe na fila'); }
 { reset({}); eq().couvert=true; eq().taxa=true; g.startDay(3); g.begin(); g.schedule=[{t:1e9,type:'estudante',color:0}]; g.nextIdx=0;
   const grp=g.spawn({type:'familia',color:0}); const t=g.tables.find(x=>x.free&&x.seats>=grp.size); g.seatGroup(grp,t); grp.juiceWant=0; grp.hearts=5; grp.bill=40;
-  const m0=g.money; g.lastKind='x'; g.collectBill(grp,t); ok(g.money-m0===Math.round(40*1.1)+3*grp.size,'taxa de couvert: R$ 3 por pessoa na conta'); }
+  const m0=g.money; g.lastKind='x'; g.collectBill(grp,t); ok(g.money-m0===Math.round(40*1.1)+L.STAFF.couvert.fee*grp.size,'taxa de couvert: R$ 8 por pessoa na conta (v10.5: salários de verdade)'); }
 
 /* bot joga dias 3–7 sem equipe e com equipe completa, com render */
 { const bot=require('./bot.js')(g,L); let err=null; const res=[];

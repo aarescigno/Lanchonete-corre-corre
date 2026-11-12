@@ -24,7 +24,7 @@ const AN={ equipe:{ tonhao:1, dani:3, joca:3, anselmo:2 } };
   ok(c && c.nivel===3 && c.dia===3 && c.ate===6 && typeof c.gatilho==='function' && c.falas.length===5 && c.falas.map(f=>f.q).join()==='tonhao,anselmo,bia,anselmo,bia','anselmo: nível 3, dia 3, até 6, 5 falas (Tonhão, Anselmo, Bia, Anselmo, Bia)');
   ok(L.HIST_NOMES.anselmo==='Anselmo' && L.LIBERA.every(l=>l.falas.every(f=>L.HIST_NOMES[f.q])),'HIST_NOMES tem o Anselmo');
   const D=L.DRINKS; ok(D.prep===4 && D.preco===22 && D.ingred===6 && D.vagas===2 && D.itens.map(d=>d.nome).join()==='Pôr do Sol da Avenida,Brisa de Maracujá,Esmeralda' && JSON.stringify(D.pede)===JSON.stringify({ executiva:0.45, negocios:0.6, familia:0.25, vovos:0.25, estudante:0.35, casal:0.6 }) && D.vip===0.2,'DRINKS como no plano');
-  ok(L.STAFF.anselmo.levels[2].pay===90 && L.STAFF.anselmo.levels[2].speed===0.8 && L.STAFF.anselmo.levels[3].pay===130 && L.PONTOS_ACAO.drink===5 && L.AVAL.amb.drink===0.25 && L.DRINK_PRICE.drink===22,'STAFF.anselmo, pontos, Ambiente e preço do lixo');
+  ok(L.STAFF.anselmo.levels[2].pay===105 && L.STAFF.anselmo.levels[2].speed===0.8 && L.STAFF.anselmo.levels[3].pay===150 && L.PONTOS_ACAO.drink===5 && L.AVAL.amb.drink===0.25 && L.DRINK_PRICE.drink===22,'STAFF.anselmo, pontos, Ambiente e preço do lixo');
   const r=L.LAYOUT.STATIONS.drinks.rect; ok(r.x===620 && r.y===92 && r.w===60 && r.h===50 && L.LAYOUT.STATIONS.drinks.ap.x===700 && L.LAYOUT.STATIONS.drinks.ap.y===150 && L.ANSELMO_HOME.x===650 && L.ANSELMO_HOME.y===118,'estação do balcão e posição dele'); }
 
 // ---------- 2. cartão e contratação ----------
@@ -35,7 +35,7 @@ const AN={ equipe:{ tonhao:1, dani:3, joca:3, anselmo:2 } };
   H.els['btn-next'].fire('click'); let n=0; while(!(g.conversa && /feira/.test(g.conversa.fala.s)) && n<30){ toque(H.els); n++; } ok(g.conversa && /feira/.test(g.conversa.fala.s),'a conversa toca no fim do dia');
   passa(H); ok(g.save.libera.anselmo===1 && g.cartaoAberto('anselmo') && g.liberaNovo.includes('anselmo'),'depois dela: o cartão abre, com selo');
   H.L.setShopGrupo('equipe'); ok(H.L.shopSecoes()[1].includes('anselmo'),'o cartão fica na Equipe');
-  const eq=g.save.equipe, f0=H.L.payroll(eq); g.save.bank=5000; ok(g.setStaff('anselmo',2) && eq.anselmo===2 && H.L.payroll(eq)-f0===90,'contratar põe no nível 2: R$ 90 por dia na folha');
+  const eq=g.save.equipe, f0=H.L.payroll(eq); g.save.bank=5000; ok(g.setStaff('anselmo',2) && eq.anselmo===2 && H.L.payroll(eq)-f0===105,'contratar põe no nível 2: R$ 105 por dia na folha (v10.5: salários de verdade)');
   ok(!g.setStaff('anselmo',3),'o nível 3 não se compra (vem dos cursos do Terraço)');
   H.L.setShopTab('anselmo'); const t=txt(H.els['shop-grid']); ok(/Anselmo · nível 1 de 2/.test(t) && /Terraço Suíça/.test(t) && /Pôr do Sol da Avenida/.test(t) || /Anselmo · nível 1/.test(t),'o cartão mostra o nível e os cursos no Terraço Suíça');
   // fora da História
@@ -83,7 +83,7 @@ const AN={ equipe:{ tonhao:1, dani:3, joca:3, anselmo:2 } };
 
 // ---------- 6. a folha ----------
 { const H=aberto({},null), {g,L}=H; const eq={ tonhao:1, dani:2, joca:0, cami:1, anselmo:2, couvert:false, tv:false, som:false, tvs:0, taxa:false };
-  ok(L.payroll(eq)-L.payroll(Object.assign({},eq,{ anselmo:0 }))===90,'payroll conta o Anselmo (R$ 90)');
+  ok(L.payroll(eq)-L.payroll(Object.assign({},eq,{ anselmo:0 }))===105,'payroll conta o Anselmo (R$ 105)');
   const e={ tonhao:1, dani:2, joca:2, cami:1, anselmo:2, tvs:0 }; const n1=L.folhaCorta(e); ok(n1==='o Anselmo (sem salário hoje)' && e.anselmoFora===true,'é o primeiro a não vir (sem couvert, som, TV nem TVs)');
   const e2={ tonhao:1, dani:2, joca:2, cami:1, anselmo:2, tvs:2, tv:false, som:false }; const o=[]; let x; while((x=L.folhaCorta(e2))) o.push(x); ok(o[0]==='TVs' && o[1].indexOf('Anselmo')>=0 && o[2].indexOf('Cami')>=0,'ordem: TVs, o Anselmo, a Cami...');
   const sv=L.normSave({ salao:{ ponto:'avenida' }, equipe:{ dani:2, anselmo:2 } }); sv.equipe.anselmoFora=true; ok(L.normEquipe(sv.equipe,g.ponto).anselmoFora===undefined,'normEquipe não guarda o "não vem"');

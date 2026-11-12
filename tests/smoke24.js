@@ -8,8 +8,8 @@ const novo=()=>{ g.save=L.normSave({maxDay:7,bank:500}); g.up=g.save.up; g.bough
 const preco=k=>k?L.precoPrato(k):0;
 
 // ---------- cardápio e conta ----------
-ok(C.pf.preco===25 && C.misto.preco===10 && C.pastel.preco===10 && C.coxinha.preco===8,'cardápio da Garagem: PF 25, misto 10, pastel 10, coxinha 8 (v8.6.9: misto de 12 para 10)');
-ok(L.precoPrato('pf',{cardapio:1.5})===38,'o ponto multiplica o cardápio (PONTOS.cardapio)');
+ok(C.pf.preco===30 && C.misto.preco===12 && C.pastel.preco===12 && C.coxinha.preco===10,'cardápio da Garagem: PF 30, misto 12, pastel 12, coxinha 10 (v10.5: salários e preços de verdade, × 1,2)');
+ok(L.precoPrato('pf',{cardapio:1.5})===45,'o ponto multiplica o cardápio (PONTOS.cardapio)');
 ok(L.GORJETA.join()==='0,-0.2,-0.1,0,0.05,0.1','gorjeta: até +10% com 5 corações; com 1 ou 2, desconto');
 ok(Object.keys(L.CUSTOMER_TYPES).every(k=>{ const T=L.CUSTOMER_TYPES[k]; return !T.bill && !T.prefere && L.GOSTOS[k] && T.mais>=0 && T.mais<1; }),'cada tipo tem o seu gosto (GOSTOS, v8.6.9; sem faixa de conta) e a chance do 2º item');
 novo(); g.startDay(5); g.begin();
@@ -57,10 +57,10 @@ novo(); g.startDay(5); g.begin(); g.schedule=[{t:1e9,type:'estudante',color:0}];
   ok(L.normSave({pontosTot:-5}).pontosTot===0 && L.normSave({}).pontosTot===0 && L.normSave({pontosTot:42}).pontosTot===42,'save: pontosTot nunca negativo; padrão 0'); }
 // ---------- custos ----------
 ok(L.CONTAS.base===20 && L.INGRED.prato===0.35 && L.DRINK_PRICE.coffee===3 && L.JUICE.price===8,'custos: gás e geladeira R$ 20/dia, ingredientes 35%, cafezinho R$ 3, suco R$ 8');
-ok(L.payroll({tonhao:2,dani:4,tv:true,som:true})===50,'folha completa da Garagem: R$ 50 por dia (v8.7: Dani mais barata; v8.8: Tonhão nível 3 a R$ 20; v8.9: Dani a R$ 25)');
-ok(L.DAYS.map(d=>d.meta).join()==='30,108,135,63,90,140,170','metas de lucro realistas (R$ 30 a 170; v8.3.9; dias 2 a 5 -10% na v8.6.9; 6 e 7 na v8.6.13)');
-ok(L.DAYS.map(d=>d.expert).join()==='60,220,230,110,140,280,310','3 estrelas pelo jogo perfeito (v8.3.9): R$ 60 a 310');
-ok(L.bomGoal(L.DAYS[0])===50,'dia 1: 2 estrelas com R$ 50');
+ok(L.payroll({tonhao:2,dani:4,tv:true,som:true})===125,'folha completa da Garagem: R$ 125 por dia (Tonhão 80 + Dani 40 + TV 3 + som 2; v10.5: salários de verdade)');
+ok(L.DAYS.map(d=>d.meta).join()==='50,160,200,90,130,205,250','metas de lucro realistas (R$ 50 a 250; v8.3.9; v10.5: × 1,1 quatro vezes, arredondadas a 5, para os salários e preços de verdade)');
+ok(L.DAYS.map(d=>d.expert).join()==='80,320,340,160,205,415,455','3 estrelas pelo jogo perfeito (v8.3.9; v10.5: × 1,1 quatro vezes): R$ 80 a 455');
+ok(L.bomGoal(L.DAYS[0])===75,'dia 1: 2 estrelas com R$ 75 (v10.5; era R$ 50)');
 // ---------- Manual (v9.6.7: no lugar do Como jogar; sem preços nem números) ----------
 { let err=null; try{ els['btn-manual'].fire('click'); }catch(e){ err=e; }
   ok(!err && els['ov-manual'].classList.contains('show') && els['manual-grid'].children.length>0,'Manual abre com as fichas do Básico'+(err?': '+err:'')); }
