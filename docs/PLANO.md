@@ -15,10 +15,9 @@ Origem: retorno do Renan Martorelli (beta-tester) e conversa com o Arthur (15/10
 ## Situação
 | # | Etapa | Versão | Situação |
 |---|---|---|---|
-| S | Salários de verdade: equipe e música no custo real (~80%), cardápio e metas recalibrados | v10.5 | feita em 12/11 (`docs/spec-v10.5.md`; `smoke67`; a música não paga o preço no `balance.js`, ver Desvios) |
 | R1 | Metas no alvo e a música do Terraço (revisão do balanceamento de 12/11) | v10.5.1 | feita em 12/11 (`docs/spec-v10.5.1.md`; `smoke68`; trio 0,7 e pianista 0,5; a Avenida ficou em 97% das metas e o Terraço da campanha +19%, ver Desvios) |
 | R2 | O ritmo da história: conversas no cap. 3 e um capítulo novo na Avenida e outro no Terraço | v10.5.2 | feita em 12/11 (`docs/spec-v10.5.2.md`; `smoke69`; 11 capítulos; o cap. 7 leva 3 a 4 dias e o cap. 10, 3; a história acaba no dia 49) |
-| V | A vontade da freguesia: doce e espresso puxam a Dani e o Joca (garantia do Joca e da Cami) | v10.5.3 | a fazer (`docs/spec-v10.5.3.md`, aprovada) |
+| V | A vontade da freguesia: doce e espresso puxam a Dani e o Joca (garantia do Joca e da Cami) | v10.5.3 | feita em 12/11 (`docs/spec-v10.5.3.md`; `smoke70`; `VONTADE.menos` 0,3 em vez de 0,5, ver Desvios) |
 | 4c | Eventos de bairro: festa junina e jogo do Brasil (adiantada em 12/11, para dar novidade aos dias parados da Garagem) | v10.6 | a fazer |
 | 4b | Nível de luxo | v10.7 | a fazer |
 | 5 | ~~Modo História, parte 1~~: juntou-se à 2f e aos capítulos da 3a, 3b e 4a (28/10) | — | — |
@@ -106,13 +105,6 @@ Origem: retorno do Renan Martorelli (beta-tester) e conversa com o Arthur (15/10
 **Modelo:** planejar com o Opus antes (atributos, pesos e efeito no jogo, a lista de enfeites e móveis com preços); executar com o Sonnet, esforço médio (é cálculo e interface sobre o que já existe).
 
 ---
-
-## Etapa V — A vontade da freguesia (v10.5.3)
-> Pedido do usuário em 12/11: garantia para o Joca e a Cami, vinda da necessidade dos clientes. Planejada no mesmo dia (Opus); vem antes da 4c.
-
-Objetivo: antes do curso de Confeitaria caseira (área industrial) e do Barista: espresso (Avenida), a freguesia pede doce e espresso, a nota cai um pouco e a vontade cresce; sem o curso, a equipe conversa sobre isso no fim do dia. Spec: `docs/spec-v10.5.3.md`.
-
-**Modelo:** Sonnet, esforço médio (código de jogo com plano detalhado em várias partes, sem decisão de design)
 
 ## Etapa 4c — Eventos de bairro (v10.6)
 > Entrou no plano na revisão de 28/10 (era ideia guardada). Vem depois do Terraço, para variar com cada ponto.

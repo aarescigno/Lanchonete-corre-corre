@@ -153,6 +153,8 @@ function pontoDiaDe(s, dia){
 function saveJogou(s){
   return (+s.dia > 1) || (+s.maxDay > 1) || (+s.lucroTot > 0) || (Array.isArray(s.caixa) && s.caixa.length > 0) || (!!s.stars && typeof s.stars === 'object' && Object.keys(s.stars).length > 0);
 }
+/* v10.5.3: save.vontDoce e save.vontCafe: 0 (nunca), 'pend' ou o dia da carreira em que a conversa foi vista */
+function normVont(v){ const n = Math.round(+v); return v === 'pend' ? 'pend' : n >= 1 ? n : 0; }
 function normSave(s){
   const up = (s.up && typeof s.up === 'object') ? s.up : {};
   if (up.jukebox){ up.agua = true; delete up.jukebox; }   // a Jukebox virou Água saborizada na v5
@@ -187,7 +189,7 @@ function normSave(s){
   // v10: o save que já terminou o cap. 8 na parte A (sem o campo v10) começa o 'Do começo ao fim' (v10.5.2: cap. 11, era o 9) com a conversa de antes
   const conversa = cap > HISTORIA.length || pendente ? null : hist ? (s.conversa === 'antes' || s.conversa === 'depois' ? s.conversa : (cap === 11 && s.v10 !== 1 ? 'antes' : null)) : novoHist ? 'antes' : null;
   const conversaF = capNovo && !pendente ? 'antes' : conversa;   // v10.5.2: o capítulo novo começa com a conversa de antes
-  const dev = salaoDevolucao(s.salao), out = { dia, estrelas, lucroTot: Math.round(+s.lucroTot) || 0, pontosTot: Math.max(0, Math.round(+s.pontosTot) || 0), aval: normAval(s.aval), avalCom: normAvalCom(s.avalCom), neg: clamp(Math.round(+s.neg) || 0, 0, BANCO.neg), emp: normEmprestimo(novoHist ? { resto:REFORMA.valor, amort:REFORMA.amort, j:REFORMA.juros, ini:REFORMA.ini, ref:true } : s.emp), corta: s.corta !== false, fechou: Math.max(0, Math.round(+s.fechou) || 0), bank: bank + dev + devMaq, up, torneira:true, salao: normSalao(dev ? null : s.salao), divulga: dia < DIVULGA_DIA && !devLivre() ? 'boca' : divulgaOf(s.divulga).id, treino: !!s.treino, decor: normDecor(s.decor), cursos: normCursos(s.cursos), cursoDia: Math.max(0, Math.round(+s.cursoDia) || 0), tonXp: s.tonXp === 1 ? 1 : 0, daniTar: Math.max(0, Math.round(+s.daniTar) || 0), daniCursos: normDaniCursos(s.daniCursos), daniCursoDia: Math.max(0, Math.round(+s.daniCursoDia) || 0), jocaTar: Math.max(0, Math.round(+s.jocaTar) || 0), jocaCursos: normJocaCursos(s.jocaCursos), jocaCursoDia: Math.max(0, Math.round(+s.jocaCursoDia) || 0), camiCursos: normCamiCursos(s.camiCursos), camiCursoDia: Math.max(0, Math.round(+s.camiCursoDia) || 0), anselmoCursos: normAnselmoCursos(s.anselmoCursos), anselmoCursoDia: Math.max(0, Math.round(+s.anselmoCursoDia) || 0), daniXp: s.daniXp === 1 ? 1 : 0, cardV: 1, libera: normLibera(s.libera, !novoHist), pontoDia: pontoDiaDe(s, dia), convCard: s.convCard === 'pend' ? 'pend' : s.convCard === 1 ? 1 : 0, convDiv: s.convDiv === 'pend' ? 'pend' : s.convDiv === 1 ? 1 : 0, convPlanta: s.convPlanta === 'pend' ? 'pend' : s.convPlanta === 1 || dia > 1 ? 1 : 0, convEnt: s.convEnt === 'pend' ? 'pend' : s.convEnt === 1 ? 1 : 0, socorro: s.socorro === 1 ? 1 : 0, convSocorro: s.convSocorro === 'pend' ? 'pend' : s.convSocorro === 1 ? 1 : 0, exigBravo: Math.max(0, Math.round(+s.exigBravo) || 0), exigVisto: s.exigVisto === 1 ? 1 : 0, convExig: s.convExig === 'pend' ? 'pend' : s.convExig === 1 ? 1 : 0, cardVisto: Array.isArray(s.cardVisto) ? s.cardVisto.filter(x => typeof x === 'string').slice(0, 40) : [], avisoCard: !!s.avisoCard, histV: 1, avisoHist: !!s.avisoHist, cap, capDia: Math.max(1, Math.round(+s.capDia) || 1), capV: 2, capAzul: capNovo ? 0 : Math.max(0, Math.round(+s.capAzul) || 0), capVezes: capNovo ? 0 : Math.max(0, Math.round(+s.capVezes) || 0), convQuit: s.convQuit === 'pend' ? 'pend' : s.convQuit === 1 || cap > 3 ? 1 : 0, convTeto: s.convTeto === 'pend' ? 'pend' : s.convTeto === 1 || cap > 3 ? 1 : 0, capFeito: !capNovo && s.capFeito === 1 ? 1 : 0, capMarm: Math.max(0, Math.round(+s.capMarm) || 0), capComp: Math.max(0, Math.round(+s.capComp) || 0), docesTot: Math.max(0, Math.round(+s.docesTot) || 0), conversa: conversaF, manut: normManut(s.manut), caixa: normCaixa(s.caixa), caixaPend: normPend(s.caixaPend) };
+  const dev = salaoDevolucao(s.salao), out = { dia, estrelas, lucroTot: Math.round(+s.lucroTot) || 0, pontosTot: Math.max(0, Math.round(+s.pontosTot) || 0), aval: normAval(s.aval), avalCom: normAvalCom(s.avalCom), neg: clamp(Math.round(+s.neg) || 0, 0, BANCO.neg), emp: normEmprestimo(novoHist ? { resto:REFORMA.valor, amort:REFORMA.amort, j:REFORMA.juros, ini:REFORMA.ini, ref:true } : s.emp), corta: s.corta !== false, fechou: Math.max(0, Math.round(+s.fechou) || 0), bank: bank + dev + devMaq, up, torneira:true, salao: normSalao(dev ? null : s.salao), divulga: dia < DIVULGA_DIA && !devLivre() ? 'boca' : divulgaOf(s.divulga).id, treino: !!s.treino, decor: normDecor(s.decor), cursos: normCursos(s.cursos), cursoDia: Math.max(0, Math.round(+s.cursoDia) || 0), tonXp: s.tonXp === 1 ? 1 : 0, daniTar: Math.max(0, Math.round(+s.daniTar) || 0), daniCursos: normDaniCursos(s.daniCursos), daniCursoDia: Math.max(0, Math.round(+s.daniCursoDia) || 0), jocaTar: Math.max(0, Math.round(+s.jocaTar) || 0), jocaCursos: normJocaCursos(s.jocaCursos), jocaCursoDia: Math.max(0, Math.round(+s.jocaCursoDia) || 0), camiCursos: normCamiCursos(s.camiCursos), camiCursoDia: Math.max(0, Math.round(+s.camiCursoDia) || 0), anselmoCursos: normAnselmoCursos(s.anselmoCursos), anselmoCursoDia: Math.max(0, Math.round(+s.anselmoCursoDia) || 0), daniXp: s.daniXp === 1 ? 1 : 0, cardV: 1, libera: normLibera(s.libera, !novoHist), pontoDia: pontoDiaDe(s, dia), vontDoce: normVont(s.vontDoce), vontCafe: normVont(s.vontCafe), vontDoceV: s.vontDoceV === 1 ? 1 : 0, vontCafeV: s.vontCafeV === 1 ? 1 : 0, convCard: s.convCard === 'pend' ? 'pend' : s.convCard === 1 ? 1 : 0, convDiv: s.convDiv === 'pend' ? 'pend' : s.convDiv === 1 ? 1 : 0, convPlanta: s.convPlanta === 'pend' ? 'pend' : s.convPlanta === 1 || dia > 1 ? 1 : 0, convEnt: s.convEnt === 'pend' ? 'pend' : s.convEnt === 1 ? 1 : 0, socorro: s.socorro === 1 ? 1 : 0, convSocorro: s.convSocorro === 'pend' ? 'pend' : s.convSocorro === 1 ? 1 : 0, exigBravo: Math.max(0, Math.round(+s.exigBravo) || 0), exigVisto: s.exigVisto === 1 ? 1 : 0, convExig: s.convExig === 'pend' ? 'pend' : s.convExig === 1 ? 1 : 0, cardVisto: Array.isArray(s.cardVisto) ? s.cardVisto.filter(x => typeof x === 'string').slice(0, 40) : [], avisoCard: !!s.avisoCard, histV: 1, avisoHist: !!s.avisoHist, cap, capDia: Math.max(1, Math.round(+s.capDia) || 1), capV: 2, capAzul: capNovo ? 0 : Math.max(0, Math.round(+s.capAzul) || 0), capVezes: capNovo ? 0 : Math.max(0, Math.round(+s.capVezes) || 0), convQuit: s.convQuit === 'pend' ? 'pend' : s.convQuit === 1 || cap > 3 ? 1 : 0, convTeto: s.convTeto === 'pend' ? 'pend' : s.convTeto === 1 || cap > 3 ? 1 : 0, capFeito: !capNovo && s.capFeito === 1 ? 1 : 0, capMarm: Math.max(0, Math.round(+s.capMarm) || 0), capComp: Math.max(0, Math.round(+s.capComp) || 0), docesTot: Math.max(0, Math.round(+s.docesTot) || 0), conversa: conversaF, manut: normManut(s.manut), caixa: normCaixa(s.caixa), caixaPend: normPend(s.caixaPend) };
   out.equipe = normEquipe(s.equipe, pontoOf(out.salao.ponto));
   out.v10 = 1;
   out.efoodNota = s.efoodNota === 1 || dia > HIST_ENTREGA.dia ? 1 : 0;   // v9.6.4: o texto do entregador na introdução já saiu (quem passou do dia 4 já viu)
@@ -274,6 +276,17 @@ class Table {
    GRUPO DE CLIENTES
    ============================================================ */
 const T0 = g => !!g.T.ind;
+/* v10.5.3: a chance de um grupo ter vontade de `qual` ('doce' ou 'cafe'): a de pedir com o curso feito, vezes o fator que cresce a cada dia de vontade no ponto (VONTADE); 0 com o curso feito.
+   Modo dev "Todos pedem" (DEV.forca.vontade): 1 sem olhar ponto nem dia (ainda 0 com o curso feito e para o entregador) */
+function vontadeChance(g, qual, tipo, vip){
+  const T = CUSTOMER_TYPES[tipo], up = g.up || {};
+  if (g.mode !== 'carreira' || !T || T.retira || (qual === 'doce' ? up.confCaseira : up.espresso)) return 0;
+  if (DEV.on && DEV.forca.vontade === 'todos') return 1;
+  const dv = vontadeDia(g.save, g.ponto, qual, g.day.n);
+  if (!dv) return 0;
+  const tab = qual === 'doce' ? DOCES : CAFES, p = (tab.pede[tipo] || 0) + (vip ? tab.vip : 0);
+  return Math.min(1, p * Math.min(VONTADE.max, 1 + VONTADE.cresce * (dv - 1)));
+}
 class Group {
   constructor(game, type, id, color, vip, s){
     const T = CUSTOMER_TYPES[type];
@@ -311,6 +324,7 @@ class Group {
     // v9.2, doces: o que pediu depois de comer (sorteado no fim da refeição), os já entregues, os corações perdidos esperando e, no entregador, as marmitas "+ doce"
     this.doces = null; this.docesDados = 0; this.perdDoce = 0;
     this.drinks = game.mode === 'carreira' && anselmoOn(game.save.equipe, game.ponto) && !T.retira ? this.sorteiaDrinks() : []; this.drinksDados = 0; this.drinksPedidos = false; this.perdDrink = 0;   // v9.5: os drinks do Anselmo (ids de DRINKS.itens), pedidos ao sentar; pedidos: já foram para a fila dele
+    this.vontade = { doce:false, cafe:false }; this.vontadeT = 0; this.vontadeFeita = false;   // v10.5.3: a vontade da freguesia (sorteada no fim da refeição) e os segundos que o balão apagado ainda fica
     this.cafes = null; this.cafesDados = 0;   // v9.3: os cafés da máquina de espresso (ids de CAFES.lista) pedidos no fim da refeição, e os já entregues
     this.docesMarm = this.retira && game.mode === 'carreira' && game.up.confCaseira ? (this.lote ? this.dishes : [0]).filter(() => Math.random() < DOCES.marmita).length : 0; this.docesMarmDados = 0;
     this.extras = this.tempos ? this.people.map(p => pedePrato(type, game, true, p.veg)) : this.people.map((p, i) => !this.retira && game.mode !== 'treino' && Math.random() < (CARDAPIO[this.dishes[i]].cat === 'pf' ? T.mais : Math.max(T.mais, MAIS.salgado)) ? pedePrato(type, game, true, p.veg) : null);
@@ -388,6 +402,20 @@ class Group {
     if (!g.up.espresso || this.retira || g.mode !== 'carreira') return [];
     const p = (CAFES.pede[this.type] || 0) + (this.vip ? CAFES.vip : 0);
     return Math.random() < p ? Array.from({ length:randi(1, this.size) }, () => pick(cafesLista(g.up)).id) : [];
+  }
+  /* v10.5.3: a vontade de doce e de espresso (a casa ainda não tem o curso): sorteada com a chance de vontadeChance; na refeição completa não há vontade de doce */
+  sorteiaVontade(){
+    const g = this.game, v = { doce:false, cafe:false };
+    if (this.retira || g.mode !== 'carreira') return v;
+    if (!this.tempos) v.doce = Math.random() < vontadeChance(g, 'doce', this.type, this.vip);
+    v.cafe = Math.random() < vontadeChance(g, 'cafe', this.type, this.vip);
+    return v;
+  }
+  /* o ícone apagado que a mesa mostra agora ('doce' ou 'cafe'; com os dois, um depois do outro) ou null */
+  get vontadeBalao(){
+    if (!(this.vontadeT > 0)) return null;
+    const l = [this.vontade.doce ? 'doce' : null, this.vontade.cafe ? 'cafe' : null].filter(Boolean);
+    return l.length ? l[Math.min(l.length - 1, Math.floor((VONTADE.balao - this.vontadeT) / (VONTADE.balao / l.length)))] : null;
   }
   get juicePending(){ return Math.max(0, this.juiceWant - this.juiceGot); }
   /* v10, a refeição completa: o prato do tempo da vez (o balão e a mão) e a bebida que ainda falta (drinks ou sucos); a bebida entregue vira nota */
@@ -468,6 +496,7 @@ class Group {
   }
   update(dt){
     this.stateT += dt;
+    if (this.vontadeT > 0) this.vontadeT = Math.max(0, this.vontadeT - dt);   // v10.5.3
     if (this.boing > 0) this.boing -= dt;
     switch (this.state){
       case 'queue':
@@ -506,6 +535,7 @@ class Group {
         // acabou de comer: quem pediu suco espera por ele (perdendo a paciência) antes de pedir a conta (v8.5.2)
         if (!this.doces) this.doces = this.sorteiaDoces();   // v9.2
         if (!this.cafes) this.cafes = this.sorteiaCafes();   // v9.3
+        if (!this.vontadeFeita){ this.vontadeFeita = true; this.vontade = this.sorteiaVontade(); if (this.vontade.doce || this.vontade.cafe) this.vontadeT = VONTADE.balao; }   // v10.5.3
         if (this.juicePending > 0 || (this.cafePede && !this.coffee) || this.docesFalta > 0 || this.cafesFalta > 0 || this.drinksFalta > 0){
           if (!this.esperaSuco){ this.esperaSuco = true; this.patLeft = this.patPer(); }
           this.tick(dt); break;

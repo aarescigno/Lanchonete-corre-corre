@@ -40,6 +40,7 @@ Etapas concluídas (1a a 3a), movidas de `docs/PLANO.md` em 30/10/2026 e 31/10/2
 
 | # | Etapa | Versão | Situação |
 |---|---|---|---|
+| S | Salários de verdade: equipe e música no custo real (~80%), cardápio e metas recalibrados | v10.5 | feita em 12/11 (`docs/spec-v10.5.md`; `smoke67`; a música não paga o preço no `balance.js`, ver Desvios) |
 | D-2 | Modo dev completo: História (cumprir, assistir, revelar) e Hoje (forçar imprevistos) | v10.2.2 | feita em 11/11 (`docs/spec-v10.2.2.md`; `smoke64`) |
 | 4a-1 | O Terraço Suíça e a refeição completa (caps. 8 e 9) | v10 | feita em 11/11 (`docs/spec-v10.md`; `smoke60`; calibrada: grupos 0,50, metaF 9, expertF 6, aluguel R$ 1.200, cardápio ×2,4) |
 | R2 | Menos sustos: "Já vou!", banco sem armadilha e pausa que confirma (análise de frustração) | v9.6.13 | feita em 10/11 (`docs/spec-v9.6.13.md`; `smoke59`) |
@@ -1926,3 +1927,10 @@ Modelo: Sonnet, esforço médio (plano detalhado; o fluxo das conversas já exis
 **Objetivo:** cada pessoa da equipe e cada música custa o que o cargo custaria de verdade (~80% do custo real, como o aluguel); o Tonhão passa a ter salário e a Dani ajuda de custo; o salário da Dani (confeiteira) e do Joca (barista) sobe a cada curso da carreira deles; o cardápio sobe para perto do preço real (PF da Garagem a R$ 30) e as metas são recalibradas pelo bot. Entrevista de 12/11; pesquisa em `docs/pesquisa-salarios.md`. Spec: `docs/spec-v10.5.md` (aprovada).
 
 **Modelo:** Sonnet, esforço alto (código simples, mas a calibração por tentativa mexe nos quatro pontos e em muitos smokes)
+
+## Etapa V — A vontade da freguesia (v10.5.3)
+> Pedido do usuário em 12/11: garantia para o Joca e a Cami, vinda da necessidade dos clientes. Planejada no mesmo dia (Opus); vem antes da 4c.
+
+Objetivo: antes do curso de Confeitaria caseira (área industrial) e do Barista: espresso (Avenida), a freguesia pede doce e espresso, a nota cai um pouco e a vontade cresce; sem o curso, a equipe conversa sobre isso no fim do dia. Spec: `docs/spec-v10.5.3.md`.
+
+**Modelo:** Sonnet, esforço médio (código de jogo com plano detalhado em várias partes, sem decisão de design)

@@ -1207,6 +1207,39 @@ const HIST_PLANTA = { dia:1,
   falas:[ { q:'tonhao', nota:'com um vaso na mão', s:'A dona Cida, aqui do lado, mandou de presente pela inauguração.' },
           { q:'bia', s:'Uma espada-de-são-jorge! Vai ficar na entrada.' },
           { q:'tonhao', s:'Dizem que espanta mau-olhado. E freguês mal-humorado, quem sabe.' } ] };
+/* v10.5.3, a vontade da freguesia (só na carreira, nunca o entregador): antes dos cursos de Confeitaria caseira (doce, a partir do `dia` na área industrial, `nivel` 2)
+   e de Barista: espresso (café, a partir do `dia` na Avenida, `nivel` 3; nos pontos acima, desde o 1º dia), o grupo sorteia a vontade com a chance de pedir com o curso vezes
+   min(max, 1 + cresce × (dia de vontade − 1)); a mesa mostra o ícone apagado por `balao` s, a nota do Cardápio perde `menos` por vontade e, com chance `coment`, o comentário pede o que faltou.
+   No Modo História, no fim do dia `conversa` de vontade (e a cada `repete` dias, a curta) a equipe conversa sobre isso. save.vontDoce, save.vontCafe: 0 | 'pend' | dia em que a conversa foi vista */
+const VONTADE = { doce:{ nivel:2, dia:4 }, cafe:{ nivel:3, dia:3 }, cresce:0.25, max:2, menos:0.3, coment:0.4, balao:4, conversa:3, repete:3 };
+const HIST_VONTADE_DOCE = {
+  falas:[ { q:'bia', s:'Tio, hoje de novo: um monte de mesa pediu sobremesa.' },
+          { q:'dani', s:'As famílias saem daqui e vão comer doce na padaria da esquina.' },
+          { q:'tonhao', s:'Freguês que vai comer doce em outro lugar um dia não volta.' },
+          { q:'dani', s:'Com o curso de confeitaria, eu resolvo isso!' },
+          { q:'bia', s:'Tá no Cardápio da lojinha.' } ],
+  curta:[ { q:'dani', s:'Pediram sobremesa de novo hoje, Bia...' } ] };
+const HIST_VONTADE_CAFE = {
+  falas:[ { q:'bia', s:'Os executivos pedem um espresso depois do almoço, e a gente só tem o cafezinho.' },
+          { q:'joca', s:'No café da esquina tem fila pra cappuccino!' },
+          { q:'tonhao', s:'Avenida é assim: o povo quer café de máquina.' },
+          { q:'joca', s:'Com o curso de barista, eu tiro o melhor espresso da Avenida.' },
+          { q:'bia', s:'Tá no Cardápio da lojinha.' } ],
+  curta:[ { q:'joca', s:'Mais gente pedindo espresso hoje...' } ] };
+/* o dia de vontade no ponto (1 = o 1º) de `qual` ('doce' ou 'cafe') no dia `n` da carreira, ou 0 se ainda não há (ponto baixo, dia cedo ou curso feito) */
+function vontadeDia(sv, ponto, qual, n){
+  const V = VONTADE[qual], up = sv.up || {};
+  if (qual === 'doce' ? up.confCaseira : up.espresso) return 0;
+  if (!ponto || ponto.nivel < V.nivel) return 0;
+  const dnp = diaNoPonto(sv, n);
+  if (ponto.nivel === V.nivel) return dnp >= V.dia ? dnp - V.dia + 1 : 0;
+  return Math.max(0, dnp);
+}
+/* as falas da conversa da vontade: quem não está contratado (a Dani no doce, o Joca no espresso) tem a fala dada ao Tonhão */
+function vontadeFalas(qual, sv, curta){
+  const H = qual === 'doce' ? HIST_VONTADE_DOCE : HIST_VONTADE_CAFE, quem = qual === 'doce' ? 'dani' : 'joca', eq = (sv && sv.equipe) || {};
+  return (curta ? H.curta : H.falas).map(f => f.q === quem && !(eq[quem] > 0) ? Object.assign({}, f, { q:'tonhao' }) : f);
+}
 /* v9.6.2: a conversa dos entregadores, só no Modo História. v9.6.4: fica pendente no fim do dia anterior ao 1º com motoboy (dia 4) e toca antes de todas as outras conversas de cartão. save.convEnt: 'pend' | 1 (vista) */
 const HIST_ENTREGA = { dia:4,
   falas:[ { q:'bia', s:'Tio, que história é essa de motoqueiro no balcão pedindo marmita?' },
@@ -1336,7 +1369,7 @@ const BIA_IDS = ['tenis', 'corrida', 'bandeja', 'sudoku'];
 function upgradeCartao(id){ return BIA_IDS.indexOf(id) >= 0 ? 'bia' : 'melhorias'; }
 const HIST_NOMES = { bia:'Bia', tonhao:'Tonhão', dani:'Dani', joca:'Joca', cami:'Cami', anselmo:'Anselmo', lia:'Lia' };
 const CAIXA_MAX = 14;                                 // livro-caixa (v7.2): quantos dias da carreira ficam guardados
-const VERSAO = 'v10.5.2';                                // vai no resumo do Caixa
+const VERSAO = 'v10.5.3';                                // vai no resumo do Caixa
 const DIVULGA_DIA = 4;                                // antes disso, o movimento é o da inauguração (sem custo); v9.0.2: dia 4, e o padrão é o boca a boca
 function divulgaAberta(n, sv){ return devLivre() || n >= DIVULGA_DIA && !(sv && sv.convDiv === 'pend'); }   // no modo dev, desde o dia 1; v9.0.3: no Modo História, só depois da conversa
 /* v9.6.4: a Efood (os entregadores) só abre depois da conversa dos entregadores, no Modo História; antes dela, nenhum tipo com `retira` vem na agenda */
@@ -1491,8 +1524,8 @@ const MANUAL = [
 
   { id:'e-bia',     aba:'equipe', quem:'bia',     sempre:true, nome:'Bia', linha:'A garçonete. Anota, leva, entrega, cobra e recolhe.' },
   { id:'e-tonhao',  aba:'equipe', quem:'tonhao',  sempre:true, nome:'Tonhão', linha:'O chef. Aprende pratos nos cursos e, com aumento, cozinha mais rápido e ajuda na pia.' },
-  { id:'e-dani',    aba:'equipe', quem:'dani',    nome:'Dani', linha:'Cuida da louça, do lixo e das mesas sujas; depois, dos doces.' },
-  { id:'e-joca',    aba:'equipe', quem:'joca',    nome:'Joca', linha:'O básico da casa; depois, o café espresso e os cafés especiais.' },
+  { id:'e-dani',    aba:'equipe', quem:'dani',    nome:'Dani', linha:'Cuida da louça, do lixo e das mesas sujas; depois, dos doces. A freguesia da área industrial sente falta de sobremesa.' },
+  { id:'e-joca',    aba:'equipe', quem:'joca',    nome:'Joca', linha:'O básico da casa; depois, o café espresso e os cafés especiais. Na Avenida, a freguesia quer café de máquina.' },
   { id:'e-cami',    aba:'equipe', quem:'cami',    nome:'Cami', linha:'Garçonete de rodízio: com cursos, cuida das mesas dela ou ajuda em todas.' },
   { id:'e-anselmo', aba:'equipe', quem:'anselmo', nome:'Anselmo', linha:'Coqueteleiro: só o balcão de drinks; no Terraço, coquetéis de autor.' },
   { id:'e-lia',     aba:'equipe', quem:'lia',     nome:'Lia', linha:'Ajudante de cozinha: com ela, tudo sai mais rápido.' },   // v10.2

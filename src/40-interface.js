@@ -200,7 +200,8 @@ const DEV_HOJE = [
   ['fiscal', 'Fiscal (Avenida em diante)', [['', 'Sorteio'], ['vem', 'Vem'], ['nao', 'Não vem']]],
   ['gripe', 'Tonhão gripado', [['', 'Sorteio'], ['gripado', 'Gripado'], ['bem', 'Bem']]],
   ['vip', 'VIP', [['', 'Sorteio'], ['vem', 'Vem um VIP']]],
-  ['apito', 'Apito da fábrica (área industrial)', [['', 'Sorteio'], ['apita', 'Apita'], ['nao', 'Não apita']]]
+  ['apito', 'Apito da fábrica (área industrial)', [['', 'Sorteio'], ['apita', 'Apita'], ['nao', 'Não apita']]],
+  ['vontade', 'Vontade de doce e de espresso (sem o curso)', [['', 'Normal'], ['todos', 'Todos pedem']]]   // v10.5.3
 ];
 const DEV_MUSICA = ['sem música', 'trio de cordas', 'pianista'];
 function devAbaHoje(body, secao, botao){
