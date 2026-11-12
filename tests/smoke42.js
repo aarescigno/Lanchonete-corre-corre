@@ -1,6 +1,6 @@
 // v9.1, etapa 3b-1: Restaurante na Avenida Brasil. O cartão Mudança generalizado (cap. 6 em diante), o que vai e o que sai na mudança,
 // o aluguel e os preços, a clientela (almoço de negócios, sem turma/motorista/encomenda, mais VIPs), os sofás, as águas saborizadas,
-// as flores, o couvert, o curso Cozinha de restaurante (a parmegiana), as 6 vagas de prato e as 6 de espera, e os capítulos 6 e 7.
+// as flores, o couvert, o curso Cozinha de restaurante (a parmegiana), as 6 vagas de prato e as 6 de espera, e os capítulos 6 e 8 (o 7 é da v10.5.2; smoke69).
 const load=require('./harness.js'), fs=require('fs');
 let fails=0,total=0; const ok=(c,m)=>{ total++; if(!c){fails++;console.log('FAIL:',m);} else console.log('ok  :',m); };
 const txt=e=>(e.textContent||'')+(e.children||[]).map(txt).join(' ');
@@ -13,7 +13,7 @@ const cartoes=H=>grid(H).children.map(c=>c.getAttribute('data-sec'));
 const notaDe=(g,v,n)=>{ g.save.aval=Array(n||10).fill([v,v,v,v,v]); };
 // um jogo de História no cap. dado, num ponto ('garagem', 'industrial' ou 'avenida')
 const jogo=(cap,ponto,sv)=>{ const H=nova(), {g,L}=H;
-  g.save=L.normSave(Object.assign({ histV:1, cap, dia:10, maxDay:10, bank:5000, up:{ tenis:true }, equipe:{ tonhao:1, dani:1 }, salao:{ ponto:ponto||'garagem' } }, sv||{}));
+  g.save=L.normSave(Object.assign({ histV:1, capV:2, cap, dia:10, maxDay:10, bank:5000, up:{ tenis:true }, equipe:{ tonhao:1, dani:1 }, salao:{ ponto:ponto||'garagem' } }, sv||{}));
   g.up=g.save.up; g.tablesKey=''; g.buildTables(); g.goShop(10); return H; };
 const joga=(H,fat,custo)=>{ const {g,els}=H; if(g.state==='shop') els['btn-shop-go'].fire('click'); if(g.state==='intro') els['btn-start'].fire('click'); g.schedule=[]; g.nextIdx=0; g.money=fat||0; g.custo=custo||0; g.finishDay(); };
 const html=fs.readFileSync(__dirname+'/../lanchonete.html','utf8');
@@ -55,7 +55,7 @@ const html=fs.readFileSync(__dirname+'/../lanchonete.html','utf8');
   ok(sv.cap===6 && sv.conversa==='antes' && sv.capAzul===0,'o cap. 6 começa, com a conversa de antes pendente');
   g.resetDay(10); ok(L.PLATE_SLOTS.length===6 && g.kitchen.plates.length===6 && g.vagas===4 && L.PLATE_SLOTS.every((s,i)=>i===0 || s.x-L.PLATE_SLOTS[i-1].x>=28) && L.PLATE_SLOTS[5].x+19<=960 && L.PLATE_SLOTS[0].x-19>=766,'balcão de pratos com 6 vagas dentro da janela e prateleira de 4');
   ok(g.ponto.credito===4000,'o limite do banco sobe para R$ 4.000');
-  ok(!g.mudancaVisivel && g.proximoPonto && g.proximoPonto.id==='terraco','não dá para voltar, e o cartão Mudança do Terraço só aparece com o cap. 8');
+  ok(!g.mudancaVisivel && g.proximoPonto && g.proximoPonto.id==='terraco','não dá para voltar, e o cartão Mudança do Terraço só aparece com o cap. 9');
   // as vagas da espera: 6 posições, todas definidas e distintas (até a v9 a 5ª vaga da área industrial não tinha posição)
   ok(L.QUEUE.ys.length===6 && L.QUEUE.ys.every(y=>isFinite(y)) && new Set(L.QUEUE.ys).size===6 && L.QUEUE.ys[0]>L.QUEUE.ys[5] && L.QUEUE.ys[5]>=230,'6 lugares de espera com posição (de baixo para cima)');
   for(let i=0;i<7;i++) g.arrive({ t:0, type:'estudante', color:0, vip:false });
@@ -164,26 +164,26 @@ const html=fs.readFileSync(__dirname+'/../lanchonete.html','utf8');
   g.startDay(10); ok(/Capítulo 6, Do outro lado da rua: Fechar 3 dias no azul pagando o aluguel \(2 de 3\)/.test(H.els['intro-manut'].textContent),'a introdução traz "Fechar 3 dias no azul pagando o aluguel (2 de 3)"');
   H.els['btn-start'].fire('click'); g.schedule=[]; g.nextIdx=0; g.money=2500; g.custo=0; g.finishDay();
   ok(g.save.capAzul===3 && g.result.cap.n===6 && g.result.cap.ok && g.save.conversa==='depois','3 dias no azul: cap. 6 cumprido');
-  ok(g.avancaCap()===false && g.save.cap===7 && g.save.conversa==='antes','depois do cap. 6: o cap. 7 começa com a conversa de antes');
-  ok(L.HISTORIA.length>=7 && L.HISTORIA[5].titulo==='Do outro lado da rua' && L.HISTORIA[5].antes.length===4 && L.HISTORIA[5].depois.length===3 && L.HISTORIA[6].titulo==='Nota de restaurante' && L.HISTORIA[6].antes.length===3 && L.HISTORIA[6].depois.length===5,'as falas dos caps. 6 e 7');
-  ok(L.HISTORIA[5].depois[2].nota==='rindo' && L.HISTORIA[6].depois[1].nota==='tirando o avental' && L.HISTORIA[5].antes[1].nota==='olhando pela janela','as rubricas em itálico'); }
+  ok(g.avancaCap()===false && g.save.cap===7 && g.save.conversa==='antes','depois do cap. 6: o cap. 7 (novo, v10.5.2) começa com a conversa de antes');
+  ok(L.HISTORIA.length>=8 && L.HISTORIA[5].titulo==='Do outro lado da rua' && L.HISTORIA[5].antes.length===4 && L.HISTORIA[5].depois.length===3 && L.HISTORIA[7].titulo==='Nota de restaurante' && L.HISTORIA[7].antes.length===3 && L.HISTORIA[7].depois.length===5,'as falas dos caps. 6 e 8 (o 7 é novo, v10.5.2)');
+  ok(L.HISTORIA[5].depois[2].nota==='rindo' && L.HISTORIA[7].depois[1].nota==='tirando o avental' && L.HISTORIA[5].antes[1].nota==='olhando pela janela','as rubricas em itálico'); }
 
-// ---------- 11. cap. 7 ----------
-{ const H=jogo(7,'avenida',{ bank:1000 }), {g,L}=H; g.save.conversa=null;
+// ---------- 11. cap. 8 (era o 7 antes da v10.5.2) ----------
+{ const H=jogo(8,'avenida',{ bank:1000 }), {g,L}=H; g.save.conversa=null;
   const dia=(nota,bank)=>{ H.g.startDay(H.g.save.dia); H.els['btn-start'].fire('click'); notaDe(H.g,nota,30); H.g.save.bank=bank; H.g.schedule=[]; H.g.nextIdx=0; H.g.money=0; H.g.custo=0; H.g.finishDay(); };
-  g.startDay(10); ok(/Capítulo 7, Nota de restaurante: Nota do Gurugol 3,9/.test(H.els['intro-manut'].textContent) && /R\$ 5000 no caixa/.test(H.els['intro-manut'].textContent),'a introdução traz os 2 itens do cap. 7');
+  g.startDay(10); ok(/Capítulo 8, Nota de restaurante: Nota do Gurugol 3,9/.test(H.els['intro-manut'].textContent) && /R\$ 5000 no caixa/.test(H.els['intro-manut'].textContent),'a introdução traz os 2 itens do cap. 8');
   dia(3.8,6000); ok(!g.result.cap.ok,'nota 3,8 com R$ 6.000: não cumpre');
   g.save.dia=11; dia(4.2,2000); ok(!g.result.cap.ok,'nota 4,2 com R$ 2.000: não cumpre');
-  g.save.dia=12; dia(3.9,6000); ok(g.result.cap.ok && g.save.conversa==='depois','nota 3,9 e R$ 5.000: cap. 7 cumprido');
-  ok(g.avancaCap()===true && g.save.cap===8 && g.save.conversa===null,'depois dele, save.cap = 8 e os dias seguem sem objetivo');
+  g.save.dia=12; dia(3.9,6000); ok(g.result.cap.ok && g.save.conversa==='depois','nota 3,9 e R$ 5.000: cap. 8 cumprido');
+  ok(g.avancaCap()===true && g.save.cap===9 && g.save.conversa===null,'depois dele, save.cap = 9 e os dias seguem sem objetivo');
   g.save.dia=13; g.startDay(13); ok(!/Capítulo/.test(H.els['intro-manut'].textContent),'sem objetivo na introdução');
   g.setState('menu'); ok(/Avenida Brasil completa/.test(H.els['menu-dia'].textContent),'o menu diz "Avenida Brasil completa"'); }
 
 // ---------- 12. os cartões de fim de capítulos ----------
-{ const H=jogo(7,'avenida',{ capAzul:0, caixa:[] }), {g,L,els}=H; notaDe(g,4.1,30); g.save.bank=6000; g.save.conversa=null;
+{ const H=jogo(8,'avenida',{ capAzul:0, caixa:[] }), {g,L,els}=H; notaDe(g,4.1,30); g.save.bank=6000; g.save.conversa=null;
   g.startDay(10); els['btn-start'].fire('click'); g.schedule=[]; g.nextIdx=0; g.money=0; g.custo=0; g.finishDay();
-  ok(g.save.conversa==='depois','(cap. 7 cumprido)'); els['btn-next'].fire('click'); passa(H);
-  ok(g.save.cap===8 && mostra(els,'ov-continua') && els['cont-h'].textContent==='Fim dos capítulos da Avenida Brasil' && els['cont-p'].textContent==='Quando quiser, a mudança para o Terraço Suíça está na lojinha.','depois do cap. 7: "Fim dos capítulos da Avenida Brasil", a mudança para o Terraço Suíça está na lojinha');
+  ok(g.save.conversa==='depois','(cap. 8 cumprido)'); els['btn-next'].fire('click'); passa(H);
+  ok(g.save.cap===9 && mostra(els,'ov-continua') && els['cont-h'].textContent==='Fim dos capítulos da Avenida Brasil' && els['cont-p'].textContent==='Quando quiser, a mudança para o Terraço Suíça está na lojinha.','depois do cap. 8: "Fim dos capítulos da Avenida Brasil", a mudança para o Terraço Suíça está na lojinha');
   const H2=jogo(5,'industrial',{ bank:3000 }), g2=H2.g; notaDe(g2,3.5,30); g2.save.conversa=null; g2.save.capFeito=1; g2.startDay(10); H2.els['btn-start'].fire('click'); notaDe(g2,3.5,30); g2.schedule=[]; g2.nextIdx=0; g2.money=0; g2.custo=0; g2.finishDay();
   ok(g2.save.conversa==='depois','(cap. 5 cumprido)'); H2.els['btn-next'].fire('click'); passa(H2);
   ok(g2.save.cap===6 && g2.save.conversa===null && mostra(H2.els,'ov-continua') && H2.els['cont-h'].textContent==='Fim dos capítulos da área industrial' && /mudança para a Avenida Brasil está na lojinha/.test(H2.els['cont-p'].textContent),'depois do cap. 5: o cartão manda para a mudança para a Avenida Brasil (na lojinha)');

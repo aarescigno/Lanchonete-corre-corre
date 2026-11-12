@@ -15,10 +15,9 @@ Origem: retorno do Renan Martorelli (beta-tester) e conversa com o Arthur (15/10
 ## Situação
 | # | Etapa | Versão | Situação |
 |---|---|---|---|
-| 4a-5 | Música, flores e o rebalanceamento do Terraço | v10.4 | feita em 11/11 (`docs/spec-v10.4.md`; `smoke66`; cardápio ×1,3, metas ×12 e 3ª estrela ×8,5: o comando do CA8 não contrata a equipe toda, ver Desvios) |
 | S | Salários de verdade: equipe e música no custo real (~80%), cardápio e metas recalibrados | v10.5 | feita em 12/11 (`docs/spec-v10.5.md`; `smoke67`; a música não paga o preço no `balance.js`, ver Desvios) |
 | R1 | Metas no alvo e a música do Terraço (revisão do balanceamento de 12/11) | v10.5.1 | feita em 12/11 (`docs/spec-v10.5.1.md`; `smoke68`; trio 0,7 e pianista 0,5; a Avenida ficou em 97% das metas e o Terraço da campanha +19%, ver Desvios) |
-| R2 | O ritmo da história: conversas no cap. 3 e um capítulo novo na Avenida e outro no Terraço | v10.5.2 | a fazer (`docs/spec-v10.5.2.md`, aprovada em 12/11; Modelo: Sonnet, esforço alto) |
+| R2 | O ritmo da história: conversas no cap. 3 e um capítulo novo na Avenida e outro no Terraço | v10.5.2 | feita em 12/11 (`docs/spec-v10.5.2.md`; `smoke69`; 11 capítulos; o cap. 7 leva 3 a 4 dias e o cap. 10, 3; a história acaba no dia 49) |
 | 4c | Eventos de bairro: festa junina e jogo do Brasil (adiantada em 12/11, para dar novidade aos dias parados da Garagem) | v10.6 | a fazer |
 | 4b | Nível de luxo | v10.7 | a fazer |
 | 5 | ~~Modo História, parte 1~~: juntou-se à 2f e aos capítulos da 3a, 3b e 4a (28/10) | — | — |
