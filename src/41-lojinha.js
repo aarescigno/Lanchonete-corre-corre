@@ -1,4 +1,12 @@
 /* ---------- Lojinha ---------- */
+/* v10.8: o ícone do molho da Rosa: um vaso branco com rosas e duas pétalas caindo (c já está em translate(32,32) e escala 1,5) */
+function drawVasoRosa(c){
+  rr(c,-8,2,16,13,4); fs(c,'#F4F0E6',2);
+  c.strokeStyle = '#3E7B4F'; c.lineWidth = 2; c.lineCap = 'round';
+  [[-8,-12],[0,-16],[8,-11]].forEach(f => { c.beginPath(); c.moveTo(0,2); c.lineTo(f[0],f[1]); c.stroke(); });
+  [[-8,-12,AB_COR.petala],[0,-16,'#F06A98'],[8,-11,'#D2356A']].forEach(f => { circ(c,f[0],f[1],5); fs(c,f[2],1.6); circ(c,f[0],f[1],1.6); c.fillStyle = '#FFF3C9'; c.fill(); });
+  drawPetala(c,-14,6,0.9,-0.8); drawPetala(c,14,9,0.8,0.6);
+}
 function upgradeIcon(id){
   return tipCanvas(c => {
     c.translate(32,32); c.scale(1.5,1.5);
@@ -10,6 +18,8 @@ function upgradeIcon(id){
       c.beginPath(); c.moveTo(-17,-3); c.lineTo(17,-3); c.lineTo(14,-14); c.lineTo(-14,-14); c.closePath(); fs(c,'#E2574C',2);
       c.fillStyle = '#fff'; [-9,-1,7].forEach(x => { c.beginPath(); c.moveTo(x,-14); c.lineTo(x+4,-14); c.lineTo(x+4.6,-3); c.lineTo(x+0.6,-3); c.closePath(); c.fill(); });
       c.save(); c.translate(0,0); c.scale(0.55,0.55); drawJunino(c,'milho'); c.restore();
+    } else if (id === 'rosa'){   // v10.8: o vaso de rosas com três pétalas soltas
+      drawVasoRosa(c);
     } else if (id === 'corrida'){
       // tênis de corrida: perfil baixo e esticado, solado alto em gomos, cadarço e linhas de velocidade
       c.strokeStyle = PAL.faixa; c.lineWidth = 2; c.lineCap = 'round';
@@ -476,7 +486,7 @@ function buildJoca(grid){
 /* cursos da Dani (v8.9): três cartões, +2 de experiência cada; um por lojinha, à parte do curso do Tonhão */
 /* o cartão da Cami (v9.3): atendimento, chega no nível 1 e sobe só por curso (o salário sobe junto); fica com o básico da casa */
 function buildCami(grid){
-  const eq = game.save.equipe, sv = game.save, bank = sv.bank, C = STAFF.cami.levels, cMax = (game.ponto.nivel >= 4 || devLivre()) ? C.length - 1 : C.length - 2;   // v10.3: o nível 4 é do Terraço
+  const eq = game.save.equipe, sv = game.save, bank = sv.bank, C = STAFF.cami.levels, cMax = (game.ponto.nivel >= 4 || devLivre()) ? C.length - 1 : 3;   // v10.3: o nível 4 é do Terraço (v10.8: e o 5, a gerência)
   const canPay = extra => payroll(eq, cursosPay(game.save)) + extra <= bank;
   const pc = v => Math.round(v*100) + '%', sec = v => String(Math.round(v*10)/10).replace('.', ',') + ' s';
   const lv = eq.cami, sp = C[lv] || C[1];
@@ -497,6 +507,16 @@ function buildCami(grid){
     c.appendChild(modos);
     c.appendChild(el('span', 'cursos-lista', emTudo ? 'Ela ajuda em qualquer mesa que ficou esperando.' : nMesas ? 'Mesas da Cami: ' + nMesas + ' de ' + CAMI_MESAS_MAX : 'Marque as mesas dela no Salão.'));
   }
+  if (sp.gerente){   // v10.8: a gerente de salão leva à mesa quem espera na porta (dá para desligar)
+    const fila = el('div', 'tasks'), on = eq.camiFila !== false;
+    [['Sim', true], ['Não', false]].forEach(m => {
+      const b = el('button', null, m[0]); b.type = 'button'; b.setAttribute('aria-pressed', m[1] === on ? 'true' : 'false');
+      b.addEventListener('click', () => { Sfx.tap(); game.setCamiFila(m[1]); buildShop(); });
+      fila.appendChild(b);
+    });
+    c.appendChild(el('span', 'full', 'Organiza a fila:'));
+    c.appendChild(fila);
+  }
   if (lv && !emMesas && !emTudo){
     const sel = eq.camiTasks.filter(id => daniTaskOk(id, game.up)).length, tasks = el('div', 'tasks');
     avail.forEach(t => {
@@ -514,9 +534,9 @@ function buildCami(grid){
   if (!lv) duo.appendChild(shopBtn('Contratar', 'btn', canPay(C[1].pay), () => game.setStaff('cami', 1)));
   c.appendChild(duo); grid.appendChild(c);
   if (game.cursoMsg) grid.appendChild(el('p', 'cursomsg', game.cursoMsg));
-  CAMI_CURSOS.filter(q => cursoDaniVis(q, game.ponto)).forEach(q => {
+  CAMI_CURSOS.filter(q => cursoDaniVis(q, game.ponto) && (!q.cap || devLivre() || sv.cap >= q.cap)).forEach(q => {
     const feito = !!sv.camiCursos[q.id], card = el('div', 'item' + (feito ? ' own' : ''));
-    
+    if (q.id === 'gerente') game.manualVer('l-gerente');   // v10.8: a ficha abre com o cartão
     card.appendChild(upgradeIcon('cami'));
     card.appendChild(el('b', null, 'Curso de ' + q.nome));
     if (!feito && game.camiCursoTrava) card.appendChild(el('span', 'cursos-lista', 'Em curso'));
@@ -934,6 +954,15 @@ function buildCardapio(grid){
   grid.appendChild(c);
   buildCursos(grid);
   buildCursosAjudantes(grid);
+  if (game.rosaVisivel) buildRosa(grid);   // v10.8: o molho da Rosa (Terraço, a partir do cap. 12)
+}
+/* v10.8: o molho da Rosa: só o nome, o preço e o "?"; compra única */
+function buildRosa(grid){
+  const own = !!game.save.rosa, c = staffCard(upgradeIcon('rosa'), 'O molho da Rosa');
+  c.setAttribute('data-ficha', 'l-rosa');
+  if (own) c.classList.add('own');
+  c.appendChild(own ? shopBtn('Aprendido', 'btn', false, () => false) : shopBtn(devLivre() ? 'Aprender (grátis)' : 'Aprender ' + fmt(ROSA.preco), 'btn', true, () => game.buyRosa(), devLivre() ? 0 : ROSA.preco));
+  grid.appendChild(c);
 }
 /* v10.6: a barraca junina (só no dia da festa, fora do Terraço): só o nome, o preço e o "?" */
 function buildBarraca(grid){

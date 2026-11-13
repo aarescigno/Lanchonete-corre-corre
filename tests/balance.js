@@ -75,7 +75,9 @@ function jogaDia(n,man){
   if(TE&&AUTOR){ g.save.anselmoCursos.classica=1; g.save.anselmoCursos.autor=1; g.up.coqClassica=true; g.up.coqAutor=true; g.up.maquina=true; }   // v10.3
   if(AV&&CAMIN>=2) g.save.camiCursos.agil=1;
   if(AV&&CAMIN>=3) g.save.camiCursos.mesa=1;
-  if(TE&&CAMIN>=4) g.save.camiCursos.salao=1;   // v10.3   // v9.6: CAMI=3 liga o modo "Minhas mesas"
+  if(TE&&CAMIN>=4) g.save.camiCursos.salao=1;   // v10.3
+  if(TE&&CAMIN>=5) g.save.camiCursos.gerente=1;   // v10.8: CAMI=5 é a gerente de salão (organiza a fila)
+  if(TE&&process.env.ROSA==='1') g.save.rosa=1;   // v10.8: ROSA=1 aprende o molho da Rosa (a Bia pega pétalas no vaso e põe nos pratos da casa; o bot.js faz a viagem)   // v9.6: CAMI=3 liga o modo "Minhas mesas"
   if(TE&&ALTA){ g.save.cursos.entradas=2; g.save.cursos.alta=2; g.save.daniCursos.confCaseira=1; g.save.daniCursos.confGourmet=1; g.save.daniCursos.confAlta=1; g.up.confCaseira=true; g.up.confGourmet=true; g.up.confAlta=true; }   // v10.2
   if(AV&&CUR!=='0') g.save.cursos.restaurante=1;   // v9.1: o curso de restaurante (a parmegiana)
   if(L.normSave){ g.save.equipe=L.normSave({equipe:eqFor(n),salao:{ponto:PONTO},up:IND?{tvs:true}:{}}).equipe; g.save.bank=1e6; }

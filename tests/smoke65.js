@@ -18,7 +18,7 @@ const roda=(H,seg,fn)=>{ const {g}=H; for(let i=0;i<seg*20;i++){ g.update(0.05);
 // ---------- 1. o curso de salão e o nível 4 da Cami ----------
 { const {L}=nova(), S=L.STAFF.cami.levels[4], c=L.CAMI_CURSOS.find(x=>x.id==='salao');
   ok(c && c.nome==='Atendimento de salão' && c.preco===900 && c.nivel===4 && c.dep==='mesa','CAMI_CURSOS: Atendimento de salão, R$ 900, nível 4, depois do de mesa');
-  ok(S && S.speed===1.35 && S.tasks===4 && S.pay===160 && S.mesas===true && S.tudo===true && L.STAFF.cami.levels.length===5,'nível 4 da Cami: rapidez 1,35, 4 tarefas, R$ 160 (v10.5), mesas e "Ajuda em tudo"');
+  ok(S && S.speed===1.35 && S.tasks===4 && S.pay===160 && S.mesas===true && S.tudo===true && L.STAFF.cami.levels.length===6,'nível 4 da Cami: rapidez 1,35, 4 tarefas, R$ 160 (v10.5), mesas e "Ajuda em tudo"');
   ok(L.CAMI_TUDO.espera===3,'CAMI_TUDO.espera = 3 s');
   ok(L.camiNivelCursos({ camiCursos:{ agil:1, mesa:1, salao:1 } })===4 && L.camiNivelCursos({ camiCursos:{ salao:1 } })===1,'o nível pelos cursos: 4 com os três, e o de salão sozinho não conta');
   let H=jogo(9,'terraco',{ pontoDia:5, equipe:{ tonhao:2, dani:3, joca:3, cami:3 }, camiCursos:{ agil:1, mesa:1 }, libera:{ cami:2 } }), g=H.g;

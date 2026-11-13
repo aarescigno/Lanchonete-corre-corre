@@ -311,22 +311,22 @@ const pegaPrato=(H,grp)=>{ const g=H.g, p=g.kitchen.plates.find(q=>q&&q.group===
   const C=L9=>L9, H=jogo(11,'terraco',{ bank:3000, v10:1, capAzul:0, caixa:[], conversa:'antes' }), {g,L,els}=H, c=L.HISTORIA[10];
   ok(c.cap===11 && c.titulo==='Do começo ao fim' && c.ponto==='terraco' && c.obj.completas===6 && c.obj.nota===4.5 && c.antes.length===3 && c.depois.length===5,'o cap. 11, "Do começo ao fim": 6 refeições completas e nota 4,5; 3 falas antes e 5 depois');
   ok(c.antes[0].s==='Refeição completa é como música: não pode faltar nota.' && c.antes[2].s==='Se faltar a sobremesa, eu choro.' && c.depois[1].nota==='guardando o pote de cominho' && c.depois[3].s==='Ele mesmo. Dizem que o crítico chega sem avisar.' && c.depois[4].s==='Então é deixar tudo brilhando!','as falas do cap. 11');
-  ok(c.fim.h==='Fim dos capítulos do Terraço Suíça' && c.fim.p==='Continua na próxima versão: o crítico do Michelzão.','o `fim` final');
+  ok(c.fim===undefined && L.HISTORIA[11].fim.h==='Fim do capítulo 12','o cap. 11 não tem mais `fim` (v10.8: o cartão de fim é o do cap. 12)');
   passa(H); g.save.conversa=null; g.save.aval=[]; g.startDay(10); ok(/Capítulo 11, Do começo ao fim: 6 refeições completas e nota 4,5 no mesmo dia \(no último dia: 0 completas, nota —\)/.test(els['intro-manut'].textContent) || /Capítulo 11, Do começo ao fim: 6 refeições completas e nota 4,5 no mesmo dia/.test(els['intro-manut'].textContent),'a introdução traz o objetivo do cap. 11');
   const dia=(comp,nota)=>{ g.save.aval=Array(10).fill([nota,nota,nota,nota,nota]); g.save.dia=10; g.startDay(10); els['btn-start'].fire('click'); g.schedule=[]; g.nextIdx=0; g.money=3000; g.custo=0; g.stats.completas=comp; g.finishDay(); };
   dia(5,4.7); ok(!g.save.capFeito && g.save.capComp===5 && !g.result.cap.ok && /5 completas, nota 4,7/.test(g.result.cap.itens[0].txt),'5 completas com nota 4,7: ainda não (o item mostra "hoje: 5 completas, nota 4,7")');
   dia(8,4.3); ok(!g.save.capFeito && g.save.capComp===8,'8 completas mas nota 4,3: ainda não');
   g.save.conversa=null; dia(6,4.5); ok(g.save.capFeito===1 && g.result.cap.ok && g.save.conversa==='depois' && /6 refeições completas e nota 4,5 no mesmo dia \(hoje: 6 completas, nota 4,5\)/.test(g.result.cap.itens[0].txt),'6 completas e nota 4,5 no mesmo dia: cumprido (a conversa de depois fica pendente)');
   els['btn-next'].fire('click'); passa(H);
-  ok(g.save.cap===12 && mostra(els,'ov-continua') && els['cont-h'].textContent==='Fim dos capítulos do Terraço Suíça' && /o crítico do Michelzão/.test(els['cont-p'].textContent),'depois do cap. 11: o cartão de fim de capítulos, "Continua na próxima versão: o crítico do Michelzão."');
-  g.setState('menu'); ok(/Terraço Suíça completo/.test(els['menu-dia'].textContent),'o menu diz "Terraço Suíça completo"');
+  ok(g.save.cap===12 && !mostra(els,'ov-continua') && g.save.conversa===null,'depois do cap. 11: o cap. 12 começa (v10.8), sem cartão de fim (a conversa de antes toca em seguida)');
+  g.setState('menu'); ok(/cap\. 12, O molho da Rosa/.test(els['menu-dia'].textContent),'o menu diz "cap. 12, O molho da Rosa"');
   ok(!/\d+ de \d+/.test(L.HISTORIA[10].obj.completas+''),'(sem texto solto)'); }
 { // o save que terminou o cap. 8 na parte A (cap 9, sem o campo v10) começa o cap. 11 com a conversa de antes; o que já tem v10 não repete (v10.5.2: eram o 8 e o 9)
   const H=nova(), {L}=H;
   const a=L.normSave({ histV:1, capV:2, cap:11, dia:20, bank:4000, conversa:null, salao:{ ponto:'terraco' } }); ok(a.conversa==='antes' && a.cap===11 && a.v10===1,'save da parte A no cap. 11 (sem v10): começa o cap. 11 com a conversa de antes');
   const b=L.normSave(JSON.parse(JSON.stringify(a))); ok(b.conversa==='antes' && JSON.stringify(L.normSave(JSON.parse(JSON.stringify(b))))===JSON.stringify(b),'e normalizar de novo não muda nada');
   const c=L.normSave({ histV:1, capV:2, cap:11, dia:20, bank:4000, conversa:null, v10:1, salao:{ ponto:'terraco' } }); ok(c.conversa===null,'quem já ouviu a conversa (v10 no save) não ouve de novo');
-  const d=L.normSave({ histV:1, capV:2, cap:12, dia:20, bank:4000, salao:{ ponto:'terraco' } }); ok(d.conversa===null && d.cap===12,'cap. 12 (história acabou): sem conversa');
+  const d=L.normSave({ histV:1, capV:3, cap:13, dia:20, bank:4000, salao:{ ponto:'terraco' } }); ok(d.conversa===null && d.cap===13,'cap. 13 (história acabou; v10.8): sem conversa');
   const e=L.normSave({ histV:1, capV:2, cap:11, dia:20, conversa:'depois', capComp:4, salao:{ ponto:'terraco' } }); ok(e.conversa==='depois' && e.capComp===4,'a conversa de depois e o capComp se mantêm'); }
 
 // ---------- 14. saves e Manual ----------

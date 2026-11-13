@@ -142,7 +142,7 @@ const AV={ daniCursos:{ confCaseira:1 } }, ESP={ daniCursos:{ confCaseira:1 }, j
 // ---------- 11. os cursos e os níveis da Cami ----------
 { const H=aberto({ equipe:{ tonhao:1, dani:3, joca:3, cami:1 }, libera:{ confeitaria:2, joca:2, cami:2, anselmo:2 } },null,ESP), {g,L}=H; const sv=g.save, C=L.STAFF.cami.levels;
   ok(C[1].speed===0.9 && C[1].tasks===3 && C[1].pay===95 && C[2].speed===1.1 && C[2].tasks===4 && C[2].pay===115 && C[3].speed===1.25 && C[3].pay===135 && C[3].mesas===true,'STAFF.cami como no plano (0,9/1,1/1,25; 3/4/4; R$ 95/115/135; mesas no 3; v10.5: salários de verdade)');
-  ok(L.CAMI_CURSOS.length===3 && L.CAMI_CURSOS[0].preco===400 && L.CAMI_CURSOS[1].preco===600 && L.CAMI_CURSOS[1].dep==='agil','cursos: Atendimento ágil R$ 400 e Atendimento de mesa R$ 600 (precisa do ágil)');
+  ok(L.CAMI_CURSOS.length===4 && L.CAMI_CURSOS[0].preco===400 && L.CAMI_CURSOS[1].preco===600 && L.CAMI_CURSOS[1].dep==='agil','cursos: Atendimento ágil R$ 400 e Atendimento de mesa R$ 600 (precisa do ágil)');
   g.save.bank=5000; sv.camiCursoDia=0; g.cursoMsg=''; const f0=L.payroll(sv.equipe);
   ok(!g.buyCamiCurso('mesa'),'o de mesa não se compra antes do ágil');
   ok(g.buyCamiCurso('agil') && sv.camiCursos.agil===1 && sv.equipe.cami===2 && sv.bank===5000-400 && L.payroll(sv.equipe)-f0===20 && g.cami.spec.speed===1.1,'Atendimento ágil: R$ 400, nível 2, velocidade 1,1 e salário +R$ 20');

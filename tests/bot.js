@@ -9,6 +9,9 @@ module.exports=function(g,L,opts){
 };
 // v10, a refeição completa: o grupo só recebe o prato quando espera por ele ('ordered'); o principal pronto com o grupo ainda comendo a entrada espera no balcão
 const pront=grp=>!grp||!grp.tempos||grp.state==='ordered';
+// v10.8, o molho da Rosa: com o molho aprendido (ROSA=0 desliga), o prato da casa pronto no balcão (ou ainda na cozinha) pede a pétala antes: a Bia pega as pétalas no vaso quando está sem
+const casaPronta=g=>g.kitchen.plates.some(p=>p&&p.casa&&pront(p.group)), casaNaCozinha=g=>g.kitchen.queue.concat(g.kitchen.cooking).some(t=>t&&!t.marmita&&t.group&&t.group.exigente&&t.tempo!==0);
+const querPetala=(g,L,b)=>!!g.save.rosa&&process.env.ROSA!=='0'&&b.petalas<L.ROSA.max&&!b.acts.some(a=>a.type==='rosas')&&(casaPronta(g)||casaNaCozinha(g));
 // v10.1: o exigente cobra a bebida antes da entrada: com o drink já pronto ou a caminho, a entrada espera
 const bebPrimeiro=(g,grp,tempo)=>!!grp&&grp.exigente&&tempo===0&&grp.bebFalta>0&&(g.drinkPronto.some(o=>o.grp===grp)||g.drinkQ.some(o=>o.grp===grp)||(g.drinkJob&&g.drinkJob.grp===grp)||g.bia.hands.some(h=>h.kind==='drink'&&h.group===grp));
 // v9.6: a Cami em "Minhas mesas" cuida do pedido à conta das mesas dela: a Bia não mexe nelas (só entrega o prato que já pegou)
@@ -73,6 +76,7 @@ function baseBot(g,L,opts){
       if(!t.open||dela(t)||has(a=>a.type==='table'&&a.id===t.id)||ajd(g,h=>h.targets(t))) continue;
       if(t.dirty||(t.group&&(t.group.state==='wantOrder'||t.group.state==='wantBill'))){ if(can(t.dirty?'dirty':'ticket')||t.group&&t.group.state==='wantBill') return g.tapTable(t); }
     }
+    if(b.petalas===0&&querPetala(g,L,b)&&can('dish')) return g.tapStation('rosas');   // v10.8
     for(let i=0;i<L.LAYOUT.PLATE_SLOTS.length;i++){ const p=g.kitchen.plates[i]; if(p&&!p.dani&&pront(p.group)&&!bebPrimeiro(g,p.group,p.tempo)&&!(p.group&&dela(p.group.table))&&can('dish')&&!has(a=>a.type==='plate'&&a.pid===p.id)) return g.tapStation('plates',L.LAYOUT.PLATE_SLOTS[i].x,L.LAYOUT.PLATE_SLOTS[i].y); }
     const need=jt.reduce((n,t)=>n+t.group.juicePending,0), carry=b.hands.filter(h=>h.kind==='juice').length+b.acts.filter(a=>a.type==='juice').length;
     // busca de uma vez todos os sucos que couberem (a fila de ações conta como já nas mãos)
@@ -201,6 +205,8 @@ function afiado(g,L){
     const mo=g.up.maquina&&!ajd(g,h=>h.does('suco'))&&g.maqLivre();
     // a ida lá fora é longa: só com folga (nada mais urgente) ou para quem espera por um fio
     if(mo&&can('suco')){ const tg=ttl(mo.group), trip=sw('maquina')+walk(ST.maquina.ap.x,ST.maquina.ap.y,mo.group.x,mo.group.y); add(tg<12?tg-trip:40,()=>g.tapStation('maquina')); }
+    // v10.8: a pétala do molho da Rosa: antes do prato da casa pronto (um pouco mais urgente que ele) ou, com ele ainda na cozinha, quando sobra folga
+    if(querPetala(g,L,b)&&(b.petalas===0||casaPronta(g))){ const pr=k.plates.find(p=>p&&p.casa&&pront(p.group)); add(pr?ttl(pr.group)-sw('rosas')-walk(ST.rosas.ap.x,ST.rosas.ap.y,ST.plates.ap.x,ST.plates.ap.y)-sw('plates')-0.5:20,()=>g.tapStation('rosas')); }
     if(!cands.length) return;
     cands.sort((a,c)=>a[0]-c[0]);
     cands[0][1]();

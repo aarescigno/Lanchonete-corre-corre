@@ -15,11 +15,10 @@ Origem: retorno do Renan Martorelli (beta-tester) e conversa com o Arthur (15/10
 ## Situação
 | # | Etapa | Versão | Situação |
 |---|---|---|---|
-| V | A vontade da freguesia: doce e espresso puxam a Dani e o Joca (garantia do Joca e da Cami) | v10.5.3 | feita em 12/11 (`docs/spec-v10.5.3.md`; `smoke70`; `VONTADE.menos` 0,3 em vez de 0,5, ver Desvios) |
 | 4c | Eventos de bairro: festa junina e jogo do Brasil (adiantada em 12/11, para dar novidade aos dias parados da Garagem) | v10.6 | feita em 13/11 (`docs/spec-v10.6.md`; `smoke71`; fases e gol na janela de chegadas, ver Desvios) |
 | 4b | Nível de luxo | v10.7 | feita em 13/11 (`docs/spec-v10.7.md`; `smoke72`; Ambiente do Gurugol pelo luxo, ver Desvios) |
 | 5 | ~~Modo História, parte 1~~: juntou-se à 2f e aos capítulos da 3a, 3b e 4a (28/10) | — | — |
-| 6a | O molho da Rosa: a pétala na mão e a Cami gerente (cap. 12) | v10.8 | a fazer (`docs/spec-v10.8.md`, aprovada) |
+| 6a | O molho da Rosa: a pétala na mão e a Cami gerente (cap. 12) | v10.8 | feita em 13/11 (`docs/spec-v10.8.md`; `smoke73`; o prato no balcão ainda não leva a pétala, ver Desvios) |
 | 6b | O crítico sem aviso: o caderninho e o boato do Bráulio (cap. 13) | v10.9 | a fazer (`docs/spec-v10.9.md`, aprovada) |
 | 6c | A noite da estrela: o jantar, o Bráulio à mesa e as estrelas (cap. 14) | v10.10 | a fazer (`docs/spec-v10.10.md`, aprovada) |
 | 6d | O futuro da Corre-Corre: a cena final, os créditos e a placa | v11 | a fazer (`docs/spec-v11.md`, aprovada) |
@@ -96,11 +95,6 @@ Origem: retorno do Renan Martorelli (beta-tester) e conversa com o Arthur (15/10
 - **O Bráulio é rival até o fim:** planta um comentário no Gurugol, espalha um boato para lotar a casa no dia do crítico, senta à mesa na noite da estrela para achar defeito e, no final, perde a estrela da Casa Aurora por nunca ter sabido repetir o molho.
 - **O futuro:** o Terraço segue com a estrela, e a garagem da Rosa reabre como a Cozinha da Rosa, escola de cozinha do bairro, com a Dani dando aula. A última cena espelha a primeira da abertura.
 - **Depois do final** a campanha continua, com a placa na parede, visitas surpresa do crítico e noites novas.
-
-### 6a — O molho da Rosa (v10.8)
-Capítulo 12: o Tonhão conta o segredo da Casa Aurora. A Bia aprende o molho e pega pétalas no vaso para servir o Prato da Rosa (o prato da casa com a pétala). A Cami vira gerente de salão e leva à mesa quem espera na porta. Spec: `docs/spec-v10.8.md`.
-
-**Modelo:** Sonnet, esforço alto (muitas partes ao mesmo tempo, com calibração por receita).
 
 ### 6b — O crítico sem aviso (v10.9)
 Capítulo 13: duas visitas do crítico disfarçado, com a pista do caderninho, a ficha da visita no fim do dia (cinco itens) e o boato do Bráulio, que lota a casa na 2ª visita. Spec: `docs/spec-v10.9.md`.

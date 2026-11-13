@@ -99,7 +99,15 @@ function mmssUp(s){ s = Math.max(0, Math.floor(s)); return Math.floor(s/60) + ':
 function mmss(s){ s = Math.max(0, Math.ceil(s)); return Math.floor(s/60) + ':' + String(s%60).padStart(2,'0'); }
 
 /* ---------- pratos ---------- */
-function drawDish(ctx,k,x,y,s,empty,carne,av){
+/* v10.8, a pétala do molho da Rosa (x, y: o centro; s: a escala; rot: a inclinação; apagada: a que falta no HUD) */
+function drawPetala(ctx,x,y,s,rot,apagada){
+  ctx.save(); ctx.translate(x,y); ctx.rotate(rot == null ? -0.5 : rot); ctx.scale(s,s);
+  ctx.beginPath(); ctx.moveTo(0,-6.5); ctx.bezierCurveTo(6.5,-5,6.5,4,0,7); ctx.bezierCurveTo(-6.5,4,-6.5,-5,0,-6.5); ctx.closePath();
+  fs(ctx,apagada ? '#5b554a' : AB_COR.petala,1.3);
+  if (!apagada){ ctx.strokeStyle = 'rgba(255,255,255,.6)'; ctx.lineWidth = 0.9; ctx.beginPath(); ctx.moveTo(0,-3.5); ctx.lineTo(0,4); ctx.stroke(); }
+  ctx.restore();
+}
+function drawDish(ctx,k,x,y,s,empty,carne,av,rosa){
   ctx.save(); ctx.translate(x,y); ctx.scale(s,s);
   ell(ctx,0,0,15,10.5); fs(ctx,'#fff',2.4);
   ell(ctx,0,0,9.5,6); ctx.lineWidth = 1.2; ctx.strokeStyle = '#d4d0c4'; ctx.stroke();
@@ -108,6 +116,7 @@ function drawDish(ctx,k,x,y,s,empty,carne,av){
     ctx.restore(); return;
   }
   drawComida(ctx,k,carne,av);
+  if (rosa) drawPetala(ctx,5,-4,1.4);   // v10.8: o Prato da Rosa
   ctx.restore();
 }
 /* marmita (v8.6): a quentinha de alumínio com a tampa de papelão e o desenho da comida em cima; (x, y) é o meio da tampa */

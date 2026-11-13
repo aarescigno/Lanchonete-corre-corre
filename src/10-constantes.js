@@ -173,7 +173,8 @@ const CAMI_HOME = { x:590, y:515 };
 const CAMI_CURSOS = [
   { id:'agil', nome:'Atendimento ágil',     preco:400, nivel:3 },
   { id:'mesa', nome:'Atendimento de mesa',  preco:600, nivel:3, dep:'agil' },
-  { id:'salao', nome:'Atendimento de salão', preco:900, nivel:4, dep:'mesa' }   // v10.3: o topo do salão (nível 4) e o modo "Ajuda em tudo"
+  { id:'salao', nome:'Atendimento de salão', preco:900, nivel:4, dep:'mesa' },   // v10.3: o topo do salão (nível 4) e o modo "Ajuda em tudo"
+  { id:'gerente', nome:'Gerência de salão', preco:1200, nivel:4, dep:'salao', cap:12 }   // v10.8: o nível 5 (só no Terraço, a partir do cap. 12): ela organiza a fila
 ];
 /* v10.3, modo "Ajuda em tudo" da Cami: em qualquer mesa ela faz o que a Bia não pegou, depois de `espera` segundos de espera */
 const CAMI_TUDO = { espera:3 };
@@ -201,7 +202,7 @@ function normCamiCursos(c){ const o = {}; CAMI_CURSOS.forEach(x => { if (c && c[
 /* o nível dela pelos cursos: 1 + os feitos (o 2º só conta com o 1º) */
 function camiNivelCursos(save){
   const c = (save && save.camiCursos) || {};
-  return 1 + (c.agil ? 1 : 0) + (c.agil && c.mesa ? 1 : 0) + (c.agil && c.mesa && c.salao ? 1 : 0);
+  return 1 + (c.agil ? 1 : 0) + (c.agil && c.mesa ? 1 : 0) + (c.agil && c.mesa && c.salao ? 1 : 0) + (c.agil && c.mesa && c.salao && c.gerente ? 1 : 0);
 }
 function jocaXp(save){
   const s = save || {};
@@ -689,7 +690,7 @@ const STAFF = {
   // Joca (v9.2): o conhecido da Dani; entra na área industrial no nível 2 (R$ 65/dia desde a v10.5) e sobe até o 4, como ela; faz o básico da casa
   joca:    { levels:[ null, null, { speed:0.5, tasks:2, pay:65, xp:0 }, { speed:0.65, tasks:2, pay:78, xp:6 }, { speed:0.8, tasks:3, pay:90, xp:12 } ] },
   // Cami (v9.3): garçonete de rodízio que o Joca indica; entra na Avenida já rápida e fica com o básico. Sobe só por curso (CAMI_CURSOS)
-  cami:    { levels:[ null, { speed:0.9, tasks:3, pay:95 }, { speed:1.1, tasks:4, pay:115 }, { speed:1.25, tasks:4, pay:135, mesas:true }, { speed:1.35, tasks:4, pay:160, mesas:true, tudo:true } ] },   // v10.3: o nível 4 (curso de salão, só no Terraço)
+  cami:    { levels:[ null, { speed:0.9, tasks:3, pay:95 }, { speed:1.1, tasks:4, pay:115 }, { speed:1.25, tasks:4, pay:135, mesas:true }, { speed:1.35, tasks:4, pay:160, mesas:true, tudo:true }, { speed:1.35, tasks:4, pay:200, mesas:true, tudo:true, gerente:true } ] },   // v10.3: o nível 4 (curso de salão, só no Terraço); v10.8: o 5 (gerência)
   // Anselmo (v9.5): coqueteleiro, só na Avenida; entra já no nível 2 (R$ 105/dia desde a v10.5), não faz tarefas da lista; o nível 3 vem dos cursos do Terraço (4a)
   anselmo: { levels:[ null, null, { speed:0.8, pay:105, xp:0 }, { speed:1.0, pay:150, xp:0 } ] },
   // Lia (v10.2): ajudante de cozinha, só no Terraço; com ela no dia todo pedido da cozinha leva `cook` × o tempo. Contratar é definitivo (equipe.lia: 0 ou 1)
@@ -861,6 +862,14 @@ const VIP = { pat:0.65, tip:0.1, perfect:40, angry:10, dish:12, cook:1.8, types:
 const EXIGENTE = { tip:0.2, generosa:0.2, casa:{ preco:40, cook:2, cookBom:1.3, nivel:3 }, sujaT:6, peso:2, bravoMov:0.9, rep:[0.6, 1.4], acc:['chapeu', 'lenco', 'echarpe'],
   cores:['#B23A48', '#2F5F8A', '#3E7B4A', '#7A4FA0', '#C98A2B', '#2A8C8C', '#8C6A4A'], aviso:'Um cliente exigente saiu bravo ontem: hoje vem menos gente.' };
 const LOUCA = { cook:0.75 };
+/* v10.8, o molho da Rosa (cap. 12, só no Terraço): compra única na lojinha (save.rosa). A Bia pega pétalas no vaso (`vaso`: o ap e o rect no armário do corredor da cozinha), `pega` s
+   para encher `max` pétalas (zeram a cada dia); com pétala, o prato da casa sai Prato da Rosa (rosa e crit): `coracao` coração a mais, `mais` R$ na conta, `pts` pontos; `coment` é o
+   comentário no Gurugol (metade das vezes). `cap`: o capítulo da história em que o cartão aparece */
+const ROSA = { preco:800, max:2, pega:0.8, mais:20, coracao:1, pts:20, cap:12, coment:'Que molho é esse?!',
+  vaso:{ ap:{ x:700, y:150 }, rect:{ x:686, y:104, w:48, h:92 } } };
+STATIONS.rosas = ROSA.vaso;   // v10.8: o vaso de rosas no armário do corredor, onde nos outros pontos fica a mesinha das marmitas
+/* v10.8, a Cami gerente de salão (curso `gerente`, nível 5): a cada `passo` s senta o 1º grupo da fila (na ordem justa) parado há `espera` s ou mais, se há mesa livre em que caiba */
+const GERENTE = { espera:4, passo:0.5 };
 const vipDish = grp => grp.exigente ? EXIGENTE.casa.preco : VIP.dish;
 function casaBoa(grp, game){ return !!grp.exigente && game.save.equipe.tonhao >= EXIGENTE.casa.nivel; }
 function vipCook(grp, game){ if (!grp.vip) return 1; return (grp.exigente ? (casaBoa(grp, game) ? EXIGENTE.casa.cookBom : EXIGENTE.casa.cook) : VIP.cook) * (game.up.louca ? LOUCA.cook : 1); }
@@ -1090,7 +1099,7 @@ function simulaEmprestimo(v, j){ const t = tabelaDe(normEmprestimo({ resto:v, am
 /* ============================================================
    MODO HISTÓRIA (v8.7): a campanha em capítulos. Cada capítulo tem um objetivo, que vale no fim de um dia (sem prazo: se não
    cumpriu, o capítulo segue), e conversas (balões sobre o salão) antes e depois. fala: { q:'bia'|'tonhao'|'dani', s:texto,
-   nota?:rubrica em itálico }. save.cap (1 a 11; 12 = o Fim; 4, 6 e 9 esperam a mudança de ponto; v10.5.2: 11 capítulos, o 7 (Avenida) e o 10 (Terraço) são novos), save.capDia, save.capAzul, save.capVezes, save.capV (2), save.conversa ('antes'/'depois'/null).
+   nota?:rubrica em itálico }. save.cap (1 a 12; 13 = o Fim; 4, 6 e 9 esperam a mudança de ponto; v10.5.2: 11 capítulos, o 7 (Avenida) e o 10 (Terraço) são novos; v10.8: o 12, o molho da Rosa), save.capDia, save.capAzul, save.capVezes, save.capV (3), save.conversa ('antes'/'depois'/null).
    REFORMA: o empréstimo da reforma da garagem, que o save novo já traz (1ª parcela no fim do dia ini)
    ============================================================ */
 const HIST = { on: !(typeof window !== 'undefined' && window.__semHist) };   // os testes antigos ligam window.__semHist: save novo sem a História
@@ -1210,12 +1219,26 @@ const HISTORIA = [
       { q:'tonhao', nota:'guardando o pote de cominho', s:'Sabe quem ligou? O Bráulio. Disse que o Michelzão anda rondando a cidade.' },
       { q:'bia', s:'O guia das estrelas?' },
       { q:'tonhao', s:'Ele mesmo. Dizem que o crítico chega sem avisar.' },
-      { q:'dani', s:'Então é deixar tudo brilhando!' }],
-    fim:{ h:'Fim dos capítulos do Terraço Suíça', p:'Continua na próxima versão: o crítico do Michelzão.' } }
+      { q:'dani', s:'Então é deixar tudo brilhando!' }] },
+  // v10.8: o molho da Rosa. Objetivo: aprender o molho (compra na lojinha) e servir 3 Pratos da Rosa num dia, 3 vezes
+  { cap:12, titulo:'O molho da Rosa', ponto:'terraco', obj:{ compra:'rosa', rosa:3, vezes:3 },
+    antes:[
+      { q:'bia', s:'Tio, se o crítico vem, o que a gente serve pra ele?' },
+      { q:'tonhao', nota:'abrindo o pote de cominho', s:'Tá na hora de eu te contar da Casa Aurora.' },
+      { q:'tonhao', s:'O molho da estrela era meu e da sua mãe. Cominho com açafrão... e o segredo dela.' },
+      { q:'bia', s:'Que segredo?' },
+      { q:'tonhao', s:'Uma pétala de rosa, posta na hora. O Bráulio nunca descobriu.' },
+      { q:'dani', s:'Então a gente tem o que ele não tem!' }],
+    depois:[
+      { q:'bia', s:'Todo mundo pergunta que molho é esse, tio.' },
+      { q:'tonhao', nota:'enxugando o olho no avental', s:'Igualzinho ao dela.' },
+      { q:'cami', s:'Bia, deixa a porta comigo. Eu organizo a fila e as mesas.' },
+      { q:'bia', s:'Gerente de salão, Cami. Você merece.' }],
+    fim:{ h:'Fim do capítulo 12', p:'Continua na próxima versão: o crítico sem aviso.' } }
 ];
 /* v9.0.1: a conversa do cardápio, no fim do dia `dia` (ou do 1º dia completo depois dele, para saves antigos), só no Modo História.
    falas: o Tonhão ainda não fez curso; fez: já fez algum (básico de qualquer curso ou o avançado do PF). save.convCard: 'pend' | 1 (vista) */
-/* v10.2.1, modo dev: o save do começo de cada capítulo (devCapitulo). n 1 a 11 e 12 (o Fim, depois do último; v10.5.2). Níveis da equipe: índices de STAFF (99 = o último);
+/* v10.2.1, modo dev: o save do começo de cada capítulo (devCapitulo). n 1 a 12 e 13 (o Fim, depois do último; v10.8). Níveis da equipe: índices de STAFF (99 = o último);
    cursos do Tonhão { id:nível }; cursos da equipe e melhorias em listas de ids */
 const DEV_CAPS = [
   { n:1,  dia:1,  ponto:'garagem',    pdia:1,  caixa:0,     nota:0,   eq:{ tonhao:0, dani:0, joca:0, cami:0, anselmo:0, lia:0 }, cursos:{}, dani:[], joca:[], cami:[], up:[] },
@@ -1229,7 +1252,8 @@ const DEV_CAPS = [
   { n:9,  dia:50, ponto:'terraco',    pdia:50, caixa:1500,  nota:3.9, eq:{ tonhao:3, dani:4, joca:3, cami:2, anselmo:2, lia:0 }, cursos:{ pastel:1, chapa:1, fritos:1, assados:1, veg:1, restaurante:1 }, dani:['confCaseira', 'confGourmet'], joca:['espresso'], cami:[], up:['tenis', 'ventilador', 'bandeja', 'triturador', 'corrida'] },
   { n:10, dia:54, ponto:'terraco',    pdia:50, caixa:4000,  nota:4.2, eq:{ tonhao:99, dani:99, joca:99, cami:2, anselmo:3, lia:0 }, cursos:{ pastel:1, chapa:1, fritos:1, assados:1, veg:1, restaurante:1, entradas:1, alta:1 }, dani:['confCaseira', 'confGourmet', 'confAlta'], joca:['espresso'], cami:[], up:['tenis', 'ventilador', 'bandeja', 'triturador', 'corrida'] },
   { n:11, dia:58, ponto:'terraco',    pdia:50, caixa:6000,  nota:4.2, eq:{ tonhao:99, dani:99, joca:99, cami:2, anselmo:3, lia:1 }, cursos:{ pastel:1, chapa:1, fritos:1, assados:1, veg:1, restaurante:1, entradas:1, alta:1 }, dani:['confCaseira', 'confGourmet', 'confAlta'], joca:['espresso'], cami:[], up:['tenis', 'ventilador', 'bandeja', 'triturador', 'corrida'] },
-  { n:12, dia:64, ponto:'terraco',    pdia:50, caixa:10000, nota:4.6, eq:null, cursos:null, dani:null, joca:null, cami:null, up:null }   // o Fim: o mesmo que "Tudo no máximo" (devEquipe('max') e devMelhorias(true)), com a Lia
+  { n:12, dia:64, ponto:'terraco',    pdia:50, caixa:10000, nota:4.6, eq:null, cursos:null, dani:null, joca:null, cami:null, up:null, semRosa:true },   // v10.8: o molho da Rosa: tudo no máximo (como o Fim) menos o molho e a gerência
+  { n:13, dia:64, ponto:'terraco',    pdia:50, caixa:10000, nota:4.6, eq:null, cursos:null, dani:null, joca:null, cami:null, up:null }   // o Fim: o mesmo que "Tudo no máximo" (devEquipe('max') e devMelhorias(true)), com a Lia, o molho e a gerência
 ];
 const HIST_CARDAPIO = { dia:2,   // v9.6.2: no fim do dia 2 (antes, do dia 1), para a 1ª lojinha ficar sem empurrão
   falas:[ { q:'bia', s:'Tio, hoje um monte de gente perguntou se só tem PF e coxinha...' },
@@ -1437,7 +1461,7 @@ const BIA_IDS = ['tenis', 'corrida', 'bandeja', 'sudoku'];
 function upgradeCartao(id){ return BIA_IDS.indexOf(id) >= 0 ? 'bia' : 'melhorias'; }
 const HIST_NOMES = { bia:'Bia', tonhao:'Tonhão', dani:'Dani', joca:'Joca', cami:'Cami', anselmo:'Anselmo', lia:'Lia' };
 const CAIXA_MAX = 14;                                 // livro-caixa (v7.2): quantos dias da carreira ficam guardados
-const VERSAO = 'v10.7';                                // vai no resumo do Caixa
+const VERSAO = 'v10.8';                                // vai no resumo do Caixa
 const DIVULGA_DIA = 4;                                // antes disso, o movimento é o da inauguração (sem custo); v9.0.2: dia 4, e o padrão é o boca a boca
 function divulgaAberta(n, sv){ return devLivre() || n >= DIVULGA_DIA && !(sv && sv.convDiv === 'pend'); }   // no modo dev, desde o dia 1; v9.0.3: no Modo História, só depois da conversa
 /* v9.6.4: a Efood (os entregadores) só abre depois da conversa dos entregadores, no Modo História; antes dela, nenhum tipo com `retira` vem na agenda */
@@ -1638,6 +1662,8 @@ const MANUAL = [
   { id:'l-mudanca',    aba:'lojinha', nome:'Mudança', linha:'Um ponto maior, com freguesia nova e aluguel.' },
   { id:'l-caixa',      aba:'lojinha', nome:'Caixa', linha:'O que entrou e o que saiu, dia a dia.' },
   { id:'l-barraca',    aba:'lojinha', nome:'Barraca junina', linha:'Só no dia da festa: pamonha, milho e canjica no cardápio.' },
+  { id:'l-rosa',       aba:'lojinha', nome:'O molho da Rosa', linha:'O prato da casa ganha o molho da Rosa. Pegue pétalas no vaso antes de buscar o prato: só a Bia sabe pôr.' },   // v10.8
+  { id:'l-gerente',    aba:'lojinha', nome:'Gerência de salão', linha:'A Cami leva à mesa quem espera na porta. Dá para desligar no cartão dela.' },   // v10.8
 
   { id:'p-garagem',    aba:'lugares', sempre:true, nome:'Garagem da mãe da Bia', linha:'Onde tudo começou. Sem aluguel, freguesia do bairro.' },
   { id:'p-industrial', aba:'lugares', nome:'Área industrial', linha:'Perto das fábricas: turma no apito, motoristas e encomendas de marmita.' },
