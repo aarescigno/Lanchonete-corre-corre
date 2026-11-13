@@ -4,6 +4,21 @@ Registro das ideias e dos retornos de quem jogou, com o texto original, e de ond
 
 ---
 
+## 13/11 — usuário: decisões do final (etapa 6), no planejamento
+> Coordene para se fazer o planejamento do final épico com base na próxima etapa. Deve ser desafiador para gerar a recompensa do fim do jogo com uma finalização de história bela sobre o futuro do restaurante e etc. Não precisa implementar agora, só deixar as próximas etapas bem planejadas
+
+- **Estrelas:** de nenhuma a 3. Com 1 a história fecha e a cena final toca inteira; a 2ª e a 3ª são o desafio duro, cada uma acrescenta um trecho à cena, e dá para tentar de novo.
+- **Bráulio:** rival até o fim (atrapalha com boato, manda o crítico em dia ruim e perde a estrela da Casa Aurora quando a Bia ganha a dela).
+- **Futuro:** o Terraço segue com a estrela e a garagem da Rosa vira escola de cozinha do bairro; a última cena espelha a primeira da abertura.
+- **Crítico:** pista sutil (o caderninho depois de cada prato).
+- **Prato da Rosa:** pétala na mão (a Bia pega no vaso, guarda até 2, e o prato da casa sai com a pétala).
+- **Créditos:** só o agradecimento, sem nomes.
+- **Divisão:** quatro versões, com a v11 no fim.
+- Decidido pela sessão de planejar, com o aval de "coordene": a Cami gerente senta sozinha quem espera na porta (dá para desligar); a noite é marcada pelo jogador na lojinha; a pontuação do guia (visitas 45, Gurugol 15, luxo 15, a noite 15, salão 5, Bráulio 5; cortes 50, 72 e 90); visitas surpresa e noites novas depois do final; os textos dos capítulos 12 a 14 e da cena final.
+Destino: `docs/spec-v10.8.md` (6a), `docs/spec-v10.9.md` (6b), `docs/spec-v10.10.md` (6c) e `docs/spec-v11.md` (6d), todas aprovadas.
+
+---
+
 ## 13/11 — usuário: decisões da 4b (nível de luxo), no planejamento
 - **Atributos:** 5 barras somando até 100 pontos (Endereço 40, Decoração 25, Móveis 20, Ambiente 10, Fama 5); o nível sobe a cada 20. Os críticos surpresa entram na Fama com o Michelzão (etapa 6).
 - **Gurugol:** a nota de Ambiente é 2 + 3 × (luxo ÷ o que o ponto pede: 20, 40, 60 e 90), mais o que acontece na hora.
