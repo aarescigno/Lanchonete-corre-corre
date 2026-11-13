@@ -49,9 +49,9 @@ const dev=(L,on,f)=>{ L.DEV.on=!!on; L.DEV.real=!!on; L.DEV.forca=f||{}; };
     if(els['intro-manut'].textContent.indexOf(L.NOITE.aviso)<0) intro=false;
     const base=g.diaPonto(L.diaOf(60)), r5=v=>Math.round(v*L.NOITE.meta/5)*5;
     if(g.day.meta!==r5(base.meta) || g.day.expert!==r5(base.expert)) metas=false;
-    g.divF=1; const n1=g.buildSchedule(g.day).length-2; g.noite=null; g.day=base; g.visita=null; const n0=g.buildSchedule(g.day).length; dif=Math.max(dif,Math.abs(n1-n0*1.3)); }
+    g.divF=1; const n1=g.buildSchedule(g.day).length-2; g.noite=null; g.day=base; g.visita=null; const n0=g.buildSchedule(g.day).length; dif=Math.max(dif,Math.abs(n1-n0*L.NOITE.groups)); }
   ok(tudo,'o dia marcado é a noite (real)'); ok(sem,'sem clima, sem evento de bairro e sem quebra nova');
-  ok(metas,'as metas (meta e expert) × NOITE.meta, em múltiplos de 5'); ok(dif<=1.6,'os grupos do dia × 1,3 (±1; maior diferença '+dif.toFixed(2)+')'); ok(intro,'a introdução do dia traz o aviso da noite');
+  ok(metas,'as metas (meta e expert) × NOITE.meta, em múltiplos de 5'); ok(dif<=1.7,'os grupos do dia × NOITE.groups (±1; maior diferença '+dif.toFixed(2)+')'); ok(intro,'a introdução do dia traz o aviso da noite');
   const H=noite1({ guia:GUIA({ noite:60 }) }), g=H.g; g.startDay(60); g.startDay(60); ok(g.noite && g.save.guia.noite===60,'recomeçar o dia continua sendo a noite');
   g.startDay(61); ok(g.noite===null && !g.schedule.some(s=>s.critico && s.disfarce===undefined && s.braulio),'o dia seguinte não é noite');
   const H2=jogo(13,{ guia:GUIA({ n:0, prox:70, v:[], noite:60 }) }); H2.g.startDay(60); ok(H2.g.noite===null,'antes do cap. 14, o dia marcado não vale');

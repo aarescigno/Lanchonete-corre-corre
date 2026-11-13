@@ -1962,3 +1962,8 @@ Objetivo: antes do curso de Confeitaria caseira (área industrial) e do Barista:
 Capítulo 13: duas visitas do crítico disfarçado, com a pista do caderninho, a ficha da visita no fim do dia (cinco itens) e o boato do Bráulio, que lota a casa na 2ª visita. Spec: `docs/spec-v10.9.md`.
 
 **Modelo:** Sonnet, esforço alto (o disfarce atravessa o grupo, o desenho e o Gurugol).
+
+### 6c — A noite da estrela (v10.10)
+Capítulo 14: a noite que o jogador marca na lojinha, com casa cheia, o crítico de cara limpa e o Bráulio à mesa; os pontos do guia (visitas, Gurugol, luxo, a noite, salão e Bráulio), as estrelas, o boletim, o selo no menu e a Fama do luxo. Spec: `docs/spec-v10.10.md`.
+
+**Modelo:** Sonnet, esforço alto (dia especial, pontuação, painel novo, desenho da noite e bot).

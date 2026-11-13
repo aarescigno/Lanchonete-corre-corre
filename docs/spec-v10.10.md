@@ -1,6 +1,6 @@
 # v10.10 — A noite da estrela: o jantar do crítico, o Bráulio à mesa e as estrelas do Michelzão (etapa 6c)
 
-**Situação:** aprovada (13/11)
+**Situação:** entregue em 13/11
 **Origem:** a Etapa 6 do `docs/PLANO.md`, terceira das quatro sessões do final (planejamento de 13/11, `docs/PROPOSTAS.md`). Decisões do usuário: 1 estrela cumpre o sonho e 3 estrelas são o desafio duro, com direito a tentar de novo; o Bráulio é rival até o fim.
 
 ## Objetivo
@@ -101,15 +101,15 @@ O último desafio do jogo: uma noite que o jogador escolhe, com a casa cheia, o 
 - `tests/bot.js`, `tests/balance.js`, `tests/carreira.js`.
 
 ## Tarefas
-- [ ] T1 Smoke novo `tests/smoke75.js` com CA1 a CA13 (falhando) e no `run_all.sh`.
-- [ ] T2 `NOITE`, os campos do `save.guia`, o capítulo 14 e o cartão da lojinha.
-- [ ] T3 O dia da noite: grupos, metas, sem imprevistos, o crítico de cara limpa e o Bráulio com as falas.
-- [ ] T4 `guiaPontos`, as estrelas, a espera e a visita surpresa de depois.
-- [ ] T5 O veredito: a linha dos resultados, as conversas, o boletim `#ov-guia` e o selo do menu.
-- [ ] T6 A Fama do luxo, o modo dev e o Manual.
-- [ ] T7 Desenho: a noite, as velas, o Bráulio e a plaquinha; `shot_v10_10.js` e conferência em recortes.
-- [ ] T8 Bot: o `balance.js` com `NOITE=1`; o `carreira.js` marca a noite no capítulo 14 quando o luxo é 4 ou mais e a nota 4,6 ou mais (ou depois de 5 dias no capítulo), marca de novo depois de cada espera até as 3 estrelas e mostra a linha `MICHELZAO` (dia da primeira noite, estrelas na primeira noite e a melhor marca no fim). Calibrar CA14 e CA15 pela receita.
-- [ ] Fechamento: `VERSAO`, `vtag`, `#ov-ver`, `docs/RESUMO.md`, `docs/TESTES.md`, `docs/PARTES.md`, esta spec como entregue, `tests/run_all.sh` verde, PR e merge.
+- [x] T1 Smoke novo `tests/smoke75.js` com CA1 a CA13 (falhando) e no `run_all.sh`.
+- [x] T2 `NOITE`, os campos do `save.guia`, o capítulo 14 e o cartão da lojinha.
+- [x] T3 O dia da noite: grupos, metas, sem imprevistos, o crítico de cara limpa e o Bráulio com as falas.
+- [x] T4 `guiaPontos`, as estrelas, a espera e a visita surpresa de depois.
+- [x] T5 O veredito: a linha dos resultados, as conversas, o boletim `#ov-guia` e o selo do menu.
+- [x] T6 A Fama do luxo, o modo dev e o Manual.
+- [x] T7 Desenho: a noite, as velas, o Bráulio e a plaquinha; `shot_v10_10.js` e conferência em recortes.
+- [x] T8 Bot: o `balance.js` com `NOITE=1`; o `carreira.js` marca a noite no capítulo 14 quando o luxo é 4 ou mais e a nota 4,6 ou mais (ou depois de 5 dias no capítulo), marca de novo depois de cada espera até as 3 estrelas e mostra a linha `MICHELZAO` (dia da primeira noite, estrelas na primeira noite e a melhor marca no fim). Calibrar CA14 e CA15 pela receita.
+- [x] Fechamento: `VERSAO`, `vtag`, `#ov-ver`, `docs/RESUMO.md`, `docs/TESTES.md`, `docs/PARTES.md`, esta spec como entregue, `tests/run_all.sh` verde, PR e merge.
 
 ## Avisos para a execução
 - A noite segue o molde do dia de evento (`eventoDe`, `sortear`, `buildSchedule` da v10.6): grupos no mesmo produto, sem clima, aviso na `introManut`.
@@ -126,6 +126,21 @@ O último desafio do jogo: uma noite que o jogador escolhe, com a casa cheia, o 
 Nenhuma.
 
 ## Desvios
-(No fechamento.)
+- **`NOITE.groups` 1,3 → 1,15 e `NOITE.meta` 1,2 → 2,3 (decisão do usuário, 13/11, "aliviar a noite").** Com 1,2, até o jogador perfeito do `balance.js` batia a meta da noite em 100% das vezes; o `meta` subiu em passos até a faixa do CA14 e, com o `groups` aliviado, ficou em 2,3 (**medido: 69% em 240 noites**; 2,5 deu 61%, 2,7 deu 40%). Com `groups` 1,3 o `meta` ficava em 2,7 (74%).
+- **CA15 não foi atingido** (e os cortes só variam 6 pontos, o que não resolve). Medido com o bot da carreira (`DIAS=66 node carreira.js 40`, `groups` 1,15, `meta` 2,3): na **1ª** noite, nenhuma estrela 51%, 1 ou mais 49%, 2 ou mais 0%, 3 em 0%; pontos médios 48,6 (Crítico 0,67 · Gurugol 0,55 · Luxo 0,67 · A noite 0,00 · Salão 0,00 · Bráulio 0,05, em fração de cada linha). Com `groups` 1,3 e `meta` 2,7 (`DIAS=120`, 40 carreiras): 35% / 0% / 0%; com `groups` 1,0: 67% / 4% / 0%. O bot nunca ganha "A noite", "Salão" e "Bráulio" (25 pontos); a calibração fina fica para quando houver retorno dos jogadores (a noite do jogador atento, ao contrário do bot, pode ganhar esses pontos). Os cortes ficaram em 50, 72 e 90.
+- **Modo dev: a noite forçada (`Marcar hoje`) não mexe no save** (como o crítico "Hoje"): o veredito sai e o boletim abre, mas `guia.est`, `ult` e `bol` ficam como estavam. A noite marcada na lojinha (`save.guia.noite`) é a "de verdade", e ganha da forçada.
+- **`guiaPontos(par)` e `estrelasDe`, `guiaSelo`, `NOITE.max` e `NOITE.cap` (14) são puros e ficam em `10-constantes.js`** (a spec os punha em `16-jogo.js`); `Game.fechaNoite(stars, d)` junta os pontos do jogo.
+- **O cartão do fim do dia do crítico (`result.critico`) também aparece na noite** (a ficha da noite vale como a de uma visita); o boletim mostra o resto.
+- **A visita surpresa sorteia o dia em memória** (`Game.sorteiaSurpresa`, uma vez por dia): recarregar a página no meio do dia pode sortear de novo.
+- **O veredito vem depois dos resultados** (a noite pula as conversas de antes dos resultados): `veredito(fim)` em `43-telas.js` toca a conversa de depois do cap. 14 (ou a `HIST_RECOMENDA`), e o boletim, ao tocar "Continuar" na tela de resultados. As outras conversas pendentes esperam o fim de dia seguinte.
+- **Saves**: `capV` passa a 5; `normGuia` ganha `noite`, `ult`, `est`, `rec`, `bol` e `convRec`; o save no cap. 14 ou 15 sem `guia` ganha um vazio.
+- **Testes antigos atualizados** para os números novos (14 capítulos, `DEV_CAPS` 15, 76 fichas do Manual, `capV` 5, o cap. 13 sem cartão de fim).
+- **`carreira.js`**: `NOITE_CFG`, `DBGN=1`, `NOITE=0` (não marca a noite) e `NOITE_BOT=afiado` (o bot perfeito na noite; não usado, deu pior no Gurugol); **`balance.js`**: `NOITE=1` e `NOITE_CFG`.
+- **O menu com o selo cabe sem rolar** nos 14 tamanhos do `menu_fit` (conferido no Chromium do node, porque o Python daqui não tem o playwright).
+
+## Testes medidos
+- `smoke75`: 128 checagens, CA1 a CA13.
+- CA14: `NOITE_CFG='{"groups":1.15,"meta":2.3}' NOITE=1 PONTO=terraco BOT=afiado EQUIPE=auto ALTA=1 LIA=1 CAMI=5 CAFESESP=1 AUTOR=1 JOCA=4 CONFEITARIA=1 LUXO=tudo ROSA=1 node balance.js 80`: meta batida em 165 de 240 noites (69%).
+- CA15: ver Desvios (fora da faixa).
 
 **Modelo:** Sonnet, esforço alto (regras e textos fechados, com receita de calibração; junta dia especial, pontuação, painel novo, desenho da noite e bot)

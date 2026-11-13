@@ -1673,7 +1673,7 @@ function plantaBoato(lista, dia){
 /* v10.10, a noite da estrela (cap. 14, só no Terraço): o dia que o jogador marca na lojinha. `groups` e `meta`: fatores dos grupos e das metas do dia; `critico` e `braulio`: onde (fração da janela de chegadas)
    chegam os dois convidados; `brauPat`: fator da paciência do Bráulio; `brauFeliz`: corações para ele sair feliz; `espera`: dias até poder marcar outra noite; `volta`: chance diária da visita surpresa depois da 1ª noite.
    `pts`: os pontos do guia (até 100): visita (× a soma das três fichas), nota do Gurugol, nível de luxo, estrelas do dia, salão sem ninguém bravo, Bráulio feliz; `cortes`: pontos para 1, 2 e 3 estrelas */
-const NOITE = { cap:14, groups:1.3, meta:2.7, critico:[0.35, 0.45], braulio:[0.5, 0.6], brauPat:0.7, brauFeliz:4, espera:3, volta:0.12,
+const NOITE = { cap:14, groups:1.15, meta:2.3, critico:[0.35, 0.45], braulio:[0.5, 0.6], brauPat:0.7, brauFeliz:4, espera:3, volta:0.12,
   pts:{ visita:1.5, nota:[[4.8, 15], [4.6, 10], [4.4, 5]], luxo:[0, 0, 0, 5, 10, 15], dia:[0, 5, 10, 15], salao:5, braulio:5 },
   cortes:[50, 72, 90], linhas:['Crítico', 'Gurugol', 'Luxo', 'A noite', 'Salão', 'Bráulio'], max:[45, 15, 15, 15, 5, 5],
   aviso:'Noite da estrela: casa cheia, o crítico à mesa e o Bráulio de olho.',
