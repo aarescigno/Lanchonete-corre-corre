@@ -12,10 +12,10 @@ const aba=(H,k)=>{ const b=H.els['manual-abas'].children.find(x=>x.getAttribute(
 { const H=load(), {g,L,els}=H;
   ok(['b-sentar','b-mesa','b-coracoes','b-cores','b-meta','b-lojinha','b-historia','e-bia','e-tonhao','p-garagem'].every(id=>g.save.manual.indexOf(id)>=0) && g.save.manualNovo.length===0,'carreira nova: as fichas sempre abertas já vêm no save, sem "novo"');
   els['btn-manual'].fire('click');
-  ok(els['ov-manual'].classList.contains('show') && cards(H).length===12,'o Manual abre no Básico, com as 12 fichas');
+  ok(els['ov-manual'].classList.contains('show') && cards(H).length===13,'o Manual abre no Básico, com as 13 fichas (v10.10: as Estrelas do Michelzão)');
   ok(cards(H).filter(c=>!tranc(c)).length===7 && cards(H).filter(tranc).every(c=>nome(c)==='???'),'Básico: 7 abertas; as outras 4 trancadas, com "???"');
   ok(cards(H).filter(tranc).every(c=>/Aparece mais adiante na história\./.test(c.children[2].textContent)),'ficha trancada: "Aparece mais adiante na história."');
-  aba(H,'clientes'); ok(cards(H).length===13 && cards(H).every(tranc),'Clientes: todas trancadas antes do 1º dia');
+  aba(H,'clientes'); ok(cards(H).length===14 && cards(H).every(tranc),'Clientes: todas trancadas antes do 1º dia');
   els['btn-manual-voltar'].fire('click'); ok(els['ov-menu'].classList.contains('show') && !els['ov-manual'].classList.contains('show'),'Voltar leva ao menu');
 }
 // (a2) depois do dia 1: Estudante e Vovô e vovó abertos e a linha "Novo no Manual" no fim do dia
@@ -81,7 +81,7 @@ const aba=(H,k)=>{ const b=H.els['manual-abas'].children.find(x=>x.getAttribute(
 { const {L}=load(); const sv=L.normSave({dia:30,maxDay:30,salao:{ponto:'avenida'}}); sv.equipe.tonhao=4; sv.equipe.dani=4; sv.equipe.joca=4; sv.equipe.cami=3; sv.equipe.anselmo=3; sv.up.bandeja=true;
   const tex=[]; L.MANUAL.forEach(f=>{ tex.push(f.nome,f.linha); if(f.tipo) tex.push.apply(tex,L.manualTracos(f.tipo)); if(f.quem) tex.push.apply(tex,L.manualTracos(f.quem,{save:sv})); });
   const ruim=tex.filter(t=>/\d/.test(t)); ok(ruim.length===0,'nenhum texto, linha ou traço do Manual tem algarismo'+(ruim.length?': '+ruim.join(' | '):''));
-  ok(L.MANUAL.length===73 && new Set(L.MANUAL.map(f=>f.id)).size===73,'73 fichas, ids únicos (v10.4: a música ao vivo; v10.6: a festa junina, o jogo e a barraca; v10.8: o molho da Rosa e a gerência; v10.9: o crítico e o boato)');
+  ok(L.MANUAL.length===76 && new Set(L.MANUAL.map(f=>f.id)).size===76,'76 fichas, v10.10: a noite, o Bráulio e o Michelzão; ids únicos (v10.4: a música ao vivo; v10.6: a festa junina, o jogo e a barraca; v10.8: o molho da Rosa e a gerência; v10.9: o crítico e o boato)');
 }
 // (h) o fogão industrial, o couvert e o assento abrem na industrial/Avenida; imprevistos
 { const H=novo(12,{bank:9000,salao:{ponto:'industrial'}}), {g,L}=H; g.goShop(12); L.setShopTab('manut'); L.setShopTab('divulga'); L.setShopTab('melhorias');

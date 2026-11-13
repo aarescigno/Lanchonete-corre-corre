@@ -470,13 +470,18 @@ function drawMarmoreTe(ctx){
   ctx.restore();
 }
 /* a cidade vista do alto: céu em degradê, o sol baixo, morros ao longe e as torres com as janelas acesas (clipado na janela) */
-function drawVistaTe(ctx,x0,y0,x1,y1){
+function drawVistaTe(ctx,x0,y0,x1,y1,noite){
   ctx.save(); ctx.beginPath(); ctx.rect(x0,y0,x1 - x0,y1 - y0); ctx.clip();
   const sk = ctx.createLinearGradient(0,y0,0,y1);
-  sk.addColorStop(0,'#5E78B8'); sk.addColorStop(0.5,'#E9A0A0'); sk.addColorStop(1,'#FAD79B');
+  if (noite){ sk.addColorStop(0,'#0B1230'); sk.addColorStop(0.6,'#1C2A5A'); sk.addColorStop(1,'#3A3F6E'); } else { sk.addColorStop(0,'#5E78B8'); sk.addColorStop(0.5,'#E9A0A0'); sk.addColorStop(1,'#FAD79B'); }   // v10.10: o céu noturno da noite da estrela
   ctx.fillStyle = sk; ctx.fillRect(x0,y0,x1 - x0,y1 - y0);
+  if (noite){
+    ctx.fillStyle = '#fff'; for (let i = 0; i < 46; i++){ const sx = x0 + (i * 53) % (x1 - x0), sy = y0 + 3 + (i * 29) % (y1 - y0 - 22), r = i % 5 === 0 ? 1.5 : 0.9; ctx.globalAlpha = i % 3 ? 0.85 : 0.55; ctx.fillRect(sx,sy,r,r); }
+    ctx.globalAlpha = 1; circ(ctx,x0 + 470,y0 + 18,9); ctx.fillStyle = '#F7E6A8'; ctx.fill(); circ(ctx,x0 + 474,y0 + 16,8); ctx.fillStyle = '#16204A'; ctx.fill();
+  } else {
   circ(ctx,x0 + 470,y1 - 8,15); ctx.fillStyle = 'rgba(255,238,176,.9)'; ctx.fill();
   ctx.fillStyle = 'rgba(255,255,255,.35)'; [[x0 + 90,y0 + 14,26],[x0 + 330,y0 + 22,20],[x0 + 590,y0 + 12,30]].forEach(c => { ell(ctx,c[0],c[1],c[2],4); ctx.fill(); ell(ctx,c[0] + 10,c[1] - 3,c[2] * 0.6,3.4); ctx.fill(); });
+  }
   [['#9486B0',y1 - 14,6,47,4,19],['#6F6893',y1 - 10,5,31,3,13]].forEach(h => {   // os morros ao longe, em duas camadas
     ctx.beginPath(); ctx.moveTo(x0,y1);
     for (let x = x0; x <= x1; x += 8) ctx.lineTo(x,h[1] - h[2] * Math.sin(x / h[3]) - h[4] * Math.sin(x / h[5] + 1));
@@ -485,7 +490,7 @@ function drawVistaTe(ctx,x0,y0,x1,y1){
   for (let i = 0, x = x0; x < x1; i++){   // as torres, de larguras e alturas variadas; algumas com janelas acesas e uma antena
     const w = 7 + (i * 7) % 9, h = 7 + (i * 13) % 19, y = y1 - h;
     ctx.fillStyle = i % 4 ? '#3E4466' : '#4C5378'; ctx.fillRect(x,y,w,h);
-    ctx.fillStyle = '#F6D472'; for (let k = 0; k < 3; k++) if ((i * 5 + k * 3) % 4 < 2) ctx.fillRect(x + 1.5 + (k % 2) * 3.5,y + 3 + Math.floor(k / 2) * 5 + (k % 3) * 2,2,2.4);
+    ctx.fillStyle = '#F6D472'; for (let k = 0; k < 3; k++) if (noite || (i * 5 + k * 3) % 4 < 2) ctx.fillRect(x + 1.5 + (k % 2) * 3.5,y + 3 + Math.floor(k / 2) * 5 + (k % 3) * 2,2,2.4);
     if (i % 9 === 4){ ctx.fillStyle = '#3E4466'; ctx.fillRect(x + w / 2 - 0.6,y - 6,1.2,6); }
     x += w + 1;
   }
@@ -511,7 +516,7 @@ function drawParedeTe(ctx,g,t){
   ctx.fillStyle = TE_OURO; ctx.fillRect(0,66,W,3);
   // o janelão de ponta a ponta, com a cidade lá embaixo
   const wx0 = 104, wx1 = 772, wy0 = 8, wy1 = 62;
-  drawVistaTe(ctx,wx0,wy0,wx1,wy1);
+  drawVistaTe(ctx,wx0,wy0,wx1,wy1,g.noite && !menu);
   ctx.strokeStyle = '#4A3628'; ctx.lineWidth = 3; for (let k = 1; k <= 5; k++){ const x = wx0 + (wx1 - wx0) * k / 6; ctx.beginPath(); ctx.moveTo(x,wy0); ctx.lineTo(x,wy1); ctx.stroke(); }   // as colunas finas
   ctx.strokeStyle = TE_OURO; ctx.lineWidth = 0.8; for (let k = 1; k <= 5; k++){ const x = wx0 + (wx1 - wx0) * k / 6 - 0.8; ctx.beginPath(); ctx.moveTo(x,wy0); ctx.lineTo(x,wy1); ctx.stroke(); }
   ctx.strokeStyle = PAL.tinta; ctx.lineWidth = 2.5; ctx.strokeRect(wx0,wy0,wx1 - wx0,wy1 - wy0);

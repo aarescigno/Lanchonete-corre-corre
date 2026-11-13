@@ -1,3 +1,21 @@
+/* ---------- v10.10: o boletim do Michelzão ---------- */
+let guiaFim = null;
+/* abre o boletim com o último veredito (save.guia): três estrelas (cheias as da melhor marca) e seis barras, sem número; `depois` roda ao tocar em Continuar */
+function abreBoletim(depois){
+  const g = game.save.guia; if (!g){ depois(); return; }
+  const est = $('guia-est'), bar = $('guia-barras'), rec = $('guia-rec'); clearEl(est); clearEl(bar);
+  est.setAttribute('aria-label', g.est + (g.est === 1 ? ' estrela' : ' estrelas') + ' no Michelzão');
+  for (let i = 0; i < 3; i++){ const cv = document.createElement('canvas'); cv.width = 108; cv.height = 108; const c = cv.getContext('2d'); star(c, 54, 56, 44, i < g.est ? PAL.mostarda : 'rgba(34,32,28,.12)'); est.appendChild(cv); }
+  rec.textContent = g.est === 0 && g.rec ? 'Recomendado pelo Michelzão' : '';
+  (g.bol || [0, 0, 0, 0, 0, 0]).forEach((f, i) => {
+    const lin = el('div', 'guia-lin'), b = el('div', 'guia-bar'), fi = el('i');
+    lin.setAttribute('aria-label', NOITE.linhas[i] + ': ' + (f >= 1 ? 'cheia' : f > 0 ? 'parte' : 'vazia'));
+    fi.style.width = Math.round(f * 100) + '%'; b.appendChild(fi);
+    lin.appendChild(el('span', null, NOITE.linhas[i])); lin.appendChild(b); bar.appendChild(lin);
+  });
+  game.manualVer('b-michelzao');
+  guiaFim = depois; showOnly(['ov-guia']);
+}
 /* ---------- fim do dia ---------- */
 /* faixa da nota do Gurugol (v8.4.1), pela nota com uma casa: abaixo de 3 pura, de 3 a 3,9 bronze (v8.6.7: o teto da Garagem),
    de 4 a 4,4 prata, de 4,5 a 4,8 ouro e acima disso diamante */
@@ -83,6 +101,7 @@ function buildEnd(){
   if (r.marmitas || r.esfriou || r.jogadas || r.sobra) rows.splice(2, 0, ['Marmitas', r.marmitas + ' entregue' + (r.marmitas === 1 ? '' : 's') + (r.efood ? ' (Efood −' + fmt(r.efood) + ')' : '') + (r.jogadas ? ' · ' + r.jogadas + ' jogada' + (r.jogadas > 1 ? 's' : '') + ' fora' : '') + (r.esfriou ? ' · ' + r.esfriou + ' esfri' + (r.esfriou > 1 ? 'aram' : 'ou') : '') + (r.sobra ? ' · ' + r.sobra + ' sobr' + (r.sobra > 1 ? 'aram' : 'ou') : '')]);
   if (r.vip || r.vipLost) rows.splice(2, 0, ['VIPs', r.vip + ' atendido' + (r.vip === 1 ? '' : 's') + (r.vipLost ? ' · ' + r.vipLost + ' bravo' + (r.vipLost > 1 ? 's' : '') : '')]);
   if (r.amanha) rows.push(['Amanhã', EVENTOS[r.amanha].nome]);   // v10.6: a véspera do evento de bairro, a última linha da tabela
+  if (r.noite) rows.push(['Michelzão', 'O guia liga amanhã cedo']);   // v10.10: a noite da estrela
   // Gurugol (v8.4): a caixa animada à esquerda dos quadros (v8.4.1); embaixo, 2 ou 3 comentários (os critérios do dia no title)
   const av = $('end-aval'); clearEl(av); av.title = ''; clearEl($('end-baloes'));
   { const cr = $('end-critico'); clearEl(cr);   // v10.9: a ficha da visita do crítico: cinco linhas com 0 a 2 garfinhos, sem número

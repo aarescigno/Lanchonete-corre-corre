@@ -195,6 +195,7 @@ function drawTable(ctx,g,t,tm,menu){
   if (showPpl) seats.forEach((s,i) => { if (!s.front && i < grp.people.length) drawSeatPerson(ctx,g,grp,i,s,tm); });
   drawTableBody(ctx,t,true,g,tm);
   if (grp && grp.critico && grp.caderno > 0 && grp.seated && seats[0]) drawCaderno(ctx,seats[0].x + 13,seats[0].y - 17,tm,RM,1.25);   // v10.9: a pista do crítico
+  if (g.noite && !menu && t.open) drawVela(ctx,t.cx + t.hx * 0.5,t.cy - 2,tm,RM);   // v10.10: a vela de cada mesa aberta na noite da estrela
   if (t.cami && (menu || g.camiMesasOn)) drawAventalCami(ctx,t.cx + t.hx - 22,t.cy - 4);   // v9.6: o avental vinho da Cami no tampo
   // toalhinha da comanda (do pedido até o grupo sair)
   if (grp && grp.cmd >= 0 && grp.seated){
@@ -286,6 +287,28 @@ function drawTempoTrilha(ctx,grp,x,y,tm){
     ctx.restore();
   });
 }
+/* v10.10, a noite da estrela: a vela acesa na mesa (a chama balança; parada com prefers-reduced-motion) */
+function drawVela(ctx,x,y,tm,parado){
+  ctx.save(); ctx.translate(x,y);
+  ell(ctx,0,2,5.5,2.2); ctx.fillStyle = 'rgba(34,32,28,.22)'; ctx.fill();
+  rr(ctx,-2.6,-8,5.2,10,1.4); fs(ctx,'#FFF6DA',1.5);
+  const f = parado ? 0 : Math.sin(tm * 9 + x) * 0.9;
+  ctx.beginPath(); ctx.moveTo(-2.4,-9.6); ctx.quadraticCurveTo(f - 3,-14,f,-18.4); ctx.quadraticCurveTo(f + 3,-14,2.4,-9.6); ctx.closePath(); fs(ctx,'#F7B33C',1.3);
+  ctx.beginPath(); ctx.arc(0,-11.2,8,0,TAU); ctx.fillStyle = 'rgba(255,214,120,.2)'; ctx.fill();
+  ctx.restore();
+}
+/* v10.10, a fala do Bráulio: um balão branco curto em cima da mesa (ou de quem anda), com o nome em cima; some devagar no fim */
+function drawFala(ctx,grp,tm){
+  const a = Math.min(1, grp.falaT / 0.5), x = grp.x, y = grp.y - (grp.seated ? 122 : 78);
+  ctx.save(); ctx.globalAlpha = a; ctx.translate(x,y);
+  ctx.font = '13px ' + FD; const w = Math.max(38, ctx.measureText(grp.fala).width + 20);
+  rr(ctx,-w / 2,-12,w,24,9); fs(ctx,'#fff',2.2);
+  ctx.beginPath(); ctx.moveTo(-5,11); ctx.lineTo(0,18); ctx.lineTo(5,11); ctx.closePath(); fs(ctx,'#fff',1.8);
+  ctx.fillStyle = '#fff'; ctx.fillRect(-4,9.6,8,3);
+  txt(ctx,grp.fala,0,1,13,PAL.tinta,'center',FD);
+  txt(ctx,'Bráulio',0,-20,10.5,'#fff','center',FD,3);
+  ctx.restore();
+}
 function drawTableOverlay(ctx,g,t,tm,menu){
   const grp = t.group;
   const bx = t.cx + t.hx + 6, by = t.cy - 44;
@@ -297,7 +320,7 @@ function drawTableOverlay(ctx,g,t,tm,menu){
   if (!grp || grp.state === 'toTable' || grp.state === 'leaving' || !t.open) return;
   drawHearts(ctx,grp,t.cx,t.cy-70,tm);
   if (grp.tempos) drawTempoTrilha(ctx,grp,t.cx,t.cy-54,tm);   // v10
-  if (grp.vipAberto) drawVipBadge(ctx,t.cx-60,t.cy-70,tm,grp.exigente);   // v10.9: o crítico disfarçado não leva plaquinha
+  if (grp.vipAberto) drawVipBadge(ctx,t.cx-60,t.cy-70,tm,grp.critico ? 'michel' : grp.exigente);   // v10.9: o crítico disfarçado não leva plaquinha
   const pul = RM ? 1 : 1 + 0.12*Math.sin(tm*7);
   ctx.save(); ctx.translate(bx,by);
   if (grp.state === 'reading'){
