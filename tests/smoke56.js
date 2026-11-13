@@ -65,15 +65,15 @@ const mostra=(H,id)=>H.els[id].classList.contains('show');
   ok(sv.convPlanta==='pend' && g.conversa && g.conversa.falas===H.L.HIST_PLANTA.falas,'fim do dia 1: o presente da dona Cida toca');
   ok(/dona Cida/.test(fala(H)),'1ª fala do Tonhão');
   passa(H);
-  ok(sv.convPlanta===1 && sv.decor.espada===1 && sv.libera.decor===0 && mostra(H,'ov-end'),'depois, a espada está à mostra e o cartão Decoração segue fechado'); }
+  ok(sv.convPlanta===1 && sv.decor.espada===1 && sv.libera.luxo===0 && mostra(H,'ov-end'),'depois, a espada está à mostra e o cartão Decoração segue fechado'); }
 
 // 7. o elogio à planta abre a Decoração
 { const H=nova(), {g}=H, sv=base(H); sv.decor.espada=1;
   g.startDay(3); joga(H,400,g=>{ g.avals=[aval([5,5,5,5,3])]; });
-  ok(sv.libera.decor==='pend' || sv.libera.decor===1,'elogio (ambiente 3) com a planta à mostra: Decoração');
+  ok(sv.libera.luxo==='pend' || sv.libera.luxo===1,'elogio (ambiente 3) com a planta à mostra: Decoração');
   const H2=nova(), sv2=base(H2); H2.g.startDay(3); joga(H2,400,g=>{ g.avals=[aval([5,5,5,5,3])]; });
-  ok(sv2.libera.decor===0,'sem a planta à mostra, o elogio não abre a Decoração');
-  const L=H.L.LIBERA.find(l=>l.id==='decor'); ok(L.dia===3 && L.ate===6 && L.reclama.some(t=>/plantinha/.test(t)),'dia 3, garantia 6, comentário sobre a plantinha'); }
+  ok(sv2.libera.luxo===0,'sem a planta à mostra, o elogio não abre a Decoração');
+  const L=H.L.LIBERA.find(l=>l.id==='luxo'); ok(L.dia===3 && L.ate===6 && L.reclama.some(t=>/plantinha/.test(t)),'dia 3, garantia 6, comentário sobre a plantinha'); }
 
 // 8. a Dani
 { const H=nova(), {g,L,els}=H; g.save.cap=1; g.save.conversa=null; g.goShop(2); L.setShopGrupo('equipe'); L.setShopTab('dani');

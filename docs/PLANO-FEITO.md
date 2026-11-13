@@ -36,6 +36,15 @@ Etapas concluídas (1a a 3a), movidas de `docs/PLANO.md` em 30/10/2026 e 31/10/2
 
 ---
 
+### Sessão 4b — Nível de luxo (v10.7)
+**Objetivo:** o nível de luxo de 0 a 5, em cinco barras (Endereço, Decoração, Móveis, Ambiente e Fama), na aba nova Luxo da lojinha, com 5 enfeites e 4 degraus de mesa novos. Mais luxo traz mais VIPs (e exigentes na Avenida) e vira a nota de Ambiente do Gurugol.
+
+**Spec:** `docs/spec-v10.7.md` (aprovada em 13/11).
+
+**Modelo:** Sonnet, esforço alto (cálculo, interface, desenho e calibração em várias partes).
+
+---
+
 ## Etapa 4c — Eventos de bairro (v10.6)
 **Objetivo:** um evento por semana, do dia 8 em diante (festa junina com a barraca de pratos típicos; jogo do Brasil com as três fases e o gol), avisado na véspera. Spec aprovada em 12/11: `docs/spec-v10.6.md`.
 
@@ -50,6 +59,7 @@ Etapas concluídas (1a a 3a), movidas de `docs/PLANO.md` em 30/10/2026 e 31/10/2
 | S | Salários de verdade: equipe e música no custo real (~80%), cardápio e metas recalibrados | v10.5 | feita em 12/11 (`docs/spec-v10.5.md`; `smoke67`; a música não paga o preço no `balance.js`, ver Desvios) |
 | D-2 | Modo dev completo: História (cumprir, assistir, revelar) e Hoje (forçar imprevistos) | v10.2.2 | feita em 11/11 (`docs/spec-v10.2.2.md`; `smoke64`) |
 | 4a-1 | O Terraço Suíça e a refeição completa (caps. 8 e 9) | v10 | feita em 11/11 (`docs/spec-v10.md`; `smoke60`; calibrada: grupos 0,50, metaF 9, expertF 6, aluguel R$ 1.200, cardápio ×2,4) |
+| R2 | O ritmo da história: conversas no cap. 3 e um capítulo novo na Avenida e outro no Terraço | v10.5.2 | feita em 12/11 (`docs/spec-v10.5.2.md`; `smoke69`; 11 capítulos; o cap. 7 leva 3 a 4 dias e o cap. 10, 3; a história acaba no dia 49) |
 | R2 | Menos sustos: "Já vou!", banco sem armadilha e pausa que confirma (análise de frustração) | v9.6.13 | feita em 10/11 (`docs/spec-v9.6.13.md`; `smoke59`) |
 | R1 | Revisão geral: Missão zero enxuta, dicas na hora, HUD com estrelas, fim do dia | v9.6.12 | feita em 10/11 (`docs/spec-v9.6.12.md`; `smoke58`; sem mudar números do jogo) |
 | 3g-2 | A tela avisa: Gurugol em balões, mesinha das marmitas, eFood e fumaça | v9.6.11 | feita em 02/11 (`docs/spec-v9.6.11.md`; `smoke57`; geladeira fora da tela, mesinha no lugar dela, cheiro só onde a fumaça chega) |

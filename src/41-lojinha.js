@@ -164,6 +164,38 @@ function upgradeIcon(id){
       c.save(); c.translate(-6,-5); c.rotate(-0.18); rr(c,-4,-4,8,8,2); fs(c,'#E8B43A',1.2); c.restore();
       c.save(); c.translate(7,-5); c.rotate(0.18); rr(c,-4,-4,8,8,2); fs(c,'#D9644A',1.2); c.restore();
       c.fillStyle = PAL.madeiraEsc; c.fillRect(-14,9,3,4); c.fillRect(11,9,3,4);
+    } else if (id === 'luxo'){   // v10.7: o brilhante da aba Luxo
+      c.beginPath(); c.moveTo(-14,-6); c.lineTo(-8,-14); c.lineTo(8,-14); c.lineTo(14,-6); c.lineTo(0,14); c.closePath(); fs(c,'#BFE9F6',2);
+      c.strokeStyle = PAL.tinta; c.lineWidth = 1.2; c.beginPath(); c.moveTo(-14,-6); c.lineTo(14,-6); c.moveTo(-8,-14); c.lineTo(-4,-6); c.lineTo(0,14); c.moveTo(8,-14); c.lineTo(4,-6); c.lineTo(0,14); c.moveTo(-4,-6); c.lineTo(0,-14); c.lineTo(4,-6); c.stroke();
+      c.fillStyle = 'rgba(255,255,255,.7)'; c.beginPath(); c.moveTo(-10,-7); c.lineTo(-7,-12); c.lineTo(-3,-7); c.closePath(); c.fill();
+      c.fillStyle = '#F2C94C'; [[15,-12],[-16,-13]].forEach(p => { c.beginPath(); c.moveTo(p[0],p[1] - 4); c.lineTo(p[0] + 1.2,p[1] - 1.2); c.lineTo(p[0] + 4,p[1]); c.lineTo(p[0] + 1.2,p[1] + 1.2); c.lineTo(p[0],p[1] + 4); c.lineTo(p[0] - 1.2,p[1] + 1.2); c.lineTo(p[0] - 4,p[1]); c.lineTo(p[0] - 1.2,p[1] - 1.2); c.closePath(); c.fill(); });
+    } else if (id === 'd-pisca'){
+      c.strokeStyle = '#2B2A26'; c.lineWidth = 1.2; c.beginPath(); c.moveTo(-18,-6); c.quadraticCurveTo(-9,10,0,-4); c.quadraticCurveTo(9,10,18,-6); c.stroke();
+      [[-14,0,'#FF6B5B'],[-8,4,'#FFD84A'],[-2,1,'#5BC27A'],[6,3,'#5AA9F2'],[13,-1,'#FFB347']].forEach(b => { circ(c,b[0],b[1] + 2,3); fs(c,b[2],1); });
+    } else if (id === 'd-chita'){
+      c.save(); c.beginPath(); c.moveTo(-14,-14); c.lineTo(14,-14); c.lineTo(14,9); c.quadraticCurveTo(9,15,5,9); c.quadraticCurveTo(0,15,-5,9); c.quadraticCurveTo(-9,15,-14,9); c.closePath(); c.fillStyle = '#F8E7B8'; c.fill(); c.clip(); pintaChita(c,-14,-14,28,30); c.restore();
+      c.beginPath(); c.moveTo(-14,-14); c.lineTo(14,-14); c.lineTo(14,9); c.quadraticCurveTo(9,15,5,9); c.quadraticCurveTo(0,15,-5,9); c.quadraticCurveTo(-9,15,-14,9); c.closePath(); c.strokeStyle = PAL.tinta; c.lineWidth = 1.6; c.stroke();
+      rr(c,-17,-17,34,4,1.5); fs(c,'#5B3A21',1.2);
+    } else if (id === 'd-luminaria'){
+      c.scale(0.8,0.8); drawLuminaria(c,0,2); c.fillStyle = 'rgba(255,255,255,0)';
+    } else if (id === 'd-quadros'){
+      c.save(); c.translate(0,0); drawQuadro(c,0,0,30,36,0); c.restore();
+    } else if (id === 'd-lustre'){
+      c.scale(0.55,0.55); drawLustre(c,0,-4,0);
+    } else if (id === 'm-madeira' || id === 'm-linho' || id === 'm-marmore'){   // o degrau do jogo de mesas: o tampo e as pernas
+      c.fillStyle = id === 'm-marmore' ? '#9A948A' : PAL.madeiraEsc; c.fillRect(-13,6,3,10); c.fillRect(10,6,3,10);
+      if (id === 'm-linho'){
+        c.beginPath(); c.moveTo(-17,-6); c.lineTo(17,-6); c.lineTo(18,12); c.quadraticCurveTo(12,15,6,12); c.quadraticCurveTo(0,15,-6,12); c.quadraticCurveTo(-12,15,-18,12); c.closePath(); fs(c,'#FFFFFF',2);
+        c.fillStyle = 'rgba(140,170,200,.5)'; c.fillRect(-17,6,35,2);
+      } else {
+        rr(c,-18,-4,36,11,3); fs(c,id === 'm-marmore' ? '#BDB6AA' : '#7A4B22',2); rr(c,-18,-8,36,11,3); fs(c,id === 'm-marmore' ? '#F4F1EC' : '#C99A5B',2);
+        c.strokeStyle = id === 'm-marmore' ? 'rgba(120,125,140,.5)' : 'rgba(90,50,20,.35)'; c.lineWidth = 1; c.beginPath(); c.moveTo(-13,-4); c.quadraticCurveTo(0,-7,13,-4); c.stroke();
+        if (id === 'm-marmore'){ c.strokeStyle = '#C9953A'; c.lineWidth = 1.2; rr(c,-16,-6.5,32,6,2); c.stroke(); }
+      }
+    } else if (id === 'm-acolch'){   // a cadeira acolchoada
+      c.strokeStyle = PAL.cromoEsc; c.lineWidth = 2.4; c.beginPath(); c.moveTo(-9,6); c.lineTo(-10,16); c.moveTo(9,6); c.lineTo(10,16); c.stroke();
+      rr(c,-12,-16,24,24,6); fs(c,'#D9644A',2); rr(c,-8,-12,16,15,5); fs(c,'#F0987F',1.4);
+      ell(c,0,6,13,4.5); fs(c,'#F0987F',1.8); c.strokeStyle = 'rgba(34,32,28,.3)'; c.lineWidth = 1; c.beginPath(); c.moveTo(0,-10); c.lineTo(0,0); c.stroke();
     } else if (id === 'd-tulipa'){
       c.scale(0.62,0.62); drawTulipas(c,0,12,1);
     } else if (id === 'd-copo'){
@@ -190,7 +222,7 @@ function upgradeIcon(id){
 /* v8.6.15: a lojinha tem 4 grupos; cada um mostra cartões (ícone e nome) e o cartão abre a seção. shopTab = a seção aberta (null = os cartões do grupo) */
 let shopGrupo = 'lanchonete', shopTab = null;
 const SHOP_GRUPOS = [
-  { id:'lanchonete', nome:'Lanchonete', secoes:['cardapio', 'melhorias', 'salao', 'decor', 'manut', 'divulga'] },
+  { id:'lanchonete', nome:'Lanchonete', secoes:['cardapio', 'melhorias', 'salao', 'luxo', 'manut', 'divulga'] },
   { id:'equipe', nome:'Equipe', secoes:['bia', 'tonhao', 'dani', 'joca', 'cami', 'anselmo', 'lia'] },
   { id:'dinheiro', nome:'Dinheiro', secoes:['banco', 'mudanca', 'caixa'] },
   { id:'gurugol', nome:'Gurugol', secoes:['gurugol'] }];
@@ -198,7 +230,7 @@ const SHOP_SECOES = {
   cardapio:{ nome:'Cardápio', icon:'cardapio', build:g => buildCardapio(g) },
   melhorias:{ nome:'Melhorias', icon:'ventilador', build:g => buildMelhorias(g) },
   salao:{ nome:'Salão', icon:'g-salao', build:g => buildSalao(g) },
-  decor:{ nome:'Decoração', icon:'d-samambaia', build:g => buildDecor(g) },
+  luxo:{ nome:'Luxo', icon:'luxo', build:g => buildLuxo(g) },   // v10.7: no lugar da Decoração
   manut:{ nome:'Manutenção', icon:'m-fogao', build:g => buildManut(g) },
   divulga:{ nome:'Divulgação', icon:'div-redes', build:g => buildDivulga(g) },
   bia:{ nome:'Bia', icon:'bia', build:g => buildBia(g) },
@@ -212,7 +244,7 @@ const SHOP_SECOES = {
   mudanca:{ nome:'Mudança', icon:'mudanca', build:g => buildMudanca(g) },
   caixa:{ nome:'Caixa', icon:'contas', build:g => buildCaixa(g) },
   gurugol:{ nome:'Gurugol', icon:'contas', build:g => buildGurugol(g) }};
-const SHOP_ANTIGAS = { equipe:'tonhao', cursos:'cardapio' };   // nomes das abas antigas, para os testes e capturas
+const SHOP_ANTIGAS = { equipe:'tonhao', cursos:'cardapio', decor:'luxo' };   // nomes das abas antigas, para os testes e capturas
 function shopGrupoDe(sec){ const g = SHOP_GRUPOS.find(x => x.secoes.indexOf(sec) >= 0); return g ? g.id : 'lanchonete'; }
 function shopAbrir(sec){ sec = SHOP_ANTIGAS[sec] || sec; shopGrupo = shopGrupoDe(sec); shopTab = game.cartaoAberto(sec) ? sec : null; buildShop(); }   // v9.0.4: cartão fechado abre só o grupo
 function shopGrupoAbrir(g){ shopGrupo = g; shopTab = g === 'gurugol' ? 'gurugol' : null; buildShop(); }
@@ -848,6 +880,47 @@ function buildDecor(grid){
     grid.appendChild(c);
   });
 }
+/* aba Luxo (v10.7, no lugar da Decoração): o quadro do luxo (o nível e as cinco barras, sem números) e os cartões: os enfeites,
+   o próximo degrau do jogo de mesas e o ambiente do ponto (TV e som, TVs, couvert, música) */
+function luxoQuadro(){
+  const f = luxoForca(), p = luxoPts(game), tot = f >= 0 ? f * LUXO.passo : p.tot, nv = Math.min(5, Math.floor(tot / LUXO.passo));
+  const box = el('div', 'luxo-quadro'); box.setAttribute('data-nivel', String(nv));
+  const cab = el('div', 'luxo-cab');
+  cab.appendChild(el('b', null, 'Luxo ' + nv));
+  const prox = el('div', 'guru-bar'); prox.setAttribute('role', 'meter'); prox.setAttribute('aria-label', 'Luxo até o próximo nível');
+  const frac = nv >= 5 ? 1 : (tot - nv * LUXO.passo) / LUXO.passo; prox.setAttribute('aria-valuenow', String(Math.round(frac * 100)));
+  const pf = el('i'); pf.style.width = Math.round(frac * 100) + '%'; prox.appendChild(pf); cab.appendChild(prox);
+  box.appendChild(cab);
+  const barras = el('div', 'luxo-barras');
+  [p.end, p.dec, p.mov, p.amb, p.fama].forEach((v, i) => {
+    const q = el('div', 'luxo-b'), fr = f >= 0 ? f / 5 : v / LUXO.max[i];
+    q.appendChild(el('span', null, LUXO.nomes[i]));
+    const b = el('div', 'guru-bar'); b.setAttribute('role', 'meter'); b.setAttribute('aria-label', LUXO.nomes[i]); b.setAttribute('aria-valuenow', String(Math.round(fr * 100)));
+    const fi = el('i'); fi.style.width = Math.round(fr * 100) + '%'; b.appendChild(fi); q.appendChild(b); barras.appendChild(q);
+  });
+  box.appendChild(barras);
+  return box;
+}
+function buildLuxo(grid){
+  grid.appendChild(luxoQuadro());
+  buildDecor(grid);
+  buildMoveis(grid);
+  if (game.ponto.nivel === 1) buildTvSom(grid);
+  if (game.ponto.nivel === 2) buildTvs(grid);
+  buildCouvert(grid);   // (só na Avenida; no modo dev, também antes dela)
+  buildMusica(grid);    // (só no Terraço)
+}
+/* o próximo degrau do jogo de mesas (MOVEIS): um cartão só; no fim da escada do ponto, o degrau mais alto comprado */
+function buildMoveis(grid){
+  const k = movelNivel(game), prox = MOVEIS[k], bank = game.save.bank;
+  const vende = prox && (prox.nivel <= game.ponto.nivel || devLivre());
+  const m = vende ? prox : MOVEIS[k - 1];
+  if (!m) return;
+  const c = decorCard('Móveis', upgradeIcon('m-' + m.id), m.name, '');
+  if (!vende) c.classList.add('own');
+  c.appendChild(vende ? shopBtn('Comprar ' + fmt(m.cost), 'btn', bank >= m.cost, () => game.buyMovel(m.id), m.cost) : shopBtn('Já comprado', 'btn', false, () => false));
+  grid.appendChild(c);
+}
 /* aba Divulgação (v7): escolha do dia, paga junto com a folha (no fim do dia, desde a v8.2.2); e o resumo das contas do dia */
 /* aba Cursos (v8.6.9): um cartão por curso do Tonhão; feito o básico, o cartão vira o do avançado. Um curso por lojinha */
 function cursoIcon(c, av){
@@ -939,8 +1012,6 @@ function buildDivulga(grid){
   const p = game.ponto;
   const c = staffCard(upgradeIcon('contas'), 'Contas do dia ' + n, 'Luz e gás: ' + fmt(contasDia(game.tables, p)) + ' por dia');
   grid.appendChild(c);
-  buildCouvert(grid);
-  buildMusica(grid);
 }
 /* aba Manutenção (v8): o estado de cada equipamento, o risco de quebrar e a revisão (volta a 100%) */
 function buildManut(grid){
@@ -1198,7 +1269,7 @@ function buildGurugol(grid){
   if (!com.length) lista.appendChild(el('li', 'rank-empty', 'Os comentários aparecem depois do próximo dia.'));
   grid.appendChild(lista);
 }
-function buildMelhorias(grid){ upgradeCartoes(grid, false); const nv = game.ponto.nivel; if (nv === 2) { buildTvs(grid); buildAssento(grid); } else if (nv >= 3) buildAssento(grid); else buildTvSom(grid); }   // v9.1: as TVs são só da área industrial; na Avenida, os sofás
+function buildMelhorias(grid){ upgradeCartoes(grid, false); if (game.ponto.nivel >= 2) buildAssento(grid); }   // v10.7: a TV, o som e as TVs foram para a aba Luxo; o assento da espera fica   // v9.1: as TVs são só da área industrial; na Avenida, os sofás
 function upgradeCartoes(grid, bia){
   // os Tênis de corrida (v7.3) só aparecem depois dos Tênis novos, no lugar deles (a grade continua com 6); no modo dev, todas
   UPGRADES.filter(u => (BIA_IDS.indexOf(u.id) >= 0) === bia).filter(u => u.id !== 'maquina' || (game.ponto.bebida && game.ponto.bebida !== 'coquetel')).filter(u => !u.nivel || devLivre() || game.ponto.nivel >= u.nivel).filter(u => devLivre() || (u.req ? game.up[u.req] : !(game.up[u.id] && UPGRADES.some(v => v.req === u.id)))).forEach(u => {
@@ -1220,7 +1291,7 @@ function upgradeCartoes(grid, bia){
 }
 /* v9.6.7: as fichas do Manual abrem com os cartões que a lojinha já mostra (as seções, a equipe e os pontos); as das melhorias, ao desenhar o item */
 const FICHA_PADRAO = { tonhao:'e-tonhao', bia:'e-bia' };   // v9.6.8: as seções sem ficha própria em SEC_FICHA
-const SEC_FICHA = { cardapio:'l-cardapio', salao:'l-salao', decor:'l-decor', manut:'l-manut', divulga:'l-divulga', banco:'l-banco', mudanca:'l-mudanca', caixa:'l-caixa', dani:'e-dani', joca:'e-joca', cami:'e-cami', anselmo:'e-anselmo', lia:'e-lia' };
+const SEC_FICHA = { cardapio:'l-cardapio', salao:'l-salao', luxo:'l-luxo', manut:'l-manut', divulga:'l-divulga', banco:'l-banco', mudanca:'l-mudanca', caixa:'l-caixa', dani:'e-dani', joca:'e-joca', cami:'e-cami', anselmo:'e-anselmo', lia:'e-lia' };
 function manualLoja(){
   SHOP_GRUPOS.forEach(g => shopSecoesVis(g).forEach(id => { if (SEC_FICHA[id]) game.manualVer(SEC_FICHA[id]); }));
   game.manualPontos();
@@ -1257,7 +1328,7 @@ function buildShopTela(){
   ['salao', 'caixa'].forEach(k => $('ov-shop').classList[shopTab === k ? 'add' : 'remove'](k));
   if (shopTab !== 'mudanca') mudarPede = false;
   if (!aberta){ grid.className = 'shopcards'; return shopCartoes(grid, SHOP_GRUPOS.find(x => x.id === shopGrupo)); }
-  grid.className = 'shopgrid' + (shopTab === 'tonhao' || shopTab === 'dani' || shopTab === 'joca' || shopTab === 'cami' || shopTab === 'anselmo' || shopTab === 'lia' || shopTab === 'cardapio' ? ' cursos' : ['salao', 'caixa', 'melhorias', 'gurugol', 'decor'].indexOf(shopTab) >= 0 ? ' ' + shopTab : '');
+  grid.className = 'shopgrid' + (shopTab === 'tonhao' || shopTab === 'dani' || shopTab === 'joca' || shopTab === 'cami' || shopTab === 'anselmo' || shopTab === 'lia' || shopTab === 'cardapio' ? ' cursos' : ['salao', 'caixa', 'melhorias', 'gurugol', 'luxo'].indexOf(shopTab) >= 0 ? ' ' + shopTab : '');
   aberta.build(grid);
   if (shopTab !== 'caixa' && shopTab !== 'gurugol') Array.prototype.slice.call(grid.children).filter(c => (c.className || '').split(' ').indexOf('item') >= 0).forEach(card => {   // v9.6.8: o "?" no canto de cada cartão
     const f = card.getAttribute('data-ficha') || SEC_FICHA[shopTab] || FICHA_PADRAO[shopTab], t = Array.prototype.find.call(card.children, x => x.tagName === 'B');

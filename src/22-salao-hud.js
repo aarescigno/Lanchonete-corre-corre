@@ -1,7 +1,23 @@
 /* ============================================================
    MESAS E CLIENTES
    ============================================================ */
-function drawChair(ctx,x,y,ci,front,plast,estof){
+/* v10.7: o jogo de mesas: da cadeira acolchoada (mv 2 em diante) em almofada no assento e no encosto, e, no mármore (mv 4), cadeira de veludo
+   (cor escura da cadeira, com botões e pregos dourados) */
+function drawAlmofada(ctx,x,y,c,mv,plast,estof){
+  const veludo = mv >= 4, cor = veludo ? mixCor(c.d,'#2A0F2E',0.45) : mixCor(c.c,'#FFFFFF',0.32);
+  const bx = x - (estof ? 11 : plast ? 10 : 12), by = estof ? y - 35 : plast ? y - 30 : y - 29, bw = estof ? 22 : plast ? 20 : 24, bh = estof ? 28 : plast ? 19 : 21;
+  rr(ctx,bx,by,bw,bh,6); fs(ctx,cor,1.6);
+  ell(ctx,x,y - 0.5,veludo ? 15 : 14,4.8); fs(ctx,cor,1.6);
+  if (veludo){
+    ctx.fillStyle = '#E8C46A'; [[0.3,0.3],[0.7,0.3],[0.5,0.62]].forEach(p => { circ(ctx,bx + bw * p[0],by + bh * p[1],1.5); ctx.fill(); });
+    ctx.strokeStyle = 'rgba(232,196,106,.7)'; ctx.lineWidth = 1; ctx.beginPath(); ctx.moveTo(bx + 3,by + bh - 3); ctx.lineTo(bx + bw - 3,by + bh - 3); ctx.stroke();
+  } else { ctx.strokeStyle = 'rgba(34,32,28,.25)'; ctx.lineWidth = 1; ctx.beginPath(); ctx.moveTo(bx + bw / 2,by + 3); ctx.lineTo(bx + bw / 2,by + bh - 3); ctx.stroke(); }
+}
+function drawChair(ctx,x,y,ci,front,plast,estof,mv){
+  drawChairBase(ctx,x,y,ci,front,plast,estof);
+  if (mv >= 2) drawAlmofada(ctx,x,y,CHAIRS[ci],mv,plast,estof);
+}
+function drawChairBase(ctx,x,y,ci,front,plast,estof){
   const c = CHAIRS[ci];
   if (estof){
     // v10, Terraço Suíça: cadeira estofada de encosto alto, na cor da cadeira, com pregos dourados e pés de madeira escura
@@ -32,13 +48,45 @@ function drawChair(ctx,x,y,ci,front,plast,estof){
   ell(ctx,x,y+2,18,6); fs(ctx,c.d,2.2);
 }
 
-function drawTableBody(ctx,t,open,g,tm){
+/* v10.7: o jogo de mesas fora da Garagem (as mesas retangulares): madeira clara (mv 1 e 2), toalha de linho (3) ou mármore (4); fora do Terraço,
+   o tampo de formica some; (a madeira escura do Terraço já é madeira: só o linho e o mármore mudam) */
+function drawMesaLuxo(ctx,t,open,mv,te){
   const hw = t.hx - 4;
+  if (mv === 3){
+    rr(ctx,t.cx-hw,t.cy-15,hw*2,36,9); fs(ctx,'#CFC9BB',2.6);
+    drawToalha(ctx,t.cx - hw,t.cy,hw * 2,true);
+    drawToalhaEnfeites(ctx,t.cx,t.cy,hw);
+    return;
+  }
+  const mar = mv >= 4;
+  rr(ctx,t.cx-hw,t.cy-15,hw*2,36,9); fs(ctx,mar ? '#BDB6AA' : '#7A4B22',2.6);
+  rr(ctx,t.cx-hw,t.cy-18,hw*2,34,9); fs(ctx,mar ? (open ? '#F4F1EC' : '#CFCBC4') : (open ? '#C99A5B' : '#A98558'),2.6);
+  rr(ctx,t.cx-hw+4,t.cy-14,hw*2-8,26,6); fs(ctx,mar ? (open ? '#ECE8E1' : '#C4C0B9') : (open ? '#B98749' : '#9A774C'),1.6);
+  if (mar){
+    ctx.strokeStyle = 'rgba(120,125,140,.35)'; ctx.lineWidth = 1.1;
+    [[-0.7,-8,-0.2,-2,0.3,-9,0.8,-3],[-0.5,6,0,0,0.5,8,0.9,2]].forEach(v => { ctx.beginPath(); ctx.moveTo(t.cx + v[0] * hw,t.cy + v[1]); ctx.bezierCurveTo(t.cx + v[2] * hw,t.cy + v[3],t.cx + v[4] * hw,t.cy + v[5],t.cx + v[6] * hw,t.cy + v[7]); ctx.stroke(); });
+    ctx.strokeStyle = TE_OURO; ctx.lineWidth = 1.4; rr(ctx,t.cx-hw+2,t.cy-16,hw*2-4,30,8); ctx.stroke();
+    drawToalhaEnfeites(ctx,t.cx,t.cy,hw);
+  } else {
+    ctx.strokeStyle = 'rgba(90,50,20,.28)'; ctx.lineWidth = 1.1;
+    [-6,0,6].forEach(dy => { ctx.beginPath(); ctx.moveTo(t.cx-hw+9,t.cy-1+dy); ctx.quadraticCurveTo(t.cx,t.cy-3+dy,t.cx+hw-9,t.cy-1+dy); ctx.stroke(); });
+  }
+  ctx.fillStyle = 'rgba(255,255,255,.22)'; rr(ctx,t.cx-hw+8,t.cy-11,hw*2-30,4,2); ctx.fill();
+}
+function drawTableBody(ctx,t,open,g,tm){
+  const hw = t.hx - 4, mv = movelNivel(g);
   shadowEll(ctx,t.cx,t.cy+24,hw+8,12,0.2);
+  if (!garagem(g) && (terraco(g) ? mv >= 3 : mv >= 1)){   // v10.7: o jogo de mesas
+    drawMesaLuxo(ctx,t,open,mv,terraco(g));
+    if (t.id === '') return;
+    circ(ctx,t.cx-hw+14,t.cy-1,8.5); fs(ctx,terraco(g) ? TE_OURO_CL : '#fff',2);
+    txt(ctx,String(t.id),t.cx-hw+14,t.cy,12,PAL.tinta,'center',FD);
+    return;
+  }
   if (garagem(g)){
     // mesa quadrada de plástico de bar (Garagem, v7.4): cantos chanfrados, furo do guarda-sol no meio e pernas
     // que afinam para baixo. A mesa de 4 são 2 mesas quadradas juntas, como no bar
-    const n = t.seats === 4 ? 2 : 1, w = hw * 2 / n, top = open ? '#F7F4EB' : '#d6d2c8', side = open ? '#D3CCBB' : '#b9b4a8';
+    const n = t.seats === 4 ? 2 : 1, w = hw * 2 / n, top = mv >= 4 ? (open ? '#F4F1EC' : '#cfcbc4') : mv >= 1 ? (open ? '#C99A5B' : '#a98558') : open ? '#F7F4EB' : '#d6d2c8', side = mv >= 4 ? '#BDB6AA' : mv >= 1 ? '#8F6535' : open ? '#D3CCBB' : '#b9b4a8';   // v10.7: madeira e mármore
     const leg = (x, y0, y1, d) => { ctx.beginPath(); ctx.moveTo(x-4*d,y0); ctx.lineTo(x+4*d,y0); ctx.lineTo(x+2,y1); ctx.lineTo(x-2,y1); ctx.closePath(); fs(ctx,side,2); };
     const oct = (x, y, ww, h, c) => { ctx.beginPath(); ctx.moveTo(x+c,y); ctx.lineTo(x+ww-c,y); ctx.lineTo(x+ww,y+c*0.6); ctx.lineTo(x+ww,y+h-c*0.6); ctx.lineTo(x+ww-c,y+h); ctx.lineTo(x+c,y+h); ctx.lineTo(x,y+h-c*0.6); ctx.lineTo(x,y+c*0.6); ctx.closePath(); };
     for (let k=0;k<n;k++){
@@ -48,10 +96,13 @@ function drawTableBody(ctx,t,open,g,tm){
       leg(x0+7,t.cy+14,t.cy+32,1); leg(x0+w-7,t.cy+14,t.cy+32,1);          // pernas da frente
       oct(x0,t.cy-18,w,30,8); fs(ctx,top,2.6);                               // tampo
       ctx.strokeStyle = 'rgba(34,32,28,.12)'; ctx.lineWidth = 1.2; oct(x0+5,t.cy-14,w-10,22,5); ctx.stroke();
-      if (t.toalha) drawToalha(ctx,x0,t.cy,w);
+      if (mv === 3) drawToalha(ctx,x0,t.cy,w,true);   // v10.7: o linho cobre todas as mesas, no lugar da xadrez; no mármore, sem toalha
+      else if (t.toalha && mv < 4) drawToalha(ctx,x0,t.cy,w);
+      else if (mv >= 4){ ctx.strokeStyle = 'rgba(120,125,140,.35)'; ctx.lineWidth = 1; ctx.beginPath(); ctx.moveTo(x0+8,t.cy-10); ctx.bezierCurveTo(x0+w*0.4,t.cy-2,x0+w*0.6,t.cy-12,x0+w-8,t.cy-4); ctx.stroke(); ctx.strokeStyle = TE_OURO; ctx.lineWidth = 1.2; oct(x0+2,t.cy-16,w-4,26,6); ctx.stroke(); }
+      else if (mv >= 1){ ctx.strokeStyle = 'rgba(90,50,20,.28)'; ctx.lineWidth = 1; [-5,2].forEach(dy => { ctx.beginPath(); ctx.moveTo(x0+8,t.cy-6+dy); ctx.quadraticCurveTo(x0+w/2,t.cy-8+dy,x0+w-8,t.cy-6+dy); ctx.stroke(); }); }
       else { ell(ctx,x0+w/2,t.cy-3,3,1.8); ctx.fillStyle = 'rgba(34,32,28,.35)'; ctx.fill(); }
     }
-    if (t.toalha) drawToalhaEnfeites(ctx,t.cx,t.cy,hw);
+    if ((t.toalha && mv < 4) || mv >= 3) drawToalhaEnfeites(ctx,t.cx,t.cy,hw);
     if (t.id === '') return;   // mesa no estoque do editor (v8.3.5): sem número
     circ(ctx,t.cx-hw+14,t.cy-1,8.5); fs(ctx,PAL.mostarda,2);
     txt(ctx,String(t.id),t.cx-hw+14,t.cy,12,PAL.tinta,'center',FD);
@@ -81,19 +132,24 @@ function drawTableBody(ctx,t,open,g,tm){
 
 /* toalha xadrez (v8.6.5, aba Decoração): por cima do tampo da mesa quadrada (x0 é a borda esquerda, w a largura),
    com a aba da frente caindo em ondas */
-function drawToalha(ctx,x0,cy,w){
+function drawToalha(ctx,x0,cy,w,linho){
   const a = x0 - 3, b = x0 + w + 3, y0 = cy - 20, y1 = cy + 12, yb = cy + 19;
   ctx.save();
   ctx.beginPath(); ctx.moveTo(a+5,y0); ctx.lineTo(b-5,y0); ctx.quadraticCurveTo(b,y0,b,y0+5); ctx.lineTo(b+1,yb-3);
   const n = 4, d = (b - a + 2) / n;
   for (let i=0;i<n;i++){ const xa = b + 1 - i*d; ctx.quadraticCurveTo(xa - d/2,yb + (i % 2 ? 3 : -1),xa - d,yb - (i === n-1 ? 3 : 0)); }
   ctx.lineTo(a,y0+5); ctx.quadraticCurveTo(a,y0,a+5,y0); ctx.closePath();
-  ctx.fillStyle = '#FFFDF7'; ctx.fill();
+  ctx.fillStyle = linho ? '#FFFFFF' : '#FFFDF7'; ctx.fill();
   ctx.save(); ctx.clip();
-  ctx.fillStyle = 'rgba(200,60,50,.55)';
   const q = 7;
-  for (let x = a; x < b + 2; x += q*2) ctx.fillRect(x,y0,q,yb - y0 + 4);
-  for (let y = y0; y < yb + 4; y += q*2) ctx.fillRect(a,y,b - a + 2,q);
+  if (linho){   // v10.7: a toalha de linho, branca, com a barra azul-clara perto da borda e o brilho do tecido
+    ctx.fillStyle = 'rgba(140,170,200,.45)'; ctx.fillRect(a,y1 - 2,b - a + 2,2.4); ctx.fillRect(a,y0 + 3,b - a + 2,1.6);
+    ctx.fillStyle = 'rgba(190,205,225,.35)'; for (let x = a + 6; x < b; x += 11) ctx.fillRect(x,y0 + 6,1,y1 - y0 - 10);
+  } else {
+    ctx.fillStyle = 'rgba(200,60,50,.55)';
+    for (let x = a; x < b + 2; x += q*2) ctx.fillRect(x,y0,q,yb - y0 + 4);
+    for (let y = y0; y < yb + 4; y += q*2) ctx.fillRect(a,y,b - a + 2,q);
+  }
   ctx.fillStyle = 'rgba(34,32,28,.12)'; ctx.fillRect(a,y1,b - a + 2,yb - y1 + 4);   // a aba da frente, na sombra
   ctx.restore();
   ctx.strokeStyle = PAL.tinta; ctx.lineWidth = 2.2; ctx.stroke();
@@ -134,8 +190,8 @@ function drawTable(ctx,g,t,tm,menu){
   }
   if (grp && grp.seated) drawMoodRing(ctx,grp.hearts,t.cx,t.cy+66,t.hx+2,10,tm);
   // cadeiras e pessoas de trás
-  const plast = garagem(g), estof = terraco(g);
-  seats.forEach((s,i) => { if (!s.front) drawChair(ctx,s.x,s.y,t.color,false,plast,estof); });
+  const plast = garagem(g), estof = terraco(g), mv = movelNivel(g);
+  seats.forEach((s,i) => { if (!s.front) drawChair(ctx,s.x,s.y,t.color,false,plast,estof,mv); });
   if (showPpl) seats.forEach((s,i) => { if (!s.front && i < grp.people.length) drawSeatPerson(ctx,g,grp,i,s,tm); });
   drawTableBody(ctx,t,true,g,tm);
   if (t.cami && (menu || g.camiMesasOn)) drawAventalCami(ctx,t.cx + t.hx - 22,t.cy - 4);   // v9.6: o avental vinho da Cami no tampo
@@ -162,7 +218,7 @@ function drawTable(ctx,g,t,tm,menu){
     }
     ctx.fillStyle = '#fff'; ell(ctx,t.cx+hw-10,t.cy+3,5,3); fs(ctx,'#fff',1.5);
   }
-  seats.forEach((s,i) => { if (s.front) drawChair(ctx,s.x,s.y,t.color,true,plast,estof); });
+  seats.forEach((s,i) => { if (s.front) drawChair(ctx,s.x,s.y,t.color,true,plast,estof,mv); });
   if (showPpl) seats.forEach((s,i) => { if (s.front && i < grp.people.length) drawSeatPerson(ctx,g,grp,i,s,tm); });
 }
 function drawSeatPerson(ctx,g,grp,i,s,tm){

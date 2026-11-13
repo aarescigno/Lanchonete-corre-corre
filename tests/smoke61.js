@@ -132,7 +132,7 @@ const tempoDe=(g,grp,t)=>{ g.kitchen.queue=[]; g.kitchen.cooking=[]; g.kitchen.s
   // o Ambiente +0,5: o critério do cliente sobe 0,5 com a Louça fina
   const T=terr({ bank:3000 }), gt=T.g, ra=Math.random; Math.random=()=>0.5;
   const med=(up)=>{ gt.up.louca=up; gt.avals=[]; const x=sentar(gt,'familia',false); x.grp.avalia=true; x.grp.setState('wantBill'); x.grp.hearts=5; gt.avaliar(x.grp,0,0); const s=gt.avals[0].s[4]; x.t.group=null; return s; };
-  const sem=med(false), com=med(true); Math.random=ra; ok(Math.abs((com-sem)-0.5)<1e-9,'a Louça fina soma 0,5 ao Ambiente ('+sem+' → '+com+')'); }
+  const sem=med(false), pm=L.luxoPts(gt).mov, com=med(true), pm2=L.luxoPts(gt).mov; Math.random=ra; ok(pm2-pm===3 && com>=sem && com-sem<0.31,'v10.7: a Louça fina soma 3 pontos de luxo (barra Móveis), cerca de 0,1 no Ambiente ('+sem+' → '+com+')'); }
 
 // ---------- 10. a conversa, só no Modo História ----------
 { const H=nova({historia:true}), {g,L,els}=H; g.save=L.normSave({ histV:1, cap:8, dia:10, maxDay:10, bank:6000, v10:1, up:{ tenis:true, fogaoInd:true }, equipe:{ tonhao:3, dani:2, anselmo:2 }, daniCursos:{ confCaseira:1 }, salao:{ ponto:'terraco' } });

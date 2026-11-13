@@ -210,6 +210,9 @@ function devAbaHoje(body, secao, botao){
     const r = secao(titulo);
     ops.forEach(([v, t]) => botao(r, t, () => game.devForca(k, v), (DEV.forca[k] || '') === v));
   });
+  { const f = luxoForca(), r = secao('Luxo (VIPs, exigentes na Avenida e Ambiente)', 'Agora: ' + (f >= 0 ? 'forçado no nível ' + f : 'normal, nível ' + luxoNivel(game)));   // v10.7
+    botao(r, 'normal', () => game.devLuxo(null), f < 0);
+    [0, 1, 2, 3, 4, 5].forEach(n => botao(r, String(n), () => game.devLuxo(n), f === n)); }
   if (musicaOk(game.ponto)) botao(secao('Música (Terraço)', 'Agora: ' + DEV_MUSICA[game.save.equipe.musica || 0]), 'Música: trocar', () => game.devMusica());   // v10.4: sem música → trioo → pianista
   if ((game.state === 'paused' || game.state === 'playing') && game.mode === 'carreira'){
     let r = secao('No dia', 'Velocidade ' + DEV.vel + '×');
@@ -255,6 +258,8 @@ function devAbaEquipe(body, secao, botao, nota){
   botao(r, 'Todas', () => game.devMelhorias(true)); botao(r, 'Nenhuma', () => game.devMelhorias(false));
   r = secao('Decoração');
   botao(r, 'Toda', () => game.devDecor(true)); botao(r, 'Nenhuma', () => game.devDecor(false));
+  r = secao('Luxo');   // v10.7
+  botao(r, 'Tudo do luxo', () => game.devLuxoTudo());
   r = secao('Manutenção');
   botao(r, 'Tudo novo', () => game.devManut(1)); botao(r, 'Tudo gasto', () => game.devManut(0.2));
   const ng = game.notaGurugol;
@@ -387,7 +392,7 @@ const DES_BASICO = {
 };
 /* o ícone da lojinha de cada ficha `l-` (o da Água da torneira e do assento segue o ponto) */
 const MANUAL_ICO = { 'l-tenis':'tenis', 'l-corrida':'corrida', 'l-cafeteira':'cafeteira', 'l-bandeja':'bandeja', 'l-sudoku':'sudoku', 'l-ventilador':'ventilador', 'l-triturador':'triturador', 'l-pratos':'pratos', 'l-louca':'louca',
-  'l-tvsom':'ambiente', 'l-tvs':'tvs', 'l-couvert':'couvert', 'l-musica':'musica', 'l-fogao':'fogao-ind', 'l-cardapio':'cardapio', 'l-barraca':'barraca', 'l-salao':'g-salao', 'l-decor':'d-samambaia', 'l-manut':'m-fogao', 'l-divulga':'div-redes', 'l-banco':'banco', 'l-mudanca':'mudanca', 'l-caixa':'contas',
+  'l-tvsom':'ambiente', 'l-tvs':'tvs', 'l-couvert':'couvert', 'l-musica':'musica', 'l-fogao':'fogao-ind', 'l-cardapio':'cardapio', 'l-barraca':'barraca', 'l-salao':'g-salao', 'l-luxo':'luxo', 'l-manut':'m-fogao', 'l-divulga':'div-redes', 'l-banco':'banco', 'l-mudanca':'mudanca', 'l-caixa':'contas',
   'p-industrial':'mudanca', 'p-avenida':'mudanca-av', 'p-terraco':'mudanca-te' };
 function manualIcone(f){
   const nv = game.ponto.nivel;

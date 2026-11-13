@@ -79,8 +79,10 @@ function jogaDia(n,man){
   if(TE&&ALTA){ g.save.cursos.entradas=2; g.save.cursos.alta=2; g.save.daniCursos.confCaseira=1; g.save.daniCursos.confGourmet=1; g.save.daniCursos.confAlta=1; g.up.confCaseira=true; g.up.confGourmet=true; g.up.confAlta=true; }   // v10.2
   if(AV&&CUR!=='0') g.save.cursos.restaurante=1;   // v9.1: o curso de restaurante (a parmegiana)
   if(L.normSave){ g.save.equipe=L.normSave({equipe:eqFor(n),salao:{ponto:PONTO},up:IND?{tvs:true}:{}}).equipe; g.save.bank=1e6; }
-  const dec=process.env.DECOR==='tudo';   // v8.6.6: DECOR=tudo põe todos os enfeites à mostra e toalha em todas as mesas (o bot não compra decoração)
-  g.save.decor=L.normDecor?L.normDecor(dec?Object.fromEntries(L.DECOR.map(d=>[d.id,1])):{}):{};
+  const LUXO_T=process.env.LUXO==='tudo', PN={garagem:1,industrial:2,avenida:3,terraco:4}[PONTO];   // v10.7: LUXO=tudo põe à mostra os enfeites do ponto (os 5 novos também), toalha em todas as mesas e os degraus de mesa do ponto (sem o assento nem a louça)
+  const dec=process.env.DECOR==='tudo'||LUXO_T;   // v8.6.6: DECOR=tudo põe todos os enfeites à mostra e toalha em todas as mesas (o bot não compra decoração)
+  g.save.decor=L.normDecor?L.normDecor(dec?Object.fromEntries(L.DECOR.filter(d=>!LUXO_T||!d.nivel||d.nivel<=PN).map(d=>[d.id,1])):{}):{};
+  g.save.moveis=L.normMoveis(LUXO_T?Object.fromEntries(L.MOVEIS.filter(m=>m.nivel<=PN).map(m=>[m.id,1])):{});
   g.save.salao=L.normSalao({ponto:PONTO,mesas:movFor(n).map((seats,c)=>({x:0,y:0,seats,c:c%4,t:dec?1:0}))});
   if(AV&&CAMIN===3){ const NM=+process.env.CAMI_MESAS||2, W=L.LAYOUT.STATIONS.order.ap; g.save.salao.mesas.map((m,i)=>[Math.hypot(m.x-W.x,m.y-W.y),i]).sort((a,b)=>a[0]-b[0]).slice(0,NM).forEach(q=>{ g.save.salao.mesas[q[1]].cami=1; }); }   // v9.6: CAMI_MESAS=2: quantas mesas (as mais perto da janela)
   if(L.salaoLugares(g.save.salao.mesas)!==movFor(n).reduce((x,y)=>x+y,0)) throw new Error('salão '+JSON.stringify(movFor(n))+' não cabe na arrumação automática (voltou ao kit)');

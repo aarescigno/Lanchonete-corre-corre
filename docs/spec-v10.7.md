@@ -1,6 +1,6 @@
 # v10.7 — Nível de luxo (etapa 4b)
 
-**Situação:** aprovada (13/11)
+**Situação:** entregue em 13/11
 **Origem:** etapa 4b do `docs/PLANO.md`; pedido do usuário de 21/10 e preferências de 12/11 (`docs/PROPOSTAS.md`); decisões fechadas com o usuário na sessão de planejamento de 13/11.
 
 ## Objetivo
@@ -72,15 +72,15 @@ O jogador vê o restaurante ficar mais chique: o nível de luxo, de 0 a 5, sobe 
 - `40-interface.js`: só se a ficha do Manual pedir.
 
 ## Tarefas
-- [ ] T1 Medir a v10.6 antes de mexer: `DIAS=65 node carreira.js 40 | tail` (as medianas das 3 mudanças) e `EQUIPE=auto DECOR=tudo PONTO=terraco node balance.js 40`; anotar em Testes.
-- [ ] T2 `tests/smoke72.js` com os CA1 a CA9 (falhando); chave `LUXO=tudo` no `balance.js` (todos os enfeites à mostra, toalha em todas as mesas, todos os móveis do ponto) e o bot do `carreira.js` comprando o próximo item de luxo do ponto (enfeite ou degrau de mesa, o mais barato) quando o caixa passa de 3× o preço, depois das compras que ele já faz.
-- [ ] T3 `LUXO`, `MOVEIS`, `normMoveis`, `luxoPts`, `luxoNivel`, os enfeites novos e o save.
-- [ ] T4 A nota de Ambiente pelo luxo, os VIPs e os exigentes da Avenida.
-- [ ] T5 A aba Luxo (quadro, cartões, os de ambiente trazidos das outras abas) e a ficha do Manual.
-- [ ] T6 O desenho dos enfeites, das mesas e dos ícones; captura `shot_v10_7.js`, conferida em recortes e apagada.
-- [ ] T7 O modo dev (Luxo forçado e "Tudo do luxo").
-- [ ] T8 Calibração: CA10 e CA11, com os ajustes previstos.
-- [ ] Fechamento: `VERSAO`, `vtag`, `#ov-ver`, `docs/RESUMO.md`, `docs/TESTES.md` (`LUXO=tudo`), `docs/PARTES.md`, esta spec como entregue, `tests/run_all.sh` verde, PR e merge.
+- [x] T1 Medir a v10.6 antes de mexer: `DIAS=65 node carreira.js 40 | tail` (as medianas das 3 mudanças) e `EQUIPE=auto DECOR=tudo PONTO=terraco node balance.js 40`; anotar em Testes.
+- [x] T2 `tests/smoke72.js` com os CA1 a CA9 (falhando); chave `LUXO=tudo` no `balance.js` (todos os enfeites à mostra, toalha em todas as mesas, todos os móveis do ponto) e o bot do `carreira.js` comprando o próximo item de luxo do ponto (enfeite ou degrau de mesa, o mais barato) quando o caixa passa de 3× o preço, depois das compras que ele já faz.
+- [x] T3 `LUXO`, `MOVEIS`, `normMoveis`, `luxoPts`, `luxoNivel`, os enfeites novos e o save.
+- [x] T4 A nota de Ambiente pelo luxo, os VIPs e os exigentes da Avenida.
+- [x] T5 A aba Luxo (quadro, cartões, os de ambiente trazidos das outras abas) e a ficha do Manual.
+- [x] T6 O desenho dos enfeites, das mesas e dos ícones; captura `shot_v10_7.js`, conferida em recortes e apagada.
+- [x] T7 O modo dev (Luxo forçado e "Tudo do luxo").
+- [x] T8 Calibração: CA10 e CA11, com os ajustes previstos.
+- [x] Fechamento: `VERSAO`, `vtag`, `#ov-ver`, `docs/RESUMO.md`, `docs/TESTES.md` (`LUXO=tudo`), `docs/PARTES.md`, esta spec como entregue, `tests/run_all.sh` verde, PR e merge.
 
 ## Avisos para a execução
 - A soma de hoje do `amb` está numa linha só de `avaliar` (`16-jogo.js`, perto da linha 993). Troque-a pela fórmula nova e deixe o `decor` (a lista de ids) para o `AVAL_DECOR`.
@@ -91,13 +91,20 @@ O jogador vê o restaurante ficar mais chique: o nível de luxo, de 0 a 5, sobe 
 
 ## Testes
 - Novo: `smoke72` (CA1 a CA9). Chave nova `LUXO=tudo` no `balance.js` (o `DECOR=tudo` continua e não liga os móveis). O bot do `carreira.js` passa a comprar luxo (T2).
-- Medidas da v10.6 (T1): a preencher na execução.
+- Medidas da v10.6 (T1, antes de mexer; 40 rodadas / 40 carreiras): `DIAS=65 node carreira.js 40`: mudanças nos dias 26 (área industrial), 35 (Avenida) e 42 (Terraço), lucro médio por dia Garagem R$ 373, área industrial R$ 678, Avenida R$ 1.110, Terraço R$ 2.331, 0 dias no negativo. Terraço com a equipe toda (`PONTO=terraco BOT=afiado EQUIPE=auto ALTA=1 LIA=1 CAMI=4 CAFESESP=1 AUTOR=1 JOCA=4 CONFEITARIA=1 DECOR=tudo`): metas dos dias 8 a 10 em 40, 39 e 40 de 40 (99%), lucro R$ 4.510, 2.765 e 3.173. (O comando do CA11 da spec, sem `JOCA=4 CONFEITARIA=1`, não contrata a equipe e dá 0%.)
+- Medidas da v10.7 (T8): CA10, `DIAS=65 node carreira.js 40`, duas rodadas com o bot comprando luxo: mudanças nos dias 27, 35 e 43 (as duas vezes), ou seja, +1, 0 e +1 dia sobre a v10.6 (limite de +2); sem comprar luxo (`LUXO=0`): 26, 36 e 37, e 26, 37 e 44 (ruído de ±1). No fim dos 65 dias o luxo médio é 96 pontos (nível 4: Endereço 40, Decoração 25, Móveis 17, Ambiente 10, Fama 4). CA11, mesmo comando do Terraço com `LUXO=tudo`, três rodadas de 40: metas em 119, 117 e 119 de 120 (99%, 97,5% e 99%) e lucro médio dos 3 dias R$ 3.593 contra R$ 3.483 sem luxo (+3%).
 - Capturas: `shot_v10_7.js` (CA12).
 
 ## Decisões em aberto
 Nenhuma.
 
 ## Desvios
-(no fechamento)
+- **CA11 (decisão do usuário, 13/11): `LUXO.vip` fica em 0,1.** O Terraço com a equipe toda já passava ~99% das metas na v10.6, antes do luxo (a medida da v10.5.1 era 88 a 91%; a deriva veio entre a v10.5.2 e a v10.6). Com o luxo ficou igual (97,5 a 99%, lucro +3%). Baixar `LUXO.vip` para 0,06 quebraria o CA5 sem tirar o 99%; o recálculo do `metaF` do Terraço (8,0) fica para uma etapa própria.
+- **A aba nasceu com o id `luxo` também em `LIBERA`, no `SEC_FICHA` e na ficha do Manual** (`l-luxo`): o `normLibera` e o `normSave` migram `libera.decor` e a ficha `l-decor` de saves antigos; `SHOP_ANTIGAS` ganhou `decor:'luxo'` (smokes e capturas antigos). A fala do Tonhão em `LIBERA` agora diz "Vê no Luxo."
+- **`AVAL.amb`, `DECOR.amb` e `TERRACO.musica[].amb` ficam nas constantes**, mas só os valores "da hora" (café, doce, drink, selo, lixeira cheia) entram na soma do Ambiente; o resto vale pelo luxo. Constante nova `LUXO.ambMax` (3). O elogio da toalha xadrez some com o linho; os elogios que citam enfeite exigem Ambiente 4 ou mais, e na Garagem isso pede quase todo o luxo.
+- **`Game.vipChance(day)`** (novo) guarda a conta da `vipP`, para o teste enxergar o fator do luxo.
+- **Desenho:** a cortina de chita fica na janela de cada ponto (no Terraço, sobre a ponta da cortina de veludo); os quadros ficam no azulejo da Avenida e no lambri do Terraço (menores); as luminárias e o lustre (`x` 390, `y` 136) ficam na lista ordenada por y, atrás das pessoas, com o fio sumindo no alto (o teto fica fora do quadro); a toalha xadrez só é desenhada na Garagem (como antes) e o linho aparece em todos os pontos; as mesas de madeira e as cadeiras acolchoadas contam o degrau mais alto, e o mármore (degrau 4) tira a toalha.
+- **Modo dev:** a linha "Luxo" ficou na aba Hoje (onde estão os outros "Forçar"); "Tudo do luxo" fica na aba Equipe e lojinha, ao lado da Decoração.
+- **Testes:** `smoke12`, `15`, `30`, `33`, `38`, `40`, `41`, `42`, `42b`, `53`, `54`, `56`, `61`, `62`, `66` e `67` foram ajustados à aba Luxo e ao Ambiente por pontos (nenhuma checagem apagada). `tests/bot.js` ganhou `luxo` e o `carreira.js` a linha `LUXO`. Com o bot comprando luxo na carreira apareceram 2 a 4 dias no negativo em 40 carreiras (0 na v10.6), quase todos nos 5 dias depois da mudança para o Terraço: o bot gasta o caixa em lustre e quadros; é do bot, não do jogo.
 
 **Modelo:** Sonnet, esforço alto (cálculo, interface, desenho no canvas e calibração com o bot, em várias partes ao mesmo tempo)

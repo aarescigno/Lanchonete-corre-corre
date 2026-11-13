@@ -30,7 +30,7 @@ ok(g.state==='shop' && g.shopNext===1,'até o dia 1 abre a lojinha no modo dev')
 
 // melhorias: todas na grade, de graça, liga e desliga, sem limite
 L.setShopTab('melhorias');
-{ const nM=cartoes().length-1;   /* menos o cartão da TV e som */ L.setShopTab('bia'); ok(nM+cartoes().length===L.UPGRADES.length,'as '+L.UPGRADES.length+' melhorias nas seções Melhorias e Bia (Tênis novos e de corrida juntos)'); }
+{ const nM=cartoes().length;   /* v10.7: a TV e som saiu de Melhorias (aba Luxo) */ L.setShopTab('bia'); ok(nM+cartoes().length===L.UPGRADES.length,'as '+L.UPGRADES.length+' melhorias nas seções Melhorias e Bia (Tênis novos e de corrida juntos)'); }
 ok(/Modo dev/.test(els['shop-limit'].textContent),'aviso de modo dev na lojinha');
 L.UPGRADES.forEach(u=>{ L.setShopTab(['tenis','corrida','bandeja','sudoku'].includes(u.id)?'bia':'melhorias'); const b=btnDe(cartao(u.name)); ok(b.textContent==='Ligar' && !b.disabled,'"Ligar" '+u.name); b.fire('click'); });
 ok(L.UPGRADES.every(u=>g.up[u.id]) && g.save.bank===10000,'todas ligadas, sem gastar');
@@ -39,9 +39,9 @@ btnDe(cartao('Tênis de corrida')).fire('click'); ok(g.up.tenis && g.up.corrida,
 ok(L.UPGRADES.every(u=>JSON.parse(store[L.LS.devSave]).up[u.id]),'salvas no save dev');
 
 // equipe completa (e o couvert, mesmo na Garagem)
-L.setShopTab('divulga');
+L.setShopTab('luxo');
 ok(g.setStaff('tonhao',2) && g.setStaff('dani',4) && g.setStaff('tv',true) && g.setStaff('som',true),'Tonhão 3, Dani 3, TV e som');
-ok(L.couvertOk(g.ponto) && /Couvert/.test(txt(els['shop-grid'])) && g.setStaff('couvert',true),'couvert liberado na Garagem');
+ok(L.couvertOk(g.ponto) && /Couvert/.test(txt(els['shop-grid'])) && g.setStaff('couvert',true),'couvert liberado na Garagem (na aba Luxo, v10.7)');
 ok(['pratos','lavar','lixo','suco'].filter(t=>g.toggleDaniTask(t)||g.save.equipe.daniTasks.indexOf(t)>=0).length>=3,'tarefas da Dani');
 // divulgação desde o dia 1
 L.setShopTab('divulga');

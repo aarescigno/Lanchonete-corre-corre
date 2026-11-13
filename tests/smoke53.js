@@ -86,7 +86,7 @@ const aba=(H,k)=>{ const b=H.els['manual-abas'].children.find(x=>x.getAttribute(
 // (h) o fogão industrial, o couvert e o assento abrem na industrial/Avenida; imprevistos
 { const H=novo(12,{bank:9000,salao:{ponto:'industrial'}}), {g,L}=H; g.goShop(12); L.setShopTab('manut'); L.setShopTab('divulga'); L.setShopTab('melhorias');
   L.setShopTab('manut'); ok(g.save.manual.indexOf('l-fogao')>=0,'Manutenção na industrial abre l-fogao');
-  L.setShopTab('melhorias'); ok(g.save.manual.indexOf('l-tvs')>=0 && g.save.manual.indexOf('l-assento')>=0 && g.save.manual.indexOf('l-maquina')>=0,'Melhorias da industrial abrem TVs, assento e jarra');
+  L.setShopTab('melhorias'); L.setShopTab('luxo'); ok(g.save.manual.indexOf('l-tvs')>=0 && g.save.manual.indexOf('l-assento')>=0 && g.save.manual.indexOf('l-maquina')>=0,'Melhorias da industrial abrem TVs, assento e jarra');
   ok(g.save.manual.indexOf('p-industrial')>=0,'o lugar onde se está abre a ficha'); }
 { const H=novo(8,{bank:9000}), {g,L}=H; g.clima='chuva'; g.day.gripe=true; g.manualInicio();
   ok(g.save.manual.indexOf('i-chuva')>=0 && g.save.manual.indexOf('i-gripe')>=0 && g.save.manual.indexOf('i-feriado')<0,'o clima e a gripe abrem as fichas dos imprevistos'); }

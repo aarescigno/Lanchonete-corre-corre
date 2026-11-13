@@ -150,8 +150,8 @@ p{margin:calc(var(--u)*6) 0;font-size:max(12px,calc(var(--u)*16));line-height:1.
 .shopgrid .cursomsg{grid-column:1/-1;margin:0;font-weight:700;color:var(--ok,#3E9B5A)}
 .item .cursos-lista.apagado{font-weight:400;opacity:.6}
 .item .cursos-lista{grid-column:1 / -1;font-weight:700}   /* o aviso do curso do dia, na largura do cartão */
-.shopgrid.melhorias,.shopgrid.decor{grid-template-columns:repeat(4,1fr);width:calc(var(--u)*980)}   /* v8.3.10: 7 cartões em 2 fileiras (com o Triturador); v8.6.5: e a Decoração */
-@media (max-width:600px) and (min-height:461px){.shopcards{grid-template-columns:repeat(2,1fr)}.shopgrid.melhorias,.shopgrid.decor,.shopgrid.cursos{grid-template-columns:repeat(2,1fr)}}
+.shopgrid.melhorias,.shopgrid.luxo{grid-template-columns:repeat(4,1fr);width:calc(var(--u)*980)}   /* v8.3.10: 7 cartões em 2 fileiras (com o Triturador); v8.6.5: e a Decoração */
+@media (max-width:600px) and (min-height:461px){.shopcards{grid-template-columns:repeat(2,1fr)}.shopgrid.melhorias,.shopgrid.luxo,.shopgrid.cursos{grid-template-columns:repeat(2,1fr)}}
 /* editor do salão (v7.4): o salão em escala à esquerda, a loja de móveis à direita */
 .ed{display:grid;grid-template-columns:minmax(0,1fr) max(150px,calc(var(--u)*210));gap:calc(var(--u)*8);align-items:start;text-align:left}
 .ed-cv{position:relative;border:calc(var(--u)*3) solid var(--tinta);border-radius:calc(var(--u)*10);overflow:hidden;line-height:0;background:var(--tinta)}
@@ -175,6 +175,14 @@ p{margin:calc(var(--u)*6) 0;font-size:max(12px,calc(var(--u)*16));line-height:1.
 .ed-side .msg{color:var(--perigo);font-weight:800}
 .ed-side .ed-contas{font-weight:400;color:#5b5446}
 #ov-shop.salao #shop-folha,#ov-shop.caixa #shop-folha{display:none}
+/* aba Luxo (v10.7): o quadro do nível e as cinco barras, na largura da grade */
+.luxo-quadro{grid-column:1/-1;background:var(--azulejo);border:calc(var(--u)*3) solid var(--tinta);border-radius:calc(var(--u)*10);padding:calc(var(--u)*6) calc(var(--u)*10);text-align:left}
+.luxo-cab{display:flex;align-items:center;gap:calc(var(--u)*12)}
+.luxo-cab b{font-family:var(--fd);font-weight:400;font-size:max(16px,calc(var(--u)*22));color:var(--faixa);white-space:nowrap}
+.luxo-cab .guru-bar{flex:1}
+.luxo-barras{display:grid;grid-template-columns:repeat(5,1fr);gap:calc(var(--u)*10);margin-top:calc(var(--u)*4)}
+.luxo-b span{display:block;font-weight:700;font-size:max(10px,calc(var(--u)*12));line-height:1.1}
+@media (max-width:600px){.luxo-barras{grid-template-columns:repeat(2,1fr)}}
 /* aba Gurugol (v8.4.2): a caixa da nota à esquerda e os últimos comentários à direita */
 .shopgrid.gurugol{display:flex;gap:calc(var(--u)*16);align-items:flex-start;text-align:left}
 .guru-lado{flex:none}

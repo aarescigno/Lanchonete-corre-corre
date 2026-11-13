@@ -269,6 +269,22 @@ mk.barraca=function(g,L,folha){
   if(process.env.BARRACA==='0'||!g.barracaVisivel) return false;
   return g.save.bank-folha-g.barracaPreco()>=300 && g.buyBarraca();
 };
+/* v10.7: o bot compra luxo: o item mais barato do ponto (um enfeite que falta ou o próximo degrau do jogo de mesas) quando o caixa, depois da folha,
+   passa de 3× o preço (LUXO=0: não compra) */
+mk.luxo=function(g,L,folha){
+  if(process.env.LUXO==='0') return 0;
+  let n=0;
+  for(;;){
+    const lista=[];
+    L.DECOR.forEach(d=>{ if(!(d.id in g.save.decor)&&(!d.nivel||d.nivel<=g.ponto.nivel)) lista.push({ id:d.id, cost:d.cost, movel:false }); });
+    const m=L.MOVEIS[L.movelNivel(g)]; if(m&&m.nivel<=g.ponto.nivel) lista.push({ id:m.id, cost:m.cost, movel:true });
+    lista.sort((a,b)=>a.cost-b.cost);
+    const it=lista[0];
+    if(!it||g.save.bank-folha<=3*it.cost||!(it.movel?g.buyMovel(it.id):g.buyDecor(it.id))) break;
+    n++;
+  }
+  return n;
+};
  window.botStep=function(){ if(!window.__bot) window.__bot=mk(window.__game,window.__lcc); window.__bot(); };
  window.botAfiado=function(){ if(!window.__botA) window.__botA=mk(window.__game,window.__lcc,{afiado:true}); window.__botA(); };
  window.run=function(sec,bot){const g=window.__game;for(let i=0;i<sec*20;i++){if(bot==='afiado')window.botAfiado();else if(bot)window.botStep();g.update(0.05);}};

@@ -9,7 +9,7 @@ const grid=H=>H.els['shop-grid'];
 const jogo=(cap,ponto,sv)=>{ const H=load(), {g,L}=H; H.doc.createTextNode=t=>({textContent:String(t),children:[]});
   g.save=L.normSave(Object.assign({ cap, dia:10, maxDay:10, bank:50000, up:{ tenis:true }, equipe:{ tonhao:1, dani:1, joca:2, cami:1, anselmo:2 }, salao:{ ponto:ponto||'garagem' } }, sv||{}));
   g.up=g.save.up; g.tablesKey=''; g.buildTables(); g.goShop(10); return H; };
-const SECOES=['cardapio','melhorias','bia','decor','manut','divulga','tonhao','dani','joca','cami','anselmo','banco','mudanca'];
+const SECOES=['cardapio','melhorias','bia','luxo','manut','divulga','tonhao','dani','joca','cami','anselmo','banco','mudanca'];
 
 for (const ponto of ['garagem','industrial','avenida']){
   const H=jogo(ponto==='avenida'?7:ponto==='industrial'?5:3,ponto,{ salao:{ ponto } }), {L,els}=H;
@@ -37,7 +37,7 @@ for (const ponto of ['garagem','industrial','avenida']){
     q.fire('click'); ok(els['ov-manual'].classList.contains('show'),sec+': o "?" abre o Manual');
     els['btn-manual-voltar'].fire('click'); ok(els['ov-shop'].classList.contains('show'),sec+': Voltar volta à lojinha'); };
   toca('melhorias','lanchonete',c=>/Ventilador/.test(txt(c)),'l-ventilador');
-  toca('decor','lanchonete',c=>true,'l-decor');
+  toca('luxo','lanchonete',c=>true,'l-luxo');
   toca('divulga','lanchonete',c=>/Redes sociais/.test(txt(c)),'l-divulga');
   toca('cardapio','lanchonete',c=>/Curso de/.test(txt(c)),'l-cardapio');
   toca('tonhao','equipe',c=>/Tonhão ·/.test(txt(c)),'e-tonhao');

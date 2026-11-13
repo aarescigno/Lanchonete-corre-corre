@@ -86,6 +86,8 @@ function render(g, ctx){
   if (menu) items.pop();
   if (g.marmitaOk && !menu) items.push({ y:RETIRADA.balcao.y + 50, f:() => glowSprite(ctx,g,'retirada',ctx => drawRetirada(ctx,g,tm)) });
   const mus = !menu && terraco(g) ? g.save.equipe.musica : 0;   // v10.4: a música ao vivo (só nos dias de jogo)
+  if (decorOn(g,'luminaria') && !edDesenho) g.tables.forEach(t => { if (t.open) items.push({ y:t.cy - 100, f:() => drawLuminaria(ctx,t.cx,Math.max(112,t.cy - 112)) }); });   // v10.7: as luminárias sobre as mesas e o lustre no centro do teto (atrás das pessoas)
+  if (decorOn(g,'lustre') && !edDesenho) items.push({ y:LUXO_LUSTRE.y - 40, f:() => drawLustre(ctx,LUXO_LUSTRE.x,LUXO_LUSTRE.y,tm) });
   if (terraco(g)) items.push({ y:TERRACO.piano.y1, f:() => drawPiano(ctx,g,mus === 2) });   // v10: o piano de cauda (obstáculo fixo)
   if (g.maquinaOn) items.push({ y:STATIONS.maquina.rect.y + STATIONS.maquina.rect.h, f:() => glowSprite(ctx,g,'maquina',ctx => drawMaquina(ctx,g,tm,menu)) });
   if (g.save.equipe.couvert && !menu) items.push({ y:528, f:() => drawMusico(ctx,g,tm) });
