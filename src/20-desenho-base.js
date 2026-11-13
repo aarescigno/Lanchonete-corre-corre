@@ -47,7 +47,11 @@ function drawMoodRing(ctx,hearts,x,y,rx,ry,tm){
 function drawVipBadge(ctx,x,y,tm,dupla){
   const p = RM ? 1 : 1 + 0.06*Math.sin(tm*5);
   ctx.save(); ctx.translate(x,y); ctx.scale(p,p);
-  if (dupla){   // v10.1: o VIP exigente, com duas estrelas
+  if (dupla === 'michel'){   // v10.10: o crítico da noite da estrela: a plaquinha de exigente com uma estrela vermelha
+    rr(ctx,-26,-9,52,18,6); fs(ctx,PAL.mostarda,2.2);
+    star(ctx,-14,0,6.4,'#D2262E');
+    txt(ctx,'VIP',9,1,12,PAL.tinta,'center',FD);
+  } else if (dupla){   // v10.1: o VIP exigente, com duas estrelas
     rr(ctx,-26,-9,52,18,6); fs(ctx,PAL.mostarda,2.2);
     star(ctx,-17,0,5.2,'#fff'); star(ctx,-6.5,0,5.2,'#fff');
     txt(ctx,'VIP',12,1,12,PAL.tinta,'center',FD);
@@ -563,7 +567,7 @@ function drawPerson(ctx,p,x,y,o){
   if (sit) ctx.translate(0, 12);
   if (!sit && !o.noShadow) shadowEll(ctx,0,0,13,4,0.2);
   const skin = SKINS[p.skin];
-  const shirt = p.shirt || o.shirt || '#888';   // v9: a turma, o motorista e a encomenda têm roupa própria
+  const shirt = p.paleto || p.shirt || o.shirt || '#888';   // v10.10: o paletó bordô do Bráulio   // v9: a turma, o motorista e a encomenda têm roupa própria
   // pernas
   if (!sit){
     const sw = moving ? Math.sin(ph) * 4 : 0;
@@ -691,6 +695,9 @@ function drawPerson(ctx,p,x,y,o){
     ctx.fillStyle = 'rgba(255,255,255,.45)'; ctx.fillRect(-7,hy-1.6,2,1.4); ctx.fillRect(2.8,hy-1.6,2,1.4);
   }
   else if (p.glasses){ ctx.lineWidth = 1.5; circ(ctx,-4.4,hy+0.5,3.6); ctx.stroke(); circ(ctx,4.4,hy+0.5,3.6); ctx.stroke(); ctx.beginPath(); ctx.moveTo(-0.9,hy+0.5); ctx.lineTo(0.9,hy+0.5); ctx.stroke(); }
+  if (p.bigode){   // v10.10: o bigode grande do Bráulio
+    ctx.beginPath(); ctx.moveTo(0,hy+4); ctx.quadraticCurveTo(-5,hy+1.4,-11.5,hy+5.4); ctx.quadraticCurveTo(-5.5,hy+8.4,0,hy+6.8); ctx.quadraticCurveTo(5.5,hy+8.4,11.5,hy+5.4); ctx.quadraticCurveTo(5,hy+1.4,0,hy+4); ctx.closePath(); fs(ctx,'#1B1512',1.4);
+  }
   if (p.chapeu || p.lenco || p.echarpe) acExigente(ctx,p,hy,false);   // v10.1
   ctx.restore();
 }

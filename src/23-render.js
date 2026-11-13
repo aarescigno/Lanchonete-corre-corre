@@ -28,6 +28,7 @@ function render(g, ctx){
   drawCalcada(ctx,g,tm);
   drawMesinha(ctx,g,tm);   // v9.6.11: no lugar da geladeira (que sai da tela; a manutenção dela segue escondida)
   drawKitchen(ctx,g,tm);
+  if (g.noite && !menu){ ctx.fillStyle = 'rgba(14,20,52,.08)'; ctx.fillRect(0,0,TW,H); }   // v10.10: a noite da estrela: o véu escuro por baixo das pessoas
   if (g.clima === 'chuva' && !menu) drawChuvaFundo(ctx,tm);
   if (g.clima === 'feriado' && !menu) drawBandeirinhas(ctx);
   if (g.evento === 'junina' && !menu) drawBandeirinhas(ctx,BAND_JUNINA,tm); else if (g.evento === 'jogo' && !menu) drawBandeirinhas(ctx,BAND_JOGO,tm);   // v10.6
@@ -107,13 +108,14 @@ function render(g, ctx){
 
   // camada superior: balões, corações, fila
   g.tables.forEach(t => { if (t.open || menu) drawTableOverlay(ctx,g,t,tm,menu); });
+  if (!menu) g.groups.forEach(grp => { if (grp.falaT > 0 && grp.fala) drawFala(ctx,grp,tm); });   // v10.10: a fala do Bráulio, por cima dos corações
   g.queue.forEach(grp => {
     if (grp.state !== 'queue') return;
     if (g.drag && g.drag.moved && g.drag.g === grp) return;
     if (QUEUE.max >= 5){   // v9.6.9: corações menores, à direita do grupo, na altura do balão do pedido
       drawHearts(ctx,grp,grp.x + 52,grp.y-64,tm,0.75);
-      if (grp.vipAberto) drawVipBadge(ctx,grp.x-45,grp.y-63,tm,grp.exigente);
-    } else if (grp.vipAberto){ drawHearts(ctx,grp,grp.x+14,grp.y-64,tm); drawVipBadge(ctx,grp.x-45,grp.y-63,tm,grp.exigente); }
+      if (grp.vipAberto) drawVipBadge(ctx,grp.x-45,grp.y-63,tm,grp.critico ? 'michel' : grp.exigente);
+    } else if (grp.vipAberto){ drawHearts(ctx,grp,grp.x+14,grp.y-64,tm); drawVipBadge(ctx,grp.x-45,grp.y-63,tm,grp.critico ? 'michel' : grp.exigente); }
     else drawHearts(ctx,grp,grp.x,grp.y-64,tm);
     if (grp.aguarda && !grp.path.length) drawWaitBadge(ctx,grp.x + (grp.vipAberto ? 63 : 50),grp.y-66,tm,grp.piso);
     if (!menu) drawPedidoEspera(ctx,g,grp,tm);

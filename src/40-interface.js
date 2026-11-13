@@ -9,7 +9,7 @@ const game = new Game(canvas, ctx);
 /* quem nunca fez a Missão zero (e ainda está no dia 1) encontra o botão dela em destaque */
 function treinoPrimeiro(){ return !game.save.treino && game.proxDia <= 1 && !DEV.on; }
 
-const SCREENS = ['ov-menu','ov-manual','ov-intro','ov-treino','ov-pause','ov-end','ov-shop','ov-falencia','ov-endless','ov-rank','ov-ver','ov-app','ov-abertura','ov-conversa','ov-continua'];
+const SCREENS = ['ov-menu','ov-manual','ov-intro','ov-treino','ov-pause','ov-end','ov-shop','ov-falencia','ov-endless','ov-rank','ov-ver','ov-app','ov-abertura','ov-conversa','ov-continua','ov-guia'];
 function showOnly(ids){
   SCREENS.forEach(id => { const el = $(id); if (!el) return; if (ids.indexOf(id) >= 0) el.classList.add('show'); else el.classList.remove('show'); });
 }
@@ -58,6 +58,8 @@ function buildMenu(){
     if (sv.emp.resto) info.push('banco: faltam ' + fmt(sv.emp.resto));
   }
   $('menu-info').textContent = info.join(' · ');
+  { const sb = $('btn-selo'), g = sv.guia, tx = g && (g.est || g.rec) ? NOITE.selo[g.est] : '';   // v10.10: o selo do Michelzão (só depois da 1ª noite); o toque abre o último boletim
+    sb.textContent = tx; sb.style.display = tx ? '' : 'none'; sb.setAttribute('aria-label', tx ? tx + ': ver o último boletim' : ''); }
   // v8.6.9: o aviso de uma vez só para quem tinha campanha antes do cardápio que cresce (save.avisoCard, apagado ao fechar)
   $('menu-aviso').style.display = sv.avisoCard || sv.avisoHist ? '' : 'none';
   $('menu-aviso-txt').textContent = sv.avisoHist ? 'Novidade: a campanha virou o Modo História, com a dívida da reforma da garagem. Por isso, recomeçou do dia 1.' : 'Novidade: o cardápio agora cresce com os cursos do Tonhão. Por isso, a campanha recomeçou do dia 1.';
@@ -204,7 +206,9 @@ const DEV_HOJE = [
   ['apito', 'Apito da fábrica (área industrial)', [['', 'Sorteio'], ['apita', 'Apita'], ['nao', 'Não apita']]],
   ['vontade', 'Vontade de doce e de espresso (sem o curso)', [['', 'Normal'], ['todos', 'Todos pedem']]],   // v10.5.3
   ['rosa', 'Pétala (molho da Rosa)', [['', 'Normal'], ['sempre', 'Sempre']]],   // v10.8
-  ['critico', 'Crítico (em qualquer ponto)', [['', 'Sorteio'], ['hoje', 'Hoje'], ['boato', 'Hoje com boato']]]   // v10.9: no próximo dia que começar; a ficha aparece no fim do dia e não é guardada: o prato da casa da Bia sempre sai com pétala, em qualquer ponto
+  ['critico', 'Crítico (em qualquer ponto)', [['', 'Sorteio'], ['hoje', 'Hoje'], ['boato', 'Hoje com boato']]],   // v10.9: no próximo dia que começar; a ficha aparece no fim do dia e não é guardada: o prato da casa da Bia sempre sai com pétala, em qualquer ponto
+  ['noite', 'Noite da estrela (Terraço)', [['', 'Normal'], ['hoje', 'Marcar hoje']]],   // v10.10: o próximo dia que começar no Terraço vira a noite, em qualquer capítulo
+  ['guia', 'Veredito (fim da noite)', [['', 'Normal'], ['rec', 'Recomendado'], ['1', '★'], ['2', '★★'], ['3', '★★★']]]   // v10.10: troca as estrelas dadas no fim da noite, sem mexer nas barras
 ];
 const DEV_MUSICA = ['sem música', 'trio de cordas', 'pianista'];
 function devAbaHoje(body, secao, botao){
@@ -380,6 +384,10 @@ const DES_BASICO = {
     c.strokeStyle = 'rgba(34,32,28,.45)'; c.lineWidth = 1.6; c.beginPath(); [18,26,34,42].forEach(y => { c.moveTo(28,y); c.lineTo(40,y); }); c.stroke();
     c.lineCap = 'round'; c.strokeStyle = PAL.tinta; c.lineWidth = 6; c.beginPath(); c.moveTo(38,40); c.lineTo(54,12); c.stroke(); c.strokeStyle = PAL.mostarda; c.lineWidth = 3; c.beginPath(); c.moveTo(38,40); c.lineTo(54,12); c.stroke();
   },
+  'b-michelzao': c => {   // v10.10: as três estrelas do guia
+    star(c,16,34,10,PAL.mostarda); star(c,32,24,12,PAL.mostarda); star(c,48,34,10,PAL.mostarda);
+    txt(c,'Michelzão',32,54,11,PAL.tinta,'center',FD);
+  },
   'i-boato': c => {   // o megafone
     c.beginPath(); c.moveTo(10,24); c.lineTo(26,24); c.lineTo(48,10); c.lineTo(48,46); c.lineTo(26,34); c.lineTo(10,34); c.closePath(); fs(c,PAL.mostarda,2.2);
     rr(c,24,34,9,14,2); fs(c,PAL.tinta,1.6);
@@ -405,7 +413,7 @@ const DES_BASICO = {
 /* o ícone da lojinha de cada ficha `l-` (o da Água da torneira e do assento segue o ponto) */
 const MANUAL_ICO = { 'l-tenis':'tenis', 'l-corrida':'corrida', 'l-cafeteira':'cafeteira', 'l-bandeja':'bandeja', 'l-sudoku':'sudoku', 'l-ventilador':'ventilador', 'l-triturador':'triturador', 'l-pratos':'pratos', 'l-louca':'louca',
   'l-tvsom':'ambiente', 'l-tvs':'tvs', 'l-couvert':'couvert', 'l-musica':'musica', 'l-fogao':'fogao-ind', 'l-cardapio':'cardapio', 'l-barraca':'barraca', 'l-salao':'g-salao', 'l-luxo':'luxo', 'l-manut':'m-fogao', 'l-divulga':'div-redes', 'l-banco':'banco', 'l-mudanca':'mudanca', 'l-caixa':'contas',
-  'p-industrial':'mudanca', 'p-avenida':'mudanca-av', 'p-terraco':'mudanca-te' };
+  'l-noite':'noite', 'p-industrial':'mudanca', 'p-avenida':'mudanca-av', 'p-terraco':'mudanca-te' };
 function manualIcone(f){
   const nv = game.ponto.nivel;
   if (f.id === 'l-maquina') return nv >= 3 ? 'aguas' : nv === 2 ? 'jarra' : 'maquina';
@@ -425,6 +433,9 @@ function manualCliente(c, f){
       drawVipBadge(c,40,14,0);
     } else if (t === 'exigente'){   // v10.1
       drawPerson(c,{skin:3,hair:2,hairC:'#2A1D17',pants:'#2F3E5C',chapeu:true,accC:'#2F5F8A'},28,60,{shirt:CHAIRS[1].c,mood:0,s:0.85});
+      drawVipBadge(c,42,14,0,true);
+    } else if (t === 'braulio'){   // v10.10: bigode grande e paletó bordô
+      drawPerson(c,{skin:2,hair:3,hairC:'#1B1512',pants:'#2F3E5C',bigode:true,paleto:AB_COR.aurora},28,60,{shirt:AB_COR.aurora,mood:0,s:0.85});
       drawVipBadge(c,42,14,0,true);
     } else if (t === 'veg'){
       drawPerson(c,makePeople('estudante',1)[0],22,60,{shirt:CHAIRS[3].c,mood:0,s:0.72});
