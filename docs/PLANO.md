@@ -18,7 +18,7 @@ Origem: retorno do Renan Martorelli (beta-tester) e conversa com o Arthur (15/10
 | R2 | O ritmo da história: conversas no cap. 3 e um capítulo novo na Avenida e outro no Terraço | v10.5.2 | feita em 12/11 (`docs/spec-v10.5.2.md`; `smoke69`; 11 capítulos; o cap. 7 leva 3 a 4 dias e o cap. 10, 3; a história acaba no dia 49) |
 | V | A vontade da freguesia: doce e espresso puxam a Dani e o Joca (garantia do Joca e da Cami) | v10.5.3 | feita em 12/11 (`docs/spec-v10.5.3.md`; `smoke70`; `VONTADE.menos` 0,3 em vez de 0,5, ver Desvios) |
 | 4c | Eventos de bairro: festa junina e jogo do Brasil (adiantada em 12/11, para dar novidade aos dias parados da Garagem) | v10.6 | feita em 13/11 (`docs/spec-v10.6.md`; `smoke71`; fases e gol na janela de chegadas, ver Desvios) |
-| 4b | Nível de luxo | v10.7 | a fazer |
+| 4b | Nível de luxo | v10.7 | planejada em 13/11 (`docs/spec-v10.7.md`, aprovada) |
 | 5 | ~~Modo História, parte 1~~: juntou-se à 2f e aos capítulos da 3a, 3b e 4a (28/10) | — | — |
 | 6 | Modo História: o crítico do Michelzão e o final | v11 | a fazer |
 | 7 | Polimento: celular, jogo online, ajuste geral | v11.1 | a rever |
@@ -85,23 +85,11 @@ Origem: retorno do Renan Martorelli (beta-tester) e conversa com o Arthur (15/10
 > Ordem: 4a-1 (o ponto e a refeição completa, v10) → 4a-2 (o VIP exigente e a reputação, v10.1) → 4a-3 (a cozinha: alta gastronomia, a Lia e a alta confeitaria, v10.2) → 4a-4 (o salão e o bar: Cami, Joca e Anselmo, v10.3) → 4a-5 (música, flores e rebalanceamento, v10.4). Cada uma é uma versão, com PR e merge. As "Checagens de fim de sessão" da etapa 3 valem para todas.
 
 ### Sessão 4b — Nível de luxo (v10.7)
-**Objetivo:** o nível de luxo de 0 a 5 (pedido do usuário em 21/10; texto em `docs/PROPOSTAS.md`), que soma o que o jogador montou em todos os pontos.
+**Objetivo:** o nível de luxo de 0 a 5, em cinco barras (Endereço, Decoração, Móveis, Ambiente e Fama), na aba nova Luxo da lojinha, com 5 enfeites e 4 degraus de mesa novos. Mais luxo traz mais VIPs (e exigentes na Avenida) e vira a nota de Ambiente do Gurugol.
 
-**Entra:**
-- **Nível de luxo** (0 a 5), a soma de atributos: decoração da espera e do salão, móveis (as mesas de plástico de bar da Garagem são o degrau mais baixo), o ponto, o ambiente (TV, som, couvert, quarteto, pianista, que soma mais), o impacto da divulgação e a avaliação de críticos surpresa.
-- A progressão é por atributos, como subir de nível um personagem (referência do usuário: os atributos do Kratos em God of War Ragnarök, só nos docs; na interface, sem citar o jogo): cada atributo tem a sua barra, e o nível sobe quando elas sobem.
-- Onde aparece: uma aba ou um quadro na lojinha, com as barras (pode reaproveitar o estilo da caixa do Gurugol da v8.4.1).
-- Efeito no jogo (a decidir): mais VIPs, mais gorjeta, nota de ambiente do Gurugol, régua do Michelzão (etapa 6).
-- TV, som e couvert podem sair da aba Equipe e ir para o lugar do ambiente (anotado na v7.4.4).
-- **Enfeites e móveis melhores** à venda, para subir o luxo (decidir quais). Os da Garagem já existem desde a v8.6.5 (`DECOR` e a toalha xadrez), só visuais.
+**Spec:** `docs/spec-v10.7.md` (aprovada em 13/11).
 
-**Partes:** `10-constantes.js` (`LUXO`), `16-jogo.js` (cálculo), `41-lojinha.js` (aba ou quadro do luxo, enfeites), `21-cenario.js` e `22-salao-hud.js` (enfeites e móveis), `12-clientes.js` (efeito na freguesia).
-
-**Testes:** smoke novo (cada atributo, nível de 0 a 5, efeito, save).
-
-**Decisões em aberto:** os atributos e o peso de cada um; o efeito no jogo; quais enfeites e móveis entram; se a nota de ambiente do Gurugol passa a ser o luxo.
-
-**Modelo:** planejar com o Opus antes (atributos, pesos e efeito no jogo, a lista de enfeites e móveis com preços); executar com o Sonnet, esforço médio (é cálculo e interface sobre o que já existe).
+**Modelo:** Sonnet, esforço alto (cálculo, interface, desenho e calibração em várias partes).
 
 ---
 
