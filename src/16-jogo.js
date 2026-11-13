@@ -109,6 +109,7 @@ class Game {
     this.day = treino ? TREINO : n === 0 ? ENDLESS : this.diaPonto(diaOf(n));
     if (!treino && n && DEV.on && DEV.forca.gripe) this.day = Object.assign({}, this.day, { gripe:DEV.forca.gripe === 'gripado' });   // v10.2.2
     this.money = 0; this.custo = 0; this.contas = 0; this.paidDiv = 0; this.conserto = 0; this.pontos = 0;
+    this.visita = treino || !n ? null : this.criticoDia(n); this.ficha = null;   // v10.9: o crítico do dia (null, ou { n:1|2, boato, real }) e a ficha da visita (fechada quando o grupo dele sai)
     this.manualDia = [];   // v9.6.7: as fichas do Manual reveladas durante o dia (a linha "Novo no Manual" do fim do dia)
     this.semToque = 0; this.dica = null; this.dicaCand = null; this.dicaT = 0; this.dicaDesde = 0;   // v9.6.12: as dicas na hora (17-treino.js)
     this.avals = [];   // avaliações do dia (v8.4): { r: as notas dos critérios, txt: o comentário }; entram no save no fim do dia
@@ -185,13 +186,36 @@ class Game {
   }
   /* a chance de VIP de cada grupo do dia (v10.7: mais luxo, mais VIPs: × (1 + LUXO.vip × nível)) */
   vipChance(day){ return (day.vip || 0) * (this.div ? this.div.vip : 1) * (this.ponto.vip == null ? 1 : this.ponto.vip) * this.repVip * (1 + LUXO.vip * luxoNivel(this)); }
+  /* v10.9, o crítico do Michelzão: a visita do dia n (null, ou { n:1|2, boato:a 2ª, real:vale para o save }). Só na carreira com a História ligada, no capítulo 13, no dia sorteado em save.guia.prox
+     (o dia que passou sem visita, por exemplo no modo dev, vale no seguinte); o modo dev força por cima (DEV.forca.critico: 'hoje' = a 1ª, 'boato' = a 2ª, sem mexer no save) */
+  criticoDia(n){
+    if (!n) return null;
+    const f = DEV.on && DEV.forca.critico;
+    if (f === 'hoje') return { n:1, boato:false, real:false };
+    if (f === 'boato') return { n:2, boato:true, real:false };
+    const sv = this.save, g = sv.guia, c = HISTORIA[sv.cap - 1];
+    if (!histLiga() || !g || sv.cap !== CRITICO.cap || !c || c.ponto !== sv.salao.ponto || g.n >= 2 || !g.prox || g.prox > n) return null;
+    return { n:g.n + 1, boato:g.n === 1, real:true };
+  }
+  /* a ficha da visita (fechada quando o grupo do crítico sai, pago ou bravo): 5 itens de 0 a 2 garfos, na ordem de CRITICO.itens; bravo (0 corações) zera tudo */
+  fechaFicha(g, bravo){
+    if (!g.critico || this.ficha) return;
+    const pm = g.pratoMain || {}, tempos = g.tempos ? g.notaT.filter(x => x != null).length : 3;
+    const it = bravo || g.hearts <= 0 ? [0, 0, 0, 0, 0] : [
+      g.perdFila === 0 ? 2 : g.perdFila === 1 ? 1 : 0,
+      g.hearts >= 5 ? 2 : g.hearts === 4 ? 1 : 0,
+      pm.rosa ? 2 : pm.crit && !pm.fria ? 1 : 0,
+      g.salaoSeg <= 0 ? 2 : g.salaoSeg <= CRITICO.salaoT ? 1 : 0,
+      tempos >= 4 ? 2 : tempos === 3 ? 1 : 0];
+    this.ficha = { d:this.day.n, it };
+  }
   buildSchedule(day){
     const out = [], efood = efoodAberto(this.save);
     const lug = this.tables.filter(t => t.open).reduce((a, t) => a + t.seats, 0);
     const cl = CLIMA[this.clima], ev = EVENTOS[this.evento] || null;   // v10.6: o evento de bairro (this.evento só é '', 'junina' ou 'jogo')
     const evG = ev ? ev.groups[this.ponto.id] * (this.evento === 'jogo' && this.tvLigada ? ev.tv.groups : 1) : 1;
     // a nota do Gurugol (v8.4) traz mais ou menos gente
-    const N = Math.max(3, Math.round(day.groups * this.divF * movimentoSalao(lug) * (cl ? cl.groups : 1) * evG * avalMovimento(this.save.aval, this.ponto) * vegMov(this.cursos) * (this.ponto.grupos || 1) * this.exigBravoF(day))), vipP = this.vipChance(day);
+    const N = Math.max(3, Math.round(day.groups * this.divF * movimentoSalao(lug) * (cl ? cl.groups : 1) * evG * avalMovimento(this.save.aval, this.ponto) * vegMov(this.cursos) * (this.ponto.grupos || 1) * this.exigBravoF(day) * (this.visita && this.visita.boato ? CRITICO.lotada : 1))), vipP = this.vipChance(day);
     const gap = day.speed * day.time / N;
     let t = 3;
     const forced = day.nu ? randi(1, Math.min(3, N-1)) : -1;
@@ -238,6 +262,15 @@ class Game {
     // v9.6.5: dois entregadores comuns (não a encomenda) chegam com pelo menos MARMITA.gap s de diferença; o que chegaria antes vira um tipo pequeno
     let tEnt = -1e9;
     out.forEach(s => { if (s.type !== 'entregador') return; if (s.t - tEnt < MARMITA.gap) s.type = this.tipoPequeno(s.vip); else tEnt = s.t; });
+    // v10.9, o crítico: entre CRITICO.chega da janela de chegadas, um dos grupos (o mais perto do meio; de preferência não VIP) vira o crítico, sozinho e disfarçado; sem nenhum na faixa, um a mais aos 45%
+    if (this.visita){
+      const win = day.speed * day.time, [f0, f1] = CRITICO.chega;
+      const pode = x => !CUSTOMER_TYPES[x.type].retira && x.type !== 'turma' && x.type !== 'encomenda' && !x.apito && x.t / win >= f0 && x.t / win <= f1;
+      const cand = out.filter(pode).sort((a, b) => (a.vip ? 1 : 0) - (b.vip ? 1 : 0) || Math.abs(a.t / win - 0.5) - Math.abs(b.t / win - 0.5));
+      const c = cand.length ? cand[0] : (out.push({ t:0.45 * win, type:CRITICO.tipo, color:pick(colors.concat([0,1,2,3])), vip:false }), out[out.length - 1]);
+      Object.assign(c, { type:CRITICO.tipo, vip:true, exig:true, critico:true, disfarce:true });
+      out.sort((a, b) => a.t - b.t);
+    }
     // só AVAL.porDia grupos sorteados do dia avaliam no Gurugol (quem fica para o fim do dia não avalia)
     // v10.1: o VIP exigente sempre avalia e não entra no sorteio
     const exg = this.mode === 'carreira' && !!this.ponto.exigente;
@@ -257,8 +290,9 @@ class Game {
     if (!MANUT.on || !n){ delete m.sorteio; return; }
     if (m.sorteio && m.sorteio.d === n){ if (this.devForcaSorteio(m.sorteio)) writeSave(this.save); return; }
     let clima = '';
-    const evd = eventoSemana(this.save, n);   // v10.6: no dia do evento de bairro não há chuva nem feriado
-    if (n >= CLIMA_DIA && !evd){ const r = Math.random(); if (r < CLIMA.chuva.chance) clima = 'chuva'; else if (r < CLIMA.chuva.chance + CLIMA.feriado.chance) clima = 'feriado'; }
+    const vis = this.criticoDia(n), boato = !!(vis && vis.boato);   // v10.9: o dia do boato não tem clima nem evento de bairro (e não mexe no save.evento)
+    const evd = boato ? '' : eventoSemana(this.save, n);   // v10.6: no dia do evento de bairro não há chuva nem feriado
+    if (n >= CLIMA_DIA && !evd && !boato){ const r = Math.random(); if (r < CLIMA.chuva.chance) clima = 'chuva'; else if (r < CLIMA.chuva.chance + CLIMA.feriado.chance) clima = 'feriado'; }
     const quebra = n >= MANUT.dia ? MANUT.equip.filter(q => Math.random() < manutChance(m[q.id])).map(q => ({ id:q.id, f:rand(MANUT.quando[0], MANUT.quando[1]) })) : [];
     m.sorteio = { d:n, clima, ev:evd, quebra };
     // v9.4: o fiscal da vigilância (só na Avenida, do 2º dia no ponto em diante), sorteado junto e guardado até o dia acabar
@@ -274,6 +308,7 @@ class Game {
     if (f.evento){ so.ev = f.evento === 'nada' ? '' : f.evento; if (so.ev && !f.clima) so.clima = ''; }   // v10.6: o evento forçado (sem mexer no save.evento)
     if (f.quebra) so.quebra = f.quebra === 'nada' ? [] : [{ id:f.quebra, f:0.4 }];
     if (f.fiscal === 'vem') so.fiscal = { f:0.4, dev:true }; else if (f.fiscal === 'nao') delete so.fiscal;
+    if (f.critico === 'boato'){ so.clima = ''; so.ev = ''; }   // v10.9: o dia do boato (forçado) não tem clima nem evento
     return JSON.stringify(so) !== antes;
   }
   /* equipamento quebrado agora (e sem conserto) */
@@ -512,7 +547,7 @@ class Game {
       this.addText(t.cx - 30, t.cy - 76, 'Couvert +' + fee, PAL.faixa, 14);
     }
     if (g.vip){
-      this.stats.vip++;
+      if (!g.disfarce) this.stats.vip++;   // v10.9: o crítico disfarçado não conta como VIP
       if (g.hearts === 5){
         this.pontos += VIP.perfect;
         this.addText(t.cx, t.cy - 100, 'VIP satisfeito! +' + VIP.perfect + ' pts', PAL.faixa, 17);
@@ -528,6 +563,7 @@ class Game {
     }
     this.stats.served++;
     this.cinco(g);
+    this.fechaFicha(g, false);   // v10.9
     this.avaliar(g, t.cx, t.cy - 146);
     this.releaseCmd(g);
     g.paid = true;
@@ -563,6 +599,7 @@ class Game {
       this.addText(cx, cy - 136, 'Prato da Rosa!', AB_COR.petala, 16); this.addSparks(cx, cy - 70, 8, AB_COR.petala);
     }
     grp.pratoQ = dish.q || 0; grp.fria = !!dish.fria; if (dish.crit) grp.capricho = true;
+    if (tp !== 0) grp.pratoMain = { rosa:!!dish.rosa, crit:!!dish.crit, fria:!!dish.fria };   // v10.9: o prato principal (a ficha do crítico)
     this.score('deliver', cx, cy - 40, 0, grp, semCorrente);
     if (dish.crit){
       const b = grp.vip ? CRIT.vipBonus : CRIT.bonus;
@@ -817,7 +854,7 @@ class Game {
     const g = new Group(this, s.type, ++this.gid, s.color, s.vip, s);
     g.avalia = !!s.av; g.doApito = !!s.apito;   // doApito: uma das turmas que chegam com o apito da fábrica
     this.groups.push(g);
-    const novoMan = this.manualVer('c-' + s.type) | (s.vip ? this.manualVer('c-vip') : 0) | (g.exigente ? this.manualVer('c-exigente') : 0);   // v9.6.7: a 1ª vez de cada tipo abre a ficha dele no Manual
+    const novoMan = this.manualVer('c-' + s.type) | (g.vipAberto ? this.manualVer('c-vip') : 0) | (g.exigente && !g.disfarce ? this.manualVer('c-exigente') : 0);   // v9.6.7: a 1ª vez de cada tipo abre a ficha dele no Manual
     if (novoMan) this.addText(QUEUE.x, DOOR.y + 34, 'Novo no Manual!', PAL.faixa, 14);
     if (g.retira){
       this.retirada.push(g); g.setState('retirada'); this.reslotRetirada();
@@ -827,12 +864,14 @@ class Game {
       this.stats.spawned++;
       return g;
     }
-    if (g.exigente) this.stats.exigentes++;   // v10.1
+    if (g.exigente && !g.disfarce) this.stats.exigentes++;   // v10.1
     if (g.vip){
-      // VIP fura a fila: entra logo depois dos outros VIPs que já estão esperando
+      // VIP fura a fila: entra logo depois dos outros VIPs que já estão esperando (v10.9: o crítico disfarçado também fura, mas sem o aviso, a marca nem o toque de VIP)
       let i = 0;
       while (i < this.queue.length && this.queue[i].vip) i++;
       this.queue.splice(i, 0, g);
+      if (g.disfarce) Sfx.tone(880, 0.12, 'sine', 0.05);
+      else {
       this.addText(QUEUE.x, DOOR.y + 12, 'VIP chegou!', PAL.mostarda, 22);
       if (this.mode === 'carreira' && !this.save.vipVisto){   // v9.6.4: o 1º VIP da carreira vem explicado, num balão branco
         this.save.vipVisto = 1; writeSave(this.save);
@@ -843,6 +882,7 @@ class Game {
         this.fx.push({ k:'text', box:true, x:TW/2 - this.cam, y:250, vy:-6, life:5, max:5, text:'Cliente exigente!\nDuas estrelas: quer tudo no lugar.', color:PAL.faixa, size:16 });
       }
       Sfx.tone(988, 0.1, 'sine', 0.06); Sfx.tone(1319, 0.14, 'sine', 0.06, 0.1);
+      }
     } else {
       this.queue.push(g);
       Sfx.tone(880, 0.12, 'sine', 0.05);
@@ -854,6 +894,7 @@ class Game {
   bounce(s){
     const g = new Group(this, s.type, ++this.gid, s.color, s.vip, s);
     g.hearts = 3; g.bounced = true; g.hold = 0.9;
+    if (g.critico) this.fechaFicha(g, true);   // v10.9: o crítico que vê a espera cheia e volta para a rua: ficha zerada
     g.x = QUEUE.x - 60;   // chega à calçada, vê a espera cheia e volta para a rua
     g.setState('leaving');
     g.path = [{ x:DOOR.x, y:DOOR.y + 4 }];
@@ -1011,8 +1052,9 @@ class Game {
     const fine = this.multa(g);
     this.addMoney(-fine);
     this.addText(g.x, g.y - 78, '-' + fine, PAL.perigo, 18);
-    if (g.vip) this.stats.vipLost++;
-    if (g.exigente) this.save.exigBravo = this.day.n;   // v10.1: o dia seguinte vem com menos gente
+    if (g.vip && !g.disfarce) this.stats.vipLost++;
+    if (g.exigente && !g.disfarce) this.save.exigBravo = this.day.n;   // v10.1: o dia seguinte vem com menos gente (v10.9: não vale para o crítico)
+    if (g.critico) this.fechaFicha(g, true);   // v10.9: sai bravo: a ficha inteira é 0
     g.angry = true;
     this.avaliar(g, g.x, g.y - 120);
     Sfx.huff();
@@ -1096,6 +1138,7 @@ class Game {
   }
   timeUpLeave(g){
     if (g.state === 'leaving') return;
+    if (g.critico) this.fechaFicha(g, false);   // v10.9
     this.leaveCommon(g);
   }
 
@@ -1159,6 +1202,7 @@ class Game {
     this.gerenteUpdate(dt);   // v10.8
     this.kitchen.update(dt);
     this.tables.forEach(t => { t.sujaT = t.dirty ? t.sujaT + dt : 0; });   // v10.1
+    if (this.visita){ const ruim = this.salaoBagunca() || this.trashFull; this.groups.forEach(g => { if (g.critico && g.seated && ruim) g.salaoSeg += dt; }); }   // v10.9: os segundos de salão bagunçado com o crítico sentado
     this.esfriar(dt);
     this.updateFx(dt);
     dicaAnda(this, dt);   // v9.6.12
@@ -1224,6 +1268,7 @@ class Game {
     const ord = this.avals.slice().sort((a, b) => avalNota(b.r) - avalNota(a.r)), coment = [], comentK = [];   // v9.6.11: comentK = o tipo de cliente de cada comentário (o rostinho do balão)
     if (ord.length) [ord[0], ord[ord.length - 1], pick(ord)].forEach(a => { if (!coment.includes(a.txt)){ coment.push(a.txt); comentK.push(a.k); } });
     if (ord.length) this.manualVer('b-gurugol');   // v9.6.7
+    if (this.ficha) this.manualVer('i-critico'); if (this.visita && this.visita.boato) this.manualVer('i-boato');   // v10.9
     const avsDia = this.avals;   // v9.0.4: o gatilho dos cartões da lojinha lê as notas cruas do dia
     this.avals = [];   // já estão no save (a nota do HUD não conta duas vezes)
     // caixa no negativo: BANCO.neg dias seguidos podem; no seguinte, o banco cobre o que falta, à força
@@ -1248,6 +1293,12 @@ class Game {
       if (co.obj.vip && this.stats.vip >= co.obj.vip) sv.capVezes++;   // v10.5.2, cap. 7: o dia com VIPs que pagaram a conta (não precisam ser seguidos)
       if (co.obj.drinks && this.stats.drinks >= co.obj.drinks) sv.capVezes++;   // v10.5.2, cap. 10: o dia com coquetéis servidos
       if (co.obj.rosa && this.stats.rosa >= co.obj.rosa) sv.capVezes++;   // v10.8, cap. 12: o dia com Pratos da Rosa servidos
+      const vis = this.visita;
+      if (co.obj.critico && vis && vis.real && this.ficha && sv.guia){   // v10.9, cap. 13: a visita do dia: a ficha entra no save e a próxima sai sorteada (a conversa da 1ª fica pendente)
+        sv.guia.v.push(this.ficha); sv.guia.n++;
+        sv.guia.prox = sv.guia.n >= 2 ? 0 : d.n + randi(CRITICO.segunda[0], CRITICO.segunda[1]);
+        if (sv.guia.n === 1 && !sv.convCrit) sv.convCrit = 'pend';
+      }
       const ob = this.capObj(sv, true);
       cap = { n:sv.cap, titulo:co.titulo, itens:ob.itens, ok:ob.ok };
       if (ob.ok) sv.conversa = 'depois';
@@ -1298,6 +1349,7 @@ class Game {
     writeSave(sv);
     this.result = { daniFeitas:this.dani.feitas, jocaFeitas:this.joca.feitas, camiFeitas:this.cami.feitas, cafesEsp:this.stats.cafesEsp, drinks:this.stats.drinks, doces:this.stats.doces, docesMarm:this.stats.docesMarm, day:d.n, money:m, fat, pontos:Math.round(this.pontos), custo:Math.round(this.custo), contas:this.contas, aluguel:this.ponto.aluguel, div:this.paidDiv, divName:this.div ? this.div.name : '', meta:d.meta, bom:bomGoal(d), expert:d.expert, passed, stars, served:this.stats.served, lost:this.stats.lost, lostBy:this.stats.lostBy, lotadoT:Math.round(this.stats.lotadoT), atraso:Math.round(this.atraso), full:this.stats.full, chain:this.stats.chain, vip:this.stats.vip, vipLost:this.stats.vipLost, marmitas:this.stats.marmitas, completas:this.stats.completas, efood:this.efood, esfriou:this.stats.esfriou, jogadas:this.stats.jogadas, sobra:this.marmitas().filter(o => o.onde !== 'fogao').length, juice:this.stats.juice, juiceMiss:this.stats.juiceMiss, sucoEsp:this.stats.sucoEsp, bebida:this.bebida.id, trash:this.stats.trash, washed:this.stats.washed, income, paid:this.paid, reason:this.reason, conserto:this.conserto, consertos:this.stats.consertos, quebras:this.quebras.filter(q => q.on).map(q => ({ id:q.id, fixed:q.fixed })), clima:this.clima, manut:Object.assign({}, this.manut), par, forcado, neg:sv.neg, emp:Object.assign({}, sv.emp), atrasou, tomou, socorro, devido, cap, aval:{ dia:avDia, geral:avalGeral(sv.aval), n:sv.aval.length, coment, comentK, teto:avalTeto(this.ponto) } };
     this.result.evento = this.evento; this.result.amanha = amanha;   // v10.6
+    this.result.critico = this.ficha ? { it:this.ficha.it.slice(), real:!!(this.visita && this.visita.real) } : null; this.result.boato = !!(this.visita && this.visita.boato);   // v10.9: o cartão da ficha no fim do dia
     this.result.multaVig = this.multaVig; this.result.vig = this.fiscal && this.fiscal.res ? { res:this.fiscal.res, falhas:Object.assign({}, this.fiscal.falhas) } : null;   // v9.4
     if (tomou){ this.setState('falencia'); Sfx.lose(); return; }
     this.setState('dayend');
@@ -1361,6 +1413,7 @@ class Game {
     const o = c.obj, itens = [], ge = avalGeral(sv.aval), nota = ge ? Math.round(ge.nota * 10) / 10 : null;
     if (o.equipe){ const nm = o.equipe === 'cami' ? 'Cami' : 'Lia', fem = sv.equipe[o.equipe] > 0; itens.push({ txt:fem ? nm + ' contratada' : 'Contratar a ' + nm, ok:fem }); }   // v10.5.2: contratar a Cami (cap. 7) ou a Lia (cap. 10)
     if (o.compra === 'rosa') itens.push({ txt:sv.rosa ? 'Molho da Rosa aprendido' : 'Aprender o molho da Rosa', ok:!!sv.rosa });   // v10.8, cap. 12
+    if (o.critico) itens.push({ txt:'Receber o crítico do Michelzão ' + o.critico + ' vezes (' + Math.min(sv.guia ? sv.guia.n : 0, o.critico) + ' de ' + o.critico + ')', ok:!!sv.guia && sv.guia.n >= o.critico });   // v10.9, cap. 13
     if (o.rosa) itens.push({ txt:o.rosa + ' Pratos da Rosa servidos num dia, ' + o.vezes + ' vezes (' + Math.min(sv.capVezes, o.vezes) + ' de ' + o.vezes + ')', ok:sv.capVezes >= o.vezes });
     if (o.vip) itens.push({ txt:o.vip + ' VIPs bem atendidos num dia, ' + o.vezes + ' vezes (' + Math.min(sv.capVezes, o.vezes) + ' de ' + o.vezes + ')', ok:sv.capVezes >= o.vezes });
     if (o.drinks) itens.push({ txt:o.drinks + ' coquetéis servidos num dia, ' + o.vezes + ' vezes (' + Math.min(sv.capVezes, o.vezes) + ' de ' + o.vezes + ')', ok:sv.capVezes >= o.vezes });
@@ -1378,6 +1431,12 @@ class Game {
     const ob = this.capObj(sv), c = HISTORIA[(sv || this.save).cap - 1];
     return ob ? 'Capítulo ' + c.cap + ', ' + c.titulo + ': ' + ob.itens.map(it => (it.ok ? '✓ ' : '') + it.txt).join(' · ') : '';
   }
+  /* v10.9: o capítulo 13 começa: sorteia a 1ª visita do crítico (de CRITICO.primeira dias à frente) e planta no Gurugol o comentário do boato */
+  comecaCritico(){
+    const sv = this.save;
+    sv.guia = { n:0, prox:sv.dia + randi(CRITICO.primeira[0], CRITICO.primeira[1]), v:[] }; sv.convCrit = 0;
+    sv.avalCom = plantaBoato(sv.avalCom, sv.dia);
+  }
   /* o capítulo termina (a conversa de depois já tocou): o seguinte começa; ao entrar no 2, a Dani chega como aprendiz.
      Devolve true se não há capítulo para começar agora: acabaram (cap passa de HISTORIA.length) ou o seguinte espera a mudança
      de ponto (v9: o cap. 4 começa em mudarPonto) */
@@ -1387,6 +1446,7 @@ class Game {
     const c = HISTORIA[sv.cap - 1], ativo = !!c && c.ponto === sv.salao.ponto && histLiga();
     sv.conversa = ativo ? 'antes' : null;
     if (sv.cap === 2){ sv.equipe.dani = Math.max(sv.equipe.dani, 1); this.dani.reset(); this.joca.reset(); this.cami.reset(); }
+    if (sv.cap === CRITICO.cap) this.comecaCritico();
     writeSave(sv);
     return !ativo;
   }
@@ -2048,6 +2108,7 @@ class Game {
     sv.convPlanta = D.dia > HIST_PLANTA.dia ? 1 : 0; if (sv.convPlanta) sv.decor = normDecor({ espada:1 });
     sv.convCard = D.dia > HIST_CARDAPIO.dia ? 1 : 0; sv.convDiv = D.dia >= DIVULGA_DIA ? 1 : 0; sv.convEnt = D.dia >= HIST_ENTREGA.dia ? 1 : 0;
     sv.vontDoce = sv.vontCafe = sv.vontDoceV = sv.vontCafeV = 0;   // v10.5.3: a vontade recomeça no capítulo
+    sv.convCrit = n > CRITICO.cap ? 1 : 0; if (n === CRITICO.cap) this.comecaCritico(); else if (n > CRITICO.cap) sv.guia = { n:2, prox:0, v:[] };   // v10.9: o capítulo 13 começa com o sorteio da 1ª visita
     sv.convExig = n >= 10 ? 1 : 0; sv.socorro = 0; sv.convSocorro = 0; sv.convQuit = sv.convTeto = n > 3 ? 1 : 0;
     sv.efoodNota = D.dia > HIST_ENTREGA.dia ? 1 : 0; sv.vipVisto = D.dia > 5 ? 1 : 0;
     // equipe, cursos e melhorias pela tabela (o Fim: tudo no máximo, com a Lia)

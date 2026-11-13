@@ -132,7 +132,7 @@ const TIPOS=['estudante','executiva','familia','vovos','turma','motorista','nego
   ok(typeof L.drawLia==='function' && L.LIA_HOME.x>766 && L.LIA_HOME.y>200,'drawLia e LIA_HOME expostos (na cozinha)');
   const sv=L.normSave(JSON.parse(JSON.stringify(g.save))); ok(sv.equipe.lia===1,'o save guarda a Lia');
   const old=L.normSave({ v10:1, dia:10, salao:{ ponto:'terraco' }, equipe:{ tonhao:1, dani:1, anselmo:2 }, daniCursos:{ confCaseira:1 } }); ok(old.equipe.lia===0 && !old.up.confAlta && old.cursos.entradas===undefined,'o save da v10.1 carrega igual, sem a Lia nem os cursos');
-  ok(/^v10\.(2|3|4|5|6|7|8)(\.|$)/.test(L.VERSAO),'VERSAO = série v10.2 a v10.8'); }
+  ok(/^v10\.(2|3|4|5|6|7|8|9)(\.|$)/.test(L.VERSAO),'VERSAO = série v10.2 a v10.9'); }
 
 // ---------- 8. as páginas desenham sem erro (cartão da Lia, Cardápio, os 6 pratos, a Lia na cozinha) ----------
 { const H=jogo(8,'terraco',{ v10:1, equipe:{ tonhao:3, dani:2, lia:1 }, cursos:{ entradas:2, alta:2 }, daniCursos:{ confCaseira:1, confGourmet:1, confAlta:1 } },true), {g,L,els}=H;

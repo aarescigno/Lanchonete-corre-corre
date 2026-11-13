@@ -1,6 +1,6 @@
 # v10.9 — O crítico sem aviso: o caderninho e o boato do Bráulio (etapa 6b)
 
-**Situação:** aprovada (13/11)
+**Situação:** entregue em 13/11
 **Origem:** a Etapa 6 do `docs/PLANO.md`, segunda das quatro sessões do final (planejamento de 13/11, `docs/PROPOSTAS.md`). Decisões do usuário: o crítico tem pista sutil (o caderninho) e o Bráulio é rival até o fim.
 
 ## Objetivo
@@ -89,15 +89,15 @@ O crítico do Michelzão janta duas vezes na casa sem se apresentar. Parece um f
 - `tests/bot.js`, `tests/carreira.js`.
 
 ## Tarefas
-- [ ] T1 Smoke novo `tests/smoke74.js` com CA1 a CA11 (falhando) e no `run_all.sh`.
-- [ ] T2 `CRITICO`, `save.guia`, o sorteio das visitas e o capítulo 13.
-- [ ] T3 O crítico no dia: o grupo, o disfarce e o caderninho.
-- [ ] T4 A ficha: as medidas, o cartão do fim do dia e a conversa da 1ª visita.
-- [ ] T5 O boato: casa lotada, sem clima nem evento, a introdução e o comentário plantado.
-- [ ] T6 Modo dev e Manual.
-- [ ] T7 Desenho do caderninho e dos garfinhos; `shot_v10_9.js` e conferência em recortes.
-- [ ] T8 `carreira.js`: joga o capítulo 13 e mostra a linha `CRITICO` (visitas e ficha média de cada uma); calibrar CA12 pela receita.
-- [ ] Fechamento: `VERSAO`, `vtag`, `#ov-ver`, `docs/RESUMO.md`, `docs/TESTES.md`, `docs/PARTES.md`, esta spec como entregue, `tests/run_all.sh` verde, PR e merge.
+- [x] T1 Smoke novo `tests/smoke74.js` com CA1 a CA11 (falhando) e no `run_all.sh`.
+- [x] T2 `CRITICO`, `save.guia`, o sorteio das visitas e o capítulo 13.
+- [x] T3 O crítico no dia: o grupo, o disfarce e o caderninho.
+- [x] T4 A ficha: as medidas, o cartão do fim do dia e a conversa da 1ª visita.
+- [x] T5 O boato: casa lotada, sem clima nem evento, a introdução e o comentário plantado.
+- [x] T6 Modo dev e Manual.
+- [x] T7 Desenho do caderninho e dos garfinhos; `shot_v10_9.js` e conferência em recortes.
+- [x] T8 `carreira.js`: joga o capítulo 13 e mostra a linha `CRITICO` (visitas e ficha média de cada uma); calibrar CA12 pela receita.
+- [x] Fechamento: `VERSAO`, `vtag`, `#ov-ver`, `docs/RESUMO.md`, `docs/TESTES.md`, `docs/PARTES.md`, esta spec como entregue, `tests/run_all.sh` verde, PR e merge.
 
 ## Avisos para a execução
 - O exigente fora do Terraço já existe pelo `s.exig` do construtor do `Group`: o crítico usa o mesmo caminho, com `disfarce` só tirando o que se vê.
@@ -106,13 +106,25 @@ O crítico do Michelzão janta duas vezes na casa sem se apresentar. Parece um f
 - O harness desliga a História e os imprevistos: o `smoke74` usa `load({historia:true})` ou o `DEV.forca.critico`.
 
 ## Testes
-- `smoke74` novo (CA1 a CA11). `carreira.js`: linha `CRITICO` e `DIAS=100` para chegar ao capítulo 13.
+- `smoke74` novo (CA1 a CA11): 107 checagens, verde. `carreira.js`: linha `CRITICO` (as duas visitas, a ficha média de cada uma e por item), `cap. 13` na linha `HISTORIA`, `DBGC=1` (como cada visita do crítico fechou) e `CRITICO_CFG='{"pac":1.5}'` (troca números do crítico em runtime); `DIAS=100` chega ao capítulo 13.
+- **CA12 medido** (`DIAS=100 node carreira.js 10`): as duas visitas em 10/10 carreiras; ficha média **6,3** na 1ª e **5,6** na 2ª (dentro de 6 a 9 e de 5 a 9). Em 12 carreiras de `DIAS=75`: 8,7 e 5,9. `salaoT` fica em 6 e `lotada` em 1,25. Sem o `pac` (`pac` 1): 4,0 e 2,4 (o crítico ia embora bravo em ~60% das visitas); com `pac` 1,54: 5,3 e 2,9.
+- Testes antigos ajustados só nas contagens: `smoke53` (73 fichas), `60` e `69` (13 capítulos: o `fim` do 12 sumiu, o antigo Fim vira o cap. 13; `capV` 4; DEV_CAPS 14), `62` (VERSAO), `63` (14 linhas do dev), `64` (as cenas do dev) e `73` (`capV` 4, o cap. 12 sem `fim`). Nenhuma checagem apagada.
 - Capturas: `shot_v10_9.js` (CA13), conferidas e apagadas.
 
 ## Decisões em aberto
 Nenhuma.
 
 ## Desvios
-(No fechamento.)
+- **`CRITICO.pac` = 2 (decisão do usuário, 13/11).** Com as Regras como estavam, o crítico (executiva, com a paciência de VIP ×0,65) perdia a paciência cedo: ia embora bravo em ~60% das visitas (fila e espera da entrada), e a ficha média ficava em 4,0 e 2,4, fora do alvo, sem que `salaoT` ou `lotada` resolvessem. O fator novo multiplica só a paciência dele (`patPer`); o medido está em Testes. Para voltar ao de antes, `pac` 1.
+- **O crítico fura a fila como todo VIP**, só que sem o aviso "VIP chegou!", sem o toque de VIP, sem a plaquinha e sem a marca na fila (a Regra dizia "sem marca de VIP"; esperando como todo mundo, ele perdia os 5 corações na fila). `Group.vipAberto` (VIP que se vê) comanda a plaquinha, a marca e o balão do "aguardando mesa".
+- **Dia da visita que passou sem ela vale no seguinte** (`g.prox <= n`, não `===`): assim o capítulo nunca trava (por exemplo, com o modo dev pulando dias). A Regra dizia só "no dia `prox`".
+- **O crítico que chega com a espera cheia (`bounce`) tem a ficha zerada** (volta para a rua: é sair bravo da fila). A Regra não cobria isso.
+- **O crítico bravo** não conta em `stats.vipLost`, não tira gente do dia seguinte (`exigBravo`) e não conta em `stats.exigentes` nem abre as fichas `c-vip` e `c-exigente` do Manual; a multa do grupo bravo (MULTA + VIP.angry) vale.
+- **Fora do Terraço** (só no modo dev), sem `tempos`, a linha Refeição da ficha dá 1 garfo se o grupo foi servido (não há quatro tempos).
+- **Constantes e funções a mais:** `CRITICO.cap` (13) e `CRITICO.pac`; `normGuia` (valida `save.guia`), `plantaBoato` (o comentário plantado, uma vez só); `Game.criticoDia(n)`, `fechaFicha`, `comecaCritico`.
+- **O save**: `capRosa` agora também exige `capV !== 4`, para o save já na v10.9 no cap. 12 não recomeçar o 12; o save no cap. 13 sem `guia` (novo ou apagado por inválido) sorteia a 1ª visita ao ser lido.
+- **`introManut`** devolve o boato mesmo com `MANUT.on` desligado (o boato não depende dos imprevistos); o dia do boato não chama `eventoSemana`, e a semana sorteia o evento só no dia seguinte.
+- **Desenho:** `drawCaderno` fica ao lado do ombro (o tampo da mesa cobre o peito de quem senta na cadeira de trás) e `drawGarfo` no `20-desenho-base.js`; o Manual ganhou os desenhos `i-critico` (caderninho) e `i-boato` (megafone); o comentário plantado aparece como "Anônimo" na lista do Gurugol.
+- **A conversa da 1ª visita** entra na lista das cenas do modo dev ("O crítico, 1ª visita").
 
 **Modelo:** Sonnet, esforço alto (regras e textos fechados; o disfarce atravessa o grupo, o desenho e o Gurugol, e a ficha pede medidas novas no meio do dia)

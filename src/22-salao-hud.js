@@ -194,6 +194,7 @@ function drawTable(ctx,g,t,tm,menu){
   seats.forEach((s,i) => { if (!s.front) drawChair(ctx,s.x,s.y,t.color,false,plast,estof,mv); });
   if (showPpl) seats.forEach((s,i) => { if (!s.front && i < grp.people.length) drawSeatPerson(ctx,g,grp,i,s,tm); });
   drawTableBody(ctx,t,true,g,tm);
+  if (grp && grp.critico && grp.caderno > 0 && grp.seated && seats[0]) drawCaderno(ctx,seats[0].x + 13,seats[0].y - 17,tm,RM,1.25);   // v10.9: a pista do crítico
   if (t.cami && (menu || g.camiMesasOn)) drawAventalCami(ctx,t.cx + t.hx - 22,t.cy - 4);   // v9.6: o avental vinho da Cami no tampo
   // toalhinha da comanda (do pedido até o grupo sair)
   if (grp && grp.cmd >= 0 && grp.seated){
@@ -296,7 +297,7 @@ function drawTableOverlay(ctx,g,t,tm,menu){
   if (!grp || grp.state === 'toTable' || grp.state === 'leaving' || !t.open) return;
   drawHearts(ctx,grp,t.cx,t.cy-70,tm);
   if (grp.tempos) drawTempoTrilha(ctx,grp,t.cx,t.cy-54,tm);   // v10
-  if (grp.vip) drawVipBadge(ctx,t.cx-60,t.cy-70,tm,grp.exigente);
+  if (grp.vipAberto) drawVipBadge(ctx,t.cx-60,t.cy-70,tm,grp.exigente);   // v10.9: o crítico disfarçado não leva plaquinha
   const pul = RM ? 1 : 1 + 0.12*Math.sin(tm*7);
   ctx.save(); ctx.translate(bx,by);
   if (grp.state === 'reading'){
