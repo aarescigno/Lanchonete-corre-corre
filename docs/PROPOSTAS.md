@@ -4,6 +4,15 @@ Registro das ideias e dos retornos de quem jogou, com o texto original, e de ond
 
 ---
 
+## 13/11 — usuário: decisões da 4b (nível de luxo), no planejamento
+- **Atributos:** 5 barras somando até 100 pontos (Endereço 40, Decoração 25, Móveis 20, Ambiente 10, Fama 5); o nível sobe a cada 20. Os críticos surpresa entram na Fama com o Michelzão (etapa 6).
+- **Gurugol:** a nota de Ambiente é 2 + 3 × (luxo ÷ o que o ponto pede: 20, 40, 60 e 90), mais o que acontece na hora.
+- **VIPs:** +10% de chance por nível; na Avenida, do nível 3 em diante, 1 em cada 4 VIPs vem exigente.
+- **Itens:** pisca-pisca, cortina de chita, luminárias de fábrica, quadros de artista, lustre de cristal; e a escada de mesas (madeira, cadeiras acolchoadas, toalhas de linho, mármore).
+Destino: `docs/spec-v10.7.md`.
+
+---
+
 ## 12/11 — usuário: decisões da 4c (eventos de bairro), no planejamento
 Respostas às perguntas da sessão de planejar: frequência "1 por semana (Recomendado)"; preparo "Aviso na véspera (Recomendado)"; pratos juninos "Barraca junina na lojinha (Recomendado)"; jogo do Brasil "Gol na TV (Recomendado)".
 Destino: `docs/spec-v10.6.md` (aprovada em 12/11).
