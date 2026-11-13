@@ -1,6 +1,6 @@
 # v10.6 — Eventos de bairro: festa junina e jogo do Brasil (etapa 4c)
 
-**Situação:** aprovada (12/11)
+**Situação:** entregue em 13/11
 **Origem:** a etapa 4c do `docs/PLANO.md` (revisão de 28/10; adiantada em 12/11 para dar novidade aos dias parados da Garagem). Decisões do usuário em 12/11: um evento por semana, aviso na véspera, a barraca junina na lojinha e o gol na TV.
 
 ## Objetivo
@@ -33,14 +33,14 @@ Uma vez por semana, do dia 8 em diante, o bairro muda o dia da lanchonete: a fes
 - **Festa junina:**
   - Movimento: os grupos do dia × `EVENTOS.junina.groups[ponto.id]` (no `buildSchedule`, no mesmo produto do `cl.groups`); cada grupo vira família com chance `tipoP` = 0,3, como o feriado (no Terraço também).
   - Enfeites: na calçada, o fio de bandeirinhas do feriado com as cores juninas (vermelho, amarelo, azul, verde e laranja); no salão, dois fios de bandeirinhas em curva cruzando o alto da área do salão (`ponto.area`), por cima das mesas e sem cobrir a cozinha nem o HUD (função nova `drawBandeirinhasSalao(ctx, g)` em `src/21-cenario.js`). Com `prefers-reduced-motion`, paradas; sem ele, balançam de leve.
-  - **Barraca junina:** no dia da festa (e só nele), a seção **Cardápio** da lojinha ganha no topo o cartão "Barraca junina" (ícone de milho, preço `EVENTOS.junina.barraca.preco × ponto.cardapio`, arredondado para cima de 10 em 10: R$ 40 na Garagem, R$ 60 na área industrial, R$ 80 na Avenida; no Terraço, que só tem refeição completa, **não aparece**), com o botão "Montar" e o "?" da ficha `l-barraca`. Comprada, grava `save.barraca = n` e sai do caixa como as outras compras da lojinha (gasto do dia na linha "Barraca junina" do Caixa).
+  - **Barraca junina:** no dia da festa (e só nele), a seção **Cardápio** da lojinha ganha no topo o cartão "Barraca junina" (ícone de milho, preço `EVENTOS.junina.barraca.preco × ponto.cardapio`, arredondado para cima de 10 em 10: R$ 40 na Garagem, R$ 60 na área industrial, R$ 80 na Avenida; no Terraço, que só tem refeição completa, **não aparece**), com o botão "Montar" e o "?" da ficha `l-barraca`. Comprada, grava `save.barraca = n` e sai do caixa como as outras compras da lojinha (entra na coluna Compras do Caixa, como as outras compras; ver Desvios).
   - Pratos juninos: três entradas novas no `CARDAPIO` com `curso:'junina'` (curso que não existe, então nunca são "sabidas" e não aparecem no cardápio comum): `pamonha: { nome:'Pamonha', preco:9, cat:'junina', carne:false }`, `milho: { nome:'Milho cozido', preco:7, cat:'junina', carne:false }`, `canjica: { nome:'Canjica', preco:8, cat:'junina', carne:false }`, cada uma com a sua `cor`. Com a barraca montada no dia (`save.barraca === day.n`), ao montar os pedidos do grupo (`this.extras` em `src/12-clientes.js`, fora do `retira` e da refeição completa): quem ficou sem 2º item ganha um junino sorteado com chance `pede` = 0,5; quem pediu salgado como 2º item troca por junino com chance `troca` = 0,3. O junino entra na conta pelo `precoPrato` e na cozinha como o 2º item de sempre.
   - Desenhos dos pratos (`drawDish`, `src/20-desenho-base.js`): pamonha (embrulho de palha verde-claro amarrado), milho cozido (espiga amarela com grãos e palha) e canjica (tigela branca com canela por cima). Servem para vegetarianos (sem carne, sem o "v" verde).
 - **Jogo do Brasil:**
   - Movimento: os grupos do dia × `EVENTOS.jogo.groups[ponto.id]`, e mais × `tv.groups` = 1,15 se a TV estiver ligada (`eq.tv` na Garagem ou `eq.tvs` na área industrial).
-  - As três fases: depois de montar a agenda (`buildSchedule`), as chegadas são redistribuídas pelo turno: 45% dos grupos chegam entre 0 e 35% do turno (antes do jogo), 8% entre 35% e 65% (durante) e 47% entre 65% e o fim (depois), espalhados por igual em cada faixa, na ordem em que já estavam. A encomenda do setor fica onde estava. **No dia de jogo não tem apito da fábrica** (a fábrica para para ver o jogo).
+  - As três fases: depois de montar a agenda (`buildSchedule`), as chegadas são redistribuídas pela **janela de chegadas** (`day.speed × day.time`, ~55% do turno, decisão de 13/11, ver Desvios): 45% dos grupos chegam entre 0 e 35% da janela (antes do jogo), 8% entre 35% e 65% (durante) e 47% entre 65% e o fim dela (depois), espalhados por igual em cada faixa, na ordem em que já estavam. A encomenda do setor fica onde estava. **No dia de jogo não tem apito da fábrica** (a fábrica para para ver o jogo).
   - TV: com a TV ligada, o ambiente ganha `tv.effect` = 0,1 a mais na paciência das mesas (somado no `ambiente`), só no dia de jogo; a TV da Garagem (e as da área industrial) passam o jogo o dia todo (campo verde com a bola andando; com `prefers-reduced-motion`, a bola parada).
-  - **O gol:** num momento sorteado entre 45% e 55% do turno (`gol`, guardado no dia), todo grupo sentado à mesa que ainda não pagou nem saiu bravo ganha 1 coração (até o máximo de 5), e aparece no alto do salão o letreiro "GOOOL!" por `golT` = 2,5 s (sem movimento reduzido, cresce e treme de leve; com ele, parado). Se a TV estiver ligada, ela mostra a comemoração no mesmo tempo. Conta em `stats.gol` (0 ou 1).
+  - **O gol:** num momento sorteado entre 45% e 55% da janela de chegadas (`gol`, em segundos, guardado no dia), todo grupo sentado à mesa que ainda não pagou nem saiu bravo ganha 1 coração (até o máximo de 5), e aparece no alto do salão o letreiro "GOOOL!" por `golT` = 2,5 s (sem movimento reduzido, cresce e treme de leve; com ele, parado). Se a TV estiver ligada, ela mostra a comemoração no mesmo tempo. Conta em `stats.gol` (0 ou 1).
   - Enfeites: o fio de bandeirinhas da calçada em verde e amarelo.
   - Nenhum nome de time, emissora ou jogador; a TV segue sendo a Rede Esfera, já inventada.
 - **Fim do dia:** a linha `Imprevisto` dos resultados mostra o nome do evento do dia (como faz com o clima).
@@ -58,8 +58,8 @@ Uma vez por semana, do dia 8 em diante, o bairro muda o dia da lanchonete: a fes
 - **CA4** A véspera: o resultado do dia anterior ao evento tem a linha "Amanhã" com o nome do evento; a introdução do dia traz o `aviso` → `smoke71` (4)
 - **CA5** Festa junina: o número de grupos do dia na Garagem é o do dia comum × 1,3 (±1, com o mesmo resto da agenda), e o sorteio de tipos dá família em pelo menos 30% dos grupos → `smoke71` (5)
 - **CA6** A barraca: o cartão só aparece no dia da festa e fora do Terraço; montar custa R$ 40 na Garagem e grava `save.barraca`; com ela, pelo menos um grupo do dia pede pamonha, milho ou canjica, e o preço entra na conta; sem ela, ninguém pede → `smoke71` (6)
-- **CA7** Jogo do Brasil: com 40 grupos simulados, no máximo 10% chegam entre 35% e 65% do turno, e não há apito na área industrial → `smoke71` (7)
-- **CA8** O gol: entre 45% e 55% do turno, os grupos sentados ganham 1 coração (sem passar de 5), `stats.gol` vira 1 e o letreiro fica 2,5 s → `smoke71` (8)
+- **CA7** Jogo do Brasil: com 40 grupos simulados, no máximo 10% chegam entre 35% e 65% da janela de chegadas, e não há apito na área industrial → `smoke71` (7)
+- **CA8** O gol: entre 45% e 55% da janela de chegadas, os grupos sentados ganham 1 coração (sem passar de 5), `stats.gol` vira 1 e o letreiro fica 2,5 s → `smoke71` (8)
 - **CA9** A TV: no dia de jogo com a TV ligada, o `ambiente` sobe 0,1 e os grupos × 1,15 em relação à TV desligada → `smoke71` (9)
 - **CA10** Save: `normSave` limpa `save.evento` e `save.barraca` inválidos e aceita o save da v10.5.3 sem eles → `smoke71` (10)
 - **CA11** Modo dev: a linha Evento força o evento no dia que começa, também antes do dia 8 → `smoke71` (11)
@@ -83,15 +83,15 @@ Uma vez por semana, do dia 8 em diante, o bairro muda o dia da lanchonete: a fes
 - `tests/balance.js`, `tests/bot.js`, `tests/carreira.js`: `EVENTO=junina|jogo` (força o evento em todos os dias jogados), `BARRACA=0|1` (padrão 1: o bot monta a barraca quando aparece), a linha `EVENTOS` e a chave `EVENTOS_OFF=1` do `carreira.js`.
 
 ## Tarefas
-- [ ] T1 Smoke novo `tests/smoke71.js` com os critérios CA1 a CA12 (falhando) e no `run_all.sh`.
-- [ ] T2 `EVENTOS`, os pratos juninos e as fichas do Manual; `normSave` com `save.evento` e `save.barraca`.
-- [ ] T3 `eventoSemana`, o sorteio na véspera e no começo do dia, sem clima no dia do evento; o modo dev (linha Evento).
-- [ ] T4 Festa junina: movimento, famílias, a barraca na lojinha e os juninos nos pedidos.
-- [ ] T5 Jogo do Brasil: movimento, as fases, sem apito, a TV (ambiente e grupos) e o gol.
-- [ ] T6 Avisos: a linha "Amanhã" e o evento no `Imprevisto` dos resultados; o aviso na introdução; a revelação das fichas.
-- [ ] T7 Desenho: os 3 pratos, as bandeirinhas juninas e verde-amarelas, as do salão, a TV no jogo e o letreiro; `shot_v10_6.js` e conferência por recortes ampliados.
-- [ ] T8 Bot e balanceamento: `EVENTO` e `BARRACA` no `balance.js`, a linha `EVENTOS` no `carreira.js`; calibrar CA13 a CA15 pela receita dos critérios.
-- [ ] Fechamento: `VERSAO`, `vtag`, `#ov-ver`, `docs/RESUMO.md`, `docs/TESTES.md` (variáveis novas), `docs/PARTES.md`, esta spec como entregue, `tests/run_all.sh` verde, PR e merge.
+- [x] T1 Smoke novo `tests/smoke71.js` com os critérios CA1 a CA12 (falhando) e no `run_all.sh`.
+- [x] T2 `EVENTOS`, os pratos juninos e as fichas do Manual; `normSave` com `save.evento` e `save.barraca`.
+- [x] T3 `eventoSemana`, o sorteio na véspera e no começo do dia, sem clima no dia do evento; o modo dev (linha Evento).
+- [x] T4 Festa junina: movimento, famílias, a barraca na lojinha e os juninos nos pedidos.
+- [x] T5 Jogo do Brasil: movimento, as fases, sem apito, a TV (ambiente e grupos) e o gol.
+- [x] T6 Avisos: a linha "Amanhã" e o evento no `Imprevisto` dos resultados; o aviso na introdução; a revelação das fichas.
+- [x] T7 Desenho: os 3 pratos, as bandeirinhas juninas e verde-amarelas, as do salão, a TV no jogo e o letreiro; `shot_v10_6.js` e conferência por recortes ampliados.
+- [x] T8 Bot e balanceamento: `EVENTO` e `BARRACA` no `balance.js`, a linha `EVENTOS` no `carreira.js`; calibrar CA13 a CA15 pela receita dos critérios.
+- [x] Fechamento: `VERSAO`, `vtag`, `#ov-ver`, `docs/RESUMO.md`, `docs/TESTES.md` (variáveis novas), `docs/PARTES.md`, esta spec como entregue, `tests/run_all.sh` verde, PR e merge.
 
 ## Avisos para a execução
 - O feriado já usa `drawBandeirinhas` (só na calçada): dê a ela um parâmetro de cores, mantendo as atuais como padrão, e não mude o desenho do feriado.
@@ -101,6 +101,11 @@ Uma vez por semana, do dia 8 em diante, o bairro muda o dia da lanchonete: a fes
 - Comece pelo `eventoSemana` e pelos avisos (T3 e T6), que destravam os outros testes do smoke.
 
 ## Testes
+- `smoke71` (48 checagens, CA1 a CA12): verde. Ajustes nos antigos (só contagens): `smoke31` (os 29 pratos mais os 3 juninos à parte), `smoke53` (69 fichas) e `smoke67` (preços dos 29).
+- CA13 (40 rodadas, Garagem, dias 3 a 7): festa com barraca passa a meta em 98% dos dias e com lucro médio de R$ 1.849 (sem barraca: 98%, R$ 1.676).
+- CA14: jogo com TV (`EQUIPE=auto`) 100% (199/200); sem equipe 62% (125/200; alvo 40–75%).
+- CA15 (`DIAS=35`, 30 carreiras): 4 eventos em cada carreira (festa junina 2,2 e jogo 1,8 em média; barraca montada em 30 de 65 festas); dinheiro na lojinha do dia 35: R$ 4.454 com eventos × R$ 4.424 sem (+0,7%).
+- Capturas `shot_v10_6.js` (CA16) conferidas em recortes e apagadas: bandeirinhas no salão acima das cabeças, letreiro "GOOOL!" no alto, TV da Garagem e as 3 da área industrial no campo/"GOL!", cartão da barraca na lojinha.
 - `smoke71` novo (CA1 a CA12). Os smokes antigos não mudam de número (eventos desligados no `harness.js` junto com os imprevistos).
 - `balance.js`: chaves novas `EVENTO=junina|jogo` e `BARRACA=0|1`; alvos em CA13 e CA14. `carreira.js`: linha `EVENTOS` (eventos por campanha, por tipo) e CA15.
 - Capturas: `shot_v10_6.js` (CA16), conferidas e apagadas.
@@ -109,6 +114,10 @@ Uma vez por semana, do dia 8 em diante, o bairro muda o dia da lanchonete: a fes
 Nenhuma.
 
 ## Desvios
-(No fechamento.)
+- **As fases e o gol valem na janela de chegadas, não no turno todo (decisão do usuário, 13/11).** Com as fases no turno inteiro (45% até 35%, 8% até 65%, 47% até 100%), o jogo espalhava as chegadas além da janela normal (~55% do turno) e aliviava a fila: sem equipe, a meta passava em 84 a 88% dos dias (alvo 40–75%), e baixar `jogo.groups` só subia o número (0,85 dava 98%); na campanha o dinheiro do dia 35 ficava +25 a +50% acima do `EVENTOS_OFF=1`. Com as fatias e o gol na janela (`speed × turno`), os `groups` da spec ficaram como estavam e os alvos fecharam (62% sem equipe; +0,7% na campanha). O gol, que a spec punha entre 45 e 55% do turno, cai entre 45 e 55% da janela, para ficar na fase do meio.
+- **A compra da barraca** entra na coluna **Compras** do Caixa (categoria `mel`), como as outras compras da lojinha: o Caixa não tem linha por compra.
+- **`tests/bot.js`** ganhou `eventos(g, L, o)` e `barraca(g, L, folha)`: o harness desliga os imprevistos (`MANUT.on`) e com eles os eventos, então o `balance.js` e o `carreira.js` ligam só os eventos (sem clima nem quebras, com `MANUT=com` o sorteio de verdade segue). `balance.js` e `carreira.js` também aceitam `EVENTOS_CFG='{...}'` (troca números de `EVENTOS` em runtime); o balance só tem evento com `EVENTO=`.
+- `eventoDe(n)`, `barracaVisivel`, `barracaOn`, `tvLigada` e `ambienteEv` no `Game` (a lojinha precisa saber o evento antes de o dia começar, e o `sortear(n)` só roda no começo do dia).
+
 
 **Modelo:** Sonnet, esforço médio (regras e números fechados; segue o molde do `CLIMA`, com desenho novo e calibração por receita)

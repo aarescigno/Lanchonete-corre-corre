@@ -5,6 +5,11 @@ function upgradeIcon(id){
     if (id === 'tenis'){
       c.beginPath(); c.moveTo(-14,6); c.lineTo(-14,-8); c.lineTo(-6,-10); c.lineTo(0,-2); c.lineTo(12,2); c.quadraticCurveTo(15,4,14,8); c.lineTo(-14,8); c.closePath(); fs(c,'#fff',2);
       c.fillStyle = PAL.formica; c.fillRect(-14,5,28,3); c.strokeStyle = PAL.faixa; c.lineWidth = 1.5; c.beginPath(); c.moveTo(-3,-3); c.lineTo(1,-6); c.moveTo(1,0); c.lineTo(5,-3); c.stroke();
+    } else if (id === 'barraca'){   // v10.6: o balcão da barraca com o toldo listrado e uma espiga de milho
+      rr(c,-15,2,30,11,2); fs(c,PAL.madeira,2);
+      c.beginPath(); c.moveTo(-17,-3); c.lineTo(17,-3); c.lineTo(14,-14); c.lineTo(-14,-14); c.closePath(); fs(c,'#E2574C',2);
+      c.fillStyle = '#fff'; [-9,-1,7].forEach(x => { c.beginPath(); c.moveTo(x,-14); c.lineTo(x+4,-14); c.lineTo(x+4.6,-3); c.lineTo(x+0.6,-3); c.closePath(); c.fill(); });
+      c.save(); c.translate(0,0); c.scale(0.55,0.55); drawJunino(c,'milho'); c.restore();
     } else if (id === 'corrida'){
       // tênis de corrida: perfil baixo e esticado, solado alto em gomos, cadarço e linhas de velocidade
       c.strokeStyle = PAL.faixa; c.lineWidth = 2; c.lineCap = 'round';
@@ -850,11 +855,21 @@ function cursoIcon(c, av){
 }
 /* seção Cardápio (v9.0.1): o que se serve hoje, a diversidade no Gurugol e os cursos do Tonhão */
 function buildCardapio(grid){
+  if (game.barracaVisivel) buildBarraca(grid);   // v10.6: no dia da festa junina, a barraca vem no topo
   const cur = game.save.cursos, sab = pratosSabidos(cur);
   const c = staffCard(upgradeIcon('cardapio'), 'No cardápio hoje (' + sab.length + ' pratos)');
   grid.appendChild(c);
   buildCursos(grid);
   buildCursosAjudantes(grid);
+}
+/* v10.6: a barraca junina (só no dia da festa, fora do Terraço): só o nome, o preço e o "?" */
+function buildBarraca(grid){
+  const own = game.save.barraca === game.shopNext, p = game.barracaPreco();
+  const c = staffCard(upgradeIcon('barraca'), 'Barraca junina');
+  c.setAttribute('data-ficha', 'l-barraca');
+  if (own) c.classList.add('own');
+  c.appendChild(shopBtn(own ? 'Montada' : devLivre() ? 'Montar (grátis)' : 'Montar ' + fmt(p), 'btn', !own, () => game.buyBarraca(), devLivre() ? 0 : p));
+  grid.appendChild(c);
 }
 function buildCursos(grid){
   const sv = game.save, bank = sv.bank, cur = sv.cursos;

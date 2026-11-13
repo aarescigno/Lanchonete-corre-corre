@@ -134,11 +134,15 @@ function drawParedeInd(ctx,g,t){
 }
 /* as 3 televisores no alto da parede, abaixo do cartaz, com a notinha musical (v9); instaladas e ligadas pelo modo do dia */
 function drawTvsParede(ctx,g,t){
-  const modo = g.save.equipe.tvs || 0;
+  const modo = g.save.equipe.tvs || 0, jg = modo && g.evento === 'jogo' ? (g.golT > 0 ? 2 : 1) : 0;   // v10.6: no dia de jogo as 3 passam o campo
   [360,480,600].forEach((x,i) => {
     rr(ctx,x-24,52,48,29,3); fs(ctx,'#2A2E36',2);
-    rr(ctx,x-21,55,42,23,2); fs(ctx,modo ? ['#1E4FA8','#7B4FB5','#C2562B'][i] : '#1B1F27',1);
-    if (modo){
+    rr(ctx,x-21,55,42,23,2); fs(ctx,jg ? '#3E9B4F' : modo ? ['#1E4FA8','#7B4FB5','#C2562B'][i] : '#1B1F27',1);
+    if (jg){
+      ctx.strokeStyle = 'rgba(255,255,255,.8)'; ctx.lineWidth = 1; ctx.beginPath(); ctx.moveTo(x,55); ctx.lineTo(x,78); ctx.stroke(); circ(ctx,x,66.5,5); ctx.stroke();
+      if (jg === 2) txt(ctx,'GOL!',x,66,11,'#FFE066','center',FD,2,38);
+      else { const bx = x + (RM ? 5 : Math.sin(t*1.7 + i)*13), by = 66 + (RM ? 3 : Math.sin(t*2.3 + i)*7); circ(ctx,bx,by,2.4); fs(ctx,'#fff',1); }
+    } else if (modo){
       ctx.fillStyle = 'rgba(255,255,255,.18)'; ctx.beginPath(); ctx.moveTo(x-21,55); ctx.lineTo(x-8,55); ctx.lineTo(x-21,70); ctx.closePath(); ctx.fill();
       circ(ctx,x-9,66,4); fs(ctx,SKINS[i+1],1); rr(ctx,x-14,69,10,8,2); fs(ctx,'#C2362B',1);
       txt(ctx,modo === 2 ? 'SEM ANÚNCIOS' : 'SERTANEJO',x+6,60,5,'#fff','center',FD,0,34);
@@ -1352,7 +1356,7 @@ function drawMusico(ctx,g,tm){
 }
 /* ambiente da Garagem (v7.4.3): TV de tubo passando a Rede Esfera e aparelho de som na rádio Velha Brasil FM.
    drawTv e drawSom desenham com a base em (x, y); a TV troca de programa a cada 6 s (parada, só o logo) */
-function drawTv(ctx,x,y,tm,s){
+function drawTv(ctx,x,y,tm,s,jogo){   // v10.6: jogo 1 = o campo (o dia de jogo do Brasil), 2 = a comemoração do gol
   ctx.save(); ctx.translate(x,y); if (s) ctx.scale(s,s);
   ctx.strokeStyle = PAL.tinta; ctx.lineWidth = 2;
   ctx.beginPath(); ctx.moveTo(-4,-42); ctx.lineTo(-18,-62); ctx.moveTo(4,-42); ctx.lineTo(14,-64); ctx.stroke();
@@ -1360,8 +1364,10 @@ function drawTv(ctx,x,y,tm,s){
   rr(ctx,-30,-44,60,44,7); fs(ctx,'#6B6F7A',2.5);
   rr(ctx,-26,-40,40,34,7); fs(ctx,'#1B2233',2);
   ctx.save(); rr(ctx,-24,-38,36,30,6); ctx.clip();
-  const prog = RM ? 0 : Math.floor(tm / 6) % 3;
-  if (prog === 0){
+  const prog = jogo ? 1 : RM ? 0 : Math.floor(tm / 6) % 3;
+  if (jogo === 2){
+    ctx.fillStyle = '#2E9B4F'; ctx.fillRect(-24,-38,36,30); txt(ctx,'GOL!',-6,-23,12,'#FFE066','center',FD,2.4);
+  } else if (prog === 0){
     ctx.fillStyle = '#1E4FA8'; ctx.fillRect(-24,-38,36,30);
     circ(ctx,-6,-26,8); fs(ctx,'#5FB8F0',1.4);
     ctx.save(); ctx.translate(-6,-26); ctx.rotate(-0.4); ell(ctx,0,0,12,3.5); ctx.strokeStyle = '#FFD36B'; ctx.lineWidth = 1.6; ctx.stroke(); ctx.restore();
@@ -1370,7 +1376,7 @@ function drawTv(ctx,x,y,tm,s){
     ctx.fillStyle = '#3E9B4F'; ctx.fillRect(-24,-38,36,30);
     ctx.strokeStyle = 'rgba(255,255,255,.8)'; ctx.lineWidth = 1; ctx.beginPath(); ctx.moveTo(-6,-38); ctx.lineTo(-6,-8); ctx.stroke();
     circ(ctx,-6,-23,6); ctx.stroke();
-    circ(ctx,-6 + Math.sin(tm*1.7)*12,-23 + Math.sin(tm*2.3)*8,2.2); fs(ctx,'#fff',1);
+    circ(ctx,-6 + (jogo && RM ? 6 : Math.sin(tm*1.7)*12),-23 + (jogo && RM ? 4 : Math.sin(tm*2.3)*8),2.2); fs(ctx,'#fff',1);   // v10.6: no jogo com movimento reduzido, a bola parada
   } else {
     ctx.fillStyle = '#E8A0B4'; ctx.fillRect(-24,-38,36,30);
     circ(ctx,-15,-20,6); fs(ctx,SKINS[1],1.2); circ(ctx,3,-20,6); fs(ctx,SKINS[4],1.2);
@@ -1413,7 +1419,7 @@ function drawAmbiente(ctx,g,tm){
     if (!RM){ for (let i=0;i<2;i++){ const q = (tm*0.6 + i*0.5) % 1; ctx.globalAlpha = 1 - q; txt(ctx,'♪',22 - i*6,y-36-q*18,12,PAL.faixa,'center',FB); ctx.globalAlpha = 1; } }
     else txt(ctx,'♪',20,y-40,12,PAL.faixa,'center',FB);
   }
-  if (eq.tv) drawTv(ctx,146,y-2,tm);
+  if (eq.tv) drawTv(ctx,146,y-2,tm,undefined,g.evento === 'jogo' ? (g.golT > 0 ? 2 : 1) : 0);
 }
 /* água saborizada na entrada (jarra com frutas numa mesinha) */
 /* v8.3.10: mistura duas cores '#rrggbb' (f de 0 a 1) */
@@ -1623,15 +1629,47 @@ function drawChuvaPingos(ctx,t){
   ctx.restore();
 }
 /* feriado (v8): fio de bandeirinhas coloridas no alto da fachada da calçada, por cima do muro */
-function drawBandeirinhas(ctx){
-  const x0 = -CALCADA.w + 30, x1 = -8, cores = ['#E2574C','#F2B33D','#3E9B5A','#3F7FD0','#8E5BB5','#F28FB0','#4FB6B0'];
+const BAND_FERIADO = ['#E2574C','#F2B33D','#3E9B5A','#3F7FD0','#8E5BB5','#F28FB0','#4FB6B0'];
+const BAND_JUNINA = ['#E2574C','#F2C23D','#3F7FD0','#3E9B5A','#F28C38'];   // v10.6: a festa junina (o feriado segue com as dele)
+const BAND_JOGO = ['#2E9B4F','#F2C23D'];   // v10.6: o jogo do Brasil, verde e amarelo
+/* v10.6: cores (padrão: as do feriado) e tm (sem ele, paradas; com ele, balançam de leve, menos com movimento reduzido) */
+function drawBandeirinhas(ctx,cores,tm){
+  const x0 = -CALCADA.w + 30, x1 = -8; cores = cores || BAND_FERIADO;
   const pt = u => ({ x:x0 + (x1 - x0)*u, y:2 + 7*4*u*(1 - u) });
   ctx.strokeStyle = PAL.tinta; ctx.lineWidth = 1.8; ctx.beginPath();
   for (let i=0;i<=24;i++){ const p = pt(i/24); i ? ctx.lineTo(p.x,p.y) : ctx.moveTo(p.x,p.y); } ctx.stroke();
   for (let i=0;i<14;i++){
-    const u = (i + 0.5)/14, p = pt(u), d = 6;
-    ctx.beginPath(); ctx.moveTo(p.x - d,p.y); ctx.lineTo(p.x + d,p.y); ctx.lineTo(p.x,p.y + 12); ctx.closePath(); fs(ctx,cores[(i*3) % cores.length],1.6);
+    const u = (i + 0.5)/14, p = pt(u), d = 6, sw = tm == null || RM ? 0 : Math.sin(tm*1.6 + i*0.8)*0.12;
+    ctx.save(); ctx.translate(p.x,p.y); ctx.rotate(sw);
+    ctx.beginPath(); ctx.moveTo(-d,0); ctx.lineTo(d,0); ctx.lineTo(0,12); ctx.closePath(); fs(ctx,cores[(i*3) % cores.length],1.6);
+    ctx.restore();
   }
+}
+/* v10.6, a festa junina: dois fios de bandeirinhas em curva no alto da área do salão (por cima das mesas, abaixo dos balões); balançam de leve (paradas com movimento reduzido) */
+function drawBandeirinhasSalao(ctx,g,tm){
+  const A = g.ponto.area, x0 = A.x0 - 6, x1 = A.x1 + 6;
+  [[A.y0 - 12, A.y0 - 4, 9, 0], [A.y0 + 2, A.y0 - 8, 9, 2]].forEach(([ya, yb, sag, off]) => {
+    const pt = u => ({ x:x0 + (x1 - x0)*u, y:ya + (yb - ya)*u + sag*4*u*(1 - u) });
+    ctx.strokeStyle = PAL.tinta; ctx.lineWidth = 1.6; ctx.beginPath();
+    for (let i=0;i<=30;i++){ const p = pt(i/30); i ? ctx.lineTo(p.x,p.y) : ctx.moveTo(p.x,p.y); } ctx.stroke();
+    const n = Math.round((x1 - x0) / 26);
+    for (let i=0;i<n;i++){
+      const p = pt((i + 0.5)/n), sw = RM ? 0 : Math.sin(tm*1.5 + i*0.7 + off)*0.12;
+      ctx.save(); ctx.translate(p.x,p.y); ctx.rotate(sw);
+      ctx.beginPath(); ctx.moveTo(-6,0); ctx.lineTo(6,0); ctx.lineTo(0,12); ctx.closePath(); fs(ctx,BAND_JUNINA[(i*2 + off) % BAND_JUNINA.length],1.5);
+      ctx.restore();
+    }
+  });
+}
+/* v10.6: o letreiro "GOOOL!" no alto do salão por EVENTOS.jogo.golT s (cresce e treme de leve; parado com movimento reduzido) */
+function drawGol(ctx,g,tm){
+  if (!(g.golT > 0)) return;
+  const T = EVENTOS.jogo.golT, p = 1 - g.golT / T, a = clamp(Math.min(p / 0.08, (1 - p) / 0.2, 1), 0, 1);
+  const k = RM ? 1 : 0.55 + 0.45 * Math.min(1, p / 0.18) + Math.sin(tm*34)*0.025, A = g.ponto.area;
+  ctx.save(); ctx.globalAlpha = a; ctx.translate((A.x0 + A.x1) / 2, A.y0 - 22); ctx.scale(k,k); if (!RM) ctx.rotate(Math.sin(tm*28)*0.025);
+  rr(ctx,-112,-34,224,68,18); ctx.fillStyle = '#2E9B4F'; ctx.fill(); ctx.strokeStyle = PAL.tinta; ctx.lineWidth = 3; ctx.stroke();
+  txt(ctx,'GOOOL!',0,2,52,'#FFE066','center',FD,7);
+  ctx.restore();
 }
 /* plaquinhas de conserto (v8): alvo do toque (raio MANUT.badge), no ponto `badge` de cada equipamento quebrado e sem conserto.
    Círculo mostarda com a chave inglesa e o preço do conserto embaixo; pulsa de leve (parada com movimento reduzido) */

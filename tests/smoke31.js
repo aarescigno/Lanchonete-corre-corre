@@ -10,10 +10,11 @@ const txt=e=>(e.textContent||'')+(e.children||[]).map(txt).join(' ');
 const BAS={pastel:1,chapa:1,fritos:1,assados:1};
 
 // ---------- o cardápio e os cursos ----------
-ok(Object.keys(C).length===29,'29 pratos no cardápio (14 + 8 sem carne da v8.6.11 + a parmegiana da v9.1 + os 6 pratos finos do Terraço da v10.2)');
-ok(Object.keys(C).every(k=>C[k].cat && ['pf','frito','assado','chapa','pastel'].includes(C[k].cat) && (C[k].curso===null || L.cursoOf(C[k].curso))),'cada prato tem categoria e curso (ou nenhum)');
+const CJ=Object.keys(C).filter(k=>C[k].cat==='junina');   // v10.6: os 3 pratos da barraca junina (curso 'junina', que não existe: nunca são sabidos)
+ok(Object.keys(C).length-CJ.length===29 && CJ.join()==='pamonha,milho,canjica' && CJ.every(k=>C[k].curso==='junina' && !C[k].carne && !L.cursoOf('junina')),'29 pratos no cardápio (14 + 8 sem carne da v8.6.11 + a parmegiana da v9.1 + os 6 pratos finos do Terraço da v10.2) e, à parte, os 3 juninos da v10.6');
+ok(Object.keys(C).filter(k=>C[k].cat!=='junina').every(k=>C[k].cat && ['pf','frito','assado','chapa','pastel'].includes(C[k].cat) && (C[k].curso===null || L.cursoOf(C[k].curso))),'cada prato tem categoria e curso (ou nenhum)');
 ok(C.pf.preco===30 && C.coxinha.preco===10 && C.risoles.preco===7 && C.kibe.preco===8 && C.bolinho.preco===10 && C.empada.preco===11 && C.esfihaA.preco===8 && C.esfihaF.preco===8 && C.misto.preco===12 && C.bauru.preco===14 && C.paoChapa.preco===8 && C.pastel.preco===12 && C.pastelQ.preco===12 && C.pastelP.preco===13,'os preços dos 14 pratos (v10.5: salários e preços de verdade, × 1,2)');
-ok(Object.keys(C).filter(k=>!C[k].carne&&!C[k].veg).sort().join()==='paoChapa,pastelQ' && Object.keys(C).filter(k=>!C[k].carne).length===13,'sem carne de fábrica: só o pão na chapa e o pastel de queijo (mais os 8 pratos do curso Vegetariano)');
+ok(Object.keys(C).filter(k=>C[k].cat!=='junina'&&!C[k].carne&&!C[k].veg).sort().join()==='paoChapa,pastelQ' && Object.keys(C).filter(k=>C[k].cat!=='junina'&&!C[k].carne).length===13,'sem carne de fábrica: só o pão na chapa e o pastel de queijo (mais os 8 pratos do curso Vegetariano)');
 ok(L.CURSOS.map(c=>c.id+':'+c.preco+':'+c.av.preco).join()==='pastel:150:300,chapa:180:360,fritos:220:440,assados:250:500,pf:0:400,veg:150:300,restaurante:400:600,entradas:600:900,alta:900:1400','cursos e preços: pastel 150/300, chapa 180/360, fritos 220/440, assados 250/500, PF só o avançado 400, Vegetariano 150/300, Cozinha de restaurante 400/600 (v9.1), Entradas finas 600/900 e Alta gastronomia 900/1400 (v10.2)');
 novo();
 ok(L.pratosSabidos(g.save.cursos).join()==='pf,coxinha','save novo: a cozinha só sabe PF e coxinha');

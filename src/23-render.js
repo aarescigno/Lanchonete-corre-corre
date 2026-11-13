@@ -30,6 +30,7 @@ function render(g, ctx){
   drawKitchen(ctx,g,tm);
   if (g.clima === 'chuva' && !menu) drawChuvaFundo(ctx,tm);
   if (g.clima === 'feriado' && !menu) drawBandeirinhas(ctx);
+  if (g.evento === 'junina' && !menu) drawBandeirinhas(ctx,BAND_JUNINA,tm); else if (g.evento === 'jogo' && !menu) drawBandeirinhas(ctx,BAND_JOGO,tm);   // v10.6
 
   // destaque de mesa durante arrasto/seleção
   if (g.hover && (g.drag || g.sel)){
@@ -96,6 +97,7 @@ function render(g, ctx){
   if (g.joca.active && !menu) items.push({ y:g.joca.y, f:() => drawJoca(ctx,g.joca,tm) });   // v9.2
   if (g.cami.active && !menu) items.push({ y:g.cami.y, f:() => drawCami(ctx,g.cami,tm) });   // v9.3
   items.sort((a,c) => a.y - c.y).forEach(it => it.f());
+  if (g.evento === 'junina' && !menu) drawBandeirinhasSalao(ctx,g,tm);   // v10.6
   if (g.clima === 'chuva' && !menu) drawChuvaPingos(ctx,tm);
   if (!menu) drawFumacaLixo(ctx,g,tm);   // v9.6.11
   if (!menu) drawConsertos(ctx,g,tm);
@@ -129,6 +131,8 @@ function render(g, ctx){
     drawCluster(ctx,d.g,d.x,d.y+8,tm,{ s:1.05 });
     ctx.restore();
   }
+
+  if (!menu) drawGol(ctx,g,tm);   // v10.6: o letreiro do gol
 
   // efeitos
   for (const f of g.fx){

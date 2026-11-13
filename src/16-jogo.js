@@ -1,6 +1,17 @@
 /* ============================================================
    JOGO
    ============================================================ */
+/* v10.6, eventos de bairro: garante que a semana do dia `n` está sorteada (save.evento = { sem, d, ev }) e devolve o evento do dia n ('junina', 'jogo' ou '').
+   O sorteio tardio (save sem ele, no meio da semana) escolhe o dia entre os que ainda não passaram. Só com MANUT.on e do dia EVENTOS.dia em diante */
+function eventoSemana(save, n){
+  if (!MANUT.on || !(n >= EVENTOS.dia)) return '';
+  const k = Math.floor((n - EVENTOS.dia) / EVENTOS.semana);
+  if (!save.evento || save.evento.sem !== k){
+    const ini = EVENTOS.dia + k * EVENTOS.semana, p = EVENTOS.peso[pontoOf(save.salao && save.salao.ponto).id];
+    save.evento = { sem:k, d:randi(Math.max(ini, n), ini + EVENTOS.semana - 1), ev:Math.random() < p.junina / (p.junina + p.jogo) ? 'junina' : 'jogo' };
+  }
+  return save.evento.d === n ? save.evento.ev : '';
+}
 class Game {
   constructor(canvas, ctx){
     this.canvas = canvas; this.ctx = ctx;
@@ -34,6 +45,31 @@ class Game {
   get cursos(){ return this.mode === 'treino' ? {} : this.mode === 'semfim' ? CURSOS_SEMFIM : this.save.cursos; }
   get bebida(){ return bebidaOf(this.ponto); }
   /* v10.3: a estação da bebida da espera está servindo? (no Terraço, o carrinho de coquetéis só nos dias em que o Anselmo vem) */
+  /* v10.6: a TV está ligada (a da Garagem; as 3 da área industrial, instaladas e com um modo); no dia de jogo ela puxa a freguesia e acalma a espera */
+  get tvLigada(){ const eq = this.save.equipe, n = this.ponto.nivel; return n === 1 ? !!eq.tv : n === 2 ? !!this.up.tvs && (eq.tvs || 0) > 0 : false; }
+  get ambienteEv(){ return this.evento === 'jogo' && this.tvLigada ? EVENTOS.jogo.tv.effect : 0; }
+  get barracaOn(){ return this.mode === 'carreira' && this.evento === 'junina' && this.save.barraca === this.day.n; }   // a barraca montada vale só no dia da festa
+  /* o evento do dia n visto da lojinha (antes de o dia começar): o forçado do modo dev ou o sorteio da semana */
+  eventoDe(n){
+    if (this.mode !== 'carreira' || !MANUT.on) return '';
+    const f = DEV.on && DEV.forca.evento; if (f) return f === 'nada' ? '' : f;
+    return eventoSemana(this.save, n);
+  }
+  get barracaVisivel(){ return this.eventoDe(this.shopNext) === 'junina' && (this.ponto.nivel < 4 || (DEV.on && DEV.forca.evento === 'junina')); }
+  barracaPreco(){ return Math.ceil(EVENTOS.junina.barraca.preco * this.ponto.cardapio / 10) * 10; }
+  buyBarraca(){
+    const n = this.shopNext, p = this.barracaPreco();
+    if (!this.barracaVisivel || this.save.barraca === n || (!devLivre() && this.save.bank < p)) return false;
+    if (!devLivre()){ this.save.bank -= p; caixaGasto(this.save, 'mel', p); }
+    this.save.barraca = n; this.manualVer('l-barraca'); writeSave(this.save); Sfx.coin();
+    return true;
+  }
+  /* o gol do Brasil: todo grupo sentado (que não está bravo) ganha 1 coração e o letreiro aparece por golT s */
+  golDoBrasil(){
+    this.golFeito = true; this.golT = EVENTOS.jogo.golT; this.stats.gol = 1;
+    this.groups.forEach(g => { if (g.seated && !g.angry) g.gain(1); });
+    Sfx.tone(660, 0.12, 'square', 0.05); Sfx.tone(880, 0.12, 'square', 0.05, 0.12); Sfx.tone(1175, 0.3, 'square', 0.05, 0.24);
+  }
   get maquinaOn(){ return !!this.up.maquina && (this.ponto.bebida !== 'coquetel' || (!!this.up.coqAutor && this.anselmoAtivo)); }   // o que se serve na espera (v7.7)
 
   resetDay(n, treino){
@@ -48,6 +84,8 @@ class Game {
     // imprevistos (v8): o sorteio do dia (feito ao começar o dia, e guardado até ele acabar) diz o clima e o que quebra
     const so = n && this.save.manut.sorteio && this.save.manut.sorteio.d === n ? this.save.manut.sorteio : null;
     this.clima = so ? so.clima : '';
+    this.evento = so && so.ev ? so.ev : '';   // v10.6: o evento de bairro do dia ('junina', 'jogo' ou '')
+    this.gol = this.evento === 'jogo' ? rand(EVENTOS.jogo.gol[0], EVENTOS.jogo.gol[1]) * this.day.speed * this.day.time : 0;   // v10.6: a fração é da janela de chegadas (speed × turno), como as fases this.golFeito = false; this.golT = 0;   // o gol do jogo: o segundo do turno em que sai
     this.quebras = so ? so.quebra.map(q => ({ id:q.id, t:q.f * this.day.time, on:false, fixed:false })) : [];
     this.usos = { fogao:0, geladeira:0, cafeteira:0 };
     this.fiscal = so && so.fiscal && !treino && (this.ponto.nivel >= FISCAL.nivel || (so.fiscal.dev && devLivre())) ? new Fiscal(this, so.fiscal.f) : null;   // v9.4
@@ -78,7 +116,7 @@ class Game {
     this.bia.reset();
     this.dani.reset(); this.joca.reset(); this.cami.reset();
     this.fx = [];
-    this.stats = { served:0, lost:0, chain:0, spawned:0, full:0, vip:0, vipLost:0, juice:0, juiceMiss:0, trash:0, washed:0, emptied:0, sucoEsp:0, doces:0, docesMarm:0, cafesEsp:0, drinks:0, crit:0, consertos:0, quebras:0, lostBy:{ semMesa:0, comMesa:0, pedido:0, prato:0, conta:0, retirada:0 }, lotadoT:0, bravoMesa:0, lixoCheio:false, marmitas:0, esfriou:0, jogadas:0, lostGrande:0, completas:0, exigentes:0, rodadas:0 };
+    this.stats = { served:0, lost:0, chain:0, spawned:0, full:0, vip:0, vipLost:0, juice:0, juiceMiss:0, trash:0, washed:0, emptied:0, sucoEsp:0, doces:0, docesMarm:0, cafesEsp:0, drinks:0, crit:0, consertos:0, quebras:0, lostBy:{ semMesa:0, comMesa:0, pedido:0, prato:0, conta:0, retirada:0 }, lotadoT:0, bravoMesa:0, lixoCheio:false, marmitas:0, esfriou:0, jogadas:0, lostGrande:0, completas:0, exigentes:0, rodadas:0, gol:0 };
     this.lastKind = null; this.chainN = 0;
     this.ending = false; this.endTimer = 0; this.reason = '';
     this.fechado = false; this.fechadoT = 0;   // v9.6.4: a porta fecha quando o relógio zera; fechadoT: segundos desde então
@@ -117,9 +155,10 @@ class Game {
   buildSchedule(day){
     const out = [], efood = efoodAberto(this.save);
     const lug = this.tables.filter(t => t.open).reduce((a, t) => a + t.seats, 0);
-    const cl = CLIMA[this.clima];
+    const cl = CLIMA[this.clima], ev = EVENTOS[this.evento] || null;   // v10.6: o evento de bairro (this.evento só é '', 'junina' ou 'jogo')
+    const evG = ev ? ev.groups[this.ponto.id] * (this.evento === 'jogo' && this.tvLigada ? ev.tv.groups : 1) : 1;
     // a nota do Gurugol (v8.4) traz mais ou menos gente
-    const N = Math.max(3, Math.round(day.groups * this.divF * movimentoSalao(lug) * (cl ? cl.groups : 1) * avalMovimento(this.save.aval, this.ponto) * vegMov(this.cursos) * (this.ponto.grupos || 1) * this.exigBravoF(day))), vipP = (day.vip || 0) * (this.div ? this.div.vip : 1) * (this.ponto.vip == null ? 1 : this.ponto.vip) * this.repVip;
+    const N = Math.max(3, Math.round(day.groups * this.divF * movimentoSalao(lug) * (cl ? cl.groups : 1) * evG * avalMovimento(this.save.aval, this.ponto) * vegMov(this.cursos) * (this.ponto.grupos || 1) * this.exigBravoF(day))), vipP = (day.vip || 0) * (this.div ? this.div.vip : 1) * (this.ponto.vip == null ? 1 : this.ponto.vip) * this.repVip;
     const gap = day.speed * day.time / N;
     let t = 3;
     const forced = day.nu ? randi(1, Math.min(3, N-1)) : -1;
@@ -130,6 +169,7 @@ class Game {
       let type = (i === forced) ? day.nu : this.ponto.tipos ? this.sorteiaTipo(this.ponto.tipos, i / N) : pick(day.types);
       if (day.tipo && i !== forced && Math.random() < day.tipoP) type = day.tipo;   // o dia da semana (v8.3, do dia 8 em diante)
       if (cl && i !== forced && Math.random() < cl.tipoP) type = cl.tipo;   // chuva: entregadores; feriado: famílias
+      if (ev && ev.tipo && i !== forced && Math.random() < ev.tipoP) type = ev.tipo;   // v10.6: a festa junina traz famílias
       if ((!efood || this.ponto.semRetirada) && CUSTOMER_TYPES[type].retira) type = this.tipoPequeno();   // v9.6.4: a Efood ainda não abriu: sem entregador (v10: no Terraço Suíça, nunca: semRetirada, também na chuva e na sexta-feira)
       let vip = false;
       if ((day.vip || vipDev) && (i === forcedVip || (day.vip && Math.random() < vipP))){
@@ -139,9 +179,17 @@ class Game {
       out.push({ t, type, color: pick(colors.concat([0,1,2,3])), vip });
       t += gap * (0.7 + Math.random()*0.6);
     }
+    // v10.6, o jogo do Brasil: as chegadas se espalham pelas três fases do turno (antes, durante e depois), na ordem em que estavam; a última fatia fica com o resto
+    if (this.evento === 'jogo'){
+      const M = out.length; let i0 = 0;
+      ev.fases.forEach(([de, ate, f], fi, fs) => {
+        const c = fi === fs.length - 1 ? M - i0 : Math.round(M * f);
+        for (let j = 0; j < c && i0 < M; j++, i0++) out[i0].t = Math.max(3, (de + (ate - de) * (j + 0.5) / c) * day.speed * day.time);   // as fatias valem dentro da janela de chegadas (speed × turno)
+      });
+    }
     // v9: o apito da fábrica (as primeiras `max` turmas do dia chegam juntas a partir de `quando` do turno) e a encomenda do setor
     this.apito = null;
-    const ap = DEV.on && DEV.forca.apito === 'nao' ? null : this.ponto.apito;   // v10.2.2
+    const ap = this.evento === 'jogo' || (DEV.on && DEV.forca.apito === 'nao') ? null : this.ponto.apito;   // v10.2.2; v10.6: no dia de jogo a fábrica não apita
     if (ap && DEV.on && DEV.forca.apito === 'apita' && !out.some(s => s.type === 'turma')) out.slice(1, 1 + ap.max).forEach(s => { s.type = 'turma'; s.vip = false; });
     if (ap){
       const ts = out.map((s, i) => s.type === 'turma' ? i : -1).filter(i => i >= 0).slice(0, ap.max);
@@ -175,9 +223,10 @@ class Game {
     if (!MANUT.on || !n){ delete m.sorteio; return; }
     if (m.sorteio && m.sorteio.d === n){ if (this.devForcaSorteio(m.sorteio)) writeSave(this.save); return; }
     let clima = '';
-    if (n >= CLIMA_DIA){ const r = Math.random(); if (r < CLIMA.chuva.chance) clima = 'chuva'; else if (r < CLIMA.chuva.chance + CLIMA.feriado.chance) clima = 'feriado'; }
+    const evd = eventoSemana(this.save, n);   // v10.6: no dia do evento de bairro não há chuva nem feriado
+    if (n >= CLIMA_DIA && !evd){ const r = Math.random(); if (r < CLIMA.chuva.chance) clima = 'chuva'; else if (r < CLIMA.chuva.chance + CLIMA.feriado.chance) clima = 'feriado'; }
     const quebra = n >= MANUT.dia ? MANUT.equip.filter(q => Math.random() < manutChance(m[q.id])).map(q => ({ id:q.id, f:rand(MANUT.quando[0], MANUT.quando[1]) })) : [];
-    m.sorteio = { d:n, clima, quebra };
+    m.sorteio = { d:n, clima, ev:evd, quebra };
     // v9.4: o fiscal da vigilância (só na Avenida, do 2º dia no ponto em diante), sorteado junto e guardado até o dia acabar
     if (this.ponto.nivel >= FISCAL.nivel && diaNoPonto(this.save, n) >= FISCAL.dia && Math.random() < FISCAL.chance) m.sorteio.fiscal = { f:rand(FISCAL.quando[0], FISCAL.quando[1]) };
     this.devForcaSorteio(m.sorteio);
@@ -188,6 +237,7 @@ class Game {
     const f = DEV.on && DEV.forca; if (!f) return false;
     const antes = JSON.stringify(so);
     if (f.clima) so.clima = f.clima === 'sem' ? '' : f.clima;
+    if (f.evento){ so.ev = f.evento === 'nada' ? '' : f.evento; if (so.ev && !f.clima) so.clima = ''; }   // v10.6: o evento forçado (sem mexer no save.evento)
     if (f.quebra) so.quebra = f.quebra === 'nada' ? [] : [{ id:f.quebra, f:0.4 }];
     if (f.fiscal === 'vem') so.fiscal = { f:0.4, dev:true }; else if (f.fiscal === 'nao') delete so.fiscal;
     return JSON.stringify(so) !== antes;
@@ -1020,6 +1070,7 @@ class Game {
     dt = Math.min(dt, 0.05);
     if (this.treino && this.treino.para){ this.updateFx(dt); return; }   // Missão zero: com o pop-up de explicação, o jogo espera
     if (this.starFlash > 0) this.starFlash = Math.max(0, this.starFlash - dt);
+    if (this.golT > 0) this.golT = Math.max(0, this.golT - dt);
     if (!this.ending){
       this.elapsed += dt;
       if (this.mode === 'treino'){ if (this.treino) this.treino.update(dt); }
@@ -1035,6 +1086,7 @@ class Game {
         const ap = this.apito;   // v9: o aviso 10 s antes e o apito da fábrica
         if (ap && !ap.avisou && this.elapsed >= ap.t - ap.aviso){ ap.avisou = true; this.addText(QUEUE.x, DOOR.y + 36, 'A fábrica vai apitar!', PAL.alerta, 20); this.manualVer('i-apito'); }
         if (ap && !ap.tocou && this.elapsed >= ap.t){ ap.tocou = true; this.addText(QUEUE.x, DOOR.y + 36, 'Apitou!', PAL.perigo, 26); Sfx.tone(880, 0.16, 'square', 0.05); Sfx.tone(1175, 0.28, 'square', 0.05, 0.2); }
+        if (this.gol && !this.golFeito && this.elapsed >= this.gol) this.golDoBrasil();   // v10.6
         const s = this.schedule[this.nextIdx];
         if (s && this.elapsed >= s.t + this.atraso && this.lotado && this.portaT < PORTA.max && this.atraso < PORTA.total * this.day.time){
           this.atraso += dt; this.portaT += dt;
@@ -1200,9 +1252,11 @@ class Game {
     if (forcado) row.forc = 1;
     if (atrasou) row.atr = 1;
     if (tomou) row.tom = 1;
+    const amanha = MANUT.on ? eventoSemana(sv, d.n + 1) : '';   // v10.6: o evento de amanhã (sorteado agora, para avisar na véspera)
     caixaAdd(sv, row);
     writeSave(sv);
     this.result = { daniFeitas:this.dani.feitas, jocaFeitas:this.joca.feitas, camiFeitas:this.cami.feitas, cafesEsp:this.stats.cafesEsp, drinks:this.stats.drinks, doces:this.stats.doces, docesMarm:this.stats.docesMarm, day:d.n, money:m, fat, pontos:Math.round(this.pontos), custo:Math.round(this.custo), contas:this.contas, aluguel:this.ponto.aluguel, div:this.paidDiv, divName:this.div ? this.div.name : '', meta:d.meta, bom:bomGoal(d), expert:d.expert, passed, stars, served:this.stats.served, lost:this.stats.lost, lostBy:this.stats.lostBy, lotadoT:Math.round(this.stats.lotadoT), atraso:Math.round(this.atraso), full:this.stats.full, chain:this.stats.chain, vip:this.stats.vip, vipLost:this.stats.vipLost, marmitas:this.stats.marmitas, completas:this.stats.completas, efood:this.efood, esfriou:this.stats.esfriou, jogadas:this.stats.jogadas, sobra:this.marmitas().filter(o => o.onde !== 'fogao').length, juice:this.stats.juice, juiceMiss:this.stats.juiceMiss, sucoEsp:this.stats.sucoEsp, bebida:this.bebida.id, trash:this.stats.trash, washed:this.stats.washed, income, paid:this.paid, reason:this.reason, conserto:this.conserto, consertos:this.stats.consertos, quebras:this.quebras.filter(q => q.on).map(q => ({ id:q.id, fixed:q.fixed })), clima:this.clima, manut:Object.assign({}, this.manut), par, forcado, neg:sv.neg, emp:Object.assign({}, sv.emp), atrasou, tomou, socorro, devido, cap, aval:{ dia:avDia, geral:avalGeral(sv.aval), n:sv.aval.length, coment, comentK, teto:avalTeto(this.ponto) } };
+    this.result.evento = this.evento; this.result.amanha = amanha;   // v10.6
     this.result.multaVig = this.multaVig; this.result.vig = this.fiscal && this.fiscal.res ? { res:this.fiscal.res, falhas:Object.assign({}, this.fiscal.falhas) } : null;   // v9.4
     if (tomou){ this.setState('falencia'); Sfx.lose(); return; }
     this.setState('dayend');
@@ -1486,6 +1540,7 @@ class Game {
     if (n >= 3){ this.manualVer('b-louca'); this.manualVer('b-suco'); }
     if (n >= HIST_ENTREGA.dia && efoodAberto(this.save)) this.manualVer('b-marmita');
     if (this.clima === 'chuva') this.manualVer('i-chuva'); else if (this.clima === 'feriado') this.manualVer('i-feriado');
+    if (this.evento === 'junina') this.manualVer('i-junina'); else if (this.evento === 'jogo') this.manualVer('i-jogo');   // v10.6
     if (this.day.gripe) this.manualVer('i-gripe');
     if (this.fiscal) this.manualVer('i-fiscal');
     if (MANUT.on && n >= MANUT.dia && MANUT.equip.some(q => manutChance(this.manut[q.id]) > 0)) this.manualVer('i-quebra');

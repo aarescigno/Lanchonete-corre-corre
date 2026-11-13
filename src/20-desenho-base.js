@@ -182,12 +182,34 @@ function drawFino(ctx,k,av){
     if (av){ ctx.fillStyle = '#D9B24A'; circ(ctx,-1,-0.4,1); ctx.fill(); }
   }
 }
+/* v10.6, os pratos da barraca junina (sem carne, sem o "v"): a pamonha no embrulho de palha, a espiga de milho cozido e a canjica com canela */
+function drawJunino(ctx,k){
+  if (k === 'pamonha'){
+    ctx.beginPath(); ctx.moveTo(-14,0); ctx.lineTo(-10,-6); ctx.quadraticCurveTo(0,-9,10,-6); ctx.lineTo(14,0); ctx.lineTo(10,6); ctx.quadraticCurveTo(0,9,-10,6); ctx.closePath(); fs(ctx,'#B9CE7A',2);
+    ctx.strokeStyle = 'rgba(70,100,30,.55)'; ctx.lineWidth = 1; ctx.beginPath(); ctx.moveTo(-9,-4); ctx.lineTo(8,-4.6); ctx.moveTo(-10,0); ctx.lineTo(10,0); ctx.moveTo(-9,4); ctx.lineTo(8,4.6); ctx.stroke();
+    ctx.strokeStyle = '#7A5A2E'; ctx.lineWidth = 1.6; [-7,7].forEach(x => { ctx.beginPath(); ctx.moveTo(x,-6.5); ctx.lineTo(x,6.5); ctx.stroke(); });   // o barbante
+    ell(ctx,13,0,2.6,3.4); fs(ctx,'#F2D86B',1.2);   // a massa aparecendo na ponta
+  } else if (k === 'milho'){
+    ctx.save(); ctx.rotate(-0.45);
+    ell(ctx,1,0,12.5,5.6); fs(ctx,'#F2C94C',2);
+    ctx.fillStyle = 'rgba(190,130,10,.6)'; for (let i=-3;i<=3;i++) for (const y of [-2.6,0,2.6]) { circ(ctx,i*3.1 + 2 + (y ? 1 : 0),y,0.85); ctx.fill(); }
+    ctx.beginPath(); ctx.moveTo(-5,-4.4); ctx.quadraticCurveTo(-14,-7,-16,0); ctx.quadraticCurveTo(-14,7,-5,4.4); ctx.quadraticCurveTo(-8,0,-5,-4.4); ctx.closePath(); fs(ctx,'#6FAE3E',1.6);   // a palha
+    ctx.restore();
+  } else {   // canjica
+    ctx.beginPath(); ctx.moveTo(-11,-2); ctx.lineTo(11,-2); ctx.quadraticCurveTo(10,9,0,9); ctx.quadraticCurveTo(-10,9,-11,-2); ctx.closePath(); fs(ctx,'#FFFFFF',2);
+    ell(ctx,0,-2,11,4); fs(ctx,'#F4E6B8',1.6);
+    ctx.fillStyle = '#E9D79A'; for (const d of [[-5,-3],[-1,-1.5],[3,-3],[6,-1],[-7,-1],[1,-4]]){ circ(ctx,d[0],d[1],1.3); ctx.fill(); }
+    ctx.fillStyle = '#8A4B2A'; for (const d of [[-3,-2.5],[2,-1.2],[5,-3.2],[-6,-2],[0,-3.8]]){ circ(ctx,d[0],d[1],0.7); ctx.fill(); }   // a canela em pó
+    ctx.strokeStyle = '#8A4B2A'; ctx.lineWidth = 1.8; ctx.lineCap = 'round'; ctx.beginPath(); ctx.moveTo(4,-4); ctx.lineTo(9,-9); ctx.stroke(); ctx.lineCap = 'butt';   // o pau de canela
+  }
+}
 function drawComida(ctx,k,carne,av){
   const pr = CARDAPIO[k], cat = pr ? pr.cat : 'chapa', cor = pr ? pr.cor : '#D9A25B';
   if (av === undefined || av === null) av = pratoAv(k, COMIDA_CURSOS) && !(pr && pr.semAv);
   const kk = DESENHO_BASE[k] || k;   // os pratos veganos e vegetarianos reusam o desenho do prato com carne
   let dx = 0, dy = 0;   // onde fica o detalhe do avançado
   if (pr && pr.fino){ drawFino(ctx,k,av); return; }   // v10.2
+  if (pr && pr.cat === 'junina'){ drawJunino(ctx,k); return; }   // v10.6
   if (k === 'parmegiana'){   // v9.1: filé empanado com molho vermelho e queijo gratinado, arroz e batata frita
     ell(ctx,-7,-1.5,5.3,4); fs(ctx,'#FFF6DA',1.6);
     ctx.fillStyle = '#F2C94C'; ctx.strokeStyle = '#B58A1B'; ctx.lineWidth = 0.8;

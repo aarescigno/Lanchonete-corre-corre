@@ -396,7 +396,7 @@ table.rank tr.me td{background:#fbe7a8}
 
     <div class="ov show" id="ov-menu">
       <div class="panel menu-panel">
-        <span class="vtag" id="vtag" aria-label="Versão 10.5.3">v10.5.3</span>
+        <span class="vtag" id="vtag" aria-label="Versão 10.6">v10.6</span>
         <h1 class="title">Lanchonete <br>Corre-Corre</h1>
         <p class="tag">Ajude a Bia a atender a freguesia da esquina antes que o cafezinho esfrie!</p>
         <div class="lbl" id="menu-dia">História</div>
@@ -616,7 +616,8 @@ table.rank tr.me td{background:#fbe7a8}
       <div class="panel">
         <h2>Versões</h2>
         <ul class="verlist">
-          <li><b>v10.5.3</b><span class="cur">versão atual</span><br>12/11/2026 &mdash; A vontade da freguesia: antes de você ter o doce e o espresso, a freguesia pede! A mesa mostra o que faltou, a nota cai um pouco e, no Modo História, a equipe conversa sobre isso no fim do dia.</li>
+          <li><b>v10.6</b><span class="cur">versão atual</span><br>13/11/2026 &mdash; Eventos de bairro: uma vez por semana, a partir do dia 8, vem uma festa junina (famílias, bandeirinhas e a barraca de pamonha, milho e canjica) ou o jogo do Brasil (casa cheia antes, rua vazia durante, festa depois, e o gol faz todo mundo comemorar). Você fica sabendo na véspera.</li>
+          <li><b>v10.5.3</b><br>12/11/2026 &mdash; A vontade da freguesia: antes de você ter o doce e o espresso, a freguesia pede! A mesa mostra o que faltou, a nota cai um pouco e, no Modo História, a equipe conversa sobre isso no fim do dia.</li>
           <li><b>v10.5.2</b><br>12/11/2026 &mdash; O ritmo da história: duas conversas novas no meio do capítulo 3 (a reforma quitada e o teto da Garagem) e um capítulo a mais na Avenida (a Cami e os VIPs) e outro no Terraço (a Lia e os coquetéis), agora com 11 capítulos.</li>
           <li><b>v10.5.1</b><br>12/11/2026 &mdash; Metas no alvo: o primeiro dia e a sexta-feira da Garagem ficam mais fáceis, a área industrial e a Avenida pedem um pouco mais; no Terraço, com música ao vivo, a mesa às vezes pede mais uma rodada.</li>
           <li><b>v10.5</b><br>12/11/2026 &mdash; Salários de verdade: o Tonhão passa a ter salário, a Dani ganha uma ajuda de custo e a música do Terraço custa o que custaria ao vivo; a Dani e o Joca ganham mais a cada curso da carreira deles; o cardápio sobe para perto do preço real e as metas foram refeitas.</li>
@@ -809,7 +810,11 @@ const CARDAPIO = {
   quiche:       { nome:'Quiche de alho-poró',       preco:18, cat:'assado', curso:'entradas', carne:false, cor:'#E3B25A', veg:true, fino:true },
   risoto:       { nome:'Risoto de cogumelos',       preco:46, cat:'pf',     curso:'alta',     carne:false, cor:'#E8D9A8', veg:true, fino:true },
   peixe:        { nome:'Peixe do dia',              preco:50, cat:'pf',     curso:'alta',     carne:true,  cor:'#D9A25B', fino:true },
-  medalhao:     { nome:'Medalhão ao molho madeira', preco:55, cat:'pf',     curso:'alta',     carne:true,  cor:'#8A4B2A', fino:true }
+  medalhao:     { nome:'Medalhão ao molho madeira', preco:55, cat:'pf',     curso:'alta',     carne:true,  cor:'#8A4B2A', fino:true },
+  /* v10.6, a barraca da festa junina: curso:'junina' não existe em CURSOS, então nunca são sabidos nem entram no cardápio comum; só saem nos pedidos do dia da festa com a barraca montada */
+  pamonha:      { nome:'Pamonha',                   preco:9,  cat:'junina', curso:'junina',   carne:false, cor:'#E6D27A' },
+  milho:        { nome:'Milho cozido',              preco:7,  cat:'junina', curso:'junina',   carne:false, cor:'#F2C94C' },
+  canjica:      { nome:'Canjica',                   preco:8,  cat:'junina', curso:'junina',   carne:false, cor:'#F6EBC8' }
 };
 /* os cursos do Tonhão (v8.6.9): um por lojinha. O básico ensina os pratos; o avançado ("mais requintadinha") soma CURSO_AV.preco ao
    preço de venda dos pratos dele e CURSO_AV.crit à chance de caprichado. O PF não tem básico (preco 0): o avançado aparece desde o início.
@@ -2109,7 +2114,7 @@ const BIA_IDS = ['tenis', 'corrida', 'bandeja', 'sudoku'];
 function upgradeCartao(id){ return BIA_IDS.indexOf(id) >= 0 ? 'bia' : 'melhorias'; }
 const HIST_NOMES = { bia:'Bia', tonhao:'Tonhão', dani:'Dani', joca:'Joca', cami:'Cami', anselmo:'Anselmo', lia:'Lia' };
 const CAIXA_MAX = 14;                                 // livro-caixa (v7.2): quantos dias da carreira ficam guardados
-const VERSAO = 'v10.5.3';                                // vai no resumo do Caixa
+const VERSAO = 'v10.6';                                // vai no resumo do Caixa
 const DIVULGA_DIA = 4;                                // antes disso, o movimento é o da inauguração (sem custo); v9.0.2: dia 4, e o padrão é o boca a boca
 function divulgaAberta(n, sv){ return devLivre() || n >= DIVULGA_DIA && !(sv && sv.convDiv === 'pend'); }   // no modo dev, desde o dia 1; v9.0.3: no Modo História, só depois da conversa
 /* v9.6.4: a Efood (os entregadores) só abre depois da conversa dos entregadores, no Modo História; antes dela, nenhum tipo com `retira` vem na agenda */
@@ -2209,7 +2214,7 @@ function normManut(m){
   const out = {};
   MANUT.equip.forEach(q => { const v = +m[q.id]; out[q.id] = isFinite(v) ? clamp(v, 0, 1) : 1; });
   const s = m.sorteio;
-  if (s && typeof s === 'object' && +s.d >= 1) out.sorteio = { d:Math.round(+s.d), clima:CLIMA[s.clima] ? s.clima : '',
+  if (s && typeof s === 'object' && +s.d >= 1) out.sorteio = { d:Math.round(+s.d), clima:CLIMA[s.clima] ? s.clima : '', ev:s.ev === 'junina' || s.ev === 'jogo' ? s.ev : '',
     quebra:(Array.isArray(s.quebra) ? s.quebra : []).filter(x => x && manutOf(x.id)).map(x => ({ id:x.id, f:clamp(+x.f || 0.3, 0, 1) })) };
   if (out.sorteio && s.fiscal && isFinite(+s.fiscal.f)) out.sorteio.fiscal = { f:clamp(+s.fiscal.f, FISCAL.quando[0], FISCAL.quando[1]) };   // v9.4
   return out;
@@ -2221,6 +2226,21 @@ const CLIMA = {
   feriado: { nome:'Feriado',      chance:0.10, groups:1.25, tipo:'familia',    tipoP:0.25, aviso:'Feriado: a cidade saiu de casa! Mais gente e mais famílias.' }
 };
 const CLIMA_DIA = 3;
+/* eventos de bairro (v10.6, carreira com MANUT.on): do dia `dia` em diante, uma festa junina ou um jogo do Brasil por semana de `semana` dias, num dia sorteado dela
+   (avisado na véspera). peso: a chance de cada evento por ponto. groups: o movimento do dia por ponto. junina: tipo/tipoP viram família como o feriado; a barraca
+   (preco × cardápio do ponto, de 10 em 10, na lojinha do dia da festa) põe `pratos` nos pedidos (pede: quem estava sem 2º item; troca: quem pediria salgado).
+   jogo: fases [de, até, fatia dos grupos] do turno (antes, durante e depois); tv: com a TV ligada, grupos × `groups` e +`effect` na paciência; gol: o momento (fração
+   do turno) em que todo grupo sentado ganha 1 coração, e o letreiro dura golT s */
+const EVENTOS = {
+  dia:8, semana:7,
+  peso:{ garagem:{ junina:0.6, jogo:0.4 }, industrial:{ junina:0.35, jogo:0.65 }, avenida:{ junina:0.5, jogo:0.5 }, terraco:{ junina:0.5, jogo:0.5 } },
+  junina:{ nome:'Festa junina', groups:{ garagem:1.3, industrial:1.15, avenida:1.15, terraco:1.1 }, tipo:'familia', tipoP:0.3,
+    aviso:'Festa junina no bairro! Mais famílias, e todo mundo com vontade de comida de festa.', amanha:'Amanhã tem festa junina no bairro!',
+    barraca:{ preco:40, pede:0.5, troca:0.3 }, pratos:['pamonha', 'milho', 'canjica'] },
+  jogo:{ nome:'Jogo do Brasil', groups:{ garagem:1.15, industrial:1.3, avenida:1.1, terraco:1.05 },
+    fases:[[0, 0.35, 0.45], [0.35, 0.65, 0.08], [0.65, 1, 0.47]], tv:{ groups:1.15, effect:0.1 }, gol:[0.45, 0.55], golT:2.5,
+    aviso:'Dia de jogo do Brasil! Antes do jogo, casa cheia; durante, rua vazia; depois, festa.', amanha:'Amanhã tem jogo do Brasil!' }
+};
 /* fiscal da vigilância sanitária (v9.4): só na Avenida (nivel >= 3), do `dia`-ésimo dia no ponto em diante, com `chance` por dia (sorteada com o clima, em
    manut.sorteio.fiscal, para não mudar ao rejogar). Entra num momento entre `quando` do turno, fica `visita` s olhando e confere 3 coisas: mesa suja por mais de
    `mesaSuja` s seguidos, lixeira cheia e pia com `pia` pilhas ou mais. 0 falhas: selo por `selo` dias (+`seloPts` pontos; AVAL.amb.selo no Ambiente); 1: advertência; 2 ou 3: multa */
@@ -2294,6 +2314,7 @@ const MANUAL = [
   { id:'l-banco',      aba:'lojinha', nome:'Banco', linha:'Empréstimo para crescer. As parcelas saem do caixa no fim do dia; parcela atrasada é perigo.' },
   { id:'l-mudanca',    aba:'lojinha', nome:'Mudança', linha:'Um ponto maior, com freguesia nova e aluguel.' },
   { id:'l-caixa',      aba:'lojinha', nome:'Caixa', linha:'O que entrou e o que saiu, dia a dia.' },
+  { id:'l-barraca',    aba:'lojinha', nome:'Barraca junina', linha:'Só no dia da festa: pamonha, milho e canjica no cardápio.' },
 
   { id:'p-garagem',    aba:'lugares', sempre:true, nome:'Garagem da mãe da Bia', linha:'Onde tudo começou. Sem aluguel, freguesia do bairro.' },
   { id:'p-industrial', aba:'lugares', nome:'Área industrial', linha:'Perto das fábricas: turma no apito, motoristas e encomendas de marmita.' },
@@ -2303,6 +2324,8 @@ const MANUAL = [
   { id:'i-quebra',  aba:'imprevistos', nome:'Quebra', linha:'Equipamento gasto pode quebrar no meio do dia. A plaquinha da chave chama o técnico na hora, mais caro.' },
   { id:'i-chuva',   aba:'imprevistos', nome:'Dia de chuva', linha:'Vem menos gente e mais entregadores.' },
   { id:'i-feriado', aba:'imprevistos', nome:'Feriado', linha:'A cidade sai de casa: mais gente e mais famílias.' },
+  { id:'i-junina',  aba:'imprevistos', nome:'Festa junina', linha:'O bairro faz festa: vêm mais famílias, e quem monta a barraca vende comida de festa.' },
+  { id:'i-jogo',    aba:'imprevistos', nome:'Jogo do Brasil', linha:'Antes do jogo a casa lota, durante ninguém vem, e depois vem todo mundo. Com a TV ligada, a freguesia espera com mais calma.' },
   { id:'i-gripe',   aba:'imprevistos', nome:'Tonhão gripado', linha:'A cozinha anda mais devagar no dia.' },
   { id:'i-apito',   aba:'imprevistos', nome:'Apito da fábrica', linha:'A turma chega toda junta no meio do dia.' },
   { id:'i-fiscal',  aba:'imprevistos', nome:'Vigilância sanitária', linha:'Mesa suja e pia cheia dão multa; tudo limpo dá selo.' }
@@ -2723,6 +2746,9 @@ function normSave(s){
   out.efoodNota = s.efoodNota === 1 || dia > HIST_ENTREGA.dia ? 1 : 0;   // v9.6.4: o texto do entregador na introdução já saiu (quem passou do dia 4 já viu)
   out.vipVisto = s.vipVisto === 1 || dia > 5 ? 1 : 0;   // v9.6.4: o balão do 1º VIP da carreira
   out.selo = Math.max(0, Math.round(+s.selo) || 0);   // v9.4: o último dia do selo da vigilância (0: sem selo)
+  // v10.6: o evento da semana ({ sem, d, ev }: só valores válidos, senão sorteia de novo) e o dia em que a barraca junina foi montada
+  { const e = s.evento; if (e && typeof e === 'object' && Number.isInteger(+e.sem) && +e.sem >= 0 && Number.isInteger(+e.d) && +e.d >= EVENTOS.dia && (e.ev === 'junina' || e.ev === 'jogo')) out.evento = { sem:+e.sem, d:+e.d, ev:e.ev };
+    const b = Math.round(+s.barraca); if (b >= 1) out.barraca = b; }
   // v9.6.7: o Manual. Save sem `manual` (novo ou antigo): a semente com o que a carreira já viu, sem "novo"
   const manIds = (l, ok) => Array.isArray(l) ? l.filter((x, i) => typeof x === 'string' && MANUAL.some(f => f.id === x) && l.indexOf(x) === i && (!ok || ok.indexOf(x) >= 0)) : null;
   out.manual = Array.isArray(s.manual) ? manIds(s.manual) : manualSemente(out);
@@ -2856,6 +2882,9 @@ class Group {
     this.cafes = null; this.cafesDados = 0;   // v9.3: os cafés da máquina de espresso (ids de CAFES.lista) pedidos no fim da refeição, e os já entregues
     this.docesMarm = this.retira && game.mode === 'carreira' && game.up.confCaseira ? (this.lote ? this.dishes : [0]).filter(() => Math.random() < DOCES.marmita).length : 0; this.docesMarmDados = 0;
     this.extras = this.tempos ? this.people.map(p => pedePrato(type, game, true, p.veg)) : this.people.map((p, i) => !this.retira && game.mode !== 'treino' && Math.random() < (CARDAPIO[this.dishes[i]].cat === 'pf' ? T.mais : Math.max(T.mais, MAIS.salgado)) ? pedePrato(type, game, true, p.veg) : null);
+    if (!this.tempos && !this.retira && game.barracaOn){   // v10.6: a barraca junina: quem ficou sem 2º item pede um junino (pede), e quem pediria salgado troca por um (troca)
+      const B = EVENTOS.junina.barraca; this.extras = this.extras.map(k => Math.random() < (k ? B.troca : B.pede) ? pick(EVENTOS.junina.pratos) : k);
+    }
     this.bill = (this.lote ? [] : this.dishes).concat(this.extras).reduce((v, k) => v + (k ? precoPrato(k, game.ponto, game.cursos) : 0), 0) + (this.vip ? vipDish(this) : 0);
     if (this.tempos && !this.extras.some(Boolean)) this.tempo = 1;   // sem entrada que a cozinha saiba fazer (só vegetarianos sem opção): começa pelo principal
     this.hearts = 5; this.jaVouDito = false; this.bebCobrou = false;   // v9.6.13: jaVouDito = o "Já vou!" já apareceu para este grupo; v10.1: bebCobrou = o exigente já cobrou a bebida
@@ -2883,7 +2912,7 @@ class Group {
     if (this.state === 'queue' && g0.mode === 'carreira' && g0.up.assento) m /= 1 - assentoSlow(g0.up.assento);   // v9: espera sentado (v9.1: o sofá 25%, a cadeirinha e o banquinho 15%)
     if (this.state === 'queue' && this.sucoN) m /= 1 - MAQUINA.slow * Math.min(1, this.sucoN / this.size);
     const g = this.game, eq = g.save.equipe;
-    const amb = ambienteEffect(eq);
+    const amb = ambienteEffect(eq) + g.ambienteEv;   // v10.6: no dia de jogo, a TV ligada acalma a espera
     if (amb && this.state !== 'queue') m /= 1 - amb;
     return m;
   }
@@ -4063,6 +4092,17 @@ class Fiscal {
 /* ============================================================
    JOGO
    ============================================================ */
+/* v10.6, eventos de bairro: garante que a semana do dia `n` está sorteada (save.evento = { sem, d, ev }) e devolve o evento do dia n ('junina', 'jogo' ou '').
+   O sorteio tardio (save sem ele, no meio da semana) escolhe o dia entre os que ainda não passaram. Só com MANUT.on e do dia EVENTOS.dia em diante */
+function eventoSemana(save, n){
+  if (!MANUT.on || !(n >= EVENTOS.dia)) return '';
+  const k = Math.floor((n - EVENTOS.dia) / EVENTOS.semana);
+  if (!save.evento || save.evento.sem !== k){
+    const ini = EVENTOS.dia + k * EVENTOS.semana, p = EVENTOS.peso[pontoOf(save.salao && save.salao.ponto).id];
+    save.evento = { sem:k, d:randi(Math.max(ini, n), ini + EVENTOS.semana - 1), ev:Math.random() < p.junina / (p.junina + p.jogo) ? 'junina' : 'jogo' };
+  }
+  return save.evento.d === n ? save.evento.ev : '';
+}
 class Game {
   constructor(canvas, ctx){
     this.canvas = canvas; this.ctx = ctx;
@@ -4096,6 +4136,31 @@ class Game {
   get cursos(){ return this.mode === 'treino' ? {} : this.mode === 'semfim' ? CURSOS_SEMFIM : this.save.cursos; }
   get bebida(){ return bebidaOf(this.ponto); }
   /* v10.3: a estação da bebida da espera está servindo? (no Terraço, o carrinho de coquetéis só nos dias em que o Anselmo vem) */
+  /* v10.6: a TV está ligada (a da Garagem; as 3 da área industrial, instaladas e com um modo); no dia de jogo ela puxa a freguesia e acalma a espera */
+  get tvLigada(){ const eq = this.save.equipe, n = this.ponto.nivel; return n === 1 ? !!eq.tv : n === 2 ? !!this.up.tvs && (eq.tvs || 0) > 0 : false; }
+  get ambienteEv(){ return this.evento === 'jogo' && this.tvLigada ? EVENTOS.jogo.tv.effect : 0; }
+  get barracaOn(){ return this.mode === 'carreira' && this.evento === 'junina' && this.save.barraca === this.day.n; }   // a barraca montada vale só no dia da festa
+  /* o evento do dia n visto da lojinha (antes de o dia começar): o forçado do modo dev ou o sorteio da semana */
+  eventoDe(n){
+    if (this.mode !== 'carreira' || !MANUT.on) return '';
+    const f = DEV.on && DEV.forca.evento; if (f) return f === 'nada' ? '' : f;
+    return eventoSemana(this.save, n);
+  }
+  get barracaVisivel(){ return this.eventoDe(this.shopNext) === 'junina' && (this.ponto.nivel < 4 || (DEV.on && DEV.forca.evento === 'junina')); }
+  barracaPreco(){ return Math.ceil(EVENTOS.junina.barraca.preco * this.ponto.cardapio / 10) * 10; }
+  buyBarraca(){
+    const n = this.shopNext, p = this.barracaPreco();
+    if (!this.barracaVisivel || this.save.barraca === n || (!devLivre() && this.save.bank < p)) return false;
+    if (!devLivre()){ this.save.bank -= p; caixaGasto(this.save, 'mel', p); }
+    this.save.barraca = n; this.manualVer('l-barraca'); writeSave(this.save); Sfx.coin();
+    return true;
+  }
+  /* o gol do Brasil: todo grupo sentado (que não está bravo) ganha 1 coração e o letreiro aparece por golT s */
+  golDoBrasil(){
+    this.golFeito = true; this.golT = EVENTOS.jogo.golT; this.stats.gol = 1;
+    this.groups.forEach(g => { if (g.seated && !g.angry) g.gain(1); });
+    Sfx.tone(660, 0.12, 'square', 0.05); Sfx.tone(880, 0.12, 'square', 0.05, 0.12); Sfx.tone(1175, 0.3, 'square', 0.05, 0.24);
+  }
   get maquinaOn(){ return !!this.up.maquina && (this.ponto.bebida !== 'coquetel' || (!!this.up.coqAutor && this.anselmoAtivo)); }   // o que se serve na espera (v7.7)
 
   resetDay(n, treino){
@@ -4110,6 +4175,8 @@ class Game {
     // imprevistos (v8): o sorteio do dia (feito ao começar o dia, e guardado até ele acabar) diz o clima e o que quebra
     const so = n && this.save.manut.sorteio && this.save.manut.sorteio.d === n ? this.save.manut.sorteio : null;
     this.clima = so ? so.clima : '';
+    this.evento = so && so.ev ? so.ev : '';   // v10.6: o evento de bairro do dia ('junina', 'jogo' ou '')
+    this.gol = this.evento === 'jogo' ? rand(EVENTOS.jogo.gol[0], EVENTOS.jogo.gol[1]) * this.day.speed * this.day.time : 0;   // v10.6: a fração é da janela de chegadas (speed × turno), como as fases this.golFeito = false; this.golT = 0;   // o gol do jogo: o segundo do turno em que sai
     this.quebras = so ? so.quebra.map(q => ({ id:q.id, t:q.f * this.day.time, on:false, fixed:false })) : [];
     this.usos = { fogao:0, geladeira:0, cafeteira:0 };
     this.fiscal = so && so.fiscal && !treino && (this.ponto.nivel >= FISCAL.nivel || (so.fiscal.dev && devLivre())) ? new Fiscal(this, so.fiscal.f) : null;   // v9.4
@@ -4140,7 +4207,7 @@ class Game {
     this.bia.reset();
     this.dani.reset(); this.joca.reset(); this.cami.reset();
     this.fx = [];
-    this.stats = { served:0, lost:0, chain:0, spawned:0, full:0, vip:0, vipLost:0, juice:0, juiceMiss:0, trash:0, washed:0, emptied:0, sucoEsp:0, doces:0, docesMarm:0, cafesEsp:0, drinks:0, crit:0, consertos:0, quebras:0, lostBy:{ semMesa:0, comMesa:0, pedido:0, prato:0, conta:0, retirada:0 }, lotadoT:0, bravoMesa:0, lixoCheio:false, marmitas:0, esfriou:0, jogadas:0, lostGrande:0, completas:0, exigentes:0, rodadas:0 };
+    this.stats = { served:0, lost:0, chain:0, spawned:0, full:0, vip:0, vipLost:0, juice:0, juiceMiss:0, trash:0, washed:0, emptied:0, sucoEsp:0, doces:0, docesMarm:0, cafesEsp:0, drinks:0, crit:0, consertos:0, quebras:0, lostBy:{ semMesa:0, comMesa:0, pedido:0, prato:0, conta:0, retirada:0 }, lotadoT:0, bravoMesa:0, lixoCheio:false, marmitas:0, esfriou:0, jogadas:0, lostGrande:0, completas:0, exigentes:0, rodadas:0, gol:0 };
     this.lastKind = null; this.chainN = 0;
     this.ending = false; this.endTimer = 0; this.reason = '';
     this.fechado = false; this.fechadoT = 0;   // v9.6.4: a porta fecha quando o relógio zera; fechadoT: segundos desde então
@@ -4179,9 +4246,10 @@ class Game {
   buildSchedule(day){
     const out = [], efood = efoodAberto(this.save);
     const lug = this.tables.filter(t => t.open).reduce((a, t) => a + t.seats, 0);
-    const cl = CLIMA[this.clima];
+    const cl = CLIMA[this.clima], ev = EVENTOS[this.evento] || null;   // v10.6: o evento de bairro (this.evento só é '', 'junina' ou 'jogo')
+    const evG = ev ? ev.groups[this.ponto.id] * (this.evento === 'jogo' && this.tvLigada ? ev.tv.groups : 1) : 1;
     // a nota do Gurugol (v8.4) traz mais ou menos gente
-    const N = Math.max(3, Math.round(day.groups * this.divF * movimentoSalao(lug) * (cl ? cl.groups : 1) * avalMovimento(this.save.aval, this.ponto) * vegMov(this.cursos) * (this.ponto.grupos || 1) * this.exigBravoF(day))), vipP = (day.vip || 0) * (this.div ? this.div.vip : 1) * (this.ponto.vip == null ? 1 : this.ponto.vip) * this.repVip;
+    const N = Math.max(3, Math.round(day.groups * this.divF * movimentoSalao(lug) * (cl ? cl.groups : 1) * evG * avalMovimento(this.save.aval, this.ponto) * vegMov(this.cursos) * (this.ponto.grupos || 1) * this.exigBravoF(day))), vipP = (day.vip || 0) * (this.div ? this.div.vip : 1) * (this.ponto.vip == null ? 1 : this.ponto.vip) * this.repVip;
     const gap = day.speed * day.time / N;
     let t = 3;
     const forced = day.nu ? randi(1, Math.min(3, N-1)) : -1;
@@ -4192,6 +4260,7 @@ class Game {
       let type = (i === forced) ? day.nu : this.ponto.tipos ? this.sorteiaTipo(this.ponto.tipos, i / N) : pick(day.types);
       if (day.tipo && i !== forced && Math.random() < day.tipoP) type = day.tipo;   // o dia da semana (v8.3, do dia 8 em diante)
       if (cl && i !== forced && Math.random() < cl.tipoP) type = cl.tipo;   // chuva: entregadores; feriado: famílias
+      if (ev && ev.tipo && i !== forced && Math.random() < ev.tipoP) type = ev.tipo;   // v10.6: a festa junina traz famílias
       if ((!efood || this.ponto.semRetirada) && CUSTOMER_TYPES[type].retira) type = this.tipoPequeno();   // v9.6.4: a Efood ainda não abriu: sem entregador (v10: no Terraço Suíça, nunca: semRetirada, também na chuva e na sexta-feira)
       let vip = false;
       if ((day.vip || vipDev) && (i === forcedVip || (day.vip && Math.random() < vipP))){
@@ -4201,9 +4270,17 @@ class Game {
       out.push({ t, type, color: pick(colors.concat([0,1,2,3])), vip });
       t += gap * (0.7 + Math.random()*0.6);
     }
+    // v10.6, o jogo do Brasil: as chegadas se espalham pelas três fases do turno (antes, durante e depois), na ordem em que estavam; a última fatia fica com o resto
+    if (this.evento === 'jogo'){
+      const M = out.length; let i0 = 0;
+      ev.fases.forEach(([de, ate, f], fi, fs) => {
+        const c = fi === fs.length - 1 ? M - i0 : Math.round(M * f);
+        for (let j = 0; j < c && i0 < M; j++, i0++) out[i0].t = Math.max(3, (de + (ate - de) * (j + 0.5) / c) * day.speed * day.time);   // as fatias valem dentro da janela de chegadas (speed × turno)
+      });
+    }
     // v9: o apito da fábrica (as primeiras `max` turmas do dia chegam juntas a partir de `quando` do turno) e a encomenda do setor
     this.apito = null;
-    const ap = DEV.on && DEV.forca.apito === 'nao' ? null : this.ponto.apito;   // v10.2.2
+    const ap = this.evento === 'jogo' || (DEV.on && DEV.forca.apito === 'nao') ? null : this.ponto.apito;   // v10.2.2; v10.6: no dia de jogo a fábrica não apita
     if (ap && DEV.on && DEV.forca.apito === 'apita' && !out.some(s => s.type === 'turma')) out.slice(1, 1 + ap.max).forEach(s => { s.type = 'turma'; s.vip = false; });
     if (ap){
       const ts = out.map((s, i) => s.type === 'turma' ? i : -1).filter(i => i >= 0).slice(0, ap.max);
@@ -4237,9 +4314,10 @@ class Game {
     if (!MANUT.on || !n){ delete m.sorteio; return; }
     if (m.sorteio && m.sorteio.d === n){ if (this.devForcaSorteio(m.sorteio)) writeSave(this.save); return; }
     let clima = '';
-    if (n >= CLIMA_DIA){ const r = Math.random(); if (r < CLIMA.chuva.chance) clima = 'chuva'; else if (r < CLIMA.chuva.chance + CLIMA.feriado.chance) clima = 'feriado'; }
+    const evd = eventoSemana(this.save, n);   // v10.6: no dia do evento de bairro não há chuva nem feriado
+    if (n >= CLIMA_DIA && !evd){ const r = Math.random(); if (r < CLIMA.chuva.chance) clima = 'chuva'; else if (r < CLIMA.chuva.chance + CLIMA.feriado.chance) clima = 'feriado'; }
     const quebra = n >= MANUT.dia ? MANUT.equip.filter(q => Math.random() < manutChance(m[q.id])).map(q => ({ id:q.id, f:rand(MANUT.quando[0], MANUT.quando[1]) })) : [];
-    m.sorteio = { d:n, clima, quebra };
+    m.sorteio = { d:n, clima, ev:evd, quebra };
     // v9.4: o fiscal da vigilância (só na Avenida, do 2º dia no ponto em diante), sorteado junto e guardado até o dia acabar
     if (this.ponto.nivel >= FISCAL.nivel && diaNoPonto(this.save, n) >= FISCAL.dia && Math.random() < FISCAL.chance) m.sorteio.fiscal = { f:rand(FISCAL.quando[0], FISCAL.quando[1]) };
     this.devForcaSorteio(m.sorteio);
@@ -4250,6 +4328,7 @@ class Game {
     const f = DEV.on && DEV.forca; if (!f) return false;
     const antes = JSON.stringify(so);
     if (f.clima) so.clima = f.clima === 'sem' ? '' : f.clima;
+    if (f.evento){ so.ev = f.evento === 'nada' ? '' : f.evento; if (so.ev && !f.clima) so.clima = ''; }   // v10.6: o evento forçado (sem mexer no save.evento)
     if (f.quebra) so.quebra = f.quebra === 'nada' ? [] : [{ id:f.quebra, f:0.4 }];
     if (f.fiscal === 'vem') so.fiscal = { f:0.4, dev:true }; else if (f.fiscal === 'nao') delete so.fiscal;
     return JSON.stringify(so) !== antes;
@@ -5082,6 +5161,7 @@ class Game {
     dt = Math.min(dt, 0.05);
     if (this.treino && this.treino.para){ this.updateFx(dt); return; }   // Missão zero: com o pop-up de explicação, o jogo espera
     if (this.starFlash > 0) this.starFlash = Math.max(0, this.starFlash - dt);
+    if (this.golT > 0) this.golT = Math.max(0, this.golT - dt);
     if (!this.ending){
       this.elapsed += dt;
       if (this.mode === 'treino'){ if (this.treino) this.treino.update(dt); }
@@ -5097,6 +5177,7 @@ class Game {
         const ap = this.apito;   // v9: o aviso 10 s antes e o apito da fábrica
         if (ap && !ap.avisou && this.elapsed >= ap.t - ap.aviso){ ap.avisou = true; this.addText(QUEUE.x, DOOR.y + 36, 'A fábrica vai apitar!', PAL.alerta, 20); this.manualVer('i-apito'); }
         if (ap && !ap.tocou && this.elapsed >= ap.t){ ap.tocou = true; this.addText(QUEUE.x, DOOR.y + 36, 'Apitou!', PAL.perigo, 26); Sfx.tone(880, 0.16, 'square', 0.05); Sfx.tone(1175, 0.28, 'square', 0.05, 0.2); }
+        if (this.gol && !this.golFeito && this.elapsed >= this.gol) this.golDoBrasil();   // v10.6
         const s = this.schedule[this.nextIdx];
         if (s && this.elapsed >= s.t + this.atraso && this.lotado && this.portaT < PORTA.max && this.atraso < PORTA.total * this.day.time){
           this.atraso += dt; this.portaT += dt;
@@ -5262,9 +5343,11 @@ class Game {
     if (forcado) row.forc = 1;
     if (atrasou) row.atr = 1;
     if (tomou) row.tom = 1;
+    const amanha = MANUT.on ? eventoSemana(sv, d.n + 1) : '';   // v10.6: o evento de amanhã (sorteado agora, para avisar na véspera)
     caixaAdd(sv, row);
     writeSave(sv);
     this.result = { daniFeitas:this.dani.feitas, jocaFeitas:this.joca.feitas, camiFeitas:this.cami.feitas, cafesEsp:this.stats.cafesEsp, drinks:this.stats.drinks, doces:this.stats.doces, docesMarm:this.stats.docesMarm, day:d.n, money:m, fat, pontos:Math.round(this.pontos), custo:Math.round(this.custo), contas:this.contas, aluguel:this.ponto.aluguel, div:this.paidDiv, divName:this.div ? this.div.name : '', meta:d.meta, bom:bomGoal(d), expert:d.expert, passed, stars, served:this.stats.served, lost:this.stats.lost, lostBy:this.stats.lostBy, lotadoT:Math.round(this.stats.lotadoT), atraso:Math.round(this.atraso), full:this.stats.full, chain:this.stats.chain, vip:this.stats.vip, vipLost:this.stats.vipLost, marmitas:this.stats.marmitas, completas:this.stats.completas, efood:this.efood, esfriou:this.stats.esfriou, jogadas:this.stats.jogadas, sobra:this.marmitas().filter(o => o.onde !== 'fogao').length, juice:this.stats.juice, juiceMiss:this.stats.juiceMiss, sucoEsp:this.stats.sucoEsp, bebida:this.bebida.id, trash:this.stats.trash, washed:this.stats.washed, income, paid:this.paid, reason:this.reason, conserto:this.conserto, consertos:this.stats.consertos, quebras:this.quebras.filter(q => q.on).map(q => ({ id:q.id, fixed:q.fixed })), clima:this.clima, manut:Object.assign({}, this.manut), par, forcado, neg:sv.neg, emp:Object.assign({}, sv.emp), atrasou, tomou, socorro, devido, cap, aval:{ dia:avDia, geral:avalGeral(sv.aval), n:sv.aval.length, coment, comentK, teto:avalTeto(this.ponto) } };
+    this.result.evento = this.evento; this.result.amanha = amanha;   // v10.6
     this.result.multaVig = this.multaVig; this.result.vig = this.fiscal && this.fiscal.res ? { res:this.fiscal.res, falhas:Object.assign({}, this.fiscal.falhas) } : null;   // v9.4
     if (tomou){ this.setState('falencia'); Sfx.lose(); return; }
     this.setState('dayend');
@@ -5548,6 +5631,7 @@ class Game {
     if (n >= 3){ this.manualVer('b-louca'); this.manualVer('b-suco'); }
     if (n >= HIST_ENTREGA.dia && efoodAberto(this.save)) this.manualVer('b-marmita');
     if (this.clima === 'chuva') this.manualVer('i-chuva'); else if (this.clima === 'feriado') this.manualVer('i-feriado');
+    if (this.evento === 'junina') this.manualVer('i-junina'); else if (this.evento === 'jogo') this.manualVer('i-jogo');   // v10.6
     if (this.day.gripe) this.manualVer('i-gripe');
     if (this.fiscal) this.manualVer('i-fiscal');
     if (MANUT.on && n >= MANUT.dia && MANUT.equip.some(q => manutChance(this.manut[q.id]) > 0)) this.manualVer('i-quebra');
@@ -6706,12 +6790,34 @@ function drawFino(ctx,k,av){
     if (av){ ctx.fillStyle = '#D9B24A'; circ(ctx,-1,-0.4,1); ctx.fill(); }
   }
 }
+/* v10.6, os pratos da barraca junina (sem carne, sem o "v"): a pamonha no embrulho de palha, a espiga de milho cozido e a canjica com canela */
+function drawJunino(ctx,k){
+  if (k === 'pamonha'){
+    ctx.beginPath(); ctx.moveTo(-14,0); ctx.lineTo(-10,-6); ctx.quadraticCurveTo(0,-9,10,-6); ctx.lineTo(14,0); ctx.lineTo(10,6); ctx.quadraticCurveTo(0,9,-10,6); ctx.closePath(); fs(ctx,'#B9CE7A',2);
+    ctx.strokeStyle = 'rgba(70,100,30,.55)'; ctx.lineWidth = 1; ctx.beginPath(); ctx.moveTo(-9,-4); ctx.lineTo(8,-4.6); ctx.moveTo(-10,0); ctx.lineTo(10,0); ctx.moveTo(-9,4); ctx.lineTo(8,4.6); ctx.stroke();
+    ctx.strokeStyle = '#7A5A2E'; ctx.lineWidth = 1.6; [-7,7].forEach(x => { ctx.beginPath(); ctx.moveTo(x,-6.5); ctx.lineTo(x,6.5); ctx.stroke(); });   // o barbante
+    ell(ctx,13,0,2.6,3.4); fs(ctx,'#F2D86B',1.2);   // a massa aparecendo na ponta
+  } else if (k === 'milho'){
+    ctx.save(); ctx.rotate(-0.45);
+    ell(ctx,1,0,12.5,5.6); fs(ctx,'#F2C94C',2);
+    ctx.fillStyle = 'rgba(190,130,10,.6)'; for (let i=-3;i<=3;i++) for (const y of [-2.6,0,2.6]) { circ(ctx,i*3.1 + 2 + (y ? 1 : 0),y,0.85); ctx.fill(); }
+    ctx.beginPath(); ctx.moveTo(-5,-4.4); ctx.quadraticCurveTo(-14,-7,-16,0); ctx.quadraticCurveTo(-14,7,-5,4.4); ctx.quadraticCurveTo(-8,0,-5,-4.4); ctx.closePath(); fs(ctx,'#6FAE3E',1.6);   // a palha
+    ctx.restore();
+  } else {   // canjica
+    ctx.beginPath(); ctx.moveTo(-11,-2); ctx.lineTo(11,-2); ctx.quadraticCurveTo(10,9,0,9); ctx.quadraticCurveTo(-10,9,-11,-2); ctx.closePath(); fs(ctx,'#FFFFFF',2);
+    ell(ctx,0,-2,11,4); fs(ctx,'#F4E6B8',1.6);
+    ctx.fillStyle = '#E9D79A'; for (const d of [[-5,-3],[-1,-1.5],[3,-3],[6,-1],[-7,-1],[1,-4]]){ circ(ctx,d[0],d[1],1.3); ctx.fill(); }
+    ctx.fillStyle = '#8A4B2A'; for (const d of [[-3,-2.5],[2,-1.2],[5,-3.2],[-6,-2],[0,-3.8]]){ circ(ctx,d[0],d[1],0.7); ctx.fill(); }   // a canela em pó
+    ctx.strokeStyle = '#8A4B2A'; ctx.lineWidth = 1.8; ctx.lineCap = 'round'; ctx.beginPath(); ctx.moveTo(4,-4); ctx.lineTo(9,-9); ctx.stroke(); ctx.lineCap = 'butt';   // o pau de canela
+  }
+}
 function drawComida(ctx,k,carne,av){
   const pr = CARDAPIO[k], cat = pr ? pr.cat : 'chapa', cor = pr ? pr.cor : '#D9A25B';
   if (av === undefined || av === null) av = pratoAv(k, COMIDA_CURSOS) && !(pr && pr.semAv);
   const kk = DESENHO_BASE[k] || k;   // os pratos veganos e vegetarianos reusam o desenho do prato com carne
   let dx = 0, dy = 0;   // onde fica o detalhe do avançado
   if (pr && pr.fino){ drawFino(ctx,k,av); return; }   // v10.2
+  if (pr && pr.cat === 'junina'){ drawJunino(ctx,k); return; }   // v10.6
   if (k === 'parmegiana'){   // v9.1: filé empanado com molho vermelho e queijo gratinado, arroz e batata frita
     ell(ctx,-7,-1.5,5.3,4); fs(ctx,'#FFF6DA',1.6);
     ctx.fillStyle = '#F2C94C'; ctx.strokeStyle = '#B58A1B'; ctx.lineWidth = 0.8;
@@ -7378,11 +7484,15 @@ function drawParedeInd(ctx,g,t){
 }
 /* as 3 televisores no alto da parede, abaixo do cartaz, com a notinha musical (v9); instaladas e ligadas pelo modo do dia */
 function drawTvsParede(ctx,g,t){
-  const modo = g.save.equipe.tvs || 0;
+  const modo = g.save.equipe.tvs || 0, jg = modo && g.evento === 'jogo' ? (g.golT > 0 ? 2 : 1) : 0;   // v10.6: no dia de jogo as 3 passam o campo
   [360,480,600].forEach((x,i) => {
     rr(ctx,x-24,52,48,29,3); fs(ctx,'#2A2E36',2);
-    rr(ctx,x-21,55,42,23,2); fs(ctx,modo ? ['#1E4FA8','#7B4FB5','#C2562B'][i] : '#1B1F27',1);
-    if (modo){
+    rr(ctx,x-21,55,42,23,2); fs(ctx,jg ? '#3E9B4F' : modo ? ['#1E4FA8','#7B4FB5','#C2562B'][i] : '#1B1F27',1);
+    if (jg){
+      ctx.strokeStyle = 'rgba(255,255,255,.8)'; ctx.lineWidth = 1; ctx.beginPath(); ctx.moveTo(x,55); ctx.lineTo(x,78); ctx.stroke(); circ(ctx,x,66.5,5); ctx.stroke();
+      if (jg === 2) txt(ctx,'GOL!',x,66,11,'#FFE066','center',FD,2,38);
+      else { const bx = x + (RM ? 5 : Math.sin(t*1.7 + i)*13), by = 66 + (RM ? 3 : Math.sin(t*2.3 + i)*7); circ(ctx,bx,by,2.4); fs(ctx,'#fff',1); }
+    } else if (modo){
       ctx.fillStyle = 'rgba(255,255,255,.18)'; ctx.beginPath(); ctx.moveTo(x-21,55); ctx.lineTo(x-8,55); ctx.lineTo(x-21,70); ctx.closePath(); ctx.fill();
       circ(ctx,x-9,66,4); fs(ctx,SKINS[i+1],1); rr(ctx,x-14,69,10,8,2); fs(ctx,'#C2362B',1);
       txt(ctx,modo === 2 ? 'SEM ANÚNCIOS' : 'SERTANEJO',x+6,60,5,'#fff','center',FD,0,34);
@@ -8596,7 +8706,7 @@ function drawMusico(ctx,g,tm){
 }
 /* ambiente da Garagem (v7.4.3): TV de tubo passando a Rede Esfera e aparelho de som na rádio Velha Brasil FM.
    drawTv e drawSom desenham com a base em (x, y); a TV troca de programa a cada 6 s (parada, só o logo) */
-function drawTv(ctx,x,y,tm,s){
+function drawTv(ctx,x,y,tm,s,jogo){   // v10.6: jogo 1 = o campo (o dia de jogo do Brasil), 2 = a comemoração do gol
   ctx.save(); ctx.translate(x,y); if (s) ctx.scale(s,s);
   ctx.strokeStyle = PAL.tinta; ctx.lineWidth = 2;
   ctx.beginPath(); ctx.moveTo(-4,-42); ctx.lineTo(-18,-62); ctx.moveTo(4,-42); ctx.lineTo(14,-64); ctx.stroke();
@@ -8604,8 +8714,10 @@ function drawTv(ctx,x,y,tm,s){
   rr(ctx,-30,-44,60,44,7); fs(ctx,'#6B6F7A',2.5);
   rr(ctx,-26,-40,40,34,7); fs(ctx,'#1B2233',2);
   ctx.save(); rr(ctx,-24,-38,36,30,6); ctx.clip();
-  const prog = RM ? 0 : Math.floor(tm / 6) % 3;
-  if (prog === 0){
+  const prog = jogo ? 1 : RM ? 0 : Math.floor(tm / 6) % 3;
+  if (jogo === 2){
+    ctx.fillStyle = '#2E9B4F'; ctx.fillRect(-24,-38,36,30); txt(ctx,'GOL!',-6,-23,12,'#FFE066','center',FD,2.4);
+  } else if (prog === 0){
     ctx.fillStyle = '#1E4FA8'; ctx.fillRect(-24,-38,36,30);
     circ(ctx,-6,-26,8); fs(ctx,'#5FB8F0',1.4);
     ctx.save(); ctx.translate(-6,-26); ctx.rotate(-0.4); ell(ctx,0,0,12,3.5); ctx.strokeStyle = '#FFD36B'; ctx.lineWidth = 1.6; ctx.stroke(); ctx.restore();
@@ -8614,7 +8726,7 @@ function drawTv(ctx,x,y,tm,s){
     ctx.fillStyle = '#3E9B4F'; ctx.fillRect(-24,-38,36,30);
     ctx.strokeStyle = 'rgba(255,255,255,.8)'; ctx.lineWidth = 1; ctx.beginPath(); ctx.moveTo(-6,-38); ctx.lineTo(-6,-8); ctx.stroke();
     circ(ctx,-6,-23,6); ctx.stroke();
-    circ(ctx,-6 + Math.sin(tm*1.7)*12,-23 + Math.sin(tm*2.3)*8,2.2); fs(ctx,'#fff',1);
+    circ(ctx,-6 + (jogo && RM ? 6 : Math.sin(tm*1.7)*12),-23 + (jogo && RM ? 4 : Math.sin(tm*2.3)*8),2.2); fs(ctx,'#fff',1);   // v10.6: no jogo com movimento reduzido, a bola parada
   } else {
     ctx.fillStyle = '#E8A0B4'; ctx.fillRect(-24,-38,36,30);
     circ(ctx,-15,-20,6); fs(ctx,SKINS[1],1.2); circ(ctx,3,-20,6); fs(ctx,SKINS[4],1.2);
@@ -8657,7 +8769,7 @@ function drawAmbiente(ctx,g,tm){
     if (!RM){ for (let i=0;i<2;i++){ const q = (tm*0.6 + i*0.5) % 1; ctx.globalAlpha = 1 - q; txt(ctx,'♪',22 - i*6,y-36-q*18,12,PAL.faixa,'center',FB); ctx.globalAlpha = 1; } }
     else txt(ctx,'♪',20,y-40,12,PAL.faixa,'center',FB);
   }
-  if (eq.tv) drawTv(ctx,146,y-2,tm);
+  if (eq.tv) drawTv(ctx,146,y-2,tm,undefined,g.evento === 'jogo' ? (g.golT > 0 ? 2 : 1) : 0);
 }
 /* água saborizada na entrada (jarra com frutas numa mesinha) */
 /* v8.3.10: mistura duas cores '#rrggbb' (f de 0 a 1) */
@@ -8867,15 +8979,47 @@ function drawChuvaPingos(ctx,t){
   ctx.restore();
 }
 /* feriado (v8): fio de bandeirinhas coloridas no alto da fachada da calçada, por cima do muro */
-function drawBandeirinhas(ctx){
-  const x0 = -CALCADA.w + 30, x1 = -8, cores = ['#E2574C','#F2B33D','#3E9B5A','#3F7FD0','#8E5BB5','#F28FB0','#4FB6B0'];
+const BAND_FERIADO = ['#E2574C','#F2B33D','#3E9B5A','#3F7FD0','#8E5BB5','#F28FB0','#4FB6B0'];
+const BAND_JUNINA = ['#E2574C','#F2C23D','#3F7FD0','#3E9B5A','#F28C38'];   // v10.6: a festa junina (o feriado segue com as dele)
+const BAND_JOGO = ['#2E9B4F','#F2C23D'];   // v10.6: o jogo do Brasil, verde e amarelo
+/* v10.6: cores (padrão: as do feriado) e tm (sem ele, paradas; com ele, balançam de leve, menos com movimento reduzido) */
+function drawBandeirinhas(ctx,cores,tm){
+  const x0 = -CALCADA.w + 30, x1 = -8; cores = cores || BAND_FERIADO;
   const pt = u => ({ x:x0 + (x1 - x0)*u, y:2 + 7*4*u*(1 - u) });
   ctx.strokeStyle = PAL.tinta; ctx.lineWidth = 1.8; ctx.beginPath();
   for (let i=0;i<=24;i++){ const p = pt(i/24); i ? ctx.lineTo(p.x,p.y) : ctx.moveTo(p.x,p.y); } ctx.stroke();
   for (let i=0;i<14;i++){
-    const u = (i + 0.5)/14, p = pt(u), d = 6;
-    ctx.beginPath(); ctx.moveTo(p.x - d,p.y); ctx.lineTo(p.x + d,p.y); ctx.lineTo(p.x,p.y + 12); ctx.closePath(); fs(ctx,cores[(i*3) % cores.length],1.6);
+    const u = (i + 0.5)/14, p = pt(u), d = 6, sw = tm == null || RM ? 0 : Math.sin(tm*1.6 + i*0.8)*0.12;
+    ctx.save(); ctx.translate(p.x,p.y); ctx.rotate(sw);
+    ctx.beginPath(); ctx.moveTo(-d,0); ctx.lineTo(d,0); ctx.lineTo(0,12); ctx.closePath(); fs(ctx,cores[(i*3) % cores.length],1.6);
+    ctx.restore();
   }
+}
+/* v10.6, a festa junina: dois fios de bandeirinhas em curva no alto da área do salão (por cima das mesas, abaixo dos balões); balançam de leve (paradas com movimento reduzido) */
+function drawBandeirinhasSalao(ctx,g,tm){
+  const A = g.ponto.area, x0 = A.x0 - 6, x1 = A.x1 + 6;
+  [[A.y0 - 12, A.y0 - 4, 9, 0], [A.y0 + 2, A.y0 - 8, 9, 2]].forEach(([ya, yb, sag, off]) => {
+    const pt = u => ({ x:x0 + (x1 - x0)*u, y:ya + (yb - ya)*u + sag*4*u*(1 - u) });
+    ctx.strokeStyle = PAL.tinta; ctx.lineWidth = 1.6; ctx.beginPath();
+    for (let i=0;i<=30;i++){ const p = pt(i/30); i ? ctx.lineTo(p.x,p.y) : ctx.moveTo(p.x,p.y); } ctx.stroke();
+    const n = Math.round((x1 - x0) / 26);
+    for (let i=0;i<n;i++){
+      const p = pt((i + 0.5)/n), sw = RM ? 0 : Math.sin(tm*1.5 + i*0.7 + off)*0.12;
+      ctx.save(); ctx.translate(p.x,p.y); ctx.rotate(sw);
+      ctx.beginPath(); ctx.moveTo(-6,0); ctx.lineTo(6,0); ctx.lineTo(0,12); ctx.closePath(); fs(ctx,BAND_JUNINA[(i*2 + off) % BAND_JUNINA.length],1.5);
+      ctx.restore();
+    }
+  });
+}
+/* v10.6: o letreiro "GOOOL!" no alto do salão por EVENTOS.jogo.golT s (cresce e treme de leve; parado com movimento reduzido) */
+function drawGol(ctx,g,tm){
+  if (!(g.golT > 0)) return;
+  const T = EVENTOS.jogo.golT, p = 1 - g.golT / T, a = clamp(Math.min(p / 0.08, (1 - p) / 0.2, 1), 0, 1);
+  const k = RM ? 1 : 0.55 + 0.45 * Math.min(1, p / 0.18) + Math.sin(tm*34)*0.025, A = g.ponto.area;
+  ctx.save(); ctx.globalAlpha = a; ctx.translate((A.x0 + A.x1) / 2, A.y0 - 22); ctx.scale(k,k); if (!RM) ctx.rotate(Math.sin(tm*28)*0.025);
+  rr(ctx,-112,-34,224,68,18); ctx.fillStyle = '#2E9B4F'; ctx.fill(); ctx.strokeStyle = PAL.tinta; ctx.lineWidth = 3; ctx.stroke();
+  txt(ctx,'GOOOL!',0,2,52,'#FFE066','center',FD,7);
+  ctx.restore();
 }
 /* plaquinhas de conserto (v8): alvo do toque (raio MANUT.badge), no ponto `badge` de cada equipamento quebrado e sem conserto.
    Círculo mostarda com a chave inglesa e o preço do conserto embaixo; pulsa de leve (parada com movimento reduzido) */
@@ -9750,6 +9894,7 @@ function render(g, ctx){
   drawKitchen(ctx,g,tm);
   if (g.clima === 'chuva' && !menu) drawChuvaFundo(ctx,tm);
   if (g.clima === 'feriado' && !menu) drawBandeirinhas(ctx);
+  if (g.evento === 'junina' && !menu) drawBandeirinhas(ctx,BAND_JUNINA,tm); else if (g.evento === 'jogo' && !menu) drawBandeirinhas(ctx,BAND_JOGO,tm);   // v10.6
 
   // destaque de mesa durante arrasto/seleção
   if (g.hover && (g.drag || g.sel)){
@@ -9816,6 +9961,7 @@ function render(g, ctx){
   if (g.joca.active && !menu) items.push({ y:g.joca.y, f:() => drawJoca(ctx,g.joca,tm) });   // v9.2
   if (g.cami.active && !menu) items.push({ y:g.cami.y, f:() => drawCami(ctx,g.cami,tm) });   // v9.3
   items.sort((a,c) => a.y - c.y).forEach(it => it.f());
+  if (g.evento === 'junina' && !menu) drawBandeirinhasSalao(ctx,g,tm);   // v10.6
   if (g.clima === 'chuva' && !menu) drawChuvaPingos(ctx,tm);
   if (!menu) drawFumacaLixo(ctx,g,tm);   // v9.6.11
   if (!menu) drawConsertos(ctx,g,tm);
@@ -9849,6 +9995,8 @@ function render(g, ctx){
     drawCluster(ctx,d.g,d.x,d.y+8,tm,{ s:1.05 });
     ctx.restore();
   }
+
+  if (!menu) drawGol(ctx,g,tm);   // v10.6: o letreiro do gol
 
   // efeitos
   for (const f of g.fx){
@@ -11030,6 +11178,7 @@ function devAbaHistoria(body, secao, botao){
 /* v10.2.2: a aba Hoje: força o imprevisto do próximo dia que começar (DEV.forca, só na memória) */
 const DEV_HOJE = [
   ['clima', 'Clima', [['', 'Sorteio'], ['sem', 'Sem clima'], ['chuva', 'Chuva'], ['feriado', 'Feriado']]],
+  ['evento', 'Evento de bairro', [['', 'Sorteio'], ['nada', 'Nenhum'], ['junina', 'Festa junina'], ['jogo', 'Jogo do Brasil']]],   // v10.6
   ['quebra', 'Quebra', [['', 'Sorteio'], ['nada', 'Nada quebra'], ['fogao', 'Fogão'], ['geladeira', 'Geladeira'], ['cafeteira', 'Cafeteira']]],
   ['fiscal', 'Fiscal (Avenida em diante)', [['', 'Sorteio'], ['vem', 'Vem'], ['nao', 'Não vem']]],
   ['gripe', 'Tonhão gripado', [['', 'Sorteio'], ['gripado', 'Gripado'], ['bem', 'Bem']]],
@@ -11187,6 +11336,20 @@ const DES_BASICO = {
     });
     star(c,32,50,7,PAL.mostarda);
   },
+  'i-junina': c => {   // o fio de bandeirinhas juninas e uma espiga de milho
+    c.strokeStyle = PAL.tinta; c.lineWidth = 1.8; c.beginPath(); c.moveTo(6,12); c.quadraticCurveTo(32,30,58,12); c.stroke();
+    BAND_JUNINA.forEach((col,i) => {
+      const x = 12 + i*10, y = 12 + Math.sin((x - 6) / 52 * Math.PI) * 9;
+      c.beginPath(); c.moveTo(x-4,y); c.lineTo(x+4,y); c.lineTo(x,y+11); c.closePath(); fs(c,col,1.4);
+    });
+    c.save(); c.translate(32,46); c.scale(1.1,1.1); drawJunino(c,'milho'); c.restore();
+  },
+  'i-jogo': c => {   // a bola no campo
+    rr(c,6,38,52,18,4); fs(c,'#3E9B4F',2); c.strokeStyle = 'rgba(255,255,255,.85)'; c.lineWidth = 1.4; c.beginPath(); c.moveTo(32,38); c.lineTo(32,56); c.stroke();
+    circ(c,32,26,15); fs(c,'#fff',2.2);
+    c.fillStyle = PAL.tinta; c.beginPath(); for (let i=0;i<5;i++){ const a = -Math.PI/2 + i*Math.PI*2/5; i ? c.lineTo(32 + Math.cos(a)*6,26 + Math.sin(a)*6) : c.moveTo(32 + Math.cos(a)*6,26 + Math.sin(a)*6); } c.closePath(); c.fill();
+    c.strokeStyle = PAL.tinta; c.lineWidth = 1.2; for (let i=0;i<5;i++){ const a = -Math.PI/2 + i*Math.PI*2/5; c.beginPath(); c.moveTo(32 + Math.cos(a)*6,26 + Math.sin(a)*6); c.lineTo(32 + Math.cos(a)*14.4,26 + Math.sin(a)*14.4); c.stroke(); }
+  },
   'i-gripe': c => {   // termômetro
     rr(c,28,8,8,34,4); fs(c,'#fff',2); circ(c,32,48,9); fs(c,PAL.perigo,2);
     c.fillStyle = PAL.perigo; c.fillRect(30.5,20,3,26);
@@ -11206,7 +11369,7 @@ const DES_BASICO = {
 };
 /* o ícone da lojinha de cada ficha `l-` (o da Água da torneira e do assento segue o ponto) */
 const MANUAL_ICO = { 'l-tenis':'tenis', 'l-corrida':'corrida', 'l-cafeteira':'cafeteira', 'l-bandeja':'bandeja', 'l-sudoku':'sudoku', 'l-ventilador':'ventilador', 'l-triturador':'triturador', 'l-pratos':'pratos', 'l-louca':'louca',
-  'l-tvsom':'ambiente', 'l-tvs':'tvs', 'l-couvert':'couvert', 'l-musica':'musica', 'l-fogao':'fogao-ind', 'l-cardapio':'cardapio', 'l-salao':'g-salao', 'l-decor':'d-samambaia', 'l-manut':'m-fogao', 'l-divulga':'div-redes', 'l-banco':'banco', 'l-mudanca':'mudanca', 'l-caixa':'contas',
+  'l-tvsom':'ambiente', 'l-tvs':'tvs', 'l-couvert':'couvert', 'l-musica':'musica', 'l-fogao':'fogao-ind', 'l-cardapio':'cardapio', 'l-barraca':'barraca', 'l-salao':'g-salao', 'l-decor':'d-samambaia', 'l-manut':'m-fogao', 'l-divulga':'div-redes', 'l-banco':'banco', 'l-mudanca':'mudanca', 'l-caixa':'contas',
   'p-industrial':'mudanca', 'p-avenida':'mudanca-av', 'p-terraco':'mudanca-te' };
 function manualIcone(f){
   const nv = game.ponto.nivel;
@@ -11320,6 +11483,11 @@ function upgradeIcon(id){
     if (id === 'tenis'){
       c.beginPath(); c.moveTo(-14,6); c.lineTo(-14,-8); c.lineTo(-6,-10); c.lineTo(0,-2); c.lineTo(12,2); c.quadraticCurveTo(15,4,14,8); c.lineTo(-14,8); c.closePath(); fs(c,'#fff',2);
       c.fillStyle = PAL.formica; c.fillRect(-14,5,28,3); c.strokeStyle = PAL.faixa; c.lineWidth = 1.5; c.beginPath(); c.moveTo(-3,-3); c.lineTo(1,-6); c.moveTo(1,0); c.lineTo(5,-3); c.stroke();
+    } else if (id === 'barraca'){   // v10.6: o balcão da barraca com o toldo listrado e uma espiga de milho
+      rr(c,-15,2,30,11,2); fs(c,PAL.madeira,2);
+      c.beginPath(); c.moveTo(-17,-3); c.lineTo(17,-3); c.lineTo(14,-14); c.lineTo(-14,-14); c.closePath(); fs(c,'#E2574C',2);
+      c.fillStyle = '#fff'; [-9,-1,7].forEach(x => { c.beginPath(); c.moveTo(x,-14); c.lineTo(x+4,-14); c.lineTo(x+4.6,-3); c.lineTo(x+0.6,-3); c.closePath(); c.fill(); });
+      c.save(); c.translate(0,0); c.scale(0.55,0.55); drawJunino(c,'milho'); c.restore();
     } else if (id === 'corrida'){
       // tênis de corrida: perfil baixo e esticado, solado alto em gomos, cadarço e linhas de velocidade
       c.strokeStyle = PAL.faixa; c.lineWidth = 2; c.lineCap = 'round';
@@ -12165,11 +12333,21 @@ function cursoIcon(c, av){
 }
 /* seção Cardápio (v9.0.1): o que se serve hoje, a diversidade no Gurugol e os cursos do Tonhão */
 function buildCardapio(grid){
+  if (game.barracaVisivel) buildBarraca(grid);   // v10.6: no dia da festa junina, a barraca vem no topo
   const cur = game.save.cursos, sab = pratosSabidos(cur);
   const c = staffCard(upgradeIcon('cardapio'), 'No cardápio hoje (' + sab.length + ' pratos)');
   grid.appendChild(c);
   buildCursos(grid);
   buildCursosAjudantes(grid);
+}
+/* v10.6: a barraca junina (só no dia da festa, fora do Terraço): só o nome, o preço e o "?" */
+function buildBarraca(grid){
+  const own = game.save.barraca === game.shopNext, p = game.barracaPreco();
+  const c = staffCard(upgradeIcon('barraca'), 'Barraca junina');
+  c.setAttribute('data-ficha', 'l-barraca');
+  if (own) c.classList.add('own');
+  c.appendChild(shopBtn(own ? 'Montada' : devLivre() ? 'Montar (grátis)' : 'Montar ' + fmt(p), 'btn', !own, () => game.buyBarraca(), devLivre() ? 0 : p));
+  grid.appendChild(c);
 }
 function buildCursos(grid){
   const sv = game.save, bank = sv.bank, cur = sv.cursos;
@@ -12643,6 +12821,7 @@ function buildEnd(){
   // imprevistos (v8): o que quebrou (e se foi consertado na hora) e o clima do dia
   if (r.quebras && r.quebras.length) rows.push(['Quebrou', r.quebras.map(q => manutOf(q.id).name.toLowerCase() + (q.fixed ? ' (consertado)' : '')).join(', ')]);
   if (r.clima) rows.push(['Imprevisto', CLIMA[r.clima].nome]);
+  else if (r.evento) rows.push(['Imprevisto', EVENTOS[r.evento].nome]);   // v10.6: o evento de bairro do dia
   if (r.vig){   // v9.4: a visita da vigilância sanitária
     const fl = [r.vig.falhas.suja ? 'mesa suja' : '', r.vig.falhas.lixo ? 'lixeira cheia' : '', r.vig.falhas.pia ? 'pia lotada' : ''].filter(x => x);
     rows.push(['Vigilância', r.vig.res === 'aprovado' ? 'Aprovado! Selo por ' + FISCAL.selo + ' dias (+' + FISCAL.seloPts + ' pontos)' : (r.vig.res === 'advertencia' ? 'Advertência' : 'Multa') + ': ' + fl.join(' e ')]);
@@ -12650,6 +12829,7 @@ function buildEnd(){
   // marmitas (v8.6): as entregues (e a parte da Efood), as que esfriaram e as que sobraram no fim do dia
   if (r.marmitas || r.esfriou || r.jogadas || r.sobra) rows.splice(2, 0, ['Marmitas', r.marmitas + ' entregue' + (r.marmitas === 1 ? '' : 's') + (r.efood ? ' (Efood −' + fmt(r.efood) + ')' : '') + (r.jogadas ? ' · ' + r.jogadas + ' jogada' + (r.jogadas > 1 ? 's' : '') + ' fora' : '') + (r.esfriou ? ' · ' + r.esfriou + ' esfri' + (r.esfriou > 1 ? 'aram' : 'ou') : '') + (r.sobra ? ' · ' + r.sobra + ' sobr' + (r.sobra > 1 ? 'aram' : 'ou') : '')]);
   if (r.vip || r.vipLost) rows.splice(2, 0, ['VIPs', r.vip + ' atendido' + (r.vip === 1 ? '' : 's') + (r.vipLost ? ' · ' + r.vipLost + ' bravo' + (r.vipLost > 1 ? 's' : '') : '')]);
+  if (r.amanha) rows.push(['Amanhã', EVENTOS[r.amanha].nome]);   // v10.6: a véspera do evento de bairro, a última linha da tabela
   // Gurugol (v8.4): a caixa animada à esquerda dos quadros (v8.4.1); embaixo, 2 ou 3 comentários (os critérios do dia no title)
   const av = $('end-aval'); clearEl(av); av.title = ''; clearEl($('end-baloes'));
   const a = r.aval;
@@ -12911,8 +13091,8 @@ function introBanco(){
 /* introdução do dia (v8): o clima do dia e o estado do fogão, da geladeira e da cafeteira (com o risco de quebrar) */
 function introManut(){
   if (!MANUT.on || game.mode !== 'carreira') return '';
-  const m = game.manut, cl = CLIMA[game.clima], out = [];
-  if (cl) out.push(cl.aviso);
+  const m = game.manut, cl = CLIMA[game.clima], ev = EVENTOS[game.evento], out = [];
+  if (ev) out.push(ev.aviso); else if (cl) out.push(cl.aviso);   // v10.6: o evento de bairro vem primeiro (e no lugar do clima)
   if (game.fiscal) out.push(FISCAL.aviso);   // v9.4
   const lista = c => game.day.n >= MANUT.dia ? MANUT.equip.filter(q => manutChance(m[q.id]) === c).map(q => q.name.toLowerCase()) : [];
   const frase = (l, txt) => l.length ? ' ' + l.join(' e ').replace(/^./, x => x.toUpperCase()) + ': ' + txt + '.' : '';
@@ -13188,7 +13368,7 @@ try { Rank.init(); } catch(e) {}
 game.setState('menu');
 if (!aberturaVista() && !DEV.on) abrirAbertura('auto');   // v8.5: a abertura toca sozinha uma vez
 window.__game = game;
-window.__lcc = { musicaPay, musicaDe, musicaOk, camiModoTudo, CAMI_TUDO, cafesLista, cafeIdx, cafeIngred, ANSELMO_CURSOS, normAnselmoCursos, drinksLista, drinksTodos, drinkPreco, drinkIngred, drinkVagas, drinkPrep, MAQUINA_LUGAR, drawCafesEsp, drawCarrinhoBoasVindas, espressoTrabalho, bebExtra, devCenas, devAssistir, histLiga, DEV_CAPS, drawIcon, liaOn, drawLia, LIA_HOME, LIA_LOOK, doceIcone, drawFino, TEMPOS, tempoMarcas, pedePrincipal, drawTempoTrilha, HIST_SOCORRO, HIST_EXIGENTE, EXIGENTE, LOUCA, vipDish, vipCook, casaBoa, exigRep, HIST_PLANTA, HIST_QUITOU, HIST_TETO, VONTADE, vontadeChance, vontadeDia, vontadeFalas, HIST_VONTADE_DOCE, HIST_VONTADE_CAFE, filaPos, STATIONS, MANUAL, manualTracos, manualAberta, abrirManual, buildManual, fecharManual, semente, manualSemente, FECHA, efoodAberto, drawTable, camiMesasN, camiModoMesas, CAMI_MESAS_MAX, drawAventalCami, FISCAL, Fiscal, FISCAL_PONTOS, abrirDev, fecharDev, buildDev, passoJogo, devLivre, diaNoPonto, manutEmerg, manutFator, daniTaskDe, plateSlotsFor, queueYsFor, assentoSlow, AVENIDA, SABORES, cursoOk, INDUSTRIAL, PLATE_SLOTS, cozinhaSlots, upgradeDe, DECOR, DECOR_GRUPOS, TOALHA, decorOf, normDecor, decorOn, FILA_ACOES, filaMax, MARMITA, RETIRADA, marmitaMao, drawMarmita, prateleiraPos, EFOOD_COR, AVAL_BRAVO, QUEUE, setShopTab: v => shopAbrir(v), setShopGrupo: g => shopGrupoAbrir(g), shopSecoes: () => SHOP_GRUPOS.map(g => shopSecoesVis(g)), TREINO, TREINO_PASSOS, TREINO_COR, Treino, treinoLugar, DICAS, dicaDe, dicaLigada, drawDica, HUD_LUCRO, hudEstrelas, drawHud, daniNaLoja, treinoPrimeiro, playCareer, buildMenu, introBanco, buildFalencia, BANCO, normEmprestimo, parcelaDe, devidoDe, jurosDe, tabelaDe, simulaEmprestimo, SEMANA, semanaOf, diaOf, FILA_JUSTA, PORTA, CHAIRS, PAT, CONTAS, INGRED, CARDAPIO, precoPrato, CURSOS, CURSO_AV, CURSO_XP, tonhaoXp, tonhaoNivelXp, daniXp, daniNivelXp, DANI_XP, DANI_CURSOS, CURSOS_SEMFIM, cursoOf, cursoNivel, normCursos, pratoAv, CARNES, drawDish, pratoSabido, pratosSabidos, GOSTOS, GOSTOS_CAT, pedePrato, VEG, vegMov, drawDish, MAIS, PONTOS_ACAO, GORJETA, DRINK_PRICE, MOVIMENTO, movimentoSalao, DIVULGA, DIVULGA_DIA, divulgaOf, contasDia, bomGoal, SALAO, PONTOS, pontoOf, MESA, mesaBox, mesaPreco, salaoLugares, mesaProblema, salaoCaminho, salaoProblema, salaoOrdena, salaoAuto, salaoVaga, salaoPerto, salaoKit, salaoDevolucao, SALAO_SEMFIM, normSalao, setObst, OBST, pathOk, MAQUINA, BEBIDA_ESPERA, bebidaOf, MANUT, manutOf, manutChance, manutPreco, normManut, CLIMA, CLIMA_DIA, introManut, normPend, CALCADA, TW, HUDX, esperaAp, tableApproach, CRIT, STAFF, diariaDani, diariaJoca, cursosPay, DANI_TASKS, DANI_HANDS, daniTaskOk, TRASH, WASH, payroll, FOLHA_CORTE, folhaCorta, folhaCortes, folhaItens, listaE, pratosDe, couvertEffect, couvertOk, ambienteEffect, dishStock, normSave, Helper, JUICE, KITCHEN_SLOTS, handLayout, trayOk, Game, Group, Table, Kitchen, Waitress, BIA_SPEED, DAYS, UPGRADES, CUSTOMER_TYPES, LAYOUT, PAL, Sfx, findPath, render, Rank, sortRows, cleanName, normName, CMD, ENDLESS, VIP, MULTA, rk, renderRank, openRank, closeRank, LS, lsGet, lsSet, loadSave, DEV, saveKey, devSync, divulgaAberta, CAIXA_MAX, VERSAO, normCaixa, caixaResumo, caixaTotais, copyText, PRATO, pratoPerde, pratoVapor, AVAL, AVAL_CRIT, AVAL_BRAVO, avalMenu, cursosItem, DOCES, CAFES, cafeDe, DRINKS, drinkDe, drinkIdx, anselmoOn, ANSELMO_HOME, ANSELMO_LOOK, drawAnselmo, docesLista, docePreco, doceIngred, doceIdx, CAMI_CURSOS, CAMI_HOME, CAMI_LOOK, camiNivelCursos, normCamiCursos, drawCami, drawEspresso, JOCA_XP, JOCA_CURSOS, JOCA_HOME, jocaXp, jocaNivelXp, BASICAS, donoBasico, cursoDaniVis, JOCA_LOOK, drawJoca, avalTeto, avalEscala, TERRACO, fixosDe, vipTipos, doorFor, DOOR, terraco, drawPiano, drawPoltrona, drawFoyerTe, drawParedeTe, drawElevadorTe, drawLugarTe, drawPerson, makePeople, drawChair, iconeMudanca, avalFrac, AVAL_SIMPLES, AVAL_DECOR, normAval, avalNota, avalMedias, avalGeral, avalMovimento, avalMinimo, avalComentario, fmtNota, notaFaixa, gurugolCaixa, AVAL_COM, normAvalCom, buildGurugol, ABERTURA, Abertura, AB_CENAS, AB_ALT, AB_BASE, abEsc, AB_VIVO, aberturaVista, aberturaSom, drawAbertura, abrirAbertura, HISTORIA, HIST_CARDAPIO, HIST_DIVULGA, HIST_ENTREGA, LIBERA, liberaOf, HIST_NOMES, normEquipe, upgradeCartao, cursoFeito, AVAL_POUCO, REFORMA, HIST, carencia, Conversa, drawConversa, falar, fluxoHistoria, falar, aberturaAtual: () => abertura };
+window.__lcc = { musicaPay, musicaDe, musicaOk, camiModoTudo, CAMI_TUDO, cafesLista, cafeIdx, cafeIngred, ANSELMO_CURSOS, normAnselmoCursos, drinksLista, drinksTodos, drinkPreco, drinkIngred, drinkVagas, drinkPrep, MAQUINA_LUGAR, drawCafesEsp, drawCarrinhoBoasVindas, espressoTrabalho, bebExtra, devCenas, devAssistir, histLiga, DEV_CAPS, drawIcon, liaOn, drawLia, LIA_HOME, LIA_LOOK, doceIcone, drawFino, TEMPOS, tempoMarcas, pedePrincipal, drawTempoTrilha, HIST_SOCORRO, HIST_EXIGENTE, EXIGENTE, LOUCA, vipDish, vipCook, casaBoa, exigRep, HIST_PLANTA, HIST_QUITOU, HIST_TETO, VONTADE, vontadeChance, vontadeDia, vontadeFalas, HIST_VONTADE_DOCE, HIST_VONTADE_CAFE, filaPos, STATIONS, MANUAL, manualTracos, manualAberta, abrirManual, buildManual, fecharManual, semente, manualSemente, FECHA, efoodAberto, drawTable, camiMesasN, camiModoMesas, CAMI_MESAS_MAX, drawAventalCami, FISCAL, Fiscal, FISCAL_PONTOS, abrirDev, fecharDev, buildDev, passoJogo, devLivre, diaNoPonto, manutEmerg, manutFator, daniTaskDe, plateSlotsFor, queueYsFor, assentoSlow, AVENIDA, SABORES, cursoOk, INDUSTRIAL, PLATE_SLOTS, cozinhaSlots, upgradeDe, DECOR, DECOR_GRUPOS, TOALHA, decorOf, normDecor, decorOn, FILA_ACOES, filaMax, MARMITA, RETIRADA, marmitaMao, drawMarmita, prateleiraPos, EFOOD_COR, AVAL_BRAVO, QUEUE, setShopTab: v => shopAbrir(v), setShopGrupo: g => shopGrupoAbrir(g), shopSecoes: () => SHOP_GRUPOS.map(g => shopSecoesVis(g)), TREINO, TREINO_PASSOS, TREINO_COR, Treino, treinoLugar, DICAS, dicaDe, dicaLigada, drawDica, HUD_LUCRO, hudEstrelas, drawHud, daniNaLoja, treinoPrimeiro, playCareer, buildMenu, introBanco, buildFalencia, BANCO, normEmprestimo, parcelaDe, devidoDe, jurosDe, tabelaDe, simulaEmprestimo, SEMANA, semanaOf, diaOf, FILA_JUSTA, PORTA, CHAIRS, PAT, CONTAS, INGRED, CARDAPIO, precoPrato, CURSOS, CURSO_AV, CURSO_XP, tonhaoXp, tonhaoNivelXp, daniXp, daniNivelXp, DANI_XP, DANI_CURSOS, CURSOS_SEMFIM, cursoOf, cursoNivel, normCursos, pratoAv, CARNES, drawDish, pratoSabido, pratosSabidos, GOSTOS, GOSTOS_CAT, pedePrato, VEG, vegMov, drawDish, MAIS, PONTOS_ACAO, GORJETA, DRINK_PRICE, MOVIMENTO, movimentoSalao, DIVULGA, DIVULGA_DIA, divulgaOf, contasDia, bomGoal, SALAO, PONTOS, pontoOf, MESA, mesaBox, mesaPreco, salaoLugares, mesaProblema, salaoCaminho, salaoProblema, salaoOrdena, salaoAuto, salaoVaga, salaoPerto, salaoKit, salaoDevolucao, SALAO_SEMFIM, normSalao, setObst, OBST, pathOk, MAQUINA, BEBIDA_ESPERA, bebidaOf, MANUT, manutOf, manutChance, manutPreco, normManut, CLIMA, CLIMA_DIA, EVENTOS, eventoSemana, introManut, normPend, CALCADA, TW, HUDX, esperaAp, tableApproach, CRIT, STAFF, diariaDani, diariaJoca, cursosPay, DANI_TASKS, DANI_HANDS, daniTaskOk, TRASH, WASH, payroll, FOLHA_CORTE, folhaCorta, folhaCortes, folhaItens, listaE, pratosDe, couvertEffect, couvertOk, ambienteEffect, dishStock, normSave, Helper, JUICE, KITCHEN_SLOTS, handLayout, trayOk, Game, Group, Table, Kitchen, Waitress, BIA_SPEED, DAYS, UPGRADES, CUSTOMER_TYPES, LAYOUT, PAL, Sfx, findPath, render, Rank, sortRows, cleanName, normName, CMD, ENDLESS, VIP, MULTA, rk, renderRank, openRank, closeRank, LS, lsGet, lsSet, loadSave, DEV, saveKey, devSync, divulgaAberta, CAIXA_MAX, VERSAO, normCaixa, caixaResumo, caixaTotais, copyText, PRATO, pratoPerde, pratoVapor, AVAL, AVAL_CRIT, AVAL_BRAVO, avalMenu, cursosItem, DOCES, CAFES, cafeDe, DRINKS, drinkDe, drinkIdx, anselmoOn, ANSELMO_HOME, ANSELMO_LOOK, drawAnselmo, docesLista, docePreco, doceIngred, doceIdx, CAMI_CURSOS, CAMI_HOME, CAMI_LOOK, camiNivelCursos, normCamiCursos, drawCami, drawEspresso, JOCA_XP, JOCA_CURSOS, JOCA_HOME, jocaXp, jocaNivelXp, BASICAS, donoBasico, cursoDaniVis, JOCA_LOOK, drawJoca, avalTeto, avalEscala, TERRACO, fixosDe, vipTipos, doorFor, DOOR, terraco, drawPiano, drawPoltrona, drawFoyerTe, drawParedeTe, drawElevadorTe, drawLugarTe, drawPerson, makePeople, drawChair, iconeMudanca, avalFrac, AVAL_SIMPLES, AVAL_DECOR, normAval, avalNota, avalMedias, avalGeral, avalMovimento, avalMinimo, avalComentario, fmtNota, notaFaixa, gurugolCaixa, AVAL_COM, normAvalCom, buildGurugol, ABERTURA, Abertura, AB_CENAS, AB_ALT, AB_BASE, abEsc, AB_VIVO, aberturaVista, aberturaSom, drawAbertura, abrirAbertura, HISTORIA, HIST_CARDAPIO, HIST_DIVULGA, HIST_ENTREGA, LIBERA, liberaOf, HIST_NOMES, normEquipe, upgradeCartao, cursoFeito, AVAL_POUCO, REFORMA, HIST, carencia, Conversa, drawConversa, falar, fluxoHistoria, falar, aberturaAtual: () => abertura };
 window.requestAnimationFrame(frame);
 
 })();

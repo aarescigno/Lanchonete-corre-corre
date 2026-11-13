@@ -16,6 +16,7 @@ if(process.env.MANUT_CFG){ const c=JSON.parse(process.env.MANUT_CFG); const eq=c
 if(process.env.PONTO_CFG){ const c=JSON.parse(process.env.PONTO_CFG), P=L.PONTOS.find(p=>p.id===(process.env.PONTO_ALVO||process.env.PONTO||'industrial'))||L.PONTOS[1]; for(const k in c){ if(c[k]&&typeof c[k]==='object'&&!Array.isArray(c[k])) Object.assign(P[k],c[k]); else P[k]=c[k]; } }   // v9: PONTO_CFG='{"cardapio":1.3,"aluguel":100}' troca números do ponto em runtime (v9.1: o ponto de PONTO; padrão: a área industrial)
 if(process.env.MUSICA_CFG){ const c=JSON.parse(process.env.MUSICA_CFG); for(const k in c) Object.assign(L.TERRACO.musica[k],c[k]); }   // v10.5: MUSICA_CFG='{"1":{"effect":0.4}}' troca números da música em runtime (1 trio, 2 pianista)
 if(process.env.COUVERT_CFG){ Object.assign(L.STAFF.couvert,JSON.parse(process.env.COUVERT_CFG)); }   // v10.5: COUVERT_CFG='{"effect":0.25}' troca números do couvert em runtime
+if(process.env.EVENTOS_CFG){ const c=JSON.parse(process.env.EVENTOS_CFG), mescla=(a,b)=>{ for(const k in b){ if(b[k]&&typeof b[k]==='object'&&!Array.isArray(b[k])&&a[k]&&typeof a[k]==='object') mescla(a[k],b[k]); else a[k]=b[k]; } }; mescla(L.EVENTOS,c); }   // v10.6: EVENTOS_CFG='{"jogo":{"groups":{"garagem":1.05}}}' troca números dos eventos em runtime
 if(process.env.CLIMA_CFG){ const c=JSON.parse(process.env.CLIMA_CFG); for(const k in c) Object.assign(L.CLIMA[k],c[k]); }
 const N=+process.argv[2]||20;
 // v9: PONTO=industrial joga os dias no ponto da área industrial (salão de 20 lugares, fogão industrial, TVs com anúncios, cadeirinhas; DIAS padrão 8,9,10)
@@ -57,6 +58,9 @@ const NMAX=Math.max(...DIAS);
 // CURSOS=todos (os 4 básicos e todos os avançados); CURSOS=0 (nenhum: só PF e coxinha); CURSOS=chapa,pastel,... troca a ordem do bot
 const CUR=process.env.CURSOS||'bot', BOTM=require('./bot.js'), ORD_CUR=!['bot','todos','0'].includes(CUR)?CUR.split(','):null;
 const cursosFor=n=>CUR==='0'?{}:CUR==='todos'?BOTM.cursosApos(L,99):BOTM.cursosApos(L,n-1,ORD_CUR||undefined);
+// v10.6: EVENTO=junina|jogo força o evento de bairro em todos os dias jogados (BARRACA=0: a festa junina sem a barraca; padrão: com); sem EVENTO, nada muda
+const EVENTO=process.env.EVENTO||'', BARRACA=process.env.BARRACA!=='0'; if(EVENTO&&!['junina','jogo'].includes(EVENTO)) throw new Error('EVENTO=junina|jogo');
+BOTM.eventos(g,L,{ off:!EVENTO, force:EVENTO });
 const R={}; DIAS.forEach(n=>R[n]=[]);
 // um dia de uma rodada; man: o estado de equipamentos que vem do dia anterior (null: tudo novo)
 function jogaDia(n,man){
@@ -85,6 +89,7 @@ function jogaDia(n,man){
   g.save.aval=[];   // v8.4: cada dia sem avaliações de antes (a nota não mexe no movimento; AVAL_MOV=1 liga, com a nota do dia anterior)
   if(process.env.AVAL_MOV&&jogaDia.av) g.save.aval=jogaDia.av.slice();
   g.save.manut=L.normManut(man); g.save.caixaPend={mel:0,sal:0,man:0}; delete g.save.manut.sorteio;
+  g.save.barraca=EVENTO==='junina'&&BARRACA?n:0;   // v10.6: a barraca montada no dia da festa
   let rev=0;
   if(MODO==='cuida'&&n>=2){ const b0=g.save.bank; g.goShop(n); g.revisarTudo(); rev=b0-g.save.bank; }   // revisa na lojinha, antes do dia
   const b1=g.save.bank;
