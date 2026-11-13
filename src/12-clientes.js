@@ -192,7 +192,7 @@ function normSave(s){
   const capCrit = hist && s.capV !== 4 && s.capV !== 5 && capIn === 13 && pontoOf(s.salao && s.salao.ponto).id === 'terraco';
   if (capCrit) capNovo = true;
   // v10.10: a história passou de 13 para 14 capítulos; o save da v10.9 (capV 4) que já estava no Fim (cap 14) no Terraço começa o capítulo 14 (a noite da estrela) com a conversa de antes
-  const capNoite = hist && s.capV !== 5 && capIn === 14 && pontoOf(s.salao && s.salao.ponto).id === 'terraco';
+  const capNoite = hist && s.capV === 4 && capIn === 14 && pontoOf(s.salao && s.salao.ponto).id === 'terraco';
   if (capNoite) capNovo = true;
   const cap = hist ? clamp(capIn, 1, capMax) : novoHist ? 1 : 4;   // v9: dev e testes ficam no cap. 4 (sem objetivo na Garagem; a mudança de ponto está livre)
   const capPonto = HISTORIA[cap - 1], pendente = !!capPonto && capPonto.ponto !== pontoOf(s.salao && s.salao.ponto).id;   // v9, v9.1: o capítulo de um ponto só começa na mudança para ele (o 4 e o 6)
@@ -200,8 +200,8 @@ function normSave(s){
   const conversa = cap > HISTORIA.length || pendente ? null : hist ? (s.conversa === 'antes' || s.conversa === 'depois' ? s.conversa : (cap === 11 && s.v10 !== 1 ? 'antes' : null)) : novoHist ? 'antes' : null;
   const conversaF = capNovo && !pendente ? 'antes' : conversa;
   let guia = normGuia(s.guia);   // v10.9: as visitas do crítico (cap. 13); o capítulo sem sorteio (save novo no 13, ou o inválido apagado) sorteia a 1ª visita
-  if (hist && cap === CRITICO.cap && !guia && pontoOf(s.salao && s.salao.ponto).id === 'terraco') guia = normGuia({ n:0, prox:dia + randi(CRITICO.primeira[0], CRITICO.primeira[1]), v:[] });
-  if (hist && cap > CRITICO.cap && !guia && pontoOf(s.salao && s.salao.ponto).id === 'terraco') guia = normGuia({ n:2, prox:0, v:[] });   // v10.10: a noite da estrela e o Fim não ficam sem o guia   // v10.5.2: o capítulo novo começa com a conversa de antes
+  if (hist && cap === CRITICO.cap && !guia && pontoOf(s.salao && s.salao.ponto).id === 'terraco') guia = normGuia({ n:0, prox:dia + randi(CRITICO.primeira[0], CRITICO.primeira[1]), v:[] });   // v10.5.2: o capítulo novo começa com a conversa de antes
+  if (hist && cap > CRITICO.cap && !guia && pontoOf(s.salao && s.salao.ponto).id === 'terraco') guia = normGuia({ n:2, prox:0, v:[] });   // v10.10: do capítulo 14 em diante o save.guia sempre existe (a noite da estrela)
   const dev = salaoDevolucao(s.salao), out = { dia, estrelas, lucroTot: Math.round(+s.lucroTot) || 0, pontosTot: Math.max(0, Math.round(+s.pontosTot) || 0), aval: normAval(s.aval), avalCom: capCrit ? plantaBoato(s.avalCom, dia) : normAvalCom(s.avalCom), neg: clamp(Math.round(+s.neg) || 0, 0, BANCO.neg), emp: normEmprestimo(novoHist ? { resto:REFORMA.valor, amort:REFORMA.amort, j:REFORMA.juros, ini:REFORMA.ini, ref:true } : s.emp), corta: s.corta !== false, fechou: Math.max(0, Math.round(+s.fechou) || 0), bank: bank + dev + devMaq, up, torneira:true, salao: normSalao(dev ? null : s.salao), divulga: dia < DIVULGA_DIA && !devLivre() ? 'boca' : divulgaOf(s.divulga).id, treino: !!s.treino, decor: normDecor(s.decor), moveis: normMoveis(s.moveis), cursos: normCursos(s.cursos), cursoDia: Math.max(0, Math.round(+s.cursoDia) || 0), tonXp: s.tonXp === 1 ? 1 : 0, daniTar: Math.max(0, Math.round(+s.daniTar) || 0), daniCursos: normDaniCursos(s.daniCursos), daniCursoDia: Math.max(0, Math.round(+s.daniCursoDia) || 0), jocaTar: Math.max(0, Math.round(+s.jocaTar) || 0), jocaCursos: normJocaCursos(s.jocaCursos), jocaCursoDia: Math.max(0, Math.round(+s.jocaCursoDia) || 0), camiCursos: normCamiCursos(s.camiCursos), camiCursoDia: Math.max(0, Math.round(+s.camiCursoDia) || 0), anselmoCursos: normAnselmoCursos(s.anselmoCursos), anselmoCursoDia: Math.max(0, Math.round(+s.anselmoCursoDia) || 0), daniXp: s.daniXp === 1 ? 1 : 0, cardV: 1, libera: normLibera(s.libera, !novoHist), pontoDia: pontoDiaDe(s, dia), vontDoce: normVont(s.vontDoce), vontCafe: normVont(s.vontCafe), vontDoceV: s.vontDoceV === 1 ? 1 : 0, vontCafeV: s.vontCafeV === 1 ? 1 : 0, convCard: s.convCard === 'pend' ? 'pend' : s.convCard === 1 ? 1 : 0, convDiv: s.convDiv === 'pend' ? 'pend' : s.convDiv === 1 ? 1 : 0, convPlanta: s.convPlanta === 'pend' ? 'pend' : s.convPlanta === 1 || dia > 1 ? 1 : 0, convEnt: s.convEnt === 'pend' ? 'pend' : s.convEnt === 1 ? 1 : 0, socorro: s.socorro === 1 ? 1 : 0, convSocorro: s.convSocorro === 'pend' ? 'pend' : s.convSocorro === 1 ? 1 : 0, exigBravo: Math.max(0, Math.round(+s.exigBravo) || 0), exigVisto: s.exigVisto === 1 ? 1 : 0, convExig: s.convExig === 'pend' ? 'pend' : s.convExig === 1 ? 1 : 0, convCrit: s.convCrit === 'pend' ? 'pend' : s.convCrit === 1 ? 1 : 0, guia, cardVisto: Array.isArray(s.cardVisto) ? s.cardVisto.filter(x => typeof x === 'string').slice(0, 40) : [], avisoCard: !!s.avisoCard, histV: 1, avisoHist: !!s.avisoHist, cap, capDia: capRosa || capCrit || capNoite ? dia : Math.max(1, Math.round(+s.capDia) || 1), capV: 5, capAzul: capNovo ? 0 : Math.max(0, Math.round(+s.capAzul) || 0), capVezes: capNovo ? 0 : Math.max(0, Math.round(+s.capVezes) || 0), convQuit: s.convQuit === 'pend' ? 'pend' : s.convQuit === 1 || cap > 3 ? 1 : 0, convTeto: s.convTeto === 'pend' ? 'pend' : s.convTeto === 1 || cap > 3 ? 1 : 0, capFeito: !capNovo && s.capFeito === 1 ? 1 : 0, capMarm: Math.max(0, Math.round(+s.capMarm) || 0), capComp: Math.max(0, Math.round(+s.capComp) || 0), docesTot: Math.max(0, Math.round(+s.docesTot) || 0), conversa: conversaF, manut: normManut(s.manut), caixa: normCaixa(s.caixa), caixaPend: normPend(s.caixaPend) };
   out.equipe = normEquipe(s.equipe, pontoOf(out.salao.ponto));
   out.v10 = 1;
@@ -314,8 +314,8 @@ class Group {
     this.color = color;
     this.vip = !!vip && VIP.types.includes(type);
     // v10.9, o crítico do Michelzão: por dentro é VIP exigente, mas `disfarce` tira tudo o que se vê (acessório, plaquinha, marca na fila); o caderninho (`caderno`: segundos que ainda aparece) sai ao sentar e a cada tempo servido (`cadV`)
-    this.braulio = !!(s && s.braulio); this.fala = null; this.braulioFeliz = false;   // v10.10, o Bráulio da noite da estrela: VIP exigente de paletó bordô e bigode, com falas em balão (`fala`: { txt, t })
-    this.critico = !!(s && s.critico); this.disfarce = this.critico && !!s.disfarce; this.caderno = 0; this.cadV = [false, false, false, false]; this.salaoSeg = 0; this.pratoMain = null;
+    this.critico = !!(s && s.critico); this.disfarce = this.critico && !!s.disfarce; this.braulio = !!(s && s.braulio); this.fala = ''; this.falaT = 0;   // v10.10: o Bráulio da noite da estrela e a fala em cima da mesa (balão curto)
+    this.caderno = 0; this.cadV = [false, false, false, false]; this.salaoSeg = 0; this.pratoMain = null;
     // v10, a refeição completa: no Terraço (ponto com `tempos`, só na carreira) cada mesa pede bebida, entrada, prato principal e sobremesa;
     // tempo: o que o grupo espera em 'ordered' (0 a entrada, 1 o principal); notaT: a nota de cada tempo (bebida, entrada, principal, sobremesa; null: não serviu);
     // perdTempo: corações perdidos esperando a entrada e o principal; perdBeb: perdidos esperando só a bebida (depois da refeição)
@@ -325,9 +325,8 @@ class Group {
     this.juiceGot = 0;
     this.sabor = randi(0, SABORES.length - 1);   // v9.1: o sabor da água saborizada (só muda a cor do copo e do balão)
     this.people = makePeople(type, this.size);
-    if (s && s.braulio) this.people = [newPerson({ skin:2, hair:0, hairC:'#2A1D17', pants:'#2B2B33', shirt:AB_COR.aurora, blazer:true, gravata:'#F2C23D', braulio:true })];   // v10.10: bigode grande e paletó bordô, sem acessório de exigente
     this.exigente = this.vip && game.mode === 'carreira' && (!!game.ponto.exigente || !!(s && s.exig));   // v10.1: o VIP do Terraço é exigente: sem óculos escuros, com chapéu, lenço de seda ou echarpe
-    if (this.vip && !this.disfarce && !this.braulio) this.people.forEach(p => { if (this.exigente){ p[pick(EXIGENTE.acc)] = true; p.accC = pick(EXIGENTE.cores); } else p.shades = true; });
+    if (this.vip && !this.disfarce) this.people.forEach(p => { if (this.braulio){ p.bigode = true; p.blazer = true; p.gravata = '#F2C23D'; p.paleto = AB_COR.aurora; } else if (this.exigente){ p[pick(EXIGENTE.acc)] = true; p.accC = pick(EXIGENTE.cores); } else p.shades = true; });   // v10.10: o Bráulio: bigode grande e paletó bordô, sem chapéu, lenço nem echarpe
     // a conta (v8.3.8): cada pessoa paga o que pediu, pelo cardápio do ponto: o prato e, às vezes, um 2º item (extras;
     // nunca no treino); o prato especial do VIP soma VIP.dish
     // v8.6.11: ~10% das pessoas são vegetarianas (nunca o entregador, nem na Missão zero) e pedem só prato sem carne
@@ -389,10 +388,11 @@ class Group {
   }
   setState(s){
     this.state = s; this.stateT = 0; this.patLeft = this.patPer();
-    if (s === 'leaving' && this.braulio && !this.saiu){ this.saiu = true; this.braulioFeliz = !this.angry && this.hearts >= NOITE.brauFeliz; this.game.braulioFeliz = this.braulioFeliz; this.diz(this.braulioFeliz ? NOITE.falas.feliz : NOITE.falas.bravo); }   // v10.10: sai feliz (4 corações ou mais) ou bravo
+    if (s === 'leaving' && this.braulio && !this.saiu){   // v10.10: o Bráulio sai feliz (4 corações ou mais) ou bravo, com a fala em cima da mesa; o jogo guarda como ele saiu
+      this.saiu = true; this.game.brauFeliz = !this.angry && this.hearts >= NOITE.brauFeliz; this.diz(this.game.brauFeliz ? NOITE.falas.feliz : NOITE.falas.bravo);
+    }
   }
-  /* v10.10: o balão curto de fala em cima da cabeça (só o Bráulio), por `seg` s */
-  diz(txt, seg){ this.fala = { txt, t:seg || 3.2 }; }
+  diz(t){ this.fala = t; this.falaT = 3.2; }   // v10.10: o balão curto em cima do Bráulio
   /* bebeu n sucos da espera: a paciência que falta no coração encolhe junto com o ritmo */
   drink(n){
     const old = this.patPer();
@@ -533,8 +533,8 @@ class Group {
       if (this.caderno > 0) this.caderno = Math.max(0, this.caderno - dt);
       for (let i = 0; i < 4; i++) if (this.notaT[i] != null && !this.cadV[i]){ this.cadV[i] = true; this.caderno = CRITICO.caderno; }
     }
+    if (this.falaT > 0) this.falaT = Math.max(0, this.falaT - dt);   // v10.10: a fala do Bráulio
     if (this.vontadeT > 0) this.vontadeT = Math.max(0, this.vontadeT - dt);   // v10.5.3
-    if (this.fala){ this.fala.t -= dt; if (this.fala.t <= 0) this.fala = null; }   // v10.10
     if (this.boing > 0) this.boing -= dt;
     switch (this.state){
       case 'queue':

@@ -18,10 +18,10 @@ function upgradeIcon(id){
       c.beginPath(); c.moveTo(-17,-3); c.lineTo(17,-3); c.lineTo(14,-14); c.lineTo(-14,-14); c.closePath(); fs(c,'#E2574C',2);
       c.fillStyle = '#fff'; [-9,-1,7].forEach(x => { c.beginPath(); c.moveTo(x,-14); c.lineTo(x+4,-14); c.lineTo(x+4.6,-3); c.lineTo(x+0.6,-3); c.closePath(); c.fill(); });
       c.save(); c.translate(0,0); c.scale(0.55,0.55); drawJunino(c,'milho'); c.restore();
-    } else if (id === 'noite'){   // v10.10: a lua e três estrelas
-      c.fillStyle = '#1E2A4A'; rr(c,-16,-14,32,28,5); fs(c,'#1E2A4A',2);
-      c.beginPath(); c.arc(-4,-1,8,0.5,Math.PI * 2 - 0.5); c.arc(0,-1,6.5,Math.PI * 2 - 0.9,0.9,true); c.closePath(); fs(c,'#F2C23D',1.6);
-      [[8,-8,2.2],[10,4,1.8],[3,9,1.6]].forEach(([x,y,r]) => { circ(c,x,y,r); fs(c,'#F2C23D',1); });
+    } else if (id === 'noite'){   // v10.10: a noite da estrela: o céu escuro, uma lua e a estrela do Michelzão
+      rr(c,-17,-15,34,30,5); fs(c,AB_COR.noite,2);
+      c.beginPath(); c.arc(-6,-3,8,0,TAU); c.fillStyle = '#F7E6A8'; c.fill(); c.beginPath(); c.arc(-2,-5,7,0,TAU); c.fillStyle = AB_COR.noite; c.fill();
+      star(c,8,-2,7.5,PAL.mostarda); c.fillStyle = '#fff'; [[-12,-11],[12,-11],[-12,8],[9,10]].forEach(p => c.fillRect(p[0],p[1],1.6,1.6));
     } else if (id === 'rosa'){   // v10.8: o vaso de rosas com três pétalas soltas
       drawVasoRosa(c);
     } else if (id === 'corrida'){
@@ -952,7 +952,7 @@ function cursoIcon(c, av){
 }
 /* seção Cardápio (v9.0.1): o que se serve hoje, a diversidade no Gurugol e os cursos do Tonhão */
 function buildCardapio(grid){
-  buildNoite(grid);   // v10.10: a noite da estrela, no topo da seção (Terraço, cap. 14 em diante)
+  if (game.noiteVisivel) buildNoite(grid);   // v10.10: a noite da estrela, no topo do Cardápio (Terraço, cap. 14 em diante)
   if (game.barracaVisivel) buildBarraca(grid);   // v10.6: no dia da festa junina, a barraca vem no topo
   const cur = game.save.cursos, sab = pratosSabidos(cur);
   const c = staffCard(upgradeIcon('cardapio'), 'No cardápio hoje (' + sab.length + ' pratos)');
@@ -961,20 +961,13 @@ function buildCardapio(grid){
   buildCursosAjudantes(grid);
   if (game.rosaVisivel) buildRosa(grid);   // v10.8: o molho da Rosa (Terraço, a partir do cap. 12)
 }
-/* v10.10: a noite da estrela: só o nome e o "?"; "É hoje!" marca o dia que vai começar (de novo desmarca); depois de uma noite, apagado por NOITE.espera dias */
+/* v10.10: a noite da estrela: só o nome e o "?"; "É hoje!" marca o dia que vai começar (de novo desmarca); depois de uma noite, o cartão apaga por NOITE.espera dias */
 function buildNoite(grid){
-  const n = game.noiteCartao; if (!n) return;
-  game.manualVer('l-noite');
+  const g = game.save.guia, falta = game.noiteFalta(game.shopNext), marcada = !!g && g.noite === game.shopNext;
   const c = staffCard(upgradeIcon('noite'), 'Noite da estrela');
-  c.setAttribute('data-ficha', 'l-noite');
-  if (n.falta > 0){
-    c.classList.add('own');
-    c.appendChild(el('span', 'cursos-lista', 'O crítico volta em ' + n.falta + (n.falta === 1 ? ' dia' : ' dias')));
-    c.appendChild(shopBtn('Em breve', 'btn', false, () => false));
-  } else {
-    if (n.marcada) c.classList.add('own');
-    c.appendChild(shopBtn(n.marcada ? 'Marcada ✓' : 'É hoje!', 'btn', true, () => game.marcaNoite()));
-  }
+  c.setAttribute('data-ficha', 'l-noite'); game.manualVer('l-noite');
+  if (falta){ c.classList.add('own'); c.appendChild(el('span', 'cursos-lista', 'O crítico volta em ' + falta + (falta === 1 ? ' dia' : ' dias'))); c.appendChild(shopBtn('Em breve', 'btn', false, () => false)); }
+  else c.appendChild(shopBtn(marcada ? 'Marcada ✓' : 'É hoje!', 'btn', true, () => game.marcaNoite()));
   grid.appendChild(c);
 }
 /* v10.8: o molho da Rosa: só o nome, o preço e o "?"; compra única */
@@ -1198,18 +1191,16 @@ function caixaTotais(cx){
 }
 function caixaResumo(save){
   const cx = save.caixa, eq = save.equipe, sal = save.salao;
-  const out = ['Lanchonete Corre-Corre ' + VERSAO + ' · Caixa (valores em R$)'];
+  const out = ['Lanchonete Corre-Corre ' + VERSAO + ' · Caixa (valores em R$)'].concat(game.save.guia && (game.save.guia.est || game.save.guia.rec) ? [NOITE.selo[game.save.guia.est]] : []);   // v10.10: o selo do Michelzão
   cx.forEach(r => out.push(r.int ? 'Dia ' + r.d + ' largado no meio: ' + r.int + (r.int > 1 ? ' grupos foram' : ' grupo foi') + ' embora bravo' + (r.int > 1 ? 's' : '') + ': −' + r.mul + ' · saldo ' + r.saldo : r.dev ? 'Devolução ' + (r.devK === 'maquina' ? 'da máquina de suco' : 'do salão') + ': +' + r.dev + ' · saldo ' + r.saldo : 'Dia ' + r.d + (r.ok ? ' ✓' : ' ✗') + ': fatura ' + r.fat + ' − ingred. ' + r.ingr + ' − contas ' + r.contas + ' − equipe ' + r.folha + (r.div ? ' − divulg. ' + r.div : '') +
     ' = lucro ' + r.lucro + ' (meta ' + r.meta + ')' + (r.perd ? ' · ' + r.perd + (r.perd > 1 ? ' perdidos' : ' perdido') : '') + (r.mel + r.sal ? ' · compras ' + (r.mel + r.sal) : '') + (r.man ? ' · manutenção ' + r.man : '') + (r.emp ? ' · empréstimo +' + r.emp + (r.forc ? ' (à força)' : '') : '') + (r.par ? ' · banco −' + r.par + (r.jur ? ' (juros ' + r.jur + ')' : '') : '') + (r.atr ? ' · parcela atrasada' : '') + (r.tom ? ' · o banco tomou a lanchonete' : '') + (r.av ? ' · Gurugol ' + fmtNota(r.av / 10) : '') + ' · saldo ' + r.saldo));
   const nd = cx.filter(r => !r.dev && !r.int).length;
   if (nd) out.push('Para onde foi (' + nd + (nd > 1 ? ' dias' : ' dia') + '): ' + caixaTotais(cx).filter(t => t.v).map(t => t.name.toLowerCase() + ' ' + t.v).join(', '));
   const ups = UPGRADES.filter(u => save.up[u.id]).map(u => u.name.toLowerCase() + (u.multi && pratosDe(save.up) > 1 ? ' ×' + pratosDe(save.up) : ''));
   const ga = avalGeral(save.aval);
-  const selo = guiaSelo(save.guia);   // v10.10
   out.push('Agora: dia ' + save.dia + ' · ' + fmt(save.bank) + (save.emp.resto ? ' (banco: faltam ' + save.emp.resto + ')' : '') + ' · lucro acumulado ' + save.lucroTot + ' · Tonhão nível ' + (eq.tonhao + 1) + ', ' + (eq.dani ? 'Dani nível ' + eq.dani : 'sem Dani') + (eq.couvert ? ', couvert' : '') + (eq.tv ? ', TV' : '') + (eq.som ? ', som' : '') +
     ' · ' + divulgaOf(save.divulga).name.toLowerCase() + ' · ' + pontoOf(sal.ponto).nome.replace(/ da .*/, '').toLowerCase() + ' com ' + sal.mesas.length + ' mesas e ' + salaoLugares(sal.mesas) + ' lugares · melhorias: ' + (ups.join(', ') || 'nenhuma') +
     ' · Gurugol ' + (ga ? fmtNota(ga.nota) + ' (' + AVAL_CRIT.map((c, i) => c.nome.toLowerCase() + ' ' + fmtNota(ga.crit[i]) + ' em ' + ga.cnt[i]).join(', ') + ')' : 'sem nota (' + save.aval.length + '/' + AVAL.min + ')'));
-  if (selo) out.push(selo);   // v10.10: o selo do Michelzão
   return out.join('\n');
 }
 /* copia para a área de transferência; se o navegador não deixar, devolve false (a aba mostra o texto para copiar à mão) */

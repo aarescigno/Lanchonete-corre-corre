@@ -75,7 +75,7 @@ const fecha=(H,st,fat)=>{ const {g,els}=H; g.startDay(g.save.dia); els['btn-star
 
 // ---------- 6. o capítulo 12 (CA6) ----------
 { const H=jogo(12,{ capDia:50, conversa:null }), {g,L}=H, c=L.HISTORIA[11];
-  ok(L.HISTORIA.length>=13 && c.cap===12 && c.titulo==='O molho da Rosa' && c.ponto==='terraco' && c.obj.compra==='rosa' && c.obj.rosa===3 && c.obj.vezes===3 && c.antes.length===6 && c.depois.length===4,'HISTORIA[11]: cap. 12, "O molho da Rosa", obj { compra, rosa:3, vezes:3 }, 6 falas antes e 4 depois');
+  ok(L.HISTORIA.length===14 && c.cap===12 && c.titulo==='O molho da Rosa' && c.ponto==='terraco' && c.obj.compra==='rosa' && c.obj.rosa===3 && c.obj.vezes===3 && c.antes.length===6 && c.depois.length===4,'HISTORIA[11]: cap. 12, "O molho da Rosa", obj { compra, rosa:3, vezes:3 }, 6 falas antes e 4 depois');
   ok(c.antes[2].s==='O molho da estrela era meu e da sua mãe. Cominho com açafrão... e o segredo dela.' && c.depois[3].q==='bia' && c.fim===undefined,'(os textos da spec; v10.9: o cap. 12 perde o cartão de fim)');
   ok(L.HISTORIA[10].fim===undefined,'o cap. 11 não tem mais cartão de fim');
   const ob=g.capObj(); ok(ob.itens.length===2 && ob.itens[0].txt==='Aprender o molho da Rosa' && !ob.itens[0].ok && /^3 Pratos da Rosa servidos num dia, 3 vezes \(0 de 3\)/.test(ob.itens[1].txt),'os dois itens do objetivo');

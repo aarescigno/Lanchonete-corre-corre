@@ -146,15 +146,16 @@ const fecha=(H,ficha)=>{ const {g}=H; g.schedule=[]; g.nextIdx=0; g.money=3000; 
 
 // ---------- 9. o capítulo 13 e o save (CA9) ----------
 { const H=dia1(), {g,L}=H, c=L.HISTORIA[12];
-  ok(L.HISTORIA.length>=13 && c.cap===13 && c.titulo==='O crítico sem aviso' && c.ponto==='terraco' && c.obj.critico===2 && c.antes.length===5 && c.depois.length===5,'HISTORIA[12]: cap. 13, "O crítico sem aviso", obj { critico:2 }, 5 falas antes e 5 depois');
-  ok(c.antes[0].s==='O crítico do Michelzão não usa crachá. Senta, come e anota.' && c.antes[3].nota==='olhando o Gurugol' && c.depois[3].nota==='lendo um cartão' && c.depois[4].s==='A noite da estrela!' && c.fim===undefined,'(os textos da spec; o cap. 13 já não tem cartão de fim, v10.10)');
+  ok(L.HISTORIA.length===14 && c.cap===13 && c.titulo==='O crítico sem aviso' && c.ponto==='terraco' && c.obj.critico===2 && c.antes.length===5 && c.depois.length===5,'HISTORIA[12]: cap. 13, "O crítico sem aviso", obj { critico:2 }, 5 falas antes e 5 depois');
+  ok(c.antes[0].s==='O crítico do Michelzão não usa crachá. Senta, come e anota.' && c.antes[3].nota==='olhando o Gurugol' && c.depois[3].nota==='lendo um cartão' && c.depois[4].s==='A noite da estrela!' && c.fim===undefined,'(os textos da spec; v10.10: o cap. 13 não tem mais cartão de fim)');
   ok(L.HISTORIA[11].fim===undefined,'o cap. 12 não mostra mais cartão de fim');
   let ob=g.capObj(); ok(ob.itens.length===1 && ob.itens[0].txt==='Receber o crítico do Michelzão 2 vezes (0 de 2)' && !ob.itens[0].ok,'o objetivo: "Receber o crítico do Michelzão 2 vezes (0 de 2)"');
   comeca(H); fecha(H,FICHA(60,[0,0,0,0,0])); ok(g.save.guia.n===1 && !g.result.cap.ok && /\(1 de 2\)/.test(g.result.cap.itens[0].txt) && g.save.conversa===null,'a 1ª visita soma 1 e não cumpre o capítulo');
   g.save.guia.prox=g.save.dia; g.startDay(g.save.dia); ok(g.visita && g.visita.n===2,'(a 2ª visita)'); fecha(H,FICHA(g.day.n,[0,0,0,0,0]));
   ok(g.save.guia.n===2 && g.result.cap.ok && g.save.conversa==='depois','a 2ª visita cumpre o capítulo, qualquer que seja a ficha (ficha 0 no total)');
   // o fim do capítulo: a conversa de depois e o cartão
-  let fim=0; L.fluxoHistoria(()=>{ fim++; }); passa(g); ok(g.save.cap===14 && g.save.conversa===null,'as falas de depois e as de antes do cap. 14 passam (cap='+g.save.cap+')');
+  let fim=0; L.fluxoHistoria(()=>{ fim++; }); passa(g); ok(g.save.cap===14,'as falas de depois passam e o capítulo acaba (cap='+g.save.cap+')');
+  ok(g.save.conversa===null && g.save.cap===14,'(v10.10: sem cartão de fim; a conversa de antes do cap. 14 toca direto)');
   // o save: a v10.8 no Fim (cap 13, capV 3) começa o 13
   const a=L.normSave({ histV:1, capV:3, cap:13, dia:70, bank:4000, capDia:50, capVezes:2, conversa:null, salao:{ ponto:'terraco' } });
   ok(a.cap===13 && a.conversa==='antes' && a.capDia===70 && a.capVezes===0 && a.capV===5 && a.guia && a.guia.n===0 && a.guia.prox-70>=1 && a.guia.prox-70<=3 && a.avalCom.some(x=>x.boato),'save da v10.8 no Fim (capV 3, cap 13) no Terraço: começa o 13 com a conversa de antes, a 1ª visita sorteada e o comentário');

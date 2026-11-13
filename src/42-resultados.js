@@ -1,3 +1,21 @@
+/* ---------- v10.10: o boletim do Michelzão ---------- */
+let guiaFim = null;
+/* abre o boletim com o último veredito (save.guia): três estrelas (cheias as da melhor marca) e seis barras, sem número; `depois` roda ao tocar em Continuar */
+function abreBoletim(depois){
+  const g = game.save.guia; if (!g){ depois(); return; }
+  const est = $('guia-est'), bar = $('guia-barras'), rec = $('guia-rec'); clearEl(est); clearEl(bar);
+  est.setAttribute('aria-label', g.est + (g.est === 1 ? ' estrela' : ' estrelas') + ' no Michelzão');
+  for (let i = 0; i < 3; i++){ const cv = document.createElement('canvas'); cv.width = 108; cv.height = 108; const c = cv.getContext('2d'); star(c, 54, 56, 44, i < g.est ? PAL.mostarda : 'rgba(34,32,28,.12)'); est.appendChild(cv); }
+  rec.textContent = g.est === 0 && g.rec ? 'Recomendado pelo Michelzão' : '';
+  (g.bol || [0, 0, 0, 0, 0, 0]).forEach((f, i) => {
+    const lin = el('div', 'guia-lin'), b = el('div', 'guia-bar'), fi = el('i');
+    lin.setAttribute('aria-label', NOITE.linhas[i] + ': ' + (f >= 1 ? 'cheia' : f > 0 ? 'parte' : 'vazia'));
+    fi.style.width = Math.round(f * 100) + '%'; b.appendChild(fi);
+    lin.appendChild(el('span', null, NOITE.linhas[i])); lin.appendChild(b); bar.appendChild(lin);
+  });
+  game.manualVer('b-michelzao');
+  guiaFim = depois; showOnly(['ov-guia']);
+}
 /* ---------- fim do dia ---------- */
 /* faixa da nota do Gurugol (v8.4.1), pela nota com uma casa: abaixo de 3 pura, de 3 a 3,9 bronze (v8.6.7: o teto da Garagem),
    de 4 a 4,4 prata, de 4,5 a 4,8 ouro e acima disso diamante */
@@ -82,8 +100,8 @@ function buildEnd(){
   // marmitas (v8.6): as entregues (e a parte da Efood), as que esfriaram e as que sobraram no fim do dia
   if (r.marmitas || r.esfriou || r.jogadas || r.sobra) rows.splice(2, 0, ['Marmitas', r.marmitas + ' entregue' + (r.marmitas === 1 ? '' : 's') + (r.efood ? ' (Efood −' + fmt(r.efood) + ')' : '') + (r.jogadas ? ' · ' + r.jogadas + ' jogada' + (r.jogadas > 1 ? 's' : '') + ' fora' : '') + (r.esfriou ? ' · ' + r.esfriou + ' esfri' + (r.esfriou > 1 ? 'aram' : 'ou') : '') + (r.sobra ? ' · ' + r.sobra + ' sobr' + (r.sobra > 1 ? 'aram' : 'ou') : '')]);
   if (r.vip || r.vipLost) rows.splice(2, 0, ['VIPs', r.vip + ' atendido' + (r.vip === 1 ? '' : 's') + (r.vipLost ? ' · ' + r.vipLost + ' bravo' + (r.vipLost > 1 ? 's' : '') : '')]);
-  if (r.amanha) rows.push(['Amanhã', EVENTOS[r.amanha].nome]);   // v10.6: a véspera do evento de bairro
-  if (r.noite) rows.push(['Michelzão', 'O guia liga amanhã cedo']);   // v10.10: a última linha da tabela (o veredito vem depois)
+  if (r.amanha) rows.push(['Amanhã', EVENTOS[r.amanha].nome]);   // v10.6: a véspera do evento de bairro, a última linha da tabela
+  if (r.noite) rows.push(['Michelzão', 'O guia liga amanhã cedo']);   // v10.10: a noite da estrela
   // Gurugol (v8.4): a caixa animada à esquerda dos quadros (v8.4.1); embaixo, 2 ou 3 comentários (os critérios do dia no title)
   const av = $('end-aval'); clearEl(av); av.title = ''; clearEl($('end-baloes'));
   { const cr = $('end-critico'); clearEl(cr);   // v10.9: a ficha da visita do crítico: cinco linhas com 0 a 2 garfinhos, sem número
@@ -153,18 +171,6 @@ function buildEnd(){
   fm.style.display = mn.length ? '' : 'none';
   $('btn-next').textContent = 'Lojinha e dia ' + game.proxDia;
   buildSaveForm($('end-save'), 'carreira');
-}
-/* v10.10: o boletim do Michelzão: três estrelas (cheias as da melhor marca), "Recomendado" (sem estrela) e seis barras sem número (a fração dos pontos de cada linha nesta noite) */
-function buildGuia(est, rec, lin){
-  starsHtml($('guia-est'), est, 3); $('guia-est').setAttribute('aria-label', est + (est === 1 ? ' estrela' : ' estrelas') + ' de 3');
-  $('guia-rec').textContent = !est && rec ? 'Recomendado' : '';
-  const box = $('guia-barras'); clearEl(box);
-  NOITE.linhas.forEach((nome, i) => {
-    const row = el('div', 'guia-lin'), bar = el('div', 'guia-bar'), f = el('i'), v = Math.round(clamp((lin || [])[i] || 0, 0, 1) * 100);
-    f.style.width = v + '%'; bar.appendChild(f); row.appendChild(el('span', null, nome)); row.appendChild(bar);
-    row.setAttribute('role', 'img'); row.setAttribute('aria-label', nome + ': ' + (v >= 100 ? 'cheia' : v <= 0 ? 'vazia' : 'em parte'));
-    box.appendChild(row);
-  });
 }
 /* v8.3.1: o banco tomou a lanchonete (a parcela atrasada não foi paga no dia seguinte): fim da carreira */
 function buildFalencia(){

@@ -28,7 +28,7 @@ const H0=nova(), L0=H0.L, HI=L0.HISTORIA;
   ok(f(c7.depois,['bia:Três dias de VIP saindo feliz!','dani:A Cami já sabe o nome de todo freguês.','tonhao:Salão redondo. Agora é a nota subir.']),'cap. 7: as falas de depois');
   ok(f(c10.antes,['tonhao:Quatro tempos por mesa, Bia. Sozinho no fogão eu não venço.','bia:A Lia, ajudante de cozinha, tá procurando serviço.','dani:E o pessoal daqui gosta de um coquetel antes da entrada!']),'cap. 10: as falas de antes');
   ok(f(c10.depois,['bia:A cozinha tá voando, tio!','tonhao:E o balcão de drinks não para.|provando um coquetel','dani:Agora só falta a refeição perfeita.']),'cap. 10: as falas de depois (a rubrica do Tonhão)');
-  ok(!c7.fim && !c10.fim && HI[7].fim.h==='Fim dos capítulos da Avenida Brasil' && HI[10].fim===undefined && HI[11].fim===undefined && HI[12].fim===undefined && HI[13].fim.h==='Fim do capítulo 14' && HI[2].fim && HI[4].fim,'o `fim` fica nos capítulos 3, 5, 8 e 14 (v10.8: o 11 perdeu o dele; v10.9: o 12 também)');
+  ok(!c7.fim && !c10.fim && HI[7].fim.h==='Fim dos capítulos da Avenida Brasil' && HI[10].fim===undefined && HI[11].fim===undefined && HI[12].fim===undefined && HI[13].fim.h==='Fim do capítulo 14' && HI[2].fim && HI[4].fim,'o `fim` fica nos capítulos 3, 5, 8 e 14 (v10.8: o 11 perdeu o dele; v10.9: o 12 também; v10.10: o 13 também)');
   ok(HI[7].obj.nota===3.9 && HI[7].obj.caixa===5000 && HI[7].antes.length===3 && HI[7].depois.length===5 && HI[8].obj.azul===3 && HI[8].antes.length===5 && HI[10].obj.completas===6 && HI[10].obj.nota===4.5 && HI[10].depois.length===5,'os antigos 7, 8 e 9 (agora 8, 9 e 11) seguem como eram');
   ok(L0.HIST_QUITOU.falas.length===4 && L0.HIST_TETO.falas.length===4 && L0.HIST_QUITOU.falas[1].nota==='rasgando o carnê' && L0.HIST_TETO.falas[0].s==='Bia, olha o Gurugol! Nota 2,7!','HIST_QUITOU e HIST_TETO com 4 falas e as rubricas'); }
 
@@ -111,7 +111,7 @@ const H0=nova(), L0=H0.L, HI=L0.HISTORIA;
 // ---------- 7. o modo dev ----------
 { const H=nova({ store:{ lcc2_dev:'1' } }), {g,L,els}=H; g.setDev(true); g.devReal(true); g.setState('menu');
   const C=L.DEV_CAPS;
-  ok(C.length===15 && C.every((c,i)=>c.n===i+1),'DEV_CAPS: 15 linhas (v10.10: o 12 é o molho da Rosa, o 13 o crítico, o 14 a noite, o 15 o Fim)');
+  ok(C.length===15 && C.every((c,i)=>c.n===i+1),'DEV_CAPS: 15 linhas (v10.10: o 14 é a noite da estrela, o 15 o Fim)');
   const lin=(n,k)=>C[n-1][k];
   ok(lin(7,'dia')===34 && lin(7,'caixa')===1500 && lin(7,'eq').cami===0 && lin(7,'pdia')===30 && lin(7,'ponto')==='avenida','DEV_CAPS 7: dia 34, caixa 1500, Cami 0');
   ok(lin(8,'dia')===38 && lin(8,'caixa')===2500 && lin(8,'eq').cami===1,'DEV_CAPS 8: a 7 de antes, com dia 38');

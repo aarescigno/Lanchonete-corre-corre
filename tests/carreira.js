@@ -14,8 +14,7 @@
 //   Com MANUT=com|cuida, mostra por dia: quebras (média), chuva/feriado (dias), revisão e conserto (R$) e o dinheiro final.
 //   MANUT_CFG='{"equip":{"fogao":{"preco":300}}}' e CLIMA_CFG='{"chuva":{"chance":0.1}}' trocam L.MANUT / L.CLIMA em runtime (sem mexer em src/)
 const N=+process.argv[2]||10, DIV=process.argv[3]||'panfleto';
-/* v8.7: joga a História (reforma, capítulos e a Dani de graça no cap. 2); HIST=0 joga sem ela */ const H=require('./harness.js')({historia:process.env.HIST!=='0'}); const {g,L}=H; const BOT=require('./bot.js'), bot=BOT(g,L,{afiado:process.env.BOT==='afiado',conserto:process.env.CONSERTO==='todos'?'todos':!!process.env.CONSERTO});
-const botNoite=BOT(g,L,{afiado:true,conserto:process.env.CONSERTO==='todos'?'todos':!!process.env.CONSERTO});   /* v10.10: NOITE_BOT=afiado: na noite da estrela o bot joga como o jogador perfeito; sem ele, o bot de sempre */   // BOT=afiado: o jogador perfeito (v8.6.9: para conferir a nota do Gurugol)
+/* v8.7: joga a História (reforma, capítulos e a Dani de graça no cap. 2); HIST=0 joga sem ela */ const H=require('./harness.js')({historia:process.env.HIST!=='0'}); const {g,L}=H; const BOT=require('./bot.js'), bot=BOT(g,L,{afiado:process.env.BOT==='afiado',conserto:process.env.CONSERTO==='todos'?'todos':!!process.env.CONSERTO});   // BOT=afiado: o jogador perfeito (v8.6.9: para conferir a nota do Gurugol)
 const MODO=process.env.MANUT||'sem'; if(!['sem','com','cuida','amarelo','vermelho'].includes(MODO)) throw new Error('MANUT=sem|com|cuida|amarelo|vermelho');
 /* v10.5: com salários de verdade, quem muda com o caixa zerado tem a folha cortada no 1º dia (o time cai para a base). O bot só muda com a folha de hoje (e MUDA_FOLGA a mais, padrão R$ 1.500, para o couvert, a música, as TVs e o 1º dia fraco do ponto novo) sobrando depois da mudança; MUDA_FOLGA=-99999 volta ao de antes */
 const MUDA_FOLGA=g=>process.env.MUDA_FOLGA!=null&&+process.env.MUDA_FOLGA<0?-1e9:PAY(g.save.equipe)+(+process.env.MUDA_FOLGA||1500);
@@ -26,7 +25,7 @@ const evCar=[];
 if(process.env.MANUT_CFG){ const c=JSON.parse(process.env.MANUT_CFG); const eq=c.equip; delete c.equip; Object.assign(L.MANUT,c); if(eq) for(const id in eq) Object.assign(L.manutOf(id),eq[id]); }
 if(process.env.PONTO_CFG){ const c=JSON.parse(process.env.PONTO_CFG), P=L.PONTOS.find(p=>p.id===(process.env.PONTO_ALVO||process.env.PONTO||'industrial'))||L.PONTOS[1]; for(const k in c){ if(c[k]&&typeof c[k]==='object'&&!Array.isArray(c[k])) Object.assign(P[k],c[k]); else P[k]=c[k]; } }   // v9: PONTO_CFG='{"cardapio":1.3,"aluguel":100}' troca números do ponto em runtime (v9.1: o ponto de PONTO_ALVO ou PONTO; padrão: a área industrial; PONTO_ALVO=avenida)
 if(process.env.EVENTOS_CFG){ const c=JSON.parse(process.env.EVENTOS_CFG), mescla=(a,b)=>{ for(const k in b){ if(b[k]&&typeof b[k]==='object'&&!Array.isArray(b[k])&&a[k]&&typeof a[k]==='object') mescla(a[k],b[k]); else a[k]=b[k]; } }; mescla(L.EVENTOS,c); }   // v10.6: EVENTOS_CFG='{"jogo":{"groups":{"garagem":1.05}}}' troca números dos eventos em runtime
-if(process.env.NOITE_CFG) Object.assign(L.NOITE,JSON.parse(process.env.NOITE_CFG));   // v10.10: NOITE_CFG='{"groups":1.15}' troca números da noite em runtime
+if(process.env.NOITE_CFG) Object.assign(L.NOITE,JSON.parse(process.env.NOITE_CFG));   // v10.10: NOITE_CFG='{"cortes":[48,70,88]}' troca números da noite da estrela em runtime
 if(process.env.CRITICO_CFG) Object.assign(L.CRITICO,JSON.parse(process.env.CRITICO_CFG));   // v10.9: CRITICO_CFG='{"lotada":1.15}' troca números do crítico em runtime
 if(process.env.CLIMA_CFG){ const c=JSON.parse(process.env.CLIMA_CFG); for(const k in c) Object.assign(L.CLIMA[k],c[k]); }
 // v9.0.5: a ordem de liberação dos cartões da lojinha (LIBERA): LIBERA=0 deixa tudo aberto (o jogo da v9.0.3, a base de comparação);
@@ -49,10 +48,9 @@ if(process.env.CARDAPIO){ const c=JSON.parse(process.env.CARDAPIO); for(const k 
 if(process.env.MAIS) Object.assign(L.MAIS,JSON.parse(process.env.MAIS));   // v8.3.8: MAIS='{"cada":0.6}' testa o 2º pedido
 const luxoFim=[]; const vigs={aprovado:0,advertencia:0,multa:0}; /* v9.4: as visitas do fiscal (só com MANUT=com e na Avenida) */ const jocaDia=[], espDia=[], camiDia=[], anselmoDia=[], liaDia=[], musicaDia=[], roseDia=[], gerDia=[]; const ND=+process.env.DIAS||14, MUDA=800; /* v8.6.9: cursoDias guarda o dia em que cada curso foi comprado (id+nível) */ const cursoDias={}; const rows={}, chega=[]; let negs=0, forcs=0, fechou=0; if(process.env.DBGC){ const fo=g.fechaFicha; g.fechaFicha=function(gr,b){ if(!this.ficha&&gr.critico) console.log('dbgC dia',this.day.n,'bravo',b,'corações',gr.hearts,'perdFila',gr.perdFila,'estado',gr.state,'prato',JSON.stringify(gr.pratoMain),'salaoSeg',gr.salaoSeg.toFixed(1),'notaT',JSON.stringify(gr.notaT),'boato',!!(this.visita&&this.visita.boato)); return fo.call(this,gr,b); }; }   // v10.9: DBGC=1 mostra como cada visita do crítico fechou
 if(process.env.DBGV){ const cnt={vip:0,vipBravo:0,crit:0,critBravo:0}; const ao=g.angryLeave, cb=g.collectBill; g.angryLeave=function(gr){ if(gr.state!=='leaving'&&gr.exigente&&this.ponto.nivel===4&&this.day.n<=62){ if(gr.critico) cnt.critBravo++; else cnt.vipBravo++; } return ao.call(this,gr); }; g.collectBill=function(gr,t,x){ if(gr.exigente&&this.ponto.nivel===4&&this.day.n<=62){ if(gr.critico) cnt.crit++; else cnt.vip++; } return cb.call(this,gr,t,x); }; process.on('exit',()=>console.log('dbgV exigentes pagos',cnt.vip,'bravos',cnt.vipBravo,'| críticos pagos',cnt.crit,'bravos',cnt.critBravo)); }
-const micK=[]; /* v10.10: a noite da estrela de cada carreira: o dia, as estrelas e os pontos da 1ª noite, e a melhor marca no fim */ const critGuia=[]; /* v10.9: a guia do crítico de cada carreira (n visitas, fichas) */ const capDia={1:[],2:[],3:[],4:[],5:[],6:[],7:[],8:[],9:[],10:[],11:[],12:[],13:[],14:[]}, mudaDia=[], mudaAv=[], mudaTe=[], lucroGar=[], lucroInd=[], lucroAv=[], lucroTe=[], negPos=[], negPosAv=[], negPosTe=[];   // v8.7: o dia em que cada capítulo foi cumprido
+const critGuia=[]; /* v10.9: a guia do crítico de cada carreira (n visitas, fichas) */ const capDia={1:[],2:[],3:[],4:[],5:[],6:[],7:[],8:[],9:[],10:[],11:[],12:[],13:[],14:[]}, mzK=[], mudaDia=[], mudaAv=[], mudaTe=[], lucroGar=[], lucroInd=[], lucroAv=[], lucroTe=[], negPos=[], negPosAv=[], negPosTe=[];   // v8.7: o dia em que cada capítulo foi cumprido
 for(let k=0;k<N;k++){
   const evK={junina:0,jogo:0,barraca:0}; evCar.push(evK);
-  const mic={ d:0, est:0, tot:0, lin:null, noites:0, melhor:0, pronto:0 }; micK.push(mic);
   g.save=L.normSave({}); g.up=g.save.up; g.boughtFor=0; g.buildTables(); let semMesa=0, chegou=0, vermVisto=false, runAbre={}; if(process.env.LIBERA==='0') for(const x of L.LIBERA) g.save.libera[x.id]=2;
   for(let n=1;n<=ND;n++){
     const r=rows[n]||(rows[n]={shop:[],after:[],lucro:[],pass:0,eq:[],lug:[],rev:[],con:[],qb:[],est:[],chuva:0,fer:0,fim:[],nota:[]});
@@ -102,26 +100,24 @@ for(let k=0;k<N;k++){
         for(let t=0;t<=g.save.equipe.tonhao;t++) if(!vistoT.has(k+':'+t)){ vistoT.add(k+':'+t); nivDia[t].push(n); }   // v8.8: o dia em que ele chega a cada nível
       }
       BOT.barraca(g,L,PAY(g.save.equipe));   // v10.6: a barraca junina, quando aparece
+      // v10.10: marca a noite da estrela quando o luxo é 4 ou mais e a nota 4,6 ou mais (ou depois de 5 dias no capítulo 14) e, passada a espera, de novo até as 3 estrelas (NOITE=0: nunca marca)
+      if(process.env.NOITE!=='0'&&g.noiteVisivel&&!g.noiteFalta(n)&&g.save.guia&&!g.save.guia.noite){ const ge=g.notaGurugol; if((L.luxoNivel(g)>=4&&ge!=null&&ge>=4.6)||n-g.save.capDia>=5) g.marcaNoite(); }
       BOT.luxo(g,L,PAY(g.save.equipe));   // v10.7: o luxo mais barato do ponto, com o caixa em 3× o preço (LUXO=0: sem luxo, como na v10.6)
       r.shop.push(g.save.bank);
     }
     (libVis[n]=libVis[n]||[]).push(L.LIBERA.filter(x=>g.save.libera[x.id]>=1).length); const manutAbre=g.save.libera.manut>=1;
     if(g.proxDia!==n) throw new Error('a campanha pulou: '+g.proxDia+' em vez de '+n);
     if(MODO!=='sem') r.est.push(L.MANUT.equip.map(q=>g.save.manut[q.id]));   // estado antes do dia (v8.3.11)
-    /* v10.10: a noite da estrela: marca quando o luxo é 4 ou mais e a nota 4,6 ou mais (ou depois de 5 dias no capítulo 14); depois de cada espera, marca de novo até as 3 estrelas (NOITE=0 não marca) */
-    if(process.env.NOITE!=='0'&&g.save.cap>=L.NOITE.cap&&g.save.guia){ const nc=g.noiteCartao, ge=L.avalGeral(g.save.aval), nota=ge?ge.nota:0;
-      if(!mic.pronto&&(L.luxoNivel(g)>=4&&nota>=4.6||n-g.save.capDia>=5)) mic.pronto=n;
-      if(nc&&nc.falta===0&&!nc.marcada&&(g.save.guia.ult>0||mic.pronto)) g.marcaNoite(); }
     g.startDay(n); g.begin(); r.after.push(g.save.bank-g.paid-g.paidDiv); r.eq.push(g.paid);   // v8.2.2: a folha só sai no fim do dia; "depois da folha" é o que sobra além dela
-    const bn=g.noite&&process.env.NOITE_BOT==='afiado'?botNoite:bot; let st=0; while(g.state==='playing'&&st<30000){ bn(); g.update(0.05); st++; }
+    let st=0; while(g.state==='playing'&&st<30000){ bot(); g.update(0.05); st++; }
     if(process.env.DBGF){ const r=g.result; console.log('dbgF',k,n,g.ponto.id.slice(0,3),'grupos',g.stats.spawned,'serv',r.served,'perd',r.lost,JSON.stringify(r.lostBy),'fat',r.fat,'ingr',r.custo,'contas',r.contas,'folha',g.paid+g.paidDiv,'lucro',r.money,'meta',r.meta,'nota',(g.gurugol||{nota:0}).nota.toFixed?(g.gurugol||{nota:0}).nota.toFixed(2):'-','full',g.stats.full,'marm',g.stats.marmitas,'slots',g.kitchen.slots,'lug',L.salaoLugares(g.save.salao.mesas),'bank',g.save.bank,'eq',g.save.equipe.tonhao+'/'+g.save.equipe.dani+(g.save.equipe.tvs?'T':''),'up',Object.keys(g.up).join('+')); }
     if(process.env.DBGD) console.log('dbg',n,'tar',g.save.daniTar,'feitas',g.result.daniFeitas,'cursos',Object.keys(g.save.daniCursos).length,'nivel',g.save.equipe.dani);
     (xpDani[n]=xpDani[n]||[]).push([L.daniXp(g.save),g.save.equipe.dani]);   // v8.9: a XP dela e o nível pago no fim de cada dia
     if(g.save.equipe.dani>0) tarNiv[g.save.equipe.dani-1].push(g.result.daniFeitas);   // v8.9: tarefas da Dani no dia, pelo nível dela
     { const ge=L.avalGeral(g.save.aval); r.nota.push(ge?ge.nota:null); }   // v8.6.9: a nota geral do Gurugol no fim do dia
     if(g.result.vig) vigs[g.result.vig.res]++;
-    if(process.env.DBGN&&g.result.noite) console.log('dbgN',k,n,'perdidos',g.stats.lost,JSON.stringify(g.stats.lostBy),'bráulio feliz',g.braulioFeliz,'ficha',g.ficha?g.ficha.it.join(''):'-','lucro',g.result.money,'meta',g.result.meta,'3★',g.result.expert,'estrelas dia',g.result.stars,'pts',g.result.noite.tot.toFixed(1),'lin',g.result.noite.lin.join(','));   // v10.10: DBGN=1 mostra como cada noite fechou
-    if(g.result.noite&&g.result.noite.real){ const rn=g.result.noite; if(!mic.noites){ mic.d=n; mic.est=rn.est; mic.tot=rn.tot; mic.lin=rn.lin; } mic.noites++; mic.melhor=rn.melhor; }   // v10.10
+    if(g.result.noite&&process.env.DBGN) console.log('dbgN',k,n,'lost',g.result.lost,JSON.stringify(g.result.lostBy),'brau',g.brauFeliz,'est',g.result.noite.est,'pts',g.result.noite.pts,'stars',g.result.stars,'lucro',g.result.money,'meta',g.result.meta);
+    if(g.result.noite){ const m=mzK[k]||(mzK[k]={ dia:n, est1:g.result.noite.est, pts1:g.result.noite.pts, bol1:g.save.guia.bol.slice(), noites:0 }); m.noites++; if(g.save.guia) g.save.guia.ver=0; }   // v10.10: a noite da estrela: o dia e as estrelas da 1ª
     if(g.result.evento){ evK[g.result.evento]++; if(g.result.evento==='junina'&&g.save.barraca===n) evK.barraca++; }   // v10.6
     r.lucro.push(g.result.money); r.con.push(g.result.conserto); r.qb.push(g.result.quebras.length); if(g.result.clima==='chuva') r.chuva++; if(g.result.clima==='feriado') r.fer++; r.fim.push(g.save.bank); if(g.result.passed) r.pass++; semMesa=g.result.lostBy.semMesa; r.lug.push(L.salaoLugares(g.save.salao.mesas)); if(g.save.bank<0) negs++; if(g.result.forcado) forcs++; if(!chegou&&g.save.bank>=MUDA) chegou=n; if(process.env.MESAS) console.log(n, g.save.salao.mesas.map(m=>m.seats).sort().join(''), 'semMesa', semMesa);
     // v8.7: o que a interface faz entre os dias: a conversa de depois fecha o capítulo (e abre o seguinte); a de antes só passa
@@ -135,6 +131,7 @@ for(let k=0;k<N;k++){
   }
   luxoFim.push(L.luxoPts(g));   // v10.7: o luxo no fim da carreira
   if(g.save.guia) critGuia.push(JSON.parse(JSON.stringify(g.save.guia)));   // v10.9
+  if(mzK[k]) mzK[k].melhor=g.save.guia?g.save.guia.est:0;   // v10.10
   chega.push(chegou||Infinity); for(const x of L.LIBERA) if(runAbre[x.id]) (libAbre[x.id]=libAbre[x.id]||[]).push(runAbre[x.id]); libTudo.push(L.LIBERA.every(x=>(g.save.libera[x.id]>=1)&&(process.env.LIBERA==='0'||runAbre[x.id]<=9)));
 }
 const avg=a=>a.length?Math.round(a.reduce((x,y)=>x+y,0)/a.length):'-';
@@ -153,9 +150,11 @@ console.log('DANI | XP e nível pago no fim do dia '+[5,7,9,11,13,16].filter(n=>
   const duas=critGuia.filter(x=>x.n>=2).length, uma=critGuia.filter(x=>x.n===1).length, tot=f=>f.it.reduce((a,b)=>a+b,0), mean=a=>a.length?a.reduce((x,y)=>x+y,0)/a.length:NaN;
   const f1=critGuia.filter(x=>x.v[0]).map(x=>x.v[0]), f2=critGuia.filter(x=>x.v[1]).map(x=>x.v[1]), it=(fs,k)=>mean(fs.map(f=>f.it[k])).toFixed(1);
   console.log('CRITICO (v10.9) | as duas visitas em',duas+'/'+N,'carreiras (só a 1ª em '+uma+') | ficha média da 1ª',mean(f1.map(tot)).toFixed(1),'('+f1.length+') · da 2ª',mean(f2.map(tot)).toFixed(1),'('+f2.length+') | por item (Recepção, Atendimento, Prato, Salão, Refeição) 1ª:',[0,1,2,3,4].map(k=>it(f1,k)).join(' '),'· 2ª:',[0,1,2,3,4].map(k=>it(f2,k)).join(' ')); }
-{ /* v10.10: a noite da estrela: a 1ª noite de cada carreira (o dia mediano, as estrelas e os pontos por linha) e a melhor marca no fim */
-  const jog=micK.filter(m=>m.noites>0), n=jog.length||1, pc=f=>Math.round(jog.filter(f).length/n*100)+'%', med=a=>a.length?a.sort((x,y)=>x-y)[Math.floor(a.length/2)]:'-';
-  console.log('MICHELZAO (v10.10) | 1ª noite jogada em',jog.length+'/'+N,'carreiras, dia mediano',med(jog.map(m=>m.d)),'| na 1ª noite: nenhuma',pc(m=>m.est===0),'· 1 ou mais',pc(m=>m.est>=1),'· 2 ou mais',pc(m=>m.est>=2),'· 3',pc(m=>m.est>=3),'| pontos médios',(jog.reduce((a,m)=>a+m.tot,0)/n).toFixed(1),'| linhas',L.NOITE.linhas.map((nm,k)=>nm+' '+(jog.reduce((a,m)=>a+m.lin[k],0)/n).toFixed(2)).join(' · '),'| noites por carreira',(jog.reduce((a,m)=>a+m.noites,0)/n).toFixed(1),'| melhor marca no fim: nenhuma',pc(m=>m.melhor===0),'· 1',pc(m=>m.melhor===1),'· 2',pc(m=>m.melhor===2),'· 3',pc(m=>m.melhor===3)); }
+{ /* v10.10: a noite da estrela: na 1ª noite de cada carreira, as estrelas dadas; e a melhor marca no fim */
+  const m=mzK.filter(Boolean), pc=f=>m.length?Math.round(m.filter(f).length/m.length*100)+'%':'-', md=a=>a.length?a.sort((x,y)=>x-y)[Math.floor(a.length/2)]:'-';
+  console.log('MICHELZAO (v10.10) | 1ª noite em',m.length+'/'+N,'carreiras, dia mediano',md(m.map(x=>x.dia)),'| estrelas na 1ª noite: ≥1',pc(x=>x.est1>=1),'· ≥2',pc(x=>x.est1>=2),'· 3',pc(x=>x.est1>=3),'| melhor marca no fim: ≥1',pc(x=>x.melhor>=1),'· ≥2',pc(x=>x.melhor>=2),'· 3',pc(x=>x.melhor>=3),'| noites por carreira',m.length?(m.reduce((a,x)=>a+x.noites,0)/m.length).toFixed(1):'-');
+  if(m.length) console.log('MICHELZAO | barras da 1ª noite (média, 0 a 1):',L.NOITE.linhas.map((n,i)=>n+' '+(m.reduce((a,x)=>a+x.bol1[i],0)/m.length).toFixed(2)).join(' · '));
+  if(m.length){ const ps=m.map(x=>x.pts1).sort((a,b)=>a-b), q=f=>ps[Math.min(ps.length-1,Math.floor(f*ps.length))]; console.log('MICHELZAO | pontos da 1ª noite: p10',q(0.1),'p25',q(0.25),'p50',q(0.5),'p75',q(0.75),'p90',q(0.9),'| todos:',ps.join(' ')); } }
 { const med=a=>a.length?a.sort((x,y)=>x-y)[Math.floor(a.length/2)]:'-'; console.log('LIA (v10.2) | contratada em',liaDia.length+'/'+N,'carreiras, dia mediano',med(liaDia)); }
 { const med=a=>a.length?a.sort((x,y)=>x-y)[Math.floor(a.length/2)]:'-'; console.log('MUSICA (v10.4) | contratada em',musicaDia.length+'/'+N,'carreiras, dia mediano',med(musicaDia)); }
 { const med=a=>a.length?a.sort((x,y)=>x-y)[Math.floor(a.length/2)]:'-'; console.log('ANSELMO (v9.5) | contratado em',anselmoDia.length+'/'+N,'carreiras, dia mediano',med(anselmoDia)); }

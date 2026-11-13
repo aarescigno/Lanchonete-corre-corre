@@ -473,16 +473,16 @@ function drawMarmoreTe(ctx){
 function drawVistaTe(ctx,x0,y0,x1,y1,noite){
   ctx.save(); ctx.beginPath(); ctx.rect(x0,y0,x1 - x0,y1 - y0); ctx.clip();
   const sk = ctx.createLinearGradient(0,y0,0,y1);
-  if (noite){ sk.addColorStop(0,'#0E1330'); sk.addColorStop(0.6,'#1E2A4A'); sk.addColorStop(1,'#3A3F6E'); } else { sk.addColorStop(0,'#5E78B8'); sk.addColorStop(0.5,'#E9A0A0'); sk.addColorStop(1,'#FAD79B'); }
+  if (noite){ sk.addColorStop(0,'#0B1230'); sk.addColorStop(0.6,'#1C2A5A'); sk.addColorStop(1,'#3A3F6E'); } else { sk.addColorStop(0,'#5E78B8'); sk.addColorStop(0.5,'#E9A0A0'); sk.addColorStop(1,'#FAD79B'); }   // v10.10: o céu noturno da noite da estrela
   ctx.fillStyle = sk; ctx.fillRect(x0,y0,x1 - x0,y1 - y0);
-  if (noite){   // v10.10, a noite da estrela: a lua e as estrelinhas (paradas)
-    circ(ctx,x0 + 470,y0 + 16,9); ctx.fillStyle = 'rgba(250,240,200,.95)'; ctx.fill(); circ(ctx,x0 + 474,y0 + 14,8); ctx.fillStyle = '#0E1330'; ctx.fill();
-    ctx.fillStyle = 'rgba(255,248,214,.9)'; for (let i = 0; i < 46; i++){ const sx = x0 + (i * 97) % (x1 - x0), sy = y0 + 3 + (i * 53) % Math.max(10,(y1 - y0) * 0.6); ctx.fillRect(sx,sy,i % 5 ? 1.2 : 2,i % 5 ? 1.2 : 2); }
+  if (noite){
+    ctx.fillStyle = '#fff'; for (let i = 0; i < 46; i++){ const sx = x0 + (i * 53) % (x1 - x0), sy = y0 + 3 + (i * 29) % (y1 - y0 - 22), r = i % 5 === 0 ? 1.5 : 0.9; ctx.globalAlpha = i % 3 ? 0.85 : 0.55; ctx.fillRect(sx,sy,r,r); }
+    ctx.globalAlpha = 1; circ(ctx,x0 + 470,y0 + 18,9); ctx.fillStyle = '#F7E6A8'; ctx.fill(); circ(ctx,x0 + 474,y0 + 16,8); ctx.fillStyle = '#16204A'; ctx.fill();
   } else {
   circ(ctx,x0 + 470,y1 - 8,15); ctx.fillStyle = 'rgba(255,238,176,.9)'; ctx.fill();
   ctx.fillStyle = 'rgba(255,255,255,.35)'; [[x0 + 90,y0 + 14,26],[x0 + 330,y0 + 22,20],[x0 + 590,y0 + 12,30]].forEach(c => { ell(ctx,c[0],c[1],c[2],4); ctx.fill(); ell(ctx,c[0] + 10,c[1] - 3,c[2] * 0.6,3.4); ctx.fill(); });
   }
-  [[noite ? '#2C3156' : '#9486B0',y1 - 14,6,47,4,19],[noite ? '#232848' : '#6F6893',y1 - 10,5,31,3,13]].forEach(h => {   // os morros ao longe, em duas camadas
+  [['#9486B0',y1 - 14,6,47,4,19],['#6F6893',y1 - 10,5,31,3,13]].forEach(h => {   // os morros ao longe, em duas camadas
     ctx.beginPath(); ctx.moveTo(x0,y1);
     for (let x = x0; x <= x1; x += 8) ctx.lineTo(x,h[1] - h[2] * Math.sin(x / h[3]) - h[4] * Math.sin(x / h[5] + 1));
     ctx.lineTo(x1,y1); ctx.closePath(); ctx.fillStyle = h[0]; ctx.fill();
@@ -494,26 +494,6 @@ function drawVistaTe(ctx,x0,y0,x1,y1,noite){
     if (i % 9 === 4){ ctx.fillStyle = '#3E4466'; ctx.fillRect(x + w / 2 - 0.6,y - 6,1.2,6); }
     x += w + 1;
   }
-  ctx.restore();
-}
-/* v10.10, a noite da estrela: a vela acesa na mesa (a chama balança; parada com prefers-reduced-motion) */
-function drawVela(ctx,x,y,tm){
-  const fl = RM ? 0 : Math.sin(tm * 9 + x) * 0.8;
-  circ(ctx,x,y - 12,12); ctx.fillStyle = 'rgba(255,205,110,.2)'; ctx.fill();
-  rr(ctx,x - 3,y - 9,6,9,1.5); fs(ctx,'#F3EAD0',1.6);
-  ctx.beginPath(); ctx.moveTo(x + fl * 0.3,y - 20); ctx.quadraticCurveTo(x + 3.2 + fl,y - 14,x,y - 10.5); ctx.quadraticCurveTo(x - 3.2 + fl,y - 14,x + fl * 0.3,y - 20); ctx.closePath(); fs(ctx,'#F29A2E',1);
-  ctx.beginPath(); ctx.arc(x + fl * 0.2,y - 13,1.4,0,TAU); ctx.fillStyle = '#FFF1B0'; ctx.fill();
-}
-/* v10.10: o balão curto de fala em cima da cabeça (só o Bráulio), com o nome em cima; some no último pedaço de segundo */
-function drawFala(ctx,grp,x,y){
-  const f = grp.fala; if (!f) return;
-  const w = Math.max(48,f.txt.length * 7.4 + 20);
-  ctx.save(); ctx.globalAlpha = clamp(f.t / 0.35,0,1);
-  rr(ctx,x - w / 2,y - 13,w,26,9); fs(ctx,'#fff',2.2);
-  ctx.beginPath(); ctx.moveTo(x - 5,y + 12); ctx.lineTo(x,y + 20); ctx.lineTo(x + 5,y + 12); ctx.closePath(); fs(ctx,'#fff',2);
-  ctx.fillStyle = '#fff'; ctx.fillRect(x - 4,y + 11,8,3);
-  txt(ctx,f.txt,x,y + 1,14,PAL.tinta,'center',FD);
-  txt(ctx,'Bráulio',x,y - 24,12,'#FFE9A8','center',FD,3);
   ctx.restore();
 }
 /* cortina presa de lado (side: -1 esquerda, 1 direita): o pano em dobras caindo da cortina e o laço dourado */
@@ -536,7 +516,7 @@ function drawParedeTe(ctx,g,t){
   ctx.fillStyle = TE_OURO; ctx.fillRect(0,66,W,3);
   // o janelão de ponta a ponta, com a cidade lá embaixo
   const wx0 = 104, wx1 = 772, wy0 = 8, wy1 = 62;
-  drawVistaTe(ctx,wx0,wy0,wx1,wy1,!!g.noite && !menu);   // v10.10: de noite, o céu escuro com estrelas e os prédios de janelas acesas
+  drawVistaTe(ctx,wx0,wy0,wx1,wy1,g.noite && !menu);
   ctx.strokeStyle = '#4A3628'; ctx.lineWidth = 3; for (let k = 1; k <= 5; k++){ const x = wx0 + (wx1 - wx0) * k / 6; ctx.beginPath(); ctx.moveTo(x,wy0); ctx.lineTo(x,wy1); ctx.stroke(); }   // as colunas finas
   ctx.strokeStyle = TE_OURO; ctx.lineWidth = 0.8; for (let k = 1; k <= 5; k++){ const x = wx0 + (wx1 - wx0) * k / 6 - 0.8; ctx.beginPath(); ctx.moveTo(x,wy0); ctx.lineTo(x,wy1); ctx.stroke(); }
   ctx.strokeStyle = PAL.tinta; ctx.lineWidth = 2.5; ctx.strokeRect(wx0,wy0,wx1 - wx0,wy1 - wy0);

@@ -101,6 +101,17 @@ p{margin:calc(var(--u)*6) 0;font-size:max(12px,calc(var(--u)*16));line-height:1.
 .end-critico .cr-lin{display:flex;align-items:center;justify-content:space-between;gap:calc(var(--u)*8);padding:calc(var(--u)*1) 0;font-weight:600;font-size:max(14px,calc(var(--u)*15))}
 .end-critico .cr-fg{display:flex;gap:calc(var(--u)*2)}
 .end-critico canvas{width:calc(var(--u)*22);height:calc(var(--u)*22);display:block}
+/* v10.10: o boletim do Michelzão (três estrelas e seis barras, sem número) e o selo do menu */
+.guia-panel{max-width:calc(var(--u)*360)}
+.guia-est{display:flex;justify-content:center;gap:calc(var(--u)*8);margin:calc(var(--u)*4) 0}
+.guia-est canvas{width:calc(var(--u)*54);height:calc(var(--u)*54);display:block}
+.guia-rec{margin:0 0 calc(var(--u)*4);font-weight:800;font-size:max(15px,calc(var(--u)*17));min-height:1.2em}
+.guia-barras{text-align:left;margin:0 auto calc(var(--u)*6);max-width:calc(var(--u)*300)}
+.guia-lin{display:flex;align-items:center;gap:calc(var(--u)*8);padding:calc(var(--u)*2) 0;font-weight:700;font-size:max(14px,calc(var(--u)*15))}
+.guia-lin span{flex:0 0 calc(var(--u)*80)}
+.guia-bar{flex:1;height:max(10px,calc(var(--u)*12));background:#E7DCC0;border:calc(var(--u)*2) solid var(--tinta);border-radius:999px;overflow:hidden}
+.guia-bar i{display:block;height:100%;width:0;background:linear-gradient(#F7DA4F,#E3B21E)}
+.selo-guia{display:block;margin:calc(var(--u)*2) auto 0;padding:0 4px;min-height:0}
 .end-balao{display:flex;align-items:center;gap:calc(var(--u)*8);text-align:left;background:#fff;border:calc(var(--u)*2) solid var(--tinta);border-radius:calc(var(--u)*14);padding:calc(var(--u)*3) calc(var(--u)*10)}
 .end-balao q{font-style:italic;font-weight:600;font-size:max(15px,calc(var(--u)*17));line-height:1.15}
 .end-rosto{flex:none;width:max(30px,calc(var(--u)*38));height:max(30px,calc(var(--u)*38));border-radius:50%;border:calc(var(--u)*2) solid var(--tinta)}
@@ -398,13 +409,3 @@ table.rank tr.me td{background:#fbe7a8}
 .dev-panel .dev-pessoa{display:flex;align-items:center;gap:calc(var(--u)*6);margin-top:calc(var(--u)*4)}
 .dev-panel .dev-nome{font-weight:700;min-width:calc(var(--u)*150)}
 .dev-panel .dev-pessoa .btn{min-width:max(36px,calc(var(--u)*38));padding:0}
-/* v10.10: o selo do Michelzão no menu e o boletim da noite da estrela */
-.selo{display:block;margin:calc(var(--u)*2) auto 0;padding:calc(var(--u)*2) calc(var(--u)*10);font:800 max(11px,calc(var(--u)*13)) var(--fb);color:#7A2E3A;background:#FFF3C4;border:calc(var(--u)*2) solid var(--tinta);border-radius:calc(var(--u)*12);cursor:pointer;touch-action:manipulation;-webkit-tap-highlight-color:transparent}
-.guia-panel{text-align:center}
-.guia-est{margin:calc(var(--u)*4) 0 calc(var(--u)*2)}
-.guia-rec{min-height:1.2em;margin:0 0 calc(var(--u)*4);font-weight:800;color:#7A2E3A}
-.guia-barras{max-width:calc(var(--u)*360);margin:0 auto calc(var(--u)*8)}
-.guia-lin{display:flex;align-items:center;gap:calc(var(--u)*8);margin:calc(var(--u)*3) 0;font-weight:700;font-size:max(11px,calc(var(--u)*14))}
-.guia-lin span{flex:0 0 28%;text-align:right}
-.guia-bar{flex:1;height:max(8px,calc(var(--u)*10));background:#14223A;border:1.5px solid #0B1424;border-radius:3px;overflow:hidden}
-.guia-bar i{display:block;height:100%;width:0;background:linear-gradient(#F7DA4F,#E3B21E)}

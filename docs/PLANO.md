@@ -18,7 +18,7 @@ Origem: retorno do Renan Martorelli (beta-tester) e conversa com o Arthur (15/10
 | 5 | ~~Modo História, parte 1~~: juntou-se à 2f e aos capítulos da 3a, 3b e 4a (28/10) | — | — |
 | 6a | O molho da Rosa: a pétala na mão e a Cami gerente (cap. 12) | v10.8 | feita em 13/11 (`docs/spec-v10.8.md`; `smoke73`; o prato no balcão ainda não leva a pétala, ver Desvios) |
 | 6b | O crítico sem aviso: o caderninho e o boato do Bráulio (cap. 13) | v10.9 | feita em 13/11 (`docs/spec-v10.9.md`; `smoke74`; ficha média 6,3 e 5,6 com `CRITICO.pac` 2, ver Desvios) |
-| 6c | A noite da estrela: o jantar, o Bráulio à mesa e as estrelas (cap. 14) | v10.10 | feita em 13/11 (`docs/spec-v10.10.md`; `smoke75`; CA15 fora da faixa e `groups` 1,15 e `meta` 2,3, ver Desvios) |
+| 6c | A noite da estrela: o jantar, o Bráulio à mesa e as estrelas (cap. 14) | v10.10 | feita em 13/11 (`docs/spec-v10.10.md`; `smoke75`; cortes 44/66/90 e CA14 e CA15 em parte, ver Desvios) |
 | 6d | O futuro da Corre-Corre: a cena final, os créditos e a placa | v11 | a fazer (`docs/spec-v11.md`, aprovada) |
 | 7 | Polimento: celular, jogo online, ajuste geral | v11.1 | a rever |
 
