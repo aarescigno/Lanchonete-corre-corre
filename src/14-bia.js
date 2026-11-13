@@ -56,6 +56,7 @@ class Waitress {
     this.x = 700; this.y = 310; this.dir = -1;
     this.hands = []; this.acts = []; this.phase = 'idle'; this.timer = 0;
     this.path = []; this.walkPh = 0; this.moving = false; this.qT = 0; this.doing = null;
+    this.petalas = 0;   // v10.8: as pétalas do vaso (ROSA.max); não ocupam as mãos nem a bandeja e zeram a cada dia
   }
   get speed(){ const u = this.g.up; return BIA_SPEED.base * (u.corrida ? BIA_SPEED.corrida : u.tenis ? BIA_SPEED.tenis : 1); }
   get tray(){ return !!this.g.up.bandeja; }
@@ -124,6 +125,7 @@ class Waitress {
       return (t && t.group && t.group.state === 'wantOrder') ? 0.6 : 0.35;
     }
     if (a.type === 'juice') return JUICE.prep;
+    if (a.type === 'rosas') return ROSA.pega;   // v10.8
     if (a.type === 'espresso'){ a.item = this.g.cafeEspItem(); return cafeDe(a.item).prep; }   // v9.3: 0,8 s o espresso, 1,2 s o cappuccino
     if (a.type === 'maquina') return a.leg === 2 ? 0.35 : this.g.bebida.take;
     const g = this.g;
@@ -237,8 +239,17 @@ class Waitress {
       ach.arr[ach.i] = null;
       if (p.kind === 'marmita'){ this.hands.push(marmitaMao(p)); Sfx.blip(); return; }
       const perde = pratoPerde(p.age);   // v8.6.8: esfriou no balcão
-      this.hands.push({ kind:'dish', table:p.table, group:p.group, dish:p.dish, crit:p.crit, q:Math.max(1, (p.q || 1) - perde), fria:perde >= PRATO.friaDe, vip:p.vip, tempo:p.tempo, casa:p.casa });
+      // v10.8: o prato da casa leva uma pétala (só a Bia põe): gasta uma e sai Prato da Rosa, sempre caprichado (no modo dev, "Pétala: Sempre" põe sem gastar)
+      const sempre = DEV.on && DEV.forca.rosa === 'sempre', rosa = !!p.casa && (this.petalas > 0 || sempre);
+      if (rosa && this.petalas > 0 && !sempre) this.petalas--;
+      this.hands.push({ kind:'dish', table:p.table, group:p.group, dish:p.dish, crit:p.crit || rosa, q:Math.max(1, (p.q || 1) - perde), fria:perde >= PRATO.friaDe, vip:p.vip, tempo:p.tempo, casa:p.casa, rosa });
       Sfx.blip();
+      return;
+    }
+    if (a.type === 'rosas'){   // v10.8: o vaso de rosas: enche as pétalas de uma vez
+      if (this.petalas >= ROSA.max) return this.fail('Já tenho pétalas');
+      this.petalas = ROSA.max; Sfx.tone(880, 0.08, 'sine', 0.04); Sfx.tone(1175, 0.1, 'sine', 0.04, 0.07);
+      g.addText(this.x, this.y - 82, 'Pétalas!', AB_COR.petala, 14);
       return;
     }
     if (a.type === 'juice'){

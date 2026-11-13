@@ -15,7 +15,7 @@ const loja=(H,grupo,aba)=>{ H.L.setShopGrupo(grupo); H.L.setShopTab(aba); return
   ok(S.tonhao.levels.map(l=>l.pay).join()==='50,65,80,100,120','Tonhão: 50 · 65 · 80 · 100 · 120 (a diária inteira do nível)');
   ok(S.dani.levels.slice(1).map(l=>l.pay).join()==='15,25,32,40','Dani: 15 (ajuda de custo) · 25 · 32 · 40');
   ok(S.joca.levels.slice(2).map(l=>l.pay).join()==='65,78,90','Joca: 65 · 78 · 90');
-  ok(S.cami.levels.slice(1).map(l=>l.pay).join()==='95,115,135,160','Cami: 95 · 115 · 135 · 160');
+  ok(S.cami.levels.slice(1).map(l=>l.pay).join()==='95,115,135,160,200','Cami: 95 · 115 · 135 · 160 · 200 (v10.8: o nível 5)');
   ok(S.anselmo.levels.slice(2).map(l=>l.pay).join()==='105,150','Anselmo: 105 · 150');
   ok(S.lia.pay===80,'Lia: 80 (não muda)');
   ok(S.couvert.pay===200 && S.couvert.fee===8,'couvert: R$ 200 por dia e taxa de R$ 8 por cliente');

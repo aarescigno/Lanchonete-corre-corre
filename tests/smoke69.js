@@ -16,10 +16,10 @@ const fecha=(H,st,fat)=>{ const {g,els}=H; g.startDay(g.save.dia); els['btn-star
 
 const H0=nova(), L0=H0.L, HI=L0.HISTORIA;
 
-// ---------- 1. os 11 capítulos ----------
-{ const tit=['A garagem da Rosa','A Dani chega','Casa cheia','Ponto novo','Hora do almoço','Do outro lado da rua','Salão de gente grande','Nota de restaurante','Lá no alto','A casa completa','Do começo ao fim'];
-  const pts=['garagem','garagem','garagem','industrial','industrial','avenida','avenida','avenida','terraco','terraco','terraco'];
-  ok(HI.length===11 && HI.every((c,i)=>c.cap===i+1 && c.titulo===tit[i] && c.ponto===pts[i]),'HISTORIA: 11 capítulos, com número, título e ponto da spec');
+// ---------- 1. os capítulos (v10.8: 12) ----------
+{ const tit=['A garagem da Rosa','A Dani chega','Casa cheia','Ponto novo','Hora do almoço','Do outro lado da rua','Salão de gente grande','Nota de restaurante','Lá no alto','A casa completa','Do começo ao fim','O molho da Rosa'];
+  const pts=['garagem','garagem','garagem','industrial','industrial','avenida','avenida','avenida','terraco','terraco','terraco','terraco'];
+  ok(HI.length===12 && HI.every((c,i)=>c.cap===i+1 && c.titulo===tit[i] && c.ponto===pts[i]),'HISTORIA: 12 capítulos, com número, título e ponto da spec');
   const c7=HI[6], c10=HI[9];
   ok(c7.obj.equipe==='cami' && c7.obj.vip===3 && c7.obj.vezes===3 && Object.keys(c7.obj).length===3,'cap. 7: obj { equipe:cami, vip:3, vezes:3 }');
   ok(c10.obj.equipe==='lia' && c10.obj.drinks===8 && c10.obj.vezes===3 && Object.keys(c10.obj).length===3,'cap. 10: obj { equipe:lia, drinks:8, vezes:3 }');
@@ -28,7 +28,7 @@ const H0=nova(), L0=H0.L, HI=L0.HISTORIA;
   ok(f(c7.depois,['bia:Três dias de VIP saindo feliz!','dani:A Cami já sabe o nome de todo freguês.','tonhao:Salão redondo. Agora é a nota subir.']),'cap. 7: as falas de depois');
   ok(f(c10.antes,['tonhao:Quatro tempos por mesa, Bia. Sozinho no fogão eu não venço.','bia:A Lia, ajudante de cozinha, tá procurando serviço.','dani:E o pessoal daqui gosta de um coquetel antes da entrada!']),'cap. 10: as falas de antes');
   ok(f(c10.depois,['bia:A cozinha tá voando, tio!','tonhao:E o balcão de drinks não para.|provando um coquetel','dani:Agora só falta a refeição perfeita.']),'cap. 10: as falas de depois (a rubrica do Tonhão)');
-  ok(!c7.fim && !c10.fim && HI[7].fim.h==='Fim dos capítulos da Avenida Brasil' && HI[10].fim.h==='Fim dos capítulos do Terraço Suíça' && HI[2].fim && HI[4].fim,'o `fim` fica nos capítulos 3, 5, 8 e 11');
+  ok(!c7.fim && !c10.fim && HI[7].fim.h==='Fim dos capítulos da Avenida Brasil' && HI[10].fim===undefined && HI[11].fim.h==='Fim do capítulo 12' && HI[2].fim && HI[4].fim,'o `fim` fica nos capítulos 3, 5, 8 e 12 (v10.8: o 11 perdeu o dele)');
   ok(HI[7].obj.nota===3.9 && HI[7].obj.caixa===5000 && HI[7].antes.length===3 && HI[7].depois.length===5 && HI[8].obj.azul===3 && HI[8].antes.length===5 && HI[10].obj.completas===6 && HI[10].obj.nota===4.5 && HI[10].depois.length===5,'os antigos 7, 8 e 9 (agora 8, 9 e 11) seguem como eram');
   ok(L0.HIST_QUITOU.falas.length===4 && L0.HIST_TETO.falas.length===4 && L0.HIST_QUITOU.falas[1].nota==='rasgando o carnê' && L0.HIST_TETO.falas[0].s==='Bia, olha o Gurugol! Nota 2,7!','HIST_QUITOU e HIST_TETO com 4 falas e as rubricas'); }
 
@@ -89,18 +89,18 @@ const H0=nova(), L0=H0.L, HI=L0.HISTORIA;
   ok(g.mudancaVisivel && g.proximoPonto.id==='terraco','cap. 9 à espera na Avenida: a mudança para o Terraço fica à mostra'); }
 { const H=jogo(11,'terraco',{ conversa:null, bank:3000 }), {g,els}=H; notaDe(g,4.7,30); g.save.capFeito=1; fecha(H); notaDe(g,4.7,30);
   ok(g.save.conversa==='depois' || (g.result.cap && g.result.cap.ok),'(cap. 11 cumprido)'); g.save.conversa='depois'; els['btn-next'].fire('click'); passa(H);
-  ok(g.save.cap===12 && mostra(els,'ov-continua') && els['cont-h'].textContent==='Fim dos capítulos do Terraço Suíça','fim do cap. 11: o cartão "Fim dos capítulos do Terraço Suíça"'); }
+  ok(g.save.cap===12 && !mostra(els,'ov-continua'),'depois do cap. 11 (v10.8): o cap. 12 começa, sem cartão de fim'); }
 { const H=jogo(6,'industrial',{ conversa:null }); ok(H.g.mudancaVisivel,'cap. 6 na área industrial: a mudança para a Avenida aparece (como antes)');
   const H2=jogo(7,'avenida',{ conversa:null }); ok(!H2.g.mudancaVisivel,'cap. 7 na Avenida: nada de mudança'); }
 
 // ---------- 6. saves da v10.5 ----------
 { const sv=(cap,ponto,x)=>({ histV:1, cap, dia:30, bank:3000, v10:1, conversa:null, salao:{ ponto }, capAzul:2, capFeito:1, ...(x||{}) });
   const n=(cap,ponto,x)=>L0.normSave(sv(cap,ponto,x));
-  const a=n(6,'avenida'); ok(a.cap===6 && a.capV===2 && a.conversa===null && a.capAzul===2,'cap. 6 fica 6 (e capV passa a 2)');
+  const a=n(6,'avenida'); ok(a.cap===6 && a.capV===3 && a.conversa===null && a.capAzul===2,'cap. 6 fica 6 (e capV passa a 3, v10.8)');
   const b=n(7,'avenida'); ok(b.cap===7 && b.conversa==='antes' && b.capAzul===0 && b.capFeito===0 && b.capVezes===0,'cap. 7 → 7: o cap. novo da Avenida começa, com a conversa de antes e os contadores zerados');
   const c=n(8,'terraco'); ok(c.cap===9 && c.conversa===null && c.capAzul===2,'cap. 8 → 9 (Lá no alto), sem mexer no resto');
   const d=n(9,'terraco'); ok(d.cap===10 && d.conversa==='antes' && d.capAzul===0 && d.capFeito===0 && d.capVezes===0,'cap. 9 → 10: o cap. novo do Terraço começa, com a conversa de antes');
-  const e=n(10,'terraco'); ok(e.cap===12 && e.conversa===null,'cap. 10 (o Fim) → 12');
+  const e=n(10,'terraco'); ok(e.cap===12 && e.conversa==='antes' && e.capDia===e.dia,'cap. 10 (o Fim da v10.4) → 12 (v10.8: o molho da Rosa começa, com a conversa de antes)');
   const e8=n(8,'avenida'); ok(e8.cap===9 && e8.conversa===null,'cap. 8 à espera na Avenida → 9 à espera');
   ok(n(7,'avenida').cap===7 && L0.normSave(n(7,'avenida')).cap===7 && L0.normSave(n(10,'terraco')).cap===12 && L0.normSave(n(8,'terraco')).cap===9 && L0.normSave(n(9,'terraco')).cap===10,'carregar de novo não converte outra vez');
   const f=n(8,'terraco',{ capV:2 }); ok(f.cap===8 && f.capVezes===0,'com capV 2, o cap. 8 é o 8 mesmo');
@@ -111,17 +111,17 @@ const H0=nova(), L0=H0.L, HI=L0.HISTORIA;
 // ---------- 7. o modo dev ----------
 { const H=nova({ store:{ lcc2_dev:'1' } }), {g,L,els}=H; g.setDev(true); g.devReal(true); g.setState('menu');
   const C=L.DEV_CAPS;
-  ok(C.length===12 && C.every((c,i)=>c.n===i+1),'DEV_CAPS: 12 linhas');
+  ok(C.length===13 && C.every((c,i)=>c.n===i+1),'DEV_CAPS: 13 linhas (v10.8: o 12 é o molho da Rosa, o 13 o Fim)');
   const lin=(n,k)=>C[n-1][k];
   ok(lin(7,'dia')===34 && lin(7,'caixa')===1500 && lin(7,'eq').cami===0 && lin(7,'pdia')===30 && lin(7,'ponto')==='avenida','DEV_CAPS 7: dia 34, caixa 1500, Cami 0');
   ok(lin(8,'dia')===38 && lin(8,'caixa')===2500 && lin(8,'eq').cami===1,'DEV_CAPS 8: a 7 de antes, com dia 38');
   ok(lin(9,'dia')===50 && lin(9,'pdia')===50 && lin(9,'ponto')==='terraco' && lin(9,'caixa')===1500,'DEV_CAPS 9: a 8 de antes, com dia 50 e pdia 50');
   ok(lin(10,'dia')===54 && lin(10,'pdia')===50 && lin(10,'caixa')===4000 && lin(10,'eq').lia===0 && lin(10,'eq').anselmo===3,'DEV_CAPS 10: a 9 de antes, com dia 54, caixa 4000 e Lia 0');
   ok(lin(11,'dia')===58 && lin(11,'pdia')===50 && lin(11,'caixa')===6000 && lin(11,'eq').lia===1,'DEV_CAPS 11: a 9 de antes, com dia 58');
-  ok(lin(12,'dia')===64 && lin(12,'pdia')===50 && lin(12,'eq')===null,'DEV_CAPS 12 (o Fim): dia 64');
+  ok(lin(12,'dia')===64 && lin(12,'pdia')===50 && lin(12,'eq')===null && lin(13,'dia')===64 && lin(13,'eq')===null,'DEV_CAPS 12 (o molho da Rosa) e 13 (o Fim): dia 64');
   let erro=null; const caps=[];
-  try{ for(let n=1;n<=12;n++){ ok(g.devCapitulo(n),'devCapitulo('+n+')'); caps.push(g.save.cap); } }catch(e){ erro=e; }
-  ok(!erro && caps.join()==='1,2,3,4,5,6,7,8,9,10,11,12','os 12 saves se montam sem erro'+(erro?' ('+erro.message+')':''));
+  try{ for(let n=1;n<=13;n++){ ok(g.devCapitulo(n),'devCapitulo('+n+')'); caps.push(g.save.cap); } }catch(e){ erro=e; }
+  ok(!erro && caps.join()==='1,2,3,4,5,6,7,8,9,10,11,12,13','os 13 saves se montam sem erro'+(erro?' ('+erro.message+')':''));
   g.devCapitulo(7); ok(g.save.equipe.cami===0 && g.save.libera.cami===2 && g.capObj().itens[0].txt==='Contratar a Cami' && g.save.conversa==='antes','dev 7: sem a Cami, com o cartão dela aberto e a conversa de antes');
   g.devCapitulo(10); ok(g.save.equipe.lia===0 && g.save.libera.lia===2 && g.capObj().itens[0].txt==='Contratar a Lia' && g.save.convExig===1,'dev 10: sem a Lia, com o cartão dela aberto');
   g.devCapitulo(9); ok(g.save.convExig===0,'dev 9 (Lá no alto): o exigente ainda não foi visto');
@@ -129,11 +129,11 @@ const H0=nova(), L0=H0.L, HI=L0.HISTORIA;
   g.devCapitulo(4); ok(g.save.convQuit===1 && g.save.convTeto===1,'dev 4: já vistas');
   g.devCapitulo(3); g.devConversas('pend'); ok(g.save.convQuit==='pend' && g.save.convTeto==='pend','devConversas: pendentes inclui as duas novas');
   g.devConversas('vistas'); ok(g.save.convQuit===1 && g.save.convTeto===1,'devConversas: vistas inclui as duas novas');
-  // o painel: botões 1 a 11 e o Fim
+  // o painel: botões 1 a 12 e o Fim (v10.8)
   g.setState('menu'); g.devCapitulo(1); L.DEV.aba='pular'; L.buildDev();
   const body=H.doc.getElementById('dev-body'); const botoes=[]; const colhe=e=>{ (e.children||[]).forEach(c=>{ if(c.tagName==='BUTTON') botoes.push(c.textContent); colhe(c); }); }; colhe(body);
   const nums=botoes.filter(t=>/^\d+$/.test(t) || t==='Fim');
-  ok(nums.length===12 && nums.slice(0,11).every((t,i)=>t===String(i+1)) && nums[11]==='Fim','o painel do modo dev tem os botões 1 a 11 e o Fim ('+nums.join(',')+')'); }
+  ok(nums.length===13 && nums.slice(0,12).every((t,i)=>t===String(i+1)) && nums[12]==='Fim','o painel do modo dev tem os botões 1 a 12 e o Fim ('+nums.join(',')+')'); }
 
 console.log('smoke69: total = '+total+'  fails = '+fails);
 process.exit(fails?1:0);

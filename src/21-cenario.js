@@ -1642,7 +1642,7 @@ function drawMesinha(ctx,g,t){
     const cx = x + w / 2, by = y + 4;
     ctx.strokeStyle = '#3E7B4F'; ctx.lineWidth = 2; ctx.lineCap = 'round';
     [[-8,-30],[0,-36],[8,-29]].forEach(f => { ctx.beginPath(); ctx.moveTo(cx,by - 14); ctx.lineTo(cx + f[0],by + f[1]); ctx.stroke(); });
-    [[-8,-30,'#E5384A'],[0,-36,'#F2B33D'],[8,-29,'#C77DD6']].forEach(f => { circ(ctx,cx + f[0],by + f[1],5); fs(ctx,f[2],1.6); circ(ctx,cx + f[0],by + f[1],1.6); ctx.fillStyle = '#FFF3C9'; ctx.fill(); });
+    (g.save.rosa ? [[-8,-30,AB_COR.petala],[0,-36,'#F06A98'],[8,-29,'#D2356A']] : [[-8,-30,'#E5384A'],[0,-36,'#F2B33D'],[8,-29,'#C77DD6']]).forEach(f => { circ(ctx,cx + f[0],by + f[1],5); fs(ctx,f[2],1.6); circ(ctx,cx + f[0],by + f[1],1.6); ctx.fillStyle = '#FFF3C9'; ctx.fill(); });
     rr(ctx,cx - 8,by - 17,16,19,6); fs(ctx,'#F4F0E6',2);
     ctx.fillStyle = 'rgba(47,111,181,.35)'; ctx.fillRect(cx - 6,by - 9,12,3);
   }

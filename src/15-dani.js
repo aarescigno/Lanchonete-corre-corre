@@ -102,7 +102,7 @@ class Helper {
     const conta = mine.filter(t => t.group && t.group.state === 'wantBill' && espera(t.group.stateT) && semBia(t)).sort((a, b) => a.group.hearts - b.group.hearts)[0];
     if (conta){ marca(conta.group); return this.go(this.nearestAp(conta), { type:'conta', t:conta }); }
     if (hs.length < DANI_HANDS){
-      const p = k.plates.filter(q => q && q.group && q.group.table && (tudo || q.group.table.cami) && espera(q.age) && !q.camiVai
+      const p = k.plates.filter(q => q && q.group && q.group.table && (tudo || q.group.table.cami) && espera(q.age) && !q.camiVai && !(q.casa && g.save.rosa)   // v10.8: com o molho, o prato da casa é da Bia (a pétala)
         && (!q.group.tempos || q.group.state === 'ordered') && !g.bia.acts.some(a => a.type === 'plate' && a.pid === q.id)).sort((a, b) => b.age - a.age)[0];   // v10: o principal só quando o grupo já acabou a entrada; v9.6.5: o mais antigo dos dela   // a Bia já a caminho do prato: a Cami deixa
       if (p){ p.camiVai = true; marca(p.group); return this.go(STATIONS.plates.ap, { type:'pegaPrato', p }); }
       if (pedido){ marca(pedido.group); return this.go(this.nearestAp(pedido), { type:'anota', t:pedido }); }

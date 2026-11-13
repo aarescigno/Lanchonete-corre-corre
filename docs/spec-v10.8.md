@@ -1,6 +1,6 @@
 # v10.8 — O molho da Rosa: a pétala na mão e a Cami gerente (etapa 6a)
 
-**Situação:** aprovada (13/11)
+**Situação:** entregue em 13/11
 **Origem:** a Etapa 6 do `docs/PLANO.md` (o crítico do Michelzão e o final), dividida em quatro sessões no planejamento de 13/11 (`docs/PROPOSTAS.md`, "13/11 — usuário: decisões do final"). Esta é a primeira: o capítulo 12.
 
 ## Objetivo
@@ -78,15 +78,15 @@ O Tonhão enfim conta o segredo da Casa Aurora: o molho da estrela era dele e da
 - `tests/bot.js`, `tests/balance.js`, `tests/carreira.js`.
 
 ## Tarefas
-- [ ] T1 Smoke novo `tests/smoke73.js` com CA1 a CA11 (falhando) e no `run_all.sh`.
-- [ ] T2 Constantes, `normSave` (`rosa`, `capV` 3, `camiFila`) e o capítulo 12 com o objetivo novo.
-- [ ] T3 O vaso, a ação `rosa` da Bia, a pétala ao pegar o prato da casa e a regra dos ajudantes.
-- [ ] T4 A entrega do Prato da Rosa (coração, conta, pontos, comentário) e o cartão do molho na lojinha.
-- [ ] T5 A Cami gerente: curso, nível 5, a fila organizada e a linha do cartão.
-- [ ] T6 Modo dev e Manual.
-- [ ] T7 Desenho: o vaso, a pétala no prato e no HUD; `shot_v10_8.js` e conferência em recortes.
-- [ ] T8 Bot: pega pétalas quando há prato da casa na cozinha e ela está sem (`ROSA=0|1`, padrão 1 quando `save.rosa`); `CAMI=5`; o `carreira.js` compra o molho e a gerência no capítulo 12. Calibrar CA12 e CA13 pela receita.
-- [ ] Fechamento: `VERSAO`, `vtag`, `#ov-ver`, `docs/RESUMO.md`, `docs/TESTES.md`, `docs/PARTES.md`, esta spec como entregue, `tests/run_all.sh` verde, PR e merge.
+- [x] T1 Smoke novo `tests/smoke73.js` com CA1 a CA11 (falhando) e no `run_all.sh`.
+- [x] T2 Constantes, `normSave` (`rosa`, `capV` 3, `camiFila`) e o capítulo 12 com o objetivo novo.
+- [x] T3 O vaso, a ação `rosa` da Bia, a pétala ao pegar o prato da casa e a regra dos ajudantes.
+- [x] T4 A entrega do Prato da Rosa (coração, conta, pontos, comentário) e o cartão do molho na lojinha.
+- [x] T5 A Cami gerente: curso, nível 5, a fila organizada e a linha do cartão.
+- [x] T6 Modo dev e Manual.
+- [x] T7 Desenho: o vaso, a pétala no prato e no HUD; `shot_v10_8.js` e conferência em recortes.
+- [x] T8 Bot: pega pétalas quando há prato da casa na cozinha e ela está sem (`ROSA=0|1`, padrão 1 quando `save.rosa`); `CAMI=5`; o `carreira.js` compra o molho e a gerência no capítulo 12. Calibrar CA12 e CA13 pela receita.
+- [x] Fechamento: `VERSAO`, `vtag`, `#ov-ver`, `docs/RESUMO.md`, `docs/TESTES.md`, `docs/PARTES.md`, esta spec como entregue, `tests/run_all.sh` verde, PR e merge.
 
 ## Avisos para a execução
 - O prato na mão já carrega `casa` (`src/14-bia.js`, linha 240, e `src/15-dani.js`, linha 215): a pétala entra ali, sem mexer na cozinha.
@@ -96,13 +96,24 @@ O Tonhão enfim conta o segredo da Casa Aurora: o molho da estrela era dele e da
 - Confira na captura onde fica o vaso do armário no Terraço; se o `rect` do `ROSA.vaso` não cobrir o vaso e o armário, ajuste só o `rect` (o `ap` fica).
 
 ## Testes
-- `smoke73` novo (CA1 a CA11). Chaves novas: `ROSA=0|1` e `CAMI=5` no `balance.js`; o `carreira.js` joga o capítulo 12.
+- `smoke73` novo (CA1 a CA11): 84 checagens, verde. Chaves novas: `ROSA=0|1` e `CAMI=5` no `balance.js` (`ROSA=0` também desliga a viagem do bot ao vaso na carreira); o `carreira.js` joga o capítulo 12 (compra o molho e, um curso por lojinha, o de mesa, o de salão e a gerência da Cami) e mostra as linhas `ROSA` e `PRAZOS` (cap. 12).
+- **CA12 medido** (`PONTO=terraco BOT=afiado EQUIPE=auto ALTA=1 LIA=1 CAFESESP=1 AUTOR=1 JOCA=4 CONFEITARIA=1 LUXO=tudo`, 40 rodadas × 4 repetições, lucro médio dos dias 8 a 10): `CAMI=5 ROSA=1` 3.762, 3.831, 3.775 e 3.780; `CAMI=4 ROSA=0` 3.542, 3.511, 3.636 e 3.599. A média dá **+6,0%** (de +3,8% a +9,1% por repetição, o ruído é do tamanho da diferença), abaixo dos 8%: `GERENTE.espera` fica em 4 e `ROSA.mais` em 20. As metas passam em 100% (40/40) nos dias 8 e 10 e 97,5% no dia 9 (o mesmo do `CAMI=4`).
+- **CA13 medido** (`DIAS=90 node carreira.js 10`): o capítulo 12 cumprido em 10/10 carreiras, no dia mediano 53; 3 dias depois do capítulo 11 em todas (o mínimo possível: 3 dias com 3 Pratos da Rosa); molho comprado no dia mediano 51 e a gerência no 53. `obj.rosa` fica em 3.
 - Capturas: `shot_v10_8.js` (CA14), conferidas e apagadas.
 
 ## Decisões em aberto
 Nenhuma.
 
 ## Desvios
-(No fechamento.)
+- **O prato no balcão não leva a pétala.** Só a Bia põe a pétala, e ela põe ao pegar o prato; então o `drawDish` só desenha a pétala (parâmetro novo `rosa`) na mesa, e na mão (`drawHandItem`) e no ícone da fila (ação `rosas`) a pétala é desenhada à parte. No balcão fica a estrela do prato da casa, como na v10.1.
+- **`STATIONS.rosas = ROSA.vaso` é atribuído logo depois do `ROSA`** (em `src/10-constantes.js`): o `STATIONS` vem antes na ordem do arquivo e a constante ainda não existia.
+- **`seatGroup(g, t, semCorrente)`**: terceiro parâmetro novo, para a gerente sentar sem mexer na corrente da Bia (o `score` já tinha esse parâmetro).
+- **A gerência no cartão da Cami**: o cartão do curso aparece com `save.cap >= 12` (ou no modo dev livre), apagado e com "Precisa do curso de Atendimento de salão." até o de salão ser feito; a compra recusa sem ele. O `l-gerente` abre quando o cartão é desenhado.
+- **A Cami fora do Terraço** passa a parar no nível 3 por número fixo (era `levels.length - 2`, que com o nível 5 daria 4): em `normEquipe` e no `cMax` do cartão.
+- **O save sem `capV` (de antes da v10.5.2) que chegou ao antigo Fim** também começa o capítulo 12 com a conversa de antes (`capRosa`: `capV !== 3`, `cap` 12 depois da conversão, no Terraço). A spec só citava `capV 2`.
+- **`DEV_CAPS` 12 (molho) e 13 (Fim)** os dois no dia 64; o modo dev ganhou a coluna `semRosa` na linha 12 (sem o molho, sem a gerência, a Cami no nível 4). "Tudo no máximo" (`devEquipe('max')`) agora também compra o molho; "Do começo" tira.
+- **O comentário "Que molho é esse?!"** entra depois do comentário do exigente (que também sorteia 50%), para valer sempre que sortear; só com nota de comida 4 ou mais e sem estar bravo.
+- **Testes ajustados só nas contagens:** `smoke45` (4 cursos da Cami), `53` (71 fichas), `60` e `69` (12 capítulos, o `fim` do 11 sumiu, o antigo Fim vira o cap. 12; DEV_CAPS 13; `capV` 3), `62` (VERSAO), `63` (13 linhas do dev), `65` e `67` (nível 5 da Cami). Nenhuma checagem apagada.
+- **Ícone novo `rosa`** (vaso branco com rosas e duas pétalas) para o cartão do molho, em `upgradeIcon`; `drawPetala` fica em `src/20-desenho-base.js`.
 
 **Modelo:** Sonnet, esforço alto (regras e textos fechados, mas mexe em muitas partes ao mesmo tempo: Bia, ajudantes, fila, lojinha, save e bot, com calibração por receita)
