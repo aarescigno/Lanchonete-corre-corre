@@ -15,10 +15,9 @@ Origem: retorno do Renan Martorelli (beta-tester) e conversa com o Arthur (15/10
 ## Situação
 | # | Etapa | Versão | Situação |
 |---|---|---|---|
-| R1 | Metas no alvo e a música do Terraço (revisão do balanceamento de 12/11) | v10.5.1 | feita em 12/11 (`docs/spec-v10.5.1.md`; `smoke68`; trio 0,7 e pianista 0,5; a Avenida ficou em 97% das metas e o Terraço da campanha +19%, ver Desvios) |
 | R2 | O ritmo da história: conversas no cap. 3 e um capítulo novo na Avenida e outro no Terraço | v10.5.2 | feita em 12/11 (`docs/spec-v10.5.2.md`; `smoke69`; 11 capítulos; o cap. 7 leva 3 a 4 dias e o cap. 10, 3; a história acaba no dia 49) |
 | V | A vontade da freguesia: doce e espresso puxam a Dani e o Joca (garantia do Joca e da Cami) | v10.5.3 | feita em 12/11 (`docs/spec-v10.5.3.md`; `smoke70`; `VONTADE.menos` 0,3 em vez de 0,5, ver Desvios) |
-| 4c | Eventos de bairro: festa junina e jogo do Brasil (adiantada em 12/11, para dar novidade aos dias parados da Garagem) | v10.6 | planejada em 12/11 (`docs/spec-v10.6.md`, aprovada) |
+| 4c | Eventos de bairro: festa junina e jogo do Brasil (adiantada em 12/11, para dar novidade aos dias parados da Garagem) | v10.6 | feita em 13/11 (`docs/spec-v10.6.md`; `smoke71`; fases e gol na janela de chegadas, ver Desvios) |
 | 4b | Nível de luxo | v10.7 | a fazer |
 | 5 | ~~Modo História, parte 1~~: juntou-se à 2f e aos capítulos da 3a, 3b e 4a (28/10) | — | — |
 | 6 | Modo História: o crítico do Michelzão e o final | v11 | a fazer |
@@ -103,13 +102,6 @@ Origem: retorno do Renan Martorelli (beta-tester) e conversa com o Arthur (15/10
 **Decisões em aberto:** os atributos e o peso de cada um; o efeito no jogo; quais enfeites e móveis entram; se a nota de ambiente do Gurugol passa a ser o luxo.
 
 **Modelo:** planejar com o Opus antes (atributos, pesos e efeito no jogo, a lista de enfeites e móveis com preços); executar com o Sonnet, esforço médio (é cálculo e interface sobre o que já existe).
-
----
-
-## Etapa 4c — Eventos de bairro (v10.6)
-**Objetivo:** um evento por semana, do dia 8 em diante (festa junina com a barraca de pratos típicos; jogo do Brasil com as três fases e o gol), avisado na véspera. Spec aprovada em 12/11: `docs/spec-v10.6.md`.
-
-**Modelo:** Sonnet, esforço médio (regras e números fechados na spec; segue o molde do `CLIMA`, com desenho novo e calibração por receita).
 
 ---
 

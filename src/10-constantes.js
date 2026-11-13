@@ -69,7 +69,11 @@ const CARDAPIO = {
   quiche:       { nome:'Quiche de alho-poró',       preco:18, cat:'assado', curso:'entradas', carne:false, cor:'#E3B25A', veg:true, fino:true },
   risoto:       { nome:'Risoto de cogumelos',       preco:46, cat:'pf',     curso:'alta',     carne:false, cor:'#E8D9A8', veg:true, fino:true },
   peixe:        { nome:'Peixe do dia',              preco:50, cat:'pf',     curso:'alta',     carne:true,  cor:'#D9A25B', fino:true },
-  medalhao:     { nome:'Medalhão ao molho madeira', preco:55, cat:'pf',     curso:'alta',     carne:true,  cor:'#8A4B2A', fino:true }
+  medalhao:     { nome:'Medalhão ao molho madeira', preco:55, cat:'pf',     curso:'alta',     carne:true,  cor:'#8A4B2A', fino:true },
+  /* v10.6, a barraca da festa junina: curso:'junina' não existe em CURSOS, então nunca são sabidos nem entram no cardápio comum; só saem nos pedidos do dia da festa com a barraca montada */
+  pamonha:      { nome:'Pamonha',                   preco:9,  cat:'junina', curso:'junina',   carne:false, cor:'#E6D27A' },
+  milho:        { nome:'Milho cozido',              preco:7,  cat:'junina', curso:'junina',   carne:false, cor:'#F2C94C' },
+  canjica:      { nome:'Canjica',                   preco:8,  cat:'junina', curso:'junina',   carne:false, cor:'#F6EBC8' }
 };
 /* os cursos do Tonhão (v8.6.9): um por lojinha. O básico ensina os pratos; o avançado ("mais requintadinha") soma CURSO_AV.preco ao
    preço de venda dos pratos dele e CURSO_AV.crit à chance de caprichado. O PF não tem básico (preco 0): o avançado aparece desde o início.
@@ -1369,7 +1373,7 @@ const BIA_IDS = ['tenis', 'corrida', 'bandeja', 'sudoku'];
 function upgradeCartao(id){ return BIA_IDS.indexOf(id) >= 0 ? 'bia' : 'melhorias'; }
 const HIST_NOMES = { bia:'Bia', tonhao:'Tonhão', dani:'Dani', joca:'Joca', cami:'Cami', anselmo:'Anselmo', lia:'Lia' };
 const CAIXA_MAX = 14;                                 // livro-caixa (v7.2): quantos dias da carreira ficam guardados
-const VERSAO = 'v10.5.3';                                // vai no resumo do Caixa
+const VERSAO = 'v10.6';                                // vai no resumo do Caixa
 const DIVULGA_DIA = 4;                                // antes disso, o movimento é o da inauguração (sem custo); v9.0.2: dia 4, e o padrão é o boca a boca
 function divulgaAberta(n, sv){ return devLivre() || n >= DIVULGA_DIA && !(sv && sv.convDiv === 'pend'); }   // no modo dev, desde o dia 1; v9.0.3: no Modo História, só depois da conversa
 /* v9.6.4: a Efood (os entregadores) só abre depois da conversa dos entregadores, no Modo História; antes dela, nenhum tipo com `retira` vem na agenda */
@@ -1469,7 +1473,7 @@ function normManut(m){
   const out = {};
   MANUT.equip.forEach(q => { const v = +m[q.id]; out[q.id] = isFinite(v) ? clamp(v, 0, 1) : 1; });
   const s = m.sorteio;
-  if (s && typeof s === 'object' && +s.d >= 1) out.sorteio = { d:Math.round(+s.d), clima:CLIMA[s.clima] ? s.clima : '',
+  if (s && typeof s === 'object' && +s.d >= 1) out.sorteio = { d:Math.round(+s.d), clima:CLIMA[s.clima] ? s.clima : '', ev:s.ev === 'junina' || s.ev === 'jogo' ? s.ev : '',
     quebra:(Array.isArray(s.quebra) ? s.quebra : []).filter(x => x && manutOf(x.id)).map(x => ({ id:x.id, f:clamp(+x.f || 0.3, 0, 1) })) };
   if (out.sorteio && s.fiscal && isFinite(+s.fiscal.f)) out.sorteio.fiscal = { f:clamp(+s.fiscal.f, FISCAL.quando[0], FISCAL.quando[1]) };   // v9.4
   return out;
@@ -1481,6 +1485,21 @@ const CLIMA = {
   feriado: { nome:'Feriado',      chance:0.10, groups:1.25, tipo:'familia',    tipoP:0.25, aviso:'Feriado: a cidade saiu de casa! Mais gente e mais famílias.' }
 };
 const CLIMA_DIA = 3;
+/* eventos de bairro (v10.6, carreira com MANUT.on): do dia `dia` em diante, uma festa junina ou um jogo do Brasil por semana de `semana` dias, num dia sorteado dela
+   (avisado na véspera). peso: a chance de cada evento por ponto. groups: o movimento do dia por ponto. junina: tipo/tipoP viram família como o feriado; a barraca
+   (preco × cardápio do ponto, de 10 em 10, na lojinha do dia da festa) põe `pratos` nos pedidos (pede: quem estava sem 2º item; troca: quem pediria salgado).
+   jogo: fases [de, até, fatia dos grupos] do turno (antes, durante e depois); tv: com a TV ligada, grupos × `groups` e +`effect` na paciência; gol: o momento (fração
+   do turno) em que todo grupo sentado ganha 1 coração, e o letreiro dura golT s */
+const EVENTOS = {
+  dia:8, semana:7,
+  peso:{ garagem:{ junina:0.6, jogo:0.4 }, industrial:{ junina:0.35, jogo:0.65 }, avenida:{ junina:0.5, jogo:0.5 }, terraco:{ junina:0.5, jogo:0.5 } },
+  junina:{ nome:'Festa junina', groups:{ garagem:1.3, industrial:1.15, avenida:1.15, terraco:1.1 }, tipo:'familia', tipoP:0.3,
+    aviso:'Festa junina no bairro! Mais famílias, e todo mundo com vontade de comida de festa.', amanha:'Amanhã tem festa junina no bairro!',
+    barraca:{ preco:40, pede:0.5, troca:0.3 }, pratos:['pamonha', 'milho', 'canjica'] },
+  jogo:{ nome:'Jogo do Brasil', groups:{ garagem:1.15, industrial:1.3, avenida:1.1, terraco:1.05 },
+    fases:[[0, 0.35, 0.45], [0.35, 0.65, 0.08], [0.65, 1, 0.47]], tv:{ groups:1.15, effect:0.1 }, gol:[0.45, 0.55], golT:2.5,
+    aviso:'Dia de jogo do Brasil! Antes do jogo, casa cheia; durante, rua vazia; depois, festa.', amanha:'Amanhã tem jogo do Brasil!' }
+};
 /* fiscal da vigilância sanitária (v9.4): só na Avenida (nivel >= 3), do `dia`-ésimo dia no ponto em diante, com `chance` por dia (sorteada com o clima, em
    manut.sorteio.fiscal, para não mudar ao rejogar). Entra num momento entre `quando` do turno, fica `visita` s olhando e confere 3 coisas: mesa suja por mais de
    `mesaSuja` s seguidos, lixeira cheia e pia com `pia` pilhas ou mais. 0 falhas: selo por `selo` dias (+`seloPts` pontos; AVAL.amb.selo no Ambiente); 1: advertência; 2 ou 3: multa */
@@ -1554,6 +1573,7 @@ const MANUAL = [
   { id:'l-banco',      aba:'lojinha', nome:'Banco', linha:'Empréstimo para crescer. As parcelas saem do caixa no fim do dia; parcela atrasada é perigo.' },
   { id:'l-mudanca',    aba:'lojinha', nome:'Mudança', linha:'Um ponto maior, com freguesia nova e aluguel.' },
   { id:'l-caixa',      aba:'lojinha', nome:'Caixa', linha:'O que entrou e o que saiu, dia a dia.' },
+  { id:'l-barraca',    aba:'lojinha', nome:'Barraca junina', linha:'Só no dia da festa: pamonha, milho e canjica no cardápio.' },
 
   { id:'p-garagem',    aba:'lugares', sempre:true, nome:'Garagem da mãe da Bia', linha:'Onde tudo começou. Sem aluguel, freguesia do bairro.' },
   { id:'p-industrial', aba:'lugares', nome:'Área industrial', linha:'Perto das fábricas: turma no apito, motoristas e encomendas de marmita.' },
@@ -1563,6 +1583,8 @@ const MANUAL = [
   { id:'i-quebra',  aba:'imprevistos', nome:'Quebra', linha:'Equipamento gasto pode quebrar no meio do dia. A plaquinha da chave chama o técnico na hora, mais caro.' },
   { id:'i-chuva',   aba:'imprevistos', nome:'Dia de chuva', linha:'Vem menos gente e mais entregadores.' },
   { id:'i-feriado', aba:'imprevistos', nome:'Feriado', linha:'A cidade sai de casa: mais gente e mais famílias.' },
+  { id:'i-junina',  aba:'imprevistos', nome:'Festa junina', linha:'O bairro faz festa: vêm mais famílias, e quem monta a barraca vende comida de festa.' },
+  { id:'i-jogo',    aba:'imprevistos', nome:'Jogo do Brasil', linha:'Antes do jogo a casa lota, durante ninguém vem, e depois vem todo mundo. Com a TV ligada, a freguesia espera com mais calma.' },
   { id:'i-gripe',   aba:'imprevistos', nome:'Tonhão gripado', linha:'A cozinha anda mais devagar no dia.' },
   { id:'i-apito',   aba:'imprevistos', nome:'Apito da fábrica', linha:'A turma chega toda junta no meio do dia.' },
   { id:'i-fiscal',  aba:'imprevistos', nome:'Vigilância sanitária', linha:'Mesa suja e pia cheia dão multa; tudo limpo dá selo.' }

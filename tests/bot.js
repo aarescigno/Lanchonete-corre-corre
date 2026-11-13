@@ -247,3 +247,23 @@ module.exports.moveis=function(g,L,semMesa,reserva,estrategia){
   g.arrumarSalao();
   return ok;
 };
+
+/* v10.6, os eventos de bairro nos testes. O harness desliga os imprevistos (MANUT.on = false) e com eles os eventos; o balance e a carreira ligam só os eventos,
+   sem clima nem quebras (com MANUT=com, o sorteio de verdade segue valendo). o.off: sem eventos; o.force ('junina' ou 'jogo'): esse evento em todos os dias jogados. */
+module.exports.eventos=function(g,L,o){
+  o=o||{};
+  const quando=fn=>{ const on=L.MANUT.on; L.MANUT.on=true; try{ return fn(); } finally{ L.MANUT.on=on; } };
+  const sortear0=g.sortear.bind(g);
+  g.sortear=function(n){
+    if(o.off||!n) return sortear0(n);
+    const ev=o.force||quando(()=>L.eventoSemana(this.save,n));
+    if(L.MANUT.on) sortear0(n); else this.save.manut.sorteio={ d:n, clima:'', ev:'', quebra:[] };
+    const so=this.save.manut.sorteio; if(so){ so.ev=ev; if(ev) so.clima=''; }
+  };
+  g.eventoDe=function(n){ if(this.mode!=='carreira'||o.off) return ''; return o.force||quando(()=>L.eventoSemana(this.save,n)); };
+};
+/* o bot monta a barraca junina quando ela aparece na lojinha e sobra R$ 300 acima da folha (BARRACA=0: não monta) */
+module.exports.barraca=function(g,L,folha){
+  if(process.env.BARRACA==='0'||!g.barracaVisivel) return false;
+  return g.save.bank-folha-g.barracaPreco()>=300 && g.buyBarraca();
+};

@@ -195,6 +195,9 @@ function normSave(s){
   out.efoodNota = s.efoodNota === 1 || dia > HIST_ENTREGA.dia ? 1 : 0;   // v9.6.4: o texto do entregador na introdução já saiu (quem passou do dia 4 já viu)
   out.vipVisto = s.vipVisto === 1 || dia > 5 ? 1 : 0;   // v9.6.4: o balão do 1º VIP da carreira
   out.selo = Math.max(0, Math.round(+s.selo) || 0);   // v9.4: o último dia do selo da vigilância (0: sem selo)
+  // v10.6: o evento da semana ({ sem, d, ev }: só valores válidos, senão sorteia de novo) e o dia em que a barraca junina foi montada
+  { const e = s.evento; if (e && typeof e === 'object' && Number.isInteger(+e.sem) && +e.sem >= 0 && Number.isInteger(+e.d) && +e.d >= EVENTOS.dia && (e.ev === 'junina' || e.ev === 'jogo')) out.evento = { sem:+e.sem, d:+e.d, ev:e.ev };
+    const b = Math.round(+s.barraca); if (b >= 1) out.barraca = b; }
   // v9.6.7: o Manual. Save sem `manual` (novo ou antigo): a semente com o que a carreira já viu, sem "novo"
   const manIds = (l, ok) => Array.isArray(l) ? l.filter((x, i) => typeof x === 'string' && MANUAL.some(f => f.id === x) && l.indexOf(x) === i && (!ok || ok.indexOf(x) >= 0)) : null;
   out.manual = Array.isArray(s.manual) ? manIds(s.manual) : manualSemente(out);
@@ -328,6 +331,9 @@ class Group {
     this.cafes = null; this.cafesDados = 0;   // v9.3: os cafés da máquina de espresso (ids de CAFES.lista) pedidos no fim da refeição, e os já entregues
     this.docesMarm = this.retira && game.mode === 'carreira' && game.up.confCaseira ? (this.lote ? this.dishes : [0]).filter(() => Math.random() < DOCES.marmita).length : 0; this.docesMarmDados = 0;
     this.extras = this.tempos ? this.people.map(p => pedePrato(type, game, true, p.veg)) : this.people.map((p, i) => !this.retira && game.mode !== 'treino' && Math.random() < (CARDAPIO[this.dishes[i]].cat === 'pf' ? T.mais : Math.max(T.mais, MAIS.salgado)) ? pedePrato(type, game, true, p.veg) : null);
+    if (!this.tempos && !this.retira && game.barracaOn){   // v10.6: a barraca junina: quem ficou sem 2º item pede um junino (pede), e quem pediria salgado troca por um (troca)
+      const B = EVENTOS.junina.barraca; this.extras = this.extras.map(k => Math.random() < (k ? B.troca : B.pede) ? pick(EVENTOS.junina.pratos) : k);
+    }
     this.bill = (this.lote ? [] : this.dishes).concat(this.extras).reduce((v, k) => v + (k ? precoPrato(k, game.ponto, game.cursos) : 0), 0) + (this.vip ? vipDish(this) : 0);
     if (this.tempos && !this.extras.some(Boolean)) this.tempo = 1;   // sem entrada que a cozinha saiba fazer (só vegetarianos sem opção): começa pelo principal
     this.hearts = 5; this.jaVouDito = false; this.bebCobrou = false;   // v9.6.13: jaVouDito = o "Já vou!" já apareceu para este grupo; v10.1: bebCobrou = o exigente já cobrou a bebida
@@ -355,7 +361,7 @@ class Group {
     if (this.state === 'queue' && g0.mode === 'carreira' && g0.up.assento) m /= 1 - assentoSlow(g0.up.assento);   // v9: espera sentado (v9.1: o sofá 25%, a cadeirinha e o banquinho 15%)
     if (this.state === 'queue' && this.sucoN) m /= 1 - MAQUINA.slow * Math.min(1, this.sucoN / this.size);
     const g = this.game, eq = g.save.equipe;
-    const amb = ambienteEffect(eq);
+    const amb = ambienteEffect(eq) + g.ambienteEv;   // v10.6: no dia de jogo, a TV ligada acalma a espera
     if (amb && this.state !== 'queue') m /= 1 - amb;
     return m;
   }

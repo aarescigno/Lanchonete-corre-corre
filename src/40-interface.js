@@ -196,6 +196,7 @@ function devAbaHistoria(body, secao, botao){
 /* v10.2.2: a aba Hoje: força o imprevisto do próximo dia que começar (DEV.forca, só na memória) */
 const DEV_HOJE = [
   ['clima', 'Clima', [['', 'Sorteio'], ['sem', 'Sem clima'], ['chuva', 'Chuva'], ['feriado', 'Feriado']]],
+  ['evento', 'Evento de bairro', [['', 'Sorteio'], ['nada', 'Nenhum'], ['junina', 'Festa junina'], ['jogo', 'Jogo do Brasil']]],   // v10.6
   ['quebra', 'Quebra', [['', 'Sorteio'], ['nada', 'Nada quebra'], ['fogao', 'Fogão'], ['geladeira', 'Geladeira'], ['cafeteira', 'Cafeteira']]],
   ['fiscal', 'Fiscal (Avenida em diante)', [['', 'Sorteio'], ['vem', 'Vem'], ['nao', 'Não vem']]],
   ['gripe', 'Tonhão gripado', [['', 'Sorteio'], ['gripado', 'Gripado'], ['bem', 'Bem']]],
@@ -353,6 +354,20 @@ const DES_BASICO = {
     });
     star(c,32,50,7,PAL.mostarda);
   },
+  'i-junina': c => {   // o fio de bandeirinhas juninas e uma espiga de milho
+    c.strokeStyle = PAL.tinta; c.lineWidth = 1.8; c.beginPath(); c.moveTo(6,12); c.quadraticCurveTo(32,30,58,12); c.stroke();
+    BAND_JUNINA.forEach((col,i) => {
+      const x = 12 + i*10, y = 12 + Math.sin((x - 6) / 52 * Math.PI) * 9;
+      c.beginPath(); c.moveTo(x-4,y); c.lineTo(x+4,y); c.lineTo(x,y+11); c.closePath(); fs(c,col,1.4);
+    });
+    c.save(); c.translate(32,46); c.scale(1.1,1.1); drawJunino(c,'milho'); c.restore();
+  },
+  'i-jogo': c => {   // a bola no campo
+    rr(c,6,38,52,18,4); fs(c,'#3E9B4F',2); c.strokeStyle = 'rgba(255,255,255,.85)'; c.lineWidth = 1.4; c.beginPath(); c.moveTo(32,38); c.lineTo(32,56); c.stroke();
+    circ(c,32,26,15); fs(c,'#fff',2.2);
+    c.fillStyle = PAL.tinta; c.beginPath(); for (let i=0;i<5;i++){ const a = -Math.PI/2 + i*Math.PI*2/5; i ? c.lineTo(32 + Math.cos(a)*6,26 + Math.sin(a)*6) : c.moveTo(32 + Math.cos(a)*6,26 + Math.sin(a)*6); } c.closePath(); c.fill();
+    c.strokeStyle = PAL.tinta; c.lineWidth = 1.2; for (let i=0;i<5;i++){ const a = -Math.PI/2 + i*Math.PI*2/5; c.beginPath(); c.moveTo(32 + Math.cos(a)*6,26 + Math.sin(a)*6); c.lineTo(32 + Math.cos(a)*14.4,26 + Math.sin(a)*14.4); c.stroke(); }
+  },
   'i-gripe': c => {   // termômetro
     rr(c,28,8,8,34,4); fs(c,'#fff',2); circ(c,32,48,9); fs(c,PAL.perigo,2);
     c.fillStyle = PAL.perigo; c.fillRect(30.5,20,3,26);
@@ -372,7 +387,7 @@ const DES_BASICO = {
 };
 /* o ícone da lojinha de cada ficha `l-` (o da Água da torneira e do assento segue o ponto) */
 const MANUAL_ICO = { 'l-tenis':'tenis', 'l-corrida':'corrida', 'l-cafeteira':'cafeteira', 'l-bandeja':'bandeja', 'l-sudoku':'sudoku', 'l-ventilador':'ventilador', 'l-triturador':'triturador', 'l-pratos':'pratos', 'l-louca':'louca',
-  'l-tvsom':'ambiente', 'l-tvs':'tvs', 'l-couvert':'couvert', 'l-musica':'musica', 'l-fogao':'fogao-ind', 'l-cardapio':'cardapio', 'l-salao':'g-salao', 'l-decor':'d-samambaia', 'l-manut':'m-fogao', 'l-divulga':'div-redes', 'l-banco':'banco', 'l-mudanca':'mudanca', 'l-caixa':'contas',
+  'l-tvsom':'ambiente', 'l-tvs':'tvs', 'l-couvert':'couvert', 'l-musica':'musica', 'l-fogao':'fogao-ind', 'l-cardapio':'cardapio', 'l-barraca':'barraca', 'l-salao':'g-salao', 'l-decor':'d-samambaia', 'l-manut':'m-fogao', 'l-divulga':'div-redes', 'l-banco':'banco', 'l-mudanca':'mudanca', 'l-caixa':'contas',
   'p-industrial':'mudanca', 'p-avenida':'mudanca-av', 'p-terraco':'mudanca-te' };
 function manualIcone(f){
   const nv = game.ponto.nivel;

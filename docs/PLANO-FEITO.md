@@ -36,6 +36,13 @@ Etapas concluídas (1a a 3a), movidas de `docs/PLANO.md` em 30/10/2026 e 31/10/2
 
 ---
 
+## Etapa 4c — Eventos de bairro (v10.6)
+**Objetivo:** um evento por semana, do dia 8 em diante (festa junina com a barraca de pratos típicos; jogo do Brasil com as três fases e o gol), avisado na véspera. Spec aprovada em 12/11: `docs/spec-v10.6.md`.
+
+**Modelo:** Sonnet, esforço médio (regras e números fechados na spec; segue o molde do `CLIMA`, com desenho novo e calibração por receita).
+
+---
+
 ## Situação das etapas feitas
 
 | # | Etapa | Versão | Situação |

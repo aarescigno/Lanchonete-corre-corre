@@ -74,6 +74,7 @@ function buildEnd(){
   // imprevistos (v8): o que quebrou (e se foi consertado na hora) e o clima do dia
   if (r.quebras && r.quebras.length) rows.push(['Quebrou', r.quebras.map(q => manutOf(q.id).name.toLowerCase() + (q.fixed ? ' (consertado)' : '')).join(', ')]);
   if (r.clima) rows.push(['Imprevisto', CLIMA[r.clima].nome]);
+  else if (r.evento) rows.push(['Imprevisto', EVENTOS[r.evento].nome]);   // v10.6: o evento de bairro do dia
   if (r.vig){   // v9.4: a visita da vigilância sanitária
     const fl = [r.vig.falhas.suja ? 'mesa suja' : '', r.vig.falhas.lixo ? 'lixeira cheia' : '', r.vig.falhas.pia ? 'pia lotada' : ''].filter(x => x);
     rows.push(['Vigilância', r.vig.res === 'aprovado' ? 'Aprovado! Selo por ' + FISCAL.selo + ' dias (+' + FISCAL.seloPts + ' pontos)' : (r.vig.res === 'advertencia' ? 'Advertência' : 'Multa') + ': ' + fl.join(' e ')]);
@@ -81,6 +82,7 @@ function buildEnd(){
   // marmitas (v8.6): as entregues (e a parte da Efood), as que esfriaram e as que sobraram no fim do dia
   if (r.marmitas || r.esfriou || r.jogadas || r.sobra) rows.splice(2, 0, ['Marmitas', r.marmitas + ' entregue' + (r.marmitas === 1 ? '' : 's') + (r.efood ? ' (Efood −' + fmt(r.efood) + ')' : '') + (r.jogadas ? ' · ' + r.jogadas + ' jogada' + (r.jogadas > 1 ? 's' : '') + ' fora' : '') + (r.esfriou ? ' · ' + r.esfriou + ' esfri' + (r.esfriou > 1 ? 'aram' : 'ou') : '') + (r.sobra ? ' · ' + r.sobra + ' sobr' + (r.sobra > 1 ? 'aram' : 'ou') : '')]);
   if (r.vip || r.vipLost) rows.splice(2, 0, ['VIPs', r.vip + ' atendido' + (r.vip === 1 ? '' : 's') + (r.vipLost ? ' · ' + r.vipLost + ' bravo' + (r.vipLost > 1 ? 's' : '') : '')]);
+  if (r.amanha) rows.push(['Amanhã', EVENTOS[r.amanha].nome]);   // v10.6: a véspera do evento de bairro, a última linha da tabela
   // Gurugol (v8.4): a caixa animada à esquerda dos quadros (v8.4.1); embaixo, 2 ou 3 comentários (os critérios do dia no title)
   const av = $('end-aval'); clearEl(av); av.title = ''; clearEl($('end-baloes'));
   const a = r.aval;
