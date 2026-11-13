@@ -1671,7 +1671,8 @@ function normGuia(g){   // save.guia: { n:0 a 2, prox:≥ 0, v:[{ d, it:[5 intei
    (visita × a soma de três fichas; nota geral: [piso, pontos]; luxo e estrelas do dia por nível; salão e Bráulio: tudo ou nada); `cortes`: os pontos de cada estrela */
 const NOITE = { groups:1.3, meta:1.2, critico:[0.35, 0.45], braulio:[0.5, 0.6], brauPat:0.7, brauFeliz:4, espera:3, volta:0.12,
   pts:{ visita:1.5, nota:[[4.8, 15], [4.6, 10], [4.4, 5]], luxo:[0, 0, 0, 5, 10, 15], dia:[0, 5, 10, 15], salao:5, braulio:5 },
-  cortes:[50, 72, 90], linhas:['Crítico', 'Gurugol', 'Luxo', 'A noite', 'Salão', 'Bráulio'],
+  cortes:[44, 66, 90],   // v10.10: calibrado em 13/11 (a spec dizia 50, 72 e 90; ver os Desvios da spec)
+  linhas:['Crítico', 'Gurugol', 'Luxo', 'A noite', 'Salão', 'Bráulio'],
   aviso:'Noite da estrela: casa cheia, o crítico à mesa e o Bráulio de olho.',
   selo:['Recomendado pelo Michelzão', '★ no Michelzão', '★★ no Michelzão', '★★★ no Michelzão'],
   falas:{ senta:'Vim provar a cópia.', prova:'Esse molho...', feliz:'...', bravo:'Sabia! Amadores.' } };

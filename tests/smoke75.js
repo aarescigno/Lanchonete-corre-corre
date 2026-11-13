@@ -24,7 +24,7 @@ const fecha=(H,o)=>{ o=o||{}; const {g}=H; comeca(H); g.schedule=[]; g.nextIdx=0
 // ---------- 0. as constantes ----------
 { const L=load({ historia:true }).L, N=L.NOITE;
   ok(N.groups===1.3 && N.meta===1.2 && N.critico.join()==='0.35,0.45' && N.braulio.join()==='0.5,0.6' && N.brauPat===0.7 && N.brauFeliz===4 && N.espera===3 && N.volta===0.12,'NOITE: grupos ×1,3, metas ×1,2, crítico 35–45%, Bráulio 50–60%, paciência ×0,7, feliz com 4, espera 3, volta 12%');
-  ok(JSON.stringify(N.pts)===JSON.stringify({ visita:1.5, nota:[[4.8,15],[4.6,10],[4.4,5]], luxo:[0,0,0,5,10,15], dia:[0,5,10,15], salao:5, braulio:5 }) && N.cortes.join()==='50,72,90' && N.linhas.join()==='Crítico,Gurugol,Luxo,A noite,Salão,Bráulio','NOITE: os pontos, os cortes e as seis linhas');
+  ok(JSON.stringify(N.pts)===JSON.stringify({ visita:1.5, nota:[[4.8,15],[4.6,10],[4.4,5]], luxo:[0,0,0,5,10,15], dia:[0,5,10,15], salao:5, braulio:5 }) && N.cortes.join()==='44,66,90' && N.linhas.join()==='Crítico,Gurugol,Luxo,A noite,Salão,Bráulio','NOITE: os pontos, os cortes e as seis linhas');
   ok(N.aviso==='Noite da estrela: casa cheia, o crítico à mesa e o Bráulio de olho.' && N.selo.join('|')==='Recomendado pelo Michelzão|★ no Michelzão|★★ no Michelzão|★★★ no Michelzão' && N.falas.senta==='Vim provar a cópia.' && N.falas.prova==='Esse molho...' && N.falas.feliz==='...' && N.falas.bravo==='Sabia! Amadores.','NOITE: o aviso, o selo e as falas');
   ok(L.HIST_RECOMENDA.falas.length===3 && L.HIST_RECOMENDA.falas[0].s==='O guia ligou. Somos "recomendados".' && L.HIST_RECOMENDA.falas[2].s==='Não é. Mas ele volta. Arruma a casa e marca outra noite.','HIST_RECOMENDA: as três falas da spec'); }
 
@@ -102,7 +102,7 @@ const fecha=(H,o)=>{ o=o||{}; const {g}=H; comeca(H); g.schedule=[]; g.nextIdx=0
   const lx=n=>P(Object.assign({},base,{ luxo:n })).linhas[2]; ok([0,1,2,3,4,5].map(lx).join()==='0,0,0,5,10,15','Luxo: nível 3 → 5, 4 → 10, 5 → 15');
   const dd=n=>P(Object.assign({},base,{ dia:n })).linhas[3]; ok([0,1,2,3].map(dd).join()==='0,5,10,15','A noite: 1 estrela → 5, 2 → 10, 3 → 15');
   ok(P(Object.assign({},base,{ salao:false })).linhas[4]===0 && P(Object.assign({},base,{ braulio:false })).linhas[5]===0 && P(Object.assign({},base,{ salao:false, braulio:false })).tot===90,'Salão e Bráulio: 5 cada, tudo ou nada');
-  ok(L.guiaEstrelas(0)===0 && L.guiaEstrelas(49.5)===0 && L.guiaEstrelas(50)===1 && L.guiaEstrelas(71.5)===1 && L.guiaEstrelas(72)===2 && L.guiaEstrelas(89.5)===2 && L.guiaEstrelas(90)===3 && L.guiaEstrelas(100)===3,'os cortes: 49 → nenhuma; 50 → 1; 72 → 2; 90 → 3'); }
+  ok(L.guiaEstrelas(0)===0 && L.guiaEstrelas(43.5)===0 && L.guiaEstrelas(44)===1 && L.guiaEstrelas(65.5)===1 && L.guiaEstrelas(66)===2 && L.guiaEstrelas(89.5)===2 && L.guiaEstrelas(90)===3 && L.guiaEstrelas(100)===3,'os cortes: 43,5 → nenhuma; 44 → 1; 66 → 2; 90 → 3'); }
 
 // ---------- 6. do fim da noite às estrelas (CA6) ----------
 { // 2 estrelas: três fichas de 10 (45) + noite 3 estrelas (15) + salão (5) + Bráulio (5) + Gurugol 4,4 (5) = 75

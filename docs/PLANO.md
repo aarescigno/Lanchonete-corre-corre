@@ -15,11 +15,10 @@ Origem: retorno do Renan Martorelli (beta-tester) e conversa com o Arthur (15/10
 ## Situação
 | # | Etapa | Versão | Situação |
 |---|---|---|---|
-| 4b | Nível de luxo | v10.7 | feita em 13/11 (`docs/spec-v10.7.md`; `smoke72`; Ambiente do Gurugol pelo luxo, ver Desvios) |
 | 5 | ~~Modo História, parte 1~~: juntou-se à 2f e aos capítulos da 3a, 3b e 4a (28/10) | — | — |
 | 6a | O molho da Rosa: a pétala na mão e a Cami gerente (cap. 12) | v10.8 | feita em 13/11 (`docs/spec-v10.8.md`; `smoke73`; o prato no balcão ainda não leva a pétala, ver Desvios) |
 | 6b | O crítico sem aviso: o caderninho e o boato do Bráulio (cap. 13) | v10.9 | feita em 13/11 (`docs/spec-v10.9.md`; `smoke74`; ficha média 6,3 e 5,6 com `CRITICO.pac` 2, ver Desvios) |
-| 6c | A noite da estrela: o jantar, o Bráulio à mesa e as estrelas (cap. 14) | v10.10 | a fazer (`docs/spec-v10.10.md`, aprovada) |
+| 6c | A noite da estrela: o jantar, o Bráulio à mesa e as estrelas (cap. 14) | v10.10 | feita em 13/11 (`docs/spec-v10.10.md`; `smoke75`; cortes 44/66/90 e CA14 e CA15 em parte, ver Desvios) |
 | 6d | O futuro da Corre-Corre: a cena final, os créditos e a placa | v11 | a fazer (`docs/spec-v11.md`, aprovada) |
 | 7 | Polimento: celular, jogo online, ajuste geral | v11.1 | a rever |
 
@@ -94,11 +93,6 @@ Origem: retorno do Renan Martorelli (beta-tester) e conversa com o Arthur (15/10
 - **O Bráulio é rival até o fim:** planta um comentário no Gurugol, espalha um boato para lotar a casa no dia do crítico, senta à mesa na noite da estrela para achar defeito e, no final, perde a estrela da Casa Aurora por nunca ter sabido repetir o molho.
 - **O futuro:** o Terraço segue com a estrela, e a garagem da Rosa reabre como a Cozinha da Rosa, escola de cozinha do bairro, com a Dani dando aula. A última cena espelha a primeira da abertura.
 - **Depois do final** a campanha continua, com a placa na parede, visitas surpresa do crítico e noites novas.
-
-### 6c — A noite da estrela (v10.10)
-Capítulo 14: a noite que o jogador marca na lojinha, com casa cheia, o crítico de cara limpa e o Bráulio à mesa; os pontos do guia (visitas, Gurugol, luxo, a noite, salão e Bráulio), as estrelas, o boletim, o selo no menu e a Fama do luxo. Spec: `docs/spec-v10.10.md`.
-
-**Modelo:** Sonnet, esforço alto (dia especial, pontuação, painel novo, desenho da noite e bot).
 
 ### 6d — O futuro da Corre-Corre (v11)
 A cena final animada (oito cenas, no motor da abertura), os créditos, a placa na parede do Terraço, "O final" no botão História e a v10 guardada em `versoes/v10.html`. Spec: `docs/spec-v11.md`.
