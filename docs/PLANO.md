@@ -19,7 +19,10 @@ Origem: retorno do Renan Martorelli (beta-tester) e conversa com o Arthur (15/10
 | 4c | Eventos de bairro: festa junina e jogo do Brasil (adiantada em 12/11, para dar novidade aos dias parados da Garagem) | v10.6 | feita em 13/11 (`docs/spec-v10.6.md`; `smoke71`; fases e gol na janela de chegadas, ver Desvios) |
 | 4b | Nível de luxo | v10.7 | feita em 13/11 (`docs/spec-v10.7.md`; `smoke72`; Ambiente do Gurugol pelo luxo, ver Desvios) |
 | 5 | ~~Modo História, parte 1~~: juntou-se à 2f e aos capítulos da 3a, 3b e 4a (28/10) | — | — |
-| 6 | Modo História: o crítico do Michelzão e o final | v11 | a fazer |
+| 6a | O molho da Rosa: a pétala na mão e a Cami gerente (cap. 12) | v10.8 | a fazer (`docs/spec-v10.8.md`, aprovada) |
+| 6b | O crítico sem aviso: o caderninho e o boato do Bráulio (cap. 13) | v10.9 | a fazer (`docs/spec-v10.9.md`, aprovada) |
+| 6c | A noite da estrela: o jantar, o Bráulio à mesa e as estrelas (cap. 14) | v10.10 | a fazer (`docs/spec-v10.10.md`, aprovada) |
+| 6d | O futuro da Corre-Corre: a cena final, os créditos e a placa | v11 | a fazer (`docs/spec-v11.md`, aprovada) |
 | 7 | Polimento: celular, jogo online, ajuste geral | v11.1 | a rever |
 
 ---
@@ -83,31 +86,36 @@ Origem: retorno do Renan Martorelli (beta-tester) e conversa com o Arthur (15/10
 > - **Regra da 3f em todas as sessões:** cartão novo da lojinha só com nome, preço e "?"; toda novidade ganha ficha no `MANUAL` (sem números), revelada quando aparece na história.
 > Ordem: 4a-1 (o ponto e a refeição completa, v10) → 4a-2 (o VIP exigente e a reputação, v10.1) → 4a-3 (a cozinha: alta gastronomia, a Lia e a alta confeitaria, v10.2) → 4a-4 (o salão e o bar: Cami, Joca e Anselmo, v10.3) → 4a-5 (música, flores e rebalanceamento, v10.4). Cada uma é uma versão, com PR e merge. As "Checagens de fim de sessão" da etapa 3 valem para todas.
 
-## Etapa 6 — Modo História: o crítico do Michelzão e o final (v11)
-> Revista em 28/10: desde que a campanha virou o Modo História (etapa 2f), esta etapa fica só com o crítico e o final. O guia se chama **Michelzão** (escolha do usuário em 22/10).
+## Etapa 6 — Modo História: o crítico do Michelzão e o final (v10.8 a v11)
+> Planejada em 13/11 (decisões do usuário no `docs/PROPOSTAS.md`): quatro sessões, uma versão cada, todas com spec aprovada. O guia é o **Michelzão**, inventado: nada de nome, logo, mascote ou arte de guia real.
 
-**Objetivo:** a estrela do Michelzão, o fim do sonho da Bia.
+**Objetivo:** a estrela do Michelzão, o fim do sonho da Bia. Três capítulos novos no Terraço (12 a 14) e a cena final.
 
-**Entra:**
-- **O crítico do guia:** um guia gastronômico **inventado**, o **Michelzão**. Não usar o nome "Michelin", nem logo, mascote ou arte do guia real.
-  - No capítulo final, um cliente disfarçado aparece em dia sorteado.
-  - Atendê-lo com 5 corações, prato caprichado e mesa limpa conta para a avaliação.
-- **A receita da Casa Aurora** volta: o molho com o cominho com açafrão do Tonhão e a pétala de rosa da Dona Rosa, que o Bráulio nunca conseguiu repetir (sugestão: o prato do crítico, que a Bia faz no final).
-- **Final:** a avaliação junta reputação (Gurugol), lucro, nível de luxo e o atendimento do crítico, e dá de 0 a 3 estrelas, com cena final (falas) e créditos curtos. Rejogar o final para tentar mais estrelas.
-- Selo do resultado no menu (ex.: "★★ no Michelzão").
-- **A Cami vira gerente de salão** no capítulo final (entrevista de 31/10): sobe de cargo e organiza a fila e as mesas sozinha; decidir o efeito no planejamento.
-- O que acontece depois do final: a campanha continua (sugestão) ou acaba.
+**O arco (vale para as quatro):**
+- **Estrelas:** de nenhuma ("Recomendado") a 3. Com 1 a promessa à Rosa se cumpre e a cena final toca inteira; a 2ª e a 3ª são o desafio duro, cada uma acrescenta um trecho à cena, e dá para marcar outra noite para tentar mais. Estrela ganha não se perde.
+- **O Bráulio é rival até o fim:** planta um comentário no Gurugol, espalha um boato para lotar a casa no dia do crítico, senta à mesa na noite da estrela para achar defeito e, no final, perde a estrela da Casa Aurora por nunca ter sabido repetir o molho.
+- **O futuro:** o Terraço segue com a estrela, e a garagem da Rosa reabre como a Cozinha da Rosa, escola de cozinha do bairro, com a Dani dando aula. A última cena espelha a primeira da abertura.
+- **Depois do final** a campanha continua, com a placa na parede, visitas surpresa do crítico e noites novas.
 
-**Partes:** `10-constantes.js` (`HISTORIA`), `12-clientes.js` (crítico disfarçado, sem sinal óbvio, talvez um caderninho), `16-jogo.js`, `22-salao-hud.js`, `25-abertura.js` (cena final, se reaproveitar o desenho das cenas), `42-resultados.js`.
+### 6a — O molho da Rosa (v10.8)
+Capítulo 12: o Tonhão conta o segredo da Casa Aurora. A Bia aprende o molho e pega pétalas no vaso para servir o Prato da Rosa (o prato da casa com a pétala). A Cami vira gerente de salão e leva à mesa quem espera na porta. Spec: `docs/spec-v10.8.md`.
 
-**Testes:** smoke novo (aparição do crítico, avaliação, finais). O bot termina a história.
+**Modelo:** Sonnet, esforço alto (muitas partes ao mesmo tempo, com calibração por receita).
 
-**Decisões em aberto:**
-- O crítico pode ser reconhecido (pista sutil) ou é surpresa total?
-- Quantas estrelas possíveis (sugestão: 3).
-- O Bráulio aparece no final?
+### 6b — O crítico sem aviso (v10.9)
+Capítulo 13: duas visitas do crítico disfarçado, com a pista do caderninho, a ficha da visita no fim do dia (cinco itens) e o boato do Bráulio, que lota a casa na 2ª visita. Spec: `docs/spec-v10.9.md`.
 
-**Modelo:** planejar com o Opus (decisões em aberto, regra de pontuação do final e as falas da cena final, que pedem cuidado de texto); executar com o Sonnet, esforço alto.
+**Modelo:** Sonnet, esforço alto (o disfarce atravessa o grupo, o desenho e o Gurugol).
+
+### 6c — A noite da estrela (v10.10)
+Capítulo 14: a noite que o jogador marca na lojinha, com casa cheia, o crítico de cara limpa e o Bráulio à mesa; os pontos do guia (visitas, Gurugol, luxo, a noite, salão e Bráulio), as estrelas, o boletim, o selo no menu e a Fama do luxo. Spec: `docs/spec-v10.10.md`.
+
+**Modelo:** Sonnet, esforço alto (dia especial, pontuação, painel novo, desenho da noite e bot).
+
+### 6d — O futuro da Corre-Corre (v11)
+A cena final animada (oito cenas, no motor da abertura), os créditos, a placa na parede do Terraço, "O final" no botão História e a v10 guardada em `versoes/v10.html`. Spec: `docs/spec-v11.md`.
+
+**Modelo:** Sonnet, esforço alto (o peso é o desenho das cenas no canvas, conferidas por captura).
 
 ---
 
