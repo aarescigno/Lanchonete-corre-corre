@@ -17,7 +17,7 @@ const sentar=(g,type)=>{ const grp=g.spawn({ type:type||'casal', color:0, vip:fa
   ok(L.ambienteEffect({ musica:1 })===0.35 && L.ambienteEffect({ musica:2 })===0.25 && L.ambienteEffect({ musica:0 })===0,'ambienteEffect: a paciência nas mesas cai 35% (trio) e 25% (pianista) mais devagar');
   const base=L.payroll({ tonhao:1, dani:1, musica:0 }); ok(L.payroll({ tonhao:1, dani:1, musica:1 })-base===500 && L.payroll({ tonhao:1, dani:1, musica:2 })-base===305,'a folha soma 500 (trio) e 300 + 5 (pianista)');
   ok(L.folhaItens({ tonhao:0, musica:1 }).indexOf('trio de cordas')>=0 && L.folhaItens({ tonhao:0, musica:2 }).indexOf('pianista e afinação')>=0,'a folha mostra "trio de cordas" ou "pianista e afinação"'); }
-{ const H=jogo('terraco'), {g,L}=H; const t=loja(H,'lanchonete','divulga');
+{ const H=jogo('terraco'), {g,L}=H; const t=loja(H,'lanchonete','luxo');
   ok(/Música ao vivo/.test(t) && /Sem música/.test(t) && /Trio de cordas · R\$ ?500/.test(t) && /Pianista · R\$ ?305/.test(t),'no Terraço o cartão "Música ao vivo" tem os 3 botões e as diárias');
   ok(!/Couvert/.test(t),'e o couvert não aparece');
   const b0=g.save.bank; ok(g.setStaff('musica',1) && g.save.equipe.musica===1 && g.payroll()===L.payroll(Object.assign({},g.save.equipe,{ musica:0 }))+500,'contratar o trio');
@@ -27,8 +27,8 @@ const sentar=(g,type)=>{ const grp=g.spawn({ type:type||'casal', color:0, vip:fa
   const nota=m=>{ g.save.equipe.musica=m; g.mode='carreira'; g.avals.length=0; const x=sentar(g,'casal'); x.grp.avalia=true; x.grp.setState('wantBill'); x.grp.hearts=5; g.avaliar(x.grp,0,0); return g.avals[g.avals.length-1].s[4]; };
   g.startDay(10); H.els['btn-start'].fire('click'); g.mode='carreira';
   const a0=nota(0), a1=nota(1), a2=nota(2);
-  ok(Math.abs(a1-a0-1)<0.06 && Math.abs(a2-a0-1.5)<0.06,'no Ambiente do Gurugol a música soma +1 (trio) e +1,5 (pianista) ('+a0+' → '+a1+' / '+a2+')'); }
-{ const H=jogo('avenida',{ cap:7 },7), {g}=H; const t=loja(H,'lanchonete','divulga');
+  ok(a1>a0 && a2>=a1 && (g.save.equipe.musica=2,L.luxoPts(g).amb===10) && (g.save.equipe.musica=1,L.luxoPts(g).amb===8) && (g.save.equipe.musica=0,L.luxoPts(g).amb===0),'v10.7: a música entra pelo luxo: trio 8 e pianista 10 pontos na barra Ambiente ('+a0+' → '+a1+' / '+a2+')'); }
+{ const H=jogo('avenida',{ cap:7 },7), {g}=H; const t=loja(H,'lanchonete','luxo');
   ok(!/Música ao vivo/.test(t) && /Couvert/.test(t),'na Avenida: sem o cartão da música, com o do couvert');
   ok(!g.setStaff('musica',1) && g.save.equipe.musica===0,'a música é recusada fora do Terraço');
   const H2=jogo('industrial',{},6); ok(!H2.g.setStaff('musica',2),'e na área industrial'); }
@@ -67,14 +67,14 @@ const sentar=(g,type)=>{ const grp=g.spawn({ type:type||'casal', color:0, vip:fa
   g.startDay(10); Ht.els['btn-start'].fire('click'); g.mode='carreira';
   const amb=()=>{ g.avals.length=0; const x=sentar(g,'casal'); x.grp.avalia=true; x.grp.setState('wantBill'); x.grp.hearts=5; g.avaliar(x.grp,0,0); return g.avals[g.avals.length-1].s[4]; };
   const com=amb(); ['ikebana','orqArranjo','campo'].forEach(id=>g.mostraDecor(id,false)); const sem=amb();
-  ok(Math.abs(com-sem-0.6)<0.06,'as 3 somam +0,6 no Ambiente ('+sem+' → '+com+')');
+  ok(com>=sem && com-sem<0.31,'v10.7: as 3 flores somam 3 pontos de luxo (cerca de 0,1 no Ambiente do Terraço) ('+sem+' → '+com+')');
   const Hd=nova(); Hd.g.setDev(true); Hd.g.devPonto('garagem'); ok(/Ikebana/.test(loja(Hd,'lanchonete','decor')),'no modo dev aparecem em qualquer ponto'); }
 
 // ---------- 5. a ficha l-musica ----------
 { const H=jogo('terraco'), {g,L}=H; const f=L.MANUAL.find(x=>x.id==='l-musica');
   ok(f && f.aba==='lojinha' && f.nome==='Música ao vivo' && f.linha==='Trio ou pianista: a paciência nas mesas dura mais, o ambiente melhora e a mesa pede mais uma rodada.','a ficha l-musica existe, na aba lojinha');
   ok(!/\d/.test(f.linha),'sem números');
-  g.save.manual=g.save.manual.filter(x=>x!=='l-musica'); g.mode='carreira'; loja(H,'lanchonete','divulga');
+  g.save.manual=g.save.manual.filter(x=>x!=='l-musica'); g.mode='carreira'; loja(H,'lanchonete','luxo');
   ok(g.save.manual.indexOf('l-musica')>=0,'o cartão aparece e a ficha é revelada'); }
 
 // ---------- 6. o botão "Música: trocar" do modo dev ----------

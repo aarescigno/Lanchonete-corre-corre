@@ -14,7 +14,7 @@ const aval=(s)=>({ r:s.slice(), s, txt:'x', k:'estudante' });
 
 // ---------- 1. regras e dados ----------
 { const {L}=load();
-  ok(L.LIBERA.filter(l=>!l.nivel).map(l=>l.id).join()==='bia,melhorias,manut,salao,decor','cinco cartões em LIBERA, na ordem');
+  ok(L.LIBERA.filter(l=>!l.nivel).map(l=>l.id).join()==='bia,melhorias,manut,salao,luxo','cinco cartões em LIBERA, na ordem');
   ok(L.LIBERA.filter(l=>!l.nivel).every(l=>l.dia<=l.ate && l.reclama.length>=2 && l.falas.length>=3 && l.falas.every(f=>['bia','tonhao'].includes(f.q))),'cada um tem dia mínimo, garantia, reclamações e conversa (Bia e Tonhão)');
   ok(L.upgradeCartao('tenis')==='bia' && L.upgradeCartao('ventilador')==='melhorias','upgradeCartao separa Bia de Melhorias');
   ok(Object.entries(L.normSave({dia:9}).libera).filter(([k])=>!L.liberaOf(k).nivel).every(([k,v])=>v===2),'save antigo (dia 9, sem libera): tudo aberto e visto');
@@ -26,7 +26,7 @@ const aval=(s)=>({ r:s.slice(), s, txt:'x', k:'estudante' });
 { const H=nova(), {g,els,L}=H; g.save.conversa=null; g.save.bank=5000;
   g.startDay(1); joga(H,400); fecha(H);
   const sc=secoes(H);
-  ok(sc[0].includes('cardapio') && !sc[0].includes('melhorias') && !sc[0].includes('salao') && !sc[0].includes('decor') && !sc[0].includes('manut'),'Lanchonete: só o Cardápio (e a Divulgação)');
+  ok(sc[0].includes('cardapio') && !sc[0].includes('melhorias') && !sc[0].includes('salao') && !sc[0].includes('luxo') && !sc[0].includes('manut'),'Lanchonete: só o Cardápio (e a Divulgação)');
   ok(sc[1].includes('tonhao') && !sc[1].includes('bia'),'Equipe: Tonhão, sem a Bia');
   ok(sc[2].includes('banco') && sc[2].includes('caixa'),'Dinheiro: Banco e Caixa');
   ok(!g.buy('tenis') && !g.buy('ventilador') && !g.buyMesa(2) && !g.buyDecor('samambaia'),'buy, buyMesa e buyDecor recusam'); }
@@ -55,7 +55,7 @@ const aval=(s)=>({ r:s.slice(), s, txt:'x', k:'estudante' });
   g.startDay(4); joga(H,400,g=>{ g.stats.lostBy.semMesa=1; });
   ok(g.save.libera.salao==='pend','desistiu da fila sem mesa: Salão pendente');
   fecha(H); g.startDay(5); g.save.decor.espada=1; joga(H,400,g=>{ g.avals=[aval([5,5,5,5,3])]; });
-  ok(g.save.libera.decor==='pend','um elogio à planta (ambiente 3) com a espada à mostra: Decoração pendente (v9.6.10)'); }
+  ok(g.save.libera.luxo==='pend','um elogio à planta (ambiente 3) com a espada à mostra: Decoração pendente (v9.6.10)'); }
 
 // ---------- 4. o fluxo: conversa, abre, selo ----------
 { const H=nova(), {g,els,L}=H; g.save.conversa=null; g.save.bank=5000; g.save.convCard=1; g.save.convDiv=1; g.save.convEnt=1;
@@ -85,10 +85,10 @@ const aval=(s)=>({ r:s.slice(), s, txt:'x', k:'estudante' });
 
 // ---------- 6. tudo aberto ----------
 { const {g}=load(); ok(g.buy('tenis') || true,'sem a História (padrão) nada é recusado por cartão fechado');
-  ok(['bia','melhorias','manut','salao','decor'].every(id=>g.cartaoAberto(id)),'sem a História: todos abertos'); }
+  ok(['bia','melhorias','manut','salao','luxo'].every(id=>g.cartaoAberto(id)),'sem a História: todos abertos'); }
 { const H=nova(), {g}=H; g.save.cap=4;
-  ok(['bia','melhorias','manut','salao','decor'].every(id=>g.cartaoAberto(id)),'cap. 4 em diante: todos abertos'); }
+  ok(['bia','melhorias','manut','salao','luxo'].every(id=>g.cartaoAberto(id)),'cap. 4 em diante: todos abertos'); }
 { const H=nova(), {g}=H; H.L.DEV.on=true;
-  ok(['bia','melhorias','manut','salao','decor'].every(id=>g.cartaoAberto(id)),'modo dev: todos abertos'); H.L.DEV.on=false; }
+  ok(['bia','melhorias','manut','salao','luxo'].every(id=>g.cartaoAberto(id)),'modo dev: todos abertos'); H.L.DEV.on=false; }
 
 console.log('smoke41: total =',total,' fails =',fails); process.exit(fails?1:0);

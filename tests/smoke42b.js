@@ -53,9 +53,9 @@ const J=(cap,ponto,sv)=>{ const H=nova(); entrada(H.L); const {g,L}=H;
 
 // ---------- 4. as 5 antigas e o save antigo ----------
 { const H=J(5,'industrial',{pontoDia:5}), {g}=H;
-  ok(['bia','melhorias','manut','salao','decor'].every(id=>g.cartaoAberto(id)),'as 5 entradas de sempre seguem abertas do cap. 4 em diante, no ponto novo'); }
+  ok(['bia','melhorias','manut','salao','luxo'].every(id=>g.cartaoAberto(id)),'as 5 entradas de sempre seguem abertas do cap. 4 em diante, no ponto novo'); }
 { const H=nova(); entrada(H.L); const s=H.L.normSave({dia:9,salao:{ponto:'industrial'}});
-  ok(s.libera.teste===0 && ['bia','melhorias','manut','salao','decor'].every(id=>s.libera[id]===2),'save antigo sem a chave: as 5 antigas 2, a de nível 0'); }
+  ok(s.libera.teste===0 && ['bia','melhorias','manut','salao','luxo'].every(id=>s.libera[id]===2),'save antigo sem a chave: as 5 antigas 2, a de nível 0'); }
 { const H=nova(); entrada(H.L); const s=H.L.normSave({dia:9,libera:{bia:1}});
   ok(s.libera.teste===0 && s.libera.bia===1,'save com libera parcial: a de nível que falta é 0'); }
 

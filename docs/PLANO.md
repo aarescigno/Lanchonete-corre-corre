@@ -15,10 +15,9 @@ Origem: retorno do Renan Martorelli (beta-tester) e conversa com o Arthur (15/10
 ## Situação
 | # | Etapa | Versão | Situação |
 |---|---|---|---|
-| R2 | O ritmo da história: conversas no cap. 3 e um capítulo novo na Avenida e outro no Terraço | v10.5.2 | feita em 12/11 (`docs/spec-v10.5.2.md`; `smoke69`; 11 capítulos; o cap. 7 leva 3 a 4 dias e o cap. 10, 3; a história acaba no dia 49) |
 | V | A vontade da freguesia: doce e espresso puxam a Dani e o Joca (garantia do Joca e da Cami) | v10.5.3 | feita em 12/11 (`docs/spec-v10.5.3.md`; `smoke70`; `VONTADE.menos` 0,3 em vez de 0,5, ver Desvios) |
 | 4c | Eventos de bairro: festa junina e jogo do Brasil (adiantada em 12/11, para dar novidade aos dias parados da Garagem) | v10.6 | feita em 13/11 (`docs/spec-v10.6.md`; `smoke71`; fases e gol na janela de chegadas, ver Desvios) |
-| 4b | Nível de luxo | v10.7 | planejada em 13/11 (`docs/spec-v10.7.md`, aprovada) |
+| 4b | Nível de luxo | v10.7 | feita em 13/11 (`docs/spec-v10.7.md`; `smoke72`; Ambiente do Gurugol pelo luxo, ver Desvios) |
 | 5 | ~~Modo História, parte 1~~: juntou-se à 2f e aos capítulos da 3a, 3b e 4a (28/10) | — | — |
 | 6 | Modo História: o crítico do Michelzão e o final | v11 | a fazer |
 | 7 | Polimento: celular, jogo online, ajuste geral | v11.1 | a rever |
@@ -83,15 +82,6 @@ Origem: retorno do Renan Martorelli (beta-tester) e conversa com o Arthur (15/10
 > - **O Terraço mede pela equipe toda** (Joca, Cami, Anselmo e a confeitaria): é ela que passa ~90% das metas.
 > - **Regra da 3f em todas as sessões:** cartão novo da lojinha só com nome, preço e "?"; toda novidade ganha ficha no `MANUAL` (sem números), revelada quando aparece na história.
 > Ordem: 4a-1 (o ponto e a refeição completa, v10) → 4a-2 (o VIP exigente e a reputação, v10.1) → 4a-3 (a cozinha: alta gastronomia, a Lia e a alta confeitaria, v10.2) → 4a-4 (o salão e o bar: Cami, Joca e Anselmo, v10.3) → 4a-5 (música, flores e rebalanceamento, v10.4). Cada uma é uma versão, com PR e merge. As "Checagens de fim de sessão" da etapa 3 valem para todas.
-
-### Sessão 4b — Nível de luxo (v10.7)
-**Objetivo:** o nível de luxo de 0 a 5, em cinco barras (Endereço, Decoração, Móveis, Ambiente e Fama), na aba nova Luxo da lojinha, com 5 enfeites e 4 degraus de mesa novos. Mais luxo traz mais VIPs (e exigentes na Avenida) e vira a nota de Ambiente do Gurugol.
-
-**Spec:** `docs/spec-v10.7.md` (aprovada em 13/11).
-
-**Modelo:** Sonnet, esforço alto (cálculo, interface, desenho e calibração em várias partes).
-
----
 
 ## Etapa 6 — Modo História: o crítico do Michelzão e o final (v11)
 > Revista em 28/10: desde que a campanha virou o Modo História (etapa 2f), esta etapa fica só com o crítico e o final. O guia se chama **Michelzão** (escolha do usuário em 22/10).

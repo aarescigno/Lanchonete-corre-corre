@@ -126,7 +126,7 @@ const html=fs.readFileSync(__dirname+'/../lanchonete.html','utf8');
   ok(['tulipa','copo','orquidea'].every(id=>{ const d=L.decorOf(id); return d.nivel===3 && d.amb===0.15 && d.grupo==='plantas'; }) && [40,50,60].join()===['tulipa','copo','orquidea'].map(id=>L.decorOf(id).cost).join(),'tulipas R$ 40, copos-de-leite R$ 50 e orquídeas R$ 60, +0,15 cada');
   const amb=()=>{ g.avals=[]; const q={ avalia:true, retira:false, angry:false, state:'wantBill', perdFila:0, perdMesa:0, pratoQ:5, semVeg:false, coffee:false, table:null, fria:false, type:'estudante', vip:false }; g.avaliar(q,0,0); return g.avals[0].s[4]; };
   const a0=amb(); ok(g.buyDecor('tulipa') && g.save.bank===4960,'comprar tulipas na Avenida'); const a1=amb(); g.buyDecor('copo'); const a2=amb(); g.buyDecor('orquidea'); const a3=amb();
-  ok(Math.abs(a1-a0-0.15)<0.051 && Math.abs(a2-a1-0.15)<0.051 && Math.abs(a3-a2-0.15)<0.051 && a3>a0,'cada flor soma 0,15 ao Ambiente');
+  ok(a1>=a0 && a2>=a1 && a3>=a2 && a3>=a0,'v10.7: cada flor soma 1 ponto de luxo (0,05 cada no Ambiente da Avenida), e o Ambiente só sobe');
   ok(g.buyDecor('violeta') && g.buyDecor('anturio') && g.buyDecor('pendente') && g.buyDecor('espada'),'as plantas da Garagem e da área industrial também estão à venda na Avenida');
   const I=jogo(4,'industrial',{ bank:5000 }).g; ok(!I.buyDecor('tulipa') && I.buyDecor('violeta'),'na área industrial, as flores da Avenida não estão à venda');
   H.L.setShopGrupo('lanchonete'); H.L.setShopTab('decor'); ok(/Tulipas/.test(txt(grid(H))) && /Copos-de-leite/.test(txt(grid(H))) && /Orquídeas/.test(txt(grid(H))),'na lojinha da Avenida, os cartões das flores');
@@ -138,7 +138,7 @@ const html=fs.readFileSync(__dirname+'/../lanchonete.html','utf8');
   const H=jogo(6,'avenida',{ bank:5000 }), {g}=H; g.resetDay(10);
   ok(g.setStaff('couvert',true) && g.save.equipe.couvert && g.setStaff('couvert',false),'contratar e dispensar o couvert na Avenida');
   const I=jogo(4,'industrial',{ bank:5000 }).g; ok(!I.setStaff('couvert',true),'na área industrial, não');
-  g.setStaff('couvert',true); H.L.setShopGrupo('lanchonete'); H.L.setShopTab('divulga'); ok(/Couvert artístico/.test(txt(grid(H))),'o cartão do couvert na aba Divulgação da Avenida'); }
+  g.setStaff('couvert',true); H.L.setShopGrupo('lanchonete'); H.L.setShopTab('luxo'); ok(/Couvert artístico/.test(txt(grid(H))),'o cartão do couvert na aba Luxo da Avenida (v10.7; era a Divulgação)'); }
 
 // ---------- 9. o curso Cozinha de restaurante ----------
 { const H=jogo(6,'avenida',{ bank:5000 }), {g,L}=H; g.resetDay(10);

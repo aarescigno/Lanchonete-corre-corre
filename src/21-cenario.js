@@ -74,6 +74,7 @@ function drawWall(ctx,g,t){
   else drawAzulejo(ctx);
   drawWallCommon(ctx,g,t);
   if (industrial(g) && g.up && g.up.tvs && g.state !== 'menu') drawTvsParede(ctx,g,t);
+  drawLuxoParede(ctx,g,t);   // v10.7: o pisca-pisca, a cortina de chita e os quadros
 }
 /* ============================================================
    ÁREA INDUSTRIAL (v9): cimento queimado cinza (mais escuro e liso que o da Garagem), parede de tijolinho pintado de
@@ -929,6 +930,109 @@ function drawDecorParede(ctx,g){
   if (decorOn(g,'giz') && !edDesenho) drawGiz(ctx,P.giz[0],P.giz[1],P.giz[2],g);
 }
 /* samambaia num vaso de barro pendurado por 3 correntinhas num suporte de ferro na parede; (x, y) é a boca do vaso */
+
+/* ============================================================
+   OS ENFEITES DO LUXO (v10.7): o pisca-pisca no alto da parede do fundo, a cortina de chita na janela (junto da porta), os quadros de
+   artista na parede (Avenida e Terraço), as luminárias de fábrica penduradas sobre as mesas e o lustre de cristal no centro do teto
+   (as duas últimas vão na lista ordenada por y, atrás das pessoas). Servem também para os ícones da lojinha
+   ============================================================ */
+const LUXO_JAN = [ { x0:116, x1:158, y0:16, y1:64 }, { x0:100, x1:160, y0:14, y1:64 }, { x0:104, x1:176, y0:10, y1:62 }, { x0:132, x1:190, y0:9, y1:62 } ];   // a janela de cada ponto (a da esquerda, perto da porta)
+const LUXO_QUADROS = [ null, null, [[404,69,24,26,0],[480,69,24,26,1],[556,69,24,26,2]], [[404,79,16,18,0],[480,79,16,18,1],[556,79,16,18,2]] ];   // x, y, largura, altura e o desenho
+const LUXO_LUSTRE = { x:390, y:136 };
+/* a estampa da chita (fundo creme, flores vermelhas com miolo amarelo e folhinhas verdes) dentro do retângulo */
+function pintaChita(ctx,x,y,w,h){
+  ctx.save(); ctx.beginPath(); ctx.rect(x,y,w,h); ctx.clip();
+  ctx.fillStyle = '#F8E7B8'; ctx.fillRect(x,y,w,h);
+  for (let yy=y+3, r=0; yy<y+h+6; yy+=9, r++) for (let xx=x+(r % 2 ? 7 : 2); xx<x+w+6; xx+=13){
+    ell(ctx,xx+4,yy+1.5,3.4,1.5); ctx.fillStyle = '#4E9F52'; ctx.fill();
+    circ(ctx,xx,yy,3.2); ctx.fillStyle = r % 2 ? '#E2574C' : '#E8608A'; ctx.fill();
+    circ(ctx,xx,yy,1.1); ctx.fillStyle = '#F2C23D'; ctx.fill();
+  }
+  ctx.restore();
+}
+function drawPisca(ctx,tm){
+  const x0 = 306, x1 = 958, n = 12, sw = (x1 - x0) / n, cores = ['#FFD84A','#FF6B5B','#5BC27A','#5AA9F2','#FFB347'];
+  ctx.strokeStyle = '#2B2A26'; ctx.lineWidth = 1.3; ctx.beginPath(); ctx.moveTo(x0,2);
+  for (let i=0;i<n;i++) ctx.quadraticCurveTo(x0 + (i + 0.5) * sw,10,x0 + (i + 1) * sw,2);
+  ctx.stroke();
+  for (let i=0;i<n;i++) [0.2,0.5,0.8].forEach((u,k) => {
+    const x = x0 + (i + u) * sw, y = 2 + 16 * u * (1 - u) + 2.5, c = cores[(i * 3 + k) % cores.length];
+    const on = RM ? 1 : 0.7 + 0.3 * Math.sin(tm * 3 + i * 1.7 + k * 2.3);
+    circ(ctx,x,y,5.5); ctx.fillStyle = 'rgba(255,235,170,' + (0.2 * on) + ')'; ctx.fill();
+    circ(ctx,x,y,2.6); ctx.globalAlpha = 0.6 + 0.4 * on; fs(ctx,c,1); ctx.globalAlpha = 1;
+  });
+}
+function drawCortinaChita(ctx,j){
+  const x0 = j.x0 - 6, x1 = j.x1 + 6, y0 = j.y0 - 2, h = j.y1 - j.y0 + 4;
+  rr(ctx,x0 - 2,y0 - 3,x1 - x0 + 4,3.4,1.5); fs(ctx,'#5B3A21',1.2);   // a vara
+  // o painel da esquerda, preso no meio por uma fita vermelha, e a bandô de babados no alto
+  ctx.save();
+  ctx.beginPath(); ctx.moveTo(x0,y0); ctx.lineTo(x0 + 17,y0); ctx.bezierCurveTo(x0 + 17,y0 + h * 0.3,x0 + 8,y0 + h * 0.42,x0 + 8,y0 + h * 0.52); ctx.bezierCurveTo(x0 + 8,y0 + h * 0.62,x0 + 18,y0 + h * 0.8,x0 + 17,y0 + h); ctx.lineTo(x0,y0 + h); ctx.closePath();
+  ctx.fillStyle = '#F8E7B8'; ctx.fill(); ctx.clip(); pintaChita(ctx,x0,y0,20,h);
+  ctx.strokeStyle = 'rgba(80,40,20,.25)'; ctx.lineWidth = 1; [5,10].forEach(d => { ctx.beginPath(); ctx.moveTo(x0 + d,y0 + 2); ctx.lineTo(x0 + d,y0 + h - 2); ctx.stroke(); });
+  ctx.restore();
+  ctx.beginPath(); ctx.moveTo(x0,y0); ctx.lineTo(x0 + 17,y0); ctx.bezierCurveTo(x0 + 17,y0 + h * 0.3,x0 + 8,y0 + h * 0.42,x0 + 8,y0 + h * 0.52); ctx.bezierCurveTo(x0 + 8,y0 + h * 0.62,x0 + 18,y0 + h * 0.8,x0 + 17,y0 + h); ctx.lineTo(x0,y0 + h); ctx.strokeStyle = PAL.tinta; ctx.lineWidth = 1.6; ctx.stroke();
+  rr(ctx,x0 + 3,y0 + h * 0.48,12,4.5,1.5); fs(ctx,'#C2362B',1.2);
+  ctx.save(); ctx.beginPath(); const n = Math.max(4,Math.round((x1 - x0) / 11)), d = (x1 - x0) / n;
+  ctx.moveTo(x0,y0); ctx.lineTo(x1,y0); for (let i=n;i>0;i--) ctx.quadraticCurveTo(x0 + (i - 0.5) * d,y0 + 17,x0 + (i - 1) * d,y0 + 9);
+  ctx.closePath(); ctx.fillStyle = '#F8E7B8'; ctx.fill(); ctx.clip(); pintaChita(ctx,x0,y0,x1 - x0,18); ctx.restore();
+  ctx.beginPath(); ctx.moveTo(x0,y0); ctx.lineTo(x1,y0); for (let i=n;i>0;i--) ctx.quadraticCurveTo(x0 + (i - 0.5) * d,y0 + 17,x0 + (i - 1) * d,y0 + 9);
+  ctx.closePath(); ctx.strokeStyle = PAL.tinta; ctx.lineWidth = 1.6; ctx.stroke();
+}
+/* quadro de artista (moldura dourada e passe-partout); k: 0 a paisagem, 1 as formas, 2 o vaso de flores */
+function drawQuadro(ctx,x,y,w,h,k){
+  rr(ctx,x - w/2,y - h/2,w,h,2); fs(ctx,'#B8862F',1.8);
+  const ix = x - w/2 + 3, iy = y - h/2 + 3, iw = w - 6, ih = h - 6;
+  ctx.fillStyle = '#F6EEDA'; ctx.fillRect(ix,iy,iw,ih);
+  const px = ix + iw * 0.12, py = iy + ih * 0.12, pw = iw * 0.76, ph = ih * 0.76;
+  ctx.save(); ctx.beginPath(); ctx.rect(px,py,pw,ph); ctx.clip();
+  if (k === 0){ ctx.fillStyle = '#9CCBE0'; ctx.fillRect(px,py,pw,ph); ctx.fillStyle = '#E9A33B'; circ(ctx,px + pw * 0.72,py + ph * 0.3,ph * 0.17); ctx.fill();
+    ctx.fillStyle = '#4E9F6A'; ctx.beginPath(); ctx.moveTo(px,py + ph); ctx.quadraticCurveTo(px + pw * 0.3,py + ph * 0.35,px + pw * 0.65,py + ph); ctx.fill();
+    ctx.fillStyle = '#2F7A55'; ctx.beginPath(); ctx.moveTo(px + pw * 0.3,py + ph); ctx.quadraticCurveTo(px + pw * 0.75,py + ph * 0.45,px + pw,py + ph * 0.8); ctx.lineTo(px + pw,py + ph); ctx.fill(); }
+  else if (k === 1){ ctx.fillStyle = '#F2C94C'; ctx.fillRect(px,py,pw,ph); ctx.fillStyle = '#D9483B'; circ(ctx,px + pw * 0.35,py + ph * 0.45,ph * 0.3); ctx.fill();
+    ctx.fillStyle = '#2F5E9E'; ctx.fillRect(px + pw * 0.5,py + ph * 0.18,pw * 0.4,ph * 0.62); ctx.fillStyle = '#1E1D21'; ctx.fillRect(px,py + ph * 0.78,pw,ph * 0.1); }
+  else { ctx.fillStyle = '#E8D9C2'; ctx.fillRect(px,py,pw,ph); ctx.fillStyle = '#6C8FB4'; rr(ctx,px + pw * 0.33,py + ph * 0.5,pw * 0.34,ph * 0.5,2); ctx.fill();
+    [[0.3,0.28,'#D9483B'],[0.52,0.18,'#F2C94C'],[0.72,0.3,'#E8608A']].forEach(f => { circ(ctx,px + pw * f[0],py + ph * f[1],ph * 0.12); ctx.fillStyle = f[2]; ctx.fill(); }); }
+  ctx.restore();
+  ctx.strokeStyle = 'rgba(34,32,28,.5)'; ctx.lineWidth = 0.8; ctx.strokeRect(px,py,pw,ph);
+}
+function drawLuxoParede(ctx,g,tm){
+  if (edDesenho) return;
+  if (decorOn(g,'pisca')) drawPisca(ctx,tm);
+  if (decorOn(g,'chita')) drawCortinaChita(ctx,LUXO_JAN[Math.max(0,Math.min(3,((g.ponto && g.ponto.nivel) || 1) - 1))]);
+  const Q = LUXO_QUADROS[Math.max(0,Math.min(3,((g.ponto && g.ponto.nivel) || 1) - 1))];
+  if (decorOn(g,'quadros') && Q) Q.forEach(q => drawQuadro(ctx,q[0],q[1],q[2],q[3],q[4]));
+}
+/* o fio de quem pende do teto: sobe da peça e vai sumindo, porque o teto fica fora do quadro */
+function drawFioTeto(ctx,x,y,len,cor,lw){
+  const gr = ctx.createLinearGradient(0,y,0,y - len);
+  gr.addColorStop(0,cor); gr.addColorStop(1,'rgba(43,42,38,0)');
+  ctx.strokeStyle = gr; ctx.lineWidth = lw; ctx.beginPath(); ctx.moveTo(x,y); ctx.lineTo(x,y - len); ctx.stroke();
+}
+/* a luminária de fábrica: o fio sobe até sumir e a cúpula de esmalte verde fica sobre a mesa; (x, y) é o meio da cúpula */
+function drawLuminaria(ctx,x,y){
+  if (y > 100) drawFioTeto(ctx,x,y - 9,Math.min(46,y - 94),'#2B2A26',1.6);
+  ctx.fillStyle = 'rgba(255,233,166,.11)'; ctx.beginPath(); ctx.moveTo(x - 14,y + 8); ctx.lineTo(x + 14,y + 8); ctx.lineTo(x + 46,y + 62); ctx.lineTo(x - 46,y + 62); ctx.closePath(); ctx.fill();
+  ctx.beginPath(); ctx.moveTo(x - 21,y + 7); ctx.quadraticCurveTo(x - 21,y - 9,x,y - 9); ctx.quadraticCurveTo(x + 21,y - 9,x + 21,y + 7); ctx.closePath(); fs(ctx,'#2F6B57',2);
+  ctx.fillStyle = 'rgba(255,255,255,.28)'; ctx.beginPath(); ctx.moveTo(x - 15,y + 2); ctx.quadraticCurveTo(x - 15,y - 5,x - 5,y - 6); ctx.lineTo(x - 7,y - 3); ctx.quadraticCurveTo(x - 12,y - 2,x - 12,y + 2); ctx.closePath(); ctx.fill();
+  ell(ctx,x,y + 7,21,3.4); fs(ctx,'#1E4A3C',1.8);
+  circ(ctx,x,y + 8.5,3.6); fs(ctx,'#FFE9A6',1.2);
+}
+/* o lustre de cristal: a corrente do teto, o aro dourado, as velas e os pingentes que brilham devagar; (x, y) é o aro */
+function drawLustre(ctx,x,y,tm){
+  drawFioTeto(ctx,x,y - 14,38,'#8C7A4A',2);
+  [-20,-29].forEach(dy => { ell(ctx,x,y + dy,2.6,3.2); ctx.strokeStyle = '#B79B4A'; ctx.lineWidth = 1.4; ctx.stroke(); });
+  ell(ctx,x,y + 6,46,18); ctx.fillStyle = 'rgba(255,236,170,.12)'; ctx.fill();
+  ctx.beginPath(); ctx.moveTo(x,y - 14); ctx.quadraticCurveTo(x - 20,y - 10,x - 30,y - 2); ctx.moveTo(x,y - 14); ctx.quadraticCurveTo(x + 20,y - 10,x + 30,y - 2); ctx.strokeStyle = '#C9953A'; ctx.lineWidth = 2.4; ctx.stroke();
+  ell(ctx,x,y,32,7); fs(ctx,'#C9953A',2);
+  [-24,-12,0,12,24].forEach(dx => { rr(ctx,x + dx - 2,y - 13 - (dx === 0 ? 4 : 0),4,9,1.2); fs(ctx,'#FFF6D8',1); ctx.beginPath(); ctx.moveTo(x + dx,y - 14 - (dx === 0 ? 4 : 0)); ctx.quadraticCurveTo(x + dx + 2.6,y - 19 - (dx === 0 ? 4 : 0),x + dx,y - 21 - (dx === 0 ? 4 : 0)); ctx.quadraticCurveTo(x + dx - 2.6,y - 19 - (dx === 0 ? 4 : 0),x + dx,y - 14 - (dx === 0 ? 4 : 0)); ctx.fillStyle = '#FFD36B'; ctx.fill(); });
+  [-28,-20,-12,-4,4,12,20,28].forEach((dx,i) => {
+    const len = 9 + (i % 3) * 4, on = RM ? 0.8 : 0.6 + 0.4 * Math.sin(tm * 2.4 + i * 1.3);
+    ctx.strokeStyle = 'rgba(120,130,150,.7)'; ctx.lineWidth = 0.8; ctx.beginPath(); ctx.moveTo(x + dx,y + 6); ctx.lineTo(x + dx,y + 6 + len - 3); ctx.stroke();
+    ctx.beginPath(); ctx.moveTo(x + dx,y + 4 + len); ctx.lineTo(x + dx - 2.6,y + 8 + len); ctx.lineTo(x + dx,y + 14 + len); ctx.lineTo(x + dx + 2.6,y + 8 + len); ctx.closePath();
+    ctx.globalAlpha = 0.55 + 0.45 * on; fs(ctx,i % 2 ? '#E6F6FF' : '#CFE8F7',1); ctx.globalAlpha = 1;
+  });
+}
 function drawSamambaia(ctx,x,y,s){
   ctx.save(); ctx.translate(x,y); ctx.scale(s,s);
   ctx.strokeStyle = PAL.cromoEsc; ctx.lineWidth = 2.4; ctx.beginPath(); ctx.moveTo(-14,-24); ctx.lineTo(4,-24); ctx.stroke();

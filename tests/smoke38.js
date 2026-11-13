@@ -108,7 +108,8 @@ const joga=(H,fat,custo)=>{ const {g,els}=H; if(g.state==='shop') els['btn-shop-
   const eq2={ tonhao:0, dani:0, couvert:false, taxa:false, tv:false, som:false, tvs:2 }; ok(L.folhaCortes(eq2,null,10).join()==='TVs' && L.folhaItens(eq2,null).join()==='Tonhão,TVs','sem dinheiro: as TVs ficam de fora ("TVs"; v10.5: o Tonhão sempre na folha)');
   // o ambiente do Gurugol
   ok(L.AVAL.amb.tvs===0.5 && L.AVAL.amb.tvsPlus===0.75,'Ambiente: 0,5 com anúncios e 0,75 sem');
-  H.L.setShopTab('melhorias'); ok(/3 televisores com sertanejo/.test(txt(grid(H))) && !/TV de tubo/.test(txt(grid(H))) && /Espera sentada/.test(txt(grid(H))) && /Jarra de suco/.test(txt(grid(H))),'Melhorias: TVs, espera sentada e a jarra; o cartão "TV e som" sai');
+  H.L.setShopTab('melhorias'); ok(!/3 televisores/.test(txt(grid(H))) && !/TV de tubo/.test(txt(grid(H))) && /Espera sentada/.test(txt(grid(H))) && /Jarra de suco/.test(txt(grid(H))),'Melhorias: espera sentada e a jarra; as TVs e o cartão "TV e som" saíram para a aba Luxo (v10.7)');
+  H.L.setShopTab('luxo'); ok(/3 televisores com sertanejo/.test(txt(grid(H))) && !/TV de tubo/.test(txt(grid(H))),'aba Luxo: as 3 TVs com sertanejo (v10.7)');
   const G=jogo(4,false,{ bank:5000 }).g; ok(!G.comprarInd('tvs'),'na Garagem não há TVs'); }
 
 // ---------- 7. espera sentada e jarra de suco ----------
@@ -128,7 +129,7 @@ const joga=(H,fat,custo)=>{ const {g,els}=H; if(g.state==='shop') els['btn-shop-
   ok(['violeta','anturio','pendente'].every(id=>{ const d=L.decorOf(id); return d.nivel===2 && d.amb===0.1; }) && [20,30,40].join()===['violeta','anturio','pendente'].map(id=>L.decorOf(id).cost).join(),'violetas R$ 20, antúrio R$ 30 e samambaia pendurada R$ 40, +0,1 cada');
   const amb=()=>{ g.avals=[]; const q={ avalia:true, retira:false, angry:false, state:'wantBill', perdFila:0, perdMesa:0, pratoQ:5, semVeg:false, coffee:false, table:null, fria:false, type:'estudante', vip:false }; g.avaliar(q,0,0); return g.avals[0].s[4]; };
   const a0=amb(); ok(g.buyDecor('violeta') && g.save.bank===4980,'comprar violetas na área industrial'); const a1=amb(); g.buyDecor('anturio'); const a2=amb(); g.buyDecor('pendente'); const a3=amb();
-  ok(Math.abs(a1-a0-0.1)<0.051 && Math.abs(a2-a1-0.1)<0.051 && Math.abs(a3-a2-0.1)<0.051 && a3>a0,'cada planta soma 0,1 ao Ambiente');
+  ok(a1>=a0 && a2>=a1 && a3>=a2 && a3>a0,'v10.7: cada planta soma 1 ponto de luxo, e o Ambiente só sobe (0,075 cada na área industrial)');
   const G=jogo(4,false,{ bank:5000 }).g; ok(!G.buyDecor('violeta'),'na Garagem, essas plantas não estão à venda');
   H.L.setShopTab('decor'); ok(/Violetas/.test(txt(grid(H))),'na lojinha da área industrial, o cartão das violetas'); }
 

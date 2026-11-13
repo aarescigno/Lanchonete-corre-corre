@@ -538,28 +538,35 @@ const SALAO_SEMFIM = [2,2,2,4,2,4];
    vai junto quando a mesa muda de lugar e some quando ela é vendida
    ============================================================ */
 const DECOR = [
-  { id:'espada',    grupo:'plantas', name:'Espada-de-são-jorge', cost:15 },
-  { id:'lata',      grupo:'plantas', name:'Muda na lata',        cost:8 },
-  { id:'samambaia', grupo:'plantas', name:'Samambaia',           cost:30 },
+  { id:'espada',    grupo:'plantas', name:'Espada-de-são-jorge', cost:15, lux:1 },
+  { id:'lata',      grupo:'plantas', name:'Muda na lata',        cost:8, lux:1 },
+  { id:'samambaia', grupo:'plantas', name:'Samambaia',           cost:30, lux:1 },
   // v9, só a partir da área industrial: as plantas da calçada (+0,1 cada no Ambiente)
-  { id:'violeta',   grupo:'plantas', name:'Violetas',            cost:20, nivel:2, amb:0.1 },
-  { id:'anturio',   grupo:'plantas', name:'Antúrio',             cost:30, nivel:2, amb:0.1 },
-  { id:'pendente',  grupo:'plantas', name:'Samambaia pendurada', cost:40, nivel:2, amb:0.1 },
+  { id:'violeta',   grupo:'plantas', name:'Violetas',            cost:20, nivel:2, amb:0.1, lux:1 },
+  { id:'anturio',   grupo:'plantas', name:'Antúrio',             cost:30, nivel:2, amb:0.1, lux:1 },
+  { id:'pendente',  grupo:'plantas', name:'Samambaia pendurada', cost:40, nivel:2, amb:0.1, lux:1 },
   // v9.1, só na Avenida Brasil: as flores da calçada (+0,15 cada no Ambiente)
-  { id:'tulipa',    grupo:'plantas', name:'Tulipas',             cost:40, nivel:3, amb:0.15 },
-  { id:'copo',      grupo:'plantas', name:'Copos-de-leite',      cost:50, nivel:3, amb:0.15 },
-  { id:'orquidea',  grupo:'plantas', name:'Orquídeas',           cost:60, nivel:3, amb:0.15 },
+  { id:'tulipa',    grupo:'plantas', name:'Tulipas',             cost:40, nivel:3, amb:0.15, lux:1 },
+  { id:'copo',      grupo:'plantas', name:'Copos-de-leite',      cost:50, nivel:3, amb:0.15, lux:1 },
+  { id:'orquidea',  grupo:'plantas', name:'Orquídeas',           cost:60, nivel:3, amb:0.15, lux:1 },
   // v10.4, só no Terraço: as flores finas do foyer (+0,2 cada no Ambiente)
-  { id:'ikebana',   grupo:'plantas', name:'Ikebana',             cost:90,  nivel:4, amb:0.2 },
-  { id:'orqArranjo', grupo:'plantas', name:'Arranjo de orquídeas', cost:120, nivel:4, amb:0.2 },
-  { id:'campo',     grupo:'plantas', name:'Flores do campo',     cost:70,  nivel:4, amb:0.2 },
-  { id:'foto',      grupo:'rosa',    name:'Foto da dona Rosa',   cost:10 },
-  { id:'giz',       grupo:'rosa',    name:'Quadro de giz',       cost:25 },
-  { id:'placa',     grupo:'rosa',    name:'Plaquinha',           cost:15 }
+  { id:'ikebana',   grupo:'plantas', name:'Ikebana',             cost:90,  nivel:4, amb:0.2, lux:1 },
+  { id:'orqArranjo', grupo:'plantas', name:'Arranjo de orquídeas', cost:120, nivel:4, amb:0.2, lux:1 },
+  { id:'campo',     grupo:'plantas', name:'Flores do campo',     cost:70,  nivel:4, amb:0.2, lux:1 },
+  { id:'foto',      grupo:'rosa',    name:'Foto da dona Rosa',   cost:10, lux:1 },
+  { id:'giz',       grupo:'rosa',    name:'Quadro de giz',       cost:25, lux:1 },
+  { id:'placa',     grupo:'rosa',    name:'Plaquinha',           cost:15, lux:1 },
+  // v10.7, os enfeites do luxo (2 pontos cada; à venda do ponto do `nivel` em diante)
+  { id:'pisca',     grupo:'enfeites', name:'Pisca-pisca',        cost:30,   nivel:1, lux:2 },
+  { id:'chita',     grupo:'enfeites', name:'Cortina de chita',   cost:25,   nivel:1, lux:2 },
+  { id:'luminaria', grupo:'enfeites', name:'Luminárias de fábrica', cost:180, nivel:2, lux:2 },
+  { id:'quadros',   grupo:'enfeites', name:'Quadros de artista', cost:450,  nivel:3, lux:2 },
+  { id:'lustre',    grupo:'enfeites', name:'Lustre de cristal',  cost:1500, nivel:4, lux:2 }
 ];
 const DECOR_GRUPOS = [
   { id:'plantas', nome:'Plantas' },
-  { id:'rosa',    nome:'Cantinho da Rosa' }
+  { id:'rosa',    nome:'Cantinho da Rosa' },
+  { id:'enfeites', nome:'Enfeites' }   // v10.7
 ];
 const TOALHA = { cost:12 };   // por mesa
 function decorOf(id){ return DECOR.find(d => d.id === id); }
@@ -571,6 +578,62 @@ function normDecor(d){
 }
 /* o enfeite id está à mostra no jogo g? (no menu e na Missão zero, o save do jogo) */
 function decorOn(g, id){ return !!(g && g.save && g.save.decor && g.save.decor[id]); }
+
+/* ============================================================
+   NÍVEL DE LUXO (v10.7): 0 a 5, em cinco barras (pontos inteiros, `tot` de 0 a 100; nível = tot ÷ 20, no máximo 5). Não vai no save:
+   é calculado na hora, de tudo o que está comprado e à mostra.
+   - end (máx. 40): o endereço, pelo `nivel` do ponto (LUXO.endereco);
+   - dec (máx. 25): cada enfeite à mostra vale o seu `lux` (DECOR: os antigos 1, os novos 2);
+   - mov (máx. 20): a toalha xadrez (3 × mesas com toalha ÷ mesas), os degraus do jogo de mesas (MOVEIS), o assento da espera e a louça fina;
+   - amb (máx. 10): o que está ligado no ponto (TV e som, TVs, couvert, música ao vivo);
+   - fama (máx. 5): a divulgação do dia (0 a 2) e a nota do Gurugol (0 a 3, pela fração do teto do ponto).
+   Mais luxo traz mais VIPs (LUXO.vip por nível), exigentes na Avenida (LUXO.exigAv, do nível 3) e a nota de Ambiente do Gurugol
+   (`pede`: os pontos que dão o Ambiente cheio, por nível do ponto)
+   ============================================================ */
+const LUXO = {
+  endereco:[0, 10, 20, 40], pede:[20, 40, 60, 90], vip:0.1, exigAv:0.25, passo:20, nomes:['Endereço', 'Decoração', 'Móveis', 'Ambiente', 'Fama'], max:[40, 25, 20, 10, 5],
+  assento:{ cadeira:1, banco:1, sofa:2, poltrona:3 }, louca:3, toalha:3, divulga:{ boca:0, panfleto:1, redes:2 }, nota:3, ambMax:3,
+  tv:2, som:2, tvs:[0, 3, 5], couvert:7, musica:[0, 8, 10]
+};
+/* o jogo de mesas: uma escada (cada degrau só depois do anterior); save.moveis = { madeira, acolch, linho, marmore } (0 ou 1) */
+const MOVEIS = [
+  { id:'madeira', name:'Mesas de madeira',     cost:200,  nivel:1, lux:3 },
+  { id:'acolch',  name:'Cadeiras acolchoadas', cost:350,  nivel:2, lux:2 },
+  { id:'linho',   name:'Toalhas de linho',     cost:600,  nivel:3, lux:2 },
+  { id:'marmore', name:'Mesas de mármore',     cost:2000, nivel:4, lux:4 }
+];
+function movelOf(id){ return MOVEIS.find(m => m.id === id); }
+function normMoveis(m){
+  const out = {}; let ant = true;
+  MOVEIS.forEach(x => { const v = !!(m && typeof m === 'object' && m[x.id]) && ant; out[x.id] = v ? 1 : 0; ant = v; });
+  return out;
+}
+/* o degrau mais alto do jogo de mesas (0 = nenhum, 1 a 4) */
+function movelNivel(g){ const m = g && g.save && g.save.moveis; let n = 0; if (m) MOVEIS.forEach((x, i) => { if (m[x.id]) n = i + 1; }); return n; }
+function luxoPts(g){
+  const sv = g.save, pn = clamp(((g.ponto || PONTOS[0]).nivel || 1), 1, 4), eq = sv.equipe || {}, up = g.up || {};
+  const end = LUXO.endereco[pn - 1];
+  const dec = DECOR.reduce((a, d) => a + (decorOn(g, d.id) ? (d.lux || 0) : 0), 0);
+  const mesas = (sv.salao && sv.salao.mesas) || [], mt = mesas.filter(m => m.t).length;
+  const linho = !!(sv.moveis && sv.moveis.linho);
+  let mov = linho ? LUXO.toalha : mesas.length ? Math.round(LUXO.toalha * mt / mesas.length) : 0;
+  MOVEIS.forEach(x => { if (sv.moveis && sv.moveis[x.id]) mov += x.lux; });
+  if (up.assento) mov += LUXO.assento[up.assento] || 0;
+  if (up.louca) mov += LUXO.louca;
+  const amb = (eq.tv ? LUXO.tv : 0) + (eq.som ? LUXO.som : 0) + (up.tvs ? LUXO.tvs[eq.tvs || 0] || 0 : 0) + (eq.couvert ? LUXO.couvert : 0) + (LUXO.musica[eq.musica || 0] || 0);
+  const ge = avalGeral(sv.aval || []);
+  const fama = (g.div ? LUXO.divulga[g.div.id] || 0 : 0) + (ge ? Math.round(LUXO.nota * clamp(avalFrac(ge.nota, avalTeto(g.ponto)), 0, 1)) : 0);
+  const o = { end, dec, mov: Math.min(mov, LUXO.max[2]), amb: Math.min(amb, LUXO.max[3]), fama: Math.min(fama, LUXO.max[4]) };
+  o.dec = Math.min(o.dec, LUXO.max[1]);
+  o.tot = o.end + o.dec + o.mov + o.amb + o.fama;
+  return o;
+}
+/* o nível forçado no modo dev (DEV.forca.luxo = 0 a 5), ou -1 */
+function luxoForca(){ const f = DEV.on ? DEV.forca.luxo : undefined; return typeof f === 'number' && f >= 0 && f <= 5 ? f : -1; }
+/* os pontos de luxo que valem agora: os de verdade, ou o nível forçado × 20 */
+function luxoTot(g){ const f = luxoForca(); return f >= 0 ? f * LUXO.passo : luxoPts(g).tot; }
+/* o nível de luxo (0 a 5); fora da carreira, 0 */
+function luxoNivel(g){ if (g.mode !== 'carreira') return 0; return Math.min(5, Math.floor(luxoTot(g) / LUXO.passo)); }
 
 /* gorjeta pelos corações na hora da conta (v8.3.8; antes, com 5 corações a conta saía 50% maior): no máximo +10%;
    com 1 ou 2 o grupo reclama e ganha desconto */
@@ -968,7 +1031,8 @@ const AVAL_DECOR = {
   toalha:'A toalha xadrez dá um charme!',
   violeta:'Que violetas lindas na janela!', anturio:'Adorei o antúrio na entrada!', pendente:'A samambaia no toldo ficou linda!',
   tulipa:'Que tulipas lindas na calçada!', copo:'Adorei os copos-de-leite!', orquidea:'Que orquídea mais delicada!',
-  ikebana:'Que ikebana mais elegante!', orqArranjo:'O arranjo de orquídeas é um espetáculo!', campo:'Adorei as flores do campo!'
+  ikebana:'Que ikebana mais elegante!', orqArranjo:'O arranjo de orquídeas é um espetáculo!', campo:'Adorei as flores do campo!',
+  pisca:'Que luzinhas mais charmosas!', chita:'Adorei a cortina de chita!', luminaria:'As luminárias dão um charme!', quadros:'Que quadros bonitos!', lustre:'Que lustre maravilhoso!'   // v10.7
 };
 function avalComentario(r, bravo, lixo, nivel, decor, fria, semVeg, tipo, pouco){
   if (bravo) return pick(AVAL_BRAVO[bravo]);
@@ -1326,11 +1390,11 @@ const LIBERA = [
     falas:[ { q:'bia', s:'Hoje uma família foi embora da fila: só tem uma mesa de quatro.' },
             { q:'tonhao', s:'Na garagem ainda cabem umas mesinhas. Cadeira de plástico é baratinha.' },
             { q:'bia', s:'Vou ver no Salão onde encaixar.' } ] },
-  { id:'decor', dia:3, ate:6, gatilho:(st, av, g) => g.save.decor.espada === 1 && av.some(a => a.s && a.s[4] != null && a.s[4] >= 2.5), reclama:['Que plantinha bonita!', 'Gostei da plantinha na entrada.'],   // v9.6.10: o elogio à planta da dona Cida
+  { id:'luxo', dia:3, ate:6, gatilho:(st, av, g) => g.save.decor.espada === 1 && av.some(a => a.s && a.s[4] != null && a.s[4] >= 2.5), reclama:['Que plantinha bonita!', 'Gostei da plantinha na entrada.'],   // v9.6.10: o elogio à planta da dona Cida
     falas:[ { q:'bia', s:'Tio, elogiaram a plantinha da dona Cida no Gurugol!' },
             { q:'tonhao', s:'Viu? Um verdinho já muda a cara da garagem.' },
             { q:'bia', s:'E se a gente pusesse mais? A foto da mãe na parede...' },
-            { q:'tonhao', nota:'sorrindo', s:'Isso a Rosa ia gostar. Vê na Decoração.' } ] },
+            { q:'tonhao', nota:'sorrindo', s:'Isso a Rosa ia gostar. Vê no Luxo.' } ] },
   // v9.2, área industrial: o 4º dia no ponto abre o curso de Confeitaria caseira (cartão Cardápio); o Joca vem no fim do dia do curso
   { id:'confeitaria', nivel:2, dia:4, ate:4, reclama:[],
     falas:[ { q:'dani', s:'Bia, as famílias daqui sempre perguntam se tem sobremesa.' },
@@ -1373,7 +1437,7 @@ const BIA_IDS = ['tenis', 'corrida', 'bandeja', 'sudoku'];
 function upgradeCartao(id){ return BIA_IDS.indexOf(id) >= 0 ? 'bia' : 'melhorias'; }
 const HIST_NOMES = { bia:'Bia', tonhao:'Tonhão', dani:'Dani', joca:'Joca', cami:'Cami', anselmo:'Anselmo', lia:'Lia' };
 const CAIXA_MAX = 14;                                 // livro-caixa (v7.2): quantos dias da carreira ficam guardados
-const VERSAO = 'v10.6';                                // vai no resumo do Caixa
+const VERSAO = 'v10.7';                                // vai no resumo do Caixa
 const DIVULGA_DIA = 4;                                // antes disso, o movimento é o da inauguração (sem custo); v9.0.2: dia 4, e o padrão é o boca a boca
 function divulgaAberta(n, sv){ return devLivre() || n >= DIVULGA_DIA && !(sv && sv.convDiv === 'pend'); }   // no modo dev, desde o dia 1; v9.0.3: no Modo História, só depois da conversa
 /* v9.6.4: a Efood (os entregadores) só abre depois da conversa dos entregadores, no Modo História; antes dela, nenhum tipo com `retira` vem na agenda */
@@ -1567,7 +1631,7 @@ const MANUAL = [
   { id:'l-fogao',      aba:'lojinha', nome:'Fogão industrial', linha:'Uma boca a mais: o Tonhão faz mais pratos ao mesmo tempo.' },
   { id:'l-cardapio',   aba:'lojinha', nome:'Cardápio', linha:'Cursos do Tonhão e da equipe. Cada curso ensina pratos novos e dá experiência; o avançado deixa os pratos mais caros e caprichados.' },
   { id:'l-salao',      aba:'lojinha', nome:'Salão', linha:'Compre, venda e arrume as mesas.' },
-  { id:'l-decor',      aba:'lojinha', nome:'Decoração', linha:'Enfeites que dão cara de casa e melhoram o ambiente no Gurugol.' },
+  { id:'l-luxo',       aba:'lojinha', nome:'Luxo', linha:'Enfeites, móveis, música e um endereço melhor deixam a casa mais chique. Mais luxo traz mais VIPs e melhora o ambiente no Gurugol.' },   // v10.7: a antiga ficha da Decoração
   { id:'l-manut',      aba:'lojinha', nome:'Manutenção', linha:'Revisão do fogão, da geladeira e da cafeteira, antes que quebrem.' },
   { id:'l-divulga',    aba:'lojinha', nome:'Divulgação', linha:'Boca a boca: de graça, menos gente. Panfletos: o movimento normal. Redes sociais: mais gente e mais VIPs.' },
   { id:'l-banco',      aba:'lojinha', nome:'Banco', linha:'Empréstimo para crescer. As parcelas saem do caixa no fim do dia; parcela atrasada é perigo.' },

@@ -44,7 +44,7 @@ if(process.env.CONTAS) Object.assign(L.CONTAS,JSON.parse(process.env.CONTAS));
 if(process.env.INGRED) Object.assign(L.INGRED,JSON.parse(process.env.INGRED));
 if(process.env.CARDAPIO){ const c=JSON.parse(process.env.CARDAPIO); for(const k in c) L.CARDAPIO[k].preco=c[k]; }   // v8.3.8: CARDAPIO='{"pf":25}' testa os preços dos pratos
 if(process.env.MAIS) Object.assign(L.MAIS,JSON.parse(process.env.MAIS));   // v8.3.8: MAIS='{"cada":0.6}' testa o 2º pedido
-const vigs={aprovado:0,advertencia:0,multa:0}; /* v9.4: as visitas do fiscal (só com MANUT=com e na Avenida) */ const jocaDia=[], espDia=[], camiDia=[], anselmoDia=[], liaDia=[], musicaDia=[]; const ND=+process.env.DIAS||14, MUDA=800; /* v8.6.9: cursoDias guarda o dia em que cada curso foi comprado (id+nível) */ const cursoDias={}; const rows={}, chega=[]; let negs=0, forcs=0, fechou=0; const capDia={1:[],2:[],3:[],4:[],5:[],6:[],7:[],8:[],9:[],10:[],11:[]}, mudaDia=[], mudaAv=[], mudaTe=[], lucroGar=[], lucroInd=[], lucroAv=[], lucroTe=[], negPos=[], negPosAv=[], negPosTe=[];   // v8.7: o dia em que cada capítulo foi cumprido
+const luxoFim=[]; const vigs={aprovado:0,advertencia:0,multa:0}; /* v9.4: as visitas do fiscal (só com MANUT=com e na Avenida) */ const jocaDia=[], espDia=[], camiDia=[], anselmoDia=[], liaDia=[], musicaDia=[]; const ND=+process.env.DIAS||14, MUDA=800; /* v8.6.9: cursoDias guarda o dia em que cada curso foi comprado (id+nível) */ const cursoDias={}; const rows={}, chega=[]; let negs=0, forcs=0, fechou=0; const capDia={1:[],2:[],3:[],4:[],5:[],6:[],7:[],8:[],9:[],10:[],11:[]}, mudaDia=[], mudaAv=[], mudaTe=[], lucroGar=[], lucroInd=[], lucroAv=[], lucroTe=[], negPos=[], negPosAv=[], negPosTe=[];   // v8.7: o dia em que cada capítulo foi cumprido
 for(let k=0;k<N;k++){
   const evK={junina:0,jogo:0,barraca:0}; evCar.push(evK);
   g.save=L.normSave({}); g.up=g.save.up; g.boughtFor=0; g.buildTables(); let semMesa=0, chegou=0, vermVisto=false, runAbre={}; if(process.env.LIBERA==='0') for(const x of L.LIBERA) g.save.libera[x.id]=2;
@@ -94,6 +94,7 @@ for(let k=0;k<N;k++){
         for(let t=0;t<=g.save.equipe.tonhao;t++) if(!vistoT.has(k+':'+t)){ vistoT.add(k+':'+t); nivDia[t].push(n); }   // v8.8: o dia em que ele chega a cada nível
       }
       BOT.barraca(g,L,PAY(g.save.equipe));   // v10.6: a barraca junina, quando aparece
+      BOT.luxo(g,L,PAY(g.save.equipe));   // v10.7: o luxo mais barato do ponto, com o caixa em 3× o preço (LUXO=0: sem luxo, como na v10.6)
       r.shop.push(g.save.bank);
     }
     (libVis[n]=libVis[n]||[]).push(L.LIBERA.filter(x=>g.save.libera[x.id]>=1).length); const manutAbre=g.save.libera.manut>=1;
@@ -118,9 +119,11 @@ for(let k=0;k<N;k++){
     if(g.state==='falencia'){ fechou++; break; }
     (g.ponto.nivel===4?lucroTe:g.ponto.nivel===3?lucroAv:g.ponto.nivel===2?lucroInd:lucroGar).push(g.result.money); if(mudaDia[mudaDia.length-1]!==undefined&&n-mudaDia[mudaDia.length-1]<=5&&n>mudaDia[mudaDia.length-1]&&g.save.bank<0&&g.ponto.nivel===2) negPos.push(n); if(mudaAv[mudaAv.length-1]!==undefined&&n-mudaAv[mudaAv.length-1]<=5&&n>mudaAv[mudaAv.length-1]&&g.save.bank<0&&g.ponto.nivel===3) negPosAv.push(n); if(mudaTe[mudaTe.length-1]!==undefined&&n-mudaTe[mudaTe.length-1]<=5&&n>mudaTe[mudaTe.length-1]&&g.save.bank<0&&g.ponto.nivel===4) negPosTe.push(n);
   }
+  luxoFim.push(L.luxoPts(g));   // v10.7: o luxo no fim da carreira
   chega.push(chegou||Infinity); for(const x of L.LIBERA) if(runAbre[x.id]) (libAbre[x.id]=libAbre[x.id]||[]).push(runAbre[x.id]); libTudo.push(L.LIBERA.every(x=>(g.save.libera[x.id]>=1)&&(process.env.LIBERA==='0'||runAbre[x.id]<=9)));
 }
 const avg=a=>a.length?Math.round(a.reduce((x,y)=>x+y,0)/a.length):'-';
+console.log('LUXO (v10.7) | no fim dos '+ND+' dias (média): pontos '+avg(luxoFim.map(v=>v.tot))+' (nível '+(luxoFim.reduce((x,v)=>x+Math.min(5,Math.floor(v.tot/20)),0)/Math.max(1,luxoFim.length)).toFixed(1)+') · Endereço '+avg(luxoFim.map(v=>v.end))+' · Decoração '+avg(luxoFim.map(v=>v.dec))+' · Móveis '+avg(luxoFim.map(v=>v.mov))+' · Ambiente '+avg(luxoFim.map(v=>v.amb))+' · Fama '+avg(luxoFim.map(v=>v.fama)));
 if(process.env.LIBERA!=='0'||true){   // v9.0.5: a linha LIBERA
   const av=a=>a.reduce((x,y)=>x+y,0)/a.length;
   console.log('LIBERA',process.env.LIBERA==='0'?'(tudo aberto)':L.LIBERA.map(x=>x.id+' '+x.dia+'/'+x.ate).join(', '),'| dia médio em que abre',L.LIBERA.map(x=>x.id+' '+(libAbre[x.id]?av(libAbre[x.id]).toFixed(1)+' ('+libAbre[x.id].length+'/'+N+')':'-')).join(' · '),'| cartões à vista por dia (1 a 10)',[1,2,3,4,5,6,7,8,9,10].map(n=>libVis[n]?av(libVis[n]).toFixed(1):'-').join(' '),'| pendentes juntos (máx.)',Math.max.apply(null,libPend.filter(Boolean).map(a=>Math.max.apply(null,a))),'| todos abertos até o dia 9',libTudo.filter(Boolean).length+'/'+N,'| Manutenção aberta antes da 1ª barra vermelha',libVerm.filter(Boolean).length+'/'+libVerm.length);

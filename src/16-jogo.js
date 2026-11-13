@@ -152,13 +152,15 @@ class Game {
     let r = Math.random() * l.reduce((a, k) => a + wt(k), 0);
     return l.find(k => (r -= wt(k)) < 0) || l[l.length - 1];
   }
+  /* a chance de VIP de cada grupo do dia (v10.7: mais luxo, mais VIPs: × (1 + LUXO.vip × nível)) */
+  vipChance(day){ return (day.vip || 0) * (this.div ? this.div.vip : 1) * (this.ponto.vip == null ? 1 : this.ponto.vip) * this.repVip * (1 + LUXO.vip * luxoNivel(this)); }
   buildSchedule(day){
     const out = [], efood = efoodAberto(this.save);
     const lug = this.tables.filter(t => t.open).reduce((a, t) => a + t.seats, 0);
     const cl = CLIMA[this.clima], ev = EVENTOS[this.evento] || null;   // v10.6: o evento de bairro (this.evento só é '', 'junina' ou 'jogo')
     const evG = ev ? ev.groups[this.ponto.id] * (this.evento === 'jogo' && this.tvLigada ? ev.tv.groups : 1) : 1;
     // a nota do Gurugol (v8.4) traz mais ou menos gente
-    const N = Math.max(3, Math.round(day.groups * this.divF * movimentoSalao(lug) * (cl ? cl.groups : 1) * evG * avalMovimento(this.save.aval, this.ponto) * vegMov(this.cursos) * (this.ponto.grupos || 1) * this.exigBravoF(day))), vipP = (day.vip || 0) * (this.div ? this.div.vip : 1) * (this.ponto.vip == null ? 1 : this.ponto.vip) * this.repVip;
+    const N = Math.max(3, Math.round(day.groups * this.divF * movimentoSalao(lug) * (cl ? cl.groups : 1) * evG * avalMovimento(this.save.aval, this.ponto) * vegMov(this.cursos) * (this.ponto.grupos || 1) * this.exigBravoF(day))), vipP = this.vipChance(day);
     const gap = day.speed * day.time / N;
     let t = 3;
     const forced = day.nu ? randi(1, Math.min(3, N-1)) : -1;
@@ -171,12 +173,13 @@ class Game {
       if (cl && i !== forced && Math.random() < cl.tipoP) type = cl.tipo;   // chuva: entregadores; feriado: famílias
       if (ev && ev.tipo && i !== forced && Math.random() < ev.tipoP) type = ev.tipo;   // v10.6: a festa junina traz famílias
       if ((!efood || this.ponto.semRetirada) && CUSTOMER_TYPES[type].retira) type = this.tipoPequeno();   // v9.6.4: a Efood ainda não abriu: sem entregador (v10: no Terraço Suíça, nunca: semRetirada, também na chuva e na sexta-feira)
-      let vip = false;
+      let vip = false, exig = false;
       if ((day.vip || vipDev) && (i === forcedVip || (day.vip && Math.random() < vipP))){
         if (!VIP.types.includes(type) || (this.ponto.tipos && !this.ponto.tipos[type])) type = pick(vipTipos(this.ponto));   // v10: o VIP é de um tipo do ponto (no Terraço não vem estudante; casal só lá)
         vip = true;
+        if (this.mode === 'carreira' && this.ponto.nivel === 3 && luxoNivel(this) >= 3 && Math.random() < LUXO.exigAv) exig = true;   // v10.7: na Avenida, com luxo 3 ou mais, alguns VIPs são exigentes
       }
-      out.push({ t, type, color: pick(colors.concat([0,1,2,3])), vip });
+      out.push(exig ? { t, type, color: pick(colors.concat([0,1,2,3])), vip, exig } : { t, type, color: pick(colors.concat([0,1,2,3])), vip });
       t += gap * (0.7 + Math.random()*0.6);
     }
     // v10.6, o jogo do Brasil: as chegadas se espalham pelas três fases do turno (antes, durante e depois), na ordem em que estavam; a última fatia fica com o resto
@@ -207,8 +210,8 @@ class Game {
     // só AVAL.porDia grupos sorteados do dia avaliam no Gurugol (quem fica para o fim do dia não avalia)
     // v10.1: o VIP exigente sempre avalia e não entra no sorteio
     const exg = this.mode === 'carreira' && !!this.ponto.exigente;
-    out.forEach(s => { if (exg && s.vip) s.av = true; });
-    const idx = out.map((_, i) => i).filter(i => !(exg && out[i].vip));
+    out.forEach(s => { if ((exg && s.vip) || s.exig) s.av = true; });
+    const idx = out.map((_, i) => i).filter(i => !((exg && out[i].vip) || out[i].exig));
     for (let k = 0; k < Math.min(AVAL.porDia, idx.length); k++) out[idx.splice(randi(0, idx.length - 1), 1)[0]].av = true;
     return out;
   }
@@ -989,10 +992,10 @@ class Game {
     const encanta = A.humor.encanta + (g.corCerta ? A.bonus.cor : 0) + (g.corrente ? A.bonus.corrente : 0) + (g.capricho ? A.bonus.crit : 0);
     // v8.6.6: a decoração à mostra e a toalha da mesa em que o grupo sentou (g.table ainda vale aqui, também para quem sai bravo)
     const decor = DECOR.filter(d => decorOn(this, d.id)).map(d => d.id), toalha = !!(g.table && g.table.toalha);
-    if (toalha) decor.push('toalha');
-    const amb = A.amb.base + (eq.tv ? A.amb.tv : 0) + (eq.som ? A.amb.som : 0) + (this.seloOn ? A.amb.selo : 0) + (this.maquinaOn ? A.amb.maquina : 0) + (this.up.ventilador ? A.amb.ventilador : 0) + (eq.tvs === 1 ? A.amb.tvs : eq.tvs === 2 ? A.amb.tvsPlus : 0) +
-      (g.coffee ? A.amb.cafe : 0) + (this.up.confGourmet && (g.docesDados > 0 || g.docesMarmDados > 0) ? (this.up.confAlta ? A.amb.doceAlta : A.amb.doce) : 0) + (g.drinksDados > 0 ? A.amb.drink : 0) + (this.up.louca ? A.amb.louca : 0) + (eq.couvert ? A.amb.couvert : 0) + (musicaDe(eq) ? musicaDe(eq).amb : 0) + (this.trashFull ? A.amb.lixo : 0) +
-      decor.reduce((a, id) => a + (id === 'toalha' ? A.amb.toalha : decorOf(id).amb != null ? decorOf(id).amb : A.amb[decorOf(id).grupo === 'plantas' ? 'planta' : 'rosa']), 0);
+    if (toalha && !(this.save.moveis && this.save.moveis.linho)) decor.push('toalha');
+    // v10.7: o Ambiente vem do nível de luxo (LUXO: enfeites, móveis, TV, som, música, endereço e fama) e só o que acontece na hora soma por fora
+    const amb = A.amb.base + LUXO.ambMax * Math.min(1, luxoTot(this) / LUXO.pede[clamp(this.ponto.nivel, 1, 4) - 1]) + (this.seloOn ? A.amb.selo : 0) +
+      (g.coffee ? A.amb.cafe : 0) + (this.up.confGourmet && (g.docesDados > 0 || g.docesMarmDados > 0) ? (this.up.confAlta ? A.amb.doceAlta : A.amb.doce) : 0) + (g.drinksDados > 0 ? A.amb.drink : 0) + (this.trashFull ? A.amb.lixo : 0);
     // o entregador (v8.6): a espera no balcão conta na espera e na agilidade
     // v8.6.7: cada um avalia só o que viveu (null: não viu). Bravo: da fila, só a espera; antes do pedido, mais agilidade e ambiente;
     // depois do pedido, sem comer, mais o cardápio; o entregador bravo não levou a marmita. Quem comeu (ou pagou) dá os 5
@@ -1769,11 +1772,21 @@ class Game {
   }
   /* decoração (v8.6.5): enfeite novo (fica à mostra), à vontade */
   buyDecor(id){
-    if (!this.cartaoAberto('decor')) return false;
+    if (!this.cartaoAberto('luxo')) return false;
     const d = decorOf(id), dec = this.save.decor;
     if (!d || id in dec || this.save.bank < d.cost || (d.nivel && this.ponto.nivel < d.nivel && !devLivre())) return false;
     this.save.bank -= d.cost; caixaGasto(this.save, 'sal', d.cost);
     dec[id] = 1;
+    writeSave(this.save); Sfx.coin();
+    return true;
+  }
+  /* v10.7: o próximo degrau do jogo de mesas (MOVEIS): só depois do anterior e no ponto do `nivel` em diante; vai junto na mudança */
+  buyMovel(id){
+    if (!this.cartaoAberto('luxo')) return false;
+    const i = MOVEIS.findIndex(m => m.id === id), m = MOVEIS[i], mv = this.save.moveis;
+    if (!m || mv[id] || (i > 0 && !mv[MOVEIS[i - 1].id]) || this.save.bank < m.cost || (this.ponto.nivel < m.nivel && !devLivre())) return false;
+    this.save.bank -= m.cost; caixaGasto(this.save, 'sal', m.cost);
+    mv[id] = 1;
     writeSave(this.save); Sfx.coin();
     return true;
   }
@@ -1954,6 +1967,17 @@ class Game {
     if (sv.convPlanta === 1 && sv.decor.espada) d.espada = 1;
     sv.decor = normDecor(d); writeSave(sv); return true;
   }
+  /* v10.7: todo o luxo do ponto de graça: os enfeites, o jogo de mesas e a toalha em todas as mesas (sem mexer no caixa) */
+  devLuxoTudo(){
+    if (!DEV.on) return false;
+    const sv = this.save, mv = {};
+    this.devDecor(true);
+    MOVEIS.forEach(m => { if (m.nivel <= this.ponto.nivel) mv[m.id] = 1; });
+    sv.moveis = normMoveis(mv);
+    sv.salao.mesas.concat(this.estoque).forEach(m => { m.t = 1; });
+    this.salaoSaved();
+    return true;
+  }
   /* v10.2.1: manutenção de tudo "nova" (1) ou "gasta" (0,2: para testar as quebras) */
   devManut(v){
     if (!DEV.on) return false;
@@ -2054,6 +2078,13 @@ class Game {
     writeSave(sv); return true;
   }
   /* DEV.forca[k] = v (v vazio ou 'sorteio' volta ao sorteio); vale a partir do próximo dia que começar */
+  /* v10.7: o nível de luxo forçado (0 a 5; null volta ao normal): vale no VIP, no exigente da Avenida e na nota de Ambiente */
+  devLuxo(n){
+    if (!DEV.on) return false;
+    if (n == null || n === '') delete DEV.forca.luxo; else DEV.forca.luxo = clamp(Math.round(+n) || 0, 0, 5);
+    if (this.state === 'shop') this.resetDay(this.shopNext);
+    return true;
+  }
   devForca(k, v){
     if (!DEV.on) return false;
     if (!v || v === 'sorteio') delete DEV.forca[k]; else DEV.forca[k] = v;

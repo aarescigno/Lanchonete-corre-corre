@@ -68,7 +68,7 @@ const loja=(H,grupo,aba)=>{ H.L.setShopGrupo(grupo); H.L.setShopTab(aba); return
   ok(L.folhaItens({ tonhao:1, dani:1, musica:1 }).indexOf('trio de cordas')>=0 && L.folhaItens({ tonhao:1, dani:1, musica:2 }).indexOf('pianista e afinação')>=0,'a folha diz "trio de cordas" e "pianista e afinação"'); }
 { const H=jogo('garagem',{ cap:8, equipe:{ tonhao:0, dani:1 } },2); const t=loja(H,'equipe','dani');
   ok(/aprendiz \(R\$ 15\/dia\)/.test(t) && !/sem salário/.test(t),'o cartão da Dani no nível 1 diz "aprendiz (R$ 15/dia)"'); }
-{ const H=jogo('terraco'); const t=loja(H,'lanchonete','divulga');
+{ const H=jogo('terraco'); const t=loja(H,'lanchonete','luxo');
   ok(/Trio de cordas · R\$ ?500\/dia/.test(t) && /Pianista · R\$ ?305\/dia/.test(t) && !/Quarteto/.test(t),'o cartão da música: "Trio de cordas · R$ 500/dia" e "Pianista · R$ 305/dia"'); }
 
 // ---------- 4. o cardápio × 1,2 ----------
