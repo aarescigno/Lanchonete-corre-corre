@@ -19,6 +19,9 @@ if(process.env.COUVERT_CFG){ Object.assign(L.STAFF.couvert,JSON.parse(process.en
 if(process.env.EVENTOS_CFG){ const c=JSON.parse(process.env.EVENTOS_CFG), mescla=(a,b)=>{ for(const k in b){ if(b[k]&&typeof b[k]==='object'&&!Array.isArray(b[k])&&a[k]&&typeof a[k]==='object') mescla(a[k],b[k]); else a[k]=b[k]; } }; mescla(L.EVENTOS,c); }   // v10.6: EVENTOS_CFG='{"jogo":{"groups":{"garagem":1.05}}}' troca números dos eventos em runtime
 if(process.env.CLIMA_CFG){ const c=JSON.parse(process.env.CLIMA_CFG); for(const k in c) Object.assign(L.CLIMA[k],c[k]); }
 const N=+process.argv[2]||20;
+// v10.10: NOITE=1 faz de todo dia jogado no Terraço a noite da estrela (grupos × 1,3, metas × 1,2, o crítico e o Bráulio); mostra a linha NOITE com os pontos do guia e as estrelas
+const NOITE_ON=process.env.NOITE==='1'; if(NOITE_ON) g.noiteDia=n=>g.ponto.id==='terraco'?{real:false}:null;
+if(process.env.NOITE_CFG) Object.assign(L.NOITE,JSON.parse(process.env.NOITE_CFG));   // v10.10: NOITE_CFG='{"meta":1.15}' troca números da noite em runtime
 // v9: PONTO=industrial joga os dias no ponto da área industrial (salão de 20 lugares, fogão industrial, TVs com anúncios, cadeirinhas; DIAS padrão 8,9,10)
 const PONTO=process.env.PONTO||'garagem', IND=PONTO==='industrial', TE=PONTO==='terraco', AV=PONTO==='avenida'||TE;   /* v10: PONTO=terraco joga os dias 8 a 10 no Terraço Suíça (5 mesas de 4, fogão industrial, poltronas, couvert com taxa, o curso de restaurante, Tonhão nível 4; JOCA, ESPRESSO, CAMI, ANSELMO e GOURMET como na Avenida; AV vale para os dois pontos de cima) */ //   // v9.1: PONTO=avenida joga os dias no Restaurante na Avenida Brasil (24 lugares, fogão industrial, sofás, águas saborizadas, couvert com taxa e o curso de restaurante; DIAS padrão 8,9,10)
 // EQUIPE='{"tonhao":1,"dani":1,"daniTasks":["pratos","lavar"]}' node balance.js 40
@@ -112,6 +115,7 @@ const tot={rev:0,lucro:0,quebras:0,dias:0};
 for(const n of DIAS){
   const res=R[n];
   const m=res.map(r=>r.money), mean=m.reduce((a,b)=>a+b,0)/N, d=g.diaPonto(L.diaOf(n));   // v9: com as metas do ponto
+  if(NOITE_ON&&TE){ const r5=v=>Math.round(v*L.NOITE.meta/5)*5; d.meta=r5(d.meta); d.expert=r5(d.expert); }   // v10.10: as metas da noite
   const avg=k=>(res.reduce((a,r)=>a+(r[k]||0),0)/N).toFixed(0);
   const pass=res.filter(r=>r.passed).length, exp=res.filter(r=>r.money>=d.expert).length;
   const so=m.slice().sort((a,b)=>a-b), q=f=>so[Math.min(so.length-1,Math.floor(f*so.length))];
@@ -124,5 +128,10 @@ for(const n of DIAS){
     console.log('      imprevistos | quebras/dia',qt.toFixed(2),'(fogão',qb('fogao'),'geladeira',qb('geladeira'),'cafeteira',qb('cafeteira')+')','dias com quebra',res.filter(r=>r.quebras.length).length+'/'+N,'| chuva',res.filter(r=>r.clima==='chuva').length+'/'+N,'feriado',res.filter(r=>r.clima==='feriado').length+'/'+N,'| revisão R$',rev.toFixed(0),'('+(mean>0?(rev/mean*100).toFixed(0):'-')+'% do lucro)','conserto R$',con.toFixed(0),'| estado médio no fim: fogão',(100*res.reduce((a,r)=>a+r.manut.fogao,0)/N).toFixed(0)+'% geladeira',(100*res.reduce((a,r)=>a+r.manut.geladeira,0)/N).toFixed(0)+'% cafeteira',(100*res.reduce((a,r)=>a+r.manut.cafeteira,0)/N).toFixed(0)+'%');
     if(n>=3){ tot.rev+=rev; tot.lucro+=mean; tot.quebras+=n>=L.MANUT.dia?qt:0; tot.dias+=n>=L.MANUT.dia?1:0; }
   }
+}
+if(NOITE_ON&&TE){   // v10.10: a noite da estrela: a meta batida e os pontos do guia (média por linha, em frações) e as estrelas
+  const rs=DIAS.flatMap(n=>R[n]).map(r=>r.noite).filter(Boolean), n=rs.length||1, av=k=>(rs.reduce((a,r)=>a+r.lin[k],0)/n).toFixed(2);
+  const ps=DIAS.flatMap(n=>R[n]), ok=ps.filter(r=>r.passed).length;
+  console.log('NOITE (v10.10) | meta batida em '+ok+'/'+ps.length+' ('+Math.round(ok/ps.length*100)+'%) | pontos médios '+(rs.reduce((a,r)=>a+r.tot,0)/n).toFixed(1)+' | linhas (fração: '+L.NOITE.linhas.join(', ')+') '+L.NOITE.linhas.map((_,k)=>av(k)).join(' · ')+' | estrelas: nenhuma '+rs.filter(r=>r.est===0).length+', 1 '+rs.filter(r=>r.est===1).length+', 2 '+rs.filter(r=>r.est===2).length+', 3 '+rs.filter(r=>r.est===3).length+' (de '+rs.length+')');
 }
 if(MODO!=='sem'&&tot.dias) console.log('RESUMO',MODO,'| dias 3 a '+NMAX+': revisão =',(tot.rev/tot.lucro*100).toFixed(1)+'% do lucro médio | quebras/dia (dias '+L.MANUT.dia+' a '+NMAX+') =',(tot.quebras/tot.dias).toFixed(2),'(1 a cada',(tot.dias/tot.quebras).toFixed(1),'dias)');

@@ -106,7 +106,12 @@ class Game {
   resetDay(n, treino){
     if (!treino) this.sairTreino();
     this.mode = treino ? 'treino' : n === 0 ? 'semfim' : 'carreira';
+    this.noite = treino || !n ? null : this.noiteDia(n); this.braulioFeliz = false;   // v10.10: a noite da estrela do dia (null, ou { real })
     this.day = treino ? TREINO : n === 0 ? ENDLESS : this.diaPonto(diaOf(n));
+    if (this.noite){   // v10.10: a noite traz NOITE.groups × os grupos e NOITE.meta × as metas (meta e expert, em múltiplos de 5)
+      const r5 = v => Math.round(v * NOITE.meta / 5) * 5;
+      this.day = Object.assign({}, this.day, { groups:this.day.groups * NOITE.groups, meta:r5(this.day.meta), expert:r5(this.day.expert) });
+    }
     if (!treino && n && DEV.on && DEV.forca.gripe) this.day = Object.assign({}, this.day, { gripe:DEV.forca.gripe === 'gripado' });   // v10.2.2
     this.money = 0; this.custo = 0; this.contas = 0; this.paidDiv = 0; this.conserto = 0; this.pontos = 0;
     this.visita = treino || !n ? null : this.criticoDia(n); this.ficha = null;   // v10.9: o crítico do dia (null, ou { n:1|2, boato, real }) e a ficha da visita (fechada quando o grupo dele sai)
@@ -190,12 +195,39 @@ class Game {
      (o dia que passou sem visita, por exemplo no modo dev, vale no seguinte); o modo dev força por cima (DEV.forca.critico: 'hoje' = a 1ª, 'boato' = a 2ª, sem mexer no save) */
   criticoDia(n){
     if (!n) return null;
+    if (this.noiteDia(n)) return null;   // v10.10: a noite tem o crítico dela (de cara limpa), e nenhuma visita surpresa
     const f = DEV.on && DEV.forca.critico;
     if (f === 'hoje') return { n:1, boato:false, real:false };
     if (f === 'boato') return { n:2, boato:true, real:false };
     const sv = this.save, g = sv.guia, c = HISTORIA[sv.cap - 1];
+    if (histLiga() && g && sv.cap >= NOITE.cap && g.ult > 0 && this.ponto.id === 'terraco' && this.sorteiaSurpresa(n)) return { n:0, boato:false, real:true, surpresa:true };   // v10.10: depois da 1ª noite
     if (!histLiga() || !g || sv.cap !== CRITICO.cap || !c || c.ponto !== sv.salao.ponto || g.n >= 2 || !g.prox || g.prox > n) return null;
     return { n:g.n + 1, boato:g.n === 1, real:true };
+  }
+  /* v10.10, a noite da estrela do dia n (null, ou { real:true se foi marcada na lojinha, false se veio do modo dev }): só no Terraço; marcada em save.guia.noite (cap. 14 em diante) */
+  noiteDia(n){
+    if (!n || this.mode === 'treino' || this.ponto.id !== 'terraco') return null;
+    const g = this.save.guia;
+    if (histLiga() && g && this.save.cap >= NOITE.cap && g.noite === n) return { real:true };   // a que o jogador marcou
+    return DEV.on && DEV.forca.noite ? { real:false } : null;   // a do modo dev ("Marcar hoje"): não mexe no save
+  }
+  /* a visita surpresa do crítico depois da 1ª noite: NOITE.volta de chance por dia, sorteada uma vez por dia (recomeçar o dia não sorteia de novo) */
+  sorteiaSurpresa(n){
+    const m = this.supSort || (this.supSort = {});
+    if (!(n in m)) m[n] = Math.random() < NOITE.volta;
+    return m[n];
+  }
+  /* o cartão da lojinha: 'marcar' (livre), 'espera' (N dias), ou '' (sem cartão: fora do Terraço, antes do cap. 14 ou com as 3 estrelas) */
+  get noiteCartao(){
+    const sv = this.save, g = sv.guia;
+    if (this.ponto.id !== 'terraco' || !g || sv.cap < NOITE.cap || !histLiga() || g.est >= 3) return null;
+    const falta = g.ult ? g.ult + NOITE.espera + 1 - this.proxDia : 0;
+    return { marcada:g.noite === this.proxDia, falta:Math.max(0, falta) };
+  }
+  marcaNoite(){
+    const c = this.noiteCartao; if (!c || c.falta > 0) return false;
+    this.save.guia.noite = c.marcada ? 0 : this.proxDia; writeSave(this.save); Sfx.tap();
+    return true;
   }
   /* a ficha da visita (fechada quando o grupo do crítico sai, pago ou bravo): 5 itens de 0 a 2 garfos, na ordem de CRITICO.itens; bravo (0 corações) zera tudo */
   fechaFicha(g, bravo){
@@ -271,6 +303,12 @@ class Game {
       Object.assign(c, { type:CRITICO.tipo, vip:true, exig:true, critico:true, disfarce:true });
       out.sort((a, b) => a.t - b.t);
     }
+    // v10.10, a noite da estrela: o crítico (de cara limpa) e o Bráulio chegam sozinhos, a mais, nas faixas de NOITE; os dois sempre avaliam
+    if (this.noite){
+      const win = day.speed * day.time;
+      [[NOITE.critico, { critico:true }], [NOITE.braulio, { braulio:true }]].forEach(([f, x]) => out.push(Object.assign({ t:rand(f[0], f[1]) * win, type:CRITICO.tipo, color:pick(colors.concat([0,1,2,3])), vip:true, exig:true }, x)));
+      out.sort((a, b) => a.t - b.t);
+    }
     // só AVAL.porDia grupos sorteados do dia avaliam no Gurugol (quem fica para o fim do dia não avalia)
     // v10.1: o VIP exigente sempre avalia e não entra no sorteio
     const exg = this.mode === 'carreira' && !!this.ponto.exigente;
@@ -278,6 +316,20 @@ class Game {
     const idx = out.map((_, i) => i).filter(i => !((exg && out[i].vip) || out[i].exig));
     for (let k = 0; k < Math.min(AVAL.porDia, idx.length); k++) out[idx.splice(randi(0, idx.length - 1), 1)[0]].av = true;
     return out;
+  }
+  /* v10.10: o fim da noite da estrela: os pontos do guia (as duas melhores fichas das visitas, a ficha da noite, a nota do Gurugol, o luxo, as estrelas do dia, o salão e o Bráulio),
+     as estrelas pelos cortes (o modo dev troca por DEV.forca.guia: 'rec', 1, 2 ou 3) e, se a noite foi marcada de verdade, o save: a melhor marca (nunca cai), o último dia, o boletim e a noite desmarcada.
+     Devolve { real, est (desta noite), melhor, nova, rec, lin (seis frações), tot } */
+  fechaNoite(stars, d){
+    const sv = this.save, real = this.noite.real, g = sv.guia || normGuia({ n:2, prox:0, v:[] });
+    const soma = f => f ? f.it.reduce((a, x) => a + x, 0) : 0, vs = g.v.map(soma).sort((a, b) => b - a), ge = avalGeral(sv.aval);
+    const pts = guiaPontos({ fichas:[vs[0] || 0, vs[1] || 0, soma(this.ficha)], nota:ge ? Math.round(ge.nota * 10) / 10 : null, luxo:luxoNivel(this), dia:stars, salao:this.stats.lost === 0, braulio:this.braulioFeliz });
+    let est = estrelasDe(pts.tot);
+    const f = DEV.on && DEV.forca.guia; if (f) est = f === 'rec' ? 0 : clamp(Math.round(+f) || 0, 0, 3);
+    const melhor = Math.max(est, g.est), nova = est > g.est, lin = pts.lin.map((v, i) => Math.round(v / NOITE.max[i] * 1000) / 1000);
+    if (real){ g.est = melhor; g.rec = melhor === 0 ? 1 : 0; g.ult = d.n; g.noite = 0; g.bol = lin.slice(); sv.guia = g; }
+    this.manualVer('b-michelzao'); this.manualVer('c-braulio');
+    return { real, est, melhor, nova, rec:melhor === 0, lin, tot:pts.tot };
   }
   /* v10.1: o exigente que saiu bravo ontem tira EXIGENTE.bravoMov do movimento de hoje; a reputação (nota do Gurugol) mexe na chance de VIP no Terraço */
   exigBravoF(day){ return this.mode === 'carreira' && this.ponto.exigente && this.save.exigBravo && this.save.exigBravo === day.n - 1 ? EXIGENTE.bravoMov : 1; }
@@ -290,10 +342,10 @@ class Game {
     if (!MANUT.on || !n){ delete m.sorteio; return; }
     if (m.sorteio && m.sorteio.d === n){ if (this.devForcaSorteio(m.sorteio)) writeSave(this.save); return; }
     let clima = '';
-    const vis = this.criticoDia(n), boato = !!(vis && vis.boato);   // v10.9: o dia do boato não tem clima nem evento de bairro (e não mexe no save.evento)
+    const vis = this.criticoDia(n), noite = !!this.noiteDia(n), boato = !!(vis && vis.boato) || noite;   // v10.9: o dia do boato não tem clima nem evento de bairro (e não mexe no save.evento); v10.10: a noite da estrela também não, nem quebra nova
     const evd = boato ? '' : eventoSemana(this.save, n);   // v10.6: no dia do evento de bairro não há chuva nem feriado
     if (n >= CLIMA_DIA && !evd && !boato){ const r = Math.random(); if (r < CLIMA.chuva.chance) clima = 'chuva'; else if (r < CLIMA.chuva.chance + CLIMA.feriado.chance) clima = 'feriado'; }
-    const quebra = n >= MANUT.dia ? MANUT.equip.filter(q => Math.random() < manutChance(m[q.id])).map(q => ({ id:q.id, f:rand(MANUT.quando[0], MANUT.quando[1]) })) : [];
+    const quebra = n >= MANUT.dia && !noite ? MANUT.equip.filter(q => Math.random() < manutChance(m[q.id])).map(q => ({ id:q.id, f:rand(MANUT.quando[0], MANUT.quando[1]) })) : [];
     m.sorteio = { d:n, clima, ev:evd, quebra };
     // v9.4: o fiscal da vigilância (só na Avenida, do 2º dia no ponto em diante), sorteado junto e guardado até o dia acabar
     if (this.ponto.nivel >= FISCAL.nivel && diaNoPonto(this.save, n) >= FISCAL.dia && Math.random() < FISCAL.chance) m.sorteio.fiscal = { f:rand(FISCAL.quando[0], FISCAL.quando[1]) };
@@ -597,6 +649,7 @@ class Game {
     if (dish.rosa){   // v10.8: o Prato da Rosa: a conta sobe, a Bia ganha pontos e o grupo guarda o molho na memória (o comentário no Gurugol)
       grp.rosa = true; grp.bill += ROSA.mais; this.pontos += ROSA.pts; this.stats.rosa++;
       this.addText(cx, cy - 136, 'Prato da Rosa!', AB_COR.petala, 16); this.addSparks(cx, cy - 70, 8, AB_COR.petala);
+      if (grp.braulio) grp.diz(NOITE.falas.prova);   // v10.10
     }
     grp.pratoQ = dish.q || 0; grp.fria = !!dish.fria; if (dish.crit) grp.capricho = true;
     if (tp !== 0) grp.pratoMain = { rosa:!!dish.rosa, crit:!!dish.crit, fria:!!dish.fria };   // v10.9: o prato principal (a ficha do crítico)
@@ -1202,7 +1255,7 @@ class Game {
     this.gerenteUpdate(dt);   // v10.8
     this.kitchen.update(dt);
     this.tables.forEach(t => { t.sujaT = t.dirty ? t.sujaT + dt : 0; });   // v10.1
-    if (this.visita){ const ruim = this.salaoBagunca() || this.trashFull; this.groups.forEach(g => { if (g.critico && g.seated && ruim) g.salaoSeg += dt; }); }   // v10.9: os segundos de salão bagunçado com o crítico sentado
+    if (this.visita || this.noite){ const ruim = this.salaoBagunca() || this.trashFull; this.groups.forEach(g => { if (g.critico && g.seated && ruim) g.salaoSeg += dt; }); }   // v10.9: os segundos de salão bagunçado com o crítico sentado
     this.esfriar(dt);
     this.updateFx(dt);
     dicaAnda(this, dt);   // v9.6.12
@@ -1279,6 +1332,7 @@ class Game {
     let cap = null;
     sv.capMarm = this.stats.marmitas; sv.capComp = this.stats.completas;
     sv.docesTot = (sv.docesTot || 0) + this.stats.doces;   // v9.6.6: o selo NOVO! da geladeirinha some depois de 5 doces entregues
+    const noiteRes = this.noite && !tomou ? this.fechaNoite(stars, d) : null;   // v10.10: os pontos do guia e as estrelas (antes de conferir o objetivo do capítulo 14)
     if (!tomou && sv.cap <= HISTORIA.length && this.capObj(sv)){
       const co = HISTORIA[sv.cap - 1];
       if (co.obj.azul && m > 0) sv.capAzul++;
@@ -1302,6 +1356,10 @@ class Game {
       const ob = this.capObj(sv, true);
       cap = { n:sv.cap, titulo:co.titulo, itens:ob.itens, ok:ob.ok };
       if (ob.ok) sv.conversa = 'depois';
+    }
+    if (!tomou && this.visita && this.visita.surpresa && this.ficha && sv.guia){   // v10.10: a visita surpresa depois da 1ª noite: a ficha entra e o save guarda as duas melhores
+      const soma = f => f.it.reduce((a, x) => a + x, 0);
+      sv.guia.v = sv.guia.v.concat([this.ficha]).sort((a, b) => soma(b) - soma(a)).slice(0, 2);
     }
     if (!tomou && histLiga() && sv.histV === 1 && sv.cap === 3){   // v10.5.2: as conversas do meio do cap. 3 (Garagem)
       if (sv.conversa === 'depois'){ sv.convQuit = 1; sv.convTeto = 1; }   // o capítulo se cumpre hoje: a conversa de depois já diz o mesmo
@@ -1349,6 +1407,7 @@ class Game {
     writeSave(sv);
     this.result = { daniFeitas:this.dani.feitas, jocaFeitas:this.joca.feitas, camiFeitas:this.cami.feitas, cafesEsp:this.stats.cafesEsp, drinks:this.stats.drinks, doces:this.stats.doces, docesMarm:this.stats.docesMarm, day:d.n, money:m, fat, pontos:Math.round(this.pontos), custo:Math.round(this.custo), contas:this.contas, aluguel:this.ponto.aluguel, div:this.paidDiv, divName:this.div ? this.div.name : '', meta:d.meta, bom:bomGoal(d), expert:d.expert, passed, stars, served:this.stats.served, lost:this.stats.lost, lostBy:this.stats.lostBy, lotadoT:Math.round(this.stats.lotadoT), atraso:Math.round(this.atraso), full:this.stats.full, chain:this.stats.chain, vip:this.stats.vip, vipLost:this.stats.vipLost, marmitas:this.stats.marmitas, completas:this.stats.completas, efood:this.efood, esfriou:this.stats.esfriou, jogadas:this.stats.jogadas, sobra:this.marmitas().filter(o => o.onde !== 'fogao').length, juice:this.stats.juice, juiceMiss:this.stats.juiceMiss, sucoEsp:this.stats.sucoEsp, bebida:this.bebida.id, trash:this.stats.trash, washed:this.stats.washed, income, paid:this.paid, reason:this.reason, conserto:this.conserto, consertos:this.stats.consertos, quebras:this.quebras.filter(q => q.on).map(q => ({ id:q.id, fixed:q.fixed })), clima:this.clima, manut:Object.assign({}, this.manut), par, forcado, neg:sv.neg, emp:Object.assign({}, sv.emp), atrasou, tomou, socorro, devido, cap, aval:{ dia:avDia, geral:avalGeral(sv.aval), n:sv.aval.length, coment, comentK, teto:avalTeto(this.ponto) } };
     this.result.evento = this.evento; this.result.amanha = amanha;   // v10.6
+    this.result.noite = noiteRes;   // v10.10: { real, est, melhor, nova, rec, lin, tot } ou null
     this.result.critico = this.ficha ? { it:this.ficha.it.slice(), real:!!(this.visita && this.visita.real) } : null; this.result.boato = !!(this.visita && this.visita.boato);   // v10.9: o cartão da ficha no fim do dia
     this.result.multaVig = this.multaVig; this.result.vig = this.fiscal && this.fiscal.res ? { res:this.fiscal.res, falhas:Object.assign({}, this.fiscal.falhas) } : null;   // v9.4
     if (tomou){ this.setState('falencia'); Sfx.lose(); return; }
@@ -1413,6 +1472,7 @@ class Game {
     const o = c.obj, itens = [], ge = avalGeral(sv.aval), nota = ge ? Math.round(ge.nota * 10) / 10 : null;
     if (o.equipe){ const nm = o.equipe === 'cami' ? 'Cami' : 'Lia', fem = sv.equipe[o.equipe] > 0; itens.push({ txt:fem ? nm + ' contratada' : 'Contratar a ' + nm, ok:fem }); }   // v10.5.2: contratar a Cami (cap. 7) ou a Lia (cap. 10)
     if (o.compra === 'rosa') itens.push({ txt:sv.rosa ? 'Molho da Rosa aprendido' : 'Aprender o molho da Rosa', ok:!!sv.rosa });   // v10.8, cap. 12
+    if (o.estrela) itens.push({ txt:'Ganhar a estrela do Michelzão', ok:!!sv.guia && sv.guia.est >= o.estrela });   // v10.10, cap. 14
     if (o.critico) itens.push({ txt:'Receber o crítico do Michelzão ' + o.critico + ' vezes (' + Math.min(sv.guia ? sv.guia.n : 0, o.critico) + ' de ' + o.critico + ')', ok:!!sv.guia && sv.guia.n >= o.critico });   // v10.9, cap. 13
     if (o.rosa) itens.push({ txt:o.rosa + ' Pratos da Rosa servidos num dia, ' + o.vezes + ' vezes (' + Math.min(sv.capVezes, o.vezes) + ' de ' + o.vezes + ')', ok:sv.capVezes >= o.vezes });
     if (o.vip) itens.push({ txt:o.vip + ' VIPs bem atendidos num dia, ' + o.vezes + ' vezes (' + Math.min(sv.capVezes, o.vezes) + ' de ' + o.vezes + ')', ok:sv.capVezes >= o.vezes });
@@ -1434,7 +1494,7 @@ class Game {
   /* v10.9: o capítulo 13 começa: sorteia a 1ª visita do crítico (de CRITICO.primeira dias à frente) e planta no Gurugol o comentário do boato */
   comecaCritico(){
     const sv = this.save;
-    sv.guia = { n:0, prox:sv.dia + randi(CRITICO.primeira[0], CRITICO.primeira[1]), v:[] }; sv.convCrit = 0;
+    sv.guia = normGuia({ n:0, prox:sv.dia + randi(CRITICO.primeira[0], CRITICO.primeira[1]), v:[] }); sv.convCrit = 0;
     sv.avalCom = plantaBoato(sv.avalCom, sv.dia);
   }
   /* o capítulo termina (a conversa de depois já tocou): o seguinte começa; ao entrar no 2, a Dani chega como aprendiz.
@@ -2108,7 +2168,7 @@ class Game {
     sv.convPlanta = D.dia > HIST_PLANTA.dia ? 1 : 0; if (sv.convPlanta) sv.decor = normDecor({ espada:1 });
     sv.convCard = D.dia > HIST_CARDAPIO.dia ? 1 : 0; sv.convDiv = D.dia >= DIVULGA_DIA ? 1 : 0; sv.convEnt = D.dia >= HIST_ENTREGA.dia ? 1 : 0;
     sv.vontDoce = sv.vontCafe = sv.vontDoceV = sv.vontCafeV = 0;   // v10.5.3: a vontade recomeça no capítulo
-    sv.convCrit = n > CRITICO.cap ? 1 : 0; if (n === CRITICO.cap) this.comecaCritico(); else if (n > CRITICO.cap) sv.guia = { n:2, prox:0, v:[] };   // v10.9: o capítulo 13 começa com o sorteio da 1ª visita
+    sv.convCrit = n > CRITICO.cap ? 1 : 0; if (n === CRITICO.cap) this.comecaCritico(); else if (n > CRITICO.cap) sv.guia = normGuia({ n:2, prox:0, v:n === NOITE.cap ? [{ d:D.dia - 4, it:[2,2,2,1,1] }, { d:D.dia - 2, it:[2,2,2,1,1] }] : [], est:n > NOITE.cap ? 1 : 0 });   // v10.9: o capítulo 13 começa com o sorteio da 1ª visita; v10.10: o 14 começa com duas fichas de 8 e o Fim com a 1ª estrela
     sv.convExig = n >= 10 ? 1 : 0; sv.socorro = 0; sv.convSocorro = 0; sv.convQuit = sv.convTeto = n > 3 ? 1 : 0;
     sv.efoodNota = D.dia > HIST_ENTREGA.dia ? 1 : 0; sv.vipVisto = D.dia > 5 ? 1 : 0;
     // equipe, cursos e melhorias pela tabela (o Fim: tudo no máximo, com a Lia)
@@ -2151,7 +2211,7 @@ class Game {
   devCumpre(){
     const sv = this.save;
     if (!DEV.on || !histLiga() || sv.cap > HISTORIA.length) return false;
-    sv.conversa = 'depois'; writeSave(sv);
+    sv.conversa = 'depois'; if (sv.cap === NOITE.cap && sv.guia) sv.guia.est = Math.max(1, sv.guia.est); writeSave(sv);   // v10.10: no cap. 14 o objetivo é a 1ª estrela
     if (this.mode === 'carreira' && (this.state === 'playing' || this.state === 'paused')) this.devFimDia();
     return true;
   }

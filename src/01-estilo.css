@@ -398,3 +398,13 @@ table.rank tr.me td{background:#fbe7a8}
 .dev-panel .dev-pessoa{display:flex;align-items:center;gap:calc(var(--u)*6);margin-top:calc(var(--u)*4)}
 .dev-panel .dev-nome{font-weight:700;min-width:calc(var(--u)*150)}
 .dev-panel .dev-pessoa .btn{min-width:max(36px,calc(var(--u)*38));padding:0}
+/* v10.10: o selo do Michelzão no menu e o boletim da noite da estrela */
+.selo{display:block;margin:calc(var(--u)*2) auto 0;padding:calc(var(--u)*2) calc(var(--u)*10);font:800 max(11px,calc(var(--u)*13)) var(--fb);color:#7A2E3A;background:#FFF3C4;border:calc(var(--u)*2) solid var(--tinta);border-radius:calc(var(--u)*12);cursor:pointer;touch-action:manipulation;-webkit-tap-highlight-color:transparent}
+.guia-panel{text-align:center}
+.guia-est{margin:calc(var(--u)*4) 0 calc(var(--u)*2)}
+.guia-rec{min-height:1.2em;margin:0 0 calc(var(--u)*4);font-weight:800;color:#7A2E3A}
+.guia-barras{max-width:calc(var(--u)*360);margin:0 auto calc(var(--u)*8)}
+.guia-lin{display:flex;align-items:center;gap:calc(var(--u)*8);margin:calc(var(--u)*3) 0;font-weight:700;font-size:max(11px,calc(var(--u)*14))}
+.guia-lin span{flex:0 0 28%;text-align:right}
+.guia-bar{flex:1;height:max(8px,calc(var(--u)*10));background:#14223A;border:1.5px solid #0B1424;border-radius:3px;overflow:hidden}
+.guia-bar i{display:block;height:100%;width:0;background:linear-gradient(#F7DA4F,#E3B21E)}

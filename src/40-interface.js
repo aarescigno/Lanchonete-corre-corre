@@ -9,7 +9,7 @@ const game = new Game(canvas, ctx);
 /* quem nunca fez a Missão zero (e ainda está no dia 1) encontra o botão dela em destaque */
 function treinoPrimeiro(){ return !game.save.treino && game.proxDia <= 1 && !DEV.on; }
 
-const SCREENS = ['ov-menu','ov-manual','ov-intro','ov-treino','ov-pause','ov-end','ov-shop','ov-falencia','ov-endless','ov-rank','ov-ver','ov-app','ov-abertura','ov-conversa','ov-continua'];
+const SCREENS = ['ov-menu','ov-manual','ov-intro','ov-treino','ov-pause','ov-end','ov-shop','ov-falencia','ov-endless','ov-rank','ov-ver','ov-app','ov-abertura','ov-conversa','ov-continua','ov-guia'];
 function showOnly(ids){
   SCREENS.forEach(id => { const el = $(id); if (!el) return; if (ids.indexOf(id) >= 0) el.classList.add('show'); else el.classList.remove('show'); });
 }
@@ -66,6 +66,7 @@ function buildMenu(){
   $('btn-treino').className = 'btn ' + (treinoPrimeiro() ? 'go' : 'alt');
   resetPede = false; $('btn-reset').textContent = 'Recomeçar do zero';
   $('btn-reset').style.display = novo || sv.fechou ? 'none' : '';   // nada a apagar ainda (ou o botão principal já recomeça)
+  const so = guiaSelo(sv.guia), bs = $('menu-selo'); bs.style.display = so ? '' : 'none'; bs.textContent = so;   // v10.10: o selo do Michelzão (só depois da 1ª noite); o toque abre o último boletim
   buildChips();
 }
 /* modo dev: os dias à escolha (o save dev pula para o dia tocado) */
@@ -204,7 +205,9 @@ const DEV_HOJE = [
   ['apito', 'Apito da fábrica (área industrial)', [['', 'Sorteio'], ['apita', 'Apita'], ['nao', 'Não apita']]],
   ['vontade', 'Vontade de doce e de espresso (sem o curso)', [['', 'Normal'], ['todos', 'Todos pedem']]],   // v10.5.3
   ['rosa', 'Pétala (molho da Rosa)', [['', 'Normal'], ['sempre', 'Sempre']]],   // v10.8
-  ['critico', 'Crítico (em qualquer ponto)', [['', 'Sorteio'], ['hoje', 'Hoje'], ['boato', 'Hoje com boato']]]   // v10.9: no próximo dia que começar; a ficha aparece no fim do dia e não é guardada: o prato da casa da Bia sempre sai com pétala, em qualquer ponto
+  ['critico', 'Crítico (em qualquer ponto)', [['', 'Sorteio'], ['hoje', 'Hoje'], ['boato', 'Hoje com boato']]],   // v10.9: no próximo dia que começar; a ficha aparece no fim do dia e não é guardada: o prato da casa da Bia sempre sai com pétala, em qualquer ponto
+  ['noite', 'Noite da estrela (Terraço, em qualquer capítulo)', [['', 'Sorteio'], ['hoje', 'Marcar hoje']]],   // v10.10: o próximo dia que começar é a noite; o veredito sai no fim, sem mexer no save
+  ['guia', 'Veredito (as estrelas dadas no fim da noite)', [['', 'Normal'], ['rec', 'Recomendado'], ['1', '★'], ['2', '★★'], ['3', '★★★']]]   // v10.10: troca as estrelas, sem mexer nas barras
 ];
 const DEV_MUSICA = ['sem música', 'trio de cordas', 'pianista'];
 function devAbaHoje(body, secao, botao){
@@ -425,6 +428,9 @@ function manualCliente(c, f){
       drawVipBadge(c,40,14,0);
     } else if (t === 'exigente'){   // v10.1
       drawPerson(c,{skin:3,hair:2,hairC:'#2A1D17',pants:'#2F3E5C',chapeu:true,accC:'#2F5F8A'},28,60,{shirt:CHAIRS[1].c,mood:0,s:0.85});
+      drawVipBadge(c,42,14,0,true);
+    } else if (t === 'braulio'){   // v10.10: o chef da Casa Aurora: paletó bordô e bigode, com a plaquinha de exigente
+      drawPerson(c,{skin:2,hair:0,hairC:'#2A1D17',pants:'#2B2B33',shirt:AB_COR.aurora,braulio:true},28,60,{shirt:AB_COR.aurora,mood:1,s:0.85});
       drawVipBadge(c,42,14,0,true);
     } else if (t === 'veg'){
       drawPerson(c,makePeople('estudante',1)[0],22,60,{shirt:CHAIRS[3].c,mood:0,s:0.72});

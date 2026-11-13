@@ -297,7 +297,7 @@ function drawTableOverlay(ctx,g,t,tm,menu){
   if (!grp || grp.state === 'toTable' || grp.state === 'leaving' || !t.open) return;
   drawHearts(ctx,grp,t.cx,t.cy-70,tm);
   if (grp.tempos) drawTempoTrilha(ctx,grp,t.cx,t.cy-54,tm);   // v10
-  if (grp.vipAberto) drawVipBadge(ctx,t.cx-60,t.cy-70,tm,grp.exigente);   // v10.9: o crítico disfarçado não leva plaquinha
+  if (grp.vipAberto) drawVipBadge(ctx,t.cx-60,t.cy-70,tm,grp.exigente,grp.critico);   // v10.9: o crítico disfarçado não leva plaquinha
   const pul = RM ? 1 : 1 + 0.12*Math.sin(tm*7);
   ctx.save(); ctx.translate(bx,by);
   if (grp.state === 'reading'){

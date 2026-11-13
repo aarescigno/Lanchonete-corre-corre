@@ -75,7 +75,7 @@ const fecha=(H,st,fat)=>{ const {g,els}=H; g.startDay(g.save.dia); els['btn-star
 
 // ---------- 6. o capítulo 12 (CA6) ----------
 { const H=jogo(12,{ capDia:50, conversa:null }), {g,L}=H, c=L.HISTORIA[11];
-  ok(L.HISTORIA.length===13 && c.cap===12 && c.titulo==='O molho da Rosa' && c.ponto==='terraco' && c.obj.compra==='rosa' && c.obj.rosa===3 && c.obj.vezes===3 && c.antes.length===6 && c.depois.length===4,'HISTORIA[11]: cap. 12, "O molho da Rosa", obj { compra, rosa:3, vezes:3 }, 6 falas antes e 4 depois');
+  ok(L.HISTORIA.length>=13 && c.cap===12 && c.titulo==='O molho da Rosa' && c.ponto==='terraco' && c.obj.compra==='rosa' && c.obj.rosa===3 && c.obj.vezes===3 && c.antes.length===6 && c.depois.length===4,'HISTORIA[11]: cap. 12, "O molho da Rosa", obj { compra, rosa:3, vezes:3 }, 6 falas antes e 4 depois');
   ok(c.antes[2].s==='O molho da estrela era meu e da sua mãe. Cominho com açafrão... e o segredo dela.' && c.depois[3].q==='bia' && c.fim===undefined,'(os textos da spec; v10.9: o cap. 12 perde o cartão de fim)');
   ok(L.HISTORIA[10].fim===undefined,'o cap. 11 não tem mais cartão de fim');
   const ob=g.capObj(); ok(ob.itens.length===2 && ob.itens[0].txt==='Aprender o molho da Rosa' && !ob.itens[0].ok && /^3 Pratos da Rosa servidos num dia, 3 vezes \(0 de 3\)/.test(ob.itens[1].txt),'os dois itens do objetivo');
@@ -89,9 +89,9 @@ const fecha=(H,st,fat)=>{ const {g,els}=H; g.startDay(g.save.dia); els['btn-star
 // ---------- 7. o save (CA7) ----------
 { const L=load({ historia:true }).L;
   const a=L.normSave({ histV:1, capV:2, cap:12, dia:60, bank:4000, capDia:50, capVezes:2, conversa:null, salao:{ ponto:'terraco' } });
-  ok(a.cap===12 && a.conversa==='antes' && a.capDia===60 && a.capVezes===0 && a.capV===4 && a.rosa===0,'save da v10.7 no Fim (capV 2, cap 12) no Terraço: começa o cap. 12 com a conversa de antes (capDia = dia, capVezes 0)');
+  ok(a.cap===12 && a.conversa==='antes' && a.capDia===60 && a.capVezes===0 && a.capV===5 && a.rosa===0,'save da v10.7 no Fim (capV 2, cap 12) no Terraço: começa o cap. 12 com a conversa de antes (capDia = dia, capVezes 0)');
   ok(JSON.stringify(L.normSave(JSON.parse(JSON.stringify(a))))===JSON.stringify(a) && L.normSave(JSON.parse(JSON.stringify(a))).conversa==='antes','e normalizar de novo não muda nada');
-  const b=L.normSave({ histV:1, capV:2, cap:9, dia:50, bank:4000, conversa:null, salao:{ ponto:'terraco' } }); ok(b.cap===9 && b.capV===4,'o save com capV 2 em outro capítulo só troca o capV');
+  const b=L.normSave({ histV:1, capV:2, cap:9, dia:50, bank:4000, conversa:null, salao:{ ponto:'terraco' } }); ok(b.cap===9 && b.capV===5,'o save com capV 2 em outro capítulo só troca o capV');
   const c=L.normSave({ histV:1, capV:3, cap:12, dia:70, bank:4000, conversa:null, capVezes:1, salao:{ ponto:'terraco' } }); ok(c.cap===12 && c.conversa===null && c.capVezes===1,'o save já na v10.8 não recomeça o cap. 12');
   ok(L.normSave({ histV:1, capV:3, cap:12, rosa:5, salao:{ ponto:'terraco' } }).rosa===0 && L.normSave({ histV:1, capV:3, cap:12, rosa:'x', salao:{ ponto:'terraco' } }).rosa===0 && L.normSave({ histV:1, capV:3, cap:12, rosa:1, salao:{ ponto:'terraco' } }).rosa===1,'save.rosa: só 0 ou 1');
   const eq=v=>L.normSave({ histV:1, capV:3, cap:12, equipe:{ camiFila:v }, salao:{ ponto:'terraco' } }).equipe.camiFila;

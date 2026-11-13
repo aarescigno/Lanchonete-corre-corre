@@ -146,19 +146,18 @@ const fecha=(H,ficha)=>{ const {g}=H; g.schedule=[]; g.nextIdx=0; g.money=3000; 
 
 // ---------- 9. o capítulo 13 e o save (CA9) ----------
 { const H=dia1(), {g,L}=H, c=L.HISTORIA[12];
-  ok(L.HISTORIA.length===13 && c.cap===13 && c.titulo==='O crítico sem aviso' && c.ponto==='terraco' && c.obj.critico===2 && c.antes.length===5 && c.depois.length===5,'HISTORIA[12]: cap. 13, "O crítico sem aviso", obj { critico:2 }, 5 falas antes e 5 depois');
-  ok(c.antes[0].s==='O crítico do Michelzão não usa crachá. Senta, come e anota.' && c.antes[3].nota==='olhando o Gurugol' && c.depois[3].nota==='lendo um cartão' && c.depois[4].s==='A noite da estrela!' && c.fim.h==='Fim do capítulo 13' && c.fim.p==='Continua na próxima versão: a noite da estrela.','(os textos da spec)');
+  ok(L.HISTORIA.length>=13 && c.cap===13 && c.titulo==='O crítico sem aviso' && c.ponto==='terraco' && c.obj.critico===2 && c.antes.length===5 && c.depois.length===5,'HISTORIA[12]: cap. 13, "O crítico sem aviso", obj { critico:2 }, 5 falas antes e 5 depois');
+  ok(c.antes[0].s==='O crítico do Michelzão não usa crachá. Senta, come e anota.' && c.antes[3].nota==='olhando o Gurugol' && c.depois[3].nota==='lendo um cartão' && c.depois[4].s==='A noite da estrela!' && c.fim===undefined,'(os textos da spec; o cap. 13 já não tem cartão de fim, v10.10)');
   ok(L.HISTORIA[11].fim===undefined,'o cap. 12 não mostra mais cartão de fim');
   let ob=g.capObj(); ok(ob.itens.length===1 && ob.itens[0].txt==='Receber o crítico do Michelzão 2 vezes (0 de 2)' && !ob.itens[0].ok,'o objetivo: "Receber o crítico do Michelzão 2 vezes (0 de 2)"');
   comeca(H); fecha(H,FICHA(60,[0,0,0,0,0])); ok(g.save.guia.n===1 && !g.result.cap.ok && /\(1 de 2\)/.test(g.result.cap.itens[0].txt) && g.save.conversa===null,'a 1ª visita soma 1 e não cumpre o capítulo');
   g.save.guia.prox=g.save.dia; g.startDay(g.save.dia); ok(g.visita && g.visita.n===2,'(a 2ª visita)'); fecha(H,FICHA(g.day.n,[0,0,0,0,0]));
   ok(g.save.guia.n===2 && g.result.cap.ok && g.save.conversa==='depois','a 2ª visita cumpre o capítulo, qualquer que seja a ficha (ficha 0 no total)');
   // o fim do capítulo: a conversa de depois e o cartão
-  let fim=0; L.fluxoHistoria(()=>{ fim++; }); passa(g); ok(g.save.cap===14,'as falas de depois passam e o capítulo acaba (cap='+g.save.cap+')');
-  ok(H.els['cont-h'].textContent==='Fim do capítulo 13' && /noite da estrela/.test(H.els['cont-p'].textContent),'o cartão "Fim do capítulo 13: a noite da estrela"');
+  let fim=0; L.fluxoHistoria(()=>{ fim++; }); passa(g); ok(g.save.cap===14 && g.save.conversa===null,'as falas de depois e as de antes do cap. 14 passam (cap='+g.save.cap+')');
   // o save: a v10.8 no Fim (cap 13, capV 3) começa o 13
   const a=L.normSave({ histV:1, capV:3, cap:13, dia:70, bank:4000, capDia:50, capVezes:2, conversa:null, salao:{ ponto:'terraco' } });
-  ok(a.cap===13 && a.conversa==='antes' && a.capDia===70 && a.capVezes===0 && a.capV===4 && a.guia && a.guia.n===0 && a.guia.prox-70>=1 && a.guia.prox-70<=3 && a.avalCom.some(x=>x.boato),'save da v10.8 no Fim (capV 3, cap 13) no Terraço: começa o 13 com a conversa de antes, a 1ª visita sorteada e o comentário');
+  ok(a.cap===13 && a.conversa==='antes' && a.capDia===70 && a.capVezes===0 && a.capV===5 && a.guia && a.guia.n===0 && a.guia.prox-70>=1 && a.guia.prox-70<=3 && a.avalCom.some(x=>x.boato),'save da v10.8 no Fim (capV 3, cap 13) no Terraço: começa o 13 com a conversa de antes, a 1ª visita sorteada e o comentário');
   ok(JSON.stringify(L.normSave(JSON.parse(JSON.stringify(a))))===JSON.stringify(a),'e normalizar de novo não muda nada');
   const b=L.normSave({ histV:1, capV:4, cap:13, dia:70, conversa:null, guia:GUIA(1,72,[FICHA(68,[1,2,1,2,1])]), convCrit:1, salao:{ ponto:'terraco' } }); ok(b.cap===13 && b.conversa===null && b.guia.n===1 && b.guia.prox===72 && b.guia.v[0].it.join('')==='12121' && b.convCrit===1,'o save já na v10.9 segue como veio');
   const bad=v=>L.normSave({ histV:1, capV:4, cap:12, dia:70, conversa:null, guia:v, salao:{ ponto:'terraco' } }).guia;
@@ -170,8 +169,8 @@ const fecha=(H,ficha)=>{ const {g}=H; g.schedule=[]; g.nextIdx=0; g.money=3000; 
 { const H=nova({ store:{ lcc2_dev:'1' }, imprevistos:true }), {g,L,els,doc}=H; g.setDev(true); g.devReal(true); g.setState('menu');
   ok(g.devCapitulo(13) && g.save.cap===13 && g.save.salao.ponto==='terraco' && g.save.conversa==='antes' && g.save.dia===64 && g.save.bank===10000 && g.save.rosa===1 && g.save.camiCursos.gerente===1 && g.save.equipe.cami===5,'o capítulo 13 da lista: Terraço, dia 64, caixa 10000, com o molho e a gerência, e a conversa de antes');
   ok(g.save.guia && g.save.guia.n===0 && g.save.avalCom.some(x=>x.boato),'o 13 da lista traz o sorteio da 1ª visita e o comentário plantado');
-  ok(g.devCapitulo(14) && g.save.cap===14 && g.save.conversa===null && g.capObj()===null,'o Fim agora é o 14');
-  ok(L.DEV_CAPS.length===14,'DEV_CAPS: 14 linhas');
+  ok(g.devCapitulo(15) && g.save.cap===15 && g.save.conversa===null && g.capObj()===null,'o Fim agora é o 15 (v10.10)');
+  ok(L.DEV_CAPS.length===15,'DEV_CAPS: 15 linhas');
   // forçar: 'Hoje' e 'Hoje com boato', em qualquer ponto e capítulo, sem mexer no save.guia
   g.devCapitulo(4); g.save.conversa=null; const guia0=JSON.stringify(g.save.guia);
   ok(g.devForca('critico','hoje') && L.DEV.forca.critico==='hoje','Crítico: Hoje');

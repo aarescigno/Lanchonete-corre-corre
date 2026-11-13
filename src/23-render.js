@@ -43,9 +43,11 @@ function render(g, ctx){
     g.tables.forEach(t => { if (t.free && t.seats >= g.sel.size){ ctx.save(); ctx.strokeStyle = 'rgba(62,155,90,' + (0.35+0.25*Math.sin(tm*6)) + ')'; ctx.lineWidth = 3; ctx.setLineDash([6,5]); rr(ctx,t.cx-t.hx-10,t.cy-60,t.hx*2+20,128,14); ctx.stroke(); ctx.restore(); } });
   }
 
+  if (g.noite && !menu){ ctx.fillStyle = 'rgba(14,20,52,.08)'; ctx.fillRect(0,92,W,H - 92); }   // v10.10: o véu da noite, por baixo das pessoas
   // lista de desenháveis ordenados por y
   const items = [];
   g.tables.forEach(t => items.push({ y:t.cy + 10, f:() => glowSprite(ctx,g,t,ctx => drawTable(ctx,g,t,tm,menu)) }));
+  if (g.noite && !menu) g.tables.forEach(t => { if (t.open) items.push({ y:t.cy + 11, f:() => drawVela(ctx,t.cx,t.cy,tm) }); });   // v10.10: uma vela em cada mesa aberta
   g.groups.forEach(grp => {
     if (grp.state === 'queue'){
       const isDrag = g.drag && g.drag.moved && g.drag.g === grp;
@@ -112,12 +114,13 @@ function render(g, ctx){
     if (g.drag && g.drag.moved && g.drag.g === grp) return;
     if (QUEUE.max >= 5){   // v9.6.9: corações menores, à direita do grupo, na altura do balão do pedido
       drawHearts(ctx,grp,grp.x + 52,grp.y-64,tm,0.75);
-      if (grp.vipAberto) drawVipBadge(ctx,grp.x-45,grp.y-63,tm,grp.exigente);
-    } else if (grp.vipAberto){ drawHearts(ctx,grp,grp.x+14,grp.y-64,tm); drawVipBadge(ctx,grp.x-45,grp.y-63,tm,grp.exigente); }
+      if (grp.vipAberto) drawVipBadge(ctx,grp.x-45,grp.y-63,tm,grp.exigente,grp.critico);
+    } else if (grp.vipAberto){ drawHearts(ctx,grp,grp.x+14,grp.y-64,tm); drawVipBadge(ctx,grp.x-45,grp.y-63,tm,grp.exigente,grp.critico); }
     else drawHearts(ctx,grp,grp.x,grp.y-64,tm);
     if (grp.aguarda && !grp.path.length) drawWaitBadge(ctx,grp.x + (grp.vipAberto ? 63 : 50),grp.y-66,tm,grp.piso);
     if (!menu) drawPedidoEspera(ctx,g,grp,tm);
   });
+  g.groups.forEach(grp => { if (grp.fala && !menu) drawFala(ctx,grp,grp.x,grp.table ? grp.y - 128 : grp.y - 100); });   // v10.10: o balão do Bráulio
   g.retirada.forEach(grp => { drawHearts(ctx,grp,grp.x,grp.y-62,tm,0.6); if (!menu) drawRetiradaBalao(ctx,g,grp,tm); });
   drawLugarNums(ctx,g);   // v9.6.9
   if (!menu) drawFilaMarcas(ctx,g,tm);

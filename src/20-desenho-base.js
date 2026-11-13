@@ -44,10 +44,14 @@ function drawMoodRing(ctx,hearts,x,y,rx,ry,tm){
   ctx.restore();
 }
 /* selo VIP: plaquinha dourada com estrela e "VIP" (o texto, não só a cor, identifica o VIP) */
-function drawVipBadge(ctx,x,y,tm,dupla){
+function drawVipBadge(ctx,x,y,tm,dupla,michel){
   const p = RM ? 1 : 1 + 0.06*Math.sin(tm*5);
   ctx.save(); ctx.translate(x,y); ctx.scale(p,p);
-  if (dupla){   // v10.1: o VIP exigente, com duas estrelas
+  if (michel){   // v10.10: a plaquinha do Michelzão: a de exigente com uma estrela vermelha no lugar das duas
+    rr(ctx,-26,-9,52,18,6); fs(ctx,PAL.mostarda,2.2);
+    star(ctx,-14,0,7,PAL.perigo);
+    txt(ctx,'VIP',10,1,12,PAL.tinta,'center',FD);
+  } else if (dupla){   // v10.1: o VIP exigente, com duas estrelas
     rr(ctx,-26,-9,52,18,6); fs(ctx,PAL.mostarda,2.2);
     star(ctx,-17,0,5.2,'#fff'); star(ctx,-6.5,0,5.2,'#fff');
     txt(ctx,'VIP',12,1,12,PAL.tinta,'center',FD);
@@ -683,6 +687,9 @@ function drawPerson(ctx,p,x,y,o){
   else {
     ctx.beginPath(); ctx.arc(0,hy+9,4,Math.PI+0.3,TAU-0.3); ctx.stroke();
     ctx.lineWidth = 2; ctx.beginPath(); ctx.moveTo(-7.5,hy-4.6); ctx.lineTo(-2,hy-2.4); ctx.moveTo(7.5,hy-4.6); ctx.lineTo(2,hy-2.4); ctx.stroke();
+  }
+  if (p.braulio){   // v10.10: o bigode grande do Bráulio
+    ctx.fillStyle = hc; ctx.beginPath(); ctx.moveTo(0,hy+4.4); ctx.quadraticCurveTo(-5,hy+1.4,-12,hy+5.4); ctx.quadraticCurveTo(-7,hy+10,0,hy+6.8); ctx.quadraticCurveTo(7,hy+10,12,hy+5.4); ctx.quadraticCurveTo(5,hy+1.4,0,hy+4.4); ctx.closePath(); fs(ctx,hc,1.4);
   }
   if (p.shades){
     ctx.fillStyle = '#1b1b1b'; ctx.lineWidth = 1.5;
