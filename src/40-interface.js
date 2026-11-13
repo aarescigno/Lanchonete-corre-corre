@@ -203,7 +203,8 @@ const DEV_HOJE = [
   ['vip', 'VIP', [['', 'Sorteio'], ['vem', 'Vem um VIP']]],
   ['apito', 'Apito da fábrica (área industrial)', [['', 'Sorteio'], ['apita', 'Apita'], ['nao', 'Não apita']]],
   ['vontade', 'Vontade de doce e de espresso (sem o curso)', [['', 'Normal'], ['todos', 'Todos pedem']]],   // v10.5.3
-  ['rosa', 'Pétala (molho da Rosa)', [['', 'Normal'], ['sempre', 'Sempre']]]   // v10.8: o prato da casa da Bia sempre sai com pétala, em qualquer ponto
+  ['rosa', 'Pétala (molho da Rosa)', [['', 'Normal'], ['sempre', 'Sempre']]],   // v10.8
+  ['critico', 'Crítico (em qualquer ponto)', [['', 'Sorteio'], ['hoje', 'Hoje'], ['boato', 'Hoje com boato']]]   // v10.9: no próximo dia que começar; a ficha aparece no fim do dia e não é guardada: o prato da casa da Bia sempre sai com pétala, em qualquer ponto
 ];
 const DEV_MUSICA = ['sem música', 'trio de cordas', 'pianista'];
 function devAbaHoje(body, secao, botao){
@@ -373,6 +374,16 @@ const DES_BASICO = {
     circ(c,32,26,15); fs(c,'#fff',2.2);
     c.fillStyle = PAL.tinta; c.beginPath(); for (let i=0;i<5;i++){ const a = -Math.PI/2 + i*Math.PI*2/5; i ? c.lineTo(32 + Math.cos(a)*6,26 + Math.sin(a)*6) : c.moveTo(32 + Math.cos(a)*6,26 + Math.sin(a)*6); } c.closePath(); c.fill();
     c.strokeStyle = PAL.tinta; c.lineWidth = 1.2; for (let i=0;i<5;i++){ const a = -Math.PI/2 + i*Math.PI*2/5; c.beginPath(); c.moveTo(32 + Math.cos(a)*6,26 + Math.sin(a)*6); c.lineTo(32 + Math.cos(a)*14.4,26 + Math.sin(a)*14.4); c.stroke(); }
+  },
+  'i-critico': c => {   // o caderninho e a caneta
+    rr(c,14,6,30,44,4); fs(c,'#FFF8E3',2.2); c.fillStyle = PAL.faixa; c.fillRect(14,6,8,44);
+    c.strokeStyle = 'rgba(34,32,28,.45)'; c.lineWidth = 1.6; c.beginPath(); [18,26,34,42].forEach(y => { c.moveTo(28,y); c.lineTo(40,y); }); c.stroke();
+    c.lineCap = 'round'; c.strokeStyle = PAL.tinta; c.lineWidth = 6; c.beginPath(); c.moveTo(38,40); c.lineTo(54,12); c.stroke(); c.strokeStyle = PAL.mostarda; c.lineWidth = 3; c.beginPath(); c.moveTo(38,40); c.lineTo(54,12); c.stroke();
+  },
+  'i-boato': c => {   // o megafone
+    c.beginPath(); c.moveTo(10,24); c.lineTo(26,24); c.lineTo(48,10); c.lineTo(48,46); c.lineTo(26,34); c.lineTo(10,34); c.closePath(); fs(c,PAL.mostarda,2.2);
+    rr(c,24,34,9,14,2); fs(c,PAL.tinta,1.6);
+    c.strokeStyle = PAL.tinta; c.lineWidth = 2; c.lineCap = 'round'; [[52,20,58,16],[53,28,60,28],[52,36,58,40]].forEach(l => { c.beginPath(); c.moveTo(l[0],l[1]); c.lineTo(l[2],l[3]); c.stroke(); });
   },
   'i-gripe': c => {   // termômetro
     rr(c,28,8,8,34,4); fs(c,'#fff',2); circ(c,32,48,9); fs(c,PAL.perigo,2);

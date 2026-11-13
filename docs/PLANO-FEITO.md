@@ -128,6 +128,7 @@ Capítulo 12: o Tonhão conta o segredo da Casa Aurora. A Bia aprende o molho e 
 | 4a-3 | A cozinha do Terraço: alta gastronomia, a Lia e a alta confeitaria | v10.2 | feita em 11/11 (`docs/spec-v10.2.md`; `smoke62`; `ALTA=1` quase dobra o lucro do bot: recalibrar na 4a-5) |
 | 4a-4 | O salão e o bar do Terraço: a Cami em tudo, cafés especiais e coquetéis de autor | v10.3 | feita em 11/11 (`docs/spec-v10.3.md`; `smoke65`; o Terraço já passava 100% das metas com a equipe toda: recalibrar na 4a-5) |
 | 4a-5 | Música, flores e o rebalanceamento do Terraço | v10.4 | feita em 11/11 (`docs/spec-v10.4.md`; `smoke66`; cardápio ×1,3, metas ×12 e 3ª estrela ×8,5: o comando do CA8 não contrata a equipe toda, ver Desvios) |
+| 4c | Eventos de bairro: festa junina e jogo do Brasil (adiantada em 12/11, para dar novidade aos dias parados da Garagem) | v10.6 | feita em 13/11 (`docs/spec-v10.6.md`; `smoke71`; fases e gol na janela de chegadas, ver Desvios) |
 
 ## Etapa 1a — Jogo justo: dá para não perder ninguém (v7.1)
 > **Feita em 15/10 (v7.1, `docs/spec-v7.1.md`).** Decisões: A + B; no Turno sem fim vale o ritmo da fila justa, sem o piso; ícone "aguardando mesa" sim. A medição mostrou que, com a equipe, a maior parte das perdas era a espera pelo prato, e não a fila. O que sobra é o limite de louça nos dias de 6 mesas: o bot afiado só chega ao alvo (0 perdidos em 94% dos dias) comprando o Jogo de pratos primeiro. A louça não mudou; se jogadores reclamarem da espera pelo prato, a etapa 1b pode rever `dishStock` ou a mecânica D. Metas sem mudança.
@@ -1956,3 +1957,8 @@ Modelo: Sonnet, esforço médio (plano detalhado; o fluxo das conversas já exis
 Objetivo: antes do curso de Confeitaria caseira (área industrial) e do Barista: espresso (Avenida), a freguesia pede doce e espresso, a nota cai um pouco e a vontade cresce; sem o curso, a equipe conversa sobre isso no fim do dia. Spec: `docs/spec-v10.5.3.md`.
 
 **Modelo:** Sonnet, esforço médio (código de jogo com plano detalhado em várias partes, sem decisão de design)
+
+### 6b — O crítico sem aviso (v10.9)
+Capítulo 13: duas visitas do crítico disfarçado, com a pista do caderninho, a ficha da visita no fim do dia (cinco itens) e o boato do Bráulio, que lota a casa na 2ª visita. Spec: `docs/spec-v10.9.md`.
+
+**Modelo:** Sonnet, esforço alto (o disfarce atravessa o grupo, o desenho e o Gurugol).

@@ -21,7 +21,7 @@ ok(!g.devCumpre(),'no Livre devCumpre não faz nada'); g.devReal(true);
 
 // 2. as cenas
 { const c=L.devCenas();
-  ok(c.length===1+2*L.HISTORIA.length+11+L.LIBERA.length,'devCenas: '+c.length+' itens');
+  ok(c.length===1+2*L.HISTORIA.length+12+L.LIBERA.length,'devCenas: '+c.length+' itens');
   ok(c[0].rot==='Abertura' && c[1].rot==='Cap. 1, antes' && c[2].rot==='Cap. 1, depois' && c.some(x=>x.rot==='Cartão: bia') && c.slice(1).every(x=>x.falas && x.falas.length),'rótulos e falas'); }
 
 // 3. assistir não muda o save

@@ -85,6 +85,16 @@ function buildEnd(){
   if (r.amanha) rows.push(['Amanhã', EVENTOS[r.amanha].nome]);   // v10.6: a véspera do evento de bairro, a última linha da tabela
   // Gurugol (v8.4): a caixa animada à esquerda dos quadros (v8.4.1); embaixo, 2 ou 3 comentários (os critérios do dia no title)
   const av = $('end-aval'); clearEl(av); av.title = ''; clearEl($('end-baloes'));
+  { const cr = $('end-critico'); clearEl(cr);   // v10.9: a ficha da visita do crítico: cinco linhas com 0 a 2 garfinhos, sem número
+    if (r.critico){
+      cr.setAttribute('aria-label', 'A ficha do crítico'); cr.appendChild(el('h3', null, 'O crítico esteve aqui'));
+      CRITICO.itens.forEach((nome, i) => {
+        const lin = el('div', 'cr-lin'), fg = el('span', 'cr-fg'), n = r.critico.it[i];
+        lin.appendChild(el('span', null, nome)); lin.setAttribute('aria-label', nome + ': ' + n + ' de 2');
+        for (let k = 0; k < 2; k++){ const cv = document.createElement('canvas'); cv.width = 44; cv.height = 44; const c = cv.getContext('2d'); drawGarfo(c, 22, 22, k < n, 1.7); fg.appendChild(cv); }
+        lin.appendChild(fg); cr.appendChild(lin);
+      });
+    } }
   const a = r.aval;
   guruAnim++;
   if (a && a.dia){

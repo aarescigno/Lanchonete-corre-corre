@@ -23,18 +23,18 @@ g.devReal(false); ok(store['lcc2_dev_real']==='0' && !L.histLiga(),'devReal(fals
 
 // ---------- 3. os ids da tabela existem ----------
 { const C=L.DEV_CAPS, tem=(l,ids)=>(ids||[]).every(id=>l.some(x=>x.id===id));
-  ok(C.length===13 && C.every((c,i)=>c.n===i+1) && C.every(c=>L.PONTOS.some(p=>p.id===c.ponto)),'DEV_CAPS: 13 linhas (v10.8), pontos existentes');
+  ok(C.length===14 && C.every((c,i)=>c.n===i+1) && C.every(c=>L.PONTOS.some(p=>p.id===c.ponto)),'DEV_CAPS: 14 linhas (v10.9), pontos existentes');
   ok(C.every(c=>!c.eq || (tem(L.CURSOS,Object.keys(c.cursos)) && tem(L.DANI_CURSOS,c.dani) && tem(L.JOCA_CURSOS,c.joca) && tem(L.CAMI_CURSOS,c.cami) && tem(L.UPGRADES,c.up))),'DEV_CAPS: todos os ids de cursos e melhorias existem'); }
 
 // ---------- 4. pular para cada capítulo ----------
-const TAB={1:[1,'garagem',1,0,[0,0]],2:[4,'garagem',1,300,[0,1]],3:[8,'garagem',1,500,[1,2]],4:[13,'industrial',13,400,[1,2]],5:[17,'industrial',13,900,[2,3]],6:[30,'avenida',30,600,[2,3]],7:[34,'avenida',30,1500,[3,4]],8:[38,'avenida',30,2500,[3,4]],9:[50,'terraco',50,1500,[3,4]],10:[54,'terraco',50,4000,[4,4]],11:[58,'terraco',50,6000,[4,4]],12:[64,'terraco',50,10000,[4,4]],13:[64,'terraco',50,10000,[4,4]]};   // v10.5.2: 12 linhas
-for(let n=1;n<=13;n++){
+const TAB={1:[1,'garagem',1,0,[0,0]],2:[4,'garagem',1,300,[0,1]],3:[8,'garagem',1,500,[1,2]],4:[13,'industrial',13,400,[1,2]],5:[17,'industrial',13,900,[2,3]],6:[30,'avenida',30,600,[2,3]],7:[34,'avenida',30,1500,[3,4]],8:[38,'avenida',30,2500,[3,4]],9:[50,'terraco',50,1500,[3,4]],10:[54,'terraco',50,4000,[4,4]],11:[58,'terraco',50,6000,[4,4]],12:[64,'terraco',50,10000,[4,4]],13:[64,'terraco',50,10000,[4,4]],14:[64,'terraco',50,10000,[4,4]]};   // v10.5.2: 12 linhas
+for(let n=1;n<=14;n++){
   const [dia,ponto,pdia,caixa,[ton,dan]]=TAB[n];
   ok(g.devCapitulo(n),'devCapitulo('+n+') funciona');
   const sv=g.save;
   ok(sv.cap===n && sv.salao.ponto===ponto && sv.dia===dia && sv.pontoDia===pdia && sv.bank===caixa && sv.equipe.tonhao===ton && sv.equipe.dani===dan,'cap '+n+': dia '+dia+', '+ponto+', caixa '+caixa+', equipe da tabela');
   ok(L.DEV.real && L.histLiga(),'cap '+n+': liga o De verdade');
-  if(n<=12) ok(g.capObj()!==null && sv.conversa==='antes','cap '+n+': tem objetivo e a conversa de antes'); else ok(g.capObj()===null && sv.conversa===null,'Fim: sem objetivo nem conversa');
+  if(n<=13) ok(g.capObj()!==null && sv.conversa==='antes','cap '+n+': tem objetivo e a conversa de antes'); else ok(g.capObj()===null && sv.conversa===null,'Fim: sem objetivo nem conversa');
 }
 { g.devCapitulo(8); const e=g.save.equipe; ok(e.cami===1 && e.anselmo===2 && e.joca===3 && g.up.espresso && g.up.confGourmet,'cap 8: Cami 1, Anselmo 2, Joca 3, espresso e vitrine gourmet');
   ok(g.save.emp.resto===0 && g.save.libera.cami===2 && g.save.libera.anselmo===2 && g.save.libera.joca===2 && g.save.libera.bia===2,'cap 8: sem empréstimo; Cami, Anselmo, Joca e Bia com o cartão aberto');

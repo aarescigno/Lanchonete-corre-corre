@@ -1292,7 +1292,7 @@ function buildGurugol(grid){
     const li = el('li'), cab = el('div', 'guru-cab'), n = c.n / 10;
     const est = el('span', 'guru-ests', '★'.repeat(Math.round(n))); est.appendChild(el('i', null, '★'.repeat(5 - Math.round(n)))); est.setAttribute('aria-label', fmtNota(n) + ' estrelas');
     cab.appendChild(est); cab.appendChild(el('b', null, fmtNota(n)));
-    cab.appendChild(el('span', 'guru-quem', CUSTOMER_TYPES[c.k].label + (c.v ? ' (VIP)' : '') + ' · dia ' + c.d));
+    cab.appendChild(el('span', 'guru-quem', (c.boato ? 'Anônimo' : CUSTOMER_TYPES[c.k].label + (c.v ? ' (VIP)' : '')) + ' · dia ' + c.d));   // v10.9: o comentário plantado do boato
     li.appendChild(cab); li.appendChild(el('q', null, c.t)); lista.appendChild(li);
   });
   if (!com.length) lista.appendChild(el('li', 'rank-empty', 'Os comentários aparecem depois do próximo dia.'));

@@ -868,6 +868,25 @@ const LOUCA = { cook:0.75 };
 const ROSA = { preco:800, max:2, pega:0.8, mais:20, coracao:1, pts:20, cap:12, coment:'Que molho é esse?!',
   vaso:{ ap:{ x:700, y:150 }, rect:{ x:686, y:104, w:48, h:92 } } };
 STATIONS.rosas = ROSA.vaso;   // v10.8: o vaso de rosas no armário do corredor, onde nos outros pontos fica a mesinha das marmitas
+/* v10.9, o crítico do Michelzão (cap. 13, só no Terraço): vem duas vezes, sozinho e sem se apresentar (`tipo`, entre `chega` da janela de chegadas), a 1ª `primeira` e a 2ª `segunda` dias à frente
+   (sorteio de dias). Parece um freguês qualquer (`disfarce`), mas por dentro é VIP exigente e tira o caderninho (`caderno` s) ao sentar e depois de cada tempo servido. A ficha tem 5 itens
+   (`itens`), de 0 a 2 garfos; `salaoT`: segundos de salão bagunçado que ainda valem 1 garfo; `pac`: fator da paciência dele (medido em 13/11 com o bot: sem ele, o crítico, executiva e VIP, ia embora bravo em ~60% das visitas e a ficha média ficava em 4,0 e 2,4). Na 2ª visita o Bráulio espalha o `boato` e vem `lotada` × os grupos do dia. `coment`: o comentário plantado no Gurugol */
+const CRITICO = { tipo:'executiva', chega:[0.3, 0.6], primeira:[1, 3], segunda:[2, 3], caderno:1.8, lotada:1.25, salaoT:6, cap:13, pac:2,
+  itens:['Recepção', 'Atendimento', 'Prato', 'Salão', 'Refeição'],
+  boato:'Boato na cidade: dizem que hoje a casa dá sobremesa de graça. Vai lotar!',
+  coment:'Ouvi dizer que o molho de lá é copiado.' };
+function normGuia(g){   // save.guia: { n:0 a 2, prox:≥ 0, v:[{ d, it:[5 inteiros de 0 a 2] }] }; inválido, null
+  if (!g || typeof g !== 'object') return null;
+  const n = Math.round(+g.n), prox = Math.round(+g.prox);
+  if (!(n >= 0 && n <= 2) || !(prox >= 0) || !Array.isArray(g.v) || g.v.length > 2) return null;
+  const v = g.v.map(f => f && typeof f === 'object' && Math.round(+f.d) >= 0 && Array.isArray(f.it) && f.it.length === 5 && f.it.every(x => x >= 0 && x <= 2 && x === Math.round(x)) ? { d:Math.round(+f.d), it:f.it.slice() } : null);
+  return v.some(f => !f) ? null : { n, prox, v };
+}
+/* o comentário plantado do boato (1 estrela, marcado `boato`): entra no topo da lista do Gurugol e fora da conta da nota (a nota vem de save.aval); uma vez só */
+function plantaBoato(lista, dia){
+  const l = normAvalCom(lista);
+  return l.some(c => c.boato) ? l : normAvalCom(l.concat([{ d:dia, n:10, t:CRITICO.coment, k:'estudante', boato:true }]));
+}
 /* v10.8, a Cami gerente de salão (curso `gerente`, nível 5): a cada `passo` s senta o 1º grupo da fila (na ordem justa) parado há `espera` s ou mais, se há mesa livre em que caiba */
 const GERENTE = { espera:4, passo:0.5 };
 const vipDish = grp => grp.exigente ? EXIGENTE.casa.preco : VIP.dish;
@@ -995,7 +1014,7 @@ function normAval(a){
 const AVAL_COM = 30;
 function normAvalCom(a){
   return (Array.isArray(a) ? a : []).filter(c => c && typeof c === 'object' && typeof c.t === 'string' && c.t).slice(-AVAL_COM)
-    .map(c => { const o = { d:Math.max(1, Math.round(+c.d) || 1), n:clamp(Math.round(+c.n) || 10, 10, 50), t:c.t.slice(0, 60), k:CUSTOMER_TYPES[c.k] ? c.k : 'estudante' }; if (c.v) o.v = 1; return o; });
+    .map(c => { const o = { d:Math.max(1, Math.round(+c.d) || 1), n:clamp(Math.round(+c.n) || 10, 10, 50), t:c.t.slice(0, 60), k:CUSTOMER_TYPES[c.k] ? c.k : 'estudante' }; if (c.v) o.v = 1; if (c.boato) o.boato = 1; return o; });   // v10.9: boato = o comentário plantado (fica na lista, fora da conta da nota)
 }
 /* a nota de uma avaliação: a média dos critérios que o cliente viu */
 function avalNota(r){ const v = r.filter(x => x != null); return v.reduce((a, x) => a + x, 0) / (v.length || 1); }
@@ -1233,12 +1252,26 @@ const HISTORIA = [
       { q:'bia', s:'Todo mundo pergunta que molho é esse, tio.' },
       { q:'tonhao', nota:'enxugando o olho no avental', s:'Igualzinho ao dela.' },
       { q:'cami', s:'Bia, deixa a porta comigo. Eu organizo a fila e as mesas.' },
-      { q:'bia', s:'Gerente de salão, Cami. Você merece.' }],
-    fim:{ h:'Fim do capítulo 12', p:'Continua na próxima versão: o crítico sem aviso.' } }
+      { q:'bia', s:'Gerente de salão, Cami. Você merece.' }] },
+  // v10.9: o crítico sem aviso. Objetivo: receber o crítico do Michelzão 2 vezes (guia.n de 2)
+  { cap:13, titulo:'O crítico sem aviso', ponto:'terraco', obj:{ critico:2 },
+    antes:[
+      { q:'tonhao', s:'O crítico do Michelzão não usa crachá. Senta, come e anota.' },
+      { q:'bia', s:'Então é tratar todo mundo como se fosse ele.' },
+      { q:'dani', s:'Ouvi dizer que ele vive com um caderninho!' },
+      { q:'cami', nota:'olhando o Gurugol', s:'Gente... tem comentário novo dizendo que o nosso molho é copiado.' },
+      { q:'tonhao', s:'Isso tem bigode. Deixa o Bráulio falar. A gente cozinha.' }],
+    depois:[
+      { q:'bia', s:'Casa lotada por causa de um boato, e o crítico bem no meio.' },
+      { q:'tonhao', s:'O Bráulio mandou ele no pior dia. Não dá ponto sem nó.' },
+      { q:'cami', s:'E a gente deu conta.' },
+      { q:'tonhao', nota:'lendo um cartão', s:'O Michelzão deixou um recado: a última visita é um jantar. A gente escolhe a noite.' },
+      { q:'dani', s:'A noite da estrela!' }],
+    fim:{ h:'Fim do capítulo 13', p:'Continua na próxima versão: a noite da estrela.' } }
 ];
 /* v9.0.1: a conversa do cardápio, no fim do dia `dia` (ou do 1º dia completo depois dele, para saves antigos), só no Modo História.
    falas: o Tonhão ainda não fez curso; fez: já fez algum (básico de qualquer curso ou o avançado do PF). save.convCard: 'pend' | 1 (vista) */
-/* v10.2.1, modo dev: o save do começo de cada capítulo (devCapitulo). n 1 a 12 e 13 (o Fim, depois do último; v10.8). Níveis da equipe: índices de STAFF (99 = o último);
+/* v10.2.1, modo dev: o save do começo de cada capítulo (devCapitulo). n 1 a 13 e 14 (o Fim, depois do último; v10.9). Níveis da equipe: índices de STAFF (99 = o último);
    cursos do Tonhão { id:nível }; cursos da equipe e melhorias em listas de ids */
 const DEV_CAPS = [
   { n:1,  dia:1,  ponto:'garagem',    pdia:1,  caixa:0,     nota:0,   eq:{ tonhao:0, dani:0, joca:0, cami:0, anselmo:0, lia:0 }, cursos:{}, dani:[], joca:[], cami:[], up:[] },
@@ -1253,7 +1286,8 @@ const DEV_CAPS = [
   { n:10, dia:54, ponto:'terraco',    pdia:50, caixa:4000,  nota:4.2, eq:{ tonhao:99, dani:99, joca:99, cami:2, anselmo:3, lia:0 }, cursos:{ pastel:1, chapa:1, fritos:1, assados:1, veg:1, restaurante:1, entradas:1, alta:1 }, dani:['confCaseira', 'confGourmet', 'confAlta'], joca:['espresso'], cami:[], up:['tenis', 'ventilador', 'bandeja', 'triturador', 'corrida'] },
   { n:11, dia:58, ponto:'terraco',    pdia:50, caixa:6000,  nota:4.2, eq:{ tonhao:99, dani:99, joca:99, cami:2, anselmo:3, lia:1 }, cursos:{ pastel:1, chapa:1, fritos:1, assados:1, veg:1, restaurante:1, entradas:1, alta:1 }, dani:['confCaseira', 'confGourmet', 'confAlta'], joca:['espresso'], cami:[], up:['tenis', 'ventilador', 'bandeja', 'triturador', 'corrida'] },
   { n:12, dia:64, ponto:'terraco',    pdia:50, caixa:10000, nota:4.6, eq:null, cursos:null, dani:null, joca:null, cami:null, up:null, semRosa:true },   // v10.8: o molho da Rosa: tudo no máximo (como o Fim) menos o molho e a gerência
-  { n:13, dia:64, ponto:'terraco',    pdia:50, caixa:10000, nota:4.6, eq:null, cursos:null, dani:null, joca:null, cami:null, up:null }   // o Fim: o mesmo que "Tudo no máximo" (devEquipe('max') e devMelhorias(true)), com a Lia, o molho e a gerência
+  { n:13, dia:64, ponto:'terraco',    pdia:50, caixa:10000, nota:4.6, eq:null, cursos:null, dani:null, joca:null, cami:null, up:null },   // v10.9: o crítico sem aviso: como o 12, com o molho e a gerência comprados
+  { n:14, dia:64, ponto:'terraco',    pdia:50, caixa:10000, nota:4.6, eq:null, cursos:null, dani:null, joca:null, cami:null, up:null }   // o Fim: o mesmo que "Tudo no máximo" (devEquipe('max') e devMelhorias(true)), com a Lia, o molho e a gerência
 ];
 const HIST_CARDAPIO = { dia:2,   // v9.6.2: no fim do dia 2 (antes, do dia 1), para a 1ª lojinha ficar sem empurrão
   falas:[ { q:'bia', s:'Tio, hoje um monte de gente perguntou se só tem PF e coxinha...' },
@@ -1282,6 +1316,11 @@ const HIST_EXIGENTE = {
           { q:'tonhao', s:'Cliente exigente. Quer a bebida antes da entrada, o salão em ordem e o prato da casa.' },
           { q:'bia', s:'E se ele gostar?' },
           { q:'tonhao', s:'Paga como ninguém. Se sair bravo, a cidade inteira fica sabendo.' } ] };
+/* v10.9: a conversa da 1ª visita do crítico, no fim do dia dela (antes do cartão da ficha). save.convCrit: 0 | 'pend' | 1 */
+const HIST_CRITICO = { falas:[
+  { q:'dani', s:'Bia! Aquele freguês sozinho... ele tinha um caderninho!' },
+  { q:'bia', s:'Era ele?!' },
+  { q:'tonhao', s:'Era. E deixou a ficha da visita. Olha aí.' } ] };
 /* v10.5.2: as conversas do meio do capítulo 3 (Garagem), só no Modo História: ficam pendentes no fim do 1º dia em que save.cap === 3 e a reforma zerou
    (convQuit: 0 | 'pend' | 1) ou a nota geral do Gurugol chegou à nota mínima da Garagem (convTeto). Se o capítulo se cumpre no mesmo dia, passam direto a 1 */
 const HIST_QUITOU = {
@@ -1461,7 +1500,7 @@ const BIA_IDS = ['tenis', 'corrida', 'bandeja', 'sudoku'];
 function upgradeCartao(id){ return BIA_IDS.indexOf(id) >= 0 ? 'bia' : 'melhorias'; }
 const HIST_NOMES = { bia:'Bia', tonhao:'Tonhão', dani:'Dani', joca:'Joca', cami:'Cami', anselmo:'Anselmo', lia:'Lia' };
 const CAIXA_MAX = 14;                                 // livro-caixa (v7.2): quantos dias da carreira ficam guardados
-const VERSAO = 'v10.8';                                // vai no resumo do Caixa
+const VERSAO = 'v10.9';                                // vai no resumo do Caixa
 const DIVULGA_DIA = 4;                                // antes disso, o movimento é o da inauguração (sem custo); v9.0.2: dia 4, e o padrão é o boca a boca
 function divulgaAberta(n, sv){ return devLivre() || n >= DIVULGA_DIA && !(sv && sv.convDiv === 'pend'); }   // no modo dev, desde o dia 1; v9.0.3: no Modo História, só depois da conversa
 /* v9.6.4: a Efood (os entregadores) só abre depois da conversa dos entregadores, no Modo História; antes dela, nenhum tipo com `retira` vem na agenda */
@@ -1677,7 +1716,9 @@ const MANUAL = [
   { id:'i-jogo',    aba:'imprevistos', nome:'Jogo do Brasil', linha:'Antes do jogo a casa lota, durante ninguém vem, e depois vem todo mundo. Com a TV ligada, a freguesia espera com mais calma.' },
   { id:'i-gripe',   aba:'imprevistos', nome:'Tonhão gripado', linha:'A cozinha anda mais devagar no dia.' },
   { id:'i-apito',   aba:'imprevistos', nome:'Apito da fábrica', linha:'A turma chega toda junta no meio do dia.' },
-  { id:'i-fiscal',  aba:'imprevistos', nome:'Vigilância sanitária', linha:'Mesa suja e pia cheia dão multa; tudo limpo dá selo.' }
+  { id:'i-fiscal',  aba:'imprevistos', nome:'Vigilância sanitária', linha:'Mesa suja e pia cheia dão multa; tudo limpo dá selo.' },
+  { id:'i-critico', aba:'imprevistos', nome:'Crítico do Michelzão', linha:'Chega sem avisar, sozinho, e anota tudo num caderninho. Repara na espera, no atendimento, no prato, no salão e na refeição do começo ao fim.' },
+  { id:'i-boato',   aba:'imprevistos', nome:'Boato', linha:'Alguém espalha que hoje tem coisa de graça, e a casa lota.' }
 ];
 const MANUAL_PONTO_NOME = { garagem:'Garagem', industrial:'Área industrial', avenida:'Avenida Brasil', terraco:'Terraço Suíça' };
 const MANUAL_CATS = { pf:'PF', frito:'fritos', assado:'assados', chapa:'lanches na chapa', pastel:'pastel' };

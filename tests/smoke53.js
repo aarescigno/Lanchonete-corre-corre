@@ -81,7 +81,7 @@ const aba=(H,k)=>{ const b=H.els['manual-abas'].children.find(x=>x.getAttribute(
 { const {L}=load(); const sv=L.normSave({dia:30,maxDay:30,salao:{ponto:'avenida'}}); sv.equipe.tonhao=4; sv.equipe.dani=4; sv.equipe.joca=4; sv.equipe.cami=3; sv.equipe.anselmo=3; sv.up.bandeja=true;
   const tex=[]; L.MANUAL.forEach(f=>{ tex.push(f.nome,f.linha); if(f.tipo) tex.push.apply(tex,L.manualTracos(f.tipo)); if(f.quem) tex.push.apply(tex,L.manualTracos(f.quem,{save:sv})); });
   const ruim=tex.filter(t=>/\d/.test(t)); ok(ruim.length===0,'nenhum texto, linha ou traço do Manual tem algarismo'+(ruim.length?': '+ruim.join(' | '):''));
-  ok(L.MANUAL.length===71 && new Set(L.MANUAL.map(f=>f.id)).size===71,'71 fichas, ids únicos (v10.4: a música ao vivo; v10.6: a festa junina, o jogo e a barraca; v10.8: o molho da Rosa e a gerência)');
+  ok(L.MANUAL.length===73 && new Set(L.MANUAL.map(f=>f.id)).size===73,'73 fichas, ids únicos (v10.4: a música ao vivo; v10.6: a festa junina, o jogo e a barraca; v10.8: o molho da Rosa e a gerência; v10.9: o crítico e o boato)');
 }
 // (h) o fogão industrial, o couvert e o assento abrem na industrial/Avenida; imprevistos
 { const H=novo(12,{bank:9000,salao:{ponto:'industrial'}}), {g,L}=H; g.goShop(12); L.setShopTab('manut'); L.setShopTab('divulga'); L.setShopTab('melhorias');

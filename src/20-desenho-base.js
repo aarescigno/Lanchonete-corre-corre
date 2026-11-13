@@ -58,6 +58,24 @@ function drawVipBadge(ctx,x,y,tm,dupla){
   }
   ctx.restore();
 }
+/* v10.9, a pista do crítico: um caderninho com a caneta na frente do peito (a caneta escreve; parado com prefers-reduced-motion). A ficha do fim do dia usa o garfinho (cheio: ganho; apagado: perdido) */
+function drawCaderno(ctx,x,y,tm,parado,s){
+  ctx.save(); ctx.translate(x,y); ctx.scale(s || 1,s || 1);
+  rr(ctx,-6.5,-8.5,13,17,1.8); fs(ctx,'#FFF8E3',1.8);
+  ctx.fillStyle = PAL.faixa; ctx.fillRect(-6.5,-8.5,3.2,17);
+  ctx.strokeStyle = 'rgba(34,32,28,.45)'; ctx.lineWidth = 0.9; ctx.beginPath(); [-4,-0.5,3].forEach(yy => { ctx.moveTo(-1.5,yy); ctx.lineTo(4.5,yy); }); ctx.stroke();
+  const w = parado ? 0 : Math.sin(tm * 16) * 1.4;
+  ctx.strokeStyle = PAL.tinta; ctx.lineWidth = 2.4; ctx.lineCap = 'round'; ctx.beginPath(); ctx.moveTo(3 + w,3); ctx.lineTo(9 + w,-5.5); ctx.stroke();
+  ctx.strokeStyle = PAL.mostarda; ctx.lineWidth = 1.2; ctx.beginPath(); ctx.moveTo(3 + w,3); ctx.lineTo(9 + w,-5.5); ctx.stroke();
+  ctx.restore();
+}
+function drawGarfo(ctx,x,y,cheio,s){
+  ctx.save(); ctx.translate(x,y); ctx.scale(s || 1,s || 1); ctx.lineCap = 'round'; ctx.lineJoin = 'round';
+  ctx.strokeStyle = cheio ? PAL.tinta : 'rgba(34,32,28,.35)'; ctx.fillStyle = cheio ? PAL.mostarda : 'rgba(34,32,28,.12)'; ctx.lineWidth = 3.4;
+  ctx.beginPath(); ctx.moveTo(-5,-10); ctx.lineTo(-5,-3); ctx.quadraticCurveTo(-5,1,0,1); ctx.quadraticCurveTo(5,1,5,-3); ctx.lineTo(5,-10); ctx.moveTo(0,-10); ctx.lineTo(0,1); ctx.moveTo(0,1); ctx.lineTo(0,10); ctx.stroke();
+  if (cheio){ ctx.lineWidth = 1.8; ctx.strokeStyle = PAL.mostarda; ctx.beginPath(); ctx.moveTo(-5,-10); ctx.lineTo(-5,-3); ctx.quadraticCurveTo(-5,1,0,1); ctx.quadraticCurveTo(5,1,5,-3); ctx.lineTo(5,-10); ctx.moveTo(0,-10); ctx.lineTo(0,10); ctx.stroke(); }
+  ctx.restore();
+}
 /* v10.1: os acessórios do VIP exigente (sorteados em Group): chapéu de aba, lenço de seda no pescoço ou echarpe; `p.accC` é a cor */
 function acExigente(ctx,p,hy,costas){
   const c = p.accC || '#B23A48';

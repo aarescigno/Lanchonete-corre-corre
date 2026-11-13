@@ -112,10 +112,10 @@ function render(g, ctx){
     if (g.drag && g.drag.moved && g.drag.g === grp) return;
     if (QUEUE.max >= 5){   // v9.6.9: corações menores, à direita do grupo, na altura do balão do pedido
       drawHearts(ctx,grp,grp.x + 52,grp.y-64,tm,0.75);
-      if (grp.vip) drawVipBadge(ctx,grp.x-45,grp.y-63,tm,grp.exigente);
-    } else if (grp.vip){ drawHearts(ctx,grp,grp.x+14,grp.y-64,tm); drawVipBadge(ctx,grp.x-45,grp.y-63,tm,grp.exigente); }
+      if (grp.vipAberto) drawVipBadge(ctx,grp.x-45,grp.y-63,tm,grp.exigente);
+    } else if (grp.vipAberto){ drawHearts(ctx,grp,grp.x+14,grp.y-64,tm); drawVipBadge(ctx,grp.x-45,grp.y-63,tm,grp.exigente); }
     else drawHearts(ctx,grp,grp.x,grp.y-64,tm);
-    if (grp.aguarda && !grp.path.length) drawWaitBadge(ctx,grp.x + (grp.vip ? 63 : 50),grp.y-66,tm,grp.piso);
+    if (grp.aguarda && !grp.path.length) drawWaitBadge(ctx,grp.x + (grp.vipAberto ? 63 : 50),grp.y-66,tm,grp.piso);
     if (!menu) drawPedidoEspera(ctx,g,grp,tm);
   });
   g.retirada.forEach(grp => { drawHearts(ctx,grp,grp.x,grp.y-62,tm,0.6); if (!menu) drawRetiradaBalao(ctx,g,grp,tm); });
