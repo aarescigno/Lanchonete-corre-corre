@@ -421,7 +421,7 @@ table.rank tr.me td{background:#fbe7a8}
 
     <div class="ov show" id="ov-menu">
       <div class="panel menu-panel">
-        <span class="vtag" id="vtag" aria-label="Versão 11.3">v11.3</span>
+        <span class="vtag" id="vtag" aria-label="Versão 11.4">v11.4</span>
         <h1 class="title">Lanchonete <br>Corre-Corre</h1>
         <p class="tag">Ajude a Bia a atender a freguesia da esquina antes que o cafezinho esfrie!</p>
         <div class="lbl" id="menu-dia">História</div>
@@ -661,7 +661,8 @@ table.rank tr.me td{background:#fbe7a8}
       <div class="panel">
         <h2>Versões</h2>
         <ul class="verlist">
-          <li><b>v11.3</b><span class="cur">versão atual</span><br>14/11/2026 &mdash; Conversas novas: no fim de certos dias, na Garagem e na área industrial, a Bia, o tio e a equipe conversam sobre o desânimo, o elogio, o caderno do caixa e o motoqueiro. Uma por dia, só no Modo História.</li>
+          <li><b>v11.4</b><span class="cur">versão atual</span><br>14/11/2026 &mdash; Mais conversas: na Avenida e no Terraço, no fim de certos dias, a Bia, o tio e a equipe falam do copo quebrado, do espresso, da pressa no salão, da Casa Aurora, da pétala da Rosa e da roda antes da noite da estrela. Uma por dia, só no Modo História.</li>
+          <li><b>v11.3</b><br>14/11/2026 &mdash; Conversas novas: no fim de certos dias, na Garagem e na área industrial, a Bia, o tio e a equipe conversam sobre o desânimo, o elogio, o caderno do caixa e o motoqueiro. Uma por dia, só no Modo História.</li>
           <li><b>v11.2</b><br>14/11/2026 &mdash; A voz da Bia na Avenida e no Terraço: as falas dos capítulos 6 a 14 e das conversas desses pontos foram reescritas. A Bia decide, acalma o tio, defende a equipe e, no fim, comanda a noite da estrela.</li>
           <li><b>v11.1</b><br>14/11/2026 &mdash; A voz da Bia: as falas dos capítulos 1 a 5, da abertura e das conversas da Garagem e da área industrial foram reescritas. A Bia começa insegura, com medo de errar, e ganha segurança: no 5º capítulo, discorda do tio e decide ir para a Avenida Brasil.</li>
           <li><b>v11</b><br>14/11/2026 &mdash; O futuro da Corre-Corre: o final do Modo História. Na manhã seguinte à noite da estrela, o telefone toca, e uma cena animada mostra a placa do Michelzão indo para a parede, a estrela da Casa Aurora se apagando, a promessa cumprida ao lado do retrato da Rosa e a garagem reaberta como escola de cozinha do bairro. Cada estrela a mais acrescenta um trecho. Depois, a casa segue aberta, com a placa na parede do Terraço; o botão História passa a rever o final.</li>
@@ -2390,7 +2391,61 @@ const ARCO = [
             { q:'bia', e:'firme', s:'Deixa, tio. O salão é comigo.' },
             { q:'bia', e:'firme', nota:'voltando da calçada', s:'Falei com ele: aqui se pede com educação, ou se pede em outro lugar.' },
             { q:'dani', e:'alegre', s:'E ele?' },
-            { q:'bia', e:'alegre', s:'Pediu desculpa. E mais uma marmita.' } ] } ];
+            { q:'bia', e:'alegre', s:'Pediu desculpa. E mais uma marmita.' } ] },
+  // v11.4: a Avenida (nivel 3) e o Terraço (nivel 4); roteiro em docs/ARCO.md §7
+  { id:'anselmoCopo', nivel:3, quando:(sv, g) => sv.equipe.anselmo > 0 && !sv.equipe.anselmoFora,
+    falas:[ { q:'anselmo', e:'insegura', nota:'catando os cacos', s:'Desculpa, desculpa! Eu pago o copo, pode descontar...' },
+            { q:'bia', s:'Anselmo. Olha pra mim. É um copo.' },
+            { q:'anselmo', s:'No outro restaurante, um copo era meia hora de grito.' },
+            { q:'bia', e:'firme', s:'Aqui é uma vassoura e um copo novo. Respira e volta pro balcão.' } ] },
+  { id:'jocaEspresso', nivel:3, quando:(sv, g) => !!sv.jocaCursos.espresso,
+    falas:[ { q:'joca', e:'insegura', s:'O homem de terno perguntou se "o menino da louça" sabia mexer na máquina.' },
+            { q:'bia', e:'firme', s:'Eu ouvi. E disse a ele que o nosso barista se chama Joca.' },
+            { q:'joca', s:'Você disse isso?' },
+            { q:'bia', e:'alegre', s:'Disse. Agora tira um espresso que faça ele engolir a piada.' } ] },
+  { id:'camiPressa', nivel:3, quando:(sv, g) => sv.equipe.cami > 0 && !sv.equipe.camiFora,
+    falas:[ { q:'bia', s:'Cami, a mesa do casal reclamou que o prato chegou antes de eles tirarem o casaco.' },
+            { q:'cami', s:'No rodízio era assim: girou, serviu, próxima!' },
+            { q:'bia', e:'firme', s:'Aqui mesa não é número. Pergunta o nome, olha no olho. Rápida você já é.' },
+            { q:'cami', e:'alegre', s:'Nome e olho no olho. Anotado, chefe!' } ] },
+  { id:'daniEnsina', nivel:3, quando:(sv, g) => !!sv.daniCursos.confGourmet,
+    falas:[ { q:'dani', e:'alegre', s:'Bia, me pediram pra ensinar o ponto do brigadeiro. Eu! Ensinando!' },
+            { q:'bia', e:'alegre', s:'E ensinou?' },
+            { q:'dani', e:'firme', s:'Ensinei. E descobri que eu explico bem.' },
+            { q:'tonhao', s:'Quem diria. A menina lenta dando aula.' },
+            { q:'dani', e:'alegre', s:'Lenta, não, seu Tonhão. Caprichosa.' } ] },
+  { id:'cortina', nivel:3, quando:(sv, g) => sv.cap >= 8,
+    falas:[ { q:'bia', s:'Tio, o senhor passou o dia olhando pra Casa Aurora.' },
+            { q:'tonhao', e:'insegura', s:'Vinte anos naquela cozinha, Bia. E saí sem levar nem o meu nome.' },
+            { q:'bia', e:'firme', s:'O senhor trouxe o que importava: a mão. O nome a gente faz aqui.' },
+            { q:'tonhao', e:'alegre', nota:'fechando a cortina', s:'...Então vamos trabalhar, que nome não se faz sozinho.' } ] },
+  { id:'liaPerfeita', nivel:4, quando:(sv, g) => sv.equipe.lia > 0 && !sv.equipe.liaFora,
+    falas:[ { q:'tonhao', s:'Lia, a mesa quatro tá esperando a entrada faz tempo!' },
+            { q:'lia', e:'insegura', s:'Refiz três vezes, chef. O corte não ficou igual.' },
+            { q:'tonhao', e:'firme', s:'Prato perfeito e frio não serve pra ninguém. Capricho tem hora, e a hora é a do freguês.' },
+            { q:'lia', e:'firme', s:'Entendido. Sai agora.' },
+            { q:'bia', e:'alegre', s:'Tá ensinando bonito, tio.' } ] },
+  { id:'anselmoRi', nivel:4, quando:(sv, g) => !!sv.anselmoCursos.autor,
+    falas:[ { q:'anselmo', e:'alegre', nota:'rindo alto atrás do balcão', s:'Opa... desculpa o barulho.' },
+            { q:'bia', s:'Desculpa por quê?' },
+            { q:'anselmo', s:'Fazia anos que eu não ria no serviço. Nem lembrava como era.' },
+            { q:'bia', e:'alegre', s:'Então ri mais alto, que o salão gostou.' } ] },
+  { id:'jocaNome', nivel:4, quando:(sv, g) => !!sv.jocaCursos.cafesEsp,
+    falas:[ { q:'joca', e:'alegre', s:'Bia, a mesa da janela pediu "o café do Joca". Pelo nome!' },
+            { q:'bia', e:'alegre', s:'E o que o barista da casa respondeu?' },
+            { q:'joca', e:'firme', s:'Que hoje tem coado, prensa e cold brew. E que eu recomendo o coado.' },
+            { q:'bia', s:'Olha ele. Há pouco tempo, nem bom-dia.' } ] },
+  { id:'liaPetala', nivel:4, quando:(sv, g) => sv.rosa === 1 && sv.cap >= 13 && sv.equipe.lia > 0 && sv.arco.liaPerfeita === 1,
+    falas:[ { q:'tonhao', nota:'com a pétala na palma da mão', s:'Lia, hoje quem põe a pétala é você.' },
+            { q:'lia', e:'insegura', s:'Eu, chef? Esse prato é da sua família.' },
+            { q:'tonhao', e:'firme', s:'Por isso mesmo. Receita que fica numa mão só some. Eu já vi isso acontecer.' },
+            { q:'lia', e:'firme', nota:'pondo a pétala', s:'...Na hora. Como a Rosa.' } ] },
+  { id:'roda', nivel:4, quando:(sv, g) => sv.cap === 14,
+    falas:[ { q:'bia', e:'firme', s:'Antes da noite da estrela, eu quero dizer uma coisa a vocês.' },
+            { q:'bia', s:'Eu comecei numa garagem, com medo de abrir o portão.' },
+            { q:'bia', e:'alegre', s:'Hoje eu não tenho medo. Porque nunca mais abri sozinha.' },
+            { q:'dani', e:'alegre', s:'Ai, Bia, eu vou chorar em cima do doce!' },
+            { q:'tonhao', e:'alegre', s:'Chora depois. Primeiro a estrela.' } ] } ];
 function arcoOf(id){ return ARCO.find(a => a.id === id) || null; }
 /* v9.1.1: o dia da carreira em que o save chegou ao ponto de agora (save.pontoDia); n = o dia que terminou (padrão: o anterior ao save.dia,
    porque o fim do dia já avançou o save.dia). O 1º dia no ponto é 1 */
@@ -2399,7 +2454,7 @@ const BIA_IDS = ['tenis', 'corrida', 'bandeja', 'sudoku'];
 function upgradeCartao(id){ return BIA_IDS.indexOf(id) >= 0 ? 'bia' : 'melhorias'; }
 const HIST_NOMES = { bia:'Bia', tonhao:'Tonhão', dani:'Dani', joca:'Joca', cami:'Cami', anselmo:'Anselmo', lia:'Lia' };
 const CAIXA_MAX = 14;                                 // livro-caixa (v7.2): quantos dias da carreira ficam guardados
-const VERSAO = 'v11.3';                                // vai no resumo do Caixa
+const VERSAO = 'v11.4';                                // vai no resumo do Caixa
 const DIVULGA_DIA = 4;                                // antes disso, o movimento é o da inauguração (sem custo); v9.0.2: dia 4, e o padrão é o boca a boca
 function divulgaAberta(n, sv){ return devLivre() || n >= DIVULGA_DIA && !(sv && sv.convDiv === 'pend'); }   // no modo dev, desde o dia 1; v9.0.3: no Modo História, só depois da conversa
 /* v9.6.4: a Efood (os entregadores) só abre depois da conversa dos entregadores, no Modo História; antes dela, nenhum tipo com `retira` vem na agenda */
