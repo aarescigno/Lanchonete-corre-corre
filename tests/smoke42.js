@@ -165,8 +165,8 @@ const html=fs.readFileSync(__dirname+'/../lanchonete.html','utf8');
   H.els['btn-start'].fire('click'); g.schedule=[]; g.nextIdx=0; g.money=2500; g.custo=0; g.finishDay();
   ok(g.save.capAzul===3 && g.result.cap.n===6 && g.result.cap.ok && g.save.conversa==='depois','3 dias no azul: cap. 6 cumprido');
   ok(g.avancaCap()===false && g.save.cap===7 && g.save.conversa==='antes','depois do cap. 6: o cap. 7 (novo, v10.5.2) começa com a conversa de antes');
-  ok(L.HISTORIA.length>=8 && L.HISTORIA[5].titulo==='Do outro lado da rua' && L.HISTORIA[5].antes.length===4 && L.HISTORIA[5].depois.length===3 && L.HISTORIA[7].titulo==='Nota de restaurante' && L.HISTORIA[7].antes.length===3 && L.HISTORIA[7].depois.length===5,'as falas dos caps. 6 e 8 (o 7 é novo, v10.5.2)');
-  ok(L.HISTORIA[5].depois[2].nota==='rindo' && L.HISTORIA[7].depois[1].nota==='tirando o avental' && L.HISTORIA[5].antes[1].nota==='olhando pela janela','as rubricas em itálico'); }
+  ok(L.HISTORIA.length>=8 && L.HISTORIA[5].titulo==='Do outro lado da rua' && L.HISTORIA[5].antes.length===4 && L.HISTORIA[5].depois.length===4 && L.HISTORIA[7].titulo==='Nota de restaurante' && L.HISTORIA[7].antes.length===4 && L.HISTORIA[7].depois.length===6,'as falas dos caps. 6 e 8 (o 7 é novo, v10.5.2)');
+  ok(L.HISTORIA[5].antes[2].nota==='virando a foto da mãe pra janela' && L.HISTORIA[7].depois[1].nota==='tirando o avental' && L.HISTORIA[5].antes[1].nota==='olhando pela janela','as rubricas em itálico'); }
 
 // ---------- 11. cap. 8 (era o 7 antes da v10.5.2) ----------
 { const H=jogo(8,'avenida',{ bank:1000 }), {g,L}=H; g.save.conversa=null;

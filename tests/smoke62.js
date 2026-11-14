@@ -102,10 +102,10 @@ const TIPOS=['estudante','executiva','familia','vovos','turma','motorista','nego
   g.groups=[]; g.queue=[]; g.money=100; g.custo=0; g.finishDay();
   ok(g.save.libera.lia==='pend' && !!g.conversa,'depois do curso do Tonhão, a conversa fica pendente e toca no fim do dia');
   const vistas=[]; { let k=0; while(g.conversa && k<30){ vistas.push(g.conversa.fala.q+':'+g.conversa.fala.s.slice(0,18)); toque(els); k++; } } 
-  const n=vistas.length; ok(n>=5 && g.save.libera.lia===1 && !g.conversa && g.cartaoAberto('lia'),'a conversa tem '+n+' falas; no fim o cartão abre (selo novo)');
-  const F=L.liberaOf('lia'); ok(F.falas.length===5 && F.falas.map(f=>f.q).join()==='tonhao,bia,tonhao,lia,bia' && L.HIST_NOMES.lia==='Lia','as falas: Tonhão, Bia, Tonhão, Lia, Bia');
+  const n=vistas.length; ok(n>=4 && g.save.libera.lia===1 && !g.conversa && g.cartaoAberto('lia'),'a conversa tem '+n+' falas; no fim o cartão abre (selo novo)');
+  const F=L.liberaOf('lia'); ok(F.falas.length===4 && F.falas.map(f=>f.q).join()==='tonhao,bia,lia,bia' && L.HIST_NOMES.lia==='Lia','as falas: Tonhão, Bia, Tonhão, Lia, Bia');
   ok(F.nivel===4 && F.dia===1 && F.ate===999 && F.reclama.length===2 && F.reclama[0]==='A comida demorou entre um prato e outro.' && F.reclama[1]==='Cozinha lenta para um terraço.','LIBERA.lia: nivel 4, dia 1, ate 999 e as duas reclamações');
-  ok(/Onde eu guardo as facas/.test(F.falas[3].s) && F.falas[0].nota==='secando as mãos no avental','os textos do plano'); }
+  ok(/Onde eu guardo as facas/.test(F.falas[2].s) && F.falas[0].nota==='secando as mãos no avental','os textos do plano'); }
 
 // ---------- 6. a Alta confeitaria da Dani ----------
 { const H=terr({ daniCursos:{ confCaseira:1, confGourmet:1 }, bank:9000 }), {g,L}=H;

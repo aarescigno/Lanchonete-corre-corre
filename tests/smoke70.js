@@ -95,7 +95,7 @@ const R=Math.random;
 { const H=jogo('industrial',6), L=H.L;
   const comDani=L.vontadeFalas('doce',{ equipe:{ tonhao:2, dani:2 } }), semDani=L.vontadeFalas('doce',{ equipe:{ tonhao:2, dani:0 } });
   ok(comDani.some(f=>f.q==='dani') && !semDani.some(f=>f.q==='dani'),'sem a Dani contratada, as falas dela saem com q:\'tonhao\'');
-  ok(comDani.map(f=>f.s).join('|')===semDani.map(f=>f.s).join('|') && comDani.length===5 && comDani[0].s==='Tio, hoje de novo: um monte de mesa pediu sobremesa.','o texto é o mesmo (5 falas, a 1ª da Bia)');
+  ok(comDani.slice(0,4).map(f=>f.s).join('|')===semDani.slice(0,4).map(f=>f.s).join('|') && comDani.length===5 && comDani[0].s==='Tio, hoje de novo: um monte de mesa pediu sobremesa.','o texto é o mesmo (5 falas, a 1ª da Bia), salvo a última, que cita a Dani (v11.2: s2)');
   const cafe=L.vontadeFalas('cafe',{ equipe:{ tonhao:2, dani:2, joca:0 } });
   ok(cafe.every(f=>f.q!=='joca') && cafe.some(f=>f.q==='tonhao' && f.s==='No café da esquina tem fila pra cappuccino!'),'sem o Joca, as falas dele vão para o Tonhão');
   ok(L.vontadeFalas('doce',{ equipe:{ dani:2 } },true).length===1 && L.vontadeFalas('doce',{ equipe:{ dani:2 } },true)[0].s==='Pediram sobremesa de novo hoje, Bia...','a fala curta tem uma linha'); }
