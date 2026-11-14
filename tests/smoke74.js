@@ -158,7 +158,7 @@ const fecha=(H,ficha)=>{ const {g}=H; g.schedule=[]; g.nextIdx=0; g.money=3000; 
   ok(g.save.conversa===null && g.save.cap===14,'(v10.10: sem cartão de fim; a conversa de antes do cap. 14 toca direto)');
   // o save: a v10.8 no Fim (cap 13, capV 3) começa o 13
   const a=L.normSave({ histV:1, capV:3, cap:13, dia:70, bank:4000, capDia:50, capVezes:2, conversa:null, salao:{ ponto:'terraco' } });
-  ok(a.cap===13 && a.conversa==='antes' && a.capDia===70 && a.capVezes===0 && a.capV===5 && a.guia && a.guia.n===0 && a.guia.prox-70>=1 && a.guia.prox-70<=3 && a.avalCom.some(x=>x.boato),'save da v10.8 no Fim (capV 3, cap 13) no Terraço: começa o 13 com a conversa de antes, a 1ª visita sorteada e o comentário');
+  ok(a.cap===13 && a.conversa==='antes' && a.capDia===70 && a.capVezes===0 && a.capV===6 && a.guia && a.guia.n===0 && a.guia.prox-70>=1 && a.guia.prox-70<=3 && a.avalCom.some(x=>x.boato),'save da v10.8 no Fim (capV 3, cap 13) no Terraço: começa o 13 com a conversa de antes, a 1ª visita sorteada e o comentário');
   ok(JSON.stringify(L.normSave(JSON.parse(JSON.stringify(a))))===JSON.stringify(a),'e normalizar de novo não muda nada');
   const b=L.normSave({ histV:1, capV:4, cap:13, dia:70, conversa:null, guia:GUIA(1,72,[FICHA(68,[1,2,1,2,1])]), convCrit:1, salao:{ ponto:'terraco' } }); ok(b.cap===13 && b.conversa===null && b.guia.n===1 && b.guia.prox===72 && b.guia.v[0].it.join('')==='12121' && b.convCrit===1,'o save já na v10.9 segue como veio');
   const bad=v=>L.normSave({ histV:1, capV:4, cap:12, dia:70, conversa:null, guia:v, salao:{ ponto:'terraco' } }).guia;

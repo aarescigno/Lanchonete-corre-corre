@@ -50,6 +50,24 @@ Capítulo 12: o Tonhão conta o segredo da Casa Aurora. A Bia aprende o molho e 
 
 **Modelo:** Sonnet, esforço alto (muitas partes ao mesmo tempo, com calibração por receita).
 
+## Etapa 6 — Modo História: o crítico do Michelzão e o final (v10.8 a v11)
+> Planejada em 13/11 (decisões do usuário no `docs/PROPOSTAS.md`): quatro sessões, uma versão cada, todas com spec aprovada. O guia é o **Michelzão**, inventado: nada de nome, logo, mascote ou arte de guia real.
+
+**Objetivo:** a estrela do Michelzão, o fim do sonho da Bia. Três capítulos novos no Terraço (12 a 14) e a cena final.
+
+**O arco (vale para as quatro):**
+- **Estrelas:** de nenhuma ("Recomendado") a 3. Com 1 a promessa à Rosa se cumpre e a cena final toca inteira; a 2ª e a 3ª são o desafio duro, cada uma acrescenta um trecho à cena, e dá para marcar outra noite para tentar mais. Estrela ganha não se perde.
+- **O Bráulio é rival até o fim:** planta um comentário no Gurugol, espalha um boato para lotar a casa no dia do crítico, senta à mesa na noite da estrela para achar defeito e, no final, perde a estrela da Casa Aurora por nunca ter sabido repetir o molho.
+- **O futuro:** o Terraço segue com a estrela, e a garagem da Rosa reabre como a Cozinha da Rosa, escola de cozinha do bairro, com a Dani dando aula. A última cena espelha a primeira da abertura.
+- **Depois do final** a campanha continua, com a placa na parede, visitas surpresa do crítico e noites novas.
+
+### 6d — O futuro da Corre-Corre (v11)
+A cena final animada (oito cenas, no motor da abertura), os créditos, a placa na parede do Terraço, "O final" no botão História e a v10 guardada em `versoes/v10.html`. Spec: `docs/spec-v11.md`.
+
+**Modelo:** Sonnet, esforço alto (o peso é o desenho das cenas no canvas, conferidas por captura).
+
+---
+
 ## Etapa 4c — Eventos de bairro (v10.6)
 **Objetivo:** um evento por semana, do dia 8 em diante (festa junina com a barraca de pratos típicos; jogo do Brasil com as três fases e o gol), avisado na véspera. Spec aprovada em 12/11: `docs/spec-v10.6.md`.
 

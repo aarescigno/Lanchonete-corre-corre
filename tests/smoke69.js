@@ -28,7 +28,7 @@ const H0=nova(), L0=H0.L, HI=L0.HISTORIA;
   ok(f(c7.depois,['bia:Três dias de VIP saindo feliz!','dani:A Cami já sabe o nome de todo freguês.','tonhao:Salão redondo. Agora é a nota subir.']),'cap. 7: as falas de depois');
   ok(f(c10.antes,['tonhao:Quatro tempos por mesa, Bia. Sozinho no fogão eu não venço.','bia:A Lia, ajudante de cozinha, tá procurando serviço.','dani:E o pessoal daqui gosta de um coquetel antes da entrada!']),'cap. 10: as falas de antes');
   ok(f(c10.depois,['bia:A cozinha tá voando, tio!','tonhao:E o balcão de drinks não para.|provando um coquetel','dani:Agora só falta a refeição perfeita.']),'cap. 10: as falas de depois (a rubrica do Tonhão)');
-  ok(!c7.fim && !c10.fim && HI[7].fim.h==='Fim dos capítulos da Avenida Brasil' && HI[10].fim===undefined && HI[11].fim===undefined && HI[12].fim===undefined && HI[13].fim.h==='Fim do capítulo 14' && HI[2].fim && HI[4].fim,'o `fim` fica nos capítulos 3, 5, 8 e 14 (v10.8: o 11 perdeu o dele; v10.9: o 12 também; v10.10: o 13 também)');
+  ok(!c7.fim && !c10.fim && HI[7].fim.h==='Fim dos capítulos da Avenida Brasil' && HI[10].fim===undefined && HI[11].fim===undefined && HI[12].fim===undefined && HI[13].fim.h==='Fim da história' && HI[2].fim && HI[4].fim,'o `fim` fica nos capítulos 3, 5, 8 e 14 (v10.8: o 11 perdeu o dele; v10.9: o 12 também; v10.10: o 13 também)');
   ok(HI[7].obj.nota===3.9 && HI[7].obj.caixa===5000 && HI[7].antes.length===3 && HI[7].depois.length===5 && HI[8].obj.azul===3 && HI[8].antes.length===5 && HI[10].obj.completas===6 && HI[10].obj.nota===4.5 && HI[10].depois.length===5,'os antigos 7, 8 e 9 (agora 8, 9 e 11) seguem como eram');
   ok(L0.HIST_QUITOU.falas.length===4 && L0.HIST_TETO.falas.length===4 && L0.HIST_QUITOU.falas[1].nota==='rasgando o carnê' && L0.HIST_TETO.falas[0].s==='Bia, olha o Gurugol! Nota 2,7!','HIST_QUITOU e HIST_TETO com 4 falas e as rubricas'); }
 
@@ -96,7 +96,7 @@ const H0=nova(), L0=H0.L, HI=L0.HISTORIA;
 // ---------- 6. saves da v10.5 ----------
 { const sv=(cap,ponto,x)=>({ histV:1, cap, dia:30, bank:3000, v10:1, conversa:null, salao:{ ponto }, capAzul:2, capFeito:1, ...(x||{}) });
   const n=(cap,ponto,x)=>L0.normSave(sv(cap,ponto,x));
-  const a=n(6,'avenida'); ok(a.cap===6 && a.capV===5 && a.conversa===null && a.capAzul===2,'cap. 6 fica 6 (e capV passa a 5, v10.10)');
+  const a=n(6,'avenida'); ok(a.cap===6 && a.capV===6 && a.conversa===null && a.capAzul===2,'cap. 6 fica 6 (e capV passa a 6, v11)');
   const b=n(7,'avenida'); ok(b.cap===7 && b.conversa==='antes' && b.capAzul===0 && b.capFeito===0 && b.capVezes===0,'cap. 7 → 7: o cap. novo da Avenida começa, com a conversa de antes e os contadores zerados');
   const c=n(8,'terraco'); ok(c.cap===9 && c.conversa===null && c.capAzul===2,'cap. 8 → 9 (Lá no alto), sem mexer no resto');
   const d=n(9,'terraco'); ok(d.cap===10 && d.conversa==='antes' && d.capAzul===0 && d.capFeito===0 && d.capVezes===0,'cap. 9 → 10: o cap. novo do Terraço começa, com a conversa de antes');

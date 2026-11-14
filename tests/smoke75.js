@@ -139,14 +139,15 @@ const fecha=(H,o)=>{ o=o||{}; const {g}=H; comeca(H); g.schedule=[]; g.nextIdx=0
 
 // ---------- 8. o capítulo 14 e as conversas (CA8) ----------
 { const L0=load({ historia:true }).L, c=L0.HISTORIA[13];
-  ok(c.cap===14 && c.titulo==='A noite da estrela' && c.ponto==='terraco' && c.obj.estrela===1 && c.antes.length===5 && c.depois.length===4 && c.fim.h==='Fim do capítulo 14' && c.fim.p==='Continua na próxima versão: o futuro da Corre-Corre.','HISTORIA[13]: cap. 14, "A noite da estrela", obj { estrela:1 }, 5 falas antes, 4 depois, fim do cap. 14');
+  ok(c.cap===14 && c.titulo==='A noite da estrela' && c.ponto==='terraco' && c.obj.estrela===1 && c.antes.length===5 && c.depois.length===4 && c.fim.h==='Fim da história' && c.fim.p==='A casa segue aberta. Para mais estrelas, marque outra noite na lojinha.','HISTORIA[13]: cap. 14, "A noite da estrela", obj { estrela:1 }, 5 falas antes, 4 depois, o cartão "Fim da história" (v11)');
   ok(c.antes[0].s==='Uma noite pra valer tudo, tio.' && c.antes[4].nota==='olhando a foto da mãe' && c.depois[3].s==='Agora o guia liga. Dorme, Bia. Amanhã cedo o telefone toca.','(os textos da spec)');
   // com estrela: a conversa de depois e o boletim
   { const H=noite(), {g,L,els}=H; fecha(H,{ nota:4.4 }); g.setState('dayend');
     ok(els['ov-end'].classList.contains('show') && !g.conversa,'na noite, a tela de resultados vem primeiro (sem conversa antes)');
     let fim=0; L.fluxoHistoria(()=>{ fim++; }); ok(g.conversa && g.conversa.falas===L.HISTORIA[13].depois,'depois dos resultados, toca a conversa de depois do cap. 14'); passa(g);
-    ok(els['ov-continua'].classList.contains('show') && els['cont-h'].textContent==='Fim do capítulo 14','o cap. 14 acaba (o cartão do fim)'); els['btn-continua'].fire('click');
-    ok(els['ov-guia'].classList.contains('show') && fim===0,'e depois vem o boletim'); els['btn-guia'].fire('click'); passa(g); ok(fim===1 && g.save.guia.ver===0,'"Continuar" fecha o boletim e segue (ver 0)'); }
+    ok(L.aberturaAtual() && L.aberturaAtual().cena.id==='telefone','o cap. 14 acaba: a cena final (v11)'); L.aberturaAtual().pular();
+    ok(els['ov-guia'].classList.contains('show') && fim===0,'e depois vem o boletim (v11: antes do cartão do fim)'); els['btn-guia'].fire('click');
+    ok(els['ov-continua'].classList.contains('show') && els['cont-h'].textContent==='Fim da história' && g.save.guia.ver===0,'o cartão do fim (v11)'); els['btn-continua'].fire('click'); passa(g); ok(fim===1 && g.save.guia.ver===0,'"Seguir jogando" segue (ver 0)'); }
   // sem estrela: a HIST_RECOMENDA só na 1ª vez, e o capítulo segue
   { const H=noite({ guia:GUIA({ noite:60, v:[] }) }), {g,L,els}=H; fecha(H,{ ficha:{ d:60, it:[0,0,0,0,0] }, nota:3.0, money:0, lost:2, brau:false }); g.setState('dayend');
     let fim=0; L.fluxoHistoria(()=>{ fim++; }); ok(g.conversa && g.conversa.falas===L.HIST_RECOMENDA.falas && fim===0,'sem estrela, toca a conversa do "recomendado"'); passa(g);
@@ -194,11 +195,11 @@ const fecha=(H,o)=>{ o=o||{}; const {g}=H; comeca(H); g.schedule=[]; g.nextIdx=0
 // ---------- 13. o save (CA13) ----------
 { const L=load({ historia:true }).L, n=g=>L.normSave(Object.assign({ histV:1, capV:5, cap:14, dia:70, conversa:null, salao:{ ponto:'terraco' } },g));
   const a=L.normSave({ histV:1, capV:4, cap:14, dia:70, bank:4000, capDia:50, capVezes:2, conversa:null, guia:{ n:2, prox:0, v:[] }, salao:{ ponto:'terraco' } });
-  ok(a.cap===14 && a.conversa==='antes' && a.capDia===70 && a.capVezes===0 && a.capV===5,'save da v10.9 no Fim (capV 4, cap 14) no Terraço: começa o cap. 14 com a conversa de antes');
+  ok(a.cap===14 && a.conversa==='antes' && a.capDia===70 && a.capVezes===0 && a.capV===6,'save da v10.9 no Fim (capV 4, cap 14) no Terraço: começa o cap. 14 com a conversa de antes');
   ok(a.guia && a.guia.est===0 && a.guia.ult===0 && a.guia.noite===0 && a.guia.rec===0 && a.guia.bol===null && a.guia.convRec===0,'e o `guia` ganha os campos novos zerados');
   ok(JSON.stringify(L.normSave(JSON.parse(JSON.stringify(a))))===JSON.stringify(a),'normalizar de novo não muda nada');
-  const b=L.normSave({ histV:1, capV:5, cap:13, dia:70, conversa:null, guia:{ n:1, prox:72, v:[] }, salao:{ ponto:'terraco' } }); ok(b.cap===13 && b.conversa===null && b.capV===5,'o save já na v10.10 segue como veio (cap. 13 não recomeça)');
-  const c=L.normSave({ histV:1, capV:4, cap:9, dia:50, conversa:null, salao:{ ponto:'terraco' } }); ok(c.cap===9 && c.capV===5,'o save com capV 4 em outro capítulo só troca o capV');
+  const b=L.normSave({ histV:1, capV:5, cap:13, dia:70, conversa:null, guia:{ n:1, prox:72, v:[] }, salao:{ ponto:'terraco' } }); ok(b.cap===13 && b.conversa===null && b.capV===6,'o save já na v10.10 segue como veio (cap. 13 não recomeça)');
+  const c=L.normSave({ histV:1, capV:4, cap:9, dia:50, conversa:null, salao:{ ponto:'terraco' } }); ok(c.cap===9 && c.capV===6,'o save com capV 4 em outro capítulo só troca o capV');
   const bom=n({ guia:{ n:2, prox:0, v:[], noite:65, ult:60, est:2, rec:0, bol:[1,0.5,0,1,1,1], convRec:1, ver:1 } }).guia;
   ok(bom.noite===65 && bom.ult===60 && bom.est===2 && bom.bol.join()==='1,0.5,0,1,1,1' && bom.convRec===1 && bom.ver===1,'campos válidos seguem como vieram');
   const ruim=n({ guia:{ n:2, prox:0, v:[], noite:-4, ult:'x', est:9, rec:7, bol:[2,1,1], convRec:'a', ver:5 } }).guia;

@@ -9,7 +9,7 @@ const game = new Game(canvas, ctx);
 /* quem nunca fez a Missão zero (e ainda está no dia 1) encontra o botão dela em destaque */
 function treinoPrimeiro(){ return !game.save.treino && game.proxDia <= 1 && !DEV.on; }
 
-const SCREENS = ['ov-menu','ov-manual','ov-intro','ov-treino','ov-pause','ov-end','ov-shop','ov-falencia','ov-endless','ov-rank','ov-ver','ov-app','ov-abertura','ov-conversa','ov-continua','ov-guia'];
+const SCREENS = ['ov-menu','ov-manual','ov-intro','ov-treino','ov-pause','ov-end','ov-shop','ov-falencia','ov-endless','ov-rank','ov-ver','ov-app','ov-abertura','ov-escolha','ov-conversa','ov-continua','ov-guia'];
 function showOnly(ids){
   SCREENS.forEach(id => { const el = $(id); if (!el) return; if (ids.indexOf(id) >= 0) el.classList.add('show'); else el.classList.remove('show'); });
 }
@@ -188,6 +188,8 @@ function devAbaHistoria(body, secao, botao){
   r.appendChild(sel);
   const b = botao(r, 'Assistir', () => {}, null); b.id = 'dev-assistir';
   b.addEventListener('click', () => { devAssistir(+sel.value || 0); });
+  r = secao('O final', 'Toca as cenas finais e os créditos, sem mudar o jogo');
+  botao(r, 'Assistir o final: ★', () => devFinal(1)); botao(r, 'Assistir o final: ★★', () => devFinal(2)); botao(r, 'Assistir o final: ★★★', () => devFinal(3));
   r = secao('Manual');
   botao(r, 'Manual: todas as fichas', () => game.devManual(true)); botao(r, 'Manual: só o básico', () => game.devManual(false));
   r = secao('Lojinha');

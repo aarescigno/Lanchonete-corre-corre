@@ -875,14 +875,14 @@ const CRITICO = { tipo:'executiva', chega:[0.3, 0.6], primeira:[1, 3], segunda:[
   itens:['Recepção', 'Atendimento', 'Prato', 'Salão', 'Refeição'],
   boato:'Boato na cidade: dizem que hoje a casa dá sobremesa de graça. Vai lotar!',
   coment:'Ouvi dizer que o molho de lá é copiado.' };
-function normGuia(g){   // save.guia: { n:0 a 2, prox:≥ 0, v:[{ d, it:[5 inteiros de 0 a 2] }], noite, ult, est, rec, bol, convRec, ver }; inválido, null (v10.10: os campos da noite da estrela, cada um limpo sozinho)
+function normGuia(g){   // save.guia: { n:0 a 2, prox:≥ 0, v:[{ d, it:[5 inteiros de 0 a 2] }], noite, ult, est, rec, bol, convRec, ver, visto }; inválido, null (v10.10: os campos da noite da estrela, cada um limpo sozinho; v11: `visto`, as estrelas da última cena final vista, de 0 a 3)
   if (!g || typeof g !== 'object') return null;
   const n = Math.round(+g.n), prox = Math.round(+g.prox);
   if (!(n >= 0 && n <= 2) || !(prox >= 0) || !Array.isArray(g.v) || g.v.length > 2) return null;
   const v = g.v.map(f => f && typeof f === 'object' && Math.round(+f.d) >= 0 && Array.isArray(f.it) && f.it.length === 5 && f.it.every(x => x >= 0 && x <= 2 && x === Math.round(x)) ? { d:Math.round(+f.d), it:f.it.slice() } : null);
   if (v.some(f => !f)) return null;
   const nat = x => Math.max(0, Math.round(+x) || 0), bol = Array.isArray(g.bol) && g.bol.length === 6 && g.bol.every(x => typeof x === 'number' && x >= 0 && x <= 1) ? g.bol.slice() : null;
-  return { n, prox, v, noite:nat(g.noite), ult:nat(g.ult), est:nat(g.est) <= 3 ? nat(g.est) : 0, rec:g.rec === 1 ? 1 : 0, bol, convRec:g.convRec === 1 ? 1 : 0, ver:g.ver === 1 ? 1 : 0 };
+  return { n, prox, v, noite:nat(g.noite), ult:nat(g.ult), est:nat(g.est) <= 3 ? nat(g.est) : 0, rec:g.rec === 1 ? 1 : 0, bol, convRec:g.convRec === 1 ? 1 : 0, ver:g.ver === 1 ? 1 : 0, visto:nat(g.visto) <= 3 ? nat(g.visto) : 0 };
 }
 /* v10.10, a noite da estrela (cap. 14, só no Terraço): o dia que o jogador marca na lojinha. `groups` e `meta`: os grupos e as metas do dia × isso; `critico` e `braulio`: a faixa da janela de chegadas em que cada um chega;
    `brauPat`: a paciência do Bráulio; `brauFeliz`: os corações com que ele sai feliz; `espera`: dias até poder marcar outra noite; `volta`: a chance diária do crítico depois da 1ª noite. `pts`: os pontos do guia por linha
@@ -1302,7 +1302,7 @@ const HISTORIA = [
       { q:'tonhao', s:'E o Bráulio saiu calado. Pela primeira vez na vida.' },
       { q:'dani', s:'E agora?' },
       { q:'tonhao', s:'Agora o guia liga. Dorme, Bia. Amanhã cedo o telefone toca.' }],
-    fim:{ h:'Fim do capítulo 14', p:'Continua na próxima versão: o futuro da Corre-Corre.' } }
+    fim:{ h:'Fim da história', p:'A casa segue aberta. Para mais estrelas, marque outra noite na lojinha.', p3:'A casa segue aberta, com a nota mais alta do guia na parede.' } }   // v11: o final; p3 quando a 1ª noite já dá 3 estrelas
 ];
 /* v9.0.1: a conversa do cardápio, no fim do dia `dia` (ou do 1º dia completo depois dele, para saves antigos), só no Modo História.
    falas: o Tonhão ainda não fez curso; fez: já fez algum (básico de qualquer curso ou o avançado do PF). save.convCard: 'pend' | 1 (vista) */
@@ -1323,7 +1323,7 @@ const DEV_CAPS = [
   { n:12, dia:64, ponto:'terraco',    pdia:50, caixa:10000, nota:4.6, eq:null, cursos:null, dani:null, joca:null, cami:null, up:null, semRosa:true },   // v10.8: o molho da Rosa: tudo no máximo (como o Fim) menos o molho e a gerência
   { n:13, dia:64, ponto:'terraco',    pdia:50, caixa:10000, nota:4.6, eq:null, cursos:null, dani:null, joca:null, cami:null, up:null },   // v10.9: o crítico sem aviso: como o 12, com o molho e a gerência comprados
   { n:14, dia:64, ponto:'terraco',    pdia:50, caixa:10000, nota:4.6, eq:null, cursos:null, dani:null, joca:null, cami:null, up:null },   // v10.10: a noite da estrela: como o 13, com duas fichas de 8 do crítico (devCapitulo)
-  { n:15, dia:64, ponto:'terraco',    pdia:50, caixa:10000, nota:4.6, eq:null, cursos:null, dani:null, joca:null, cami:null, up:null }   // o Fim: o mesmo que "Tudo no máximo" (devEquipe('max') e devMelhorias(true)), com a Lia, o molho e a gerência
+  { n:15, dia:64, ponto:'terraco',    pdia:50, caixa:10000, nota:4.6, eq:null, cursos:null, dani:null, joca:null, cami:null, up:null, guiaEst:1, guiaVisto:1 }   // v11: com 1 estrela já vista. O Fim: o mesmo que "Tudo no máximo" (devEquipe('max') e devMelhorias(true)), com a Lia, o molho e a gerência
 ];
 const HIST_CARDAPIO = { dia:2,   // v9.6.2: no fim do dia 2 (antes, do dia 1), para a 1ª lojinha ficar sem empurrão
   falas:[ { q:'bia', s:'Tio, hoje um monte de gente perguntou se só tem PF e coxinha...' },
@@ -1541,7 +1541,7 @@ const BIA_IDS = ['tenis', 'corrida', 'bandeja', 'sudoku'];
 function upgradeCartao(id){ return BIA_IDS.indexOf(id) >= 0 ? 'bia' : 'melhorias'; }
 const HIST_NOMES = { bia:'Bia', tonhao:'Tonhão', dani:'Dani', joca:'Joca', cami:'Cami', anselmo:'Anselmo', lia:'Lia' };
 const CAIXA_MAX = 14;                                 // livro-caixa (v7.2): quantos dias da carreira ficam guardados
-const VERSAO = 'v10.10';                                // vai no resumo do Caixa
+const VERSAO = 'v11';                                // vai no resumo do Caixa
 const DIVULGA_DIA = 4;                                // antes disso, o movimento é o da inauguração (sem custo); v9.0.2: dia 4, e o padrão é o boca a boca
 function divulgaAberta(n, sv){ return devLivre() || n >= DIVULGA_DIA && !(sv && sv.convDiv === 'pend'); }   // no modo dev, desde o dia 1; v9.0.3: no Modo História, só depois da conversa
 /* v9.6.4: a Efood (os entregadores) só abre depois da conversa dos entregadores, no Modo História; antes dela, nenhum tipo com `retira` vem na agenda */
@@ -1762,7 +1762,7 @@ const MANUAL = [
   { id:'i-boato',   aba:'imprevistos', nome:'Boato', linha:'Alguém espalha que hoje tem coisa de graça, e a casa lota.' },
   { id:'l-noite',   aba:'lojinha', nome:'Noite da estrela', linha:'Você escolhe o dia. Casa cheia, o crítico à mesa e o Bráulio de olho. No fim, o guia dá o veredito.' },   // v10.10
   { id:'c-braulio', aba:'clientes', tipo:'braulio', nome:'Bráulio', linha:'O chef da Casa Aurora. Vem sozinho, tem pouca paciência e pede o prato da casa para achar defeito.' },
-  { id:'b-michelzao', aba:'basico', nome:'Estrelas do Michelzão', linha:'O guia pesa as visitas do crítico, o Gurugol, o luxo e a noite. As estrelas ganhas não se perdem.' }
+  { id:'b-michelzao', aba:'basico', nome:'Estrelas do Michelzão', linha:'O guia pesa as visitas do crítico, o Gurugol, o luxo e a noite. As estrelas ganhas não se perdem. A placa fica na parede.' }
 ];
 const MANUAL_PONTO_NOME = { garagem:'Garagem', industrial:'Área industrial', avenida:'Avenida Brasil', terraco:'Terraço Suíça' };
 const MANUAL_CATS = { pf:'PF', frito:'fritos', assado:'assados', chapa:'lanches na chapa', pastel:'pastel' };

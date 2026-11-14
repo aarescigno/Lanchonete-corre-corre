@@ -16,10 +16,9 @@ Origem: retorno do Renan Martorelli (beta-tester) e conversa com o Arthur (15/10
 | # | Etapa | Versão | Situação |
 |---|---|---|---|
 | 5 | ~~Modo História, parte 1~~: juntou-se à 2f e aos capítulos da 3a, 3b e 4a (28/10) | — | — |
-| 6a | O molho da Rosa: a pétala na mão e a Cami gerente (cap. 12) | v10.8 | feita em 13/11 (`docs/spec-v10.8.md`; `smoke73`; o prato no balcão ainda não leva a pétala, ver Desvios) |
 | 6b | O crítico sem aviso: o caderninho e o boato do Bráulio (cap. 13) | v10.9 | feita em 13/11 (`docs/spec-v10.9.md`; `smoke74`; ficha média 6,3 e 5,6 com `CRITICO.pac` 2, ver Desvios) |
 | 6c | A noite da estrela: o jantar, o Bráulio à mesa e as estrelas (cap. 14) | v10.10 | feita em 13/11 (`docs/spec-v10.10.md`; `smoke75`; cortes 44/66/90 e CA14 e CA15 em parte, ver Desvios) |
-| 6d | O futuro da Corre-Corre: a cena final, os créditos e a placa | v11 | a fazer (`docs/spec-v11.md`, aprovada) |
+| 6d | O futuro da Corre-Corre: a cena final, os créditos e a placa | v11 | feita em 14/11 (`docs/spec-v11.md`; `smoke76`; o Fim em 10 de 10 carreiras; a placa fica sobre o janelão, ver Desvios) |
 | 7 | Polimento: celular, jogo online, ajuste geral | v11.1 | a rever |
 
 ---
@@ -82,24 +81,6 @@ Origem: retorno do Renan Martorelli (beta-tester) e conversa com o Arthur (15/10
 > - **O Terraço mede pela equipe toda** (Joca, Cami, Anselmo e a confeitaria): é ela que passa ~90% das metas.
 > - **Regra da 3f em todas as sessões:** cartão novo da lojinha só com nome, preço e "?"; toda novidade ganha ficha no `MANUAL` (sem números), revelada quando aparece na história.
 > Ordem: 4a-1 (o ponto e a refeição completa, v10) → 4a-2 (o VIP exigente e a reputação, v10.1) → 4a-3 (a cozinha: alta gastronomia, a Lia e a alta confeitaria, v10.2) → 4a-4 (o salão e o bar: Cami, Joca e Anselmo, v10.3) → 4a-5 (música, flores e rebalanceamento, v10.4). Cada uma é uma versão, com PR e merge. As "Checagens de fim de sessão" da etapa 3 valem para todas.
-
-## Etapa 6 — Modo História: o crítico do Michelzão e o final (v10.8 a v11)
-> Planejada em 13/11 (decisões do usuário no `docs/PROPOSTAS.md`): quatro sessões, uma versão cada, todas com spec aprovada. O guia é o **Michelzão**, inventado: nada de nome, logo, mascote ou arte de guia real.
-
-**Objetivo:** a estrela do Michelzão, o fim do sonho da Bia. Três capítulos novos no Terraço (12 a 14) e a cena final.
-
-**O arco (vale para as quatro):**
-- **Estrelas:** de nenhuma ("Recomendado") a 3. Com 1 a promessa à Rosa se cumpre e a cena final toca inteira; a 2ª e a 3ª são o desafio duro, cada uma acrescenta um trecho à cena, e dá para marcar outra noite para tentar mais. Estrela ganha não se perde.
-- **O Bráulio é rival até o fim:** planta um comentário no Gurugol, espalha um boato para lotar a casa no dia do crítico, senta à mesa na noite da estrela para achar defeito e, no final, perde a estrela da Casa Aurora por nunca ter sabido repetir o molho.
-- **O futuro:** o Terraço segue com a estrela, e a garagem da Rosa reabre como a Cozinha da Rosa, escola de cozinha do bairro, com a Dani dando aula. A última cena espelha a primeira da abertura.
-- **Depois do final** a campanha continua, com a placa na parede, visitas surpresa do crítico e noites novas.
-
-### 6d — O futuro da Corre-Corre (v11)
-A cena final animada (oito cenas, no motor da abertura), os créditos, a placa na parede do Terraço, "O final" no botão História e a v10 guardada em `versoes/v10.html`. Spec: `docs/spec-v11.md`.
-
-**Modelo:** Sonnet, esforço alto (o peso é o desenho das cenas no canvas, conferidas por captura).
-
----
 
 ## Etapa 7 — Polimento (v11.1)
 > **A rever com o usuário antes de começar** (revisão de 22/10).
