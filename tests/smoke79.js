@@ -17,15 +17,15 @@ const L0=load({historia:true}).L;
 
 // ---------- CA1: as 7 entradas ----------
 { const A=L0.ARCO||[];
-  ok(Array.isArray(A) && A.length===7 && A.map(a=>a.id+':'+a.nivel).join()===EXP.map(e=>e[0]+':'+e[1]).join() && A.every(a=>typeof a.quando==='function'),'CA1 ARCO tem as 7 entradas, na ordem e com o nivel de §6.2 e §6.3, cada uma com quando');
+  ok(Array.isArray(A) && A.length>=7 && A.slice(0,7).map(a=>a.id+':'+a.nivel).join()===EXP.map(e=>e[0]+':'+e[1]).join() && A.every(a=>typeof a.quando==='function'),'CA1 ARCO começa com as 7 entradas, na ordem e com o nivel de §6.2 e §6.3, cada uma com quando');
   const dif=EXP.filter(e=>{ const a=A.find(x=>x.id===e[0]); return !a || JSON.stringify(ach(a.falas))!==JSON.stringify(e[2]); }).map(e=>e[0]);
-  ok(A.length===7 && dif.length===0,'CA1 as falas têm o texto, o e e a rubrica exatos do roteiro (diferente: '+(dif.join(', ')||'nenhuma')+')');
-  const todas=[].concat(...A.map(a=>a.falas));
+  ok(A.length>=7 && dif.length===0,'CA1 as falas têm o texto, o e e a rubrica exatos do roteiro (diferente: '+(dif.join(', ')||'nenhuma')+')');
+  const todas=[].concat(...A.slice(0,7).map(a=>a.falas));
   ok(todas.length>0 && todas.every(f=>f.s.length<=120 && (!f.e || cinco.includes(f.e))),'CA1 nenhuma fala passa de 120 letras e o e é um dos cinco'); }
 
 // ---------- CA2: save.arco ----------
 { const novo=L0.normSave({}), ids=EXP.map(e=>e[0]);
-  ok(novo.arco && ids.every(i=>novo.arco[i]===0) && Object.keys(novo.arco).length===7,'CA2 save novo: um valor por id, tudo 0');
+  ok(novo.arco && L0.ARCO.every(a=>novo.arco[a.id]===0) && Object.keys(novo.arco).length===L0.ARCO.length,'CA2 save novo: um valor por id, tudo 0');
   const ind=L0.normSave({ dia:20, salao:{ ponto:'industrial' } });
   ok(ids.every(i=>ind.arco[i]===(EXP.find(e=>e[0]===i)[1]<2?1:0)),'CA2 save antigo (sem arco) na área industrial: as da Garagem nascem 1, as da área industrial 0');
   const av=L0.normSave({ dia:40, salao:{ ponto:'avenida' } });
@@ -111,10 +111,10 @@ const L0=load({historia:true}).L;
   const rot=L.devCenas().map(c=>c.rot);
   ok(EXP.every(e=>rot.includes('Arco: '+e[0])) && L.devCenas().find(c=>c.rot==='Arco: caderno').falas===L.ARCO.find(a=>a.id==='caderno').falas,'CA8 a lista de cenas do modo dev tem Arco: <id> com as falas');
   g.devConversas('vistas');
-  ok(Object.keys(g.save.arco).length===7 && Object.keys(g.save.arco).every(k=>g.save.arco[k]===1),'CA8 "Marcar todas como vistas" põe as 7 em 1'); }
+  ok(Object.keys(g.save.arco).length===L.ARCO.length && Object.keys(g.save.arco).every(k=>g.save.arco[k]===1),'CA8 "Marcar todas como vistas" põe todas em 1'); }
 
 // ---------- CA9 ----------
-ok(Array.isArray(L0.ARCO) && L0.ARCO.length===7,'CA9 window.__lcc expõe ARCO');
+ok(Array.isArray(L0.ARCO) && L0.ARCO.length>=7,'CA9 window.__lcc expõe ARCO');
 
 console.log('\n'+(total-fails)+' de '+total+' checagens ok');
 if(fails) process.exit(1);

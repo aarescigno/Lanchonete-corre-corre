@@ -16,10 +16,9 @@ Origem: retorno do Renan Martorelli (beta-tester) e conversa com o Arthur (15/10
 | # | Etapa | Versão | Situação |
 |---|---|---|---|
 | 5 | ~~Modo História, parte 1~~: juntou-se à 2f e aos capítulos da 3a, 3b e 4a (28/10) | — | — |
-| 8a | A voz da Bia na Garagem e na área industrial (falas reescritas) | v11.1 | feita em 14/11 (`docs/spec-v11.1.md`; `smoke77`; a última fala de `HIST_VONTADE_DOCE` e o `e` de `melhorias` e `salao` ficaram pendentes, ver Desvios) |
 | 8b | A voz da Bia na Avenida e no Terraço (falas reescritas) | v11.2 | feita em 14/11 (`docs/spec-v11.2.md`; `smoke78`; as duas da vontade com `s2` e `socorroFalas` fecham as pendências da 8a; o Fim em 10 de 10 carreiras) |
 | 8c | As conversas do arco: o motor `ARCO` e as 7 da Garagem e da área industrial | v11.3 | feita em 14/11 (`docs/spec-v11.3.md`; `smoke79`; o `quando` lê `g.fimDia`, novo; o Fim em 10 de 10 carreiras) |
-| 8d | As 10 conversas do arco da Avenida e do Terraço | v11.4 | roteiro em `docs/ARCO.md` §7 |
+| 8d | As 10 conversas do arco da Avenida e do Terraço | v11.4 | feita em 14/11 (`docs/spec-v11.4.md`; `smoke80`; só entradas novas na `ARCO`; o Fim em 10 de 10 carreiras) |
 | 8e | O retrato no balão e as 5 expressões | v11.5 | roteiro em `docs/ARCO.md` §8 |
 | 8f | O Bráulio em cena: na Avenida e na noite da estrela | v11.6 | roteiro em `docs/ARCO.md` §9 |
 | 8g | A roupa da Bia por ponto | v11.7 | roteiro em `docs/ARCO.md` §10 |
@@ -91,13 +90,12 @@ Origem: retorno do Renan Martorelli (beta-tester) e conversa com o Arthur (15/10
 > **Planejada com o usuário em 14/11** (entrevista; pedido em `docs/PROPOSTAS.md`). A Bia parte insegura e chega a dona que comanda a casa; o Tonhão passa o bastão; cada ajudante ganha dificuldade e conquista. **Todo o roteiro (falas, gatilhos, desenho) está em `docs/ARCO.md`**, uma seção por sessão: leia só a seção da vez (`tests/indice.sh ARCO`) e a §12.
 > **Como executar cada sessão:** crie a spec (`python3 ferramentas/spec.py nova vN "Título" 8x`), **copie para ela a seção do `docs/ARCO.md` sem decidir nada** (Regras = o roteiro; Critérios de aceite = a §12 aplicada à seção; aprovada no mesmo dia), e siga o ciclo do `docs/SDD.md`. Faltou texto, gatilho ou dado no save: pergunte ao usuário. Vem antes do Polimento (Etapa 7, agora v11.9), que já revisa estes textos.
 
-- **8d (v11.4) — As conversas do arco, parte 2.** As 10 entradas da Avenida e do Terraço. `docs/ARCO.md` §7. Partes: `src/10-constantes.js`. **Modelo:** Sonnet, esforço baixo (o Haiku deixou pendências na 8a; só entradas e smoke; se algum `quando` não tiver o dado no save, pare e pergunte).
 - **8e (v11.5) — O retrato no balão.** O busto de quem fala dentro do balão, com 5 expressões (`e`). `docs/ARCO.md` §8. Partes: `src/26-conversa.js`, `src/20-desenho-base.js` e `src/21-cenario.js` (rostos), `src/16-jogo.js` (modo dev). **Modelo:** Sonnet, esforço alto (desenho no canvas, conferido por captura).
 - **8f (v11.6) — O Bráulio em cena.** O retrato dele, a conversa `braulio1` (duas versões) e o cap. 14 `depois` com ele na porta. `docs/ARCO.md` §9. Partes: `src/10-constantes.js`, `src/26-conversa.js`. **Modelo:** Sonnet, esforço médio.
 - **8g (v11.7) — A roupa da Bia por ponto.** Quatro trajes, do avental da mãe ao colete com a rosa. `docs/ARCO.md` §10. Partes: `src/20-desenho-base.js` (`drawBia`), `src/26-conversa.js` (retrato). **Modelo:** Sonnet, esforço alto (desenho, conferido por captura).
 - **8h (v11.8) — As reações da Bia.** Três gestos curtos, que mudam com o ponto. `docs/ARCO.md` §11. Partes: `src/14-bia.js`, `src/20-desenho-base.js`, `src/16-jogo.js`. **Modelo:** Sonnet, esforço alto (animação nova, sem mexer no ritmo do jogo).
 
-**Modelo:** por sessão, acima; a próxima é a 8d, com o Sonnet, esforço baixo.
+**Modelo:** por sessão, acima; a próxima é a 8e, com o Sonnet, esforço alto.
 
 ---
 
