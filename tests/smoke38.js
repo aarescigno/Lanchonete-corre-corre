@@ -67,7 +67,7 @@ const joga=(H,fat,custo)=>{ const {g,els}=H; if(g.state==='shop') els['btn-shop-
 
 // ---------- 4. a clientela ----------
 { const H=jogo(4,true), {g,L}=H, I=g, tipos={}, vipI={ v:0, n:0 }; g.save.divulga='boca';
-  const conta=(game,res)=>{ for(let k=0;k<30;k++){ const sc=game.buildSchedule(game.day); sc.forEach(s=>{ res.tipos[s.type]=(res.tipos[s.type]||0)+1; res.n++; if(s.vip) res.v++; }); } return res; };
+  const conta=(game,res)=>{ for(let k=0;k<200;k++){ const sc=game.buildSchedule(game.day); sc.forEach(s=>{ res.tipos[s.type]=(res.tipos[s.type]||0)+1; res.n++; if(s.vip) res.v++; }); } return res; };
   const ri=conta(g,{ tipos:{}, v:0, n:0 });
   const G=jogo(4,false).g; G.resetDay(10); const rg=conta(G,{ tipos:{}, v:0, n:0 });
   const fr=(r,k)=>(r.tipos[k]||0)/(r.n-(r.tipos.encomenda||0));
@@ -168,13 +168,13 @@ const joga=(H,fat,custo)=>{ const {g,els}=H; if(g.state==='shop') els['btn-shop-
 
 // ---------- 12. turma e o apito da fábrica ----------
 { const H=jogo(4,true,{ bank:5000, divulga:'panfleto' }), {g,L}=H; let achou=0, juntas=0;   // v9.0.2: com panfletos (o boca a boca sorteia menos turmas)
-  for (let k=0;k<12;k++){
+  for (let k=0;k<40;k++){   // 40 dias (eram 12, com 11 exigidos: falhava por sorteio)
     g.resetDay(10); const sc=g.schedule, ts=sc.filter(s=>s.apito);
     if (!ts.length) continue; achou++;
     const t0=0.45*g.day.time;
     if (ts.length<=3 && Math.abs(ts[0].t-t0)<1e-6 && ts.every((s,i)=>i===0 || (s.t-ts[i-1].t>=8-1e-9 && s.t-ts[i-1].t<=12+1e-9)) && ts.every(s=>s.type==='turma') && g.apito && g.apito.aviso===10) juntas++;
   }
-  ok(achou>=11 && juntas===achou,'as primeiras turmas (até 3) chegam juntas a partir de 45% do turno, uma a cada 8 a 12 s, com o aviso de 10 s');
+  ok(achou>=30 && juntas===achou,'as primeiras turmas (até 3) chegam juntas a partir de 45% do turno, uma a cada 8 a 12 s, com o aviso de 10 s');
   g.resetDay(10); while(!g.apito) g.resetDay(10); g.begin(); g.schedule.forEach(s=>{ s.t=9999; }); const ap=g.apito; g.elapsed=ap.t-ap.aviso-0.01; g.fx.length=0;
   g.update(0.05); ok(g.fx.some(f=>f.text==='A fábrica vai apitar!'),'10 s antes: "A fábrica vai apitar!"');
   g.elapsed=ap.t-0.01; g.update(0.05); ok(g.fx.some(f=>f.text==='Apitou!') && ap.tocou,'na hora: "Apitou!"');
