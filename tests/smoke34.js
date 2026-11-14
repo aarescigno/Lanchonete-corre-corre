@@ -37,7 +37,7 @@ const notaDe=(g,v,n)=>{ g.save.aval=Array(n||10).fill([v,v,v,v,v]); };
   els['btn-treino-dia1'].fire('click');
   ok(g.conversa && mostra(els,'ov-conversa') && !mostra(els,'ov-treino') && g.state==='treinoend','"Começar o dia 1" toca antes a conversa do cap. 1');
   ok(/Tonhão/.test(els['conv-live'].textContent),'o leitor de tela recebe a fala');
-  ok(passa(H)===3 && !g.conversa && g.state==='intro' && g.day.n===1 && g.save.conversa===null,'3 toques passam as 3 falas, gravam conversa:null e abrem o dia 1');
+  ok(passa(H)===4 && !g.conversa && g.state==='intro' && g.day.n===1 && g.save.conversa===null,'4 toques passam as 4 falas (v11.1), gravam conversa:null e abrem o dia 1');
   ok(!mostra(els,'ov-conversa'),'o painel da conversa fecha'); }
 { // com a Missão zero já feita, a abertura leva direto à conversa
   const H=nova({abertura:true},{lcc2_save:JSON.stringify({cardV:1,treino:true})}), {g,L}=H;

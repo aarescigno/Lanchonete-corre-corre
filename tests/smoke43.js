@@ -18,8 +18,8 @@ const fala=(L,id)=>L.liberaOf(id);
 // ---------- 1. a entrada da confeitaria no LIBERA ----------
 { const {L}=nova(); const c=fala(L,'confeitaria'), j=fala(L,'joca');
   ok(c && c.nivel===2 && c.dia===4 && c.ate===4 && !c.gatilho,'confeitaria: nível 2, dia 4, garantia 4, sem gatilho');
-  ok(c.falas.length===4 && c.falas.map(f=>f.q).join()==='dani,bia,dani,tonhao' && /sobremesa/.test(c.falas[0].s) && /brigadeiro/.test(c.falas[2].s),'confeitaria: 4 falas (Dani, Bia, Dani, Tonhão)');
-  ok(j && j.nivel===2 && j.dia===1 && j.ate===999 && typeof j.gatilho==='function' && j.falas.length===6 && j.falas[4].q==='joca' && /Lixo, louça, mesa suja/.test(j.falas[4].s),'joca: nível 2, gatilho pelo curso, 6 falas com a dele');
+  ok(c.falas.length===4 && c.falas.map(f=>f.q).join()==='dani,bia,dani,tonhao' && /sobremesa/.test(c.falas[0].s) && /[Bb]rigadeiro/.test(c.falas[2].s),'confeitaria: 4 falas (Dani, Bia, Dani, Tonhão)');
+  ok(j && j.nivel===2 && j.dia===1 && j.ate===999 && typeof j.gatilho==='function' && j.falas.length===5 && j.falas[3].q==='joca' && /Lixo, louça, mesa suja/.test(j.falas[3].s),'joca: nível 2, gatilho pelo curso, 5 falas com a dele (v11.1)');
   ok(L.LIBERA.every(l=>l.falas.every(f=>L.HIST_NOMES[f.q])),'toda fala tem nome em HIST_NOMES (inclui o Joca)'); }
 
 // ---------- 2. a conversa no 4º dia no ponto; o curso só depois dela ----------

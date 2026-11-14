@@ -1148,52 +1148,57 @@ const REFORMA = { valor:1000, amort:100, juros:0.01, ini:2 };
 const HISTORIA = [
   { cap:1, titulo:'A garagem da Rosa', ponto:'garagem', obj:{ azul:2 },
     antes:[
-      { q:'tonhao', s:'Panela no fogo, avental no lugar. Abre o portão, Bia!' },
-      { q:'bia', s:'A garagem da mãe... Ela ia gostar de ver isso cheio de gente.' },
-      { q:'tonhao', s:'Então vamos encher! E fechar o dia no azul, que o banco não espera.' }],
+      { q:'tonhao', e:'alegre', s:'Panela no fogo, avental no lugar. Abre o portão, Bia!' },
+      { q:'bia', e:'insegura', nota:'olhando a foto da mãe', s:'Será que eu dou conta, mãe?' },
+      { q:'bia', e:'insegura', s:'E se não vier ninguém, tio?' },
+      { q:'tonhao', e:'firme', s:'Vem. E a gente fecha o dia no azul, que o banco não espera.' }],
     depois:[
-      { q:'bia', s:'Dois dias no azul, tio!' },
-      { q:'tonhao', s:'Isso! Agora é aguentar a parcela todo dia.' }] },
+      { q:'bia', e:'alegre', s:'Dois dias no azul, tio! Eu nem acreditei.' },
+      { q:'tonhao', s:'Pois acredite. Agora é aguentar a parcela todo dia.' }] },
   { cap:2, titulo:'A Dani chega', ponto:'garagem', obj:{ nota:2.4 },
     antes:[
-      { q:'bia', s:'Não dou conta da mesa e da pia ao mesmo tempo...' },
-      { q:'tonhao', s:'Pedi ajuda pra Dani, filha da vizinha. Ela vem aprender com a gente.' },
-      { q:'dani', s:'Sou meio lenta ainda, mas aprendo rápido!' }],
+      { q:'bia', e:'insegura', s:'Deixei a pia encher de novo. Não dou conta da mesa e da louça...' },
+      { q:'tonhao', s:'Sozinha, ninguém dá. Pedi ajuda pra Dani, filha da vizinha.' },
+      { q:'dani', e:'insegura', s:'Sou meio lenta ainda, mas aprendo rápido!' },
+      { q:'bia', e:'alegre', s:'Então somos duas aprendendo.' }],
     depois:[
-      { q:'dani', s:'Ouvi um freguês dizer que aqui é tudo limpinho!' },
-      { q:'bia', s:'O Gurugol subiu, tio! Já tá em 2,4.' },
+      { q:'dani', e:'alegre', s:'Ouvi um freguês dizer que aqui é tudo limpinho!' },
+      { q:'bia', e:'alegre', s:'O Gurugol subiu, tio! Já tá em 2,4.' },
       { q:'tonhao', s:'Devagar e sempre.' }] },
   { cap:3, titulo:'Casa cheia', ponto:'garagem', obj:{ quitar:true, nota:2.7, caixa:800 },
     fim:{ h:'Fim dos capítulos da Garagem', p:'Quando quiser, a mudança para a área industrial está na lojinha.' },   // v9.1: o cartão de fim do último capítulo de cada ponto
     antes:[
       { q:'bia', s:'O Gurugol tá cheio de comentário sobre a gente!' },
       { q:'dani', s:'Tem freguês perguntando se a gente vai abrir num lugar maior.' },
+      { q:'bia', e:'insegura', s:'Lugar maior? A gente mal paga a reforma...' },
       { q:'tonhao', s:'Primeiro quita a reforma. Depois junta pra mudança.' }],
     depois:[
-      { q:'bia', s:'Reforma quitada e R$ 800 guardados!' },
+      { q:'bia', e:'firme', s:'Reforma quitada e R$ 800 guardados. Fui eu que juntei, tio!' },
       { q:'tonhao', nota:'cheirando o pote de cominho', s:'Cominho com açafrão... a Rosa ia rir de mim agora.' },
       { q:'bia', s:'Por quê, tio?' },
-      { q:'tonhao', s:'Um dia eu te conto da Casa Aurora.' }] },
+      { q:'tonhao', s:'Um dia eu te conto da Casa Aurora.' },
+      { q:'bia', e:'firme', s:'Vou cobrar.' }] },
   // v9: os capítulos do primeiro ponto novo. O cap. 4 só começa na mudança (na lojinha); até lá save.cap fica em 4, "à espera" (v9.1: o `fim` do último capítulo de cada ponto é o cartão de fim)
   { cap:4, titulo:'Ponto novo', ponto:'industrial', obj:{ azul:3 },
     antes:[
-      { q:'bia', s:'Olha o tamanho disso, tio! Vinte lugares!' },
-      { q:'tonhao', s:'E aluguel todo dia. Aqui o almoço é corrido: o pessoal da fábrica tem hora pra voltar.' },
-      { q:'bia', s:'Então é servir rápido e fechar no azul.' }],
+      { q:'bia', e:'alegre', nota:'pondo a foto da mãe na parede', s:'Olha só, mãe: vinte lugares!' },
+      { q:'tonhao', s:'E aluguel todo dia. O pessoal da fábrica tem hora pra voltar.' },
+      { q:'bia', e:'firme', s:'Então eu sirvo rápido e a gente fecha no azul. Já fiz isso na garagem.' }],
     depois:[
       { q:'tonhao', s:'Três dias no azul pagando aluguel. Tá provado, Bia.' },
-      { q:'bia', s:'E a moto não para de chegar pedindo marmita!' }] },
+      { q:'bia', e:'alegre', s:'Tá provado mesmo. E a moto não para de pedir marmita!' }] },
   { cap:5, titulo:'Hora do almoço', ponto:'industrial', obj:{ marmitas:6, nota:3.4, caixa:2000 },
     antes:[
       { q:'dani', s:'Os motoqueiros já sabem o meu nome!' },
       { q:'tonhao', s:'Marmita bem fechada e na hora. Quem sai da fábrica volta amanhã.' },
-      { q:'bia', s:'E se a nota subir, dá pra sonhar com a Avenida Brasil.' }],
+      { q:'bia', e:'firme', s:'E eu tô de olho na nota. Subindo, a gente vai pra Avenida Brasil.' }],
     depois:[
-      { q:'bia', s:'R$ 2.000 guardados! Dá pra Avenida Brasil, tio.' },
-      { q:'tonhao', nota:'largando a colher', s:'Na Avenida Brasil tem o restaurante do Bráulio.' },
-      { q:'bia', s:'O chef de bigode da Casa Aurora?' },
-      { q:'tonhao', s:'Ele mesmo. A estrela veio do molho da sua mãe... e ele nunca conseguiu repetir.' },
-      { q:'dani', s:'Então é lá que a gente vai abrir!' }],
+      { q:'bia', e:'alegre', s:'R$ 2.000 guardados! Dá pra Avenida Brasil, tio.' },
+      { q:'tonhao', e:'insegura', nota:'largando a colher', s:'Lá fica a Casa Aurora, do Bráulio. Vamos pra outro bairro, Bia.' },
+      { q:'tonhao', s:'A estrela dele veio do molho da sua mãe. Eu não quero olhar pra aquela porta todo dia.' },
+      { q:'bia', e:'firme', s:'Eu quero. Não, tio: a gente não vai se esconder dele.' },
+      { q:'tonhao', e:'alegre', nota:'pegando a colher de volta', s:'...Falou igual à Rosa.' },
+      { q:'dani', e:'alegre', s:'Então é lá que a gente vai abrir!' }],
     fim:{ h:'Fim dos capítulos da área industrial', p:'Quando quiser, a mudança para a Avenida Brasil está na lojinha.' } },
   // v9.1: os capítulos da Avenida Brasil. O cap. 6 só começa na mudança (na lojinha); até lá save.cap fica em 6, "à espera". O Bráulio é só citado
   { cap:6, titulo:'Do outro lado da rua', ponto:'avenida', obj:{ azul:3 },
@@ -1326,9 +1331,9 @@ const DEV_CAPS = [
   { n:15, dia:64, ponto:'terraco',    pdia:50, caixa:10000, nota:4.6, eq:null, cursos:null, dani:null, joca:null, cami:null, up:null, guiaEst:1, guiaVisto:1 }   // v11: com 1 estrela já vista. O Fim: o mesmo que "Tudo no máximo" (devEquipe('max') e devMelhorias(true)), com a Lia, o molho e a gerência
 ];
 const HIST_CARDAPIO = { dia:2,   // v9.6.2: no fim do dia 2 (antes, do dia 1), para a 1ª lojinha ficar sem empurrão
-  falas:[ { q:'bia', s:'Tio, hoje um monte de gente perguntou se só tem PF e coxinha...' },
+  falas:[ { q:'bia', e:'insegura', s:'Tio, um monte de gente perguntou se só tem PF e coxinha... Eu não soube o que dizer.' },
           { q:'tonhao', s:'É... a Rosa fazia um pastel que era uma beleza. Eu nunca aprendi.' },
-          { q:'bia', s:'Então faz um curso! Tem uns baratinhos.' },
+          { q:'bia', s:'E se o senhor fizesse um curso? Tem uns baratinhos...' },
           { q:'tonhao', s:'Tá bom, tá bom. Vê aí no Cardápio da lojinha o que cabe no bolso.' } ],
   fez:[ { q:'bia', s:'O pessoal adorou o prato novo!' },
         { q:'tonhao', s:'Então vou fazer mais cursos. Tá tudo no Cardápio da lojinha.' } ] };
@@ -1336,16 +1341,20 @@ const HIST_CARDAPIO = { dia:2,   // v9.6.2: no fim do dia 2 (antes, do dia 1), p
    save.convDiv: 'pend' | 1 (vista). v9.0.3: enquanto pendente, a divulgação não abre (o movimento da inauguração segue) */
 const HIST_DIVULGA = {
   falas:[ { q:'tonhao', s:'A festa da inauguração acabou, Bia. Daqui pra frente, quem vem é porque ouviu falar da gente.' },
-          { q:'bia', s:'No boca a boca? Então vai ter dia fraco...' },
-          { q:'bia', s:'E se a gente fizer panfleto? Eu entrego no ponto de ônibus antes de abrir!' },
+          { q:'bia', e:'insegura', s:'No boca a boca? Então vai ter dia fraco...' },
+          { q:'bia', e:'alegre', s:'E se a gente fizer panfleto? Eu entrego no ponto de ônibus antes de abrir!' },
           { q:'tonhao', nota:'coçando a cabeça', s:'Panfleto custa, mas traz o movimento de sempre. E tem as redes sociais, pra quem tem lugar pra tanta gente.' },
           { q:'bia', s:'Vou ver na Divulgação da lojinha o que compensa.' } ] };
 /* v9.6.13: a 2ª chance do banco, só no Modo História e uma vez por carreira (BANCO.socorro): em vez de tomar a lanchonete, o banco segura a parcela atrasada.
    save.socorro: 0 | 1 (já usou); save.convSocorro: 0 | 'pend' | 1 */
 const HIST_SOCORRO = {
-  falas:[ { q:'tonhao', nota:'desligando o telefone', s:'Falei com o gerente do banco, Bia. Ele segurou a parcela desta vez.' },
-          { q:'bia', s:'Ufa... achei que a gente ia perder tudo.' },
-          { q:'tonhao', s:'Só desta vez. Na próxima, ele toma a lanchonete. Olha o caixa antes de comprar.' } ] };
+  falas:[ { q:'tonhao', s:'O banco ligou, Bia. Deixa que eu falo com o gerente.' },
+          { q:'bia', e:'insegura', s:'Não, tio. A dívida tá no meu nome. Eu ligo.' },
+          { q:'bia', e:'insegura', nota:'desligando o telefone, com a mão tremendo', s:'Ele segurou a parcela desta vez.' },
+          { q:'tonhao', e:'alegre', s:'Tremeu, mas ligou. E é só desta vez: na próxima, ele toma a lanchonete. Olha o caixa antes de comprar.' } ],
+  firme:[ { q:'bia', e:'firme', nota:'desligando o telefone', s:'Falei com o gerente, tio. Ele segurou a parcela desta vez.' },
+          { q:'tonhao', s:'E na próxima?' },
+          { q:'bia', e:'firme', s:'Na próxima ele toma a lanchonete. Não vai ter próxima: eu olho o caixa antes de comprar.' } ] };
 /* v10.1: o cliente exigente do Terraço, no fim do 1º dia em que um veio (só no Modo História). save.convExig: 0 | 'pend' | 1 */
 const HIST_EXIGENTE = {
   falas:[ { q:'bia', s:'Tio, viu a plaquinha de duas estrelas naquela mesa?' },
@@ -1365,7 +1374,7 @@ const HIST_RECOMENDA = { falas:[
 /* v10.5.2: as conversas do meio do capítulo 3 (Garagem), só no Modo História: ficam pendentes no fim do 1º dia em que save.cap === 3 e a reforma zerou
    (convQuit: 0 | 'pend' | 1) ou a nota geral do Gurugol chegou à nota mínima da Garagem (convTeto). Se o capítulo se cumpre no mesmo dia, passam direto a 1 */
 const HIST_QUITOU = {
-  falas:[ { q:'bia', s:'Última parcela da reforma paga, tio!' },
+  falas:[ { q:'bia', e:'alegre', s:'Última parcela da reforma paga, tio! Paguei uma por uma.' },
           { q:'tonhao', nota:'rasgando o carnê', s:'A garagem da Rosa é nossa de novo.' },
           { q:'dani', s:'E agora, o dinheiro vai pra onde?' },
           { q:'bia', s:'Pro cofrinho da mudança.' } ] };
@@ -1373,11 +1382,11 @@ const HIST_TETO = {
   falas:[ { q:'dani', s:'Bia, olha o Gurugol! Nota 2,7!' },
           { q:'bia', s:'Será que sobe mais?' },
           { q:'tonhao', s:'Garagem tem teto, Bia. Pra nota subir de verdade, só num lugar maior.' },
-          { q:'bia', s:'Então é juntar pra mudança.' } ] };
+          { q:'bia', e:'firme', s:'Então eu junto pra mudança.' } ] };
 /* v9.6.10: o presente da vizinha, no fim do dia 1 (só no Modo História): ao terminar, a espada-de-são-jorge fica à mostra, de graça. save.convPlanta: 0 | 'pend' | 1 */
 const HIST_PLANTA = { dia:1,
   falas:[ { q:'tonhao', nota:'com um vaso na mão', s:'A dona Cida, aqui do lado, mandou de presente pela inauguração.' },
-          { q:'bia', s:'Uma espada-de-são-jorge! Vai ficar na entrada.' },
+          { q:'bia', e:'alegre', s:'Uma espada-de-são-jorge! Vai ficar na entrada.' },
           { q:'tonhao', s:'Dizem que espanta mau-olhado. E freguês mal-humorado, quem sabe.' } ] };
 /* v10.5.3, a vontade da freguesia (só na carreira, nunca o entregador): antes dos cursos de Confeitaria caseira (doce, a partir do `dia` na área industrial, `nivel` 2)
    e de Barista: espresso (café, a partir do `dia` na Avenida, `nivel` 3; nos pontos acima, desde o 1º dia), o grupo sorteia a vontade com a chance de pedir com o curso vezes
@@ -1476,7 +1485,7 @@ const liberaTres = (av, i, lim) => av.filter(a => a.s && a.s[i] != null && a.s[i
    e só com cap < 4. `gatilho(st, av, g)` (stats do dia, notas cruas do dia, o jogo) diz se a reclamação aconteceu; sem ele, só a garantia (`ate`) */
 const LIBERA = [
   { id:'bia', dia:2, ate:3, gatilho:(st, av) => st.bravoMesa >= 1 || liberaTres(av, 1, 3), reclama:['A moça corre pra lá e pra cá e não dá conta!', 'Demorou um século pra anotarem o pedido.'],
-    falas:[ { q:'bia', s:'Hoje um freguês disse que eu corro pra lá e pra cá e não dou conta.' },
+    falas:[ { q:'bia', e:'insegura', s:'Hoje um freguês disse que eu corro pra lá e pra cá e não dou conta.' },
             { q:'tonhao', nota:'olhando o pé dela', s:'Também, com esse chinelo! Compra um tênis decente, Bia.' },
             { q:'bia', s:'E uma bandeja, pra levar dois pratos de uma vez...' },
             { q:'tonhao', s:'Tá tudo na lojinha, em Equipe, no seu nome.' } ] },
@@ -1487,7 +1496,7 @@ const LIBERA = [
             { q:'tonhao', s:'Calma, uma coisa de cada vez. Vê nas Melhorias o que cabe no bolso.' } ] },
   { id:'manut', dia:3, ate:5, primeiro:true, gatilho:(st, av, g) => Math.min.apply(null, MANUT.equip.map(q => g.manut[q.id])) < MANUT.verde, reclama:['O café veio com gosto de queimado.', 'A comida demorou... o fogão tá fraco?'],
     falas:[ { q:'tonhao', nota:'batendo na lateral do fogão', s:'Esse fogão tá com a chama amarela. Coisa boa não é.' },
-            { q:'bia', s:'Vai quebrar?' },
+            { q:'bia', e:'insegura', s:'Vai quebrar?' },
             { q:'tonhao', s:'Se ninguém olhar, um dia quebra no meio do almoço. Melhor chamar o técnico antes.' },
             { q:'bia', s:'Vou ver na Manutenção quanto custa a revisão.' } ] },
   { id:'salao', dia:1, ate:3, gatilho:(st) => st.lostGrande >= 1 || st.lostBy.semMesa >= 1 || st.lotadoT >= 90, reclama:['Nem consegui sentar.', 'Só tem quatro mesinhas?'],   // v9.6.4: a 1ª família perdida abre o Salão
@@ -1497,21 +1506,20 @@ const LIBERA = [
   { id:'luxo', dia:3, ate:6, gatilho:(st, av, g) => g.save.decor.espada === 1 && av.some(a => a.s && a.s[4] != null && a.s[4] >= 2.5), reclama:['Que plantinha bonita!', 'Gostei da plantinha na entrada.'],   // v9.6.10: o elogio à planta da dona Cida
     falas:[ { q:'bia', s:'Tio, elogiaram a plantinha da dona Cida no Gurugol!' },
             { q:'tonhao', s:'Viu? Um verdinho já muda a cara da garagem.' },
-            { q:'bia', s:'E se a gente pusesse mais? A foto da mãe na parede...' },
+            { q:'bia', e:'alegre', s:'E se a gente pusesse mais? A foto da mãe na parede...' },
             { q:'tonhao', nota:'sorrindo', s:'Isso a Rosa ia gostar. Vê no Luxo.' } ] },
   // v9.2, área industrial: o 4º dia no ponto abre o curso de Confeitaria caseira (cartão Cardápio); o Joca vem no fim do dia do curso
   { id:'confeitaria', nivel:2, dia:4, ate:4, reclama:[],
     falas:[ { q:'dani', s:'Bia, as famílias daqui sempre perguntam se tem sobremesa.' },
-            { q:'bia', s:'E não tem...' },
-            { q:'dani', s:'Eu faço brigadeiro desde pequena! Com um curso de confeitaria, dá pra vender doce na mesa e na marmita.' },
+            { q:'bia', s:'E eu sempre digo que não tem... Você faz doce, Dani?' },
+            { q:'dani', e:'alegre', s:'Brigadeiro, desde pequena! Com um curso de confeitaria, dá pra vender na mesa e na marmita.' },
             { q:'tonhao', s:'Doce bom segura freguês. Vê no Cardápio da lojinha.' } ] },
   { id:'joca', nivel:2, dia:1, ate:999, gatilho:(st, av, g) => !!(g.save.daniCursos && g.save.daniCursos.confCaseira), reclama:['Tinha pouca gente pra cuidar de tanta mesa.', 'A moça de avental tava sozinha pra tudo.'],
     falas:[ { q:'dani', s:'Terminei o curso de confeitaria! Mas, se eu ficar nos doces, quem cuida da louça e do lixo?' },
-            { q:'bia', s:'Pois é...' },
-            { q:'dani', s:'Lembra do Joca, do meu colégio? Tá procurando serviço e é trabalhador.' },
-            { q:'tonhao', s:'Esse salão é grande demais pra vocês duas, mesmo.' },
-            { q:'joca', s:'Lixo, louça, mesa suja: pode deixar comigo!' },
-            { q:'bia', s:'Tá na lojinha, em Equipe.' } ] },
+            { q:'bia', s:'Boa pergunta. Conhece alguém de confiança?' },
+            { q:'dani', s:'O Joca, do meu colégio. Tá procurando serviço e é trabalhador.' },
+            { q:'joca', e:'insegura', s:'Lixo, louça, mesa suja... pode deixar comigo.' },
+            { q:'bia', e:'firme', s:'Bem-vindo, Joca. Eu acerto tudo na lojinha, em Equipe.' } ] },
   // v9.3, Avenida: no fim do dia do curso de espresso do Joca, ele indica a Cami e passa o bastão do básico
   // v9.5, Avenida: o Anselmo, coqueteleiro do restaurante do Bráulio, chega depois de 3 notas baixas no Ambiente
   { id:'anselmo', nivel:3, dia:3, ate:6, gatilho:(st, av) => liberaTres(av, 4, 3.5), reclama:['Não tem nem um drinkzinho aqui?', 'No restaurante da frente tem drink.'],

@@ -35,7 +35,7 @@ const ABERTURA = {
       falas:[{ q:'tonhao', s:'Dinheiro eu não tenho, Bia. Mas braço pra cozinha tenho de sobra!', de:2.4 }],
       som:[[392,0,.3],[494,.25,.3],[587,.5,.6]] },
     { id:'banco', t:7.5, leg:'Sem um tostão, a Bia deu a cartada: correu ao banco e pegou um empréstimo para reformar a garagem, tudo nos conformes da vigilância sanitária.',
-      falas:[{ q:'bia', s:'Vai dar certo!', de:1 }],
+      falas:[{ q:'bia', s:'Tem que dar certo...', de:1 }],
       som:[[523,0,.15],[587,.15,.15],[659,.3,.15],[784,.45,.4],[1046,4.4,.5]] },
     { id:'inauguracao', t:8.5, leg:'E assim nasceu a Lanchonete Corre-Corre.', titulo:'O sonho da Bia',
       falas:[],

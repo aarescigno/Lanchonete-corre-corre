@@ -53,8 +53,8 @@ const joga=(H,fat)=>{ const {g,els}=H; if(g.state==='shop') els['btn-shop-go'].f
   ok(g.save.convCard!=='pend','ao fechar o dia 1, convCard não fica pendente (v9.6.2)');
   passa(H); els['btn-next'].fire('click'); g.startDay(2); joga(H,0);
   ok(g.save.convCard==='pend','ao fechar o dia 2, convCard fica pendente (v9.6.2)');
-  ate(H,/Tio, hoje/);
-  ok(g.conversa && /Tio, hoje um monte de gente perguntou se só tem PF e coxinha/.test(g.conversa.fala.s),'toca a conversa, com a 1ª fala certa');
+  ate(H,/Tio, um monte/);
+  ok(g.conversa && /Tio, um monte de gente perguntou se só tem PF e coxinha/.test(g.conversa.fala.s),'toca a conversa, com a 1ª fala certa');
   let cap=0; while(g.conversa && cap<20){ if(g.save.conversa==='depois'||g.save.conversa==='antes'){} toque(els); cap++; }
   els['btn-next'].fire('click');
   ok(g.save.convCard===1 && g.state==='shop' && els['shop-sec'].textContent==='Cardápio','no fim, convCard=1 e a lojinha abre no Cardápio');
