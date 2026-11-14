@@ -550,6 +550,41 @@ function drawIcon(ctx,k,x,y,s,extra,extra2,extra3){
 /* ============================================================
    PESSOAS
    ============================================================ */
+/* v11.5: as cinco expressões do retrato do balão (docs/ARCO.md §8). EXPR vale só enquanto o drawRetrato desenha; fora dele é 'neutra'
+   e o boneco do salão fica exatamente como sempre foi. rostoExpr troca olhos, sobrancelhas e boca (ex: meia distância entre os olhos; ey: altura dos olhos;
+   my: altura da boca) e desenha com traço mais grosso, para ler no retrato pequeno. */
+let EXPR = 'neutra';
+const EXPRESSOES = ['neutra','insegura','firme','alegre','brava'];
+function exprDe(e){ return EXPRESSOES.indexOf(e) >= 0 ? e : 'neutra'; }
+function rostoExpr(ctx,e,ex,ey,my,bh){
+  ctx.save(); ctx.lineCap = 'round'; ctx.lineJoin = 'round';
+  ctx.strokeStyle = PAL.tinta; ctx.fillStyle = PAL.tinta; ctx.lineWidth = 2.9;
+  const by = ey - (bh || 4.6), ln = (a,b,c,d) => { ctx.beginPath(); ctx.moveTo(a,b); ctx.lineTo(c,d); ctx.stroke(); };
+  const olho = (sx,dy,r) => { circ(ctx,sx * ex,ey + dy,r); ctx.fill(); };
+  if (e === 'insegura'){   // sobrancelhas erguidas no meio, olhando para baixo, boca pequena e reta
+    ln(-ex-3.4,by+1.6,-ex+2.8,by-2); ln(ex+3.4,by+1.6,ex-2.8,by-2);
+    olho(-1,1.6,1.9); olho(1,1.6,1.9);
+    ln(-ex-2.4,ey-0.6,-ex+2.4,ey-0.6); ln(ex-2.4,ey-0.6,ex+2.4,ey-0.6);
+    ln(-2.4,my+0.4,2.4,my+0.4);
+  } else if (e === 'firme'){   // retas e baixas, olhos abertos de frente, boca fechada de canto erguido
+    ln(-ex-3.4,by+1.8,-ex+3.2,by+1.8); ln(ex-3.2,by+1.8,ex+3.4,by+1.8);
+    olho(-1,0,2.3); olho(1,0,2.3);
+    ctx.beginPath(); ctx.moveTo(-3.8,my+0.8); ctx.lineTo(2.2,my+0.8); ctx.quadraticCurveTo(3.8,my+0.8,4.9,my-1.2); ctx.stroke();
+  } else if (e === 'alegre'){   // arqueadas, olhos em arco (fechados sorrindo), sorriso aberto
+    [-1,1].forEach(sx => {
+      ctx.beginPath(); ctx.moveTo(sx*ex-3.2,by+0.8); ctx.quadraticCurveTo(sx*ex,by-4.4,sx*ex+3.2,by+0.8); ctx.stroke();
+      ctx.beginPath(); ctx.arc(sx*ex,ey+1.6,2.4,Math.PI*1.1,Math.PI*1.9); ctx.stroke();
+    });
+    ctx.beginPath(); ctx.moveTo(-4.8,my-0.8); ctx.quadraticCurveTo(0,my+0.8,4.8,my-0.8); ctx.quadraticCurveTo(0,my+7.4,-4.8,my-0.8); ctx.closePath();
+    ctx.fillStyle = '#7A2E2E'; ctx.fill(); ctx.lineWidth = 1.7; ctx.stroke();
+    ctx.fillStyle = 'rgba(226,106,44,.3)'; circ(ctx,-ex-3.4,my-0.4,2.4); ctx.fill(); circ(ctx,ex+3.4,my-0.4,2.4); ctx.fill();
+  } else {   // brava: sobrancelhas em V, olhos apertados, boca curvada para baixo
+    ln(-ex-3.6,by-1.4,-ex+3.2,by+2.8); ln(ex+3.6,by-1.4,ex-3.2,by+2.8);
+    ctx.lineWidth = 3.4; ln(-ex-2,ey+1,-ex+2,ey+1); ln(ex-2,ey+1,ex+2,ey+1); ctx.lineWidth = 2.9;
+    ctx.beginPath(); ctx.arc(0,my+4.4,3.9,Math.PI+0.45,TAU-0.45); ctx.stroke();
+  }
+  ctx.restore();
+}
 /* v10: uma florzinha de 5 pétalas (casal: na lapela ou no cabelo) */
 function florCasal(ctx,x,y,cor){
   for (let i=0;i<5;i++){ const a = i * TAU / 5; ell(ctx,x + Math.cos(a) * 2.6,y + Math.sin(a) * 2.6,2.2,2.2); ctx.fillStyle = cor || '#F28AA8'; ctx.fill(); }
@@ -673,6 +708,8 @@ function drawPerson(ctx,p,x,y,o){
   if (p.flor === 'cabelo') florCasal(ctx,8.5,hy - 6,p.florC);   // v10, casal: a flor no cabelo
   // rosto (abertura, v8.6.1: olha vira o rosto para o lado em que anda; pisca e fala animam)
   if (o.olha) ctx.translate(o.olha * 2.5,0);
+  if (EXPR !== 'neutra') rostoExpr(ctx,EXPR,4.2,hy+0.5,hy+6.4);   // v11.5: o retrato do balão
+  else {
   ctx.fillStyle = PAL.tinta;
   if (o.sleepy || o.pisca) { ctx.fillRect(-6,hy,4,1.6); ctx.fillRect(2,hy,4,1.6); }
   else { circ(ctx,-4.2,hy+0.5,1.7); ctx.fill(); circ(ctx,4.2,hy+0.5,1.7); ctx.fill(); }
@@ -687,6 +724,7 @@ function drawPerson(ctx,p,x,y,o){
   else {
     ctx.beginPath(); ctx.arc(0,hy+9,4,Math.PI+0.3,TAU-0.3); ctx.stroke();
     ctx.lineWidth = 2; ctx.beginPath(); ctx.moveTo(-7.5,hy-4.6); ctx.lineTo(-2,hy-2.4); ctx.moveTo(7.5,hy-4.6); ctx.lineTo(2,hy-2.4); ctx.stroke();
+  }
   }
   if (p.shades){
     ctx.fillStyle = '#1b1b1b'; ctx.lineWidth = 1.5;
@@ -748,11 +786,14 @@ function drawBia(ctx,b,x,y,o){
   ctx.beginPath(); ctx.moveTo(10,hy-8); ctx.lineTo(18,hy-12); ctx.lineTo(16,hy-5); ctx.closePath(); fs(ctx,PAL.mostarda,1.8);
   // rosto
   if (o.olha) ctx.translate(o.olha * 2.5,0);
+  if (EXPR !== 'neutra') rostoExpr(ctx,EXPR,4.3,hy+1,hy+6.6);   // v11.5: o retrato do balão
+  else {
   ctx.fillStyle = PAL.tinta;
   if (o.pisca){ ctx.fillRect(-6.2,hy+0.4,4,1.6); ctx.fillRect(2.2,hy+0.4,4,1.6); } else { circ(ctx,-4.3,hy+1,1.8); ctx.fill(); circ(ctx,4.3,hy+1,1.8); ctx.fill(); }
   ctx.strokeStyle = PAL.tinta; ctx.lineWidth = 1.9;
   if (o.fala){ ell(ctx,0,hy+5.6,3.2,1.2 + o.fala * 2); fs(ctx,'#7A2E2E',1.5); } else { ctx.beginPath(); ctx.arc(0,hy+3.8,4.6,0.2,Math.PI-0.2); ctx.stroke(); }
   ctx.fillStyle = 'rgba(226,106,44,.3)'; circ(ctx,-7.8,hy+4.6,2.4); ctx.fill(); circ(ctx,7.8,hy+4.6,2.4); ctx.fill();
+  }
   ctx.restore();
 }
 

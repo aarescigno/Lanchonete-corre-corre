@@ -188,6 +188,8 @@ function devAbaHistoria(body, secao, botao){
   r.appendChild(sel);
   const b = botao(r, 'Assistir', () => {}, null); b.id = 'dev-assistir';
   b.addEventListener('click', () => { devAssistir(+sel.value || 0); });
+  r = secao('Retratos', 'Os personagens nas cinco expressões, de uma vez');
+  botao(r, 'Retratos', () => devRetratos());
   r = secao('O final', 'Toca as cenas finais e os créditos, sem mudar o jogo');
   botao(r, 'Assistir o final: ★', () => devFinal(1)); botao(r, 'Assistir o final: ★★', () => devFinal(2)); botao(r, 'Assistir o final: ★★★', () => devFinal(3));
   r = secao('Manual');
