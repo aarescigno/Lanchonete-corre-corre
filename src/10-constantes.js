@@ -1555,6 +1555,49 @@ const LIBERA = [
             { q:'lia', e:'firme', s:'Lia. Onde eu guardo as facas?' },
             { q:'bia', e:'firme', s:'Na cozinha do chef Tonhão. Eu acerto na lojinha, em Equipe.' } ] } ];
 function liberaOf(id){ return LIBERA.find(l => l.id === id) || null; }
+/* v11.3 (etapa 8c, docs/ARCO.md §6): as conversas do arco. Cada entrada: { id, nivel (o ponto), quando:(sv, g) => bool, falas }; `g` é o jogo no fim do dia (g.day.n, g.fimDia = { stars, lucro }, g.stats).
+   save.arco[id]: 0 (não vista) | 'pend' (toca no próximo fim de dia) | 1 (vista). Só no Modo História: a 1ª da lista, do nível do ponto, com valor 0 e `quando` verdadeiro vira 'pend', uma por fim de dia */
+const ARCO = [
+  { id:'desanimo', nivel:1, quando:(sv, g) => (g.fimDia.lucro < 0 && g.day.n >= 3) || g.day.n >= 6,
+    falas:[ { q:'bia', e:'insegura', nota:'sentada no degrau, com a foto da mãe na mão', s:'Tio... e se eu não for como a mãe?' },
+            { q:'bia', e:'insegura', s:'Peguei dívida, errei pedido, deixei gente esperando. Acho que não nasci pra isso.' },
+            { q:'tonhao', s:'A Rosa queimou o arroz no primeiro dia da Casa Aurora. Chorou na despensa.' },
+            { q:'tonhao', e:'firme', s:'No outro dia, voltou. Você não precisa ser ela, Bia. Só precisa voltar amanhã.' },
+            { q:'bia', e:'firme', nota:'levantando', s:'...Amanhã eu abro o portão.' } ] },
+  { id:'elogio', nivel:1, quando:(sv, g) => sv.arco.desanimo === 1 && g.fimDia.stars >= 2,
+    falas:[ { q:'bia', e:'alegre', s:'Tio! Uma senhora disse que fazia tempo que ninguém atendia ela com tanto carinho.' },
+            { q:'tonhao', s:'E quem atendeu?' },
+            { q:'bia', e:'alegre', s:'...Eu.' },
+            { q:'tonhao', s:'Então guarda isso. Em dia ruim, você vai precisar.' } ] },
+  { id:'daniPrato', nivel:1, quando:(sv, g) => sv.equipe.dani > 0 && sv.arco.elogio === 1,
+    falas:[ { q:'dani', e:'insegura', s:'Quebrei dois pratos hoje, Bia. Desculpa. Eu sou lenta e ainda estrago as coisas.' },
+            { q:'bia', s:'Sabe quantos pedidos eu errei na primeira semana?' },
+            { q:'dani', s:'Quantos?' },
+            { q:'bia', e:'alegre', s:'Perdi a conta. O tio me disse que é só voltar amanhã. Volta amanhã, Dani.' } ] },
+  { id:'caderno', nivel:2, quando:(sv, g) => sv.cap >= 5 && g.fimDia.lucro > 0,
+    falas:[ { q:'tonhao', s:'Bia, me passa o caderno do caixa pra eu conferir.' },
+            { q:'bia', e:'firme', s:'Já fechei, tio. Bateu até o último real.' },
+            { q:'tonhao', nota:'folheando o caderno', s:'...Bateu mesmo. Desde quando você faz isso sozinha?' },
+            { q:'bia', e:'alegre', s:'Desde a semana passada. O senhor é que não reparou.' },
+            { q:'tonhao', e:'alegre', s:'Então o caderno é seu.' } ] },
+  { id:'daniDoce', nivel:2, quando:(sv, g) => !!sv.daniCursos.confCaseira && sv.equipe.joca > 0,
+    falas:[ { q:'dani', e:'insegura', s:'Devolveram meu pudim, Bia. Disseram que tava mole. Acho melhor eu voltar pra louça.' },
+            { q:'bia', e:'firme', s:'A louça agora é do Joca. E o doce é seu.' },
+            { q:'dani', s:'E se devolverem de novo?' },
+            { q:'bia', e:'alegre', s:'Aí você faz outro. Pudim mole a gente conserta. Desistir, não.' } ] },
+  { id:'jocaCalado', nivel:2, quando:(sv, g) => sv.equipe.joca > 0 && sv.arco.daniDoce === 1,
+    falas:[ { q:'dani', s:'O Joca não abre a boca, Bia. O freguês pergunta e ele aponta pra mim.' },
+            { q:'joca', e:'insegura', s:'É que eu sou só o da louça...' },
+            { q:'bia', e:'firme', s:'Aqui não tem "só", Joca. Sem prato limpo, ninguém almoça.' },
+            { q:'joca', e:'alegre', s:'...Amanhã eu digo bom-dia.' } ] },
+  { id:'motoqueiro', nivel:2, quando:(sv, g) => sv.cap >= 5 && sv.equipe.dani > 0 && g.stats.marmitas >= 1,
+    falas:[ { q:'dani', e:'insegura', s:'Aquele motoqueiro gritou comigo de novo por causa da marmita...' },
+            { q:'tonhao', e:'brava', s:'Deixa que eu vou lá fora falar com ele.' },
+            { q:'bia', e:'firme', s:'Deixa, tio. O salão é comigo.' },
+            { q:'bia', e:'firme', nota:'voltando da calçada', s:'Falei com ele: aqui se pede com educação, ou se pede em outro lugar.' },
+            { q:'dani', e:'alegre', s:'E ele?' },
+            { q:'bia', e:'alegre', s:'Pediu desculpa. E mais uma marmita.' } ] } ];
+function arcoOf(id){ return ARCO.find(a => a.id === id) || null; }
 /* v9.1.1: o dia da carreira em que o save chegou ao ponto de agora (save.pontoDia); n = o dia que terminou (padrão: o anterior ao save.dia,
    porque o fim do dia já avançou o save.dia). O 1º dia no ponto é 1 */
 function diaNoPonto(sv, n){ return (n == null ? sv.dia - 1 : n) - sv.pontoDia + 1; }
@@ -1562,7 +1605,7 @@ const BIA_IDS = ['tenis', 'corrida', 'bandeja', 'sudoku'];
 function upgradeCartao(id){ return BIA_IDS.indexOf(id) >= 0 ? 'bia' : 'melhorias'; }
 const HIST_NOMES = { bia:'Bia', tonhao:'Tonhão', dani:'Dani', joca:'Joca', cami:'Cami', anselmo:'Anselmo', lia:'Lia' };
 const CAIXA_MAX = 14;                                 // livro-caixa (v7.2): quantos dias da carreira ficam guardados
-const VERSAO = 'v11.2';                                // vai no resumo do Caixa
+const VERSAO = 'v11.3';                                // vai no resumo do Caixa
 const DIVULGA_DIA = 4;                                // antes disso, o movimento é o da inauguração (sem custo); v9.0.2: dia 4, e o padrão é o boca a boca
 function divulgaAberta(n, sv){ return devLivre() || n >= DIVULGA_DIA && !(sv && sv.convDiv === 'pend'); }   // no modo dev, desde o dia 1; v9.0.3: no Modo História, só depois da conversa
 /* v9.6.4: a Efood (os entregadores) só abre depois da conversa dos entregadores, no Modo História; antes dela, nenhum tipo com `retira` vem na agenda */

@@ -1391,6 +1391,11 @@ class Game {
         sv.avalCom = normAvalCom(sv.avalCom);
       }
     }
+    this.fimDia = { stars, lucro:m };   // v11.3: as estrelas e o lucro do dia que terminou, para o `quando` do ARCO
+    if (!tomou && histLiga() && sv.histV === 1 && !ARCO.some(A => sv.arco[A.id] === 'pend')){   // v11.3: as conversas do arco: uma por fim de dia, a 1ª da lista do ponto de agora
+      const A = ARCO.find(A => A.nivel === this.ponto.nivel && sv.arco[A.id] === 0 && A.quando(sv, this));
+      if (A) sv.arco[A.id] = 'pend';
+    }
     const row = { d:d.n, fat, ingr:Math.round(this.custo), contas:this.contas + this.multaVig, folha:this.paid, div:this.paidDiv, lucro:m, meta:d.meta, ok:passed, st:stars, perd:this.stats.lost, saldo:sv.bank };
     if (this.multaVig) row.vig = this.multaVig;
     if (avDia) row.av = Math.round(avDia.nota * 10);
@@ -1527,6 +1532,7 @@ class Game {
   trocaPonto(para){
     const sv = this.save;
     sv.salao.ponto = para.id; sv.pontoDia = sv.dia;   // v9.1.1: o dia em que chegou ao ponto novo
+    ARCO.forEach(A => { if (A.nivel < para.nivel && sv.arco[A.id] === 0) sv.arco[A.id] = 1; });   // v11.3: as conversas do ponto anterior que não vieram não tocam mais
     sv.equipe.tv = false; sv.equipe.som = false; delete this.up.maquina;
     delete this.up.tvs; delete this.up.assento; sv.equipe.tvs = 0;   // v9.1: ao sair da área industrial, as TVs, o assento e a jarra saem sem devolver (o fogão industrial e as mesas vão junto)
     // v10: o ponto novo tem menos lugares (Terraço Suíça, 20): as últimas mesas que passam do teto (primeiro as do estoque) são vendidas, por SALAO.venda do preço (linha do caixa como a venda do editor)
@@ -2231,7 +2237,7 @@ class Game {
   devConversas(modo){
     if (!DEV.on) return false;
     const sv = this.save, d = sv.dia;
-    if (modo === 'vistas'){ sv.convPlanta = sv.convCard = sv.convDiv = sv.convEnt = sv.convExig = sv.convQuit = sv.convTeto = 1; sv.vontDoce = sv.vontCafe = Math.max(1, d - 1); sv.vontDoceV = sv.vontCafeV = 1; }
+    if (modo === 'vistas'){ ARCO.forEach(A => { sv.arco[A.id] = 1; }); sv.convPlanta = sv.convCard = sv.convDiv = sv.convEnt = sv.convExig = sv.convQuit = sv.convTeto = 1; sv.vontDoce = sv.vontCafe = Math.max(1, d - 1); sv.vontDoceV = sv.vontCafeV = 1; }
     else {
       if (d > HIST_PLANTA.dia && sv.convPlanta !== 1) sv.convPlanta = 'pend';
       if (d >= HIST_CARDAPIO.dia && sv.convCard !== 1) sv.convCard = 'pend';
