@@ -65,7 +65,8 @@ Nenhuma.
 - O smoke foi escrito antes e visto falhar (rodado contra o `src/` anterior); a implementação já estava escrita quando rodei a 1ª vez, então a falha foi conferida depois, com `git stash` de `src/`.
 - "Ombros 3 px mais baixos" e "cabeça 2 px mais alta" são feitos deslocando o busto inteiro no círculo (3 px para baixo na `insegura`, 2 px para cima na `firme`), sem mexer nas funções do boneco.
 - O balão tem altura mínima de 92 px (o roteiro não diz), para caber o círculo de 68 px numa fala de uma linha.
-- Na Bia, as sobrancelhas se perdem no cabelo e no lenço (escuros, como a pele); a diferença entre as expressões dela vem dos olhos e da boca. Não houve mudança na tabela.
+- Revisão do coordenador (mesmo dia): a 1ª versão das expressões cobria os olhos com faixas (pálpebra + sobrancelha) e lia como óculos escuros. Refeito `rostoExpr`: os olhos são sempre as bolinhas (na `brava`, elipses achatadas), sem faixa por cima; sobrancelhas finas (traço 2,1, não 2,9) com vão de pele; `insegura` com sobrancelhas "/ \\" de ponta de dentro mais alta, pupilas 1 px mais baixas e boca pequena ondulada; `firme` com sobrancelhas retas e boca curta de canto erguido; `brava` com V de ponta de dentro mais baixa e boca em arco para baixo. A tabela não mudou.
+- Bia (decidido pelo coordenador): a sobrancelha dela se perdia no cabelo e no lenço escuros. No retrato com expressão, os olhos descem 1,5 px e a boca também, a sobrancelha fica na faixa de pele e leva por baixo um contorno fino da cor da pele (`halo`), sem mudar o cabelo. Quem usa óculos (Joca): a sobrancelha sobe para ficar acima da armação (`bh` 5,6).
 - `menu_fit.py` não rodou aqui (falta o módulo `playwright` do Python); o menu não mudou.
 
 **Modelo:** Sonnet, esforço alto (desenho no canvas, conferido por captura).
