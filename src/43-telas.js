@@ -140,7 +140,7 @@ function fluxoHistoria(fim, n){
   const libera = id => { const L = liberaOf(id); return falar(L.falas, () => { sv.libera[id] = 1; writeSave(sv); shopEntraG = shopGrupoDe(id); prox(); }); };   // v9.0.4
   const lib = id => sv.libera[id] === 'pend' ? () => libera(id) : null;
   const passos = [
-    () => sv.convSocorro === 'pend' ? () => falar(HIST_SOCORRO.falas, () => { sv.convSocorro = 1; writeSave(sv); prox(); }) : null,   // v9.6.13: a 2ª chance do banco
+    () => sv.convSocorro === 'pend' ? () => falar(pontoOf(sv.salao && sv.salao.ponto).nivel >= 3 ? HIST_SOCORRO.firme : HIST_SOCORRO.falas, () => { sv.convSocorro = 1; writeSave(sv); prox(); }) : null,   // v9.6.13: a 2ª chance do banco
     () => sv.convExig === 'pend' ? () => falar(HIST_EXIGENTE.falas, () => { sv.convExig = 1; writeSave(sv); prox(); }) : null,   // v10.1: o cliente exigente
     () => sv.convCrit === 'pend' ? () => falar(HIST_CRITICO.falas, () => { sv.convCrit = 1; writeSave(sv); prox(); }) : null,   // v10.9: o crítico era o freguês do caderninho
     () => sv.convEnt === 'pend' ? () => falar(HIST_ENTREGA.falas, () => { sv.convEnt = 1; writeSave(sv); prox(); }) : null,   // v9.6.2; v9.6.4
@@ -163,7 +163,7 @@ function devCenas(){
   const o = [{ rot:'Abertura', ab:true }];
   HISTORIA.forEach(c => { o.push({ rot:'Cap. ' + c.cap + ', antes', falas:c.antes }); o.push({ rot:'Cap. ' + c.cap + ', depois', falas:c.depois }); });
   o.push({ rot:'A plantinha da dona Cida', falas:HIST_PLANTA.falas }, { rot:'O cardápio', falas:HIST_CARDAPIO.falas }, { rot:'O cardápio, depois do curso', falas:HIST_CARDAPIO.fez },
-    { rot:'A divulgação', falas:HIST_DIVULGA.falas }, { rot:'Os entregadores', falas:HIST_ENTREGA.falas }, { rot:'A 2ª chance do banco', falas:HIST_SOCORRO.falas }, { rot:'O cliente exigente', falas:HIST_EXIGENTE.falas }, { rot:'O crítico, 1ª visita', falas:HIST_CRITICO.falas }, { rot:'Noite da estrela sem estrela', falas:HIST_RECOMENDA.falas },
+    { rot:'A divulgação', falas:HIST_DIVULGA.falas }, { rot:'Os entregadores', falas:HIST_ENTREGA.falas }, { rot:'A 2ª chance do banco', falas:HIST_SOCORRO.falas }, { rot:'A 2ª chance do banco, na Avenida', falas:HIST_SOCORRO.firme }, { rot:'O cliente exigente', falas:HIST_EXIGENTE.falas }, { rot:'O crítico, 1ª visita', falas:HIST_CRITICO.falas }, { rot:'Noite da estrela sem estrela', falas:HIST_RECOMENDA.falas },
     { rot:'A reforma quitada', falas:HIST_QUITOU.falas }, { rot:'O teto da Garagem', falas:HIST_TETO.falas },
     { rot:'A vontade de doce', falas:HIST_VONTADE_DOCE.falas }, { rot:'A vontade de espresso', falas:HIST_VONTADE_CAFE.falas });   // v10.5.3
   LIBERA.forEach(L => o.push({ rot:'Cartão: ' + L.id, falas:L.falas }));

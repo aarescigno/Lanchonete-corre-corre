@@ -120,7 +120,7 @@ const mostra=(els,id)=>els[id].classList.contains('show');
     ok(/O banco segurou a parcela desta vez/.test(txt(els['end-msg'])),'(j) o recado de alerta aparece no fim do dia');
     ok(g.save.convSocorro==='pend' && !!g.conversa,'(j) a conversa do banco está tocando (convSocorro pendente)');
     const n=passa(H); ok(n>=3 && g.save.convSocorro===1 && !g.conversa,'(j) a conversa terminou ('+n+' falas) e convSocorro vai a 1');
-    ok(L.HIST_SOCORRO.falas.length===3 && L.HIST_SOCORRO.falas[0].q==='tonhao','(j) HIST_SOCORRO exposto, com 3 falas');
+    ok(L.HIST_SOCORRO.falas.length===4 && L.HIST_SOCORRO.falas[0].q==='tonhao','(j) HIST_SOCORRO exposto, com 4 falas (v11.1)');
     g.startDay(4); joga(H,0,0); passa(H); ok(g.save.emp.atr===true && g.state==='dayend','(j) dia 4 sem dinheiro: atrasa de novo');
     g.startDay(5); joga(H,0,0); ok(g.state==='falencia' && g.save.fechou===5 && mostra(els,'ov-falencia'),'(j) a 2ª vez: aí sim a falência');
     ok(g.save.socorro===1,'(j) o socorro não volta'); }

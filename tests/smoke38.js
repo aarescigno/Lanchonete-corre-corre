@@ -143,7 +143,7 @@ const joga=(H,fat,custo)=>{ const {g,els}=H; if(g.state==='shop') els['btn-shop-
   const H3=jogo(4,true,{ capAzul:2 }); H3.g.startDay(10); H3.els['btn-start'].fire('click'); H3.g.schedule=[]; H3.g.nextIdx=0; H3.g.money=0; H3.g.custo=0; H3.g.finishDay();
   ok(H3.g.save.capAzul===2,'dia no vermelho não conta');
   ok(g.avancaCap()===false && g.save.cap===5 && g.save.conversa==='antes','depois do cap. 4: o cap. 5 começa com a conversa de antes');
-  ok(L.HISTORIA[3].antes.length===3 && L.HISTORIA[4].depois.length===5 && L.HISTORIA[4].depois[1].nota==='largando a colher','as falas dos caps. 4 e 5'); }
+  ok(L.HISTORIA[3].antes.length===3 && L.HISTORIA[4].depois.length===6 && L.HISTORIA[4].depois[1].nota==='largando a colher','as falas dos caps. 4 e 5'); }
 
 // ---------- 10. cap. 5 ----------
 { const H=jogo(5,true,{ bank:1000 }), {g,L}=H; g.save.conversa=null;
