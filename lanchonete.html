@@ -478,6 +478,14 @@ table.rank tr.me td{background:#fbe7a8}
       <button class="btn alt ab-pular" id="btn-ab-pular">Pular</button>
     </div>
 
+    <div class="ov" id="ov-escolha">
+      <div class="panel">
+        <h2>História</h2>
+        <div class="row"><button class="btn go" id="btn-esc-ab">A abertura</button><button class="btn go" id="btn-esc-final">O final</button></div>
+        <div class="row"><button class="btn alt" id="btn-esc-voltar">Voltar</button></div>
+      </div>
+    </div>
+
     <div class="ov" id="ov-conversa">
       <button class="btn alt ab-pular" id="btn-conv-pular">Pular</button>
     </div>
@@ -668,7 +676,7 @@ table.rank tr.me td{background:#fbe7a8}
           <li><b>v10.2.1</b><br>11/11/2026 &mdash; Modo dev novo: dois jeitos (Livre e De verdade, que joga com o Modo História), abas, pular para o começo de qualquer capítulo (e desfazer), dinheiro e banco à mão e a equipe pessoa por pessoa.</li>
           <li><b>v10.2</b><br>11/11/2026 &mdash; A cozinha do Terraço: o Tonhão aprende entradas finas e alta gastronomia (e lá não se vende mais coxinha), a Lia chega para ajudar na cozinha e a Dani faz alta confeitaria.</li>
           <li><b>v10.1</b><br>11/11/2026 &mdash; O cliente exigente do Terraço: o VIP de lá tem duas estrelas na plaquinha, chapéu, lenço ou echarpe, e quer o prato da casa, a bebida antes da entrada e o salão em ordem. Em troca, paga muito bem e a nota dele pesa dobrado no Gurugol; saiu bravo, vem menos gente no dia seguinte. A Louça fina, na lojinha, deixa o prato da casa mais rápido.</li>
-          <li><b>v10</b><br>11/11/2026 &mdash; O Terraço Suíça, o último ponto: 20 lugares, um piano de cauda, a porta do elevador e o casal da data especial. Cada mesa pede a refeição completa, com bebida, entrada, prato e sobremesa, e cada tempo conta no Gurugol. Dois novos capítulos: Lá no alto e Do começo ao fim.</li>
+          <li><b>v10</b><br>11/11/2026 &mdash; O Terraço Suíça, o último ponto: 20 lugares, um piano de cauda, a porta do elevador e o casal da data especial. Cada mesa pede a refeição completa, com bebida, entrada, prato e sobremesa, e cada tempo conta no Gurugol. Dois novos capítulos: Lá no alto e Do começo ao fim.<br><a href="versoes/v10.html" target="_blank" rel="noopener">Abrir a v10</a></li>
           <li><b>v9.6.13</b><br>10/11/2026 &mdash; Menos sustos: o último coração não cai quando a Bia já está a caminho; a lojinha avisa quando a compra come a parcela do banco, e o banco dá uma segunda chance na história; na pausa, Reiniciar e Menu pedem confirmação.</li>
           <li><b>v9.6.12</b><br>10/11/2026 &mdash; Revisão geral: a Missão zero ficou mais curta e sem números; nos três primeiros dias, uma seta mostra o que fazer quando você para; a barra do lucro ganhou as três estrelas e letras maiores; no fim do dia, os botões ficam sempre à vista e os recados vêm em linhas curtas; a Dani só aparece na lojinha depois que chega.</li>
           <li><b>v9.6.11</b><br>02/11/2026 &mdash; Os coment&aacute;rios do Gurugol viram bal&otilde;es no fim do dia; a geladeira sai da tela e d&aacute; lugar &agrave; mesinha das marmitas; o entregador ganha o letreiro eFood e uma seta mostra a marmita pronta; a fuma&ccedil;a do lixo cheio se espalha pelo sal&atilde;o.</li>
@@ -1657,14 +1665,14 @@ const CRITICO = { tipo:'executiva', chega:[0.3, 0.6], primeira:[1, 3], segunda:[
   itens:['Recepção', 'Atendimento', 'Prato', 'Salão', 'Refeição'],
   boato:'Boato na cidade: dizem que hoje a casa dá sobremesa de graça. Vai lotar!',
   coment:'Ouvi dizer que o molho de lá é copiado.' };
-function normGuia(g){   // save.guia: { n:0 a 2, prox:≥ 0, v:[{ d, it:[5 inteiros de 0 a 2] }], noite, ult, est, rec, bol, convRec, ver }; inválido, null (v10.10: os campos da noite da estrela, cada um limpo sozinho)
+function normGuia(g){   // save.guia: { n:0 a 2, prox:≥ 0, v:[{ d, it:[5 inteiros de 0 a 2] }], noite, ult, est, rec, bol, convRec, ver, visto }; inválido, null (v10.10: os campos da noite da estrela, cada um limpo sozinho; v11: `visto`, as estrelas da última cena final vista, de 0 a 3)
   if (!g || typeof g !== 'object') return null;
   const n = Math.round(+g.n), prox = Math.round(+g.prox);
   if (!(n >= 0 && n <= 2) || !(prox >= 0) || !Array.isArray(g.v) || g.v.length > 2) return null;
   const v = g.v.map(f => f && typeof f === 'object' && Math.round(+f.d) >= 0 && Array.isArray(f.it) && f.it.length === 5 && f.it.every(x => x >= 0 && x <= 2 && x === Math.round(x)) ? { d:Math.round(+f.d), it:f.it.slice() } : null);
   if (v.some(f => !f)) return null;
   const nat = x => Math.max(0, Math.round(+x) || 0), bol = Array.isArray(g.bol) && g.bol.length === 6 && g.bol.every(x => typeof x === 'number' && x >= 0 && x <= 1) ? g.bol.slice() : null;
-  return { n, prox, v, noite:nat(g.noite), ult:nat(g.ult), est:nat(g.est) <= 3 ? nat(g.est) : 0, rec:g.rec === 1 ? 1 : 0, bol, convRec:g.convRec === 1 ? 1 : 0, ver:g.ver === 1 ? 1 : 0 };
+  return { n, prox, v, noite:nat(g.noite), ult:nat(g.ult), est:nat(g.est) <= 3 ? nat(g.est) : 0, rec:g.rec === 1 ? 1 : 0, bol, convRec:g.convRec === 1 ? 1 : 0, ver:g.ver === 1 ? 1 : 0, visto:nat(g.visto) <= 3 ? nat(g.visto) : 0 };
 }
 /* v10.10, a noite da estrela (cap. 14, só no Terraço): o dia que o jogador marca na lojinha. `groups` e `meta`: os grupos e as metas do dia × isso; `critico` e `braulio`: a faixa da janela de chegadas em que cada um chega;
    `brauPat`: a paciência do Bráulio; `brauFeliz`: os corações com que ele sai feliz; `espera`: dias até poder marcar outra noite; `volta`: a chance diária do crítico depois da 1ª noite. `pts`: os pontos do guia por linha
@@ -2084,7 +2092,7 @@ const HISTORIA = [
       { q:'tonhao', s:'E o Bráulio saiu calado. Pela primeira vez na vida.' },
       { q:'dani', s:'E agora?' },
       { q:'tonhao', s:'Agora o guia liga. Dorme, Bia. Amanhã cedo o telefone toca.' }],
-    fim:{ h:'Fim do capítulo 14', p:'Continua na próxima versão: o futuro da Corre-Corre.' } }
+    fim:{ h:'Fim da história', p:'A casa segue aberta. Para mais estrelas, marque outra noite na lojinha.', p3:'A casa segue aberta, com a nota mais alta do guia na parede.' } }   // v11: o final; p3 quando a 1ª noite já dá 3 estrelas
 ];
 /* v9.0.1: a conversa do cardápio, no fim do dia `dia` (ou do 1º dia completo depois dele, para saves antigos), só no Modo História.
    falas: o Tonhão ainda não fez curso; fez: já fez algum (básico de qualquer curso ou o avançado do PF). save.convCard: 'pend' | 1 (vista) */
@@ -2105,7 +2113,7 @@ const DEV_CAPS = [
   { n:12, dia:64, ponto:'terraco',    pdia:50, caixa:10000, nota:4.6, eq:null, cursos:null, dani:null, joca:null, cami:null, up:null, semRosa:true },   // v10.8: o molho da Rosa: tudo no máximo (como o Fim) menos o molho e a gerência
   { n:13, dia:64, ponto:'terraco',    pdia:50, caixa:10000, nota:4.6, eq:null, cursos:null, dani:null, joca:null, cami:null, up:null },   // v10.9: o crítico sem aviso: como o 12, com o molho e a gerência comprados
   { n:14, dia:64, ponto:'terraco',    pdia:50, caixa:10000, nota:4.6, eq:null, cursos:null, dani:null, joca:null, cami:null, up:null },   // v10.10: a noite da estrela: como o 13, com duas fichas de 8 do crítico (devCapitulo)
-  { n:15, dia:64, ponto:'terraco',    pdia:50, caixa:10000, nota:4.6, eq:null, cursos:null, dani:null, joca:null, cami:null, up:null }   // o Fim: o mesmo que "Tudo no máximo" (devEquipe('max') e devMelhorias(true)), com a Lia, o molho e a gerência
+  { n:15, dia:64, ponto:'terraco',    pdia:50, caixa:10000, nota:4.6, eq:null, cursos:null, dani:null, joca:null, cami:null, up:null, guiaEst:1, guiaVisto:1 }   // v11: com 1 estrela já vista. O Fim: o mesmo que "Tudo no máximo" (devEquipe('max') e devMelhorias(true)), com a Lia, o molho e a gerência
 ];
 const HIST_CARDAPIO = { dia:2,   // v9.6.2: no fim do dia 2 (antes, do dia 1), para a 1ª lojinha ficar sem empurrão
   falas:[ { q:'bia', s:'Tio, hoje um monte de gente perguntou se só tem PF e coxinha...' },
@@ -2544,7 +2552,7 @@ const MANUAL = [
   { id:'i-boato',   aba:'imprevistos', nome:'Boato', linha:'Alguém espalha que hoje tem coisa de graça, e a casa lota.' },
   { id:'l-noite',   aba:'lojinha', nome:'Noite da estrela', linha:'Você escolhe o dia. Casa cheia, o crítico à mesa e o Bráulio de olho. No fim, o guia dá o veredito.' },   // v10.10
   { id:'c-braulio', aba:'clientes', tipo:'braulio', nome:'Bráulio', linha:'O chef da Casa Aurora. Vem sozinho, tem pouca paciência e pede o prato da casa para achar defeito.' },
-  { id:'b-michelzao', aba:'basico', nome:'Estrelas do Michelzão', linha:'O guia pesa as visitas do crítico, o Gurugol, o luxo e a noite. As estrelas ganhas não se perdem.' }
+  { id:'b-michelzao', aba:'basico', nome:'Estrelas do Michelzão', linha:'O guia pesa as visitas do crítico, o Gurugol, o luxo e a noite. As estrelas ganhas não se perdem. A placa fica na parede.' }
 ];
 const MANUAL_PONTO_NOME = { garagem:'Garagem', industrial:'Área industrial', avenida:'Avenida Brasil', terraco:'Terraço Suíça' };
 const MANUAL_CATS = { pf:'PF', frito:'fritos', assado:'assados', chapa:'lanches na chapa', pastel:'pastel' };
@@ -2950,15 +2958,15 @@ function normSave(s){
   // v10.5.2: a história passou de 9 para 11 capítulos; um save sem capV (da v10.5 ou antes) converte o capítulo uma vez: 1 a 6 ficam, 7 → 7 (o novo da Avenida começa),
   // 8 → 9, 9 → 10 (o novo do Terraço começa), 10 (o Fim) → 12. Com a conversa de depois pendente, o capítulo cumprido é o antigo: 7 → 8 e 9 → 11
   let capIn = Math.round(+s.cap) || capMax, capNovo = false;
-  if (hist && s.capV !== 2 && s.capV !== 3 && s.capV !== 4 && s.capV !== 5){
+  if (hist && s.capV !== 2 && s.capV !== 3 && s.capV !== 4 && s.capV !== 5 && s.capV !== 6){
     const dep = s.conversa === 'depois';
     if (capIn === 7){ if (dep) capIn = 8; else capNovo = true; } else if (capIn === 8) capIn = 9; else if (capIn === 9){ if (dep) capIn = 11; else { capIn = 10; capNovo = true; } } else if (capIn >= 10) capIn = 12;
   }
   // v10.8: a história passou de 11 para 12 capítulos; o save da v10.7 (capV 2) que já estava no Fim (cap 12) no Terraço começa o capítulo 12 (o molho da Rosa) com a conversa de antes
-  const capRosa = hist && s.capV !== 3 && s.capV !== 4 && s.capV !== 5 && capIn === 12 && pontoOf(s.salao && s.salao.ponto).id === 'terraco';   // (o save antigo que chegou ao 12 era o Fim)
+  const capRosa = hist && s.capV !== 3 && s.capV !== 4 && s.capV !== 5 && s.capV !== 6 && capIn === 12 && pontoOf(s.salao && s.salao.ponto).id === 'terraco';   // (o save antigo que chegou ao 12 era o Fim)
   if (capRosa) capNovo = true;
   // v10.9: a história passou de 12 para 13 capítulos; o save da v10.8 (capV 3) que já estava no Fim (cap 13) no Terraço começa o capítulo 13 (o crítico sem aviso) com a conversa de antes e o sorteio da 1ª visita
-  const capCrit = hist && s.capV !== 4 && s.capV !== 5 && capIn === 13 && pontoOf(s.salao && s.salao.ponto).id === 'terraco';
+  const capCrit = hist && s.capV !== 4 && s.capV !== 5 && s.capV !== 6 && capIn === 13 && pontoOf(s.salao && s.salao.ponto).id === 'terraco';
   if (capCrit) capNovo = true;
   // v10.10: a história passou de 13 para 14 capítulos; o save da v10.9 (capV 4) que já estava no Fim (cap 14) no Terraço começa o capítulo 14 (a noite da estrela) com a conversa de antes
   const capNoite = hist && s.capV === 4 && capIn === 14 && pontoOf(s.salao && s.salao.ponto).id === 'terraco';
@@ -2971,7 +2979,7 @@ function normSave(s){
   let guia = normGuia(s.guia);   // v10.9: as visitas do crítico (cap. 13); o capítulo sem sorteio (save novo no 13, ou o inválido apagado) sorteia a 1ª visita
   if (hist && cap === CRITICO.cap && !guia && pontoOf(s.salao && s.salao.ponto).id === 'terraco') guia = normGuia({ n:0, prox:dia + randi(CRITICO.primeira[0], CRITICO.primeira[1]), v:[] });   // v10.5.2: o capítulo novo começa com a conversa de antes
   if (hist && cap > CRITICO.cap && !guia && pontoOf(s.salao && s.salao.ponto).id === 'terraco') guia = normGuia({ n:2, prox:0, v:[] });   // v10.10: do capítulo 14 em diante o save.guia sempre existe (a noite da estrela)
-  const dev = salaoDevolucao(s.salao), out = { dia, estrelas, lucroTot: Math.round(+s.lucroTot) || 0, pontosTot: Math.max(0, Math.round(+s.pontosTot) || 0), aval: normAval(s.aval), avalCom: capCrit ? plantaBoato(s.avalCom, dia) : normAvalCom(s.avalCom), neg: clamp(Math.round(+s.neg) || 0, 0, BANCO.neg), emp: normEmprestimo(novoHist ? { resto:REFORMA.valor, amort:REFORMA.amort, j:REFORMA.juros, ini:REFORMA.ini, ref:true } : s.emp), corta: s.corta !== false, fechou: Math.max(0, Math.round(+s.fechou) || 0), bank: bank + dev + devMaq, up, torneira:true, salao: normSalao(dev ? null : s.salao), divulga: dia < DIVULGA_DIA && !devLivre() ? 'boca' : divulgaOf(s.divulga).id, treino: !!s.treino, decor: normDecor(s.decor), moveis: normMoveis(s.moveis), cursos: normCursos(s.cursos), cursoDia: Math.max(0, Math.round(+s.cursoDia) || 0), tonXp: s.tonXp === 1 ? 1 : 0, daniTar: Math.max(0, Math.round(+s.daniTar) || 0), daniCursos: normDaniCursos(s.daniCursos), daniCursoDia: Math.max(0, Math.round(+s.daniCursoDia) || 0), jocaTar: Math.max(0, Math.round(+s.jocaTar) || 0), jocaCursos: normJocaCursos(s.jocaCursos), jocaCursoDia: Math.max(0, Math.round(+s.jocaCursoDia) || 0), camiCursos: normCamiCursos(s.camiCursos), camiCursoDia: Math.max(0, Math.round(+s.camiCursoDia) || 0), anselmoCursos: normAnselmoCursos(s.anselmoCursos), anselmoCursoDia: Math.max(0, Math.round(+s.anselmoCursoDia) || 0), daniXp: s.daniXp === 1 ? 1 : 0, cardV: 1, libera: normLibera(s.libera, !novoHist), pontoDia: pontoDiaDe(s, dia), vontDoce: normVont(s.vontDoce), vontCafe: normVont(s.vontCafe), vontDoceV: s.vontDoceV === 1 ? 1 : 0, vontCafeV: s.vontCafeV === 1 ? 1 : 0, convCard: s.convCard === 'pend' ? 'pend' : s.convCard === 1 ? 1 : 0, convDiv: s.convDiv === 'pend' ? 'pend' : s.convDiv === 1 ? 1 : 0, convPlanta: s.convPlanta === 'pend' ? 'pend' : s.convPlanta === 1 || dia > 1 ? 1 : 0, convEnt: s.convEnt === 'pend' ? 'pend' : s.convEnt === 1 ? 1 : 0, socorro: s.socorro === 1 ? 1 : 0, convSocorro: s.convSocorro === 'pend' ? 'pend' : s.convSocorro === 1 ? 1 : 0, exigBravo: Math.max(0, Math.round(+s.exigBravo) || 0), exigVisto: s.exigVisto === 1 ? 1 : 0, convExig: s.convExig === 'pend' ? 'pend' : s.convExig === 1 ? 1 : 0, convCrit: s.convCrit === 'pend' ? 'pend' : s.convCrit === 1 ? 1 : 0, guia, cardVisto: Array.isArray(s.cardVisto) ? s.cardVisto.filter(x => typeof x === 'string').slice(0, 40) : [], avisoCard: !!s.avisoCard, histV: 1, avisoHist: !!s.avisoHist, cap, capDia: capRosa || capCrit || capNoite ? dia : Math.max(1, Math.round(+s.capDia) || 1), capV: 5, capAzul: capNovo ? 0 : Math.max(0, Math.round(+s.capAzul) || 0), capVezes: capNovo ? 0 : Math.max(0, Math.round(+s.capVezes) || 0), convQuit: s.convQuit === 'pend' ? 'pend' : s.convQuit === 1 || cap > 3 ? 1 : 0, convTeto: s.convTeto === 'pend' ? 'pend' : s.convTeto === 1 || cap > 3 ? 1 : 0, capFeito: !capNovo && s.capFeito === 1 ? 1 : 0, capMarm: Math.max(0, Math.round(+s.capMarm) || 0), capComp: Math.max(0, Math.round(+s.capComp) || 0), docesTot: Math.max(0, Math.round(+s.docesTot) || 0), conversa: conversaF, manut: normManut(s.manut), caixa: normCaixa(s.caixa), caixaPend: normPend(s.caixaPend) };
+  const dev = salaoDevolucao(s.salao), out = { dia, estrelas, lucroTot: Math.round(+s.lucroTot) || 0, pontosTot: Math.max(0, Math.round(+s.pontosTot) || 0), aval: normAval(s.aval), avalCom: capCrit ? plantaBoato(s.avalCom, dia) : normAvalCom(s.avalCom), neg: clamp(Math.round(+s.neg) || 0, 0, BANCO.neg), emp: normEmprestimo(novoHist ? { resto:REFORMA.valor, amort:REFORMA.amort, j:REFORMA.juros, ini:REFORMA.ini, ref:true } : s.emp), corta: s.corta !== false, fechou: Math.max(0, Math.round(+s.fechou) || 0), bank: bank + dev + devMaq, up, torneira:true, salao: normSalao(dev ? null : s.salao), divulga: dia < DIVULGA_DIA && !devLivre() ? 'boca' : divulgaOf(s.divulga).id, treino: !!s.treino, decor: normDecor(s.decor), moveis: normMoveis(s.moveis), cursos: normCursos(s.cursos), cursoDia: Math.max(0, Math.round(+s.cursoDia) || 0), tonXp: s.tonXp === 1 ? 1 : 0, daniTar: Math.max(0, Math.round(+s.daniTar) || 0), daniCursos: normDaniCursos(s.daniCursos), daniCursoDia: Math.max(0, Math.round(+s.daniCursoDia) || 0), jocaTar: Math.max(0, Math.round(+s.jocaTar) || 0), jocaCursos: normJocaCursos(s.jocaCursos), jocaCursoDia: Math.max(0, Math.round(+s.jocaCursoDia) || 0), camiCursos: normCamiCursos(s.camiCursos), camiCursoDia: Math.max(0, Math.round(+s.camiCursoDia) || 0), anselmoCursos: normAnselmoCursos(s.anselmoCursos), anselmoCursoDia: Math.max(0, Math.round(+s.anselmoCursoDia) || 0), daniXp: s.daniXp === 1 ? 1 : 0, cardV: 1, libera: normLibera(s.libera, !novoHist), pontoDia: pontoDiaDe(s, dia), vontDoce: normVont(s.vontDoce), vontCafe: normVont(s.vontCafe), vontDoceV: s.vontDoceV === 1 ? 1 : 0, vontCafeV: s.vontCafeV === 1 ? 1 : 0, convCard: s.convCard === 'pend' ? 'pend' : s.convCard === 1 ? 1 : 0, convDiv: s.convDiv === 'pend' ? 'pend' : s.convDiv === 1 ? 1 : 0, convPlanta: s.convPlanta === 'pend' ? 'pend' : s.convPlanta === 1 || dia > 1 ? 1 : 0, convEnt: s.convEnt === 'pend' ? 'pend' : s.convEnt === 1 ? 1 : 0, socorro: s.socorro === 1 ? 1 : 0, convSocorro: s.convSocorro === 'pend' ? 'pend' : s.convSocorro === 1 ? 1 : 0, exigBravo: Math.max(0, Math.round(+s.exigBravo) || 0), exigVisto: s.exigVisto === 1 ? 1 : 0, convExig: s.convExig === 'pend' ? 'pend' : s.convExig === 1 ? 1 : 0, convCrit: s.convCrit === 'pend' ? 'pend' : s.convCrit === 1 ? 1 : 0, guia, cardVisto: Array.isArray(s.cardVisto) ? s.cardVisto.filter(x => typeof x === 'string').slice(0, 40) : [], avisoCard: !!s.avisoCard, histV: 1, avisoHist: !!s.avisoHist, cap, capDia: capRosa || capCrit || capNoite ? dia : Math.max(1, Math.round(+s.capDia) || 1), capV: 6, capAzul: capNovo ? 0 : Math.max(0, Math.round(+s.capAzul) || 0), capVezes: capNovo ? 0 : Math.max(0, Math.round(+s.capVezes) || 0), convQuit: s.convQuit === 'pend' ? 'pend' : s.convQuit === 1 || cap > 3 ? 1 : 0, convTeto: s.convTeto === 'pend' ? 'pend' : s.convTeto === 1 || cap > 3 ? 1 : 0, capFeito: !capNovo && s.capFeito === 1 ? 1 : 0, capMarm: Math.max(0, Math.round(+s.capMarm) || 0), capComp: Math.max(0, Math.round(+s.capComp) || 0), docesTot: Math.max(0, Math.round(+s.docesTot) || 0), conversa: conversaF, manut: normManut(s.manut), caixa: normCaixa(s.caixa), caixaPend: normPend(s.caixaPend) };
   out.equipe = normEquipe(s.equipe, pontoOf(out.salao.ponto));
   out.v10 = 1;
   out.efoodNota = s.efoodNota === 1 || dia > HIST_ENTREGA.dia ? 1 : 0;   // v9.6.4: o texto do entregador na introdução já saiu (quem passou do dia 4 já viu)
@@ -6518,6 +6526,7 @@ class Game {
     sv.convCard = D.dia > HIST_CARDAPIO.dia ? 1 : 0; sv.convDiv = D.dia >= DIVULGA_DIA ? 1 : 0; sv.convEnt = D.dia >= HIST_ENTREGA.dia ? 1 : 0;
     sv.vontDoce = sv.vontCafe = sv.vontDoceV = sv.vontCafeV = 0;   // v10.5.3: a vontade recomeça no capítulo
     sv.convCrit = n > CRITICO.cap ? 1 : 0; if (n === CRITICO.cap) this.comecaCritico(); else if (n > CRITICO.cap) sv.guia = normGuia({ n:2, prox:0, v:[{ d:D.dia - 8, it:[2, 2, 2, 1, 1] }, { d:D.dia - 4, it:[2, 2, 2, 1, 1] }] });   // v10.10: do 14 em diante, duas fichas de 8   // v10.9: o capítulo 13 começa com o sorteio da 1ª visita
+    if (D.guiaEst && sv.guia){ sv.guia.est = D.guiaEst; sv.guia.visto = D.guiaVisto || 0; }   // v11: o Fim já com a estrela e a cena final vista
     sv.convExig = n >= 10 ? 1 : 0; sv.socorro = 0; sv.convSocorro = 0; sv.convQuit = sv.convTeto = n > 3 ? 1 : 0;
     sv.efoodNota = D.dia > HIST_ENTREGA.dia ? 1 : 0; sv.vipVisto = D.dia > 5 ? 1 : 0;
     // equipe, cursos e melhorias pela tabela (o Fim: tudo no máximo, com a Lia)
@@ -6994,30 +7003,63 @@ const ABERTURA = {
       som:[[523,0,.2],[659,.18,.2],[784,.36,.2],[1046,.54,.9],[1318,1.1,1.2]] }
   ]
 };
+/* v11: o final (a manhã seguinte à noite da estrela), no mesmo motor. `min`: as estrelas que o trecho pede; `leg` pode ser uma lista de três textos (para 1, 2 e 3 estrelas) */
+const FINAL = { fade:0.5, cenas:[
+  { id:'telefone', t:6.5, min:1, leg:'Na manhã seguinte, o telefone do Terraço tocou cedo.',
+    falas:[{ q:'bia', s:'Alô?... É do Michelzão?!', de:2.4 }], som:[[784,0,.2],[988,.25,.2],[784,.9,.2],[988,1.15,.2]] },
+  { id:'placa', t:8, min:1, leg:['A Lanchonete Corre-Corre ganhou a estrela do Michelzão.', 'A Lanchonete Corre-Corre ganhou duas estrelas do Michelzão.', 'A Lanchonete Corre-Corre ganhou três estrelas do Michelzão, a nota mais alta do guia.'],
+    falas:[{ q:'tonhao', s:'Tá torta?', de:2.6 }, { q:'bia', s:'Tá perfeita, tio.', de:4.4 }], som:[[784,0,.3],[988,.2,.3],[1175,.4,.3],[1568,.6,.9]] },
+  { id:'apagou', t:7.5, min:1, leg:'Na mesma semana, o guia voltou à Casa Aurora e pediu o molho da casa. O Bráulio nunca soube repetir. A estrela de lá se apagou.',
+    falas:[{ q:'braulio', s:'Cadê o tempero?!', de:3 }], som:[[440,0,.5],[392,.5,.5],[330,1,.9]] },
+  { id:'retrato', t:8, min:1, leg:'A Bia pendurou a estrela ao lado do retrato da mãe.',
+    falas:[{ q:'bia', s:'Essa estrela é nossa, mãe.', de:3.4 }], som:[[349,0,.7],[440,.6,.7],[523,1.2,1.1]] },
+  { id:'equipe', t:8, min:2, leg:'Ninguém ganha estrela sozinho. A foto da equipe foi para a parede: a Dani, o Joca, a Cami, o Anselmo e a Lia.',
+    falas:[{ q:'tonhao', s:'Olha o passarinho!', de:2.8 }], som:[[523,0,.2],[659,.18,.2],[784,.36,.2],[1046,.54,.7]] },
+  { id:'escola', t:8.5, min:1, leg:'E a garagem da Rosa reabriu. Agora é a Cozinha da Rosa, a escola de cozinha do bairro.',
+    falas:[{ q:'dani', s:'Eu era lenta, mas aprendi rápido. Vocês também vão!', de:3 }], som:[[587,0,.4],[740,.3,.4],[880,.6,.8]] },
+  { id:'ceu', t:8, min:3, leg:'Dizem que, do Terraço, nas noites limpas, dá para ver três estrelas bem juntinhas.',
+    falas:[{ q:'bia', s:'Uma delas pisca pra mim, tio.', de:2.6 }, { q:'tonhao', s:'Eu sei qual é.', de:4.6 }], som:[[1046,0,.4],[1318,.5,.4],[1568,1,1.2]] },
+  { id:'roda', t:9, min:1, leg:'Toda tarde, a Bia desce até a garagem. E sempre tem uma criança na porta da cozinha, olhando.', titulo:'Fim',
+    falas:[{ q:'bia', s:'Comida boa é carinho que a gente põe no prato.', de:3.2 }], som:[[523,0,.5],[659,.35,.5],[784,.7,.9],[1046,1.6,1.4]] }
+] };
+/* os créditos: um quadro só, depois da última cena do final (some com um toque ou em 6 s) */
+const FINAL_CREDITOS = { id:'creditos', t:6, leg:'', falas:[], cheia:true, som:[[523,0,.5],[659,.35,.5],[784,.7,.9]] };
+/* as cenas do final que tocam: as de `min` até as estrelas ganhas (est); com `desde` (as estrelas já vistas), só a placa e as cenas que ainda não tinham sido vistas; os créditos, se pedidos */
+function finalCenas(est, desde, creditos){
+  est = clamp(Math.round(+est) || 1, 1, 3); desde = clamp(Math.round(+desde) || 0, 0, 3);
+  const v = FINAL.cenas.filter(c => c.min <= est && (desde < 1 || c.id === 'placa' || c.min > desde));
+  return creditos ? v.concat([FINAL_CREDITOS]) : v;
+}
 function aberturaVista(){ return lsGet(LS.abertura) === '1'; }
 
 class Abertura {
   // origem: 'auto' (a 1ª vez que o jogo abre: no fim, vai ao menu) ou 'menu' (botão História: no fim, o cartão "Em breve")
-  constructor(origem, rm){
+  // v11: roteiro (o ABERTURA, ou o FINAL com opt = { est, desde, creditos }: as cenas do final que tocam, ver finalCenas)
+  constructor(origem, rm, roteiro, opt){
     this.origem = origem === 'auto' ? 'auto' : 'menu';
+    this.roteiro = roteiro || ABERTURA; opt = opt || {};
+    this.est = clamp(Math.round(+opt.est) || 1, 1, 3);
+    this.cenas = this.roteiro === FINAL ? finalCenas(this.est, opt.desde, opt.creditos) : this.roteiro.cenas;
     this.rm = !!rm; this.i = 0; this.t = 0; this.fim = false; this.tm = 0;
     this.onCena = null; this.onFim = null;
   }
-  get n(){ return ABERTURA.cenas.length; }
-  get cena(){ return ABERTURA.cenas[this.i]; }
+  get n(){ return this.cenas.length; }
+  get cena(){ return this.cenas[this.i]; }
+  // a legenda da cena (uma lista de textos vale para 1, 2 e 3 estrelas)
+  get leg(){ const l = this.cena.leg; return Array.isArray(l) ? l[this.est - 1] : l; }
   // andamento da cena, de 0 a 1 (com movimento reduzido, sempre o quadro final)
   get p(){ return this.rm ? (this.cena.pRM != null ? this.cena.pRM : 1) : clamp(this.t / this.cena.t, 0, 1); }
   // opacidade do escuro por cima da cena (entrada e saída); 0 com movimento reduzido
   get escuro(){
     if (this.rm) return 0;
-    const f = ABERTURA.fade, t = this.t, d = this.cena.t;
+    const f = this.roteiro.fade, t = this.t, d = this.cena.t;
     return t < f ? 1 - t / f : (t > d - f ? clamp((t - (d - f)) / f, 0, 1) : 0);
   }
   falas(){ return this.cena.falas.filter(f => this.rm || (this.t >= f.de && !(f.ate && this.t >= f.ate))); }   // ate: some (a cortina vai fechar)
   // texto da cena para o leitor de tela: legenda, falas e título
   texto(){
-    const c = this.cena, nome = { rosa:'Rosa', bia:'Bia', tonhao:'Tonhão', braulio:'Bráulio' };
-    return [c.leg].concat(c.falas.map(f => nome[f.q] + ': ' + f.s), c.titulo ? [c.titulo] : []).join(' ');
+    const c = this.cena, nome = { rosa:'Rosa', bia:'Bia', tonhao:'Tonhão', braulio:'Bráulio', dani:'Dani' };
+    return [this.leg].concat(c.falas.map(f => nome[f.q] + ': ' + f.s), c.titulo ? [c.titulo] : [], c.cheia ? ['Lanchonete Corre-Corre. O sonho da Bia. Obrigado por jogar!'] : []).filter(Boolean).join(' ');
   }
   update(dt){
     if (this.fim) return;
@@ -10865,8 +10907,8 @@ const AB_CHAO = 470;   // linha do chão das cenas (a faixa da legenda começa e
 const AB_FOGAO = 356;  // a boca do fogão de casa: na cintura da Rosa (~55% da altura dela)
 const AB_COR = { rosa:'#C8506A', petala:'#E8457A', noite:'#1E2A4A', noite2:'#3A3F6E', aurora:'#7A2E3A', ouro:'#F2C23D', molho:'#C2362B', segredo:'#F2A53A' };
 // altura de cada um na cena, em px do chão ao alto da cabeça (sem a touca), e a mesma altura no desenho em escala 1
-const AB_ALT = { rosa:210, bia:210, biaCrianca:130, tonhao:230, braulio:230 };
-const AB_BASE = { rosa:63, bia:73.5, biaCrianca:46, tonhao:114, braulio:115 };
+const AB_ALT = { rosa:210, bia:210, biaCrianca:130, tonhao:230, braulio:230, dani:200, joca:215, cami:205, anselmo:220, lia:200 };   // v11: a equipe da foto e a Dani adulta
+const AB_BASE = { rosa:63, bia:73.5, biaCrianca:46, tonhao:114, braulio:115, dani:63, joca:63, cami:63, anselmo:63, lia:63 };
 const abEsc = (q,k) => AB_ALT[q] / AB_BASE[q] * (k || 1);   // k: mais longe (< 1), como na janela ou na porta
 const abSeg = (p,a,b) => clamp((p - a) / (b - a), 0, 1);
 const abSuave = p => p * p * (3 - 2 * p);
@@ -11446,6 +11488,28 @@ const AB_CENAS = {
     return { bia:[300,AB_CHAO - AB_ALT.bia], tonhao:[950,AB_CHAO - 275] };
   }
 };
+/* ---------- o final (v11) ---------- */
+Object.assign(AB_CENAS, {
+  telefone(c,p,T){ abCeu(c,'#9FD3F0','#F7EFD8'); abChao(c,'#BDB6A8'); return {}; },
+  placa(c,p,T){ abCeu(c,'#9FD3F0','#F7EFD8'); abChao(c,'#BDB6A8'); return {}; },
+  apagou(c,p,T){ abCeu(c,AB_COR.noite,AB_COR.noite2); abChao(c,'#3B2420'); return {}; },
+  retrato(c,p,T){ abCozinhaCasa(c,T,true); return {}; },
+  equipe(c,p,T){ abCeu(c,'#F7EFD8','#E9D8BF'); abChao(c,'#BDB6A8'); return {}; },
+  escola(c,p,T){ abCeu(c,AB_COR.noite,AB_COR.noite2); abChao(c,'#5B5F6B'); return {}; },
+  ceu(c,p,T){ abCeu(c,AB_COR.noite,AB_COR.noite2); abChao(c,'#3B2420'); return {}; },
+  roda(c,p,T){ abCozinhaCasa(c,T,false); return {}; },
+  // os créditos: um quadro só, sem legenda
+  creditos(c,p,T){
+    c.fillStyle = AB_COR.noite; c.fillRect(0,0,TW,H);
+    c.fillStyle = 'rgba(255,255,255,.7)';
+    [[80,60],[210,170],[330,40],[460,110],[720,70],[860,140],[1010,60],[1150,150],[140,420],[1100,440],[600,520],[300,500],[950,500]].forEach((s,i) => { circ(c,s[0],s[1],RM ? 1.8 : 1.4 + Math.abs(Math.sin(T * 2 + i)) * 1.2); c.fill(); });
+    star(c,TW/2,150,46 + (RM ? 0 : Math.sin(T * 3) * 3),AB_COR.ouro);
+    txt(c,'Lanchonete Corre-Corre',TW/2,290,64,PAL.mostarda,'center',FD,8,TW - 120);
+    txt(c,'O sonho da Bia',TW/2,360,34,PAL.creme,'center',FD,4);
+    txt(c,'Obrigado por jogar!',TW/2,470,28,PAL.creme,'center',FB);
+    return {};
+  }
+});
 // mistura duas cores #rrggbb (k de 0 a 1)
 function abMistura(a,b,k){
   const h = s => [1,3,5].map(i => parseInt(s.substr(i,2),16)), x = h(a), y = h(b);
@@ -11470,7 +11534,7 @@ function abLegenda(c,ab){
   const U = AB_UI;
   c.fillStyle = 'rgba(34,32,28,.92)'; c.fillRect(0,500,TW,100);
   c.fillStyle = PAL.mostarda; c.fillRect(0,500,TW,4);
-  const lin = treinoLinhas(c,ab.cena.leg,1040,U.leg), y0 = 548 - (lin.length - 1) * U.legLinha / 2 - 6;
+  const lin = treinoLinhas(c,ab.leg,1040,U.leg), y0 = 548 - (lin.length - 1) * U.legLinha / 2 - 6;
   lin.forEach((l,i) => txt(c,l,TW/2,y0 + i * U.legLinha,U.leg,PAL.creme,'center',FB));
   // as bolinhas das cenas e a dica do toque
   const n = ab.n, x0 = TW/2 - (n - 1) * 9;
@@ -11487,7 +11551,7 @@ function drawAbertura(c,ab){
   const desenha = AB_CENAS[ab.cena.id];
   const cab = (desenha && desenha(c,ab.p,T)) || {};
   ab.falas().forEach(f => { const a = cab[f.q]; if (a) abBalao(c,f.s,a[0],a[1],a[2]); });
-  abLegenda(c,ab);
+  if (ab.cena.cheia) txt(c,'toque para seguir',TW - 20,586,13,'#b8ae98','right',FB); else abLegenda(c,ab);   // v11: os créditos ocupam o quadro todo
   const e = ab.escuro;
   if (e > 0){ c.fillStyle = 'rgba(16,14,12,' + e + ')'; c.fillRect(0,0,TW,H); }
   c.restore();
@@ -11686,7 +11750,7 @@ const game = new Game(canvas, ctx);
 /* quem nunca fez a Missão zero (e ainda está no dia 1) encontra o botão dela em destaque */
 function treinoPrimeiro(){ return !game.save.treino && game.proxDia <= 1 && !DEV.on; }
 
-const SCREENS = ['ov-menu','ov-manual','ov-intro','ov-treino','ov-pause','ov-end','ov-shop','ov-falencia','ov-endless','ov-rank','ov-ver','ov-app','ov-abertura','ov-conversa','ov-continua','ov-guia'];
+const SCREENS = ['ov-menu','ov-manual','ov-intro','ov-treino','ov-pause','ov-end','ov-shop','ov-falencia','ov-endless','ov-rank','ov-ver','ov-app','ov-abertura','ov-escolha','ov-conversa','ov-continua','ov-guia'];
 function showOnly(ids){
   SCREENS.forEach(id => { const el = $(id); if (!el) return; if (ids.indexOf(id) >= 0) el.classList.add('show'); else el.classList.remove('show'); });
 }
@@ -11865,6 +11929,8 @@ function devAbaHistoria(body, secao, botao){
   r.appendChild(sel);
   const b = botao(r, 'Assistir', () => {}, null); b.id = 'dev-assistir';
   b.addEventListener('click', () => { devAssistir(+sel.value || 0); });
+  r = secao('O final', 'Toca as cenas finais e os créditos, sem mudar o jogo');
+  botao(r, 'Assistir o final: ★', () => devFinal(1)); botao(r, 'Assistir o final: ★★', () => devFinal(2)); botao(r, 'Assistir o final: ★★★', () => devFinal(3));
   r = secao('Manual');
   botao(r, 'Manual: todas as fichas', () => game.devManual(true)); botao(r, 'Manual: só o básico', () => game.devManual(false));
   r = secao('Lojinha');
@@ -13998,22 +14064,33 @@ let contFim = null;
 function contTexto(){
   const ind = game.save.cap > HISTORIA.length;
   const c = HISTORIA[Math.min(game.save.cap, HISTORIA.length + 1) - 2], fim = (c && c.fim) || { h:'Fim dos capítulos', p:'' };   // v9.1: o texto vem do último capítulo de cada ponto (HISTORIA.fim)
+  const g = game.save.guia;
   $('cont-h').textContent = fim.h;
-  $('cont-p').textContent = fim.p;
-  $('cont-s').textContent = ind ? 'Enquanto isso, a lanchonete segue aberta: os dias continuam, sem objetivo, e a história espera por você.' : 'Enquanto isso, a lanchonete segue aberta: os dias continuam, sem objetivo.';
+  $('cont-p').textContent = (g && g.est >= 3 && fim.p3) || fim.p;   // v11: com 3 estrelas na 1ª noite, o cartão fala da nota mais alta na parede
+  $('cont-s').textContent = fim.p3 ? 'Os dias continuam, sem objetivo.' : ind ? 'Enquanto isso, a lanchonete segue aberta: os dias continuam, sem objetivo, e a história espera por você.' : 'Enquanto isso, a lanchonete segue aberta: os dias continuam, sem objetivo.';
 }
 /* v9.6.10: as conversas vêm no fim do turno, antes dos resultados. A de capítulo (depois e antes) toca sempre e não conta;
    das de cartão e presente tocam até 2 por fim de dia (n), na ordem fixa abaixo; as outras esperam, pendentes, para o dia seguinte */
 const CONV_MAX = 2;
 function fluxoHistoria(fim, n){
-  const sv = game.save; n = n || 0;
+  const sv = game.save, gs = sv.guia; n = n || 0;
+  // v11: save da v10.10 já com estrela e sem a cena final vista: toca antes de qualquer conversa, com os créditos
+  if (gs && gs.est >= 1 && !gs.visto && sv.cap > HISTORIA.length && sv.conversa !== 'depois' && histLiga())
+    return tocaFinal(gs.est, 0, true, () => { gs.visto = gs.est; writeSave(sv); fluxoHistoria(fim, n); });
   if (sv.conversa === 'depois') return falar('depois', () => {
-    if (game.avancaCap()){ contFim = () => fluxoHistoria(fim, n); contTexto(); showOnly(['ov-continua']); } else fluxoHistoria(fim, n);
+    const ultimo = sv.cap === HISTORIA.length;   // o capítulo 14 acaba: a cena final, os créditos e o boletim vêm antes do cartão do fim
+    if (game.avancaCap()){
+      const cont = () => { contFim = () => fluxoHistoria(fim, n); contTexto(); showOnly(['ov-continua']); };
+      if (!ultimo || !gs || gs.est < 1) return cont();
+      return tocaFinal(gs.est, 0, true, () => { gs.visto = gs.est; writeSave(sv); gs.ver === 1 ? abreBoletim(() => { gs.ver = 0; writeSave(sv); cont(); }) : cont(); });
+    } else fluxoHistoria(fim, n);
   });
   if (sv.conversa === 'antes') return falar('antes', () => { game.save.conversa = null; writeSave(game.save); fluxoHistoria(fim, n); });
   if (sv.guia && sv.guia.ver === 1){   // v10.10: o veredito da noite da estrela: a conversa do "recomendado" (a 1ª vez sem nenhuma estrela) e o boletim
     const bol = () => abreBoletim(() => { sv.guia.ver = 0; writeSave(sv); fluxoHistoria(fim, n); });
-    return sv.guia.est === 0 && !sv.guia.convRec ? falar(HIST_RECOMENDA.falas, () => { sv.guia.convRec = 1; writeSave(sv); bol(); }) : bol();
+    const veredito = () => sv.guia.est === 0 && !sv.guia.convRec ? falar(HIST_RECOMENDA.falas, () => { sv.guia.convRec = 1; writeSave(sv); bol(); }) : bol();
+    // v11: estrela nova depois da 1ª: a placa e as cenas ainda não vistas, sem créditos, antes do boletim
+    return sv.guia.visto >= 1 && sv.guia.est > sv.guia.visto ? tocaFinal(sv.guia.est, sv.guia.visto, false, () => { sv.guia.visto = sv.guia.est; writeSave(sv); veredito(); }) : veredito();
   }
   if (n >= CONV_MAX) return fim();
   const prox = () => fluxoHistoria(fim, n + 1);
@@ -14049,6 +14126,14 @@ function devCenas(){
   LIBERA.forEach(L => o.push({ rot:'Cartão: ' + L.id, falas:L.falas }));
   return o;
 }
+/* v11 (modo dev): toca o final com as estrelas pedidas e os créditos, sem mexer no save; ao acabar, volta ao menu */
+function devFinal(est){
+  $('ov-dev').classList.remove('show');
+  if (game.state !== 'menu' && game.state !== 'shop') game.setState('menu');
+  const st = game.state;
+  tocaFinal(est, 0, true, () => game.setState(st));
+  return true;
+}
 /* toca uma cena sem mexer no save; ao acabar, volta ao menu ou à lojinha (de dentro de um dia, vai ao menu) */
 function devAssistir(i){
   const c = devCenas()[i]; if (!c) return false;
@@ -14066,21 +14151,31 @@ function on(id, fn){ const e = $(id); if (e) e.addEventListener('click', fn); }
    segue para a Missão zero (se ainda não fez) ou para a conversa do cap. 1 (v8.7) */
 let abertura = null;
 function abLive(){ const e = $('ab-live'); if (e) e.textContent = abertura ? abertura.texto() : ''; }
-function abrirAbertura(origem){
+/* v11: cfg = { roteiro, est, desde, creditos, depois }: o final (FINAL) toca no mesmo painel; `depois` roda no fim (inclusive no Pular), no lugar de ir ao menu */
+function abrirAbertura(origem, cfg){
   Sfx.init(); Sfx.resume();
-  lsSet(LS.abertura, '1');
-  abertura = new Abertura(origem, RM);
+  cfg = cfg || {};
+  if (!cfg.roteiro) lsSet(LS.abertura, '1');
+  abertura = new Abertura(origem, RM, cfg.roteiro, cfg);
   abertura.onCena = ab => { aberturaSom(ab.cena); abLive(); };
   abertura.onFim = ab => {
     abertura = null; abLive();
     const sv = game.save;
-    if (ab.origem === 'auto' && sv.cap === 1 && sv.conversa === 'antes' && sv.dia === 1 && !sv.fechou) playCareer(sv.treino ? undefined : 0);
+    if (cfg.depois) cfg.depois();
+    else if (ab.origem === 'auto' && sv.cap === 1 && sv.conversa === 'antes' && sv.dia === 1 && !sv.fechou) playCareer(sv.treino ? undefined : 0);
     else game.setState('menu');
   };
   aberturaSom(abertura.cena); abLive();
   showOnly(['ov-abertura']);
 }
-on('btn-historia',   () => { Sfx.tap(); abrirAbertura('menu'); });
+/* v11: a cena final (o FINAL, com as estrelas ganhas); `depois` roda no fim */
+function tocaFinal(est, desde, creditos, depois){ abrirAbertura('menu', { roteiro:FINAL, est, desde, creditos, depois }); }
+/* v11: o botão História abre a abertura; depois da cena final vista, antes oferece "A abertura" ou "O final" */
+function finalVisto(){ return game.save.guia ? game.save.guia.visto : 0; }
+on('btn-historia',   () => { Sfx.tap(); if (finalVisto() >= 1) showOnly(['ov-escolha']); else abrirAbertura('menu'); });
+on('btn-esc-ab',    () => { Sfx.tap(); abrirAbertura('menu'); });
+on('btn-esc-final', () => { Sfx.tap(); const v = finalVisto(); tocaFinal(v, 0, true, () => game.setState('menu')); });
+on('btn-esc-voltar', () => { Sfx.tap(); showOnly(['ov-menu']); });
 on('btn-ab-voltar',  () => { Sfx.tap(); if (abertura) abertura.voltar(); });
 on('btn-ab-pular',   () => { Sfx.tap(); if (abertura) abertura.pular(); });
 on('btn-conv-pular', () => { Sfx.tap(); if (game.conversa) game.conversa.pular(); });
@@ -14246,7 +14341,7 @@ try { Rank.init(); } catch(e) {}
 game.setState('menu');
 if (!aberturaVista() && !DEV.on) abrirAbertura('auto');   // v8.5: a abertura toca sozinha uma vez
 window.__game = game;
-window.__lcc = { NOITE, HIST_RECOMENDA, guiaPontos, guiaEstrelas, abreBoletim, drawVela, drawFala, CRITICO, HIST_CRITICO, normGuia, plantaBoato, drawCaderno, drawGarfo, ROSA, GERENTE, drawPetala, musicaPay, musicaDe, musicaOk, camiModoTudo, CAMI_TUDO, cafesLista, cafeIdx, cafeIngred, ANSELMO_CURSOS, normAnselmoCursos, drinksLista, drinksTodos, drinkPreco, drinkIngred, drinkVagas, drinkPrep, MAQUINA_LUGAR, drawCafesEsp, drawCarrinhoBoasVindas, espressoTrabalho, bebExtra, devCenas, devAssistir, histLiga, DEV_CAPS, drawIcon, liaOn, drawLia, LIA_HOME, LIA_LOOK, doceIcone, drawFino, TEMPOS, tempoMarcas, pedePrincipal, drawTempoTrilha, HIST_SOCORRO, HIST_EXIGENTE, EXIGENTE, LOUCA, vipDish, vipCook, casaBoa, exigRep, HIST_PLANTA, HIST_QUITOU, HIST_TETO, VONTADE, vontadeChance, vontadeDia, vontadeFalas, HIST_VONTADE_DOCE, HIST_VONTADE_CAFE, filaPos, STATIONS, MANUAL, manualTracos, manualAberta, abrirManual, buildManual, fecharManual, semente, manualSemente, FECHA, efoodAberto, drawTable, camiMesasN, camiModoMesas, CAMI_MESAS_MAX, drawAventalCami, FISCAL, Fiscal, FISCAL_PONTOS, abrirDev, fecharDev, buildDev, passoJogo, devLivre, diaNoPonto, manutEmerg, manutFator, daniTaskDe, plateSlotsFor, queueYsFor, assentoSlow, AVENIDA, SABORES, cursoOk, INDUSTRIAL, PLATE_SLOTS, cozinhaSlots, upgradeDe, DECOR, DECOR_GRUPOS, TOALHA, LUXO, MOVEIS, movelOf, movelNivel, normMoveis, luxoPts, luxoTot, luxoNivel, luxoForca, decorOf, normDecor, decorOn, FILA_ACOES, filaMax, MARMITA, RETIRADA, marmitaMao, drawMarmita, prateleiraPos, EFOOD_COR, AVAL_BRAVO, QUEUE, setShopTab: v => shopAbrir(v), setShopGrupo: g => shopGrupoAbrir(g), shopSecoes: () => SHOP_GRUPOS.map(g => shopSecoesVis(g)), TREINO, TREINO_PASSOS, TREINO_COR, Treino, treinoLugar, DICAS, dicaDe, dicaLigada, drawDica, HUD_LUCRO, hudEstrelas, drawHud, daniNaLoja, treinoPrimeiro, playCareer, buildMenu, introBanco, buildFalencia, BANCO, normEmprestimo, parcelaDe, devidoDe, jurosDe, tabelaDe, simulaEmprestimo, SEMANA, semanaOf, diaOf, FILA_JUSTA, PORTA, CHAIRS, PAT, CONTAS, INGRED, CARDAPIO, precoPrato, CURSOS, CURSO_AV, CURSO_XP, tonhaoXp, tonhaoNivelXp, daniXp, daniNivelXp, DANI_XP, DANI_CURSOS, CURSOS_SEMFIM, cursoOf, cursoNivel, normCursos, pratoAv, CARNES, drawDish, pratoSabido, pratosSabidos, GOSTOS, GOSTOS_CAT, pedePrato, VEG, vegMov, drawDish, MAIS, PONTOS_ACAO, GORJETA, DRINK_PRICE, MOVIMENTO, movimentoSalao, DIVULGA, DIVULGA_DIA, divulgaOf, contasDia, bomGoal, SALAO, PONTOS, pontoOf, MESA, mesaBox, mesaPreco, salaoLugares, mesaProblema, salaoCaminho, salaoProblema, salaoOrdena, salaoAuto, salaoVaga, salaoPerto, salaoKit, salaoDevolucao, SALAO_SEMFIM, normSalao, setObst, OBST, pathOk, MAQUINA, BEBIDA_ESPERA, bebidaOf, MANUT, manutOf, manutChance, manutPreco, normManut, CLIMA, CLIMA_DIA, EVENTOS, eventoSemana, introManut, normPend, CALCADA, TW, HUDX, esperaAp, tableApproach, CRIT, STAFF, diariaDani, diariaJoca, cursosPay, DANI_TASKS, DANI_HANDS, daniTaskOk, TRASH, WASH, payroll, FOLHA_CORTE, folhaCorta, folhaCortes, folhaItens, listaE, pratosDe, couvertEffect, couvertOk, ambienteEffect, dishStock, normSave, Helper, JUICE, KITCHEN_SLOTS, handLayout, trayOk, Game, Group, Table, Kitchen, Waitress, BIA_SPEED, DAYS, UPGRADES, CUSTOMER_TYPES, LAYOUT, PAL, Sfx, findPath, render, Rank, sortRows, cleanName, normName, CMD, ENDLESS, VIP, MULTA, rk, renderRank, openRank, closeRank, LS, lsGet, lsSet, loadSave, DEV, saveKey, devSync, divulgaAberta, CAIXA_MAX, VERSAO, normCaixa, caixaResumo, caixaTotais, copyText, PRATO, pratoPerde, pratoVapor, AVAL, AVAL_CRIT, AVAL_BRAVO, avalMenu, cursosItem, DOCES, CAFES, cafeDe, DRINKS, drinkDe, drinkIdx, anselmoOn, ANSELMO_HOME, ANSELMO_LOOK, drawAnselmo, docesLista, docePreco, doceIngred, doceIdx, CAMI_CURSOS, CAMI_HOME, CAMI_LOOK, camiNivelCursos, normCamiCursos, drawCami, drawEspresso, JOCA_XP, JOCA_CURSOS, JOCA_HOME, jocaXp, jocaNivelXp, BASICAS, donoBasico, cursoDaniVis, JOCA_LOOK, drawJoca, avalTeto, avalEscala, TERRACO, fixosDe, vipTipos, doorFor, DOOR, terraco, drawPiano, drawPoltrona, drawFoyerTe, drawParedeTe, drawElevadorTe, drawLugarTe, drawPerson, makePeople, drawChair, iconeMudanca, avalFrac, AVAL_SIMPLES, AVAL_DECOR, normAval, avalNota, avalMedias, avalGeral, avalMovimento, avalMinimo, avalComentario, fmtNota, notaFaixa, gurugolCaixa, AVAL_COM, normAvalCom, buildGurugol, ABERTURA, Abertura, AB_CENAS, AB_ALT, AB_BASE, abEsc, AB_VIVO, aberturaVista, aberturaSom, drawAbertura, abrirAbertura, HISTORIA, HIST_CARDAPIO, HIST_DIVULGA, HIST_ENTREGA, LIBERA, liberaOf, HIST_NOMES, normEquipe, upgradeCartao, cursoFeito, AVAL_POUCO, REFORMA, HIST, carencia, Conversa, drawConversa, falar, fluxoHistoria, falar, aberturaAtual: () => abertura };
+window.__lcc = { NOITE, HIST_RECOMENDA, guiaPontos, guiaEstrelas, abreBoletim, drawVela, drawFala, CRITICO, HIST_CRITICO, normGuia, plantaBoato, drawCaderno, drawGarfo, ROSA, GERENTE, drawPetala, musicaPay, musicaDe, musicaOk, camiModoTudo, CAMI_TUDO, cafesLista, cafeIdx, cafeIngred, ANSELMO_CURSOS, normAnselmoCursos, drinksLista, drinksTodos, drinkPreco, drinkIngred, drinkVagas, drinkPrep, MAQUINA_LUGAR, drawCafesEsp, drawCarrinhoBoasVindas, espressoTrabalho, bebExtra, devCenas, devAssistir, devFinal, FINAL, finalCenas, histLiga, DEV_CAPS, drawIcon, liaOn, drawLia, LIA_HOME, LIA_LOOK, doceIcone, drawFino, TEMPOS, tempoMarcas, pedePrincipal, drawTempoTrilha, HIST_SOCORRO, HIST_EXIGENTE, EXIGENTE, LOUCA, vipDish, vipCook, casaBoa, exigRep, HIST_PLANTA, HIST_QUITOU, HIST_TETO, VONTADE, vontadeChance, vontadeDia, vontadeFalas, HIST_VONTADE_DOCE, HIST_VONTADE_CAFE, filaPos, STATIONS, MANUAL, manualTracos, manualAberta, abrirManual, buildManual, fecharManual, semente, manualSemente, FECHA, efoodAberto, drawTable, camiMesasN, camiModoMesas, CAMI_MESAS_MAX, drawAventalCami, FISCAL, Fiscal, FISCAL_PONTOS, abrirDev, fecharDev, buildDev, passoJogo, devLivre, diaNoPonto, manutEmerg, manutFator, daniTaskDe, plateSlotsFor, queueYsFor, assentoSlow, AVENIDA, SABORES, cursoOk, INDUSTRIAL, PLATE_SLOTS, cozinhaSlots, upgradeDe, DECOR, DECOR_GRUPOS, TOALHA, LUXO, MOVEIS, movelOf, movelNivel, normMoveis, luxoPts, luxoTot, luxoNivel, luxoForca, decorOf, normDecor, decorOn, FILA_ACOES, filaMax, MARMITA, RETIRADA, marmitaMao, drawMarmita, prateleiraPos, EFOOD_COR, AVAL_BRAVO, QUEUE, setShopTab: v => shopAbrir(v), setShopGrupo: g => shopGrupoAbrir(g), shopSecoes: () => SHOP_GRUPOS.map(g => shopSecoesVis(g)), TREINO, TREINO_PASSOS, TREINO_COR, Treino, treinoLugar, DICAS, dicaDe, dicaLigada, drawDica, HUD_LUCRO, hudEstrelas, drawHud, daniNaLoja, treinoPrimeiro, playCareer, buildMenu, introBanco, buildFalencia, BANCO, normEmprestimo, parcelaDe, devidoDe, jurosDe, tabelaDe, simulaEmprestimo, SEMANA, semanaOf, diaOf, FILA_JUSTA, PORTA, CHAIRS, PAT, CONTAS, INGRED, CARDAPIO, precoPrato, CURSOS, CURSO_AV, CURSO_XP, tonhaoXp, tonhaoNivelXp, daniXp, daniNivelXp, DANI_XP, DANI_CURSOS, CURSOS_SEMFIM, cursoOf, cursoNivel, normCursos, pratoAv, CARNES, drawDish, pratoSabido, pratosSabidos, GOSTOS, GOSTOS_CAT, pedePrato, VEG, vegMov, drawDish, MAIS, PONTOS_ACAO, GORJETA, DRINK_PRICE, MOVIMENTO, movimentoSalao, DIVULGA, DIVULGA_DIA, divulgaOf, contasDia, bomGoal, SALAO, PONTOS, pontoOf, MESA, mesaBox, mesaPreco, salaoLugares, mesaProblema, salaoCaminho, salaoProblema, salaoOrdena, salaoAuto, salaoVaga, salaoPerto, salaoKit, salaoDevolucao, SALAO_SEMFIM, normSalao, setObst, OBST, pathOk, MAQUINA, BEBIDA_ESPERA, bebidaOf, MANUT, manutOf, manutChance, manutPreco, normManut, CLIMA, CLIMA_DIA, EVENTOS, eventoSemana, introManut, normPend, CALCADA, TW, HUDX, esperaAp, tableApproach, CRIT, STAFF, diariaDani, diariaJoca, cursosPay, DANI_TASKS, DANI_HANDS, daniTaskOk, TRASH, WASH, payroll, FOLHA_CORTE, folhaCorta, folhaCortes, folhaItens, listaE, pratosDe, couvertEffect, couvertOk, ambienteEffect, dishStock, normSave, Helper, JUICE, KITCHEN_SLOTS, handLayout, trayOk, Game, Group, Table, Kitchen, Waitress, BIA_SPEED, DAYS, UPGRADES, CUSTOMER_TYPES, LAYOUT, PAL, Sfx, findPath, render, Rank, sortRows, cleanName, normName, CMD, ENDLESS, VIP, MULTA, rk, renderRank, openRank, closeRank, LS, lsGet, lsSet, loadSave, DEV, saveKey, devSync, divulgaAberta, CAIXA_MAX, VERSAO, normCaixa, caixaResumo, caixaTotais, copyText, PRATO, pratoPerde, pratoVapor, AVAL, AVAL_CRIT, AVAL_BRAVO, avalMenu, cursosItem, DOCES, CAFES, cafeDe, DRINKS, drinkDe, drinkIdx, anselmoOn, ANSELMO_HOME, ANSELMO_LOOK, drawAnselmo, docesLista, docePreco, doceIngred, doceIdx, CAMI_CURSOS, CAMI_HOME, CAMI_LOOK, camiNivelCursos, normCamiCursos, drawCami, drawEspresso, JOCA_XP, JOCA_CURSOS, JOCA_HOME, jocaXp, jocaNivelXp, BASICAS, donoBasico, cursoDaniVis, JOCA_LOOK, drawJoca, avalTeto, avalEscala, TERRACO, fixosDe, vipTipos, doorFor, DOOR, terraco, drawPiano, drawPoltrona, drawFoyerTe, drawParedeTe, drawElevadorTe, drawLugarTe, drawPerson, makePeople, drawChair, iconeMudanca, avalFrac, AVAL_SIMPLES, AVAL_DECOR, normAval, avalNota, avalMedias, avalGeral, avalMovimento, avalMinimo, avalComentario, fmtNota, notaFaixa, gurugolCaixa, AVAL_COM, normAvalCom, buildGurugol, ABERTURA, Abertura, AB_CENAS, AB_ALT, AB_BASE, abEsc, AB_VIVO, aberturaVista, aberturaSom, drawAbertura, abrirAbertura, HISTORIA, HIST_CARDAPIO, HIST_DIVULGA, HIST_ENTREGA, LIBERA, liberaOf, HIST_NOMES, normEquipe, upgradeCartao, cursoFeito, AVAL_POUCO, REFORMA, HIST, carencia, Conversa, drawConversa, falar, fluxoHistoria, falar, aberturaAtual: () => abertura };
 window.requestAnimationFrame(frame);
 
 })();

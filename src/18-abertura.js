@@ -42,30 +42,63 @@ const ABERTURA = {
       som:[[523,0,.2],[659,.18,.2],[784,.36,.2],[1046,.54,.9],[1318,1.1,1.2]] }
   ]
 };
+/* v11: o final (a manhã seguinte à noite da estrela), no mesmo motor. `min`: as estrelas que o trecho pede; `leg` pode ser uma lista de três textos (para 1, 2 e 3 estrelas) */
+const FINAL = { fade:0.5, cenas:[
+  { id:'telefone', t:6.5, min:1, leg:'Na manhã seguinte, o telefone do Terraço tocou cedo.',
+    falas:[{ q:'bia', s:'Alô?... É do Michelzão?!', de:2.4 }], som:[[784,0,.2],[988,.25,.2],[784,.9,.2],[988,1.15,.2]] },
+  { id:'placa', t:8, min:1, leg:['A Lanchonete Corre-Corre ganhou a estrela do Michelzão.', 'A Lanchonete Corre-Corre ganhou duas estrelas do Michelzão.', 'A Lanchonete Corre-Corre ganhou três estrelas do Michelzão, a nota mais alta do guia.'],
+    falas:[{ q:'tonhao', s:'Tá torta?', de:2.6 }, { q:'bia', s:'Tá perfeita, tio.', de:4.4 }], som:[[784,0,.3],[988,.2,.3],[1175,.4,.3],[1568,.6,.9]] },
+  { id:'apagou', t:7.5, min:1, leg:'Na mesma semana, o guia voltou à Casa Aurora e pediu o molho da casa. O Bráulio nunca soube repetir. A estrela de lá se apagou.',
+    falas:[{ q:'braulio', s:'Cadê o tempero?!', de:3 }], som:[[440,0,.5],[392,.5,.5],[330,1,.9]] },
+  { id:'retrato', t:8, min:1, leg:'A Bia pendurou a estrela ao lado do retrato da mãe.',
+    falas:[{ q:'bia', s:'Essa estrela é nossa, mãe.', de:3.4 }], som:[[349,0,.7],[440,.6,.7],[523,1.2,1.1]] },
+  { id:'equipe', t:8, min:2, leg:'Ninguém ganha estrela sozinho. A foto da equipe foi para a parede: a Dani, o Joca, a Cami, o Anselmo e a Lia.',
+    falas:[{ q:'tonhao', s:'Olha o passarinho!', de:2.8 }], som:[[523,0,.2],[659,.18,.2],[784,.36,.2],[1046,.54,.7]] },
+  { id:'escola', t:8.5, min:1, leg:'E a garagem da Rosa reabriu. Agora é a Cozinha da Rosa, a escola de cozinha do bairro.',
+    falas:[{ q:'dani', s:'Eu era lenta, mas aprendi rápido. Vocês também vão!', de:3 }], som:[[587,0,.4],[740,.3,.4],[880,.6,.8]] },
+  { id:'ceu', t:8, min:3, leg:'Dizem que, do Terraço, nas noites limpas, dá para ver três estrelas bem juntinhas.',
+    falas:[{ q:'bia', s:'Uma delas pisca pra mim, tio.', de:2.6 }, { q:'tonhao', s:'Eu sei qual é.', de:4.6 }], som:[[1046,0,.4],[1318,.5,.4],[1568,1,1.2]] },
+  { id:'roda', t:9, min:1, leg:'Toda tarde, a Bia desce até a garagem. E sempre tem uma criança na porta da cozinha, olhando.', titulo:'Fim',
+    falas:[{ q:'bia', s:'Comida boa é carinho que a gente põe no prato.', de:3.2 }], som:[[523,0,.5],[659,.35,.5],[784,.7,.9],[1046,1.6,1.4]] }
+] };
+/* os créditos: um quadro só, depois da última cena do final (some com um toque ou em 6 s) */
+const FINAL_CREDITOS = { id:'creditos', t:6, leg:'', falas:[], cheia:true, som:[[523,0,.5],[659,.35,.5],[784,.7,.9]] };
+/* as cenas do final que tocam: as de `min` até as estrelas ganhas (est); com `desde` (as estrelas já vistas), só a placa e as cenas que ainda não tinham sido vistas; os créditos, se pedidos */
+function finalCenas(est, desde, creditos){
+  est = clamp(Math.round(+est) || 1, 1, 3); desde = clamp(Math.round(+desde) || 0, 0, 3);
+  const v = FINAL.cenas.filter(c => c.min <= est && (desde < 1 || c.id === 'placa' || c.min > desde));
+  return creditos ? v.concat([FINAL_CREDITOS]) : v;
+}
 function aberturaVista(){ return lsGet(LS.abertura) === '1'; }
 
 class Abertura {
   // origem: 'auto' (a 1ª vez que o jogo abre: no fim, vai ao menu) ou 'menu' (botão História: no fim, o cartão "Em breve")
-  constructor(origem, rm){
+  // v11: roteiro (o ABERTURA, ou o FINAL com opt = { est, desde, creditos }: as cenas do final que tocam, ver finalCenas)
+  constructor(origem, rm, roteiro, opt){
     this.origem = origem === 'auto' ? 'auto' : 'menu';
+    this.roteiro = roteiro || ABERTURA; opt = opt || {};
+    this.est = clamp(Math.round(+opt.est) || 1, 1, 3);
+    this.cenas = this.roteiro === FINAL ? finalCenas(this.est, opt.desde, opt.creditos) : this.roteiro.cenas;
     this.rm = !!rm; this.i = 0; this.t = 0; this.fim = false; this.tm = 0;
     this.onCena = null; this.onFim = null;
   }
-  get n(){ return ABERTURA.cenas.length; }
-  get cena(){ return ABERTURA.cenas[this.i]; }
+  get n(){ return this.cenas.length; }
+  get cena(){ return this.cenas[this.i]; }
+  // a legenda da cena (uma lista de textos vale para 1, 2 e 3 estrelas)
+  get leg(){ const l = this.cena.leg; return Array.isArray(l) ? l[this.est - 1] : l; }
   // andamento da cena, de 0 a 1 (com movimento reduzido, sempre o quadro final)
   get p(){ return this.rm ? (this.cena.pRM != null ? this.cena.pRM : 1) : clamp(this.t / this.cena.t, 0, 1); }
   // opacidade do escuro por cima da cena (entrada e saída); 0 com movimento reduzido
   get escuro(){
     if (this.rm) return 0;
-    const f = ABERTURA.fade, t = this.t, d = this.cena.t;
+    const f = this.roteiro.fade, t = this.t, d = this.cena.t;
     return t < f ? 1 - t / f : (t > d - f ? clamp((t - (d - f)) / f, 0, 1) : 0);
   }
   falas(){ return this.cena.falas.filter(f => this.rm || (this.t >= f.de && !(f.ate && this.t >= f.ate))); }   // ate: some (a cortina vai fechar)
   // texto da cena para o leitor de tela: legenda, falas e título
   texto(){
-    const c = this.cena, nome = { rosa:'Rosa', bia:'Bia', tonhao:'Tonhão', braulio:'Bráulio' };
-    return [c.leg].concat(c.falas.map(f => nome[f.q] + ': ' + f.s), c.titulo ? [c.titulo] : []).join(' ');
+    const c = this.cena, nome = { rosa:'Rosa', bia:'Bia', tonhao:'Tonhão', braulio:'Bráulio', dani:'Dani' };
+    return [this.leg].concat(c.falas.map(f => nome[f.q] + ': ' + f.s), c.titulo ? [c.titulo] : [], c.cheia ? ['Lanchonete Corre-Corre. O sonho da Bia. Obrigado por jogar!'] : []).filter(Boolean).join(' ');
   }
   update(dt){
     if (this.fim) return;

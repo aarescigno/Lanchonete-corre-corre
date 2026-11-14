@@ -9,8 +9,8 @@ const AB_CHAO = 470;   // linha do chão das cenas (a faixa da legenda começa e
 const AB_FOGAO = 356;  // a boca do fogão de casa: na cintura da Rosa (~55% da altura dela)
 const AB_COR = { rosa:'#C8506A', petala:'#E8457A', noite:'#1E2A4A', noite2:'#3A3F6E', aurora:'#7A2E3A', ouro:'#F2C23D', molho:'#C2362B', segredo:'#F2A53A' };
 // altura de cada um na cena, em px do chão ao alto da cabeça (sem a touca), e a mesma altura no desenho em escala 1
-const AB_ALT = { rosa:210, bia:210, biaCrianca:130, tonhao:230, braulio:230 };
-const AB_BASE = { rosa:63, bia:73.5, biaCrianca:46, tonhao:114, braulio:115 };
+const AB_ALT = { rosa:210, bia:210, biaCrianca:130, tonhao:230, braulio:230, dani:200, joca:215, cami:205, anselmo:220, lia:200 };   // v11: a equipe da foto e a Dani adulta
+const AB_BASE = { rosa:63, bia:73.5, biaCrianca:46, tonhao:114, braulio:115, dani:63, joca:63, cami:63, anselmo:63, lia:63 };
 const abEsc = (q,k) => AB_ALT[q] / AB_BASE[q] * (k || 1);   // k: mais longe (< 1), como na janela ou na porta
 const abSeg = (p,a,b) => clamp((p - a) / (b - a), 0, 1);
 const abSuave = p => p * p * (3 - 2 * p);
@@ -590,6 +590,28 @@ const AB_CENAS = {
     return { bia:[300,AB_CHAO - AB_ALT.bia], tonhao:[950,AB_CHAO - 275] };
   }
 };
+/* ---------- o final (v11) ---------- */
+Object.assign(AB_CENAS, {
+  telefone(c,p,T){ abCeu(c,'#9FD3F0','#F7EFD8'); abChao(c,'#BDB6A8'); return {}; },
+  placa(c,p,T){ abCeu(c,'#9FD3F0','#F7EFD8'); abChao(c,'#BDB6A8'); return {}; },
+  apagou(c,p,T){ abCeu(c,AB_COR.noite,AB_COR.noite2); abChao(c,'#3B2420'); return {}; },
+  retrato(c,p,T){ abCozinhaCasa(c,T,true); return {}; },
+  equipe(c,p,T){ abCeu(c,'#F7EFD8','#E9D8BF'); abChao(c,'#BDB6A8'); return {}; },
+  escola(c,p,T){ abCeu(c,AB_COR.noite,AB_COR.noite2); abChao(c,'#5B5F6B'); return {}; },
+  ceu(c,p,T){ abCeu(c,AB_COR.noite,AB_COR.noite2); abChao(c,'#3B2420'); return {}; },
+  roda(c,p,T){ abCozinhaCasa(c,T,false); return {}; },
+  // os créditos: um quadro só, sem legenda
+  creditos(c,p,T){
+    c.fillStyle = AB_COR.noite; c.fillRect(0,0,TW,H);
+    c.fillStyle = 'rgba(255,255,255,.7)';
+    [[80,60],[210,170],[330,40],[460,110],[720,70],[860,140],[1010,60],[1150,150],[140,420],[1100,440],[600,520],[300,500],[950,500]].forEach((s,i) => { circ(c,s[0],s[1],RM ? 1.8 : 1.4 + Math.abs(Math.sin(T * 2 + i)) * 1.2); c.fill(); });
+    star(c,TW/2,150,46 + (RM ? 0 : Math.sin(T * 3) * 3),AB_COR.ouro);
+    txt(c,'Lanchonete Corre-Corre',TW/2,290,64,PAL.mostarda,'center',FD,8,TW - 120);
+    txt(c,'O sonho da Bia',TW/2,360,34,PAL.creme,'center',FD,4);
+    txt(c,'Obrigado por jogar!',TW/2,470,28,PAL.creme,'center',FB);
+    return {};
+  }
+});
 // mistura duas cores #rrggbb (k de 0 a 1)
 function abMistura(a,b,k){
   const h = s => [1,3,5].map(i => parseInt(s.substr(i,2),16)), x = h(a), y = h(b);
@@ -614,7 +636,7 @@ function abLegenda(c,ab){
   const U = AB_UI;
   c.fillStyle = 'rgba(34,32,28,.92)'; c.fillRect(0,500,TW,100);
   c.fillStyle = PAL.mostarda; c.fillRect(0,500,TW,4);
-  const lin = treinoLinhas(c,ab.cena.leg,1040,U.leg), y0 = 548 - (lin.length - 1) * U.legLinha / 2 - 6;
+  const lin = treinoLinhas(c,ab.leg,1040,U.leg), y0 = 548 - (lin.length - 1) * U.legLinha / 2 - 6;
   lin.forEach((l,i) => txt(c,l,TW/2,y0 + i * U.legLinha,U.leg,PAL.creme,'center',FB));
   // as bolinhas das cenas e a dica do toque
   const n = ab.n, x0 = TW/2 - (n - 1) * 9;
@@ -631,7 +653,7 @@ function drawAbertura(c,ab){
   const desenha = AB_CENAS[ab.cena.id];
   const cab = (desenha && desenha(c,ab.p,T)) || {};
   ab.falas().forEach(f => { const a = cab[f.q]; if (a) abBalao(c,f.s,a[0],a[1],a[2]); });
-  abLegenda(c,ab);
+  if (ab.cena.cheia) txt(c,'toque para seguir',TW - 20,586,13,'#b8ae98','right',FB); else abLegenda(c,ab);   // v11: os créditos ocupam o quadro todo
   const e = ab.escuro;
   if (e > 0){ c.fillStyle = 'rgba(16,14,12,' + e + ')'; c.fillRect(0,0,TW,H); }
   c.restore();
