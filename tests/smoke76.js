@@ -113,6 +113,11 @@ const E1=['telefone','placa','apagou','retrato','escola','roda'], E2=['telefone'
   try{ for(let i=0;i<9;i++){ [0.01,0.5,1].forEach(k=>{ const a=mkAb(); a.i=i; a.t=a.cena.t*k; a.tm=a.t+1; H2.L.drawAbertura(c2,a); }); } }catch(e){ erro2=e; } ok(!erro2,'desenha todos os quadros no começo, no meio e no fim sem erro'+(erro2?': '+erro2.message:''));
   const placa=mkAb(); ok(!!H2.L.AB_CENAS.placa(c2,0.5,3),'(a cena devolve onde fica a cabeça de quem fala)'); }
 
+// ---------- 8b. a placa na parede do Terraço e o adesivo (T6) ----------
+{ const H=nova(), {L,ctx}=H; let erro=null;
+  try{ [[1,0],[2,0],[3,1],[0,1],[0,0]].forEach(([est,rec])=>L.drawPlacaGuia(ctx,{ save:{ guia:{ est, rec } } })); L.drawPlacaGuia(ctx,{ save:{} }); }catch(e){ erro=e; }
+  ok(typeof L.drawPlacaGuia==='function' && !erro,'drawPlacaGuia desenha com 0 a 3 estrelas, com e sem `rec`, e sem guia'+(erro?': '+erro.message:'')); }
+
 // ---------- 9. a v10 guardada (CA10) ----------
 { const v10=fs.readFileSync(__dirname+'/../versoes/v10.html','utf8'), v1=fs.readFileSync(__dirname+'/../versoes/v1.html','utf8');
   let base=''; try{ base=cp.execSync('git show e85d8ac:lanchonete.html',{ cwd:__dirname+'/..', maxBuffer:64*1024*1024 }).toString(); }catch(e){}

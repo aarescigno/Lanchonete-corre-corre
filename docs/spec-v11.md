@@ -1,6 +1,6 @@
 # v11 — O futuro da Corre-Corre: a cena final, os créditos e a placa na parede (etapa 6d)
 
-**Situação:** aprovada (13/11)
+**Situação:** entregue em 14/11
 **Origem:** a Etapa 6 do `docs/PLANO.md`, última das quatro sessões do final (planejamento de 13/11, `docs/PROPOSTAS.md`). Decisões do usuário: com 1 estrela a cena final toca inteira e cada estrela a mais acrescenta um trecho; o Bráulio perde a estrela da Casa Aurora; a garagem da Rosa vira escola de cozinha; créditos só com o agradecimento.
 
 ## Objetivo
@@ -81,15 +81,15 @@ O fim do sonho da Bia. Na manhã seguinte à noite da estrela, o telefone toca: 
 - `versoes/v10.html`, `tests/carreira.js`.
 
 ## Tarefas
-- [ ] T0 Guardar a v10.10 como `versoes/v10.html` (antes de qualquer mudança em `src/`).
-- [ ] T1 Smoke novo `tests/smoke76.js` com CA1 a CA10 (falhando) e no `run_all.sh`.
-- [ ] T2 A classe `Abertura` com roteiro e o `FINAL` (cenas ainda sem desenho: fundo liso e legenda), com a escolha das cenas por estrela.
-- [ ] T3 O fluxo: primeira estrela, estrela nova depois, save da v10.10, o cartão de fim e o `cap` 15.
-- [ ] T4 O botão História, o modo dev e a ficha do Manual.
-- [ ] T5 Os desenhos das oito cenas e dos créditos, uma por vez, cada uma conferida em captura antes da próxima.
-- [ ] T6 A placa na parede do Terraço e o adesivo.
-- [ ] T7 `shot_v11.js` (CA12) e o `carreira.js` (CA11).
-- [ ] Fechamento: `VERSAO` v11, `vtag`, `#ov-ver`, `docs/RESUMO.md`, `docs/TESTES.md`, `docs/PARTES.md`, esta spec como entregue, a Etapa 6 arquivada no `docs/PLANO-FEITO.md`, `tests/run_all.sh` verde, PR e merge; avisar que o artifact do editor de desenhos ficou com as cenas antigas.
+- [x] T0 Guardar a v10.10 como `versoes/v10.html` (antes de qualquer mudança em `src/`).
+- [x] T1 Smoke novo `tests/smoke76.js` com CA1 a CA10 (falhando) e no `run_all.sh`.
+- [x] T2 A classe `Abertura` com roteiro e o `FINAL` (cenas ainda sem desenho: fundo liso e legenda), com a escolha das cenas por estrela.
+- [x] T3 O fluxo: primeira estrela, estrela nova depois, save da v10.10, o cartão de fim e o `cap` 15.
+- [x] T4 O botão História, o modo dev e a ficha do Manual.
+- [x] T5 Os desenhos das oito cenas e dos créditos, uma por vez, cada uma conferida em captura antes da próxima.
+- [x] T6 A placa na parede do Terraço e o adesivo.
+- [x] T7 `shot_v11.js` (CA12) e o `carreira.js` (CA11).
+- [x] Fechamento: `VERSAO` v11, `vtag`, `#ov-ver`, `docs/RESUMO.md`, `docs/TESTES.md`, `docs/PARTES.md`, esta spec como entregue, a Etapa 6 arquivada no `docs/PLANO-FEITO.md`, `tests/run_all.sh` verde, PR e merge; avisar que o artifact do editor de desenhos ficou com as cenas antigas.
 
 ## Avisos para a execução
 - As cenas `casa`, `estrela` e `inauguracao` da abertura já têm a cozinha, a fachada da Casa Aurora e a garagem: a `roda`, a `apagou` e a `escola` partem delas (copie a função e mude, sem alterar a abertura: o `smoke` da abertura confere as cenas dela).
@@ -105,6 +105,19 @@ O fim do sonho da Bia. Na manhã seguinte à noite da estrela, o telefone toca: 
 Nenhuma.
 
 ## Desvios
-(No fechamento.)
+- **Medido (14/11):** `smoke76` com 74 checagens, verde. CA11: `DIAS=120 node carreira.js 10` terminou o capítulo 14 e chegou ao Fim em 10 das 10 carreiras (dia mediano 65; o banco não tomou a lanchonete em nenhuma). CA12: `shot_v11.js` (e com `RM=1`) conferido em recortes: as oito cenas, os créditos e a placa com 1 e 3 estrelas.
+- **A placa na parede fica sobre o janelão, e não numa parede livre.** À direita da porta do Terraço (na altura do ABERTO) só há o janelão da cidade, sem parede livre: a placa (52×30) cobre o canto esquerdo dele, na frente da cortina (`drawPlacaGuia`, `src/21-cenario.js`). Fica legível, com o nome e as estrelas vermelhas.
+- **O adesivo "Recomendado" é só a estrela num círculo vermelho** (raio 7 no vidro da folha da esquerda): com o texto, ficaria ilegível nesse tamanho. O nome continua no selo do menu e no boletim.
+- **"O retrato da cena `casa`":** a `casa` da abertura não tem retrato. Na `retrato`, a foto da dona Rosa é o busto dela (a mesma `abRosa`, no mesmo traço) numa moldura.
+- **A escolha do botão História é o painel `#ov-escolha`** (botões `#btn-esc-ab`, `#btn-esc-final`, `#btn-esc-voltar`), e não `#ov-historia`: o `smoke34` proíbe esse id no HTML ("o cartão Em breve saiu").
+- **"Assistir o final: ★ | ★★ | ★★★"** fica na aba **História** do painel dev (na seção "O final", antes do Manual), junto das outras cenas para assistir, e não na aba Pular. `DEV_CAPS` n:15 ganhou `guiaEst` e `guiaVisto`, lidos pelo `devCapitulo`.
+- **O cartão de fim do Fim** (`Fim da história`) troca a linha pequena "e a história espera por você" por "Os dias continuam, sem objetivo." (a história acabou); `contTexto` lê `fim.p3` com 3 estrelas.
+- **`capV` 6 pediu mais três listas** em `normSave` (as comparações `capV !== 5` do arranque e dos capítulos 12 e 13 passaram a aceitar o 6), senão um save v11 era reconvertido como antigo.
+- **Testes antigos atualizados:** `smoke69`, `smoke73`, `smoke74` e `smoke75` (`capV` 6), `smoke75` (o fim do cap. 14: cena final, boletim e só então o cartão "Fim da história") e `smoke60` (`HISTORIA[13].fim`, o cap. 15). O `smoke60` já quebrava na `main` da v10.10 (`HISTORIA[12].fim` indefinido derrubava o script).
+- **`versoes/v10.html`** substituiu a v10 original (de 11/11, guardada na v10.1) pelo `lanchonete.html` exato da v10.10; o `smoke76` (CA10) compara com o commit `e85d8ac`.
+- **O leitor de tela dos créditos** lê "Lanchonete Corre-Corre. O sonho da Bia. Obrigado por jogar!".
+- **Falhas de sorteio na suíte:** `smoke3`, `smoke38`, `smoke42` e o teste do almoço de negócios no `smoke42` falham de vez em quando por sorteio (sem relação com a v11); cada um passa de novo na repetição.
+- **`menu_fit.py`** não rodou (sem Playwright no Python do ambiente); a v11 não mexeu no menu (só o rótulo do botão segue "Ver abertura").
+- **O artifact do editor de desenhos** (`ferramentas/editor.py --artifact`) ficou com as cenas antigas: as cenas novas estão no `AB_CENAS`, no mesmo formato, e entram na próxima publicação dele.
 
 **Modelo:** Sonnet, esforço alto (roteiro, falas e fluxo fechados; o peso é o desenho de oito cenas no canvas, conferidas uma a uma por captura)

@@ -539,6 +539,26 @@ function drawParedeTe(ctx,g,t){
   drawPendente(ctx,763,26,0.9,t,menu);
   ctx.strokeStyle = PAL.tinta; ctx.lineWidth = 2.5; ctx.beginPath(); ctx.moveTo(0,92); ctx.lineTo(W,92); ctx.stroke();
   if (g.seloOn && !menu) drawSeloVig(ctx,356,79);
+  drawPlacaGuia(ctx,g);   // v11
+}
+/* v11: a placa de latão do Michelzão na parede, à direita da porta (na altura do ABERTO), com as estrelas vermelhas ganhas (guia.est);
+   só com `rec` (a noite que deu o "Recomendado"), um adesivo redondo no vidro da porta */
+function drawPlacaGuia(ctx,g){
+  const gu = g.save && g.save.guia; if (!gu) return;
+  if (gu.est >= 1){
+    ctx.save(); ctx.translate(126,36); ctx.rotate(-0.04);
+    const gr = ctx.createLinearGradient(-26,-15,26,15); gr.addColorStop(0,'#F0D78A'); gr.addColorStop(0.5,'#D9B24A'); gr.addColorStop(1,'#B8902E');
+    ctx.fillStyle = gr; rr(ctx,-26,-15,52,30,3); ctx.fill(); ctx.strokeStyle = PAL.tinta; ctx.lineWidth = 1.6; ctx.stroke();
+    rr(ctx,-23,-12,46,24,2); ctx.strokeStyle = '#8A6A1E'; ctx.lineWidth = 0.9; ctx.stroke();
+    txt(ctx,'Michelzão',0,-5.5,8,'#4A3510','center',FD,0,42);
+    for (let i = 0; i < gu.est; i++) star(ctx,(i - (gu.est - 1) / 2) * 12,5.5,5.6,'#D8342C');
+    ctx.fillStyle = '#6E7480'; [[-22,-11],[22,-11],[-22,11],[22,11]].forEach(q => { circ(ctx,q[0],q[1],1.2); ctx.fill(); });
+    ctx.restore();
+  }
+  if (gu.rec === 1){   // o adesivo "Recomendado": redondo, vermelho, com a estrela, no vidro da folha da esquerda
+    circ(ctx,22,24,7.4); fs(ctx,'#fff',1.4); circ(ctx,22,24,5.8); fs(ctx,'#D8342C',1);
+    star(ctx,22,24,4,'#fff');
+  }
 }
 /* a porta do elevador, no alto do foyer (centro em x = -230; DOOR fica logo abaixo): duas folhas de metal que abrem quando há gente
    por perto (chegando ou saindo) e o mostrador do andar em cima */
