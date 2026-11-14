@@ -421,7 +421,7 @@ table.rank tr.me td{background:#fbe7a8}
 
     <div class="ov show" id="ov-menu">
       <div class="panel menu-panel">
-        <span class="vtag" id="vtag" aria-label="Versão 11">v11</span>
+        <span class="vtag" id="vtag" aria-label="Versão 11.1">v11.1</span>
         <h1 class="title">Lanchonete <br>Corre-Corre</h1>
         <p class="tag">Ajude a Bia a atender a freguesia da esquina antes que o cafezinho esfrie!</p>
         <div class="lbl" id="menu-dia">História</div>
@@ -661,7 +661,8 @@ table.rank tr.me td{background:#fbe7a8}
       <div class="panel">
         <h2>Versões</h2>
         <ul class="verlist">
-          <li><b>v11</b><span class="cur">versão atual</span><br>14/11/2026 &mdash; O futuro da Corre-Corre: o final do Modo História. Na manhã seguinte à noite da estrela, o telefone toca, e uma cena animada mostra a placa do Michelzão indo para a parede, a estrela da Casa Aurora se apagando, a promessa cumprida ao lado do retrato da Rosa e a garagem reaberta como escola de cozinha do bairro. Cada estrela a mais acrescenta um trecho. Depois, a casa segue aberta, com a placa na parede do Terraço; o botão História passa a rever o final.</li>
+          <li><b>v11.1</b><span class="cur">versão atual</span><br>14/11/2026 &mdash; A voz da Bia: as falas dos capítulos 1 a 5, da abertura e das conversas da Garagem e da área industrial foram reescritas. A Bia começa insegura, com medo de errar, e ganha segurança: no 5º capítulo, discorda do tio e decide ir para a Avenida Brasil.</li>
+          <li><b>v11</b><br>14/11/2026 &mdash; O futuro da Corre-Corre: o final do Modo História. Na manhã seguinte à noite da estrela, o telefone toca, e uma cena animada mostra a placa do Michelzão indo para a parede, a estrela da Casa Aurora se apagando, a promessa cumprida ao lado do retrato da Rosa e a garagem reaberta como escola de cozinha do bairro. Cada estrela a mais acrescenta um trecho. Depois, a casa segue aberta, com a placa na parede do Terraço; o botão História passa a rever o final.</li>
           <li><b>v10.10</b><br>13/11/2026 &mdash; A noite da estrela: no capítulo 14 você marca na lojinha a noite do crítico do Michelzão. Casa cheia, vela em cada mesa, o crítico de cara limpa e o Bráulio de olho no molho. No fim, o guia dá o veredito, de nenhuma a três estrelas, e as estrelas ficam para sempre.</li>
           <li><b>v10.9</b><br>13/11/2026 &mdash; O crítico sem aviso: no capítulo 13, o crítico do Michelzão janta duas vezes sem se apresentar, com um caderninho na mão. No fim do dia, a ficha mostra como ele viu a casa, e na segunda visita um boato do Bráulio lota o salão.</li>
           <li><b>v10.8</b><br>13/11/2026 &mdash; O molho da Rosa: no capítulo 12, o Tonhão conta o segredo da Casa Aurora. No Terraço, a Bia pega pétalas no vaso e serve o Prato da Rosa a quem pede o prato da casa. A Cami pode virar gerente de salão e leva à mesa quem espera na porta.</li>
@@ -2340,7 +2341,7 @@ const BIA_IDS = ['tenis', 'corrida', 'bandeja', 'sudoku'];
 function upgradeCartao(id){ return BIA_IDS.indexOf(id) >= 0 ? 'bia' : 'melhorias'; }
 const HIST_NOMES = { bia:'Bia', tonhao:'Tonhão', dani:'Dani', joca:'Joca', cami:'Cami', anselmo:'Anselmo', lia:'Lia' };
 const CAIXA_MAX = 14;                                 // livro-caixa (v7.2): quantos dias da carreira ficam guardados
-const VERSAO = 'v11';                                // vai no resumo do Caixa
+const VERSAO = 'v11.1';                                // vai no resumo do Caixa
 const DIVULGA_DIA = 4;                                // antes disso, o movimento é o da inauguração (sem custo); v9.0.2: dia 4, e o padrão é o boca a boca
 function divulgaAberta(n, sv){ return devLivre() || n >= DIVULGA_DIA && !(sv && sv.convDiv === 'pend'); }   // no modo dev, desde o dia 1; v9.0.3: no Modo História, só depois da conversa
 /* v9.6.4: a Efood (os entregadores) só abre depois da conversa dos entregadores, no Modo História; antes dela, nenhum tipo com `retira` vem na agenda */

@@ -1986,3 +1986,5 @@ Capítulo 13: duas visitas do crítico disfarçado, com a pista do caderninho, a
 Capítulo 14: a noite que o jogador marca na lojinha, com casa cheia, o crítico de cara limpa e o Bráulio à mesa; os pontos do guia (visitas, Gurugol, luxo, a noite, salão e Bráulio), as estrelas, o boletim, o selo no menu e a Fama do luxo. Spec: `docs/spec-v10.10.md`.
 
 **Modelo:** Sonnet, esforço alto (dia especial, pontuação, painel novo, desenho da noite e bot).
+
+- **8a (v11.1) — A voz da Bia na Garagem e na área industrial.** Troca de falas dos capítulos 1 a 5, da abertura (banco) e das conversas avulsas desses pontos; o socorro do banco ganha a versão `firme`. `docs/ARCO.md` §4. Partes: `src/10-constantes.js` (`HISTORIA`, `HIST_*`, `LIBERA`), `src/18-abertura.js`, `src/43-telas.js` (só a escolha de `HIST_SOCORRO.firme`). **Modelo:** Haiku, esforço médio (troca exata de textos e smoke de textos).
