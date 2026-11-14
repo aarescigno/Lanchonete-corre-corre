@@ -26,7 +26,7 @@ const fecha=(H,o)=>{ o=o||{}; const {g}=H; comeca(H); g.schedule=[]; g.nextIdx=0
   ok(N.groups===1.3 && N.meta===1.2 && N.critico.join()==='0.35,0.45' && N.braulio.join()==='0.5,0.6' && N.brauPat===0.7 && N.brauFeliz===4 && N.espera===3 && N.volta===0.12,'NOITE: grupos ×1,3, metas ×1,2, crítico 35–45%, Bráulio 50–60%, paciência ×0,7, feliz com 4, espera 3, volta 12%');
   ok(JSON.stringify(N.pts)===JSON.stringify({ visita:1.5, nota:[[4.8,15],[4.6,10],[4.4,5]], luxo:[0,0,0,5,10,15], dia:[0,5,10,15], salao:5, braulio:5 }) && N.cortes.join()==='44,66,90' && N.linhas.join()==='Crítico,Gurugol,Luxo,A noite,Salão,Bráulio','NOITE: os pontos, os cortes e as seis linhas');
   ok(N.aviso==='Noite da estrela: casa cheia, o crítico à mesa e o Bráulio de olho.' && N.selo.join('|')==='Recomendado pelo Michelzão|★ no Michelzão|★★ no Michelzão|★★★ no Michelzão' && N.falas.senta==='Vim provar a cópia.' && N.falas.prova==='Esse molho...' && N.falas.feliz==='...' && N.falas.bravo==='Sabia! Amadores.','NOITE: o aviso, o selo e as falas');
-  ok(L.HIST_RECOMENDA.falas.length===3 && L.HIST_RECOMENDA.falas[0].s==='O guia ligou. Somos "recomendados".' && L.HIST_RECOMENDA.falas[2].s==='Não é. Mas ele volta. Arruma a casa e marca outra noite.','HIST_RECOMENDA: as três falas da spec'); }
+  ok(L.HIST_RECOMENDA.falas.length===3 && L.HIST_RECOMENDA.falas[0].s==='O guia ligou. Somos "recomendados".' && L.HIST_RECOMENDA.falas[2].s==='Mas ele volta. Eu arrumo a casa e marco outra noite.','HIST_RECOMENDA: as três falas da spec'); }
 
 // ---------- 1. o cartão da lojinha (CA1) ----------
 { const H=jogo(14,{}), {g,L}=H; const t=loja(H,'lanchonete','cardapio');
@@ -140,7 +140,7 @@ const fecha=(H,o)=>{ o=o||{}; const {g}=H; comeca(H); g.schedule=[]; g.nextIdx=0
 // ---------- 8. o capítulo 14 e as conversas (CA8) ----------
 { const L0=load({ historia:true }).L, c=L0.HISTORIA[13];
   ok(c.cap===14 && c.titulo==='A noite da estrela' && c.ponto==='terraco' && c.obj.estrela===1 && c.antes.length===5 && c.depois.length===4 && c.fim.h==='Fim da história' && c.fim.p==='A casa segue aberta. Para mais estrelas, marque outra noite na lojinha.','HISTORIA[13]: cap. 14, "A noite da estrela", obj { estrela:1 }, 5 falas antes, 4 depois, o cartão "Fim da história" (v11)');
-  ok(c.antes[0].s==='Uma noite pra valer tudo, tio.' && c.antes[4].nota==='olhando a foto da mãe' && c.depois[3].s==='Agora o guia liga. Dorme, Bia. Amanhã cedo o telefone toca.','(os textos da spec)');
+  ok(c.antes[0].s==='O crítico vem de cara limpa. E o Bráulio reservou uma mesa.' && c.antes[4].nota==='olhando a foto da mãe' && c.depois[3].s==='Agora o guia liga. Vai dormir, tio. Amanhã o telefone toca, e eu atendo.','(os textos da spec)');
   // com estrela: a conversa de depois e o boletim
   { const H=noite(), {g,L,els}=H; fecha(H,{ nota:4.4 }); g.setState('dayend');
     ok(els['ov-end'].classList.contains('show') && !g.conversa,'na noite, a tela de resultados vem primeiro (sem conversa antes)');

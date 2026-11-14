@@ -115,7 +115,7 @@ const fecha=(H,ficha)=>{ const {g}=H; g.schedule=[]; g.nextIdx=0; g.money=3000; 
   const H2=dia1({ guia:GUIA(0,70) }); comeca(H2); fecha(H2); H2.g.setState('dayend'); ok(txt(H2.doc.getElementById('end-critico')).trim()==='','sem visita, o cartão não aparece');
   // a conversa da 1ª visita: pendente, toca uma vez, antes dos resultados
   ok(g.save.convCrit==='pend','depois da 1ª visita, a conversa fica pendente');
-  ok(L.HIST_CRITICO.falas.length===3 && L.HIST_CRITICO.falas[0].q==='dani' && L.HIST_CRITICO.falas[0].s==='Bia! Aquele freguês sozinho... ele tinha um caderninho!' && L.HIST_CRITICO.falas[2].s==='Era. E deixou a ficha da visita. Olha aí.','HIST_CRITICO: as três falas da spec');
+  ok(L.HIST_CRITICO.falas.length===3 && L.HIST_CRITICO.falas[0].q==='dani' && L.HIST_CRITICO.falas[0].s==='Bia! Aquele freguês sozinho... ele tinha um caderninho!' && L.HIST_CRITICO.falas[2].s==='Era ele. E deixou a ficha da visita. Olha aí.','HIST_CRITICO: as três falas da spec');
   let fim=0; L.fluxoHistoria(()=>{ fim++; }); ok(g.conversa && g.conversa.falas===L.HIST_CRITICO.falas && fim===0,'o fim do dia toca a conversa antes de seguir'); passa(g);
   ok(g.save.convCrit===1 && fim===1,'e marca como vista'); let fim2=0; L.fluxoHistoria(()=>{ fim2++; }); const outra=!!g.conversa && g.conversa.falas===L.HIST_CRITICO.falas; passa(g); ok(!outra && g.save.convCrit===1,'não toca de novo');
   // a 2ª visita não tem conversa
@@ -147,7 +147,7 @@ const fecha=(H,ficha)=>{ const {g}=H; g.schedule=[]; g.nextIdx=0; g.money=3000; 
 // ---------- 9. o capítulo 13 e o save (CA9) ----------
 { const H=dia1(), {g,L}=H, c=L.HISTORIA[12];
   ok(L.HISTORIA.length===14 && c.cap===13 && c.titulo==='O crítico sem aviso' && c.ponto==='terraco' && c.obj.critico===2 && c.antes.length===5 && c.depois.length===5,'HISTORIA[12]: cap. 13, "O crítico sem aviso", obj { critico:2 }, 5 falas antes e 5 depois');
-  ok(c.antes[0].s==='O crítico do Michelzão não usa crachá. Senta, come e anota.' && c.antes[3].nota==='olhando o Gurugol' && c.depois[3].nota==='lendo um cartão' && c.depois[4].s==='A noite da estrela!' && c.fim===undefined,'(os textos da spec; v10.10: o cap. 13 não tem mais cartão de fim)');
+  ok(c.antes[0].s==='O crítico do Michelzão não usa crachá. Senta, come e anota.' && c.antes[2].nota==='olhando o Gurugol' && c.depois[3].nota==='lendo um cartão' && c.depois[4].s==='A noite da estrela!' && c.fim===undefined,'(os textos da spec; v10.10: o cap. 13 não tem mais cartão de fim)');
   ok(L.HISTORIA[11].fim===undefined,'o cap. 12 não mostra mais cartão de fim');
   let ob=g.capObj(); ok(ob.itens.length===1 && ob.itens[0].txt==='Receber o crítico do Michelzão 2 vezes (0 de 2)' && !ob.itens[0].ok,'o objetivo: "Receber o crítico do Michelzão 2 vezes (0 de 2)"');
   comeca(H); fecha(H,FICHA(60,[0,0,0,0,0])); ok(g.save.guia.n===1 && !g.result.cap.ok && /\(1 de 2\)/.test(g.result.cap.itens[0].txt) && g.save.conversa===null,'a 1ª visita soma 1 e não cumpre o capítulo');

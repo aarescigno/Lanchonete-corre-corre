@@ -144,7 +144,7 @@ const tempoDe=(g,grp,t)=>{ g.kitchen.queue=[]; g.kitchen.cooking=[]; g.kitchen.s
   g.groups=[]; g.queue=[]; g.money=100; g.custo=0; g.finishDay();
   ok(g.save.convExig==='pend' && !!g.conversa,'no fim do dia, a conversa do exigente fica pendente e toca');
   const n=passa(H); ok(n>=4 && g.save.convExig===1 && !g.conversa,'a conversa tem '+n+' falas e depois vai a 1');
-  ok(L.HIST_EXIGENTE.falas.length===4 && L.HIST_EXIGENTE.falas[0].q==='bia' && L.HIST_EXIGENTE.falas[1].q==='tonhao','HIST_EXIGENTE exposto: 4 falas (Bia, Tonhão, Bia, Tonhão)');
+  ok(L.HIST_EXIGENTE.falas.length===4 && L.HIST_EXIGENTE.falas[0].q==='tonhao' && L.HIST_EXIGENTE.falas[1].q==='bia','HIST_EXIGENTE exposto: 4 falas (Tonhão, Bia, Tonhão, Bia; v11.2: a Bia explica)');
   // sem o Modo História, nada
   const H2=load(), g2=H2.g; g2.save=H2.L.normSave({ cap:8, dia:10, maxDay:10, bank:6000, v10:1, salao:{ ponto:'terraco' } }); g2.up=g2.save.up; g2.tablesKey=''; g2.buildTables(); g2.goShop(10); g2.startDay(10); H2.els['btn-start'].fire('click'); g2.schedule=[]; g2.nextIdx=0;
   g2.arrive({ t:0, type:'casal', color:0, vip:true, av:true }); g2.groups=[]; g2.queue=[]; g2.finishDay(); ok(!g2.save.convExig,'sem o Modo História, nenhuma conversa'); }

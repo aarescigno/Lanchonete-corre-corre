@@ -120,7 +120,7 @@ Só texto: troca as falas abaixo em `src/10-constantes.js` e `src/18-abertura.js
   - tonhao: E na próxima?
   - bia [firme]: Na próxima ele toma a lanchonete. Não vai ter próxima: eu olho o caixa antes de comprar.
 
-**`HIST_VONTADE_DOCE.falas`**: só a última fala muda: bia: `Boa, Dani. Vou ver o curso no Cardápio da lojinha.` (com a fala da Dani dada ao Tonhão, por ela não estar contratada: `Boa ideia. Vou ver o curso no Cardápio da lojinha.`)
+**`HIST_VONTADE_DOCE.falas`**: passou para a v11.2 (§5.2), junto com a do café, porque pede um campo novo na fala (`s2`).
 
 **`LIBERA`, `confeitaria`**
 - dani: Bia, as famílias daqui sempre perguntam se tem sobremesa.
@@ -135,7 +135,7 @@ Só texto: troca as falas abaixo em `src/10-constantes.js` e `src/18-abertura.js
 - joca [insegura]: Lixo, louça, mesa suja... pode deixar comigo.
 - bia [firme]: Bem-vindo, Joca. Eu acerto tudo na lojinha, em Equipe.
 
-**Só o `e` (texto igual):** `LIBERA` `bia` (1ª fala [insegura]), `melhorias`, `manut` (bia "Vai quebrar?" [insegura]), `salao`, `luxo` (bia "E se a gente pusesse mais?..." [alegre]); `HIST_DIVULGA` (bia "No boca a boca?..." [insegura]; "E se a gente fizer panfleto?..." [alegre]); `HIST_PLANTA` (bia [alegre]); `HIST_ENTREGA` (sem `e`).
+**Só o `e` (texto igual; `melhorias`, `salao` e `HIST_ENTREGA` ficam sem `e` nenhum):** `LIBERA` `bia` (1ª fala [insegura]), `manut` (bia "Vai quebrar?" [insegura]), `luxo` (bia "E se a gente pusesse mais?..." [alegre]); `HIST_DIVULGA` (bia "No boca a boca?..." [insegura]; "E se a gente fizer panfleto?..." [alegre]); `HIST_PLANTA` (bia [alegre]).
 
 ## 5. v11.2 — A voz da Bia na Avenida e no Terraço (sessão 8b)
 Só texto, como a 8a. O cap. 14 `depois` desta versão ainda não tem o Bráulio em cena (entra na v11.6).
@@ -266,7 +266,12 @@ Só texto, como a 8a. O cap. 14 `depois` desta versão ainda não tem o Bráulio
 - bia: Recomendado não é estrela.
 - bia [firme]: Mas ele volta. Eu arrumo a casa e marco outra noite.
 
-**`HIST_VONTADE_CAFE.falas`**: só a última fala muda: bia [firme]: `Fechado, Joca. O curso tá no Cardápio da lojinha.` (com a fala do Joca dada ao Tonhão: `Fechado. O curso tá no Cardápio da lojinha.`)
+**As conversas da vontade (`HIST_VONTADE_DOCE.falas` e `HIST_VONTADE_CAFE.falas`)**: em cada uma, **só a última fala (a da Bia, hoje `Tá no Cardápio da lojinha.`) muda**; as outras falas e as `curta` ficam como estão. A fala nova cita o ajudante pelo nome, e ele pode não estar contratado (é quando `vontadeFalas` passa as falas dele para o Tonhão). Por isso a fala ganha um campo novo, `s2`: o texto para quando o ajudante (`quem`) não está contratado.
+- `HIST_VONTADE_DOCE.falas`, última: `{ q:'bia', s:'Boa, Dani. Vou ver o curso no Cardápio da lojinha.', s2:'Boa ideia. Vou ver o curso no Cardápio da lojinha.' }` (sem `e`).
+- `HIST_VONTADE_CAFE.falas`, última: `{ q:'bia', e:'firme', s:'Fechado, Joca. O curso tá no Cardápio da lojinha.', s2:'Fechado. O curso tá no Cardápio da lojinha.' }`.
+- `vontadeFalas(qual, sv, curta)`: além do que já faz, quando `quem` não está contratado, toda fala com `s2` sai com `s` igual ao `s2`. A fala devolvida nunca leva o campo `s2` (com o ajudante contratado, sai o `s`).
+
+**O socorro do banco numa função** (pendência da v11.1, que conferia a escolha lendo o código): `socorroFalas(sv)` em `src/10-constantes.js`, logo depois de `HIST_SOCORRO`, devolve `HIST_SOCORRO.firme` quando o `nivel` do ponto do save é 3 ou mais e `HIST_SOCORRO.falas` nos outros casos (save sem ponto = Garagem). `src/43-telas.js` passa a chamar a função, `window.__lcc` a expõe, e o smoke confere os quatro pontos por ela (a checagem por regex do `smoke77` é trocada por essa).
 
 **`LIBERA`, `anselmo`**
 - tonhao: Bia, lembra do Anselmo, o dos drinks do Bráulio? Encontrei ele na feira.

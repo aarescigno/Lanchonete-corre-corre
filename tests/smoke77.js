@@ -54,7 +54,7 @@ for(const c of [1,2,3,4,5]){ tudo.push(...ESP_HIST[c].antes, ...ESP_HIST[c].depo
 
 // ---------- CA2: a fala da Dani dada ao Tonhão em HIST_VONTADE_DOCE segue pendente (ver Avisos) ----------
 { const u=L.HIST_VONTADE_DOCE.falas.slice(-1)[0];
-  ok(u.q==='bia' && u.s==='Tá no Cardápio da lojinha.', 'CA2 última fala de HIST_VONTADE_DOCE ainda como antes (pendente de confirmação do usuário)'); }
+  ok(u.q==='bia' && u.s==='Boa, Dani. Vou ver o curso no Cardápio da lojinha.' && u.s2==='Boa ideia. Vou ver o curso no Cardápio da lojinha.', 'CA2 última fala de HIST_VONTADE_DOCE trocada na v11.2 (com s2; antes pendente de confirmação do usuário)'); }
 
 // ---------- CA3: nenhuma fala trocada passa de 120 letras ----------
 { const todas=[...tudo, ...ESP_AVULSAS.CARDAPIO, ...ESP_AVULSAS.SOCORRO, ...ESP_AVULSAS.SOCORRO_FIRME, ...ESP_AVULSAS.CONFEITARIA, ...ESP_AVULSAS.JOCA];
@@ -82,9 +82,8 @@ for(const c of [1,2,3,4,5]){ tudo.push(...ESP_HIST[c].antes, ...ESP_HIST[c].depo
   ok(es.length>0 && es.every(e=>cinco.indexOf(e)>=0), 'CA5 o campo e das falas trocadas é um dos cinco ('+es.length+' com e)'); }
 
 // ---------- CA6: HIST_SOCORRO.firme e a escolha pelo nivel 3 ou mais ----------
-{ const src=fs.readFileSync(__dirname+'/../src/43-telas.js','utf8');
-  const linha=(src.split('\n').find(l=>/convSocorro === 'pend'/.test(l))||'');
-  ok(!!L.HIST_SOCORRO.firme && /HIST_SOCORRO\.firme/.test(linha) && /nivel\s*>=\s*3/.test(linha), 'CA6 HIST_SOCORRO.firme existe e a conversa escolhe firme quando o nivel do ponto é 3 ou mais'); }
+{ const sv=id=>({ salao:{ ponto:id } });   // v11.2: pela função socorroFalas, nos quatro pontos (antes era uma regex na linha de src/43-telas.js)
+  ok(!!L.HIST_SOCORRO.firme && L.socorroFalas(sv('garagem'))===L.HIST_SOCORRO.falas && L.socorroFalas(sv('industrial'))===L.HIST_SOCORRO.falas && L.socorroFalas(sv('avenida'))===L.HIST_SOCORRO.firme && L.socorroFalas(sv('terraco'))===L.HIST_SOCORRO.firme, 'CA6 HIST_SOCORRO.firme existe e socorroFalas escolhe firme na Avenida e no Terraço (nivel 3 ou mais) e falas na Garagem e na área industrial'); }
 
 // ---------- CA7: save antigo segue igual ----------
 { const s=L.normSave({ cap:3, dia:5, convSocorro:'pend', convCard:1 });

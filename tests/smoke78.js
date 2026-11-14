@@ -1,0 +1,78 @@
+// v11.2, etapa 8b: a voz da Bia na Avenida e no Terraço (só texto). Roteiro em docs/ARCO.md §5; spec em docs/spec-v11.2.md.
+// CA1 caps. 6 a 14 com o texto exato; CA2 as avulsas (exigente, crítico, recomendado, anselmo, cami, lia); CA3 as conversas da vontade (última fala com s2);
+// CA4 vontadeFalas e o s2; CA5 socorroFalas nos quatro pontos; CA6 nenhuma fala trocada passa de 120 letras; CA7 as abas da lojinha seguem com as mesmas palavras;
+// CA8 o campo e é um dos cinco; CA9 save antigo segue igual; CA10 a escolha do socorro sai por socorroFalas (43-telas) e o smoke77 confere pela função.
+// Cada fala esperada: [quem, e, nota, texto].
+const load=require('./harness.js'), fs=require('fs');
+let fails=0,total=0; const ok=(c,m)=>{ total++; if(!c){fails++;console.log('FAIL:',m);} else console.log('ok  :',m); };
+const L=load({historia:true}).L;
+const ach=falas=>falas.map(f=>[f.q,f.e||'',f.nota||'',f.s]);
+const HIST={"6":{"antes":[["bia","alegre","","Avenida Brasil, tio! Olha o movimento dessa calçada."],["tonhao","insegura","olhando pela janela","E ali, do outro lado da rua... a Casa Aurora."],["bia","firme","virando a foto da mãe pra janela","Daqui ela vê tudo. E ele vai ver a gente crescer."],["dani","","","E aqui cabe até música ao vivo!"]],"depois":[["tonhao","","","Três dias no azul com aluguel de gente grande."],["bia","","","O pessoal do Bráulio passou duas vezes espiando pela janela."],["tonhao","brava","","Atrevidos..."],["bia","alegre","","Deixa espiar, tio. Tem lugar na fila."]]},"7":{"antes":[["bia","firme","","Vinte e quatro lugares. Preciso de mais gente no salão, tio."],["tonhao","","","Tem a Cami, garçonete de rodízio. Rápida que só ela."],["bia","firme","","Então eu chamo. E VIP nenhum sai daqui de cara feia."],["dani","","","Aqui vem gente importante mesmo!"]],"depois":[["bia","alegre","","Três dias de VIP saindo feliz!"],["dani","","","A Cami já sabe o nome de todo freguês."],["tonhao","alegre","","Salão redondo. E agora, chefe?"],["bia","firme","","Agora é a nota subir."]]},"8":{"antes":[["bia","","","Aqui o Gurugol é mais exigente. Restaurante é outra régua."],["tonhao","","","E como você quer a casa?"],["bia","firme","","Prato bonito, mesa limpa e ninguém esperando."],["dani","","","E guardar dinheiro. Ouvi falar de um terraço lá no alto..."]],"depois":[["bia","alegre","","Nota 3,9 e R$ 5.000 guardados!"],["tonhao","","tirando o avental","O Bráulio veio jantar aqui ontem. Pediu PF."],["bia","firme","","Eu vi. Fui eu que servi."],["tonhao","","","E ele?"],["bia","alegre","","Não disse nada. Mas raspou o prato."],["dani","","","Próxima parada: o Terraço Suíça!"]]},"9":{"antes":[["bia","alegre","","Último andar, tio! Dá pra ver a cidade inteira."],["tonhao","","olhando o piano no canto","E esse piano de cauda?"],["bia","","","Veio com o ponto. Um dia eu acho quem toque."],["tonhao","","","Aqui ninguém vem com pressa. Vem pra comer do começo ao fim: bebida, entrada, prato e sobremesa."],["bia","firme","pendurando a foto da mãe","Obrigada por me trazer até aqui, mãe. Daqui eu levo."]],"depois":[["bia","","","Três dias no azul pagando esse aluguel!"],["tonhao","","","Menos mesa, mais capricho. É outra cozinha."],["dani","alegre","","Hoje uma mesa bateu palma pra minha sobremesa!"]]},"10":{"antes":[["tonhao","insegura","","Quatro tempos por mesa, Bia. Sozinho no fogão eu não venço."],["bia","firme","","Então o senhor vai ter ajuda. A Lia, ajudante de cozinha, tá procurando serviço."],["tonhao","","","Ajudante na minha cozinha?..."],["bia","alegre","","Foi o senhor que me ensinou a pedir ajuda, tio."],["dani","","","E o pessoal daqui gosta de um coquetel antes da entrada!"]],"depois":[["bia","alegre","","A cozinha tá voando, tio!"],["tonhao","","provando um coquetel","E o balcão de drinks não para."],["dani","","","Agora só falta a refeição perfeita."]]},"11":{"antes":[["tonhao","","","Refeição completa é como música: não pode faltar nota."],["bia","firme","","Bebida, entrada, prato e sobremesa, sem ninguém esperando. Deixa o salão comigo."],["dani","","","Se faltar a sobremesa, eu choro."]],"depois":[["bia","alegre","","Nota 4,5, tio! No Terraço Suíça!"],["tonhao","","guardando o pote de cominho","Sabe quem ligou? O Bráulio. Disse que o Michelzão anda rondando a cidade."],["bia","","","O guia das estrelas?"],["tonhao","","","Ele mesmo. Dizem que o crítico chega sem avisar."],["bia","firme","","Que venha. A casa tá pronta todo dia."]]},"12":{"antes":[["bia","firme","","Tio, se o crítico vem, eu quero servir o molho da mãe."],["tonhao","insegura","segurando o pote de cominho","Aquele molho ficou na Casa Aurora, Bia. Dói mexer nisso."],["bia","firme","","Dói mais deixar ele lá. Tá na hora de me contar."],["tonhao","","","O molho da estrela era meu e da sua mãe. Cominho com açafrão... e o segredo dela."],["tonhao","","","Uma pétala de rosa, posta na hora. O Bráulio nunca descobriu."],["bia","alegre","","Então o molho volta pra casa. Me ensina."]],"depois":[["bia","","","Todo mundo pergunta que molho é esse, tio."],["tonhao","","enxugando o olho no avental","Igualzinho ao dela."],["cami","","","Bia, deixa a porta comigo. Eu organizo a fila e as mesas."],["bia","firme","","Gerente de salão, Cami. Você merece."]]},"13":{"antes":[["tonhao","","","O crítico do Michelzão não usa crachá. Senta, come e anota."],["bia","firme","","Então a gente trata todo mundo como se fosse ele. Como sempre."],["cami","","olhando o Gurugol","Gente... tem comentário novo dizendo que o nosso molho é copiado."],["tonhao","brava","","Isso tem bigode! Eu vou lá agora..."],["bia","firme","","Não vai, tio. Deixa o Bráulio falar. A gente cozinha."]],"depois":[["bia","","","Casa lotada por causa de um boato, e o crítico bem no meio."],["cami","","","E a gente deu conta."],["bia","alegre","","Deu porque cada um segurou o seu canto. Obrigada, gente."],["tonhao","","lendo um cartão","O Michelzão deixou um recado: a última visita é um jantar. A gente escolhe a noite."],["dani","alegre","","A noite da estrela!"]]},"14":{"antes":[["tonhao","","","O crítico vem de cara limpa. E o Bráulio reservou uma mesa."],["dani","","","Ele vem provar o molho?!"],["bia","firme","","Vem procurar defeito. Não vai achar."],["tonhao","alegre","","Panela no fogo, avental no lugar. É só você mandar, chefe."],["bia","firme","olhando a foto da mãe","Quando a casa estiver pronta, eu marco a noite."]],"depois":[["bia","alegre","","O crítico raspou o prato. Não sobrou molho!"],["tonhao","","","E o Bráulio saiu calado. Pela primeira vez na vida."],["dani","","","E agora?"],["bia","firme","","Agora o guia liga. Vai dormir, tio. Amanhã o telefone toca, e eu atendo."]]}};
+const AV={"EXIGENTE":[["tonhao","","","Bia, que plaquinha de duas estrelas era aquela na mesa?"],["bia","firme","","Cliente exigente, tio. Quer a bebida antes da entrada, o salão em ordem e o prato da casa."],["tonhao","","","E se ele gostar?"],["bia","","","Paga como ninguém. Se sair bravo, a cidade inteira fica sabendo. Deixa comigo."]],"CRITICO":[["dani","","","Bia! Aquele freguês sozinho... ele tinha um caderninho!"],["bia","firme","","Eu desconfiei. Servi como sirvo todo mundo."],["tonhao","","","Era ele. E deixou a ficha da visita. Olha aí."]],"RECOMENDA":[["tonhao","insegura","","O guia ligou. Somos \"recomendados\"."],["bia","","","Recomendado não é estrela."],["bia","firme","","Mas ele volta. Eu arrumo a casa e marco outra noite."]],"anselmo":[["tonhao","","","Bia, lembra do Anselmo, o dos drinks do Bráulio? Encontrei ele na feira."],["anselmo","insegura","","Com licença... Lá no Bráulio não dava mais: era grito o dia inteiro."],["bia","firme","","Aqui ninguém grita. Só a chapa, de vez em quando."],["anselmo","","","Me dá um balcão e eu faço o drink mais bonito da Avenida."],["bia","firme","","O balcão é seu. Eu acerto na lojinha, em Equipe."]],"cami":[["joca","","","Agora que eu tô na máquina de café, a louça vai acumular..."],["bia","","","E o salão daqui não perdoa. Tem alguém em mente?"],["joca","","","A Cami, do meu curso de barista. Era garçonete de rodízio: rápida que só!"],["cami","alegre","","Me mostra onde fica tudo que eu dou conta!"],["bia","firme","","Gostei. Eu acerto na lojinha, em Equipe."]],"lia":[["tonhao","","secando as mãos no avental","Bia, no curso tinha uma moça que cortava cebola mais rápido que eu."],["bia","alegre","","Mais rápido que o senhor? Essa eu quero conhecer."],["lia","firme","","Lia. Onde eu guardo as facas?"],["bia","firme","","Na cozinha do chef Tonhão. Eu acerto na lojinha, em Equipe."]]};
+const LIB=id=>L.LIBERA.find(l=>l.id===id).falas;
+const cinco=['neutra','insegura','firme','alegre','brava'];
+const novas=[]; for(const c in HIST){ novas.push(...HIST[c].antes, ...HIST[c].depois); } for(const k in AV) novas.push(...AV[k]);
+
+// ---------- CA1: capítulos 6 a 14 ----------
+{ const dif=[];
+  for(let c=6;c<=14;c++){ const h=L.HISTORIA[c-1];
+    if(h.cap!==c) dif.push('cap'+c+' fora do lugar');
+    if(JSON.stringify(ach(h.antes))!==JSON.stringify(HIST[c].antes)) dif.push('cap'+c+' antes');
+    if(JSON.stringify(ach(h.depois))!==JSON.stringify(HIST[c].depois)) dif.push('cap'+c+' depois'); }
+  ok(dif.length===0,'CA1 capítulos 6 a 14 com o texto exato da §5.1 (diferente: '+(dif.join(', ')||'nenhum')+')'); }
+
+// ---------- CA2: as avulsas ----------
+{ const exp=[['HIST_EXIGENTE',ach(L.HIST_EXIGENTE.falas),AV.EXIGENTE],['HIST_CRITICO',ach(L.HIST_CRITICO.falas),AV.CRITICO],['HIST_RECOMENDA',ach(L.HIST_RECOMENDA.falas),AV.RECOMENDA],
+    ['LIBERA anselmo',ach(LIB('anselmo')),AV.anselmo],['LIBERA cami',ach(LIB('cami')),AV.cami],['LIBERA lia',ach(LIB('lia')),AV.lia]];
+  const ruins=exp.filter(([n,a,e])=>JSON.stringify(a)!==JSON.stringify(e)).map(x=>x[0]);
+  ok(ruins.length===0,'CA2 avulsas com o texto exato da §5.2 (diferente: '+(ruins.join(', ')||'nenhuma')+')'); }
+
+// ---------- CA3: as conversas da vontade: só a última fala muda, com o campo s2 ----------
+{ const d=L.HIST_VONTADE_DOCE.falas, c=L.HIST_VONTADE_CAFE.falas, ud=d[d.length-1], uc=c[c.length-1];
+  const ant=(fs,n)=>fs.slice(0,n).map(f=>f.q+':'+f.s).join('|');
+  ok(d.length===5 && ud.q==='bia' && !ud.e && ud.s==='Boa, Dani. Vou ver o curso no Cardápio da lojinha.' && ud.s2==='Boa ideia. Vou ver o curso no Cardápio da lojinha.'
+     && ant(d,4)==='bia:Tio, hoje de novo: um monte de mesa pediu sobremesa.|dani:As famílias saem daqui e vão comer doce na padaria da esquina.|tonhao:Freguês que vai comer doce em outro lugar um dia não volta.|dani:Com o curso de confeitaria, eu resolvo isso!'
+     && L.HIST_VONTADE_DOCE.curta.length===1 && L.HIST_VONTADE_DOCE.curta[0].s==='Pediram sobremesa de novo hoje, Bia...','CA3 HIST_VONTADE_DOCE: a última fala nova com s2, as outras e a curta como estavam');
+  ok(c.length===5 && uc.q==='bia' && uc.e==='firme' && uc.s==='Fechado, Joca. O curso tá no Cardápio da lojinha.' && uc.s2==='Fechado. O curso tá no Cardápio da lojinha.'
+     && ant(c,4)==='bia:Os executivos pedem um espresso depois do almoço, e a gente só tem o cafezinho.|joca:No café da esquina tem fila pra cappuccino!|tonhao:Avenida é assim: o povo quer café de máquina.|joca:Com o curso de barista, eu tiro o melhor espresso da Avenida.'
+     && L.HIST_VONTADE_CAFE.curta.length===1 && L.HIST_VONTADE_CAFE.curta[0].s==='Mais gente pedindo espresso hoje...','CA3 HIST_VONTADE_CAFE: a última fala nova com e firme e s2, as outras e a curta como estavam'); }
+
+// ---------- CA4: vontadeFalas e o s2 ----------
+{ const com=L.vontadeFalas('doce',{ equipe:{ tonhao:2, dani:2 } }), sem=L.vontadeFalas('doce',{ equipe:{ tonhao:2, dani:0 } });
+  const cJ=L.vontadeFalas('cafe',{ equipe:{ tonhao:2, joca:2 } }), sJ=L.vontadeFalas('cafe',{ equipe:{ tonhao:2, joca:0 } });
+  ok(com[4].s==='Boa, Dani. Vou ver o curso no Cardápio da lojinha.' && sem[4].s==='Boa ideia. Vou ver o curso no Cardápio da lojinha.' && sem[4].q==='bia' && sem[1].q==='tonhao' && com[1].q==='dani','CA4 doce: com a Dani sai o s, sem ela sai o s2 (e as falas dela vão ao Tonhão)');
+  ok(cJ[4].s==='Fechado, Joca. O curso tá no Cardápio da lojinha.' && sJ[4].s==='Fechado. O curso tá no Cardápio da lojinha.' && sJ[4].e==='firme' && sJ.every(f=>f.q!=='joca'),'CA4 café: com o Joca sai o s, sem ele sai o s2 (e o e firme fica)');
+  ok([com,sem,cJ,sJ].every(a=>a.every(f=>!('s2' in f))) && L.HIST_VONTADE_DOCE.falas[4].s2 && L.vontadeFalas('doce',{ equipe:{} },true)[0].q==='tonhao','CA4 a fala devolvida nunca leva s2, e as constantes seguem com ele'); }
+
+// ---------- CA5: socorroFalas nos quatro pontos ----------
+{ const sv=id=>({ salao:{ ponto:id } });
+  ok(L.socorroFalas(sv('garagem'))===L.HIST_SOCORRO.falas && L.socorroFalas(sv('industrial'))===L.HIST_SOCORRO.falas && L.socorroFalas(sv('avenida'))===L.HIST_SOCORRO.firme && L.socorroFalas(sv('terraco'))===L.HIST_SOCORRO.firme && L.socorroFalas({})===L.HIST_SOCORRO.falas,'CA5 socorroFalas: falas na Garagem e na área industrial (e sem ponto), firme na Avenida e no Terraço'); }
+
+// ---------- CA6: nenhuma fala trocada passa de 120 letras ----------
+{ const longas=novas.filter(f=>[...f[3]].length>120).map(f=>f[3].slice(0,30));
+  const s2=[...L.HIST_VONTADE_DOCE.falas, ...L.HIST_VONTADE_CAFE.falas].filter(f=>f.s2 && [...f.s2].length>120);
+  ok(longas.length===0 && s2.length===0,'CA6 nenhuma fala trocada passa de 120 letras ('+novas.length+' conferidas; longas: '+longas.length+')'); }
+
+// ---------- CA7: as conversas que apontam uma aba da lojinha seguem com as mesmas palavras ----------
+{ const txt=a=>a.map(f=>f[3]).join(' ');
+  const abas=[[txt(AV.anselmo),'lojinha, em Equipe'],[txt(AV.cami),'lojinha, em Equipe'],[txt(AV.lia),'lojinha, em Equipe'],
+    [L.HIST_VONTADE_DOCE.falas.map(f=>f.s+' '+(f.s2||'')).join(' '),'Cardápio da lojinha'],[L.HIST_VONTADE_CAFE.falas.map(f=>f.s+' '+(f.s2||'')).join(' '),'Cardápio da lojinha'],
+    [L.HIST_VONTADE_DOCE.falas[4].s2,'Cardápio da lojinha'],[L.HIST_VONTADE_CAFE.falas[4].s2,'Cardápio da lojinha']];
+  const perdidas=abas.filter(([t,p])=>t.indexOf(p)<0).map(x=>x[1]);
+  ok(perdidas.length===0,'CA7 as conversas com aba da lojinha seguem com as mesmas palavras (perdidas: '+(perdidas.join(', ')||'nenhuma')+')'); }
+
+// ---------- CA8: o campo e é um dos cinco ----------
+{ const es=novas.map(f=>f[1]).filter(e=>e);
+  ok(es.length>0 && es.every(e=>cinco.indexOf(e)>=0) && [L.HIST_VONTADE_CAFE.falas[4].e].every(e=>cinco.indexOf(e)>=0),'CA8 o campo e das falas trocadas é um dos cinco ('+es.length+' com e)'); }
+
+// ---------- CA9: save antigo segue igual ----------
+{ const s=L.normSave({ cap:9, dia:50, convSocorro:'pend', convExig:'pend', convCrit:1 });
+  ok(s.convSocorro==='pend' && s.convExig==='pend' && s.convCrit===1 && s.dia===50,'CA9 save com conversas pendentes segue igual depois de normSave'); }
+
+// ---------- CA10: o jogo escolhe o socorro por socorroFalas, e o smoke77 confere pela função ----------
+{ const src=fs.readFileSync(__dirname+'/../src/43-telas.js','utf8'), linha=(src.split('\n').find(l=>/convSocorro === 'pend'/.test(l))||'');
+  const s77=fs.readFileSync(__dirname+'/smoke77.js','utf8');
+  ok(/socorroFalas\(sv\)/.test(linha) && !/nivel\s*>=\s*3/.test(linha) && /socorroFalas/.test(src.split('\n').find(l=>/window\.__lcc = /.test(l))||'') && /L\.socorroFalas/.test(s77) && !/nivel\\s\*>=/.test(s77),'CA10 43-telas chama socorroFalas(sv), __lcc a expõe e o smoke77 confere pela função'); }
+
+console.log('\n'+(total-fails)+' de '+total+' checagens ok');
+if(fails) process.exit(1);

@@ -1203,110 +1203,117 @@ const HISTORIA = [
   // v9.1: os capítulos da Avenida Brasil. O cap. 6 só começa na mudança (na lojinha); até lá save.cap fica em 6, "à espera". O Bráulio é só citado
   { cap:6, titulo:'Do outro lado da rua', ponto:'avenida', obj:{ azul:3 },
     antes:[
-      { q:'bia', s:'Avenida Brasil, tio! Olha o movimento dessa calçada.' },
-      { q:'tonhao', nota:'olhando pela janela', s:'E ali, do outro lado da rua... o restaurante do Bráulio.' },
-      { q:'bia', s:'Então ele vai ver a gente crescer de pertinho.' },
+      { q:'bia', e:'alegre', s:'Avenida Brasil, tio! Olha o movimento dessa calçada.' },
+      { q:'tonhao', e:'insegura', nota:'olhando pela janela', s:'E ali, do outro lado da rua... a Casa Aurora.' },
+      { q:'bia', e:'firme', nota:'virando a foto da mãe pra janela', s:'Daqui ela vê tudo. E ele vai ver a gente crescer.' },
       { q:'dani', s:'E aqui cabe até música ao vivo!' }],
     depois:[
       { q:'tonhao', s:'Três dias no azul com aluguel de gente grande.' },
       { q:'bia', s:'O pessoal do Bráulio passou duas vezes espiando pela janela.' },
-      { q:'tonhao', nota:'rindo', s:'Deixa espiar.' }] },
+      { q:'tonhao', e:'brava', s:'Atrevidos...' },
+      { q:'bia', e:'alegre', s:'Deixa espiar, tio. Tem lugar na fila.' }] },
   // v10.5.2: um capítulo a mais na Avenida, para usar a Cami e os VIPs antes da nota de restaurante. Objetivo: contratar a Cami e 3 VIPs bem atendidos num dia, 3 vezes
   { cap:7, titulo:'Salão de gente grande', ponto:'avenida', obj:{ equipe:'cami', vip:3, vezes:3 },
     antes:[
-      { q:'bia', s:'Vinte e quatro lugares, tio. Sozinha no salão eu não dou conta.' },
-      { q:'tonhao', s:'Conheço uma garçonete de rodízio, a Cami. Rápida que só ela.' },
-      { q:'dani', s:'E aqui vem gente importante. Não pode sair ninguém de cara feia!' }],
+      { q:'bia', e:'firme', s:'Vinte e quatro lugares. Preciso de mais gente no salão, tio.' },
+      { q:'tonhao', s:'Tem a Cami, garçonete de rodízio. Rápida que só ela.' },
+      { q:'bia', e:'firme', s:'Então eu chamo. E VIP nenhum sai daqui de cara feia.' },
+      { q:'dani', s:'Aqui vem gente importante mesmo!' }],
     depois:[
-      { q:'bia', s:'Três dias de VIP saindo feliz!' },
+      { q:'bia', e:'alegre', s:'Três dias de VIP saindo feliz!' },
       { q:'dani', s:'A Cami já sabe o nome de todo freguês.' },
-      { q:'tonhao', s:'Salão redondo. Agora é a nota subir.' }] },
+      { q:'tonhao', e:'alegre', s:'Salão redondo. E agora, chefe?' },
+      { q:'bia', e:'firme', s:'Agora é a nota subir.' }] },
   { cap:8, titulo:'Nota de restaurante', ponto:'avenida', obj:{ nota:3.9, caixa:5000 },
     antes:[
       { q:'bia', s:'Aqui o Gurugol é mais exigente. Restaurante é outra régua.' },
-      { q:'tonhao', s:'Então capricha: prato bonito, mesa limpa e ninguém esperando.' },
+      { q:'tonhao', s:'E como você quer a casa?' },
+      { q:'bia', e:'firme', s:'Prato bonito, mesa limpa e ninguém esperando.' },
       { q:'dani', s:'E guardar dinheiro. Ouvi falar de um terraço lá no alto...' }],
     depois:[
-      { q:'bia', s:'Nota 3,9 e R$ 5.000 guardados!' },
+      { q:'bia', e:'alegre', s:'Nota 3,9 e R$ 5.000 guardados!' },
       { q:'tonhao', nota:'tirando o avental', s:'O Bráulio veio jantar aqui ontem. Pediu PF.' },
-      { q:'bia', s:'E aí?' },
-      { q:'tonhao', s:'Comeu tudo e não disse nada. Mas raspou o prato.' },
+      { q:'bia', e:'firme', s:'Eu vi. Fui eu que servi.' },
+      { q:'tonhao', s:'E ele?' },
+      { q:'bia', e:'alegre', s:'Não disse nada. Mas raspou o prato.' },
       { q:'dani', s:'Próxima parada: o Terraço Suíça!' }],
     fim:{ h:'Fim dos capítulos da Avenida Brasil', p:'Quando quiser, a mudança para o Terraço Suíça está na lojinha.' } },
   // v10: os capítulos do Terraço Suíça. O cap. 9 só começa na mudança (na lojinha); até lá save.cap fica em 9, "à espera" (v10.5.2: eram 8 e 9)
   { cap:9, titulo:'Lá no alto', ponto:'terraco', obj:{ azul:3 },
     antes:[
-      { q:'bia', s:'Último andar, tio! Dá pra ver a cidade inteira.' },
+      { q:'bia', e:'alegre', s:'Último andar, tio! Dá pra ver a cidade inteira.' },
       { q:'tonhao', nota:'olhando o piano no canto', s:'E esse piano de cauda?' },
-      { q:'bia', s:'Veio com o ponto. Um dia a gente acha quem toque.' },
+      { q:'bia', s:'Veio com o ponto. Um dia eu acho quem toque.' },
       { q:'tonhao', s:'Aqui ninguém vem com pressa. Vem pra comer do começo ao fim: bebida, entrada, prato e sobremesa.' },
-      { q:'dani', s:'E cada pedacinho vai parar no Gurugol!' }],
+      { q:'bia', e:'firme', nota:'pendurando a foto da mãe', s:'Obrigada por me trazer até aqui, mãe. Daqui eu levo.' }],
     depois:[
       { q:'bia', s:'Três dias no azul pagando esse aluguel!' },
       { q:'tonhao', s:'Menos mesa, mais capricho. É outra cozinha.' },
-      { q:'dani', s:'Hoje uma mesa bateu palma pra sobremesa!' }] },
+      { q:'dani', e:'alegre', s:'Hoje uma mesa bateu palma pra minha sobremesa!' }] },
   // v10.5.2: um capítulo a mais no Terraço, para usar a Lia e os coquetéis antes da refeição perfeita. Objetivo: contratar a Lia e 8 coquetéis num dia, 3 vezes
   { cap:10, titulo:'A casa completa', ponto:'terraco', obj:{ equipe:'lia', drinks:8, vezes:3 },
     antes:[
-      { q:'tonhao', s:'Quatro tempos por mesa, Bia. Sozinho no fogão eu não venço.' },
-      { q:'bia', s:'A Lia, ajudante de cozinha, tá procurando serviço.' },
+      { q:'tonhao', e:'insegura', s:'Quatro tempos por mesa, Bia. Sozinho no fogão eu não venço.' },
+      { q:'bia', e:'firme', s:'Então o senhor vai ter ajuda. A Lia, ajudante de cozinha, tá procurando serviço.' },
+      { q:'tonhao', s:'Ajudante na minha cozinha?...' },
+      { q:'bia', e:'alegre', s:'Foi o senhor que me ensinou a pedir ajuda, tio.' },
       { q:'dani', s:'E o pessoal daqui gosta de um coquetel antes da entrada!' }],
     depois:[
-      { q:'bia', s:'A cozinha tá voando, tio!' },
+      { q:'bia', e:'alegre', s:'A cozinha tá voando, tio!' },
       { q:'tonhao', nota:'provando um coquetel', s:'E o balcão de drinks não para.' },
       { q:'dani', s:'Agora só falta a refeição perfeita.' }] },
   { cap:11, titulo:'Do começo ao fim', ponto:'terraco', obj:{ completas:6, nota:4.5 },
     antes:[
       { q:'tonhao', s:'Refeição completa é como música: não pode faltar nota.' },
-      { q:'bia', s:'Bebida, entrada, prato e sobremesa, sem ninguém esperando entre um e outro.' },
+      { q:'bia', e:'firme', s:'Bebida, entrada, prato e sobremesa, sem ninguém esperando. Deixa o salão comigo.' },
       { q:'dani', s:'Se faltar a sobremesa, eu choro.' }],
     depois:[
-      { q:'bia', s:'Nota 4,5, tio! No Terraço Suíça!' },
+      { q:'bia', e:'alegre', s:'Nota 4,5, tio! No Terraço Suíça!' },
       { q:'tonhao', nota:'guardando o pote de cominho', s:'Sabe quem ligou? O Bráulio. Disse que o Michelzão anda rondando a cidade.' },
       { q:'bia', s:'O guia das estrelas?' },
       { q:'tonhao', s:'Ele mesmo. Dizem que o crítico chega sem avisar.' },
-      { q:'dani', s:'Então é deixar tudo brilhando!' }] },
+      { q:'bia', e:'firme', s:'Que venha. A casa tá pronta todo dia.' }] },
   // v10.8: o molho da Rosa. Objetivo: aprender o molho (compra na lojinha) e servir 3 Pratos da Rosa num dia, 3 vezes
   { cap:12, titulo:'O molho da Rosa', ponto:'terraco', obj:{ compra:'rosa', rosa:3, vezes:3 },
     antes:[
-      { q:'bia', s:'Tio, se o crítico vem, o que a gente serve pra ele?' },
-      { q:'tonhao', nota:'abrindo o pote de cominho', s:'Tá na hora de eu te contar da Casa Aurora.' },
+      { q:'bia', e:'firme', s:'Tio, se o crítico vem, eu quero servir o molho da mãe.' },
+      { q:'tonhao', e:'insegura', nota:'segurando o pote de cominho', s:'Aquele molho ficou na Casa Aurora, Bia. Dói mexer nisso.' },
+      { q:'bia', e:'firme', s:'Dói mais deixar ele lá. Tá na hora de me contar.' },
       { q:'tonhao', s:'O molho da estrela era meu e da sua mãe. Cominho com açafrão... e o segredo dela.' },
-      { q:'bia', s:'Que segredo?' },
       { q:'tonhao', s:'Uma pétala de rosa, posta na hora. O Bráulio nunca descobriu.' },
-      { q:'dani', s:'Então a gente tem o que ele não tem!' }],
+      { q:'bia', e:'alegre', s:'Então o molho volta pra casa. Me ensina.' }],
     depois:[
       { q:'bia', s:'Todo mundo pergunta que molho é esse, tio.' },
       { q:'tonhao', nota:'enxugando o olho no avental', s:'Igualzinho ao dela.' },
       { q:'cami', s:'Bia, deixa a porta comigo. Eu organizo a fila e as mesas.' },
-      { q:'bia', s:'Gerente de salão, Cami. Você merece.' }] },
+      { q:'bia', e:'firme', s:'Gerente de salão, Cami. Você merece.' }] },
   // v10.9: o crítico sem aviso. Objetivo: receber o crítico do Michelzão 2 vezes (guia.n de 2)
   { cap:13, titulo:'O crítico sem aviso', ponto:'terraco', obj:{ critico:2 },
     antes:[
       { q:'tonhao', s:'O crítico do Michelzão não usa crachá. Senta, come e anota.' },
-      { q:'bia', s:'Então é tratar todo mundo como se fosse ele.' },
-      { q:'dani', s:'Ouvi dizer que ele vive com um caderninho!' },
+      { q:'bia', e:'firme', s:'Então a gente trata todo mundo como se fosse ele. Como sempre.' },
       { q:'cami', nota:'olhando o Gurugol', s:'Gente... tem comentário novo dizendo que o nosso molho é copiado.' },
-      { q:'tonhao', s:'Isso tem bigode. Deixa o Bráulio falar. A gente cozinha.' }],
+      { q:'tonhao', e:'brava', s:'Isso tem bigode! Eu vou lá agora...' },
+      { q:'bia', e:'firme', s:'Não vai, tio. Deixa o Bráulio falar. A gente cozinha.' }],
     depois:[
       { q:'bia', s:'Casa lotada por causa de um boato, e o crítico bem no meio.' },
-      { q:'tonhao', s:'O Bráulio mandou ele no pior dia. Não dá ponto sem nó.' },
       { q:'cami', s:'E a gente deu conta.' },
+      { q:'bia', e:'alegre', s:'Deu porque cada um segurou o seu canto. Obrigada, gente.' },
       { q:'tonhao', nota:'lendo um cartão', s:'O Michelzão deixou um recado: a última visita é um jantar. A gente escolhe a noite.' },
-      { q:'dani', s:'A noite da estrela!' }] },
+      { q:'dani', e:'alegre', s:'A noite da estrela!' }] },
   // v10.10: a noite da estrela. Objetivo: ganhar a 1ª estrela do Michelzão (guia.est de 1); sem estrela, o capítulo segue e a noite pode ser marcada de novo
   { cap:14, titulo:'A noite da estrela', ponto:'terraco', obj:{ estrela:1 },
     antes:[
-      { q:'bia', s:'Uma noite pra valer tudo, tio.' },
       { q:'tonhao', s:'O crítico vem de cara limpa. E o Bráulio reservou uma mesa.' },
       { q:'dani', s:'Ele vem provar o molho?!' },
-      { q:'tonhao', s:'Vem procurar defeito. Não vai achar.' },
-      { q:'bia', nota:'olhando a foto da mãe', s:'Quando a casa estiver pronta, eu marco a noite.' }],
+      { q:'bia', e:'firme', s:'Vem procurar defeito. Não vai achar.' },
+      { q:'tonhao', e:'alegre', s:'Panela no fogo, avental no lugar. É só você mandar, chefe.' },
+      { q:'bia', e:'firme', nota:'olhando a foto da mãe', s:'Quando a casa estiver pronta, eu marco a noite.' }],
     depois:[
-      { q:'bia', s:'O crítico raspou o prato. Não sobrou molho!' },
+      { q:'bia', e:'alegre', s:'O crítico raspou o prato. Não sobrou molho!' },
       { q:'tonhao', s:'E o Bráulio saiu calado. Pela primeira vez na vida.' },
       { q:'dani', s:'E agora?' },
-      { q:'tonhao', s:'Agora o guia liga. Dorme, Bia. Amanhã cedo o telefone toca.' }],
+      { q:'bia', e:'firme', s:'Agora o guia liga. Vai dormir, tio. Amanhã o telefone toca, e eu atendo.' }],
     fim:{ h:'Fim da história', p:'A casa segue aberta. Para mais estrelas, marque outra noite na lojinha.', p3:'A casa segue aberta, com a nota mais alta do guia na parede.' } }   // v11: o final; p3 quando a 1ª noite já dá 3 estrelas
 ];
 /* v9.0.1: a conversa do cardápio, no fim do dia `dia` (ou do 1º dia completo depois dele, para saves antigos), só no Modo História.
@@ -1355,22 +1362,24 @@ const HIST_SOCORRO = {
   firme:[ { q:'bia', e:'firme', nota:'desligando o telefone', s:'Falei com o gerente, tio. Ele segurou a parcela desta vez.' },
           { q:'tonhao', s:'E na próxima?' },
           { q:'bia', e:'firme', s:'Na próxima ele toma a lanchonete. Não vai ter próxima: eu olho o caixa antes de comprar.' } ] };
+/* v11.2: a versão do socorro do banco pelo ponto do save: `firme` no nível 3 ou mais (Avenida e Terraço), `falas` nos outros (save sem ponto = Garagem) */
+function socorroFalas(sv){ return pontoOf(sv && sv.salao && sv.salao.ponto).nivel >= 3 ? HIST_SOCORRO.firme : HIST_SOCORRO.falas; }
 /* v10.1: o cliente exigente do Terraço, no fim do 1º dia em que um veio (só no Modo História). save.convExig: 0 | 'pend' | 1 */
 const HIST_EXIGENTE = {
-  falas:[ { q:'bia', s:'Tio, viu a plaquinha de duas estrelas naquela mesa?' },
-          { q:'tonhao', s:'Cliente exigente. Quer a bebida antes da entrada, o salão em ordem e o prato da casa.' },
-          { q:'bia', s:'E se ele gostar?' },
-          { q:'tonhao', s:'Paga como ninguém. Se sair bravo, a cidade inteira fica sabendo.' } ] };
+  falas:[ { q:'tonhao', s:'Bia, que plaquinha de duas estrelas era aquela na mesa?' },
+          { q:'bia', e:'firme', s:'Cliente exigente, tio. Quer a bebida antes da entrada, o salão em ordem e o prato da casa.' },
+          { q:'tonhao', s:'E se ele gostar?' },
+          { q:'bia', s:'Paga como ninguém. Se sair bravo, a cidade inteira fica sabendo. Deixa comigo.' } ] };
 /* v10.9: a conversa da 1ª visita do crítico, no fim do dia dela (antes do cartão da ficha). save.convCrit: 0 | 'pend' | 1 */
 const HIST_CRITICO = { falas:[
   { q:'dani', s:'Bia! Aquele freguês sozinho... ele tinha um caderninho!' },
-  { q:'bia', s:'Era ele?!' },
-  { q:'tonhao', s:'Era. E deixou a ficha da visita. Olha aí.' } ] };
+  { q:'bia', e:'firme', s:'Eu desconfiei. Servi como sirvo todo mundo.' },
+  { q:'tonhao', s:'Era ele. E deixou a ficha da visita. Olha aí.' } ] };
 /* v10.10: a conversa de quando a noite da estrela termina sem nenhuma estrela (só a primeira vez). save.guia.convRec: 0 | 1 */
 const HIST_RECOMENDA = { falas:[
-  { q:'tonhao', s:'O guia ligou. Somos "recomendados".' },
+  { q:'tonhao', e:'insegura', s:'O guia ligou. Somos "recomendados".' },
   { q:'bia', s:'Recomendado não é estrela.' },
-  { q:'tonhao', s:'Não é. Mas ele volta. Arruma a casa e marca outra noite.' } ] };
+  { q:'bia', e:'firme', s:'Mas ele volta. Eu arrumo a casa e marco outra noite.' } ] };
 /* v10.5.2: as conversas do meio do capítulo 3 (Garagem), só no Modo História: ficam pendentes no fim do 1º dia em que save.cap === 3 e a reforma zerou
    (convQuit: 0 | 'pend' | 1) ou a nota geral do Gurugol chegou à nota mínima da Garagem (convTeto). Se o capítulo se cumpre no mesmo dia, passam direto a 1 */
 const HIST_QUITOU = {
@@ -1398,14 +1407,14 @@ const HIST_VONTADE_DOCE = {
           { q:'dani', s:'As famílias saem daqui e vão comer doce na padaria da esquina.' },
           { q:'tonhao', s:'Freguês que vai comer doce em outro lugar um dia não volta.' },
           { q:'dani', s:'Com o curso de confeitaria, eu resolvo isso!' },
-          { q:'bia', s:'Tá no Cardápio da lojinha.' } ],
+          { q:'bia', s:'Boa, Dani. Vou ver o curso no Cardápio da lojinha.', s2:'Boa ideia. Vou ver o curso no Cardápio da lojinha.' } ],
   curta:[ { q:'dani', s:'Pediram sobremesa de novo hoje, Bia...' } ] };
 const HIST_VONTADE_CAFE = {
   falas:[ { q:'bia', s:'Os executivos pedem um espresso depois do almoço, e a gente só tem o cafezinho.' },
           { q:'joca', s:'No café da esquina tem fila pra cappuccino!' },
           { q:'tonhao', s:'Avenida é assim: o povo quer café de máquina.' },
           { q:'joca', s:'Com o curso de barista, eu tiro o melhor espresso da Avenida.' },
-          { q:'bia', s:'Tá no Cardápio da lojinha.' } ],
+          { q:'bia', e:'firme', s:'Fechado, Joca. O curso tá no Cardápio da lojinha.', s2:'Fechado. O curso tá no Cardápio da lojinha.' } ],
   curta:[ { q:'joca', s:'Mais gente pedindo espresso hoje...' } ] };
 /* o dia de vontade no ponto (1 = o 1º) de `qual` ('doce' ou 'cafe') no dia `n` da carreira, ou 0 se ainda não há (ponto baixo, dia cedo ou curso feito) */
 function vontadeDia(sv, ponto, qual, n){
@@ -1419,7 +1428,12 @@ function vontadeDia(sv, ponto, qual, n){
 /* as falas da conversa da vontade: quem não está contratado (a Dani no doce, o Joca no espresso) tem a fala dada ao Tonhão */
 function vontadeFalas(qual, sv, curta){
   const H = qual === 'doce' ? HIST_VONTADE_DOCE : HIST_VONTADE_CAFE, quem = qual === 'doce' ? 'dani' : 'joca', eq = (sv && sv.equipe) || {};
-  return (curta ? H.curta : H.falas).map(f => f.q === quem && !(eq[quem] > 0) ? Object.assign({}, f, { q:'tonhao' }) : f);
+  const fora = !(eq[quem] > 0);
+  return (curta ? H.curta : H.falas).map(f => {
+    const g = Object.assign({}, f); delete g.s2;
+    if (fora) { if (f.q === quem) g.q = 'tonhao'; if (f.s2) g.s = f.s2; }
+    return g;
+  });
 }
 /* v9.6.2: a conversa dos entregadores, só no Modo História. v9.6.4: fica pendente no fim do dia anterior ao 1º com motoboy (dia 4) e toca antes de todas as outras conversas de cartão. save.convEnt: 'pend' | 1 (vista) */
 const HIST_ENTREGA = { dia:4,
@@ -1524,23 +1538,22 @@ const LIBERA = [
   // v9.5, Avenida: o Anselmo, coqueteleiro do restaurante do Bráulio, chega depois de 3 notas baixas no Ambiente
   { id:'anselmo', nivel:3, dia:3, ate:6, gatilho:(st, av) => liberaTres(av, 4, 3.5), reclama:['Não tem nem um drinkzinho aqui?', 'No restaurante da frente tem drink.'],
     falas:[ { q:'tonhao', s:'Bia, lembra do Anselmo, o dos drinks do Bráulio? Encontrei ele na feira.' },
-            { q:'anselmo', s:'Seu Tonhão me contou da casa nova. Lá no Bráulio não dava mais: era grito o dia inteiro.' },
-            { q:'bia', s:'Aqui ninguém grita. Só a chapa, de vez em quando.' },
+            { q:'anselmo', e:'insegura', s:'Com licença... Lá no Bráulio não dava mais: era grito o dia inteiro.' },
+            { q:'bia', e:'firme', s:'Aqui ninguém grita. Só a chapa, de vez em quando.' },
             { q:'anselmo', s:'Me dá um balcão e eu faço o drink mais bonito da Avenida.' },
-            { q:'bia', s:'Tá na lojinha, em Equipe.' } ] },
+            { q:'bia', e:'firme', s:'O balcão é seu. Eu acerto na lojinha, em Equipe.' } ] },
   { id:'cami', nivel:3, dia:1, ate:999, gatilho:(st, av, g) => !!(g.save.jocaCursos && g.save.jocaCursos.espresso), reclama:['Tinha pouca gente pra cuidar de tanta mesa.', 'A louça acumulou enquanto o café saía.'],
     falas:[ { q:'joca', s:'Agora que eu tô na máquina de café, a louça vai acumular...' },
-            { q:'bia', s:'E o salão daqui não perdoa.' },
-            { q:'joca', s:'Tem a Cami, do meu curso de barista. Ela era garçonete de rodízio: rápida que só!' },
-            { q:'cami', s:'Me mostra onde fica tudo que eu dou conta!' },
-            { q:'bia', s:'Tá na lojinha, em Equipe.' } ] },
+            { q:'bia', s:'E o salão daqui não perdoa. Tem alguém em mente?' },
+            { q:'joca', s:'A Cami, do meu curso de barista. Era garçonete de rodízio: rápida que só!' },
+            { q:'cami', e:'alegre', s:'Me mostra onde fica tudo que eu dou conta!' },
+            { q:'bia', e:'firme', s:'Gostei. Eu acerto na lojinha, em Equipe.' } ] },
   // v10.2, Terraço: a Lia, colega do Tonhão no curso de alta gastronomia, chega depois do básico de um dos cursos dele
   { id:'lia', nivel:4, dia:1, ate:999, gatilho:(st, av, g) => cursoNivel(g.save.cursos, 'entradas') >= 1 || cursoNivel(g.save.cursos, 'alta') >= 1, reclama:['A comida demorou entre um prato e outro.', 'Cozinha lenta para um terraço.'],
     falas:[ { q:'tonhao', nota:'secando as mãos no avental', s:'Bia, no curso tinha uma moça que cortava cebola mais rápido que eu.' },
-            { q:'bia', s:'Mais rápido que o senhor? Duvido.' },
-            { q:'tonhao', s:'A Lia. Tá procurando cozinha pra trabalhar. Com mais duas mãos, a entrada e o prato saem juntinhos.' },
-            { q:'lia', s:'O chef Tonhão me falou do terraço. Onde eu guardo as facas?' },
-            { q:'bia', s:'Tá na lojinha, em Equipe.' } ] } ];
+            { q:'bia', e:'alegre', s:'Mais rápido que o senhor? Essa eu quero conhecer.' },
+            { q:'lia', e:'firme', s:'Lia. Onde eu guardo as facas?' },
+            { q:'bia', e:'firme', s:'Na cozinha do chef Tonhão. Eu acerto na lojinha, em Equipe.' } ] } ];
 function liberaOf(id){ return LIBERA.find(l => l.id === id) || null; }
 /* v9.1.1: o dia da carreira em que o save chegou ao ponto de agora (save.pontoDia); n = o dia que terminou (padrão: o anterior ao save.dia,
    porque o fim do dia já avançou o save.dia). O 1º dia no ponto é 1 */
@@ -1549,7 +1562,7 @@ const BIA_IDS = ['tenis', 'corrida', 'bandeja', 'sudoku'];
 function upgradeCartao(id){ return BIA_IDS.indexOf(id) >= 0 ? 'bia' : 'melhorias'; }
 const HIST_NOMES = { bia:'Bia', tonhao:'Tonhão', dani:'Dani', joca:'Joca', cami:'Cami', anselmo:'Anselmo', lia:'Lia' };
 const CAIXA_MAX = 14;                                 // livro-caixa (v7.2): quantos dias da carreira ficam guardados
-const VERSAO = 'v11.1';                                // vai no resumo do Caixa
+const VERSAO = 'v11.2';                                // vai no resumo do Caixa
 const DIVULGA_DIA = 4;                                // antes disso, o movimento é o da inauguração (sem custo); v9.0.2: dia 4, e o padrão é o boca a boca
 function divulgaAberta(n, sv){ return devLivre() || n >= DIVULGA_DIA && !(sv && sv.convDiv === 'pend'); }   // no modo dev, desde o dia 1; v9.0.3: no Modo História, só depois da conversa
 /* v9.6.4: a Efood (os entregadores) só abre depois da conversa dos entregadores, no Modo História; antes dela, nenhum tipo com `retira` vem na agenda */
