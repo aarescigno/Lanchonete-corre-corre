@@ -89,5 +89,5 @@ for(const c of [1,2,3,4,5]){ tudo.push(...ESP_HIST[c].antes, ...ESP_HIST[c].depo
 { const s=L.normSave({ cap:3, dia:5, convSocorro:'pend', convCard:1 });
   ok(s.convSocorro==='pend' && s.convCard===1 && s.cap===4 && s.dia===5, 'CA7 save com convSocorro pend segue igual depois de normSave (cap 3 vira 4, como antes desta versão)'); }
 
-console.log('\n'+(total-fails)+' de '+total+' checagens ok');
+console.log('\n'+(total-fails)+'/'+total+' ok; fails = '+fails);
 if(fails) process.exit(1);

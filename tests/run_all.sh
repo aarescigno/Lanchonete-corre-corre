@@ -13,7 +13,7 @@ for f in smoke.js smoke2.js smoke3.js smoke4.js smoke5.js smoke6.js smoke7.js sm
   out=$(node "$f" 2>&1); rc=$?
   echo "$f: $(echo "$out" | tail -1)"
   echo "$out" | grep -m5 '^FAIL' ; [ $rc -ne 0 ] && st=1
-  echo "$out" | tail -1 | grep -q 'fails *= *0' || st=1
+  echo "$out" | tail -1 | grep -q 'fails' && { echo "$out" | tail -1 | grep -q 'fails *= *0' || st=1; }   # os smokes antigos sem "fails" na última linha valem pelo código de saída
 done
 if [ "$1" = "--tudo" ]; then
   python3 menu_fit.py | tail -1

@@ -116,5 +116,5 @@ const L0=load({historia:true}).L;
 // ---------- CA9 ----------
 ok(Array.isArray(L0.ARCO) && L0.ARCO.length>=7,'CA9 window.__lcc expõe ARCO');
 
-console.log('\n'+(total-fails)+' de '+total+' checagens ok');
+console.log('\n'+(total-fails)+'/'+total+' ok; fails = '+fails);
 if(fails) process.exit(1);

@@ -74,5 +74,5 @@ const novas=[]; for(const c in HIST){ novas.push(...HIST[c].antes, ...HIST[c].de
   const s77=fs.readFileSync(__dirname+'/smoke77.js','utf8');
   ok(/socorroFalas\(sv\)/.test(linha) && !/nivel\s*>=\s*3/.test(linha) && /socorroFalas/.test(src.split('\n').find(l=>/window\.__lcc = /.test(l))||'') && /L\.socorroFalas/.test(s77) && !/nivel\\s\*>=/.test(s77),'CA10 43-telas chama socorroFalas(sv), __lcc a expõe e o smoke77 confere pela função'); }
 
-console.log('\n'+(total-fails)+' de '+total+' checagens ok');
+console.log('\n'+(total-fails)+'/'+total+' ok; fails = '+fails);
 if(fails) process.exit(1);

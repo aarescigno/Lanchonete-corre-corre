@@ -98,5 +98,5 @@ const dia=(pi,id,arr,n)=>{ const H=nova(), {g}=H, sv=g.save; sv.conversa=null; s
 // ---------- CA7 ----------
 ok(Array.isArray(L0.ARCO) && L0.ARCO.length===17,'CA7 window.__lcc expõe ARCO (17 entradas)');
 
-console.log('\n'+(total-fails)+' de '+total+' checagens ok');
+console.log('\n'+(total-fails)+'/'+total+' ok; fails = '+fails);
 if(fails) process.exit(1);
