@@ -4,6 +4,14 @@ Registro das ideias e dos retornos de quem jogou, com o texto original, e de ond
 
 ---
 
+## 14/11 — usuário: o arco da Bia e da equipe (Etapa 8), no planejamento
+> Achei a postura da Bia ao longo do jogo muito parada e passiva nas falas, ela é uma mulher empoderada e esforçada, quero que ela vá crescendo em personalidade e Segurança ao longo da história. Analise todos os eventos de história, pondere caminhos e formas de demonstrar esse crescimento dela. Após isso, monte um cronograma de implementações das histórias para que modelos mais baratos possam fazer as implementações. Pode adicionar mais pontos de história ao longo da carreira para reforçar esse processo de desenvolvimento da personagem. Quero que haja algo similar para as demais personagens também. Me entreviste para qualificar esse processo
+
+- **Entrevista (14/11):** a Bia parte insegura, com medo de errar (quase desiste uma vez na Garagem), e a fala do banco na abertura muda; o Tonhão passa o bastão aos poucos; ela discorda do tio e vence em três pontos (abrir em frente ao Bráulio, servir o molho da Rosa, ligar para o banco), encara o Bráulio duas vezes em cena e cuida da equipe; a foto da Rosa aparece em 4 momentos; arco de 3 batidas para cada ajudante; cerca de 20 conversas novas; retrato com expressão no balão, roupa por ponto (do avental ao colete) e reações durante o dia; texto primeiro, desenho depois; antes do Polimento.
+- **Destino:** Etapa 8 do `docs/PLANO.md` (v11.1 a v11.8), com o roteiro inteiro em `docs/ARCO.md`. O Polimento passou para a v11.9.
+
+---
+
 ## 13/11 — usuário: decisões do final (etapa 6), no planejamento
 > Coordene para se fazer o planejamento do final épico com base na próxima etapa. Deve ser desafiador para gerar a recompensa do fim do jogo com uma finalização de história bela sobre o futuro do restaurante e etc. Não precisa implementar agora, só deixar as próximas etapas bem planejadas
 

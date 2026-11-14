@@ -19,7 +19,15 @@ Origem: retorno do Renan Martorelli (beta-tester) e conversa com o Arthur (15/10
 | 6b | O crítico sem aviso: o caderninho e o boato do Bráulio (cap. 13) | v10.9 | feita em 13/11 (`docs/spec-v10.9.md`; `smoke74`; ficha média 6,3 e 5,6 com `CRITICO.pac` 2, ver Desvios) |
 | 6c | A noite da estrela: o jantar, o Bráulio à mesa e as estrelas (cap. 14) | v10.10 | feita em 13/11 (`docs/spec-v10.10.md`; `smoke75`; cortes 44/66/90 e CA14 e CA15 em parte, ver Desvios) |
 | 6d | O futuro da Corre-Corre: a cena final, os créditos e a placa | v11 | feita em 14/11 (`docs/spec-v11.md`; `smoke76`; o Fim em 10 de 10 carreiras; a placa fica sobre o janelão, ver Desvios) |
-| 7 | Polimento: celular, jogo online, ajuste geral | v11.1 | a rever |
+| 8a | A voz da Bia na Garagem e na área industrial (falas reescritas) | v11.1 | roteiro em `docs/ARCO.md` §4; a aprovar os textos |
+| 8b | A voz da Bia na Avenida e no Terraço (falas reescritas) | v11.2 | roteiro em `docs/ARCO.md` §5 |
+| 8c | As conversas do arco: o motor `ARCO` e as 7 da Garagem e da área industrial | v11.3 | roteiro em `docs/ARCO.md` §6 |
+| 8d | As 10 conversas do arco da Avenida e do Terraço | v11.4 | roteiro em `docs/ARCO.md` §7 |
+| 8e | O retrato no balão e as 5 expressões | v11.5 | roteiro em `docs/ARCO.md` §8 |
+| 8f | O Bráulio em cena: na Avenida e na noite da estrela | v11.6 | roteiro em `docs/ARCO.md` §9 |
+| 8g | A roupa da Bia por ponto | v11.7 | roteiro em `docs/ARCO.md` §10 |
+| 8h | As reações da Bia durante o dia | v11.8 | roteiro em `docs/ARCO.md` §11 |
+| 7 | Polimento: celular, jogo online, ajuste geral (depois da Etapa 8) | v11.9 | a rever |
 
 ---
 
@@ -82,7 +90,24 @@ Origem: retorno do Renan Martorelli (beta-tester) e conversa com o Arthur (15/10
 > - **Regra da 3f em todas as sessões:** cartão novo da lojinha só com nome, preço e "?"; toda novidade ganha ficha no `MANUAL` (sem números), revelada quando aparece na história.
 > Ordem: 4a-1 (o ponto e a refeição completa, v10) → 4a-2 (o VIP exigente e a reputação, v10.1) → 4a-3 (a cozinha: alta gastronomia, a Lia e a alta confeitaria, v10.2) → 4a-4 (o salão e o bar: Cami, Joca e Anselmo, v10.3) → 4a-5 (música, flores e rebalanceamento, v10.4). Cada uma é uma versão, com PR e merge. As "Checagens de fim de sessão" da etapa 3 valem para todas.
 
-## Etapa 7 — Polimento (v11.1)
+## Etapa 8 — O arco das personagens (v11.1 a v11.8)
+> **Planejada com o usuário em 14/11** (entrevista; pedido em `docs/PROPOSTAS.md`). A Bia parte insegura e chega a dona que comanda a casa; o Tonhão passa o bastão; cada ajudante ganha dificuldade e conquista. **Todo o roteiro (falas, gatilhos, desenho) está em `docs/ARCO.md`**, uma seção por sessão: leia só a seção da vez (`tests/indice.sh ARCO`) e a §12.
+> **Como executar cada sessão:** crie a spec (`python3 ferramentas/spec.py nova vN "Título" 8x`), **copie para ela a seção do `docs/ARCO.md` sem decidir nada** (Regras = o roteiro; Critérios de aceite = a §12 aplicada à seção; aprovada no mesmo dia), e siga o ciclo do `docs/SDD.md`. Faltou texto, gatilho ou dado no save: pergunte ao usuário. Vem antes do Polimento (Etapa 7, agora v11.9), que já revisa estes textos.
+
+- **8a (v11.1) — A voz da Bia na Garagem e na área industrial.** Troca de falas dos capítulos 1 a 5, da abertura (banco) e das conversas avulsas desses pontos; o socorro do banco ganha a versão `firme`. `docs/ARCO.md` §4. Partes: `src/10-constantes.js` (`HISTORIA`, `HIST_*`, `LIBERA`), `src/18-abertura.js`, `src/43-telas.js` (só a escolha de `HIST_SOCORRO.firme`). **Modelo:** Haiku, esforço médio (troca exata de textos e smoke de textos).
+- **8b (v11.2) — A voz da Bia na Avenida e no Terraço.** O mesmo para os capítulos 6 a 14 e as avulsas (`anselmo`, `cami`, `lia`, exigente, crítico, recomendado, vontade de café). `docs/ARCO.md` §5. Partes: `src/10-constantes.js`. **Modelo:** Haiku, esforço médio.
+- **8c (v11.3) — As conversas do arco, parte 1.** O motor `ARCO` (`save.arco`, uma conversa nova por fim de dia, modo dev) e as 7 conversas da Garagem e da área industrial. `docs/ARCO.md` §6. Partes: `src/10-constantes.js`, `src/12-clientes.js` (`normSave`), `src/16-jogo.js` (fim do dia, `devConversas`), `src/43-telas.js` (fila de conversas e lista do modo dev). **Modelo:** Sonnet, esforço médio (mecanismo novo, com molde na `LIBERA`).
+- **8d (v11.4) — As conversas do arco, parte 2.** As 10 entradas da Avenida e do Terraço. `docs/ARCO.md` §7. Partes: `src/10-constantes.js`. **Modelo:** Haiku, esforço médio (só entradas e smoke; se algum `quando` não tiver o dado no save, pare e pergunte).
+- **8e (v11.5) — O retrato no balão.** O busto de quem fala dentro do balão, com 5 expressões (`e`). `docs/ARCO.md` §8. Partes: `src/26-conversa.js`, `src/20-desenho-base.js` e `src/21-cenario.js` (rostos), `src/16-jogo.js` (modo dev). **Modelo:** Sonnet, esforço alto (desenho no canvas, conferido por captura).
+- **8f (v11.6) — O Bráulio em cena.** O retrato dele, a conversa `braulio1` (duas versões) e o cap. 14 `depois` com ele na porta. `docs/ARCO.md` §9. Partes: `src/10-constantes.js`, `src/26-conversa.js`. **Modelo:** Sonnet, esforço médio.
+- **8g (v11.7) — A roupa da Bia por ponto.** Quatro trajes, do avental da mãe ao colete com a rosa. `docs/ARCO.md` §10. Partes: `src/20-desenho-base.js` (`drawBia`), `src/26-conversa.js` (retrato). **Modelo:** Sonnet, esforço alto (desenho, conferido por captura).
+- **8h (v11.8) — As reações da Bia.** Três gestos curtos, que mudam com o ponto. `docs/ARCO.md` §11. Partes: `src/14-bia.js`, `src/20-desenho-base.js`, `src/16-jogo.js`. **Modelo:** Sonnet, esforço alto (animação nova, sem mexer no ritmo do jogo).
+
+**Modelo:** por sessão, acima; a próxima é a 8a, com o Haiku, esforço médio.
+
+---
+
+## Etapa 7 — Polimento (v11.9)
 > **A rever com o usuário antes de começar** (revisão de 22/10).
 
 - Celular: "Como jogar" sem rolar no celular deitado; lojinha sem rolar no 568×320 (pendências antigas do `RESUMO.md`). Testar som e toque num aparelho real.
