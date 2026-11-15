@@ -16,10 +16,9 @@ Origem: retorno do Renan Martorelli (beta-tester) e conversa com o Arthur (15/10
 | # | Etapa | Versão | Situação |
 |---|---|---|---|
 | 5 | ~~Modo História, parte 1~~: juntou-se à 2f e aos capítulos da 3a, 3b e 4a (28/10) | — | — |
-| 8e | O retrato no balão e as 5 expressões | v11.5 | feita em 14/11 (`docs/spec-v11.5.md`; `smoke81`; o retrato reaproveita `drawBia`, `drawPerson`, `drawChef`; o Bráulio entra na 8f) |
 | 8f | O Bráulio em cena: na Avenida e na noite da estrela | v11.6 | feita em 15/11 (`docs/spec-v11.6.md`; `smoke82`; `falasB`/`qualB` no motor `ARCO`; o Bráulio parado na porta durante a conversa; o Fim em 10 de 10 carreiras) |
 | 8g | A roupa da Bia por ponto | v11.7 | feita em 15/11 (`docs/spec-v11.7.md`; `smoke83`; `roupaBia(g)` e `drawBia({ roupa })`; o retrato da Bia com enquadramento mais aberto; o Fim em 10 de 10 carreiras) |
-| 8h | As reações da Bia durante o dia | v11.8 | roteiro em `docs/ARCO.md` §11 |
+| 8h | As reações da Bia durante o dia | v11.8 | feita em 15/11 (`docs/spec-v11.8.md`; `smoke84`; `BIA_REACAO`, `Waitress.reage` e `drawBia({ reacao })`; três gestos por ponto; a Etapa 8 está completa) |
 | 7 | Polimento: celular, jogo online, ajuste geral (depois da Etapa 8) | v11.9 | a rever |
 
 ---
@@ -82,16 +81,6 @@ Origem: retorno do Renan Martorelli (beta-tester) e conversa com o Arthur (15/10
 > - **O Terraço mede pela equipe toda** (Joca, Cami, Anselmo e a confeitaria): é ela que passa ~90% das metas.
 > - **Regra da 3f em todas as sessões:** cartão novo da lojinha só com nome, preço e "?"; toda novidade ganha ficha no `MANUAL` (sem números), revelada quando aparece na história.
 > Ordem: 4a-1 (o ponto e a refeição completa, v10) → 4a-2 (o VIP exigente e a reputação, v10.1) → 4a-3 (a cozinha: alta gastronomia, a Lia e a alta confeitaria, v10.2) → 4a-4 (o salão e o bar: Cami, Joca e Anselmo, v10.3) → 4a-5 (música, flores e rebalanceamento, v10.4). Cada uma é uma versão, com PR e merge. As "Checagens de fim de sessão" da etapa 3 valem para todas.
-
-## Etapa 8 — O arco das personagens (v11.1 a v11.8)
-> **Planejada com o usuário em 14/11** (entrevista; pedido em `docs/PROPOSTAS.md`). A Bia parte insegura e chega a dona que comanda a casa; o Tonhão passa o bastão; cada ajudante ganha dificuldade e conquista. **Todo o roteiro (falas, gatilhos, desenho) está em `docs/ARCO.md`**, uma seção por sessão: leia só a seção da vez (`tests/indice.sh ARCO`) e a §12.
-> **Como executar cada sessão:** crie a spec (`python3 ferramentas/spec.py nova vN "Título" 8x`), **copie para ela a seção do `docs/ARCO.md` sem decidir nada** (Regras = o roteiro; Critérios de aceite = a §12 aplicada à seção; aprovada no mesmo dia), e siga o ciclo do `docs/SDD.md`. Faltou texto, gatilho ou dado no save: pergunte ao usuário. Vem antes do Polimento (Etapa 7, agora v11.9), que já revisa estes textos.
-
-- **8h (v11.8) — As reações da Bia.** Três gestos curtos, que mudam com o ponto. `docs/ARCO.md` §11. Partes: `src/14-bia.js`, `src/20-desenho-base.js`, `src/16-jogo.js`. **Modelo:** Sonnet, esforço alto (animação nova, sem mexer no ritmo do jogo).
-
-**Modelo:** por sessão, acima; a próxima é a 8h, com o Sonnet, esforço alto.
-
----
 
 ## Etapa 7 — Polimento (v11.9)
 > **A rever com o usuário antes de começar** (revisão de 22/10).

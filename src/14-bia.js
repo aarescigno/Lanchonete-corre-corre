@@ -57,7 +57,15 @@ class Waitress {
     this.hands = []; this.acts = []; this.phase = 'idle'; this.timer = 0;
     this.path = []; this.walkPh = 0; this.moving = false; this.qT = 0; this.doing = null;
     this.petalas = 0;   // v10.8: as pétalas do vaso (ROSA.max); não ocupam as mãos nem a bandeja e zeram a cada dia
+    this.reacao = null;   // v11.8: o gesto de agora ({ id, t }), só desenho
   }
+  /* v11.8: dispara o gesto do gatilho ('mesa', 'bravo' ou 'meta') do ponto de agora; o novo substitui o anterior. Não faz nada com movimento reduzido */
+  reage(tipo){
+    const por = BIA_REACAO.por[tipo]; if (RM || !por) return false;
+    this.reacao = { id:por[this.g.ponto.nivel >= 3 ? 1 : 0], t:0 };
+    return true;
+  }
+  reacaoAnda(dt){ if (!this.reacao) return; this.reacao.t += dt; if (this.reacao.t >= BIA_REACAO.dur - 1e-9) this.reacao = null; }
   get speed(){ const u = this.g.up; return BIA_SPEED.base * (u.corrida ? BIA_SPEED.corrida : u.tenis ? BIA_SPEED.tenis : 1); }
   get tray(){ return !!this.g.up.bandeja; }
   layout(items){ return handLayout(items || this.hands, this.tray, this.g.kitchen.slots); }

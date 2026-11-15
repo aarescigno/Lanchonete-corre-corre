@@ -1673,7 +1673,7 @@ const BIA_IDS = ['tenis', 'corrida', 'bandeja', 'sudoku'];
 function upgradeCartao(id){ return BIA_IDS.indexOf(id) >= 0 ? 'bia' : 'melhorias'; }
 const HIST_NOMES = { bia:'Bia', tonhao:'Tonhão', dani:'Dani', joca:'Joca', cami:'Cami', anselmo:'Anselmo', lia:'Lia', braulio:'Bráulio' };   // v11.6: o Bráulio
 const CAIXA_MAX = 14;                                 // livro-caixa (v7.2): quantos dias da carreira ficam guardados
-const VERSAO = 'v11.7';                                // vai no resumo do Caixa
+const VERSAO = 'v11.8';                                // vai no resumo do Caixa
 const DIVULGA_DIA = 4;                                // antes disso, o movimento é o da inauguração (sem custo); v9.0.2: dia 4, e o padrão é o boca a boca
 function divulgaAberta(n, sv){ return devLivre() || n >= DIVULGA_DIA && !(sv && sv.convDiv === 'pend'); }   // no modo dev, desde o dia 1; v9.0.3: no Modo História, só depois da conversa
 /* v9.6.4: a Efood (os entregadores) só abre depois da conversa dos entregadores, no Modo História; antes dela, nenhum tipo com `retira` vem na agenda */
@@ -1709,6 +1709,9 @@ const ENDLESS = { n:0, groups:0, types:['estudante','vovos','familia','executiva
 
 /* Bia (v7.3): velocidade de base em px/s e o ganho de cada nível dos tênis */
 const BIA_SPEED = { base:300, tenis:1.1, corrida:1.2 };
+/* v11.8 (etapa 8h, docs/ARCO.md §11): as reações da Bia, gestos de `dur` s desenhados por cima do andar (sem efeito no jogo; desligados com movimento reduzido).
+   `por`: o gesto de cada gatilho, o 1º na Garagem e na área industrial (nivel 1 e 2) e o 2º na Avenida e no Terraço (nivel 3 e 4) */
+const BIA_REACAO = { dur:0.8, por:{ mesa:['sorriso', 'punho'], bravo:['cabeca', 'respira'], meta:['suspiro', 'cintura'] } };
 
 /* fila de ações da Bia (v8.6.3): 5 quadrinhos de base (eram 6) e o Livrinho de Sudoku acrescenta 3 */
 const FILA_ACOES = { base:5, sudoku:3 };

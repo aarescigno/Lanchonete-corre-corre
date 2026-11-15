@@ -592,6 +592,7 @@ class Game {
     }
     this.addCoins(t.cx, t.cy, Math.min(8, 3 + g.hearts));
     Sfx.coin();
+    if (g.hearts === 5) this.bia.reage('mesa');   // v11.8
     if (g.completa){   // v10: bebida, entrada, principal e sobremesa servidos: refeição completa
       this.stats.completas++; this.pontos += TEMPOS.pts;
       this.addText(t.cx, t.cy - 124, 'Refeição completa!', PAL.mostarda, 17);
@@ -1095,6 +1096,7 @@ class Game {
     g.angry = true;
     this.avaliar(g, g.x, g.y - 120);
     Sfx.huff();
+    this.bia.reage('bravo');   // v11.8
     this.leaveCommon(g);
     if (this.mode === 'semfim' && !this.ending) this.loseStar();
   }
@@ -1180,8 +1182,11 @@ class Game {
   }
 
   /* ---------- atualização principal ---------- */
+  /* v11.8: o dia fecha (começa o banner de fim) com a meta batida: a Bia comemora, antes do resumo */
+  reageMeta(){ if (this.mode === 'carreira' && Math.round(this.lucro) >= this.day.meta) this.bia.reage('meta'); }
   update(dt){
     this.anim += dt;
+    this.bia.reacaoAnda(Math.min(dt, 0.05));   // v11.8: o relógio do gesto da Bia (só desenho; anda até pausado, com o painel do modo dev aberto)
     if (this.state !== 'playing') {
       if (this.state === 'menu' || this.state === 'intro' || this.state === 'dayend' || this.state === 'shop' || this.state === 'endlessend') this.updateFx(dt);
       return;
@@ -1260,11 +1265,11 @@ class Game {
         if (!resta.length || this.fechadoT >= FECHA.max){
           resta.forEach(g => this.timeUpLeave(g));
           this.bia.clearActs();
-          this.ending = true; this.endTimer = 2.0; this.reason = 'time';
+          this.ending = true; this.endTimer = 2.0; this.reason = 'time'; this.reageMeta();
           Sfx.bell();
         }
       } else if (this.nextIdx >= this.schedule.length && this.groups.length === 0){
-        this.ending = true; this.endTimer = 1.2; this.reason = 'done';
+        this.ending = true; this.endTimer = 1.2; this.reason = 'done'; this.reageMeta();
       }
     } else {
       this.endTimer -= dt;
@@ -2264,6 +2269,11 @@ class Game {
     if (!DEV.on) return false;
     if (n == null || n === '') delete DEV.forca.roupa; else DEV.forca.roupa = clamp(Math.round(+n) || 1, 1, 4);
     return true;
+  }
+  /* v11.8: dispara a reação da Bia ('mesa', 'bravo' ou 'meta') do ponto de agora, na hora */
+  devReacao(tipo){
+    if (!DEV.on || !BIA_REACAO.por[tipo]) return false;
+    return this.bia.reage(tipo);
   }
   devForca(k, v){
     if (!DEV.on) return false;

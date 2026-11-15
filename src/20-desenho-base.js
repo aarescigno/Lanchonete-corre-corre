@@ -751,10 +751,15 @@ function roupaBia(g){
   if (typeof f === 'number' && f >= 1 && f <= 4) return f;
   return clamp(Math.round((g && g.ponto && g.ponto.nivel) || 1), 1, 4);
 }
+/* v11.8 (etapa 8h, docs/ARCO.md §11): o gesto de reação da Bia, por cima do andar. `p` de 0 a 1: sobe em 20%, fica e desce nos últimos 25%; em 0 e em 1 vale 0 (o desenho é o de sempre) */
+function reacaoEnv(p){ p = clamp(p, 0, 1); const s = k => k * k * (3 - 2 * k); return p < 0.2 ? s(p / 0.2) : p > 0.75 ? s((1 - p) / 0.25) : 1; }
+const REACAO_EXPR = { sorriso:'alegre', punho:'alegre', cabeca:'insegura', respira:'firme', cintura:'firme' };
 function drawBia(ctx,b,x,y,o){
   o = o || {};
   const sc = o.s || 1, moving = !!o.moving, ph = o.ph || 0;
-  const bob = (moving && !RM) ? -Math.abs(Math.sin(ph)) * 2.8 : (RM ? 0 : Math.sin((o.t||0)*3) * 0.6);
+  const env = o.reacao ? reacaoEnv(o.reacao.p) : 0, R = env > 0 ? o.reacao.id : '';   // v11.8: o gesto de agora ('' = nenhum)
+  const dBob = R === 'punho' ? -2.5 * env : R === 'suspiro' ? 2.4 * env : R === 'respira' ? -1.2 * env : R === 'cabeca' ? 1.4 * env : 0;
+  const bob = ((moving && !RM) ? -Math.abs(Math.sin(ph)) * 2.8 : (RM ? 0 : Math.sin((o.t||0)*3) * 0.6)) + dBob;
   const skin = '#6B3F25', rp = clamp(Math.round(o.roupa || 1), 1, 4), C = BIA_ROUPA_COR;
   const blusa = rp === 3 ? C.camisa : rp === 4 ? C.clara : C.verde;       // a camiseta, a camisa
   const saia = rp >= 3 ? (rp === 4 ? C.saiaEsc : '#2B2B33') : C.verde;
@@ -777,9 +782,30 @@ function drawBia(ctx,b,x,y,o){
   let aE = o.lava ? [-2+lv*4+18,-24+lv*2] : [-15,-18], aD = o.wave ? [19+wave,-52] : (o.lava ? [20-lv*4,-24-lv*2] : [15,-18]);
   if (o.wave && o.wa != null){ const k = o.wa; aD = [15 + (4 + wave) * k,-18 - 34 * k]; }   // o aceno entra aos poucos (abertura)
   if (o.maos){ aE = o.maos[0]; aD = o.maos[1]; }                                             // as mãos onde a cena pede (abertura)
+  if (R){   // v11.8: as mãos do gesto (do que ela fazia até o alvo, pelo envelope); a cintura leva cotovelo (3º e 4º valores)
+    const mix = (a,t) => [a[0] + (t[0] - a[0]) * env, a[1] + (t[1] - a[1]) * env];
+    if (R === 'sorriso') aE = mix(aE,[-1,-27]);
+    else if (R === 'punho') aD = mix(aD,[17,-62]);
+    else if (R === 'cabeca' || R === 'suspiro'){ aE = mix(aE,[-13,-12]); aD = mix(aD,[13,-12]); }
+    else if (R === 'respira'){ aE = mix(aE,[-19,-21]); aD = mix(aD,[19,-21]); }
+    else if (R === 'cintura'){ const e0 = aE, d0 = aD; aE = mix(e0,[-11,-19]).concat(mix([-15,-24],[-21,-25])); aD = mix(d0,[11,-19]).concat(mix([15,-24],[21,-25])); }
+  }
   const mang = rp === 1 ? 0.42 : rp === 3 ? 0.66 : 1;
   const braco = (sx,pt) => {
     const sy = -30 + bob, ex = pt[0], ey = pt[1];
+    if (pt.length > 2){   // v11.8: braço dobrado (mãos na cintura): ombro, cotovelo, mão; a manga cobre `mang` do comprimento todo
+      const cx = pt[2], cy = pt[3], l1 = Math.hypot(cx - sx, cy - sy), l2 = Math.hypot(ex - cx, ey - cy), alvo = mang * (l1 + l2);
+      const poli = (w,c,fim) => { ctx.strokeStyle = c; ctx.lineWidth = w; ctx.lineJoin = 'round'; ctx.beginPath(); ctx.moveTo(sx,sy);
+        if (fim == null){ ctx.lineTo(cx,cy); ctx.lineTo(ex,ey); } else if (fim <= l1) ctx.lineTo(sx + (cx - sx) * fim / l1, sy + (cy - sy) * fim / l1);
+        else { ctx.lineTo(cx,cy); const k = (fim - l1) / l2; ctx.lineTo(cx + (ex - cx) * k, cy + (ey - cy) * k); } ctx.stroke(); };
+      poli(8.5,PAL.tinta); if (mang < 1) poli(5,skin); poli(5,blusa,alvo);
+      if (rp === 3){   // a barra da manga dobrada
+        const f0 = Math.max(0, alvo - 0.14 * (l1 + l2)); ctx.lineCap = 'butt'; ctx.strokeStyle = C.clara; ctx.lineWidth = 6; ctx.beginPath();
+        const pt2 = f => f <= l1 ? [sx + (cx - sx) * f / l1, sy + (cy - sy) * f / l1] : [cx + (ex - cx) * (f - l1) / l2, cy + (ey - cy) * (f - l1) / l2];
+        const a = pt2(f0), z = pt2(alvo); ctx.moveTo(a[0],a[1]); ctx.lineTo(z[0],z[1]); ctx.stroke(); ctx.lineCap = 'round';
+      }
+      ctx.lineJoin = 'miter'; return;
+    }
     ctx.strokeStyle = PAL.tinta; ctx.lineWidth = 8.5; ctx.beginPath(); ctx.moveTo(sx,sy); ctx.lineTo(ex,ey); ctx.stroke();
     if (mang < 1){ ctx.strokeStyle = skin; ctx.lineWidth = 5; ctx.beginPath(); ctx.moveTo(sx,sy); ctx.lineTo(ex,ey); ctx.stroke(); }
     const mx = sx + (ex - sx) * mang, my = sy + (ey - sy) * mang;
@@ -792,6 +818,10 @@ function drawBia(ctx,b,x,y,o){
   braco(-10,aE); braco(10,aD);
   circ(ctx,aE[0],aE[1]+2,3.8); fs(ctx,skin,1.8);
   circ(ctx,aD[0],aD[1]+(o.maos ? 0 : (o.wave?-2:2)),3.8); fs(ctx,skin,1.8);
+  if (R === 'punho'){   // v11.8: o punho fechado: a mão maior e os dedos marcados
+    circ(ctx,aD[0],aD[1]-1,4.6); fs(ctx,skin,1.8);
+    ctx.strokeStyle = PAL.tinta; ctx.lineWidth = 1; ctx.beginPath(); ctx.moveTo(aD[0]-2.6,aD[1]-0.4); ctx.lineTo(aD[0]+2.6,aD[1]-0.4); ctx.moveTo(aD[0]-2.6,aD[1]+1.6); ctx.lineTo(aD[0]+2.6,aD[1]+1.6); ctx.stroke();
+  }
   // a gola e o pescoço (aparecem no retrato)
   rr(ctx,-3.4,-37+bob,6.8,6,1.5); fs(ctx,skin,1.6);
   if (rp === 1){ ctx.beginPath(); ctx.arc(0,-33+bob,5.2,0.1,Math.PI-0.1); ctx.lineWidth = 2; ctx.strokeStyle = PAL.tinta; ctx.stroke(); }   // gola redonda da camiseta
@@ -825,7 +855,7 @@ function drawBia(ctx,b,x,y,o){
     if (rp === 4){ ctx.strokeStyle = PAL.creme; ctx.lineWidth = 1; ctx.beginPath(); ctx.moveTo(-14,-10.4); ctx.lineTo(14,-10.4); ctx.moveTo(-9.8,-19.8); ctx.lineTo(9.8,-19.8); ctx.stroke(); }   // o debrum claro do avental escuro
   }
   // cabeça e cabelo (1 solto com o puff; 2 rabo; 3 rabo alto; 4 coque)
-  const hy = -46 + bob, ph2 = moving ? Math.sin(ph) * 2.2 : (RM ? 0 : Math.sin((o.t||0)*2.2) * 0.8);
+  const hy = -46 + bob + (R === 'cabeca' ? 4 * env : R === 'respira' ? -2.5 * env : R === 'cintura' ? -2 * env : R === 'suspiro' ? 1.2 * env : 0), ph2 = moving ? Math.sin(ph) * 2.2 : (RM ? 0 : Math.sin((o.t||0)*2.2) * 0.8);
   if (rp === 1){ circ(ctx,0,hy-14,13.5); fs(ctx,C.cabelo,2.5); }              // puff
   else if (rp === 2){   // rabo na altura da nuca, balançando
     ctx.beginPath(); ctx.moveTo(8,hy-7); ctx.bezierCurveTo(23+ph2,hy-9,27+ph2,hy+6,19+ph2*1.6,hy+13); ctx.bezierCurveTo(17+ph2,hy+6,15,hy+2,9,hy-1); ctx.closePath(); fs(ctx,C.cabelo,2);
@@ -843,13 +873,19 @@ function drawBia(ctx,b,x,y,o){
   else { circ(ctx,5.4,hy-14.4,1.9); fs(ctx,PAL.creme,1.4); }   // o elástico do coque
   // rosto
   if (o.olha) ctx.translate(o.olha * 2.5,0);
-  if (EXPR !== 'neutra') rostoExpr(ctx,EXPR,4.3,hy+2.5,hy+8,4.9,skin);   // v11.5: o retrato do balão
+  const E = EXPR !== 'neutra' ? EXPR : (env > 0.2 && REACAO_EXPR[R]) || 'neutra';   // v11.5: o retrato do balão; v11.8: a cara do gesto
+  const pisca = o.pisca || (R === 'suspiro' && env > 0.2), fala = o.fala || (R === 'suspiro' && env > 0.2 ? 0.5 : 0);   // o suspiro: olhos fechados e a boca em "o"
+  if (E !== 'neutra') rostoExpr(ctx,E,4.3,hy+2.5,hy+8,4.9,skin);
   else {
   ctx.fillStyle = PAL.tinta;
-  if (o.pisca){ ctx.fillRect(-6.2,hy+0.4,4,1.6); ctx.fillRect(2.2,hy+0.4,4,1.6); } else { circ(ctx,-4.3,hy+1,1.8); ctx.fill(); circ(ctx,4.3,hy+1,1.8); ctx.fill(); }
+  if (pisca){ ctx.fillRect(-6.2,hy+0.4,4,1.6); ctx.fillRect(2.2,hy+0.4,4,1.6); } else { circ(ctx,-4.3,hy+1,1.8); ctx.fill(); circ(ctx,4.3,hy+1,1.8); ctx.fill(); }
   ctx.strokeStyle = PAL.tinta; ctx.lineWidth = 1.9;
-  if (o.fala){ ell(ctx,0,hy+5.6,3.2,1.2 + o.fala * 2); fs(ctx,'#7A2E2E',1.5); } else { ctx.beginPath(); ctx.arc(0,hy+3.8,4.6,0.2,Math.PI-0.2); ctx.stroke(); }
+  if (fala){ ell(ctx,0,hy+5.6,3.2,1.2 + fala * 2); fs(ctx,'#7A2E2E',1.5); } else { ctx.beginPath(); ctx.arc(0,hy+3.8,4.6,0.2,Math.PI-0.2); ctx.stroke(); }
   ctx.fillStyle = 'rgba(226,106,44,.3)'; circ(ctx,-7.8,hy+4.6,2.4); ctx.fill(); circ(ctx,7.8,hy+4.6,2.4); ctx.fill();
+  }
+  if (R === 'suspiro'){   // v11.8: o sopro de alívio: três bolinhas claras que saem da boca e sobem
+    ctx.fillStyle = 'rgba(255,255,255,.85)'; ctx.strokeStyle = PAL.tinta; ctx.lineWidth = 1;
+    [[9,hy+8,1.8],[14,hy+5,2.6],[20,hy+1,3.4]].forEach(([qx,qy,qr]) => { circ(ctx,qx,qy - 4 * env,qr * env); ctx.fill(); ctx.stroke(); });
   }
   ctx.restore();
 }
