@@ -69,7 +69,7 @@ ok(g.save.convPlanta===1 && g.save.decor.espada===1 && g.save.convCard!=='pend',
 els['btn-next'].fire('click');
 ok(g.state==='shop' && !g.conversa,'depois dela, a lojinha');
 joga(H,400,0); ok(g.save.capAzul===1 && g.save.cap===1 && g.save.conversa===null && /\(1 de 2\)/.test(txt(els['end-msg'])),'1 dia no azul: o capítulo continua (1 de 2)');
-els['btn-next'].fire('click'); L.setShopTab('dani'); ok(txt(els['shop-grid']).trim()==='','antes do cap. 2, a Dani não tem cartão (v9.6.10)');
+els['btn-next'].fire('click'); L.setShopTab('dani'); ok(!/Dani/.test(txt(els['shop-grid'])),'antes do cap. 2, a Dani não tem cartão (v9.6.10)');
 joga(H,400,0); ok(g.save.capAzul===2 && g.save.conversa==='depois' && g.result.cap.ok && /Objetivo cumprido/.test(txt(els['end-msg'])) && g.save.cap===1,'2 dias no azul: objetivo cumprido, conversa de depois pendente');
 // ---------- 5. do fim do cap. 1 ao cap. 2: depois, antes e a Dani chega ----------
 els['btn-next'].fire('click');

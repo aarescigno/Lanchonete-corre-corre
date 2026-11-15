@@ -32,6 +32,7 @@ function toRow(d, id, uid){
     me: !!uid && id === uid
   };
 }
+const RANK_VOCE = 'Você';   // v11.9: o nome do registro automático, até o jogador escrever o dele na tela do Ranking
 const delay = ms => new Promise(r => setTimeout(r, ms));
 const Rank = {
   online:false, db:null, user:null, uid:null, ready:null, done:false,
@@ -87,6 +88,25 @@ const Rank = {
     all[RK[kind].local] = list.slice(0, 50);
     lsSet(LS.rank, JSON.stringify(all));
     return { where:'local', improved, best };
+  },
+  /* v11.9: o primeiro nome escrito troca as linhas "de" das duas listas do aparelho (se o nome novo já existe, fica a de mais pontos); devolve quantas linhas mudou */
+  renomeiaLocal(de, para){
+    const all = this.loadLocal(), kd = normName(de), kp = normName(para);
+    let n = 0;
+    ['campanha','semfim'].forEach(k => {
+      const list = Array.isArray(all[k]) ? all[k] : [];
+      const i = list.findIndex(r => r && r.key === kd);
+      if (i < 0) return;
+      const j = list.findIndex(r => r && r.key === kp);
+      if (j >= 0 && j !== i){
+        if ((+list[i].pontos || 0) > (+list[j].pontos || 0)) list[j] = Object.assign({}, list[i], { key:kp, nome:para });
+        list.splice(i, 1);
+      } else list[i] = Object.assign({}, list[i], { key:kp, nome:para });
+      list.sort((a,b) => (+b.pontos || 0) - (+a.pontos || 0));
+      all[k] = list; n++;
+    });
+    if (n) lsSet(LS.rank, JSON.stringify(all));
+    return n;
   },
   async saveShared(kind, body){
     const ref = this.db.collection(RK[kind].col).doc(this.uid);

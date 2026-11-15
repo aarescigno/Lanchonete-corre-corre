@@ -16,10 +16,9 @@ Origem: retorno do Renan Martorelli (beta-tester) e conversa com o Arthur (15/10
 | # | Etapa | Versão | Situação |
 |---|---|---|---|
 | 5 | ~~Modo História, parte 1~~: juntou-se à 2f e aos capítulos da 3a, 3b e 4a (28/10) | — | — |
-| 8f | O Bráulio em cena: na Avenida e na noite da estrela | v11.6 | feita em 15/11 (`docs/spec-v11.6.md`; `smoke82`; `falasB`/`qualB` no motor `ARCO`; o Bráulio parado na porta durante a conversa; o Fim em 10 de 10 carreiras) |
 | 8g | A roupa da Bia por ponto | v11.7 | feita em 15/11 (`docs/spec-v11.7.md`; `smoke83`; `roupaBia(g)` e `drawBia({ roupa })`; o retrato da Bia com enquadramento mais aberto; o Fim em 10 de 10 carreiras) |
 | 8h | As reações da Bia durante o dia | v11.8 | feita em 15/11 (`docs/spec-v11.8.md`; `smoke84`; `BIA_REACAO`, `Waitress.reage` e `drawBia({ reacao })`; três gestos por ponto; a Etapa 8 está completa) |
-| 7a | Acertos do polimento: o nome no Ranking, a Divulgação na hora certa e o trio com três músicos | v11.9 | spec aprovada em 15/11 (`docs/spec-v11.9.md`) |
+| 7a | Acertos do polimento: o nome no Ranking, a Divulgação na hora certa e o trio com três músicos | v11.9 | feita em 15/11 (`docs/spec-v11.9.md`; `smoke85`; `rankAuto`, `Rank.renomeiaLocal`, `shopSecoesVis` e `TRIO`) |
 | 7b | As telas no celular: a lojinha com o topo fixo, os painéis pequenos e as Versões enxutas | v11.10 | spec aprovada em 15/11 (`docs/spec-v11.10.md`); depois da 7a |
 
 ---

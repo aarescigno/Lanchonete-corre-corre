@@ -170,7 +170,7 @@ function buildEnd(){
   fm.textContent = mn.length ? 'Novo no Manual: ' + (mn.length > 3 ? mn.slice(0, 3).join(', ') + ' e mais ' + (mn.length - 3) : mn.join(', ')) + '.' : '';
   fm.style.display = mn.length ? '' : 'none';
   $('btn-next').textContent = 'Lojinha e dia ' + game.proxDia;
-  buildSaveForm($('end-save'), 'carreira');
+  if (game.mode === 'carreira') rankAuto('carreira');
 }
 /* v8.3.1: o banco tomou a lanchonete (a parcela atrasada não foi paga no dia seguinte): fim da carreira */
 function buildFalencia(){
@@ -182,7 +182,7 @@ function buildFalencia(){
   [['Dias jogados', String(r.day)], ['Estrelas', sv.estrelas + ' ★'], ['Lucro acumulado', fmt(sv.lucroTot)], ['Lucro do último dia', fmt(r.money)], ['Dívida com o banco', fmt(sv.emp.resto)]].forEach(p => {
     st.appendChild(el('span', null, p[0])); st.appendChild(el('b', null, p[1]));
   });
-  buildSaveForm($('falencia-save'), 'carreira');
+  rankAuto('carreira');
 }
 function buildEndless(){
   const r = game.endless;
@@ -192,45 +192,36 @@ function buildEndless(){
   [['Pontos de atendimento', r.pontos],['Faturamento', fmt(r.fat || 0)],['Tempo sobrevivido', mmssUp(r.tempo)],['Grupos atendidos', r.served],['VIPs atendidos', r.vip],['Sucos entregues', r.juice],['Maior corrente', '×' + r.chain],['Não couberam na espera', r.full],['Ingredientes e contas', '-' + fmt(r.custo + r.contas)],['Dinheiro acumulado', fmt(game.save.bank)]].forEach(p => {
     st.appendChild(el('span', null, p[0])); st.appendChild(el('b', null, String(p[1])));
   });
-  buildSaveForm($('endless-save'), 'semfim');
+  rankAuto('semfim');
 }
 
-/* ---------- formulário "Seu nome" + "Salvar no ranking" ---------- */
+/* ---------- registro automático no ranking (v11.9) e o nome, escrito na tela do Ranking ---------- */
 function lastName(){ return cleanName(lsGet(LS.name) || ''); }
-function buildSaveForm(host, kind){
-  clearEl(host);
-  if (DEV.on){ host.appendChild(el('p', 'small savemsg', 'Modo dev: o ranking fica de fora.')); return; }
-  const form = el('form', 'saveform');
-  form.setAttribute('autocomplete', 'off');
-  const id = 'nm-' + kind;
-  const lab = el('label', null, 'Seu nome'); lab.setAttribute('for', id);
-  const inp = el('input'); inp.type = 'text'; inp.id = id; inp.maxLength = 16; inp.value = lastName();
-  inp.setAttribute('autocomplete', 'off'); inp.setAttribute('autocapitalize', 'words'); inp.setAttribute('spellcheck', 'false');
-  const btn = el('button', 'btn go', 'Salvar no ranking'); btn.type = 'submit';
-  const msg = el('p', 'small savemsg'); msg.setAttribute('role', 'status');
-  form.appendChild(lab); form.appendChild(inp); form.appendChild(btn);
-  host.appendChild(form); host.appendChild(msg);
-  let busy = false;
-  form.addEventListener('submit', async ev => {
+function rankNome(){ return lastName() || RANK_VOCE; }
+function rankAuto(kind){
+  if (DEV.on) return;
+  let pontos, extra;
+  if (kind === 'carreira'){ if (!game || game.mode !== 'carreira') return; pontos = game.save.lucroTot; extra = { dia: game.proxDia - 1 }; }   // o lucro acumulado da campanha e o último dia jogado
+  else { const r = game && game.endless; if (!r) return; pontos = r.pontos; extra = { tempo: r.tempo }; }
+  if (!(pontos > 0)) return;
+  try { Promise.resolve(Rank.saveScore(kind, rankNome(), pontos, extra)).catch(() => {}); } catch(e) {}
+}
+function rankNomeForm(){
+  const inp = $('rank-nome-inp'), msg = $('rank-nome-msg'), form = $('rank-nome');
+  if (!inp || !form) return;
+  inp.value = lastName();
+  msg.textContent = '';
+  if (form.getAttribute('data-bound')) return;
+  form.setAttribute('data-bound', '1');
+  form.addEventListener('submit', ev => {
     ev.preventDefault();
-    if (busy) return;
     const nome = cleanName(inp.value);
-    if (!nome){ msg.textContent = 'Digite seu nome para entrar no ranking.'; return; }
-    let pontos, extra;
-    if (kind === 'carreira'){ pontos = game.save.lucroTot; extra = { dia: game.proxDia - 1 }; }   // v8.3: o lucro acumulado da campanha e o último dia jogado
-    else { const r = game.endless || { pontos:0, tempo:0 }; pontos = r.pontos; extra = { tempo: r.tempo }; }
-    if (!(pontos > 0)){ msg.textContent = kind === 'carreira' ? 'O lucro acumulado precisa ficar acima de zero para entrar no ranking.' : 'Faça alguns pontos antes de salvar.'; return; }
-    busy = true; btn.disabled = true; msg.textContent = 'Salvando...';
+    if (!nome){ msg.textContent = 'Digite seu nome.'; return; }
+    const antes = lastName();
     lsSet(LS.name, nome);
-    try {
-      const res = await Rank.saveScore(kind, nome, pontos, extra);
-      if (res.refused) msg.textContent = 'O ranking compartilhado recusou o registro; salvei só neste aparelho.';
-      else if (!res.improved) msg.textContent = 'Seu recorde (' + res.best + ' pontos) continua maior; mantive o melhor.';
-      else msg.textContent = res.where === 'shared' ? 'Salvo no ranking compartilhado!' : 'Salvo no ranking deste aparelho.';
-    } catch(e) {
-      msg.textContent = 'Não consegui salvar agora. Tente de novo.';
-    }
-    busy = false; btn.disabled = false;
+    if (!antes) Rank.renomeiaLocal(RANK_VOCE, nome);
+    msg.textContent = 'Nome salvo.';
+    rk.started = null; rankStart();
   });
 }
 
@@ -272,6 +263,7 @@ function renderRank(){
 }
 function openRank(back){
   rk.back = back || 'ov-menu'; rk.open = true;
+  rankNomeForm();
   showOnly(['ov-rank']);
   renderRank();
   if (Rank.online) $('rank-source').textContent = 'Conectando...';

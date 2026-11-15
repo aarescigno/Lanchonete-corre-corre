@@ -101,7 +101,7 @@ const txt=e=>(e.textContent||'')+(e.children||[]).map(txt).join(' ');
   // os botões ficam fora do corpo que rola
   const src=require('fs').readFileSync(__dirname+'/../src/02-telas.html','utf8'), css=require('fs').readFileSync(__dirname+'/../src/01-estilo.css','utf8');
   const fim=src.slice(src.indexOf('id="ov-end"'), src.indexOf('id="ov-shop"'));
-  ok(/class="panel end-panel"/.test(fim) && fim.indexOf('class="end-corpo"')<fim.indexOf('id="end-stats"') && fim.indexOf('id="end-save"')<fim.indexOf('class="row end-pe"') && fim.indexOf('class="row end-pe"')<fim.indexOf('id="btn-next"'),'fim do dia: corpo que rola e a linha de botões no pé, fora dele');
+  ok(/class="panel end-panel"/.test(fim) && fim.indexOf('class="end-corpo"')<fim.indexOf('id="end-stats"') && fim.indexOf('id="end-manual"')<fim.indexOf('class="row end-pe"') && fim.indexOf('class="row end-pe"')<fim.indexOf('id="btn-next"'),'fim do dia: corpo que rola e a linha de botões no pé, fora dele');
   ok(/\.end-panel\{[^}]*overflow:hidden/.test(css) && /\.end-corpo\{[^}]*overflow:auto/.test(css) && /\.end-pe\{[^}]*flex:none/.test(css),'CSS: o painel não rola, o corpo rola, o pé é fixo'); }
 
 // ---------- (3) na História, o capítulo é uma linha à parte ----------

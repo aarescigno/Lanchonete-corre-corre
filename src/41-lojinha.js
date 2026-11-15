@@ -260,12 +260,12 @@ const SHOP_SECOES = {
   gurugol:{ nome:'Gurugol', icon:'contas', build:g => buildGurugol(g) }};
 const SHOP_ANTIGAS = { equipe:'tonhao', cursos:'cardapio', decor:'luxo' };   // nomes das abas antigas, para os testes e capturas
 function shopGrupoDe(sec){ const g = SHOP_GRUPOS.find(x => x.secoes.indexOf(sec) >= 0); return g ? g.id : 'lanchonete'; }
-function shopAbrir(sec){ sec = SHOP_ANTIGAS[sec] || sec; shopGrupo = shopGrupoDe(sec); shopTab = game.cartaoAberto(sec) ? sec : null; buildShop(); }   // v9.0.4: cartão fechado abre só o grupo
+function shopAbrir(sec){ sec = SHOP_ANTIGAS[sec] || sec; shopGrupo = shopGrupoDe(sec); shopTab = game.cartaoAberto(sec) && shopSecoesVis(SHOP_GRUPOS.find(x => x.id === shopGrupo)).indexOf(sec) >= 0 ? sec : null; buildShop(); }   // v9.0.4: cartão fechado abre só o grupo
 function shopGrupoAbrir(g){ shopGrupo = g; shopTab = g === 'gurugol' ? 'gurugol' : null; buildShop(); }
 /* as seções do grupo que aparecem agora: a Mudança só depois do cap. 3 (v9) e enquanto há ponto para onde ir */
 /* v9.6.12: na História, a Dani só entra na lojinha quando chega (cap. 2): nem o cartão dela no grupo Equipe, nem a seção */
 function daniNaLoja(){ return !(HIST.on && game.save.histV === 1) || game.daniChegou; }
-function shopSecoesVis(grupo){ return grupo.secoes.filter(id => (id !== 'mudanca' || game.mudancaVisivel) && (id !== 'dani' || daniNaLoja()) && game.cartaoAberto(id)); }   // v9.0.4: e o cartão já aberto
+function shopSecoesVis(grupo){ return grupo.secoes.filter(id => (id !== 'mudanca' || game.mudancaVisivel) && (id !== 'dani' || daniNaLoja()) && (id !== 'divulga' || divulgaAberta(game.shopNext, game.save)) && game.cartaoAberto(id)); }   // v9.0.4: e o cartão já aberto
 /* v9.1, v10: o ícone do cartão Mudança segue o ponto de destino */
 function iconeMudanca(p){ return p && p.id === 'avenida' ? 'mudanca-av' : p && p.id === 'terraco' ? 'mudanca-te' : 'mudanca'; }
 let mudarPede = false;   // o 1º toque em "Mudar" pede a confirmação
@@ -1049,7 +1049,7 @@ function buildDivulga(grid){
     const on = open && cur === d.id;
     const c = staffCard(upgradeIcon('div-' + d.id), d.name, d.cost ? fmt(d.cost) + ' por dia' : 'Grátis');
     if (on) c.classList.add('own');
-    c.appendChild(shopBtn(!open ? 'A partir do dia ' + DIVULGA_DIA : (on ? 'Escolhida' : 'Escolher'), 'btn', open && !on && (!d.cost || game.payroll() + d.cost <= game.save.bank), () => game.setDivulga(d.id)));
+    c.appendChild(shopBtn(on ? 'Escolhida' : 'Escolher', 'btn', open && !on && (!d.cost || game.payroll() + d.cost <= game.save.bank), () => game.setDivulga(d.id)));
     grid.appendChild(c);
   });
   const p = game.ponto;

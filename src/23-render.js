@@ -93,7 +93,7 @@ function render(g, ctx){
   if (g.maquinaOn) items.push({ y:STATIONS.maquina.rect.y + STATIONS.maquina.rect.h, f:() => glowSprite(ctx,g,'maquina',ctx => drawMaquina(ctx,g,tm,menu)) });
   if (g.save.equipe.couvert && !menu) items.push({ y:528, f:() => drawMusico(ctx,g,tm) });
   if (mus === 2) items.push({ y:TERRACO.piano.y1 + 2, f:() => drawPianista(ctx,g,tm) });
-  if (mus === 1) items.push({ y:528, f:() => drawQuarteto(ctx,g,tm) });
+  if (mus === 1) items.push({ y:528, f:() => drawTrio(ctx,g,tm) });
   if ((g.save.equipe.tv || g.save.equipe.som) && !menu) items.push({ y:532, f:() => drawAmbiente(ctx,g,tm) });
   if (g.fiscal && g.fiscal.ativo && !menu) items.push({ y:g.fiscal.y, f:() => drawFiscal(ctx,g.fiscal,tm) });   // v9.4
   if (g.dani.active && !menu) items.push({ y:g.dani.y, f:() => drawDani(ctx,g.dani,tm) });
