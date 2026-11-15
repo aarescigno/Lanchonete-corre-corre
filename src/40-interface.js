@@ -223,6 +223,9 @@ function devAbaHoje(body, secao, botao){
   { const f = luxoForca(), r = secao('Luxo (VIPs, exigentes na Avenida e Ambiente)', 'Agora: ' + (f >= 0 ? 'forçado no nível ' + f : 'normal, nível ' + luxoNivel(game)));   // v10.7
     botao(r, 'normal', () => game.devLuxo(null), f < 0);
     [0, 1, 2, 3, 4, 5].forEach(n => botao(r, String(n), () => game.devLuxo(n), f === n)); }
+  { const f = DEV.forca.roupa, r = secao('Roupa da Bia', 'Agora: ' + (typeof f === 'number' ? 'forçada a roupa ' + f : 'a do ponto (' + roupaBia(game) + ')'));   // v11.7
+    botao(r, 'Normal', () => game.devRoupa(null), typeof f !== 'number');
+    [1, 2, 3, 4].forEach(n => botao(r, String(n), () => game.devRoupa(n), f === n)); }
   if (musicaOk(game.ponto)) botao(secao('Música (Terraço)', 'Agora: ' + DEV_MUSICA[game.save.equipe.musica || 0]), 'Música: trocar', () => game.devMusica());   // v10.4: sem música → trioo → pianista
   if ((game.state === 'paused' || game.state === 'playing') && game.mode === 'carreira'){
     let r = secao('No dia', 'Velocidade ' + DEV.vel + '×');

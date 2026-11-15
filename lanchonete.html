@@ -421,7 +421,7 @@ table.rank tr.me td{background:#fbe7a8}
 
     <div class="ov show" id="ov-menu">
       <div class="panel menu-panel">
-        <span class="vtag" id="vtag" aria-label="Versão 11.6">v11.6</span>
+        <span class="vtag" id="vtag" aria-label="Versão 11.7">v11.7</span>
         <h1 class="title">Lanchonete <br>Corre-Corre</h1>
         <p class="tag">Ajude a Bia a atender a freguesia da esquina antes que o cafezinho esfrie!</p>
         <div class="lbl" id="menu-dia">História</div>
@@ -661,7 +661,8 @@ table.rank tr.me td{background:#fbe7a8}
       <div class="panel">
         <h2>Versões</h2>
         <ul class="verlist">
-          <li><b>v11.6</b><span class="cur">versão atual</span><br>15/11/2026 &mdash; O chef Bráulio em cena: ele ganha rosto e voz. Na Avenida, ele aparece na porta com uma conversa nova (que muda se o Anselmo trabalha com você), e na noite da estrela se despede da Bia no fim.</li>
+          <li><b>v11.7</b><span class="cur">versão atual</span><br>15/11/2026 &mdash; A Bia muda de roupa com o ponto: o avental florido da mãe na Garagem, o avental da casa na área industrial, a camisa de botão na Avenida e o colete com a rosa no Terraço, com o cabelo mudando junto (solto, rabo, rabo alto, coque). Aparece no salão, no balão da conversa e na lojinha.</li>
+          <li><b>v11.6</b><br>15/11/2026 &mdash; O chef Bráulio em cena: ele ganha rosto e voz. Na Avenida, ele aparece na porta com uma conversa nova (que muda se o Anselmo trabalha com você), e na noite da estrela se despede da Bia no fim.</li>
           <li><b>v11.5</b><br>14/11/2026 &mdash; Quem fala ganha rosto: nas conversas do Modo História, um retrato redondo aparece no balão, com cinco expressões (insegura, firme, alegre, brava e neutra). No modo dev, o painel História ganha a tela dos Retratos.</li>
           <li><b>v11.4</b><br>14/11/2026 &mdash; Mais conversas: na Avenida e no Terraço, no fim de certos dias, a Bia, o tio e a equipe falam do copo quebrado, do espresso, da pressa no salão, da Casa Aurora, da pétala da Rosa e da roda antes da noite da estrela. Uma por dia, só no Modo História.</li>
           <li><b>v11.3</b><br>14/11/2026 &mdash; Conversas novas: no fim de certos dias, na Garagem e na área industrial, a Bia, o tio e a equipe conversam sobre o desânimo, o elogio, o caderno do caixa e o motoqueiro. Uma por dia, só no Modo História.</li>
@@ -2470,7 +2471,7 @@ const BIA_IDS = ['tenis', 'corrida', 'bandeja', 'sudoku'];
 function upgradeCartao(id){ return BIA_IDS.indexOf(id) >= 0 ? 'bia' : 'melhorias'; }
 const HIST_NOMES = { bia:'Bia', tonhao:'Tonhão', dani:'Dani', joca:'Joca', cami:'Cami', anselmo:'Anselmo', lia:'Lia', braulio:'Bráulio' };   // v11.6: o Bráulio
 const CAIXA_MAX = 14;                                 // livro-caixa (v7.2): quantos dias da carreira ficam guardados
-const VERSAO = 'v11.6';                                // vai no resumo do Caixa
+const VERSAO = 'v11.7';                                // vai no resumo do Caixa
 const DIVULGA_DIA = 4;                                // antes disso, o movimento é o da inauguração (sem custo); v9.0.2: dia 4, e o padrão é o boca a boca
 function divulgaAberta(n, sv){ return devLivre() || n >= DIVULGA_DIA && !(sv && sv.convDiv === 'pend'); }   // no modo dev, desde o dia 1; v9.0.3: no Modo História, só depois da conversa
 /* v9.6.4: a Efood (os entregadores) só abre depois da conversa dos entregadores, no Modo História; antes dela, nenhum tipo com `retira` vem na agenda */
@@ -6766,6 +6767,12 @@ class Game {
     if (this.state === 'shop') this.resetDay(this.shopNext);
     return true;
   }
+  /* v11.7: a roupa da Bia forçada (1 a 4; null volta à roupa do ponto), só na memória */
+  devRoupa(n){
+    if (!DEV.on) return false;
+    if (n == null || n === '') delete DEV.forca.roupa; else DEV.forca.roupa = clamp(Math.round(+n) || 1, 1, 4);
+    return true;
+  }
   devForca(k, v){
     if (!DEV.on) return false;
     if (!v || v === 'sorteio') delete DEV.forca[k]; else DEV.forca[k] = v;
@@ -8009,11 +8016,22 @@ function drawPerson(ctx,p,x,y,o){
   ctx.restore();
 }
 
+/* v11.7 (etapa 8g, docs/ARCO.md §10): a roupa da Bia por ponto. roupaBia(g) dá 1 a 4 pelo `nivel` do ponto (o modo dev força por cima, DEV.forca.roupa);
+   drawBia(..., { roupa }) escolhe a roupa (sem `roupa`, a 1, a da Garagem: é o que a abertura usa). 1 camiseta e o avental florido da mãe, cabelo solto com o lenço;
+   2 avental da casa com "Corre-Corre" bordado, rabo; 3 camisa de botão de mangas dobradas e avental de cintura, rabo alto; 4 colete com a rosa na lapela, camisa clara, coque. */
+const BIA_ROUPA_COR = { colete:'#2F3A4A', rosa:'#D9486E', verde:'#2E8B57', camisa:'#1F4FA3', clara:'#FBFAF5', saiaEsc:'#3B4252', avEsc:'#1B1F27', cabelo:'#15100D', florido:'#F7EFD8', folha:'#4F9F6A' };
+function roupaBia(g){
+  const f = DEV.on ? DEV.forca.roupa : undefined;
+  if (typeof f === 'number' && f >= 1 && f <= 4) return f;
+  return clamp(Math.round((g && g.ponto && g.ponto.nivel) || 1), 1, 4);
+}
 function drawBia(ctx,b,x,y,o){
   o = o || {};
   const sc = o.s || 1, moving = !!o.moving, ph = o.ph || 0;
   const bob = (moving && !RM) ? -Math.abs(Math.sin(ph)) * 2.8 : (RM ? 0 : Math.sin((o.t||0)*3) * 0.6);
-  const skin = '#6B3F25';
+  const skin = '#6B3F25', rp = clamp(Math.round(o.roupa || 1), 1, 4), C = BIA_ROUPA_COR;
+  const blusa = rp === 3 ? C.camisa : rp === 4 ? C.clara : C.verde;       // a camiseta, a camisa
+  const saia = rp >= 3 ? (rp === 4 ? C.saiaEsc : '#2B2B33') : C.verde;
   ctx.save(); ctx.translate(x,y); ctx.scale(sc * (o.flip || 1), sc);
   shadowEll(ctx,0,0,16,5,0.22);
   const sw = moving ? Math.sin(ph) * 5 : 0;
@@ -8023,36 +8041,80 @@ function drawBia(ctx,b,x,y,o){
   ell(ctx,-4+sw,-0.5,6,3); fs(ctx,'#fff',2);
   ell(ctx,4-sw,-0.5,6,3); fs(ctx,'#fff',2);
   ctx.fillStyle = PAL.formica; ctx.fillRect(-8+sw,-2.5,5,1.8); ctx.fillRect(2-sw,-2.5,5,1.8);
-  // saia verde
-  ctx.beginPath(); ctx.moveTo(-10,-32+bob); ctx.lineTo(10,-32+bob); ctx.lineTo(15,-14); ctx.lineTo(-15,-14); ctx.closePath(); fs(ctx,'#2E8B57',2.5);
-  // braços
+  // saia (e, da camisa em diante, a camisa por cima do tronco)
+  ctx.beginPath(); ctx.moveTo(-10,-32+bob); ctx.lineTo(10,-32+bob); ctx.lineTo(15,-14); ctx.lineTo(-15,-14); ctx.closePath(); fs(ctx,saia,2.5);
+  if (rp >= 3){ ctx.beginPath(); ctx.moveTo(-10,-32+bob); ctx.lineTo(10,-32+bob); ctx.lineTo(11.5,-19); ctx.lineTo(-11.5,-19); ctx.closePath(); fs(ctx,blusa,2.2); }
+  // braços: a manga cobre uma parte do braço (camiseta curta, camisa dobrada, o resto longa); a mão é sempre de pele
   ctx.lineCap = 'round';
   const wave = o.wave ? Math.sin((o.t||0)*8) * 5 : 0;
   const lv = o.lava ? Math.sin((o.t||0)*11) : 0;   // lavando: braços à frente, balançando em direção à pia
   let aE = o.lava ? [-2+lv*4+18,-24+lv*2] : [-15,-18], aD = o.wave ? [19+wave,-52] : (o.lava ? [20-lv*4,-24-lv*2] : [15,-18]);
   if (o.wave && o.wa != null){ const k = o.wa; aD = [15 + (4 + wave) * k,-18 - 34 * k]; }   // o aceno entra aos poucos (abertura)
   if (o.maos){ aE = o.maos[0]; aD = o.maos[1]; }                                             // as mãos onde a cena pede (abertura)
-  ctx.strokeStyle = PAL.tinta; ctx.lineWidth = 8.5;
-  ctx.beginPath(); ctx.moveTo(-10,-30+bob); ctx.lineTo(aE[0],aE[1]); ctx.stroke();
-  ctx.beginPath(); ctx.moveTo(10,-30+bob); ctx.lineTo(aD[0],aD[1]); ctx.stroke();
-  ctx.strokeStyle = '#2E8B57'; ctx.lineWidth = 5;
-  ctx.beginPath(); ctx.moveTo(-10,-30+bob); ctx.lineTo(aE[0],aE[1]); ctx.stroke();
-  ctx.beginPath(); ctx.moveTo(10,-30+bob); ctx.lineTo(aD[0],aD[1]); ctx.stroke();
+  const mang = rp === 1 ? 0.42 : rp === 3 ? 0.66 : 1;
+  const braco = (sx,pt) => {
+    const sy = -30 + bob, ex = pt[0], ey = pt[1];
+    ctx.strokeStyle = PAL.tinta; ctx.lineWidth = 8.5; ctx.beginPath(); ctx.moveTo(sx,sy); ctx.lineTo(ex,ey); ctx.stroke();
+    if (mang < 1){ ctx.strokeStyle = skin; ctx.lineWidth = 5; ctx.beginPath(); ctx.moveTo(sx,sy); ctx.lineTo(ex,ey); ctx.stroke(); }
+    const mx = sx + (ex - sx) * mang, my = sy + (ey - sy) * mang;
+    ctx.strokeStyle = blusa; ctx.lineWidth = 5; ctx.beginPath(); ctx.moveTo(sx,sy); ctx.lineTo(mx,my); ctx.stroke();
+    if (rp === 3){   // a barra da manga dobrada: um friso mais claro
+      const k = 0.14, bx = mx - (ex - sx) * k, by = my - (ey - sy) * k;
+      ctx.lineCap = 'butt'; ctx.strokeStyle = C.clara; ctx.lineWidth = 6; ctx.beginPath(); ctx.moveTo(bx,by); ctx.lineTo(mx,my); ctx.stroke(); ctx.lineCap = 'round';
+    }
+  };
+  braco(-10,aE); braco(10,aD);
   circ(ctx,aE[0],aE[1]+2,3.8); fs(ctx,skin,1.8);
   circ(ctx,aD[0],aD[1]+(o.maos ? 0 : (o.wave?-2:2)),3.8); fs(ctx,skin,1.8);
-  // avental laranja
-  ctx.beginPath(); ctx.moveTo(-8,-30+bob); ctx.lineTo(8,-30+bob); ctx.lineTo(11,-12); ctx.lineTo(-11,-12); ctx.closePath(); fs(ctx,PAL.alerta,2.4);
-  rr(ctx,-5,-22,10,6,1.5); fs(ctx,'#F58A4E',1.6);
-  ctx.strokeStyle = PAL.tinta; ctx.lineWidth = 1.6; ctx.beginPath(); ctx.moveTo(-6,-31+bob); ctx.lineTo(-3,-38+bob); ctx.moveTo(6,-31+bob); ctx.lineTo(3,-38+bob); ctx.stroke();
-  // cabeça e cabelo
-  const hy = -46 + bob;
-  circ(ctx,0,hy-14,13.5); fs(ctx,'#15100D',2.5);              // puff
+  // a gola e o pescoço (aparecem no retrato)
+  rr(ctx,-3.4,-37+bob,6.8,6,1.5); fs(ctx,skin,1.6);
+  if (rp === 1){ ctx.beginPath(); ctx.arc(0,-33+bob,5.2,0.1,Math.PI-0.1); ctx.lineWidth = 2; ctx.strokeStyle = PAL.tinta; ctx.stroke(); }   // gola redonda da camiseta
+  if (rp >= 3){ ctx.beginPath(); ctx.moveTo(-3.2,-34.5+bob); ctx.lineTo(-8,-31+bob); ctx.lineTo(-1.2,-29+bob); ctx.closePath(); fs(ctx,rp === 4 ? C.clara : C.camisa,1.8);
+    ctx.beginPath(); ctx.moveTo(3.2,-34.5+bob); ctx.lineTo(8,-31+bob); ctx.lineTo(1.2,-29+bob); ctx.closePath(); fs(ctx,rp === 4 ? C.clara : C.camisa,1.8); }
+  if (rp === 3){   // a carreira de botões
+    ctx.fillStyle = C.clara; [-27.5,-24.5,-21.5].forEach(by => { circ(ctx,0,by+bob*0.4,0.9); ctx.fill(); });
+  }
+  if (rp === 4){   // o colete escuro aberto em V, a lapela e a rosa bordada
+    ctx.beginPath(); ctx.moveTo(-10,-31+bob); ctx.lineTo(-4.2,-31+bob); ctx.lineTo(0,-23.5+bob*0.5); ctx.lineTo(4.2,-31+bob); ctx.lineTo(10,-31+bob); ctx.lineTo(11,-19); ctx.lineTo(-11,-19); ctx.closePath(); fs(ctx,C.colete,2.2);
+    ctx.beginPath(); ctx.moveTo(4.2,-31+bob); ctx.lineTo(8.6,-30.4+bob); ctx.lineTo(3.2,-24.2+bob); ctx.lineTo(0,-23.5+bob*0.5); ctx.closePath(); fs(ctx,'#3C4A5F',1.4);   // a lapela
+    ctx.save(); ctx.translate(5.6,-27+bob*0.6); circ(ctx,0,0,2.7); fs(ctx,C.rosa,1.5);
+    ctx.strokeStyle = '#8E2446'; ctx.lineWidth = 1.1; ctx.beginPath(); ctx.arc(0,0,1.4,0.4,Math.PI*1.6); ctx.stroke();
+    ctx.beginPath(); ctx.moveTo(1.6,2.2); ctx.lineTo(4,3.6); ctx.lineTo(2.2,0.8); ctx.closePath(); fs(ctx,C.folha,1.1); ctx.restore();
+  }
+  // avental: 1 e 2 inteiro (peitilho), 3 e 4 de cintura
+  if (rp <= 2){
+    ctx.beginPath(); ctx.moveTo(-8,-30+bob); ctx.lineTo(8,-30+bob); ctx.lineTo(11,-12); ctx.lineTo(-11,-12); ctx.closePath(); fs(ctx,rp === 1 ? C.florido : PAL.alerta,2.4);
+    ctx.strokeStyle = PAL.tinta; ctx.lineWidth = 1.6; ctx.beginPath(); ctx.moveTo(-6,-31+bob); ctx.lineTo(-3,-38+bob); ctx.moveTo(6,-31+bob); ctx.lineTo(3,-38+bob); ctx.stroke();
+    if (rp === 1){   // o pano florido da mãe: rosas miúdas, com folhinha
+      [[-4.5,-26.5],[3.4,-27.8],[-7,-20.5],[0.4,-21],[6.6,-19.6],[-3.6,-15],[4,-14.2]].forEach(([fx,fy]) => { ctx.fillStyle = C.folha; ctx.fillRect(fx+0.9,fy-0.2,2,1); circ(ctx,fx,fy,1.25); ctx.fillStyle = C.rosa; ctx.fill(); });
+    } else {   // o "Corre-Corre" bordado no peito, e o bolso mais baixo
+      ctx.save(); ctx.scale(o.flip || 1,1);   // o texto não vira ao contrário quando ela anda para o outro lado
+      txt(ctx,'Corre-',0,-26.6+bob*0.4,3.7,PAL.creme,'center',FD); txt(ctx,'Corre',0,-23.2+bob*0.4,3.7,PAL.creme,'center',FD); ctx.restore();
+      rr(ctx,-5,-18.4,10,5,1.5); fs(ctx,'#F58A4E',1.6);
+    }
+  } else {
+    ctx.beginPath(); ctx.moveTo(-11,-21); ctx.lineTo(11,-21); ctx.lineTo(15,-9); ctx.lineTo(-15,-9); ctx.closePath(); fs(ctx,rp === 3 ? PAL.alerta : C.avEsc,2.4);
+    ctx.strokeStyle = PAL.tinta; ctx.lineWidth = 1.6; ctx.beginPath(); ctx.moveTo(-11,-20); ctx.lineTo(-14,-24); ctx.moveTo(11,-20); ctx.lineTo(14,-24); ctx.stroke();
+    rr(ctx,-4.5,-16,9,5.2,1.5); fs(ctx,rp === 3 ? '#F58A4E' : '#2B3340',1.5);
+    if (rp === 4){ ctx.strokeStyle = PAL.creme; ctx.lineWidth = 1; ctx.beginPath(); ctx.moveTo(-14,-10.4); ctx.lineTo(14,-10.4); ctx.moveTo(-9.8,-19.8); ctx.lineTo(9.8,-19.8); ctx.stroke(); }   // o debrum claro do avental escuro
+  }
+  // cabeça e cabelo (1 solto com o puff; 2 rabo; 3 rabo alto; 4 coque)
+  const hy = -46 + bob, ph2 = moving ? Math.sin(ph) * 2.2 : (RM ? 0 : Math.sin((o.t||0)*2.2) * 0.8);
+  if (rp === 1){ circ(ctx,0,hy-14,13.5); fs(ctx,C.cabelo,2.5); }              // puff
+  else if (rp === 2){   // rabo na altura da nuca, balançando
+    ctx.beginPath(); ctx.moveTo(8,hy-7); ctx.bezierCurveTo(23+ph2,hy-9,27+ph2,hy+6,19+ph2*1.6,hy+13); ctx.bezierCurveTo(17+ph2,hy+6,15,hy+2,9,hy-1); ctx.closePath(); fs(ctx,C.cabelo,2);
+  } else if (rp === 3){   // rabo alto, preso no alto da cabeça
+    ctx.beginPath(); ctx.moveTo(1,hy-13); ctx.bezierCurveTo(6,hy-31,26+ph2,hy-28,24+ph2,hy-8); ctx.bezierCurveTo(21+ph2,hy-18,13,hy-18,8,hy-12); ctx.closePath(); fs(ctx,C.cabelo,2);
+  } else { circ(ctx,0,hy-19,7); fs(ctx,C.cabelo,2); }                           // coque
   circ(ctx,-11.5,hy+1,2.8); fs(ctx,skin,1.6); circ(ctx,11.5,hy+1,2.8); fs(ctx,skin,1.6);
   circ(ctx,0,hy,11.5); fs(ctx,skin,2.5);
-  ctx.beginPath(); ctx.arc(0,hy-1,12,Math.PI*1.05,Math.PI*1.95); ctx.quadraticCurveTo(0,hy-7,-12,hy-1); ctx.closePath(); fs(ctx,'#15100D',2);
-  // lenço amarelo
-  ctx.beginPath(); ctx.moveTo(-12.5,hy-5); ctx.quadraticCurveTo(0,hy-11,12.5,hy-5); ctx.lineTo(12,hy-9); ctx.quadraticCurveTo(0,hy-16,-12,hy-9); ctx.closePath(); fs(ctx,PAL.mostarda,2);
-  ctx.beginPath(); ctx.moveTo(10,hy-8); ctx.lineTo(18,hy-12); ctx.lineTo(16,hy-5); ctx.closePath(); fs(ctx,PAL.mostarda,1.8);
+  ctx.beginPath(); ctx.arc(0,hy-1,12,Math.PI*1.05,Math.PI*1.95); ctx.quadraticCurveTo(0,hy-7,-12,hy-1); ctx.closePath(); fs(ctx,C.cabelo,2);
+  if (rp === 1){   // lenço amarelo
+    ctx.beginPath(); ctx.moveTo(-12.5,hy-5); ctx.quadraticCurveTo(0,hy-11,12.5,hy-5); ctx.lineTo(12,hy-9); ctx.quadraticCurveTo(0,hy-16,-12,hy-9); ctx.closePath(); fs(ctx,PAL.mostarda,2);
+    ctx.beginPath(); ctx.moveTo(10,hy-8); ctx.lineTo(18,hy-12); ctx.lineTo(16,hy-5); ctx.closePath(); fs(ctx,PAL.mostarda,1.8);
+  } else if (rp === 2){ circ(ctx,9.2,hy-4.2,2.4); fs(ctx,PAL.alerta,1.6); }       // o elástico do rabo
+  else if (rp === 3){ circ(ctx,2,hy-12.6,2.3); fs(ctx,PAL.alerta,1.6); }
+  else { circ(ctx,5.4,hy-14.4,1.9); fs(ctx,PAL.creme,1.4); }   // o elástico do coque
   // rosto
   if (o.olha) ctx.translate(o.olha * 2.5,0);
   if (EXPR !== 'neutra') rostoExpr(ctx,EXPR,4.3,hy+2.5,hy+8,4.9,skin);   // v11.5: o retrato do balão
@@ -10890,7 +10952,7 @@ function render(g, ctx){
   });
   const b = g.bia;
   items.push({ y:b.y, f:() => {
-    drawBia(ctx,b,b.x,b.y,{ moving:b.moving, ph:b.walkPh, flip:b.dir, t:tm, lava:b.washing && !RM });
+    drawBia(ctx,b,b.x,b.y,{ moving:b.moving, ph:b.walkPh, flip:b.dir, t:tm, lava:b.washing && !RM, roupa:roupaBia(g) });
     const lay = b.layout() || [b.hands.slice(0,1), b.hands.slice(1,2)];
     lay.forEach((its,i) => {
       const hx = b.x + (i ? 20 : -20);
@@ -10986,7 +11048,7 @@ function render(g, ctx){
 
   if (menu){
     ctx.fillStyle = 'rgba(34,32,28,.18)'; ctx.fillRect(0,92,TW,448);
-    drawBia(ctx,b,TW-170,520,{ s:2.3, wave:true, t:tm });
+    drawBia(ctx,b,TW-170,520,{ s:2.3, wave:true, t:tm, roupa:roupaBia(g) });
     ctx.fillStyle = '#2B2823'; ctx.fillRect(0,540,TW,60);
     ctx.fillStyle = PAL.mostarda; ctx.fillRect(0,540,TW,4);
   } else {
@@ -11170,7 +11232,7 @@ function abBiaCrianca(c,x,y,s,o){
   c.restore();
 }
 // a Bia adulta, com o piscar e a boca da fala
-function abBia(c,x,y,o){ drawBia(c,{},x,y,Object.assign({ s:abEsc('bia'), pisca:abPisca(o.t || 0,1.9), fala:abBoca('bia') },o)); }
+function abBia(c,x,y,o){ drawBia(c,{},x,y,Object.assign({ roupa:1, s:abEsc('bia'), pisca:abPisca(o.t || 0,1.9), fala:abBoca('bia') },o)); }
 // braço com contorno: ombro, (cotovelo) e mão
 function abBraco(c,pts,cor,mao,larg){
   larg = larg || 7;
@@ -12112,7 +12174,7 @@ const CONV_UI = { texto:21, linha:27, nome:16, nota:15, w:420 };
    (o Bráulio, v11.6) entra aqui, em RETRATO_POSE (escala s e a altura dos pés abaixo do centro da cabeça, pe) e no `switch` de drawRetrato. */
 const RETRATO = { raio:34, fundo:'#F4EBDD', larg:84 };
 const RETRATO_QUEM = ['bia','tonhao','dani','joca','cami','anselmo','lia','braulio'];   // v11.6: o Bráulio, a 8ª coluna
-const RETRATO_POSE = { bia:{ s:2.3, pe:46, dy:3 }, tonhao:{ s:1.95, pe:14, dy:3 }, braulio:{ s:1.9, pe:42, dy:3 }, padrao:{ s:2.35, pe:42, dy:3 } };
+const RETRATO_POSE = { bia:{ s:1.75, pe:40, dy:3 }, tonhao:{ s:1.95, pe:14, dy:3 }, braulio:{ s:1.9, pe:42, dy:3 }, padrao:{ s:2.35, pe:42, dy:3 } };
 /* v11.6: o chef Bráulio (docs/ARCO.md §9): o mesmo boneco do cliente `braulio` de src/12-clientes.js (bigode grande, paletó bordô, gravata #F2C23D), de cabelo grisalho; desenhado por drawPerson */
 const BRAULIO_LOOK = { skin:0, hair:0, hairC:'#8C8C8C', pants:'#2B2B33', kid:false, elder:false, acc:null, glasses:false, bigode:true, blazer:true, gravata:'#F2C23D', paleto:AB_COR.aurora };
 function drawRetrato(c, q, e, cx, cy, g){
@@ -12126,7 +12188,7 @@ function drawRetrato(c, q, e, cx, cy, g){
   c.translate(cx, cy + dy); c.scale(P.s, P.s); c.translate(0, P.pe + P.dy / P.s);
   EXPR = e; CRACHA_A = 0;
   try {
-    if (q === 'bia') drawBia(c, null, 0, 0, {});
+    if (q === 'bia') drawBia(c, null, 0, 0, { roupa:roupaBia(g) });   // v11.7: a roupa do ponto
     else if (q === 'tonhao') drawChef(c, { day:{ gripe:false } }, 0, 0, 0);
     else if (q === 'dani') drawDani(c, d, 0);
     else if (q === 'joca') drawJoca(c, d, 0);
@@ -12555,6 +12617,9 @@ function devAbaHoje(body, secao, botao){
   { const f = luxoForca(), r = secao('Luxo (VIPs, exigentes na Avenida e Ambiente)', 'Agora: ' + (f >= 0 ? 'forçado no nível ' + f : 'normal, nível ' + luxoNivel(game)));   // v10.7
     botao(r, 'normal', () => game.devLuxo(null), f < 0);
     [0, 1, 2, 3, 4, 5].forEach(n => botao(r, String(n), () => game.devLuxo(n), f === n)); }
+  { const f = DEV.forca.roupa, r = secao('Roupa da Bia', 'Agora: ' + (typeof f === 'number' ? 'forçada a roupa ' + f : 'a do ponto (' + roupaBia(game) + ')'));   // v11.7
+    botao(r, 'Normal', () => game.devRoupa(null), typeof f !== 'number');
+    [1, 2, 3, 4].forEach(n => botao(r, String(n), () => game.devRoupa(n), f === n)); }
   if (musicaOk(game.ponto)) botao(secao('Música (Terraço)', 'Agora: ' + DEV_MUSICA[game.save.equipe.musica || 0]), 'Música: trocar', () => game.devMusica());   // v10.4: sem música → trioo → pianista
   if ((game.state === 'paused' || game.state === 'playing') && game.mode === 'carreira'){
     let r = secao('No dia', 'Velocidade ' + DEV.vel + '×');
@@ -12894,7 +12959,7 @@ function upgradeIcon(id){
       c.strokeStyle = PAL.tinta; c.lineWidth = 1; for (let x=-8;x<=12;x+=5){ c.beginPath(); c.moveTo(x,6); c.lineTo(x-1,10); c.stroke(); }
       c.lineWidth = 1.4; c.beginPath(); c.moveTo(-3,-6); c.lineTo(0,-8); c.moveTo(0,-4); c.lineTo(3,-6); c.stroke();
     } else if (id === 'bia'){
-      c.scale(1/1.5,1/1.5); drawBia(c,{},0,27,{ s:0.62 });   // v8.9.1: a figura inteira, sem corte
+      c.scale(1/1.5,1/1.5); drawBia(c,{},0,27,{ s:0.62, roupa:roupaBia(game) });   // v8.9.1: a figura inteira, sem corte
     } else if (id === 'tonhao'){
       c.scale(1/1.5,1/1.5); abTonhao(c,0,27,0.42,{ t:0, mood:0, g:1 });
     } else if (id === 'dani'){
@@ -14948,7 +15013,7 @@ try { Rank.init(); } catch(e) {}
 game.setState('menu');
 if (!aberturaVista() && !DEV.on) abrirAbertura('auto');   // v8.5: a abertura toca sozinha uma vez
 window.__game = game;
-window.__lcc = { BRAULIO_LOOK, convCabeca, drawRetrato, drawRetratosTela, RETRATO, RETRATO_QUEM, RETRATO_POSE, EXPRESSOES, exprDe, exprAtual: () => EXPR, devRetratos, CONV_UI, socorroFalas, NOITE, HIST_RECOMENDA, guiaPontos, guiaEstrelas, abreBoletim, drawVela, drawFala, CRITICO, HIST_CRITICO, normGuia, plantaBoato, drawCaderno, drawGarfo, ROSA, GERENTE, drawPetala, musicaPay, musicaDe, musicaOk, camiModoTudo, CAMI_TUDO, cafesLista, cafeIdx, cafeIngred, ANSELMO_CURSOS, normAnselmoCursos, drinksLista, drinksTodos, drinkPreco, drinkIngred, drinkVagas, drinkPrep, MAQUINA_LUGAR, drawCafesEsp, drawCarrinhoBoasVindas, espressoTrabalho, bebExtra, devCenas, devAssistir, devFinal, drawPlacaGuia, FINAL, finalCenas, histLiga, DEV_CAPS, drawIcon, liaOn, drawLia, LIA_HOME, LIA_LOOK, doceIcone, drawFino, TEMPOS, tempoMarcas, pedePrincipal, drawTempoTrilha, HIST_SOCORRO, HIST_EXIGENTE, EXIGENTE, LOUCA, vipDish, vipCook, casaBoa, exigRep, HIST_PLANTA, HIST_QUITOU, HIST_TETO, VONTADE, vontadeChance, vontadeDia, vontadeFalas, HIST_VONTADE_DOCE, HIST_VONTADE_CAFE, filaPos, STATIONS, MANUAL, manualTracos, manualAberta, abrirManual, buildManual, fecharManual, semente, manualSemente, FECHA, efoodAberto, drawTable, camiMesasN, camiModoMesas, CAMI_MESAS_MAX, drawAventalCami, FISCAL, Fiscal, FISCAL_PONTOS, abrirDev, fecharDev, buildDev, passoJogo, devLivre, diaNoPonto, manutEmerg, manutFator, daniTaskDe, plateSlotsFor, queueYsFor, assentoSlow, AVENIDA, SABORES, cursoOk, INDUSTRIAL, PLATE_SLOTS, cozinhaSlots, upgradeDe, DECOR, DECOR_GRUPOS, TOALHA, LUXO, MOVEIS, movelOf, movelNivel, normMoveis, luxoPts, luxoTot, luxoNivel, luxoForca, decorOf, normDecor, decorOn, FILA_ACOES, filaMax, MARMITA, RETIRADA, marmitaMao, drawMarmita, prateleiraPos, EFOOD_COR, AVAL_BRAVO, QUEUE, setShopTab: v => shopAbrir(v), setShopGrupo: g => shopGrupoAbrir(g), shopSecoes: () => SHOP_GRUPOS.map(g => shopSecoesVis(g)), TREINO, TREINO_PASSOS, TREINO_COR, Treino, treinoLugar, DICAS, dicaDe, dicaLigada, drawDica, HUD_LUCRO, hudEstrelas, drawHud, daniNaLoja, treinoPrimeiro, playCareer, buildMenu, introBanco, buildFalencia, BANCO, normEmprestimo, parcelaDe, devidoDe, jurosDe, tabelaDe, simulaEmprestimo, SEMANA, semanaOf, diaOf, FILA_JUSTA, PORTA, CHAIRS, PAT, CONTAS, INGRED, CARDAPIO, precoPrato, CURSOS, CURSO_AV, CURSO_XP, tonhaoXp, tonhaoNivelXp, daniXp, daniNivelXp, DANI_XP, DANI_CURSOS, CURSOS_SEMFIM, cursoOf, cursoNivel, normCursos, pratoAv, CARNES, drawDish, pratoSabido, pratosSabidos, GOSTOS, GOSTOS_CAT, pedePrato, VEG, vegMov, drawDish, MAIS, PONTOS_ACAO, GORJETA, DRINK_PRICE, MOVIMENTO, movimentoSalao, DIVULGA, DIVULGA_DIA, divulgaOf, contasDia, bomGoal, SALAO, PONTOS, pontoOf, MESA, mesaBox, mesaPreco, salaoLugares, mesaProblema, salaoCaminho, salaoProblema, salaoOrdena, salaoAuto, salaoVaga, salaoPerto, salaoKit, salaoDevolucao, SALAO_SEMFIM, normSalao, setObst, OBST, pathOk, MAQUINA, BEBIDA_ESPERA, bebidaOf, MANUT, manutOf, manutChance, manutPreco, normManut, CLIMA, CLIMA_DIA, EVENTOS, eventoSemana, introManut, normPend, CALCADA, TW, HUDX, esperaAp, tableApproach, CRIT, STAFF, diariaDani, diariaJoca, cursosPay, DANI_TASKS, DANI_HANDS, daniTaskOk, TRASH, WASH, payroll, FOLHA_CORTE, folhaCorta, folhaCortes, folhaItens, listaE, pratosDe, couvertEffect, couvertOk, ambienteEffect, dishStock, normSave, Helper, JUICE, KITCHEN_SLOTS, handLayout, trayOk, Game, Group, Table, Kitchen, Waitress, BIA_SPEED, DAYS, UPGRADES, CUSTOMER_TYPES, LAYOUT, PAL, Sfx, findPath, render, Rank, sortRows, cleanName, normName, CMD, ENDLESS, VIP, MULTA, rk, renderRank, openRank, closeRank, LS, lsGet, lsSet, loadSave, DEV, saveKey, devSync, divulgaAberta, CAIXA_MAX, VERSAO, normCaixa, caixaResumo, caixaTotais, copyText, PRATO, pratoPerde, pratoVapor, AVAL, AVAL_CRIT, AVAL_BRAVO, avalMenu, cursosItem, DOCES, CAFES, cafeDe, DRINKS, drinkDe, drinkIdx, anselmoOn, ANSELMO_HOME, ANSELMO_LOOK, drawAnselmo, docesLista, docePreco, doceIngred, doceIdx, CAMI_CURSOS, CAMI_HOME, CAMI_LOOK, camiNivelCursos, normCamiCursos, drawCami, drawEspresso, JOCA_XP, JOCA_CURSOS, JOCA_HOME, jocaXp, jocaNivelXp, BASICAS, donoBasico, cursoDaniVis, JOCA_LOOK, drawJoca, avalTeto, avalEscala, TERRACO, fixosDe, vipTipos, doorFor, DOOR, terraco, drawPiano, drawPoltrona, drawFoyerTe, drawParedeTe, drawElevadorTe, drawLugarTe, drawPerson, makePeople, drawChair, iconeMudanca, avalFrac, AVAL_SIMPLES, AVAL_DECOR, normAval, avalNota, avalMedias, avalGeral, avalMovimento, avalMinimo, avalComentario, fmtNota, notaFaixa, gurugolCaixa, AVAL_COM, normAvalCom, buildGurugol, ABERTURA, Abertura, AB_CENAS, AB_ALT, AB_BASE, abEsc, AB_VIVO, aberturaVista, aberturaSom, drawAbertura, abrirAbertura, HISTORIA, HIST_CARDAPIO, HIST_DIVULGA, HIST_ENTREGA, LIBERA, liberaOf, ARCO, HIST_NOMES, normEquipe, upgradeCartao, cursoFeito, AVAL_POUCO, REFORMA, HIST, carencia, Conversa, drawConversa, falar, fluxoHistoria, falar, aberturaAtual: () => abertura };
+window.__lcc = { drawBia, roupaBia, BIA_ROUPA_COR, abBia, BRAULIO_LOOK, convCabeca, drawRetrato, drawRetratosTela, RETRATO, RETRATO_QUEM, RETRATO_POSE, EXPRESSOES, exprDe, exprAtual: () => EXPR, devRetratos, CONV_UI, socorroFalas, NOITE, HIST_RECOMENDA, guiaPontos, guiaEstrelas, abreBoletim, drawVela, drawFala, CRITICO, HIST_CRITICO, normGuia, plantaBoato, drawCaderno, drawGarfo, ROSA, GERENTE, drawPetala, musicaPay, musicaDe, musicaOk, camiModoTudo, CAMI_TUDO, cafesLista, cafeIdx, cafeIngred, ANSELMO_CURSOS, normAnselmoCursos, drinksLista, drinksTodos, drinkPreco, drinkIngred, drinkVagas, drinkPrep, MAQUINA_LUGAR, drawCafesEsp, drawCarrinhoBoasVindas, espressoTrabalho, bebExtra, devCenas, devAssistir, devFinal, drawPlacaGuia, FINAL, finalCenas, histLiga, DEV_CAPS, drawIcon, liaOn, drawLia, LIA_HOME, LIA_LOOK, doceIcone, drawFino, TEMPOS, tempoMarcas, pedePrincipal, drawTempoTrilha, HIST_SOCORRO, HIST_EXIGENTE, EXIGENTE, LOUCA, vipDish, vipCook, casaBoa, exigRep, HIST_PLANTA, HIST_QUITOU, HIST_TETO, VONTADE, vontadeChance, vontadeDia, vontadeFalas, HIST_VONTADE_DOCE, HIST_VONTADE_CAFE, filaPos, STATIONS, MANUAL, manualTracos, manualAberta, abrirManual, buildManual, fecharManual, semente, manualSemente, FECHA, efoodAberto, drawTable, camiMesasN, camiModoMesas, CAMI_MESAS_MAX, drawAventalCami, FISCAL, Fiscal, FISCAL_PONTOS, abrirDev, fecharDev, buildDev, passoJogo, devLivre, diaNoPonto, manutEmerg, manutFator, daniTaskDe, plateSlotsFor, queueYsFor, assentoSlow, AVENIDA, SABORES, cursoOk, INDUSTRIAL, PLATE_SLOTS, cozinhaSlots, upgradeDe, DECOR, DECOR_GRUPOS, TOALHA, LUXO, MOVEIS, movelOf, movelNivel, normMoveis, luxoPts, luxoTot, luxoNivel, luxoForca, decorOf, normDecor, decorOn, FILA_ACOES, filaMax, MARMITA, RETIRADA, marmitaMao, drawMarmita, prateleiraPos, EFOOD_COR, AVAL_BRAVO, QUEUE, setShopTab: v => shopAbrir(v), setShopGrupo: g => shopGrupoAbrir(g), shopSecoes: () => SHOP_GRUPOS.map(g => shopSecoesVis(g)), TREINO, TREINO_PASSOS, TREINO_COR, Treino, treinoLugar, DICAS, dicaDe, dicaLigada, drawDica, HUD_LUCRO, hudEstrelas, drawHud, daniNaLoja, treinoPrimeiro, playCareer, buildMenu, introBanco, buildFalencia, BANCO, normEmprestimo, parcelaDe, devidoDe, jurosDe, tabelaDe, simulaEmprestimo, SEMANA, semanaOf, diaOf, FILA_JUSTA, PORTA, CHAIRS, PAT, CONTAS, INGRED, CARDAPIO, precoPrato, CURSOS, CURSO_AV, CURSO_XP, tonhaoXp, tonhaoNivelXp, daniXp, daniNivelXp, DANI_XP, DANI_CURSOS, CURSOS_SEMFIM, cursoOf, cursoNivel, normCursos, pratoAv, CARNES, drawDish, pratoSabido, pratosSabidos, GOSTOS, GOSTOS_CAT, pedePrato, VEG, vegMov, drawDish, MAIS, PONTOS_ACAO, GORJETA, DRINK_PRICE, MOVIMENTO, movimentoSalao, DIVULGA, DIVULGA_DIA, divulgaOf, contasDia, bomGoal, SALAO, PONTOS, pontoOf, MESA, mesaBox, mesaPreco, salaoLugares, mesaProblema, salaoCaminho, salaoProblema, salaoOrdena, salaoAuto, salaoVaga, salaoPerto, salaoKit, salaoDevolucao, SALAO_SEMFIM, normSalao, setObst, OBST, pathOk, MAQUINA, BEBIDA_ESPERA, bebidaOf, MANUT, manutOf, manutChance, manutPreco, normManut, CLIMA, CLIMA_DIA, EVENTOS, eventoSemana, introManut, normPend, CALCADA, TW, HUDX, esperaAp, tableApproach, CRIT, STAFF, diariaDani, diariaJoca, cursosPay, DANI_TASKS, DANI_HANDS, daniTaskOk, TRASH, WASH, payroll, FOLHA_CORTE, folhaCorta, folhaCortes, folhaItens, listaE, pratosDe, couvertEffect, couvertOk, ambienteEffect, dishStock, normSave, Helper, JUICE, KITCHEN_SLOTS, handLayout, trayOk, Game, Group, Table, Kitchen, Waitress, BIA_SPEED, DAYS, UPGRADES, CUSTOMER_TYPES, LAYOUT, PAL, Sfx, findPath, render, Rank, sortRows, cleanName, normName, CMD, ENDLESS, VIP, MULTA, rk, renderRank, openRank, closeRank, LS, lsGet, lsSet, loadSave, DEV, saveKey, devSync, divulgaAberta, CAIXA_MAX, VERSAO, normCaixa, caixaResumo, caixaTotais, copyText, PRATO, pratoPerde, pratoVapor, AVAL, AVAL_CRIT, AVAL_BRAVO, avalMenu, cursosItem, DOCES, CAFES, cafeDe, DRINKS, drinkDe, drinkIdx, anselmoOn, ANSELMO_HOME, ANSELMO_LOOK, drawAnselmo, docesLista, docePreco, doceIngred, doceIdx, CAMI_CURSOS, CAMI_HOME, CAMI_LOOK, camiNivelCursos, normCamiCursos, drawCami, drawEspresso, JOCA_XP, JOCA_CURSOS, JOCA_HOME, jocaXp, jocaNivelXp, BASICAS, donoBasico, cursoDaniVis, JOCA_LOOK, drawJoca, avalTeto, avalEscala, TERRACO, fixosDe, vipTipos, doorFor, DOOR, terraco, drawPiano, drawPoltrona, drawFoyerTe, drawParedeTe, drawElevadorTe, drawLugarTe, drawPerson, makePeople, drawChair, iconeMudanca, avalFrac, AVAL_SIMPLES, AVAL_DECOR, normAval, avalNota, avalMedias, avalGeral, avalMovimento, avalMinimo, avalComentario, fmtNota, notaFaixa, gurugolCaixa, AVAL_COM, normAvalCom, buildGurugol, ABERTURA, Abertura, AB_CENAS, AB_ALT, AB_BASE, abEsc, AB_VIVO, aberturaVista, aberturaSom, drawAbertura, abrirAbertura, HISTORIA, HIST_CARDAPIO, HIST_DIVULGA, HIST_ENTREGA, LIBERA, liberaOf, ARCO, HIST_NOMES, normEquipe, upgradeCartao, cursoFeito, AVAL_POUCO, REFORMA, HIST, carencia, Conversa, drawConversa, falar, fluxoHistoria, falar, aberturaAtual: () => abertura };
 window.requestAnimationFrame(frame);
 
 })();

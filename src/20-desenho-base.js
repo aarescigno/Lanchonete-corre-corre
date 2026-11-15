@@ -742,11 +742,22 @@ function drawPerson(ctx,p,x,y,o){
   ctx.restore();
 }
 
+/* v11.7 (etapa 8g, docs/ARCO.md §10): a roupa da Bia por ponto. roupaBia(g) dá 1 a 4 pelo `nivel` do ponto (o modo dev força por cima, DEV.forca.roupa);
+   drawBia(..., { roupa }) escolhe a roupa (sem `roupa`, a 1, a da Garagem: é o que a abertura usa). 1 camiseta e o avental florido da mãe, cabelo solto com o lenço;
+   2 avental da casa com "Corre-Corre" bordado, rabo; 3 camisa de botão de mangas dobradas e avental de cintura, rabo alto; 4 colete com a rosa na lapela, camisa clara, coque. */
+const BIA_ROUPA_COR = { colete:'#2F3A4A', rosa:'#D9486E', verde:'#2E8B57', camisa:'#1F4FA3', clara:'#FBFAF5', saiaEsc:'#3B4252', avEsc:'#1B1F27', cabelo:'#15100D', florido:'#F7EFD8', folha:'#4F9F6A' };
+function roupaBia(g){
+  const f = DEV.on ? DEV.forca.roupa : undefined;
+  if (typeof f === 'number' && f >= 1 && f <= 4) return f;
+  return clamp(Math.round((g && g.ponto && g.ponto.nivel) || 1), 1, 4);
+}
 function drawBia(ctx,b,x,y,o){
   o = o || {};
   const sc = o.s || 1, moving = !!o.moving, ph = o.ph || 0;
   const bob = (moving && !RM) ? -Math.abs(Math.sin(ph)) * 2.8 : (RM ? 0 : Math.sin((o.t||0)*3) * 0.6);
-  const skin = '#6B3F25';
+  const skin = '#6B3F25', rp = clamp(Math.round(o.roupa || 1), 1, 4), C = BIA_ROUPA_COR;
+  const blusa = rp === 3 ? C.camisa : rp === 4 ? C.clara : C.verde;       // a camiseta, a camisa
+  const saia = rp >= 3 ? (rp === 4 ? C.saiaEsc : '#2B2B33') : C.verde;
   ctx.save(); ctx.translate(x,y); ctx.scale(sc * (o.flip || 1), sc);
   shadowEll(ctx,0,0,16,5,0.22);
   const sw = moving ? Math.sin(ph) * 5 : 0;
@@ -756,36 +767,80 @@ function drawBia(ctx,b,x,y,o){
   ell(ctx,-4+sw,-0.5,6,3); fs(ctx,'#fff',2);
   ell(ctx,4-sw,-0.5,6,3); fs(ctx,'#fff',2);
   ctx.fillStyle = PAL.formica; ctx.fillRect(-8+sw,-2.5,5,1.8); ctx.fillRect(2-sw,-2.5,5,1.8);
-  // saia verde
-  ctx.beginPath(); ctx.moveTo(-10,-32+bob); ctx.lineTo(10,-32+bob); ctx.lineTo(15,-14); ctx.lineTo(-15,-14); ctx.closePath(); fs(ctx,'#2E8B57',2.5);
-  // braços
+  // saia (e, da camisa em diante, a camisa por cima do tronco)
+  ctx.beginPath(); ctx.moveTo(-10,-32+bob); ctx.lineTo(10,-32+bob); ctx.lineTo(15,-14); ctx.lineTo(-15,-14); ctx.closePath(); fs(ctx,saia,2.5);
+  if (rp >= 3){ ctx.beginPath(); ctx.moveTo(-10,-32+bob); ctx.lineTo(10,-32+bob); ctx.lineTo(11.5,-19); ctx.lineTo(-11.5,-19); ctx.closePath(); fs(ctx,blusa,2.2); }
+  // braços: a manga cobre uma parte do braço (camiseta curta, camisa dobrada, o resto longa); a mão é sempre de pele
   ctx.lineCap = 'round';
   const wave = o.wave ? Math.sin((o.t||0)*8) * 5 : 0;
   const lv = o.lava ? Math.sin((o.t||0)*11) : 0;   // lavando: braços à frente, balançando em direção à pia
   let aE = o.lava ? [-2+lv*4+18,-24+lv*2] : [-15,-18], aD = o.wave ? [19+wave,-52] : (o.lava ? [20-lv*4,-24-lv*2] : [15,-18]);
   if (o.wave && o.wa != null){ const k = o.wa; aD = [15 + (4 + wave) * k,-18 - 34 * k]; }   // o aceno entra aos poucos (abertura)
   if (o.maos){ aE = o.maos[0]; aD = o.maos[1]; }                                             // as mãos onde a cena pede (abertura)
-  ctx.strokeStyle = PAL.tinta; ctx.lineWidth = 8.5;
-  ctx.beginPath(); ctx.moveTo(-10,-30+bob); ctx.lineTo(aE[0],aE[1]); ctx.stroke();
-  ctx.beginPath(); ctx.moveTo(10,-30+bob); ctx.lineTo(aD[0],aD[1]); ctx.stroke();
-  ctx.strokeStyle = '#2E8B57'; ctx.lineWidth = 5;
-  ctx.beginPath(); ctx.moveTo(-10,-30+bob); ctx.lineTo(aE[0],aE[1]); ctx.stroke();
-  ctx.beginPath(); ctx.moveTo(10,-30+bob); ctx.lineTo(aD[0],aD[1]); ctx.stroke();
+  const mang = rp === 1 ? 0.42 : rp === 3 ? 0.66 : 1;
+  const braco = (sx,pt) => {
+    const sy = -30 + bob, ex = pt[0], ey = pt[1];
+    ctx.strokeStyle = PAL.tinta; ctx.lineWidth = 8.5; ctx.beginPath(); ctx.moveTo(sx,sy); ctx.lineTo(ex,ey); ctx.stroke();
+    if (mang < 1){ ctx.strokeStyle = skin; ctx.lineWidth = 5; ctx.beginPath(); ctx.moveTo(sx,sy); ctx.lineTo(ex,ey); ctx.stroke(); }
+    const mx = sx + (ex - sx) * mang, my = sy + (ey - sy) * mang;
+    ctx.strokeStyle = blusa; ctx.lineWidth = 5; ctx.beginPath(); ctx.moveTo(sx,sy); ctx.lineTo(mx,my); ctx.stroke();
+    if (rp === 3){   // a barra da manga dobrada: um friso mais claro
+      const k = 0.14, bx = mx - (ex - sx) * k, by = my - (ey - sy) * k;
+      ctx.lineCap = 'butt'; ctx.strokeStyle = C.clara; ctx.lineWidth = 6; ctx.beginPath(); ctx.moveTo(bx,by); ctx.lineTo(mx,my); ctx.stroke(); ctx.lineCap = 'round';
+    }
+  };
+  braco(-10,aE); braco(10,aD);
   circ(ctx,aE[0],aE[1]+2,3.8); fs(ctx,skin,1.8);
   circ(ctx,aD[0],aD[1]+(o.maos ? 0 : (o.wave?-2:2)),3.8); fs(ctx,skin,1.8);
-  // avental laranja
-  ctx.beginPath(); ctx.moveTo(-8,-30+bob); ctx.lineTo(8,-30+bob); ctx.lineTo(11,-12); ctx.lineTo(-11,-12); ctx.closePath(); fs(ctx,PAL.alerta,2.4);
-  rr(ctx,-5,-22,10,6,1.5); fs(ctx,'#F58A4E',1.6);
-  ctx.strokeStyle = PAL.tinta; ctx.lineWidth = 1.6; ctx.beginPath(); ctx.moveTo(-6,-31+bob); ctx.lineTo(-3,-38+bob); ctx.moveTo(6,-31+bob); ctx.lineTo(3,-38+bob); ctx.stroke();
-  // cabeça e cabelo
-  const hy = -46 + bob;
-  circ(ctx,0,hy-14,13.5); fs(ctx,'#15100D',2.5);              // puff
+  // a gola e o pescoço (aparecem no retrato)
+  rr(ctx,-3.4,-37+bob,6.8,6,1.5); fs(ctx,skin,1.6);
+  if (rp === 1){ ctx.beginPath(); ctx.arc(0,-33+bob,5.2,0.1,Math.PI-0.1); ctx.lineWidth = 2; ctx.strokeStyle = PAL.tinta; ctx.stroke(); }   // gola redonda da camiseta
+  if (rp >= 3){ ctx.beginPath(); ctx.moveTo(-3.2,-34.5+bob); ctx.lineTo(-8,-31+bob); ctx.lineTo(-1.2,-29+bob); ctx.closePath(); fs(ctx,rp === 4 ? C.clara : C.camisa,1.8);
+    ctx.beginPath(); ctx.moveTo(3.2,-34.5+bob); ctx.lineTo(8,-31+bob); ctx.lineTo(1.2,-29+bob); ctx.closePath(); fs(ctx,rp === 4 ? C.clara : C.camisa,1.8); }
+  if (rp === 3){   // a carreira de botões
+    ctx.fillStyle = C.clara; [-27.5,-24.5,-21.5].forEach(by => { circ(ctx,0,by+bob*0.4,0.9); ctx.fill(); });
+  }
+  if (rp === 4){   // o colete escuro aberto em V, a lapela e a rosa bordada
+    ctx.beginPath(); ctx.moveTo(-10,-31+bob); ctx.lineTo(-4.2,-31+bob); ctx.lineTo(0,-23.5+bob*0.5); ctx.lineTo(4.2,-31+bob); ctx.lineTo(10,-31+bob); ctx.lineTo(11,-19); ctx.lineTo(-11,-19); ctx.closePath(); fs(ctx,C.colete,2.2);
+    ctx.beginPath(); ctx.moveTo(4.2,-31+bob); ctx.lineTo(8.6,-30.4+bob); ctx.lineTo(3.2,-24.2+bob); ctx.lineTo(0,-23.5+bob*0.5); ctx.closePath(); fs(ctx,'#3C4A5F',1.4);   // a lapela
+    ctx.save(); ctx.translate(5.6,-27+bob*0.6); circ(ctx,0,0,2.7); fs(ctx,C.rosa,1.5);
+    ctx.strokeStyle = '#8E2446'; ctx.lineWidth = 1.1; ctx.beginPath(); ctx.arc(0,0,1.4,0.4,Math.PI*1.6); ctx.stroke();
+    ctx.beginPath(); ctx.moveTo(1.6,2.2); ctx.lineTo(4,3.6); ctx.lineTo(2.2,0.8); ctx.closePath(); fs(ctx,C.folha,1.1); ctx.restore();
+  }
+  // avental: 1 e 2 inteiro (peitilho), 3 e 4 de cintura
+  if (rp <= 2){
+    ctx.beginPath(); ctx.moveTo(-8,-30+bob); ctx.lineTo(8,-30+bob); ctx.lineTo(11,-12); ctx.lineTo(-11,-12); ctx.closePath(); fs(ctx,rp === 1 ? C.florido : PAL.alerta,2.4);
+    ctx.strokeStyle = PAL.tinta; ctx.lineWidth = 1.6; ctx.beginPath(); ctx.moveTo(-6,-31+bob); ctx.lineTo(-3,-38+bob); ctx.moveTo(6,-31+bob); ctx.lineTo(3,-38+bob); ctx.stroke();
+    if (rp === 1){   // o pano florido da mãe: rosas miúdas, com folhinha
+      [[-4.5,-26.5],[3.4,-27.8],[-7,-20.5],[0.4,-21],[6.6,-19.6],[-3.6,-15],[4,-14.2]].forEach(([fx,fy]) => { ctx.fillStyle = C.folha; ctx.fillRect(fx+0.9,fy-0.2,2,1); circ(ctx,fx,fy,1.25); ctx.fillStyle = C.rosa; ctx.fill(); });
+    } else {   // o "Corre-Corre" bordado no peito, e o bolso mais baixo
+      ctx.save(); ctx.scale(o.flip || 1,1);   // o texto não vira ao contrário quando ela anda para o outro lado
+      txt(ctx,'Corre-',0,-26.6+bob*0.4,3.7,PAL.creme,'center',FD); txt(ctx,'Corre',0,-23.2+bob*0.4,3.7,PAL.creme,'center',FD); ctx.restore();
+      rr(ctx,-5,-18.4,10,5,1.5); fs(ctx,'#F58A4E',1.6);
+    }
+  } else {
+    ctx.beginPath(); ctx.moveTo(-11,-21); ctx.lineTo(11,-21); ctx.lineTo(15,-9); ctx.lineTo(-15,-9); ctx.closePath(); fs(ctx,rp === 3 ? PAL.alerta : C.avEsc,2.4);
+    ctx.strokeStyle = PAL.tinta; ctx.lineWidth = 1.6; ctx.beginPath(); ctx.moveTo(-11,-20); ctx.lineTo(-14,-24); ctx.moveTo(11,-20); ctx.lineTo(14,-24); ctx.stroke();
+    rr(ctx,-4.5,-16,9,5.2,1.5); fs(ctx,rp === 3 ? '#F58A4E' : '#2B3340',1.5);
+    if (rp === 4){ ctx.strokeStyle = PAL.creme; ctx.lineWidth = 1; ctx.beginPath(); ctx.moveTo(-14,-10.4); ctx.lineTo(14,-10.4); ctx.moveTo(-9.8,-19.8); ctx.lineTo(9.8,-19.8); ctx.stroke(); }   // o debrum claro do avental escuro
+  }
+  // cabeça e cabelo (1 solto com o puff; 2 rabo; 3 rabo alto; 4 coque)
+  const hy = -46 + bob, ph2 = moving ? Math.sin(ph) * 2.2 : (RM ? 0 : Math.sin((o.t||0)*2.2) * 0.8);
+  if (rp === 1){ circ(ctx,0,hy-14,13.5); fs(ctx,C.cabelo,2.5); }              // puff
+  else if (rp === 2){   // rabo na altura da nuca, balançando
+    ctx.beginPath(); ctx.moveTo(8,hy-7); ctx.bezierCurveTo(23+ph2,hy-9,27+ph2,hy+6,19+ph2*1.6,hy+13); ctx.bezierCurveTo(17+ph2,hy+6,15,hy+2,9,hy-1); ctx.closePath(); fs(ctx,C.cabelo,2);
+  } else if (rp === 3){   // rabo alto, preso no alto da cabeça
+    ctx.beginPath(); ctx.moveTo(1,hy-13); ctx.bezierCurveTo(6,hy-31,26+ph2,hy-28,24+ph2,hy-8); ctx.bezierCurveTo(21+ph2,hy-18,13,hy-18,8,hy-12); ctx.closePath(); fs(ctx,C.cabelo,2);
+  } else { circ(ctx,0,hy-19,7); fs(ctx,C.cabelo,2); }                           // coque
   circ(ctx,-11.5,hy+1,2.8); fs(ctx,skin,1.6); circ(ctx,11.5,hy+1,2.8); fs(ctx,skin,1.6);
   circ(ctx,0,hy,11.5); fs(ctx,skin,2.5);
-  ctx.beginPath(); ctx.arc(0,hy-1,12,Math.PI*1.05,Math.PI*1.95); ctx.quadraticCurveTo(0,hy-7,-12,hy-1); ctx.closePath(); fs(ctx,'#15100D',2);
-  // lenço amarelo
-  ctx.beginPath(); ctx.moveTo(-12.5,hy-5); ctx.quadraticCurveTo(0,hy-11,12.5,hy-5); ctx.lineTo(12,hy-9); ctx.quadraticCurveTo(0,hy-16,-12,hy-9); ctx.closePath(); fs(ctx,PAL.mostarda,2);
-  ctx.beginPath(); ctx.moveTo(10,hy-8); ctx.lineTo(18,hy-12); ctx.lineTo(16,hy-5); ctx.closePath(); fs(ctx,PAL.mostarda,1.8);
+  ctx.beginPath(); ctx.arc(0,hy-1,12,Math.PI*1.05,Math.PI*1.95); ctx.quadraticCurveTo(0,hy-7,-12,hy-1); ctx.closePath(); fs(ctx,C.cabelo,2);
+  if (rp === 1){   // lenço amarelo
+    ctx.beginPath(); ctx.moveTo(-12.5,hy-5); ctx.quadraticCurveTo(0,hy-11,12.5,hy-5); ctx.lineTo(12,hy-9); ctx.quadraticCurveTo(0,hy-16,-12,hy-9); ctx.closePath(); fs(ctx,PAL.mostarda,2);
+    ctx.beginPath(); ctx.moveTo(10,hy-8); ctx.lineTo(18,hy-12); ctx.lineTo(16,hy-5); ctx.closePath(); fs(ctx,PAL.mostarda,1.8);
+  } else if (rp === 2){ circ(ctx,9.2,hy-4.2,2.4); fs(ctx,PAL.alerta,1.6); }       // o elástico do rabo
+  else if (rp === 3){ circ(ctx,2,hy-12.6,2.3); fs(ctx,PAL.alerta,1.6); }
+  else { circ(ctx,5.4,hy-14.4,1.9); fs(ctx,PAL.creme,1.4); }   // o elástico do coque
   // rosto
   if (o.olha) ctx.translate(o.olha * 2.5,0);
   if (EXPR !== 'neutra') rostoExpr(ctx,EXPR,4.3,hy+2.5,hy+8,4.9,skin);   // v11.5: o retrato do balão

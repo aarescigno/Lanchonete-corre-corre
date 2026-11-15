@@ -75,7 +75,7 @@ function render(g, ctx){
   });
   const b = g.bia;
   items.push({ y:b.y, f:() => {
-    drawBia(ctx,b,b.x,b.y,{ moving:b.moving, ph:b.walkPh, flip:b.dir, t:tm, lava:b.washing && !RM });
+    drawBia(ctx,b,b.x,b.y,{ moving:b.moving, ph:b.walkPh, flip:b.dir, t:tm, lava:b.washing && !RM, roupa:roupaBia(g) });
     const lay = b.layout() || [b.hands.slice(0,1), b.hands.slice(1,2)];
     lay.forEach((its,i) => {
       const hx = b.x + (i ? 20 : -20);
@@ -171,7 +171,7 @@ function render(g, ctx){
 
   if (menu){
     ctx.fillStyle = 'rgba(34,32,28,.18)'; ctx.fillRect(0,92,TW,448);
-    drawBia(ctx,b,TW-170,520,{ s:2.3, wave:true, t:tm });
+    drawBia(ctx,b,TW-170,520,{ s:2.3, wave:true, t:tm, roupa:roupaBia(g) });
     ctx.fillStyle = '#2B2823'; ctx.fillRect(0,540,TW,60);
     ctx.fillStyle = PAL.mostarda; ctx.fillRect(0,540,TW,4);
   } else {

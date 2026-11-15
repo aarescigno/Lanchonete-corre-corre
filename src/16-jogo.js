@@ -2259,6 +2259,12 @@ class Game {
     if (this.state === 'shop') this.resetDay(this.shopNext);
     return true;
   }
+  /* v11.7: a roupa da Bia forçada (1 a 4; null volta à roupa do ponto), só na memória */
+  devRoupa(n){
+    if (!DEV.on) return false;
+    if (n == null || n === '') delete DEV.forca.roupa; else DEV.forca.roupa = clamp(Math.round(+n) || 1, 1, 4);
+    return true;
+  }
   devForca(k, v){
     if (!DEV.on) return false;
     if (!v || v === 'sorteio') delete DEV.forca[k]; else DEV.forca[k] = v;

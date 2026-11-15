@@ -54,7 +54,7 @@ function abBiaCrianca(c,x,y,s,o){
   c.restore();
 }
 // a Bia adulta, com o piscar e a boca da fala
-function abBia(c,x,y,o){ drawBia(c,{},x,y,Object.assign({ s:abEsc('bia'), pisca:abPisca(o.t || 0,1.9), fala:abBoca('bia') },o)); }
+function abBia(c,x,y,o){ drawBia(c,{},x,y,Object.assign({ roupa:1, s:abEsc('bia'), pisca:abPisca(o.t || 0,1.9), fala:abBoca('bia') },o)); }
 // braço com contorno: ombro, (cotovelo) e mão
 function abBraco(c,pts,cor,mao,larg){
   larg = larg || 7;
