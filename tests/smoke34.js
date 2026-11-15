@@ -82,9 +82,9 @@ L.setShopGrupo('equipe'); L.setShopTab('dani'); ok(/aprendiz \(R\$ 15\/dia\)/.te
 ok(!g.setStaff('dani',2),'v8.9: sem experiência o aumento da Dani é recusado'); g.save.daniTar=4*L.DANI_XP.tarefas; ok(g.setStaff('dani',2) && L.payroll(g.save.equipe)===50+25 && g.save.equipe.dani===2,'o aumento leva a folha a R$ 75 (Tonhão 50 + Dani 25)');
 ok(!g.setStaff('dani',1) && g.save.equipe.dani===2,'v8.9: o nível pago é definitivo (sem "Reduzir")'); g.save.equipe.dani=1; g.save.daniTar=0;   // volta a aprendiz para o resto do teste
 { const eq={tonhao:0,dani:3,tv:false,som:false,couvert:false}; ok(L.folhaCortes(eq,null,10).join()==='aumento da Dani,aumento da Dani' && eq.dani===3,'sem dinheiro, a folha corta os aumentos da Dani (volta a aprendiz), nunca ela'); }
-// ---------- 6. cap. 2: nota do Gurugol 2,4 ----------
+// ---------- 6. cap. 2: nota do Gúgou 2,4 ----------
 g.save.bank=5000; notaDe(g,2.3);
-joga(H,400,0); ok(g.result.cap.n===2 && !g.result.cap.ok && g.save.conversa===null && /Nota do Gurugol 2,4 \(agora 2,3\)/.test(txt(els['end-msg'])),'nota 2,3: o cap. 2 continua');
+joga(H,400,0); ok(g.result.cap.n===2 && !g.result.cap.ok && g.save.conversa===null && /Nota do Gúgou 2,4 \(agora 2,3\)/.test(txt(els['end-msg'])),'nota 2,3: o cap. 2 continua');
 els['btn-next'].fire('click'); joga(H,400,0); ok(g.save.cap===2 && g.save.conversa===null,'e continua, dia após dia, sem prazo');
 notaDe(g,2.4); joga(H,400,0); ok(g.result.cap.ok && g.save.conversa==='depois' && /Objetivo cumprido/.test(txt(els['end-msg'])),'nota 2,4: objetivo cumprido');
 passa(H); els['btn-next'].fire('click');
@@ -94,7 +94,7 @@ const cap3=(resto,nota,bank)=>{ g.save.emp=resto?L.normEmprestimo({resto,amort:1
 { let c=cap3(300,2.8,5000); ok(c.n===3 && !c.ok && c.itens.length===3 && !c.itens[0].ok && c.itens[1].ok && c.itens[2].ok,'cap. 3 com dívida ainda: não cumpre (falta quitar)');
   c=cap3(0,2.6,5000); ok(!c.ok && c.itens[0].ok && !c.itens[1].ok && c.itens[2].ok,'sem dívida e com caixa, mas nota 2,6: não cumpre');
   c=cap3(0,2.8,500); ok(!c.ok && c.itens[0].ok && c.itens[1].ok && !c.itens[2].ok,'sem dívida e com nota, mas só R$ 500: não cumpre');
-  ok(c.itens.map(i=>i.txt).join(' · ')==='Reforma quitada · nota do Gurugol 2,7 (agora 2,8) · R$ 800 no caixa (agora R$ '+g.save.bank+')','os itens do cap. 3 na linha: ✓ quando cumpridos');
+  ok(c.itens.map(i=>i.txt).join(' · ')==='Reforma quitada · nota do Gúgou 2,7 (agora 2,8) · R$ 800 no caixa (agora R$ '+g.save.bank+')','os itens do cap. 3 na linha: ✓ quando cumpridos');
   c=cap3(0,2.8,5000); ok(c.ok && g.save.conversa==='depois' && /Objetivo cumprido/.test(txt(els['end-msg'])),'os 3 juntos: objetivo cumprido'); }
 els['btn-next'].fire('click');
 ok(g.conversa && g.conversa.falas===L.HISTORIA[2].depois,'toca a conversa de depois do cap. 3');

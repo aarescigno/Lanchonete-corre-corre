@@ -38,7 +38,7 @@ const aval=(s)=>({ r:s.slice(), s, txt:'x', k:'estudante' });
   fecha(H); g.startDay(2); joga(H,400,g=>{ g.stats.bravoMesa=1; });
   ok(g.save.libera.bia==='pend','dia 2 com grupo bravo na mesa: Bia pendente');
   ok(g.result.aval.coment.length<=3 && g.result.aval.coment.some(t=>H.L.LIBERA[0].reclama.includes(t)),'o resultado traz a reclamação da Bia');
-  ok(g.save.avalCom.some(c=>H.L.LIBERA[0].reclama.includes(c.t)),'e o Gurugol a guarda'); }
+  ok(g.save.avalCom.some(c=>H.L.LIBERA[0].reclama.includes(c.t)),'e o Gúgou a guarda'); }
 { const H=nova(), {g}=H; g.save.conversa=null; g.save.bank=5000; g.save.convCard=1; g.save.convDiv=1; g.save.convEnt=1;
   g.startDay(2); joga(H,400,g=>{ g.avals=[aval([5,3,5,5,5]),aval([5,2,5,5,5]),aval([5,3,5,5,5])]; });
   ok(g.save.libera.bia==='pend','3 avaliações com agilidade 3 ou menos também dão o gatilho');

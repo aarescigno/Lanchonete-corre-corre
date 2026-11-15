@@ -1,5 +1,5 @@
 // v9.0.1, etapa 2c-r6: cartão Cardápio na lojinha (cursos do Tonhão), selo "novo", conversa do cardápio no dia 2 (dia 1 desde a v9.0.3),
-// balão que desvia do botão Pular e comentário do Gurugol quando o cardápio é pequeno.
+// balão que desvia do botão Pular e comentário do Gúgou quando o cardápio é pequeno.
 const load=require('./harness.js'), fs=require('fs');
 let fails=0,total=0; const ok=(c,m)=>{ total++; if(!c){fails++;console.log('FAIL:',m);} else console.log('ok  :',m); };
 const txt=e=>(e.textContent||'')+(e.children||[]).map(txt).join(' ');
@@ -81,7 +81,7 @@ const joga=(H,fat)=>{ const {g,els}=H; if(g.state==='shop') els['btn-shop-go'].f
   ok(cruza(livre) && !cruza(cx),'sem desvio o balão do Tonhão cruza o Pular; com `evita` não cruza');
   const sem=mk(null); ok(sem.x===livre.x && sem.y===livre.y,'com `evita` nulo, o balão fica onde fica hoje'); }
 
-// ---------- 5. o comentário do Gurugol ----------
+// ---------- 5. o comentário do Gúgou ----------
 { const H=load(), {L}=H, r=[4,4,4,2,4];
   const POUCO=L.AVAL_POUCO, RUIM=['Pouca opção no cardápio.','Queria mais pratos.'];
   let a=true,b=true,c=true;

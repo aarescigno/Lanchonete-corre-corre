@@ -1,4 +1,4 @@
-// v8.4, avaliações do Gurugol: cada grupo que sai na carreira dá de 1 a 5 em 5 critérios; a nota é a média das últimas
+// v8.4, avaliações do Gúgou: cada grupo que sai na carreira dá de 1 a 5 em 5 critérios; a nota é a média das últimas
 // 30, a partir da 8ª; só 4 grupos sorteados por dia avaliam; ela mexe no movimento (−10% a +10%); vai no save, no fim do dia, no caixa e no HUD.
 const H=require('./harness.js')(); const {g,L,els}=H;
 const bot=require('./bot.js')(g,L,{});
@@ -48,7 +48,7 @@ g.save=L.normSave({dia:3,bank:500}); g.up=g.save.up; g.buildTables(); g.startDay
   ok(r[2]===4.2 && r[3]===2,'prato e cardápio (2,0 sem cursos, v8.6.9)');
   ok(r[4]===A.amb.base+A.amb.cafe,'ambiente: a base e o cafezinho');
   const v=g.avals[0].r, d=v.map((x,i)=>x-L.avalEscala(r[i],3)), h=d[0];   // r[0] é o menor: não passa do teto + folga
-  ok(v.every((x,i)=>Math.abs(x-Math.min(3+A.humor.folga*2,L.avalEscala(r[i],3)+h))<0.11) && h>=-A.humor.var*2-0.06 && h<=(A.humor.var+A.humor.extra[1])*2+0.06,'no Gurugol: a escala da Garagem mais o humor do cliente, até 3,8 ('+v+')');
+  ok(v.every((x,i)=>Math.abs(x-Math.min(3+A.humor.folga*2,L.avalEscala(r[i],3)+h))<0.11) && h>=-A.humor.var*2-0.06 && h<=(A.humor.var+A.humor.extra[1])*2+0.06,'no Gúgou: a escala da Garagem mais o humor do cliente, até 3,8 ('+v+')');
   { let mx=0; for(let i=0;i<300;i++){ g.avaliar(gr,0,0); mx=Math.max(mx,...g.avals[g.avals.length-1].r); } g.avals.length=1; ok(mx<=3+A.humor.folga*2+1e-9,'nenhum critério passa de 3,8 na Garagem ('+mx+')'); }
   gr.corrente=true; gr.capricho=true; gr.perdMesa=0; g.avaliar(gr,0,0); ok(g.avals[1].s[1]===5,'agilidade não passa de 5');
   gr.perdMesa=0; gr.state='ordered'; gr.hearts=3; gr.perdMesa=2; gr.gain(1); ok(gr.perdMesa===1,'coração devolvido na mesa compensa um perdido');
@@ -115,13 +115,13 @@ let st=0; while(g.state==='playing'&&st<30000){ bot(); g.update(0.05); st++; }
   const row=g.save.caixa[g.save.caixa.length-1]; ok(row.av===Math.round(a.dia.nota*10),'linha do caixa com a nota do dia');
   ok(L.normCaixa([{d:3,av:44}])[0].av===44,'normCaixa guarda a nota');
   const gb=els['end-stats'].children[0];
-  ok(gb.className==='guru' && /^Gurugol: .*Espera por mesa \d,\d/.test(gb.getAttribute('aria-label')) && /^Hoje, em \d+ avaliações: espera por mesa/.test(els['end-aval'].title),'fim do dia: a caixa do Gurugol à esquerda dos quadros');
+  ok(gb.className==='guru' && /^Gúgou: .*Espera por mesa \d,\d/.test(gb.getAttribute('aria-label')) && /^Hoje, em \d+ avaliações: espera por mesa/.test(els['end-aval'].title),'fim do dia: a caixa do Gúgou à esquerda dos quadros');
   ok(gb.children.filter(c=>c.className==='guru-crit').length===5,'uma barra por critério');
   ok(L.notaFaixa(2.94)==='pura' && L.notaFaixa(2.96)==='bronze' && L.notaFaixa(3)==='bronze' && L.notaFaixa(3.94)==='bronze' && L.notaFaixa(3.96)==='prata' && L.notaFaixa(4.44)==='prata' && L.notaFaixa(4.5)==='ouro' && L.notaFaixa(4.8)==='ouro' && L.notaFaixa(4.85)==='diamante','faixas: pura, bronze (3 a 3,9), prata (4 a 4,4), ouro (4,5 a 4,8) e diamante (acima de 4,8)');
-  ok(/Gurugol sem nota \(\d+\/8\)/.test(L.caixaResumo(g.save)),'resumo do caixa: sem nota ainda'); }
+  ok(/Gúgou sem nota \(\d+\/8\)/.test(L.caixaResumo(g.save)),'resumo do caixa: sem nota ainda'); }
 g.save.aval=L.normAval(cinco(30));
-ok(g.gurugol.nota===5 && /Gurugol 5,0 \(espera por mesa 5,0/.test(L.caixaResumo(g.save)),'com 8 ou mais: a nota no HUD e no resumo');
-// v8.4.2: aba Gurugol na lojinha, com a caixa da nota e os últimos comentários; os critérios com os nomes novos
+ok(g.gurugol.nota===5 && /Gúgou 5,0 \(espera por mesa 5,0/.test(L.caixaResumo(g.save)),'com 8 ou mais: a nota no HUD e no resumo');
+// v8.4.2: aba Gúgou na lojinha, com a caixa da nota e os últimos comentários; os critérios com os nomes novos
 ok(L.AVAL_CRIT[2].nome==='Qualidade da comida' && L.AVAL_CRIT[3].nome==='Diversidade do cardápio','critérios: qualidade da comida e diversidade do cardápio');
 { const n=g.save.avalCom.length, c=g.save.avalCom[n-1];
   ok(n>=1 && n<=4 && c.d===3 && c.n>=10 && c.n<=50 && typeof c.t==='string' && L.CUSTOMER_TYPES[c.k],'comentários do dia no save (dia, nota, texto e quem)');
@@ -130,11 +130,11 @@ ok(L.AVAL_CRIT[2].nome==='Qualidade da comida' && L.AVAL_CRIT[3].nome==='Diversi
 g.save.avalCom=L.normAvalCom([{d:2,n:32,t:'Comida meio fria.',k:'executiva'},{d:3,n:49,t:'Comida de mãe!',k:'familia',v:1}]);
 g.goShop(4); L.setShopTab('gurugol');
 { const t=texto(els['shop-grid']), gr=els['shop-grid'];
-  ok(gr.className==='shopgrid gurugol' && gr.children[0].children[0].className==='guru','aba Gurugol: a caixa da nota');
-  ok(/\+10% de movimento/.test(t) && /média das últimas 30 avaliações/.test(t),'aba Gurugol: movimento e quantas avaliações');
-  const li=gr.children[1].children; ok(li.length===2 && /Comida de mãe!/.test(texto(li[0])) && /Família \(VIP\) · dia 3/.test(texto(li[0])) && /Comida meio fria/.test(texto(li[1])),'aba Gurugol: os comentários, do mais novo para o mais velho'); }
-L.setShopTab('caixa'); ok(!/Gurugol/.test(texto(els['shop-grid'])),'o Gurugol saiu da aba Caixa');
-g.save.aval=[]; L.setShopTab('gurugol'); ok(/Ainda ninguém avaliou/.test(texto(els['shop-grid'])),'aba Gurugol sem avaliações'); g.save.aval=L.normAval(cinco(30));
+  ok(gr.className==='shopgrid gurugol' && gr.children[0].children[0].className==='guru','aba Gúgou: a caixa da nota');
+  ok(/\+10% de movimento/.test(t) && /média das últimas 30 avaliações/.test(t),'aba Gúgou: movimento e quantas avaliações');
+  const li=gr.children[1].children; ok(li.length===2 && /Comida de mãe!/.test(texto(li[0])) && /Família \(VIP\) · dia 3/.test(texto(li[0])) && /Comida meio fria/.test(texto(li[1])),'aba Gúgou: os comentários, do mais novo para o mais velho'); }
+L.setShopTab('caixa'); ok(!/Gúgou/.test(texto(els['shop-grid'])),'o Gúgou saiu da aba Caixa');
+g.save.aval=[]; L.setShopTab('gurugol'); ok(/Ainda ninguém avaliou/.test(texto(els['shop-grid'])),'aba Gúgou sem avaliações'); g.save.aval=L.normAval(cinco(30));
 g.startDay(4); g.begin(); let rn=true; try{ for(let i=0;i<40;i++){ bot(); g.update(0.05); L.render(g,H.ctx); } }catch(e){ rn=false; console.log(e); } ok(rn,'HUD com a nota desenha sem erro');
 console.log('smoke25.js: total = '+total+'  fails = '+fails);
 process.exit(fails?1:0);

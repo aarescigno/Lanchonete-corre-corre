@@ -239,7 +239,7 @@ const SHOP_GRUPOS = [
   { id:'lanchonete', nome:'Lanchonete', secoes:['cardapio', 'melhorias', 'salao', 'luxo', 'manut', 'divulga'] },
   { id:'equipe', nome:'Equipe', secoes:['bia', 'tonhao', 'dani', 'joca', 'cami', 'anselmo', 'lia'] },
   { id:'dinheiro', nome:'Dinheiro', secoes:['banco', 'mudanca', 'caixa'] },
-  { id:'gurugol', nome:'Gurugol', secoes:['gurugol'] }];
+  { id:'gurugol', nome:'Gúgou', secoes:['gurugol'] }];
 const SHOP_SECOES = {
   cardapio:{ nome:'Cardápio', icon:'cardapio', build:g => buildCardapio(g) },
   melhorias:{ nome:'Melhorias', icon:'ventilador', build:g => buildMelhorias(g) },
@@ -257,7 +257,7 @@ const SHOP_SECOES = {
   banco:{ nome:'Banco', icon:'banco', build:g => buildBanco(g) },
   mudanca:{ nome:'Mudança', icon:'mudanca', build:g => buildMudanca(g) },
   caixa:{ nome:'Caixa', icon:'contas', build:g => buildCaixa(g) },
-  gurugol:{ nome:'Gurugol', icon:'contas', build:g => buildGurugol(g) }};
+  gurugol:{ nome:'Gúgou', icon:'contas', build:g => buildGurugol(g) }};
 const SHOP_ANTIGAS = { equipe:'tonhao', cursos:'cardapio', decor:'luxo' };   // nomes das abas antigas, para os testes e capturas
 function shopGrupoDe(sec){ const g = SHOP_GRUPOS.find(x => x.secoes.indexOf(sec) >= 0); return g ? g.id : 'lanchonete'; }
 let shopTopo = false;   // v11.10: trocar de grupo, abrir seção ou voltar leva o grid ao alto; comprar na mesma seção mantém o lugar
@@ -869,7 +869,7 @@ function buildSalao(grid){
   side.appendChild(el('span', 'ed-contas', 'Luz e gás: ' + fmt(contasDia(game.tables, p)) + ' por dia (' + fmt(CONTAS.mesa) + ' por mesa e ' + fmt(CONTAS.lugar) + ' por lugar).'));
   const mov = Math.round((movimentoSalao(lug) - 1) * 100);
   side.appendChild(el('span', 'ed-contas', 'Cada lugar acima de ' + MOVIMENTO.kit + ' traz ' + Math.round(MOVIMENTO.porLugar * 100) + '% mais clientes' + (mov > 0 ? ' (hoje, +' + mov + '%).' : '.')));
-  side.appendChild(el('span', 'ed-contas', 'Toalha xadrez: ' + fmt(TOALHA.cost) + ' por mesa; melhora o ambiente no Gurugol para quem senta nela. ' + (todas.length - sem) + ' de ' + todas.length + (todas.length > 1 ? ' mesas têm.' : ' mesa tem.')));
+  side.appendChild(el('span', 'ed-contas', 'Toalha xadrez: ' + fmt(TOALHA.cost) + ' por mesa; melhora o ambiente no Gúgou para quem senta nela. ' + (todas.length - sem) + ' de ' + todas.length + (todas.length > 1 ? ' mesas têm.' : ' mesa tem.')));
   ed.appendChild(side);
   grid.appendChild(ed);
   drawEditor(cv);
@@ -951,7 +951,7 @@ function buildMoveis(grid){
 function cursoIcon(c, av){
   return tipCanvas(x => { x.translate(32,32); drawDish(x, c.pratos[0] || c.av.pratos[0], 0, 4, 1.7, false, 'frango', av || !c.pratos[0]); });
 }
-/* seção Cardápio (v9.0.1): o que se serve hoje, a diversidade no Gurugol e os cursos do Tonhão */
+/* seção Cardápio (v9.0.1): o que se serve hoje, a diversidade no Gúgou e os cursos do Tonhão */
 function buildCardapio(grid){
   if (game.noiteVisivel) buildNoite(grid);   // v10.10: a noite da estrela, no topo do Cardápio (Terraço, cap. 14 em diante)
   if (game.barracaVisivel) buildBarraca(grid);   // v10.6: no dia da festa junina, a barraca vem no topo
@@ -1194,14 +1194,14 @@ function caixaResumo(save){
   const cx = save.caixa, eq = save.equipe, sal = save.salao;
   const out = ['Lanchonete Corre-Corre ' + VERSAO + ' · Caixa (valores em R$)'].concat(game.save.guia && (game.save.guia.est || game.save.guia.rec) ? [NOITE.selo[game.save.guia.est]] : []);   // v10.10: o selo do Michelzão
   cx.forEach(r => out.push(r.int ? 'Dia ' + r.d + ' largado no meio: ' + r.int + (r.int > 1 ? ' grupos foram' : ' grupo foi') + ' embora bravo' + (r.int > 1 ? 's' : '') + ': −' + r.mul + ' · saldo ' + r.saldo : r.dev ? 'Devolução ' + (r.devK === 'maquina' ? 'da máquina de suco' : 'do salão') + ': +' + r.dev + ' · saldo ' + r.saldo : 'Dia ' + r.d + (r.ok ? ' ✓' : ' ✗') + ': fatura ' + r.fat + ' − ingred. ' + r.ingr + ' − contas ' + r.contas + ' − equipe ' + r.folha + (r.div ? ' − divulg. ' + r.div : '') +
-    ' = lucro ' + r.lucro + ' (meta ' + r.meta + ')' + (r.perd ? ' · ' + r.perd + (r.perd > 1 ? ' perdidos' : ' perdido') : '') + (r.mel + r.sal ? ' · compras ' + (r.mel + r.sal) : '') + (r.man ? ' · manutenção ' + r.man : '') + (r.emp ? ' · empréstimo +' + r.emp + (r.forc ? ' (à força)' : '') : '') + (r.par ? ' · banco −' + r.par + (r.jur ? ' (juros ' + r.jur + ')' : '') : '') + (r.atr ? ' · parcela atrasada' : '') + (r.tom ? ' · o banco tomou a lanchonete' : '') + (r.av ? ' · Gurugol ' + fmtNota(r.av / 10) : '') + ' · saldo ' + r.saldo));
+    ' = lucro ' + r.lucro + ' (meta ' + r.meta + ')' + (r.perd ? ' · ' + r.perd + (r.perd > 1 ? ' perdidos' : ' perdido') : '') + (r.mel + r.sal ? ' · compras ' + (r.mel + r.sal) : '') + (r.man ? ' · manutenção ' + r.man : '') + (r.emp ? ' · empréstimo +' + r.emp + (r.forc ? ' (à força)' : '') : '') + (r.par ? ' · banco −' + r.par + (r.jur ? ' (juros ' + r.jur + ')' : '') : '') + (r.atr ? ' · parcela atrasada' : '') + (r.tom ? ' · o banco tomou a lanchonete' : '') + (r.av ? ' · Gúgou ' + fmtNota(r.av / 10) : '') + ' · saldo ' + r.saldo));
   const nd = cx.filter(r => !r.dev && !r.int).length;
   if (nd) out.push('Para onde foi (' + nd + (nd > 1 ? ' dias' : ' dia') + '): ' + caixaTotais(cx).filter(t => t.v).map(t => t.name.toLowerCase() + ' ' + t.v).join(', '));
   const ups = UPGRADES.filter(u => save.up[u.id]).map(u => u.name.toLowerCase() + (u.multi && pratosDe(save.up) > 1 ? ' ×' + pratosDe(save.up) : ''));
   const ga = avalGeral(save.aval);
   out.push('Agora: dia ' + save.dia + ' · ' + fmt(save.bank) + (save.emp.resto ? ' (banco: faltam ' + save.emp.resto + ')' : '') + ' · lucro acumulado ' + save.lucroTot + ' · Tonhão nível ' + (eq.tonhao + 1) + ', ' + (eq.dani ? 'Dani nível ' + eq.dani : 'sem Dani') + (eq.couvert ? ', couvert' : '') + (eq.tv ? ', TV' : '') + (eq.som ? ', som' : '') +
     ' · ' + divulgaOf(save.divulga).name.toLowerCase() + ' · ' + pontoOf(sal.ponto).nome.replace(/ da .*/, '').toLowerCase() + ' com ' + sal.mesas.length + ' mesas e ' + salaoLugares(sal.mesas) + ' lugares · melhorias: ' + (ups.join(', ') || 'nenhuma') +
-    ' · Gurugol ' + (ga ? fmtNota(ga.nota) + ' (' + AVAL_CRIT.map((c, i) => c.nome.toLowerCase() + ' ' + fmtNota(ga.crit[i]) + ' em ' + ga.cnt[i]).join(', ') + ')' : 'sem nota (' + save.aval.length + '/' + AVAL.min + ')'));
+    ' · Gúgou ' + (ga ? fmtNota(ga.nota) + ' (' + AVAL_CRIT.map((c, i) => c.nome.toLowerCase() + ' ' + fmtNota(ga.crit[i]) + ' em ' + ga.cnt[i]).join(', ') + ')' : 'sem nota (' + save.aval.length + '/' + AVAL.min + ')'));
   return out.join('\n');
 }
 /* copia para a área de transferência; se o navegador não deixar, devolve false (a aba mostra o texto para copiar à mão) */
@@ -1245,7 +1245,7 @@ function buildCaixa(grid){
       tr.appendChild(td); tr.appendChild(cxTd(r.saldo)); tb.appendChild(tr); return;
     }
     const dia = el('td', null, 'Dia ' + r.d + (r.st ? ' ' + '★'.repeat(r.st) : '')); tr.appendChild(dia);
-    if (r.av) dia.title = 'Gurugol no dia: ' + fmtNota(r.av / 10) + ' ★';
+    if (r.av) dia.title = 'Gúgou no dia: ' + fmtNota(r.av / 10) + ' ★';
     const cs = [r.fat, r.ingr, r.contas, r.folha + r.div].map(v => cxTd(v)); cs.forEach(c => tr.appendChild(c));
     if (r.vig) cs[2].title = 'Inclui a multa da vigilância: ' + fmt(r.vig);   // v9.4
     const lu = cxTd(r.lucro, r.ok ? 'pos' : 'neg'); lu.title = (r.ok ? 'Passou' : 'Não passou') + ' da meta de ' + fmt(r.meta) + (r.perd ? '; ' + r.perd + (r.perd > 1 ? ' perdidos' : ' perdido') : '');
@@ -1291,10 +1291,10 @@ function buildCaixa(grid){
   });
   row.appendChild(b); row.appendChild(st); onde.appendChild(row); grid.appendChild(onde);
 }
-/* aba Gurugol (v8.4.2): a caixa da nota (a mesma do fim do dia), o efeito no movimento e os últimos comentários, do mais novo */
+/* aba Gúgou (v8.4.2): a caixa da nota (a mesma do fim do dia), o efeito no movimento e os últimos comentários, do mais novo */
 function buildGurugol(grid){
   const sv = game.save, ga = avalGeral(sv.aval), na = sv.aval.length, com = sv.avalCom.slice().reverse();
-  if (!na){ grid.appendChild(el('p', 'rank-empty', 'Ainda ninguém avaliou a lanchonete no Gurugol: cada grupo que sai avalia, e os comentários aparecem aqui.')); return; }
+  if (!na){ grid.appendChild(el('p', 'rank-empty', 'Ainda ninguém avaliou a lanchonete no Gúgou: cada grupo que sai avalia, e os comentários aparecem aqui.')); return; }
   const esq = el('div', 'guru-lado');
   esq.appendChild(gurugolCaixa({ geral:ga, dia:avalMedias(sv.aval), n:na, teto:avalTeto(game.ponto) }, ga ? 'média das últimas ' + na + ' avaliações' : 'sem nota: ' + na + ' de ' + AVAL.min + ' avaliações'));
   const mv = Math.round((avalMovimento(sv.aval, game.ponto) - 1) * 100), teto = fmtNota(avalTeto(game.ponto));
@@ -1366,7 +1366,7 @@ function buildShopTela(){
   const f = payroll(game.save.equipe, cursosPay(game.save)), dv = divulgaAberta(game.shopNext, game.save) ? divulgaOf(game.save.divulga) : null;
   // v9.6.12: a linha diz o que sai no fim do dia, em ordem, sem o "que só rende completo" (a pausa já avisa que dia largado não conta)
   $('shop-folha').textContent = 'No fim do dia saem: ' + (f ? 'folha ' + fmt(f) + ', ' : '') + (dv && dv.cost ? dv.name.toLowerCase() + ' ' + fmt(dv.cost) + ', ' : '') + 'contas ' + fmt(contasDia(game.tables)) + (sv.emp.resto ? ', parcela do banco ' + fmt(game.devido) + (sv.emp.atr ? ' (com a atrasada)' : '') : '') + ' e os ingredientes. A meta é o lucro.';
-  // v8.6.15: sem seção aberta, os cartões do grupo; com ela, o botão Voltar (o Gurugol abre direto, sem cartões)
+  // v8.6.15: sem seção aberta, os cartões do grupo; com ela, o botão Voltar (o Gúgou abre direto, sem cartões)
   const nav = $('shop-nav'), aberta = shopTab ? SHOP_SECOES[shopTab] : null;
   nav.hidden = !aberta || shopGrupo === 'gurugol'; $('shop-sec').textContent = aberta ? aberta.nome : '';
   ['salao', 'caixa'].forEach(k => $('ov-shop').classList[shopTab === k ? 'add' : 'remove'](k));

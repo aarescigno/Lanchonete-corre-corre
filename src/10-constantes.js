@@ -287,7 +287,7 @@ const MAIS = { cozinha:0.4, salgado:0.8 };   // v8.6.9: o 2º item sai de pedePr
    deles). A corrente e a cor certa também viram pontos */
 const PONTOS_ACAO = { sit:10, take:15, deliver:20, clear:10, coffee:5, juice:5, bill:20, cor:15, marmita:20, lote:20, doce:5, cafeEsp:5, drink:5, completa:30 };
 /* v10, a refeição completa (pontos com `tempos`, só na carreira): bebida, entrada, prato principal e sobremesa. A entrada cozinha em `cook` do tempo e
-   come em `eat` do tempo da refeição; cada coração perdido esperando um tempo tira `porCoracao` da nota dele; sem a confeitaria o cardápio do Gurugol
+   come em `eat` do tempo da refeição; cada coração perdido esperando um tempo tira `porCoracao` da nota dele; sem a confeitaria o cardápio do Gúgou
    perde `semSobremesa`, e sem o Anselmo no dia, `semBar`; `pts`: os pontos da refeição completa (as 4 coisas servidas) */
 const TEMPOS = { entrada:{ cook:0.6, eat:0.5 }, porCoracao:1, semSobremesa:1, semBar:0.5, pts:30 };
 /* o prato principal da refeição completa: da categoria PF (PF, PF vegetariano, parmegiana). Vegetariano: só sem carne (sem opção, o PF, e o grupo reclama);
@@ -531,7 +531,7 @@ function salaoDevolucao(s){
 const SALAO_SEMFIM = [2,2,2,4,2,4];
 /* ============================================================
    DECORAÇÃO (v8.6.5, pedido do usuário): enfeites da Garagem, comprados na aba Decoração da lojinha, à vontade.
-   Desde a v8.6.6, contam no Ambiente do Gurugol (AVAL.amb: planta, rosa e toalha).
+   Desde a v8.6.6, contam no Ambiente do Gúgou (AVAL.amb: planta, rosa e toalha).
    - plantas: as espadas-de-são-jorge da calçada (da v7.7, que vinham de graça) e a samambaia na parede;
    - cantinho da Rosa: a foto da mãe da Bia, o quadro de giz com o prato do dia e a plaquinha "Comida é afeto".
    Comprado, o enfeite pode ser guardado e posto de volta de graça: save.decor[id] = 1 (à mostra) ou 0 (guardado).
@@ -587,8 +587,8 @@ function decorOn(g, id){ return !!(g && g.save && g.save.decor && g.save.decor[i
    - dec (máx. 25): cada enfeite à mostra vale o seu `lux` (DECOR: os antigos 1, os novos 2);
    - mov (máx. 20): a toalha xadrez (3 × mesas com toalha ÷ mesas), os degraus do jogo de mesas (MOVEIS), o assento da espera e a louça fina;
    - amb (máx. 10): o que está ligado no ponto (TV e som, TVs, couvert, música ao vivo);
-   - fama (máx. 5): a divulgação do dia (0 a 2) e a nota do Gurugol (0 a 3, pela fração do teto do ponto).
-   Mais luxo traz mais VIPs (LUXO.vip por nível), exigentes na Avenida (LUXO.exigAv, do nível 3) e a nota de Ambiente do Gurugol
+   - fama (máx. 5): a divulgação do dia (0 a 2) e a nota do Gúgou (0 a 3, pela fração do teto do ponto).
+   Mais luxo traz mais VIPs (LUXO.vip por nível), exigentes na Avenida (LUXO.exigAv, do nível 3) e a nota de Ambiente do Gúgou
    (`pede`: os pontos que dão o Ambiente cheio, por nível do ponto)
    ============================================================ */
 const LUXO = {
@@ -716,7 +716,7 @@ const AVENIDA = { sofa:{ nome:'Sofás com almofadas', cost:250, slow:0.25 } };
 /* v10, Terraço Suíça: o foyer (a calçada do andar) com poltronas de veludo (compra única, `up.assento = 'poltrona'`; a espera 35% mais devagar) e o piano de cauda que
    já vem com o ponto: obstáculo fixo dos caminhos (fora da área das mesas; quem toca chega na 4a-5) */
 const TERRACO = { poltrona:{ nome:'Poltronas do foyer', cost:600, slow:0.35 }, piano:{ x0:28, y0:404, x1:148, y1:520 },
-  /* v10.4: a música ao vivo (equipe.musica: 0 sem, 1 trio de cordas, 2 pianista; só no Terraço): effect = a paciência nas mesas cai tanto mais devagar; amb = soma no Ambiente do Gurugol; piano = a afinação por dia */
+  /* v10.4: a música ao vivo (equipe.musica: 0 sem, 1 trio de cordas, 2 pianista; só no Terraço): effect = a paciência nas mesas cai tanto mais devagar; amb = soma no Ambiente do Gúgou; piano = a afinação por dia */
   musica:[ null, { nome:'Trio de cordas', pay:500, effect:0.35, amb:1, rodada:{ chance:0.7, valor:0.2 } }, { nome:'Pianista', pay:300, piano:5, effect:0.25, amb:1.5, rodada:{ chance:0.5, valor:0.2 } } ] };
 function musicaDe(eq){ return TERRACO.musica[eq && eq.musica] || null; }
 function musicaPay(m){ return m ? m.pay + (m.piano || 0) : 0; }
@@ -857,20 +857,20 @@ const MULTA = 10;                                     // grupo que vai embora br
 const VIP = { pat:0.65, tip:0.1, perfect:40, angry:10, dish:12, cook:1.8, types:['estudante','vovos','familia','executiva','casal'] };
 /* v10.1, o VIP exigente (só no ponto com `exigente`, o Terraço Suíça: todo VIP de lá é exigente). Prato da casa no lugar do prato especial (`casa.preco` na conta; o principal
    leva `casa.cook` × o tempo, ou `cookBom` × e sai caprichado com o Tonhão no nível `casa.nivel` em diante), bebida antes da entrada, salão em ordem (mesa suja há mais de `sujaT` s),
-   gorjeta `tip` (mais `generosa` com 5 corações), sempre avalia (a nota conta `peso` vezes), bravo tira `1 - bravoMov` do movimento do dia seguinte e a reputação (nota do Gurugol)
+   gorjeta `tip` (mais `generosa` com 5 corações), sempre avalia (a nota conta `peso` vezes), bravo tira `1 - bravoMov` do movimento do dia seguinte e a reputação (nota do Gúgou)
    multiplica a chance de VIP de `rep[0]` (nota 1) a `rep[1]` (nota 5). LOUCA: a Louça fina deixa o prato da casa e o prato especial 25% mais rápidos */
 const EXIGENTE = { tip:0.2, generosa:0.2, casa:{ preco:40, cook:2, cookBom:1.3, nivel:3 }, sujaT:6, peso:2, bravoMov:0.9, rep:[0.6, 1.4], acc:['chapeu', 'lenco', 'echarpe'],
   cores:['#B23A48', '#2F5F8A', '#3E7B4A', '#7A4FA0', '#C98A2B', '#2A8C8C', '#8C6A4A'], aviso:'Um cliente exigente saiu bravo ontem: hoje vem menos gente.' };
 const LOUCA = { cook:0.75 };
 /* v10.8, o molho da Rosa (cap. 12, só no Terraço): compra única na lojinha (save.rosa). A Bia pega pétalas no vaso (`vaso`: o ap e o rect no armário do corredor da cozinha), `pega` s
    para encher `max` pétalas (zeram a cada dia); com pétala, o prato da casa sai Prato da Rosa (rosa e crit): `coracao` coração a mais, `mais` R$ na conta, `pts` pontos; `coment` é o
-   comentário no Gurugol (metade das vezes). `cap`: o capítulo da história em que o cartão aparece */
+   comentário no Gúgou (metade das vezes). `cap`: o capítulo da história em que o cartão aparece */
 const ROSA = { preco:800, max:2, pega:0.8, mais:20, coracao:1, pts:20, cap:12, coment:'Que molho é esse?!',
   vaso:{ ap:{ x:700, y:150 }, rect:{ x:686, y:104, w:48, h:92 } } };
 STATIONS.rosas = ROSA.vaso;   // v10.8: o vaso de rosas no armário do corredor, onde nos outros pontos fica a mesinha das marmitas
 /* v10.9, o crítico do Michelzão (cap. 13, só no Terraço): vem duas vezes, sozinho e sem se apresentar (`tipo`, entre `chega` da janela de chegadas), a 1ª `primeira` e a 2ª `segunda` dias à frente
    (sorteio de dias). Parece um freguês qualquer (`disfarce`), mas por dentro é VIP exigente e tira o caderninho (`caderno` s) ao sentar e depois de cada tempo servido. A ficha tem 5 itens
-   (`itens`), de 0 a 2 garfos; `salaoT`: segundos de salão bagunçado que ainda valem 1 garfo; `pac`: fator da paciência dele (medido em 13/11 com o bot: sem ele, o crítico, executiva e VIP, ia embora bravo em ~60% das visitas e a ficha média ficava em 4,0 e 2,4). Na 2ª visita o Bráulio espalha o `boato` e vem `lotada` × os grupos do dia. `coment`: o comentário plantado no Gurugol */
+   (`itens`), de 0 a 2 garfos; `salaoT`: segundos de salão bagunçado que ainda valem 1 garfo; `pac`: fator da paciência dele (medido em 13/11 com o bot: sem ele, o crítico, executiva e VIP, ia embora bravo em ~60% das visitas e a ficha média ficava em 4,0 e 2,4). Na 2ª visita o Bráulio espalha o `boato` e vem `lotada` × os grupos do dia. `coment`: o comentário plantado no Gúgou */
 const CRITICO = { tipo:'executiva', chega:[0.3, 0.6], primeira:[1, 3], segunda:[2, 3], caderno:1.8, lotada:1.25, salaoT:6, cap:13, pac:2,
   itens:['Recepção', 'Atendimento', 'Prato', 'Salão', 'Refeição'],
   boato:'Boato na cidade: dizem que hoje a casa dá sobremesa de graça. Vai lotar!',
@@ -890,7 +890,7 @@ function normGuia(g){   // save.guia: { n:0 a 2, prox:≥ 0, v:[{ d, it:[5 intei
 const NOITE = { groups:1.3, meta:1.2, critico:[0.35, 0.45], braulio:[0.5, 0.6], brauPat:0.7, brauFeliz:4, espera:3, volta:0.12,
   pts:{ visita:1.5, nota:[[4.8, 15], [4.6, 10], [4.4, 5]], luxo:[0, 0, 0, 5, 10, 15], dia:[0, 5, 10, 15], salao:5, braulio:5 },
   cortes:[44, 66, 90],   // v10.10: calibrado em 13/11 (a spec dizia 50, 72 e 90; ver os Desvios da spec)
-  linhas:['Crítico', 'Gurugol', 'Luxo', 'A noite', 'Salão', 'Bráulio'],
+  linhas:['Crítico', 'Gúgou', 'Luxo', 'A noite', 'Salão', 'Bráulio'],
   aviso:'Noite da estrela: casa cheia, o crítico à mesa e o Bráulio de olho.',
   selo:['Recomendado pelo Michelzão', '★ no Michelzão', '★★ no Michelzão', '★★★ no Michelzão'],
   falas:{ senta:'Vim provar a cópia.', prova:'Esse molho...', feliz:'...', bravo:'Sabia! Amadores.' } };
@@ -904,7 +904,7 @@ function guiaPontos(o){
 }
 /* as estrelas dos pontos: 0 a 3 (NOITE.cortes) */
 function guiaEstrelas(tot){ return NOITE.cortes.filter(c => tot >= c).length; }
-/* o comentário plantado do boato (1 estrela, marcado `boato`): entra no topo da lista do Gurugol e fora da conta da nota (a nota vem de save.aval); uma vez só */
+/* o comentário plantado do boato (1 estrela, marcado `boato`): entra no topo da lista do Gúgou e fora da conta da nota (a nota vem de save.aval); uma vez só */
 function plantaBoato(lista, dia){
   const l = normAvalCom(lista);
   return l.some(c => c.boato) ? l : normAvalCom(l.concat([{ d:dia, n:10, t:CRITICO.coment, k:'estudante', boato:true }]));
@@ -968,7 +968,7 @@ const DIVULGA = [
 const MOVIMENTO = { kit:10, porLugar:0.06 };
 function movimentoSalao(lugares){ return 1 + MOVIMENTO.porLugar * Math.max(0, lugares - MOVIMENTO.kit); }
 /* ============================================================
-   AVALIAÇÕES (v8.4): o Gurugol, o site de avaliações do jogo. Cada grupo que sai na carreira (pago ou bravo) dá de 1 a 5
+   AVALIAÇÕES (v8.4): o Gúgou, o site de avaliações do jogo. Cada grupo que sai na carreira (pago ou bravo) dá de 1 a 5
    em 5 critérios, de peso igual:
    - espera: cada coração perdido lá fora tira `porCoracao`;
    - agil (agilidade): cada coração perdido na mesa esperando a Bia (pedido, prato, conta e o suco que faltou) tira
@@ -979,7 +979,7 @@ function movimentoSalao(lugares){ return 1 + MOVIMENTO.porLugar * Math.max(0, lu
    Quem sai bravo dá 1 na agilidade e no prato que não chegou a comer. Só `porDia` grupos do dia (sorteados) avaliam, como num restaurante de verdade. A nota é a média das últimas `max` avaliações,
    e só aparece depois das `min` primeiras; ela mexe no movimento do dia (v8.6.4: pelo teto do ponto, abaixo).
    Quem fica para o fim do dia (a lanchonete fecha) não avalia; dia largado no meio não conta.
-   v8.6.4, teto por ponto: os critérios acima medem o serviço (1 a 5), e o Gurugol mostra a nota na escala do ponto:
+   v8.6.4, teto por ponto: os critérios acima medem o serviço (1 a 5), e o Gúgou mostra a nota na escala do ponto:
    serviço 5 vale `teto` (pelo nível do ponto: Garagem 3, área industrial 3,7, Avenida Brasil 4,3, Terraço Suíça 5).
    Cada cliente tem o seu humor (de −humor.var a +humor.var) e, às vezes (`humor.encanta`), sai encantado e dá de
    humor.extra a mais, até `humor.folga` acima do teto: num dia especial, a Garagem chega a 3,5 ou 3,8. Quem sai bravo não
@@ -1032,7 +1032,7 @@ function normAval(a){
   return (Array.isArray(a) ? a : []).filter(r => Array.isArray(r) && r.length === AVAL_CRIT.length).slice(-AVAL.max)
     .map(r => r.map(v => v == null ? null : clamp(Math.round((+v || 1) * 10) / 10, 1, 5)));
 }
-/* os últimos comentários (v8.4.2, aba Gurugol da lojinha): { d: o dia, n: a nota ×10, t: o texto, k: o tipo do grupo, v: VIP } */
+/* os últimos comentários (v8.4.2, aba Gúgou da lojinha): { d: o dia, n: a nota ×10, t: o texto, k: o tipo do grupo, v: VIP } */
 const AVAL_COM = 30;
 function normAvalCom(a){
   return (Array.isArray(a) ? a : []).filter(c => c && typeof c === 'object' && typeof c.t === 'string' && c.t).slice(-AVAL_COM)
@@ -1163,12 +1163,12 @@ const HISTORIA = [
       { q:'bia', e:'alegre', s:'Então somos duas aprendendo.' }],
     depois:[
       { q:'dani', e:'alegre', s:'Ouvi um freguês dizer que aqui é tudo limpinho!' },
-      { q:'bia', e:'alegre', s:'O Gurugol subiu, tio! Já tá em 2,4.' },
+      { q:'bia', e:'alegre', s:'O Gúgou subiu, tio! Já tá em 2,4.' },
       { q:'tonhao', s:'Devagar e sempre.' }] },
   { cap:3, titulo:'Casa cheia', ponto:'garagem', obj:{ quitar:true, nota:2.7, caixa:800 },
     fim:{ h:'Fim dos capítulos da Garagem', p:'Quando quiser, a mudança para a área industrial está na lojinha.' },   // v9.1: o cartão de fim do último capítulo de cada ponto
     antes:[
-      { q:'bia', s:'O Gurugol tá cheio de comentário sobre a gente!' },
+      { q:'bia', s:'O Gúgou tá cheio de comentário sobre a gente!' },
       { q:'dani', s:'Tem freguês perguntando se a gente vai abrir num lugar maior.' },
       { q:'bia', e:'insegura', s:'Lugar maior? A gente mal paga a reforma...' },
       { q:'tonhao', s:'Primeiro quita a reforma. Depois junta pra mudança.' }],
@@ -1226,7 +1226,7 @@ const HISTORIA = [
       { q:'bia', e:'firme', s:'Agora é a nota subir.' }] },
   { cap:8, titulo:'Nota de restaurante', ponto:'avenida', obj:{ nota:3.9, caixa:5000 },
     antes:[
-      { q:'bia', s:'Aqui o Gurugol é mais exigente. Restaurante é outra régua.' },
+      { q:'bia', s:'Aqui o Gúgou é mais exigente. Restaurante é outra régua.' },
       { q:'tonhao', s:'E como você quer a casa?' },
       { q:'bia', e:'firme', s:'Prato bonito, mesa limpa e ninguém esperando.' },
       { q:'dani', s:'E guardar dinheiro. Ouvi falar de um terraço lá no alto...' }],
@@ -1292,7 +1292,7 @@ const HISTORIA = [
     antes:[
       { q:'tonhao', s:'O crítico do Michelzão não usa crachá. Senta, come e anota.' },
       { q:'bia', e:'firme', s:'Então a gente trata todo mundo como se fosse ele. Como sempre.' },
-      { q:'cami', nota:'olhando o Gurugol', s:'Gente... tem comentário novo dizendo que o nosso molho é copiado.' },
+      { q:'cami', nota:'olhando o Gúgou', s:'Gente... tem comentário novo dizendo que o nosso molho é copiado.' },
       { q:'tonhao', e:'brava', s:'Isso tem bigode! Eu vou lá agora...' },
       { q:'bia', e:'firme', s:'Não vai, tio. Deixa o Bráulio falar. A gente cozinha.' }],
     depois:[
@@ -1383,14 +1383,14 @@ const HIST_RECOMENDA = { falas:[
   { q:'bia', s:'Recomendado não é estrela.' },
   { q:'bia', e:'firme', s:'Mas ele volta. Eu arrumo a casa e marco outra noite.' } ] };
 /* v10.5.2: as conversas do meio do capítulo 3 (Garagem), só no Modo História: ficam pendentes no fim do 1º dia em que save.cap === 3 e a reforma zerou
-   (convQuit: 0 | 'pend' | 1) ou a nota geral do Gurugol chegou à nota mínima da Garagem (convTeto). Se o capítulo se cumpre no mesmo dia, passam direto a 1 */
+   (convQuit: 0 | 'pend' | 1) ou a nota geral do Gúgou chegou à nota mínima da Garagem (convTeto). Se o capítulo se cumpre no mesmo dia, passam direto a 1 */
 const HIST_QUITOU = {
   falas:[ { q:'bia', e:'alegre', s:'Última parcela da reforma paga, tio! Paguei uma por uma.' },
           { q:'tonhao', nota:'rasgando o carnê', s:'A garagem da Rosa é nossa de novo.' },
           { q:'dani', s:'E agora, o dinheiro vai pra onde?' },
           { q:'bia', s:'Pro cofrinho da mudança.' } ] };
 const HIST_TETO = {
-  falas:[ { q:'dani', s:'Bia, olha o Gurugol! Nota 2,7!' },
+  falas:[ { q:'dani', s:'Bia, olha o Gúgou! Nota 2,7!' },
           { q:'bia', s:'Será que sobe mais?' },
           { q:'tonhao', s:'Garagem tem teto, Bia. Pra nota subir de verdade, só num lugar maior.' },
           { q:'bia', e:'firme', s:'Então eu junto pra mudança.' } ] };
@@ -1494,7 +1494,7 @@ function anselmoOn(eq, ponto){ return !!eq && eq.anselmo > 0 && !eq.anselmoFora 
 /* v10.2: a Lia trabalha hoje? (contratada, não cortada da folha e no Terraço; no modo dev, em qualquer ponto) */
 function liaOn(eq, ponto){ return !!eq && eq.lia > 0 && !eq.liaFora && ((ponto || PONTOS[0]).nivel >= 4 || devLivre()); }
 const LIA_HOME = { x:868, y:203, s:0.72 };   // v10.2: na janela dos pedidos, ao lado do Tonhão (s: a escala, menor que a da Bia, para caber abaixo das comandas)
-/* v9.0.4: a lojinha abre aos poucos no Modo História. Cada cartão: dia mínimo, garantia (ate), as reclamações do Gurugol
+/* v9.0.4: a lojinha abre aos poucos no Modo História. Cada cartão: dia mínimo, garantia (ate), as reclamações do Gúgou
    no dia do gatilho e a conversa do fim do dia. save.libera[id]: 0 fechado | 'pend' | 1 aberto (selo "novo") | 2 aberto e visto */
 const liberaTres = (av, i, lim) => av.filter(a => a.s && a.s[i] != null && a.s[i] <= lim).length >= 3;   // v9.1.1: 3 notas do dia no critério i, até lim
 /* v9.1.1: entrada com `nivel` só vale com ponto.nivel >= nivel e conta `dia`/`ate` pelo diaNoPonto (em qualquer capítulo); sem `nivel`, pelo dia da carreira
@@ -1520,7 +1520,7 @@ const LIBERA = [
             { q:'tonhao', s:'Na garagem ainda cabem umas mesinhas. Cadeira de plástico é baratinha.' },
             { q:'bia', s:'Vou ver no Salão onde encaixar.' } ] },
   { id:'luxo', dia:3, ate:6, gatilho:(st, av, g) => g.save.decor.espada === 1 && av.some(a => a.s && a.s[4] != null && a.s[4] >= 2.5), reclama:['Que plantinha bonita!', 'Gostei da plantinha na entrada.'],   // v9.6.10: o elogio à planta da dona Cida
-    falas:[ { q:'bia', s:'Tio, elogiaram a plantinha da dona Cida no Gurugol!' },
+    falas:[ { q:'bia', s:'Tio, elogiaram a plantinha da dona Cida no Gúgou!' },
             { q:'tonhao', s:'Viu? Um verdinho já muda a cara da garagem.' },
             { q:'bia', e:'alegre', s:'E se a gente pusesse mais? A foto da mãe na parede...' },
             { q:'tonhao', nota:'sorrindo', s:'Isso a Rosa ia gostar. Vê no Luxo.' } ] },
@@ -1827,8 +1827,8 @@ const MANUAL = [
   { id:'b-louca',    aba:'basico', nome:'Louça e lixo', linha:'Sem prato limpo, o Tonhão espera. Lixeira cheia espanta a freguesia.' },
   { id:'b-suco',     aba:'basico', nome:'Suco e cafezinho', linha:'Quem pede suco só pede a conta depois dele. O cafezinho acalma a mesa.' },
   { id:'b-marmita',  aba:'basico', nome:'Marmitas', linha:'O pedido do entregador vai sozinho à cozinha. Leve a marmita pronta ao balcão de retirada.' },
-  { id:'b-gurugol',  aba:'basico', nome:'Gurugol', linha:'Cada grupo que sai dá a sua nota. Nota alta traz mais gente; nota baixa afasta.' },
-  { id:'b-tempos',   aba:'basico', nome:'Refeição completa', linha:'No Terraço, cada mesa pede bebida, entrada, prato e sobremesa. Cada tempo conta no Gurugol.' },   // v10
+  { id:'b-gurugol',  aba:'basico', nome:'Gúgou', linha:'Cada grupo que sai dá a sua nota. Nota alta traz mais gente; nota baixa afasta.' },
+  { id:'b-tempos',   aba:'basico', nome:'Refeição completa', linha:'No Terraço, cada mesa pede bebida, entrada, prato e sobremesa. Cada tempo conta no Gúgou.' },   // v10
 
   { id:'c-estudante',  aba:'clientes', tipo:'estudante',  nome:'Estudante', linha:'Mochila nas costas e dinheiro contado.' },
   { id:'c-vovos',      aba:'clientes', tipo:'vovos',      nome:'Vovô e vovó', linha:'Sem pressa nenhuma: escolhem com calma e comem devagar.' },
@@ -1870,7 +1870,7 @@ const MANUAL = [
   { id:'l-fogao',      aba:'lojinha', nome:'Fogão industrial', linha:'Uma boca a mais: o Tonhão faz mais pratos ao mesmo tempo.' },
   { id:'l-cardapio',   aba:'lojinha', nome:'Cardápio', linha:'Cursos do Tonhão e da equipe. Cada curso ensina pratos novos e dá experiência; o avançado deixa os pratos mais caros e caprichados.' },
   { id:'l-salao',      aba:'lojinha', nome:'Salão', linha:'Compre, venda e arrume as mesas.' },
-  { id:'l-luxo',       aba:'lojinha', nome:'Luxo', linha:'Enfeites, móveis, música e um endereço melhor deixam a casa mais chique. Mais luxo traz mais VIPs e melhora o ambiente no Gurugol.' },   // v10.7: a antiga ficha da Decoração
+  { id:'l-luxo',       aba:'lojinha', nome:'Luxo', linha:'Enfeites, móveis, música e um endereço melhor deixam a casa mais chique. Mais luxo traz mais VIPs e melhora o ambiente no Gúgou.' },   // v10.7: a antiga ficha da Decoração
   { id:'l-manut',      aba:'lojinha', nome:'Manutenção', linha:'Revisão do fogão, da geladeira e da cafeteira, antes que quebrem.' },
   { id:'l-divulga',    aba:'lojinha', nome:'Divulgação', linha:'Boca a boca: de graça, menos gente. Panfletos: o movimento normal. Redes sociais: mais gente e mais VIPs.' },
   { id:'l-banco',      aba:'lojinha', nome:'Banco', linha:'Empréstimo para crescer. As parcelas saem do caixa no fim do dia; parcela atrasada é perigo.' },
@@ -1897,7 +1897,7 @@ const MANUAL = [
   { id:'i-boato',   aba:'imprevistos', nome:'Boato', linha:'Alguém espalha que hoje tem coisa de graça, e a casa lota.' },
   { id:'l-noite',   aba:'lojinha', nome:'Noite da estrela', linha:'Você escolhe o dia. Casa cheia, o crítico à mesa e o Bráulio de olho. No fim, o guia dá o veredito.' },   // v10.10
   { id:'c-braulio', aba:'clientes', tipo:'braulio', nome:'Bráulio', linha:'O chef da Casa Aurora. Vem sozinho, tem pouca paciência e pede o prato da casa para achar defeito.' },
-  { id:'b-michelzao', aba:'basico', nome:'Estrelas do Michelzão', linha:'O guia pesa as visitas do crítico, o Gurugol, o luxo e a noite. As estrelas ganhas não se perdem. A placa fica na parede.' }
+  { id:'b-michelzao', aba:'basico', nome:'Estrelas do Michelzão', linha:'O guia pesa as visitas do crítico, o Gúgou, o luxo e a noite. As estrelas ganhas não se perdem. A placa fica na parede.' }
 ];
 const MANUAL_PONTO_NOME = { garagem:'Garagem', industrial:'Área industrial', avenida:'Avenida Brasil', terraco:'Terraço Suíça' };
 const MANUAL_CATS = { pf:'PF', frito:'fritos', assado:'assados', chapa:'lanches na chapa', pastel:'pastel' };
@@ -1909,9 +1909,9 @@ function manualTracos(tipo, opt){
   opt = opt || {};
   const aberta = opt.aberta || (() => true), out = [];
   if (tipo === 'vip') return ['paciência menor', 'fura a fila', 'pede o prato especial', 'gorjeta boa', 'prato frio tira coração'];
-  if (tipo === 'veg') return ['só prato sem carne', 'sem opção, reclama no Gurugol'];
-  if (tipo === 'exigente') return ['pede o prato da casa', 'bebida antes da entrada', 'repara em mesa suja', 'sempre avalia no Gurugol', 'gorjeta ótima'];   // v10.1
-  if (tipo === 'braulio') return ['pouca paciência', 'pede o prato da casa', 'sempre avalia no Gurugol'];   // v10.10
+  if (tipo === 'veg') return ['só prato sem carne', 'sem opção, reclama no Gúgou'];
+  if (tipo === 'exigente') return ['pede o prato da casa', 'bebida antes da entrada', 'repara em mesa suja', 'sempre avalia no Gúgou', 'gorjeta ótima'];   // v10.1
+  if (tipo === 'braulio') return ['pouca paciência', 'pede o prato da casa', 'sempre avalia no Gúgou'];   // v10.10
   if (tipo === 'lia') return ['cozinha mais rápida'];   // v10.2
   if (['bia', 'tonhao', 'dani', 'joca', 'cami', 'anselmo'].indexOf(tipo) >= 0) return manualTracosEquipe(tipo, opt.save);
   const T = CUSTOMER_TYPES[tipo]; if (!T) return out;

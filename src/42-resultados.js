@@ -17,20 +17,20 @@ function abreBoletim(depois){
   guiaFim = depois; showOnly(['ov-guia']);
 }
 /* ---------- fim do dia ---------- */
-/* faixa da nota do Gurugol (v8.4.1), pela nota com uma casa: abaixo de 3 pura, de 3 a 3,9 bronze (v8.6.7: o teto da Garagem),
+/* faixa da nota do Gúgou (v8.4.1), pela nota com uma casa: abaixo de 3 pura, de 3 a 3,9 bronze (v8.6.7: o teto da Garagem),
    de 4 a 4,4 prata, de 4,5 a 4,8 ouro e acima disso diamante */
 function notaFaixa(n){ n = Math.round(n * 10) / 10; return n > 4.8 ? 'diamante' : n >= 4.5 ? 'ouro' : n >= 4 ? 'prata' : n >= 3 ? 'bronze' : 'pura'; }
 const GURU_BRILHOS = { pura:0, bronze:0, prata:0, ouro:3, diamante:7 };
 let guruAnim = 0;   // a animação em curso (abrir de novo o fim do dia cancela a anterior)
-/* caixa do Gurugol no fim do dia (v8.4.1): uma barra por critério, que enche até a nota dele, e embaixo a nota contando
+/* caixa do Gúgou no fim do dia (v8.4.1): uma barra por critério, que enche até a nota dele, e embaixo a nota contando
    de 0 até o valor, com a cor da faixa; ouro e diamante soltam brilhinhos. Com prefers-reduced-motion, já aparece pronta.
    Depois da v8.8: a barra vai pelo teto do ponto (a.teto): o atendimento perfeito a enche (na Garagem, 3 ★), e o encantado não passa dela */
 function gurugolCaixa(a, sub, semCnt){
   const m = a.geral || a.dia, box = el('div', 'guru'), teto = a.teto || 5;
   const larg = i => clamp(avalFrac(m.crit[i] || 1, teto), 0, 1) * 100;
   box.setAttribute('role', 'img');
-  box.setAttribute('aria-label', 'Gurugol: ' + (a.geral ? fmtNota(m.nota) + ' estrelas' : 'sem nota ainda, ' + a.n + ' de ' + AVAL.min + ' avaliações' + (sub ? '' : '; hoje ' + fmtNota(m.nota))) + '. ' + AVAL_CRIT.map((c, i) => c.nome + ' ' + fmtNota(m.crit[i]) + (m.cnt ? ' em ' + m.cnt[i] : '')).join(', ') + '.');
-  box.appendChild(el('b', 'guru-tit', 'Gurugol'));
+  box.setAttribute('aria-label', 'Gúgou: ' + (a.geral ? fmtNota(m.nota) + ' estrelas' : 'sem nota ainda, ' + a.n + ' de ' + AVAL.min + ' avaliações' + (sub ? '' : '; hoje ' + fmtNota(m.nota))) + '. ' + AVAL_CRIT.map((c, i) => c.nome + ' ' + fmtNota(m.crit[i]) + (m.cnt ? ' em ' + m.cnt[i] : '')).join(', ') + '.');
+  box.appendChild(el('b', 'guru-tit', 'Gúgou'));
   const fills = AVAL_CRIT.map((c, i) => {
     const row = el('div', 'guru-crit');
     row.appendChild(el('span', null, c.nome + (m.cnt && !semCnt ? ' (' + m.cnt[i] + ')' : '')));   // v8.6.7: quantas avaliações viram o critério
@@ -102,7 +102,7 @@ function buildEnd(){
   if (r.vip || r.vipLost) rows.splice(2, 0, ['VIPs', r.vip + ' atendido' + (r.vip === 1 ? '' : 's') + (r.vipLost ? ' · ' + r.vipLost + ' bravo' + (r.vipLost > 1 ? 's' : '') : '')]);
   if (r.amanha) rows.push(['Amanhã', EVENTOS[r.amanha].nome]);   // v10.6: a véspera do evento de bairro, a última linha da tabela
   if (r.noite) rows.push(['Michelzão', 'O guia liga amanhã cedo']);   // v10.10: a noite da estrela
-  // Gurugol (v8.4): a caixa animada à esquerda dos quadros (v8.4.1); embaixo, 2 ou 3 comentários (os critérios do dia no title)
+  // Gúgou (v8.4): a caixa animada à esquerda dos quadros (v8.4.1); embaixo, 2 ou 3 comentários (os critérios do dia no title)
   const av = $('end-aval'); clearEl(av); av.title = ''; clearEl($('end-baloes'));
   { const cr = $('end-critico'); clearEl(cr);   // v10.9: a ficha da visita do crítico: cinco linhas com 0 a 2 garfinhos, sem número
     if (r.critico){
@@ -121,7 +121,7 @@ function buildEnd(){
     av.title = 'Hoje, em ' + a.dia.n + (a.dia.n > 1 ? ' avaliações: ' : ' avaliação: ') + AVAL_CRIT.map((c, i) => c.nome.toLowerCase() + ' ' + fmtNota(a.dia.crit[i]) + ' (' + a.dia.cnt[i] + ')').join(', ');
     // v9.6.11: os comentários viram balões grandes no topo (com o rostinho de quem falou), acima das tabelas
     if (a.coment.length){
-      const bal = $('end-baloes'); bal.setAttribute('aria-label', 'Comentários do Gurugol');
+      const bal = $('end-baloes'); bal.setAttribute('aria-label', 'Comentários do Gúgou');
       a.coment.forEach((t, i) => { const b = el('div', 'end-balao'); b.appendChild(rostinhoCliente((a.comentK || [])[i])); b.appendChild(el('q', null, t)); bal.appendChild(b); });
     }
   }
@@ -288,7 +288,7 @@ bindSeg('rank-by', 'by');
 bindSeg('rank-dir', 'dir');
 
 
-/* v9.6.11: o rostinho do tipo de cliente (a 1ª pessoa do grupo, só a cabeça) no balão do Gurugol */
+/* v9.6.11: o rostinho do tipo de cliente (a 1ª pessoa do grupo, só a cabeça) no balão do Gúgou */
 function rostinhoCliente(k){
   const cv = document.createElement('canvas'); cv.width = 72; cv.height = 72; cv.className = 'end-rosto';
   const c = cv.getContext('2d'); c.scale(1.5, 1.5); c.lineJoin = 'round'; c.lineCap = 'round';

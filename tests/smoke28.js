@@ -1,6 +1,6 @@
 // v8.6, etapa 2e: o entregador vai à fila de retirada (não senta), o pedido dele vira marmita no fogão (sem prato limpo),
 // a Bia (ou a Dani) leva a marmita ao balcão e ele paga na hora (a Efood fica com 15%); adiantar marmitas, prateleira
-// cheia, validade, entregador perdido, fila de retirada cheia, avaliação no Gurugol, chuva e Turno sem fim
+// cheia, validade, entregador perdido, fila de retirada cheia, avaliação no Gúgou, chuva e Turno sem fim
 const H=require('./harness.js')(); const {g,L,ctx}=H;
 let fails=0,total=0; const ok=(c,m)=>{ total++; if(!c){fails++;console.log('FAIL:',m);} else console.log('ok  :',m); };
 L.MARMITA.adiantar=true;   // v9.6.2: desligado no jogo; o código segue testado
@@ -97,7 +97,7 @@ novo(4);
   ok(g.retirada.length===M.fila && g.stats.full===f0+1,'fila de retirada com '+M.fila+' lugares: o próximo vê "Lotado!"');
   ok(g.queue.length===0,'ninguém vai para a espera do salão'); }
 
-// 9. avaliação no Gurugol: a espera no balcão conta na espera e na agilidade; bravo reclama da marmita
+// 9. avaliação no Gúgou: a espera no balcão conta na espera e na agilidade; bravo reclama da marmita
 novo(4);
 { const e=entregador('pf'); e.avalia=true; e.perdMesa=2; e.hearts=3;
   const m={kind:'marmita',dish:'pf',dono:e,age:0,q:4.2}; g.entregaMarmita(e,m);

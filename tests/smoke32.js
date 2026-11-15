@@ -1,5 +1,5 @@
 // v8.6.14, etapa 2c-r4a: sem o limite de 1 melhoria por dia (o limite é o dinheiro; o curso do Tonhão segue 1 por lojinha)
-// e o fim do dia sem o "(n)" depois de cada critério do Gurugol (a aba Gurugol da lojinha continua com ele)
+// e o fim do dia sem o "(n)" depois de cada critério do Gúgou (a aba Gúgou da lojinha continua com ele)
 const load=require('./harness.js');
 const H=load(); const {g,L,els}=H;
 let fails=0,total=0; const ok=(c,m)=>{ total++; if(!c){fails++;console.log('FAIL:',m);} else console.log('ok  :',m); };
@@ -22,5 +22,5 @@ ok(g.buy('tenis') && g.buy('corrida'),'e depois dos novos, na mesma lojinha, com
 { const aval={geral:null,dia:{nota:4,crit:[4,4,4,4,4,4],cnt:[3,3,3,3,3,3]},n:3};
   const a=L.gurugolCaixa(aval,undefined,true), b=L.gurugolCaixa(aval);
   ok(!L.AVAL_CRIT.some(c=>txt(a).includes(c.nome+' (')),'fim do dia: nomes dos critérios sem "("');
-  ok(L.AVAL_CRIT.every(c=>txt(b).includes(c.nome+' (3)')),'aba Gurugol: continua com o (n)'); }
+  ok(L.AVAL_CRIT.every(c=>txt(b).includes(c.nome+' (3)')),'aba Gúgou: continua com o (n)'); }
 console.log(`\n${total-fails}/${total} ok`); process.exit(fails?1:0);

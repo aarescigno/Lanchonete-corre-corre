@@ -30,7 +30,7 @@ const H0=nova(), L0=H0.L, HI=L0.HISTORIA;
   ok(f(c10.depois,['bia:A cozinha tá voando, tio!','tonhao:E o balcão de drinks não para.|provando um coquetel','dani:Agora só falta a refeição perfeita.']),'cap. 10: as falas de depois (a rubrica do Tonhão)');
   ok(!c7.fim && !c10.fim && HI[7].fim.h==='Fim dos capítulos da Avenida Brasil' && HI[10].fim===undefined && HI[11].fim===undefined && HI[12].fim===undefined && HI[13].fim.h==='Fim da história' && HI[2].fim && HI[4].fim,'o `fim` fica nos capítulos 3, 5, 8 e 14 (v10.8: o 11 perdeu o dele; v10.9: o 12 também; v10.10: o 13 também)');
   ok(HI[7].obj.nota===3.9 && HI[7].obj.caixa===5000 && HI[7].antes.length===4 && HI[7].depois.length===6 && HI[8].obj.azul===3 && HI[8].antes.length===5 && HI[10].obj.completas===6 && HI[10].obj.nota===4.5 && HI[10].depois.length===5,'os antigos 7, 8 e 9 (agora 8, 9 e 11) seguem como eram');
-  ok(L0.HIST_QUITOU.falas.length===4 && L0.HIST_TETO.falas.length===4 && L0.HIST_QUITOU.falas[1].nota==='rasgando o carnê' && L0.HIST_TETO.falas[0].s==='Bia, olha o Gurugol! Nota 2,7!','HIST_QUITOU e HIST_TETO com 4 falas e as rubricas'); }
+  ok(L0.HIST_QUITOU.falas.length===4 && L0.HIST_TETO.falas.length===4 && L0.HIST_QUITOU.falas[1].nota==='rasgando o carnê' && L0.HIST_TETO.falas[0].s==='Bia, olha o Gúgou! Nota 2,7!','HIST_QUITOU e HIST_TETO com 4 falas e as rubricas'); }
 
 // ---------- 2. as conversas do cap. 3 ----------
 { // a reforma zera mas a nota não chega: só a do carnê

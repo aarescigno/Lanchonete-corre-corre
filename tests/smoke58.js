@@ -129,7 +129,7 @@ const txt=e=>(e.textContent||'')+(e.children||[]).map(txt).join(' ');
     ok(e.length===3 && e[0]>=B.x && e[0]<e[1] && e[1]<e[2] && e[2]===B.x+B.w && e[1]-e[0]>=17 && e[2]-e[1]>=17,'dia '+d.n+': 3 estrelas em ordem na barra, sem se cobrirem ('+e.map(x=>Math.round(x)).join(', ')+')'); });
   const col=L.hudEstrelas({meta:100,expert:120});
   ok(col[1]-col[0]>=17 && col[2]-col[1]>=17,'alvos colados (meta 100, 3★ 120) continuam separados na barra');
-  ok(B.x+B.w+10<=334,'a barra e a 3ª estrela não invadem a caixa do Gurugol');
+  ok(B.x+B.w+10<=334,'a barra e a 3ª estrela não invadem a caixa do Gúgou');
   // desenha o HUD em cada estado sem erro (o texto do canvas não é conferido; só não pode quebrar)
   const frases=[]; const ctx=new Proxy({},{get:(o,k)=>k==='measureText'?()=>({width:40}):k==='fillText'?(t)=>{ frases.push(String(t)); }:(k in o?o[k]:()=>{}), set:(o,k,v)=>{o[k]=v;return true;}});
   g.save=L.normSave({bank:500,dia:4,maxDay:4}); g.up=g.save.up; g.buildTables(); g.startDay(4); if(g.state==='shop') H.els['btn-shop-go'].fire('click'); if(g.state==='intro') H.els['btn-start'].fire('click');

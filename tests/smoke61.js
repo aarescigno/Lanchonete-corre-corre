@@ -1,6 +1,6 @@
 // v10.1, etapa 4a-2: o VIP exigente e a reputação. No Terraço Suíça todo VIP é exigente (Avenida e Garagem não): o prato da casa (R$ 40 na conta, ×2 o tempo,
 // ×1,3 e sempre caprichado com o Tonhão no nível 4), a bebida antes da entrada, o salão em ordem (mesa suja há mais de 6 s), a gorjeta de 20% (e mais 20% com 5
-// corações), a avaliação que sempre vem e conta 2 vezes, o bravo que tira 10% do movimento do dia seguinte, a reputação (nota do Gurugol) na chance de VIP, a Louça
+// corações), a avaliação que sempre vem e conta 2 vezes, o bravo que tira 10% do movimento do dia seguinte, a reputação (nota do Gúgou) na chance de VIP, a Louça
 // fina, a conversa do fim do dia, as fichas do Manual e o save.
 const load=require('./harness.js'), fs=require('fs');
 let fails=0,total=0; const ok=(c,m)=>{ total++; if(!c){fails++;console.log('FAIL:',m);} else console.log('ok  :',m); };
@@ -91,7 +91,7 @@ const tempoDe=(g,grp,t)=>{ g.kitchen.queue=[]; g.kitchen.cooking=[]; g.kitchen.s
   ok(semAv===0,'todo VIP exigente do dia avalia');
   ok(bomN===total && avN===total*L.AVAL.porDia,'o sorteio dos '+L.AVAL.porDia+' do dia só conta os clientes comuns');
   const x=sentar(g,'casal',true), grp=x.grp; grp.avalia=true; grp.setState('wantBill'); grp.hearts=5; const n0=g.avals.length, p0=g.avalsPeso().length; g.avaliar(grp,0,0);
-  ok(g.avals[n0].x===2 && g.avalsPeso().length===p0+2,'a nota do exigente entra 2 vezes na lista do Gurugol');
+  ok(g.avals[n0].x===2 && g.avalsPeso().length===p0+2,'a nota do exigente entra 2 vezes na lista do Gúgou');
   const y=sentar(g,'familia',false); y.grp.avalia=true; y.grp.setState('wantBill'); y.grp.hearts=5; const p1=g.avalsPeso().length; g.avaliar(y.grp,0,0); ok(g.avalsPeso().length===p1+1,'a do cliente comum, 1 vez');
   const ant=g.save.aval.length; g.schedule=[]; g.nextIdx=0; g.money=100; g.custo=0; g.finishDay(); ok(g.save.aval.length===Math.min(L.AVAL.max,ant+3),'no fim do dia entram no save as 3 (2 do exigente + 1)');
   // os comentários
@@ -111,7 +111,7 @@ const tempoDe=(g,grp,t)=>{ g.kitchen.queue=[]; g.kitchen.cooking=[]; g.kitchen.s
   const H3=jogo(8,'terraco',{ v10:1, exigBravo:7 }); H3.g.startDay(10); ok(!/exigente/.test(H3.els['intro-manut'].textContent),'sem bravo ontem, sem aviso');
   const Ha=jogo(9,'avenida',{ exigBravo:9 }); Ha.g.startDay(10); ok(Ha.g.exigBravoF(Ha.g.day)===1 && !/exigente/.test(Ha.els['intro-manut'].textContent),'na Avenida nada disso vale'); }
 
-// ---------- 8. a reputação: a nota do Gurugol mexe na chance de VIP ----------
+// ---------- 8. a reputação: a nota do Gúgou mexe na chance de VIP ----------
 { const H=terr(), {g,L}=H, E=L.EXIGENTE;
   g.save.aval=[]; ok(g.repVip===1 && L.exigRep(null)===1,'sem nota, o fator é 1');
   ok(Math.abs(L.exigRep(1)-0.6)<1e-9 && Math.abs(L.exigRep(5)-1.4)<1e-9 && Math.abs(L.exigRep(3)-1)<1e-9,'nota 1 → ×0,6; nota 3 → ×1; nota 5 → ×1,4 (em linha reta)');
@@ -154,7 +154,7 @@ const tempoDe=(g,grp,t)=>{ g.kitchen.queue=[]; g.kitchen.cooking=[]; g.kitchen.s
   const f=L.MANUAL.find(q=>q.id==='c-exigente'), l=L.MANUAL.find(q=>q.id==='l-louca');
   ok(f && f.aba==='clientes' && f.tipo==='exigente' && f.nome==='VIP exigente' && f.linha==='Duas estrelas na plaquinha. Quer tudo no lugar e paga muito bem.','ficha c-exigente (aba Clientes)');
   ok(l && l.aba==='lojinha' && l.nome==='Louça fina' && l.linha==='O prato da casa sai mais rápido, e a mesa fica mais bonita.','ficha l-louca (aba Lojinha)');
-  ok(L.manualTracos('exigente').join('|')==='pede o prato da casa|bebida antes da entrada|repara em mesa suja|sempre avalia no Gurugol|gorjeta ótima','os traços do exigente');
+  ok(L.manualTracos('exigente').join('|')==='pede o prato da casa|bebida antes da entrada|repara em mesa suja|sempre avalia no Gúgou|gorjeta ótima','os traços do exigente');
   ok(![f,l].some(q=>/\d/.test(q.linha+L.manualTracos(q.tipo||'x').join(' '))),'as fichas sem números');
   ok(L.manualSemente(L.normSave({ exigVisto:1, dia:12, salao:{ ponto:'terraco' }, pontoDia:10 })).indexOf('c-exigente')>=0,'um save que já viu o exigente abre a ficha'); }
 

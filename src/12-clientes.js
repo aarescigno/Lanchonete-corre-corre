@@ -114,7 +114,7 @@ function normCaixa(c){
       if (o.dev && r.devK === 'maquina') o.devK = 'maquina';   // ou a da máquina de suco, que virou torneira (v7.7)
       if (n(r.int)){ o.int = n(r.int); o.mul = n(r.mul); }   // dia encerrado no meio (v8.2.3): grupos que saíram bravos e a multa
       if (n(r.st)) o.st = clamp(n(r.st), 0, 3);
-      if (n(r.av)) o.av = clamp(n(r.av), 10, 50);   // v8.4: a nota do Gurugol no dia, ×10
+      if (n(r.av)) o.av = clamp(n(r.av), 10, 50);   // v8.4: a nota do Gúgou no dia, ×10
       if (n(r.emp)){ o.emp = n(r.emp); if (r.forc) o.forc = 1; }
       if (n(r.par)) o.par = n(r.par);
       if (n(r.jur)) o.jur = n(r.jur);   // v8.3.2: a parte de juros do que foi pago ao banco
@@ -232,7 +232,7 @@ function normSave(s){
   if (out.anselmoCursos.classica) up.coqClassica = true; else delete up.coqClassica;   // v10.3: o Anselmo
   if (out.anselmoCursos.autor) up.coqAutor = true; else delete up.coqAutor;
   if (out.anselmoCursos.autor && pontoOf(s.salao && s.salao.ponto).bebida === 'coquetel') up.maquina = true;   // o carrinho de boas-vindas vem do curso de autor
-  // v8.6.4: as notas do Gurugol de antes (de 1 a 5 pelo serviço) passam para a escala da Garagem, uma vez só (avalEsc)
+  // v8.6.4: as notas do Gúgou de antes (de 1 a 5 pelo serviço) passam para a escala da Garagem, uma vez só (avalEsc)
   if (s.avalEsc !== 2){
     const t = AVAL.teto[0], esc = v => v == null ? null : Math.round(avalEscala(v, t) * 10) / 10;
     out.aval = normAval(out.aval.map(r => r.map(esc)));
@@ -343,7 +343,7 @@ class Group {
     if (this.lote) this.dishes = Array.from({ length:this.lote }, () => pedePrato(type, game, false, false));
     this.faltam = this.lote ? this.dishes.slice() : [];   // as marmitas do lote que ainda não chegaram ao balcão
     this.cafePede = !!T.pedeCafe && game.mode === 'carreira' && Math.random() < T.pedeCafe;   // v9: o motorista pede o cafezinho ao terminar de comer
-    this.semVeg = this.people.some((p, i) => p.veg && CARDAPIO[this.dishes[i]].carne);   // sem prato vegetariano: Cardápio 1 no Gurugol
+    this.semVeg = this.people.some((p, i) => p.veg && CARDAPIO[this.dishes[i]].carne);   // sem prato vegetariano: Cardápio 1 no Gúgou
     this.dish = this.dishes[0];
     this.carnes = this.people.map(() => pratoAv('pf', game.cursos) ? pick(CARNES) : 'bife');   // v8.6.10: Carnes variadas
     // o entregador (v8.6) não come no salão: leva o prato numa marmita, pela fila de retirada, sem 2º item
@@ -467,7 +467,7 @@ class Group {
   notaPrato(tempo, q){   // a nota do prato do tempo (0 entrada, 1 principal): a do prato (já com o frio) menos TEMPOS.porCoracao por coração perdido esperando
     this.notaT[tempo + 1] = clamp(Math.round(((q || 1) - TEMPOS.porCoracao * this.perdTempo[tempo]) * 10) / 10, 1, 5);
   }
-  /* a nota da comida no Gurugol: a média das notas dos tempos servidos (null se nada foi servido) */
+  /* a nota da comida no Gúgou: a média das notas dos tempos servidos (null se nada foi servido) */
   get notaComida(){ const v = this.notaT.filter(x => x != null); return v.length ? v.reduce((a, b) => a + b, 0) / v.length : null; }
   get completa(){ return this.tempos && this.notaT.every(x => x != null); }
   /* o pedido de suco aparece quando a comanda é anotada; sem ele, o grupo não pede a conta (v8.5.2) */

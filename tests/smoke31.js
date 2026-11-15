@@ -107,7 +107,7 @@ function normB(A){ return A.L.normSave({}).bank; }
   for(let i=0;i<4000;i++){ const gr=new L.Group(g,TIPOS[i%5],i,0,false); if(TIPOS[i%5]==='entregador' && gr.people.some(p=>p.veg)) ent=true; const tem=gr.people.some(p=>p.veg); if(tem){ nVeg++; if(gr.semVeg) nSem++; if(!gr.semVeg) semOp=false; } }
   ok(nVeg>0 && nSem===nVeg && semOp && !ent,'sem nenhum prato sem carne: todo grupo com vegetariano fica semVeg ('+nVeg+'), e o entregador nunca é vegetariano');
   const frac=nVeg/4000; ok(frac>0.08 && frac<0.35,'~10% das pessoas são vegetarianas: '+(frac*100).toFixed(1)+'% dos grupos têm alguma');
-  // o Gurugol: Cardápio 1 e o comentário
+  // o Gúgou: Cardápio 1 e o comentário
   novo({cursos:{}}); g.mode='carreira'; g.avals=[]; const gr=new L.Group(g,'executiva',1,0,false); gr.people[0].veg=true; gr.dishes[0]='coxinha'; gr.semVeg=true; gr.avalia=true; gr.pratoQ=5; gr.state='eating'; gr.table=g.tables[0];
   for(let i=0;i<20;i++) g.avaliar(gr,0,0);
   const av=g.avals; ok(av.every(a=>a.s[3]===1),'o grupo sem prato vegetariano dá Cardápio 1');

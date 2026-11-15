@@ -23,7 +23,7 @@ const sentar=(g,type)=>{ const grp=g.spawn({ type:type||'casal', color:0, vip:fa
   const b0=g.save.bank; ok(g.setStaff('musica',1) && g.save.equipe.musica===1 && g.payroll()===L.payroll(Object.assign({},g.save.equipe,{ musica:0 }))+500,'contratar o trio');
   ok(g.setStaff('musica',2) && g.save.equipe.musica===2,'trocar para o pianista'); ok(g.setStaff('musica',0) && g.save.equipe.musica===0,'dispensar');
   ok(!g.setStaff('musica',3) && !g.setStaff('musica',-1),'só 0, 1 ou 2');
-  // o Ambiente do Gurugol: base + música
+  // o Ambiente do Gúgou: base + música
   const nota=m=>{ g.save.equipe.musica=m; g.mode='carreira'; g.avals.length=0; const x=sentar(g,'casal'); x.grp.avalia=true; x.grp.setState('wantBill'); x.grp.hearts=5; g.avaliar(x.grp,0,0); return g.avals[g.avals.length-1].s[4]; };
   g.startDay(10); H.els['btn-start'].fire('click'); g.mode='carreira';
   const a0=nota(0), a1=nota(1), a2=nota(2);
