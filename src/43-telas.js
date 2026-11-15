@@ -37,7 +37,7 @@ game.hooks.state = function(s){
   }
   else if (s === 'dayend'){ buildEnd(); if (game.result && game.result.noite) showOnly(['ov-end']);   // v10.10: na noite da estrela os resultados vêm primeiro; a conversa e o boletim, ao seguir
     else if (game.mode === 'carreira' && game.save.histV === 1 && histLiga()) fluxoHistoria(() => showOnly(['ov-end'])); else showOnly(['ov-end']); }   // v9.6.10: as conversas vêm antes dos resultados (a tela já está montada, porque a conversa reinicia o dia)
-  else if (s === 'shop'){ shopGrupo = shopEntra ? shopGrupoDe(shopEntra) : shopEntraG || 'lanchonete'; shopTab = shopEntra; shopEntra = null; shopEntraG = null; buildShop(); showOnly(['ov-shop']); }
+  else if (s === 'shop'){ shopGrupo = shopEntra ? shopGrupoDe(shopEntra) : shopEntraG || 'lanchonete'; shopTab = shopEntra; shopEntra = null; shopEntraG = null; shopTopo = true; buildShop(); showOnly(['ov-shop']); }
   else if (s === 'falencia'){ buildFalencia(); showOnly(['ov-falencia']); }
   else if (s === 'endlessend'){ buildEndless(); showOnly(['ov-endless']); }
 };

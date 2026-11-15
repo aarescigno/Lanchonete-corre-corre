@@ -1,6 +1,6 @@
 # v11.10 — As telas no celular: a lojinha com o topo fixo, os painéis pequenos e as Versões enxutas (etapa 7b)
 
-**Situação:** aprovada (15/11)
+**Situação:** entregue em 15/11
 **Origem:** a Etapa 7 do `docs/PLANO.md`, revista com o usuário em 15/11 (as respostas estão no `docs/PROPOSTAS.md`, "15/11 — usuário: decisões da Etapa 7"); a pendência antiga do `docs/RESUMO.md` ("a lojinha ainda rola no menor celular deitado"). Vem depois da 7a (`docs/spec-v11.9.md`), que muda a tela do Ranking e o fim do Turno sem fim.
 
 ## Objetivo
@@ -56,12 +56,12 @@ Na lojinha, o dinheiro, as abas e o botão de começar o dia ficam sempre à vis
 - `tests/menu_fit.py`: as conferências novas (CA1 a CA3).
 
 ## Tarefas
-- [ ] T1 `tests/menu_fit.py` com as conferências dos CA1 a CA3 (falhando) e `tests/smoke86.js` com o CA5 e o CA6 (falhando); o `smoke86` entra no `tests/run_all.sh`.
-- [ ] T2 A lojinha: o painel em coluna, o `#shop-grid` rolando e o `scrollTop` guardado e devolvido no `buildShop`.
-- [ ] T3 Os painéis da regra 2, medidos pelo `menu_fit.py` e ajustados com o que a regra permite.
-- [ ] T4 O painel Versões: a lista enxuta, o link da v9 e o topo fixo.
-- [ ] T5 `tests/shot_v11_10.js`, conferir os recortes do CA7 e apagar as capturas.
-- [ ] Fechamento: `VERSAO`, `vtag`, `docs/RESUMO.md` (a linha da versão; nas Ideias pendentes sai "a lojinha ainda rola no menor celular deitado"; em Arquivos publicados, a próxima publicação envia `versoes/v9.html` e `versoes/v10.html` em `files`), `docs/TESTES.md` (o que o `menu_fit.py` confere agora), `CLAUDE.md` (em **Nova versão**: a lista do `#ov-ver` tem só as versões cheias e as da série atual; em Testes: o `menu_fit.py` confere o menu, a lojinha e os painéis), esta spec como entregue, `tests/run_all.sh` verde e `python3 tests/menu_fit.py` com 0 falha, a linha da 7b na tabela Situação do `docs/PLANO.md` (a Etapa 7 fica completa; o texto vai para o `docs/PLANO-FEITO.md` com `ferramentas/arquiva.py`), PR e merge.
+- [x] T1 `tests/menu_fit.py` com as conferências dos CA1 a CA3 (falhando) e `tests/smoke86.js` com o CA5 e o CA6 (falhando); o `smoke86` entra no `tests/run_all.sh`.
+- [x] T2 A lojinha: o painel em coluna, o `#shop-grid` rolando e o `scrollTop` guardado e devolvido no `buildShop`.
+- [x] T3 Os painéis da regra 2, medidos pelo `menu_fit.py` e ajustados com o que a regra permite.
+- [x] T4 O painel Versões: a lista enxuta, o link da v9 e o topo fixo.
+- [x] T5 `tests/shot_v11_10.js`, conferir os recortes do CA7 e apagar as capturas.
+- [x] Fechamento: `VERSAO`, `vtag`, `docs/RESUMO.md` (a linha da versão; nas Ideias pendentes sai "a lojinha ainda rola no menor celular deitado"; em Arquivos publicados, a próxima publicação envia `versoes/v9.html` e `versoes/v10.html` em `files`), `docs/TESTES.md` (o que o `menu_fit.py` confere agora), `CLAUDE.md` (em **Nova versão**: a lista do `#ov-ver` tem só as versões cheias e as da série atual; em Testes: o `menu_fit.py` confere o menu, a lojinha e os painéis), esta spec como entregue, `tests/run_all.sh` verde e `python3 tests/menu_fit.py` com 0 falha, a linha da 7b na tabela Situação do `docs/PLANO.md` (a Etapa 7 fica completa; o texto vai para o `docs/PLANO-FEITO.md` com `ferramentas/arquiva.py`), PR e merge.
 
 ## Avisos para a execução
 - O `.panel` é `display:block` com `text-align:center` e os grids têm largura própria: em coluna flex, use `align-self:center` (ou `margin:0 auto`) no `#shop-grid` e confira no CA7 que o painel não mudou de largura nas seções que cabem.
@@ -80,6 +80,12 @@ Na lojinha, o dinheiro, as abas e o botão de começar o dia ficam sempre à vis
 Nenhuma.
 
 ## Desvios
-(No fechamento: o que saiu diferente do que estava escrito e por quê. Sem desvio, "Nenhum.")
+- **Medidas:** `menu_fit.py` com 630 conferências e 0 falha (14 tamanhos); `smoke86` com 14 checagens; `DIAS=120 node carreira.js 6`: o Fim em 6 de 6 (dia 59), banco 0/6.
+- **Margens em coluna:** no flex as margens dos filhos não se fundem e o painel crescia uns 36px; por isso `#ov-shop .panel > *` leva `margin-bottom:0` (só a margem de cima vale). Resultado medido em 1366×768 e 667×375, antes e depois: mesma largura do painel; altura igual ou até 4px maior nas seções que cabem.
+- **Grid no centro:** o `.shopgrid` com largura própria ficava encostado à esquerda no painel antigo; agora fica no centro (`align-self:center`), como a regra pedia.
+- **Instalar no celular:** só encolher não bastava (o endereço e o botão passavam da largura, que vinha da altura da tela); em `max-height:460px` o painel usa `width:min(100%,640px)`.
+- **Falência e fim do Turno sem fim:** a falência já cabia; o Turno sem fim ganhou `#endless-stats` em 4 colunas. O Ranking: `.rank-wrap` com `max-height:max(64px,calc(100vh - 250px))`.
+- **Captura (CA7):** a leitura de `capturas/` está bloqueada nesta sessão, então o `shot_v11_10.js` foi escrito e rodado sem erro de página, mas o visual foi conferido por medidas no DOM (largura e altura do painel, posição do grid, botões dentro do painel e da tela, antes e depois), não a olho. Vale olhar a lojinha uma vez num celular.
+- **Smoke:** `smoke86` não clica nas abas (no `harness.js` não são elementos); o CA6 usa `setShopGrupo`, `setShopTab`, o cartão e o "‹ Voltar".
 
 **Modelo:** Sonnet, esforço médio (CSS e um ajuste no `buildShop`, com as regras fechadas e a prova no Chromium; se o painel em coluna quebrar a largura de alguma seção e pedir mais de duas rodadas de captura, suba para esforço alto).
