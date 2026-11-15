@@ -4,6 +4,22 @@ Registro das ideias e dos retornos de quem jogou, com o texto original, e de ond
 
 ---
 
+## 15/11 — usuário: decisões da Etapa 7 (polimento), no planejamento
+Texto original: "Start planning the next phase" e, sobre qual etapa, "8h is already committed, it's the 7th step that needs planning".
+A sessão mediu antes de perguntar (v11.8): a lojinha rola em Cardápio, Salão, Luxo e Dani em todo tamanho de tela (até em 1366×768, no Terraço) e em 8 seções em 568×320; o painel Versões tem 114 linhas (de 15 a 20 mil px de altura); em 568×320 passam da tela o Ranking, o Instalar no celular e o fim do Turno sem fim; o "Como jogar" já não existe (é o Manual, desde a v9.6.7); as chamadas do ranking compartilhado ainda batem com o `db` do artifact; com os bots, a Garagem passa 54% das metas sem equipe e 96% com, a área industrial 92%, a Avenida 82% e o Terraço 88%, e a história fecha no dia 63 em 6 de 6 carreiras, sempre com 2 estrelas e nunca com 3.
+Respostas do usuário (15/11):
+- Lojinha no celular: "Fixed top, cards scroll" (o topo e os botões parados; só os cartões rolam).
+- Ranking compartilhado: "Stay offline".
+- As conferências com jogadores do `docs/RESUMO.md`: "Keep the list" (ficam pendentes).
+- Som e toque num celular de verdade: "Not yet".
+- Equilíbrio: "No balance session" (espera o retorno dos jogadores).
+- O "Seu nome / Salvar no ranking" de todo fim de dia: "Move to the Ranking screen" (o registro passa a ser automático); sem nome escrito, a linha entra como "Você".
+- Painel Versões: "Full versions + v11.x" (uma linha por versão cheia e as da série atual).
+- Sobras de outras specs que entram: "Trio with 3 musicians", "Hide Divulgação until it opens" (com o cartão "Contas do dia" escondido junto nos dias 2 e 3: "Yes, hide both") e "Other panels on the small phone". Não entra a revisão de texto do arco.
+Destino: `docs/spec-v11.9.md` (etapa 7a: o nome no Ranking, a Divulgação e o trio) e `docs/spec-v11.10.md` (etapa 7b: a lojinha com o topo fixo, os painéis pequenos e as Versões), as duas aprovadas em 15/11; o ranking compartilhado e a revisão de equilíbrio foram para as Ideias guardadas do `docs/PLANO.md`.
+
+---
+
 ## 14/11 — usuário: o arco da Bia e da equipe (Etapa 8), no planejamento
 > Achei a postura da Bia ao longo do jogo muito parada e passiva nas falas, ela é uma mulher empoderada e esforçada, quero que ela vá crescendo em personalidade e Segurança ao longo da história. Analise todos os eventos de história, pondere caminhos e formas de demonstrar esse crescimento dela. Após isso, monte um cronograma de implementações das histórias para que modelos mais baratos possam fazer as implementações. Pode adicionar mais pontos de história ao longo da carreira para reforçar esse processo de desenvolvimento da personagem. Quero que haja algo similar para as demais personagens também. Me entreviste para qualificar esse processo
 
