@@ -28,6 +28,13 @@ const notaDe=(g,v,n)=>{ g.save.aval=Array(n||10).fill([v,v,v,v,v]); };
   ok(!g.podeEmprestar(200),'com a reforma, não dá para pegar outro empréstimo');
   g.save.bank=5000; ok(g.quitar() && g.save.emp.resto===0 && g.podeEmprestar(200),'quitada a reforma, o banco empresta de novo'); }
 
+// ---------- v11.11: recomeçar do zero refaz a abertura e a Missão zero ----------
+{ const H=nova({abertura:true},{lcc2_save:JSON.stringify({cardV:1,treino:true,dia:5,bank:900}),lcc2_abertura:'1'}), {g,L,els,store}=H;
+  ok(!L.aberturaAtual() && g.save.treino===true,'v11.11: save antigo, abertura já vista e Missão zero feita');
+  els['btn-reset'].fire('click'); els['btn-reset'].fire('click');
+  ok(L.aberturaAtual() && L.aberturaAtual().origem==='auto' && !g.save.treino,'v11.11: recomeçar do zero toca a abertura de novo e zera a Missão zero');
+  L.aberturaAtual().pular();
+  ok(!L.aberturaAtual() && g.mode==='treino' && g.state==='playing','v11.11: o fim da abertura vai à Missão zero de novo'); }
 // ---------- 2. a 1ª vez: abertura -> Missão zero -> conversa do cap. 1 -> dia 1 ----------
 { const H=nova({abertura:true}), {g,L,els}=H, ab=L.aberturaAtual();
   ok(ab && ab.origem==='auto' && g.save.cap===1 && !g.save.treino,'1ª vez: a abertura toca sozinha');

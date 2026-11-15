@@ -82,9 +82,11 @@ function introManut(){
 }
 /* carreira (v8.3, campanha): sempre o próximo dia; do dia 2 em diante (no modo dev, desde o dia 1), a lojinha abre antes
    da introdução do dia. n = 0: a Missão zero (v8.2) */
+/* v11.11: recomeçar do zero refaz tudo: a abertura (que segue para a Missão zero); no modo dev, só o menu */
+function recomeca(){ game.resetProgress(); if (DEV.on) game.setState('menu'); else abrirAbertura('auto'); }
 function playCareer(n){
   if (n === 0) return game.startTreino();
-  if (game.save.fechou) game.resetProgress();   // v8.3.1: o banco tomou a lanchonete; só resta recomeçar
+  if (game.save.fechou) return recomeca();   // v8.3.1: o banco tomou a lanchonete; só resta recomeçar
   fluxoHistoria(() => { const p = game.proxDia; if (p >= 2 || DEV.on) game.goShop(p); else game.startDay(p); });
 }
 /* conversas do Modo História (v8.7): balões sobre o salão do dia que vem, parado e escurecido; um toque passa, Pular fecha */
@@ -286,7 +288,7 @@ on('btn-aviso',      () => { Sfx.tap(); game.save.avisoCard = false; game.save.a
 on('btn-reset',      () => {
   Sfx.init();
   if (!resetPede){ resetPede = true; $('btn-reset').textContent = 'Confirmar: apagar a carreira e voltar ao dia 1?'; Sfx.tap(); return; }
-  game.resetProgress(); game.setState('menu');
+  recomeca();
 });
 on('btn-start',      () => { Sfx.init(); Sfx.resume(); Sfx.ok(); game.begin(); });
 on('btn-intro-menu', () => game.setState('menu'));
