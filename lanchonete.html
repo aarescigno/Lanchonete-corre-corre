@@ -449,7 +449,7 @@ table.rank tr.me td{background:#fbe7a8}
 
     <div class="ov show" id="ov-menu">
       <div class="panel menu-panel">
-        <span class="vtag" id="vtag" aria-label="Versão 11.10">v11.10</span>
+        <span class="vtag" id="vtag" aria-label="Versão 11.11">v11.11</span>
         <h1 class="title">Lanchonete <br>Corre-Corre</h1>
         <p class="tag">Ajude a Bia a atender a freguesia da esquina antes que o cafezinho esfrie!</p>
         <div class="lbl" id="menu-dia">História</div>
@@ -692,7 +692,8 @@ table.rank tr.me td{background:#fbe7a8}
       <div class="panel">
         <h2>Versões</h2>
         <ul class="verlist">
-          <li><b>v11.10</b><span class="cur">versão atual</span><br>15/11/2026 &mdash; Na lojinha, o dinheiro, as abas e o botão de começar o dia ficam sempre à vista: só os cartões rolam. As telas pequenas cabem melhor no celular deitado, e esta lista ficou mais curta.</li>
+          <li><b>v11.11</b><span class="cur">versão atual</span><br>15/11/2026 &mdash; Quem recomeça do zero passa de novo pela abertura e pela Missão zero.</li>
+          <li><b>v11.10</b><br>15/11/2026 &mdash; Na lojinha, o dinheiro, as abas e o botão de começar o dia ficam sempre à vista: só os cartões rolam. As telas pequenas cabem melhor no celular deitado, e esta lista ficou mais curta.</li>
           <li><b>v11.9</b><br>15/11/2026 &mdash; O fim do dia não pede mais o nome: a pontuação entra sozinha no ranking, e o nome se escreve uma vez, na tela do Ranking. A Divulgação só aparece na lojinha quando já dá para escolher. E o trio de cordas do Terraço agora tem três músicos.</li>
           <li><b>v11.8</b><br>15/11/2026 &mdash; A Bia reage ao que acontece no salão, com gestos curtos que mudam com o ponto: quando uma mesa sai encantada, quando um grupo vai embora bravo e quando o dia fecha com a meta batida.</li>
           <li><b>v11.7</b><br>15/11/2026 &mdash; A Bia muda de roupa com o ponto: o avental florido da mãe na Garagem, o avental da casa na área industrial, a camisa de botão na Avenida e o colete com a rosa no Terraço, com o cabelo mudando junto (solto, rabo, rabo alto, coque). Aparece no salão, no balão da conversa e na lojinha.</li>
@@ -2410,7 +2411,7 @@ const BIA_IDS = ['tenis', 'corrida', 'bandeja', 'sudoku'];
 function upgradeCartao(id){ return BIA_IDS.indexOf(id) >= 0 ? 'bia' : 'melhorias'; }
 const HIST_NOMES = { bia:'Bia', tonhao:'Tonhão', dani:'Dani', joca:'Joca', cami:'Cami', anselmo:'Anselmo', lia:'Lia', braulio:'Bráulio' };   // v11.6: o Bráulio
 const CAIXA_MAX = 14;                                 // livro-caixa (v7.2): quantos dias da carreira ficam guardados
-const VERSAO = 'v11.10';                               // vai no resumo do Caixa
+const VERSAO = 'v11.11';                               // vai no resumo do Caixa
 const DIVULGA_DIA = 4;                                // antes disso, o movimento é o da inauguração (sem custo); v9.0.2: dia 4, e o padrão é o boca a boca
 function divulgaAberta(n, sv){ return devLivre() || n >= DIVULGA_DIA && !(sv && sv.convDiv === 'pend'); }   // no modo dev, desde o dia 1; v9.0.3: no Modo História, só depois da conversa
 /* v9.6.4: a Efood (os entregadores) só abre depois da conversa dos entregadores, no Modo História; antes dela, nenhum tipo com `retira` vem na agenda */
@@ -6467,9 +6468,10 @@ class Game {
     else this.buildTables();
     return true;
   }
-  /* Recomeçar do zero (v8.3, com confirmação no menu): a carreira volta ao dia 1; a Missão zero continua feita */
+  /* Recomeçar do zero (v8.3, com confirmação no menu): a carreira volta ao dia 1; desde a v11.11, a abertura e a Missão zero também voltam */
   resetProgress(){
-    this.save = normSave(DEV.on ? { bank:DEV.bank, treino:this.save.treino } : { treino:this.save.treino });   // também depois que o banco tomou a lanchonete (v8.3.1)
+    this.save = normSave(DEV.on ? { bank:DEV.bank } : {});   // também depois que o banco tomou a lanchonete (v8.3.1)
+    if (!DEV.on) lsSet(LS.abertura, '0');   // no modo dev a abertura nunca toca sozinha
     this.up = this.save.up;
     this.buildTables();
     this.kitchen.reset(); this.dani.reset(); this.joca.reset(); this.cami.reset();
@@ -14707,9 +14709,11 @@ function introManut(){
 }
 /* carreira (v8.3, campanha): sempre o próximo dia; do dia 2 em diante (no modo dev, desde o dia 1), a lojinha abre antes
    da introdução do dia. n = 0: a Missão zero (v8.2) */
+/* v11.11: recomeçar do zero refaz tudo: a abertura (que segue para a Missão zero); no modo dev, só o menu */
+function recomeca(){ game.resetProgress(); if (DEV.on) game.setState('menu'); else abrirAbertura('auto'); }
 function playCareer(n){
   if (n === 0) return game.startTreino();
-  if (game.save.fechou) game.resetProgress();   // v8.3.1: o banco tomou a lanchonete; só resta recomeçar
+  if (game.save.fechou) return recomeca();   // v8.3.1: o banco tomou a lanchonete; só resta recomeçar
   fluxoHistoria(() => { const p = game.proxDia; if (p >= 2 || DEV.on) game.goShop(p); else game.startDay(p); });
 }
 /* conversas do Modo História (v8.7): balões sobre o salão do dia que vem, parado e escurecido; um toque passa, Pular fecha */
@@ -14911,7 +14915,7 @@ on('btn-aviso',      () => { Sfx.tap(); game.save.avisoCard = false; game.save.a
 on('btn-reset',      () => {
   Sfx.init();
   if (!resetPede){ resetPede = true; $('btn-reset').textContent = 'Confirmar: apagar a carreira e voltar ao dia 1?'; Sfx.tap(); return; }
-  game.resetProgress(); game.setState('menu');
+  recomeca();
 });
 on('btn-start',      () => { Sfx.init(); Sfx.resume(); Sfx.ok(); game.begin(); });
 on('btn-intro-menu', () => game.setState('menu'));

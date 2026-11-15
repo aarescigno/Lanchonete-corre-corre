@@ -19,10 +19,10 @@ Origem: retorno do Renan Martorelli (beta-tester) e conversa com o Arthur (15/10
 | 8h | As reações da Bia durante o dia | v11.8 | feita em 15/11 (`docs/spec-v11.8.md`; `smoke84`; `BIA_REACAO`, `Waitress.reage` e `drawBia({ reacao })`; três gestos por ponto; a Etapa 8 está completa) |
 | 7a | Acertos do polimento: o nome no Ranking, a Divulgação na hora certa e o trio com três músicos | v11.9 | feita em 15/11 (`docs/spec-v11.9.md`; `smoke85`; `rankAuto`, `Rank.renomeiaLocal`, `shopSecoesVis` e `TRIO`) |
 | 7b | As telas no celular: a lojinha com o topo fixo, os painéis pequenos e as Versões enxutas | v11.10 | feita em 15/11 (`docs/spec-v11.10.md`; `smoke86` e `menu_fit.py` com 630 conferências; só o `#shop-grid` rola; a Etapa 7 está completa) |
-| 9a | A abertura nova: o motor, o som e as cenas 1 e 2 | v11.11 | **a próxima** (`docs/spec-v11.11.md`, aprovada em 15/11) |
-| 9b | A abertura nova: as cenas da Casa Aurora (3, 4 e 5) | v11.12 | planejada (`docs/spec-v11.12.md`, aprovada em 15/11) |
-| 9c | A abertura nova: a perda e a promessa (6, 7 e 8) | v11.13 | planejada (`docs/spec-v11.13.md`, aprovada em 15/11) |
-| 9d | A abertura nova no ar: as cenas 9, 10 e 11, a troca e a limpeza | v11.14 | planejada (`docs/spec-v11.14.md`, aprovada em 15/11) |
+| 9a | A abertura nova: o motor, o som e as cenas 1 e 2 | v11.12 | **a próxima** (`docs/spec-v11.12.md`, aprovada em 15/11) |
+| 9b | A abertura nova: as cenas da Casa Aurora (3, 4 e 5) | v11.13 | planejada (`docs/spec-v11.13.md`, aprovada em 15/11) |
+| 9c | A abertura nova: a perda e a promessa (6, 7 e 8) | v11.14 | planejada (`docs/spec-v11.14.md`, aprovada em 15/11) |
+| 9d | A abertura nova no ar: as cenas 9, 10 e 11, a troca e a limpeza | v11.15 | planejada (`docs/spec-v11.15.md`, aprovada em 15/11) |
 | 10 | O final no mesmo tratamento da abertura | — | planejar com o Opus antes |
 
 ---
@@ -86,14 +86,14 @@ Origem: retorno do Renan Martorelli (beta-tester) e conversa com o Arthur (15/10
 > - **Regra da 3f em todas as sessões:** cartão novo da lojinha só com nome, preço e "?"; toda novidade ganha ficha no `MANUAL` (sem números), revelada quando aparece na história.
 > Ordem: 4a-1 (o ponto e a refeição completa, v10) → 4a-2 (o VIP exigente e a reputação, v10.1) → 4a-3 (a cozinha: alta gastronomia, a Lia e a alta confeitaria, v10.2) → 4a-4 (o salão e o bar: Cami, Joca e Anselmo, v10.3) → 4a-5 (música, flores e rebalanceamento, v10.4). Cada uma é uma versão, com PR e merge. As "Checagens de fim de sessão" da etapa 3 valem para todas.
 
-## Etapa 9 — A abertura refeita como um filminho (9a a 9d, v11.11 a v11.14)
+## Etapa 9 — A abertura refeita como um filminho (9a a 9d, v11.12 a v11.15)
 > Pedido do usuário em 15/11: "Revise o vídeo inicial com objetivo de deixar ele bonito, faça uma revisão minuciosa, para praticamente refazê-lo do zero". Planejada no mesmo dia, com entrevista. Roteiro, direção de arte, som e o quadro a quadro das 11 cenas: `docs/ABERTURA.md` (leia por faixa: `tests/indice.sh ABERTURA`).
 
 Quadro cheio, câmera que desliza e aproxima, cenários em camadas com luz, legenda de uma linha e o tema da Rosa. Até a 9d, o jogador vê a abertura antiga e a nova toca só pelo modo dev ("Abertura nova (em obras)"). Depois de cada sessão, o usuário assiste e pode pedir ajustes.
-- **9a (v11.11)** — o motor, o som inteiro e as cenas 1 e 2 (a cozinha de casa): `docs/spec-v11.11.md`. **Modelo:** Sonnet, esforço alto.
-- **9b (v11.12)** — as cenas da Casa Aurora (3, 4 e 5): `docs/spec-v11.12.md`. **Modelo:** Sonnet, esforço alto.
-- **9c (v11.13)** — a perda e a promessa (6, 7 e 8): `docs/spec-v11.13.md`. **Modelo:** Sonnet, esforço alto.
-- **9d (v11.14)** — a virada (9, 10 e 11), a troca pela abertura nova e a limpeza da antiga: `docs/spec-v11.14.md`. **Modelo:** Sonnet, esforço alto.
+- **9a (v11.12)** — o motor, o som inteiro e as cenas 1 e 2 (a cozinha de casa): `docs/spec-v11.12.md`. **Modelo:** Sonnet, esforço alto.
+- **9b (v11.13)** — as cenas da Casa Aurora (3, 4 e 5): `docs/spec-v11.13.md`. **Modelo:** Sonnet, esforço alto.
+- **9c (v11.14)** — a perda e a promessa (6, 7 e 8): `docs/spec-v11.14.md`. **Modelo:** Sonnet, esforço alto.
+- **9d (v11.15)** — a virada (9, 10 e 11), a troca pela abertura nova e a limpeza da antiga: `docs/spec-v11.15.md`. **Modelo:** Sonnet, esforço alto.
 
 ## Etapa 10 — O final no mesmo tratamento da abertura
 As 8 cenas do final e os créditos (`FINAL`) refeitos com o motor da Etapa 9 (quadro cheio, câmera, luz, o tema da Rosa), espelhando a abertura nova: a última cena do final repete a cozinha da cena 1. Depende da 9d. Decidir com o usuário: se o roteiro do final muda, quantas sessões e se os créditos ganham desenho.

@@ -1,4 +1,4 @@
-# A abertura nova (Etapa 9, v11.11 a v11.14)
+# A abertura nova (Etapa 9, v11.12 a v11.15)
 
 Roteiro e direção fechados na entrevista de 15/11 (pedido em `docs/PROPOSTAS.md`). É a fonte dos textos, dos quadros e do som da Etapa 9: a sessão de cada versão **copia a sua seção para a spec** sem decidir nada. Leia por faixa: `tests/indice.sh ABERTURA`.
 
@@ -12,7 +12,7 @@ Roteiro e direção fechados na entrevista de 15/11 (pedido em `docs/PROPOSTAS.m
 - **O segredo do molho:** só o brilho rosado. A pétala não aparece; quem revela é o Tonhão, no Terraço.
 - **Som:** um tema musical (o tema da Rosa) que atravessa a abertura mudando de clima, mais efeitos.
 - **Escopo:** só a abertura. O final (`FINAL`, 8 cenas e os créditos) continua como está e ganha o mesmo tratamento numa etapa seguinte (Etapa 10, a planejar).
-- **Sessões:** 4 versões. Até a última, o jogador vê a abertura antiga e a nova só toca pelo modo dev ("Abertura nova (em obras)"); na v11.14 a nova vira a oficial e a antiga sai.
+- **Sessões:** 4 versões. Até a última, o jogador vê a abertura antiga e a nova só toca pelo modo dev ("Abertura nova (em obras)"); na v11.15 a nova vira a oficial e a antiga sai.
 
 ## 2. O que a abertura planta e o jogo colhe (não quebrar)
 | Na abertura | No jogo |
@@ -96,7 +96,7 @@ A cena 11 tem `titulo:'O sonho da Bia'`. Soma: 77 s. O texto do leitor de tela (
 
 - **Trocar de cena corta o som:** a trilha e os efeitos de uma cena saem por um nó de ganho próprio (`Sfx.faixa()`), que vai a zero em 0,15 s quando a cena troca (toque, Voltar, Pular ou fim). O botão de som vale como no resto do jogo. Com movimento reduzido, o som toca igual.
 
-## 6. v11.11 — O motor, o som e as cenas 1 e 2 (sessão 9a)
+## 6. v11.12 — O motor, o som e as cenas 1 e 2 (sessão 9a)
 O motor (§3), o roteiro (§4) e o som (§5) inteiros, e o desenho das duas cenas da cozinha de casa. As cenas 3 a 11 tocam como **cartão de obra**: fundo `PAL.tinta`, o número e o `id` da cena no centro (creme, 40 px), com a legenda, as falas (sem ponta), a câmera parada e o som de verdade.
 
 **O cenário "cozinha de casa"** (`ab2Cozinha(c,cam,modo)`, com `modo` `'tarde'`, `'noite'` ou `'lar'`; as cenas 7 e 8 reusam):
@@ -116,7 +116,7 @@ O motor (§3), o roteiro (§4) e o som (§5) inteiros, e o desenho das duas cena
 - p 0,45: a Bia fecha os olhos, as bochechas coram, sobem corações e estrelinhas. A Rosa ri. Fala em 2,6 s.
 - p 0,86: o clique. Um clarão branco de 0,15 s; a cena escurece 60% e, no centro, aparece a foto da Rosa na moldura (`drawFotoRosa`, com 300 px de altura, girada 4 graus), com um halo dourado. Fica até o fim.
 
-## 7. v11.12 — As cenas da Casa Aurora: 3, 4 e 5 (sessão 9b)
+## 7. v11.13 — As cenas da Casa Aurora: 3, 4 e 5 (sessão 9b)
 **O cenário "rua da Casa Aurora"** (`ab2RuaAurora(c,cam,modo)`, `'manha'` ou `'tarde'`; a cena 9 reusa):
 - Fundo: céu em degradê; duas fileiras de prédios em silhueta (paralaxe 0,6 e 0,8), com janelinhas; o sol atrás deles.
 - Meio: a fachada da Casa Aurora, larga e elegante, do centro para a direita: toldo listrado vinho e creme, letreiro "Casa Aurora" dourado sobre vinho, porta dupla com vidro, duas janelas altas com luz quente e cortina, dois vasos de buxinho, um lampião de rua; calçada de pedra em mosaico preto e branco; do lado esquerdo, a outra calçada, com uma árvore e um banco.
@@ -151,7 +151,7 @@ O motor (§3), o roteiro (§4) e o som (§5) inteiros, e o desenho das duas cena
 - p 0,4 a 1: a câmera desliza até a porta da cozinha. O Tonhão fecha o punho e dá um passo; a Rosa segura o braço dele e baixa os olhos. A legenda entra em 3,4 s.
 - O volume do aplauso cai à metade quando a câmera chega à sombra (é a trilha `gala` passando para `triste`).
 
-## 8. v11.13 — A perda e a promessa: 6, 7 e 8 (sessão 9c)
+## 8. v11.14 — A perda e a promessa: 6, 7 e 8 (sessão 9c)
 **O cenário "quarto"** (`ab2Quarto(c,cam)`): um quarto de hospital, mas aconchegante, sem aparelhos nem soro.
 - Fundo: parede verde-água escurecida pela noite; janela com o céu azul-escuro, a lua e uma cortina leve que balança.
 - Meio: a cama com travesseiros altos e uma colcha de retalhos rosa; o criado-mudo com um abajur aceso (a luz da cena, âmbar), o copo com a flor da Rosa e o caderno "Receitas da Rosa"; a cadeirinha da Bia.
@@ -176,7 +176,7 @@ O motor (§3), o roteiro (§4) e o som (§5) inteiros, e o desenho das duas cena
 - p 0,6: ela ergue os olhos para a estrela. Fala em 4,6 s.
 - p 0,85: a estrela pisca em resposta, e a Bia sorri.
 
-## 9. v11.14 — A virada, a troca e a limpeza: 9, 10 e 11 (sessão 9d)
+## 9. v11.15 — A virada, a troca e a limpeza: 9, 10 e 11 (sessão 9d)
 **Cena 9, `tio`** — a rua da Casa Aurora em `modo` `'tarde'`. `cam` de `[760,320,1.2]` para `[420,320,1.2]`; `clima` `esperanca`.
 - p 0,15 a 0,35: o Tonhão sai pela porta, tira o avental vinho da Casa Aurora, pendura na maçaneta e solta os ombros. A touca fica.
 - p 0,35 a 0,6: ele atravessa a rua; a câmera vai junto. Na outra calçada, a Bia espera com o caderno.

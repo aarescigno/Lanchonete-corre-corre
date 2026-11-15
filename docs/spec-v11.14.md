@@ -1,60 +1,51 @@
-# v11.14 — A abertura nova no ar: a virada (9, 10 e 11), a troca e a limpeza (etapa 9d)
+# v11.14 — A abertura nova: a perda e a promessa (6, 7 e 8) (etapa 9c)
 
 **Situação:** aprovada (15/11)
-**Origem:** `docs/ABERTURA.md` §9 e §10 (roteiro e direção fechados na entrevista de 15/11; pedido em `docs/PROPOSTAS.md`); etapa 9d do `docs/PLANO.md`.
+**Origem:** `docs/ABERTURA.md` §8 e §10 (roteiro e direção fechados na entrevista de 15/11; pedido em `docs/PROPOSTAS.md`); etapa 9c do `docs/PLANO.md`.
 
 ## Objetivo
-A abertura nova fica completa e passa a ser a do jogo: o tio que larga a Casa Aurora, o carimbo do banco e a Bia erguendo o portão da garagem. A abertura antiga sai.
+O coração da abertura ganha desenho: a despedida no quarto, a cozinha vazia onde uma estrela acende na janela e a Bia que cresce no mesmo lugar e faz a promessa. Continua só no modo dev.
 
 ## Fora do escopo
-- O final (`FINAL`) e os créditos no mesmo tratamento: Etapa 10 do `docs/PLANO.md`, a planejar. Até lá o `FINAL` segue com a faixa de legenda e os cenários antigos.
+- As cenas 9 a 11 e a troca da abertura oficial (v11.15); o final (`FINAL`).
 
 ## Regras (decisões tomadas)
-Valem, sem mudança de texto nem de número, `docs/ABERTURA.md` §3 (direção de arte), §9 (os cenários e as cenas desta versão, quadro a quadro) e §10. Os textos, os tempos, a câmera, o `sai`, o `clima` e os `fx` das cenas já estão na `ABERTURA2` desde a v11.11 e não mudam.
-- **Desenho:** em `src/27-abertura-nova.js`, os cenários `ab2Banco(c,cam)` e `ab2RuaCasa(c,cam,k)` e as cenas `AB2_CENAS.tio`, `.banco` e `.portao`; o `ab2Obra` (cartão de obra) sai.
-- **A troca:** `ABERTURA` passa a ser o roteiro novo (o nome `ABERTURA2` deixa de existir; `AB2_CENAS` e os `ab2...` ficam com o nome que têm). A abertura que toca sozinha na 1ª vez e a do botão "Ver abertura" são a nova. Quem já viu a antiga não a vê de novo sozinho (`LS.abertura` não muda).
-- **A limpeza:** saem as 10 cenas antigas da `AB_CENAS` (`casa`, `aurora`, `tempero`, `estrela`, `hospital`, `saudade`, `promessa`, `tonhao`, `banco`, `inauguracao`) e as funções de `src/25-abertura.js` que só elas usavam. Tudo o que o `FINAL` usa fica, e o `FINAL` continua desenhado pelo caminho antigo (`abLegenda`, `fade`).
-- **Modo dev:** a entrada "Abertura nova (em obras)" sai; "Abertura" toca a nova.
-- **Leitor de tela:** `Abertura.texto()` como hoje, com os textos novos.
-- **Versão:** `VERSAO` e `vtag` `v11.14`; no `#ov-ver`, a linha da abertura passa a dizer: "Abertura nova: a história da Bia e da Rosa refeita como um filminho, com quadro cheio, câmera, luz e música."
+Valem, sem mudança de texto nem de número, `docs/ABERTURA.md` §3 (direção de arte), §8 (os cenários e as cenas desta versão, quadro a quadro) e §10. Os textos, os tempos, a câmera, o `sai`, o `clima` e os `fx` das cenas já estão na `ABERTURA2` desde a v11.12 e não mudam.
+- **Desenho:** em `src/27-abertura-nova.js`, o cenário `ab2Quarto(c,cam)`, os modos `'noite'` e `'lar'` de `ab2Cozinha` e as cenas `AB2_CENAS.despedida`, `.janela` e `.promessa`, que deixam de ser cartão de obra.
+- **Modo dev:** a entrada "Abertura nova (em obras)" já mostra as oito primeiras cenas desenhadas; nada novo no painel.
+- **Versão:** `VERSAO` e `vtag` `v11.14`; a linha da abertura no `#ov-ver` passa a dizer: "A abertura está sendo refeita: quadro cheio, câmera e música. Oito cenas prontas, por enquanto só no modo dev."
 - **Manual:** nada muda.
 - **Save:** nada muda.
 
 ## Critérios de aceite
-- **CA1** (`AB2_CENAS.tio`, `.banco` e `.portao` desenham sem erro em p 0, 0,25, 0,5, 0,75 e 0,95, com e sem movimento reduzido; `tonhao` na 9 e na 11 e `bia` na 10 caem na tela no instante da fala, com 40 px de margem) → `smoke90` (CA1)
-- **CA2** (`ABERTURA` é o roteiro novo: 11 cenas, os `id` e os textos de `docs/ABERTURA.md` §4, soma 77 s; `ABERTURA2` não existe; nenhuma cena cai em cartão de obra) → `smoke90` (CA2)
-- **CA3** (a abertura nova toca sozinha na 1ª vez e marca `LS.abertura`; pelo botão, volta ao menu; o toque segue, Voltar volta, Pular termina; não mexe no save; com movimento reduzido só o toque avança; o som da cena é cortado ao trocar) → `smoke26` reescrito
-- **CA4** (modo dev: há "Abertura" e não há "Abertura nova (em obras)"; "Abertura" abre o roteiro novo) → `smoke90` (CA4)
-- **CA5** (as 10 cenas antigas não existem mais na `AB_CENAS`; as do `FINAL` existem e desenham sem erro com 1, 2 e 3 estrelas) → `smoke90` (CA5) e `smoke76` sem mudança
-- **CA6** (o `#ov-abertura` cabe nos 14 tamanhos de tela) → `python3 menu_fit.py`
-- **CA7** (o que se vê) → captura `shot_v11_14.js`: as cenas 9, 10 e 11 em p 0,25, 0,6 e 0,9 (1220 x 600 e 844 x 390), a 11 também em p 0,5 e 0,75 (o portão subindo e o letreiro acendendo), e a folha das 11 cenas em p 0,6; conferir em recorte, contra `docs/ABERTURA.md` §3 e §9: na 9 o avental fica na maçaneta e a touca na cabeça; na 10 o "APROVADO" se lê; na 11 a luz sai da garagem para a calçada, o letreiro acende, a estrela pisca e o título não cobre ninguém; as 11 cenas juntas têm unidade de luz e de cor
+- **CA1** (`AB2_CENAS.despedida`, `.janela` e `.promessa` desenham sem erro em p 0, 0,25, 0,5, 0,75 e 0,95, com e sem movimento reduzido, e não são mais o cartão de obra) → `smoke89` (CA1)
+- **CA2** (a 6 devolve as cabeças de `rosa` e `bia` e a 8, a de `bia`; no instante `de` de cada fala, a cabeça cai na tela com 40 px de margem; a 7 não tem fala) → `smoke89` (CA2)
+- **CA3** (a câmera do fim da 7 é a do começo da 8, e o `sai` da 7 é `segue`) → `smoke89` (CA3)
+- **CA4** (a `ABERTURA2`, as cenas 1 a 5, a abertura antiga e o `FINAL` não mudaram) → `smoke87`, `smoke88`, `smoke26` e `smoke76` sem mudança
+- **CA5** (o que se vê) → captura `shot_v11_14.js`: as cenas 6, 7 e 8 em p 0,25, 0,6 e 0,9 (1220 x 600 e 844 x 390), a 8 também em p 0,15 e 0,3 (o tempo passando), a troca 7 para 8 e as cenas 1 e 2 de novo; conferir em recorte, contra `docs/ABERTURA.md` §3 e §8: o quarto é aconchegante, sem aparelhos; na 7 a estrela acende e o facho chega à foto; na 8 a criança dá lugar à adulta sem pulo e a estrela pisca; as cenas 1 e 2 saem iguais às da v11.12; balão fora dos rostos
 
 ## Partes
-- `src/27-abertura-nova.js`: `ab2Banco`, `ab2RuaCasa`, as três cenas, a saída do `ab2Obra`.
-- `src/18-abertura.js`: `ABERTURA` (o roteiro novo no lugar do antigo), `aberturaSom`.
-- `src/25-abertura.js`: a limpeza da `AB_CENAS` e das funções órfãs; `drawAbertura`.
-- `src/43-telas.js`: `devCenas`, `devAssistir`, `abrirAbertura`, `window.__lcc`.
-- `src/10-constantes.js` (`VERSAO`) e `src/02-telas.html` (`vtag`, `#ov-ver`).
+- `src/27-abertura-nova.js`: `ab2Quarto`, `ab2Cozinha` (os dois modos novos) e as três cenas.
+- `src/25-abertura.js`, para ler: `abRosa`, `abBiaCrianca`, `abBia`, `abCostas`, a cena `promessa` antiga (o caderno), `abJanela`.
+- `src/21-cenario.js`, para ler: `drawFotoRosa`.
+- `src/43-telas.js` (`window.__lcc`, se faltar expor algo), `src/10-constantes.js` (`VERSAO`) e `src/02-telas.html` (`vtag`, `#ov-ver`).
 
 ## Tarefas
-- [ ] T1 Smoke novo `tests/smoke90.js` (CA1, CA2, CA4 e CA5) e o `tests/smoke26.js` reescrito (CA3), vistos falhar; `smoke90` no `tests/run_all.sh`.
-- [ ] T2 A cena 9, `tio`; captura, recorte e acerto.
-- [ ] T3 `ab2Banco` e a cena 10, `banco`; captura, recorte e acerto.
-- [ ] T4 `ab2RuaCasa` e a cena 11, `portao`; captura, recorte e acerto.
-- [ ] T5 A troca (`ABERTURA`), o modo dev e os smokes `87` a `89` ajustados.
-- [ ] T6 A limpeza de `src/25-abertura.js`, com o `smoke76` verde.
-- [ ] T7 `tests/shot_v11_14.js`, a folha das 11 cenas e a conferência do CA7; o editor de desenhos abrindo a `AB2_CENAS`.
-- [ ] Fechamento: `VERSAO`, `vtag`, `#ov-ver`, `docs/RESUMO.md`, `docs/TESTES.md`, `docs/PARTES.md`, o `CLAUDE.md` (a parte `27` e o editor), esta spec como entregue, `tests/run_all.sh --tudo` verde, PR e merge; avisar o usuário para publicar e para atualizar o artifact do editor.
+- [ ] T1 Smoke novo `tests/smoke89.js` (CA1 a CA3), visto falhar, incluído no `tests/run_all.sh`.
+- [ ] T2 `ab2Quarto` e a cena 6, `despedida`; captura, recorte e acerto.
+- [ ] T3 `ab2Cozinha` em `'noite'` e a cena 7, `janela`; captura, recorte e acerto.
+- [ ] T4 `ab2Cozinha` em `'lar'` e a cena 8, `promessa`, com a passagem do tempo; captura, recorte e acerto.
+- [ ] T5 `tests/shot_v11_14.js` e a conferência do CA5.
+- [ ] Fechamento: `VERSAO`, `vtag`, `#ov-ver`, `docs/RESUMO.md`, `docs/TESTES.md`, `docs/PARTES.md`, esta spec como entregue, `tests/run_all.sh` verde, PR e merge.
 
 ## Avisos para a execução
-- Antes de apagar qualquer função de `src/25-abertura.js`, confira com `grep` se o `FINAL` (as cenas `telefone` a `creditos`), o `src/27-abertura-nova.js` ou outra parte a usa; na dúvida, fica.
-- A cena 9 reusa `ab2RuaAurora` em `'tarde'` (v11.12); a Bia de costas é a `abCostas`; a foto na mão é a `drawFotoRosa`, pequena.
-- O `smoke26` confere a abertura antiga cena a cena: reescreva-o para a nova (as mesmas garantias: toca sozinha uma vez, o toque segue, Pular termina, não mexe no save, movimento reduzido só avança por toque).
-- O editor de desenhos (`ferramentas/editor.py`) acha as cenas pela `AB_CENAS`: confira que ele abre `src/27-abertura-nova.js` e a `AB2_CENAS`; se precisar, ajuste a ferramenta (não pede spec).
-- Se as cenas não ficarem bonitas em duas rodadas de captura, pare e avise.
+- As cenas 7 e 8 reusam `ab2Cozinha` (v11.12): acrescente os modos `'noite'` e `'lar'` sem mudar o `'tarde'` (as capturas das cenas 1 e 2 têm de sair iguais).
+- A cena 8 começa no quadro em que a 7 termina (`sai:'segue'`): confira na captura da troca que nada pula.
+- A foto é a `drawFotoRosa` (`src/21-cenario.js`); a Bia adulta é a `abBia` (roupa 1); o caderno "Receitas da Rosa" já foi desenhado na cena `promessa` antiga (`src/25-abertura.js`), para aproveitar.
+- É o trecho mais delicado: nada de aparelho, soro, cortina fechando ou corredor. Se não ficar bonito em duas rodadas, pare e avise.
 
 ## Testes
-`smoke90` novo; `smoke26` reescrito para a abertura nova; `smoke87` a `smoke89` ajustados onde citavam `ABERTURA2` ou a entrada "em obras"; `smoke76` sem mudança; `tests/run_all.sh --tudo` verde (o `menu_fit` confere o `#ov-abertura`). Capturas de `shot_v11_14.js` conferidas e apagadas. (No fechamento: o número de checagens do `smoke90` e do `smoke26`.)
+`smoke89` novo; `smoke87`, `smoke88`, `smoke26` e `smoke76` sem mudança; `tests/run_all.sh` verde. Capturas de `shot_v11_14.js` conferidas e apagadas. (No fechamento: o número de checagens do `smoke89`.)
 
 ## Decisões em aberto
 Nenhuma.
@@ -62,4 +53,4 @@ Nenhuma.
 ## Desvios
 (No fechamento.)
 
-**Modelo:** Sonnet, esforço alto — três cenas, a troca e a limpeza do código antigo, que pede cuidado com o que o final ainda usa.
+**Modelo:** Sonnet, esforço alto — o trecho mais delicado (luz da noite, passagem do tempo), com o quadro a quadro fechado; a beleza se confere em captura.

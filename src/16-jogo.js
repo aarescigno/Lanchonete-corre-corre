@@ -2009,9 +2009,10 @@ class Game {
     else this.buildTables();
     return true;
   }
-  /* Recomeçar do zero (v8.3, com confirmação no menu): a carreira volta ao dia 1; a Missão zero continua feita */
+  /* Recomeçar do zero (v8.3, com confirmação no menu): a carreira volta ao dia 1; desde a v11.11, a abertura e a Missão zero também voltam */
   resetProgress(){
-    this.save = normSave(DEV.on ? { bank:DEV.bank, treino:this.save.treino } : { treino:this.save.treino });   // também depois que o banco tomou a lanchonete (v8.3.1)
+    this.save = normSave(DEV.on ? { bank:DEV.bank } : {});   // também depois que o banco tomou a lanchonete (v8.3.1)
+    if (!DEV.on) lsSet(LS.abertura, '0');   // no modo dev a abertura nunca toca sozinha
     this.up = this.save.up;
     this.buildTables();
     this.kitchen.reset(); this.dani.reset(); this.joca.reset(); this.cami.reset();
