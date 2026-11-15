@@ -1310,9 +1310,11 @@ const HISTORIA = [
       { q:'tonhao', e:'alegre', s:'Panela no fogo, avental no lugar. É só você mandar, chefe.' },
       { q:'bia', e:'firme', nota:'olhando a foto da mãe', s:'Quando a casa estiver pronta, eu marco a noite.' }],
     depois:[
-      { q:'bia', e:'alegre', s:'O crítico raspou o prato. Não sobrou molho!' },
-      { q:'tonhao', s:'E o Bráulio saiu calado. Pela primeira vez na vida.' },
-      { q:'dani', s:'E agora?' },
+      { q:'braulio', e:'insegura', nota:'parado na porta, de saída', s:'Esse molho... é o da Rosa.' },
+      { q:'bia', e:'firme', s:'É. E agora a cidade inteira sabe de quem é.' },
+      { q:'braulio', s:'...Ela cozinhava melhor que eu.' },
+      { q:'bia', e:'firme', s:'A porta fica aberta, chef. Pra jantar.' },
+      { q:'tonhao', s:'Saiu calado. Pela primeira vez na vida.' },
       { q:'bia', e:'firme', s:'Agora o guia liga. Vai dormir, tio. Amanhã o telefone toca, e eu atendo.' }],
     fim:{ h:'Fim da história', p:'A casa segue aberta. Para mais estrelas, marque outra noite na lojinha.', p3:'A casa segue aberta, com a nota mais alta do guia na parede.' } }   // v11: o final; p3 quando a 1ª noite já dá 3 estrelas
 ];
@@ -1598,6 +1600,18 @@ const ARCO = [
             { q:'dani', e:'alegre', s:'E ele?' },
             { q:'bia', e:'alegre', s:'Pediu desculpa. E mais uma marmita.' } ] },
   // v11.4: a Avenida (nivel 3) e o Terraço (nivel 4); roteiro em docs/ARCO.md §7
+  { id:'braulio1', nivel:3, quando:(sv, g) => sv.cap >= 7 && diaNoPonto(sv, g.day.n) >= 6, qualB:(sv) => !(sv.equipe && sv.equipe.anselmo > 0),   // v11.6: o Bráulio na porta; falasB quando o Anselmo não está contratado
+    falas:[ { q:'braulio', nota:'de braços cruzados, na porta', s:'Então é esta a lanchonete da garagem. Vim buscar o meu coqueteleiro.' },
+            { q:'bia', e:'insegura', s:'Ele... ele não é seu, chef. Pergunta pra ele.' },
+            { q:'anselmo', e:'firme', s:'Eu fico aqui. Aqui ninguém grita.' },
+            { q:'braulio', e:'brava', s:'Vocês não duram um ano nesta avenida.' },
+            { q:'bia', e:'firme', nota:'com a voz ainda tremendo', s:'Pode ser. Mas a mesa do senhor fica do outro lado da rua.' },
+            { q:'tonhao', e:'alegre', s:'A Rosa ia aplaudir de pé.' } ],
+    falasB:[ { q:'braulio', nota:'de braços cruzados, na porta', s:'Então é esta a lanchonete da garagem. Sobrinha do Tonhão, não é?' },
+            { q:'bia', e:'insegura', s:'Filha da Rosa. E dona da casa.' },
+            { q:'braulio', e:'brava', s:'Vocês não duram um ano nesta avenida.' },
+            { q:'bia', e:'firme', nota:'com a voz ainda tremendo', s:'Pode ser. Mas a mesa do senhor fica do outro lado da rua.' },
+            { q:'tonhao', e:'alegre', s:'A Rosa ia aplaudir de pé.' } ] },
   { id:'anselmoCopo', nivel:3, quando:(sv, g) => sv.equipe.anselmo > 0 && !sv.equipe.anselmoFora,
     falas:[ { q:'anselmo', e:'insegura', nota:'catando os cacos', s:'Desculpa, desculpa! Eu pago o copo, pode descontar...' },
             { q:'bia', s:'Anselmo. Olha pra mim. É um copo.' },
@@ -1657,9 +1671,9 @@ function arcoOf(id){ return ARCO.find(a => a.id === id) || null; }
 function diaNoPonto(sv, n){ return (n == null ? sv.dia - 1 : n) - sv.pontoDia + 1; }
 const BIA_IDS = ['tenis', 'corrida', 'bandeja', 'sudoku'];
 function upgradeCartao(id){ return BIA_IDS.indexOf(id) >= 0 ? 'bia' : 'melhorias'; }
-const HIST_NOMES = { bia:'Bia', tonhao:'Tonhão', dani:'Dani', joca:'Joca', cami:'Cami', anselmo:'Anselmo', lia:'Lia' };
+const HIST_NOMES = { bia:'Bia', tonhao:'Tonhão', dani:'Dani', joca:'Joca', cami:'Cami', anselmo:'Anselmo', lia:'Lia', braulio:'Bráulio' };   // v11.6: o Bráulio
 const CAIXA_MAX = 14;                                 // livro-caixa (v7.2): quantos dias da carreira ficam guardados
-const VERSAO = 'v11.5';                                // vai no resumo do Caixa
+const VERSAO = 'v11.6';                                // vai no resumo do Caixa
 const DIVULGA_DIA = 4;                                // antes disso, o movimento é o da inauguração (sem custo); v9.0.2: dia 4, e o padrão é o boca a boca
 function divulgaAberta(n, sv){ return devLivre() || n >= DIVULGA_DIA && !(sv && sv.convDiv === 'pend'); }   // no modo dev, desde o dia 1; v9.0.3: no Modo História, só depois da conversa
 /* v9.6.4: a Efood (os entregadores) só abre depois da conversa dos entregadores, no Modo História; antes dela, nenhum tipo com `retira` vem na agenda */

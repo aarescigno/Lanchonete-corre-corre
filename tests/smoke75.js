@@ -139,8 +139,8 @@ const fecha=(H,o)=>{ o=o||{}; const {g}=H; comeca(H); g.schedule=[]; g.nextIdx=0
 
 // ---------- 8. o capítulo 14 e as conversas (CA8) ----------
 { const L0=load({ historia:true }).L, c=L0.HISTORIA[13];
-  ok(c.cap===14 && c.titulo==='A noite da estrela' && c.ponto==='terraco' && c.obj.estrela===1 && c.antes.length===5 && c.depois.length===4 && c.fim.h==='Fim da história' && c.fim.p==='A casa segue aberta. Para mais estrelas, marque outra noite na lojinha.','HISTORIA[13]: cap. 14, "A noite da estrela", obj { estrela:1 }, 5 falas antes, 4 depois, o cartão "Fim da história" (v11)');
-  ok(c.antes[0].s==='O crítico vem de cara limpa. E o Bráulio reservou uma mesa.' && c.antes[4].nota==='olhando a foto da mãe' && c.depois[3].s==='Agora o guia liga. Vai dormir, tio. Amanhã o telefone toca, e eu atendo.','(os textos da spec)');
+  ok(c.cap===14 && c.titulo==='A noite da estrela' && c.ponto==='terraco' && c.obj.estrela===1 && c.antes.length===5 && c.depois.length===6 && c.fim.h==='Fim da história' && c.fim.p==='A casa segue aberta. Para mais estrelas, marque outra noite na lojinha.','HISTORIA[13]: cap. 14, "A noite da estrela", obj { estrela:1 }, 5 falas antes, 6 depois (v11.6), o cartão "Fim da história" (v11)');
+  ok(c.antes[0].s==='O crítico vem de cara limpa. E o Bráulio reservou uma mesa.' && c.antes[4].nota==='olhando a foto da mãe' && c.depois[5].s==='Agora o guia liga. Vai dormir, tio. Amanhã o telefone toca, e eu atendo.','(os textos da spec)');
   // com estrela: a conversa de depois e o boletim
   { const H=noite(), {g,L,els}=H; fecha(H,{ nota:4.4 }); g.setState('dayend');
     ok(els['ov-end'].classList.contains('show') && !g.conversa,'na noite, a tela de resultados vem primeiro (sem conversa antes)');
