@@ -2050,13 +2050,17 @@ function drawChef(ctx,g,x,y,t){
   rr(ctx,-13,-34,26,12,2); fs(ctx,'#fff',2.4);
   ctx.beginPath(); ctx.arc(-9,-38,8,0,TAU); ctx.arc(0,-43,9,0,TAU); ctx.arc(9,-38,8,0,TAU); fs(ctx,'#fff',2.4);
   rr(ctx,-13,-34,26,8,2); ctx.fillStyle = '#fff'; ctx.fill();
-  // rosto
+  // rosto (v11.5: no retrato do balão, as cinco expressões; a boca vai por baixo do bigode, depois dele)
+  const exp = EXPR !== 'neutra';
+  if (!exp){
   ctx.fillStyle = PAL.tinta; circ(ctx,-5.5,-17,1.8); ctx.fill(); circ(ctx,5.5,-17,1.8); ctx.fill();
   ctx.lineWidth = 2; ctx.beginPath(); ctx.moveTo(-9,-22); ctx.lineTo(-3,-20.5); ctx.moveTo(9,-22); ctx.lineTo(3,-20.5); ctx.stroke();
+  }
   if (sick){ circ(ctx,0,-12,3.6); fs(ctx,'#E0645A',1.5); }
   // bigode
   ctx.beginPath(); ctx.moveTo(0,-10); ctx.bezierCurveTo(-5,-15,-16,-13,-16,-7); ctx.bezierCurveTo(-12,-9,-5,-7,0,-8); ctx.bezierCurveTo(5,-7,12,-9,16,-7); ctx.bezierCurveTo(16,-13,5,-15,0,-10); ctx.closePath(); fs(ctx,'#1B1512',2);
-  ctx.strokeStyle = PAL.tinta; ctx.lineWidth = 1.8; ctx.beginPath(); ctx.arc(0,-4,4,0.3,Math.PI-0.3); ctx.stroke();
+  if (exp) rostoExpr(ctx,EXPR,5.5,-17,-2.6);
+  else { ctx.strokeStyle = PAL.tinta; ctx.lineWidth = 1.8; ctx.beginPath(); ctx.arc(0,-4,4,0.3,Math.PI-0.3); ctx.stroke(); }
   if (sick){ const a = (Math.floor(t*0.6) % 2); if (a) txt(ctx,'Atchim!',-26,-34,12,PAL.perigo,'center',FD,3); }
   ctx.restore();
 }
