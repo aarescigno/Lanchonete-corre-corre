@@ -9,8 +9,8 @@ const cartoes=()=>grid().children.map(c=>c.getAttribute('data-sec'));
 const voltar=els['btn-shop-voltar'];
 g.save=L.normSave({bank:5000,maxDay:3,up:{tenis:true}}); g.up=g.save.up; g.buildTables(); g.save.equipe.dani=2; g.goShop(3);
 // abre em Lanchonete, nos cartões
-ok(grid().className==='shopcards' && cartoes().join()==='cardapio,melhorias,salao,luxo,manut,divulga','abre em Lanchonete, nos 6 cartões na ordem');
-ok(nomes().join()==='Cardápio,Melhorias,Salão,Luxo,Manutenção,Divulgação','nomes dos cartões da Lanchonete');
+ok(grid().className==='shopcards' && cartoes().join()==='cardapio,melhorias,salao,luxo,manut','abre em Lanchonete, nos 5 cartões na ordem (v11.9: a Divulgação só no dia 4)');
+ok(nomes().join()==='Cardápio,Melhorias,Salão,Luxo,Manutenção','nomes dos cartões da Lanchonete');
 ok(grid().children.every(c=>c.children[0].tagName==='CANVAS' && c.children.length===2),'cartão: só ícone e nome');
 ok(els['shop-nav'].hidden===true,'nos cartões, sem o botão Voltar');
 // grupos
@@ -20,7 +20,7 @@ L.setShopGrupo('gurugol'); ok(grid().className.indexOf('shopgrid')===0 && els['s
 // abrir seção e voltar
 L.setShopGrupo('lanchonete'); grid().children[1].fire('click');
 ok(els['shop-nav'].hidden===false && els['shop-sec'].textContent==='Melhorias' && /Ventilador de teto/.test(txt(grid())),'abrir Melhorias: Voltar aparece');
-voltar.fire('click'); ok(cartoes().join()==='cardapio,melhorias,salao,luxo,manut,divulga' && els['shop-nav'].hidden===true,'Voltar volta aos cartões do grupo');
+voltar.fire('click'); ok(cartoes().join()==='cardapio,melhorias,salao,luxo,manut' && els['shop-nav'].hidden===true,'Voltar volta aos cartões do grupo');
 grid().children[1].fire('click'); L.setShopGrupo('equipe');
 ok(cartoes().join()==='bia,tonhao,dani','trocar de grupo vai aos cartões dele');
 // conteúdo das seções
@@ -29,7 +29,7 @@ L.setShopTab('bia'); { const t=nomes(); ok(t.includes('Tênis de corrida') && t.
 L.setShopTab('melhorias'); { const t=nomes(); ok(!t.includes('Bandeja') && !t.some(n=>/Tênis|Sudoku/.test(n)) && t.includes('Jogo de pratos') && t.includes('Ventilador de teto'),'Melhorias sem os itens da Bia'); }
 L.setShopTab('melhorias'); ok(!/TV e som/.test(txt(grid())) && /Ventilador de teto/.test(txt(grid())),'Melhorias sem a TV e som (foi para a aba Luxo, v10.7)');
 L.setShopTab('luxo'); ok(/TV e som/.test(txt(grid())),'a aba Luxo tem a TV e som'); L.setShopTab('melhorias');
-L.setShopTab('divulga'); ok(!/TV e som/.test(txt(grid())) && /Contas do dia/.test(txt(grid())),'Divulgação não tem a TV e som');
+g.goShop(4); L.setShopTab('divulga'); ok(!/TV e som/.test(txt(grid())) && /Contas do dia/.test(txt(grid())),'Divulgação não tem a TV e som');
 // v8.9.1: cartão Manutenção muda de cor com o pior equipamento
 { const mc=()=>{ L.setShopGrupo('lanchonete'); return grid().children.find(c=>c.getAttribute('data-sec')==='manut'); };
   const cls=c=>[...c.classList._s].join(' '), ids=Object.keys(g.manut);

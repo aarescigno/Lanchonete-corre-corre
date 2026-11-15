@@ -1,6 +1,6 @@
 # v11.9 — Acertos do polimento: o nome no Ranking, a Divulgação na hora certa e o trio com três músicos (etapa 7a)
 
-**Situação:** aprovada (15/11)
+**Situação:** entregue em 15/11
 **Origem:** a Etapa 7 do `docs/PLANO.md`, revista com o usuário em 15/11 (as respostas estão no `docs/PROPOSTAS.md`, "15/11 — usuário: decisões da Etapa 7"); as pendências de 10/11 do `docs/RESUMO.md` (o "Seu nome" em todo fim de dia, a Divulgação à mostra desde o dia 2) e o desvio da `docs/spec-v10.5.md` (o trio desenhado com 4 músicos).
 
 ## Objetivo
@@ -65,13 +65,13 @@ Três acertos pequenos que ficaram para o polimento. O fim do dia deixa de pedir
 - `src/01-estilo.css`: só se o formulário pedir ajuste na tela do Ranking (`.saveform` já existe).
 
 ## Tarefas
-- [ ] T1 `tests/smoke85.js` com uma checagem por critério (CA1 a CA8), falhando; entra no `tests/run_all.sh`.
-- [ ] T2 O ranking: `RANK_VOCE`, `Rank.renomeiaLocal`, `rankNome`, `rankAuto`; tirar `buildSaveForm` e os três `*-save`; o formulário `#rank-nome` na tela do Ranking.
-- [ ] T3 A Divulgação: `shopSecoesVis`, `shopAbrir`, `buildDivulga`.
-- [ ] T4 O trio: `TRIO`, `drawTrio` e a chamada.
-- [ ] T5 Acertar os smokes antigos (ver Testes) e rodar `tests/run_all.sh`.
-- [ ] T6 `tests/shot_v11_9.js`, conferir os recortes do CA9 e apagar as capturas; `DIAS=120 node carreira.js 6` (CA10).
-- [ ] Fechamento: `VERSAO`, `vtag`, `#ov-ver`, `docs/RESUMO.md` (a linha da versão e, nas Ideias pendentes, saem as duas revisões de 10/11 que esta versão entrega), `docs/TESTES.md`, esta spec como entregue, `tests/run_all.sh` verde, a linha da 7a na tabela Situação do `docs/PLANO.md`, PR e merge.
+- [x] T1 `tests/smoke85.js` com uma checagem por critério (CA1 a CA8), falhando; entra no `tests/run_all.sh`.
+- [x] T2 O ranking: `RANK_VOCE`, `Rank.renomeiaLocal`, `rankNome`, `rankAuto`; tirar `buildSaveForm` e os três `*-save`; o formulário `#rank-nome` na tela do Ranking.
+- [x] T3 A Divulgação: `shopSecoesVis`, `shopAbrir`, `buildDivulga`.
+- [x] T4 O trio: `TRIO`, `drawTrio` e a chamada.
+- [x] T5 Acertar os smokes antigos (ver Testes) e rodar `tests/run_all.sh`.
+- [x] T6 `tests/shot_v11_9.js`, conferir os recortes do CA9 e apagar as capturas; `DIAS=120 node carreira.js 6` (CA10).
+- [x] Fechamento: `VERSAO`, `vtag`, `#ov-ver`, `docs/RESUMO.md` (a linha da versão e, nas Ideias pendentes, saem as duas revisões de 10/11 que esta versão entrega), `docs/TESTES.md`, esta spec como entregue, `tests/run_all.sh` verde, a linha da 7a na tabela Situação do `docs/PLANO.md`, PR e merge.
 
 ## Avisos para a execução
 - O `Rank.saveScore` já guarda só a melhor pontuação por nome e já serve para o aparelho e para o compartilhado: não mexa nele nem no `Rank.online`. O `harness.js` tem `load({online:true})`, que os smokes do ranking compartilhado usam; eles têm de continuar passando.
@@ -90,7 +90,12 @@ Três acertos pequenos que ficaram para o polimento. O fim do dia deixa de pedir
 ## Decisões em aberto
 Nenhuma.
 
+## Números medidos
+`smoke85`: 32 checagens; `run_all.sh` verde. `DIAS=120 node carreira.js 6`: ver a linha FIM da saída (conferida no fechamento).
+
 ## Desvios
-(No fechamento: o que saiu diferente do que estava escrito e por quê. Sem desvio, "Nenhum.")
+- O `smoke56` (linha 80, "antes do cap. 2, a Dani não tem cartão") também mudou, e a spec não o listava: com a regra nova do `shopAbrir`, `setShopTab('dani')` antes de a Dani chegar abre só o grupo (antes abria a seção vazia); a checagem passou a ver que o cartão não está à mostra.
+- Também mudaram o `smoke33` (a lojinha do dia 3 tem 5 cartões; a Divulgação confere no dia 4) e o `smoke34` (a Dani antes do cap. 2).
+- Os smokes antigos que gravam no ranking (`smoke20`, `smoke21`) ganharam uma espera curta (o registro automático é assíncrono) e `smoke21` passou a fixar `lucroTot` para a falência render pontos.
 
 **Modelo:** Sonnet, esforço médio (três acertos localizados, com as regras e os textos fechados; o trabalho maior é acertar cinco smokes antigos do formulário).

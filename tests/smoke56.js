@@ -77,7 +77,7 @@ const mostra=(H,id)=>H.els[id].classList.contains('show');
 
 // 8. a Dani
 { const H=nova(), {g,L,els}=H; g.save.cap=1; g.save.conversa=null; g.goShop(2); L.setShopGrupo('equipe'); L.setShopTab('dani');
-  ok(!g.daniChegou && txt(els['shop-grid']).trim()==='','antes do cap. 2, a Dani não tem cartão');
+  ok(!g.daniChegou && !/Dani/.test(txt(els['shop-grid'])) && !L.shopSecoes().some(l=>l.indexOf('dani')>=0),'antes do cap. 2, a Dani não tem cartão (v11.9: setShopTab só abre seção à mostra)');
   g.save.cap=2; L.setShopTab('dani'); ok(g.daniChegou && /Dani/.test(txt(els['shop-grid'])),'no cap. 2, o cartão aparece');
   const H2=nova(), {g:g2,L:L2,els:e2}=H2; g2.save.cap=2; g2.save.daniCursos={ atend:true }; g2.save.daniTar=999; g2.save.equipe.dani=4;
   g2.goShop(2); L2.setShopGrupo('equipe'); L2.setShopTab('dani');

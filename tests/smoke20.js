@@ -145,9 +145,8 @@ ok(JSON.parse(store[L.LS.save]).dia===1,'gravado');
 
 // ---------- ranking: o lucro acumulado e o dia ----------
 (async()=>{
-  novo({dia:6,bank:400,lucroTot:2345}); g.startDay(5); g.begin(); g.schedule=[]; g.money=0; g.finishDay();
-  const form=els['end-save'].children[0], inp=form.children[1];
-  inp.value='Teste'; form.fire('submit',{preventDefault(){}}); await new Promise(r=>setTimeout(r,30));
+  await new Promise(r=>setTimeout(r,50)); L.lsSet(L.LS.rank,'{}'); novo({dia:6,bank:400,lucroTot:2345}); g.startDay(5); g.begin(); g.schedule=[]; g.money=0; g.finishDay();
+  await new Promise(r=>setTimeout(r,30));
   const rows=L.Rank.localRows('carreira'); ok(rows.length===1 && rows[0].pontos===g.save.lucroTot && rows[0].dia===5,'ranking: lucro acumulado ('+g.save.lucroTot+') e o último dia jogado (5)');
   const o=JSON.parse(store['lcc2_ranking']); ok(Array.isArray(o.campanha) && !o.carreira,'lista nova no aparelho');
   // ranking antigo no aparelho: fica guardado, mas não aparece
@@ -156,8 +155,7 @@ ok(JSON.parse(store[L.LS.save]).dia===1,'gravado');
   await H3.L.Rank.saveScore('carreira','Nova',100,{dia:3}); const o3=JSON.parse(H3.store['lcc2_ranking']); ok(o3.carreira.length===1 && o3.campanha.length===1,'e continua guardado');
   // prejuízo acumulado não entra
   novo({dia:3,bank:0,lucroTot:-200}); g.startDay(3); g.begin(); g.schedule=[]; g.finishDay();
-  const f2=els['end-save'].children[0], m2=els['end-save'].children[1]; f2.children[1].value='Neg'; f2.fire('submit',{preventDefault(){}}); await new Promise(r=>setTimeout(r,30));
-  ok(/acima de zero/.test(m2.textContent),'lucro acumulado negativo: não entra no ranking');
+  { const antes=JSON.stringify(JSON.parse(store['lcc2_ranking']).campanha); await new Promise(r=>setTimeout(r,30)); ok(JSON.stringify(JSON.parse(store['lcc2_ranking']).campanha)===antes,'lucro acumulado negativo: não entra no ranking'); }
   console.log('total = '+total+'  fails = '+fails);
   process.exit(fails?1:0);
 })();

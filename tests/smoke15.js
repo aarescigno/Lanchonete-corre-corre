@@ -53,7 +53,7 @@ g.save.bank=12; g.goShop(2); ok(g.save.bank===10000,'a lojinha repõe os R$ 10.0
 // ranking de fora
 g.startDay(5); g.begin(); g.money=900; g.finishDay();
 ok(g.state==='dayend' && store[L.LS.save]===real,'jogar um dia no modo dev não mexe no save de verdade');
-{ const t=txt(els['end-save']); ok(/ranking fica de fora/.test(t) && !/Salvar no ranking/.test(t),'fim do dia no modo dev: sem formulário do ranking'); }
+ok(!store['lcc2_ranking'],'v11.9: o fim do dia no modo dev não grava no ranking');
 // zerar no modo dev
 g.save.bank=5; g.resetProgress(); ok(g.proxDia===1 && g.save.bank===10000 && store[L.LS.save]===real,'Recomeçar do zero no modo dev: dia 1 e R$ 10.000');
 // sair: 10 toques de novo

@@ -200,7 +200,7 @@ function mkStub(o){
   L.openRank('ov-menu'); ok(els['ov-rank'].classList.contains('show'),'tela de ranking abre'); await sleep(30);
   ok(L.rk.unsub!==undefined,'assinatura local ok'); L.closeRank(); ok(!els['ov-rank'].classList.contains('show')&&els['ov-menu'].classList.contains('show'),'fecha e volta ao menu');
   // formulário: nome lembrado
-  H.els['nm-carreira']; 
+  ok(!/nm-carreira|end-save/.test(require('fs').readFileSync('../lanchonete.html','utf8')),'v11.9: sem o formulário do nome no fim do dia'); 
 }
 
 /* ---------- 5. caminho db ---------- */

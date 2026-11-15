@@ -636,13 +636,12 @@ function drawFloresCampo(ctx,x,y,s){
   ctx.strokeStyle = '#EADFC6'; ctx.lineWidth = 1.6; ctx.beginPath(); ctx.moveTo(-10,-18); ctx.lineTo(10,-18); ctx.stroke();
   ctx.restore();
 }
-/* v10.4, a música ao vivo do Terraço: o pianista (de costas, na banqueta do piano com a tampa aberta) e o quarteto de cordas, em fila no pé do salão */
+/* v10.4, a música ao vivo do Terraço: o pianista (de costas, na banqueta do piano com a tampa aberta) e o trio de cordas, em fila no pé do salão */
 const PIANISTA_LOOK = { skin:2, hair:0, hairC:'#1B1512', pants:'#1E1D21', kid:false, elder:false, acc:null, glasses:false };
-const QUARTETO = [
-  { x:206, look:{ skin:1, hair:3, hairC:'#A67B43', pants:'#1E1D21', kid:false, elder:false, acc:null, glasses:true },  shirt:'#26252E', inst:'violino' },
-  { x:248, look:{ skin:5, hair:0, hairC:'#1B1512', pants:'#1E1D21', kid:false, elder:false, acc:null, glasses:false }, shirt:'#2A2F42', inst:'violino' },
-  { x:290, look:{ skin:3, hair:4, hairC:'#8C8C8C', pants:'#1E1D21', kid:false, elder:true,  acc:null, glasses:true },  shirt:'#33262B', inst:'viola' },
-  { x:332, look:{ skin:0, hair:6, hairC:'#7A2E1B', pants:'#1E1D21', kid:false, elder:false, acc:null, glasses:false }, shirt:'#1F3236', inst:'violoncelo' }
+const TRIO = [
+  { x:227, look:{ skin:5, hair:0, hairC:'#1B1512', pants:'#1E1D21', kid:false, elder:false, acc:null, glasses:false }, shirt:'#2A2F42', inst:'violino' },
+  { x:269, look:{ skin:3, hair:4, hairC:'#8C8C8C', pants:'#1E1D21', kid:false, elder:true,  acc:null, glasses:true },  shirt:'#33262B', inst:'viola' },
+  { x:311, look:{ skin:0, hair:6, hairC:'#7A2E1B', pants:'#1E1D21', kid:false, elder:false, acc:null, glasses:false }, shirt:'#1F3236', inst:'violoncelo' }
 ];
 function drawNotas(ctx,x,y,tm,n){
   if (RM){ txt(ctx,'♪',x,y - 6,14,TE_OURO_CL,'center',FB); return; }   // com movimento reduzido, parada
@@ -653,9 +652,9 @@ function drawPianista(ctx,g,tm){
   drawPerson(ctx,PIANISTA_LOOK,x,y,{ sit:true, back:true, shirt:'#1B1B22', mood:0, bob:RM ? 0 : Math.sin(tm * 2.4) * 0.8, bracoE:[[-15,-26],[-8 + k * 2.5,-39]], bracoD:[[15,-26],[8 - k * 2.5,-39]] });
   drawNotas(ctx,x + 8,y - 78,tm,3);
 }
-function drawQuarteto(ctx,g,tm){
+function drawTrio(ctx,g,tm){
   const yb = 534, K = 0.8, mv = RM ? 0 : 1;   // menores e no fim do chão, para não cobrir as cadeiras das mesas de baixo
-  QUARTETO.forEach((q,i) => {
+  TRIO.forEach((q,i) => {
     const x = 0, y = 0, bow = mv * Math.sin(tm * 3 + i * 1.3);
     ctx.save(); ctx.translate(q.x,yb); ctx.scale(K,K);
     shadowEll(ctx,x,y,20,5,0.18);

@@ -421,7 +421,7 @@ table.rank tr.me td{background:#fbe7a8}
 
     <div class="ov show" id="ov-menu">
       <div class="panel menu-panel">
-        <span class="vtag" id="vtag" aria-label="Versão 11.8">v11.8</span>
+        <span class="vtag" id="vtag" aria-label="Versão 11.9">v11.9</span>
         <h1 class="title">Lanchonete <br>Corre-Corre</h1>
         <p class="tag">Ajude a Bia a atender a freguesia da esquina antes que o cafezinho esfrie!</p>
         <div class="lbl" id="menu-dia">História</div>
@@ -544,7 +544,6 @@ table.rank tr.me td{background:#fbe7a8}
           <div class="stats2" id="end-stats"></div>
           <span class="aval" id="end-aval"></span>
           <p class="small end-manual" id="end-manual" style="display:none"></p>
-          <div id="end-save"></div>
         </div>
         <div class="row end-pe">
           <button class="btn go" id="btn-next">Próximo dia</button>
@@ -577,7 +576,6 @@ table.rank tr.me td{background:#fbe7a8}
         <h2>O banco tomou a lanchonete</h2>
         <p id="falencia-msg"></p>
         <div class="stats" id="falencia-stats"></div>
-        <div id="falencia-save"></div>
         <div class="row">
           <button class="btn go" id="btn-falencia-zero">Recomeçar do zero</button>
           <button class="btn alt" id="btn-falencia-rank">Ranking</button>
@@ -591,7 +589,6 @@ table.rank tr.me td{background:#fbe7a8}
         <h2>Turno encerrado!</h2>
         <p id="endless-msg">A reputação da lanchonete chegou a zero.</p>
         <div class="stats" id="endless-stats"></div>
-        <div id="endless-save"></div>
         <div class="row">
           <button class="btn go" id="btn-endless-again">Jogar de novo</button>
           <button class="btn alt" id="btn-endless-rank">Ranking</button>
@@ -604,6 +601,12 @@ table.rank tr.me td{background:#fbe7a8}
       <div class="panel" style="width:calc(var(--u)*660)">
         <h2>Ranking</h2>
         <p class="small" id="rank-source" role="status">Ranking deste aparelho</p>
+        <form class="saveform" id="rank-nome" autocomplete="off">
+          <label for="rank-nome-inp">Seu nome</label>
+          <input type="text" id="rank-nome-inp" maxlength="16" autocomplete="off" autocapitalize="words" spellcheck="false">
+          <button type="submit" class="btn go">Salvar</button>
+        </form>
+        <p class="small savemsg" id="rank-nome-msg" role="status"></p>
         <div class="rankbar">
           <div class="seg" id="rank-tabs" role="group" aria-label="Modo">
             <button type="button" data-v="carreira" aria-pressed="true">História</button>
@@ -661,7 +664,8 @@ table.rank tr.me td{background:#fbe7a8}
       <div class="panel">
         <h2>Versões</h2>
         <ul class="verlist">
-          <li><b>v11.8</b><span class="cur">versão atual</span><br>15/11/2026 &mdash; A Bia reage ao que acontece no salão, com gestos curtos que mudam com o ponto: quando uma mesa sai encantada, quando um grupo vai embora bravo e quando o dia fecha com a meta batida.</li>
+          <li><b>v11.9</b><span class="cur">versão atual</span><br>15/11/2026 &mdash; O fim do dia não pede mais o nome: a pontuação entra sozinha no ranking, e o nome se escreve uma vez, na tela do Ranking. A Divulgação só aparece na lojinha quando já dá para escolher. E o trio de cordas do Terraço agora tem três músicos.</li>
+          <li><b>v11.8</b><br>15/11/2026 &mdash; A Bia reage ao que acontece no salão, com gestos curtos que mudam com o ponto: quando uma mesa sai encantada, quando um grupo vai embora bravo e quando o dia fecha com a meta batida.</li>
           <li><b>v11.7</b><br>15/11/2026 &mdash; A Bia muda de roupa com o ponto: o avental florido da mãe na Garagem, o avental da casa na área industrial, a camisa de botão na Avenida e o colete com a rosa no Terraço, com o cabelo mudando junto (solto, rabo, rabo alto, coque). Aparece no salão, no balão da conversa e na lojinha.</li>
           <li><b>v11.6</b><br>15/11/2026 &mdash; O chef Bráulio em cena: ele ganha rosto e voz. Na Avenida, ele aparece na porta com uma conversa nova (que muda se o Anselmo trabalha com você), e na noite da estrela se despede da Bia no fim.</li>
           <li><b>v11.5</b><br>14/11/2026 &mdash; Quem fala ganha rosto: nas conversas do Modo História, um retrato redondo aparece no balão, com cinco expressões (insegura, firme, alegre, brava e neutra). No modo dev, o painel História ganha a tela dos Retratos.</li>
@@ -2472,7 +2476,7 @@ const BIA_IDS = ['tenis', 'corrida', 'bandeja', 'sudoku'];
 function upgradeCartao(id){ return BIA_IDS.indexOf(id) >= 0 ? 'bia' : 'melhorias'; }
 const HIST_NOMES = { bia:'Bia', tonhao:'Tonhão', dani:'Dani', joca:'Joca', cami:'Cami', anselmo:'Anselmo', lia:'Lia', braulio:'Bráulio' };   // v11.6: o Bráulio
 const CAIXA_MAX = 14;                                 // livro-caixa (v7.2): quantos dias da carreira ficam guardados
-const VERSAO = 'v11.8';                                // vai no resumo do Caixa
+const VERSAO = 'v11.9';                                // vai no resumo do Caixa
 const DIVULGA_DIA = 4;                                // antes disso, o movimento é o da inauguração (sem custo); v9.0.2: dia 4, e o padrão é o boca a boca
 function divulgaAberta(n, sv){ return devLivre() || n >= DIVULGA_DIA && !(sv && sv.convDiv === 'pend'); }   // no modo dev, desde o dia 1; v9.0.3: no Modo História, só depois da conversa
 /* v9.6.4: a Efood (os entregadores) só abre depois da conversa dos entregadores, no Modo História; antes dela, nenhum tipo com `retira` vem na agenda */
@@ -8842,13 +8846,12 @@ function drawFloresCampo(ctx,x,y,s){
   ctx.strokeStyle = '#EADFC6'; ctx.lineWidth = 1.6; ctx.beginPath(); ctx.moveTo(-10,-18); ctx.lineTo(10,-18); ctx.stroke();
   ctx.restore();
 }
-/* v10.4, a música ao vivo do Terraço: o pianista (de costas, na banqueta do piano com a tampa aberta) e o quarteto de cordas, em fila no pé do salão */
+/* v10.4, a música ao vivo do Terraço: o pianista (de costas, na banqueta do piano com a tampa aberta) e o trio de cordas, em fila no pé do salão */
 const PIANISTA_LOOK = { skin:2, hair:0, hairC:'#1B1512', pants:'#1E1D21', kid:false, elder:false, acc:null, glasses:false };
-const QUARTETO = [
-  { x:206, look:{ skin:1, hair:3, hairC:'#A67B43', pants:'#1E1D21', kid:false, elder:false, acc:null, glasses:true },  shirt:'#26252E', inst:'violino' },
-  { x:248, look:{ skin:5, hair:0, hairC:'#1B1512', pants:'#1E1D21', kid:false, elder:false, acc:null, glasses:false }, shirt:'#2A2F42', inst:'violino' },
-  { x:290, look:{ skin:3, hair:4, hairC:'#8C8C8C', pants:'#1E1D21', kid:false, elder:true,  acc:null, glasses:true },  shirt:'#33262B', inst:'viola' },
-  { x:332, look:{ skin:0, hair:6, hairC:'#7A2E1B', pants:'#1E1D21', kid:false, elder:false, acc:null, glasses:false }, shirt:'#1F3236', inst:'violoncelo' }
+const TRIO = [
+  { x:227, look:{ skin:5, hair:0, hairC:'#1B1512', pants:'#1E1D21', kid:false, elder:false, acc:null, glasses:false }, shirt:'#2A2F42', inst:'violino' },
+  { x:269, look:{ skin:3, hair:4, hairC:'#8C8C8C', pants:'#1E1D21', kid:false, elder:true,  acc:null, glasses:true },  shirt:'#33262B', inst:'viola' },
+  { x:311, look:{ skin:0, hair:6, hairC:'#7A2E1B', pants:'#1E1D21', kid:false, elder:false, acc:null, glasses:false }, shirt:'#1F3236', inst:'violoncelo' }
 ];
 function drawNotas(ctx,x,y,tm,n){
   if (RM){ txt(ctx,'♪',x,y - 6,14,TE_OURO_CL,'center',FB); return; }   // com movimento reduzido, parada
@@ -8859,9 +8862,9 @@ function drawPianista(ctx,g,tm){
   drawPerson(ctx,PIANISTA_LOOK,x,y,{ sit:true, back:true, shirt:'#1B1B22', mood:0, bob:RM ? 0 : Math.sin(tm * 2.4) * 0.8, bracoE:[[-15,-26],[-8 + k * 2.5,-39]], bracoD:[[15,-26],[8 - k * 2.5,-39]] });
   drawNotas(ctx,x + 8,y - 78,tm,3);
 }
-function drawQuarteto(ctx,g,tm){
+function drawTrio(ctx,g,tm){
   const yb = 534, K = 0.8, mv = RM ? 0 : 1;   // menores e no fim do chão, para não cobrir as cadeiras das mesas de baixo
-  QUARTETO.forEach((q,i) => {
+  TRIO.forEach((q,i) => {
     const x = 0, y = 0, bow = mv * Math.sin(tm * 3 + i * 1.3);
     ctx.save(); ctx.translate(q.x,yb); ctx.scale(K,K);
     shadowEll(ctx,x,y,20,5,0.18);
@@ -11028,7 +11031,7 @@ function render(g, ctx){
   if (g.maquinaOn) items.push({ y:STATIONS.maquina.rect.y + STATIONS.maquina.rect.h, f:() => glowSprite(ctx,g,'maquina',ctx => drawMaquina(ctx,g,tm,menu)) });
   if (g.save.equipe.couvert && !menu) items.push({ y:528, f:() => drawMusico(ctx,g,tm) });
   if (mus === 2) items.push({ y:TERRACO.piano.y1 + 2, f:() => drawPianista(ctx,g,tm) });
-  if (mus === 1) items.push({ y:528, f:() => drawQuarteto(ctx,g,tm) });
+  if (mus === 1) items.push({ y:528, f:() => drawTrio(ctx,g,tm) });
   if ((g.save.equipe.tv || g.save.equipe.som) && !menu) items.push({ y:532, f:() => drawAmbiente(ctx,g,tm) });
   if (g.fiscal && g.fiscal.ativo && !menu) items.push({ y:g.fiscal.y, f:() => drawFiscal(ctx,g.fiscal,tm) });   // v9.4
   if (g.dani.active && !menu) items.push({ y:g.dani.y, f:() => drawDani(ctx,g.dani,tm) });
@@ -12342,6 +12345,7 @@ function toRow(d, id, uid){
     me: !!uid && id === uid
   };
 }
+const RANK_VOCE = 'Você';   // v11.9: o nome do registro automático, até o jogador escrever o dele na tela do Ranking
 const delay = ms => new Promise(r => setTimeout(r, ms));
 const Rank = {
   online:false, db:null, user:null, uid:null, ready:null, done:false,
@@ -12397,6 +12401,25 @@ const Rank = {
     all[RK[kind].local] = list.slice(0, 50);
     lsSet(LS.rank, JSON.stringify(all));
     return { where:'local', improved, best };
+  },
+  /* v11.9: o primeiro nome escrito troca as linhas "de" das duas listas do aparelho (se o nome novo já existe, fica a de mais pontos); devolve quantas linhas mudou */
+  renomeiaLocal(de, para){
+    const all = this.loadLocal(), kd = normName(de), kp = normName(para);
+    let n = 0;
+    ['campanha','semfim'].forEach(k => {
+      const list = Array.isArray(all[k]) ? all[k] : [];
+      const i = list.findIndex(r => r && r.key === kd);
+      if (i < 0) return;
+      const j = list.findIndex(r => r && r.key === kp);
+      if (j >= 0 && j !== i){
+        if ((+list[i].pontos || 0) > (+list[j].pontos || 0)) list[j] = Object.assign({}, list[i], { key:kp, nome:para });
+        list.splice(i, 1);
+      } else list[i] = Object.assign({}, list[i], { key:kp, nome:para });
+      list.sort((a,b) => (+b.pontos || 0) - (+a.pontos || 0));
+      all[k] = list; n++;
+    });
+    if (n) lsSet(LS.rank, JSON.stringify(all));
+    return n;
   },
   async saveShared(kind, body){
     const ref = this.db.collection(RK[kind].col).doc(this.uid);
@@ -13245,12 +13268,12 @@ const SHOP_SECOES = {
   gurugol:{ nome:'Gurugol', icon:'contas', build:g => buildGurugol(g) }};
 const SHOP_ANTIGAS = { equipe:'tonhao', cursos:'cardapio', decor:'luxo' };   // nomes das abas antigas, para os testes e capturas
 function shopGrupoDe(sec){ const g = SHOP_GRUPOS.find(x => x.secoes.indexOf(sec) >= 0); return g ? g.id : 'lanchonete'; }
-function shopAbrir(sec){ sec = SHOP_ANTIGAS[sec] || sec; shopGrupo = shopGrupoDe(sec); shopTab = game.cartaoAberto(sec) ? sec : null; buildShop(); }   // v9.0.4: cartão fechado abre só o grupo
+function shopAbrir(sec){ sec = SHOP_ANTIGAS[sec] || sec; shopGrupo = shopGrupoDe(sec); shopTab = game.cartaoAberto(sec) && shopSecoesVis(SHOP_GRUPOS.find(x => x.id === shopGrupo)).indexOf(sec) >= 0 ? sec : null; buildShop(); }   // v9.0.4: cartão fechado abre só o grupo
 function shopGrupoAbrir(g){ shopGrupo = g; shopTab = g === 'gurugol' ? 'gurugol' : null; buildShop(); }
 /* as seções do grupo que aparecem agora: a Mudança só depois do cap. 3 (v9) e enquanto há ponto para onde ir */
 /* v9.6.12: na História, a Dani só entra na lojinha quando chega (cap. 2): nem o cartão dela no grupo Equipe, nem a seção */
 function daniNaLoja(){ return !(HIST.on && game.save.histV === 1) || game.daniChegou; }
-function shopSecoesVis(grupo){ return grupo.secoes.filter(id => (id !== 'mudanca' || game.mudancaVisivel) && (id !== 'dani' || daniNaLoja()) && game.cartaoAberto(id)); }   // v9.0.4: e o cartão já aberto
+function shopSecoesVis(grupo){ return grupo.secoes.filter(id => (id !== 'mudanca' || game.mudancaVisivel) && (id !== 'dani' || daniNaLoja()) && (id !== 'divulga' || divulgaAberta(game.shopNext, game.save)) && game.cartaoAberto(id)); }   // v9.0.4: e o cartão já aberto
 /* v9.1, v10: o ícone do cartão Mudança segue o ponto de destino */
 function iconeMudanca(p){ return p && p.id === 'avenida' ? 'mudanca-av' : p && p.id === 'terraco' ? 'mudanca-te' : 'mudanca'; }
 let mudarPede = false;   // o 1º toque em "Mudar" pede a confirmação
@@ -14034,7 +14057,7 @@ function buildDivulga(grid){
     const on = open && cur === d.id;
     const c = staffCard(upgradeIcon('div-' + d.id), d.name, d.cost ? fmt(d.cost) + ' por dia' : 'Grátis');
     if (on) c.classList.add('own');
-    c.appendChild(shopBtn(!open ? 'A partir do dia ' + DIVULGA_DIA : (on ? 'Escolhida' : 'Escolher'), 'btn', open && !on && (!d.cost || game.payroll() + d.cost <= game.save.bank), () => game.setDivulga(d.id)));
+    c.appendChild(shopBtn(on ? 'Escolhida' : 'Escolher', 'btn', open && !on && (!d.cost || game.payroll() + d.cost <= game.save.bank), () => game.setDivulga(d.id)));
     grid.appendChild(c);
   });
   const p = game.ponto;
@@ -14538,7 +14561,7 @@ function buildEnd(){
   fm.textContent = mn.length ? 'Novo no Manual: ' + (mn.length > 3 ? mn.slice(0, 3).join(', ') + ' e mais ' + (mn.length - 3) : mn.join(', ')) + '.' : '';
   fm.style.display = mn.length ? '' : 'none';
   $('btn-next').textContent = 'Lojinha e dia ' + game.proxDia;
-  buildSaveForm($('end-save'), 'carreira');
+  if (game.mode === 'carreira') rankAuto('carreira');
 }
 /* v8.3.1: o banco tomou a lanchonete (a parcela atrasada não foi paga no dia seguinte): fim da carreira */
 function buildFalencia(){
@@ -14550,7 +14573,7 @@ function buildFalencia(){
   [['Dias jogados', String(r.day)], ['Estrelas', sv.estrelas + ' ★'], ['Lucro acumulado', fmt(sv.lucroTot)], ['Lucro do último dia', fmt(r.money)], ['Dívida com o banco', fmt(sv.emp.resto)]].forEach(p => {
     st.appendChild(el('span', null, p[0])); st.appendChild(el('b', null, p[1]));
   });
-  buildSaveForm($('falencia-save'), 'carreira');
+  rankAuto('carreira');
 }
 function buildEndless(){
   const r = game.endless;
@@ -14560,45 +14583,36 @@ function buildEndless(){
   [['Pontos de atendimento', r.pontos],['Faturamento', fmt(r.fat || 0)],['Tempo sobrevivido', mmssUp(r.tempo)],['Grupos atendidos', r.served],['VIPs atendidos', r.vip],['Sucos entregues', r.juice],['Maior corrente', '×' + r.chain],['Não couberam na espera', r.full],['Ingredientes e contas', '-' + fmt(r.custo + r.contas)],['Dinheiro acumulado', fmt(game.save.bank)]].forEach(p => {
     st.appendChild(el('span', null, p[0])); st.appendChild(el('b', null, String(p[1])));
   });
-  buildSaveForm($('endless-save'), 'semfim');
+  rankAuto('semfim');
 }
 
-/* ---------- formulário "Seu nome" + "Salvar no ranking" ---------- */
+/* ---------- registro automático no ranking (v11.9) e o nome, escrito na tela do Ranking ---------- */
 function lastName(){ return cleanName(lsGet(LS.name) || ''); }
-function buildSaveForm(host, kind){
-  clearEl(host);
-  if (DEV.on){ host.appendChild(el('p', 'small savemsg', 'Modo dev: o ranking fica de fora.')); return; }
-  const form = el('form', 'saveform');
-  form.setAttribute('autocomplete', 'off');
-  const id = 'nm-' + kind;
-  const lab = el('label', null, 'Seu nome'); lab.setAttribute('for', id);
-  const inp = el('input'); inp.type = 'text'; inp.id = id; inp.maxLength = 16; inp.value = lastName();
-  inp.setAttribute('autocomplete', 'off'); inp.setAttribute('autocapitalize', 'words'); inp.setAttribute('spellcheck', 'false');
-  const btn = el('button', 'btn go', 'Salvar no ranking'); btn.type = 'submit';
-  const msg = el('p', 'small savemsg'); msg.setAttribute('role', 'status');
-  form.appendChild(lab); form.appendChild(inp); form.appendChild(btn);
-  host.appendChild(form); host.appendChild(msg);
-  let busy = false;
-  form.addEventListener('submit', async ev => {
+function rankNome(){ return lastName() || RANK_VOCE; }
+function rankAuto(kind){
+  if (DEV.on) return;
+  let pontos, extra;
+  if (kind === 'carreira'){ if (!game || game.mode !== 'carreira') return; pontos = game.save.lucroTot; extra = { dia: game.proxDia - 1 }; }   // o lucro acumulado da campanha e o último dia jogado
+  else { const r = game && game.endless; if (!r) return; pontos = r.pontos; extra = { tempo: r.tempo }; }
+  if (!(pontos > 0)) return;
+  try { Promise.resolve(Rank.saveScore(kind, rankNome(), pontos, extra)).catch(() => {}); } catch(e) {}
+}
+function rankNomeForm(){
+  const inp = $('rank-nome-inp'), msg = $('rank-nome-msg'), form = $('rank-nome');
+  if (!inp || !form) return;
+  inp.value = lastName();
+  msg.textContent = '';
+  if (form.getAttribute('data-bound')) return;
+  form.setAttribute('data-bound', '1');
+  form.addEventListener('submit', ev => {
     ev.preventDefault();
-    if (busy) return;
     const nome = cleanName(inp.value);
-    if (!nome){ msg.textContent = 'Digite seu nome para entrar no ranking.'; return; }
-    let pontos, extra;
-    if (kind === 'carreira'){ pontos = game.save.lucroTot; extra = { dia: game.proxDia - 1 }; }   // v8.3: o lucro acumulado da campanha e o último dia jogado
-    else { const r = game.endless || { pontos:0, tempo:0 }; pontos = r.pontos; extra = { tempo: r.tempo }; }
-    if (!(pontos > 0)){ msg.textContent = kind === 'carreira' ? 'O lucro acumulado precisa ficar acima de zero para entrar no ranking.' : 'Faça alguns pontos antes de salvar.'; return; }
-    busy = true; btn.disabled = true; msg.textContent = 'Salvando...';
+    if (!nome){ msg.textContent = 'Digite seu nome.'; return; }
+    const antes = lastName();
     lsSet(LS.name, nome);
-    try {
-      const res = await Rank.saveScore(kind, nome, pontos, extra);
-      if (res.refused) msg.textContent = 'O ranking compartilhado recusou o registro; salvei só neste aparelho.';
-      else if (!res.improved) msg.textContent = 'Seu recorde (' + res.best + ' pontos) continua maior; mantive o melhor.';
-      else msg.textContent = res.where === 'shared' ? 'Salvo no ranking compartilhado!' : 'Salvo no ranking deste aparelho.';
-    } catch(e) {
-      msg.textContent = 'Não consegui salvar agora. Tente de novo.';
-    }
-    busy = false; btn.disabled = false;
+    if (!antes) Rank.renomeiaLocal(RANK_VOCE, nome);
+    msg.textContent = 'Nome salvo.';
+    rk.started = null; rankStart();
   });
 }
 
@@ -14640,6 +14654,7 @@ function renderRank(){
 }
 function openRank(back){
   rk.back = back || 'ov-menu'; rk.open = true;
+  rankNomeForm();
   showOnly(['ov-rank']);
   renderRank();
   if (Rank.online) $('rank-source').textContent = 'Conectando...';
@@ -15073,7 +15088,7 @@ try { Rank.init(); } catch(e) {}
 game.setState('menu');
 if (!aberturaVista() && !DEV.on) abrirAbertura('auto');   // v8.5: a abertura toca sozinha uma vez
 window.__game = game;
-window.__lcc = { drawBia, roupaBia, BIA_REACAO, BIA_ROUPA_COR, abBia, BRAULIO_LOOK, convCabeca, drawRetrato, drawRetratosTela, RETRATO, RETRATO_QUEM, RETRATO_POSE, EXPRESSOES, exprDe, exprAtual: () => EXPR, devRetratos, CONV_UI, socorroFalas, NOITE, HIST_RECOMENDA, guiaPontos, guiaEstrelas, abreBoletim, drawVela, drawFala, CRITICO, HIST_CRITICO, normGuia, plantaBoato, drawCaderno, drawGarfo, ROSA, GERENTE, drawPetala, musicaPay, musicaDe, musicaOk, camiModoTudo, CAMI_TUDO, cafesLista, cafeIdx, cafeIngred, ANSELMO_CURSOS, normAnselmoCursos, drinksLista, drinksTodos, drinkPreco, drinkIngred, drinkVagas, drinkPrep, MAQUINA_LUGAR, drawCafesEsp, drawCarrinhoBoasVindas, espressoTrabalho, bebExtra, devCenas, devAssistir, devFinal, drawPlacaGuia, FINAL, finalCenas, histLiga, DEV_CAPS, drawIcon, liaOn, drawLia, LIA_HOME, LIA_LOOK, doceIcone, drawFino, TEMPOS, tempoMarcas, pedePrincipal, drawTempoTrilha, HIST_SOCORRO, HIST_EXIGENTE, EXIGENTE, LOUCA, vipDish, vipCook, casaBoa, exigRep, HIST_PLANTA, HIST_QUITOU, HIST_TETO, VONTADE, vontadeChance, vontadeDia, vontadeFalas, HIST_VONTADE_DOCE, HIST_VONTADE_CAFE, filaPos, STATIONS, MANUAL, manualTracos, manualAberta, abrirManual, buildManual, fecharManual, semente, manualSemente, FECHA, efoodAberto, drawTable, camiMesasN, camiModoMesas, CAMI_MESAS_MAX, drawAventalCami, FISCAL, Fiscal, FISCAL_PONTOS, abrirDev, fecharDev, buildDev, passoJogo, devLivre, diaNoPonto, manutEmerg, manutFator, daniTaskDe, plateSlotsFor, queueYsFor, assentoSlow, AVENIDA, SABORES, cursoOk, INDUSTRIAL, PLATE_SLOTS, cozinhaSlots, upgradeDe, DECOR, DECOR_GRUPOS, TOALHA, LUXO, MOVEIS, movelOf, movelNivel, normMoveis, luxoPts, luxoTot, luxoNivel, luxoForca, decorOf, normDecor, decorOn, FILA_ACOES, filaMax, MARMITA, RETIRADA, marmitaMao, drawMarmita, prateleiraPos, EFOOD_COR, AVAL_BRAVO, QUEUE, setShopTab: v => shopAbrir(v), setShopGrupo: g => shopGrupoAbrir(g), shopSecoes: () => SHOP_GRUPOS.map(g => shopSecoesVis(g)), TREINO, TREINO_PASSOS, TREINO_COR, Treino, treinoLugar, DICAS, dicaDe, dicaLigada, drawDica, HUD_LUCRO, hudEstrelas, drawHud, daniNaLoja, treinoPrimeiro, playCareer, buildMenu, introBanco, buildFalencia, BANCO, normEmprestimo, parcelaDe, devidoDe, jurosDe, tabelaDe, simulaEmprestimo, SEMANA, semanaOf, diaOf, FILA_JUSTA, PORTA, CHAIRS, PAT, CONTAS, INGRED, CARDAPIO, precoPrato, CURSOS, CURSO_AV, CURSO_XP, tonhaoXp, tonhaoNivelXp, daniXp, daniNivelXp, DANI_XP, DANI_CURSOS, CURSOS_SEMFIM, cursoOf, cursoNivel, normCursos, pratoAv, CARNES, drawDish, pratoSabido, pratosSabidos, GOSTOS, GOSTOS_CAT, pedePrato, VEG, vegMov, drawDish, MAIS, PONTOS_ACAO, GORJETA, DRINK_PRICE, MOVIMENTO, movimentoSalao, DIVULGA, DIVULGA_DIA, divulgaOf, contasDia, bomGoal, SALAO, PONTOS, pontoOf, MESA, mesaBox, mesaPreco, salaoLugares, mesaProblema, salaoCaminho, salaoProblema, salaoOrdena, salaoAuto, salaoVaga, salaoPerto, salaoKit, salaoDevolucao, SALAO_SEMFIM, normSalao, setObst, OBST, pathOk, MAQUINA, BEBIDA_ESPERA, bebidaOf, MANUT, manutOf, manutChance, manutPreco, normManut, CLIMA, CLIMA_DIA, EVENTOS, eventoSemana, introManut, normPend, CALCADA, TW, HUDX, esperaAp, tableApproach, CRIT, STAFF, diariaDani, diariaJoca, cursosPay, DANI_TASKS, DANI_HANDS, daniTaskOk, TRASH, WASH, payroll, FOLHA_CORTE, folhaCorta, folhaCortes, folhaItens, listaE, pratosDe, couvertEffect, couvertOk, ambienteEffect, dishStock, normSave, Helper, JUICE, KITCHEN_SLOTS, handLayout, trayOk, Game, Group, Table, Kitchen, Waitress, BIA_SPEED, DAYS, UPGRADES, CUSTOMER_TYPES, LAYOUT, PAL, Sfx, findPath, render, Rank, sortRows, cleanName, normName, CMD, ENDLESS, VIP, MULTA, rk, renderRank, openRank, closeRank, LS, lsGet, lsSet, loadSave, DEV, saveKey, devSync, divulgaAberta, CAIXA_MAX, VERSAO, normCaixa, caixaResumo, caixaTotais, copyText, PRATO, pratoPerde, pratoVapor, AVAL, AVAL_CRIT, AVAL_BRAVO, avalMenu, cursosItem, DOCES, CAFES, cafeDe, DRINKS, drinkDe, drinkIdx, anselmoOn, ANSELMO_HOME, ANSELMO_LOOK, drawAnselmo, docesLista, docePreco, doceIngred, doceIdx, CAMI_CURSOS, CAMI_HOME, CAMI_LOOK, camiNivelCursos, normCamiCursos, drawCami, drawEspresso, JOCA_XP, JOCA_CURSOS, JOCA_HOME, jocaXp, jocaNivelXp, BASICAS, donoBasico, cursoDaniVis, JOCA_LOOK, drawJoca, avalTeto, avalEscala, TERRACO, fixosDe, vipTipos, doorFor, DOOR, terraco, drawPiano, drawPoltrona, drawFoyerTe, drawParedeTe, drawElevadorTe, drawLugarTe, drawPerson, makePeople, drawChair, iconeMudanca, avalFrac, AVAL_SIMPLES, AVAL_DECOR, normAval, avalNota, avalMedias, avalGeral, avalMovimento, avalMinimo, avalComentario, fmtNota, notaFaixa, gurugolCaixa, AVAL_COM, normAvalCom, buildGurugol, ABERTURA, Abertura, AB_CENAS, AB_ALT, AB_BASE, abEsc, AB_VIVO, aberturaVista, aberturaSom, drawAbertura, abrirAbertura, HISTORIA, HIST_CARDAPIO, HIST_DIVULGA, HIST_ENTREGA, LIBERA, liberaOf, ARCO, HIST_NOMES, normEquipe, upgradeCartao, cursoFeito, AVAL_POUCO, REFORMA, HIST, carencia, Conversa, drawConversa, falar, fluxoHistoria, falar, aberturaAtual: () => abertura };
+window.__lcc = { TRIO, drawTrio, rankAuto, rankNome, RANK_VOCE, drawBia, roupaBia, BIA_REACAO, BIA_ROUPA_COR, abBia, BRAULIO_LOOK, convCabeca, drawRetrato, drawRetratosTela, RETRATO, RETRATO_QUEM, RETRATO_POSE, EXPRESSOES, exprDe, exprAtual: () => EXPR, devRetratos, CONV_UI, socorroFalas, NOITE, HIST_RECOMENDA, guiaPontos, guiaEstrelas, abreBoletim, drawVela, drawFala, CRITICO, HIST_CRITICO, normGuia, plantaBoato, drawCaderno, drawGarfo, ROSA, GERENTE, drawPetala, musicaPay, musicaDe, musicaOk, camiModoTudo, CAMI_TUDO, cafesLista, cafeIdx, cafeIngred, ANSELMO_CURSOS, normAnselmoCursos, drinksLista, drinksTodos, drinkPreco, drinkIngred, drinkVagas, drinkPrep, MAQUINA_LUGAR, drawCafesEsp, drawCarrinhoBoasVindas, espressoTrabalho, bebExtra, devCenas, devAssistir, devFinal, drawPlacaGuia, FINAL, finalCenas, histLiga, DEV_CAPS, drawIcon, liaOn, drawLia, LIA_HOME, LIA_LOOK, doceIcone, drawFino, TEMPOS, tempoMarcas, pedePrincipal, drawTempoTrilha, HIST_SOCORRO, HIST_EXIGENTE, EXIGENTE, LOUCA, vipDish, vipCook, casaBoa, exigRep, HIST_PLANTA, HIST_QUITOU, HIST_TETO, VONTADE, vontadeChance, vontadeDia, vontadeFalas, HIST_VONTADE_DOCE, HIST_VONTADE_CAFE, filaPos, STATIONS, MANUAL, manualTracos, manualAberta, abrirManual, buildManual, fecharManual, semente, manualSemente, FECHA, efoodAberto, drawTable, camiMesasN, camiModoMesas, CAMI_MESAS_MAX, drawAventalCami, FISCAL, Fiscal, FISCAL_PONTOS, abrirDev, fecharDev, buildDev, passoJogo, devLivre, diaNoPonto, manutEmerg, manutFator, daniTaskDe, plateSlotsFor, queueYsFor, assentoSlow, AVENIDA, SABORES, cursoOk, INDUSTRIAL, PLATE_SLOTS, cozinhaSlots, upgradeDe, DECOR, DECOR_GRUPOS, TOALHA, LUXO, MOVEIS, movelOf, movelNivel, normMoveis, luxoPts, luxoTot, luxoNivel, luxoForca, decorOf, normDecor, decorOn, FILA_ACOES, filaMax, MARMITA, RETIRADA, marmitaMao, drawMarmita, prateleiraPos, EFOOD_COR, AVAL_BRAVO, QUEUE, setShopTab: v => shopAbrir(v), setShopGrupo: g => shopGrupoAbrir(g), shopSecoes: () => SHOP_GRUPOS.map(g => shopSecoesVis(g)), TREINO, TREINO_PASSOS, TREINO_COR, Treino, treinoLugar, DICAS, dicaDe, dicaLigada, drawDica, HUD_LUCRO, hudEstrelas, drawHud, daniNaLoja, treinoPrimeiro, playCareer, buildMenu, introBanco, buildFalencia, BANCO, normEmprestimo, parcelaDe, devidoDe, jurosDe, tabelaDe, simulaEmprestimo, SEMANA, semanaOf, diaOf, FILA_JUSTA, PORTA, CHAIRS, PAT, CONTAS, INGRED, CARDAPIO, precoPrato, CURSOS, CURSO_AV, CURSO_XP, tonhaoXp, tonhaoNivelXp, daniXp, daniNivelXp, DANI_XP, DANI_CURSOS, CURSOS_SEMFIM, cursoOf, cursoNivel, normCursos, pratoAv, CARNES, drawDish, pratoSabido, pratosSabidos, GOSTOS, GOSTOS_CAT, pedePrato, VEG, vegMov, drawDish, MAIS, PONTOS_ACAO, GORJETA, DRINK_PRICE, MOVIMENTO, movimentoSalao, DIVULGA, DIVULGA_DIA, divulgaOf, contasDia, bomGoal, SALAO, PONTOS, pontoOf, MESA, mesaBox, mesaPreco, salaoLugares, mesaProblema, salaoCaminho, salaoProblema, salaoOrdena, salaoAuto, salaoVaga, salaoPerto, salaoKit, salaoDevolucao, SALAO_SEMFIM, normSalao, setObst, OBST, pathOk, MAQUINA, BEBIDA_ESPERA, bebidaOf, MANUT, manutOf, manutChance, manutPreco, normManut, CLIMA, CLIMA_DIA, EVENTOS, eventoSemana, introManut, normPend, CALCADA, TW, HUDX, esperaAp, tableApproach, CRIT, STAFF, diariaDani, diariaJoca, cursosPay, DANI_TASKS, DANI_HANDS, daniTaskOk, TRASH, WASH, payroll, FOLHA_CORTE, folhaCorta, folhaCortes, folhaItens, listaE, pratosDe, couvertEffect, couvertOk, ambienteEffect, dishStock, normSave, Helper, JUICE, KITCHEN_SLOTS, handLayout, trayOk, Game, Group, Table, Kitchen, Waitress, BIA_SPEED, DAYS, UPGRADES, CUSTOMER_TYPES, LAYOUT, PAL, Sfx, findPath, render, Rank, sortRows, cleanName, normName, CMD, ENDLESS, VIP, MULTA, rk, renderRank, openRank, closeRank, LS, lsGet, lsSet, loadSave, DEV, saveKey, devSync, divulgaAberta, CAIXA_MAX, VERSAO, normCaixa, caixaResumo, caixaTotais, copyText, PRATO, pratoPerde, pratoVapor, AVAL, AVAL_CRIT, AVAL_BRAVO, avalMenu, cursosItem, DOCES, CAFES, cafeDe, DRINKS, drinkDe, drinkIdx, anselmoOn, ANSELMO_HOME, ANSELMO_LOOK, drawAnselmo, docesLista, docePreco, doceIngred, doceIdx, CAMI_CURSOS, CAMI_HOME, CAMI_LOOK, camiNivelCursos, normCamiCursos, drawCami, drawEspresso, JOCA_XP, JOCA_CURSOS, JOCA_HOME, jocaXp, jocaNivelXp, BASICAS, donoBasico, cursoDaniVis, JOCA_LOOK, drawJoca, avalTeto, avalEscala, TERRACO, fixosDe, vipTipos, doorFor, DOOR, terraco, drawPiano, drawPoltrona, drawFoyerTe, drawParedeTe, drawElevadorTe, drawLugarTe, drawPerson, makePeople, drawChair, iconeMudanca, avalFrac, AVAL_SIMPLES, AVAL_DECOR, normAval, avalNota, avalMedias, avalGeral, avalMovimento, avalMinimo, avalComentario, fmtNota, notaFaixa, gurugolCaixa, AVAL_COM, normAvalCom, buildGurugol, ABERTURA, Abertura, AB_CENAS, AB_ALT, AB_BASE, abEsc, AB_VIVO, aberturaVista, aberturaSom, drawAbertura, abrirAbertura, HISTORIA, HIST_CARDAPIO, HIST_DIVULGA, HIST_ENTREGA, LIBERA, liberaOf, ARCO, HIST_NOMES, normEquipe, upgradeCartao, cursoFeito, AVAL_POUCO, REFORMA, HIST, carencia, Conversa, drawConversa, falar, fluxoHistoria, falar, aberturaAtual: () => abertura };
 window.requestAnimationFrame(frame);
 
 })();

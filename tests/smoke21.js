@@ -39,11 +39,10 @@ ok(g.state==='dayend' && !g.save.fechou,'a carreira segue');
 // ---------- atrasou de novo: o banco toma a lanchonete ----------
 novo({dia:5,bank:600}); g.emprestar(500);
 cont(); fecha(0,50); ok(g.save.emp.atr,'atrasou no dia 5');
-cont(); fecha(0,100);
+g.save.lucroTot=500; cont(); fecha(0,100);
 ok(g.result.tomou && g.save.fechou===6 && g.state==='falencia' && els['ov-falencia'].classList.contains('show'),'no dia 6 sem os R$ 215: o banco toma a lanchonete');
 ok(/não tinha os R\$ 215/.test(els['falencia-msg'].textContent),'a tela conta o porquê');
 ok(/Dias jogados/.test(txt(els['falencia-stats'])) && /Lucro acumulado/.test(txt(els['falencia-stats'])),'resumo da carreira');
-ok(/Salvar no ranking/.test(txt(els['falencia-save'])) || /ranking/.test(txt(els['falencia-save'])),'formulário do ranking');
 ok(g.save.caixa.slice(-1)[0].tom===1 && /o banco tomou a lanchonete/.test(L.caixaResumo(g.save)),'o caixa marca o dia');
 ok(JSON.parse(store[L.LS.save]).fechou===6,'gravado no save');
 // menu depois do fim
@@ -76,5 +75,6 @@ novo({dia:5,bank:-50}); cont(); fecha(0); ok(!g.result.atrasou && !g.result.tomo
 // ---------- turno sem fim e Missão zero não cobram parcela ----------
 novo({dia:5,bank:20,emp:{resto:550,n:5,atr:true}}); g.startEndless(); g.begin(); g.money=0; g.finishEndless(); ok(g.save.emp.atr && !g.save.fechou && g.state==='endlessend','turno sem fim não cobra o banco');
 
+setTimeout(()=>{ ok(L.Rank.localRows('carreira').some(r=>r.nome==='Você'),'v11.9: a falência entra sozinha no ranking (o lucro acumulado ficou acima de zero)');
 console.log('total = '+total+'  fails = '+fails);
-process.exit(fails?1:0);
+process.exit(fails?1:0); },60);
