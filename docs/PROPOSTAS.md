@@ -4,6 +4,14 @@ Registro das ideias e dos retornos de quem jogou, com o texto original, e de ond
 
 ---
 
+## 15/11 — usuário: refazer a abertura para ficar bonita (entrevista e Etapa 9)
+Texto original: "Revise o vídeo inicial com objetivo de deixar ele bonito, faça uma revisão minuciosa, para praticamente refazê-lo do zero, pode me entrevistar à vontade para preparar". Sobre o roteiro: "3 [pode reescrever], mas esteja atento a todas as falas jo jogo para criar sinergias e evitar contradições".
+
+- **Entrevista (15/11):** incomodam os cenários vazios, os personagens pequenos, a pouca animação e o texto demais; estilo de cinema com os mesmos bonecos; roteiro reescrito (11 cenas, aprovado); 77 s, como hoje; quadro cheio com legenda de uma linha; a perda da Rosa delicada e simbólica (a cozinha vazia e a estrela na janela); o segredo do molho só como brilho rosado; tema musical e efeitos; só a abertura agora, o final depois; 4 versões, com a nova só no modo dev até a última.
+- **Destino:** Etapa 9 do `docs/PLANO.md` (9a a 9d, v11.11 a v11.14), com o roteiro e a direção em `docs/ABERTURA.md` e as specs `docs/spec-v11.11.md` a `docs/spec-v11.14.md`, aprovadas. O final no mesmo tratamento: Etapa 10, a planejar.
+
+---
+
 ## 15/11 — usuário: decisões da Etapa 7 (polimento), no planejamento
 Texto original: "Start planning the next phase" e, sobre qual etapa, "8h is already committed, it's the 7th step that needs planning".
 A sessão mediu antes de perguntar (v11.8): a lojinha rola em Cardápio, Salão, Luxo e Dani em todo tamanho de tela (até em 1366×768, no Terraço) e em 8 seções em 568×320; o painel Versões tem 114 linhas (de 15 a 20 mil px de altura); em 568×320 passam da tela o Ranking, o Instalar no celular e o fim do Turno sem fim; o "Como jogar" já não existe (é o Manual, desde a v9.6.7); as chamadas do ranking compartilhado ainda batem com o `db` do artifact; com os bots, a Garagem passa 54% das metas sem equipe e 96% com, a área industrial 92%, a Avenida 82% e o Terraço 88%, e a história fecha no dia 63 em 6 de 6 carreiras, sempre com 2 estrelas e nunca com 3.
