@@ -144,7 +144,7 @@ function render(g, ctx){
       const a = clamp(f.life / 0.5, 0, 1);
       ctx.globalAlpha = a;
       if (f.box){
-        // a avaliação do Gurugol (v8.4): balão branco com a borda na cor da nota
+        // a avaliação do Gúgou (v8.4): balão branco com a borda na cor da nota
         ctx.font = f.size + 'px ' + FB;
         const ls = String(f.text).split('\n'), lh = f.size + 5;   // v9.6.4: o balão pode ter várias linhas (\n)
         const w = Math.max.apply(null, ls.map(l => ctx.measureText(l).width)) + 18, x = clamp(f.x, w/2 + 4 - g.cam, W - w/2 - 4);

@@ -68,7 +68,7 @@ const vem=g=>{ g.elapsed=g.fiscal.t; return ate(g,'olha'); };
   g.save.selo=16; em(10); ok(g.seloOn && Math.abs(amb()-sem-0.5)<0.01 && L.AVAL.amb.selo===0.5,'com o selo, a nota crua do Ambiente sobe 0,5');
   em(16); ok(g.seloOn,'no último dia do selo (16) ainda vale'); em(17); ok(!g.seloOn && Math.abs(amb()-sem)<0.01,'no dia 17 o selo acabou e o Ambiente volta');
   g.mode='semfim'; g.save.selo=99; ok(!g.seloOn,'no Turno sem fim o selo não conta');
-  // o comentário do Gurugol no dia aprovado
+  // o comentário do Gúgou no dia aprovado
   g.mode='carreira'; em(10); g.aprovado=true; let achou=false; for(let i=0;i<200 && !achou;i++){ amb(); achou=g.avals[0].txt===L.FISCAL.coment; }
   ok(achou && L.FISCAL.coment==='Vi o selo da vigilância: lugar limpinho!','no dia aprovado, alguém comenta "Vi o selo da vigilância: lugar limpinho!"');
   g.aprovado=false; let sem2=true; for(let i=0;i<200;i++){ amb(); if(g.avals[0].txt===L.FISCAL.coment) sem2=false; } ok(sem2,'sem o dia aprovado, ninguém comenta o selo'); }

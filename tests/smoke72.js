@@ -1,4 +1,4 @@
-// v10.7, etapa 4b: o nível de luxo (0 a 5, cinco barras), a aba Luxo, os 5 enfeites e 4 degraus de mesa novos, mais VIPs, exigentes na Avenida e o Ambiente do Gurugol.
+// v10.7, etapa 4b: o nível de luxo (0 a 5, cinco barras), a aba Luxo, os 5 enfeites e 4 degraus de mesa novos, mais VIPs, exigentes na Avenida e o Ambiente do Gúgou.
 // CA1 pontos na Garagem; CA2 tudo comprado em cada ponto; CA3 a escada de móveis; CA4 a nota de Ambiente; CA5 a chance de VIP; CA6 exigentes na Avenida;
 // CA7 a aba Luxo; CA8 o save; CA9 o modo dev.
 const load=require('./harness.js');

@@ -1,7 +1,7 @@
 // v10, etapa 4a-1 (parte A): o Terraço Suíça. O cartão Mudança (cap. 8), o que vai, o que sai e a venda das mesas que sobram, o aluguel e os preços,
 // a clientela (o casal, sem estudante, entregador, turma, motorista nem encomenda; VIP só de tipo do ponto), as poltronas do foyer, o piano como
 // obstáculo fixo, o cap. 8, o save da v9.6.13 e as fichas do Manual. A parte B acrescenta a refeição completa (o pedido em dois tempos, a cozinha, a bebida e a
-// sobremesa, as notas de cada tempo e o Gurugol, a refeição completa e a trilha dos tempos), o cap. 9 com o cartão de fim e a ficha b-tempos.
+// sobremesa, as notas de cada tempo e o Gúgou, a refeição completa e a trilha dos tempos), o cap. 9 com o cartão de fim e a ficha b-tempos.
 const load=require('./harness.js'), fs=require('fs');
 let fails=0,total=0; const ok=(c,m)=>{ total++; if(!c){fails++;console.log('FAIL:',m);} else console.log('ok  :',m); };
 const txt=e=>(e.textContent||'')+(e.children||[]).map(txt).join(' ');
@@ -228,7 +228,7 @@ const pegaPrato=(H,grp)=>{ const g=H.g, p=g.kitchen.plates.find(q=>q&&q.group===
   const jj=terr({ equipe:{ tonhao:3, dani:2, anselmo:2, joca:2 }, up:{ tenis:true, fogaoInd:true }, jocaCursos:{ espresso:1 } }).g; let cs=0; ok(jj.up.espresso,'(o Joca tem o espresso)'); for(let i=0;i<200;i++){ const x=new L.Group(jj,'casal',++jj.gid,0,false); x.setState('eating'); x.tempo=1; x.timer=0; x.update(0); if(x.cafes && x.cafes.length) cs++; }
   ok(cs>40 && cs<160,'o café do Joca segue por chance (casal ~50%), depois da sobremesa'); }
 
-// ---------- 10. as notas de cada tempo e o Gurugol ----------
+// ---------- 10. as notas de cada tempo e o Gúgou ----------
 { const H=terr(), {g,L}=H, mk=(sv)=>{ const R=terr(sv); const s=sentar(R.g,'casal'); const q=s.grp; q.extras=['coxinha','coxinha']; q.dishes=['pf','pf']; q.dish='pf'; return { R, g:R.g, q, t:s.t }; };
   const entrega=(x,tempo,qv)=>{ x.g.bia.hands=[{ kind:'dish', table:x.t.id, group:x.q, dish:'pf', q:qv, tempo }]; x.q.setState('ordered'); x.q.tempo=tempo; x.g.bia.perform({ type:'table', id:x.t.id }); };
   let x=mk(); x.q.perdTempo[1]=1; entrega(x,1,4.4); ok(Math.abs(x.q.notaT[2]-3.4)<1e-9,'coração perdido esperando o principal tira 1 da nota dele (4,4 → 3,4)');
@@ -243,11 +243,11 @@ const pegaPrato=(H,grp)=>{ const g=H.g, p=g.kitchen.plates.find(q=>q&&q.group===
   x=mk(); { const q=x.q; q.perdBeb=0; q.drinksPedidos=true; q.drinksDados=0; q.setState('eating'); q.esperaSuco=true; q.patLeft=0.001; q.hearts=3; const pb=q.perdBeb, pt=q.perdTempo.slice(); q.tick(0.01); ok(q.perdBeb===pb+1 && q.perdTempo[0]===pt[0] && q.perdTempo[1]===pt[1],'coração perdido esperando só a bebida (depois da refeição) conta na bebida'); q.setState('ordered'); q.tempo=1; q.patLeft=0.001; q.tick(0.01); ok(q.perdTempo[1]===1,'e esperando o principal, na nota do principal'); }
   // sobremesa: 5 − corações perdidos esperando (perdDoce)
   x=mk(); { const q=x.q; q.doces=['pudim','pudim']; q.docesDados=0; q.perdDoce=2; q.setState('eating'); q.esperaSuco=true; x.g.entregaDoces(q,2,x.t.cx,x.t.cy); ok(q.notaT[3]===3,'sobremesa: 5 menos 1 por coração perdido esperando (5 − 2)'); }
-  // o Gurugol: a comida é a média dos tempos servidos; o cardápio perde 1 sem a confeitaria e 0,5 sem o Anselmo
+  // o Gúgou: a comida é a média dos tempos servidos; o cardápio perde 1 sem a confeitaria e 0,5 sem o Anselmo
   const gur=(sv,notas)=>{ const R=terr(sv), s=sentar(R.g,'casal'), q=s.grp; q.notaT=notas.slice(); q.semVeg=false; q.setState('wantBill'); q.hearts=5; q.avalia=true; R.g.collectBill(q,s.t); const a=R.g.avals[R.g.avals.length-1]; a.base=R.L.avalMenu(R.g.cursos, R.L.cursosItem(R.g.save)); return a; };
   const lim=v=>Math.max(1,Math.min(5,Math.round(v*10)/10));
   const a1=gur({},[5,4,3,2]);
-  ok(a1 && a1.s[2]===3.5 && a1.s[3]===lim(a1.base),'Gurugol no Terraço: a comida é a média dos tempos servidos ([5,4,3,2] → 3,5); o cardápio sem perda com a equipe toda');
+  ok(a1 && a1.s[2]===3.5 && a1.s[3]===lim(a1.base),'Gúgou no Terraço: a comida é a média dos tempos servidos ([5,4,3,2] → 3,5); o cardápio sem perda com a equipe toda');
   const a2=gur({ daniCursos:{} },[5,4,3,null]); ok(a2.s[2]===4 && a2.s[3]===lim(a2.base-1),'sem a confeitaria: o cardápio perde 1 (e a média só dos tempos servidos: [5,4,3] → 4)');
   const a3=gur({ equipe:{ tonhao:3, dani:2 } },[5,4,3,2]); ok(a3.s[3]===lim(a3.base-0.5),'sem o Anselmo no dia: o cardápio perde 0,5');
   const a4=gur({ daniCursos:{}, equipe:{ tonhao:3, dani:2 } },[5,4,3,null]); ok(a4.s[3]===lim(a4.base-1.5),'sem os dois: perde 1,5');
@@ -350,7 +350,7 @@ const pegaPrato=(H,grp)=>{ const g=H.g, p=g.kitchen.plates.find(q=>q&&q.group===
   T.arrive({ t:0, type:'casal', color:0, vip:false }); ok(T.save.manual.indexOf('c-casal')>=0,'a ficha c-casal abre na 1ª vez que um casal chega');
   ok(T.save.manual.indexOf('b-tempos')>=0 && T.save.manualNovo.indexOf('b-tempos')>=0,'a ficha b-tempos abre no 1º dia no Terraço (como novidade)');
   const A=jogo(9,'avenida',{ manual:[] }).g; A.resetDay(10); A.begin(); ok(A.save.manual.indexOf('b-tempos')<0,'e não abre fora do Terraço');
-  const f=H.L.MANUAL.find(x=>x.id==='b-tempos'); ok(f && f.aba==='basico' && f.nome==='Refeição completa' && f.linha==='No Terraço, cada mesa pede bebida, entrada, prato e sobremesa. Cada tempo conta no Gurugol.' && !/\d/.test(f.linha),'a ficha b-tempos (aba Básico, sem número)'); }
+  const f=H.L.MANUAL.find(x=>x.id==='b-tempos'); ok(f && f.aba==='basico' && f.nome==='Refeição completa' && f.linha==='No Terraço, cada mesa pede bebida, entrada, prato e sobremesa. Cada tempo conta no Gúgou.' && !/\d/.test(f.linha),'a ficha b-tempos (aba Básico, sem número)'); }
 
 console.log('total =',total,' fails =',fails);
 process.exit(fails?1:0);

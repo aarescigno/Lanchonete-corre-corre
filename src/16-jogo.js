@@ -243,7 +243,7 @@ class Game {
     const lug = this.tables.filter(t => t.open).reduce((a, t) => a + t.seats, 0);
     const cl = CLIMA[this.clima], ev = EVENTOS[this.evento] || null;   // v10.6: o evento de bairro (this.evento só é '', 'junina' ou 'jogo')
     const evG = ev ? ev.groups[this.ponto.id] * (this.evento === 'jogo' && this.tvLigada ? ev.tv.groups : 1) : 1;
-    // a nota do Gurugol (v8.4) traz mais ou menos gente
+    // a nota do Gúgou (v8.4) traz mais ou menos gente
     const N = Math.max(3, Math.round(day.groups * this.divF * movimentoSalao(lug) * (cl ? cl.groups : 1) * evG * avalMovimento(this.save.aval, this.ponto) * vegMov(this.cursos) * (this.ponto.grupos || 1) * this.exigBravoF(day) * (this.visita && this.visita.boato ? CRITICO.lotada : 1))), vipP = this.vipChance(day);
     const gap = day.speed * day.time / N;
     let t = 3;
@@ -306,7 +306,7 @@ class Game {
       um(NOITE.critico, { critico:true }); um(NOITE.braulio, { braulio:true });
       out.sort((a, b) => a.t - b.t);
     }
-    // só AVAL.porDia grupos sorteados do dia avaliam no Gurugol (quem fica para o fim do dia não avalia)
+    // só AVAL.porDia grupos sorteados do dia avaliam no Gúgou (quem fica para o fim do dia não avalia)
     // v10.1: o VIP exigente sempre avalia e não entra no sorteio
     const exg = this.mode === 'carreira' && !!this.ponto.exigente;
     out.forEach(s => { if ((exg && s.vip) || s.exig) s.av = true; });
@@ -314,7 +314,7 @@ class Game {
     for (let k = 0; k < Math.min(AVAL.porDia, idx.length); k++) out[idx.splice(randi(0, idx.length - 1), 1)[0]].av = true;
     return out;
   }
-  /* v10.1: o exigente que saiu bravo ontem tira EXIGENTE.bravoMov do movimento de hoje; a reputação (nota do Gurugol) mexe na chance de VIP no Terraço */
+  /* v10.1: o exigente que saiu bravo ontem tira EXIGENTE.bravoMov do movimento de hoje; a reputação (nota do Gúgou) mexe na chance de VIP no Terraço */
   exigBravoF(day){ return this.mode === 'carreira' && this.ponto.exigente && this.save.exigBravo && this.save.exigBravo === day.n - 1 ? EXIGENTE.bravoMov : 1; }
   get repVip(){ return this.mode === 'carreira' && this.ponto.exigente ? exigRep(this.notaGurugol) : 1; }
   startDay(n){ this.sortear(n); this.resetDay(n); this.setState('intro'); }
@@ -631,7 +631,7 @@ class Game {
       this.addText(cx, cy - 70, 'E a minha bebida?', PAL.perigo, 16);
     }
     if (dish.casa) this.addText(cx, cy - 114, 'Prato da casa!', PAL.mostarda, 16);   // v10.1
-    if (dish.rosa){   // v10.8: o Prato da Rosa: a conta sobe, a Bia ganha pontos e o grupo guarda o molho na memória (o comentário no Gurugol)
+    if (dish.rosa){   // v10.8: o Prato da Rosa: a conta sobe, a Bia ganha pontos e o grupo guarda o molho na memória (o comentário no Gúgou)
       if (grp.braulio) grp.diz(NOITE.falas.prova);   // v10.10
       grp.rosa = true; grp.bill += ROSA.mais; this.pontos += ROSA.pts; this.stats.rosa++;
       this.addText(cx, cy - 136, 'Prato da Rosa!', AB_COR.petala, 16); this.addSparks(cx, cy - 70, 8, AB_COR.petala);
@@ -1100,7 +1100,7 @@ class Game {
     this.leaveCommon(g);
     if (this.mode === 'semfim' && !this.ending) this.loseStar();
   }
-  /* avaliação no Gurugol (v8.4, só na carreira): o grupo que sai (pago ou bravo) dá a nota de cada critério (AVAL) e deixa
+  /* avaliação no Gúgou (v8.4, só na carreira): o grupo que sai (pago ou bravo) dá a nota de cada critério (AVAL) e deixa
      um comentário curto, num balãozinho sobre ele */
   avaliar(g, x, y){
     if (this.mode !== 'carreira' || !g.avalia) return;
@@ -1122,7 +1122,7 @@ class Game {
     const comida = g.tempos ? (g.notaComida || 1) : (g.pratoQ || 1), menos = g.tempos ? (this.up.confCaseira ? 0 : TEMPOS.semSobremesa) + (this.anselmoAtivo ? 0 : TEMPOS.semBar) : 0 + (vo.doce ? VONTADE.menos : 0) + (vo.cafe ? VONTADE.menos : 0);   // v10.5.3: a vontade que ficou sem resposta
     const s = [5 - A.porCoracao * (g.retira ? g.perdMesa : g.perdFila), bravo ? 1 : 5 - A.porCoracao * g.perdMesa, comida, g.semVeg ? 1 : avalMenu(this.cursos, cursosItem(this.save)) - menos, amb]
       .map((v, i) => ve[i] ? clamp(Math.round(v * 10) / 10, 1, 5) : null);
-    // v8.6.4: a nota no Gurugol fica na escala do ponto (o serviço 5 vale o teto), mais o humor de quem avalia; v8.6.7: o humor
+    // v8.6.4: a nota no Gúgou fica na escala do ponto (o serviço 5 vale o teto), mais o humor de quem avalia; v8.6.7: o humor
     // e a folga são fração da faixa do ponto (teto − 1), e a cor certa, a corrente e o caprichado aumentam a chance de encantar
     const teto = avalTeto(this.ponto), faixa = teto - 1, lim = Math.min(5, teto + A.humor.folga * faixa);
     const h = bravo ? 0 : (rand(-A.humor.var, A.humor.var) + (Math.random() < encanta ? rand(A.humor.extra[0], A.humor.extra[1]) : 0)) * faixa;
@@ -1146,7 +1146,7 @@ class Game {
     // balãozinho branco (sobe devagar, acima dos textos da conta)
     this.fx.push({ k:'text', box:true, x, y, vy:-12, life:2.8, max:2.8, text:fmtNota(nota) + '★ ' + txt, color:f >= 0.75 ? PAL.ok : f >= 0.5 ? PAL.alerta : PAL.perigo, size:13 });
   }
-  /* a nota do Gurugol agora: as do save e as do dia (null antes das AVAL.min primeiras) */
+  /* a nota do Gúgou agora: as do save e as do dia (null antes das AVAL.min primeiras) */
   /* as notas do dia, cada avaliação do exigente repetida EXIGENTE.peso vezes (v10.1) */
   avalsPeso(){ const o = []; this.avals.forEach(a => { for (let i = 0; i < (a.x || 1); i++) o.push(a.r); }); return o; }
   get gurugol(){ return avalGeral(this.save.aval.concat(this.avalsPeso()).slice(-AVAL.max)); }
@@ -1303,7 +1303,7 @@ class Game {
     this.desgastar(); delete sv.manut.sorteio;
     // campanha (v8.3): o dia seguinte vem de qualquer jeito; a meta não batida só fica sem estrelas
     sv.dia = d.n + 1; sv.estrelas += stars; sv.lucroTot += m; sv.pontosTot += Math.round(this.pontos);
-    // Gurugol (v8.4): as avaliações do dia entram no save; o fim do dia mostra a nota do dia, a geral e 2 ou 3 comentários
+    // Gúgou (v8.4): as avaliações do dia entram no save; o fim do dia mostra a nota do dia, a geral e 2 ou 3 comentários
     const avDia = avalMedias(this.avalsPeso());
     sv.aval = normAval(sv.aval.concat(this.avalsPeso()));
     sv.avalCom = normAvalCom(sv.avalCom.concat(this.avals.map(a => ({ d:d.n, n:Math.round(avalNota(a.r) * 10), t:a.txt, k:a.k, v:a.v }))));
@@ -1313,7 +1313,7 @@ class Game {
     if (this.ficha) this.manualVer('i-critico'); if (this.visita && this.visita.boato) this.manualVer('i-boato');   // v10.9
     const avsDia = this.avals;   // v9.0.4: o gatilho dos cartões da lojinha lê as notas cruas do dia
     this.avals = [];   // já estão no save (a nota do HUD não conta duas vezes)
-    // v10.10, a noite da estrela: o guia pesa as visitas do crítico, o Gurugol, o luxo, a noite, o salão e o Bráulio; a melhor marca fica (nunca cai), o último boletim é guardado e o veredito sai depois dos resultados
+    // v10.10, a noite da estrela: o guia pesa as visitas do crítico, o Gúgou, o luxo, a noite, o salão e o Bráulio; a melhor marca fica (nunca cai), o último boletim é guardado e o veredito sai depois dos resultados
     let noiteRes = null;
     if (this.noite){
       const gs = this.guiaSave(), vs = gs.v.map(f => f.it.reduce((a, x) => a + x, 0)).sort((a, b) => b - a), fn = this.ficha ? this.ficha.it.reduce((a, x) => a + x, 0) : 0;
@@ -1486,7 +1486,7 @@ class Game {
     if (o.marmitas) itens.push({ txt:o.marmitas + ' marmitas e nota ' + fmtNota(o.nota) + ' no mesmo dia (' + (fim ? 'hoje' : 'no último dia') + ': ' + (sv.capMarm || 0) + (sv.capMarm === 1 ? ' marmita' : ' marmitas') + ', nota ' + fmtNota(ge ? ge.nota : null) + ')', ok:!!sv.capFeito });
     if (o.completas) itens.push({ txt:o.completas + ' refeições completas e nota ' + fmtNota(o.nota) + ' no mesmo dia (' + (fim ? 'hoje' : 'no último dia') + ': ' + (sv.capComp || 0) + (sv.capComp === 1 ? ' completa' : ' completas') + ', nota ' + fmtNota(ge ? ge.nota : null) + ')', ok:!!sv.capFeito });
     if (o.quitar) itens.push({ txt:sv.emp.resto ? 'Quitar a reforma (faltam ' + fmt(sv.emp.resto) + ')' : 'Reforma quitada', ok:!sv.emp.resto });
-    if (o.nota && !o.marmitas && !o.completas) itens.push({ txt:'Nota do Gurugol ' + fmtNota(o.nota) + ' (agora ' + fmtNota(ge ? ge.nota : null) + ')', ok:nota != null && nota >= o.nota });
+    if (o.nota && !o.marmitas && !o.completas) itens.push({ txt:'Nota do Gúgou ' + fmtNota(o.nota) + ' (agora ' + fmtNota(ge ? ge.nota : null) + ')', ok:nota != null && nota >= o.nota });
     if (o.caixa) itens.push({ txt:fmt(o.caixa) + ' no caixa (agora ' + fmt(sv.bank) + ')', ok:sv.bank >= o.caixa });
     itens.forEach((it, i) => { it.txt = i ? it.txt.replace(/^(?!R\$)./, x => x.toLowerCase()) : it.txt; });
     return { ok:itens.every(it => it.ok), itens };
@@ -1496,7 +1496,7 @@ class Game {
     const ob = this.capObj(sv), c = HISTORIA[(sv || this.save).cap - 1];
     return ob ? 'Capítulo ' + c.cap + ', ' + c.titulo + ': ' + ob.itens.map(it => (it.ok ? '✓ ' : '') + it.txt).join(' · ') : '';
   }
-  /* v10.9: o capítulo 13 começa: sorteia a 1ª visita do crítico (de CRITICO.primeira dias à frente) e planta no Gurugol o comentário do boato */
+  /* v10.9: o capítulo 13 começa: sorteia a 1ª visita do crítico (de CRITICO.primeira dias à frente) e planta no Gúgou o comentário do boato */
   comecaCritico(){
     const sv = this.save;
     sv.guia = normGuia({ n:0, prox:sv.dia + randi(CRITICO.primeira[0], CRITICO.primeira[1]), v:[] }); sv.convCrit = 0;
@@ -1515,7 +1515,7 @@ class Game {
     writeSave(sv);
     return !ativo;
   }
-  /* mudança de ponto (v9): o próximo ponto da lista, para sempre. Custa o dinheiro da mudança e pede a nota do Gurugol do ponto de agora
+  /* mudança de ponto (v9): o próximo ponto da lista, para sempre. Custa o dinheiro da mudança e pede a nota do Gúgou do ponto de agora
      (avalMinimo); no modo dev, sem custo nem nota. Leva as mesas (arrumação automática), os pratos, os cursos, a equipe, as melhorias
      e o empréstimo; saem a TV, o som e a torneira (sem devolver). O cap. 4 começa na mudança */
   get proximoPonto(){ return PONTOS[PONTOS.indexOf(this.ponto) + 1] || null; }

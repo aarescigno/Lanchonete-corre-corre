@@ -1,4 +1,4 @@
-// v9.6.11, etapa 3g-2: a tela avisa: comentários do Gurugol em balões, geladeira fora da tela, mesinha das marmitas, letreiro eFood,
+// v9.6.11, etapa 3g-2: a tela avisa: comentários do Gúgou em balões, geladeira fora da tela, mesinha das marmitas, letreiro eFood,
 // seta nas marmitas prontas (dias 4 e 5) e a fumaça do lixo que se espalha.
 const load=require('./harness.js');
 let fails=0,total=0; const ok=(c,m)=>{ total++; if(!c){fails++;console.log('FAIL:',m);} else console.log('ok  :',m); };
@@ -9,7 +9,7 @@ const roda=(s,cond)=>{ for(let i=0;i<s/0.05;i++){ g.update(0.05); if(cond&&cond(
 const entregador=()=>{ const e=g.spawn({type:'entregador',color:1}); e.patLeft=1e9; e.hearts=5; return e; };
 const K=()=>g.kitchen;
 
-// (1) balões do Gurugol no topo do fim do dia
+// (1) balões do Gúgou no topo do fim do dia
 g.save=L.normSave({bank:2000,dia:3,maxDay:3}); g.up=g.save.up; g.startDay(3); if(g.state==='shop') els['btn-shop-go'].fire('click'); if(g.state==='intro') els['btn-start'].fire('click');
 g.schedule=[]; g.nextIdx=0; g.avals=[aval([5,5,5,5,5],'estudante','Adorei!'),aval([2,2,2,2,2],'familia','Demorou.'),aval([4,4,4,4,4],'executiva','Boa.')];
 g.finishDay();

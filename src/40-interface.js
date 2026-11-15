@@ -278,7 +278,7 @@ function devAbaEquipe(body, secao, botao, nota){
   r = secao('Manutenção');
   botao(r, 'Tudo novo', () => game.devManut(1)); botao(r, 'Tudo gasto', () => game.devManut(0.2));
   const ng = game.notaGurugol;
-  r = secao('Nota do Gurugol', 'Agora: ' + (ng != null ? nota(ng) + ' ★' : 'sem nota'));
+  r = secao('Nota do Gúgou', 'Agora: ' + (ng != null ? nota(ng) + ' ★' : 'sem nota'));
   [2, 2.7, 3.4, 4].forEach(v => botao(r, nota(v), () => game.devNota(v)));
   botao(r, 'Teto', () => game.devNota(avalTeto(game.ponto)));
   botao(r, 'Limpar', () => game.devNota(0));

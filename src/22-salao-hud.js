@@ -410,7 +410,7 @@ function drawCluster(ctx,grp,x,y,tm,o){
 /* ============================================================
    HUD
    ============================================================ */
-/* estrela pequena, sem contorno (as do Gurugol no HUD, v8.4) */
+/* estrela pequena, sem contorno (as do Gúgou no HUD, v8.4) */
 function starFill(ctx,x,y,r,fill){
   ctx.beginPath();
   for (let i=0;i<10;i++){ const a = -Math.PI/2 + i*Math.PI/5, rad = i%2 ? r*0.45 : r; ctx.lineTo(x+Math.cos(a)*rad, y+Math.sin(a)*rad); }
@@ -485,10 +485,10 @@ function drawHud(ctx,g,tm){
     else if (lost) txt(ctx,'3ª estrela perdida',ax,ay,12.5,'#FF9C8A','right',FB);
     else if (m < d.expert) alvo(3, d.expert);
     else txt(ctx,'3 estrelas!',ax,ay,15,PAL.mostarda,'right',FD);
-    // nota do Gurugol (v8.4): a média das últimas avaliações; antes da AVAL.min-ésima, uma bolinha por avaliação que já chegou (v9.6.12)
+    // nota do Gúgou (v8.4): a média das últimas avaliações; antes da AVAL.min-ésima, uma bolinha por avaliação que já chegou (v9.6.12)
     const av = g.gurugol;
     rr(ctx,334,550,124,44,9); fs(ctx,'#3b362e',2);
-    txt(ctx,'Gurugol',396,561,12,'#cfc7b0','center',FB);
+    txt(ctx,'Gúgou',396,561,12,'#cfc7b0','center',FB);
     if (av){
       const fr = avalFrac(av.nota, avalTeto(g.ponto));   // v8.6.4: a cor vai pelo teto do ponto
       txt(ctx,fmtNota(av.nota),366,582,20,fr >= 0.75 ? '#7fd69a' : fr >= 0.5 ? '#FFF7DC' : '#FF9C8A','center',FD,3);

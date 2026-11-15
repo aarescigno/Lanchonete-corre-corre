@@ -130,7 +130,7 @@ const html=fs.readFileSync(__dirname+'/../lanchonete.html','utf8');
   ok(g.buyDecor('violeta') && g.buyDecor('anturio') && g.buyDecor('pendente') && g.buyDecor('espada'),'as plantas da Garagem e da área industrial também estão à venda na Avenida');
   const I=jogo(4,'industrial',{ bank:5000 }).g; ok(!I.buyDecor('tulipa') && I.buyDecor('violeta'),'na área industrial, as flores da Avenida não estão à venda');
   H.L.setShopGrupo('lanchonete'); H.L.setShopTab('decor'); ok(/Tulipas/.test(txt(grid(H))) && /Copos-de-leite/.test(txt(grid(H))) && /Orquídeas/.test(txt(grid(H))),'na lojinha da Avenida, os cartões das flores');
-  ok(Object.keys(L.AVAL_DECOR).includes('tulipa') && Object.keys(L.AVAL_DECOR).includes('copo') && Object.keys(L.AVAL_DECOR).includes('orquidea'),'elogios das flores no Gurugol'); }
+  ok(Object.keys(L.AVAL_DECOR).includes('tulipa') && Object.keys(L.AVAL_DECOR).includes('copo') && Object.keys(L.AVAL_DECOR).includes('orquidea'),'elogios das flores no Gúgou'); }
 
 // ---------- 8. o couvert ----------
 { const L=load({}).L;
@@ -171,7 +171,7 @@ const html=fs.readFileSync(__dirname+'/../lanchonete.html','utf8');
 // ---------- 11. cap. 8 (era o 7 antes da v10.5.2) ----------
 { const H=jogo(8,'avenida',{ bank:1000 }), {g,L}=H; g.save.conversa=null;
   const dia=(nota,bank)=>{ H.g.startDay(H.g.save.dia); H.els['btn-start'].fire('click'); notaDe(H.g,nota,30); H.g.save.bank=bank; H.g.schedule=[]; H.g.nextIdx=0; H.g.money=0; H.g.custo=0; H.g.finishDay(); };
-  g.startDay(10); ok(/Capítulo 8, Nota de restaurante: Nota do Gurugol 3,9/.test(H.els['intro-manut'].textContent) && /R\$ 5000 no caixa/.test(H.els['intro-manut'].textContent),'a introdução traz os 2 itens do cap. 8');
+  g.startDay(10); ok(/Capítulo 8, Nota de restaurante: Nota do Gúgou 3,9/.test(H.els['intro-manut'].textContent) && /R\$ 5000 no caixa/.test(H.els['intro-manut'].textContent),'a introdução traz os 2 itens do cap. 8');
   dia(3.8,6000); ok(!g.result.cap.ok,'nota 3,8 com R$ 6.000: não cumpre');
   g.save.dia=11; dia(4.2,2000); ok(!g.result.cap.ok,'nota 4,2 com R$ 2.000: não cumpre');
   g.save.dia=12; dia(3.9,6000); ok(g.result.cap.ok && g.save.conversa==='depois','nota 3,9 e R$ 5.000: cap. 8 cumprido');

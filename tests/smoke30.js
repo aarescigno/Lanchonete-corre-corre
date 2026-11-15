@@ -1,5 +1,5 @@
 // v8.6.5: decoração da Garagem (aba Decoração da lojinha). Plantas e o cantinho da Rosa (save.decor) e a toalha
-// xadrez de cada mesa ({ t:1 }). Não muda as contas do dia; desde a v8.6.6, conta no ambiente do Gurugol.
+// xadrez de cada mesa ({ t:1 }). Não muda as contas do dia; desde a v8.6.6, conta no ambiente do Gúgou.
 const H=require('./harness.js')(); const {g,L,ctx,els}=H;
 let fails=0,total=0; const ok=(c,m)=>{ total++; if(!c){fails++;console.log('FAIL:',m);} else console.log('ok  :',m); };
 const novo=s=>{ g.save=L.normSave(Object.assign({bank:500,dia:5},s||{})); g.up=g.save.up; g.boughtFor=0; g.shopBought=false; g.buildTables(); };
@@ -60,7 +60,7 @@ novo({decor:{espada:1,lata:1,samambaia:1,foto:1,giz:1,placa:1}}); g.save.salao.m
 { let err=null; try{ L.render(g,ctx); }catch(e){ err=e; } ok(!err,'desenha o dia com tudo'+(err?': '+err.message:'')); }
 g.goShop(5); { let err=null; try{ L.setShopTab('decor'); L.setShopTab('salao'); }catch(e){ err=e; } ok(!err,'desenha a aba Luxo e o editor'+(err?': '+err.message:'')); }
 
-// v8.6.6: a decoração no ambiente do Gurugol (na escala do serviço, avals[i].s[4])
+// v8.6.6: a decoração no ambiente do Gúgou (na escala do serviço, avals[i].s[4])
 { const A=L.AVAL, amb=(decor,toalha,mv)=>{ novo({decor,salao:undefined,moveis:mv||{}}); g.save.salao.mesas.forEach(m=>{ m.t=toalha?1:0; }); g.buildTables(); g.startDay(5); g.begin();
     const t=g.tables.find(x=>x.open), gr=g.spawn({type:'estudante',color:0,vip:false,av:true}); gr.table=t; gr.pratoQ=5; g.avaliar(gr,0,0); const r=g.avals[g.avals.length-1]; return {v:r.s[4],txt:r.txt}; };
   ok(A.amb.base===2 && L.LUXO.ambMax===3 && L.LUXO.pede[0]===20,'v10.7: o Ambiente é a base 2 mais até 3 pelo luxo (pede 20 pontos na Garagem)');

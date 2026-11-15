@@ -68,7 +68,7 @@ const fecha=(H,st,fat)=>{ const {g,els}=H; g.startDay(g.save.dia); els['btn-star
   ok(r.rosa===1 && n.rosa===0 && r.grp.rosa===true && !n.grp.rosa,'stats.rosa conta e o grupo guarda `rosa`');
   ok(r.g.fx.some(f=>f.text==='Prato da Rosa!'),'sobe o texto "Prato da Rosa!"');
   const c=serve(true,4); ok(c.grp.hearts===5,'o coração a mais não passa de 5');
-  // o comentário no Gurugol: em metade das vezes, nas notas boas de comida
+  // o comentário no Gúgou: em metade das vezes, nas notas boas de comida
   const H=jogo(12,{ rosa:1 }), {g}=H; dia(H); g.mode='carreira'; let com=0, tot=0;
   for(let i=0;i<200;i++){ const { grp }=sentar(g,'casal',true); grp.avalia=true; grp.rosa=true; grp.pratoQ=5; grp.tempos=null; const n=g.avals.length; g.avaliar(grp,0,0); if(g.avals[n]){ tot++; if(g.avals[n].txt==='Que molho é esse?!') com++; } grp.table.group=null; grp.table=null; g.queue=g.queue.filter(q=>q!==grp); g.groups=g.groups.filter(q=>q!==grp); }
   ok(tot>150 && com>=tot*0.3 && com<=tot*0.7,'o comentário "Que molho é esse?!" vem em cerca de metade ('+com+' de '+tot+')'); }

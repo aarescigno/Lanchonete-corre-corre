@@ -45,7 +45,7 @@ const fecha=(H,ficha)=>{ const {g}=H; g.schedule=[]; g.nextIdx=0; g.money=3000; 
     if(cs.length!==1 || c.type!=='executiva' || !c.disfarce){ tudo=false; continue; } const f=c.t/win; if(f<0.3-1e-9 || f>0.6+1e-9) tudo=false; else vistos++; }
   ok(tudo && vistos===30,'no dia da visita, exatamente um grupo é o crítico (executiva, sozinha), chegando entre 30% e 60% da janela');
   const H=dia1({ guia:GUIA(0,62) }), g=H.g; g.startDay(60); ok(!g.schedule.some(s=>s.critico),'nos outros dias, nenhum');
-  const H2=dia1(), g2=H2.g; g2.startDay(60); const so=g2.schedule.filter(s=>s.critico), n0=g2.schedule.length; ok(so.length===1 && g2.schedule.filter(s=>s.av).length>=1 && so[0].av===true,'o crítico sempre avalia no Gurugol');
+  const H2=dia1(), g2=H2.g; g2.startDay(60); const so=g2.schedule.filter(s=>s.critico), n0=g2.schedule.length; ok(so.length===1 && g2.schedule.filter(s=>s.av).length>=1 && so[0].av===true,'o crítico sempre avalia no Gúgou');
   // sem nenhum grupo na faixa, entra um a mais aos 45%
   const H3=dia1(), g3=H3.g; const mb=g3.buildSchedule.bind(g3); g3.visita={ n:1, boato:false, real:true };
   const sch=g3.buildSchedule(g3.day); ok(sch.filter(s=>s.critico).length===1,'(buildSchedule direto: um crítico)');
@@ -138,7 +138,7 @@ const fecha=(H,ficha)=>{ const {g}=H; g.schedule=[]; g.nextIdx=0; g.money=3000; 
 { const H=jogo(12,{ conversa:'depois', capVezes:3, aval:Array(12).fill([4,4,4,4,4]), avalCom:[{ d:55, n:40, t:'Muito bom!', k:'estudante' }] }), {g,L}=H; const nota0=g.notaGurugol; g.avancaCap();
   const c=g.save.avalCom[g.save.avalCom.length-1]; ok(c && c.boato===1 && c.t===L.CRITICO.coment && c.n===10,'ao começar o cap. 13, o comentário de uma estrela entra no topo, marcado boato');
   ok(g.notaGurugol===nota0 && g.save.aval.length===12,'a nota geral não muda com ele');
-  g.avancaCap=null; const t=loja(H,'gurugol'); ok(t.indexOf(L.CRITICO.coment)>=0,'ele aparece na lista do Gurugol');
+  g.avancaCap=null; const t=loja(H,'gurugol'); ok(t.indexOf(L.CRITICO.coment)>=0,'ele aparece na lista do Gúgou');
   const dois=L.plantaBoato(L.plantaBoato([],60),61); ok(dois.filter(x=>x.boato).length===1,'só entra uma vez');
   const n2=L.normSave(JSON.parse(JSON.stringify(g.save))); ok(n2.avalCom.some(x=>x.boato===1),'e o save normalizado guarda o `boato`');
   // um dia depois: a nota do dia não conta o plantado
@@ -147,7 +147,7 @@ const fecha=(H,ficha)=>{ const {g}=H; g.schedule=[]; g.nextIdx=0; g.money=3000; 
 // ---------- 9. o capítulo 13 e o save (CA9) ----------
 { const H=dia1(), {g,L}=H, c=L.HISTORIA[12];
   ok(L.HISTORIA.length===14 && c.cap===13 && c.titulo==='O crítico sem aviso' && c.ponto==='terraco' && c.obj.critico===2 && c.antes.length===5 && c.depois.length===5,'HISTORIA[12]: cap. 13, "O crítico sem aviso", obj { critico:2 }, 5 falas antes e 5 depois');
-  ok(c.antes[0].s==='O crítico do Michelzão não usa crachá. Senta, come e anota.' && c.antes[2].nota==='olhando o Gurugol' && c.depois[3].nota==='lendo um cartão' && c.depois[4].s==='A noite da estrela!' && c.fim===undefined,'(os textos da spec; v10.10: o cap. 13 não tem mais cartão de fim)');
+  ok(c.antes[0].s==='O crítico do Michelzão não usa crachá. Senta, come e anota.' && c.antes[2].nota==='olhando o Gúgou' && c.depois[3].nota==='lendo um cartão' && c.depois[4].s==='A noite da estrela!' && c.fim===undefined,'(os textos da spec; v10.10: o cap. 13 não tem mais cartão de fim)');
   ok(L.HISTORIA[11].fim===undefined,'o cap. 12 não mostra mais cartão de fim');
   let ob=g.capObj(); ok(ob.itens.length===1 && ob.itens[0].txt==='Receber o crítico do Michelzão 2 vezes (0 de 2)' && !ob.itens[0].ok,'o objetivo: "Receber o crítico do Michelzão 2 vezes (0 de 2)"');
   comeca(H); fecha(H,FICHA(60,[0,0,0,0,0])); ok(g.save.guia.n===1 && !g.result.cap.ok && /\(1 de 2\)/.test(g.result.cap.itens[0].txt) && g.save.conversa===null,'a 1ª visita soma 1 e não cumpre o capítulo');

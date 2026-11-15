@@ -87,9 +87,9 @@ p{margin:calc(var(--u)*6) 0;font-size:max(12px,calc(var(--u)*16));line-height:1.
 .stars{font-size:max(30px,calc(var(--u)*56));letter-spacing:.1em;line-height:1;margin:calc(var(--u)*4) 0;text-shadow:calc(var(--u)*2) calc(var(--u)*2) 0 var(--tinta)}
 .stars .on{color:var(--mostarda)} .stars .off{color:#d9d4c4}
 .stats{display:grid;grid-template-columns:auto auto;gap:calc(var(--u)*4) calc(var(--u)*24);justify-content:center;text-align:left;margin:calc(var(--u)*8) auto;font-size:max(11px,calc(var(--u)*14));font-weight:600}
-/* v9.6.11: os comentários do Gurugol em balões grandes no topo do fim do dia */
+/* v9.6.11: os comentários do Gúgou em balões grandes no topo do fim do dia */
 /* v9.6.12, fim do dia: o corpo rola e a linha de botões fica sempre à vista no pé do painel; os recados (resultado, avisos do banco,
-   quem pode subir de nível e o objetivo do capítulo) vêm em linhas curtas, acima dos balões do Gurugol */
+   quem pode subir de nível e o objetivo do capítulo) vêm em linhas curtas, acima dos balões do Gúgou */
 .end-panel{display:flex;flex-direction:column;overflow:hidden}
 .end-corpo{flex:1 1 auto;min-height:0;overflow:auto;padding:0 calc(var(--u)*4)}
 .end-pe{flex:none;margin-top:calc(var(--u)*8);padding-top:calc(var(--u)*8);border-top:calc(var(--u)*2) solid rgba(34,32,28,.14)}
@@ -124,8 +124,8 @@ p{margin:calc(var(--u)*6) 0;font-size:max(12px,calc(var(--u)*16));line-height:1.
 .end-rosto{flex:none;width:max(30px,calc(var(--u)*38));height:max(30px,calc(var(--u)*38));border-radius:50%;border:calc(var(--u)*2) solid var(--tinta)}
 .stats2{display:flex;flex-wrap:wrap;justify-content:center;align-items:flex-start;column-gap:calc(var(--u)*36)}
 .stats2 .stats{margin:calc(var(--u)*6) 0}
-#end-stats .stats{row-gap:calc(var(--u)*1)}   /* v8.4: a linha do Gurugol cabe sem rolar */
-/* caixa do Gurugol no fim do dia (v8.4.1): barras por critério e a nota contando, com a cor da faixa */
+#end-stats .stats{row-gap:calc(var(--u)*1)}   /* v8.4: a linha do Gúgou cabe sem rolar */
+/* caixa do Gúgou no fim do dia (v8.4.1): barras por critério e a nota contando, com a cor da faixa */
 @media (min-width:700px){#end-stats{flex-wrap:nowrap}}
 .guru{background:#22344F;color:#F7EFD8;border:calc(var(--u)*3) solid var(--tinta);border-radius:calc(var(--u)*12);padding:calc(var(--u)*5) calc(var(--u)*11) calc(var(--u)*4);margin:calc(var(--u)*6) 0;width:max(140px,calc(var(--u)*176));flex:none;text-align:left;box-shadow:calc(var(--u)*3) calc(var(--u)*3) 0 var(--tinta)}
 .guru-tit{display:block;text-align:center;font-family:var(--fd);font-weight:400;font-size:max(13px,calc(var(--u)*16));line-height:1.1;color:var(--mostarda);letter-spacing:.02em}
@@ -207,7 +207,7 @@ p{margin:calc(var(--u)*6) 0;font-size:max(12px,calc(var(--u)*16));line-height:1.
 .luxo-barras{display:grid;grid-template-columns:repeat(5,1fr);gap:calc(var(--u)*10);margin-top:calc(var(--u)*4)}
 .luxo-b span{display:block;font-weight:700;font-size:max(10px,calc(var(--u)*12));line-height:1.1}
 @media (max-width:600px){.luxo-barras{grid-template-columns:repeat(2,1fr)}}
-/* aba Gurugol (v8.4.2): a caixa da nota à esquerda e os últimos comentários à direita */
+/* aba Gúgou (v8.4.2): a caixa da nota à esquerda e os últimos comentários à direita */
 .shopgrid.gurugol{display:flex;gap:calc(var(--u)*16);align-items:flex-start;text-align:left}
 .guru-lado{flex:none}
 .guru-lado .guru{margin-top:0}

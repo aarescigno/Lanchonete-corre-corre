@@ -1,4 +1,4 @@
-// v8.6.15, etapa 2c-r4b: lojinha em 4 grupos (Lanchonete, Equipe, Dinheiro, Gurugol) com cartões de ícone e nome
+// v8.6.15, etapa 2c-r4b: lojinha em 4 grupos (Lanchonete, Equipe, Dinheiro, Gúgou) com cartões de ícone e nome
 const load=require('./harness.js');
 const H=load(); const {g,L,els}=H;
 let fails=0,total=0; const ok=(c,m)=>{ total++; if(!c){fails++;console.log('FAIL:',m);} else console.log('ok  :',m); };
@@ -16,7 +16,7 @@ ok(els['shop-nav'].hidden===true,'nos cartões, sem o botão Voltar');
 // grupos
 L.setShopGrupo('equipe'); ok(cartoes().join()==='bia,tonhao,dani' && nomes().join()==='Bia,Tonhão,Dani','Equipe: Bia, Tonhão e Dani');
 L.setShopGrupo('dinheiro'); ok(cartoes().join()==='banco,mudanca,caixa' && nomes().join()==='Banco,Mudança,Caixa','Dinheiro: Banco, Mudança (cap. 4 em diante, v9) e Caixa');
-L.setShopGrupo('gurugol'); ok(grid().className.indexOf('shopgrid')===0 && els['shop-nav'].hidden===true && /Ainda ninguém avaliou/.test(txt(grid())),'Gurugol abre direto, sem cartões nem Voltar');
+L.setShopGrupo('gurugol'); ok(grid().className.indexOf('shopgrid')===0 && els['shop-nav'].hidden===true && /Ainda ninguém avaliou/.test(txt(grid())),'Gúgou abre direto, sem cartões nem Voltar');
 // abrir seção e voltar
 L.setShopGrupo('lanchonete'); grid().children[1].fire('click');
 ok(els['shop-nav'].hidden===false && els['shop-sec'].textContent==='Melhorias' && /Ventilador de teto/.test(txt(grid())),'abrir Melhorias: Voltar aparece');
