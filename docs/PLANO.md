@@ -16,10 +16,9 @@ Origem: retorno do Renan Martorelli (beta-tester) e conversa com o Arthur (15/10
 | # | Etapa | Versão | Situação |
 |---|---|---|---|
 | 5 | ~~Modo História, parte 1~~: juntou-se à 2f e aos capítulos da 3a, 3b e 4a (28/10) | — | — |
-| 8g | A roupa da Bia por ponto | v11.7 | feita em 15/11 (`docs/spec-v11.7.md`; `smoke83`; `roupaBia(g)` e `drawBia({ roupa })`; o retrato da Bia com enquadramento mais aberto; o Fim em 10 de 10 carreiras) |
 | 8h | As reações da Bia durante o dia | v11.8 | feita em 15/11 (`docs/spec-v11.8.md`; `smoke84`; `BIA_REACAO`, `Waitress.reage` e `drawBia({ reacao })`; três gestos por ponto; a Etapa 8 está completa) |
 | 7a | Acertos do polimento: o nome no Ranking, a Divulgação na hora certa e o trio com três músicos | v11.9 | feita em 15/11 (`docs/spec-v11.9.md`; `smoke85`; `rankAuto`, `Rank.renomeiaLocal`, `shopSecoesVis` e `TRIO`) |
-| 7b | As telas no celular: a lojinha com o topo fixo, os painéis pequenos e as Versões enxutas | v11.10 | spec aprovada em 15/11 (`docs/spec-v11.10.md`); depois da 7a |
+| 7b | As telas no celular: a lojinha com o topo fixo, os painéis pequenos e as Versões enxutas | v11.10 | feita em 15/11 (`docs/spec-v11.10.md`; `smoke86` e `menu_fit.py` com 630 conferências; só o `#shop-grid` rola; a Etapa 7 está completa) |
 
 ---
 
@@ -81,18 +80,6 @@ Origem: retorno do Renan Martorelli (beta-tester) e conversa com o Arthur (15/10
 > - **O Terraço mede pela equipe toda** (Joca, Cami, Anselmo e a confeitaria): é ela que passa ~90% das metas.
 > - **Regra da 3f em todas as sessões:** cartão novo da lojinha só com nome, preço e "?"; toda novidade ganha ficha no `MANUAL` (sem números), revelada quando aparece na história.
 > Ordem: 4a-1 (o ponto e a refeição completa, v10) → 4a-2 (o VIP exigente e a reputação, v10.1) → 4a-3 (a cozinha: alta gastronomia, a Lia e a alta confeitaria, v10.2) → 4a-4 (o salão e o bar: Cami, Joca e Anselmo, v10.3) → 4a-5 (música, flores e rebalanceamento, v10.4). Cada uma é uma versão, com PR e merge. As "Checagens de fim de sessão" da etapa 3 valem para todas.
-
-## Etapa 7 — Polimento (v11.9 e v11.10)
-> **Revista com o usuário em 15/11** (as respostas estão no `docs/PROPOSTAS.md`, "15/11 — usuário: decisões da Etapa 7"). Duas sessões, cada uma com a sua spec aprovada; a 7b vem depois da 7a, porque mede as telas que a 7a muda (o Ranking e o fim do Turno sem fim).
-
-- **7a (v11.9) — Acertos do polimento.** O fim do dia deixa de pedir o nome: a pontuação entra sozinha no ranking do aparelho e o nome se escreve na tela do Ranking; o cartão da Divulgação só aparece quando abre; o trio de cordas passa a ter três músicos. Spec: `docs/spec-v11.9.md`. **Modelo:** Sonnet, esforço médio (três acertos localizados, com regras e textos fechados).
-- **7b (v11.10) — As telas no celular.** A lojinha com o topo e os botões parados (só os cartões rolam), os painéis que passam da tela no menor celular deitado e o painel Versões só com as versões cheias e as da série atual. Spec: `docs/spec-v11.10.md`. **Modelo:** Sonnet, esforço médio (CSS com a prova no Chromium, pelo `menu_fit.py`).
-
-**Fora da etapa (decisões de 15/11):** o ranking compartilhado continua desligado; a revisão geral de equilíbrio espera o retorno dos jogadores (os bots puseram os quatro pontos dentro ou perto da faixa); as conferências com jogadores e o teste de som e toque num celular de verdade continuam nas Ideias pendentes do `docs/RESUMO.md`. Os dois primeiros estão nas Ideias guardadas, abaixo.
-
-**Modelo:** por sessão, acima; a próxima é a 7a, com o Sonnet, esforço médio.
-
----
 
 ## Ideias guardadas (sem etapa ainda)
 - **Estufa para as marmitas** (retorno de 01/11): guarda as marmitas adiantadas por mais tempo (hoje esfriam em `MARMITA.validade`, 60 s) e, com ela, o "+ marmita" volta (`MARMITA.adiantar`, desligado na 3c). Pode vir junto da prateleira de 4 (ideia da v8.6). Decidir preço, ponto em que aparece e quanto dura a marmita.

@@ -260,8 +260,9 @@ const SHOP_SECOES = {
   gurugol:{ nome:'Gurugol', icon:'contas', build:g => buildGurugol(g) }};
 const SHOP_ANTIGAS = { equipe:'tonhao', cursos:'cardapio', decor:'luxo' };   // nomes das abas antigas, para os testes e capturas
 function shopGrupoDe(sec){ const g = SHOP_GRUPOS.find(x => x.secoes.indexOf(sec) >= 0); return g ? g.id : 'lanchonete'; }
-function shopAbrir(sec){ sec = SHOP_ANTIGAS[sec] || sec; shopGrupo = shopGrupoDe(sec); shopTab = game.cartaoAberto(sec) && shopSecoesVis(SHOP_GRUPOS.find(x => x.id === shopGrupo)).indexOf(sec) >= 0 ? sec : null; buildShop(); }   // v9.0.4: cartão fechado abre só o grupo
-function shopGrupoAbrir(g){ shopGrupo = g; shopTab = g === 'gurugol' ? 'gurugol' : null; buildShop(); }
+let shopTopo = false;   // v11.10: trocar de grupo, abrir seção ou voltar leva o grid ao alto; comprar na mesma seção mantém o lugar
+function shopAbrir(sec){ sec = SHOP_ANTIGAS[sec] || sec; shopGrupo = shopGrupoDe(sec); shopTab = game.cartaoAberto(sec) && shopSecoesVis(SHOP_GRUPOS.find(x => x.id === shopGrupo)).indexOf(sec) >= 0 ? sec : null; shopTopo = true; buildShop(); }   // v9.0.4: cartão fechado abre só o grupo
+function shopGrupoAbrir(g){ shopGrupo = g; shopTab = g === 'gurugol' ? 'gurugol' : null; shopTopo = true; buildShop(); }
 /* as seções do grupo que aparecem agora: a Mudança só depois do cap. 3 (v9) e enquanto há ponto para onde ir */
 /* v9.6.12: na História, a Dani só entra na lojinha quando chega (cap. 2): nem o cartão dela no grupo Equipe, nem a seção */
 function daniNaLoja(){ return !(HIST.on && game.save.histV === 1) || game.daniChegou; }
@@ -280,7 +281,7 @@ function shopCartoes(grid, grupo){
     }
     if (id === 'cardapio' && game.cardapioNovo.length){ b.classList.add('novo'); b.setAttribute('aria-label', 'Cardápio: tem curso novo que cabe no caixa'); }
     if (game.liberaNovo.indexOf(id) >= 0){ b.classList.add('novo'); b.setAttribute('aria-label', sc.nome + ': novo na lojinha'); }   // v9.0.4
-    b.addEventListener('click', () => { Sfx.init(); Sfx.tap(); if (id === 'cardapio') game.cardVer(); game.liberaVer(id); shopTab = id; buildShop(); });
+    b.addEventListener('click', () => { Sfx.init(); Sfx.tap(); if (id === 'cardapio') game.cardVer(); game.liberaVer(id); shopTab = id; shopTopo = true; buildShop(); });
     grid.appendChild(b);
   });
 }
@@ -1136,7 +1137,7 @@ function buildMudanca(grid){
   if (!f && mudarPede){
     c.appendChild(el('span', 'full', 'Mudar para ' + (p.art || 'a') + ' ' + p.nome + ' por ' + fmt(p.mudanca) + '? Aluguel de ' + fmt(p.aluguel) + ' por dia.' + (p.lugares < de.lugares ? ' O ' + p.nome.split(' ')[0] + ' tem ' + p.lugares + ' lugares: as mesas que não couberem são vendidas.' : '') + ' Não dá para voltar.'));
     const duo = el('div', 'duo');
-    duo.appendChild(shopBtn(devLivre() ? 'Sim, mudar' : 'Sim, mudar: ' + fmt(p.mudanca), 'btn', true, () => { mudarPede = false; shopTab = null; return game.mudarPonto(); }, devLivre() ? 0 : p.mudanca));
+    duo.appendChild(shopBtn(devLivre() ? 'Sim, mudar' : 'Sim, mudar: ' + fmt(p.mudanca), 'btn', true, () => { mudarPede = false; shopTab = null; shopTopo = true; return game.mudarPonto(); }, devLivre() ? 0 : p.mudanca));
     const nao = el('button', 'btn alt', 'Agora não'); nao.type = 'button'; nao.addEventListener('click', () => { Sfx.tap(); mudarPede = false; buildShop(); });
     duo.appendChild(nao); c.appendChild(duo);
   } else {
@@ -1339,7 +1340,7 @@ function manualLoja(){
   SHOP_GRUPOS.forEach(g => shopSecoesVis(g).forEach(id => { if (SEC_FICHA[id]) game.manualVer(SEC_FICHA[id]); }));
   game.manualPontos();
 }
-function buildShop(){ buildShopTela(); manualBolinha(); }
+function buildShop(){ const g = $('shop-grid'), st = shopTopo || !g ? 0 : (g.scrollTop || 0); shopTopo = false; buildShopTela(); if (g) g.scrollTop = st; manualBolinha(); }
 function buildShopTela(){
   const grid = $('shop-grid');
   clearEl(grid);
@@ -1379,5 +1380,5 @@ function buildShopTela(){
   });
 }
 (function(){ const box = $('shop-tabs'); if (box) Array.prototype.forEach.call(box.querySelectorAll('button'), b => b.addEventListener('click', () => { Sfx.init(); Sfx.tap(); shopGrupoAbrir(b.getAttribute('data-v')); }));
-  const vo = $('btn-shop-voltar'); if (vo) vo.addEventListener('click', () => { Sfx.init(); Sfx.tap(); shopTab = null; buildShop(); }); })();
+  const vo = $('btn-shop-voltar'); if (vo) vo.addEventListener('click', () => { Sfx.init(); Sfx.tap(); shopTab = null; shopTopo = true; buildShop(); }); })();
 

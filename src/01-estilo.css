@@ -56,6 +56,13 @@ p{margin:calc(var(--u)*6) 0;font-size:max(12px,calc(var(--u)*16));line-height:1.
 .lbl{font-weight:800;font-size:max(11px,calc(var(--u)*13));letter-spacing:.08em;text-transform:uppercase;color:var(--faixa);margin-top:calc(var(--u)*10)}
 /* Manual (v9.6.7): fichas em grade de 2 colunas (1 abaixo de 560 px); o painel não rola, a lista rola por dentro */
 #ov-manual .panel{display:flex;flex-direction:column;overflow:hidden;width:calc(var(--u)*900);max-width:97%}
+/* v11.10: a lojinha com o topo fixo; só os cartões (#shop-grid) rolam */
+#ov-shop .panel{display:flex;flex-direction:column;overflow:hidden}
+#ov-shop .panel > *{flex:0 0 auto;margin-bottom:0}   /* em coluna as margens não se fundem: só a de cima vale, e o painel fica na altura de antes */
+#ov-shop .panel > #shop-grid{flex:1 1 auto;min-height:0;overflow-y:auto;overscroll-behavior:contain;align-self:center}
+#ov-ver .panel{display:flex;flex-direction:column;overflow:hidden}
+#ov-ver .panel > *{flex:0 0 auto}
+#ov-ver .panel > .verlist{flex:1 1 auto;min-height:0;overflow-y:auto;overscroll-behavior:contain;align-self:center}
 #ov-manual .rankbar{margin:calc(var(--u)*2) 0}
 #manual-abas button{padding:0 calc(var(--u)*10);position:relative}
 #manual-abas button.novo::after{top:2px;right:2px}
@@ -289,16 +296,16 @@ table.cx .rs{font-size:inherit}
 .app-cols .nw{white-space:nowrap}
 @media (max-width:600px) and (min-height:461px){.app-cols{grid-template-columns:1fr}}
 @media (max-height:460px){
-  .app-panel{padding:calc(var(--u)*6) calc(var(--u)*14)}
+  .app-panel{padding:4px 8px;width:min(100%,640px)}   /* v11.10: no celular deitado o painel usa a largura da tela (a altura é que dava a largura) */
   .app-panel h2{font-size:max(17px,calc(var(--u)*26));margin-bottom:0}
   .app-panel > p.small{font-size:10.5px;line-height:1.25}
-  .app-panel p{margin:2px 0}
-  .app-url{margin:2px 0;gap:6px;flex-wrap:nowrap}
-  .app-url a{font-size:11px;white-space:nowrap}
-  .app-url .btn{font-size:12px;min-height:30px;padding:1px 8px;box-shadow:0 3px 0 var(--tinta);white-space:nowrap}
+  .app-panel p{margin:1px 0}
+  .app-url{margin:1px 0;gap:4px;flex-wrap:nowrap}
+  .app-url a{font-size:11px;font-weight:700;white-space:nowrap}
+  .app-url .btn{font-size:11px;min-height:30px;padding:1px 6px;box-shadow:0 3px 0 var(--tinta);white-space:nowrap}
   .app-panel .savemsg{min-height:0}
-  .app-cols{gap:6px;margin:4px 0}
-  .app-cols section{padding:4px 8px}
+  .app-cols{gap:6px;margin:2px 0}
+  .app-cols section{padding:3px 8px}
   .app-cols h3{font-size:14px;margin-bottom:2px}
   .app-cols ol{gap:1px}
   .app-cols li{font-size:11px;line-height:1.25}
@@ -409,3 +416,24 @@ table.rank tr.me td{background:#fbe7a8}
 .dev-panel .dev-pessoa{display:flex;align-items:center;gap:calc(var(--u)*6);margin-top:calc(var(--u)*4)}
 .dev-panel .dev-nome{font-weight:700;min-width:calc(var(--u)*150)}
 .dev-panel .dev-pessoa .btn{min-width:max(36px,calc(var(--u)*38));padding:0}
+/* v11.10: painéis que ainda passavam da tela no celular deitado (Ranking, Turno sem fim): o que sobra rola por dentro ou fica mais junto */
+@media (max-height:460px){
+  #ov-rank .panel{padding:calc(var(--u)*6) calc(var(--u)*14)}
+  #ov-rank h2{font-size:max(17px,calc(var(--u)*26));margin-bottom:0}
+  #ov-rank p{margin:1px 0}
+  #ov-rank .saveform{margin:2px 0 0;gap:6px}
+  #ov-rank .saveform input{min-height:30px;padding:1px 8px}
+  #ov-rank .saveform .btn{min-height:30px;padding:1px 12px;font-size:14px;box-shadow:0 3px 0 var(--tinta)}
+  #ov-rank .savemsg{min-height:0;margin:0}
+  #ov-rank .rankbar{margin:3px 0;gap:4px 10px}
+  #ov-rank .seg button{min-height:30px}
+  #ov-rank .rank-wrap{margin:3px auto;max-height:max(64px,calc(100vh - 250px))}
+  #ov-rank .row{margin-top:2px}
+  #ov-rank .row .btn{min-height:30px;font-size:14px;box-shadow:0 3px 0 var(--tinta)}
+  #ov-endless .panel,#ov-falencia .panel{padding:calc(var(--u)*8) calc(var(--u)*16)}
+  #ov-endless h2,#ov-falencia h2{font-size:max(18px,calc(var(--u)*28));margin-bottom:0}
+  #ov-endless p,#ov-falencia p{margin:2px 0}
+  #endless-stats{grid-template-columns:auto auto auto auto;gap:2px 14px;margin:4px auto}
+  #ov-endless .row,#ov-falencia .row{margin-top:4px}
+  #ov-endless .row .btn,#ov-falencia .row .btn{min-height:32px;font-size:14px;padding:2px 14px;box-shadow:0 3px 0 var(--tinta)}
+}
