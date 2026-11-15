@@ -1998,3 +1998,13 @@ Capítulo 14: a noite que o jogador marca na lojinha, com casa cheia, o crítico
 - **8e (v11.5) — O retrato no balão.** O busto de quem fala dentro do balão, com 5 expressões (`e`). `docs/ARCO.md` §8. Partes: `src/26-conversa.js`, `src/20-desenho-base.js` e `src/21-cenario.js` (rostos), `src/16-jogo.js` (modo dev). **Modelo:** Sonnet, esforço alto (desenho no canvas, conferido por captura).
 - **8f (v11.6) — O Bráulio em cena.** O retrato dele, a conversa `braulio1` (duas versões) e o cap. 14 `depois` com ele na porta. `docs/ARCO.md` §9. Partes: `src/10-constantes.js`, `src/26-conversa.js`. **Modelo:** Sonnet, esforço médio.
 - **8g (v11.7) — A roupa da Bia por ponto.** Quatro trajes, do avental da mãe ao colete com a rosa. `docs/ARCO.md` §10. Partes: `src/20-desenho-base.js` (`drawBia`), `src/26-conversa.js` (retrato). **Modelo:** Sonnet, esforço alto (desenho, conferido por captura).
+
+## Etapa 8 — O arco das personagens (v11.1 a v11.8)
+> **Planejada com o usuário em 14/11** (entrevista; pedido em `docs/PROPOSTAS.md`). A Bia parte insegura e chega a dona que comanda a casa; o Tonhão passa o bastão; cada ajudante ganha dificuldade e conquista. **Todo o roteiro (falas, gatilhos, desenho) está em `docs/ARCO.md`**, uma seção por sessão: leia só a seção da vez (`tests/indice.sh ARCO`) e a §12.
+> **Como executar cada sessão:** crie a spec (`python3 ferramentas/spec.py nova vN "Título" 8x`), **copie para ela a seção do `docs/ARCO.md` sem decidir nada** (Regras = o roteiro; Critérios de aceite = a §12 aplicada à seção; aprovada no mesmo dia), e siga o ciclo do `docs/SDD.md`. Faltou texto, gatilho ou dado no save: pergunte ao usuário. Vem antes do Polimento (Etapa 7, agora v11.9), que já revisa estes textos.
+
+- **8h (v11.8) — As reações da Bia.** Três gestos curtos, que mudam com o ponto. `docs/ARCO.md` §11. Partes: `src/14-bia.js`, `src/20-desenho-base.js`, `src/16-jogo.js`. **Modelo:** Sonnet, esforço alto (animação nova, sem mexer no ritmo do jogo).
+
+**Modelo:** por sessão, acima; a próxima é a 8h, com o Sonnet, esforço alto.
+
+---
