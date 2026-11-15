@@ -19,7 +19,8 @@ Origem: retorno do Renan Martorelli (beta-tester) e conversa com o Arthur (15/10
 | 8f | O Bráulio em cena: na Avenida e na noite da estrela | v11.6 | feita em 15/11 (`docs/spec-v11.6.md`; `smoke82`; `falasB`/`qualB` no motor `ARCO`; o Bráulio parado na porta durante a conversa; o Fim em 10 de 10 carreiras) |
 | 8g | A roupa da Bia por ponto | v11.7 | feita em 15/11 (`docs/spec-v11.7.md`; `smoke83`; `roupaBia(g)` e `drawBia({ roupa })`; o retrato da Bia com enquadramento mais aberto; o Fim em 10 de 10 carreiras) |
 | 8h | As reações da Bia durante o dia | v11.8 | feita em 15/11 (`docs/spec-v11.8.md`; `smoke84`; `BIA_REACAO`, `Waitress.reage` e `drawBia({ reacao })`; três gestos por ponto; a Etapa 8 está completa) |
-| 7 | Polimento: celular, jogo online, ajuste geral (depois da Etapa 8) | v11.9 | a rever |
+| 7a | Acertos do polimento: o nome no Ranking, a Divulgação na hora certa e o trio com três músicos | v11.9 | spec aprovada em 15/11 (`docs/spec-v11.9.md`) |
+| 7b | As telas no celular: a lojinha com o topo fixo, os painéis pequenos e as Versões enxutas | v11.10 | spec aprovada em 15/11 (`docs/spec-v11.10.md`); depois da 7a |
 
 ---
 
@@ -82,15 +83,15 @@ Origem: retorno do Renan Martorelli (beta-tester) e conversa com o Arthur (15/10
 > - **Regra da 3f em todas as sessões:** cartão novo da lojinha só com nome, preço e "?"; toda novidade ganha ficha no `MANUAL` (sem números), revelada quando aparece na história.
 > Ordem: 4a-1 (o ponto e a refeição completa, v10) → 4a-2 (o VIP exigente e a reputação, v10.1) → 4a-3 (a cozinha: alta gastronomia, a Lia e a alta confeitaria, v10.2) → 4a-4 (o salão e o bar: Cami, Joca e Anselmo, v10.3) → 4a-5 (música, flores e rebalanceamento, v10.4). Cada uma é uma versão, com PR e merge. As "Checagens de fim de sessão" da etapa 3 valem para todas.
 
-## Etapa 7 — Polimento (v11.9)
-> **A rever com o usuário antes de começar** (revisão de 22/10).
+## Etapa 7 — Polimento (v11.9 e v11.10)
+> **Revista com o usuário em 15/11** (as respostas estão no `docs/PROPOSTAS.md`, "15/11 — usuário: decisões da Etapa 7"). Duas sessões, cada uma com a sua spec aprovada; a 7b vem depois da 7a, porque mede as telas que a 7a muda (o Ranking e o fim do Turno sem fim).
 
-- Celular: "Como jogar" sem rolar no celular deitado; lojinha sem rolar no 568×320 (pendências antigas do `RESUMO.md`). Testar som e toque num aparelho real.
-- **Jogo online (pedido do usuário em 23/10: "onlinização só para os ajustes finais"):** desde a v8.3.3 o jogo é offline (`Rank.online = false`, ranking só no aparelho). Aqui, religar o ranking compartilhado: `Rank.online = true` e as capacidades do artifact com a leitura de `ranking-campanha` (a coleção da campanha, criada na v8.3). Fazer só com o OK do usuário.
-- Revisão geral de equilíbrio com `carreira.js` e com o retorno dos jogadores (o "Copiar resumo" do Caixa). Revisar textos do "Como jogar" para os sistemas novos.
-- **Conferir com jogadores** o que ficou pendente no `RESUMO.md` (Ideias pendentes): a Bia e os selos da v7.3, o editor do salão, a fila justa e a porta, as estrelas, a escassez, o "livre" e "reservados" da lojinha e a tela larga.
+- **7a (v11.9) — Acertos do polimento.** O fim do dia deixa de pedir o nome: a pontuação entra sozinha no ranking do aparelho e o nome se escreve na tela do Ranking; o cartão da Divulgação só aparece quando abre; o trio de cordas passa a ter três músicos. Spec: `docs/spec-v11.9.md`. **Modelo:** Sonnet, esforço médio (três acertos localizados, com regras e textos fechados).
+- **7b (v11.10) — As telas no celular.** A lojinha com o topo e os botões parados (só os cartões rolam), os painéis que passam da tela no menor celular deitado e o painel Versões só com as versões cheias e as da série atual. Spec: `docs/spec-v11.10.md`. **Modelo:** Sonnet, esforço médio (CSS com a prova no Chromium, pelo `menu_fit.py`).
 
-**Modelo:** a revisão com o usuário é com o Opus; depois, ajustes de tela no celular com o Sonnet, esforço médio; religar o ranking (`Rank.online = true` e capacidades) com o Haiku, esforço baixo; a revisão geral de equilíbrio com o Sonnet, esforço alto.
+**Fora da etapa (decisões de 15/11):** o ranking compartilhado continua desligado; a revisão geral de equilíbrio espera o retorno dos jogadores (os bots puseram os quatro pontos dentro ou perto da faixa); as conferências com jogadores e o teste de som e toque num celular de verdade continuam nas Ideias pendentes do `docs/RESUMO.md`. Os dois primeiros estão nas Ideias guardadas, abaixo.
+
+**Modelo:** por sessão, acima; a próxima é a 7a, com o Sonnet, esforço médio.
 
 ---
 
@@ -98,3 +99,5 @@ Origem: retorno do Renan Martorelli (beta-tester) e conversa com o Arthur (15/10
 - **Estufa para as marmitas** (retorno de 01/11): guarda as marmitas adiantadas por mais tempo (hoje esfriam em `MARMITA.validade`, 60 s) e, com ela, o "+ marmita" volta (`MARMITA.adiantar`, desligado na 3c). Pode vir junto da prateleira de 4 (ideia da v8.6). Decidir preço, ponto em que aparece e quanto dura a marmita.
 - **Conta rachada** (pensada com o usuário em 30/10; ficou fora da 3b em 31/10, continua guardada): um jeito de pagar que pode cair em qualquer grupo de colegas (turma, executivas): cada um paga a sua parte, e a Bia leva 2 ou 3 maquininhas em vez de uma conta só. Mais trabalho, mas cada pessoa deixa um pouco de gorjeta. Decidir: a chance, quantas maquininhas, o tempo de cada uma e a gorjeta por pessoa.
 - Cardápio com preço escolhido pelo jogador (o Arthur achou estranho só mexer em preço; talvez nunca).
+- **Ranking compartilhado** (saiu da Etapa 7 em 15/11: "fica offline"): o código continua no jogo, desligado (`Rank.online = false`, `src/30-ranking.js`), e as chamadas ainda batem com o `db` do artifact (conferido em 15/11). Religar pede `Rank.online = true`, declarar nas capacidades a leitura da coleção `ranking-campanha` e decidir a ordem (lucro acumulado, ou estrelas do Michelzão com o lucro no desempate, a ideia adiada na v10.10).
+- **Revisão geral de equilíbrio com o retorno dos jogadores** (saiu da Etapa 7 em 15/11): medido na v11.8 com os bots, a Garagem passa 54% das metas sem equipe e 96% com; a área industrial 92%, a Avenida 82% e o Terraço 88% (20 rodadas por dia); a história fecha no dia 63 em 6 de 6 carreiras, sem banco tomar a casa, sempre com 2 estrelas e nunca com 3. Só mexer quando houver retorno de jogador (o "Copiar resumo" do Caixa) ou depois das conferências pendentes do `docs/RESUMO.md`.
