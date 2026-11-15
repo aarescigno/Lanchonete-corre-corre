@@ -34,7 +34,7 @@ function upgradeIcon(id){
       c.strokeStyle = PAL.tinta; c.lineWidth = 1; for (let x=-8;x<=12;x+=5){ c.beginPath(); c.moveTo(x,6); c.lineTo(x-1,10); c.stroke(); }
       c.lineWidth = 1.4; c.beginPath(); c.moveTo(-3,-6); c.lineTo(0,-8); c.moveTo(0,-4); c.lineTo(3,-6); c.stroke();
     } else if (id === 'bia'){
-      c.scale(1/1.5,1/1.5); drawBia(c,{},0,27,{ s:0.62 });   // v8.9.1: a figura inteira, sem corte
+      c.scale(1/1.5,1/1.5); drawBia(c,{},0,27,{ s:0.62, roupa:roupaBia(game) });   // v8.9.1: a figura inteira, sem corte
     } else if (id === 'tonhao'){
       c.scale(1/1.5,1/1.5); abTonhao(c,0,27,0.42,{ t:0, mood:0, g:1 });
     } else if (id === 'dani'){

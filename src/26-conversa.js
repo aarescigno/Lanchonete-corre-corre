@@ -7,7 +7,7 @@ const CONV_UI = { texto:21, linha:27, nome:16, nota:15, w:420 };
    (o Bráulio, v11.6) entra aqui, em RETRATO_POSE (escala s e a altura dos pés abaixo do centro da cabeça, pe) e no `switch` de drawRetrato. */
 const RETRATO = { raio:34, fundo:'#F4EBDD', larg:84 };
 const RETRATO_QUEM = ['bia','tonhao','dani','joca','cami','anselmo','lia','braulio'];   // v11.6: o Bráulio, a 8ª coluna
-const RETRATO_POSE = { bia:{ s:2.3, pe:46, dy:3 }, tonhao:{ s:1.95, pe:14, dy:3 }, braulio:{ s:1.9, pe:42, dy:3 }, padrao:{ s:2.35, pe:42, dy:3 } };
+const RETRATO_POSE = { bia:{ s:1.75, pe:40, dy:3 }, tonhao:{ s:1.95, pe:14, dy:3 }, braulio:{ s:1.9, pe:42, dy:3 }, padrao:{ s:2.35, pe:42, dy:3 } };
 /* v11.6: o chef Bráulio (docs/ARCO.md §9): o mesmo boneco do cliente `braulio` de src/12-clientes.js (bigode grande, paletó bordô, gravata #F2C23D), de cabelo grisalho; desenhado por drawPerson */
 const BRAULIO_LOOK = { skin:0, hair:0, hairC:'#8C8C8C', pants:'#2B2B33', kid:false, elder:false, acc:null, glasses:false, bigode:true, blazer:true, gravata:'#F2C23D', paleto:AB_COR.aurora };
 function drawRetrato(c, q, e, cx, cy, g){
@@ -21,7 +21,7 @@ function drawRetrato(c, q, e, cx, cy, g){
   c.translate(cx, cy + dy); c.scale(P.s, P.s); c.translate(0, P.pe + P.dy / P.s);
   EXPR = e; CRACHA_A = 0;
   try {
-    if (q === 'bia') drawBia(c, null, 0, 0, {});
+    if (q === 'bia') drawBia(c, null, 0, 0, { roupa:roupaBia(g) });   // v11.7: a roupa do ponto
     else if (q === 'tonhao') drawChef(c, { day:{ gripe:false } }, 0, 0, 0);
     else if (q === 'dani') drawDani(c, d, 0);
     else if (q === 'joca') drawJoca(c, d, 0);

@@ -16,10 +16,9 @@ Origem: retorno do Renan Martorelli (beta-tester) e conversa com o Arthur (15/10
 | # | Etapa | Versão | Situação |
 |---|---|---|---|
 | 5 | ~~Modo História, parte 1~~: juntou-se à 2f e aos capítulos da 3a, 3b e 4a (28/10) | — | — |
-| 8d | As 10 conversas do arco da Avenida e do Terraço | v11.4 | feita em 14/11 (`docs/spec-v11.4.md`; `smoke80`; só entradas novas na `ARCO`; o Fim em 10 de 10 carreiras) |
 | 8e | O retrato no balão e as 5 expressões | v11.5 | feita em 14/11 (`docs/spec-v11.5.md`; `smoke81`; o retrato reaproveita `drawBia`, `drawPerson`, `drawChef`; o Bráulio entra na 8f) |
 | 8f | O Bráulio em cena: na Avenida e na noite da estrela | v11.6 | feita em 15/11 (`docs/spec-v11.6.md`; `smoke82`; `falasB`/`qualB` no motor `ARCO`; o Bráulio parado na porta durante a conversa; o Fim em 10 de 10 carreiras) |
-| 8g | A roupa da Bia por ponto | v11.7 | roteiro em `docs/ARCO.md` §10 |
+| 8g | A roupa da Bia por ponto | v11.7 | feita em 15/11 (`docs/spec-v11.7.md`; `smoke83`; `roupaBia(g)` e `drawBia({ roupa })`; o retrato da Bia com enquadramento mais aberto; o Fim em 10 de 10 carreiras) |
 | 8h | As reações da Bia durante o dia | v11.8 | roteiro em `docs/ARCO.md` §11 |
 | 7 | Polimento: celular, jogo online, ajuste geral (depois da Etapa 8) | v11.9 | a rever |
 
@@ -88,10 +87,9 @@ Origem: retorno do Renan Martorelli (beta-tester) e conversa com o Arthur (15/10
 > **Planejada com o usuário em 14/11** (entrevista; pedido em `docs/PROPOSTAS.md`). A Bia parte insegura e chega a dona que comanda a casa; o Tonhão passa o bastão; cada ajudante ganha dificuldade e conquista. **Todo o roteiro (falas, gatilhos, desenho) está em `docs/ARCO.md`**, uma seção por sessão: leia só a seção da vez (`tests/indice.sh ARCO`) e a §12.
 > **Como executar cada sessão:** crie a spec (`python3 ferramentas/spec.py nova vN "Título" 8x`), **copie para ela a seção do `docs/ARCO.md` sem decidir nada** (Regras = o roteiro; Critérios de aceite = a §12 aplicada à seção; aprovada no mesmo dia), e siga o ciclo do `docs/SDD.md`. Faltou texto, gatilho ou dado no save: pergunte ao usuário. Vem antes do Polimento (Etapa 7, agora v11.9), que já revisa estes textos.
 
-- **8g (v11.7) — A roupa da Bia por ponto.** Quatro trajes, do avental da mãe ao colete com a rosa. `docs/ARCO.md` §10. Partes: `src/20-desenho-base.js` (`drawBia`), `src/26-conversa.js` (retrato). **Modelo:** Sonnet, esforço alto (desenho, conferido por captura).
 - **8h (v11.8) — As reações da Bia.** Três gestos curtos, que mudam com o ponto. `docs/ARCO.md` §11. Partes: `src/14-bia.js`, `src/20-desenho-base.js`, `src/16-jogo.js`. **Modelo:** Sonnet, esforço alto (animação nova, sem mexer no ritmo do jogo).
 
-**Modelo:** por sessão, acima; a próxima é a 8g, com o Sonnet, esforço alto.
+**Modelo:** por sessão, acima; a próxima é a 8h, com o Sonnet, esforço alto.
 
 ---
 
