@@ -14,7 +14,7 @@ Quem aperta "Recomeçar do zero" (menu, ou depois que o banco toma a lanchonete)
 
 ## Critérios de aceite
 - **CA1** depois de `resetProgress`, `save.treino` é falso e `aberturaVista()` é falso → `smoke15`
-- **CA2** `recomeca()` (sem dev) abre a abertura e o fim dela inicia a Missão zero → conferência no smoke
+- **CA2** `recomeca()` (sem dev) abre a abertura e o fim dela inicia a Missão zero → conferência no `smoke21` e no `smoke34`
 
 ## Partes
 `src/16-jogo.js` (`resetProgress`), `src/43-telas.js` (`playCareer`, `btn-reset`).

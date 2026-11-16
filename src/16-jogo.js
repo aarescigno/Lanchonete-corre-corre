@@ -1369,6 +1369,7 @@ class Game {
         if (!sv.convTeto && nota3 != null && nota3 >= avalMinimo(this.ponto)) sv.convTeto = 'pend';
       }
     }
+    if (!tomou && histLiga() && sv.histV === 1 && HIST_NOTA.on && !sv.convNota && (stars <= HIST_NOTA.estrelas || (avDia && avDia.n >= HIST_NOTA.n && Math.round(avDia.nota * 10) / 10 <= HIST_NOTA.ate))) sv.convNota = 'pend';   // v11.11.1: a 1ª nota baixa do dia: as estrelas do fim da fase (0 a 3) ou a nota do dia no Gúgou
     if (!tomou && histLiga() && sv.histV === 1 && d.n >= HIST_CARDAPIO.dia && !sv.convCard) sv.convCard = 'pend';   // v9.0.1: saves antigos que já passaram do dia 2 veem a conversa no próximo fim de dia
     if (!tomou && histLiga() && sv.histV === 1 && d.n >= HIST_ENTREGA.dia - 1 && !sv.convEnt) sv.convEnt = 'pend';   // v9.6.2: a conversa dos entregadores; v9.6.4: no fim do dia anterior ao 1º com motoboy (o >= cuida dos saves antigos)
     if (!tomou && histLiga() && sv.histV === 1 && this.stats.exigentes > 0 && !sv.convExig) sv.convExig = 'pend';   // v10.1: o 1º dia em que um exigente veio
@@ -2243,7 +2244,7 @@ class Game {
   devConversas(modo){
     if (!DEV.on) return false;
     const sv = this.save, d = sv.dia;
-    if (modo === 'vistas'){ ARCO.forEach(A => { sv.arco[A.id] = 1; }); sv.convPlanta = sv.convCard = sv.convDiv = sv.convEnt = sv.convExig = sv.convQuit = sv.convTeto = 1; sv.vontDoce = sv.vontCafe = Math.max(1, d - 1); sv.vontDoceV = sv.vontCafeV = 1; }
+    if (modo === 'vistas'){ ARCO.forEach(A => { sv.arco[A.id] = 1; }); sv.convPlanta = sv.convCard = sv.convDiv = sv.convEnt = sv.convExig = sv.convQuit = sv.convTeto = sv.convNota = 1; sv.vontDoce = sv.vontCafe = Math.max(1, d - 1); sv.vontDoceV = sv.vontCafeV = 1; }
     else {
       if (d > HIST_PLANTA.dia && sv.convPlanta !== 1) sv.convPlanta = 'pend';
       if (d >= HIST_CARDAPIO.dia && sv.convCard !== 1) sv.convCard = 'pend';
@@ -2252,6 +2253,7 @@ class Game {
       if (this.ponto.exigente && sv.convExig !== 1) sv.convExig = 'pend';
       if (sv.convQuit !== 1) sv.convQuit = 'pend';   // v10.5.2: as do cap. 3
       if (sv.convTeto !== 1) sv.convTeto = 'pend';
+      if (sv.convNota !== 1) sv.convNota = 'pend';   // v11.11.1
       if (vontadeDia(sv, this.ponto, 'doce', d - 1) > 0) sv.vontDoce = 'pend';   // v10.5.3
       if (vontadeDia(sv, this.ponto, 'cafe', d - 1) > 0) sv.vontCafe = 'pend';
     }

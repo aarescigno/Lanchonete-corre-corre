@@ -51,9 +51,9 @@ ok(g.state==='menu' && /fechou no dia 6/.test(els['menu-dia'].textContent) && /R
 // abrir de novo continua fechado
 { const H2=load({store:{lcc2_save:store[L.LS.save]}}); H2.g.setState('menu'); ok(H2.g.save.fechou===6 && /Recomeçar do zero/.test(H2.els['btn-play'].textContent),'reabrindo, continua fechada'); }
 els['btn-play'].fire('click');
-ok(!g.save.fechou && g.save.dia===1 && g.save.bank===0 && !g.save.emp.resto && g.state==='intro' && g.day.n===1,'Recomeçar do zero: carreira nova, dia 1');
+ok(!g.save.fechou && g.save.dia===1 && g.save.bank===0 && !g.save.emp.resto && !!L.aberturaAtual(),'Recomeçar do zero: carreira nova, dia 1 (v11.11: recomeça pela abertura)');
 // o botão da tela de fim também recomeça
-novo({dia:8,bank:300,fechou:7}); g.setState('falencia'); els['btn-falencia-zero'].fire('click'); ok(!g.save.fechou && g.save.dia===1 && g.state==='intro','"Recomeçar do zero" na tela do fim');
+novo({dia:8,bank:300,fechou:7}); g.setState('falencia'); els['btn-falencia-zero'].fire('click'); ok(!g.save.fechou && g.save.dia===1 && !!L.aberturaAtual(),'"Recomeçar do zero" na tela do fim (v11.11: pela abertura)');
 novo({dia:8,bank:300,fechou:7}); els['btn-falencia-rank'].fire('click'); ok(els['ov-rank'].classList.contains('show'),'Ranking na tela do fim');
 
 // ---------- quitar tira o atraso ----------

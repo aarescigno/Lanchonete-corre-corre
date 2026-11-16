@@ -12,6 +12,13 @@ Texto original: "Revise o vídeo inicial com objetivo de deixar ele bonito, faç
 
 ---
 
+## 15/11 — usuário: a conversa da primeira nota baixa
+Texto original: "Na primeira vez que a pessoa tirar uma nota 2 estrelas ou menos, aparecer uma conversa da bia com o Tonhão em que ela pergunta por que ela se esforçou tanto e não conseguiu agradar a todo mundo? E Tonhão responde, isso é a vida, Bia, importante é melhorar a cada dia! Ou algo assim."
+Retorno de 16/11: "Não só a nota do Gugou, mas a nota de estrelas no fim da fase também".
+Destino: entregue na v11.11.1 (`docs/spec-v11.11.1.md`): `HIST_NOTA`, `save.convNota`; dispara com 2 estrelas ou menos no fim da fase ou com nota do dia no Gúgou de 2,0 ou menos (3 ou mais avaliações).
+
+---
+
 ## 15/11 — usuário: decisões da Etapa 7 (polimento), no planejamento
 Texto original: "Start planning the next phase" e, sobre qual etapa, "8h is already committed, it's the 7th step that needs planning".
 A sessão mediu antes de perguntar (v11.8): a lojinha rola em Cardápio, Salão, Luxo e Dani em todo tamanho de tela (até em 1366×768, no Terraço) e em 8 seções em 568×320; o painel Versões tem 114 linhas (de 15 a 20 mil px de altura); em 568×320 passam da tela o Ranking, o Instalar no celular e o fim do Turno sem fim; o "Como jogar" já não existe (é o Manual, desde a v9.6.7); as chamadas do ranking compartilhado ainda batem com o `db` do artifact; com os bots, a Garagem passa 54% das metas sem equipe e 96% com, a área industrial 92%, a Avenida 82% e o Terraço 88%, e a história fecha no dia 63 em 6 de 6 carreiras, sempre com 2 estrelas e nunca com 3.

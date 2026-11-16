@@ -140,7 +140,7 @@ novo({dia:9,bank:1234,lucroTot:5000,estrelas:12,up:{tenis:true}}); g.setState('m
 els['btn-reset'].fire('click'); ok(g.save.dia===9 && /Confirmar/.test(els['btn-reset'].textContent),'1º toque: só pede confirmação');
 g.setState('menu'); ok(/Recomeçar do zero/.test(els['btn-reset'].textContent),'voltar ao menu desfaz o pedido');
 els['btn-reset'].fire('click'); els['btn-reset'].fire('click');
-ok(g.save.dia===1 && g.save.bank===0 && g.save.lucroTot===0 && g.save.estrelas===0 && !g.up.tenis && g.save.treino===true,'2º toque: carreira do zero (a Missão zero continua feita)');
+ok(g.save.dia===1 && g.save.bank===0 && g.save.lucroTot===0 && g.save.estrelas===0 && !g.up.tenis && g.save.treino===false,'2º toque: carreira do zero (v11.11: a Missão zero volta a ser por fazer)');
 ok(JSON.parse(store[L.LS.save]).dia===1,'gravado');
 
 // ---------- ranking: o lucro acumulado e o dia ----------
