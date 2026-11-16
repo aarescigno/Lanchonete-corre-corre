@@ -425,7 +425,7 @@ function ab2BracoDe(c,x,y,s,pts,roupa,pele,fn){
 
 /* ---------- o cenário "rua da Casa Aurora" (cena 3, de manhã; a 9 reusa à tarde) ---------- */
 const AB2_RUA = { calcada:482, porta:{ x:690, y:168, w:140, h:314 }, modos:{
-  manha:{ ceu:['#9FD3F0','#F5B58A'], longe:'#E7BBA8', perto:'#C9958F', jan:'rgba(255,236,190,.55)', sol:[306,424,'255,238,196'], clima:['245,181,138',0.07], lampiao:true, placa:false, sombra:0.26 },
+  manha:{ ceu:['#9FD3F0','#F5B58A'], longe:'#E7BBA8', perto:'#C9958F', jan:'rgba(255,236,190,.55)', sol:[330,372,'255,238,196'], clima:['245,181,138',0.07], lampiao:true, placa:false, sombra:0.26 },
   tarde:{ ceu:['#7A4E7E','#F0A45A'], longe:'#B0768C', perto:'#84557C', jan:'rgba(255,214,140,.7)', sol:[250,446,'255,206,150'], clima:['240,150,80',0.1], lampiao:false, placa:true, sombra:0.4 } } };
 // uma fileira de prédios em silhueta, com janelinhas
 function ab2Predios(c,cor,jan,base,sem){
@@ -598,7 +598,7 @@ function ab2RuaAurora(c,cam,modo,o){
     [[40,60,-0.5,80,26],[110,70,0.9,90,28],[180,96,0.5,96,28],[250,128,1.1,84,26],[300,150,0.3,90,26],[160,44,-0.9,80,24],[250,34,-0.2,96,26],[250,34,0.9,70,22],[-20,50,1.2,110,30],[90,60,-1.3,70,22],[320,160,1.5,70,22]].forEach((q,i) => ab2Folha(c,q[0],q[1],q[2] + b * (i % 2 ? 1 : -1),q[3],q[4],i % 2 ? '#22382A' : '#1B2E22'));
     // três pombos, que levantam voo
     const v = o.voo || 0;
-    [[468,572,1,-1],[536,584,1.15,1],[590,566,0.95,1]].forEach((q,i) => {
+    [[400,572,1,-1],[462,584,1.15,-1],[520,566,0.95,-1]].forEach((q,i) => {
       const k = clamp(v * 1.25 - i * 0.12,0,1), pica = v <= 0 && T > 0 ? Math.max(0,Math.sin(T * 2.2 + i * 2)) * 3 : 0;
       c.save(); if (q[3] < 0){ c.translate(q[0] * 2,0); c.scale(-1,1); }
       ab2Pombo(c,q[0] + k * (150 + i * 60),q[1] - k * k * 470 - k * 60 + pica,q[2] * 1.5,k,T,i);
@@ -952,7 +952,7 @@ const AB2_CENAS = {
     const abre = abSuave(abSeg(p,0.41,0.48)), sai = abSuave(abSeg(p,0.5,0.64)), abraco = abSuave(abSeg(p,0.7,0.8)), entra = abSuave(abSeg(p,0.86,0.99));
     const cx = P.x + P.w / 2;
     // a Rosa: vestido rosa, bolsa a tiracolo, a flor no cabelo
-    const rx = 392 + anda * (696 - 392) + abraco * 34 + entra * (cx - 730), ry = Y - entra * 30, andando = (anda > 0 && anda < 1) || (abraco > 0 && abraco < 1) || (entra > 0 && entra < 1);
+    const rx = 424 + anda * (640 - 424) + abraco * 46 + entra * (cx - 28 - 686), ry = Y - entra * 30, andando = (anda > 0 && anda < 1) || (abraco > 0 && abraco < 1) || (entra > 0 && entra < 1);
     const rosa = cc => {
       const fundo = T > 0 ? Math.sin(abSeg(p,0.33,0.4) * Math.PI) * 0.035 : 0;   // respira fundo
       cc.save(); cc.translate(rx,ry); cc.scale(1 - entra * 0.14,(1 - entra * 0.14) * (1 + fundo)); cc.translate(-rx,-ry);
@@ -966,12 +966,12 @@ const AB2_CENAS = {
       cc.restore();
     };
     // a Bia criança, à esquerda, pula e acena
-    const bx = 300, pulo = T > 0 ? Math.abs(Math.sin(T * 6.5)) * (p < 0.34 ? 15 : 7) : 0;
+    const bx = 262, pulo = T > 0 ? Math.abs(Math.sin(T * 6.5)) * (p < 0.34 ? 15 : 7) : 0;
     // o Tonhão: aparece na porta de braços abertos, sai para a calçada, abraça e entra junto
-    const tk = 0.86 + 0.14 * sai - entra * 0.12, st = st0 * tk, tx = cx + sai * 30 - abraco * 16 - entra * 20, ty = Y - 36 + sai * 36 - entra * 30;
+    const tk = 0.86 + 0.14 * sai - entra * 0.12, st = st0 * tk, tx = cx - sai * 6 - abraco * 18 + entra * 30, ty = Y - 36 + sai * 36 - entra * 30;
     const ab = abSuave(abSeg(p,0.44,0.52)), bal = T > 0 ? Math.sin(T * 5) * 2 : 0;
     const tonhao = cc => {
-      abTonhao(cc,tx,ty,st,{ t:T, olha:-1, andando:(sai > 0 && sai < 1) || (entra > 0 && entra < 1), ph:T * 9, bracoE:[[-32 - ab * 6,-74 - ab * 10],[-42 - ab * 6,-86 - ab * 14 + bal]],
+      abTonhao(cc,tx,ty,st,{ t:T, olha:-1, andando:(sai > 0 && sai < 1) || (entra > 0 && entra < 1), ph:T * 9, bracoE:abraco > 0.4 ? [[-12,-62]] : [[-32 - ab * 6,-74 - ab * 10],[-42 - ab * 6,-86 - ab * 14 + bal]],
         bracoD:abraco > 0.3 ? [[30,-66],[24,-56]] : [[32 + ab * 6,-74 - ab * 10],[42 + ab * 6,-86 - ab * 14 - bal]] });
     };
     const fora = sai > 0.02 && entra < 0.5;
@@ -987,7 +987,7 @@ const AB2_CENAS = {
           cc.globalAlpha = abSeg(abraco,0.4,1) * (1 - abSeg(entra,0,0.4)); heart(cc,(rx + tx) / 2,ry - 300 - (T > 0 ? Math.sin(T * 3) * 6 : 0),15,'#E0559A'); cc.globalAlpha = 1;
         }
       } });
-    return { bia:[bx,Y - AB_ALT.biaCrianca * AB2.k - 10 - pulo * 0.5,30], tonhao:[tx,ty - 104 * st,210], rosa:[rx,ry - AB_ALT.rosa * AB2.k - 8] };
+    return { bia:[bx,Y - AB_ALT.biaCrianca * AB2.k - 10 - pulo * 0.5,10], tonhao:[tx + 13 * st,ty - 128 * st,196], rosa:[rx,ry - AB_ALT.rosa * AB2.k - 8] };
   },
   /* 4, o molho: o Tonhão polvilha o cominho, prova e acha que falta algo; a Rosa cobre a panela com o corpo, sobe o brilho rosado (a pétala não aparece), ele prova de novo e arregala os olhos */
   molho(c,p,T,cam){
@@ -1027,20 +1027,21 @@ const AB2_CENAS = {
       ab2Vivo(cc,rx,Y,T,0,() => abRosa(cc,rx,Y,sr,{ roupa:'#fff', avental:costas ? false : '#E9E4D8', t:T, costas, olha:lados || (segredo > 0.3 ? -1.2 : -0.8), andando:frente > 0.02 && frente < 0.98, ph:T * 10,
         bracoD:segredo > 0.05 ? [[14 - segredo * 2,-27 - segredo * 2],[15.5 - segredo * 13,-17 - segredo * 17.5]] : undefined }));
       if (costas){ cc.strokeStyle = 'rgba(34,32,28,.3)'; cc.lineWidth = 3; cc.beginPath(); cc.moveTo(rx,Y - 31 * sr); cc.lineTo(rx,Y - 13 * sr); cc.stroke(); rr(cc,rx - 9 * sr,Y - 21 * sr,18 * sr,2.2 * sr,3); fs(cc,'#E9E4D8',2); }   // o laço do avental, nas costas
-      if (segredo > 0.6){   // o dedo nos lábios e a piscadela
-        const fxp = rx + (2.6 - 1.2 * 2.5) * sr, fyp = Y - 34.6 * sr;
-        cc.strokeStyle = PAL.tinta; cc.lineWidth = 10; cc.lineCap = 'round'; cc.beginPath(); cc.moveTo(fxp,fyp - 2); cc.lineTo(fxp,fyp - 24); cc.stroke(); cc.strokeStyle = SKINS[3]; cc.lineWidth = 5.5; cc.stroke();
-        if (pisca){ const ex = rx + (4.2 - 1.2 * 2.5) * sr, ey = Y - 41.5 * sr; cc.fillStyle = SKINS[3]; circ(cc,ex,ey,2.6 * sr); cc.fill(); cc.strokeStyle = PAL.tinta; cc.lineWidth = 3.4; cc.beginPath(); cc.arc(ex,ey - 3,2.4 * sr,0.5,Math.PI - 0.5); cc.stroke(); }
+      if (segredo > 0.6){   // a mão e o dedo nos lábios, e a piscadela
+        const fx = rx + (0.6 - 3) * sr, my = Y - 33.4 * sr;
+        cc.strokeStyle = PAL.tinta; cc.lineWidth = 9; cc.lineCap = 'round'; cc.beginPath(); cc.moveTo(fx,my); cc.lineTo(fx,my - 5.6 * sr); cc.stroke(); cc.strokeStyle = SKINS[3]; cc.lineWidth = 5; cc.stroke();
+        circ(cc,fx + 1.2 * sr,my + 1.6 * sr,3.4 * sr); fs(cc,SKINS[3],4);
+        if (pisca){ const ex = rx + (4.2 - 3) * sr, ey = Y - 41.5 * sr; cc.fillStyle = SKINS[3]; circ(cc,ex,ey,2.3 * sr); cc.fill(); cc.fillStyle = PAL.tinta; cc.fillRect(ex - 2.2 * sr,ey - 0.3 * sr,4.4 * sr,1.7 * sr); }
       }
     } });
-    return { tonhao:[tx,Y - 118 * st,-36], rosa:[rx,Y - AB_ALT.rosa * AB2.k - 8] };
+    return { tonhao:[tx,Y - 108 * st,-36], rosa:[rx,Y - AB_ALT.rosa * AB2.k - 8] };
   },
   /* 5, a estrela: o Bráulio ergue a placa do Michelzão sob o holofote; a câmera desliza até a porta da cozinha, onde o Tonhão fecha o punho e a Rosa segura o braço dele */
   estrela(c,p,T,cam){
     const G = AB2_GALA, sbr = abEsc('braulio',AB2.k), bx = 470, by = G.palco, sr = abEsc('rosa',AB2.k * 0.94), st = abEsc('tonhao',AB2.k * 0.94);
     const up = abSuave(abSeg(p,0.04,0.2)), peito = up * (T > 0 ? 1 + Math.sin(T * 2.4) * 0.3 : 1);
     const passo = abSuave(abSeg(p,0.5,0.66)), punho = abSuave(abSeg(p,0.46,0.6)), segura = abSuave(abSeg(p,0.6,0.74)), baixa = segura > 0.7;
-    const tx = 1046 - passo * 22, ty = G.chao + 2, rx = 1118 - segura * 8, ry = G.chao + 2;
+    const tx = 1030 - passo * 22, ty = G.chao + 2, rx = 1100 - segura * 8, ry = G.chao + 2;
     const plc = abLerp([bx + 6,by - 62 * sbr],[bx + 118,by - 128 * sbr],up), rot = -0.05 + up * 0.17;
     ab2Gala(c,cam,{ T, foco:1,
       palco: cc => {
@@ -1152,7 +1153,7 @@ function drawAbertura2(c,ab){
   c.save();
   c.fillStyle = PAL.tinta; c.fillRect(0,0,TW,H);
   const q = ab2Quadro(c,ab,ab.i,ab.t), falas = ab.falas();
-  if (q.cab) falas.forEach(f => { const a = q.cab[f.q]; if (a){ const s = ab2Tela(q.cam,a[0],a[1]); abBalao(c,f.s,s[0],s[1],a[2]); } });
+  if (q.cab) falas.forEach(f => { const a = q.cab[f.q]; if (a){ const s = ab2Tela(q.cam,a[0],a[1]); if (s[0] > 0 && s[0] < TW) abBalao(c,f.s,s[0],s[1],a[2]); } });   // quem saiu do quadro (a câmera deslizou) fica sem balão
   else ab2ObraFalas(c,falas);
   ab2Legenda(c,ab);
   if (ab.trans) ab2Trans(c,ab,() => { AB_VIVO.fala = {}; ab2Quadro(c,ab,ab.i + 1,0); });

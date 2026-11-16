@@ -1,6 +1,6 @@
 # v11.13 — A abertura nova: as cenas da Casa Aurora (3, 4 e 5) (etapa 9b)
 
-**Situação:** aprovada (15/11)
+**Situação:** entregue em 16/11
 **Origem:** `docs/ABERTURA.md` §7 e §10 (roteiro e direção fechados na entrevista de 15/11; pedido em `docs/PROPOSTAS.md`); etapa 9b do `docs/PLANO.md`.
 
 ## Objetivo
@@ -11,9 +11,9 @@ As três cenas da Casa Aurora ganham desenho na abertura nova: a rua ao amanhece
 
 ## Regras (decisões tomadas)
 Valem, sem mudança de texto nem de número, `docs/ABERTURA.md` §3 (direção de arte), §7 (os cenários e as cenas desta versão, quadro a quadro) e §10. Os textos, os tempos, a câmera, o `sai`, o `clima` e os `fx` das cenas já estão na `ABERTURA2` desde a v11.12 e não mudam.
-- **Desenho:** em `src/27-abertura-nova.js`, os cenários `ab2RuaAurora(c,cam,modo)`, `ab2CozinhaAurora(c,cam)` e `ab2Gala(c,cam)` e as cenas `AB2_CENAS.aurora`, `.molho` e `.estrela`, que deixam de ser cartão de obra.
+- **Desenho:** em `src/27-abertura-nova.js`, os cenários `ab2RuaAurora(c,cam,modo,o)`, `ab2CozinhaAurora(c,cam,o)` e `ab2Gala(c,cam,o)` (o `o` leva o relógio `T`, as pessoas e o que a cena anima: a porta e os pombos, o brilho, o holofote) e as cenas `AB2_CENAS.aurora`, `.molho` e `.estrela`, que deixam de ser cartão de obra.
 - **Modo dev:** a entrada "Abertura nova (em obras)" já mostra as cinco primeiras cenas desenhadas; nada novo no painel.
-- **Versão:** `VERSAO` e `vtag` `v11.13`; a linha da v11.12 no `#ov-ver` passa a dizer: "A abertura está sendo refeita: quadro cheio, câmera e música. Cinco cenas prontas, por enquanto só no modo dev."
+- **Versão:** `VERSAO` e `vtag` `v11.13`; a linha da abertura no `#ov-ver` (a da v11.12, que passa a levar o número v11.13 e o "versão atual") passa a dizer: "A abertura está sendo refeita: quadro cheio, câmera e música. Cinco cenas prontas, por enquanto só no modo dev."
 - **Manual:** nada muda.
 - **Save:** nada muda.
 
@@ -30,12 +30,12 @@ Valem, sem mudança de texto nem de número, `docs/ABERTURA.md` §3 (direção d
 - `src/43-telas.js` (`window.__lcc`, se faltar expor algo), `src/10-constantes.js` (`VERSAO`) e `src/02-telas.html` (`vtag`, `#ov-ver`).
 
 ## Tarefas
-- [ ] T1 Smoke novo `tests/smoke89.js` (CA1 e CA2), visto falhar, incluído no `tests/run_all.sh`.
-- [ ] T2 `ab2RuaAurora` (os dois modos) e a cena 3, `aurora`; captura, recorte e acerto.
-- [ ] T3 `ab2CozinhaAurora` e a cena 4, `molho`; captura, recorte e acerto.
-- [ ] T4 `ab2Gala` e a cena 5, `estrela`; captura, recorte e acerto.
-- [ ] T5 `tests/shot_v11_13.js` e a conferência do CA5.
-- [ ] Fechamento: `VERSAO`, `vtag`, `#ov-ver`, `docs/RESUMO.md`, `docs/TESTES.md`, `docs/PARTES.md`, esta spec como entregue, `tests/run_all.sh` verde, PR e merge.
+- [x] T1 Smoke novo `tests/smoke89.js` (CA1 e CA2), visto falhar, incluído no `tests/run_all.sh`.
+- [x] T2 `ab2RuaAurora` (os dois modos) e a cena 3, `aurora`; captura, recorte e acerto.
+- [x] T3 `ab2CozinhaAurora` e a cena 4, `molho`; captura, recorte e acerto.
+- [x] T4 `ab2Gala` e a cena 5, `estrela`; captura, recorte e acerto.
+- [x] T5 `tests/shot_v11_13.js` e a conferência do CA5.
+- [x] Fechamento: `VERSAO`, `vtag`, `#ov-ver`, `docs/RESUMO.md`, `docs/TESTES.md`, `docs/PARTES.md`, esta spec como entregue, `tests/run_all.sh` verde, PR e merge.
 
 ## Avisos para a execução
 - Leia de `src/27-abertura-nova.js` o kit e uma cena pronta (`porta`) como modelo; o motor não muda nesta versão.
@@ -45,12 +45,20 @@ Valem, sem mudança de texto nem de número, `docs/ABERTURA.md` §3 (direção d
 - Da 9a: o boneco tem a cabeça grande, então fogão, bancada e mesa ficam na altura das mãos (y perto de 448 para o adulto de 290 px), e não a 55% da altura; a luz em `screen` vai atrás das pessoas (por cima, lava os rostos); a cena é `(c, p, T, cam)` e devolve as cabeças no espaço da cena; as capturas ficam fora do Read: recorte com o PIL para outra pasta (ver `shot_v11_12.js` e `docs/TESTES.md`).
 
 ## Testes
-`smoke89` novo; `smoke88`, `smoke26` e `smoke76` sem mudança; `tests/run_all.sh` verde. Capturas de `shot_v11_13.js` conferidas e apagadas. (No fechamento: o número de checagens do `smoke89`.)
+`smoke89` novo, com 30 checagens (visto falhar no jogo da v11.12); `smoke26` e `smoke76` sem mudança; `smoke88` com duas checagens ajustadas (ver Desvios) e `smoke86` com a lista das Versões começando na v11.13; `tests/run_all.sh` verde. Capturas de `shot_v11_13.js` (39, em duas rodadas de acerto) conferidas em recorte e apagadas.
 
 ## Decisões em aberto
 Nenhuma.
 
 ## Desvios
-(No fechamento.)
+- **Medidas:** `smoke89` com 30 checagens; `tests/run_all.sh` verde.
+- **Modelo:** executada com o Fable 5.2, esforço alto, na mesma sessão da 9a, a pedido do usuário (16/11), e não com o Sonnet.
+- **`smoke88` mudou em duas checagens** (o CA3 pedia sem mudança): ele conferia que a `AB2_CENAS` só tinha `porta` e `carinho` e usava a cena 3 como exemplo de cartão de obra. Agora confere que as duas existem e usa a primeira cena ainda em obra. O roteiro (`ABERTURA2`), que é o que o CA3 guarda, segue conferido letra por letra.
+- **Linha do `#ov-ver`:** em vez de uma linha nova por versão, a linha da abertura muda de texto e leva o número da versão da vez (a v11.12 some da lista, a v11.13 entra no lugar).
+- **Balão de quem saiu do quadro:** quando a câmera desliza e a cabeça de quem fala sai da tela (o Bráulio, na cena 5), o balão some, em vez de ficar preso na borda. Com movimento reduzido, a cena 5 mostra a porta da cozinha e a fala do Bráulio fica só no texto do leitor de tela.
+- **As pessoas ganharam opções** em `src/25-abertura.js`, sem mudar o que já existia: `abRosa` aceita `costas` e `fecha`; `abTonhao`, `bracoE` e `bracoD` (os pontos de cada braço); `abBraulio`, `semPlaca` (a cena 5 usa a `abPlacaMichel`, erguida ao lado, e posa os braços por fora).
+- **Cena 3:** a Rosa para à esquerda da porta (e não na frente dela), para o Tonhão aparecer inteiro quando a porta abre; a fala dele começa com a porta ainda abrindo (a porta abre de 2,9 a 3,4 s e a fala é em 3,0 s).
+- **Cena 4:** as pessoas ficam na frente da bancada (como na cozinha de casa), para a Rosa poder cobrir a panela com o corpo; o pote de cominho fica o tempo todo na outra mão do Tonhão; a prateleira da frente é uma faixa escura com pilhas de pratos nos cantos.
+- **Cena 5:** a placa sobe para o lado da cabeça do Bráulio, e não acima dela, para caber no quadro com a câmera a 1,5.
 
 **Modelo:** Sonnet, esforço alto — três cenários novos no canvas, com o quadro a quadro fechado; a beleza se confere em captura.

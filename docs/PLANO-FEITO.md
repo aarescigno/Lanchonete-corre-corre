@@ -153,6 +153,7 @@ A cena final animada (oito cenas, no motor da abertura), os créditos, a placa n
 | 8c | As conversas do arco: o motor `ARCO` e as 7 da Garagem e da área industrial | v11.3 | feita em 14/11 (`docs/spec-v11.3.md`; `smoke79`; o `quando` lê `g.fimDia`, novo; o Fim em 10 de 10 carreiras) |
 | 8d | As 10 conversas do arco da Avenida e do Terraço | v11.4 | feita em 14/11 (`docs/spec-v11.4.md`; `smoke80`; só entradas novas na `ARCO`; o Fim em 10 de 10 carreiras) |
 | 8h | As reações da Bia durante o dia | v11.8 | feita em 15/11 (`docs/spec-v11.8.md`; `smoke84`; `BIA_REACAO`, `Waitress.reage` e `drawBia({ reacao })`; três gestos por ponto; a Etapa 8 está completa) |
+| 7a | Acertos do polimento: o nome no Ranking, a Divulgação na hora certa e o trio com três músicos | v11.9 | feita em 15/11 (`docs/spec-v11.9.md`; `smoke85`; `rankAuto`, `Rank.renomeiaLocal`, `shopSecoesVis` e `TRIO`) |
 
 ## Etapa 1a — Jogo justo: dá para não perder ninguém (v7.1)
 > **Feita em 15/10 (v7.1, `docs/spec-v7.1.md`).** Decisões: A + B; no Turno sem fim vale o ritmo da fila justa, sem o piso; ícone "aguardando mesa" sim. A medição mostrou que, com a equipe, a maior parte das perdas era a espera pelo prato, e não a fila. O que sobra é o limite de louça nos dias de 6 mesas: o bot afiado só chega ao alvo (0 perdidos em 94% dos dias) comprando o Jogo de pratos primeiro. A louça não mudou; se jogadores reclamarem da espera pelo prato, a etapa 1b pode rever `dishStock` ou a mecânica D. Metas sem mudança.
