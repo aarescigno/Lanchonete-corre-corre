@@ -161,7 +161,7 @@ const FX_ONDE={ panela:[[1,0.4],[2,0.3],[4,0.5],[8,3.4]], clique:[[2,6.0]], sino
     ok(!erro,'CA7: drawAbertura roda nas 11 cenas em p 0, 0,5 e 0,95'+(rm?', com movimento reduzido':'')+(erro?': '+erro.message+' '+String(erro.stack).split('\n')[1]:'')); });
   const H=load(), {L}=H, R=L.ABERTURA2, TW=L.TW;
   ok(L.AB2 && L.AB2.chao===520 && L.AB2.k===1.38,'CA7: AB2 = { chao:520, k:1.38 }');
-  ok(Object.keys(L.AB2_CENAS).sort().join()==='carinho,porta','CA7: AB2_CENAS tem porta e carinho; as outras nove são cartão de obra');
+  ok(typeof L.AB2_CENAS.porta==='function' && typeof L.AB2_CENAS.carinho==='function' && Object.keys(L.AB2_CENAS).every(k=>R.cenas.some(c=>c.id===k)),'CA7: AB2_CENAS tem porta e carinho (e só cenas do roteiro); as que faltam são cartão de obra');
   // quadro cheio: nada da faixa antiga da legenda
   { const ab=new L.Abertura('menu',false,R), ch=[]; H.ctx.fillRect=(x,y,w,h)=>ch.push([x,y,w,h]); ab.t=3; ab.tm=3; L.drawAbertura(H.ctx,ab);
     ok(!ch.some(r=>r[0]===0 && r[1]===500 && r[2]===TW && r[3]===100),'CA7: no roteiro novo, sem a faixa de legenda'); delete H.ctx.fillRect; }
@@ -170,8 +170,10 @@ const FX_ONDE={ panela:[[1,0.4],[2,0.3],[4,0.5],[8,3.4]], clique:[[2,6.0]], sino
     ab.t=0.3; ab.tm=0.3; L.drawAbertura(H.ctx,ab); const antes=tx.slice(); tx.length=0; ab.t=4; ab.tm=4; L.drawAbertura(H.ctx,ab);
     ok(!antes.includes(R.cenas[0].leg) && tx.includes(R.cenas[0].leg) && tx.includes('toque para seguir'),'CA7: a legenda entra depois de legDe; "toque para seguir" na cena 1');
     ok(!antes.some(s=>/Vem provar/.test(s)) && tx.some(s=>/Vem provar/.test(s)),'CA7: o balão da Rosa aparece no tempo da fala');
-    tx.length=0; ab.i=2; ab.t=4; L.drawAbertura(H.ctx,ab);
-    ok(tx.includes('3') && tx.includes('aurora') && tx.includes(R.cenas[2].leg) && tx.some(s=>/Vai, mãe!/.test(s)) && !tx.includes('toque para seguir'),'CA7: o cartão de obra mostra o número, o id, a legenda e as falas');
+    const io=R.cenas.findIndex(c=>!L.AB2_CENAS[c.id] && c.falas.length && c.leg);   // a 1ª cena ainda em obra (v11.13: a 6)
+    if(io>=0){ const co=R.cenas[io]; tx.length=0; ab.i=io; ab.t=co.t-1; L.drawAbertura(H.ctx,ab);
+      ok(tx.includes(String(io+1)) && tx.includes(co.id) && tx.includes(co.leg) && tx.some(s=>s.indexOf(co.falas[0].s.split(' ')[0])===0) && !tx.includes('toque para seguir'),'CA7: o cartão de obra mostra o número, o id, a legenda e as falas (cena '+(io+1)+')'); }
+    else ok(true,'CA7: não há mais cartão de obra');
     tx.length=0; ab.i=10; ab.t=7; L.drawAbertura(H.ctx,ab); ok(tx.includes('O sonho da Bia'),'CA7: o título na cena 11'); delete H.ctx.fillText; }
   // a cabeça da Rosa cai na tela, com 40 px de margem, no instante da fala
   ['porta','carinho'].forEach((id,i)=>{ const c=R.cenas[i], f=c.falas[0], p=f.de/c.t, cam=L.ab2Cam(c,p);

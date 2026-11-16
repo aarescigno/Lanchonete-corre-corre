@@ -449,7 +449,7 @@ table.rank tr.me td{background:#fbe7a8}
 
     <div class="ov show" id="ov-menu">
       <div class="panel menu-panel">
-        <span class="vtag" id="vtag" aria-label="Versão 11.12">v11.12</span>
+        <span class="vtag" id="vtag" aria-label="Versão 11.13">v11.13</span>
         <h1 class="title">Lanchonete <br>Corre-Corre</h1>
         <p class="tag">Ajude a Bia a atender a freguesia da esquina antes que o cafezinho esfrie!</p>
         <div class="lbl" id="menu-dia">História</div>
@@ -692,7 +692,7 @@ table.rank tr.me td{background:#fbe7a8}
       <div class="panel">
         <h2>Versões</h2>
         <ul class="verlist">
-          <li><b>v11.12</b><span class="cur">versão atual</span><br>16/11/2026 &mdash; A abertura está sendo refeita: quadro cheio, câmera e música. Por enquanto, só no modo dev.</li>
+          <li><b>v11.13</b><span class="cur">versão atual</span><br>16/11/2026 &mdash; A abertura está sendo refeita: quadro cheio, câmera e música. Cinco cenas prontas, por enquanto só no modo dev.</li>
           <li><b>v11.11.1</b><br>15/11/2026 &mdash; Na primeira vez que o dia fecha com nota baixa no Gúgou, a Bia desabafa com o Tonhão, e ele a anima.</li>
           <li><b>v11.11</b><br>15/11/2026 &mdash; Quem recomeça do zero passa de novo pela abertura e pela Missão zero.</li>
           <li><b>v11.10</b><br>15/11/2026 &mdash; Na lojinha, o dinheiro, as abas e o botão de começar o dia ficam sempre à vista: só os cartões rolam. As telas pequenas cabem melhor no celular deitado, e esta lista ficou mais curta.</li>
@@ -2419,7 +2419,7 @@ const BIA_IDS = ['tenis', 'corrida', 'bandeja', 'sudoku'];
 function upgradeCartao(id){ return BIA_IDS.indexOf(id) >= 0 ? 'bia' : 'melhorias'; }
 const HIST_NOMES = { bia:'Bia', tonhao:'Tonhão', dani:'Dani', joca:'Joca', cami:'Cami', anselmo:'Anselmo', lia:'Lia', braulio:'Bráulio' };   // v11.6: o Bráulio
 const CAIXA_MAX = 14;                                 // livro-caixa (v7.2): quantos dias da carreira ficam guardados
-const VERSAO = 'v11.12';                               // vai no resumo do Caixa
+const VERSAO = 'v11.13';                               // vai no resumo do Caixa
 const DIVULGA_DIA = 4;                                // antes disso, o movimento é o da inauguração (sem custo); v9.0.2: dia 4, e o padrão é o boca a boca
 function divulgaAberta(n, sv){ return devLivre() || n >= DIVULGA_DIA && !(sv && sv.convDiv === 'pend'); }   // no modo dev, desde o dia 1; v9.0.3: no Modo História, só depois da conversa
 /* v9.6.4: a Efood (os entregadores) só abre depois da conversa dos entregadores, no Modo História; antes dela, nenhum tipo com `retira` vem na agenda */
@@ -11347,7 +11347,7 @@ function abRosa(c,x,y,s,o){
   o = o || {};
   c.save(); c.translate(x,y); c.scale(o.flip || 1,1);   // flip -1: espelhada (o braço direito fica do lado esquerdo)
   drawPerson(c,{ skin:3, hair:2, hairC:'#1B1512', pants:'#4A4036' },0,0,{ s, shirt:o.roupa || AB_COR.rosa, mood:o.mood || 0, handUp:!!o.aceno, t:o.t || 0, moving:!!o.andando, ph:o.ph || 0,
-    bracoE:o.bracoE, bracoD:o.bracoD, pisca:abPisca(o.t || 0,0.3), fala:abBoca('rosa'), olha:o.olha });   // v11.12: bracoE (a abertura nova posa os dois braços)
+    bracoE:o.bracoE, bracoD:o.bracoD, pisca:!!o.fecha || abPisca(o.t || 0,0.3), fala:abBoca('rosa'), olha:o.olha, back:!!o.costas });   // v11.12: bracoE (a abertura nova posa os dois braços); v11.13: fecha (olhos fechados) e costas
   c.scale(s,s);
   if (o.avental !== false){ c.beginPath(); c.moveTo(-8,-29); c.lineTo(8,-29); c.lineTo(11,-12); c.lineTo(-11,-12); c.closePath(); fs(c,o.avental || '#fff',2); }
   abFlor(c,9,-53,3.2);
@@ -11405,7 +11405,7 @@ function abTonhao(c,x,y,s,o){
   c.translate(0,bob);
   // braço de trás (esquerdo): mão na cintura no 'flex', solto nos outros
   if (o.braco === 'flex') abBraco(c,[[-19,-76],abLerp([-24,-60],[-32,-56],g),abLerp([-25,-44],[-19,-44],g)],roupa,pele);
-  else abBraco(c,[[-19,-76],[-25,-44]],roupa,pele);
+  else abBraco(c,[[-19,-76]].concat(o.bracoE || [[-25,-44]]),roupa,pele);   // v11.13: bracoE (os pontos do braço de trás, depois do ombro)
   // corpo
   c.beginPath(); c.moveTo(-23,-30); c.lineTo(-19,-82); c.lineTo(19,-82); c.lineTo(23,-30); c.closePath(); fs(c,roupa,2.6);
   c.fillStyle = PAL.tinta; [-70,-58,-46].forEach(b => { circ(c,-6,b,1.8); c.fill(); circ(c,6,b,1.8); c.fill(); });
@@ -11422,7 +11422,7 @@ function abTonhao(c,x,y,s,o){
     }
   }
   else if (o.braco === 'mexe') abBraco(c,[[19,-76],[36,-70],o.mao || [44,-58]],roupa,pele);
-  else abBraco(c,[[19,-76],[25,-44]],roupa,pele);
+  else abBraco(c,[[19,-76]].concat(o.bracoD || [[25,-44]]),roupa,pele);   // v11.13: bracoD (os pontos do braço da frente)
   // cabeça
   const hy = -98;
   circ(c,0,hy,16); fs(c,pele,2.6);
@@ -11479,6 +11479,7 @@ function abBraulio(c,x,y,s,o){
   if (fala){ ell(c,0,hy+10.5,3.2,1.2 + fala * 2.2); fs(c,'#7A2E2E',1.5); }
   else { c.lineWidth = 1.8; c.beginPath(); c.arc(0,hy+9,3.5,0.3,Math.PI-0.3); c.stroke(); }
   // os braços seguram a plaquinha na frente do peito, erguida (o: ergue de 0 a 1)
+  if (o.semPlaca){ c.restore(); return; }   // v11.13: a abertura nova posa os braços e a placa por fora
   const up = (o.ergue || 0) * 5;
   abBraco(c,[[-18,-78],[-22,-56 - up]],'#fff',pele);
   abBraco(c,[[18,-78],[22,-56 - up]],'#fff',pele);
@@ -12562,10 +12563,10 @@ function ab2CozinhaFundo(c,cam,modo,T){
   circ(c,rx,ry,3); c.fillStyle = PAL.tinta; c.fill();
 }
 // o piso de ladrilho em xadrez creme e terracota, em perspectiva, com o rodapé
-function ab2Piso(c){
+function ab2Piso(c,corA,corB,rodape){
   const y0 = AB2_COZ.rodape, vy = 215, w0 = 46, ys = [y0,484,502,526,558,600,660];
-  c.fillStyle = '#F1DFB8'; c.fillRect(-140,y0,TW + 280,H - y0 + 80);
-  c.fillStyle = '#D68C5E'; c.beginPath();
+  c.fillStyle = corA || '#F1DFB8'; c.fillRect(-140,y0,TW + 280,H - y0 + 80);
+  c.fillStyle = corB || '#D68C5E'; c.beginPath();
   for (let r = 0; r < ys.length - 1; r++){
     const ka = (ys[r] - vy) / (y0 - vy), kb = (ys[r + 1] - vy) / (y0 - vy);
     for (let i = -18; i < 18; i++) if ((i + r) & 1){
@@ -12575,7 +12576,7 @@ function ab2Piso(c){
   c.fill();
   const g = c.createLinearGradient(0,y0,0,H + 40); g.addColorStop(0,'rgba(110,64,30,.16)'); g.addColorStop(0.25,'rgba(110,64,30,0)'); g.addColorStop(1,'rgba(90,50,26,.22)');
   c.fillStyle = g; c.fillRect(-140,y0,TW + 280,H - y0 + 80);
-  c.fillStyle = '#FBF3DC'; c.fillRect(-140,y0 - 13,TW + 280,13);
+  c.fillStyle = rodape || '#FBF3DC'; c.fillRect(-140,y0 - 13,TW + 280,13);
   c.strokeStyle = PAL.tinta; c.lineWidth = 2.5; c.beginPath(); c.moveTo(-140,y0 - 13); c.lineTo(TW + 140,y0 - 13); c.moveTo(-140,y0); c.lineTo(TW + 140,y0); c.stroke();
 }
 // a porta aberta, com o corredor mais escuro atrás; `atras` desenha quem está no corredor (recortado pelo vão)
@@ -12796,6 +12797,437 @@ function ab2Cozinha(c,cam,modo,o){
   ab2Vinheta(c,0.5);
 }
 
+/* ---------- utilitários das cenas da Casa Aurora (v11.13) ---------- */
+// valor entre chaves [[p, v], ...] (v: número ou ponto), com abSuave entre uma e outra
+function ab2Chave(K,p){
+  if (p <= K[0][0]) return K[0][1];
+  for (let i = 1; i < K.length; i++) if (p <= K[i][0]){
+    const a = K[i - 1], b = K[i], k = abSuave((p - a[0]) / (b[0] - a[0] || 1));
+    return Array.isArray(a[1]) ? a[1].map((v,j) => v + (b[1][j] - v) * k) : a[1] + (b[1] - a[1]) * k;
+  }
+  return K[K.length - 1][1];
+}
+// copa (ou arbusto): bolas com um contorno só por fora; B: [[x, y, r, cor], ...]
+function ab2Copa(c,B,lw){
+  c.strokeStyle = PAL.tinta; c.lineWidth = (lw || 3) * 2; B.forEach(q => { circ(c,q[0],q[1],q[2]); c.stroke(); });
+  B.forEach(q => { c.fillStyle = q[3]; circ(c,q[0],q[1],q[2]); c.fill(); });
+}
+// um braço a mais do Tonhão (ou do Bráulio), por cima do corpo, nas medidas dele
+function ab2BracoDe(c,x,y,s,pts,roupa,pele,fn){
+  c.save(); c.translate(x,y); c.scale(s,s); abBraco(c,pts,roupa || '#fff',pele || '#B9794B'); if (fn) fn(c); c.restore();
+}
+
+/* ---------- o cenário "rua da Casa Aurora" (cena 3, de manhã; a 9 reusa à tarde) ---------- */
+const AB2_RUA = { calcada:482, porta:{ x:690, y:168, w:140, h:314 }, modos:{
+  manha:{ ceu:['#9FD3F0','#F5B58A'], longe:'#E7BBA8', perto:'#C9958F', jan:'rgba(255,236,190,.55)', sol:[330,372,'255,238,196'], clima:['245,181,138',0.07], lampiao:true, placa:false, sombra:0.26 },
+  tarde:{ ceu:['#7A4E7E','#F0A45A'], longe:'#B0768C', perto:'#84557C', jan:'rgba(255,214,140,.7)', sol:[250,446,'255,206,150'], clima:['240,150,80',0.1], lampiao:false, placa:true, sombra:0.4 } } };
+// uma fileira de prédios em silhueta, com janelinhas
+function ab2Predios(c,cor,jan,base,sem){
+  let x = -120;
+  for (let i = 0; x < TW + 120; i++){
+    const w = 58 + ((i * 37 + sem * 13) % 52), h = 110 + ((i * 53 + sem * 29) % 150);
+    c.fillStyle = cor; c.fillRect(x,base - h,w,h + 260);
+    if ((i + sem) % 3 === 0) c.fillRect(x + w * 0.3,base - h - 16,w * 0.3,16);
+    if ((i + sem) % 4 === 1){ c.fillRect(x + w * 0.5 - 1.5,base - h - 30,3,30); }
+    c.fillStyle = jan;
+    for (let yy = base - h + 14; yy < base - 8; yy += 24) for (let xx = x + 9; xx < x + w - 12; xx += 17) if (((xx * 7 + yy * 3 + i) | 0) % 3) c.fillRect(xx,yy,8,11);
+    x += w + 5;
+  }
+}
+// a calçada de pedra em mosaico preto e branco (ondas)
+function ab2Mosaico(c,y0){
+  c.fillStyle = '#EFE8DA'; c.fillRect(-180,y0,TW + 360,H - y0 + 90);
+  c.strokeStyle = '#34323A'; c.lineCap = 'butt'; c.lineJoin = 'round';
+  [[y0 + 15,6,6,34],[y0 + 38,10,9,46],[y0 + 74,15,13,62],[y0 + 126,22,18,84]].forEach((q,k) => {
+    c.lineWidth = q[1]; c.beginPath();
+    for (let x = -180; x <= TW + 180; x += 10){ const y = q[0] + Math.sin(x / q[3] * Math.PI + k * 1.3) * q[2] * 0.5; if (x === -180) c.moveTo(x,y); else c.lineTo(x,y); }
+    c.stroke();
+  });
+  const g = c.createLinearGradient(0,y0,0,H + 40); g.addColorStop(0,'rgba(90,60,50,.2)'); g.addColorStop(0.3,'rgba(90,60,50,0)'); g.addColorStop(1,'rgba(70,40,40,.24)');
+  c.fillStyle = g; c.fillRect(-180,y0,TW + 360,H - y0 + 90);
+  c.strokeStyle = PAL.tinta; c.lineWidth = 3; c.beginPath(); c.moveTo(-180,y0); c.lineTo(TW + 180,y0); c.stroke();
+}
+// janela alta em arco, com luz quente e cortina
+function ab2JanelaAlta(c,x,y,w,h){
+  const arco = () => { c.beginPath(); c.moveTo(x,y + h); c.lineTo(x,y + w / 2); c.arc(x + w / 2,y + w / 2,w / 2,Math.PI,0); c.lineTo(x + w,y + h); c.closePath(); };
+  arco(); const g = c.createLinearGradient(0,y,0,y + h); g.addColorStop(0,'#FFF0C0'); g.addColorStop(1,'#F7C877'); c.fillStyle = g; c.fill();
+  c.save(); arco(); c.clip();
+  c.fillStyle = 'rgba(122,46,58,.82)';
+  c.beginPath(); c.moveTo(x,y); c.lineTo(x + w * 0.46,y); c.quadraticCurveTo(x + w * 0.3,y + h * 0.42,x,y + h * 0.62); c.closePath(); c.fill();
+  c.beginPath(); c.moveTo(x + w,y); c.lineTo(x + w * 0.54,y); c.quadraticCurveTo(x + w * 0.7,y + h * 0.42,x + w,y + h * 0.62); c.closePath(); c.fill();
+  c.fillStyle = 'rgba(255,255,255,.3)'; c.beginPath(); c.moveTo(x + w * 0.2,y + h); c.lineTo(x + w * 0.5,y + h * 0.5); c.lineTo(x + w * 0.62,y + h * 0.5); c.lineTo(x + w * 0.36,y + h); c.closePath(); c.fill();
+  c.restore();
+  c.strokeStyle = AB_COR.aurora; c.lineWidth = 4; c.beginPath(); c.moveTo(x + w / 2,y + 2); c.lineTo(x + w / 2,y + h); c.moveTo(x,y + h * 0.5); c.lineTo(x + w,y + h * 0.5); c.stroke();
+  arco(); c.lineWidth = 9; c.strokeStyle = PAL.tinta; c.stroke(); c.lineWidth = 5; c.strokeStyle = AB_COR.aurora; c.stroke();
+  rr(c,x - 10,y + h,w + 20,11,4); fs(c,'#E6DCCB',2.5);
+}
+// vaso de buxinho (duas bolas)
+function ab2Buxinho(c,x,y){
+  c.strokeStyle = PAL.tinta; c.lineWidth = 8; c.lineCap = 'round'; c.beginPath(); c.moveTo(x,y - 30); c.lineTo(x,y - 96); c.stroke(); c.strokeStyle = '#7A5636'; c.lineWidth = 4; c.stroke();
+  ab2Copa(c,[[x,y - 62,22,'#3F8454'],[x,y - 106,17,'#4C9460']],2.5);
+  c.fillStyle = 'rgba(190,230,150,.5)'; circ(c,x - 7,y - 70,6); c.fill(); circ(c,x - 5,y - 112,5); c.fill();
+  c.beginPath(); c.moveTo(x - 20,y - 34); c.lineTo(x + 20,y - 34); c.lineTo(x + 15,y); c.lineTo(x - 15,y); c.closePath(); fs(c,AB_COR.aurora,3);
+  rr(c,x - 23,y - 40,46,9,3); fs(c,'#93404C',2.5);
+}
+// a fachada: abre (0 a 1) abre a porta dupla; dentro(c) desenha quem está lá dentro (recortado pelo vão)
+function ab2FachadaAurora(c,M,T,abre,dentro){
+  const Y = AB2_RUA.calcada, x0 = 470, P = AB2_RUA.porta;
+  c.fillStyle = '#F4EFE6'; c.fillRect(x0,30,TW + 260 - x0,Y - 30);
+  c.strokeStyle = 'rgba(122,46,58,.11)'; c.lineWidth = 2; c.beginPath();
+  for (let y = 64; y < 400; y += 34){ c.moveTo(x0,y); c.lineTo(TW + 260,y); }
+  for (let y = 64, k = 0; y < 400; y += 34, k++) for (let x = x0 + (k % 2 ? 40 : 80); x < TW + 260; x += 80){ c.moveTo(x,y); c.lineTo(x,y + 34); }
+  c.stroke();
+  const gl = c.createLinearGradient(x0,0,x0 + 260,0); gl.addColorStop(0,'rgba(255,236,190,.5)'); gl.addColorStop(1,'rgba(255,236,190,0)'); c.fillStyle = gl; c.fillRect(x0,30,260,Y - 30);   // o sol bate de lado
+  c.fillStyle = AB_COR.aurora; c.fillRect(x0,404,TW + 260 - x0,Y - 404);
+  c.fillStyle = '#C97B4A'; c.fillRect(x0,398,TW + 260 - x0,7);
+  c.strokeStyle = 'rgba(0,0,0,.2)'; c.lineWidth = 2; c.beginPath(); for (let x = x0 + 36; x < TW + 260; x += 72){ c.rect(x,416,58,52); } c.stroke();
+  [x0,1040].forEach(x => { c.fillStyle = '#E6DCCB'; c.fillRect(x,30,28,Y - 30); c.strokeStyle = PAL.tinta; c.lineWidth = 2.5; c.strokeRect(x,30,28,Y - 30); c.fillStyle = '#C97B4A'; c.fillRect(x - 3,30,34,12); c.strokeRect(x - 3,30,34,12); });
+  rr(c,x0 - 12,14,TW + 300 - x0,20,4); fs(c,'#C97B4A',3);
+  c.fillStyle = 'rgba(255,255,255,.3)'; c.fillRect(x0 - 8,18,TW + 280 - x0,4);
+  ab2JanelaAlta(c,536,204,100,196); ab2JanelaAlta(c,884,204,100,196);
+  // o toldo listrado vinho e creme
+  const tx = 510, tw = 500, n = 12;
+  for (let i = 0; i < n; i++){
+    const a = tx + i * tw / n, b = a + tw / n;
+    c.beginPath(); c.moveTo(a + 14,104); c.lineTo(b + 14,104); c.lineTo(b,150); c.lineTo(a,150); c.closePath(); c.fillStyle = i % 2 ? PAL.creme : AB_COR.aurora; c.fill();
+    c.beginPath(); c.moveTo(a,150); c.lineTo(b,150); c.arc((a + b) / 2,150,tw / n / 2,0,Math.PI); c.closePath(); c.fillStyle = i % 2 ? '#EADFC2' : '#662632'; c.fill();
+    c.strokeStyle = PAL.tinta; c.lineWidth = 2.2; c.beginPath(); c.arc((a + b) / 2,150,tw / n / 2,0,Math.PI); c.stroke();
+  }
+  c.strokeStyle = PAL.tinta; c.lineWidth = 3; c.beginPath(); c.moveTo(tx + 14,104); c.lineTo(tx + tw + 14,104); c.lineTo(tx + tw,150); c.moveTo(tx + 14,104); c.lineTo(tx,150); c.lineTo(tx + tw,150); c.stroke();
+  // o letreiro dourado sobre vinho
+  c.fillStyle = 'rgba(60,30,30,.2)'; rr(c,604,48,320,54,12); c.fill();
+  rr(c,600,42,320,54,12); fs(c,AB_COR.aurora,3.5);
+  rr(c,607,49,306,40,8); c.strokeStyle = AB_COR.ouro; c.lineWidth = 2; c.stroke();
+  txt(c,'Casa Aurora',760,70,32,AB_COR.ouro,'center',FD);
+  star(c,628,69,7,AB_COR.ouro); star(c,892,69,7,AB_COR.ouro);
+  // a porta dupla, com vidro; lá dentro, aceso
+  c.fillStyle = PAL.tinta; c.fillRect(P.x - 12,P.y - 12,P.w + 24,P.h + 12);
+  c.fillStyle = AB_COR.aurora; c.fillRect(P.x - 9,P.y - 9,P.w + 18,P.h + 9);
+  c.save(); c.beginPath(); c.rect(P.x,P.y,P.w,P.h); c.clip();
+  const gd = c.createLinearGradient(0,P.y,0,P.y + P.h); gd.addColorStop(0,'#FFEFC0'); gd.addColorStop(1,'#F3B866'); c.fillStyle = gd; c.fillRect(P.x,P.y,P.w,P.h);
+  c.fillStyle = 'rgba(122,46,58,.3)'; c.fillRect(P.x,P.y,P.w,36); c.fillRect(P.x,P.y + P.h - 60,P.w,60);
+  c.fillStyle = 'rgba(255,255,255,.7)'; circ(c,P.x + P.w / 2,P.y + 62,13); c.fill(); ab2Luz(c,P.x + P.w / 2,P.y + 62,70,'255,250,220',0.8);
+  if (dentro) dentro(c);
+  c.restore();
+  const fw = P.w / 2 * (1 - abre * 0.8);
+  [[P.x,1],[P.x + P.w - fw,-1]].forEach(q => {
+    rr(c,q[0],P.y,fw,P.h,3); fs(c,'#8A3A46',3);
+    if (fw > 26){
+      const m = 9 * fw / 70; rr(c,q[0] + m,P.y + 14,fw - 2 * m,P.h * 0.55,3); fs(c,abre > 0.5 ? '#F3D9A0' : '#F7DFA4',2.2);
+      c.fillStyle = 'rgba(255,255,255,.4)'; c.fillRect(q[0] + m + 3,P.y + 20,3,P.h * 0.5);
+      rr(c,q[0] + m,P.y + P.h * 0.64,fw - 2 * m,P.h * 0.3,3); c.strokeStyle = 'rgba(0,0,0,.35)'; c.lineWidth = 2; c.stroke();
+    }
+    c.fillStyle = AB_COR.ouro; rr(c,q[1] > 0 ? q[0] + fw - 9 * fw / 70 - 3 : q[0] + 9 * fw / 70 - 3,P.y + P.h * 0.5,6,30,3); c.fill(); c.strokeStyle = PAL.tinta; c.lineWidth = 1.6; c.stroke();
+  });
+  rr(c,P.x - 20,Y - 9,P.w + 40,11,3); fs(c,'#D9D0BE',3);
+  ab2Buxinho(c,655,Y); ab2Buxinho(c,865,Y);
+  if (M.placa){ circ(c,865,300,25); fs(c,'#5A3A22',3); circ(c,865,300,19); fs(c,'#7A5232',1.8); star(c,865,300,13,AB_COR.ouro); }   // à tarde, a estrela ao lado da porta
+  // o cardápio na parede
+  rr(c,1118,236,64,92,4); fs(c,'#5A3A22',3); rr(c,1125,243,50,78,2); fs(c,'#FBF6E6',1.8);
+  c.fillStyle = 'rgba(34,32,28,.45)'; [256,268,280,292,304].forEach((y,i) => c.fillRect(1131,y,38 - (i % 2) * 10,3)); star(c,1150,250,4,AB_COR.ouro);
+  c.strokeStyle = PAL.tinta; c.lineWidth = 3; c.beginPath(); c.moveTo(x0,14); c.lineTo(x0,Y); c.stroke();
+}
+// o lampião de rua
+function ab2Lampiao(c,x,y,aceso){
+  rr(c,x - 13,y - 16,26,16,3); fs(c,'#2E3A36',3);
+  c.strokeStyle = PAL.tinta; c.lineWidth = 11; c.lineCap = 'butt'; c.beginPath(); c.moveTo(x,y - 14); c.lineTo(x,y - 300); c.stroke(); c.strokeStyle = '#2E3A36'; c.lineWidth = 6; c.stroke();
+  rr(c,x - 9,y - 150,18,8,3); fs(c,'#2E3A36',2.2);
+  c.beginPath(); c.moveTo(x - 15,y - 300); c.lineTo(x + 15,y - 300); c.lineTo(x + 21,y - 350); c.lineTo(x - 21,y - 350); c.closePath(); fs(c,aceso ? '#FFE9A8' : '#DCE6E4',3);
+  c.strokeStyle = PAL.tinta; c.lineWidth = 2; c.beginPath(); c.moveTo(x,y - 300); c.lineTo(x,y - 350); c.stroke();
+  c.beginPath(); c.moveTo(x - 26,y - 350); c.lineTo(x + 26,y - 350); c.lineTo(x,y - 376); c.closePath(); fs(c,'#2E3A36',3);
+  circ(c,x,y - 380,4); fs(c,'#2E3A36',2);
+}
+// um pombo (voa: 0 no chão, até 1 voando)
+function ab2Pombo(c,x,y,s,voa,T,i){
+  c.save(); c.translate(x,y); c.scale(s,s);
+  const b = voa > 0 ? (T > 0 ? Math.sin(T * 24 + i * 2) : 0.7) : 0;
+  if (voa <= 0){ c.strokeStyle = '#C96A4A'; c.lineWidth = 2; c.beginPath(); c.moveTo(-2,6); c.lineTo(-3,13); c.moveTo(4,6); c.lineTo(5,13); c.stroke(); }
+  c.beginPath(); c.moveTo(-11,-2); c.lineTo(-25,3); c.lineTo(-11,5); c.closePath(); fs(c,'#4A4F5A',1.8);
+  ell(c,0,0,14,8.5); fs(c,'#6A7180',2);
+  circ(c,12,-8,6); fs(c,'#6A7180',2);
+  c.fillStyle = '#7FB59A'; c.fillRect(8,-4,7,3);
+  c.fillStyle = PAL.tinta; circ(c,14,-9,1.3); c.fill();
+  c.beginPath(); c.moveTo(17,-8); c.lineTo(23,-6); c.lineTo(17,-5); c.closePath(); c.fillStyle = '#E8A23A'; c.fill();
+  if (voa > 0){ c.beginPath(); c.moveTo(-7,-3); c.lineTo(6,-3); c.lineTo(-4,-3 - 24 * b); c.closePath(); fs(c,'#8A92A2',1.8); }
+  else { ell(c,-2,0,9,5); fs(c,'#8A92A2',1.6); }
+  c.restore();
+}
+/* a rua da Casa Aurora. modo: 'manha' ou 'tarde'. o: { T, abre: a porta (0 a 1), dentro(c): quem está na porta, gente(c): as pessoas na calçada, voo: os pombos (0 a 1) } */
+function ab2RuaAurora(c,cam,modo,o){
+  o = o || {};
+  const T = o.T || 0, M = AB2_RUA.modos[modo] || AB2_RUA.modos.manha, Y = AB2_RUA.calcada, abre = o.abre || 0;
+  const g = c.createLinearGradient(0,0,0,H * 0.86); g.addColorStop(0,M.ceu[0]); g.addColorStop(1,M.ceu[1]); c.fillStyle = g; c.fillRect(0,0,TW,H);
+  ab2Camada(c,cam,0.5,() => {
+    ab2Luz(c,M.sol[0],M.sol[1],380,M.sol[2],0.95); circ(c,M.sol[0],M.sol[1],46); c.fillStyle = 'rgba(' + M.sol[2] + ',.95)'; c.fill();
+    c.fillStyle = 'rgba(255,255,255,.6)'; [[150,120,60,13],[205,104,40,12],[420,170,54,11],[1010,90,70,14],[1070,76,44,12]].forEach(q => { ell(c,q[0],q[1],q[2],q[3]); c.fill(); });
+  });
+  ab2Camada(c,cam,0.6,() => ab2Predios(c,M.longe,'rgba(255,255,255,.22)',470,1));
+  ab2Camada(c,cam,0.8,() => ab2Predios(c,M.perto,M.jan,500,4));
+  ab2Camada(c,cam,1,() => {
+    ab2Mosaico(c,Y);
+    // a outra calçada: a árvore e o banco
+    ab2Sombra(c,150,Y + 6,120,14,M.sombra + 0.1);
+    c.beginPath(); c.moveTo(112,Y + 2); c.quadraticCurveTo(124,360,116,250); c.lineTo(150,250); c.quadraticCurveTo(146,360,164,Y + 2); c.closePath(); fs(c,'#7A5636',3.5);
+    c.strokeStyle = 'rgba(0,0,0,.2)'; c.lineWidth = 2.5; c.beginPath(); c.moveTo(130,440); c.lineTo(132,330); c.moveTo(144,400); c.lineTo(142,300); c.stroke();
+    ab2Copa(c,[[60,190,70,'#3F8454'],[150,130,86,'#4C9460'],[250,190,72,'#3F8454'],[110,240,60,'#3F8454'],[200,244,58,'#4C9460'],[130,180,70,'#5FA86B'],[210,150,52,'#5FA86B']],3.5);
+    c.fillStyle = 'rgba(200,236,160,.5)'; [[100,110,16],[180,90,14],[236,150,12],[70,170,12],[150,200,10]].forEach(q => { circ(c,q[0],q[1],q[2]); c.fill(); });
+    ab2Sombra(c,335,Y + 8,110,10,M.sombra);
+    c.strokeStyle = PAL.tinta; c.lineWidth = 10; c.lineCap = 'round'; c.beginPath(); c.moveTo(270,Y + 4); c.lineTo(274,440); c.moveTo(400,Y + 4); c.lineTo(396,440); c.stroke(); c.strokeStyle = '#2E3A36'; c.lineWidth = 5; c.stroke();
+    rr(c,252,432,166,13,4); fs(c,PAL.madeira,3); rr(c,258,392,154,11,4); fs(c,PAL.madeira,3); rr(c,258,410,154,11,4); fs(c,PAL.madeiraEsc,3);
+    c.strokeStyle = PAL.tinta; c.lineWidth = 7; c.beginPath(); c.moveTo(266,432); c.lineTo(264,388); c.moveTo(404,432); c.lineTo(406,388); c.stroke(); c.strokeStyle = '#2E3A36'; c.lineWidth = 3.5; c.stroke();
+    ab2FachadaAurora(c,M,T,abre,o.dentro);
+    if (abre > 0){ c.fillStyle = 'rgba(255,226,150,' + (0.5 * abre).toFixed(3) + ')'; c.beginPath(); c.moveTo(696,Y + 2); c.lineTo(824,Y + 2); c.lineTo(910,H + 20); c.lineTo(620,H + 20); c.closePath(); c.fill(); }   // a luz quente sai para a calçada
+    ab2Sombra(c,1108,Y + 6,60,8,M.sombra); ab2Lampiao(c,1096,Y + 2,M.lampiao);
+    if (o.gente) o.gente(c);
+    c.save(); c.globalCompositeOperation = 'screen';
+    if (M.lampiao) ab2Luz(c,1096,Y - 322,110,'255,226,150',0.6);
+    ab2Luz(c,586,300,130,'255,214,140',0.22); ab2Luz(c,934,300,130,'255,214,140',0.22);
+    if (abre > 0) ab2Luz(c,760,340,230,'255,226,150',0.4 * abre);
+    c.restore();
+  });
+  ab2Camada(c,cam,1.2,() => {
+    // os galhos da árvore, na borda esquerda
+    c.strokeStyle = '#2A1D15'; c.lineWidth = 12; c.lineCap = 'round'; c.beginPath(); c.moveTo(-120,40); c.quadraticCurveTo(120,60,300,150); c.moveTo(60,58); c.quadraticCurveTo(160,20,250,34); c.stroke();
+    const b = T > 0 ? Math.sin(T * 1.1) * 0.05 : 0;
+    [[40,60,-0.5,80,26],[110,70,0.9,90,28],[180,96,0.5,96,28],[250,128,1.1,84,26],[300,150,0.3,90,26],[160,44,-0.9,80,24],[250,34,-0.2,96,26],[250,34,0.9,70,22],[-20,50,1.2,110,30],[90,60,-1.3,70,22],[320,160,1.5,70,22]].forEach((q,i) => ab2Folha(c,q[0],q[1],q[2] + b * (i % 2 ? 1 : -1),q[3],q[4],i % 2 ? '#22382A' : '#1B2E22'));
+    // três pombos, que levantam voo
+    const v = o.voo || 0;
+    [[400,572,1,-1],[462,584,1.15,-1],[520,566,0.95,-1]].forEach((q,i) => {
+      const k = clamp(v * 1.25 - i * 0.12,0,1), pica = v <= 0 && T > 0 ? Math.max(0,Math.sin(T * 2.2 + i * 2)) * 3 : 0;
+      c.save(); if (q[3] < 0){ c.translate(q[0] * 2,0); c.scale(-1,1); }
+      ab2Pombo(c,q[0] + k * (150 + i * 60),q[1] - k * k * 470 - k * 60 + pica,q[2] * 1.5,k,T,i);
+      c.restore();
+    });
+  });
+  ab2Clima(c,M.clima[0],M.clima[1]);
+  ab2Vinheta(c,0.46);
+}
+
+/* ---------- o cenário "cozinha da Casa Aurora" (cena 4) ---------- */
+const AB2_AUR = { tampo:448, base:516, panela:[640,440] };
+// pote de tempero com rótulo (x, y: o meio da base; s: a escala)
+function ab2Pote(c,x,y,s,rotulo,cor){
+  c.save(); c.translate(x,y); c.scale(s,s);
+  rr(c,-8,-20,16,20,3); fs(c,'#EAF3F4',1.4);
+  c.fillStyle = cor; c.fillRect(-6.6,-13,13.2,11.6);
+  rr(c,-9,-24,18,5.5,2); fs(c,PAL.madeira,1.2);
+  rr(c,-7.4,-12.5,14.8,7,1); c.fillStyle = '#FFFDF7'; c.fill(); c.strokeStyle = 'rgba(34,32,28,.6)'; c.lineWidth = 0.6; c.stroke();
+  txt(c,rotulo,0,-8.8,3.5,PAL.tinta,'center',FB);
+  c.restore();
+}
+// o fundo: o azulejo branco de metrô, a coifa de cobre, as panelas, o passa-pratos, dois cozinheiros de costas e o Bráulio gritando
+function ab2CozinhaAuroraFundo(c,T){
+  c.fillStyle = '#F4F7F8'; c.fillRect(0,0,TW,H);
+  c.strokeStyle = 'rgba(110,135,160,.3)'; c.lineWidth = 1.8; c.beginPath();
+  for (let y = 0, k = 0; y < 480; y += 28, k++){ c.moveTo(0,y); c.lineTo(TW,y); for (let x = (k % 2) * 32; x < TW; x += 64){ c.moveTo(x,y); c.lineTo(x,y + 28); } }
+  c.stroke();
+  // a coifa grande de cobre
+  const gc = c.createLinearGradient(380,0,900,0); gc.addColorStop(0,'#B5683A'); gc.addColorStop(0.45,'#E6A873'); gc.addColorStop(1,'#B5683A');
+  c.beginPath(); c.moveTo(380,-10); c.lineTo(900,-10); c.lineTo(850,104); c.lineTo(430,104); c.closePath(); c.fillStyle = gc; c.fill(); c.strokeStyle = PAL.tinta; c.lineWidth = 3.5; c.stroke();
+  rr(c,420,100,440,20,4); fs(c,'#C97B4A',3);
+  c.fillStyle = 'rgba(60,30,10,.5)'; for (let x = 440; x < 850; x += 34){ circ(c,x,110,2.6); c.fill(); }
+  c.fillStyle = 'rgba(255,255,255,.3)'; c.beginPath(); c.moveTo(560,-10); c.lineTo(620,-10); c.lineTo(600,100); c.lineTo(552,100); c.closePath(); c.fill();
+  ab2Luz(c,640,150,200,'255,240,210',0.5);
+  // as panelas de cobre penduradas
+  c.lineCap = 'round'; c.strokeStyle = PAL.tinta; c.lineWidth = 8; c.beginPath(); c.moveTo(96,118); c.lineTo(356,118); c.stroke(); c.strokeStyle = '#6B6B72'; c.lineWidth = 4; c.stroke();
+  [[130,30],[196,24],[254,27],[316,19]].forEach(q => { rr(c,q[0] - 5,122,10,34,4); fs(c,'#3a3a3c',2.5); circ(c,q[0],154 + q[1],q[1]); fs(c,'#C97B4A',3.5); c.strokeStyle = 'rgba(255,255,255,.4)'; c.lineWidth = 3; c.beginPath(); c.arc(q[0],154 + q[1],q[1] * 0.6,Math.PI * 1.05,Math.PI * 1.6); c.stroke(); });
+  // o passa-pratos, com a campainha e as comandas no varal
+  rr(c,902,170,270,150,6); fs(c,'#5B2A33',3.5);
+  c.fillStyle = 'rgba(255,214,140,.5)'; [[950,214],[1010,206],[1076,216],[1130,208]].forEach(q => { circ(c,q[0],q[1],5); c.fill(); }); ab2Luz(c,1036,240,120,'255,214,140',0.3);
+  rr(c,890,316,294,16,4); fs(c,PAL.inox,3);
+  c.strokeStyle = PAL.tinta; c.lineWidth = 2; c.beginPath(); c.moveTo(900,150); c.lineTo(1174,150); c.stroke();
+  [926,968,1012,1060,1104,1146].forEach((x,i) => { c.save(); c.translate(x,150); c.rotate((i % 3 - 1) * 0.07); rr(c,-10,0,20,30,1.5); fs(c,'#FFFDF7',1.6); c.fillStyle = 'rgba(34,32,28,.4)'; c.fillRect(-6,7,12,2); c.fillRect(-6,13,9,2); c.fillRect(-6,19,11,2); c.restore(); });
+  c.beginPath(); c.arc(934,316,13,Math.PI,0); c.closePath(); fs(c,AB_COR.ouro,2.5); circ(c,934,301,3); fs(c,AB_COR.ouro,1.8);
+  [[1004,316],[1060,316]].forEach(q => { ell(c,q[0],q[1] - 4,24,6); fs(c,'#fff',2.2); });
+  // a linha de fogões do fundo
+  rr(c,-20,404,TW + 40,90,4); fs(c,'#C7CED6',3); c.fillStyle = '#3a3a3c'; c.fillRect(-20,398,TW + 40,10); c.strokeStyle = PAL.tinta; c.lineWidth = 2.5; c.strokeRect(-20,398,TW + 40,10);
+  // dois cozinheiros de costas, trabalhando
+  const sc = abEsc('tonhao',AB2.k * 0.7), m = T > 0 ? Math.sin(T * 5) * 2 : 0;
+  abCostas(c,206,486 + (T > 0 ? Math.abs(Math.sin(T * 5)) * 2 : 0),sc,{ calca:'#3A3F4A', roupa:'#fff', pele:SKINS[2], cor:'#2a2320' });
+  abCostas(c,346,486,sc,{ calca:'#3A3F4A', roupa:'#fff', pele:SKINS[4], cor:'#8C8C8C' });
+  rr(c,150 + m,372,54,12,4); fs(c,'#4A4A52',2.5); rr(c,372,360,44,34,5); fs(c,'#B9C2CC',2.5);
+  // o Bráulio, de dedo em riste, e a frigideira flambando
+  const sb = abEsc('braulio',AB2.k * 0.7), bx = 1010, by = 486, tre = T > 0 ? Math.sin(T * 17) * 1.5 : 0;
+  abBraulio(c,bx + tre,by,sb,{ semPlaca:true });
+  ab2BracoDe(c,bx + tre,by,sb,[[-18,-78],[-27,-62],[-19,-50]],'#fff','#F2C9A5');
+  ab2BracoDe(c,bx + tre,by,sb,[[18,-78],[34,-86],[40,-108 + (T > 0 ? Math.sin(T * 9) * 3 : 0)]],'#fff','#F2C9A5',cc => { cc.strokeStyle = PAL.tinta; cc.lineWidth = 6.4; cc.lineCap = 'round'; cc.beginPath(); cc.moveTo(40,-110); cc.lineTo(41,-122); cc.stroke(); cc.strokeStyle = '#F2C9A5'; cc.lineWidth = 3.4; cc.stroke(); });
+  c.strokeStyle = PAL.tinta; c.lineWidth = 3; c.beginPath(); c.moveTo(bx - 13,by - 106 * sb); c.lineTo(bx - 4,by - 103 * sb); c.moveTo(bx + 13,by - 106 * sb); c.lineTo(bx + 4,by - 103 * sb); c.stroke();   // as sobrancelhas de bravo
+  const qx = bx - 96, qy = by - 190 * sb + 40;   // o balãozinho de "!!!" (não é fala)
+  c.beginPath(); c.moveTo(qx + 34,qy + 30); c.lineTo(qx + 62,qy + 54); c.lineTo(qx + 50,qy + 26); c.closePath(); fs(c,'#fff',3);
+  rr(c,qx - 30,qy - 24,88,54,16); fs(c,'#fff',3); c.fillStyle = '#fff'; c.fillRect(qx + 34,qy + 22,16,7);
+  txt(c,'!!!',qx + 14,qy + 4,34,PAL.perigo,'center',FD);
+  const fx = 1128, fy = 392;
+  for (let i = 0; i < 5; i++){ const h = 46 + (T > 0 ? Math.sin(T * 11 + i * 1.7) * 12 : 6) - Math.abs(i - 2) * 9, x = fx - 32 + i * 16; c.beginPath(); c.moveTo(x - 11,fy); c.quadraticCurveTo(x - 4,fy - h * 0.5,x,fy - h); c.quadraticCurveTo(x + 5,fy - h * 0.5,x + 11,fy); c.closePath(); c.fillStyle = i % 2 ? '#F2A53A' : '#E86A2C'; c.fill(); }
+  for (let i = 0; i < 3; i++){ const h = 22 + (T > 0 ? Math.sin(T * 13 + i * 2.3) * 6 : 3), x = fx - 16 + i * 16; c.beginPath(); c.moveTo(x - 7,fy); c.quadraticCurveTo(x,fy - h * 1.6,x + 7,fy); c.closePath(); c.fillStyle = '#FFE08A'; c.fill(); }
+  rr(c,fx - 44,fy - 4,88,13,5); fs(c,'#4A4A52',3); rr(c,fx + 40,fy - 2,50,8,4); fs(c,'#3a3a3c',2.5);
+  ab2Luz(c,fx,fy - 30,110,'255,170,80',0.45);
+  c.fillStyle = 'rgba(232,242,250,.36)'; c.fillRect(0,0,TW,H);   // mais claro e mais frio, para ficar longe
+}
+// a bancada de inox comprida, com a tábua, os legumes, o pote de açafrão e a panela grande no centro; brilho: o molho reluz (0 a 1)
+function ab2BancadaAurora(c,T,brilho){
+  const A = AB2_AUR, y = A.tampo, yb = A.base, x = 150, w = 920;
+  ab2Sombra(c,x + w / 2,yb + 2,w * 0.55,13,0.4);
+  rr(c,x + 8,y + 10,w - 16,yb - y - 10,5); fs(c,'#C7CED6',4);
+  for (let i = 0; i < 5; i++){ const dx = x + 22 + i * ((w - 44) / 5), dw = (w - 44) / 5 - 10; rr(c,dx,y + 24,dw,yb - y - 34,4); c.strokeStyle = 'rgba(34,32,28,.4)'; c.lineWidth = 2.2; c.stroke(); c.fillStyle = 'rgba(255,255,255,.3)'; c.fillRect(dx + 6,y + 28,5,yb - y - 42); rr(c,dx + dw / 2 - 16,y + 30,32,5,2.5); fs(c,'#8E99A6',1.6); }
+  rr(c,x,y,w,14,5); fs(c,PAL.inox,3.5);
+  c.fillStyle = 'rgba(255,255,255,.6)'; c.fillRect(x + 8,y + 3,w - 16,3);
+  // a tábua e os legumes
+  rr(c,196,y - 9,150,9,3); fs(c,'#DDA869',2.5);
+  c.beginPath(); c.moveTo(214,y - 12); c.lineTo(262,y - 22); c.lineTo(264,y - 12); c.closePath(); fs(c,'#F08A3C',2.5); ab2Folha(c,214,y - 14,-2.7,16,5,'#4C9460');
+  circ(c,290,y - 22,13); fs(c,'#DC4A34',2.5); ab2Folha(c,290,y - 34,-2.4,8,3,'#3F8454'); ab2Folha(c,290,y - 34,-0.7,8,3,'#3F8454');
+  circ(c,322,y - 20,11); fs(c,'#E9D9A6',2.5); c.strokeStyle = 'rgba(120,90,40,.5)'; c.lineWidth = 1.5; c.beginPath(); c.arc(322,y - 20,6,0.5,2.6); c.stroke();
+  ab2Pote(c,398,y,2.3,'açafrão','#F2B43A');
+  // o prato fundo com as colheres e a pilha de pratos
+  [0,1,2,3].forEach(i => { ell(c,930,y - 5 - i * 6,42,7); fs(c,'#fff',2.2); });
+  c.beginPath(); c.moveTo(832,y - 22); c.quadraticCurveTo(856,y + 8,880,y - 22); c.closePath(); fs(c,'#F6E7C1',2.8);
+  // a boca acesa e a panela grande
+  const px = A.panela[0], py = A.panela[1];
+  c.fillStyle = PAL.tinta; c.fillRect(px - 62,y - 6,124,6); c.fillRect(px - 62,y - 10,7,5); c.fillRect(px + 55,y - 10,7,5);
+  for (let i = -5; i <= 5; i++){ const h = 8 + (T > 0 ? Math.sin(T * 13 + i * 1.9) * 2.5 : 1), fx = px + i * 10; c.beginPath(); c.moveTo(fx - 5,y - 6); c.quadraticCurveTo(fx,y - 6 - h * 1.9,fx + 5,y - 6); c.closePath(); c.fillStyle = '#4AA8F0'; c.fill(); }
+  const pw = 150, ph = 50;
+  rr(c,px - pw / 2 - 18,py - ph + 8,24,11,4); fs(c,'#6B6B72',2.5); rr(c,px + pw / 2 - 6,py - ph + 8,24,11,4); fs(c,'#6B6B72',2.5);
+  rr(c,px - pw / 2,py - ph,pw,ph,10); fs(c,'#B9C2CC',4);
+  c.fillStyle = 'rgba(255,255,255,.5)'; rr(c,px - pw / 2 + 10,py - ph + 8,10,ph - 18,5); c.fill();
+  c.fillStyle = 'rgba(60,70,90,.2)'; rr(c,px - pw / 2 + 4,py - 13,pw - 8,9,4); c.fill();
+  rr(c,px - pw / 2 - 5,py - ph - 8,pw + 10,12,6); fs(c,'#DDE3E9',3);
+  c.fillStyle = brilho > 0 ? abMistura(AB_COR.molho,'#E8557A',brilho * 0.7) : AB_COR.molho; ell(c,px,py - ph - 3,pw / 2 - 7,5); c.fill();
+  c.fillStyle = 'rgba(255,230,190,.55)'; ell(c,px - 22,py - ph - 4,13,1.8); c.fill();
+  c.lineCap = 'round';
+  for (let i = 0; i < 4; i++){   // o vapor (fica rosa com o brilho)
+    const k = T > 0 ? ((T * 0.45 + i * 0.27) % 1) : 0.35 + i * 0.12, vx = px - 48 + i * 32, vy = py - ph - 16 - k * 70;
+    c.globalAlpha = T > 0 ? Math.min(1,k * 4) * (1 - k) : 0.6;
+    c.beginPath(); c.moveTo(vx,vy); c.bezierCurveTo(vx - 15,vy - 22,vx + 15,vy - 36,vx,vy - 60);
+    c.strokeStyle = brilho > 0 ? 'rgba(200,80,120,' + (0.3 + brilho * 0.25).toFixed(2) + ')' : 'rgba(120,135,150,.45)'; c.lineWidth = 10; c.stroke();
+    c.strokeStyle = brilho > 0 ? abMistura('#FCFCFA','#FFC2D6',brilho) : 'rgba(252,252,250,.95)'; c.lineWidth = 5.5; c.stroke();
+  }
+  c.globalAlpha = 1;
+}
+/* a cozinha da Casa Aurora. o: { T, brilho: o brilho rosado da panela (0 a 1), gente(c) } */
+function ab2CozinhaAurora(c,cam,o){
+  o = o || {};
+  const T = o.T || 0, A = AB2_AUR, b = o.brilho || 0, px = A.panela[0], gy = A.panela[1] - 92;
+  ab2Camada(c,cam,0.8,() => ab2CozinhaAuroraFundo(c,T));
+  ab2Camada(c,cam,1,() => {
+    ab2Piso(c,'#E6EAEC','#A3B3BE','#C7CED6');
+    ab2BancadaAurora(c,T,b);
+    if (b > 0){   // o brilho rosado com halo dourado, por trás das pessoas, e as estrelinhas
+      c.save(); c.globalCompositeOperation = 'screen';
+      ab2Luz(c,px,gy,300,'242,194,61',0.5 * b); ab2Luz(c,px,gy,190,'232,69,122',0.85 * b);
+      c.restore();
+      for (let i = 0; i < 7; i++){ const a = i * TAU / 7 + (T > 0 ? T * 1.6 : 0.4), r = 96 + (i % 2) * 40; c.globalAlpha = b * (0.75 + 0.25 * Math.sin((T > 0 ? T * 5 : 1) + i)); star(c,px + Math.cos(a) * r,gy - 10 + Math.sin(a) * r * 0.42,6 + (i % 3) * 2,i % 2 ? AB_COR.ouro : '#FFD0DF'); }
+      c.globalAlpha = 1;
+    }
+    if (o.gente) o.gente(c);
+    c.save(); c.globalCompositeOperation = 'screen';
+    ab2Luz(c,px,A.tampo - 6,96,'255,150,70',0.45 + (T > 0 ? Math.sin(T * 9) * 0.05 : 0));
+    if (b > 0) ab2Luz(c,px,gy,150,'232,69,122',0.22 * b);
+    c.restore();
+  });
+  ab2Camada(c,cam,1.2,() => {
+    // a borda de uma prateleira com pratos empilhados, embaixo, e o vapor passando
+    c.fillStyle = 'rgba(46,36,34,.96)'; c.fillRect(-300,512,TW + 600,300);
+    c.fillStyle = 'rgba(92,78,74,.96)'; c.fillRect(-300,512,TW + 600,5);
+    [[318,5],[392,3],[916,4],[994,6],[150,4],[1100,3]].forEach(q => { for (let i = 0; i < q[1]; i++){ c.fillStyle = i % 2 ? 'rgba(70,58,56,.97)' : 'rgba(46,36,34,.97)'; rr(c,q[0] - 38,505 - i * 8,76,9,4); c.fill(); } });
+    for (let i = 0; i < 3; i++){
+      const k = T > 0 ? ((T * 0.07 + i * 0.37) % 1) : 0.3 + i * 0.25, vx = -100 + k * (TW + 200), vy = 430 - i * 90 + Math.sin(k * 9 + i) * 20;
+      c.fillStyle = 'rgba(255,255,255,' + (0.1 * Math.sin(k * Math.PI)).toFixed(3) + ')'; ell(c,vx,vy,150,30); c.fill(); ell(c,vx + 90,vy - 16,100,24); c.fill();
+    }
+  });
+  ab2Clima(c,'201,123,74',0.05);
+  ab2Vinheta(c,0.46);
+}
+
+/* ---------- o cenário "salão de gala" (cena 5) ---------- */
+const AB2_GALA = { palco:512, chao:526, porta:{ x:968, y:164, w:186, h:362 } };
+/* o salão de gala. o: { T, foco: o holofote (0 a 1), palco(c): quem está no palco, porta(c): quem está na porta da cozinha, na penumbra } */
+function ab2Gala(c,cam,o){
+  o = o || {};
+  const T = o.T || 0, G = AB2_GALA, P = G.porta, foco = o.foco == null ? 1 : o.foco;
+  ab2Camada(c,cam,0.8,() => {
+    // a cortina de veludo vinho, com dobras e franja dourada
+    const g = c.createLinearGradient(0,0,0,H); g.addColorStop(0,'#5A1F2B'); g.addColorStop(1,'#7A2E3A'); c.fillStyle = g; c.fillRect(0,0,TW,H);
+    for (let x = -20, i = 0; x < TW; x += 44, i++){
+      const gg = c.createLinearGradient(x,0,x + 44,0); gg.addColorStop(0,'rgba(0,0,0,.26)'); gg.addColorStop(0.45,'rgba(255,190,170,.1)'); gg.addColorStop(1,'rgba(0,0,0,.2)');
+      c.fillStyle = gg; c.fillRect(x,0,44,H);
+    }
+    for (let x = -30, i = 0; x < TW + 60; x += 122, i++){
+      c.beginPath(); c.moveTo(x,-10); c.lineTo(x + 122,-10); c.lineTo(x + 122,40); c.quadraticCurveTo(x + 61,118,x,40); c.closePath(); fs(c,'#8A3442',3);
+      c.strokeStyle = 'rgba(0,0,0,.22)'; c.lineWidth = 3; c.beginPath(); c.moveTo(x + 30,-10); c.quadraticCurveTo(x + 50,40,x + 61,76); c.moveTo(x + 92,-10); c.quadraticCurveTo(x + 72,40,x + 61,76); c.stroke();
+      c.strokeStyle = AB_COR.ouro; c.lineWidth = 5; c.beginPath(); c.moveTo(x + 122,40); c.quadraticCurveTo(x + 61,118,x,40); c.stroke();
+      c.lineWidth = 2; c.beginPath(); for (let k = 1; k < 12; k++){ const u = k / 12, fx = x + 122 - 122 * u, fy = 40 + 78 * 2 * u * (1 - u) * 1.0; c.moveTo(fx,fy + 2); c.lineTo(fx,fy + 13); } c.stroke();
+      circ(c,x,40,8); fs(c,AB_COR.ouro,2.5);
+    }
+    // um lustre
+    const lx = 760;
+    c.strokeStyle = PAL.tinta; c.lineWidth = 6; c.beginPath(); c.moveTo(lx,-10); c.lineTo(lx,96); c.stroke(); c.strokeStyle = AB_COR.ouro; c.lineWidth = 3; c.stroke();
+    c.strokeStyle = AB_COR.ouro; c.lineWidth = 5; c.lineCap = 'round'; c.beginPath(); [-78,-40,40,78].forEach(d => { c.moveTo(lx,100); c.quadraticCurveTo(lx + d * 0.6,140,lx + d,112); }); c.stroke();
+    ell(c,lx,102,22,10); fs(c,AB_COR.ouro,2.5);
+    [-78,-40,0,40,78].forEach((d,i) => { const y = d ? 112 : 128; rr(c,lx + d - 4,y - 20,8,20,2); fs(c,'#FFFDF7',2); c.fillStyle = '#FFE08A'; ell(c,lx + d,y - 27,4,7); c.fill(); ab2Luz(c,lx + d,y - 26,46,'255,226,150',0.55 + (T > 0 ? Math.sin(T * 7 + i) * 0.08 : 0)); });
+    c.fillStyle = 'rgba(255,255,255,.75)'; [-58,-20,20,58].forEach(d => { c.beginPath(); c.moveTo(lx + d,128); c.lineTo(lx + d - 4,138); c.lineTo(lx + d,150); c.lineTo(lx + d + 4,138); c.closePath(); c.fill(); });
+  });
+  ab2Camada(c,cam,1,() => {
+    // o chão (carpete com losangos) e o palco baixo de madeira
+    c.fillStyle = '#3B2420'; c.fillRect(-160,G.chao,TW + 320,H - G.chao + 90);
+    c.fillStyle = 'rgba(201,123,74,.16)'; c.beginPath(); for (let y = G.chao + 12, k = 0; y < H + 60; y += 26, k++) for (let x = -160 + (k % 2) * 30; x < TW + 160; x += 60){ c.moveTo(x,y - 9); c.lineTo(x + 15,y); c.lineTo(x,y + 9); c.lineTo(x - 15,y); c.closePath(); } c.fill();
+    ab2Sombra(c,470,G.chao + 30,400,16,0.5);
+    rr(c,96,G.palco,750,36,5); fs(c,'#8A5226',4);
+    c.fillStyle = PAL.madeira; c.fillRect(100,G.palco + 2,742,10); c.strokeStyle = 'rgba(0,0,0,.25)'; c.lineWidth = 2; c.beginPath(); for (let x = 150; x < 840; x += 74){ c.moveTo(x,G.palco + 12); c.lineTo(x,G.palco + 34); } c.moveTo(98,G.palco + 12); c.lineTo(844,G.palco + 12); c.stroke();
+    // o holofote, em cone
+    if (foco > 0){
+      c.save(); c.globalCompositeOperation = 'screen';
+      const g = c.createLinearGradient(0,0,0,G.palco); g.addColorStop(0,'rgba(255,240,190,' + (0.42 * foco).toFixed(3) + ')'); g.addColorStop(1,'rgba(255,240,190,' + (0.14 * foco).toFixed(3) + ')');
+      c.fillStyle = g; c.beginPath(); c.moveTo(430,-20); c.lineTo(510,-20); c.lineTo(660,G.palco + 6); c.lineTo(280,G.palco + 6); c.closePath(); c.fill();
+      c.fillStyle = 'rgba(255,240,190,' + (0.3 * foco).toFixed(3) + ')'; ell(c,470,G.palco + 6,190,13); c.fill();
+      c.restore();
+    }
+    if (o.palco) o.palco(c);
+    // o confete dourado caindo
+    for (let i = 0; i < 44; i++){
+      const k = T > 0 ? ((T * (0.1 + (i % 5) * 0.022) + i * 0.137) % 1) : (i * 0.137) % 1, x = 120 + ((i * 97) % 720) + Math.sin(k * 9 + i) * 16, y = -20 + k * (G.palco + 20);
+      c.save(); c.translate(x,y); c.rotate(k * 9 + i); c.fillStyle = i % 3 ? AB_COR.ouro : '#FFE9A8'; c.fillRect(-4,-2,8,4); c.restore();
+    }
+    // a parede da direita e a porta da cozinha, entreaberta, com a luz fria
+    c.fillStyle = '#4A2A2E'; c.fillRect(900,-10,TW + 260 - 900,G.chao + 10);
+    c.strokeStyle = 'rgba(201,123,74,.35)'; c.lineWidth = 3; [[1176,60,110,180],[1176,270,110,220],[912,60,36,430]].forEach(q => c.strokeRect(q[0],q[1],q[2],q[3]));
+    c.fillStyle = '#C97B4A'; c.fillRect(900,-10,7,G.chao + 10); c.strokeStyle = PAL.tinta; c.lineWidth = 3; c.beginPath(); c.moveTo(900,-10); c.lineTo(900,G.chao); c.stroke();
+    c.fillStyle = PAL.tinta; c.fillRect(P.x - 13,P.y - 13,P.w + 26,P.h + 13); c.fillStyle = '#6E4630'; c.fillRect(P.x - 10,P.y - 10,P.w + 20,P.h + 10);
+    c.save(); c.beginPath(); c.rect(P.x,P.y,P.w,P.h); c.clip();
+    const gp = c.createLinearGradient(0,P.y,0,P.y + P.h); gp.addColorStop(0,'#B9CCE6'); gp.addColorStop(1,'#56608E'); c.fillStyle = gp; c.fillRect(P.x,P.y,P.w,P.h);
+    c.strokeStyle = 'rgba(255,255,255,.3)'; c.lineWidth = 1.8; c.beginPath(); for (let y = P.y, k = 0; y < P.y + 260; y += 26, k++){ c.moveTo(P.x,y); c.lineTo(P.x + P.w,y); for (let x = P.x + (k % 2) * 28; x < P.x + P.w; x += 56){ c.moveTo(x,y); c.lineTo(x,y + 26); } } c.stroke();
+    c.fillStyle = 'rgba(42,49,90,.5)'; c.fillRect(P.x,P.y + 280,P.w,P.h - 280);
+    c.strokeStyle = 'rgba(30,42,74,.6)'; c.lineWidth = 5; c.beginPath(); c.moveTo(P.x + 10,P.y + 34); c.lineTo(P.x + P.w - 10,P.y + 34); c.stroke();
+    [[P.x + 44,20],[P.x + 92,15],[P.x + 136,18]].forEach(q => { c.fillStyle = 'rgba(30,42,74,.6)'; c.fillRect(q[0] - 3,P.y + 34,6,24); circ(c,q[0],P.y + 58 + q[1],q[1]); c.fill(); });
+    if (o.porta) o.porta(c);
+    c.fillStyle = 'rgba(30,42,74,.36)'; c.fillRect(P.x,P.y,P.w,P.h);   // a penumbra
+    c.restore();
+    c.beginPath(); c.moveTo(P.x + P.w,P.y); c.lineTo(P.x + P.w + 40,P.y + 14); c.lineTo(P.x + P.w + 40,G.chao + 26); c.lineTo(P.x + P.w,G.chao); c.closePath(); fs(c,'#7A5232',3);
+    circ(c,P.x + P.w + 9,P.y + 190,6); fs(c,AB_COR.ouro,2);
+    c.fillStyle = 'rgba(159,180,216,.3)'; c.beginPath(); c.moveTo(P.x,G.chao); c.lineTo(P.x + P.w,G.chao); c.lineTo(P.x + P.w + 30,H + 40); c.lineTo(P.x - 110,H + 40); c.closePath(); c.fill();   // a luz fria no chão
+  });
+  ab2Camada(c,cam,1.2,() => {
+    // a plateia em silhueta, de costas, com os braços aplaudindo e três câmeras com flash
+    const cor = '#190F14';
+    for (let i = 0; i < 13; i++){
+      const x = -110 + i * 122 + (i % 2) * 14, pula = T > 0 ? Math.abs(Math.sin(T * (4 + (i % 3)) + i)) * 5 : 0, y = 500 + (i % 3) * 12 - pula;
+      c.fillStyle = cor; rr(c,x - 54,y + 26,108,200,30); c.fill(); circ(c,x,y,(i % 2 ? 33 : 37)); c.fill();
+      if (i % 4 === 1){ circ(c,x,y - 30,20); c.fill(); }
+      if (i % 3 !== 2){   // as palmas
+        const b = T > 0 ? Math.abs(Math.sin(T * (7 + (i % 4)) + i * 1.7)) : 0.5;
+        c.strokeStyle = cor; c.lineWidth = 17; c.lineCap = 'round'; c.beginPath(); c.moveTo(x - 50,y + 50); c.lineTo(x - 26 - b * 10,y - 46); c.moveTo(x + 50,y + 50); c.lineTo(x + 26 + b * 10,y - 46); c.stroke();
+        circ(c,x - 26 - b * 10,y - 52,11); c.fill(); circ(c,x + 26 + b * 10,y - 52,11); c.fill();
+      }
+    }
+    [[214,430,0],[628,438,1.9],[1010,426,3.4]].forEach((q,i) => {
+      c.fillStyle = cor; rr(c,q[0] - 30,q[1] - 16,60,40,7); c.fill(); rr(c,q[0] - 12,q[1] - 26,26,12,3); c.fill(); c.fillRect(q[0] - 8,q[1] + 20,16,90);
+      const f = T > 0 ? Math.pow(Math.max(0,Math.sin(T * 2.6 + q[2])),14) : 0;
+      if (f > 0.02){ c.save(); c.globalCompositeOperation = 'screen'; ab2Luz(c,q[0] + 20,q[1] - 22,150 * f,'255,255,255',f); c.restore(); c.fillStyle = 'rgba(255,255,255,' + f.toFixed(3) + ')'; star(c,q[0] + 20,q[1] - 22,10 + f * 16,'#fff'); }
+      else { c.fillStyle = 'rgba(255,255,255,.5)'; circ(c,q[0] + 20,q[1] - 22,3); c.fill(); }
+    });
+  });
+  ab2Clima(c,'122,46,58',0.07);
+  ab2Vinheta(c,0.6);
+}
+
 /* ---------- enfeites das cenas ---------- */
 // notinhas musicais subindo (a Rosa cantarola); a: a opacidade
 function ab2Notinhas(c,x,y,T,a){
@@ -12822,7 +13254,7 @@ function ab2Mimos(c,x,y,T,a){
   c.globalAlpha = 1;
 }
 
-/* ---------- as cenas (as que ainda não estão aqui tocam como cartão de obra) ---------- */
+/* ---------- as cenas (as que ainda não estão aqui tocam como cartão de obra): 1 e 2 na v11.12; 3, 4 e 5 na v11.13 ---------- */
 const AB2_CENAS = {
   /* 1, a porta: a Bia criança espia de trás do batente; a Rosa mexe a panela e cantarola, vira o rosto, chama, e a Bia entra de braços abertos */
   porta(c,p,T,cam){
@@ -12906,6 +13338,125 @@ const AB2_CENAS = {
       if (cl > 0){ c.fillStyle = 'rgba(255,255,255,' + cl.toFixed(3) + ')'; c.fillRect(0,0,TW,H); }
     }
     return { rosa:[rx,ry - AB_ALT.rosa * AB2.k - 8,0], bia:[bx,by - 190], foto };
+  },
+  /* 3, a Casa Aurora: a Rosa chega à porta, a Bia pula e acena; a porta dupla se abre, o Tonhão aparece de braços abertos, os dois se abraçam e entram */
+  aurora(c,p,T,cam){
+    const R = AB2_RUA, P = R.porta, Y = AB2.chao, sr = abEsc('rosa',AB2.k), sb = abEsc('biaCrianca',AB2.k), st0 = abEsc('tonhao',AB2.k);
+    const anda = abSuave(abSeg(p,0.02,0.33)), tras = abSeg(p,0.15,0.19) * (1 - abSeg(p,0.26,0.3)), ajeita = abSeg(p,0.34,0.37) * (1 - abSeg(p,0.4,0.43));
+    const abre = abSuave(abSeg(p,0.41,0.48)), sai = abSuave(abSeg(p,0.5,0.64)), abraco = abSuave(abSeg(p,0.7,0.8)), entra = abSuave(abSeg(p,0.86,0.99));
+    const cx = P.x + P.w / 2;
+    // a Rosa: vestido rosa, bolsa a tiracolo, a flor no cabelo
+    const rx = 424 + anda * (640 - 424) + abraco * 46 + entra * (cx - 28 - 686), ry = Y - entra * 30, andando = (anda > 0 && anda < 1) || (abraco > 0 && abraco < 1) || (entra > 0 && entra < 1);
+    const rosa = cc => {
+      const fundo = T > 0 ? Math.sin(abSeg(p,0.33,0.4) * Math.PI) * 0.035 : 0;   // respira fundo
+      cc.save(); cc.translate(rx,ry); cc.scale(1 - entra * 0.14,(1 - entra * 0.14) * (1 + fundo)); cc.translate(-rx,-ry);
+      ab2Vivo(cc,rx,ry,T,0,() => abRosa(cc,rx,ry,sr,{ roupa:AB_COR.rosa, avental:false, t:T, andando, ph:T * 9, olha:tras > 0.3 ? -1.8 : (abraco > 0 ? 1.4 : 1.2),
+        bracoE:tras > 0.05 ? [[-19,-34 - tras * 3],[-23 + (T > 0 ? Math.sin(T * 9) * 2 : 0),-30 - tras * 17]] : (abraco > 0.05 ? [[-17,-26],[-9,-30]] : undefined),
+        bracoD:ajeita > 0.05 ? [[18,-36 - ajeita * 6],[15.5 - ajeita * 3,-30 - ajeita * 19]] : (abraco > 0.05 ? [[19,-31 - abraco * 3],[25,-36 - abraco * 5]] : undefined) }));
+      // a bolsa a tiracolo
+      const u = q => [rx + q[0] * sr,ry + q[1] * sr];
+      cc.strokeStyle = PAL.tinta; cc.lineWidth = 6; cc.lineCap = 'round'; cc.beginPath(); cc.moveTo.apply(cc,u([-9,-31])); cc.lineTo.apply(cc,u([11,-15])); cc.stroke(); cc.strokeStyle = '#8A5226'; cc.lineWidth = 3; cc.stroke();
+      const bq = u([6,-16]); rr(cc,bq[0],bq[1],9 * sr,7.5 * sr,6); fs(cc,PAL.madeira,3); cc.fillStyle = AB_COR.ouro; circ(cc,bq[0] + 4.5 * sr,bq[1] + 2.4 * sr,3.4); cc.fill();
+      cc.restore();
+    };
+    // a Bia criança, à esquerda, pula e acena
+    const bx = 262, pulo = T > 0 ? Math.abs(Math.sin(T * 6.5)) * (p < 0.34 ? 15 : 7) : 0;
+    // o Tonhão: aparece na porta de braços abertos, sai para a calçada, abraça e entra junto
+    const tk = 0.86 + 0.14 * sai - entra * 0.12, st = st0 * tk, tx = cx - sai * 6 - abraco * 18 + entra * 30, ty = Y - 36 + sai * 36 - entra * 30;
+    const ab = abSuave(abSeg(p,0.44,0.52)), bal = T > 0 ? Math.sin(T * 5) * 2 : 0;
+    const tonhao = cc => {
+      abTonhao(cc,tx,ty,st,{ t:T, olha:-1, andando:(sai > 0 && sai < 1) || (entra > 0 && entra < 1), ph:T * 9, bracoE:abraco > 0.4 ? [[-12,-62]] : [[-32 - ab * 6,-74 - ab * 10],[-42 - ab * 6,-86 - ab * 14 + bal]],
+        bracoD:abraco > 0.3 ? [[30,-66],[24,-56]] : [[32 + ab * 6,-74 - ab * 10],[42 + ab * 6,-86 - ab * 14 - bal]] });
+    };
+    const fora = sai > 0.02 && entra < 0.5;
+    ab2RuaAurora(c,cam,'manha',{ T, abre, voo:abSeg(p,0.76,1),
+      dentro: abre > 0.05 && !fora ? cc => { cc.globalAlpha = 1 - abSeg(entra,0.6,1); tonhao(cc); if (entra >= 0.5) rosa(cc); cc.globalAlpha = 1; } : null,
+      gente: cc => {
+        ab2Sombra(cc,bx + 26,Y + 4,62,9,0.3);
+        ab2Vivo(cc,bx,Y,T,1.3,() => abBiaCrianca(cc,bx,Y,sb,{ t:T, aceno:true, olha:1.2, bracoE:entra > 0.2 ? [[-19,-33],[-25,-43 + (T > 0 ? Math.sin(T * 9) * 3 : 0)]] : undefined }),pulo);
+        if (fora){ ab2Sombra(cc,tx + 34,ty + 4,96,12,0.3 * sai); tonhao(cc); }
+        if (entra < 0.5){ ab2Sombra(cc,rx + 34,ry + 4,88,12,0.32); rosa(cc); }
+        if (abraco > 0.4 && entra < 0.5){   // o braço do Tonhão por cima do ombro da Rosa, e um coração
+          ab2BracoDe(cc,tx,ty,st,[[-19,-76],[-34,-64],[(rx - 34 - tx) / st,(ry - 31 * sr - ty) / st]]);
+          cc.globalAlpha = abSeg(abraco,0.4,1) * (1 - abSeg(entra,0,0.4)); heart(cc,(rx + tx) / 2,ry - 300 - (T > 0 ? Math.sin(T * 3) * 6 : 0),15,'#E0559A'); cc.globalAlpha = 1;
+        }
+      } });
+    return { bia:[bx,Y - AB_ALT.biaCrianca * AB2.k - 10 - pulo * 0.5,10], tonhao:[tx + 13 * st,ty - 128 * st,196], rosa:[rx,ry - AB_ALT.rosa * AB2.k - 8] };
+  },
+  /* 4, o molho: o Tonhão polvilha o cominho, prova e acha que falta algo; a Rosa cobre a panela com o corpo, sobe o brilho rosado (a pétala não aparece), ele prova de novo e arregala os olhos */
+  molho(c,p,T,cam){
+    const A = AB2_AUR, Y = AB2.chao, sr = abEsc('rosa',AB2.k), st = abEsc('tonhao',AB2.k), tx = 492, px = A.panela[0], rim = A.panela[1] - 53;
+    const brilho = abSuave(abSeg(p,0.48,0.56)) * (1 - 0.4 * abSuave(abSeg(p,0.64,0.9)));
+    // o Tonhão: a mão da frente polvilha, leva a colher à boca, descansa, prova de novo
+    const Hm = ab2Chave([[0.08,[26,-46]],[0.13,[44,-70]],[0.2,[44,-70]],[0.25,[11,-83]],[0.31,[11,-83]],[0.38,[27,-48]],[0.55,[27,-48]],[0.6,[11,-83]],[0.68,[11,-83]],[0.76,[30,-58]],[1,[30,-58]]],p);
+    const polvilha = abSeg(p,0.12,0.14) * (1 - abSeg(p,0.2,0.22)), prova = Math.max(abSeg(p,0.22,0.25) * (1 - abSeg(p,0.32,0.36)),abSeg(p,0.57,0.6) * (1 - abSeg(p,0.7,0.76)));
+    const falta = abSeg(p,0.27,0.3) * (1 - abSeg(p,0.5,0.56)), nao = T > 0 ? Math.sin(T * 11) * 1.3 * abSeg(p,0.27,0.3) * (1 - abSeg(p,0.37,0.4)) : 0, espanto = abSeg(p,0.61,0.65);
+    const cot = [(19 + Hm[0]) / 2 + 7,(-76 + Hm[1]) / 2 + 5];
+    // a Rosa: olha para os dois lados, vai para a frente da panela, vira de costas; depois volta, pisca um olho e põe o dedo nos lábios
+    const frente = abSuave(abSeg(p,0.42,0.47)) * (1 - abSuave(abSeg(p,0.57,0.62))), rx = 792 - frente * 136, costas = p > 0.445 && p < 0.59;
+    const lados = p > 0.35 && p < 0.425 ? (p < 0.385 ? -1.9 : 1.9) : 0, segredo = abSuave(abSeg(p,0.64,0.7)), pisca = segredo > 0.5 && (T <= 0 || (T * 0.9) % 1 < 0.6);
+    ab2CozinhaAurora(c,cam,{ T, brilho, gente: cc => {
+      ab2Sombra(cc,tx - 10,Y + 4,100,13,0.4);
+      abTonhao(cc,tx,Y,st,{ t:T, olha:espanto > 0.5 ? 1 : nao, mood:falta > 0.5 ? 2 : 0, bracoE:[[-12,-62]], bracoD:[cot,Hm] });
+      // o pote de cominho na outra mão
+      ab2BracoDe(cc,tx,Y,st,[[-19,-76],[-31,-60],[-15,-50]],'#fff','#B9794B',k => ab2Pote(k,-13,-49,1,'cominho','#9A6A3A'));
+      if (prova > 0.05){   // a colherzinha
+        cc.save(); cc.translate(tx,Y); cc.scale(st,st); cc.lineCap = 'round';
+        cc.strokeStyle = PAL.tinta; cc.lineWidth = 3.4; cc.beginPath(); cc.moveTo(Hm[0] + 7,Hm[1] + 5); cc.lineTo(Hm[0] - 7,Hm[1] - 4); cc.stroke(); cc.strokeStyle = PAL.cromo; cc.lineWidth = 1.8; cc.stroke();
+        ell(cc,Hm[0] - 8,Hm[1] - 4.5,3.6,2.4); fs(cc,brilho > 0.3 ? '#E8557A' : AB_COR.molho,1.2);
+        cc.restore();
+      }
+      if (polvilha > 0.05){   // o cominho caindo
+        const hx = tx + Hm[0] * st, hy = Y + Hm[1] * st;
+        cc.fillStyle = '#8A5A2E'; for (let i = 0; i < 9; i++){ const k = T > 0 ? ((T * 1.6 + i * 0.23) % 1) : i / 9; cc.globalAlpha = polvilha * (1 - k * 0.5); circ(cc,hx + 6 + Math.sin(i * 2.4) * 16,hy + 14 + k * (rim - hy - 16),2.6); cc.fill(); }
+        cc.globalAlpha = 1;
+      }
+      if (espanto > 0.5){   // os olhos arregalados
+        cc.save(); cc.translate(tx + 3 * st,Y); cc.scale(st,st);
+        [-5.5,5.5].forEach(d => { circ(cc,d,-101,4.3); fs(cc,'#fff',1.4); circ(cc,d + 1,-101,1.9); cc.fillStyle = PAL.tinta; cc.fill(); });
+        cc.strokeStyle = PAL.tinta; cc.lineWidth = 2; cc.beginPath(); cc.moveTo(-9.5,-108.5); cc.lineTo(-2,-109.5); cc.moveTo(9.5,-108.5); cc.lineTo(2,-109.5); cc.stroke();
+        cc.restore();
+      }
+      ab2Sombra(cc,rx - 10,Y + 4,84,13,0.4);
+      ab2Vivo(cc,rx,Y,T,0,() => abRosa(cc,rx,Y,sr,{ roupa:'#fff', avental:costas ? false : '#E9E4D8', t:T, costas, olha:lados || (segredo > 0.3 ? -1.2 : -0.8), andando:frente > 0.02 && frente < 0.98, ph:T * 10,
+        bracoD:segredo > 0.05 ? [[14 - segredo * 2,-27 - segredo * 2],[15.5 - segredo * 13,-17 - segredo * 17.5]] : undefined }));
+      if (costas){ cc.strokeStyle = 'rgba(34,32,28,.3)'; cc.lineWidth = 3; cc.beginPath(); cc.moveTo(rx,Y - 31 * sr); cc.lineTo(rx,Y - 13 * sr); cc.stroke(); rr(cc,rx - 9 * sr,Y - 21 * sr,18 * sr,2.2 * sr,3); fs(cc,'#E9E4D8',2); }   // o laço do avental, nas costas
+      if (segredo > 0.6){   // a mão e o dedo nos lábios, e a piscadela
+        const fx = rx + (0.6 - 3) * sr, my = Y - 33.4 * sr;
+        cc.strokeStyle = PAL.tinta; cc.lineWidth = 9; cc.lineCap = 'round'; cc.beginPath(); cc.moveTo(fx,my); cc.lineTo(fx,my - 5.6 * sr); cc.stroke(); cc.strokeStyle = SKINS[3]; cc.lineWidth = 5; cc.stroke();
+        circ(cc,fx + 1.2 * sr,my + 1.6 * sr,3.4 * sr); fs(cc,SKINS[3],4);
+        if (pisca){ const ex = rx + (4.2 - 3) * sr, ey = Y - 41.5 * sr; cc.fillStyle = SKINS[3]; circ(cc,ex,ey,2.3 * sr); cc.fill(); cc.fillStyle = PAL.tinta; cc.fillRect(ex - 2.2 * sr,ey - 0.3 * sr,4.4 * sr,1.7 * sr); }
+      }
+    } });
+    return { tonhao:[tx,Y - 108 * st,-36], rosa:[rx,Y - AB_ALT.rosa * AB2.k - 8] };
+  },
+  /* 5, a estrela: o Bráulio ergue a placa do Michelzão sob o holofote; a câmera desliza até a porta da cozinha, onde o Tonhão fecha o punho e a Rosa segura o braço dele */
+  estrela(c,p,T,cam){
+    const G = AB2_GALA, sbr = abEsc('braulio',AB2.k), bx = 470, by = G.palco, sr = abEsc('rosa',AB2.k * 0.94), st = abEsc('tonhao',AB2.k * 0.94);
+    const up = abSuave(abSeg(p,0.04,0.2)), peito = up * (T > 0 ? 1 + Math.sin(T * 2.4) * 0.3 : 1);
+    const passo = abSuave(abSeg(p,0.5,0.66)), punho = abSuave(abSeg(p,0.46,0.6)), segura = abSuave(abSeg(p,0.6,0.74)), baixa = segura > 0.7;
+    const tx = 1030 - passo * 22, ty = G.chao + 2, rx = 1100 - segura * 8, ry = G.chao + 2;
+    const plc = abLerp([bx + 6,by - 62 * sbr],[bx + 118,by - 128 * sbr],up), rot = -0.05 + up * 0.17;
+    ab2Gala(c,cam,{ T, foco:1,
+      palco: cc => {
+        if (up > 0.5){   // o brilho girando atrás da placa
+          cc.save(); cc.translate(plc[0],plc[1]); cc.rotate(T > 0 ? T * 0.6 : 0.3); cc.globalCompositeOperation = 'screen';
+          cc.fillStyle = 'rgba(242,194,61,' + (0.34 * abSeg(up,0.5,1)).toFixed(3) + ')'; for (let i = 0; i < 8; i++){ cc.rotate(TAU / 8); cc.beginPath(); cc.moveTo(0,0); cc.lineTo(-22,-190); cc.lineTo(22,-190); cc.closePath(); cc.fill(); }
+          cc.restore();
+        }
+        ab2Sombra(cc,bx,by + 4,104,11,0.5);
+        cc.save(); cc.translate(bx,by); cc.scale(1 + peito * 0.05,1 + peito * 0.012); cc.translate(-bx,-by);
+        abBraulio(cc,bx,by,sbr,{ semPlaca:true });
+        ab2BracoDe(cc,bx,by,sbr,[[-18,-78],abLerp([-24,-66],[-31,-62],up),abLerp([-10,-58],[-21,-47],up)],'#fff','#F2C9A5');                 // a outra mão vai para a cintura
+        cc.restore();
+        abPlacaMichel(cc,plc[0],plc[1],158,100,1,rot,true,T > 0 ? Math.max(0,Math.sin(T * 3)) * up : up * 0.6);
+        ab2BracoDe(cc,bx,by,sbr,[[18,-78],abLerp([24,-64],[34,-84],up),[(plc[0] - 44 - bx) / sbr,(plc[1] + 40 - by) / sbr]],'#fff','#F2C9A5');   // o braço que ergue a placa
+      },
+      porta: cc => {
+        abTonhao(cc,tx,ty,st,{ t:T, mood:2, olha:-1, andando:passo > 0.02 && passo < 0.98, ph:T * 8, bracoD:[[28 + punho * 4,-62 - punho * 6],[25 + punho * 9,-46 - punho * 30]] });
+        ab2Vivo(cc,rx,ry,T,0,() => abRosa(cc,rx,ry,sr,{ roupa:'#fff', avental:'#E9E4D8', t:T, mood:segura > 0.5 ? 3 : 1, fecha:baixa, olha:-1.4, bracoE:segura > 0.05 ? [[-16 - segura * 2,-29],[-15.5 - segura * 1.5,-17 - segura * 13]] : undefined }));
+      } });
+    return { braulio:[bx,by - 118 * sbr,-70], tonhao:[tx,ty - 118 * st], rosa:[rx,ry - 66 * sr] };
   }
 };
 
@@ -12996,7 +13547,7 @@ function drawAbertura2(c,ab){
   c.save();
   c.fillStyle = PAL.tinta; c.fillRect(0,0,TW,H);
   const q = ab2Quadro(c,ab,ab.i,ab.t), falas = ab.falas();
-  if (q.cab) falas.forEach(f => { const a = q.cab[f.q]; if (a){ const s = ab2Tela(q.cam,a[0],a[1]); abBalao(c,f.s,s[0],s[1],a[2]); } });
+  if (q.cab) falas.forEach(f => { const a = q.cab[f.q]; if (a){ const s = ab2Tela(q.cam,a[0],a[1]); if (s[0] > 0 && s[0] < TW) abBalao(c,f.s,s[0],s[1],a[2]); } });   // quem saiu do quadro (a câmera deslizou) fica sem balão
   else ab2ObraFalas(c,falas);
   ab2Legenda(c,ab);
   if (ab.trans) ab2Trans(c,ab,() => { AB_VIVO.fala = {}; ab2Quadro(c,ab,ab.i + 1,0); });
@@ -15787,7 +16338,7 @@ try { Rank.init(); } catch(e) {}
 game.setState('menu');
 if (!aberturaVista() && !DEV.on) abrirAbertura('auto');   // v8.5: a abertura toca sozinha uma vez
 window.__game = game;
-window.__lcc = { ABERTURA2, ab2Cam, ab2Cabe, ab2Tela, ab2Notas, AB_FX, AB2, AB2_CENAS, TRIO, drawTrio, rankAuto, rankNome, RANK_VOCE, drawBia, roupaBia, BIA_REACAO, BIA_ROUPA_COR, abBia, BRAULIO_LOOK, convCabeca, drawRetrato, drawRetratosTela, RETRATO, RETRATO_QUEM, RETRATO_POSE, EXPRESSOES, exprDe, exprAtual: () => EXPR, devRetratos, CONV_UI, socorroFalas, NOITE, HIST_RECOMENDA, HIST_NOTA, guiaPontos, guiaEstrelas, abreBoletim, drawVela, drawFala, CRITICO, HIST_CRITICO, normGuia, plantaBoato, drawCaderno, drawGarfo, ROSA, GERENTE, drawPetala, musicaPay, musicaDe, musicaOk, camiModoTudo, CAMI_TUDO, cafesLista, cafeIdx, cafeIngred, ANSELMO_CURSOS, normAnselmoCursos, drinksLista, drinksTodos, drinkPreco, drinkIngred, drinkVagas, drinkPrep, MAQUINA_LUGAR, drawCafesEsp, drawCarrinhoBoasVindas, espressoTrabalho, bebExtra, devCenas, devAssistir, devFinal, drawPlacaGuia, FINAL, finalCenas, histLiga, DEV_CAPS, drawIcon, liaOn, drawLia, LIA_HOME, LIA_LOOK, doceIcone, drawFino, TEMPOS, tempoMarcas, pedePrincipal, drawTempoTrilha, HIST_SOCORRO, HIST_EXIGENTE, EXIGENTE, LOUCA, vipDish, vipCook, casaBoa, exigRep, HIST_PLANTA, HIST_QUITOU, HIST_TETO, VONTADE, vontadeChance, vontadeDia, vontadeFalas, HIST_VONTADE_DOCE, HIST_VONTADE_CAFE, filaPos, STATIONS, MANUAL, manualTracos, manualAberta, abrirManual, buildManual, fecharManual, semente, manualSemente, FECHA, efoodAberto, drawTable, camiMesasN, camiModoMesas, CAMI_MESAS_MAX, drawAventalCami, FISCAL, Fiscal, FISCAL_PONTOS, abrirDev, fecharDev, buildDev, passoJogo, devLivre, diaNoPonto, manutEmerg, manutFator, daniTaskDe, plateSlotsFor, queueYsFor, assentoSlow, AVENIDA, SABORES, cursoOk, INDUSTRIAL, PLATE_SLOTS, cozinhaSlots, upgradeDe, DECOR, DECOR_GRUPOS, TOALHA, LUXO, MOVEIS, movelOf, movelNivel, normMoveis, luxoPts, luxoTot, luxoNivel, luxoForca, decorOf, normDecor, decorOn, FILA_ACOES, filaMax, MARMITA, RETIRADA, marmitaMao, drawMarmita, prateleiraPos, EFOOD_COR, AVAL_BRAVO, QUEUE, setShopTab: v => shopAbrir(v), setShopGrupo: g => shopGrupoAbrir(g), shopSecoes: () => SHOP_GRUPOS.map(g => shopSecoesVis(g)), TREINO, TREINO_PASSOS, TREINO_COR, Treino, treinoLugar, DICAS, dicaDe, dicaLigada, drawDica, HUD_LUCRO, hudEstrelas, drawHud, daniNaLoja, treinoPrimeiro, playCareer, buildMenu, introBanco, buildFalencia, BANCO, normEmprestimo, parcelaDe, devidoDe, jurosDe, tabelaDe, simulaEmprestimo, SEMANA, semanaOf, diaOf, FILA_JUSTA, PORTA, CHAIRS, PAT, CONTAS, INGRED, CARDAPIO, precoPrato, CURSOS, CURSO_AV, CURSO_XP, tonhaoXp, tonhaoNivelXp, daniXp, daniNivelXp, DANI_XP, DANI_CURSOS, CURSOS_SEMFIM, cursoOf, cursoNivel, normCursos, pratoAv, CARNES, drawDish, pratoSabido, pratosSabidos, GOSTOS, GOSTOS_CAT, pedePrato, VEG, vegMov, drawDish, MAIS, PONTOS_ACAO, GORJETA, DRINK_PRICE, MOVIMENTO, movimentoSalao, DIVULGA, DIVULGA_DIA, divulgaOf, contasDia, bomGoal, SALAO, PONTOS, pontoOf, MESA, mesaBox, mesaPreco, salaoLugares, mesaProblema, salaoCaminho, salaoProblema, salaoOrdena, salaoAuto, salaoVaga, salaoPerto, salaoKit, salaoDevolucao, SALAO_SEMFIM, normSalao, setObst, OBST, pathOk, MAQUINA, BEBIDA_ESPERA, bebidaOf, MANUT, manutOf, manutChance, manutPreco, normManut, CLIMA, CLIMA_DIA, EVENTOS, eventoSemana, introManut, normPend, CALCADA, TW, HUDX, esperaAp, tableApproach, CRIT, STAFF, diariaDani, diariaJoca, cursosPay, DANI_TASKS, DANI_HANDS, daniTaskOk, TRASH, WASH, payroll, FOLHA_CORTE, folhaCorta, folhaCortes, folhaItens, listaE, pratosDe, couvertEffect, couvertOk, ambienteEffect, dishStock, normSave, Helper, JUICE, KITCHEN_SLOTS, handLayout, trayOk, Game, Group, Table, Kitchen, Waitress, BIA_SPEED, DAYS, UPGRADES, CUSTOMER_TYPES, LAYOUT, PAL, Sfx, findPath, render, Rank, sortRows, cleanName, normName, CMD, ENDLESS, VIP, MULTA, rk, renderRank, openRank, closeRank, LS, lsGet, lsSet, loadSave, DEV, saveKey, devSync, divulgaAberta, CAIXA_MAX, VERSAO, normCaixa, caixaResumo, caixaTotais, copyText, PRATO, pratoPerde, pratoVapor, AVAL, AVAL_CRIT, AVAL_BRAVO, avalMenu, cursosItem, DOCES, CAFES, cafeDe, DRINKS, drinkDe, drinkIdx, anselmoOn, ANSELMO_HOME, ANSELMO_LOOK, drawAnselmo, docesLista, docePreco, doceIngred, doceIdx, CAMI_CURSOS, CAMI_HOME, CAMI_LOOK, camiNivelCursos, normCamiCursos, drawCami, drawEspresso, JOCA_XP, JOCA_CURSOS, JOCA_HOME, jocaXp, jocaNivelXp, BASICAS, donoBasico, cursoDaniVis, JOCA_LOOK, drawJoca, avalTeto, avalEscala, TERRACO, fixosDe, vipTipos, doorFor, DOOR, terraco, drawPiano, drawPoltrona, drawFoyerTe, drawParedeTe, drawElevadorTe, drawLugarTe, drawPerson, makePeople, drawChair, iconeMudanca, avalFrac, AVAL_SIMPLES, AVAL_DECOR, normAval, avalNota, avalMedias, avalGeral, avalMovimento, avalMinimo, avalComentario, fmtNota, notaFaixa, gurugolCaixa, AVAL_COM, normAvalCom, buildGurugol, ABERTURA, Abertura, AB_CENAS, AB_ALT, AB_BASE, abEsc, AB_VIVO, aberturaVista, aberturaSom, drawAbertura, abrirAbertura, HISTORIA, HIST_CARDAPIO, HIST_DIVULGA, HIST_ENTREGA, LIBERA, liberaOf, ARCO, HIST_NOMES, normEquipe, upgradeCartao, cursoFeito, AVAL_POUCO, REFORMA, HIST, carencia, Conversa, drawConversa, falar, fluxoHistoria, falar, aberturaAtual: () => abertura };
+window.__lcc = { ABERTURA2, ab2Cam, ab2Cabe, ab2Tela, ab2Notas, AB_FX, AB2, AB2_CENAS, ab2RuaAurora, ab2CozinhaAurora, ab2Gala, TRIO, drawTrio, rankAuto, rankNome, RANK_VOCE, drawBia, roupaBia, BIA_REACAO, BIA_ROUPA_COR, abBia, BRAULIO_LOOK, convCabeca, drawRetrato, drawRetratosTela, RETRATO, RETRATO_QUEM, RETRATO_POSE, EXPRESSOES, exprDe, exprAtual: () => EXPR, devRetratos, CONV_UI, socorroFalas, NOITE, HIST_RECOMENDA, HIST_NOTA, guiaPontos, guiaEstrelas, abreBoletim, drawVela, drawFala, CRITICO, HIST_CRITICO, normGuia, plantaBoato, drawCaderno, drawGarfo, ROSA, GERENTE, drawPetala, musicaPay, musicaDe, musicaOk, camiModoTudo, CAMI_TUDO, cafesLista, cafeIdx, cafeIngred, ANSELMO_CURSOS, normAnselmoCursos, drinksLista, drinksTodos, drinkPreco, drinkIngred, drinkVagas, drinkPrep, MAQUINA_LUGAR, drawCafesEsp, drawCarrinhoBoasVindas, espressoTrabalho, bebExtra, devCenas, devAssistir, devFinal, drawPlacaGuia, FINAL, finalCenas, histLiga, DEV_CAPS, drawIcon, liaOn, drawLia, LIA_HOME, LIA_LOOK, doceIcone, drawFino, TEMPOS, tempoMarcas, pedePrincipal, drawTempoTrilha, HIST_SOCORRO, HIST_EXIGENTE, EXIGENTE, LOUCA, vipDish, vipCook, casaBoa, exigRep, HIST_PLANTA, HIST_QUITOU, HIST_TETO, VONTADE, vontadeChance, vontadeDia, vontadeFalas, HIST_VONTADE_DOCE, HIST_VONTADE_CAFE, filaPos, STATIONS, MANUAL, manualTracos, manualAberta, abrirManual, buildManual, fecharManual, semente, manualSemente, FECHA, efoodAberto, drawTable, camiMesasN, camiModoMesas, CAMI_MESAS_MAX, drawAventalCami, FISCAL, Fiscal, FISCAL_PONTOS, abrirDev, fecharDev, buildDev, passoJogo, devLivre, diaNoPonto, manutEmerg, manutFator, daniTaskDe, plateSlotsFor, queueYsFor, assentoSlow, AVENIDA, SABORES, cursoOk, INDUSTRIAL, PLATE_SLOTS, cozinhaSlots, upgradeDe, DECOR, DECOR_GRUPOS, TOALHA, LUXO, MOVEIS, movelOf, movelNivel, normMoveis, luxoPts, luxoTot, luxoNivel, luxoForca, decorOf, normDecor, decorOn, FILA_ACOES, filaMax, MARMITA, RETIRADA, marmitaMao, drawMarmita, prateleiraPos, EFOOD_COR, AVAL_BRAVO, QUEUE, setShopTab: v => shopAbrir(v), setShopGrupo: g => shopGrupoAbrir(g), shopSecoes: () => SHOP_GRUPOS.map(g => shopSecoesVis(g)), TREINO, TREINO_PASSOS, TREINO_COR, Treino, treinoLugar, DICAS, dicaDe, dicaLigada, drawDica, HUD_LUCRO, hudEstrelas, drawHud, daniNaLoja, treinoPrimeiro, playCareer, buildMenu, introBanco, buildFalencia, BANCO, normEmprestimo, parcelaDe, devidoDe, jurosDe, tabelaDe, simulaEmprestimo, SEMANA, semanaOf, diaOf, FILA_JUSTA, PORTA, CHAIRS, PAT, CONTAS, INGRED, CARDAPIO, precoPrato, CURSOS, CURSO_AV, CURSO_XP, tonhaoXp, tonhaoNivelXp, daniXp, daniNivelXp, DANI_XP, DANI_CURSOS, CURSOS_SEMFIM, cursoOf, cursoNivel, normCursos, pratoAv, CARNES, drawDish, pratoSabido, pratosSabidos, GOSTOS, GOSTOS_CAT, pedePrato, VEG, vegMov, drawDish, MAIS, PONTOS_ACAO, GORJETA, DRINK_PRICE, MOVIMENTO, movimentoSalao, DIVULGA, DIVULGA_DIA, divulgaOf, contasDia, bomGoal, SALAO, PONTOS, pontoOf, MESA, mesaBox, mesaPreco, salaoLugares, mesaProblema, salaoCaminho, salaoProblema, salaoOrdena, salaoAuto, salaoVaga, salaoPerto, salaoKit, salaoDevolucao, SALAO_SEMFIM, normSalao, setObst, OBST, pathOk, MAQUINA, BEBIDA_ESPERA, bebidaOf, MANUT, manutOf, manutChance, manutPreco, normManut, CLIMA, CLIMA_DIA, EVENTOS, eventoSemana, introManut, normPend, CALCADA, TW, HUDX, esperaAp, tableApproach, CRIT, STAFF, diariaDani, diariaJoca, cursosPay, DANI_TASKS, DANI_HANDS, daniTaskOk, TRASH, WASH, payroll, FOLHA_CORTE, folhaCorta, folhaCortes, folhaItens, listaE, pratosDe, couvertEffect, couvertOk, ambienteEffect, dishStock, normSave, Helper, JUICE, KITCHEN_SLOTS, handLayout, trayOk, Game, Group, Table, Kitchen, Waitress, BIA_SPEED, DAYS, UPGRADES, CUSTOMER_TYPES, LAYOUT, PAL, Sfx, findPath, render, Rank, sortRows, cleanName, normName, CMD, ENDLESS, VIP, MULTA, rk, renderRank, openRank, closeRank, LS, lsGet, lsSet, loadSave, DEV, saveKey, devSync, divulgaAberta, CAIXA_MAX, VERSAO, normCaixa, caixaResumo, caixaTotais, copyText, PRATO, pratoPerde, pratoVapor, AVAL, AVAL_CRIT, AVAL_BRAVO, avalMenu, cursosItem, DOCES, CAFES, cafeDe, DRINKS, drinkDe, drinkIdx, anselmoOn, ANSELMO_HOME, ANSELMO_LOOK, drawAnselmo, docesLista, docePreco, doceIngred, doceIdx, CAMI_CURSOS, CAMI_HOME, CAMI_LOOK, camiNivelCursos, normCamiCursos, drawCami, drawEspresso, JOCA_XP, JOCA_CURSOS, JOCA_HOME, jocaXp, jocaNivelXp, BASICAS, donoBasico, cursoDaniVis, JOCA_LOOK, drawJoca, avalTeto, avalEscala, TERRACO, fixosDe, vipTipos, doorFor, DOOR, terraco, drawPiano, drawPoltrona, drawFoyerTe, drawParedeTe, drawElevadorTe, drawLugarTe, drawPerson, makePeople, drawChair, iconeMudanca, avalFrac, AVAL_SIMPLES, AVAL_DECOR, normAval, avalNota, avalMedias, avalGeral, avalMovimento, avalMinimo, avalComentario, fmtNota, notaFaixa, gurugolCaixa, AVAL_COM, normAvalCom, buildGurugol, ABERTURA, Abertura, AB_CENAS, AB_ALT, AB_BASE, abEsc, AB_VIVO, aberturaVista, aberturaSom, drawAbertura, abrirAbertura, HISTORIA, HIST_CARDAPIO, HIST_DIVULGA, HIST_ENTREGA, LIBERA, liberaOf, ARCO, HIST_NOMES, normEquipe, upgradeCartao, cursoFeito, AVAL_POUCO, REFORMA, HIST, carencia, Conversa, drawConversa, falar, fluxoHistoria, falar, aberturaAtual: () => abertura };
 window.requestAnimationFrame(frame);
 
 })();

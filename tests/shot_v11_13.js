@@ -1,0 +1,32 @@
+// capturas da v11.13 (a abertura nova: as cenas da Casa Aurora) em ../capturas/v11_13: as cenas 3, 4 e 5 em p 0,25, 0,6 e 0,9 (1220 x 600 e 844 x 390),
+// outros instantes de cada uma, as trocas passa (3 para 4) e iris (4 para 5) e o movimento reduzido. Confira em recorte (PIL crop + resize), contra
+// docs/ABERTURA.md §3 e §7, e descarte: capturas não vão para o git. Uso: node shot_v11_13.js [filtro]
+const { chromium } = require('playwright'); const fs = require('fs'), path = require('path');
+const OUT = path.join(__dirname, '..', 'capturas', 'v11_13'); fs.mkdirSync(OUT, { recursive:true });
+const html = '<!doctype html><html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"></head><body>' + fs.readFileSync(path.join(__dirname, '..', 'lanchonete.html'), 'utf8');
+const W = path.join(__dirname, 'wrapped.html'); fs.writeFileSync(W, html);
+const FILTRO = process.argv[2] || '';
+// abre a abertura nova pelo modo dev e para o relógio na cena i (de 0), no instante t (s); tm é o relógio dos gestos
+const CENA = (i, t) => `const L=window.__lcc; L.DEV.on=true; L.devAssistir(1); const ab=L.aberturaAtual(); ab.update=()=>{}; ab.i=${i}; ab.t=${t}; ab.tm=${(10 + i * 7 + t).toFixed(2)};`;
+const P = (i, p) => CENA(i, Math.round(window_t[i] * p * 1000) / 1000);
+const window_t = [7, 7, 7, 7, 7, 7, 7, 8, 6, 6, 8];
+(async () => {
+  const b = await chromium.launch(); const errs = [];
+  const lista = [];
+  [[1220, 600, ''], [844, 390, '_cel']].forEach(([w, h, suf]) => [2, 3, 4].forEach(i => [0.25, 0.6, 0.9].forEach(p => lista.push(['cena' + (i + 1) + '_p' + String(p).replace('.', '') + suf, P(i, p), w, h, false]))));
+  [[2, [0.05, 0.17, 0.38, 0.47, 0.75, 0.82]], [3, [0.05, 0.16, 0.28, 0.4, 0.5, 0.56, 0.7, 0.8]], [4, [0.05, 0.15, 0.4, 0.5, 0.75, 1]]].forEach(([i, ps]) => ps.forEach(p => lista.push(['cena' + (i + 1) + '_x' + String(Math.round(p * 100)).padStart(2, '0'), P(i, p), 1220, 600, false])));
+  lista.push(['trans_passa_3_4', CENA(2, 6.75), 1220, 600, false], ['trans_iris_4_fecha', CENA(3, 6.62), 1220, 600, false], ['trans_iris_4_abre', CENA(3, 6.9), 1220, 600, false]);
+  [2, 3, 4].forEach(i => lista.push(['cena' + (i + 1) + '_rm', CENA(i, 0), 1220, 600, true]));
+  for (const [f, js, w, h, rm] of lista) {
+    if (FILTRO && f.indexOf(FILTRO) < 0) continue;
+    const ctx = await b.newContext({ viewport:{ width:w, height:h }, deviceScaleFactor:1, reducedMotion: rm ? 'reduce' : 'no-preference' });
+    await ctx.addInitScript("try{localStorage.setItem('lcc2_abertura','1')}catch(e){}");
+    const pg = await ctx.newPage(); pg.on('pageerror', e => errs.push(f + ': ' + String(e)));
+    await pg.goto('file://' + W); await pg.waitForTimeout(400);
+    await pg.evaluate(js); await pg.waitForTimeout(250);
+    await pg.screenshot({ path: path.join(OUT, f + '.png') });
+    await ctx.close();
+  }
+  await b.close();
+  console.log(errs.length ? 'ERROS: ' + errs.join(' | ') : 'sem erros de página; capturas em ' + OUT);
+})();

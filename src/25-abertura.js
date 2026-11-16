@@ -30,7 +30,7 @@ function abRosa(c,x,y,s,o){
   o = o || {};
   c.save(); c.translate(x,y); c.scale(o.flip || 1,1);   // flip -1: espelhada (o braço direito fica do lado esquerdo)
   drawPerson(c,{ skin:3, hair:2, hairC:'#1B1512', pants:'#4A4036' },0,0,{ s, shirt:o.roupa || AB_COR.rosa, mood:o.mood || 0, handUp:!!o.aceno, t:o.t || 0, moving:!!o.andando, ph:o.ph || 0,
-    bracoE:o.bracoE, bracoD:o.bracoD, pisca:abPisca(o.t || 0,0.3), fala:abBoca('rosa'), olha:o.olha });   // v11.12: bracoE (a abertura nova posa os dois braços)
+    bracoE:o.bracoE, bracoD:o.bracoD, pisca:!!o.fecha || abPisca(o.t || 0,0.3), fala:abBoca('rosa'), olha:o.olha, back:!!o.costas });   // v11.12: bracoE (a abertura nova posa os dois braços); v11.13: fecha (olhos fechados) e costas
   c.scale(s,s);
   if (o.avental !== false){ c.beginPath(); c.moveTo(-8,-29); c.lineTo(8,-29); c.lineTo(11,-12); c.lineTo(-11,-12); c.closePath(); fs(c,o.avental || '#fff',2); }
   abFlor(c,9,-53,3.2);
@@ -88,7 +88,7 @@ function abTonhao(c,x,y,s,o){
   c.translate(0,bob);
   // braço de trás (esquerdo): mão na cintura no 'flex', solto nos outros
   if (o.braco === 'flex') abBraco(c,[[-19,-76],abLerp([-24,-60],[-32,-56],g),abLerp([-25,-44],[-19,-44],g)],roupa,pele);
-  else abBraco(c,[[-19,-76],[-25,-44]],roupa,pele);
+  else abBraco(c,[[-19,-76]].concat(o.bracoE || [[-25,-44]]),roupa,pele);   // v11.13: bracoE (os pontos do braço de trás, depois do ombro)
   // corpo
   c.beginPath(); c.moveTo(-23,-30); c.lineTo(-19,-82); c.lineTo(19,-82); c.lineTo(23,-30); c.closePath(); fs(c,roupa,2.6);
   c.fillStyle = PAL.tinta; [-70,-58,-46].forEach(b => { circ(c,-6,b,1.8); c.fill(); circ(c,6,b,1.8); c.fill(); });
@@ -105,7 +105,7 @@ function abTonhao(c,x,y,s,o){
     }
   }
   else if (o.braco === 'mexe') abBraco(c,[[19,-76],[36,-70],o.mao || [44,-58]],roupa,pele);
-  else abBraco(c,[[19,-76],[25,-44]],roupa,pele);
+  else abBraco(c,[[19,-76]].concat(o.bracoD || [[25,-44]]),roupa,pele);   // v11.13: bracoD (os pontos do braço da frente)
   // cabeça
   const hy = -98;
   circ(c,0,hy,16); fs(c,pele,2.6);
@@ -162,6 +162,7 @@ function abBraulio(c,x,y,s,o){
   if (fala){ ell(c,0,hy+10.5,3.2,1.2 + fala * 2.2); fs(c,'#7A2E2E',1.5); }
   else { c.lineWidth = 1.8; c.beginPath(); c.arc(0,hy+9,3.5,0.3,Math.PI-0.3); c.stroke(); }
   // os braços seguram a plaquinha na frente do peito, erguida (o: ergue de 0 a 1)
+  if (o.semPlaca){ c.restore(); return; }   // v11.13: a abertura nova posa os braços e a placa por fora
   const up = (o.ergue || 0) * 5;
   abBraco(c,[[-18,-78],[-22,-56 - up]],'#fff',pele);
   abBraco(c,[[18,-78],[22,-56 - up]],'#fff',pele);
