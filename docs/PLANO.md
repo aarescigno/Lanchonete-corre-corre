@@ -19,7 +19,9 @@ Origem: retorno do Renan Martorelli (beta-tester) e conversa com o Arthur (15/10
 | 9b | A abertura nova: as cenas da Casa Aurora (3, 4 e 5) | v11.13 | feita em 16/11 (`docs/spec-v11.13.md`; `smoke89`; `ab2RuaAurora`, `ab2CozinhaAurora`, `ab2Gala` e as cenas `aurora`, `molho` e `estrela`; só pelo modo dev) |
 | 9c | A abertura nova: a perda e a promessa (6, 7 e 8) | v11.14 | feita em 16/11 (`docs/spec-v11.14.md`; `smoke90`; `ab2Quarto`, `ab2Cozinha` à noite e no lar e as cenas `despedida`, `janela` e `promessa`; só pelo modo dev) |
 | 9d | A abertura nova no ar: as cenas 9, 10 e 11, a troca e a limpeza | v11.15 | feita em 16/11 (`docs/spec-v11.15.md`; `smoke91` e o `smoke26` reescrito; `ab2Banco`, `ab2RuaCasa`, `ABERTURA` como o roteiro novo, a antiga fora; a Etapa 9 está completa) |
-| 10 | O final no mesmo tratamento da abertura | — | planejar com o Opus antes |
+| 10a | O final novo: o motor, o som e as cenas 1, 2 e 3 | v11.16 | planejada em 16/11 (`docs/spec-v11.16.md`, aprovada) |
+| 10b | O final novo: as cenas 4, 5 e 6 | v11.17 | planejada em 16/11 (`docs/spec-v11.17.md`, aprovada) |
+| 10c | O final novo no ar: as cenas 7 e 8, os créditos, a troca e a limpeza | v11.18 | planejada em 16/11 (`docs/spec-v11.18.md`, aprovada) |
 
 ---
 
@@ -82,10 +84,14 @@ Origem: retorno do Renan Martorelli (beta-tester) e conversa com o Arthur (15/10
 > - **Regra da 3f em todas as sessões:** cartão novo da lojinha só com nome, preço e "?"; toda novidade ganha ficha no `MANUAL` (sem números), revelada quando aparece na história.
 > Ordem: 4a-1 (o ponto e a refeição completa, v10) → 4a-2 (o VIP exigente e a reputação, v10.1) → 4a-3 (a cozinha: alta gastronomia, a Lia e a alta confeitaria, v10.2) → 4a-4 (o salão e o bar: Cami, Joca e Anselmo, v10.3) → 4a-5 (música, flores e rebalanceamento, v10.4). Cada uma é uma versão, com PR e merge. As "Checagens de fim de sessão" da etapa 3 valem para todas.
 
-## Etapa 10 — O final no mesmo tratamento da abertura
-As 8 cenas do final e os créditos (`FINAL`) refeitos com o motor da Etapa 9 (quadro cheio, câmera, luz, o tema da Rosa), espelhando a abertura nova: a última cena do final repete a cozinha da cena 1. Depende da 9d. Decidir com o usuário: se o roteiro do final muda, quantas sessões e se os créditos ganham desenho.
-
-**Modelo:** planejar com o Opus antes
+## Etapa 10 — O final no mesmo tratamento da abertura (10a, v11.16; 10b, v11.17; 10c, v11.18)
+As 8 cenas do final e os créditos refeitos com o motor da Etapa 9 (quadro cheio, câmera, luz, o tema da Rosa): a última cena repete a cozinha e a câmera da cena 1 da abertura, e a foto da equipe repete o clique que vira foto da cena 2. Planejada em 16/11 com o usuário (roteiro, falas e tempos iguais; só as legendas encurtam para uma linha; os créditos ganham desenho; três sessões). Roteiro e direção quadro a quadro: `docs/FINAL.md`. Até a 10c, o novo só toca pelo modo dev ("Final novo (em obras)").
+- **10a** (v11.16): o roteiro `FINAL2`, os climas e efeitos novos, o cartão de obra e as cenas 1 a 3 (o Terraço de manhã e a Casa Aurora à noite). Spec: `docs/spec-v11.16.md`.
+  **Modelo:** Sonnet, esforço alto (o motor quase pronto; o peso é um cenário novo e três cenas no canvas)
+- **10b** (v11.17): as cenas 4 a 6 (o retrato, a foto da equipe com os nomes, a garagem de dia como escola). Spec: `docs/spec-v11.17.md`.
+  **Modelo:** Sonnet, esforço alto (três cenas; a foto com sete pessoas pede cuidado)
+- **10c** (v11.18): as cenas 7 e 8, os créditos, a troca e a limpeza do final antigo. Spec: `docs/spec-v11.18.md`.
+  **Modelo:** Sonnet, esforço alto (duas cenas, os créditos e a limpeza, com cuidado com o que a abertura usa)
 
 ## Ideias guardadas (sem etapa ainda)
 - **Estufa para as marmitas** (retorno de 01/11): guarda as marmitas adiantadas por mais tempo (hoje esfriam em `MARMITA.validade`, 60 s) e, com ela, o "+ marmita" volta (`MARMITA.adiantar`, desligado na 3c). Pode vir junto da prateleira de 4 (ideia da v8.6). Decidir preço, ponto em que aparece e quanto dura a marmita.

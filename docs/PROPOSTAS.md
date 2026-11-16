@@ -4,6 +4,16 @@ Registro das ideias e dos retornos de quem jogou, com o texto original, e de ond
 
 ---
 
+## 16/11 — usuário: o final no mesmo tratamento da abertura (planejamento da Etapa 10)
+Pedido: "Planeje e implemente a etapa 10" (a sessão só planejou, a pedido do usuário: "Faz só o planejamento").
+Decisões do usuário (16/11):
+- Roteiro: "Legendas curtas". As 8 cenas, a ordem, as falas e os tempos ficam; só as legendas encurtam para uma linha de até 60 letras, e o que sai do texto passa para a imagem (os nomes da equipe escritos na foto, o "Cozinha da Rosa" no letreiro).
+- Créditos: "Sim, uma cena". A rua de casa à noite, a escola acesa e a estrela da Rosa piscando, com os três textos por cima e o tema fechando; 6 s.
+- Sessões: "Só planejar agora"; a execução fica para sessões separadas, com o Sonnet. Divisão em três, como a abertura.
+Destino: Etapa 10 do `docs/PLANO.md` (10a, 10b e 10c), roteiro em `docs/FINAL.md`, specs aprovadas `docs/spec-v11.16.md`, `docs/spec-v11.17.md` e `docs/spec-v11.18.md`.
+
+---
+
 ## 15/11 — usuário: a conversa da primeira nota baixa
 Texto original: "Na primeira vez que a pessoa tirar uma nota 2 estrelas ou menos, aparecer uma conversa da bia com o Tonhão em que ela pergunta por que ela se esforçou tanto e não conseguiu agradar a todo mundo? E Tonhão responde, isso é a vida, Bia, importante é melhorar a cada dia! Ou algo assim."
 Retorno de 16/11: "Não só a nota do Gugou, mas a nota de estrelas no fim da fase também".
