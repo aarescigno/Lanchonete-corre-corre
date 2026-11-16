@@ -155,6 +155,7 @@ A cena final animada (oito cenas, no motor da abertura), os créditos, a placa n
 | 8h | As reações da Bia durante o dia | v11.8 | feita em 15/11 (`docs/spec-v11.8.md`; `smoke84`; `BIA_REACAO`, `Waitress.reage` e `drawBia({ reacao })`; três gestos por ponto; a Etapa 8 está completa) |
 | 7a | Acertos do polimento: o nome no Ranking, a Divulgação na hora certa e o trio com três músicos | v11.9 | feita em 15/11 (`docs/spec-v11.9.md`; `smoke85`; `rankAuto`, `Rank.renomeiaLocal`, `shopSecoesVis` e `TRIO`) |
 | 7b | As telas no celular: a lojinha com o topo fixo, os painéis pequenos e as Versões enxutas | v11.10 | feita em 15/11 (`docs/spec-v11.10.md`; `smoke86` e `menu_fit.py` com 630 conferências; só o `#shop-grid` rola; a Etapa 7 está completa) |
+| 9a | A abertura nova: o motor, o som e as cenas 1 e 2 | v11.12 | feita em 16/11 (`docs/spec-v11.12.md`; `smoke88`; `ABERTURA2`, a câmera que encosta na borda, o tema da Rosa, `src/27-abertura-nova.js` com a cozinha de casa e as cenas `porta` e `carinho`; só pelo modo dev) |
 
 ## Etapa 1a — Jogo justo: dá para não perder ninguém (v7.1)
 > **Feita em 15/10 (v7.1, `docs/spec-v7.1.md`).** Decisões: A + B; no Turno sem fim vale o ritmo da fila justa, sem o piso; ícone "aguardando mesa" sim. A medição mostrou que, com a equipe, a maior parte das perdas era a espera pelo prato, e não a fila. O que sobra é o limite de louça nos dias de 6 mesas: o bot afiado só chega ao alvo (0 perdidos em 94% dos dias) comprando o Jogo de pratos primeiro. A louça não mudou; se jogadores reclamarem da espera pelo prato, a etapa 1b pode rever `dishStock` ou a mecânica D. Metas sem mudança.
@@ -2023,3 +2024,12 @@ Capítulo 14: a noite que o jogador marca na lojinha, com casa cheia, o crítico
 **Modelo:** por sessão, acima; a próxima é a 7a, com o Sonnet, esforço médio.
 
 ---
+
+## Etapa 9 — A abertura refeita como um filminho (9a a 9d, v11.12 a v11.15)
+> Pedido do usuário em 15/11: "Revise o vídeo inicial com objetivo de deixar ele bonito, faça uma revisão minuciosa, para praticamente refazê-lo do zero". Planejada no mesmo dia, com entrevista. Roteiro, direção de arte, som e o quadro a quadro das 11 cenas: `docs/ABERTURA.md` (leia por faixa: `tests/indice.sh ABERTURA`).
+
+Quadro cheio, câmera que desliza e aproxima, cenários em camadas com luz, legenda de uma linha e o tema da Rosa. Até a 9d, o jogador vê a abertura antiga e a nova toca só pelo modo dev ("Abertura nova (em obras)"). Depois de cada sessão, o usuário assiste e pode pedir ajustes.
+- **9a (v11.12)** — o motor, o som inteiro e as cenas 1 e 2 (a cozinha de casa): `docs/spec-v11.12.md`. **Modelo:** Sonnet, esforço alto.
+- **9b (v11.13)** — as cenas da Casa Aurora (3, 4 e 5): `docs/spec-v11.13.md`. **Modelo:** Sonnet, esforço alto.
+- **9c (v11.14)** — a perda e a promessa (6, 7 e 8): `docs/spec-v11.14.md`. **Modelo:** Sonnet, esforço alto.
+- **9d (v11.15)** — a virada (9, 10 e 11), a troca pela abertura nova e a limpeza da antiga: `docs/spec-v11.15.md`. **Modelo:** Sonnet, esforço alto.

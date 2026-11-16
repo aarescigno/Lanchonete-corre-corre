@@ -1,6 +1,6 @@
-// v11.12 (etapa 9a): a abertura nova. O roteiro ABERTURA2 (11 cenas), a câmera que encosta na borda, as transições, a legenda,
-// o som (o tema da Rosa por clima e os efeitos) e o desenho das cenas 1 e 2; as outras nove tocam como cartão de obra.
-// O jogador ainda vê a abertura antiga; a nova toca pelo modo dev ("Abertura nova (em obras)").
+// v11.12 (etapa 9a): a abertura nova. O roteiro (ABERTURA2 até a v11.14; ABERTURA desde a v11.15, quando virou a oficial; 11 cenas), a câmera que encosta na borda, as transições, a legenda,
+// o som (o tema da Rosa por clima e os efeitos) e o desenho das cenas 1 e 2. v11.15: a abertura antiga saiu; o CA2 passou a conferir que o FINAL segue
+// no motor antigo, e o CA3, que a "Abertura" do modo dev toca a nova.
 const load=require('./harness.js');
 let fails=0,total=0; const ok=(c,m)=>{ total++; if(!c){fails++;console.log('FAIL:',m);} else console.log('ok  :',m); };
 const mostra=(els,id)=>els[id].classList.contains('show');
@@ -29,8 +29,8 @@ const CLIMA={ casa:{o:'triangle',v:0.045,passo:0.42,mais:[['sine',0.03]]}, sonho
 const FX_ONDE={ panela:[[1,0.4],[2,0.3],[4,0.5],[8,3.4]], clique:[[2,6.0]], sino:[[3,3.1]], brilho:[[4,3.6]], aplauso:[[5,0.2]], chuva:[[7,0.2]], estrela:[[7,3.9],[8,6.8],[11,6.4]], carimbo:[[10,3.3]], portao:[[11,3.6]] };
 
 // ---------- CA1: o roteiro ----------
-{ const H=load(), {L}=H, R=L.ABERTURA2;
-  ok(R && R.cheio===true && R.trans===0.5 && R.cenas && R.cenas.length===11,'CA1: ABERTURA2 é de quadro cheio, com 0,5 s de transição e 11 cenas');
+{ const H=load(), {L}=H, R=L.ABERTURA;
+  ok(R && R.cheio===true && R.trans===0.5 && R.cenas && R.cenas.length===11,'CA1: a ABERTURA é de quadro cheio, com 0,5 s de transição e 11 cenas');
   const cs=(R&&R.cenas)||[];
   ok(cs.map(c=>c.id).join()===ROT.map(r=>r[0]).join(),'CA1: os id, na ordem do roteiro ('+cs.map(c=>c.id).join()+')');
   ok(cs.length===11 && cs.every((c,i)=>c.t===ROT[i][1]) && cs.reduce((a,c)=>a+c.t,0)===77,'CA1: os tempos de cada cena e a soma de 77 s');
@@ -47,37 +47,36 @@ const FX_ONDE={ panela:[[1,0.4],[2,0.3],[4,0.5],[8,3.4]], clique:[[2,6.0]], sino
   ok(ab.texto && ab.texto()==='A Bia cresceu na porta da cozinha. Rosa: Vem provar, filha.','CA1: o texto do leitor de tela segue a regra de hoje');
 }
 
-// ---------- CA2: a abertura antiga segue como está ----------
+// ---------- CA2: o motor antigo segue valendo para o FINAL (v11.15: a abertura antiga saiu) ----------
 { const H=load({abertura:true}), {L,els,store}=H, ab=L.aberturaAtual();
-  ok(ab && ab.roteiro===L.ABERTURA && ab.origem==='auto' && ab.n===10 && mostra(els,'ov-abertura') && store.lcc2_abertura==='1','CA2: na 1ª vez toca sozinha a abertura antiga, de 10 cenas');
-  ok(ab && ab.cam && ab.cam.z===1 && perto(ab.cam.cx,L.TW/2) && ab.trans===null && ab.legA===1,'CA2: no roteiro antigo, câmera parada, sem transição nova, legenda inteira');
-  ok(ab && ab.escuro>0.9,'CA2: começa no escuro'); if(ab){ ab.update(2); ok(ab.escuro===0,'CA2: o escuro some em 0,5 s'); ab.t=ab.cena.t-0.25; ok(perto(ab.escuro,0.5,0.01),'CA2: e volta na saída de toda cena'); }
-  const ch=[]; H.ctx.fillRect=(x,y,w,h)=>ch.push([x,y,w,h]); if(ab){ ab.t=3; L.drawAbertura(H.ctx,ab); }
-  ok(ch.some(r=>r[0]===0 && r[1]===500 && r[2]===L.TW && r[3]===100),'CA2: com a faixa de legenda (0, 500, TW, 100)');
+  ok(ab && ab.roteiro===L.ABERTURA && ab.origem==='auto' && ab.n===11 && mostra(els,'ov-abertura') && store.lcc2_abertura==='1','CA2: na 1ª vez toca sozinha a abertura (a nova, de 11 cenas) e marca como vista');
+  const f=new L.Abertura('menu',false,L.FINAL,{est:3,creditos:true});
+  ok(f.cam && f.cam.z===1 && perto(f.cam.cx,L.TW/2) && f.trans===null && f.legA===1,'CA2: no FINAL, câmera parada, sem transição nova, legenda inteira');
+  ok(f.escuro>0.9,'CA2: o FINAL começa no escuro'); f.update(2); ok(f.escuro===0,'CA2: o escuro some em 0,5 s'); f.t=f.cena.t-0.25; ok(perto(f.escuro,0.5,0.01),'CA2: e volta na saída de toda cena');
+  const ch=[]; H.ctx.fillRect=(x,y,w,h)=>ch.push([x,y,w,h]); f.t=3; L.drawAbertura(H.ctx,f);
+  ok(ch.some(r=>r[0]===0 && r[1]===500 && r[2]===L.TW && r[3]===100),'CA2: o FINAL segue com a faixa de legenda (0, 500, TW, 100)');
   for(let i=0;i<20;i++) toque(els);
   ok(!L.aberturaAtual() && mostra(els,'ov-menu'),'CA2: no fim, o menu');
   els['btn-historia'].fire('click'); const b=L.aberturaAtual();
-  ok(b && b.roteiro===L.ABERTURA && b.origem==='menu' && b.n===10,'CA2: o botão do menu toca a antiga');
+  ok(b && b.roteiro===L.ABERTURA && b.origem==='menu' && b.n===11,'CA2: o botão do menu toca a abertura');
 }
 
-// ---------- CA3: o modo dev ----------
-{ const H=load(), {g,L,els,store}=H; L.DEV.on=true;
+// ---------- CA3: o modo dev (v11.15: a entrada "em obras" saiu; "Abertura" toca a nova) ----------
+{ const H=load(), {g,L,els}=H; L.DEV.on=true;
   const cs=L.devCenas();
-  ok(cs[0].rot==='Abertura' && cs[1].rot==='Abertura nova (em obras)','CA3: "Abertura nova (em obras)" vem logo depois de "Abertura"');
-  delete store.lcc2_abertura; g.setState('shop'); const st=g.state;
-  ok(L.devAssistir(1)===true,'CA3: assistir abre'); const ab=L.aberturaAtual();
-  ok(ab && ab.roteiro===L.ABERTURA2 && ab.n===11 && ab.i===0 && mostra(els,'ov-abertura'),'CA3: abre o roteiro novo, da cena 1');
-  ok(store.lcc2_abertura===undefined,'CA3: não grava LS.abertura');
+  ok(cs[0].rot==='Abertura' && !cs.some(c=>/em obras/.test(c.rot)),'CA3: há "Abertura" e não há mais "Abertura nova (em obras)"');
+  g.setState('menu');
+  ok(L.devAssistir(0)===true,'CA3: assistir abre'); const ab=L.aberturaAtual();
+  ok(ab && ab.roteiro===L.ABERTURA && ab.n===11 && ab.i===0 && mostra(els,'ov-abertura'),'CA3: abre o roteiro novo, da cena 1');
   const sv=JSON.stringify(g.save);
   for(let i=0;i<10;i++) toque(els); ok(L.aberturaAtual() && L.aberturaAtual().i===10,'CA3: 10 toques levam à cena 11');
-  toque(els); ok(!L.aberturaAtual() && g.state===st && !mostra(els,'ov-abertura'),'CA3: no fim, volta para onde estava ('+g.state+')');
-  ok(JSON.stringify(g.save)===sv && store.lcc2_abertura===undefined,'CA3: não mexe no save');
-  g.setState('menu'); L.devAssistir(1); els['btn-ab-pular'].fire('click'); ok(!L.aberturaAtual() && g.state==='menu','CA3: Pular também volta');
-  L.devAssistir(0); ok(L.aberturaAtual() && L.aberturaAtual().roteiro===L.ABERTURA,'CA3: "Abertura" segue abrindo a antiga');
+  toque(els); ok(!L.aberturaAtual() && g.state==='menu' && !mostra(els,'ov-abertura'),'CA3: no fim, volta ao menu');
+  ok(JSON.stringify(g.save)===sv,'CA3: não mexe no save');
+  L.devAssistir(0); els['btn-ab-pular'].fire('click'); ok(!L.aberturaAtual() && g.state==='menu','CA3: Pular também volta');
 }
 
 // ---------- CA4: a câmera ----------
-{ const H=load(), {L}=H, R=L.ABERTURA2, TW=L.TW;
+{ const H=load(), {L}=H, R=L.ABERTURA, TW=L.TW;
   const cabe=k=>k.z>=1 && k.cx-TW/2/k.z>=-1e-6 && k.cx+TW/2/k.z<=TW+1e-6 && k.cy-TH/2/k.z>=-1e-6 && k.cy+TH/2/k.z<=TH+1e-6;
   let ruim=[]; R.cenas.forEach((c,i)=>[0,0.25,0.5,0.75,1].forEach(p=>{ const k=L.ab2Cam(c,p); if(!cabe(k)) ruim.push((i+1)+'@'+p); }));
   ok(ruim.length===0,'CA4: nas 11 cenas, z é 1 ou mais e o retângulo visto cabe no quadro '+ruim.join(' '));
@@ -96,7 +95,7 @@ const FX_ONDE={ panela:[[1,0.4],[2,0.3],[4,0.5],[8,3.4]], clique:[[2,6.0]], sino
 }
 
 // ---------- CA5: transições, escuro e legenda ----------
-{ const H=load(), {L}=H, R=L.ABERTURA2, ab=new L.Abertura('menu',false,R);
+{ const H=load(), {L}=H, R=L.ABERTURA, ab=new L.Abertura('menu',false,R);
   let fora=true, dentro=true, cresce=true;
   R.cenas.forEach((c,i)=>{ ab.i=i; [0,1,c.t-0.6,c.t-0.5].forEach(t=>{ ab.t=t; if(ab.trans!==null) fora=false; });
     ab.t=c.t-0.4; const a=ab.trans; ab.t=c.t-0.1; const b=ab.trans;
@@ -120,7 +119,7 @@ const FX_ONDE={ panela:[[1,0.4],[2,0.3],[4,0.5],[8,3.4]], clique:[[2,6.0]], sino
 }
 
 // ---------- CA6: o som ----------
-{ const H=load(), {L,els}=H, R=L.ABERTURA2;
+{ const H=load(), {L,els}=H, R=L.ABERTURA;
   const N=R.cenas.map(c=>L.ab2Notas(c));
   ok(N.every(v=>Array.isArray(v) && v.length>=6 && v.every(n=>n.length===5)),'CA6: ab2Notas devolve 6 notas ou mais por cena, [freq, atraso, duração, onda, volume] ('+N.map(v=>v.length).join()+')');
   ok(N.every((v,i)=>v.every(n=>n[1]>=0 && n[1]<R.cenas[i].t && n[2]>0 && n[0]>0)),'CA6: todas começam antes do fim da cena');
@@ -144,23 +143,23 @@ const FX_ONDE={ panela:[[1,0.4],[2,0.3],[4,0.5],[8,3.4]], clique:[[2,6.0]], sino
   ok(L.Sfx.faixa()===null,'CA6: sem áudio, Sfx.faixa() devolve null');
   // trocar de cena corta a faixa e agenda as notas e os fx da cena nova na faixa nova
   { const S=L.Sfx; let cortes=0, tons=[], rui=0; const F={f:2}; S.corta=()=>{ cortes++; }; S.faixa=()=>F; S.tone=function(){ tons.push(Array.prototype.slice.call(arguments)); }; S.noise=function(){ rui++; };
-    L.DEV.on=true; L.devAssistir(1); const ab=L.aberturaAtual();
+    L.DEV.on=true; L.devAssistir(0); const ab=L.aberturaAtual();
     ok(cortes===1 && tons.length===N[0].length && tons.every(t=>t[6]===F) && rui===6,'CA6: abrir agenda as notas da cena 1 na faixa e o fx panela ('+tons.length+' notas, '+rui+' ruídos)');
     ok(tons[0][0]===392 && tons[0][2]==='triangle' && perto(tons[0][3],0.045) && tons[0][4]===0,'CA6: as notas vão para o Sfx.tone como [freq, dur, onda, volume, atraso]');
     tons=[]; toque(els); ok(cortes===2 && ab.i===1 && tons.length>=N[1].length,'CA6: o toque troca de cena e chama Sfx.corta');
     els['btn-ab-voltar'].fire('click'); ok(cortes===3 && ab.i===0,'CA6: Voltar também corta');
     ab.update(7.1); ok(cortes===4 && ab.i===1,'CA6: o fim da cena também');
     els['btn-ab-pular'].fire('click'); ok(cortes===5 && !L.aberturaAtual(),'CA6: fechar a abertura corta a faixa');
-    // a abertura antiga toca como hoje: 3 notas da cena 1, direto na saída de sempre, sem faixa
-    tons=[]; cortes=0; L.devAssistir(0); ok(tons.length===3 && tons.every(t=>t[6]===undefined) && tons[0][0]===523,'CA6: com ABERTURA, toca como hoje (3 notas, sem faixa)'); }
+    // o FINAL toca como sempre: as notas da cena 1 dele, direto na saída de sempre, sem faixa
+    tons=[]; cortes=0; L.devFinal(1); const nf=L.FINAL.cenas[0].som.length; ok(tons.length===nf && tons.every(t=>t[6]===undefined) && tons[0][0]===L.FINAL.cenas[0].som[0][0],'CA6: com o FINAL, toca como sempre ('+nf+' notas, sem faixa)'); }
 }
 
 // ---------- CA7: o desenho ----------
-{ [false,true].forEach(rm=>{ const H=load({rm}), {L}=H, R=L.ABERTURA2, ab=new L.Abertura('menu',rm,R);
+{ [false,true].forEach(rm=>{ const H=load({rm}), {L}=H, R=L.ABERTURA, ab=new L.Abertura('menu',rm,R);
     let erro=null; try{ R.cenas.forEach((c,i)=>{ ab.i=i; [0,0.5,0.95].forEach(p=>{ ab.t=c.t*p; ab.tm=10+i+p; L.drawAbertura(H.ctx,ab); }); }); } catch(e){ erro=e; }
     ok(!erro,'CA7: drawAbertura roda nas 11 cenas em p 0, 0,5 e 0,95'+(rm?', com movimento reduzido':'')+(erro?': '+erro.message+' '+String(erro.stack).split('\n')[1]:'')); });
-  const H=load(), {L}=H, R=L.ABERTURA2, TW=L.TW;
-  ok(L.AB2 && L.AB2.chao===520 && L.AB2.k===1.38,'CA7: AB2 = { chao:520, k:1.38 }');
+  const H=load(), {L}=H, R=L.ABERTURA, TW=L.TW;
+  ok(L.AB2 && L.AB2.chao===520 && L.AB2.k===1.38,'CA7: AB2 = { chao:520, k:1.38 }'); ok(L.ABERTURA2===undefined,'CA7: o nome ABERTURA2 não existe mais (v11.15)');
   ok(typeof L.AB2_CENAS.porta==='function' && typeof L.AB2_CENAS.carinho==='function' && Object.keys(L.AB2_CENAS).every(k=>R.cenas.some(c=>c.id===k)),'CA7: AB2_CENAS tem porta e carinho (e só cenas do roteiro); as que faltam são cartão de obra');
   // quadro cheio: nada da faixa antiga da legenda
   { const ab=new L.Abertura('menu',false,R), ch=[]; H.ctx.fillRect=(x,y,w,h)=>ch.push([x,y,w,h]); ab.t=3; ab.tm=3; L.drawAbertura(H.ctx,ab);

@@ -3,7 +3,7 @@
 
 Monta ferramentas/editor-montado.html com o jogo inteiro (lanchonete.html, montado de src/), um gancho para
 trocar funções de desenho enquanto ele roda e a interface do editor (editor.js e editor.css). Os números das
-funções de src/25-abertura.js (e dos outros arquivos passados) viram pontos e números arrastáveis.
+funções de src/27-abertura-nova.js e de src/25-abertura.js (e dos outros arquivos passados) viram pontos e números arrastáveis.
 
 Uso: python3 ferramentas/editor.py                abre em http://localhost:8765 (salva direto em src/)
      python3 ferramentas/editor.py --porta 9000   outra porta
@@ -18,7 +18,8 @@ import http.server, json, os, subprocess, sys, webbrowser
 AQUI = os.path.dirname(os.path.abspath(__file__))
 RAIZ = os.path.dirname(AQUI)
 SAIDA = os.path.join(AQUI, 'editor-montado.html')
-ARQUIVOS = ['src/25-abertura.js'] + [a for a in sys.argv[1:] if a.startswith('src/') and a.endswith('.js')]
+# v11.15: as cenas da abertura estão em 27-abertura-nova.js (AB2_CENAS); em 25-abertura.js ficam as pessoas e as cenas do final
+ARQUIVOS = ['src/27-abertura-nova.js', 'src/25-abertura.js'] + [a for a in sys.argv[1:] if a.startswith('src/') and a.endswith('.js') and a not in ('src/27-abertura-nova.js', 'src/25-abertura.js')]
 # o fim do código do jogo: o gancho entra antes, dentro do (function(){ ... })(), e enxerga as funções dele
 FIM = 'window.requestAnimationFrame(frame);\n\n})();'
 GANCHO = 'window.__ed = { ev: s => eval(s) };   // editor de desenhos: troca funções de desenho enquanto o jogo roda\n'

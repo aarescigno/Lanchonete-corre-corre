@@ -14,14 +14,14 @@ const passa=g=>{ let n=0; while(g.conversa && n<40){ g.conversa.seguir(); n++; }
 const ids=ab=>ab.cenas.map(c=>c.id);
 /* toca a abertura atual até o fim, cena por cena (seguir), e devolve os ids que passaram */
 const toca=(L)=>{ const v=[]; let ab=L.aberturaAtual(), n=0; while(ab && !ab.fim && n<30){ v.push(ab.cena.id); ab.seguir(); ab=L.aberturaAtual(); n++; } return v; };
-const ORIG=['casa','aurora','tempero','estrela','hospital','saudade','promessa','tonhao','banco','inauguracao'];
+const ORIG=['porta','carinho','aurora','molho','estrela','despedida','janela','promessa','tio','banco','portao'];   // v11.15: as 11 cenas da abertura nova
 const E1=['telefone','placa','apagou','retrato','escola','roda'], E2=['telefone','placa','apagou','retrato','equipe','escola','roda'], E3=['telefone','placa','apagou','retrato','equipe','escola','ceu','roda'];
 
 // ---------- 1. o motor: a abertura como antes e o FINAL (CA1) ----------
 { const L=load({ historia:true }).L;
   const a=new L.Abertura('menu',false);
-  ok(a.n===10 && ids(a).join()===ORIG.join() && a.cena.t===7 && a.cenas[4].pRM===0.55 && a.cenas[9].titulo==='O sonho da Bia','a abertura toca as mesmas dez cenas, tempos e títulos de antes');
-  ok(a.leg==='A Bia cresceu na cozinha de casa, vendo a mãe, a Rosa, cozinhar.' && a.texto().indexOf('Rosa: Comida boa é carinho')>=0,'a legenda e o texto do leitor de tela da abertura seguem iguais');
+  ok(a.n===11 && ids(a).join()===ORIG.join() && a.cena.t===7 && a.cenas[1].pRM===0.6 && a.cenas[10].titulo==='O sonho da Bia','a abertura toca as onze cenas dela (v11.15: a abertura nova), com os tempos e o título');
+  ok(a.leg==='A Bia cresceu na porta da cozinha.' && a.texto().indexOf('Rosa: Vem provar, filha.')>=0,'a legenda e o texto do leitor de tela da abertura (v11.15: os textos novos)');
   const f=new L.Abertura('menu',false,L.FINAL,{ est:3 });
   ok(L.FINAL.cenas.length===8 && L.FINAL.fade===0.5 && f.n===8 && f.cena.id==='telefone' && f.cena.t===6.5,'o roteiro FINAL tem oito cenas e a Abertura toca o que recebe');
   ok(L.FINAL.cenas.map(c=>c.t).join()==='6.5,8,7.5,8,8,8.5,8,9' && L.FINAL.cenas.map(c=>c.min).join()==='1,1,1,1,2,1,3,1','os tempos e as estrelas mínimas de cada cena (min) são os da spec');
@@ -79,11 +79,11 @@ const E1=['telefone','placa','apagou','retrato','escola','roda'], E2=['telefone'
 
 // ---------- 6. o botão História: "O final" (CA7) ----------
 { const semFinal=jogo(15,{ guia:GUIA({ est:0, visto:0, ver:0 }) }), {L,els}=semFinal; els['btn-historia'].fire('click');
-  ok(L.aberturaAtual() && L.aberturaAtual().cena.id==='casa' && !els['ov-escolha'].classList.contains('show'),'sem `visto`, o botão abre direto a abertura');
+  ok(L.aberturaAtual() && L.aberturaAtual().cena.id==='porta' && !els['ov-escolha'].classList.contains('show'),'sem `visto`, o botão abre direto a abertura');
   L.aberturaAtual().pular(); ok(!L.aberturaAtual(),'(a abertura termina)');
   const H=jogo(15,{ guia:GUIA({ est:2, visto:2, ver:0 }) }), h=H.els; H.L.buildMenu(); h['btn-historia'].fire('click');
   ok(!H.L.aberturaAtual() && h['ov-escolha'].classList.contains('show') && !!h['btn-esc-ab'] && !!h['btn-esc-final'],'com `visto` ≥ 1, o botão abre a escolha: "A abertura" ou "O final"');
-  h['btn-esc-ab'].fire('click'); ok(H.L.aberturaAtual() && H.L.aberturaAtual().cena.id==='casa','"A abertura" toca a abertura');
+  h['btn-esc-ab'].fire('click'); ok(H.L.aberturaAtual() && H.L.aberturaAtual().cena.id==='porta','"A abertura" toca a abertura');
   H.L.aberturaAtual().pular(); h['btn-historia'].fire('click'); h['btn-esc-final'].fire('click');
   ok(H.L.aberturaAtual() && ids(H.L.aberturaAtual()).join()===E2.concat('creditos').join(),'"O final" toca as cenas até o `visto` (2 estrelas), com os créditos');
   const antes=JSON.stringify(H.g.save); toca(H.L); ok(JSON.stringify(H.g.save)===antes,'rever não muda o save'); }

@@ -6,14 +6,14 @@ const perto=(a,b,e)=>Math.abs(a-b)<=(e||1e-6);
 const TH=600, CENAS=[['despedida',5,['rosa','bia']],['janela',6,[]],['promessa',7,['bia']]];
 
 // ---------- CA1: desenham sem erro e não são mais cartão de obra ----------
-[false,true].forEach(rm=>{ const H=load({rm}), {L}=H, R=L.ABERTURA2, ab=new L.Abertura('menu',rm,R);
+[false,true].forEach(rm=>{ const H=load({rm}), {L}=H, R=L.ABERTURA, ab=new L.Abertura('menu',rm,R);
   CENAS.forEach(([id,i])=>{ let erro=null; const tx=[]; H.ctx.fillText=s=>tx.push(s);
     let obra=false;   // (em p 0,95 a troca "passa" já mostra a cena seguinte, que pode estar em obra: o cartão só não pode aparecer até p 0,75)
     try{ ab.i=i; [0,0.25,0.5,0.75,0.95].forEach(p=>{ ab.t=R.cenas[i].t*p; ab.tm=40+i+p*7; L.drawAbertura(H.ctx,ab); if(p<=0.75 && tx.includes('cena em obras')) obra=true; }); } catch(e){ erro=e; }
     delete H.ctx.fillText;
     ok(!erro,'CA1: a cena '+(i+1)+' ('+id+') desenha em p 0, 0,25, 0,5, 0,75 e 0,95'+(rm?', com movimento reduzido':'')+(erro?': '+erro.message+' '+String(erro.stack).split('\n')[1]:''));
     ok(typeof L.AB2_CENAS[id]==='function' && !obra && !tx.includes(id),'CA1: a cena '+(i+1)+' não é mais cartão de obra'+(rm?' (movimento reduzido)':'')); }); });
-{ const H=load(), {L}=H, R=L.ABERTURA2;
+{ const H=load(), {L}=H, R=L.ABERTURA;
   ok(['despedida','janela','promessa'].every(k=>typeof L.AB2_CENAS[k]==='function'),'CA1: AB2_CENAS tem despedida, janela e promessa ('+Object.keys(L.AB2_CENAS).sort().join()+')');
   const ab=new L.Abertura('menu',false,R), tx=[]; H.ctx.fillText=s=>tx.push(s);
   const falta=R.cenas.map((c,i)=>i).filter(i=>!L.AB2_CENAS[R.cenas[i].id]); let n=0;
@@ -29,7 +29,7 @@ const TH=600, CENAS=[['despedida',5,['rosa','bia']],['janela',6,[]],['promessa',
 }
 
 // ---------- CA2: as cabeças de quem fala caem na tela, com 40 px de margem, no instante da fala ----------
-{ const H=load(), {L}=H, R=L.ABERTURA2, TW=L.TW;
+{ const H=load(), {L}=H, R=L.ABERTURA, TW=L.TW;
   CENAS.forEach(([id,i,quem])=>{ const c=R.cenas[i];
     ok(JSON.stringify(c.falas.map(f=>f.q))===JSON.stringify(quem),'CA2: na cena '+(i+1)+(quem.length?' fala(m) '+quem.join(' e '):' ninguém fala'));
     c.falas.forEach(f=>{ [f.de,f.de+0.9].forEach(t=>{ const p=t/c.t, cam=L.ab2Cam(c,p);
@@ -41,7 +41,7 @@ const TH=600, CENAS=[['despedida',5,['rosa','bia']],['janela',6,[]],['promessa',
 }
 
 // ---------- CA3: a 8 começa no quadro em que a 7 termina ----------
-{ const H=load(), {L}=H, R=L.ABERTURA2, c7=R.cenas[6], c8=R.cenas[7];
+{ const H=load(), {L}=H, R=L.ABERTURA, c7=R.cenas[6], c8=R.cenas[7];
   const a=L.ab2Cam(c7,1), b=L.ab2Cam(c8,0);
   ok(c7.sai==='segue' && perto(a.cx,b.cx) && perto(a.cy,b.cy) && perto(a.z,b.z),'CA3: a câmera do fim da 7 é a do começo da 8, e o sai da 7 é segue');
   const k0=L.ab2Cam(c7,0), k4=L.ab2Cam(c7,0.4), k5=L.ab2Cam(c7,0.5), k8=L.ab2Cam(c7,0.8);
