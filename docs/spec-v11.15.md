@@ -21,11 +21,11 @@ Valem, sem mudança de texto nem de número, `docs/ABERTURA.md` §3 (direção d
 - **Save:** nada muda.
 
 ## Critérios de aceite
-- **CA1** (`AB2_CENAS.tio`, `.banco` e `.portao` desenham sem erro em p 0, 0,25, 0,5, 0,75 e 0,95, com e sem movimento reduzido; `tonhao` na 9 e na 11 e `bia` na 10 caem na tela no instante da fala, com 40 px de margem) → `smoke90` (CA1)
-- **CA2** (`ABERTURA` é o roteiro novo: 11 cenas, os `id` e os textos de `docs/ABERTURA.md` §4, soma 77 s; `ABERTURA2` não existe; nenhuma cena cai em cartão de obra) → `smoke90` (CA2)
+- **CA1** (`AB2_CENAS.tio`, `.banco` e `.portao` desenham sem erro em p 0, 0,25, 0,5, 0,75 e 0,95, com e sem movimento reduzido; `tonhao` na 9 e na 11 e `bia` na 10 caem na tela no instante da fala, com 40 px de margem) → `smoke91` (CA1)
+- **CA2** (`ABERTURA` é o roteiro novo: 11 cenas, os `id` e os textos de `docs/ABERTURA.md` §4, soma 77 s; `ABERTURA2` não existe; nenhuma cena cai em cartão de obra) → `smoke91` (CA2)
 - **CA3** (a abertura nova toca sozinha na 1ª vez e marca `LS.abertura`; pelo botão, volta ao menu; o toque segue, Voltar volta, Pular termina; não mexe no save; com movimento reduzido só o toque avança; o som da cena é cortado ao trocar; depois de "Recomeçar do zero" (v11.11), é a nova que toca e segue para a Missão zero) → `smoke26` reescrito
-- **CA4** (modo dev: há "Abertura" e não há "Abertura nova (em obras)"; "Abertura" abre o roteiro novo) → `smoke90` (CA4)
-- **CA5** (as 10 cenas antigas não existem mais na `AB_CENAS`; as do `FINAL` existem e desenham sem erro com 1, 2 e 3 estrelas) → `smoke90` (CA5) e `smoke76` sem mudança
+- **CA4** (modo dev: há "Abertura" e não há "Abertura nova (em obras)"; "Abertura" abre o roteiro novo) → `smoke91` (CA4)
+- **CA5** (as 10 cenas antigas não existem mais na `AB_CENAS`; as do `FINAL` existem e desenham sem erro com 1, 2 e 3 estrelas) → `smoke91` (CA5) e `smoke76` sem mudança
 - **CA6** (o `#ov-abertura` cabe nos 14 tamanhos de tela) → `python3 menu_fit.py`
 - **CA7** (o que se vê) → captura `shot_v11_15.js`: as cenas 9, 10 e 11 em p 0,25, 0,6 e 0,9 (1220 x 600 e 844 x 390), a 11 também em p 0,5 e 0,75 (o portão subindo e o letreiro acendendo), e a folha das 11 cenas em p 0,6; conferir em recorte, contra `docs/ABERTURA.md` §3 e §9: na 9 o avental fica na maçaneta e a touca na cabeça; na 10 o "APROVADO" se lê; na 11 a luz sai da garagem para a calçada, o letreiro acende, a estrela pisca e o título não cobre ninguém; as 11 cenas juntas têm unidade de luz e de cor
 
@@ -37,7 +37,7 @@ Valem, sem mudança de texto nem de número, `docs/ABERTURA.md` §3 (direção d
 - `src/10-constantes.js` (`VERSAO`) e `src/02-telas.html` (`vtag`, `#ov-ver`).
 
 ## Tarefas
-- [ ] T1 Smoke novo `tests/smoke90.js` (CA1, CA2, CA4 e CA5) e o `tests/smoke26.js` reescrito (CA3), vistos falhar; `smoke90` no `tests/run_all.sh`.
+- [ ] T1 Smoke novo `tests/smoke91.js` (CA1, CA2, CA4 e CA5) e o `tests/smoke26.js` reescrito (CA3), vistos falhar; `smoke91` no `tests/run_all.sh`.
 - [ ] T2 A cena 9, `tio`; captura, recorte e acerto.
 - [ ] T3 `ab2Banco` e a cena 10, `banco`; captura, recorte e acerto.
 - [ ] T4 `ab2RuaCasa` e a cena 11, `portao`; captura, recorte e acerto.
@@ -54,7 +54,7 @@ Valem, sem mudança de texto nem de número, `docs/ABERTURA.md` §3 (direção d
 - Se as cenas não ficarem bonitas em duas rodadas de captura, pare e avise.
 
 ## Testes
-`smoke90` novo; `smoke26` reescrito para a abertura nova; `smoke87` a `smoke89` ajustados onde citavam `ABERTURA2` ou a entrada "em obras"; `smoke76` sem mudança; `tests/run_all.sh --tudo` verde (o `menu_fit` confere o `#ov-abertura`). Capturas de `shot_v11_15.js` conferidas e apagadas. (No fechamento: o número de checagens do `smoke90` e do `smoke26`.)
+`smoke91` novo; `smoke26` reescrito para a abertura nova; `smoke88` a `smoke90` ajustados onde citavam `ABERTURA2` ou a entrada "em obras"; `smoke76` sem mudança; `tests/run_all.sh --tudo` verde (o `menu_fit` confere o `#ov-abertura`). Capturas de `shot_v11_15.js` conferidas e apagadas. (No fechamento: o número de checagens do `smoke91` e do `smoke26`.)
 
 ## Decisões em aberto
 Nenhuma.

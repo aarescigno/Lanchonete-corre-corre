@@ -21,13 +21,13 @@ ok(!g.devCumpre(),'no Livre devCumpre não faz nada'); g.devReal(true);
 
 // 2. as cenas
 { const c=L.devCenas();
-  ok(c.length===1+2*L.HISTORIA.length+15+L.LIBERA.length+L.ARCO.length+L.ARCO.filter(a=>a.falasB).length,'devCenas: '+c.length+' itens (15 = 13 + a 2ª chance do banco na Avenida, v11.1, e a nota baixa, v11.11.1; mais as do ARCO, v11.3, e as versões B, v11.6)');
-  ok(c[0].rot==='Abertura' && c[1].rot==='Cap. 1, antes' && c[2].rot==='Cap. 1, depois' && c.some(x=>x.rot==='Cartão: bia') && c.slice(1).every(x=>x.falas && x.falas.length),'rótulos e falas'); }
+  ok(c.length===2+2*L.HISTORIA.length+15+L.LIBERA.length+L.ARCO.length+L.ARCO.filter(a=>a.falasB).length,'devCenas: '+c.length+' itens (15 = 13 + a 2ª chance do banco na Avenida, v11.1, e a nota baixa, v11.11.1; mais as do ARCO, v11.3, e as versões B, v11.6; 2 = a abertura e a abertura nova, v11.12)');
+  ok(c[0].rot==='Abertura' && c[1].rot==='Abertura nova (em obras)' && c[2].rot==='Cap. 1, antes' && c[3].rot==='Cap. 1, depois' && c.some(x=>x.rot==='Cartão: bia') && c.slice(2).every(x=>x.falas && x.falas.length),'rótulos e falas'); }
 
 // 3. assistir não muda o save
 g.devCapitulo(5); g.setState('menu');
 { const antes=JSON.stringify(g.save), n=L.devCenas().length;
-  [1,2,n-1].forEach(i=>{ ok(L.devAssistir(i) && g.conversa,'assistir cena '+i+' abre a conversa'); passa(); });
+  [2,3,n-1].forEach(i=>{ ok(L.devAssistir(i) && g.conversa,'assistir cena '+i+' abre a conversa'); passa(); });
   ok(JSON.stringify(g.save)===antes && g.state==='menu','assistir não muda o save e volta ao menu'); }
 
 // 4. revelar o Manual e a lojinha
