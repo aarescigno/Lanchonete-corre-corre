@@ -33,7 +33,7 @@ function abRosa(c,x,y,s,o){
     bracoE:o.bracoE, bracoD:o.bracoD, pisca:!!o.fecha || abPisca(o.t || 0,0.3), fala:abBoca('rosa'), olha:o.olha, back:!!o.costas });   // v11.12: bracoE (a abertura nova posa os dois braços); v11.13: fecha (olhos fechados) e costas
   c.scale(s,s);
   if (o.avental !== false){ c.beginPath(); c.moveTo(-8,-29); c.lineTo(8,-29); c.lineTo(11,-12); c.lineTo(-11,-12); c.closePath(); fs(c,o.avental || '#fff',2); }
-  abFlor(c,9,-53,3.2);
+  if (!o.semFlor) abFlor(c,9,-53,3.2);   // v11.14: semFlor (no quarto, a flor está no copo)
   c.restore();
 }
 // a Bia criança: cabelão redondo com laço amarelo e vestido mostarda; sentada, as pernas ficam penduradas no assento
@@ -47,7 +47,7 @@ function abBiaCrianca(c,x,y,s,o){
     c.restore();
   }
   drawPerson(c,{ kid:true, skin:4, hair:3, hairC:'#15100D', pants:'#7B4A2C' },x,y,{ s, shirt:PAL.mostarda, handUp:!!o.aceno, t:o.t || 0, mood:o.mood || 0, sit:!!o.sentada, noShadow:!!o.sentada, moving:!!o.andando, ph:o.ph || 0,   // v11.12: andando
-    bracoE:o.bracoE, bracoD:o.bracoD, pisca:!!o.fecha || abPisca(o.t || 0,2.6), fala:abBoca('bia'), olha:o.olha });   // v11.12: fecha (olhos fechados) e olha
+    bracoE:o.bracoE, bracoD:o.bracoD, pisca:!!o.fecha || abPisca(o.t || 0,2.6), fala:abBoca('bia'), olha:o.olha, back:!!o.costas });   // v11.12: fecha (olhos fechados) e olha; v11.14: costas
   c.save(); c.translate(x,y + (o.sentada ? 12 * k : 0)); c.scale(k,k);
   if (o.andando && !RM) c.translate(0,-Math.abs(Math.sin(o.ph || 0)) * 2.4);   // v11.12: o laço sobe e desce com a cabeça, no passo
   c.beginPath(); c.moveTo(12,-58); c.lineTo(20,-64); c.lineTo(20,-52); c.closePath(); fs(c,PAL.alerta,1.5);

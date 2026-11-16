@@ -40,7 +40,7 @@ const FX_ONDE={ panela:[[1,0.4],[2,0.3],[4,0.5],[8,3.4]], clique:[[2,6.0]], sino
   ok(cs.length===11 && cs.every((c,i)=>JSON.stringify(c.falas.map(f=>[f.q,f.s,f.de]))===JSON.stringify(ROT[i][4])),'CA1: as falas (quem, texto e de), letra por letra');
   ok(cs.length===11 && cs.every((c,i)=>c.sai===ROT[i][5]),'CA1: os sai ('+cs.map(c=>c.sai).join()+')');
   ok(cs.length===11 && cs.every((c,i)=>c.cam && JSON.stringify(c.cam.de)===JSON.stringify(ROT[i][6]) && JSON.stringify(c.cam.para)===JSON.stringify(ROT[i][7])),'CA1: as câmeras (de e para) de §6 a §9');
-  ok(cs.length===11 && JSON.stringify(cs[7].cam.meio)==='[610,300,1.1,0.5]' && cs.every((c,i)=>i===7 || !c.cam.meio),'CA1: só a cena 8 tem cam.meio');
+  ok(cs.length===11 && JSON.stringify(cs[7].cam.meio)==='[610,300,1.1,0.5]' && JSON.stringify(cs[6].cam.meio)==='[610,300,1,0.5]' && cs.every((c,i)=>i===7 || i===6 || !c.cam.meio),'CA1: a cena 8 tem cam.meio; a 7, um meio igual ao de (a câmera parada até a metade, v11.14)');
   ok(cs.length===11 && cs.every((c,i)=>c.clima===ROT[i][8] && JSON.stringify(c.fx||[])===JSON.stringify(ROT[i][9])),'CA1: os climas e os fx');
   ok(cs.length===11 && cs.every((c,i)=>(c.titulo||'')===(i===10?'O sonho da Bia':'')) && cs[1].pRM===0.6 && cs[5].pRM===0.7 && cs.every((c,i)=>i===1||i===5||c.pRM==null),'CA1: titulo só na 11; pRM 0,6 na 2 e 0,7 na 6');
   const ab=new (L.Abertura)('menu',false,R);
