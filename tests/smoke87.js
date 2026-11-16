@@ -1,4 +1,4 @@
-// v11.12: a conversa da 1ª nota baixa (estrelas do fim da fase 2 ou menos, ou nota do dia no Gúgou de 2,0 ou menos com 3 ou mais avaliações): a Bia desabafa, o Tonhão consola. Só na 1ª vez, só no Modo História.
+// v11.11.1: a conversa da 1ª nota baixa (estrelas do fim da fase 2 ou menos, ou nota do dia no Gúgou de 2,0 ou menos com 3 ou mais avaliações): a Bia desabafa, o Tonhão consola. Só na 1ª vez, só no Modo História.
 const load=require('./harness.js');
 let fails=0,total=0; const ok=(c,m)=>{ total++; if(!c){fails++;console.log('FAIL:',m);} else console.log('ok  :',m); };
 const toque=els=>els['c'].fire('pointerdown',{preventDefault(){},pointerId:1,clientX:300,clientY:200,pointerType:'mouse'});

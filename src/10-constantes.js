@@ -1382,7 +1382,7 @@ const HIST_RECOMENDA = { falas:[
   { q:'tonhao', e:'insegura', s:'O guia ligou. Somos "recomendados".' },
   { q:'bia', s:'Recomendado não é estrela.' },
   { q:'bia', e:'firme', s:'Mas ele volta. Eu arrumo a casa e marco outra noite.' } ] };
-/* v11.12: a conversa da 1ª nota baixa do dia: as estrelas do fim da fase (`estrelas` ou menos) ou a nota do dia no Gúgou (`ate` ou menos, com `n` ou mais avaliações), só no Modo História. save.convNota: 0 | 'pend' | 1 */
+/* v11.11.1: a conversa da 1ª nota baixa do dia: as estrelas do fim da fase (`estrelas` ou menos) ou a nota do dia no Gúgou (`ate` ou menos, com `n` ou mais avaliações), só no Modo História. save.convNota: 0 | 'pend' | 1 */
 const HIST_NOTA = { on:true, estrelas:2, ate:2, n:3, falas:[
   { q:'bia', e:'insegura', nota:'olhando a nota no Gúgou', s:'Eu me esforcei tanto hoje, tio... e não agradei todo mundo. Por quê?' },
   { q:'tonhao', s:'É a vida, Bia. Prato que agrada a cidade inteira não existe.' },
@@ -1679,7 +1679,7 @@ const BIA_IDS = ['tenis', 'corrida', 'bandeja', 'sudoku'];
 function upgradeCartao(id){ return BIA_IDS.indexOf(id) >= 0 ? 'bia' : 'melhorias'; }
 const HIST_NOMES = { bia:'Bia', tonhao:'Tonhão', dani:'Dani', joca:'Joca', cami:'Cami', anselmo:'Anselmo', lia:'Lia', braulio:'Bráulio' };   // v11.6: o Bráulio
 const CAIXA_MAX = 14;                                 // livro-caixa (v7.2): quantos dias da carreira ficam guardados
-const VERSAO = 'v11.12';                               // vai no resumo do Caixa
+const VERSAO = 'v11.11.1';                               // vai no resumo do Caixa
 const DIVULGA_DIA = 4;                                // antes disso, o movimento é o da inauguração (sem custo); v9.0.2: dia 4, e o padrão é o boca a boca
 function divulgaAberta(n, sv){ return devLivre() || n >= DIVULGA_DIA && !(sv && sv.convDiv === 'pend'); }   // no modo dev, desde o dia 1; v9.0.3: no Modo História, só depois da conversa
 /* v9.6.4: a Efood (os entregadores) só abre depois da conversa dos entregadores, no Modo História; antes dela, nenhum tipo com `retira` vem na agenda */

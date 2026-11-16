@@ -143,7 +143,7 @@ function fluxoHistoria(fim, n){
   const lib = id => sv.libera[id] === 'pend' ? () => libera(id) : null;
   const passos = [
     () => sv.convSocorro === 'pend' ? () => falar(socorroFalas(sv), () => { sv.convSocorro = 1; writeSave(sv); prox(); }) : null,   // v9.6.13: a 2ª chance do banco
-    () => sv.convNota === 'pend' ? () => falar(HIST_NOTA.falas, () => { sv.convNota = 1; writeSave(sv); prox(); }) : null,   // v11.12: a 1ª nota baixa do dia
+    () => sv.convNota === 'pend' ? () => falar(HIST_NOTA.falas, () => { sv.convNota = 1; writeSave(sv); prox(); }) : null,   // v11.11.1: a 1ª nota baixa do dia
     () => sv.convExig === 'pend' ? () => falar(HIST_EXIGENTE.falas, () => { sv.convExig = 1; writeSave(sv); prox(); }) : null,   // v10.1: o cliente exigente
     () => sv.convCrit === 'pend' ? () => falar(HIST_CRITICO.falas, () => { sv.convCrit = 1; writeSave(sv); prox(); }) : null,   // v10.9: o crítico era o freguês do caderninho
     () => sv.convEnt === 'pend' ? () => falar(HIST_ENTREGA.falas, () => { sv.convEnt = 1; writeSave(sv); prox(); }) : null,   // v9.6.2; v9.6.4
