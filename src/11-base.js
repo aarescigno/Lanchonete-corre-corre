@@ -30,7 +30,7 @@ const Sfx = {
     } catch(e) { this.ctx = null; }
   },
   resume(){ try { if (this.ctx && this.ctx.state === 'suspended') this.ctx.resume(); } catch(e) {} },
-  tone(f, dur, type, vol, delay, to){
+  tone(f, dur, type, vol, delay, to, saida){   // v11.12: saida, um nó de ganho de Sfx.faixa() (sem ela, a saída de sempre)
     if (!this.ctx || this.muted) return;
     try {
       const c = this.ctx, t0 = c.currentTime + (delay||0);
@@ -41,11 +41,11 @@ const Sfx = {
       g.gain.setValueAtTime(0.0001, t0);
       g.gain.exponentialRampToValueAtTime(vol || 0.06, t0 + 0.012);
       g.gain.exponentialRampToValueAtTime(0.0001, t0 + dur);
-      o.connect(g); g.connect(c.destination);
+      o.connect(g); g.connect(saida || c.destination);
       o.start(t0); o.stop(t0 + dur + 0.03);
     } catch(e) {}
   },
-  noise(dur, vol, delay, freq){
+  noise(dur, vol, delay, freq, saida){
     if (!this.ctx || this.muted) return;
     try {
       const c = this.ctx, t0 = c.currentTime + (delay||0);
@@ -55,8 +55,22 @@ const Sfx = {
       const s = c.createBufferSource(); s.buffer = buf;
       const f = c.createBiquadFilter(); f.type = 'lowpass'; f.frequency.value = freq || 800;
       const g = c.createGain(); g.gain.value = vol || 0.1;
-      s.connect(f); f.connect(g); g.connect(c.destination);
+      s.connect(f); f.connect(g); g.connect(saida || c.destination);
       s.start(t0);
+    } catch(e) {}
+  },
+  // v11.12 (a abertura nova): uma faixa é um nó de ganho ligado à saída, para cortar de uma vez tudo o que foi agendado nela (null sem áudio)
+  faixa(){
+    if (!this.ctx) return null;
+    try { const g = this.ctx.createGain(); g.gain.value = 1; g.connect(this.ctx.destination); return g; } catch(e) { return null; }
+  },
+  // leva a faixa a zero em 0,15 s e a desliga
+  corta(fx){
+    if (!fx || !this.ctx) return;
+    try {
+      const t = this.ctx.currentTime;
+      fx.gain.cancelScheduledValues(t); fx.gain.setValueAtTime(fx.gain.value, t); fx.gain.linearRampToValueAtTime(0, t + 0.15);
+      setTimeout(() => { try { fx.disconnect(); } catch(e) {} }, 400);
     } catch(e) {}
   },
   blip(){  this.tone(620, 0.07, 'square', 0.05); },

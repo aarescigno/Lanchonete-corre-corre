@@ -30,7 +30,7 @@ function abRosa(c,x,y,s,o){
   o = o || {};
   c.save(); c.translate(x,y); c.scale(o.flip || 1,1);   // flip -1: espelhada (o braço direito fica do lado esquerdo)
   drawPerson(c,{ skin:3, hair:2, hairC:'#1B1512', pants:'#4A4036' },0,0,{ s, shirt:o.roupa || AB_COR.rosa, mood:o.mood || 0, handUp:!!o.aceno, t:o.t || 0, moving:!!o.andando, ph:o.ph || 0,
-    bracoD:o.bracoD, pisca:abPisca(o.t || 0,0.3), fala:abBoca('rosa'), olha:o.olha });
+    bracoE:o.bracoE, bracoD:o.bracoD, pisca:abPisca(o.t || 0,0.3), fala:abBoca('rosa'), olha:o.olha });   // v11.12: bracoE (a abertura nova posa os dois braços)
   c.scale(s,s);
   if (o.avental !== false){ c.beginPath(); c.moveTo(-8,-29); c.lineTo(8,-29); c.lineTo(11,-12); c.lineTo(-11,-12); c.closePath(); fs(c,o.avental || '#fff',2); }
   abFlor(c,9,-53,3.2);
@@ -46,9 +46,10 @@ function abBiaCrianca(c,x,y,s,o){
     ell(c,-4.5,10,5,2.6); fs(c,'#2c2a26',1.6); ell(c,4.5,10,5,2.6); fs(c,'#2c2a26',1.6);
     c.restore();
   }
-  drawPerson(c,{ kid:true, skin:4, hair:3, hairC:'#15100D', pants:'#7B4A2C' },x,y,{ s, shirt:PAL.mostarda, handUp:!!o.aceno, t:o.t || 0, mood:o.mood || 0, sit:!!o.sentada, noShadow:!!o.sentada,
-    bracoE:o.bracoE, bracoD:o.bracoD, pisca:abPisca(o.t || 0,2.6), fala:abBoca('bia') });
+  drawPerson(c,{ kid:true, skin:4, hair:3, hairC:'#15100D', pants:'#7B4A2C' },x,y,{ s, shirt:PAL.mostarda, handUp:!!o.aceno, t:o.t || 0, mood:o.mood || 0, sit:!!o.sentada, noShadow:!!o.sentada, moving:!!o.andando, ph:o.ph || 0,   // v11.12: andando
+    bracoE:o.bracoE, bracoD:o.bracoD, pisca:!!o.fecha || abPisca(o.t || 0,2.6), fala:abBoca('bia'), olha:o.olha });   // v11.12: fecha (olhos fechados) e olha
   c.save(); c.translate(x,y + (o.sentada ? 12 * k : 0)); c.scale(k,k);
+  if (o.andando && !RM) c.translate(0,-Math.abs(Math.sin(o.ph || 0)) * 2.4);   // v11.12: o laço sobe e desce com a cabeça, no passo
   c.beginPath(); c.moveTo(12,-58); c.lineTo(20,-64); c.lineTo(20,-52); c.closePath(); fs(c,PAL.alerta,1.5);
   c.beginPath(); c.moveTo(12,-58); c.lineTo(4,-66); c.lineTo(5,-53); c.closePath(); fs(c,PAL.alerta,1.5);
   c.restore();
@@ -973,6 +974,7 @@ function abLegenda(c,ab){
   txt(c,'toque para seguir',TW - 20,586,13,'#b8ae98','right',FB);
 }
 function drawAbertura(c,ab){
+  if (ab.roteiro.cheio) return drawAbertura2(c,ab);   // v11.12: a abertura nova (27-abertura-nova.js)
   const T = RM || ab.rm ? 0 : ab.tm;
   // a boca de quem fala abre e fecha nos primeiros segundos do balão (nada disso com movimento reduzido)
   AB_VIVO.fala = {}; AB_VIVO.est = ab.est;

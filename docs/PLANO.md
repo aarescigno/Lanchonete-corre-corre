@@ -16,11 +16,10 @@ Origem: retorno do Renan Martorelli (beta-tester) e conversa com o Arthur (15/10
 | # | Etapa | Versão | Situação |
 |---|---|---|---|
 | 5 | ~~Modo História, parte 1~~: juntou-se à 2f e aos capítulos da 3a, 3b e 4a (28/10) | — | — |
-| 8h | As reações da Bia durante o dia | v11.8 | feita em 15/11 (`docs/spec-v11.8.md`; `smoke84`; `BIA_REACAO`, `Waitress.reage` e `drawBia({ reacao })`; três gestos por ponto; a Etapa 8 está completa) |
 | 7a | Acertos do polimento: o nome no Ranking, a Divulgação na hora certa e o trio com três músicos | v11.9 | feita em 15/11 (`docs/spec-v11.9.md`; `smoke85`; `rankAuto`, `Rank.renomeiaLocal`, `shopSecoesVis` e `TRIO`) |
 | 7b | As telas no celular: a lojinha com o topo fixo, os painéis pequenos e as Versões enxutas | v11.10 | feita em 15/11 (`docs/spec-v11.10.md`; `smoke86` e `menu_fit.py` com 630 conferências; só o `#shop-grid` rola; a Etapa 7 está completa) |
-| 9a | A abertura nova: o motor, o som e as cenas 1 e 2 | v11.12 | **a próxima** (`docs/spec-v11.12.md`, aprovada em 15/11) |
-| 9b | A abertura nova: as cenas da Casa Aurora (3, 4 e 5) | v11.13 | planejada (`docs/spec-v11.13.md`, aprovada em 15/11) |
+| 9a | A abertura nova: o motor, o som e as cenas 1 e 2 | v11.12 | feita em 16/11 (`docs/spec-v11.12.md`; `smoke88`; `ABERTURA2`, a câmera que encosta na borda, o tema da Rosa, `src/27-abertura-nova.js` com a cozinha de casa e as cenas `porta` e `carinho`; só pelo modo dev) |
+| 9b | A abertura nova: as cenas da Casa Aurora (3, 4 e 5) | v11.13 | **a próxima** (`docs/spec-v11.13.md`, aprovada em 15/11) |
 | 9c | A abertura nova: a perda e a promessa (6, 7 e 8) | v11.14 | planejada (`docs/spec-v11.14.md`, aprovada em 15/11) |
 | 9d | A abertura nova no ar: as cenas 9, 10 e 11, a troca e a limpeza | v11.15 | planejada (`docs/spec-v11.15.md`, aprovada em 15/11) |
 | 10 | O final no mesmo tratamento da abertura | — | planejar com o Opus antes |
