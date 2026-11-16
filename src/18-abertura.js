@@ -94,7 +94,8 @@ const ABERTURA2 = { cheio:true, trans:0.5, cenas:[
     cam:{ de:[560,400,2], para:[575,330,2] }, sai:'escuro', clima:'triste', fx:[] },
   { id:'janela', t:7, leg:'A Rosa partiu.', legDe:1.0,
     falas:[],
-    cam:{ de:[610,300,1], para:[700,280,1.35] }, sai:'segue', clima:'triste', fx:[['chuva',0.2],['estrela',3.9]] },
+    cam:{ de:[610,300,1], meio:[610,300,1,0.5], para:[700,280,1.35] }, sai:'segue', clima:'triste',   // v11.14: a câmera fica parada até a metade
+    fx:[['chuva',0.2],['estrela',3.9]] },
   { id:'promessa', t:8, leg:'A Bia cresceu. E fez uma promessa.', legDe:0.8,
     falas:[{ q:'bia', s:'Essa estrela vai ser nossa, mãe.', de:4.6 }],
     cam:{ de:[700,280,1.35], meio:[610,300,1.1,0.5], para:[650,290,1.6] }, sai:'passa', clima:'esperanca', fx:[['panela',3.4],['estrela',6.8]] },

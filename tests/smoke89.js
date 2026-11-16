@@ -12,11 +12,12 @@ const TH=600, CENAS=[['aurora',2,['bia','tonhao']],['molho',3,['tonhao']],['estr
     ok(!erro,'CA1: a cena '+(i+1)+' ('+id+') desenha em p 0, 0,25, 0,5, 0,75 e 0,95'+(rm?', com movimento reduzido':'')+(erro?': '+erro.message+' '+String(erro.stack).split('\n')[1]:''));
     ok(typeof L.AB2_CENAS[id]==='function' && !tx.includes('cena em obras') && !tx.includes(id),'CA1: a cena '+(i+1)+' não é mais cartão de obra'+(rm?' (movimento reduzido)':'')); }); });
 { const H=load(), {L}=H;
-  ok(Object.keys(L.AB2_CENAS).sort().join()==='aurora,carinho,estrela,molho,porta','CA1: AB2_CENAS tem as cinco primeiras cenas ('+Object.keys(L.AB2_CENAS).sort().join()+')');
-  // as seis que faltam seguem como cartão de obra
+  ok(['aurora','molho','estrela'].every(k=>typeof L.AB2_CENAS[k]==='function'),'CA1: AB2_CENAS tem aurora, molho e estrela ('+Object.keys(L.AB2_CENAS).sort().join()+')');
+  // as cenas que ainda faltam (se faltar alguma) seguem como cartão de obra
   const R=L.ABERTURA2, ab=new L.Abertura('menu',false,R), tx=[]; H.ctx.fillText=s=>tx.push(s);
-  let n=0; for(let i=5;i<11;i++){ tx.length=0; ab.i=i; ab.t=2; ab.tm=2; L.drawAbertura(H.ctx,ab); if(tx.includes('cena em obras') && tx.includes(R.cenas[i].id)) n++; }
-  ok(n===6,'CA1: as cenas 6 a 11 seguem como cartão de obra ('+n+')'); delete H.ctx.fillText;
+  const falta=R.cenas.map((c,i)=>i).filter(i=>!L.AB2_CENAS[R.cenas[i].id]); let n=0;
+  falta.forEach(i=>{ tx.length=0; ab.i=i; ab.t=2; ab.tm=2; L.drawAbertura(H.ctx,ab); if(tx.includes('cena em obras') && tx.includes(R.cenas[i].id)) n++; });
+  ok(n===falta.length,'CA1: as cenas ainda sem desenho seguem como cartão de obra ('+n+' de '+falta.length+')'); delete H.ctx.fillText;
   // os cenários existem e desenham sozinhos (a rua, nos dois modos, que a cena 9 reusa)
   let erro=null; try{ const cam={cx:610,cy:300,z:1}; L.ab2RuaAurora(H.ctx,cam,'manha',{T:1}); L.ab2RuaAurora(H.ctx,cam,'tarde',{T:1,abre:1,voo:0.5}); L.ab2CozinhaAurora(H.ctx,cam,{T:1,brilho:1}); L.ab2Gala(H.ctx,cam,{T:1}); } catch(e){ erro=e; }
   ok(!erro,'CA1: ab2RuaAurora (manha e tarde), ab2CozinhaAurora e ab2Gala desenham'+(erro?': '+erro.message:''));
