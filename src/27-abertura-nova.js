@@ -1,9 +1,9 @@
 /* ============================================================
-   ABERTURA NOVA (v11.12, etapa 9a; docs/ABERTURA.md §3 e §6): o desenho
+   ABERTURA (refeita da v11.12 à v11.15, etapa 9; docs/ABERTURA.md): o desenho
    Quadro cheio (TW x H). Cada cena é desenhada no espaço da cena e vista pela câmera (Abertura.cam): o fundo (paralaxe menor que 1), o meio
    (paralaxe 1, onde as pessoas pisam, em y = AB2.chao) e a frente (maior que 1, silhuetas escuras nas bordas), com uma fonte de luz, sombras,
    a camada de cor do clima e a vinheta. A cena recebe (c, p, T, cam) e devolve a cabeça de quem fala, no espaço da cena ([x, y, deslocamento
-   do balão]); os balões, a legenda e as bolinhas vão no espaço da tela. Cena ainda sem desenho toca como cartão de obra (ab2Obra).
+   do balão]); os balões, a legenda e as bolinhas vão no espaço da tela.
    ============================================================ */
 const AB2 = { chao:520, k:1.38 };   // o chão dos planos abertos e o tamanho das pessoas sobre o abEsc (o adulto com 290 px)
 
@@ -1049,6 +1049,168 @@ function ab2Quarto(c,cam,o){
   ab2Vinheta(c,0.58);
 }
 
+/* ---------- o cenário "banco", por dentro (cena 10) ---------- */
+const AB2_BCO = { balcao:330, papel:[640,336], gerente:[640,424] };
+/* o banco. o: { T, gerente(c): atrás do balcão e da grade, papel(c): em cima da prancheta do balcão, gente(c): diante do balcão } */
+function ab2Banco(c,cam,o){
+  o = o || {};
+  const T = o.T || 0, B = AB2_BCO, by = B.balcao, Y = AB2.chao;
+  ab2Camada(c,cam,0.85,() => {
+    // a parede azul com frisos, o lambri de madeira, duas colunas, o relógio grande e o letreiro "Banco"
+    const g = c.createLinearGradient(0,0,0,300); g.addColorStop(0,'#28335A'); g.addColorStop(1,'#34416C'); c.fillStyle = g; c.fillRect(0,0,TW,H);
+    c.fillStyle = 'rgba(255,255,255,.045)'; for (let x = 6; x < TW; x += 40) c.fillRect(x,0,14,300);
+    c.fillStyle = '#8A5226'; c.fillRect(0,300,TW,H - 300); c.fillStyle = '#C97B4A'; c.fillRect(0,296,TW,8);
+    c.strokeStyle = 'rgba(0,0,0,.28)'; c.lineWidth = 2.5; c.beginPath(); for (let x = 20; x < TW; x += 118) c.rect(x,322,96,150); c.stroke();
+    c.fillStyle = 'rgba(255,255,255,.1)'; for (let x = 20; x < TW; x += 118) c.fillRect(x + 6,328,6,138);
+    c.strokeStyle = PAL.tinta; c.lineWidth = 2.5; c.beginPath(); c.moveTo(0,296); c.lineTo(TW,296); c.moveTo(0,304); c.lineTo(TW,304); c.stroke();
+    [226,994].forEach(x => {
+      const gc = c.createLinearGradient(x - 38,0,x + 38,0); gc.addColorStop(0,'#D9D2C2'); gc.addColorStop(0.4,'#F6F1E4'); gc.addColorStop(1,'#C9C1AE');
+      c.fillStyle = gc; c.fillRect(x - 38,40,76,H); c.strokeStyle = PAL.tinta; c.lineWidth = 3; c.strokeRect(x - 38,40,76,H);
+      c.strokeStyle = 'rgba(120,110,90,.35)'; c.lineWidth = 2; c.beginPath(); [-20,-4,12,26].forEach(d => { c.moveTo(x + d,64); c.lineTo(x + d,H); }); c.stroke();
+      rr(c,x - 52,14,104,30,6); fs(c,'#EDE6D4',3); rr(c,x - 46,40,92,14,4); fs(c,AB_COR.ouro,2.5);
+    });
+    rr(c,486,20,248,62,10); fs(c,'#1B2340',3.5); rr(c,494,28,232,46,6); c.strokeStyle = AB_COR.ouro; c.lineWidth = 2.5; c.stroke();
+    txt(c,'Banco',610,52,36,AB_COR.ouro,'center',FD);
+    const rx = 392, ry = 170, a1 = -Math.PI / 2 + TAU * (10.2 / 12), a2 = -Math.PI / 2 + TAU * (12 / 60) + (T > 0 ? Math.floor(T) * TAU / 240 : 0);
+    c.fillStyle = 'rgba(0,0,0,.25)'; circ(c,rx + 6,ry + 8,56); c.fill();
+    circ(c,rx,ry,56); fs(c,AB_COR.ouro,4); circ(c,rx,ry,46); fs(c,'#FFFDF7',3);
+    c.fillStyle = PAL.tinta; for (let i = 0; i < 12; i++){ const a = i * TAU / 12; circ(c,rx + Math.cos(a) * 38,ry + Math.sin(a) * 38,i % 3 ? 1.8 : 3.2); c.fill(); }
+    c.strokeStyle = PAL.tinta; c.lineCap = 'round'; c.lineWidth = 6; c.beginPath(); c.moveTo(rx,ry); c.lineTo(rx + Math.cos(a1) * 22,ry + Math.sin(a1) * 22); c.stroke();
+    c.lineWidth = 4; c.beginPath(); c.moveTo(rx,ry); c.lineTo(rx + Math.cos(a2) * 34,ry + Math.sin(a2) * 34); c.stroke(); circ(c,rx,ry,5); c.fillStyle = PAL.tinta; c.fill();
+    // um quadro com o cifrão, do outro lado
+    rr(c,792,116,104,128,5); fs(c,AB_COR.ouro,3.5); rr(c,802,126,84,108,3); fs(c,'#F6E7C1',2); txt(c,'R$',844,182,40,'#3E9B5A','center',FD);
+    c.save(); c.globalCompositeOperation = 'screen'; ab2Luz(c,610,120,420,'255,214,150',0.22); c.restore();
+  });
+  ab2Camada(c,cam,1,() => {
+    ab2Piso(c,'#F1EEE6','#B4AFA6','#5A3A22');
+    if (o.gerente) o.gerente(c);
+    // o balcão alto de madeira
+    ab2Sombra(c,630,Y - 2,400,16,0.45);
+    rr(c,292,by + 10,676,Y - by - 14,6); fs(c,'#9A5C2A',4);
+    for (let i = 0; i < 5; i++){ const x = 310 + i * 130; rr(c,x,by + 34,112,Y - by - 56,5); c.strokeStyle = 'rgba(0,0,0,.3)'; c.lineWidth = 2.5; c.stroke(); c.fillStyle = 'rgba(255,255,255,.1)'; c.fillRect(x + 7,by + 40,7,Y - by - 68); }
+    rr(c,280,by - 4,700,20,6); fs(c,'#5A3A22',3.5); c.fillStyle = 'rgba(255,255,255,.2)'; c.fillRect(290,by,680,4);
+    // o guichê de grade dourada
+    c.strokeStyle = PAL.tinta; c.lineWidth = 15; c.lineCap = 'butt'; c.beginPath(); c.moveTo(516,by - 4); c.lineTo(516,150); c.quadraticCurveTo(640,96,764,150); c.lineTo(764,by - 4); c.stroke();
+    c.strokeStyle = AB_COR.ouro; c.lineWidth = 9; c.stroke();
+    c.lineWidth = 6.5; c.strokeStyle = PAL.tinta; c.beginPath(); for (let x = 546; x < 760; x += 31){ c.moveTo(x,138); c.lineTo(x,by - 40); } c.moveTo(516,by - 40); c.lineTo(764,by - 40); c.moveTo(516,186); c.lineTo(764,186); c.stroke();
+    c.lineWidth = 3; c.strokeStyle = AB_COR.ouro; c.stroke();
+    // a prancheta inclinada, com o papel
+    c.beginPath(); c.moveTo(542,by - 34); c.lineTo(738,by - 34); c.lineTo(760,by + 52); c.lineTo(520,by + 52); c.closePath(); fs(c,'#B5733A',3.5);
+    if (o.papel) o.papel(c);
+    // a luminária verde, a campainha e a plaquinha
+    const lx = 372;
+    rr(c,lx - 22,by - 12,44,9,4); fs(c,AB_COR.ouro,2.5); c.strokeStyle = PAL.tinta; c.lineWidth = 8; c.beginPath(); c.moveTo(lx,by - 12); c.lineTo(lx,by - 52); c.stroke(); c.strokeStyle = AB_COR.ouro; c.lineWidth = 4; c.stroke();
+    c.beginPath(); c.moveTo(lx - 44,by - 50); c.quadraticCurveTo(lx,by - 96,lx + 44,by - 50); c.closePath(); fs(c,'#2E8B57',3);
+    c.fillStyle = '#FFF2C2'; ell(c,lx,by - 49,36,5); c.fill();
+    c.beginPath(); c.arc(884,by - 5,15,Math.PI,0); c.closePath(); fs(c,AB_COR.ouro,2.5); circ(c,884,by - 22,3.4); fs(c,AB_COR.ouro,1.8);
+    rr(c,782,by - 30,88,26,4); fs(c,'#1B2340',2.5); txt(c,'Empréstimos',826,by - 17,11,AB_COR.ouro,'center',FB);
+    if (o.gente) o.gente(c);
+    c.save(); c.globalCompositeOperation = 'screen'; ab2Luz(c,lx,by - 30,150,'255,236,170',0.5); ab2Luz(c,640,250,330,'255,220,160',0.2); c.restore();
+  });
+  ab2Camada(c,cam,1.2,() => {   // os pilaretes dourados da fila, com o cordão vermelho, embaixo
+    c.strokeStyle = PAL.tinta; c.lineWidth = 15; c.lineCap = 'round'; c.beginPath(); c.moveTo(238,494); c.quadraticCurveTo(610,590,982,494); c.stroke(); c.strokeStyle = '#B5283A'; c.lineWidth = 9; c.stroke();
+    [238,982].forEach(x => { rr(c,x - 9,486,18,200,5); fs(c,AB_COR.ouro,3.5); circ(c,x,478,15); fs(c,AB_COR.ouro,3.5); c.fillStyle = 'rgba(255,255,255,.5)'; circ(c,x - 5,473,4); c.fill(); });
+  });
+  ab2Clima(c,'242,165,58',0.05);
+  ab2Vinheta(c,0.5);
+}
+
+/* ---------- o cenário "rua de casa, à noite" (cena 11) ---------- */
+const AB2_CASA = { calcada:500, portao:{ x:445, y:215, w:330, h:285 }, estrela:[1010,70], letreiro:'Lanchonete Corre-Corre', noite:'#2A315A' };
+// lá dentro da garagem: a lanchonete acesa, com o balcão e as mesinhas vermelhas
+function ab2Garagem(c,T){
+  const P = AB2_CASA.portao, yb = P.y + P.h;
+  const g = c.createLinearGradient(0,P.y,0,yb); g.addColorStop(0,'#FFF0C2'); g.addColorStop(1,'#FFD98A'); c.fillStyle = g; c.fillRect(P.x,P.y,P.w,P.h);
+  c.fillStyle = PAL.piso2; c.fillRect(P.x,yb - 56,P.w,56);
+  c.fillStyle = PAL.piso1; for (let i = 0; i < 9; i++) for (let j = 0; j < 2; j++) if ((i + j) % 2) c.fillRect(P.x + i * 32,yb - 56 + j * 28,32,28);
+  c.fillStyle = PAL.faixa; c.fillRect(P.x,P.y + 96,P.w,7);
+  rr(c,P.x + 150,P.y + 104,118,82,5); fs(c,PAL.formica,3); rr(c,P.x + 142,P.y + 96,134,13,4); fs(c,PAL.cromo,2.5);   // o balcão
+  c.fillStyle = 'rgba(255,255,255,.35)'; c.fillRect(P.x + 158,P.y + 112,8,66);
+  c.strokeStyle = PAL.tinta; c.lineWidth = 3; c.beginPath(); c.moveTo(P.x + 20,P.y + 30); c.lineTo(P.x + 20,P.y + 54); c.moveTo(P.x + 20,P.y + 54); c.stroke();
+  c.beginPath(); c.moveTo(P.x + 4,P.y + 54); c.lineTo(P.x + 36,P.y + 54); c.lineTo(P.x + 28,P.y + 76); c.lineTo(P.x + 12,P.y + 76); c.closePath(); fs(c,PAL.mostarda,2.5);
+  [P.x + 56,P.x + 118].forEach(x => {   // as mesinhas vermelhas e os banquinhos
+    [-34,34].forEach(d => { c.strokeStyle = PAL.tinta; c.lineWidth = 4; c.beginPath(); c.moveTo(x + d,yb - 40); c.lineTo(x + d,yb - 16); c.stroke(); rr(c,x + d - 11,yb - 46,22,7,3); fs(c,PAL.alerta,2); });
+    c.fillStyle = PAL.tinta; c.fillRect(x - 3,yb - 62,6,44); ell(c,x,yb - 64,30,9); fs(c,PAL.formica,2.4);
+  });
+}
+/* a rua de casa, à noite. k: o portão aberto (0 a 1). o: { T, letras: o letreiro aceso, letra por letra (0 a 1), pisca: a estrela da Rosa (0 a 1), gente(c): as pessoas,
+   desenhadas por cima da noite (pinte-as com ab2Noite) } */
+function ab2Noite(cor,k){ return abMistura(cor,AB2_CASA.noite,k == null ? 0.42 : k); }
+function ab2RuaCasa(c,cam,k,o){
+  o = o || {};
+  const T = o.T || 0, K = AB2_CASA, P = K.portao, Y = K.calcada, yb = P.y + P.h, ab = P.h * clamp(k,0,1), le = o.letras || 0, E = K.estrela;
+  const g = c.createLinearGradient(0,0,0,H * 0.9); g.addColorStop(0,AB_COR.noite); g.addColorStop(1,AB_COR.noite2); c.fillStyle = g; c.fillRect(0,0,TW,H);
+  ab2Camada(c,cam,0.5,() => {   // muitas estrelas pequenas e a estrela da Rosa, maior
+    c.fillStyle = 'rgba(255,255,255,.85)';
+    for (let i = 0; i < 46; i++){ const x = (i * 197) % 1240 - 10, y = (i * 83) % 250 + 6; circ(c,x,y,(1 + (i % 3) * 0.5) * (T > 0 ? 1 + Math.sin(T * 2.2 + i * 1.7) * 0.3 : 1)); c.fill(); }
+    ab2Estrela(c,E[0],E[1],(15 + (T > 0 ? Math.sin(T * 3) * 2 : 0)) * (1 + (o.pisca || 0) * 1.1),1 + (o.pisca || 0));
+  });
+  ab2Camada(c,cam,0.75,() => {   // as casas vizinhas em silhueta, com janelinhas acesas, e uma árvore
+    [[-40,300,170,0],[150,330,150,1],[330,290,120,0],[880,310,150,1],[1040,280,130,0],[1160,330,140,1]].forEach(q => {
+      c.fillStyle = '#232B4E'; c.fillRect(q[0],q[1],q[2],400); c.beginPath(); c.moveTo(q[0] - 12,q[1] + 4); c.lineTo(q[0] + q[2] / 2,q[1] - 46); c.lineTo(q[0] + q[2] + 12,q[1] + 4); c.closePath(); c.fill();
+      c.fillStyle = 'rgba(255,214,140,.85)'; [[0.22,36],[0.62,36],[0.4,96]].forEach((w,i) => { if ((i + q[3]) % 3) c.fillRect(q[0] + q[2] * w[0],q[1] + w[1],22,26); });
+    });
+    c.fillStyle = '#1B2340'; c.fillRect(246,360,14,160); [[254,330,54],[214,366,40],[294,362,42]].forEach(q => { circ(c,q[0],q[1],q[2]); c.fill(); });
+  });
+  ab2Camada(c,cam,1,() => {
+    // a rua e a calçada
+    c.fillStyle = '#3A3F55'; c.fillRect(-180,Y + 50,TW + 360,300); c.fillStyle = 'rgba(255,255,255,.2)'; for (let x = -160; x < TW + 160; x += 150) c.fillRect(x,Y + 86,80,7);
+    c.fillStyle = '#7C7F94'; c.fillRect(-180,Y,TW + 360,50); c.strokeStyle = 'rgba(0,0,0,.2)'; c.lineWidth = 2; c.beginPath(); for (let x = -160; x < TW + 160; x += 76){ c.moveTo(x,Y); c.lineTo(x - 16,Y + 50); } c.stroke();
+    c.fillStyle = '#9A9DB0'; c.fillRect(-180,Y + 44,TW + 360,8); c.strokeStyle = PAL.tinta; c.lineWidth = 3; c.beginPath(); c.moveTo(-180,Y); c.lineTo(TW + 180,Y); c.moveTo(-180,Y + 52); c.lineTo(TW + 180,Y + 52); c.stroke();
+    // a casa da Rosa: a parede, o telhado vermelho, a janela e a porta da casa
+    rr(c,296,150,628,Y - 150,4); fs(c,'#8E86A0',3.5);
+    c.strokeStyle = 'rgba(0,0,0,.12)'; c.lineWidth = 2; c.beginPath(); for (let y = 186; y < Y; y += 34){ c.moveTo(300,y); c.lineTo(920,y); } c.stroke();
+    c.beginPath(); c.moveTo(262,162); c.lineTo(610,92); c.lineTo(958,162); c.closePath(); fs(c,'#8E3A3F',3.5);
+    c.strokeStyle = 'rgba(0,0,0,.25)'; c.lineWidth = 2.5; c.beginPath(); for (let i = 1; i < 4; i++){ const yy = 162 - i * 17.5, hw = 348 * (yy - 92) / 70; c.moveTo(610 - hw,yy); c.lineTo(610 + hw,yy); } c.stroke();
+    rr(c,318,268,96,112,5); fs(c,'#FFD98A',3.5); c.strokeStyle = PAL.tinta; c.lineWidth = 3; c.beginPath(); c.moveTo(366,268); c.lineTo(366,380); c.moveTo(318,324); c.lineTo(414,324); c.stroke();
+    c.fillStyle = 'rgba(200,80,106,.75)'; c.beginPath(); c.moveTo(320,270); c.lineTo(362,270); c.quadraticCurveTo(348,318,320,344); c.closePath(); c.fill(); c.beginPath(); c.moveTo(412,270); c.lineTo(370,270); c.quadraticCurveTo(384,318,412,344); c.closePath(); c.fill();
+    rr(c,310,380,112,11,4); fs(c,'#C9C3D6',2.5);
+    rr(c,822,262,84,Y - 262,5); fs(c,'#6E4630',3.5); rr(c,834,276,60,86,4); c.strokeStyle = 'rgba(0,0,0,.3)'; c.lineWidth = 2.5; c.stroke(); rr(c,834,376,60,106,4); c.stroke(); circ(c,832,390,5); fs(c,AB_COR.ouro,2);
+    // a garagem: lá dentro, o portão de enrolar e o letreiro
+    c.fillStyle = PAL.tinta; c.fillRect(P.x - 12,P.y - 12,P.w + 24,P.h + 12); c.fillStyle = '#5D5870'; c.fillRect(P.x - 8,P.y - 8,P.w + 16,P.h + 8);
+    c.save(); c.beginPath(); c.rect(P.x,P.y,P.w,P.h); c.clip(); c.fillStyle = '#20253F'; c.fillRect(P.x,P.y,P.w,P.h);
+    if (ab > 0){ c.save(); c.beginPath(); c.rect(P.x,yb - ab,P.w,ab); c.clip(); ab2Garagem(c,T); c.restore(); }
+    const ph = P.h - ab;
+    if (ph > 1){
+      c.fillStyle = '#A3A9B0'; c.fillRect(P.x,P.y,P.w,ph);
+      c.strokeStyle = PAL.cromoEsc; c.lineWidth = 3; c.beginPath(); for (let y = P.y + ph - 6; y > P.y; y -= 22){ c.moveTo(P.x,y); c.lineTo(P.x + P.w,y); } c.stroke();
+      c.fillStyle = 'rgba(255,255,255,.2)'; c.fillRect(P.x + 12,P.y,10,ph);
+      c.fillStyle = '#6B6B72'; c.fillRect(P.x,P.y + ph - 9,P.w,9); rr(c,P.x + P.w / 2 - 22,P.y + ph - 20,44,9,4); fs(c,'#3a3a3c',2.2);
+      c.strokeStyle = PAL.tinta; c.lineWidth = 3; c.beginPath(); c.moveTo(P.x,P.y + ph); c.lineTo(P.x + P.w,P.y + ph); c.stroke();
+    }
+    c.restore();
+    const lx = 610, ly = 181, lw = 410;
+    rr(c,lx - lw / 2,ly - 26,lw,52,13); fs(c,PAL.tinta,3.5);
+    c.font = '29px ' + FD; c.textAlign = 'left'; c.textBaseline = 'middle';
+    const tw = c.measureText(K.letreiro).width, n = K.letreiro.length, lit = Math.round(le * n); let x = lx - tw / 2;
+    for (let i = 0; i < n; i++){ const ch = K.letreiro[i]; c.fillStyle = i < lit ? PAL.mostarda : '#5b5446'; c.fillText(ch,x,ly + 1); x += c.measureText(ch).width; }
+    if (lit > 0){ c.strokeStyle = 'rgba(242,179,61,' + (0.55 * le).toFixed(3) + ')'; c.lineWidth = 6; rr(c,lx - lw / 2 - 6,ly - 32,lw + 12,64,16); c.stroke(); }
+    // os dois vasinhos e o poste
+    [P.x - 24,P.x + P.w + 24].forEach(vx => { ab2Copa(c,[[vx,Y - 52,20,'#3E7A58'],[vx - 12,Y - 40,13,'#356B4C'],[vx + 13,Y - 42,13,'#356B4C']],2.5); abFlor(c,vx - 6,Y - 62,4.4); abFlor(c,vx + 10,Y - 50,4); c.beginPath(); c.moveTo(vx - 18,Y - 30); c.lineTo(vx + 18,Y - 30); c.lineTo(vx + 13,Y); c.lineTo(vx - 13,Y); c.closePath(); fs(c,'#B85A30',3); });
+    ab2Lampiao(c,1040,Y + 2,true);
+    if (ab > 0){ c.fillStyle = 'rgba(255,214,130,' + (0.5 * k).toFixed(3) + ')'; c.beginPath(); c.moveTo(P.x,yb); c.lineTo(P.x + P.w,yb); c.lineTo(P.x + P.w + 150 * k + 30,H + 60); c.lineTo(P.x - 150 * k - 30,H + 60); c.closePath(); c.fill(); }   // o leque dourado na calçada
+  });
+  // a noite por cima; depois, o que brilha: a garagem, o leque, o letreiro, o poste e a estrela
+  c.save(); c.globalCompositeOperation = 'multiply'; c.fillStyle = 'rgba(96,108,170,' + (0.42 - 0.2 * k).toFixed(3) + ')'; c.fillRect(0,0,TW,H); c.restore();
+  ab2Camada(c,cam,1,() => {
+    c.save(); c.globalCompositeOperation = 'screen';
+    if (k > 0){
+      ab2Luz(c,P.x + P.w / 2,yb - ab / 2,300 + 160 * k,'255,206,120',0.55 * Math.min(1,k * 3));
+      c.fillStyle = 'rgba(255,220,150,' + (0.5 * Math.min(1,k * 8)).toFixed(3) + ')'; c.fillRect(P.x - 6,yb - ab - 3,P.w + 12,7);
+      const gl = c.createLinearGradient(0,yb,0,H + 40); gl.addColorStop(0,'rgba(255,206,120,' + (0.4 * k).toFixed(3) + ')'); gl.addColorStop(1,'rgba(255,206,120,0)');
+      c.fillStyle = gl; c.beginPath(); c.moveTo(P.x,yb); c.lineTo(P.x + P.w,yb); c.lineTo(P.x + P.w + 150 * k + 30,H + 60); c.lineTo(P.x - 150 * k - 30,H + 60); c.closePath(); c.fill();
+    }
+    if (le > 0) ab2Luz(c,610,181,260,'242,179,61',0.4 * le);
+    ab2Luz(c,1040,Y - 322,150,'255,226,150',0.6); ab2Luz(c,366,324,100,'255,214,140',0.3);
+    c.restore();
+    if (o.gente) o.gente(c);   // as pessoas por cima da noite e da luz (a cena já as pinta com as cores da noite): ficam em contraluz
+  });
+  ab2Camada(c,cam,0.5,() => ab2Estrela(c,E[0],E[1],(15 + (T > 0 ? Math.sin(T * 3) * 2 : 0)) * (1 + (o.pisca || 0) * 1.1),0.8 + (o.pisca || 0)));
+  ab2Clima(c,'42,49,90',0.05);
+  ab2Vinheta(c,0.55);
+}
+
+const C_LACO = '#E26A2C';   // o laço do avental da Bia, de costas (PAL.alerta)
 const AB2_BANCO = [620,470];   // o banquinho das cenas 7 e 8, no centro da cozinha ([x, y do assento])
 
 /* ---------- enfeites das cenas ---------- */
@@ -1077,7 +1239,7 @@ function ab2Mimos(c,x,y,T,a){
   c.globalAlpha = 1;
 }
 
-/* ---------- as cenas (as que ainda não estão aqui tocam como cartão de obra): 1 e 2 na v11.12; 3, 4 e 5 na v11.13; 6, 7 e 8 na v11.14 ---------- */
+/* ---------- as 11 cenas: 1 e 2 na v11.12; 3, 4 e 5 na v11.13; 6, 7 e 8 na v11.14; 9, 10 e 11 na v11.15 ---------- */
 const AB2_CENAS = {
   /* 1, a porta: a Bia criança espia de trás do batente; a Rosa mexe a panela e cantarola, vira o rosto, chama, e a Bia entra de braços abertos */
   porta(c,p,T,cam){
@@ -1372,40 +1534,133 @@ const AB2_CENAS = {
       },
       brilho: cc => { if (clarao > 0){ cc.save(); cc.globalCompositeOperation = 'screen'; ab2Luz(cc,bx,Y - 150,260,'255,244,214',0.95 * clarao); ab2Luz(cc,bx,Y - 150,120,'255,255,255',0.9 * clarao); cc.restore(); for (let i = 0; i < 6; i++){ const a = i * TAU / 6 + (T > 0 ? T * 1.4 : 0); cc.globalAlpha = clarao; star(cc,bx + Math.cos(a) * 120,Y - 150 + Math.sin(a) * 150,6 + (i % 2) * 3,AB_COR.ouro); } cc.globalAlpha = 1; } } });
     return { bia:[bx,Y - AB_ALT.bia * AB2.k - 8,150] };
+    },
+  /* 9, o tio: o Tonhão sai da Casa Aurora, pendura o avental vinho na maçaneta, atravessa a rua arregaçando as mangas; a Bia espera com o caderno, sorri e abraça o tio */
+  tio(c,p,T,cam){
+    const R = AB2_RUA, P = R.porta, Y = AB2.chao, st0 = abEsc('tonhao',AB2.k), sa = abEsc('bia',AB2.k), cx = P.x + P.w / 2;
+    const abre = abSuave(abSeg(p,0.05,0.12)) * (1 - abSuave(abSeg(p,0.2,0.27))), sai = abSuave(abSeg(p,0.1,0.2)), tira = abSuave(abSeg(p,0.22,0.3)), ombros = Math.sin(abSeg(p,0.29,0.36) * Math.PI);
+    const anda = abSuave(abSeg(p,0.35,0.6)), mangas = abSuave(abSeg(p,0.38,0.47)), abraco = abSuave(abSeg(p,0.8,0.9));
+    const st = st0 * (0.86 + 0.14 * sai), tx = cx + sai * 14 - anda * (cx + 14 - 444), ty = Y - 36 + sai * 36 + ombros * 5, andando = (sai > 0 && sai < 1) || (anda > 0 && anda < 1);
+    const bx = 296 + abraco * 62, hx = P.x + P.w / 2 - 9, hy = P.y + P.h * 0.5 + 8;   // a maçaneta
+    const tonhao = cc => {
+      abTonhao(cc,tx,ty,st,{ t:T, olha:anda > 0 ? -1 : 0, mood:p < 0.37 ? 2 : 0, andando, ph:T * 8.5, braco:mangas > 0.02 && abraco < 0.5 ? 'flex' : null, g:mangas,
+        bracoE:abraco >= 0.5 ? [[-12,-62]] : undefined, bracoD:abraco >= 0.5 ? [[30,-64],[24,-52]] : (tira > 0.05 && tira < 1 ? [[30,-66],[24 + tira * 10,-58]] : undefined) });
+      if (tira < 0.5){   // o avental vinho da Casa Aurora, ainda no corpo
+        cc.save(); cc.translate(tx,ty); cc.scale(st,st); cc.globalAlpha = 1 - abSeg(tira,0.3,0.5);
+        cc.strokeStyle = PAL.tinta; cc.lineWidth = 1.6; cc.beginPath(); cc.moveTo(-10,-70); cc.lineTo(-6,-82); cc.moveTo(10,-70); cc.lineTo(6,-82); cc.stroke();
+        cc.beginPath(); cc.moveTo(-12,-71); cc.lineTo(12,-71); cc.lineTo(19,-32); cc.lineTo(-19,-32); cc.closePath(); fs(cc,AB_COR.aurora,2.4); star(cc,0,-56,4.4,AB_COR.ouro);
+        cc.restore(); cc.globalAlpha = 1;
+      }
+    };
+    const fora = sai > 0.05;
+    ab2RuaAurora(c,cam,'tarde',{ T, abre, dentro: !fora && abre > 0.05 ? tonhao : null,
+      gente: cc => {
+        if (tira >= 0.5){   // o avental pendurado na maçaneta
+          const q = abSeg(tira,0.5,1), ax = hx + (1 - q) * (tx - hx) * 0.5, ay = hy - (1 - q) * 60, bal = T > 0 ? Math.sin(T * 2.4) * 0.05 * q : 0;
+          cc.save(); cc.translate(ax,ay); cc.rotate(bal + (1 - q) * 0.5);
+          cc.strokeStyle = PAL.tinta; cc.lineWidth = 3; cc.beginPath(); cc.moveTo(-8,14); cc.quadraticCurveTo(0,-6,8,14); cc.stroke();
+          cc.beginPath(); cc.moveTo(-15,12); cc.lineTo(15,12); cc.lineTo(27,112); cc.quadraticCurveTo(0,122,-27,112); cc.closePath(); fs(cc,AB_COR.aurora,3); star(cc,0,52,9,AB_COR.ouro);
+          cc.strokeStyle = 'rgba(0,0,0,.25)'; cc.lineWidth = 2.5; cc.beginPath(); cc.moveTo(-8,30); cc.lineTo(-12,108); cc.moveTo(9,30); cc.lineTo(13,108); cc.stroke();
+          cc.restore();
+        }
+        const aBia = () => {
+        ab2Sombra(cc,bx + 60,Y + 4,120,11,0.34);
+        const antes = EXPR; EXPR = p >= 0.78 ? 'alegre' : (p < 0.4 ? 'insegura' : 'neutra');
+        try { ab2Vivo(cc,bx,Y,T,0.7,() => abBia(cc,bx,Y,{ s:sa, t:T, olha:1.5, maos:abraco > 0.5 ? [[-15,-20],[19,-31]] : [[-6,-21],[15,-18]] })); } finally { EXPR = antes; }
+        ab2Caderno(cc,bx - 26 + abraco * 4,Y - 24 * sa,1.05,-0.1);
+        circ(cc,bx - 6 * sa,Y - 21 * sa,3.8 * sa); fs(cc,'#6B3F25',3.2);
+        };
+        // a Bia, na outra calçada, com o caderno; no abraço, ela fica na frente do tio
+        if (abraco <= 0.3) aBia();
+        if (fora){ ab2Sombra(cc,tx + 70,ty + 4,150,13,0.36 * sai); tonhao(cc); }
+        if (abraco > 0.3) aBia();
+        if (abraco > 0.5){ ab2BracoDe(cc,tx,ty,st,[[-19,-76],[-36,-66],[(bx + 34 - tx) / st,(Y - 31 * sa - ty) / st]]); cc.globalAlpha = abSeg(abraco,0.5,1); heart(cc,(bx + tx) / 2 + 10,Y - 322 - (T > 0 ? Math.sin(T * 3) * 6 : 0),15,'#E0559A'); cc.globalAlpha = 1; }
+      } });
+    return { tonhao:[tx + 13 * st,ty - 128 * st,130], bia:[bx,Y - AB_ALT.bia * AB2.k - 8] };
+  },
+  /* 10, o banco: a Bia espera diante do balcão, com o pote de moedas e a planta da garagem; a gerente lê, o carimbo desce (o quadro treme) e o papel diz APROVADO */
+  banco(c,p,T,cam){
+    const B = AB2_BCO, Y = AB2.chao, sa = abEsc('bia',AB2.k), bx = 440, gx = B.gerente[0], gy = B.gerente[1], gs = 4.4, pp = B.papel;
+    const desce = abSuave(abSeg(p,0.5,0.55)), sobe = abSuave(abSeg(p,0.61,0.68)), carimbado = p >= 0.55, alivio = abSuave(abSeg(p,0.7,0.78));
+    const treme = T > 0 && p >= 0.55 && p < 0.55 + 0.2 / 6, tm = T > 0 && alivio < 1 ? Math.sin(T * 31) : 0;
+    const cy0 = B.balcao - 96, cyb = pp[1] - 22, cb = [pp[0] + 104 - 60 * desce * (1 - sobe),cy0 + (cyb - cy0) * desce * (1 - sobe)];   // o carimbo: no ar, no papel, no ar
+    const gl = q => [(q[0] - gx) / gs,(q[1] - gy) / gs];
+    c.save(); if (treme) c.translate(Math.sin(T * 91) * 4,Math.cos(T * 73) * 4);
+    ab2Banco(c,cam,{ T,
+      gerente: cc => {   // uma pessoa do jogo, de óculos e blazer
+        const m = gl([cb[0] + 4,cb[1] - 34]);
+        ab2Vivo(cc,gx,gy,T,2.1,() => drawPerson(cc,{ skin:1, hair:1, hairC:'#5B3A21', pants:'#2F3E5C', glasses:true, blazer:true, gravata:'#C2362B' },gx,gy,{ s:gs, shirt:'#3F4E7A', noShadow:true, mood:alivio > 0.5 ? 0 : 1, t:T,
+          pisca:abPisca(T,0.9), bracoD:[[19,-27],m], bracoE:[[-17,-24],[-12,-19]] }));
+      },
+      papel: cc => {
+        cc.beginPath(); cc.moveTo(pp[0] - 76,pp[1] - 38); cc.lineTo(pp[0] + 76,pp[1] - 38); cc.lineTo(pp[0] + 92,pp[1] + 40); cc.lineTo(pp[0] - 92,pp[1] + 40); cc.closePath(); fs(cc,'#FFFDF7',3);
+        cc.fillStyle = 'rgba(34,32,28,.3)'; [-26,-16,-6].forEach((d,i) => cc.fillRect(pp[0] - 62,pp[1] + d,i === 2 ? 70 : 124,3.4));
+        cc.fillStyle = 'rgba(34,32,28,.3)'; cc.fillRect(pp[0] - 70,pp[1] + 28,60,3);
+        if (carimbado){   // APROVADO, em verde
+          const q = T > 0 ? abSeg(p,0.55,0.6) : 1;
+          cc.save(); cc.translate(pp[0] + 6,pp[1] + 12); cc.rotate(-0.07); cc.globalAlpha = 0.55 + 0.45 * q;
+          rr(cc,-72,-17,144,34,6); cc.lineWidth = 4; cc.strokeStyle = PAL.ok; cc.stroke(); txt(cc,'APROVADO',0,1,24,PAL.ok,'center',FD);
+          cc.restore();
+        }
+        // o carimbo e a mão da gerente
+        rr(cc,cb[0] - 24,cb[1] + 4,48,14,4); fs(cc,'#3a3a3c',3); rr(cc,cb[0] - 9,cb[1] - 30,18,36,6); fs(cc,PAL.madeira,3);
+        circ(cc,cb[0] + 4,cb[1] - 34,3.6 * gs); fs(cc,SKINS[1],3.4);
+      },
+      gente: cc => {
+        ab2Sombra(cc,bx,Y + 3,84,13,0.4);
+        const antes = EXPR; EXPR = alivio > 0.5 ? 'alegre' : 'insegura';
+        try { ab2Vivo(cc,bx,Y,T,0.7,() => abBia(cc,bx,Y,{ s:sa, t:T, olha:1.5, maos:[[-12 + tm * 0.25,-22],[13 - tm * 0.25,-20 - alivio * 2]] })); } finally { EXPR = antes; }
+        // o pote de moedas num braço e a planta da garagem, enrolada, no outro
+        const jx = bx - 15 * sa + tm, jy = Y - 20 * sa;
+        rr(cc,jx - 21,jy - 40,42,50,9); cc.fillStyle = 'rgba(214,236,244,.7)'; cc.fill();
+        [[-8,0],[7,2],[0,-10],[-9,-16],[8,-14]].forEach(m => { circ(cc,jx + m[0],jy + m[1],7.5); fs(cc,AB_COR.ouro,2); });
+        rr(cc,jx - 21,jy - 40,42,50,9); cc.strokeStyle = PAL.tinta; cc.lineWidth = 3; cc.stroke(); rr(cc,jx - 24,jy - 48,48,11,4); fs(cc,PAL.madeira,2.6);
+        circ(cc,bx - 12 * sa + tm,Y - 22 * sa + 14,3.8 * sa); fs(cc,'#6B3F25',3.2);
+        cc.save(); cc.translate(bx + 15 * sa - tm,Y - 21 * sa); cc.rotate(-0.5);
+        rr(cc,-13,-62,26,124,11); fs(cc,'#DCE8F6',3); cc.strokeStyle = PAL.faixa; cc.lineWidth = 2; cc.beginPath(); cc.moveTo(-13,-40); cc.lineTo(13,-40); cc.moveTo(-13,42); cc.lineTo(13,42); cc.stroke(); ell(cc,0,-62,13,5); fs(cc,'#F4F8FD',2.4);
+        cc.restore();
+        circ(cc,bx + 13 * sa - tm,Y - (20 + alivio * 2) * sa + 6,3.8 * sa); fs(cc,'#6B3F25',3.2);
+      } });
+    c.restore();
+    return { bia:[bx,Y - AB_ALT.bia * AB2.k - 8,-40] };
+  },
+  /* 11, o portão: a Bia e o Tonhão diante do portão, de costas; ela hesita, olha a foto da mãe, ele põe a mão no ombro dela; ela ergue o portão, a luz inunda a calçada, o letreiro acende e a estrela pisca */
+  portao(c,p,T,cam){
+    const K = AB2_CASA, P = K.portao, Y = AB2.chao, st = abEsc('tonhao',AB2.k * 0.78), sbi = st * 0.86, bx = 556, tx = 672, yb = P.y + P.h;
+    const N = ab2Noite, vd = N('#2E8B57'), pb = N('#6B3F25'), br = N('#ffffff'), pt = N('#B9794B');   // as cores das pessoas, à noite
+    const estende = Math.sin(abSeg(p,0.05,0.2) * Math.PI), foto = abSuave(abSeg(p,0.14,0.22)) * (1 - abSuave(abSeg(p,0.4,0.46))), ombro = abSuave(abSeg(p,0.25,0.31)) * (1 - abSuave(abSeg(p,0.42,0.47)));
+    const k = abSuave(abSeg(p,0.45,0.65)), pega = abSuave(abSeg(p,0.4,0.46)) * (1 - abSuave(abSeg(p,0.66,0.74))), letras = abSeg(p,0.7,0.8), pisca = Math.sin(abSeg(p,0.8,0.9) * Math.PI), festa = abSuave(abSeg(p,0.72,0.8));
+    const borda = yb - P.h * k, alc = Math.max(Y - 140 * sbi,borda);   // até onde as mãos dela acompanham o portão
+    const L = q => [(q[0] - bx) / sbi,(q[1] - Y) / sbi];
+    ab2RuaCasa(c,cam,k,{ T, letras, pisca, gente: cc => {
+      ab2Sombra(cc,tx,Y + 4,104,13,0.4); ab2Sombra(cc,bx,Y + 4,88,12,0.4);
+      abCostas(cc,tx,Y,st,{ roupa:br, calca:N('#3A3F4A'), pele:pt, cabelo:'toca', cor:N('#8C8C8C') });
+      ab2BracoDe(cc,tx,Y,st,[[19,-76],festa > 0.05 ? [30,-80 - festa * 14] : [25,-60],festa > 0.05 ? [34 + (T > 0 ? Math.sin(T * 8) * 2 : 0),-96 - festa * 24] : [25,-44]],br,pt);
+      const pulo = festa > 0 && T > 0 ? Math.abs(Math.sin(T * 7)) * 6 * festa : 0;
+      ab2Vivo(cc,bx,Y,T,0.7,() => abCostas(cc,bx,Y,sbi,{ roupa:vd, calca:vd, pele:pb, cabelo:'puff', cor:'#15100D', laco:N(C_LACO) }),pulo);
+      // os braços dela: estende a mão e recua; segura a foto; ergue o portão; comemora
+      const mD = pega > 0.05 ? L([bx + 34,alc]) : (festa > 0.05 ? [30,-80 - festa * 30] : [23 + estende * 6,-46 - estende * 34]);
+      const mE = pega > 0.05 ? L([bx - 34,alc]) : (festa > 0.05 ? [-30,-80 - festa * 30] : [-24 - foto * 8,-46 - foto * 26]);
+      cc.save(); cc.translate(0,-pulo);
+      ab2BracoDe(cc,bx,Y,sbi,[[19,-76],[(19 + mD[0]) / 2 + 5,(-76 + mD[1]) / 2 + 3],mD],vd,pb);
+      ab2BracoDe(cc,bx,Y,sbi,[[-19,-76],[(-19 + mE[0]) / 2 - 5,(-76 + mE[1]) / 2 + 3],mE],vd,pb);
+      if (foto > 0.05 && pega <= 0.05){ cc.globalAlpha = Math.min(1,foto * 2); cc.save(); cc.translate(bx + (mE[0] - 9) * sbi,Y + (mE[1] - 6) * sbi); cc.rotate(-0.12); drawFotoRosa(cc,0,0,1.5); cc.restore(); cc.globalAlpha = 1; }   // a foto da mãe na outra mão
+      cc.restore();
+      if (ombro > 0.05) ab2BracoDe(cc,tx,Y,st,[[-19,-76],[-34,-70],[(bx + 44 - tx) / st * ombro + (-25) * (1 - ombro),(-78 * sbi / st) * ombro + (-44) * (1 - ombro)]],br,pt);   // a mão do Tonhão no ombro dela
+      else ab2BracoDe(cc,tx,Y,st,[[-19,-76],festa > 0.05 ? [-30,-80 - festa * 14] : [-25,-60],festa > 0.05 ? [-34,-96 - festa * 24] : [-25,-44]],br,pt);
+    } });
+    const ti = T > 0 ? abSeg(p,0.82,0.9) : 1;   // o título entra em cima (com movimento reduzido, já está lá)
+    if (ti > 0){ c.globalAlpha = ti; txt(c,'O sonho da Bia',TW / 2,52,50,PAL.mostarda,'center',FD,9); c.globalAlpha = 1; }
+    return { tonhao:[tx + 10,Y - 128 * st,170], bia:[bx,Y - 130 * sbi] };
   }
 };
 
-/* ---------- cartão de obra, transições, legenda, bolinhas e o desenho de tudo ---------- */
-// a cena i ainda sem desenho: o número e o id no centro (a legenda e as falas vêm do drawAbertura2)
-function ab2Obra(c,ab,i){
-  const cena = ab.cenas[i == null ? ab.i : i], n = (i == null ? ab.i : i) + 1;
-  c.fillStyle = PAL.tinta; c.fillRect(0,0,TW,H);
-  c.strokeStyle = 'rgba(242,179,61,.16)'; c.lineWidth = 22; c.beginPath();
-  for (let x = -H; x < TW; x += 90){ c.moveTo(x,H); c.lineTo(x + H,0); }
-  c.stroke();
-  c.fillStyle = 'rgba(34,32,28,.82)'; c.fillRect(0,60,TW,H - 120);
-  if (cena.titulo) txt(c,cena.titulo,TW / 2,140,44,PAL.mostarda,'center',FD);
-  txt(c,String(n),TW / 2,236,40,PAL.creme,'center',FD);
-  txt(c,cena.id,TW / 2,286,40,PAL.creme,'center',FD);
-  txt(c,'cena em obras',TW / 2,326,15,'rgba(247,239,216,.5)','center',FB);
-}
-// as falas no cartão de obra: balões sem ponta, empilhados
-function ab2ObraFalas(c,falas){
-  const U = AB_UI; let y = 372;
-  falas.forEach(f => {
-    const lin = treinoLinhas(c,f.s,560,U.fala);
-    c.font = U.fala + 'px ' + FB;
-    const w = Math.max.apply(null,lin.map(l => c.measureText(l).width)) + 34, h = lin.length * U.linha + 18;
-    rr(c,TW / 2 - w / 2,y,w,h,16); fs(c,'#fff',3);
-    lin.forEach((l,i) => txt(c,l,TW / 2,y + 9 + U.linha * (i + 0.5),U.fala,PAL.tinta,'center',FB));
-    y += h + 10;
-  });
-}
-// a cena i no tempo t, vista pela câmera; devolve a câmera e as cabeças (null no cartão de obra)
+/* ---------- transições, legenda, bolinhas e o desenho de tudo ---------- */
+// a cena i no tempo t, vista pela câmera; devolve a câmera e as cabeças
 function ab2Quadro(c,ab,i,t){
   const cena = ab.cenas[i], par = RM || ab.rm, fn = AB2_CENAS[cena.id];
   const p = par ? (cena.pRM != null ? cena.pRM : 0.8) : clamp(t / cena.t,0,1), cam = ab2Cam(cena,par ? 1 : t / cena.t);
-  if (!fn){ ab2Obra(c,ab,i); return { cam, cab:null }; }
+  if (!fn) return { cam, cab:{} };
   return { cam, cab:fn(c,p,par ? 0 : ab.tm,cam) || {} };
 }
 /* a transição de saída (Abertura.trans), por recorte e cor por cima: flash (branco), passa (a próxima entra por uma cortina lateral) e iris (um círculo
@@ -1462,8 +1717,7 @@ function drawAbertura2(c,ab){
   c.save();
   c.fillStyle = PAL.tinta; c.fillRect(0,0,TW,H);
   const q = ab2Quadro(c,ab,ab.i,ab.t), falas = ab.falas();
-  if (q.cab) falas.forEach(f => { const a = q.cab[f.q]; if (a){ const s = ab2Tela(q.cam,a[0],a[1]); if (s[0] > 0 && s[0] < TW) abBalao(c,f.s,s[0],s[1],a[2]); } });   // quem saiu do quadro (a câmera deslizou) fica sem balão
-  else ab2ObraFalas(c,falas);
+  falas.forEach(f => { const a = q.cab[f.q]; if (a){ const s = ab2Tela(q.cam,a[0],a[1]); if (s[0] > 0 && s[0] < TW) abBalao(c,f.s,s[0],s[1],a[2]); } });   // quem saiu do quadro (a câmera deslizou) fica sem balão
   ab2Legenda(c,ab);
   if (ab.trans) ab2Trans(c,ab,() => { AB_VIVO.fala = {}; ab2Quadro(c,ab,ab.i + 1,0); });
   ab2Bolinhas(c,ab);

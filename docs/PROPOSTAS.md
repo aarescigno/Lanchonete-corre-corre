@@ -4,14 +4,6 @@ Registro das ideias e dos retornos de quem jogou, com o texto original, e de ond
 
 ---
 
-## 15/11 — usuário: refazer a abertura para ficar bonita (entrevista e Etapa 9)
-Texto original: "Revise o vídeo inicial com objetivo de deixar ele bonito, faça uma revisão minuciosa, para praticamente refazê-lo do zero, pode me entrevistar à vontade para preparar". Sobre o roteiro: "3 [pode reescrever], mas esteja atento a todas as falas jo jogo para criar sinergias e evitar contradições".
-
-- **Entrevista (15/11):** incomodam os cenários vazios, os personagens pequenos, a pouca animação e o texto demais; estilo de cinema com os mesmos bonecos; roteiro reescrito (11 cenas, aprovado); 77 s, como hoje; quadro cheio com legenda de uma linha; a perda da Rosa delicada e simbólica (a cozinha vazia e a estrela na janela); o segredo do molho só como brilho rosado; tema musical e efeitos; só a abertura agora, o final depois; 4 versões, com a nova só no modo dev até a última.
-- **Destino:** Etapa 9 do `docs/PLANO.md` (9a a 9d, v11.12 a v11.15), com o roteiro e a direção em `docs/ABERTURA.md` e as specs `docs/spec-v11.12.md` a `docs/spec-v11.15.md`, aprovadas. O final no mesmo tratamento: Etapa 10, a planejar.
-
----
-
 ## 15/11 — usuário: a conversa da primeira nota baixa
 Texto original: "Na primeira vez que a pessoa tirar uma nota 2 estrelas ou menos, aparecer uma conversa da bia com o Tonhão em que ela pergunta por que ela se esforçou tanto e não conseguiu agradar a todo mundo? E Tonhão responde, isso é a vida, Bia, importante é melhorar a cada dia! Ou algo assim."
 Retorno de 16/11: "Não só a nota do Gugou, mas a nota de estrelas no fim da fase também".

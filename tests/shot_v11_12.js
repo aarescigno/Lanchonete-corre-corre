@@ -7,7 +7,7 @@ const html = '<!doctype html><html><head><meta charset="utf-8"><meta name="viewp
 const W = path.join(__dirname, 'wrapped.html'); fs.writeFileSync(W, html);
 const FILTRO = process.argv[2] || '';
 // abre a abertura nova pelo modo dev e para o relógio na cena i (de 0), no instante t (s); tm é o relógio dos gestos
-const CENA = (i, t) => `const L=window.__lcc; L.DEV.on=true; L.devAssistir(1); const ab=L.aberturaAtual(); ab.update=()=>{}; ab.i=${i}; ab.t=${t}; ab.tm=${(10 + i * 7 + t).toFixed(2)};`;
+const CENA = (i, t) => `const L=window.__lcc; L.DEV.on=true; L.devAssistir(0); const ab=L.aberturaAtual(); ab.update=()=>{}; ab.i=${i}; ab.t=${t}; ab.tm=${(10 + i * 7 + t).toFixed(2)};`;
 const P = (i, p) => CENA(i, Math.round(window_t[i] * p * 1000) / 1000);
 const window_t = [7, 7, 7, 7, 7, 7, 7, 8, 6, 6, 8];
 (async () => {

@@ -162,6 +162,7 @@ const cv = $('e-cv'), sobre = $('e-sobre'), ctx = cv.getContext('2d'), so = sobr
 const CENAS = L.ABERTURA.cenas;
 const ab = new L.Abertura('menu', false);
 Object.defineProperty(ab, 'escuro', { get: () => 0 });   // sem o escuro da entrada e da saída
+Object.defineProperty(ab, 'trans', { get: () => null });   // v11.15: nem a transição para a cena seguinte
 ab.seguir = ab.voltar = ab.pular = ab.terminar = () => {};
 
 const est = { cena:0, tempo:0.5, zoom:1, mostra:'cena', grade:false, func:null };
@@ -181,7 +182,7 @@ $('e-cena').value = est.cena; $('e-zoom').value = est.zoom; $('e-mostra').value 
 if (window.__ED_SERVIDOR) $('e-salva').hidden = false;
 if (window.__ED_ARTIFACT) $('e-baixa').hidden = true;   // o artifact do claude.ai não deixa baixar: copie as mudanças
 
-const funcDaCena = () => FUNCS.find(f => f.tipo === 'metodo' && f.obj === 'AB_CENAS' && f.nome === CENAS[est.cena].id);
+const funcDaCena = () => FUNCS.find(f => f.tipo === 'metodo' && (f.obj === 'AB2_CENAS' || f.obj === 'AB_CENAS') && f.nome === CENAS[est.cena].id);   // v11.15: as cenas da abertura são da AB2_CENAS
 function aviso(s){ const a = $('e-aviso'); a.textContent = s; a.classList.add('ver'); clearTimeout(aviso.t); aviso.t = setTimeout(() => a.classList.remove('ver'), 2600); }
 
 /* ---------- desenho da cena e dos pontos ---------- */
