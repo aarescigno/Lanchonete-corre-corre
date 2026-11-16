@@ -6,7 +6,8 @@ Registro das ideias e dos retornos de quem jogou, com o texto original, e de ond
 
 ## 15/11 — usuário: a conversa da primeira nota baixa
 Texto original: "Na primeira vez que a pessoa tirar uma nota 2 estrelas ou menos, aparecer uma conversa da bia com o Tonhão em que ela pergunta por que ela se esforçou tanto e não conseguiu agradar a todo mundo? E Tonhão responde, isso é a vida, Bia, importante é melhorar a cada dia! Ou algo assim."
-Destino: entregue na v11.12 (`docs/spec-v11.12.md`): `HIST_NOTA`, `save.convNota`, nota do dia no Gúgou de 2,0 ou menos (3 ou mais avaliações).
+Retorno de 16/11: "Não só a nota do Gugou, mas a nota de estrelas no fim da fase também".
+Destino: entregue na v11.12 (`docs/spec-v11.12.md`): `HIST_NOTA`, `save.convNota`; dispara com 2 estrelas ou menos no fim da fase ou com nota do dia no Gúgou de 2,0 ou menos (3 ou mais avaliações).
 
 ---
 

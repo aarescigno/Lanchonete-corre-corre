@@ -1382,8 +1382,8 @@ const HIST_RECOMENDA = { falas:[
   { q:'tonhao', e:'insegura', s:'O guia ligou. Somos "recomendados".' },
   { q:'bia', s:'Recomendado não é estrela.' },
   { q:'bia', e:'firme', s:'Mas ele volta. Eu arrumo a casa e marco outra noite.' } ] };
-/* v11.12: a conversa da 1ª nota baixa do dia (a nota do dia no Gúgou, `ate` ou menos, com `n` ou mais avaliações), só no Modo História. save.convNota: 0 | 'pend' | 1 */
-const HIST_NOTA = { ate:2, n:3, falas:[
+/* v11.12: a conversa da 1ª nota baixa do dia: as estrelas do fim da fase (`estrelas` ou menos) ou a nota do dia no Gúgou (`ate` ou menos, com `n` ou mais avaliações), só no Modo História. save.convNota: 0 | 'pend' | 1 */
+const HIST_NOTA = { on:true, estrelas:2, ate:2, n:3, falas:[
   { q:'bia', e:'insegura', nota:'olhando a nota no Gúgou', s:'Eu me esforcei tanto hoje, tio... e não agradei todo mundo. Por quê?' },
   { q:'tonhao', s:'É a vida, Bia. Prato que agrada a cidade inteira não existe.' },
   { q:'tonhao', e:'firme', s:'O importante é melhorar um pouquinho a cada dia.' },

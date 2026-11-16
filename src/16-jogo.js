@@ -1369,7 +1369,7 @@ class Game {
         if (!sv.convTeto && nota3 != null && nota3 >= avalMinimo(this.ponto)) sv.convTeto = 'pend';
       }
     }
-    if (!tomou && histLiga() && sv.histV === 1 && !sv.convNota && avDia && avDia.n >= HIST_NOTA.n && Math.round(avDia.nota * 10) / 10 <= HIST_NOTA.ate) sv.convNota = 'pend';   // v11.12: a 1ª nota baixa do dia
+    if (!tomou && histLiga() && sv.histV === 1 && HIST_NOTA.on && !sv.convNota && (stars <= HIST_NOTA.estrelas || (avDia && avDia.n >= HIST_NOTA.n && Math.round(avDia.nota * 10) / 10 <= HIST_NOTA.ate))) sv.convNota = 'pend';   // v11.12: a 1ª nota baixa do dia: as estrelas do fim da fase (0 a 3) ou a nota do dia no Gúgou
     if (!tomou && histLiga() && sv.histV === 1 && d.n >= HIST_CARDAPIO.dia && !sv.convCard) sv.convCard = 'pend';   // v9.0.1: saves antigos que já passaram do dia 2 veem a conversa no próximo fim de dia
     if (!tomou && histLiga() && sv.histV === 1 && d.n >= HIST_ENTREGA.dia - 1 && !sv.convEnt) sv.convEnt = 'pend';   // v9.6.2: a conversa dos entregadores; v9.6.4: no fim do dia anterior ao 1º com motoboy (o >= cuida dos saves antigos)
     if (!tomou && histLiga() && sv.histV === 1 && this.stats.exigentes > 0 && !sv.convExig) sv.convExig = 'pend';   // v10.1: o 1º dia em que um exigente veio
