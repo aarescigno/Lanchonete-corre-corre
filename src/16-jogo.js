@@ -12,6 +12,9 @@ function eventoSemana(save, n){
   }
   return save.evento.d === n ? save.evento.ev : '';
 }
+/* v12.2: as medidas do Teste de habilidade (Game.tm; só no teste, no humano e no bot pelas mesmas funções): t (segundos de turno medidos), ac (toques aceitos da Bia), perd (toques perdidos), filaS (soma da fila de ações × segundos),
+   par (segundos com a Bia parada e coisa à espera), as cinco listas de reação em segundos (sentar, pedido, conta, suja, prato), o aparelho ('bot' até o 1º pointerdown da página) e dev (o dia foi encerrado pelo modo dev) */
+function novoTm(){ return { t:0, ac:0, perd:0, filaS:0, par:0, sentar:[], pedido:[], conta:[], suja:[], prato:[], aparelho:'bot', dev:false }; }
 class Game {
   constructor(canvas, ctx){
     this.canvas = canvas; this.ctx = ctx;
@@ -33,6 +36,7 @@ class Game {
     this.mode = 'carreira';
     this.conversa = null;   // Modo História (v8.7): a conversa em andamento (19-conversa.js)
     this.treino = null; this.salvo = null;   // Missão zero (v8.2): o passo a passo e o save de verdade, guardado enquanto ela dura
+    this.teste = null; this.testeRel = ''; this.tm = null; this.devForcaSalva = null;   // v12.2: o Teste de habilidade em andamento ({ id, nome, semente, tent }), o texto do relatório depois do fim, as medidas do dia e o DEV.forca guardado enquanto o teste dura
     this.desafio = null; this.desafioRes = null;   // v12: o Desafio em andamento (item da DESAFIOS) e o resultado dele (medalha, nova marca); o save de verdade fica em `salvo`, como na Missão zero
     this.resetDay(1);
   }
@@ -127,7 +131,8 @@ class Game {
     this.multaVig = 0; this.aprovado = false;
     // divulgação (v7, do dia 4 em diante na carreira; v9.0.2): quanto da freguesia do dia aparece
     this.div = divulgaAberta(n, this.save) ? divulgaOf(this.save.divulga) : null;
-    this.divF = this.div ? rand(this.div.groups[0], this.div.groups[1]) : 1;
+    const sd = this.teste ? this.teste.semente : 0;   // v12.2: no teste, o que decide quem chega (a divulgação, a encomenda e a agenda) sai da semente da fase
+    this.divF = this.div ? (this.teste ? comSemente(sd, () => rand(this.div.groups[0], this.div.groups[1])) : rand(this.div.groups[0], this.div.groups[1])) : 1;
     this.clock = this.day.time;
     this.cmdFree = CMD.map((c,i) => i);
     this.stars = 5; this.five = 0; this.starFlash = 0; this.arrT = 2; this.endless = null;
@@ -159,10 +164,12 @@ class Game {
     this.cam = CALCADA.w;
     // v9, a encomenda do setor (área industrial): sorteada ao começar o dia e avisada na introdução
     const pe = this.ponto.encomenda, te = CUSTOMER_TYPES.encomenda;
-    this.encomendaDia = !treino && n > 0 && pe && Math.random() < pe ? { lote:randi(te.lote[0], te.lote[1]) } : null;
+    const sorteiaEnc = () => !treino && n > 0 && pe && Math.random() < pe ? { lote:randi(te.lote[0], te.lote[1]) } : null;
+    this.encomendaDia = this.teste ? comSemente(sd, sorteiaEnc) : sorteiaEnc();
     this.apito = null;
-    this.schedule = n === 0 || treino ? [] : this.buildSchedule(this.day);
+    this.schedule = n === 0 || treino ? [] : this.teste ? comSemente(sd, () => this.buildSchedule(this.day)) : this.buildSchedule(this.day);
     this.nextIdx = 0;
+    this.tm = this.teste ? novoTm() : null;   // v12.2
     this.result = null;
     this.bannerT = 0;
   }
@@ -322,6 +329,7 @@ class Game {
     out.forEach(s => { if ((exg && s.vip) || s.exig) s.av = true; });
     const idx = out.map((_, i) => i).filter(i => !((exg && out[i].vip) || out[i].exig));
     for (let k = 0; k < Math.min(AVAL.porDia, idx.length); k++) out[idx.splice(randi(0, idx.length - 1), 1)[0]].av = true;
+    if (this.teste) out.forEach((x, i) => { x.i = i; });   // v12.2: a posição na agenda (o spawn semeia o grupo com semente × 1000 + i)
     return out;
   }
   /* v10.1: o exigente que saiu bravo ontem tira EXIGENTE.bravoMov do movimento de hoje; a reputação (nota do Gúgou) mexe na chance de VIP no Terraço */
@@ -417,12 +425,27 @@ class Game {
     if (!this.salvo) return;
     this.save = this.salvo; this.salvo = null; this.up = this.save.up; this.treino = null;
     if (this.desafio){ this.desafio = null; DESAFIO_EST.on = false; this.tablesKey = ''; }   // v12: acabar o Desafio também devolve o salão de verdade
+    if (this.teste){ this.teste = null; this.tm = null; }   // v12.2: e o Teste de habilidade (o DEV.forca que ele guardou volta)
+    if (this.devForcaSalva){ DEV.forca = this.devForcaSalva; this.devForcaSalva = null; }
   }
   /* Desafio (v12): joga com um save de mentira (`_desafio`, nunca gravado), montado pela linha `cap` da DEV_CAPS, sem as pessoas de mod.sem e com as melhorias de mod.up;
      o de verdade fica em `salvo` e volta ao sair. Vai à introdução do dia (o título e o aviso são do Desafio) */
   startDesafio(id){
     const D = DESAFIOS.find(x => x.id === id);
     if (!D) return false;
+    this.teste = null;
+    return this.comecaDesafio(D);
+  }
+  /* v12.2, o Teste de habilidade: o dia é o de um Desafio (comecaDesafio), com a semente da fase e as medidas (this.tm); a tentativa sobe ao começar. O modo dev não mexe: o DEV.forca fica vazio (e volta ao sair) e a velocidade, em 1 */
+  startTeste(id){
+    const T = TESTES.find(x => x.id === id);
+    if (!T) return false;
+    this.teste = { id:T.id, nome:T.nome, semente:T.semente, tent:testeSobe(T.id), quando:new Date() }; this.testeRel = '';
+    if (!this.devForcaSalva) this.devForcaSalva = DEV.forca;
+    DEV.forca = {}; DEV.vel = 1;
+    return this.comecaDesafio(Object.assign({}, T, { nome:'Teste: ' + T.nome, cond:null, aviso:TESTE_AVISO, falhou:'' }));
+  }
+  comecaDesafio(D){
     if (!this.salvo) this.salvo = this.save;
     this.mode = 'carreira'; this.treino = null; this.desafio = D; DESAFIO_EST.on = true;
     this.save = this.montaCap(D.cap, { marca:{ _desafio:true }, conversa:false, maximo:true, sem:D.mod.sem, up:D.mod.up, equipe:D.mod.tvs ? { tvs:D.mod.tvs } : null });
@@ -451,6 +474,7 @@ class Game {
   }
   /* o fim do Desafio (v12): só conta as estrelas; a medalha é 0 se a cond não vale; a melhor fica no save de verdade (`salvo`), e é só ela que se grava */
   finishDesafio(){
+    if (this.teste) return this.finishTeste();   // v12.2: o teste não tem medalha, nem grava nada: só o relatório
     const D = this.desafio, m = Math.round(this.lucro), real = this.salvo || this.save;
     this.aberto = false;
     const stars = this.estrelasDe(m), condOk = !D.cond || D.cond(this.stats), medalha = condOk ? stars : 0;
@@ -459,6 +483,14 @@ class Game {
     this.desafioRes = { id:D.id, medalha, nova, falhou:!condOk, lucro:m, stars };
     this.setState('desafiofim');
     if (medalha) Sfx.win(); else Sfx.lose();
+  }
+  /* v12.2, o fim do Teste de habilidade: o relatório (testeRelatorio, em 42-resultados.js) e a tela ov-teste-fim; nada do save de verdade muda */
+  finishTeste(){
+    const m = Math.round(this.lucro), stars = this.estrelasDe(m);
+    this.aberto = false; this.teste.quando = new Date();
+    this.testeRel = testeRelatorio(this);
+    this.setState('testefim');
+    if (stars) Sfx.win(); else Sfx.lose();
   }
   /* "Pular tutorial": sai da Missão zero, marca como feita (não volta a abrir sozinha) e vai ao menu */
   pularTreino(){
@@ -943,7 +975,7 @@ class Game {
   }
   spawn(s){
     s = s || this.schedule[this.nextIdx++];
-    const g = new Group(this, s.type, ++this.gid, s.color, s.vip, s);
+    const id = ++this.gid, g = this.teste && s.i != null ? comSemente(this.teste.semente * 1000 + s.i, () => new Group(this, s.type, id, s.color, s.vip, s)) : new Group(this, s.type, id, s.color, s.vip, s);   // v12.2: no teste, o tamanho, as pessoas e os pedidos de cada grupo saem da semente da fase
     g.avalia = !!s.av; g.doApito = !!s.apito;   // doApito: uma das turmas que chegam com o apito da fábrica
     this.groups.push(g);
     const novoMan = this.manualVer('c-' + s.type) | (g.vipAberto ? this.manualVer('c-vip') : 0) | (g.exigente && !g.disfarce ? this.manualVer('c-exigente') : 0);   // v9.6.7: a 1ª vez de cada tipo abre a ficha dele no Manual
@@ -1076,7 +1108,13 @@ class Game {
     Sfx.boing();
     return false;
   }
-  seatGroup(g, t, semCorrente){   // v10.8: semCorrente (a Cami gerente): a corrente é só da Bia
+  /* v12.2: o toque da Bia que senta o grupo conta como ação (ou toque perdido, se devolve false) e dá a reação ao sentar (o tempo que o grupo esperou com mesa livre que coubesse); o que a Cami gerente senta (semCorrente) não conta */
+  seatGroup(g, t, semCorrente){
+    const ok = this.seatGroup0(g, t, semCorrente);
+    if (this.tm && !semCorrente){ this.tmAcao(ok); if (ok) this.tm.sentar.push(g.tmQ || 0); }
+    return ok;
+  }
+  seatGroup0(g, t, semCorrente){   // v10.8: semCorrente (a Cami gerente): a corrente é só da Bia
     if (!g || !t || g.state !== 'queue') return false;
     if (!t.open) return this.fail(g, 'Mesa fechada!');
     if (t.group) return this.fail(g, 'Mesa ocupada!');
@@ -1298,6 +1336,7 @@ class Game {
     this.gerenteUpdate(dt);   // v10.8
     this.kitchen.update(dt);
     this.tables.forEach(t => { t.sujaT = t.dirty ? t.sujaT + dt : 0; });   // v10.1
+    if (this.tm && !this.ending) this.tmAnda(dt);   // v12.2
     if (this.visita){ const ruim = this.salaoBagunca() || this.trashFull; this.groups.forEach(g => { if (g.critico && g.seated && ruim) g.salaoSeg += dt; }); }   // v10.9: os segundos de salão bagunçado com o crítico sentado
     this.esfriar(dt);
     this.updateFx(dt);
@@ -2396,6 +2435,7 @@ class Game {
   devFimDia(){
     if (!DEV.on || this.mode !== 'carreira' || (this.state !== 'playing' && this.state !== 'paused')) return false;
     if (this.state === 'paused') this.setState('playing');
+    if (this.tm) this.tm.dev = true;   // v12.2: o relatório do teste diz que o dia foi encerrado pelo modo dev
     this.fechaPorta(); this.fechadoT = FECHA.max; return true;   // v9.6.4: o botão do modo dev encerra o dia na hora (sem esperar o salão esvaziar)
   }
   /* liga ou desliga uma melhoria de graça; os Tênis de corrida andam junto com os Tênis novos */
@@ -2459,12 +2499,52 @@ class Game {
     }
     return { k:'hud' };
   }
+  /* v12.2: o toque aceito é ação; o recusado, toque perdido; e o 1º toque aceito na mesa que pede o pedido, a conta ou a limpeza dá a reação (os segundos que ela esperou) */
   tapTable(t){
+    const ok = this.tapTable0(t);
+    if (this.tm){
+      this.tmAcao(ok);
+      const g = ok && t.group;
+      if (g && g.state === 'wantOrder' && !g.tmP){ g.tmP = true; this.tm.pedido.push(g.stateT); }
+      else if (g && g.state === 'wantBill' && !g.tmC){ g.tmC = true; this.tm.conta.push(g.stateT); }
+      else if (ok && !t.group && t.dirty && !t.tmS){ t.tmS = true; this.tm.suja.push(t.sujaT); }
+    }
+    return ok;
+  }
+  tapTable0(t){
     if (!t.open) return false;
     if ((t.group || t.dirty) && this.bia.enqueue({ type:'table', id:t.id })){ Sfx.tap(); this.addGlow(t); return true; }
     return false;
   }
+  /* v12.2: o toque na janela que pega um prato pronto para um grupo à espera dele dá a reação ao prato (a idade do prato no balcão) */
   tapStation(k, x, y){
+    const ok = this.tapStation0(k, x, y);
+    if (this.tm){
+      this.tmAcao(ok);
+      if (ok && k === 'plates'){
+        const a = this.bia.acts[this.bia.acts.length - 1], p = a && a.type === 'plate' ? this.kitchen.plates.find(q => q && q.id === a.pid) : null;
+        if (p && p.group && p.group.state === 'ordered' && !p.tmF){ p.tmF = true; this.tm.prato.push(p.age); }
+      }
+    }
+    return ok;
+  }
+  tmAcao(ok){ if (ok) this.tm.ac++; else this.tm.perd++; }
+  /* v12.2, a cada quadro do turno (ou do fechamento com gente dentro): o relógio, a fila média, a espera de quem tem mesa livre que caiba (o exigente, também sem salão bagunçado) e a Bia parada
+     (a fila de ações vazia, sem andar, e alguma coisa à espera dela: um grupo com mesa que caiba, uma mesa pedindo o pedido ou a conta, uma mesa suja ou um prato no balcão para grupo à espera dele) */
+  tmAnda(dt){
+    const m = this.tm, b = this.bia;
+    m.t += dt; m.filaS += b.acts.length * dt;
+    const livres = this.tables.filter(t => t.free), bag = this.salaoBagunca();
+    let espera = false;
+    this.queue.forEach(g => {
+      if (g.state !== 'queue' || (g.exigente && bag) || !livres.some(t => t.seats >= g.size)) return;
+      g.tmQ = (g.tmQ || 0) + dt; espera = true;
+    });
+    this.tables.forEach(t => { if (!t.dirty) t.tmS = false; });
+    if (!espera) espera = this.tables.some(t => t.open && ((t.group && (t.group.state === 'wantOrder' || t.group.state === 'wantBill')) || (t.dirty && !t.group))) || this.kitchen.plates.some(p => p && p.group && p.group.state === 'ordered');
+    if (espera && !b.acts.length && !b.moving) m.par += dt;
+  }
+  tapStation0(k, x, y){
     if (k === 'rosas'){   // v10.8: o vaso de rosas: com as 2 pétalas na mão, só o aviso, sem andar
       if (this.bia.petalas >= ROSA.max){ this.bia.fail('Já tenho pétalas'); return false; }
       if (this.bia.enqueue({ type:'rosas' })){ Sfx.tap(); this.addGlow('rosas'); return true; }
@@ -2524,7 +2604,7 @@ class Game {
     this.sel = null;
     if (hit && hit.k === 'conserto') this.consertar(hit.id);
     else if (hit) this.tapStation(hit.st, x, y);
-    else if (pad) this.fx.push({ k:'tap', x, y, life:0, max:0.3 });
+    else { if (this.tm) this.tm.perd++; if (pad) this.fx.push({ k:'tap', x, y, life:0, max:0.3 }); }   // v12.2: o toque no salão que não acerta nada é toque perdido
   }
   /* destaque da mesa sob o grupo arrastado ou escolhido */
   hoverAt(x, y, pad, grp){
@@ -2552,7 +2632,7 @@ class Game {
     if (d.moved){
       const t = this.tableAt(x, y, d.pad);
       if (t) this.seatGroup(d.g, t);
-      else { d.g.boing = 0.4; }
+      else { d.g.boing = 0.4; if (this.tm) this.tm.perd++; }   // v12.2: soltou o grupo fora de mesa: toque perdido
     } else {
       this.sel = (this.sel === d.g) ? null : d.g;
       Sfx.tap();

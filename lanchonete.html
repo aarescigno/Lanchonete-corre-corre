@@ -245,6 +245,9 @@ table.cx .rs{font-size:inherit}
 .cx-copia .btn{min-height:34px;padding:2px calc(var(--u)*16);font-size:max(13px,calc(var(--u)*16))}
 .cx-st{font-weight:700;font-size:max(12px,calc(var(--u)*14))}
 .cx-txt{flex-basis:100%;height:calc(var(--u)*90);font:600 12px var(--fb);border:2px solid var(--tinta);border-radius:8px;padding:4px}
+/* v12.2: o fim do Teste de habilidade: o relatório só aparece (numa caixa para selecionar) se a cópia falhar */
+#teste-fim-caixa .cx-txt{display:block;width:100%;box-sizing:border-box;height:calc(var(--u)*120);min-height:84px}
+#teste-fim-caixa:empty{display:none}
 .item{background:var(--creme);border:calc(var(--u)*3) solid var(--tinta);border-radius:calc(var(--u)*12);padding:calc(var(--u)*6) calc(var(--u)*8);display:grid;grid-template-columns:auto 1fr;column-gap:calc(var(--u)*8);row-gap:calc(var(--u)*3);align-items:center;align-content:start;text-align:left}
 .item.own{background:#dcefd9}
 .item{position:relative}
@@ -419,6 +422,7 @@ table.rank tr.me td{background:#fbe7a8}
 .dev-panel #dev-abas button{font-size:max(12px,calc(var(--u)*15));min-height:max(36px,calc(var(--u)*38));padding:0 calc(var(--u)*10);flex:1 1 auto}
 .dev-panel #dev-abas button[aria-pressed="true"]{background:var(--faixa);color:#fff}
 .dev-panel select{font:700 max(12px,calc(var(--u)*15)) var(--fb);min-height:max(36px,calc(var(--u)*38));max-width:100%;border:calc(var(--u)*2) solid var(--tinta);border-radius:calc(var(--u)*6);background:#fff;color:var(--tinta)}
+.dev-panel #dev-teste-nome{font:600 max(16px,calc(var(--u)*17)) var(--fb);color:var(--tinta);background:#fff;border:calc(var(--u)*2) solid var(--tinta);border-radius:calc(var(--u)*6);min-height:max(36px,calc(var(--u)*38));padding:0 8px;max-width:100%;width:calc(var(--u)*260)}   /* v12.2 */
 .dev-panel .dev-pessoa{display:flex;align-items:center;gap:calc(var(--u)*6);margin-top:calc(var(--u)*4)}
 .dev-panel .dev-nome{font-weight:700;min-width:calc(var(--u)*150)}
 .dev-panel .dev-pessoa .btn{min-width:max(36px,calc(var(--u)*38));padding:0}
@@ -476,7 +480,7 @@ table.rank tr.me td{background:#fbe7a8}
 
     <div class="ov show" id="ov-menu">
       <div class="panel menu-panel">
-        <span class="vtag" id="vtag" aria-label="Versão 12.1">v12.1</span>
+        <span class="vtag" id="vtag" aria-label="Versão 12.2">v12.2</span>
         <h1 class="title">Lanchonete <br>Corre-Corre</h1>
         <p class="tag">Ajude a Bia a atender a freguesia da esquina antes que o cafezinho esfrie!</p>
         <div class="lbl" id="menu-dia">História</div>
@@ -527,6 +531,16 @@ table.rank tr.me td{background:#fbe7a8}
         <div id="desafio-fim-medalha"></div>
         <p id="desafio-fim-msg" role="status"></p>
         <div class="row"><button class="btn go" id="btn-desafio-de-novo">Tentar de novo</button><button class="btn alt" id="btn-desafio-lista">Desafios</button></div>
+      </div>
+    </div>
+
+    <div class="ov" id="ov-teste-fim">
+      <div class="panel desafio-fim-panel">
+        <h2 id="teste-fim-titulo">Teste</h2>
+        <p id="teste-fim-msg" role="status"></p>
+        <div class="row"><button class="btn go" id="btn-teste-copia" type="button">Copiar relatório</button><button class="btn alt" id="btn-teste-de-novo" type="button">Jogar de novo</button><button class="btn alt" id="btn-teste-volta" type="button">Voltar</button></div>
+        <p id="teste-fim-aviso" role="status"></p>
+        <div id="teste-fim-caixa"></div>
       </div>
     </div>
 
@@ -748,7 +762,8 @@ table.rank tr.me td{background:#fbe7a8}
       <div class="panel">
         <h2>Versões</h2>
         <ul class="verlist">
-          <li><b>v12.1</b><span class="cur">versão atual</span><br>17/11/2026 &mdash; Mais quatro desafios: a festa junina lotada, o jogo do Brasil, a noite do crítico e os VIPs exigentes.</li>
+          <li><b>v12.2</b><span class="cur">versão atual</span><br>17/11/2026 &mdash; Só no modo dev: o Teste de habilidade, quatro fases padrão com relatório para nivelar o bot com o jeito de jogar de gente.</li>
+          <li><b>v12.1</b><br>17/11/2026 &mdash; Mais quatro desafios: a festa junina lotada, o jogo do Brasil, a noite do crítico e os VIPs exigentes.</li>
           <li><b>v12</b><br>17/11/2026 &mdash; Desafios: depois do fim da história, dias avulsos que valem medalha de bronze, prata ou ouro.</li>
           <li><b>v11</b><br>14/11/2026 &mdash; O futuro da Corre-Corre: a história ganha final, o arco da Bia e da equipe, e a abertura e o final refeitos como filminho.<br><a href="versoes/v11.html" target="_blank" rel="noopener">Abrir a v11</a></li>
           <li><b>v10</b><br>11/11/2026 &mdash; O Terraço Suíça, o último ponto: 20 lugares, um piano de cauda, a porta do elevador e o casal da data especial. Cada mesa pede a refeição completa, com bebida, entrada, prato e sobremesa, e cada tempo conta no Gúgou. Dois novos capítulos: Lá no alto e Do começo ao fim.<br><a href="versoes/v10.html" target="_blank" rel="noopener">Abrir a v10</a></li>
@@ -2156,6 +2171,18 @@ const DESAFIOS = [
     aviso:'Hoje só vem gente exigente.', falhou:'Uma mesa saiu descontente.' }
 ];
 const MEDALHAS = ['sem medalha', 'bronze', 'prata', 'ouro'];
+/* v12.2, o Teste de habilidade (só no modo dev): quatro fases padrão, uma por ponto, no formato da DESAFIOS (o dia é montado como o de um Desafio: `mod.groups` e `mod.meta` 1, o save de mentira
+   "Tudo no máximo"; na Garagem, sem `mod.sem`: só a Bia e o Tonhão). `semente`: o sorteio da agenda do dia (S) e de cada grupo (S × 1000 + i) sai dela, e por isso os clientes são sempre os mesmos.
+   TESTE_LS: a chave do aparelho com as tentativas de cada fase ({ garagem:3, ... }); fica fora do save */
+const TESTES = [
+  { id:'garagem',    nome:'Garagem',          cap:3,  dia:7,  mod:{ sem:['dani', 'joca', 'cami', 'anselmo', 'lia'], groups:1, meta:1 }, semente:7001 },
+  { id:'industrial', nome:'Área industrial',  cap:5,  dia:17, mod:{ groups:1, meta:1 }, semente:7002 },
+  { id:'avenida',    nome:'Avenida Brasil',   cap:8,  dia:38, mod:{ groups:1, meta:1 }, semente:7003 },
+  { id:'terraco',    nome:'Terraço Suíça',    cap:11, dia:58, mod:{ groups:1, meta:1 }, semente:7004 }
+];
+const TESTE_LS = 'lcc-teste';
+const TESTE_FORMATO = 1;   // o número do formato do relatório (1ª linha: LCC-TESTE 1)
+const TESTE_AVISO = 'Jogue um dia como sempre. No fim, copie o relatório e mande.';
 /* save.desafios: { id: 0 a 3 } só dos ids da DESAFIOS e com inteiros (a melhor medalha de cada um) */
 function normDesafios(d){
   const o = {}; d = d && typeof d === 'object' ? d : {};
@@ -2505,7 +2532,7 @@ const HIST_NOMES = { bia:'Bia', tonhao:'Tonhão', dani:'Dani', joca:'Joca', cami
 const ATU_TXT = { procurando:'Procurando versão nova...', nova:'Tem versão nova: {v}! Seu jogo salvo continua.', igual:'Você já está na versão mais nova ({v}).', erro:'Sem internet agora. Tente de novo mais tarde.', atualizando:'Atualizando...' };
 function atuEstado(remota, atual){ if (typeof remota !== 'string' || !remota.trim()) return 'erro'; return remota.trim() === atual ? 'igual' : 'nova'; }
 const CAIXA_MAX = 14;                                 // livro-caixa (v7.2): quantos dias da carreira ficam guardados
-const VERSAO = 'v12.1';                               // vai no resumo do Caixa
+const VERSAO = 'v12.2';                               // vai no resumo do Caixa
 const DIVULGA_DIA = 4;                                // antes disso, o movimento é o da inauguração (sem custo); v9.0.2: dia 4, e o padrão é o boca a boca
 function divulgaAberta(n, sv){ return devLivre() || n >= DIVULGA_DIA && !(sv && sv.convDiv === 'pend'); }   // no modo dev, desde o dia 1; v9.0.3: no Modo História, só depois da conversa
 /* v9.6.4: a Efood (os entregadores) só abre depois da conversa dos entregadores, no Modo História; antes dela, nenhum tipo com `retira` vem na agenda */
@@ -2835,6 +2862,12 @@ function semente(n){
   };
 }
 
+/* v12.2: troca o Math.random pelo gerador com semente só durante fn (e devolve o original, mesmo com erro): rand, randi e pick entram sozinhos. Usado pelo Teste de habilidade */
+function comSemente(seed, fn){
+  const o = Math.random; Math.random = semente(seed);
+  try { return fn(); } finally { Math.random = o; }
+}
+
 /* ============================================================
    ÁUDIO (WebAudio sintetizado)
    ============================================================ */
@@ -3064,6 +3097,13 @@ function lsSet(k, v){
    liberado na lojinha, até antes do dia 1: melhorias de graça (liga e desliga), couvert e divulgação. Ranking de fora */
 const DEV = { on: lsGet(LS.dev) === '1', bank: 10000, toques: 10, real: lsGet(LS.dev) === '1' && lsGet(LS.devReal) === '1', vel:1, aba:'pular', forca:{} };   // v9.2.1: real = preços e travas de verdade; vel = velocidade (só na memória); v10.2.1: real fica gravado (lcc2_dev_real); aba = a aba aberta do painel
 function devLivre(){ return DEV.on && !DEV.real; }
+/* v12.2: as tentativas do Teste de habilidade, por fase ({ garagem:3, ... }), guardadas no aparelho (TESTE_LS); ficam fora do save e recomeçar do zero não as apaga */
+function testeTent(){
+  let o = {}; try { o = JSON.parse(lsGet(TESTE_LS) || '{}') || {}; } catch(e) { o = {}; }
+  const r = {}; TESTES.forEach(t => { const v = o[t.id]; r[t.id] = typeof v === 'number' && Number.isInteger(v) && v > 0 ? v : 0; });
+  return r;
+}
+function testeSobe(id){ const r = testeTent(); r[id] = (r[id] || 0) + 1; lsSet(TESTE_LS, JSON.stringify(r)); return r[id]; }
 /* v10.2.1: o Modo História liga fora do modo dev e no jeito "De verdade" do modo dev (no Livre fica desligado) */
 function histLiga(){ return HIST.on && !devLivre() && !DESAFIO_EST.on; }
 /* v12: durante um Desafio a História fica desligada (sem conversa, capítulo, objetivo nem reação de história); o Game liga e desliga */
@@ -4589,6 +4629,9 @@ function eventoSemana(save, n){
   }
   return save.evento.d === n ? save.evento.ev : '';
 }
+/* v12.2: as medidas do Teste de habilidade (Game.tm; só no teste, no humano e no bot pelas mesmas funções): t (segundos de turno medidos), ac (toques aceitos da Bia), perd (toques perdidos), filaS (soma da fila de ações × segundos),
+   par (segundos com a Bia parada e coisa à espera), as cinco listas de reação em segundos (sentar, pedido, conta, suja, prato), o aparelho ('bot' até o 1º pointerdown da página) e dev (o dia foi encerrado pelo modo dev) */
+function novoTm(){ return { t:0, ac:0, perd:0, filaS:0, par:0, sentar:[], pedido:[], conta:[], suja:[], prato:[], aparelho:'bot', dev:false }; }
 class Game {
   constructor(canvas, ctx){
     this.canvas = canvas; this.ctx = ctx;
@@ -4610,6 +4653,7 @@ class Game {
     this.mode = 'carreira';
     this.conversa = null;   // Modo História (v8.7): a conversa em andamento (19-conversa.js)
     this.treino = null; this.salvo = null;   // Missão zero (v8.2): o passo a passo e o save de verdade, guardado enquanto ela dura
+    this.teste = null; this.testeRel = ''; this.tm = null; this.devForcaSalva = null;   // v12.2: o Teste de habilidade em andamento ({ id, nome, semente, tent }), o texto do relatório depois do fim, as medidas do dia e o DEV.forca guardado enquanto o teste dura
     this.desafio = null; this.desafioRes = null;   // v12: o Desafio em andamento (item da DESAFIOS) e o resultado dele (medalha, nova marca); o save de verdade fica em `salvo`, como na Missão zero
     this.resetDay(1);
   }
@@ -4704,7 +4748,8 @@ class Game {
     this.multaVig = 0; this.aprovado = false;
     // divulgação (v7, do dia 4 em diante na carreira; v9.0.2): quanto da freguesia do dia aparece
     this.div = divulgaAberta(n, this.save) ? divulgaOf(this.save.divulga) : null;
-    this.divF = this.div ? rand(this.div.groups[0], this.div.groups[1]) : 1;
+    const sd = this.teste ? this.teste.semente : 0;   // v12.2: no teste, o que decide quem chega (a divulgação, a encomenda e a agenda) sai da semente da fase
+    this.divF = this.div ? (this.teste ? comSemente(sd, () => rand(this.div.groups[0], this.div.groups[1])) : rand(this.div.groups[0], this.div.groups[1])) : 1;
     this.clock = this.day.time;
     this.cmdFree = CMD.map((c,i) => i);
     this.stars = 5; this.five = 0; this.starFlash = 0; this.arrT = 2; this.endless = null;
@@ -4736,10 +4781,12 @@ class Game {
     this.cam = CALCADA.w;
     // v9, a encomenda do setor (área industrial): sorteada ao começar o dia e avisada na introdução
     const pe = this.ponto.encomenda, te = CUSTOMER_TYPES.encomenda;
-    this.encomendaDia = !treino && n > 0 && pe && Math.random() < pe ? { lote:randi(te.lote[0], te.lote[1]) } : null;
+    const sorteiaEnc = () => !treino && n > 0 && pe && Math.random() < pe ? { lote:randi(te.lote[0], te.lote[1]) } : null;
+    this.encomendaDia = this.teste ? comSemente(sd, sorteiaEnc) : sorteiaEnc();
     this.apito = null;
-    this.schedule = n === 0 || treino ? [] : this.buildSchedule(this.day);
+    this.schedule = n === 0 || treino ? [] : this.teste ? comSemente(sd, () => this.buildSchedule(this.day)) : this.buildSchedule(this.day);
     this.nextIdx = 0;
+    this.tm = this.teste ? novoTm() : null;   // v12.2
     this.result = null;
     this.bannerT = 0;
   }
@@ -4899,6 +4946,7 @@ class Game {
     out.forEach(s => { if ((exg && s.vip) || s.exig) s.av = true; });
     const idx = out.map((_, i) => i).filter(i => !((exg && out[i].vip) || out[i].exig));
     for (let k = 0; k < Math.min(AVAL.porDia, idx.length); k++) out[idx.splice(randi(0, idx.length - 1), 1)[0]].av = true;
+    if (this.teste) out.forEach((x, i) => { x.i = i; });   // v12.2: a posição na agenda (o spawn semeia o grupo com semente × 1000 + i)
     return out;
   }
   /* v10.1: o exigente que saiu bravo ontem tira EXIGENTE.bravoMov do movimento de hoje; a reputação (nota do Gúgou) mexe na chance de VIP no Terraço */
@@ -4994,12 +5042,27 @@ class Game {
     if (!this.salvo) return;
     this.save = this.salvo; this.salvo = null; this.up = this.save.up; this.treino = null;
     if (this.desafio){ this.desafio = null; DESAFIO_EST.on = false; this.tablesKey = ''; }   // v12: acabar o Desafio também devolve o salão de verdade
+    if (this.teste){ this.teste = null; this.tm = null; }   // v12.2: e o Teste de habilidade (o DEV.forca que ele guardou volta)
+    if (this.devForcaSalva){ DEV.forca = this.devForcaSalva; this.devForcaSalva = null; }
   }
   /* Desafio (v12): joga com um save de mentira (`_desafio`, nunca gravado), montado pela linha `cap` da DEV_CAPS, sem as pessoas de mod.sem e com as melhorias de mod.up;
      o de verdade fica em `salvo` e volta ao sair. Vai à introdução do dia (o título e o aviso são do Desafio) */
   startDesafio(id){
     const D = DESAFIOS.find(x => x.id === id);
     if (!D) return false;
+    this.teste = null;
+    return this.comecaDesafio(D);
+  }
+  /* v12.2, o Teste de habilidade: o dia é o de um Desafio (comecaDesafio), com a semente da fase e as medidas (this.tm); a tentativa sobe ao começar. O modo dev não mexe: o DEV.forca fica vazio (e volta ao sair) e a velocidade, em 1 */
+  startTeste(id){
+    const T = TESTES.find(x => x.id === id);
+    if (!T) return false;
+    this.teste = { id:T.id, nome:T.nome, semente:T.semente, tent:testeSobe(T.id), quando:new Date() }; this.testeRel = '';
+    if (!this.devForcaSalva) this.devForcaSalva = DEV.forca;
+    DEV.forca = {}; DEV.vel = 1;
+    return this.comecaDesafio(Object.assign({}, T, { nome:'Teste: ' + T.nome, cond:null, aviso:TESTE_AVISO, falhou:'' }));
+  }
+  comecaDesafio(D){
     if (!this.salvo) this.salvo = this.save;
     this.mode = 'carreira'; this.treino = null; this.desafio = D; DESAFIO_EST.on = true;
     this.save = this.montaCap(D.cap, { marca:{ _desafio:true }, conversa:false, maximo:true, sem:D.mod.sem, up:D.mod.up, equipe:D.mod.tvs ? { tvs:D.mod.tvs } : null });
@@ -5028,6 +5091,7 @@ class Game {
   }
   /* o fim do Desafio (v12): só conta as estrelas; a medalha é 0 se a cond não vale; a melhor fica no save de verdade (`salvo`), e é só ela que se grava */
   finishDesafio(){
+    if (this.teste) return this.finishTeste();   // v12.2: o teste não tem medalha, nem grava nada: só o relatório
     const D = this.desafio, m = Math.round(this.lucro), real = this.salvo || this.save;
     this.aberto = false;
     const stars = this.estrelasDe(m), condOk = !D.cond || D.cond(this.stats), medalha = condOk ? stars : 0;
@@ -5036,6 +5100,14 @@ class Game {
     this.desafioRes = { id:D.id, medalha, nova, falhou:!condOk, lucro:m, stars };
     this.setState('desafiofim');
     if (medalha) Sfx.win(); else Sfx.lose();
+  }
+  /* v12.2, o fim do Teste de habilidade: o relatório (testeRelatorio, em 42-resultados.js) e a tela ov-teste-fim; nada do save de verdade muda */
+  finishTeste(){
+    const m = Math.round(this.lucro), stars = this.estrelasDe(m);
+    this.aberto = false; this.teste.quando = new Date();
+    this.testeRel = testeRelatorio(this);
+    this.setState('testefim');
+    if (stars) Sfx.win(); else Sfx.lose();
   }
   /* "Pular tutorial": sai da Missão zero, marca como feita (não volta a abrir sozinha) e vai ao menu */
   pularTreino(){
@@ -5520,7 +5592,7 @@ class Game {
   }
   spawn(s){
     s = s || this.schedule[this.nextIdx++];
-    const g = new Group(this, s.type, ++this.gid, s.color, s.vip, s);
+    const id = ++this.gid, g = this.teste && s.i != null ? comSemente(this.teste.semente * 1000 + s.i, () => new Group(this, s.type, id, s.color, s.vip, s)) : new Group(this, s.type, id, s.color, s.vip, s);   // v12.2: no teste, o tamanho, as pessoas e os pedidos de cada grupo saem da semente da fase
     g.avalia = !!s.av; g.doApito = !!s.apito;   // doApito: uma das turmas que chegam com o apito da fábrica
     this.groups.push(g);
     const novoMan = this.manualVer('c-' + s.type) | (g.vipAberto ? this.manualVer('c-vip') : 0) | (g.exigente && !g.disfarce ? this.manualVer('c-exigente') : 0);   // v9.6.7: a 1ª vez de cada tipo abre a ficha dele no Manual
@@ -5653,7 +5725,13 @@ class Game {
     Sfx.boing();
     return false;
   }
-  seatGroup(g, t, semCorrente){   // v10.8: semCorrente (a Cami gerente): a corrente é só da Bia
+  /* v12.2: o toque da Bia que senta o grupo conta como ação (ou toque perdido, se devolve false) e dá a reação ao sentar (o tempo que o grupo esperou com mesa livre que coubesse); o que a Cami gerente senta (semCorrente) não conta */
+  seatGroup(g, t, semCorrente){
+    const ok = this.seatGroup0(g, t, semCorrente);
+    if (this.tm && !semCorrente){ this.tmAcao(ok); if (ok) this.tm.sentar.push(g.tmQ || 0); }
+    return ok;
+  }
+  seatGroup0(g, t, semCorrente){   // v10.8: semCorrente (a Cami gerente): a corrente é só da Bia
     if (!g || !t || g.state !== 'queue') return false;
     if (!t.open) return this.fail(g, 'Mesa fechada!');
     if (t.group) return this.fail(g, 'Mesa ocupada!');
@@ -5875,6 +5953,7 @@ class Game {
     this.gerenteUpdate(dt);   // v10.8
     this.kitchen.update(dt);
     this.tables.forEach(t => { t.sujaT = t.dirty ? t.sujaT + dt : 0; });   // v10.1
+    if (this.tm && !this.ending) this.tmAnda(dt);   // v12.2
     if (this.visita){ const ruim = this.salaoBagunca() || this.trashFull; this.groups.forEach(g => { if (g.critico && g.seated && ruim) g.salaoSeg += dt; }); }   // v10.9: os segundos de salão bagunçado com o crítico sentado
     this.esfriar(dt);
     this.updateFx(dt);
@@ -6973,6 +7052,7 @@ class Game {
   devFimDia(){
     if (!DEV.on || this.mode !== 'carreira' || (this.state !== 'playing' && this.state !== 'paused')) return false;
     if (this.state === 'paused') this.setState('playing');
+    if (this.tm) this.tm.dev = true;   // v12.2: o relatório do teste diz que o dia foi encerrado pelo modo dev
     this.fechaPorta(); this.fechadoT = FECHA.max; return true;   // v9.6.4: o botão do modo dev encerra o dia na hora (sem esperar o salão esvaziar)
   }
   /* liga ou desliga uma melhoria de graça; os Tênis de corrida andam junto com os Tênis novos */
@@ -7036,12 +7116,52 @@ class Game {
     }
     return { k:'hud' };
   }
+  /* v12.2: o toque aceito é ação; o recusado, toque perdido; e o 1º toque aceito na mesa que pede o pedido, a conta ou a limpeza dá a reação (os segundos que ela esperou) */
   tapTable(t){
+    const ok = this.tapTable0(t);
+    if (this.tm){
+      this.tmAcao(ok);
+      const g = ok && t.group;
+      if (g && g.state === 'wantOrder' && !g.tmP){ g.tmP = true; this.tm.pedido.push(g.stateT); }
+      else if (g && g.state === 'wantBill' && !g.tmC){ g.tmC = true; this.tm.conta.push(g.stateT); }
+      else if (ok && !t.group && t.dirty && !t.tmS){ t.tmS = true; this.tm.suja.push(t.sujaT); }
+    }
+    return ok;
+  }
+  tapTable0(t){
     if (!t.open) return false;
     if ((t.group || t.dirty) && this.bia.enqueue({ type:'table', id:t.id })){ Sfx.tap(); this.addGlow(t); return true; }
     return false;
   }
+  /* v12.2: o toque na janela que pega um prato pronto para um grupo à espera dele dá a reação ao prato (a idade do prato no balcão) */
   tapStation(k, x, y){
+    const ok = this.tapStation0(k, x, y);
+    if (this.tm){
+      this.tmAcao(ok);
+      if (ok && k === 'plates'){
+        const a = this.bia.acts[this.bia.acts.length - 1], p = a && a.type === 'plate' ? this.kitchen.plates.find(q => q && q.id === a.pid) : null;
+        if (p && p.group && p.group.state === 'ordered' && !p.tmF){ p.tmF = true; this.tm.prato.push(p.age); }
+      }
+    }
+    return ok;
+  }
+  tmAcao(ok){ if (ok) this.tm.ac++; else this.tm.perd++; }
+  /* v12.2, a cada quadro do turno (ou do fechamento com gente dentro): o relógio, a fila média, a espera de quem tem mesa livre que caiba (o exigente, também sem salão bagunçado) e a Bia parada
+     (a fila de ações vazia, sem andar, e alguma coisa à espera dela: um grupo com mesa que caiba, uma mesa pedindo o pedido ou a conta, uma mesa suja ou um prato no balcão para grupo à espera dele) */
+  tmAnda(dt){
+    const m = this.tm, b = this.bia;
+    m.t += dt; m.filaS += b.acts.length * dt;
+    const livres = this.tables.filter(t => t.free), bag = this.salaoBagunca();
+    let espera = false;
+    this.queue.forEach(g => {
+      if (g.state !== 'queue' || (g.exigente && bag) || !livres.some(t => t.seats >= g.size)) return;
+      g.tmQ = (g.tmQ || 0) + dt; espera = true;
+    });
+    this.tables.forEach(t => { if (!t.dirty) t.tmS = false; });
+    if (!espera) espera = this.tables.some(t => t.open && ((t.group && (t.group.state === 'wantOrder' || t.group.state === 'wantBill')) || (t.dirty && !t.group))) || this.kitchen.plates.some(p => p && p.group && p.group.state === 'ordered');
+    if (espera && !b.acts.length && !b.moving) m.par += dt;
+  }
+  tapStation0(k, x, y){
     if (k === 'rosas'){   // v10.8: o vaso de rosas: com as 2 pétalas na mão, só o aviso, sem andar
       if (this.bia.petalas >= ROSA.max){ this.bia.fail('Já tenho pétalas'); return false; }
       if (this.bia.enqueue({ type:'rosas' })){ Sfx.tap(); this.addGlow('rosas'); return true; }
@@ -7101,7 +7221,7 @@ class Game {
     this.sel = null;
     if (hit && hit.k === 'conserto') this.consertar(hit.id);
     else if (hit) this.tapStation(hit.st, x, y);
-    else if (pad) this.fx.push({ k:'tap', x, y, life:0, max:0.3 });
+    else { if (this.tm) this.tm.perd++; if (pad) this.fx.push({ k:'tap', x, y, life:0, max:0.3 }); }   // v12.2: o toque no salão que não acerta nada é toque perdido
   }
   /* destaque da mesa sob o grupo arrastado ou escolhido */
   hoverAt(x, y, pad, grp){
@@ -7129,7 +7249,7 @@ class Game {
     if (d.moved){
       const t = this.tableAt(x, y, d.pad);
       if (t) this.seatGroup(d.g, t);
-      else { d.g.boing = 0.4; }
+      else { d.g.boing = 0.4; if (this.tm) this.tm.perd++; }   // v12.2: soltou o grupo fora de mesa: toque perdido
     } else {
       this.sel = (this.sel === d.g) ? null : d.g;
       Sfx.tap();
@@ -14750,7 +14870,7 @@ const game = new Game(canvas, ctx);
 /* quem nunca fez a Missão zero (e ainda está no dia 1) encontra o botão dela em destaque */
 function treinoPrimeiro(){ return !game.save.treino && game.proxDia <= 1 && !DEV.on; }
 
-const SCREENS = ['ov-menu','ov-manual','ov-intro','ov-treino','ov-pause','ov-end','ov-shop','ov-falencia','ov-endless','ov-rank','ov-ver','ov-app','ov-atu','ov-abertura','ov-escolha','ov-conversa','ov-continua','ov-guia','ov-desafios','ov-desafio-fim'];
+const SCREENS = ['ov-menu','ov-manual','ov-intro','ov-treino','ov-pause','ov-end','ov-shop','ov-falencia','ov-endless','ov-rank','ov-ver','ov-app','ov-atu','ov-abertura','ov-escolha','ov-conversa','ov-continua','ov-guia','ov-desafios','ov-desafio-fim','ov-teste-fim'];
 function showOnly(ids){
   SCREENS.forEach(id => { const el = $(id); if (!el) return; if (ids.indexOf(id) >= 0) el.classList.add('show'); else el.classList.remove('show'); });
 }
@@ -14929,12 +15049,31 @@ function devAbaPular(body, secao, botao, dia){
   PONTOS.forEach(p => botao(r, p.nome, () => game.devPonto(p.id), p.id === game.ponto.id));
   r = secao('Desafios', 'Liberar mostra o botão no menu, sem o Fim');   // v12
   botao(r, 'Liberar', () => game.devDesafios('liberar')); botao(r, 'Ouro em todos', () => game.devDesafios('ouro')); botao(r, 'Zerar', () => game.devDesafios('zerar'));
+  devTeste(secao, botao);
   if (emDia){
     r = secao('No dia', 'Velocidade ' + DEV.vel + '×');
     [1, 2, 4, 8].forEach(v => botao(r, 'Velocidade ' + v + '×', () => { DEV.vel = v; }, DEV.vel === v));
     const b = botao(r, 'Encerrar o dia agora', () => {}, null);
     b.addEventListener('click', () => { if (game.devFimDia()) fecharDev(); });
   }
+}
+/* v12.2: a seção "Teste de habilidade": o nome (o mesmo do Ranking) e as quatro fases, cada uma com as tentativas já jogadas; o botão fecha o painel e vai à introdução do dia */
+function devTeste(secao, botao){
+  const tent = testeTent();
+  let r = secao('Teste de habilidade', 'Quatro fases padrão, sempre com os mesmos clientes. No fim, copie o relatório e mande.');
+  const inp = el('input'); inp.type = 'text'; inp.id = 'dev-teste-nome'; inp.maxLength = 16; inp.placeholder = 'Seu nome'; inp.value = lastName(); inp.setAttribute('aria-label', 'Seu nome');
+  const grava = () => { const n = cleanName(inp.value); if (n) lsSet(LS.name, n); };
+  inp.addEventListener('input', grava); inp.addEventListener('change', grava);
+  r.appendChild(inp);
+  r = secao('Fases');
+  TESTES.forEach(t => {
+    const b = botao(r, t.nome + ' (' + tent[t.id] + ')', () => {
+      grava();
+      if (game.state !== 'menu') game.setState('menu');
+      if (game.startTeste(t.id)) fecharDev();
+    });
+    b.setAttribute('data-teste', t.id);
+  });
 }
 /* v10.2.2: a aba História (só no De verdade): cumprir o objetivo, assistir a qualquer cena, revelar o Manual e a lojinha, soltar as conversas */
 function devAbaHistoria(body, secao, botao){
@@ -16876,6 +17015,45 @@ function buildDesafioFim(){
   clearEl(box); box.appendChild(medalhaEl(r.medalha, true));
   $('desafio-fim-msg').textContent = r.medalha ? 'Medalha de ' + MEDALHAS[r.medalha] + '!' + (r.nova ? ' Nova melhor marca!' : '') : r.falhou ? D.falhou : 'Não deu a meta.';
 }
+/* v12.2, o relatório do Teste de habilidade (texto puro, vírgula decimal, uma linha por bloco; a 1ª linha leva o número do formato para a ferramenta ler sempre igual). Só lê o jogo: não muda nada */
+function testeRelatorio(g){
+  const T = g.teste, m = g.tm, st = g.stats, d = g.day, lb = st.lostBy;
+  const fn = (v, c) => v.toFixed(c == null ? 1 : c).replace('.', ',');
+  const soma = a => a.reduce((x, y) => x + y, 0);
+  const mediana = a => { const o = a.slice().sort((x, y) => x - y), h = o.length >> 1; return o.length % 2 ? o[h] : (o[h - 1] + o[h]) / 2; };
+  const reac = a => a.length ? fn(soma(a) / a.length) + ' / ' + fn(mediana(a)) + ' / ' + a.length : '—';
+  const p2 = n => (n < 10 ? '0' : '') + n, q = T.quando || new Date();
+  const lucro = Math.round(g.lucro), est = g.estrelasDe(lucro), av = avalMedias(g.avalsPeso());
+  const tela = m.aparelho === 'bot' ? '-' : window.innerWidth + '×' + window.innerHeight;
+  const min = m.t / 60;
+  return [
+    'LCC-TESTE ' + TESTE_FORMATO + ' · ' + VERSAO + ' · ' + T.nome + ' · dia ' + d.n + ' · semente ' + T.semente,
+    'Jogador: ' + (lastName() || 'sem nome') + ' · tentativa ' + T.tent + ' · ' + m.aparelho + ' ' + tela + ' · ' + p2(q.getDate()) + '/' + p2(q.getMonth() + 1) + '/' + q.getFullYear() + ' ' + p2(q.getHours()) + ':' + p2(q.getMinutes()),
+    'Resultado: lucro ' + fmt(lucro) + ' · meta ' + fmt(d.meta) + ' (' + Math.round(lucro / d.meta * 100) + '%) · ' + (est ? '★'.repeat(est) : '0★') + ' · servidos ' + st.served + ' de ' + st.spawned + ' · Gúgou ' + (av ? fn(av.nota) : '—'),
+    'Perdidos: ' + st.lost + ' · fila sem mesa ' + lb.semMesa + ' · fila com mesa ' + lb.comMesa + ' · pedido ' + lb.pedido + ' · prato ' + lb.prato + ' · conta ' + lb.conta + ' · retirada ' + lb.retirada + ' · esfriou ' + st.esfriou,
+    'Reação em s (média / mediana / casos): sentar ' + reac(m.sentar) + ' · pedido ' + reac(m.pedido) + ' · prato ' + reac(m.prato) + ' · conta ' + reac(m.conta) + ' · mesa suja ' + reac(m.suja),
+    'Ritmo: ' + fn(min > 0 ? m.ac / min : 0) + ' ações/min · ' + m.perd + ' toques perdidos · fila média ' + fn(m.t > 0 ? m.filaS / m.t : 0),
+    'Bia parada: ' + Math.round(m.t > 0 ? 100 * m.par / m.t : 0) + '% do turno com coisa à espera'
+  ].concat(m.dev ? ['(encerrado no modo dev)'] : []).join('\n');
+}
+/* v12.2: a tela do fim do teste: o título, a linha do lucro e das estrelas (como no fim do Desafio, sem medalha) e os botões; o relatório só aparece se a cópia falhar */
+function buildTesteFim(){
+  const g = game, m = Math.round(g.lucro), est = g.estrelasDe(m);
+  $('teste-fim-titulo').textContent = 'Teste: ' + g.teste.nome;
+  $('teste-fim-msg').textContent = 'Lucro ' + fmt(m) + ' · ' + (est ? '★'.repeat(est) : '0★');
+  $('teste-fim-aviso').textContent = '';
+  const cx = $('teste-fim-caixa'); clearEl(cx);
+}
+function testeCopia(){
+  const t = game.testeRel, st = $('teste-fim-aviso'), cx = $('teste-fim-caixa');
+  copyText(t).then(ok => {
+    if (ok){ Sfx.ok(); st.textContent = 'Copiado! Cole na conversa.'; clearEl(cx); return; }
+    st.textContent = 'Não deu para copiar sozinho: selecione o texto abaixo.';
+    let ta = cx.children[0];
+    if (!ta){ ta = el('textarea', 'cx-txt'); ta.setAttribute('readonly', ''); ta.setAttribute('aria-label', 'Relatório do teste'); cx.appendChild(ta); }
+    ta.value = t; if (ta.select) ta.select();
+  });
+}
 function buildFalencia(){
   const r = game.result, sv = game.save;
   if (!r) return;
@@ -17005,6 +17183,7 @@ game.hooks.state = function(s){
   if (s === 'menu'){ game.resetDay(game.proxDia); buildMenu(); devSync(); showOnly(['ov-menu']); }
   else if (s === 'desafios'){ game.sairDesafio(); game.resetDay(game.proxDia); buildDesafios(); showOnly(['ov-desafios']); }   // v12: a tela de Desafios (o save de verdade volta, se estava no de mentira)
   else if (s === 'desafiofim'){ buildDesafioFim(); showOnly(['ov-desafio-fim']); }
+  else if (s === 'testefim'){ buildTesteFim(); showOnly(['ov-teste-fim']); }   // v12.2: o fim do Teste de habilidade (o relatório)
   else if (s === 'intro'){
     const d = game.day;
     if (game.desafio){   // v12: o nome do Desafio no título e o aviso dele no lugar do aviso do dia
@@ -17041,7 +17220,7 @@ game.hooks.state = function(s){
     manualBolinha();
     // v8.2.2: só o dia completo rende; interrompido, não paga nem ganha nada
     const nb = game.bravosSeSair.length, mb = game.multaSeSair;
-    $('pause-note').textContent = game.mode !== 'carreira' ? '' : game.desafio ? 'Se sair agora, não vale medalha.' : 'Se sair agora, o dia não conta.'
+    $('pause-note').textContent = game.mode !== 'carreira' ? '' : game.teste ? 'Se sair agora, não sai relatório.' : game.desafio ? 'Se sair agora, não vale medalha.' : 'Se sair agora, o dia não conta.'
       + (nb ? ' Quem está aqui vai embora bravo: multa de ' + fmt(mb) + '.' : '');
     showOnly(['ov-pause']);
   }
@@ -17261,6 +17440,10 @@ on('btn-desafios',   () => { Sfx.init(); Sfx.resume(); Sfx.tap(); game.setState(
 on('btn-desafios-voltar', () => { Sfx.tap(); game.setState('menu'); });
 on('btn-desafio-de-novo', () => { Sfx.init(); Sfx.resume(); Sfx.tap(); if (game.desafio) game.startDesafio(game.desafio.id); });
 on('btn-desafio-lista',   () => { Sfx.tap(); game.setState('desafios'); });
+/* v12.2: o fim do Teste de habilidade: copiar o relatório (sem ele na tela, a não ser que a cópia falhe), jogar de novo (a mesma fase, tentativa + 1) e voltar ao menu (com o save de verdade) */
+on('btn-teste-copia',   () => { Sfx.init(); testeCopia(); });
+on('btn-teste-de-novo', () => { Sfx.init(); Sfx.resume(); Sfx.tap(); if (game.teste) game.startTeste(game.teste.id); });
+on('btn-teste-volta',   () => { Sfx.tap(); game.setState('menu'); });
 on('btn-ver',        () => { Sfx.tap(); showOnly(['ov-ver']); });
 on('btn-ver-close',  () => { Sfx.tap(); showOnly(['ov-menu']); });
 /* modo dev: 10 toques seguidos no selo da versão (no máximo 1,5 s entre um e outro) ligam e desligam */
@@ -17336,7 +17519,7 @@ on('btn-reset',      () => {
   recomeca();
 });
 on('btn-start',      () => { Sfx.init(); Sfx.resume(); Sfx.ok(); game.begin(); });
-on('btn-intro-menu', () => game.setState(game.desafio ? 'desafios' : 'menu'));
+on('btn-intro-menu', () => game.setState(game.desafio && !game.teste ? 'desafios' : 'menu'));   // v12.2: o teste volta ao menu
 on('btn-resume',     () => { Sfx.tap(); game.resume(); });
 /* v9.6.13: na carreira com o dia aberto, Reiniciar e Menu da pausa pedem um 2º toque (o 1º só troca o texto do botão) */
 let pausaPede = null;
@@ -17350,10 +17533,10 @@ function pausaConfirma(id, normal){
   Sfx.tap();
   return false;
 }
-on('btn-restart',    () => { if (!pausaConfirma('btn-restart', 'Confirmar: recomeçar o dia')) return; pausaReset(); if (game.mode === 'semfim') game.startEndless(); else if (game.mode === 'treino') game.startTreino(); else if (game.desafio) game.startDesafio(game.desafio.id); else { game.encerrar(); game.startDay(game.day.n); } });
+on('btn-restart',    () => { if (!pausaConfirma('btn-restart', 'Confirmar: recomeçar o dia')) return; pausaReset(); if (game.mode === 'semfim') game.startEndless(); else if (game.mode === 'treino') game.startTreino(); else if (game.teste) game.startTeste(game.teste.id); else if (game.desafio) game.startDesafio(game.desafio.id); else { game.encerrar(); game.startDay(game.day.n); } });
 on('btn-treino-dia1', () => { Sfx.tap(); playCareer(); });
 on('btn-treino-menu', () => game.setState('menu'));
-on('btn-pause-menu', () => { if (!pausaConfirma('btn-pause-menu', 'Confirmar: sair do dia')) return; pausaReset(); game.encerrar(); game.encerrado = null; game.setState(game.desafio ? 'desafios' : 'menu'); });
+on('btn-pause-menu', () => { if (!pausaConfirma('btn-pause-menu', 'Confirmar: sair do dia')) return; pausaReset(); game.encerrar(); game.encerrado = null; game.setState(game.desafio && !game.teste ? 'desafios' : 'menu'); });
 on('btn-end-menu',   () => game.setState('menu'));
 on('btn-next',       () => { if (game.result && game.result.noite) fluxoHistoria(() => game.goShop(game.proxDia)); else game.goShop(game.proxDia); });   // v9.6.10: as conversas já tocaram antes dos resultados (v10.10: menos na noite da estrela, que toca depois)
 on('btn-shop-go',    () => { Sfx.tap(); game.startDay(game.shopNext); });
@@ -17381,6 +17564,7 @@ function touchPad(e){
 canvas.addEventListener('pointerdown', e => {
   Sfx.init(); Sfx.resume();
   e.preventDefault();
+  if (game.tm) game.tm.aparelho = e.pointerType === 'mouse' ? 'mouse' : 'toque';   // v12.2: o aparelho do relatório do teste (dedo e caneta: toque)
   if (retratosTela){ fechaRetratos(); return; }
   if (abertura){ Sfx.tap(); abertura.seguir(); return; }   // abertura: o toque passa para a próxima cena
   if (game.conversa){ Sfx.tap(); game.conversa.seguir(); return; }   // conversa (v8.7): o toque passa para a próxima fala
@@ -17422,7 +17606,8 @@ window.addEventListener('orientationchange', fit);
 
 /* ---------- laço principal ---------- */
 /* v9.2.1: o modo dev acelera o dia (DEV.vel: 1, 2 ou 4 passos por quadro); fora dele é um passo só */
-function passoJogo(dt){ const k = DEV.on && game.state === 'playing' ? DEV.vel : 1; for (let i = 0; i < k; i++) game.update(dt); }
+function passoJogo(dt){ const k = DEV.on && game.state === 'playing' && !game.teste ? DEV.vel : 1;   // v12.2: no teste, a velocidade fica em 1
+  for (let i = 0; i < k; i++) game.update(dt); }
 let last = 0;
 function frame(ts){
   window.requestAnimationFrame(frame);
@@ -17445,7 +17630,7 @@ try { Rank.init(); } catch(e) {}
 game.setState('menu');
 if (!aberturaVista() && !DEV.on) abrirAbertura('auto');   // v8.5: a abertura toca sozinha uma vez
 window.__game = game;
-window.__lcc = { DESAFIOS, MEDALHAS, normDesafios, MANUAL_ABAS, buildDesafios, DESAFIO_EST, ATU_TXT, atuEstado, atuVerifica, atuAplica, ENFEITE_MESA, enfeiteMesa, enfeiteDe, ENTREGA_CHEGA, ab2Cam, ab2Cabe, ab2Tela, ab2Notas, AB_FX, AB2, AB2_CENAS, AB2_TE, ab2Terraco, ab2RuaAurora, ab2CozinhaAurora, ab2Gala, ab2Quarto, ab2Cozinha, ab2Banco, ab2RuaCasa, TRIO, drawTrio, rankAuto, rankNome, RANK_VOCE, drawBia, roupaBia, BIA_REACAO, BIA_ROUPA_COR, abBia, BRAULIO_LOOK, convCabeca, drawRetrato, drawRetratosTela, RETRATO, RETRATO_QUEM, RETRATO_POSE, EXPRESSOES, exprDe, exprAtual: () => EXPR, devRetratos, CONV_UI, socorroFalas, NOITE, HIST_RECOMENDA, HIST_NOTA, guiaPontos, guiaEstrelas, abreBoletim, drawVela, drawFala, CRITICO, HIST_CRITICO, normGuia, plantaBoato, drawCaderno, drawGarfo, ROSA, GERENTE, drawPetala, musicaPay, musicaDe, musicaOk, camiModoTudo, CAMI_TUDO, cafesLista, cafeIdx, cafeIngred, ANSELMO_CURSOS, normAnselmoCursos, drinksLista, drinksTodos, drinkPreco, drinkIngred, drinkVagas, drinkPrep, MAQUINA_LUGAR, drawCafesEsp, drawCarrinhoBoasVindas, espressoTrabalho, bebExtra, devCenas, devAssistir, devFinal, tocaFinal, drawPlacaGuia, FINAL, finalCenas, histLiga, DEV_CAPS, drawIcon, liaOn, drawLia, LIA_HOME, LIA_LOOK, doceIcone, drawFino, TEMPOS, tempoMarcas, pedePrincipal, drawTempoTrilha, HIST_SOCORRO, HIST_EXIGENTE, EXIGENTE, LOUCA, vipDish, vipCook, casaBoa, exigRep, HIST_PLANTA, HIST_QUITOU, HIST_TETO, VONTADE, vontadeChance, vontadeDia, vontadeFalas, HIST_VONTADE_DOCE, HIST_VONTADE_CAFE, filaPos, STATIONS, MANUAL, manualTracos, manualAberta, abrirManual, buildManual, fecharManual, semente, manualSemente, FECHA, efoodAberto, drawTable, camiMesasN, camiModoMesas, CAMI_MESAS_MAX, drawAventalCami, FISCAL, Fiscal, FISCAL_PONTOS, abrirDev, fecharDev, buildDev, passoJogo, devLivre, diaNoPonto, manutEmerg, manutFator, daniTaskDe, plateSlotsFor, queueYsFor, assentoSlow, AVENIDA, SABORES, cursoOk, INDUSTRIAL, PLATE_SLOTS, cozinhaSlots, upgradeDe, DECOR, DECOR_GRUPOS, TOALHA, LUXO, MOVEIS, movelOf, movelNivel, normMoveis, luxoPts, luxoTot, luxoNivel, luxoForca, decorOf, normDecor, decorOn, FILA_ACOES, filaMax, MARMITA, RETIRADA, marmitaMao, drawMarmita, prateleiraPos, EFOOD_COR, AVAL_BRAVO, QUEUE, setShopTab: v => shopAbrir(v), setShopGrupo: g => shopGrupoAbrir(g), shopSecoes: () => SHOP_GRUPOS.map(g => shopSecoesVis(g)), TREINO, TREINO_PASSOS, TREINO_COR, Treino, treinoLugar, DICAS, dicaDe, dicaLigada, drawDica, HUD_LUCRO, hudEstrelas, drawHud, daniNaLoja, treinoPrimeiro, playCareer, buildMenu, introBanco, buildFalencia, BANCO, normEmprestimo, parcelaDe, devidoDe, jurosDe, tabelaDe, simulaEmprestimo, SEMANA, semanaOf, diaOf, FILA_JUSTA, PORTA, CHAIRS, PAT, CONTAS, INGRED, CARDAPIO, precoPrato, CURSOS, CURSO_AV, CURSO_XP, tonhaoXp, tonhaoNivelXp, daniXp, daniNivelXp, DANI_XP, DANI_CURSOS, CURSOS_SEMFIM, cursoOf, cursoNivel, normCursos, pratoAv, CARNES, drawDish, pratoSabido, pratosSabidos, GOSTOS, GOSTOS_CAT, pedePrato, VEG, vegMov, drawDish, MAIS, PONTOS_ACAO, GORJETA, DRINK_PRICE, MOVIMENTO, movimentoSalao, DIVULGA, DIVULGA_DIA, divulgaOf, contasDia, bomGoal, SALAO, PONTOS, pontoOf, MESA, mesaBox, mesaPreco, salaoLugares, mesaProblema, salaoCaminho, salaoProblema, salaoOrdena, salaoAuto, salaoVaga, salaoPerto, salaoKit, salaoDevolucao, SALAO_SEMFIM, normSalao, setObst, OBST, pathOk, MAQUINA, BEBIDA_ESPERA, bebidaOf, MANUT, manutOf, manutChance, manutPreco, normManut, CLIMA, CLIMA_DIA, EVENTOS, eventoSemana, introManut, normPend, CALCADA, TW, HUDX, esperaAp, tableApproach, CRIT, STAFF, diariaDani, diariaJoca, cursosPay, DANI_TASKS, DANI_HANDS, daniTaskOk, TRASH, WASH, payroll, FOLHA_CORTE, folhaCorta, folhaCortes, folhaItens, listaE, pratosDe, couvertEffect, couvertOk, ambienteEffect, dishStock, normSave, Helper, JUICE, KITCHEN_SLOTS, handLayout, trayOk, Game, Group, Table, Kitchen, Waitress, BIA_SPEED, DAYS, UPGRADES, CUSTOMER_TYPES, LAYOUT, PAL, Sfx, findPath, render, Rank, sortRows, cleanName, normName, CMD, ENDLESS, VIP, MULTA, rk, renderRank, openRank, closeRank, LS, lsGet, lsSet, loadSave, DEV, saveKey, devSync, divulgaAberta, CAIXA_MAX, VERSAO, normCaixa, caixaResumo, caixaTotais, copyText, PRATO, pratoPerde, pratoVapor, AVAL, AVAL_CRIT, AVAL_BRAVO, avalMenu, cursosItem, DOCES, CAFES, cafeDe, DRINKS, drinkDe, drinkIdx, anselmoOn, ANSELMO_HOME, ANSELMO_LOOK, drawAnselmo, docesLista, docePreco, doceIngred, doceIdx, CAMI_CURSOS, CAMI_HOME, CAMI_LOOK, camiNivelCursos, normCamiCursos, drawCami, drawEspresso, JOCA_XP, JOCA_CURSOS, JOCA_HOME, jocaXp, jocaNivelXp, BASICAS, donoBasico, cursoDaniVis, JOCA_LOOK, drawJoca, avalTeto, avalEscala, TERRACO, fixosDe, vipTipos, doorFor, DOOR, terraco, drawPiano, drawPoltrona, drawFoyerTe, drawParedeTe, drawElevadorTe, drawLugarTe, drawPerson, makePeople, drawChair, iconeMudanca, avalFrac, AVAL_SIMPLES, AVAL_DECOR, normAval, avalNota, avalMedias, avalGeral, avalMovimento, avalMinimo, avalComentario, fmtNota, notaFaixa, gurugolCaixa, AVAL_COM, normAvalCom, buildGurugol, ABERTURA, Abertura, AB_ALT, AB_BASE, abEsc, AB_VIVO, aberturaVista, aberturaSom, drawAbertura, abrirAbertura, HISTORIA, HIST_CARDAPIO, HIST_DIVULGA, HIST_ENTREGA, LIBERA, liberaOf, ARCO, HIST_NOMES, normEquipe, upgradeCartao, cursoFeito, AVAL_POUCO, REFORMA, HIST, carencia, Conversa, drawConversa, falar, fluxoHistoria, falar, aberturaAtual: () => abertura };
+window.__lcc = { TESTES, TESTE_LS, testeRelatorio, buildTesteFim, DESAFIOS, MEDALHAS, normDesafios, MANUAL_ABAS, buildDesafios, DESAFIO_EST, ATU_TXT, atuEstado, atuVerifica, atuAplica, ENFEITE_MESA, enfeiteMesa, enfeiteDe, ENTREGA_CHEGA, ab2Cam, ab2Cabe, ab2Tela, ab2Notas, AB_FX, AB2, AB2_CENAS, AB2_TE, ab2Terraco, ab2RuaAurora, ab2CozinhaAurora, ab2Gala, ab2Quarto, ab2Cozinha, ab2Banco, ab2RuaCasa, TRIO, drawTrio, rankAuto, rankNome, RANK_VOCE, drawBia, roupaBia, BIA_REACAO, BIA_ROUPA_COR, abBia, BRAULIO_LOOK, convCabeca, drawRetrato, drawRetratosTela, RETRATO, RETRATO_QUEM, RETRATO_POSE, EXPRESSOES, exprDe, exprAtual: () => EXPR, devRetratos, CONV_UI, socorroFalas, NOITE, HIST_RECOMENDA, HIST_NOTA, guiaPontos, guiaEstrelas, abreBoletim, drawVela, drawFala, CRITICO, HIST_CRITICO, normGuia, plantaBoato, drawCaderno, drawGarfo, ROSA, GERENTE, drawPetala, musicaPay, musicaDe, musicaOk, camiModoTudo, CAMI_TUDO, cafesLista, cafeIdx, cafeIngred, ANSELMO_CURSOS, normAnselmoCursos, drinksLista, drinksTodos, drinkPreco, drinkIngred, drinkVagas, drinkPrep, MAQUINA_LUGAR, drawCafesEsp, drawCarrinhoBoasVindas, espressoTrabalho, bebExtra, devCenas, devAssistir, devFinal, tocaFinal, drawPlacaGuia, FINAL, finalCenas, histLiga, DEV_CAPS, drawIcon, liaOn, drawLia, LIA_HOME, LIA_LOOK, doceIcone, drawFino, TEMPOS, tempoMarcas, pedePrincipal, drawTempoTrilha, HIST_SOCORRO, HIST_EXIGENTE, EXIGENTE, LOUCA, vipDish, vipCook, casaBoa, exigRep, HIST_PLANTA, HIST_QUITOU, HIST_TETO, VONTADE, vontadeChance, vontadeDia, vontadeFalas, HIST_VONTADE_DOCE, HIST_VONTADE_CAFE, filaPos, STATIONS, MANUAL, manualTracos, manualAberta, abrirManual, buildManual, fecharManual, semente, manualSemente, FECHA, efoodAberto, drawTable, camiMesasN, camiModoMesas, CAMI_MESAS_MAX, drawAventalCami, FISCAL, Fiscal, FISCAL_PONTOS, abrirDev, fecharDev, buildDev, passoJogo, devLivre, diaNoPonto, manutEmerg, manutFator, daniTaskDe, plateSlotsFor, queueYsFor, assentoSlow, AVENIDA, SABORES, cursoOk, INDUSTRIAL, PLATE_SLOTS, cozinhaSlots, upgradeDe, DECOR, DECOR_GRUPOS, TOALHA, LUXO, MOVEIS, movelOf, movelNivel, normMoveis, luxoPts, luxoTot, luxoNivel, luxoForca, decorOf, normDecor, decorOn, FILA_ACOES, filaMax, MARMITA, RETIRADA, marmitaMao, drawMarmita, prateleiraPos, EFOOD_COR, AVAL_BRAVO, QUEUE, setShopTab: v => shopAbrir(v), setShopGrupo: g => shopGrupoAbrir(g), shopSecoes: () => SHOP_GRUPOS.map(g => shopSecoesVis(g)), TREINO, TREINO_PASSOS, TREINO_COR, Treino, treinoLugar, DICAS, dicaDe, dicaLigada, drawDica, HUD_LUCRO, hudEstrelas, drawHud, daniNaLoja, treinoPrimeiro, playCareer, buildMenu, introBanco, buildFalencia, BANCO, normEmprestimo, parcelaDe, devidoDe, jurosDe, tabelaDe, simulaEmprestimo, SEMANA, semanaOf, diaOf, FILA_JUSTA, PORTA, CHAIRS, PAT, CONTAS, INGRED, CARDAPIO, precoPrato, CURSOS, CURSO_AV, CURSO_XP, tonhaoXp, tonhaoNivelXp, daniXp, daniNivelXp, DANI_XP, DANI_CURSOS, CURSOS_SEMFIM, cursoOf, cursoNivel, normCursos, pratoAv, CARNES, drawDish, pratoSabido, pratosSabidos, GOSTOS, GOSTOS_CAT, pedePrato, VEG, vegMov, drawDish, MAIS, PONTOS_ACAO, GORJETA, DRINK_PRICE, MOVIMENTO, movimentoSalao, DIVULGA, DIVULGA_DIA, divulgaOf, contasDia, bomGoal, SALAO, PONTOS, pontoOf, MESA, mesaBox, mesaPreco, salaoLugares, mesaProblema, salaoCaminho, salaoProblema, salaoOrdena, salaoAuto, salaoVaga, salaoPerto, salaoKit, salaoDevolucao, SALAO_SEMFIM, normSalao, setObst, OBST, pathOk, MAQUINA, BEBIDA_ESPERA, bebidaOf, MANUT, manutOf, manutChance, manutPreco, normManut, CLIMA, CLIMA_DIA, EVENTOS, eventoSemana, introManut, normPend, CALCADA, TW, HUDX, esperaAp, tableApproach, CRIT, STAFF, diariaDani, diariaJoca, cursosPay, DANI_TASKS, DANI_HANDS, daniTaskOk, TRASH, WASH, payroll, FOLHA_CORTE, folhaCorta, folhaCortes, folhaItens, listaE, pratosDe, couvertEffect, couvertOk, ambienteEffect, dishStock, normSave, Helper, JUICE, KITCHEN_SLOTS, handLayout, trayOk, Game, Group, Table, Kitchen, Waitress, BIA_SPEED, DAYS, UPGRADES, CUSTOMER_TYPES, LAYOUT, PAL, Sfx, findPath, render, Rank, sortRows, cleanName, normName, CMD, ENDLESS, VIP, MULTA, rk, renderRank, openRank, closeRank, LS, lsGet, lsSet, loadSave, DEV, saveKey, devSync, divulgaAberta, CAIXA_MAX, VERSAO, normCaixa, caixaResumo, caixaTotais, copyText, PRATO, pratoPerde, pratoVapor, AVAL, AVAL_CRIT, AVAL_BRAVO, avalMenu, cursosItem, DOCES, CAFES, cafeDe, DRINKS, drinkDe, drinkIdx, anselmoOn, ANSELMO_HOME, ANSELMO_LOOK, drawAnselmo, docesLista, docePreco, doceIngred, doceIdx, CAMI_CURSOS, CAMI_HOME, CAMI_LOOK, camiNivelCursos, normCamiCursos, drawCami, drawEspresso, JOCA_XP, JOCA_CURSOS, JOCA_HOME, jocaXp, jocaNivelXp, BASICAS, donoBasico, cursoDaniVis, JOCA_LOOK, drawJoca, avalTeto, avalEscala, TERRACO, fixosDe, vipTipos, doorFor, DOOR, terraco, drawPiano, drawPoltrona, drawFoyerTe, drawParedeTe, drawElevadorTe, drawLugarTe, drawPerson, makePeople, drawChair, iconeMudanca, avalFrac, AVAL_SIMPLES, AVAL_DECOR, normAval, avalNota, avalMedias, avalGeral, avalMovimento, avalMinimo, avalComentario, fmtNota, notaFaixa, gurugolCaixa, AVAL_COM, normAvalCom, buildGurugol, ABERTURA, Abertura, AB_ALT, AB_BASE, abEsc, AB_VIVO, aberturaVista, aberturaSom, drawAbertura, abrirAbertura, HISTORIA, HIST_CARDAPIO, HIST_DIVULGA, HIST_ENTREGA, LIBERA, liberaOf, ARCO, HIST_NOMES, normEquipe, upgradeCartao, cursoFeito, AVAL_POUCO, REFORMA, HIST, carencia, Conversa, drawConversa, falar, fluxoHistoria, falar, aberturaAtual: () => abertura };
 window.requestAnimationFrame(frame);
 
 })();

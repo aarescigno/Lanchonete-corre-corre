@@ -161,6 +161,7 @@ A cena final animada (oito cenas, no motor da abertura), os créditos, a placa n
 | 9d | A abertura nova no ar: as cenas 9, 10 e 11, a troca e a limpeza | v11.15 | feita em 16/11 (`docs/spec-v11.15.md`; `smoke91` e o `smoke26` reescrito; `ab2Banco`, `ab2RuaCasa`, `ABERTURA` como o roteiro novo, a antiga fora; a Etapa 9 está completa) |
 | 10a | O final novo: o motor, o som e as cenas 1, 2 e 3 | v11.16 | feita em 16/11 (`docs/spec-v11.16.md`; `smoke92`; o roteiro `FINAL2`, os climas e efeitos novos, o cartão de obra e as cenas telefone, placa e apagou) |
 | 10b | O final novo: as cenas 4, 5 e 6 | v11.17 | feita em 17/11 (`docs/spec-v11.17.md`; `smoke93`; as cenas `retrato`, `equipe` e `escola` em `src/28-final.js` e o `ab2RuaCasa` de dia; só pelo modo dev) |
+| 12 | A 3ª estrela do Michelzão ao alcance | v11.19 | feita em 17/11 (`docs/spec-v11.19.md`; `smoke96`; `NOITE.cortes` passou de `[44, 66, 90]` para `[44, 66, 75]`: o bot afiado leva a 3ª estrela em 37,5% das carreiras) |
 
 ## Etapa 1a — Jogo justo: dá para não perder ninguém (v7.1)
 > **Feita em 15/10 (v7.1, `docs/spec-v7.1.md`).** Decisões: A + B; no Turno sem fim vale o ritmo da fila justa, sem o piso; ícone "aguardando mesa" sim. A medição mostrou que, com a equipe, a maior parte das perdas era a espera pelo prato, e não a fila. O que sobra é o limite de louça nos dias de 6 mesas: o bot afiado só chega ao alvo (0 perdidos em 94% dos dias) comprando o Jogo de pratos primeiro. A louça não mudou; se jogadores reclamarem da espera pelo prato, a etapa 1b pode rever `dishStock` ou a mecânica D. Metas sem mudança.
@@ -2061,3 +2062,8 @@ Planejada em 17/11 (questionário pós-final). Depois do "Fim da história", o m
   **Modelo:** Sonnet, esforço alto (motor novo, duas telas, save e calibração)
 - **13b** (v12.1): Festa junina, Jogo do Brasil, Noite do crítico e VIPs exigentes. Spec: `docs/spec-v12.1.md`.
   **Modelo:** Sonnet, esforço alto (quatro desafios sobre o motor; a calibração mexe no movimento e na meta)
+
+## Etapa 14a — Teste de habilidade: as quatro fases padrão e o relatório (v12.2)
+Vinda da Etapa 14 ("O bot com habilidade de gente"), cujas 14c e 14b seguem no `docs/PLANO.md`.
+- **14a** (v12.2): no modo dev, o Teste de habilidade. São quatro fases padrão, uma por ponto, com os mesmos clientes para todo mundo (semente fixa). No fim, o relatório para copiar e colar no chat: o resultado, os tempos de reação, o ritmo de toques, a Bia parada e o aparelho. O bot joga as mesmas fases e escreve o mesmo relatório. Spec: `docs/spec-v12.2.md`.
+  **Modelo:** Sonnet, esforço alto (reaproveita o motor dos Desafios, mas mede em muitos pontos do código, tela nova, bot e ferramenta)

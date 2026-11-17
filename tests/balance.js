@@ -39,6 +39,31 @@ if(process.env.DESAFIO){
   console.log('DESAFIO',D.id,(process.env.BOT==='afiado'?'[afiado]':'[comum]'),'| bronze ou mais',pc(r=>r.medalha>=1),'| prata ou mais',pc(r=>r.medalha>=2),'| ouro',pc(r=>r.medalha>=3),'| meta batida',pc(r=>r.stars>=1),'| cond vale',pc(r=>!r.falhou),'| rodadas',N);
   process.exit(0);
 }
+// v12.2: TESTE=garagem|industrial|avenida|terraco joga a fase padrão do Teste de habilidade N vezes (startTeste + o dia inteiro com o bot; BOT=afiado: o jogador perfeito) e mostra, de cada número do relatório, a média e a faixa
+//   (p10 a p90): % da meta, estrelas, perdidos, as 5 reações (a média de cada rodada; só das rodadas com caso), ações/min, toques perdidos, fila média e Bia parada. REL=1 imprime o relatório de cada rodada.
+//   É o ponto de partida da 14b (o bot humano): os relatórios de gente colados no chat se comparam com estes (ferramentas/relatorios.py --bot)
+if(process.env.TESTE){
+  const T=L.TESTES.find(x=>x.id===process.env.TESTE); if(!T) throw new Error('TESTE='+L.TESTES.map(x=>x.id).join('|'));
+  const num={ pct:[], est:[], perd:[], sentar:[], pedido:[], prato:[], conta:[], suja:[], acoes:[], toques:[], fila:[], parada:[] }, casos={ sentar:0, pedido:0, prato:0, conta:0, suja:0 };
+  const med=a=>a.reduce((x,y)=>x+y,0)/a.length;
+  for(let k=0;k<N;k++){
+    g.startTeste(T.id); g.begin();
+    let st=0; while(g.state==='playing'&&st<30000){ bot(); g.update(0.05); st++; }
+    if(g.state!=='testefim') throw new Error('o teste não acabou em '+st+' passos');
+    const m=g.tm, lucro=Math.round(g.lucro), min=m.t/60;
+    num.pct.push(100*lucro/g.day.meta); num.est.push(g.estrelasDe(lucro)); num.perd.push(g.stats.lost);
+    ['sentar','pedido','prato','conta','suja'].forEach(q=>{ if(m[q].length){ num[q].push(med(m[q])); casos[q]+=m[q].length; } });
+    num.acoes.push(m.ac/min); num.toques.push(m.perd); num.fila.push(m.filaS/m.t); num.parada.push(100*m.par/m.t);
+    if(process.env.REL) console.log(g.testeRel+'\n');
+    g.sairDesafio();
+  }
+  const f=(a,c)=>{ if(!a.length) return '—'; const o=a.slice().sort((x,y)=>x-y), q=p=>o[Math.min(o.length-1,Math.floor(p*o.length))]; return med(a).toFixed(c)+' ('+q(0.1).toFixed(c)+' a '+q(0.9).toFixed(c)+')'; };
+  console.log('TESTE',T.id,(process.env.BOT==='afiado'?'[afiado]':'[comum]'),'| rodadas',N);
+  console.log('TESTE',T.id,'| % da meta',f(num.pct,0),'| estrelas',f(num.est,1),'| perdidos',f(num.perd,1));
+  console.log('TESTE',T.id,'| reação em s (média, p10 a p90; rodadas com caso/'+N+'): sentar',f(num.sentar,1),'['+num.sentar.length+']','| pedido',f(num.pedido,1),'['+num.pedido.length+']','| prato',f(num.prato,1),'['+num.prato.length+']','| conta',f(num.conta,1),'['+num.conta.length+']','| mesa suja',f(num.suja,1),'['+num.suja.length+']');
+  console.log('TESTE',T.id,'| ações/min',f(num.acoes,1),'| toques perdidos',f(num.toques,1),'| fila média',f(num.fila,2),'| Bia parada %',f(num.parada,0));
+  process.exit(0);
+}
 // v9: PONTO=industrial joga os dias no ponto da área industrial (salão de 20 lugares, fogão industrial, TVs com anúncios, cadeirinhas; DIAS padrão 8,9,10)
 const PONTO=process.env.PONTO||'garagem', IND=PONTO==='industrial', TE=PONTO==='terraco', AV=PONTO==='avenida'||TE;   /* v10: PONTO=terraco joga os dias 8 a 10 no Terraço Suíça (5 mesas de 4, fogão industrial, poltronas, couvert com taxa, o curso de restaurante, Tonhão nível 4; JOCA, ESPRESSO, CAMI, ANSELMO e GOURMET como na Avenida; AV vale para os dois pontos de cima) */ //   // v9.1: PONTO=avenida joga os dias no Restaurante na Avenida Brasil (24 lugares, fogão industrial, sofás, águas saborizadas, couvert com taxa e o curso de restaurante; DIAS padrão 8,9,10)
 // EQUIPE='{"tonhao":1,"dani":1,"daniTasks":["pratos","lavar"]}' node balance.js 40

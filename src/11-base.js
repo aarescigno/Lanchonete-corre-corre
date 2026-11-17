@@ -16,6 +16,12 @@ function semente(n){
   };
 }
 
+/* v12.2: troca o Math.random pelo gerador com semente só durante fn (e devolve o original, mesmo com erro): rand, randi e pick entram sozinhos. Usado pelo Teste de habilidade */
+function comSemente(seed, fn){
+  const o = Math.random; Math.random = semente(seed);
+  try { return fn(); } finally { Math.random = o; }
+}
+
 /* ============================================================
    ÁUDIO (WebAudio sintetizado)
    ============================================================ */
