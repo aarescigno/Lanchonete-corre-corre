@@ -1353,7 +1353,7 @@ const DEV_CAPS = [
    cap: a linha da DEV_CAPS que monta o save do dia; dia: o número do dia (diaOf); mod: sem (pessoas fora da equipe), up (melhorias a mais), groups (grupos ×), meta (as três metas ×, arredondadas para 5),
    tipo/tipoP (no lugar do tipo do dia da semana); cond(stats): a regra que precisa valer no fim (ou nenhuma); aviso: a frase da introdução; falhou: a frase de quando a cond não vale */
 const DESAFIOS = [
-  { id:'soBia',    nome:'Só a Bia',       cap:5, dia:17, mod:{ sem:['dani', 'joca', 'cami', 'anselmo', 'lia'], groups:1, meta:0.85 }, cond:null,
+  { id:'soBia',    nome:'Só a Bia',       cap:5, dia:17, mod:{ sem:['dani', 'joca', 'cami', 'anselmo', 'lia'], groups:1, meta:1.2 }, cond:null,
     aviso:'Hoje a Bia segura o salão sozinha. O tio fica na cozinha.', falhou:'' },
   { id:'semBravo', nome:'Ninguém bravo',  cap:8, dia:38, mod:{ groups:1.1, meta:1 }, cond:s => s.lost === 0,
     aviso:'Hoje ninguém pode sair bravo da Avenida.', falhou:'Alguém saiu bravo.' },
