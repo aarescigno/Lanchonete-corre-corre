@@ -88,10 +88,12 @@ function lsSet(k, v){
    liberado na lojinha, até antes do dia 1: melhorias de graça (liga e desliga), couvert e divulgação. Ranking de fora */
 const DEV = { on: lsGet(LS.dev) === '1', bank: 10000, toques: 10, real: lsGet(LS.dev) === '1' && lsGet(LS.devReal) === '1', vel:1, aba:'pular', forca:{} };   // v9.2.1: real = preços e travas de verdade; vel = velocidade (só na memória); v10.2.1: real fica gravado (lcc2_dev_real); aba = a aba aberta do painel
 function devLivre(){ return DEV.on && !DEV.real; }
-/* v12.2: as tentativas do Teste de habilidade, por fase ({ garagem:3, ... }), guardadas no aparelho (TESTE_LS); ficam fora do save e recomeçar do zero não as apaga */
+/* v12.2: as tentativas do Teste de habilidade, por fase ({ garagem:3, ... }; v12.3: e de cada Desafio, 'd-soBia'), guardadas no aparelho (TESTE_LS); ficam fora do save e recomeçar do zero não as apaga */
 function testeTent(){
   let o = {}; try { o = JSON.parse(lsGet(TESTE_LS) || '{}') || {}; } catch(e) { o = {}; }
-  const r = {}; TESTES.forEach(t => { const v = o[t.id]; r[t.id] = typeof v === 'number' && Number.isInteger(v) && v > 0 ? v : 0; });
+  const r = {}, ok = v => typeof v === 'number' && Number.isInteger(v) && v > 0 ? v : 0;
+  TESTES.forEach(t => { r[t.id] = ok(o[t.id]); });
+  DESAFIOS.forEach(d => { const v = ok(o['d-' + d.id]); if (v) r['d-' + d.id] = v; });   // v12.3: a tentativa de cada Desafio (chave d-<id>), só as que já começaram
   return r;
 }
 function testeSobe(id){ const r = testeTent(); r[id] = (r[id] || 0) + 1; lsSet(TESTE_LS, JSON.stringify(r)); return r[id]; }

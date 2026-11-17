@@ -178,11 +178,14 @@ function buildDesafioFim(){
   const r = game.desafioRes, D = DESAFIOS.find(x => x.id === r.id), box = $('desafio-fim-medalha');
   $('desafio-fim-titulo').textContent = D.nome;
   clearEl(box); box.appendChild(medalhaEl(r.medalha, true));
+  $('desafio-fim-aviso').textContent = ''; clearEl($('desafio-fim-caixa'));   // v12.3: o relatório do desafio, só no modo dev
+  $('btn-desafio-copia').style.display = DEV.on ? '' : 'none';
   $('desafio-fim-msg').textContent = r.medalha ? 'Medalha de ' + MEDALHAS[r.medalha] + '!' + (r.nova ? ' Nova melhor marca!' : '') : r.falhou ? D.falhou : 'Não deu a meta.';
 }
 /* v12.2, o relatório do Teste de habilidade (texto puro, vírgula decimal, uma linha por bloco; a 1ª linha leva o número do formato para a ferramenta ler sempre igual). Só lê o jogo: não muda nada */
 function testeRelatorio(g){
-  const T = g.teste, m = g.tm, st = g.stats, d = g.day, lb = st.lostBy;
+  const D = g.teste ? null : g.desafio, T = g.teste || { nome:'Desafio: ' + D.nome, semente:D.semente, tent:g.dTent.tent, quando:g.dTent.quando };   // v12.3: o mesmo relatório no fim do Desafio (com a linha Desafio:)
+  const m = g.tm, st = g.stats, d = g.day, lb = st.lostBy;
   const fn = (v, c) => v.toFixed(c == null ? 1 : c).replace('.', ',');
   const soma = a => a.reduce((x, y) => x + y, 0);
   const mediana = a => { const o = a.slice().sort((x, y) => x - y), h = o.length >> 1; return o.length % 2 ? o[h] : (o[h - 1] + o[h]) / 2; };
@@ -191,15 +194,17 @@ function testeRelatorio(g){
   const lucro = Math.round(g.lucro), est = g.estrelasDe(lucro), av = avalMedias(g.avalsPeso());
   const tela = m.aparelho === 'bot' ? '-' : window.innerWidth + '×' + window.innerHeight;
   const min = m.t / 60;
+  const rd = g.desafioRes, linhaD = D && rd ? ['Desafio: ' + (rd.medalha ? 'medalha de ' + MEDALHAS[rd.medalha] : 'sem medalha') + ' · regra ' + (!D.cond ? '—' : rd.falhou ? 'não valeu' : 'valeu')] : [];
   return [
     'LCC-TESTE ' + TESTE_FORMATO + ' · ' + VERSAO + ' · ' + T.nome + ' · dia ' + d.n + ' · semente ' + T.semente,
     'Jogador: ' + (lastName() || 'sem nome') + ' · tentativa ' + T.tent + ' · ' + m.aparelho + ' ' + tela + ' · ' + p2(q.getDate()) + '/' + p2(q.getMonth() + 1) + '/' + q.getFullYear() + ' ' + p2(q.getHours()) + ':' + p2(q.getMinutes()),
-    'Resultado: lucro ' + fmt(lucro) + ' · meta ' + fmt(d.meta) + ' (' + Math.round(lucro / d.meta * 100) + '%) · ' + (est ? '★'.repeat(est) : '0★') + ' · servidos ' + st.served + ' de ' + st.spawned + ' · Gúgou ' + (av ? fn(av.nota) : '—'),
+    'Resultado: lucro ' + fmt(lucro) + ' · meta ' + fmt(d.meta) + ' (' + Math.round(lucro / d.meta * 100) + '%) · ' + (est ? '★'.repeat(est) : '0★') + ' · servidos ' + st.served + ' de ' + st.spawned + ' · Gúgou ' + (av ? fn(av.nota) : '—')
+  ].concat(linhaD, [
     'Perdidos: ' + st.lost + ' · fila sem mesa ' + lb.semMesa + ' · fila com mesa ' + lb.comMesa + ' · pedido ' + lb.pedido + ' · prato ' + lb.prato + ' · conta ' + lb.conta + ' · retirada ' + lb.retirada + ' · esfriou ' + st.esfriou,
     'Reação em s (média / mediana / casos): sentar ' + reac(m.sentar) + ' · pedido ' + reac(m.pedido) + ' · prato ' + reac(m.prato) + ' · conta ' + reac(m.conta) + ' · mesa suja ' + reac(m.suja),
     'Ritmo: ' + fn(min > 0 ? m.ac / min : 0) + ' ações/min · ' + m.perd + ' toques perdidos · fila média ' + fn(m.t > 0 ? m.filaS / m.t : 0),
     'Bia parada: ' + Math.round(m.t > 0 ? 100 * m.par / m.t : 0) + '% do turno com coisa à espera'
-  ].concat(m.dev ? ['(encerrado no modo dev)'] : []).join('\n');
+  ], m.dev ? ['(encerrado no modo dev)'] : []).join('\n');
 }
 /* v12.2: a tela do fim do teste: o título, a linha do lucro e das estrelas (como no fim do Desafio, sem medalha) e os botões; o relatório só aparece se a cópia falhar */
 function buildTesteFim(){
@@ -209,8 +214,9 @@ function buildTesteFim(){
   $('teste-fim-aviso').textContent = '';
   const cx = $('teste-fim-caixa'); clearEl(cx);
 }
-function testeCopia(){
-  const t = game.testeRel, st = $('teste-fim-aviso'), cx = $('teste-fim-caixa');
+function testeCopia(pre){
+  pre = pre || 'teste';   // v12.3: 'teste' (ov-teste-fim) ou 'desafio' (ov-desafio-fim)
+  const t = game.testeRel, st = $(pre + '-fim-aviso'), cx = $(pre + '-fim-caixa');
   copyText(t).then(ok => {
     if (ok){ Sfx.ok(); st.textContent = 'Copiado! Cole na conversa.'; clearEl(cx); return; }
     st.textContent = 'Não deu para copiar sozinho: selecione o texto abaixo.';

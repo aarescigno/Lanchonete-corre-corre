@@ -1,12 +1,15 @@
 #!/usr/bin/env python3
-"""Lê os relatórios do Teste de habilidade (blocos 'LCC-TESTE 1 · ...') do docs/RELATORIOS.md e mostra, por fase e por jogador,
+"""Lê os relatórios do Teste de habilidade e dos Desafios (blocos 'LCC-TESTE 1 · ...'; os dos Desafios têm "Desafio: <nome>" no lugar da fase) do docs/RELATORIOS.md e mostra, por fase (ou desafio) e por jogador,
 a melhor tentativa (pelo lucro), a mediana do lucro e o número de tentativas.
 Uso: python3 ferramentas/relatorios.py [arquivo]            (padrão: docs/RELATORIOS.md)
-     python3 ferramentas/relatorios.py --bot [arquivo]      (roda junto, em tests/, `TESTE=<id> node balance.js 20` com o bot comum e o afiado nas fases que têm relatório)"""
+     python3 ferramentas/relatorios.py --bot [arquivo]      (roda junto, em tests/, `TESTE=<id>` ou, nos desafios, `DESAFIO=<id>` `node balance.js 20` com o bot comum e o afiado no que tem relatório)"""
 import os, re, statistics, subprocess, sys
 
 RAIZ = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 FASES = {'Garagem': 'garagem', 'Área industrial': 'industrial', 'Avenida Brasil': 'avenida', 'Terraço Suíça': 'terraco'}
+# v12.3: os Desafios (a 1ª linha do bloco traz 'Desafio: <nome>'); o bot deles roda com DESAFIO=<id>
+DESAFIOS = {'Desafio: Só a Bia': 'soBia', 'Desafio: Ninguém bravo': 'semBravo', 'Desafio: Hora do eFood': 'efood', 'Desafio: Festa junina': 'junina', 'Desafio: Jogo do Brasil': 'jogo', 'Desafio: Noite do crítico': 'critico', 'Desafio: VIPs exigentes': 'vips'}
+FASES.update(DESAFIOS)
 NUM = r'(-?\d+(?:,\d+)?)'
 REAC = ('sentar', 'pedido', 'prato', 'conta', 'mesa suja')
 
@@ -102,7 +105,7 @@ def main():
             if not any(x['fase'] == nome for x in lidos):
                 continue
             for bot in ('comum', 'afiado'):
-                env = dict(os.environ, TESTE=id)
+                env = dict(os.environ, **({'DESAFIO': id} if nome in DESAFIOS else {'TESTE': id}))
                 if bot == 'afiado':
                     env['BOT'] = 'afiado'
                 p = subprocess.run(['node', 'balance.js', '20'], cwd=os.path.join(RAIZ, 'tests'), env=env, capture_output=True, text=True)

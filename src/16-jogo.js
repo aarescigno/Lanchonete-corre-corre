@@ -36,7 +36,7 @@ class Game {
     this.mode = 'carreira';
     this.conversa = null;   // Modo História (v8.7): a conversa em andamento (19-conversa.js)
     this.treino = null; this.salvo = null;   // Missão zero (v8.2): o passo a passo e o save de verdade, guardado enquanto ela dura
-    this.teste = null; this.testeRel = ''; this.tm = null; this.devForcaSalva = null;   // v12.2: o Teste de habilidade em andamento ({ id, nome, semente, tent }), o texto do relatório depois do fim, as medidas do dia e o DEV.forca guardado enquanto o teste dura
+    this.teste = null; this.testeRel = ''; this.tm = null; this.dTent = null; this.devForcaSalva = null;   // v12.2: o Teste de habilidade em andamento ({ id, nome, semente, tent }), o texto do relatório depois do fim, as medidas do dia e o DEV.forca guardado enquanto o teste dura
     this.desafio = null; this.desafioRes = null;   // v12: o Desafio em andamento (item da DESAFIOS) e o resultado dele (medalha, nova marca); o save de verdade fica em `salvo`, como na Missão zero
     this.resetDay(1);
   }
@@ -131,8 +131,8 @@ class Game {
     this.multaVig = 0; this.aprovado = false;
     // divulgação (v7, do dia 4 em diante na carreira; v9.0.2): quanto da freguesia do dia aparece
     this.div = divulgaAberta(n, this.save) ? divulgaOf(this.save.divulga) : null;
-    const sd = this.teste ? this.teste.semente : 0;   // v12.2: no teste, o que decide quem chega (a divulgação, a encomenda e a agenda) sai da semente da fase
-    this.divF = this.div ? (this.teste ? comSemente(sd, () => rand(this.div.groups[0], this.div.groups[1])) : rand(this.div.groups[0], this.div.groups[1])) : 1;
+    const sd = this.desafio && this.desafio.semente || 0;   // v12.2: no teste (v12.3: e no Desafio), o que decide quem chega (a divulgação, a encomenda e a agenda) sai da semente do dia
+    this.divF = this.div ? (sd ? comSemente(sd, () => rand(this.div.groups[0], this.div.groups[1])) : rand(this.div.groups[0], this.div.groups[1])) : 1;
     this.clock = this.day.time;
     this.cmdFree = CMD.map((c,i) => i);
     this.stars = 5; this.five = 0; this.starFlash = 0; this.arrT = 2; this.endless = null;
@@ -165,11 +165,11 @@ class Game {
     // v9, a encomenda do setor (área industrial): sorteada ao começar o dia e avisada na introdução
     const pe = this.ponto.encomenda, te = CUSTOMER_TYPES.encomenda;
     const sorteiaEnc = () => !treino && n > 0 && pe && Math.random() < pe ? { lote:randi(te.lote[0], te.lote[1]) } : null;
-    this.encomendaDia = this.teste ? comSemente(sd, sorteiaEnc) : sorteiaEnc();
+    this.encomendaDia = sd ? comSemente(sd, sorteiaEnc) : sorteiaEnc();
     this.apito = null;
-    this.schedule = n === 0 || treino ? [] : this.teste ? comSemente(sd, () => this.buildSchedule(this.day)) : this.buildSchedule(this.day);
+    this.schedule = n === 0 || treino ? [] : sd ? comSemente(sd, () => this.buildSchedule(this.day)) : this.buildSchedule(this.day);
     this.nextIdx = 0;
-    this.tm = this.teste ? novoTm() : null;   // v12.2
+    this.tm = this.desafio ? novoTm() : null;   // v12.2 (v12.3: também no Desafio)
     this.result = null;
     this.bannerT = 0;
   }
@@ -329,7 +329,7 @@ class Game {
     out.forEach(s => { if ((exg && s.vip) || s.exig) s.av = true; });
     const idx = out.map((_, i) => i).filter(i => !((exg && out[i].vip) || out[i].exig));
     for (let k = 0; k < Math.min(AVAL.porDia, idx.length); k++) out[idx.splice(randi(0, idx.length - 1), 1)[0]].av = true;
-    if (this.teste) out.forEach((x, i) => { x.i = i; });   // v12.2: a posição na agenda (o spawn semeia o grupo com semente × 1000 + i)
+    if (this.desafio && this.desafio.semente) out.forEach((x, i) => { x.i = i; });   // v12.2: a posição na agenda (o spawn semeia o grupo com semente × 1000 + i)
     return out;
   }
   /* v10.1: o exigente que saiu bravo ontem tira EXIGENTE.bravoMov do movimento de hoje; a reputação (nota do Gúgou) mexe na chance de VIP no Terraço */
@@ -424,7 +424,7 @@ class Game {
   sairTreino(){
     if (!this.salvo) return;
     this.save = this.salvo; this.salvo = null; this.up = this.save.up; this.treino = null;
-    if (this.desafio){ this.desafio = null; DESAFIO_EST.on = false; this.tablesKey = ''; }   // v12: acabar o Desafio também devolve o salão de verdade
+    if (this.desafio){ this.desafio = null; this.tm = null; this.dTent = null; DESAFIO_EST.on = false; this.tablesKey = ''; }   // v12: acabar o Desafio também devolve o salão de verdade
     if (this.teste){ this.teste = null; this.tm = null; }   // v12.2: e o Teste de habilidade (o DEV.forca que ele guardou volta)
     if (this.devForcaSalva){ DEV.forca = this.devForcaSalva; this.devForcaSalva = null; }
   }
@@ -433,7 +433,9 @@ class Game {
   startDesafio(id){
     const D = DESAFIOS.find(x => x.id === id);
     if (!D) return false;
-    this.teste = null;
+    if (!this.devForcaSalva) this.devForcaSalva = DEV.forca;
+    DEV.forca = {};   // v12.3: no Desafio os forçados do dev também ficam desligados (guardados e devolvidos ao sair, como no Teste)
+    this.teste = null; this.dTent = { tent:testeSobe('d-' + D.id), quando:new Date() };   // v12.3: a tentativa de cada desafio, no mesmo lcc-teste (chave d-<id>)
     return this.comecaDesafio(D);
   }
   /* v12.2, o Teste de habilidade: o dia é o de um Desafio (comecaDesafio), com a semente da fase e as medidas (this.tm); a tentativa sobe ao começar. O modo dev não mexe: o DEV.forca fica vazio (e volta ao sair) e a velocidade, em 1 */
@@ -481,6 +483,7 @@ class Game {
     const antes = (real.desafios && real.desafios[D.id]) || 0, nova = medalha > antes;
     if (nova){ real.desafios = normDesafios(Object.assign({}, real.desafios, { [D.id]:medalha })); writeSave(real); }
     this.desafioRes = { id:D.id, medalha, nova, falhou:!condOk, lucro:m, stars };
+    this.dTent.quando = new Date(); this.testeRel = testeRelatorio(this);   // v12.3: o relatório (só aparece, no botão, com o modo dev)
     this.setState('desafiofim');
     if (medalha) Sfx.win(); else Sfx.lose();
   }
@@ -975,7 +978,7 @@ class Game {
   }
   spawn(s){
     s = s || this.schedule[this.nextIdx++];
-    const id = ++this.gid, g = this.teste && s.i != null ? comSemente(this.teste.semente * 1000 + s.i, () => new Group(this, s.type, id, s.color, s.vip, s)) : new Group(this, s.type, id, s.color, s.vip, s);   // v12.2: no teste, o tamanho, as pessoas e os pedidos de cada grupo saem da semente da fase
+    const id = ++this.gid, g = this.desafio && this.desafio.semente && s.i != null ? comSemente(this.desafio.semente * 1000 + s.i, () => new Group(this, s.type, id, s.color, s.vip, s)) : new Group(this, s.type, id, s.color, s.vip, s);   // v12.2: no teste, o tamanho, as pessoas e os pedidos de cada grupo saem da semente da fase
     g.avalia = !!s.av; g.doApito = !!s.apito;   // doApito: uma das turmas que chegam com o apito da fábrica
     this.groups.push(g);
     const novoMan = this.manualVer('c-' + s.type) | (g.vipAberto ? this.manualVer('c-vip') : 0) | (g.exigente && !g.disfarce ? this.manualVer('c-exigente') : 0);   // v9.6.7: a 1ª vez de cada tipo abre a ficha dele no Manual

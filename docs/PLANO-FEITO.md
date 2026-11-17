@@ -2067,3 +2067,8 @@ Planejada em 17/11 (questionário pós-final). Depois do "Fim da história", o m
 Vinda da Etapa 14 ("O bot com habilidade de gente"), cujas 14c e 14b seguem no `docs/PLANO.md`.
 - **14a** (v12.2): no modo dev, o Teste de habilidade. São quatro fases padrão, uma por ponto, com os mesmos clientes para todo mundo (semente fixa). No fim, o relatório para copiar e colar no chat: o resultado, os tempos de reação, o ritmo de toques, a Bia parada e o aparelho. O bot joga as mesmas fases e escreve o mesmo relatório. Spec: `docs/spec-v12.2.md`.
   **Modelo:** Sonnet, esforço alto (reaproveita o motor dos Desafios, mas mede em muitos pontos do código, tela nova, bot e ferramenta)
+
+## Etapa 14c — Desafios com os mesmos clientes para todos (v12.3)
+Vinda da Etapa 14 ("O bot com habilidade de gente"), cuja 14b segue no `docs/PLANO.md`.
+- **14c** (v12.3, depois da 14a, que traz a semente e o relatório): cada Desafio com semente fixa, ou seja, os mesmos clientes para todo jogador e em toda tentativa. A calibração troca a semente (até 10 por desafio), não os valores. No modo dev, o fim do desafio ganha "Copiar relatório". Spec: `docs/spec-v12.3.md`.
+  **Modelo:** Sonnet, esforço médio (o mecanismo vem pronto da v12.2; a calibração é rodar sementes em ordem, com a regra de parada decidida)

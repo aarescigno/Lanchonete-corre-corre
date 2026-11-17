@@ -259,6 +259,7 @@ on('btn-rank',       () => { Sfx.init(); Sfx.resume(); Sfx.tap(); openRank('ov-m
 on('btn-desafios',   () => { Sfx.init(); Sfx.resume(); Sfx.tap(); game.setState('desafios'); });   // v12
 on('btn-desafios-voltar', () => { Sfx.tap(); game.setState('menu'); });
 on('btn-desafio-de-novo', () => { Sfx.init(); Sfx.resume(); Sfx.tap(); if (game.desafio) game.startDesafio(game.desafio.id); });
+on('btn-desafio-copia',  () => { Sfx.init(); testeCopia('desafio'); });   // v12.3: só aparece no modo dev
 on('btn-desafio-lista',   () => { Sfx.tap(); game.setState('desafios'); });
 /* v12.2: o fim do Teste de habilidade: copiar o relatório (sem ele na tela, a não ser que a cópia falhe), jogar de novo (a mesma fase, tentativa + 1) e voltar ao menu (com o save de verdade) */
 on('btn-teste-copia',   () => { Sfx.init(); testeCopia(); });

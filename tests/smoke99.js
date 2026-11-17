@@ -79,7 +79,7 @@ bloco('CA3',()=>{
   ok(new Set(IDS.map(id=>sigs[id])).size===4,'CA3: as quatro fases dão agendas diferentes');
   { const {g,L}=mk(); const r0=Math.random; g.startTeste('terraco'); ok(Math.random===r0,'CA3: o Math.random original volta depois do sorteio com semente');
     g.startTeste('industrial'); const encom=g.schedule.filter(s=>s.type==='encomenda').length; g.startTeste('industrial'); ok(g.schedule.filter(s=>s.type==='encomenda').length===encom,'CA3: a encomenda do setor também sai da semente ('+encom+')'); }
-  { const {g}=mk(); const x=g.startDesafio('soBia'), a=JSON.stringify(g.schedule.map(s=>Math.round(s.t*1000))); g.startDesafio('soBia'); ok(JSON.stringify(g.schedule.map(s=>Math.round(s.t*1000)))!==a && g.teste===null && g.tm===null,'CA3: (controle) o Desafio comum segue sem semente e sem medidas'); } });
+  { const {g}=mk(); const x=g.startDesafio('soBia'), a=JSON.stringify(g.schedule.map(s=>Math.round(s.t*1000))); g.startDesafio('soBia'); ok(JSON.stringify(g.schedule.map(s=>Math.round(s.t*1000)))===a && g.teste===null,'CA3: (controle) o Desafio comum, sem o Teste (v12.3: ele tem semente própria, então a agenda é a mesma)'); } });
 
 // ---------- CA4: as medidas, num dia roteirizado ----------
 bloco('CA4',()=>{
@@ -138,7 +138,7 @@ bloco('CA4 (ajudante e aparelho)',()=>{
 // ---------- CA5: o relatório ----------
 bloco('CA5',()=>{
   const R='(\\d+,\\d / \\d+,\\d / \\d+|—)';
-  const re=[/^LCC-TESTE 1 · v12\.2 · Garagem · dia 7 · semente 7001$/,
+  const re=[/^LCC-TESTE 1 · v12\.\d+ · Garagem · dia 7 · semente 7001$/,
     /^Jogador: Ana · tentativa 3 · (toque \d+×\d+|mouse \d+×\d+|bot -) · \d{2}\/\d{2}\/\d{4} \d{2}:\d{2}$/,
     /^Resultado: lucro -?R\$ \d+ · meta R\$ \d+ \(-?\d+%\) · (0★|★{1,3}) · servidos \d+ de \d+ · Gúgou (\d,\d|—)$/,
     /^Perdidos: \d+ · fila sem mesa \d+ · fila com mesa \d+ · pedido \d+ · prato \d+ · conta \d+ · retirada \d+ · esfriou \d+$/,
@@ -160,7 +160,7 @@ bloco('CA5',()=>{
   ok(JSON.stringify(JSON.parse(store['lcc-teste']))===JSON.stringify({ garagem:3, industrial:1, avenida:0, terraco:2 }) && g.teste.tent===2,'CA5: a tentativa é contada por fase ('+store['lcc-teste']+')');
   // sem nome e sem caso nenhum
   { const x=mk(); x.g.startTeste('terraco'); x.g.begin(); roda(x.g,2); x.g.schedule=[]; x.g.groups=[]; x.g.custo=0; x.g.money=0; roda(x.g,3); const l=x.g.testeRel.split('\n');
-    ok(/^Jogador: sem nome · tentativa 1 /.test(l[1]) && /^LCC-TESTE 1 · v12\.2 · Terraço Suíça · dia 58 · semente 7004$/.test(l[0]),'CA5: sem nome no Ranking, o relatório diz "sem nome"');
+    ok(/^Jogador: sem nome · tentativa 1 /.test(l[1]) && /^LCC-TESTE 1 · v12\.\d+ · Terraço Suíça · dia 58 · semente 7004$/.test(l[0]),'CA5: sem nome no Ranking, o relatório diz "sem nome"');
     ok(l[4]==='Reação em s (média / mediana / casos): sentar — · pedido — · prato — · conta — · mesa suja —','CA5: sem nenhum caso, as cinco reações saem "—"');
     ok(/^Resultado: lucro -?R\$ \d+ · meta R\$ \d+ \(-?\d+%\) · 0★ · servidos 0 de \d+ · Gúgou —$/.test(l[2]),'CA5: sem estrela, "0★"; sem nota, "Gúgou —" ('+l[2]+')'); }
   // o dia encerrado no modo dev
