@@ -11,6 +11,7 @@ A tela de Desafios ganha os outros quatro da 1ª leva: a Festa junina lotada, o 
 - Desafios novos além destes sete.
 
 ## Regras (decisões tomadas)
+- **O dia** é o da v12: o save com "Tudo no máximo" (a equipe, os cursos, as melhorias e o salão cheio, com as Redes sociais), por cima da linha `cap`. Os `groups` da tabela abaixo são os de partida, antes do "Tudo no máximo"; a calibração do CA5 acerta os valores.
 - **Os quatro novos**, depois dos três da v12 na `DESAFIOS` e na tela, nesta ordem:
 
 | id | nome | cap (ponto) | dia | mod | cond |
@@ -49,7 +50,9 @@ A tela de Desafios ganha os outros quatro da 1ª leva: a Festa junina lotada, o 
 - **CA4** (`vips`: todo grupo é VIP exigente; a `cond` falha se um grupo sai com 3 corações ou bravo) → `smoke98` (CA4)
 - **CA5** (a calibração: com o bot comum, cada um dá bronze ou mais em 40% a 70% das rodadas; com o bot afiado, a `cond` do `critico` e a dos `vips` valem em 30% ou mais) → `DESAFIO=<id> node balance.js 40` e `BOT=afiado DESAFIO=<id> node balance.js 40`.
   - Fora da faixa de bronze: mexa no `mod.meta` em passos de 0,05, entre 0,6 e 1,5.
-  - `cond` abaixo de 30%: aplique o alívio da regra.
+  - **Também o `mod.groups`**, entre 0,4 e 1,4, em passos de 0,05. Na v12, o dia do desafio passou a ter "Tudo no máximo" (decisão do usuário de 17/11, ver `docs/spec-v12.md`), e com isso o movimento ficou ~2,2 vezes maior. Comece pelo `groups` da tabela dividido por 2,2: `junina` 0,55, `jogo` 0,55, `critico` 0,45, `vips` 0,4. A `junina` e o `jogo` ficam com o `groups` acima do `critico` e dos `vips`, para continuarem os dias mais cheios.
+  - Na v12, 40 rodadas oscilavam muito: decida com 200 (`DESAFIO=<id> node balance.js 200`). Rode o `run_all.sh` ou o `./extract.sh` antes do `balance.js`, porque ele lê o `tests/game.js`.
+  - `cond` abaixo de 30%: primeiro desça o `groups`; depois aplique o alívio da regra.
   - Se ainda assim não couber, pare e avise.
 - **CA6** (a tela com sete cartões cabe nos 14 tamanhos) → `python3 menu_fit.py`
 - **CA7** (o que se vê) → captura `shot_v12_1.js`, em 1220 x 600 e 844 x 390, conferida em recorte:
