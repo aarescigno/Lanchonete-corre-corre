@@ -1,6 +1,6 @@
 # v11.16 — O final novo: o motor, o som e as cenas 1, 2 e 3 (etapa 10a)
 
-**Situação:** aprovada (16/11)
+**Situação:** entregue em 17/11
 **Origem:** `docs/FINAL.md` §1 a §6 e §9 (roteiro e direção fechados no planejamento de 16/11; decisões do usuário em `docs/PROPOSTAS.md`); etapa 10a do `docs/PLANO.md`.
 
 ## Objetivo
@@ -39,13 +39,13 @@ Valem, sem mudança de texto nem de número, `docs/FINAL.md` §3 (direção de a
 - `ferramentas/editor.py` (a lista `ARQUIVOS` com o `src/28-final.js`).
 
 ## Tarefas
-- [ ] T1 Smoke novo `tests/smoke92.js` (CA1 a CA6), visto falhar, incluído no `tests/run_all.sh`.
-- [ ] T2 O roteiro `FINAL2`, o motor (`finalCenas`, `Abertura`, `ab2Bolinhas`), o som (climas e efeitos), o `ab2Obra` e a linha do modo dev; o `smoke92` verde nas partes de motor.
-- [ ] T3 `ab2Terraco` (os dois modos) e a cena 1, `telefone`; captura, recorte e acerto.
-- [ ] T4 A cena 2, `placa`; captura (com 1, 2 e 3 estrelas), recorte e acerto.
-- [ ] T5 O `modo` `'noite'` da rua da Casa Aurora e a cena 3, `apagou`; captura, recorte e acerto.
-- [ ] T6 `tests/shot_v11_16.js` e a conferência do CA8; o editor de desenhos abrindo o `src/28-final.js`.
-- [ ] Fechamento: `VERSAO`, `vtag`, `#ov-ver`, `docs/RESUMO.md`, `docs/TESTES.md`, `docs/PARTES.md`, o `CLAUDE.md` (a parte `28` na lista), esta spec como entregue, `tests/run_all.sh` verde, PR e merge.
+- [x] T1 Smoke novo `tests/smoke92.js` (CA1 a CA6), visto falhar, incluído no `tests/run_all.sh`.
+- [x] T2 O roteiro `FINAL2`, o motor (`finalCenas`, `Abertura`, `ab2Bolinhas`), o som (climas e efeitos), o `ab2Obra` e a linha do modo dev; o `smoke92` verde nas partes de motor.
+- [x] T3 `ab2Terraco` (os dois modos) e a cena 1, `telefone`; captura, recorte e acerto.
+- [x] T4 A cena 2, `placa`; captura (com 1, 2 e 3 estrelas), recorte e acerto.
+- [x] T5 O `modo` `'noite'` da rua da Casa Aurora e a cena 3, `apagou`; captura, recorte e acerto.
+- [x] T6 `tests/shot_v11_16.js` e a conferência do CA8; o editor de desenhos abrindo o `src/28-final.js`.
+- [x] Fechamento: `VERSAO`, `vtag`, `#ov-ver`, `docs/RESUMO.md`, `docs/TESTES.md`, `docs/PARTES.md`, o `CLAUDE.md` (a parte `28` na lista), esta spec como entregue, `tests/run_all.sh` verde, PR e merge.
 
 ## Avisos para a execução
 - O motor da abertura já faz quase tudo (`ab2Cam`, `trans`, `legA`, `escuro` e o `drawAbertura2`): o `FINAL2` toca por ele só por ter `cheio:true`; o trabalho de motor é o `final:true` no lugar do `roteiro === FINAL` e os créditos vindos do roteiro.
@@ -61,6 +61,15 @@ Valem, sem mudança de texto nem de número, `docs/FINAL.md` §3 (direção de a
 Nenhuma.
 
 ## Desvios
-(no fechamento)
+- **Modelo:** executada com o Sonnet 5.5, esforço alto, como a spec pedia.
+- **`smoke88` e `smoke91` mudaram** (o CA7 pedia os dois sem mudança): o `smoke91` contava exatamente 11 cenas na `AB2_CENAS`, e o `smoke88` exigia exatamente os 9 efeitos da abertura na `AB_FX` e só cenas da abertura na `AB2_CENAS`; agora aceitam as 3 cenas e os 3 efeitos novos do final. As demais checagens deles ficaram como estavam.
+- **`smoke86` e `menu_fit.py`** (a lista das Versões, a `VERSAO` e o selo) passaram a esperar a v11.16 e 25 linhas; o `menu_fit.py` não rodou aqui (falta o `playwright` do Python).
+- **Medidas do Terraço** (`AB2_TE`, dentro dos 40 px permitidos, menos duas): o rodapé (onde a parede encontra o piso) em y 480, e a porta vai de 150 a 480 (a spec dizia 520, o chão onde as pessoas pisam); o janelão vai de x 620 a 1090 (a spec, 1170) para sobrar parede ao passa-pratos (x 1108 a 1216, y 252 a 410), que não cabia à direita dele.
+- **Cena 2, o abraço:** os dois ficam à direita da placa (Bia em x 455, Tonhão em x 570) e não embaixo dela: com a câmera final (`[340,230,1.9]`) as cabeças cobririam o nome e as estrelas. O Tonhão põe a mão no ombro dela (não envolve os dois ombros), para o braço não cruzar o rosto.
+- **Cena 3, o Bráulio sentado:** o `abBraulio` ganhou a opção `triste` (olhos abertos, sobrancelhas caídas e boca virada) para a careta e o desânimo; sentado, é o torso dele mais baixo e achatado, joelhos à frente, no degrau da porta (desenhado na própria cena).
+- **Editor de desenhos:** passou a achar as cenas registradas por `Object.assign(AB2_CENAS, {...})` e a listar as do `src/28-final.js` junto das da abertura (conferido: 14 cenas na lista, sem erro de página).
+- **`devFinal` e `tocaFinal`** ganharam o argumento `roteiro`; `window.__lcc` passou a expor `FINAL2`, `tocaFinal`, `AB2_TE`, `ab2Terraco` e `ab2Obra`.
+- **Número medido:** `smoke92` tem 93 checagens.
+- **`versoes/`:** nada a guardar (a v11.16 segue na série v11).
 
 **Modelo:** Sonnet, esforço alto — o motor quase todo pronto e o quadro a quadro fechado; o peso é desenhar um cenário novo e três cenas no canvas, conferidas em captura.

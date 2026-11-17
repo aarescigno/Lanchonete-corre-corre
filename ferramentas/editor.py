@@ -19,7 +19,9 @@ AQUI = os.path.dirname(os.path.abspath(__file__))
 RAIZ = os.path.dirname(AQUI)
 SAIDA = os.path.join(AQUI, 'editor-montado.html')
 # v11.15: as cenas da abertura estão em 27-abertura-nova.js (AB2_CENAS); em 25-abertura.js ficam as pessoas e as cenas do final
-ARQUIVOS = ['src/27-abertura-nova.js', 'src/25-abertura.js'] + [a for a in sys.argv[1:] if a.startswith('src/') and a.endswith('.js') and a not in ('src/27-abertura-nova.js', 'src/25-abertura.js')]
+# v11.16: o final novo (FINAL2) está em 28-final.js
+PADRAO = ['src/27-abertura-nova.js', 'src/25-abertura.js', 'src/28-final.js']
+ARQUIVOS = PADRAO + [a for a in sys.argv[1:] if a.startswith('src/') and a.endswith('.js') and a not in PADRAO]
 # o fim do código do jogo: o gancho entra antes, dentro do (function(){ ... })(), e enxerga as funções dele
 FIM = 'window.requestAnimationFrame(frame);\n\n})();'
 GANCHO = 'window.__ed = { ev: s => eval(s) };   // editor de desenhos: troca funções de desenho enquanto o jogo roda\n'
