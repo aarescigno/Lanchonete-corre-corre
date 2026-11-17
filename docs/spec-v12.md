@@ -98,7 +98,14 @@ Depois do "Fim da história", o menu ganha "Desafios": dias avulsos, cada um num
 - **CA6** (o modo dev: Liberar, Ouro em todos e Zerar) → `smoke97` (CA6)
 - **CA7** (a calibração: com o bot comum, cada desafio dá bronze ou mais em 40% a 70% das rodadas; com o bot afiado, a `cond` vale em 30% ou mais) → `DESAFIO=<id> node balance.js 40` e `BOT=afiado DESAFIO=<id> node balance.js 40`.
   - Fora da faixa de bronze: mexa no `mod.meta` daquele desafio em passos de 0,05, entre 0,6 e 1,5 (acima de 70%, suba; abaixo de 40%, baixe).
-  - `cond` abaixo de 30%: em `semBravo`, `groups` 1,1 para 1; em `efood`, `tipoP` 0,45 para 0,3.
+  - **Também o `mod.groups`** (decisão do usuário, 17/11, na execução): com o "Tudo no máximo", o movimento ficou ~2,2× maior. O `groups` de cada desafio é calibrado entre 0,4 e 1,2, em passos de 0,05.
+    - Comece por ele quando a `cond` ou o CA3 não couberem, e depois acerte a meta.
+    - No `efood`, o `groups` precisa manter os entregadores acima de 35% dos grupos (CA3).
+  - Pontos de partida medidos na execução, com 200 rodadas:
+    - `semBravo`: `groups` 0,5 e `meta` 0,6 dão 60% de bronze no comum e 97% de `cond` no afiado.
+    - `efood`: `groups` 0,6 dá 38% de entregadores; com `meta` 0,8, 35% de bronze no comum e 42% de `cond` no afiado.
+  - Use 200 rodadas para decidir, porque o bot não tem semente e 40 rodadas oscilam muito.
+  - `cond` ainda abaixo de 30%: em `semBravo`, desça o `groups`; em `efood`, o `tipoP` 0,45 passa a 0,3 se isso não derrubar os entregadores abaixo de 35%.
   - Se ainda assim não couber, pare e avise.
 - **CA8** (o menu, a tela de Desafios e o cartão do fim cabem nos 14 tamanhos de tela) → `python3 menu_fit.py` (com `#ov-desafios` e `#ov-desafio-fim` na lista dos painéis)
 - **CA9** (o que se vê) → captura `shot_v12.js`, em 1220 x 600 e 844 x 390, conferida em recorte:
@@ -151,6 +158,7 @@ Depois do "Fim da história", o menu ganha "Desafios": dias avulsos, cada um num
 Nenhuma.
 
 ## Desvios
+- **A calibração** passou a mexer também no `mod.groups` (decisão do usuário, 17/11; ver o CA7).
 - **O save do dia** passou a ser "Tudo no máximo" e a "Missão zero" virou link depois do Fim. As duas decisões são do usuário, de 17/11, tomadas durante a execução (ver Regras).
 - (o resto, no fechamento)
 
