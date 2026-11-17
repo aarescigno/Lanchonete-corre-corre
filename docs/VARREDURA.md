@@ -7,6 +7,7 @@ Pedido do usuário, 17/11: "Vai pesquisando por outras sobreposições etc e pro
 **Captura:** `node <scratchpad>/varre.js <pasta>` (o script está descrito abaixo; recrie se a pasta temporária tiver sido limpa). Monta o save no ponto com `L.DEV.on=true; g.devLuxoTudo(); L.DEV.on=false`, equipe cheia, `up.assento` e as TVs/som do ponto, `g.begin()` e uns 12 s de jogo para a fila e a retirada encherem; captura 960x600 em dsf 2 e recortes ampliados com PIL. Apague as capturas no fim.
 
 ## Falta conferir
+- [ ] **Primeiro:** as capturas dos achados abaixo foram tiradas na v11.16, antes da v11.16.1 (entregue em 17/11 por outra sessão, com as luminárias, a plaquinha do eFood, a lata, a jarra, o antúrio e as bandeirinhas). Reconfira cada achado na versão atual e risque o que ela já resolveu.
 - [ ] Confirmar no jogo de verdade (sem `devLuxoTudo`) os achados de equipe: a Cami e o Joca só vão a certos pontos, então G2 pode não acontecer na Garagem real
 - [ ] Equipe andando no salão (Dani, Joca, Cami) durante o serviço, não só parada na casa: atravessa enfeite ou móvel?
 - [ ] Chuva na Garagem, na Avenida e no Terraço (só a área industrial foi vista com chuva)
