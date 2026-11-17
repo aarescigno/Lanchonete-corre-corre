@@ -8,17 +8,16 @@ Pedido do usuário, 17/11: "Vai pesquisando por outras sobreposições etc e pro
 
 ## Falta conferir
 - [ ] Confirmar no jogo de verdade (sem `devLuxoTudo`) os achados de equipe: a Cami e o Joca só vão a certos pontos, então G2 pode não acontecer na Garagem real
-- [ ] Equipe andando no salão (Dani, Joca, Cami, Anselmo, Lia) em cada ponto: encostam em móvel ou enfeite?
-- [ ] Noite da estrela (Terraço) e chuva nos outros pontos (só a área industrial foi vista com chuva)
-- [ ] Balões e textos flutuantes (pedido, doce, bebida, "Novo no Manual!") por cima de enfeites ou fora da tela
-- [ ] Celular deitado (844x390): o HUD e o salão
+- [ ] Equipe andando no salão (Dani, Joca, Cami) durante o serviço, não só parada na casa: atravessa enfeite ou móvel?
+- [ ] Chuva na Garagem, na Avenida e no Terraço (só a área industrial foi vista com chuva)
+- [ ] Textos flutuantes que ainda não apareceram nas capturas ("Novo no Manual!", "Pedido na Efood!", gorjeta) por cima de enfeites ou fora da tela
 
 ## Achados
 Conferidos em 17/11 (Garagem, Avenida e Terraço com `devLuxoTudo`, equipe cheia, fila e retirada cheias). O que a seção 6 da `docs/spec-v11.16.1.md` já resolve em todo ponto (a plaquinha do eFood centrada, a muda na lata no parapeito, as luminárias menores e sem cone) não se repete aqui.
 
 ### Garagem
 - **G1** A cortina de chita da janela encosta no letreiro "LANCHES" (a bandô passa da janela para a direita). `drawCortinaChita` com `LUXO_JAN[0]` (`src/21-cenario.js`). Sugestão: a bandô e o painel ficam dentro de `j.x1`, sem os `+ 6`.
-- **G2** A equipe parada no canto de baixo (a Cami e o Joca, na casa deles) fica em cima das cadeiras da frente da mesa 4 quando a mesa de 4 está no canto de baixo à direita. `CAMI_HOME` e `JOCA_HOME` (`src/10-constantes.js` ou a parte de cada um). Sugestão: a casa da equipe vira lugar proibido para mesa no editor do salão (como o caminho), ou a casa muda para perto do lixo. Confirmar no jogo de verdade (ver Falta conferir).
+- **G2** A equipe parada no canto de baixo (a Cami e o Joca, na casa deles) fica em cima das cadeiras da frente da mesa 4 quando a mesa de 4 está no canto de baixo à direita. Visto igual nos 4 pontos (a mesma arrumação de mesas). `CAMI_HOME` e `JOCA_HOME` (`src/10-constantes.js` ou a parte de cada um). Sugestão: a casa da equipe vira lugar proibido para mesa no editor do salão (como o caminho), ou a casa muda para perto do lixo. Confirmar no jogo de verdade (ver Falta conferir).
 - **G3** A samambaia pendurada encosta na moldura da foto da Rosa (as folhas da direita). `DECOR_POS[0]` (`samambaia:[42,30,1]`, `foto:[88,36,1]`). Sugestão: foto 6 px para a direita ou samambaia em escala 0,9.
 
 ### Avenida Brasil
@@ -49,3 +48,11 @@ Conferidos em 17/11 (Garagem, Avenida e Terraço com `devLuxoTudo`, equipe cheia
 
 ### Avenida (eventos e sofás)
 - **A5** Com os sofás da espera, as almofadas vermelhas do braço do sofá ficam embaixo dos corações dos grupos, e os balões de bebida encostam no braço do sofá. Pequeno; sugestão: os corações sobem 4 px quando a espera é no sofá.
+
+### Terraço (noite da estrela)
+- **T10** Na noite da estrela, a vela de cada mesa (`drawVela` em `t.cx + t.hx * 0.5`) encosta no porta-guardanapo do mármore e do linho. Sugestão: a vela vai para o meio da frente do tampo, ou o porta-guardanapo some na noite da estrela (a seção 5 da spec já tira o enfeite de vela nessa noite).
+
+### Em todo ponto
+- **C1** O aviso "Lotado!" (quando a espera enche) sai no alto da calçada, por cima dos entregadores do eFood, dos corações deles e do balão de bebida do lugar de cima. Visto no celular deitado (844x390), e o lugar é o mesmo no computador. Sugestão: o aviso sai no meio da faixa da espera (ou em cima do lugar 1), longe da retirada.
+- **C2** No celular deitado (844x390), o resto cabe: é a mesma tela, só menor; nada a mais encosta.
+
