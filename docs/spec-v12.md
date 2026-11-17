@@ -44,7 +44,13 @@ Depois do "Fim da história", o menu ganha "Desafios": dias avulsos, cada um num
   - **Sem história:** nada de conversas, capítulo, objetivos, dicas na hora nem reações de história. As reações da Bia, que são do salão, ficam.
 - **O save do dia:**
   - Como na Missão zero, o desafio joga com um save de mentira que nunca se grava. O save de verdade fica guardado e volta ao sair.
-  - O save de mentira é montado pela linha `cap` da `DEV_CAPS`, do mesmo jeito que o `devCapitulo` monta. As pessoas de `mod.sem` ficam fora da equipe (nível 0) e as melhorias de `mod.up` entram a mais.
+  - O save de mentira é montado pela linha `cap` da `DEV_CAPS`, do mesmo jeito que o `devCapitulo` monta (o ponto e o dia).
+  - **Tudo no máximo** (decisão do usuário, 17/11, na execução: o save do capítulo saía pobre, com o kit de 10 lugares e o boca a boca, e o bot comum ficava em 5% de bronze mesmo com `mod.meta` 0,6). Por cima do save do capítulo entram:
+    - o que o modo dev chama de "Tudo no máximo": a equipe, os cursos e as melhorias do ponto;
+    - o salão cheio: o máximo de lugares que o ponto comporta, pela arrumação automática;
+    - a divulgação Redes sociais.
+    A decoração e o luxo ficam os da linha `cap`.
+  - As pessoas de `mod.sem` ficam fora da equipe (nível 0) e as melhorias de `mod.up` entram a mais. Esses ajustes valem por cima do "Tudo no máximo".
   - O `mode` é `'carreira'`, para as regras do ponto valerem.
   - Nada do dia toca o save de verdade, menos a medalha: nem caixa, dia, estrelas, lucro acumulado, ranking, manutenção, Gúgou ou guia.
 - **A medalha:**
@@ -53,7 +59,7 @@ Depois do "Fim da história", o menu ganha "Desafios": dias avulsos, cada um num
   - Fica a melhor: `save.desafios = { id: 0 a 3 }`.
 - **O menu:**
   - O botão "Desafios" (`#btn-desafios`) fica na 2ª fileira, depois de "Turno sem fim". Ele aparece com `save.cap >= 15` (o Fim da história) ou no modo dev Livre.
-  - Se o `menu_fit.py` falhar em algum tamanho com os 4 botões: depois do Fim, "Missão zero" sai da 1ª fileira e vira link nos `.links`, com o mesmo texto e o mesmo `id`.
+  - Depois do Fim, "Missão zero" sai da 1ª fileira e vira link nos `.links`, com o mesmo texto e o mesmo `id`, para os botões caberem em duas fileiras. Decisão do usuário, 17/11, na execução: com "Continuar: dia 70", em 1220 x 600, o "Ranking" caía sozinho numa 3ª linha. Antes do Fim, nada muda.
 - **A tela `#ov-desafios`:**
   - O título é "Desafios". Há um cartão por desafio, com:
     - o nome;
@@ -145,6 +151,7 @@ Depois do "Fim da história", o menu ganha "Desafios": dias avulsos, cada um num
 Nenhuma.
 
 ## Desvios
-(no fechamento)
+- **O save do dia** passou a ser "Tudo no máximo" e a "Missão zero" virou link depois do Fim. As duas decisões são do usuário, de 17/11, tomadas durante a execução (ver Regras).
+- (o resto, no fechamento)
 
 **Modelo:** Sonnet, esforço alto — motor novo (save de mentira, o dia sem história e o fim próprio), duas telas, save, a chave do bot e a calibração por regra.
