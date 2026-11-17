@@ -1468,6 +1468,9 @@ O curso "Atendimento de mesa" da Cami (3b-3) passa a se comprar e abre o **modo 
 
 ---
 - **Ordem (11/11):** a próxima é a **4a-4** (o salão e o bar do Terraço), depois a 4a-5 (planejadas em 10/11), 4b, 4c, 6 e 7 (a rever). A 4a-1 (v10), a 4a-2 (v10.1) e a 4a-3 (v10.2) foram feitas em 11/11. As revisões R1 (v9.6.12) e R2 (v9.6.13) foram feitas em 10/11, fora da ordem, a pedido do usuário. O histórico da ordem está no fim do `docs/PLANO-FEITO.md`.
+- **Estufa para as marmitas** (retorno de 01/11): guarda as marmitas adiantadas por mais tempo (hoje esfriam em `MARMITA.validade`, 60 s) e, com ela, o "+ marmita" volta (`MARMITA.adiantar`, desligado na 3c). Pode vir junto da prateleira de 4 (ideia da v8.6). Decidir preço, ponto em que aparece e quanto dura a marmita.
+- **Conta rachada** (pensada com o usuário em 30/10; ficou fora da 3b em 31/10, continua guardada): um jeito de pagar que pode cair em qualquer grupo de colegas (turma, executivas): cada um paga a sua parte, e a Bia leva 2 ou 3 maquininhas em vez de uma conta só. Mais trabalho, mas cada pessoa deixa um pouco de gorjeta. Decidir: a chance, quantas maquininhas, o tempo de cada uma e a gorjeta por pessoa.
+- Cardápio com preço escolhido pelo jogador (o Arthur achou estranho só mexer em preço; talvez nunca).
 
 ## Etapa 3c — Retornos de 01/11: a pia da Dani, as conversas do Cardápio e dos entregadores (v9.6.2)
 **Objetivo:** três retornos do usuário de 01/11 (texto em `docs/PROPOSTAS.md`), decididos com ele na mesma sessão. Uma sessão só.
