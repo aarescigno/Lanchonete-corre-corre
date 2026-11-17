@@ -423,7 +423,7 @@ class Game {
     if (!D) return false;
     if (!this.salvo) this.salvo = this.save;
     this.mode = 'carreira'; this.treino = null; this.desafio = D; DESAFIO_EST.on = true;
-    this.save = this.montaCap(D.cap, { marca:{ _desafio:true }, conversa:false, sem:D.mod.sem, up:D.mod.up });
+    this.save = this.montaCap(D.cap, { marca:{ _desafio:true }, conversa:false, maximo:true, sem:D.mod.sem, up:D.mod.up });
     this.save.dia = D.dia; this.save.pontoDia = Math.min(this.save.pontoDia, D.dia);
     this.up = this.save.up; this.tablesKey = '';
     this.resetDay(D.dia, false, true);
@@ -2235,6 +2235,7 @@ class Game {
   /* v12: o save do começo do capítulo n (DEV_CAPS), montado à parte: devolve o save, sem trocar o do jogo (this.save e this.up ficam trocados só durante a montagem, porque os
      ajudantes do modo dev trabalham neles) e sem mexer no modo dev nem no save guardado; quem chama põe o save onde quiser (o devCapitulo no jogo; o Desafio, como save de mentira).
      opt: marca (campos postos logo depois do normSave, como { _desafio:true }, que impede o writeSave); conversa:false (sem a conversa de antes);
+     maximo ("Tudo no máximo" por cima: equipe, cursos, melhorias, salão cheio e Redes sociais);
      sem (pessoas da equipe a pôr em 0); up (melhorias a mais) */
   montaCap(n, opt){
     opt = opt || {};
@@ -2277,7 +2278,15 @@ class Game {
       // Manual: o Básico e as fichas dos pontos visitados
       sv.manual = MANUAL.filter(f => f.aba === 'basico' || PONTOS.slice(0, PONTOS.findIndex(p => p.id === D.ponto) + 1).some(p => f.id === 'p-' + p.id)).map(f => f.id);
       sv.manualNovo = [];
-      (opt.sem || []).forEach(q => { sv.equipe[q] = 0; });   // v12: o Desafio tira pessoas da equipe e põe melhorias a mais
+      if (opt.maximo){   // v12, o Desafio: "Tudo no máximo" por cima do save do capítulo (a equipe, os cursos e as melhorias do ponto, como o botão do modo dev), o salão cheio (mesas de 4, arrumação automática) e as Redes sociais
+        if (D.eq){ this.equipeModo('max'); this.melhoriasTodas(true); sv.equipe.lia = 1; sv.equipe.anselmo = STAFF.anselmo.levels.length - 1; }
+        const P = this.ponto; let m4 = Math.floor(P.lugares / 4), cheio = null;
+        while (m4 > 0 && !cheio){ cheio = salaoAuto(Array.from({ length:m4 }, (_, c) => ({ x:0, y:0, seats:4, c:c % 4 })), P); if (!cheio) m4--; }
+        if (cheio) sv.salao = normSalao({ ponto:P.id, mesas:cheio, estoque:[] });
+        sv.divulga = 'redes';
+        sv.equipe = normEquipe(sv.equipe, P);
+      }
+      (opt.sem || []).forEach(q => { sv.equipe[q] = 0; });   // v12: o Desafio tira pessoas da equipe e põe melhorias a mais (por cima do "Tudo no máximo")
       (opt.up || []).forEach(id => { const u = UPGRADES.find(x => x.id === id); if (u) this.up[id] = u.multi ? 1 : true; });
       sv.equipe = normEquipe(sv.equipe, this.ponto);
       this.notaSave(D.nota);
