@@ -25,6 +25,8 @@ titulo, corpo = jogo[:titulo_fim], jogo[titulo_fim:]
 m = re.search(r'</style>', corpo)
 head_extra, body = corpo[:m.end()], corpo[m.end():]
 versao = hashlib.sha1(jogo.encode('utf8')).hexdigest()[:10]
+mv = re.search(r"const VERSAO = '([^']+)'", jogo)
+assert mv, "não achei a constante VERSAO no lanchonete.html"   # v11.16.1: a versão do jogo vai no versao.json, que o botão Verificar atualização consulta
 
 shutil.rmtree(SITE, ignore_errors=True)
 os.makedirs(os.path.join(SITE, 'icones'))
@@ -75,6 +77,9 @@ for f in sorted(os.listdir(os.path.join(RAIZ, 'versoes'))):
     if re.fullmatch(r'v\d+\.html', f):
         shutil.copy(os.path.join(RAIZ, 'versoes', f), os.path.join(SITE, 'versoes', f))
 
+# ---------- versao.json (fora do cache do service worker) ----------
+json.dump({'versao': mv.group(1)}, open(os.path.join(SITE, 'versao.json'), 'w', encoding='utf8'))
+
 # ---------- service worker ----------
 PRECACHE = ['./', 'index.html', 'manifest.webmanifest'] + [i['src'] for i in icones] + ['icones/apple-touch-icon.png']
 sw = open(os.path.join(AQUI, 'sw.template.js'), encoding='utf8').read()
@@ -96,7 +101,7 @@ head = f'''<!doctype html>
 <link rel="manifest" href="manifest.webmanifest">
 <link rel="icon" type="image/png" sizes="192x192" href="icones/icone-192.png">
 <link rel="apple-touch-icon" href="icones/apple-touch-icon.png">
-{titulo}{head_extra}
+{titulo}<script>window.LCC_APP=1</script>{head_extra}
 <style>html,body{{height:100%;margin:0}}</style>
 </head>
 <body>'''

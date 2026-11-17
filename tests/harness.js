@@ -8,7 +8,7 @@ function mkCtx(){
     return ()=>{};
   }, set:(o,k,v)=>{o[k]=v;return true;}});
 }
-// opts: {claude: stub|undefined, online:bool (v8.3.3: liga o ranking compartilhado, que o jogo deixa desligado), store: initial localStorage object, noStorage:bool, rm:boolean, imprevistos:bool, notaBaixa:bool (v11.11.1: liga a conversa da 1ª nota baixa), saveAntigo:bool (v8.6.9: não marca o save injetado como do cardápio novo)}
+// opts: {claude: stub|undefined, online:bool (v8.3.3: liga o ranking compartilhado, que o jogo deixa desligado), store: initial localStorage object, noStorage:bool, rm:boolean, imprevistos:bool, notaBaixa:bool (v11.11.1: liga a conversa da 1ª nota baixa), saveAntigo:bool (v8.6.9: não marca o save injetado como do cardápio novo), app:bool (v11.16.1: window.LCC_APP=1), fetch:fn (v11.16.1: vira window.fetch)}
 module.exports=function load(opts){
   opts=opts||{};
   const code=fs.readFileSync(__dirname+'/'+(process.env.GAMEJS||'game.js'),'utf8');
@@ -40,6 +40,8 @@ module.exports=function load(opts){
   if (ls) sandbox.localStorage=ls;
   if (opts.throwStorage) Object.defineProperty(sandbox,'localStorage',{get(){throw new Error('SecurityError');}});
   if (opts.claude!==undefined) win.claude=opts.claude;
+  if (opts.app) win.LCC_APP=1;   // v11.16.1: o jogo dentro do app (o app/build.py põe window.LCC_APP=1 no head)
+  if (opts.fetch) win.fetch=opts.fetch;   // v11.16.1: um fetch falso (o jogo chama window.fetch)
   win.window=win;
   if(!opts.historia) win.__semHist=true;   // v8.7: o save novo dos testes antigos não tem a História (sem a reforma, a conversa e a Dani de graça); opts.historia liga
   vm.createContext(sandbox);

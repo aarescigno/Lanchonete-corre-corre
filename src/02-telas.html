@@ -5,7 +5,7 @@
 
     <div class="ov show" id="ov-menu">
       <div class="panel menu-panel">
-        <span class="vtag" id="vtag" aria-label="Versão 11.16">v11.16</span>
+        <span class="vtag" id="vtag" aria-label="Versão 11.16.1">v11.16.1</span>
         <h1 class="title">Lanchonete <br>Corre-Corre</h1>
         <p class="tag">Ajude a Bia a atender a freguesia da esquina antes que o cafezinho esfrie!</p>
         <div class="lbl" id="menu-dia">História</div>
@@ -28,6 +28,9 @@
         <div class="links">
           <button class="link" id="btn-reset">Recomeçar do zero</button>
           <button class="link" id="btn-dev-off" style="display:none">Sair do modo dev</button>
+          <button class="ver-ico" id="btn-atu" style="display:none" title="Verificar atualização" aria-label="Verificar atualização">
+            <svg viewBox="0 0 24 24" width="22" height="22" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 11.5A8 8 0 0 0 5.6 6.8"/><path d="M5 3.5v3.8h3.8"/><path d="M4 12.5a8 8 0 0 0 14.4 4.7"/><path d="M19 20.5v-3.8h-3.8"/></svg>
+          </button>
           <button class="ver-ico" id="btn-app" title="Instalar no celular" aria-label="Instalar no celular (Android e iPhone)">
             <svg viewBox="0 0 24 24" width="22" height="22" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><rect x="6.5" y="2.5" width="11" height="19" rx="2.5"/><path d="M10.5 18.5h3"/><path d="M12 6.5v7"/><path d="M9 10.8l3 3 3-3"/></svg>
           </button>
@@ -244,11 +247,20 @@
       </div>
     </div>
 
+    <div class="ov" id="ov-atu">
+      <div class="panel app-panel">
+        <h2>Atualização</h2>
+        <p class="small" id="atu-txt" role="status"></p>
+        <div class="row"><button class="btn go" id="btn-atu-ir" style="display:none">Atualizar agora</button><button class="btn alt" id="btn-atu-close">Voltar</button></div>
+      </div>
+    </div>
+
     <div class="ov" id="ov-ver">
       <div class="panel">
         <h2>Versões</h2>
         <ul class="verlist">
-          <li><b>v11.16</b><span class="cur">versão atual</span><br>17/11/2026 &mdash; O final está sendo refeito como a abertura: quadro cheio, câmera e música. Três cenas prontas, por enquanto só no modo dev.</li>
+          <li><b>v11.16.1</b><span class="cur">versão atual</span><br>17/11/2026 &mdash; Retornos dos testadores: no app e no site, um botão para buscar a versão nova. A Bia ganhou cabelo crespo em todos os pontos, as mesas ganharam um enfeite de cada ponto, quem espera sentado tem pernas, as bandeirinhas ficam presas e a área industrial foi arrumada. O entregador do eFood chega buzinando.</li>
+          <li><b>v11.16</b><br>17/11/2026 &mdash; O final está sendo refeito como a abertura: quadro cheio, câmera e música. Três cenas prontas, por enquanto só no modo dev.</li>
           <li><b>v11.15</b><br>16/11/2026 &mdash; Abertura nova: a história da Bia e da Rosa refeita como um filminho, com quadro cheio, câmera, luz e música.</li>
           <li><b>v11.11.1</b><br>15/11/2026 &mdash; Na primeira vez que o dia fecha com nota baixa no Gúgou, a Bia desabafa com o Tonhão, e ele a anima.</li>
           <li><b>v11.11</b><br>15/11/2026 &mdash; Quem recomeça do zero passa de novo pela abertura e pela Missão zero.</li>

@@ -66,7 +66,7 @@ function drawMesaLuxo(ctx,t,open,mv,te){
     ctx.strokeStyle = 'rgba(120,125,140,.35)'; ctx.lineWidth = 1.1;
     [[-0.7,-8,-0.2,-2,0.3,-9,0.8,-3],[-0.5,6,0,0,0.5,8,0.9,2]].forEach(v => { ctx.beginPath(); ctx.moveTo(t.cx + v[0] * hw,t.cy + v[1]); ctx.bezierCurveTo(t.cx + v[2] * hw,t.cy + v[3],t.cx + v[4] * hw,t.cy + v[5],t.cx + v[6] * hw,t.cy + v[7]); ctx.stroke(); });
     ctx.strokeStyle = TE_OURO; ctx.lineWidth = 1.4; rr(ctx,t.cx-hw+2,t.cy-16,hw*2-4,30,8); ctx.stroke();
-    drawToalhaEnfeites(ctx,t.cx,t.cy,hw);
+    drawToalhaEnfeites(ctx,t.cx,t.cy,hw,!!t.toalha);   // v11.16.1: a mesa com o enfeite do ponto troca a florzinha por ele
   } else {
     ctx.strokeStyle = 'rgba(90,50,20,.28)'; ctx.lineWidth = 1.1;
     [-6,0,6].forEach(dy => { ctx.beginPath(); ctx.moveTo(t.cx-hw+9,t.cy-1+dy); ctx.quadraticCurveTo(t.cx,t.cy-3+dy,t.cx+hw-9,t.cy-1+dy); ctx.stroke(); });
@@ -78,6 +78,8 @@ function drawTableBody(ctx,t,open,g,tm){
   shadowEll(ctx,t.cx,t.cy+24,hw+8,12,0.2);
   if (!garagem(g) && (terraco(g) ? mv >= 3 : mv >= 1)){   // v10.7: o jogo de mesas
     drawMesaLuxo(ctx,t,open,mv,terraco(g));
+    if (open) drawBrilhoLuminaria(ctx,g,t,hw);
+    drawEnfeiteMesa(ctx,g,t,tm);
     if (t.id === '') return;
     circ(ctx,t.cx-hw+14,t.cy-1,8.5); fs(ctx,terraco(g) ? TE_OURO_CL : '#fff',2);
     txt(ctx,String(t.id),t.cx-hw+14,t.cy,12,PAL.tinta,'center',FD);
@@ -115,6 +117,8 @@ function drawTableBody(ctx,t,open,g,tm){
     ctx.strokeStyle = 'rgba(255,225,180,.12)'; ctx.lineWidth = 1.2;
     [-7,0,7].forEach(dy => { ctx.beginPath(); ctx.moveTo(t.cx-hw+10,t.cy-1+dy); ctx.quadraticCurveTo(t.cx,t.cy-4+dy,t.cx+hw-10,t.cy-1+dy); ctx.stroke(); });
     ctx.fillStyle = 'rgba(255,255,255,.14)'; rr(ctx,t.cx-hw+8,t.cy-11,hw*2-30,4,2); ctx.fill();
+    if (open) drawBrilhoLuminaria(ctx,g,t,hw);
+    drawEnfeiteMesa(ctx,g,t,tm);
     if (t.id === '') return;
     circ(ctx,t.cx-hw+14,t.cy-1,8.5); fs(ctx,TE_OURO_CL,2);
     txt(ctx,String(t.id),t.cx-hw+14,t.cy,12,PAL.tinta,'center',FD);
@@ -124,6 +128,8 @@ function drawTableBody(ctx,t,open,g,tm){
   rr(ctx,t.cx-hw,t.cy-18,hw*2,34,9); fs(ctx,open ? PAL.cromo : '#aeb4ba',2.6);
   rr(ctx,t.cx-hw+4,t.cy-14,hw*2-8,26,6); fs(ctx,open ? PAL.formica : '#b7867e',2);
   ctx.fillStyle = 'rgba(255,255,255,.22)'; rr(ctx,t.cx-hw+8,t.cy-11,hw*2-30,5,2.5); ctx.fill();
+  if (open) drawBrilhoLuminaria(ctx,g,t,hw);
+  drawEnfeiteMesa(ctx,g,t,tm);
   // plaquinha do número
   if (t.id === '') return;
   circ(ctx,t.cx-hw+14,t.cy-1,8.5); fs(ctx,'#fff',2);
@@ -157,16 +163,46 @@ function drawToalha(ctx,x0,cy,w,linho){
   ctx.restore();
 }
 /* na mesa com toalha: o porta-guardanapo no canto de trás, à direita, e a florzinha num copinho, no meio de trás */
-function drawToalhaEnfeites(ctx,cx,cy,hw){
+function drawToalhaEnfeites(ctx,cx,cy,hw,semFlor){
   const px = cx + hw - 13, py = cy - 13;
   ctx.beginPath(); ctx.moveTo(px-6,py); ctx.lineTo(px-4,py-10); ctx.lineTo(px+4,py-10); ctx.lineTo(px+6,py); ctx.closePath(); fs(ctx,'#fff',1.4);
   rr(ctx,px-7,py-6,14,7,1.5); fs(ctx,PAL.cromo,1.6);
+  if (semFlor) return;   // v11.16.1: no mármore, a mesa com o enfeite do ponto não leva a florzinha
   const fx = cx + (hw > 60 ? -hw*0.15 : 4), fy = cy - 13;
   ctx.strokeStyle = '#3E8A47'; ctx.lineWidth = 1.6; ctx.beginPath(); ctx.moveTo(fx,fy-4); ctx.quadraticCurveTo(fx-2,fy-12,fx+1,fy-18); ctx.stroke();
   ell(ctx,fx+3,fy-11,3,1.5); ctx.fillStyle = '#4E9F52'; ctx.fill();
   for (let i=0;i<5;i++){ const a = i*TAU/5; ell(ctx,fx+1+Math.cos(a)*3,fy-19+Math.sin(a)*3,2.4,2.4); ctx.fillStyle = '#F7F4EB'; ctx.fill(); }
   circ(ctx,fx+1,fy-19,1.8); fs(ctx,PAL.mostarda,1);
   rr(ctx,fx-4,fy-6,8,8,2); ctx.fillStyle = 'rgba(191,227,242,.8)'; ctx.fill(); ctx.strokeStyle = PAL.tinta; ctx.lineWidth = 1.4; ctx.stroke();
+}
+/* v11.16.1: o brilho quente da luminária no tampo da mesa aberta (no lugar do cone de luz que descia até o chão) */
+function drawBrilhoLuminaria(ctx,g,t,hw){
+  if (!decorOn(g,'luminaria') || edDesenho) return;
+  ell(ctx,t.cx,t.cy - 2,hw * 0.62,8); ctx.fillStyle = 'rgba(255,233,166,.18)'; ctx.fill();
+}
+/* v11.16.1: o enfeite da mesa por ponto (o upgrade 'toalha', t.toalha): fora da Garagem, um enfeite pequeno no meio de trás do tampo, onde fica a
+   florzinha da toalha: a violeta na área industrial, o galheteiro na Avenida e a vela no Terraço (na noite da estrela, só a vela da noite). No linho, nada */
+function drawEnfeiteMesa(ctx,g,t,tm){
+  if (garagem(g) || !t.toalha || movelNivel(g) === 3) return;
+  const hw = t.hx - 4, x = t.cx + (hw > 60 ? -hw * 0.15 : 4), y = t.cy - 13, id = g.ponto.id;
+  if (id === 'industrial') drawVioletaVaso(ctx,x,y,0.75,1);
+  else if (id === 'avenida'){
+    rr(ctx,x-8,y-2,16,3,1.5); fs(ctx,PAL.cromo,1.4);
+    ctx.strokeStyle = PAL.tinta; ctx.lineWidth = 1.4; ctx.beginPath(); ctx.moveTo(x,y-2); ctx.lineTo(x,y-18); ctx.stroke();
+    circ(ctx,x,y-19,2); ctx.stroke();
+    rr(ctx,x-7,y-13,6,12,2.5); fs(ctx,'rgba(196,170,60,.85)',1.4);
+    rr(ctx,x+1,y-13,6,12,2.5); fs(ctx,'rgba(150,40,50,.75)',1.4);
+    rr(ctx,x-5.5,y-17,3,4,1); fs(ctx,'#9CA2A8',1.2);
+    rr(ctx,x+2.5,y-17,3,4,1); fs(ctx,'#9CA2A8',1.2);
+  } else if (id === 'terraco' && !g.noite){
+    circ(ctx,x,y-9,7); ctx.fillStyle = 'rgba(255,214,120,.18)'; ctx.fill();
+    rr(ctx,x-5,y-9,10,10,2.5); fs(ctx,'rgba(220,235,245,.55)',1.4);
+    rr(ctx,x-3.4,y-6,6.8,6,1.2); fs(ctx,'#FFF6DA',1.2);
+    const f = RM ? 0 : Math.sin((tm || 0) * 9 + x) * 0.9;
+    ctx.save(); ctx.translate(x,y - 0.7); ctx.scale(0.6,0.6);
+    ctx.beginPath(); ctx.moveTo(-2.4,-9.6); ctx.quadraticCurveTo(f - 3,-14,f,-18.4); ctx.quadraticCurveTo(f + 3,-14,2.4,-9.6); ctx.closePath(); fs(ctx,'#F7B33C',1.3);
+    ctx.restore();
+  }
 }
 /* v9.6: avental vinho pequeno (a mesa é da Cami): babador com bolsinho e a tira do pescoço */
 function drawAventalCami(ctx,x,y){
@@ -401,7 +437,7 @@ function drawCluster(ctx,grp,x,y,tm,o){
     const px = x + (i - (n-1)/2) * sp;
     const jig = (grp.hearts <= 2 && !grp.moving && grp.state === 'queue' && !RM) ? Math.sin(tm*14 + i) * 1.2 : 0;
     drawPerson(ctx,grp.people[i],px,y,{
-      mood:grp.mood, shirt:CHAIRS[grp.color].c, moving:grp.moving, ph:grp.walkPh + i*0.8, s:o.s, dx:jig, sit:o.sit
+      mood:grp.mood, shirt:CHAIRS[grp.color].c, moving:grp.moving, ph:grp.walkPh + i*0.8, s:o.s, dx:jig, sit:o.sit, pernas:o.pernas
     });
     if (o.bebe && i < grp.sucoN) drawIcon(ctx,grp.game.bebida.icon,px + 12,y - (o.sit ? 14 : 30),0.42,bebExtra(grp.game,grp.sabor));   // bebendo o da espera (sentado ou de pé)
   }

@@ -131,7 +131,8 @@ function upgradeIcon(id){
       rr(c,-19,-7,38,18,3); fs(c,'#F4E2C0',2);
       c.beginPath(); c.moveTo(0,8); c.bezierCurveTo(-11,0,-6,-9,0,-3); c.bezierCurveTo(6,-9,11,0,0,8); c.closePath(); c.fillStyle = PAL.perigo; c.fill();
     } else if (id === 'd-toalha'){
-      drawToalha(c,-17,6,34); drawToalhaEnfeites(c,0,6,17);
+      if (game.ponto.id === 'garagem'){ drawToalha(c,-17,6,34); drawToalhaEnfeites(c,0,6,17); }
+      else { rr(c,-19,-4,38,14,5); fs(c,PAL.formica,2); drawEnfeiteMesa(c,game,{ cx:0, cy:14, hx:27, toalha:true, id:'' },0); }   // v11.16.1: o enfeite do ponto de agora
     } else if (id === 'd-violeta'){
       c.scale(0.9,0.9); drawVioleta(c,0,12,1);
     } else if (id === 'd-anturio'){
@@ -828,7 +829,7 @@ function buildSalao(grid){
       pop.style.top = tops[up ? 1 : 0] + '%';
       pop.appendChild(el('b', null, 'Mesa ' + (sel + 1) + ' · ' + m.seats + ' lugares'));
       pop.appendChild(edCores(m, k => game.pintarMesa(sel, k)));
-      if (!m.t) pop.appendChild(edBtn('Toalha xadrez: ' + fmt(TOALHA.cost), 'btn', bank >= TOALHA.cost, () => game.buyToalha(sel), TOALHA.cost));   // v8.6.5
+      if (!m.t) pop.appendChild(edBtn(enfeiteMesa(game).nome + ': ' + fmt(TOALHA.cost), 'btn', bank >= TOALHA.cost, () => game.buyToalha(sel), TOALHA.cost));   // v8.6.5
       if (devLivre() || (game.save.equipe.cami > 0 && STAFF.cami.levels[game.save.equipe.cami].mesas)) pop.appendChild(edBtn(m.cami ? 'Tirar da Cami' : 'Mesa da Cami (' + camiMesasN(game.save) + ' de ' + CAMI_MESAS_MAX + ')', 'btn' + (m.cami ? ' alt' : ''), m.cami || camiMesasN(game.save) < CAMI_MESAS_MAX, () => game.camiMesa(sel)));   // v9.6
       if (m.seats === 2) pop.appendChild(edBtn('Virar mesa de 4: ' + fmt(SALAO.virar), 'btn', tot + 2 <= p.lugares && bank >= SALAO.virar, () => game.virarMesa(sel), SALAO.virar));
       pop.appendChild(edBtn('Guardar no estoque', 'btn alt', mesas.length > 1, () => game.guardarMesa(sel)));
@@ -842,7 +843,7 @@ function buildSalao(grid){
       pop.style.top = tops[up ? 1 : 0] + '%';
       pop.appendChild(el('b', null, 'Mesa no estoque · ' + me.seats + ' lugares'));
       pop.appendChild(edCores(me, k => game.pintarMesa(ks, k, true)));
-      if (!me.t) pop.appendChild(edBtn('Toalha xadrez: ' + fmt(TOALHA.cost), 'btn', bank >= TOALHA.cost, () => game.buyToalha(ks, true), TOALHA.cost));
+      if (!me.t) pop.appendChild(edBtn(enfeiteMesa(game).nome + ': ' + fmt(TOALHA.cost), 'btn', bank >= TOALHA.cost, () => game.buyToalha(ks, true), TOALHA.cost));
       pop.appendChild(edBtn('Pôr no salão', 'btn', true, () => game.tirarMesa(ks)));
       if (me.seats === 2) pop.appendChild(edBtn('Virar mesa de 4: ' + fmt(SALAO.virar), 'btn', tot + 2 <= p.lugares && bank >= SALAO.virar, () => game.virarMesa(ks, true), SALAO.virar));
       pop.appendChild(edBtn('Vender por ' + fmt(mesaPreco(me.seats) * SALAO.venda), 'btn alt', true, () => game.venderMesa(ks, true)));
@@ -862,14 +863,14 @@ function buildSalao(grid){
   side.appendChild(edBtn('Mesa de 4: ' + fmt(SALAO.mesa4), 'btn', tot + 4 <= p.lugares && bank >= SALAO.mesa4, () => game.buyMesa(4), SALAO.mesa4));
   // v8.9.1: a toalha xadrez em todas as mesas (antes na Decoração); mesa a mesa, no balãozinho
   const todas = mesas.concat(est), sem = game.semToalha.length, vt = sem * TOALHA.cost;
-  side.appendChild(edBtn(!sem ? 'Toalha xadrez: todas têm' : 'Toalha xadrez em ' + (sem > 1 ? 'todas (' + sem + ')' : '1 mesa') + ': ' + fmt(vt), 'btn', sem > 0 && bank >= vt, () => game.buyToalhas(), vt));
+  side.appendChild(edBtn(!sem ? enfeiteMesa(game).nome + ': todas têm' : enfeiteMesa(game).nome + ' em ' + (sem > 1 ? 'todas (' + sem + ')' : '1 mesa') + ': ' + fmt(vt), 'btn', sem > 0 && bank >= vt, () => game.buyToalhas(), vt));
   side.appendChild(edBtn('Arrumação automática', 'btn alt', true, () => game.arrumarSalao()));
   side.appendChild(edBtn('Desfazer', 'btn alt', game.salaoUndo.length > 0, () => game.desfazerSalao()));
   side.appendChild(el('span', game.salaoMsg ? 'msg' : 'ed-dica', game.salaoMsg || (tot >= p.lugares ? (nEst ? 'Salão e estoque estão no teto de ' + p.lugares + ' lugares.' : 'O salão está no teto de ' + p.lugares + ' lugares.') + ' Para rearrumar, arraste mesas para o estoque e de volta.' : 'Arraste as mesas. Toque numa mesa para mais opções.')));
   side.appendChild(el('span', 'ed-contas', 'Luz e gás: ' + fmt(contasDia(game.tables, p)) + ' por dia (' + fmt(CONTAS.mesa) + ' por mesa e ' + fmt(CONTAS.lugar) + ' por lugar).'));
   const mov = Math.round((movimentoSalao(lug) - 1) * 100);
   side.appendChild(el('span', 'ed-contas', 'Cada lugar acima de ' + MOVIMENTO.kit + ' traz ' + Math.round(MOVIMENTO.porLugar * 100) + '% mais clientes' + (mov > 0 ? ' (hoje, +' + mov + '%).' : '.')));
-  side.appendChild(el('span', 'ed-contas', 'Toalha xadrez: ' + fmt(TOALHA.cost) + ' por mesa; melhora o ambiente no Gúgou para quem senta nela. ' + (todas.length - sem) + ' de ' + todas.length + (todas.length > 1 ? ' mesas têm.' : ' mesa tem.')));
+  side.appendChild(el('span', 'ed-contas', enfeiteMesa(game).nome + ': ' + fmt(TOALHA.cost) + ' por mesa; melhora o ambiente no Gúgou para quem senta nela. ' + (todas.length - sem) + ' de ' + todas.length + (todas.length > 1 ? ' mesas têm.' : ' mesa tem.')));
   ed.appendChild(side);
   grid.appendChild(ed);
   drawEditor(cv);

@@ -500,7 +500,7 @@ class Game {
     this.fx.push({ k:'text', x, y, vy:-38, life:1.3, max:1.3, text, color:color||PAL.tinta, size:size||18 });
   }
   /* brilho de confirmação no desenho do objeto tocado (key: mesa, prato, grupo ou nome da estação/botão) */
-  addGlow(key){ this.fx = this.fx.filter(f => !(f.k === 'glow' && f.key === key)); this.fx.push({ k:'glow', key, life:0, max:0.4 }); }
+  addGlow(key, max){ this.fx = this.fx.filter(f => !(f.k === 'glow' && f.key === key)); this.fx.push({ k:'glow', key, life:0, max:max || 0.4 }); }   // v11.16.1: max opcional (o entregador do eFood brilha mais)
   addCoins(x, y, n){
     n = RM ? Math.min(n,2) : n;
     for (let i=0;i<n;i++){
@@ -898,7 +898,7 @@ class Game {
       this.retirada.push(g); g.setState('retirada'); this.reslotRetirada();
       this.marmitaPara(g);
       this.addText(RETIRADA.fila[0].x, DOOR.y + 4, g.lote ? 'Encomenda: ' + g.lote + ' marmitas!' : 'Pedido na Efood!', PAL.alerta, 16);
-      Sfx.tone(784, 0.08, 'square', 0.03); Sfx.tone(1046, 0.1, 'square', 0.03, 0.08);
+      Sfx.buzina(); this.addGlow(g, ENTREGA_CHEGA.brilho);   // v11.16.1: a buzina da moto e o brilho, no lugar dos bipes
       this.stats.spawned++;
       return g;
     }
@@ -2272,6 +2272,17 @@ class Game {
     if (!DEV.on) return false;
     if (n == null || n === '') delete DEV.forca.roupa; else DEV.forca.roupa = clamp(Math.round(+n) || 1, 1, 4);
     return true;
+  }
+  /* v11.16.1: a verificação de atualização simulada ('nova' ou 'erro'; null volta ao normal), só na memória */
+  devAtu(v){
+    if (!DEV.on) return false;
+    if (v === 'nova' || v === 'erro') DEV.forca.atu = v; else delete DEV.forca.atu;
+    return true;
+  }
+  /* v11.16.1: chega um entregador do eFood agora, na fila de retirada (nada onde não há retirada ou se a fila está cheia) */
+  devEntregador(){
+    if (!DEV.on || (this.state !== 'playing' && this.state !== 'paused') || this.ponto.semRetirada || this.retirada.length >= MARMITA.fila) return false;
+    this.spawn({ type:'entregador', color:0, vip:false }); return true;
   }
   /* v11.8: dispara a reação da Bia ('mesa', 'bravo' ou 'meta') do ponto de agora, na hora */
   devReacao(tipo){

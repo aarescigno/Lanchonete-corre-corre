@@ -1,6 +1,6 @@
 # v11.16.1 — Retornos da Letícia: verificar atualização, pernas na espera, bandeirinhas, o cabelo da Bia, o enfeite da mesa e a área industrial sem sobreposição (etapa R1)
 
-**Situação:** aprovada
+**Situação:** entregue em 17/11
 **Origem:** retorno da betatester Letícia, 17/11 (`docs/PROPOSTAS.md`, entrada de 17/11), com as decisões do usuário no mesmo dia; o enfeite da mesa por ponto, a área industrial sem sobreposição e a buzina do eFood entraram na mesma data (o enfeite e a buzina, pedidos do usuário; a sobreposição, da Letícia). Planejada como v11.15.1; virou v11.16.1 porque a v11.16 foi entregue antes
 
 ## Objetivo
@@ -105,17 +105,17 @@ Conferido pelo planejamento numa captura da área industrial com todo o luxo (`d
 `src/02-telas.html` (ícone `#btn-atu` e painel `#ov-atu`, `vtag`, `#ov-ver`), `src/10-constantes.js` (`ATU_TXT`, `atuEstado`, `VERSAO`), `src/12-clientes.js` (só se `DEV.forca` precisar de algo; não deve), `src/16-jogo.js` (`devAtu`, ao lado do `devRoupa`), `src/10-constantes.js` (`ENFEITE_MESA`, `enfeiteMesa`, o comentário do Gúgou), `src/16-jogo.js` (a lista `decor` do `finishDay`, se o elogio for resolvido lá), `src/20-desenho-base.js` (`drawPerson`, `puffCrespo`, `drawBia`), `src/21-cenario.js` (`drawBandeirinhas`, `drawBandeirinhasSalao`, `drawVioleta`), `src/22-salao-hud.js` (`drawCluster`, `drawTableBody`, `drawMesaLuxo`, `drawToalhaEnfeites`, `drawEnfeiteMesa`), `src/41-lojinha.js` (os textos da toalha no editor do salão e o ícone `d-toalha`), `src/10-constantes.js` (`MAQUINA_LUGAR`, `maquinaLugarFor`, `ENTREGA_CHEGA`), `src/11-base.js` (`Sfx.buzina`), `src/16-jogo.js` (`addGlow`, `spawn`, `devEntregador`), `src/21-cenario.js` (`drawLuminaria`, o poste, `drawMaquina`, `drawAnturio` na calçada, `drawLetreiroEfood`, `drawLataEspada`, `DECOR_POS`), `src/23-render.js` (a chamada das luminárias e o brilho no tampo), `src/23-render.js` (a chamada da espera), `src/40-interface.js` (`SCREENS`, `devSync`, `buildDev`), `src/43-telas.js` (`atuVerifica`, `atuAplica`, os `on(...)` e o `window.__lcc`), `app/build.py`, `app/sw.template.js`, `tests/harness.js` (opções `app` e `fetch`), `tests/menu_fit.py`.
 
 ## Tarefas
-- [ ] T1 `tests/smoke95.js` com CA1 a CA5 e CA8 a CA10 (falhando), as opções `app` e `fetch` no `tests/harness.js` e a entrada no `run_all.sh`.
-- [ ] T2 O botão e o painel: `#btn-atu`, `#ov-atu`, `SCREENS`, `devSync`, `ATU_TXT`, `atuEstado`, `atuVerifica`, `atuAplica`, `devAtu` e a seção do `buildDev`; `window.__lcc` com `ATU_TXT`, `atuEstado`, `atuVerifica` e `atuAplica`.
-- [ ] T3 `app/build.py` (`versao.json`, `window.LCC_APP=1`) e `app/sw.template.js` (passa direto o `versao.json`); `tests/menu_fit.py` confere o `#ov-atu`.
-- [ ] T4 As pernas (`drawPerson`, `drawCluster`, a chamada em `23-render.js`).
-- [ ] T5 As bandeirinhas presas (`drawBandeirinhasSalao`, `drawBandeirinhas`, os pregos).
-- [ ] T6 O cabelo crespo (`puffCrespo`, roupas 2, 3 e 4 do `drawBia`).
-- [ ] T6b O enfeite da mesa: `ENFEITE_MESA`, `enfeiteMesa`, os textos do editor do salão, o elogio do Gúgou e o `drawEnfeiteMesa` (violeta, galheteiro e vela; o mármore e a noite da estrela).
-- [ ] T6c A área industrial sem sobreposição: luminárias, poste, jarra (`MAQUINA_LUGAR.industrial`), antúrio, plaquinha do eFood, lata, foto e samambaia.
-- [ ] T6d A chegada do entregador: `addGlow(key, max)`, `ENTREGA_CHEGA`, `Sfx.buzina`, `devEntregador` e o botão do modo dev.
-- [ ] T7 `tests/shot_v11_16_1.js` e a conferência em recorte do CA7 e do CA11 (ajustar o que o CA7 pedir; capturas apagadas no fim).
-- [ ] Fechamento: `VERSAO` v11.16.1, `vtag`, `#ov-ver` (linha da v11.16.1 no topo) e a lista esperada no `smoke86`, `docs/RESUMO.md` (a seção do app ganha uma linha sobre o botão), `docs/TESTES.md`, esta spec como entregue, `tests/run_all.sh --tudo` verde, PR e merge.
+- [x] T1 `tests/smoke95.js` com CA1 a CA5 e CA8 a CA10 (falhando), as opções `app` e `fetch` no `tests/harness.js` e a entrada no `run_all.sh`.
+- [x] T2 O botão e o painel: `#btn-atu`, `#ov-atu`, `SCREENS`, `devSync`, `ATU_TXT`, `atuEstado`, `atuVerifica`, `atuAplica`, `devAtu` e a seção do `buildDev`; `window.__lcc` com `ATU_TXT`, `atuEstado`, `atuVerifica` e `atuAplica`.
+- [x] T3 `app/build.py` (`versao.json`, `window.LCC_APP=1`) e `app/sw.template.js` (passa direto o `versao.json`); `tests/menu_fit.py` confere o `#ov-atu`.
+- [x] T4 As pernas (`drawPerson`, `drawCluster`, a chamada em `23-render.js`).
+- [x] T5 As bandeirinhas presas (`drawBandeirinhasSalao`, `drawBandeirinhas`, os pregos).
+- [x] T6 O cabelo crespo (`puffCrespo`, roupas 2, 3 e 4 do `drawBia`).
+- [x] T6b O enfeite da mesa: `ENFEITE_MESA`, `enfeiteMesa`, os textos do editor do salão, o elogio do Gúgou e o `drawEnfeiteMesa` (violeta, galheteiro e vela; o mármore e a noite da estrela).
+- [x] T6c A área industrial sem sobreposição: luminárias, poste, jarra (`MAQUINA_LUGAR.industrial`), antúrio, plaquinha do eFood, lata, foto e samambaia.
+- [x] T6d A chegada do entregador: `addGlow(key, max)`, `ENTREGA_CHEGA`, `Sfx.buzina`, `devEntregador` e o botão do modo dev.
+- [x] T7 `tests/shot_v11_16_1.js` e a conferência em recorte do CA7 e do CA11 (ajustar o que o CA7 pedir; capturas apagadas no fim).
+- [x] Fechamento: `VERSAO` v11.16.1, `vtag`, `#ov-ver` (linha da v11.16.1 no topo) e a lista esperada no `smoke86`, `docs/RESUMO.md` (a seção do app ganha uma linha sobre o botão), `docs/TESTES.md`, esta spec como entregue, `tests/run_all.sh --tudo` verde, PR e merge.
 
 ## Avisos para a execução
 - O `smoke92` é da v11.16 e o `smoke93` e o `smoke94` estão reservados pelas specs v11.17 e v11.18: por isso esta usa o `smoke95`. Esta versão vem depois da v11.16 (já no ar) e antes da v11.17.
@@ -131,6 +131,17 @@ Conferido pelo planejamento numa captura da área industrial com todo o luxo (`d
 Nenhuma.
 
 ## Desvios
-(No fechamento.)
+Números medidos: `smoke95` com 46 checagens (CA1 a CA5 e CA8 a CA10, mais a seção "Entregador do eFood" do modo dev). `tests/run_all.sh --tudo` verde. Capturas (`shot_v11_16_1.js`) conferidas em recorte e apagadas. Pernas, bandeirinhas, cabelo, enfeites e a área industrial saíram como a spec pedia, com estes ajustes:
+- **Pernas:** altura mantida (11 e -12): contra o banquinho e a cadeirinha ficaram boas.
+- **Bandeirinhas:** o fio da calçada começa em `-CALCADA.w + 22` (o meio do pilar), e não em +16; o do salão vai de `x 0` a `x 766` (constante nova `BAND_SALAO`: a divisa com a calçada e a face da parede da cozinha), igual nos 4 pontos.
+- **Cabelo:** os centros e raios da spec ficaram como estão. No retrato das conversas (círculo de 34 px, que já cortava o rabo e o coque antigos), o puff alto e o coque ficam fora do círculo e aparece só a coroa ondulada; o enquadramento do retrato não foi mexido (fora do escopo).
+- **Enfeite da mesa:** posições e tamanhos da spec mantidos (a violeta, o galheteiro e a vela cabem em 16 × 20, sem tocar prato, número nem avental da Cami). `drawToalhaEnfeites` ganhou o 4º parâmetro `semFlor` (o mármore troca a florzinha pelo enfeite). O elogio do Gúgou sai pelo `nivel` do ponto (`avalComentario` não recebe o ponto).
+- **Luminárias:** a cúpula ficou em `t.cy - 112` (não encostou em cadeira de outra mesa); o brilho no tampo é o `drawBrilhoLuminaria`.
+- **Jarra de suco:** o lugar novo (`ap` -72,520; `rect` -60,450,52,86) funcionou como veio: a Bia vai e volta sem ficar presa (CA9 entrega o suco do começo ao fim).
+- **Plaquinha do eFood:** subiu de `grp.y - 104` para `grp.y - 118`: a 104, o balão do pedido do entregador vizinho a cobria.
+- **Muda na lata:** o `x` passou de `x0 + 102` para `x0 + 78` (a ponta esquerda da janela): as plaquinhas do eFood, mais altas, ocupam o resto do parapeito.
+- **Foto da Rosa e samambaia:** `[297,70,.55]` e `[664,60,.6]` (a foto a 0,55, abaixo dos 0,6 da spec, porque a 0,6 ainda encostava no letreiro; registrado aqui como a spec mandava).
+- **Entregador:** o brilho vale na fila de retirada (que não usava `glowSprite`): o desenho do entregador passou a ir por ele. `devEntregador` só age com o dia aberto (jogando ou pausado).
+- **Regras corrigidas:** nenhuma (o texto da spec acima já traz os valores finais, exceto os desta lista).
 
 **Modelo:** Sonnet, esforço alto (valores e textos decididos, mas são muitas partes e vários desenhos acertados pela captura; se a sessão passar de umas 15 trocas, feche o que estiver pronto e continue a spec numa sessão nova)

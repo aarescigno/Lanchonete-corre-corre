@@ -157,11 +157,15 @@ function drawTvsParede(ctx,g,t){
 /* violetas em vasinhos de barro no parapeito (x, y: o pé do vaso do meio) */
 function drawVioleta(ctx,x,y,s){
   ctx.save(); ctx.translate(x,y); ctx.scale(s || 1,s || 1);
-  [-14,0,14].forEach((dx,i) => {
-    ctx.beginPath(); ctx.moveTo(dx-6,-9); ctx.lineTo(dx+6,-9); ctx.lineTo(dx+4.5,0); ctx.lineTo(dx-4.5,0); ctx.closePath(); fs(ctx,'#C9743F',1.6);
-    ell(ctx,dx-4,-11,5,2.6); fs(ctx,'#4E8F4A',1.2); ell(ctx,dx+4,-11,5,2.6); fs(ctx,'#4E8F4A',1.2);
-    [[-3,-14],[3,-15],[0,-18]].forEach(q => { circ(ctx,dx+q[0],q[1],2.8); fs(ctx,i === 1 ? '#9B5BD0' : '#7B4FB5',1.2); circ(ctx,dx+q[0],q[1],0.9); ctx.fillStyle = '#F2C94C'; ctx.fill(); });
-  });
+  [-14,0,14].forEach((dx,i) => drawVioletaVaso(ctx,dx,0,1,i));
+  ctx.restore();
+}
+/* v11.16.1: um vasinho de violeta (x, y: o pé); i === 1 é o do meio, de roxo mais claro. Também é o enfeite da mesa da área industrial */
+function drawVioletaVaso(ctx,x,y,s,i){
+  ctx.save(); ctx.translate(x,y); ctx.scale(s || 1,s || 1);
+  ctx.beginPath(); ctx.moveTo(-6,-9); ctx.lineTo(6,-9); ctx.lineTo(4.5,0); ctx.lineTo(-4.5,0); ctx.closePath(); fs(ctx,'#C9743F',1.6);
+  ell(ctx,-4,-11,5,2.6); fs(ctx,'#4E8F4A',1.2); ell(ctx,4,-11,5,2.6); fs(ctx,'#4E8F4A',1.2);
+  [[-3,-14],[3,-15],[0,-18]].forEach(q => { circ(ctx,q[0],q[1],2.8); fs(ctx,i === 1 ? '#9B5BD0' : '#7B4FB5',1.2); circ(ctx,q[0],q[1],0.9); ctx.fillStyle = '#F2C94C'; ctx.fill(); });
   ctx.restore();
 }
 /* antúrio no vaso, no chão: folhas grandes em coração e duas flores vermelhas (x, y: o chão) */
@@ -837,16 +841,13 @@ function drawCalcada(ctx,g,tm){
   }
   // muro da casa (no alto), com janela, e o toldo listrado por cima da espera
   ctx.fillStyle = ind ? '#E4E0D6' : av ? '#EDE3CF' : '#EFC9A4'; ctx.fillRect(x0 + 26,0,-x0 - 26,82);
-  if (ind){   // v9: o muro do galpão, de tijolinho pintado, a faixa amarela de carga e descarga no meio-fio e o poste
+  if (ind){   // v9: o muro do galpão, de tijolinho pintado, a faixa amarela de carga e descarga no meio-fio
     ctx.strokeStyle = 'rgba(120,96,84,.2)'; ctx.lineWidth = 1;
     for (let y=0, r=0; y<82; y+=11, r++){ ctx.beginPath(); ctx.moveTo(x0 + 26,y); ctx.lineTo(0,y); ctx.stroke(); for (let x=x0 + 26 + (r % 2)*17; x<0; x+=34){ ctx.beginPath(); ctx.moveTo(x,y); ctx.lineTo(x,Math.min(82,y+11)); ctx.stroke(); } }
     ctx.fillStyle = '#F2C230'; ctx.fillRect(x0 + 26,96,10,444);
     ctx.fillStyle = 'rgba(34,32,28,.55)'; for (let y=98;y<540;y+=24) ctx.fillRect(x0 + 26,y,10,8);
     ctx.save(); ctx.translate(x0 + 52,300); ctx.rotate(-Math.PI/2); txt(ctx,'CARGA E DESCARGA',0,0,9,'rgba(160,116,10,.9)','center',FD); ctx.restore();
-    ctx.fillStyle = PAL.cromoEsc; ctx.fillRect(x0 + 96,440,5,100); rr(ctx,x0 + 84,432,30,8,3); fs(ctx,PAL.cromo,1.8);
-    ell(ctx,x0 + 98,538,12,3.5); ctx.fillStyle = 'rgba(34,32,28,.18)'; ctx.fill();
-    ctx.fillStyle = 'rgba(255,230,150,.2)'; ctx.beginPath(); ctx.moveTo(x0 + 88,440); ctx.lineTo(x0 + 110,440); ctx.lineTo(x0 + 124,520); ctx.lineTo(x0 + 74,520); ctx.closePath(); ctx.fill();
-  }
+  }   // v11.16.1: o poste saiu (passava atrás dos lugares 1 e 2 da espera)
   rr(ctx,x0 + 70,10,64,44,3); fs(ctx,'#BFE3F2',2.5);
   ctx.strokeStyle = PAL.tinta; ctx.lineWidth = 2; ctx.beginPath(); ctx.moveTo(x0 + 102,10); ctx.lineTo(x0 + 102,54); ctx.stroke();
   rr(ctx,x0 + 170,18,40,20,3); fs(ctx,'#fff',2); txt(ctx,ind ? 'Nº 410' : av ? 'Nº 1500' : 'Nº 27',x0 + 190,28.5,10,PAL.faixa,'center',FD);
@@ -896,8 +897,8 @@ function drawCalcada(ctx,g,tm){
   // numa lata de tinta reaproveitada, encostada no muro (o banquinho de plástico da v7.5 fica para o nível 2).
   // Desde a v8.6.5, compradas na aba Decoração (DECOR)
   if (decorOn(g,'espada')) drawVasoEspada(ctx,x0 + 40,536);
-  if (decorOn(g,'lata')) drawLataEspada(ctx,x0 + 44,132);
-  if ((ind || av || te) && decorOn(g,'anturio')) drawAnturio(ctx,-38,534,1);   // v9: o antúrio no chão, perto do portão, e a samambaia pendurada no toldo
+  if (decorOn(g,'lata')){ ctx.save(); ctx.translate(x0 + 78,56); ctx.scale(0.7,0.7); drawLataEspada(ctx,0,0); ctx.restore(); }   // v11.16.1: no parapeito da janela do muro (antes no chão, atrás da cabeça do 1º entregador)
+  if ((ind || av || te) && decorOn(g,'anturio')){ if (ind) drawAnturio(ctx,30,536,0.9); else drawAnturio(ctx,-38,534,1); }   // v11.16.1: na área industrial, dentro do salão, no canto da divisa (na calçada encostava no caixote)   // v9: o antúrio no chão, perto do portão, e a samambaia pendurada no toldo
   if ((ind || av || te) && decorOn(g,'pendente')) drawSamambaia(ctx,x0 + 66,120,0.8);
   if ((av || te) && decorOn(g,'tulipa')) drawTulipas(ctx,x0 + 112,138,1);   // v9.1: as flores da Avenida: tulipas na jardineira, copos-de-leite no vaso alto e a orquídea na mesinha
   if ((av || te) && decorOn(g,'copo')) drawCopoLeite(ctx,x0 + 38,300,1);
@@ -943,7 +944,7 @@ let edDesenho = false;   // o editor do salão desenha a parede: o quadro de giz
    embaixo do cartaz de preços, a plaquinha embaixo do letreiro, o quadro de giz no chão, perto da porta) */
 const DECOR_POS = [
   { samambaia:[42,30,1],   foto:[88,36,1],    placa:[234,68,1], giz:[62,150,1] },
-  { samambaia:[630,78,.8], foto:[308,74,.8],  placa:[237,68,1], giz:[62,150,1] },   // a foto 22 px à esquerda: encostava na 1ª TV
+  { samambaia:[664,60,.6], foto:[297,70,.55],  placa:[237,68,1], giz:[62,150,1] },   // v11.16.1: nada passa da linha da parede (y 82); a foto entre a plaquinha e o cardápio, a samambaia entre o cardápio e o relógio
   { samambaia:[630,78,.8], foto:[330,74,.8],  placa:[242,68,1], giz:[62,150,1] }
 ];
 function drawDecorParede(ctx,g){
@@ -1034,13 +1035,14 @@ function drawFioTeto(ctx,x,y,len,cor,lw){
   ctx.strokeStyle = gr; ctx.lineWidth = lw; ctx.beginPath(); ctx.moveTo(x,y); ctx.lineTo(x,y - len); ctx.stroke();
 }
 /* a luminária de fábrica: o fio sobe até sumir e a cúpula de esmalte verde fica sobre a mesa; (x, y) é o meio da cúpula */
-function drawLuminaria(ctx,x,y){
-  if (y > 100) drawFioTeto(ctx,x,y - 9,Math.min(46,y - 94),'#2B2A26',1.6);
-  ctx.fillStyle = 'rgba(255,233,166,.11)'; ctx.beginPath(); ctx.moveTo(x - 14,y + 8); ctx.lineTo(x + 14,y + 8); ctx.lineTo(x + 46,y + 62); ctx.lineTo(x - 46,y + 62); ctx.closePath(); ctx.fill();
+function drawLuminaria(ctx,x,y){   // v11.16.1: em escala 0,8, o fio sobe no máximo 22 e o cone sai (o brilho vai no tampo da mesa)
+  if (y > 100) drawFioTeto(ctx,x,y - 7,Math.min(22,y - 94),'#2B2A26',1.6);
+  ctx.save(); ctx.translate(x,y); ctx.scale(0.8,0.8); x = 0; y = 0;
   ctx.beginPath(); ctx.moveTo(x - 21,y + 7); ctx.quadraticCurveTo(x - 21,y - 9,x,y - 9); ctx.quadraticCurveTo(x + 21,y - 9,x + 21,y + 7); ctx.closePath(); fs(ctx,'#2F6B57',2);
   ctx.fillStyle = 'rgba(255,255,255,.28)'; ctx.beginPath(); ctx.moveTo(x - 15,y + 2); ctx.quadraticCurveTo(x - 15,y - 5,x - 5,y - 6); ctx.lineTo(x - 7,y - 3); ctx.quadraticCurveTo(x - 12,y - 2,x - 12,y + 2); ctx.closePath(); ctx.fill();
   ell(ctx,x,y + 7,21,3.4); fs(ctx,'#1E4A3C',1.8);
   circ(ctx,x,y + 8.5,3.6); fs(ctx,'#FFE9A6',1.2);
+  ctx.restore();
 }
 /* o lustre de cristal: a corrente do teto, o aro dourado, as velas e os pingentes que brilham devagar; (x, y) é o aro */
 function drawLustre(ctx,x,y,tm){
@@ -1143,12 +1145,14 @@ function drawMaquina(ctx,g,t,menu){
   if (g.bebida.id === 'saborizada') return drawAguasEspera(ctx,g,t,menu);   // v9.1
   if (g.bebida.id === 'coquetel') return drawCarrinhoBoasVindas(ctx,g,t,menu);   // v10.3
   const r = STATIONS.maquina.rect, x = r.x + r.w / 2, y = r.y + r.h;
+  ctx.save(); ctx.translate(x,y); ctx.scale(0.8,0.8); ctx.translate(-x,-y);   // v11.16.1: em escala 0,8 em volta do pé, para caber entre o lugar 1 e a parede do salão
   shadowEll(ctx,x,y-2,36,6,0.2);
   rr(ctx,x-32,y-26,64,24,3); fs(ctx,PAL.madeira,2.2);   // o caixote de feira
   ctx.strokeStyle = 'rgba(34,32,28,.3)'; ctx.lineWidth = 1.2; [-10,10].forEach(dx => { ctx.beginPath(); ctx.moveTo(x+dx,y-24); ctx.lineTo(x+dx,y-4); ctx.stroke(); });
   const prep = !menu && g.maq.some(o => o.t > 0), pr = menu ? 0 : g.maqPronto().reduce((a,o) => a + o.n, 0);
   drawJarraSuco(ctx,x-12,y-24,0.95,0.55 + (prep && !RM ? 0.12 * Math.sin(t*5) : 0));
   for (let i=0;i<3;i++){ const cx = x+10+i*9; rr(ctx,cx-3.5,y-35,7,11,2); fs(ctx,i < pr ? 'rgba(242,140,40,.85)' : 'rgba(214,236,246,.9)',1.4); }   // os copos; cheios os que estão prontos
+  ctx.restore();
   if (menu) return;
   if (pr){
     const p = RM ? 1 : 1 + 0.08 * Math.sin(t*7);
@@ -1672,9 +1676,9 @@ function drawMesinha(ctx,g,t){
   }
 }
 /* v9.6.11: o letreiro "eFood" sobre o entregador que espera (pisca 0,6 s acesa e 0,4 s apagada; sem movimento, fica acesa) */
-function drawLetreiroEfood(ctx,grp,tm,k){
+function drawLetreiroEfood(ctx,grp,tm,k){   // v11.16.1: centrada sobre o entregador, em escala 0,75, entre os corações e o balão do pedido
   const acesa = RM || (tm % 1) < 0.6;
-  ctx.save(); ctx.translate(grp.x - 34 * (k || 1),grp.y - 70); ctx.scale(k || 1,k || 1);
+  ctx.save(); ctx.translate(grp.x,grp.y - 118); ctx.scale(k || 0.75,k || 0.75);
   rr(ctx,-19,-8,38,16,4); fs(ctx,acesa ? '#D8432F' : '#6E2A22',1.8);
   txt(ctx,'eFood',0,1,10,acesa ? '#fff' : '#B89A94','center',FB);
   ctx.restore();
@@ -1761,8 +1765,10 @@ const BAND_FERIADO = ['#E2574C','#F2B33D','#3E9B5A','#3F7FD0','#8E5BB5','#F28FB0
 const BAND_JUNINA = ['#E2574C','#F2C23D','#3F7FD0','#3E9B5A','#F28C38'];   // v10.6: a festa junina (o feriado segue com as dele)
 const BAND_JOGO = ['#2E9B4F','#F2C23D'];   // v10.6: o jogo do Brasil, verde e amarelo
 /* v10.6: cores (padrão: as do feriado) e tm (sem ele, paradas; com ele, balançam de leve, menos com movimento reduzido) */
+/* v11.16.1: o preguinho das pontas de cada fio */
+function drawPrego(ctx,x,y){ circ(ctx,x,y,2.2); fs(ctx,'#6E6A63',1.2); }
 function drawBandeirinhas(ctx,cores,tm){
-  const x0 = -CALCADA.w + 30, x1 = -8; cores = cores || BAND_FERIADO;
+  const x0 = -CALCADA.w + 22, x1 = -8;   // v11.16.1: do pilar da esquerda ao da porta, presas com prego cores = cores || BAND_FERIADO;
   const pt = u => ({ x:x0 + (x1 - x0)*u, y:2 + 7*4*u*(1 - u) });
   ctx.strokeStyle = PAL.tinta; ctx.lineWidth = 1.8; ctx.beginPath();
   for (let i=0;i<=24;i++){ const p = pt(i/24); i ? ctx.lineTo(p.x,p.y) : ctx.moveTo(p.x,p.y); } ctx.stroke();
@@ -1772,10 +1778,12 @@ function drawBandeirinhas(ctx,cores,tm){
     ctx.beginPath(); ctx.moveTo(-d,0); ctx.lineTo(d,0); ctx.lineTo(0,12); ctx.closePath(); fs(ctx,cores[(i*3) % cores.length],1.6);
     ctx.restore();
   }
+  drawPrego(ctx,x0,pt(0).y); drawPrego(ctx,x1,pt(1).y);
 }
+const BAND_SALAO = { x0:0, x1:766 };   // v11.16.1: a divisa do salão com a calçada e a face da parede da cozinha
 /* v10.6, a festa junina: dois fios de bandeirinhas em curva no alto da área do salão (por cima das mesas, abaixo dos balões); balançam de leve (paradas com movimento reduzido) */
 function drawBandeirinhasSalao(ctx,g,tm){
-  const A = g.ponto.area, x0 = A.x0 - 6, x1 = A.x1 + 6;
+  const A = g.ponto.area, x0 = BAND_SALAO.x0, x1 = BAND_SALAO.x1;   // v11.16.1: da parede da esquerda do salão à da cozinha, nos 4 pontos
   [[A.y0 - 12, A.y0 - 4, 9, 0], [A.y0 + 2, A.y0 - 8, 9, 2]].forEach(([ya, yb, sag, off]) => {
     const pt = u => ({ x:x0 + (x1 - x0)*u, y:ya + (yb - ya)*u + sag*4*u*(1 - u) });
     ctx.strokeStyle = PAL.tinta; ctx.lineWidth = 1.6; ctx.beginPath();
@@ -1787,6 +1795,7 @@ function drawBandeirinhasSalao(ctx,g,tm){
       ctx.beginPath(); ctx.moveTo(-6,0); ctx.lineTo(6,0); ctx.lineTo(0,12); ctx.closePath(); fs(ctx,BAND_JUNINA[(i*2 + off) % BAND_JUNINA.length],1.5);
       ctx.restore();
     }
+    drawPrego(ctx,x0,ya); drawPrego(ctx,x1,yb);
   });
 }
 /* v10.6: o letreiro "GOOOL!" no alto do salão por EVENTOS.jogo.golT s (cresce e treme de leve; parado com movimento reduzido) */

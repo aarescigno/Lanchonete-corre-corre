@@ -61,13 +61,13 @@ function render(g, ctx){
         ctx.translate(grp.x, grp.y); ctx.scale(1/sq, sq); ctx.translate(-grp.x, -grp.y);
         if (QUEUE.max >= 5){ ctx.translate(grp.x, grp.y); ctx.scale(0.85, 0.85); ctx.translate(-grp.x, -grp.y); }   // v9.6.9: a espera da Avenida (6 lugares) em escala menor
         const parado = !grp.path.length;   // no lugar: sentado ou de pé, conforme o ponto (na Garagem, de pé)
-        glowSprite(ctx,g,grp,ctx => drawCluster(ctx,grp,grp.x,grp.y,tm,{ sit:parado && g.sentado, bebe:parado }));
+        glowSprite(ctx,g,grp,ctx => drawCluster(ctx,grp,grp.x,grp.y,tm,{ sit:parado && g.sentado, bebe:parado, pernas:parado && g.sentado && !avenida(g) && !terraco(g) }));   // v11.16.1: pernas só na cadeirinha e no banquinho
         ctx.restore();
       }});
     } else if (grp.state === 'retirada'){   // v8.6: o entregador no balcão de retirada, de pé
       items.push({ y:grp.y, f:() => {
         if (!grp.path.length) drawMoodRing(ctx,grp.hearts,grp.x,grp.y+2,28,8,tm);
-        drawCluster(ctx,grp,grp.x,grp.y,tm);
+        glowSprite(ctx,g,grp,ctx => drawCluster(ctx,grp,grp.x,grp.y,tm));   // v11.16.1: o entregador brilha ao chegar
       }});
     } else if (grp.state === 'toTable' || grp.state === 'leaving'){
       items.push({ y:grp.y, f:() => drawCluster(ctx,grp,grp.x,grp.y,tm) });
@@ -87,7 +87,7 @@ function render(g, ctx){
   if (menu) items.pop();
   if (g.marmitaOk && !menu) items.push({ y:RETIRADA.balcao.y + 50, f:() => glowSprite(ctx,g,'retirada',ctx => drawRetirada(ctx,g,tm)) });
   const mus = !menu && terraco(g) ? g.save.equipe.musica : 0;   // v10.4: a música ao vivo (só nos dias de jogo)
-  if (decorOn(g,'luminaria') && !edDesenho) g.tables.forEach(t => { if (t.open) items.push({ y:t.cy - 100, f:() => drawLuminaria(ctx,t.cx,Math.max(112,t.cy - 112)) }); });   // v10.7: as luminárias sobre as mesas e o lustre no centro do teto (atrás das pessoas)
+  if (decorOn(g,'luminaria') && !edDesenho) g.tables.forEach(t => { if (t.open) items.push({ y:t.cy - 100, f:() => drawLuminaria(ctx,t.cx,Math.max(112,t.cy - 112)) }); });   // (v11.16.1: a cúpula em escala 0,8, sem o cone de luz; o brilho vai no tampo)   // v10.7: as luminárias sobre as mesas e o lustre no centro do teto (atrás das pessoas)
   if (decorOn(g,'lustre') && !edDesenho) items.push({ y:LUXO_LUSTRE.y - 40, f:() => drawLustre(ctx,LUXO_LUSTRE.x,LUXO_LUSTRE.y,tm) });
   if (terraco(g)) items.push({ y:TERRACO.piano.y1, f:() => drawPiano(ctx,g,mus === 2) });   // v10: o piano de cauda (obstáculo fixo)
   if (g.maquinaOn) items.push({ y:STATIONS.maquina.rect.y + STATIONS.maquina.rect.h, f:() => glowSprite(ctx,g,'maquina',ctx => drawMaquina(ctx,g,tm,menu)) });
