@@ -7,11 +7,9 @@ Pedido do usuário, 17/11: "Vai pesquisando por outras sobreposições etc e pro
 **Captura:** `node <scratchpad>/varre.js <pasta>` (o script está descrito abaixo; recrie se a pasta temporária tiver sido limpa). Monta o save no ponto com `L.DEV.on=true; g.devLuxoTudo(); L.DEV.on=false`, equipe cheia, `up.assento` e as TVs/som do ponto, `g.begin()` e uns 12 s de jogo para a fila e a retirada encherem; captura 960x600 em dsf 2 e recortes ampliados com PIL. Apague as capturas no fim.
 
 ## Falta conferir
-- [ ] Terraço com o trio (só o pianista foi visto) e a Avenida com os sofás da espera (`up.assento:'sofa'`; a 1ª captura foi sem)
 - [ ] Confirmar no jogo de verdade (sem `devLuxoTudo`) os achados de equipe: a Cami e o Joca só vão a certos pontos, então G2 pode não acontecer na Garagem real
 - [ ] Equipe andando no salão (Dani, Joca, Cami, Anselmo, Lia) em cada ponto: encostam em móvel ou enfeite?
-- [ ] Festa junina e jogo do Brasil em cada ponto (bandeirinhas, telão, gol)
-- [ ] Chuva, feriado e noite da estrela (Terraço)
+- [ ] Noite da estrela (Terraço) e chuva nos outros pontos (só a área industrial foi vista com chuva)
 - [ ] Balões e textos flutuantes (pedido, doce, bebida, "Novo no Manual!") por cima de enfeites ou fora da tela
 - [ ] Celular deitado (844x390): o HUD e o salão
 
@@ -37,3 +35,17 @@ Conferidos em 17/11 (Garagem, Avenida e Terraço com `devLuxoTudo`, equipe cheia
 - **T5** A Lia, na cozinha, aparece encostada na palavra "PEDIDOS" do painel. Sugestão: o rótulo "PEDIDOS" sobe 6 px ou a Lia anda 10 px para a direita na casa dela (`LIA_HOME`).
 - **T6** O banco do pianista passa da borda de baixo do salão. `drawPianista` / `TERRACO.piano`. Sugestão: o piano sobe 8 px.
 - **A3 também vale aqui** (a samambaia atrás do Anselmo).
+- **T7** O trio de cordas (`drawTrio`, `items` com y 528) fica embaixo da cadeira da frente da mesa 3 e os banquinhos passam da borda de baixo do salão. Sugestão: o trio vira lugar proibido para mesa no editor (como o piano), ou sobe para a faixa livre entre o piano e a mesa 3.
+- **T8** Na festa junina, os fios de bandeirinhas do salão passam pelo meio do lustre de cristal. Sugestão: no Terraço, os fios sobem acima do lustre (ou a ponta do meio desvia dele); conferir junto com a seção 3 da spec, que prende os fios nas paredes.
+- **T9** No Terraço, o fio de bandeirinhas da calçada (festa junina, jogo e feriado) passa por cima do letreiro "Terraço Suíça" e das arandelas do foyer. Sugestão: no Terraço, o fio da calçada não aparece (o foyer é por dentro do prédio) e fica só o do salão.
+
+### Área industrial (o que a seção 6 da spec não cobre)
+- **I1** Na festa junina, o fio de bandeirinhas do salão passa por cima da prateleira das marmitas do eFood (e, com a seção 3 da spec levando o fio até a parede da cozinha, vai continuar passando). Sugestão: a ponta da direita prende na lateral da prateleira quando ela existir (Garagem, área industrial e Avenida).
+- **I2** As 3 TVs passam da linha da parede para o chão, e a samambaia encosta na TV da direita. Sugestão: as TVs sobem até a linha; a samambaia já muda de lugar na seção 6 (conferir lá que não encosta nas TVs).
+- **I3** Na espera sentada, os corações do grupo ficam por cima do 4º banquinho. Sugestão: os corações vão para cima das cabeças, como nos outros pontos, ou ficam menores (ver A2).
+
+### Garagem (eventos)
+- **G4** No jogo do Brasil e na festa junina, o fio de bandeirinhas da calçada encosta na plaquinha "Nº 27" e passa por cima da janela. Sugestão: o fio sobe 6 px ou a barriga dele diminui (o `7*4*u*(1 - u)` de `drawBandeirinhas`).
+
+### Avenida (eventos e sofás)
+- **A5** Com os sofás da espera, as almofadas vermelhas do braço do sofá ficam embaixo dos corações dos grupos, e os balões de bebida encostam no braço do sofá. Pequeno; sugestão: os corações sobem 4 px quando a espera é no sofá.
