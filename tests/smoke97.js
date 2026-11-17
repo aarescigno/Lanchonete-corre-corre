@@ -17,8 +17,8 @@ const r5=v=>Math.round(v/5)*5;
 
 // ---------- CA1: a lista, os campos, a normalização e o save antigo ----------
 bloco('CA1',()=>{ const {L}=load(), D=L.DESAFIOS, por=id=>D.find(x=>x.id===id);
-  ok(Array.isArray(D) && D.map(x=>x.id).join()==='soBia,semBravo,efood','CA1: DESAFIOS tem soBia, semBravo e efood, nesta ordem');
-  ok(D.every(x=>x.nome && typeof x.cap==='number' && typeof x.dia==='number' && x.mod && typeof x.mod.meta==='number' && x.mod.meta>=0.6 && x.mod.meta<=1.5 && x.aviso && x.falhou!==undefined),'CA1: cada um tem id, nome, cap, dia, mod (com meta de 0,6 a 1,5), aviso e falhou');
+  ok(Array.isArray(D) && D.slice(0,3).map(x=>x.id).join()==='soBia,semBravo,efood','CA1: DESAFIOS começa com soBia, semBravo e efood, nesta ordem (os quatro seguintes são do smoke98)');
+  ok(D.every(x=>x.nome && typeof x.cap==='number' && typeof x.dia==='number' && x.mod && typeof x.mod.meta==='number' && x.mod.meta>=0.6 && x.mod.meta<=3 && x.aviso && x.falhou!==undefined),'CA1: cada um tem id, nome, cap, dia, mod (com meta de 0,6 a 3: v12.1, a festa e o jogo vão até 3), aviso e falhou');
   const a=por('soBia'), b=por('semBravo'), c=por('efood');
   ok(a.nome==='Só a Bia' && a.cap===5 && a.dia===17 && a.mod.sem.join()==='dani,joca,cami,anselmo,lia' && a.mod.groups===1 && !a.cond,'CA1: Só a Bia: cap 5, dia 17, sem as cinco pessoas, groups 1, sem cond');
   ok(b.nome==='Ninguém bravo' && b.cap===8 && b.dia===38 && b.mod.groups===0.5 && b.mod.meta===0.6,'CA1: Ninguém bravo: cap 8, dia 38, groups 0,5 e meta 0,6 (calibrados)');
@@ -32,7 +32,7 @@ bloco('CA1',()=>{ const {L}=load(), D=L.DESAFIOS, por=id=>D.find(x=>x.id===id);
   ok(JSON.stringify(L.normSave({ dia:5, bank:100 }).desafios)==='{}','CA1: o save da v11.19 (sem o campo) abre com desafios {}');
   ok(JSON.stringify(L.normSave({ desafios:{ soBia:3, foo:1 } }).desafios)==='{"soBia":3}','CA1: o campo do save passa pelo normDesafios');
   const f=L.MANUAL.filter(x=>x.aba==='desafios');
-  ok(L.MANUAL_ABAS.some(x=>x[0]==='desafios' && x[1]==='Desafios') && f.map(x=>x.id).join()==='d-soBia,d-semBravo,d-efood','CA1: a aba "Desafios" do Manual, com as três fichas');
+  ok(L.MANUAL_ABAS.some(x=>x[0]==='desafios' && x[1]==='Desafios') && f.slice(0,3).map(x=>x.id).join()==='d-soBia,d-semBravo,d-efood','CA1: a aba "Desafios" do Manual, com as três primeiras fichas');
   ok(f[0].linha==='Um dia na área industrial sem ajudante: só a Bia no salão e o Tonhão no fogão.' && f[1].linha==='Um dia na Avenida em que nenhum grupo pode ir embora bravo, nem da fila.' && f[2].linha==='Um dia na área industrial com entregador chegando o tempo todo. Nenhum pode ir embora de mãos vazias.','CA1: as três linhas das fichas');
   ok(f.every(x=>!/\d/.test(x.linha)),'CA1: as fichas não têm número'); });
 
@@ -57,7 +57,7 @@ bloco('CA2',()=>{
     ok(g.state==='desafios' && els['ov-desafios'].classList.contains('show') && !els['ov-menu'].classList.contains('show'),'CA2: tocar no botão abre a tela de Desafios');
     ok(/<div class="ov" id="ov-desafios">[\s\S]*?<h2>Desafios<\/h2>/.test(html),'CA2: a tela #ov-desafios tem o título "Desafios"');
     const cartoes=todos(els['desafios-grid'],n=>n.getAttribute && n.getAttribute('data-desafio'));
-    ok(cartoes.length===3 && cartoes.map(c=>c.getAttribute('data-desafio')).join()==='soBia,semBravo,efood','CA2: a tela lista os três cartões, na ordem');
+    ok(cartoes.length>=3 && cartoes.slice(0,3).map(c=>c.getAttribute('data-desafio')).join()==='soBia,semBravo,efood','CA2: a tela lista os cartões, na ordem (os três primeiros aqui, os sete no smoke98)');
     const rot=c=>todos(c,n=>n.tagName==='BUTTON' && !cls(n,'qm'))[0];
     ok(cartoes.every(c=>/sem medalha$/.test(rot(c).getAttribute('aria-label'))) && rot(cartoes[0]).getAttribute('aria-label')==='Só a Bia, sem medalha','CA2: sem medalha, o leitor de tela lê "Só a Bia, sem medalha"');
     ok(cartoes.every(c=>todos(c,n=>n.getAttribute && n.getAttribute('data-medalha')!==undefined && n.getAttribute('data-medalha')!==null).length===1),'CA2: cada cartão tem a medalha (data-medalha)');
@@ -67,7 +67,7 @@ bloco('CA2',()=>{
     const med=c=>todos(c,n=>n.getAttribute && n.getAttribute('data-medalha')!==null && n.getAttribute('data-medalha')!==undefined)[0].getAttribute('data-medalha');
     ok(med(c2[0])==='2' && med(c2[1])==='1' && med(c2[2])==='3','CA2: a medalha de cada cartão (2, 1 e 3)');
     const qs=todos(els['desafios-grid'],n=>cls(n,'qm'));
-    ok(qs.length===3 && qs.map(q=>q.getAttribute('data-ficha')).join()==='d-soBia,d-semBravo,d-efood' && qs.every(q=>q.textContent==='?'),'CA2: um "?" por cartão, com a ficha dele');
+    ok(qs.length>=3 && qs.slice(0,3).map(q=>q.getAttribute('data-ficha')).join()==='d-soBia,d-semBravo,d-efood' && qs.every(q=>q.textContent==='?'),'CA2: um "?" por cartão, com a ficha dele');
     qs[1].fire('click');
     ok(els['ov-manual'].classList.contains('show') && todos(els['manual-grid'],n=>n.getAttribute && n.getAttribute('data-id')==='d-semBravo').length===1,'CA2: o "?" abre a ficha no Manual');
     els['btn-manual-voltar'].fire('click'); ok(els['ov-desafios'].classList.contains('show'),'CA2: Voltar do Manual leva à tela de Desafios');

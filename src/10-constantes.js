@@ -1358,7 +1358,17 @@ const DESAFIOS = [
   { id:'semBravo', nome:'Ninguém bravo',  cap:8, dia:38, mod:{ groups:0.5, meta:0.6 }, cond:s => s.lost === 0,
     aviso:'Hoje ninguém pode sair bravo da Avenida.', falhou:'Alguém saiu bravo.' },
   { id:'efood',    nome:'Hora do eFood',  cap:5, dia:17, mod:{ tipo:'entregador', tipoP:0.45, groups:0.55, meta:0.65 }, cond:s => s.lostBy.retirada === 0,
-    aviso:'O eFood mandou entregador que não acaba mais!', falhou:'Um entregador saiu sem a marmita.' }
+    aviso:'O eFood mandou entregador que não acaba mais!', falhou:'Um entregador saiu sem a marmita.' },
+  /* v12.1: mod.evento (o evento de bairro do dia, forçado, sem sorteio; na junina, a barraca já montada), mod.tvs (as TVs ligadas: equipe.tvs) */
+  { id:'junina',   nome:'Festa junina',   cap:8, dia:38, mod:{ evento:'junina', groups:0.55, meta:2.8 }, cond:null,
+    aviso:'Festa junina lotada: o bairro inteiro veio!', falhou:'' },
+  { id:'jogo',     nome:'Jogo do Brasil', cap:5, dia:17, mod:{ evento:'jogo', up:['tvs'], tvs:1, groups:0.55, meta:3 }, cond:null,
+    aviso:'Jogo do Brasil e a casa cheia de torcedor!', falhou:'' },
+  /* mod.critico (a 1ª visita do crítico, sem boato), mod.vip (a chance de VIP de cada grupo); as cond leem o stats.criticoH (corações com que o crítico saiu: 0 se foi embora bravo ou não saiu) e o stats.saiMin (o menor número de corações com que um grupo pagou) */
+  { id:'critico',  nome:'Noite do crítico', cap:13, dia:64, mod:{ critico:true, groups:0.45, meta:0.6 }, cond:s => s.criticoH >= 5,
+    aviso:'O crítico do Michelzão vem hoje. Ninguém sabe qual mesa é a dele.', falhou:'O crítico não saiu com todos os corações.' },
+  { id:'vips',     nome:'VIPs exigentes', cap:13, dia:64, mod:{ vip:1, groups:0.4, meta:0.6 }, cond:s => s.lost === 0 && s.saiMin >= 4,
+    aviso:'Hoje só vem gente exigente.', falhou:'Uma mesa saiu descontente.' }
 ];
 const MEDALHAS = ['sem medalha', 'bronze', 'prata', 'ouro'];
 /* save.desafios: { id: 0 a 3 } só dos ids da DESAFIOS e com inteiros (a melhor medalha de cada um) */
@@ -1710,7 +1720,7 @@ const HIST_NOMES = { bia:'Bia', tonhao:'Tonhão', dani:'Dani', joca:'Joca', cami
 const ATU_TXT = { procurando:'Procurando versão nova...', nova:'Tem versão nova: {v}! Seu jogo salvo continua.', igual:'Você já está na versão mais nova ({v}).', erro:'Sem internet agora. Tente de novo mais tarde.', atualizando:'Atualizando...' };
 function atuEstado(remota, atual){ if (typeof remota !== 'string' || !remota.trim()) return 'erro'; return remota.trim() === atual ? 'igual' : 'nova'; }
 const CAIXA_MAX = 14;                                 // livro-caixa (v7.2): quantos dias da carreira ficam guardados
-const VERSAO = 'v12';                               // vai no resumo do Caixa
+const VERSAO = 'v12.1';                               // vai no resumo do Caixa
 const DIVULGA_DIA = 4;                                // antes disso, o movimento é o da inauguração (sem custo); v9.0.2: dia 4, e o padrão é o boca a boca
 function divulgaAberta(n, sv){ return devLivre() || n >= DIVULGA_DIA && !(sv && sv.convDiv === 'pend'); }   // no modo dev, desde o dia 1; v9.0.3: no Modo História, só depois da conversa
 /* v9.6.4: a Efood (os entregadores) só abre depois da conversa dos entregadores, no Modo História; antes dela, nenhum tipo com `retira` vem na agenda */
@@ -1937,7 +1947,11 @@ const MANUAL = [
   { id:'b-michelzao', aba:'basico', nome:'Estrelas do Michelzão', linha:'O guia pesa as visitas do crítico, o Gúgou, o luxo e a noite. As estrelas ganhas não se perdem. A placa fica na parede.' },
   { id:'d-soBia',    aba:'desafios', nome:'Só a Bia', linha:'Um dia na área industrial sem ajudante: só a Bia no salão e o Tonhão no fogão.' },   // v12: os Desafios
   { id:'d-semBravo', aba:'desafios', nome:'Ninguém bravo', linha:'Um dia na Avenida em que nenhum grupo pode ir embora bravo, nem da fila.' },
-  { id:'d-efood',    aba:'desafios', nome:'Hora do eFood', linha:'Um dia na área industrial com entregador chegando o tempo todo. Nenhum pode ir embora de mãos vazias.' }
+  { id:'d-efood',    aba:'desafios', nome:'Hora do eFood', linha:'Um dia na área industrial com entregador chegando o tempo todo. Nenhum pode ir embora de mãos vazias.' },
+  { id:'d-junina',   aba:'desafios', nome:'Festa junina', linha:'A festa junina na Avenida, com mais gente que nunca e a meta lá em cima.' },   // v12.1
+  { id:'d-jogo',     aba:'desafios', nome:'Jogo do Brasil', linha:'O dia do jogo na área industrial: antes e depois, casa cheia; durante, rua vazia. A meta é alta.' },
+  { id:'d-critico',  aba:'desafios', nome:'Noite do crítico', linha:'Um dia no Terraço com o crítico à mesa. Ele tem de sair com todos os corações.' },
+  { id:'d-vips',     aba:'desafios', nome:'VIPs exigentes', linha:'Um dia no Terraço só de clientes exigentes. Toda mesa tem de sair feliz.' }
 ];
 const MANUAL_PONTO_NOME = { garagem:'Garagem', industrial:'Área industrial', avenida:'Avenida Brasil', terraco:'Terraço Suíça' };
 const MANUAL_CATS = { pf:'PF', frito:'fritos', assado:'assados', chapa:'lanches na chapa', pastel:'pastel' };

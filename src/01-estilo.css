@@ -456,7 +456,7 @@ table.rank tr.me td{background:#fbe7a8}
 @media (max-height:460px){
   .desafios-panel{padding:calc(var(--u)*10) calc(var(--u)*16)}
   .desafios-panel h2,.desafio-fim-panel h2{font-size:max(18px,calc(var(--u)*28));margin-bottom:0}
-  .desafios-grid{width:calc(var(--u)*780);gap:6px;margin:4px 0}
+  .desafios-grid{width:calc(var(--u)*780);grid-template-columns:repeat(4,1fr);gap:6px;margin:4px 0}   /* v12.1: sete cartões em 2 fileiras */
   .dcard .dbtn{min-height:76px;flex-direction:column;justify-content:center;padding:4px;font-size:12px;gap:4px;line-height:1.1}
   .dcard .qm{width:22px;height:22px;font-size:12px}
   .desafios-panel .row,.desafio-fim-panel .row{margin-top:calc(var(--u)*6)}

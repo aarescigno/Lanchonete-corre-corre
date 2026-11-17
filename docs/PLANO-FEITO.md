@@ -2054,3 +2054,10 @@ As 8 cenas do final e os créditos refeitos com o motor da Etapa 9 (quadro cheio
 ## Etapa 12 — A 3ª estrela do Michelzão ao alcance (v11.19)
 Planejada em 17/11 (questionário pós-final; os roteiros para ouvir os jogadores, a outra frente escolhida, ficaram em `docs/JOGADORES.md`, sem versão). Com o bot afiado, a 3ª estrela nunca saía (melhor noite: 70,5 de 90 pontos). O usuário escolheu baixar a régua da 3ª, calibrada para ~1 em 3 carreiras do afiado; a noite não muda. Spec: `docs/spec-v11.19.md`.
 **Modelo:** Sonnet, esforço médio (um número calibrado por regra e um smoke curto)
+
+## Etapa 13 — Desafios depois do fim da história (13a, v12; 13b, v12.1)
+Planejada em 17/11 (questionário pós-final). Depois do "Fim da história", o menu ganha "Desafios": dias avulsos com save de mentira, como a Missão zero, que valem medalha de bronze, prata ou ouro pelas estrelas do dia, mais a regra de cada um. Só a melhor medalha fica guardada. Sete na 1ª leva.
+- **13a** (v12): o motor, a tela, o cartão do fim, o modo dev e três desafios (Só a Bia, Ninguém bravo, Hora do eFood). Spec: `docs/spec-v12.md`.
+  **Modelo:** Sonnet, esforço alto (motor novo, duas telas, save e calibração)
+- **13b** (v12.1): Festa junina, Jogo do Brasil, Noite do crítico e VIPs exigentes. Spec: `docs/spec-v12.1.md`.
+  **Modelo:** Sonnet, esforço alto (quatro desafios sobre o motor; a calibração mexe no movimento e na meta)
