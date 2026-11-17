@@ -4,6 +4,13 @@ Registro das ideias e dos retornos de quem jogou, com o texto original, e de ond
 
 ---
 
+## 17/11 — usuário: semente fixa nos Desafios
+> "Os desafios devem ter semente padrão também, não acha? Fica mais fácil de se comparar dessa forma, faça Spec disso também"
+
+**Destino:** 14c do `docs/PLANO.md` (v12.3, `docs/spec-v12.3.md`, aprovada em 17/11). Decisões: semente fixa por desafio; se a semente deixar o desafio fora da faixa, troca-se a semente, não os valores; o "Copiar relatório" no fim do desafio só no modo dev.
+
+---
+
 ## 17/11 — usuário: o bot joga bem demais
 > "O bot que joga muito bem, eu acho que ele está jogando bem demais. Acho que humanamente melhor do que bem demais, sabe? Eu acho que a gente poderia fazer um benchmark. Faz uma fase padrão de cada nível, e essa fase padrão com um retorno de relatório que eu posso copiar e colar aqui, para que a gente possa nivelar o melhor bot possível com o melhor das minhas habilidades, dos meus beta testers, e aí a gente faz esse bot se limitar a essa habilidade, não uma habilidade robótica, sabe?"
 
