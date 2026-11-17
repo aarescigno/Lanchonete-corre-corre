@@ -4,6 +4,21 @@ Registro das ideias e dos retornos de quem jogou, com o texto original, e de ond
 
 ---
 
+## 17/11 — Letícia (betatester): verificar atualização, pernas na espera, bandeirinhas e o cabelo da Bia
+Texto original (enviado pelo usuário):
+"Adicione um botão de verificar atualização no menu para quem joga poder ir para a versão nova, quando nao atualizar sozinho.
+Na área industrial quando as pessoas sentam no banquinho, elas perdem as pernas
+As bandeirinhas de festa junina estão começando e terminando no nada.
+O cabelo da bia na área industrial é alisado? Não deveria, ela tem orgulho de seu cabelo e cada vez mais se sente segura com ele"
+O planejamento conferiu nas capturas: quem senta na cadeirinha ou no banquinho da espera fica sem pernas (o `drawPerson` sentado não desenha pernas); os dois fios do salão começam e terminam no ar em todos os pontos, e o da calçada começa solto; o cabelo da Bia das roupas 2, 3 e 4 (rabo, rabo alto e coque) é liso e colado.
+Decisões do usuário (17/11):
+- Botão: "Só no app e no site" (não no artifact) e "Verifica e pergunta" (painel com "Atualizar agora"; sem aviso automático).
+- Cabelo: "Crespo, mesmos penteados" (puff baixo na nuca, puff alto e coque crespo; a Garagem fica com o puff e o lenço).
+- Bandeirinhas: "Parede a parede", com um preguinho em cada ponta.
+Destino: `docs/spec-v11.15.1.md` (aprovada em 17/11), etapa R1 do `docs/PLANO.md`.
+
+---
+
 ## 16/11 — usuário: o final no mesmo tratamento da abertura (planejamento da Etapa 10)
 Pedido: "Planeje e implemente a etapa 10" (a sessão só planejou, a pedido do usuário: "Faz só o planejamento").
 Decisões do usuário (16/11):
