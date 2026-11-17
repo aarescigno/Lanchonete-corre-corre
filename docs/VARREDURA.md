@@ -7,18 +7,24 @@ Pedido do usuário, 17/11: "Vai pesquisando por outras sobreposições etc e pro
 **Captura:** `node <scratchpad>/varre.js <pasta>` (o script está descrito abaixo; recrie se a pasta temporária tiver sido limpa). Monta o save no ponto com `L.DEV.on=true; g.devLuxoTudo(); L.DEV.on=false`, equipe cheia, `up.assento` e as TVs/som do ponto, `g.begin()` e uns 12 s de jogo para a fila e a retirada encherem; captura 960x600 em dsf 2 e recortes ampliados com PIL. Apague as capturas no fim.
 
 ## Falta conferir
-- [ ] **Primeiro:** as capturas dos achados abaixo foram tiradas na v11.16, antes da v11.16.1 (entregue em 17/11 por outra sessão, com as luminárias, a plaquinha do eFood, a lata, a jarra, o antúrio e as bandeirinhas). Reconfira cada achado na versão atual e risque o que ela já resolveu.
-- [ ] Confirmar no jogo de verdade (sem `devLuxoTudo`) os achados de equipe: a Cami e o Joca só vão a certos pontos, então G2 pode não acontecer na Garagem real
-- [ ] Equipe andando no salão (Dani, Joca, Cami) durante o serviço, não só parada na casa: atravessa enfeite ou móvel?
-- [ ] Chuva na Garagem, na Avenida e no Terraço (só a área industrial foi vista com chuva)
-- [ ] Textos flutuantes que ainda não apareceram nas capturas ("Novo no Manual!", "Pedido na Efood!", gorjeta) por cima de enfeites ou fora da tela
+Nada: a varredura terminou em 17/11. Os achados abaixo esperam virar spec (planejar com o Opus, esforço médio ou alto; as decisões de estilo, como T1, T2 e N5, vão ao usuário). Não vistos nas capturas, de baixa prioridade: os textos "Novo no Manual!" e "Pedido na Efood!" (saem só na 1ª vez de cada tipo e na chegada do entregador); conferir junto com a spec.
 
 ## Achados
+**Reconferido na v11.18 (17/11, de madrugada), com chuva na Garagem, na Avenida e no Terraço.** Situação de cada achado abaixo:
+- **Resolvidos pela v11.16.1:** na área industrial, as luminárias (menores, sem cone), a jarra fora do lugar 1, o antúrio no canto do salão, o poste, a foto da Rosa e a samambaia; as plaquinhas "eFood" (agora acima dos balões, em todo ponto). **A2** em parte: o selo VIP já não cobre o número do lugar (os corações ainda encostam no grupo de cima).
+- **Continuam:** G1, G2, G3, G4, A1, A3, A4, A5, T1 a T10, I1 (vale também na Garagem, na Avenida e no Terraço: ver N6), I2 (só as TVs: a samambaia já saiu de perto), I3 e C1 (o "Lotado!" também no computador).
+- **Novos (da v11.16.1 em diante ou só vistos agora):**
+  - **N1** A muda na lata, que a v11.16.1 levou para o parapeito, fica em cima do vidro da janela (Garagem, área industrial e Avenida) e, no Terraço, **em cima do letreiro "Terraço Suíça"**. Sugestão: no Terraço a lata fica no chão do foyer, ao lado da espada; nos outros, no canto de baixo do parapeito, fora do vidro (ou de volta ao chão, ao lado da porta, se não couber).
+  - **N2** Os fios de bandeirinhas do salão, agora de parede a parede, passam por cima da lousa "HOJE" (em todo ponto). Sugestão: a ponta da esquerda prende na lateral direita da lousa, ou os fios sobem acima dela.
+  - **N3** Na chuva, as poças da calçada cobrem o número do lugar da espera (lugares 2 e 4 na Garagem). Sugestão: as poças não ficam em cima dos números nem das plaquinhas; sorteadas fora das caixas dos lugares.
+  - **N4** Na Avenida com os sofás, as poças da chuva ficam em cima das almofadas do sofá. Sugestão: sem poça onde há sofá (a espera tem toldo) ou as poças só nas bordas da calçada.
+  - **N5** No Terraço, a chuva (os riscos e as poças) cai **dentro do foyer**, que é por dentro do prédio. Sugestão: no Terraço, a chuva aparece só na janela panorâmica do salão.
+  - **N6** A ponta da direita dos fios do salão passa por cima da prateleira das marmitas (Garagem, área industrial e Avenida) e da geladeira (Avenida e Terraço). Junta-se ao I1: a ponta prende antes deles.
 Conferidos em 17/11 (Garagem, Avenida e Terraço com `devLuxoTudo`, equipe cheia, fila e retirada cheias). O que a seção 6 da `docs/spec-v11.16.1.md` já resolve em todo ponto (a plaquinha do eFood centrada, a muda na lata no parapeito, as luminárias menores e sem cone) não se repete aqui.
 
 ### Garagem
 - **G1** A cortina de chita da janela encosta no letreiro "LANCHES" (a bandô passa da janela para a direita). `drawCortinaChita` com `LUXO_JAN[0]` (`src/21-cenario.js`). Sugestão: a bandô e o painel ficam dentro de `j.x1`, sem os `+ 6`.
-- **G2** A equipe parada no canto de baixo (a Cami e o Joca, na casa deles) fica em cima das cadeiras da frente da mesa 4 quando a mesa de 4 está no canto de baixo à direita. Visto igual nos 4 pontos (a mesma arrumação de mesas). `CAMI_HOME` e `JOCA_HOME` (`src/10-constantes.js` ou a parte de cada um). Sugestão: a casa da equipe vira lugar proibido para mesa no editor do salão (como o caminho), ou a casa muda para perto do lixo. Confirmar no jogo de verdade (ver Falta conferir).
+- **G2** A equipe parada no canto de baixo (a Cami e o Joca, na casa deles) fica em cima das cadeiras da frente da mesa 4 quando a mesa de 4 está no canto de baixo à direita. Visto igual nos 4 pontos (a mesma arrumação de mesas). Confirmado no código: as casas são fixas (`CAMI_HOME` em `{590,515}` e `JOCA_HOME` em `{640,515}`, `src/10-constantes.js`; `DANI_HOME` em `src/15-dani.js`) e o editor do salão não impede mesa em cima delas, então acontece em qualquer ponto em que a equipe esteja. `CAMI_HOME` e `JOCA_HOME` (`src/10-constantes.js` ou a parte de cada um). Sugestão: a casa da equipe vira lugar proibido para mesa no editor do salão (como o caminho), ou a casa muda para perto do lixo. Confirmar no jogo de verdade (ver Falta conferir).
 - **G3** A samambaia pendurada encosta na moldura da foto da Rosa (as folhas da direita). `DECOR_POS[0]` (`samambaia:[42,30,1]`, `foto:[88,36,1]`). Sugestão: foto 6 px para a direita ou samambaia em escala 0,9.
 
 ### Avenida Brasil
@@ -56,4 +62,7 @@ Conferidos em 17/11 (Garagem, Avenida e Terraço com `devLuxoTudo`, equipe cheia
 ### Em todo ponto
 - **C1** O aviso "Lotado!" (quando a espera enche) sai no alto da calçada, por cima dos entregadores do eFood, dos corações deles e do balão de bebida do lugar de cima. Visto no celular deitado (844x390), e o lugar é o mesmo no computador. Sugestão: o aviso sai no meio da faixa da espera (ou em cima do lugar 1), longe da retirada.
 - **C2** No celular deitado (844x390), o resto cabe: é a mesma tela, só menor; nada a mais encosta.
+- **C3** Com o bot servindo (o `tests/botpage.js`, `window.run(6,true)` a cada quadro), os textos que sobem de uma mesa se empilham uns sobre os outros e sobre os corações: "Suco entregue!", "Corrente ×3! +20 pts", a gorjeta e o "na conta" saem quase juntos no mesmo lugar. Sugestão: cada texto novo no mesmo lugar começa um pouco mais acima do anterior que ainda está subindo (uma fila por lugar), ou os de pontos e dinheiro vão juntos numa linha só.
+- **C4** O "Mãos cheias!" sai por cima dos painéis da cozinha (PRONTOS e CAFEZINHO) quando a Bia está no passa-pratos. Sugestão: perto da Bia, mas do lado do salão.
+- **C5** A equipe andando (Dani, Joca e Cami, vistos com o bot) não atravessou móvel nem enfeite nos quadros vistos; o problema da equipe é só a casa dela (G2).
 
