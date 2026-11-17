@@ -461,7 +461,7 @@ table.rank tr.me td{background:#fbe7a8}
 @media (max-height:460px){
   .desafios-panel{padding:calc(var(--u)*10) calc(var(--u)*16)}
   .desafios-panel h2,.desafio-fim-panel h2{font-size:max(18px,calc(var(--u)*28));margin-bottom:0}
-  .desafios-grid{width:calc(var(--u)*780);gap:6px;margin:4px 0}
+  .desafios-grid{width:calc(var(--u)*780);grid-template-columns:repeat(4,1fr);gap:6px;margin:4px 0}   /* v12.1: sete cartões em 2 fileiras */
   .dcard .dbtn{min-height:76px;flex-direction:column;justify-content:center;padding:4px;font-size:12px;gap:4px;line-height:1.1}
   .dcard .qm{width:22px;height:22px;font-size:12px}
   .desafios-panel .row,.desafio-fim-panel .row{margin-top:calc(var(--u)*6)}
@@ -476,7 +476,7 @@ table.rank tr.me td{background:#fbe7a8}
 
     <div class="ov show" id="ov-menu">
       <div class="panel menu-panel">
-        <span class="vtag" id="vtag" aria-label="Versão 12">v12</span>
+        <span class="vtag" id="vtag" aria-label="Versão 12.1">v12.1</span>
         <h1 class="title">Lanchonete <br>Corre-Corre</h1>
         <p class="tag">Ajude a Bia a atender a freguesia da esquina antes que o cafezinho esfrie!</p>
         <div class="lbl" id="menu-dia">História</div>
@@ -748,7 +748,8 @@ table.rank tr.me td{background:#fbe7a8}
       <div class="panel">
         <h2>Versões</h2>
         <ul class="verlist">
-          <li><b>v12</b><span class="cur">versão atual</span><br>17/11/2026 &mdash; Desafios: depois do fim da história, dias avulsos que valem medalha de bronze, prata ou ouro.</li>
+          <li><b>v12.1</b><span class="cur">versão atual</span><br>17/11/2026 &mdash; Mais quatro desafios: a festa junina lotada, o jogo do Brasil, a noite do crítico e os VIPs exigentes.</li>
+          <li><b>v12</b><br>17/11/2026 &mdash; Desafios: depois do fim da história, dias avulsos que valem medalha de bronze, prata ou ouro.</li>
           <li><b>v11</b><br>14/11/2026 &mdash; O futuro da Corre-Corre: a história ganha final, o arco da Bia e da equipe, e a abertura e o final refeitos como filminho.<br><a href="versoes/v11.html" target="_blank" rel="noopener">Abrir a v11</a></li>
           <li><b>v10</b><br>11/11/2026 &mdash; O Terraço Suíça, o último ponto: 20 lugares, um piano de cauda, a porta do elevador e o casal da data especial. Cada mesa pede a refeição completa, com bebida, entrada, prato e sobremesa, e cada tempo conta no Gúgou. Dois novos capítulos: Lá no alto e Do começo ao fim.<br><a href="versoes/v10.html" target="_blank" rel="noopener">Abrir a v10</a></li>
           <li><b>v9</b><br>30/10/2026 &mdash; A primeira mudança de ponto: depois do capítulo 3, a lojinha (Dinheiro &rsaquo; Mudança) oferece a Lanchonete na área industrial, por R$ 800 e com nota 2,7 no Gúgou; não dá para voltar. Lá são 20 lugares, cardápio mais caro, aluguel de R$ 120 por dia e uma vaga a mais no balcão de pratos, e a freguesia muda: a turma da fábrica (que chega junto quando a fábrica apita), o motorista de caminhão (que pede cafezinho no fim) e a encomenda do setor (de 4 a 6 marmitas, avisada de manhã). A lojinha ganha o fogão industrial, 3 TVs com sertanejo, espera sentada (cadeirinhas ou banquinhos), a jarra de suco e plantas novas; a TV, o som e a torneira da Garagem ficam para trás. E a História ganha os capítulos 4 (Ponto novo) e 5 (Hora do almoço).<br><a href="versoes/v9.html" target="_blank" rel="noopener">Abrir a v9</a></li>
@@ -2504,7 +2505,7 @@ const HIST_NOMES = { bia:'Bia', tonhao:'Tonhão', dani:'Dani', joca:'Joca', cami
 const ATU_TXT = { procurando:'Procurando versão nova...', nova:'Tem versão nova: {v}! Seu jogo salvo continua.', igual:'Você já está na versão mais nova ({v}).', erro:'Sem internet agora. Tente de novo mais tarde.', atualizando:'Atualizando...' };
 function atuEstado(remota, atual){ if (typeof remota !== 'string' || !remota.trim()) return 'erro'; return remota.trim() === atual ? 'igual' : 'nova'; }
 const CAIXA_MAX = 14;                                 // livro-caixa (v7.2): quantos dias da carreira ficam guardados
-const VERSAO = 'v12';                               // vai no resumo do Caixa
+const VERSAO = 'v12.1';                               // vai no resumo do Caixa
 const DIVULGA_DIA = 4;                                // antes disso, o movimento é o da inauguração (sem custo); v9.0.2: dia 4, e o padrão é o boca a boca
 function divulgaAberta(n, sv){ return devLivre() || n >= DIVULGA_DIA && !(sv && sv.convDiv === 'pend'); }   // no modo dev, desde o dia 1; v9.0.3: no Modo História, só depois da conversa
 /* v9.6.4: a Efood (os entregadores) só abre depois da conversa dos entregadores, no Modo História; antes dela, nenhum tipo com `retira` vem na agenda */

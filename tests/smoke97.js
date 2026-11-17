@@ -18,7 +18,7 @@ const r5=v=>Math.round(v/5)*5;
 // ---------- CA1: a lista, os campos, a normalização e o save antigo ----------
 bloco('CA1',()=>{ const {L}=load(), D=L.DESAFIOS, por=id=>D.find(x=>x.id===id);
   ok(Array.isArray(D) && D.slice(0,3).map(x=>x.id).join()==='soBia,semBravo,efood','CA1: DESAFIOS começa com soBia, semBravo e efood, nesta ordem (os quatro seguintes são do smoke98)');
-  ok(D.every(x=>x.nome && typeof x.cap==='number' && typeof x.dia==='number' && x.mod && typeof x.mod.meta==='number' && x.mod.meta>=0.6 && x.mod.meta<=1.5 && x.aviso && x.falhou!==undefined),'CA1: cada um tem id, nome, cap, dia, mod (com meta de 0,6 a 1,5), aviso e falhou');
+  ok(D.every(x=>x.nome && typeof x.cap==='number' && typeof x.dia==='number' && x.mod && typeof x.mod.meta==='number' && x.mod.meta>=0.6 && x.mod.meta<=3 && x.aviso && x.falhou!==undefined),'CA1: cada um tem id, nome, cap, dia, mod (com meta de 0,6 a 3: v12.1, a festa e o jogo vão até 3), aviso e falhou');
   const a=por('soBia'), b=por('semBravo'), c=por('efood');
   ok(a.nome==='Só a Bia' && a.cap===5 && a.dia===17 && a.mod.sem.join()==='dani,joca,cami,anselmo,lia' && a.mod.groups===1 && !a.cond,'CA1: Só a Bia: cap 5, dia 17, sem as cinco pessoas, groups 1, sem cond');
   ok(b.nome==='Ninguém bravo' && b.cap===8 && b.dia===38 && b.mod.groups===0.5 && b.mod.meta===0.6,'CA1: Ninguém bravo: cap 8, dia 38, groups 0,5 e meta 0,6 (calibrados)');

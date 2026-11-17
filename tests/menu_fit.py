@@ -111,7 +111,7 @@ with sync_playwright() as p:
             conf(pg,f'{tag} Versões','#ov-ver .panel',['#btn-ver-close'])
             r=pg.evaluate("()=>{const l=document.querySelector('.verlist');return [l.scrollHeight,l.clientHeight,l.querySelectorAll('li').length]}")
             total+=1
-            if r[2]!=12: fails+=1; print(f'FAIL: {tag} a lista das Versões tem {r[2]} linhas (esperado 12: a v12, a v11 e da v10 à v1)')
+            if r[2]!=13: fails+=1; print(f'FAIL: {tag} a lista das Versões tem {r[2]} linhas (esperado 13: a v12.1, a v12, a v11 e da v10 à v1)')
         # ---- v11.15: a abertura (os botões Voltar e Pular, por cima do quadro cheio, à vista e sem se cobrir) ----
         if SOLO in ('','abertura'):
             run(pg,"g.setState('menu');document.getElementById('btn-historia').click();")
