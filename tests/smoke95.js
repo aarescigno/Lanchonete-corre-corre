@@ -19,10 +19,10 @@ const falso=(resp,calls)=>(url,o)=>{ calls.push([url,o]); return resp==='erro' ?
   ok(e('','v11.16.1')==='erro' && e(null,'v11.16.1')==='erro' && e(42,'v11.16.1')==='erro' && e(undefined,'v11.16.1')==='erro','CA2: vazia, nula, número e indefinida são erro'); }
 
 // ---------- CA3: tocar no ícone ----------
-{ const calls=[], H=load({ app:true, fetch:falso('v11.19',calls) }), {L,els}=H;
+{ const calls=[], H=load({ app:true, fetch:falso('v11.20',calls) }), {L,els}=H;
   els['btn-atu'].fire('click'); ok(els['ov-atu'].classList.contains('show'),'CA3: tocar no ícone abre o #ov-atu');
   await sleep(20);
-  ok(txt(els['atu-txt'])==='Tem versão nova: v11.19! Seu jogo salvo continua.' && els['btn-atu-ir'].style.display!=='none','CA3: versão nova: o texto e o botão "Atualizar agora"');
+  ok(txt(els['atu-txt'])==='Tem versão nova: v11.20! Seu jogo salvo continua.' && els['btn-atu-ir'].style.display!=='none','CA3: versão nova: o texto e o botão "Atualizar agora"');
   ok(calls.length===1 && /^versao\.json\?t=\d+/.test(calls[0][0]) && calls[0][1].cache==='no-store','CA3: pede versao.json?t=... com cache no-store');
   els['btn-atu-close'].fire('click'); ok(els['ov-menu'].classList.contains('show') && !els['ov-atu'].classList.contains('show'),'CA3: Voltar volta ao menu'); }
 { const calls=[], H=load({ app:true, fetch:null }), {L,els}=H; H.win.fetch=falso(L.VERSAO,calls);
@@ -35,13 +35,13 @@ const falso=(resp,calls)=>(url,o)=>{ calls.push([url,o]); return resp==='erro' ?
   ok(txt(els['atu-txt'])==='Sem internet agora. Tente de novo mais tarde.','CA3: sem fetch nenhum (harness): também cai em sem internet'); }
 
 // ---------- CA4: modo dev ----------
-{ const calls=[], H=load({ fetch:falso('v11.19',calls) }), {g,L,els}=H; g.setDev(true);
+{ const calls=[], H=load({ fetch:falso('v11.20',calls) }), {g,L,els}=H; g.setDev(true);
   ok(g.devAtu('nova')===true && L.DEV.forca.atu==='nova','CA4: devAtu(nova) grava DEV.forca.atu');
   els['btn-atu'].fire('click'); await sleep(20);
   ok(txt(els['atu-txt'])==='Tem versão nova: v99! Seu jogo salvo continua.' && calls.length===0,'CA4: simulando "nova": v99, sem chamar o fetch');
   els['btn-atu-ir'].fire('click'); await sleep(5); ok(els['ov-menu'].classList.contains('show'),'CA4: simulando, "Atualizar agora" só volta ao menu (sem recarregar)');
   g.devAtu('erro'); els['btn-atu'].fire('click'); await sleep(20); ok(txt(els['atu-txt'])==='Sem internet agora. Tente de novo mais tarde.' && calls.length===0,'CA4: simulando "erro": sem internet, sem fetch');
-  g.devAtu(null); ok(L.DEV.forca.atu===undefined,'CA4: devAtu(null) volta ao normal'); els['btn-atu'].fire('click'); await sleep(20); ok(calls.length===1 && /v11\.19/.test(txt(els['atu-txt'])),'CA4: normal de novo: chama o fetch');
+  g.devAtu(null); ok(L.DEV.forca.atu===undefined,'CA4: devAtu(null) volta ao normal'); els['btn-atu'].fire('click'); await sleep(20); ok(calls.length===1 && /v11\.20/.test(txt(els['atu-txt'])),'CA4: normal de novo: chama o fetch');
   g.setDev(false); ok(g.devAtu('nova')===false,'CA4: fora do modo dev, devAtu não faz nada');
   g.setDev(true); L.abrirDev(); L.DEV.aba='hoje'; L.buildDev(); ok(/Atualização \(app\)/.test(txt(els['dev-body'])),'CA4: a seção "Atualização (app)" aparece no buildDev');
   const bs=[]; const ach=n=>{ if(n.tagName==='BUTTON') bs.push(n); (n.children||[]).forEach(ach); }; ach(els['dev-body']);

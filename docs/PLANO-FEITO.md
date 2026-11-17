@@ -79,6 +79,7 @@ A cena final animada (oito cenas, no motor da abertura), os créditos, a placa n
 
 | # | Etapa | Versão | Situação |
 |---|---|---|---|
+| R1 | Retornos da Letícia: verificar atualização, pernas na espera, bandeirinhas, o cabelo da Bia, o enfeite da mesa, a área industrial sem sobreposição e a buzina do eFood | v11.16.1 | feita em 17/11 (`docs/spec-v11.16.1.md`; `smoke95`; o botão Verificar atualização, as pernas na espera, as bandeirinhas presas, o cabelo crespo da Bia, o enfeite da mesa por ponto, a área industrial sem sobreposição e a buzina do eFood) |
 | S | Salários de verdade: equipe e música no custo real (~80%), cardápio e metas recalibrados | v10.5 | feita em 12/11 (`docs/spec-v10.5.md`; `smoke67`; a música não paga o preço no `balance.js`, ver Desvios) |
 | D-2 | Modo dev completo: História (cumprir, assistir, revelar) e Hoje (forçar imprevistos) | v10.2.2 | feita em 11/11 (`docs/spec-v10.2.2.md`; `smoke64`) |
 | 4a-1 | O Terraço Suíça e a refeição completa (caps. 8 e 9) | v10 | feita em 11/11 (`docs/spec-v10.md`; `smoke60`; calibrada: grupos 0,50, metaF 9, expertF 6, aluguel R$ 1.200, cardápio ×2,4) |
@@ -2048,3 +2049,7 @@ As 8 cenas do final e os créditos refeitos com o motor da Etapa 9 (quadro cheio
   **Modelo:** Sonnet, esforço alto (três cenas; a foto com sete pessoas pede cuidado)
 - **10c** (v11.18): as cenas 7 e 8, os créditos, a troca e a limpeza do final antigo. Spec: `docs/spec-v11.18.md`.
   **Modelo:** Sonnet, esforço alto (duas cenas, os créditos e a limpeza, com cuidado com o que a abertura usa)
+
+## Etapa 12 — A 3ª estrela do Michelzão ao alcance (v11.19)
+Planejada em 17/11 (questionário pós-final; os roteiros para ouvir os jogadores, a outra frente escolhida, ficaram em `docs/JOGADORES.md`, sem versão). Com o bot afiado, a 3ª estrela nunca saía (melhor noite: 70,5 de 90 pontos). O usuário escolheu baixar a régua da 3ª, calibrada para ~1 em 3 carreiras do afiado; a noite não muda. Spec: `docs/spec-v11.19.md`.
+**Modelo:** Sonnet, esforço médio (um número calibrado por regra e um smoke curto)

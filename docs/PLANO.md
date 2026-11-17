@@ -16,10 +16,9 @@ Origem: retorno do Renan Martorelli (beta-tester) e conversa com o Arthur (15/10
 | # | Etapa | Versão | Situação |
 |---|---|---|---|
 | 5 | ~~Modo História, parte 1~~: juntou-se à 2f e aos capítulos da 3a, 3b e 4a (28/10) | — | — |
-| R1 | Retornos da Letícia: verificar atualização, pernas na espera, bandeirinhas, o cabelo da Bia, o enfeite da mesa, a área industrial sem sobreposição e a buzina do eFood | v11.16.1 | feita em 17/11 (`docs/spec-v11.16.1.md`; `smoke95`; o botão Verificar atualização, as pernas na espera, as bandeirinhas presas, o cabelo crespo da Bia, o enfeite da mesa por ponto, a área industrial sem sobreposição e a buzina do eFood) |
 | 10b | O final novo: as cenas 4, 5 e 6 | v11.17 | feita em 17/11 (`docs/spec-v11.17.md`; `smoke93`; as cenas `retrato`, `equipe` e `escola` em `src/28-final.js` e o `ab2RuaCasa` de dia; só pelo modo dev) |
 | 10c | O final novo no ar: as cenas 7 e 8, os créditos, a troca e a limpeza | v11.18 | feita em 17/11 (`docs/spec-v11.18.md`; `smoke94`; as cenas `ceu`, `roda` e `creditos`, o `FINAL` é o roteiro novo, o final antigo e o cartão de obra fora; a Etapa 10 está completa) |
-| 12 | A 3ª estrela do Michelzão ao alcance | v11.19 | planejada em 17/11 (`docs/spec-v11.19.md`, aprovada) |
+| 12 | A 3ª estrela do Michelzão ao alcance | v11.19 | feita em 17/11 (`docs/spec-v11.19.md`; `smoke96`; `NOITE.cortes` passou de `[44, 66, 90]` para `[44, 66, 75]`: o bot afiado leva a 3ª estrela em 37,5% das carreiras) |
 | 13a | Desafios: o motor, a tela e os três primeiros | v12 | planejada em 17/11 (`docs/spec-v12.md`, aprovada) |
 | 13b | Desafios: festa, jogo, crítico e VIPs | v12.1 | planejada em 17/11 (`docs/spec-v12.1.md`, aprovada) |
 
@@ -83,10 +82,6 @@ Origem: retorno do Renan Martorelli (beta-tester) e conversa com o Arthur (15/10
 > - **O Terraço mede pela equipe toda** (Joca, Cami, Anselmo e a confeitaria): é ela que passa ~90% das metas.
 > - **Regra da 3f em todas as sessões:** cartão novo da lojinha só com nome, preço e "?"; toda novidade ganha ficha no `MANUAL` (sem números), revelada quando aparece na história.
 > Ordem: 4a-1 (o ponto e a refeição completa, v10) → 4a-2 (o VIP exigente e a reputação, v10.1) → 4a-3 (a cozinha: alta gastronomia, a Lia e a alta confeitaria, v10.2) → 4a-4 (o salão e o bar: Cami, Joca e Anselmo, v10.3) → 4a-5 (música, flores e rebalanceamento, v10.4). Cada uma é uma versão, com PR e merge. As "Checagens de fim de sessão" da etapa 3 valem para todas.
-
-## Etapa 12 — A 3ª estrela do Michelzão ao alcance (v11.19)
-Planejada em 17/11 (questionário pós-final; os roteiros para ouvir os jogadores, a outra frente escolhida, ficaram em `docs/JOGADORES.md`, sem versão). Com o bot afiado, a 3ª estrela nunca saía (melhor noite: 70,5 de 90 pontos). O usuário escolheu baixar a régua da 3ª, calibrada para ~1 em 3 carreiras do afiado; a noite não muda. Spec: `docs/spec-v11.19.md`.
-**Modelo:** Sonnet, esforço médio (um número calibrado por regra e um smoke curto)
 
 ## Etapa 13 — Desafios depois do fim da história (13a, v12; 13b, v12.1)
 Planejada em 17/11 (questionário pós-final). Depois do "Fim da história", o menu ganha "Desafios": dias avulsos com save de mentira, como a Missão zero, que valem medalha de bronze, prata ou ouro pelas estrelas do dia, mais a regra de cada um. Só a melhor medalha fica guardada. Sete na 1ª leva.
