@@ -90,6 +90,7 @@ const CENAS=[['telefone',0,['bia']],['placa',1,['tonhao','bia']],['apagou',2,['b
 { const H=load(), {g,L,els}=H; L.DEV.on=true; g.devCapitulo(15); L.DEV.aba='historia'; L.buildDev();
   const txt=e=>{ let s=e.textContent||''; (e.children||[]).forEach(c=>{ s+=' '+txt(c); }); return s; };
   const dv=txt(els['dev-body']); ok(/Assistir o final: ★/.test(dv) && /Assistir o final: ★★★/.test(dv) && !/Final novo/.test(dv),'CA6: o painel tem "Assistir o final" e não tem mais "Final novo (em obras)" (v11.18)');
+  g.setState('menu');   // v12: o menu, no Fim, já revela as três fichas dos Desafios no Manual; o que se confere é que o final não mexe mais no save
   const antes=JSON.stringify(g.save);
   [1,2,3].forEach(e=>{ g.setState('menu'); L.devFinal(e); const ab=L.aberturaAtual();
     ok(ab && ab.roteiro===L.FINAL && ab.est===e && ab.cenas.map(c=>c.id).join()===new L.Abertura('menu',false,L.FINAL,{est:e,creditos:true}).cenas.map(c=>c.id).join() && els['ov-abertura'].classList.contains('show'),'CA6: o ★'+('★'.repeat(e-1))+' toca o FINAL2 com as cenas certas e os créditos');

@@ -1,6 +1,6 @@
 # v12 — Desafios: o motor, a tela e os três primeiros (etapa 13a)
 
-**Situação:** aprovada (17/11)
+**Situação:** entregue em 17/11
 **Origem:** questionário de 17/11 (`docs/QUESTIONARIO-pos-final.md`; respostas no `docs/PROPOSTAS.md`, entrada "o que vem depois do final novo"); Etapa 13 do `docs/PLANO.md`.
 
 ## Objetivo
@@ -24,9 +24,9 @@ Depois do "Fim da história", o menu ganha "Desafios": dias avulsos, cada um num
 
 | id | nome | cap (ponto) | dia | mod | cond |
 |---|---|---|---|---|---|
-| `soBia` | Só a Bia | 5 (área industrial) | 17 | `sem:['dani','joca','cami','anselmo','lia']`, `groups:1`, `meta:0.85` | nenhuma |
-| `semBravo` | Ninguém bravo | 8 (Avenida) | 38 | `groups:1.1`, `meta:1` | `stats.lost === 0` |
-| `efood` | Hora do eFood | 5 (área industrial) | 17 | `tipo:'entregador'`, `tipoP:0.45`, `groups:1.1`, `meta:1` | `stats.lostBy.retirada === 0` |
+| `soBia` | Só a Bia | 5 (área industrial) | 17 | `sem:['dani','joca','cami','anselmo','lia']`, `groups:1`, `meta:1.2` | nenhuma |
+| `semBravo` | Ninguém bravo | 8 (Avenida) | 38 | `groups:0.5`, `meta:0.6` | `stats.lost === 0` |
+| `efood` | Hora do eFood | 5 (área industrial) | 17 | `tipo:'entregador'`, `tipoP:0.45`, `groups:0.55`, `meta:0.65` | `stats.lostBy.retirada === 0` |
 
 - **Os textos:**
 
@@ -37,6 +37,7 @@ Depois do "Fim da história", o menu ganha "Desafios": dias avulsos, cada um num
 | `efood` | O eFood mandou entregador que não acaba mais! | Um entregador saiu sem a marmita. | Um dia na área industrial com entregador chegando o tempo todo. Nenhum pode ir embora de mãos vazias. |
 
 - **O dia de cada desafio:**
+  - **Valores calibrados** (CA7, 17/11, com 200 rodadas): a tabela acima já traz os valores finais de `groups` e `meta`. Mudaram em relação ao 1º plano: `soBia` de 0,85 para 1,2 (meta), `semBravo` e `efood` de `groups` 1,1 e `meta` 1 para os da tabela.
   - **Metas:** é o `diaPonto(diaOf(dia))`, com as três metas (`meta`, `expert` e, por elas, o `bomGoal`) vezes `mod.meta`, arredondadas para 5, como o `diaNoite`.
   - **Movimento:** os grupos vezes `mod.groups`.
   - **Tipo forçado:** `mod.tipo`/`mod.tipoP` entram no lugar do `tipo`/`tipoP` do dia da semana.
@@ -44,7 +45,13 @@ Depois do "Fim da história", o menu ganha "Desafios": dias avulsos, cada um num
   - **Sem história:** nada de conversas, capítulo, objetivos, dicas na hora nem reações de história. As reações da Bia, que são do salão, ficam.
 - **O save do dia:**
   - Como na Missão zero, o desafio joga com um save de mentira que nunca se grava. O save de verdade fica guardado e volta ao sair.
-  - O save de mentira é montado pela linha `cap` da `DEV_CAPS`, do mesmo jeito que o `devCapitulo` monta. As pessoas de `mod.sem` ficam fora da equipe (nível 0) e as melhorias de `mod.up` entram a mais.
+  - O save de mentira é montado pela linha `cap` da `DEV_CAPS`, do mesmo jeito que o `devCapitulo` monta (o ponto e o dia).
+  - **Tudo no máximo** (decisão do usuário, 17/11, na execução: o save do capítulo saía pobre, com o kit de 10 lugares e o boca a boca, e o bot comum ficava em 5% de bronze mesmo com `mod.meta` 0,6). Por cima do save do capítulo entram:
+    - o que o modo dev chama de "Tudo no máximo": a equipe, os cursos e as melhorias do ponto;
+    - o salão cheio: o máximo de lugares que o ponto comporta, pela arrumação automática;
+    - a divulgação Redes sociais.
+    A decoração e o luxo ficam os da linha `cap`.
+  - As pessoas de `mod.sem` ficam fora da equipe (nível 0) e as melhorias de `mod.up` entram a mais. Esses ajustes valem por cima do "Tudo no máximo".
   - O `mode` é `'carreira'`, para as regras do ponto valerem.
   - Nada do dia toca o save de verdade, menos a medalha: nem caixa, dia, estrelas, lucro acumulado, ranking, manutenção, Gúgou ou guia.
 - **A medalha:**
@@ -53,7 +60,7 @@ Depois do "Fim da história", o menu ganha "Desafios": dias avulsos, cada um num
   - Fica a melhor: `save.desafios = { id: 0 a 3 }`.
 - **O menu:**
   - O botão "Desafios" (`#btn-desafios`) fica na 2ª fileira, depois de "Turno sem fim". Ele aparece com `save.cap >= 15` (o Fim da história) ou no modo dev Livre.
-  - Se o `menu_fit.py` falhar em algum tamanho com os 4 botões: depois do Fim, "Missão zero" sai da 1ª fileira e vira link nos `.links`, com o mesmo texto e o mesmo `id`.
+  - Depois do Fim, "Missão zero" sai da 1ª fileira e vira link nos `.links`, com o mesmo texto e o mesmo `id`, para os botões caberem em duas fileiras. Decisão do usuário, 17/11, na execução: com "Continuar: dia 70", em 1220 x 600, o "Ranking" caía sozinho numa 3ª linha. Antes do Fim, nada muda.
 - **A tela `#ov-desafios`:**
   - O título é "Desafios". Há um cartão por desafio, com:
     - o nome;
@@ -92,8 +99,16 @@ Depois do "Fim da história", o menu ganha "Desafios": dias avulsos, cada um num
 - **CA6** (o modo dev: Liberar, Ouro em todos e Zerar) → `smoke97` (CA6)
 - **CA7** (a calibração: com o bot comum, cada desafio dá bronze ou mais em 40% a 70% das rodadas; com o bot afiado, a `cond` vale em 30% ou mais) → `DESAFIO=<id> node balance.js 40` e `BOT=afiado DESAFIO=<id> node balance.js 40`.
   - Fora da faixa de bronze: mexa no `mod.meta` daquele desafio em passos de 0,05, entre 0,6 e 1,5 (acima de 70%, suba; abaixo de 40%, baixe).
-  - `cond` abaixo de 30%: em `semBravo`, `groups` 1,1 para 1; em `efood`, `tipoP` 0,45 para 0,3.
+  - **Também o `mod.groups`** (decisão do usuário, 17/11, na execução): com o "Tudo no máximo", o movimento ficou ~2,2× maior. O `groups` de cada desafio é calibrado entre 0,4 e 1,2, em passos de 0,05.
+    - Comece por ele quando a `cond` ou o CA3 não couberem, e depois acerte a meta.
+    - No `efood`, o `groups` precisa manter os entregadores acima de 35% dos grupos (CA3).
+  - Pontos de partida medidos na execução, com 200 rodadas:
+    - `semBravo`: `groups` 0,5 e `meta` 0,6 dão 60% de bronze no comum e 97% de `cond` no afiado.
+    - `efood`: `groups` 0,6 dá 38% de entregadores; com `meta` 0,8, 35% de bronze no comum e 42% de `cond` no afiado.
+  - Use 200 rodadas para decidir, porque o bot não tem semente e 40 rodadas oscilam muito.
+  - `cond` ainda abaixo de 30%: em `semBravo`, desça o `groups`; em `efood`, o `tipoP` 0,45 passa a 0,3 se isso não derrubar os entregadores abaixo de 35%.
   - Se ainda assim não couber, pare e avise.
+  - **Medido na entrega** (200 rodadas, bot sem semente): `soBia` 63% (comum) e 73% (afiado) de bronze ou mais; `semBravo` 62% no comum e 94% de bronze no afiado (`cond` 97%); `efood` 43% no comum e 44% no afiado (`cond` 66%).
 - **CA8** (o menu, a tela de Desafios e o cartão do fim cabem nos 14 tamanhos de tela) → `python3 menu_fit.py` (com `#ov-desafios` e `#ov-desafio-fim` na lista dos painéis)
 - **CA9** (o que se vê) → captura `shot_v12.js`, em 1220 x 600 e 844 x 390, conferida em recorte:
   - o menu com o botão;
@@ -118,13 +133,13 @@ Depois do "Fim da história", o menu ganha "Desafios": dias avulsos, cada um num
 - `tests/balance.js` (a chave `DESAFIO`), `tests/menu_fit.py`.
 
 ## Tarefas
-- [ ] T1 Smoke novo `tests/smoke97.js` (CA1 a CA6), visto falhar, incluído no `tests/run_all.sh`.
-- [ ] T2 `DESAFIOS`, `normDesafios`, o campo no save, o `_desafio` no `writeSave` e a montagem do save tirada do `devCapitulo` (o `smoke` do modo dev segue verde).
-- [ ] T3 O dia do desafio (`startDesafio`, o dia, sem imprevistos nem história) e o fim com a medalha.
-- [ ] T4 O botão, a tela, a introdução, o cartão do fim, a aba do Manual e o modo dev.
-- [ ] T5 `DESAFIO` no `balance.js` e a calibração do CA7.
-- [ ] T6 `menu_fit.py` (CA8) e `tests/shot_v12.js` com a conferência do CA9.
-- [ ] Fechamento:
+- [x] T1 Smoke novo `tests/smoke97.js` (CA1 a CA6), visto falhar, incluído no `tests/run_all.sh`.
+- [x] T2 `DESAFIOS`, `normDesafios`, o campo no save, o `_desafio` no `writeSave` e a montagem do save tirada do `devCapitulo` (o `smoke` do modo dev segue verde).
+- [x] T3 O dia do desafio (`startDesafio`, o dia, sem imprevistos nem história) e o fim com a medalha.
+- [x] T4 O botão, a tela, a introdução, o cartão do fim, a aba do Manual e o modo dev.
+- [x] T5 `DESAFIO` no `balance.js` e a calibração do CA7.
+- [x] T6 `menu_fit.py` (CA8) e `tests/shot_v12.js` com a conferência do CA9.
+- [x] Fechamento:
   - `versoes/v11.html`, `VERSAO`, `vtag`, `#ov-ver`;
   - `docs/RESUMO.md`, incluindo enviar `versoes/v11.html` na próxima publicação;
   - `docs/TESTES.md`, `docs/PARTES.md`;
@@ -140,11 +155,20 @@ Depois do "Fim da história", o menu ganha "Desafios": dias avulsos, cada um num
 
 ## Testes
 `smoke97` novo (CA1 a CA6); `balance.js` com `DESAFIO=<id>` (CA7); `menu_fit.py` (CA8); `shot_v12.js` (CA9, capturas apagadas depois); `tests/run_all.sh --tudo` verde. No fechamento: quantas checagens tem o `smoke97` e os `mod.meta` calibrados de cada desafio.
+- **Medido:** `smoke97` com 137 checagens, todas verdes. Calibrados: `soBia` `meta` 1,2 (`groups` 1); `semBravo` `groups` 0,5 e `meta` 0,6; `efood` `groups` 0,55, `meta` 0,65 e `tipoP` 0,45 (entregadores a 36% dos grupos, medidos em 400 dias). `menu_fit.py` verde nos 14 tamanhos (672 conferências), com o menu em 2 fileiras. `shot_v12.js` conferido em 1220 x 600 e 844 x 390: o botão, a tela com as três cores e os cartões sem medalha, a introdução de `soBia`, o cartão do fim com medalha e com o `falhou`; as medalhas se distinguem pela cor e pelo contorno tracejado; capturas apagadas.
 
 ## Decisões em aberto
 Nenhuma.
 
 ## Desvios
-(no fechamento)
+- **A calibração** passou a mexer também no `mod.groups` (decisão do usuário, 17/11; ver o CA7).
+- **O save do dia** passou a ser "Tudo no máximo" e a "Missão zero" virou link depois do Fim. As duas decisões são do usuário, de 17/11, tomadas durante a execução (ver Regras).
+- **`soBia`**: o `mod.meta` ficou em 1,2 (e não 0,85) para o bot comum ficar em 63% de bronze; o `groups` ficou em 1.
+- **`semBravo` e `efood`**: `groups` e `meta` calibrados (0,5 e 0,6; 0,55 e 0,65), no lugar de 1,1 e 1. O `tipoP` do `efood` ficou em 0,45.
+- **A parte do `efood`:** abaixo de `groups` 0,55 o bot não bate a meta (o `meta` não desce de 0,6) e acima disso os entregadores caem abaixo de 35% (eles têm espaçamento fixo, `MARMITA.gap`, e quase não aumentam com os grupos); o 0,55 sobrou na faixa. A checagem dos 35% do `smoke97` usa 200 dias de sorteio, em vez de 40, porque a margem é de ~1 ponto.
+- **O menu:** `#menu-btns` ganhou a classe `.quatro` (o espaço dentro dos botões da 2ª fileira encolhe um pouco quando o Desafios aparece) e, junto, os ids `menu-btns`, `menu-fila1` (1ª fileira) e `menu-links`, usados para tirar a "Missão zero" da 1ª fileira e pô-la nos links depois do Fim.
+- **O `tests/harness.js`** ganhou `insertBefore` (e `parentNode` no `appendChild`) para o menu mover o botão.
+- **Testes ajustados pelo número novo, sem tirar checagem:** `smoke86` (12 linhas no `#ov-ver`, o link da v11, a v11 guardada), `smoke53` (79 fichas), `smoke45` e `smoke62` (a `VERSAO` aceita v12), `smoke92` (abre o menu antes de conferir o save) e `menu_fit.py` (12 linhas).
+- **O `#ov-ver`:** a linha da v11 já existia, com um texto maior e sem link; passou ao texto da spec, com "Abrir a v11".
 
 **Modelo:** Sonnet, esforço alto — motor novo (save de mentira, o dia sem história e o fim próprio), duas telas, save, a chave do bot e a calibração por regra.

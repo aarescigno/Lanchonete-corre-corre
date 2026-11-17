@@ -3,6 +3,7 @@
 #  CA1: a lojinha (em cada grupo e em cada seção) tem o painel parado, as abas e o botão de começar o dia à vista, e só o #shop-grid rola;
 #  v11.15: os botões Voltar e Pular da abertura (#ov-abertura) ficam à vista, com 44 px de altura ou mais, sem se cobrir (python3 menu_fit.py abertura);
 #  CA2: os painéis Ranking, Instalar no celular, Atualização (v11.16.1), fim do Turno sem fim, falência, abertura do dia, pausa e fim da Missão zero cabem inteiros;
+#  v12: o menu com o botão Desafios (no Fim da história), a tela de Desafios e o cartão do fim do desafio cabem inteiros (python3 menu_fit.py desafios);
 #  CA3: o painel Versões não rola (a lista rola por dentro) e o Fechar está à vista.
 from playwright.sync_api import sync_playwright
 import pathlib, os, sys
@@ -17,6 +18,7 @@ UP="{tenis:true,fogaoInd:true,assento:'poltrona',pratos:1,ventilador:true}"
 FIM=("g.save=L.normSave({dia:60,bank:90000,cap:14,histV:1,capV:2,maxDay:60,v10:1,convEnt:1,convCard:1,convDiv:1,convPlanta:1,convSocorro:1,up:"+UP+",equipe:{tonhao:3,dani:3,joca:3,cami:4,camiModo:'tudo',anselmo:3,lia:1,musica:1},camiCursos:{agil:1,mesa:1,salao:1},jocaCursos:{espresso:1,cafesEsp:1},anselmoCursos:{classica:1,autor:1},daniCursos:{confCaseira:1,confGourmet:1,confAlta:1},cursos:{restaurante:1},libera:{confeitaria:2,joca:2,cami:2,anselmo:2,lia:2},salao:{ponto:'terraco'}});"
      "g.up=g.save.up;g.tablesKey='';g.buildTables();")
 DIA2="g.save=L.normSave({dia:2,bank:300,maxDay:2});g.up=g.save.up;g.tablesKey='';g.buildTables();"
+FIMSV=("g.save=L.normSave({dia:70,bank:12345,histV:1,capV:6,cap:15,conversa:null,treino:true,convEnt:1,convCard:1,convDiv:1,convPlanta:1,convSocorro:1,salao:{ponto:'terraco'}});g.up=g.save.up;g.tablesKey='';g.buildTables();")   # v12: o Fim da história (o botão Desafios aparece)
 LIMPA="document.querySelectorAll('.ov').forEach(o=>o.classList.remove('show'));const g=window.__game,L=window.__lcc;"
 
 # o que mede cada painel: [seletor do painel, [seletores dos botões que têm de estar à vista]]
@@ -52,6 +54,21 @@ with sync_playwright() as p:
             r=pg.evaluate("()=>{const p=document.querySelector('.menu-panel');return [p.scrollHeight,p.clientHeight,p.scrollWidth,p.clientWidth]}")
             bad=r[0]>r[1]+1 or r[2]>r[3]+1; fails+=bad; total+=1
             print(('FAIL' if bad else 'ok  ')+f': {tag} menu altura {r[0]}/{r[1]} largura {r[2]}/{r[3]}')
+        # ---- v12: o menu com o botão Desafios, a tela de Desafios e o cartão do fim ----
+        if SOLO in ('','menu','desafios'):
+            run(pg,FIMSV+"g.setState('menu');")
+            r=pg.evaluate("()=>{const p=document.querySelector('.menu-panel'),b=document.getElementById('btn-desafios'),t=new Set([...document.querySelectorAll('.menu-btns .btn')].map(x=>Math.round(x.getBoundingClientRect().top/6)));return [p.scrollHeight,p.clientHeight,p.scrollWidth,p.clientWidth,b.getBoundingClientRect().width>0,t.size]}")
+            bad=r[0]>r[1]+1 or r[2]>r[3]+1 or not r[4] or r[5]>2; fails+=bad; total+=1   # v12: depois do Fim (Missão zero vira link), os botões ficam em no máximo duas fileiras
+            print(('FAIL' if bad else 'ok  ')+f': {tag} menu com o botão Desafios altura {r[0]}/{r[1]} largura {r[2]}/{r[3]} visível={r[4]} fileiras={r[5]}')
+        if SOLO in ('','paineis','desafios'):
+            run(pg,FIMSV+"g.save.desafios=L.normDesafios({soBia:1,semBravo:2,efood:3});g.setState('desafios');")
+            conf(pg,f'{tag} Desafios','#ov-desafios .panel',['#btn-desafios-voltar','#desafios-grid .dcard:first-child .dbtn','#desafios-grid .dcard:last-child .dbtn','#desafios-grid .dcard:last-child .qm'])
+            run(pg,FIMSV+"g.startDesafio('semBravo');g.begin();g.schedule=[];g.nextIdx=0;g.groups=[];g.custo=0;g.money=g.fixo+g.day.expert;g.stats.lost=0;g.finishDay();")
+            conf(pg,f'{tag} fim do Desafio (ouro)','#ov-desafio-fim .panel',['#btn-desafio-de-novo','#btn-desafio-lista'])
+            run(pg,FIMSV+"g.startDesafio('efood');g.begin();g.schedule=[];g.nextIdx=0;g.groups=[];g.custo=0;g.money=g.fixo+g.day.meta;g.stats.lost=1;g.stats.lostBy.retirada=1;g.finishDay();")
+            conf(pg,f'{tag} fim do Desafio (falhou)','#ov-desafio-fim .panel',['#btn-desafio-de-novo','#btn-desafio-lista'])
+            run(pg,FIMSV+"g.startDesafio('soBia');")
+            conf(pg,f'{tag} introdução do Desafio','#ov-intro .panel',['#ov-intro .row .btn'])
         # ---- CA1: a lojinha ----
         if SOLO in ('','loja'):
             for nome,save in (('fim',FIM),('dia2',DIA2)):
@@ -94,7 +111,7 @@ with sync_playwright() as p:
             conf(pg,f'{tag} Versões','#ov-ver .panel',['#btn-ver-close'])
             r=pg.evaluate("()=>{const l=document.querySelector('.verlist');return [l.scrollHeight,l.clientHeight,l.querySelectorAll('li').length]}")
             total+=1
-            if r[2]!=26: fails+=1; print(f'FAIL: {tag} a lista das Versões tem {r[2]} linhas (esperado 26: da v11.16.1 à v11.1, a v11 e da v10 à v1)')
+            if r[2]!=12: fails+=1; print(f'FAIL: {tag} a lista das Versões tem {r[2]} linhas (esperado 12: a v12, a v11 e da v10 à v1)')
         # ---- v11.15: a abertura (os botões Voltar e Pular, por cima do quadro cheio, à vista e sem se cobrir) ----
         if SOLO in ('','abertura'):
             run(pg,"g.setState('menu');document.getElementById('btn-historia').click();")

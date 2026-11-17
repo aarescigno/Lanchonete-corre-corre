@@ -114,7 +114,7 @@ class Treino {
    Sentar um grupo não depende da Bia; as outras só valem com a fila de ações vazia. alvos: retângulos do mundo
    ============================================================ */
 const DICAS = { dias:3, espera:4, firme:1.5, surge:0.25 };
-function dicaLigada(g){ return g.mode === 'carreira' && g.state === 'playing' && !g.ending && !g.fechado && g.day.n <= DICAS.dias && !devLivre(); }
+function dicaLigada(g){ return g.mode === 'carreira' && !g.desafio && g.state === 'playing' && !g.ending && !g.fechado && g.day.n <= DICAS.dias && !devLivre(); }
 function dicaDe(g){
   if (!dicaLigada(g) || g.drag) return null;
   const b = g.bia, livre = !b.acts.length, mao = k => b.hands.find(h => h.kind === k);

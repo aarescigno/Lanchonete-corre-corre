@@ -173,6 +173,13 @@ function buildEnd(){
   if (game.mode === 'carreira') rankAuto('carreira');
 }
 /* v8.3.1: o banco tomou a lanchonete (a parcela atrasada não foi paga no dia seguinte): fim da carreira */
+/* v12: o cartão do fim do Desafio: o nome, a medalha grande e uma linha com o resultado (a medalha, o `falhou` da regra ou "Não deu a meta.") */
+function buildDesafioFim(){
+  const r = game.desafioRes, D = DESAFIOS.find(x => x.id === r.id), box = $('desafio-fim-medalha');
+  $('desafio-fim-titulo').textContent = D.nome;
+  clearEl(box); box.appendChild(medalhaEl(r.medalha, true));
+  $('desafio-fim-msg').textContent = r.medalha ? 'Medalha de ' + MEDALHAS[r.medalha] + '!' + (r.nova ? ' Nova melhor marca!' : '') : r.falhou ? D.falhou : 'Não deu a meta.';
+}
 function buildFalencia(){
   const r = game.result, sv = game.save;
   if (!r) return;

@@ -16,10 +16,9 @@ Origem: retorno do Renan Martorelli (beta-tester) e conversa com o Arthur (15/10
 | # | Etapa | Versão | Situação |
 |---|---|---|---|
 | 5 | ~~Modo História, parte 1~~: juntou-se à 2f e aos capítulos da 3a, 3b e 4a (28/10) | — | — |
-| 10b | O final novo: as cenas 4, 5 e 6 | v11.17 | feita em 17/11 (`docs/spec-v11.17.md`; `smoke93`; as cenas `retrato`, `equipe` e `escola` em `src/28-final.js` e o `ab2RuaCasa` de dia; só pelo modo dev) |
 | 10c | O final novo no ar: as cenas 7 e 8, os créditos, a troca e a limpeza | v11.18 | feita em 17/11 (`docs/spec-v11.18.md`; `smoke94`; as cenas `ceu`, `roda` e `creditos`, o `FINAL` é o roteiro novo, o final antigo e o cartão de obra fora; a Etapa 10 está completa) |
 | 12 | A 3ª estrela do Michelzão ao alcance | v11.19 | feita em 17/11 (`docs/spec-v11.19.md`; `smoke96`; `NOITE.cortes` passou de `[44, 66, 90]` para `[44, 66, 75]`: o bot afiado leva a 3ª estrela em 37,5% das carreiras) |
-| 13a | Desafios: o motor, a tela e os três primeiros | v12 | planejada em 17/11 (`docs/spec-v12.md`, aprovada) |
+| 13a | Desafios: o motor, a tela e os três primeiros | v12 | feita em 17/11 (`docs/spec-v12.md`; `smoke97`; `DESAFIOS`, o save de mentira "Tudo no máximo", a tela, o cartão do fim, a aba do Manual e o modo dev; Só a Bia, Ninguém bravo e Hora do eFood calibrados) |
 | 13b | Desafios: festa, jogo, crítico e VIPs | v12.1 | planejada em 17/11 (`docs/spec-v12.1.md`, aprovada) |
 
 ---
