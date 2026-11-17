@@ -40,7 +40,7 @@ const ROT=[['porta',7,'A Bia cresceu na porta da cozinha.',['Vem provar, filha.'
   ok(R.cheio===true && cs.length===11 && cs.map(c=>c.id).join()===ROT.map(r=>r[0]).join(),'CA2: ABERTURA tem as 11 cenas novas, na ordem ('+cs.map(c=>c.id).join()+')');
   ok(cs.every((c,i)=>c.t===ROT[i][1] && c.leg===ROT[i][2] && JSON.stringify(c.falas.map(f=>f.s))===JSON.stringify(ROT[i][3])) && cs.reduce((a,c)=>a+c.t,0)===77,'CA2: os tempos, as legendas e as falas de docs/ABERTURA.md §4; soma 77 s');
   ok(L.ABERTURA2===undefined,'CA2: ABERTURA2 não existe');
-  ok(cs.every(c=>typeof L.AB2_CENAS[c.id]==='function') && Object.keys(L.AB2_CENAS).filter(k=>!['telefone','placa','apagou'].includes(k)).length===11,'CA2: as 11 cenas têm desenho na AB2_CENAS (a v11.16 acrescenta as do final novo)');
+  ok(cs.every(c=>typeof L.AB2_CENAS[c.id]==='function') && Object.keys(L.AB2_CENAS).filter(k=>!['telefone','placa','apagou','retrato','equipe','escola'].includes(k)).length===11,'CA2: as 11 cenas têm desenho na AB2_CENAS (a v11.16 e a v11.17 acrescentam as do final novo)');
   const ab=new L.Abertura('menu',false,R), tx=[]; H.ctx.fillText=s=>tx.push(s); let erro=null;
   try{ cs.forEach((c,i)=>{ ab.i=i; [0.1,0.5,0.97].forEach(p=>{ ab.t=c.t*p; ab.tm=5+i+p; L.drawAbertura(H.ctx,ab); }); }); } catch(e){ erro=e; }
   ok(!erro && !tx.includes('cena em obras'),'CA2: nenhuma cena cai em cartão de obra'+(erro?': '+erro.message:'')); delete H.ctx.fillText;

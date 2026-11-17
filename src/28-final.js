@@ -32,7 +32,7 @@ function ab2TeVista(c,cam,J,noite,T){
   if (noite){
     c.fillStyle = 'rgba(255,255,255,.8)';
     for (let i = 0; i < 22; i++){ const sx = J.x + 14 + (i * 97) % (J.w - 20), sy = J.y + 10 + (i * 53) % 110; circ(c,sx,sy,0.9 + (T > 0 ? Math.abs(Math.sin(T * 1.7 + i)) * 0.9 : 0.6)); c.fill(); }
-    ab2Estrela(c,J.x + J.w * 0.2,J.y + 62,13 + (T > 0 ? Math.sin(T * 3) * 1.4 : 0),1);
+    ab2Estrela(c,J.x + J.w * 0.3,J.y + 130,13 + (T > 0 ? Math.sin(T * 3) * 1.4 : 0),1);
   } else {
     const sx = J.x + J.w * 0.76, sy = J.y + J.h * 0.62;
     ab2Luz(c,sx,sy,230,'255,236,170',0.9); circ(c,sx,sy,32 + (T > 0 ? Math.sin(T * 1.5) * 1.2 : 0)); c.fillStyle = '#FFF1B0'; c.fill();
@@ -134,7 +134,7 @@ function ab2TePendente(c,x,aceso){
   ell(c,x,143,45,6); fs(c,aceso ? '#FFF1B8' : '#F1E4C2',2);
 }
 // o Cantinho da Rosa: o aparador de nogueira, o retrato grande numa moldura dourada, o copo com uma rosa e a vela (acesa na noite)
-function ab2TeCantinho(c,noite,T){
+function ab2TeCantinho(c,noite,T,lean){   // v11.17: lean (0 a 1): a chama se inclina
   const A = AB2_TE.aparador, R = AB2_TE.retrato, y0 = A.tampo, x1 = A.x + A.w;
   ab2Sombra(c,A.x + A.w / 2,516,A.w * 0.62,12,0.34);
   rr(c,A.x + 6,y0 + 12,A.w - 12,76,4); fs(c,'#5B3A26',3);
@@ -151,7 +151,7 @@ function ab2TeCantinho(c,noite,T){
   abFlor(c,A.x + 47,y0 - 62,8);
   rr(c,x1 - 56,y0 - 38,16,38,3); fs(c,'#FBF6E6',2.2); c.strokeStyle = PAL.tinta; c.lineWidth = 1.6; c.beginPath(); c.moveTo(x1 - 48,y0 - 38); c.lineTo(x1 - 48,y0 - 44); c.stroke();
   const fl = noite ? 1 + (T > 0 ? Math.sin(T * 9) * 0.1 : 0) : 0;
-  if (noite){ c.beginPath(); c.moveTo(x1 - 48,y0 - 66); c.quadraticCurveTo(x1 - 40,y0 - 52,x1 - 48,y0 - 44); c.quadraticCurveTo(x1 - 56,y0 - 52,x1 - 48,y0 - 66); c.fillStyle = '#FFD36B'; c.fill(); }
+  if (noite){ const ln = (lean || 0) * 11; c.beginPath(); c.moveTo(x1 - 48 + ln,y0 - 66 + ln * 0.25); c.quadraticCurveTo(x1 - 40 + ln * 0.5,y0 - 52,x1 - 48,y0 - 44); c.quadraticCurveTo(x1 - 56 + ln * 0.5,y0 - 52,x1 - 48 + ln,y0 - 66 + ln * 0.25); c.fillStyle = '#FFD36B'; c.fill(); }
   return fl;
 }
 // a ponta de uma mesa com toalha e um arranjo de flores, e a borda da cortina de veludo vinho (na frente de tudo)
@@ -171,7 +171,8 @@ function ab2TeFrente(c,T){
   });
 }
 /* o Terraço por dentro. modo: 'manha' (o sol nascendo, pêssego e dourado) ou 'noite' (os pendentes âmbar sobre o azul).
-   o: { T, tel: { fora, toca, K } (o telefone de mesa; K: a escala), passa(c, P): quem aparece no passa-pratos, parede(c): o que vai na parede, gente(c): as pessoas, frente(c) } */
+   o: { T, tel: { fora, toca, K } (o telefone de mesa; K: a escala), passa(c, P): quem aparece no passa-pratos, parede(c): o que vai na parede, gente(c): as pessoas, frente(c),
+   v11.17: pisca (a estrela da Rosa no janelão), vela (a chama se inclina), topo(c): o que fica por cima da noite, sem escurecer (a estrelinha, a pétala) } */
 function ab2Terraco(c,cam,modo,o){
   o = o || {};
   const T = o.T || 0, noite = modo === 'noite', R = AB2_TE, B = R.balcao, K = o.tel && o.tel.K || 1.2;
@@ -189,7 +190,7 @@ function ab2Terraco(c,cam,modo,o){
     ab2TePorta(c,!noite);
     if (!noite){ c.save(); c.globalCompositeOperation = 'screen'; ab2Luz(c,R.porta.x + R.porta.w / 2,R.porta.y + 90,150,'255,236,180',0.55); c.restore(); }
     ab2TePassa(c,o.passa);
-    vela = ab2TeCantinho(c,noite,T);
+    vela = ab2TeCantinho(c,noite,T,o.vela);
     if (o.parede) o.parede(c);
     [[300,506,0.8],[735,506,0.8]].forEach(q => { ab2Sombra(c,q[0],q[1] + 4,80,9,0.3); abMesaTe(c,q[0],q[1],q[2]); });
     // o balcão da entrada, com o telefone em cima
@@ -218,9 +219,15 @@ function ab2Terraco(c,cam,modo,o){
       R.pend.forEach(x => { ab2Luz(c,x,150,210,'255,170,60',0.62); ab2Luz(c,x,146,60,'255,236,170',0.8); });
       ab2Luz(c,R.aparador.x + R.aparador.w - 48,R.aparador.tampo - 52,90 * vela,'255,190,90',0.55);
       c.restore();
+      if (o.topo) o.topo(c);
+    });
+    if (o.pisca > 0) ab2Camada(c,cam,0.85,() => {   // a estrela da Rosa, no janelão, pisca forte por cima da noite (onde ab2TeVista a desenha)
+      const J = R.janela, x = J.x + J.w * 0.3 + (cam.cx - TW / 2) * 0.25, y = J.y + 130 + (cam.cy - H / 2) * 0.25, r = 13 * (1 + o.pisca * 1.4);
+      c.save(); c.globalCompositeOperation = 'screen'; ab2Luz(c,x,y,r * 2.6,'200,222,255',0.7 * o.pisca); c.restore();
+      c.fillStyle = '#FFF8DC'; c.beginPath(); for (let i = 0; i < 8; i++){ const an = i * Math.PI / 4 - Math.PI / 2, rad = i % 2 ? r * 0.3 : r; c.lineTo(x + Math.cos(an) * rad,y + Math.sin(an) * rad); } c.closePath(); c.fill();
     });
     ab2Clima(c,'42,49,90',0.1);
-  } else ab2Clima(c,'255,201,154',0.09);
+  } else { if (o.topo) ab2Camada(c,cam,1,() => o.topo(c)); ab2Clima(c,'255,201,154',0.09); }
   ab2Vinheta(c,0.5);
 }
 
@@ -399,5 +406,237 @@ Object.assign(AB2_CENAS, {
         cc.restore();
       } });
     return { braulio:[bx,Y - 118 * sbr + drop,-70] };
+  }
+});
+
+/* ---------- o retrato, a equipe e a escola (v11.17: cenas 4, 5 e 6) ---------- */
+// a estrelinha de latão (do tamanho de uma mão), com um reflexo
+function ab2TeEstrelinha(c,x,y,r,rot){
+  c.save(); c.translate(x,y); c.rotate(rot || 0);
+  star(c,0,0,r,AB_COR.ouro);
+  c.fillStyle = 'rgba(255,248,214,.7)'; c.beginPath(); c.moveTo(-r * 0.12,-r * 0.7); c.lineTo(r * 0.08,-r * 0.15); c.lineTo(-r * 0.25,-r * 0.2); c.closePath(); c.fill();
+  c.restore();
+}
+Object.assign(AB2_CENAS, {
+  /* 4, o retrato: o Terraço à noite, vazio; a Bia, de três quartos diante do Cantinho, prende a estrelinha ao lado do retrato da mãe, olha para ele e diz a frase;
+     encosta dois dedos na moldura (a chama da vela se inclina); uma pétala cai do copo da rosa e a estrela da Rosa, no janelão, pisca forte */
+  retrato(c,p,T,cam){
+    const R = AB2_TE, Y = AB2.chao, K = AB2.k, sb = abEsc('bia',K), est = AB_VIVO.est || 1, pl = R.placa, bx = 700, alvo = [576,326];
+    const sobe = abSuave(abSeg(p,0.22,0.35)), preso = p >= 0.35, desce = abSuave(abSeg(p,0.36,0.46));
+    const toca = abSuave(abSeg(p,0.58,0.68)) * (1 - abSuave(abSeg(p,0.74,0.82))), brilho = abSeg(p,0.35,0.52), cai = abSeg(p,0.75,1);
+    const sl0 = [15,-42], slA = [(bx - alvo[0]) / sb,(alvo[1] - Y) / sb];   // a estrelinha, em unidades da Bia: nas mãos e na parede
+    const sl = abLerp(sl0,slA,sobe), lift = Math.sin(sobe * Math.PI) * 7, S = [bx - sl[0] * sb,Y + (sl[1] - lift) * sb];
+    const aD = abLerp(abLerp([sl[0] + 5,sl[1] - lift + 3],[10,-24],desce),[39.6,-44.4],toca), aE = abLerp([sl[0] - 5,sl[1] - lift + 3],[-6,-22],desce);
+    const pisca = Math.sin(abSeg(p,0.84,0.96) * Math.PI);
+    ab2Terraco(c,cam,'noite',{ T, pisca, vela:toca,
+      parede: cc => { cc.save(); cc.translate(pl[0],pl[1]); cc.rotate(-0.02); abPlacaMichel(cc,0,0,pl[2],pl[3],est,0,true,0); cc.restore(); },
+      gente: cc => {
+        ab2Sombra(cc,bx,Y + 4,70,11,0.4);
+        ab2TeBia(cc,bx,Y,{ t:T, flip:-1, olha:p < 0.42 ? 0.7 : 1.6, maos:[aE,aD] });
+      },
+      topo: cc => {   // por cima da noite: o brilho e a estrelinha (nas mãos, depois presa), os brilhinhos de quando prende e a pétala
+        cc.save(); cc.globalCompositeOperation = 'screen'; ab2Luz(cc,bx - 24,Y - 8 * sb,240,'255,190,110',0.5); ab2Luz(cc,S[0],S[1],90 + (preso && T > 0 ? Math.sin(T * 4) * 8 : 0),'255,214,120',0.5); cc.restore();   // a luz quente do Terraço no rosto dela
+        ab2TeEstrelinha(cc,S[0],S[1],preso ? 22 + (T > 0 ? Math.sin(T * 4) * 1.4 : 0) : 20,preso ? 0 : -0.25 * (1 - sobe));
+        if (preso && brilho < 1){ cc.globalAlpha = 1 - brilho; for (let i = 0; i < 4; i++){ const a = i * TAU / 4 + 0.4, d = 30 + 26 * brilho; star(cc,S[0] + Math.cos(a) * d,S[1] + Math.sin(a) * d,6,'#FFF8D6'); } cc.globalAlpha = 1; }
+        if (cai > 0){ const x = 427 + (Math.sin(cai * 7) * 12 + cai * 20), y = 372 + cai * 56; cc.save(); cc.translate(x,y); cc.rotate(Math.sin(cai * 6) * 0.9); ell(cc,0,0,12,7); fs(cc,AB_COR.petala,2.2); cc.restore(); }
+      } });
+    return { bia:[bx,Y - AB_ALT.bia * K - 8,-20] };
+  }
+});
+
+/* ---------- a cena 5, equipe: a foto do Terraço ---------- */
+// as posições da foto (x no chão da cena): atrás, a Cami, a Lia e o Anselmo (90% do tamanho, um pouco mais para dentro); na frente, a Dani, a Bia, o lugar do Tonhão e o Joca
+const AB2_EQ = { atras:{ y:472, k:0.9, cami:395, lia:605, anselmo:815 }, frente:{ y:520, dani:290, bia:500, tonhao:710, joca:920 }, tripe:[100,350] };
+// uma pessoa da equipe: a abPessoaFoto com os gestos (o: bracoD, bracoE, fala, olha, t) e o tamanho k
+function ab2EqPessoa(c,q,x,y,k,o){
+  const s = abEsc(q,k * AB2.k);
+  if (q === 'bia') return ab2TeBia(c,x,y,Object.assign({ s },o));
+  if (q === 'dani') return abDani(c,x,y,Object.assign({ s },o));
+  const L = { joca:[JOCA_LOOK,'#B9BDC4','#1F4E8C'], cami:[CAMI_LOOK,'#8A1F3D','#1E1D21'], anselmo:[ANSELMO_LOOK,'#FFFFFF','#1E1D21'], lia:[LIA_LOOK,'#FFFFFF','#9FB8A8'] }[q];
+  drawPerson(c,L[0],x,y,Object.assign({ s,shirt:L[1] },o));
+  abAvental(c,x,y,s,L[2]);
+  if (q === 'lia'){ c.save(); c.translate(x,y); c.scale(s,s); circ(c,0,-57,6.4); fs(c,'#1B1512',1.8); c.beginPath(); c.arc(0,-43,12.6,Math.PI * 1.08,Math.PI * 1.92); c.lineTo(12,-46); c.quadraticCurveTo(0,-51,-12,-46); c.closePath(); fs(c,'#D9A21B',1.8); c.restore(); }
+}
+// a câmera fotográfica num tripé, em silhueta (x, y: o centro da câmera); a luzinha vermelha pisca
+function ab2EqTripe(c,x,y,T,pisca){
+  const cor = 'rgba(52,34,22,.94)';
+  c.strokeStyle = cor; c.lineWidth = 9; c.lineCap = 'round'; c.beginPath();
+  c.moveTo(x,y + 30); c.lineTo(x - 66,538); c.moveTo(x,y + 30); c.lineTo(x + 66,538); c.moveTo(x,y + 30); c.lineTo(x + 6,552); c.stroke();
+  c.fillStyle = cor; rr(c,x - 7,y + 12,14,26,3); c.fill();
+  rr(c,x - 46,y - 30,92,46,9); c.fill();
+  rr(c,x - 20,y - 42,34,16,4); c.fill();
+  circ(c,x - 8,y - 7,19); c.fill(); c.fillStyle = 'rgba(120,132,150,.55)'; circ(c,x - 8,y - 7,10); c.fill(); c.fillStyle = 'rgba(255,255,255,.5)'; circ(c,x - 12,y - 11,3); c.fill();
+  const on = T > 0 ? Math.floor(T * (pisca ? 6 : 3)) % 2 === 0 : true;   // sem relógio, acesa
+  if (on){ c.save(); c.globalCompositeOperation = 'screen'; ab2Luz(c,x + 30,y - 20,34,'255,60,50',0.8); c.restore(); }
+  circ(c,x + 30,y - 20,4.6); c.fillStyle = on ? '#FF4638' : '#7A2A26'; c.fill();
+}
+// uma bandeja de doces nas duas mãos (x, y: o centro; a Dani)
+function ab2EqBandeja(c,x,y){
+  ell(c,x,y + 3,98,9); fs(c,'#B9C2CC',2.6); ell(c,x,y,92,7); fs(c,'#E6EBF0',2);
+  [[-52,'#E8457A','#F6E7C9'],[-18,'#7A4A22','#F2C23D'],[18,'#F6E7C9','#E0523C'],[52,'#E8A73A','#FFFFFF']].forEach(d => {
+    rr(c,x + d[0] - 13,y - 14,26,13,3); fs(c,d[1],2);
+    circ(c,x + d[0],y - 20,11); fs(c,d[2],2); circ(c,x + d[0],y - 32,3.4); fs(c,'#D8342C',1.4);
+  });
+}
+// a coqueteleira do Anselmo (x, y: a mão); balança
+function ab2EqCoqueteleira(c,x,y,rot){
+  c.save(); c.translate(x,y); c.rotate(rot);
+  rr(c,-11,-46,22,44,6); fs(c,'#C9CED6',2.6); rr(c,-9,-58,18,14,5); fs(c,'#B9C2CC',2.2); rr(c,-5,-66,10,9,3); fs(c,'#E6EBF0',2);
+  c.fillStyle = 'rgba(255,255,255,.55)'; c.fillRect(-7,-42,4,34);
+  c.restore();
+}
+// o quadro da cena 5 no andamento p (a foto desenha o mesmo, parado em p 0,6, no tamanho pequeno)
+function ab2EqQuadro(c,cam,p,T){
+  const Y = AB2.chao, K = AB2.k, A = AB2_EQ, F = A.frente, B = A.atras, TR = A.tripe;
+  const ajeita = abSuave(abSeg(p,0.32,0.4)), abre = abSuave(abSeg(p,0.3,0.45)), ri = abSuave(abSeg(p,0.34,0.42)), ergue = abSuave(abSeg(p,0.34,0.44)), segura = abSuave(abSeg(p,0.3,0.4));
+  const corre = abSuave(abSeg(p,0.3,0.55)), dobra = 0.3 * (1 - abSuave(abSeg(p,0.2,0.3))), tx = 205 + (F.tonhao - 205) * corre, ty = Y + 36 * Math.sin(corre * Math.PI);
+  const joca = F.joca + 28 * abre, sc = abEsc('tonhao',K), t = T;
+  ab2Terraco(c,cam,'manha',{ T,
+    gente: cc => {
+      // atrás
+      ab2Sombra(cc,B.cami,B.y + 4,70,10,0.3); ab2Sombra(cc,B.lia,B.y + 4,70,10,0.3); ab2Sombra(cc,B.anselmo,B.y + 4,70,10,0.3);
+      const cd = abLerp([15.5,-17],[13.5,-46],ajeita), cm = abLerp([20,-30],[19,-40],ajeita), bal = T > 0 ? Math.sin(T * 9) * 2 : 0;
+      ab2EqPessoa(cc,'cami',B.cami,B.y,B.k,{ t,bracoD:ajeita > 0.01 ? [[cm[0],cm[1]],[cd[0] + bal * ajeita,cd[1]]] : undefined });
+      ab2EqPessoa(cc,'lia',B.lia,B.y,B.k,{ t,fala:ri > 0 ? (T > 0 ? Math.abs(Math.sin(T * 10)) * 0.9 : 0.8) : 0,mood:0 });
+      const ad = abLerp([15.5,-17],[17,-60],ergue), am = abLerp([22,-30],[24,-46],ergue), sk = T > 0 ? Math.sin(T * 14) * 0.18 * ergue : 0, as = abEsc('anselmo',B.k * K);
+      ab2EqPessoa(cc,'anselmo',B.anselmo,B.y,B.k,{ t,bracoD:ergue > 0.01 ? [[am[0],am[1]],[ad[0],ad[1]]] : undefined });
+      if (ergue > 0.01) ab2EqCoqueteleira(cc,B.anselmo + ad[0] * as,B.y + ad[1] * as + 4,0.25 + sk);
+      // na frente
+      [F.dani,F.bia,joca].forEach(x => ab2Sombra(cc,x,Y + 4,76,11,0.38));
+      ab2EqPessoa(cc,'dani',F.dani,Y,1,{ t,bracoE:segura > 0.01 ? [[-19,-27],[-20,-23]] : undefined,bracoD:segura > 0.01 ? [[19,-27],[20,-23]] : undefined });
+      if (segura > 0.01){ const sd = abEsc('dani',K), by = Y - 23 * sd; ab2EqBandeja(cc,F.dani,by); [-1,1].forEach(d => { circ(cc,F.dani + d * 88,by + 1,7); fs(cc,SKINS[3],1.8); }); }
+      ab2EqPessoa(cc,'bia',F.bia,Y,1,{ t,olha:0 });
+      ab2EqPessoa(cc,'joca',joca,Y,1,{ t });
+      // o Tonhão: atrás da câmera (curvado), corre até o lugar vazio e fica
+      ab2Sombra(cc,tx,ty + 4,80,11,0.38);
+      cc.save(); cc.translate(tx,ty); cc.rotate(corre > 0 ? 0 : -dobra); cc.translate(-tx,-ty);
+      abTonhao(cc,tx,ty,sc,{ flip:corre > 0 ? 1 : -1,t,andando:corre > 0.001 && corre < 0.999,ph:T * 14,olha:corre > 0 ? 1 : 1,
+        bracoD:corre > 0 ? undefined : [[34,-76],[44,-72]] });
+      cc.restore();
+    },
+    frente: cc => ab2EqTripe(cc,TR[0],TR[1],T,p > 0.3) });
+  return { tx, ty };
+}
+Object.assign(AB2_CENAS, {
+  /* 5, a equipe: o Tonhão, curvado atrás da câmera num tripé, aperta o botão e corre para o lugar vazio; a equipe se ajeita; o clique vira a foto, com os nomes embaixo de cada um */
+  equipe(c,p,T,cam){
+    const Y = AB2.chao, K = AB2.k, pq = Math.min(p,0.6), Tq = p >= 0.6 ? 0 : T;   // a partir do clique, tudo para (o quadro de p 0,6)
+    const q = ab2EqQuadro(c,cam,pq,Tq);
+    if (p >= 0.6){   // o clique: o clarão, o quadro escurece e a foto aparece no centro, numa moldura de madeira, com os nomes à mão embaixo de cada um
+      const k = abSuave(abSeg(p,0.6,0.67)), sf = 0.54, pw = TW * sf, ph = H * sf, mg = 26, mb = 74, fw = 15;
+      const W = pw + mg * 2 + fw * 2, Hh = ph + mg + mb + fw * 2, cf = ab2Cam(FINAL2.cenas.find(z => z.id === 'equipe'),0.6);
+      c.fillStyle = 'rgba(16,14,12,.6)'; c.fillRect(0,0,TW,H);
+      ab2Luz(c,TW / 2,H / 2,440,'242,194,61',0.6 * k);
+      c.save(); c.translate(TW / 2,H / 2 - 6); c.rotate(2 * Math.PI / 180); const z = 0.9 + 0.1 * k; c.scale(z,z);
+      rr(c,-W / 2,-Hh / 2,W,Hh,10); fs(c,'#7A4A22',4); rr(c,-W / 2 + fw - 3,-Hh / 2 + fw - 3,W - 2 * fw + 6,Hh - 2 * fw + 6,6); fs(c,'#5B3A22',2.4);
+      rr(c,-W / 2 + fw,-Hh / 2 + fw,W - 2 * fw,Hh - 2 * fw,4); fs(c,'#F6EBD0',2);   // o passe-partout creme
+      const px = -pw / 2, py = -Hh / 2 + fw + mg;
+      c.save(); c.translate(px,py); c.scale(sf,sf); c.beginPath(); c.rect(0,0,TW,H); c.clip(); ab2EqQuadro(c,cf,0.6,0); c.restore();
+      c.strokeStyle = PAL.tinta; c.lineWidth = 2.4; c.strokeRect(px,py,pw,ph);
+      const A = AB2_EQ, ny0 = py + ph + 20, ny1 = py + ph + 46;   // os nomes: os de trás numa linha, os da frente na de baixo
+      [['Cami',A.atras.cami,ny0],['Lia',A.atras.lia,ny0],['Anselmo',A.atras.anselmo,ny0],['Dani',A.frente.dani,ny1],['Bia',A.frente.bia,ny1],['Tonhão',A.frente.tonhao,ny1],['Joca',A.frente.joca,ny1]].forEach((n,i) => {
+        c.save(); c.translate(px + n[1] * sf,n[2]); c.rotate((i % 2 ? 1 : -1) * 0.03); txt(c,n[0],0,0,18,PAL.tinta,'center',FB); c.restore();
+      });
+      c.restore();
+      const cl = T > 0 ? 1 - abSeg(p,0.6,0.6 + 0.15 / 8) : 0;
+      if (cl > 0){ c.fillStyle = 'rgba(255,255,255,' + cl.toFixed(3) + ')'; c.fillRect(0,0,TW,H); }
+    }
+    return { tonhao:[q.tx,q.ty - AB_ALT.tonhao * K - 8,60] };
+  }
+});
+
+/* ---------- a cena 6, escola: a garagem da Rosa como escola de cozinha ---------- */
+// as medidas lá dentro (a garagem é o AB2_CASA.portao: x 445, y 215, 330 x 285; o chão em y 500)
+const AB2_ES = { chao:496, bancada:{ x:470, y:428, w:305 }, panela:[672,428], dani:726, crianca:[498,548,598] };
+// uma criança de avental: pele, cabelo (0 a 6), cor do cabelo, avental, mochila (de fora), fecha os olhos; s é o tamanho, no desenho de abCrianca
+function ab2EsCrianca(c,x,y,s,o){
+  drawPerson(c,{ kid:true, skin:o.pele,hair:o.cabelo,hairC:o.cor,pants:'#3C5A4A',acc:o.mochila ? 'backpack' : null },x,y,
+    { s,shirt:'#FFF4DC',t:o.t || 0,pisca:o.fecha || abPisca(o.t || 0,o.sd || 0.6),bracoD:o.bracoD,bracoE:o.bracoE,olha:o.olha,moving:!!o.corre,ph:o.ph || 0,noShadow:!!o.semSombra });
+  abAvental(c,x,y,s * 0.74,o.avental);
+}
+const AB2_ES_KIDS = [{ pele:2,cabelo:3,cor:'#2F1D12',avental:'#E0523C',sd:0.2 },{ pele:4,cabelo:6,cor:'#1B1512',avental:'#2E9CA6',sd:1.1 },{ pele:1,cabelo:1,cor:'#6B3F25',avental:'#F2B33D',sd:2.3 }];
+// o lado de dentro da garagem (o.dentro do ab2RuaCasa; já recortado no vão do portão). e: o que a cena mostra agora
+function ab2EsDentro(c,T,e){
+  const K = AB2_CASA.portao, B = AB2_ES.bancada, Yc = AB2_ES.chao, Pn = AB2_ES.panela, sd = abEsc('dani',1.38 * 0.7), sk = abEsc('biaCrianca',1.38 * 0.7);
+  // a parede creme, o barrado de azulejo azul e branco e o piso
+  const g = c.createLinearGradient(0,K.y,0,K.y + K.h); g.addColorStop(0,'#FBEFD0'); g.addColorStop(1,'#F2DDB0'); c.fillStyle = g; c.fillRect(K.x,K.y,K.w,K.h);
+  for (let i = 0; i < 16; i++) for (let j = 0; j < 4; j++){ c.fillStyle = (i + j) % 2 ? '#FFFFFF' : '#3B74B8'; c.fillRect(K.x + i * 21,392 + j * 20.5,21,20.5); }
+  c.strokeStyle = 'rgba(40,70,120,.35)'; c.lineWidth = 1; c.beginPath(); for (let i = 0; i <= 16; i++){ c.moveTo(K.x + i * 21,392); c.lineTo(K.x + i * 21,474); } for (let j = 0; j <= 4; j++){ c.moveTo(K.x,392 + j * 20.5); c.lineTo(K.x + K.w,392 + j * 20.5); } c.stroke();
+  c.fillStyle = '#2A5A96'; c.fillRect(K.x,388,K.w,5); c.fillStyle = '#D9B98A'; c.fillRect(K.x,474,K.w,K.h + K.y - 474); c.strokeStyle = 'rgba(90,60,30,.3)'; c.lineWidth = 1.4; c.beginPath(); for (let x = K.x; x < K.x + K.w; x += 38){ c.moveTo(x,474); c.lineTo(x - 12,K.y + K.h); } c.stroke();
+  c.strokeStyle = PAL.tinta; c.lineWidth = 2.4; c.beginPath(); c.moveTo(K.x,474); c.lineTo(K.x + K.w,474); c.stroke();
+  // o quadro-negro com "Receitas da Rosa", a foto da Rosa, a prateleira com potes
+  rr(c,462,236,150,84,5); fs(c,'#7A4A22',3); rr(c,468,242,138,72,3); fs(c,'#2F4A3E',1.6);
+  txt(c,'Receitas da Rosa',537,262,16,'#F7EFD8','center',FD);
+  c.strokeStyle = 'rgba(247,239,216,.7)'; c.lineWidth = 2; c.lineCap = 'round'; c.beginPath(); c.moveTo(486,282); c.lineTo(540,282); c.moveTo(486,296); c.lineTo(522,296); c.stroke();
+  heart(c,578,292,7,'rgba(232,87,122,.9)'); c.fillStyle = 'rgba(224,82,60,.9)'; circ(c,574,276,6); c.fill(); c.fillStyle = 'rgba(60,160,80,.9)'; c.fillRect(572,267,4,4);
+  rr(c,462,320,150,5,2); fs(c,'#B58A5A',1.6);
+  drawFotoRosa(c,640,276,1.7);
+  rr(c,676,288,92,6,2); fs(c,'#7A4A22',2); [[684,'#E0523C',20],[708,'#F2B33D',24],[732,'#3B74B8',18],[754,'#7DB85A',22]].forEach(q => { rr(c,q[0] - 8,288 - q[2],16,q[2],3); fs(c,'rgba(255,255,255,.75)',1.6); c.fillStyle = q[1]; c.fillRect(q[0] - 6,288 - q[2] * 0.6,12,q[2] * 0.5 - 2); rr(c,q[0] - 9,288 - q[2] - 4,18,5,2); fs(c,q[1],1.6); });
+  // a Dani, atrás da bancada: mexe a panela, mostra a colher, dá a provar e bate palmas
+  const px = e.hand[0], py = e.hand[1], dl = [(px - AB2_ES.dani) / sd,(py - Yc) / sd];
+  const claps = e.palmas > 0 ? (T > 0 ? Math.sin(T * 14) * 3 : 0) : 0, hands = e.palmas > 0 ? abLerp([-15.5,-17],[-5 + claps * 0.3,-36],e.palmas) : null;
+  ab2Sombra(c,AB2_ES.dani,Yc + 3,70,9,0.3);
+  abDani(c,AB2_ES.dani,Yc,{ s:sd,t:T,fala:e.ri > 0 ? (T > 0 ? 0.1 + Math.abs(Math.sin(T * 10)) * 0.5 : 0.4) : undefined,
+    bracoE:e.palmas > 0 ? [[-13,-34],[hands[0] - claps,hands[1]]] : [[-19,-26],[dl[0],dl[1]]], bracoD:e.palmas > 0 ? [[13,-34],[-hands[0] + claps,hands[1]]] : undefined });
+  // a bancada de madeira, com a tábua, os tomates e a colher esperando na panela
+  rr(c,B.x + 6,B.y + 14,B.w - 12,Yc + 2 - B.y - 14,3); fs(c,'#A9763D',2.6);
+  c.strokeStyle = 'rgba(70,40,20,.35)'; c.lineWidth = 1.6; c.beginPath(); [0.33,0.66].forEach(f => { c.moveTo(B.x + B.w * f,B.y + 18); c.lineTo(B.x + B.w * f,Yc - 4); }); c.stroke();
+  [0.16,0.5,0.83].forEach(f => { rr(c,B.x + B.w * f - 18,B.y + 26,36,22,3); fs(c,'#8E5F2E',1.6); circ(c,B.x + B.w * f,B.y + 37,2.4); fs(c,AB_COR.ouro,1); });
+  rr(c,B.x,B.y,B.w,15,4); fs(c,'#E8C48E',2.6); c.fillStyle = 'rgba(255,255,255,.35)'; c.fillRect(B.x + 6,B.y + 3,B.w - 12,3);
+  rr(c,706,B.y - 7,38,7,2); fs(c,'#D9B07A',1.8); [[718,'#E0523C'],[733,'#D8342C']].forEach(t => { circ(c,t[0],B.y - 14,7); fs(c,t[1],1.8); c.fillStyle = '#3E8F4A'; c.fillRect(t[0] - 2,B.y - 22,4,3); });
+  circ(c,764,B.y - 8,7.5); fs(c,'#E0523C',1.8);
+  if (!e.colherNaMao) abColher(c,[Pn[0] + 14,Pn[1] - 88],[Pn[0] - 4,Pn[1] - 38],null,0,AB_COR.molho);   // o cabo para fora da panela
+  abPanela(c,Pn[0],Pn[1],56,T,e.vapor,AB_COR.molho);
+  // as crianças, na frente da bancada; a do banquinho, na ponta dos pés
+  AB2_ES_KIDS.forEach((k,i) => {
+    const a = i === 2 ? 1 : e.entrou[i]; if (a <= 0) return;
+    const x = AB2_ES.crianca[i], pe = i === 2 ? 20 + (e.provou < 0.2 && T > 0 ? Math.abs(Math.sin(T * 2.2)) * 3 : 0) : 0, y = Yc - pe;
+    c.save(); c.globalAlpha = a;
+    if (i === 2){ ab2Sombra(c,x,Yc + 2,34,6,0.3); rr(c,x - 25,Yc - 20,50,22,4); fs(c,'#B98A56',2.4); c.fillStyle = 'rgba(255,255,255,.3)'; c.fillRect(x - 22,Yc - 18,44,3); }
+    else ab2Sombra(c,x,Yc + 2,36,6,0.3 * a);
+    ab2EsCrianca(c,x,y,sk,Object.assign({ t:T,semSombra:true,olha:1,fecha:i === 2 && e.provou > 0.5,
+      bracoD:i === 2 && e.provou > 0.5 ? [[13,-30],[8,-38]] : undefined,bracoE:i === 2 && e.provou > 0.5 ? [[-13,-30],[-8,-38]] : undefined },k));
+    c.restore();
+  });
+  if (e.colherNaMao) abColher(c,e.colherNaMao[0],e.colherNaMao[1],null,0,AB_COR.molho);
+}
+Object.assign(AB2_CENAS, {
+  /* 6, a escola: duas crianças de mochila chegam correndo (a sineta) e entram pelo portão aberto; a Dani mexe a panela e mostra a colher; a criança do banquinho prova,
+     fecha os olhos e sobem corações; a Dani ri e bate palmas, e o vapor sobe da panela */
+  escola(c,p,T,cam){
+    const K = AB2_CASA, Y = AB2.chao, Yc = AB2_ES.chao, sk = abEsc('biaCrianca',1.38 * 0.7), sf = abEsc('biaCrianca',1.38 * 0.85), sd = abEsc('dani',1.38 * 0.7), Pn = AB2_ES.panela;
+    const ent = abSuave(abSeg(p,0.285,0.305)), entrou = [ent,ent], prova = abSuave(abSeg(p,0.55,0.62)) * (1 - abSuave(abSeg(p,0.76,0.82))), provou = abSuave(abSeg(p,0.58,0.66));
+    // a mão da Dani: repouso, a panela (mexendo), a colher no alto, a criança, de volta à panela, e as palmas
+    const mex = abSuave(abSeg(p,0.3,0.34)) * (1 - abSuave(abSeg(p,0.4,0.43))), mostra = abSuave(abSeg(p,0.4,0.46)) * (1 - abSuave(abSeg(p,0.5,0.56))), dar = abSuave(abSeg(p,0.5,0.58)) * (1 - abSuave(abSeg(p,0.76,0.82)));
+    const palmas = abSuave(abSeg(p,0.82,0.88)), ri = p >= 0.8 ? 1 : 0, sx = T > 0 ? Math.sin(T * 5) * 7 * mex : 0;
+    let hand = [AB2_ES.dani - 15.5 * sd,Yc - 17 * sd];
+    const alvoPanela = [652 + sx,Yc - 92 + sx * 0.1], alvoAlto = [636,352], alvoCrianca = [626,388];
+    hand = abLerp(hand,alvoPanela,Math.max(mex,palmas > 0 ? 0 : 0));
+    if (mostra > 0) hand = abLerp(hand,alvoAlto,mostra);
+    if (dar > 0) hand = abLerp(hand,alvoCrianca,dar);
+    const guarda = p > 0.56 && p < 0.58 ? 0 : 0;
+    let colher = null;   // na mão da Dani entre 0,3 e 0,82, fora da panela
+    const seg = mex > 0 || mostra > 0 || dar > 0 || (p > 0.3 && p < 0.82);
+    if (seg && p < 0.82){
+      const tip = mostra > 0.01 && dar < 0.5 ? [hand[0] - 14,hand[1] - 36] : (dar > 0.5 ? [hand[0] - 24,hand[1] - 3] : (mex > 0.01 ? [Pn[0] - 2,Pn[1] - 42] : [hand[0] - 14,hand[1] - 30]));
+      colher = [[hand[0] + 6,hand[1] + 4],tip];
+    }
+    const e = { hand,colherNaMao:colher,palmas,ri,vapor:p >= 0.78,entrou,provou };
+    // as crianças que chegam: correm pela calçada de cada lado (85% do tamanho) e entram pelo portão
+    const vem = abSuave(abSeg(p,0.02,0.24)), cx = [-70 + (AB2_ES.crianca[0] + 70) * vem,1290 + (AB2_ES.crianca[1] - 1290) * vem];
+    ab2RuaCasa(c,cam,1,{ T,letras:1,dia:1,letreiro:'Cozinha da Rosa',dentro:cc => ab2EsDentro(cc,T,e),
+      gente: cc => {
+        const fora = 1 - ent;
+        if (fora > 0.01){
+          const sobe = abSuave(abSeg(p,0.22,0.3));
+          [0,1].forEach(i => {
+            const x = cx[i], yy = Y - (Y - Yc) * sobe, ss = sf + (sk - sf) * sobe, k = AB2_ES_KIDS[i], run = vem > 0.001 && vem < 0.999;
+            cc.save(); cc.globalAlpha = fora; ab2Sombra(cc,x,yy + 4,40,7,0.32 * fora);
+            ab2EsCrianca(cc,x,yy,ss,Object.assign({ t:T,semSombra:true,mochila:true,corre:run,ph:T * 16 + i * 2,olha:i ? -1 : 1 },k)); cc.restore();
+          });
+        }
+        if (prova > 0 || provou > 0) ab2Mimos(cc,AB2_ES.crianca[2] + 4,Yc - 20 - 127 - 4,T,provou * (1 - abSeg(p,0.9,1) * 0.6));
+      } });
+    return { dani:[AB2_ES.dani,Yc - AB_ALT.dani * 0.7 - 6,0] };
   }
 });

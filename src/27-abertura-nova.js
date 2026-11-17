@@ -1161,42 +1161,54 @@ function ab2Garagem(c,T){
   });
 }
 /* a rua de casa, à noite. k: o portão aberto (0 a 1). o: { T, letras: o letreiro aceso, letra por letra (0 a 1), pisca: a estrela da Rosa (0 a 1), gente(c): as pessoas,
-   desenhadas por cima da noite (pinte-as com ab2Noite) } */
+   desenhadas por cima da noite (pinte-as com ab2Noite);
+   v11.17 (a cena 6 do final novo): dia (0 a 1: a rua de dia, sem noite, sem estrelas, com sol, roseiras e as pessoas sem ab2Noite), letreiro (o texto; padrão AB2_CASA.letreiro),
+   dentro(c, T) (o que se vê dentro da garagem, no lugar do ab2Garagem) } */
 function ab2Noite(cor,k){ return abMistura(cor,AB2_CASA.noite,k == null ? 0.42 : k); }
 function ab2RuaCasa(c,cam,k,o){
   o = o || {};
   const T = o.T || 0, K = AB2_CASA, P = K.portao, Y = K.calcada, yb = P.y + P.h, ab = P.h * clamp(k,0,1), le = o.letras || 0, E = K.estrela;
-  const g = c.createLinearGradient(0,0,0,H * 0.9); g.addColorStop(0,AB_COR.noite); g.addColorStop(1,AB_COR.noite2); c.fillStyle = g; c.fillRect(0,0,TW,H);
-  ab2Camada(c,cam,0.5,() => {   // muitas estrelas pequenas e a estrela da Rosa, maior
-    c.fillStyle = 'rgba(255,255,255,.85)';
-    for (let i = 0; i < 46; i++){ const x = (i * 197) % 1240 - 10, y = (i * 83) % 250 + 6; circ(c,x,y,(1 + (i % 3) * 0.5) * (T > 0 ? 1 + Math.sin(T * 2.2 + i * 1.7) * 0.3 : 1)); c.fill(); }
-    ab2Estrela(c,E[0],E[1],(15 + (T > 0 ? Math.sin(T * 3) * 2 : 0)) * (1 + (o.pisca || 0) * 1.1),1 + (o.pisca || 0));
+  const dia = clamp(o.dia || 0,0,1), D = (n,d) => dia > 0 ? abMistura(n,d,dia) : n, letreiro = o.letreiro || K.letreiro;   // v11.17: dia 0 desenha como sempre
+  const g = c.createLinearGradient(0,0,0,H * 0.9); g.addColorStop(0,D(AB_COR.noite,'#8EC9EC')); g.addColorStop(1,D(AB_COR.noite2,'#F7D9A8')); c.fillStyle = g; c.fillRect(0,0,TW,H);
+  ab2Camada(c,cam,0.5,() => {   // muitas estrelas pequenas e a estrela da Rosa, maior (de dia: o sol baixo à esquerda e umas nuvens)
+    if (dia > 0){
+      ab2Luz(c,200,120,240,'255,236,170',0.85 * dia); circ(c,200,120,34 + (T > 0 ? Math.sin(T * 1.5) * 1.2 : 0)); c.fillStyle = 'rgba(255,241,176,' + dia.toFixed(3) + ')'; c.fill();
+      c.fillStyle = 'rgba(255,255,255,' + (0.75 * dia).toFixed(3) + ')'; [[470,90,52,11],[540,76,32,9],[900,116,56,12],[960,102,34,9],[1120,70,40,10]].forEach(q => { ell(c,q[0],q[1],q[2],q[3]); c.fill(); });
+    }
+    if (dia < 1){
+      if (dia > 0) c.globalAlpha = 1 - dia;
+      c.fillStyle = 'rgba(255,255,255,.85)';
+      for (let i = 0; i < 46; i++){ const x = (i * 197) % 1240 - 10, y = (i * 83) % 250 + 6; circ(c,x,y,(1 + (i % 3) * 0.5) * (T > 0 ? 1 + Math.sin(T * 2.2 + i * 1.7) * 0.3 : 1)); c.fill(); }
+      ab2Estrela(c,E[0],E[1],(15 + (T > 0 ? Math.sin(T * 3) * 2 : 0)) * (1 + (o.pisca || 0) * 1.1),1 + (o.pisca || 0));
+      if (dia > 0) c.globalAlpha = 1;
+    }
   });
-  ab2Camada(c,cam,0.75,() => {   // as casas vizinhas em silhueta, com janelinhas acesas, e uma árvore
+  ab2Camada(c,cam,0.75,() => {   // as casas vizinhas em silhueta, com janelinhas acesas (de dia, apagadas), e uma árvore
     [[-40,300,170,0],[150,330,150,1],[330,290,120,0],[880,310,150,1],[1040,280,130,0],[1160,330,140,1]].forEach(q => {
-      c.fillStyle = '#232B4E'; c.fillRect(q[0],q[1],q[2],400); c.beginPath(); c.moveTo(q[0] - 12,q[1] + 4); c.lineTo(q[0] + q[2] / 2,q[1] - 46); c.lineTo(q[0] + q[2] + 12,q[1] + 4); c.closePath(); c.fill();
-      c.fillStyle = 'rgba(255,214,140,.85)'; [[0.22,36],[0.62,36],[0.4,96]].forEach((w,i) => { if ((i + q[3]) % 3) c.fillRect(q[0] + q[2] * w[0],q[1] + w[1],22,26); });
+      c.fillStyle = D('#232B4E','#C9A9A0'); c.fillRect(q[0],q[1],q[2],400); c.beginPath(); c.moveTo(q[0] - 12,q[1] + 4); c.lineTo(q[0] + q[2] / 2,q[1] - 46); c.lineTo(q[0] + q[2] + 12,q[1] + 4); c.closePath(); c.fill();
+      c.fillStyle = dia > 0 ? abMistura('#FFD68C','#8E8290',dia) : 'rgba(255,214,140,.85)'; [[0.22,36],[0.62,36],[0.4,96]].forEach((w,i) => { if ((i + q[3]) % 3) c.fillRect(q[0] + q[2] * w[0],q[1] + w[1],22,26); });
     });
-    c.fillStyle = '#1B2340'; c.fillRect(246,360,14,160); [[254,330,54],[214,366,40],[294,362,42]].forEach(q => { circ(c,q[0],q[1],q[2]); c.fill(); });
+    c.fillStyle = D('#1B2340','#6B4A34'); c.fillRect(246,360,14,160); if (dia > 0) c.fillStyle = abMistura('#1B2340','#4C9460',dia);
+    [[254,330,54],[214,366,40],[294,362,42]].forEach(q => { circ(c,q[0],q[1],q[2]); c.fill(); });
   });
   ab2Camada(c,cam,1,() => {
     // a rua e a calçada
-    c.fillStyle = '#3A3F55'; c.fillRect(-180,Y + 50,TW + 360,300); c.fillStyle = 'rgba(255,255,255,.2)'; for (let x = -160; x < TW + 160; x += 150) c.fillRect(x,Y + 86,80,7);
-    c.fillStyle = '#7C7F94'; c.fillRect(-180,Y,TW + 360,50); c.strokeStyle = 'rgba(0,0,0,.2)'; c.lineWidth = 2; c.beginPath(); for (let x = -160; x < TW + 160; x += 76){ c.moveTo(x,Y); c.lineTo(x - 16,Y + 50); } c.stroke();
-    c.fillStyle = '#9A9DB0'; c.fillRect(-180,Y + 44,TW + 360,8); c.strokeStyle = PAL.tinta; c.lineWidth = 3; c.beginPath(); c.moveTo(-180,Y); c.lineTo(TW + 180,Y); c.moveTo(-180,Y + 52); c.lineTo(TW + 180,Y + 52); c.stroke();
+    c.fillStyle = D('#3A3F55','#6D6C75'); c.fillRect(-180,Y + 50,TW + 360,300); c.fillStyle = 'rgba(255,255,255,.2)'; for (let x = -160; x < TW + 160; x += 150) c.fillRect(x,Y + 86,80,7);
+    c.fillStyle = D('#7C7F94','#CDC4B4'); c.fillRect(-180,Y,TW + 360,50); c.strokeStyle = 'rgba(0,0,0,.2)'; c.lineWidth = 2; c.beginPath(); for (let x = -160; x < TW + 160; x += 76){ c.moveTo(x,Y); c.lineTo(x - 16,Y + 50); } c.stroke();
+    c.fillStyle = D('#9A9DB0','#E2DACB'); c.fillRect(-180,Y + 44,TW + 360,8); c.strokeStyle = PAL.tinta; c.lineWidth = 3; c.beginPath(); c.moveTo(-180,Y); c.lineTo(TW + 180,Y); c.moveTo(-180,Y + 52); c.lineTo(TW + 180,Y + 52); c.stroke();
     // a casa da Rosa: a parede, o telhado vermelho, a janela e a porta da casa
-    rr(c,296,150,628,Y - 150,4); fs(c,'#8E86A0',3.5);
+    rr(c,296,150,628,Y - 150,4); fs(c,D('#8E86A0','#EBD9BC'),3.5);
     c.strokeStyle = 'rgba(0,0,0,.12)'; c.lineWidth = 2; c.beginPath(); for (let y = 186; y < Y; y += 34){ c.moveTo(300,y); c.lineTo(920,y); } c.stroke();
-    c.beginPath(); c.moveTo(262,162); c.lineTo(610,92); c.lineTo(958,162); c.closePath(); fs(c,'#8E3A3F',3.5);
+    c.beginPath(); c.moveTo(262,162); c.lineTo(610,92); c.lineTo(958,162); c.closePath(); fs(c,D('#8E3A3F','#B5533A'),3.5);
     c.strokeStyle = 'rgba(0,0,0,.25)'; c.lineWidth = 2.5; c.beginPath(); for (let i = 1; i < 4; i++){ const yy = 162 - i * 17.5, hw = 348 * (yy - 92) / 70; c.moveTo(610 - hw,yy); c.lineTo(610 + hw,yy); } c.stroke();
-    rr(c,318,268,96,112,5); fs(c,'#FFD98A',3.5); c.strokeStyle = PAL.tinta; c.lineWidth = 3; c.beginPath(); c.moveTo(366,268); c.lineTo(366,380); c.moveTo(318,324); c.lineTo(414,324); c.stroke();
+    rr(c,318,268,96,112,5); fs(c,D('#FFD98A','#BFE3F7'),3.5); c.strokeStyle = PAL.tinta; c.lineWidth = 3; c.beginPath(); c.moveTo(366,268); c.lineTo(366,380); c.moveTo(318,324); c.lineTo(414,324); c.stroke();
     c.fillStyle = 'rgba(200,80,106,.75)'; c.beginPath(); c.moveTo(320,270); c.lineTo(362,270); c.quadraticCurveTo(348,318,320,344); c.closePath(); c.fill(); c.beginPath(); c.moveTo(412,270); c.lineTo(370,270); c.quadraticCurveTo(384,318,412,344); c.closePath(); c.fill();
-    rr(c,310,380,112,11,4); fs(c,'#C9C3D6',2.5);
+    rr(c,310,380,112,11,4); fs(c,D('#C9C3D6','#F2EAD8'),2.5);
     rr(c,822,262,84,Y - 262,5); fs(c,'#6E4630',3.5); rr(c,834,276,60,86,4); c.strokeStyle = 'rgba(0,0,0,.3)'; c.lineWidth = 2.5; c.stroke(); rr(c,834,376,60,106,4); c.stroke(); circ(c,832,390,5); fs(c,AB_COR.ouro,2);
     // a garagem: lá dentro, o portão de enrolar e o letreiro
-    c.fillStyle = PAL.tinta; c.fillRect(P.x - 12,P.y - 12,P.w + 24,P.h + 12); c.fillStyle = '#5D5870'; c.fillRect(P.x - 8,P.y - 8,P.w + 16,P.h + 8);
+    c.fillStyle = PAL.tinta; c.fillRect(P.x - 12,P.y - 12,P.w + 24,P.h + 12); c.fillStyle = D('#5D5870','#8C8698'); c.fillRect(P.x - 8,P.y - 8,P.w + 16,P.h + 8);
     c.save(); c.beginPath(); c.rect(P.x,P.y,P.w,P.h); c.clip(); c.fillStyle = '#20253F'; c.fillRect(P.x,P.y,P.w,P.h);
-    if (ab > 0){ c.save(); c.beginPath(); c.rect(P.x,yb - ab,P.w,ab); c.clip(); ab2Garagem(c,T); c.restore(); }
+    if (ab > 0){ c.save(); c.beginPath(); c.rect(P.x,yb - ab,P.w,ab); c.clip(); (o.dentro || ab2Garagem)(c,T); c.restore(); }
     const ph = P.h - ab;
     if (ph > 1){
       c.fillStyle = '#A3A9B0'; c.fillRect(P.x,P.y,P.w,ph);
@@ -1206,20 +1218,24 @@ function ab2RuaCasa(c,cam,k,o){
       c.strokeStyle = PAL.tinta; c.lineWidth = 3; c.beginPath(); c.moveTo(P.x,P.y + ph); c.lineTo(P.x + P.w,P.y + ph); c.stroke();
     }
     c.restore();
-    const lx = 610, ly = 181, lw = 410;
+    const lx = 610, ly = 181; let lw = 410;
+    if (o.letreiro){ c.font = '29px ' + FD; lw = Math.max(260,c.measureText(letreiro).width + 70); }   // o letreiro dado leva uma placa do tamanho do texto
     rr(c,lx - lw / 2,ly - 26,lw,52,13); fs(c,PAL.tinta,3.5);
     c.font = '29px ' + FD; c.textAlign = 'left'; c.textBaseline = 'middle';
-    const tw = c.measureText(K.letreiro).width, n = K.letreiro.length, lit = Math.round(le * n); let x = lx - tw / 2;
-    for (let i = 0; i < n; i++){ const ch = K.letreiro[i]; c.fillStyle = i < lit ? PAL.mostarda : '#5b5446'; c.fillText(ch,x,ly + 1); x += c.measureText(ch).width; }
+    const tw = c.measureText(letreiro).width, n = letreiro.length, lit = Math.round(le * n); let x = lx - tw / 2;
+    for (let i = 0; i < n; i++){ const ch = letreiro[i]; c.fillStyle = i < lit ? PAL.mostarda : '#5b5446'; c.fillText(ch,x,ly + 1); x += c.measureText(ch).width; }
     if (lit > 0){ c.strokeStyle = 'rgba(242,179,61,' + (0.55 * le).toFixed(3) + ')'; c.lineWidth = 6; rr(c,lx - lw / 2 - 6,ly - 32,lw + 12,64,16); c.stroke(); }
     // os dois vasinhos e o poste
-    [P.x - 24,P.x + P.w + 24].forEach(vx => { ab2Copa(c,[[vx,Y - 52,20,'#3E7A58'],[vx - 12,Y - 40,13,'#356B4C'],[vx + 13,Y - 42,13,'#356B4C']],2.5); abFlor(c,vx - 6,Y - 62,4.4); abFlor(c,vx + 10,Y - 50,4); c.beginPath(); c.moveTo(vx - 18,Y - 30); c.lineTo(vx + 18,Y - 30); c.lineTo(vx + 13,Y); c.lineTo(vx - 13,Y); c.closePath(); fs(c,'#B85A30',3); });
-    ab2Lampiao(c,1040,Y + 2,true);
-    if (ab > 0){ c.fillStyle = 'rgba(255,214,130,' + (0.5 * k).toFixed(3) + ')'; c.beginPath(); c.moveTo(P.x,yb); c.lineTo(P.x + P.w,yb); c.lineTo(P.x + P.w + 150 * k + 30,H + 60); c.lineTo(P.x - 150 * k - 30,H + 60); c.closePath(); c.fill(); }   // o leque dourado na calçada
+    if (dia > 0.5){   // v11.17: de dia, duas roseiras floridas, uma de cada lado do portão
+      [P.x - 76,P.x + P.w + 76].forEach((rx,i) => abRoseira(c,rx,Y + 4,0.95,T + i * 2));
+    } else [P.x - 24,P.x + P.w + 24].forEach(vx => { ab2Copa(c,[[vx,Y - 52,20,'#3E7A58'],[vx - 12,Y - 40,13,'#356B4C'],[vx + 13,Y - 42,13,'#356B4C']],2.5); abFlor(c,vx - 6,Y - 62,4.4); abFlor(c,vx + 10,Y - 50,4); c.beginPath(); c.moveTo(vx - 18,Y - 30); c.lineTo(vx + 18,Y - 30); c.lineTo(vx + 13,Y); c.lineTo(vx - 13,Y); c.closePath(); fs(c,'#B85A30',3); });
+    ab2Lampiao(c,1040,Y + 2,dia < 0.5);
+    if (ab > 0){ c.fillStyle = 'rgba(255,214,130,' + (0.5 * k * (1 - 0.6 * dia)).toFixed(3) + ')'; c.beginPath(); c.moveTo(P.x,yb); c.lineTo(P.x + P.w,yb); c.lineTo(P.x + P.w + 150 * k + 30,H + 60); c.lineTo(P.x - 150 * k - 30,H + 60); c.closePath(); c.fill(); }   // o leque dourado na calçada
   });
   // a noite por cima; depois, o que brilha: a garagem, o leque, o letreiro, o poste e a estrela
-  c.save(); c.globalCompositeOperation = 'multiply'; c.fillStyle = 'rgba(96,108,170,' + (0.42 - 0.2 * k).toFixed(3) + ')'; c.fillRect(0,0,TW,H); c.restore();
+  if (dia < 1){ c.save(); c.globalCompositeOperation = 'multiply'; c.fillStyle = 'rgba(96,108,170,' + ((0.42 - 0.2 * k) * (1 - dia)).toFixed(3) + ')'; c.fillRect(0,0,TW,H); c.restore(); }
   ab2Camada(c,cam,1,() => {
+    if (dia < 1){
     c.save(); c.globalCompositeOperation = 'screen';
     if (k > 0){
       ab2Luz(c,P.x + P.w / 2,yb - ab / 2,300 + 160 * k,'255,206,120',0.55 * Math.min(1,k * 3));
@@ -1230,11 +1246,12 @@ function ab2RuaCasa(c,cam,k,o){
     if (le > 0) ab2Luz(c,610,181,260,'242,179,61',0.4 * le);
     ab2Luz(c,1040,Y - 322,150,'255,226,150',0.6); ab2Luz(c,366,324,100,'255,214,140',0.3);
     c.restore();
+    }   // de dia, nada brilha: só o que o dia mostra
     if (o.gente) o.gente(c);   // as pessoas por cima da noite e da luz (a cena já as pinta com as cores da noite): ficam em contraluz
   });
-  ab2Camada(c,cam,0.5,() => ab2Estrela(c,E[0],E[1],(15 + (T > 0 ? Math.sin(T * 3) * 2 : 0)) * (1 + (o.pisca || 0) * 1.1),0.8 + (o.pisca || 0)));
-  ab2Clima(c,'42,49,90',0.05);
-  ab2Vinheta(c,0.55);
+  if (dia < 1) ab2Camada(c,cam,0.5,() => ab2Estrela(c,E[0],E[1],(15 + (T > 0 ? Math.sin(T * 3) * 2 : 0)) * (1 + (o.pisca || 0) * 1.1),(0.8 + (o.pisca || 0)) * (1 - dia)));
+  if (dia > 0) ab2Clima(c,'255,226,170',0.07 * dia); else ab2Clima(c,'42,49,90',0.05);
+  ab2Vinheta(c,0.55 - 0.2 * dia);
 }
 
 const C_LACO = '#E26A2C';   // o laço do avental da Bia, de costas (PAL.alerta)

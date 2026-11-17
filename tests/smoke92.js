@@ -62,9 +62,9 @@ const CENAS=[['telefone',0,['bia']],['placa',1,['tonhao','bia']],['apagou',2,['b
   const ab=new L.Abertura('menu',false,R,{est:3}); ab.i=1; ab.t=7.2; ab.tm=9; let e2=null; try{ L.drawAbertura(H.ctx,ab); }catch(e){ e2=e; } ok(!e2,'CA3: a placa com 3 estrelas desenha');
 }
 
-// ---------- CA4: as cenas 4 a 8 e os créditos caem no cartão de obra ----------
+// ---------- CA4: as cenas ainda sem desenho (v11.17: a 7, a 8 e os créditos) caem no cartão de obra; v11.17: as 4, 5 e 6 ganharam o desenho e saem daqui ----------
 [false,true].forEach(rm=>{ const H=load({rm}), {L}=H, R=L.FINAL2, ab=new L.Abertura('menu',rm,R,{est:3,creditos:true}), tx=[]; H.ctx.fillText=s=>tx.push(s); let erro=null;
-  ab.cenas.forEach((c,i)=>{ if(i<3) return; tx.length=0; try{ ab.i=i; [0.1,0.5,0.95].forEach(p=>{ ab.t=c.t*p; ab.tm=5+i; L.drawAbertura(H.ctx,ab); }); } catch(e){ erro=e; }
+  ab.cenas.forEach((c,i)=>{ if(typeof L.AB2_CENAS[c.id]==='function') return; tx.length=0; try{ ab.i=i; [0.1,0.5,0.95].forEach(p=>{ ab.t=c.t*p; ab.tm=5+i; L.drawAbertura(H.ctx,ab); }); } catch(e){ erro=e; }
     ok(!erro && tx.includes('cena em obras') && tx.includes(c.id),'CA4: '+c.id+' cai no cartão de obra'+(rm?' (movimento reduzido)':'')+(erro?': '+erro.message:'')); }); delete H.ctx.fillText; });
 { const H=load(), {L}=H, ab=new L.Abertura('menu',false,L.FINAL2,{est:3,creditos:true}); let n=0; const c0=H.ctx.arc; H.ctx.arc=function(x,y,r){ n++; };
   ab.i=3; ab.t=2; ab.tm=2; L.drawAbertura(H.ctx,ab); const dentro=n; n=0; ab.i=ab.n-1; L.drawAbertura(H.ctx,ab); const cred=n;

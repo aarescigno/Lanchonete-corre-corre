@@ -16,11 +16,10 @@ Origem: retorno do Renan Martorelli (beta-tester) e conversa com o Arthur (15/10
 | # | Etapa | Versão | Situação |
 |---|---|---|---|
 | 5 | ~~Modo História, parte 1~~: juntou-se à 2f e aos capítulos da 3a, 3b e 4a (28/10) | — | — |
-| 9c | A abertura nova: a perda e a promessa (6, 7 e 8) | v11.14 | feita em 16/11 (`docs/spec-v11.14.md`; `smoke90`; `ab2Quarto`, `ab2Cozinha` à noite e no lar e as cenas `despedida`, `janela` e `promessa`; só pelo modo dev) |
 | 9d | A abertura nova no ar: as cenas 9, 10 e 11, a troca e a limpeza | v11.15 | feita em 16/11 (`docs/spec-v11.15.md`; `smoke91` e o `smoke26` reescrito; `ab2Banco`, `ab2RuaCasa`, `ABERTURA` como o roteiro novo, a antiga fora; a Etapa 9 está completa) |
 | R1 | Retornos da Letícia: verificar atualização, pernas na espera, bandeirinhas, o cabelo da Bia, o enfeite da mesa, a área industrial sem sobreposição e a buzina do eFood | v11.16.1 | feita em 17/11 (`docs/spec-v11.16.1.md`; `smoke95`; o botão Verificar atualização, as pernas na espera, as bandeirinhas presas, o cabelo crespo da Bia, o enfeite da mesa por ponto, a área industrial sem sobreposição e a buzina do eFood) |
 | 10a | O final novo: o motor, o som e as cenas 1, 2 e 3 | v11.16 | planejada em 16/11 (`docs/spec-v11.16.md`, aprovada) |
-| 10b | O final novo: as cenas 4, 5 e 6 | v11.17 | planejada em 16/11 (`docs/spec-v11.17.md`, aprovada) |
+| 10b | O final novo: as cenas 4, 5 e 6 | v11.17 | feita em 17/11 (`docs/spec-v11.17.md`; `smoke93`; as cenas `retrato`, `equipe` e `escola` em `src/28-final.js` e o `ab2RuaCasa` de dia; só pelo modo dev) |
 | 10c | O final novo no ar: as cenas 7 e 8, os créditos, a troca e a limpeza | v11.18 | planejada em 16/11 (`docs/spec-v11.18.md`, aprovada) |
 
 ---
