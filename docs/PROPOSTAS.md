@@ -4,7 +4,7 @@ Registro das ideias e dos retornos de quem jogou, com o texto original, e de ond
 
 ---
 
-## 17/11 — Letícia (betatester): verificar atualização, pernas na espera, bandeirinhas e o cabelo da Bia
+## 17/11 — Letícia (betatester): verificar atualização, pernas na espera, bandeirinhas e o cabelo da Bia; e o usuário: o enfeite da mesa por ponto
 Texto original (enviado pelo usuário):
 "Adicione um botão de verificar atualização no menu para quem joga poder ir para a versão nova, quando nao atualizar sozinho.
 Na área industrial quando as pessoas sentam no banquinho, elas perdem as pernas
@@ -15,6 +15,7 @@ Decisões do usuário (17/11):
 - Botão: "Só no app e no site" (não no artifact) e "Verifica e pergunta" (painel com "Atualizar agora"; sem aviso automático).
 - Cabelo: "Crespo, mesmos penteados" (puff baixo na nuca, puff alto e coque crespo; a Garagem fica com o puff e o lenço).
 - Bandeirinhas: "Parede a parede", com um preguinho em cada ponta.
+No mesmo dia, o usuário: "As toalhas de mesa funcionam na garagem, mas não aparecem esteticamente na área industrial, precisa ter um adereço na mesa, que tal uma violeta para cada mesa que tem o upgrade adicionado?" O planejamento conferiu: fora da Garagem a toalha é comprada e conta no Ambiente, mas não é desenhada. Decisões: "Se é pra comprar algo para as mesas, precisa aparecer de alguma forma, mas sem deixar poluído, por isso violeta na industrial, algo outro na avenida Brasil e uma vela no terraço"; "Só a violeta, nome novo"; na Avenida, "Galheteiro".
 Destino: `docs/spec-v11.15.1.md` (aprovada em 17/11), etapa R1 do `docs/PLANO.md`.
 
 ---
