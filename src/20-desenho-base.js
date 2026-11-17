@@ -613,6 +613,11 @@ function drawPerson(ctx,p,x,y,o){
     rr(ctx,1-sw,-14,7,13,2); fs(ctx,p.pants,2);
     ell(ctx,-5+sw,-0.5,5,2.6); fs(ctx,'#2c2a26',1.6);
     ell(ctx,5-sw,-0.5,5,2.6); fs(ctx,'#2c2a26',1.6);
+  } else if (o.pernas){   // v11.16.1: quem espera na cadeirinha ou no banquinho tem as pernas à frente, paradas (antes do tronco, a saia cobre)
+    rr(ctx,-8,-12,7,11,2); fs(ctx,p.pants,2);
+    rr(ctx,1,-12,7,11,2); fs(ctx,p.pants,2);
+    ell(ctx,-4.5,-0.5,5,2.6); fs(ctx,'#2c2a26',1.6);
+    ell(ctx,4.5,-0.5,5,2.6); fs(ctx,'#2c2a26',1.6);
   }
   // acessórios atrás
   if (p.acc === 'backpack'){ rr(ctx,-15,-33+bob,30,19,6); fs(ctx,'#E8A73A',2); }
@@ -754,6 +759,14 @@ function roupaBia(g){
 /* v11.8 (etapa 8h, docs/ARCO.md §11): o gesto de reação da Bia, por cima do andar. `p` de 0 a 1: sobe em 20%, fica e desce nos últimos 25%; em 0 e em 1 vale 0 (o desenho é o de sempre) */
 function reacaoEnv(p){ p = clamp(p, 0, 1); const s = k => k * k * (3 - 2 * k); return p < 0.2 ? s(p / 0.2) : p > 0.75 ? s((1 - p) / 0.25) : 1; }
 const REACAO_EXPR = { sorriso:'alegre', punho:'alegre', cabeca:'insegura', respira:'firme', cintura:'firme' };
+/* v11.16.1: um tufo de cabelo crespo (o círculo do meio e n em volta). Duas passadas: o contorno de todos e depois o miolo de todos, para não sobrar linha entre as bolinhas */
+function puffCrespo(ctx,cx,cy,r,n){
+  const cs = [[cx,cy,r*0.62]];
+  for (let i=0;i<n;i++){ const a = -Math.PI/2 + i*TAU/n; cs.push([cx + Math.cos(a)*r*0.6, cy + Math.sin(a)*r*0.6, r*0.42]); }
+  const trilho = () => { ctx.beginPath(); cs.forEach(c => { ctx.moveTo(c[0] + c[2],c[1]); ctx.arc(c[0],c[1],c[2],0,TAU); }); };
+  trilho(); ctx.strokeStyle = PAL.tinta; ctx.lineWidth = 4; ctx.stroke();
+  trilho(); ctx.fillStyle = BIA_ROUPA_COR.cabelo; ctx.fill();
+}
 function drawBia(ctx,b,x,y,o){
   o = o || {};
   const sc = o.s || 1, moving = !!o.moving, ph = o.ph || 0;
@@ -857,20 +870,19 @@ function drawBia(ctx,b,x,y,o){
   // cabeça e cabelo (1 solto com o puff; 2 rabo; 3 rabo alto; 4 coque)
   const hy = -46 + bob + (R === 'cabeca' ? 4 * env : R === 'respira' ? -2.5 * env : R === 'cintura' ? -2 * env : R === 'suspiro' ? 1.2 * env : 0), ph2 = moving ? Math.sin(ph) * 2.2 : (RM ? 0 : Math.sin((o.t||0)*2.2) * 0.8);
   if (rp === 1){ circ(ctx,0,hy-14,13.5); fs(ctx,C.cabelo,2.5); }              // puff
-  else if (rp === 2){   // rabo na altura da nuca, balançando
-    ctx.beginPath(); ctx.moveTo(8,hy-7); ctx.bezierCurveTo(23+ph2,hy-9,27+ph2,hy+6,19+ph2*1.6,hy+13); ctx.bezierCurveTo(17+ph2,hy+6,15,hy+2,9,hy-1); ctx.closePath(); fs(ctx,C.cabelo,2);
-  } else if (rp === 3){   // rabo alto, preso no alto da cabeça
-    ctx.beginPath(); ctx.moveTo(1,hy-13); ctx.bezierCurveTo(6,hy-31,26+ph2,hy-28,24+ph2,hy-8); ctx.bezierCurveTo(21+ph2,hy-18,13,hy-18,8,hy-12); ctx.closePath(); fs(ctx,C.cabelo,2);
-  } else { circ(ctx,0,hy-19,7); fs(ctx,C.cabelo,2); }                           // coque
+  else if (rp === 2) puffCrespo(ctx,16 + ph2,hy + 3,10,6);   // v11.16.1: puff crespo baixo na nuca, balançando (era o rabo)
+  else if (rp === 3) puffCrespo(ctx,5 + ph2 * 0.5,hy - 19,12,7);   // puff crespo alto, preso no alto da cabeça
+  else puffCrespo(ctx,0,hy - 20,9.5,7);                           // coque crespo
   circ(ctx,-11.5,hy+1,2.8); fs(ctx,skin,1.6); circ(ctx,11.5,hy+1,2.8); fs(ctx,skin,1.6);
   circ(ctx,0,hy,11.5); fs(ctx,skin,2.5);
+  if (rp >= 2) [200,235,270,305,340].forEach(d => { const a = d * Math.PI / 180; circ(ctx,Math.cos(a)*10.5,hy - 1 + Math.sin(a)*10.5,3.6); fs(ctx,C.cabelo,1.6); });   // v11.16.1: o alto da cabeça crespo (a franja cobre a parte de baixo)
   ctx.beginPath(); ctx.arc(0,hy-1,12,Math.PI*1.05,Math.PI*1.95); ctx.quadraticCurveTo(0,hy-7,-12,hy-1); ctx.closePath(); fs(ctx,C.cabelo,2);
   if (rp === 1){   // lenço amarelo
     ctx.beginPath(); ctx.moveTo(-12.5,hy-5); ctx.quadraticCurveTo(0,hy-11,12.5,hy-5); ctx.lineTo(12,hy-9); ctx.quadraticCurveTo(0,hy-16,-12,hy-9); ctx.closePath(); fs(ctx,PAL.mostarda,2);
     ctx.beginPath(); ctx.moveTo(10,hy-8); ctx.lineTo(18,hy-12); ctx.lineTo(16,hy-5); ctx.closePath(); fs(ctx,PAL.mostarda,1.8);
-  } else if (rp === 2){ circ(ctx,9.2,hy-4.2,2.4); fs(ctx,PAL.alerta,1.6); }       // o elástico do rabo
-  else if (rp === 3){ circ(ctx,2,hy-12.6,2.3); fs(ctx,PAL.alerta,1.6); }
-  else { circ(ctx,5.4,hy-14.4,1.9); fs(ctx,PAL.creme,1.4); }   // o elástico do coque
+  } else if (rp === 2){ circ(ctx,9.2,hy-4.2,2.4); fs(ctx,PAL.alerta,1.6); }       // o elástico do puff baixo
+  else if (rp === 3){ circ(ctx,3,hy-11.5,2.3); fs(ctx,PAL.alerta,1.6); }           // o elástico, onde o puff encontra a cabeça
+  else { rr(ctx,-6,hy-13.5,12,2.6,1.3); fs(ctx,PAL.creme,1.2); }   // a faixa creme na base do coque
   // rosto
   if (o.olha) ctx.translate(o.olha * 2.5,0);
   const E = EXPR !== 'neutra' ? EXPR : (env > 0.2 && REACAO_EXPR[R]) || 'neutra';   // v11.5: o retrato do balão; v11.8: a cara do gesto

@@ -341,8 +341,8 @@ const STATIONS = {
   maquina:{ ap:{x:-26,y:498}, rect:{x:-110,y:452,w:62,h:84 } }  // bebida da espera (v7.5), na calçada: na Garagem, a torneira (v7.7)
 };
 /* v10.3: no Terraço a estação da bebida da espera (o carrinho de boas-vindas) fica no alto do foyer, onde nos outros pontos fica o balcão de retirada */
-const MAQUINA_LUGAR = { padrao:{ ap:{x:-26,y:498}, rect:{x:-110,y:452,w:62,h:84} }, terraco:{ ap:{x:16,y:156}, rect:{x:-94,y:98,w:90,h:80} } };
-function maquinaLugarFor(ponto){ const l = ponto && ponto.bebida === 'coquetel' ? MAQUINA_LUGAR.terraco : MAQUINA_LUGAR.padrao; STATIONS.maquina.ap = l.ap; STATIONS.maquina.rect = l.rect; }
+const MAQUINA_LUGAR = { padrao:{ ap:{x:-26,y:498}, rect:{x:-110,y:452,w:62,h:84} }, terraco:{ ap:{x:16,y:156}, rect:{x:-94,y:98,w:90,h:80} }, industrial:{ ap:{x:-72,y:520}, rect:{x:-60,y:450,w:52,h:86} } };   // v11.16.1: a jarra de suco da área industrial, fora do lugar 1 da espera
+function maquinaLugarFor(ponto){ const l = ponto && ponto.bebida === 'coquetel' ? MAQUINA_LUGAR.terraco : ponto && ponto.bebida === 'suco' ? MAQUINA_LUGAR.industrial : MAQUINA_LUGAR.padrao; STATIONS.maquina.ap = l.ap; STATIONS.maquina.rect = l.rect; }
 const PLATE_SLOTS = [ {x:806,y:270}, {x:848,y:270}, {x:890,y:270}, {x:932,y:270} ];
 /* v9: o balcão de pratos tem as vagas do ponto (ponto.pratos): 4 na Garagem, 5 na área industrial, 6 na Avenida Brasil (mais juntas). Muda o mesmo array no lugar */
 function plateSlotsFor(n){ PLATE_SLOTS.length = 0; for (let i = 0; i < n; i++) PLATE_SLOTS.push({ x:(n >= 6 ? 791 + 29 * i : n >= 5 ? 792 + 36 * i : 806 + 42 * i), y:270 }); }   // v9.1: 6 vagas na Avenida Brasil
@@ -570,6 +570,15 @@ const DECOR_GRUPOS = [
   { id:'enfeites', nome:'Enfeites' }   // v10.7
 ];
 const TOALHA = { cost:12 };   // por mesa
+/* v11.16.1: o upgrade da mesa (id interno 'toalha', campo t) é o enfeite da mesa e muda com o ponto: só o desenho e o nome */
+const ENFEITE_MESA = {
+  garagem:{ nome:'Toalha xadrez', elogio:'A toalha xadrez dá um charme!' },
+  industrial:{ nome:'Violeta', elogio:'A violeta na mesa é um charme!' },
+  avenida:{ nome:'Galheteiro', elogio:'Azeite e vinagre na mesa: que capricho!' },
+  terraco:{ nome:'Vela', elogio:'A vela na mesa deixa tudo mais aconchegante!' }
+};
+function enfeiteDe(pid){ return ENFEITE_MESA[pid] || ENFEITE_MESA.garagem; }
+function enfeiteMesa(g){ return enfeiteDe(g && g.ponto && g.ponto.id); }
 function decorOf(id){ return DECOR.find(d => d.id === id); }
 /* save.decor: { id: 1 à mostra, 0 guardado }; só os enfeites que existem */
 function normDecor(d){
@@ -836,6 +845,7 @@ const DRINK_PRICE = { coffee:3, juice:JUICE.price, doce:7, pote:7, cafeesp:10, d
    depois de chegar ao lugar lá fora, o grupo pede 1 copo por pessoa; a Bia (ou a Dani) pega na estação e entrega,
    e quem bebe perde a paciência da espera `slow` mais devagar. Quem sai da espera antes cancela o que não foi pego */
 const MAQUINA = { pede:2.5, slow:0.4 };
+const ENTREGA_CHEGA = { brilho:1.2 };   // v11.16.1: o entregador do eFood brilha ao chegar (segundos)
 /* marmitas (v8.6): o entregador de moto não come no salão. Ele espera na fila de retirada (RETIRADA, no máximo `fila`) e
    leva o prato do cardápio numa marmita: o pedido chega pela Efood (o app de entrega) e vai sozinho ao Tonhão. A marmita
    ocupa uma boca do fogão como um prato, mas não usa prato limpo; os ingredientes e a `embalagem` saem quando ela fica
@@ -1084,14 +1094,14 @@ const AVAL_DECOR = {
   ikebana:'Que ikebana mais elegante!', orqArranjo:'O arranjo de orquídeas é um espetáculo!', campo:'Adorei as flores do campo!',
   pisca:'Que luzinhas mais charmosas!', chita:'Adorei a cortina de chita!', luminaria:'As luminárias dão um charme!', quadros:'Que quadros bonitos!', lustre:'Que lustre maravilhoso!'   // v10.7
 };
-function avalComentario(r, bravo, lixo, nivel, decor, fria, semVeg, tipo, pouco){
+function avalComentario(r, bravo, lixo, nivel, decor, fria, semVeg, tipo, pouco){   // v11.16.1: o elogio da toalha é o do enfeite do ponto (pelo nível)
   if (bravo) return pick(AVAL_BRAVO[bravo]);
   const bom = Math.round(avalNota(r) * 10) >= 40;   // pela nota com uma casa (3,96 vira 4,0)
   const tp = tipo && AVAL_CRIT[1].tipo[tipo];   // v9: a turma e a encomenda têm comentário próprio de agilidade (50%)
   if (tp && Math.random() < 0.5) return pick(tp[bom ? 'bom' : 'ruim']);
   if (bom && AVAL_SIMPLES[(nivel || 1) - 1] && Math.random() < 0.3) return pick(AVAL_SIMPLES[(nivel || 1) - 1]);
   // v8.6.6: com o ambiente bom (4 ou mais), às vezes elogia um enfeite que viu (decor: os ids, e 'toalha')
-  if (bom && decor && decor.length && r[AVAL_CRIT.findIndex(c => c.id === 'amb')] >= 4 && Math.random() < 0.35) return AVAL_DECOR[pick(decor)];
+  if (bom && decor && decor.length && r[AVAL_CRIT.findIndex(c => c.id === 'amb')] >= 4 && Math.random() < 0.35){ const d = pick(decor); return d === 'toalha' ? enfeiteDe((PONTOS.find(p => p.nivel === nivel) || PONTOS[0]).id).elogio : AVAL_DECOR[d]; }
   let k = r.findIndex(v => v != null);
   r.forEach((v, i) => { if (v != null && (bom ? v > r[k] : v < r[k])) k = i; });
   if (!bom && semVeg){ const m = AVAL_CRIT.findIndex(c => c.id === 'menu'); if (r[m] != null && r[m] <= r[k]) return 'Não tinha nada vegetariano.'; }   // v8.6.11
@@ -1678,8 +1688,11 @@ function diaNoPonto(sv, n){ return (n == null ? sv.dia - 1 : n) - sv.pontoDia + 
 const BIA_IDS = ['tenis', 'corrida', 'bandeja', 'sudoku'];
 function upgradeCartao(id){ return BIA_IDS.indexOf(id) >= 0 ? 'bia' : 'melhorias'; }
 const HIST_NOMES = { bia:'Bia', tonhao:'Tonhão', dani:'Dani', joca:'Joca', cami:'Cami', anselmo:'Anselmo', lia:'Lia', braulio:'Bráulio' };   // v11.6: o Bráulio
+/* v11.16.1: verificar atualização (só no app e no site): ATU_TXT e a conta pura do estado ('erro', 'igual' ou 'nova') */
+const ATU_TXT = { procurando:'Procurando versão nova...', nova:'Tem versão nova: {v}! Seu jogo salvo continua.', igual:'Você já está na versão mais nova ({v}).', erro:'Sem internet agora. Tente de novo mais tarde.', atualizando:'Atualizando...' };
+function atuEstado(remota, atual){ if (typeof remota !== 'string' || !remota.trim()) return 'erro'; return remota.trim() === atual ? 'igual' : 'nova'; }
 const CAIXA_MAX = 14;                                 // livro-caixa (v7.2): quantos dias da carreira ficam guardados
-const VERSAO = 'v11.16';                               // vai no resumo do Caixa
+const VERSAO = 'v11.16.1';                               // vai no resumo do Caixa
 const DIVULGA_DIA = 4;                                // antes disso, o movimento é o da inauguração (sem custo); v9.0.2: dia 4, e o padrão é o boca a boca
 function divulgaAberta(n, sv){ return devLivre() || n >= DIVULGA_DIA && !(sv && sv.convDiv === 'pend'); }   // no modo dev, desde o dia 1; v9.0.3: no Modo História, só depois da conversa
 /* v9.6.4: a Efood (os entregadores) só abre depois da conversa dos entregadores, no Modo História; antes dela, nenhum tipo com `retira` vem na agenda */

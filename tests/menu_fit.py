@@ -2,7 +2,7 @@
 #  CA4: o painel do menu principal não rola;
 #  CA1: a lojinha (em cada grupo e em cada seção) tem o painel parado, as abas e o botão de começar o dia à vista, e só o #shop-grid rola;
 #  v11.15: os botões Voltar e Pular da abertura (#ov-abertura) ficam à vista, com 44 px de altura ou mais, sem se cobrir (python3 menu_fit.py abertura);
-#  CA2: os painéis Ranking, Instalar no celular, fim do Turno sem fim, falência, abertura do dia, pausa e fim da Missão zero cabem inteiros;
+#  CA2: os painéis Ranking, Instalar no celular, Atualização (v11.16.1), fim do Turno sem fim, falência, abertura do dia, pausa e fim da Missão zero cabem inteiros;
 #  CA3: o painel Versões não rola (a lista rola por dentro) e o Fechar está à vista.
 from playwright.sync_api import sync_playwright
 import pathlib, os, sys
@@ -74,6 +74,8 @@ with sync_playwright() as p:
             conf(pg,f'{tag} Ranking','#ov-rank .panel',['#rank-nome button','#rank-tabs','#ov-rank .row .btn'])
             run(pg,"document.getElementById('ov-app').classList.add('show');")
             conf(pg,f'{tag} Instalar no celular','#ov-app .panel',['#ov-app .row .btn'])
+            run(pg,"document.getElementById('btn-atu').style.display='';document.getElementById('atu-txt').textContent='Tem versão nova: v11.99! Seu jogo salvo continua.';document.getElementById('btn-atu-ir').style.display='';document.getElementById('ov-atu').classList.add('show');")   # v11.16.1: o pior caso, com a versão nova e os dois botões
+            conf(pg,f'{tag} Atualização','#ov-atu .panel',['#btn-atu-ir','#btn-atu-close'])
             run(pg,FIM+"g.startEndless();g.begin();g.pontos=300;g.money=50;g.finishEndless();")
             conf(pg,f'{tag} fim do Turno sem fim','#ov-endless .panel',['#btn-endless-again','#btn-endless-rank','#btn-endless-menu'])
             run(pg,FIM+"g.startDay(5);g.begin();g.schedule=[];g.money=0;g.custo=100;g.save.bank=0;g.save.socorro=1;g.save.emp=Object.assign(g.save.emp,{resto:550,n:5,atr:true});g.finishDay();")

@@ -16,6 +16,7 @@ self.addEventListener('fetch', e => {
   const req = e.request;
   if (req.method !== 'GET') return;
   const url = new URL(req.url);
+  if (url.pathname.endsWith('/versao.json')) return;   // v11.16.1: a versão publicada nunca vem do cache (o botão Verificar atualização do jogo)
   const fonte = url.host === 'fonts.googleapis.com' || url.host === 'fonts.gstatic.com';
   if (url.origin !== location.origin && !fonte) return;
   // página: rede primeiro (pega a versão nova), cache se estiver sem internet

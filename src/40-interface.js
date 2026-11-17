@@ -9,7 +9,7 @@ const game = new Game(canvas, ctx);
 /* quem nunca fez a Missão zero (e ainda está no dia 1) encontra o botão dela em destaque */
 function treinoPrimeiro(){ return !game.save.treino && game.proxDia <= 1 && !DEV.on; }
 
-const SCREENS = ['ov-menu','ov-manual','ov-intro','ov-treino','ov-pause','ov-end','ov-shop','ov-falencia','ov-endless','ov-rank','ov-ver','ov-app','ov-abertura','ov-escolha','ov-conversa','ov-continua','ov-guia'];
+const SCREENS = ['ov-menu','ov-manual','ov-intro','ov-treino','ov-pause','ov-end','ov-shop','ov-falencia','ov-endless','ov-rank','ov-ver','ov-app','ov-atu','ov-abertura','ov-escolha','ov-conversa','ov-continua','ov-guia'];
 function showOnly(ids){
   SCREENS.forEach(id => { const el = $(id); if (!el) return; if (ids.indexOf(id) >= 0) el.classList.add('show'); else el.classList.remove('show'); });
 }
@@ -88,10 +88,11 @@ function buildChips(){
 
 /* ---------- modo dev: "Modo dev" no selo da versão e no alto da tela, e o link de sair ---------- */
 function devSync(){
-  const t = $('vtag'), b = $('devbadge'), o = $('btn-dev-off');
+  const t = $('vtag'), b = $('devbadge'), o = $('btn-dev-off'), a = $('btn-atu');
   if (t){ t.textContent = VERSAO + (DEV.on ? ' · dev' : ''); t.classList[DEV.on ? 'add' : 'remove']('dev'); }
   if (b) b.style.display = DEV.on ? '' : 'none';
   if (o) o.style.display = DEV.on ? '' : 'none';
+  if (a) a.style.display = (window.LCC_APP || DEV.on) ? '' : 'none';   // v11.16.1: verificar atualização, só no app e no site (e no modo dev)
 }
 
 /* ---------- v9.2.1: painel do modo dev (#ov-dev; liga e desliga só ele, por cima das outras telas) ---------- */
@@ -228,8 +229,14 @@ function devAbaHoje(body, secao, botao){
   { const f = DEV.forca.roupa, r = secao('Roupa da Bia', 'Agora: ' + (typeof f === 'number' ? 'forçada a roupa ' + f : 'a do ponto (' + roupaBia(game) + ')'));   // v11.7
     botao(r, 'Normal', () => game.devRoupa(null), typeof f !== 'number');
     [1, 2, 3, 4].forEach(n => botao(r, String(n), () => game.devRoupa(n), f === n)); }
+  { const f = DEV.forca.atu, r = secao('Atualização (app)', 'Agora: ' + (f === 'nova' ? 'simulando versão nova' : f === 'erro' ? 'simulando sem internet' : 'normal'));   // v11.16.1
+    botao(r, 'Normal', () => game.devAtu(null), !f);
+    botao(r, 'Simular nova', () => game.devAtu('nova'), f === 'nova');
+    botao(r, 'Simular sem internet', () => game.devAtu('erro'), f === 'erro'); }
   { const r = secao('Reação da Bia', 'O gesto do ponto de agora, na hora');   // v11.8
     [['mesa', 'Mesa feliz'], ['bravo', 'Grupo bravo'], ['meta', 'Meta']].forEach(([k, t]) => botao(r, t, () => game.devReacao(k))); }
+  { const r = secao('Entregador do eFood', 'Chega um agora na fila de retirada (com o dia aberto, onde há retirada)');   // v11.16.1
+    botao(r, 'Chegar entregador', () => game.devEntregador()); }
   if (musicaOk(game.ponto)) botao(secao('Música (Terraço)', 'Agora: ' + DEV_MUSICA[game.save.equipe.musica || 0]), 'Música: trocar', () => game.devMusica());   // v10.4: sem música → trioo → pianista
   if ((game.state === 'paused' || game.state === 'playing') && game.mode === 'carreira'){
     let r = secao('No dia', 'Velocidade ' + DEV.vel + '×');
