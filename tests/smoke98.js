@@ -37,7 +37,7 @@ bloco('CA1',()=>{ const {L}=load(), D=L.DESAFIOS, por=id=>D.find(x=>x.id===id);
   ok(fj('d-vips').nome==='VIPs exigentes' && fj('d-vips').linha==='Um dia no Terraço só de clientes exigentes. Toda mesa tem de sair feliz.','CA1: a ficha d-vips');
   ok(f.every(x=>!/\d/.test(x.linha)),'CA1: as fichas não têm número');
   ok(JSON.stringify(L.normDesafios({ junina:3, jogo:2, critico:1, vips:0, xx:3 }))==='{"junina":3,"jogo":2,"critico":1,"vips":0}','CA1: o normDesafios aceita os ids novos (estão na DESAFIOS)');
-  ok(/Mais quatro desafios: a festa junina lotada, o jogo do Brasil, a noite do crítico e os VIPs exigentes\./.test(html) && /<li><b>v12\.1<\/b>(<span class="cur">versão atual<\/span>)?<br>/.test(html) && /^v12\.\d+$/.test(L.VERSAO) && /id="vtag"[^>]*>v12\.\d+</.test(html),'CA1: VERSAO e vtag na série v12 (v12.2 desde a etapa 14a) e a linha da v12.1 no #ov-ver'); });
+  ok(/Mais quatro desafios: a festa junina lotada, o jogo do Brasil, a noite do crítico e os VIPs exigentes\./.test(html) && /<li><b>v12\.1<\/b>(<span class="cur">versão atual<\/span>)?<br>/.test(html) && /^v12(\.\d+)+$/.test(L.VERSAO) && /id="vtag"[^>]*>v12[\d.]+</.test(html),'CA1: VERSAO e vtag na série v12 (v12.2 desde a etapa 14a) e a linha da v12.1 no #ov-ver'); });
 bloco('CA1 (tela)',()=>{
   { const {L,els,g}=mk(); L.buildMenu(); els['btn-desafios'].fire('click');
     const cartoes=todos(els['desafios-grid'],n=>n.getAttribute && n.getAttribute('data-desafio'));

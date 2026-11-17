@@ -9,7 +9,7 @@ const game = new Game(canvas, ctx);
 /* quem nunca fez a Missão zero (e ainda está no dia 1) encontra o botão dela em destaque */
 function treinoPrimeiro(){ return !game.save.treino && game.proxDia <= 1 && !DEV.on; }
 
-const SCREENS = ['ov-menu','ov-manual','ov-intro','ov-treino','ov-pause','ov-end','ov-shop','ov-falencia','ov-endless','ov-rank','ov-ver','ov-app','ov-atu','ov-abertura','ov-escolha','ov-conversa','ov-continua','ov-guia','ov-desafios','ov-desafio-fim','ov-teste-fim'];
+const SCREENS = ['ov-menu','ov-manual','ov-intro','ov-treino','ov-pause','ov-end','ov-shop','ov-falencia','ov-endless','ov-rank','ov-ver','ov-app','ov-atu','ov-abertura','ov-escolha','ov-conversa','ov-continua','ov-guia','ov-desafios','ov-desafio-fim','ov-teste','ov-teste-fim'];
 function showOnly(ids){
   SCREENS.forEach(id => { const el = $(id); if (!el) return; if (ids.indexOf(id) >= 0) el.classList.add('show'); else el.classList.remove('show'); });
 }
@@ -47,7 +47,10 @@ let resetPede = false;   // "Recomeçar do zero": o 1º toque pede confirmação
 function buildMenu(){
   const dv = game.desafiosVisivel;   // v12: o botão Desafios, a partir do Fim da história (ou do modo dev); as três fichas do Manual abrem junto
   $('btn-desafios').style.display = dv ? '' : 'none';
-  $('menu-btns').classList[dv ? 'add' : 'remove']('quatro');   // v12: com o Desafios, a 2ª fileira tem 4 botões: o espaço dentro de cada um encolhe um pouco para caberem
+  $('btn-teste').style.display = DEV.on ? '' : 'none';   // v12.3.1: o Teste de habilidade, só com o modo dev ligado
+  const nbt = 3 + (dv ? 1 : 0) + (DEV.on ? 1 : 0);   // Turno sem fim, Manual e Ranking, mais o Desafios e o Teste
+  $('menu-btns').classList[nbt >= 4 ? 'add' : 'remove']('quatro');   // v12: com 4 botões na 2ª fileira, o espaço dentro de cada um encolhe um pouco para caberem
+  $('menu-btns').classList[nbt >= 5 ? 'add' : 'remove']('cinco');   // v12.3.1: com 5 (Desafios e Teste juntos), encolhe mais
   if (dv) DESAFIOS.forEach(d => game.manualVer('d-' + d.id));
   manualBolinha();
   const sv = game.save, n = game.proxDia, novo = n <= 1 && !sv.caixa.length;
@@ -197,12 +200,29 @@ function devAbaPular(body, secao, botao, dia){
   }
 }
 /* v12.2: a seção "Teste de habilidade": o nome (o mesmo do Ranking) e as quatro fases, cada uma com as tentativas já jogadas; o botão fecha o painel e vai à introdução do dia */
+function testeNome(id){   // v12.3.1: o campo do nome do Teste (o do painel do dev e o da tela do menu): grava no LS.name ao digitar
+  const inp = el('input'); inp.type = 'text'; inp.id = id; inp.maxLength = 16; inp.placeholder = 'Seu nome'; inp.value = lastName(); inp.setAttribute('aria-label', 'Seu nome');
+  const grava = () => { const n = cleanName(inp.value); if (n) lsSet(LS.name, n); };
+  inp.addEventListener('input', grava); inp.addEventListener('change', grava);
+  return { inp, grava };
+}
+/* v12.3.1: a tela do Teste no menu (modo dev): o nome e as quatro fases, cada uma com as tentativas; o toque começa a fase */
+function buildTeste(){
+  const box = $('teste-lista'), tent = testeTent();
+  clearEl(box);
+  const { inp, grava } = testeNome('teste-nome');
+  const campo = el('div', 'row'); campo.appendChild(inp); box.appendChild(campo);
+  const fases = el('div', 'teste-fases'); box.appendChild(fases);
+  TESTES.forEach(t => {
+    const b = el('button', 'btn alt', t.nome + ' (' + tent[t.id] + ')'); b.type = 'button'; b.setAttribute('data-teste', t.id);
+    b.addEventListener('click', () => { Sfx.init(); Sfx.resume(); Sfx.tap(); grava(); game.startTeste(t.id); });
+    fases.appendChild(b);
+  });
+}
 function devTeste(secao, botao){
   const tent = testeTent();
   let r = secao('Teste de habilidade', 'Quatro fases padrão, sempre com os mesmos clientes. No fim, copie o relatório e mande.');
-  const inp = el('input'); inp.type = 'text'; inp.id = 'dev-teste-nome'; inp.maxLength = 16; inp.placeholder = 'Seu nome'; inp.value = lastName(); inp.setAttribute('aria-label', 'Seu nome');
-  const grava = () => { const n = cleanName(inp.value); if (n) lsSet(LS.name, n); };
-  inp.addEventListener('input', grava); inp.addEventListener('change', grava);
+  const { inp, grava } = testeNome('dev-teste-nome');
   r.appendChild(inp);
   r = secao('Fases');
   TESTES.forEach(t => {

@@ -51,6 +51,8 @@ p{margin:calc(var(--u)*6) 0;font-size:max(12px,calc(var(--u)*16));line-height:1.
 .chip{font-family:var(--fd);font-size:max(13px,calc(var(--u)*18));min-width:max(44px,calc(var(--u)*50));min-height:max(44px,calc(var(--u)*46));background:var(--azulejo);border:calc(var(--u)*3) solid var(--tinta);border-radius:calc(var(--u)*12);cursor:pointer;color:var(--tinta);box-shadow:0 calc(var(--u)*4) 0 var(--tinta)}
 .menu-panel .chips{gap:calc(var(--u)*6)}   /* 8 chips (0 a 7) numa linha */
 .menu-panel .chip{min-width:max(40px,calc(var(--u)*46))}
+.menu-panel .chip{flex:none;min-height:36px}   /* só aparecem no modo dev */
+@media (max-height:620px){.menu-panel .chips{flex-wrap:nowrap;overflow-x:auto;padding-bottom:2px}}   /* v12.3.1: em tela baixa, os 10 chips do modo dev numa fileira só, que rola por dentro (antes passavam da largura do painel ou ocupavam duas fileiras) */
 .menu-panel .menu-info{margin:calc(var(--u)*4) 0 0}   /* v8.3: o caixa, as estrelas e o lucro acumulado da campanha */
 .menu-panel .menu-aviso{margin:calc(var(--u)*6) 0 0;padding:calc(var(--u)*4) calc(var(--u)*8);border-radius:calc(var(--u)*8);background:var(--creme);border:2px solid var(--mostarda);font-weight:600}   /* v8.6.9: o aviso de uma vez só (cardápio que cresce) */
 .menu-panel .menu-aviso .link{margin:0;padding:0 4px;min-height:0}
@@ -285,6 +287,7 @@ table.cx .rs{font-size:inherit}
 .menu-panel .row.tight{margin-top:calc(var(--u)*8);gap:calc(var(--u)*10)}
 .menu-panel .row.tight .btn{padding-left:calc(var(--u)*15);padding-right:calc(var(--u)*15)}   /* v8.5: cabem Continuar, Missão zero e História na 1ª linha */
 .menu-panel .menu-btns.quatro .row.tight .btn{padding-left:calc(var(--u)*9);padding-right:calc(var(--u)*9)}   /* v12: 4 botões na 2ª fileira com o Desafios */
+.menu-panel .menu-btns.cinco .row.tight .btn{padding-left:calc(var(--u)*5);padding-right:calc(var(--u)*5);font-size:max(13px,calc(var(--u)*17))}   /* v12.3.1: 5 botões, com o Desafios e o Teste (modo dev) */
 .menu-panel .btn{font-size:max(14px,calc(var(--u)*20));padding:calc(var(--u)*6) calc(var(--u)*14)}
 .ver-ico{margin-left:auto;align-self:flex-end;width:max(40px,calc(var(--u)*40));height:max(40px,calc(var(--u)*40));display:flex;align-items:center;justify-content:center;border-radius:50%;border:calc(var(--u)*2) solid rgba(34,32,28,.3);background:transparent;color:#7a7263;cursor:pointer;padding:0;transition:color .15s,background .15s,border-color .15s}
 .ver-ico:hover,.ver-ico:focus-visible{color:var(--faixa);background:var(--creme);border-color:var(--faixa)}
@@ -397,11 +400,14 @@ table.rank tr.me td{background:#fbe7a8}
   .menu-panel .title{font-size:max(24px,calc(var(--u)*44));padding-right:calc(var(--u)*40)}
   .menu-panel .tag{margin:calc(var(--u)*8) 0 calc(var(--u)*4)}
   .menu-panel .lbl{margin-top:calc(var(--u)*4)}
-  .menu-panel .chips{gap:4px;flex-wrap:nowrap}
-  .menu-panel .chip{min-width:38px}
+  .menu-panel .chips{gap:4px;flex-wrap:nowrap;overflow-x:auto}
+  .menu-panel .chip{min-width:38px;min-height:28px}
   .menu-btns{display:flex;flex-wrap:wrap;gap:8px;margin-top:calc(var(--u)*10)}
   .menu-btns .row.tight{display:contents}
   .menu-panel .links .link{margin-top:calc(var(--u)*4)}
+  .menu-panel .links{gap:2px 8px}
+  .menu-panel .links .link{min-height:28px}
+  .menu-panel .ver-ico{width:30px;height:30px}   /* v12.3.1: com o modo dev, os links e os três ícones cabem em menos fileiras */
 }
 .item .tonxp{grid-column:1 / -1;font-weight:700;font-size:.9em}   /* v8.8: experiência do Tonhão */
 .item .tonxp-bar{height:8px;border-radius:4px;background:rgba(0,0,0,.15);margin-top:3px;overflow:hidden}
@@ -448,6 +454,20 @@ table.rank tr.me td{background:#fbe7a8}
   #ov-endless .row .btn,#ov-falencia .row .btn{min-height:32px;font-size:14px;padding:2px 14px;box-shadow:0 3px 0 var(--tinta)}
 }
 
+/* v12.3.1: a tela do Teste de habilidade (modo dev) */
+.teste-panel{width:calc(var(--u)*640);max-width:100%}
+.teste-panel #teste-nome{font:600 max(16px,calc(var(--u)*17)) var(--fb);color:var(--tinta);background:#fff;border:calc(var(--u)*2) solid var(--tinta);border-radius:calc(var(--u)*6);min-height:max(40px,calc(var(--u)*42));padding:0 10px;width:100%;box-sizing:border-box}
+.teste-fases{display:grid;grid-template-columns:1fr 1fr;gap:calc(var(--u)*10);margin:calc(var(--u)*10) 0}
+.teste-fases .btn{min-height:44px}
+@media (max-width:600px) and (min-height:461px){.teste-fases{grid-template-columns:1fr}}
+@media (max-height:460px){
+  .teste-panel{padding:calc(var(--u)*10) calc(var(--u)*16)}
+  .teste-panel h2{font-size:max(18px,calc(var(--u)*28));margin-bottom:0}
+  .teste-panel p{margin:2px 0}
+  .teste-fases{gap:6px;margin:4px 0}
+  .teste-panel .row{margin-top:calc(var(--u)*4)}
+  .teste-panel .btn{min-height:34px;box-shadow:0 3px 0 var(--tinta);font-size:14px}
+}
 /* v12, os Desafios: os cartões da tela (nome, medalha e o "?" da ficha) e o cartão do fim */
 .desafios-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:calc(var(--u)*12);width:calc(var(--u)*620);max-width:100%;margin:calc(var(--u)*10) 0}
 .dcard{position:relative}
@@ -480,7 +500,7 @@ table.rank tr.me td{background:#fbe7a8}
 
     <div class="ov show" id="ov-menu">
       <div class="panel menu-panel">
-        <span class="vtag" id="vtag" aria-label="Versão 12.3">v12.3</span>
+        <span class="vtag" id="vtag" aria-label="Versão 12.3.1">v12.3.1</span>
         <h1 class="title">Lanchonete <br>Corre-Corre</h1>
         <p class="tag">Ajude a Bia a atender a freguesia da esquina antes que o cafezinho esfrie!</p>
         <div class="lbl" id="menu-dia">História</div>
@@ -497,6 +517,7 @@ table.rank tr.me td{background:#fbe7a8}
           <div class="row tight">
             <button class="btn" id="btn-endless">Turno sem fim</button>
             <button class="btn alt" id="btn-desafios" style="display:none">Desafios</button>
+            <button class="btn alt" id="btn-teste" style="display:none">Teste</button>
             <button class="btn alt" id="btn-manual">Manual</button>
             <button class="btn alt" id="btn-rank">Ranking</button>
           </div>
@@ -522,6 +543,15 @@ table.rank tr.me td{background:#fbe7a8}
         <h2>Desafios</h2>
         <div class="desafios-grid" id="desafios-grid" role="list"></div>
         <div class="row"><button class="btn go" id="btn-desafios-voltar">Voltar</button></div>
+      </div>
+    </div>
+
+    <div class="ov" id="ov-teste">
+      <div class="panel teste-panel">
+        <h2>Teste de habilidade</h2>
+        <p class="small">Quatro fases, sempre com os mesmos clientes. No fim, copie o relatório e mande.</p>
+        <div id="teste-lista"></div>
+        <div class="row"><button class="btn go" id="btn-teste-menu-volta" type="button">Voltar</button></div>
       </div>
     </div>
 
@@ -764,7 +794,8 @@ table.rank tr.me td{background:#fbe7a8}
       <div class="panel">
         <h2>Versões</h2>
         <ul class="verlist">
-          <li><b>v12.3</b><span class="cur">versão atual</span><br>17/11/2026 &mdash; Os desafios agora têm sempre os mesmos clientes, para todo mundo e em toda tentativa.</li>
+          <li><b>v12.3.1</b><span class="cur">versão atual</span><br>No modo dev, o Teste de habilidade ganhou um botão no menu.</li>
+          <li><b>v12.3</b><br>17/11/2026 &mdash; Os desafios agora têm sempre os mesmos clientes, para todo mundo e em toda tentativa.</li>
           <li><b>v12.2</b><br>17/11/2026 &mdash; Só no modo dev: o Teste de habilidade, quatro fases padrão com relatório para nivelar o bot com o jeito de jogar de gente.</li>
           <li><b>v12.1</b><br>17/11/2026 &mdash; Mais quatro desafios: a festa junina lotada, o jogo do Brasil, a noite do crítico e os VIPs exigentes.</li>
           <li><b>v12</b><br>17/11/2026 &mdash; Desafios: depois do fim da história, dias avulsos que valem medalha de bronze, prata ou ouro.</li>
@@ -2535,7 +2566,7 @@ const HIST_NOMES = { bia:'Bia', tonhao:'Tonhão', dani:'Dani', joca:'Joca', cami
 const ATU_TXT = { procurando:'Procurando versão nova...', nova:'Tem versão nova: {v}! Seu jogo salvo continua.', igual:'Você já está na versão mais nova ({v}).', erro:'Sem internet agora. Tente de novo mais tarde.', atualizando:'Atualizando...' };
 function atuEstado(remota, atual){ if (typeof remota !== 'string' || !remota.trim()) return 'erro'; return remota.trim() === atual ? 'igual' : 'nova'; }
 const CAIXA_MAX = 14;                                 // livro-caixa (v7.2): quantos dias da carreira ficam guardados
-const VERSAO = 'v12.3';                               // vai no resumo do Caixa
+const VERSAO = 'v12.3.1';                               // vai no resumo do Caixa
 const DIVULGA_DIA = 4;                                // antes disso, o movimento é o da inauguração (sem custo); v9.0.2: dia 4, e o padrão é o boca a boca
 function divulgaAberta(n, sv){ return devLivre() || n >= DIVULGA_DIA && !(sv && sv.convDiv === 'pend'); }   // no modo dev, desde o dia 1; v9.0.3: no Modo História, só depois da conversa
 /* v9.6.4: a Efood (os entregadores) só abre depois da conversa dos entregadores, no Modo História; antes dela, nenhum tipo com `retira` vem na agenda */
@@ -14878,7 +14909,7 @@ const game = new Game(canvas, ctx);
 /* quem nunca fez a Missão zero (e ainda está no dia 1) encontra o botão dela em destaque */
 function treinoPrimeiro(){ return !game.save.treino && game.proxDia <= 1 && !DEV.on; }
 
-const SCREENS = ['ov-menu','ov-manual','ov-intro','ov-treino','ov-pause','ov-end','ov-shop','ov-falencia','ov-endless','ov-rank','ov-ver','ov-app','ov-atu','ov-abertura','ov-escolha','ov-conversa','ov-continua','ov-guia','ov-desafios','ov-desafio-fim','ov-teste-fim'];
+const SCREENS = ['ov-menu','ov-manual','ov-intro','ov-treino','ov-pause','ov-end','ov-shop','ov-falencia','ov-endless','ov-rank','ov-ver','ov-app','ov-atu','ov-abertura','ov-escolha','ov-conversa','ov-continua','ov-guia','ov-desafios','ov-desafio-fim','ov-teste','ov-teste-fim'];
 function showOnly(ids){
   SCREENS.forEach(id => { const el = $(id); if (!el) return; if (ids.indexOf(id) >= 0) el.classList.add('show'); else el.classList.remove('show'); });
 }
@@ -14916,7 +14947,10 @@ let resetPede = false;   // "Recomeçar do zero": o 1º toque pede confirmação
 function buildMenu(){
   const dv = game.desafiosVisivel;   // v12: o botão Desafios, a partir do Fim da história (ou do modo dev); as três fichas do Manual abrem junto
   $('btn-desafios').style.display = dv ? '' : 'none';
-  $('menu-btns').classList[dv ? 'add' : 'remove']('quatro');   // v12: com o Desafios, a 2ª fileira tem 4 botões: o espaço dentro de cada um encolhe um pouco para caberem
+  $('btn-teste').style.display = DEV.on ? '' : 'none';   // v12.3.1: o Teste de habilidade, só com o modo dev ligado
+  const nbt = 3 + (dv ? 1 : 0) + (DEV.on ? 1 : 0);   // Turno sem fim, Manual e Ranking, mais o Desafios e o Teste
+  $('menu-btns').classList[nbt >= 4 ? 'add' : 'remove']('quatro');   // v12: com 4 botões na 2ª fileira, o espaço dentro de cada um encolhe um pouco para caberem
+  $('menu-btns').classList[nbt >= 5 ? 'add' : 'remove']('cinco');   // v12.3.1: com 5 (Desafios e Teste juntos), encolhe mais
   if (dv) DESAFIOS.forEach(d => game.manualVer('d-' + d.id));
   manualBolinha();
   const sv = game.save, n = game.proxDia, novo = n <= 1 && !sv.caixa.length;
@@ -15066,12 +15100,29 @@ function devAbaPular(body, secao, botao, dia){
   }
 }
 /* v12.2: a seção "Teste de habilidade": o nome (o mesmo do Ranking) e as quatro fases, cada uma com as tentativas já jogadas; o botão fecha o painel e vai à introdução do dia */
+function testeNome(id){   // v12.3.1: o campo do nome do Teste (o do painel do dev e o da tela do menu): grava no LS.name ao digitar
+  const inp = el('input'); inp.type = 'text'; inp.id = id; inp.maxLength = 16; inp.placeholder = 'Seu nome'; inp.value = lastName(); inp.setAttribute('aria-label', 'Seu nome');
+  const grava = () => { const n = cleanName(inp.value); if (n) lsSet(LS.name, n); };
+  inp.addEventListener('input', grava); inp.addEventListener('change', grava);
+  return { inp, grava };
+}
+/* v12.3.1: a tela do Teste no menu (modo dev): o nome e as quatro fases, cada uma com as tentativas; o toque começa a fase */
+function buildTeste(){
+  const box = $('teste-lista'), tent = testeTent();
+  clearEl(box);
+  const { inp, grava } = testeNome('teste-nome');
+  const campo = el('div', 'row'); campo.appendChild(inp); box.appendChild(campo);
+  const fases = el('div', 'teste-fases'); box.appendChild(fases);
+  TESTES.forEach(t => {
+    const b = el('button', 'btn alt', t.nome + ' (' + tent[t.id] + ')'); b.type = 'button'; b.setAttribute('data-teste', t.id);
+    b.addEventListener('click', () => { Sfx.init(); Sfx.resume(); Sfx.tap(); grava(); game.startTeste(t.id); });
+    fases.appendChild(b);
+  });
+}
 function devTeste(secao, botao){
   const tent = testeTent();
   let r = secao('Teste de habilidade', 'Quatro fases padrão, sempre com os mesmos clientes. No fim, copie o relatório e mande.');
-  const inp = el('input'); inp.type = 'text'; inp.id = 'dev-teste-nome'; inp.maxLength = 16; inp.placeholder = 'Seu nome'; inp.value = lastName(); inp.setAttribute('aria-label', 'Seu nome');
-  const grava = () => { const n = cleanName(inp.value); if (n) lsSet(LS.name, n); };
-  inp.addEventListener('input', grava); inp.addEventListener('change', grava);
+  const { inp, grava } = testeNome('dev-teste-nome');
   r.appendChild(inp);
   r = secao('Fases');
   TESTES.forEach(t => {
@@ -17196,6 +17247,7 @@ function rostinhoCliente(k){
 game.hooks.state = function(s){
   if (s === 'menu'){ game.resetDay(game.proxDia); buildMenu(); devSync(); showOnly(['ov-menu']); }
   else if (s === 'desafios'){ game.sairDesafio(); game.resetDay(game.proxDia); buildDesafios(); showOnly(['ov-desafios']); }   // v12: a tela de Desafios (o save de verdade volta, se estava no de mentira)
+  else if (s === 'teste'){ game.sairDesafio(); game.resetDay(game.proxDia); buildTeste(); showOnly(['ov-teste']); }   // v12.3.1: a tela do Teste de habilidade (modo dev); como nos Desafios, o save de verdade volta
   else if (s === 'desafiofim'){ buildDesafioFim(); showOnly(['ov-desafio-fim']); }
   else if (s === 'testefim'){ buildTesteFim(); showOnly(['ov-teste-fim']); }   // v12.2: o fim do Teste de habilidade (o relatório)
   else if (s === 'intro'){
@@ -17451,6 +17503,8 @@ on('btn-manual-voltar', () => { Sfx.tap(); fecharManual(); });
 on('btn-endless',    () => { Sfx.init(); Sfx.resume(); Sfx.tap(); game.startEndless(); });
 on('btn-rank',       () => { Sfx.init(); Sfx.resume(); Sfx.tap(); openRank('ov-menu'); });
 on('btn-desafios',   () => { Sfx.init(); Sfx.resume(); Sfx.tap(); game.setState('desafios'); });   // v12
+on('btn-teste',   () => { Sfx.init(); Sfx.resume(); Sfx.tap(); game.setState('teste'); });   // v12.3.1
+on('btn-teste-menu-volta', () => { Sfx.tap(); game.setState('menu'); });
 on('btn-desafios-voltar', () => { Sfx.tap(); game.setState('menu'); });
 on('btn-desafio-de-novo', () => { Sfx.init(); Sfx.resume(); Sfx.tap(); if (game.desafio) game.startDesafio(game.desafio.id); });
 on('btn-desafio-copia',  () => { Sfx.init(); testeCopia('desafio'); });   // v12.3: só aparece no modo dev
@@ -17458,7 +17512,7 @@ on('btn-desafio-lista',   () => { Sfx.tap(); game.setState('desafios'); });
 /* v12.2: o fim do Teste de habilidade: copiar o relatório (sem ele na tela, a não ser que a cópia falhe), jogar de novo (a mesma fase, tentativa + 1) e voltar ao menu (com o save de verdade) */
 on('btn-teste-copia',   () => { Sfx.init(); testeCopia(); });
 on('btn-teste-de-novo', () => { Sfx.init(); Sfx.resume(); Sfx.tap(); if (game.teste) game.startTeste(game.teste.id); });
-on('btn-teste-volta',   () => { Sfx.tap(); game.setState('menu'); });
+on('btn-teste-volta',   () => { Sfx.tap(); game.setState(DEV.on ? 'teste' : 'menu'); });   // v12.3.1: no modo dev, volta à tela do Teste
 on('btn-ver',        () => { Sfx.tap(); showOnly(['ov-ver']); });
 on('btn-ver-close',  () => { Sfx.tap(); showOnly(['ov-menu']); });
 /* modo dev: 10 toques seguidos no selo da versão (no máximo 1,5 s entre um e outro) ligam e desligam */
@@ -17534,7 +17588,7 @@ on('btn-reset',      () => {
   recomeca();
 });
 on('btn-start',      () => { Sfx.init(); Sfx.resume(); Sfx.ok(); game.begin(); });
-on('btn-intro-menu', () => game.setState(game.desafio && !game.teste ? 'desafios' : 'menu'));   // v12.2: o teste volta ao menu
+on('btn-intro-menu', () => game.setState(game.teste && DEV.on ? 'teste' : game.desafio && !game.teste ? 'desafios' : 'menu'));   // v12.2: o teste volta ao menu; v12.3.1: no modo dev, à tela do Teste
 on('btn-resume',     () => { Sfx.tap(); game.resume(); });
 /* v9.6.13: na carreira com o dia aberto, Reiniciar e Menu da pausa pedem um 2º toque (o 1º só troca o texto do botão) */
 let pausaPede = null;
@@ -17551,7 +17605,7 @@ function pausaConfirma(id, normal){
 on('btn-restart',    () => { if (!pausaConfirma('btn-restart', 'Confirmar: recomeçar o dia')) return; pausaReset(); if (game.mode === 'semfim') game.startEndless(); else if (game.mode === 'treino') game.startTreino(); else if (game.teste) game.startTeste(game.teste.id); else if (game.desafio) game.startDesafio(game.desafio.id); else { game.encerrar(); game.startDay(game.day.n); } });
 on('btn-treino-dia1', () => { Sfx.tap(); playCareer(); });
 on('btn-treino-menu', () => game.setState('menu'));
-on('btn-pause-menu', () => { if (!pausaConfirma('btn-pause-menu', 'Confirmar: sair do dia')) return; pausaReset(); game.encerrar(); game.encerrado = null; game.setState(game.desafio && !game.teste ? 'desafios' : 'menu'); });
+on('btn-pause-menu', () => { if (!pausaConfirma('btn-pause-menu', 'Confirmar: sair do dia')) return; pausaReset(); game.encerrar(); game.encerrado = null; game.setState(game.teste && DEV.on ? 'teste' : game.desafio && !game.teste ? 'desafios' : 'menu'); });
 on('btn-end-menu',   () => game.setState('menu'));
 on('btn-next',       () => { if (game.result && game.result.noite) fluxoHistoria(() => game.goShop(game.proxDia)); else game.goShop(game.proxDia); });   // v9.6.10: as conversas já tocaram antes dos resultados (v10.10: menos na noite da estrela, que toca depois)
 on('btn-shop-go',    () => { Sfx.tap(); game.startDay(game.shopNext); });
