@@ -138,8 +138,8 @@ bloco('CA4 (ajudante e aparelho)',()=>{
 // ---------- CA5: o relatório ----------
 bloco('CA5',()=>{
   const R='(\\d+,\\d / \\d+,\\d / \\d+|—)';
-  const re=[/^LCC-TESTE 1 · v12(\.\d+)+ · Garagem · dia 7 · semente 7001$/,
-    /^Jogador: Ana · tentativa 3 · (toque \d+×\d+|mouse \d+×\d+|bot -) · \d{2}\/\d{2}\/\d{4} \d{2}:\d{2}$/,
+  const re=[/^LCC-TESTE 2 · v12(\.\d+)+ · Garagem · dia 7 · semente 7001$/,
+    /^Jogador: Ana · tentativa 3 · (celular|tablet|computador|bot) · (toque \d+×\d+|mouse \d+×\d+|bot -) · \d{2}\/\d{2}\/\d{4} \d{2}:\d{2}$/,
     /^Resultado: lucro -?R\$ \d+ · meta R\$ \d+ \(-?\d+%\) · (0★|★{1,3}) · servidos \d+ de \d+ · Gúgou (\d,\d|—)$/,
     /^Perdidos: \d+ · fila sem mesa \d+ · fila com mesa \d+ · pedido \d+ · prato \d+ · conta \d+ · retirada \d+ · esfriou \d+$/,
     new RegExp('^Reação em s \\(média / mediana / casos\\): sentar '+R+' · pedido '+R+' · prato '+R+' · conta '+R+' · mesa suja '+R+'$'),
@@ -160,7 +160,7 @@ bloco('CA5',()=>{
   ok(JSON.stringify(JSON.parse(store['lcc-teste']))===JSON.stringify({ garagem:3, industrial:1, avenida:0, terraco:2 }) && g.teste.tent===2,'CA5: a tentativa é contada por fase ('+store['lcc-teste']+')');
   // sem nome e sem caso nenhum
   { const x=mk(); x.g.startTeste('terraco'); x.g.begin(); roda(x.g,2); x.g.schedule=[]; x.g.groups=[]; x.g.custo=0; x.g.money=0; roda(x.g,3); const l=x.g.testeRel.split('\n');
-    ok(/^Jogador: sem nome · tentativa 1 /.test(l[1]) && /^LCC-TESTE 1 · v12(\.\d+)+ · Terraço Suíça · dia 58 · semente 7004$/.test(l[0]),'CA5: sem nome no Ranking, o relatório diz "sem nome"');
+    ok(/^Jogador: sem nome · tentativa 1 /.test(l[1]) && /^LCC-TESTE 2 · v12(\.\d+)+ · Terraço Suíça · dia 58 · semente 7004$/.test(l[0]),'CA5: sem nome no Ranking, o relatório diz "sem nome"');
     ok(l[4]==='Reação em s (média / mediana / casos): sentar — · pedido — · prato — · conta — · mesa suja —','CA5: sem nenhum caso, as cinco reações saem "—"');
     ok(/^Resultado: lucro -?R\$ \d+ · meta R\$ \d+ \(-?\d+%\) · 0★ · servidos 0 de \d+ · Gúgou —$/.test(l[2]),'CA5: sem estrela, "0★"; sem nota, "Gúgou —" ('+l[2]+')'); }
   // o dia encerrado no modo dev
@@ -179,7 +179,7 @@ const prepara=(copia)=>{ const H=mk(); if(copia){ const cr=H.doc.createElement, 
       ok(txt(els['teste-fim-titulo'])==='Teste: Garagem' && /^Lucro R\$ \d+ · ★{1,3}$/.test(txt(els['teste-fim-msg'])),'CA6: o título "Teste: Garagem" e a linha do lucro e das estrelas ('+txt(els['teste-fim-msg'])+')');
       ok(!/LCC-TESTE/.test(txt(els['ov-teste-fim'])),'CA6: o relatório não aparece na tela');
       els['btn-teste-copia'].fire('click'); await espera(10);
-      ok(cap.v===g.testeRel && /^LCC-TESTE 1/.test(cap.v),'CA6: "Copiar relatório" chama o copyText com o texto do relatório');
+      ok(cap.v===g.testeRel && /^LCC-TESTE 2/.test(cap.v),'CA6: "Copiar relatório" chama o copyText com o texto do relatório');
       ok(txt(els['teste-fim-aviso'])==='Copiado! Cole na conversa.' && todos(els['teste-fim-caixa'],n=>n.tagName==='TEXTAREA').length===0 && !/LCC-TESTE/.test(txt(els['ov-teste-fim'])),'CA6: copiou: "Copiado! Cole na conversa." e o relatório continua fora da tela'); }
     // a cópia que falha, jogar de novo e voltar
     { const F=prepara(false), {g:g2,els:e2}=F; e2['btn-teste-copia'].fire('click'); await espera(10);

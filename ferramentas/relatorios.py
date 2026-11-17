@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Lê os relatórios do Teste de habilidade e dos Desafios (blocos 'LCC-TESTE 1 · ...'; os dos Desafios têm "Desafio: <nome>" no lugar da fase) do docs/RELATORIOS.md e mostra, por fase (ou desafio) e por jogador,
+"""Lê os relatórios do Teste de habilidade e dos Desafios (blocos 'LCC-TESTE 1 · ...' ou 'LCC-TESTE 2 · ...', o 2 com o tipo do aparelho; os dos Desafios têm "Desafio: <nome>" no lugar da fase) do docs/RELATORIOS.md e mostra, por fase (ou desafio) e por jogador,
 a melhor tentativa (pelo lucro), a mediana do lucro e o número de tentativas.
 Uso: python3 ferramentas/relatorios.py [arquivo]            (padrão: docs/RELATORIOS.md)
      python3 ferramentas/relatorios.py --bot [arquivo]      (roda junto, em tests/, `TESTE=<id>` ou, nos desafios, `DESAFIO=<id>` `node balance.js 20` com o bot comum e o afiado no que tem relatório)"""
@@ -38,10 +38,11 @@ def blocos(txt):
 
 
 def leia(b):
-    """Um bloco do formato 1 vira um dict; None se vier incompleto."""
+    """Um bloco dos formatos 1 e 2 vira um dict; None se vier incompleto. No formato 2 a linha Jogador traz o tipo (celular, tablet, computador, bot) antes do toque/mouse; no 1 o tipo fica '?'."""
     t = '\n'.join(b)
-    m = re.match(r'LCC-TESTE 1 · (\S+) · (.+?) · dia (\d+) · semente (\d+)', b[0])
-    j = re.search(r'Jogador: (.+?) · tentativa (\d+) · (\S+) (\S+) · (\S+ \S+)', t)
+    m = re.match(r'LCC-TESTE [12] · (\S+) · (.+?) · dia (\d+) · semente (\d+)', b[0])
+    f2 = b[0].startswith('LCC-TESTE 2 ')
+    j = re.search(r'Jogador: (.+?) · tentativa (\d+) · ' + (r'(\S+) · ' if f2 else '') + r'(\S+) (\S+) · (\S+ \S+)', t)
     r = re.search(r'Resultado: lucro (-?)R\$ (\d+) · meta R\$ (\d+) \((-?\d+)%\) · (0★|★+) · servidos (\d+) de (\d+) · Gúgou (\S+)', t)
     p = re.search(r'Perdidos: (\d+) ·', t)
     k = re.search(r'Ritmo: ' + NUM + r' ações/min · (\d+) toques perdidos · fila média ' + NUM, t)
@@ -54,7 +55,7 @@ def leia(b):
         x = re.search(nome + r' (?:—|' + NUM + ' / ' + NUM + r' / (\d+))', lr)
         reac[nome] = (n(x.group(1)), n(x.group(2)), int(x.group(3))) if x and x.group(1) else None
     return dict(versao=m.group(1), fase=m.group(2), dia=int(m.group(3)), semente=int(m.group(4)),
-                jogador=j.group(1), tent=int(j.group(2)), aparelho=j.group(3) + ' ' + j.group(4), quando=j.group(5),
+                jogador=j.group(1), tent=int(j.group(2)), tipo=j.group(3) if f2 else '?', aparelho=j.group(3 + f2) + ' ' + j.group(4 + f2), quando=j.group(5 + f2),
                 lucro=(-1 if r.group(1) else 1) * int(r.group(2)), meta=int(r.group(3)), pct=int(r.group(4)),
                 estrelas=0 if r.group(5) == '0★' else len(r.group(5)), servidos=int(r.group(6)), de=int(r.group(7)),
                 gugou=None if r.group(8) == '—' else n(r.group(8)), perdidos=int(p.group(1)), reac=reac,
@@ -79,9 +80,9 @@ def main():
     txt = open(arq, encoding='utf-8').read()
     lidos, ruins = [], 0
     for b in blocos(txt):
-        if not re.match(r'LCC-TESTE 1 ', b[0]):
+        if not re.match(r'LCC-TESTE [12] ', b[0]):
             ruins += 1
-            print('(formato diferente do 1, ignorado):', b[0][:60])
+            print('(formato desconhecido, ignorado):', b[0][:60])
             continue
         x = leia(b)
         if x:
@@ -94,11 +95,15 @@ def main():
         da_fase = [x for x in lidos if x['fase'] == nome]
         if not da_fase:
             continue
+        tipos = {}
+        for x in da_fase:
+            tipos[x['tipo']] = tipos.get(x['tipo'], 0) + 1
         print('\n== %s (%d relatórios) ==' % (nome, len(da_fase)))
+        print('aparelhos: ' + ' · '.join('%s %d' % (k, v) for k, v in sorted(tipos.items())))
         for jog in sorted({x['jogador'] for x in da_fase}):
             rs = [x for x in da_fase if x['jogador'] == jog]
             melhor = max(rs, key=lambda x: x['lucro'])
-            print('%s: %d tentativas · lucro: mediana R$ %d, melhor R$ %d' % (jog, len(rs), statistics.median(x['lucro'] for x in rs), melhor['lucro']))
+            print('%s (%s): %d tentativas · lucro: mediana R$ %d, melhor R$ %d' % (jog, ', '.join(sorted({x['tipo'] for x in rs})), len(rs), statistics.median(x['lucro'] for x in rs), melhor['lucro']))
             print('   melhor: ' + linha(melhor) + ' · ' + melhor['aparelho'] + (' (encerrado no modo dev)' if melhor['dev'] else ''))
     if '--bot' in sys.argv:
         for nome, id in FASES.items():
