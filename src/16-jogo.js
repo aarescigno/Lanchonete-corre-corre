@@ -119,7 +119,7 @@ class Game {
     // imprevistos (v8): o sorteio do dia (feito ao começar o dia, e guardado até ele acabar) diz o clima e o que quebra
     const so = n && this.save.manut.sorteio && this.save.manut.sorteio.d === n ? this.save.manut.sorteio : null;
     this.clima = so ? so.clima : '';
-    this.evento = so && so.ev ? so.ev : '';   // v10.6: o evento de bairro do dia ('junina', 'jogo' ou '')
+    this.evento = so && so.ev ? so.ev : this.desafio && this.desafio.mod.evento ? this.desafio.mod.evento : '';   // v10.6: o evento de bairro do dia ('junina', 'jogo' ou ''); v12.1: o Desafio força o dele (mod.evento), sem sorteio
     this.gol = this.evento === 'jogo' ? rand(EVENTOS.jogo.gol[0], EVENTOS.jogo.gol[1]) * this.day.speed * this.day.time : 0;   // v10.6: a fração é da janela de chegadas (speed × turno), como as fases this.golFeito = false; this.golT = 0;   // o gol do jogo: o segundo do turno em que sai
     this.quebras = so ? so.quebra.map(q => ({ id:q.id, t:q.f * this.day.time, on:false, fixed:false })) : [];
     this.usos = { fogao:0, geladeira:0, cafeteira:0 };
@@ -151,7 +151,7 @@ class Game {
     this.bia.reset();
     this.dani.reset(); this.joca.reset(); this.cami.reset();
     this.fx = [];
-    this.stats = { served:0, lost:0, chain:0, spawned:0, full:0, vip:0, vipLost:0, juice:0, juiceMiss:0, trash:0, washed:0, emptied:0, sucoEsp:0, doces:0, docesMarm:0, cafesEsp:0, drinks:0, crit:0, consertos:0, quebras:0, lostBy:{ semMesa:0, comMesa:0, pedido:0, prato:0, conta:0, retirada:0 }, lotadoT:0, bravoMesa:0, lixoCheio:false, marmitas:0, esfriou:0, jogadas:0, lostGrande:0, completas:0, exigentes:0, rodadas:0, gol:0, rosa:0 };
+    this.stats = { served:0, lost:0, chain:0, spawned:0, full:0, vip:0, vipLost:0, juice:0, juiceMiss:0, trash:0, washed:0, emptied:0, sucoEsp:0, doces:0, docesMarm:0, cafesEsp:0, drinks:0, crit:0, consertos:0, quebras:0, lostBy:{ semMesa:0, comMesa:0, pedido:0, prato:0, conta:0, retirada:0 }, criticoH:0, saiMin:5, lotadoT:0, bravoMesa:0, lixoCheio:false, marmitas:0, esfriou:0, jogadas:0, lostGrande:0, completas:0, exigentes:0, rodadas:0, gol:0, rosa:0 };
     this.lastKind = null; this.chainN = 0;
     this.ending = false; this.endTimer = 0; this.reason = '';
     this.fechado = false; this.fechadoT = 0;   // v9.6.4: a porta fecha quando o relógio zera; fechadoT: segundos desde então
@@ -177,6 +177,7 @@ class Game {
     const D = this.desafio, m = D.mod, d = this.diaPonto(diaOf(D.dia)), r5 = v => Math.round(v * m.meta / 5) * 5;
     const o = Object.assign({}, d, { groups:d.groups * (m.groups || 1), meta:r5(d.meta), expert:r5(d.expert) });
     if (m.tipo){ o.tipo = m.tipo; o.tipoP = m.tipoP; }
+    if (m.vip) o.vip = m.vip;   // v12.1: o dia só de VIPs (vipChance devolve mod.vip)
     return o;
   }
   /* v9: o tipo do grupo pelos pesos do ponto; o motorista vem mais nas pontas do turno (f: 0 a 1) e menos no meio */
@@ -195,11 +196,12 @@ class Game {
     return l.find(k => (r -= wt(k)) < 0) || l[l.length - 1];
   }
   /* a chance de VIP de cada grupo do dia (v10.7: mais luxo, mais VIPs: × (1 + LUXO.vip × nível)) */
-  vipChance(day){ return (day.vip || 0) * (this.div ? this.div.vip : 1) * (this.ponto.vip == null ? 1 : this.ponto.vip) * this.repVip * (1 + LUXO.vip * luxoNivel(this)); }
+  vipChance(day){ if (this.desafio && this.desafio.mod.vip) return this.desafio.mod.vip; return (day.vip || 0) * (this.div ? this.div.vip : 1) * (this.ponto.vip == null ? 1 : this.ponto.vip) * this.repVip * (1 + LUXO.vip * luxoNivel(this)); }
   /* v10.9, o crítico do Michelzão: a visita do dia n (null, ou { n:1|2, boato:a 2ª, real:vale para o save }). Só na carreira com a História ligada, no capítulo 13, no dia sorteado em save.guia.prox
      (o dia que passou sem visita, por exemplo no modo dev, vale no seguinte); o modo dev força por cima (DEV.forca.critico: 'hoje' = a 1ª, 'boato' = a 2ª, sem mexer no save) */
   criticoDia(n){
-    if (!n || this.desafio || this.noiteDia(n)) return null;   // v12: no Desafio, nunca; v10.10: na noite da estrela o crítico vem de cara limpa (buildSchedule), nunca de surpresa
+    if (this.desafio) return n && this.desafio.mod.critico ? { n:1, boato:false, real:false } : null;   // v12: no Desafio, nunca sorteado (v12.1: a Noite do crítico traz a 1ª visita, sem boato)
+    if (!n || this.noiteDia(n)) return null;   // v10.10: na noite da estrela o crítico vem de cara limpa (buildSchedule), nunca de surpresa
     const f = DEV.on && DEV.forca.critico;
     if (f === 'hoje') return { n:1, boato:false, real:false };
     if (f === 'boato') return { n:2, boato:true, real:false };
@@ -423,7 +425,8 @@ class Game {
     if (!D) return false;
     if (!this.salvo) this.salvo = this.save;
     this.mode = 'carreira'; this.treino = null; this.desafio = D; DESAFIO_EST.on = true;
-    this.save = this.montaCap(D.cap, { marca:{ _desafio:true }, conversa:false, maximo:true, sem:D.mod.sem, up:D.mod.up });
+    this.save = this.montaCap(D.cap, { marca:{ _desafio:true }, conversa:false, maximo:true, sem:D.mod.sem, up:D.mod.up, equipe:D.mod.tvs ? { tvs:D.mod.tvs } : null });
+    if (D.mod.evento === 'junina') this.save.barraca = D.dia;   // v12.1: a barraca junina já vem montada, como se tivesse sido comprada na lojinha do dia
     this.save.dia = D.dia; this.save.pontoDia = Math.min(this.save.pontoDia, D.dia);
     this.up = this.save.up; this.tablesKey = '';
     this.resetDay(D.dia, false, true);
@@ -651,6 +654,7 @@ class Game {
     this.stats.served++;
     this.cinco(g);
     this.fechaFicha(g, false);   // v10.9
+    this.stats.saiMin = Math.min(this.stats.saiMin, g.hearts); if (g.critico) this.stats.criticoH = g.hearts;   // v12.1: os corações com que o grupo (e o crítico) saiu, para a cond dos Desafios
     this.avaliar(g, t.cx, t.cy - 146);
     this.releaseCmd(g);
     g.paid = true;
@@ -2236,7 +2240,7 @@ class Game {
      ajudantes do modo dev trabalham neles) e sem mexer no modo dev nem no save guardado; quem chama põe o save onde quiser (o devCapitulo no jogo; o Desafio, como save de mentira).
      opt: marca (campos postos logo depois do normSave, como { _desafio:true }, que impede o writeSave); conversa:false (sem a conversa de antes);
      maximo ("Tudo no máximo" por cima: equipe, cursos, melhorias, salão cheio e Redes sociais);
-     sem (pessoas da equipe a pôr em 0); up (melhorias a mais) */
+     sem (pessoas da equipe a pôr em 0); up (melhorias a mais); equipe (campos da equipe a pôr, como { tvs:1 }) */
   montaCap(n, opt){
     opt = opt || {};
     const D = DEV_CAPS[clamp(Math.round(+n) || 1, 1, DEV_CAPS.length) - 1];
@@ -2287,7 +2291,8 @@ class Game {
         sv.equipe = normEquipe(sv.equipe, P);
       }
       (opt.sem || []).forEach(q => { sv.equipe[q] = 0; });   // v12: o Desafio tira pessoas da equipe e põe melhorias a mais (por cima do "Tudo no máximo")
-      (opt.up || []).forEach(id => { const u = UPGRADES.find(x => x.id === id); if (u) this.up[id] = u.multi ? 1 : true; });
+      (opt.up || []).forEach(id => { const u = UPGRADES.find(x => x.id === id); if (u) this.up[id] = u.multi ? 1 : true; else if (INDUSTRIAL[id]) this.up[id] = true; });   // v12.1: as melhorias da área industrial (as TVs) não estão na UPGRADES
+      if (opt.equipe) Object.assign(sv.equipe, opt.equipe);   // v12.1: valores da equipe a mais (o Desafio do jogo: as TVs ligadas com anúncios, equipe.tvs)
       sv.equipe = normEquipe(sv.equipe, this.ponto);
       this.notaSave(D.nota);
     } finally { this.save = salvoSave; this.up = salvoUp; }
