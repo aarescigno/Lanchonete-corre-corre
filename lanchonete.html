@@ -2154,9 +2154,9 @@ const DEV_CAPS = [
 const DESAFIOS = [
   { id:'soBia',    nome:'Só a Bia',       cap:5, dia:17, mod:{ sem:['dani', 'joca', 'cami', 'anselmo', 'lia'], groups:1, meta:1.2 }, cond:null,
     aviso:'Hoje a Bia segura o salão sozinha. O tio fica na cozinha.', falhou:'' },
-  { id:'semBravo', nome:'Ninguém bravo',  cap:8, dia:38, mod:{ groups:1.1, meta:1 }, cond:s => s.lost === 0,
+  { id:'semBravo', nome:'Ninguém bravo',  cap:8, dia:38, mod:{ groups:0.5, meta:0.6 }, cond:s => s.lost === 0,
     aviso:'Hoje ninguém pode sair bravo da Avenida.', falhou:'Alguém saiu bravo.' },
-  { id:'efood',    nome:'Hora do eFood',  cap:5, dia:17, mod:{ tipo:'entregador', tipoP:0.45, groups:1.1, meta:1 }, cond:s => s.lostBy.retirada === 0,
+  { id:'efood',    nome:'Hora do eFood',  cap:5, dia:17, mod:{ tipo:'entregador', tipoP:0.45, groups:0.55, meta:0.65 }, cond:s => s.lostBy.retirada === 0,
     aviso:'O eFood mandou entregador que não acaba mais!', falhou:'Um entregador saiu sem a marmita.' }
 ];
 const MEDALHAS = ['sem medalha', 'bronze', 'prata', 'ouro'];

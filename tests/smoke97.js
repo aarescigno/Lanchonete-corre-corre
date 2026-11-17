@@ -21,8 +21,8 @@ bloco('CA1',()=>{ const {L}=load(), D=L.DESAFIOS, por=id=>D.find(x=>x.id===id);
   ok(D.every(x=>x.nome && typeof x.cap==='number' && typeof x.dia==='number' && x.mod && typeof x.mod.meta==='number' && x.mod.meta>=0.6 && x.mod.meta<=1.5 && x.aviso && x.falhou!==undefined),'CA1: cada um tem id, nome, cap, dia, mod (com meta de 0,6 a 1,5), aviso e falhou');
   const a=por('soBia'), b=por('semBravo'), c=por('efood');
   ok(a.nome==='Só a Bia' && a.cap===5 && a.dia===17 && a.mod.sem.join()==='dani,joca,cami,anselmo,lia' && a.mod.groups===1 && !a.cond,'CA1: Só a Bia: cap 5, dia 17, sem as cinco pessoas, groups 1, sem cond');
-  ok(b.nome==='Ninguém bravo' && b.cap===8 && b.dia===38 && (b.mod.groups===1.1 || b.mod.groups===1),'CA1: Ninguém bravo: cap 8, dia 38, groups 1,1 (ou 1 se a calibração desceu)');
-  ok(c.nome==='Hora do eFood' && c.cap===5 && c.dia===17 && c.mod.tipo==='entregador' && (c.mod.tipoP===0.45 || c.mod.tipoP===0.3) && c.mod.groups===1.1,'CA1: Hora do eFood: cap 5, dia 17, tipo entregador (tipoP 0,45, ou 0,3 se a calibração desceu), groups 1,1');
+  ok(b.nome==='Ninguém bravo' && b.cap===8 && b.dia===38 && b.mod.groups===0.5 && b.mod.meta===0.6,'CA1: Ninguém bravo: cap 8, dia 38, groups 0,5 e meta 0,6 (calibrados)');
+  ok(c.nome==='Hora do eFood' && c.cap===5 && c.dia===17 && c.mod.tipo==='entregador' && c.mod.tipoP===0.45 && c.mod.groups===0.55 && c.mod.meta===0.65,'CA1: Hora do eFood: cap 5, dia 17, tipo entregador, tipoP 0,45, groups 0,55 e meta 0,65 (calibrados)');
   ok(a.aviso==='Hoje a Bia segura o salão sozinha. O tio fica na cozinha.' && b.aviso==='Hoje ninguém pode sair bravo da Avenida.' && c.aviso==='O eFood mandou entregador que não acaba mais!','CA1: os três avisos');
   ok(b.falhou==='Alguém saiu bravo.' && c.falhou==='Um entregador saiu sem a marmita.','CA1: os dois falhou');
   ok(b.cond({lost:0,lostBy:{retirada:2}})===true && b.cond({lost:1,lostBy:{retirada:0}})===false,'CA1: a cond de Ninguém bravo é lost === 0');
@@ -103,9 +103,9 @@ bloco('CA3',()=>{
     ok(JSON.stringify(real)===JSON.stringify(g.salvo) && store.lcc2_save===antes,'CA3: '+id+': o save de verdade e o localStorage ficam como estavam ao começar o dia');
     g.sairDesafio(); ok(g.save===real && g.salvo===null && g.desafio===null,'CA3: '+id+': sairDesafio devolve o save de verdade'); });
   // o eFood: mais de 35% dos grupos são entregadores
-  { const {g,L}=mk(); g.startDesafio('efood'); let ent=0,tot=0; for(let i=0;i<40;i++){ const s=g.buildSchedule(g.day); s.forEach(x=>{ if(x.type==='encomenda') return; tot++; if(x.type==='entregador') ent++; }); }
+  { const {g,L}=mk(); g.startDesafio('efood'); let ent=0,tot=0; for(let i=0;i<200;i++){ const s=g.buildSchedule(g.day); s.forEach(x=>{ if(x.type==='encomenda') return; tot++; if(x.type==='entregador') ent++; }); }
     ok(ent/tot>0.35,'CA3: efood: os entregadores passam de 35% dos grupos ('+Math.round(100*ent/tot)+'%)');
-    const H=mk(), g2=H.g; g2.startDesafio('soBia'); let e2=0,t2=0; for(let i=0;i<40;i++){ g2.buildSchedule(g2.day).forEach(x=>{ if(x.type==='encomenda') return; t2++; if(x.type==='entregador') e2++; }); }
+    const H=mk(), g2=H.g; g2.startDesafio('soBia'); let e2=0,t2=0; for(let i=0;i<200;i++){ g2.buildSchedule(g2.day).forEach(x=>{ if(x.type==='encomenda') return; t2++; if(x.type==='entregador') e2++; }); }
     ok(e2/t2<ent/tot,'CA3: o desafio comum tem menos entregadores que o do eFood ('+Math.round(100*e2/t2)+'%)'); } });
 
 // ---------- CA4: o fim dá a medalha; a melhor fica; nada mais do save de verdade muda ----------
