@@ -53,6 +53,9 @@ A tela de Desafios ganha os outros quatro da 1ª leva: a Festa junina lotada, o 
   - **Também o `mod.groups`**, entre 0,4 e 1,4, em passos de 0,05. Na v12, o dia do desafio passou a ter "Tudo no máximo" (decisão do usuário de 17/11, ver `docs/spec-v12.md`), e com isso o movimento ficou ~2,2 vezes maior. Comece pelo `groups` da tabela dividido por 2,2: `junina` 0,55, `jogo` 0,55, `critico` 0,45, `vips` 0,4. A `junina` e o `jogo` ficam com o `groups` acima do `critico` e dos `vips`, para continuarem os dias mais cheios.
   - Na v12, 40 rodadas oscilavam muito: decida com 200 (`DESAFIO=<id> node balance.js 200`). Rode o `run_all.sh` ou o `./extract.sh` antes do `balance.js`, porque ele lê o `tests/game.js`.
   - `cond` abaixo de 30%: primeiro desça o `groups`; depois aplique o alívio da regra.
+  - **Festa junina e Jogo do Brasil: casa cheia e meta lá em cima** (decisão do usuário, 17/11, na execução: com o `groups` em 0,4 e a meta em 1,5, a `junina` ainda dava 77% de bronze no comum). O `groups` dos dois fica fixo em 0,55. Só a `meta` é calibrada, em passos de 0,1, entre 1,5 e 3. Assim os dois continuam sendo os dias mais cheios dos sete.
+    - Medido na execução, em 200 rodadas: `junina` 0,4/1,8 dá 55%; `jogo` 0,45/2,2 dá 51%.
+    - Se nem com 3 a faixa couber, pare e avise.
   - Se ainda assim não couber, pare e avise.
 - **CA6** (a tela com sete cartões cabe nos 14 tamanhos) → `python3 menu_fit.py`
 - **CA7** (o que se vê) → captura `shot_v12_1.js`, em 1220 x 600 e 844 x 390, conferida em recorte:
@@ -87,6 +90,7 @@ A tela de Desafios ganha os outros quatro da 1ª leva: a Festa junina lotada, o 
 Nenhuma.
 
 ## Desvios
-(no fechamento)
+- **Festa junina e Jogo do Brasil** com o `groups` fixo em 0,55 e a meta acima de 1,5 (decisão do usuário, 17/11; ver o CA5).
+- (o resto, no fechamento)
 
 **Modelo:** Sonnet, esforço alto — quatro desafios em cima do motor da v12. A calibração mexe em dois números por desafio, movimento e meta; na v12, só fechou com esforço alto.
