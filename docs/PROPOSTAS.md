@@ -4,6 +4,20 @@ Registro das ideias e dos retornos de quem jogou, com o texto original, e de ond
 
 ---
 
+## 17/11 — usuário: o que vem depois do final novo (questionário de planejamento)
+Texto original: "Se sobrar limite de sessão já prepare com opus o questionário para planejamento das etapas seguintes" e, depois da v11.18, "Bora esse questionário". O questionário ficou em `docs/QUESTIONARIO-pos-final.md`; as respostas vieram pelo `AskUserQuestion` (17/11):
+- Foco: "Ouvir jogadores" e "Pós-história" (sem conteúdo novo de jogo nem preparar lançamento agora).
+- Estufa das marmitas: "Descartar". Conta rachada: "Descartar". Preço escolhido pelo jogador: descartar.
+- 3ª estrela do Michelzão: "Sim, mas difícil"; ajuste: "Ajustar o crítico" (medir com o bot afiado; ~1 em 3 carreiras dele chega a 3).
+- Ouvir jogadores: "Roteiro de perguntas" (até 8, junto do "Copiar resumo") e "Roteiro do celular" (10 checagens que o usuário faz no próprio celular). A lista de conferências do `RESUMO.md` fica.
+- Pós-história: "Desafios de dia"; formato: "Botão no menu, dia avulso" (aparece depois do "Fim da história"; o dia não mexe no caixa nem no save da carreira; só a medalha fica); medalha: "Bronze, prata e ouro" (as três faixas das estrelas do dia; a melhor fica); vitrine: "Na tela de Desafios" (cartões com nome, medalha e "?").
+- Desafios da 1ª leva (7): Só a Bia (na área industrial), Ninguém bravo (Avenida), Festa junina, Jogo do Brasil, Noite do crítico (Terraço), Hora do eFood e VIPs exigentes.
+- Ordem: os roteiros para os jogadores (só docs, em 17/11), a 3ª estrela, os desafios. Specs: todas planejadas agora, aprovadas, para executar em série.
+- Arrumação: enviar `versoes/v9.html` e `versoes/v10.html` na próxima publicação; não reescrever o histórico do git.
+Destino: `docs/JOGADORES.md` (os dois roteiros); Etapa 12 (`docs/spec-v11.19.md`, a 3ª estrela) e Etapa 13 (`docs/spec-v12.md` e `docs/spec-v12.1.md`, os desafios) do `docs/PLANO.md`; a estufa, a conta rachada e o preço escolhido saíram das Ideias guardadas.
+
+---
+
 ## 15/11 — usuário: a conversa da primeira nota baixa
 Texto original: "Na primeira vez que a pessoa tirar uma nota 2 estrelas ou menos, aparecer uma conversa da bia com o Tonhão em que ela pergunta por que ela se esforçou tanto e não conseguiu agradar a todo mundo? E Tonhão responde, isso é a vida, Bia, importante é melhorar a cada dia! Ou algo assim."
 Retorno de 16/11: "Não só a nota do Gugou, mas a nota de estrelas no fim da fase também".

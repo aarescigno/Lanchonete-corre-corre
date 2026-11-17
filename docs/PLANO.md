@@ -19,6 +19,9 @@ Origem: retorno do Renan Martorelli (beta-tester) e conversa com o Arthur (15/10
 | R1 | Retornos da Letícia: verificar atualização, pernas na espera, bandeirinhas, o cabelo da Bia, o enfeite da mesa, a área industrial sem sobreposição e a buzina do eFood | v11.16.1 | feita em 17/11 (`docs/spec-v11.16.1.md`; `smoke95`; o botão Verificar atualização, as pernas na espera, as bandeirinhas presas, o cabelo crespo da Bia, o enfeite da mesa por ponto, a área industrial sem sobreposição e a buzina do eFood) |
 | 10b | O final novo: as cenas 4, 5 e 6 | v11.17 | feita em 17/11 (`docs/spec-v11.17.md`; `smoke93`; as cenas `retrato`, `equipe` e `escola` em `src/28-final.js` e o `ab2RuaCasa` de dia; só pelo modo dev) |
 | 10c | O final novo no ar: as cenas 7 e 8, os créditos, a troca e a limpeza | v11.18 | feita em 17/11 (`docs/spec-v11.18.md`; `smoke94`; as cenas `ceu`, `roda` e `creditos`, o `FINAL` é o roteiro novo, o final antigo e o cartão de obra fora; a Etapa 10 está completa) |
+| 12 | A 3ª estrela do Michelzão ao alcance | v11.19 | planejada em 17/11 (`docs/spec-v11.19.md`, aprovada) |
+| 13a | Desafios: o motor, a tela e os três primeiros | v12 | planejada em 17/11 (`docs/spec-v12.md`, aprovada) |
+| 13b | Desafios: festa, jogo, crítico e VIPs | v12.1 | planejada em 17/11 (`docs/spec-v12.1.md`, aprovada) |
 
 ---
 
@@ -81,9 +84,17 @@ Origem: retorno do Renan Martorelli (beta-tester) e conversa com o Arthur (15/10
 > - **Regra da 3f em todas as sessões:** cartão novo da lojinha só com nome, preço e "?"; toda novidade ganha ficha no `MANUAL` (sem números), revelada quando aparece na história.
 > Ordem: 4a-1 (o ponto e a refeição completa, v10) → 4a-2 (o VIP exigente e a reputação, v10.1) → 4a-3 (a cozinha: alta gastronomia, a Lia e a alta confeitaria, v10.2) → 4a-4 (o salão e o bar: Cami, Joca e Anselmo, v10.3) → 4a-5 (música, flores e rebalanceamento, v10.4). Cada uma é uma versão, com PR e merge. As "Checagens de fim de sessão" da etapa 3 valem para todas.
 
+## Etapa 12 — A 3ª estrela do Michelzão ao alcance (v11.19)
+Planejada em 17/11 (questionário pós-final; os roteiros para ouvir os jogadores, a outra frente escolhida, ficaram em `docs/JOGADORES.md`, sem versão). Com o bot afiado, a 3ª estrela nunca saía (melhor noite: 70,5 de 90 pontos). O usuário escolheu baixar a régua da 3ª, calibrada para ~1 em 3 carreiras do afiado; a noite não muda. Spec: `docs/spec-v11.19.md`.
+**Modelo:** Sonnet, esforço médio (um número calibrado por regra e um smoke curto)
+
+## Etapa 13 — Desafios depois do fim da história (13a, v12; 13b, v12.1)
+Planejada em 17/11 (questionário pós-final). Depois do "Fim da história", o menu ganha "Desafios": dias avulsos com save de mentira, como a Missão zero, que valem medalha de bronze, prata ou ouro pelas estrelas do dia, mais a regra de cada um. Só a melhor medalha fica guardada. Sete na 1ª leva.
+- **13a** (v12): o motor, a tela, o cartão do fim, o modo dev e três desafios (Só a Bia, Ninguém bravo, Hora do eFood). Spec: `docs/spec-v12.md`.
+  **Modelo:** Sonnet, esforço alto (motor novo, duas telas, save e calibração)
+- **13b** (v12.1): Festa junina, Jogo do Brasil, Noite do crítico e VIPs exigentes. Spec: `docs/spec-v12.1.md`.
+  **Modelo:** Sonnet, esforço médio (quatro desafios sobre o motor, regras decididas)
+
 ## Ideias guardadas (sem etapa ainda)
-- **Estufa para as marmitas** (retorno de 01/11): guarda as marmitas adiantadas por mais tempo (hoje esfriam em `MARMITA.validade`, 60 s) e, com ela, o "+ marmita" volta (`MARMITA.adiantar`, desligado na 3c). Pode vir junto da prateleira de 4 (ideia da v8.6). Decidir preço, ponto em que aparece e quanto dura a marmita.
-- **Conta rachada** (pensada com o usuário em 30/10; ficou fora da 3b em 31/10, continua guardada): um jeito de pagar que pode cair em qualquer grupo de colegas (turma, executivas): cada um paga a sua parte, e a Bia leva 2 ou 3 maquininhas em vez de uma conta só. Mais trabalho, mas cada pessoa deixa um pouco de gorjeta. Decidir: a chance, quantas maquininhas, o tempo de cada uma e a gorjeta por pessoa.
-- Cardápio com preço escolhido pelo jogador (o Arthur achou estranho só mexer em preço; talvez nunca).
 - **Ranking compartilhado** (saiu da Etapa 7 em 15/11: "fica offline"): o código continua no jogo, desligado (`Rank.online = false`, `src/30-ranking.js`), e as chamadas ainda batem com o `db` do artifact (conferido em 15/11). Religar pede `Rank.online = true`, declarar nas capacidades a leitura da coleção `ranking-campanha` e decidir a ordem (lucro acumulado, ou estrelas do Michelzão com o lucro no desempate, a ideia adiada na v10.10).
 - **Revisão geral de equilíbrio com o retorno dos jogadores** (saiu da Etapa 7 em 15/11): medido na v11.8 com os bots, a Garagem passa 54% das metas sem equipe e 96% com; a área industrial 92%, a Avenida 82% e o Terraço 88% (20 rodadas por dia); a história fecha no dia 63 em 6 de 6 carreiras, sem banco tomar a casa, sempre com 2 estrelas e nunca com 3. Só mexer quando houver retorno de jogador (o "Copiar resumo" do Caixa) ou depois das conferências pendentes do `docs/RESUMO.md`.
