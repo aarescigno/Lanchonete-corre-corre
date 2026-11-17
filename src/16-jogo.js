@@ -33,6 +33,7 @@ class Game {
     this.mode = 'carreira';
     this.conversa = null;   // Modo História (v8.7): a conversa em andamento (19-conversa.js)
     this.treino = null; this.salvo = null;   // Missão zero (v8.2): o passo a passo e o save de verdade, guardado enquanto ela dura
+    this.desafio = null; this.desafioRes = null;   // v12: o Desafio em andamento (item da DESAFIOS) e o resultado dele (medalha, nova marca); o save de verdade fica em `salvo`, como na Missão zero
     this.resetDay(1);
   }
   setState(s){ this.state = s; if (this.hooks.state) this.hooks.state(s); }
@@ -103,11 +104,11 @@ class Game {
   }
   get maquinaOn(){ return !!this.up.maquina && (this.ponto.bebida !== 'coquetel' || (!!this.up.coqAutor && this.anselmoAtivo)); }   // o que se serve na espera (v7.7)
 
-  resetDay(n, treino){
-    if (!treino) this.sairTreino();
+  resetDay(n, treino, desafio){
+    if (!treino && !desafio) this.sairTreino();   // v12: um dia comum devolve o save de verdade (e acaba o Desafio); o Desafio fica com o de mentira
     this.mode = treino ? 'treino' : n === 0 ? 'semfim' : 'carreira';
-    this.day = treino ? TREINO : n === 0 ? ENDLESS : this.diaPonto(diaOf(n));
-    if (!treino && n && DEV.on && DEV.forca.gripe) this.day = Object.assign({}, this.day, { gripe:DEV.forca.gripe === 'gripado' });   // v10.2.2
+    this.day = treino ? TREINO : n === 0 ? ENDLESS : this.desafio ? this.diaDesafio() : this.diaPonto(diaOf(n));
+    if (!treino && n && DEV.on && DEV.forca.gripe && !this.desafio) this.day = Object.assign({}, this.day, { gripe:DEV.forca.gripe === 'gripado' });   // v10.2.2
     this.noite = !treino && !!n && this.noiteDia(n); this.brauFeliz = null;   // v10.10: a noite da estrela (o dia marcado, do começo ao fim) e como o Bráulio saiu (null: ainda não saiu)
     if (this.noite) this.day = this.diaNoite(this.day);
     this.money = 0; this.custo = 0; this.contas = 0; this.paidDiv = 0; this.conserto = 0; this.pontos = 0;
@@ -171,6 +172,13 @@ class Game {
     const r5 = (v, k) => Math.round(v * k / 5) * 5;
     return Object.assign({}, d, { meta:r5(d.meta, f), expert:r5(d.expert, this.ponto.expertF || f) });
   }
+  /* v12: o dia do Desafio: o dia `dia` do ponto (diaPonto) com as três metas × mod.meta (arredondadas para 5, como a noite), os grupos × mod.groups e o tipo forçado no lugar do do dia da semana */
+  diaDesafio(){
+    const D = this.desafio, m = D.mod, d = this.diaPonto(diaOf(D.dia)), r5 = v => Math.round(v * m.meta / 5) * 5;
+    const o = Object.assign({}, d, { groups:d.groups * (m.groups || 1), meta:r5(d.meta), expert:r5(d.expert) });
+    if (m.tipo){ o.tipo = m.tipo; o.tipoP = m.tipoP; }
+    return o;
+  }
   /* v9: o tipo do grupo pelos pesos do ponto; o motorista vem mais nas pontas do turno (f: 0 a 1) e menos no meio */
   sorteiaTipo(w, f){
     const l = Object.keys(w).map(k => ({ k, w:w[k] * (k === 'motorista' ? (f < 0.2 || f > 0.8 ? 2 : 0.3) : 1) }));
@@ -191,7 +199,7 @@ class Game {
   /* v10.9, o crítico do Michelzão: a visita do dia n (null, ou { n:1|2, boato:a 2ª, real:vale para o save }). Só na carreira com a História ligada, no capítulo 13, no dia sorteado em save.guia.prox
      (o dia que passou sem visita, por exemplo no modo dev, vale no seguinte); o modo dev força por cima (DEV.forca.critico: 'hoje' = a 1ª, 'boato' = a 2ª, sem mexer no save) */
   criticoDia(n){
-    if (!n || this.noiteDia(n)) return null;   // v10.10: na noite da estrela o crítico vem de cara limpa (buildSchedule), nunca de surpresa
+    if (!n || this.desafio || this.noiteDia(n)) return null;   // v12: no Desafio, nunca; v10.10: na noite da estrela o crítico vem de cara limpa (buildSchedule), nunca de surpresa
     const f = DEV.on && DEV.forca.critico;
     if (f === 'hoje') return { n:1, boato:false, real:false };
     if (f === 'boato') return { n:2, boato:true, real:false };
@@ -206,7 +214,7 @@ class Game {
   }
   /* v10.10, a noite da estrela: o dia n é a noite (marcada na lojinha em save.guia.noite; o modo dev força o próximo dia que começar, DEV.forca.noite), só no Terraço */
   noiteDia(n){
-    if (!n || this.save.salao.ponto !== 'terraco') return false;
+    if (!n || this.desafio || this.save.salao.ponto !== 'terraco') return false;   // v12: no Desafio, nunca
     if (DEV.on && DEV.forca.noite) return true;
     const g = this.save.guia;
     return histLiga() && !!g && g.noite === n && this.save.cap >= 14;
@@ -337,7 +345,7 @@ class Game {
   }
   /* v10.2.2: o modo dev força o clima, a quebra e o fiscal do dia (DEV.forca, só na memória) por cima do sorteio */
   devForcaSorteio(so){
-    const f = DEV.on && DEV.forca; if (!f) return false;
+    const f = DEV.on && DEV.forca; if (!f || this.desafio) return false;   // v12: nada sorteado nem forçado no Desafio
     const antes = JSON.stringify(so);
     if (f.clima) so.clima = f.clima === 'sem' ? '' : f.clima;
     if (f.evento){ so.ev = f.evento === 'nada' ? '' : f.evento; if (so.ev && !f.clima) so.clima = ''; }   // v10.6: o evento forçado (sem mexer no save.evento)
@@ -406,6 +414,48 @@ class Game {
   sairTreino(){
     if (!this.salvo) return;
     this.save = this.salvo; this.salvo = null; this.up = this.save.up; this.treino = null;
+    if (this.desafio){ this.desafio = null; DESAFIO_EST.on = false; this.tablesKey = ''; }   // v12: acabar o Desafio também devolve o salão de verdade
+  }
+  /* Desafio (v12): joga com um save de mentira (`_desafio`, nunca gravado), montado pela linha `cap` da DEV_CAPS, sem as pessoas de mod.sem e com as melhorias de mod.up;
+     o de verdade fica em `salvo` e volta ao sair. Vai à introdução do dia (o título e o aviso são do Desafio) */
+  startDesafio(id){
+    const D = DESAFIOS.find(x => x.id === id);
+    if (!D) return false;
+    if (!this.salvo) this.salvo = this.save;
+    this.mode = 'carreira'; this.treino = null; this.desafio = D; DESAFIO_EST.on = true;
+    this.save = this.montaCap(D.cap, { marca:{ _desafio:true }, conversa:false, sem:D.mod.sem, up:D.mod.up });
+    this.save.dia = D.dia; this.save.pontoDia = Math.min(this.save.pontoDia, D.dia);
+    this.up = this.save.up; this.tablesKey = '';
+    this.resetDay(D.dia, false, true);
+    this.setState('intro');
+    return true;
+  }
+  sairDesafio(){ this.sairTreino(); }
+  /* o botão Desafios do menu: a partir do Fim da história (cap depois do último), no modo dev Livre ou com o "Liberar" do dev */
+  get desafiosVisivel(){ return this.save.cap > HISTORIA.length || devLivre() || !!(DEV.on && DEV.forca.desafios); }
+  /* v12, modo dev: liberar o botão sem o Fim, ouro em todos ou zerar as medalhas */
+  devDesafios(acao){
+    if (!DEV.on) return false;
+    const sv = this.save, o = {};
+    if (acao === 'liberar'){ DEV.forca.desafios = true; return true; }
+    if (acao === 'ouro') DESAFIOS.forEach(d => { o[d.id] = 3; }); else if (acao !== 'zerar') return false;
+    sv.desafios = normDesafios(o); writeSave(sv); return true;
+  }
+  /* as estrelas do dia pelo lucro m (1: a meta; 2: o bomGoal; 3: a expert sem perder ninguém), usado pelo fim do dia e pelo do Desafio */
+  estrelasDe(m){
+    const d = this.day;
+    return m >= d.expert && this.stats.lost === 0 ? 3 : m >= bomGoal(d) && m >= d.meta ? 2 : m >= d.meta ? 1 : 0;
+  }
+  /* o fim do Desafio (v12): só conta as estrelas; a medalha é 0 se a cond não vale; a melhor fica no save de verdade (`salvo`), e é só ela que se grava */
+  finishDesafio(){
+    const D = this.desafio, m = Math.round(this.lucro), real = this.salvo || this.save;
+    this.aberto = false;
+    const stars = this.estrelasDe(m), condOk = !D.cond || D.cond(this.stats), medalha = condOk ? stars : 0;
+    const antes = (real.desafios && real.desafios[D.id]) || 0, nova = medalha > antes;
+    if (nova){ real.desafios = normDesafios(Object.assign({}, real.desafios, { [D.id]:medalha })); writeSave(real); }
+    this.desafioRes = { id:D.id, medalha, nova, falhou:!condOk, lucro:m, stars };
+    this.setState('desafiofim');
+    if (medalha) Sfx.win(); else Sfx.lose();
   }
   /* "Pular tutorial": sai da Missão zero, marca como feita (não volta a abrir sozinha) e vai ao menu */
   pularTreino(){
@@ -1154,7 +1204,7 @@ class Game {
   multa(g){ return MULTA + (g.vip ? VIP.angry : 0); }   // grupo que vai embora bravo (0 corações)
   /* v8.2.3: encerrar o dia no meio (Reiniciar ou Menu na pausa) não rende nada (v8.2.2), e quem está na espera ou nas
      mesas vai embora bravo, como se tivesse zerado os corações: cada grupo paga a multa, direto do dinheiro acumulado */
-  get bravosSeSair(){ return this.mode === 'carreira' && this.aberto ? this.groups.filter(g => g.state !== 'leaving') : []; }
+  get bravosSeSair(){ return this.mode === 'carreira' && this.aberto && !this.desafio ? this.groups.filter(g => g.state !== 'leaving') : []; }
   get multaSeSair(){ return this.bravosSeSair.reduce((a, g) => a + this.multa(g), 0); }
   encerrar(){
     const gs = this.bravosSeSair, v = this.multaSeSair, d = this.day;
@@ -1278,13 +1328,11 @@ class Game {
   }
 
   finishDay(){
+    if (this.desafio) return this.finishDesafio();   // v12: o Desafio só conta as estrelas; nada do caixa, empréstimo, ranking nem save roda
     const d = this.day, m = Math.round(this.lucro), fat = Math.round(this.money), sv = this.save;
     const passed = m >= d.meta;
     this.aberto = false;
-    let stars = 0;
-    if (passed) stars = 1;
-    if (passed && m >= bomGoal(d)) stars = 2;
-    if (m >= d.expert && this.stats.lost === 0) stars = 3;
+    const stars = this.estrelasDe(m);
     // v8.2.2: só o dia completo rende. O faturamento vai para o dinheiro acumulado, menos ingredientes, contas, folha e
     // divulgação, que só são pagas agora (o conserto na hora já saiu); dia interrompido na pausa não paga nem ganha nada.
     // v8.3: tudo sai mesmo sem dinheiro (o caixa pode ficar negativo), junto com a parcela do empréstimo
@@ -1698,7 +1746,7 @@ class Game {
   manualAberta(id){ const sv = this.manualReal; return devLivre() || (sv.manual || []).indexOf(id) >= 0; }
   manualVer(id){
     const sv = this.save;
-    if (this.mode !== 'carreira' || sv._treino || devLivre() || sv.manual.indexOf(id) >= 0 || !manualFicha(id)) return 0;
+    if (this.mode !== 'carreira' || sv._treino || sv._desafio || devLivre() || sv.manual.indexOf(id) >= 0 || !manualFicha(id)) return 0;
     sv.manual.push(id); sv.manualNovo.push(id); writeSave(sv);
     if (this.state === 'playing') this.manualDia.push(id);
     return 1;
@@ -2048,6 +2096,9 @@ class Game {
   }
   devNota(v){
     if (!DEV.on) return false;
+    return this.notaSave(v);
+  }
+  notaSave(v){   // v12: o miolo (sem a trava do modo dev), usado também pela montaCap
     v = +v || 0;
     if (v <= 0) this.save.aval = [];
     else { const x = Math.min(v, avalTeto(this.ponto)); this.save.aval = normAval(Array.from({ length:AVAL.max }, () => AVAL_CRIT.map(() => x))); }
@@ -2055,6 +2106,9 @@ class Game {
   }
   devEquipe(modo){
     if (!DEV.on) return false;
+    return this.equipeModo(modo);
+  }
+  equipeModo(modo){   // v12: o miolo (sem a trava do modo dev), usado também pela montaCap
     const sv = this.save, e = sv.equipe;
     if (modo === 'max'){
       e.tonhao = STAFF.tonhao.levels.length - 1; e.dani = STAFF.dani.levels.length - 1; e.joca = STAFF.joca.levels.length - 1;
@@ -2064,12 +2118,15 @@ class Game {
     }
     sv.equipe = normEquipe(e, this.ponto);
     sv.rosa = modo === 'max' ? 1 : 0;   // v10.8: o molho da Rosa vem com o "Tudo no máximo"
-    this.devCursos(modo === 'max');
+    this.cursosTodos(modo === 'max');
     return true;
   }
   /* v10.2.1: todos os cursos (do Tonhão, da Dani, do Joca e da Cami) ou nenhum; os itens que vêm dos cursos acompanham */
   devCursos(on){
     if (!DEV.on) return false;
+    return this.cursosTodos(on);
+  }
+  cursosTodos(on){   // v12: o miolo (sem a trava do modo dev), usado também pela montaCap
     const sv = this.save, tudo = (lista, v) => { const o = {}; if (on) lista.forEach(x => { o[x.id] = v; }); return o; };
     sv.cursos = normCursos(tudo(CURSOS, 2)); sv.daniCursos = normDaniCursos(tudo(DANI_CURSOS, true)); sv.jocaCursos = normJocaCursos(tudo(JOCA_CURSOS, true)); sv.camiCursos = normCamiCursos(tudo(CAMI_CURSOS, true)); sv.anselmoCursos = normAnselmoCursos(tudo(ANSELMO_CURSOS, true));
     this.devSegueCursos(); sv.cursoDia = sv.daniCursoDia = sv.jocaCursoDia = sv.camiCursoDia = sv.anselmoCursoDia = 0;
@@ -2089,6 +2146,9 @@ class Game {
   }
   devMelhorias(on){
     if (!DEV.on) return false;
+    return this.melhoriasTodas(on);
+  }
+  melhoriasTodas(on){   // v12: o miolo (sem a trava do modo dev), usado também pela montaCap
     Object.keys(this.up).forEach(k => { if (['confCaseira', 'confGourmet', 'confAlta', 'espresso', 'cafesEsp', 'coqClassica', 'coqAutor'].indexOf(k) < 0 && !(k === 'maquina' && this.up.coqAutor)) delete this.up[k]; });
     if (on) UPGRADES.forEach(u => { this.up[u.id] = u.multi ? 1 : true; });
     this.kitchen.slots = cozinhaSlots(this);
@@ -2163,49 +2223,66 @@ class Game {
   devCapitulo(n){
     const D = DEV_CAPS[clamp(Math.round(+n) || 1, 1, DEV_CAPS.length) - 1];
     if (!DEV.on || !D) return false;
-    n = D.n;
     this.devReal(true);
     lsSet(LS.devBak, JSON.stringify(this.save));
-    const sv = normSave({ treino:true }), ativo = n <= HISTORIA.length;
-    sv.histV = 1; sv.cap = n; sv.dia = D.dia; sv.capDia = D.dia; sv.capAzul = 0; sv.capFeito = 0; sv.capVezes = 0; sv.conversa = ativo ? 'antes' : null; sv.bank = D.caixa;
+    const sv = this.montaCap(D.n);
     this.save = sv; this.up = sv.up;
-    for (let i = 1; i <= PONTOS.findIndex(p => p.id === D.ponto); i++) this.trocaPonto(PONTOS[i]);
-    sv.pontoDia = D.pdia; sv.conversa = ativo ? 'antes' : null; sv.capDia = D.dia;
-    const r = REFORMA, resto = n === 1 ? r.valor : n === 2 ? 700 : n === 3 ? 400 : 0;
-    sv.emp = normEmprestimo(resto ? { resto, amort:r.amort, j:r.juros, ini:r.ini, ref:true } : {});
-    sv.convPlanta = D.dia > HIST_PLANTA.dia ? 1 : 0; if (sv.convPlanta) sv.decor = normDecor({ espada:1 });
-    sv.convCard = D.dia > HIST_CARDAPIO.dia ? 1 : 0; sv.convDiv = D.dia >= DIVULGA_DIA ? 1 : 0; sv.convEnt = D.dia >= HIST_ENTREGA.dia ? 1 : 0;
-    sv.vontDoce = sv.vontCafe = sv.vontDoceV = sv.vontCafeV = 0;   // v10.5.3: a vontade recomeça no capítulo
-    sv.convCrit = n > CRITICO.cap ? 1 : 0; if (n === CRITICO.cap) this.comecaCritico(); else if (n > CRITICO.cap) sv.guia = normGuia({ n:2, prox:0, v:[{ d:D.dia - 8, it:[2, 2, 2, 1, 1] }, { d:D.dia - 4, it:[2, 2, 2, 1, 1] }] });   // v10.10: do 14 em diante, duas fichas de 8   // v10.9: o capítulo 13 começa com o sorteio da 1ª visita
-    if (D.guiaEst && sv.guia){ sv.guia.est = D.guiaEst; sv.guia.visto = D.guiaVisto || 0; }   // v11: o Fim já com a estrela e a cena final vista
-    sv.convExig = n >= 10 ? 1 : 0; sv.socorro = 0; sv.convSocorro = 0; sv.convQuit = sv.convTeto = n > 3 ? 1 : 0;
-    sv.efoodNota = D.dia > HIST_ENTREGA.dia ? 1 : 0; sv.vipVisto = D.dia > 5 ? 1 : 0;
-    // equipe, cursos e melhorias pela tabela (o Fim: tudo no máximo, com a Lia)
-    if (D.eq){
-      const e = sv.equipe, top = { tonhao:STAFF.tonhao.levels.length - 1, dani:STAFF.dani.levels.length - 1, joca:STAFF.joca.levels.length - 1, cami:STAFF.cami.levels.length - 1, anselmo:STAFF.anselmo.levels.length - 1, lia:1 };
-      Object.keys(D.eq).forEach(q => { e[q] = Math.min(D.eq[q], top[q]); });
-      sv.equipe = normEquipe(e, this.ponto);
-      const lista = (ids, ok) => { const o = {}; ids.forEach(id => { if (ok.some(x => x.id === id)) o[id] = true; }); return o; };
-      const cs = {}; Object.keys(D.cursos).forEach(id => { if (CURSOS.some(c => c.id === id)) cs[id] = D.cursos[id]; });
-      sv.cursos = normCursos(cs); sv.daniCursos = normDaniCursos(lista(D.dani, DANI_CURSOS)); sv.jocaCursos = normJocaCursos(lista(D.joca, JOCA_CURSOS)); sv.camiCursos = normCamiCursos(lista(D.cami, CAMI_CURSOS)); sv.anselmoCursos = normAnselmoCursos(lista(D.anselmo || [], ANSELMO_CURSOS));
-      Object.keys(this.up).forEach(k => delete this.up[k]);
-      D.up.forEach(id => { const u = UPGRADES.find(x => x.id === id); if (u) this.up[id] = u.multi ? 1 : true; });
-      this.devSegueCursos();
-    } else {
-      this.devEquipe('max'); this.devMelhorias(true); sv.equipe.lia = 1; sv.equipe.anselmo = STAFF.anselmo.levels.length - 1;
-      if (D.semRosa){ sv.rosa = 0; delete sv.camiCursos.gerente; sv.equipe.cami = 4; }   // v10.8: o capítulo 12 começa sem o molho e sem a gerência
-      sv.equipe = normEquipe(sv.equipe, this.ponto);
-    }
-    // cartões da lojinha: os de antes do ponto, vistos; os do ponto, só no 2º capítulo dele e com a pessoa contratada
-    this.devLibera(n, false);
-    // Manual: o Básico e as fichas dos pontos visitados
-    sv.manual = MANUAL.filter(f => f.aba === 'basico' || PONTOS.slice(0, PONTOS.findIndex(p => p.id === D.ponto) + 1).some(p => f.id === 'p-' + p.id)).map(f => f.id);
-    sv.manualNovo = [];
     writeSave(sv);
     this.kitchen.slots = cozinhaSlots(this);
-    this.devNota(D.nota);
     this.devRecarrega();
     return true;
+  }
+  /* v12: o save do começo do capítulo n (DEV_CAPS), montado à parte: devolve o save, sem trocar o do jogo (this.save e this.up ficam trocados só durante a montagem, porque os
+     ajudantes do modo dev trabalham neles) e sem mexer no modo dev nem no save guardado; quem chama põe o save onde quiser (o devCapitulo no jogo; o Desafio, como save de mentira).
+     opt: marca (campos postos logo depois do normSave, como { _desafio:true }, que impede o writeSave); conversa:false (sem a conversa de antes);
+     sem (pessoas da equipe a pôr em 0); up (melhorias a mais) */
+  montaCap(n, opt){
+    opt = opt || {};
+    const D = DEV_CAPS[clamp(Math.round(+n) || 1, 1, DEV_CAPS.length) - 1];
+    n = D.n;
+    const salvoSave = this.save, salvoUp = this.up;
+    const sv = Object.assign(normSave({ treino:true }), opt.marca || {}), ativo = n <= HISTORIA.length && opt.conversa !== false;
+    try {
+      sv.histV = 1; sv.cap = n; sv.dia = D.dia; sv.capDia = D.dia; sv.capAzul = 0; sv.capFeito = 0; sv.capVezes = 0; sv.conversa = ativo ? 'antes' : null; sv.bank = D.caixa;
+      this.save = sv; this.up = sv.up;
+      for (let i = 1; i <= PONTOS.findIndex(p => p.id === D.ponto); i++) this.trocaPonto(PONTOS[i]);
+      sv.pontoDia = D.pdia; sv.conversa = ativo ? 'antes' : null; sv.capDia = D.dia;
+      const r = REFORMA, resto = n === 1 ? r.valor : n === 2 ? 700 : n === 3 ? 400 : 0;
+      sv.emp = normEmprestimo(resto ? { resto, amort:r.amort, j:r.juros, ini:r.ini, ref:true } : {});
+      sv.convPlanta = D.dia > HIST_PLANTA.dia ? 1 : 0; if (sv.convPlanta) sv.decor = normDecor({ espada:1 });
+      sv.convCard = D.dia > HIST_CARDAPIO.dia ? 1 : 0; sv.convDiv = D.dia >= DIVULGA_DIA ? 1 : 0; sv.convEnt = D.dia >= HIST_ENTREGA.dia ? 1 : 0;
+      sv.vontDoce = sv.vontCafe = sv.vontDoceV = sv.vontCafeV = 0;   // v10.5.3: a vontade recomeça no capítulo
+      sv.convCrit = n > CRITICO.cap ? 1 : 0; if (n === CRITICO.cap) this.comecaCritico(); else if (n > CRITICO.cap) sv.guia = normGuia({ n:2, prox:0, v:[{ d:D.dia - 8, it:[2, 2, 2, 1, 1] }, { d:D.dia - 4, it:[2, 2, 2, 1, 1] }] });   // v10.10: do 14 em diante, duas fichas de 8   // v10.9: o capítulo 13 começa com o sorteio da 1ª visita
+      if (D.guiaEst && sv.guia){ sv.guia.est = D.guiaEst; sv.guia.visto = D.guiaVisto || 0; }   // v11: o Fim já com a estrela e a cena final vista
+      sv.convExig = n >= 10 ? 1 : 0; sv.socorro = 0; sv.convSocorro = 0; sv.convQuit = sv.convTeto = n > 3 ? 1 : 0;
+      sv.efoodNota = D.dia > HIST_ENTREGA.dia ? 1 : 0; sv.vipVisto = D.dia > 5 ? 1 : 0;
+      // equipe, cursos e melhorias pela tabela (o Fim: tudo no máximo, com a Lia)
+      if (D.eq){
+        const e = sv.equipe, top = { tonhao:STAFF.tonhao.levels.length - 1, dani:STAFF.dani.levels.length - 1, joca:STAFF.joca.levels.length - 1, cami:STAFF.cami.levels.length - 1, anselmo:STAFF.anselmo.levels.length - 1, lia:1 };
+        Object.keys(D.eq).forEach(q => { e[q] = Math.min(D.eq[q], top[q]); });
+        sv.equipe = normEquipe(e, this.ponto);
+        const lista = (ids, ok) => { const o = {}; ids.forEach(id => { if (ok.some(x => x.id === id)) o[id] = true; }); return o; };
+        const cs = {}; Object.keys(D.cursos).forEach(id => { if (CURSOS.some(c => c.id === id)) cs[id] = D.cursos[id]; });
+        sv.cursos = normCursos(cs); sv.daniCursos = normDaniCursos(lista(D.dani, DANI_CURSOS)); sv.jocaCursos = normJocaCursos(lista(D.joca, JOCA_CURSOS)); sv.camiCursos = normCamiCursos(lista(D.cami, CAMI_CURSOS)); sv.anselmoCursos = normAnselmoCursos(lista(D.anselmo || [], ANSELMO_CURSOS));
+        Object.keys(this.up).forEach(k => delete this.up[k]);
+        D.up.forEach(id => { const u = UPGRADES.find(x => x.id === id); if (u) this.up[id] = u.multi ? 1 : true; });
+        this.devSegueCursos();
+      } else {
+        this.equipeModo('max'); this.melhoriasTodas(true); sv.equipe.lia = 1; sv.equipe.anselmo = STAFF.anselmo.levels.length - 1;
+        if (D.semRosa){ sv.rosa = 0; delete sv.camiCursos.gerente; sv.equipe.cami = 4; }   // v10.8: o capítulo 12 começa sem o molho e sem a gerência
+        sv.equipe = normEquipe(sv.equipe, this.ponto);
+      }
+      // cartões da lojinha: os de antes do ponto, vistos; os do ponto, só no 2º capítulo dele e com a pessoa contratada
+      this.devLibera(n, false);
+      // Manual: o Básico e as fichas dos pontos visitados
+      sv.manual = MANUAL.filter(f => f.aba === 'basico' || PONTOS.slice(0, PONTOS.findIndex(p => p.id === D.ponto) + 1).some(p => f.id === 'p-' + p.id)).map(f => f.id);
+      sv.manualNovo = [];
+      (opt.sem || []).forEach(q => { sv.equipe[q] = 0; });   // v12: o Desafio tira pessoas da equipe e põe melhorias a mais
+      (opt.up || []).forEach(id => { const u = UPGRADES.find(x => x.id === id); if (u) this.up[id] = u.multi ? 1 : true; });
+      sv.equipe = normEquipe(sv.equipe, this.ponto);
+      this.notaSave(D.nota);
+    } finally { this.save = salvoSave; this.up = salvoUp; }
+    return sv;
   }
   /* v10.2.1: desfaz o último pulo de capítulo (volta o save dev guardado e apaga a cópia) */
   devDesfaz(){

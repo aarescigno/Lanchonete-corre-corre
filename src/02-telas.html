@@ -21,6 +21,7 @@
           </div>
           <div class="row tight">
             <button class="btn" id="btn-endless">Turno sem fim</button>
+            <button class="btn alt" id="btn-desafios" style="display:none">Desafios</button>
             <button class="btn alt" id="btn-manual">Manual</button>
             <button class="btn alt" id="btn-rank">Ranking</button>
           </div>
@@ -38,6 +39,23 @@
             <svg viewBox="0 0 24 24" width="22" height="22" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M3.5 12a8.5 8.5 0 1 0 2.6-6.1"/><path d="M3 4.5v4h4"/><path d="M12 7.5V12l3 2"/></svg>
           </button>
         </div>
+      </div>
+    </div>
+
+    <div class="ov" id="ov-desafios">
+      <div class="panel desafios-panel">
+        <h2>Desafios</h2>
+        <div class="desafios-grid" id="desafios-grid" role="list"></div>
+        <div class="row"><button class="btn go" id="btn-desafios-voltar">Voltar</button></div>
+      </div>
+    </div>
+
+    <div class="ov" id="ov-desafio-fim">
+      <div class="panel desafio-fim-panel">
+        <h2 id="desafio-fim-titulo">Desafio</h2>
+        <div id="desafio-fim-medalha"></div>
+        <p id="desafio-fim-msg" role="status"></p>
+        <div class="row"><button class="btn go" id="btn-desafio-de-novo">Tentar de novo</button><button class="btn alt" id="btn-desafio-lista">Desafios</button></div>
       </div>
     </div>
 

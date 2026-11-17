@@ -1349,6 +1349,24 @@ const DEV_CAPS = [
   { n:14, dia:64, ponto:'terraco',    pdia:50, caixa:10000, nota:4.6, eq:null, cursos:null, dani:null, joca:null, cami:null, up:null },   // v10.10: a noite da estrela: como o 13, com duas fichas de 8 do crítico (devCapitulo)
   { n:15, dia:64, ponto:'terraco',    pdia:50, caixa:10000, nota:4.6, eq:null, cursos:null, dani:null, joca:null, cami:null, up:null, guiaEst:1, guiaVisto:1 }   // v11: com 1 estrela já vista. O Fim: o mesmo que "Tudo no máximo" (devEquipe('max') e devMelhorias(true)), com a Lia, o molho e a gerência
 ];
+/* v12, os Desafios: dias avulsos, cada um num ponto e com uma regra, que valem medalha de bronze (1), prata (2) ou ouro (3) pelas estrelas do dia. Só a melhor fica (save.desafios).
+   cap: a linha da DEV_CAPS que monta o save do dia; dia: o número do dia (diaOf); mod: sem (pessoas fora da equipe), up (melhorias a mais), groups (grupos ×), meta (as três metas ×, arredondadas para 5),
+   tipo/tipoP (no lugar do tipo do dia da semana); cond(stats): a regra que precisa valer no fim (ou nenhuma); aviso: a frase da introdução; falhou: a frase de quando a cond não vale */
+const DESAFIOS = [
+  { id:'soBia',    nome:'Só a Bia',       cap:5, dia:17, mod:{ sem:['dani', 'joca', 'cami', 'anselmo', 'lia'], groups:1, meta:0.85 }, cond:null,
+    aviso:'Hoje a Bia segura o salão sozinha. O tio fica na cozinha.', falhou:'' },
+  { id:'semBravo', nome:'Ninguém bravo',  cap:8, dia:38, mod:{ groups:1.1, meta:1 }, cond:s => s.lost === 0,
+    aviso:'Hoje ninguém pode sair bravo da Avenida.', falhou:'Alguém saiu bravo.' },
+  { id:'efood',    nome:'Hora do eFood',  cap:5, dia:17, mod:{ tipo:'entregador', tipoP:0.45, groups:1.1, meta:1 }, cond:s => s.lostBy.retirada === 0,
+    aviso:'O eFood mandou entregador que não acaba mais!', falhou:'Um entregador saiu sem a marmita.' }
+];
+const MEDALHAS = ['sem medalha', 'bronze', 'prata', 'ouro'];
+/* save.desafios: { id: 0 a 3 } só dos ids da DESAFIOS e com inteiros (a melhor medalha de cada um) */
+function normDesafios(d){
+  const o = {}; d = d && typeof d === 'object' ? d : {};
+  DESAFIOS.forEach(x => { const v = d[x.id]; if (typeof v === 'number' && Number.isInteger(v) && v >= 0 && v <= 3) o[x.id] = v; });
+  return o;
+}
 const HIST_CARDAPIO = { dia:2,   // v9.6.2: no fim do dia 2 (antes, do dia 1), para a 1ª lojinha ficar sem empurrão
   falas:[ { q:'bia', e:'insegura', s:'Tio, um monte de gente perguntou se só tem PF e coxinha... Eu não soube o que dizer.' },
           { q:'tonhao', s:'É... a Rosa fazia um pastel que era uma beleza. Eu nunca aprendi.' },
@@ -1834,7 +1852,7 @@ const FISCAL = { nivel:3, dia:2, chance:0.15, quando:[0.3, 0.7], visita:20, mesa
    Sem número nenhum no texto, na linha ou nos traços: só palavras e bolinhas.
    sempre: aberta desde o começo da carreira; tipo: a chave de CUSTOMER_TYPES (ou 'vip' e 'veg') para os traços; quem: a chave de STAFF
    ============================================================ */
-const MANUAL_ABAS = [['basico', 'Básico'], ['clientes', 'Clientes'], ['equipe', 'Equipe'], ['lojinha', 'Lojinha'], ['lugares', 'Lugares'], ['imprevistos', 'Imprevistos']];
+const MANUAL_ABAS = [['basico', 'Básico'], ['clientes', 'Clientes'], ['equipe', 'Equipe'], ['lojinha', 'Lojinha'], ['lugares', 'Lugares'], ['imprevistos', 'Imprevistos'], ['desafios', 'Desafios']];
 const MANUAL = [
   { id:'b-sentar',   aba:'basico', nome:'Sentar a freguesia', sempre:true, linha:'Arraste o grupo da calçada até uma mesa livre. Grupo de três ou quatro só cabe em mesa de quatro.' },
   { id:'b-mesa',     aba:'basico', nome:'O ciclo da mesa', sempre:true, linha:'Anote o pedido, leve à cozinha, entregue o prato, cobre e recolha a louça.' },
@@ -1916,7 +1934,10 @@ const MANUAL = [
   { id:'i-boato',   aba:'imprevistos', nome:'Boato', linha:'Alguém espalha que hoje tem coisa de graça, e a casa lota.' },
   { id:'l-noite',   aba:'lojinha', nome:'Noite da estrela', linha:'Você escolhe o dia. Casa cheia, o crítico à mesa e o Bráulio de olho. No fim, o guia dá o veredito.' },   // v10.10
   { id:'c-braulio', aba:'clientes', tipo:'braulio', nome:'Bráulio', linha:'O chef da Casa Aurora. Vem sozinho, tem pouca paciência e pede o prato da casa para achar defeito.' },
-  { id:'b-michelzao', aba:'basico', nome:'Estrelas do Michelzão', linha:'O guia pesa as visitas do crítico, o Gúgou, o luxo e a noite. As estrelas ganhas não se perdem. A placa fica na parede.' }
+  { id:'b-michelzao', aba:'basico', nome:'Estrelas do Michelzão', linha:'O guia pesa as visitas do crítico, o Gúgou, o luxo e a noite. As estrelas ganhas não se perdem. A placa fica na parede.' },
+  { id:'d-soBia',    aba:'desafios', nome:'Só a Bia', linha:'Um dia na área industrial sem ajudante: só a Bia no salão e o Tonhão no fogão.' },   // v12: os Desafios
+  { id:'d-semBravo', aba:'desafios', nome:'Ninguém bravo', linha:'Um dia na Avenida em que nenhum grupo pode ir embora bravo, nem da fila.' },
+  { id:'d-efood',    aba:'desafios', nome:'Hora do eFood', linha:'Um dia na área industrial com entregador chegando o tempo todo. Nenhum pode ir embora de mãos vazias.' }
 ];
 const MANUAL_PONTO_NOME = { garagem:'Garagem', industrial:'Área industrial', avenida:'Avenida Brasil', terraco:'Terraço Suíça' };
 const MANUAL_CATS = { pf:'PF', frito:'fritos', assado:'assados', chapa:'lanches na chapa', pastel:'pastel' };

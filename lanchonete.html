@@ -442,6 +442,31 @@ table.rank tr.me td{background:#fbe7a8}
   #ov-endless .row,#ov-falencia .row{margin-top:4px}
   #ov-endless .row .btn,#ov-falencia .row .btn{min-height:32px;font-size:14px;padding:2px 14px;box-shadow:0 3px 0 var(--tinta)}
 }
+
+/* v12, os Desafios: os cartões da tela (nome, medalha e o "?" da ficha) e o cartão do fim */
+.desafios-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:calc(var(--u)*12);width:calc(var(--u)*620);max-width:100%;margin:calc(var(--u)*10) 0}
+.dcard{position:relative}
+.dcard .dbtn{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:calc(var(--u)*8);width:100%;height:100%;background:var(--creme);border:calc(var(--u)*3) solid var(--tinta);border-radius:calc(var(--u)*14);padding:calc(var(--u)*10) calc(var(--u)*8);min-height:max(96px,calc(var(--u)*124));cursor:pointer;color:var(--tinta);font-family:var(--fd);font-size:max(14px,calc(var(--u)*18))}
+.dcard .dbtn:focus-visible{outline:3px solid var(--mostarda);outline-offset:2px}
+.dcard .qm{position:absolute;top:calc(var(--u)*4);right:calc(var(--u)*4);width:26px;height:26px;min-height:0;padding:0;border-radius:50%;border:calc(var(--u)*2) solid var(--tinta);background:#fff;color:var(--tinta);font:800 14px/1 var(--fb);cursor:pointer;display:flex;align-items:center;justify-content:center;z-index:1}
+.dcard .qm:hover,.dcard .qm:focus-visible{background:var(--faixa);color:#fff}
+.medalha{display:block;flex:none;width:max(32px,calc(var(--u)*44));height:max(32px,calc(var(--u)*44));border-radius:50%;border:calc(var(--u)*3) solid var(--tinta);box-sizing:border-box}
+.medalha.m0{background:transparent;border-style:dashed}   /* sem medalha: só o contorno tracejado (não depende da cor) */
+.medalha.m1{background:#C8823A}
+.medalha.m2{background:#B9C1C9}
+.medalha.m3{background:#E8B930}
+.medalha.grande{width:max(60px,calc(var(--u)*96));height:max(60px,calc(var(--u)*96));margin:calc(var(--u)*8) auto}
+@media (max-width:600px) and (min-height:461px){.desafios-grid{grid-template-columns:1fr}.dcard .dbtn{flex-direction:row;justify-content:flex-start;min-height:56px;padding-right:38px}}
+@media (max-height:460px){
+  .desafios-panel{padding:calc(var(--u)*10) calc(var(--u)*16)}
+  .desafios-panel h2,.desafio-fim-panel h2{font-size:max(18px,calc(var(--u)*28));margin-bottom:0}
+  .desafios-grid{gap:6px;margin:4px 0}
+  .dcard .dbtn{min-height:64px;flex-direction:row;justify-content:flex-start;padding:4px 36px 4px 8px;font-size:14px}
+  .desafios-panel .row,.desafio-fim-panel .row{margin-top:calc(var(--u)*6)}
+  .desafios-panel .btn,.desafio-fim-panel .btn{min-height:34px;box-shadow:0 3px 0 var(--tinta);font-size:14px}
+  .medalha.grande{width:48px;height:48px;margin:4px auto}
+  .desafio-fim-panel p{margin:2px 0}
+}
 </style>
 <div id="app">
   <div id="stage">
@@ -465,6 +490,7 @@ table.rank tr.me td{background:#fbe7a8}
           </div>
           <div class="row tight">
             <button class="btn" id="btn-endless">Turno sem fim</button>
+            <button class="btn alt" id="btn-desafios" style="display:none">Desafios</button>
             <button class="btn alt" id="btn-manual">Manual</button>
             <button class="btn alt" id="btn-rank">Ranking</button>
           </div>
@@ -482,6 +508,23 @@ table.rank tr.me td{background:#fbe7a8}
             <svg viewBox="0 0 24 24" width="22" height="22" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M3.5 12a8.5 8.5 0 1 0 2.6-6.1"/><path d="M3 4.5v4h4"/><path d="M12 7.5V12l3 2"/></svg>
           </button>
         </div>
+      </div>
+    </div>
+
+    <div class="ov" id="ov-desafios">
+      <div class="panel desafios-panel">
+        <h2>Desafios</h2>
+        <div class="desafios-grid" id="desafios-grid" role="list"></div>
+        <div class="row"><button class="btn go" id="btn-desafios-voltar">Voltar</button></div>
+      </div>
+    </div>
+
+    <div class="ov" id="ov-desafio-fim">
+      <div class="panel desafio-fim-panel">
+        <h2 id="desafio-fim-titulo">Desafio</h2>
+        <div id="desafio-fim-medalha"></div>
+        <p id="desafio-fim-msg" role="status"></p>
+        <div class="row"><button class="btn go" id="btn-desafio-de-novo">Tentar de novo</button><button class="btn alt" id="btn-desafio-lista">Desafios</button></div>
       </div>
     </div>
 
@@ -2103,6 +2146,24 @@ const DEV_CAPS = [
   { n:14, dia:64, ponto:'terraco',    pdia:50, caixa:10000, nota:4.6, eq:null, cursos:null, dani:null, joca:null, cami:null, up:null },   // v10.10: a noite da estrela: como o 13, com duas fichas de 8 do crítico (devCapitulo)
   { n:15, dia:64, ponto:'terraco',    pdia:50, caixa:10000, nota:4.6, eq:null, cursos:null, dani:null, joca:null, cami:null, up:null, guiaEst:1, guiaVisto:1 }   // v11: com 1 estrela já vista. O Fim: o mesmo que "Tudo no máximo" (devEquipe('max') e devMelhorias(true)), com a Lia, o molho e a gerência
 ];
+/* v12, os Desafios: dias avulsos, cada um num ponto e com uma regra, que valem medalha de bronze (1), prata (2) ou ouro (3) pelas estrelas do dia. Só a melhor fica (save.desafios).
+   cap: a linha da DEV_CAPS que monta o save do dia; dia: o número do dia (diaOf); mod: sem (pessoas fora da equipe), up (melhorias a mais), groups (grupos ×), meta (as três metas ×, arredondadas para 5),
+   tipo/tipoP (no lugar do tipo do dia da semana); cond(stats): a regra que precisa valer no fim (ou nenhuma); aviso: a frase da introdução; falhou: a frase de quando a cond não vale */
+const DESAFIOS = [
+  { id:'soBia',    nome:'Só a Bia',       cap:5, dia:17, mod:{ sem:['dani', 'joca', 'cami', 'anselmo', 'lia'], groups:1, meta:0.85 }, cond:null,
+    aviso:'Hoje a Bia segura o salão sozinha. O tio fica na cozinha.', falhou:'' },
+  { id:'semBravo', nome:'Ninguém bravo',  cap:8, dia:38, mod:{ groups:1.1, meta:1 }, cond:s => s.lost === 0,
+    aviso:'Hoje ninguém pode sair bravo da Avenida.', falhou:'Alguém saiu bravo.' },
+  { id:'efood',    nome:'Hora do eFood',  cap:5, dia:17, mod:{ tipo:'entregador', tipoP:0.45, groups:1.1, meta:1 }, cond:s => s.lostBy.retirada === 0,
+    aviso:'O eFood mandou entregador que não acaba mais!', falhou:'Um entregador saiu sem a marmita.' }
+];
+const MEDALHAS = ['sem medalha', 'bronze', 'prata', 'ouro'];
+/* save.desafios: { id: 0 a 3 } só dos ids da DESAFIOS e com inteiros (a melhor medalha de cada um) */
+function normDesafios(d){
+  const o = {}; d = d && typeof d === 'object' ? d : {};
+  DESAFIOS.forEach(x => { const v = d[x.id]; if (typeof v === 'number' && Number.isInteger(v) && v >= 0 && v <= 3) o[x.id] = v; });
+  return o;
+}
 const HIST_CARDAPIO = { dia:2,   // v9.6.2: no fim do dia 2 (antes, do dia 1), para a 1ª lojinha ficar sem empurrão
   falas:[ { q:'bia', e:'insegura', s:'Tio, um monte de gente perguntou se só tem PF e coxinha... Eu não soube o que dizer.' },
           { q:'tonhao', s:'É... a Rosa fazia um pastel que era uma beleza. Eu nunca aprendi.' },
@@ -2588,7 +2649,7 @@ const FISCAL = { nivel:3, dia:2, chance:0.15, quando:[0.3, 0.7], visita:20, mesa
    Sem número nenhum no texto, na linha ou nos traços: só palavras e bolinhas.
    sempre: aberta desde o começo da carreira; tipo: a chave de CUSTOMER_TYPES (ou 'vip' e 'veg') para os traços; quem: a chave de STAFF
    ============================================================ */
-const MANUAL_ABAS = [['basico', 'Básico'], ['clientes', 'Clientes'], ['equipe', 'Equipe'], ['lojinha', 'Lojinha'], ['lugares', 'Lugares'], ['imprevistos', 'Imprevistos']];
+const MANUAL_ABAS = [['basico', 'Básico'], ['clientes', 'Clientes'], ['equipe', 'Equipe'], ['lojinha', 'Lojinha'], ['lugares', 'Lugares'], ['imprevistos', 'Imprevistos'], ['desafios', 'Desafios']];
 const MANUAL = [
   { id:'b-sentar',   aba:'basico', nome:'Sentar a freguesia', sempre:true, linha:'Arraste o grupo da calçada até uma mesa livre. Grupo de três ou quatro só cabe em mesa de quatro.' },
   { id:'b-mesa',     aba:'basico', nome:'O ciclo da mesa', sempre:true, linha:'Anote o pedido, leve à cozinha, entregue o prato, cobre e recolha a louça.' },
@@ -2670,7 +2731,10 @@ const MANUAL = [
   { id:'i-boato',   aba:'imprevistos', nome:'Boato', linha:'Alguém espalha que hoje tem coisa de graça, e a casa lota.' },
   { id:'l-noite',   aba:'lojinha', nome:'Noite da estrela', linha:'Você escolhe o dia. Casa cheia, o crítico à mesa e o Bráulio de olho. No fim, o guia dá o veredito.' },   // v10.10
   { id:'c-braulio', aba:'clientes', tipo:'braulio', nome:'Bráulio', linha:'O chef da Casa Aurora. Vem sozinho, tem pouca paciência e pede o prato da casa para achar defeito.' },
-  { id:'b-michelzao', aba:'basico', nome:'Estrelas do Michelzão', linha:'O guia pesa as visitas do crítico, o Gúgou, o luxo e a noite. As estrelas ganhas não se perdem. A placa fica na parede.' }
+  { id:'b-michelzao', aba:'basico', nome:'Estrelas do Michelzão', linha:'O guia pesa as visitas do crítico, o Gúgou, o luxo e a noite. As estrelas ganhas não se perdem. A placa fica na parede.' },
+  { id:'d-soBia',    aba:'desafios', nome:'Só a Bia', linha:'Um dia na área industrial sem ajudante: só a Bia no salão e o Tonhão no fogão.' },   // v12: os Desafios
+  { id:'d-semBravo', aba:'desafios', nome:'Ninguém bravo', linha:'Um dia na Avenida em que nenhum grupo pode ir embora bravo, nem da fila.' },
+  { id:'d-efood',    aba:'desafios', nome:'Hora do eFood', linha:'Um dia na área industrial com entregador chegando o tempo todo. Nenhum pode ir embora de mãos vazias.' }
 ];
 const MANUAL_PONTO_NOME = { garagem:'Garagem', industrial:'Área industrial', avenida:'Avenida Brasil', terraco:'Terraço Suíça' };
 const MANUAL_CATS = { pf:'PF', frito:'fritos', assado:'assados', chapa:'lanches na chapa', pastel:'pastel' };
@@ -2999,7 +3063,9 @@ function lsSet(k, v){
 const DEV = { on: lsGet(LS.dev) === '1', bank: 10000, toques: 10, real: lsGet(LS.dev) === '1' && lsGet(LS.devReal) === '1', vel:1, aba:'pular', forca:{} };   // v9.2.1: real = preços e travas de verdade; vel = velocidade (só na memória); v10.2.1: real fica gravado (lcc2_dev_real); aba = a aba aberta do painel
 function devLivre(){ return DEV.on && !DEV.real; }
 /* v10.2.1: o Modo História liga fora do modo dev e no jeito "De verdade" do modo dev (no Livre fica desligado) */
-function histLiga(){ return HIST.on && !devLivre(); }
+function histLiga(){ return HIST.on && !devLivre() && !DESAFIO_EST.on; }
+/* v12: durante um Desafio a História fica desligada (sem conversa, capítulo, objetivo nem reação de história); o Game liga e desliga */
+const DESAFIO_EST = { on:false };
 function saveKey(){ return DEV.on ? LS.devSave : LS.save; }
 /* v10.4: o couvert só vale na Avenida (no modo dev, também nos níveis 1 e 2) e a música só no Terraço: fora dali, saem */
 function normEquipe(e, ponto){
@@ -3118,7 +3184,7 @@ function normSave(s){
   let guia = normGuia(s.guia);   // v10.9: as visitas do crítico (cap. 13); o capítulo sem sorteio (save novo no 13, ou o inválido apagado) sorteia a 1ª visita
   if (hist && cap === CRITICO.cap && !guia && pontoOf(s.salao && s.salao.ponto).id === 'terraco') guia = normGuia({ n:0, prox:dia + randi(CRITICO.primeira[0], CRITICO.primeira[1]), v:[] });   // v10.5.2: o capítulo novo começa com a conversa de antes
   if (hist && cap > CRITICO.cap && !guia && pontoOf(s.salao && s.salao.ponto).id === 'terraco') guia = normGuia({ n:2, prox:0, v:[] });   // v10.10: do capítulo 14 em diante o save.guia sempre existe (a noite da estrela)
-  const dev = salaoDevolucao(s.salao), out = { dia, estrelas, lucroTot: Math.round(+s.lucroTot) || 0, pontosTot: Math.max(0, Math.round(+s.pontosTot) || 0), aval: normAval(s.aval), avalCom: capCrit ? plantaBoato(s.avalCom, dia) : normAvalCom(s.avalCom), neg: clamp(Math.round(+s.neg) || 0, 0, BANCO.neg), emp: normEmprestimo(novoHist ? { resto:REFORMA.valor, amort:REFORMA.amort, j:REFORMA.juros, ini:REFORMA.ini, ref:true } : s.emp), corta: s.corta !== false, fechou: Math.max(0, Math.round(+s.fechou) || 0), bank: bank + dev + devMaq, up, torneira:true, salao: normSalao(dev ? null : s.salao), divulga: dia < DIVULGA_DIA && !devLivre() ? 'boca' : divulgaOf(s.divulga).id, treino: !!s.treino, decor: normDecor(s.decor), moveis: normMoveis(s.moveis), cursos: normCursos(s.cursos), cursoDia: Math.max(0, Math.round(+s.cursoDia) || 0), tonXp: s.tonXp === 1 ? 1 : 0, daniTar: Math.max(0, Math.round(+s.daniTar) || 0), daniCursos: normDaniCursos(s.daniCursos), daniCursoDia: Math.max(0, Math.round(+s.daniCursoDia) || 0), jocaTar: Math.max(0, Math.round(+s.jocaTar) || 0), jocaCursos: normJocaCursos(s.jocaCursos), jocaCursoDia: Math.max(0, Math.round(+s.jocaCursoDia) || 0), camiCursos: normCamiCursos(s.camiCursos), camiCursoDia: Math.max(0, Math.round(+s.camiCursoDia) || 0), anselmoCursos: normAnselmoCursos(s.anselmoCursos), anselmoCursoDia: Math.max(0, Math.round(+s.anselmoCursoDia) || 0), daniXp: s.daniXp === 1 ? 1 : 0, cardV: 1, libera: normLibera(s.libera, !novoHist), arco: normArco(s.arco, pontoOf(s.salao && s.salao.ponto).nivel), pontoDia: pontoDiaDe(s, dia), vontDoce: normVont(s.vontDoce), vontCafe: normVont(s.vontCafe), vontDoceV: s.vontDoceV === 1 ? 1 : 0, vontCafeV: s.vontCafeV === 1 ? 1 : 0, convCard: s.convCard === 'pend' ? 'pend' : s.convCard === 1 ? 1 : 0, convDiv: s.convDiv === 'pend' ? 'pend' : s.convDiv === 1 ? 1 : 0, convPlanta: s.convPlanta === 'pend' ? 'pend' : s.convPlanta === 1 || dia > 1 ? 1 : 0, convEnt: s.convEnt === 'pend' ? 'pend' : s.convEnt === 1 ? 1 : 0, socorro: s.socorro === 1 ? 1 : 0, convSocorro: s.convSocorro === 'pend' ? 'pend' : s.convSocorro === 1 ? 1 : 0, convNota: s.convNota === 'pend' ? 'pend' : s.convNota === 1 ? 1 : 0, exigBravo: Math.max(0, Math.round(+s.exigBravo) || 0), exigVisto: s.exigVisto === 1 ? 1 : 0, convExig: s.convExig === 'pend' ? 'pend' : s.convExig === 1 ? 1 : 0, convCrit: s.convCrit === 'pend' ? 'pend' : s.convCrit === 1 ? 1 : 0, guia, cardVisto: Array.isArray(s.cardVisto) ? s.cardVisto.filter(x => typeof x === 'string').slice(0, 40) : [], avisoCard: !!s.avisoCard, histV: 1, avisoHist: !!s.avisoHist, cap, capDia: capRosa || capCrit || capNoite ? dia : Math.max(1, Math.round(+s.capDia) || 1), capV: 6, capAzul: capNovo ? 0 : Math.max(0, Math.round(+s.capAzul) || 0), capVezes: capNovo ? 0 : Math.max(0, Math.round(+s.capVezes) || 0), convQuit: s.convQuit === 'pend' ? 'pend' : s.convQuit === 1 || cap > 3 ? 1 : 0, convTeto: s.convTeto === 'pend' ? 'pend' : s.convTeto === 1 || cap > 3 ? 1 : 0, capFeito: !capNovo && s.capFeito === 1 ? 1 : 0, capMarm: Math.max(0, Math.round(+s.capMarm) || 0), capComp: Math.max(0, Math.round(+s.capComp) || 0), docesTot: Math.max(0, Math.round(+s.docesTot) || 0), conversa: conversaF, manut: normManut(s.manut), caixa: normCaixa(s.caixa), caixaPend: normPend(s.caixaPend) };
+  const dev = salaoDevolucao(s.salao), out = { dia, estrelas, lucroTot: Math.round(+s.lucroTot) || 0, pontosTot: Math.max(0, Math.round(+s.pontosTot) || 0), aval: normAval(s.aval), avalCom: capCrit ? plantaBoato(s.avalCom, dia) : normAvalCom(s.avalCom), neg: clamp(Math.round(+s.neg) || 0, 0, BANCO.neg), emp: normEmprestimo(novoHist ? { resto:REFORMA.valor, amort:REFORMA.amort, j:REFORMA.juros, ini:REFORMA.ini, ref:true } : s.emp), corta: s.corta !== false, fechou: Math.max(0, Math.round(+s.fechou) || 0), bank: bank + dev + devMaq, up, torneira:true, salao: normSalao(dev ? null : s.salao), divulga: dia < DIVULGA_DIA && !devLivre() ? 'boca' : divulgaOf(s.divulga).id, treino: !!s.treino, desafios: normDesafios(s.desafios), decor: normDecor(s.decor), moveis: normMoveis(s.moveis), cursos: normCursos(s.cursos), cursoDia: Math.max(0, Math.round(+s.cursoDia) || 0), tonXp: s.tonXp === 1 ? 1 : 0, daniTar: Math.max(0, Math.round(+s.daniTar) || 0), daniCursos: normDaniCursos(s.daniCursos), daniCursoDia: Math.max(0, Math.round(+s.daniCursoDia) || 0), jocaTar: Math.max(0, Math.round(+s.jocaTar) || 0), jocaCursos: normJocaCursos(s.jocaCursos), jocaCursoDia: Math.max(0, Math.round(+s.jocaCursoDia) || 0), camiCursos: normCamiCursos(s.camiCursos), camiCursoDia: Math.max(0, Math.round(+s.camiCursoDia) || 0), anselmoCursos: normAnselmoCursos(s.anselmoCursos), anselmoCursoDia: Math.max(0, Math.round(+s.anselmoCursoDia) || 0), daniXp: s.daniXp === 1 ? 1 : 0, cardV: 1, libera: normLibera(s.libera, !novoHist), arco: normArco(s.arco, pontoOf(s.salao && s.salao.ponto).nivel), pontoDia: pontoDiaDe(s, dia), vontDoce: normVont(s.vontDoce), vontCafe: normVont(s.vontCafe), vontDoceV: s.vontDoceV === 1 ? 1 : 0, vontCafeV: s.vontCafeV === 1 ? 1 : 0, convCard: s.convCard === 'pend' ? 'pend' : s.convCard === 1 ? 1 : 0, convDiv: s.convDiv === 'pend' ? 'pend' : s.convDiv === 1 ? 1 : 0, convPlanta: s.convPlanta === 'pend' ? 'pend' : s.convPlanta === 1 || dia > 1 ? 1 : 0, convEnt: s.convEnt === 'pend' ? 'pend' : s.convEnt === 1 ? 1 : 0, socorro: s.socorro === 1 ? 1 : 0, convSocorro: s.convSocorro === 'pend' ? 'pend' : s.convSocorro === 1 ? 1 : 0, convNota: s.convNota === 'pend' ? 'pend' : s.convNota === 1 ? 1 : 0, exigBravo: Math.max(0, Math.round(+s.exigBravo) || 0), exigVisto: s.exigVisto === 1 ? 1 : 0, convExig: s.convExig === 'pend' ? 'pend' : s.convExig === 1 ? 1 : 0, convCrit: s.convCrit === 'pend' ? 'pend' : s.convCrit === 1 ? 1 : 0, guia, cardVisto: Array.isArray(s.cardVisto) ? s.cardVisto.filter(x => typeof x === 'string').slice(0, 40) : [], avisoCard: !!s.avisoCard, histV: 1, avisoHist: !!s.avisoHist, cap, capDia: capRosa || capCrit || capNoite ? dia : Math.max(1, Math.round(+s.capDia) || 1), capV: 6, capAzul: capNovo ? 0 : Math.max(0, Math.round(+s.capAzul) || 0), capVezes: capNovo ? 0 : Math.max(0, Math.round(+s.capVezes) || 0), convQuit: s.convQuit === 'pend' ? 'pend' : s.convQuit === 1 || cap > 3 ? 1 : 0, convTeto: s.convTeto === 'pend' ? 'pend' : s.convTeto === 1 || cap > 3 ? 1 : 0, capFeito: !capNovo && s.capFeito === 1 ? 1 : 0, capMarm: Math.max(0, Math.round(+s.capMarm) || 0), capComp: Math.max(0, Math.round(+s.capComp) || 0), docesTot: Math.max(0, Math.round(+s.docesTot) || 0), conversa: conversaF, manut: normManut(s.manut), caixa: normCaixa(s.caixa), caixaPend: normPend(s.caixaPend) };
   out.equipe = normEquipe(s.equipe, pontoOf(out.salao.ponto));
   out.v10 = 1;
   out.efoodNota = s.efoodNota === 1 || dia > HIST_ENTREGA.dia ? 1 : 0;   // v9.6.4: o texto do entregador na introdução já saiu (quem passou do dia 4 já viu)
@@ -3190,8 +3256,8 @@ function loadSave(){
   } catch(e) {}
   return def;
 }
-/* o save de mentira da Missão zero (v8.2, `_treino`) nunca vai para o localStorage */
-function writeSave(s){ if (s && s._treino) return; lsSet(saveKey(), JSON.stringify(s)); }
+/* o save de mentira da Missão zero (v8.2, `_treino`) e o do Desafio (v12, `_desafio`) nunca vão para o localStorage */
+function writeSave(s){ if (s && (s._treino || s._desafio)) return; lsSet(saveKey(), JSON.stringify(s)); }
 
 /* ============================================================
    MESA
@@ -4542,6 +4608,7 @@ class Game {
     this.mode = 'carreira';
     this.conversa = null;   // Modo História (v8.7): a conversa em andamento (19-conversa.js)
     this.treino = null; this.salvo = null;   // Missão zero (v8.2): o passo a passo e o save de verdade, guardado enquanto ela dura
+    this.desafio = null; this.desafioRes = null;   // v12: o Desafio em andamento (item da DESAFIOS) e o resultado dele (medalha, nova marca); o save de verdade fica em `salvo`, como na Missão zero
     this.resetDay(1);
   }
   setState(s){ this.state = s; if (this.hooks.state) this.hooks.state(s); }
@@ -4612,11 +4679,11 @@ class Game {
   }
   get maquinaOn(){ return !!this.up.maquina && (this.ponto.bebida !== 'coquetel' || (!!this.up.coqAutor && this.anselmoAtivo)); }   // o que se serve na espera (v7.7)
 
-  resetDay(n, treino){
-    if (!treino) this.sairTreino();
+  resetDay(n, treino, desafio){
+    if (!treino && !desafio) this.sairTreino();   // v12: um dia comum devolve o save de verdade (e acaba o Desafio); o Desafio fica com o de mentira
     this.mode = treino ? 'treino' : n === 0 ? 'semfim' : 'carreira';
-    this.day = treino ? TREINO : n === 0 ? ENDLESS : this.diaPonto(diaOf(n));
-    if (!treino && n && DEV.on && DEV.forca.gripe) this.day = Object.assign({}, this.day, { gripe:DEV.forca.gripe === 'gripado' });   // v10.2.2
+    this.day = treino ? TREINO : n === 0 ? ENDLESS : this.desafio ? this.diaDesafio() : this.diaPonto(diaOf(n));
+    if (!treino && n && DEV.on && DEV.forca.gripe && !this.desafio) this.day = Object.assign({}, this.day, { gripe:DEV.forca.gripe === 'gripado' });   // v10.2.2
     this.noite = !treino && !!n && this.noiteDia(n); this.brauFeliz = null;   // v10.10: a noite da estrela (o dia marcado, do começo ao fim) e como o Bráulio saiu (null: ainda não saiu)
     if (this.noite) this.day = this.diaNoite(this.day);
     this.money = 0; this.custo = 0; this.contas = 0; this.paidDiv = 0; this.conserto = 0; this.pontos = 0;
@@ -4680,6 +4747,13 @@ class Game {
     const r5 = (v, k) => Math.round(v * k / 5) * 5;
     return Object.assign({}, d, { meta:r5(d.meta, f), expert:r5(d.expert, this.ponto.expertF || f) });
   }
+  /* v12: o dia do Desafio: o dia `dia` do ponto (diaPonto) com as três metas × mod.meta (arredondadas para 5, como a noite), os grupos × mod.groups e o tipo forçado no lugar do do dia da semana */
+  diaDesafio(){
+    const D = this.desafio, m = D.mod, d = this.diaPonto(diaOf(D.dia)), r5 = v => Math.round(v * m.meta / 5) * 5;
+    const o = Object.assign({}, d, { groups:d.groups * (m.groups || 1), meta:r5(d.meta), expert:r5(d.expert) });
+    if (m.tipo){ o.tipo = m.tipo; o.tipoP = m.tipoP; }
+    return o;
+  }
   /* v9: o tipo do grupo pelos pesos do ponto; o motorista vem mais nas pontas do turno (f: 0 a 1) e menos no meio */
   sorteiaTipo(w, f){
     const l = Object.keys(w).map(k => ({ k, w:w[k] * (k === 'motorista' ? (f < 0.2 || f > 0.8 ? 2 : 0.3) : 1) }));
@@ -4700,7 +4774,7 @@ class Game {
   /* v10.9, o crítico do Michelzão: a visita do dia n (null, ou { n:1|2, boato:a 2ª, real:vale para o save }). Só na carreira com a História ligada, no capítulo 13, no dia sorteado em save.guia.prox
      (o dia que passou sem visita, por exemplo no modo dev, vale no seguinte); o modo dev força por cima (DEV.forca.critico: 'hoje' = a 1ª, 'boato' = a 2ª, sem mexer no save) */
   criticoDia(n){
-    if (!n || this.noiteDia(n)) return null;   // v10.10: na noite da estrela o crítico vem de cara limpa (buildSchedule), nunca de surpresa
+    if (!n || this.desafio || this.noiteDia(n)) return null;   // v12: no Desafio, nunca; v10.10: na noite da estrela o crítico vem de cara limpa (buildSchedule), nunca de surpresa
     const f = DEV.on && DEV.forca.critico;
     if (f === 'hoje') return { n:1, boato:false, real:false };
     if (f === 'boato') return { n:2, boato:true, real:false };
@@ -4715,7 +4789,7 @@ class Game {
   }
   /* v10.10, a noite da estrela: o dia n é a noite (marcada na lojinha em save.guia.noite; o modo dev força o próximo dia que começar, DEV.forca.noite), só no Terraço */
   noiteDia(n){
-    if (!n || this.save.salao.ponto !== 'terraco') return false;
+    if (!n || this.desafio || this.save.salao.ponto !== 'terraco') return false;   // v12: no Desafio, nunca
     if (DEV.on && DEV.forca.noite) return true;
     const g = this.save.guia;
     return histLiga() && !!g && g.noite === n && this.save.cap >= 14;
@@ -4846,7 +4920,7 @@ class Game {
   }
   /* v10.2.2: o modo dev força o clima, a quebra e o fiscal do dia (DEV.forca, só na memória) por cima do sorteio */
   devForcaSorteio(so){
-    const f = DEV.on && DEV.forca; if (!f) return false;
+    const f = DEV.on && DEV.forca; if (!f || this.desafio) return false;   // v12: nada sorteado nem forçado no Desafio
     const antes = JSON.stringify(so);
     if (f.clima) so.clima = f.clima === 'sem' ? '' : f.clima;
     if (f.evento){ so.ev = f.evento === 'nada' ? '' : f.evento; if (so.ev && !f.clima) so.clima = ''; }   // v10.6: o evento forçado (sem mexer no save.evento)
@@ -4915,6 +4989,48 @@ class Game {
   sairTreino(){
     if (!this.salvo) return;
     this.save = this.salvo; this.salvo = null; this.up = this.save.up; this.treino = null;
+    if (this.desafio){ this.desafio = null; DESAFIO_EST.on = false; this.tablesKey = ''; }   // v12: acabar o Desafio também devolve o salão de verdade
+  }
+  /* Desafio (v12): joga com um save de mentira (`_desafio`, nunca gravado), montado pela linha `cap` da DEV_CAPS, sem as pessoas de mod.sem e com as melhorias de mod.up;
+     o de verdade fica em `salvo` e volta ao sair. Vai à introdução do dia (o título e o aviso são do Desafio) */
+  startDesafio(id){
+    const D = DESAFIOS.find(x => x.id === id);
+    if (!D) return false;
+    if (!this.salvo) this.salvo = this.save;
+    this.mode = 'carreira'; this.treino = null; this.desafio = D; DESAFIO_EST.on = true;
+    this.save = this.montaCap(D.cap, { marca:{ _desafio:true }, conversa:false, sem:D.mod.sem, up:D.mod.up });
+    this.save.dia = D.dia; this.save.pontoDia = Math.min(this.save.pontoDia, D.dia);
+    this.up = this.save.up; this.tablesKey = '';
+    this.resetDay(D.dia, false, true);
+    this.setState('intro');
+    return true;
+  }
+  sairDesafio(){ this.sairTreino(); }
+  /* o botão Desafios do menu: a partir do Fim da história (cap depois do último), no modo dev Livre ou com o "Liberar" do dev */
+  get desafiosVisivel(){ return this.save.cap > HISTORIA.length || devLivre() || !!(DEV.on && DEV.forca.desafios); }
+  /* v12, modo dev: liberar o botão sem o Fim, ouro em todos ou zerar as medalhas */
+  devDesafios(acao){
+    if (!DEV.on) return false;
+    const sv = this.save, o = {};
+    if (acao === 'liberar'){ DEV.forca.desafios = true; return true; }
+    if (acao === 'ouro') DESAFIOS.forEach(d => { o[d.id] = 3; }); else if (acao !== 'zerar') return false;
+    sv.desafios = normDesafios(o); writeSave(sv); return true;
+  }
+  /* as estrelas do dia pelo lucro m (1: a meta; 2: o bomGoal; 3: a expert sem perder ninguém), usado pelo fim do dia e pelo do Desafio */
+  estrelasDe(m){
+    const d = this.day;
+    return m >= d.expert && this.stats.lost === 0 ? 3 : m >= bomGoal(d) && m >= d.meta ? 2 : m >= d.meta ? 1 : 0;
+  }
+  /* o fim do Desafio (v12): só conta as estrelas; a medalha é 0 se a cond não vale; a melhor fica no save de verdade (`salvo`), e é só ela que se grava */
+  finishDesafio(){
+    const D = this.desafio, m = Math.round(this.lucro), real = this.salvo || this.save;
+    this.aberto = false;
+    const stars = this.estrelasDe(m), condOk = !D.cond || D.cond(this.stats), medalha = condOk ? stars : 0;
+    const antes = (real.desafios && real.desafios[D.id]) || 0, nova = medalha > antes;
+    if (nova){ real.desafios = normDesafios(Object.assign({}, real.desafios, { [D.id]:medalha })); writeSave(real); }
+    this.desafioRes = { id:D.id, medalha, nova, falhou:!condOk, lucro:m, stars };
+    this.setState('desafiofim');
+    if (medalha) Sfx.win(); else Sfx.lose();
   }
   /* "Pular tutorial": sai da Missão zero, marca como feita (não volta a abrir sozinha) e vai ao menu */
   pularTreino(){
@@ -5663,7 +5779,7 @@ class Game {
   multa(g){ return MULTA + (g.vip ? VIP.angry : 0); }   // grupo que vai embora bravo (0 corações)
   /* v8.2.3: encerrar o dia no meio (Reiniciar ou Menu na pausa) não rende nada (v8.2.2), e quem está na espera ou nas
      mesas vai embora bravo, como se tivesse zerado os corações: cada grupo paga a multa, direto do dinheiro acumulado */
-  get bravosSeSair(){ return this.mode === 'carreira' && this.aberto ? this.groups.filter(g => g.state !== 'leaving') : []; }
+  get bravosSeSair(){ return this.mode === 'carreira' && this.aberto && !this.desafio ? this.groups.filter(g => g.state !== 'leaving') : []; }
   get multaSeSair(){ return this.bravosSeSair.reduce((a, g) => a + this.multa(g), 0); }
   encerrar(){
     const gs = this.bravosSeSair, v = this.multaSeSair, d = this.day;
@@ -5787,13 +5903,11 @@ class Game {
   }
 
   finishDay(){
+    if (this.desafio) return this.finishDesafio();   // v12: o Desafio só conta as estrelas; nada do caixa, empréstimo, ranking nem save roda
     const d = this.day, m = Math.round(this.lucro), fat = Math.round(this.money), sv = this.save;
     const passed = m >= d.meta;
     this.aberto = false;
-    let stars = 0;
-    if (passed) stars = 1;
-    if (passed && m >= bomGoal(d)) stars = 2;
-    if (m >= d.expert && this.stats.lost === 0) stars = 3;
+    const stars = this.estrelasDe(m);
     // v8.2.2: só o dia completo rende. O faturamento vai para o dinheiro acumulado, menos ingredientes, contas, folha e
     // divulgação, que só são pagas agora (o conserto na hora já saiu); dia interrompido na pausa não paga nem ganha nada.
     // v8.3: tudo sai mesmo sem dinheiro (o caixa pode ficar negativo), junto com a parcela do empréstimo
@@ -6207,7 +6321,7 @@ class Game {
   manualAberta(id){ const sv = this.manualReal; return devLivre() || (sv.manual || []).indexOf(id) >= 0; }
   manualVer(id){
     const sv = this.save;
-    if (this.mode !== 'carreira' || sv._treino || devLivre() || sv.manual.indexOf(id) >= 0 || !manualFicha(id)) return 0;
+    if (this.mode !== 'carreira' || sv._treino || sv._desafio || devLivre() || sv.manual.indexOf(id) >= 0 || !manualFicha(id)) return 0;
     sv.manual.push(id); sv.manualNovo.push(id); writeSave(sv);
     if (this.state === 'playing') this.manualDia.push(id);
     return 1;
@@ -6557,6 +6671,9 @@ class Game {
   }
   devNota(v){
     if (!DEV.on) return false;
+    return this.notaSave(v);
+  }
+  notaSave(v){   // v12: o miolo (sem a trava do modo dev), usado também pela montaCap
     v = +v || 0;
     if (v <= 0) this.save.aval = [];
     else { const x = Math.min(v, avalTeto(this.ponto)); this.save.aval = normAval(Array.from({ length:AVAL.max }, () => AVAL_CRIT.map(() => x))); }
@@ -6564,6 +6681,9 @@ class Game {
   }
   devEquipe(modo){
     if (!DEV.on) return false;
+    return this.equipeModo(modo);
+  }
+  equipeModo(modo){   // v12: o miolo (sem a trava do modo dev), usado também pela montaCap
     const sv = this.save, e = sv.equipe;
     if (modo === 'max'){
       e.tonhao = STAFF.tonhao.levels.length - 1; e.dani = STAFF.dani.levels.length - 1; e.joca = STAFF.joca.levels.length - 1;
@@ -6573,12 +6693,15 @@ class Game {
     }
     sv.equipe = normEquipe(e, this.ponto);
     sv.rosa = modo === 'max' ? 1 : 0;   // v10.8: o molho da Rosa vem com o "Tudo no máximo"
-    this.devCursos(modo === 'max');
+    this.cursosTodos(modo === 'max');
     return true;
   }
   /* v10.2.1: todos os cursos (do Tonhão, da Dani, do Joca e da Cami) ou nenhum; os itens que vêm dos cursos acompanham */
   devCursos(on){
     if (!DEV.on) return false;
+    return this.cursosTodos(on);
+  }
+  cursosTodos(on){   // v12: o miolo (sem a trava do modo dev), usado também pela montaCap
     const sv = this.save, tudo = (lista, v) => { const o = {}; if (on) lista.forEach(x => { o[x.id] = v; }); return o; };
     sv.cursos = normCursos(tudo(CURSOS, 2)); sv.daniCursos = normDaniCursos(tudo(DANI_CURSOS, true)); sv.jocaCursos = normJocaCursos(tudo(JOCA_CURSOS, true)); sv.camiCursos = normCamiCursos(tudo(CAMI_CURSOS, true)); sv.anselmoCursos = normAnselmoCursos(tudo(ANSELMO_CURSOS, true));
     this.devSegueCursos(); sv.cursoDia = sv.daniCursoDia = sv.jocaCursoDia = sv.camiCursoDia = sv.anselmoCursoDia = 0;
@@ -6598,6 +6721,9 @@ class Game {
   }
   devMelhorias(on){
     if (!DEV.on) return false;
+    return this.melhoriasTodas(on);
+  }
+  melhoriasTodas(on){   // v12: o miolo (sem a trava do modo dev), usado também pela montaCap
     Object.keys(this.up).forEach(k => { if (['confCaseira', 'confGourmet', 'confAlta', 'espresso', 'cafesEsp', 'coqClassica', 'coqAutor'].indexOf(k) < 0 && !(k === 'maquina' && this.up.coqAutor)) delete this.up[k]; });
     if (on) UPGRADES.forEach(u => { this.up[u.id] = u.multi ? 1 : true; });
     this.kitchen.slots = cozinhaSlots(this);
@@ -6672,49 +6798,66 @@ class Game {
   devCapitulo(n){
     const D = DEV_CAPS[clamp(Math.round(+n) || 1, 1, DEV_CAPS.length) - 1];
     if (!DEV.on || !D) return false;
-    n = D.n;
     this.devReal(true);
     lsSet(LS.devBak, JSON.stringify(this.save));
-    const sv = normSave({ treino:true }), ativo = n <= HISTORIA.length;
-    sv.histV = 1; sv.cap = n; sv.dia = D.dia; sv.capDia = D.dia; sv.capAzul = 0; sv.capFeito = 0; sv.capVezes = 0; sv.conversa = ativo ? 'antes' : null; sv.bank = D.caixa;
+    const sv = this.montaCap(D.n);
     this.save = sv; this.up = sv.up;
-    for (let i = 1; i <= PONTOS.findIndex(p => p.id === D.ponto); i++) this.trocaPonto(PONTOS[i]);
-    sv.pontoDia = D.pdia; sv.conversa = ativo ? 'antes' : null; sv.capDia = D.dia;
-    const r = REFORMA, resto = n === 1 ? r.valor : n === 2 ? 700 : n === 3 ? 400 : 0;
-    sv.emp = normEmprestimo(resto ? { resto, amort:r.amort, j:r.juros, ini:r.ini, ref:true } : {});
-    sv.convPlanta = D.dia > HIST_PLANTA.dia ? 1 : 0; if (sv.convPlanta) sv.decor = normDecor({ espada:1 });
-    sv.convCard = D.dia > HIST_CARDAPIO.dia ? 1 : 0; sv.convDiv = D.dia >= DIVULGA_DIA ? 1 : 0; sv.convEnt = D.dia >= HIST_ENTREGA.dia ? 1 : 0;
-    sv.vontDoce = sv.vontCafe = sv.vontDoceV = sv.vontCafeV = 0;   // v10.5.3: a vontade recomeça no capítulo
-    sv.convCrit = n > CRITICO.cap ? 1 : 0; if (n === CRITICO.cap) this.comecaCritico(); else if (n > CRITICO.cap) sv.guia = normGuia({ n:2, prox:0, v:[{ d:D.dia - 8, it:[2, 2, 2, 1, 1] }, { d:D.dia - 4, it:[2, 2, 2, 1, 1] }] });   // v10.10: do 14 em diante, duas fichas de 8   // v10.9: o capítulo 13 começa com o sorteio da 1ª visita
-    if (D.guiaEst && sv.guia){ sv.guia.est = D.guiaEst; sv.guia.visto = D.guiaVisto || 0; }   // v11: o Fim já com a estrela e a cena final vista
-    sv.convExig = n >= 10 ? 1 : 0; sv.socorro = 0; sv.convSocorro = 0; sv.convQuit = sv.convTeto = n > 3 ? 1 : 0;
-    sv.efoodNota = D.dia > HIST_ENTREGA.dia ? 1 : 0; sv.vipVisto = D.dia > 5 ? 1 : 0;
-    // equipe, cursos e melhorias pela tabela (o Fim: tudo no máximo, com a Lia)
-    if (D.eq){
-      const e = sv.equipe, top = { tonhao:STAFF.tonhao.levels.length - 1, dani:STAFF.dani.levels.length - 1, joca:STAFF.joca.levels.length - 1, cami:STAFF.cami.levels.length - 1, anselmo:STAFF.anselmo.levels.length - 1, lia:1 };
-      Object.keys(D.eq).forEach(q => { e[q] = Math.min(D.eq[q], top[q]); });
-      sv.equipe = normEquipe(e, this.ponto);
-      const lista = (ids, ok) => { const o = {}; ids.forEach(id => { if (ok.some(x => x.id === id)) o[id] = true; }); return o; };
-      const cs = {}; Object.keys(D.cursos).forEach(id => { if (CURSOS.some(c => c.id === id)) cs[id] = D.cursos[id]; });
-      sv.cursos = normCursos(cs); sv.daniCursos = normDaniCursos(lista(D.dani, DANI_CURSOS)); sv.jocaCursos = normJocaCursos(lista(D.joca, JOCA_CURSOS)); sv.camiCursos = normCamiCursos(lista(D.cami, CAMI_CURSOS)); sv.anselmoCursos = normAnselmoCursos(lista(D.anselmo || [], ANSELMO_CURSOS));
-      Object.keys(this.up).forEach(k => delete this.up[k]);
-      D.up.forEach(id => { const u = UPGRADES.find(x => x.id === id); if (u) this.up[id] = u.multi ? 1 : true; });
-      this.devSegueCursos();
-    } else {
-      this.devEquipe('max'); this.devMelhorias(true); sv.equipe.lia = 1; sv.equipe.anselmo = STAFF.anselmo.levels.length - 1;
-      if (D.semRosa){ sv.rosa = 0; delete sv.camiCursos.gerente; sv.equipe.cami = 4; }   // v10.8: o capítulo 12 começa sem o molho e sem a gerência
-      sv.equipe = normEquipe(sv.equipe, this.ponto);
-    }
-    // cartões da lojinha: os de antes do ponto, vistos; os do ponto, só no 2º capítulo dele e com a pessoa contratada
-    this.devLibera(n, false);
-    // Manual: o Básico e as fichas dos pontos visitados
-    sv.manual = MANUAL.filter(f => f.aba === 'basico' || PONTOS.slice(0, PONTOS.findIndex(p => p.id === D.ponto) + 1).some(p => f.id === 'p-' + p.id)).map(f => f.id);
-    sv.manualNovo = [];
     writeSave(sv);
     this.kitchen.slots = cozinhaSlots(this);
-    this.devNota(D.nota);
     this.devRecarrega();
     return true;
+  }
+  /* v12: o save do começo do capítulo n (DEV_CAPS), montado à parte: devolve o save, sem trocar o do jogo (this.save e this.up ficam trocados só durante a montagem, porque os
+     ajudantes do modo dev trabalham neles) e sem mexer no modo dev nem no save guardado; quem chama põe o save onde quiser (o devCapitulo no jogo; o Desafio, como save de mentira).
+     opt: marca (campos postos logo depois do normSave, como { _desafio:true }, que impede o writeSave); conversa:false (sem a conversa de antes);
+     sem (pessoas da equipe a pôr em 0); up (melhorias a mais) */
+  montaCap(n, opt){
+    opt = opt || {};
+    const D = DEV_CAPS[clamp(Math.round(+n) || 1, 1, DEV_CAPS.length) - 1];
+    n = D.n;
+    const salvoSave = this.save, salvoUp = this.up;
+    const sv = Object.assign(normSave({ treino:true }), opt.marca || {}), ativo = n <= HISTORIA.length && opt.conversa !== false;
+    try {
+      sv.histV = 1; sv.cap = n; sv.dia = D.dia; sv.capDia = D.dia; sv.capAzul = 0; sv.capFeito = 0; sv.capVezes = 0; sv.conversa = ativo ? 'antes' : null; sv.bank = D.caixa;
+      this.save = sv; this.up = sv.up;
+      for (let i = 1; i <= PONTOS.findIndex(p => p.id === D.ponto); i++) this.trocaPonto(PONTOS[i]);
+      sv.pontoDia = D.pdia; sv.conversa = ativo ? 'antes' : null; sv.capDia = D.dia;
+      const r = REFORMA, resto = n === 1 ? r.valor : n === 2 ? 700 : n === 3 ? 400 : 0;
+      sv.emp = normEmprestimo(resto ? { resto, amort:r.amort, j:r.juros, ini:r.ini, ref:true } : {});
+      sv.convPlanta = D.dia > HIST_PLANTA.dia ? 1 : 0; if (sv.convPlanta) sv.decor = normDecor({ espada:1 });
+      sv.convCard = D.dia > HIST_CARDAPIO.dia ? 1 : 0; sv.convDiv = D.dia >= DIVULGA_DIA ? 1 : 0; sv.convEnt = D.dia >= HIST_ENTREGA.dia ? 1 : 0;
+      sv.vontDoce = sv.vontCafe = sv.vontDoceV = sv.vontCafeV = 0;   // v10.5.3: a vontade recomeça no capítulo
+      sv.convCrit = n > CRITICO.cap ? 1 : 0; if (n === CRITICO.cap) this.comecaCritico(); else if (n > CRITICO.cap) sv.guia = normGuia({ n:2, prox:0, v:[{ d:D.dia - 8, it:[2, 2, 2, 1, 1] }, { d:D.dia - 4, it:[2, 2, 2, 1, 1] }] });   // v10.10: do 14 em diante, duas fichas de 8   // v10.9: o capítulo 13 começa com o sorteio da 1ª visita
+      if (D.guiaEst && sv.guia){ sv.guia.est = D.guiaEst; sv.guia.visto = D.guiaVisto || 0; }   // v11: o Fim já com a estrela e a cena final vista
+      sv.convExig = n >= 10 ? 1 : 0; sv.socorro = 0; sv.convSocorro = 0; sv.convQuit = sv.convTeto = n > 3 ? 1 : 0;
+      sv.efoodNota = D.dia > HIST_ENTREGA.dia ? 1 : 0; sv.vipVisto = D.dia > 5 ? 1 : 0;
+      // equipe, cursos e melhorias pela tabela (o Fim: tudo no máximo, com a Lia)
+      if (D.eq){
+        const e = sv.equipe, top = { tonhao:STAFF.tonhao.levels.length - 1, dani:STAFF.dani.levels.length - 1, joca:STAFF.joca.levels.length - 1, cami:STAFF.cami.levels.length - 1, anselmo:STAFF.anselmo.levels.length - 1, lia:1 };
+        Object.keys(D.eq).forEach(q => { e[q] = Math.min(D.eq[q], top[q]); });
+        sv.equipe = normEquipe(e, this.ponto);
+        const lista = (ids, ok) => { const o = {}; ids.forEach(id => { if (ok.some(x => x.id === id)) o[id] = true; }); return o; };
+        const cs = {}; Object.keys(D.cursos).forEach(id => { if (CURSOS.some(c => c.id === id)) cs[id] = D.cursos[id]; });
+        sv.cursos = normCursos(cs); sv.daniCursos = normDaniCursos(lista(D.dani, DANI_CURSOS)); sv.jocaCursos = normJocaCursos(lista(D.joca, JOCA_CURSOS)); sv.camiCursos = normCamiCursos(lista(D.cami, CAMI_CURSOS)); sv.anselmoCursos = normAnselmoCursos(lista(D.anselmo || [], ANSELMO_CURSOS));
+        Object.keys(this.up).forEach(k => delete this.up[k]);
+        D.up.forEach(id => { const u = UPGRADES.find(x => x.id === id); if (u) this.up[id] = u.multi ? 1 : true; });
+        this.devSegueCursos();
+      } else {
+        this.equipeModo('max'); this.melhoriasTodas(true); sv.equipe.lia = 1; sv.equipe.anselmo = STAFF.anselmo.levels.length - 1;
+        if (D.semRosa){ sv.rosa = 0; delete sv.camiCursos.gerente; sv.equipe.cami = 4; }   // v10.8: o capítulo 12 começa sem o molho e sem a gerência
+        sv.equipe = normEquipe(sv.equipe, this.ponto);
+      }
+      // cartões da lojinha: os de antes do ponto, vistos; os do ponto, só no 2º capítulo dele e com a pessoa contratada
+      this.devLibera(n, false);
+      // Manual: o Básico e as fichas dos pontos visitados
+      sv.manual = MANUAL.filter(f => f.aba === 'basico' || PONTOS.slice(0, PONTOS.findIndex(p => p.id === D.ponto) + 1).some(p => f.id === 'p-' + p.id)).map(f => f.id);
+      sv.manualNovo = [];
+      (opt.sem || []).forEach(q => { sv.equipe[q] = 0; });   // v12: o Desafio tira pessoas da equipe e põe melhorias a mais
+      (opt.up || []).forEach(id => { const u = UPGRADES.find(x => x.id === id); if (u) this.up[id] = u.multi ? 1 : true; });
+      sv.equipe = normEquipe(sv.equipe, this.ponto);
+      this.notaSave(D.nota);
+    } finally { this.save = salvoSave; this.up = salvoUp; }
+    return sv;
   }
   /* v10.2.1: desfaz o último pulo de capítulo (volta o save dev guardado e apaga a cópia) */
   devDesfaz(){
@@ -7095,7 +7238,7 @@ class Treino {
    Sentar um grupo não depende da Bia; as outras só valem com a fila de ações vazia. alvos: retângulos do mundo
    ============================================================ */
 const DICAS = { dias:3, espera:4, firme:1.5, surge:0.25 };
-function dicaLigada(g){ return g.mode === 'carreira' && g.state === 'playing' && !g.ending && !g.fechado && g.day.n <= DICAS.dias && !devLivre(); }
+function dicaLigada(g){ return g.mode === 'carreira' && !g.desafio && g.state === 'playing' && !g.ending && !g.fechado && g.day.n <= DICAS.dias && !devLivre(); }
 function dicaDe(g){
   if (!dicaLigada(g) || g.drag) return null;
   const b = g.bia, livre = !b.acts.length, mao = k => b.hands.find(h => h.kind === k);
@@ -14591,7 +14734,7 @@ const game = new Game(canvas, ctx);
 /* quem nunca fez a Missão zero (e ainda está no dia 1) encontra o botão dela em destaque */
 function treinoPrimeiro(){ return !game.save.treino && game.proxDia <= 1 && !DEV.on; }
 
-const SCREENS = ['ov-menu','ov-manual','ov-intro','ov-treino','ov-pause','ov-end','ov-shop','ov-falencia','ov-endless','ov-rank','ov-ver','ov-app','ov-atu','ov-abertura','ov-escolha','ov-conversa','ov-continua','ov-guia'];
+const SCREENS = ['ov-menu','ov-manual','ov-intro','ov-treino','ov-pause','ov-end','ov-shop','ov-falencia','ov-endless','ov-rank','ov-ver','ov-app','ov-atu','ov-abertura','ov-escolha','ov-conversa','ov-continua','ov-guia','ov-desafios','ov-desafio-fim'];
 function showOnly(ids){
   SCREENS.forEach(id => { const el = $(id); if (!el) return; if (ids.indexOf(id) >= 0) el.classList.add('show'); else el.classList.remove('show'); });
 }
@@ -14627,6 +14770,9 @@ function fit(){
 /* ---------- menu (v8.3): a carreira é uma campanha; "Continuar" abre o próximo dia ---------- */
 let resetPede = false;   // "Recomeçar do zero": o 1º toque pede confirmação
 function buildMenu(){
+  const dv = game.desafiosVisivel;   // v12: o botão Desafios, a partir do Fim da história (ou do modo dev); as três fichas do Manual abrem junto
+  $('btn-desafios').style.display = dv ? '' : 'none';
+  if (dv) DESAFIOS.forEach(d => game.manualVer('d-' + d.id));
   manualBolinha();
   const sv = game.save, n = game.proxDia, novo = n <= 1 && !sv.caixa.length;
   // v8.7: a carreira é a História ("História · cap. 2, A Dani chega · dia 5"; fim dos capítulos: "Garagem completa")
@@ -14651,6 +14797,27 @@ function buildMenu(){
   resetPede = false; $('btn-reset').textContent = 'Recomeçar do zero';
   $('btn-reset').style.display = novo || sv.fechou ? 'none' : '';   // nada a apagar ainda (ou o botão principal já recomeça)
   buildChips();
+}
+/* v12, a tela de Desafios: um cartão por desafio, com a medalha (círculo cheio de bronze, prata ou ouro; só o contorno tracejado, sem medalha), o nome e o "?" da ficha no Manual; tocar no cartão começa o desafio */
+function medalhaEl(m, grande){
+  const e = el('span', 'medalha m' + m + (grande ? ' grande' : '')); e.setAttribute('data-medalha', String(m)); e.setAttribute('aria-hidden', 'true');
+  return e;
+}
+function buildDesafios(){
+  const box = $('desafios-grid'), sv = game.save;
+  clearEl(box);
+  DESAFIOS.forEach(D => {
+    const m = (sv.desafios && sv.desafios[D.id]) || 0, rot = D.nome + ', ' + (m ? 'medalha de ' + MEDALHAS[m] : 'sem medalha');
+    const card = el('div', 'dcard'); card.setAttribute('data-desafio', D.id); card.setAttribute('role', 'listitem');
+    const b = el('button', 'dbtn'); b.type = 'button'; b.setAttribute('aria-label', rot);
+    b.appendChild(medalhaEl(m, false)); b.appendChild(el('b', null, D.nome));
+    b.addEventListener('click', () => { Sfx.init(); Sfx.resume(); Sfx.tap(); game.startDesafio(D.id); });
+    card.appendChild(b);
+    const q = el('button', 'qm', '?'); q.type = 'button'; q.setAttribute('aria-label', 'No Manual: ' + D.nome); q.setAttribute('data-ficha', 'd-' + D.id);
+    q.addEventListener('click', () => { Sfx.init(); Sfx.tap(); abrirManual('d-' + D.id, 'desafios'); });
+    card.appendChild(q);
+    box.appendChild(card);
+  });
 }
 /* modo dev: os dias à escolha (o save dev pula para o dia tocado) */
 function buildChips(){
@@ -14741,6 +14908,8 @@ function devAbaPular(body, secao, botao, dia){
   [[-10, '−10'], [-1, '−1'], [1, '+1'], [10, '+10']].forEach(([d, t]) => botao(r, t, () => game.devDia(dia + d)));
   r = secao('Ponto');
   PONTOS.forEach(p => botao(r, p.nome, () => game.devPonto(p.id), p.id === game.ponto.id));
+  r = secao('Desafios', 'Liberar mostra o botão no menu, sem o Fim');   // v12
+  botao(r, 'Liberar', () => game.devDesafios('liberar')); botao(r, 'Ouro em todos', () => game.devDesafios('ouro')); botao(r, 'Zerar', () => game.devDesafios('zerar'));
   if (emDia){
     r = secao('No dia', 'Velocidade ' + DEV.vel + '×');
     [1, 2, 4, 8].forEach(v => botao(r, 'Velocidade ' + v + '×', () => { DEV.vel = v; }, DEV.vel === v));
@@ -15116,6 +15285,7 @@ function abrirManual(fichaId, volta){
 }
 function fecharManual(){
   if (manualVolta === 'pause') showOnly(['ov-pause']);
+  else if (manualVolta === 'desafios'){ buildDesafios(); showOnly(['ov-desafios']); }   // v12
   else if (manualVolta === 'shop'){ buildShop(); showOnly(['ov-shop']); }
   else { buildMenu(); showOnly(['ov-menu']); }
 }
@@ -16680,6 +16850,13 @@ function buildEnd(){
   if (game.mode === 'carreira') rankAuto('carreira');
 }
 /* v8.3.1: o banco tomou a lanchonete (a parcela atrasada não foi paga no dia seguinte): fim da carreira */
+/* v12: o cartão do fim do Desafio: o nome, a medalha grande e uma linha com o resultado (a medalha, o `falhou` da regra ou "Não deu a meta.") */
+function buildDesafioFim(){
+  const r = game.desafioRes, D = DESAFIOS.find(x => x.id === r.id), box = $('desafio-fim-medalha');
+  $('desafio-fim-titulo').textContent = D.nome;
+  clearEl(box); box.appendChild(medalhaEl(r.medalha, true));
+  $('desafio-fim-msg').textContent = r.medalha ? 'Medalha de ' + MEDALHAS[r.medalha] + '!' + (r.nova ? ' Nova melhor marca!' : '') : r.falhou ? D.falhou : 'Não deu a meta.';
+}
 function buildFalencia(){
   const r = game.result, sv = game.save;
   if (!r) return;
@@ -16807,8 +16984,16 @@ function rostinhoCliente(k){
 /* ---------- troca de telas ---------- */
 game.hooks.state = function(s){
   if (s === 'menu'){ game.resetDay(game.proxDia); buildMenu(); devSync(); showOnly(['ov-menu']); }
+  else if (s === 'desafios'){ game.sairDesafio(); game.resetDay(game.proxDia); buildDesafios(); showOnly(['ov-desafios']); }   // v12: a tela de Desafios (o save de verdade volta, se estava no de mentira)
+  else if (s === 'desafiofim'){ buildDesafioFim(); showOnly(['ov-desafio-fim']); }
   else if (s === 'intro'){
     const d = game.day;
+    if (game.desafio){   // v12: o nome do Desafio no título e o aviso dele no lugar do aviso do dia
+      $('intro-title').textContent = game.desafio.nome;
+      $('intro-goal').textContent = 'Meta: ' + fmt(d.meta) + ' · ★★ ' + fmt(bomGoal(d)) + ' · ★★★ ' + fmt(d.expert);
+      $('intro-note').textContent = game.desafio.aviso; $('intro-manut').textContent = '';
+      showOnly(['ov-intro']); return;
+    }
     if (game.mode === 'semfim'){
       $('intro-title').textContent = 'Turno sem fim';
       $('intro-goal').textContent = 'Todas as mesas abertas e freguesia cada vez mais rápida.';
@@ -16837,7 +17022,7 @@ game.hooks.state = function(s){
     manualBolinha();
     // v8.2.2: só o dia completo rende; interrompido, não paga nem ganha nada
     const nb = game.bravosSeSair.length, mb = game.multaSeSair;
-    $('pause-note').textContent = game.mode !== 'carreira' ? '' : 'Se sair agora, o dia não conta.'
+    $('pause-note').textContent = game.mode !== 'carreira' ? '' : game.desafio ? 'Se sair agora, não vale medalha.' : 'Se sair agora, o dia não conta.'
       + (nb ? ' Quem está aqui vai embora bravo: multa de ' + fmt(mb) + '.' : '');
     showOnly(['ov-pause']);
   }
@@ -17053,6 +17238,10 @@ on('btn-shop-manual', () => { Sfx.init(); Sfx.tap(); abrirManual(null, 'shop'); 
 on('btn-manual-voltar', () => { Sfx.tap(); fecharManual(); });
 on('btn-endless',    () => { Sfx.init(); Sfx.resume(); Sfx.tap(); game.startEndless(); });
 on('btn-rank',       () => { Sfx.init(); Sfx.resume(); Sfx.tap(); openRank('ov-menu'); });
+on('btn-desafios',   () => { Sfx.init(); Sfx.resume(); Sfx.tap(); game.setState('desafios'); });   // v12
+on('btn-desafios-voltar', () => { Sfx.tap(); game.setState('menu'); });
+on('btn-desafio-de-novo', () => { Sfx.init(); Sfx.resume(); Sfx.tap(); if (game.desafio) game.startDesafio(game.desafio.id); });
+on('btn-desafio-lista',   () => { Sfx.tap(); game.setState('desafios'); });
 on('btn-ver',        () => { Sfx.tap(); showOnly(['ov-ver']); });
 on('btn-ver-close',  () => { Sfx.tap(); showOnly(['ov-menu']); });
 /* modo dev: 10 toques seguidos no selo da versão (no máximo 1,5 s entre um e outro) ligam e desligam */
@@ -17128,7 +17317,7 @@ on('btn-reset',      () => {
   recomeca();
 });
 on('btn-start',      () => { Sfx.init(); Sfx.resume(); Sfx.ok(); game.begin(); });
-on('btn-intro-menu', () => game.setState('menu'));
+on('btn-intro-menu', () => game.setState(game.desafio ? 'desafios' : 'menu'));
 on('btn-resume',     () => { Sfx.tap(); game.resume(); });
 /* v9.6.13: na carreira com o dia aberto, Reiniciar e Menu da pausa pedem um 2º toque (o 1º só troca o texto do botão) */
 let pausaPede = null;
@@ -17142,10 +17331,10 @@ function pausaConfirma(id, normal){
   Sfx.tap();
   return false;
 }
-on('btn-restart',    () => { if (!pausaConfirma('btn-restart', 'Confirmar: recomeçar o dia')) return; pausaReset(); if (game.mode === 'semfim') game.startEndless(); else if (game.mode === 'treino') game.startTreino(); else { game.encerrar(); game.startDay(game.day.n); } });
+on('btn-restart',    () => { if (!pausaConfirma('btn-restart', 'Confirmar: recomeçar o dia')) return; pausaReset(); if (game.mode === 'semfim') game.startEndless(); else if (game.mode === 'treino') game.startTreino(); else if (game.desafio) game.startDesafio(game.desafio.id); else { game.encerrar(); game.startDay(game.day.n); } });
 on('btn-treino-dia1', () => { Sfx.tap(); playCareer(); });
 on('btn-treino-menu', () => game.setState('menu'));
-on('btn-pause-menu', () => { if (!pausaConfirma('btn-pause-menu', 'Confirmar: sair do dia')) return; pausaReset(); game.encerrar(); game.encerrado = null; game.setState('menu'); });
+on('btn-pause-menu', () => { if (!pausaConfirma('btn-pause-menu', 'Confirmar: sair do dia')) return; pausaReset(); game.encerrar(); game.encerrado = null; game.setState(game.desafio ? 'desafios' : 'menu'); });
 on('btn-end-menu',   () => game.setState('menu'));
 on('btn-next',       () => { if (game.result && game.result.noite) fluxoHistoria(() => game.goShop(game.proxDia)); else game.goShop(game.proxDia); });   // v9.6.10: as conversas já tocaram antes dos resultados (v10.10: menos na noite da estrela, que toca depois)
 on('btn-shop-go',    () => { Sfx.tap(); game.startDay(game.shopNext); });
@@ -17237,7 +17426,7 @@ try { Rank.init(); } catch(e) {}
 game.setState('menu');
 if (!aberturaVista() && !DEV.on) abrirAbertura('auto');   // v8.5: a abertura toca sozinha uma vez
 window.__game = game;
-window.__lcc = { ATU_TXT, atuEstado, atuVerifica, atuAplica, ENFEITE_MESA, enfeiteMesa, enfeiteDe, ENTREGA_CHEGA, ab2Cam, ab2Cabe, ab2Tela, ab2Notas, AB_FX, AB2, AB2_CENAS, AB2_TE, ab2Terraco, ab2RuaAurora, ab2CozinhaAurora, ab2Gala, ab2Quarto, ab2Cozinha, ab2Banco, ab2RuaCasa, TRIO, drawTrio, rankAuto, rankNome, RANK_VOCE, drawBia, roupaBia, BIA_REACAO, BIA_ROUPA_COR, abBia, BRAULIO_LOOK, convCabeca, drawRetrato, drawRetratosTela, RETRATO, RETRATO_QUEM, RETRATO_POSE, EXPRESSOES, exprDe, exprAtual: () => EXPR, devRetratos, CONV_UI, socorroFalas, NOITE, HIST_RECOMENDA, HIST_NOTA, guiaPontos, guiaEstrelas, abreBoletim, drawVela, drawFala, CRITICO, HIST_CRITICO, normGuia, plantaBoato, drawCaderno, drawGarfo, ROSA, GERENTE, drawPetala, musicaPay, musicaDe, musicaOk, camiModoTudo, CAMI_TUDO, cafesLista, cafeIdx, cafeIngred, ANSELMO_CURSOS, normAnselmoCursos, drinksLista, drinksTodos, drinkPreco, drinkIngred, drinkVagas, drinkPrep, MAQUINA_LUGAR, drawCafesEsp, drawCarrinhoBoasVindas, espressoTrabalho, bebExtra, devCenas, devAssistir, devFinal, tocaFinal, drawPlacaGuia, FINAL, finalCenas, histLiga, DEV_CAPS, drawIcon, liaOn, drawLia, LIA_HOME, LIA_LOOK, doceIcone, drawFino, TEMPOS, tempoMarcas, pedePrincipal, drawTempoTrilha, HIST_SOCORRO, HIST_EXIGENTE, EXIGENTE, LOUCA, vipDish, vipCook, casaBoa, exigRep, HIST_PLANTA, HIST_QUITOU, HIST_TETO, VONTADE, vontadeChance, vontadeDia, vontadeFalas, HIST_VONTADE_DOCE, HIST_VONTADE_CAFE, filaPos, STATIONS, MANUAL, manualTracos, manualAberta, abrirManual, buildManual, fecharManual, semente, manualSemente, FECHA, efoodAberto, drawTable, camiMesasN, camiModoMesas, CAMI_MESAS_MAX, drawAventalCami, FISCAL, Fiscal, FISCAL_PONTOS, abrirDev, fecharDev, buildDev, passoJogo, devLivre, diaNoPonto, manutEmerg, manutFator, daniTaskDe, plateSlotsFor, queueYsFor, assentoSlow, AVENIDA, SABORES, cursoOk, INDUSTRIAL, PLATE_SLOTS, cozinhaSlots, upgradeDe, DECOR, DECOR_GRUPOS, TOALHA, LUXO, MOVEIS, movelOf, movelNivel, normMoveis, luxoPts, luxoTot, luxoNivel, luxoForca, decorOf, normDecor, decorOn, FILA_ACOES, filaMax, MARMITA, RETIRADA, marmitaMao, drawMarmita, prateleiraPos, EFOOD_COR, AVAL_BRAVO, QUEUE, setShopTab: v => shopAbrir(v), setShopGrupo: g => shopGrupoAbrir(g), shopSecoes: () => SHOP_GRUPOS.map(g => shopSecoesVis(g)), TREINO, TREINO_PASSOS, TREINO_COR, Treino, treinoLugar, DICAS, dicaDe, dicaLigada, drawDica, HUD_LUCRO, hudEstrelas, drawHud, daniNaLoja, treinoPrimeiro, playCareer, buildMenu, introBanco, buildFalencia, BANCO, normEmprestimo, parcelaDe, devidoDe, jurosDe, tabelaDe, simulaEmprestimo, SEMANA, semanaOf, diaOf, FILA_JUSTA, PORTA, CHAIRS, PAT, CONTAS, INGRED, CARDAPIO, precoPrato, CURSOS, CURSO_AV, CURSO_XP, tonhaoXp, tonhaoNivelXp, daniXp, daniNivelXp, DANI_XP, DANI_CURSOS, CURSOS_SEMFIM, cursoOf, cursoNivel, normCursos, pratoAv, CARNES, drawDish, pratoSabido, pratosSabidos, GOSTOS, GOSTOS_CAT, pedePrato, VEG, vegMov, drawDish, MAIS, PONTOS_ACAO, GORJETA, DRINK_PRICE, MOVIMENTO, movimentoSalao, DIVULGA, DIVULGA_DIA, divulgaOf, contasDia, bomGoal, SALAO, PONTOS, pontoOf, MESA, mesaBox, mesaPreco, salaoLugares, mesaProblema, salaoCaminho, salaoProblema, salaoOrdena, salaoAuto, salaoVaga, salaoPerto, salaoKit, salaoDevolucao, SALAO_SEMFIM, normSalao, setObst, OBST, pathOk, MAQUINA, BEBIDA_ESPERA, bebidaOf, MANUT, manutOf, manutChance, manutPreco, normManut, CLIMA, CLIMA_DIA, EVENTOS, eventoSemana, introManut, normPend, CALCADA, TW, HUDX, esperaAp, tableApproach, CRIT, STAFF, diariaDani, diariaJoca, cursosPay, DANI_TASKS, DANI_HANDS, daniTaskOk, TRASH, WASH, payroll, FOLHA_CORTE, folhaCorta, folhaCortes, folhaItens, listaE, pratosDe, couvertEffect, couvertOk, ambienteEffect, dishStock, normSave, Helper, JUICE, KITCHEN_SLOTS, handLayout, trayOk, Game, Group, Table, Kitchen, Waitress, BIA_SPEED, DAYS, UPGRADES, CUSTOMER_TYPES, LAYOUT, PAL, Sfx, findPath, render, Rank, sortRows, cleanName, normName, CMD, ENDLESS, VIP, MULTA, rk, renderRank, openRank, closeRank, LS, lsGet, lsSet, loadSave, DEV, saveKey, devSync, divulgaAberta, CAIXA_MAX, VERSAO, normCaixa, caixaResumo, caixaTotais, copyText, PRATO, pratoPerde, pratoVapor, AVAL, AVAL_CRIT, AVAL_BRAVO, avalMenu, cursosItem, DOCES, CAFES, cafeDe, DRINKS, drinkDe, drinkIdx, anselmoOn, ANSELMO_HOME, ANSELMO_LOOK, drawAnselmo, docesLista, docePreco, doceIngred, doceIdx, CAMI_CURSOS, CAMI_HOME, CAMI_LOOK, camiNivelCursos, normCamiCursos, drawCami, drawEspresso, JOCA_XP, JOCA_CURSOS, JOCA_HOME, jocaXp, jocaNivelXp, BASICAS, donoBasico, cursoDaniVis, JOCA_LOOK, drawJoca, avalTeto, avalEscala, TERRACO, fixosDe, vipTipos, doorFor, DOOR, terraco, drawPiano, drawPoltrona, drawFoyerTe, drawParedeTe, drawElevadorTe, drawLugarTe, drawPerson, makePeople, drawChair, iconeMudanca, avalFrac, AVAL_SIMPLES, AVAL_DECOR, normAval, avalNota, avalMedias, avalGeral, avalMovimento, avalMinimo, avalComentario, fmtNota, notaFaixa, gurugolCaixa, AVAL_COM, normAvalCom, buildGurugol, ABERTURA, Abertura, AB_ALT, AB_BASE, abEsc, AB_VIVO, aberturaVista, aberturaSom, drawAbertura, abrirAbertura, HISTORIA, HIST_CARDAPIO, HIST_DIVULGA, HIST_ENTREGA, LIBERA, liberaOf, ARCO, HIST_NOMES, normEquipe, upgradeCartao, cursoFeito, AVAL_POUCO, REFORMA, HIST, carencia, Conversa, drawConversa, falar, fluxoHistoria, falar, aberturaAtual: () => abertura };
+window.__lcc = { DESAFIOS, MEDALHAS, normDesafios, MANUAL_ABAS, buildDesafios, DESAFIO_EST, ATU_TXT, atuEstado, atuVerifica, atuAplica, ENFEITE_MESA, enfeiteMesa, enfeiteDe, ENTREGA_CHEGA, ab2Cam, ab2Cabe, ab2Tela, ab2Notas, AB_FX, AB2, AB2_CENAS, AB2_TE, ab2Terraco, ab2RuaAurora, ab2CozinhaAurora, ab2Gala, ab2Quarto, ab2Cozinha, ab2Banco, ab2RuaCasa, TRIO, drawTrio, rankAuto, rankNome, RANK_VOCE, drawBia, roupaBia, BIA_REACAO, BIA_ROUPA_COR, abBia, BRAULIO_LOOK, convCabeca, drawRetrato, drawRetratosTela, RETRATO, RETRATO_QUEM, RETRATO_POSE, EXPRESSOES, exprDe, exprAtual: () => EXPR, devRetratos, CONV_UI, socorroFalas, NOITE, HIST_RECOMENDA, HIST_NOTA, guiaPontos, guiaEstrelas, abreBoletim, drawVela, drawFala, CRITICO, HIST_CRITICO, normGuia, plantaBoato, drawCaderno, drawGarfo, ROSA, GERENTE, drawPetala, musicaPay, musicaDe, musicaOk, camiModoTudo, CAMI_TUDO, cafesLista, cafeIdx, cafeIngred, ANSELMO_CURSOS, normAnselmoCursos, drinksLista, drinksTodos, drinkPreco, drinkIngred, drinkVagas, drinkPrep, MAQUINA_LUGAR, drawCafesEsp, drawCarrinhoBoasVindas, espressoTrabalho, bebExtra, devCenas, devAssistir, devFinal, tocaFinal, drawPlacaGuia, FINAL, finalCenas, histLiga, DEV_CAPS, drawIcon, liaOn, drawLia, LIA_HOME, LIA_LOOK, doceIcone, drawFino, TEMPOS, tempoMarcas, pedePrincipal, drawTempoTrilha, HIST_SOCORRO, HIST_EXIGENTE, EXIGENTE, LOUCA, vipDish, vipCook, casaBoa, exigRep, HIST_PLANTA, HIST_QUITOU, HIST_TETO, VONTADE, vontadeChance, vontadeDia, vontadeFalas, HIST_VONTADE_DOCE, HIST_VONTADE_CAFE, filaPos, STATIONS, MANUAL, manualTracos, manualAberta, abrirManual, buildManual, fecharManual, semente, manualSemente, FECHA, efoodAberto, drawTable, camiMesasN, camiModoMesas, CAMI_MESAS_MAX, drawAventalCami, FISCAL, Fiscal, FISCAL_PONTOS, abrirDev, fecharDev, buildDev, passoJogo, devLivre, diaNoPonto, manutEmerg, manutFator, daniTaskDe, plateSlotsFor, queueYsFor, assentoSlow, AVENIDA, SABORES, cursoOk, INDUSTRIAL, PLATE_SLOTS, cozinhaSlots, upgradeDe, DECOR, DECOR_GRUPOS, TOALHA, LUXO, MOVEIS, movelOf, movelNivel, normMoveis, luxoPts, luxoTot, luxoNivel, luxoForca, decorOf, normDecor, decorOn, FILA_ACOES, filaMax, MARMITA, RETIRADA, marmitaMao, drawMarmita, prateleiraPos, EFOOD_COR, AVAL_BRAVO, QUEUE, setShopTab: v => shopAbrir(v), setShopGrupo: g => shopGrupoAbrir(g), shopSecoes: () => SHOP_GRUPOS.map(g => shopSecoesVis(g)), TREINO, TREINO_PASSOS, TREINO_COR, Treino, treinoLugar, DICAS, dicaDe, dicaLigada, drawDica, HUD_LUCRO, hudEstrelas, drawHud, daniNaLoja, treinoPrimeiro, playCareer, buildMenu, introBanco, buildFalencia, BANCO, normEmprestimo, parcelaDe, devidoDe, jurosDe, tabelaDe, simulaEmprestimo, SEMANA, semanaOf, diaOf, FILA_JUSTA, PORTA, CHAIRS, PAT, CONTAS, INGRED, CARDAPIO, precoPrato, CURSOS, CURSO_AV, CURSO_XP, tonhaoXp, tonhaoNivelXp, daniXp, daniNivelXp, DANI_XP, DANI_CURSOS, CURSOS_SEMFIM, cursoOf, cursoNivel, normCursos, pratoAv, CARNES, drawDish, pratoSabido, pratosSabidos, GOSTOS, GOSTOS_CAT, pedePrato, VEG, vegMov, drawDish, MAIS, PONTOS_ACAO, GORJETA, DRINK_PRICE, MOVIMENTO, movimentoSalao, DIVULGA, DIVULGA_DIA, divulgaOf, contasDia, bomGoal, SALAO, PONTOS, pontoOf, MESA, mesaBox, mesaPreco, salaoLugares, mesaProblema, salaoCaminho, salaoProblema, salaoOrdena, salaoAuto, salaoVaga, salaoPerto, salaoKit, salaoDevolucao, SALAO_SEMFIM, normSalao, setObst, OBST, pathOk, MAQUINA, BEBIDA_ESPERA, bebidaOf, MANUT, manutOf, manutChance, manutPreco, normManut, CLIMA, CLIMA_DIA, EVENTOS, eventoSemana, introManut, normPend, CALCADA, TW, HUDX, esperaAp, tableApproach, CRIT, STAFF, diariaDani, diariaJoca, cursosPay, DANI_TASKS, DANI_HANDS, daniTaskOk, TRASH, WASH, payroll, FOLHA_CORTE, folhaCorta, folhaCortes, folhaItens, listaE, pratosDe, couvertEffect, couvertOk, ambienteEffect, dishStock, normSave, Helper, JUICE, KITCHEN_SLOTS, handLayout, trayOk, Game, Group, Table, Kitchen, Waitress, BIA_SPEED, DAYS, UPGRADES, CUSTOMER_TYPES, LAYOUT, PAL, Sfx, findPath, render, Rank, sortRows, cleanName, normName, CMD, ENDLESS, VIP, MULTA, rk, renderRank, openRank, closeRank, LS, lsGet, lsSet, loadSave, DEV, saveKey, devSync, divulgaAberta, CAIXA_MAX, VERSAO, normCaixa, caixaResumo, caixaTotais, copyText, PRATO, pratoPerde, pratoVapor, AVAL, AVAL_CRIT, AVAL_BRAVO, avalMenu, cursosItem, DOCES, CAFES, cafeDe, DRINKS, drinkDe, drinkIdx, anselmoOn, ANSELMO_HOME, ANSELMO_LOOK, drawAnselmo, docesLista, docePreco, doceIngred, doceIdx, CAMI_CURSOS, CAMI_HOME, CAMI_LOOK, camiNivelCursos, normCamiCursos, drawCami, drawEspresso, JOCA_XP, JOCA_CURSOS, JOCA_HOME, jocaXp, jocaNivelXp, BASICAS, donoBasico, cursoDaniVis, JOCA_LOOK, drawJoca, avalTeto, avalEscala, TERRACO, fixosDe, vipTipos, doorFor, DOOR, terraco, drawPiano, drawPoltrona, drawFoyerTe, drawParedeTe, drawElevadorTe, drawLugarTe, drawPerson, makePeople, drawChair, iconeMudanca, avalFrac, AVAL_SIMPLES, AVAL_DECOR, normAval, avalNota, avalMedias, avalGeral, avalMovimento, avalMinimo, avalComentario, fmtNota, notaFaixa, gurugolCaixa, AVAL_COM, normAvalCom, buildGurugol, ABERTURA, Abertura, AB_ALT, AB_BASE, abEsc, AB_VIVO, aberturaVista, aberturaSom, drawAbertura, abrirAbertura, HISTORIA, HIST_CARDAPIO, HIST_DIVULGA, HIST_ENTREGA, LIBERA, liberaOf, ARCO, HIST_NOMES, normEquipe, upgradeCartao, cursoFeito, AVAL_POUCO, REFORMA, HIST, carencia, Conversa, drawConversa, falar, fluxoHistoria, falar, aberturaAtual: () => abertura };
 window.requestAnimationFrame(frame);
 
 })();

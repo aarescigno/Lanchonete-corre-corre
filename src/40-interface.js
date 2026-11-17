@@ -9,7 +9,7 @@ const game = new Game(canvas, ctx);
 /* quem nunca fez a Missão zero (e ainda está no dia 1) encontra o botão dela em destaque */
 function treinoPrimeiro(){ return !game.save.treino && game.proxDia <= 1 && !DEV.on; }
 
-const SCREENS = ['ov-menu','ov-manual','ov-intro','ov-treino','ov-pause','ov-end','ov-shop','ov-falencia','ov-endless','ov-rank','ov-ver','ov-app','ov-atu','ov-abertura','ov-escolha','ov-conversa','ov-continua','ov-guia'];
+const SCREENS = ['ov-menu','ov-manual','ov-intro','ov-treino','ov-pause','ov-end','ov-shop','ov-falencia','ov-endless','ov-rank','ov-ver','ov-app','ov-atu','ov-abertura','ov-escolha','ov-conversa','ov-continua','ov-guia','ov-desafios','ov-desafio-fim'];
 function showOnly(ids){
   SCREENS.forEach(id => { const el = $(id); if (!el) return; if (ids.indexOf(id) >= 0) el.classList.add('show'); else el.classList.remove('show'); });
 }
@@ -45,6 +45,9 @@ function fit(){
 /* ---------- menu (v8.3): a carreira é uma campanha; "Continuar" abre o próximo dia ---------- */
 let resetPede = false;   // "Recomeçar do zero": o 1º toque pede confirmação
 function buildMenu(){
+  const dv = game.desafiosVisivel;   // v12: o botão Desafios, a partir do Fim da história (ou do modo dev); as três fichas do Manual abrem junto
+  $('btn-desafios').style.display = dv ? '' : 'none';
+  if (dv) DESAFIOS.forEach(d => game.manualVer('d-' + d.id));
   manualBolinha();
   const sv = game.save, n = game.proxDia, novo = n <= 1 && !sv.caixa.length;
   // v8.7: a carreira é a História ("História · cap. 2, A Dani chega · dia 5"; fim dos capítulos: "Garagem completa")
@@ -69,6 +72,27 @@ function buildMenu(){
   resetPede = false; $('btn-reset').textContent = 'Recomeçar do zero';
   $('btn-reset').style.display = novo || sv.fechou ? 'none' : '';   // nada a apagar ainda (ou o botão principal já recomeça)
   buildChips();
+}
+/* v12, a tela de Desafios: um cartão por desafio, com a medalha (círculo cheio de bronze, prata ou ouro; só o contorno tracejado, sem medalha), o nome e o "?" da ficha no Manual; tocar no cartão começa o desafio */
+function medalhaEl(m, grande){
+  const e = el('span', 'medalha m' + m + (grande ? ' grande' : '')); e.setAttribute('data-medalha', String(m)); e.setAttribute('aria-hidden', 'true');
+  return e;
+}
+function buildDesafios(){
+  const box = $('desafios-grid'), sv = game.save;
+  clearEl(box);
+  DESAFIOS.forEach(D => {
+    const m = (sv.desafios && sv.desafios[D.id]) || 0, rot = D.nome + ', ' + (m ? 'medalha de ' + MEDALHAS[m] : 'sem medalha');
+    const card = el('div', 'dcard'); card.setAttribute('data-desafio', D.id); card.setAttribute('role', 'listitem');
+    const b = el('button', 'dbtn'); b.type = 'button'; b.setAttribute('aria-label', rot);
+    b.appendChild(medalhaEl(m, false)); b.appendChild(el('b', null, D.nome));
+    b.addEventListener('click', () => { Sfx.init(); Sfx.resume(); Sfx.tap(); game.startDesafio(D.id); });
+    card.appendChild(b);
+    const q = el('button', 'qm', '?'); q.type = 'button'; q.setAttribute('aria-label', 'No Manual: ' + D.nome); q.setAttribute('data-ficha', 'd-' + D.id);
+    q.addEventListener('click', () => { Sfx.init(); Sfx.tap(); abrirManual('d-' + D.id, 'desafios'); });
+    card.appendChild(q);
+    box.appendChild(card);
+  });
 }
 /* modo dev: os dias à escolha (o save dev pula para o dia tocado) */
 function buildChips(){
@@ -159,6 +183,8 @@ function devAbaPular(body, secao, botao, dia){
   [[-10, '−10'], [-1, '−1'], [1, '+1'], [10, '+10']].forEach(([d, t]) => botao(r, t, () => game.devDia(dia + d)));
   r = secao('Ponto');
   PONTOS.forEach(p => botao(r, p.nome, () => game.devPonto(p.id), p.id === game.ponto.id));
+  r = secao('Desafios', 'Liberar mostra o botão no menu, sem o Fim');   // v12
+  botao(r, 'Liberar', () => game.devDesafios('liberar')); botao(r, 'Ouro em todos', () => game.devDesafios('ouro')); botao(r, 'Zerar', () => game.devDesafios('zerar'));
   if (emDia){
     r = secao('No dia', 'Velocidade ' + DEV.vel + '×');
     [1, 2, 4, 8].forEach(v => botao(r, 'Velocidade ' + v + '×', () => { DEV.vel = v; }, DEV.vel === v));
@@ -534,6 +560,7 @@ function abrirManual(fichaId, volta){
 }
 function fecharManual(){
   if (manualVolta === 'pause') showOnly(['ov-pause']);
+  else if (manualVolta === 'desafios'){ buildDesafios(); showOnly(['ov-desafios']); }   // v12
   else if (manualVolta === 'shop'){ buildShop(); showOnly(['ov-shop']); }
   else { buildMenu(); showOnly(['ov-menu']); }
 }

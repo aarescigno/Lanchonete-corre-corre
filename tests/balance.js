@@ -8,7 +8,7 @@
 //   e "revisão/lucro" (o que cuidar de tudo custa em relação ao lucro do dia). L.MANUT e L.CLIMA podem ser trocados em runtime:
 //   MANUT_CFG='{"dia":4,"equip":{"fogao":{"base":3,"uso":0.3}}}'  CLIMA_CFG='{"chuva":{"chance":0.1}}'  (veja ajustaManut abaixo)
 const NOITE=process.env.NOITE==='1';   // v10.10: NOITE=1 joga cada dia como a noite da estrela (cap. 14, Terraço): grupos × 1,3, metas × 1,2, o crítico e o Bráulio; o 'passou' vale para a meta da noite
-const H=require('./harness.js')(NOITE?{historia:true}:undefined); const {g,L}=H;
+const H=require('./harness.js')(NOITE||process.env.DESAFIO?{historia:true}:undefined); const {g,L}=H;
 const MODO=process.env.MANUT||'sem';
 if(!['sem','com','cuida'].includes(MODO)) throw new Error('MANUT=sem|com|cuida');
 const bot=require('./bot.js')(g,L,{afiado:process.env.BOT==='afiado',conserto:process.env.CONSERTO==='todos'?'todos':!!process.env.CONSERTO});   // BOT=afiado: o jogador perfeito
@@ -21,6 +21,24 @@ if(process.env.EVENTOS_CFG){ const c=JSON.parse(process.env.EVENTOS_CFG), mescla
 if(process.env.CLIMA_CFG){ const c=JSON.parse(process.env.CLIMA_CFG); for(const k in c) Object.assign(L.CLIMA[k],c[k]); }
 if(process.env.NOITE_CFG) Object.assign(L.NOITE,JSON.parse(process.env.NOITE_CFG));   // v10.10: NOITE_CFG='{"cortes":[48,70,88]}' troca números da noite da estrela em runtime
 const N=+process.argv[2]||20;
+// v12: DESAFIO=soBia|semBravo|efood joga o desafio N vezes (startDesafio + o dia inteiro com o bot; BOT=afiado: o jogador perfeito) e mostra as medalhas.
+//   Alvos (CA7 da spec-v12): com o bot comum, bronze ou mais em 40% a 70% das rodadas; com o afiado, a cond valendo em 30% ou mais. DESAFIO_CFG='{"meta":0.9}' troca o mod do desafio em runtime
+if(process.env.DESAFIO){
+  const D=L.DESAFIOS.find(x=>x.id===process.env.DESAFIO); if(!D) throw new Error('DESAFIO='+L.DESAFIOS.map(x=>x.id).join('|'));
+  if(process.env.DESAFIO_CFG) Object.assign(D.mod,JSON.parse(process.env.DESAFIO_CFG));
+  const res=[]; let lucro=0, lost=0, ret=0, meta=0, ent=0, tot=0;
+  for(let k=0;k<N;k++){
+    g.startDesafio(D.id); g.begin(); meta=g.day.meta;
+    let st=0; while(g.state==='playing'&&st<30000){ bot(); g.update(0.05); st++; }
+    if(g.state!=='desafiofim') throw new Error('o desafio não acabou em '+st+' passos');
+    const r=g.desafioRes; res.push(r); lucro+=r.lucro; lost+=g.stats.lost; ret+=g.stats.lostBy.retirada;
+    g.sairDesafio();
+  }
+  const pc=f=>Math.round(100*res.filter(f).length/N)+'%';
+  console.log('DESAFIO',D.id,'| mod',JSON.stringify(D.mod),'| meta',meta,'| lucro médio',(lucro/N).toFixed(0),'| perdidos',(lost/N).toFixed(1),'(na retirada',(ret/N).toFixed(1)+')');
+  console.log('DESAFIO',D.id,(process.env.BOT==='afiado'?'[afiado]':'[comum]'),'| bronze ou mais',pc(r=>r.medalha>=1),'| prata ou mais',pc(r=>r.medalha>=2),'| ouro',pc(r=>r.medalha>=3),'| meta batida',pc(r=>r.stars>=1),'| cond vale',pc(r=>!r.falhou),'| rodadas',N);
+  process.exit(0);
+}
 // v9: PONTO=industrial joga os dias no ponto da área industrial (salão de 20 lugares, fogão industrial, TVs com anúncios, cadeirinhas; DIAS padrão 8,9,10)
 const PONTO=process.env.PONTO||'garagem', IND=PONTO==='industrial', TE=PONTO==='terraco', AV=PONTO==='avenida'||TE;   /* v10: PONTO=terraco joga os dias 8 a 10 no Terraço Suíça (5 mesas de 4, fogão industrial, poltronas, couvert com taxa, o curso de restaurante, Tonhão nível 4; JOCA, ESPRESSO, CAMI, ANSELMO e GOURMET como na Avenida; AV vale para os dois pontos de cima) */ //   // v9.1: PONTO=avenida joga os dias no Restaurante na Avenida Brasil (24 lugares, fogão industrial, sofás, águas saborizadas, couvert com taxa e o curso de restaurante; DIAS padrão 8,9,10)
 // EQUIPE='{"tonhao":1,"dani":1,"daniTasks":["pratos","lavar"]}' node balance.js 40

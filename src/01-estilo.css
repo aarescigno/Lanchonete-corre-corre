@@ -437,3 +437,28 @@ table.rank tr.me td{background:#fbe7a8}
   #ov-endless .row,#ov-falencia .row{margin-top:4px}
   #ov-endless .row .btn,#ov-falencia .row .btn{min-height:32px;font-size:14px;padding:2px 14px;box-shadow:0 3px 0 var(--tinta)}
 }
+
+/* v12, os Desafios: os cartões da tela (nome, medalha e o "?" da ficha) e o cartão do fim */
+.desafios-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:calc(var(--u)*12);width:calc(var(--u)*620);max-width:100%;margin:calc(var(--u)*10) 0}
+.dcard{position:relative}
+.dcard .dbtn{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:calc(var(--u)*8);width:100%;height:100%;background:var(--creme);border:calc(var(--u)*3) solid var(--tinta);border-radius:calc(var(--u)*14);padding:calc(var(--u)*10) calc(var(--u)*8);min-height:max(96px,calc(var(--u)*124));cursor:pointer;color:var(--tinta);font-family:var(--fd);font-size:max(14px,calc(var(--u)*18))}
+.dcard .dbtn:focus-visible{outline:3px solid var(--mostarda);outline-offset:2px}
+.dcard .qm{position:absolute;top:calc(var(--u)*4);right:calc(var(--u)*4);width:26px;height:26px;min-height:0;padding:0;border-radius:50%;border:calc(var(--u)*2) solid var(--tinta);background:#fff;color:var(--tinta);font:800 14px/1 var(--fb);cursor:pointer;display:flex;align-items:center;justify-content:center;z-index:1}
+.dcard .qm:hover,.dcard .qm:focus-visible{background:var(--faixa);color:#fff}
+.medalha{display:block;flex:none;width:max(32px,calc(var(--u)*44));height:max(32px,calc(var(--u)*44));border-radius:50%;border:calc(var(--u)*3) solid var(--tinta);box-sizing:border-box}
+.medalha.m0{background:transparent;border-style:dashed}   /* sem medalha: só o contorno tracejado (não depende da cor) */
+.medalha.m1{background:#C8823A}
+.medalha.m2{background:#B9C1C9}
+.medalha.m3{background:#E8B930}
+.medalha.grande{width:max(60px,calc(var(--u)*96));height:max(60px,calc(var(--u)*96));margin:calc(var(--u)*8) auto}
+@media (max-width:600px) and (min-height:461px){.desafios-grid{grid-template-columns:1fr}.dcard .dbtn{flex-direction:row;justify-content:flex-start;min-height:56px;padding-right:38px}}
+@media (max-height:460px){
+  .desafios-panel{padding:calc(var(--u)*10) calc(var(--u)*16)}
+  .desafios-panel h2,.desafio-fim-panel h2{font-size:max(18px,calc(var(--u)*28));margin-bottom:0}
+  .desafios-grid{gap:6px;margin:4px 0}
+  .dcard .dbtn{min-height:64px;flex-direction:row;justify-content:flex-start;padding:4px 36px 4px 8px;font-size:14px}
+  .desafios-panel .row,.desafio-fim-panel .row{margin-top:calc(var(--u)*6)}
+  .desafios-panel .btn,.desafio-fim-panel .btn{min-height:34px;box-shadow:0 3px 0 var(--tinta);font-size:14px}
+  .medalha.grande{width:48px;height:48px;margin:4px auto}
+  .desafio-fim-panel p{margin:2px 0}
+}

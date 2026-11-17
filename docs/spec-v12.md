@@ -118,10 +118,10 @@ Depois do "Fim da história", o menu ganha "Desafios": dias avulsos, cada um num
 - `tests/balance.js` (a chave `DESAFIO`), `tests/menu_fit.py`.
 
 ## Tarefas
-- [ ] T1 Smoke novo `tests/smoke97.js` (CA1 a CA6), visto falhar, incluído no `tests/run_all.sh`.
-- [ ] T2 `DESAFIOS`, `normDesafios`, o campo no save, o `_desafio` no `writeSave` e a montagem do save tirada do `devCapitulo` (o `smoke` do modo dev segue verde).
-- [ ] T3 O dia do desafio (`startDesafio`, o dia, sem imprevistos nem história) e o fim com a medalha.
-- [ ] T4 O botão, a tela, a introdução, o cartão do fim, a aba do Manual e o modo dev.
+- [x] T1 Smoke novo `tests/smoke97.js` (CA1 a CA6), visto falhar, incluído no `tests/run_all.sh`.
+- [x] T2 `DESAFIOS`, `normDesafios`, o campo no save, o `_desafio` no `writeSave` e a montagem do save tirada do `devCapitulo` (o `smoke` do modo dev segue verde).
+- [x] T3 O dia do desafio (`startDesafio`, o dia, sem imprevistos nem história) e o fim com a medalha.
+- [x] T4 O botão, a tela, a introdução, o cartão do fim, a aba do Manual e o modo dev.
 - [ ] T5 `DESAFIO` no `balance.js` e a calibração do CA7.
 - [ ] T6 `menu_fit.py` (CA8) e `tests/shot_v12.js` com a conferência do CA9.
 - [ ] Fechamento:
