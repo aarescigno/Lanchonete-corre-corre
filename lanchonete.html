@@ -2149,9 +2149,9 @@ const DESAFIOS = [
   { id:'jogo',     nome:'Jogo do Brasil', cap:5, dia:17, mod:{ evento:'jogo', up:['tvs'], tvs:1, groups:0.55, meta:1.2 }, cond:null,
     aviso:'Jogo do Brasil e a casa cheia de torcedor!', falhou:'' },
   /* mod.critico (a 1ª visita do crítico, sem boato), mod.vip (a chance de VIP de cada grupo); as cond leem o stats.criticoH (corações com que o crítico saiu: 0 se foi embora bravo ou não saiu) e o stats.saiMin (o menor número de corações com que um grupo pagou) */
-  { id:'critico',  nome:'Noite do crítico', cap:13, dia:64, mod:{ critico:true, groups:0.45, meta:1 }, cond:s => s.criticoH >= 5,
+  { id:'critico',  nome:'Noite do crítico', cap:13, dia:64, mod:{ critico:true, groups:0.45, meta:0.6 }, cond:s => s.criticoH >= 5,
     aviso:'O crítico do Michelzão vem hoje. Ninguém sabe qual mesa é a dele.', falhou:'O crítico não saiu com todos os corações.' },
-  { id:'vips',     nome:'VIPs exigentes', cap:13, dia:64, mod:{ vip:1, groups:0.4, meta:1 }, cond:s => s.lost === 0 && s.saiMin >= 4,
+  { id:'vips',     nome:'VIPs exigentes', cap:13, dia:64, mod:{ vip:1, groups:0.4, meta:0.6 }, cond:s => s.lost === 0 && s.saiMin >= 4,
     aviso:'Hoje só vem gente exigente.', falhou:'Uma mesa saiu descontente.' }
 ];
 const MEDALHAS = ['sem medalha', 'bronze', 'prata', 'ouro'];
