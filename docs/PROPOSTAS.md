@@ -4,7 +4,7 @@ Registro das ideias e dos retornos de quem jogou, com o texto original, e de ond
 
 ---
 
-## 17/11 — Letícia (betatester): verificar atualização, pernas na espera, bandeirinhas e o cabelo da Bia; e o usuário: o enfeite da mesa por ponto
+## 17/11 — Letícia (betatester): verificar atualização, pernas na espera, bandeirinhas e o cabelo da Bia, a área industrial sem sobreposição; e o usuário: o enfeite da mesa por ponto e a buzina do eFood
 Texto original (enviado pelo usuário):
 "Adicione um botão de verificar atualização no menu para quem joga poder ir para a versão nova, quando nao atualizar sozinho.
 Na área industrial quando as pessoas sentam no banquinho, elas perdem as pernas
@@ -16,7 +16,8 @@ Decisões do usuário (17/11):
 - Cabelo: "Crespo, mesmos penteados" (puff baixo na nuca, puff alto e coque crespo; a Garagem fica com o puff e o lenço).
 - Bandeirinhas: "Parede a parede", com um preguinho em cada ponta.
 No mesmo dia, o usuário: "As toalhas de mesa funcionam na garagem, mas não aparecem esteticamente na área industrial, precisa ter um adereço na mesa, que tal uma violeta para cada mesa que tem o upgrade adicionado?" O planejamento conferiu: fora da Garagem a toalha é comprada e conta no Ambiente, mas não é desenhada. Decisões: "Se é pra comprar algo para as mesas, precisa aparecer de alguma forma, mas sem deixar poluído, por isso violeta na industrial, algo outro na avenida Brasil e uma vela no terraço"; "Só a violeta, nome novo"; na Avenida, "Galheteiro".
-Destino: `docs/spec-v11.15.1.md` (aprovada em 17/11), etapa R1 do `docs/PLANO.md`.
+Ainda em 17/11, a Letícia: "com os upgrades na área industrial fica meio poluído com algumas sobreposições de elementos, tipo as luminárias e a jarra de suco". O planejamento conferiu numa captura com todo o luxo e achou também o poste, o antúrio, as plaquinhas do eFood, a muda na lata, a foto da Rosa e a samambaia. Decisões: luminárias "Menores e sem cone"; calçada "Cada um no seu canto" (o poste sai, a jarra encosta na parede do salão, o antúrio muda de lugar); arrumar também as plaquinhas do eFood, a foto e a samambaia. E o usuário acrescentou: "quando chega EFood aparece um brilho no entregador esperando com um som de buzina de moto 'Bibip'".
+Destino: `docs/spec-v11.16.1.md` (aprovada em 17/11; planejada como v11.15.1, renumerada porque a v11.16 saiu antes), etapa R1 do `docs/PLANO.md`.
 
 ---
 
