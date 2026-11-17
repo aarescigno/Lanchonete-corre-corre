@@ -87,7 +87,7 @@ Planejada em 17/11 (questionário pós-final). Depois do "Fim da história", o m
 - **13a** (v12): o motor, a tela, o cartão do fim, o modo dev e três desafios (Só a Bia, Ninguém bravo, Hora do eFood). Spec: `docs/spec-v12.md`.
   **Modelo:** Sonnet, esforço alto (motor novo, duas telas, save e calibração)
 - **13b** (v12.1): Festa junina, Jogo do Brasil, Noite do crítico e VIPs exigentes. Spec: `docs/spec-v12.1.md`.
-  **Modelo:** Sonnet, esforço médio (quatro desafios sobre o motor, regras decididas)
+  **Modelo:** Sonnet, esforço alto (quatro desafios sobre o motor; a calibração mexe no movimento e na meta)
 
 ## Ideias guardadas (sem etapa ainda)
 - **Ranking compartilhado** (saiu da Etapa 7 em 15/11: "fica offline"): o código continua no jogo, desligado (`Rank.online = false`, `src/30-ranking.js`), e as chamadas ainda batem com o `db` do artifact (conferido em 15/11). Religar pede `Rank.online = true`, declarar nas capacidades a leitura da coleção `ranking-campanha` e decidir a ordem (lucro acumulado, ou estrelas do Michelzão com o lucro no desempate, a ideia adiada na v10.10).

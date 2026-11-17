@@ -89,4 +89,4 @@ Nenhuma.
 ## Desvios
 (no fechamento)
 
-**Modelo:** Sonnet, esforço médio — quatro desafios em cima do motor da v12, com as regras e a calibração decididas.
+**Modelo:** Sonnet, esforço alto — quatro desafios em cima do motor da v12. A calibração mexe em dois números por desafio, movimento e meta; na v12, só fechou com esforço alto.
