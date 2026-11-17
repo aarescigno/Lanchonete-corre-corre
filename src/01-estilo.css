@@ -276,6 +276,7 @@ table.cx .rs{font-size:inherit}
 .devbadge{position:absolute;left:50%;top:calc(var(--u)*4);transform:translateX(-50%);z-index:20;cursor:pointer;min-height:max(28px,calc(var(--u)*30));font:800 max(10px,calc(var(--u)*13)) var(--fb);letter-spacing:.08em;text-transform:uppercase;color:#fff;background:var(--alerta);border:calc(var(--u)*2) solid var(--tinta);border-radius:999px;padding:0 calc(var(--u)*10);line-height:1.5;opacity:.92}
 .menu-panel .row.tight{margin-top:calc(var(--u)*8);gap:calc(var(--u)*10)}
 .menu-panel .row.tight .btn{padding-left:calc(var(--u)*15);padding-right:calc(var(--u)*15)}   /* v8.5: cabem Continuar, Missão zero e História na 1ª linha */
+.menu-panel .menu-btns.quatro .row.tight .btn{padding-left:calc(var(--u)*9);padding-right:calc(var(--u)*9)}   /* v12: 4 botões na 2ª fileira com o Desafios */
 .menu-panel .btn{font-size:max(14px,calc(var(--u)*20));padding:calc(var(--u)*6) calc(var(--u)*14)}
 .ver-ico{margin-left:auto;align-self:flex-end;width:max(40px,calc(var(--u)*40));height:max(40px,calc(var(--u)*40));display:flex;align-items:center;justify-content:center;border-radius:50%;border:calc(var(--u)*2) solid rgba(34,32,28,.3);background:transparent;color:#7a7263;cursor:pointer;padding:0;transition:color .15s,background .15s,border-color .15s}
 .ver-ico:hover,.ver-ico:focus-visible{color:var(--faixa);background:var(--creme);border-color:var(--faixa)}

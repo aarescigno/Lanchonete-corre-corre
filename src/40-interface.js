@@ -47,6 +47,7 @@ let resetPede = false;   // "Recomeçar do zero": o 1º toque pede confirmação
 function buildMenu(){
   const dv = game.desafiosVisivel;   // v12: o botão Desafios, a partir do Fim da história (ou do modo dev); as três fichas do Manual abrem junto
   $('btn-desafios').style.display = dv ? '' : 'none';
+  $('menu-btns').classList[dv ? 'add' : 'remove']('quatro');   // v12: com o Desafios, a 2ª fileira tem 4 botões: o espaço dentro de cada um encolhe um pouco para caberem
   if (dv) DESAFIOS.forEach(d => game.manualVer('d-' + d.id));
   manualBolinha();
   const sv = game.save, n = game.proxDia, novo = n <= 1 && !sv.caixa.length;
@@ -68,7 +69,9 @@ function buildMenu(){
   $('menu-aviso-txt').textContent = sv.avisoHist ? 'Novidade: a campanha virou o Modo História, com a dívida da reforma da garagem. Por isso, recomeçou do dia 1.' : 'Novidade: o cardápio agora cresce com os cursos do Tonhão. Por isso, a campanha recomeçou do dia 1.';
   $('btn-play').textContent = sv.fechou ? 'Recomeçar do zero' : novo ? 'Começar o dia 1' : 'Continuar: dia ' + n;
   $('btn-play').className = 'btn ' + (treinoPrimeiro() ? 'alt' : 'go');
-  $('btn-treino').className = 'btn ' + (treinoPrimeiro() ? 'go' : 'alt');
+  { const bt = $('btn-treino'), fim = game.save.cap > HISTORIA.length;   // v12: depois do Fim da história, a Missão zero vira link nos .links (para os botões caberem em duas fileiras); antes, nada muda
+    if (fim){ if (bt.className !== 'link') $('menu-links').insertBefore(bt, $('btn-reset')); bt.className = 'link'; }
+    else { if (bt.className === 'link') $('menu-fila1').insertBefore(bt, $('btn-historia')); bt.className = 'btn ' + (treinoPrimeiro() ? 'go' : 'alt'); } }
   resetPede = false; $('btn-reset').textContent = 'Recomeçar do zero';
   $('btn-reset').style.display = novo || sv.fechou ? 'none' : '';   // nada a apagar ainda (ou o botão principal já recomeça)
   buildChips();

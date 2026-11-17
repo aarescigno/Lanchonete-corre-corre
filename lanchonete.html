@@ -281,6 +281,7 @@ table.cx .rs{font-size:inherit}
 .devbadge{position:absolute;left:50%;top:calc(var(--u)*4);transform:translateX(-50%);z-index:20;cursor:pointer;min-height:max(28px,calc(var(--u)*30));font:800 max(10px,calc(var(--u)*13)) var(--fb);letter-spacing:.08em;text-transform:uppercase;color:#fff;background:var(--alerta);border:calc(var(--u)*2) solid var(--tinta);border-radius:999px;padding:0 calc(var(--u)*10);line-height:1.5;opacity:.92}
 .menu-panel .row.tight{margin-top:calc(var(--u)*8);gap:calc(var(--u)*10)}
 .menu-panel .row.tight .btn{padding-left:calc(var(--u)*15);padding-right:calc(var(--u)*15)}   /* v8.5: cabem Continuar, Missão zero e História na 1ª linha */
+.menu-panel .menu-btns.quatro .row.tight .btn{padding-left:calc(var(--u)*9);padding-right:calc(var(--u)*9)}   /* v12: 4 botões na 2ª fileira com o Desafios */
 .menu-panel .btn{font-size:max(14px,calc(var(--u)*20));padding:calc(var(--u)*6) calc(var(--u)*14)}
 .ver-ico{margin-left:auto;align-self:flex-end;width:max(40px,calc(var(--u)*40));height:max(40px,calc(var(--u)*40));display:flex;align-items:center;justify-content:center;border-radius:50%;border:calc(var(--u)*2) solid rgba(34,32,28,.3);background:transparent;color:#7a7263;cursor:pointer;padding:0;transition:color .15s,background .15s,border-color .15s}
 .ver-ico:hover,.ver-ico:focus-visible{color:var(--faixa);background:var(--creme);border-color:var(--faixa)}
@@ -483,8 +484,8 @@ table.rank tr.me td{background:#fbe7a8}
         <button class="link selo-guia" id="btn-selo" type="button" style="display:none"></button>
         <p class="small menu-aviso" id="menu-aviso" style="display:none"><span id="menu-aviso-txt"></span> <button class="link" id="btn-aviso" type="button">Entendi</button></p>
         <div class="chips" id="daychips" role="group" aria-label="Modo dev: escolha o dia" style="display:none"></div>
-        <div class="menu-btns">
-          <div class="row tight">
+        <div class="menu-btns" id="menu-btns">
+          <div class="row tight" id="menu-fila1">
             <button class="btn go" id="btn-play">Continuar</button>
             <button class="btn alt" id="btn-treino">Missão zero</button>
             <button class="btn alt" id="btn-historia">Ver abertura</button>
@@ -496,7 +497,7 @@ table.rank tr.me td{background:#fbe7a8}
             <button class="btn alt" id="btn-rank">Ranking</button>
           </div>
         </div>
-        <div class="links">
+        <div class="links" id="menu-links">
           <button class="link" id="btn-reset">Recomeçar do zero</button>
           <button class="link" id="btn-dev-off" style="display:none">Sair do modo dev</button>
           <button class="ver-ico" id="btn-atu" style="display:none" title="Verificar atualização" aria-label="Verificar atualização">
@@ -4999,7 +5000,7 @@ class Game {
     if (!D) return false;
     if (!this.salvo) this.salvo = this.save;
     this.mode = 'carreira'; this.treino = null; this.desafio = D; DESAFIO_EST.on = true;
-    this.save = this.montaCap(D.cap, { marca:{ _desafio:true }, conversa:false, sem:D.mod.sem, up:D.mod.up });
+    this.save = this.montaCap(D.cap, { marca:{ _desafio:true }, conversa:false, maximo:true, sem:D.mod.sem, up:D.mod.up });
     this.save.dia = D.dia; this.save.pontoDia = Math.min(this.save.pontoDia, D.dia);
     this.up = this.save.up; this.tablesKey = '';
     this.resetDay(D.dia, false, true);
@@ -6811,6 +6812,7 @@ class Game {
   /* v12: o save do começo do capítulo n (DEV_CAPS), montado à parte: devolve o save, sem trocar o do jogo (this.save e this.up ficam trocados só durante a montagem, porque os
      ajudantes do modo dev trabalham neles) e sem mexer no modo dev nem no save guardado; quem chama põe o save onde quiser (o devCapitulo no jogo; o Desafio, como save de mentira).
      opt: marca (campos postos logo depois do normSave, como { _desafio:true }, que impede o writeSave); conversa:false (sem a conversa de antes);
+     maximo ("Tudo no máximo" por cima: equipe, cursos, melhorias, salão cheio e Redes sociais);
      sem (pessoas da equipe a pôr em 0); up (melhorias a mais) */
   montaCap(n, opt){
     opt = opt || {};
@@ -6853,7 +6855,15 @@ class Game {
       // Manual: o Básico e as fichas dos pontos visitados
       sv.manual = MANUAL.filter(f => f.aba === 'basico' || PONTOS.slice(0, PONTOS.findIndex(p => p.id === D.ponto) + 1).some(p => f.id === 'p-' + p.id)).map(f => f.id);
       sv.manualNovo = [];
-      (opt.sem || []).forEach(q => { sv.equipe[q] = 0; });   // v12: o Desafio tira pessoas da equipe e põe melhorias a mais
+      if (opt.maximo){   // v12, o Desafio: "Tudo no máximo" por cima do save do capítulo (a equipe, os cursos e as melhorias do ponto, como o botão do modo dev), o salão cheio (mesas de 4, arrumação automática) e as Redes sociais
+        if (D.eq){ this.equipeModo('max'); this.melhoriasTodas(true); sv.equipe.lia = 1; sv.equipe.anselmo = STAFF.anselmo.levels.length - 1; }
+        const P = this.ponto; let m4 = Math.floor(P.lugares / 4), cheio = null;
+        while (m4 > 0 && !cheio){ cheio = salaoAuto(Array.from({ length:m4 }, (_, c) => ({ x:0, y:0, seats:4, c:c % 4 })), P); if (!cheio) m4--; }
+        if (cheio) sv.salao = normSalao({ ponto:P.id, mesas:cheio, estoque:[] });
+        sv.divulga = 'redes';
+        sv.equipe = normEquipe(sv.equipe, P);
+      }
+      (opt.sem || []).forEach(q => { sv.equipe[q] = 0; });   // v12: o Desafio tira pessoas da equipe e põe melhorias a mais (por cima do "Tudo no máximo")
       (opt.up || []).forEach(id => { const u = UPGRADES.find(x => x.id === id); if (u) this.up[id] = u.multi ? 1 : true; });
       sv.equipe = normEquipe(sv.equipe, this.ponto);
       this.notaSave(D.nota);
@@ -14773,6 +14783,7 @@ let resetPede = false;   // "Recomeçar do zero": o 1º toque pede confirmação
 function buildMenu(){
   const dv = game.desafiosVisivel;   // v12: o botão Desafios, a partir do Fim da história (ou do modo dev); as três fichas do Manual abrem junto
   $('btn-desafios').style.display = dv ? '' : 'none';
+  $('menu-btns').classList[dv ? 'add' : 'remove']('quatro');   // v12: com o Desafios, a 2ª fileira tem 4 botões: o espaço dentro de cada um encolhe um pouco para caberem
   if (dv) DESAFIOS.forEach(d => game.manualVer('d-' + d.id));
   manualBolinha();
   const sv = game.save, n = game.proxDia, novo = n <= 1 && !sv.caixa.length;
@@ -14794,7 +14805,9 @@ function buildMenu(){
   $('menu-aviso-txt').textContent = sv.avisoHist ? 'Novidade: a campanha virou o Modo História, com a dívida da reforma da garagem. Por isso, recomeçou do dia 1.' : 'Novidade: o cardápio agora cresce com os cursos do Tonhão. Por isso, a campanha recomeçou do dia 1.';
   $('btn-play').textContent = sv.fechou ? 'Recomeçar do zero' : novo ? 'Começar o dia 1' : 'Continuar: dia ' + n;
   $('btn-play').className = 'btn ' + (treinoPrimeiro() ? 'alt' : 'go');
-  $('btn-treino').className = 'btn ' + (treinoPrimeiro() ? 'go' : 'alt');
+  { const bt = $('btn-treino'), fim = game.save.cap > HISTORIA.length;   // v12: depois do Fim da história, a Missão zero vira link nos .links (para os botões caberem em duas fileiras); antes, nada muda
+    if (fim){ if (bt.className !== 'link') $('menu-links').insertBefore(bt, $('btn-reset')); bt.className = 'link'; }
+    else { if (bt.className === 'link') $('menu-fila1').insertBefore(bt, $('btn-historia')); bt.className = 'btn ' + (treinoPrimeiro() ? 'go' : 'alt'); } }
   resetPede = false; $('btn-reset').textContent = 'Recomeçar do zero';
   $('btn-reset').style.display = novo || sv.fechou ? 'none' : '';   // nada a apagar ainda (ou o botão principal já recomeça)
   buildChips();

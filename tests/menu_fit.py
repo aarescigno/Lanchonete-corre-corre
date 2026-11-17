@@ -57,9 +57,9 @@ with sync_playwright() as p:
         # ---- v12: o menu com o botão Desafios, a tela de Desafios e o cartão do fim ----
         if SOLO in ('','menu','desafios'):
             run(pg,FIMSV+"g.setState('menu');")
-            r=pg.evaluate("()=>{const p=document.querySelector('.menu-panel'),b=document.getElementById('btn-desafios');return [p.scrollHeight,p.clientHeight,p.scrollWidth,p.clientWidth,b.getBoundingClientRect().width>0]}")
-            bad=r[0]>r[1]+1 or r[2]>r[3]+1 or not r[4]; fails+=bad; total+=1
-            print(('FAIL' if bad else 'ok  ')+f': {tag} menu com o botão Desafios altura {r[0]}/{r[1]} largura {r[2]}/{r[3]} visível={r[4]}')
+            r=pg.evaluate("()=>{const p=document.querySelector('.menu-panel'),b=document.getElementById('btn-desafios'),t=new Set([...document.querySelectorAll('.menu-btns .btn')].map(x=>Math.round(x.getBoundingClientRect().top/6)));return [p.scrollHeight,p.clientHeight,p.scrollWidth,p.clientWidth,b.getBoundingClientRect().width>0,t.size]}")
+            bad=r[0]>r[1]+1 or r[2]>r[3]+1 or not r[4] or r[5]>2; fails+=bad; total+=1   # v12: depois do Fim (Missão zero vira link), os botões ficam em no máximo duas fileiras
+            print(('FAIL' if bad else 'ok  ')+f': {tag} menu com o botão Desafios altura {r[0]}/{r[1]} largura {r[2]}/{r[3]} visível={r[4]} fileiras={r[5]}')
         if SOLO in ('','paineis','desafios'):
             run(pg,FIMSV+"g.save.desafios=L.normDesafios({soBia:1,semBravo:2,efood:3});g.setState('desafios');")
             conf(pg,f'{tag} Desafios','#ov-desafios .panel',['#btn-desafios-voltar','#desafios-grid .dcard:first-child .dbtn','#desafios-grid .dcard:last-child .dbtn','#desafios-grid .dcard:last-child .qm'])

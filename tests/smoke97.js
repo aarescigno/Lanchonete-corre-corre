@@ -12,6 +12,7 @@ const IDS=['soBia','semBravo','efood'];
 const FIMSAVE={ dia:70, bank:12345, estrelas:77, lucroTot:54321, histV:1, capV:6, cap:15, conversa:null, salao:{ponto:'terraco'}, treino:true, convEnt:1, convCard:1, convDiv:1, convPlanta:1, convSocorro:1 };
 const mk=(extra,opts)=>{ const sv=Object.assign({},FIMSAVE,extra||{}); return load(Object.assign({ store:{ lcc2_save:JSON.stringify(sv) }, historia:true },opts||{})); };
 const sem=(o,k)=>{ const c=JSON.parse(JSON.stringify(o)); delete c[k]; return c; };
+const ch=(els,id)=>(els[id]||{children:[]}).children;
 const r5=v=>Math.round(v/5)*5;
 
 // ---------- CA1: a lista, os campos, a normalização e o save antigo ----------
@@ -44,6 +45,13 @@ bloco('CA2',()=>{
     ok(['d-soBia','d-semBravo','d-efood'].every(id=>g.save.manual.indexOf(id)>=0),'CA2: as três fichas são reveladas quando o botão aparece');
     const i=html.indexOf('id="btn-endless"'), j=html.indexOf('id="btn-desafios"'), k=html.indexOf('id="btn-manual"');
     ok(i>0 && j>i && k>j,'CA2: no menu, #btn-desafios vem depois de #btn-endless e antes de #btn-manual'); }
+  { const {L,els,g}=mk(); L.buildMenu(); const bt=els['btn-treino'];
+    ok(ch(els,'menu-links').indexOf(bt)>=0 && bt.className==='link' && /Missão zero/.test(txt(bt)||'Missão zero') && ch(els,'menu-fila1').indexOf(bt)<0,'CA2: depois do Fim, a "Missão zero" (mesmo id) vira link nos .links e sai da 1ª fileira');
+    ok(/<div class="row tight" id="menu-fila1">\s*<button class="btn go" id="btn-play">[\s\S]*?<\/div>\s*<div class="row tight">\s*<button class="btn" id="btn-endless">[\s\S]*?id="btn-desafios"[\s\S]*?id="btn-manual"[\s\S]*?id="btn-rank"/.test(html) && /id="btn-treino">Missão zero</.test(html),'CA2: o menu tem só duas fileiras de botões (com "Desafios" na 2ª) e o texto da Missão zero segue o mesmo');
+    ok(els['menu-btns'].classList.contains('quatro') && /\.menu-btns\.quatro \.row\.tight \.btn\{padding-left/.test(html),'CA2: com o Desafios, a 2ª fileira (4 botões) ganha a classe .quatro, que encolhe o espaço dentro dos botões para caberem em duas fileiras (captura 1220 x 600 conferida)');
+    g.save.cap=4; L.buildMenu(); ok(ch(els,'menu-fila1').indexOf(bt)>=0 && ch(els,'menu-links').indexOf(bt)<0 && /^btn (go|alt)$/.test(bt.className),'CA2: se o Fim some (cap 4), a Missão zero volta à 1ª fileira como botão');
+    g.save.cap=15; L.buildMenu(); bt.fire('click'); ok(g.mode==='treino' && g.state==='playing','CA2: a Missão zero como link ainda abre o treino'); }
+  { const {L,els,g}=load(); L.buildMenu(); ok(ch(els,'menu-links').indexOf(els['btn-treino'])<0 && /^btn (go|alt)$/.test(els['btn-treino'].className),'CA2: antes do Fim, a Missão zero segue botão na 1ª fileira'); }
   { const {L,els,g}=load(); g.setDev(true); L.buildMenu(); ok(els['btn-desafios'].style.display!=='none','CA2: no modo dev Livre, o botão aparece'); }
   { const {L,els,g}=mk(); L.buildMenu(); els['btn-desafios'].fire('click');
     ok(g.state==='desafios' && els['ov-desafios'].classList.contains('show') && !els['ov-menu'].classList.contains('show'),'CA2: tocar no botão abre a tela de Desafios');

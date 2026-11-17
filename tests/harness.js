@@ -17,7 +17,8 @@ module.exports=function load(opts){
   function mkEl(id){
     const e={id, listeners:{}, style:{setProperty(){}}, children:[], textContent:'', disabled:false, className:'', width:960, height:600, value:'', tagName:'DIV', maxLength:0,
       classList:{_s:new Set(), add(c){this._s.add(c)}, remove(c){this._s.delete(c)}, contains(c){return this._s.has(c)}},
-      appendChild(c){this.children.push(c);return c},
+      appendChild(c){this.children.push(c);c.parentNode=this;return c},
+      insertBefore(c,ref){ if(c.parentNode) c.parentNode.children=c.parentNode.children.filter(x=>x!==c); this.children=this.children.filter(x=>x!==c); const i=ref?this.children.indexOf(ref):-1; if(i<0) this.children.push(c); else this.children.splice(i,0,c); c.parentNode=this; return c },
       removeChild(c){this.children=this.children.filter(x=>x!==c)},
       get firstChild(){return this.children[0]||null},
       addEventListener(n,f){(this.listeners[n]=this.listeners[n]||[]).push(f)},
