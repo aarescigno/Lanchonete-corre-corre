@@ -1,6 +1,6 @@
 # v12.2 — Teste de habilidade: as quatro fases padrão e o relatório (etapa 14a)
 
-**Situação:** aprovada (17/11)
+**Situação:** entregue em 17/11
 **Origem:** conversa de 17/11 ("o bot está jogando bem demais [...] uma fase padrão de cada nível, com um relatório que eu possa copiar e colar aqui, para nivelar o bot com as minhas habilidades e as dos beta testers"); Etapa 14 do `docs/PLANO.md`.
 
 ## Objetivo
@@ -141,18 +141,18 @@ No modo dev, o tester joga um "Teste de habilidade": quatro fases padrão, uma p
 - `tests/balance.js` (`TESTE`, `REL`); `tests/menu_fit.py` (o painel).
 
 ## Tarefas
-- [ ] T1 `smoke99` com os critérios de aceite CA1 a CA6 (falhando), no `run_all.sh`.
-- [ ] T2 `TESTES`, `startTeste` sobre o caminho do `startDesafio`, a semente na agenda e no `spawn`, o modo dev neutralizado no teste (CA2, CA3).
-- [ ] T3 As medidas (`this.tm`) e o `testeRelatorio` (CA4, CA5).
-- [ ] T4 A seção no `buildDev`, a introdução, a pausa, o `ov-teste-fim` e os botões (CA1, CA6); `menu_fit.py` com o painel (CA8).
-- [ ] T5 `balance.js` com `TESTE` e `REL`, rodado nas 4 fases com o bot comum e o afiado; números em Testes (CA7).
-- [ ] T6 `docs/RELATORIOS.md` (o cabeçalho e como anexar) e `ferramentas/relatorios.py`:
+- [x] T1 `smoke99` com os critérios de aceite CA1 a CA6 (falhando), no `run_all.sh`.
+- [x] T2 `TESTES`, `startTeste` sobre o caminho do `startDesafio`, a semente na agenda e no `spawn`, o modo dev neutralizado no teste (CA2, CA3).
+- [x] T3 As medidas (`this.tm`) e o `testeRelatorio` (CA4, CA5).
+- [x] T4 A seção no `buildDev`, a introdução, a pausa, o `ov-teste-fim` e os botões (CA1, CA6); `menu_fit.py` com o painel (CA8).
+- [x] T5 `balance.js` com `TESTE` e `REL`, rodado nas 4 fases com o bot comum e o afiado; números em Testes (CA7).
+- [x] T6 `docs/RELATORIOS.md` (o cabeçalho e como anexar) e `ferramentas/relatorios.py`:
   - lê os blocos `LCC-TESTE 1` do arquivo;
   - mostra, por fase e por jogador, a melhor tentativa (pelo lucro), a mediana e o número de tentativas;
   - com `--bot`, roda junto o `TESTE=<id> node balance.js 20` para comparar.
 
   No `CLAUDE.md`, a linha: "Relatórios do Teste de habilidade colados no chat vão para o fim do `docs/RELATORIOS.md` (por `cat >>`, sem reler), um bloco por relatório, como vieram."
-- [ ] Fechamento: `VERSAO`, `vtag`, `#ov-ver`, `docs/RESUMO.md`, `docs/TESTES.md` (o `TESTE`, o `REL` e o `relatorios.py`), esta spec como entregue, `tests/run_all.sh` verde, PR e merge.
+- [x] Fechamento: `VERSAO`, `vtag`, `#ov-ver`, `docs/RESUMO.md`, `docs/TESTES.md` (o `TESTE`, o `REL` e o `relatorios.py`), esta spec como entregue, `tests/run_all.sh` verde, PR e merge.
 
 ## Avisos para a execução
 - O sorteio com semente: uma função `comSemente(seed, fn)` que troca o `Math.random` pelo `semente(seed)` só durante `fn` e devolve o original num `finally`. Assim, `rand`, `randi` e `pick` (`src/11-base.js`) entram sozinhos. O desenho, que também sorteia, fica de fora porque roda em outro momento.
@@ -161,12 +161,31 @@ No modo dev, o tester joga um "Teste de habilidade": quatro fases padrão, uma p
 - O `harness.js` não tem `pointerdown`: no bot, o aparelho é `bot` por padrão (`this.tm.aparelho` começa `'bot'`, e o `pointerdown` da página troca).
 
 ## Testes
-(No fechamento: quantas checagens o `smoke99` tem; a tabela do bot comum e do afiado nas 4 fases, com a média e a faixa de: % da meta, estrelas, perdidos, as 5 reações, ações/min, fila média e Bia parada.)
+- `smoke99`: 114 checagens (CA1 a CA6; o CA7 é o `balance.js` e o CA8, o `menu_fit.py`). `./run_all.sh` verde.
+- `python3 menu_fit.py paineis`: 196 conferências, 0 falhas (o `ov-teste-fim` com a caixa do relatório aberta, nos 14 tamanhos: de 202 px de altura a 568×320 até 516 px a 1920×1080, sem rolar nem botão fora).
+- O bot nas quatro fases (`TESTE=<id> node balance.js 20`, 17/11): média (p10 a p90) de cada número; as reações são a média de cada rodada (todas as rodadas tiveram caso nas cinco). É o ponto de partida da 14b; o bot comum e o afiado reagem em 0,05 s, e por isso as reações dele são de 0,1 a 10 s e as ações/min ficam em 47 a 55, com a Bia parada em 0 a 4% do turno.
+
+| fase | bot | % da meta | estrelas | perdidos | sentar | pedido | prato | conta | mesa suja | ações/min | toques perdidos | fila média | Bia parada |
+|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
+| Garagem | comum | 352 (306 a 424) | 2,0 (2 a 2) | 4,2 (3 a 6) | 0,1 (0,1 a 0,1) | 0,7 (0,3 a 1,5) | 2,0 (0,9 a 3,7) | 0,7 (0,3 a 1,2) | 0,5 (0,1 a 1,7) | 49,3 (46,6 a 52,2) | 0 | 2,87 (2,77 a 3,07) | 0% |
+| Garagem | afiado | 348 (321 a 422) | 2,8 (3 a 3) | 0,9 (0 a 2) | 0,1 (0,1 a 0,1) | 2,8 (2,1 a 3,5) | 4,5 (3,4 a 6,5) | 4,4 (2,9 a 5,3) | 4,2 (2,2 a 7,5) | 47,0 (43,4 a 51,7) | 0 | 0,96 (0,93 a 1,02) | 3% (2 a 3) |
+| Área industrial | comum | 376 (345 a 428) | 2,3 (2 a 3) | 1,0 (0 a 2) | 0,1 (0,1 a 0,2) | 1,5 (1,0 a 2,4) | 1,6 (0,9 a 2,7) | 0,7 (0,4 a 1,3) | 0,1 (0,1 a 0,2) | 52,4 (50,4 a 54,5) | 0 | 3,01 (2,83 a 3,17) | 0% (0 a 1) |
+| Área industrial | afiado | 406 (386 a 428) | 3,0 (3 a 3) | 0,1 (0 a 0) | 0,1 (0,1 a 0,1) | 2,4 (1,9 a 3,1) | 4,2 (3,4 a 5,6) | 3,8 (3,2 a 5,1) | 0,3 (0,1 a 0,6) | 50,1 (49,1 a 51,9) | 0 | 0,90 (0,87 a 0,94) | 3% |
+| Avenida Brasil | comum | 249 (170 a 351) | 1,9 (2 a 2) | 7,5 (6 a 10) | 0,1 (0,1 a 0,2) | 2,4 (1,7 a 3,2) | 4,3 (2,5 a 5,6) | 1,9 (1,3 a 2,5) | 0,1 (0,0 a 0,4) | 54,8 (53,3 a 57,2) | 0 | 3,42 (3,23 a 3,55) | 0% |
+| Avenida Brasil | afiado | 357 (295 a 432) | 2,4 (2 a 3) | 1,4 (0 a 4) | 0,2 (0,2 a 0,2) | 6,8 (5,4 a 9,0) | 6,2 (5,1 a 7,9) | 4,1 (3,0 a 5,5) | 0,2 (0,0 a 0,4) | 51,3 (49,7 a 53,3) | 0 | 0,98 (0,95 a 1,00) | 3% (3 a 4) |
+| Terraço Suíça | comum | 211 (157 a 275) | 1,9 (2 a 2) | 3,2 (2 a 4) | 0,1 (0,1 a 0,1) | 1,0 (0,7 a 1,8) | 7,9 (7,3 a 8,8) | 1,3 (0,6 a 2,0) | 0,1 (0,0 a 0,2) | 55,3 (53,6 a 57,7) | 0 | 3,07 (2,88 a 3,23) | 1% (0 a 0) |
+| Terraço Suíça | afiado | 279 (221 a 334) | 2,3 (2 a 3) | 1,1 (0 a 2) | 0,1 (0,1 a 0,1) | 2,8 (2,1 a 3,7) | 10,3 (9,2 a 11,1) | 3,3 (2,6 a 4,4) | 0,1 (0,0 a 0,4) | 54,8 (52,7 a 57,4) | 0 | 1,00 (0,98 a 1,03) | 4% (3 a 4) |
 
 ## Decisões em aberto
 Nenhuma.
 
 ## Desvios
-(No fechamento.)
+- **O modo dev "não valer" virou uma troca do objeto:** em vez de cada leitura do `DEV.forca` (vip, apito, clima, quebra, fiscal, evento, crítico, noite, luxo, rosa, vontade...) ser ignorada uma a uma, o `startTeste` guarda o `DEV.forca` em `devForcaSalva` e põe `{}`; o `sairTreino` devolve o de antes. O que o dev força pelo painel durante o teste (na pausa) se perde. A velocidade fica em 1 pelo `startTeste` e pelo `passoJogo` (`!game.teste`).
+- **A semente ganhou duas coisas que a spec não listava:** o `divF` (o fator da divulgação, sorteado no `resetDay`) e a `encomendaDia` (área industrial) também saem do `comSemente(S, ...)`; sem isso, o número de grupos e a encomenda mudavam de uma tentativa para outra. O `buildSchedule` marca cada grupo com `s.i` (a posição na agenda) só no teste, e o `spawn` semeia o `new Group` com `S * 1000 + s.i`. O que o `arrive` troca na hora (o grupo grande que vira pequeno com a espera cheia) segue sem semente.
+- **As medidas ficam em `tmAnda`, `seatGroup`, `tapTable`, `tapStation` e `onDown`/`onUp`, sem mexer no `Group.setState`:** a reação de pedido e de conta usa o `stateT` do grupo, a de mesa suja, o `sujaT` da mesa, e a de prato, a `age` do prato (todos já existiam). `seatGroup`, `tapTable` e `tapStation` viraram invólucros (`seatGroup0`, `tapTable0` e `tapStation0` são os de antes); o bot, que os chama direto, é medido igual ao humano.
+- **A Cami e os ajudantes na área industrial:** o "Tudo no máximo" da `DEV_CAPS` do cap 5 deixa a Dani sem tarefa e a Cami no nível 3 (tarefas), e é ela quem limpa mesa na fase; o teste é com a equipe que o Desafio monta, como a spec manda.
+- **No painel do dev, a seção fica na aba "Pular"** (ao lado dos Desafios), e o botão da fase, se o jogo não está no menu, vai primeiro ao menu (como os botões de capítulo).
+- **#ov-ver:** a linha da v12.2 diz "Só no modo dev: o Teste de habilidade, quatro fases padrão com relatório para nivelar o bot com o jeito de jogar de gente." A lista ficou com 14 linhas (`smoke86` e `menu_fit.py` passaram a esperar 14), e o `smoke86` e o `smoke98` aceitam a versão nova (o `smoke98`, qualquer v12.x).
+- O relatório do bot sai "bot -" na linha do jogador (o aparelho `bot` e a tela `-`, como a spec diz) e com o nome do Ranking (`sem nome` no bot).
 
 **Modelo:** Sonnet, esforço alto (reaproveita o motor dos Desafios, mas mede em muitos pontos do código, tela nova, bot e ferramenta)

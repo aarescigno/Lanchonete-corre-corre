@@ -105,13 +105,17 @@ with sync_playwright() as p:
             conf(pg,f'{tag} pausa','#ov-pause .panel',['#ov-pause .row .btn'])
             run(pg,DIA2+"g.setState('treinoend');")
             conf(pg,f'{tag} fim da Missão zero','#ov-treino .panel',['#btn-treino-dia1'])
+            # v12.2: o fim do Teste de habilidade com a caixa do relatório aberta (a cópia falha de propósito)
+            run(pg,FIM+"Object.defineProperty(navigator,'clipboard',{value:{writeText:()=>Promise.reject(1)},configurable:true});document.execCommand=()=>false;g.startTeste('terraco');g.begin();g.schedule=[];g.nextIdx=0;g.groups=[];g.custo=0;g.money=g.fixo+g.day.meta;g.finishDay();document.getElementById('btn-teste-copia').click();")
+            pg.wait_for_timeout(200)
+            conf(pg,f'{tag} fim do Teste (caixa do relatório aberta)','#ov-teste-fim .panel',['#btn-teste-copia','#btn-teste-de-novo','#btn-teste-volta','#teste-fim-caixa .cx-txt'])
         # ---- CA3: as Versões ----
         if SOLO in ('','versoes'):
             run(pg,"document.getElementById('ov-ver').classList.add('show');")
             conf(pg,f'{tag} Versões','#ov-ver .panel',['#btn-ver-close'])
             r=pg.evaluate("()=>{const l=document.querySelector('.verlist');return [l.scrollHeight,l.clientHeight,l.querySelectorAll('li').length]}")
             total+=1
-            if r[2]!=13: fails+=1; print(f'FAIL: {tag} a lista das Versões tem {r[2]} linhas (esperado 13: a v12.1, a v12, a v11 e da v10 à v1)')
+            if r[2]!=14: fails+=1; print(f'FAIL: {tag} a lista das Versões tem {r[2]} linhas (esperado 14: a v12.2, a v12.1, a v12, a v11 e da v10 à v1)')
         # ---- v11.15: a abertura (os botões Voltar e Pular, por cima do quadro cheio, à vista e sem se cobrir) ----
         if SOLO in ('','abertura'):
             run(pg,"g.setState('menu');document.getElementById('btn-historia').click();")

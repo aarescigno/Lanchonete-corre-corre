@@ -9,7 +9,7 @@ const game = new Game(canvas, ctx);
 /* quem nunca fez a Missão zero (e ainda está no dia 1) encontra o botão dela em destaque */
 function treinoPrimeiro(){ return !game.save.treino && game.proxDia <= 1 && !DEV.on; }
 
-const SCREENS = ['ov-menu','ov-manual','ov-intro','ov-treino','ov-pause','ov-end','ov-shop','ov-falencia','ov-endless','ov-rank','ov-ver','ov-app','ov-atu','ov-abertura','ov-escolha','ov-conversa','ov-continua','ov-guia','ov-desafios','ov-desafio-fim'];
+const SCREENS = ['ov-menu','ov-manual','ov-intro','ov-treino','ov-pause','ov-end','ov-shop','ov-falencia','ov-endless','ov-rank','ov-ver','ov-app','ov-atu','ov-abertura','ov-escolha','ov-conversa','ov-continua','ov-guia','ov-desafios','ov-desafio-fim','ov-teste-fim'];
 function showOnly(ids){
   SCREENS.forEach(id => { const el = $(id); if (!el) return; if (ids.indexOf(id) >= 0) el.classList.add('show'); else el.classList.remove('show'); });
 }
@@ -188,12 +188,31 @@ function devAbaPular(body, secao, botao, dia){
   PONTOS.forEach(p => botao(r, p.nome, () => game.devPonto(p.id), p.id === game.ponto.id));
   r = secao('Desafios', 'Liberar mostra o botão no menu, sem o Fim');   // v12
   botao(r, 'Liberar', () => game.devDesafios('liberar')); botao(r, 'Ouro em todos', () => game.devDesafios('ouro')); botao(r, 'Zerar', () => game.devDesafios('zerar'));
+  devTeste(secao, botao);
   if (emDia){
     r = secao('No dia', 'Velocidade ' + DEV.vel + '×');
     [1, 2, 4, 8].forEach(v => botao(r, 'Velocidade ' + v + '×', () => { DEV.vel = v; }, DEV.vel === v));
     const b = botao(r, 'Encerrar o dia agora', () => {}, null);
     b.addEventListener('click', () => { if (game.devFimDia()) fecharDev(); });
   }
+}
+/* v12.2: a seção "Teste de habilidade": o nome (o mesmo do Ranking) e as quatro fases, cada uma com as tentativas já jogadas; o botão fecha o painel e vai à introdução do dia */
+function devTeste(secao, botao){
+  const tent = testeTent();
+  let r = secao('Teste de habilidade', 'Quatro fases padrão, sempre com os mesmos clientes. No fim, copie o relatório e mande.');
+  const inp = el('input'); inp.type = 'text'; inp.id = 'dev-teste-nome'; inp.maxLength = 16; inp.placeholder = 'Seu nome'; inp.value = lastName(); inp.setAttribute('aria-label', 'Seu nome');
+  const grava = () => { const n = cleanName(inp.value); if (n) lsSet(LS.name, n); };
+  inp.addEventListener('input', grava); inp.addEventListener('change', grava);
+  r.appendChild(inp);
+  r = secao('Fases');
+  TESTES.forEach(t => {
+    const b = botao(r, t.nome + ' (' + tent[t.id] + ')', () => {
+      grava();
+      if (game.state !== 'menu') game.setState('menu');
+      if (game.startTeste(t.id)) fecharDev();
+    });
+    b.setAttribute('data-teste', t.id);
+  });
 }
 /* v10.2.2: a aba História (só no De verdade): cumprir o objetivo, assistir a qualquer cena, revelar o Manual e a lojinha, soltar as conversas */
 function devAbaHistoria(body, secao, botao){
