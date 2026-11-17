@@ -12,7 +12,7 @@ const html=fs.readFileSync('../lanchonete.html','utf8');
   ok(lis.filter(l=>l.indexOf('versão atual')>=0).length===1 && lis[0].indexOf('versão atual')>=0,'CA5: "versão atual" só na v11.16.1');
   const comLink=lis.filter(l=>/Abrir a v\d+<\/a>/.test(l)).map(l=>/^<b>(v[\d.]+)<\/b>/.exec(l)[1]);
   ok(comLink.join()==='v10,v9,v8,v7,v6,v5,v4,v3,v2,v1','CA5: link "Abrir" em v1 a v10 e em nenhuma outra ('+comLink.join()+')');
-  ok(lis[15].indexOf('<br><a href="versoes/v9.html" target="_blank" rel="noopener">Abrir a v9</a>')<0 && lis[16].indexOf('<br><a href="versoes/v9.html" target="_blank" rel="noopener">Abrir a v9</a>')>=0,'CA5: o link da v9 no formato dos outros');
+  ok(lis[16].indexOf('<br><a href="versoes/v9.html" target="_blank" rel="noopener">Abrir a v9</a>')<0 && lis[17].indexOf('<br><a href="versoes/v9.html" target="_blank" rel="noopener">Abrir a v9</a>')>=0,'CA5: o link da v9 no formato dos outros');
   ok(fs.existsSync('../versoes/v9.html') && fs.existsSync('../versoes/v10.html'),'CA5: os arquivos versoes/v9.html e v10.html existem');
   ok(/ id="vtag" aria-label="Versão 11\.16\.1">v11\.16\.1</.test(html) && /VERSAO = 'v11\.16\.1'/.test(html),'CA5: o selo e a VERSAO dizem v11.16.1'); }
 
