@@ -19,6 +19,8 @@ Origem: retorno do Renan Martorelli (beta-tester) e conversa com o Arthur (15/10
 | 12 | A 3ª estrela do Michelzão ao alcance | v11.19 | feita em 17/11 (`docs/spec-v11.19.md`; `smoke96`; `NOITE.cortes` passou de `[44, 66, 90]` para `[44, 66, 75]`: o bot afiado leva a 3ª estrela em 37,5% das carreiras) |
 | 13a | Desafios: o motor, a tela e os três primeiros | v12 | feita em 17/11 (`docs/spec-v12.md`; `smoke97`; `DESAFIOS`, o save de mentira "Tudo no máximo", a tela, o cartão do fim, a aba do Manual e o modo dev; Só a Bia, Ninguém bravo e Hora do eFood calibrados) |
 | 13b | Desafios: festa, jogo, crítico e VIPs | v12.1 | feita em 17/11 (`docs/spec-v12.1.md`; `smoke98`; Festa junina, Jogo do Brasil, Noite do crítico e VIPs exigentes calibrados; a Etapa 13 está completa) |
+| 14a | Teste de habilidade: as quatro fases padrão e o relatório | v12.2 | planejada em 17/11 (`docs/spec-v12.2.md`, aprovada) |
+| 14b | O bot humano, calibrado pelos relatórios | — (testes) | depois dos relatórios dos testers |
 
 ---
 
@@ -80,6 +82,21 @@ Origem: retorno do Renan Martorelli (beta-tester) e conversa com o Arthur (15/10
 > - **O Terraço mede pela equipe toda** (Joca, Cami, Anselmo e a confeitaria): é ela que passa ~90% das metas.
 > - **Regra da 3f em todas as sessões:** cartão novo da lojinha só com nome, preço e "?"; toda novidade ganha ficha no `MANUAL` (sem números), revelada quando aparece na história.
 > Ordem: 4a-1 (o ponto e a refeição completa, v10) → 4a-2 (o VIP exigente e a reputação, v10.1) → 4a-3 (a cozinha: alta gastronomia, a Lia e a alta confeitaria, v10.2) → 4a-4 (o salão e o bar: Cami, Joca e Anselmo, v10.3) → 4a-5 (música, flores e rebalanceamento, v10.4). Cada uma é uma versão, com PR e merge. As "Checagens de fim de sessão" da etapa 3 valem para todas.
+
+## Etapa 14 — O bot com habilidade de gente (14a, v12.2; 14b, só testes)
+Pedido do usuário em 17/11: o bot joga "bem demais, melhor do que gente". Os alvos do `balance.js` e do `carreira.js` saem de um bot que reage em 0,05 s, vê o salão inteiro e nunca erra o toque. A régua passa a ser o jogo de gente.
+- **14a** (v12.2): no modo dev, o Teste de habilidade. São quatro fases padrão, uma por ponto, com os mesmos clientes para todo mundo (semente fixa). No fim, o relatório para copiar e colar no chat: o resultado, os tempos de reação, o ritmo de toques, a Bia parada e o aparelho. O bot joga as mesmas fases e escreve o mesmo relatório. Spec: `docs/spec-v12.2.md`.
+  **Modelo:** Sonnet, esforço alto (reaproveita o motor dos Desafios, mas mede em muitos pontos do código, tela nova, bot e ferramenta)
+- **14b** (sem versão: só `tests/bot.js` e docs), depois de chegarem os relatórios em `docs/RELATORIOS.md`:
+  - `BOT=humano` (imita o melhor jogador) e `BOT=medio` (a mediana dos testers), por cima do bot afiado, com três limites ajustáveis em `HUMANO='{...}'`:
+    - **tempo de reação:** só enxerga o que aconteceu há X s, sorteado por evento;
+    - **toques por minuto:** um teto, com intervalo mínimo entre toques;
+    - **atenção limitada:** às vezes faz a ação mais perto em vez da mais urgente, e às vezes se distrai por alguns segundos.
+  - Calibrar por tentativa com `TESTE=<fase> node balance.js 40`, até o relatório do bot cair na faixa do alvo nas 4 fases: as reações medianas, as ações/min, a Bia parada e a % da meta.
+  - Registrar os perfis no `docs/TESTES.md`.
+  - O que muda no equilíbrio do jogo com esses perfis fica para a ideia guardada "Revisão geral de equilíbrio".
+
+  **Modelo:** Sonnet, esforço alto (calibração por tentativa, em 4 fases e 2 perfis)
 
 ## Ideias guardadas (sem etapa ainda)
 - **Ranking compartilhado** (saiu da Etapa 7 em 15/11: "fica offline"): o código continua no jogo, desligado (`Rank.online = false`, `src/30-ranking.js`), e as chamadas ainda batem com o `db` do artifact (conferido em 15/11). Religar pede `Rank.online = true`, declarar nas capacidades a leitura da coleção `ranking-campanha` e decidir a ordem (lucro acumulado, ou estrelas do Michelzão com o lucro no desempate, a ideia adiada na v10.10).

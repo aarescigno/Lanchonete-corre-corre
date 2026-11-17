@@ -4,6 +4,13 @@ Registro das ideias e dos retornos de quem jogou, com o texto original, e de ond
 
 ---
 
+## 17/11 — usuário: o bot joga bem demais
+> "O bot que joga muito bem, eu acho que ele está jogando bem demais. Acho que humanamente melhor do que bem demais, sabe? Eu acho que a gente poderia fazer um benchmark. Faz uma fase padrão de cada nível, e essa fase padrão com um retorno de relatório que eu posso copiar e colar aqui, para que a gente possa nivelar o melhor bot possível com o melhor das minhas habilidades, dos meus beta testers, e aí a gente faz esse bot se limitar a essa habilidade, não uma habilidade robótica, sabe?"
+
+**Destino:** Etapa 14 do `docs/PLANO.md`. A 14a (v12.2, `docs/spec-v12.2.md`, aprovada em 17/11) faz o Teste de habilidade no modo dev: 4 fases com semente fixa e o relatório para copiar. A 14b faz o bot humano (`BOT=humano` e `BOT=medio`), calibrado pelos relatórios.
+
+---
+
 ## 17/11 — usuário: o que vem depois do final novo (questionário de planejamento)
 Texto original: "Se sobrar limite de sessão já prepare com opus o questionário para planejamento das etapas seguintes" e, depois da v11.18, "Bora esse questionário". O questionário ficou em `docs/QUESTIONARIO-pos-final.md`; as respostas vieram pelo `AskUserQuestion` (17/11):
 - Foco: "Ouvir jogadores" e "Pós-história" (sem conteúdo novo de jogo nem preparar lançamento agora).
