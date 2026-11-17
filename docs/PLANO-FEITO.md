@@ -157,6 +157,8 @@ A cena final animada (oito cenas, no motor da abertura), os créditos, a placa n
 | 7b | As telas no celular: a lojinha com o topo fixo, os painéis pequenos e as Versões enxutas | v11.10 | feita em 15/11 (`docs/spec-v11.10.md`; `smoke86` e `menu_fit.py` com 630 conferências; só o `#shop-grid` rola; a Etapa 7 está completa) |
 | 9a | A abertura nova: o motor, o som e as cenas 1 e 2 | v11.12 | feita em 16/11 (`docs/spec-v11.12.md`; `smoke88`; `ABERTURA2`, a câmera que encosta na borda, o tema da Rosa, `src/27-abertura-nova.js` com a cozinha de casa e as cenas `porta` e `carinho`; só pelo modo dev) |
 | 9c | A abertura nova: a perda e a promessa (6, 7 e 8) | v11.14 | feita em 16/11 (`docs/spec-v11.14.md`; `smoke90`; `ab2Quarto`, `ab2Cozinha` à noite e no lar e as cenas `despedida`, `janela` e `promessa`; só pelo modo dev) |
+| 9d | A abertura nova no ar: as cenas 9, 10 e 11, a troca e a limpeza | v11.15 | feita em 16/11 (`docs/spec-v11.15.md`; `smoke91` e o `smoke26` reescrito; `ab2Banco`, `ab2RuaCasa`, `ABERTURA` como o roteiro novo, a antiga fora; a Etapa 9 está completa) |
+| 10a | O final novo: o motor, o som e as cenas 1, 2 e 3 | v11.16 | feita em 16/11 (`docs/spec-v11.16.md`; `smoke92`; o roteiro `FINAL2`, os climas e efeitos novos, o cartão de obra e as cenas telefone, placa e apagou) |
 
 ## Etapa 1a — Jogo justo: dá para não perder ninguém (v7.1)
 > **Feita em 15/10 (v7.1, `docs/spec-v7.1.md`).** Decisões: A + B; no Turno sem fim vale o ritmo da fila justa, sem o piso; ícone "aguardando mesa" sim. A medição mostrou que, com a equipe, a maior parte das perdas era a espera pelo prato, e não a fila. O que sobra é o limite de louça nos dias de 6 mesas: o bot afiado só chega ao alvo (0 perdidos em 94% dos dias) comprando o Jogo de pratos primeiro. A louça não mudou; se jogadores reclamarem da espera pelo prato, a etapa 1b pode rever `dishStock` ou a mecânica D. Metas sem mudança.
@@ -2034,3 +2036,12 @@ Quadro cheio, câmera que desliza e aproxima, cenários em camadas com luz, lege
 - **9b (v11.13)** — as cenas da Casa Aurora (3, 4 e 5): `docs/spec-v11.13.md`. **Modelo:** Sonnet, esforço alto.
 - **9c (v11.14)** — a perda e a promessa (6, 7 e 8): `docs/spec-v11.14.md`. **Modelo:** Sonnet, esforço alto.
 - **9d (v11.15)** — a virada (9, 10 e 11), a troca pela abertura nova e a limpeza da antiga: `docs/spec-v11.15.md`. **Modelo:** Sonnet, esforço alto.
+
+## Etapa 10 — O final no mesmo tratamento da abertura (10a, v11.16; 10b, v11.17; 10c, v11.18)
+As 8 cenas do final e os créditos refeitos com o motor da Etapa 9 (quadro cheio, câmera, luz, o tema da Rosa): a última cena repete a cozinha e a câmera da cena 1 da abertura, e a foto da equipe repete o clique que vira foto da cena 2. Planejada em 16/11 com o usuário (roteiro, falas e tempos iguais; só as legendas encurtam para uma linha; os créditos ganham desenho; três sessões). Roteiro e direção quadro a quadro: `docs/FINAL.md`. Até a 10c, o novo só toca pelo modo dev ("Final novo (em obras)").
+- **10a** (v11.16): o roteiro `FINAL2`, os climas e efeitos novos, o cartão de obra e as cenas 1 a 3 (o Terraço de manhã e a Casa Aurora à noite). Spec: `docs/spec-v11.16.md`.
+  **Modelo:** Sonnet, esforço alto (o motor quase pronto; o peso é um cenário novo e três cenas no canvas)
+- **10b** (v11.17): as cenas 4 a 6 (o retrato, a foto da equipe com os nomes, a garagem de dia como escola). Spec: `docs/spec-v11.17.md`.
+  **Modelo:** Sonnet, esforço alto (três cenas; a foto com sete pessoas pede cuidado)
+- **10c** (v11.18): as cenas 7 e 8, os créditos, a troca e a limpeza do final antigo. Spec: `docs/spec-v11.18.md`.
+  **Modelo:** Sonnet, esforço alto (duas cenas, os créditos e a limpeza, com cuidado com o que a abertura usa)

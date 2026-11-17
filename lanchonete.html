@@ -449,7 +449,7 @@ table.rank tr.me td{background:#fbe7a8}
 
     <div class="ov show" id="ov-menu">
       <div class="panel menu-panel">
-        <span class="vtag" id="vtag" aria-label="Versão 11.17">v11.17</span>
+        <span class="vtag" id="vtag" aria-label="Versão 11.18">v11.18</span>
         <h1 class="title">Lanchonete <br>Corre-Corre</h1>
         <p class="tag">Ajude a Bia a atender a freguesia da esquina antes que o cafezinho esfrie!</p>
         <div class="lbl" id="menu-dia">História</div>
@@ -703,7 +703,7 @@ table.rank tr.me td{background:#fbe7a8}
       <div class="panel">
         <h2>Versões</h2>
         <ul class="verlist">
-          <li><b>v11.17</b><span class="cur">versão atual</span><br>17/11/2026 &mdash; O final está sendo refeito como a abertura: quadro cheio, câmera e música. Seis cenas prontas, por enquanto só no modo dev.</li>
+          <li><b>v11.18</b><span class="cur">versão atual</span><br>17/11/2026 &mdash; Final novo: a manhã da estrela, a foto da equipe e a cozinha da Rosa de novo, no mesmo filminho da abertura.</li>
           <li><b>v11.16.1</b><br>17/11/2026 &mdash; Retornos dos testadores: no app e no site, um botão para buscar a versão nova. A Bia ganhou cabelo crespo em todos os pontos, as mesas ganharam um enfeite de cada ponto, quem espera sentado tem pernas, as bandeirinhas ficam presas e a área industrial foi arrumada. O entregador do eFood chega buzinando.</li>
           <li><b>v11.15</b><br>16/11/2026 &mdash; Abertura nova: a história da Bia e da Rosa refeita como um filminho, com quadro cheio, câmera, luz e música.</li>
           <li><b>v11.11.1</b><br>15/11/2026 &mdash; Na primeira vez que o dia fecha com nota baixa no Gúgou, a Bia desabafa com o Tonhão, e ele a anima.</li>
@@ -2445,7 +2445,7 @@ const HIST_NOMES = { bia:'Bia', tonhao:'Tonhão', dani:'Dani', joca:'Joca', cami
 const ATU_TXT = { procurando:'Procurando versão nova...', nova:'Tem versão nova: {v}! Seu jogo salvo continua.', igual:'Você já está na versão mais nova ({v}).', erro:'Sem internet agora. Tente de novo mais tarde.', atualizando:'Atualizando...' };
 function atuEstado(remota, atual){ if (typeof remota !== 'string' || !remota.trim()) return 'erro'; return remota.trim() === atual ? 'igual' : 'nova'; }
 const CAIXA_MAX = 14;                                 // livro-caixa (v7.2): quantos dias da carreira ficam guardados
-const VERSAO = 'v11.17';                               // vai no resumo do Caixa
+const VERSAO = 'v11.18';                               // vai no resumo do Caixa
 const DIVULGA_DIA = 4;                                // antes disso, o movimento é o da inauguração (sem custo); v9.0.2: dia 4, e o padrão é o boca a boca
 function divulgaAberta(n, sv){ return devLivre() || n >= DIVULGA_DIA && !(sv && sv.convDiv === 'pend'); }   // no modo dev, desde o dia 1; v9.0.3: no Modo História, só depois da conversa
 /* v9.6.4: a Efood (os entregadores) só abre depois da conversa dos entregadores, no Modo História; antes dela, nenhum tipo com `retira` vem na agenda */

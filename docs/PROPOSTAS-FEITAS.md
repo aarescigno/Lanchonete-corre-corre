@@ -4,6 +4,16 @@ Retornos com destino já feito, movidos de `docs/PROPOSTAS.md` em 30/10/2026 sem
 
 ---
 
+## 16/11 — usuário: o final no mesmo tratamento da abertura (planejamento da Etapa 10)
+Pedido: "Planeje e implemente a etapa 10" (a sessão só planejou, a pedido do usuário: "Faz só o planejamento").
+Decisões do usuário (16/11):
+- Roteiro: "Legendas curtas". As 8 cenas, a ordem, as falas e os tempos ficam; só as legendas encurtam para uma linha de até 60 letras, e o que sai do texto passa para a imagem (os nomes da equipe escritos na foto, o "Cozinha da Rosa" no letreiro).
+- Créditos: "Sim, uma cena". A rua de casa à noite, a escola acesa e a estrela da Rosa piscando, com os três textos por cima e o tema fechando; 6 s.
+- Sessões: "Só planejar agora"; a execução fica para sessões separadas, com o Sonnet. Divisão em três, como a abertura.
+Destino: Etapa 10 do `docs/PLANO.md` (10a, 10b e 10c), roteiro em `docs/FINAL.md`, specs aprovadas `docs/spec-v11.16.md`, `docs/spec-v11.17.md` e `docs/spec-v11.18.md`.
+
+---
+
 ## 17/11 — Letícia (betatester): verificar atualização, pernas na espera, bandeirinhas e o cabelo da Bia, a área industrial sem sobreposição; e o usuário: o enfeite da mesa por ponto e a buzina do eFood
 Texto original (enviado pelo usuário):
 "Adicione um botão de verificar atualização no menu para quem joga poder ir para a versão nova, quando nao atualizar sozinho.

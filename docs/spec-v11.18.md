@@ -1,6 +1,6 @@
 # v11.18 — O final novo no ar: o céu, a roda, os créditos, a troca e a limpeza (etapa 10c)
 
-**Situação:** aprovada (16/11)
+**Situação:** entregue em 17/11
 **Origem:** `docs/FINAL.md` §3, §4, §8 e §9 (roteiro e direção fechados no planejamento de 16/11; decisões do usuário em `docs/PROPOSTAS.md`); etapa 10c do `docs/PLANO.md`.
 
 ## Objetivo
@@ -38,14 +38,14 @@ Valem, sem mudança de texto nem de número, `docs/FINAL.md` §3, §4, §8 e §9
 - `ferramentas/editor.py`, se ele citar a `AB_CENAS`.
 
 ## Tarefas
-- [ ] T1 Smoke novo `tests/smoke94.js` (CA1, CA2 e CA4), visto falhar, incluído no `tests/run_all.sh`.
-- [ ] T2 `ab2Varanda` e a cena 7, `ceu`; captura, recorte e acerto.
-- [ ] T3 A cena 8, `roda`, ao lado da cena 1 da abertura; captura, recorte e acerto.
-- [ ] T4 Os créditos; captura, recorte e acerto.
-- [ ] T5 A troca (`FINAL`), o modo dev e os smokes `76`, `88`, `91` e `92`/`93` ajustados.
-- [ ] T6 A limpeza de `src/18-abertura.js`, `src/25-abertura.js` e `src/27-abertura-nova.js`, com os smokes verdes.
-- [ ] T7 `tests/shot_v11_18.js`, a folha das 8 cenas e a conferência do CA7; o editor de desenhos abrindo as cenas.
-- [ ] Fechamento: `VERSAO`, `vtag`, `#ov-ver`, `docs/RESUMO.md`, `docs/TESTES.md`, `docs/PARTES.md`, o `CLAUDE.md` (a parte `25` sem as cenas do final; o editor), esta spec como entregue, a Etapa 10 arquivada, `tests/run_all.sh --tudo` verde, PR e merge; avisar o usuário para publicar e para atualizar o artifact do editor.
+- [x] T1 Smoke novo `tests/smoke94.js` (CA1, CA2 e CA4), visto falhar, incluído no `tests/run_all.sh`.
+- [x] T2 `ab2Varanda` e a cena 7, `ceu`; captura, recorte e acerto.
+- [x] T3 A cena 8, `roda`, ao lado da cena 1 da abertura; captura, recorte e acerto.
+- [x] T4 Os créditos; captura, recorte e acerto.
+- [x] T5 A troca (`FINAL`), o modo dev e os smokes `76`, `88`, `91` e `92`/`93` ajustados.
+- [x] T6 A limpeza de `src/18-abertura.js`, `src/25-abertura.js` e `src/27-abertura-nova.js`, com os smokes verdes.
+- [x] T7 `tests/shot_v11_18.js`, a folha das 8 cenas e a conferência do CA7; o editor de desenhos abrindo as cenas.
+- [x] Fechamento: `VERSAO`, `vtag`, `#ov-ver`, `docs/RESUMO.md`, `docs/TESTES.md`, `docs/PARTES.md`, o `CLAUDE.md` (a parte `25` sem as cenas do final; o editor), esta spec como entregue, a Etapa 10 arquivada, `tests/run_all.sh --tudo` verde, PR e merge; avisar o usuário para publicar e para atualizar o artifact do editor.
 
 ## Avisos para a execução
 - Antes de apagar qualquer função de `src/25-abertura.js`, confira com `grep` em `src/` se a abertura (`src/27-abertura-nova.js`), o final novo (`src/28-final.js`) ou outra parte a usa (a `abPlacaMichel` está na cena 5 da abertura; a `abFlor`, a `abColher` e a `abMistura`, em várias); na dúvida, fica.
@@ -55,12 +55,21 @@ Valem, sem mudança de texto nem de número, `docs/FINAL.md` §3, §4, §8 e §9
 - Se as cenas não ficarem bonitas em duas rodadas de captura, pare e avise.
 
 ## Testes
-`smoke94` novo (CA1, CA2 e CA4); `smoke76`, `smoke88`, `smoke91`, `smoke92` e `smoke93` ajustados onde conferiam o motor antigo, o `FINAL2` ou o cartão de obra (anotar quantas checagens mudaram em cada um); `tests/run_all.sh --tudo` verde (`menu_fit.py` incluído). Capturas de `shot_v11_18.js` conferidas em recorte e apagadas. No fechamento: quantas checagens o `smoke94` tem.
+`smoke94` novo (CA1, CA2 e CA4); `smoke76`, `smoke88`, `smoke91`, `smoke92` e `smoke93` ajustados onde conferiam o motor antigo, o `FINAL2` ou o cartão de obra; `tests/run_all.sh --tudo` verde (`menu_fit.py` incluído). Capturas de `shot_v11_18.js` conferidas em recorte e apagadas.
+**Medido:** o `smoke94` tem 81 checagens (CA1: 43, CA2: 25, CA4: 13). Checagens mudadas: `smoke76` 4 reescritas (o roteiro, a `AB2_CENAS`, a legenda da placa com 3 estrelas, a cabeça da placa) e 1 ampliada (o painel dev sem "Final novo"), 74 no total; `smoke88` 5 (o CA2: câmera, escuro, faixa de legenda; o CA6 do som; o CA7 da `AB2_CENAS`), 84 no total; `smoke91` 4 (o CA2 e o CA5, a `AB_CENAS` e a lista da `AB2_CENAS`), 37; `smoke92` 8 removidas (o `FINAL` antigo, o cartão de obra) e 3 reescritas (o painel dev, "Assistir o final" e as bolinhas contadas só em y 584), 79 (eram 87); `smoke93` nenhuma (só o nome `FINAL2` virou `FINAL`), 51; `smoke86` 3 e `smoke95` (a versão do servidor de mentira) pelo número da versão. `tests/run_all.sh --tudo`: `menu_fit.py` com 658 conferências e 0 falhas nos 14 tamanhos de tela; o `balance.js 40` sem mudança (nada do jogo mexeu); todos os smokes verdes (a 1ª rodada achou um `v11.18` esquecido no `smoke95`, já corrigido). As capturas (cenas 7 e 8 e os créditos em p 0,25, 0,6 e 0,9, em 1220 x 600 e 844 x 390, a 8 ao lado da 1 da abertura, a folha das 8 cenas, o movimento reduzido) foram conferidas em recorte contra o `docs/FINAL.md` §2, §3 e §8 e apagadas; o editor de desenhos abre as 20 cenas (11 da abertura, 8 do final e os créditos) sem erro.
 
 ## Decisões em aberto
 Nenhuma.
 
 ## Desvios
-(no fechamento)
+- **Os textos dos créditos ficam mais acima que na spec** (y 46, 98 e 136, no lugar de 110, 170 e 222): com a câmera dos créditos (`[610,240,1.3]` a `[610,300,1]`), o letreiro "Cozinha da Rosa" fica na tela entre y 155 e 225, e o telhado da casa, em y 92 a 160; os textos nos y da spec cobriam o letreiro. Eles seguem na metade de cima, sobre o céu e o telhado, com o mesmo corpo, a mesma ordem e os mesmos tempos de entrada. Ver as Regras corrigidas.
+- **Os créditos mostram a garagem como a escola por dentro** (a Dani, as crianças e a panela de vapor, com o `ab2EsDentro`), sem ninguém na calçada.
+- **A Bia e o Tonhão da cena 7 entram por transparência** em p 0,24 a 0,3 (a câmera, que a spec fixa, já mostra a cabeça deles em p 0, quando a spec pede só o céu).
+- **A cena 8 segue os números do §8** (a Bia vira o rosto em p 0,34 a 0,42, a colher sai em p 0,55 a 0,62, a criança entra em p 0,55 a 0,74), e não os tempos de virar o rosto da `porta` (p 0,42 a 0,5), que são outros; a câmera é a mesma da `porta`. A Bia dá um passo (20 px) para a criança quando a colher sai.
+- **O halo da foto da Rosa** é dourado sobre a parede clara (o `screen` não aparecia), e o `ab2Cozinha` ganhou também `o.fotoHalo`; a `puffCrespo` ganhou o parâmetro `cor` e a `abCrianca`, o `fecha` (olhos fechados), para o coque e a criança que prova.
+- **Na folha de p 0,6, a cena 5 (`equipe`) mostra o clarão do clique** (o `clique` é em 4,8 s, p 0,6); nada a corrigir, é o efeito da v11.17.
+- **`smoke86` e `smoke95` mudaram** pelo número da versão (como na v11.17). O `smoke92` perdeu 8 checagens que só conferiam o final antigo e o cartão de obra.
+- A `drawAbertura2` virou `drawAbertura` (a antiga saiu); o `aberturaSom` perdeu o 2º parâmetro; `AB_UI` perdeu `leg` e `legLinha`. Saíram do `src/25-abertura.js`: as 9 cenas da `AB_CENAS`, a `AB_CENAS`, o `abLegenda`, o `AB_CHAO`, o `AB_FOGAO`, o `abCeu`, o `abChao`, o `abJanela`, o `abCozinhaCasa`, o `abCoracoes`, o `abFachadaAurora`, o `abJanelaCidade` e o `abTerracoSala` (nenhuma tinha outro uso em `src/`); do `src/27-abertura-nova.js`, o `ab2Obra` e o `ab2ObraFalas`; do `src/18-abertura.js`, o `FINAL` antigo, o `FINAL_CREDITOS`, o `fade` e o caminho antigo de `p`, `escuro` e `legA`. O `ferramentas/editor.js` lista as 20 cenas (o `editor.py` só ganhou o comentário novo).
+- **Regras corrigidas:** (a) créditos com os textos em y 46, 98 e 136 (largura de contorno 8, 5 e 4); (b) a cena 7: a Bia em x 556 (e 566 ao encostar a cabeça) e o Tonhão em x 668, com a rosa no ombro e o coque na `abCostas`.
 
 **Modelo:** Sonnet, esforço alto — um cenário novo, duas cenas e os créditos, mais a troca e a limpeza do código antigo, que pede cuidado com o que a abertura ainda usa.
