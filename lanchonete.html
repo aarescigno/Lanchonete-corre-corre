@@ -2144,9 +2144,9 @@ const DESAFIOS = [
   { id:'efood',    nome:'Hora do eFood',  cap:5, dia:17, mod:{ tipo:'entregador', tipoP:0.45, groups:0.55, meta:0.65 }, cond:s => s.lostBy.retirada === 0,
     aviso:'O eFood mandou entregador que não acaba mais!', falhou:'Um entregador saiu sem a marmita.' },
   /* v12.1: mod.evento (o evento de bairro do dia, forçado, sem sorteio; na junina, a barraca já montada), mod.tvs (as TVs ligadas: equipe.tvs) */
-  { id:'junina',   nome:'Festa junina',   cap:8, dia:38, mod:{ evento:'junina', groups:0.55, meta:1.2 }, cond:null,
+  { id:'junina',   nome:'Festa junina',   cap:8, dia:38, mod:{ evento:'junina', groups:0.55, meta:2.8 }, cond:null,
     aviso:'Festa junina lotada: o bairro inteiro veio!', falhou:'' },
-  { id:'jogo',     nome:'Jogo do Brasil', cap:5, dia:17, mod:{ evento:'jogo', up:['tvs'], tvs:1, groups:0.55, meta:1.2 }, cond:null,
+  { id:'jogo',     nome:'Jogo do Brasil', cap:5, dia:17, mod:{ evento:'jogo', up:['tvs'], tvs:1, groups:0.55, meta:3 }, cond:null,
     aviso:'Jogo do Brasil e a casa cheia de torcedor!', falhou:'' },
   /* mod.critico (a 1ª visita do crítico, sem boato), mod.vip (a chance de VIP de cada grupo); as cond leem o stats.criticoH (corações com que o crítico saiu: 0 se foi embora bravo ou não saiu) e o stats.saiMin (o menor número de corações com que um grupo pagou) */
   { id:'critico',  nome:'Noite do crítico', cap:13, dia:64, mod:{ critico:true, groups:0.45, meta:0.6 }, cond:s => s.criticoH >= 5,
