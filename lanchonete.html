@@ -246,8 +246,8 @@ table.cx .rs{font-size:inherit}
 .cx-st{font-weight:700;font-size:max(12px,calc(var(--u)*14))}
 .cx-txt{flex-basis:100%;height:calc(var(--u)*90);font:600 12px var(--fb);border:2px solid var(--tinta);border-radius:8px;padding:4px}
 /* v12.2: o fim do Teste de habilidade: o relatório só aparece (numa caixa para selecionar) se a cópia falhar */
-#teste-fim-caixa .cx-txt{display:block;width:100%;box-sizing:border-box;height:calc(var(--u)*120);min-height:84px}
-#teste-fim-caixa:empty{display:none}
+#teste-fim-caixa .cx-txt,#desafio-fim-caixa .cx-txt{display:block;width:100%;box-sizing:border-box;height:calc(var(--u)*120);min-height:84px}
+#teste-fim-caixa:empty,#desafio-fim-caixa:empty{display:none}
 .item{background:var(--creme);border:calc(var(--u)*3) solid var(--tinta);border-radius:calc(var(--u)*12);padding:calc(var(--u)*6) calc(var(--u)*8);display:grid;grid-template-columns:auto 1fr;column-gap:calc(var(--u)*8);row-gap:calc(var(--u)*3);align-items:center;align-content:start;text-align:left}
 .item.own{background:#dcefd9}
 .item{position:relative}
@@ -480,7 +480,7 @@ table.rank tr.me td{background:#fbe7a8}
 
     <div class="ov show" id="ov-menu">
       <div class="panel menu-panel">
-        <span class="vtag" id="vtag" aria-label="Versão 12.2">v12.2</span>
+        <span class="vtag" id="vtag" aria-label="Versão 12.3">v12.3</span>
         <h1 class="title">Lanchonete <br>Corre-Corre</h1>
         <p class="tag">Ajude a Bia a atender a freguesia da esquina antes que o cafezinho esfrie!</p>
         <div class="lbl" id="menu-dia">História</div>
@@ -530,7 +530,9 @@ table.rank tr.me td{background:#fbe7a8}
         <h2 id="desafio-fim-titulo">Desafio</h2>
         <div id="desafio-fim-medalha"></div>
         <p id="desafio-fim-msg" role="status"></p>
-        <div class="row"><button class="btn go" id="btn-desafio-de-novo">Tentar de novo</button><button class="btn alt" id="btn-desafio-lista">Desafios</button></div>
+        <div class="row"><button class="btn go" id="btn-desafio-de-novo">Tentar de novo</button><button class="btn alt" id="btn-desafio-lista">Desafios</button><button class="btn alt" id="btn-desafio-copia" type="button" style="display:none">Copiar relatório</button></div>
+        <p id="desafio-fim-aviso" role="status"></p>
+        <div id="desafio-fim-caixa"></div>
       </div>
     </div>
 
@@ -762,7 +764,8 @@ table.rank tr.me td{background:#fbe7a8}
       <div class="panel">
         <h2>Versões</h2>
         <ul class="verlist">
-          <li><b>v12.2</b><span class="cur">versão atual</span><br>17/11/2026 &mdash; Só no modo dev: o Teste de habilidade, quatro fases padrão com relatório para nivelar o bot com o jeito de jogar de gente.</li>
+          <li><b>v12.3</b><span class="cur">versão atual</span><br>17/11/2026 &mdash; Os desafios agora têm sempre os mesmos clientes, para todo mundo e em toda tentativa.</li>
+          <li><b>v12.2</b><br>17/11/2026 &mdash; Só no modo dev: o Teste de habilidade, quatro fases padrão com relatório para nivelar o bot com o jeito de jogar de gente.</li>
           <li><b>v12.1</b><br>17/11/2026 &mdash; Mais quatro desafios: a festa junina lotada, o jogo do Brasil, a noite do crítico e os VIPs exigentes.</li>
           <li><b>v12</b><br>17/11/2026 &mdash; Desafios: depois do fim da história, dias avulsos que valem medalha de bronze, prata ou ouro.</li>
           <li><b>v11</b><br>14/11/2026 &mdash; O futuro da Corre-Corre: a história ganha final, o arco da Bia e da equipe, e a abertura e o final refeitos como filminho.<br><a href="versoes/v11.html" target="_blank" rel="noopener">Abrir a v11</a></li>
@@ -2151,23 +2154,23 @@ const DEV_CAPS = [
 ];
 /* v12, os Desafios: dias avulsos, cada um num ponto e com uma regra, que valem medalha de bronze (1), prata (2) ou ouro (3) pelas estrelas do dia. Só a melhor fica (save.desafios).
    cap: a linha da DEV_CAPS que monta o save do dia; dia: o número do dia (diaOf); mod: sem (pessoas fora da equipe), up (melhorias a mais), groups (grupos ×), meta (as três metas ×, arredondadas para 5),
-   tipo/tipoP (no lugar do tipo do dia da semana); cond(stats): a regra que precisa valer no fim (ou nenhuma); aviso: a frase da introdução; falhou: a frase de quando a cond não vale */
+   semente (v12.3: o sorteio da agenda do dia e de cada grupo sai dela, e por isso os clientes são sempre os mesmos; ver TESTES), tipo/tipoP (no lugar do tipo do dia da semana); cond(stats): a regra que precisa valer no fim (ou nenhuma); aviso: a frase da introdução; falhou: a frase de quando a cond não vale */
 const DESAFIOS = [
-  { id:'soBia',    nome:'Só a Bia',       cap:5, dia:17, mod:{ sem:['dani', 'joca', 'cami', 'anselmo', 'lia'], groups:1, meta:1.2 }, cond:null,
+  { id:'soBia',    nome:'Só a Bia',       cap:5, dia:17, mod:{ sem:['dani', 'joca', 'cami', 'anselmo', 'lia'], groups:1, meta:1.2 }, semente:8102, cond:null,
     aviso:'Hoje a Bia segura o salão sozinha. O tio fica na cozinha.', falhou:'' },
-  { id:'semBravo', nome:'Ninguém bravo',  cap:8, dia:38, mod:{ groups:0.5, meta:0.6 }, cond:s => s.lost === 0,
+  { id:'semBravo', nome:'Ninguém bravo',  cap:8, dia:38, mod:{ groups:0.5, meta:0.6 }, semente:8202, cond:s => s.lost === 0,
     aviso:'Hoje ninguém pode sair bravo da Avenida.', falhou:'Alguém saiu bravo.' },
-  { id:'efood',    nome:'Hora do eFood',  cap:5, dia:17, mod:{ tipo:'entregador', tipoP:0.45, groups:0.55, meta:0.65 }, cond:s => s.lostBy.retirada === 0,
+  { id:'efood',    nome:'Hora do eFood',  cap:5, dia:17, mod:{ tipo:'entregador', tipoP:0.45, groups:0.55, meta:0.65 }, semente:8316, cond:s => s.lostBy.retirada === 0,
     aviso:'O eFood mandou entregador que não acaba mais!', falhou:'Um entregador saiu sem a marmita.' },
   /* v12.1: mod.evento (o evento de bairro do dia, forçado, sem sorteio; na junina, a barraca já montada), mod.tvs (as TVs ligadas: equipe.tvs) */
-  { id:'junina',   nome:'Festa junina',   cap:8, dia:38, mod:{ evento:'junina', groups:0.55, meta:2.8 }, cond:null,
+  { id:'junina',   nome:'Festa junina',   cap:8, dia:38, mod:{ evento:'junina', groups:0.55, meta:2.8 }, semente:8406, cond:null,
     aviso:'Festa junina lotada: o bairro inteiro veio!', falhou:'' },
-  { id:'jogo',     nome:'Jogo do Brasil', cap:5, dia:17, mod:{ evento:'jogo', up:['tvs'], tvs:1, groups:0.55, meta:3 }, cond:null,
+  { id:'jogo',     nome:'Jogo do Brasil', cap:5, dia:17, mod:{ evento:'jogo', up:['tvs'], tvs:1, groups:0.55, meta:3 }, semente:8505, cond:null,
     aviso:'Jogo do Brasil e a casa cheia de torcedor!', falhou:'' },
   /* mod.critico (a 1ª visita do crítico, sem boato), mod.vip (a chance de VIP de cada grupo); as cond leem o stats.criticoH (corações com que o crítico saiu: 0 se foi embora bravo ou não saiu) e o stats.saiMin (o menor número de corações com que um grupo pagou) */
-  { id:'critico',  nome:'Noite do crítico', cap:13, dia:64, mod:{ critico:true, groups:0.45, meta:0.6 }, cond:s => s.criticoH >= 5,
+  { id:'critico',  nome:'Noite do crítico', cap:13, dia:64, mod:{ critico:true, groups:0.45, meta:0.6 }, semente:8603, cond:s => s.criticoH >= 5,
     aviso:'O crítico do Michelzão vem hoje. Ninguém sabe qual mesa é a dele.', falhou:'O crítico não saiu com todos os corações.' },
-  { id:'vips',     nome:'VIPs exigentes', cap:13, dia:64, mod:{ vip:1, groups:0.4, meta:0.6 }, cond:s => s.lost === 0 && s.saiMin >= 4,
+  { id:'vips',     nome:'VIPs exigentes', cap:13, dia:64, mod:{ vip:1, groups:0.4, meta:0.6 }, semente:8701, cond:s => s.lost === 0 && s.saiMin >= 4,
     aviso:'Hoje só vem gente exigente.', falhou:'Uma mesa saiu descontente.' }
 ];
 const MEDALHAS = ['sem medalha', 'bronze', 'prata', 'ouro'];
@@ -2532,7 +2535,7 @@ const HIST_NOMES = { bia:'Bia', tonhao:'Tonhão', dani:'Dani', joca:'Joca', cami
 const ATU_TXT = { procurando:'Procurando versão nova...', nova:'Tem versão nova: {v}! Seu jogo salvo continua.', igual:'Você já está na versão mais nova ({v}).', erro:'Sem internet agora. Tente de novo mais tarde.', atualizando:'Atualizando...' };
 function atuEstado(remota, atual){ if (typeof remota !== 'string' || !remota.trim()) return 'erro'; return remota.trim() === atual ? 'igual' : 'nova'; }
 const CAIXA_MAX = 14;                                 // livro-caixa (v7.2): quantos dias da carreira ficam guardados
-const VERSAO = 'v12.2';                               // vai no resumo do Caixa
+const VERSAO = 'v12.3';                               // vai no resumo do Caixa
 const DIVULGA_DIA = 4;                                // antes disso, o movimento é o da inauguração (sem custo); v9.0.2: dia 4, e o padrão é o boca a boca
 function divulgaAberta(n, sv){ return devLivre() || n >= DIVULGA_DIA && !(sv && sv.convDiv === 'pend'); }   // no modo dev, desde o dia 1; v9.0.3: no Modo História, só depois da conversa
 /* v9.6.4: a Efood (os entregadores) só abre depois da conversa dos entregadores, no Modo História; antes dela, nenhum tipo com `retira` vem na agenda */
@@ -3097,10 +3100,12 @@ function lsSet(k, v){
    liberado na lojinha, até antes do dia 1: melhorias de graça (liga e desliga), couvert e divulgação. Ranking de fora */
 const DEV = { on: lsGet(LS.dev) === '1', bank: 10000, toques: 10, real: lsGet(LS.dev) === '1' && lsGet(LS.devReal) === '1', vel:1, aba:'pular', forca:{} };   // v9.2.1: real = preços e travas de verdade; vel = velocidade (só na memória); v10.2.1: real fica gravado (lcc2_dev_real); aba = a aba aberta do painel
 function devLivre(){ return DEV.on && !DEV.real; }
-/* v12.2: as tentativas do Teste de habilidade, por fase ({ garagem:3, ... }), guardadas no aparelho (TESTE_LS); ficam fora do save e recomeçar do zero não as apaga */
+/* v12.2: as tentativas do Teste de habilidade, por fase ({ garagem:3, ... }; v12.3: e de cada Desafio, 'd-soBia'), guardadas no aparelho (TESTE_LS); ficam fora do save e recomeçar do zero não as apaga */
 function testeTent(){
   let o = {}; try { o = JSON.parse(lsGet(TESTE_LS) || '{}') || {}; } catch(e) { o = {}; }
-  const r = {}; TESTES.forEach(t => { const v = o[t.id]; r[t.id] = typeof v === 'number' && Number.isInteger(v) && v > 0 ? v : 0; });
+  const r = {}, ok = v => typeof v === 'number' && Number.isInteger(v) && v > 0 ? v : 0;
+  TESTES.forEach(t => { r[t.id] = ok(o[t.id]); });
+  DESAFIOS.forEach(d => { const v = ok(o['d-' + d.id]); if (v) r['d-' + d.id] = v; });   // v12.3: a tentativa de cada Desafio (chave d-<id>), só as que já começaram
   return r;
 }
 function testeSobe(id){ const r = testeTent(); r[id] = (r[id] || 0) + 1; lsSet(TESTE_LS, JSON.stringify(r)); return r[id]; }
@@ -4653,7 +4658,7 @@ class Game {
     this.mode = 'carreira';
     this.conversa = null;   // Modo História (v8.7): a conversa em andamento (19-conversa.js)
     this.treino = null; this.salvo = null;   // Missão zero (v8.2): o passo a passo e o save de verdade, guardado enquanto ela dura
-    this.teste = null; this.testeRel = ''; this.tm = null; this.devForcaSalva = null;   // v12.2: o Teste de habilidade em andamento ({ id, nome, semente, tent }), o texto do relatório depois do fim, as medidas do dia e o DEV.forca guardado enquanto o teste dura
+    this.teste = null; this.testeRel = ''; this.tm = null; this.dTent = null; this.devForcaSalva = null;   // v12.2: o Teste de habilidade em andamento ({ id, nome, semente, tent }), o texto do relatório depois do fim, as medidas do dia e o DEV.forca guardado enquanto o teste dura
     this.desafio = null; this.desafioRes = null;   // v12: o Desafio em andamento (item da DESAFIOS) e o resultado dele (medalha, nova marca); o save de verdade fica em `salvo`, como na Missão zero
     this.resetDay(1);
   }
@@ -4748,8 +4753,8 @@ class Game {
     this.multaVig = 0; this.aprovado = false;
     // divulgação (v7, do dia 4 em diante na carreira; v9.0.2): quanto da freguesia do dia aparece
     this.div = divulgaAberta(n, this.save) ? divulgaOf(this.save.divulga) : null;
-    const sd = this.teste ? this.teste.semente : 0;   // v12.2: no teste, o que decide quem chega (a divulgação, a encomenda e a agenda) sai da semente da fase
-    this.divF = this.div ? (this.teste ? comSemente(sd, () => rand(this.div.groups[0], this.div.groups[1])) : rand(this.div.groups[0], this.div.groups[1])) : 1;
+    const sd = this.desafio && this.desafio.semente || 0;   // v12.2: no teste (v12.3: e no Desafio), o que decide quem chega (a divulgação, a encomenda e a agenda) sai da semente do dia
+    this.divF = this.div ? (sd ? comSemente(sd, () => rand(this.div.groups[0], this.div.groups[1])) : rand(this.div.groups[0], this.div.groups[1])) : 1;
     this.clock = this.day.time;
     this.cmdFree = CMD.map((c,i) => i);
     this.stars = 5; this.five = 0; this.starFlash = 0; this.arrT = 2; this.endless = null;
@@ -4782,11 +4787,11 @@ class Game {
     // v9, a encomenda do setor (área industrial): sorteada ao começar o dia e avisada na introdução
     const pe = this.ponto.encomenda, te = CUSTOMER_TYPES.encomenda;
     const sorteiaEnc = () => !treino && n > 0 && pe && Math.random() < pe ? { lote:randi(te.lote[0], te.lote[1]) } : null;
-    this.encomendaDia = this.teste ? comSemente(sd, sorteiaEnc) : sorteiaEnc();
+    this.encomendaDia = sd ? comSemente(sd, sorteiaEnc) : sorteiaEnc();
     this.apito = null;
-    this.schedule = n === 0 || treino ? [] : this.teste ? comSemente(sd, () => this.buildSchedule(this.day)) : this.buildSchedule(this.day);
+    this.schedule = n === 0 || treino ? [] : sd ? comSemente(sd, () => this.buildSchedule(this.day)) : this.buildSchedule(this.day);
     this.nextIdx = 0;
-    this.tm = this.teste ? novoTm() : null;   // v12.2
+    this.tm = this.desafio ? novoTm() : null;   // v12.2 (v12.3: também no Desafio)
     this.result = null;
     this.bannerT = 0;
   }
@@ -4946,7 +4951,7 @@ class Game {
     out.forEach(s => { if ((exg && s.vip) || s.exig) s.av = true; });
     const idx = out.map((_, i) => i).filter(i => !((exg && out[i].vip) || out[i].exig));
     for (let k = 0; k < Math.min(AVAL.porDia, idx.length); k++) out[idx.splice(randi(0, idx.length - 1), 1)[0]].av = true;
-    if (this.teste) out.forEach((x, i) => { x.i = i; });   // v12.2: a posição na agenda (o spawn semeia o grupo com semente × 1000 + i)
+    if (this.desafio && this.desafio.semente) out.forEach((x, i) => { x.i = i; });   // v12.2: a posição na agenda (o spawn semeia o grupo com semente × 1000 + i)
     return out;
   }
   /* v10.1: o exigente que saiu bravo ontem tira EXIGENTE.bravoMov do movimento de hoje; a reputação (nota do Gúgou) mexe na chance de VIP no Terraço */
@@ -5041,7 +5046,7 @@ class Game {
   sairTreino(){
     if (!this.salvo) return;
     this.save = this.salvo; this.salvo = null; this.up = this.save.up; this.treino = null;
-    if (this.desafio){ this.desafio = null; DESAFIO_EST.on = false; this.tablesKey = ''; }   // v12: acabar o Desafio também devolve o salão de verdade
+    if (this.desafio){ this.desafio = null; this.tm = null; this.dTent = null; DESAFIO_EST.on = false; this.tablesKey = ''; }   // v12: acabar o Desafio também devolve o salão de verdade
     if (this.teste){ this.teste = null; this.tm = null; }   // v12.2: e o Teste de habilidade (o DEV.forca que ele guardou volta)
     if (this.devForcaSalva){ DEV.forca = this.devForcaSalva; this.devForcaSalva = null; }
   }
@@ -5050,7 +5055,9 @@ class Game {
   startDesafio(id){
     const D = DESAFIOS.find(x => x.id === id);
     if (!D) return false;
-    this.teste = null;
+    if (!this.devForcaSalva) this.devForcaSalva = DEV.forca;
+    DEV.forca = {};   // v12.3: no Desafio os forçados do dev também ficam desligados (guardados e devolvidos ao sair, como no Teste)
+    this.teste = null; this.dTent = { tent:testeSobe('d-' + D.id), quando:new Date() };   // v12.3: a tentativa de cada desafio, no mesmo lcc-teste (chave d-<id>)
     return this.comecaDesafio(D);
   }
   /* v12.2, o Teste de habilidade: o dia é o de um Desafio (comecaDesafio), com a semente da fase e as medidas (this.tm); a tentativa sobe ao começar. O modo dev não mexe: o DEV.forca fica vazio (e volta ao sair) e a velocidade, em 1 */
@@ -5098,6 +5105,7 @@ class Game {
     const antes = (real.desafios && real.desafios[D.id]) || 0, nova = medalha > antes;
     if (nova){ real.desafios = normDesafios(Object.assign({}, real.desafios, { [D.id]:medalha })); writeSave(real); }
     this.desafioRes = { id:D.id, medalha, nova, falhou:!condOk, lucro:m, stars };
+    this.dTent.quando = new Date(); this.testeRel = testeRelatorio(this);   // v12.3: o relatório (só aparece, no botão, com o modo dev)
     this.setState('desafiofim');
     if (medalha) Sfx.win(); else Sfx.lose();
   }
@@ -5592,7 +5600,7 @@ class Game {
   }
   spawn(s){
     s = s || this.schedule[this.nextIdx++];
-    const id = ++this.gid, g = this.teste && s.i != null ? comSemente(this.teste.semente * 1000 + s.i, () => new Group(this, s.type, id, s.color, s.vip, s)) : new Group(this, s.type, id, s.color, s.vip, s);   // v12.2: no teste, o tamanho, as pessoas e os pedidos de cada grupo saem da semente da fase
+    const id = ++this.gid, g = this.desafio && this.desafio.semente && s.i != null ? comSemente(this.desafio.semente * 1000 + s.i, () => new Group(this, s.type, id, s.color, s.vip, s)) : new Group(this, s.type, id, s.color, s.vip, s);   // v12.2: no teste, o tamanho, as pessoas e os pedidos de cada grupo saem da semente da fase
     g.avalia = !!s.av; g.doApito = !!s.apito;   // doApito: uma das turmas que chegam com o apito da fábrica
     this.groups.push(g);
     const novoMan = this.manualVer('c-' + s.type) | (g.vipAberto ? this.manualVer('c-vip') : 0) | (g.exigente && !g.disfarce ? this.manualVer('c-exigente') : 0);   // v9.6.7: a 1ª vez de cada tipo abre a ficha dele no Manual
@@ -17013,11 +17021,14 @@ function buildDesafioFim(){
   const r = game.desafioRes, D = DESAFIOS.find(x => x.id === r.id), box = $('desafio-fim-medalha');
   $('desafio-fim-titulo').textContent = D.nome;
   clearEl(box); box.appendChild(medalhaEl(r.medalha, true));
+  $('desafio-fim-aviso').textContent = ''; clearEl($('desafio-fim-caixa'));   // v12.3: o relatório do desafio, só no modo dev
+  $('btn-desafio-copia').style.display = DEV.on ? '' : 'none';
   $('desafio-fim-msg').textContent = r.medalha ? 'Medalha de ' + MEDALHAS[r.medalha] + '!' + (r.nova ? ' Nova melhor marca!' : '') : r.falhou ? D.falhou : 'Não deu a meta.';
 }
 /* v12.2, o relatório do Teste de habilidade (texto puro, vírgula decimal, uma linha por bloco; a 1ª linha leva o número do formato para a ferramenta ler sempre igual). Só lê o jogo: não muda nada */
 function testeRelatorio(g){
-  const T = g.teste, m = g.tm, st = g.stats, d = g.day, lb = st.lostBy;
+  const D = g.teste ? null : g.desafio, T = g.teste || { nome:'Desafio: ' + D.nome, semente:D.semente, tent:g.dTent.tent, quando:g.dTent.quando };   // v12.3: o mesmo relatório no fim do Desafio (com a linha Desafio:)
+  const m = g.tm, st = g.stats, d = g.day, lb = st.lostBy;
   const fn = (v, c) => v.toFixed(c == null ? 1 : c).replace('.', ',');
   const soma = a => a.reduce((x, y) => x + y, 0);
   const mediana = a => { const o = a.slice().sort((x, y) => x - y), h = o.length >> 1; return o.length % 2 ? o[h] : (o[h - 1] + o[h]) / 2; };
@@ -17026,15 +17037,17 @@ function testeRelatorio(g){
   const lucro = Math.round(g.lucro), est = g.estrelasDe(lucro), av = avalMedias(g.avalsPeso());
   const tela = m.aparelho === 'bot' ? '-' : window.innerWidth + '×' + window.innerHeight;
   const min = m.t / 60;
+  const rd = g.desafioRes, linhaD = D && rd ? ['Desafio: ' + (rd.medalha ? 'medalha de ' + MEDALHAS[rd.medalha] : 'sem medalha') + ' · regra ' + (!D.cond ? '—' : rd.falhou ? 'não valeu' : 'valeu')] : [];
   return [
     'LCC-TESTE ' + TESTE_FORMATO + ' · ' + VERSAO + ' · ' + T.nome + ' · dia ' + d.n + ' · semente ' + T.semente,
     'Jogador: ' + (lastName() || 'sem nome') + ' · tentativa ' + T.tent + ' · ' + m.aparelho + ' ' + tela + ' · ' + p2(q.getDate()) + '/' + p2(q.getMonth() + 1) + '/' + q.getFullYear() + ' ' + p2(q.getHours()) + ':' + p2(q.getMinutes()),
-    'Resultado: lucro ' + fmt(lucro) + ' · meta ' + fmt(d.meta) + ' (' + Math.round(lucro / d.meta * 100) + '%) · ' + (est ? '★'.repeat(est) : '0★') + ' · servidos ' + st.served + ' de ' + st.spawned + ' · Gúgou ' + (av ? fn(av.nota) : '—'),
+    'Resultado: lucro ' + fmt(lucro) + ' · meta ' + fmt(d.meta) + ' (' + Math.round(lucro / d.meta * 100) + '%) · ' + (est ? '★'.repeat(est) : '0★') + ' · servidos ' + st.served + ' de ' + st.spawned + ' · Gúgou ' + (av ? fn(av.nota) : '—')
+  ].concat(linhaD, [
     'Perdidos: ' + st.lost + ' · fila sem mesa ' + lb.semMesa + ' · fila com mesa ' + lb.comMesa + ' · pedido ' + lb.pedido + ' · prato ' + lb.prato + ' · conta ' + lb.conta + ' · retirada ' + lb.retirada + ' · esfriou ' + st.esfriou,
     'Reação em s (média / mediana / casos): sentar ' + reac(m.sentar) + ' · pedido ' + reac(m.pedido) + ' · prato ' + reac(m.prato) + ' · conta ' + reac(m.conta) + ' · mesa suja ' + reac(m.suja),
     'Ritmo: ' + fn(min > 0 ? m.ac / min : 0) + ' ações/min · ' + m.perd + ' toques perdidos · fila média ' + fn(m.t > 0 ? m.filaS / m.t : 0),
     'Bia parada: ' + Math.round(m.t > 0 ? 100 * m.par / m.t : 0) + '% do turno com coisa à espera'
-  ].concat(m.dev ? ['(encerrado no modo dev)'] : []).join('\n');
+  ], m.dev ? ['(encerrado no modo dev)'] : []).join('\n');
 }
 /* v12.2: a tela do fim do teste: o título, a linha do lucro e das estrelas (como no fim do Desafio, sem medalha) e os botões; o relatório só aparece se a cópia falhar */
 function buildTesteFim(){
@@ -17044,8 +17057,9 @@ function buildTesteFim(){
   $('teste-fim-aviso').textContent = '';
   const cx = $('teste-fim-caixa'); clearEl(cx);
 }
-function testeCopia(){
-  const t = game.testeRel, st = $('teste-fim-aviso'), cx = $('teste-fim-caixa');
+function testeCopia(pre){
+  pre = pre || 'teste';   // v12.3: 'teste' (ov-teste-fim) ou 'desafio' (ov-desafio-fim)
+  const t = game.testeRel, st = $(pre + '-fim-aviso'), cx = $(pre + '-fim-caixa');
   copyText(t).then(ok => {
     if (ok){ Sfx.ok(); st.textContent = 'Copiado! Cole na conversa.'; clearEl(cx); return; }
     st.textContent = 'Não deu para copiar sozinho: selecione o texto abaixo.';
@@ -17439,6 +17453,7 @@ on('btn-rank',       () => { Sfx.init(); Sfx.resume(); Sfx.tap(); openRank('ov-m
 on('btn-desafios',   () => { Sfx.init(); Sfx.resume(); Sfx.tap(); game.setState('desafios'); });   // v12
 on('btn-desafios-voltar', () => { Sfx.tap(); game.setState('menu'); });
 on('btn-desafio-de-novo', () => { Sfx.init(); Sfx.resume(); Sfx.tap(); if (game.desafio) game.startDesafio(game.desafio.id); });
+on('btn-desafio-copia',  () => { Sfx.init(); testeCopia('desafio'); });   // v12.3: só aparece no modo dev
 on('btn-desafio-lista',   () => { Sfx.tap(); game.setState('desafios'); });
 /* v12.2: o fim do Teste de habilidade: copiar o relatório (sem ele na tela, a não ser que a cópia falhe), jogar de novo (a mesma fase, tentativa + 1) e voltar ao menu (com o save de verdade) */
 on('btn-teste-copia',   () => { Sfx.init(); testeCopia(); });

@@ -241,8 +241,8 @@ table.cx .rs{font-size:inherit}
 .cx-st{font-weight:700;font-size:max(12px,calc(var(--u)*14))}
 .cx-txt{flex-basis:100%;height:calc(var(--u)*90);font:600 12px var(--fb);border:2px solid var(--tinta);border-radius:8px;padding:4px}
 /* v12.2: o fim do Teste de habilidade: o relatório só aparece (numa caixa para selecionar) se a cópia falhar */
-#teste-fim-caixa .cx-txt{display:block;width:100%;box-sizing:border-box;height:calc(var(--u)*120);min-height:84px}
-#teste-fim-caixa:empty{display:none}
+#teste-fim-caixa .cx-txt,#desafio-fim-caixa .cx-txt{display:block;width:100%;box-sizing:border-box;height:calc(var(--u)*120);min-height:84px}
+#teste-fim-caixa:empty,#desafio-fim-caixa:empty{display:none}
 .item{background:var(--creme);border:calc(var(--u)*3) solid var(--tinta);border-radius:calc(var(--u)*12);padding:calc(var(--u)*6) calc(var(--u)*8);display:grid;grid-template-columns:auto 1fr;column-gap:calc(var(--u)*8);row-gap:calc(var(--u)*3);align-items:center;align-content:start;text-align:left}
 .item.own{background:#dcefd9}
 .item{position:relative}

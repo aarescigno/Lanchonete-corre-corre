@@ -25,7 +25,7 @@ const N=+process.argv[2]||20;
 //   Alvos (CA7 da spec-v12): com o bot comum, bronze ou mais em 40% a 70% das rodadas; com o afiado, a cond valendo em 30% ou mais. DESAFIO_CFG='{"meta":0.9}' troca o mod do desafio em runtime
 if(process.env.DESAFIO){
   const D=L.DESAFIOS.find(x=>x.id===process.env.DESAFIO); if(!D) throw new Error('DESAFIO='+L.DESAFIOS.map(x=>x.id).join('|'));
-  if(process.env.DESAFIO_CFG) Object.assign(D.mod,JSON.parse(process.env.DESAFIO_CFG));
+  if(process.env.DESAFIO_CFG){ const c=JSON.parse(process.env.DESAFIO_CFG); if('semente' in c){ D.semente=c.semente; delete c.semente; } Object.assign(D.mod,c); }   // v12.3: 'semente' vai no item, não no mod (DESAFIO_CFG='{"semente":8102}')
   const res=[]; let lucro=0, lost=0, ret=0, meta=0, ent=0, tot=0;
   for(let k=0;k<N;k++){
     g.startDesafio(D.id); g.begin(); meta=g.day.meta;
@@ -35,7 +35,7 @@ if(process.env.DESAFIO){
     g.sairDesafio();
   }
   const pc=f=>Math.round(100*res.filter(f).length/N)+'%';
-  console.log('DESAFIO',D.id,'| mod',JSON.stringify(D.mod),'| meta',meta,'| lucro médio',(lucro/N).toFixed(0),'| perdidos',(lost/N).toFixed(1),'(na retirada',(ret/N).toFixed(1)+')');
+  console.log('DESAFIO',D.id,'| semente',D.semente,'| mod',JSON.stringify(D.mod),'| meta',meta,'| lucro médio',(lucro/N).toFixed(0),'| perdidos',(lost/N).toFixed(1),'(na retirada',(ret/N).toFixed(1)+')');
   console.log('DESAFIO',D.id,(process.env.BOT==='afiado'?'[afiado]':'[comum]'),'| bronze ou mais',pc(r=>r.medalha>=1),'| prata ou mais',pc(r=>r.medalha>=2),'| ouro',pc(r=>r.medalha>=3),'| meta batida',pc(r=>r.stars>=1),'| cond vale',pc(r=>!r.falhou),'| rodadas',N);
   process.exit(0);
 }

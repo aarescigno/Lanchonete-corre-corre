@@ -1351,23 +1351,23 @@ const DEV_CAPS = [
 ];
 /* v12, os Desafios: dias avulsos, cada um num ponto e com uma regra, que valem medalha de bronze (1), prata (2) ou ouro (3) pelas estrelas do dia. Só a melhor fica (save.desafios).
    cap: a linha da DEV_CAPS que monta o save do dia; dia: o número do dia (diaOf); mod: sem (pessoas fora da equipe), up (melhorias a mais), groups (grupos ×), meta (as três metas ×, arredondadas para 5),
-   tipo/tipoP (no lugar do tipo do dia da semana); cond(stats): a regra que precisa valer no fim (ou nenhuma); aviso: a frase da introdução; falhou: a frase de quando a cond não vale */
+   semente (v12.3: o sorteio da agenda do dia e de cada grupo sai dela, e por isso os clientes são sempre os mesmos; ver TESTES), tipo/tipoP (no lugar do tipo do dia da semana); cond(stats): a regra que precisa valer no fim (ou nenhuma); aviso: a frase da introdução; falhou: a frase de quando a cond não vale */
 const DESAFIOS = [
-  { id:'soBia',    nome:'Só a Bia',       cap:5, dia:17, mod:{ sem:['dani', 'joca', 'cami', 'anselmo', 'lia'], groups:1, meta:1.2 }, cond:null,
+  { id:'soBia',    nome:'Só a Bia',       cap:5, dia:17, mod:{ sem:['dani', 'joca', 'cami', 'anselmo', 'lia'], groups:1, meta:1.2 }, semente:8102, cond:null,
     aviso:'Hoje a Bia segura o salão sozinha. O tio fica na cozinha.', falhou:'' },
-  { id:'semBravo', nome:'Ninguém bravo',  cap:8, dia:38, mod:{ groups:0.5, meta:0.6 }, cond:s => s.lost === 0,
+  { id:'semBravo', nome:'Ninguém bravo',  cap:8, dia:38, mod:{ groups:0.5, meta:0.6 }, semente:8202, cond:s => s.lost === 0,
     aviso:'Hoje ninguém pode sair bravo da Avenida.', falhou:'Alguém saiu bravo.' },
-  { id:'efood',    nome:'Hora do eFood',  cap:5, dia:17, mod:{ tipo:'entregador', tipoP:0.45, groups:0.55, meta:0.65 }, cond:s => s.lostBy.retirada === 0,
+  { id:'efood',    nome:'Hora do eFood',  cap:5, dia:17, mod:{ tipo:'entregador', tipoP:0.45, groups:0.55, meta:0.65 }, semente:8316, cond:s => s.lostBy.retirada === 0,
     aviso:'O eFood mandou entregador que não acaba mais!', falhou:'Um entregador saiu sem a marmita.' },
   /* v12.1: mod.evento (o evento de bairro do dia, forçado, sem sorteio; na junina, a barraca já montada), mod.tvs (as TVs ligadas: equipe.tvs) */
-  { id:'junina',   nome:'Festa junina',   cap:8, dia:38, mod:{ evento:'junina', groups:0.55, meta:2.8 }, cond:null,
+  { id:'junina',   nome:'Festa junina',   cap:8, dia:38, mod:{ evento:'junina', groups:0.55, meta:2.8 }, semente:8406, cond:null,
     aviso:'Festa junina lotada: o bairro inteiro veio!', falhou:'' },
-  { id:'jogo',     nome:'Jogo do Brasil', cap:5, dia:17, mod:{ evento:'jogo', up:['tvs'], tvs:1, groups:0.55, meta:3 }, cond:null,
+  { id:'jogo',     nome:'Jogo do Brasil', cap:5, dia:17, mod:{ evento:'jogo', up:['tvs'], tvs:1, groups:0.55, meta:3 }, semente:8505, cond:null,
     aviso:'Jogo do Brasil e a casa cheia de torcedor!', falhou:'' },
   /* mod.critico (a 1ª visita do crítico, sem boato), mod.vip (a chance de VIP de cada grupo); as cond leem o stats.criticoH (corações com que o crítico saiu: 0 se foi embora bravo ou não saiu) e o stats.saiMin (o menor número de corações com que um grupo pagou) */
-  { id:'critico',  nome:'Noite do crítico', cap:13, dia:64, mod:{ critico:true, groups:0.45, meta:0.6 }, cond:s => s.criticoH >= 5,
+  { id:'critico',  nome:'Noite do crítico', cap:13, dia:64, mod:{ critico:true, groups:0.45, meta:0.6 }, semente:8603, cond:s => s.criticoH >= 5,
     aviso:'O crítico do Michelzão vem hoje. Ninguém sabe qual mesa é a dele.', falhou:'O crítico não saiu com todos os corações.' },
-  { id:'vips',     nome:'VIPs exigentes', cap:13, dia:64, mod:{ vip:1, groups:0.4, meta:0.6 }, cond:s => s.lost === 0 && s.saiMin >= 4,
+  { id:'vips',     nome:'VIPs exigentes', cap:13, dia:64, mod:{ vip:1, groups:0.4, meta:0.6 }, semente:8701, cond:s => s.lost === 0 && s.saiMin >= 4,
     aviso:'Hoje só vem gente exigente.', falhou:'Uma mesa saiu descontente.' }
 ];
 const MEDALHAS = ['sem medalha', 'bronze', 'prata', 'ouro'];
@@ -1732,7 +1732,7 @@ const HIST_NOMES = { bia:'Bia', tonhao:'Tonhão', dani:'Dani', joca:'Joca', cami
 const ATU_TXT = { procurando:'Procurando versão nova...', nova:'Tem versão nova: {v}! Seu jogo salvo continua.', igual:'Você já está na versão mais nova ({v}).', erro:'Sem internet agora. Tente de novo mais tarde.', atualizando:'Atualizando...' };
 function atuEstado(remota, atual){ if (typeof remota !== 'string' || !remota.trim()) return 'erro'; return remota.trim() === atual ? 'igual' : 'nova'; }
 const CAIXA_MAX = 14;                                 // livro-caixa (v7.2): quantos dias da carreira ficam guardados
-const VERSAO = 'v12.2';                               // vai no resumo do Caixa
+const VERSAO = 'v12.3';                               // vai no resumo do Caixa
 const DIVULGA_DIA = 4;                                // antes disso, o movimento é o da inauguração (sem custo); v9.0.2: dia 4, e o padrão é o boca a boca
 function divulgaAberta(n, sv){ return devLivre() || n >= DIVULGA_DIA && !(sv && sv.convDiv === 'pend'); }   // no modo dev, desde o dia 1; v9.0.3: no Modo História, só depois da conversa
 /* v9.6.4: a Efood (os entregadores) só abre depois da conversa dos entregadores, no Modo História; antes dela, nenhum tipo com `retira` vem na agenda */
