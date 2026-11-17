@@ -193,8 +193,6 @@ function devAbaHistoria(body, secao, botao){
   botao(r, 'Retratos', () => devRetratos());
   r = secao('O final', 'Toca as cenas finais e os créditos, sem mudar o jogo');
   botao(r, 'Assistir o final: ★', () => devFinal(1)); botao(r, 'Assistir o final: ★★', () => devFinal(2)); botao(r, 'Assistir o final: ★★★', () => devFinal(3));
-  r = el('div', 'row'); body.appendChild(r);   // v11.16: o final novo, em obras (a etapa 10 troca o final na v11.18)
-  botao(r, 'Final novo (em obras): ★', () => devFinal(1, FINAL2)); botao(r, 'Final novo (em obras): ★★', () => devFinal(2, FINAL2)); botao(r, 'Final novo (em obras): ★★★', () => devFinal(3, FINAL2));
   r = secao('Manual');
   botao(r, 'Manual: todas as fichas', () => game.devManual(true)); botao(r, 'Manual: só o básico', () => game.devManual(false));
   r = secao('Lojinha');

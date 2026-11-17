@@ -18,8 +18,7 @@ import http.server, json, os, subprocess, sys, webbrowser
 AQUI = os.path.dirname(os.path.abspath(__file__))
 RAIZ = os.path.dirname(AQUI)
 SAIDA = os.path.join(AQUI, 'editor-montado.html')
-# v11.15: as cenas da abertura estão em 27-abertura-nova.js (AB2_CENAS); em 25-abertura.js ficam as pessoas e as cenas do final
-# v11.16: o final novo (FINAL2) está em 28-final.js
+# as cenas da abertura estão em 27-abertura-nova.js e as do final (e os créditos) em 28-final.js, todas na AB2_CENAS; em 25-abertura.js ficam as pessoas (v11.18: as cenas antigas do final saíram)
 PADRAO = ['src/27-abertura-nova.js', 'src/25-abertura.js', 'src/28-final.js']
 ARQUIVOS = PADRAO + [a for a in sys.argv[1:] if a.startswith('src/') and a.endswith('.js') and a not in PADRAO]
 # o fim do código do jogo: o gancho entra antes, dentro do (function(){ ... })(), e enxerga as funções dele

@@ -159,7 +159,7 @@ raiz.innerHTML = `
   <div class="aviso" id="e-aviso"></div>`;
 const $ = id => document.getElementById(id);
 const cv = $('e-cv'), sobre = $('e-sobre'), ctx = cv.getContext('2d'), so = sobre.getContext('2d');
-const CENAS = L.ABERTURA.cenas.concat(L.FINAL2.cenas.filter(c => typeof L.AB2_CENAS[c.id] === 'function'));   // v11.16: a abertura e as cenas desenhadas do final novo
+const CENAS = L.ABERTURA.cenas.concat(L.FINAL.cenas, [L.FINAL.creditos]).filter(c => typeof L.AB2_CENAS[c.id] === 'function');   // a abertura (11 cenas) e o final (8 cenas e os créditos)
 const ab = new L.Abertura('menu', false);
 ab.cenas = CENAS;
 Object.defineProperty(ab, 'escuro', { get: () => 0 });   // sem o escuro da entrada e da saída
@@ -183,7 +183,7 @@ $('e-cena').value = est.cena; $('e-zoom').value = est.zoom; $('e-mostra').value 
 if (window.__ED_SERVIDOR) $('e-salva').hidden = false;
 if (window.__ED_ARTIFACT) $('e-baixa').hidden = true;   // o artifact do claude.ai não deixa baixar: copie as mudanças
 
-const funcDaCena = () => FUNCS.find(f => f.tipo === 'metodo' && (f.obj === 'AB2_CENAS' || f.obj === 'AB_CENAS') && f.nome === CENAS[est.cena].id);   // v11.15: as cenas da abertura são da AB2_CENAS
+const funcDaCena = () => FUNCS.find(f => f.tipo === 'metodo' && f.obj === 'AB2_CENAS' && f.nome === CENAS[est.cena].id);   // as cenas da abertura e do final são da AB2_CENAS (v11.18: a AB_CENAS saiu)
 function aviso(s){ const a = $('e-aviso'); a.textContent = s; a.classList.add('ver'); clearTimeout(aviso.t); aviso.t = setTimeout(() => a.classList.remove('ver'), 2600); }
 
 /* ---------- desenho da cena e dos pontos ---------- */

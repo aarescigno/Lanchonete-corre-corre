@@ -40,7 +40,7 @@ const ROT=[['porta',7,'A Bia cresceu na porta da cozinha.',['Vem provar, filha.'
   ok(R.cheio===true && cs.length===11 && cs.map(c=>c.id).join()===ROT.map(r=>r[0]).join(),'CA2: ABERTURA tem as 11 cenas novas, na ordem ('+cs.map(c=>c.id).join()+')');
   ok(cs.every((c,i)=>c.t===ROT[i][1] && c.leg===ROT[i][2] && JSON.stringify(c.falas.map(f=>f.s))===JSON.stringify(ROT[i][3])) && cs.reduce((a,c)=>a+c.t,0)===77,'CA2: os tempos, as legendas e as falas de docs/ABERTURA.md §4; soma 77 s');
   ok(L.ABERTURA2===undefined,'CA2: ABERTURA2 não existe');
-  ok(cs.every(c=>typeof L.AB2_CENAS[c.id]==='function') && Object.keys(L.AB2_CENAS).filter(k=>!['telefone','placa','apagou','retrato','equipe','escola'].includes(k)).length===11,'CA2: as 11 cenas têm desenho na AB2_CENAS (a v11.16 e a v11.17 acrescentam as do final novo)');
+  ok(cs.every(c=>typeof L.AB2_CENAS[c.id]==='function') && Object.keys(L.AB2_CENAS).filter(k=>!['telefone','placa','apagou','retrato','equipe','escola','ceu','roda','creditos'].includes(k)).length===11,'CA2: as 11 cenas têm desenho na AB2_CENAS (as v11.16 a v11.18 acrescentam as 8 do final e os créditos)');
   const ab=new L.Abertura('menu',false,R), tx=[]; H.ctx.fillText=s=>tx.push(s); let erro=null;
   try{ cs.forEach((c,i)=>{ ab.i=i; [0.1,0.5,0.97].forEach(p=>{ ab.t=c.t*p; ab.tm=5+i+p; L.drawAbertura(H.ctx,ab); }); }); } catch(e){ erro=e; }
   ok(!erro && !tx.includes('cena em obras'),'CA2: nenhuma cena cai em cartão de obra'+(erro?': '+erro.message:'')); delete H.ctx.fillText;
@@ -56,14 +56,14 @@ const ROT=[['porta',7,'A Bia cresceu na porta da cozinha.',['Vem provar, filha.'
   ok(ab && ab.roteiro===L.ABERTURA && ab.n===11 && els['ov-abertura'].classList.contains('show'),'CA4: "Abertura" abre o roteiro novo');
 }
 
-// ---------- CA5: as cenas antigas saíram; as do FINAL ficam ----------
+// ---------- CA5: as cenas antigas saíram (v11.18: a AB_CENAS inteira); as do FINAL estão na AB2_CENAS ----------
 { const H=load(), {L}=H;
-  ok(['casa','aurora','tempero','estrela','hospital','saudade','promessa','tonhao','banco','inauguracao'].every(k=>L.AB_CENAS[k]===undefined),'CA5: as 10 cenas antigas não existem mais na AB_CENAS');
-  ok(Object.keys(L.AB_CENAS).sort().join()==='apagou,ceu,creditos,equipe,escola,placa,retrato,roda,telefone','CA5: na AB_CENAS ficam as do FINAL ('+Object.keys(L.AB_CENAS).sort().join()+')');
+  ok(L.AB_CENAS===undefined && ['casa','tempero','hospital','saudade','tonhao','inauguracao'].every(k=>L.AB2_CENAS[k]===undefined),'CA5: as 10 cenas antigas e a própria AB_CENAS não existem mais');
+  ok(Object.keys(L.AB2_CENAS).sort().join()==='apagou,aurora,banco,carinho,ceu,creditos,despedida,equipe,escola,estrela,janela,molho,placa,porta,portao,promessa,retrato,roda,telefone,tio','CA5: na AB2_CENAS ficam as 11 da abertura, as 8 do FINAL e os créditos ('+Object.keys(L.AB2_CENAS).sort().join()+')');
   [1,2,3].forEach(est=>{ let erro=null, n=0; [false,true].forEach(rm=>{ const f=new L.Abertura('menu',rm,L.FINAL,{est,creditos:true}); n=f.n;
       try{ for(let i=0;i<f.n;i++){ f.i=i; [0,0.5,0.95].forEach(p=>{ f.t=f.cena.t*p; f.tm=f.t+3; L.drawAbertura(H.ctx,f); }); } } catch(e){ erro=e; } });
     ok(!erro,'CA5: o FINAL com '+est+' estrela(s) desenha sem erro ('+n+' cenas)'+(erro?': '+erro.message:'')); });
-  const f=new L.Abertura('menu',false,L.FINAL,{est:3}); ok(f.cenas.every(c=>typeof L.AB_CENAS[c.id]==='function') && !f.roteiro.cheio,'CA5: as cenas do FINAL seguem na AB_CENAS, no motor antigo');
+  const f=new L.Abertura('menu',false,L.FINAL,{est:3}); ok(f.cenas.every(c=>typeof L.AB2_CENAS[c.id]==='function') && f.roteiro.cheio===true,'CA5: as cenas do FINAL estão na AB2_CENAS, no motor novo');
 }
 
 console.log(`\nsmoke91: ${total-fails}/${total}`); process.exit(fails?1:0);

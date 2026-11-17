@@ -23,11 +23,11 @@ const E1=['telefone','placa','apagou','retrato','escola','roda'], E2=['telefone'
   ok(a.n===11 && ids(a).join()===ORIG.join() && a.cena.t===7 && a.cenas[1].pRM===0.6 && a.cenas[10].titulo==='O sonho da Bia','a abertura toca as onze cenas dela (v11.15: a abertura nova), com os tempos e o título');
   ok(a.leg==='A Bia cresceu na porta da cozinha.' && a.texto().indexOf('Rosa: Vem provar, filha.')>=0,'a legenda e o texto do leitor de tela da abertura (v11.15: os textos novos)');
   const f=new L.Abertura('menu',false,L.FINAL,{ est:3 });
-  ok(L.FINAL.cenas.length===8 && L.FINAL.fade===0.5 && f.n===8 && f.cena.id==='telefone' && f.cena.t===6.5,'o roteiro FINAL tem oito cenas e a Abertura toca o que recebe');
+  ok(L.FINAL.cenas.length===8 && L.FINAL.cheio===true && L.FINAL.final===true && L.FINAL.fade===undefined && f.n===8 && f.cena.id==='telefone' && f.cena.t===6.5,'o roteiro FINAL tem oito cenas e a Abertura toca o que recebe');
   ok(L.FINAL.cenas.map(c=>c.t).join()==='6.5,8,7.5,8,8,8.5,8,9' && L.FINAL.cenas.map(c=>c.min).join()==='1,1,1,1,2,1,3,1','os tempos e as estrelas mínimas de cada cena (min) são os da spec');
   ok(L.FINAL.cenas[7].titulo==='Fim' && L.FINAL.cenas[0].falas[0].s==='Alô?... É do Michelzão?!' && L.FINAL.cenas[2].falas[0].q==='braulio' && L.FINAL.cenas[5].falas[0].q==='dani','falas e título da spec (Fim; o Bráulio e a Dani falam)');
   const e=new L.Abertura('menu',false,L.FINAL,{ est:1 }); e.i=4; ok(/Dani: Eu era lenta, mas aprendi rápido\. Vocês também vão!/.test(e.texto()),'o leitor de tela diz "Dani: ..." (nome de quem fala)');
-  ok(L.AB_ALT.dani>0 && L.AB_BASE.dani>0 && L.AB_CENAS && E3.every(id=>typeof L.AB_CENAS[id]==='function') && typeof L.AB_CENAS.creditos==='function','AB_ALT e AB_BASE têm a Dani, e as oito cenas e os créditos estão desenhados no AB_CENAS'); }
+  ok(L.AB_ALT.dani>0 && L.AB_BASE.dani>0 && L.AB2_CENAS && E3.every(id=>typeof L.AB2_CENAS[id]==='function') && typeof L.AB2_CENAS.creditos==='function','AB_ALT e AB_BASE têm a Dani, e as oito cenas e os créditos estão desenhados no AB2_CENAS (v11.18: o motor novo)'); }
 
 // ---------- 2. as cenas por estrela (CA2) e a legenda da placa (CA3) ----------
 { const L=load({ historia:true }).L, mk=(est,desde,cred)=>new L.Abertura('menu',false,L.FINAL,{ est, desde:desde||0, creditos:!!cred });
@@ -37,7 +37,7 @@ const E1=['telefone','placa','apagou','retrato','escola','roda'], E2=['telefone'
   ok(ids(mk(3,0,true)).join()===E3.concat('creditos').join() && mk(1,0,true).cenas.slice(-1)[0].t===6,'os créditos vêm depois da roda e duram 6 s');
   ok(ids(mk(2,1)).join()==='placa,equipe' && ids(mk(3,1)).join()==='placa,equipe,ceu' && ids(mk(3,2)).join()==='placa,ceu','estrela nova: só a placa e as cenas ainda não vistas');
   const leg=est=>{ const a=mk(est); a.i=1; return a.leg; };
-  ok(leg(1)==='A Lanchonete Corre-Corre ganhou a estrela do Michelzão.' && leg(2)==='A Lanchonete Corre-Corre ganhou duas estrelas do Michelzão.' && leg(3)==='A Lanchonete Corre-Corre ganhou três estrelas do Michelzão, a nota mais alta do guia.','a legenda da placa muda com 1, 2 e 3 estrelas'); }
+  ok(leg(1)==='A Lanchonete Corre-Corre ganhou a estrela do Michelzão.' && leg(2)==='A Lanchonete Corre-Corre ganhou duas estrelas do Michelzão.' && leg(3)==='Três estrelas do Michelzão: a nota mais alta do guia.','a legenda da placa muda com 1, 2 e 3 estrelas'); }
 
 // ---------- 3. o fluxo da 1ª estrela (CA4) ----------
 { const estrelas=est=>{ const H=jogo(14,{ conversa:'depois', guia:GUIA({ est, ver:1 }) }), {g,L,els}=H; g.save.guia.visto=0;
@@ -97,7 +97,7 @@ const E1=['telefone','placa','apagou','retrato','escola','roda'], E2=['telefone'
   ok(ids((L.devFinal(1),L.aberturaAtual())).join()===E1.concat('creditos').join() && !(L.aberturaAtual().pular(),L.aberturaAtual()),'★ toca o final de uma estrela; Pular fecha');
   const c=L.DEV_CAPS.find(x=>x.n===15); ok(c && c.guiaEst===1 && c.guiaVisto===1,'DEV_CAPS n:15 (o Fim) tem guia.est 1 e guia.visto 1');
   g.devCapitulo(15); ok(g.save.cap===15 && g.save.guia.est===1 && g.save.guia.visto===1,'devCapitulo(15): cap 15, 1 estrela, já vista');
-  L.DEV.aba='historia'; L.buildDev(); const dv=txt(H.doc.getElementById('dev-body')); ok(/Assistir o final/.test(dv),'o painel dev tem a linha "Assistir o final"'); }
+  L.DEV.aba='historia'; L.buildDev(); const dv=txt(H.doc.getElementById('dev-body')); ok(/Assistir o final: ★/.test(dv) && /Assistir o final: ★★/.test(dv) && /Assistir o final: ★★★/.test(dv) && !/Final novo/.test(dv) && !/em obras/.test(dv),'o painel dev tem "Assistir o final" com ★, ★★ e ★★★, e não tem mais "Final novo (em obras)" (v11.18)'); }
 
 // ---------- 8. movimento reduzido (CA9) ----------
 { const L=load({ historia:true, rm:true }).L, ctxs=[];
@@ -111,7 +111,7 @@ const E1=['telefone','placa','apagou','retrato','escola','roda'], E2=['telefone'
   // sem RM, todas as cenas desenham em 0, 0,5 e 1 sem erro e devolvem a cabeça de quem fala
   const H2=nova(), c2=H2.ctx; let erro2=null; const mkAb=()=>new H2.L.Abertura('menu',false,H2.L.FINAL,{ est:3, creditos:true });
   try{ for(let i=0;i<9;i++){ [0.01,0.5,1].forEach(k=>{ const a=mkAb(); a.i=i; a.t=a.cena.t*k; a.tm=a.t+1; H2.L.drawAbertura(c2,a); }); } }catch(e){ erro2=e; } ok(!erro2,'desenha todos os quadros no começo, no meio e no fim sem erro'+(erro2?': '+erro2.message:''));
-  const placa=mkAb(); ok(!!H2.L.AB_CENAS.placa(c2,0.5,3),'(a cena devolve onde fica a cabeça de quem fala)'); }
+  const placa=mkAb(); ok(!!H2.L.AB2_CENAS.placa(c2,0.5,3,H2.L.ab2Cam(H2.L.FINAL.cenas[1],0.5)),'(a cena devolve onde fica a cabeça de quem fala)'); }
 
 // ---------- 8b. a placa na parede do Terraço e o adesivo (T6) ----------
 { const H=nova(), {L,ctx}=H; let erro=null;
