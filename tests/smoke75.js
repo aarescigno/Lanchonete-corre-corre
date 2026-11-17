@@ -24,7 +24,7 @@ const fecha=(H,o)=>{ o=o||{}; const {g}=H; comeca(H); g.schedule=[]; g.nextIdx=0
 // ---------- 0. as constantes ----------
 { const L=load({ historia:true }).L, N=L.NOITE;
   ok(N.groups===1.3 && N.meta===1.2 && N.critico.join()==='0.35,0.45' && N.braulio.join()==='0.5,0.6' && N.brauPat===0.7 && N.brauFeliz===4 && N.espera===3 && N.volta===0.12,'NOITE: grupos ×1,3, metas ×1,2, crítico 35–45%, Bráulio 50–60%, paciência ×0,7, feliz com 4, espera 3, volta 12%');
-  ok(JSON.stringify(N.pts)===JSON.stringify({ visita:1.5, nota:[[4.8,15],[4.6,10],[4.4,5]], luxo:[0,0,0,5,10,15], dia:[0,5,10,15], salao:5, braulio:5 }) && N.cortes.join()==='44,66,90' && N.linhas.join()==='Crítico,Gúgou,Luxo,A noite,Salão,Bráulio','NOITE: os pontos, os cortes e as seis linhas');
+  ok(JSON.stringify(N.pts)===JSON.stringify({ visita:1.5, nota:[[4.8,15],[4.6,10],[4.4,5]], luxo:[0,0,0,5,10,15], dia:[0,5,10,15], salao:5, braulio:5 }) && N.cortes.join()==='44,66,75' && N.linhas.join()==='Crítico,Gúgou,Luxo,A noite,Salão,Bráulio','NOITE: os pontos, os cortes e as seis linhas');
   ok(N.aviso==='Noite da estrela: casa cheia, o crítico à mesa e o Bráulio de olho.' && N.selo.join('|')==='Recomendado pelo Michelzão|★ no Michelzão|★★ no Michelzão|★★★ no Michelzão' && N.falas.senta==='Vim provar a cópia.' && N.falas.prova==='Esse molho...' && N.falas.feliz==='...' && N.falas.bravo==='Sabia! Amadores.','NOITE: o aviso, o selo e as falas');
   ok(L.HIST_RECOMENDA.falas.length===3 && L.HIST_RECOMENDA.falas[0].s==='O guia ligou. Somos "recomendados".' && L.HIST_RECOMENDA.falas[2].s==='Mas ele volta. Eu arrumo a casa e marco outra noite.','HIST_RECOMENDA: as três falas da spec'); }
 
@@ -102,12 +102,12 @@ const fecha=(H,o)=>{ o=o||{}; const {g}=H; comeca(H); g.schedule=[]; g.nextIdx=0
   const lx=n=>P(Object.assign({},base,{ luxo:n })).linhas[2]; ok([0,1,2,3,4,5].map(lx).join()==='0,0,0,5,10,15','Luxo: nível 3 → 5, 4 → 10, 5 → 15');
   const dd=n=>P(Object.assign({},base,{ dia:n })).linhas[3]; ok([0,1,2,3].map(dd).join()==='0,5,10,15','A noite: 1 estrela → 5, 2 → 10, 3 → 15');
   ok(P(Object.assign({},base,{ salao:false })).linhas[4]===0 && P(Object.assign({},base,{ braulio:false })).linhas[5]===0 && P(Object.assign({},base,{ salao:false, braulio:false })).tot===90,'Salão e Bráulio: 5 cada, tudo ou nada');
-  ok(L.guiaEstrelas(0)===0 && L.guiaEstrelas(43.5)===0 && L.guiaEstrelas(44)===1 && L.guiaEstrelas(65.5)===1 && L.guiaEstrelas(66)===2 && L.guiaEstrelas(89.5)===2 && L.guiaEstrelas(90)===3 && L.guiaEstrelas(100)===3,'os cortes: 43,5 → nenhuma; 44 → 1; 66 → 2; 90 → 3'); }
+  ok(L.guiaEstrelas(0)===0 && L.guiaEstrelas(43.5)===0 && L.guiaEstrelas(44)===1 && L.guiaEstrelas(65.5)===1 && L.guiaEstrelas(66)===2 && L.guiaEstrelas(74.5)===2 && L.guiaEstrelas(75)===3 && L.guiaEstrelas(100)===3,'os cortes: 43,5 → nenhuma; 44 → 1; 66 → 2; 75 → 3'); }
 
 // ---------- 6. do fim da noite às estrelas (CA6) ----------
 { // 2 estrelas: três fichas de 10 (45) + noite 3 estrelas (15) + salão (5) + Bráulio (5) + Gúgou 4,4 (5) = 75
   const H=noite(), g=H.g; fecha(H,{ ficha:{ d:60, it:[2,2,2,2,2] }, nota:4.4 }); const gs=g.save.guia;
-  ok(g.result.noite && g.result.noite.pts===75 && g.result.noite.est===2 && gs.est===2 && gs.ult===60 && gs.noite===0 && gs.rec===0 && gs.ver===1,'noite boa: 75 pontos, 2 estrelas (est 2, ult 60, noite 0, rec 0, ver 1)');
+  ok(g.result.noite && g.result.noite.pts===75 && g.result.noite.est===3 && gs.est===3 && gs.ult===60 && gs.noite===0 && gs.rec===0 && gs.ver===1,'noite boa: 75 pontos, 3 estrelas (est 3, ult 60, noite 0, rec 0, ver 1)');
   ok(gs.bol.join()==='1,0.333,0,1,1,1','o boletim guardado: 45/45, 5/15, luxo 0, 15/15, 5/5, 5/5 ('+gs.bol.join()+')');
   ok(g.save.manual.indexOf('c-braulio')>=0 && g.save.manual.indexOf('b-michelzao')>=0,'o Manual abre o Bráulio e as Estrelas do Michelzão');
   ok(g.result.cap && /Ganhar a estrela do Michelzão/.test(g.result.cap.itens[0].txt) && g.result.cap.ok && g.save.conversa==='depois','o objetivo do cap. 14 cumpre com a 1ª estrela (conversa de depois pendente)');
@@ -118,14 +118,14 @@ const fecha=(H,o)=>{ o=o||{}; const {g}=H; comeca(H); g.schedule=[]; g.nextIdx=0
   ok(g0.result.noite.est===0 && g0.save.guia.est===0 && g0.save.guia.rec===1 && g0.save.guia.ver===1 && g0.result.cap && !g0.result.cap.ok && g0.save.conversa===null,'noite ruim: nenhuma estrela, "recomendado" (rec 1), o capítulo segue sem conversa');
   // estrela ganha não se perde
   const H3=noite({ guia:GUIA({ noite:60, est:2, ult:50 }) }), g3=H3.g; fecha(H3,{ ficha:{ d:60, it:[0,0,0,0,0] }, nota:3.0, money:0, lost:2, brau:false }); ok(g3.save.guia.est===2 && g3.save.guia.rec===0 && g3.result.noite.est===0 && g3.result.noite.nova===false,'uma noite pior depois não baixa `guia.est`');
-  const H4=noite({ guia:GUIA({ noite:60, est:1, ult:50 }) }), g4=H4.g; fecha(H4,{ nota:4.4 }); ok(g4.save.guia.est===2 && g4.result.noite.nova===true,'uma noite melhor sobe a melhor marca (1 → 2) e é estrela nova');
+  const H4=noite({ guia:GUIA({ noite:60, est:1, ult:50 }) }), g4=H4.g; fecha(H4,{ nota:4.4 }); ok(g4.save.guia.est===3 && g4.result.noite.nova===true,'uma noite melhor sobe a melhor marca (1 → 3) e é estrela nova');
   // o Fama do luxo; a linha dos resultados
   ok(g.result.noite && g.result.cap,'(o resultado traz a noite)'); g.setState('dayend'); const tb=txt(H.doc.getElementById('end-stats')||{}); ok(/Michelzão/.test(tb) && /O guia liga amanhã cedo/.test(tb),'a tela de resultados ganha a linha "Michelzão: O guia liga amanhã cedo"'); }
 
 // ---------- 7. o boletim e o selo do menu (CA7, CA11) ----------
 { const H=noite(), {g,L,els,doc}=H; fecha(H,{ nota:4.4 }); let fim=0; L.abreBoletim(()=>{ fim++; });
   ok(els['ov-guia'].classList.contains('show'),'o boletim abre (#ov-guia)');
-  const est=doc.getElementById('guia-est'), bar=doc.getElementById('guia-barras'); ok(achaTag(est,'CANVAS').length===3 && est.getAttribute('aria-label')==='2 estrelas no Michelzão','três estrelas, com o rótulo "2 estrelas no Michelzão"');
+  const est=doc.getElementById('guia-est'), bar=doc.getElementById('guia-barras'); ok(achaTag(est,'CANVAS').length===3 && est.getAttribute('aria-label')==='3 estrelas no Michelzão','três estrelas, com o rótulo "3 estrelas no Michelzão"');
   const lin=[]; const acha=e=>{ if((e.className||'')==='guia-lin') lin.push(e); (e.children||[]).forEach(acha); }; acha(bar);
   ok(lin.length===6 && lin.map(l=>txt(l).trim().split(' ')[0]).join()==='Crítico,Gúgou,Luxo,A,Salão,Bráulio' && !/\d/.test(txt(bar).replace(/\d+%/g,'')),'seis barras com os nomes, sem número');
   els['btn-guia'].fire('click'); ok(fim===1 && !els['ov-guia'].classList.contains('show')===true || fim===1,'"Continuar" fecha o boletim e segue');

@@ -449,7 +449,7 @@ table.rank tr.me td{background:#fbe7a8}
 
     <div class="ov show" id="ov-menu">
       <div class="panel menu-panel">
-        <span class="vtag" id="vtag" aria-label="Versão 11.18">v11.18</span>
+        <span class="vtag" id="vtag" aria-label="Versão 11.19">v11.19</span>
         <h1 class="title">Lanchonete <br>Corre-Corre</h1>
         <p class="tag">Ajude a Bia a atender a freguesia da esquina antes que o cafezinho esfrie!</p>
         <div class="lbl" id="menu-dia">História</div>
@@ -703,7 +703,8 @@ table.rank tr.me td{background:#fbe7a8}
       <div class="panel">
         <h2>Versões</h2>
         <ul class="verlist">
-          <li><b>v11.18</b><span class="cur">versão atual</span><br>17/11/2026 &mdash; Final novo: a manhã da estrela, a foto da equipe e a cozinha da Rosa de novo, no mesmo filminho da abertura.</li>
+          <li><b>v11.19</b><span class="cur">versão atual</span><br>17/11/2026 &mdash; A 3ª estrela do Michelzão ficou ao alcance de quem joga muito bem.</li>
+          <li><b>v11.18</b><br>17/11/2026 &mdash; Final novo: a manhã da estrela, a foto da equipe e a cozinha da Rosa de novo, no mesmo filminho da abertura.</li>
           <li><b>v11.16.1</b><br>17/11/2026 &mdash; Retornos dos testadores: no app e no site, um botão para buscar a versão nova. A Bia ganhou cabelo crespo em todos os pontos, as mesas ganharam um enfeite de cada ponto, quem espera sentado tem pernas, as bandeirinhas ficam presas e a área industrial foi arrumada. O entregador do eFood chega buzinando.</li>
           <li><b>v11.15</b><br>16/11/2026 &mdash; Abertura nova: a história da Bia e da Rosa refeita como um filminho, com quadro cheio, câmera, luz e música.</li>
           <li><b>v11.11.1</b><br>15/11/2026 &mdash; Na primeira vez que o dia fecha com nota baixa no Gúgou, a Bia desabafa com o Tonhão, e ele a anima.</li>
@@ -1652,7 +1653,7 @@ function normGuia(g){   // save.guia: { n:0 a 2, prox:≥ 0, v:[{ d, it:[5 intei
    (visita × a soma de três fichas; nota geral: [piso, pontos]; luxo e estrelas do dia por nível; salão e Bráulio: tudo ou nada); `cortes`: os pontos de cada estrela */
 const NOITE = { groups:1.3, meta:1.2, critico:[0.35, 0.45], braulio:[0.5, 0.6], brauPat:0.7, brauFeliz:4, espera:3, volta:0.12,
   pts:{ visita:1.5, nota:[[4.8, 15], [4.6, 10], [4.4, 5]], luxo:[0, 0, 0, 5, 10, 15], dia:[0, 5, 10, 15], salao:5, braulio:5 },
-  cortes:[44, 66, 90],   // v10.10: calibrado em 13/11 (a spec dizia 50, 72 e 90; ver os Desvios da spec)
+  cortes:[44, 66, 75],   // v10.10: calibrado em 13/11 (a spec dizia 50, 72 e 90); v11.19: a 3ª estrela baixou de 90 para 75 (calibrada em 17/11 com o bot afiado)
   linhas:['Crítico', 'Gúgou', 'Luxo', 'A noite', 'Salão', 'Bráulio'],
   aviso:'Noite da estrela: casa cheia, o crítico à mesa e o Bráulio de olho.',
   selo:['Recomendado pelo Michelzão', '★ no Michelzão', '★★ no Michelzão', '★★★ no Michelzão'],
@@ -2445,7 +2446,7 @@ const HIST_NOMES = { bia:'Bia', tonhao:'Tonhão', dani:'Dani', joca:'Joca', cami
 const ATU_TXT = { procurando:'Procurando versão nova...', nova:'Tem versão nova: {v}! Seu jogo salvo continua.', igual:'Você já está na versão mais nova ({v}).', erro:'Sem internet agora. Tente de novo mais tarde.', atualizando:'Atualizando...' };
 function atuEstado(remota, atual){ if (typeof remota !== 'string' || !remota.trim()) return 'erro'; return remota.trim() === atual ? 'igual' : 'nova'; }
 const CAIXA_MAX = 14;                                 // livro-caixa (v7.2): quantos dias da carreira ficam guardados
-const VERSAO = 'v11.18';                               // vai no resumo do Caixa
+const VERSAO = 'v11.19';                               // vai no resumo do Caixa
 const DIVULGA_DIA = 4;                                // antes disso, o movimento é o da inauguração (sem custo); v9.0.2: dia 4, e o padrão é o boca a boca
 function divulgaAberta(n, sv){ return devLivre() || n >= DIVULGA_DIA && !(sv && sv.convDiv === 'pend'); }   // no modo dev, desde o dia 1; v9.0.3: no Modo História, só depois da conversa
 /* v9.6.4: a Efood (os entregadores) só abre depois da conversa dos entregadores, no Modo História; antes dela, nenhum tipo com `retira` vem na agenda */

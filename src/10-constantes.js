@@ -899,7 +899,7 @@ function normGuia(g){   // save.guia: { n:0 a 2, prox:≥ 0, v:[{ d, it:[5 intei
    (visita × a soma de três fichas; nota geral: [piso, pontos]; luxo e estrelas do dia por nível; salão e Bráulio: tudo ou nada); `cortes`: os pontos de cada estrela */
 const NOITE = { groups:1.3, meta:1.2, critico:[0.35, 0.45], braulio:[0.5, 0.6], brauPat:0.7, brauFeliz:4, espera:3, volta:0.12,
   pts:{ visita:1.5, nota:[[4.8, 15], [4.6, 10], [4.4, 5]], luxo:[0, 0, 0, 5, 10, 15], dia:[0, 5, 10, 15], salao:5, braulio:5 },
-  cortes:[44, 66, 90],   // v10.10: calibrado em 13/11 (a spec dizia 50, 72 e 90; ver os Desvios da spec)
+  cortes:[44, 66, 75],   // v10.10: calibrado em 13/11 (a spec dizia 50, 72 e 90); v11.19: a 3ª estrela baixou de 90 para 75 (calibrada em 17/11 com o bot afiado)
   linhas:['Crítico', 'Gúgou', 'Luxo', 'A noite', 'Salão', 'Bráulio'],
   aviso:'Noite da estrela: casa cheia, o crítico à mesa e o Bráulio de olho.',
   selo:['Recomendado pelo Michelzão', '★ no Michelzão', '★★ no Michelzão', '★★★ no Michelzão'],
@@ -1692,7 +1692,7 @@ const HIST_NOMES = { bia:'Bia', tonhao:'Tonhão', dani:'Dani', joca:'Joca', cami
 const ATU_TXT = { procurando:'Procurando versão nova...', nova:'Tem versão nova: {v}! Seu jogo salvo continua.', igual:'Você já está na versão mais nova ({v}).', erro:'Sem internet agora. Tente de novo mais tarde.', atualizando:'Atualizando...' };
 function atuEstado(remota, atual){ if (typeof remota !== 'string' || !remota.trim()) return 'erro'; return remota.trim() === atual ? 'igual' : 'nova'; }
 const CAIXA_MAX = 14;                                 // livro-caixa (v7.2): quantos dias da carreira ficam guardados
-const VERSAO = 'v11.18';                               // vai no resumo do Caixa
+const VERSAO = 'v11.19';                               // vai no resumo do Caixa
 const DIVULGA_DIA = 4;                                // antes disso, o movimento é o da inauguração (sem custo); v9.0.2: dia 4, e o padrão é o boca a boca
 function divulgaAberta(n, sv){ return devLivre() || n >= DIVULGA_DIA && !(sv && sv.convDiv === 'pend'); }   // no modo dev, desde o dia 1; v9.0.3: no Modo História, só depois da conversa
 /* v9.6.4: a Efood (os entregadores) só abre depois da conversa dos entregadores, no Modo História; antes dela, nenhum tipo com `retira` vem na agenda */
