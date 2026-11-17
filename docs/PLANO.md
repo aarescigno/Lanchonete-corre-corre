@@ -19,6 +19,7 @@ Origem: retorno do Renan Martorelli (beta-tester) e conversa com o Arthur (15/10
 | 9b | A abertura nova: as cenas da Casa Aurora (3, 4 e 5) | v11.13 | feita em 16/11 (`docs/spec-v11.13.md`; `smoke89`; `ab2RuaAurora`, `ab2CozinhaAurora`, `ab2Gala` e as cenas `aurora`, `molho` e `estrela`; só pelo modo dev) |
 | 9c | A abertura nova: a perda e a promessa (6, 7 e 8) | v11.14 | feita em 16/11 (`docs/spec-v11.14.md`; `smoke90`; `ab2Quarto`, `ab2Cozinha` à noite e no lar e as cenas `despedida`, `janela` e `promessa`; só pelo modo dev) |
 | 9d | A abertura nova no ar: as cenas 9, 10 e 11, a troca e a limpeza | v11.15 | feita em 16/11 (`docs/spec-v11.15.md`; `smoke91` e o `smoke26` reescrito; `ab2Banco`, `ab2RuaCasa`, `ABERTURA` como o roteiro novo, a antiga fora; a Etapa 9 está completa) |
+| R1 | Retornos da Letícia: verificar atualização, pernas na espera, bandeirinhas e o cabelo da Bia | v11.15.1 | planejada em 17/11 (`docs/spec-v11.15.1.md`, aprovada; Modelo: Sonnet, esforço médio) |
 | 10a | O final novo: o motor, o som e as cenas 1, 2 e 3 | v11.16 | planejada em 16/11 (`docs/spec-v11.16.md`, aprovada) |
 | 10b | O final novo: as cenas 4, 5 e 6 | v11.17 | planejada em 16/11 (`docs/spec-v11.17.md`, aprovada) |
 | 10c | O final novo no ar: as cenas 7 e 8, os créditos, a troca e a limpeza | v11.18 | planejada em 16/11 (`docs/spec-v11.18.md`, aprovada) |
