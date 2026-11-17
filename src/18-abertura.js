@@ -7,7 +7,7 @@
 /* a abertura (refeita da v11.12 à v11.15, docs/ABERTURA.md): um filminho de quadro cheio. Cada cena tem a câmera (`cam`: de e para, [cx, cy, z], o centro
    do que se vê e a aproximação; `meio`: [cx, cy, z, p], por onde passa), a transição de saída (`sai`, nos últimos `trans` segundos), o clima do tema
    da Rosa (`clima`, ver ab2Notas) e os efeitos (`fx`: [nome da AB_FX, segundo]). `legDe`: quando a legenda entra (padrão 0,6 s). O desenho fica em
-   27-abertura-nova.js. O FINAL, mais abaixo, ainda é do motor antigo (a faixa de legenda e o `fade`). */
+   27-abertura-nova.js. O FINAL, mais abaixo, ainda é do motor antigo (a faixa de legenda e o `fade`); o FINAL2 (v11.16) usa o motor novo. */
 const ABERTURA = { cheio:true, trans:0.5, cenas:[
   { id:'porta', t:7, leg:'A Bia cresceu na porta da cozinha.',
     falas:[{ q:'rosa', s:'Vem provar, filha.', de:3.2 }],
@@ -45,7 +45,7 @@ const ABERTURA = { cheio:true, trans:0.5, cenas:[
     cam:{ de:[560,340,1.5], para:[610,300,1] }, sai:'escuro', clima:'fim', fx:[['portao',3.6],['estrela',6.4]] }
 ] };
 /* v11: o final (a manhã seguinte à noite da estrela), no mesmo motor. `min`: as estrelas que o trecho pede; `leg` pode ser uma lista de três textos (para 1, 2 e 3 estrelas) */
-const FINAL = { fade:0.5, cenas:[
+const FINAL = { fade:0.5, final:true, cenas:[
   { id:'telefone', t:6.5, min:1, leg:'Na manhã seguinte, o telefone do Terraço tocou cedo.',
     falas:[{ q:'bia', s:'Alô?... É do Michelzão?!', de:2.4 }], som:[[784,0,.2],[988,.25,.2],[784,.9,.2],[988,1.15,.2]] },
   { id:'placa', t:8, min:1, leg:['A Lanchonete Corre-Corre ganhou a estrela do Michelzão.', 'A Lanchonete Corre-Corre ganhou duas estrelas do Michelzão.', 'A Lanchonete Corre-Corre ganhou três estrelas do Michelzão, a nota mais alta do guia.'],
@@ -65,11 +65,40 @@ const FINAL = { fade:0.5, cenas:[
 ] };
 /* os créditos: um quadro só, depois da última cena do final (some com um toque ou em 6 s) */
 const FINAL_CREDITOS = { id:'creditos', t:6, leg:'', falas:[], cheia:true, som:[[523,0,.5],[659,.35,.5],[784,.7,.9]] };
+/* v11.16 (etapa 10a, docs/FINAL.md §4): o final no motor da abertura nova (quadro cheio). Até a v11.18 só toca pelo modo dev ("Final novo (em obras)"); na v11.18 vira o FINAL.
+   Como na ABERTURA: `cam` (de e para), `sai` (a transição), `clima` (o som, ver ab2Notas), `fx`, `legDe`; `min` e `leg` como no FINAL. As cenas não têm `som`. */
+const FINAL2 = { cheio:true, final:true, trans:0.5, cenas:[
+  { id:'telefone', t:6.5, min:1, leg:'Na manhã seguinte, o telefone do Terraço tocou cedo.',
+    falas:[{ q:'bia', s:'Alô?... É do Michelzão?!', de:2.4 }],
+    cam:{ de:[950,400,1.9], para:[760,300,1.25] }, sai:'corte', clima:'sonho', fx:[['telefone',0.2],['telefone',1.4]] },
+  { id:'placa', t:8, min:1, leg:['A Lanchonete Corre-Corre ganhou a estrela do Michelzão.', 'A Lanchonete Corre-Corre ganhou duas estrelas do Michelzão.', 'Três estrelas do Michelzão: a nota mais alta do guia.'],
+    falas:[{ q:'tonhao', s:'Tá torta?', de:2.6 }, { q:'bia', s:'Tá perfeita, tio.', de:4.4 }],
+    cam:{ de:[380,330,1.15], para:[340,230,1.9] }, sai:'iris', clima:'festa', fx:[['parafuso',0.5],['brilho',4.8]] },
+  { id:'apagou', t:7.5, min:1, leg:'Sem o molho da Rosa, a estrela da Casa Aurora se apagou.', legDe:4.8,
+    falas:[{ q:'braulio', s:'Cadê o tempero?!', de:3 }],
+    cam:{ de:[865,300,2], para:[780,330,1.15] }, sai:'escuro', clima:'triste', fx:[['apaga',4.6]] },
+  { id:'retrato', t:8, min:1, leg:'A Bia pendurou a estrela ao lado do retrato da mãe.',
+    falas:[{ q:'bia', s:'Essa estrela é nossa, mãe.', de:3.4 }],
+    cam:{ de:[470,330,1.2], para:[470,270,2] }, sai:'passa', clima:'casa', fx:[['estrela',2.8]] },
+  { id:'equipe', t:8, min:2, leg:'Ninguém ganha estrela sozinho.',
+    falas:[{ q:'tonhao', s:'Olha o passarinho!', de:2.8 }],
+    cam:{ de:[610,330,1], para:[620,310,1.15] }, sai:'passa', clima:'festa', fx:[['clique',4.8]] },
+  { id:'escola', t:8.5, min:1, leg:'A garagem da Rosa reabriu: é a escola de cozinha do bairro.',
+    falas:[{ q:'dani', s:'Eu era lenta, mas aprendi rápido. Vocês também vão!', de:3 }],
+    cam:{ de:[610,330,1], para:[610,390,1.7] }, sai:'escuro', clima:'esperanca', fx:[['sino',0.4],['panela',3.6]] },
+  { id:'ceu', t:8, min:3, leg:'Do Terraço, nas noites limpas, dá para ver três estrelas.',
+    falas:[{ q:'bia', s:'Uma delas pisca pra mim, tio.', de:2.6 }, { q:'tonhao', s:'Eu sei qual é.', de:4.6 }],
+    cam:{ de:[610,190,1.6], para:[610,330,1.1] }, sai:'escuro', clima:'estrelas', fx:[['estrela',1.0],['estrela',6.4]] },
+  { id:'roda', t:9, min:1, leg:'E sempre tem uma criança na porta da cozinha, olhando.', titulo:'Fim',
+    falas:[{ q:'bia', s:'Comida boa é carinho que a gente põe no prato.', de:3.2 }],
+    cam:{ de:[330,330,1.7], para:[610,300,1] }, sai:'escuro', clima:'fim', fx:[['panela',0.4]] }
+], creditos:{ id:'creditos', t:6, leg:'', falas:[], cheia:true, cam:{ de:[610,240,1.3], para:[610,300,1] }, sai:'escuro', clima:'creditos', fx:[['estrela',0.6]] } };
 /* as cenas do final que tocam: as de `min` até as estrelas ganhas (est); com `desde` (as estrelas já vistas), só a placa e as cenas que ainda não tinham sido vistas; os créditos, se pedidos */
-function finalCenas(est, desde, creditos){
+function finalCenas(est, desde, creditos, roteiro){
+  roteiro = roteiro || FINAL;   // v11.16: o FINAL2 (os créditos vêm dele; o FINAL usa o FINAL_CREDITOS)
   est = clamp(Math.round(+est) || 1, 1, 3); desde = clamp(Math.round(+desde) || 0, 0, 3);
-  const v = FINAL.cenas.filter(c => c.min <= est && (desde < 1 || c.id === 'placa' || c.min > desde));
-  return creditos ? v.concat([FINAL_CREDITOS]) : v;
+  const v = roteiro.cenas.filter(c => c.min <= est && (desde < 1 || c.id === 'placa' || c.min > desde));
+  return creditos ? v.concat([roteiro.creditos || FINAL_CREDITOS]) : v;
 }
 /* a câmera da abertura nova. ab2Cabe encosta na borda: mantém o z (nunca menor que 1) e leva o centro só até onde o retângulo visto ainda cabe em
    0 a TW por 0 a H. ab2Cam(cena, p): de `de` a `para` (passando pelo `meio`, se houver), com abSuave. ab2Tela: um ponto da cena na tela. */
@@ -87,12 +116,12 @@ function aberturaVista(){ return lsGet(LS.abertura) === '1'; }
 
 class Abertura {
   // origem: 'auto' (a 1ª vez que o jogo abre: no fim, vai ao menu) ou 'menu' (botão História: no fim, o cartão "Em breve")
-  // v11: roteiro (o ABERTURA, ou o FINAL com opt = { est, desde, creditos }: as cenas do final que tocam, ver finalCenas)
+  // v11: roteiro (o ABERTURA, ou o FINAL e o FINAL2 com opt = { est, desde, creditos }: as cenas do final que tocam, ver finalCenas)
   constructor(origem, rm, roteiro, opt){
     this.origem = origem === 'auto' ? 'auto' : 'menu';
     this.roteiro = roteiro || ABERTURA; opt = opt || {};
     this.est = clamp(Math.round(+opt.est) || 1, 1, 3);
-    this.cenas = this.roteiro === FINAL ? finalCenas(this.est, opt.desde, opt.creditos) : this.roteiro.cenas;
+    this.cenas = this.roteiro.final ? finalCenas(this.est, opt.desde, opt.creditos, this.roteiro) : this.roteiro.cenas;
     this.rm = !!rm; this.i = 0; this.t = 0; this.fim = false; this.tm = 0;
     this.onCena = null; this.onFim = null;
   }
@@ -185,6 +214,9 @@ function ab2Notas(cena){
     case 'sonho': return ab2Frase({ passo:0.34, onda:'triangle', vol:0.045, baixo:true, terca:true, ate:d });
     case 'gala': return AB2_TEMA.slice(0,4).map((f,i) => [f, i * 0.2, 0.36, 'square', 0.04]).concat(triste(3.2));
     case 'triste': return triste(0);
+    case 'festa': return AB2_TEMA.slice(0,4).map((f,i) => [f, i * 0.2, 0.36, 'square', 0.04]).concat(ab2Frase({ de:1.0, passo:0.34, onda:'triangle', vol:0.045, baixo:true, terca:true, ate:d }));   // v11.16: a fanfarra e o tema do sonho
+    case 'estrelas': return ab2Frase({ passo:0.6, onda:'sine', vol:0.035, k:2, ate:d });   // a caixinha de música: o tema uma oitava acima
+    case 'creditos': return casa(0.42, d - 1.4).concat([523,659,784,1046].map(f => [f, d - 1.4, 1.4, 'triangle', 0.045]));
     case 'esperanca': return casa(0.46);
     case 'fim': {   // casa até 5,4 s; o tema uma oitava acima; e o acorde final, que acaba junto com a cena
       const ac = d - 1.4, v = casa(0.42, 5.4);
@@ -204,6 +236,10 @@ const AB_FX = {
   chuva(d, s){ Sfx.noise(2.6, 0.03, d, 1200, s); },
   estrela(d, s){ Sfx.tone(1568, 0.6, 'sine', 0.07, d, 0, s); Sfx.tone(2093, 0.6, 'sine', 0.04, d + 0.04, 0, s); },
   carimbo(d, s){ Sfx.tone(110, 0.18, 'sine', 0.12, d, 0, s); Sfx.noise(0.08, 0.1, d, 900, s); },
-  portao(d, s){ Sfx.noise(1.1, 0.07, d, 500, s); Sfx.tone(90, 1.1, 'sawtooth', 0.03, d, 180, s); }
+  portao(d, s){ Sfx.noise(1.1, 0.07, d, 500, s); Sfx.tone(90, 1.1, 'sawtooth', 0.03, d, 180, s); },
+  // v11.16 (o final): o telefone, os parafusos da placa e a estrela que apaga
+  telefone(d, s){ Sfx.tone(784, 0.2, 'square', 0.035, d, 0, s); Sfx.tone(988, 0.2, 'square', 0.035, d + 0.25, 0, s); },
+  parafuso(d, s){ [0,0.18,0.36].forEach(a => Sfx.noise(0.05, 0.05, d + a, 2400, s)); },
+  apaga(d, s){ Sfx.tone(440, 0.6, 'sawtooth', 0.03, d, 110, s); Sfx.noise(0.12, 0.06, d, 800, s); }
 };
 

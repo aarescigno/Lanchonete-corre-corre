@@ -134,7 +134,7 @@ const FX_ONDE={ panela:[[1,0.4],[2,0.3],[4,0.5],[8,3.4]], clique:[[2,6.0]], sino
   { const v=N[10], ac=v.filter(n=>perto(n[2],1.4)), alto=v.filter(n=>n[1]>=5.4-1e-9 && !perto(n[2],1.4));
     ok(JSON.stringify(ac.map(n=>n[0]))==='[523,659,784,1046]' && ac.every(n=>n[1]===ac[0][1] && n[1]+1.4<=8+1e-9),'CA6: fim fecha com o acorde Dó-Mi-Sol-Dó de 1,4 s, dentro da cena');
     ok(alto.length>=3 && perto(alto[0][0],784) && perto(alto[0][1],5.4) && perto(alto[1][1]-alto[0][1],0.3) && v.filter(n=>n[1]<5.4-1e-9).every(n=>n[0]<700),'CA6: de 5,4 s em diante, o tema uma oitava acima, 0,3 s por nota'); }
-  ok(R.cenas.every(c=>(c.fx||[]).every(f=>typeof L.AB_FX[f[0]]==='function')) && Object.keys(L.AB_FX).sort().join()===Object.keys(FX_ONDE).sort().join(),'CA6: todo nome de fx existe na AB_FX (9 efeitos)');
+  ok(R.cenas.every(c=>(c.fx||[]).every(f=>typeof L.AB_FX[f[0]]==='function')) && Object.keys(L.AB_FX).filter(k=>!['telefone','parafuso','apaga'].includes(k)).sort().join()===Object.keys(FX_ONDE).sort().join(),'CA6: todo nome de fx existe na AB_FX (9 efeitos; a v11.16 acrescenta 3 do final)');
   ok(Object.keys(FX_ONDE).every(n=>{ const tem=[]; R.cenas.forEach((c,i)=>(c.fx||[]).forEach(f=>{ if(f[0]===n) tem.push([i+1,f[1]]); })); return JSON.stringify(tem)===JSON.stringify(FX_ONDE[n]); }),'CA6: os tempos dos fx batem com §5');
   // os efeitos tocam pela faixa, com Sfx.tone e Sfx.noise
   { const S=L.Sfx, t0=S.tone, n0=S.noise; let usa=[]; S.tone=function(){ usa.push(['t',arguments[4]||0,arguments[6]]); }; S.noise=function(){ usa.push(['n',arguments[2]||0,arguments[4]]); };
@@ -160,7 +160,7 @@ const FX_ONDE={ panela:[[1,0.4],[2,0.3],[4,0.5],[8,3.4]], clique:[[2,6.0]], sino
     ok(!erro,'CA7: drawAbertura roda nas 11 cenas em p 0, 0,5 e 0,95'+(rm?', com movimento reduzido':'')+(erro?': '+erro.message+' '+String(erro.stack).split('\n')[1]:'')); });
   const H=load(), {L}=H, R=L.ABERTURA, TW=L.TW;
   ok(L.AB2 && L.AB2.chao===520 && L.AB2.k===1.38,'CA7: AB2 = { chao:520, k:1.38 }'); ok(L.ABERTURA2===undefined,'CA7: o nome ABERTURA2 não existe mais (v11.15)');
-  ok(typeof L.AB2_CENAS.porta==='function' && typeof L.AB2_CENAS.carinho==='function' && Object.keys(L.AB2_CENAS).every(k=>R.cenas.some(c=>c.id===k)),'CA7: AB2_CENAS tem porta e carinho (e só cenas do roteiro); as que faltam são cartão de obra');
+  ok(typeof L.AB2_CENAS.porta==='function' && typeof L.AB2_CENAS.carinho==='function' && Object.keys(L.AB2_CENAS).every(k=>R.cenas.some(c=>c.id===k) || L.FINAL2.cenas.some(c=>c.id===k)),'CA7: AB2_CENAS tem porta e carinho (e só cenas do roteiro); as que faltam são cartão de obra');
   // quadro cheio: nada da faixa antiga da legenda
   { const ab=new L.Abertura('menu',false,R), ch=[]; H.ctx.fillRect=(x,y,w,h)=>ch.push([x,y,w,h]); ab.t=3; ab.tm=3; L.drawAbertura(H.ctx,ab);
     ok(!ch.some(r=>r[0]===0 && r[1]===500 && r[2]===TW && r[3]===100),'CA7: no roteiro novo, sem a faixa de legenda'); delete H.ctx.fillRect; }

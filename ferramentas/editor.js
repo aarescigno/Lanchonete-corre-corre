@@ -53,13 +53,13 @@ function ler(arq, src){
     const a = src.indexOf('{', src.indexOf(')', m.index));
     if (pares[a] != null) fs.push({ arq, nome:m[1], tipo:'func', s:m.index, e:pares[a] + 1 });
   }
-  const reO = /^const (\w+) = \{/gm;
+  const reO = /^(?:const (\w+) = |Object\.assign\((\w+),\s*)\{/gm;   // v11.16: também as cenas do final, registradas por Object.assign(AB2_CENAS, {...})
   while ((m = reO.exec(src))){
     const a = m.index + m[0].length - 1, fim = pares[a]; if (fim == null) continue;
     const reM = /^  (\w+)\(([^)]*)\)\s*\{/gm; reM.lastIndex = a; let mm;
     while ((mm = reM.exec(src)) && mm.index < fim){
       const b = mm.index + mm[0].length - 1;
-      if (pares[b] != null){ fs.push({ arq, nome:mm[1], tipo:'metodo', obj:m[1], s:mm.index, e:pares[b] + 1 }); reM.lastIndex = pares[b]; }
+      if (pares[b] != null){ fs.push({ arq, nome:mm[1], tipo:'metodo', obj:m[1] || m[2], s:mm.index, e:pares[b] + 1 }); reM.lastIndex = pares[b]; }
     }
   }
   fs.sort((a, b) => a.s - b.s);
@@ -159,8 +159,9 @@ raiz.innerHTML = `
   <div class="aviso" id="e-aviso"></div>`;
 const $ = id => document.getElementById(id);
 const cv = $('e-cv'), sobre = $('e-sobre'), ctx = cv.getContext('2d'), so = sobre.getContext('2d');
-const CENAS = L.ABERTURA.cenas;
+const CENAS = L.ABERTURA.cenas.concat(L.FINAL2.cenas.filter(c => typeof L.AB2_CENAS[c.id] === 'function'));   // v11.16: a abertura e as cenas desenhadas do final novo
 const ab = new L.Abertura('menu', false);
+ab.cenas = CENAS;
 Object.defineProperty(ab, 'escuro', { get: () => 0 });   // sem o escuro da entrada e da saída
 Object.defineProperty(ab, 'trans', { get: () => null });   // v11.15: nem a transição para a cena seguinte
 ab.seguir = ab.voltar = ab.pular = ab.terminar = () => {};

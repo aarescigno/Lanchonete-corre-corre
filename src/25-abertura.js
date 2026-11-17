@@ -149,9 +149,10 @@ function abBraulio(c,x,y,s,o){
   rr(c,-12,hy-56,24,42,6); fs(c,'#fff',2.4);                                    // a toca alta
   c.strokeStyle = '#D9D9D9'; c.lineWidth = 1.5; c.beginPath(); c.moveTo(-4,hy-52); c.lineTo(-4,hy-18); c.moveTo(4,hy-52); c.lineTo(4,hy-18); c.stroke();
   rr(c,-14,hy-20,28,8,2); fs(c,'#fff',2.2);
-  // olhos fechados de orgulho e o nariz empinado
+  // olhos fechados de orgulho e o nariz empinado (v11.16, o.triste: olhos abertos e sobrancelhas caídas, para o final)
   c.strokeStyle = PAL.tinta; c.lineWidth = 2;
-  c.beginPath(); c.arc(-5.5,hy-4,2.6,Math.PI,TAU); c.moveTo(8.1,hy-4); c.arc(5.5,hy-4,2.6,0,Math.PI,true); c.stroke();
+  if (o.triste){ c.fillStyle = PAL.tinta; circ(c,-5.5,hy-3,1.8); c.fill(); circ(c,5.5,hy-3,1.8); c.fill(); c.beginPath(); c.moveTo(-9.5,hy-8); c.lineTo(-2.5,hy-10.5); c.moveTo(9.5,hy-8); c.lineTo(2.5,hy-10.5); c.stroke(); }
+  else { c.beginPath(); c.arc(-5.5,hy-4,2.6,Math.PI,TAU); c.moveTo(8.1,hy-4); c.arc(5.5,hy-4,2.6,0,Math.PI,true); c.stroke(); }
   c.beginPath(); c.moveTo(1,hy-2); c.lineTo(6,hy+2); c.lineTo(1,hy+3); c.stroke();
   // bigodinho enrolado, logo abaixo do nariz; a boca fica embaixo dele
   c.lineWidth = 2.4; c.beginPath();
@@ -160,7 +161,7 @@ function abBraulio(c,x,y,s,o){
   c.stroke();
   const fala = abBoca('braulio');
   if (fala){ ell(c,0,hy+10.5,3.2,1.2 + fala * 2.2); fs(c,'#7A2E2E',1.5); }
-  else { c.lineWidth = 1.8; c.beginPath(); c.arc(0,hy+9,3.5,0.3,Math.PI-0.3); c.stroke(); }
+  else { c.lineWidth = 1.8; c.beginPath(); if (o.triste) c.arc(0,hy+13,3.5,Math.PI + 0.3,TAU - 0.3); else c.arc(0,hy+9,3.5,0.3,Math.PI-0.3); c.stroke(); }
   // os braços seguram a plaquinha na frente do peito, erguida (o: ergue de 0 a 1)
   if (o.semPlaca){ c.restore(); return; }   // v11.13: a abertura nova posa os braços e a placa por fora
   const up = (o.ergue || 0) * 5;
