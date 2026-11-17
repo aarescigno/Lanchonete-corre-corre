@@ -39,6 +39,7 @@ module.exports=function load(opts){
   if (opts.throwStorage) { /* acessos lançam */ }
   const sandbox={window:win,document:doc,console,Math,Date,JSON,Object,Array,Set,Number,String,Infinity,isFinite,parseInt,parseFloat,setTimeout,clearTimeout,Promise,RegExp,Error,TypeError};
   if (ls) sandbox.localStorage=ls;
+  if (opts.navigator) sandbox.navigator=opts.navigator;   // v12.3.2: o aparelho do relatório do teste (userAgent, maxTouchPoints)
   if (opts.throwStorage) Object.defineProperty(sandbox,'localStorage',{get(){throw new Error('SecurityError');}});
   if (opts.claude!==undefined) win.claude=opts.claude;
   if (opts.app) win.LCC_APP=1;   // v11.16.1: o jogo dentro do app (o app/build.py põe window.LCC_APP=1 no head)

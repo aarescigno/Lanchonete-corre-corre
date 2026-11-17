@@ -192,12 +192,13 @@ function testeRelatorio(g){
   const reac = a => a.length ? fn(soma(a) / a.length) + ' / ' + fn(mediana(a)) + ' / ' + a.length : '—';
   const p2 = n => (n < 10 ? '0' : '') + n, q = T.quando || new Date();
   const lucro = Math.round(g.lucro), est = g.estrelasDe(lucro), av = avalMedias(g.avalsPeso());
+  const nv = typeof navigator !== 'undefined' ? navigator : {}, tipo = m.aparelho === 'bot' ? 'bot' : tipoAparelho(nv.userAgent, nv.maxTouchPoints || 0, nv.userAgentData ? nv.userAgentData.mobile : undefined);   // v12.3.2
   const tela = m.aparelho === 'bot' ? '-' : window.innerWidth + '×' + window.innerHeight;
   const min = m.t / 60;
   const rd = g.desafioRes, linhaD = D && rd ? ['Desafio: ' + (rd.medalha ? 'medalha de ' + MEDALHAS[rd.medalha] : 'sem medalha') + ' · regra ' + (!D.cond ? '—' : rd.falhou ? 'não valeu' : 'valeu')] : [];
   return [
     'LCC-TESTE ' + TESTE_FORMATO + ' · ' + VERSAO + ' · ' + T.nome + ' · dia ' + d.n + ' · semente ' + T.semente,
-    'Jogador: ' + (lastName() || 'sem nome') + ' · tentativa ' + T.tent + ' · ' + m.aparelho + ' ' + tela + ' · ' + p2(q.getDate()) + '/' + p2(q.getMonth() + 1) + '/' + q.getFullYear() + ' ' + p2(q.getHours()) + ':' + p2(q.getMinutes()),
+    'Jogador: ' + (lastName() || 'sem nome') + ' · tentativa ' + T.tent + ' · ' + tipo + ' · ' + m.aparelho + ' ' + tela + ' · ' + p2(q.getDate()) + '/' + p2(q.getMonth() + 1) + '/' + q.getFullYear() + ' ' + p2(q.getHours()) + ':' + p2(q.getMinutes()),
     'Resultado: lucro ' + fmt(lucro) + ' · meta ' + fmt(d.meta) + ' (' + Math.round(lucro / d.meta * 100) + '%) · ' + (est ? '★'.repeat(est) : '0★') + ' · servidos ' + st.served + ' de ' + st.spawned + ' · Gúgou ' + (av ? fn(av.nota) : '—')
   ].concat(linhaD, [
     'Perdidos: ' + st.lost + ' · fila sem mesa ' + lb.semMesa + ' · fila com mesa ' + lb.comMesa + ' · pedido ' + lb.pedido + ' · prato ' + lb.prato + ' · conta ' + lb.conta + ' · retirada ' + lb.retirada + ' · esfriou ' + st.esfriou,

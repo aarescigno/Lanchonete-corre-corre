@@ -50,7 +50,7 @@ const fecha=(g,id,lucro,extra)=>{ g.startDesafio(id); g.begin(); g.schedule=[]; 
     { const H=dev(), {g,els,L}=H; g.startDesafio('soBia'); g.begin(); const meta=g.day.meta; g.schedule=[]; g.nextIdx=0; g.groups=[]; g.custo=0; g.money=g.fixo+meta+10; g.finishDay();
       const rel=g.testeRel, l=rel.split('\n');
       ok(g.state==='desafiofim' && els['btn-desafio-copia'].style.display!=='none','CA2: no modo dev, o fim do desafio tem "Copiar relatório"');
-      ok(l[0]==='LCC-TESTE 1 · '+L.VERSAO+' · Desafio: Só a Bia · dia 17 · semente '+L.DESAFIOS[0].semente,'CA2: a 1ª linha: '+l[0]);
+      ok(l[0]==='LCC-TESTE 2 · '+L.VERSAO+' · Desafio: Só a Bia · dia 17 · semente '+L.DESAFIOS[0].semente,'CA2: a 1ª linha: '+l[0]);
       ok(/^Resultado:/.test(l[2]) && /^Desafio: medalha de (bronze|prata|ouro) · regra — $|^Desafio: medalha de (bronze|prata|ouro) · regra —$/.test(l[3]),'CA2: depois do Resultado, a linha do Desafio (medalha, desafio sem regra: —): '+l[3]);
       ok(/tentativa 1 /.test(l[1]),'CA2: a tentativa 1 ('+l[1]+')'); }
     { const {g,L}=dev(); fecha(g,'semBravo',0,{}); /* sem a meta: sem medalha */
@@ -63,7 +63,7 @@ const fecha=(g,id,lucro,extra)=>{ g.startDesafio(id); g.begin(); g.schedule=[]; 
     { const H=mk(); const cr=H.doc.createElement, cap={ v:null }; H.doc.createElement=t=>{ const e=cr(t); e.select=()=>{}; return e; }; H.doc.body={ appendChild(c){ cap.v=c.value; }, removeChild(){} }; H.doc.execCommand=()=>true;
       const {g,els}=H; g.setDev(true); g.startDesafio('soBia'); g.begin(); g.schedule=[]; g.nextIdx=0; g.groups=[]; g.custo=0; g.money=g.fixo+g.day.meta+10; g.finishDay();
       els['btn-desafio-copia'].fire('click'); await espera(10);
-      ok(cap.v===g.testeRel && /^LCC-TESTE 1/.test(cap.v) && txt(els['desafio-fim-aviso'])==='Copiado! Cole na conversa.','CA2: o clique copia o relatório e mostra "Copiado! Cole na conversa."');
+      ok(cap.v===g.testeRel && /^LCC-TESTE 2/.test(cap.v) && txt(els['desafio-fim-aviso'])==='Copiado! Cole na conversa.','CA2: o clique copia o relatório e mostra "Copiado! Cole na conversa."');
       ok(!/LCC-TESTE/.test(txt(els['ov-desafio-fim'])),'CA2: o relatório fica fora da tela'); }
     { const H=mk(); const {g,els}=H; g.setDev(true); g.startDesafio('soBia'); g.begin(); g.schedule=[]; g.nextIdx=0; g.groups=[]; g.custo=0; g.money=g.fixo+g.day.meta+10; g.finishDay();
       els['btn-desafio-copia'].fire('click'); await espera(10);

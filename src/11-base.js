@@ -160,4 +160,11 @@ function pathOk(from, to){
   let a = from;
   return findPath(from, to).every(p => { const ok = !blocked(a.x, a.y, p.x, p.y); a = p; return ok; });
 }
-
+/* v12.3.2: o tipo do aparelho para o relatório do teste: 'celular', 'tablet' ou 'computador' (uaMobile: navigator.userAgentData.mobile, se houver) */
+function tipoAparelho(ua, toques, uaMobile){
+  ua = ua || '';
+  if (uaMobile === true) return 'celular';
+  if (/iPad|Tablet/i.test(ua) || (/Android/i.test(ua) && !/Mobile/i.test(ua)) || (/Macintosh/i.test(ua) && toques > 1)) return 'tablet';
+  if (/iPhone|iPod|Mobi|Android/i.test(ua)) return 'celular';
+  return 'computador';
+}
