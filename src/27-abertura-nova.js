@@ -428,7 +428,12 @@ function ab2CozinhaTempo(c,E,T){
     circ(c,560,150,5); fs(c,PAL.cromoEsc,2);
     c.globalAlpha = 1;
   }
-  if (lar > 0){ c.globalAlpha = lar; c.fillStyle = 'rgba(120,80,40,.2)'; rr(c,526,160,78,96,4); c.fill(); drawFotoRosa(c,560,206,2.1); c.globalAlpha = 1; }   // a foto da Rosa, agora na parede
+  if (lar > 0) ab2FotoParede(c,lar,0);   // a foto da Rosa, agora na parede
+}
+// a foto da Rosa na parede (a: a opacidade; halo: o halo dourado, de 0 a 1; v11.18: também à tarde, na cena 8 do final, pelo o.foto do ab2Cozinha)
+function ab2FotoParede(c,a,halo){
+  if (halo > 0){ ab2Luz(c,565,208,150,'255,186,50',0.62 * halo); c.save(); c.globalCompositeOperation = 'screen'; ab2Luz(c,565,208,70,'255,236,170',0.8 * halo); c.restore(); }   // um halo dourado sobre a parede clara
+  c.globalAlpha = a; c.fillStyle = 'rgba(120,80,40,.2)'; rr(c,526,160,78,96,4); c.fill(); drawFotoRosa(c,560,206,2.1); c.globalAlpha = 1;
 }
 // a bancada, fora da tarde: o copo com a rosa, a foto da Rosa (some com E.lar) e o escorredor com a panela emborcada (a panela some com E.lar)
 function ab2BancadaNoite(c,x,y,E){
@@ -455,14 +460,15 @@ function ab2BancadaNoite(c,x,y,E){
 }
 /* a cozinha de casa. modo: 'tarde' (o sol baixo pela janela), 'noite' (tudo apagado, azul; cena 7) ou 'lar' (a luz acesa, âmbar; cena 8). o: { T, banco:[x, y do
    assento], vapor, atras(c): quem está no corredor, gente(c): as pessoas, no meio, frente(c): a frente própria da cena, brilho(c): o que brilha no escuro, no meio,
-   estado: fora da tarde, por cima do modo, { dia, noite, lar, chuva, nuvens, estrela, facho, folhas, planta, pisca }, tudo de 0 a 1 } */
+   estado: fora da tarde, por cima do modo, { dia, noite, lar, chuva, nuvens, estrela, facho, folhas, planta, pisca }, tudo de 0 a 1;
+   v11.18: foto (a foto da Rosa na parede, à tarde, como no modo 'lar') e fotoHalo (o halo dourado dela, de 0 a 1) } */
 function ab2Cozinha(c,cam,modo,o){
   o = o || {};
   const T = o.T || 0, Z = AB2_COZ, tarde = !modo || modo === 'tarde', casa = modo === 'lar';
   const E = tarde ? null : Object.assign({ dia:0, noite:casa ? 0.32 : 1, lar:casa ? 1 : 0, chuva:0, nuvens:0, estrela:1, facho:0, folhas:0, planta:casa ? 1 : 0, pisca:0 },o.estado || {});
   const sol = tarde ? 1 : E.dia * 0.8, lar = tarde ? 0 : E.lar, fogo = tarde || lar > 0.5;
   const facho = () => { c.beginPath(); c.moveTo(846,104); c.lineTo(1060,104); c.lineTo(1060,292); c.lineTo(742,604); c.lineTo(318,604); c.closePath(); c.fill(); };
-  ab2Camada(c,cam,0.85,() => ab2CozinhaFundo(c,cam,modo,T,E));
+  ab2Camada(c,cam,0.85,() => { ab2CozinhaFundo(c,cam,modo,T,E); if (o.foto && tarde) ab2FotoParede(c,1,o.fotoHalo || 0); });   // v11.18: o.foto (e o.fotoHalo): a foto da Rosa na parede também à tarde
   ab2Camada(c,cam,1,() => {
     ab2Piso(c);
     if (sol > 0){ c.fillStyle = 'rgba(255,232,160,' + (0.42 * sol) + ')'; c.beginPath(); c.moveTo(452,486); c.lineTo(742,486); c.lineTo(668,604); c.lineTo(318,604); c.closePath(); c.fill(); }   // o sol no piso
@@ -1700,37 +1706,11 @@ const AB2_CENAS = {
 };
 
 /* ---------- transições, legenda, bolinhas e o desenho de tudo ---------- */
-/* ---------- o cartão de obra (v11.16): a cena ainda sem desenho na AB2_CENAS (as do final novo, até a v11.18) ---------- */
-function ab2Obra(c,ab,i){
-  const cena = ab.cenas[i == null ? ab.i : i], n = (i == null ? ab.i : i) + 1;
-  c.fillStyle = PAL.tinta; c.fillRect(0,0,TW,H);
-  c.strokeStyle = 'rgba(242,179,61,.16)'; c.lineWidth = 22; c.beginPath();
-  for (let x = -H; x < TW; x += 90){ c.moveTo(x,H); c.lineTo(x + H,0); }
-  c.stroke();
-  c.fillStyle = 'rgba(34,32,28,.82)'; c.fillRect(0,60,TW,H - 120);
-  if (cena.titulo) txt(c,cena.titulo,TW / 2,140,44,PAL.mostarda,'center',FD);
-  txt(c,String(n),TW / 2,236,40,PAL.creme,'center',FD);
-  txt(c,cena.id,TW / 2,286,40,PAL.creme,'center',FD);
-  txt(c,'cena em obras',TW / 2,326,15,'rgba(247,239,216,.5)','center',FB);
-}
-// as falas no cartão de obra: balões sem ponta, empilhados
-function ab2ObraFalas(c,falas){
-  const U = AB_UI; let y = 372;
-  falas.forEach(f => {
-    const lin = treinoLinhas(c,f.s,560,U.fala);
-    c.font = U.fala + 'px ' + FB;
-    const w = Math.max.apply(null,lin.map(l => c.measureText(l).width)) + 34, h = lin.length * U.linha + 18;
-    rr(c,TW / 2 - w / 2,y,w,h,16); fs(c,'#fff',3);
-    lin.forEach((l,i) => txt(c,l,TW / 2,y + 9 + U.linha * (i + 0.5),U.fala,PAL.tinta,'center',FB));
-    y += h + 10;
-  });
-}
-// a cena i no tempo t, vista pela câmera; devolve a câmera e as cabeças (null no cartão de obra)
+// a cena i no tempo t, vista pela câmera; devolve a câmera e as cabeças de quem fala
 function ab2Quadro(c,ab,i,t){
-  const cena = ab.cenas[i], par = RM || ab.rm, fn = AB2_CENAS[cena.id];
+  const cena = ab.cenas[i], par = RM || ab.rm;
   const p = par ? (cena.pRM != null ? cena.pRM : 0.8) : clamp(t / cena.t,0,1), cam = ab2Cam(cena,par ? 1 : t / cena.t);
-  if (!fn){ ab2Obra(c,ab,i); return { cam, cab:null }; }
-  return { cam, cab:fn(c,p,par ? 0 : ab.tm,cam) || {} };
+  return { cam, cab:AB2_CENAS[cena.id](c,p,par ? 0 : ab.tm,cam) || {} };
 }
 /* a transição de saída (Abertura.trans), por recorte e cor por cima: flash (branco), passa (a próxima entra por uma cortina lateral) e iris (um círculo
    fecha num ponto e a próxima abre dele; o centro é o [cx, cy] do cam.para da cena que sai). O escuro é o de sempre; corte e segue não desenham nada. */
@@ -1779,7 +1759,7 @@ function ab2Bolinhas(c,ab){
   }
   if (ab.i === 0) txt(c,'toque para seguir',TW - 20,584,13,'rgba(247,239,216,.85)','right',FB,3);
 }
-function drawAbertura2(c,ab){
+function drawAbertura(c,ab){
   const par = RM || ab.rm, T = par ? 0 : ab.tm;
   // a boca de quem fala abre e fecha nos primeiros segundos do balão (nada disso com movimento reduzido)
   AB_VIVO.fala = {}; AB_VIVO.est = ab.est;
@@ -1787,8 +1767,7 @@ function drawAbertura2(c,ab){
   c.save();
   c.fillStyle = PAL.tinta; c.fillRect(0,0,TW,H);
   const q = ab2Quadro(c,ab,ab.i,ab.t), falas = ab.falas();
-  if (q.cab) falas.forEach(f => { const a = q.cab[f.q]; if (a){ const s = ab2Tela(q.cam,a[0],a[1]); if (s[0] > 0 && s[0] < TW) abBalao(c,f.s,s[0],s[1],a[2]); } });   // quem saiu do quadro (a câmera deslizou) fica sem balão
-  else ab2ObraFalas(c,falas);   // o cartão de obra: balões sem ponta
+  falas.forEach(f => { const a = q.cab[f.q]; if (a){ const s = ab2Tela(q.cam,a[0],a[1]); if (s[0] > 0 && s[0] < TW) abBalao(c,f.s,s[0],s[1],a[2]); } });   // quem saiu do quadro (a câmera deslizou) fica sem balão
   ab2Legenda(c,ab);
   if (ab.trans) ab2Trans(c,ab,() => { AB_VIVO.fala = {}; ab2Quadro(c,ab,ab.i + 1,0); });
   ab2Bolinhas(c,ab);

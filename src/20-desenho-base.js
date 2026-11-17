@@ -760,12 +760,12 @@ function roupaBia(g){
 function reacaoEnv(p){ p = clamp(p, 0, 1); const s = k => k * k * (3 - 2 * k); return p < 0.2 ? s(p / 0.2) : p > 0.75 ? s((1 - p) / 0.25) : 1; }
 const REACAO_EXPR = { sorriso:'alegre', punho:'alegre', cabeca:'insegura', respira:'firme', cintura:'firme' };
 /* v11.16.1: um tufo de cabelo crespo (o círculo do meio e n em volta). Duas passadas: o contorno de todos e depois o miolo de todos, para não sobrar linha entre as bolinhas */
-function puffCrespo(ctx,cx,cy,r,n){
+function puffCrespo(ctx,cx,cy,r,n,cor){   // v11.18: cor (opcional): outra cor de cabelo (a Bia de costas, à noite)
   const cs = [[cx,cy,r*0.62]];
   for (let i=0;i<n;i++){ const a = -Math.PI/2 + i*TAU/n; cs.push([cx + Math.cos(a)*r*0.6, cy + Math.sin(a)*r*0.6, r*0.42]); }
   const trilho = () => { ctx.beginPath(); cs.forEach(c => { ctx.moveTo(c[0] + c[2],c[1]); ctx.arc(c[0],c[1],c[2],0,TAU); }); };
   trilho(); ctx.strokeStyle = PAL.tinta; ctx.lineWidth = 4; ctx.stroke();
-  trilho(); ctx.fillStyle = BIA_ROUPA_COR.cabelo; ctx.fill();
+  trilho(); ctx.fillStyle = cor || BIA_ROUPA_COR.cabelo; ctx.fill();
 }
 function drawBia(ctx,b,x,y,o){
   o = o || {};

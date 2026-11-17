@@ -47,14 +47,14 @@ const FX_ONDE={ panela:[[1,0.4],[2,0.3],[4,0.5],[8,3.4]], clique:[[2,6.0]], sino
   ok(ab.texto && ab.texto()==='A Bia cresceu na porta da cozinha. Rosa: Vem provar, filha.','CA1: o texto do leitor de tela segue a regra de hoje');
 }
 
-// ---------- CA2: o motor antigo segue valendo para o FINAL (v11.15: a abertura antiga saiu) ----------
+// ---------- CA2: o FINAL toca pelo motor novo, como a abertura (v11.15: a abertura antiga saiu; v11.18: o FINAL também) ----------
 { const H=load({abertura:true}), {L,els,store}=H, ab=L.aberturaAtual();
   ok(ab && ab.roteiro===L.ABERTURA && ab.origem==='auto' && ab.n===11 && mostra(els,'ov-abertura') && store.lcc2_abertura==='1','CA2: na 1ª vez toca sozinha a abertura (a nova, de 11 cenas) e marca como vista');
   const f=new L.Abertura('menu',false,L.FINAL,{est:3,creditos:true});
-  ok(f.cam && f.cam.z===1 && perto(f.cam.cx,L.TW/2) && f.trans===null && f.legA===1,'CA2: no FINAL, câmera parada, sem transição nova, legenda inteira');
-  ok(f.escuro>0.9,'CA2: o FINAL começa no escuro'); f.update(2); ok(f.escuro===0,'CA2: o escuro some em 0,5 s'); f.t=f.cena.t-0.25; ok(perto(f.escuro,0.5,0.01),'CA2: e volta na saída de toda cena');
+  ok(f.cam && perto(f.cam.z,1.9) && f.trans===null && f.legA===0,'CA2: no FINAL, a câmera da cena 1 (z 1,9), sem transição fora dos últimos 0,5 s, a legenda ainda não entrou');
+  ok(f.escuro>0.9,'CA2: o FINAL começa no escuro'); f.update(2); ok(f.escuro===0,'CA2: o escuro some em 0,5 s'); f.i=2; f.t=f.cena.t-0.25; ok(perto(f.escuro,0.5,0.01),'CA2: e volta na saída das cenas com sai "escuro" (a 3, o apagou)');
   const ch=[]; H.ctx.fillRect=(x,y,w,h)=>ch.push([x,y,w,h]); f.t=3; L.drawAbertura(H.ctx,f);
-  ok(ch.some(r=>r[0]===0 && r[1]===500 && r[2]===L.TW && r[3]===100),'CA2: o FINAL segue com a faixa de legenda (0, 500, TW, 100)');
+  ok(!ch.some(r=>r[0]===0 && r[1]===500 && r[2]===L.TW && r[3]===100),'CA2: o FINAL não tem mais a faixa de legenda (0, 500, TW, 100)');
   for(let i=0;i<20;i++) toque(els);
   ok(!L.aberturaAtual() && mostra(els,'ov-menu'),'CA2: no fim, o menu');
   els['btn-historia'].fire('click'); const b=L.aberturaAtual();
@@ -150,8 +150,8 @@ const FX_ONDE={ panela:[[1,0.4],[2,0.3],[4,0.5],[8,3.4]], clique:[[2,6.0]], sino
     els['btn-ab-voltar'].fire('click'); ok(cortes===3 && ab.i===0,'CA6: Voltar também corta');
     ab.update(7.1); ok(cortes===4 && ab.i===1,'CA6: o fim da cena também');
     els['btn-ab-pular'].fire('click'); ok(cortes===5 && !L.aberturaAtual(),'CA6: fechar a abertura corta a faixa');
-    // o FINAL toca como sempre: as notas da cena 1 dele, direto na saída de sempre, sem faixa
-    tons=[]; cortes=0; L.devFinal(1); const nf=L.FINAL.cenas[0].som.length; ok(tons.length===nf && tons.every(t=>t[6]===undefined) && tons[0][0]===L.FINAL.cenas[0].som[0][0],'CA6: com o FINAL, toca como sempre ('+nf+' notas, sem faixa)'); }
+    // o FINAL toca como a abertura (v11.18): as notas do clima da cena 1 e os fx, pela faixa
+    tons=[]; cortes=0; rui=0; L.devFinal(1); const nf=L.ab2Notas(L.FINAL.cenas[0]).length; ok(tons.length===nf+4 && tons.every(t=>t[6]===F) && cortes>=1,'CA6: com o FINAL, toca como a abertura: as notas do clima da cena 1 e o fx telefone, pela faixa ('+tons.length+' notas)'); }
 }
 
 // ---------- CA7: o desenho ----------
@@ -160,7 +160,7 @@ const FX_ONDE={ panela:[[1,0.4],[2,0.3],[4,0.5],[8,3.4]], clique:[[2,6.0]], sino
     ok(!erro,'CA7: drawAbertura roda nas 11 cenas em p 0, 0,5 e 0,95'+(rm?', com movimento reduzido':'')+(erro?': '+erro.message+' '+String(erro.stack).split('\n')[1]:'')); });
   const H=load(), {L}=H, R=L.ABERTURA, TW=L.TW;
   ok(L.AB2 && L.AB2.chao===520 && L.AB2.k===1.38,'CA7: AB2 = { chao:520, k:1.38 }'); ok(L.ABERTURA2===undefined,'CA7: o nome ABERTURA2 não existe mais (v11.15)');
-  ok(typeof L.AB2_CENAS.porta==='function' && typeof L.AB2_CENAS.carinho==='function' && Object.keys(L.AB2_CENAS).every(k=>R.cenas.some(c=>c.id===k) || L.FINAL2.cenas.some(c=>c.id===k)),'CA7: AB2_CENAS tem porta e carinho (e só cenas do roteiro); as que faltam são cartão de obra');
+  ok(typeof L.AB2_CENAS.porta==='function' && typeof L.AB2_CENAS.carinho==='function' && Object.keys(L.AB2_CENAS).every(k=>R.cenas.some(c=>c.id===k) || L.FINAL.cenas.concat([L.FINAL.creditos]).some(c=>c.id===k)),'CA7: AB2_CENAS tem porta e carinho (e só cenas dos roteiros da abertura e do final)');
   // quadro cheio: nada da faixa antiga da legenda
   { const ab=new L.Abertura('menu',false,R), ch=[]; H.ctx.fillRect=(x,y,w,h)=>ch.push([x,y,w,h]); ab.t=3; ab.tm=3; L.drawAbertura(H.ctx,ab);
     ok(!ch.some(r=>r[0]===0 && r[1]===500 && r[2]===TW && r[3]===100),'CA7: no roteiro novo, sem a faixa de legenda'); delete H.ctx.fillRect; }

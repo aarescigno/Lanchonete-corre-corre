@@ -1,5 +1,5 @@
 // v11.17 (etapa 10b): o final novo ganha as cenas 4 (retrato), 5 (equipe, a foto e os nomes) e 6 (escola); o ab2RuaCasa ganha dia, letreiro e dentro.
-// Só toca pelo modo dev; o FINAL antigo e a cena 11 da abertura seguem como estão.
+// (v11.18: o FINAL2 virou o FINAL.) A cena 11 da abertura segue como está.
 const load=require('./harness.js'), crypto=require('crypto');
 let fails=0,total=0; const ok=(c,m)=>{ total++; if(!c){fails++;console.log('FAIL:',m);} else console.log('ok  :',m); };
 const TH=600, TW=1220;
@@ -7,14 +7,14 @@ const CENAS=[['retrato',3,['bia']],['equipe',4,['tonhao']],['escola',5,['dani']]
 const NOMES=['Cami','Lia','Anselmo','Dani','Bia','Tonhão','Joca'];
 
 // ---------- CA1: as cenas 4, 5 e 6 desenham e não são mais o cartão de obra ----------
-[false,true].forEach(rm=>[1,2,3].forEach(est=>{ const H=load({rm}), {L}=H, R=L.FINAL2, ab=new L.Abertura('menu',rm,R,{est}), tx=[]; H.ctx.fillText=s=>tx.push(s);
+[false,true].forEach(rm=>[1,2,3].forEach(est=>{ const H=load({rm}), {L}=H, R=L.FINAL, ab=new L.Abertura('menu',rm,R,{est}), tx=[]; H.ctx.fillText=s=>tx.push(s);
   CENAS.forEach(([id,i0])=>{ const i=ab.cenas.findIndex(q=>q.id===id); if(i<0) return; let erro=null, obra=false;   // com 1 estrela, a equipe não toca
     try{ ab.i=i; [0,0.25,0.5,0.75,0.95].forEach(p=>{ tx.length=0; ab.t=ab.cenas[i].t*p; ab.tm=70+i+p*7; L.drawAbertura(H.ctx,ab); if(p<0.9 && tx.includes('cena em obras')) obra=true; }); } catch(e){ erro=e; }   // em p 0,95 a transição já mostra a cena seguinte (que pode ser o cartão)
     ok(!erro && typeof L.AB2_CENAS[id]==='function' && !obra,'CA1: '+id+' desenha em p 0, 0,25, 0,5, 0,75 e 0,95, com '+est+' estrela(s)'+(rm?', com movimento reduzido':'')+', e não é o cartão de obra'+(erro?': '+erro.message+' '+String(erro.stack).split('\n')[1]:'')); });
   delete H.ctx.fillText; }));
 
 // ---------- CA2: as cabeças de quem fala caem na tela ----------
-{ const H=load(), {L}=H, R=L.FINAL2;
+{ const H=load(), {L}=H, R=L.FINAL;
   CENAS.forEach(([id,i,quem])=>{ const c=R.cenas[i];
     ok(JSON.stringify(c.falas.map(f=>f.q))===JSON.stringify(quem),'CA2: na cena '+(i+1)+' ('+id+') fala '+quem.join());
     c.falas.forEach(f=>{ [f.de,f.de+0.9].forEach(t=>{ const p=t/c.t, cam=L.ab2Cam(c,p);
@@ -26,7 +26,7 @@ const NOMES=['Cami','Lia','Anselmo','Dani','Bia','Tonhão','Joca'];
 }
 
 // ---------- CA3: na cena 5, os sete nomes são escritos na foto, a partir de p 0,6 ----------
-{ const H=load(), {L}=H, R=L.FINAL2, c=R.cenas[4], tx=[]; H.ctx.fillText=s=>tx.push(s);
+{ const H=load(), {L}=H, R=L.FINAL, c=R.cenas[4], tx=[]; H.ctx.fillText=s=>tx.push(s);
   const nomes=(p,T)=>{ tx.length=0; try{ L.AB2_CENAS.equipe(H.ctx,p,T,L.ab2Cam(c,p)); } catch(e){} return tx.filter(s=>NOMES.includes(s)); };
   [0,0.2,0.4,0.55,0.59].forEach(p=>ok(nomes(p,10+p).length===0,'CA3: em p '+p+' nenhum nome está escrito'));
   [0.6,0.7,0.8,0.95,1].forEach(p=>{ const n=nomes(p,10+p); ok(n.join()===NOMES.join(),'CA3: em p '+p+' os sete nomes, na ordem: Cami, Lia, Anselmo, Dani, Bia, Tonhão, Joca ('+n.join(', ')+')'); });

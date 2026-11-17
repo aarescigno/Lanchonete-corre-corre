@@ -1,13 +1,13 @@
 /* ============================================================
    ABERTURA DO MODO HISTÓRIA (v8.5): o sonho da Bia
-   Cenas com tempo, legenda e falas; o desenho da abertura fica em 27-abertura-nova.js e o do final, em 25-abertura.js. Um toque passa para a próxima cena, "Pular"
+   Cenas com tempo, legenda e falas; o desenho da abertura fica em 27-abertura-nova.js e o do final, em 28-final.js. Um toque passa para a próxima cena, "Pular"
    termina. Com movimento reduzido, cada cena é um quadro parado (o fim da cena, ou pRM) e só avança por toque.
    Toca sozinha uma vez, na 1ª vez que o jogo abre (LS.abertura); depois, pelo botão História do menu.
    ============================================================ */
 /* a abertura (refeita da v11.12 à v11.15, docs/ABERTURA.md): um filminho de quadro cheio. Cada cena tem a câmera (`cam`: de e para, [cx, cy, z], o centro
    do que se vê e a aproximação; `meio`: [cx, cy, z, p], por onde passa), a transição de saída (`sai`, nos últimos `trans` segundos), o clima do tema
    da Rosa (`clima`, ver ab2Notas) e os efeitos (`fx`: [nome da AB_FX, segundo]). `legDe`: quando a legenda entra (padrão 0,6 s). O desenho fica em
-   27-abertura-nova.js. O FINAL, mais abaixo, ainda é do motor antigo (a faixa de legenda e o `fade`); o FINAL2 (v11.16) usa o motor novo. */
+   27-abertura-nova.js. O FINAL (refeito nas v11.16 a v11.18) usa o mesmo motor. */
 const ABERTURA = { cheio:true, trans:0.5, cenas:[
   { id:'porta', t:7, leg:'A Bia cresceu na porta da cozinha.',
     falas:[{ q:'rosa', s:'Vem provar, filha.', de:3.2 }],
@@ -44,30 +44,10 @@ const ABERTURA = { cheio:true, trans:0.5, cenas:[
     falas:[{ q:'tonhao', s:'Abre, Bia.', de:2.2 }],
     cam:{ de:[560,340,1.5], para:[610,300,1] }, sai:'escuro', clima:'fim', fx:[['portao',3.6],['estrela',6.4]] }
 ] };
-/* v11: o final (a manhã seguinte à noite da estrela), no mesmo motor. `min`: as estrelas que o trecho pede; `leg` pode ser uma lista de três textos (para 1, 2 e 3 estrelas) */
-const FINAL = { fade:0.5, final:true, cenas:[
-  { id:'telefone', t:6.5, min:1, leg:'Na manhã seguinte, o telefone do Terraço tocou cedo.',
-    falas:[{ q:'bia', s:'Alô?... É do Michelzão?!', de:2.4 }], som:[[784,0,.2],[988,.25,.2],[784,.9,.2],[988,1.15,.2]] },
-  { id:'placa', t:8, min:1, leg:['A Lanchonete Corre-Corre ganhou a estrela do Michelzão.', 'A Lanchonete Corre-Corre ganhou duas estrelas do Michelzão.', 'A Lanchonete Corre-Corre ganhou três estrelas do Michelzão, a nota mais alta do guia.'],
-    falas:[{ q:'tonhao', s:'Tá torta?', de:2.6 }, { q:'bia', s:'Tá perfeita, tio.', de:4.4 }], som:[[784,0,.3],[988,.2,.3],[1175,.4,.3],[1568,.6,.9]] },
-  { id:'apagou', t:7.5, min:1, leg:'Na mesma semana, o guia voltou à Casa Aurora e pediu o molho da casa. O Bráulio nunca soube repetir. A estrela de lá se apagou.',
-    falas:[{ q:'braulio', s:'Cadê o tempero?!', de:3 }], som:[[440,0,.5],[392,.5,.5],[330,1,.9]] },
-  { id:'retrato', t:8, min:1, leg:'A Bia pendurou a estrela ao lado do retrato da mãe.',
-    falas:[{ q:'bia', s:'Essa estrela é nossa, mãe.', de:3.4 }], som:[[349,0,.7],[440,.6,.7],[523,1.2,1.1]] },
-  { id:'equipe', t:8, min:2, leg:'Ninguém ganha estrela sozinho. A foto da equipe foi para a parede: a Dani, o Joca, a Cami, o Anselmo e a Lia.',
-    falas:[{ q:'tonhao', s:'Olha o passarinho!', de:2.8 }], som:[[523,0,.2],[659,.18,.2],[784,.36,.2],[1046,.54,.7]] },
-  { id:'escola', t:8.5, min:1, leg:'E a garagem da Rosa reabriu. Agora é a Cozinha da Rosa, a escola de cozinha do bairro.',
-    falas:[{ q:'dani', s:'Eu era lenta, mas aprendi rápido. Vocês também vão!', de:3 }], som:[[587,0,.4],[740,.3,.4],[880,.6,.8]] },
-  { id:'ceu', t:8, min:3, leg:'Dizem que, do Terraço, nas noites limpas, dá para ver três estrelas bem juntinhas.',
-    falas:[{ q:'bia', s:'Uma delas pisca pra mim, tio.', de:2.6 }, { q:'tonhao', s:'Eu sei qual é.', de:4.6 }], som:[[1046,0,.4],[1318,.5,.4],[1568,1,1.2]] },
-  { id:'roda', t:9, min:1, leg:'Toda tarde, a Bia desce até a garagem. E sempre tem uma criança na porta da cozinha, olhando.', titulo:'Fim',
-    falas:[{ q:'bia', s:'Comida boa é carinho que a gente põe no prato.', de:3.2 }], som:[[523,0,.5],[659,.35,.5],[784,.7,.9],[1046,1.6,1.4]] }
-] };
-/* os créditos: um quadro só, depois da última cena do final (some com um toque ou em 6 s) */
-const FINAL_CREDITOS = { id:'creditos', t:6, leg:'', falas:[], cheia:true, som:[[523,0,.5],[659,.35,.5],[784,.7,.9]] };
-/* v11.16 (etapa 10a, docs/FINAL.md §4): o final no motor da abertura nova (quadro cheio). Até a v11.18 só toca pelo modo dev ("Final novo (em obras)"); na v11.18 vira o FINAL.
-   Como na ABERTURA: `cam` (de e para), `sai` (a transição), `clima` (o som, ver ab2Notas), `fx`, `legDe`; `min` e `leg` como no FINAL. As cenas não têm `som`. */
-const FINAL2 = { cheio:true, final:true, trans:0.5, cenas:[
+/* o final (a manhã seguinte à noite da estrela; refeito nas v11.16 a v11.18, docs/FINAL.md §4), no motor da abertura nova (quadro cheio). Como na ABERTURA: `cam` (de e para), `sai`
+   (a transição), `clima` (o som, ver ab2Notas), `fx`, `legDe`. `min`: as estrelas que o trecho pede; `leg` pode ser uma lista de três textos (para 1, 2 e 3 estrelas). Os créditos (`creditos`)
+   são um quadro só, depois da última cena (somem com um toque ou em 6 s). O desenho fica em 28-final.js. */
+const FINAL = { cheio:true, final:true, trans:0.5, cenas:[
   { id:'telefone', t:6.5, min:1, leg:'Na manhã seguinte, o telefone do Terraço tocou cedo.',
     falas:[{ q:'bia', s:'Alô?... É do Michelzão?!', de:2.4 }],
     cam:{ de:[950,400,1.9], para:[760,300,1.25] }, sai:'corte', clima:'sonho', fx:[['telefone',0.2],['telefone',1.4]] },
@@ -95,10 +75,10 @@ const FINAL2 = { cheio:true, final:true, trans:0.5, cenas:[
 ], creditos:{ id:'creditos', t:6, leg:'', falas:[], cheia:true, cam:{ de:[610,240,1.3], para:[610,300,1] }, sai:'escuro', clima:'creditos', fx:[['estrela',0.6]] } };
 /* as cenas do final que tocam: as de `min` até as estrelas ganhas (est); com `desde` (as estrelas já vistas), só a placa e as cenas que ainda não tinham sido vistas; os créditos, se pedidos */
 function finalCenas(est, desde, creditos, roteiro){
-  roteiro = roteiro || FINAL;   // v11.16: o FINAL2 (os créditos vêm dele; o FINAL usa o FINAL_CREDITOS)
+  roteiro = roteiro || FINAL;
   est = clamp(Math.round(+est) || 1, 1, 3); desde = clamp(Math.round(+desde) || 0, 0, 3);
   const v = roteiro.cenas.filter(c => c.min <= est && (desde < 1 || c.id === 'placa' || c.min > desde));
-  return creditos ? v.concat([roteiro.creditos || FINAL_CREDITOS]) : v;
+  return creditos ? v.concat([roteiro.creditos]) : v;
 }
 /* a câmera da abertura nova. ab2Cabe encosta na borda: mantém o z (nunca menor que 1) e leva o centro só até onde o retângulo visto ainda cabe em
    0 a TW por 0 a H. ab2Cam(cena, p): de `de` a `para` (passando pelo `meio`, se houver), com abSuave. ab2Tela: um ponto da cena na tela. */
@@ -116,7 +96,7 @@ function aberturaVista(){ return lsGet(LS.abertura) === '1'; }
 
 class Abertura {
   // origem: 'auto' (a 1ª vez que o jogo abre: no fim, vai ao menu) ou 'menu' (botão História: no fim, o cartão "Em breve")
-  // v11: roteiro (o ABERTURA, ou o FINAL e o FINAL2 com opt = { est, desde, creditos }: as cenas do final que tocam, ver finalCenas)
+  // v11: roteiro (o ABERTURA, ou o FINAL com opt = { est, desde, creditos }: as cenas do final que tocam, ver finalCenas)
   constructor(origem, rm, roteiro, opt){
     this.origem = origem === 'auto' ? 'auto' : 'menu';
     this.roteiro = roteiro || ABERTURA; opt = opt || {};
@@ -130,13 +110,13 @@ class Abertura {
   // a legenda da cena (uma lista de textos vale para 1, 2 e 3 estrelas)
   get leg(){ const l = this.cena.leg; return Array.isArray(l) ? l[this.est - 1] : l; }
   // andamento da cena, de 0 a 1 (com movimento reduzido, sempre o quadro final)
-  get p(){ return this.rm ? (this.cena.pRM != null ? this.cena.pRM : (this.roteiro.cheio ? 0.8 : 1)) : clamp(this.t / this.cena.t, 0, 1); }   // v11.12: no roteiro novo, o quadro parado é o de p 0,8
+  get p(){ return this.rm ? (this.cena.pRM != null ? this.cena.pRM : 0.8) : clamp(this.t / this.cena.t, 0, 1); }   // o quadro parado é o de p 0,8 (ou o pRM da cena)
   // opacidade do escuro por cima da cena (entrada e saída); 0 com movimento reduzido
   get escuro(){
     if (this.rm) return 0;
-    const R = this.roteiro, f = R.fade || R.trans, t = this.t, d = this.cena.t;
-    // v11.12, quadro cheio: só a entrada da 1ª cena e as cenas com sai 'escuro' (a saída delas e a entrada da seguinte)
-    const ant = this.cenas[this.i - 1], ent = !R.cheio || this.i === 0 || (ant && ant.sai === 'escuro'), sai = !R.cheio || this.cena.sai === 'escuro';
+    const f = this.roteiro.trans, t = this.t, d = this.cena.t;
+    // só a entrada da 1ª cena e as cenas com sai 'escuro' (a saída delas e a entrada da seguinte)
+    const ant = this.cenas[this.i - 1], ent = this.i === 0 || (ant && ant.sai === 'escuro'), sai = this.cena.sai === 'escuro';
     return ent && t < f ? 1 - t / f : (sai && t > d - f ? clamp((t - (d - f)) / f, 0, 1) : 0);
   }
   // v11.12: a câmera da cena agora ({ cx, cy, z }); com movimento reduzido, fica no `para`
@@ -150,7 +130,7 @@ class Abertura {
     return k > 1e-9 ? { tipo:c.sai, k:clamp(k, 0, 1) } : null;
   }
   // v11.12: a opacidade da legenda, que entra em `legDe` (padrão 0,6 s) com 0,4 s de transparência
-  get legA(){ return this.rm || !this.roteiro.cheio ? 1 : clamp((this.t - (this.cena.legDe != null ? this.cena.legDe : 0.6)) / 0.4, 0, 1); }
+  get legA(){ return this.rm ? 1 : clamp((this.t - (this.cena.legDe != null ? this.cena.legDe : 0.6)) / 0.4, 0, 1); }
   falas(){ return this.cena.falas.filter(f => this.rm || (this.t >= f.de && !(f.ate && this.t >= f.ate))); }   // ate: some (a cortina vai fechar)
   // texto da cena para o leitor de tela: legenda, falas e título
   texto(){
@@ -181,13 +161,11 @@ class Abertura {
   terminar(){ if (this.fim) return; this.fim = true; if (this.onFim) this.onFim(this); }
 }
 /* a frase da trilha de cada cena (respeita o botão de som, como o resto do áudio) */
-/* v11.12: com o roteiro de quadro cheio (a ABERTURA), a cena toca o tema da Rosa no clima dela (ab2Notas) e os efeitos (AB_FX), por uma faixa própria
-   (Sfx.faixa), cortada quando a cena troca ou a abertura fecha (aberturaSom(null)). Com ABERTURA e FINAL, toca como sempre. */
+/* v11.12: a cena toca o tema da Rosa no clima dela (ab2Notas) e os efeitos (AB_FX), por uma faixa própria (Sfx.faixa), cortada quando a cena troca ou a abertura fecha (aberturaSom(null)). */
 let abFaixa = null;
-function aberturaSom(c, roteiro){
+function aberturaSom(c){
   Sfx.corta(abFaixa); abFaixa = null;
   if (!c) return;
-  if (!roteiro || !roteiro.cheio){ (c.som || []).forEach(n => Sfx.tone(n[0], n[2], 'triangle', 0.045, n[1])); return; }
   const fx = Sfx.faixa(); abFaixa = fx;
   ab2Notas(c).forEach(n => Sfx.tone(n[0], n[2], n[3], n[4], n[1], 0, fx));
   (c.fx || []).forEach(e => { const f = AB_FX[e[0]]; if (f) f(e[1], fx); });

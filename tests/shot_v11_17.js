@@ -6,9 +6,9 @@ const OUT = path.join(__dirname, '..', 'capturas', 'v11_17'); fs.mkdirSync(OUT, 
 const html = '<!doctype html><html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"></head><body>' + fs.readFileSync(path.join(__dirname, '..', 'lanchonete.html'), 'utf8');
 const W = path.join(__dirname, 'wrapped.html'); fs.writeFileSync(W, html);
 const FILTRO = process.argv[2] || '';
-const TS = { 3:8, 4:8, 5:8.5 };   // a duração de cada cena (índices 3, 4 e 5 do FINAL2 com 3 estrelas)
+const TS = { 3:8, 4:8, 5:8.5 };   // a duração de cada cena (índices 3, 4 e 5 do FINAL com 3 estrelas)
 // abre o final novo pelo modo dev (3 estrelas) e para o relógio na cena i (de 0), no instante t (s); tm é o relógio dos gestos
-const CENA = (i, t) => `const L=window.__lcc; L.DEV.on=true; L.devFinal(3, L.FINAL2); const ab=L.aberturaAtual(); ab.update=()=>{}; ab.i=${i}; ab.t=${t}; ab.tm=${(10 + i * 7 + t).toFixed(2)};`;
+const CENA = (i, t) => `const L=window.__lcc; L.DEV.on=true; L.devFinal(3, L.FINAL); const ab=L.aberturaAtual(); ab.update=()=>{}; ab.i=${i}; ab.t=${t}; ab.tm=${(10 + i * 7 + t).toFixed(2)};`;
 const P = (i, p) => CENA(i, Math.round(TS[i] * p * 1000) / 1000);
 (async () => {
   const b = await chromium.launch(); const errs = [];

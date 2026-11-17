@@ -1,8 +1,8 @@
 /* ============================================================
    O FINAL NOVO (refeito nas v11.16 a v11.18, etapa 10; docs/FINAL.md): o desenho
-   As cenas do FINAL2 (src/18-abertura.js) no motor da abertura nova (27-abertura-nova.js): quadro cheio, câmera, camadas, luz. Cada cena recebe
+   As cenas do FINAL (src/18-abertura.js) no motor da abertura nova (27-abertura-nova.js): quadro cheio, câmera, camadas, luz. Cada cena recebe
    (c, p, T, cam) e devolve a cabeça de quem fala ([x, y, deslocamento do balão]), como as da abertura; entram na AB2_CENAS por Object.assign.
-   Aqui ficam o cenário "Terraço por dentro" (ab2Terraco, de manhã e à noite) e as cenas telefone, placa e apagou (v11.16).
+   Aqui ficam o cenário "Terraço por dentro" (ab2Terraco, de manhã e à noite) e as cenas telefone, placa e apagou (v11.16), retrato, equipe e escola (v11.17), e o cenário da varanda (ab2Varanda) e as cenas ceu, roda e creditos (v11.18).
    ============================================================ */
 
 /* ---------- o cenário "Terraço por dentro" ---------- */
@@ -524,7 +524,7 @@ Object.assign(AB2_CENAS, {
     const q = ab2EqQuadro(c,cam,pq,Tq);
     if (p >= 0.6){   // o clique: o clarão, o quadro escurece e a foto aparece no centro, numa moldura de madeira, com os nomes à mão embaixo de cada um
       const k = abSuave(abSeg(p,0.6,0.67)), sf = 0.54, pw = TW * sf, ph = H * sf, mg = 26, mb = 74, fw = 15;
-      const W = pw + mg * 2 + fw * 2, Hh = ph + mg + mb + fw * 2, cf = ab2Cam(FINAL2.cenas.find(z => z.id === 'equipe'),0.6);
+      const W = pw + mg * 2 + fw * 2, Hh = ph + mg + mb + fw * 2, cf = ab2Cam(FINAL.cenas.find(z => z.id === 'equipe'),0.6);
       c.fillStyle = 'rgba(16,14,12,.6)'; c.fillRect(0,0,TW,H);
       ab2Luz(c,TW / 2,H / 2,440,'242,194,61',0.6 * k);
       c.save(); c.translate(TW / 2,H / 2 - 6); c.rotate(2 * Math.PI / 180); const z = 0.9 + 0.1 * k; c.scale(z,z);
@@ -638,5 +638,196 @@ Object.assign(AB2_CENAS, {
         if (prova > 0 || provou > 0) ab2Mimos(cc,AB2_ES.crianca[2] + 4,Yc - 20 - 127 - 4,T,provou * (1 - abSeg(p,0.9,1) * 0.6));
       } });
     return { dani:[AB2_ES.dani,Yc - AB_ALT.dani * 0.7 - 6,0] };
+  }
+});
+
+/* ---------- a varanda do Terraço, à noite (v11.18: a cena 7, ceu) ---------- */
+// as medidas (docs/FINAL.md §8): o tampo do parapeito em y 400, o piso a partir de 486; as três estrelas juntas no alto do centro (a do meio, a da Rosa, maior); os dois vasos e o cordão de luzinhas
+const AB2_VA = { tampo:400, chao:486, estrelas:[[554,134,15],[666,134,15],[610,120,24]], vasos:[150,1070], cordaY:318, cordaSag:76 };
+// um ponto do cordão de luzinhas (t de 0 a 1): uma curva, de um vaso ao outro
+function ab2VaCorda(t){
+  const V = AB2_VA, x0 = V.vasos[0] + 6, x1 = V.vasos[1] - 6, y0 = V.cordaY, cx = (x0 + x1) / 2, cy = y0 + V.cordaSag * 2, u = 1 - t;
+  return [u * u * x0 + 2 * u * t * cx + t * t * x1,u * u * y0 + 2 * u * t * cy + t * t * y0];
+}
+// o céu e as estrelas (fundo, paralaxe 0,5): o degradê da noite, muitas estrelas pequenas e as três juntas; pisca (0 a 1): a do meio brilha mais
+function ab2VaCeu(c,T,pisca){
+  const V = AB2_VA, g = c.createLinearGradient(0,-300,0,430); g.addColorStop(0,AB_COR.noite); g.addColorStop(1,AB_COR.noite2);
+  c.fillStyle = g; c.fillRect(-300,-420,TW + 600,880);
+  for (let i = 0; i < 90; i++){
+    const x = (i * 197) % 1500 - 140, y = ((i * 83) % 330) - 40, r = (0.8 + (i % 4) * 0.35) * (T > 0 ? 0.75 + Math.abs(Math.sin(T * 1.6 + i * 1.9)) * 0.5 : 1);
+    c.fillStyle = 'rgba(255,255,255,' + (0.55 + (i % 3) * 0.12).toFixed(2) + ')'; circ(c,x,y,r); c.fill();
+  }
+  V.estrelas.forEach((q,i) => {   // as três: um halo pequeno e a estrela de oito pontas; a do meio, maior, brilha mais quando pisca
+    const meio = i === 2, r = q[2] * (meio ? 1 + pisca * 0.8 : 1) + (T > 0 ? Math.sin(T * 2.6 + i * 2) * (meio ? 1.6 : 1) : 0);
+    c.save(); c.globalCompositeOperation = 'screen'; ab2Luz(c,q[0],q[1],r * 3.4,'200,222,255',(meio ? 0.55 : 0.4) + pisca * 0.3 * (meio ? 1 : 0)); c.restore();
+    c.fillStyle = '#FFF8DC'; c.beginPath();
+    for (let k = 0; k < 8; k++){ const an = k * Math.PI / 4 - Math.PI / 2, rad = k % 2 ? r * 0.3 : r; c.lineTo(q[0] + Math.cos(an) * rad,q[1] + Math.sin(an) * rad); }
+    c.closePath(); c.fill();
+  });
+}
+// a cidade lá embaixo, em duas camadas, e a avenida de luzinhas (cada uma na sua paralaxe)
+function ab2VaCidade(c,T,perto){
+  const V = AB2_VA;
+  if (!perto){ ab2TeSkyline(c,-200,TW + 200,V.tampo - 26,'#2A3260','rgba(255,214,120,.55)',3,0.8); return; }
+  ab2TeSkyline(c,-200,TW + 200,V.tampo - 2,'#1B2245','rgba(255,200,100,.85)',1,1.05);
+  for (let i = 0; i < 90; i++){   // a avenida: luzinhas amarelas e vermelhas em fila, com um brilho que pulsa de leve
+    const x = -150 + i * 16.5 + (i * 7) % 5, y = V.tampo - 8 - (i % 3) * 3, a = 0.7 + (T > 0 ? Math.sin(T * 1.8 + i) * 0.22 : 0);
+    c.fillStyle = (i % 7 === 3 ? 'rgba(255,110,90,' : 'rgba(255,226,140,') + a.toFixed(2) + ')'; circ(c,x,y,1.9); c.fill();
+  }
+}
+// o parapeito de pedra clara com os balaústres, o piso de lajota e os dois vasos (meio: onde as pessoas pisam)
+function ab2VaMeio(c,T){
+  const V = AB2_VA, y0 = V.tampo, y1 = V.chao;
+  const gp = c.createLinearGradient(0,y0,0,y1); gp.addColorStop(0,'#BFC4DE'); gp.addColorStop(1,'#8E94B8'); c.fillStyle = gp; c.fillRect(-260,y0 + 14,TW + 520,y1 - y0 - 14);
+  for (let x = -230; x < TW + 260; x += 56){   // os balaústres
+    ell(c,x,y0 + 34,10.5,8); fs(c,'#E6E9F5',2); rr(c,x - 4,y0 + 40,8,16,3); fs(c,'#D5D9EC',1.8); ell(c,x,y0 + 64,9.5,9); fs(c,'#E6E9F5',2); rr(c,x - 8,y0 + 71,16,7,2); fs(c,'#CDD2E8',1.8);
+  }
+  rr(c,-260,y0 - 2,TW + 520,17,6); fs(c,'#EEF0FA',3); c.fillStyle = 'rgba(255,255,255,.55)'; c.fillRect(-250,y0 + 1,TW + 500,3);   // o tampo
+  rr(c,-260,y1 - 14,TW + 520,15,5); fs(c,'#D3D7EA',2.8);
+  // o piso de lajota, em perspectiva
+  const gl = c.createLinearGradient(0,y1,0,H + 160); gl.addColorStop(0,'#9096B8'); gl.addColorStop(1,'#6E749A'); c.fillStyle = gl; c.fillRect(-260,y1 + 1,TW + 520,H + 160 - y1);
+  c.strokeStyle = 'rgba(38,40,84,.34)'; c.lineWidth = 2; c.beginPath();
+  for (let k = -16; k <= 16; k++){ c.moveTo(610 + k * 40,y1 + 1); c.lineTo(610 + k * 120,H + 160); }
+  for (let j = 0, y = y1 + 22; y < H + 160; j++, y += 22 + j * 9){ c.moveTo(-260,y); c.lineTo(TW + 260,y); }
+  c.stroke();
+  const gs = c.createLinearGradient(0,y1,0,y1 + 40); gs.addColorStop(0,'rgba(30,32,70,.4)'); gs.addColorStop(1,'rgba(30,32,70,0)'); c.fillStyle = gs; c.fillRect(-260,y1 + 1,TW + 520,40);
+  // os dois vasos com plantas, em cima do tampo, e uma estaca onde o cordão se prende
+  V.vasos.forEach((x,i) => {
+    const d = i ? -1 : 1;
+    c.strokeStyle = PAL.tinta; c.lineWidth = 6; c.lineCap = 'round'; c.beginPath(); c.moveTo(x,y0 - 30); c.lineTo(x + d * 6,V.cordaY); c.stroke(); c.strokeStyle = '#8A6A4A'; c.lineWidth = 3; c.stroke();
+    [[-2.3,78,16,'#2C7A52'],[-1.9,92,15,'#3A9462'],[-1.6,100,14,'#2C7A52'],[-1.3,88,15,'#3A9462'],[-0.9,74,16,'#2C7A52'],[-2.7,56,13,'#3A9462'],[-0.5,56,13,'#3A9462']].forEach((q,j) => ab2Folha(c,x,y0 - 36,q[0] + (T > 0 ? Math.sin(T * 0.9 + i * 2 + j) * 0.035 : 0),q[1],q[2],q[3]));
+    c.beginPath(); c.moveTo(x - 27,y0 - 40); c.lineTo(x + 27,y0 - 40); c.lineTo(x + 19,y0 - 1); c.lineTo(x - 19,y0 - 1); c.closePath(); fs(c,'#B5683F',3);
+    rr(c,x - 30,y0 - 46,60,10,4); fs(c,'#C97B4A',2.6); c.fillStyle = 'rgba(255,255,255,.18)'; c.fillRect(x - 22,y0 - 34,6,28);
+  });
+}
+// a palmeira (borda direita) e a ponta da espreguiçadeira (borda esquerda), em silhueta, na frente de tudo
+function ab2VaFrente(c,T){
+  const sw = i => T > 0 ? Math.sin(T * 0.8 + i * 1.7) * 0.025 : 0;
+  c.strokeStyle = '#0E1426'; c.lineWidth = 16; c.lineCap = 'round'; c.beginPath(); c.moveTo(1316,H + 60); c.quadraticCurveTo(1290,360,1264,250); c.stroke();
+  [[-2.55,330,46],[-2.2,360,52],[-1.9,330,50],[-1.6,290,46],[-2.95,250,40],[-3.3,230,36]].forEach((q,i) => ab2Folha(c,1264,250,q[0] + sw(i),q[1],q[2],i % 2 ? '#0E1A22' : '#101A2A'));
+  // a espreguiçadeira: o encosto inclinado e a perna, com as ripas
+  c.strokeStyle = '#121830'; c.lineWidth = 46; c.lineCap = 'round'; c.beginPath(); c.moveTo(-90,H + 20); c.lineTo(112,474); c.stroke();
+  c.strokeStyle = 'rgba(120,130,190,.28)'; c.lineWidth = 3; c.lineCap = 'butt'; for (let i = 0; i < 6; i++){ c.beginPath(); c.moveTo(-60 + i * 30,H + 30 - i * 24 - 28); c.lineTo(-40 + i * 30,H + 30 - i * 24 + 20); c.stroke(); }
+  c.strokeStyle = '#121830'; c.lineWidth = 10; c.lineCap = 'round'; c.beginPath(); c.moveTo(30,520); c.lineTo(48,H + 80); c.stroke();
+}
+/* a varanda do Terraço, à noite. o: { T, pisca (0 a 1: a estrela do meio brilha forte), gente(c): as pessoas (no meio, na frente do parapeito) } */
+function ab2Varanda(c,cam,o){
+  o = o || {};
+  const T = o.T || 0, V = AB2_VA;
+  ab2Camada(c,cam,0.5,() => ab2VaCeu(c,T,o.pisca || 0));
+  ab2Camada(c,cam,0.7,() => ab2VaCidade(c,T,false));
+  ab2Camada(c,cam,0.85,() => ab2VaCidade(c,T,true));
+  ab2Camada(c,cam,1,() => {
+    ab2VaMeio(c,T);
+    // o cordão de luzinhas: o fio e as lâmpadas, de um vaso ao outro
+    c.strokeStyle = 'rgba(18,20,44,.85)'; c.lineWidth = 2.4; c.beginPath(); for (let i = 0; i <= 40; i++){ const q = ab2VaCorda(i / 40); i ? c.lineTo(q[0],q[1]) : c.moveTo(q[0],q[1]); } c.stroke();
+    for (let i = 0; i <= 26; i++){ const q = ab2VaCorda(i / 26), a = T > 0 ? 0.88 + Math.sin(T * 2.3 + i * 1.3) * 0.12 : 1; c.globalAlpha = a; circ(c,q[0],q[1] + 5,4.6); fs(c,'#FFE08A',1.5); c.globalAlpha = 1; }
+    c.save(); c.globalCompositeOperation = 'screen';   // o brilho de cada lâmpada, atrás das pessoas (para não esbranquiçar)
+    for (let i = 0; i <= 26; i++){ const q = ab2VaCorda(i / 26); ab2Luz(c,q[0],q[1] + 5,30,'255,214,120',0.3); }
+    c.restore();
+    if (o.gente) o.gente(c);
+  });
+  ab2Camada(c,cam,1.2,() => ab2VaFrente(c,T));
+  ab2Clima(c,'50,60,120',0.1);
+  ab2Vinheta(c,0.5);
+}
+
+Object.assign(AB2_CENAS, {
+  /* 7, o céu: a varanda do Terraço à noite; a câmera desce das três estrelas (a do meio pisca) até a cidade e o parapeito; a Bia (de coque e colete, de costas) e o Tonhão chegam ao parapeito;
+     ela aponta para a estrela do meio; ele passa o braço pelos ombros dela; a estrela pisca forte duas vezes e ela encosta a cabeça no ombro dele */
+  ceu(c,p,T,cam){
+    const Y = AB2.chao, K = AB2.k, st = abEsc('tonhao',K * 0.78), sb = st * 0.86, C = BIA_ROUPA_COR, N0 = ab2Noite, N = cor => N0(cor,0.14);
+    const entra = abSuave(abSeg(p,0.24,0.3)), aponta = abSuave(abSeg(p,0.3,0.4)) * (1 - abSuave(abSeg(p,0.74,0.82))), abraca = abSuave(abSeg(p,0.5,0.6)), encosta = abSuave(abSeg(p,0.8,0.9));
+    const pisca = Math.max(Math.sin(abSeg(p,0.1,0.18) * Math.PI) * 0.5, Math.abs(Math.sin(abSeg(p,0.78,0.96) * 2 * Math.PI)));
+    const bx = 556 + 10 * encosta, tx = 668;
+    ab2Varanda(c,cam,{ T, pisca, gente: cc => {
+      cc.globalAlpha = entra;
+      const sob = (1 - entra) * 12, lean = 0.07 * encosta;
+      ab2Sombra(cc,tx,Y + 4,104,13,0.4 * entra); ab2Sombra(cc,556,Y + 4,88,12,0.4 * entra);
+      abCostas(cc,tx,Y + sob,st,{ roupa:N('#ffffff'), calca:N('#3A3F4A'), pele:N('#B9794B'), cabelo:'toca', cor:N('#8C8C8C') });
+      // o braço dele: ao lado do corpo, e (de p 0,5 a 0,6) por cima dos ombros dela
+      const mao = [(bx - 22 * sb * Math.cos(lean) - tx) / st,(Y - 78 * sb - Y) / st];
+      ab2BracoDe(cc,tx,Y + sob,st,[[-19,-76],abLerp([-25,-60],[(-19 + mao[0]) / 2 - 4,(-76 + mao[1]) / 2 + 2],abraca),abLerp([-25,-44],mao,abraca)],N('#ffffff'),N('#B9794B'));
+      ab2BracoDe(cc,tx,Y + sob,st,[[19,-76],[25,-60],[25,-44]],N('#ffffff'),N('#B9794B'));
+      // a Bia, de costas: o braço de fora aponta para a estrela do meio
+      cc.save(); cc.translate(bx,Y + sob); cc.rotate(lean); cc.translate(-bx,-Y - sob);
+      ab2Vivo(cc,bx,Y + sob,T,0.7,() => {
+        abCostas(cc,bx,Y + sob,sb,{ roupa:N(C.colete), calca:N(C.saiaEsc), pele:N('#6B3F25'), cabelo:'coque', cor:N(C.cabelo), rosa:N(C.rosa) });
+        const sh = [bx + 17 * sb,Y + sob - 80 * sb], alvo = [610,120], d = Math.hypot(alvo[0] - sh[0],alvo[1] - sh[1]), len = 150 * sb / 1.87;
+        const mA = [sh[0] + (alvo[0] - sh[0]) / d * len,sh[1] + (alvo[1] - sh[1]) / d * len], rep = [bx + 26 * sb,Y + sob - 44 * sb];
+        const m = abLerp(rep,mA,aponta), cot = abLerp([bx + 26 * sb,Y + sob - 62 * sb],[(sh[0] + m[0]) / 2 + 12,(sh[1] + m[1]) / 2],aponta);
+        abBraco(cc,[sh,cot,m],N(C.colete),N('#6B3F25'),7 * sb);
+      });
+      cc.restore();
+      cc.globalAlpha = 1;
+    } });
+    return { bia:[bx,Y - 142 * sb,-150], tonhao:[tx,Y - 140 * st,150] };
+  }
+});
+
+/* ---------- a cena 8, roda: a cozinha de casa de novo (v11.18) ---------- */
+Object.assign(AB2_CENAS, {
+  /* 8, a roda: a mesma cozinha e a mesma câmera da cena 1 da abertura; a Bia adulta (avental florido da mãe) mexe a panela e cantarola, no lugar da Rosa, e uma criança do bairro espia
+     de trás do batente; ela vira o rosto, sorri e diz a frase; tira a colher, sopra e estende; a criança entra de mãos juntas, prova, fecha os olhos e cora; sobem corações;
+     a foto da Rosa, na parede, ganha um halo dourado e o título "Fim" entra no alto */
+  roda(c,p,T,cam){
+    const Z = AB2_COZ, P = Z.porta, K = AB2.k, Y = AB2.chao, sb = abEsc('bia',K), rim = Z.molho, kx1 = 440;
+    const virou = abSuave(abSeg(p,0.34,0.42)), sai = abSuave(abSeg(p,0.54,0.6)), tira = abSuave(abSeg(p,0.55,0.62)), estende = abSuave(abSeg(p,0.62,0.74)), volta = abSuave(abSeg(p,0.82,0.9));
+    const entra = abSuave(abSeg(p,0.55,0.74)), cora = abSuave(abSeg(p,0.74,0.8)), fecha = p >= 0.76 && p < 0.9, halo = abSuave(abSeg(p,0.78,0.86)), ti = T > 0 ? abSeg(p,0.835,0.915) : 1;   // o título entra em cima (com movimento reduzido, já está lá)
+    // a Bia: ao lado da panela; quando a colher sai, dá um passo para a criança
+    const bx = 580 - 20 * sai, anda = sai > 0.001 && sai < 0.999;
+    const a = T > 0 ? T * 3.2 : 0.6;
+    const ponta0 = [Z.panela[0] + 2 + Math.cos(a) * 17 * (1 - tira),rim + 2 + Math.sin(a) * 3 * (1 - tira)];   // a ponta da colher, mexendo (como a Rosa da cena 1)
+    // a criança: no corredor, depois pelo chão da cozinha, até a frente da Bia
+    const fora = abSuave(abSeg(p,0.1,0.24)) * 9 + virou * 6, vem = abSuave(clamp(entra * 1.7,0,1));
+    const kx = P.x + 8 + fora + (kx1 - P.x - 8 - 15) * entra, ky = Z.rodape + (Y - Z.rodape) * vem, sk = abEsc('biaCrianca',K * (0.86 + 0.14 * vem)), kb = sk * 0.74;
+    // a colher: da panela, sobe, vai à boca da criança e, no fim, volta para a mão da Bia
+    const tipo = [kx1 + 16,Y - 37 * abEsc('biaCrianca',K) * 0.74];
+    const lev = [Z.panela[0] - 8,rim - 64], L3 = (u,v,k) => [u[0] + (v[0] - u[0]) * k,u[1] + (v[1] - u[1]) * k];
+    let ponta = L3(L3(ponta0,lev,tira),tipo,estende);
+    ponta = L3(ponta,[bx - 30,Y - 20 * sb],volta);
+    const vm = L3(L3([-34,-16],[6,-14],tira),[44,-10],estende), vmv = L3(vm,[-20,-4],volta);
+    const mao = [ponta[0] + vmv[0],ponta[1] + vmv[1]], cabo = [ponta[0] + vmv[0] * 1.42,ponta[1] + vmv[1] * 1.42];
+    const ml = [(mao[0] - bx) / sb,(mao[1] - Y) / sb];
+    const corte = P.x - 90 * abSuave(abSeg(entra,0.02,0.26));
+    const kid = cc => abCrianca(cc,kx,ky,sk,{ pele:2,cabelo:6,cor:'#1B1512',camisa:'#3C7BD9',calca:'#3C5A4A',t:T,sd:1.4,olha:1,fecha,
+      andando:false,bracoE:[[-11,-24],[-2.5,-31]],bracoD:[[11,-24],[2.5,-31]] });
+    ab2Cozinha(c,cam,'tarde',{ T, banco:[446,470], foto:true, fotoHalo:halo,
+      atras: entra <= 0.02 ? (cc => { kid(cc); }) : null,   // espiando: no corredor, recortada pelo vão da porta
+      gente: cc => {
+        if (entra <= 0.02){   // os dedinhos no batente
+          const hy = ky - 27 * kb; rr(cc,P.x - 9,hy - 9,15,20,6); fs(cc,SKINS[2],2.2);
+          cc.strokeStyle = 'rgba(34,32,28,.5)'; cc.lineWidth = 1.5; cc.beginPath(); cc.moveTo(P.x - 7,hy - 2); cc.lineTo(P.x + 3,hy - 2); cc.moveTo(P.x - 7,hy + 4); cc.lineTo(P.x + 3,hy + 4); cc.stroke();
+        }
+        ab2Sombra(cc,bx - 14,Y + 3,82,13,0.42);
+        ab2Vivo(cc,bx,Y,T,0,() => abBia(cc,bx,Y,{ roupa:1,t:T,olha:-1.8 * virou,moving:anda,ph:T * 10,maos:[[-15,-18],[ml[0],ml[1],(10 + ml[0]) / 2,(-30 + ml[1]) / 2 + 6]] }));
+        ab2Notinhas(cc,bx + 46,Y - 236,T,1 - abSeg(p,0.36,0.44));
+        if (entra > 0.02){
+          ab2Sombra(cc,kx - 8,ky + 3,50,9,0.4 * vem); cc.save(); cc.beginPath(); cc.rect(corte,-200,TW + 400,H + 400); cc.clip(); kid(cc); cc.restore();   // entrando: na frente de tudo
+          if (cora > 0){ cc.fillStyle = 'rgba(238,84,116,' + (0.42 * cora).toFixed(3) + ')'; ell(cc,kx - 7.6 * kb,ky - 37.4 * kb,2.9 * kb,2.1 * kb); cc.fill(); ell(cc,kx + 7.6 * kb,ky - 37.4 * kb,2.9 * kb,2.1 * kb); cc.fill(); }
+          ab2Mimos(cc,kx + 6,ky - 62 * kb,T,cora * (1 - abSeg(p,0.92,1) * 0.5));
+        }
+        abColher(cc,cabo,ponta,mao.concat('#6B3F25'),3.8 * sb,volta < 0.5 && tira < 0.5 ? AB_COR.molho : (estende > 0.6 && volta < 0.5 ? AB_COR.molho : PAL.madeira));   // a colher por cima de tudo, com o molho até a criança provar
+      } });
+    if (ti > 0){ c.globalAlpha = ti; txt(c,'Fim',TW / 2,56,80,PAL.mostarda,'center',FD,10); c.globalAlpha = 1; }
+    return { bia:[bx,Y - AB_ALT.bia * K - 8,-180] };
+  }
+});
+
+/* ---------- os créditos (v11.18): a rua de casa à noite, com a garagem acesa como escola ---------- */
+Object.assign(AB2_CENAS, {
+  /* os créditos: a rua de casa à noite, o portão aberto e a garagem acesa como a escola, com o letreiro "Cozinha da Rosa" e a estrela da Rosa piscando (a cada 2 s); ninguém na calçada;
+     por cima, três textos que entram por transparência (sem legenda, balão nem bolinhas). Com movimento reduzido, tudo à vista e a estrela parada em 0,5 */
+  creditos(c,p,T,cam){
+    const Yc = AB2_ES.chao, sd = abEsc('dani',1.38 * 0.7);
+    const pisca = T > 0 ? 1 - Math.abs(((T % 2) / 2) * 2 - 1) : 0.5;
+    const e = { hand:[AB2_ES.dani - 15.5 * sd,Yc - 17 * sd],colherNaMao:null,palmas:1,ri:1,vapor:true,entrou:[1,1],provou:0 };
+    ab2RuaCasa(c,cam,1,{ T,letras:1,pisca,letreiro:'Cozinha da Rosa',dentro:cc => ab2EsDentro(cc,T,e) });
+    const a = d => T > 0 ? abSeg(p,d,d + 0.1) : 1;
+    [['Lanchonete Corre-Corre',46,60,PAL.mostarda,FD,8,0.1],['O sonho da Bia',98,32,PAL.creme,FD,5,0.25],['Obrigado por jogar!',136,26,PAL.creme,FB,4,0.45]].forEach(q => {
+      const al = a(q[6]); if (al <= 0) return;
+      c.globalAlpha = al; txt(c,q[0],TW / 2,q[1],q[2],q[3],'center',q[4],q[5],TW - 120); c.globalAlpha = 1;
+    });
+    return {};
   }
 });

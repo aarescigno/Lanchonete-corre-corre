@@ -8,7 +8,7 @@ const W = path.join(__dirname, 'wrapped.html'); fs.writeFileSync(W, html);
 const FILTRO = process.argv[2] || '';
 const TS = [6.5, 8, 7.5];
 // abre o final novo pelo modo dev (est estrelas) e para o relógio na cena i (de 0), no instante t (s); tm é o relógio dos gestos
-const CENA = (est, i, t) => `const L=window.__lcc; L.DEV.on=true; L.devFinal(${est}, L.FINAL2); const ab=L.aberturaAtual(); ab.update=()=>{}; ab.i=${i}; ab.t=${t}; ab.tm=${(10 + i * 7 + t).toFixed(2)};`;
+const CENA = (est, i, t) => `const L=window.__lcc; L.DEV.on=true; L.devFinal(${est}, L.FINAL); const ab=L.aberturaAtual(); ab.update=()=>{}; ab.i=${i}; ab.t=${t}; ab.tm=${(10 + i * 7 + t).toFixed(2)};`;
 const P = (i, p, est) => CENA(est || 1, i, Math.round(TS[i] * p * 1000) / 1000);
 (async () => {
   const b = await chromium.launch(); const errs = [];
@@ -17,7 +17,7 @@ const P = (i, p, est) => CENA(est || 1, i, Math.round(TS[i] * p * 1000) / 1000);
   [1, 2, 3].forEach(e => lista.push(['cena2_est' + e + '_p09', P(1, 0.9, e), 1220, 600, false]));
   [[0, [0.05, 0.15, 0.3, 0.38, 0.46, 0.7, 0.8, 0.99]], [1, [0.05, 0.1, 0.2, 0.33, 0.45, 0.55, 0.65, 0.72, 0.8, 0.99]], [2, [0.05, 0.2, 0.32, 0.42, 0.5, 0.56, 0.62, 0.7, 0.8, 0.99]]].forEach(([i, ps]) => ps.forEach(p => lista.push(['cena' + (i + 1) + '_x' + String(Math.round(p * 100)).padStart(2, '0'), P(i, p), 1220, 600, false])));
   lista.push(['troca_corte', P(0, 0.985), 1220, 600, false], ['troca_iris', P(1, 0.97), 1220, 600, false]);
-  lista.push(['terraco_noite', "const L=window.__lcc; L.DEV.on=true; L.devFinal(1, L.FINAL2); const ab=L.aberturaAtual(); ab.update=()=>{}; ab.i=0; ab.t=1; ab.tm=11; const o=L.AB2_CENAS.telefone; L.AB2_CENAS.telefone=function(c,p,T,cam){ L.ab2Terraco(c,cam,'noite',{T}); return {}; };", 1220, 600, false]);
+  lista.push(['terraco_noite', "const L=window.__lcc; L.DEV.on=true; L.devFinal(1, L.FINAL); const ab=L.aberturaAtual(); ab.update=()=>{}; ab.i=0; ab.t=1; ab.tm=11; const o=L.AB2_CENAS.telefone; L.AB2_CENAS.telefone=function(c,p,T,cam){ L.ab2Terraco(c,cam,'noite',{T}); return {}; };", 1220, 600, false]);
   [0, 1, 2].forEach(i => lista.push(['cena' + (i + 1) + '_rm', CENA(1, i, 0), 1220, 600, true]));
   for (const [f, js, w, h, rm] of lista) {
     if (FILTRO && f.indexOf(FILTRO) < 0) continue;

@@ -1,4 +1,4 @@
-// v11.16 (etapa 10a): o final novo, o motor, o som e as cenas 1 a 3 (FINAL2). Só toca pelo modo dev; o FINAL antigo segue como está.
+// v11.16 (etapa 10a): o final novo, o motor, o som e as cenas 1 a 3. (v11.18: o FINAL2 virou o FINAL; o final antigo e o cartão de obra saíram.)
 const load=require('./harness.js');
 let fails=0,total=0; const ok=(c,m)=>{ total++; if(!c){fails++;console.log('FAIL:',m);} else console.log('ok  :',m); };
 const TH=600, TW=1220;
@@ -13,8 +13,8 @@ const ROT=[ // id, t, min, leg (ou lista), falas [q,s,de], sai, clima, cam, fx
  ['roda',9,1,'E sempre tem uma criança na porta da cozinha, olhando.',[['bia','Comida boa é carinho que a gente põe no prato.',3.2]],'escuro','fim',[[330,330,1.7],[610,300,1]],[['panela',0.4]]]];
 
 // ---------- CA1: o roteiro ----------
-{ const H=load(), {L}=H, R=L.FINAL2, cs=R.cenas;
-  ok(R.cheio===true && R.final===true && R.trans===0.5 && cs.length===8,'CA1: FINAL2 é de quadro cheio, final, trans 0,5, com 8 cenas');
+{ const H=load(), {L}=H, R=L.FINAL, cs=R.cenas;
+  ok(R.cheio===true && R.final===true && R.trans===0.5 && cs.length===8,'CA1: o FINAL é de quadro cheio, final, trans 0,5, com 8 cenas');
   ok(cs.every((c,i)=>{ const r=ROT[i]; return c.id===r[0] && c.t===r[1] && c.min===r[2] && JSON.stringify(c.leg)===JSON.stringify(r[3]) && JSON.stringify(c.falas.map(f=>[f.q,f.s,f.de]))===JSON.stringify(r[4]) && c.sai===r[5] && c.clima===r[6] && JSON.stringify([c.cam.de,c.cam.para])===JSON.stringify(r[7]) && JSON.stringify(c.fx)===JSON.stringify(r[8]); }),'CA1: id, tempo, min, legenda, falas, sai, clima, câmera e fx de cada cena, como no docs/FINAL.md §4');
   ok(cs[2].legDe===4.8 && cs[7].titulo==='Fim' && cs.filter(c=>c.legDe!=null).length===1,'CA1: legDe 4,8 só no apagou; a roda tem o título Fim');
   const ls=[]; cs.forEach(c=>(Array.isArray(c.leg)?c.leg:[c.leg]).forEach(l=>ls.push(l)));
@@ -22,19 +22,17 @@ const ROT=[ // id, t, min, leg (ou lista), falas [q,s,de], sai, clima, cam, fx
   ok(cs.every(c=>c.som===undefined),'CA1: nenhuma cena tem som');
   const cr=R.creditos; ok(cr.id==='creditos' && cr.t===6 && cr.cheia===true && cr.clima==='creditos' && cr.sai==='escuro' && JSON.stringify(cr.cam.de)==='[610,240,1.3]' && JSON.stringify(cr.cam.para)==='[610,300,1]' && JSON.stringify(cr.fx)==='[["estrela",0.6]]','CA1: os créditos');
   ok(Math.abs(cs.reduce((a,c)=>a+c.t,0)-63.5)<1e-9,'CA1: com 3 estrelas, 63,5 s mais 6 dos créditos');
-  ok(L.FINAL.final===true && !L.FINAL.cheio,'CA1: o FINAL antigo só ganha final:true');
 }
 
 // ---------- CA2: a Abertura escolhe as cenas ----------
 { const H=load(), {L}=H, ids=a=>a.cenas.map(c=>c.id).join();
   const T3='telefone,placa,apagou,retrato,equipe,escola,ceu,roda';
-  ok(ids(new L.Abertura('menu',false,L.FINAL2,{est:1}))==='telefone,placa,apagou,retrato,escola,roda','CA2: 1 estrela: 6 cenas');
-  ok(ids(new L.Abertura('menu',false,L.FINAL2,{est:2,creditos:true}))==='telefone,placa,apagou,retrato,equipe,escola,roda,creditos','CA2: 2 estrelas com créditos');
-  ok(ids(new L.Abertura('menu',false,L.FINAL2,{est:3,creditos:true}))===T3+',creditos','CA2: 3 estrelas com créditos');
-  ok(ids(new L.Abertura('menu',false,L.FINAL2,{est:3,desde:1}))==='placa,equipe,ceu' && ids(new L.Abertura('menu',false,L.FINAL2,{est:3,desde:2}))==='placa,ceu','CA2: com `desde`, a placa e as cenas ainda não vistas');
-  ok(ids(new L.Abertura('menu',false,L.FINAL,{est:3,creditos:true}))===T3+',creditos' && new L.Abertura('menu',false,L.FINAL,{est:1,creditos:true}).cenas.slice(-1)[0].id==='creditos','CA2: o FINAL antigo segue escolhendo como antes');
-  [1,2,3].forEach(e=>{ const a=new L.Abertura('menu',false,L.FINAL2,{est:e}); a.i=1; ok(a.leg===L.FINAL2.cenas[1].leg[e-1],'CA2: a legenda da placa com '+e+' estrela(s)'); });
-  const a=new L.Abertura('menu',false,L.FINAL2,{est:1,creditos:true});
+  ok(ids(new L.Abertura('menu',false,L.FINAL,{est:1}))==='telefone,placa,apagou,retrato,escola,roda','CA2: 1 estrela: 6 cenas');
+  ok(ids(new L.Abertura('menu',false,L.FINAL,{est:2,creditos:true}))==='telefone,placa,apagou,retrato,equipe,escola,roda,creditos','CA2: 2 estrelas com créditos');
+  ok(ids(new L.Abertura('menu',false,L.FINAL,{est:3,creditos:true}))===T3+',creditos','CA2: 3 estrelas com créditos');
+  ok(ids(new L.Abertura('menu',false,L.FINAL,{est:3,desde:1}))==='placa,equipe,ceu' && ids(new L.Abertura('menu',false,L.FINAL,{est:3,desde:2}))==='placa,ceu','CA2: com `desde`, a placa e as cenas ainda não vistas');
+  [1,2,3].forEach(e=>{ const a=new L.Abertura('menu',false,L.FINAL,{est:e}); a.i=1; ok(a.leg===L.FINAL.cenas[1].leg[e-1],'CA2: a legenda da placa com '+e+' estrela(s)'); });
+  const a=new L.Abertura('menu',false,L.FINAL,{est:1,creditos:true});
   ok(Math.abs(a.legA-0)<1e-9,'CA2: a legenda ainda não entrou em t 0'); a.i=2; a.t=3; ok(a.legA===0,'CA2: no apagou a legenda só entra em 4,8 s'); a.t=5.4; ok(a.legA===1,'CA2: e entra até 5,2 s');
   a.i=0; a.t=6.4; ok(a.trans && a.trans.tipo==='corte','CA2: a transição de saída da 1 é o corte, nos últimos 0,5 s'); a.i=1; a.t=7.8; ok(a.trans && a.trans.tipo==='iris','CA2: a da 2 é a íris');
   const cam=a.cam; a.i=0; a.t=0; const c0=a.cam; ok(Math.abs(c0.z-1.9)<1e-9,'CA2: a câmera da 1 começa em z 1,9'); a.t=6.5; ok(Math.abs(a.cam.z-1.25)<1e-9,'CA2: e acaba em 1,25');
@@ -44,11 +42,11 @@ const ROT=[ // id, t, min, leg (ou lista), falas [q,s,de], sai, clima, cam, fx
 
 // ---------- CA3: as cenas 1, 2 e 3 desenham e as cabeças caem na tela ----------
 const CENAS=[['telefone',0,['bia']],['placa',1,['tonhao','bia']],['apagou',2,['braulio']]];
-[false,true].forEach(rm=>[1,2,3].forEach(est=>{ const H=load({rm}), {L}=H, R=L.FINAL2, ab=new L.Abertura('menu',rm,R,{est});
+[false,true].forEach(rm=>[1,2,3].forEach(est=>{ const H=load({rm}), {L}=H, R=L.FINAL, ab=new L.Abertura('menu',rm,R,{est});
   CENAS.forEach(([id,i])=>{ let erro=null;
     try{ ab.i=i; [0,0.25,0.5,0.75,0.95].forEach(p=>{ ab.t=R.cenas[i].t*p; ab.tm=70+i+p*7; L.drawAbertura(H.ctx,ab); }); } catch(e){ erro=e; }
     ok(!erro && typeof L.AB2_CENAS[id]==='function','CA3: '+id+' desenha em p 0, 0,25, 0,5, 0,75 e 0,95, com '+est+' estrela(s)'+(rm?', com movimento reduzido':'')+(erro?': '+erro.message+' '+String(erro.stack).split('\n')[1]:'')); }); }));
-{ const H=load(), {L}=H, R=L.FINAL2;
+{ const H=load(), {L}=H, R=L.FINAL;
   CENAS.forEach(([id,i,quem])=>{ const c=R.cenas[i];
     c.falas.forEach(f=>{ [f.de,f.de+0.9].forEach(t=>{ const p=t/c.t, cam=L.ab2Cam(c,p);
       let r=null, erro=null; try{ r=L.AB2_CENAS[id](H.ctx,p,10+t,cam); } catch(e){ erro=e; }
@@ -62,16 +60,13 @@ const CENAS=[['telefone',0,['bia']],['placa',1,['tonhao','bia']],['apagou',2,['b
   const ab=new L.Abertura('menu',false,R,{est:3}); ab.i=1; ab.t=7.2; ab.tm=9; let e2=null; try{ L.drawAbertura(H.ctx,ab); }catch(e){ e2=e; } ok(!e2,'CA3: a placa com 3 estrelas desenha');
 }
 
-// ---------- CA4: as cenas ainda sem desenho (v11.17: a 7, a 8 e os créditos) caem no cartão de obra; v11.17: as 4, 5 e 6 ganharam o desenho e saem daqui ----------
-[false,true].forEach(rm=>{ const H=load({rm}), {L}=H, R=L.FINAL2, ab=new L.Abertura('menu',rm,R,{est:3,creditos:true}), tx=[]; H.ctx.fillText=s=>tx.push(s); let erro=null;
-  ab.cenas.forEach((c,i)=>{ if(typeof L.AB2_CENAS[c.id]==='function') return; tx.length=0; try{ ab.i=i; [0.1,0.5,0.95].forEach(p=>{ ab.t=c.t*p; ab.tm=5+i; L.drawAbertura(H.ctx,ab); }); } catch(e){ erro=e; }
-    ok(!erro && tx.includes('cena em obras') && tx.includes(c.id),'CA4: '+c.id+' cai no cartão de obra'+(rm?' (movimento reduzido)':'')+(erro?': '+erro.message:'')); }); delete H.ctx.fillText; });
-{ const H=load(), {L}=H, ab=new L.Abertura('menu',false,L.FINAL2,{est:3,creditos:true}); let n=0; const c0=H.ctx.arc; H.ctx.arc=function(x,y,r){ n++; };
+// ---------- CA4: as bolinhas (v11.18: nenhuma cena cai mais no cartão de obra: ver o smoke94) ----------
+{ const H=load(), {L}=H, ab=new L.Abertura('menu',false,L.FINAL,{est:3,creditos:true}); let n=0; const c0=H.ctx.arc; H.ctx.arc=function(x,y,r){ if(y===584) n++; };   // v11.18: só as bolinhas (y 584); as cenas e os créditos também desenham arcos
   ab.i=3; ab.t=2; ab.tm=2; L.drawAbertura(H.ctx,ab); const dentro=n; n=0; ab.i=ab.n-1; L.drawAbertura(H.ctx,ab); const cred=n;
-  ok(dentro===ab.cenas.filter(c=>!c.cheia).length || dentro>0,'CA4: as bolinhas contam as 8 cenas (sem os créditos)'); ok(cred===0,'CA4: os créditos não têm bolinhas ('+cred+')'); delete H.ctx.arc; }
+  ok(dentro===ab.cenas.filter(c=>!c.cheia).length && dentro===8,'CA4: as bolinhas contam as 8 cenas (sem os créditos)'); ok(cred===0,'CA4: os créditos não têm bolinhas ('+cred+')'); delete H.ctx.arc; }
 
 // ---------- CA5: o som ----------
-{ const H=load(), {L}=H, R=L.FINAL2, F=n=>R.cenas.find(c=>c.id===n);
+{ const H=load(), {L}=H, R=L.FINAL, F=n=>R.cenas.find(c=>c.id===n);
   const fe=L.ab2Notas(F('placa')), T0=[392,523,494,523];
   ok(fe.slice(0,4).every((n,i)=>n[0]===T0[i] && n[3]==='square' && n[4]===0.04 && Math.abs(n[1]-i*0.2)<1e-9),'CA5: festa: as 4 primeiras notas do tema em square, 0,2 s cada, volume 0,04');
   const resto=fe.slice(4); ok(resto.length>10 && Math.min.apply(null,resto.map(n=>n[1]))>=1.0-1e-9 && resto.some(n=>n[3]==='triangle' && n[4]===0.045) && resto.some(n=>n[3]==='sine'),'CA5: festa: a partir de 1,0 s o tema do sonho, com o baixo');
@@ -88,20 +83,20 @@ const CENAS=[['telefone',0,['bia']],['placa',1,['tonhao','bia']],['apagou',2,['b
   S.tone=t0; S.noise=n0;
   // a faixa da cena: toca pela faixa e é cortada ao trocar
   let cortes=0, tons=0; const FX={f:2}; S.corta=()=>{ cortes++; }; S.faixa=()=>FX; S.tone=function(){ tons++; }; S.noise=function(){ tons++; };
-  L.aberturaSom(R.cenas[0],R); ok(tons>=L.ab2Notas(R.cenas[0]).length+4,'CA5: o FINAL2 toca as notas do clima e os efeitos'); const c1=cortes; L.aberturaSom(R.cenas[1],R); ok(cortes===c1+1,'CA5: trocar de cena corta a faixa'); L.aberturaSom(null); ok(cortes===c1+2,'CA5: fechar corta a faixa');
+  L.aberturaSom(R.cenas[0]); ok(tons>=L.ab2Notas(R.cenas[0]).length+4,'CA5: o FINAL toca as notas do clima e os efeitos'); const c1=cortes; L.aberturaSom(R.cenas[1]); ok(cortes===c1+1,'CA5: trocar de cena corta a faixa'); L.aberturaSom(null); ok(cortes===c1+2,'CA5: fechar corta a faixa');
 }
 
 // ---------- CA6: o modo dev ----------
 { const H=load(), {g,L,els}=H; L.DEV.on=true; g.devCapitulo(15); L.DEV.aba='historia'; L.buildDev();
   const txt=e=>{ let s=e.textContent||''; (e.children||[]).forEach(c=>{ s+=' '+txt(c); }); return s; };
-  const dv=txt(els['dev-body']); ok(/Final novo \(em obras\): ★/.test(dv) && /Final novo \(em obras\): ★★★/.test(dv) && /Assistir o final: ★/.test(dv),'CA6: o painel tem "Final novo (em obras)" e segue com "Assistir o final"');
+  const dv=txt(els['dev-body']); ok(/Assistir o final: ★/.test(dv) && /Assistir o final: ★★★/.test(dv) && !/Final novo/.test(dv),'CA6: o painel tem "Assistir o final" e não tem mais "Final novo (em obras)" (v11.18)');
   const antes=JSON.stringify(g.save);
-  [1,2,3].forEach(e=>{ g.setState('menu'); L.devFinal(e,L.FINAL2); const ab=L.aberturaAtual();
-    ok(ab && ab.roteiro===L.FINAL2 && ab.est===e && ab.cenas.map(c=>c.id).join()===new L.Abertura('menu',false,L.FINAL2,{est:e,creditos:true}).cenas.map(c=>c.id).join() && els['ov-abertura'].classList.contains('show'),'CA6: o ★'+('★'.repeat(e-1))+' toca o FINAL2 com as cenas certas e os créditos');
+  [1,2,3].forEach(e=>{ g.setState('menu'); L.devFinal(e); const ab=L.aberturaAtual();
+    ok(ab && ab.roteiro===L.FINAL && ab.est===e && ab.cenas.map(c=>c.id).join()===new L.Abertura('menu',false,L.FINAL,{est:e,creditos:true}).cenas.map(c=>c.id).join() && els['ov-abertura'].classList.contains('show'),'CA6: o ★'+('★'.repeat(e-1))+' toca o FINAL2 com as cenas certas e os créditos');
     ab.pular(); ok(!L.aberturaAtual() && g.state==='menu','CA6: o Pular volta ao menu'); });
-  g.setState('menu'); L.devFinal(1,L.FINAL2); let ab=L.aberturaAtual(); for(let k=0;k<20 && L.aberturaAtual();k++) ab.update(100); ok(!L.aberturaAtual() && g.state==='menu','CA6: ao fim, volta ao menu');
+  g.setState('menu'); L.devFinal(1); let ab=L.aberturaAtual(); for(let k=0;k<20 && L.aberturaAtual();k++) ab.update(100); ok(!L.aberturaAtual() && g.state==='menu','CA6: ao fim, volta ao menu');
   ok(JSON.stringify(g.save)===antes,'CA6: não muda o save');
-  g.setState('menu'); L.devFinal(2); ab=L.aberturaAtual(); ok(ab.roteiro===L.FINAL,'CA6: "Assistir o final" segue tocando o FINAL antigo'); ab.pular();
+  g.setState('menu'); L.devFinal(2); ab=L.aberturaAtual(); ok(ab.roteiro===L.FINAL,'CA6: "Assistir o final" toca o FINAL (o novo)'); ab.pular();
 }
 console.log('smoke92: '+total+' checagens, fails = '+fails);
 process.exit(fails?1:0);
