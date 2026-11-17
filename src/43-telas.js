@@ -2,6 +2,7 @@
 game.hooks.state = function(s){
   if (s === 'menu'){ game.resetDay(game.proxDia); buildMenu(); devSync(); showOnly(['ov-menu']); }
   else if (s === 'desafios'){ game.sairDesafio(); game.resetDay(game.proxDia); buildDesafios(); showOnly(['ov-desafios']); }   // v12: a tela de Desafios (o save de verdade volta, se estava no de mentira)
+  else if (s === 'teste'){ game.sairDesafio(); game.resetDay(game.proxDia); buildTeste(); showOnly(['ov-teste']); }   // v12.3.1: a tela do Teste de habilidade (modo dev); como nos Desafios, o save de verdade volta
   else if (s === 'desafiofim'){ buildDesafioFim(); showOnly(['ov-desafio-fim']); }
   else if (s === 'testefim'){ buildTesteFim(); showOnly(['ov-teste-fim']); }   // v12.2: o fim do Teste de habilidade (o relatório)
   else if (s === 'intro'){
@@ -257,6 +258,8 @@ on('btn-manual-voltar', () => { Sfx.tap(); fecharManual(); });
 on('btn-endless',    () => { Sfx.init(); Sfx.resume(); Sfx.tap(); game.startEndless(); });
 on('btn-rank',       () => { Sfx.init(); Sfx.resume(); Sfx.tap(); openRank('ov-menu'); });
 on('btn-desafios',   () => { Sfx.init(); Sfx.resume(); Sfx.tap(); game.setState('desafios'); });   // v12
+on('btn-teste',   () => { Sfx.init(); Sfx.resume(); Sfx.tap(); game.setState('teste'); });   // v12.3.1
+on('btn-teste-menu-volta', () => { Sfx.tap(); game.setState('menu'); });
 on('btn-desafios-voltar', () => { Sfx.tap(); game.setState('menu'); });
 on('btn-desafio-de-novo', () => { Sfx.init(); Sfx.resume(); Sfx.tap(); if (game.desafio) game.startDesafio(game.desafio.id); });
 on('btn-desafio-copia',  () => { Sfx.init(); testeCopia('desafio'); });   // v12.3: só aparece no modo dev
@@ -264,7 +267,7 @@ on('btn-desafio-lista',   () => { Sfx.tap(); game.setState('desafios'); });
 /* v12.2: o fim do Teste de habilidade: copiar o relatório (sem ele na tela, a não ser que a cópia falhe), jogar de novo (a mesma fase, tentativa + 1) e voltar ao menu (com o save de verdade) */
 on('btn-teste-copia',   () => { Sfx.init(); testeCopia(); });
 on('btn-teste-de-novo', () => { Sfx.init(); Sfx.resume(); Sfx.tap(); if (game.teste) game.startTeste(game.teste.id); });
-on('btn-teste-volta',   () => { Sfx.tap(); game.setState('menu'); });
+on('btn-teste-volta',   () => { Sfx.tap(); game.setState(DEV.on ? 'teste' : 'menu'); });   // v12.3.1: no modo dev, volta à tela do Teste
 on('btn-ver',        () => { Sfx.tap(); showOnly(['ov-ver']); });
 on('btn-ver-close',  () => { Sfx.tap(); showOnly(['ov-menu']); });
 /* modo dev: 10 toques seguidos no selo da versão (no máximo 1,5 s entre um e outro) ligam e desligam */
@@ -340,7 +343,7 @@ on('btn-reset',      () => {
   recomeca();
 });
 on('btn-start',      () => { Sfx.init(); Sfx.resume(); Sfx.ok(); game.begin(); });
-on('btn-intro-menu', () => game.setState(game.desafio && !game.teste ? 'desafios' : 'menu'));   // v12.2: o teste volta ao menu
+on('btn-intro-menu', () => game.setState(game.teste && DEV.on ? 'teste' : game.desafio && !game.teste ? 'desafios' : 'menu'));   // v12.2: o teste volta ao menu; v12.3.1: no modo dev, à tela do Teste
 on('btn-resume',     () => { Sfx.tap(); game.resume(); });
 /* v9.6.13: na carreira com o dia aberto, Reiniciar e Menu da pausa pedem um 2º toque (o 1º só troca o texto do botão) */
 let pausaPede = null;
@@ -357,7 +360,7 @@ function pausaConfirma(id, normal){
 on('btn-restart',    () => { if (!pausaConfirma('btn-restart', 'Confirmar: recomeçar o dia')) return; pausaReset(); if (game.mode === 'semfim') game.startEndless(); else if (game.mode === 'treino') game.startTreino(); else if (game.teste) game.startTeste(game.teste.id); else if (game.desafio) game.startDesafio(game.desafio.id); else { game.encerrar(); game.startDay(game.day.n); } });
 on('btn-treino-dia1', () => { Sfx.tap(); playCareer(); });
 on('btn-treino-menu', () => game.setState('menu'));
-on('btn-pause-menu', () => { if (!pausaConfirma('btn-pause-menu', 'Confirmar: sair do dia')) return; pausaReset(); game.encerrar(); game.encerrado = null; game.setState(game.desafio && !game.teste ? 'desafios' : 'menu'); });
+on('btn-pause-menu', () => { if (!pausaConfirma('btn-pause-menu', 'Confirmar: sair do dia')) return; pausaReset(); game.encerrar(); game.encerrado = null; game.setState(game.teste && DEV.on ? 'teste' : game.desafio && !game.teste ? 'desafios' : 'menu'); });
 on('btn-end-menu',   () => game.setState('menu'));
 on('btn-next',       () => { if (game.result && game.result.noite) fluxoHistoria(() => game.goShop(game.proxDia)); else game.goShop(game.proxDia); });   // v9.6.10: as conversas já tocaram antes dos resultados (v10.10: menos na noite da estrela, que toca depois)
 on('btn-shop-go',    () => { Sfx.tap(); game.startDay(game.shopNext); });

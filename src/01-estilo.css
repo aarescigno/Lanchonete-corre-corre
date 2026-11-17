@@ -46,6 +46,8 @@ p{margin:calc(var(--u)*6) 0;font-size:max(12px,calc(var(--u)*16));line-height:1.
 .chip{font-family:var(--fd);font-size:max(13px,calc(var(--u)*18));min-width:max(44px,calc(var(--u)*50));min-height:max(44px,calc(var(--u)*46));background:var(--azulejo);border:calc(var(--u)*3) solid var(--tinta);border-radius:calc(var(--u)*12);cursor:pointer;color:var(--tinta);box-shadow:0 calc(var(--u)*4) 0 var(--tinta)}
 .menu-panel .chips{gap:calc(var(--u)*6)}   /* 8 chips (0 a 7) numa linha */
 .menu-panel .chip{min-width:max(40px,calc(var(--u)*46))}
+.menu-panel .chip{flex:none;min-height:36px}   /* só aparecem no modo dev */
+@media (max-height:620px){.menu-panel .chips{flex-wrap:nowrap;overflow-x:auto;padding-bottom:2px}}   /* v12.3.1: em tela baixa, os 10 chips do modo dev numa fileira só, que rola por dentro (antes passavam da largura do painel ou ocupavam duas fileiras) */
 .menu-panel .menu-info{margin:calc(var(--u)*4) 0 0}   /* v8.3: o caixa, as estrelas e o lucro acumulado da campanha */
 .menu-panel .menu-aviso{margin:calc(var(--u)*6) 0 0;padding:calc(var(--u)*4) calc(var(--u)*8);border-radius:calc(var(--u)*8);background:var(--creme);border:2px solid var(--mostarda);font-weight:600}   /* v8.6.9: o aviso de uma vez só (cardápio que cresce) */
 .menu-panel .menu-aviso .link{margin:0;padding:0 4px;min-height:0}
@@ -280,6 +282,7 @@ table.cx .rs{font-size:inherit}
 .menu-panel .row.tight{margin-top:calc(var(--u)*8);gap:calc(var(--u)*10)}
 .menu-panel .row.tight .btn{padding-left:calc(var(--u)*15);padding-right:calc(var(--u)*15)}   /* v8.5: cabem Continuar, Missão zero e História na 1ª linha */
 .menu-panel .menu-btns.quatro .row.tight .btn{padding-left:calc(var(--u)*9);padding-right:calc(var(--u)*9)}   /* v12: 4 botões na 2ª fileira com o Desafios */
+.menu-panel .menu-btns.cinco .row.tight .btn{padding-left:calc(var(--u)*5);padding-right:calc(var(--u)*5);font-size:max(13px,calc(var(--u)*17))}   /* v12.3.1: 5 botões, com o Desafios e o Teste (modo dev) */
 .menu-panel .btn{font-size:max(14px,calc(var(--u)*20));padding:calc(var(--u)*6) calc(var(--u)*14)}
 .ver-ico{margin-left:auto;align-self:flex-end;width:max(40px,calc(var(--u)*40));height:max(40px,calc(var(--u)*40));display:flex;align-items:center;justify-content:center;border-radius:50%;border:calc(var(--u)*2) solid rgba(34,32,28,.3);background:transparent;color:#7a7263;cursor:pointer;padding:0;transition:color .15s,background .15s,border-color .15s}
 .ver-ico:hover,.ver-ico:focus-visible{color:var(--faixa);background:var(--creme);border-color:var(--faixa)}
@@ -392,11 +395,14 @@ table.rank tr.me td{background:#fbe7a8}
   .menu-panel .title{font-size:max(24px,calc(var(--u)*44));padding-right:calc(var(--u)*40)}
   .menu-panel .tag{margin:calc(var(--u)*8) 0 calc(var(--u)*4)}
   .menu-panel .lbl{margin-top:calc(var(--u)*4)}
-  .menu-panel .chips{gap:4px;flex-wrap:nowrap}
-  .menu-panel .chip{min-width:38px}
+  .menu-panel .chips{gap:4px;flex-wrap:nowrap;overflow-x:auto}
+  .menu-panel .chip{min-width:38px;min-height:28px}
   .menu-btns{display:flex;flex-wrap:wrap;gap:8px;margin-top:calc(var(--u)*10)}
   .menu-btns .row.tight{display:contents}
   .menu-panel .links .link{margin-top:calc(var(--u)*4)}
+  .menu-panel .links{gap:2px 8px}
+  .menu-panel .links .link{min-height:28px}
+  .menu-panel .ver-ico{width:30px;height:30px}   /* v12.3.1: com o modo dev, os links e os três ícones cabem em menos fileiras */
 }
 .item .tonxp{grid-column:1 / -1;font-weight:700;font-size:.9em}   /* v8.8: experiência do Tonhão */
 .item .tonxp-bar{height:8px;border-radius:4px;background:rgba(0,0,0,.15);margin-top:3px;overflow:hidden}
@@ -443,6 +449,20 @@ table.rank tr.me td{background:#fbe7a8}
   #ov-endless .row .btn,#ov-falencia .row .btn{min-height:32px;font-size:14px;padding:2px 14px;box-shadow:0 3px 0 var(--tinta)}
 }
 
+/* v12.3.1: a tela do Teste de habilidade (modo dev) */
+.teste-panel{width:calc(var(--u)*640);max-width:100%}
+.teste-panel #teste-nome{font:600 max(16px,calc(var(--u)*17)) var(--fb);color:var(--tinta);background:#fff;border:calc(var(--u)*2) solid var(--tinta);border-radius:calc(var(--u)*6);min-height:max(40px,calc(var(--u)*42));padding:0 10px;width:100%;box-sizing:border-box}
+.teste-fases{display:grid;grid-template-columns:1fr 1fr;gap:calc(var(--u)*10);margin:calc(var(--u)*10) 0}
+.teste-fases .btn{min-height:44px}
+@media (max-width:600px) and (min-height:461px){.teste-fases{grid-template-columns:1fr}}
+@media (max-height:460px){
+  .teste-panel{padding:calc(var(--u)*10) calc(var(--u)*16)}
+  .teste-panel h2{font-size:max(18px,calc(var(--u)*28));margin-bottom:0}
+  .teste-panel p{margin:2px 0}
+  .teste-fases{gap:6px;margin:4px 0}
+  .teste-panel .row{margin-top:calc(var(--u)*4)}
+  .teste-panel .btn{min-height:34px;box-shadow:0 3px 0 var(--tinta);font-size:14px}
+}
 /* v12, os Desafios: os cartões da tela (nome, medalha e o "?" da ficha) e o cartão do fim */
 .desafios-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:calc(var(--u)*12);width:calc(var(--u)*620);max-width:100%;margin:calc(var(--u)*10) 0}
 .dcard{position:relative}

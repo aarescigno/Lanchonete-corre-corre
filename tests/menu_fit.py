@@ -4,6 +4,7 @@
 #  v11.15: os botões Voltar e Pular da abertura (#ov-abertura) ficam à vista, com 44 px de altura ou mais, sem se cobrir (python3 menu_fit.py abertura);
 #  CA2: os painéis Ranking, Instalar no celular, Atualização (v11.16.1), fim do Turno sem fim, falência, abertura do dia, pausa e fim da Missão zero cabem inteiros;
 #  v12: o menu com o botão Desafios (no Fim da história), a tela de Desafios e o cartão do fim do desafio cabem inteiros (python3 menu_fit.py desafios);
+#  v12.3.1: o menu com o modo dev ligado (Desafios e Teste) e a tela do Teste (python3 menu_fit.py paineis);
 #  CA3: o painel Versões não rola (a lista rola por dentro) e o Fechar está à vista.
 from playwright.sync_api import sync_playwright
 import pathlib, os, sys
@@ -57,7 +58,7 @@ with sync_playwright() as p:
         # ---- v12: o menu com o botão Desafios, a tela de Desafios e o cartão do fim ----
         if SOLO in ('','menu','desafios'):
             run(pg,FIMSV+"g.setState('menu');")
-            r=pg.evaluate("()=>{const p=document.querySelector('.menu-panel'),b=document.getElementById('btn-desafios'),t=new Set([...document.querySelectorAll('.menu-btns .btn')].map(x=>Math.round(x.getBoundingClientRect().top/6)));return [p.scrollHeight,p.clientHeight,p.scrollWidth,p.clientWidth,b.getBoundingClientRect().width>0,t.size]}")
+            r=pg.evaluate("()=>{const p=document.querySelector('.menu-panel'),b=document.getElementById('btn-desafios'),t=new Set([...document.querySelectorAll('.menu-btns .btn')].filter(x=>x.getBoundingClientRect().width>0).map(x=>Math.round(x.getBoundingClientRect().top/6)));return [p.scrollHeight,p.clientHeight,p.scrollWidth,p.clientWidth,b.getBoundingClientRect().width>0,t.size]}")
             bad=r[0]>r[1]+1 or r[2]>r[3]+1 or not r[4] or r[5]>2; fails+=bad; total+=1   # v12: depois do Fim (Missão zero vira link), os botões ficam em no máximo duas fileiras
             print(('FAIL' if bad else 'ok  ')+f': {tag} menu com o botão Desafios altura {r[0]}/{r[1]} largura {r[2]}/{r[3]} visível={r[4]} fileiras={r[5]}')
         if SOLO in ('','paineis','desafios'):
@@ -109,13 +110,22 @@ with sync_playwright() as p:
             run(pg,FIM+"Object.defineProperty(navigator,'clipboard',{value:{writeText:()=>Promise.reject(1)},configurable:true});document.execCommand=()=>false;g.startTeste('terraco');g.begin();g.schedule=[];g.nextIdx=0;g.groups=[];g.custo=0;g.money=g.fixo+g.day.meta;g.finishDay();document.getElementById('btn-teste-copia').click();")
             pg.wait_for_timeout(200)
             conf(pg,f'{tag} fim do Teste (caixa do relatório aberta)','#ov-teste-fim .panel',['#btn-teste-copia','#btn-teste-de-novo','#btn-teste-volta','#teste-fim-caixa .cx-txt'])
+            # v12.3.1: o menu com o modo dev ligado (Desafios e Teste lado a lado) e a tela do Teste
+            run(pg,FIMSV+"g.setDev(true);g.setState('menu');")
+            r=pg.evaluate("()=>{const p=document.querySelector('.menu-panel'),b=document.getElementById('btn-teste'),d=document.getElementById('btn-desafios'),t=new Set([...document.querySelectorAll('.menu-btns .btn')].filter(x=>x.getBoundingClientRect().width>0).map(x=>Math.round(x.getBoundingClientRect().top/6)));return [p.scrollHeight,p.clientHeight,p.scrollWidth,p.clientWidth,b.getBoundingClientRect().width>0&&d.getBoundingClientRect().width>0,t.size]}")
+            bad=r[0]>r[1]+1 or r[2]>r[3]+1 or not r[4] or r[5]>3; fails+=bad; total+=1
+            if bad and os.environ.get('V'): print(pg.evaluate("()=>[...document.querySelector('.menu-panel').children].map(e=>[e.id||e.className,Math.round(e.getBoundingClientRect().height)]).concat([...document.querySelectorAll('#menu-links > *')].filter(e=>e.getBoundingClientRect().width>0).map(e=>[e.id,Math.round(e.getBoundingClientRect().left),Math.round(e.getBoundingClientRect().top),Math.round(e.getBoundingClientRect().width),Math.round(e.getBoundingClientRect().height)]))"))
+            print(('FAIL' if bad else 'ok  ')+f': {tag} menu do modo dev (Desafios e Teste) altura {r[0]}/{r[1]} largura {r[2]}/{r[3]} visíveis={r[4]} fileiras={r[5]}')
+            run(pg,FIMSV+"g.setDev(true);g.setState('teste');")
+            conf(pg,f'{tag} tela do Teste','#ov-teste .panel',['#btn-teste-menu-volta','#teste-nome','#teste-lista [data-teste=garagem]','#teste-lista [data-teste=terraco]'])
+            run(pg,"g.setDev(false);")
         # ---- CA3: as Versões ----
         if SOLO in ('','versoes'):
             run(pg,"document.getElementById('ov-ver').classList.add('show');")
             conf(pg,f'{tag} Versões','#ov-ver .panel',['#btn-ver-close'])
             r=pg.evaluate("()=>{const l=document.querySelector('.verlist');return [l.scrollHeight,l.clientHeight,l.querySelectorAll('li').length]}")
             total+=1
-            if r[2]!=15: fails+=1; print(f'FAIL: {tag} a lista das Versões tem {r[2]} linhas (esperado 15: a v12.3, a v12.2, a v12.1, a v12, a v11 e da v10 à v1)')
+            if r[2]!=16: fails+=1; print(f'FAIL: {tag} a lista das Versões tem {r[2]} linhas (esperado 16: a v12.3.1, a v12.3, a v12.2, a v12.1, a v12, a v11 e da v10 à v1)')
         # ---- v11.15: a abertura (os botões Voltar e Pular, por cima do quadro cheio, à vista e sem se cobrir) ----
         if SOLO in ('','abertura'):
             run(pg,"g.setState('menu');document.getElementById('btn-historia').click();")

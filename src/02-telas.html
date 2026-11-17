@@ -5,7 +5,7 @@
 
     <div class="ov show" id="ov-menu">
       <div class="panel menu-panel">
-        <span class="vtag" id="vtag" aria-label="Versão 12.3">v12.3</span>
+        <span class="vtag" id="vtag" aria-label="Versão 12.3.1">v12.3.1</span>
         <h1 class="title">Lanchonete <br>Corre-Corre</h1>
         <p class="tag">Ajude a Bia a atender a freguesia da esquina antes que o cafezinho esfrie!</p>
         <div class="lbl" id="menu-dia">História</div>
@@ -22,6 +22,7 @@
           <div class="row tight">
             <button class="btn" id="btn-endless">Turno sem fim</button>
             <button class="btn alt" id="btn-desafios" style="display:none">Desafios</button>
+            <button class="btn alt" id="btn-teste" style="display:none">Teste</button>
             <button class="btn alt" id="btn-manual">Manual</button>
             <button class="btn alt" id="btn-rank">Ranking</button>
           </div>
@@ -47,6 +48,15 @@
         <h2>Desafios</h2>
         <div class="desafios-grid" id="desafios-grid" role="list"></div>
         <div class="row"><button class="btn go" id="btn-desafios-voltar">Voltar</button></div>
+      </div>
+    </div>
+
+    <div class="ov" id="ov-teste">
+      <div class="panel teste-panel">
+        <h2>Teste de habilidade</h2>
+        <p class="small">Quatro fases, sempre com os mesmos clientes. No fim, copie o relatório e mande.</p>
+        <div id="teste-lista"></div>
+        <div class="row"><button class="btn go" id="btn-teste-menu-volta" type="button">Voltar</button></div>
       </div>
     </div>
 
@@ -289,7 +299,8 @@
       <div class="panel">
         <h2>Versões</h2>
         <ul class="verlist">
-          <li><b>v12.3</b><span class="cur">versão atual</span><br>17/11/2026 &mdash; Os desafios agora têm sempre os mesmos clientes, para todo mundo e em toda tentativa.</li>
+          <li><b>v12.3.1</b><span class="cur">versão atual</span><br>No modo dev, o Teste de habilidade ganhou um botão no menu.</li>
+          <li><b>v12.3</b><br>17/11/2026 &mdash; Os desafios agora têm sempre os mesmos clientes, para todo mundo e em toda tentativa.</li>
           <li><b>v12.2</b><br>17/11/2026 &mdash; Só no modo dev: o Teste de habilidade, quatro fases padrão com relatório para nivelar o bot com o jeito de jogar de gente.</li>
           <li><b>v12.1</b><br>17/11/2026 &mdash; Mais quatro desafios: a festa junina lotada, o jogo do Brasil, a noite do crítico e os VIPs exigentes.</li>
           <li><b>v12</b><br>17/11/2026 &mdash; Desafios: depois do fim da história, dias avulsos que valem medalha de bronze, prata ou ouro.</li>
