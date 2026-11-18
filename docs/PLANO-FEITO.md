@@ -2072,3 +2072,8 @@ Vinda da Etapa 14 ("O bot com habilidade de gente"), cujas 14c e 14b seguem no `
 Vinda da Etapa 14 ("O bot com habilidade de gente"), cuja 14b segue no `docs/PLANO.md`.
 - **14c** (v12.3, depois da 14a, que traz a semente e o relatório): cada Desafio com semente fixa, ou seja, os mesmos clientes para todo jogador e em toda tentativa. A calibração troca a semente (até 10 por desafio), não os valores. No modo dev, o fim do desafio ganha "Copiar relatório". Spec: `docs/spec-v12.3.md`.
   **Modelo:** Sonnet, esforço médio (o mecanismo vem pronto da v12.2; a calibração é rodar sementes em ordem, com a regra de parada decidida)
+
+## Etapa 14d — O Teste com o máximo de cada ponto e a equipe do jeito que quiser (v12.4)
+Vinda da Etapa 14 ("O bot com habilidade de gente"), cuja 14b segue no `docs/PLANO.md`.
+- **14d** (v12.4): cada fase do Teste e cada Desafio com o que a campanha dá naquele ponto, no máximo (sem Cami na área industrial; Terraço como no capítulo 11; a Garagem com a Dani); no Teste, a tela da fase para escolher quem vem e as funções de cada um; o relatório com a linha `Equipe:`; os 7 Desafios recalibrados. Spec: `docs/spec-v12.4.md`.
+  **Modelo:** Sonnet, esforço alto (regra nova em muitas partes, tela nova, relatório e a recalibração dos 7 Desafios)

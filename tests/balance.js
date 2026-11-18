@@ -47,7 +47,7 @@ if(process.env.TESTE){
   const num={ pct:[], est:[], perd:[], sentar:[], pedido:[], prato:[], conta:[], suja:[], acoes:[], toques:[], fila:[], parada:[] }, casos={ sentar:0, pedido:0, prato:0, conta:0, suja:0 };
   const med=a=>a.reduce((x,y)=>x+y,0)/a.length;
   for(let k=0;k<N;k++){
-    g.startTeste(T.id); g.begin();
+    g.startTeste(T.id,process.env.TESTE_EQ?JSON.parse(process.env.TESTE_EQ):undefined); g.begin();   // v12.4: TESTE_EQ='<json no formato da equipe guardada>' troca a equipe do bot (padrão: a da fase)
     let st=0; while(g.state==='playing'&&st<30000){ bot(); g.update(0.05); st++; }
     if(g.state!=='testefim') throw new Error('o teste não acabou em '+st+' passos');
     const m=g.tm, lucro=Math.round(g.lucro), min=m.t/60;

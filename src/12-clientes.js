@@ -96,7 +96,15 @@ function testeTent(){
   DESAFIOS.forEach(d => { const v = ok(o['d-' + d.id]); if (v) r['d-' + d.id] = v; });   // v12.3: a tentativa de cada Desafio (chave d-<id>), só as que já começaram
   return r;
 }
-function testeSobe(id){ const r = testeTent(); r[id] = (r[id] || 0) + 1; lsSet(TESTE_LS, JSON.stringify(r)); return r[id]; }
+function testeLsRaw(){ try { const o = JSON.parse(lsGet(TESTE_LS) || '{}'); return o && typeof o === 'object' && !Array.isArray(o) ? o : {}; } catch(e) { return {}; } }
+/* v12.4: a equipe escolhida de cada fase, no mesmo lcc-teste (chave eq-<id>; o formato é o do TESTE_EQ_PADRAO); testeEqLe devolve o que está guardado (ou null), e testeEqGrava(id, null) apaga */
+function testeEqLe(id){ const e = testeLsRaw()['eq-' + id]; return e && typeof e === 'object' && !Array.isArray(e) ? e : null; }
+function testeEqGrava(id, eq){ const o = testeLsRaw(); if (eq) o['eq-' + id] = eq; else delete o['eq-' + id]; lsSet(TESTE_LS, JSON.stringify(o)); }
+function testeSobe(id){
+  const r = testeTent(), raw = testeLsRaw();
+  Object.keys(raw).forEach(k => { if (k.indexOf('eq-') === 0) r[k] = raw[k]; });   // v12.4: as equipes guardadas ficam
+  r[id] = (r[id] || 0) + 1; lsSet(TESTE_LS, JSON.stringify(r)); return r[id];
+}
 /* v10.2.1: o Modo História liga fora do modo dev e no jeito "De verdade" do modo dev (no Livre fica desligado) */
 function histLiga(){ return HIST.on && !devLivre() && !DESAFIO_EST.on; }
 /* v12: durante um Desafio a História fica desligada (sem conversa, capítulo, objetivo nem reação de história); o Game liga e desliga */

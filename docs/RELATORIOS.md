@@ -8,12 +8,13 @@ Um bloco por relatório, como veio (sem mexer no texto), no fim do arquivo, sem 
 ```
 cat >> docs/RELATORIOS.md <<'EOF'
 
-LCC-TESTE 2 · v12.3.2 · Garagem · dia 7 · semente 7001
-Jogador: Ana · tentativa 3 · celular · toque 412×915 · 17/11/2026 18:40
+LCC-TESTE 3 · v12.4 · Garagem · dia 7 · semente 7001
+Jogador: Ana · tentativa 3 · celular · toque 412×915 · 18/11/2026 18:40
+Equipe: Dani (recolher, lavar, água)
 ...
 EOF
 ```
 
-Uma linha em branco entre os blocos. A 1ª linha (`LCC-TESTE 2 · ...`) abre o bloco; o número depois de `LCC-TESTE` é o formato (2 desde a v12.3.2, com o tipo do aparelho na linha `Jogador:`: celular, tablet, computador ou bot; os blocos do formato 1 seguem lidos, com o tipo `?`). Se o formato mudar, o número sobe e a ferramenta ganha o leitor novo, sem apagar os antigos.
+Uma linha em branco entre os blocos. A 1ª linha (`LCC-TESTE 3 · ...`) abre o bloco; o número depois de `LCC-TESTE` é o formato (3 desde a v12.4, com a linha `Equipe:` logo depois de `Jogador:`; 2 desde a v12.3.2, com o tipo do aparelho na linha `Jogador:`: celular, tablet, computador ou bot; os blocos do formato 1 seguem lidos, com o tipo `?`). Se o formato mudar, o número sobe e a ferramenta ganha o leitor novo, sem apagar os antigos.
 
 ## Os relatórios

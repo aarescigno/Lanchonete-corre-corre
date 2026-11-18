@@ -9,7 +9,7 @@ const game = new Game(canvas, ctx);
 /* quem nunca fez a Missão zero (e ainda está no dia 1) encontra o botão dela em destaque */
 function treinoPrimeiro(){ return !game.save.treino && game.proxDia <= 1 && !DEV.on; }
 
-const SCREENS = ['ov-menu','ov-manual','ov-intro','ov-treino','ov-pause','ov-end','ov-shop','ov-falencia','ov-endless','ov-rank','ov-ver','ov-app','ov-atu','ov-abertura','ov-escolha','ov-conversa','ov-continua','ov-guia','ov-desafios','ov-desafio-fim','ov-teste','ov-teste-fim'];
+const SCREENS = ['ov-menu','ov-manual','ov-intro','ov-treino','ov-pause','ov-end','ov-shop','ov-falencia','ov-endless','ov-rank','ov-ver','ov-app','ov-atu','ov-abertura','ov-escolha','ov-conversa','ov-continua','ov-guia','ov-desafios','ov-desafio-fim','ov-teste','ov-teste-fase','ov-teste-fim'];
 function showOnly(ids){
   SCREENS.forEach(id => { const el = $(id); if (!el) return; if (ids.indexOf(id) >= 0) el.classList.add('show'); else el.classList.remove('show'); });
 }
@@ -215,8 +215,46 @@ function buildTeste(){
   const fases = el('div', 'teste-fases'); box.appendChild(fases);
   TESTES.forEach(t => {
     const b = el('button', 'btn alt', t.nome + ' (' + tent[t.id] + ')'); b.type = 'button'; b.setAttribute('data-teste', t.id);
-    b.addEventListener('click', () => { Sfx.init(); Sfx.resume(); Sfx.tap(); grava(); game.startTeste(t.id); });
+    b.addEventListener('click', () => { Sfx.init(); Sfx.resume(); Sfx.tap(); grava(); game.testeFase = t.id; game.setState('testefase'); });   // v12.4: o toque abre a tela da fase (a equipe); quem começa o dia é o "Jogar"
     fases.appendChild(b);
+  });
+}
+/* v12.4: a tela da fase do Teste: uma linha por ajudante do ponto (o Tonhão sempre vem e não aparece), com "Vem"/"Não vem" e, para quem vem, as tarefas (e o modo da Cami); tudo no nível máximo do ponto.
+   A equipe em edição (testeFaseEq, no formato guardado) vai para o lcc-teste a cada mudança; "Padrão" volta à da fase; "Jogar" começa o dia com ela */
+let testeFaseEq = null;
+function testeFaseT(){ return TESTES.find(x => x.id === game.testeFase) || TESTES[0]; }
+function testeFaseAbre(){ const T = testeFaseT(); testeFaseEq = testeEqNorm(T, testeEqLe(T.id)); buildTesteFase(); }
+function testeFaseMuda(){ const T = testeFaseT(); testeFaseEq = testeEqNorm(T, testeFaseEq); testeEqGrava(T.id, testeFaseEq); buildTesteFase(); }
+function testeFasePadrao(){ const T = testeFaseT(); testeEqGrava(T.id, null); testeFaseEq = testeEqNorm(T, null); buildTesteFase(); }
+function buildTesteFase(){
+  const T = testeFaseT(), nv = testeNivel(T), ponto = PONTOS[nv - 1], eq = testeFaseEq || testeEqNorm(T, null), box = $('teste-fase-lista'), dono = testeDono(eq);
+  clearEl(box);
+  $('teste-fase-titulo').textContent = 'Teste: ' + T.nome;
+  const bt = (pai, txt, on, fn, attr) => { const b = el('button', null, txt); b.type = 'button'; b.setAttribute('aria-pressed', on ? 'true' : 'false'); if (attr) Object.keys(attr).forEach(k => b.setAttribute(k, attr[k])); b.addEventListener('click', () => { Sfx.tap(); fn(); }); pai.appendChild(b); return b; };
+  TESTE_PESSOAS.filter(q => testeTem(q, nv)).forEach(q => {
+    const x = eq[q], lin = el('div', 'tf-linha'), cab = el('div', 'tf-cab');
+    lin.setAttribute('data-quem', q);
+    cab.appendChild(el('b', 'tf-nome', TESTE_NOMES[q]));
+    bt(cab, x.vem ? 'Vem' : 'Não vem', x.vem, () => { x.vem = x.vem ? 0 : 1; testeFaseMuda(); }, { 'data-vem':q });
+    lin.appendChild(cab);
+    if (x.vem && q === 'cami'){
+      const modos = el('div', 'tf-tasks');
+      [['tarefas', 'Tarefas'], ['mesas', 'Minhas mesas']].concat(nv >= 4 ? [['tudo', 'Ajuda em tudo']] : []).forEach(m => bt(modos, m[1], x.modo === m[0], () => { x.modo = m[0]; testeFaseMuda(); }, { 'data-modo':m[0] }));
+      lin.appendChild(modos);
+    }
+    if (x.vem && (q === 'dani' || q === 'joca' || (q === 'cami' && x.modo === 'tarefas'))){
+      const tasks = el('div', 'tf-tasks'), vagas = testeVagas(q, nv, T.cap), ef = testeEfetivas(q, eq);
+      testeTarefas(q, nv).forEach(id => {
+        const t = daniTaskDe(DANI_TASKS.find(d => d.id === id), ponto), on = x.tasks.indexOf(id) >= 0;
+        const com = q === 'cami' ? null : q === 'joca' ? (dono !== 'joca' ? dono : null) : (BASICAS.indexOf(id) >= 0 && dono !== 'dani' ? dono : null);   // a tarefa básica que, pela regra do donoBasico, fica com outro
+        const b = bt(tasks, t.short, on && !com, () => { const i = x.tasks.indexOf(id); if (i >= 0) x.tasks.splice(i, 1); else x.tasks.push(id); testeFaseMuda(); }, { 'data-tarefa':id });
+        b.title = t.name;
+        if (com){ b.disabled = true; b.title = t.name + ' (com ' + (com === 'cami' ? 'a Cami' : 'o Joca') + ')'; b.appendChild(el('small', null, 'com ' + (com === 'cami' ? 'a Cami' : 'o Joca'))); }
+        else if (!on && ef.length >= vagas) b.disabled = true;
+      });
+      lin.appendChild(tasks);
+    }
+    box.appendChild(lin);
   });
 }
 function devTeste(secao, botao){
@@ -229,7 +267,7 @@ function devTeste(secao, botao){
     const b = botao(r, t.nome + ' (' + tent[t.id] + ')', () => {
       grava();
       if (game.state !== 'menu') game.setState('menu');
-      if (game.startTeste(t.id)) fecharDev();
+      game.testeFase = t.id; game.setState('testefase'); fecharDev();   // v12.4: abre a tela da fase (a equipe)
     });
     b.setAttribute('data-teste', t.id);
   });

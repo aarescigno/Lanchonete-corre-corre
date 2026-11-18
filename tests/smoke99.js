@@ -33,7 +33,9 @@ bloco('CA1',()=>{
     inp().value='  Ana   Maria  '; inp().fire('change'); ok(store.lcc2_name==='Ana Maria','CA1: o campo grava o nome no LS.name, com o cleanName ('+store.lcc2_name+')');
     L.buildDev(); ok(inp().value==='Ana Maria','CA1: ao abrir de novo, o campo traz o nome gravado');
     bt().find(b=>b.textContent==='Avenida Brasil (0)').fire('click');
-    ok(g.state==='intro' && g.teste && g.teste.id==='avenida' && !els['ov-dev'].classList.contains('show') && /Teste: Avenida Brasil/.test(txt(els['intro-title'])),'CA1: o botão fecha o painel e vai à introdução ("Teste: Avenida Brasil")');
+    ok(g.state==='testefase' && g.testeFase==='avenida' && !els['ov-dev'].classList.contains('show') && els['ov-teste-fase'].classList.contains('show') && /Teste: Avenida Brasil/.test(txt(els['teste-fase-titulo'])),'CA1: o botão fecha o painel e abre a tela da fase (v12.4: ela é que começa o dia)');
+    els['btn-teste-fase-jogar'].fire('click');
+    ok(g.state==='intro' && g.teste && g.teste.id==='avenida' && /Teste: Avenida Brasil/.test(txt(els['intro-title'])),'CA1: o "Jogar" da tela da fase vai à introdução ("Teste: Avenida Brasil")');
     ok(/Meta: R\$ \d+/.test(txt(els['intro-goal'])) && txt(els['intro-note'])==='Jogue um dia como sempre. No fim, copie o relatório e mande.','CA1: a introdução tem a meta, como nos Desafios, e o aviso'); }
   { const {L,els,g}=mk(); g.startTeste('garagem'); g.begin(); g.setState('paused'); ok(txt(els['pause-note'])==='Se sair agora, não sai relatório.','CA1: a nota da pausa: "Se sair agora, não sai relatório."'); }
   { const {L,els,g}=mk(); g.setDev(true); L.buildMenu(); ok(!/Teste de habilidade/.test(txt(els['ov-menu'])) && !/Teste de habilidade/.test(txt(els['ov-desafios'])),'CA1: nem com o modo dev ligado o menu mostra o teste (só o painel do dev)'); } });
@@ -48,7 +50,7 @@ bloco('CA2',()=>{
     ok(g.startTeste(id)===true && g.state==='intro' && g.teste.id===id && g.teste.semente===SEM[i],'CA2: '+id+': startTeste vai à introdução, com a semente '+SEM[i]);
     ok(g.ponto.id===PONTOS[i] && g.day.n===DIAS[i] && g.day.meta===g.diaPonto(L.diaOf(DIAS[i])).meta && g.day.expert===g.diaPonto(L.diaOf(DIAS[i])).expert && g.day.groups===g.diaPonto(L.diaOf(DIAS[i])).groups,'CA2: '+id+': o ponto, o dia '+DIAS[i]+' e as metas e os grupos do diaPonto, sem multiplicar (meta '+g.day.meta+')');
     const eq=g.save.equipe;
-    if(i===0) ok(['dani','joca','cami','anselmo','lia'].every(q=>eq[q]===0) && eq.tonhao>0,'CA2: Garagem: só a Bia e o Tonhão (equipe zerada)');
+    if(i===0) ok(['joca','cami','anselmo','lia'].every(q=>eq[q]===0) && eq.tonhao>0 && eq.dani>0,'CA2: Garagem: o Tonhão e a Dani (v12.4: o máximo do ponto), sem os outros');
     else ok(eq.dani>0 && eq.tonhao>0 && eq.joca>0 && g.save.divulga==='redes' && g.save._desafio===true,'CA2: '+id+': a equipe "Tudo no máximo" e as Redes sociais, no save de mentira (dani '+eq.dani+', joca '+eq.joca+', cami '+eq.cami+')');
     ok(g.clima==='' && g.quebras.length===0 && g.fiscal===null && g.evento==='' && g.visita===null && g.noite===false && g.conversa===null && !!g.day.gripe===!!L.diaOf(DIAS[i]).gripe,'CA2: '+id+': sem clima, quebra, fiscal, evento, crítico, noite nem conversa, mesmo com DEV.forca ligado');
     ok(L.DEV.vel===1 && Object.keys(L.DEV.forca).length===0,'CA2: '+id+': DEV.vel em 1 e os forçados do dev não valem durante o teste');
@@ -84,7 +86,7 @@ bloco('CA3',()=>{
 // ---------- CA4: as medidas, num dia roteirizado ----------
 bloco('CA4',()=>{
   // a Garagem, sem ajudante: o roteiro inteiro, passo a passo, com um oráculo que conta por fora
-  const {g,L,els}=mk(); roteiro(g,'garagem'); const m=g.tm, o={ fila:0, par:0 }, dt=0.05;
+  const {g,L,els}=mk(); roteiro(g,'garagem'); semHelp(g); const m=g.tm, o={ fila:0, par:0 }, dt=0.05;
   const espera=()=>g.queue.some(q=>q.state==='queue' && g.tables.some(t=>t.free&&t.seats>=q.size)) || g.tables.some(t=>t.open&&((t.group&&(t.group.state==='wantOrder'||t.group.state==='wantBill'))||(t.dirty&&!t.group))) || g.kitchen.plates.some(p=>p&&p.group&&p.group.state==='ordered');
   const passo=s=>{ for(let i=0;i<Math.round(s/dt);i++){ g.update(dt); o.fila+=g.bia.acts.length*dt; if(!g.bia.acts.length && !g.bia.moving && espera()) o.par+=dt; } };
   passo(2);
@@ -118,7 +120,7 @@ bloco('CA4',()=>{
   ok(perto(m.par,o.par,0.4) && m.par>5,'CA4: a Bia parada bate com a contada por fora ('+m.par.toFixed(2)+' s contra '+o.par.toFixed(2)+')');
   const fm=m.filaS/m.t, pp=m.par/m.t; ok(fm>0 && fm<3 && pp>0 && pp<1,'CA4: fila média '+fm.toFixed(2)+' e Bia parada '+Math.round(100*pp)+'% do turno');
   // ações por minuto: o 'ac' por minuto de turno
-  ok(L.testeRelatorio(g).split('\n')[5].indexOf('Ritmo: '+(m.ac/(m.t/60)).toFixed(1).replace('.',',')+' ações/min')===0,'CA4: as ações por minuto de turno saem no relatório ('+(m.ac/(m.t/60)).toFixed(1)+')'); }
+  ok(L.testeRelatorio(g).split('\n')[6].indexOf('Ritmo: '+(m.ac/(m.t/60)).toFixed(1).replace('.',',')+' ações/min')===0,'CA4: as ações por minuto de turno saem no relatório ('+(m.ac/(m.t/60)).toFixed(1)+')'); }
   );
 bloco('CA4 (ajudante e aparelho)',()=>{
   // o caso resolvido por ajudante não entra: a mesa suja que a Dani limpa sozinha
@@ -138,8 +140,9 @@ bloco('CA4 (ajudante e aparelho)',()=>{
 // ---------- CA5: o relatório ----------
 bloco('CA5',()=>{
   const R='(\\d+,\\d / \\d+,\\d / \\d+|—)';
-  const re=[/^LCC-TESTE 2 · v12(\.\d+)+ · Garagem · dia 7 · semente 7001$/,
+  const re=[/^LCC-TESTE 3 · v12(\.\d+)+ · Garagem · dia 7 · semente 7001$/,
     /^Jogador: Ana · tentativa 3 · (celular|tablet|computador|bot) · (toque \d+×\d+|mouse \d+×\d+|bot -) · \d{2}\/\d{2}\/\d{4} \d{2}:\d{2}$/,
+    /^Equipe: Dani \(recolher, lavar, água\)$/,   // v12.4 (formato 3)
     /^Resultado: lucro -?R\$ \d+ · meta R\$ \d+ \(-?\d+%\) · (0★|★{1,3}) · servidos \d+ de \d+ · Gúgou (\d,\d|—)$/,
     /^Perdidos: \d+ · fila sem mesa \d+ · fila com mesa \d+ · pedido \d+ · prato \d+ · conta \d+ · retirada \d+ · esfriou \d+$/,
     new RegExp('^Reação em s \\(média / mediana / casos\\): sentar '+R+' · pedido '+R+' · prato '+R+' · conta '+R+' · mesa suja '+R+'$'),
@@ -151,21 +154,21 @@ bloco('CA5',()=>{
   const A=fam(g), t=mesa(g,A); roda(g,1.5); g.seatGroup(A,t); A.setState('wantOrder'); roda(g,2); g.tapTable(t); g.tapStation('plates',0,0); fim(g,1);
   ok(g.state==='testefim' && typeof g.testeRel==='string' && g.testeRel.length>0,'CA5: no fim do dia o relatório está em g.testeRel');
   const linhas=g.testeRel.split('\n');
-  ok(linhas.length===7,'CA5: sete linhas (sem a do modo dev) ('+linhas.length+')');
+  ok(linhas.length===8,'CA5: oito linhas (com a Equipe; sem a do modo dev) ('+linhas.length+')');
   re.forEach((r,i)=>ok(r.test(linhas[i]||''),'CA5: linha '+(i+1)+' no formato: '+(linhas[i]||'').slice(0,110)));
-  ok(/pedido 2,0 \/ 2,0 \/ 1/.test(linhas[4]) && /sentar 1,5 \/ 1,5 \/ 1 /.test(linhas[4]) && /· prato — · conta — · mesa suja —/.test(linhas[4]),'CA5: as reações com vírgula decimal (pedido 2,0 / 2,0 / 1) e "—" sem caso');
-  ok(/bot -/.test(linhas[1]) && /tentativa 3/.test(linhas[1]) && /\(\d+%\)/.test(linhas[2]) && /★/.test(linhas[2]) && /1 toques perdidos|1 toque perdido|\d+ toques perdidos/.test(linhas[5]),'CA5: o nome vem do LS.name ("Ana"), o aparelho no bot é "bot -" e a tentativa é a 3ª');
+  ok(/pedido 2,0 \/ 2,0 \/ 1/.test(linhas[5]) && /sentar 1,5 \/ 1,5 \/ 1 /.test(linhas[5]) && /· prato — · conta — · mesa suja —/.test(linhas[5]),'CA5: as reações com vírgula decimal (pedido 2,0 / 2,0 / 1) e "—" sem caso');
+  ok(/bot -/.test(linhas[1]) && /tentativa 3/.test(linhas[1]) && /\(\d+%\)/.test(linhas[3]) && /★/.test(linhas[3]) && /1 toques perdidos|1 toque perdido|\d+ toques perdidos/.test(linhas[6]),'CA5: o nome vem do LS.name ("Ana"), o aparelho no bot é "bot -" e a tentativa é a 3ª');
   ok(JSON.parse(store['lcc-teste']).garagem===3,'CA5: lcc-teste guarda 3 tentativas da Garagem (uma por começo, mesmo quem sai no meio)');
   g.setState('menu'); g.startTeste('industrial'); g.startTeste('terraco'); g.startTeste('terraco');
   ok(JSON.stringify(JSON.parse(store['lcc-teste']))===JSON.stringify({ garagem:3, industrial:1, avenida:0, terraco:2 }) && g.teste.tent===2,'CA5: a tentativa é contada por fase ('+store['lcc-teste']+')');
   // sem nome e sem caso nenhum
   { const x=mk(); x.g.startTeste('terraco'); x.g.begin(); roda(x.g,2); x.g.schedule=[]; x.g.groups=[]; x.g.custo=0; x.g.money=0; roda(x.g,3); const l=x.g.testeRel.split('\n');
-    ok(/^Jogador: sem nome · tentativa 1 /.test(l[1]) && /^LCC-TESTE 2 · v12(\.\d+)+ · Terraço Suíça · dia 58 · semente 7004$/.test(l[0]),'CA5: sem nome no Ranking, o relatório diz "sem nome"');
-    ok(l[4]==='Reação em s (média / mediana / casos): sentar — · pedido — · prato — · conta — · mesa suja —','CA5: sem nenhum caso, as cinco reações saem "—"');
-    ok(/^Resultado: lucro -?R\$ \d+ · meta R\$ \d+ \(-?\d+%\) · 0★ · servidos 0 de \d+ · Gúgou —$/.test(l[2]),'CA5: sem estrela, "0★"; sem nota, "Gúgou —" ('+l[2]+')'); }
+    ok(/^Jogador: sem nome · tentativa 1 /.test(l[1]) && /^LCC-TESTE 3 · v12(\.\d+)+ · Terraço Suíça · dia 58 · semente 7004$/.test(l[0]),'CA5: sem nome no Ranking, o relatório diz "sem nome"');
+    ok(l[5]==='Reação em s (média / mediana / casos): sentar — · pedido — · prato — · conta — · mesa suja —','CA5: sem nenhum caso, as cinco reações saem "—"');
+    ok(/^Resultado: lucro -?R\$ \d+ · meta R\$ \d+ \(-?\d+%\) · 0★ · servidos 0 de \d+ · Gúgou —$/.test(l[3]),'CA5: sem estrela, "0★"; sem nota, "Gúgou —" ('+l[3]+')'); }
   // o dia encerrado no modo dev
   { const x=mk(); x.g.setDev(true); x.g.startTeste('garagem'); x.g.begin(); roda(x.g,3); ok(x.g.devFimDia()===true,'CA5: o dev encerra o dia'); roda(x.g,40);
-    const l=x.g.testeRel.split('\n'); ok(x.g.state==='testefim' && l.length===8 && l[7]==='(encerrado no modo dev)','CA5: o dia encerrado no modo dev ganha a última linha "(encerrado no modo dev)" ('+x.g.state+', '+l.length+' linhas)'); } });
+    const l=x.g.testeRel.split('\n'); ok(x.g.state==='testefim' && l.length===9 && l[8]==='(encerrado no modo dev)','CA5: o dia encerrado no modo dev ganha a última linha "(encerrado no modo dev)" ('+x.g.state+', '+l.length+' linhas)'); } });
 
 // ---------- CA6: o fim do teste (a tela, os botões, o que não pode mudar) ----------
 const espera=ms=>new Promise(r=>setTimeout(r,ms));
@@ -179,7 +182,7 @@ const prepara=(copia)=>{ const H=mk(); if(copia){ const cr=H.doc.createElement, 
       ok(txt(els['teste-fim-titulo'])==='Teste: Garagem' && /^Lucro R\$ \d+ · ★{1,3}$/.test(txt(els['teste-fim-msg'])),'CA6: o título "Teste: Garagem" e a linha do lucro e das estrelas ('+txt(els['teste-fim-msg'])+')');
       ok(!/LCC-TESTE/.test(txt(els['ov-teste-fim'])),'CA6: o relatório não aparece na tela');
       els['btn-teste-copia'].fire('click'); await espera(10);
-      ok(cap.v===g.testeRel && /^LCC-TESTE 2/.test(cap.v),'CA6: "Copiar relatório" chama o copyText com o texto do relatório');
+      ok(cap.v===g.testeRel && /^LCC-TESTE 3/.test(cap.v),'CA6: "Copiar relatório" chama o copyText com o texto do relatório');
       ok(txt(els['teste-fim-aviso'])==='Copiado! Cole na conversa.' && todos(els['teste-fim-caixa'],n=>n.tagName==='TEXTAREA').length===0 && !/LCC-TESTE/.test(txt(els['ov-teste-fim'])),'CA6: copiou: "Copiado! Cole na conversa." e o relatório continua fora da tela'); }
     // a cópia que falha, jogar de novo e voltar
     { const F=prepara(false), {g:g2,els:e2}=F; e2['btn-teste-copia'].fire('click'); await espera(10);
