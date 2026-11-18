@@ -439,24 +439,50 @@ class Game {
     return this.comecaDesafio(D);
   }
   /* v12.2, o Teste de habilidade: o dia é o de um Desafio (comecaDesafio), com a semente da fase e as medidas (this.tm); a tentativa sobe ao começar. O modo dev não mexe: o DEV.forca fica vazio (e volta ao sair) e a velocidade, em 1 */
-  startTeste(id){
+  startTeste(id, eq){   // v12.4: eq (opcional) é a equipe do dia, no formato guardado; sem ela vale a escolhida na tela da fase (lcc-teste, eq-<id>) ou, sem escolha, a padrão
     const T = TESTES.find(x => x.id === id);
     if (!T) return false;
     this.teste = { id:T.id, nome:T.nome, semente:T.semente, tent:testeSobe(T.id), quando:new Date() }; this.testeRel = '';
     if (!this.devForcaSalva) this.devForcaSalva = DEV.forca;
     DEV.forca = {}; DEV.vel = 1;
-    return this.comecaDesafio(Object.assign({}, T, { nome:'Teste: ' + T.nome, cond:null, aviso:TESTE_AVISO, falhou:'' }));
+    return this.comecaDesafio(Object.assign({}, T, { nome:'Teste: ' + T.nome, cond:null, aviso:TESTE_AVISO, falhou:'', eq:testeEqNorm(T, eq || testeEqLe(T.id)) }));
   }
   comecaDesafio(D){
     if (!this.salvo) this.salvo = this.save;
     this.mode = 'carreira'; this.treino = null; this.desafio = D; DESAFIO_EST.on = true;
-    this.save = this.montaCap(D.cap, { marca:{ _desafio:true }, conversa:false, maximo:true, sem:D.mod.sem, up:D.mod.up, equipe:D.mod.tvs ? { tvs:D.mod.tvs } : null });
+    this.save = this.montaCap(D.cap, { marca:{ _desafio:true }, conversa:false, maximo:true, sem:D.mod.sem, up:D.mod.up, equipe:D.mod.tvs ? { tvs:D.mod.tvs } : null, eq:D.eq });
     if (D.mod.evento === 'junina') this.save.barraca = D.dia;   // v12.1: a barraca junina já vem montada, como se tivesse sido comprada na lojinha do dia
     this.save.dia = D.dia; this.save.pontoDia = Math.min(this.save.pontoDia, D.dia);
     this.up = this.save.up; this.tablesKey = '';
+    this.eqLinha = this.equipeLinha();   // v12.4: a equipe do dia, para o relatório
     this.resetDay(D.dia, false, true);
     this.setState('intro');
     return true;
+  }
+  /* v12.4: a linha "Equipe:" do relatório, da equipe que o dia tem de fato (o save de mentira já montado): Dani, Joca, Cami, Anselmo e Lia, só quem o ponto tem; as tarefas são as que cada um faz (os rótulos curtos, em minúsculas) */
+  equipeLinha(){
+    const sv = this.save, e = sv.equipe, nv = this.ponto.nivel;
+    const r = id => { const t = DANI_TASKS.find(x => x.id === id); return daniTaskDe(t, this.ponto).short.toLowerCase(); };
+    const lista = h => h.tasks.length ? '(' + h.tasks.map(r).join(', ') + ')' : '(sem tarefa)';
+    return TESTE_PESSOAS.filter(q => testeTem(q, nv)).map(q => {
+      const nome = TESTE_NOMES[q];
+      if (!(e[q] > 0)) return nome + ' não vem';
+      if (q === 'anselmo' || q === 'lia') return nome;
+      if (q === 'cami' && camiModoMesas(sv)) return nome + ' (minhas mesas)';
+      if (q === 'cami' && camiModoTudo(sv)) return nome + ' (ajuda em tudo)';
+      return nome + ' ' + lista(this[q]);
+    }).join(' · ');
+  }
+  /* v12.4, a equipe escolhida na tela da fase (o formato guardado, já normalizado por testeEqNorm) aplicada ao save de mentira: quem não vem sai, e cada um fica com as tarefas escolhidas; a Cami em "Minhas mesas" fica com as duas primeiras mesas do salão */
+  testeEquipe(sv, eq){
+    const e = sv.equipe, P = pontoOf(sv.salao.ponto);
+    TESTE_PESSOAS.forEach(q => {
+      const x = eq && eq[q]; if (!x) return;
+      if (!x.vem){ e[q] = 0; return; }
+      if (q === 'dani') e.daniTasks = x.tasks.slice(); else if (q === 'joca') e.jocaTasks = x.tasks.slice(); else if (q === 'cami'){ e.camiTasks = x.tasks.slice(); e.camiModo = x.modo; }
+    });
+    sv.salao.mesas.forEach((m, i) => { if (i < CAMI_MESAS_MAX && eq && eq.cami && eq.cami.vem && eq.cami.modo === 'mesas') m.cami = 1; else delete m.cami; });
+    sv.equipe = normEquipe(e, P);
   }
   sairDesafio(){ this.sairTreino(); }
   /* o botão Desafios do menu: a partir do Fim da história (cap depois do último), no modo dev Livre ou com o "Liberar" do dev */
@@ -2278,6 +2304,35 @@ class Game {
     this.devRecarrega();
     return true;
   }
+  /* v12.4, o máximo do ponto: põe no save sv (o que está sendo montado: this.save e this.up) tudo o que a campanha dá até o ponto e o capítulo cap, no nível mais alto. Só filtra por `nivel` e `cap`; não passa pelo
+     equipeModo('max'), cursosTodos(true) nem melhoriasTodas(true) (o "Tudo no máximo" do dev segue igual, sem olhar o ponto) e não depende do normEquipe (no Livre, ele não corta quem o ponto não tem) */
+  maxDoPonto(sv, cap){
+    const P = this.ponto, nv = P.nivel, up = this.up, e = sv.equipe, pad = TESTE_EQ_PADRAO[P.id] || {}, ger = nv >= 4 && cap >= 12;
+    // a equipe
+    ['tonhao', 'dani', 'joca', 'cami', 'anselmo', 'lia'].forEach(q => { e[q] = testeNivelMax(q, nv, cap); });
+    e.daniTasks = (pad.dani ? pad.dani.tasks : []).slice(); e.jocaTasks = (pad.joca ? pad.joca.tasks : []).slice(); e.camiTasks = (pad.cami ? pad.cami.tasks : []).slice(); e.camiModo = 'tarefas'; e.camiFila = true;
+    e.tv = e.som = nv < 2; e.tvs = nv === 2 ? 2 : 0; e.couvert = e.taxa = nv === 3; e.musica = nv === 4 ? 1 : 0;   // a TV e o som da Garagem, as TVs sem anúncios da área industrial, o couvert com a taxa da Avenida, o trio de cordas do Terraço
+    sv.rosa = ger ? 1 : 0;   // o molho da Rosa: do capítulo 12 em diante
+    // os cursos até o ponto e o capítulo (o Tonhão no 2; a equipe, só de quem o ponto tem)
+    const ate = (l, tem) => { const o = {}; if (tem) l.forEach(c => { if ((c.nivel || 1) <= nv && (!c.cap || c.cap <= cap)) o[c.id] = true; }); return o; }, cs = {};
+    CURSOS.forEach(c => { if (!c.nivel || c.nivel <= nv) cs[c.id] = 2; });
+    sv.cursos = normCursos(cs); sv.daniCursos = normDaniCursos(ate(DANI_CURSOS, true)); sv.jocaCursos = normJocaCursos(ate(JOCA_CURSOS, e.joca > 0)); sv.camiCursos = normCamiCursos(ate(CAMI_CURSOS, e.cami > 0)); sv.anselmoCursos = normAnselmoCursos(ate(ANSELMO_CURSOS, e.anselmo > 0));
+    sv.cursoDia = sv.daniCursoDia = sv.jocaCursoDia = sv.camiCursoDia = sv.anselmoCursoDia = 0;
+    // as melhorias e as compras do ponto
+    Object.keys(up).forEach(k => delete up[k]);
+    UPGRADES.forEach(u => { if ((u.nivel && u.nivel > nv) || (u.id === 'maquina' && !(P.bebida && P.bebida !== 'coquetel'))) return; up[u.id] = u.multi ? 1 : true; });   // o Jogo de pratos acumula sem teto na lojinha: 1, como sempre; no Terraço o carrinho vem do curso do Anselmo
+    this.devSegueCursos();
+    if (nv >= 2) up.fogaoInd = true;   // o fogão industrial vale do nível 2 em diante e vai junto na mudança
+    if (nv === 2){ up.tvs = true; up.assento = 'banco'; } else if (nv === 3) up.assento = 'sofa'; else if (nv === 4) up.assento = 'poltrona';
+    // a decoração, o jogo de mesas e o enfeite das mesas
+    const dec = {}; DECOR.forEach(d => { if (!d.nivel || d.nivel <= nv) dec[d.id] = 1; });
+    sv.decor = normDecor(dec);
+    const mv = {}; MOVEIS.forEach(m => { if (m.nivel <= nv) mv[m.id] = 1; });
+    sv.moveis = normMoveis(mv);
+    sv.salao.mesas.forEach(m => { m.t = 1; });
+    sv.equipe = normEquipe(e, P);
+    this.kitchen.slots = cozinhaSlots(this);
+  }
   /* v12: o save do começo do capítulo n (DEV_CAPS), montado à parte: devolve o save, sem trocar o do jogo (this.save e this.up ficam trocados só durante a montagem, porque os
      ajudantes do modo dev trabalham neles) e sem mexer no modo dev nem no save guardado; quem chama põe o save onde quiser (o devCapitulo no jogo; o Desafio, como save de mentira).
      opt: marca (campos postos logo depois do normSave, como { _desafio:true }, que impede o writeSave); conversa:false (sem a conversa de antes);
@@ -2324,13 +2379,13 @@ class Game {
       // Manual: o Básico e as fichas dos pontos visitados
       sv.manual = MANUAL.filter(f => f.aba === 'basico' || PONTOS.slice(0, PONTOS.findIndex(p => p.id === D.ponto) + 1).some(p => f.id === 'p-' + p.id)).map(f => f.id);
       sv.manualNovo = [];
-      if (opt.maximo){   // v12, o Desafio: "Tudo no máximo" por cima do save do capítulo (a equipe, os cursos e as melhorias do ponto, como o botão do modo dev), o salão cheio (mesas de 4, arrumação automática) e as Redes sociais
-        if (D.eq){ this.equipeModo('max'); this.melhoriasTodas(true); sv.equipe.lia = 1; sv.equipe.anselmo = STAFF.anselmo.levels.length - 1; }
+      if (opt.maximo){   // v12, o Desafio; v12.4: o máximo do ponto (maxDoPonto: o que a campanha dá até o ponto e o capítulo, tudo no nível mais alto), o salão cheio (mesas de 4, arrumação automática, com o enfeite da mesa) e as Redes sociais
         const P = this.ponto; let m4 = Math.floor(P.lugares / 4), cheio = null;
         while (m4 > 0 && !cheio){ cheio = salaoAuto(Array.from({ length:m4 }, (_, c) => ({ x:0, y:0, seats:4, c:c % 4 })), P); if (!cheio) m4--; }
         if (cheio) sv.salao = normSalao({ ponto:P.id, mesas:cheio, estoque:[] });
         sv.divulga = 'redes';
-        sv.equipe = normEquipe(sv.equipe, P);
+        this.maxDoPonto(sv, n);
+        if (opt.eq) this.testeEquipe(sv, opt.eq);   // v12.4: a equipe escolhida na tela da fase (Teste)
       }
       (opt.sem || []).forEach(q => { sv.equipe[q] = 0; });   // v12: o Desafio tira pessoas da equipe e põe melhorias a mais (por cima do "Tudo no máximo")
       (opt.up || []).forEach(id => { const u = UPGRADES.find(x => x.id === id); if (u) this.up[id] = u.multi ? 1 : true; else if (INDUSTRIAL[id]) this.up[id] = true; });   // v12.1: as melhorias da área industrial (as TVs) não estão na UPGRADES

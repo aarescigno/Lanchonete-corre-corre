@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
-"""Lê os relatórios do Teste de habilidade e dos Desafios (blocos 'LCC-TESTE 1 · ...' ou 'LCC-TESTE 2 · ...', o 2 com o tipo do aparelho; os dos Desafios têm "Desafio: <nome>" no lugar da fase) do docs/RELATORIOS.md e mostra, por fase (ou desafio) e por jogador,
-a melhor tentativa (pelo lucro), a mediana do lucro e o número de tentativas.
+"""Lê os relatórios do Teste de habilidade e dos Desafios (blocos 'LCC-TESTE 1 · ...', 'LCC-TESTE 2 · ...' ou 'LCC-TESTE 3 · ...'; o 2 traz o tipo do aparelho e o 3, a linha 'Equipe:'; os dos Desafios têm "Desafio: <nome>" no lugar da fase) do docs/RELATORIOS.md e mostra, por fase (ou desafio) e por jogador,
+a melhor tentativa (pelo lucro), a mediana do lucro, o número de tentativas e a equipe usada; quando o jogador usou equipes diferentes na mesma fase, separa as tentativas por equipe.
 Uso: python3 ferramentas/relatorios.py [arquivo]            (padrão: docs/RELATORIOS.md)
      python3 ferramentas/relatorios.py --bot [arquivo]      (roda junto, em tests/, `TESTE=<id>` ou, nos desafios, `DESAFIO=<id>` `node balance.js 20` com o bot comum e o afiado no que tem relatório)"""
 import os, re, statistics, subprocess, sys
@@ -38,10 +38,12 @@ def blocos(txt):
 
 
 def leia(b):
-    """Um bloco dos formatos 1 e 2 vira um dict; None se vier incompleto. No formato 2 a linha Jogador traz o tipo (celular, tablet, computador, bot) antes do toque/mouse; no 1 o tipo fica '?'."""
+    """Um bloco dos formatos 1, 2 e 3 vira um dict; None se vier incompleto. Nos formatos 2 e 3 a linha Jogador traz o tipo (celular, tablet, computador, bot) antes do toque/mouse; no 1 o tipo fica '?'.
+    O 3 tem a linha 'Equipe: ...' (a equipe do dia); nos outros a equipe fica '?'."""
     t = '\n'.join(b)
-    m = re.match(r'LCC-TESTE [12] · (\S+) · (.+?) · dia (\d+) · semente (\d+)', b[0])
-    f2 = b[0].startswith('LCC-TESTE 2 ')
+    m = re.match(r'LCC-TESTE [123] · (\S+) · (.+?) · dia (\d+) · semente (\d+)', b[0])
+    f2 = not b[0].startswith('LCC-TESTE 1 ')
+    eq = re.search(r'^Equipe: (.*)$', t, re.M)
     j = re.search(r'Jogador: (.+?) · tentativa (\d+) · ' + (r'(\S+) · ' if f2 else '') + r'(\S+) (\S+) · (\S+ \S+)', t)
     r = re.search(r'Resultado: lucro (-?)R\$ (\d+) · meta R\$ (\d+) \((-?\d+)%\) · (0★|★+) · servidos (\d+) de (\d+) · Gúgou (\S+)', t)
     p = re.search(r'Perdidos: (\d+) ·', t)
@@ -55,7 +57,7 @@ def leia(b):
         x = re.search(nome + r' (?:—|' + NUM + ' / ' + NUM + r' / (\d+))', lr)
         reac[nome] = (n(x.group(1)), n(x.group(2)), int(x.group(3))) if x and x.group(1) else None
     return dict(versao=m.group(1), fase=m.group(2), dia=int(m.group(3)), semente=int(m.group(4)),
-                jogador=j.group(1), tent=int(j.group(2)), tipo=j.group(3) if f2 else '?', aparelho=j.group(3 + f2) + ' ' + j.group(4 + f2), quando=j.group(5 + f2),
+                jogador=j.group(1), tent=int(j.group(2)), tipo=j.group(3) if f2 else '?', equipe=eq.group(1).strip() if eq else '?', aparelho=j.group(3 + f2) + ' ' + j.group(4 + f2), quando=j.group(5 + f2),
                 lucro=(-1 if r.group(1) else 1) * int(r.group(2)), meta=int(r.group(3)), pct=int(r.group(4)),
                 estrelas=0 if r.group(5) == '0★' else len(r.group(5)), servidos=int(r.group(6)), de=int(r.group(7)),
                 gugou=None if r.group(8) == '—' else n(r.group(8)), perdidos=int(p.group(1)), reac=reac,
@@ -80,7 +82,7 @@ def main():
     txt = open(arq, encoding='utf-8').read()
     lidos, ruins = [], 0
     for b in blocos(txt):
-        if not re.match(r'LCC-TESTE [12] ', b[0]):
+        if not re.match(r'LCC-TESTE [123] ', b[0]):
             ruins += 1
             print('(formato desconhecido, ignorado):', b[0][:60])
             continue
@@ -102,9 +104,21 @@ def main():
         print('aparelhos: ' + ' · '.join('%s %d' % (k, v) for k, v in sorted(tipos.items())))
         for jog in sorted({x['jogador'] for x in da_fase}):
             rs = [x for x in da_fase if x['jogador'] == jog]
+            eqs = sorted({x['equipe'] for x in rs})
             melhor = max(rs, key=lambda x: x['lucro'])
-            print('%s (%s): %d tentativas · lucro: mediana R$ %d, melhor R$ %d' % (jog, ', '.join(sorted({x['tipo'] for x in rs})), len(rs), statistics.median(x['lucro'] for x in rs), melhor['lucro']))
+            tp = ', '.join(sorted({x['tipo'] for x in rs}))
+            if len(eqs) > 1:   # v12.4: equipes diferentes na mesma fase: cada uma com as suas tentativas
+                print('%s (%s): %d tentativas em %d equipes' % (jog, tp, len(rs), len(eqs)))
+                for e in eqs:
+                    re_ = [x for x in rs if x['equipe'] == e]
+                    mel = max(re_, key=lambda x: x['lucro'])
+                    print('   Equipe: %s · %d tentativas · lucro: mediana R$ %d, melhor R$ %d' % (e, len(re_), statistics.median(x['lucro'] for x in re_), mel['lucro']))
+                    print('      melhor: ' + linha(mel) + ' · ' + mel['aparelho'] + (' (encerrado no modo dev)' if mel['dev'] else ''))
+                continue
+            print('%s (%s): %d tentativas · lucro: mediana R$ %d, melhor R$ %d' % (jog, tp, len(rs), statistics.median(x['lucro'] for x in rs), melhor['lucro']))
             print('   melhor: ' + linha(melhor) + ' · ' + melhor['aparelho'] + (' (encerrado no modo dev)' if melhor['dev'] else ''))
+            if eqs[0] != '?':
+                print('   Equipe: ' + eqs[0])
     if '--bot' in sys.argv:
         for nome, id in FASES.items():
             if not any(x['fase'] == nome for x in lidos):

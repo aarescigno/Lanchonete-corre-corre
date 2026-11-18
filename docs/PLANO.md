@@ -16,10 +16,9 @@ Origem: retorno do Renan Martorelli (beta-tester) e conversa com o Arthur (15/10
 | # | Etapa | Versão | Situação |
 |---|---|---|---|
 | 5 | ~~Modo História, parte 1~~: juntou-se à 2f e aos capítulos da 3a, 3b e 4a (28/10) | — | — |
-| 13b | Desafios: festa, jogo, crítico e VIPs | v12.1 | feita em 17/11 (`docs/spec-v12.1.md`; `smoke98`; Festa junina, Jogo do Brasil, Noite do crítico e VIPs exigentes calibrados; a Etapa 13 está completa) |
 | 14a | Teste de habilidade: as quatro fases padrão e o relatório | v12.2 | feita em 17/11 (`docs/spec-v12.2.md`; `smoke99`; o teste no modo dev, as medidas, o relatório `LCC-TESTE 1`, `TESTE=<id> node balance.js`, `docs/RELATORIOS.md` e `ferramentas/relatorios.py`) |
 | 14c | Desafios com os mesmos clientes para todos | v12.3 | feita em 17/11 (`docs/spec-v12.3.md`; `smoke100`; a `semente` em cada `DESAFIOS`, o "Copiar relatório" no fim do desafio (modo dev), as tentativas `d-<id>`, `DEV.forca` desligado no Desafio; sementes calibradas, a do eFood com a faixa ampliada) |
-| 14d | O Teste com o máximo de cada ponto e a equipe do jeito que quiser | v12.4 | planejada em 18/11 (`docs/spec-v12.4.md`, aprovada; recalibra os Desafios) |
+| 14d | O Teste com o máximo de cada ponto e a equipe do jeito que quiser | v12.4 | feita em 18/11 (`docs/spec-v12.4.md`; `smoke103`; `maxDoPonto`, a tela da fase `#ov-teste-fase`, o relatório `LCC-TESTE 3` com a linha `Equipe:`, os Desafios recalibrados: jogo meta 1,75 e crítico 1,07) |
 | 14b | O bot humano, calibrado pelos relatórios | — (testes) | depois dos relatórios dos testers |
 
 ---
@@ -85,8 +84,6 @@ Origem: retorno do Renan Martorelli (beta-tester) e conversa com o Arthur (15/10
 
 ## Etapa 14 — O bot com habilidade de gente (14a, v12.2; 14b, só testes)
 Pedido do usuário em 17/11: o bot joga "bem demais, melhor do que gente". Os alvos do `balance.js` e do `carreira.js` saem de um bot que reage em 0,05 s, vê o salão inteiro e nunca erra o toque. A régua passa a ser o jogo de gente.
-- **14d** (v12.4): cada fase do Teste e cada Desafio com o que a campanha dá naquele ponto, no máximo (sem Cami na área industrial; Terraço como no capítulo 11; a Garagem com a Dani); no Teste, a tela da fase para escolher quem vem e as funções de cada um; o relatório com a linha `Equipe:`; os 7 Desafios recalibrados. Spec: `docs/spec-v12.4.md`.
-  **Modelo:** Sonnet, esforço alto (regra nova em muitas partes, tela nova, relatório e a recalibração dos 7 Desafios)
 - **14b** (sem versão: só `tests/bot.js` e docs), depois de chegarem os relatórios em `docs/RELATORIOS.md`:
   - `BOT=humano` (imita o melhor jogador) e `BOT=medio` (a mediana dos testers), por cima do bot afiado, com três limites ajustáveis em `HUMANO='{...}'`:
     - **tempo de reação:** só enxerga o que aconteceu há X s, sorteado por evento;

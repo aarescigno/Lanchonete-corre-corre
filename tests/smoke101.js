@@ -32,25 +32,25 @@ bloco('CA3',()=>{
   IDS.forEach((id,i)=>{
     const {g,L,els,store}=mk(); g.setDev(true); g.setState('teste');
     inp(els).value='  Ana   Maria  '; inp(els).fire('change');
-    fases(els).find(b=>b.getAttribute('data-teste')===id).fire('click');
+    fases(els).find(b=>b.getAttribute('data-teste')===id).fire('click'); els['btn-teste-fase-jogar'].fire('click');   /* v12.4: a fase abre a tela da fase; o Jogar começa o dia */
     ok(g.state==='intro' && g.teste && g.teste.id===id && store.lcc2_name==='Ana Maria','CA3: '+NOMES[i]+': começa a fase certa ('+(g.teste&&g.teste.id)+') e grava o nome ('+store.lcc2_name+')'); });
   { const {g,L,els,store}=mk({ lcc2_name:'Zé' }); g.setDev(true); g.setState('teste'); ok(inp(els).value==='Zé','CA3: o campo começa com o nome gravado'); } });
 
 bloco('CA4',()=>{
   const {g,L,els,store}=mk(); g.setDev(true); g.setState('teste');
-  fases(els).find(b=>b.getAttribute('data-teste')==='garagem').fire('click'); g.begin(); g.schedule=[]; g.groups=[]; g.custo=0; g.money=g.fixo+g.day.meta+20; roda(g,3);
+  fases(els).find(b=>b.getAttribute('data-teste')==='garagem').fire('click'); els['btn-teste-fase-jogar'].fire('click');   /* v12.4: a fase abre a tela da fase; o Jogar começa o dia */ g.begin(); g.schedule=[]; g.groups=[]; g.custo=0; g.money=g.fixo+g.day.meta+20; roda(g,3);
   ok(g.state==='testefim','CA4: o dia do teste termina na tela do fim');
   els['btn-teste-volta'].fire('click');
   ok(g.state==='teste' && els['ov-teste'].classList.contains('show') && g.teste===null && g.salvo===null,'CA4: "Voltar" do fim leva à tela do Teste, com o save de verdade de volta');
   ok(fases(els)[0].textContent==='Garagem (1)' && fases(els)[1].textContent==='Área industrial (0)','CA4: a tentativa da Garagem subiu para 1 no botão'); });
 
 bloco('CA5',()=>{
-  { const {g,els}=mk(); g.setDev(true); g.setState('teste'); fases(els)[1].fire('click'); els['btn-intro-menu'].fire('click');
+  { const {g,els}=mk(); g.setDev(true); g.setState('teste'); fases(els)[1].fire('click'); els['btn-teste-fase-jogar'].fire('click');   /* v12.4: a fase abre a tela da fase; o Jogar começa o dia */ els['btn-intro-menu'].fire('click');
     ok(g.state==='teste' && g.teste===null,'CA5: "Menu" da introdução de um teste volta à tela do Teste'); 
     els['btn-teste-menu-volta'].fire('click'); ok(g.state==='menu' && els['ov-menu'].classList.contains('show'),'CA5: "Voltar" da tela do Teste leva ao menu'); }
-  { const {g,els}=mk(); g.setDev(true); g.setState('teste'); fases(els)[0].fire('click'); g.begin(); g.pause(); els['btn-pause-menu'].fire('click'); if(g.state==='paused') els['btn-pause-menu'].fire('click');
+  { const {g,els}=mk(); g.setDev(true); g.setState('teste'); fases(els)[0].fire('click'); els['btn-teste-fase-jogar'].fire('click');   /* v12.4: a fase abre a tela da fase; o Jogar começa o dia */ g.begin(); g.pause(); els['btn-pause-menu'].fire('click'); if(g.state==='paused') els['btn-pause-menu'].fire('click');
     ok(g.state==='teste','CA5: "sair do dia" na pausa de um teste leva à tela do Teste ('+g.state+')'); }
-  { const {g,els}=mk(); g.setDev(true); g.setState('teste'); fases(els)[0].fire('click'); g.setDev(false); els['btn-intro-menu'].fire('click');
+  { const {g,els}=mk(); g.setDev(true); g.setState('teste'); fases(els)[0].fire('click'); els['btn-teste-fase-jogar'].fire('click');   /* v12.4: a fase abre a tela da fase; o Jogar começa o dia */ g.setDev(false); els['btn-intro-menu'].fire('click');
     ok(g.state==='menu','CA5: se o modo dev foi desligado no meio, "Menu" vai ao menu'); }
   { const {g,els}=mk(); g.setDev(true); g.startDesafio('soBia'); els['btn-intro-menu'].fire('click'); ok(g.state==='desafios','CA5: (controle) o Desafio continua voltando à tela de Desafios'); } });
 

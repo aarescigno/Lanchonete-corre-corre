@@ -1355,19 +1355,19 @@ const DEV_CAPS = [
 const DESAFIOS = [
   { id:'soBia',    nome:'Só a Bia',       cap:5, dia:17, mod:{ sem:['dani', 'joca', 'cami', 'anselmo', 'lia'], groups:1, meta:1.2 }, semente:8102, cond:null,
     aviso:'Hoje a Bia segura o salão sozinha. O tio fica na cozinha.', falhou:'' },
-  { id:'semBravo', nome:'Ninguém bravo',  cap:8, dia:38, mod:{ groups:0.5, meta:0.6 }, semente:8202, cond:s => s.lost === 0,
+  { id:'semBravo', nome:'Ninguém bravo',  cap:8, dia:38, mod:{ groups:0.5, meta:0.6 }, semente:8205, cond:s => s.lost === 0,
     aviso:'Hoje ninguém pode sair bravo da Avenida.', falhou:'Alguém saiu bravo.' },
-  { id:'efood',    nome:'Hora do eFood',  cap:5, dia:17, mod:{ tipo:'entregador', tipoP:0.45, groups:0.55, meta:0.65 }, semente:8316, cond:s => s.lostBy.retirada === 0,
+  { id:'efood',    nome:'Hora do eFood',  cap:5, dia:17, mod:{ tipo:'entregador', tipoP:0.45, groups:0.55, meta:0.65 }, semente:8308, cond:s => s.lostBy.retirada === 0,
     aviso:'O eFood mandou entregador que não acaba mais!', falhou:'Um entregador saiu sem a marmita.' },
   /* v12.1: mod.evento (o evento de bairro do dia, forçado, sem sorteio; na junina, a barraca já montada), mod.tvs (as TVs ligadas: equipe.tvs) */
-  { id:'junina',   nome:'Festa junina',   cap:8, dia:38, mod:{ evento:'junina', groups:0.55, meta:2.8 }, semente:8406, cond:null,
+  { id:'junina',   nome:'Festa junina',   cap:8, dia:38, mod:{ evento:'junina', groups:0.55, meta:2.8 }, semente:8408, cond:null,
     aviso:'Festa junina lotada: o bairro inteiro veio!', falhou:'' },
-  { id:'jogo',     nome:'Jogo do Brasil', cap:5, dia:17, mod:{ evento:'jogo', up:['tvs'], tvs:1, groups:0.55, meta:3 }, semente:8505, cond:null,
+  { id:'jogo',     nome:'Jogo do Brasil', cap:5, dia:17, mod:{ evento:'jogo', up:['tvs'], tvs:1, groups:0.55, meta:1.75 }, semente:8505, cond:null,
     aviso:'Jogo do Brasil e a casa cheia de torcedor!', falhou:'' },
   /* mod.critico (a 1ª visita do crítico, sem boato), mod.vip (a chance de VIP de cada grupo); as cond leem o stats.criticoH (corações com que o crítico saiu: 0 se foi embora bravo ou não saiu) e o stats.saiMin (o menor número de corações com que um grupo pagou) */
-  { id:'critico',  nome:'Noite do crítico', cap:13, dia:64, mod:{ critico:true, groups:0.45, meta:0.6 }, semente:8603, cond:s => s.criticoH >= 5,
+  { id:'critico',  nome:'Noite do crítico', cap:13, dia:64, mod:{ critico:true, groups:0.45, meta:1.07 }, semente:8603, cond:s => s.criticoH >= 5,
     aviso:'O crítico do Michelzão vem hoje. Ninguém sabe qual mesa é a dele.', falhou:'O crítico não saiu com todos os corações.' },
-  { id:'vips',     nome:'VIPs exigentes', cap:13, dia:64, mod:{ vip:1, groups:0.4, meta:0.6 }, semente:8701, cond:s => s.lost === 0 && s.saiMin >= 4,
+  { id:'vips',     nome:'VIPs exigentes', cap:13, dia:64, mod:{ vip:1, groups:0.4, meta:0.6 }, semente:8712, cond:s => s.lost === 0 && s.saiMin >= 4,
     aviso:'Hoje só vem gente exigente.', falhou:'Uma mesa saiu descontente.' }
 ];
 const MEDALHAS = ['sem medalha', 'bronze', 'prata', 'ouro'];
@@ -1375,13 +1375,67 @@ const MEDALHAS = ['sem medalha', 'bronze', 'prata', 'ouro'];
    "Tudo no máximo"; na Garagem, sem `mod.sem`: só a Bia e o Tonhão). `semente`: o sorteio da agenda do dia (S) e de cada grupo (S × 1000 + i) sai dela, e por isso os clientes são sempre os mesmos.
    TESTE_LS: a chave do aparelho com as tentativas de cada fase ({ garagem:3, ... }); fica fora do save */
 const TESTES = [
-  { id:'garagem',    nome:'Garagem',          cap:3,  dia:7,  mod:{ sem:['dani', 'joca', 'cami', 'anselmo', 'lia'], groups:1, meta:1 }, semente:7001 },
+  { id:'garagem',    nome:'Garagem',          cap:3,  dia:7,  mod:{ groups:1, meta:1 }, semente:7001 },
   { id:'industrial', nome:'Área industrial',  cap:5,  dia:17, mod:{ groups:1, meta:1 }, semente:7002 },
   { id:'avenida',    nome:'Avenida Brasil',   cap:8,  dia:38, mod:{ groups:1, meta:1 }, semente:7003 },
   { id:'terraco',    nome:'Terraço Suíça',    cap:11, dia:58, mod:{ groups:1, meta:1 }, semente:7004 }
 ];
 const TESTE_LS = 'lcc-teste';
-const TESTE_FORMATO = 2;   // o número do formato do relatório (1ª linha: LCC-TESTE 2; o 2 ganhou o tipo do aparelho)
+const TESTE_FORMATO = 3;   // o número do formato do relatório (1ª linha: LCC-TESTE 3; o 2 ganhou o tipo do aparelho, o 3 a linha Equipe)
+/* v12.4, o máximo do ponto (Game.maxDoPonto): o Teste e os Desafios trazem o que a campanha dá até o ponto da linha `cap` da DEV_CAPS e até o capítulo, tudo no nível mais alto. A equipe padrão (o que cada um faz sem
+   configurar), por ponto, no formato da equipe guardada do Teste (lcc-teste, chave eq-<id>): { dani:{ vem, tasks }, joca:{ vem, tasks }, cami:{ vem, modo:'tarefas'|'mesas'|'tudo', tasks }, anselmo:{ vem }, lia:{ vem } } (só quem o ponto tem; o Tonhão sempre vem).
+   Joca na Avenida em diante: o café (espresso) é a vaga fixa dele, sem tarefa guardada */
+const TESTE_EQ_PADRAO = {
+  garagem:    { dani:{ vem:1, tasks:['pratos', 'lavar', 'suco'] } },
+  industrial: { dani:{ vem:1, tasks:['cafe', 'doce'] }, joca:{ vem:1, tasks:['lixo', 'lavar', 'pratos'] } },
+  avenida:    { dani:{ vem:1, tasks:['doce'] }, joca:{ vem:1, tasks:[] }, cami:{ vem:1, modo:'tarefas', tasks:['lixo', 'lavar', 'pratos', 'suco'] }, anselmo:{ vem:1 } },
+  terraco:    { dani:{ vem:1, tasks:['doce'] }, joca:{ vem:1, tasks:[] }, cami:{ vem:1, modo:'tarefas', tasks:['lixo', 'lavar', 'pratos', 'suco'] }, anselmo:{ vem:1 }, lia:{ vem:1 } }
+};
+const TESTE_PESSOAS = ['dani', 'joca', 'cami', 'anselmo', 'lia'];
+const TESTE_NOMES = { dani:'Dani', joca:'Joca', cami:'Cami', anselmo:'Anselmo', lia:'Lia' };
+function testeNivel(t){ return pontoOf(DEV_CAPS[clamp(Math.round(+t.cap) || 1, 1, DEV_CAPS.length) - 1].ponto).nivel; }   // o nível do ponto da fase (ou do Desafio)
+function testeTem(q, nv){ return q === 'dani' || (q === 'joca' && nv >= 2) || ((q === 'cami' || q === 'anselmo') && nv >= 3) || (q === 'lia' && nv >= 4); }   // quem a campanha tem no ponto de nível nv
+/* o nível mais alto de cada pessoa no ponto nv e no capítulo cap (0 = não vem ao ponto): o Tonhão e a Dani 4, o Joca 4, a Cami 3 (Avenida), 4 (Terraço) ou 5 (a gerência, do cap. 12), o Anselmo 2 ou 3, a Lia 1 */
+function testeNivelMax(q, nv, cap){
+  if (!testeTem(q, nv) && q !== 'tonhao') return 0;
+  if (q === 'tonhao' || q === 'dani' || q === 'joca') return STAFF[q].levels.length - 1;
+  if (q === 'cami') return nv >= 4 ? (cap >= 12 ? STAFF.cami.levels.length - 1 : 4) : 3;
+  if (q === 'anselmo') return nv >= 4 ? 3 : 2;
+  return 1;
+}
+/* as tarefas que a lojinha mostraria para a pessoa no ponto nv com tudo comprado: a Dani, as de DANI_TASKS; o Joca e a Cami, só as básicas (a máquina vem da jarra ou do curso do Anselmo; o doce, do curso de confeitaria; o espresso, do Joca, tira o cafezinho da Dani) */
+function testeTarefas(q, nv){
+  const up = { maquina:true, confCaseira:nv >= 2, espresso:nv >= 3 };
+  return (q === 'dani' ? DANI_TASKS.map(t => t.id) : BASICAS).filter(id => daniTaskOk(id, up));
+}
+/* quantas tarefas a pessoa faz ao mesmo tempo no nível máximo do ponto (o café do Joca, com o espresso, ocupa 1 vaga fixa) */
+function testeVagas(q, nv, cap){ return STAFF[q].levels[testeNivelMax(q, nv, cap)].tasks - (q === 'joca' && nv >= 3 ? 1 : 0); }
+/* quem cuida das tarefas básicas com a equipe eq (o formato guardado): a Cami no modo "Tarefas", senão o Joca, senão a Dani (a regra do donoBasico) */
+function testeDono(eq){ return eq.cami && eq.cami.vem && eq.cami.modo === 'tarefas' ? 'cami' : eq.joca && eq.joca.vem ? 'joca' : eq.dani && eq.dani.vem ? 'dani' : null; }
+/* as tarefas da pessoa que ela de fato faz (as básicas, quando há outro dono, ficam guardadas e não valem: as da Dani e as do Joca) */
+function testeEfetivas(q, eq){ const x = eq[q]; return !x || !x.vem || !x.tasks ? [] : q === 'cami' ? x.tasks : q === 'joca' ? (testeDono(eq) === 'joca' ? x.tasks : []) : testeDono(eq) === 'dani' ? x.tasks : x.tasks.filter(t => BASICAS.indexOf(t) < 0); }
+function testeEqPadrao(t){ return JSON.parse(JSON.stringify(TESTE_EQ_PADRAO[pontoOf(DEV_CAPS[clamp(Math.round(+t.cap) || 1, 1, DEV_CAPS.length) - 1].ponto).id] || {})); }
+/* a equipe guardada (ou qualquer lixo no lugar dela) no formato certo para a fase t: pessoa que o ponto não tem sai; sem escolha, a padrão; tarefa que não vale (ou repetida) sai; o que passa das vagas (só o que a pessoa de fato faz) sai */
+function testeEqNorm(t, e){
+  const nv = testeNivel(t), pad = testeEqPadrao(t), out = {};
+  e = e && typeof e === 'object' && !Array.isArray(e) ? e : {};
+  TESTE_PESSOAS.forEach(q => {
+    if (!testeTem(q, nv)) return;
+    const x = e[q] && typeof e[q] === 'object' ? e[q] : pad[q], o = { vem:x.vem === 0 || x.vem === false ? 0 : 1 };
+    if (q === 'dani' || q === 'joca' || q === 'cami'){
+      const ok = testeTarefas(q, nv), tk = Array.isArray(x.tasks) ? x.tasks : pad[q].tasks;
+      o.tasks = tk.filter((id, i) => ok.indexOf(id) >= 0 && tk.indexOf(id) === i);
+    }
+    if (q === 'cami') o.modo = x.modo === 'mesas' ? 'mesas' : x.modo === 'tudo' && nv >= 4 ? 'tudo' : 'tarefas';
+    out[q] = o;
+  });
+  ['dani', 'joca', 'cami'].forEach(q => {   // o limite de vagas: só as tarefas que de fato vale contam, e as que sobram saem do fim da lista
+    const x = out[q]; if (!x) return;
+    let n = 0; const vagas = testeVagas(q, nv, t.cap), ef = testeEfetivas(q, out);
+    x.tasks = x.tasks.filter(id => ef.indexOf(id) < 0 || ++n <= vagas);
+  });
+  return out;
+}
 const TESTE_AVISO = 'Jogue um dia como sempre. No fim, copie o relatório e mande.';
 /* save.desafios: { id: 0 a 3 } só dos ids da DESAFIOS e com inteiros (a melhor medalha de cada um) */
 function normDesafios(d){
@@ -1732,7 +1786,7 @@ const HIST_NOMES = { bia:'Bia', tonhao:'Tonhão', dani:'Dani', joca:'Joca', cami
 const ATU_TXT = { procurando:'Procurando versão nova...', nova:'Tem versão nova: {v}! Seu jogo salvo continua.', igual:'Você já está na versão mais nova ({v}).', erro:'Sem internet agora. Tente de novo mais tarde.', atualizando:'Atualizando...' };
 function atuEstado(remota, atual){ if (typeof remota !== 'string' || !remota.trim()) return 'erro'; return remota.trim() === atual ? 'igual' : 'nova'; }
 const CAIXA_MAX = 14;                                 // livro-caixa (v7.2): quantos dias da carreira ficam guardados
-const VERSAO = 'v12.3.2';                               // vai no resumo do Caixa
+const VERSAO = 'v12.4';                               // vai no resumo do Caixa
 const DIVULGA_DIA = 4;                                // antes disso, o movimento é o da inauguração (sem custo); v9.0.2: dia 4, e o padrão é o boca a boca
 function divulgaAberta(n, sv){ return devLivre() || n >= DIVULGA_DIA && !(sv && sv.convDiv === 'pend'); }   // no modo dev, desde o dia 1; v9.0.3: no Modo História, só depois da conversa
 /* v9.6.4: a Efood (os entregadores) só abre depois da conversa dos entregadores, no Modo História; antes dela, nenhum tipo com `retira` vem na agenda */

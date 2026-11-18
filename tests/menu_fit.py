@@ -4,7 +4,7 @@
 #  v11.15: os botões Voltar e Pular da abertura (#ov-abertura) ficam à vista, com 44 px de altura ou mais, sem se cobrir (python3 menu_fit.py abertura);
 #  CA2: os painéis Ranking, Instalar no celular, Atualização (v11.16.1), fim do Turno sem fim, falência, abertura do dia, pausa e fim da Missão zero cabem inteiros;
 #  v12: o menu com o botão Desafios (no Fim da história), a tela de Desafios e o cartão do fim do desafio cabem inteiros (python3 menu_fit.py desafios);
-#  v12.3.1: o menu com o modo dev ligado (Desafios e Teste) e a tela do Teste (python3 menu_fit.py paineis);
+#  v12.3.1: o menu com o modo dev ligado (Desafios e Teste) e a tela do Teste (python3 menu_fit.py paineis); v12.4: e a tela da fase do Teste (equipe);
 #  CA3: o painel Versões não rola (a lista rola por dentro) e o Fechar está à vista.
 from playwright.sync_api import sync_playwright
 import pathlib, os, sys
@@ -118,6 +118,10 @@ with sync_playwright() as p:
             print(('FAIL' if bad else 'ok  ')+f': {tag} menu do modo dev (Desafios e Teste) altura {r[0]}/{r[1]} largura {r[2]}/{r[3]} visíveis={r[4]} fileiras={r[5]}')
             run(pg,FIMSV+"g.setDev(true);g.setState('teste');")
             conf(pg,f'{tag} tela do Teste','#ov-teste .panel',['#btn-teste-menu-volta','#teste-nome','#teste-lista [data-teste=garagem]','#teste-lista [data-teste=terraco]'])
+            # v12.4: a tela da fase do Teste (a equipe): a área industrial (2 ajudantes) e o Terraço (5 pessoas, a Cami nas tarefas); o painel não rola, a lista rola por dentro e os botões ficam à vista
+            for fase in ('industrial','terraco'):
+                run(pg,FIMSV+"g.setDev(true);g.testeFase='"+fase+"';g.setState('testefase');")
+                conf(pg,f'{tag} tela da fase ({fase})','#ov-teste-fase .panel',['#btn-teste-fase-jogar','#btn-teste-fase-padrao','#btn-teste-fase-volta','#teste-fase-lista [data-quem=dani] [data-vem]'])
             run(pg,"g.setDev(false);")
         # ---- CA3: as Versões ----
         if SOLO in ('','versoes'):
@@ -125,7 +129,7 @@ with sync_playwright() as p:
             conf(pg,f'{tag} Versões','#ov-ver .panel',['#btn-ver-close'])
             r=pg.evaluate("()=>{const l=document.querySelector('.verlist');return [l.scrollHeight,l.clientHeight,l.querySelectorAll('li').length]}")
             total+=1
-            if r[2]!=17: fails+=1; print(f'FAIL: {tag} a lista das Versões tem {r[2]} linhas (esperado 17: a v12.3.2, a v12.3.1, a v12.3, a v12.2, a v12.1, a v12, a v11 e da v10 à v1)')
+            if r[2]!=18: fails+=1; print(f'FAIL: {tag} a lista das Versões tem {r[2]} linhas (esperado 18: a v12.4, a v12.3.2, a v12.3.1, a v12.3, a v12.2, a v12.1, a v12, a v11 e da v10 à v1)')
         # ---- v11.15: a abertura (os botões Voltar e Pular, por cima do quadro cheio, à vista e sem se cobrir) ----
         if SOLO in ('','abertura'):
             run(pg,"g.setState('menu');document.getElementById('btn-historia').click();")

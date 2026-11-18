@@ -1,6 +1,6 @@
 # v12.4 — O Teste com o máximo de cada ponto e a equipe do jeito que quiser (etapa 14d)
 
-**Situação:** aprovada (18/11)
+**Situação:** entregue em 18/11
 **Origem:** conversa de 18/11: "O teste com 'tudo liberado' tem que ser por fase, não é pra ter Cami na área industrial. É pra ter todos os recursos disponíveis no máximo do nível testado. Outro ponto importante é poder configurar como quiser os funcionários, tipo as funções da Cami no Terraço ou da Dani na área industrial." Decisões do usuário em 18/11: a Garagem passa a ter a Dani; o Terraço fica como no capítulo 11 (sem a gerência da Cami e sem o molho da Rosa); os Desafios também passam ao máximo do ponto (e são recalibrados); na tela do Teste se escolhe quem vem e as funções, e todos ficam no nível máximo.
 
 ## Objetivo
@@ -29,6 +29,8 @@ Cada fase do Teste (e cada Desafio) passa a ter exatamente o que a campanha dá 
 - **Salão e divulgação:** como hoje (o salão cheio de mesas de 4 com a arrumação automática; a divulgação nas Redes sociais).
 - **Fases do Teste:** a `TESTES.garagem` perde o `mod.sem` (a Dani entra). As outras não mudam.
 - **Desafios:** os `mod.sem`, `mod.up`, `mod.tvs` e o resto de cada Desafio continuam valendo por cima do máximo do ponto.
+- **Regras corrigidas na entrega (decisão do usuário, 18/11):** com o máximo do ponto, o Jogo do Brasil e a Noite do crítico não tinham semente que servisse; o usuário decidiu ajustar a meta e manter as sementes: `jogo` `mod.meta` 3 → **1,75** (semente 8505) e `critico` `mod.meta` 0,6 → **1,07** (semente 8603). As outras sementes saíram da varredura (tabela em Testes).
+- **Regras corrigidas (execução):** o Jogo de pratos fica em 1 (a lojinha não tem teto); o fogão industrial (`up.fogaoInd`) vale do nível 2 em diante (Avenida e Terraço também, como na lojinha); `maxDoPonto` não tem a gerência da Cami nem a Rosa antes do cap. 12.
 
 ### A equipe padrão (o que cada um faz sem configurar)
 - Garagem: Dani com `pratos`, `lavar`, `suco`.
@@ -94,14 +96,14 @@ Cada fase do Teste (e cada Desafio) passa a ter exatamente o que a campanha dá 
 - `tests/balance.js` (`TESTE_EQ`), `tests/menu_fit.py`, `ferramentas/relatorios.py`, `docs/RELATORIOS.md` (o exemplo no formato 3), `docs/TESTES.md`.
 
 ## Tarefas
-- [ ] T1 `tests/smoke103.js` com CA1 a CA7 (falhando), no `run_all.sh`.
-- [ ] T2 `maxDoPonto` e a `montaCap` com o máximo do ponto; a Garagem com a Dani.
-- [ ] T3 A equipe padrão e a equipe escolhida aplicadas no começo do dia (Teste e Desafio).
-- [ ] T4 A tela da fase, o `lcc-teste` com a equipe, o painel do dev e o "Jogar de novo".
-- [ ] T5 O relatório no formato 3, o `relatorios.py` e o `TESTE_EQ` do `balance.js`.
-- [ ] T6 A recalibração das sementes dos 7 Desafios (CA8) e os números novos do bot nas 4 fases no `docs/TESTES.md`.
-- [ ] T7 `menu_fit.py` com a tela da fase; capturas conferidas e apagadas.
-- [ ] Fechamento: `VERSAO`, `vtag`, `#ov-ver` (e os testes que contam as linhas), `docs/RESUMO.md`, `docs/PARTES.md`, a tabela Situação do `docs/PLANO.md` (14d feita), esta spec como entregue, `tests/run_all.sh` verde.
+- [x] T1 `tests/smoke103.js` com CA1 a CA7 (falhando), no `run_all.sh`.
+- [x] T2 `maxDoPonto` e a `montaCap` com o máximo do ponto; a Garagem com a Dani.
+- [x] T3 A equipe padrão e a equipe escolhida aplicadas no começo do dia (Teste e Desafio).
+- [x] T4 A tela da fase, o `lcc-teste` com a equipe, o painel do dev e o "Jogar de novo".
+- [x] T5 O relatório no formato 3, o `relatorios.py` e o `TESTE_EQ` do `balance.js`.
+- [x] T6 A recalibração das sementes dos 7 Desafios (CA8) e os números novos do bot nas 4 fases no `docs/TESTES.md`.
+- [x] T7 `menu_fit.py` com a tela da fase; capturas conferidas e apagadas.
+- [x] Fechamento: `VERSAO`, `vtag`, `#ov-ver` (e os testes que contam as linhas), `docs/RESUMO.md`, `docs/PARTES.md`, a tabela Situação do `docs/PLANO.md` (14d feita), esta spec como entregue, `tests/run_all.sh` verde.
 
 ## Avisos para a execução
 - O "máximo" hoje ignora o ponto em três lugares: `equipeModo('max')`, `cursosTodos(true)` e `melhoriasTodas(true)`. Não mude esses três (o painel do dev usa); escreva o `maxDoPonto` à parte, filtrando por `nivel`/`cap` como fazem `cursoOk`, `cursoDaniVis`, `upgradeCartoes` (41-lojinha.js) e a `normEquipe`.
@@ -110,12 +112,35 @@ Cada fase do Teste (e cada Desafio) passa a ter exatamente o que a campanha dá 
 - O `smoke42` tem uma checagem estatística de VIPs que já oscilava; se só ela falhar, rode de novo e relate.
 
 ## Testes
-(No fechamento: checagens do `smoke103`, smokes antigos ajustados, a tabela das sementes dos Desafios e os números do bot nas 4 fases.)
+- **`smoke103`: 71 checagens** (CA1 a CA7, mais a checagem explícita do espresso e dos cafés especiais: `up.espresso` e `up.cafesEsp` falsos na Garagem e na área industrial, no Teste e nos Desafios; `up.espresso` só da Avenida em diante e `up.cafesEsp` só no Terraço). `run_all.sh` verde; `python3 menu_fit.py` sem falhas (a tela da fase na área industrial e no Terraço nos 14 tamanhos; a lista das Versões com 18 linhas).
+- **Smokes antigos ajustados (CA9):** `smoke86` (18 linhas no `#ov-ver`, v12.4); `smoke97` (cursos e melhorias só até o nível do ponto); `smoke99` (o painel do dev abre a tela da fase e o "Jogar" começa o dia; Garagem com a Dani; relatório com 8 linhas e os índices deslocados; o CA4 da Garagem tira os ajudantes, porque a Dani limpava a mesa suja); `smoke100` (formato 3, linha `Equipe:`, faixa de 20 sementes); `smoke101` (clique na fase + "Jogar"); `smoke102` (formato 3, v12.4). `smoke98` sem mudança.
+- **Sementes finais** (`DESAFIO=<id> node balance.js 200`, comum e `BOT=afiado`; a % varia uns pontos de uma rodada para outra):
+
+| desafio | semente | mod.meta | bronze comum | bronze afiado | `cond` vale (afiado) |
+|---|---|---|---|---|---|
+| soBia | 8102 (mesma) | 1,2 | 50% | 97% | — |
+| semBravo | 8205 (era 8202) | 0,6 | 66% | 96% | 96% |
+| efood | 8308 (era 8316) | 0,65 | 59% | 65% | 91% |
+| junina | 8408 (era 8406) | 2,8 | 48% | 77% | — |
+| jogo | 8505 (mesma) | **1,75** (era 3) | 59% | 85% | — |
+| critico | 8603 (mesma) | **1,07** (era 0,6) | 54% | 21% | 65% |
+| vips | 8712 (era 8701) | 0,6 | 72% (70% e 71% nas outras medidas) | 69% | 100% |
+
+- **A varredura (bronze do comum, 200 rodadas, 8x01 a 8x20):** semBravo: 8201 99, 8202 98, 8203 99, 8204 100, **8205 67**; efood: 8304 34, **8308 60**, 8305 91, 8306 99, 8310 100, 8311 87, 8314 100, o resto 0; junina: 8402 35, 8406 30, 8407 36, **8408 56**, 8414 69, 8412 73; vips: 8701 a 8711 todas de 83 a 100, **8712 70**, 8720 24; jogo: 0% em todas as 20; critico: 98% a 100% em todas as 20. As sementes antigas com o máximo novo: semBravo 8202 comum 96, efood 8316 0, junina 8406 34, vips 8701 99.
+- **Jogo e crítico (decisão do usuário):** com a meta antiga, o jogo (8505) dava bronze 0% (meta 1590, lucro médio ~950) e o crítico (8603) 100%. Medidas pela `mod.meta`, semente 8505: 1,5 → 95%; 1,6 → 91%; 1,7 → 77%; 1,75 → 60%; 1,8 → 41%; 1,9 → 19%; 2,0 → 2%. Semente 8603 (comum; `cond` do afiado): 0,9 → 100% (54%); 1,0 → 86% (52%); 1,05 → 68% (53%); 1,07 → 53% (55%); 1,1 → 35% (57%); 1,2 → 1%. Valeram 1,75 (jogo) e 1,07 (crítico), as duas dentro da faixa na conferência final.
+- **Números do bot nas 4 fases** (`TESTE=<id> node balance.js 20`, % da meta, mediana (p10 a p90); estrelas; perdidos), no lugar dos da v12.2: Garagem comum 216% (200 a 233), 2,9★, 0,1; afiado 249% (228 a 270), 3,0★, 0. Área industrial comum 225% (201 a 253), 2,4★, 0,7; afiado 263% (252 a 278), 3,0★, 0. Avenida comum 336% (261 a 415), 2,1★, 2,1; afiado 413% (392 a 432), 2,9★, 0,1. Terraço comum 356% (345 a 369), 2,8★, 0,2; afiado 351% (336 a 369), 3,0★, 0.
 
 ## Decisões em aberto
 Nenhuma.
 
 ## Desvios
-(No fechamento.)
+- **Jogo de pratos:** o "máximo de compras" ficou em 1 (a lojinha não tem teto: acumula sem limite).
+- **Fogão industrial:** incluído do nível 2 em diante (também na Avenida e no Terraço), porque a lojinha o vende do 2 em diante e ele vai junto nas mudanças; a spec só o listava na área industrial.
+- **Relatório:** quem vem sem nenhuma tarefa sai como `Dani (sem tarefa)`; as tarefas do relatório são as que o `Helper` de fato faz (na Avenida, `Joca (cafezinho)`; com a Cami fora, `Joca (cafezinho, lixo, lavar)`).
+- **Tela da fase:** a tarefa básica guardada que fica com outro dono (Dani ou Joca) segue guardada, não conta para as vagas e aparece apagada com "com o Joca"/"com a Cami"; a equipe é gravada no `lcc-teste` a cada mudança (não só no "Jogar") e "Padrão" apaga a chave `eq-<id>`.
+- **`relatorios.py`:** imprime "1 tentativas" (sem plural); o resumo separado por equipe diz "N tentativas em M equipes".
+- **Meta de dois Desafios (decisão do usuário, 18/11):** nenhuma das 20 sementes do jogo (0%) nem do crítico (98 a 100%) servia, nem pelo fallback; o usuário mandou manter as sementes e ajustar `mod.meta` (jogo 3 → 1,75; crítico 0,6 → 1,07). Os dois ficaram na faixa na 1ª conferência, sem passos de 0,05.
+- **vips (8712):** o bronze do comum ficou em 70% na varredura e em 71% e 72% nas reconferências (ruído; fora dos 70% por 1 ou 2 pontos). Não há outra semente na faixa (8701 a 8711 dão 83 a 100%), e ficou a 8712, a mais perto, anotada aqui.
+- **Relato do usuário (v12.3.2):** "a máquina de cafés especiais ainda está na área industrial no modo teste". Na v12.4 o Teste e os Desafios não têm `up.espresso` nem `up.cafesEsp` antes da Avenida (nem `cafesEsp` antes do Terraço); checagem explícita no `smoke103`.
 
 **Modelo:** Sonnet, esforço alto (regra nova em muitas partes, tela nova, relatório e a recalibração dos 7 Desafios)
