@@ -4,6 +4,13 @@ Registro das ideias e dos retornos de quem jogou, com o texto original, e de ond
 
 ---
 
+## 19/11 — usuário: preços de verdade e cardápio por ponto
+> "Eu acho que os preços têm que ficar mais realistas, então em vez de ser multiplicadores, né? Talvez até mudar uma parte dos produtos. [...] da avenida e depois do terraço, não vende PF, né? Nem pastel, nem coxinha. [...] não necessariamente o realismo é mais importante do que a diversão, mas não pode ficar muito distante do realismo [...] sem PF no terraço, por favor."
+
+**Destino:** Etapa 16 do `docs/PLANO.md`; 16a planejada em `docs/spec-v12.7.md` (aprovada em 19/11), 16b (desenhos) a planejar.
+
+---
+
 ## 19/11 — usuário: o Terraço sem marmita
 "Eu acho que não faz sentido ter Ifood no terraço. Qual restaurante de luxo tipo terraço Itália tem esse tipo de coisa de marmita?" e "A mesa de marmitas está lá sobrando..., põe no plano para corrigir". Escolhido: aparador de luxo com o vaso em cima.
 **Destino:** `docs/spec-v12.5.1.md` (aprovada), Etapa 15a-1 no `docs/PLANO.md`.
