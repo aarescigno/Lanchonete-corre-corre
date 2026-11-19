@@ -575,19 +575,31 @@ function buildAnselmo(grid){
     grid.appendChild(card);
   });
 }
-/* o cartão da Lia (v10.2): ajudante de cozinha, só no Terraço; contratar é definitivo (R$ 80/dia) e a cozinha anda mais rápida */
+/* o cartão da Lia (v10.2): cozinheira, só no Terraço; contratar é definitivo. v12.5: por nível (1 + cursos feitos): o pré-preparo, as entradas na praça dela e o prato dela; a diária sobe com o nível.
+   Os cursos dela: o Chefe de praça aqui; o de cozinha de autor fica no Cardápio */
+const LIA_LINHAS = ['Ajuda no pré-preparo', 'Cuida das entradas', 'Faz o prato dela'];
 function buildLia(grid){
-  const eq = game.save.equipe, bank = game.save.bank, L = STAFF.lia;
-  const canPay = extra => payroll(eq, cursosPay(game.save)) + extra <= bank;
-  const c = staffCard(upgradeIcon('lia'), eq.lia ? 'Lia (ajudante de cozinha)' : 'Lia', '');
+  const sv = game.save, eq = sv.equipe, bank = sv.bank, LV = STAFF.lia.levels, lv = eq.lia, cfg = LV[lv || 1];
+  const canPay = extra => payroll(eq, cursosPay(sv)) + extra <= bank;
+  const c = staffCard(upgradeIcon('lia'), lv ? 'Lia (cozinheira) · nível ' + lv + ' de ' + (LV.length - 1) : 'Lia', '');
   const box = el('div', 'next');
-  box.appendChild(el('b', null, eq.lia ? 'Na cozinha:' : 'Se contratar:'));
-  const line = el('span', null, 'A cozinha anda mais rápida'); box.appendChild(line);
-  box.appendChild(el('span', null, 'Diária: ' + fmt(L.pay)));
+  box.appendChild(el('b', null, lv ? 'Na cozinha:' : 'Se contratar:'));
+  box.appendChild(el('span', null, LIA_LINHAS[(lv || 1) - 1]));
+  box.appendChild(el('span', null, 'Diária: ' + fmt(cfg.pay)));
   c.appendChild(box);
   const duo = el('div', 'duo');
-  if (!eq.lia) duo.appendChild(shopBtn('Contratar', 'btn', canPay(L.pay), () => game.setStaff('lia', 1)));
+  if (!lv) duo.appendChild(shopBtn('Contratar', 'btn', canPay(cfg.pay), () => game.setStaff('lia', 1)));
   c.appendChild(duo); grid.appendChild(c);
+  if (game.cursoMsg) grid.appendChild(el('p', 'cursomsg', game.cursoMsg));
+  LIA_CURSOS.filter(q => !q.item && game.liaCursoVis(q)).forEach(q => {   // v12.5: o Chefe de praça
+    const feito = !!sv.liaCursos[q.id], card = el('div', 'item' + (feito ? ' own' : ''));
+    card.appendChild(upgradeIcon('lia'));
+    card.appendChild(el('b', null, 'Curso de ' + q.nome));
+    if (!feito && !(lv > 0) && !devLivre()) card.appendChild(el('span', 'cursos-lista apagado', 'Precisa da Lia contratada.'));
+    if (!feito && game.liaCursoTrava) card.appendChild(el('span', 'cursos-lista', 'Em curso'));
+    card.appendChild(feito ? shopBtn('Curso feito', 'btn', false, () => false) : shopBtn('Comprar ' + fmt(q.preco), 'btn', (lv > 0 || devLivre()) && !game.liaCursoTrava && bank >= q.preco, () => game.buyLiaCurso(q.id), q.preco));
+    grid.appendChild(card);
+  });
 }
 function buildDaniCursos(grid){
   const sv = game.save, bank = sv.bank;
@@ -1041,6 +1053,17 @@ function buildCursosAjudantes(grid){
     if (!feito && falta) card.appendChild(el('span', 'cursos-lista apagado', 'Precisa do curso de ' + ANSELMO_CURSOS.find(x => x.id === c.dep).nome + '.'));
     if (!feito && game.anselmoCursoTrava) card.appendChild(el('span', 'cursos-lista', 'Em curso'));
     card.appendChild(feito ? shopBtn('Curso feito', 'btn', false, () => false) : shopBtn('Comprar ' + fmt(c.preco), 'btn', (sv.equipe.anselmo > 0 || devLivre()) && !falta && !game.anselmoCursoTrava && bank >= c.preco, () => game.buyAnselmoCurso(c.id), c.preco));
+    grid.appendChild(card);
+  });
+  // v12.5: a cozinha de autor da Lia (só no Terraço, depois do Chefe de praça; na História, depois da conversa liaPetala)
+  LIA_CURSOS.filter(c => c.item && game.liaCursoVis(c)).forEach(c => {
+    const feito = !!sv.liaCursos[c.id], card = el('div', 'item' + (feito ? ' own' : '')), falta = !!c.dep && !sv.liaCursos[c.dep];
+    card.appendChild(upgradeIcon('lia'));
+    card.appendChild(el('b', null, 'Curso de ' + c.nome.charAt(0).toLowerCase() + c.nome.slice(1)));
+    if (!feito && !(sv.equipe.lia > 0) && !devLivre()) card.appendChild(el('span', 'cursos-lista apagado', 'Precisa da Lia contratada.'));
+    if (!feito && falta) card.appendChild(el('span', 'cursos-lista apagado', 'Precisa do curso de ' + LIA_CURSOS.find(x => x.id === c.dep).nome + '.'));
+    if (!feito && game.liaCursoTrava) card.appendChild(el('span', 'cursos-lista', 'Em curso'));
+    card.appendChild(feito ? shopBtn('Curso feito', 'btn', false, () => false) : shopBtn('Comprar ' + fmt(c.preco), 'btn', (sv.equipe.lia > 0 || devLivre()) && !falta && !game.liaCursoTrava && bank >= c.preco, () => game.buyLiaCurso(c.id), c.preco));
     grid.appendChild(card);
   });
 }

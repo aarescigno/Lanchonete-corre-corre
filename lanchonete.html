@@ -519,7 +519,7 @@ table.rank tr.me td{background:#fbe7a8}
 
     <div class="ov show" id="ov-menu">
       <div class="panel menu-panel">
-        <span class="vtag" id="vtag" aria-label="Versão 12.4.3">v12.4.3</span>
+        <span class="vtag" id="vtag" aria-label="Versão 12.5">v12.5</span>
         <h1 class="title">Lanchonete <br>Corre-Corre</h1>
         <p class="tag">Ajude a Bia a atender a freguesia da esquina antes que o cafezinho esfrie!</p>
         <div class="lbl" id="menu-dia">História</div>
@@ -821,7 +821,8 @@ table.rank tr.me td{background:#fbe7a8}
       <div class="panel">
         <h2>Versões</h2>
         <ul class="verlist">
-          <li><b>v12.4.3</b><span class="cur">versão atual</span><br>O letreiro do eFood fica só com as letras, sem a faixa no fundo.</li>
+          <li><b>v12.5</b><span class="cur">versão atual</span><br>19/11/2026 &mdash; A Lia ganha um arco no Terraço: o ciúme do Tonhão, a praça das entradas e o prato dela.</li>
+          <li><b>v12.4.3</b><br>19/11/2026 &mdash; O letreiro do eFood fica só com as letras, sem a faixa no fundo.</li>
           <li><b>v12.4.2</b><br>19/11/2026 &mdash; Quando chega um entregador, pisca um letreiro grande do eFood no alto do salão.</li>
           <li><b>v12.4.1</b><br>19/11/2026 &mdash; Na área industrial e na Avenida, o cabelo preso da Bia fica para trás quando ela anda.</li>
           <li><b>v12.4</b><br>18/11/2026 &mdash; O Teste e os Desafios trazem o que cada ponto tem, no máximo; no Teste, dá para escolher quem vem e o que cada um faz.</li>
@@ -936,6 +937,8 @@ const CARDAPIO = {
   risoto:       { nome:'Risoto de cogumelos',       preco:46, cat:'pf',     curso:'alta',     carne:false, cor:'#E8D9A8', veg:true, fino:true },
   peixe:        { nome:'Peixe do dia',              preco:50, cat:'pf',     curso:'alta',     carne:true,  cor:'#D9A25B', fino:true },
   medalhao:     { nome:'Medalhão ao molho madeira', preco:55, cat:'pf',     curso:'alta',     carne:true,  cor:'#8A4B2A', fino:true },
+  /* v12.5, o prato da Lia (curso Cozinha de autor): curso:'liaAutor' não existe em CURSOS (como os da barraca junina), então nunca é "sabido" pelo caminho comum; entra em pedePrincipal só com o curso feito e a Lia no dia (liaRisotoOn) */
+  liaRisoto:    { nome:'Risoto de feijão-manteiguinha', preco:52, cat:'pf', curso:'liaAutor', carne:false, cor:'#C9A26B', veg:true, fino:true },
   /* v10.6, a barraca da festa junina: curso:'junina' não existe em CURSOS, então nunca são sabidos nem entram no cardápio comum; só saem nos pedidos do dia da festa com a barraca montada */
   pamonha:      { nome:'Pamonha',                   preco:9,  cat:'junina', curso:'junina',   carne:false, cor:'#E6D27A' },
   milho:        { nome:'Milho cozido',              preco:7,  cat:'junina', curso:'junina',   carne:false, cor:'#F2C94C' },
@@ -1051,6 +1054,14 @@ const ANSELMO_CURSOS = [
   { id:'autor', nome:'Coquetelaria de autor', preco:800, nivel:4, dep:'classica', item:true }
 ];
 function normAnselmoCursos(c){ const o = {}; ANSELMO_CURSOS.forEach(x => { if (c && c[x.id] && (!x.dep || c[x.dep])) o[x.id] = 1; }); return o; }
+/* v12.5: os cursos da Lia (só no Terraço, um por dia: save.liaCursos e liaCursoDia). Cada um sobe o nível dela (equipe.lia): `praca` leva ao 2 (a praça das entradas), `autor` ao 3 (o Risoto de feijão-manteiguinha, no Cardápio) */
+const LIA_CURSOS = [
+  { id:'praca', nome:'Chefe de praça', preco:700, nivel:4 },
+  { id:'autor', nome:'Cozinha de autor', preco:1000, nivel:4, dep:'praca', item:true }
+];
+function normLiaCursos(c){ const o = {}; LIA_CURSOS.forEach(x => { if (c && c[x.id] && (!x.dep || c[x.dep])) o[x.id] = 1; }); return o; }
+/* a Lia do nível da equipe eq (STAFF.lia.levels), ou null sem ela */
+function liaCfg(eq){ return eq && eq.lia > 0 ? STAFF.lia.levels[Math.min(eq.lia, STAFF.lia.levels.length - 1)] : null; }
 const CAMI_MESAS_MAX = 2;   // v9.6: quantas mesas o jogador pode marcar como da Cami (v9.6.1: 3 → 2, rebalanceamento da 3b-7)
 /* v9.6: quantas mesas do salão estão marcadas como da Cami */
 function camiMesasN(save){ return ((save && save.salao && save.salao.mesas) || []).filter(m => m.cami).length; }
@@ -1158,8 +1169,11 @@ const PONTOS_ACAO = { sit:10, take:15, deliver:20, clear:10, coffee:5, juice:5, 
 const TEMPOS = { entrada:{ cook:0.6, eat:0.5 }, porCoracao:1, semSobremesa:1, semBar:0.5, pts:30 };
 /* o prato principal da refeição completa: da categoria PF (PF, PF vegetariano, parmegiana). Vegetariano: só sem carne (sem opção, o PF, e o grupo reclama);
    quem não é, troca o PF pelo vegetariano em VEG.pfTroca das vezes, como no pedePrato */
+/* v12.5: o risoto da Lia está no cardápio do dia (curso de autor feito e a Lia trabalhando) */
+function liaRisotoOn(game){ return game.mode === 'carreira' && game.liaAtiva && !!game.save.liaCursos && !!game.save.liaCursos.autor; }
 function pedePrincipal(tipo, game, veg){
   let sab = pratosSabidos(game.cursos).filter(k => CARDAPIO[k].cat === 'pf');
+  if (liaRisotoOn(game)) sab.push('liaRisoto');   // v12.5
   const fi = game.ponto && game.ponto.nivel >= 4 ? sab.filter(k => CARDAPIO[k].fino) : [];   // v10.2, a regra do prato fino: sabendo algum principal fino, só entre os finos
   if (fi.length) sab = fi;
   if (veg){ const v = sab.filter(k => !CARDAPIO[k].carne); return v.length ? pick(v) : 'pf'; }
@@ -1568,8 +1582,9 @@ const STAFF = {
   cami:    { levels:[ null, { speed:0.9, tasks:3, pay:95 }, { speed:1.1, tasks:4, pay:115 }, { speed:1.25, tasks:4, pay:135, mesas:true }, { speed:1.35, tasks:4, pay:160, mesas:true, tudo:true }, { speed:1.35, tasks:4, pay:200, mesas:true, tudo:true, gerente:true } ] },   // v10.3: o nível 4 (curso de salão, só no Terraço); v10.8: o 5 (gerência)
   // Anselmo (v9.5): coqueteleiro, só na Avenida; entra já no nível 2 (R$ 105/dia desde a v10.5), não faz tarefas da lista; o nível 3 vem dos cursos do Terraço (4a)
   anselmo: { levels:[ null, null, { speed:0.8, pay:105, xp:0 }, { speed:1.0, pay:150, xp:0 } ] },
-  // Lia (v10.2): ajudante de cozinha, só no Terraço; com ela no dia todo pedido da cozinha leva `cook` × o tempo. Contratar é definitivo (equipe.lia: 0 ou 1)
-  lia:     { pay:80, cook:0.75 },
+  // Lia (v10.2): ajudante de cozinha, só no Terraço; com ela no dia todo pedido da cozinha leva `cook` × o tempo. Contratar é definitivo.
+  // v12.5: por nível (equipe.lia 0 a 3: 1 + cursos feitos, como a Cami): 2 (Chefe de praça) cuida das entradas na praça dela, 3 (Cozinha de autor) faz o Risoto de feijão-manteiguinha
+  lia:     { levels:[ null, { cook:0.85, pay:80 }, { cook:0.75, pay:100, praca:true }, { cook:0.75, pay:120, praca:true, autor:true } ] },
   // couvert artístico: só do nível 3 do salão em diante (Avenida Brasil, etapa 3 do plano)
   couvert: { pay:200, fee:8, effect:0.2, feeCut:0.5, nivel:3 },
   // ambiente da Garagem (v7.4.3): TV e som ligados o dia todo; o custo é a conta de luz (pay) e entra na folha
@@ -1639,7 +1654,7 @@ function payroll(eq, cp){
   if (eq.joca && !eq.jocaFora) v += diariaJoca(eq, cp && cp.joca);   // v9.2; v10.5: o degrau do curso de barista
   if (eq.cami && !eq.camiFora) v += STAFF.cami.levels[eq.cami].pay;   // v9.3
   if (eq.anselmo && !eq.anselmoFora) v += STAFF.anselmo.levels[eq.anselmo].pay;   // v9.5
-  if (eq.lia && !eq.liaFora) v += STAFF.lia.pay;   // v10.2
+  if (eq.lia && !eq.liaFora) v += liaCfg(eq).pay;   // v10.2; v12.5: a diária do nível
   if (eq.couvert) v += STAFF.couvert.pay;
   v += musicaPay(musicaDe(eq));   // v10.4
   if (eq.tv) v += STAFF.tv.pay;
@@ -2128,16 +2143,21 @@ const HISTORIA = [
       { q:'dani', e:'alegre', s:'Hoje uma mesa bateu palma pra minha sobremesa!' }] },
   // v10.5.2: um capítulo a mais no Terraço, para usar a Lia e os coquetéis antes da refeição perfeita. Objetivo: contratar a Lia e 8 coquetéis num dia, 3 vezes
   { cap:10, titulo:'A casa completa', ponto:'terraco', obj:{ equipe:'lia', drinks:8, vezes:3 },
-    antes:[
+    antes:[   // v12.5: a Cami traz a Lia e o Tonhão tem ciúme da cozinha (docs/ARCO.md §2.1)
       { q:'tonhao', e:'insegura', s:'Quatro tempos por mesa, Bia. Sozinho no fogão eu não venço.' },
-      { q:'bia', e:'firme', s:'Então o senhor vai ter ajuda. A Lia, ajudante de cozinha, tá procurando serviço.' },
-      { q:'tonhao', s:'Ajudante na minha cozinha?...' },
+      { q:'bia', e:'firme', s:'Então o senhor vai ter ajuda.' },
+      { q:'cami', e:'alegre', s:'Eu sei quem! A Lia, que cozinhava no meu rodízio. Hoje ela faz curso de alta gastronomia.' },
+      { q:'tonhao', e:'brava', s:'Ajudante na minha cozinha?...' },
       { q:'bia', e:'alegre', s:'Foi o senhor que me ensinou a pedir ajuda, tio.' },
       { q:'dani', s:'E o pessoal daqui gosta de um coquetel antes da entrada!' }],
-    depois:[
-      { q:'bia', e:'alegre', s:'A cozinha tá voando, tio!' },
-      { q:'tonhao', nota:'provando um coquetel', s:'E o balcão de drinks não para.' },
-      { q:'dani', s:'Agora só falta a refeição perfeita.' }] },
+    depois:[   // v12.5: a cena dos temperos (a Lia ganha lugar no Terraço sem gastar a vez da ARCO)
+      { q:'lia', nota:'com os potes na mão', s:'Chef, arrumei os temperos em ordem alfabética.' },
+      { q:'tonhao', e:'brava', s:'O cominho mora do lado do fogão há trinta anos! Volta tudo pro lugar.' },
+      { q:'lia', e:'insegura', s:'Desculpa, chef. No rodízio ninguém sabia onde ficava nada.' },
+      { q:'cami', e:'alegre', s:'Ela arrumou a cozinha inteira do rodízio numa noite, Tonhão. O dono quase chorou.' },
+      { q:'tonhao', s:'Seu Tonhão, Cami. ...E aqui ninguém chora.' },
+      { q:'tonhao', s:'Mas deixa o sal onde ela pôs.' },
+      { q:'bia', e:'alegre', s:'A cozinha tá voando, tio!' }] },
   { cap:11, titulo:'Do começo ao fim', ponto:'terraco', obj:{ completas:6, nota:4.5 },
     antes:[
       { q:'tonhao', s:'Refeição completa é como música: não pode faltar nota.' },
@@ -2261,13 +2281,13 @@ const TESTE_PESSOAS = ['dani', 'joca', 'cami', 'anselmo', 'lia'];
 const TESTE_NOMES = { dani:'Dani', joca:'Joca', cami:'Cami', anselmo:'Anselmo', lia:'Lia' };
 function testeNivel(t){ return pontoOf(DEV_CAPS[clamp(Math.round(+t.cap) || 1, 1, DEV_CAPS.length) - 1].ponto).nivel; }   // o nível do ponto da fase (ou do Desafio)
 function testeTem(q, nv){ return q === 'dani' || (q === 'joca' && nv >= 2) || ((q === 'cami' || q === 'anselmo') && nv >= 3) || (q === 'lia' && nv >= 4); }   // quem a campanha tem no ponto de nível nv
-/* o nível mais alto de cada pessoa no ponto nv e no capítulo cap (0 = não vem ao ponto): o Tonhão e a Dani 4, o Joca 4, a Cami 3 (Avenida), 4 (Terraço) ou 5 (a gerência, do cap. 12), o Anselmo 2 ou 3, a Lia 1 */
+/* o nível mais alto de cada pessoa no ponto nv e no capítulo cap (0 = não vem ao ponto): o Tonhão e a Dani 4, o Joca 4, a Cami 3 (Avenida), 4 (Terraço) ou 5 (a gerência, do cap. 12), o Anselmo 2 ou 3, a Lia 3 (v12.5) */
 function testeNivelMax(q, nv, cap){
   if (!testeTem(q, nv) && q !== 'tonhao') return 0;
   if (q === 'tonhao' || q === 'dani' || q === 'joca') return STAFF[q].levels.length - 1;
   if (q === 'cami') return nv >= 4 ? (cap >= 12 ? STAFF.cami.levels.length - 1 : 4) : 3;
   if (q === 'anselmo') return nv >= 4 ? 3 : 2;
-  return 1;
+  return STAFF.lia.levels.length - 1;   // v12.5: a Lia no nível 3, com os dois cursos
 }
 /* as tarefas que a lojinha mostraria para a pessoa no ponto nv com tudo comprado: a Dani, as de DANI_TASKS; o Joca e a Cami, só as básicas (a máquina vem da jarra ou do curso do Anselmo; o doce, do curso de confeitaria; o espresso, do Joca, tira o cafezinho da Dani) */
 function testeTarefas(q, nv){
@@ -2527,11 +2547,17 @@ const LIBERA = [
             { q:'cami', e:'alegre', s:'Me mostra onde fica tudo que eu dou conta!' },
             { q:'bia', e:'firme', s:'Gostei. Eu acerto na lojinha, em Equipe.' } ] },
   // v10.2, Terraço: a Lia, colega do Tonhão no curso de alta gastronomia, chega depois do básico de um dos cursos dele
-  { id:'lia', nivel:4, dia:1, ate:999, gatilho:(st, av, g) => cursoNivel(g.save.cursos, 'entradas') >= 1 || cursoNivel(g.save.cursos, 'alta') >= 1, reclama:['A comida demorou entre um prato e outro.', 'Cozinha lenta para um terraço.'],
-    falas:[ { q:'tonhao', nota:'secando as mãos no avental', s:'Bia, no curso tinha uma moça que cortava cebola mais rápido que eu.' },
-            { q:'bia', e:'alegre', s:'Mais rápido que o senhor? Essa eu quero conhecer.' },
+  { id:'lia', nivel:4, dia:1, ate:999, gatilho:(st, av, g) => (cursoNivel(g.save.cursos, 'entradas') >= 1 || cursoNivel(g.save.cursos, 'alta') >= 1) && (!histLiga() || g.save.cap >= 10), reclama:['A comida demorou entre um prato e outro.', 'Cozinha lenta para um terraço.'],
+    falas:[ { q:'cami', s:'Chefe, a Lia veio! Tá na porta da cozinha.' },   // v12.5: o teste da cebola (docs/ARCO.md §2.1)
             { q:'lia', e:'firme', s:'Lia. Onde eu guardo as facas?' },
-            { q:'bia', e:'firme', s:'Na cozinha do chef Tonhão. Eu acerto na lojinha, em Equipe.' } ] } ];
+            { q:'tonhao', e:'brava', nota:'na frente da porta', s:'Peraí... Você é a moça do curso. A da cebola.' },
+            { q:'tonhao', e:'brava', s:'Na minha cozinha, não. Aqui cada panela tem dono.' },
+            { q:'bia', e:'firme', s:'Tio, quem contrata sou eu. Faz um teste com ela.' },
+            { q:'tonhao', nota:'pondo uma cebola na tábua', s:'Uma cebola. Do jeito que eu corto.' },
+            { q:'lia', e:'firme', nota:'cortando sem dizer nada', s:'...' },
+            { q:'tonhao', e:'insegura', s:'...Hum. Ficou igual.' },
+            { q:'bia', e:'firme', s:'Bem-vinda, Lia. Eu acerto na lojinha, em Equipe.' },
+            { q:'lia', s:'Obrigada, chefia.' } ] } ];
 function liberaOf(id){ return LIBERA.find(l => l.id === id) || null; }
 /* v11.3 (etapa 8c, docs/ARCO.md §6): as conversas do arco. Cada entrada: { id, nivel (o ponto), quando:(sv, g) => bool, falas }; `g` é o jogo no fim do dia (g.day.n, g.fimDia = { stars, lucro }, g.stats).
    save.arco[id]: 0 (não vista) | 'pend' (toca no próximo fim de dia) | 1 (vista). Só no Modo História: a 1ª da lista, do nível do ponto, com valor 0 e `quando` verdadeiro vira 'pend', uma por fim de dia */
@@ -2614,12 +2640,21 @@ const ARCO = [
             { q:'tonhao', e:'insegura', s:'Vinte anos naquela cozinha, Bia. E saí sem levar nem o meu nome.' },
             { q:'bia', e:'firme', s:'O senhor trouxe o que importava: a mão. O nome a gente faz aqui.' },
             { q:'tonhao', e:'alegre', nota:'fechando a cortina', s:'...Então vamos trabalhar, que nome não se faz sozinho.' } ] },
-  { id:'liaPerfeita', nivel:4, quando:(sv, g) => sv.equipe.lia > 0 && !sv.equipe.liaFora,
+  { id:'liaPerfeita', nivel:4, quando:(sv, g) => sv.equipe.lia > 0 && !sv.equipe.liaFora && sv.cap >= 11,   // v12.5: depois da cena dos temperos (cap. 10, depois)
     falas:[ { q:'tonhao', s:'Lia, a mesa quatro tá esperando a entrada faz tempo!' },
             { q:'lia', e:'insegura', s:'Refiz três vezes, chef. O corte não ficou igual.' },
             { q:'tonhao', e:'firme', s:'Prato perfeito e frio não serve pra ninguém. Capricho tem hora, e a hora é a do freguês.' },
+            { q:'cami', nota:'pegando o prato', s:'Li, a mesa não quer perfeito, quer quente. Nem lá no rodízio, nem aqui.' },
             { q:'lia', e:'firme', s:'Entendido. Sai agora.' },
             { q:'bia', e:'alegre', s:'Tá ensinando bonito, tio.' } ] },
+  { id:'liaRosa', nivel:4, quando:(sv, g) => sv.arco.liaPerfeita === 1 && sv.cap >= 11 && sv.equipe.lia > 0,   // v12.5: abre o curso Chefe de praça
+    falas:[ { q:'tonhao', nota:'olhando a Lia na tábua', s:'Bia, sabe quem refazia prato três vezes? A sua mãe.' },
+            { q:'bia', s:'A mãe?' },
+            { q:'tonhao', e:'alegre', s:'Até aprender que prato tem hora. Aí ninguém segurava ela.' },
+            { q:'tonhao', e:'firme', s:'Lia, a boca da esquerda é sua. As entradas são suas.' },
+            { q:'lia', e:'insegura', s:'O senhor disse que cada panela tinha dono.' },
+            { q:'tonhao', e:'firme', s:'E tem. Essa agora é sua. Essa cozinha nunca foi só minha.' },
+            { q:'bia', e:'firme', s:'Então o curso dela tá na lojinha, em Equipe.' } ] },
   { id:'anselmoRi', nivel:4, quando:(sv, g) => !!sv.anselmoCursos.autor,
     falas:[ { q:'anselmo', e:'alegre', nota:'rindo alto atrás do balcão', s:'Opa... desculpa o barulho.' },
             { q:'bia', s:'Desculpa por quê?' },
@@ -2634,7 +2669,15 @@ const ARCO = [
     falas:[ { q:'tonhao', nota:'com a pétala na palma da mão', s:'Lia, hoje quem põe a pétala é você.' },
             { q:'lia', e:'insegura', s:'Eu, chef? Esse prato é da sua família.' },
             { q:'tonhao', e:'firme', s:'Por isso mesmo. Receita que fica numa mão só some. Eu já vi isso acontecer.' },
-            { q:'lia', e:'firme', nota:'pondo a pétala', s:'...Na hora. Como a Rosa.' } ] },
+            { q:'lia', e:'firme', nota:'pondo a pétala', s:'...Na hora. Como a Rosa.' },
+            { q:'bia', e:'firme', s:'E o próximo prato da casa é seu, Lia. O curso tá no Cardápio da lojinha.' } ] },
+  { id:'liaChef', nivel:4, quando:(sv, g) => sv.liaPrato >= 1 && sv.arco.liaPetala === 1,   // v12.5: o 1º risoto vendido; a Lia vira "chef"
+    falas:[ { q:'cami', e:'alegre', s:'Li, a mesa da janela quer conhecer quem fez o prato.' },
+            { q:'lia', e:'insegura', s:'Eu? Fala que foi o chef.' },
+            { q:'tonhao', e:'firme', s:'Chef é quem a mesa chama. Vai lá, chef.' },
+            { q:'lia', s:'...Obrigada, Antônio.' },
+            { q:'lia', e:'firme', s:'José Carlos, Daniela: segurem a cozinha pra mim.' },
+            { q:'bia', e:'alegre', s:'Vai, Lia. O salão é da Cami, mas essa mesa é sua.' } ] },
   { id:'roda', nivel:4, quando:(sv, g) => sv.cap === 14,
     falas:[ { q:'bia', e:'firme', s:'Antes da noite da estrela, eu quero dizer uma coisa a vocês.' },
             { q:'bia', s:'Eu comecei numa garagem, com medo de abrir o portão.' },
@@ -2652,7 +2695,7 @@ const HIST_NOMES = { bia:'Bia', tonhao:'Tonhão', dani:'Dani', joca:'Joca', cami
 const ATU_TXT = { procurando:'Procurando versão nova...', nova:'Tem versão nova: {v}! Seu jogo salvo continua.', igual:'Você já está na versão mais nova ({v}).', erro:'Sem internet agora. Tente de novo mais tarde.', atualizando:'Atualizando...' };
 function atuEstado(remota, atual){ if (typeof remota !== 'string' || !remota.trim()) return 'erro'; return remota.trim() === atual ? 'igual' : 'nova'; }
 const CAIXA_MAX = 14;                                 // livro-caixa (v7.2): quantos dias da carreira ficam guardados
-const VERSAO = 'v12.4.3';                               // vai no resumo do Caixa
+const VERSAO = 'v12.5';                                 // vai no resumo do Caixa
 const DIVULGA_DIA = 4;                                // antes disso, o movimento é o da inauguração (sem custo); v9.0.2: dia 4, e o padrão é o boca a boca
 function divulgaAberta(n, sv){ return devLivre() || n >= DIVULGA_DIA && !(sv && sv.convDiv === 'pend'); }   // no modo dev, desde o dia 1; v9.0.3: no Modo História, só depois da conversa
 /* v9.6.4: a Efood (os entregadores) só abre depois da conversa dos entregadores, no Modo História; antes dela, nenhum tipo com `retira` vem na agenda */
@@ -2829,7 +2872,7 @@ const MANUAL = [
   { id:'e-joca',    aba:'equipe', quem:'joca',    nome:'Joca', linha:'O básico da casa; depois, o café espresso e os cafés especiais. Na Avenida, a freguesia quer café de máquina.' },
   { id:'e-cami',    aba:'equipe', quem:'cami',    nome:'Cami', linha:'Garçonete de rodízio: com cursos, cuida das mesas dela ou ajuda em todas.' },
   { id:'e-anselmo', aba:'equipe', quem:'anselmo', nome:'Anselmo', linha:'Coqueteleiro: só o balcão de drinks; no Terraço, coquetéis de autor.' },
-  { id:'e-lia',     aba:'equipe', quem:'lia',     nome:'Lia', linha:'Ajudante de cozinha: com ela, tudo sai mais rápido.' },   // v10.2
+  { id:'e-lia',     aba:'equipe', quem:'lia',     nome:'Lia', linha:'Cozinheira: começa no pré-preparo; com cursos, cuida das entradas e cria um prato dela.' },   // v10.2; v12.5
 
   { id:'l-tenis',      aba:'lojinha', nome:'Tênis novos', linha:'A Bia anda mais rápido.' },
   { id:'l-corrida',    aba:'lojinha', nome:'Tênis de corrida', linha:'A Bia anda bem mais rápido.' },
@@ -3253,8 +3296,8 @@ function normEquipe(e, ponto){
   const jt = Array.isArray(e.jocaTasks) ? e.jocaTasks.filter(t => BASICAS.indexOf(t) >= 0) : JOCA_PADRAO.slice(), jn = Math.round(+e.joca) || 0;   // v9.2: o Joca (0 ou 2 a 4) só tem tarefa básica
   const ct = Array.isArray(e.camiTasks) ? e.camiTasks.filter(t => BASICAS.indexOf(t) >= 0) : CAMI_PADRAO.slice(), cn = Math.round(+e.cami) || 0;   // v9.3: a Cami (0 ou 1 a 3) também só tem tarefa básica
   const an = Math.round(+e.anselmo) || 0;   // v9.5: o Anselmo (0, 2 ou 3), só na Avenida (no modo dev, em qualquer ponto)
-  const li = Math.round(+e.lia) || 0;   // v10.2: a Lia (0 ou 1), só no Terraço (no modo dev, em qualquer ponto)
-  return { lia: li >= 1 && (ponto.nivel >= 4 || devLivre()) ? 1 : 0, anselmo: an >= 2 && (ponto.nivel >= 3 || devLivre()) ? Math.min(an, STAFF.anselmo.levels.length - 1) : 0, cami: cn >= 1 ? Math.min(cn, ponto.nivel >= 4 || devLivre() ? STAFF.cami.levels.length - 1 : 3) : 0, camiFila: e.camiFila !== false, camiTasks: ct.filter((t,i) => ct.indexOf(t) === i).slice(0,4), camiModo: e.camiModo === 'mesas' ? 'mesas' : e.camiModo === 'tudo' ? 'tudo' : 'tarefas', joca: jn >= 2 ? Math.min(jn, STAFF.joca.levels.length - 1) : 0, jocaTasks: jt.filter((t,i) => jt.indexOf(t) === i).slice(0,3), tonhao: clamp(Math.round(+e.tonhao)||0,0,STAFF.tonhao.levels.length - 1), dani: clamp(Math.round(+e.dani)||0,0,STAFF.dani.levels.length - 1), daniTasks: tasks.filter((t,i) => tasks.indexOf(t) === i).slice(0,3), couvert: !!e.couvert && couvertOk(ponto), taxa: !!e.taxa && couvertOk(ponto), musica: musicaOk(ponto) ? clamp(Math.round(+e.musica) || 0, 0, TERRACO.musica.length - 1) : 0, tv: !!e.tv && ponto.nivel < 2, som: !!e.som && ponto.nivel < 2, tvs: ponto.nivel === 2 ? clamp(Math.round(+e.tvs) || 0, 0, INDUSTRIAL.tvs.modos.length - 1) : 0 };   // v9.1: as TVs são só da área industrial
+  const li = Math.round(+e.lia) || 0;   // v10.2: a Lia (0 ou 1; v12.5: 0 a 3, o nível), só no Terraço (no modo dev, em qualquer ponto)
+  return { lia: li >= 1 && (ponto.nivel >= 4 || devLivre()) ? Math.min(li, STAFF.lia.levels.length - 1) : 0, anselmo: an >= 2 && (ponto.nivel >= 3 || devLivre()) ? Math.min(an, STAFF.anselmo.levels.length - 1) : 0, cami: cn >= 1 ? Math.min(cn, ponto.nivel >= 4 || devLivre() ? STAFF.cami.levels.length - 1 : 3) : 0, camiFila: e.camiFila !== false, camiTasks: ct.filter((t,i) => ct.indexOf(t) === i).slice(0,4), camiModo: e.camiModo === 'mesas' ? 'mesas' : e.camiModo === 'tudo' ? 'tudo' : 'tarefas', joca: jn >= 2 ? Math.min(jn, STAFF.joca.levels.length - 1) : 0, jocaTasks: jt.filter((t,i) => jt.indexOf(t) === i).slice(0,3), tonhao: clamp(Math.round(+e.tonhao)||0,0,STAFF.tonhao.levels.length - 1), dani: clamp(Math.round(+e.dani)||0,0,STAFF.dani.levels.length - 1), daniTasks: tasks.filter((t,i) => tasks.indexOf(t) === i).slice(0,3), couvert: !!e.couvert && couvertOk(ponto), taxa: !!e.taxa && couvertOk(ponto), musica: musicaOk(ponto) ? clamp(Math.round(+e.musica) || 0, 0, TERRACO.musica.length - 1) : 0, tv: !!e.tv && ponto.nivel < 2, som: !!e.som && ponto.nivel < 2, tvs: ponto.nivel === 2 ? clamp(Math.round(+e.tvs) || 0, 0, INDUSTRIAL.tvs.modos.length - 1) : 0 };   // v9.1: as TVs são só da área industrial
 }
 /* livro-caixa (v7.2): uma linha por dia jogado na carreira (os últimos CAIXA_MAX). As compras da lojinha
    (melhorias e salão) ficam em caixaPend e entram na linha do dia seguinte, junto com o saldo ao fim dele.
@@ -3363,7 +3406,7 @@ function normSave(s){
   let guia = normGuia(s.guia);   // v10.9: as visitas do crítico (cap. 13); o capítulo sem sorteio (save novo no 13, ou o inválido apagado) sorteia a 1ª visita
   if (hist && cap === CRITICO.cap && !guia && pontoOf(s.salao && s.salao.ponto).id === 'terraco') guia = normGuia({ n:0, prox:dia + randi(CRITICO.primeira[0], CRITICO.primeira[1]), v:[] });   // v10.5.2: o capítulo novo começa com a conversa de antes
   if (hist && cap > CRITICO.cap && !guia && pontoOf(s.salao && s.salao.ponto).id === 'terraco') guia = normGuia({ n:2, prox:0, v:[] });   // v10.10: do capítulo 14 em diante o save.guia sempre existe (a noite da estrela)
-  const dev = salaoDevolucao(s.salao), out = { dia, estrelas, lucroTot: Math.round(+s.lucroTot) || 0, pontosTot: Math.max(0, Math.round(+s.pontosTot) || 0), aval: normAval(s.aval), avalCom: capCrit ? plantaBoato(s.avalCom, dia) : normAvalCom(s.avalCom), neg: clamp(Math.round(+s.neg) || 0, 0, BANCO.neg), emp: normEmprestimo(novoHist ? { resto:REFORMA.valor, amort:REFORMA.amort, j:REFORMA.juros, ini:REFORMA.ini, ref:true } : s.emp), corta: s.corta !== false, fechou: Math.max(0, Math.round(+s.fechou) || 0), bank: bank + dev + devMaq, up, torneira:true, salao: normSalao(dev ? null : s.salao), divulga: dia < DIVULGA_DIA && !devLivre() ? 'boca' : divulgaOf(s.divulga).id, treino: !!s.treino, desafios: normDesafios(s.desafios), decor: normDecor(s.decor), moveis: normMoveis(s.moveis), cursos: normCursos(s.cursos), cursoDia: Math.max(0, Math.round(+s.cursoDia) || 0), tonXp: s.tonXp === 1 ? 1 : 0, daniTar: Math.max(0, Math.round(+s.daniTar) || 0), daniCursos: normDaniCursos(s.daniCursos), daniCursoDia: Math.max(0, Math.round(+s.daniCursoDia) || 0), jocaTar: Math.max(0, Math.round(+s.jocaTar) || 0), jocaCursos: normJocaCursos(s.jocaCursos), jocaCursoDia: Math.max(0, Math.round(+s.jocaCursoDia) || 0), camiCursos: normCamiCursos(s.camiCursos), camiCursoDia: Math.max(0, Math.round(+s.camiCursoDia) || 0), anselmoCursos: normAnselmoCursos(s.anselmoCursos), anselmoCursoDia: Math.max(0, Math.round(+s.anselmoCursoDia) || 0), daniXp: s.daniXp === 1 ? 1 : 0, cardV: 1, libera: normLibera(s.libera, !novoHist), arco: normArco(s.arco, pontoOf(s.salao && s.salao.ponto).nivel), pontoDia: pontoDiaDe(s, dia), vontDoce: normVont(s.vontDoce), vontCafe: normVont(s.vontCafe), vontDoceV: s.vontDoceV === 1 ? 1 : 0, vontCafeV: s.vontCafeV === 1 ? 1 : 0, convCard: s.convCard === 'pend' ? 'pend' : s.convCard === 1 ? 1 : 0, convDiv: s.convDiv === 'pend' ? 'pend' : s.convDiv === 1 ? 1 : 0, convPlanta: s.convPlanta === 'pend' ? 'pend' : s.convPlanta === 1 || dia > 1 ? 1 : 0, convEnt: s.convEnt === 'pend' ? 'pend' : s.convEnt === 1 ? 1 : 0, socorro: s.socorro === 1 ? 1 : 0, convSocorro: s.convSocorro === 'pend' ? 'pend' : s.convSocorro === 1 ? 1 : 0, convNota: s.convNota === 'pend' ? 'pend' : s.convNota === 1 ? 1 : 0, exigBravo: Math.max(0, Math.round(+s.exigBravo) || 0), exigVisto: s.exigVisto === 1 ? 1 : 0, convExig: s.convExig === 'pend' ? 'pend' : s.convExig === 1 ? 1 : 0, convCrit: s.convCrit === 'pend' ? 'pend' : s.convCrit === 1 ? 1 : 0, guia, cardVisto: Array.isArray(s.cardVisto) ? s.cardVisto.filter(x => typeof x === 'string').slice(0, 40) : [], avisoCard: !!s.avisoCard, histV: 1, avisoHist: !!s.avisoHist, cap, capDia: capRosa || capCrit || capNoite ? dia : Math.max(1, Math.round(+s.capDia) || 1), capV: 6, capAzul: capNovo ? 0 : Math.max(0, Math.round(+s.capAzul) || 0), capVezes: capNovo ? 0 : Math.max(0, Math.round(+s.capVezes) || 0), convQuit: s.convQuit === 'pend' ? 'pend' : s.convQuit === 1 || cap > 3 ? 1 : 0, convTeto: s.convTeto === 'pend' ? 'pend' : s.convTeto === 1 || cap > 3 ? 1 : 0, capFeito: !capNovo && s.capFeito === 1 ? 1 : 0, capMarm: Math.max(0, Math.round(+s.capMarm) || 0), capComp: Math.max(0, Math.round(+s.capComp) || 0), docesTot: Math.max(0, Math.round(+s.docesTot) || 0), conversa: conversaF, manut: normManut(s.manut), caixa: normCaixa(s.caixa), caixaPend: normPend(s.caixaPend) };
+  const dev = salaoDevolucao(s.salao), out = { dia, estrelas, lucroTot: Math.round(+s.lucroTot) || 0, pontosTot: Math.max(0, Math.round(+s.pontosTot) || 0), aval: normAval(s.aval), avalCom: capCrit ? plantaBoato(s.avalCom, dia) : normAvalCom(s.avalCom), neg: clamp(Math.round(+s.neg) || 0, 0, BANCO.neg), emp: normEmprestimo(novoHist ? { resto:REFORMA.valor, amort:REFORMA.amort, j:REFORMA.juros, ini:REFORMA.ini, ref:true } : s.emp), corta: s.corta !== false, fechou: Math.max(0, Math.round(+s.fechou) || 0), bank: bank + dev + devMaq, up, torneira:true, salao: normSalao(dev ? null : s.salao), divulga: dia < DIVULGA_DIA && !devLivre() ? 'boca' : divulgaOf(s.divulga).id, treino: !!s.treino, desafios: normDesafios(s.desafios), decor: normDecor(s.decor), moveis: normMoveis(s.moveis), cursos: normCursos(s.cursos), cursoDia: Math.max(0, Math.round(+s.cursoDia) || 0), tonXp: s.tonXp === 1 ? 1 : 0, daniTar: Math.max(0, Math.round(+s.daniTar) || 0), daniCursos: normDaniCursos(s.daniCursos), daniCursoDia: Math.max(0, Math.round(+s.daniCursoDia) || 0), jocaTar: Math.max(0, Math.round(+s.jocaTar) || 0), jocaCursos: normJocaCursos(s.jocaCursos), jocaCursoDia: Math.max(0, Math.round(+s.jocaCursoDia) || 0), camiCursos: normCamiCursos(s.camiCursos), camiCursoDia: Math.max(0, Math.round(+s.camiCursoDia) || 0), anselmoCursos: normAnselmoCursos(s.anselmoCursos), anselmoCursoDia: Math.max(0, Math.round(+s.anselmoCursoDia) || 0), liaCursos: normLiaCursos(s.liaCursos), liaCursoDia: Math.max(0, Math.round(+s.liaCursoDia) || 0), liaPrato: Math.max(0, Math.round(+s.liaPrato) || 0), daniXp: s.daniXp === 1 ? 1 : 0, cardV: 1, libera: normLibera(s.libera, !novoHist), arco: normArco(s.arco, pontoOf(s.salao && s.salao.ponto).nivel), pontoDia: pontoDiaDe(s, dia), vontDoce: normVont(s.vontDoce), vontCafe: normVont(s.vontCafe), vontDoceV: s.vontDoceV === 1 ? 1 : 0, vontCafeV: s.vontCafeV === 1 ? 1 : 0, convCard: s.convCard === 'pend' ? 'pend' : s.convCard === 1 ? 1 : 0, convDiv: s.convDiv === 'pend' ? 'pend' : s.convDiv === 1 ? 1 : 0, convPlanta: s.convPlanta === 'pend' ? 'pend' : s.convPlanta === 1 || dia > 1 ? 1 : 0, convEnt: s.convEnt === 'pend' ? 'pend' : s.convEnt === 1 ? 1 : 0, socorro: s.socorro === 1 ? 1 : 0, convSocorro: s.convSocorro === 'pend' ? 'pend' : s.convSocorro === 1 ? 1 : 0, convNota: s.convNota === 'pend' ? 'pend' : s.convNota === 1 ? 1 : 0, exigBravo: Math.max(0, Math.round(+s.exigBravo) || 0), exigVisto: s.exigVisto === 1 ? 1 : 0, convExig: s.convExig === 'pend' ? 'pend' : s.convExig === 1 ? 1 : 0, convCrit: s.convCrit === 'pend' ? 'pend' : s.convCrit === 1 ? 1 : 0, guia, cardVisto: Array.isArray(s.cardVisto) ? s.cardVisto.filter(x => typeof x === 'string').slice(0, 40) : [], avisoCard: !!s.avisoCard, histV: 1, avisoHist: !!s.avisoHist, cap, capDia: capRosa || capCrit || capNoite ? dia : Math.max(1, Math.round(+s.capDia) || 1), capV: 6, capAzul: capNovo ? 0 : Math.max(0, Math.round(+s.capAzul) || 0), capVezes: capNovo ? 0 : Math.max(0, Math.round(+s.capVezes) || 0), convQuit: s.convQuit === 'pend' ? 'pend' : s.convQuit === 1 || cap > 3 ? 1 : 0, convTeto: s.convTeto === 'pend' ? 'pend' : s.convTeto === 1 || cap > 3 ? 1 : 0, capFeito: !capNovo && s.capFeito === 1 ? 1 : 0, capMarm: Math.max(0, Math.round(+s.capMarm) || 0), capComp: Math.max(0, Math.round(+s.capComp) || 0), docesTot: Math.max(0, Math.round(+s.docesTot) || 0), conversa: conversaF, manut: normManut(s.manut), caixa: normCaixa(s.caixa), caixaPend: normPend(s.caixaPend) };
   out.equipe = normEquipe(s.equipe, pontoOf(out.salao.ponto));
   out.v10 = 1;
   out.efoodNota = s.efoodNota === 1 || dia > HIST_ENTREGA.dia ? 1 : 0;   // v9.6.4: o texto do entregador na introdução já saiu (quem passou do dia 4 já viu)
@@ -3777,8 +3820,8 @@ class Kitchen {
   constructor(game){ this.game = game; this.reset(); }
   reset(){ this.queue = []; this.cooking = []; this.plates = PLATE_SLOTS.map(() => null); this.marmJ = MARMJ_SLOTS.map(() => null); this.pid = 0; this.slots = cozinhaSlots(this.game); this.sinkN = 0; this.clean = Infinity; this.noPlate = false; this.washT = 0; }
   get chef(){ return STAFF.tonhao.levels[this.game.save.equipe.tonhao]; }
-  /* v10.2: com a Lia no dia, todo pedido da cozinha (prato, entrada ou marmita) leva STAFF.lia.cook × o tempo */
-  get ajuda(){ return this.game.liaAtiva ? STAFF.lia.cook : 1; }
+  /* v10.2: com a Lia no dia, todo pedido da cozinha (prato, entrada ou marmita) leva o `cook` do nível dela × o tempo (v12.5: 0,85 no nível 1, 0,75 nos 2 e 3) */
+  get ajuda(){ return this.game.liaAtiva ? liaCfg(this.game.save.equipe).cook : 1; }
   /* a chance de caprichar: x CURSO_AV.crit nos pratos de um curso avançado que o Tonhão já fez (v8.6.9) */
   chefCrit(dish){ return this.chef.crit * (pratoAv(dish, this.game.cursos) ? CURSO_AV.crit : 1); }
   /* v10, a refeição completa: a comanda vira dois pedidos em sequência. Entra o da entrada (tempo 0: ×TEMPOS.entrada.cook, sem o ×VIP nem o 2º item, ocupa vaga
@@ -3850,8 +3893,13 @@ class Kitchen {
   update(dt){
     this.noPlate = false;
     const fogo = this.game.quebrado('fogao') ? manutOf('fogao').lento : 1;   // fogão falhando (v8): cozinha mais devagar
+    // v12.5: a praça da Lia (nível 2 em diante): 1 vaga a mais, só para entradas; a 1ª entrada da fila que ainda não começou vai para ela antes de encher as bocas do fogão (que continuam podendo pegar entradas)
+    if (this.game.liaPraca && !this.cooking.some(t => t.praca)){
+      const i = this.queue.findIndex(t => t.tempo === 0 && !t.marmita);
+      if (i >= 0){ const t = this.queue.splice(i, 1)[0]; t.praca = true; this.cooking.push(t); }
+    }
     // v9.6.5: as mesas na frente: o próximo é o 1º ticket de prato; marmita só entra se (no fogão + na janela) < vagas da janela
-    while (this.cooking.length < this.slots && this.queue.length){
+    while (this.cooking.filter(t => !t.praca).length < this.slots && this.queue.length){
       const noFogo = this.cooking.filter(t => t.marmita).length, naJanela = this.marmJ.filter(Boolean).length;
       const i = this.queue.findIndex(t => !t.marmita || noFogo + naJanela < MARMJ_SLOTS.length);
       if (i < 0) break;
@@ -5468,6 +5516,7 @@ class Game {
       this.addSparks(t.cx, t.cy - 60, 14, PAL.mostarda); this.addSparks(t.cx, t.cy - 60, 8, PAL.alerta);
     }
     this.stats.served++;
+    if (this.mode === 'carreira' && g.dishes) this.save.liaPrato += g.dishes.filter(k => k === 'liaRisoto').length;   // v12.5: cada risoto da Lia vendido (gatilho da liaChef)
     this.cinco(g);
     this.fechaFicha(g, false);   // v10.9
     this.stats.saiMin = Math.min(this.stats.saiMin, g.hearts); if (g.critico) this.stats.criticoH = g.hearts;   // v12.1: os corações com que o grupo (e o crítico) saiu, para a cond dos Desafios
@@ -5621,6 +5670,7 @@ class Game {
      espera no balcão (no máximo DRINKS.vagas; com o balcão cheio ele para) */
   get anselmoAtivo(){ return this.mode === 'carreira' && anselmoOn(this.save.equipe, this.ponto); }
   get liaAtiva(){ return this.mode === 'carreira' && liaOn(this.save.equipe, this.ponto); }   // v10.2: a Lia na cozinha
+  get liaPraca(){ return this.liaAtiva && !!liaCfg(this.save.equipe).praca; }   // v12.5: a praça das entradas (nível 2 em diante)
   drinkPedir(grp){
     if (!grp.drinks.length || grp.drinksPedidos || !this.anselmoAtivo) return;
     grp.drinksPedidos = true;
@@ -6702,6 +6752,27 @@ class Game {
     writeSave(sv); Sfx.coin();
     return true;
   }
+  /* cursos da Lia (v12.5): um por lojinha; cada um sobe o nível dela (a praça das entradas, depois o Risoto de feijão-manteiguinha). No Modo História o `praca` só aparece depois da conversa liaRosa e o `autor`
+     depois da liaPetala; sem ele, o `praca` com a Lia contratada e o `autor` com o `praca` feito */
+  get liaCursoTrava(){ return !devLivre() && this.save.liaCursoDia === this.shopNext; }
+  liaCursoVis(c){
+    const sv = this.save;
+    if (!c || !cursoDaniVis(c, this.ponto)) return false;
+    if (devLivre()) return true;
+    if (histLiga()) return sv.arco[c.id === 'praca' ? 'liaRosa' : 'liaPetala'] === 1;
+    return c.dep ? !!sv.liaCursos[c.dep] : sv.equipe.lia > 0;
+  }
+  buyLiaCurso(id){
+    const c = LIA_CURSOS.find(x => x.id === id), sv = this.save;
+    if (!c || !this.liaCursoVis(c) || !(sv.equipe.lia > 0 || devLivre()) || sv.liaCursos[id] || (c.dep && !sv.liaCursos[c.dep]) || this.liaCursoTrava || sv.bank < c.preco) return false;
+    sv.bank -= c.preco; caixaGasto(sv, 'mel', c.preco);
+    sv.liaCursos[id] = 1; sv.liaCursoDia = this.shopNext;
+    if (sv.equipe.lia > 0) sv.equipe.lia = Math.min(STAFF.lia.levels.length - 1, sv.equipe.lia + 1);   // cada curso sobe 1 nível, e a diária vai junto
+    this.kitchen.slots = cozinhaSlots(this);
+    this.cursoMsg = 'A Lia foi fazer o curso de ' + c.nome.charAt(0).toLowerCase() + c.nome.slice(1) + '!';
+    writeSave(sv); Sfx.coin();
+    return true;
+  }
   /* cursos da Cami (v9.3): cada um sobe um nível dela (e o salário); um por lojinha; o de mesa (v9.6) abre o modo "Minhas mesas" */
   get camiCursoTrava(){ return !devLivre() && this.save.camiCursoDia === this.shopNext; }
   buyCamiCurso(id){
@@ -6940,8 +7011,9 @@ class Game {
     if (modo === 'max'){
       e.tonhao = STAFF.tonhao.levels.length - 1; e.dani = STAFF.dani.levels.length - 1; e.joca = STAFF.joca.levels.length - 1;
       e.daniTasks = ['pratos', 'lavar', 'suco']; e.jocaTasks = ['lixo', 'lavar', 'pratos']; e.cami = STAFF.cami.levels.length - 1; e.camiTasks = ['lixo', 'lavar', 'pratos', 'suco'];
+      e.lia = STAFF.lia.levels.length - 1;   // v12.5: a Lia no nível 3 (com os dois cursos, em cursosTodos); fora do Terraço o normEquipe a tira
     } else {
-      e.tonhao = 0; e.dani = 1; e.joca = 0; e.daniTasks = DANI_PADRAO.slice(); e.jocaTasks = JOCA_PADRAO.slice(); e.cami = 0; e.camiTasks = CAMI_PADRAO.slice();
+      e.tonhao = 0; e.dani = 1; e.joca = 0; e.daniTasks = DANI_PADRAO.slice(); e.jocaTasks = JOCA_PADRAO.slice(); e.cami = 0; e.camiTasks = CAMI_PADRAO.slice(); e.lia = 0;
     }
     sv.equipe = normEquipe(e, this.ponto);
     sv.rosa = modo === 'max' ? 1 : 0;   // v10.8: o molho da Rosa vem com o "Tudo no máximo"
@@ -6956,7 +7028,8 @@ class Game {
   cursosTodos(on){   // v12: o miolo (sem a trava do modo dev), usado também pela montaCap
     const sv = this.save, tudo = (lista, v) => { const o = {}; if (on) lista.forEach(x => { o[x.id] = v; }); return o; };
     sv.cursos = normCursos(tudo(CURSOS, 2)); sv.daniCursos = normDaniCursos(tudo(DANI_CURSOS, true)); sv.jocaCursos = normJocaCursos(tudo(JOCA_CURSOS, true)); sv.camiCursos = normCamiCursos(tudo(CAMI_CURSOS, true)); sv.anselmoCursos = normAnselmoCursos(tudo(ANSELMO_CURSOS, true));
-    this.devSegueCursos(); sv.cursoDia = sv.daniCursoDia = sv.jocaCursoDia = sv.camiCursoDia = sv.anselmoCursoDia = 0;
+    sv.liaCursos = normLiaCursos(tudo(LIA_CURSOS, true)); if (sv.equipe.lia > 0) sv.equipe.lia = on ? STAFF.lia.levels.length - 1 : 1;   // v12.5: os cursos da Lia e o nível que vem com eles
+    this.devSegueCursos(); sv.cursoDia = sv.daniCursoDia = sv.jocaCursoDia = sv.camiCursoDia = sv.anselmoCursoDia = sv.liaCursoDia = 0;
     this.kitchen.reset(); this.dani.reset(); this.joca.reset(); this.cami.reset();
     writeSave(sv); return true;
   }
@@ -7011,13 +7084,14 @@ class Game {
     writeSave(this.save); return true;
   }
   devNivel(quem, delta){
-    const NIV = { tonhao:[0, 1, 2, 3, 4], dani:[0, 1, 2, 3, 4], joca:[0, 2, 3, 4], cami:[0, 1, 2, 3, 4, 5], anselmo:[0, 2, 3], lia:[0, 1] };
+    const NIV = { tonhao:[0, 1, 2, 3, 4], dani:[0, 1, 2, 3, 4], joca:[0, 2, 3, 4], cami:[0, 1, 2, 3, 4, 5], anselmo:[0, 2, 3], lia:[0, 1, 2, 3] };   // v12.5: a Lia de 0 a 3
     if (!DEV.on || !NIV[quem]) return false;
     const sv = this.save, l = NIV[quem], at = l.indexOf(sv.equipe[quem]);
     if (at < 0) return false;
     const i = clamp(at + (delta < 0 ? -1 : 1), 0, l.length - 1);
     sv.equipe[quem] = l[i];
     sv.equipe = normEquipe(sv.equipe, this.ponto);
+    if (quem === 'lia'){ const n = sv.equipe.lia; sv.liaCursos = normLiaCursos({ praca:n >= 2, autor:n >= 3 }); sv.liaCursoDia = 0; }   // v12.5: o nível 2 traz a praça e o 3, o risoto
     if (!devLivre() && sv.equipe[quem] > 0 && sv.libera && quem in sv.libera) sv.libera[quem] = 2;   // no De verdade, a pessoa também fica com o cartão aberto
     writeSave(sv); this.devRecarrega(); return true;
   }
@@ -7071,8 +7145,8 @@ class Game {
     // os cursos até o ponto e o capítulo (o Tonhão no 2; a equipe, só de quem o ponto tem)
     const ate = (l, tem) => { const o = {}; if (tem) l.forEach(c => { if ((c.nivel || 1) <= nv && (!c.cap || c.cap <= cap)) o[c.id] = true; }); return o; }, cs = {};
     CURSOS.forEach(c => { if (!c.nivel || c.nivel <= nv) cs[c.id] = 2; });
-    sv.cursos = normCursos(cs); sv.daniCursos = normDaniCursos(ate(DANI_CURSOS, true)); sv.jocaCursos = normJocaCursos(ate(JOCA_CURSOS, e.joca > 0)); sv.camiCursos = normCamiCursos(ate(CAMI_CURSOS, e.cami > 0)); sv.anselmoCursos = normAnselmoCursos(ate(ANSELMO_CURSOS, e.anselmo > 0));
-    sv.cursoDia = sv.daniCursoDia = sv.jocaCursoDia = sv.camiCursoDia = sv.anselmoCursoDia = 0;
+    sv.cursos = normCursos(cs); sv.daniCursos = normDaniCursos(ate(DANI_CURSOS, true)); sv.jocaCursos = normJocaCursos(ate(JOCA_CURSOS, e.joca > 0)); sv.camiCursos = normCamiCursos(ate(CAMI_CURSOS, e.cami > 0)); sv.anselmoCursos = normAnselmoCursos(ate(ANSELMO_CURSOS, e.anselmo > 0)); sv.liaCursos = normLiaCursos(ate(LIA_CURSOS, e.lia > 0));
+    sv.cursoDia = sv.daniCursoDia = sv.jocaCursoDia = sv.camiCursoDia = sv.anselmoCursoDia = sv.liaCursoDia = 0;
     // as melhorias e as compras do ponto
     Object.keys(up).forEach(k => delete up[k]);
     UPGRADES.forEach(u => { if ((u.nivel && u.nivel > nv) || (u.id === 'maquina' && !(P.bebida && P.bebida !== 'coquetel'))) return; up[u.id] = u.multi ? 1 : true; });   // o Jogo de pratos acumula sem teto na lojinha: 1, como sempre; no Terraço o carrinho vem do curso do Anselmo
@@ -7115,7 +7189,7 @@ class Game {
       sv.efoodNota = D.dia > HIST_ENTREGA.dia ? 1 : 0; sv.vipVisto = D.dia > 5 ? 1 : 0;
       // equipe, cursos e melhorias pela tabela (o Fim: tudo no máximo, com a Lia)
       if (D.eq){
-        const e = sv.equipe, top = { tonhao:STAFF.tonhao.levels.length - 1, dani:STAFF.dani.levels.length - 1, joca:STAFF.joca.levels.length - 1, cami:STAFF.cami.levels.length - 1, anselmo:STAFF.anselmo.levels.length - 1, lia:1 };
+        const e = sv.equipe, top = { tonhao:STAFF.tonhao.levels.length - 1, dani:STAFF.dani.levels.length - 1, joca:STAFF.joca.levels.length - 1, cami:STAFF.cami.levels.length - 1, anselmo:STAFF.anselmo.levels.length - 1, lia:STAFF.lia.levels.length - 1 };
         Object.keys(D.eq).forEach(q => { e[q] = Math.min(D.eq[q], top[q]); });
         sv.equipe = normEquipe(e, this.ponto);
         const lista = (ids, ok) => { const o = {}; ids.forEach(id => { if (ok.some(x => x.id === id)) o[id] = true; }); return o; };
@@ -7125,7 +7199,7 @@ class Game {
         D.up.forEach(id => { const u = UPGRADES.find(x => x.id === id); if (u) this.up[id] = u.multi ? 1 : true; });
         this.devSegueCursos();
       } else {
-        this.equipeModo('max'); this.melhoriasTodas(true); sv.equipe.lia = 1; sv.equipe.anselmo = STAFF.anselmo.levels.length - 1;
+        this.equipeModo('max'); this.melhoriasTodas(true); sv.equipe.lia = STAFF.lia.levels.length - 1; sv.equipe.anselmo = STAFF.anselmo.levels.length - 1;
         if (D.semRosa){ sv.rosa = 0; delete sv.camiCursos.gerente; sv.equipe.cami = 4; }   // v10.8: o capítulo 12 começa sem o molho e sem a gerência
         sv.equipe = normEquipe(sv.equipe, this.ponto);
       }
@@ -10636,11 +10710,18 @@ function drawKitchen(ctx,g,t){
     rr(ctx,r.x+14,r.y+4,r.w-18,r.h-8,8); fs(ctx,'#F0DDA6',3);
     drawChef(ctx,g,930,172,t);
     if (g.liaAtiva && g.state !== 'menu') drawLia(ctx,{ x:LIA_HOME.x, y:LIA_HOME.y, s:LIA_HOME.s },t);   // v10.2: a Lia ao lado do Tonhão
+    { const pc = g.kitchen.cooking.find(t => t.praca);   // v12.5: a praça da Lia: o anel de progresso da entrada ao lado dela
+      if (pc && g.state !== 'menu'){
+        const px = LIA_HOME.x + 29, py = 178, fr = clamp(pc.p / pc.time, 0, 1);   // ao lado da panela dela, entre ela e o Tonhão
+        ctx.save(); circ(ctx,px,py,9); fs(ctx,'#FFFBEA',2);
+        ctx.strokeStyle = PAL.ok; ctx.lineWidth = 3; ctx.lineCap = 'round'; ctx.beginPath(); ctx.arc(px,py,7,-Math.PI / 2,-Math.PI / 2 + Math.PI * 2 * Math.max(0.02,fr)); ctx.stroke();
+        txt(ctx,String(pc.table),px,py + 3,9,PAL.tinta,'center',FD); ctx.restore();
+      } }
     if (g.kitchen.noPlate && g.state !== 'menu'){
       ctx.save(); ctx.translate(904,118); drawBubble(ctx,0,0,15,'#fff'); txt(ctx,'Sem',0,-4,9,PAL.perigo,'center',FD); txt(ctx,'prato!',0,6,9,PAL.perigo,'center',FD); ctx.restore();
     }
     // tickets cozinhando
-    const ck = g.kitchen.cooking;
+    const ck = g.kitchen.cooking.filter(t => !t.praca);   // v12.5: a entrada da praça da Lia não ocupa boca do fogão (o anel, mais abaixo)
     const ns = g.kitchen.slots, tw = (128 - (ns-1)*4) / ns;   // 3, 4 ou 5 bocas (aumento do Tonhão)
     for (let i=0;i<ns;i++){
       const x = 786 + i*(tw+4), y = 108;
@@ -16308,19 +16389,31 @@ function buildAnselmo(grid){
     grid.appendChild(card);
   });
 }
-/* o cartão da Lia (v10.2): ajudante de cozinha, só no Terraço; contratar é definitivo (R$ 80/dia) e a cozinha anda mais rápida */
+/* o cartão da Lia (v10.2): cozinheira, só no Terraço; contratar é definitivo. v12.5: por nível (1 + cursos feitos): o pré-preparo, as entradas na praça dela e o prato dela; a diária sobe com o nível.
+   Os cursos dela: o Chefe de praça aqui; o de cozinha de autor fica no Cardápio */
+const LIA_LINHAS = ['Ajuda no pré-preparo', 'Cuida das entradas', 'Faz o prato dela'];
 function buildLia(grid){
-  const eq = game.save.equipe, bank = game.save.bank, L = STAFF.lia;
-  const canPay = extra => payroll(eq, cursosPay(game.save)) + extra <= bank;
-  const c = staffCard(upgradeIcon('lia'), eq.lia ? 'Lia (ajudante de cozinha)' : 'Lia', '');
+  const sv = game.save, eq = sv.equipe, bank = sv.bank, LV = STAFF.lia.levels, lv = eq.lia, cfg = LV[lv || 1];
+  const canPay = extra => payroll(eq, cursosPay(sv)) + extra <= bank;
+  const c = staffCard(upgradeIcon('lia'), lv ? 'Lia (cozinheira) · nível ' + lv + ' de ' + (LV.length - 1) : 'Lia', '');
   const box = el('div', 'next');
-  box.appendChild(el('b', null, eq.lia ? 'Na cozinha:' : 'Se contratar:'));
-  const line = el('span', null, 'A cozinha anda mais rápida'); box.appendChild(line);
-  box.appendChild(el('span', null, 'Diária: ' + fmt(L.pay)));
+  box.appendChild(el('b', null, lv ? 'Na cozinha:' : 'Se contratar:'));
+  box.appendChild(el('span', null, LIA_LINHAS[(lv || 1) - 1]));
+  box.appendChild(el('span', null, 'Diária: ' + fmt(cfg.pay)));
   c.appendChild(box);
   const duo = el('div', 'duo');
-  if (!eq.lia) duo.appendChild(shopBtn('Contratar', 'btn', canPay(L.pay), () => game.setStaff('lia', 1)));
+  if (!lv) duo.appendChild(shopBtn('Contratar', 'btn', canPay(cfg.pay), () => game.setStaff('lia', 1)));
   c.appendChild(duo); grid.appendChild(c);
+  if (game.cursoMsg) grid.appendChild(el('p', 'cursomsg', game.cursoMsg));
+  LIA_CURSOS.filter(q => !q.item && game.liaCursoVis(q)).forEach(q => {   // v12.5: o Chefe de praça
+    const feito = !!sv.liaCursos[q.id], card = el('div', 'item' + (feito ? ' own' : ''));
+    card.appendChild(upgradeIcon('lia'));
+    card.appendChild(el('b', null, 'Curso de ' + q.nome));
+    if (!feito && !(lv > 0) && !devLivre()) card.appendChild(el('span', 'cursos-lista apagado', 'Precisa da Lia contratada.'));
+    if (!feito && game.liaCursoTrava) card.appendChild(el('span', 'cursos-lista', 'Em curso'));
+    card.appendChild(feito ? shopBtn('Curso feito', 'btn', false, () => false) : shopBtn('Comprar ' + fmt(q.preco), 'btn', (lv > 0 || devLivre()) && !game.liaCursoTrava && bank >= q.preco, () => game.buyLiaCurso(q.id), q.preco));
+    grid.appendChild(card);
+  });
 }
 function buildDaniCursos(grid){
   const sv = game.save, bank = sv.bank;
@@ -16774,6 +16867,17 @@ function buildCursosAjudantes(grid){
     if (!feito && falta) card.appendChild(el('span', 'cursos-lista apagado', 'Precisa do curso de ' + ANSELMO_CURSOS.find(x => x.id === c.dep).nome + '.'));
     if (!feito && game.anselmoCursoTrava) card.appendChild(el('span', 'cursos-lista', 'Em curso'));
     card.appendChild(feito ? shopBtn('Curso feito', 'btn', false, () => false) : shopBtn('Comprar ' + fmt(c.preco), 'btn', (sv.equipe.anselmo > 0 || devLivre()) && !falta && !game.anselmoCursoTrava && bank >= c.preco, () => game.buyAnselmoCurso(c.id), c.preco));
+    grid.appendChild(card);
+  });
+  // v12.5: a cozinha de autor da Lia (só no Terraço, depois do Chefe de praça; na História, depois da conversa liaPetala)
+  LIA_CURSOS.filter(c => c.item && game.liaCursoVis(c)).forEach(c => {
+    const feito = !!sv.liaCursos[c.id], card = el('div', 'item' + (feito ? ' own' : '')), falta = !!c.dep && !sv.liaCursos[c.dep];
+    card.appendChild(upgradeIcon('lia'));
+    card.appendChild(el('b', null, 'Curso de ' + c.nome.charAt(0).toLowerCase() + c.nome.slice(1)));
+    if (!feito && !(sv.equipe.lia > 0) && !devLivre()) card.appendChild(el('span', 'cursos-lista apagado', 'Precisa da Lia contratada.'));
+    if (!feito && falta) card.appendChild(el('span', 'cursos-lista apagado', 'Precisa do curso de ' + LIA_CURSOS.find(x => x.id === c.dep).nome + '.'));
+    if (!feito && game.liaCursoTrava) card.appendChild(el('span', 'cursos-lista', 'Em curso'));
+    card.appendChild(feito ? shopBtn('Curso feito', 'btn', false, () => false) : shopBtn('Comprar ' + fmt(c.preco), 'btn', (sv.equipe.lia > 0 || devLivre()) && !falta && !game.liaCursoTrava && bank >= c.preco, () => game.buyLiaCurso(c.id), c.preco));
     grid.appendChild(card);
   });
 }
@@ -17929,7 +18033,7 @@ try { Rank.init(); } catch(e) {}
 game.setState('menu');
 if (!aberturaVista() && !DEV.on) abrirAbertura('auto');   // v8.5: a abertura toca sozinha uma vez
 window.__game = game;
-window.__lcc = { tipoAparelho, TESTES, TESTE_LS, TESTE_EQ_PADRAO, TESTE_PESSOAS, testeEqNorm, testeEqPadrao, testeTarefas, testeVagas, testeNivel, testeDono, testeEfetivas, testeEqLe, testeEqGrava, buildTesteFase, testeRelatorio, buildTesteFim, DESAFIOS, MEDALHAS, normDesafios, MANUAL_ABAS, buildDesafios, DESAFIO_EST, ATU_TXT, atuEstado, atuVerifica, atuAplica, ENFEITE_MESA, enfeiteMesa, enfeiteDe, ENTREGA_CHEGA, drawEfoodFlash, efoodFlashA, ab2Cam, ab2Cabe, ab2Tela, ab2Notas, AB_FX, AB2, AB2_CENAS, AB2_TE, ab2Terraco, ab2RuaAurora, ab2CozinhaAurora, ab2Gala, ab2Quarto, ab2Cozinha, ab2Banco, ab2RuaCasa, TRIO, drawTrio, rankAuto, rankNome, RANK_VOCE, drawBia, roupaBia, BIA_REACAO, BIA_ROUPA_COR, abBia, BRAULIO_LOOK, convCabeca, drawRetrato, drawRetratosTela, RETRATO, RETRATO_QUEM, RETRATO_POSE, EXPRESSOES, exprDe, exprAtual: () => EXPR, devRetratos, CONV_UI, socorroFalas, NOITE, HIST_RECOMENDA, HIST_NOTA, guiaPontos, guiaEstrelas, abreBoletim, drawVela, drawFala, CRITICO, HIST_CRITICO, normGuia, plantaBoato, drawCaderno, drawGarfo, ROSA, GERENTE, drawPetala, musicaPay, musicaDe, musicaOk, camiModoTudo, CAMI_TUDO, cafesLista, cafeIdx, cafeIngred, ANSELMO_CURSOS, normAnselmoCursos, drinksLista, drinksTodos, drinkPreco, drinkIngred, drinkVagas, drinkPrep, MAQUINA_LUGAR, drawCafesEsp, drawCarrinhoBoasVindas, espressoTrabalho, bebExtra, devCenas, devAssistir, devFinal, tocaFinal, drawPlacaGuia, FINAL, finalCenas, histLiga, DEV_CAPS, drawIcon, liaOn, drawLia, LIA_HOME, LIA_LOOK, doceIcone, drawFino, TEMPOS, tempoMarcas, pedePrincipal, drawTempoTrilha, HIST_SOCORRO, HIST_EXIGENTE, EXIGENTE, LOUCA, vipDish, vipCook, casaBoa, exigRep, HIST_PLANTA, HIST_QUITOU, HIST_TETO, VONTADE, vontadeChance, vontadeDia, vontadeFalas, HIST_VONTADE_DOCE, HIST_VONTADE_CAFE, filaPos, STATIONS, MANUAL, manualTracos, manualAberta, abrirManual, buildManual, fecharManual, semente, manualSemente, FECHA, efoodAberto, drawTable, camiMesasN, camiModoMesas, CAMI_MESAS_MAX, drawAventalCami, FISCAL, Fiscal, FISCAL_PONTOS, abrirDev, fecharDev, buildDev, passoJogo, devLivre, diaNoPonto, manutEmerg, manutFator, daniTaskDe, plateSlotsFor, queueYsFor, assentoSlow, AVENIDA, SABORES, cursoOk, INDUSTRIAL, PLATE_SLOTS, cozinhaSlots, upgradeDe, DECOR, DECOR_GRUPOS, TOALHA, LUXO, MOVEIS, movelOf, movelNivel, normMoveis, luxoPts, luxoTot, luxoNivel, luxoForca, decorOf, normDecor, decorOn, FILA_ACOES, filaMax, MARMITA, RETIRADA, marmitaMao, drawMarmita, prateleiraPos, EFOOD_COR, AVAL_BRAVO, QUEUE, setShopTab: v => shopAbrir(v), setShopGrupo: g => shopGrupoAbrir(g), shopSecoes: () => SHOP_GRUPOS.map(g => shopSecoesVis(g)), TREINO, TREINO_PASSOS, TREINO_COR, Treino, treinoLugar, DICAS, dicaDe, dicaLigada, drawDica, HUD_LUCRO, hudEstrelas, drawHud, daniNaLoja, treinoPrimeiro, playCareer, buildMenu, introBanco, buildFalencia, BANCO, normEmprestimo, parcelaDe, devidoDe, jurosDe, tabelaDe, simulaEmprestimo, SEMANA, semanaOf, diaOf, FILA_JUSTA, PORTA, CHAIRS, PAT, CONTAS, INGRED, CARDAPIO, precoPrato, CURSOS, CURSO_AV, CURSO_XP, tonhaoXp, tonhaoNivelXp, daniXp, daniNivelXp, DANI_XP, DANI_CURSOS, CURSOS_SEMFIM, cursoOf, cursoNivel, normCursos, pratoAv, CARNES, drawDish, pratoSabido, pratosSabidos, GOSTOS, GOSTOS_CAT, pedePrato, VEG, vegMov, drawDish, MAIS, PONTOS_ACAO, GORJETA, DRINK_PRICE, MOVIMENTO, movimentoSalao, DIVULGA, DIVULGA_DIA, divulgaOf, contasDia, bomGoal, SALAO, PONTOS, pontoOf, MESA, mesaBox, mesaPreco, salaoLugares, mesaProblema, salaoCaminho, salaoProblema, salaoOrdena, salaoAuto, salaoVaga, salaoPerto, salaoKit, salaoDevolucao, SALAO_SEMFIM, normSalao, setObst, OBST, pathOk, MAQUINA, BEBIDA_ESPERA, bebidaOf, MANUT, manutOf, manutChance, manutPreco, normManut, CLIMA, CLIMA_DIA, EVENTOS, eventoSemana, introManut, normPend, CALCADA, TW, HUDX, esperaAp, tableApproach, CRIT, STAFF, diariaDani, diariaJoca, cursosPay, DANI_TASKS, DANI_HANDS, daniTaskOk, TRASH, WASH, payroll, FOLHA_CORTE, folhaCorta, folhaCortes, folhaItens, listaE, pratosDe, couvertEffect, couvertOk, ambienteEffect, dishStock, normSave, Helper, JUICE, KITCHEN_SLOTS, handLayout, trayOk, Game, Group, Table, Kitchen, Waitress, BIA_SPEED, DAYS, UPGRADES, CUSTOMER_TYPES, LAYOUT, PAL, Sfx, findPath, render, Rank, sortRows, cleanName, normName, CMD, ENDLESS, VIP, MULTA, rk, renderRank, openRank, closeRank, LS, lsGet, lsSet, loadSave, DEV, saveKey, devSync, divulgaAberta, CAIXA_MAX, VERSAO, normCaixa, caixaResumo, caixaTotais, copyText, PRATO, pratoPerde, pratoVapor, AVAL, AVAL_CRIT, AVAL_BRAVO, avalMenu, cursosItem, DOCES, CAFES, cafeDe, DRINKS, drinkDe, drinkIdx, anselmoOn, ANSELMO_HOME, ANSELMO_LOOK, drawAnselmo, docesLista, docePreco, doceIngred, doceIdx, CAMI_CURSOS, CAMI_HOME, CAMI_LOOK, camiNivelCursos, normCamiCursos, drawCami, drawEspresso, JOCA_XP, JOCA_CURSOS, JOCA_HOME, jocaXp, jocaNivelXp, BASICAS, donoBasico, cursoDaniVis, JOCA_LOOK, drawJoca, avalTeto, avalEscala, TERRACO, fixosDe, vipTipos, doorFor, DOOR, terraco, drawPiano, drawPoltrona, drawFoyerTe, drawParedeTe, drawElevadorTe, drawLugarTe, drawPerson, makePeople, drawChair, iconeMudanca, avalFrac, AVAL_SIMPLES, AVAL_DECOR, normAval, avalNota, avalMedias, avalGeral, avalMovimento, avalMinimo, avalComentario, fmtNota, notaFaixa, gurugolCaixa, AVAL_COM, normAvalCom, buildGurugol, ABERTURA, Abertura, AB_ALT, AB_BASE, abEsc, AB_VIVO, aberturaVista, aberturaSom, drawAbertura, abrirAbertura, HISTORIA, HIST_CARDAPIO, HIST_DIVULGA, HIST_ENTREGA, LIBERA, liberaOf, ARCO, HIST_NOMES, normEquipe, upgradeCartao, cursoFeito, AVAL_POUCO, REFORMA, HIST, carencia, Conversa, drawConversa, falar, fluxoHistoria, falar, aberturaAtual: () => abertura };
+window.__lcc = { tipoAparelho, TESTES, TESTE_LS, TESTE_EQ_PADRAO, TESTE_PESSOAS, testeEqNorm, testeEqPadrao, testeTarefas, testeVagas, testeNivel, testeDono, testeEfetivas, testeEqLe, testeEqGrava, buildTesteFase, testeRelatorio, buildTesteFim, DESAFIOS, MEDALHAS, normDesafios, MANUAL_ABAS, buildDesafios, DESAFIO_EST, ATU_TXT, atuEstado, atuVerifica, atuAplica, ENFEITE_MESA, enfeiteMesa, enfeiteDe, ENTREGA_CHEGA, drawEfoodFlash, efoodFlashA, ab2Cam, ab2Cabe, ab2Tela, ab2Notas, AB_FX, AB2, AB2_CENAS, AB2_TE, ab2Terraco, ab2RuaAurora, ab2CozinhaAurora, ab2Gala, ab2Quarto, ab2Cozinha, ab2Banco, ab2RuaCasa, TRIO, drawTrio, rankAuto, rankNome, RANK_VOCE, drawBia, roupaBia, BIA_REACAO, BIA_ROUPA_COR, abBia, BRAULIO_LOOK, convCabeca, drawRetrato, drawRetratosTela, RETRATO, RETRATO_QUEM, RETRATO_POSE, EXPRESSOES, exprDe, exprAtual: () => EXPR, devRetratos, CONV_UI, socorroFalas, NOITE, HIST_RECOMENDA, HIST_NOTA, guiaPontos, guiaEstrelas, abreBoletim, drawVela, drawFala, CRITICO, HIST_CRITICO, normGuia, plantaBoato, drawCaderno, drawGarfo, ROSA, GERENTE, drawPetala, musicaPay, musicaDe, musicaOk, camiModoTudo, CAMI_TUDO, cafesLista, cafeIdx, cafeIngred, ANSELMO_CURSOS, LIA_CURSOS, liaCfg, normLiaCursos, normAnselmoCursos, drinksLista, drinksTodos, drinkPreco, drinkIngred, drinkVagas, drinkPrep, MAQUINA_LUGAR, drawCafesEsp, drawCarrinhoBoasVindas, espressoTrabalho, bebExtra, devCenas, devAssistir, devFinal, tocaFinal, drawPlacaGuia, FINAL, finalCenas, histLiga, DEV_CAPS, drawIcon, liaOn, drawLia, LIA_HOME, LIA_LOOK, doceIcone, drawFino, TEMPOS, tempoMarcas, pedePrincipal, drawTempoTrilha, HIST_SOCORRO, HIST_EXIGENTE, EXIGENTE, LOUCA, vipDish, vipCook, casaBoa, exigRep, HIST_PLANTA, HIST_QUITOU, HIST_TETO, VONTADE, vontadeChance, vontadeDia, vontadeFalas, HIST_VONTADE_DOCE, HIST_VONTADE_CAFE, filaPos, STATIONS, MANUAL, manualTracos, manualAberta, abrirManual, buildManual, fecharManual, semente, manualSemente, FECHA, efoodAberto, drawTable, camiMesasN, camiModoMesas, CAMI_MESAS_MAX, drawAventalCami, FISCAL, Fiscal, FISCAL_PONTOS, abrirDev, fecharDev, buildDev, passoJogo, devLivre, diaNoPonto, manutEmerg, manutFator, daniTaskDe, plateSlotsFor, queueYsFor, assentoSlow, AVENIDA, SABORES, cursoOk, INDUSTRIAL, PLATE_SLOTS, cozinhaSlots, upgradeDe, DECOR, DECOR_GRUPOS, TOALHA, LUXO, MOVEIS, movelOf, movelNivel, normMoveis, luxoPts, luxoTot, luxoNivel, luxoForca, decorOf, normDecor, decorOn, FILA_ACOES, filaMax, MARMITA, RETIRADA, marmitaMao, drawMarmita, prateleiraPos, EFOOD_COR, AVAL_BRAVO, QUEUE, setShopTab: v => shopAbrir(v), setShopGrupo: g => shopGrupoAbrir(g), shopSecoes: () => SHOP_GRUPOS.map(g => shopSecoesVis(g)), TREINO, TREINO_PASSOS, TREINO_COR, Treino, treinoLugar, DICAS, dicaDe, dicaLigada, drawDica, HUD_LUCRO, hudEstrelas, drawHud, daniNaLoja, treinoPrimeiro, playCareer, buildMenu, introBanco, buildFalencia, BANCO, normEmprestimo, parcelaDe, devidoDe, jurosDe, tabelaDe, simulaEmprestimo, SEMANA, semanaOf, diaOf, FILA_JUSTA, PORTA, CHAIRS, PAT, CONTAS, INGRED, CARDAPIO, precoPrato, CURSOS, CURSO_AV, CURSO_XP, tonhaoXp, tonhaoNivelXp, daniXp, daniNivelXp, DANI_XP, DANI_CURSOS, CURSOS_SEMFIM, cursoOf, cursoNivel, normCursos, pratoAv, CARNES, drawDish, pratoSabido, pratosSabidos, GOSTOS, GOSTOS_CAT, pedePrato, VEG, vegMov, drawDish, MAIS, PONTOS_ACAO, GORJETA, DRINK_PRICE, MOVIMENTO, movimentoSalao, DIVULGA, DIVULGA_DIA, divulgaOf, contasDia, bomGoal, SALAO, PONTOS, pontoOf, MESA, mesaBox, mesaPreco, salaoLugares, mesaProblema, salaoCaminho, salaoProblema, salaoOrdena, salaoAuto, salaoVaga, salaoPerto, salaoKit, salaoDevolucao, SALAO_SEMFIM, normSalao, setObst, OBST, pathOk, MAQUINA, BEBIDA_ESPERA, bebidaOf, MANUT, manutOf, manutChance, manutPreco, normManut, CLIMA, CLIMA_DIA, EVENTOS, eventoSemana, introManut, normPend, CALCADA, TW, HUDX, esperaAp, tableApproach, CRIT, STAFF, diariaDani, diariaJoca, cursosPay, DANI_TASKS, DANI_HANDS, daniTaskOk, TRASH, WASH, payroll, FOLHA_CORTE, folhaCorta, folhaCortes, folhaItens, listaE, pratosDe, couvertEffect, couvertOk, ambienteEffect, dishStock, normSave, Helper, JUICE, KITCHEN_SLOTS, handLayout, trayOk, Game, Group, Table, Kitchen, Waitress, BIA_SPEED, DAYS, UPGRADES, CUSTOMER_TYPES, LAYOUT, PAL, Sfx, findPath, render, Rank, sortRows, cleanName, normName, CMD, ENDLESS, VIP, MULTA, rk, renderRank, openRank, closeRank, LS, lsGet, lsSet, loadSave, DEV, saveKey, devSync, divulgaAberta, CAIXA_MAX, VERSAO, normCaixa, caixaResumo, caixaTotais, copyText, PRATO, pratoPerde, pratoVapor, AVAL, AVAL_CRIT, AVAL_BRAVO, avalMenu, cursosItem, DOCES, CAFES, cafeDe, DRINKS, drinkDe, drinkIdx, anselmoOn, ANSELMO_HOME, ANSELMO_LOOK, drawAnselmo, docesLista, docePreco, doceIngred, doceIdx, CAMI_CURSOS, CAMI_HOME, CAMI_LOOK, camiNivelCursos, normCamiCursos, drawCami, drawEspresso, JOCA_XP, JOCA_CURSOS, JOCA_HOME, jocaXp, jocaNivelXp, BASICAS, donoBasico, cursoDaniVis, JOCA_LOOK, drawJoca, avalTeto, avalEscala, TERRACO, fixosDe, vipTipos, doorFor, DOOR, terraco, drawPiano, drawPoltrona, drawFoyerTe, drawParedeTe, drawElevadorTe, drawLugarTe, drawPerson, makePeople, drawChair, iconeMudanca, avalFrac, AVAL_SIMPLES, AVAL_DECOR, normAval, avalNota, avalMedias, avalGeral, avalMovimento, avalMinimo, avalComentario, fmtNota, notaFaixa, gurugolCaixa, AVAL_COM, normAvalCom, buildGurugol, ABERTURA, Abertura, AB_ALT, AB_BASE, abEsc, AB_VIVO, aberturaVista, aberturaSom, drawAbertura, abrirAbertura, HISTORIA, HIST_CARDAPIO, HIST_DIVULGA, HIST_ENTREGA, LIBERA, liberaOf, ARCO, HIST_NOMES, normEquipe, upgradeCartao, cursoFeito, AVAL_POUCO, REFORMA, HIST, carencia, Conversa, drawConversa, falar, fluxoHistoria, falar, aberturaAtual: () => abertura };
 window.requestAnimationFrame(frame);
 
 })();

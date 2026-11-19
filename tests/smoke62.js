@@ -68,7 +68,7 @@ const TIPOS=['estudante','executiva','familia','vovos','turma','motorista','nego
 
 // ---------- 4. a Lia ----------
 { const H=terr({ bank:3000 },8,true), {g,L}=H;
-  ok(L.STAFF.lia.pay===80 && L.STAFF.lia.cook===0.75,'STAFF.lia: R$ 80 por dia e cozinha ×0,75');
+  ok(L.STAFF.lia.levels[1].pay===80 && L.STAFF.lia.levels[1].cook===0.85,'STAFF.lia nível 1 (v12.5): R$ 80 por dia e cozinha ×0,85');
   ok(g.cartaoAberto('lia'),'no Terraço, fora do Modo História, o cartão da Lia está aberto');
   const folha0=g.payroll(); ok(g.setStaff('lia',1) && g.save.equipe.lia===1,'contratar a Lia'); ok(g.payroll()-folha0===80,'R$ 80 na folha');
   ok(!g.setStaff('lia',0),'contratar é definitivo (não dá para dispensar)');
@@ -76,10 +76,10 @@ const TIPOS=['estudante','executiva','familia','vovos','turma','motorista','nego
   // a cozinha anda 25% mais rápida
   const med=(ativa)=>{ g.save.equipe.lia=ativa?1:0; let s=0; const n=600, grp=g.spawn({ type:'casal', color:0, vip:false, av:true });
     for(let i=0;i<n;i++){ g.kitchen.queue=[]; g.kitchen.cooking=[]; g.kitchen.submitTempo(grp,1,1); s+=g.kitchen.queue[0].time; } return s/n; };
-  const sem=med(false), com=med(true); ok(Math.abs(com/sem-0.75)<0.06,'com a Lia a cozinha leva ×0,75 do tempo ('+(com/sem).toFixed(2)+')');
+  const sem=med(false), com=med(true); ok(Math.abs(com/sem-0.85)<0.06,'com a Lia a cozinha leva ×0,85 do tempo ('+(com/sem).toFixed(2)+')');
   g.save.equipe.lia=1;
   const mm=(ativa)=>{ g.save.equipe.lia=ativa?1:0; let s=0; for(let i=0;i<400;i++){ g.kitchen.queue=[]; g.kitchen.submitMarmita('pf',null); s+=g.kitchen.queue[0].time; } return s/400; };
-  const m0=mm(false), m1=mm(true); ok(Math.abs(m1/m0-0.75)<0.07,'a marmita também ('+(m1/m0).toFixed(2)+')');
+  const m0=mm(false), m1=mm(true); ok(Math.abs(m1/m0-0.85)<0.07,'a marmita também ('+(m1/m0).toFixed(2)+')');
   g.save.equipe.lia=1;
   // o corte da folha: depois das TVs, antes do Anselmo
   const eq={ tonhao:3, dani:2, joca:0, cami:0, anselmo:2, lia:1, tvs:0, tv:false, som:false, couvert:false };
@@ -92,10 +92,10 @@ const TIPOS=['estudante','executiva','familia','vovos','turma','motorista','nego
   // só no Terraço
   const Ha=jogo(9,'avenida',{ bank:3000 }); ok(!Ha.g.setStaff('lia',1) && Ha.L.normEquipe({ lia:1 },Ha.g.ponto).lia===0,'na Avenida não dá para contratar, e o save da Avenida zera a Lia');
   const Hg=nova(); ok(Hg.L.normEquipe({ lia:1 },Hg.g.ponto).lia===0,'na Garagem também');
-  ok(L.normEquipe({ lia:1 },g.ponto).lia===1 && L.normEquipe({ lia:7 },g.ponto).lia===1 && L.normEquipe({},g.ponto).lia===0,'normEquipe: 0 ou 1 no Terraço'); }
+  ok(L.normEquipe({ lia:1 },g.ponto).lia===1 && L.normEquipe({ lia:7 },g.ponto).lia===3 && L.normEquipe({},g.ponto).lia===0,'normEquipe: 0 a 3 no Terraço (v12.5)'); }
 
 // ---------- 5. a conversa da Lia, no Modo História ----------
-{ const H=nova({historia:true}), {g,L,els}=H; g.save=L.normSave({ histV:1, cap:8, dia:10, maxDay:10, bank:9000, v10:1, convEnt:1, convCard:1, convDiv:1, convPlanta:1, up:{ tenis:true, fogaoInd:true }, equipe:{ tonhao:3, dani:2, anselmo:2 }, daniCursos:{ confCaseira:1 }, salao:{ ponto:'terraco' }, pontoDia:10 });
+{ const H=nova({historia:true}), {g,L,els}=H; g.save=L.normSave({ histV:1, cap:10, dia:10, maxDay:10, bank:9000, v10:1, convEnt:1, convCard:1, convDiv:1, convPlanta:1, up:{ tenis:true, fogaoInd:true }, equipe:{ tonhao:3, dani:2, anselmo:2 }, daniCursos:{ confCaseira:1 }, salao:{ ponto:'terraco' }, pontoDia:10 });
   g.up=g.save.up; g.tablesKey=''; g.buildTables(); g.save.conversa=null; g.goShop(10);
   ok(!g.cartaoAberto('lia') && g.save.libera.lia===0,'na História, o cartão da Lia começa fechado');
   g.save.cursoDia=0; g.buyCurso('entradas'); g.startDay(10); els['btn-start'].fire('click'); g.schedule=[]; g.nextIdx=0;
@@ -103,9 +103,9 @@ const TIPOS=['estudante','executiva','familia','vovos','turma','motorista','nego
   ok(g.save.libera.lia==='pend' && !!g.conversa,'depois do curso do Tonhão, a conversa fica pendente e toca no fim do dia');
   const vistas=[]; { let k=0; while(g.conversa && k<30){ vistas.push(g.conversa.fala.q+':'+g.conversa.fala.s.slice(0,18)); toque(els); k++; } } 
   const n=vistas.length; ok(n>=4 && g.save.libera.lia===1 && !g.conversa && g.cartaoAberto('lia'),'a conversa tem '+n+' falas; no fim o cartão abre (selo novo)');
-  const F=L.liberaOf('lia'); ok(F.falas.length===4 && F.falas.map(f=>f.q).join()==='tonhao,bia,lia,bia' && L.HIST_NOMES.lia==='Lia','as falas: Tonhão, Bia, Tonhão, Lia, Bia');
+  const F=L.liberaOf('lia'); ok(F.falas.length===10 && F.falas.map(f=>f.q).join()==='cami,lia,tonhao,tonhao,bia,tonhao,lia,tonhao,bia,lia' && L.HIST_NOMES.lia==='Lia','as falas (v12.5, o teste da cebola): 10, de Cami a Lia (os textos: smoke106)');
   ok(F.nivel===4 && F.dia===1 && F.ate===999 && F.reclama.length===2 && F.reclama[0]==='A comida demorou entre um prato e outro.' && F.reclama[1]==='Cozinha lenta para um terraço.','LIBERA.lia: nivel 4, dia 1, ate 999 e as duas reclamações');
-  ok(/Onde eu guardo as facas/.test(F.falas[2].s) && F.falas[0].nota==='secando as mãos no avental','os textos do plano'); }
+  ok(/Onde eu guardo as facas/.test(F.falas[1].s) && F.falas[2].nota==='na frente da porta','os textos do plano (v12.5)'); }
 
 // ---------- 6. a Alta confeitaria da Dani ----------
 { const H=terr({ daniCursos:{ confCaseira:1, confGourmet:1 }, bank:9000 }), {g,L}=H;
@@ -126,7 +126,7 @@ const TIPOS=['estudante','executiva','familia','vovos','turma','motorista','nego
 
 // ---------- 7. o Manual e o save ----------
 { const H=jogo(8,'terraco',{ v10:1, equipe:{ tonhao:3, dani:2, lia:1 } }), {g,L}=H;
-  const f=L.MANUAL.find(q=>q.id==='e-lia'); ok(f && f.aba==='equipe' && f.quem==='lia' && f.nome==='Lia' && f.linha==='Ajudante de cozinha: com ela, tudo sai mais rápido.','ficha e-lia (aba Equipe)');
+  const f=L.MANUAL.find(q=>q.id==='e-lia'); ok(f && f.aba==='equipe' && f.quem==='lia' && f.nome==='Lia' && f.linha==='Cozinheira: começa no pré-preparo; com cursos, cuida das entradas e cria um prato dela.','ficha e-lia (aba Equipe, v12.5)');
   ok(L.manualTracos('lia').join('|')==='cozinha mais rápida' && !/\d/.test(f.linha+L.manualTracos('lia').join(' ')),'o traço "cozinha mais rápida", sem números');
   ok(L.manualSemente(L.normSave({ dia:12, salao:{ ponto:'terraco' }, pontoDia:10, equipe:{ tonhao:3, dani:2, lia:1 } })).indexOf('e-lia')>=0,'um save com a Lia abre a ficha');
   ok(typeof L.drawLia==='function' && L.LIA_HOME.x>766 && L.LIA_HOME.y>200,'drawLia e LIA_HOME expostos (na cozinha)');
@@ -138,7 +138,7 @@ const TIPOS=['estudante','executiva','familia','vovos','turma','motorista','nego
 { const H=jogo(8,'terraco',{ v10:1, equipe:{ tonhao:3, dani:2, lia:1 }, cursos:{ entradas:2, alta:2 }, daniCursos:{ confCaseira:1, confGourmet:1, confAlta:1 } },true), {g,L,els}=H;
   let erro=null; try{ L.setShopTab('lia'); L.setShopTab('cardapio'); L.setShopTab('dani'); L.setShopTab('equipe'); }catch(e){ erro=e; } ok(!erro,'a lojinha desenha Lia, Cardápio e Dani sem erro'+(erro?': '+erro.message:''));
   const gr=els['shop-grid']; const txt=e=>(e.textContent||'')+(e.children||[]).map(txt).join(' ');
-  L.setShopTab('lia'); ok(/Lia/.test(txt(gr)) && /mais rápida/.test(txt(gr)),'o cartão da Lia: nome e "A cozinha anda mais rápida"');
+  L.setShopTab('lia'); ok(/Lia/.test(txt(gr)) && /pré-preparo/.test(txt(gr)),'o cartão da Lia: nome e "Ajuda no pré-preparo" (v12.5)');
   L.setShopTab('cardapio'); ok(/Entradas finas|Entradas de chef/.test(txt(gr)) && /Alta gastronomia|Menu do chef/.test(txt(gr)),'o Cardápio mostra os dois cursos do Terraço');
   g.startDay(10); els['btn-start'].fire('click'); g.schedule=[]; g.nextIdx=0; let e2=null; try{ for(let i=0;i<20;i++){ g.update(0.05); L.render(g,H.ctx); } }catch(e){ e2=e; } ok(!e2,'o dia roda e desenha com a Lia na cozinha'+(e2?': '+e2.message:''));
   let e3=null; try{ FINAS.concat(ALTAS).forEach(k=>{ L.drawDish(H.ctx,k,100,100,2,false,'bife',false); L.drawDish(H.ctx,k,100,100,2,false,'bife',true); L.drawMarmita(H.ctx,k,100,100,1); });

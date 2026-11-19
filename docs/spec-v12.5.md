@@ -1,6 +1,6 @@
 # v12.5 — O arco da Lia: o ciúme do Tonhão, a praça e o prato dela (etapa 15a)
 
-**Situação:** aprovada
+**Situação:** entregue em 19/11
 **Origem:** retorno do usuário de 19/11 em `docs/PROPOSTAS.md` ("um arco de verdade para a Lia..."), entrevista na mesma conversa (mistura das propostas 1 e 3, "Na minha cozinha, não"). Perfis e tratamento em `docs/ARCO.md` §2.1 e §2.2. Aprovada em 19/11: o risoto a R$ 58 e bege dourado (`#C9A26B`); a cena dos temperos no cap. 10 `depois` (e não na `ARCO`), para a Lia ter 4 entradas no arco.
 
 ## Objetivo
@@ -120,16 +120,16 @@ A Lia deixa de ser só um bônus de velocidade e ganha um arco curto no Terraço
 - `tests/bot.js`: compra os cursos da Lia quando aparecem e cabem no caixa.
 
 ## Tarefas
-- [ ] T1 `tests/smoke106.js` com CA1 a CA9 (falhando); entra no `run_all.sh`.
-- [ ] T2 `STAFF.lia` por nível, a folha, `Kitchen.ajuda`, `normSave` e o save antigo (CA1, CA7).
-- [ ] T3 A praça da Lia na `Kitchen` e o anel de progresso (CA2).
-- [ ] T4 `LIA_CURSOS`, a compra, a trava do dia, quando aparecem, os cartões da lojinha e a ficha do Manual (CA3, CA9).
-- [ ] T5 O Risoto de feijão-manteiguinha e `save.liaPrato` (CA4).
-- [ ] T6 As falas e os gatilhos (cap. 10, `LIBERA`, `ARCO`) (CA5, CA6).
-- [ ] T7 Modo dev e Teste de habilidade (CA8); `tests/bot.js` compra os cursos.
-- [ ] T8 Calibração: `balance.js` e `carreira.js` (CA10, CA11), seguindo as regras de ajuste dos critérios.
-- [ ] T9 Capturas (CA12): tirar, olhar ampliado e apagar.
-- [ ] Fechamento: `VERSAO`, `vtag`, `#ov-ver`, `docs/RESUMO.md`, `docs/TESTES.md`, `docs/PARTES.md`, esta spec como entregue, `tests/run_all.sh` verde, PR e merge.
+- [x] T1 `tests/smoke106.js` com CA1 a CA9 (falhando); entra no `run_all.sh`.
+- [x] T2 `STAFF.lia` por nível, a folha, `Kitchen.ajuda`, `normSave` e o save antigo (CA1, CA7).
+- [x] T3 A praça da Lia na `Kitchen` e o anel de progresso (CA2).
+- [x] T4 `LIA_CURSOS`, a compra, a trava do dia, quando aparecem, os cartões da lojinha e a ficha do Manual (CA3, CA9).
+- [x] T5 O Risoto de feijão-manteiguinha e `save.liaPrato` (CA4).
+- [x] T6 As falas e os gatilhos (cap. 10, `LIBERA`, `ARCO`) (CA5, CA6).
+- [x] T7 Modo dev e Teste de habilidade (CA8); `tests/bot.js` compra os cursos.
+- [x] T8 Calibração: `balance.js` e `carreira.js` (CA10, CA11), seguindo as regras de ajuste dos critérios.
+- [x] T9 Capturas (CA12): tirar, olhar ampliado e apagar.
+- [x] Fechamento: `VERSAO`, `vtag`, `#ov-ver`, `docs/RESUMO.md`, `docs/TESTES.md`, `docs/PARTES.md`, esta spec como entregue, `tests/run_all.sh` verde, PR e merge.
 
 ## Avisos para a execução
 - A Cami é o molde da Lia por nível (`STAFF.cami.levels`, nível = 1 + cursos) e o Anselmo é o molde dos cursos (`ANSELMO_CURSOS`, `buyAnselmoCurso`, `anselmoCursoTrava`, os dois lugares de `buildLia`/Cardápio em `src/41-lojinha.js`).
@@ -145,7 +145,24 @@ A Lia deixa de ser só um bônus de velocidade e ganha um arco curto no Terraço
 ## Decisões em aberto
 Nenhuma.
 
+## Testes (medido na entrega)
+- `tests/smoke106.js`: 77 checagens (CA1 a CA9), verde. Smokes antigos ajustados aos textos e números novos: `smoke31` e `smoke67` (o cardápio passou a 30 pratos fora os juninos), `smoke62` (a Lia por nível, a conversa agora no cap. 10), `smoke63`, `smoke73` e `smoke103` (a Lia no nível 3 no Fim e no Teste), `smoke69` e `smoke78` (as falas novas do cap. 10 e da `LIBERA`), `smoke80` e `smoke82` (a `ARCO` com 20 entradas), `smoke86` (a lista do painel Versões).
+- **CA10** (`balance.js` no Terraço, 40 rodadas por dia, dias 8 a 10, equipe toda e `BOT=afiado`: `PONTO=terraco BOT=afiado EQUIPE=auto ALTA=1 CAMI=4 CAFESESP=1 AUTOR=1 JOCA=4 CONFEITARIA=1`, mais `LIA=1|2|3`): antes da versão (Lia ×0,75, R$ 80), 119 de 120 metas (99%); `LIA=1` novo (×0,85), 120 de 120 (100%); `LIA=2` (a praça), 117 de 120 (97,5%); `LIA=3` com o risoto a R$ 58, 115, 116 e 116 de 120 (96% a 97%, três rodadas); com o risoto a R$ 52, 120 de 120 (100%). O comando literal da spec (`PONTO=terraco EQUIPE=auto node balance.js 40`, bot comum e sem a equipe toda) dá 0 de 40 nos três dias antes e depois da versão: não mede nada.
+- **CA11** (`DIAS=65 node carreira.js 8`, duas rodadas): o banco não tomou a casa em nenhuma (0 de 8 nas duas). A Lia chegou ao nível 3 antes do cap. 14 em 8 de 8 e em 7 de 8 carreiras (comprou o curso de autor no cap. 13); o Chefe de praça no dia 54 e 51 (mediano), o de autor no 57 e 54; 61 e 74 risotos vendidos por carreira. O Fim da história: dia 62 em 5 de 8 e dia 59 em 7 de 8 carreiras até o dia 65 (a 1ª rodada, com o risoto a R$ 58; a 2ª, a R$ 52); o código de antes, medido igual, fechou em 8 de 8 no dia 60 e no dia 63.
+- **CA12:** `tests/shot_v12_5.js` (cartão da Lia nos 3 níveis, os 2 cartões de curso, o anel da praça ao lado dela, as 4 conversas em 844×390); recortes conferidos e capturas apagadas.
+
 ## Desvios
-(No fechamento.)
+- **`PRATOS`:** no código a tabela do cardápio se chama `CARDAPIO`; o `liaRisoto` entrou nela.
+- **O comando do CA10:** o literal não mede nada (0 de 40, igual ao código de antes); mediu-se com a equipe toda e o bot afiado (comando em Testes), o de `docs/TESTES.md` para o Terraço. Antes da versão, esse comando já dava 99%, acima da faixa de 85% a 95%; o nível 3 (diária R$ 120) fica em 96% a 97%, e o nível 1 em 100%. Pela regra de "se passar de 95%, o preço do risoto cai para R$ 52", o risoto ficou a R$ 52 (a rodada seguinte deu 100%, ou seja, a diferença está no ruído, não no preço). Se a faixa de 85% a 95% era para um bot mais fraco, o preço pode voltar a R$ 58 sem mexer em mais nada (uma linha em `CARDAPIO`).
+- **`cook` do nível 1:** ficou em 0,85 (a regra "se cair abaixo de 85%" não disparou).
+- **A praça:** a entrada que vai para ela fica em `kitchen.cooking` marcada `praca:true`, fora da conta das bocas (a fila de espera do fogão só olha as que não são da praça); o desenho tira essa entrada das bocas e mostra o anel de progresso (com o número da mesa) entre a Lia e o Tonhão.
+- **Modo dev:** `equipeModo('max')` ("Tudo no máximo") põe a Lia no nível 3 e `equipeModo('zero')` ("Do começo") a tira, além de `cursosTodos` subir e descer o nível dela junto com os cursos; `devNivel('lia')` liga os cursos do nível (2 a praça, 3 a praça e a de autor).
+- **Gúgou:** a Cozinha de autor da Lia (`item:true`) não entrou em `cursosItem` (a nota do cardápio no Gúgou); a spec não pediu e o Anselmo é o único dos três que conta ali.
+- **Bots:** `balance.js` ganhou `LIA=1|2|3` (o nível e os cursos da Lia) e `carreira.js` compra os cursos da Lia quando aparecem e sobram R$ 300 acima da folha (`LIACURSO=0` não compra) e marca uma conversa do arco por fim de dia como a tela faz (antes a 1ª `pend` travava as outras, e os cursos da Lia, na História, nunca apareceriam), com a linha `LIA (v12.5)`. O `tests/bot.js` não mudou: quem compra na lojinha é o `carreira.js`.
+- **Lojinha:** o cartão do Chefe de praça fica na aba da Lia e o da Cozinha de autor no Cardápio; "Precisa da Lia contratada." só aparece num save em que a conversa já passou e ela não está na equipe (na prática, só em save mexido).
+
+## Regras corrigidas
+- **O risoto:** R$ 52, e não R$ 58 (a regra do CA10, ver Desvios).
+- **Antes de fechar o Terraço**, o `LIBERA.lia` e a ordem da `ARCO` (`liaPerfeita`, `liaRosa`, `anselmoRi`, `jocaNome`, `liaPetala`, `liaChef`, `roda`) foram confirmados no `smoke106`.
 
 **Modelo:** Sonnet, esforço alto (código de jogo em várias partes, a cozinha com uma vaga nova e calibração por tentativa)

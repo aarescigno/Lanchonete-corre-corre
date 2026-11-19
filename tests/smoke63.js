@@ -40,7 +40,7 @@ for(let n=1;n<=15;n++){
   ok(g.save.emp.resto===0 && g.save.libera.cami===2 && g.save.libera.anselmo===2 && g.save.libera.joca===2 && g.save.libera.bia===2,'cap 8: sem empréstimo; Cami, Anselmo, Joca e Bia com o cartão aberto');
   ok(g.save.manual.indexOf('p-avenida')>=0 && g.save.manual.indexOf('p-terraco')<0 && g.save.manual.indexOf('b-sentar')>=0,'cap 8: Manual com o Básico e a Avenida');
   g.devCapitulo(1); ok(g.save.emp.resto===1000 && g.save.emp.ref && g.save.aval.length===0 && g.save.convPlanta===0,'cap 1: reforma inteira, sem nota, conversa da planta ainda por vir');
-  g.devCapitulo(13); ok(g.save.equipe.lia===1 && g.save.equipe.anselmo>0 && L.UPGRADES.every(u=>g.up[u.id]),'Fim: tudo no máximo, com a Lia'); }
+  g.devCapitulo(13); ok(g.save.equipe.lia===3 && g.save.equipe.anselmo>0 && L.UPGRADES.every(u=>g.up[u.id]),'Fim: tudo no máximo, com a Lia'); }
 
 // ---------- 5. desfazer ----------
 { g.devCapitulo(4); const antes=JSON.stringify(g.save);

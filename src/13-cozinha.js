@@ -7,8 +7,8 @@ class Kitchen {
   constructor(game){ this.game = game; this.reset(); }
   reset(){ this.queue = []; this.cooking = []; this.plates = PLATE_SLOTS.map(() => null); this.marmJ = MARMJ_SLOTS.map(() => null); this.pid = 0; this.slots = cozinhaSlots(this.game); this.sinkN = 0; this.clean = Infinity; this.noPlate = false; this.washT = 0; }
   get chef(){ return STAFF.tonhao.levels[this.game.save.equipe.tonhao]; }
-  /* v10.2: com a Lia no dia, todo pedido da cozinha (prato, entrada ou marmita) leva STAFF.lia.cook × o tempo */
-  get ajuda(){ return this.game.liaAtiva ? STAFF.lia.cook : 1; }
+  /* v10.2: com a Lia no dia, todo pedido da cozinha (prato, entrada ou marmita) leva o `cook` do nível dela × o tempo (v12.5: 0,85 no nível 1, 0,75 nos 2 e 3) */
+  get ajuda(){ return this.game.liaAtiva ? liaCfg(this.game.save.equipe).cook : 1; }
   /* a chance de caprichar: x CURSO_AV.crit nos pratos de um curso avançado que o Tonhão já fez (v8.6.9) */
   chefCrit(dish){ return this.chef.crit * (pratoAv(dish, this.game.cursos) ? CURSO_AV.crit : 1); }
   /* v10, a refeição completa: a comanda vira dois pedidos em sequência. Entra o da entrada (tempo 0: ×TEMPOS.entrada.cook, sem o ×VIP nem o 2º item, ocupa vaga
@@ -80,8 +80,13 @@ class Kitchen {
   update(dt){
     this.noPlate = false;
     const fogo = this.game.quebrado('fogao') ? manutOf('fogao').lento : 1;   // fogão falhando (v8): cozinha mais devagar
+    // v12.5: a praça da Lia (nível 2 em diante): 1 vaga a mais, só para entradas; a 1ª entrada da fila que ainda não começou vai para ela antes de encher as bocas do fogão (que continuam podendo pegar entradas)
+    if (this.game.liaPraca && !this.cooking.some(t => t.praca)){
+      const i = this.queue.findIndex(t => t.tempo === 0 && !t.marmita);
+      if (i >= 0){ const t = this.queue.splice(i, 1)[0]; t.praca = true; this.cooking.push(t); }
+    }
     // v9.6.5: as mesas na frente: o próximo é o 1º ticket de prato; marmita só entra se (no fogão + na janela) < vagas da janela
-    while (this.cooking.length < this.slots && this.queue.length){
+    while (this.cooking.filter(t => !t.praca).length < this.slots && this.queue.length){
       const noFogo = this.cooking.filter(t => t.marmita).length, naJanela = this.marmJ.filter(Boolean).length;
       const i = this.queue.findIndex(t => !t.marmita || noFogo + naJanela < MARMJ_SLOTS.length);
       if (i < 0) break;

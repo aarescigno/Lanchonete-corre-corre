@@ -714,6 +714,7 @@ class Game {
       this.addSparks(t.cx, t.cy - 60, 14, PAL.mostarda); this.addSparks(t.cx, t.cy - 60, 8, PAL.alerta);
     }
     this.stats.served++;
+    if (this.mode === 'carreira' && g.dishes) this.save.liaPrato += g.dishes.filter(k => k === 'liaRisoto').length;   // v12.5: cada risoto da Lia vendido (gatilho da liaChef)
     this.cinco(g);
     this.fechaFicha(g, false);   // v10.9
     this.stats.saiMin = Math.min(this.stats.saiMin, g.hearts); if (g.critico) this.stats.criticoH = g.hearts;   // v12.1: os corações com que o grupo (e o crítico) saiu, para a cond dos Desafios
@@ -867,6 +868,7 @@ class Game {
      espera no balcão (no máximo DRINKS.vagas; com o balcão cheio ele para) */
   get anselmoAtivo(){ return this.mode === 'carreira' && anselmoOn(this.save.equipe, this.ponto); }
   get liaAtiva(){ return this.mode === 'carreira' && liaOn(this.save.equipe, this.ponto); }   // v10.2: a Lia na cozinha
+  get liaPraca(){ return this.liaAtiva && !!liaCfg(this.save.equipe).praca; }   // v12.5: a praça das entradas (nível 2 em diante)
   drinkPedir(grp){
     if (!grp.drinks.length || grp.drinksPedidos || !this.anselmoAtivo) return;
     grp.drinksPedidos = true;
@@ -1948,6 +1950,27 @@ class Game {
     writeSave(sv); Sfx.coin();
     return true;
   }
+  /* cursos da Lia (v12.5): um por lojinha; cada um sobe o nível dela (a praça das entradas, depois o Risoto de feijão-manteiguinha). No Modo História o `praca` só aparece depois da conversa liaRosa e o `autor`
+     depois da liaPetala; sem ele, o `praca` com a Lia contratada e o `autor` com o `praca` feito */
+  get liaCursoTrava(){ return !devLivre() && this.save.liaCursoDia === this.shopNext; }
+  liaCursoVis(c){
+    const sv = this.save;
+    if (!c || !cursoDaniVis(c, this.ponto)) return false;
+    if (devLivre()) return true;
+    if (histLiga()) return sv.arco[c.id === 'praca' ? 'liaRosa' : 'liaPetala'] === 1;
+    return c.dep ? !!sv.liaCursos[c.dep] : sv.equipe.lia > 0;
+  }
+  buyLiaCurso(id){
+    const c = LIA_CURSOS.find(x => x.id === id), sv = this.save;
+    if (!c || !this.liaCursoVis(c) || !(sv.equipe.lia > 0 || devLivre()) || sv.liaCursos[id] || (c.dep && !sv.liaCursos[c.dep]) || this.liaCursoTrava || sv.bank < c.preco) return false;
+    sv.bank -= c.preco; caixaGasto(sv, 'mel', c.preco);
+    sv.liaCursos[id] = 1; sv.liaCursoDia = this.shopNext;
+    if (sv.equipe.lia > 0) sv.equipe.lia = Math.min(STAFF.lia.levels.length - 1, sv.equipe.lia + 1);   // cada curso sobe 1 nível, e a diária vai junto
+    this.kitchen.slots = cozinhaSlots(this);
+    this.cursoMsg = 'A Lia foi fazer o curso de ' + c.nome.charAt(0).toLowerCase() + c.nome.slice(1) + '!';
+    writeSave(sv); Sfx.coin();
+    return true;
+  }
   /* cursos da Cami (v9.3): cada um sobe um nível dela (e o salário); um por lojinha; o de mesa (v9.6) abre o modo "Minhas mesas" */
   get camiCursoTrava(){ return !devLivre() && this.save.camiCursoDia === this.shopNext; }
   buyCamiCurso(id){
@@ -2186,8 +2209,9 @@ class Game {
     if (modo === 'max'){
       e.tonhao = STAFF.tonhao.levels.length - 1; e.dani = STAFF.dani.levels.length - 1; e.joca = STAFF.joca.levels.length - 1;
       e.daniTasks = ['pratos', 'lavar', 'suco']; e.jocaTasks = ['lixo', 'lavar', 'pratos']; e.cami = STAFF.cami.levels.length - 1; e.camiTasks = ['lixo', 'lavar', 'pratos', 'suco'];
+      e.lia = STAFF.lia.levels.length - 1;   // v12.5: a Lia no nível 3 (com os dois cursos, em cursosTodos); fora do Terraço o normEquipe a tira
     } else {
-      e.tonhao = 0; e.dani = 1; e.joca = 0; e.daniTasks = DANI_PADRAO.slice(); e.jocaTasks = JOCA_PADRAO.slice(); e.cami = 0; e.camiTasks = CAMI_PADRAO.slice();
+      e.tonhao = 0; e.dani = 1; e.joca = 0; e.daniTasks = DANI_PADRAO.slice(); e.jocaTasks = JOCA_PADRAO.slice(); e.cami = 0; e.camiTasks = CAMI_PADRAO.slice(); e.lia = 0;
     }
     sv.equipe = normEquipe(e, this.ponto);
     sv.rosa = modo === 'max' ? 1 : 0;   // v10.8: o molho da Rosa vem com o "Tudo no máximo"
@@ -2202,7 +2226,8 @@ class Game {
   cursosTodos(on){   // v12: o miolo (sem a trava do modo dev), usado também pela montaCap
     const sv = this.save, tudo = (lista, v) => { const o = {}; if (on) lista.forEach(x => { o[x.id] = v; }); return o; };
     sv.cursos = normCursos(tudo(CURSOS, 2)); sv.daniCursos = normDaniCursos(tudo(DANI_CURSOS, true)); sv.jocaCursos = normJocaCursos(tudo(JOCA_CURSOS, true)); sv.camiCursos = normCamiCursos(tudo(CAMI_CURSOS, true)); sv.anselmoCursos = normAnselmoCursos(tudo(ANSELMO_CURSOS, true));
-    this.devSegueCursos(); sv.cursoDia = sv.daniCursoDia = sv.jocaCursoDia = sv.camiCursoDia = sv.anselmoCursoDia = 0;
+    sv.liaCursos = normLiaCursos(tudo(LIA_CURSOS, true)); if (sv.equipe.lia > 0) sv.equipe.lia = on ? STAFF.lia.levels.length - 1 : 1;   // v12.5: os cursos da Lia e o nível que vem com eles
+    this.devSegueCursos(); sv.cursoDia = sv.daniCursoDia = sv.jocaCursoDia = sv.camiCursoDia = sv.anselmoCursoDia = sv.liaCursoDia = 0;
     this.kitchen.reset(); this.dani.reset(); this.joca.reset(); this.cami.reset();
     writeSave(sv); return true;
   }
@@ -2257,13 +2282,14 @@ class Game {
     writeSave(this.save); return true;
   }
   devNivel(quem, delta){
-    const NIV = { tonhao:[0, 1, 2, 3, 4], dani:[0, 1, 2, 3, 4], joca:[0, 2, 3, 4], cami:[0, 1, 2, 3, 4, 5], anselmo:[0, 2, 3], lia:[0, 1] };
+    const NIV = { tonhao:[0, 1, 2, 3, 4], dani:[0, 1, 2, 3, 4], joca:[0, 2, 3, 4], cami:[0, 1, 2, 3, 4, 5], anselmo:[0, 2, 3], lia:[0, 1, 2, 3] };   // v12.5: a Lia de 0 a 3
     if (!DEV.on || !NIV[quem]) return false;
     const sv = this.save, l = NIV[quem], at = l.indexOf(sv.equipe[quem]);
     if (at < 0) return false;
     const i = clamp(at + (delta < 0 ? -1 : 1), 0, l.length - 1);
     sv.equipe[quem] = l[i];
     sv.equipe = normEquipe(sv.equipe, this.ponto);
+    if (quem === 'lia'){ const n = sv.equipe.lia; sv.liaCursos = normLiaCursos({ praca:n >= 2, autor:n >= 3 }); sv.liaCursoDia = 0; }   // v12.5: o nível 2 traz a praça e o 3, o risoto
     if (!devLivre() && sv.equipe[quem] > 0 && sv.libera && quem in sv.libera) sv.libera[quem] = 2;   // no De verdade, a pessoa também fica com o cartão aberto
     writeSave(sv); this.devRecarrega(); return true;
   }
@@ -2317,8 +2343,8 @@ class Game {
     // os cursos até o ponto e o capítulo (o Tonhão no 2; a equipe, só de quem o ponto tem)
     const ate = (l, tem) => { const o = {}; if (tem) l.forEach(c => { if ((c.nivel || 1) <= nv && (!c.cap || c.cap <= cap)) o[c.id] = true; }); return o; }, cs = {};
     CURSOS.forEach(c => { if (!c.nivel || c.nivel <= nv) cs[c.id] = 2; });
-    sv.cursos = normCursos(cs); sv.daniCursos = normDaniCursos(ate(DANI_CURSOS, true)); sv.jocaCursos = normJocaCursos(ate(JOCA_CURSOS, e.joca > 0)); sv.camiCursos = normCamiCursos(ate(CAMI_CURSOS, e.cami > 0)); sv.anselmoCursos = normAnselmoCursos(ate(ANSELMO_CURSOS, e.anselmo > 0));
-    sv.cursoDia = sv.daniCursoDia = sv.jocaCursoDia = sv.camiCursoDia = sv.anselmoCursoDia = 0;
+    sv.cursos = normCursos(cs); sv.daniCursos = normDaniCursos(ate(DANI_CURSOS, true)); sv.jocaCursos = normJocaCursos(ate(JOCA_CURSOS, e.joca > 0)); sv.camiCursos = normCamiCursos(ate(CAMI_CURSOS, e.cami > 0)); sv.anselmoCursos = normAnselmoCursos(ate(ANSELMO_CURSOS, e.anselmo > 0)); sv.liaCursos = normLiaCursos(ate(LIA_CURSOS, e.lia > 0));
+    sv.cursoDia = sv.daniCursoDia = sv.jocaCursoDia = sv.camiCursoDia = sv.anselmoCursoDia = sv.liaCursoDia = 0;
     // as melhorias e as compras do ponto
     Object.keys(up).forEach(k => delete up[k]);
     UPGRADES.forEach(u => { if ((u.nivel && u.nivel > nv) || (u.id === 'maquina' && !(P.bebida && P.bebida !== 'coquetel'))) return; up[u.id] = u.multi ? 1 : true; });   // o Jogo de pratos acumula sem teto na lojinha: 1, como sempre; no Terraço o carrinho vem do curso do Anselmo
@@ -2361,7 +2387,7 @@ class Game {
       sv.efoodNota = D.dia > HIST_ENTREGA.dia ? 1 : 0; sv.vipVisto = D.dia > 5 ? 1 : 0;
       // equipe, cursos e melhorias pela tabela (o Fim: tudo no máximo, com a Lia)
       if (D.eq){
-        const e = sv.equipe, top = { tonhao:STAFF.tonhao.levels.length - 1, dani:STAFF.dani.levels.length - 1, joca:STAFF.joca.levels.length - 1, cami:STAFF.cami.levels.length - 1, anselmo:STAFF.anselmo.levels.length - 1, lia:1 };
+        const e = sv.equipe, top = { tonhao:STAFF.tonhao.levels.length - 1, dani:STAFF.dani.levels.length - 1, joca:STAFF.joca.levels.length - 1, cami:STAFF.cami.levels.length - 1, anselmo:STAFF.anselmo.levels.length - 1, lia:STAFF.lia.levels.length - 1 };
         Object.keys(D.eq).forEach(q => { e[q] = Math.min(D.eq[q], top[q]); });
         sv.equipe = normEquipe(e, this.ponto);
         const lista = (ids, ok) => { const o = {}; ids.forEach(id => { if (ok.some(x => x.id === id)) o[id] = true; }); return o; };
@@ -2371,7 +2397,7 @@ class Game {
         D.up.forEach(id => { const u = UPGRADES.find(x => x.id === id); if (u) this.up[id] = u.multi ? 1 : true; });
         this.devSegueCursos();
       } else {
-        this.equipeModo('max'); this.melhoriasTodas(true); sv.equipe.lia = 1; sv.equipe.anselmo = STAFF.anselmo.levels.length - 1;
+        this.equipeModo('max'); this.melhoriasTodas(true); sv.equipe.lia = STAFF.lia.levels.length - 1; sv.equipe.anselmo = STAFF.anselmo.levels.length - 1;
         if (D.semRosa){ sv.rosa = 0; delete sv.camiCursos.gerente; sv.equipe.cami = 4; }   // v10.8: o capítulo 12 começa sem o molho e sem a gerência
         sv.equipe = normEquipe(sv.equipe, this.ponto);
       }
