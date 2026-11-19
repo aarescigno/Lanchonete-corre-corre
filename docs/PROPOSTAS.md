@@ -4,6 +4,12 @@ Registro das ideias e dos retornos de quem jogou, com o texto original, e de ond
 
 ---
 
+## 19/11 — usuário: o Terraço sem marmita
+"Eu acho que não faz sentido ter Ifood no terraço. Qual restaurante de luxo tipo terraço Itália tem esse tipo de coisa de marmita?" e "A mesa de marmitas está lá sobrando..., põe no plano para corrigir". Escolhido: aparador de luxo com o vaso em cima.
+**Destino:** `docs/spec-v12.5.1.md` (aprovada), Etapa 15a-1 no `docs/PLANO.md`.
+
+---
+
 ## 19/11 — usuário: um arco de verdade para a Lia, o tratamento entre as personagens e a revisão das conversas
 > "Que eu me lembro, a gente tinha combinado de entrar uma pessoa nova por etapa do jogo [...]"
 > "Ah, eu acho importante. Senão ela [a Lia] fica ruim, né? Ela pode ser um ciclo mais curto [...] ela pode ter algum desenvolvimento de curso para ela, de desenvolvimento de história, e ela pode ter uma relação com alguma outra pessoa. [...] pode ter uma indicação da Cami, ou ela pode conhecer outras pessoas do grupo."
