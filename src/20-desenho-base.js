@@ -870,8 +870,8 @@ function drawBia(ctx,b,x,y,o){
   // cabeça e cabelo (1 solto com o puff; 2 rabo; 3 rabo alto; 4 coque)
   const hy = -46 + bob + (R === 'cabeca' ? 4 * env : R === 'respira' ? -2.5 * env : R === 'cintura' ? -2 * env : R === 'suspiro' ? 1.2 * env : 0), ph2 = moving ? Math.sin(ph) * 2.2 : (RM ? 0 : Math.sin((o.t||0)*2.2) * 0.8);
   if (rp === 1){ circ(ctx,0,hy-14,13.5); fs(ctx,C.cabelo,2.5); }              // puff
-  else if (rp === 2) puffCrespo(ctx,16 + ph2,hy + 3,10,6);   // v11.16.1: puff crespo baixo na nuca, balançando (era o rabo)
-  else if (rp === 3) puffCrespo(ctx,5 + ph2 * 0.5,hy - 19,12,7);   // puff crespo alto, preso no alto da cabeça
+  else if (rp === 2) puffCrespo(ctx,-16 - ph2,hy + 3,10,6);   // v11.16.1: puff crespo baixo na nuca, balançando (era o rabo); v12.4.1: atrás (o +x é a frente)
+  else if (rp === 3) puffCrespo(ctx,-5 - ph2 * 0.5,hy - 19,12,7);   // v12.4.1: puxado para trás; puff crespo alto, preso no alto da cabeça
   else puffCrespo(ctx,0,hy - 20,9.5,7);                           // coque crespo
   circ(ctx,-11.5,hy+1,2.8); fs(ctx,skin,1.6); circ(ctx,11.5,hy+1,2.8); fs(ctx,skin,1.6);
   circ(ctx,0,hy,11.5); fs(ctx,skin,2.5);
@@ -880,8 +880,8 @@ function drawBia(ctx,b,x,y,o){
   if (rp === 1){   // lenço amarelo
     ctx.beginPath(); ctx.moveTo(-12.5,hy-5); ctx.quadraticCurveTo(0,hy-11,12.5,hy-5); ctx.lineTo(12,hy-9); ctx.quadraticCurveTo(0,hy-16,-12,hy-9); ctx.closePath(); fs(ctx,PAL.mostarda,2);
     ctx.beginPath(); ctx.moveTo(10,hy-8); ctx.lineTo(18,hy-12); ctx.lineTo(16,hy-5); ctx.closePath(); fs(ctx,PAL.mostarda,1.8);
-  } else if (rp === 2){ circ(ctx,9.2,hy-4.2,2.4); fs(ctx,PAL.alerta,1.6); }       // o elástico do puff baixo
-  else if (rp === 3){ circ(ctx,3,hy-11.5,2.3); fs(ctx,PAL.alerta,1.6); }           // o elástico, onde o puff encontra a cabeça
+  } else if (rp === 2){ circ(ctx,-9.2,hy-4.2,2.4); fs(ctx,PAL.alerta,1.6); }       // o elástico do puff baixo
+  else if (rp === 3){ circ(ctx,-3,hy-11.5,2.3); fs(ctx,PAL.alerta,1.6); }           // o elástico, onde o puff encontra a cabeça
   else { rr(ctx,-6,hy-13.5,12,2.6,1.3); fs(ctx,PAL.creme,1.2); }   // a faixa creme na base do coque
   // rosto
   if (o.olha) ctx.translate(o.olha * 2.5,0);

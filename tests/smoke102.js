@@ -29,7 +29,7 @@ bloco('CA1',()=>{
 bloco('CA2',()=>{
   { const {g,L}=mk({ lcc2_name:'Ana' }); g.setDev(true); g.startTeste('garagem'); fecha(g);
     const l=g.testeRel.split('\n');
-    ok(/^LCC-TESTE 3 · /.test(l[0]) && L.VERSAO==='v12.4','CA2: a 1ª linha começa com "LCC-TESTE 3 · " (v12.4) ('+l[0].slice(0,30)+')');
+    ok(/^LCC-TESTE 3 · /.test(l[0]) && l[0].indexOf(' · '+L.VERSAO+' · ')>0,'CA2: a 1ª linha começa com "LCC-TESTE 3 · " e traz a VERSAO ('+l[0].slice(0,30)+')');
     ok(/^Jogador: Ana · tentativa 1 · bot · bot - · \d{2}\/\d{2}\/\d{4} \d{2}:\d{2}$/.test(l[1]),'CA2: no bot, "bot · bot -" ('+l[1]+')'); }
   { const {g,L}=mk({ lcc2_name:'Ana' },{ navigator:{ userAgent:'Mozilla/5.0 (iPhone; CPU iPhone OS 17_0 like Mac OS X) Mobile/15E148', maxTouchPoints:5 } }); g.setDev(true); g.startTeste('garagem'); g.begin(); g.tm.aparelho='toque';
     const l=L.testeRelatorio(g).split('\n');
