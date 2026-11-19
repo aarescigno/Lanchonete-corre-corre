@@ -14,15 +14,33 @@ function drawTouchFx(ctx,g){
 }
 
 /* o mundo (salão, calçada, gente e efeitos) começa em g.cam na tela larga (v7.6); o HUD fica na tela */
-/* v12.4.2: o letreiro do eFood quando chega um entregador: faixa laranja no quarto de cima do salão (y 96 a 200),
-   que acende e apaga (sin) em ENTREGA_CHEGA.letreiro s; com movimento reduzido, fica parada em 0,9 */
+/* v12.4.2: o letreiro do eFood quando chega um entregador, no quarto de cima do salão, que acende e apaga (sin)
+   em ENTREGA_CHEGA.letreiro s; com movimento reduzido, fica parado em 0,9. v12.4.3: só as letras, sem a faixa */
 function efoodFlashA(f){ return RM ? 0.9 : Math.sin(Math.PI * clamp(f.life / f.max, 0, 1)); }
+let efoodCv = null;
+function efoodLetras(o){
+  o.translate(TW/2,150); o.rotate(-0.06);
+  o.font = '120px ' + FD; o.textAlign = 'center'; o.textBaseline = 'middle'; o.lineJoin = 'round';
+  o.shadowColor = '#FFB36B'; o.shadowBlur = 30; o.lineWidth = 16; o.strokeStyle = '#22201C'; o.strokeText('eFood',0,0);
+  o.shadowBlur = 0; o.shadowColor = 'transparent'; o.lineWidth = 7; o.strokeStyle = '#fff'; o.strokeText('eFood',0,0);
+  o.fillStyle = EFOOD_COR; o.fillText('eFood',0,0);
+}
 function drawEfoodFlash(ctx,g){
   const f = g.fx.find(e => e.k === 'efood'); if (!f) return;
-  ctx.save(); ctx.globalAlpha = efoodFlashA(f);
-  rr(ctx,24,96,TW - 48,104,22); ctx.fillStyle = EFOOD_COR; ctx.fill(); ctx.lineWidth = 5; ctx.strokeStyle = '#fff'; ctx.stroke();
-  txt(ctx,'eFood',TW/2,150,84,'#fff','center',FD,6);
-  ctx.restore();
+  const cv = ctx.canvas, a = efoodFlashA(f);
+  // as três camadas vão inteiras numa tela à parte e entram juntas com a opacidade (sem uma aparecer através da outra)
+  if (cv && cv.width && typeof ctx.getTransform === 'function' && typeof document !== 'undefined'){
+    if (!efoodCv) efoodCv = document.createElement('canvas');
+    if (efoodCv.width !== cv.width || efoodCv.height !== cv.height){ efoodCv.width = cv.width; efoodCv.height = cv.height; }
+    const o = efoodCv.getContext('2d');
+    if (o){
+      o.setTransform(1,0,0,1,0,0); o.clearRect(0,0,cv.width,cv.height); o.setTransform(ctx.getTransform());
+      o.save(); efoodLetras(o); o.restore();
+      ctx.save(); ctx.setTransform(1,0,0,1,0,0); ctx.globalAlpha = a; ctx.drawImage(efoodCv,0,0); ctx.restore();
+      return;
+    }
+  }
+  ctx.save(); ctx.globalAlpha = a; efoodLetras(ctx); ctx.restore();
 }
 function render(g, ctx){
   COMIDA_CURSOS = g.cursos;   // v8.6.10: os pratos do curso avançado ganham o detalhe

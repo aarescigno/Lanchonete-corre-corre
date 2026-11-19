@@ -519,7 +519,7 @@ table.rank tr.me td{background:#fbe7a8}
 
     <div class="ov show" id="ov-menu">
       <div class="panel menu-panel">
-        <span class="vtag" id="vtag" aria-label="Versão 12.4.2">v12.4.2</span>
+        <span class="vtag" id="vtag" aria-label="Versão 12.4.3">v12.4.3</span>
         <h1 class="title">Lanchonete <br>Corre-Corre</h1>
         <p class="tag">Ajude a Bia a atender a freguesia da esquina antes que o cafezinho esfrie!</p>
         <div class="lbl" id="menu-dia">História</div>
@@ -821,7 +821,8 @@ table.rank tr.me td{background:#fbe7a8}
       <div class="panel">
         <h2>Versões</h2>
         <ul class="verlist">
-          <li><b>v12.4.2</b><span class="cur">versão atual</span><br>Quando chega um entregador, pisca um letreiro grande do eFood no alto do salão.</li>
+          <li><b>v12.4.3</b><span class="cur">versão atual</span><br>O letreiro do eFood fica só com as letras, sem a faixa no fundo.</li>
+          <li><b>v12.4.2</b><br>19/11/2026 &mdash; Quando chega um entregador, pisca um letreiro grande do eFood no alto do salão.</li>
           <li><b>v12.4.1</b><br>19/11/2026 &mdash; Na área industrial e na Avenida, o cabelo preso da Bia fica para trás quando ela anda.</li>
           <li><b>v12.4</b><br>18/11/2026 &mdash; O Teste e os Desafios trazem o que cada ponto tem, no máximo; no Teste, dá para escolher quem vem e o que cada um faz.</li>
           <li><b>v12.3.2</b><br>17/11/2026 &mdash; O relatório do Teste diz se foi jogado no celular, no tablet ou no computador.</li>
@@ -2651,7 +2652,7 @@ const HIST_NOMES = { bia:'Bia', tonhao:'Tonhão', dani:'Dani', joca:'Joca', cami
 const ATU_TXT = { procurando:'Procurando versão nova...', nova:'Tem versão nova: {v}! Seu jogo salvo continua.', igual:'Você já está na versão mais nova ({v}).', erro:'Sem internet agora. Tente de novo mais tarde.', atualizando:'Atualizando...' };
 function atuEstado(remota, atual){ if (typeof remota !== 'string' || !remota.trim()) return 'erro'; return remota.trim() === atual ? 'igual' : 'nova'; }
 const CAIXA_MAX = 14;                                 // livro-caixa (v7.2): quantos dias da carreira ficam guardados
-const VERSAO = 'v12.4.2';                               // vai no resumo do Caixa
+const VERSAO = 'v12.4.3';                               // vai no resumo do Caixa
 const DIVULGA_DIA = 4;                                // antes disso, o movimento é o da inauguração (sem custo); v9.0.2: dia 4, e o padrão é o boca a boca
 function divulgaAberta(n, sv){ return devLivre() || n >= DIVULGA_DIA && !(sv && sv.convDiv === 'pend'); }   // no modo dev, desde o dia 1; v9.0.3: no Modo História, só depois da conversa
 /* v9.6.4: a Efood (os entregadores) só abre depois da conversa dos entregadores, no Modo História; antes dela, nenhum tipo com `retira` vem na agenda */
@@ -11577,15 +11578,33 @@ function drawTouchFx(ctx,g){
 }
 
 /* o mundo (salão, calçada, gente e efeitos) começa em g.cam na tela larga (v7.6); o HUD fica na tela */
-/* v12.4.2: o letreiro do eFood quando chega um entregador: faixa laranja no quarto de cima do salão (y 96 a 200),
-   que acende e apaga (sin) em ENTREGA_CHEGA.letreiro s; com movimento reduzido, fica parada em 0,9 */
+/* v12.4.2: o letreiro do eFood quando chega um entregador, no quarto de cima do salão, que acende e apaga (sin)
+   em ENTREGA_CHEGA.letreiro s; com movimento reduzido, fica parado em 0,9. v12.4.3: só as letras, sem a faixa */
 function efoodFlashA(f){ return RM ? 0.9 : Math.sin(Math.PI * clamp(f.life / f.max, 0, 1)); }
+let efoodCv = null;
+function efoodLetras(o){
+  o.translate(TW/2,150); o.rotate(-0.06);
+  o.font = '120px ' + FD; o.textAlign = 'center'; o.textBaseline = 'middle'; o.lineJoin = 'round';
+  o.shadowColor = '#FFB36B'; o.shadowBlur = 30; o.lineWidth = 16; o.strokeStyle = '#22201C'; o.strokeText('eFood',0,0);
+  o.shadowBlur = 0; o.shadowColor = 'transparent'; o.lineWidth = 7; o.strokeStyle = '#fff'; o.strokeText('eFood',0,0);
+  o.fillStyle = EFOOD_COR; o.fillText('eFood',0,0);
+}
 function drawEfoodFlash(ctx,g){
   const f = g.fx.find(e => e.k === 'efood'); if (!f) return;
-  ctx.save(); ctx.globalAlpha = efoodFlashA(f);
-  rr(ctx,24,96,TW - 48,104,22); ctx.fillStyle = EFOOD_COR; ctx.fill(); ctx.lineWidth = 5; ctx.strokeStyle = '#fff'; ctx.stroke();
-  txt(ctx,'eFood',TW/2,150,84,'#fff','center',FD,6);
-  ctx.restore();
+  const cv = ctx.canvas, a = efoodFlashA(f);
+  // as três camadas vão inteiras numa tela à parte e entram juntas com a opacidade (sem uma aparecer através da outra)
+  if (cv && cv.width && typeof ctx.getTransform === 'function' && typeof document !== 'undefined'){
+    if (!efoodCv) efoodCv = document.createElement('canvas');
+    if (efoodCv.width !== cv.width || efoodCv.height !== cv.height){ efoodCv.width = cv.width; efoodCv.height = cv.height; }
+    const o = efoodCv.getContext('2d');
+    if (o){
+      o.setTransform(1,0,0,1,0,0); o.clearRect(0,0,cv.width,cv.height); o.setTransform(ctx.getTransform());
+      o.save(); efoodLetras(o); o.restore();
+      ctx.save(); ctx.setTransform(1,0,0,1,0,0); ctx.globalAlpha = a; ctx.drawImage(efoodCv,0,0); ctx.restore();
+      return;
+    }
+  }
+  ctx.save(); ctx.globalAlpha = a; efoodLetras(ctx); ctx.restore();
 }
 function render(g, ctx){
   COMIDA_CURSOS = g.cursos;   // v8.6.10: os pratos do curso avançado ganham o detalhe
