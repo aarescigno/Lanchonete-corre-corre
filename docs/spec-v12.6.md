@@ -1,7 +1,7 @@
 # v12.6 — As vozes da equipe: o tratamento e a revisão das conversas (etapa 15b)
 
-**Situação:** rascunho
-**Origem:** retorno do usuário de 19/11 em `docs/PROPOSTAS.md` ("revise todas as conversas com base nos perfis... veja se o tamanho dos arcos de cada personagem estão proporcionais ao tempo delas dentro da equipe"). Perfis e tratamento: `docs/ARCO.md` §2.1 e §2.2. Vem depois da v12.5 (o arco da Lia), que já entra com as falas novas da Lia no tratamento certo.
+**Situação:** aprovada
+**Origem:** retorno do usuário de 19/11 em `docs/PROPOSTAS.md` ("revise todas as conversas com base nos perfis... veja se o tamanho dos arcos de cada personagem estão proporcionais ao tempo delas dentro da equipe"). Perfis e tratamento: `docs/ARCO.md` §2.1 e §2.2. Vem depois da v12.5 (o arco da Lia), que já entra com as falas novas da Lia no tratamento certo. Aprovada em 19/11 (os fregueses da `camiNome`: dona Lurdes e seu Jorge).
 
 ## Objetivo
 Cada um fala do seu jeito e trata os outros como o perfil pede: a Dani chama a Bia de "Bi", o Joca de "dona Bia", o Anselmo de "senhora". A troca de tratamento passa a marcar a conquista de quem muda. A Cami, a mais curta das personagens que ficam, ganha a conquista em cena. E a roda antes da noite da estrela passa a ouvir a equipe inteira.
@@ -30,7 +30,7 @@ Corpus: 328 falas em 91 conversas (`HISTORIA`, `HIST_*`, `LIBERA`, `ARCO`, `ABER
 - A **Dani** é o coro da história: ela aparece em 30 conversas, quase todas de capítulo. É a mais antiga, então está proporcional.
 - **Joca e Anselmo** estão proporcionais entre si e combinam com o perfil de pouca fala.
 - A **Cami** era a mais curta: um tropeço (`camiPressa`) e uma promoção numa fala só. A v12.5 a põe em 4 cenas da Lia. Aqui ela ganha a conquista em cena (`camiNome`) e uma fala na roda.
-- A **Lia**, com a v12.5, fica densa para o tempo que tem: 5 entradas da `ARCO` (uma por fim de dia) em ~9 dias de Terraço, disputando o fim de dia com a `anselmoRi`, a `jocaNome` e a `roda`. É curto por natureza, porque ela entra no arco final. O risco é a `liaChef` ficar para depois do fim da história (ver Decisões em aberto).
+- A **Lia**, com a v12.5, fica densa para o tempo que tem, e é curta por natureza, porque entra no arco final. Com 5 entradas da `ARCO` (uma por fim de dia) em ~9 dias de Terraço, disputando com a `anselmoRi`, a `jocaNome` e a `roda`, a `liaChef` podia ficar para depois do fim da história. Decidido em 19/11: a cena dos temperos vai para o cap. 10 `depois` (que não gasta a vez da `ARCO`), e a Lia fica com 4 entradas (já na `docs/spec-v12.5.md`).
 
 ## Regras (decisões tomadas)
 As falas abaixo trocam o texto de hoje (só o que está listado; o resto fica como está). `e` e `nota` iguais aos de hoje, a não ser onde indicado.
@@ -105,8 +105,7 @@ As falas abaixo trocam o texto de hoje (só o que está listado; o resto fica co
 - `tests/smoke107.js` (novo, CA1 a CA5). Nenhuma mudança no `balance.js` nem no `carreira.js` (só texto e uma conversa).
 
 ## Decisões em aberto
-- **A densidade da Lia (afeta a v12.5).** Sugestão: juntar a `liaCiume` ao cap. 10 `depois`, que não gasta a vez da `ARCO`, para a Lia ficar com 4 entradas na `ARCO` em vez de 5. O cap. 10 `depois` ficaria: as 6 falas da `liaCiume` e, no fim, `bia [alegre]: A cozinha tá voando, tio!`. Saem o coquetel do Tonhão e o "só falta a refeição perfeita" da Dani. A outra opção é manter as 5 e aceitar que a `liaChef` às vezes fique para depois do fim da história.
-- **Os nomes dos fregueses na `camiNome`.** Sugestão: dona Lurdes e seu Jorge, nomes comuns, sem ser de ninguém do jogo.
+Nenhuma.
 
 ## Desvios
 (No fechamento.)

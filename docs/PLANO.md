@@ -20,8 +20,8 @@ Origem: retorno do Renan Martorelli (beta-tester) e conversa com o Arthur (15/10
 | 14c | Desafios com os mesmos clientes para todos | v12.3 | feita em 17/11 (`docs/spec-v12.3.md`; `smoke100`; a `semente` em cada `DESAFIOS`, o "Copiar relatório" no fim do desafio (modo dev), as tentativas `d-<id>`, `DEV.forca` desligado no Desafio; sementes calibradas, a do eFood com a faixa ampliada) |
 | 14d | O Teste com o máximo de cada ponto e a equipe do jeito que quiser | v12.4 | feita em 18/11 (`docs/spec-v12.4.md`; `smoke103`; `maxDoPonto`, a tela da fase `#ov-teste-fase`, o relatório `LCC-TESTE 3` com a linha `Equipe:`, os Desafios recalibrados: jogo meta 1,75 e crítico 1,07) |
 | 14b | O bot humano, calibrado pelos relatórios | — (testes) | depois dos relatórios dos testers |
-| 15a | O arco da Lia: o ciúme do Tonhão, a praça e o prato dela | v12.5 | planejada em 19/11 (`docs/spec-v12.5.md`, rascunho) |
-| 15b | As vozes da equipe: o tratamento e a revisão das conversas | v12.6 | planejada em 19/11 (`docs/spec-v12.6.md`, rascunho) |
+| 15a | O arco da Lia: o ciúme do Tonhão, a praça e o prato dela | v12.5 | planejada em 19/11 (`docs/spec-v12.5.md`, aprovada) |
+| 15b | As vozes da equipe: o tratamento e a revisão das conversas | v12.6 | planejada em 19/11 (`docs/spec-v12.6.md`, aprovada) |
 
 ---
 

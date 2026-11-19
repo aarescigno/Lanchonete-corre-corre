@@ -1,7 +1,7 @@
 # v12.5 — O arco da Lia: o ciúme do Tonhão, a praça e o prato dela (etapa 15a)
 
-**Situação:** rascunho
-**Origem:** retorno do usuário de 19/11 em `docs/PROPOSTAS.md` ("um arco de verdade para a Lia..."), entrevista na mesma conversa (mistura das propostas 1 e 3, "Na minha cozinha, não"). Perfis e tratamento em `docs/ARCO.md` §2.1 e §2.2.
+**Situação:** aprovada
+**Origem:** retorno do usuário de 19/11 em `docs/PROPOSTAS.md` ("um arco de verdade para a Lia..."), entrevista na mesma conversa (mistura das propostas 1 e 3, "Na minha cozinha, não"). Perfis e tratamento em `docs/ARCO.md` §2.1 e §2.2. Aprovada em 19/11: o risoto a R$ 58 e bege dourado (`#C9A26B`); a cena dos temperos no cap. 10 `depois` (e não na `ARCO`), para a Lia ter 4 entradas no arco.
 
 ## Objetivo
 A Lia deixa de ser só um bônus de velocidade e ganha um arco curto no Terraço. A Cami traz a amiga do rodízio e o Tonhão tem ciúme da cozinha, até ver nela a Rosa. A Lia cresce em dois cursos: primeiro as entradas ficam com ela, depois ela cria o prato dela. Termina sendo chamada de "chef".
@@ -29,8 +29,8 @@ A Lia deixa de ser só um bônus de velocidade e ganha um arco curto no Terraço
 - **A entrada no jogo (`LIBERA`, `lia`):** o `gatilho` de hoje (curso de entradas ou alta feito) ganha, no Modo História, a condição de o cap. 10 já ter começado (`g.save.cap >= 10`), para as falas do cap. 10 tocarem antes. Sem o Modo História, nada muda.
 - **Lojinha, cartão da Lia** (`buildLia`): título `Lia (cozinheira) · nível N de 3` contratada, `Lia` antes. Em "Na cozinha:" (ou "Se contratar:"), a linha do nível: 1 `Ajuda no pré-preparo`, 2 `Cuida das entradas`, 3 `Faz o prato dela`, e `Diária: R$ X`. O cartão do curso segue o molde do Anselmo: `Curso de Chefe de praça` / `Curso de cozinha de autor`, `Precisa da Lia contratada.`, `Precisa do curso de Chefe de praça.`, `Em curso`, `Curso feito`.
 - **Manual:** a ficha `e-lia` vira `Cozinheira: começa no pré-preparo; com cursos, cuida das entradas e cria um prato dela.`
-- **Modo dev:** `NIV.lia` passa a `[0, 1, 2, 3]`: o painel sobe e desce a Lia pelos 3 níveis, e no 3 o risoto entra no cardápio. "Tudo no máximo" e o Teste de habilidade usam o nível 3 com os dois cursos. As conversas novas entram sozinhas na lista (`Arco: liaCiume`, `Arco: liaRosa`, `Arco: liaChef`).
-- **Save:** `save.liaCursos` (`{}`), `save.liaCursoDia` (0) e `save.liaPrato` (0) nascem em `normSave`. Save antigo com `equipe.lia` 1 fica no nível 1, porque é o mesmo número. Save antigo com `arco.liaPerfeita` 1 nasce com `arco.liaCiume` 1, para a ordem não voltar.
+- **Modo dev:** `NIV.lia` passa a `[0, 1, 2, 3]`: o painel sobe e desce a Lia pelos 3 níveis, e no 3 o risoto entra no cardápio. "Tudo no máximo" e o Teste de habilidade usam o nível 3 com os dois cursos. As conversas novas entram sozinhas na lista (`Arco: liaRosa`, `Arco: liaChef`); o cap. 10 `depois` já está na lista dos capítulos.
+- **Save:** `save.liaCursos` (`{}`), `save.liaCursoDia` (0) e `save.liaPrato` (0) nascem em `normSave`. Save antigo com `equipe.lia` 1 fica no nível 1, porque é o mesmo número.
 
 **As falas** (o tratamento segue o `docs/ARCO.md` §2.2: a Lia chama o Tonhão de "chef" e a Bia de "chefia" até a `liaChef`; a Cami chama o Tonhão de "Tonhão" e a Lia de "Li"):
 
@@ -54,15 +54,16 @@ A Lia deixa de ser só um bônus de velocidade e ganha um arco curto no Terraço
 - bia [firme]: Bem-vinda, Lia. Eu acerto na lojinha, em Equipe.
 - lia: Obrigada, chefia.
 
-**`liaCiume`** (nova, na `ARCO`, `nivel` 4, logo antes da `liaPerfeita`). `quando`: a Lia contratada e veio no dia.
+**Cap. 10, `depois`** (a cena dos temperos; troca as 3 falas de hoje e não gasta a vez da `ARCO`, decidido em 19/11 para a Lia caber no Terraço):
 - lia (nota: com os potes na mão): Chef, arrumei os temperos em ordem alfabética.
 - tonhao [brava]: O cominho mora do lado do fogão há trinta anos! Volta tudo pro lugar.
 - lia [insegura]: Desculpa, chef. No rodízio ninguém sabia onde ficava nada.
 - cami [alegre]: Ela arrumou a cozinha inteira do rodízio numa noite, Tonhão. O dono quase chorou.
 - tonhao: Seu Tonhão, Cami. ...E aqui ninguém chora.
 - tonhao: Mas deixa o sal onde ela pôs.
+- bia [alegre]: A cozinha tá voando, tio!
 
-**`liaPerfeita`** (ganha a fala da Cami antes do "Entendido"; o `quando` passa a pedir também a `liaCiume` vista):
+**`liaPerfeita`** (ganha a fala da Cami antes do "Entendido"; o `quando` passa a pedir também `save.cap` 11 ou mais, para tocar depois da cena dos temperos):
 - tonhao: Lia, a mesa quatro tá esperando a entrada faz tempo!
 - lia [insegura]: Refiz três vezes, chef. O corte não ficou igual.
 - tonhao [firme]: Prato perfeito e frio não serve pra ninguém. Capricho tem hora, e a hora é a do freguês.
@@ -99,18 +100,18 @@ A Lia deixa de ser só um bônus de velocidade e ganha um arco curto no Terraço
 - **CA2** No nível 2, com a fila cheia de entradas e as bocas ocupadas, uma entrada cozinha na praça; no nível 1 e sem a Lia no dia, não há praça; o principal nunca vai para a praça → `smoke106` (2)
 - **CA3** Os cursos: um por dia, `praca` antes de `autor`; no Modo História, escondidos até a `liaRosa` (praca) e a `liaPetala` (autor); comprar sobe `equipe.lia` → `smoke106` (3)
 - **CA4** O Risoto de feijão-manteiguinha só é pedido com o curso de autor e a Lia no dia (300 grupos com e sem ela); cada um vendido soma em `save.liaPrato` → `smoke106` (4)
-- **CA5** As falas: cap. 10 `antes`, `LIBERA` lia, `liaCiume`, `liaPerfeita`, `liaRosa`, `liaPetala` e `liaChef` iguais às desta spec (texto, quem fala e o `e`); a ordem da `ARCO` no Terraço é `liaCiume`, `liaPerfeita`, `liaRosa`, ..., `liaPetala`, `liaChef`, `roda` → `smoke106` (5)
-- **CA6** Os gatilhos: no Modo História, a `LIBERA` lia não marca antes do cap. 10; `liaCiume` → `liaPerfeita` → `liaRosa` (cap. 11 ou mais) → `liaPetala` → `liaChef` (com `liaPrato`), uma por fim de dia → `smoke106` (6)
-- **CA7** Save antigo (v12.4.3) com a Lia contratada carrega no nível 1, com `liaCursos` vazio; com `liaPerfeita` vista, `liaCiume` nasce vista → `smoke106` (7)
+- **CA5** As falas: cap. 10 `antes` e `depois`, `LIBERA` lia, `liaPerfeita`, `liaRosa`, `liaPetala` e `liaChef` iguais às desta spec (texto, quem fala e o `e`); a ordem da `ARCO` no Terraço é `liaPerfeita`, `liaRosa`, ..., `liaPetala`, `liaChef`, `roda` → `smoke106` (5)
+- **CA6** Os gatilhos: no Modo História, a `LIBERA` lia não marca antes do cap. 10; `liaPerfeita` (cap. 11 ou mais) → `liaRosa` → `liaPetala` → `liaChef` (com `liaPrato`), uma por fim de dia → `smoke106` (6)
+- **CA7** Save antigo (v12.4.3) com a Lia contratada carrega no nível 1, com `liaCursos` vazio → `smoke106` (7)
 - **CA8** Modo dev: `NIV.lia` sobe e desce de 0 a 3; "Tudo no máximo" põe o nível 3; as 3 conversas novas estão na lista → `smoke106` (8)
 - **CA9** O cartão da Lia e os cartões dos cursos com os textos desta spec; a ficha `e-lia` nova → `smoke106` (9)
 - **CA10** O Terraço com a equipe: `PONTO=terraco EQUIPE=auto node balance.js 40` passa 85–95% das metas. Se cair abaixo de 85%, o `cook` do nível 1 vai a 0,8. Se passar de 95%, o preço do risoto cai para R$ 52.
 - **CA11** A campanha: `DIAS=65 node carreira.js 8` fecha a história no prazo de hoje (dia 63 ± 3), sem banco tomar a casa, com a Lia no nível 3 antes do cap. 14 em pelo menos 6 de 8 carreiras.
-- **CA12** O que se vê → captura `shot_v12_5.js`: o cartão da Lia nos 3 níveis; os 2 cartões de curso; a entrada na praça (o anel de progresso perto da Lia); as conversas `LIBERA` lia, `liaCiume`, `liaRosa` e `liaChef` em 844×390.
+- **CA12** O que se vê → captura `shot_v12_5.js`: o cartão da Lia nos 3 níveis; os 2 cartões de curso; a entrada na praça (o anel de progresso perto da Lia); as conversas `LIBERA` lia, cap. 10 `depois`, `liaRosa` e `liaChef` em 844×390.
 
 ## Partes
-- `src/10-constantes.js`: `PRATOS` (`liaRisoto`), `STAFF.lia`, a folha (`payroll`, linha da Lia), `LIA_CURSOS` e `normLiaCursos` (perto de `ANSELMO_CURSOS`), `HISTORIA` cap. 10 `antes`, `LIBERA` lia (falas e `gatilho`), `ARCO` (`liaCiume`, `liaPerfeita`, `liaRosa`, `liaPetala`, `liaChef`), `liaOn`, a ficha `e-lia` em `MANUAL`, `TESTE`/`maxDoPonto` (nível da Lia).
-- `src/12-clientes.js`: `normSave` (`liaCursos`, `liaCursoDia`, `liaPrato`, `arco.liaCiume` do save antigo). `pedePrincipal` (o risoto) está em `src/10-constantes.js`.
+- `src/10-constantes.js`: `PRATOS` (`liaRisoto`), `STAFF.lia`, a folha (`payroll`, linha da Lia), `LIA_CURSOS` e `normLiaCursos` (perto de `ANSELMO_CURSOS`), `HISTORIA` cap. 10 `antes` e `depois`, `LIBERA` lia (falas e `gatilho`), `ARCO` (`liaPerfeita`, `liaRosa`, `liaPetala`, `liaChef`), `liaOn`, a ficha `e-lia` em `MANUAL`, `TESTE`/`maxDoPonto` (nível da Lia).
+- `src/12-clientes.js`: `normSave` (`liaCursos`, `liaCursoDia`, `liaPrato`). `pedePrincipal` (o risoto) está em `src/10-constantes.js`.
 - `src/13-cozinha.js`: `Kitchen` (`ajuda` pelo nível, a praça em `reset`/`update`/`purge`/`progressFor`).
 - `src/16-jogo.js`: `liaAtiva`, `setStaff` (a Lia de 0 a 3 só pelos cursos), `buyLiaCurso` e `liaCursoTrava` (no molde de `buyAnselmoCurso`), a venda do risoto (`liaPrato`), `NIV.lia`, `devEquipe('max')`, `equipeModo`, a marcação da `ARCO`.
 - `src/21-cenario.js`: o anel de progresso da entrada perto da Lia (`drawLia` ou onde a cozinha desenha o progresso das bocas).
@@ -142,8 +143,7 @@ A Lia deixa de ser só um bônus de velocidade e ganha um arco curto no Terraço
 - `balance.js` e `carreira.js` (CA10, CA11); capturas `tests/shot_v12_5.js` (CA12).
 
 ## Decisões em aberto
-- **O preço do Risoto de feijão-manteiguinha.** Sugestão: R$ 58, logo acima do medalhão (R$ 55), por ser o prato de autor da casa. O CA10 baixa para R$ 52 se o Terraço passar de 95%.
-- **A cor do prato no desenho.** Sugestão: `#C9A26B` (bege dourado, do feijão-manteiguinha com o arroz), diferente do risoto de cogumelos (`#E8D9A8`).
+Nenhuma.
 
 ## Desvios
 (No fechamento.)

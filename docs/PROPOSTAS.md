@@ -17,7 +17,7 @@ Registro das ideias e dos retornos de quem jogou, com o texto original, e de ond
 
 **Decidido na entrevista (mistura das propostas 1 e 3, "Na minha cozinha, não"):** a Cami indica a Lia, colega dela do rodízio; o Tonhão tem ciúme da cozinha ("Na minha cozinha, não"), a Bia decide e ele faz a prova da cebola; a virada (`liaRosa`) é ele ver a Rosa nela e dar a ela uma boca do fogão; dois cursos: Chefe de praça (R$ 700; as entradas são dela) e Cozinha de autor (R$ 1.000; o Risoto de feijão-manteiguinha); diária 80 → 100 → 120; no nível 1 ela ajuda menos que hoje (15%, o ciúme pesa no jogo). Os perfis psicológicos e a tabela de tratamento (quem chama quem de quê) entram no `docs/ARCO.md` (§2.1 e §2.2).
 
-**Destino:** etapa 15 do `docs/PLANO.md`: 15a, o arco da Lia (v12.5, `docs/spec-v12.5.md`, rascunho); 15b, o tratamento e a revisão das conversas pelos perfis (v12.6, `docs/spec-v12.6.md`, rascunho).
+**Destino:** etapa 15 do `docs/PLANO.md`: 15a, o arco da Lia (v12.5, `docs/spec-v12.5.md`); 15b, o tratamento e a revisão das conversas pelos perfis (v12.6, `docs/spec-v12.6.md`), as duas aprovadas em 19/11. Na 2ª entrevista: o risoto a R$ 58 e bege dourado; a cena dos temperos no cap. 10 `depois` (a Lia com 4 entradas no arco, para a `liaChef` caber antes do fim); os fregueses da `camiNome`, dona Lurdes e seu Jorge.
 
 ---
 
