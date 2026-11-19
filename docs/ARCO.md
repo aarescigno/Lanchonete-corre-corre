@@ -45,7 +45,7 @@ Notação das falas: `quem [expressão] (nota): texto`. A expressão vira o camp
 | **Anselmo** | "senhora" ("sim, senhora"); "Bia" depois da `anselmoRi` | "seu Antônio" (o único que usa o nome de batismo) | pelo nome, com "por favor" e "com licença" |
 | **Lia** | "chefia"; "Beatriz" depois da `liaChef` | "chef"; "Antônio" depois da `liaChef` | pela praça ("confeitaria", "café", "bar") e, depois da `liaChef`, pelo nome inteiro: Daniela, José Carlos, Anselmo. A Cami é "Camila" desde o começo (amiga antiga) |
 
-Os nomes inteiros (Daniela, José Carlos, Camila, Antônio, Beatriz) só aparecem na boca da Lia. A troca de tratamento marca a conquista de quem muda (Joca, Anselmo, Lia) e não acontece antes da conversa indicada.
+Os nomes inteiros (Daniela, José Carlos, Camila, Antônio, Beatriz) só aparecem na boca da Lia. A troca de tratamento marca a conquista de quem muda (Joca, Anselmo, Lia) e não acontece antes da conversa indicada. **A v12.6 aplicou esta tabela a todas as conversas** (`docs/spec-v12.6.md`: "Bi", "dona Bia", "senhora", "chefe", a `camiNome` e a roda com a equipe toda).
 
 ## 3. A voz da Bia, fase a fase (vale para toda fala nova ou reescrita)
 | Ponto | Como fala | O que não faz mais |

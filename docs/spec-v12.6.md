@@ -1,6 +1,6 @@
 # v12.6 — As vozes da equipe: o tratamento e a revisão das conversas (etapa 15b)
 
-**Situação:** aprovada
+**Situação:** entregue em 19/11
 **Origem:** retorno do usuário de 19/11 em `docs/PROPOSTAS.md` ("revise todas as conversas com base nos perfis... veja se o tamanho dos arcos de cada personagem estão proporcionais ao tempo delas dentro da equipe"). Perfis e tratamento: `docs/ARCO.md` §2.1 e §2.2. Vem depois da v12.5 (o arco da Lia), que já entra com as falas novas da Lia no tratamento certo. Aprovada em 19/11 (os fregueses da `camiNome`: dona Lurdes e seu Jorge).
 
 ## Objetivo
@@ -94,12 +94,12 @@ As falas abaixo trocam o texto de hoje (só o que está listado; o resto fica co
 - `src/12-clientes.js`: `normSave` (só se o `arco` não nascer sozinho para ids novos).
 
 ## Tarefas
-- [ ] T1 `tests/smoke107.js` com CA1 a CA5 (falhando); entra no `run_all.sh`.
-- [ ] T2 As trocas de texto, por script com substituição exata (`assert s.count(a)==1`).
-- [ ] T3 `camiNome` e a roda.
-- [ ] T4 Os smokes antigos que conferem falas trocadas (procurar trechos das falas de hoje em `tests/`) passam a conferir as novas.
-- [ ] T5 Capturas (CA6): tirar, olhar ampliado e apagar.
-- [ ] Fechamento: `VERSAO`, `vtag`, `#ov-ver`, `docs/RESUMO.md`, `docs/ARCO.md` (uma linha em §2.2 dizendo que a v12.6 aplicou a tabela), esta spec como entregue, `tests/run_all.sh` verde, PR e merge.
+- [x] T1 `tests/smoke107.js` com CA1 a CA5 (falhando); entra no `run_all.sh`.
+- [x] T2 As trocas de texto, por script com substituição exata (`assert s.count(a)==1`).
+- [x] T3 `camiNome` e a roda.
+- [x] T4 Os smokes antigos que conferem falas trocadas (procurar trechos das falas de hoje em `tests/`) passam a conferir as novas.
+- [x] T5 Capturas (CA6): tirar, olhar ampliado e apagar.
+- [x] Fechamento: `VERSAO`, `vtag`, `#ov-ver`, `docs/RESUMO.md`, `docs/ARCO.md` (uma linha em §2.2 dizendo que a v12.6 aplicou a tabela), esta spec como entregue, `tests/run_all.sh` verde, PR e merge.
 
 ## Testes
 - `tests/smoke107.js` (novo, CA1 a CA5). Nenhuma mudança no `balance.js` nem no `carreira.js` (só texto e uma conversa).
@@ -108,6 +108,14 @@ As falas abaixo trocam o texto de hoje (só o que está listado; o resto fica co
 Nenhuma.
 
 ## Desvios
-(No fechamento.)
+- **Números medidos:** `smoke107` 13 checagens (CA1 a CA5); `run_all.sh --tudo` verde (`menu_fit` 742 conferências, 0 falhas, com a lista das Versões em 23 linhas; `balance.js 40` igual ao da v12.5, porque só mudou texto). As falas somam 332 em 76 listas (a contagem de 328 da revisão não incluía as `HIST_CARDAPIO.fez`, as `HIST_SOCORRO.firme` e a `HIST_VONTADE_*.curta`); a v12.6 acrescenta 11 (a `camiNome` 5, a roda 4 e a última fala de `jocaNome` e de `anselmoRi`), e agora são 343 falas em 77 listas.
+- **CA1:** a cópia da v12.5 é `tests/smoke107_base.json` (gerada do código de antes das trocas); o smoke aplica sobre ela só as trocas da spec e compara com o jogo.
+- **Smokes antigos** que conferiam as falas de hoje passaram a conferir as novas: `smoke69`, `smoke70`, `smoke74`, `smoke77`, `smoke78`, `smoke79`, `smoke80` (e os totais de `smoke80` e `smoke82` de 20 para 21 entradas da `ARCO`, e de 21 para 22 cenas de arco no modo dev); o `smoke86` (selo, `VERSAO` e a lista do painel Versões, agora com 23 linhas) e o `menu_fit.py` (23 linhas).
+- **CA3, `quando` da `camiNome`:** `sv.arco.camiPressa === 1 && !!sv.camiCursos.agil && sv.equipe.cami > 0 && !sv.equipe.camiFora`. O smoke confere o `camiFora` direto no `quando`, porque o `startDay` limpa o `camiFora` antes do fim do dia.
+- **`normSave`:** nada a mudar (o `normArco` já nasce o id novo pelo `nivel`).
+- **CA6 (capturas):** `tests/shot_v12_6.js` roda sem erro de página (844x390 e 568x320, as duas pontas das falas de `camiNome`, roda, `jocaNome` e `LIBERA` anselmo). A leitura das imagens estava bloqueada nesta sessão; conferiu-se por texto que nenhuma fala passa de 120 letras (o limite das conversas, como nos outros smokes). As capturas foram apagadas.
+
+## Regras corrigidas
+Nenhuma: as regras da spec foram aplicadas como estavam.
 
 **Modelo:** Sonnet, esforço médio (só texto e uma conversa nova, mas em muitas listas e com smokes antigos que conferem as falas de hoje)

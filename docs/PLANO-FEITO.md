@@ -162,6 +162,7 @@ A cena final animada (oito cenas, no motor da abertura), os créditos, a placa n
 | 10a | O final novo: o motor, o som e as cenas 1, 2 e 3 | v11.16 | feita em 16/11 (`docs/spec-v11.16.md`; `smoke92`; o roteiro `FINAL2`, os climas e efeitos novos, o cartão de obra e as cenas telefone, placa e apagou) |
 | 10b | O final novo: as cenas 4, 5 e 6 | v11.17 | feita em 17/11 (`docs/spec-v11.17.md`; `smoke93`; as cenas `retrato`, `equipe` e `escola` em `src/28-final.js` e o `ab2RuaCasa` de dia; só pelo modo dev) |
 | 12 | A 3ª estrela do Michelzão ao alcance | v11.19 | feita em 17/11 (`docs/spec-v11.19.md`; `smoke96`; `NOITE.cortes` passou de `[44, 66, 90]` para `[44, 66, 75]`: o bot afiado leva a 3ª estrela em 37,5% das carreiras) |
+| 14c | Desafios com os mesmos clientes para todos | v12.3 | feita em 17/11 (`docs/spec-v12.3.md`; `smoke100`; a `semente` em cada `DESAFIOS`, o "Copiar relatório" no fim do desafio (modo dev), as tentativas `d-<id>`, `DEV.forca` desligado no Desafio; sementes calibradas, a do eFood com a faixa ampliada) |
 
 ## Etapa 1a — Jogo justo: dá para não perder ninguém (v7.1)
 > **Feita em 15/10 (v7.1, `docs/spec-v7.1.md`).** Decisões: A + B; no Turno sem fim vale o ritmo da fila justa, sem o piso; ícone "aguardando mesa" sim. A medição mostrou que, com a equipe, a maior parte das perdas era a espera pelo prato, e não a fila. O que sobra é o limite de louça nos dias de 6 mesas: o bot afiado só chega ao alvo (0 perdidos em 94% dos dias) comprando o Jogo de pratos primeiro. A louça não mudou; se jogadores reclamarem da espera pelo prato, a etapa 1b pode rever `dishStock` ou a mecânica D. Metas sem mudança.
@@ -2077,3 +2078,8 @@ Vinda da Etapa 14 ("O bot com habilidade de gente"), cuja 14b segue no `docs/PLA
 Vinda da Etapa 14 ("O bot com habilidade de gente"), cuja 14b segue no `docs/PLANO.md`.
 - **14d** (v12.4): cada fase do Teste e cada Desafio com o que a campanha dá naquele ponto, no máximo (sem Cami na área industrial; Terraço como no capítulo 11; a Garagem com a Dani); no Teste, a tela da fase para escolher quem vem e as funções de cada um; o relatório com a linha `Equipe:`; os 7 Desafios recalibrados. Spec: `docs/spec-v12.4.md`.
   **Modelo:** Sonnet, esforço alto (regra nova em muitas partes, tela nova, relatório e a recalibração dos 7 Desafios)
+
+## Etapa 15 — A Lia de verdade e as vozes da equipe (15a, v12.5; 15b, v12.6)
+Pedido do usuário em 19/11 (`docs/PROPOSTAS.md`): a Lia ganha um arco curto (a Cami indica, o Tonhão tem ciúme da cozinha, dois cursos e o prato dela), e cada personagem passa a tratar os outros do seu jeito (perfis e tabela de tratamento no `docs/ARCO.md` §2.1 e §2.2), com a revisão de todas as conversas pelos perfis e a conquista da Cami em cena.
+- **15a** — `docs/spec-v12.5.md`. **Modelo:** Sonnet, esforço alto (código de jogo em várias partes, a cozinha com uma vaga nova e calibração por tentativa)
+- **15b** — `docs/spec-v12.6.md`, depois da 15a. **Modelo:** Sonnet, esforço médio (só texto e uma conversa nova, em muitas listas)
