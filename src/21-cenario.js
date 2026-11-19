@@ -1845,11 +1845,18 @@ function drawKitchen(ctx,g,t){
     rr(ctx,r.x+14,r.y+4,r.w-18,r.h-8,8); fs(ctx,'#F0DDA6',3);
     drawChef(ctx,g,930,172,t);
     if (g.liaAtiva && g.state !== 'menu') drawLia(ctx,{ x:LIA_HOME.x, y:LIA_HOME.y, s:LIA_HOME.s },t);   // v10.2: a Lia ao lado do Tonhão
+    { const pc = g.kitchen.cooking.find(t => t.praca);   // v12.5: a praça da Lia: o anel de progresso da entrada ao lado dela
+      if (pc && g.state !== 'menu'){
+        const px = LIA_HOME.x + 29, py = 178, fr = clamp(pc.p / pc.time, 0, 1);   // ao lado da panela dela, entre ela e o Tonhão
+        ctx.save(); circ(ctx,px,py,9); fs(ctx,'#FFFBEA',2);
+        ctx.strokeStyle = PAL.ok; ctx.lineWidth = 3; ctx.lineCap = 'round'; ctx.beginPath(); ctx.arc(px,py,7,-Math.PI / 2,-Math.PI / 2 + Math.PI * 2 * Math.max(0.02,fr)); ctx.stroke();
+        txt(ctx,String(pc.table),px,py + 3,9,PAL.tinta,'center',FD); ctx.restore();
+      } }
     if (g.kitchen.noPlate && g.state !== 'menu'){
       ctx.save(); ctx.translate(904,118); drawBubble(ctx,0,0,15,'#fff'); txt(ctx,'Sem',0,-4,9,PAL.perigo,'center',FD); txt(ctx,'prato!',0,6,9,PAL.perigo,'center',FD); ctx.restore();
     }
     // tickets cozinhando
-    const ck = g.kitchen.cooking;
+    const ck = g.kitchen.cooking.filter(t => !t.praca);   // v12.5: a entrada da praça da Lia não ocupa boca do fogão (o anel, mais abaixo)
     const ns = g.kitchen.slots, tw = (128 - (ns-1)*4) / ns;   // 3, 4 ou 5 bocas (aumento do Tonhão)
     for (let i=0;i<ns;i++){
       const x = 786 + i*(tw+4), y = 108;

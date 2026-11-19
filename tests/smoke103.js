@@ -20,7 +20,7 @@ bloco('CA1',()=>{
   ok(e('garagem').tonhao===4 && e('garagem').dani===4 && ['joca','cami','anselmo','lia'].every(q=>e('garagem')[q]===0),'CA1: Garagem: Tonhão 4, Dani 4 e nenhum outro ajudante ('+arr(['tonhao','dani','joca','cami','anselmo','lia'].map(q=>e('garagem')[q]))+')');
   ok(e('industrial').joca===4 && e('industrial').dani===4 && e('industrial').cami===0 && e('industrial').anselmo===0 && e('industrial').lia===0,'CA1: área industrial: Joca 4 e nenhuma Cami, Anselmo ou Lia');
   ok(e('avenida').cami===3 && e('avenida').anselmo===2 && e('avenida').lia===0 && e('avenida').joca===4,'CA1: Avenida: Cami 3 e Anselmo 2 (sem Lia)');
-  { const t=S.terraco; ok(t.eq.cami===4 && t.eq.anselmo===3 && t.eq.lia===1 && t.sv.rosa===0 && !t.sv.camiCursos.gerente,'CA1: Terraço (cap 11): Cami 4, Anselmo 3, Lia 1, sem o molho da Rosa e sem o curso gerente'); }
+  { const t=S.terraco; ok(t.eq.cami===4 && t.eq.anselmo===3 && t.eq.lia===3 && t.sv.rosa===0 && !t.sv.camiCursos.gerente,'CA1: Terraço (cap 11): Cami 4, Anselmo 3, Lia 3 (v12.5), sem o molho da Rosa e sem o curso gerente'); }
   { const {g:h}=mk(); h.startDesafio('critico'); const sv=h.save; ok(sv.cap===13 && sv.equipe.cami===5 && sv.rosa===1 && sv.camiCursos.gerente===1 && sv.equipe.camiFila===true,'CA1: Noite do crítico (cap 13): Cami 5 (gerente, "Organiza a fila" ligado) e o molho da Rosa'); }
   // nada acima do ponto
   const acima=[];

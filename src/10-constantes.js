@@ -70,6 +70,8 @@ const CARDAPIO = {
   risoto:       { nome:'Risoto de cogumelos',       preco:46, cat:'pf',     curso:'alta',     carne:false, cor:'#E8D9A8', veg:true, fino:true },
   peixe:        { nome:'Peixe do dia',              preco:50, cat:'pf',     curso:'alta',     carne:true,  cor:'#D9A25B', fino:true },
   medalhao:     { nome:'Medalhão ao molho madeira', preco:55, cat:'pf',     curso:'alta',     carne:true,  cor:'#8A4B2A', fino:true },
+  /* v12.5, o prato da Lia (curso Cozinha de autor): curso:'liaAutor' não existe em CURSOS (como os da barraca junina), então nunca é "sabido" pelo caminho comum; entra em pedePrincipal só com o curso feito e a Lia no dia (liaRisotoOn) */
+  liaRisoto:    { nome:'Risoto de feijão-manteiguinha', preco:52, cat:'pf', curso:'liaAutor', carne:false, cor:'#C9A26B', veg:true, fino:true },
   /* v10.6, a barraca da festa junina: curso:'junina' não existe em CURSOS, então nunca são sabidos nem entram no cardápio comum; só saem nos pedidos do dia da festa com a barraca montada */
   pamonha:      { nome:'Pamonha',                   preco:9,  cat:'junina', curso:'junina',   carne:false, cor:'#E6D27A' },
   milho:        { nome:'Milho cozido',              preco:7,  cat:'junina', curso:'junina',   carne:false, cor:'#F2C94C' },
@@ -185,6 +187,14 @@ const ANSELMO_CURSOS = [
   { id:'autor', nome:'Coquetelaria de autor', preco:800, nivel:4, dep:'classica', item:true }
 ];
 function normAnselmoCursos(c){ const o = {}; ANSELMO_CURSOS.forEach(x => { if (c && c[x.id] && (!x.dep || c[x.dep])) o[x.id] = 1; }); return o; }
+/* v12.5: os cursos da Lia (só no Terraço, um por dia: save.liaCursos e liaCursoDia). Cada um sobe o nível dela (equipe.lia): `praca` leva ao 2 (a praça das entradas), `autor` ao 3 (o Risoto de feijão-manteiguinha, no Cardápio) */
+const LIA_CURSOS = [
+  { id:'praca', nome:'Chefe de praça', preco:700, nivel:4 },
+  { id:'autor', nome:'Cozinha de autor', preco:1000, nivel:4, dep:'praca', item:true }
+];
+function normLiaCursos(c){ const o = {}; LIA_CURSOS.forEach(x => { if (c && c[x.id] && (!x.dep || c[x.dep])) o[x.id] = 1; }); return o; }
+/* a Lia do nível da equipe eq (STAFF.lia.levels), ou null sem ela */
+function liaCfg(eq){ return eq && eq.lia > 0 ? STAFF.lia.levels[Math.min(eq.lia, STAFF.lia.levels.length - 1)] : null; }
 const CAMI_MESAS_MAX = 2;   // v9.6: quantas mesas o jogador pode marcar como da Cami (v9.6.1: 3 → 2, rebalanceamento da 3b-7)
 /* v9.6: quantas mesas do salão estão marcadas como da Cami */
 function camiMesasN(save){ return ((save && save.salao && save.salao.mesas) || []).filter(m => m.cami).length; }
@@ -292,8 +302,11 @@ const PONTOS_ACAO = { sit:10, take:15, deliver:20, clear:10, coffee:5, juice:5, 
 const TEMPOS = { entrada:{ cook:0.6, eat:0.5 }, porCoracao:1, semSobremesa:1, semBar:0.5, pts:30 };
 /* o prato principal da refeição completa: da categoria PF (PF, PF vegetariano, parmegiana). Vegetariano: só sem carne (sem opção, o PF, e o grupo reclama);
    quem não é, troca o PF pelo vegetariano em VEG.pfTroca das vezes, como no pedePrato */
+/* v12.5: o risoto da Lia está no cardápio do dia (curso de autor feito e a Lia trabalhando) */
+function liaRisotoOn(game){ return game.mode === 'carreira' && game.liaAtiva && !!game.save.liaCursos && !!game.save.liaCursos.autor; }
 function pedePrincipal(tipo, game, veg){
   let sab = pratosSabidos(game.cursos).filter(k => CARDAPIO[k].cat === 'pf');
+  if (liaRisotoOn(game)) sab.push('liaRisoto');   // v12.5
   const fi = game.ponto && game.ponto.nivel >= 4 ? sab.filter(k => CARDAPIO[k].fino) : [];   // v10.2, a regra do prato fino: sabendo algum principal fino, só entre os finos
   if (fi.length) sab = fi;
   if (veg){ const v = sab.filter(k => !CARDAPIO[k].carne); return v.length ? pick(v) : 'pf'; }
@@ -702,8 +715,9 @@ const STAFF = {
   cami:    { levels:[ null, { speed:0.9, tasks:3, pay:95 }, { speed:1.1, tasks:4, pay:115 }, { speed:1.25, tasks:4, pay:135, mesas:true }, { speed:1.35, tasks:4, pay:160, mesas:true, tudo:true }, { speed:1.35, tasks:4, pay:200, mesas:true, tudo:true, gerente:true } ] },   // v10.3: o nível 4 (curso de salão, só no Terraço); v10.8: o 5 (gerência)
   // Anselmo (v9.5): coqueteleiro, só na Avenida; entra já no nível 2 (R$ 105/dia desde a v10.5), não faz tarefas da lista; o nível 3 vem dos cursos do Terraço (4a)
   anselmo: { levels:[ null, null, { speed:0.8, pay:105, xp:0 }, { speed:1.0, pay:150, xp:0 } ] },
-  // Lia (v10.2): ajudante de cozinha, só no Terraço; com ela no dia todo pedido da cozinha leva `cook` × o tempo. Contratar é definitivo (equipe.lia: 0 ou 1)
-  lia:     { pay:80, cook:0.75 },
+  // Lia (v10.2): ajudante de cozinha, só no Terraço; com ela no dia todo pedido da cozinha leva `cook` × o tempo. Contratar é definitivo.
+  // v12.5: por nível (equipe.lia 0 a 3: 1 + cursos feitos, como a Cami): 2 (Chefe de praça) cuida das entradas na praça dela, 3 (Cozinha de autor) faz o Risoto de feijão-manteiguinha
+  lia:     { levels:[ null, { cook:0.85, pay:80 }, { cook:0.75, pay:100, praca:true }, { cook:0.75, pay:120, praca:true, autor:true } ] },
   // couvert artístico: só do nível 3 do salão em diante (Avenida Brasil, etapa 3 do plano)
   couvert: { pay:200, fee:8, effect:0.2, feeCut:0.5, nivel:3 },
   // ambiente da Garagem (v7.4.3): TV e som ligados o dia todo; o custo é a conta de luz (pay) e entra na folha
@@ -773,7 +787,7 @@ function payroll(eq, cp){
   if (eq.joca && !eq.jocaFora) v += diariaJoca(eq, cp && cp.joca);   // v9.2; v10.5: o degrau do curso de barista
   if (eq.cami && !eq.camiFora) v += STAFF.cami.levels[eq.cami].pay;   // v9.3
   if (eq.anselmo && !eq.anselmoFora) v += STAFF.anselmo.levels[eq.anselmo].pay;   // v9.5
-  if (eq.lia && !eq.liaFora) v += STAFF.lia.pay;   // v10.2
+  if (eq.lia && !eq.liaFora) v += liaCfg(eq).pay;   // v10.2; v12.5: a diária do nível
   if (eq.couvert) v += STAFF.couvert.pay;
   v += musicaPay(musicaDe(eq));   // v10.4
   if (eq.tv) v += STAFF.tv.pay;
@@ -1262,16 +1276,21 @@ const HISTORIA = [
       { q:'dani', e:'alegre', s:'Hoje uma mesa bateu palma pra minha sobremesa!' }] },
   // v10.5.2: um capítulo a mais no Terraço, para usar a Lia e os coquetéis antes da refeição perfeita. Objetivo: contratar a Lia e 8 coquetéis num dia, 3 vezes
   { cap:10, titulo:'A casa completa', ponto:'terraco', obj:{ equipe:'lia', drinks:8, vezes:3 },
-    antes:[
+    antes:[   // v12.5: a Cami traz a Lia e o Tonhão tem ciúme da cozinha (docs/ARCO.md §2.1)
       { q:'tonhao', e:'insegura', s:'Quatro tempos por mesa, Bia. Sozinho no fogão eu não venço.' },
-      { q:'bia', e:'firme', s:'Então o senhor vai ter ajuda. A Lia, ajudante de cozinha, tá procurando serviço.' },
-      { q:'tonhao', s:'Ajudante na minha cozinha?...' },
+      { q:'bia', e:'firme', s:'Então o senhor vai ter ajuda.' },
+      { q:'cami', e:'alegre', s:'Eu sei quem! A Lia, que cozinhava no meu rodízio. Hoje ela faz curso de alta gastronomia.' },
+      { q:'tonhao', e:'brava', s:'Ajudante na minha cozinha?...' },
       { q:'bia', e:'alegre', s:'Foi o senhor que me ensinou a pedir ajuda, tio.' },
       { q:'dani', s:'E o pessoal daqui gosta de um coquetel antes da entrada!' }],
-    depois:[
-      { q:'bia', e:'alegre', s:'A cozinha tá voando, tio!' },
-      { q:'tonhao', nota:'provando um coquetel', s:'E o balcão de drinks não para.' },
-      { q:'dani', s:'Agora só falta a refeição perfeita.' }] },
+    depois:[   // v12.5: a cena dos temperos (a Lia ganha lugar no Terraço sem gastar a vez da ARCO)
+      { q:'lia', nota:'com os potes na mão', s:'Chef, arrumei os temperos em ordem alfabética.' },
+      { q:'tonhao', e:'brava', s:'O cominho mora do lado do fogão há trinta anos! Volta tudo pro lugar.' },
+      { q:'lia', e:'insegura', s:'Desculpa, chef. No rodízio ninguém sabia onde ficava nada.' },
+      { q:'cami', e:'alegre', s:'Ela arrumou a cozinha inteira do rodízio numa noite, Tonhão. O dono quase chorou.' },
+      { q:'tonhao', s:'Seu Tonhão, Cami. ...E aqui ninguém chora.' },
+      { q:'tonhao', s:'Mas deixa o sal onde ela pôs.' },
+      { q:'bia', e:'alegre', s:'A cozinha tá voando, tio!' }] },
   { cap:11, titulo:'Do começo ao fim', ponto:'terraco', obj:{ completas:6, nota:4.5 },
     antes:[
       { q:'tonhao', s:'Refeição completa é como música: não pode faltar nota.' },
@@ -1395,13 +1414,13 @@ const TESTE_PESSOAS = ['dani', 'joca', 'cami', 'anselmo', 'lia'];
 const TESTE_NOMES = { dani:'Dani', joca:'Joca', cami:'Cami', anselmo:'Anselmo', lia:'Lia' };
 function testeNivel(t){ return pontoOf(DEV_CAPS[clamp(Math.round(+t.cap) || 1, 1, DEV_CAPS.length) - 1].ponto).nivel; }   // o nível do ponto da fase (ou do Desafio)
 function testeTem(q, nv){ return q === 'dani' || (q === 'joca' && nv >= 2) || ((q === 'cami' || q === 'anselmo') && nv >= 3) || (q === 'lia' && nv >= 4); }   // quem a campanha tem no ponto de nível nv
-/* o nível mais alto de cada pessoa no ponto nv e no capítulo cap (0 = não vem ao ponto): o Tonhão e a Dani 4, o Joca 4, a Cami 3 (Avenida), 4 (Terraço) ou 5 (a gerência, do cap. 12), o Anselmo 2 ou 3, a Lia 1 */
+/* o nível mais alto de cada pessoa no ponto nv e no capítulo cap (0 = não vem ao ponto): o Tonhão e a Dani 4, o Joca 4, a Cami 3 (Avenida), 4 (Terraço) ou 5 (a gerência, do cap. 12), o Anselmo 2 ou 3, a Lia 3 (v12.5) */
 function testeNivelMax(q, nv, cap){
   if (!testeTem(q, nv) && q !== 'tonhao') return 0;
   if (q === 'tonhao' || q === 'dani' || q === 'joca') return STAFF[q].levels.length - 1;
   if (q === 'cami') return nv >= 4 ? (cap >= 12 ? STAFF.cami.levels.length - 1 : 4) : 3;
   if (q === 'anselmo') return nv >= 4 ? 3 : 2;
-  return 1;
+  return STAFF.lia.levels.length - 1;   // v12.5: a Lia no nível 3, com os dois cursos
 }
 /* as tarefas que a lojinha mostraria para a pessoa no ponto nv com tudo comprado: a Dani, as de DANI_TASKS; o Joca e a Cami, só as básicas (a máquina vem da jarra ou do curso do Anselmo; o doce, do curso de confeitaria; o espresso, do Joca, tira o cafezinho da Dani) */
 function testeTarefas(q, nv){
@@ -1661,11 +1680,17 @@ const LIBERA = [
             { q:'cami', e:'alegre', s:'Me mostra onde fica tudo que eu dou conta!' },
             { q:'bia', e:'firme', s:'Gostei. Eu acerto na lojinha, em Equipe.' } ] },
   // v10.2, Terraço: a Lia, colega do Tonhão no curso de alta gastronomia, chega depois do básico de um dos cursos dele
-  { id:'lia', nivel:4, dia:1, ate:999, gatilho:(st, av, g) => cursoNivel(g.save.cursos, 'entradas') >= 1 || cursoNivel(g.save.cursos, 'alta') >= 1, reclama:['A comida demorou entre um prato e outro.', 'Cozinha lenta para um terraço.'],
-    falas:[ { q:'tonhao', nota:'secando as mãos no avental', s:'Bia, no curso tinha uma moça que cortava cebola mais rápido que eu.' },
-            { q:'bia', e:'alegre', s:'Mais rápido que o senhor? Essa eu quero conhecer.' },
+  { id:'lia', nivel:4, dia:1, ate:999, gatilho:(st, av, g) => (cursoNivel(g.save.cursos, 'entradas') >= 1 || cursoNivel(g.save.cursos, 'alta') >= 1) && (!histLiga() || g.save.cap >= 10), reclama:['A comida demorou entre um prato e outro.', 'Cozinha lenta para um terraço.'],
+    falas:[ { q:'cami', s:'Chefe, a Lia veio! Tá na porta da cozinha.' },   // v12.5: o teste da cebola (docs/ARCO.md §2.1)
             { q:'lia', e:'firme', s:'Lia. Onde eu guardo as facas?' },
-            { q:'bia', e:'firme', s:'Na cozinha do chef Tonhão. Eu acerto na lojinha, em Equipe.' } ] } ];
+            { q:'tonhao', e:'brava', nota:'na frente da porta', s:'Peraí... Você é a moça do curso. A da cebola.' },
+            { q:'tonhao', e:'brava', s:'Na minha cozinha, não. Aqui cada panela tem dono.' },
+            { q:'bia', e:'firme', s:'Tio, quem contrata sou eu. Faz um teste com ela.' },
+            { q:'tonhao', nota:'pondo uma cebola na tábua', s:'Uma cebola. Do jeito que eu corto.' },
+            { q:'lia', e:'firme', nota:'cortando sem dizer nada', s:'...' },
+            { q:'tonhao', e:'insegura', s:'...Hum. Ficou igual.' },
+            { q:'bia', e:'firme', s:'Bem-vinda, Lia. Eu acerto na lojinha, em Equipe.' },
+            { q:'lia', s:'Obrigada, chefia.' } ] } ];
 function liberaOf(id){ return LIBERA.find(l => l.id === id) || null; }
 /* v11.3 (etapa 8c, docs/ARCO.md §6): as conversas do arco. Cada entrada: { id, nivel (o ponto), quando:(sv, g) => bool, falas }; `g` é o jogo no fim do dia (g.day.n, g.fimDia = { stars, lucro }, g.stats).
    save.arco[id]: 0 (não vista) | 'pend' (toca no próximo fim de dia) | 1 (vista). Só no Modo História: a 1ª da lista, do nível do ponto, com valor 0 e `quando` verdadeiro vira 'pend', uma por fim de dia */
@@ -1748,12 +1773,21 @@ const ARCO = [
             { q:'tonhao', e:'insegura', s:'Vinte anos naquela cozinha, Bia. E saí sem levar nem o meu nome.' },
             { q:'bia', e:'firme', s:'O senhor trouxe o que importava: a mão. O nome a gente faz aqui.' },
             { q:'tonhao', e:'alegre', nota:'fechando a cortina', s:'...Então vamos trabalhar, que nome não se faz sozinho.' } ] },
-  { id:'liaPerfeita', nivel:4, quando:(sv, g) => sv.equipe.lia > 0 && !sv.equipe.liaFora,
+  { id:'liaPerfeita', nivel:4, quando:(sv, g) => sv.equipe.lia > 0 && !sv.equipe.liaFora && sv.cap >= 11,   // v12.5: depois da cena dos temperos (cap. 10, depois)
     falas:[ { q:'tonhao', s:'Lia, a mesa quatro tá esperando a entrada faz tempo!' },
             { q:'lia', e:'insegura', s:'Refiz três vezes, chef. O corte não ficou igual.' },
             { q:'tonhao', e:'firme', s:'Prato perfeito e frio não serve pra ninguém. Capricho tem hora, e a hora é a do freguês.' },
+            { q:'cami', nota:'pegando o prato', s:'Li, a mesa não quer perfeito, quer quente. Nem lá no rodízio, nem aqui.' },
             { q:'lia', e:'firme', s:'Entendido. Sai agora.' },
             { q:'bia', e:'alegre', s:'Tá ensinando bonito, tio.' } ] },
+  { id:'liaRosa', nivel:4, quando:(sv, g) => sv.arco.liaPerfeita === 1 && sv.cap >= 11 && sv.equipe.lia > 0,   // v12.5: abre o curso Chefe de praça
+    falas:[ { q:'tonhao', nota:'olhando a Lia na tábua', s:'Bia, sabe quem refazia prato três vezes? A sua mãe.' },
+            { q:'bia', s:'A mãe?' },
+            { q:'tonhao', e:'alegre', s:'Até aprender que prato tem hora. Aí ninguém segurava ela.' },
+            { q:'tonhao', e:'firme', s:'Lia, a boca da esquerda é sua. As entradas são suas.' },
+            { q:'lia', e:'insegura', s:'O senhor disse que cada panela tinha dono.' },
+            { q:'tonhao', e:'firme', s:'E tem. Essa agora é sua. Essa cozinha nunca foi só minha.' },
+            { q:'bia', e:'firme', s:'Então o curso dela tá na lojinha, em Equipe.' } ] },
   { id:'anselmoRi', nivel:4, quando:(sv, g) => !!sv.anselmoCursos.autor,
     falas:[ { q:'anselmo', e:'alegre', nota:'rindo alto atrás do balcão', s:'Opa... desculpa o barulho.' },
             { q:'bia', s:'Desculpa por quê?' },
@@ -1768,7 +1802,15 @@ const ARCO = [
     falas:[ { q:'tonhao', nota:'com a pétala na palma da mão', s:'Lia, hoje quem põe a pétala é você.' },
             { q:'lia', e:'insegura', s:'Eu, chef? Esse prato é da sua família.' },
             { q:'tonhao', e:'firme', s:'Por isso mesmo. Receita que fica numa mão só some. Eu já vi isso acontecer.' },
-            { q:'lia', e:'firme', nota:'pondo a pétala', s:'...Na hora. Como a Rosa.' } ] },
+            { q:'lia', e:'firme', nota:'pondo a pétala', s:'...Na hora. Como a Rosa.' },
+            { q:'bia', e:'firme', s:'E o próximo prato da casa é seu, Lia. O curso tá no Cardápio da lojinha.' } ] },
+  { id:'liaChef', nivel:4, quando:(sv, g) => sv.liaPrato >= 1 && sv.arco.liaPetala === 1,   // v12.5: o 1º risoto vendido; a Lia vira "chef"
+    falas:[ { q:'cami', e:'alegre', s:'Li, a mesa da janela quer conhecer quem fez o prato.' },
+            { q:'lia', e:'insegura', s:'Eu? Fala que foi o chef.' },
+            { q:'tonhao', e:'firme', s:'Chef é quem a mesa chama. Vai lá, chef.' },
+            { q:'lia', s:'...Obrigada, Antônio.' },
+            { q:'lia', e:'firme', s:'José Carlos, Daniela: segurem a cozinha pra mim.' },
+            { q:'bia', e:'alegre', s:'Vai, Lia. O salão é da Cami, mas essa mesa é sua.' } ] },
   { id:'roda', nivel:4, quando:(sv, g) => sv.cap === 14,
     falas:[ { q:'bia', e:'firme', s:'Antes da noite da estrela, eu quero dizer uma coisa a vocês.' },
             { q:'bia', s:'Eu comecei numa garagem, com medo de abrir o portão.' },
@@ -1786,7 +1828,7 @@ const HIST_NOMES = { bia:'Bia', tonhao:'Tonhão', dani:'Dani', joca:'Joca', cami
 const ATU_TXT = { procurando:'Procurando versão nova...', nova:'Tem versão nova: {v}! Seu jogo salvo continua.', igual:'Você já está na versão mais nova ({v}).', erro:'Sem internet agora. Tente de novo mais tarde.', atualizando:'Atualizando...' };
 function atuEstado(remota, atual){ if (typeof remota !== 'string' || !remota.trim()) return 'erro'; return remota.trim() === atual ? 'igual' : 'nova'; }
 const CAIXA_MAX = 14;                                 // livro-caixa (v7.2): quantos dias da carreira ficam guardados
-const VERSAO = 'v12.4.3';                               // vai no resumo do Caixa
+const VERSAO = 'v12.5';                                 // vai no resumo do Caixa
 const DIVULGA_DIA = 4;                                // antes disso, o movimento é o da inauguração (sem custo); v9.0.2: dia 4, e o padrão é o boca a boca
 function divulgaAberta(n, sv){ return devLivre() || n >= DIVULGA_DIA && !(sv && sv.convDiv === 'pend'); }   // no modo dev, desde o dia 1; v9.0.3: no Modo História, só depois da conversa
 /* v9.6.4: a Efood (os entregadores) só abre depois da conversa dos entregadores, no Modo História; antes dela, nenhum tipo com `retira` vem na agenda */
@@ -1963,7 +2005,7 @@ const MANUAL = [
   { id:'e-joca',    aba:'equipe', quem:'joca',    nome:'Joca', linha:'O básico da casa; depois, o café espresso e os cafés especiais. Na Avenida, a freguesia quer café de máquina.' },
   { id:'e-cami',    aba:'equipe', quem:'cami',    nome:'Cami', linha:'Garçonete de rodízio: com cursos, cuida das mesas dela ou ajuda em todas.' },
   { id:'e-anselmo', aba:'equipe', quem:'anselmo', nome:'Anselmo', linha:'Coqueteleiro: só o balcão de drinks; no Terraço, coquetéis de autor.' },
-  { id:'e-lia',     aba:'equipe', quem:'lia',     nome:'Lia', linha:'Ajudante de cozinha: com ela, tudo sai mais rápido.' },   // v10.2
+  { id:'e-lia',     aba:'equipe', quem:'lia',     nome:'Lia', linha:'Cozinheira: começa no pré-preparo; com cursos, cuida das entradas e cria um prato dela.' },   // v10.2; v12.5
 
   { id:'l-tenis',      aba:'lojinha', nome:'Tênis novos', linha:'A Bia anda mais rápido.' },
   { id:'l-corrida',    aba:'lojinha', nome:'Tênis de corrida', linha:'A Bia anda bem mais rápido.' },
