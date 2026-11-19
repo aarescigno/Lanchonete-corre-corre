@@ -4,6 +4,23 @@ Registro das ideias e dos retornos de quem jogou, com o texto original, e de ond
 
 ---
 
+## 19/11 — usuário: um arco de verdade para a Lia, o tratamento entre as personagens e a revisão das conversas
+> "Que eu me lembro, a gente tinha combinado de entrar uma pessoa nova por etapa do jogo [...]"
+> "Ah, eu acho importante. Senão ela [a Lia] fica ruim, né? Ela pode ser um ciclo mais curto [...] ela pode ter algum desenvolvimento de curso para ela, de desenvolvimento de história, e ela pode ter uma relação com alguma outra pessoa. [...] pode ter uma indicação da Cami, ou ela pode conhecer outras pessoas do grupo."
+> "Eu gostei dessa ideia de misturar a 1 com a 3. Isso faz com que tenha o ciúme, né, uma parte mais intensa por parte do Tonhão, e a indicação da Cami"
+> "Não sei se a Cami tem a intimidade de chamar o Tonhão de tio, achei esquisito ali. Preciso do perfil psicológico de cada personagem para poder avaliar"
+> "gostei dos perfis, mas não gostei de todo mundo chamando a Bia de chefe. Cada um deve chamá-la de uma forma que lhe seja peculiar. E chamarem-se entre si de formas que sejam condizentes com seus perfis."
+> "Lia chama bia de Beatriz. A Cami pode chamar de chefe mesmo. Lia chama as pessoas pela sua praça e depois do liaChef por seus nomes: Beatriz, Antônio, Daniela, José Carlos, Anselmo e Camila"
+> "pode registrar e escrever a spec. Depois revise todas as conversas com base nos perfis das personagens pra ver se elas estão encaixando bem. E, depois, veja se o tamanho dos arcos de cada personagem estão proporcionais ao tempo delas dentro da equipe"
+
+**Lembrete (respondido na conversa):** a ideia de "uma pessoa por ponto" (entrevista de 31/10: Dani, Joca, Anselmo, Cami) mudou na mesma noite: a Cami foi para a Avenida, junto com o Anselmo, e o Terraço ganhou a Lia (4a-3).
+
+**Decidido na entrevista (mistura das propostas 1 e 3, "Na minha cozinha, não"):** a Cami indica a Lia, colega dela do rodízio; o Tonhão tem ciúme da cozinha ("Na minha cozinha, não"), a Bia decide e ele faz a prova da cebola; a virada (`liaRosa`) é ele ver a Rosa nela e dar a ela uma boca do fogão; dois cursos: Chefe de praça (R$ 700; as entradas são dela) e Cozinha de autor (R$ 1.000; o Risoto de feijão-manteiguinha); diária 80 → 100 → 120; no nível 1 ela ajuda menos que hoje (15%, o ciúme pesa no jogo). Os perfis psicológicos e a tabela de tratamento (quem chama quem de quê) entram no `docs/ARCO.md` (§2.1 e §2.2).
+
+**Destino:** etapa 15 do `docs/PLANO.md`: 15a, o arco da Lia (v12.5, `docs/spec-v12.5.md`); 15b, o tratamento e a revisão das conversas pelos perfis (v12.6, `docs/spec-v12.6.md`), as duas aprovadas em 19/11. Na 2ª entrevista: o risoto a R$ 58 e bege dourado; a cena dos temperos no cap. 10 `depois` (a Lia com 4 entradas no arco, para a `liaChef` caber antes do fim); os fregueses da `camiNome`, dona Lurdes e seu Jorge.
+
+---
+
 ## 17/11 — usuário: semente fixa nos Desafios
 > "Os desafios devem ter semente padrão também, não acha? Fica mais fácil de se comparar dessa forma, faça Spec disso também"
 

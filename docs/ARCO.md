@@ -25,6 +25,28 @@ Notação das falas: `quem [expressão] (nota): texto`. A expressão vira o camp
 | **Anselmo** | Encolhido pelos gritos do Bráulio, pede desculpa por tudo | Quebra um copo e espera o grito | Diz "eu fico" na cara do Bráulio; volta a rir no serviço |
 | **Lia** | Seca, técnica, perfeccionista | Refaz o prato três vezes e atrasa a mesa | O Tonhão entrega a ela a pétala do Prato da Rosa |
 
+### 2.1 Os perfis (19/11; base de toda fala nova ou reescrita)
+- **Bia** (garçonete e dona): sobrinha do Tonhão e filha da Rosa, que já morreu; a foto da mãe fica no balcão. Medo de errar e decepcionar a mãe e o tio; quer provar que dá conta e devolver o molho da mãe ao lugar dele. A voz muda de ponto em ponto (§3).
+- **Tonhão** (o chef): cozinhava com a Rosa na Casa Aurora até o Bráulio ficar com a casa e com a fama do molho. Medo de perder de novo (dói mexer no molho e encarar o Bráulio); quer proteger a sobrinha e, no fundo, recuperar o que foi da Rosa. Fala por ditados de cozinha ("Panela no fogo, avental no lugar"), bronqueia rápido e se emociona escondido. A cozinha é o último lugar onde ainda manda: daí o ciúme quando chega a Lia.
+- **Dani** (Daniela; ajudante e confeiteira): filha da vizinha, cresceu perto da Bia. Medo de ser "meio lenta" e de quebrar as coisas; quer fazer doce, o que faz desde pequena. Animada, de bom coração, ri de si mesma.
+- **Joca** (José Carlos; o básico, depois barista): colega de colégio da Dani. Medo de ser "só o da louça"; quer ser visto pelo nome. Fala pouco, frases curtas; ganha confiança.
+- **Cami** (Camila; garçonete, depois gerente de salão): foi garçonete de rodízio; conheceu o Joca no curso de barista e a Lia no rodízio. Medo de ficar parada (mesa é número); quer dar conta de tudo. Rápida, alegre, de bordão ("Girou, serviu, próxima!", "Anotado, chefe!"). Trata todo mundo como velho conhecido.
+- **Anselmo** (coqueteleiro): fazia os drinks do Bráulio; saiu pelos gritos e foi achado pelo Tonhão na feira. Medo do grito; pede desculpa por tudo. Quer um balcão para criar em paz. Fala com cuidado ("Com licença...", "por favor").
+- **Lia** (cozinheira; uns 30 anos, lenço amarelo-mostarda): cozinhava no rodízio onde a Cami trabalhava, onde nada saía direito, e foi estudar alta gastronomia (no curso, o Tonhão a viu cortar cebola mais rápido que ele). Medo de errar: jurou nunca mais servir "de qualquer jeito". Quer uma cozinha séria, que respeite o trabalho dela. Seca, frases curtas e técnicas; quase não sorri.
+
+### 2.2 Como cada um chama cada um (19/11)
+| Quem fala | A Bia | O Tonhão | Os outros |
+|---|---|---|---|
+| **Bia** | — | "tio" | pelo nome |
+| **Tonhão** | "Bia", "menina" no carinho; "chefe" só no fim (cap. 14, a conquista dela) | — | "Dani", "rapaz" (Joca), "moça" e depois "Cami", "Anselmo", "Lia" (e "chef" a partir da `liaChef`) |
+| **Dani** | "Bi" | "tio Tonhão" (cresceu na vizinhança) | "Joquinha" (do colégio); os outros pelo nome |
+| **Joca** | "dona Bia"; "Bia" depois da `jocaNome` | "seu Tonhão" | pelo nome |
+| **Cami** | "chefe" | "Tonhão", sem "seu" (ele pode resmungar "Seu Tonhão, moça") | "barista" (Joca), "Li" (Lia); os outros pelo nome |
+| **Anselmo** | "senhora" ("sim, senhora"); "Bia" depois da `anselmoRi` | "seu Antônio" (o único que usa o nome de batismo) | pelo nome, com "por favor" e "com licença" |
+| **Lia** | "chefia"; "Beatriz" depois da `liaChef` | "chef"; "Antônio" depois da `liaChef` | pela praça ("confeitaria", "café", "bar") e, depois da `liaChef`, pelo nome inteiro: Daniela, José Carlos, Anselmo. A Cami é "Camila" desde o começo (amiga antiga) |
+
+Os nomes inteiros (Daniela, José Carlos, Camila, Antônio, Beatriz) só aparecem na boca da Lia. A troca de tratamento marca a conquista de quem muda (Joca, Anselmo, Lia) e não acontece antes da conversa indicada.
+
 ## 3. A voz da Bia, fase a fase (vale para toda fala nova ou reescrita)
 | Ponto | Como fala | O que não faz mais |
 |---|---|---|
