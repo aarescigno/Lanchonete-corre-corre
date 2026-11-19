@@ -14,6 +14,16 @@ function drawTouchFx(ctx,g){
 }
 
 /* o mundo (salão, calçada, gente e efeitos) começa em g.cam na tela larga (v7.6); o HUD fica na tela */
+/* v12.4.2: o letreiro do eFood quando chega um entregador: faixa laranja no quarto de cima do salão (y 96 a 200),
+   que acende e apaga (sin) em ENTREGA_CHEGA.letreiro s; com movimento reduzido, fica parada em 0,9 */
+function efoodFlashA(f){ return RM ? 0.9 : Math.sin(Math.PI * clamp(f.life / f.max, 0, 1)); }
+function drawEfoodFlash(ctx,g){
+  const f = g.fx.find(e => e.k === 'efood'); if (!f) return;
+  ctx.save(); ctx.globalAlpha = efoodFlashA(f);
+  rr(ctx,24,96,TW - 48,104,22); ctx.fillStyle = EFOOD_COR; ctx.fill(); ctx.lineWidth = 5; ctx.strokeStyle = '#fff'; ctx.stroke();
+  txt(ctx,'eFood',TW/2,150,84,'#fff','center',FD,6);
+  ctx.restore();
+}
 function render(g, ctx){
   COMIDA_CURSOS = g.cursos;   // v8.6.10: os pratos do curso avançado ganham o detalhe
   const tm = g.anim;
@@ -182,6 +192,7 @@ function render(g, ctx){
       txt(ctx,msg,TW/2,275,46,PAL.mostarda,'center',FD,7);
     }
     if (g.treino && g.mode === 'treino') drawTreino(ctx,g,tm);
+    drawEfoodFlash(ctx,g);   // v12.4.2
     if (g.dica && g.state === 'playing') drawDica(ctx,g,tm);   // v9.6.12: a dica na hora (dias 1 a 3 da carreira)
   }
   ctx.restore();

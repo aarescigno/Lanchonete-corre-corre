@@ -90,7 +90,7 @@ const falso=(resp,calls)=>(url,o)=>{ calls.push([url,o]); return resp==='erro' ?
   g.save=L.normSave({dia:8,maxDay:8,bank:5000,salao:{ponto:'industrial'}}); g.up=g.save.up; g.buildTables(); g.startDay(8); g.begin(); g.schedule=[]; g.nextIdx=0;
   const e=g.spawn({ type:'entregador', color:0, vip:false }); L.Sfx.buzina=b0; L.Sfx.tone=t0;
   ok(chamadas.indexOf('buzina')>=0 && !chamadas.some(c=>c==='tone784'||c==='tone1046'),'CA10: a chegada toca a buzina e não os bipes antigos ('+chamadas+')');
-  const gl=g.fx.filter(f=>f.k==='glow' && f.key===e); ok(gl.length===1 && gl[0].max===1.2 && L.ENTREGA_CHEGA.brilho===1.2,'CA10: o grupo ganha um brilho de 1,2 s');
+  const gl=g.fx.filter(f=>f.k==='efood'); ok(gl.length===1 && gl[0].max===0.8 && L.ENTREGA_CHEGA.brilho===1.2,'CA10: a chegada acende o letreiro do eFood (v12.4.2: no lugar do brilho)');
   g.addGlow('maquina'); ok(g.fx.find(f=>f.k==='glow' && f.key==='maquina').max===0.4,'CA10: o addGlow sem o 2º parâmetro continua com 0,4');
   const sons=[]; L.Sfx.tone=function(f,d,t,v,dl){ sons.push([f,t]); }; L.Sfx.buzina(); L.Sfx.tone=t0; ok(true,'CA10: Sfx.buzina existe e roda');
   g.setDev(true); const n0=g.retirada.length; ok(g.devEntregador()===true && g.retirada.length===n0+1,'CA10: devEntregador() põe um entregador na fila de retirada');
