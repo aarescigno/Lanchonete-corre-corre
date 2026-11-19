@@ -50,6 +50,12 @@ Capítulo 12: o Tonhão conta o segredo da Casa Aurora. A Bia aprende o molho e 
 
 **Modelo:** Sonnet, esforço alto (muitas partes ao mesmo tempo, com calibração por receita).
 
+## Etapa 15 — A Lia de verdade e as vozes da equipe (15a, v12.5; 15b, v12.6)
+Pedido do usuário em 19/11 (`docs/PROPOSTAS.md`): a Lia ganha um arco curto (a Cami indica, o Tonhão tem ciúme da cozinha, dois cursos e o prato dela), e cada personagem passa a tratar os outros do seu jeito (perfis e tabela de tratamento no `docs/ARCO.md` §2.1 e §2.2), com a revisão de todas as conversas pelos perfis e a conquista da Cami em cena.
+- **15a** — `docs/spec-v12.5.md`. **Modelo:** Sonnet, esforço alto (código de jogo em várias partes, a cozinha com uma vaga nova e calibração por tentativa)
+- **15a-1 (correção)** — `docs/spec-v12.6.1.md`, antes da 15b: no Terraço, a mesinha das marmitas que sobrou vira um aparador de luxo com o vaso das rosas em cima, e somem as marquinhas das vagas (conversa de 19/11). **Modelo:** Sonnet, esforço médio (desenho no canvas com o plano fechado)
+- **15b** — `docs/spec-v12.6.md` (feita em 19/11, v12.6). **Modelo:** Sonnet, esforço médio (só texto e uma conversa nova, em muitas listas)
+
 ## Etapa 6 — Modo História: o crítico do Michelzão e o final (v10.8 a v11)
 > Planejada em 13/11 (decisões do usuário no `docs/PROPOSTAS.md`): quatro sessões, uma versão cada, todas com spec aprovada. O guia é o **Michelzão**, inventado: nada de nome, logo, mascote ou arte de guia real.
 
@@ -163,6 +169,7 @@ A cena final animada (oito cenas, no motor da abertura), os créditos, a placa n
 | 10b | O final novo: as cenas 4, 5 e 6 | v11.17 | feita em 17/11 (`docs/spec-v11.17.md`; `smoke93`; as cenas `retrato`, `equipe` e `escola` em `src/28-final.js` e o `ab2RuaCasa` de dia; só pelo modo dev) |
 | 12 | A 3ª estrela do Michelzão ao alcance | v11.19 | feita em 17/11 (`docs/spec-v11.19.md`; `smoke96`; `NOITE.cortes` passou de `[44, 66, 90]` para `[44, 66, 75]`: o bot afiado leva a 3ª estrela em 37,5% das carreiras) |
 | 14c | Desafios com os mesmos clientes para todos | v12.3 | feita em 17/11 (`docs/spec-v12.3.md`; `smoke100`; a `semente` em cada `DESAFIOS`, o "Copiar relatório" no fim do desafio (modo dev), as tentativas `d-<id>`, `DEV.forca` desligado no Desafio; sementes calibradas, a do eFood com a faixa ampliada) |
+| 14d | O Teste com o máximo de cada ponto e a equipe do jeito que quiser | v12.4 | feita em 18/11 (`docs/spec-v12.4.md`; `smoke103`; `maxDoPonto`, a tela da fase `#ov-teste-fase`, o relatório `LCC-TESTE 3` com a linha `Equipe:`, os Desafios recalibrados: jogo meta 1,75 e crítico 1,07) |
 
 ## Etapa 1a — Jogo justo: dá para não perder ninguém (v7.1)
 > **Feita em 15/10 (v7.1, `docs/spec-v7.1.md`).** Decisões: A + B; no Turno sem fim vale o ritmo da fila justa, sem o piso; ícone "aguardando mesa" sim. A medição mostrou que, com a equipe, a maior parte das perdas era a espera pelo prato, e não a fila. O que sobra é o limite de louça nos dias de 6 mesas: o bot afiado só chega ao alvo (0 perdidos em 94% dos dias) comprando o Jogo de pratos primeiro. A louça não mudou; se jogadores reclamarem da espera pelo prato, a etapa 1b pode rever `dishStock` ou a mecânica D. Metas sem mudança.

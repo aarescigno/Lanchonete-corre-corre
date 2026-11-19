@@ -1660,12 +1660,20 @@ function drawFumaca(ctx,t){
 function drawMesinha(ctx,g,t){
   const r = STATIONS.marmj.rect, x = r.x, y = r.y, w = r.w, h = r.h;
   shadowEll(ctx,x + w/2,y + h + 3,w/2 + 4,6,0.2);
+  if (terraco(g)){   // v12.6.1: no Terraço o móvel é um aparador de nogueira com friso e puxador dourados, e o vaso de flores em cima
+    rr(ctx,x + 6,y + h - 18,3,18,1); fs(ctx,'#2A1A10',1.2); rr(ctx,x + w - 9,y + h - 18,3,18,1); fs(ctx,'#2A1A10',1.2);
+    rr(ctx,x,y,w,h - 14,4); fs(ctx,'#3B2416',2);
+    ctx.strokeStyle = TE_OURO; ctx.lineWidth = 1.3; ctx.strokeRect(x + 3,y + 3,w - 6,h - 14 - 6);
+    circ(ctx,x + w/2,y + (h - 14)/2,2.2); ctx.fillStyle = TE_OURO_CL; ctx.fill();
+    ctx.fillStyle = 'rgba(255,255,255,.12)'; ctx.fillRect(x + 3,y + 3,w - 6,2);
+  } else {
   rr(ctx,x + 4,y + h - 14,6,16,2); fs(ctx,PAL.madeiraEsc,1.6); rr(ctx,x + w - 10,y + h - 14,6,16,2); fs(ctx,PAL.madeiraEsc,1.6);
   rr(ctx,x,y,w,h - 6,7); fs(ctx,PAL.madeira,2.6);
   ctx.fillStyle = 'rgba(255,255,255,.18)'; ctx.fillRect(x + 4,y + 4,w - 8,3);
   ctx.strokeStyle = 'rgba(138,82,38,.55)'; ctx.lineWidth = 1.2; ctx.beginPath();
   for (let i = 1; i < 4; i++){ const yy = y + (h - 6) * i / 4; ctx.moveTo(x + 5,yy); ctx.lineTo(x + w - 5,yy); }
   ctx.stroke();
+  }
   if (terraco(g)){   // v10: no Terraço não há marmitas nem estação: o móvel é um aparador com um vaso de flores em cima
     const cx = x + w / 2, by = y + 4;
     ctx.strokeStyle = '#3E7B4F'; ctx.lineWidth = 2; ctx.lineCap = 'round';
@@ -1937,7 +1945,7 @@ function drawKitchen(ctx,g,t){
     });
   }
   // v9.6.5: a fileira própria das marmitas (acima dos pratos): a do entregador com o selo da Efood; a sem dono com o anel da validade
-  for (let i=0;i<MARMJ_SLOTS.length;i++){
+  for (let i=0;i<MARMJ_SLOTS.length && !terraco(g);i++){   // v12.6.1: no Terraço não há marmita a desenhar
     const s = MARMJ_SLOTS[i], p = g.kitchen.marmJ[i];
     ell(ctx,s.x,s.y+3,12,6); ctx.fillStyle = 'rgba(34,32,28,.12)'; ctx.fill();
     if (p) glowSprite(ctx,g,p,ctx => {

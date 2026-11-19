@@ -1,6 +1,6 @@
-# v12.5.1 — O Terraço sem a mesinha das marmitas (etapa correção)
+# v12.6.1 — O Terraço sem a mesinha das marmitas (etapa correção)
 
-**Situação:** aprovada
+**Situação:** entregue em 19/11
 **Origem:** conversa de 19/11: "Eu acho que não faz sentido ter Ifood no terraço" e "A mesa de marmitas está lá sobrando..., põe no plano para corrigir". O Terraço já não tem entregador nem eFood desde a v10 (`semRetirada`), mas o canto ao lado da cozinha ainda mostra a mesinha listrada das marmitas, com as 3 marquinhas cinza das vagas. O usuário escolheu trocar a mesa por um aparador de luxo, mantendo o vaso (o das rosas) em cima.
 
 ## Objetivo
@@ -22,12 +22,12 @@ No Terraço Suíça não sobra nada da marmita: o canto ao lado da cozinha vira 
 - As marquinhas das vagas (o laço de `MARMJ_SLOTS` em `drawKitchen`, `src/21-cenario.js`, a elipse `rgba(34,32,28,.12)`): com `terraco(g)`, o laço inteiro não roda (lá não há marmita a desenhar).
 - **Modo dev:** nada novo (o "Ir para o ponto" do Terraço já mostra o canto).
 - **Manual e save:** nada.
-- **Versão:** `VERSAO` e `vtag` em v12.5.1; linha no `#ov-ver`: **"No Terraço, a mesinha das marmitas vira um aparador com o vaso de flores."**
+- **Versão:** `VERSAO` e `vtag` em v12.6.1; linha no `#ov-ver`: **"No Terraço, a mesinha das marmitas vira um aparador com o vaso de flores."**
 
 ## Critérios de aceite
-- **CA1** No Terraço, `drawMesinha` não pinta com `PAL.madeira` e pinta com `#3B2416` e `TE_OURO` → `smoke107` (1)
-- **CA2** No Terraço, `drawKitchen` não pinta a elipse `rgba(34,32,28,.12)` das vagas → `smoke107` (2)
-- **CA3** Na Garagem, na área industrial e na Avenida, a mesinha continua com `PAL.madeira` e as 3 elipses das vagas → `smoke107` (3)
+- **CA1** No Terraço, `drawMesinha` não pinta com `PAL.madeira` e pinta com `#3B2416` e `TE_OURO` → `smoke108` (1)
+- **CA2** No Terraço, `drawKitchen` não pinta a elipse `rgba(34,32,28,.12)` das vagas → `smoke108` (2)
+- **CA3** Na Garagem, na área industrial e na Avenida, a mesinha continua com `PAL.madeira` e as 3 elipses das vagas → `smoke108` (3)
 - **CA4** O aparador e o vaso no lugar, sem nada da mesa → captura do Terraço (recorte x 660 a 760, y 60 a 210, ampliado): conferir e apagar
 
 ## Partes
@@ -35,23 +35,27 @@ No Terraço Suíça não sobra nada da marmita: o canto ao lado da cozinha vira 
 - `src/10-constantes.js` e `src/02-telas.html`: `VERSAO`, `vtag`, `#ov-ver`.
 
 ## Tarefas
-- [ ] T1 `smoke107` com CA1 a CA3 (falhando), com o `ctx` de mentira do `smoke105` (Proxy que grava `fillStyle`, `strokeStyle` e as chamadas), chamando `drawMesinha` e `drawKitchen` com o ponto de cada lugar.
-- [ ] T2 O aparador no `drawMesinha` e o laço das vagas pulado no Terraço.
-- [ ] T3 Captura do Terraço (CA4), olhar o recorte e apagar.
-- [ ] Fechamento: `VERSAO`, `vtag`, `#ov-ver` (`smoke86`, `menu_fit.py`: a contagem de linhas do painel de Versões), `docs/RESUMO.md`, esta spec como entregue, `tests/run_all.sh` verde, PR e merge.
+- [x] T1 `smoke108` com CA1 a CA3 (falhando), com o `ctx` de mentira do `smoke105` (Proxy que grava `fillStyle`, `strokeStyle` e as chamadas), chamando `drawMesinha` e `drawKitchen` com o ponto de cada lugar.
+- [x] T2 O aparador no `drawMesinha` e o laço das vagas pulado no Terraço.
+- [x] T3 Captura do Terraço (CA4), olhar o recorte e apagar.
+- [x] Fechamento: `VERSAO`, `vtag`, `#ov-ver` (`smoke86`, `menu_fit.py`: a contagem de linhas do painel de Versões), `docs/RESUMO.md`, esta spec como entregue, `tests/run_all.sh` verde, PR e merge.
 
 ## Avisos para a execução
 - O vaso das rosas usa o mesmo `rect` da mesinha (`ROSA.vaso`): mexa só no móvel de baixo, não no bloco do vaso.
 - Se `drawMesinha` e `drawKitchen` não estiverem em `window.__lcc`, o smoke pode pegá-las do `game.js` gerado, como os outros smokes de desenho.
 
 ## Testes
-- `smoke107` novo, no `run_all.sh`.
+- `smoke108` novo, no `run_all.sh`.
 - `smoke86` e `menu_fit.py`: uma linha a mais no painel de Versões.
 
 ## Decisões em aberto
 Nenhuma.
 
 ## Desvios
-(No fechamento.)
+- **Número da versão e do smoke:** a spec nasceu como v12.5.1 e `smoke107`; como a v12.6 já tinha saído (e o `smoke107` era dela), saiu como **v12.6.1** e **`smoke108`** (decisão do usuário em 19/11). A spec foi renomeada e a linha 15a-1 do PLANO acompanhou.
+- **Vagas das marmitas:** a spec fala em "as 3 elipses"; na Garagem e no Terraço o `MARMJ_SLOTS` tem só 2 vagas (`marmJSlotsFor`), e nos outros pontos 3. O CA3 do `smoke108` confere uma elipse por vaga (2 na Garagem, 3 na área industrial e na Avenida).
+- **`window.__lcc`:** passou a expor `drawMesinha`, `drawKitchen`, `TE_OURO` e `MARMJ_SLOTS` (`src/43-telas.js`), para o smoke chamar o desenho.
+- **Painel Versões:** 24 linhas (a v12.6.1 entra como "versão atual"); `smoke86` e `menu_fit.py` ajustados.
+- **Medido:** `smoke108` 9 checagens; CA4 conferido na captura do Terraço (aparador de nogueira com friso e puxador dourados, pés finos, vaso e rosas em cima, sem listras e sem vagas); captura apagada.
 
 **Modelo:** Sonnet, esforço médio (desenho no canvas com o plano fechado e um smoke pequeno)
