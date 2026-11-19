@@ -98,7 +98,7 @@ const R=Math.random;
   ok(comDani.slice(0,4).map(f=>f.s).join('|')===semDani.slice(0,4).map(f=>f.s).join('|') && comDani.length===5 && comDani[0].s==='Tio, hoje de novo: um monte de mesa pediu sobremesa.','o texto é o mesmo (5 falas, a 1ª da Bia), salvo a última, que cita a Dani (v11.2: s2)');
   const cafe=L.vontadeFalas('cafe',{ equipe:{ tonhao:2, dani:2, joca:0 } });
   ok(cafe.every(f=>f.q!=='joca') && cafe.some(f=>f.q==='tonhao' && f.s==='No café da esquina tem fila pra cappuccino!'),'sem o Joca, as falas dele vão para o Tonhão');
-  ok(L.vontadeFalas('doce',{ equipe:{ dani:2 } },true).length===1 && L.vontadeFalas('doce',{ equipe:{ dani:2 } },true)[0].s==='Pediram sobremesa de novo hoje, Bia...','a fala curta tem uma linha'); }
+  ok(L.vontadeFalas('doce',{ equipe:{ dani:2 } },true).length===1 && L.vontadeFalas('doce',{ equipe:{ dani:2 } },true)[0].s==='Pediram sobremesa de novo hoje, Bi...','a fala curta tem uma linha'); }
 
 // ---------- 9. o modo dev ----------
 { const H=nova(), {g,L}=H; g.save=L.normSave({ histV:1, capV:2, cap:2, dia:3, bank:500, salao:{ ponto:'garagem' } });

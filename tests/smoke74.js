@@ -115,7 +115,7 @@ const fecha=(H,ficha)=>{ const {g}=H; g.schedule=[]; g.nextIdx=0; g.money=3000; 
   const H2=dia1({ guia:GUIA(0,70) }); comeca(H2); fecha(H2); H2.g.setState('dayend'); ok(txt(H2.doc.getElementById('end-critico')).trim()==='','sem visita, o cartão não aparece');
   // a conversa da 1ª visita: pendente, toca uma vez, antes dos resultados
   ok(g.save.convCrit==='pend','depois da 1ª visita, a conversa fica pendente');
-  ok(L.HIST_CRITICO.falas.length===3 && L.HIST_CRITICO.falas[0].q==='dani' && L.HIST_CRITICO.falas[0].s==='Bia! Aquele freguês sozinho... ele tinha um caderninho!' && L.HIST_CRITICO.falas[2].s==='Era ele. E deixou a ficha da visita. Olha aí.','HIST_CRITICO: as três falas da spec');
+  ok(L.HIST_CRITICO.falas.length===3 && L.HIST_CRITICO.falas[0].q==='dani' && L.HIST_CRITICO.falas[0].s==='Bi! Aquele freguês sozinho... ele tinha um caderninho!' && L.HIST_CRITICO.falas[2].s==='Era ele. E deixou a ficha da visita. Olha aí.','HIST_CRITICO: as três falas da spec');
   let fim=0; L.fluxoHistoria(()=>{ fim++; }); ok(g.conversa && g.conversa.falas===L.HIST_CRITICO.falas && fim===0,'o fim do dia toca a conversa antes de seguir'); passa(g);
   ok(g.save.convCrit===1 && fim===1,'e marca como vista'); let fim2=0; L.fluxoHistoria(()=>{ fim2++; }); const outra=!!g.conversa && g.conversa.falas===L.HIST_CRITICO.falas; passa(g); ok(!outra && g.save.convCrit===1,'não toca de novo');
   // a 2ª visita não tem conversa

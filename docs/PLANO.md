@@ -16,11 +16,10 @@ Origem: retorno do Renan Martorelli (beta-tester) e conversa com o Arthur (15/10
 | # | Etapa | Versão | Situação |
 |---|---|---|---|
 | 5 | ~~Modo História, parte 1~~: juntou-se à 2f e aos capítulos da 3a, 3b e 4a (28/10) | — | — |
-| 14c | Desafios com os mesmos clientes para todos | v12.3 | feita em 17/11 (`docs/spec-v12.3.md`; `smoke100`; a `semente` em cada `DESAFIOS`, o "Copiar relatório" no fim do desafio (modo dev), as tentativas `d-<id>`, `DEV.forca` desligado no Desafio; sementes calibradas, a do eFood com a faixa ampliada) |
 | 14d | O Teste com o máximo de cada ponto e a equipe do jeito que quiser | v12.4 | feita em 18/11 (`docs/spec-v12.4.md`; `smoke103`; `maxDoPonto`, a tela da fase `#ov-teste-fase`, o relatório `LCC-TESTE 3` com a linha `Equipe:`, os Desafios recalibrados: jogo meta 1,75 e crítico 1,07) |
 | 14b | O bot humano, calibrado pelos relatórios | — (testes) | depois dos relatórios dos testers |
 | 15a | O arco da Lia: o ciúme do Tonhão, a praça e o prato dela | v12.5 | feita em 19/11 (`docs/spec-v12.5.md`; `smoke106`; a Lia em 3 níveis, os cursos, a praça das entradas, o Risoto de feijão-manteiguinha, as falas e os gatilhos novos; o risoto ficou a R$ 52 pela regra do CA10) |
-| 15b | As vozes da equipe: o tratamento e a revisão das conversas | v12.6 | planejada em 19/11 (`docs/spec-v12.6.md`, aprovada) |
+| 15b | As vozes da equipe: o tratamento e a revisão das conversas | v12.6 | feita em 19/11 (`docs/spec-v12.6.md`; `smoke107`; "Bi", "dona Bia", "senhora" e "chefe" em todas as conversas, a `camiNome` e a roda com a equipe toda) |
 
 ---
 
@@ -95,11 +94,6 @@ Pedido do usuário em 17/11: o bot joga "bem demais, melhor do que gente". Os al
   - O que muda no equilíbrio do jogo com esses perfis fica para a ideia guardada "Revisão geral de equilíbrio".
 
   **Modelo:** Sonnet, esforço alto (calibração por tentativa, em 4 fases e 2 perfis)
-
-## Etapa 15 — A Lia de verdade e as vozes da equipe (15a, v12.5; 15b, v12.6)
-Pedido do usuário em 19/11 (`docs/PROPOSTAS.md`): a Lia ganha um arco curto (a Cami indica, o Tonhão tem ciúme da cozinha, dois cursos e o prato dela), e cada personagem passa a tratar os outros do seu jeito (perfis e tabela de tratamento no `docs/ARCO.md` §2.1 e §2.2), com a revisão de todas as conversas pelos perfis e a conquista da Cami em cena.
-- **15a** — `docs/spec-v12.5.md`. **Modelo:** Sonnet, esforço alto (código de jogo em várias partes, a cozinha com uma vaga nova e calibração por tentativa)
-- **15b** — `docs/spec-v12.6.md`, depois da 15a. **Modelo:** Sonnet, esforço médio (só texto e uma conversa nova, em muitas listas)
 
 ## Ideias guardadas (sem etapa ainda)
 - **Ranking compartilhado** (saiu da Etapa 7 em 15/11: "fica offline"): o código continua no jogo, desligado (`Rank.online = false`, `src/30-ranking.js`), e as chamadas ainda batem com o `db` do artifact (conferido em 15/11). Religar pede `Rank.online = true`, declarar nas capacidades a leitura da coleção `ranking-campanha` e decidir a ordem (lucro acumulado, ou estrelas do Michelzão com o lucro no desempate, a ideia adiada na v10.10).

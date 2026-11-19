@@ -519,7 +519,7 @@ table.rank tr.me td{background:#fbe7a8}
 
     <div class="ov show" id="ov-menu">
       <div class="panel menu-panel">
-        <span class="vtag" id="vtag" aria-label="Versão 12.5">v12.5</span>
+        <span class="vtag" id="vtag" aria-label="Versão 12.6">v12.6</span>
         <h1 class="title">Lanchonete <br>Corre-Corre</h1>
         <p class="tag">Ajude a Bia a atender a freguesia da esquina antes que o cafezinho esfrie!</p>
         <div class="lbl" id="menu-dia">História</div>
@@ -821,7 +821,8 @@ table.rank tr.me td{background:#fbe7a8}
       <div class="panel">
         <h2>Versões</h2>
         <ul class="verlist">
-          <li><b>v12.5</b><span class="cur">versão atual</span><br>19/11/2026 &mdash; A Lia ganha um arco no Terraço: o ciúme do Tonhão, a praça das entradas e o prato dela.</li>
+          <li><b>v12.6</b><span class="cur">versão atual</span><br>19/11/2026 &mdash; Cada um fala do seu jeito: a Dani diz &ldquo;Bi&rdquo;, o Joca &ldquo;dona Bia&rdquo;, o Anselmo &ldquo;senhora&rdquo;. A Cami ganha a conquista em cena e a roda da noite da estrela ouve a equipe toda.</li>
+          <li><b>v12.5</b><br>19/11/2026 &mdash; A Lia ganha um arco no Terraço: o ciúme do Tonhão, a praça das entradas e o prato dela.</li>
           <li><b>v12.4.3</b><br>19/11/2026 &mdash; O letreiro do eFood fica só com as letras, sem a faixa no fundo.</li>
           <li><b>v12.4.2</b><br>19/11/2026 &mdash; Quando chega um entregador, pisca um letreiro grande do eFood no alto do salão.</li>
           <li><b>v12.4.1</b><br>19/11/2026 &mdash; Na área industrial e na Avenida, o cabelo preso da Bia fica para trás quando ela anda.</li>
@@ -2107,13 +2108,13 @@ const HISTORIA = [
   { cap:7, titulo:'Salão de gente grande', ponto:'avenida', obj:{ equipe:'cami', vip:3, vezes:3 },
     antes:[
       { q:'bia', e:'firme', s:'Vinte e quatro lugares. Preciso de mais gente no salão, tio.' },
-      { q:'tonhao', s:'Tem a Cami, garçonete de rodízio. Rápida que só ela.' },
+      { q:'tonhao', s:'O rapaz do café falou de uma colega do curso dele. Garçonete de rodízio.' },
       { q:'bia', e:'firme', s:'Então eu chamo. E VIP nenhum sai daqui de cara feia.' },
       { q:'dani', s:'Aqui vem gente importante mesmo!' }],
     depois:[
       { q:'bia', e:'alegre', s:'Três dias de VIP saindo feliz!' },
-      { q:'dani', s:'A Cami já sabe o nome de todo freguês.' },
-      { q:'tonhao', e:'alegre', s:'Salão redondo. E agora, chefe?' },
+      { q:'dani', s:'A Cami é um foguete!' },
+      { q:'tonhao', e:'alegre', s:'Salão redondo. E agora, Bia?' },
       { q:'bia', e:'firme', s:'Agora é a nota subir.' }] },
   { cap:8, titulo:'Nota de restaurante', ponto:'avenida', obj:{ nota:3.9, caixa:5000 },
     antes:[
@@ -2181,7 +2182,7 @@ const HISTORIA = [
     depois:[
       { q:'bia', s:'Todo mundo pergunta que molho é esse, tio.' },
       { q:'tonhao', nota:'enxugando o olho no avental', s:'Igualzinho ao dela.' },
-      { q:'cami', s:'Bia, deixa a porta comigo. Eu organizo a fila e as mesas.' },
+      { q:'cami', s:'Chefe, deixa a porta comigo. Eu organizo a fila e as mesas.' },
       { q:'bia', e:'firme', s:'Gerente de salão, Cami. Você merece.' }] },
   // v10.9: o crítico sem aviso. Objetivo: receber o crítico do Michelzão 2 vezes (guia.n de 2)
   { cap:13, titulo:'O crítico sem aviso', ponto:'terraco', obj:{ critico:2 },
@@ -2364,7 +2365,7 @@ const HIST_EXIGENTE = {
           { q:'bia', s:'Paga como ninguém. Se sair bravo, a cidade inteira fica sabendo. Deixa comigo.' } ] };
 /* v10.9: a conversa da 1ª visita do crítico, no fim do dia dela (antes do cartão da ficha). save.convCrit: 0 | 'pend' | 1 */
 const HIST_CRITICO = { falas:[
-  { q:'dani', s:'Bia! Aquele freguês sozinho... ele tinha um caderninho!' },
+  { q:'dani', s:'Bi! Aquele freguês sozinho... ele tinha um caderninho!' },
   { q:'bia', e:'firme', s:'Eu desconfiei. Servi como sirvo todo mundo.' },
   { q:'tonhao', s:'Era ele. E deixou a ficha da visita. Olha aí.' } ] };
 /* v10.10: a conversa de quando a noite da estrela termina sem nenhuma estrela (só a primeira vez). save.guia.convRec: 0 | 1 */
@@ -2386,7 +2387,7 @@ const HIST_QUITOU = {
           { q:'dani', s:'E agora, o dinheiro vai pra onde?' },
           { q:'bia', s:'Pro cofrinho da mudança.' } ] };
 const HIST_TETO = {
-  falas:[ { q:'dani', s:'Bia, olha o Gúgou! Nota 2,7!' },
+  falas:[ { q:'dani', s:'Bi, olha o Gúgou! Nota 2,7!' },
           { q:'bia', s:'Será que sobe mais?' },
           { q:'tonhao', s:'Garagem tem teto, Bia. Pra nota subir de verdade, só num lugar maior.' },
           { q:'bia', e:'firme', s:'Então eu junto pra mudança.' } ] };
@@ -2406,12 +2407,12 @@ const HIST_VONTADE_DOCE = {
           { q:'tonhao', s:'Freguês que vai comer doce em outro lugar um dia não volta.' },
           { q:'dani', s:'Com o curso de confeitaria, eu resolvo isso!' },
           { q:'bia', s:'Boa, Dani. Vou ver o curso no Cardápio da lojinha.', s2:'Boa ideia. Vou ver o curso no Cardápio da lojinha.' } ],
-  curta:[ { q:'dani', s:'Pediram sobremesa de novo hoje, Bia...' } ] };
+  curta:[ { q:'dani', s:'Pediram sobremesa de novo hoje, Bi...' } ] };
 const HIST_VONTADE_CAFE = {
   falas:[ { q:'bia', s:'Os executivos pedem um espresso depois do almoço, e a gente só tem o cafezinho.' },
           { q:'joca', s:'No café da esquina tem fila pra cappuccino!' },
           { q:'tonhao', s:'Avenida é assim: o povo quer café de máquina.' },
-          { q:'joca', s:'Com o curso de barista, eu tiro o melhor espresso da Avenida.' },
+          { q:'joca', s:'Se eu fizer o curso de barista... acho que eu tiro um espresso bom.' },
           { q:'bia', e:'firme', s:'Fechado, Joca. O curso tá no Cardápio da lojinha.', s2:'Fechado. O curso tá no Cardápio da lojinha.' } ],
   curta:[ { q:'joca', s:'Mais gente pedindo espresso hoje...' } ] };
 /* o dia de vontade no ponto (1 = o 1º) de `qual` ('doce' ou 'cafe') no dia `n` da carreira, ou 0 se ainda não há (ponto baixo, dia cedo ou curso feito) */
@@ -2522,29 +2523,29 @@ const LIBERA = [
             { q:'tonhao', nota:'sorrindo', s:'Isso a Rosa ia gostar. Vê no Luxo.' } ] },
   // v9.2, área industrial: o 4º dia no ponto abre o curso de Confeitaria caseira (cartão Cardápio); o Joca vem no fim do dia do curso
   { id:'confeitaria', nivel:2, dia:4, ate:4, reclama:[],
-    falas:[ { q:'dani', s:'Bia, as famílias daqui sempre perguntam se tem sobremesa.' },
+    falas:[ { q:'dani', s:'Bi, as famílias daqui sempre perguntam se tem sobremesa.' },
             { q:'bia', s:'E eu sempre digo que não tem... Você faz doce, Dani?' },
             { q:'dani', e:'alegre', s:'Brigadeiro, desde pequena! Com um curso de confeitaria, dá pra vender na mesa e na marmita.' },
             { q:'tonhao', s:'Doce bom segura freguês. Vê no Cardápio da lojinha.' } ] },
   { id:'joca', nivel:2, dia:1, ate:999, gatilho:(st, av, g) => !!(g.save.daniCursos && g.save.daniCursos.confCaseira), reclama:['Tinha pouca gente pra cuidar de tanta mesa.', 'A moça de avental tava sozinha pra tudo.'],
     falas:[ { q:'dani', s:'Terminei o curso de confeitaria! Mas, se eu ficar nos doces, quem cuida da louça e do lixo?' },
             { q:'bia', s:'Boa pergunta. Conhece alguém de confiança?' },
-            { q:'dani', s:'O Joca, do meu colégio. Tá procurando serviço e é trabalhador.' },
-            { q:'joca', e:'insegura', s:'Lixo, louça, mesa suja... pode deixar comigo.' },
+            { q:'dani', s:'O Joquinha, do meu colégio. Tá procurando serviço e é trabalhador.' },
+            { q:'joca', e:'insegura', s:'Lixo, louça, mesa suja... pode deixar comigo, dona Bia.' },
             { q:'bia', e:'firme', s:'Bem-vindo, Joca. Eu acerto tudo na lojinha, em Equipe.' } ] },
   // v9.3, Avenida: no fim do dia do curso de espresso do Joca, ele indica a Cami e passa o bastão do básico
   // v9.5, Avenida: o Anselmo, coqueteleiro do restaurante do Bráulio, chega depois de 3 notas baixas no Ambiente
   { id:'anselmo', nivel:3, dia:3, ate:6, gatilho:(st, av) => liberaTres(av, 4, 3.5), reclama:['Não tem nem um drinkzinho aqui?', 'No restaurante da frente tem drink.'],
     falas:[ { q:'tonhao', s:'Bia, lembra do Anselmo, o dos drinks do Bráulio? Encontrei ele na feira.' },
-            { q:'anselmo', e:'insegura', s:'Com licença... Lá no Bráulio não dava mais: era grito o dia inteiro.' },
+            { q:'anselmo', e:'insegura', s:'Com licença, senhora... Lá no Bráulio não dava mais: era grito o dia inteiro.' },
             { q:'bia', e:'firme', s:'Aqui ninguém grita. Só a chapa, de vez em quando.' },
-            { q:'anselmo', s:'Me dá um balcão e eu faço o drink mais bonito da Avenida.' },
+            { q:'anselmo', s:'Se a senhora me der um balcão, eu faço o drink mais bonito da Avenida.' },
             { q:'bia', e:'firme', s:'O balcão é seu. Eu acerto na lojinha, em Equipe.' } ] },
   { id:'cami', nivel:3, dia:1, ate:999, gatilho:(st, av, g) => !!(g.save.jocaCursos && g.save.jocaCursos.espresso), reclama:['Tinha pouca gente pra cuidar de tanta mesa.', 'A louça acumulou enquanto o café saía.'],
     falas:[ { q:'joca', s:'Agora que eu tô na máquina de café, a louça vai acumular...' },
             { q:'bia', s:'E o salão daqui não perdoa. Tem alguém em mente?' },
             { q:'joca', s:'A Cami, do meu curso de barista. Era garçonete de rodízio: rápida que só!' },
-            { q:'cami', e:'alegre', s:'Me mostra onde fica tudo que eu dou conta!' },
+            { q:'cami', e:'alegre', s:'Me mostra onde fica tudo, chefe, que eu dou conta!' },
             { q:'bia', e:'firme', s:'Gostei. Eu acerto na lojinha, em Equipe.' } ] },
   // v10.2, Terraço: a Lia, colega do Tonhão no curso de alta gastronomia, chega depois do básico de um dos cursos dele
   { id:'lia', nivel:4, dia:1, ate:999, gatilho:(st, av, g) => (cursoNivel(g.save.cursos, 'entradas') >= 1 || cursoNivel(g.save.cursos, 'alta') >= 1) && (!histLiga() || g.save.cap >= 10), reclama:['A comida demorou entre um prato e outro.', 'Cozinha lenta para um terraço.'],
@@ -2574,7 +2575,7 @@ const ARCO = [
             { q:'bia', e:'alegre', s:'...Eu.' },
             { q:'tonhao', s:'Então guarda isso. Em dia ruim, você vai precisar.' } ] },
   { id:'daniPrato', nivel:1, quando:(sv, g) => sv.equipe.dani > 0 && sv.arco.elogio === 1,
-    falas:[ { q:'dani', e:'insegura', s:'Quebrei dois pratos hoje, Bia. Desculpa. Eu sou lenta e ainda estrago as coisas.' },
+    falas:[ { q:'dani', e:'insegura', s:'Quebrei dois pratos hoje, Bi. Desculpa. Eu sou lenta e ainda estrago as coisas.' },
             { q:'bia', s:'Sabe quantos pedidos eu errei na primeira semana?' },
             { q:'dani', s:'Quantos?' },
             { q:'bia', e:'alegre', s:'Perdi a conta. O tio me disse que é só voltar amanhã. Volta amanhã, Dani.' } ] },
@@ -2585,12 +2586,12 @@ const ARCO = [
             { q:'bia', e:'alegre', s:'Desde a semana passada. O senhor é que não reparou.' },
             { q:'tonhao', e:'alegre', s:'Então o caderno é seu.' } ] },
   { id:'daniDoce', nivel:2, quando:(sv, g) => !!sv.daniCursos.confCaseira && sv.equipe.joca > 0,
-    falas:[ { q:'dani', e:'insegura', s:'Devolveram meu pudim, Bia. Disseram que tava mole. Acho melhor eu voltar pra louça.' },
+    falas:[ { q:'dani', e:'insegura', s:'Devolveram meu pudim, Bi. Disseram que tava mole. Acho melhor eu voltar pra louça.' },
             { q:'bia', e:'firme', s:'A louça agora é do Joca. E o doce é seu.' },
             { q:'dani', s:'E se devolverem de novo?' },
             { q:'bia', e:'alegre', s:'Aí você faz outro. Pudim mole a gente conserta. Desistir, não.' } ] },
   { id:'jocaCalado', nivel:2, quando:(sv, g) => sv.equipe.joca > 0 && sv.arco.daniDoce === 1,
-    falas:[ { q:'dani', s:'O Joca não abre a boca, Bia. O freguês pergunta e ele aponta pra mim.' },
+    falas:[ { q:'dani', s:'O Joquinha não abre a boca, Bi. O freguês pergunta e ele aponta pra mim.' },
             { q:'joca', e:'insegura', s:'É que eu sou só o da louça...' },
             { q:'bia', e:'firme', s:'Aqui não tem "só", Joca. Sem prato limpo, ninguém almoça.' },
             { q:'joca', e:'alegre', s:'...Amanhã eu digo bom-dia.' } ] },
@@ -2615,26 +2616,33 @@ const ARCO = [
             { q:'bia', e:'firme', nota:'com a voz ainda tremendo', s:'Pode ser. Mas a mesa do senhor fica do outro lado da rua.' },
             { q:'tonhao', e:'alegre', s:'A Rosa ia aplaudir de pé.' } ] },
   { id:'anselmoCopo', nivel:3, quando:(sv, g) => sv.equipe.anselmo > 0 && !sv.equipe.anselmoFora,
-    falas:[ { q:'anselmo', e:'insegura', nota:'catando os cacos', s:'Desculpa, desculpa! Eu pago o copo, pode descontar...' },
+    falas:[ { q:'anselmo', e:'insegura', nota:'catando os cacos', s:'Desculpa, senhora, desculpa! Eu pago o copo, pode descontar...' },
             { q:'bia', s:'Anselmo. Olha pra mim. É um copo.' },
             { q:'anselmo', s:'No outro restaurante, um copo era meia hora de grito.' },
             { q:'bia', e:'firme', s:'Aqui é uma vassoura e um copo novo. Respira e volta pro balcão.' } ] },
   { id:'jocaEspresso', nivel:3, quando:(sv, g) => !!sv.jocaCursos.espresso,
     falas:[ { q:'joca', e:'insegura', s:'O homem de terno perguntou se "o menino da louça" sabia mexer na máquina.' },
             { q:'bia', e:'firme', s:'Eu ouvi. E disse a ele que o nosso barista se chama Joca.' },
-            { q:'joca', s:'Você disse isso?' },
+            { q:'joca', s:'Você disse isso, dona Bia?' },
             { q:'bia', e:'alegre', s:'Disse. Agora tira um espresso que faça ele engolir a piada.' } ] },
   { id:'camiPressa', nivel:3, quando:(sv, g) => sv.equipe.cami > 0 && !sv.equipe.camiFora,
     falas:[ { q:'bia', s:'Cami, a mesa do casal reclamou que o prato chegou antes de eles tirarem o casaco.' },
             { q:'cami', s:'No rodízio era assim: girou, serviu, próxima!' },
             { q:'bia', e:'firme', s:'Aqui mesa não é número. Pergunta o nome, olha no olho. Rápida você já é.' },
             { q:'cami', e:'alegre', s:'Nome e olho no olho. Anotado, chefe!' } ] },
+  // v12.6: a conquista da Cami em cena (docs/spec-v12.6.md)
+  { id:'camiNome', nivel:3, quando:(sv, g) => sv.arco.camiPressa === 1 && !!sv.camiCursos.agil && sv.equipe.cami > 0 && !sv.equipe.camiFora,
+    falas:[ { q:'cami', e:'alegre', s:'Chefe, a dona Lurdes da mesa dois faz aniversário hoje. E o seu Jorge voltou: o dele é sem cebola.' },
+            { q:'bia', e:'alegre', s:'Você sabe o nome de todo mundo, Cami?' },
+            { q:'cami', e:'firme', s:'De todo mundo. No rodízio eu contava mesa. Aqui eu conto gente.' },
+            { q:'tonhao', s:'Essa moça aprendeu rápido.' },
+            { q:'cami', e:'alegre', s:'Cami, Tonhão. Pode chamar de Cami.' } ] },
   { id:'daniEnsina', nivel:3, quando:(sv, g) => !!sv.daniCursos.confGourmet,
-    falas:[ { q:'dani', e:'alegre', s:'Bia, me pediram pra ensinar o ponto do brigadeiro. Eu! Ensinando!' },
+    falas:[ { q:'dani', e:'alegre', s:'Bi, me pediram pra ensinar o ponto do brigadeiro. Eu! Ensinando!' },
             { q:'bia', e:'alegre', s:'E ensinou?' },
             { q:'dani', e:'firme', s:'Ensinei. E descobri que eu explico bem.' },
             { q:'tonhao', s:'Quem diria. A menina lenta dando aula.' },
-            { q:'dani', e:'alegre', s:'Lenta, não, seu Tonhão. Caprichosa.' } ] },
+            { q:'dani', e:'alegre', s:'Lenta, não, tio Tonhão. Caprichosa.' } ] },
   { id:'cortina', nivel:3, quando:(sv, g) => sv.cap >= 8,
     falas:[ { q:'bia', s:'Tio, o senhor passou o dia olhando pra Casa Aurora.' },
             { q:'tonhao', e:'insegura', s:'Vinte anos naquela cozinha, Bia. E saí sem levar nem o meu nome.' },
@@ -2659,12 +2667,14 @@ const ARCO = [
     falas:[ { q:'anselmo', e:'alegre', nota:'rindo alto atrás do balcão', s:'Opa... desculpa o barulho.' },
             { q:'bia', s:'Desculpa por quê?' },
             { q:'anselmo', s:'Fazia anos que eu não ria no serviço. Nem lembrava como era.' },
-            { q:'bia', e:'alegre', s:'Então ri mais alto, que o salão gostou.' } ] },
+            { q:'bia', e:'alegre', s:'Então ri mais alto, que o salão gostou.' },
+            { q:'anselmo', e:'alegre', s:'Pode deixar, Bia.' } ] },
   { id:'jocaNome', nivel:4, quando:(sv, g) => !!sv.jocaCursos.cafesEsp,
-    falas:[ { q:'joca', e:'alegre', s:'Bia, a mesa da janela pediu "o café do Joca". Pelo nome!' },
+    falas:[ { q:'joca', e:'alegre', s:'Dona Bia, a mesa da janela pediu "o café do Joca". Pelo nome!' },
             { q:'bia', e:'alegre', s:'E o que o barista da casa respondeu?' },
             { q:'joca', e:'firme', s:'Que hoje tem coado, prensa e cold brew. E que eu recomendo o coado.' },
-            { q:'bia', s:'Olha ele. Há pouco tempo, nem bom-dia.' } ] },
+            { q:'bia', s:'Olha ele. Há pouco tempo, nem bom-dia.' },
+            { q:'joca', e:'alegre', s:'Valeu, Bia.' } ] },
   { id:'liaPetala', nivel:4, quando:(sv, g) => sv.rosa === 1 && sv.cap >= 13 && sv.equipe.lia > 0 && sv.arco.liaPerfeita === 1,
     falas:[ { q:'tonhao', nota:'com a pétala na palma da mão', s:'Lia, hoje quem põe a pétala é você.' },
             { q:'lia', e:'insegura', s:'Eu, chef? Esse prato é da sua família.' },
@@ -2682,7 +2692,11 @@ const ARCO = [
     falas:[ { q:'bia', e:'firme', s:'Antes da noite da estrela, eu quero dizer uma coisa a vocês.' },
             { q:'bia', s:'Eu comecei numa garagem, com medo de abrir o portão.' },
             { q:'bia', e:'alegre', s:'Hoje eu não tenho medo. Porque nunca mais abri sozinha.' },
-            { q:'dani', e:'alegre', s:'Ai, Bia, eu vou chorar em cima do doce!' },
+            { q:'joca', e:'alegre', s:'Nem eu.' },
+            { q:'cami', s:'Girou, serviu... estrela!' },
+            { q:'anselmo', e:'alegre', s:'E sem ninguém gritar.' },
+            { q:'lia', s:'Na hora.' },
+            { q:'dani', e:'alegre', s:'Ai, Bi, eu vou chorar em cima do doce!' },
             { q:'tonhao', e:'alegre', s:'Chora depois. Primeiro a estrela.' } ] } ];
 function arcoOf(id){ return ARCO.find(a => a.id === id) || null; }
 /* v9.1.1: o dia da carreira em que o save chegou ao ponto de agora (save.pontoDia); n = o dia que terminou (padrão: o anterior ao save.dia,
@@ -2695,7 +2709,7 @@ const HIST_NOMES = { bia:'Bia', tonhao:'Tonhão', dani:'Dani', joca:'Joca', cami
 const ATU_TXT = { procurando:'Procurando versão nova...', nova:'Tem versão nova: {v}! Seu jogo salvo continua.', igual:'Você já está na versão mais nova ({v}).', erro:'Sem internet agora. Tente de novo mais tarde.', atualizando:'Atualizando...' };
 function atuEstado(remota, atual){ if (typeof remota !== 'string' || !remota.trim()) return 'erro'; return remota.trim() === atual ? 'igual' : 'nova'; }
 const CAIXA_MAX = 14;                                 // livro-caixa (v7.2): quantos dias da carreira ficam guardados
-const VERSAO = 'v12.5';                                 // vai no resumo do Caixa
+const VERSAO = 'v12.6';                                 // vai no resumo do Caixa
 const DIVULGA_DIA = 4;                                // antes disso, o movimento é o da inauguração (sem custo); v9.0.2: dia 4, e o padrão é o boca a boca
 function divulgaAberta(n, sv){ return devLivre() || n >= DIVULGA_DIA && !(sv && sv.convDiv === 'pend'); }   // no modo dev, desde o dia 1; v9.0.3: no Modo História, só depois da conversa
 /* v9.6.4: a Efood (os entregadores) só abre depois da conversa dos entregadores, no Modo História; antes dela, nenhum tipo com `retira` vem na agenda */
