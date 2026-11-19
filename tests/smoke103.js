@@ -114,8 +114,8 @@ bloco('CA5',()=>{
 // ---------- CA6: o relatório (formato 3) e o relatorios.py ----------
 bloco('CA6',()=>{
   const eqAv={ dani:{ vem:1, tasks:['doce'] }, joca:{ vem:0 }, cami:{ vem:1, modo:'mesas' }, anselmo:{ vem:1 } };
-  { const {g}=mk({ lcc2_name:'Ana' }); g.setDev(true); g.startTeste('avenida',eqAv); fecha(g); const l=g.testeRel.split('\n');
-    ok(/^LCC-TESTE 3 · v12\.4 · Avenida Brasil · dia 38 · semente 7003$/.test(l[0]) && /^Jogador: Ana · tentativa 1 /.test(l[1]),'CA6: a 1ª linha é "LCC-TESTE 3 · v12.4 ..." e o Jogador vem em seguida');
+  { const {g,L}=mk({ lcc2_name:'Ana' }); g.setDev(true); g.startTeste('avenida',eqAv); fecha(g); const l=g.testeRel.split('\n');
+    ok(l[0]==='LCC-TESTE 3 · '+L.VERSAO+' · Avenida Brasil · dia 38 · semente 7003' && /^Jogador: Ana · tentativa 1 /.test(l[1]),'CA6: a 1ª linha é "LCC-TESTE 3 · <VERSAO> · Avenida ..." e o Jogador vem em seguida');
     ok(l[2]==='Equipe: Dani (doce) · Joca não vem · Cami (minhas mesas) · Anselmo' && /^Resultado: /.test(l[3]),'CA6: a linha Equipe (Joca fora, Cami em "Minhas mesas", Anselmo) vem depois do Jogador ('+l[2]+')'); }
   { const {g}=mk(); g.startTeste('avenida',{ cami:{ vem:0 }, anselmo:{ vem:0 }, dani:{ vem:1, tasks:['doce'] }, joca:{ vem:1, tasks:['lixo','lavar'] } }); const l=g.eqLinha;
     ok(l==='Dani (doce) · Joca (cafezinho, lixo, lavar) · Cami não vem · Anselmo não vem','CA6: Cami e Anselmo fora (o Joca fica com o básico): "Cami não vem · Anselmo não vem" ('+l+')'); }
