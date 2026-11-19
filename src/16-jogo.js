@@ -614,7 +614,8 @@ class Game {
     this.fx.push({ k:'text', x, y, vy:-38, life:1.3, max:1.3, text, color:color||PAL.tinta, size:size||18 });
   }
   /* brilho de confirmação no desenho do objeto tocado (key: mesa, prato, grupo ou nome da estação/botão) */
-  addGlow(key, max){ this.fx = this.fx.filter(f => !(f.k === 'glow' && f.key === key)); this.fx.push({ k:'glow', key, life:0, max:max || 0.4 }); }   // v11.16.1: max opcional (o entregador do eFood brilha mais)
+  addGlow(key, max){ this.fx = this.fx.filter(f => !(f.k === 'glow' && f.key === key)); this.fx.push({ k:'glow', key, life:0, max:max || 0.4 }); }   // v11.16.1: max opcional (a encomenda brilha mais)
+  addLetreiro(){ this.fx = this.fx.filter(f => f.k !== 'efood'); this.fx.push({ k:'efood', life:0, max:ENTREGA_CHEGA.letreiro }); }   // v12.4.2: o letreiro grande do eFood (um de cada vez)
   addCoins(x, y, n){
     n = RM ? Math.min(n,2) : n;
     for (let i=0;i<n;i++){
@@ -1013,7 +1014,7 @@ class Game {
       this.retirada.push(g); g.setState('retirada'); this.reslotRetirada();
       this.marmitaPara(g);
       this.addText(RETIRADA.fila[0].x, DOOR.y + 4, g.lote ? 'Encomenda: ' + g.lote + ' marmitas!' : 'Pedido na Efood!', PAL.alerta, 16);
-      Sfx.buzina(); this.addGlow(g, ENTREGA_CHEGA.brilho);   // v11.16.1: a buzina da moto e o brilho, no lugar dos bipes
+      Sfx.buzina(); if (g.lote) this.addGlow(g, ENTREGA_CHEGA.brilho); else this.addLetreiro();   // v11.16.1: a buzina da moto; v12.4.2: o entregador acende o letreiro do eFood, a encomenda brilha
       this.stats.spawned++;
       return g;
     }

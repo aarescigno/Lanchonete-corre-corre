@@ -845,7 +845,7 @@ const DRINK_PRICE = { coffee:3, juice:JUICE.price, doce:7, pote:7, cafeesp:10, d
    depois de chegar ao lugar lá fora, o grupo pede 1 copo por pessoa; a Bia (ou a Dani) pega na estação e entrega,
    e quem bebe perde a paciência da espera `slow` mais devagar. Quem sai da espera antes cancela o que não foi pego */
 const MAQUINA = { pede:2.5, slow:0.4 };
-const ENTREGA_CHEGA = { brilho:1.2 };   // v11.16.1: o entregador do eFood brilha ao chegar (segundos)
+const ENTREGA_CHEGA = { brilho:1.2, letreiro:0.8 };   // v11.16.1: a encomenda brilha ao chegar (segundos); v12.4.2: o entregador do eFood acende o letreiro grande no alto do salão (segundos)
 /* marmitas (v8.6): o entregador de moto não come no salão. Ele espera na fila de retirada (RETIRADA, no máximo `fila`) e
    leva o prato do cardápio numa marmita: o pedido chega pela Efood (o app de entrega) e vai sozinho ao Tonhão. A marmita
    ocupa uma boca do fogão como um prato, mas não usa prato limpo; os ingredientes e a `embalagem` saem quando ela fica
@@ -1786,7 +1786,7 @@ const HIST_NOMES = { bia:'Bia', tonhao:'Tonhão', dani:'Dani', joca:'Joca', cami
 const ATU_TXT = { procurando:'Procurando versão nova...', nova:'Tem versão nova: {v}! Seu jogo salvo continua.', igual:'Você já está na versão mais nova ({v}).', erro:'Sem internet agora. Tente de novo mais tarde.', atualizando:'Atualizando...' };
 function atuEstado(remota, atual){ if (typeof remota !== 'string' || !remota.trim()) return 'erro'; return remota.trim() === atual ? 'igual' : 'nova'; }
 const CAIXA_MAX = 14;                                 // livro-caixa (v7.2): quantos dias da carreira ficam guardados
-const VERSAO = 'v12.4.1';                               // vai no resumo do Caixa
+const VERSAO = 'v12.4.2';                               // vai no resumo do Caixa
 const DIVULGA_DIA = 4;                                // antes disso, o movimento é o da inauguração (sem custo); v9.0.2: dia 4, e o padrão é o boca a boca
 function divulgaAberta(n, sv){ return devLivre() || n >= DIVULGA_DIA && !(sv && sv.convDiv === 'pend'); }   // no modo dev, desde o dia 1; v9.0.3: no Modo História, só depois da conversa
 /* v9.6.4: a Efood (os entregadores) só abre depois da conversa dos entregadores, no Modo História; antes dela, nenhum tipo com `retira` vem na agenda */
