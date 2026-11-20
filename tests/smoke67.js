@@ -75,9 +75,9 @@ const loja=(H,grupo,aba)=>{ H.L.setShopGrupo(grupo); H.L.setShopTab(aba); return
 { const L=nova().L, v10={ pf:25, coxinha:8, risoles:6, kibe:7, bolinho:8, empada:9, esfihaA:7, esfihaF:7, misto:10, bauru:12, paoChapa:7, pastel:10, pastelQ:10, pastelP:11,
     pfVeg:23, empadaPalmito:9, kibeAbobora:7, pfVegano:23, coxinhaJaca:8, pastelPalmito:10, esfihaSoja:7, mistoVegano:10, parmegiana:30,
     bruschetta:14, bacalhau:16, quiche:15, risoto:38, peixe:42, medalhao:46 };
-  const ks=Object.keys(v10), bons=ks.filter(k=>L.CARDAPIO[k] && L.CARDAPIO[k].preco===Math.round(v10[k]*1.2));
-  ok(ks.length===Object.keys(L.CARDAPIO).filter(k=>L.CARDAPIO[k].cat!=='junina'&&k!=='liaRisoto').length && bons.length===ks.length,'os '+ks.length+' pratos custam Math.round(antigo × 1,2) (erros: '+ks.filter(k=>!bons.includes(k)).join(',')+')');
-  const C=L.CARDAPIO; ok(C.pf.preco===30 && C.coxinha.preco===10 && C.misto.preco===12 && C.pastel.preco===12 && C.bauru.preco===14 && C.pfVeg.preco===28,'PF 30, coxinha 10, misto 12, pastel 12, bauru 14, PF vegetariano 28');
+  const ks=Object.keys(v10).filter(k=>L.CARDAPIO[k] && L.CARDAPIO[k].preco.garagem!=null), bons=ks.filter(k=>L.CARDAPIO[k].preco.garagem===Math.round(v10[k]*1.2));
+  ok(ks.length===Object.keys(L.CARDAPIO).filter(k=>L.CARDAPIO[k].cat!=='junina'&&L.CARDAPIO[k].preco.garagem!=null).length && bons.length===ks.length,'os '+ks.length+' pratos da Garagem custam Math.round(antigo × 1,2) (v12.7: os dos outros pontos têm preço próprio) (erros: '+ks.filter(k=>!bons.includes(k)).join(',')+')');
+  const C=L.CARDAPIO; ok(C.pf.preco.garagem===30 && C.coxinha.preco.garagem===10 && C.misto.preco.garagem===12 && C.pastel.preco.garagem===12 && C.bauru.preco.garagem===14 && C.pfVeg.preco.garagem===28,'PF 30, coxinha 10, misto 12, pastel 12, bauru 14, PF vegetariano 28');
   ok(L.precoPrato('pf',L.PONTOS[0],{})===30,'o PF da Garagem vende por R$ 30'); }
 
 // ---------- 5. as fichas do Manual ----------

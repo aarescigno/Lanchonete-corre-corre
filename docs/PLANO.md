@@ -17,10 +17,9 @@ Origem: retorno do Renan Martorelli (beta-tester) e conversa com o Arthur (15/10
 |---|---|---|---|
 | 5 | ~~Modo História, parte 1~~: juntou-se à 2f e aos capítulos da 3a, 3b e 4a (28/10) | — | — |
 | 14b | O bot humano, calibrado pelos relatórios | — (testes) | depois dos relatórios dos testers |
-| 15a | O arco da Lia: o ciúme do Tonhão, a praça e o prato dela | v12.5 | feita em 19/11 (`docs/spec-v12.5.md`; `smoke106`; a Lia em 3 níveis, os cursos, a praça das entradas, o Risoto de feijão-manteiguinha, as falas e os gatilhos novos; o risoto ficou a R$ 52 pela regra do CA10) |
 | 15a-1 | Correção: o Terraço sem a mesinha das marmitas | v12.6.1 | feita em 19/11 (`docs/spec-v12.6.1.md`; `smoke108`; a mesinha vira um aparador de nogueira com o vaso das rosas e somem as marquinhas das vagas no Terraço) |
 | 15b | As vozes da equipe: o tratamento e a revisão das conversas | v12.6 | feita em 19/11 (`docs/spec-v12.6.md`; `smoke107`; "Bi", "dona Bia", "senhora" e "chefe" em todas as conversas, a `camiNome` e a roda com a equipe toda) |
-| 16a | Cardápio de verdade em cada ponto: pratos e preços por ponto, curso como técnica, sem PF no Terraço | v12.7 | planejada em 19/11 |
+| 16a | Cardápio de verdade em cada ponto: pratos e preços por ponto, curso como técnica, sem PF no Terraço | v12.7 | feita em 20/11 (`docs/spec-v12.7.md`; `smoke109`; `preco` por ponto em cada prato e sem o `cardapio` do ponto, 29 pratos novos da Avenida e do Terraço, os cursos como técnica, o prato de base de cada ponto, bebidas, doces e cafés com preço por ponto, o Arraiá da Avenida e o do Terraço; metas recalibradas; o ganho da industrial caiu 32% e o do Terraço subiu 78%, aceito pelo usuário) |
 | 16b | Os desenhos dos pratos novos da Avenida e do Terraço e das barracas juninas chiques | v12.8 | planejar com o Opus antes |
 
 ---
@@ -86,7 +85,7 @@ Origem: retorno do Renan Martorelli (beta-tester) e conversa com o Arthur (15/10
 
 ## Etapa 16 — Cardápio de verdade em cada ponto (16a, v12.7; 16b, v12.8)
 Pedido do usuário em 19/11: preços perto dos de verdade, sem o multiplicador do ponto, e cada ponto com o que um lugar daquele vende. A Garagem e a área industrial seguem lanchonete; a Avenida vira restaurante executivo e o Terraço, cozinha fina, sem PF. Os cursos do Tonhão viram técnicas que valem em todo ponto.
-- **16a** (v12.7): a lógica, os pratos novos (com o desenho da categoria em cor própria), os preços de comida, bebida e doce por ponto, a festa junina por ponto e o balanceamento para manter a curva da carreira. Spec aprovada: `docs/spec-v12.7.md`.
+- **16a** (v12.7): a lógica, os pratos novos (com o desenho da categoria em cor própria), os preços de comida, bebida e doce por ponto, a festa junina por ponto e o balanceamento para manter a curva da carreira. Feita em 20/11 (`docs/spec-v12.7.md`).
 
   **Modelo:** Sonnet, esforço alto (muitas partes ao mesmo tempo e balanceamento por tentativa)
 - **16b** (v12.8): o desenho próprio de cada prato novo da Avenida e do Terraço e das barracas juninas chiques. Ainda sem spec.

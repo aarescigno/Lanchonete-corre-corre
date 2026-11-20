@@ -317,7 +317,7 @@ class Waitress {
       const fora = lixo;
       fora.forEach(h => this.hands.splice(this.hands.indexOf(h), 1));
       g.addTrash(fora.length);
-      const fine = fora.reduce((v,h) => v + (h.kind === 'suco' ? g.bebida.preco : h.kind === 'doce' ? docePreco(g.up) : h.kind === 'cafeesp' ? cafeDe(h.id).preco : h.kind === 'drink' ? drinkPreco(g.up) : DRINK_PRICE[h.kind]) / 2, 0);
+      const fine = fora.reduce((v,h) => v + (h.kind === 'suco' ? g.bebida.preco : h.kind === 'doce' ? docePreco(g.up) : h.kind === 'cafeesp' ? cafePrecoDe(h.id, g.ponto) : h.kind === 'drink' ? drinkPreco(g.up) : h.kind === 'coffee' ? cafePreco(g.ponto) : h.kind === 'juice' ? sucoPreco(g.ponto) : h.kind === 'pote' ? docePreco(g.up) : DRINK_PRICE[h.kind]) / 2, 0);
       g.addMoney(-fine);
       g.stats.trash += fora.length;
       g.addText(this.x, this.y - 82, 'No lixo!', PAL.perigo, 15);
@@ -383,11 +383,11 @@ class Waitress {
     if (!n) return 0;
     for (let k=0;k<n;k++) this.hands.splice(this.hands.findIndex(h => h.kind === 'juice'), 1);
     grp.juiceGot += n;
-    g.stats.juice += n; g.custo += INGRED.suco * n;
+    g.stats.juice += n; g.custo += sucoIngred(g.ponto) * n;
     grp.gain(1);
-    grp.bebConta += JUICE.price * n;   // v8.5.2: o suco é pago na conta, com a comida
+    grp.bebConta += sucoPreco(g.ponto) * n;   // v8.5.2: o suco é pago na conta, com a comida
     g.score('juice', t.cx + 24, t.cy - 30, 0, grp);
-    g.addText(t.cx + 24, t.cy - 52, '+' + JUICE.price * n + ' na conta', PAL.ok, 14);
+    g.addText(t.cx + 24, t.cy - 52, '+' + sucoPreco(g.ponto) * n + ' na conta', PAL.ok, 14);
     if (!grp.juicePending) g.addText(t.cx, t.cy - 96, n > 1 ? 'Sucos entregues!' : 'Suco entregue!', PAL.alerta, 15);
     grp.notaBeb();   // v10
     Sfx.tone(880, 0.07, 'sine', 0.05); Sfx.tone(1175, 0.12, 'sine', 0.05, 0.07);
@@ -455,9 +455,9 @@ class Waitress {
       this.hands.splice(i,1);
       grp.coffee = true;
       grp.gain(g.up.cafeteira ? 2 : 1);
-      grp.bebConta += DRINK_PRICE.coffee;   // v8.5.2: pago na conta
+      grp.bebConta += cafePreco(g.ponto);   // v8.5.2: pago na conta
       g.score('coffee', cx, cy - 40, 0, grp);
-      g.addText(cx, cy - 62, '+' + DRINK_PRICE.coffee + ' na conta', PAL.ok, 14);
+      g.addText(cx, cy - 62, '+' + cafePreco(g.ponto) + ' na conta', PAL.ok, 14);
       g.usos.cafeteira++;
       Sfx.coin();
     } else if (grp && grp.tempos && grp.state === 'eating' && this.hands.some(h => h.kind === 'dish' && h.group === grp)){

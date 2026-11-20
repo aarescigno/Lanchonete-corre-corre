@@ -57,12 +57,12 @@ const joga=(H,fat,custo)=>{ const {g,els}=H; if(g.state==='shop') els['btn-shop-
 
 // ---------- 3. aluguel e preços ----------
 { const H=jogo(4,true), {g,L}=H; g.resetDay(10);
-  ok(g.ponto.aluguel===120 && g.contas===0 && L.precoPrato('pf',g.ponto,g.cursos)===45 && L.PONTOS[1].cardapio===1.5,'PF custa R$ 45 (cardápio ×1,5 sobre o PF de R$ 30; v10.5: salários e preços de verdade)');
+  ok(g.ponto.aluguel===120 && g.contas===0 && L.precoPrato('pf',g.ponto,g.cursos)===34 && L.PONTOS[1].cardapio===undefined,'PF custa R$ 34 na área industrial (v12.7: preço por ponto, sem o multiplicador)');
   g.begin(); const garagemContas=L.CONTAS.base+g.tables.filter(t=>t.open).length*L.CONTAS.mesa+g.tables.filter(t=>t.open).reduce((a,t)=>a+t.seats,0)*L.CONTAS.lugar;
   ok(g.contas===garagemContas+120,'as contas do dia somam o aluguel de R$ 120');
   g.schedule=[]; g.nextIdx=0; g.money=1000; g.custo=0; const b0=g.save.bank; g.finishDay();
   ok(g.save.bank===b0+1000-g.contas-g.paid-g.paidDiv && g.save.caixa[g.save.caixa.length-1].contas===g.contas,'o aluguel sai no fim do dia e entra no livro-caixa');
-  const D=g.diaPonto(L.diaOf(10)); ok(D.meta===Math.round(L.diaOf(10).meta*2.3/5)*5 && D.expert===Math.round(L.diaOf(10).expert*1.5/5)*5,'meta ×2,3 e expert ×1,5 (v10.5.1, calibrados; eram 2,1 e 1,4), arredondadas para 5');
+  const D=g.diaPonto(L.diaOf(10)); ok(D.meta===Math.round(L.diaOf(10).meta*1.5/5)*5 && D.expert===Math.round(L.diaOf(10).expert*1/5)*5,'meta ×1,5 e expert ×1 (v12.7, calibrados com os preços por ponto; eram 2,3 e 1,5), arredondadas para 5');
   const G=jogo(4,false).g; G.resetDay(10); ok(G.day.meta===L.diaOf(10).meta,'na Garagem, a meta é a de sempre'); }
 
 // ---------- 4. a clientela ----------
@@ -121,7 +121,7 @@ const joga=(H,fat,custo)=>{ const {g,els}=H; if(g.state==='shop') els['btn-shop-
   ok(g.comprarInd('assento','banco') && g.save.bank===4850 && g.up.assento==='banco' && !g.comprarInd('assento','banco'),'trocar para o banquinho paga R$ 90 (o novo); o mesmo, não');
   const u=L.UPGRADES.find(x=>x.id==='maquina'), pv=L.upgradeDe(u,g.ponto);
   ok(pv.name==='Jarra de suco' && pv.cost===120 && L.upgradeDe(u,L.PONTOS[0]).cost===80,'a melhoria "maquina" é a Jarra de suco (R$ 120) na área industrial');
-  ok(g.buy('maquina') && g.save.bank===4730 && g.up.maquina && g.bebida.id==='suco' && g.bebida.preco===12,'comprar a jarra: R$ 120; o suco vale R$ 12');
+  ok(g.buy('maquina') && g.save.bank===4730 && g.up.maquina && g.bebida.id==='suco' && g.bebida.preco===8,'comprar a jarra: R$ 120; o suco vale R$ 8 (v12.7)');
   ok(L.DANI_TASKS.length>0 && L.daniTaskDe(L.DANI_TASKS.find(t=>t.id==='suco'),g.ponto).name==='Levar o suco da espera','a tarefa da Dani vira "Levar o suco da espera"'); }
 
 // ---------- 8. as plantas ----------

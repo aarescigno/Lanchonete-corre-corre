@@ -61,9 +61,9 @@ bloco('CA2',()=>{
     ok(g.clima==='' && g.quebras.length===0 && g.fiscal===null && g.visita===null && g.noite===false && !g.save.manut.sorteio,'CA2: junina: continua sem clima, quebra, fiscal, crítico, noite nem sorteio');
     ok(store.lcc2_save===antes && !g.salvo.barraca && !g.salvo.evento,'CA2: junina: o save de verdade (e o localStorage) não ganha barraca nem evento'); });
   { const {g,L}=mk(); g.startDesafio('junina'); g.begin();
-    let pj=0,tot=0; for(let i=0;i<80;i++){ const x=g.spawn({ type:'familia', color:0, vip:false, av:false }); tot++; if(x.extras.concat([x.dish]).some(k=>L.EVENTOS.junina.pratos.indexOf(k)>=0)) pj++; g.groups=[]; }
+    let pj=0,tot=0; for(let i=0;i<80;i++){ const x=g.spawn({ type:'familia', color:0, vip:false, av:false }); tot++; if(x.extras.concat([x.dish]).some(k=>L.EVENTOS.junina.pratos[g.ponto.id].indexOf(k)>=0)) pj++; g.groups=[]; }
     ok(pj>0,'CA2: junina: com a barraca, os pedidos trazem pamonha, milho ou canjica ('+pj+' de '+tot+' famílias)');
-    const g2=mk().g; g2.startDesafio('semBravo'); g2.begin(); let pj2=0; for(let i=0;i<80;i++){ const x=g2.spawn({ type:'familia', color:0, vip:false, av:false }); if(x.extras.some(k=>L.EVENTOS.junina.pratos.indexOf(k)>=0)) pj2++; g2.groups=[]; }
+    const g2=mk().g; g2.startDesafio('semBravo'); g2.begin(); let pj2=0; for(let i=0;i<80;i++){ const x=g2.spawn({ type:'familia', color:0, vip:false, av:false }); if(x.extras.some(k=>L.EVENTOS.junina.pratos[g2.ponto.id].indexOf(k)>=0)) pj2++; g2.groups=[]; }
     ok(pj2===0,'CA2: (controle) Ninguém bravo, no mesmo ponto, não tem prato junino'); }
   { const {g}=mk(), fam=id=>{ g.startDesafio(id); let f=0,t=0; for(let i=0;i<150;i++) g.buildSchedule(g.day).forEach(s=>{ t++; if(s.type==='familia') f++; }); return f/t; };
     const fj=fam('junina'), fs=fam('semBravo'); ok(fj>fs,'CA2: junina: há mais famílias que no dia comum da Avenida ('+Math.round(100*fj)+'% contra '+Math.round(100*fs)+'%)'); }

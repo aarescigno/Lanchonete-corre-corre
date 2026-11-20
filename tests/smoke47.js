@@ -23,8 +23,8 @@ const AN={ equipe:{ tonhao:1, dani:3, joca:3, anselmo:2 } };
 { const {L}=nova(); const c=L.liberaOf('anselmo');
   ok(c && c.nivel===3 && c.dia===3 && c.ate===6 && typeof c.gatilho==='function' && c.falas.length===5 && c.falas.map(f=>f.q).join()==='tonhao,anselmo,bia,anselmo,bia','anselmo: nível 3, dia 3, até 6, 5 falas (Tonhão, Anselmo, Bia, Anselmo, Bia)');
   ok(L.HIST_NOMES.anselmo==='Anselmo' && L.LIBERA.every(l=>l.falas.every(f=>L.HIST_NOMES[f.q])),'HIST_NOMES tem o Anselmo');
-  const D=L.DRINKS; ok(D.prep===4 && D.preco===22 && D.ingred===6 && D.vagas===2 && D.itens.map(d=>d.nome).join()==='Pôr do Sol da Avenida,Brisa de Maracujá,Esmeralda' && JSON.stringify(D.pede)===JSON.stringify({ executiva:0.45, negocios:0.6, familia:0.25, vovos:0.25, estudante:0.35, casal:0.6 }) && D.vip===0.2,'DRINKS como no plano');
-  ok(L.STAFF.anselmo.levels[2].pay===105 && L.STAFF.anselmo.levels[2].speed===0.8 && L.STAFF.anselmo.levels[3].pay===150 && L.PONTOS_ACAO.drink===5 && L.AVAL.amb.drink===0.25 && L.DRINK_PRICE.drink===22,'STAFF.anselmo, pontos, Ambiente e preço do lixo');
+  const D=L.DRINKS; ok(D.prep===4 && D.preco===42 && D.ingred===11 && D.vagas===2 && D.itens.map(d=>d.nome).join()==='Pôr do Sol da Avenida,Brisa de Maracujá,Esmeralda' && JSON.stringify(D.pede)===JSON.stringify({ executiva:0.45, negocios:0.6, familia:0.25, vovos:0.25, estudante:0.35, casal:0.6 }) && D.vip===0.2,'DRINKS como no plano');
+  ok(L.STAFF.anselmo.levels[2].pay===105 && L.STAFF.anselmo.levels[2].speed===0.8 && L.STAFF.anselmo.levels[3].pay===150 && L.PONTOS_ACAO.drink===5 && L.AVAL.amb.drink===0.25 && L.DRINK_PRICE.drink===42,'STAFF.anselmo, pontos, Ambiente e preço do lixo');
   const r=L.LAYOUT.STATIONS.drinks.rect; ok(r.x===620 && r.y===92 && r.w===60 && r.h===50 && L.LAYOUT.STATIONS.drinks.ap.x===700 && L.LAYOUT.STATIONS.drinks.ap.y===150 && L.ANSELMO_HOME.x===650 && L.ANSELMO_HOME.y===118,'estação do balcão e posição dele'); }
 
 // ---------- 2. cartão e contratação ----------
@@ -70,12 +70,12 @@ const AN={ equipe:{ tonhao:1, dani:3, joca:3, anselmo:2 } };
 { const H=aberto(AN), {g,L}=H; g.mode='carreira'; const t=g.tables[0], m=new L.Group(g,'executiva',++g.gid,0,false); m.size=2; m.drinks=['por','esmeralda']; t.group=m; m.table=t; m.juiceWant=0; m.cafePede=false; m.setState('ordered'); g.drinkPedir(m);
   m.setState('eating'); m.timer=0.01; m.hearts=3; for(let i=0;i<3;i++) m.update(0.05); ok(m.state==='eating' && m.esperaSuco,'acabou de comer sem os drinks: espera, não pede a conta');
   g.bia.hands=[{ kind:'drink', id:'por', group:m },{ kind:'drink', id:'esmeralda', group:m }]; ok(g.bia.verbFor(t)==='drink','com drink na mão, a vez é do drink'); g.pontos=0; g.custo=0; g.bebConta=0;
-  g.bia.doTable(t); ok(m.drinksFalta===0 && m.drinksDados===2 && m.bebConta===44 && g.stats.drinks===2 && g.pontos>=10 && g.custo===12 && m.hearts>3 && !g.bia.hands.length,'entrega: R$ 44 na conta, +10 pontos, ingrediente R$ 12, +coração');
+  g.bia.doTable(t); ok(m.drinksFalta===0 && m.drinksDados===2 && m.bebConta===84 && g.stats.drinks===2 && g.pontos>=10 && g.custo===22 && m.hearts>3 && !g.bia.hands.length,'entrega: R$ 84 na conta, +10 pontos, ingrediente R$ 22, +coração');
   m.update(0.05); ok(m.state==='wantBill','com todos os drinks, pede a conta'); const bill=m.bill; g.money=0; g.collectBill(m,t); ok(g.money>=bill+44,'a conta paga os R$ 44');
   // drink não entregue sai da conta e o grupo perde coração
   const m2=new L.Group(g,'executiva',++g.gid,0,false); m2.size=1; m2.drinks=['brisa']; m2.drinksPedidos=true; m2.state='eating'; m2.esperaSuco=true; m2.patLeft=0.01; const h=m2.hearts; m2.tick(0.05); ok(m2.hearts===h-1 && m2.perdDrink===1 && m2.bebConta===0,'esperando o drink, perde coração; sem entrega, nada na conta');
   // lixo
-  g.bia.hands=[{ kind:'drink', id:'por', group:m }]; g.trash=0; g.money=100; g.bia.perform({ type:'trash' }); ok(g.money===89,'no lixo, o drink custa metade (R$ 11)');
+  g.bia.hands=[{ kind:'drink', id:'por', group:m }]; g.trash=0; g.money=100; g.bia.perform({ type:'trash' }); ok(g.money===79,'no lixo, o drink custa metade (R$ 21)');
   ok(g.bia.canTake('drink') && L.trayOk([{kind:'drink'},{kind:'drink'},{kind:'drink'}]),'o drink conta como bebida (bandeja de 3)');
   // Ambiente
   g.avals=[]; const a=new L.Group(g,'executiva',++g.gid,0,false); a.avalia=true; a.drinksDados=0; g.mode='carreira'; const am=(gr)=>{ g.avals.length=0; gr.hearts=5; g.avaliar(gr,0,0); return g.avals[0].s[4]; };

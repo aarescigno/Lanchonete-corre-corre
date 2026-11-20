@@ -8,8 +8,8 @@ const novo=()=>{ g.save=L.normSave({maxDay:7,bank:500}); g.up=g.save.up; g.bough
 const preco=k=>k?L.precoPrato(k):0;
 
 // ---------- cardápio e conta ----------
-ok(C.pf.preco===30 && C.misto.preco===12 && C.pastel.preco===12 && C.coxinha.preco===10,'cardápio da Garagem: PF 30, misto 12, pastel 12, coxinha 10 (v10.5: salários e preços de verdade, × 1,2)');
-ok(L.precoPrato('pf',{cardapio:1.5})===45,'o ponto multiplica o cardápio (PONTOS.cardapio)');
+ok(C.pf.preco.garagem===30 && C.misto.preco.garagem===12 && C.pastel.preco.garagem===12 && C.coxinha.preco.garagem===10,'cardápio da Garagem: PF 30, misto 12, pastel 12, coxinha 10 (v10.5: salários e preços de verdade, × 1,2)');
+ok(L.precoPrato('pf',{id:'industrial'})===34 && L.precoPrato('pf')===30 && L.PONTOS.every(p=>p.cardapio===undefined),'v12.7: cada ponto tem o preço do prato (sem o multiplicador PONTOS.cardapio)');
 ok(L.GORJETA.join()==='0,-0.2,-0.1,0,0.05,0.1','gorjeta: até +10% com 5 corações; com 1 ou 2, desconto');
 ok(Object.keys(L.CUSTOMER_TYPES).every(k=>{ const T=L.CUSTOMER_TYPES[k]; return !T.bill && !T.prefere && L.GOSTOS[k] && T.mais>=0 && T.mais<1; }),'cada tipo tem o seu gosto (GOSTOS, v8.6.9; sem faixa de conta) e a chance do 2º item');
 novo(); g.startDay(5); g.begin();
@@ -56,7 +56,7 @@ novo(); g.startDay(5); g.begin(); g.schedule=[{t:1e9,type:'estudante',color:0}];
   g.hooks.state('dayend'); ok(new RegExp('Pontos de atendimento\\s*'+pts).test(els['end-stats'].children.map(b=>b.children.map(c=>c.textContent).join(' ')).join(' ')),'o fim do dia mostra os pontos de atendimento');
   ok(L.normSave({pontosTot:-5}).pontosTot===0 && L.normSave({}).pontosTot===0 && L.normSave({pontosTot:42}).pontosTot===42,'save: pontosTot nunca negativo; padrão 0'); }
 // ---------- custos ----------
-ok(L.CONTAS.base===20 && L.INGRED.prato===0.35 && L.DRINK_PRICE.coffee===3 && L.JUICE.price===8,'custos: gás e geladeira R$ 20/dia, ingredientes 35%, cafezinho R$ 3, suco R$ 8');
+ok(L.CONTAS.base===20 && L.INGRED.prato===0.35 && L.DRINK_PRICE.coffee===4 && L.JUICE.price===8,'custos: gás e geladeira R$ 20/dia, ingredientes 35%, cafezinho R$ 4 (v12.7), suco R$ 8');
 ok(L.payroll({tonhao:2,dani:4,tv:true,som:true})===125,'folha completa da Garagem: R$ 125 por dia (Tonhão 80 + Dani 40 + TV 3 + som 2; v10.5: salários de verdade)');
 ok(L.DAYS.map(d=>d.meta).join()==='35,160,200,90,130,185,250','metas de lucro realistas (R$ 35 a 250; v8.3.9; v10.5.1: dias 1 e 6 baixados para 35 e 185; v10.5: × 1,1 quatro vezes, arredondadas a 5, para os salários e preços de verdade)');
 ok(L.DAYS.map(d=>d.expert).join()==='80,320,340,160,205,415,455','3 estrelas pelo jogo perfeito (v8.3.9; v10.5: × 1,1 quatro vezes): R$ 80 a 455');

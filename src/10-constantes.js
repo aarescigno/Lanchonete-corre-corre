@@ -30,78 +30,115 @@ const MOOD = { ok:'#3E9B5A', warn:'#F2B33D', bad:'#C2362B' };
 const SKINS  = ['#F7D9BE','#EAB98F','#CE9566','#A8693F','#7B4A2C','#4E2D1B'];
 const HAIRC  = ['#1B1512','#2F1D12','#5B3A21','#A67B43','#8C8C8C','#E8E8E8','#7A2E1B'];
 const PANTS  = ['#2F3E5C','#4A4036','#5B5F6B','#3C5A4A','#6A3F52'];
-/* cardápio (v8.3.8, preços de verdade; v8.6.9, o cardápio cresce): R$ de cada prato na Garagem (o ponto multiplica por PONTOS.cardapio).
-   A cozinha começa sabendo o PF e a coxinha (curso: null); os outros vêm dos cursos do Tonhão (CURSOS). cat: a categoria do gosto
-   dos clientes (GOSTOS); carne: false marca os sem carne (usados na v8.6.11); cor: a cor do desenho provisório (as artes de
-   verdade são da v8.6.10). Pesquisa de out/2026: PF médio no Brasil R$ 31,90 (o da garagem sai mais barato), coxinha e pastel de R$ 4 a 8. v10.5: todos os preços × 1,2, arredondados ao real (PF R$ 30, coxinha R$ 10), para pagar os salários de verdade */
+/* cardápio (v12.7, o cardápio de cada ponto): `preco` é um objeto com o R$ de cada prato por ponto (as chaves são os ids de PONTOS); o prato só é vendido nos pontos que têm preço
+   (pratoSabido). Garagem e área industrial são lanchonete; a Avenida Brasil, restaurante executivo; o Terraço Suíça, cozinha fina (sem PF, coxinha nem pastel).
+   `curso` é a técnica do Tonhão que ensina o prato (CURSOS; null: já se sabe); `tec` é a técnica do avançado quando o prato é de base (curso:null) ou do curso 'pf' (o que ensina o PF
+   de cada ponto); `nivel`, `dep`, `pfv`, `veg`, `vegano`, `semAv`, `fino` como antes. cat: a categoria do gosto dos clientes (GOSTOS); carne: false marca os sem carne; cor: a cor do
+   desenho (as artes próprias dos pratos novos são da v12.8). A cozinha começa sabendo o prato de base do ponto (pratoBase) e o frito de base. Antes (v8.3.8 a v12.6): preço da Garagem × PONTOS.cardapio */
 const CARDAPIO = {
-  pf:      { nome:'PF',              preco:30, cat:'pf',     curso:null,      carne:true,  cor:'#A0522D' },
-  coxinha: { nome:'Coxinha',         preco:10, cat:'frito',  curso:null,      carne:true,  cor:'#E8912A' },
-  risoles: { nome:'Risoles',         preco:7,  cat:'frito',  curso:'fritos',  carne:true,  cor:'#D98A32' },
-  kibe:    { nome:'Kibe',            preco:8,  cat:'frito',  curso:'fritos',  carne:true,  cor:'#9A5B2B' },
-  bolinho: { nome:'Bolinho japonês', preco:10, cat:'frito',  curso:'fritos',  carne:true,  cor:'#E2A64A' },
-  empada:  { nome:'Empada',          preco:11, cat:'assado', curso:'assados', carne:true,  cor:'#E3A84A' },
-  esfihaA: { nome:'Esfiha aberta',   preco:8,  cat:'assado', curso:'assados', carne:true,  cor:'#C8452B' },
-  esfihaF: { nome:'Esfiha fechada',  preco:8,  cat:'assado', curso:'assados', carne:true,  cor:'#D79A4B' },
-  misto:   { nome:'Misto quente',    preco:12, cat:'chapa',  curso:'chapa',   carne:true,  cor:'#D9A25B' },
-  bauru:   { nome:'Bauru',           preco:14, cat:'chapa',  curso:'chapa',   carne:true,  cor:'#C98A4B' },
-  paoChapa:{ nome:'Pão na chapa',    preco:8,  cat:'chapa',  curso:'chapa',   carne:false, cor:'#E0B070' },
-  pastel:  { nome:'Pastel de carne', preco:12, cat:'pastel', curso:'pastel',  carne:true,  cor:'#E5A33C' },
-  pastelQ: { nome:'Pastel de queijo',preco:12, cat:'pastel', curso:'pastel',  carne:false, cor:'#EBB44E' },
-  pastelP: { nome:'Pastel de pizza', preco:13, cat:'pastel', curso:'pastel',  carne:true,  cor:'#DE9438' },
-  /* v8.6.11, o curso Vegetariano (veg:true leva o "v" verde no desenho; dep: precisa do básico desse outro curso; pfv: PF sem carne,
-     que quem não é vegetariano pede em VEG.pfTroca das vezes que pede PF) e o avançado, Pratos veganos (nivel:2, vegano:true: a
+  pf:      { nome:'PF',              preco:{ garagem:30, industrial:34 }, cat:'pf',     curso:null,      tec:'pf',     carne:true,  cor:'#A0522D' },
+  coxinha: { nome:'Coxinha',         preco:{ garagem:10, industrial:11 }, cat:'frito',  curso:null,      tec:'fritos', carne:true,  cor:'#E8912A' },
+  risoles: { nome:'Risoles',         preco:{ garagem:7,  industrial:8 },  cat:'frito',  curso:'fritos',  carne:true,  cor:'#D98A32' },
+  kibe:    { nome:'Kibe',            preco:{ garagem:8,  industrial:9 },  cat:'frito',  curso:'fritos',  carne:true,  cor:'#9A5B2B' },
+  bolinho: { nome:'Bolinho japonês', preco:{ garagem:10, industrial:11 }, cat:'frito',  curso:'fritos',  carne:true,  cor:'#E2A64A' },
+  empada:  { nome:'Empada',          preco:{ garagem:11, industrial:12 }, cat:'assado', curso:'assados', carne:true,  cor:'#E3A84A' },
+  esfihaA: { nome:'Esfiha aberta',   preco:{ garagem:8,  industrial:9 },  cat:'assado', curso:'assados', carne:true,  cor:'#C8452B' },
+  esfihaF: { nome:'Esfiha fechada',  preco:{ garagem:8,  industrial:9 },  cat:'assado', curso:'assados', carne:true,  cor:'#D79A4B' },
+  misto:   { nome:'Misto quente',    preco:{ garagem:12, industrial:13 }, cat:'chapa',  curso:'chapa',   carne:true,  cor:'#D9A25B' },
+  bauru:   { nome:'Bauru',           preco:{ garagem:14, industrial:16 }, cat:'chapa',  curso:'chapa',   carne:true,  cor:'#C98A4B' },
+  paoChapa:{ nome:'Pão na chapa',    preco:{ garagem:8,  industrial:9 },  cat:'chapa',  curso:'chapa',   carne:false, cor:'#E0B070' },
+  pastel:  { nome:'Pastel de carne', preco:{ garagem:12, industrial:13 }, cat:'pastel', curso:'pastel',  carne:true,  cor:'#E5A33C' },
+  pastelQ: { nome:'Pastel de queijo',preco:{ garagem:12, industrial:13 }, cat:'pastel', curso:'pastel',  carne:false, cor:'#EBB44E' },
+  pastelP: { nome:'Pastel de pizza', preco:{ garagem:13, industrial:15 }, cat:'pastel', curso:'pastel',  carne:true,  cor:'#DE9438' },
+  /* v8.6.11, o curso Vegetariano (veg:true leva o "v" verde no desenho; dep: precisa do básico desse outro curso; pfv: prato principal sem carne,
+     que quem não é vegetariano pede em VEG.pfTroca das vezes que pede o prato de PF) e o avançado, Pratos veganos (nivel:2, vegano:true: a
      folhinha; semAv: o avançado não sobe o preço, que já é o do prato comum) */
-  pfVeg:        { nome:'PF vegetariano',    preco:28, cat:'pf',     curso:'veg', carne:false, cor:'#A0522D', veg:true, pfv:true },
-  empadaPalmito:{ nome:'Empada de palmito', preco:11, cat:'assado', curso:'veg', carne:false, cor:'#C9B35A', veg:true, dep:'assados' },
-  kibeAbobora:  { nome:'Kibe de abóbora',   preco:8,  cat:'frito',  curso:'veg', carne:false, cor:'#D98A32', veg:true, dep:'fritos' },
-  pfVegano:     { nome:'PF vegano',         preco:28, cat:'pf',     curso:'veg', carne:false, cor:'#A0522D', veg:true, vegano:true, pfv:true, nivel:2, semAv:true },
-  coxinhaJaca:  { nome:'Coxinha de jaca',   preco:10, cat:'frito',  curso:'veg', carne:false, cor:'#E8B04A', veg:true, vegano:true, dep:'fritos',  nivel:2, semAv:true },
-  pastelPalmito:{ nome:'Pastel de palmito', preco:12, cat:'pastel', curso:'veg', carne:false, cor:'#E9B85A', veg:true, vegano:true, dep:'pastel',  nivel:2, semAv:true },
-  esfihaSoja:   { nome:'Esfiha de soja',    preco:8,  cat:'assado', curso:'veg', carne:false, cor:'#A9743A', veg:true, vegano:true, dep:'assados', nivel:2, semAv:true },
-  mistoVegano:  { nome:'Misto vegano',      preco:12, cat:'chapa',  curso:'veg', carne:false, cor:'#D9B27A', veg:true, vegano:true, dep:'chapa',   nivel:2, semAv:true },
-  // v9.1, o curso Cozinha de restaurante (só com ponto.nivel >= 3): o filé à parmegiana, da categoria PF (R$ 60 na Avenida Brasil)
-  parmegiana:   { nome:'Filé à parmegiana', preco:36, cat:'pf',     curso:'restaurante', carne:true, cor:'#B5432E' },
+  pfVeg:        { nome:'PF vegetariano',    preco:{ garagem:28, industrial:32 }, cat:'pf',     curso:'veg', carne:false, cor:'#A0522D', veg:true, pfv:true },
+  empadaPalmito:{ nome:'Empada de palmito', preco:{ garagem:11, industrial:12 }, cat:'assado', curso:'veg', carne:false, cor:'#C9B35A', veg:true, dep:'assados' },
+  kibeAbobora:  { nome:'Kibe de abóbora',   preco:{ garagem:8,  industrial:9 },  cat:'frito',  curso:'veg', carne:false, cor:'#D98A32', veg:true, dep:'fritos' },
+  pfVegano:     { nome:'PF vegano',         preco:{ garagem:28, industrial:32 }, cat:'pf',     curso:'veg', carne:false, cor:'#A0522D', veg:true, vegano:true, pfv:true, nivel:2, semAv:true },
+  coxinhaJaca:  { nome:'Coxinha de jaca',   preco:{ garagem:10, industrial:11 }, cat:'frito',  curso:'veg', carne:false, cor:'#E8B04A', veg:true, vegano:true, dep:'fritos',  nivel:2, semAv:true },
+  pastelPalmito:{ nome:'Pastel de palmito', preco:{ garagem:12, industrial:13 }, cat:'pastel', curso:'veg', carne:false, cor:'#E9B85A', veg:true, vegano:true, dep:'pastel',  nivel:2, semAv:true },
+  esfihaSoja:   { nome:'Esfiha de soja',    preco:{ garagem:8,  industrial:9 },  cat:'assado', curso:'veg', carne:false, cor:'#A9743A', veg:true, vegano:true, dep:'assados', nivel:2, semAv:true },
+  mistoVegano:  { nome:'Misto vegano',      preco:{ garagem:12, industrial:13 }, cat:'chapa',  curso:'veg', carne:false, cor:'#D9B27A', veg:true, vegano:true, dep:'chapa',   nivel:2, semAv:true },
+  /* v12.7, a Avenida Brasil (restaurante executivo). Os de base (curso null ou 'pf') a cozinha já sabe; os outros vêm da técnica de `curso` */
+  execFrango:   { nome:'Executivo de frango grelhado', preco:{ avenida:39 }, cat:'pf',    curso:null,    tec:'pf',     carne:true,  cor:'#C98A4B' },
+  strogonoff:   { nome:'Strogonoff de carne',          preco:{ avenida:44 }, cat:'pf',    curso:'pf',    carne:true,  cor:'#B5663A' },
+  mandioca:     { nome:'Mandioca frita',               preco:{ avenida:26 }, cat:'frito', curso:null,    tec:'fritos', carne:false, cor:'#F0D58A', veg:true, vegano:true },
+  isca:         { nome:'Isca de peixe',                preco:{ avenida:36 }, cat:'frito', curso:'fritos',  carne:true,  cor:'#E0B46A' },
+  torta:        { nome:'Torta de frango',              preco:{ avenida:22 }, cat:'assado',curso:'assados', carne:true,  cor:'#D9A55B' },
+  empadao:      { nome:'Empadão de palmito',           preco:{ avenida:22 }, cat:'assado',curso:'assados', carne:false, cor:'#CDB866', veg:true },
+  beirute:      { nome:'Beirute',                      preco:{ avenida:38 }, cat:'chapa', curso:'chapa',   carne:true,  cor:'#C4814A' },
+  coalho:       { nome:'Queijo coalho na chapa',       preco:{ avenida:24 }, cat:'chapa', curso:'chapa',   carne:false, cor:'#EBC96B', veg:true },
+  panqueca:     { nome:'Panqueca de carne',            preco:{ avenida:34 }, cat:'pastel',curso:'pastel',  carne:true,  cor:'#E9C27A' },
+  panquecaEsp:  { nome:'Panqueca de espinafre',        preco:{ avenida:32 }, cat:'pastel',curso:'pastel',  carne:false, cor:'#B9C77A', veg:true },
+  execVeg:      { nome:'Executivo vegetariano',        preco:{ avenida:36 }, cat:'pf',    curso:'veg', carne:false, cor:'#A9B56A', veg:true, pfv:true },
+  escondidinho: { nome:'Escondidinho de abóbora',      preco:{ avenida:34 }, cat:'assado',curso:'veg', carne:false, cor:'#E3A04A', veg:true },
+  execVegano:   { nome:'Executivo vegano',             preco:{ avenida:36 }, cat:'pf',    curso:'veg', carne:false, cor:'#8FB05A', veg:true, vegano:true, pfv:true, nivel:2, semAv:true },
+  moquecaBanana:{ nome:'Moqueca de banana-da-terra',   preco:{ avenida:42 }, cat:'pf',    curso:'veg', carne:false, cor:'#E0B040', veg:true, vegano:true, pfv:true, nivel:2, semAv:true },
+  // v9.1, o curso Cozinha de restaurante (só com ponto.nivel >= 3): o filé à parmegiana na Avenida; no Terraço (v12.7), o mesmo curso ensina o filé ao molho de vinho
+  parmegiana:   { nome:'Filé à parmegiana', preco:{ avenida:58 }, cat:'pf', curso:'restaurante', carne:true, cor:'#B5432E' },
+  vinho:        { nome:'Filé ao molho de vinho', preco:{ terraco:92 }, cat:'pf', curso:'restaurante', carne:true, cor:'#7A2E3A' },
+  /* v12.7, o Terraço Suíça (cozinha fina). Os principais são da categoria pf; as entradas, das outras */
+  galeto:       { nome:'Galeto com legumes',           preco:{ terraco:72 }, cat:'pf',    curso:null,    tec:'pf',     carne:true,  cor:'#C98A4B' },
+  escalope:     { nome:'Escalope ao molho de cogumelos', preco:{ terraco:78 }, cat:'pf',  curso:'pf',    carne:true,  cor:'#9A6A45' },
+  dadinho:      { nome:'Dadinho de tapioca',           preco:{ terraco:32 }, cat:'frito', curso:null,    tec:'fritos', carne:false, cor:'#EBD79A', veg:true },
+  croquete:     { nome:'Croquete de costela',          preco:{ terraco:38 }, cat:'frito', curso:'fritos',  carne:true,  cor:'#B8793A' },
+  folhado:      { nome:'Folhado de brie',              preco:{ terraco:36 }, cat:'assado',curso:'assados', carne:false, cor:'#E6C27A', veg:true },
+  empadinhaCam: { nome:'Empadinha de camarão',         preco:{ terraco:38 }, cat:'assado',curso:'assados', carne:true,  cor:'#E7A972' },
+  coalhoMel:    { nome:'Queijo coalho com melaço',     preco:{ terraco:32 }, cat:'chapa', curso:'chapa',   carne:false, cor:'#E8B650', veg:true },
+  crostini:     { nome:'Crostini de presunto cru',     preco:{ terraco:36 }, cat:'chapa', curso:'chapa',   carne:true,  cor:'#D79A8A' },
+  pastelCamarao:{ nome:'Pastelzinho de camarão',       preco:{ terraco:38 }, cat:'pastel',curso:'pastel',  carne:true,  cor:'#EBAE7A' },
+  ravioli:      { nome:'Ravioli frito de queijo',      preco:{ terraco:34 }, cat:'pastel',curso:'pastel',  carne:false, cor:'#EED08A', veg:true },
+  nhoque:       { nome:'Nhoque de abóbora na sálvia',  preco:{ terraco:62 }, cat:'pf',    curso:'veg', carne:false, cor:'#E8B455', veg:true, pfv:true },
+  polenta:      { nome:'Polenta com legumes grelhados',preco:{ terraco:58 }, cat:'pf',    curso:'veg', carne:false, cor:'#EBCB6A', veg:true, pfv:true },
+  curry:        { nome:'Curry de grão-de-bico',        preco:{ terraco:62 }, cat:'pf',    curso:'veg', carne:false, cor:'#D99A3A', veg:true, vegano:true, pfv:true, nivel:2, semAv:true },
+  moquecaPalmito:{ nome:'Moqueca de palmito',          preco:{ terraco:64 }, cat:'pf',    curso:'veg', carne:false, cor:'#E5A94A', veg:true, vegano:true, pfv:true, nivel:2, semAv:true },
   /* v10.2, a alta gastronomia do Terraço (fino:true: entra na regra do prato fino de pedePrato e pedePrincipal; as entradas são das categorias
      chapa/frito/assado, os principais da categoria pf, sem pfv, para o risoto não ser trocado pelo PF vegetariano) */
-  bruschetta:   { nome:'Bruschetta',                preco:17, cat:'chapa',  curso:'entradas', carne:false, cor:'#D9A25B', veg:true, fino:true },
-  bacalhau:     { nome:'Bolinho de bacalhau',       preco:19, cat:'frito',  curso:'entradas', carne:true,  cor:'#E2A64A', fino:true },
-  quiche:       { nome:'Quiche de alho-poró',       preco:18, cat:'assado', curso:'entradas', carne:false, cor:'#E3B25A', veg:true, fino:true },
-  risoto:       { nome:'Risoto de cogumelos',       preco:46, cat:'pf',     curso:'alta',     carne:false, cor:'#E8D9A8', veg:true, fino:true },
-  peixe:        { nome:'Peixe do dia',              preco:50, cat:'pf',     curso:'alta',     carne:true,  cor:'#D9A25B', fino:true },
-  medalhao:     { nome:'Medalhão ao molho madeira', preco:55, cat:'pf',     curso:'alta',     carne:true,  cor:'#8A4B2A', fino:true },
+  bruschetta:   { nome:'Bruschetta',                preco:{ terraco:34 }, cat:'chapa',  curso:'entradas', carne:false, cor:'#D9A25B', veg:true, fino:true },
+  bacalhau:     { nome:'Bolinho de bacalhau',       preco:{ terraco:42 }, cat:'frito',  curso:'entradas', carne:true,  cor:'#E2A64A', fino:true },
+  quiche:       { nome:'Quiche de alho-poró',       preco:{ terraco:38 }, cat:'assado', curso:'entradas', carne:false, cor:'#E3B25A', veg:true, fino:true },
+  risoto:       { nome:'Risoto de cogumelos',       preco:{ terraco:82 }, cat:'pf',     curso:'alta',     carne:false, cor:'#E8D9A8', veg:true, fino:true },
+  peixe:        { nome:'Peixe do dia',              preco:{ terraco:94 }, cat:'pf',     curso:'alta',     carne:true,  cor:'#D9A25B', fino:true },
+  medalhao:     { nome:'Medalhão ao molho madeira', preco:{ terraco:108 }, cat:'pf',    curso:'alta',     carne:true,  cor:'#8A4B2A', fino:true },
   /* v12.5, o prato da Lia (curso Cozinha de autor): curso:'liaAutor' não existe em CURSOS (como os da barraca junina), então nunca é "sabido" pelo caminho comum; entra em pedePrincipal só com o curso feito e a Lia no dia (liaRisotoOn) */
-  liaRisoto:    { nome:'Risoto de feijão-manteiguinha', preco:52, cat:'pf', curso:'liaAutor', carne:false, cor:'#C9A26B', veg:true, fino:true },
-  /* v10.6, a barraca da festa junina: curso:'junina' não existe em CURSOS, então nunca são sabidos nem entram no cardápio comum; só saem nos pedidos do dia da festa com a barraca montada */
-  pamonha:      { nome:'Pamonha',                   preco:9,  cat:'junina', curso:'junina',   carne:false, cor:'#E6D27A' },
-  milho:        { nome:'Milho cozido',              preco:7,  cat:'junina', curso:'junina',   carne:false, cor:'#F2C94C' },
-  canjica:      { nome:'Canjica',                   preco:8,  cat:'junina', curso:'junina',   carne:false, cor:'#F6EBC8' }
+  liaRisoto:    { nome:'Risoto de feijão-manteiguinha', preco:{ terraco:88 }, cat:'pf', curso:'liaAutor', carne:false, cor:'#C9A26B', veg:true, fino:true },
+  /* v10.6, a barraca da festa junina (v12.7: um cardápio por ponto, ver EVENTOS.junina.pratos): curso:'junina' não existe em CURSOS, então nunca são sabidos nem entram no cardápio comum; só saem nos pedidos do dia da festa com a barraca montada */
+  pamonha:      { nome:'Pamonha',                   preco:{ garagem:10, industrial:10 }, cat:'junina', curso:'junina',   carne:false, cor:'#E6D27A' },
+  milho:        { nome:'Milho cozido',              preco:{ garagem:8,  industrial:8 },  cat:'junina', curso:'junina',   carne:false, cor:'#F2C94C' },
+  canjica:      { nome:'Canjica',                   preco:{ garagem:9,  industrial:9 },  cat:'junina', curso:'junina',   carne:false, cor:'#F6EBC8' },
+  curau:        { nome:'Curau',                     preco:{ avenida:14 }, cat:'junina', curso:'junina', carne:false, cor:'#F2D86B' },
+  milhoCoalho:  { nome:'Milho com queijo coalho',   preco:{ avenida:16 }, cat:'junina', curso:'junina', carne:false, cor:'#F2C94C' },
+  bolo:         { nome:'Bolo de fubá com goiabada', preco:{ avenida:14 }, cat:'junina', curso:'junina', carne:false, cor:'#E8B85A' },
+  cremeMilho:   { nome:'Creme de milho com crocante', preco:{ terraco:26 }, cat:'junina', curso:'junina', carne:false, cor:'#F2D86B' },
+  pamonhaMel:   { nome:'Pamonha de queijo com mel', preco:{ terraco:24 }, cat:'junina', curso:'junina', carne:false, cor:'#E6D27A' },
+  canjicaCoco:  { nome:'Canjica de coco com cumaru',preco:{ terraco:26 }, cat:'junina', curso:'junina', carne:false, cor:'#F6EBC8' }
 };
-/* os cursos do Tonhão (v8.6.9): um por lojinha. O básico ensina os pratos; o avançado ("mais requintadinha") soma CURSO_AV.preco ao
-   preço de venda dos pratos dele e CURSO_AV.crit à chance de caprichado. O PF não tem básico (preco 0): o avançado aparece desde o início.
+/* os cursos do Tonhão (v8.6.9): um por lojinha. v12.7: o curso é uma técnica, que vale em todo ponto: o básico ensina os pratos da técnica (CARDAPIO[k].curso, os que o ponto vende) e o avançado ("mais requintadinha") soma CURSO_AV.preco ao
+   preço de venda dos pratos dela (a `tec` do prato, ver pratoAv) e CURSO_AV.crit à chance de caprichado. O PF não tem básico (preco 0): o avançado aparece desde o início.
    save.cursos: { id: 1 (básico) | 2 (avançado) } */
 const CURSOS = [
-  { id:'pastel',  nome:'Pastel de feira',   preco:150, pratos:['pastel', 'pastelQ', 'pastelP'],
-    av:{ nome:'Pastel de feira de verdade', preco:300, receita:'carne com ovo e azeitona, queijo com orégano, pizza com calabresa', pratos:['pastel', 'pastelQ', 'pastelP'] } },
-  { id:'chapa',   nome:'Chapa',             preco:180, pratos:['misto', 'bauru', 'paoChapa'],
-    av:{ nome:'Pão francês da padaria e requeijão de corte', preco:360, receita:'misto de presunto defumado com queijo minas, bauru clássico com rosbife e picles', pratos:['misto', 'bauru', 'paoChapa'] } },
-  { id:'fritos',  nome:'Salgados fritos',   preco:220, pratos:['risoles', 'kibe', 'bolinho'],
-    av:{ nome:'Coxinha de massa de batata com catupiry', preco:440, receita:'vale também para a coxinha; risoles de camarão, kibe com coalhada, bolinho japonês com queijo', pratos:['coxinha', 'risoles', 'kibe', 'bolinho'] } },
-  { id:'assados', nome:'Salgados assados',  preco:250, pratos:['empada', 'esfihaA', 'esfihaF'],
-    av:{ nome:'Massa podre da vó Nilza', preco:500, receita:'empada de frango com azeitona, esfihas com coalhada e limão', pratos:['empada', 'esfihaA', 'esfihaF'] } },
-  { id:'pf',      nome:'PF',                preco:0,   pratos:[],
-    av:{ nome:'Carnes variadas', preco:400, receita:'o PF vem com bife, filé de frango grelhado, peixe frito ou bife a cavalo', pratos:['pf'] } },
-  { id:'veg',     nome:'Vegetariano',       preco:150, pratos:['pfVeg', 'empadaPalmito', 'kibeAbobora'],
-    av:{ nome:'Pratos veganos', preco:300, receita:'PF vegano (sem o ovo), coxinha de jaca, pastel de palmito, esfiha de soja e misto vegano com queijo de castanha',
-      pratos:['pfVeg', 'empadaPalmito', 'kibeAbobora', 'pfVegano', 'coxinhaJaca', 'pastelPalmito', 'esfihaSoja', 'mistoVegano'] } },
+  { id:'pastel',  nome:'Pastel de feira',   preco:150,
+    av:{ nome:'Pastel de feira de verdade', preco:300, receita:'carne com ovo e azeitona, queijo com orégano, pizza com calabresa' } },
+  { id:'chapa',   nome:'Chapa',             preco:180,
+    av:{ nome:'Pão francês da padaria e requeijão de corte', preco:360, receita:'misto de presunto defumado com queijo minas, bauru clássico com rosbife e picles' } },
+  { id:'fritos',  nome:'Salgados fritos',   preco:220,
+    av:{ nome:'Coxinha de massa de batata com catupiry', preco:440, receita:'vale também para a coxinha; risoles de camarão, kibe com coalhada, bolinho japonês com queijo' } },
+  { id:'assados', nome:'Salgados assados',  preco:250,
+    av:{ nome:'Massa podre da vó Nilza', preco:500, receita:'empada de frango com azeitona, esfihas com coalhada e limão' } },
+  { id:'pf',      nome:'PF',                preco:0,
+    av:{ nome:'Carnes variadas', preco:400, receita:'o PF vem com bife, filé de frango grelhado, peixe frito ou bife a cavalo' } },
+  { id:'veg',     nome:'Vegetariano',       preco:150,
+    av:{ nome:'Pratos veganos', preco:300, receita:'PF vegano (sem o ovo), coxinha de jaca, pastel de palmito, esfiha de soja e misto vegano com queijo de castanha' } },
   // v9.1: só aparece no cartão Cardápio com ponto.nivel >= 3 (nivel:3; no modo dev, sempre; cursoOk)
-  { id:'restaurante', nome:'Cozinha de restaurante', preco:400, pratos:['parmegiana'], nivel:3,
-    av:{ nome:'Parmegiana da casa', preco:600, receita:'molho de tomate de 6 horas e queijo gratinado na hora', pratos:['parmegiana'] } },
+  { id:'restaurante', nome:'Cozinha de restaurante', preco:400, nivel:3,
+    av:{ nome:'Parmegiana da casa', preco:600, receita:'molho de tomate de 6 horas e queijo gratinado na hora' } },
   // v10.2: os cursos do Terraço (nivel:4): as entradas finas e a alta gastronomia (pratos fino:true, ver a regra do prato fino em pedePrato e pedePrincipal)
-  { id:'entradas', nome:'Entradas finas', preco:600, pratos:['bruschetta', 'bacalhau', 'quiche'], nivel:4,
-    av:{ nome:'Entradas de chef', preco:900, receita:'bruschetta de tomate confitado, bolinho de bacalhau cremoso e quiche de alho-poró na massa folhada', pratos:['bruschetta', 'bacalhau', 'quiche'] } },
-  { id:'alta', nome:'Alta gastronomia', preco:900, pratos:['risoto', 'peixe', 'medalhao'], nivel:4,
-    av:{ nome:'Menu do chef', preco:1400, receita:'risoto de cogumelos frescos, peixe do dia na manteiga de ervas e medalhão ao molho madeira', pratos:['risoto', 'peixe', 'medalhao'] } }
+  { id:'entradas', nome:'Entradas finas', preco:600, nivel:4,
+    av:{ nome:'Entradas de chef', preco:900, receita:'bruschetta de tomate confitado, bolinho de bacalhau cremoso e quiche de alho-poró na massa folhada' } },
+  { id:'alta', nome:'Alta gastronomia', preco:900, nivel:4,
+    av:{ nome:'Menu do chef', preco:1400, receita:'risoto de cogumelos frescos, peixe do dia na manteiga de ervas e medalhão ao molho madeira' } }
 ];
 /* v9.1: o curso está ao alcance neste ponto? (nivel:3 só da Avenida Brasil em diante; no modo dev, sempre) */
 function cursoOk(c, ponto){ return !c.nivel || devLivre() || (ponto || PONTOS[0]).nivel >= c.nivel; }
@@ -147,8 +184,12 @@ function daniNivelXp(save){
   STAFF.dani.levels.forEach((l, i) => { if (l && x >= l.xp) n = i; });
   return n;
 }
-/* o prato é do avançado de algum curso que já foi feito? */
-function pratoAv(k, cursos){ return CURSOS.some(c => cursoNivel(cursos, c.id) >= 2 && c.av.pratos.indexOf(k) >= 0); }
+/* v12.7: a técnica do prato: a `tec` (os de base, curso:null) ou o `curso` que o ensina; o PF de cada ponto é da técnica 'pf', a coxinha e a mandioca, de 'fritos' */
+function tecnicaDe(k){ const p = CARDAPIO[k]; return p ? p.tec || p.curso || null : null; }
+/* o prato é da técnica de um curso avançado que já foi feito? (vale em todo ponto) */
+function pratoAv(k, cursos){ const t = tecnicaDe(k); return !!t && !!cursoOf(t) && cursoNivel(cursos, t) >= 2; }
+/* v12.7: os pratos de uma técnica que o ponto vende (nivel: 1 o básico, 2 o avançado: os que só o avançado ensina), na ordem do cardápio */
+function pratosCurso(id, ponto, nivel){ return Object.keys(CARDAPIO).filter(k => CARDAPIO[k].curso === id && vendeNoPonto(k, ponto) && (CARDAPIO[k].nivel || 1) === (nivel || 1)); }
 /* o save: só os níveis que existem (o PF só tem o avançado, 2) */
 /* v10.5: a diária da Dani é a do degrau mais alto que ela alcançou: o do nível ou o do curso de confeitaria (o que for maior); cursos = save.daniCursos */
 function diariaDani(eq, cursos){
@@ -239,14 +280,27 @@ function normCursos(c){
   CURSOS.forEach(x => { const n = Math.min(2, Math.floor(+(c && c[x.id]) || 0)); if (n >= (x.preco > 0 ? 1 : 2)) o[x.id] = n; });
   return o;
 }
-function pratoSabido(k, cursos){
+/* v12.7: o prato é vendido no ponto (tem preço lá)? sem ponto, a Garagem */
+function vendeNoPonto(k, ponto){ const p = CARDAPIO[k]; return !!p && p.preco[(ponto || PONTOS[0]).id] != null; }
+function pratoSabido(k, cursos, ponto){
   const p = CARDAPIO[k];
-  return !!p && (!p.curso || cursoNivel(cursos, p.curso) >= (p.nivel || 1)) && (!p.dep || cursoNivel(cursos, p.dep) >= 1);   // v8.6.11: dep, o prato que precisa de outro curso
+  if (DEV.on && DEV.forca.saberTudo && p && p.cat !== 'junina' && p.curso !== 'liaAutor') return vendeNoPonto(k, ponto);   // v12.7, modo dev "Saber tudo do ponto"
+  return !!p && vendeNoPonto(k, ponto) && (!p.curso || cursoNivel(cursos, p.curso) >= (p.nivel || 1)) && (!p.dep || cursoNivel(cursos, p.dep) >= 1);   // v8.6.11: dep, o prato que precisa de outro curso
 }
-function pratosSabidos(cursos){ return Object.keys(CARDAPIO).filter(k => pratoSabido(k, cursos)); }
+/* v12.7: os pratos do cardápio que o ponto vende (sem os da barraca junina nem o da Lia), na ordem do cardápio (o painel do modo dev) */
+function pratosDoPonto(ponto){ return Object.keys(CARDAPIO).filter(k => vendeNoPonto(k, ponto) && CARDAPIO[k].cat !== 'junina' && CARDAPIO[k].curso !== 'liaAutor'); }
+function pratosSabidos(cursos, ponto){ return Object.keys(CARDAPIO).filter(k => pratoSabido(k, cursos, ponto)); }
 /* os cursos de um modo sem a lojinha: o Turno sem fim sabe os 4 básicos (sem avançado); a Missão zero, só o PF e a coxinha */
 const CURSOS_SEMFIM = { pastel:1, chapa:1, fritos:1, assados:1 };
-function precoPrato(k, ponto, cursos){ return Math.round(CARDAPIO[k].preco * (ponto || PONTOS[0]).cardapio * (pratoAv(k, cursos) && !CARDAPIO[k].semAv ? CURSO_AV.preco : 1)); }
+/* v12.7: o prato de base de cada ponto (o que se sabe sem curso, no lugar do PF) e o frito de base (no lugar da coxinha) */
+const PRATO_BASE = { garagem:['pf', 'coxinha'], industrial:['pf', 'coxinha'], avenida:['execFrango', 'mandioca'], terraco:['galeto', 'dadinho'] };
+function pratoBase(ponto){ return (PRATO_BASE[(ponto || PONTOS[0]).id] || PRATO_BASE.garagem)[0]; }
+function fritoBase(ponto){ return (PRATO_BASE[(ponto || PONTOS[0]).id] || PRATO_BASE.garagem)[1]; }
+/* o nome curto do prato de base nas placas do salão (o preço sai de precoPrato) */
+const ROTULO_BASE = { pf:'PF', coxinha:'Coxinha', execFrango:'Executivo', mandioca:'Mandioca', galeto:'Galeto', dadinho:'Dadinho' };
+/* v12.7: o R$ do prato no ponto, sem o avançado (sem preço no ponto, o primeiro preço que ele tem: só para não dar NaN) */
+function precoCarta(k, ponto){ const p = CARDAPIO[k].preco, v = p[(ponto || PONTOS[0]).id]; return v != null ? v : Object.values(p)[0]; }
+function precoPrato(k, ponto, cursos){ return Math.round(precoCarta(k, ponto) * (pratoAv(k, cursos) && !CARDAPIO[k].semAv ? CURSO_AV.preco : 1)); }
 /* as proteínas do PF com o avançado "Carnes variadas" (v8.6.10): cada pessoa que pede PF sorteia uma (guardada em grupo.carnes) */
 const CARNES = ['bife', 'frango', 'peixe', 'cavalo'];
 /* os gostos de cada tipo (v8.6.9): pesos por categoria, na ordem de GOSTOS_CAT; o entregador muda de ideia por terço do turno */
@@ -267,7 +321,7 @@ GOSTOS.encomenda = GOSTOS.turma;
    sabido dela, com a mesma chance. Sem categoria possível, PF (com semPf, o 2º item, coxinha) */
 function pedePrato(tipo, game, semPf, veg){
   // v8.6.11: veg (a pessoa é vegetariana) pede só prato sem carne; sem opção, o 2º item some e o prato é uma coxinha (e o grupo reclama)
-  let sab = pratosSabidos(game.cursos).filter(k => !veg || !CARDAPIO[k].carne);
+  let sab = pratosSabidos(game.cursos, game.ponto).filter(k => !veg || !CARDAPIO[k].carne);
   // v10.2, a regra do prato fino: no Terraço (nivel 4), se a cozinha sabe alguma entrada fina, a entrada sai só entre as finas (peso do gosto da categoria + 1)
   const fino = !!semPf && game.mode === 'carreira' && !!game.ponto && game.ponto.nivel >= 4 && sab.some(k => CARDAPIO[k].fino && CARDAPIO[k].cat !== 'pf');
   if (fino) sab = sab.filter(k => CARDAPIO[k].fino && CARDAPIO[k].cat !== 'pf');
@@ -278,13 +332,13 @@ function pedePrato(tipo, game, semPf, veg){
   }
   const cats = GOSTOS_CAT.map((c, i) => ({ w:semPf && c === 'pf' ? 0 : w[i] + (fino ? 1 : 0), l:sab.filter(k => CARDAPIO[k].cat === c && (veg || !CARDAPIO[k].pfv)) })).filter(x => x.w > 0 && x.l.length);
   if (!cats.length){
-    if (veg){ const alt = sab.filter(k => !semPf || CARDAPIO[k].cat !== 'pf'); return alt.length ? pick(alt) : semPf ? null : 'coxinha'; }
-    return semPf ? 'coxinha' : 'pf';
+    if (veg){ const alt = sab.filter(k => !semPf || CARDAPIO[k].cat !== 'pf'); return alt.length ? pick(alt) : semPf ? null : fritoBase(game.ponto); }
+    return semPf ? fritoBase(game.ponto) : pratoBase(game.ponto);   // v12.7: o prato de base do ponto
   }
   let r = Math.random() * cats.reduce((a, x) => a + x.w, 0);
   const c = cats.find(x => (r -= x.w) < 0) || cats[cats.length - 1];
   const k = pick(c.l);
-  if (!veg && k === 'pf' && Math.random() < VEG.pfTroca){ const pv = sab.filter(x => CARDAPIO[x].pfv); if (pv.length) return pick(pv); }
+  if (!veg && tecnicaDe(k) === 'pf' && !CARDAPIO[k].pfv && Math.random() < VEG.pfTroca){ const pv = sab.filter(x => CARDAPIO[x].pfv); if (pv.length) return pick(pv); }
   return k;
 }
 /* o 2º item (v8.3.8): na hora de pedir, cada pessoa pode querer mais um salgado (chance `mais` do tipo; no máximo 2 itens
@@ -305,13 +359,13 @@ const TEMPOS = { entrada:{ cook:0.6, eat:0.5 }, porCoracao:1, semSobremesa:1, se
 /* v12.5: o risoto da Lia está no cardápio do dia (curso de autor feito e a Lia trabalhando) */
 function liaRisotoOn(game){ return game.mode === 'carreira' && game.liaAtiva && !!game.save.liaCursos && !!game.save.liaCursos.autor; }
 function pedePrincipal(tipo, game, veg){
-  let sab = pratosSabidos(game.cursos).filter(k => CARDAPIO[k].cat === 'pf');
+  let sab = pratosSabidos(game.cursos, game.ponto).filter(k => CARDAPIO[k].cat === 'pf');
   if (liaRisotoOn(game)) sab.push('liaRisoto');   // v12.5
   const fi = game.ponto && game.ponto.nivel >= 4 ? sab.filter(k => CARDAPIO[k].fino) : [];   // v10.2, a regra do prato fino: sabendo algum principal fino, só entre os finos
   if (fi.length) sab = fi;
-  if (veg){ const v = sab.filter(k => !CARDAPIO[k].carne); return v.length ? pick(v) : 'pf'; }
-  const c = sab.filter(k => !CARDAPIO[k].pfv), k = c.length ? pick(c) : 'pf';
-  if (k === 'pf' && Math.random() < VEG.pfTroca){ const pv = sab.filter(x => CARDAPIO[x].pfv); if (pv.length) return pick(pv); }
+  if (veg){ const v = sab.filter(k => !CARDAPIO[k].carne); return v.length ? pick(v) : pratoBase(game.ponto); }   // v12.7: sem opção, o prato de base do ponto
+  const c = sab.filter(k => !CARDAPIO[k].pfv), k = c.length ? pick(c) : pratoBase(game.ponto);
+  if (tecnicaDe(k) === 'pf' && !CARDAPIO[k].pfv && Math.random() < VEG.pfTroca){ const pv = sab.filter(x => CARDAPIO[x].pfv); if (pv.length) return pick(pv); }
   return k;
 }
 
@@ -368,27 +422,29 @@ const LAYOUT = { W, H, TW, HUDX, CALCADA, QUEUE, RETIRADA, DOOR, STATIONS, PLATE
    PONTOS (v7.4): o nível do salão é o ponto. Garagem, área industrial (v9) e Avenida Brasil (v9.1); o Terraço Suíça
    vem na etapa 4 do plano.
    nivel: o nível do salão (1 a 4); lugares: teto de lugares; area: onde as mesas podem ficar (a mesa inteira, com
-   as cadeiras); espera: lugares lá fora (v7.5); cardapio: fator dos preços; assento: como se espera lá fora e
+   as cadeiras); espera: lugares lá fora (v7.5); assento: como se espera lá fora e
    bebida: o que se serve lá (v7.7; ver BEBIDA_ESPERA). Na Garagem, de pé e água da torneira. credito: o limite do
    empréstimo no banco (v8.3)
    ============================================================ */
 const PONTOS = [
-  { id:'garagem', nome:'Garagem da mãe da Bia', nivel:1, lugares:16, aluguel:0, mudanca:0, credito:1000, cardapio:1, area:{ x0:196, y0:150, x1:684, y1:500 }, espera:4, assento:'pe', bebida:'agua', pratos:4, marmJanela:2, prateleira:2, vip:0, deixa:'a TV, o som e a torneira ficam' },   // traz/deixa: o que o ponto novo traz e o que fica para trás ao sair deste (texto do cartão Mudança, v9.1)
+  { id:'garagem', nome:'Garagem da mãe da Bia', nivel:1, lugares:16, aluguel:0, mudanca:0, credito:1000, area:{ x0:196, y0:150, x1:684, y1:500 }, espera:4, assento:'pe', bebida:'agua', pratos:4, marmJanela:2, prateleira:2, vip:0, deixa:'a TV, o som e a torneira ficam' },   // traz/deixa: o que o ponto novo traz e o que fica para trás ao sair deste (texto do cartão Mudança, v9.1)
   // v9: a primeira mudança (a área é a da Garagem alargada em 36 px à esquerda: 20 lugares não cabiam na arrumação automática). tipos: os pesos do sorteio da clientela (no lugar do day.types); encomenda: a chance diária da encomenda do setor;
   // apito: o pico do meio do dia (as primeiras `max` turmas chegam juntas a partir de `quando` do turno, uma a cada `gap` s, avisadas `aviso` s antes);
   // patPressa: a paciência de quem vem sozinho ou em dupla; vip: a chance de VIP; metaF: o fator das metas (v9.6.1: 1,25 → 2,3 e 1,7 → 3,2); expertF (v9.6.1): o da expert, a 3ª estrela (sem ele, o metaF); prateleira: as vagas do balcão de retirada;
   // grupos: o fator dos grupos do dia (os 20 lugares já trazem +60% de movimento; sem ele, nem o bot afiado fechava o dia sem perder ninguém)
-  { id:'industrial', nome:'Lanchonete na área industrial', nivel:2, lugares:20, aluguel:120, mudanca:800, credito:2000, cardapio:1.5, area:{ x0:160, y0:150, x1:684, y1:500 }, espera:5, assento:'pe', bebida:'suco', pratos:5, marmJanela:3, prateleira:4,
-    tipos:{ estudante:1, executiva:1, familia:0.5, vovos:0.7, entregador:2, turma:2, motorista:1 }, encomenda:0.6, apito:{ quando:0.45, max:3, gap:[8, 12], aviso:10 }, patPressa:0.85, vip:0.2, metaF:2.3, expertF:1.5, grupos:0.8,
+  { id:'industrial', nome:'Lanchonete na área industrial', nivel:2, lugares:20, aluguel:120, mudanca:800, credito:2000, area:{ x0:160, y0:150, x1:684, y1:500 }, espera:5, assento:'pe', bebida:'suco', pratos:5, marmJanela:3, prateleira:4,
+    tipos:{ estudante:1, executiva:1, familia:0.5, vovos:0.7, entregador:2, turma:2, motorista:1 }, encomenda:0.6, apito:{ quando:0.45, max:3, gap:[8, 12], aviso:10 }, patPressa:0.85, vip:0.2, metaF:1.5, expertF:1.0, grupos:0.8,   // v12.7: metaF 2,3 → 1,5 e expertF 1,5 → 1,0 (os preços da lanchonete deixaram de ser ×1,5: PF R$ 45 → 34; metas em ~86%)
+   
     traz:'a freguesia da fábrica e da estrada', deixa:'as TVs, o assento da espera e a jarra de suco ficam' },
   // v9.1: o 2º ponto novo (cap. 6 e 7). Sem apito, sem encomenda e sem patPressa: a turma, o motorista e a encomenda não vêm. vip: ×2 (restaurante atrai mais VIP)
-  { id:'avenida', nome:'Restaurante na Avenida Brasil', nivel:3, lugares:24, aluguel:400, mudanca:2000, credito:4000, cardapio:2.0, area:{ x0:160, y0:150, x1:684, y1:500 }, espera:6, assento:'pe', bebida:'saborizada', pratos:6, marmJanela:3, prateleira:4,
-    tipos:{ estudante:0.5, executiva:2, familia:1.5, vovos:1, entregador:1, negocios:1.5 }, vip:2, metaF:3.1, expertF:3.4, grupos:0.7,   // v9.6.4: 3,2 e 3,8 → 3,0 e 3,6 (o VIP mais exigente deixou a Avenida abaixo do alvo)
+  { id:'avenida', nome:'Restaurante na Avenida Brasil', nivel:3, lugares:24, aluguel:400, mudanca:2000, credito:4000, area:{ x0:160, y0:150, x1:684, y1:500 }, espera:6, assento:'pe', bebida:'saborizada', pratos:6, marmJanela:3, prateleira:4,
+    tipos:{ estudante:0.5, executiva:2, familia:1.5, vovos:1, entregador:1, negocios:1.5 }, vip:2, metaF:2.5, expertF:3.4, grupos:0.7,   // v12.7: metaF 3,1 → 2,5 (metas em ~90%; o ganho do dia ficou ~6% abaixo)
+      // v9.6.4: 3,2 e 3,8 → 3,0 e 3,6 (o VIP mais exigente deixou a Avenida abaixo do alvo)
     traz:'o almoço de negócios e mais VIPs', art:'o', deixa:'os sofás, as águas saborizadas e o couvert ficam' },
   // v10: o último ponto da escada (cap. 8 e 9). 20 lugares, aluguel R$ 1.000, cardápio ×2,5. Sem entregador (semRetirada), sem bebida da espera (bebida:null até a 4a-4) e com o casal;
   // tempos: a refeição completa (bebida, entrada, prato e sobremesa; ver TEMPOS)
-  { id:'terraco', nome:'Terraço Suíça', nivel:4, lugares:20, aluguel:1200, mudanca:5000, credito:8000, cardapio:1.3, area:{ x0:160, y0:150, x1:684, y1:500 }, espera:6, assento:'pe', bebida:'coquetel', pratos:6, marmJanela:2, prateleira:0,
-    tipos:{ executiva:0.5, familia:1, vovos:1, negocios:1.5, casal:2 }, vip:2.5, metaF:8.0, expertF:6.0, grupos:0.5, tempos:true, semRetirada:true, exigente:true,   // v10.4 (medido em 11/11, 80 rodadas, equipe toda com JOCA=4 CONFEITARIA=1): cardápio 2,4 → 1,3 (o ganho sobre a Avenida era de R$ 2.800 por dia e foi a ~R$ 850), metaF 9 → 12 e expertF 6 → 8,5 (metas em ~90% e 3★ em ~60%);   // v10 (medido em 10/11, equipe toda com o bot afiado): grupos 0,45 → 0,50 (mesas vazias em 33% do turno), metaF 4 → 9 e expertF 5 → 6 (91% das metas e 3★ em 61%), aluguel 1.000 → 1.200 e cardápio 2,5 → 2,4 (o ganho sobre a Avenida de R$ 918 caiu para ~R$ 700)
+  { id:'terraco', nome:'Terraço Suíça', nivel:4, lugares:20, aluguel:1200, mudanca:5000, credito:8000, area:{ x0:160, y0:150, x1:684, y1:500 }, espera:6, assento:'pe', bebida:'coquetel', pratos:6, marmJanela:2, prateleira:0,
+    tipos:{ executiva:0.5, familia:1, vovos:1, negocios:1.5, casal:2 }, vip:2.5, metaF:18, expertF:13.5, grupos:0.5, tempos:true, semRetirada:true, exigente:true,   // v12.7 (medido em 19/11, 40 rodadas, equipe toda com o bot afiado): metaF 8 → 18 e expertF 6 → 13,5 (os pratos de R$ 72 a 108 dobraram o ganho do dia: R$ 3.370 → ~R$ 6.100; metas em ~93% e 3★ em ~80%, como a noite da estrela pede);   // v10.4 (medido em 11/11, 80 rodadas, equipe toda com JOCA=4 CONFEITARIA=1): cardápio 2,4 → 1,3 (o ganho sobre a Avenida era de R$ 2.800 por dia e foi a ~R$ 850), metaF 9 → 12 e expertF 6 → 8,5 (metas em ~90% e 3★ em ~60%);   // v10 (medido em 10/11, equipe toda com o bot afiado): grupos 0,45 → 0,50 (mesas vazias em 33% do turno), metaF 4 → 9 e expertF 5 → 6 (91% das metas e 3★ em 61%), aluguel 1.000 → 1.200 e cardápio 2,5 → 2,4 (o ganho sobre a Avenida de R$ 918 caiu para ~R$ 700)
    
     traz:'a refeição completa e a freguesia mais fina', art:'o' }
 ];
@@ -851,10 +907,16 @@ function dishStock(day, up){
   return 4 + extra;
 }
 
-/* sucos: alguns grupos pedem junto com a comida; cada copo entregue vale JUICE.price */
+/* sucos: alguns grupos pedem junto com a comida; cada copo entregue vale sucoPreco(ponto) (v12.7: JUICE.price é o da Garagem) */
 const JUICE = { price:8, prep:0.6 };
+/* v12.7, bebidas com preço por ponto: o cafezinho e o suco da mesa (Garagem, área industrial, Avenida, Terraço) */
+const PRECO_BEB = { cafe:{ garagem:4, industrial:4, avenida:6, terraco:8 }, suco:{ garagem:8, industrial:9, avenida:12, terraco:18 } };
+function cafePreco(ponto){ return PRECO_BEB.cafe[(ponto || PONTOS[0]).id] || PRECO_BEB.cafe.garagem; }
+function sucoPreco(ponto){ return PRECO_BEB.suco[(ponto || PONTOS[0]).id] || PRECO_BEB.suco.garagem; }
+/* o custo do copo de suco da mesa: INGRED.suco (R$ 3, o da Garagem) na mesma proporção do preço */
+function sucoIngred(ponto){ return Math.round(INGRED.suco * sucoPreco(ponto) / JUICE.price); }
 /* valor de cada bebida; jogar uma na lixeira custa metade dele (a da espera, 'suco', vale o preço da BEBIDA_ESPERA) */
-const DRINK_PRICE = { coffee:3, juice:JUICE.price, doce:7, pote:7, cafeesp:10, drink:22 };   // v9.2: o doce (e o pote da marmita) também custa R$ 7 se for para o lixo (metade)
+const DRINK_PRICE = { coffee:PRECO_BEB.cafe.garagem, juice:JUICE.price, doce:9, pote:9, cafeesp:10, drink:42 };   // v9.2: o doce (e o pote da marmita) também custa o preço se for para o lixo (metade); v12.7: os valores da Garagem (no jogo, cada ponto tem o seu: cafePreco, sucoPreco, docePreco, cafePrecoDe, drinkPreco)
 /* bebida da espera (v7.5, melhoria no lugar da Água saborizada; o que se serve vem do ponto, BEBIDA_ESPERA): `pede` s
    depois de chegar ao lugar lá fora, o grupo pede 1 copo por pessoa; a Bia (ou a Dani) pega na estação e entrega,
    e quem bebe perde a paciência da espera `slow` mais devagar. Quem sai da espera antes cancela o que não foi pego */
@@ -1119,10 +1181,11 @@ function avalComentario(r, bravo, lixo, nivel, decor, fria, semVeg, tipo, pouco)
   let k = r.findIndex(v => v != null);
   r.forEach((v, i) => { if (v != null && (bom ? v > r[k] : v < r[k])) k = i; });
   if (!bom && semVeg){ const m = AVAL_CRIT.findIndex(c => c.id === 'menu'); if (r[m] != null && r[m] <= r[k]) return 'Não tinha nada vegetariano.'; }   // v8.6.11
-  if (!bom && pouco){ const m = AVAL_CRIT.findIndex(c => c.id === 'menu'); if (r[m] != null && r[m] <= r[k]) return pick(AVAL_POUCO); }   // v9.0.1
+  if (!bom && pouco && (nivel || 1) <= 2){ const m = AVAL_CRIT.findIndex(c => c.id === 'menu'); if (r[m] != null && r[m] <= r[k]) return pick(AVAL_POUCO); }   // v9.0.1
   if (!bom && lixo && AVAL_CRIT[k].id === 'amb') return 'Que cheiro de lixo!';
   if (!bom && fria && AVAL_CRIT[k].id === 'prato') return 'Comida meio fria.';   // v8.6.8: o prato esfriou no balcão
-  return pick(AVAL_CRIT[k][bom ? 'bom' : 'ruim']);
+  const t = pick(AVAL_CRIT[k][bom ? 'bom' : 'ruim']);
+  return t === 'O PF estava caprichado!' && (nivel || 1) >= 3 ? 'O prato estava caprichado!' : t;   // v12.7: sem PF na Avenida e no Terraço
 }
 /* banco (v8.3): empréstimo pago em `parcelas` no fim de cada dia (um por vez, até o crédito do ponto).
    v8.3.2, amortização (tabela SAC): cada parcela é a amortização fixa (o valor ÷ `parcelas`) mais os juros do dia, `juros`
@@ -1578,10 +1641,10 @@ const HIST_ENTREGA = { dia:4,
    pode pedir `randi(1, size)` doces (chance por tipo, VIP +vip; nunca o entregador); a marmita vem "+ doce" em `marmita` das vezes */
 /* v9.3: com o curso Confeitaria gourmet (up.confGourmet) a vitrine refrigerada serve os gourmet, que saem do sorteio dos caseiros: R$ 16 cada
    (ingrediente R$ 4) e +AVAL.amb.doce no Ambiente de quem comeu. `todos` dá o índice do desenho (0 a 2 caseiros, 3 a 5 gourmet) */
-const DOCES = { preco:7, ingred:2, vip:0.2, marmita:0.3, gourmetPreco:16, gourmetIngred:4,
+const DOCES = { preco:9, ingred:3, vip:0.2, marmita:0.3, gourmetPreco:22, gourmetIngred:6,   // v12.7: R$ 9, 22 e 44 (caseiro, gourmet, alta confeitaria; o preço segue a confeitaria que o ponto tem) e o ingrediente na mesma proporção
   caseira:[ { id:'bolo', nome:'Bolo de pote' }, { id:'brigadeiro', nome:'Brigadeiro de colher' }, { id:'pudim', nome:'Pudim' } ],
   gourmet:[ { id:'shortcake', nome:'Shortcake de morango' }, { id:'torta', nome:'Torta de limão' }, { id:'brigGourmet', nome:'Brigadeiro gourmet' } ],
-  alta:[ { id:'entremet', nome:'Entremet de chocolate' }, { id:'milfolhas', nome:'Mil-folhas' }, { id:'macaron', nome:'Macarons' } ], altaPreco:30, altaIngred:7,   // v10.2: a alta confeitaria do Terraço (índices 6 a 8 do desenho)
+  alta:[ { id:'entremet', nome:'Entremet de chocolate' }, { id:'milfolhas', nome:'Mil-folhas' }, { id:'macaron', nome:'Macarons' } ], altaPreco:44, altaIngred:10,   // v10.2: a alta confeitaria do Terraço (índices 6 a 8 do desenho)
   pede:{ familia:0.5, vovos:0.6, estudante:0.3, executiva:0.2, negocios:0.4, turma:0.3, motorista:0.3, casal:0.6 } };
 DOCES.todos = DOCES.caseira.concat(DOCES.gourmet, DOCES.alta);
 function docesLista(up){ return up && up.confAlta ? DOCES.alta : up && up.confGourmet ? DOCES.gourmet : DOCES.caseira; }
@@ -1592,21 +1655,23 @@ function doceIcone(up){ return up && up.confAlta ? 8 : up && up.confGourmet ? 5 
 function doceIdx(id){ return Math.max(0, DOCES.todos.findIndex(d => d.id === id)); }
 /* v9.3, cafés da máquina de espresso (curso do Joca, só na Avenida): pedidos de fim de refeição, como os doces. prep: segundos para tirar; preco: R$ na conta */
 const CAFES = { ingred:2, vip:0.1,
-  lista:[ { id:'espresso', nome:'Espresso', preco:8, prep:0.8 }, { id:'cappuccino', nome:'Cappuccino', preco:12, prep:1.2 } ],
+  lista:[ { id:'espresso', nome:'Espresso', preco:8, terraco:10, prep:0.8 }, { id:'cappuccino', nome:'Cappuccino', preco:12, terraco:15, prep:1.2 } ],   // v12.7: preco é o da área industrial e da Avenida; terraco, o do Terraço
   pede:{ executiva:0.5, negocios:0.6, vovos:0.4, familia:0.2, estudante:0.3, casal:0.5 } };
-/* v10.3, cafés especiais (curso do Joca, só no Terraço, depois do espresso): no lugar do espresso e do cappuccino, três métodos a R$ 20 (ingrediente R$ 5). etapas: as marcas no anel da bancada */
-CAFES.metodos = [ { id:'coado', nome:'Coado no filtro', preco:20, prep:2.5, etapas:2 }, { id:'prensa', nome:'Prensa francesa', preco:20, prep:3.5, etapas:3 }, { id:'coldbrew', nome:'Cold brew', preco:20, prep:1, etapas:1 } ];
-CAFES.ingredEsp = 5;
+/* v10.3, cafés especiais (curso do Joca, só no Terraço, depois do espresso): no lugar do espresso e do cappuccino, três métodos a R$ 24 (ingrediente R$ 6; v12.7: era R$ 20 e R$ 5). etapas: as marcas no anel da bancada */
+CAFES.metodos = [ { id:'coado', nome:'Coado no filtro', preco:24, prep:2.5, etapas:2 }, { id:'prensa', nome:'Prensa francesa', preco:24, prep:3.5, etapas:3 }, { id:'coldbrew', nome:'Cold brew', preco:24, prep:1, etapas:1 } ];
+CAFES.ingredEsp = 6;
 function cafesLista(up){ return up && up.cafesEsp ? CAFES.metodos : CAFES.lista; }
 function cafeIngred(up){ return up && up.cafesEsp ? CAFES.ingredEsp : CAFES.ingred; }
 function cafeDe(id){ return CAFES.lista.concat(CAFES.metodos).find(c => c.id === id) || CAFES.lista[0]; }
+/* v12.7: o R$ do café no ponto (o Terraço cobra mais pelo espresso e pelo cappuccino) */
+function cafePrecoDe(id, ponto){ const c = cafeDe(id); return ponto && ponto.id === 'terraco' && c.terraco != null ? c.terraco : c.preco; }
 /* o índice do desenho do café (0 espresso, 1 cappuccino, 2 coado, 3 prensa, 4 cold brew) */
 function cafeIdx(id){ return Math.max(0, CAFES.lista.concat(CAFES.metodos).findIndex(c => c.id === id)); }
 /* v9.5, drinks do Anselmo (só na Avenida): pedidos ao sentar, junto com o prato; ele faz um por vez (prep / speed) e o copo pronto espera no balcão (`vagas`).
    pede: chance por tipo de grupo (VIP +vip); cada pessoa sorteada pede um drink entre os 3 (randi(1, size)). Nunca o entregador. preco: R$ na conta */
-const DRINKS = { prep:4, preco:22, ingred:6, vip:0.2, vagas:2,
+const DRINKS = { prep:4, preco:42, ingred:11, vip:0.2, vagas:2,
   /* v10.3, os cursos do Anselmo no Terraço: a clássica dá 4 vagas de copo no balcão e preparo 20% mais rápido (prepClassica); a de autor troca os drinks pelos de `autor` (R$ 35, ingrediente R$ 9) */
-  vagasClassica:4, prepClassica:0.8, precoAutor:35, ingredAutor:9,
+  vagasClassica:4, prepClassica:0.8, precoAutor:56, ingredAutor:14,
   autor:[ { id:'neblina', nome:'Neblina da Serra' }, { id:'jardim', nome:'Jardim do Terraço' }, { id:'ouro', nome:'Ouro da Casa' } ],
   pede:{ executiva:0.45, negocios:0.6, familia:0.25, vovos:0.25, estudante:0.35, casal:0.6 },
   itens:[ { id:'por', nome:'Pôr do Sol da Avenida' }, { id:'brisa', nome:'Brisa de Maracujá' }, { id:'esmeralda', nome:'Esmeralda' } ] };
@@ -1841,7 +1906,7 @@ const HIST_NOMES = { bia:'Bia', tonhao:'Tonhão', dani:'Dani', joca:'Joca', cami
 const ATU_TXT = { procurando:'Procurando versão nova...', nova:'Tem versão nova: {v}! Seu jogo salvo continua.', igual:'Você já está na versão mais nova ({v}).', erro:'Sem internet agora. Tente de novo mais tarde.', atualizando:'Atualizando...' };
 function atuEstado(remota, atual){ if (typeof remota !== 'string' || !remota.trim()) return 'erro'; return remota.trim() === atual ? 'igual' : 'nova'; }
 const CAIXA_MAX = 14;                                 // livro-caixa (v7.2): quantos dias da carreira ficam guardados
-const VERSAO = 'v12.6.1';                                 // vai no resumo do Caixa
+const VERSAO = 'v12.7';                                   // vai no resumo do Caixa
 const DIVULGA_DIA = 4;                                // antes disso, o movimento é o da inauguração (sem custo); v9.0.2: dia 4, e o padrão é o boca a boca
 function divulgaAberta(n, sv){ return devLivre() || n >= DIVULGA_DIA && !(sv && sv.convDiv === 'pend'); }   // no modo dev, desde o dia 1; v9.0.3: no Modo História, só depois da conversa
 /* v9.6.4: a Efood (os entregadores) só abre depois da conversa dos entregadores, no Modo História; antes dela, nenhum tipo com `retira` vem na agenda */
@@ -1854,14 +1919,14 @@ function divulgaOf(id){ return DIVULGA.find(d => d.id === id) || DIVULGA[0]; }  
 const BEBIDA_ESPERA = {
   agua: { id:'agua', icon:'agua', preco:0, ingred:0, prep:0, take:1, fim:'Água na espera',
           pede:n => n > 1 ? n + ' águas, por favor!' : 'Uma água, por favor!', pega:n => n > 1 ? n + ' copos!' : 'Água!', entrega:n => n > 1 ? 'Águas entregues!' : 'Água entregue!' },
-  suco: { id:'suco', icon:'juice', preco:12, ingred:INGRED.suco, prep:3, take:0.5, fim:'Sucos da espera',
+  suco: { id:'suco', icon:'juice', preco:8, ingred:2, prep:3, take:0.5, fim:'Sucos da espera',
           pede:n => n > 1 ? n + ' sucos, por favor!' : 'Um suco, por favor!', pega:n => n > 1 ? n + ' sucos!' : 'Suco!', entrega:n => n > 1 ? 'Sucos entregues!' : 'Suco entregue!' },
-  // v9.1, Avenida Brasil: água saborizada, R$ 14 na conta; cada grupo sorteia um sabor (SABORES), que só muda a cor do copo e do balão
-  saborizada: { id:'saborizada', icon:'saborizada', preco:14, ingred:3, prep:2, take:0.5, fim:'Águas saborizadas',
+  // v9.1, Avenida Brasil: água saborizada, R$ 9 na conta (v12.7; era R$ 14); cada grupo sorteia um sabor (SABORES), que só muda a cor do copo e do balão
+  saborizada: { id:'saborizada', icon:'saborizada', preco:9, ingred:2, prep:2, take:0.5, fim:'Águas saborizadas',
           pede:n => n > 1 ? n + ' águas saborizadas, por favor!' : 'Uma água saborizada, por favor!', pega:n => n > 1 ? n + ' copos!' : 'Água saborizada!', entrega:n => n > 1 ? 'Águas entregues!' : 'Água entregue!' }
 };
   // v10.3, Terraço Suíça: o coquetel de boas-vindas do carrinho do foyer (curso de autor do Anselmo; só nos dias em que ele vem); o sabor sorteia o drink de autor
-BEBIDA_ESPERA.coquetel = { id:'coquetel', icon:'drink', preco:18, ingred:5, prep:3, take:0.5, fim:'Coquetéis de boas-vindas',
+BEBIDA_ESPERA.coquetel = { id:'coquetel', icon:'drink', preco:24, ingred:7, prep:3, take:0.5, fim:'Coquetéis de boas-vindas',
   pede:n => n > 1 ? n + ' coquetéis, por favor!' : 'Um coquetel, por favor!', pega:n => n > 1 ? n + ' coquetéis!' : 'Coquetel!', entrega:n => n > 1 ? 'Coquetéis entregues!' : 'Coquetel entregue!' };
 const SABORES = [ { nome:'limão', cor:'#D6E24A', bal:'#F3F7C2' }, { nome:'morango', cor:'#F0708A', bal:'#FBD2DB' }, { nome:'hortelã', cor:'#6FD3A0', bal:'#CBF0DD' } ];
 function bebidaOf(ponto){ return BEBIDA_ESPERA[(ponto || PONTOS[0]).bebida] || BEBIDA_ESPERA.agua; }
@@ -1958,7 +2023,7 @@ const CLIMA = {
 const CLIMA_DIA = 3;
 /* eventos de bairro (v10.6, carreira com MANUT.on): do dia `dia` em diante, uma festa junina ou um jogo do Brasil por semana de `semana` dias, num dia sorteado dela
    (avisado na véspera). peso: a chance de cada evento por ponto. groups: o movimento do dia por ponto. junina: tipo/tipoP viram família como o feriado; a barraca
-   (preco × cardápio do ponto, de 10 em 10, na lojinha do dia da festa) põe `pratos` nos pedidos (pede: quem estava sem 2º item; troca: quem pediria salgado).
+   (preco por ponto, na lojinha do dia da festa) põe `pratos` nos pedidos (pede: quem estava sem 2º item; troca: quem pediria salgado).
    jogo: fases [de, até, fatia dos grupos] do turno (antes, durante e depois); tv: com a TV ligada, grupos × `groups` e +`effect` na paciência; gol: o momento (fração
    do turno) em que todo grupo sentado ganha 1 coração, e o letreiro dura golT s */
 const EVENTOS = {
@@ -1966,7 +2031,9 @@ const EVENTOS = {
   peso:{ garagem:{ junina:0.6, jogo:0.4 }, industrial:{ junina:0.35, jogo:0.65 }, avenida:{ junina:0.5, jogo:0.5 }, terraco:{ junina:0.5, jogo:0.5 } },
   junina:{ nome:'Festa junina', groups:{ garagem:1.3, industrial:1.15, avenida:1.15, terraco:1.1 }, tipo:'familia', tipoP:0.3,
     aviso:'Festa junina no bairro! Mais famílias, e todo mundo com vontade de comida de festa.', amanha:'Amanhã tem festa junina no bairro!',
-    barraca:{ preco:40, pede:0.5, troca:0.3 }, pratos:['pamonha', 'milho', 'canjica'] },
+    barraca:{ preco:{ garagem:40, industrial:40, avenida:80, terraco:150 }, pede:0.5, troca:0.3 },   // v12.7: o preço da barraca e o cardápio dela por ponto (o Arraiá da Avenida e o do Terraço)
+    pratos:{ garagem:['pamonha', 'milho', 'canjica'], industrial:['pamonha', 'milho', 'canjica'], avenida:['curau', 'milhoCoalho', 'bolo'], terraco:['cremeMilho', 'pamonhaMel', 'canjicaCoco'] },
+    nomeBarraca:{ garagem:'Barraca junina', industrial:'Barraca junina', avenida:'Arraiá da Avenida', terraco:'Arraiá do Terraço' } },
   jogo:{ nome:'Jogo do Brasil', groups:{ garagem:1.15, industrial:1.3, avenida:1.1, terraco:1.05 },
     fases:[[0, 0.35, 0.45], [0.35, 0.65, 0.08], [0.65, 1, 0.47]], tv:{ groups:1.15, effect:0.1 }, gol:[0.45, 0.55], golT:2.5,
     aviso:'Dia de jogo do Brasil! Antes do jogo, casa cheia; durante, rua vazia; depois, festa.', amanha:'Amanhã tem jogo do Brasil!' }
@@ -2036,7 +2103,7 @@ const MANUAL = [
   { id:'l-couvert',    aba:'lojinha', nome:'Couvert artístico', linha:'Música ao vivo: a paciência nas mesas dura mais, e cada mesa paga o couvert.' },
   { id:'l-musica',     aba:'lojinha', nome:'Música ao vivo', linha:'Trio ou pianista: a paciência nas mesas dura mais, o ambiente melhora e a mesa pede mais uma rodada.' },
   { id:'l-fogao',      aba:'lojinha', nome:'Fogão industrial', linha:'Uma boca a mais: o Tonhão faz mais pratos ao mesmo tempo.' },
-  { id:'l-cardapio',   aba:'lojinha', nome:'Cardápio', linha:'Cursos do Tonhão e da equipe. Cada curso ensina pratos novos e dá experiência; o avançado deixa os pratos mais caros e caprichados.' },
+  { id:'l-cardapio',   aba:'lojinha', nome:'Cardápio', linha:'Cursos do Tonhão e da equipe. Cada curso é uma técnica que vale em todo ponto, dá experiência e o avançado deixa os pratos mais caros e caprichados. Fritos: na lanchonete, salgados; na Avenida, porções; no Terraço, entradas fritas. Assados: na lanchonete, salgados de forno; na Avenida, tortas e empadões; no Terraço, folhados e empadinhas. Chapa: na lanchonete, lanches; na Avenida, beirute e queijo coalho; no Terraço, petiscos na chapa. Pastel: na lanchonete, pastel de feira; na Avenida, panquecas; no Terraço, massas fritas. Vegetariano: pratos sem carne em todo ponto. Cozinha de restaurante: na Avenida, a parmegiana; no Terraço, o filé ao molho de vinho.' },
   { id:'l-salao',      aba:'lojinha', nome:'Salão', linha:'Compre, venda e arrume as mesas.' },
   { id:'l-luxo',       aba:'lojinha', nome:'Luxo', linha:'Enfeites, móveis, música e um endereço melhor deixam a casa mais chique. Mais luxo traz mais VIPs e melhora o ambiente no Gúgou.' },   // v10.7: a antiga ficha da Decoração
   { id:'l-manut',      aba:'lojinha', nome:'Manutenção', linha:'Revisão do fogão, da geladeira e da cafeteira, antes que quebrem.' },
@@ -2044,7 +2111,7 @@ const MANUAL = [
   { id:'l-banco',      aba:'lojinha', nome:'Banco', linha:'Empréstimo para crescer. As parcelas saem do caixa no fim do dia; parcela atrasada é perigo.' },
   { id:'l-mudanca',    aba:'lojinha', nome:'Mudança', linha:'Um ponto maior, com freguesia nova e aluguel.' },
   { id:'l-caixa',      aba:'lojinha', nome:'Caixa', linha:'O que entrou e o que saiu, dia a dia.' },
-  { id:'l-barraca',    aba:'lojinha', nome:'Barraca junina', linha:'Só no dia da festa: pamonha, milho e canjica no cardápio.' },
+  { id:'l-barraca',    aba:'lojinha', nome:'Barraca junina', linha:'Só no dia da festa: comida de festa no cardápio. Na Avenida e no Terraço, o arraiá é mais chique.' },
   { id:'l-rosa',       aba:'lojinha', nome:'O molho da Rosa', linha:'O prato da casa ganha o molho da Rosa. Pegue pétalas no vaso antes de buscar o prato: só a Bia sabe pôr.' },   // v10.8
   { id:'l-gerente',    aba:'lojinha', nome:'Gerência de salão', linha:'A Cami leva à mesa quem espera na porta. Dá para desligar no cartão dela.' },   // v10.8
 
@@ -2075,7 +2142,7 @@ const MANUAL = [
   { id:'d-vips',     aba:'desafios', nome:'VIPs exigentes', linha:'Um dia no Terraço só de clientes exigentes. Toda mesa tem de sair feliz.' }
 ];
 const MANUAL_PONTO_NOME = { garagem:'Garagem', industrial:'Área industrial', avenida:'Avenida Brasil', terraco:'Terraço Suíça' };
-const MANUAL_CATS = { pf:'PF', frito:'fritos', assado:'assados', chapa:'lanches na chapa', pastel:'pastel' };
+const MANUAL_CATS = { pf:'prato principal', frito:'fritos', assado:'assados', chapa:'lanches na chapa', pastel:'pastel' };
 function manualFicha(id){ return MANUAL.find(f => f.id === id) || null; }
 /* os traços de uma ficha de cliente (chips), calculados de CUSTOMER_TYPES e GOSTOS para seguirem o balanceamento sozinhos.
    Os de equipe (bia, tonhao, dani, joca, cami, anselmo) usam opt.save (bolinhas do nível atual). opt.aberta(id): se a ficha `p-` já abriu (padrão: todas) */

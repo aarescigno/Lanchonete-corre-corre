@@ -1,6 +1,6 @@
 # v12.7 — Cardápio de verdade em cada ponto (etapa 16a)
 
-**Situação:** aprovada
+**Situação:** entregue em 20/11
 **Origem:** conversa de 19/11 com o usuário ("os preços têm que ficar mais realistas... sem PF no terraço"), entrevista na mesma sessão
 
 ## Objetivo
@@ -124,15 +124,15 @@ Cada ponto vende o que um lugar daquele vende de verdade, a preço de verdade (n
 - O painel do modo dev (achar com `tests/mapa.sh dev`)
 
 ## Tarefas
-- [ ] T1 Medir a linha de base na v12.6.1 (ganho do dia e metas por ponto, `balance.js 40`, `EQUIPE=auto`) e anotar aqui em Testes.
-- [ ] T2 `smoke109` com os CA1 a CA8 (falhando).
-- [ ] T3 Preço por ponto em `CARDAPIO`, `precoPrato` sem multiplicador, `pratoSabido` com ponto, `pratoAv` pela técnica, `pratoBase`.
-- [ ] T4 Os pratos novos da Avenida e do Terraço e os da festa junina por ponto; sai a parmegiana do Terraço.
-- [ ] T5 Bebidas, doces e cafés com preço por ponto.
-- [ ] T6 Falas, Manual, cartão Cardápio e modo dev.
-- [ ] T7 Balanceamento até o CA9 e o CA10, na ordem da regra.
-- [ ] T8 Captura do CA11 (olhar e apagar).
-- [ ] Fechamento: `VERSAO`, `vtag`, `#ov-ver`, `docs/RESUMO.md`, `docs/TESTES.md`, esta spec como entregue, `tests/run_all.sh` verde, PR e merge.
+- [x] T1 Medir a linha de base na v12.6.1 (ganho do dia e metas por ponto, `balance.js 40`, `EQUIPE=auto`) e anotar aqui em Testes.
+- [x] T2 `smoke109` com os CA1 a CA8 (falhando).
+- [x] T3 Preço por ponto em `CARDAPIO`, `precoPrato` sem multiplicador, `pratoSabido` com ponto, `pratoAv` pela técnica, `pratoBase`.
+- [x] T4 Os pratos novos da Avenida e do Terraço e os da festa junina por ponto; sai a parmegiana do Terraço.
+- [x] T5 Bebidas, doces e cafés com preço por ponto.
+- [x] T6 Falas, Manual, cartão Cardápio e modo dev.
+- [x] T7 Balanceamento até o CA9 e o CA10, na ordem da regra.
+- [x] T8 Captura do CA11 (olhar e apagar).
+- [x] Fechamento: `VERSAO`, `vtag`, `#ov-ver`, `docs/RESUMO.md`, `docs/TESTES.md`, esta spec como entregue, `tests/run_all.sh` verde, PR e merge.
 
 ## Avisos para a execução
 - `CARDAPIO[k].preco` é lido em muitos lugares (`grep -n "CARDAPIO\[" src/`, 26 ocorrências): troque todos por `precoPrato` antes de virar objeto.
@@ -140,12 +140,23 @@ Cada ponto vende o que um lugar daquele vende de verdade, a preço de verdade (n
 - Smokes antigos que conferem preço da Avenida ou do Terraço (ex.: parmegiana R$ 60, risoto da Lia R$ 52) mudam de número: corrija o número, não a checagem.
 
 ## Testes
-(A preencher na execução: a linha de base do T1, os números do `smoke109` e a calibração medida.)
+- **T1, linha de base (v12.6.1, `balance.js 40`, `EQUIPE=auto`):** ganho do dia (média) e metas: Garagem dias 3 a 7 R$ 331 (95%); área industrial R$ 755 (86%); Avenida R$ 1.176 (88%); Terraço (comando da equipe toda com o bot afiado: `PONTO=terraco BOT=afiado EQUIPE=auto ALTA=1 CAMI=4 CAFESESP=1 AUTOR=1 JOCA=4 CONFEITARIA=1 LIA=3`) R$ 3.371 (99%). O `EQUIPE=auto` sem a equipe toda dá 0% no Terraço, antes e depois.
+- **`smoke109` novo (36 checagens, CA1 a CA8), no `run_all.sh`.** Smokes antigos com os números corrigidos (não as checagens): `smoke14`, `24`, `31`, `38`, `42`, `43`, `45`, `47`, `60`, `62`, `65`, `67`, `68`, `71`, `86` (painel Versões: 25 linhas), `98`, `106`; `menu_fit.py` (esperado 25 linhas; não rodou aqui: falta o `playwright` do Python).
+- **Calibração final (CA9):** metas: Garagem 96% (ganho R$ 330, 0% do medido), área industrial `metaF` 2,3 → 1,5 e `expertF` 1,5 → 1 (88%), Avenida `metaF` 3,1 → 2,5 (88%; ganho R$ 1.144, −3%), Terraço `metaF` 8 → 18 e `expertF` 6 → 13,5 (~98% das metas e 3★ em ~55%, a 1ª noite da estrela ≥1★ em 67%). Ganho do dia fora dos ±15%: área industrial R$ 755 → ~R$ 510 (−32%) e Terraço R$ 3.371 → ~R$ 6.000 (+78%) (ver Desvios).
+- **CA10 (`DIAS=80 node carreira.js 6`, 6 carreiras):** a história fecha em 6/6, no dia 66 (na v12.6.1: 6/6 no dia 60). Com `DIAS=65`: 3/6 no dia 61 (4/6 no dia 60 na v12.6.1). Lucro médio por dia na carreira: Garagem R$ 358 (377), industrial R$ 394 (681), Avenida R$ 1.198 (1.143), Terraço R$ 4.715 (2.414). Nenhum dia no negativo depois das mudanças.
+- **CA11 (`shot_v12_7.js`):** conferidos em 844x390 e 568x320: as placas "Executivo R$ 39 · Mandioca R$ 26 · Cafezinho R$ 6" e "Galeto R$ 72 · Dadinho R$ 32 · Cafezinho R$ 8", o balcão de pratos do Terraço e da Avenida (escalope, filé ao molho de vinho, executivo, strogonoff e mandioca com o desenho da categoria e cor própria), o cartão Cardápio da Avenida (com o Arraiá da Avenida a R$ 80) e o do Terraço (Arraiá do Terraço a R$ 150). Capturas apagadas.
 
 ## Decisões em aberto
 Nenhuma. (19/11: o usuário aprovou as tabelas de pratos e preços como estão e a divisão em duas versões: esta, com a lógica, os preços e o balanceamento; a v12.8, etapa 16b, com os desenhos próprios dos pratos novos e das barracas juninas chiques.)
 
 ## Desvios
-(No fechamento.)
+- **Ganho do dia (CA9) fora dos ±15% na área industrial e no Terraço** (decisão do usuário em 20/11: aceitar a nova curva). Os preços da tabela tiram uns 24% do faturamento da área industrial (o PF deixou de ser R$ 45) e dobram o do Terraço (galeto R$ 72 contra R$ 39); as alavancas da spec (metas, aluguel, 2º item) não alcançam: o aluguel zerado da industrial devolve só R$ 120 por dia. Ficou só a calibração das metas (`metaF`/`expertF`); nada de `grupos`, aluguel nem `MAIS`. A carreira fecha mais tarde (dia 66 contra 60).
+- **A festa junina no Terraço:** a barraca estava escondida no Terraço (`barracaVisivel` com `nivel < 4`) e o pedido do dia da festa ignorava a refeição completa (`!this.tempos`). Para o "Arraiá do Terraço" valer, as duas travas saíram; na refeição completa a barraca troca a entrada (ou pede uma a quem ficou sem). `smoke71` trocou a checagem "no Terraço não aparece" por "aparece como Arraiá do Terraço, a R$ 150". Nomes dos arraiás em `EVENTOS.junina.nomeBarraca`.
+- **Desenho dos pratos juninos novos:** o `drawJunino` tem cores fixas; os 6 pratos novos reusam o desenho de um dos três (pamonha, milho ou canjica). Cor própria só nos pratos das outras categorias.
+- **Sem `dep` nos pratos veganos e vegetarianos novos** (escondidinho, executivos, nhoque, polenta, curry, moquecas): a spec não pede; só os da v8.6.11 seguem com `dep`.
+- **Novos nomes de função:** `pratoBase`, `fritoBase`, `precoCarta`, `vendeNoPonto`, `tecnicaDe`, `pratosCurso`, `pratosDoPonto`, `cafePreco`, `sucoPreco`, `sucoIngred`, `cafePrecoDe` (expostas em `window.__lcc`); `CURSOS[].pratos` e `av.pratos` saíram (`pratosCurso(id, ponto, nivel)`). `MARMITA.prato` ficou como estava (o "+ marmita" está desligado), mas o desenho e o `adiantar` já usam `pratoBase(ponto)`. `balance.js` e `carreira.js`: `CARDAPIO='{"pf":25}'` vale para todos os pontos.
+- **Modo dev:** a seção "Cardápio do ponto" (aba Equipe e lojinha) lista os pratos com preço; "Saber tudo do ponto" liga `DEV.forca.saberTudo` (só na memória).
+- **Ingredientes:** suco da mesa `sucoIngred` = R$ 3 × preço ÷ 8 (3, 3, 5, 7); suco da espera R$ 2, saborizada R$ 2, coquetel R$ 7; doces R$ 3, 6 e 10; cafés especiais R$ 6; drinks R$ 11 e R$ 14.
+- **Manual:** a ficha `l-cardapio` ganhou a frase de cada técnica (a spec fala em "ficha de cada curso", que não existe): uma ficha só, sem números.
 
 **Modelo:** Sonnet, esforço alto (muitas partes ao mesmo tempo e balanceamento por tentativa)

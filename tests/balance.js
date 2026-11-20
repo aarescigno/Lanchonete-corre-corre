@@ -88,7 +88,7 @@ const eqFor=n=>{ const e=Object.assign({},eqFor0(n)); if(TE&&LIA&&n>=3) e.lia=LI
 if(process.env.MOVIMENTO) Object.assign(L.MOVIMENTO,JSON.parse(process.env.MOVIMENTO));   // MOVIMENTO='{"porLugar":0.04}'
 if(process.env.CONTAS) Object.assign(L.CONTAS,JSON.parse(process.env.CONTAS));
 if(process.env.INGRED) Object.assign(L.INGRED,JSON.parse(process.env.INGRED));
-if(process.env.CARDAPIO){ const c=JSON.parse(process.env.CARDAPIO); for(const k in c) L.CARDAPIO[k].preco=c[k]; }   // v8.3.8: CARDAPIO='{"pf":25}' testa os preços dos pratos
+if(process.env.CARDAPIO){ const c=JSON.parse(process.env.CARDAPIO); for(const k in c){ const q=L.CARDAPIO[k].preco; if(c[k]&&typeof c[k]==='object') Object.assign(q,c[k]); else Object.keys(q).forEach(i=>{ q[i]=c[k]; }); } }   // v12.7: preco é por ponto; um número vale para todos os pontos, um objeto troca só os que ele diz   // v8.3.8: CARDAPIO='{"pf":25}' testa os preços dos pratos
 if(process.env.MAIS) Object.assign(L.MAIS,JSON.parse(process.env.MAIS));   // v8.3.8: MAIS='{"cada":0.6}' testa o 2º pedido
 if(process.env.GRUPOS){ const gr=JSON.parse(process.env.GRUPOS); for(const k in gr) L.DAYS[k-1].groups=gr[k]; }   // GRUPOS='{"1":5}': testa o movimento do dia
 if(process.env.METAS){ const mt=JSON.parse(process.env.METAS); for(const k in mt) L.DAYS[k-1].meta=mt[k]; }   // METAS='{"3":420}': testa metas sem mexer em src/

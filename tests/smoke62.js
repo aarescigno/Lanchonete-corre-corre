@@ -22,7 +22,7 @@ const TIPOS=['estudante','executiva','familia','vovos','turma','motorista','nego
   ok(L.cursoOk(e,g.ponto) && L.cursoOk(a,g.ponto),'no Terraço, os dois cursos aparecem');
   const Ha=jogo(9,'avenida'), Hg=nova();
   ok(!Ha.L.cursoOk(Ha.L.cursoOf('entradas'),Ha.g.ponto) && !Ha.L.cursoOk(Ha.L.cursoOf('alta'),Ha.g.ponto) && !Hg.L.cursoOk(Hg.L.cursoOf('alta'),Hg.g.ponto),'na Avenida e na Garagem, não');
-  ok(FINAS.concat(ALTAS).every(k=>L.CARDAPIO[k].fino===true) && FINAS.concat(ALTAS).map(k=>L.CARDAPIO[k].preco).join()==='17,19,18,46,50,55','os 6 pratos finos, com os preços da Garagem (v10.5: × 1,2)');
+  ok(FINAS.concat(ALTAS).every(k=>L.CARDAPIO[k].fino===true) && FINAS.concat(ALTAS).map(k=>L.CARDAPIO[k].preco.terraco).join()==='34,42,38,82,94,108','os 6 pratos finos, com os preços do Terraço (v12.7)');
   ok(L.CARDAPIO.bruschetta.cat==='chapa' && L.CARDAPIO.bacalhau.cat==='frito' && L.CARDAPIO.quiche.cat==='assado' && ALTAS.every(k=>L.CARDAPIO[k].cat==='pf'),'categorias: entradas na chapa, no frito e no assado; principais no PF');
   ok(!L.CARDAPIO.bruschetta.carne && !L.CARDAPIO.quiche.carne && !L.CARDAPIO.risoto.carne && L.CARDAPIO.bacalhau.carne && L.CARDAPIO.peixe.carne,'sem carne: bruschetta, quiche e risoto');
   g.save.cursoDia=0; ok(g.buyCurso('entradas') && g.save.cursos.entradas===1 && g.save.bank===9000-600,'comprar o básico das entradas custa R$ 600');
@@ -30,8 +30,8 @@ const TIPOS=['estudante','executiva','familia','vovos','turma','motorista','nego
   g.save.cursoDia=0; ok(g.buyCurso('alta') && g.save.cursos.alta===1,'no dia seguinte, a alta gastronomia');
   g.save.cursoDia=0; ok(g.buyCurso('entradas') && g.save.cursos.entradas===2,'o avançado das entradas (Entradas de chef)');
   ok(L.pratoAv('bruschetta',g.save.cursos) && !L.pratoAv('risoto',g.save.cursos),'o avançado só vale para os pratos do curso');
-  ok(preco(L,g,'bruschetta')===Math.round(17*g.ponto.cardapio*1.15) && preco(L,g,'risoto')===Math.round(46*g.ponto.cardapio),'preço no Terraço (×'+g.ponto.cardapio+'): avançado ×1,15');
-  ok(L.precoPrato('medalhao',g.ponto,{})===Math.round(55*g.ponto.cardapio),'medalhão: R$ '+L.precoPrato('medalhao',g.ponto,{})+' no Terraço'); }
+  ok(preco(L,g,'bruschetta')===Math.round(34*1.15) && preco(L,g,'risoto')===82,'preço no Terraço (v12.7: bruschetta R$ 34, risoto R$ 82): avançado ×1,15');
+  ok(L.precoPrato('medalhao',g.ponto,{})===108,'medalhão: R$ '+L.precoPrato('medalhao',g.ponto,{})+' no Terraço'); }
 
 // ---------- 2. a regra do prato fino ----------
 { const H=terr(), {g,L}=H;
@@ -64,7 +64,7 @@ const TIPOS=['estudante','executiva','familia','vovos','turma','motorista','nego
   ok(x1-base===L.CURSO_XP.basico && x2-base===2*(L.CURSO_XP.basico+L.CURSO_XP.avancado),'cada curso novo dá +1 (básico) e +2 (avançado) de experiência');
   const m0=L.avalMenu({}), m1=L.avalMenu({ entradas:1 }), m2=L.avalMenu({ entradas:1, alta:1 });
   ok(m1>m0 && m2>m1,'a Diversidade do cardápio sobe com cada curso (de '+m0+' a '+m2+')');
-  const sab=L.pratosSabidos(L.normCursos({ entradas:1, alta:1 })); ok(FINAS.concat(ALTAS).every(k=>sab.indexOf(k)>=0),'a cozinha sabe os 6 pratos finos'); }
+  const sab=L.pratosSabidos(L.normCursos({ entradas:1, alta:1 }),L.PONTOS[3]); ok(FINAS.concat(ALTAS).every(k=>sab.indexOf(k)>=0),'a cozinha sabe os 6 pratos finos'); }
 
 // ---------- 4. a Lia ----------
 { const H=terr({ bank:3000 },8,true), {g,L}=H;
@@ -110,10 +110,10 @@ const TIPOS=['estudante','executiva','familia','vovos','turma','motorista','nego
 // ---------- 6. a Alta confeitaria da Dani ----------
 { const H=terr({ daniCursos:{ confCaseira:1, confGourmet:1 }, bank:9000 }), {g,L}=H;
   const c=L.DANI_CURSOS.find(q=>q.id==='confAlta'); ok(c && c.preco===600 && c.nivel===4 && c.dep==='confGourmet' && c.item,'DANI_CURSOS.confAlta: R$ 600, nivel 4, depende da gourmet');
-  ok(L.DOCES.alta.map(d=>d.id).join()==='entremet,milfolhas,macaron' && L.DOCES.altaPreco===30 && L.DOCES.altaIngred===7 && L.AVAL.amb.doceAlta===0.4,'DOCES.alta: 3 doces, R$ 30, ingrediente R$ 7, +0,4 no Ambiente');
-  ok(L.docesLista(g.up)===L.DOCES.gourmet && L.docePreco(g.up)===16,'antes do curso, a vitrine segue gourmet (R$ 16)');
+  ok(L.DOCES.alta.map(d=>d.id).join()==='entremet,milfolhas,macaron' && L.DOCES.altaPreco===44 && L.DOCES.altaIngred===10 && L.AVAL.amb.doceAlta===0.4,'DOCES.alta: 3 doces, R$ 44, ingrediente R$ 10, +0,4 no Ambiente');
+  ok(L.docesLista(g.up)===L.DOCES.gourmet && L.docePreco(g.up)===22,'antes do curso, a vitrine segue gourmet (R$ 22)');
   ok(g.buyDaniCurso('confAlta') && g.up.confAlta===true,'comprar o curso liga a alta confeitaria');
-  ok(L.docesLista(g.up)===L.DOCES.alta && L.docePreco(g.up)===30 && L.doceIngred(g.up)===7 && L.doceIcone(g.up)===8,'doces do Terraço: lista, R$ 30, ingrediente R$ 7');
+  ok(L.docesLista(g.up)===L.DOCES.alta && L.docePreco(g.up)===44 && L.doceIngred(g.up)===10 && L.doceIcone(g.up)===8,'doces do Terraço: lista, R$ 44, ingrediente R$ 10');
   ok(L.doceIdx('entremet')===6 && L.doceIdx('milfolhas')===7 && L.doceIdx('macaron')===8,'os 3 ícones novos (6 a 8)');
   const s=L.normSave(JSON.parse(JSON.stringify(g.save))); ok(s.daniCursos.confAlta===1 && s.up.confAlta===true,'o save guarda o curso');
   const H2=terr({ daniCursos:{ confCaseira:1 }, bank:9000 }); ok(!H2.g.buyDaniCurso('confAlta'),'sem a gourmet, não dá para fazer a alta');

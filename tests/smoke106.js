@@ -59,7 +59,7 @@ const cinco=['neutra','insegura','firme','alegre','brava'];
 
 // ---------- CA4: o Risoto de feijão-manteiguinha ----------
 { const H0=aberto({ liaCursos:{ praca:1, autor:1 }, equipe:Object.assign({},EQ,{ lia:3 }) }), {g,L}=H0, R=L.CARDAPIO.liaRisoto;
-  ok(R && R.nome==='Risoto de feijão-manteiguinha' && R.preco===52 && R.cat==='pf' && R.curso==='liaAutor' && R.carne===false && R.cor==='#C9A26B' && R.veg===true && R.fino===true && !L.CURSOS.some(c=>c.id==='liaAutor'),'CA4 CARDAPIO.liaRisoto: R$ 52 (v12.5: a regra do CA10 baixou de 58), bege dourado, sem carne, fino, curso que não existe em CURSOS');
+  ok(R && R.nome==='Risoto de feijão-manteiguinha' && R.preco.terraco===88 && R.cat==='pf' && R.curso==='liaAutor' && R.carne===false && R.cor==='#C9A26B' && R.veg===true && R.fino===true && !L.CURSOS.some(c=>c.id==='liaAutor'),'CA4 CARDAPIO.liaRisoto: R$ 88 (v12.7; a regra do CA10 da v12.5: acima do risoto de cogumelos), bege dourado, sem carne, fino, curso que não existe em CURSOS');
   const pede=(h,veg)=>{ let n=0; for(let i=0;i<300;i++) if(h.L.pedePrincipal('executiva',h.g,veg)==='liaRisoto') n++; return n; };
   g.cursos.alta=2; const c=pede(H0); ok(c>0,'CA4 com o curso de autor e a Lia no dia, o risoto é pedido ('+c+' de 300)');
   ok(pede(H0,true)>0,'CA4 também entre os vegetarianos');

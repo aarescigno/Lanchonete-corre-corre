@@ -82,12 +82,12 @@ const pegaPrato=(H,grp)=>{ const g=H.g, p=g.kitchen.plates.find(q=>q&&q.group===
 
 // ---------- 3. aluguel e preços ----------
 { const H=jogo(9,'terraco',{ bank:3000 }), {g,L}=H; g.resetDay(10);
-  ok(g.ponto.aluguel===1200 && L.precoPrato('pf',g.ponto,g.cursos)===Math.round(L.CARDAPIO.pf.preco*1.3) && L.PONTOS[3].cardapio===1.3 && L.precoPrato('coxinha',g.ponto,g.cursos)===Math.round(L.CARDAPIO.coxinha.preco*1.3),'aluguel R$ 1.200 e cardápio ×1,3 (v10.4: era ×2,4; o ganho sobre a Avenida caiu de R$ 2.800 para ~R$ 850)');
+  ok(g.ponto.aluguel===1200 && L.precoPrato('galeto',g.ponto,g.cursos)===72 && L.PONTOS[3].cardapio===undefined && L.precoPrato('dadinho',g.ponto,g.cursos)===32,'aluguel R$ 1.200 e cardápio próprio (v12.7: galeto R$ 72, dadinho de tapioca R$ 32)');
   g.begin(); const base=L.CONTAS.base+g.tables.filter(t=>t.open).length*L.CONTAS.mesa+g.tables.filter(t=>t.open).reduce((a,t)=>a+t.seats,0)*L.CONTAS.lugar;
   ok(g.contas===base+1200,'as contas do dia somam o aluguel de R$ 1.200');
   g.schedule=[]; g.nextIdx=0; g.money=1500; g.custo=0; const b0=g.save.bank; g.finishDay();
   ok(g.save.bank===b0+1500-g.contas-g.paid-g.paidDiv && g.save.caixa[g.save.caixa.length-1].contas===g.contas,'o aluguel sai no fim do dia e entra no livro-caixa');
-  const D=g.diaPonto(L.diaOf(10)); ok(D.meta===Math.round(L.diaOf(10).meta*8/5)*5 && D.expert===Math.round(L.diaOf(10).expert*6/5)*5 && L.PONTOS[3].grupos===0.5,'metas ×8 e expert ×6 (calibrados em 12/11 com a equipe toda, v10.5; eram 12 e 8,5), arredondadas para 5; grupos 0,50'); }
+  const D=g.diaPonto(L.diaOf(10)); ok(D.meta===Math.round(L.diaOf(10).meta*18/5)*5 && D.expert===Math.round(L.diaOf(10).expert*13.5/5)*5 && L.PONTOS[3].grupos===0.5,'metas ×18 e expert ×13,5 (v12.7, calibrados com os preços do Terraço; eram 8 e 6), arredondadas para 5; grupos 0,50'); }
 
 // ---------- 4. a clientela ----------
 { const H=jogo(9,'terraco',{ bank:3000, dia:10 }), {g,L}=H; g.save.divulga='boca'; g.resetDay(10);
@@ -170,9 +170,9 @@ const pegaPrato=(H,grp)=>{ const g=H.g, p=g.kitchen.plates.find(q=>q&&q.group===
   const q=new L.Group(g,'familia',++g.gid,0,false); ok(q.tempos===true && q.tempo===0 && q.notaT.length===4 && q.notaT.every(v=>v===null) && L.TEMPOS.entrada.cook===0.6 && L.TEMPOS.entrada.eat===0.5 && L.TEMPOS.pts===30 && L.PONTOS_ACAO.completa===30,'grupo com `tempos`: começa na entrada (tempo 0), notas vazias; TEMPOS e os 30 pontos');
   // o principal com os pratos que a cozinha sabe: parmegiana (curso Cozinha de restaurante) e o PF vegetariano
   const G2=terr({ cursos:{ restaurante:1, veg:1 } }).g; const vistos={}; for(let k=0;k<400;k++){ const q2=new L.Group(G2,'negocios',++G2.gid,0,false); q2.dishes.forEach(d=>{ vistos[d]=(vistos[d]||0)+1; }); }
-  ok(Object.keys(vistos).every(d=>L.CARDAPIO[d].cat==='pf') && vistos.pf>0 && vistos.parmegiana>0 && vistos.pfVeg>0,'o principal sai de PF, PF vegetariano e parmegiana (os que a cozinha sabe)');
+  ok(Object.keys(vistos).every(d=>L.CARDAPIO[d].cat==='pf') && vistos.galeto>0 && vistos.vinho>0 && (vistos.nhoque>0 || vistos.polenta>0) && !vistos.pf && !vistos.pfVeg && !vistos.parmegiana,'o principal sai do galeto, do escalope, do filé ao molho de vinho (curso Cozinha de restaurante) e dos sem carne do curso Vegetariano; nunca PF nem parmegiana (v12.7)');
   const vg=L.pedePrincipal('casal',G2,true); ok(!L.CARDAPIO[vg].carne,'vegetariano: o principal é sem carne');
-  const G3=terr().g; ok(L.pedePrincipal('casal',G3,true)==='pf','vegetariano sem prato vegetariano: o PF (e o grupo reclama no Cardápio)');
+  const G3=terr().g; ok(L.pedePrincipal('casal',G3,true)==='galeto','vegetariano sem prato vegetariano: o prato de base do Terraço (e o grupo reclama no Cardápio)');
   const q3=new L.Group(G3,'casal',++G3.gid,0,false); q3.people.forEach(p=>{ p.veg=true; });
   // na Missão zero e no Turno sem fim não há tempos
   const Z=load({}); Z.g.startTreino && Z.g.startTreino(); const qz=new L.Group(Z.g,'vovos',1,0,false); ok(!qz.tempos,'na Missão zero o grupo não tem tempos'); }
@@ -342,7 +342,7 @@ const pegaPrato=(H,grp)=>{ const g=H.g, p=g.kitchen.plates.find(q=>q&&q.group===
   ok(ids.indexOf('p-terraco')>=0 && ids.indexOf('c-casal')>=0 && L.MANUAL.find(f=>f.id==='p-terraco').aba==='lugares' && L.MANUAL.find(f=>f.id==='c-casal').aba==='clientes' && L.MANUAL.find(f=>f.id==='c-casal').tipo==='casal','o Manual tem as fichas p-terraco (Lugares) e c-casal (Clientes)');
   ok(L.MANUAL.find(f=>f.id==='p-terraco').linha==='O topo da cidade: poucas mesas e refeição completa, do drink à sobremesa.' && L.MANUAL.find(f=>f.id==='c-casal').linha==='Data especial: sem pressa, e a conta é generosa.','os textos das fichas');
   ok(!/\d/.test(L.MANUAL.find(f=>f.id==='p-terraco').linha+L.MANUAL.find(f=>f.id==='c-casal').linha),'sem número nas fichas');
-  const tr=L.manualTracos('casal',{}); ok(tr.some(x=>/Grupo: em dupla/.test(x)) && tr.some(x=>/Gorjeta: ótima/.test(x)) && tr.some(x=>/Prefere: PF/.test(x)),'os traços do casal vêm dos números (dupla, gorjeta ótima, prefere PF)');
+  const tr=L.manualTracos('casal',{}); ok(tr.some(x=>/Grupo: em dupla/.test(x)) && tr.some(x=>/Gorjeta: ótima/.test(x)) && tr.some(x=>/Prefere: prato principal/.test(x)),'os traços do casal vêm dos números (dupla, gorjeta ótima, prefere prato principal)');
   const tr2=L.manualTracos('casal',{ aberta:id=>id==='p-terraco' }), tr3=L.manualTracos('casal',{ aberta:()=>false }); ok(tr2.some(x=>x==='Onde: Terraço Suíça') && !tr3.some(x=>/Onde:/.test(x)),'"Onde: Terraço Suíça" só quando a ficha do ponto já abriu'); }
 { const H=jogo(9,'avenida',{ bank:9000, manual:[] }), {g}=H; g.goShop(10); g.manualInicio && g.manualInicio();
   ok(g.save.manual.indexOf('p-terraco')>=0,'a ficha p-terraco abre quando o cartão Mudança aparece na lojinha (ver o ponto novo)');

@@ -65,8 +65,8 @@ const roda=(H,seg,fn)=>{ const {g}=H; for(let i=0;i<seg*20;i++){ g.update(0.05);
 { const {L}=nova(), c=L.JOCA_CURSOS.find(x=>x.id==='cafesEsp');
   ok(c && c.nome==='Cafés especiais' && c.preco===600 && c.nivel===4 && c.dep==='espresso' && c.item===true,'JOCA_CURSOS: Cafés especiais, R$ 600, nível 4, depende do espresso, com item');
   const M=L.CAFES.metodos;
-  ok(M.length===3 && M.every(m=>m.preco===20) && M.map(m=>m.id).join()==='coado,prensa,coldbrew' && M[0].prep===2.5 && M[1].prep===3.5 && M[2].prep===1 && M.map(m=>m.etapas).join()==='2,3,1' && L.CAFES.ingredEsp===5,'coado 2,5 s (2 etapas), prensa 3,5 s (3), cold brew 1 s (1): R$ 20, ingrediente R$ 5');
-  ok(L.cafesLista({})===L.CAFES.lista && L.cafesLista({ cafesEsp:true })===M && L.cafeIngred({})===2 && L.cafeIngred({ cafesEsp:true })===5,'sem o curso, os cafés são os de sempre (R$ 8 e R$ 12)');
+  ok(M.length===3 && M.every(m=>m.preco===24) && M.map(m=>m.id).join()==='coado,prensa,coldbrew' && M[0].prep===2.5 && M[1].prep===3.5 && M[2].prep===1 && M.map(m=>m.etapas).join()==='2,3,1' && L.CAFES.ingredEsp===6,'coado 2,5 s (2 etapas), prensa 3,5 s (3), cold brew 1 s (1): R$ 24, ingrediente R$ 6');
+  ok(L.cafesLista({})===L.CAFES.lista && L.cafesLista({ cafesEsp:true })===M && L.cafeIngred({})===2 && L.cafeIngred({ cafesEsp:true })===6,'sem o curso, os cafés são os de sempre (R$ 8 e R$ 12; no Terraço, R$ 10 e R$ 15)');
   ok(L.cafeIdx('espresso')===0 && L.cafeIdx('cappuccino')===1 && L.cafeIdx('coado')===2 && L.cafeIdx('prensa')===3 && L.cafeIdx('coldbrew')===4,'ícones: 0 espresso, 1 cappuccino, 2 coado, 3 prensa, 4 cold brew');
   let H=jogo(9,'terraco',{ pontoDia:5, equipe:{ tonhao:2, dani:3, joca:3, cami:2, anselmo:2 }, libera:{ joca:2, confeitaria:2 } }), g=H.g;
   ok(!g.buyJocaCurso('cafesEsp'),'sem o espresso, os cafés especiais não se compram');
@@ -76,7 +76,7 @@ const roda=(H,seg,fn)=>{ const {g}=H; for(let i=0;i<seg*20;i++){ g.update(0.05);
   H=aberto({ jocaCursos:{ espresso:1, cafesEsp:1 } }); g=H.g; ok(g.up.espresso && g.up.cafesEsp,'save com os dois cursos: espresso e cafés especiais ligados');
   const ids=new Set(); for(let i=0;i<200;i++){ const m=new H.L.Group(g,'executiva',++g.gid,0,false); m.sorteiaCafes().forEach(id=>ids.add(id)); }
   ok(ids.size>0 && [...ids].every(id=>['coado','prensa','coldbrew'].indexOf(id)>=0),'os pedidos de café passam a ser os três métodos');
-  ok(H.L.cafeDe('prensa').preco===20 && H.L.cafeDe('espresso').preco===8,'preços: R$ 20 o especial, R$ 8 o espresso');
+  ok(H.L.cafeDe('prensa').preco===24 && H.L.cafeDe('espresso').preco===8 && H.L.cafePrecoDe('espresso',H.L.PONTOS[3])===10 && H.L.cafePrecoDe('cappuccino',H.L.PONTOS[3])===15,'preços: R$ 24 o especial, R$ 8 o espresso (R$ 10 no Terraço)');
   // as etapas no anel: a Bia fazendo o café
   g.bia.phase='do'; g.bia.doing={ type:'espresso', item:'prensa' }; g.bia.timer=3.5*0.4; const w=H.L.espressoTrabalho(g);
   ok(w && w.cafe.etapas===3 && Math.abs(w.f-0.6)<0.01,'o anel da bancada: 3 etapas e o progresso do café que está sendo feito');
@@ -87,8 +87,8 @@ const roda=(H,seg,fn)=>{ const {g}=H; for(let i=0;i<seg*20;i++){ g.update(0.05);
 // ---------- 4. coquetelaria do Anselmo ----------
 { const {L}=nova(), A=L.ANSELMO_CURSOS, D=L.DRINKS;
   ok(A.length===2 && A[0].id==='classica' && A[0].preco===500 && A[0].nivel===4 && A[1].id==='autor' && A[1].preco===800 && A[1].dep==='classica' && A[1].item===true,'ANSELMO_CURSOS: clássica R$ 500 e de autor R$ 800 (depois da clássica, com item), nível 4');
-  ok(D.vagas===2 && D.vagasClassica===4 && D.prepClassica===0.8 && D.precoAutor===35 && D.ingredAutor===9 && D.autor.map(d=>d.nome).join('|')==='Neblina da Serra|Jardim do Terraço|Ouro da Casa','DRINKS: 4 vagas e 20% mais rápido; autor a R$ 35 (ingrediente R$ 9): Neblina da Serra, Jardim do Terraço, Ouro da Casa');
-  ok(L.drinkVagas({})===2 && L.drinkVagas({ coqClassica:true })===4 && Math.abs(L.drinkPrep({ coqClassica:true })-3.2)<1e-9 && L.drinkPrep({})===4 && L.drinkPreco({})===22 && L.drinkPreco({ coqAutor:true })===35 && L.drinkIngred({ coqAutor:true })===9,'as funções: vagas, preparo, preço e ingrediente por curso');
+  ok(D.vagas===2 && D.vagasClassica===4 && D.prepClassica===0.8 && D.precoAutor===56 && D.ingredAutor===14 && D.autor.map(d=>d.nome).join('|')==='Neblina da Serra|Jardim do Terraço|Ouro da Casa','DRINKS: 4 vagas e 20% mais rápido; autor a R$ 56 (ingrediente R$ 14): Neblina da Serra, Jardim do Terraço, Ouro da Casa');
+  ok(L.drinkVagas({})===2 && L.drinkVagas({ coqClassica:true })===4 && Math.abs(L.drinkPrep({ coqClassica:true })-3.2)<1e-9 && L.drinkPrep({})===4 && L.drinkPreco({})===42 && L.drinkPreco({ coqAutor:true })===56 && L.drinkIngred({ coqAutor:true })===14,'as funções: vagas, preparo, preço e ingrediente por curso');
   ok(L.drinkIdx('neblina')===3 && L.drinkIdx('jardim')===4 && L.drinkIdx('ouro')===5 && L.drinkIdx('por')===0,'ícones dos drinks: 3 a 5 os de autor');
   let H=jogo(9,'terraco',{ pontoDia:5, equipe:{ tonhao:2, dani:3, joca:3, cami:2, anselmo:2 }, libera:{ joca:2, confeitaria:2, anselmo:2 } }), g=H.g;
   ok(!g.buyAnselmoCurso('autor'),'a de autor não se compra antes da clássica');
@@ -106,11 +106,11 @@ const roda=(H,seg,fn)=>{ const {g}=H; for(let i=0;i<seg*20;i++){ g.update(0.05);
   g.drinkJob.t=0; g.drinkUpdate(3.3 / H.L.STAFF.anselmo.levels[g.save.equipe.anselmo].speed); ok(g.drinkPronto.length===1,'pronto em 3,2 s (20% mais rápido que os 4 s)');
   g.drinkQ=[{grp:{},id:'a'},{grp:{},id:'b'},{grp:{},id:'c'},{grp:{},id:'d'}]; g.drinkPronto=[{id:'neblina'},{id:'ouro'},{id:'jardim'}]; g.drinkJob=null; g.drinkUpdate(0.01); ok(g.drinkJob,'com a clássica, o balcão aguenta 3 copos prontos (4 vagas)');
   const gr={ drinksDados:0, bebConta:0, gain(){}, notaBeb(){}, drinksFalta:0 }; const c0=g.custo, b0=gr.bebConta; g.entregaDrinks(gr,2,100,100);
-  ok(gr.bebConta-b0===70 && Math.round(g.custo-c0)===18,'cada drink de autor entra na conta a R$ 35 (ingrediente R$ 9)'); }
+  ok(gr.bebConta-b0===112 && Math.round(g.custo-c0)===28,'cada drink de autor entra na conta a R$ 56 (ingrediente R$ 14)'); }
 
 // ---------- 5. o carrinho de boas-vindas ----------
 { const {L}=nova(), P=L.PONTOS[3];
-  ok(P.bebida==='coquetel' && L.BEBIDA_ESPERA.coquetel.preco===18 && L.BEBIDA_ESPERA.coquetel.ingred===5 && L.BEBIDA_ESPERA.coquetel.prep===3 && L.BEBIDA_ESPERA.coquetel.take===0.5 && L.BEBIDA_ESPERA.coquetel.fim==='Coquetéis de boas-vindas','BEBIDA_ESPERA.coquetel: R$ 18, ingrediente R$ 5, 3 s, "Coquetéis de boas-vindas"');
+  ok(P.bebida==='coquetel' && L.BEBIDA_ESPERA.coquetel.preco===24 && L.BEBIDA_ESPERA.coquetel.ingred===7 && L.BEBIDA_ESPERA.coquetel.prep===3 && L.BEBIDA_ESPERA.coquetel.take===0.5 && L.BEBIDA_ESPERA.coquetel.fim==='Coquetéis de boas-vindas','BEBIDA_ESPERA.coquetel: R$ 24, ingrediente R$ 7, 3 s, "Coquetéis de boas-vindas"');
   ok(L.BEBIDA_ESPERA.coquetel.pede(1)==='Um coquetel, por favor!' && L.BEBIDA_ESPERA.coquetel.pede(2)==='2 coquetéis, por favor!','as falas no molde das águas');
   const H=aberto({ anselmoCursos:{ classica:1, autor:1 } }), g=H.g;
   ok(g.up.maquina===true && g.bebida.id==='coquetel' && g.anselmoAtivo && g.maquinaOn,'com o curso e o Anselmo no dia, o carrinho serve');

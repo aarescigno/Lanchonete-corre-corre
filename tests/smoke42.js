@@ -67,12 +67,12 @@ const html=fs.readFileSync(__dirname+'/../lanchonete.html','utf8');
 
 // ---------- 3. aluguel e preços ----------
 { const H=jogo(6,'avenida'), {g,L}=H; g.resetDay(10);
-  ok(g.ponto.aluguel===400 && L.precoPrato('pf',g.ponto,g.cursos)===60 && L.PONTOS[2].cardapio===2 && L.precoPrato('coxinha',g.ponto,g.cursos)===20,'PF custa R$ 60 e a coxinha R$ 20 (cardápio ×2,0 sobre os preços de v10.5)');
+  ok(g.ponto.aluguel===400 && L.precoPrato('execFrango',g.ponto,g.cursos)===39 && L.PONTOS[2].cardapio===undefined && L.precoPrato('mandioca',g.ponto,g.cursos)===26,'o executivo de frango custa R$ 39 e a mandioca frita R$ 26 na Avenida (v12.7: cardápio por ponto)');
   g.begin(); const base=L.CONTAS.base+g.tables.filter(t=>t.open).length*L.CONTAS.mesa+g.tables.filter(t=>t.open).reduce((a,t)=>a+t.seats,0)*L.CONTAS.lugar;
   ok(g.contas===base+400,'as contas do dia somam o aluguel de R$ 400');
   g.schedule=[]; g.nextIdx=0; g.money=2000; g.custo=0; const b0=g.save.bank; g.finishDay();
   ok(g.save.bank===b0+2000-g.contas-g.paid-g.paidDiv && g.result.aluguel===400,'o aluguel sai no fim do dia');
-  const D=g.diaPonto(L.diaOf(10)); ok(D.meta===Math.round(L.diaOf(10).meta*3.1/5)*5 && D.expert===Math.round(L.diaOf(10).expert*3.4/5)*5,'meta ×3,1 e expert ×3,4 (v10.5.1, calibrados; eram 2,8 e 3,4), arredondadas para 5');
+  const D=g.diaPonto(L.diaOf(10)); ok(D.meta===Math.round(L.diaOf(10).meta*2.5/5)*5 && D.expert===Math.round(L.diaOf(10).expert*3.4/5)*5,'meta ×2,5 e expert ×3,4 (v12.7, calibrados com os preços por ponto; eram 3,1 e 3,4), arredondadas para 5');
   ok(L.avalTeto(g.ponto)===4.3 && L.avalMinimo(g.ponto)===3.9,'teto 4,3 e nota mínima 3,9 (para sair, no Terraço)');
   ok(/Restaurante na Avenida Brasil/.test(g.ponto.nome) && L.PONTOS[2].espera===6 && L.PONTOS[2].pratos===6 && L.PONTOS[2].bebida==='saborizada','dados do ponto: nome, 6 de espera, 6 pratos, água saborizada'); }
 
@@ -113,12 +113,12 @@ const html=fs.readFileSync(__dirname+'/../lanchonete.html','utf8');
   const u=L.UPGRADES.find(x=>x.id==='maquina'), pv=L.upgradeDe(u,g.ponto);
   ok(pv.name==='Águas saborizadas' && pv.cost===200 && L.upgradeDe(u,L.PONTOS[1]).cost===120 && L.upgradeDe(u,L.PONTOS[0]).cost===80,'a melhoria "maquina" da Avenida: Águas saborizadas, R$ 200');
   ok(g.buy('maquina') && g.save.bank===4800 && g.up.maquina,'comprar: R$ 200');
-  const b=g.bebida; ok(b.id==='saborizada' && b.preco===14 && b.ingred===3 && b.prep===2 && b.take===0.5,'água saborizada: R$ 14 na conta, R$ 3 de ingrediente, 2 s de preparo');
+  const b=g.bebida; ok(b.id==='saborizada' && b.preco===9 && b.ingred===2 && b.prep===2 && b.take===0.5,'água saborizada: R$ 9 na conta, R$ 2 de ingrediente, 2 s de preparo (v12.7)');
   const sab=new Set(); for(let k=0;k<80;k++) sab.add(new L.Group(g,'estudante',++g.gid,0,false).sabor); ok(sab.size===3 && L.SABORES.length===3 && L.SABORES.map(s=>s.nome).join()==='limão,morango,hortelã','cada grupo sorteia um dos 3 sabores');
   const t=L.daniTaskDe(L.DANI_TASKS.find(x=>x.id==='suco'),g.ponto); ok(t.name==='Levar a água saborizada' && t.short==='Água','a tarefa da Dani vira "Levar a água saborizada"');
   ok(L.daniTaskDe(L.DANI_TASKS.find(x=>x.id==='suco'),L.PONTOS[1]).name==='Levar o suco da espera' && L.daniTaskDe(L.DANI_TASKS.find(x=>x.id==='suco'),L.PONTOS[0]).name==='Levar a água da espera','os outros pontos seguem iguais');
   // a conta do grupo: o copo entra na conta
-  g.begin(); const q=new L.Group(g,'estudante',++g.gid,0,false); q.size=1; q.sucoConta=2; const v=g.bebida.preco*q.sucoConta; ok(v===28,'2 copos na conta: R$ 28');
+  g.begin(); const q=new L.Group(g,'estudante',++g.gid,0,false); q.size=1; q.sucoConta=2; const v=g.bebida.preco*q.sucoConta; ok(v===18,'2 copos na conta: R$ 18');
   ok(MAQ_SLOW()===0.4,'paciência 40% mais devagar (MAQUINA.slow, como na jarra)'); function MAQ_SLOW(){ return L.MAQUINA.slow; } }
 
 // ---------- 7. as flores ----------
@@ -142,18 +142,18 @@ const html=fs.readFileSync(__dirname+'/../lanchonete.html','utf8');
 
 // ---------- 9. o curso Cozinha de restaurante ----------
 { const H=jogo(6,'avenida',{ bank:5000 }), {g,L}=H; g.resetDay(10);
-  const c=L.cursoOf('restaurante'); ok(c && c.nome==='Cozinha de restaurante' && c.preco===400 && c.pratos.join()==='parmegiana' && c.nivel===3 && c.av.nome==='Parmegiana da casa' && c.av.preco===600 && /molho de tomate de 6 horas/.test(c.av.receita),'o curso: R$ 400 e o avançado "Parmegiana da casa" R$ 600');
-  ok(L.CARDAPIO.parmegiana.nome==='Filé à parmegiana' && L.CARDAPIO.parmegiana.preco===36 && L.CARDAPIO.parmegiana.cat==='pf' && L.CARDAPIO.parmegiana.carne===true,'o prato: Filé à parmegiana, R$ 36 (v10.5; era 30), categoria PF, com carne');
+  const c=L.cursoOf('restaurante'); ok(c && c.nome==='Cozinha de restaurante' && c.preco===400 && L.pratosCurso('restaurante',g.ponto,1).join()==='parmegiana' && c.nivel===3 && c.av.nome==='Parmegiana da casa' && c.av.preco===600 && /molho de tomate de 6 horas/.test(c.av.receita),'o curso: R$ 400 e o avançado "Parmegiana da casa" R$ 600');
+  ok(L.CARDAPIO.parmegiana.nome==='Filé à parmegiana' && L.CARDAPIO.parmegiana.preco.avenida===58 && L.CARDAPIO.parmegiana.cat==='pf' && L.CARDAPIO.parmegiana.carne===true,'o prato: Filé à parmegiana, R$ 58 na Avenida (v12.7; era 72), categoria PF, com carne');
   H.L.setShopGrupo('lanchonete'); H.L.setShopTab('cardapio'); ok(/Curso de Cozinha de restaurante/.test(txt(grid(H))) && /Comprar R\$ /.test(txt(grid(H))),'o cartão aparece no Cardápio da Avenida, com o preço do curso');
   ok(g.buyCurso('restaurante') && g.save.bank===4600 && g.save.cursos.restaurante===1,'comprar: R$ 400');
-  ok(L.precoPrato('parmegiana',g.ponto,g.cursos)===72 && L.pratoSabido('parmegiana',g.save.cursos) && !L.pratoSabido('parmegiana',{}),'ensina o Filé à parmegiana (R$ 72 na Avenida)');
+  ok(L.precoPrato('parmegiana',g.ponto,g.cursos)===58 && L.pratoSabido('parmegiana',g.save.cursos,g.ponto) && !L.pratoSabido('parmegiana',{},g.ponto),'ensina o Filé à parmegiana (R$ 58 na Avenida)');
   g.save.cursoDia=0; g.cursoMsg=''; ok(g.buyCurso('restaurante') && g.save.cursos.restaurante===2 && g.save.bank===4000,'o avançado: R$ 600');
-  ok(L.precoPrato('parmegiana',g.ponto,g.cursos)===83,'com o avançado, a parmegiana custa R$ 83');
+  ok(L.precoPrato('parmegiana',g.ponto,g.cursos)===67,'com o avançado, a parmegiana custa R$ 67');
   ok(L.tonhaoXp({ restaurante:1 })===1 && L.tonhaoXp({ restaurante:2 })===3,'conta na experiência do Tonhão (+1 e +2) como os outros');
   ok(L.avalMenu({ restaurante:1 })>L.avalMenu({}),'conta na Diversidade do cardápio');
   // quem pede PF pode pedir a parmegiana; vegetariano nunca
-  g.save.cursos={ restaurante:1 }; let parm=0, pf=0, vegParm=0; for(let k=0;k<400;k++){ const d=L.pedePrato('negocios',g,false,false); if(d==='parmegiana') parm++; if(d==='pf') pf++; if(L.pedePrato('negocios',g,false,true)==='parmegiana') vegParm++; }
-  ok(parm>100 && pf>100 && vegParm===0,'metade dos PFs vira parmegiana depois do curso; vegetariano nunca ('+parm+' contra '+pf+')');
+  g.save.cursos={ restaurante:1 }; let parm=0, pf=0, vegParm=0; for(let k=0;k<400;k++){ const d=L.pedePrato('negocios',g,false,false); if(d==='parmegiana') parm++; if(d==='execFrango') pf++; if(L.pedePrato('negocios',g,false,true)==='parmegiana') vegParm++; }
+  ok(parm>60 && pf>60 && vegParm===0,'v12.7: o executivo de frango, o strogonoff e a parmegiana dividem os pratos principais depois do curso; vegetariano nunca ('+parm+' contra '+pf+')');
   // só na Avenida (fora do modo dev)
   const I=jogo(4,'industrial',{ bank:5000 }), gi=I.g; ok(gi.cursoProx('restaurante')===null && !gi.buyCurso('restaurante'),'na área industrial, o curso não está ao alcance');
   I.L.setShopGrupo('lanchonete'); I.L.setShopTab('cardapio'); ok(!/Cozinha de restaurante/.test(txt(grid(I))) && !gi.cardapioNovo.some(k=>/^restaurante/.test(k)),'e o cartão Cardápio não mostra o curso nem acende o selo "novo"');
