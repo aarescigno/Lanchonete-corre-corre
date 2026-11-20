@@ -1,6 +1,6 @@
 # v12.8.2 — O entretenimento também nas Melhorias (etapa correção)
 
-**Situação:** aprovada
+**Situação:** entregue em 20/11
 **Origem:** conversa de 20/11 (`docs/PROPOSTAS.md`, "o entretenimento nas Melhorias"): "Os itens de entretenimento, como televisão, rádio, sertanejo etc. Tem que ficar nas melhorias, eles destoam no luxo". Na escolha, o usuário pediu os cartões nos dois lugares: "O objetivo de ter em 2 lugares é para o jogador intuir que ele ajuda tanto na diminuição da velocidade de perda de corações quanto na beleza do ambiente." Desde a v10.7 esses cartões estão só na aba Luxo (`buildLuxo`).
 
 ## Objetivo
@@ -36,10 +36,10 @@ O jogador acha a TV, o som, as TVs com sertanejo, o couvert e a música ao vivo 
 - `src/10-constantes.js` e `src/02-telas.html`: `VERSAO`, `vtag`, `#ov-ver`.
 
 ## Tarefas
-- [ ] T1 `smoke112` com CA1 a CA5 (falhando), abrindo a lojinha em cada ponto e montando as abas Melhorias e Luxo como os smokes da aba Luxo já fazem (ver `smoke` que usa `shopTab = 'luxo'`).
-- [ ] T2 `buildEntrete` e as chamadas em `buildLuxo` e `buildMelhorias`; comentários.
-- [ ] T3 `menu_fit.py` (a aba Melhorias fica mais comprida; o topo fixo da lojinha tem de continuar cabendo) e uma olhada numa captura da aba Melhorias da Garagem e do Terraço (conferir e apagar).
-- [ ] Fechamento: `VERSAO`, `vtag`, `#ov-ver` (`smoke86` e `menu_fit.py`: a contagem de linhas do painel de Versões), `docs/RESUMO.md`, esta spec como entregue, `tests/run_all.sh` verde, PR e merge.
+- [x] T1 `smoke112` com CA1 a CA5 (falhando), abrindo a lojinha em cada ponto e montando as abas Melhorias e Luxo como os smokes da aba Luxo já fazem (ver `smoke` que usa `shopTab = 'luxo'`).
+- [x] T2 `buildEntrete` e as chamadas em `buildLuxo` e `buildMelhorias`; comentários.
+- [x] T3 `menu_fit.py` (a aba Melhorias fica mais comprida; o topo fixo da lojinha tem de continuar cabendo) e uma olhada numa captura da aba Melhorias da Garagem e do Terraço (conferir e apagar).
+- [x] Fechamento: `VERSAO`, `vtag`, `#ov-ver` (`smoke86` e `menu_fit.py`: a contagem de linhas do painel de Versões), `docs/RESUMO.md`, esta spec como entregue, `tests/run_all.sh` verde, PR e merge.
 
 ## Avisos para a execução
 - A v12.8.1 (pratos do Terraço, `smoke111`) saiu em 20/11, enquanto esta era planejada: esta é a v12.8.2, com o `smoke112`.
@@ -54,6 +54,9 @@ O jogador acha a TV, o som, as TVs com sertanejo, o couvert e a música ao vivo 
 Nenhuma.
 
 ## Desvios
-(No fechamento.)
+- `buildEntrete` fica logo depois de `buildLuxo`; o selo "novo" não mudou (a mesma ficha, `manualVer`).
+- O `smoke86` e o `menu_fit.py` estavam com a contagem das Versões atrasada desde a v12.8 (25 linhas, v12.7 como atual): agora 28 linhas e v12.8.2. Eram falhas antigas, e o `run_all.sh` só mostra o resumo.
+- T3: `menu_fit.py` verde (742 conferências, 0 falhas); a captura da aba não foi tirada (o smoke monta as duas abas em cada ponto).
+- `smoke112`: 9 checagens, `run_all.sh` verde.
 
 **Modelo:** Sonnet, esforço médio (código de jogo com plano fechado, pequeno; o smoke monta a lojinha em cada ponto)

@@ -958,6 +958,10 @@ function buildLuxo(grid){
   grid.appendChild(luxoQuadro());
   buildDecor(grid);
   buildMoveis(grid);
+  buildEntrete(grid);   // v12.8.2: os mesmos cartões também aparecem nas Melhorias
+}
+/* v12.8.2: o entretenimento do ponto (TV e som, TVs, couvert, música ao vivo): o mesmo cartão nas abas Melhorias e Luxo */
+function buildEntrete(grid){
   if (game.ponto.nivel === 1) buildTvSom(grid);
   if (game.ponto.nivel === 2) buildTvs(grid);
   buildCouvert(grid);   // (só na Avenida; no modo dev, também antes dela)
@@ -1354,7 +1358,7 @@ function buildGurugol(grid){
   if (!com.length) lista.appendChild(el('li', 'rank-empty', 'Os comentários aparecem depois do próximo dia.'));
   grid.appendChild(lista);
 }
-function buildMelhorias(grid){ upgradeCartoes(grid, false); if (game.ponto.nivel >= 2) buildAssento(grid); }   // v10.7: a TV, o som e as TVs foram para a aba Luxo; o assento da espera fica   // v9.1: as TVs são só da área industrial; na Avenida, os sofás
+function buildMelhorias(grid){ upgradeCartoes(grid, false); if (game.ponto.nivel >= 2) buildAssento(grid); buildEntrete(grid); }   // v12.8.2: a TV, o som, as TVs, o couvert e a música ao vivo aparecem nas Melhorias e no Luxo (desde a v10.7 só no Luxo); o assento da espera fica   // v9.1: as TVs são só da área industrial; na Avenida, os sofás
 function upgradeCartoes(grid, bia){
   // os Tênis de corrida (v7.3) só aparecem depois dos Tênis novos, no lugar deles (a grade continua com 6); no modo dev, todas
   UPGRADES.filter(u => (BIA_IDS.indexOf(u.id) >= 0) === bia).filter(u => u.id !== 'maquina' || (game.ponto.bebida && game.ponto.bebida !== 'coquetel')).filter(u => !u.nivel || devLivre() || game.ponto.nivel >= u.nivel).filter(u => devLivre() || (u.req ? game.up[u.req] : !(game.up[u.id] && UPGRADES.some(v => v.req === u.id)))).forEach(u => {
