@@ -17,10 +17,9 @@ Origem: retorno do Renan Martorelli (beta-tester) e conversa com o Arthur (15/10
 |---|---|---|---|
 | 5 | ~~Modo História, parte 1~~: juntou-se à 2f e aos capítulos da 3a, 3b e 4a (28/10) | — | — |
 | 14b | O bot humano, calibrado pelos relatórios | — (testes) | depois dos relatórios dos testers |
-| 15b | As vozes da equipe: o tratamento e a revisão das conversas | v12.6 | feita em 19/11 (`docs/spec-v12.6.md`; `smoke107`; "Bi", "dona Bia", "senhora" e "chefe" em todas as conversas, a `camiNome` e a roda com a equipe toda) |
 | 16a | Cardápio de verdade em cada ponto: pratos e preços por ponto, curso como técnica, sem PF no Terraço | v12.7 | feita em 20/11 (`docs/spec-v12.7.md`; `smoke109`; `preco` por ponto em cada prato e sem o `cardapio` do ponto, 29 pratos novos da Avenida e do Terraço, os cursos como técnica, o prato de base de cada ponto, bebidas, doces e cafés com preço por ponto, o Arraiá da Avenida e o do Terraço; metas recalibradas; o ganho da industrial caiu 32% e o do Terraço subiu 78%, aceito pelo usuário) |
 | 16b-1 | Os desenhos dos pratos novos da Avenida, dos juninos e das barracas chiques | v12.8 | feita em 20/11 (`docs/spec-v12.8.md`; `smoke110`; `drawAvenida` com os 14 pratos, os 6 juninos novos, a barraca por ponto no cartão e o desenhinho no painel dev) |
-| 16b-2 | Os desenhos dos pratos novos do Terraço e do risoto da Lia | v12.8.1 | planejada em 20/11 (`docs/spec-v12.8.1.md`, aprovada) |
+| 16b-2 | Os desenhos dos pratos novos do Terraço e do risoto da Lia | v12.8.1 | feita em 20/11 (`docs/spec-v12.8.1.md`) |
 
 ---
 
@@ -82,19 +81,6 @@ Origem: retorno do Renan Martorelli (beta-tester) e conversa com o Arthur (15/10
 > - **O Terraço mede pela equipe toda** (Joca, Cami, Anselmo e a confeitaria): é ela que passa ~90% das metas.
 > - **Regra da 3f em todas as sessões:** cartão novo da lojinha só com nome, preço e "?"; toda novidade ganha ficha no `MANUAL` (sem números), revelada quando aparece na história.
 > Ordem: 4a-1 (o ponto e a refeição completa, v10) → 4a-2 (o VIP exigente e a reputação, v10.1) → 4a-3 (a cozinha: alta gastronomia, a Lia e a alta confeitaria, v10.2) → 4a-4 (o salão e o bar: Cami, Joca e Anselmo, v10.3) → 4a-5 (música, flores e rebalanceamento, v10.4). Cada uma é uma versão, com PR e merge. As "Checagens de fim de sessão" da etapa 3 valem para todas.
-
-## Etapa 16 — Cardápio de verdade em cada ponto (16a, v12.7; 16b, v12.8 e v12.8.1)
-Pedido do usuário em 19/11: preços perto dos de verdade, sem o multiplicador do ponto, e cada ponto com o que um lugar daquele vende. A Garagem e a área industrial seguem lanchonete; a Avenida vira restaurante executivo e o Terraço, cozinha fina, sem PF. Os cursos do Tonhão viram técnicas que valem em todo ponto.
-- **16a** (v12.7): a lógica, os pratos novos (com o desenho da categoria em cor própria), os preços de comida, bebida e doce por ponto, a festa junina por ponto e o balanceamento para manter a curva da carreira. Feita em 20/11 (`docs/spec-v12.7.md`).
-
-  **Modelo:** Sonnet, esforço alto (muitas partes ao mesmo tempo e balanceamento por tentativa)
-- **16b** (planejada em 20/11, em duas sessões): o desenho próprio de cada prato novo, para o prato se reconhecer no balão.
-  - **16b-1** (v12.8, `docs/spec-v12.8.md`): os 14 pratos da Avenida, os 6 juninos novos, o ícone das barracas do Arraiá da Avenida e do Arraiá do Terraço no cartão da lojinha e o desenhinho de cada prato no "Cardápio do ponto" do modo dev.
-
-    **Modelo:** Sonnet, esforço médio (desenho no canvas com plano detalhado)
-  - **16b-2** (v12.8.1, `docs/spec-v12.8.1.md`): os 15 pratos do Terraço, com porção de cozinha fina, e o risoto da Lia (que hoje sai com o desenho do medalhão).
-
-    **Modelo:** Sonnet, esforço médio (desenho no canvas com plano detalhado)
 
 ## Etapa 14 — O bot com habilidade de gente (14a, v12.2; 14b, só testes)
 Pedido do usuário em 17/11: o bot joga "bem demais, melhor do que gente". Os alvos do `balance.js` e do `carreira.js` saem de um bot que reage em 0,05 s, vê o salão inteiro e nunca erra o toque. A régua passa a ser o jogo de gente.
