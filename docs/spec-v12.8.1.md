@@ -1,6 +1,6 @@
 # v12.8.1 — Os desenhos dos pratos novos do Terraço (etapa 16b-2)
 
-**Situação:** aprovada (20/11)
+**Situação:** entregue em 20/11
 **Origem:** etapa 16b do `docs/PLANO.md`, planejada em 20/11 com o usuário junto com a v12.8 (`docs/spec-v12.8.md`), que faz a Avenida, os juninos e as barracas
 
 ## Objetivo
@@ -50,11 +50,11 @@ No Terraço, cada prato tem a cara dele, com jeito de cozinha fina: porção men
 - `tests/smoke111.js` (novo, com a assinatura do `smoke110`) e `tests/shot_v12_8.js` (a lista do Terraço)
 
 ## Tarefas
-- [ ] T1 `smoke111` com os CA1 a CA5 (falhando).
-- [ ] T2 Os 15 desenhos do Terraço, com o detalhe do avançado.
-- [ ] T3 O risoto da Lia no `drawFino`.
-- [ ] T4 `shot_v12_8.js` com o Terraço e a conferência do CA6 (recortes ampliados; ajustar o que não se lê a 0,52 ou passa da borda; olhar e apagar).
-- [ ] Fechamento: `VERSAO`, `vtag`, `#ov-ver`, `docs/RESUMO.md`, `docs/TESTES.md`, esta spec como entregue, `tests/run_all.sh` verde, PR e merge.
+- [x] T1 `smoke111` com os CA1 a CA5 (falhando).
+- [x] T2 Os 15 desenhos do Terraço, com o detalhe do avançado.
+- [x] T3 O risoto da Lia no `drawFino`.
+- [x] T4 `shot_v12_8.js` com o Terraço e a conferência do CA6 (recortes ampliados; ajustar o que não se lê a 0,52 ou passa da borda; olhar e apagar).
+- [x] Fechamento: `VERSAO`, `vtag`, `#ov-ver`, `docs/RESUMO.md`, `docs/TESTES.md`, esta spec como entregue, `tests/run_all.sh` verde, PR e merge.
 
 ## Avisos para a execução
 - A assinatura do desenho e a grade de pratos para olhar já estão no `smoke110` e no `shot_v12_8.js` da v12.8: reuse (copie a função da assinatura; não mexa nas checagens do `smoke110`).
@@ -68,6 +68,6 @@ No Terraço, cada prato tem a cara dele, com jeito de cozinha fina: porção men
 Nenhuma. (20/11: o usuário aprovou os desenhos das tabelas como ponto de partida, com o ajuste fino na conferência das capturas, o detalhe do avançado da técnica e o raminho de ervas nos principais, e a divisão em duas versões.)
 
 ## Desvios
-(No fechamento.)
+Nenhum. `smoke111` com 11 checagens (CA1 a CA5) verde; CA6 conferido na grade a 0,52, 0,9 e 1,7 (`PONTO=terraco node shot_v12_8.js`, que ganhou a mesa e o cartão do Terraço): todos os pratos se reconhecem e cabem no prato. Regras corrigidas: nenhuma.
 
 **Modelo:** Sonnet, esforço médio (desenho no canvas com plano detalhado; a conferência das capturas pede olho, não decisão)
