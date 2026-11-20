@@ -167,10 +167,9 @@ function drawCarne(ctx,carne){
   }
 }
 const DESENHO_BASE = { empadaPalmito:'empada', kibeAbobora:'kibe', esfihaSoja:'esfihaA', pastelPalmito:'pastel', coxinhaJaca:'coxinha', mistoVegano:'misto',
-  // v12.7: os pratos novos da Avenida e do Terraço usam, por ora, o desenho da categoria (cada um com a sua cor); os desenhos próprios são da v12.8
-  execFrango:'pf', strogonoff:'pf', galeto:'pf', escalope:'pf', beirute:'bauru', coalho:'paoChapa', coalhoMel:'paoChapa', crostini:'misto', mandioca:'bolinho', dadinho:'bolinho', isca:'kibe', croquete:'kibe',
-  torta:'empada', empadao:'empada', folhado:'empada', empadinhaCam:'empada', escondidinho:'empada', vinho:'parmegiana',
-  curau:'canjica', milhoCoalho:'milho', bolo:'canjica', cremeMilho:'canjica', pamonhaMel:'pamonha', canjicaCoco:'canjica' };
+  // v12.7: os pratos novos do Terraço usam, por ora, o desenho da categoria (cada um com a sua cor); os desenhos próprios são da v12.8.1 (os da Avenida saíram na v12.8: drawAvenida)
+  galeto:'pf', escalope:'pf', coalhoMel:'paoChapa', crostini:'misto', dadinho:'bolinho', croquete:'kibe',
+  folhado:'empada', empadinhaCam:'empada', vinho:'parmegiana' };
 /* v10.2: os 6 pratos finos do Terraço (cursos Entradas finas e Alta gastronomia), no estilo das artes da v8.6.10; av = o detalhe do curso avançado */
 function drawFino(ctx,k,av){
   if (k === 'bruschetta'){   // duas fatias de pão tostado com tomate, manjericão (e, no avançado, gotas de balsâmico)
@@ -219,7 +218,6 @@ function drawFino(ctx,k,av){
 }
 /* v10.6, os pratos da barraca junina (sem carne, sem o "v"): a pamonha no embrulho de palha, a espiga de milho cozido e a canjica com canela */
 function drawJunino(ctx,k){
-  k = DESENHO_BASE[k] || k;   // v12.7: os pratos juninos novos usam o desenho de um dos três
   if (k === 'pamonha'){
     ctx.beginPath(); ctx.moveTo(-14,0); ctx.lineTo(-10,-6); ctx.quadraticCurveTo(0,-9,10,-6); ctx.lineTo(14,0); ctx.lineTo(10,6); ctx.quadraticCurveTo(0,9,-10,6); ctx.closePath(); fs(ctx,'#B9CE7A',2);
     ctx.strokeStyle = 'rgba(70,100,30,.55)'; ctx.lineWidth = 1; ctx.beginPath(); ctx.moveTo(-9,-4); ctx.lineTo(8,-4.6); ctx.moveTo(-10,0); ctx.lineTo(10,0); ctx.moveTo(-9,4); ctx.lineTo(8,4.6); ctx.stroke();
@@ -231,6 +229,46 @@ function drawJunino(ctx,k){
     ctx.fillStyle = 'rgba(190,130,10,.6)'; for (let i=-3;i<=3;i++) for (const y of [-2.6,0,2.6]) { circ(ctx,i*3.1 + 2 + (y ? 1 : 0),y,0.85); ctx.fill(); }
     ctx.beginPath(); ctx.moveTo(-5,-4.4); ctx.quadraticCurveTo(-14,-7,-16,0); ctx.quadraticCurveTo(-14,7,-5,4.4); ctx.quadraticCurveTo(-8,0,-5,-4.4); ctx.closePath(); fs(ctx,'#6FAE3E',1.6);   // a palha
     ctx.restore();
+  } else if (k === 'curau'){   // v12.8: a cumbuca de creme amarelo-vivo, liso, com canela em pó por cima
+    ctx.beginPath(); ctx.moveTo(-11,-2); ctx.lineTo(11,-2); ctx.quadraticCurveTo(10,9,0,9); ctx.quadraticCurveTo(-10,9,-11,-2); ctx.closePath(); fs(ctx,'#FFFFFF',2);
+    ell(ctx,0,-2,11,4); fs(ctx,'#F2C94C',1.6);
+    ctx.fillStyle = 'rgba(255,248,200,.7)'; ell(ctx,-4,-3.2,3.6,1); ctx.fill();
+    ctx.fillStyle = '#8A4B2A'; for (const d of [[-6,-2],[-2.5,-1.4],[1,-2.6],[4.5,-1.2],[7,-2.8],[-0.5,-0.2],[-4.5,-3.6],[3,-4]]){ circ(ctx,d[0],d[1],0.6); ctx.fill(); }
+  } else if (k === 'milhoCoalho'){   // a espiga (menor, à esquerda) cruzada com um espetinho de queijo coalho grelhado
+    ctx.save(); ctx.translate(-2.5,-1.5); ctx.scale(0.78,0.78); drawJunino(ctx,'milho'); ctx.restore();
+    ctx.save(); ctx.translate(3,2); ctx.rotate(0.55);
+    ctx.strokeStyle = '#B98A52'; ctx.lineWidth = 1.5; ctx.lineCap = 'round'; ctx.beginPath(); ctx.moveTo(-12,0); ctx.lineTo(12,0); ctx.stroke(); ctx.lineCap = 'butt';
+    rr(ctx,-7,-3,14,6,1.8); fs(ctx,'#F4E6B8',1.6);
+    ctx.strokeStyle = '#C98A3A'; ctx.lineWidth = 1.1; ctx.beginPath(); for (const x of [-4.5,-0.5,3.5]){ ctx.moveTo(x-1.4,-2.4); ctx.lineTo(x+1.4,2.4); } ctx.stroke();
+    ctx.restore();
+  } else if (k === 'bolo'){   // a fatia de bolo de fubá, com a goiabada no meio e por cima
+    ctx.beginPath(); ctx.moveTo(-11,6); ctx.lineTo(11,6); ctx.lineTo(11,-0.5); ctx.lineTo(-11,-5.5); ctx.closePath(); fs(ctx,'#E8B85A',2);
+    ctx.beginPath(); ctx.moveTo(-9.6,4.6); ctx.lineTo(9.6,4.6); ctx.lineTo(9.6,0.6); ctx.lineTo(-9.6,-3.6); ctx.closePath(); ctx.fillStyle = '#F4D88E'; ctx.fill();
+    ctx.beginPath(); ctx.moveTo(-11,2); ctx.lineTo(11,2); ctx.lineTo(11,3.8); ctx.lineTo(-11,3.8); ctx.closePath(); fs(ctx,'#B5303A',1.2);   // a camada do meio
+    ctx.beginPath(); ctx.moveTo(-11,-5.5); ctx.lineTo(11,-0.5); ctx.lineTo(11,-3.6); ctx.lineTo(-11,-8.6); ctx.closePath(); fs(ctx,'#B5303A',1.4);   // a cobertura
+    ctx.fillStyle = 'rgba(255,255,255,.35)'; ell(ctx,-4,-6,4,0.8); ctx.fill();
+  } else if (k === 'cremeMilho'){   // o ramequim branco de creme de milho com lasquinhas de crocante e uma folhinha
+    ctx.beginPath(); ctx.moveTo(-8,-1.5); ctx.lineTo(8,-1.5); ctx.quadraticCurveTo(7.4,7,0,7); ctx.quadraticCurveTo(-7.4,7,-8,-1.5); ctx.closePath(); fs(ctx,'#FFFFFF',2);
+    ell(ctx,0,-1.5,8,3.2); fs(ctx,'#F2D86B',1.5);
+    ctx.fillStyle = '#B9803A'; ctx.strokeStyle = '#7A4F20'; ctx.lineWidth = 0.7;
+    for (const l of [[-4.4,-1.8,-0.5],[-1.4,-2.8,0.3],[1.8,-1.3,-0.2],[4.4,-2.4,0.6],[-0.4,-0.4,0.8]]){ ctx.save(); ctx.translate(l[0],l[1]); ctx.rotate(l[2]); rr(ctx,-1.8,-0.8,3.6,1.6,0.6); ctx.fill(); ctx.stroke(); ctx.restore(); }
+    ctx.fillStyle = '#3E9B5A'; ell(ctx,4.6,-5.4,2.4,1.1); ctx.fill();
+  } else if (k === 'pamonhaMel'){   // a pamonha aberta: a palha em barco, a massa à mostra, um fio de mel e dois cubinhos de queijo
+    ctx.beginPath(); ctx.moveTo(-14,0); ctx.quadraticCurveTo(0,-13,14,0); ctx.quadraticCurveTo(0,13,-14,0); ctx.closePath(); fs(ctx,'#B9CE7A',2);
+    ctx.strokeStyle = 'rgba(70,100,30,.5)'; ctx.lineWidth = 0.9; ctx.beginPath(); ctx.moveTo(-11,-1.4); ctx.quadraticCurveTo(0,-8,11,-1.4); ctx.moveTo(-11,1.4); ctx.quadraticCurveTo(0,8,11,1.4); ctx.stroke();
+    ell(ctx,0,0,10,3.8); fs(ctx,'#F2D86B',1.4);
+    rr(ctx,-4.8,-2.8,3.2,3.2,0.6); fs(ctx,'#FFFBEA',0.9); rr(ctx,1.6,-0.4,3.2,3.2,0.6); fs(ctx,'#FFFBEA',0.9);
+    ctx.strokeStyle = '#D98A1E'; ctx.lineWidth = 1.8; ctx.lineCap = 'round'; ctx.beginPath(); ctx.moveTo(-9,-0.6); ctx.quadraticCurveTo(-4,-2.8,0,0.4); ctx.quadraticCurveTo(4,3,9,0.6); ctx.stroke();
+    ctx.beginPath(); ctx.moveTo(1,1.6); ctx.lineTo(1,4.4); ctx.stroke(); ctx.lineCap = 'butt';
+  } else if (k === 'canjicaCoco'){   // a taça de vidro com canjica branca, coco ralado e raspas de cumaru
+    ctx.save(); ctx.translate(0,-1.4);
+    ctx.beginPath(); ctx.moveTo(-10,-4); ctx.lineTo(10,-4); ctx.quadraticCurveTo(9,4.4,0,4.4); ctx.quadraticCurveTo(-9,4.4,-10,-4); ctx.closePath(); fs(ctx,'#EAF4F6',1.8);
+    ctx.strokeStyle = '#9FB8C2'; ctx.lineWidth = 1.8; ctx.beginPath(); ctx.moveTo(0,4.4); ctx.lineTo(0,8); ctx.stroke(); ell(ctx,0,8.2,5,1.4); fs(ctx,'#EAF4F6',1.6);
+    ctx.beginPath(); ctx.moveTo(-9,-3); ctx.lineTo(9,-3); ctx.quadraticCurveTo(8.2,3.6,0,3.6); ctx.quadraticCurveTo(-8.2,3.6,-9,-3); ctx.closePath(); ctx.fillStyle = '#F6F0DA'; ctx.fill();
+    ell(ctx,0,-4,10,3.2); fs(ctx,'#F6F0DA',1.3);
+    ctx.strokeStyle = '#FFFFFF'; ctx.lineWidth = 1.2; ctx.lineCap = 'round'; ctx.beginPath(); for (const f of [[-6,-4.6,-3,-3.8],[-2,-5.6,1,-4.6],[2,-4.2,5,-5.2],[-5,-2.8,-2,-2.2],[4,-3.2,7,-3.8],[0,-3.2,3,-2.6]]){ ctx.moveTo(f[0],f[1]); ctx.lineTo(f[2],f[3]); } ctx.stroke(); ctx.lineCap = 'butt';
+    ctx.fillStyle = '#4A2E18'; for (const d of [[-4,-4],[1,-5],[5,-4],[-1,-3],[3,-3.4]]){ circ(ctx,d[0],d[1],0.6); ctx.fill(); }
+    ctx.restore();
   } else {   // canjica
     ctx.beginPath(); ctx.moveTo(-11,-2); ctx.lineTo(11,-2); ctx.quadraticCurveTo(10,9,0,9); ctx.quadraticCurveTo(-10,9,-11,-2); ctx.closePath(); fs(ctx,'#FFFFFF',2);
     ell(ctx,0,-2,11,4); fs(ctx,'#F4E6B8',1.6);
@@ -239,6 +277,131 @@ function drawJunino(ctx,k){
     ctx.strokeStyle = '#8A4B2A'; ctx.lineWidth = 1.8; ctx.lineCap = 'round'; ctx.beginPath(); ctx.moveTo(4,-4); ctx.lineTo(9,-9); ctx.stroke(); ctx.lineCap = 'butt';   // o pau de canela
   }
 }
+/* v12.8: o arroz e o feijão do prato executivo (o mesmo do PF) e o raminho de ervas do avançado */
+function avArrozFeijao(ctx){ ell(ctx,-5,-1,5.5,4.2); fs(ctx,'#FFF6DA',1.6); ell(ctx,4,-3.5,5,3.4); fs(ctx,'#5B2E1A',1.6); }
+function avErvas(ctx,x,y){ ctx.fillStyle = '#3E9B5A'; ell(ctx,x,y,2.1,1.05); ctx.fill(); ell(ctx,x+2.2,y-1.6,1.9,0.95); ctx.fill(); }
+function avOvo(ctx,x,y){ ell(ctx,x,y,3.4,2.2); fs(ctx,'#fff',1.4); circ(ctx,x,y,1.2); ctx.fillStyle = '#F5B800'; ctx.fill(); }
+/* v12.8: os pratos novos da Avenida, cada um com a cara dele (devolve true quando desenhou); a comida enche o prato */
+function drawAvenida(ctx,k,av){
+  const pr = CARDAPIO[k];
+  let dx = 0, dy = 0, cat = pr ? pr.cat : '', ok = true;
+  if (k === 'execFrango'){   // arroz, feijão, o filé de frango grelhado e a salada no lugar do ovo
+    avArrozFeijao(ctx);
+    ctx.save(); ctx.translate(3,4.2); ctx.scale(1.17,1.2); ctx.translate(-3,-4); drawCarne(ctx,'frango'); ctx.restore();
+    ctx.fillStyle = '#8CC152'; ctx.strokeStyle = '#4F7F2A'; ctx.lineWidth = 0.8;
+    ctx.save(); ctx.translate(-8,4.4); ctx.rotate(-0.5); ell(ctx,0,0,3.4,1.8); ctx.fill(); ctx.stroke(); ctx.rotate(1.1); ell(ctx,0,0.4,3.2,1.6); ctx.fill(); ctx.stroke(); ctx.restore();
+    circ(ctx,-6.2,6.4,1.8); fs(ctx,'#E24B3B',1.1);
+    if (av) avErvas(ctx,2.6,3.4);
+  } else if (k === 'strogonoff'){   // arroz à esquerda; molho rosado com cubinhos de carne e champignon, e batata palha por cima
+    ell(ctx,-6.5,0,5,5.2); fs(ctx,'#FFF6DA',1.6);
+    ell(ctx,4.5,1,8.4,7.4); fs(ctx,'#D98A5A',1.8);
+    ctx.fillStyle = '#7A3B1E'; for (const c of [[0.5,-2.6],[5,-1.6],[2.4,3.6],[7.4,3.8]]){ rr(ctx,c[0]-1.4,c[1]-1.3,2.8,2.6,0.7); ctx.fill(); }
+    ctx.fillStyle = '#EADFC4'; ctx.strokeStyle = '#B7A57F'; ctx.lineWidth = 0.7; for (const c of [[-0.4,2.4],[8,-1.6]]){ ell(ctx,c[0],c[1],1.9,1.2); ctx.fill(); ctx.stroke(); }
+    ctx.strokeStyle = '#F2C94C'; ctx.lineWidth = 1; ctx.lineCap = 'round'; ctx.beginPath();
+    [[1,0,0.7],[4,-3,-0.6],[6,1,0.4],[3,2,-0.9],[8,3,0.2],[-1,-1,-0.4],[5,4.6,0.9],[7.4,-0.2,-0.8],[2,-0.4,1.2]].forEach(b => { ctx.moveTo(b[0]-Math.cos(b[2])*1.9,b[1]-Math.sin(b[2])*1.9); ctx.lineTo(b[0]+Math.cos(b[2])*1.9,b[1]+Math.sin(b[2])*1.9); });
+    ctx.stroke(); ctx.lineCap = 'round';
+    if (av) avErvas(ctx,6.6,-5.6);
+  } else if (k === 'mandioca'){   // cinco bastões grossos em leque e um potinho de maionese
+    [[-6,-0.6],[-3.2,-0.3],[-0.2,0],[2.8,0.3],[5.6,0.6]].forEach(b => {
+      ctx.save(); ctx.translate(b[0] - 2,0.5); ctx.rotate(b[1]); rr(ctx,-2,-8,4,16,1.8); fs(ctx,'#E3B25A',1.6);
+      rr(ctx,-1.3,-7.2,2.6,2,0.9); ctx.fillStyle = '#F7EBC4'; ctx.fill(); ctx.restore();
+    });
+    circ(ctx,9.2,4.6,2.7); fs(ctx,'#FFFFFF',1.4); ell(ctx,9.2,4.4,1.6,1); ctx.fillStyle = '#FFF4CC'; ctx.fill();
+    dx = -1.5; dy = -6;
+  } else if (k === 'isca'){   // quatro tirinhas empanadas tortas, um gomo de limão e o molho tártaro
+    [[-1,-5.2,-0.3],[1,-1.7,-0.08],[-1,1.9,0.18],[1,5.4,0.42]].forEach(t => {
+      ctx.save(); ctx.translate(t[0],t[1]); ctx.rotate(t[2]);
+      ctx.beginPath(); ctx.moveTo(-6,-1.6); ctx.quadraticCurveTo(-3,-2.8,6,-1.8); ctx.quadraticCurveTo(7.6,0,6,1.8); ctx.quadraticCurveTo(0,2.8,-6,1.6); ctx.quadraticCurveTo(-7.4,0.2,-6,-1.6); ctx.closePath(); fs(ctx,'#E0B46A',1.6);
+      ctx.fillStyle = '#F6E2A8'; for (const d of [[-3.4,-0.6],[0,0.8],[3.6,-0.4]]){ circ(ctx,d[0],d[1],0.5); ctx.fill(); }
+      ctx.restore();
+    });
+    ctx.beginPath(); ctx.arc(-9.6,-5.6,3.4,0.2,Math.PI + 0.2); ctx.closePath(); fs(ctx,'#B5D33A',1.4);
+    ctx.strokeStyle = '#EAF3B0'; ctx.lineWidth = 0.7; ctx.beginPath(); ctx.moveTo(-9.6,-5.2); ctx.lineTo(-9.6,-2.8); ctx.moveTo(-12,-5); ctx.lineTo(-11,-3); ctx.moveTo(-7.2,-5); ctx.lineTo(-8.2,-3); ctx.stroke();
+    circ(ctx,9.4,4.6,2.7); fs(ctx,'#FFFFFF',1.4); ctx.fillStyle = '#6FAE3E'; for (const d of [[8.4,4],[10.2,5],[9.2,5.6]]){ circ(ctx,d[0],d[1],0.45); ctx.fill(); }
+    dx = 3; dy = -3.6;
+  } else if (k === 'torta'){   // uma fatia em cunha: a tampa de massa e, na face do corte, o recheio com frango e ervilha
+    ctx.beginPath(); ctx.moveTo(-12,-2); ctx.lineTo(10,-7.5); ctx.lineTo(10,0.6); ctx.closePath(); fs(ctx,'#D9A55B',1.8);
+    ctx.strokeStyle = 'rgba(120,70,20,.45)'; ctx.lineWidth = 0.9; ctx.beginPath(); ctx.moveTo(-5,-2.4); ctx.lineTo(7,-4.4); ctx.moveTo(-1,-3.4); ctx.lineTo(7,-1.2); ctx.stroke();
+    ctx.beginPath(); ctx.moveTo(-12,-2); ctx.lineTo(10,0.6); ctx.lineTo(10,6.4); ctx.lineTo(-12,0.4); ctx.closePath(); fs(ctx,'#F2DDA2',1.8);
+    ctx.fillStyle = '#D9BE8A'; for (const c of [[-3,0.6],[2.6,2.8],[6.4,4.2],[5,1.8]]){ rr(ctx,c[0]-1.7,c[1]-1.1,3.4,2.2,0.9); ctx.fill(); }
+    ctx.fillStyle = '#5FAE3E'; circ(ctx,0,3.6,1.1); ctx.fill(); circ(ctx,8,3.2,1.1); ctx.fill();
+    ctx.strokeStyle = '#D9A55B'; ctx.lineWidth = 1.6; ctx.beginPath(); ctx.moveTo(-12,0.4); ctx.lineTo(10,6.4); ctx.stroke();
+    dx = 4; dy = -3.6;
+  } else if (k === 'empadao'){   // pedaço quadrado com cobertura em treliça e palmito nos furos
+    rr(ctx,-7,-5.5,14,11,2); fs(ctx,'#CDB866',2);
+    for (const x of [-3.5,3.5]){ circ(ctx,x,0,1.9); fs(ctx,'#FFF8E6',0.9); circ(ctx,x,0,0.7); ctx.fillStyle = '#E9D9A2'; ctx.fill(); }
+    ctx.save(); rr(ctx,-7,-5.5,14,11,2); ctx.clip();
+    for (const pass of [[3.4,'#8A5A24'],[1.8,'#D9A55B']]){
+      ctx.strokeStyle = pass[1]; ctx.lineWidth = pass[0]; ctx.beginPath();
+      for (const d of [-7,0,7]){ ctx.moveTo(d-7,-7); ctx.lineTo(d+7,7); ctx.moveTo(d+7,-7); ctx.lineTo(d-7,7); } ctx.stroke();
+    }
+    ctx.restore();
+    rr(ctx,-7,-5.5,14,11,2); ctx.strokeStyle = '#22201C'; ctx.lineWidth = 2; ctx.stroke();
+    dx = 0; dy = 0;
+  } else if (k === 'beirute'){   // dois triângulos de pão sírio com o recheio em camadas na borda
+    for (const cx of [-6,6]){
+      ctx.beginPath(); ctx.moveTo(cx,-9); ctx.lineTo(cx + 5.8,2); ctx.lineTo(cx - 5.8,2); ctx.closePath(); fs(ctx,'#E8C98F',1.8);
+      ctx.fillStyle = 'rgba(160,100,40,.5)'; for (const d of [[0,-4],[-2,-1],[2.4,-0.4],[0.4,0.4]]){ circ(ctx,cx+d[0],d[1],0.7); ctx.fill(); }
+      [['#B04A3E',2],['#F6D44A',3],['#6FAE3E',4],['#E24B3B',5]].forEach(l => { ctx.fillStyle = l[0]; ctx.fillRect(cx - 5.8,l[1],11.6,1); });
+      ctx.strokeStyle = '#22201C'; ctx.lineWidth = 1.2; ctx.strokeRect(cx - 5.8,2,11.6,4);
+    }
+    dx = 0; dy = -3;
+  } else if (k === 'coalho'){   // dois espetinhos de queijo com marcas de grelha
+    [[-4.4,-0.05],[4.6,0.05]].forEach(e => {
+      ctx.save(); ctx.translate(0,e[0]); ctx.rotate(e[1]);
+      ctx.strokeStyle = '#B98A52'; ctx.lineWidth = 1.5; ctx.lineCap = 'round'; ctx.beginPath(); ctx.moveTo(-12,0); ctx.lineTo(12,0); ctx.stroke(); ctx.lineCap = 'butt';
+      rr(ctx,-7,-3,14,6,1.8); fs(ctx,'#F4E6B8',1.8);
+      ctx.strokeStyle = '#C98A3A'; ctx.lineWidth = 1.1; ctx.beginPath(); for (const x of [-4.6,-0.6,3.4]){ ctx.moveTo(x-1.4,-2.4); ctx.lineTo(x+1.4,2.4); } ctx.stroke();
+      ctx.restore();
+    });
+    dx = 0; dy = -4.4;
+  } else if (k === 'panqueca' || k === 'panquecaEsp'){   // duas panquecas enroladas com molho no meio e o recheio na ponta
+    const esp = k === 'panquecaEsp', massa = esp ? '#C9D48A' : '#E9C27A';
+    [-4.6,4.6].forEach(y => {
+      rr(ctx,-9,y - 3,18,6,3); fs(ctx,massa,1.8);
+      ell(ctx,9,y,1.7,2.5); fs(ctx,esp ? '#4F8A3A' : '#7A3B1E',1.1);
+      rr(ctx,-4.4,y - 2.6,8.8,5.2,2.4); ctx.fillStyle = esp ? '#F4EEDD' : '#C23B22'; ctx.fill();
+      ctx.fillStyle = esp ? '#D9D2B8' : '#F6D44A'; for (const d of [[-2.4,-0.8],[0,0.9],[2.4,-0.6]]){ circ(ctx,d[0],y + d[1],0.6); ctx.fill(); }
+    });
+    dx = 0; dy = 0;
+  } else if (k === 'execVeg'){   // arroz, feijão, legumes (brócolis e cenoura) e o ovo frito
+    avArrozFeijao(ctx);
+    avOvo(ctx,-8.4,5.4);
+    for (const b of [[-1.4,3.2],[3,3.6],[7.2,3.2]]){
+      ctx.strokeStyle = '#6FA04A'; ctx.lineWidth = 1.4; ctx.beginPath(); ctx.moveTo(b[0],b[1] + 3); ctx.lineTo(b[0],b[1]); ctx.stroke();
+      ctx.fillStyle = '#3E7B3A'; ctx.strokeStyle = '#22201C'; ctx.lineWidth = 0.8; for (const c of [[-1.2,-0.4],[1.2,-0.4],[0,-1.6]]){ circ(ctx,b[0] + c[0],b[1] + c[1],1.4); ctx.fill(); ctx.stroke(); }
+    }
+    for (const c of [[-0.6,7],[3.4,7.2],[7.2,6.8]]){ circ(ctx,c[0],c[1],1.5); fs(ctx,'#E88A2E',1); }
+    if (av) avErvas(ctx,9.4,-0.2);
+  } else if (k === 'escondidinho'){   // a travessinha de louça com o purê e o gratinado
+    rr(ctx,-12,-7.5,24,15,3); fs(ctx,'#FFFFFF',2.4);
+    rr(ctx,-10,-5.5,20,11,2); fs(ctx,'#E3A04A',1.3);
+    ctx.fillStyle = 'rgba(150,80,20,.6)'; for (const m of [[-5,-2.4,3.4,1.8],[2.4,-3,3.8,1.6],[5,2.2,3.2,1.8],[-3,2.8,3,1.5],[-8,1,1.6,1.2]]){ ell(ctx,m[0],m[1],m[2],m[3]); ctx.fill(); }
+    dx = 0.5; dy = 0;
+  } else if (k === 'execVegano'){   // arroz, feijão, couve refogada e farofa
+    avArrozFeijao(ctx);
+    ctx.strokeStyle = '#2F6B2F'; ctx.lineWidth = 1.6; ctx.lineCap = 'round';
+    for (const f of [[-11,3.2],[-10.4,5],[-9.8,6.8],[-6.6,3.6],[-6,5.4],[-5.4,7.2]]){ ctx.beginPath(); ctx.moveTo(f[0],f[1]); ctx.lineTo(f[0] + 2,f[1] - 1); ctx.lineTo(f[0] + 4,f[1] + 1); ctx.lineTo(f[0] + 6,f[1] - 0.6); ctx.stroke(); }
+    ctx.lineCap = 'butt';
+    ell(ctx,5.6,5.4,5.4,3.2); fs(ctx,'#E8C46A',1.4);
+    ctx.fillStyle = '#B88A2E'; for (const d of [[3,4.6],[5.4,6.4],[8,5],[6.4,4],[3.6,6.6],[9,6.2]]){ circ(ctx,d[0],d[1],0.55); ctx.fill(); }
+    ctx.fillStyle = '#F6E2A0'; for (const d of [[4.4,5.4],[7,5.6],[6,4.4]]){ circ(ctx,d[0],d[1],0.45); ctx.fill(); }
+  } else if (k === 'moquecaBanana'){   // a panela de barro vista de cima, com o caldo de dendê, banana, pimentão e coentro
+    rr(ctx,-13,-1.6,6,3.2,1.4); fs(ctx,'#8A4322',1.6); rr(ctx,7,-1.6,6,3.2,1.4); fs(ctx,'#8A4322',1.6);
+    circ(ctx,0,0,9.4); fs(ctx,'#A8532E',2);
+    circ(ctx,0,0,7.2); fs(ctx,'#E8892A',1.2);
+    ctx.fillStyle = '#F2D06B'; ctx.strokeStyle = '#B58A1B'; ctx.lineWidth = 0.9;
+    for (const b of [[-3.2,-2.4],[2.4,-3.2],[3.4,1.8],[-2.2,2.8]]){ circ(ctx,b[0],b[1],2); ctx.fill(); ctx.stroke(); circ(ctx,b[0],b[1],0.6); ctx.fillStyle = '#C99A3A'; ctx.fill(); ctx.fillStyle = '#F2D06B'; }
+    ctx.strokeStyle = '#D3382B'; ctx.lineWidth = 1.6; ctx.lineCap = 'round'; ctx.beginPath(); ctx.moveTo(-5,0.4); ctx.quadraticCurveTo(-1,-1.6,1,1.2); ctx.stroke(); ctx.lineCap = 'butt';
+    ctx.fillStyle = '#3E9B5A'; for (const d of [[0,-5],[5,-0.4],[-5.4,-3.4],[-0.4,5.2]]){ ell(ctx,d[0],d[1],1.5,0.8); ctx.fill(); }
+  } else ok = false;
+  if (!ok) return false;
+  if (pr && pr.veg) drawVegSelo(ctx, pr.vegano);
+  if (av && !(pr && pr.semAv)){
+    if (cat !== 'pf') drawAvDetalhe(ctx,cat,dx,dy);
+  }
+  return true;
+}
 function drawComida(ctx,k,carne,av){
   const pr = CARDAPIO[k], cat = pr ? pr.cat : 'chapa', cor = pr ? pr.cor : '#D9A25B';
   if (av === undefined || av === null) av = pratoAv(k, COMIDA_CURSOS) && !(pr && pr.semAv);
@@ -246,6 +409,7 @@ function drawComida(ctx,k,carne,av){
   let dx = 0, dy = 0;   // onde fica o detalhe do avançado
   if (pr && pr.fino){ drawFino(ctx,k,av); return; }   // v10.2
   if (pr && pr.cat === 'junina'){ drawJunino(ctx,k); return; }   // v10.6
+  if (drawAvenida(ctx,k,av)) return;   // v12.8
   if (kk === 'parmegiana'){   // v9.1: filé empanado com molho vermelho e queijo gratinado, arroz e batata frita
     ell(ctx,-7,-1.5,5.3,4); fs(ctx,'#FFF6DA',1.6);
     ctx.fillStyle = '#F2C94C'; ctx.strokeStyle = '#B58A1B'; ctx.lineWidth = 0.8;
@@ -345,7 +509,10 @@ function drawComida(ctx,k,carne,av){
   }
   if (pr && pr.veg) drawVegSelo(ctx, pr.vegano);
   if (!av) return;
-  // o detalhe do curso avançado (v8.6.10): um por curso
+  drawAvDetalhe(ctx,cat,dx,dy);
+}
+/* o detalhe do curso avançado (v8.6.10): um por curso; (dx, dy) é onde fica no desenho (v12.8: função à parte, a drawAvenida também usa) */
+function drawAvDetalhe(ctx,cat,dx,dy){
   if (cat === 'frito'){ circ(ctx,dx,dy,1.9); fs(ctx,'#FFFDF4',1.1); }                                  // fritos: a pontinha de catupiry
   else if (cat === 'assado'){ circ(ctx,dx,dy,2.3); fs(ctx,'#2B2B2B',1); ctx.fillStyle = '#9A9A9A'; circ(ctx,dx,dy,0.7); ctx.fill(); }   // assados: a azeitona
   else if (cat === 'chapa'){                                                                           // chapa: as listras da grelha
