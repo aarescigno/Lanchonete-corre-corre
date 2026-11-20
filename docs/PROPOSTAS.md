@@ -4,6 +4,15 @@ Registro das ideias e dos retornos de quem jogou, com o texto original, e de ond
 
 ---
 
+## 20/11 — usuário: o entretenimento nas Melhorias
+> "Os itens de entretenimento, como televisão, rádio, sertanejo etc. Tem que ficar nas melhorias, eles destoam no luxo"
+
+E, na escolha: "Continuam somando, e aparece no luxo o card de que esses recursos estão ativados e contribuindo ou desativados. Pode até deixar no luxo também para ativar e desligar também. O objetivo de ter em 2 lugares é para o jogador intuir que ele ajuda tanto na diminuição da velocidade de perda de corações quanto na beleza do ambiente."
+
+**Destino:** v12.8.2, `docs/spec-v12.8.2.md` (aprovada em 20/11): os quatro cartões (TV e som, TVs com sertanejo, Couvert, Música ao vivo) nas Melhorias e também no Luxo.
+
+---
+
 ## 19/11 — usuário: preços de verdade e cardápio por ponto
 > "Eu acho que os preços têm que ficar mais realistas, então em vez de ser multiplicadores, né? Talvez até mudar uma parte dos produtos. [...] da avenida e depois do terraço, não vende PF, né? Nem pastel, nem coxinha. [...] não necessariamente o realismo é mais importante do que a diversão, mas não pode ficar muito distante do realismo [...] sem PF no terraço, por favor."
 
