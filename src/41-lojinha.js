@@ -13,6 +13,21 @@ function upgradeIcon(id){
     if (id === 'tenis'){
       c.beginPath(); c.moveTo(-14,6); c.lineTo(-14,-8); c.lineTo(-6,-10); c.lineTo(0,-2); c.lineTo(12,2); c.quadraticCurveTo(15,4,14,8); c.lineTo(-14,8); c.closePath(); fs(c,'#fff',2);
       c.fillStyle = PAL.formica; c.fillRect(-14,5,28,3); c.strokeStyle = PAL.faixa; c.lineWidth = 1.5; c.beginPath(); c.moveTo(-3,-3); c.lineTo(1,-6); c.moveTo(1,0); c.lineTo(5,-3); c.stroke();
+    } else if (id === 'barraca' && game.ponto.id === 'avenida'){   // v12.8: o Arraiá da Avenida: toldo verde e amarelo, bandeirinhas na frente e a fatia de bolo no balcão
+      rr(c,-15,2,30,11,2); fs(c,'#D9B77C',2);
+      c.beginPath(); c.moveTo(-17,-3); c.lineTo(17,-3); c.lineTo(14,-14); c.lineTo(-14,-14); c.closePath(); fs(c,'#2E8B3E',2);
+      c.fillStyle = '#F2C23D'; [-9,-1,7].forEach(x => { c.beginPath(); c.moveTo(x,-14); c.lineTo(x+4,-14); c.lineTo(x+4.6,-3); c.lineTo(x+0.6,-3); c.closePath(); c.fill(); });
+      c.strokeStyle = '#22201C'; c.lineWidth = 1; c.beginPath(); c.moveTo(-16,-3); c.quadraticCurveTo(0,3,16,-3); c.stroke();
+      for (let i = 0; i < 5; i++){ const x = -12 + i * 6, y = -3 + 6 * (1 - Math.pow((x / 16), 2)) * 0.5; c.beginPath(); c.moveTo(x - 2.4,y); c.lineTo(x + 2.4,y); c.lineTo(x,y + 5); c.closePath(); fs(c,BAND_JUNINA[i],1); }
+      c.save(); c.translate(0,8.4); c.scale(0.42,0.42); drawJunino(c,'bolo'); c.restore();
+    } else if (id === 'barraca' && game.ponto.id === 'terraco'){   // v12.8: o Arraiá do Terraço: toldo creme de listras douradas e borda em ondas, luzinhas no alto e a taça de canjica no balcão
+      rr(c,-15,2,30,11,2); fs(c,'#5A3A24',2);
+      c.beginPath(); c.moveTo(-17,-3); c.lineTo(17,-3); c.lineTo(14,-14); c.lineTo(-14,-14); c.closePath(); fs(c,'#F4EEDD',2);
+      c.strokeStyle = '#C9A24A'; c.lineWidth = 1; [-9,-3,3,9].forEach(x => { c.beginPath(); c.moveTo(x * 0.85,-14); c.lineTo(x * 1.15,-3); c.stroke(); });
+      for (let i = 0; i < 5; i++){ c.beginPath(); c.arc(-13.6 + i * 6.8,-3,3.4,0,Math.PI); c.closePath(); fs(c,'#F4EEDD',1.6); }
+      c.strokeStyle = '#22201C'; c.lineWidth = 0.8; c.beginPath(); c.moveTo(-14,-17); c.quadraticCurveTo(0,-13,14,-17); c.stroke();
+      for (let i = 0; i < 5; i++){ const x = -11 + i * 5.5, y = -17 + 4 * (1 - Math.pow(x / 14, 2)) * 0.5 + 1; circ(c,x,y,2.4); c.fillStyle = 'rgba(255,224,102,.35)'; c.fill(); circ(c,x,y,1.2); fs(c,'#FFE066',0.8); }
+      c.save(); c.translate(0,3); c.scale(0.5,0.5); drawJunino(c,'canjicaCoco'); c.restore();
     } else if (id === 'barraca'){   // v10.6: o balcão da barraca com o toldo listrado e uma espiga de milho
       rr(c,-15,2,30,11,2); fs(c,PAL.madeira,2);
       c.beginPath(); c.moveTo(-17,-3); c.lineTo(17,-3); c.lineTo(14,-14); c.lineTo(-14,-14); c.closePath(); fs(c,'#E2574C',2);

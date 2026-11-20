@@ -1,6 +1,6 @@
 # v12.8 — Os desenhos dos pratos novos da Avenida e as barracas chiques (etapa 16b-1)
 
-**Situação:** aprovada (20/11)
+**Situação:** entregue em 20/11
 **Origem:** etapa 16b do `docs/PLANO.md` (saiu da v12.7, 19/11: "os desenhos próprios dos pratos novos e das barracas juninas chiques vão na v12.8"); planejada em 20/11 com o usuário (dividida em duas versões: esta e a v12.8.1, o Terraço)
 
 ## Objetivo
@@ -67,12 +67,12 @@ Na Avenida, cada prato tem a cara dele: o jogador bate o olho no balão e sabe q
 - `tests/smoke110.js` (novo) e `tests/shot_v12_8.js` (novo)
 
 ## Tarefas
-- [ ] T1 `smoke110` com os CA1 a CA7 (falhando).
-- [ ] T2 Os 14 desenhos da Avenida, com o detalhe do avançado.
-- [ ] T3 Os 6 juninos novos e as duas barracas chiques.
-- [ ] T4 O desenhinho na seção "Cardápio do ponto" do modo dev.
-- [ ] T5 `shot_v12_8.js` e a conferência do CA8 (recortes ampliados; ajustar o que não se lê a 0,52 ou passa da borda; olhar e apagar).
-- [ ] Fechamento: `VERSAO`, `vtag`, `#ov-ver`, `docs/RESUMO.md`, `docs/TESTES.md`, esta spec como entregue, `tests/run_all.sh` verde, PR e merge.
+- [x] T1 `smoke110` com os CA1 a CA7 (falhando).
+- [x] T2 Os 14 desenhos da Avenida, com o detalhe do avançado.
+- [x] T3 Os 6 juninos novos e as duas barracas chiques.
+- [x] T4 O desenhinho na seção "Cardápio do ponto" do modo dev.
+- [x] T5 `shot_v12_8.js` e a conferência do CA8 (recortes ampliados; ajustar o que não se lê a 0,52 ou passa da borda; olhar e apagar).
+- [x] Fechamento: `VERSAO`, `vtag`, `#ov-ver`, `docs/RESUMO.md`, `docs/TESTES.md`, esta spec como entregue, `tests/run_all.sh` verde, PR e merge.
 
 ## Avisos para a execução
 - A assinatura do desenho (CA2 a CA5) se tira com um `ctx` de mentira que anota cada chamada (nome do método e números arredondados a 0,1) e cada `fillStyle`/`strokeStyle` atribuído; dois desenhos são iguais se a lista inteira é igual. O `mkCtx` do `harness.js` engole tudo: no smoke, passe ao `L.drawDish` um `Proxy` próprio que grava. `drawDish` e `drawMarmita` já estão em `window.__lcc`; `upgradeIcon` precisa entrar (para o CA5).
@@ -89,6 +89,10 @@ Na Avenida, cada prato tem a cara dele: o jogador bate o olho no balão e sabe q
 Nenhuma. (20/11: o usuário aprovou os desenhos das tabelas como ponto de partida, com o ajuste fino na conferência das capturas; a barraca só no ícone do cartão; o detalhe do avançado da técnica e o raminho de ervas nos principais; e a divisão em duas versões, esta e a v12.8.1.)
 
 ## Desvios
-(No fechamento.)
+- **Medido:** `smoke110` com 13 checagens (CA1 a CA7); CA8 conferido pela `shot_v12_8.js` (grade e cenas); ajustes de forma na conferência (a torta, o bolo e a taça de canjica passavam da borda do prato; na barraca da Avenida, bandeirinhas maiores e o bolo mais baixo).
+- A Avenida tem 15 pratos (os 14 da tabela mais a parmegiana, que já tinha desenho próprio); o CA2 conta os 15.
+- `upgradeIcon` e `DESENHO_BASE` entraram em `window.__lcc`; `drawAvDetalhe` (o detalhe do avançado) virou função à parte, usada por `drawComida` e `drawAvenida`; o executivo, o strogonoff e o executivo vegetariano levam só o raminho de ervas (não o detalhe da categoria).
+- O modo dev ganhou o `div#dev-cardapio` (um `.dev-prato` por prato, canvas e nome com o preço).
+- Sem regra de jogo nova: `balance.js` e `carreira.js` não rodaram.
 
 **Modelo:** Sonnet, esforço médio (desenho no canvas com plano detalhado; a conferência das capturas pede olho, não decisão)

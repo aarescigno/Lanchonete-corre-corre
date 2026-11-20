@@ -383,7 +383,16 @@ function devAbaEquipe(body, secao, botao, nota){
   r = secao('Cursos');
   botao(r, 'Todos', () => game.devCursos(true)); botao(r, 'Nenhum', () => game.devCursos(false));
   // v12.7: o cardápio do ponto (só leitura: cada prato com o preço do ponto) e "Saber tudo do ponto" (liga todos os pratos que o ponto vende, sem comprar curso; só na memória)
-  r = secao('Cardápio do ponto', pratosDoPonto(game.ponto).map(k => CARDAPIO[k].nome + ' R$ ' + precoPrato(k, game.ponto, game.cursos)).join(' · '));
+  secao('Cardápio do ponto');
+  // v12.8: cada prato com o desenhinho ao lado do nome (com o detalhe do avançado quando os cursos o dão)
+  const cd = el('div', 'dev-cardapio'); cd.id = 'dev-cardapio'; body.appendChild(cd);
+  pratosDoPonto(game.ponto).forEach(k => {
+    const it = el('span', 'dev-prato');
+    it.appendChild(tipCanvas(x => { x.translate(32,32); drawDish(x, k, 0, 3, 1.7, false, 'frango', pratoAv(k, game.cursos) && !CARDAPIO[k].semAv); }));
+    it.appendChild(el('span', '', CARDAPIO[k].nome + ' R$ ' + precoPrato(k, game.ponto, game.cursos)));
+    cd.appendChild(it);
+  });
+  r = el('div', 'row'); body.appendChild(r);
   botao(r, 'Saber tudo do ponto', () => game.devForca('saberTudo', DEV.forca.saberTudo ? '' : '1'), !!DEV.forca.saberTudo);
   r = secao('Melhorias');
   botao(r, 'Todas', () => game.devMelhorias(true)); botao(r, 'Nenhuma', () => game.devMelhorias(false));
