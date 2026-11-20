@@ -522,7 +522,7 @@ table.rank tr.me td{background:#fbe7a8}
 
     <div class="ov show" id="ov-menu">
       <div class="panel menu-panel">
-        <span class="vtag" id="vtag" aria-label="Versão 12.8.1">v12.8.1</span>
+        <span class="vtag" id="vtag" aria-label="Versão 12.8.2">v12.8.2</span>
         <h1 class="title">Lanchonete <br>Corre-Corre</h1>
         <p class="tag">Ajude a Bia a atender a freguesia da esquina antes que o cafezinho esfrie!</p>
         <div class="lbl" id="menu-dia">História</div>
@@ -824,7 +824,8 @@ table.rank tr.me td{background:#fbe7a8}
       <div class="panel">
         <h2>Versões</h2>
         <ul class="verlist">
-          <li><b>v12.8.1</b><span class="cur">versão atual</span><br>20/11/2026 &mdash; Cada prato do Terraço ganha a cara dele, de cozinha fina: o galeto com a coxa dourada, o filé no arco de molho de vinho, os dadinhos de tapioca. O risoto da Lia deixa de sair com o desenho do medalhão.</li>
+          <li><b>v12.8.2</b><span class="cur">versão atual</span><br>20/11/2026 &mdash; A TV, o som, as TVs com sertanejo, o couvert e a música ao vivo aparecem também nas Melhorias.</li>
+          <li><b>v12.8.1</b><br>20/11/2026 &mdash; Cada prato do Terraço ganha a cara dele, de cozinha fina: o galeto com a coxa dourada, o filé no arco de molho de vinho, os dadinhos de tapioca. O risoto da Lia deixa de sair com o desenho do medalhão.</li>
           <li><b>v12.8</b><br>20/11/2026 &mdash; Cada prato novo da Avenida ganha a cara dele (o strogonoff com batata palha, a moqueca na panela de barro) e as barracas da festa junina ficam mais chiques.</li>
           <li><b>v12.7</b><br>20/11/2026 &mdash; Cada lugar vende o que um lugar daquele vende, a preço de verdade: lanchonete, restaurante executivo e cozinha fina. Os cursos do Tonhão viram técnicas que valem em todo ponto.</li>
           <li><b>v12.6.1</b><br>19/11/2026 &mdash; No Terraço, a mesinha das marmitas vira um aparador com o vaso de flores.</li>
@@ -2781,7 +2782,7 @@ const HIST_NOMES = { bia:'Bia', tonhao:'Tonhão', dani:'Dani', joca:'Joca', cami
 const ATU_TXT = { procurando:'Procurando versão nova...', nova:'Tem versão nova: {v}! Seu jogo salvo continua.', igual:'Você já está na versão mais nova ({v}).', erro:'Sem internet agora. Tente de novo mais tarde.', atualizando:'Atualizando...' };
 function atuEstado(remota, atual){ if (typeof remota !== 'string' || !remota.trim()) return 'erro'; return remota.trim() === atual ? 'igual' : 'nova'; }
 const CAIXA_MAX = 14;                                 // livro-caixa (v7.2): quantos dias da carreira ficam guardados
-const VERSAO = 'v12.8.1';                                   // vai no resumo do Caixa
+const VERSAO = 'v12.8.2';                                   // vai no resumo do Caixa
 const DIVULGA_DIA = 4;                                // antes disso, o movimento é o da inauguração (sem custo); v9.0.2: dia 4, e o padrão é o boca a boca
 function divulgaAberta(n, sv){ return devLivre() || n >= DIVULGA_DIA && !(sv && sv.convDiv === 'pend'); }   // no modo dev, desde o dia 1; v9.0.3: no Modo História, só depois da conversa
 /* v9.6.4: a Efood (os entregadores) só abre depois da conversa dos entregadores, no Modo História; antes dela, nenhum tipo com `retira` vem na agenda */
@@ -17185,6 +17186,10 @@ function buildLuxo(grid){
   grid.appendChild(luxoQuadro());
   buildDecor(grid);
   buildMoveis(grid);
+  buildEntrete(grid);   // v12.8.2: os mesmos cartões também aparecem nas Melhorias
+}
+/* v12.8.2: o entretenimento do ponto (TV e som, TVs, couvert, música ao vivo): o mesmo cartão nas abas Melhorias e Luxo */
+function buildEntrete(grid){
   if (game.ponto.nivel === 1) buildTvSom(grid);
   if (game.ponto.nivel === 2) buildTvs(grid);
   buildCouvert(grid);   // (só na Avenida; no modo dev, também antes dela)
@@ -17581,7 +17586,7 @@ function buildGurugol(grid){
   if (!com.length) lista.appendChild(el('li', 'rank-empty', 'Os comentários aparecem depois do próximo dia.'));
   grid.appendChild(lista);
 }
-function buildMelhorias(grid){ upgradeCartoes(grid, false); if (game.ponto.nivel >= 2) buildAssento(grid); }   // v10.7: a TV, o som e as TVs foram para a aba Luxo; o assento da espera fica   // v9.1: as TVs são só da área industrial; na Avenida, os sofás
+function buildMelhorias(grid){ upgradeCartoes(grid, false); if (game.ponto.nivel >= 2) buildAssento(grid); buildEntrete(grid); }   // v12.8.2: a TV, o som, as TVs, o couvert e a música ao vivo aparecem nas Melhorias e no Luxo (desde a v10.7 só no Luxo); o assento da espera fica   // v9.1: as TVs são só da área industrial; na Avenida, os sofás
 function upgradeCartoes(grid, bia){
   // os Tênis de corrida (v7.3) só aparecem depois dos Tênis novos, no lugar deles (a grade continua com 6); no modo dev, todas
   UPGRADES.filter(u => (BIA_IDS.indexOf(u.id) >= 0) === bia).filter(u => u.id !== 'maquina' || (game.ponto.bebida && game.ponto.bebida !== 'coquetel')).filter(u => !u.nivel || devLivre() || game.ponto.nivel >= u.nivel).filter(u => devLivre() || (u.req ? game.up[u.req] : !(game.up[u.id] && UPGRADES.some(v => v.req === u.id)))).forEach(u => {
