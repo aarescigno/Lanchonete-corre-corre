@@ -17,7 +17,6 @@ Origem: retorno do Renan Martorelli (beta-tester) e conversa com o Arthur (15/10
 |---|---|---|---|
 | 5 | ~~Modo História, parte 1~~: juntou-se à 2f e aos capítulos da 3a, 3b e 4a (28/10) | — | — |
 | 14b | O bot humano, calibrado pelos relatórios | — (testes) | depois dos relatórios dos testers |
-| 15a-1 | Correção: o Terraço sem a mesinha das marmitas | v12.6.1 | feita em 19/11 (`docs/spec-v12.6.1.md`; `smoke108`; a mesinha vira um aparador de nogueira com o vaso das rosas e somem as marquinhas das vagas no Terraço) |
 | 15b | As vozes da equipe: o tratamento e a revisão das conversas | v12.6 | feita em 19/11 (`docs/spec-v12.6.md`; `smoke107`; "Bi", "dona Bia", "senhora" e "chefe" em todas as conversas, a `camiNome` e a roda com a equipe toda) |
 | 16a | Cardápio de verdade em cada ponto: pratos e preços por ponto, curso como técnica, sem PF no Terraço | v12.7 | feita em 20/11 (`docs/spec-v12.7.md`; `smoke109`; `preco` por ponto em cada prato e sem o `cardapio` do ponto, 29 pratos novos da Avenida e do Terraço, os cursos como técnica, o prato de base de cada ponto, bebidas, doces e cafés com preço por ponto, o Arraiá da Avenida e o do Terraço; metas recalibradas; o ganho da industrial caiu 32% e o do Terraço subiu 78%, aceito pelo usuário) |
 | 16b-1 | Os desenhos dos pratos novos da Avenida, dos juninos e das barracas chiques | v12.8 | feita em 20/11 (`docs/spec-v12.8.md`; `smoke110`; `drawAvenida` com os 14 pratos, os 6 juninos novos, a barraca por ponto no cartão e o desenhinho no painel dev) |
