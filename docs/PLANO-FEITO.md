@@ -50,6 +50,19 @@ Capítulo 12: o Tonhão conta o segredo da Casa Aurora. A Bia aprende o molho e 
 
 **Modelo:** Sonnet, esforço alto (muitas partes ao mesmo tempo, com calibração por receita).
 
+## Etapa 16 — Cardápio de verdade em cada ponto (16a, v12.7; 16b, v12.8 e v12.8.1)
+Pedido do usuário em 19/11: preços perto dos de verdade, sem o multiplicador do ponto, e cada ponto com o que um lugar daquele vende. A Garagem e a área industrial seguem lanchonete; a Avenida vira restaurante executivo e o Terraço, cozinha fina, sem PF. Os cursos do Tonhão viram técnicas que valem em todo ponto.
+- **16a** (v12.7): a lógica, os pratos novos (com o desenho da categoria em cor própria), os preços de comida, bebida e doce por ponto, a festa junina por ponto e o balanceamento para manter a curva da carreira. Feita em 20/11 (`docs/spec-v12.7.md`).
+
+  **Modelo:** Sonnet, esforço alto (muitas partes ao mesmo tempo e balanceamento por tentativa)
+- **16b** (planejada em 20/11, em duas sessões): o desenho próprio de cada prato novo, para o prato se reconhecer no balão.
+  - **16b-1** (v12.8, `docs/spec-v12.8.md`): os 14 pratos da Avenida, os 6 juninos novos, o ícone das barracas do Arraiá da Avenida e do Arraiá do Terraço no cartão da lojinha e o desenhinho de cada prato no "Cardápio do ponto" do modo dev.
+
+    **Modelo:** Sonnet, esforço médio (desenho no canvas com plano detalhado)
+  - **16b-2** (v12.8.1, `docs/spec-v12.8.1.md`): os 15 pratos do Terraço, com porção de cozinha fina, e o risoto da Lia (que hoje sai com o desenho do medalhão).
+
+    **Modelo:** Sonnet, esforço médio (desenho no canvas com plano detalhado)
+
 ## Etapa 15 — A Lia de verdade e as vozes da equipe (15a, v12.5; 15b, v12.6)
 Pedido do usuário em 19/11 (`docs/PROPOSTAS.md`): a Lia ganha um arco curto (a Cami indica, o Tonhão tem ciúme da cozinha, dois cursos e o prato dela), e cada personagem passa a tratar os outros do seu jeito (perfis e tabela de tratamento no `docs/ARCO.md` §2.1 e §2.2), com a revisão de todas as conversas pelos perfis e a conquista da Cami em cena.
 - **15a** — `docs/spec-v12.5.md`. **Modelo:** Sonnet, esforço alto (código de jogo em várias partes, a cozinha com uma vaga nova e calibração por tentativa)
@@ -172,6 +185,7 @@ A cena final animada (oito cenas, no motor da abertura), os créditos, a placa n
 | 14d | O Teste com o máximo de cada ponto e a equipe do jeito que quiser | v12.4 | feita em 18/11 (`docs/spec-v12.4.md`; `smoke103`; `maxDoPonto`, a tela da fase `#ov-teste-fase`, o relatório `LCC-TESTE 3` com a linha `Equipe:`, os Desafios recalibrados: jogo meta 1,75 e crítico 1,07) |
 | 15a | O arco da Lia: o ciúme do Tonhão, a praça e o prato dela | v12.5 | feita em 19/11 (`docs/spec-v12.5.md`; `smoke106`; a Lia em 3 níveis, os cursos, a praça das entradas, o Risoto de feijão-manteiguinha, as falas e os gatilhos novos; o risoto ficou a R$ 52 pela regra do CA10) |
 | 15a-1 | Correção: o Terraço sem a mesinha das marmitas | v12.6.1 | feita em 19/11 (`docs/spec-v12.6.1.md`; `smoke108`; a mesinha vira um aparador de nogueira com o vaso das rosas e somem as marquinhas das vagas no Terraço) |
+| 15b | As vozes da equipe: o tratamento e a revisão das conversas | v12.6 | feita em 19/11 (`docs/spec-v12.6.md`; `smoke107`; "Bi", "dona Bia", "senhora" e "chefe" em todas as conversas, a `camiNome` e a roda com a equipe toda) |
 
 ## Etapa 1a — Jogo justo: dá para não perder ninguém (v7.1)
 > **Feita em 15/10 (v7.1, `docs/spec-v7.1.md`).** Decisões: A + B; no Turno sem fim vale o ritmo da fila justa, sem o piso; ícone "aguardando mesa" sim. A medição mostrou que, com a equipe, a maior parte das perdas era a espera pelo prato, e não a fila. O que sobra é o limite de louça nos dias de 6 mesas: o bot afiado só chega ao alvo (0 perdidos em 94% dos dias) comprando o Jogo de pratos primeiro. A louça não mudou; se jogadores reclamarem da espera pelo prato, a etapa 1b pode rever `dishStock` ou a mecânica D. Metas sem mudança.

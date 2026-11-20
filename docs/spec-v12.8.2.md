@@ -22,7 +22,7 @@ O jogador acha a TV, o som, as TVs com sertanejo, o couvert e a música ao vivo 
 - Os comentários de `buildMelhorias` e da aba Luxo (linha "v10.7: a TV, o som e as TVs foram para a aba Luxo") passam a dizer que, desde a v12.8.2, os cartões de entretenimento aparecem nas duas abas.
 - **Modo dev:** nada novo (o "Ir para o ponto" e o "tudo liberado" já mostram os quatro cartões; no modo dev o couvert aparece antes da Avenida, como hoje).
 - **Manual e save:** nada.
-- **Versão:** `VERSAO` e `vtag` em v12.8.2 (ou na que vier depois da última entregue, se a v12.8.1 ainda não tiver saído: ver Avisos); linha no `#ov-ver`: **"A TV, o som, as TVs com sertanejo, o couvert e a música ao vivo aparecem também nas Melhorias."**
+- **Versão:** `VERSAO` e `vtag` em v12.8.2; linha no `#ov-ver`: **"A TV, o som, as TVs com sertanejo, o couvert e a música ao vivo aparecem também nas Melhorias."**
 
 ## Critérios de aceite
 - **CA1** Na Garagem, a aba Melhorias tem o cartão "TV e som" (`data-ficha="l-tvsom"`), e a aba Luxo continua com ele → `smoke112` (1)
@@ -42,7 +42,7 @@ O jogador acha a TV, o som, as TVs com sertanejo, o couvert e a música ao vivo 
 - [ ] Fechamento: `VERSAO`, `vtag`, `#ov-ver` (`smoke86` e `menu_fit.py`: a contagem de linhas do painel de Versões), `docs/RESUMO.md`, esta spec como entregue, `tests/run_all.sh` verde, PR e merge.
 
 ## Avisos para a execução
-- A spec v12.8.1 (pratos do Terraço, `smoke111`) está aprovada e ainda não saiu. Se ela sair antes, esta fica v12.8.2 e `smoke112`; se esta sair antes, ela continua v12.8.2 e `smoke112` (os números já são diferentes) e a v12.8.1 sai depois com a linha dela no `#ov-ver` abaixo desta. Não renumere.
+- A v12.8.1 (pratos do Terraço, `smoke111`) saiu em 20/11, enquanto esta era planejada: esta é a v12.8.2, com o `smoke112`.
 - O selo "novo" por cartão da lojinha (perto da linha 1390 de `src/41-lojinha.js`, v9.0.4) olha as fichas vistas: confira que o cartão nas duas abas não faz a aba Melhorias acender o selo à toa depois de visto no Luxo (`manualVer` usa a mesma ficha).
 - Os smokes antigos que abrem a aba Luxo e contam cartões (`smoke15`, `smoke33`, `smoke38`, `smoke40` a `smoke42b`, `smoke53`, `smoke54` aparecem no grep de `'luxo'`) devem continuar verdes sem mudança, porque o Luxo não muda; se algum contar os cartões das Melhorias, ajuste só a contagem.
 

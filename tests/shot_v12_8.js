@@ -13,13 +13,16 @@ const MESA = (i, tipo, dishes, st) => "{ const m=new L.Group(g,'" + tipo + "',++
 const PRATO = (slot, i, dish) => "g.kitchen.plates[" + slot + "]={id:" + (50 + slot) + ",table:" + (i + 1) + ",group:g.tables[" + i + "].group,dish:'" + dish + "',slot:" + slot + ",age:0,crit:false,q:4,vip:false,tempo:1};";
 const TODOS = "{pastel:1,chapa:1,fritos:1,assados:1,veg:1,restaurante:1,entradas:1,alta:1}";
 const LOJA = (ponto, aba, extra) => BASE + SV(ponto, TODOS, extra) + "g.goShop(20); L.setShopGrupo('lanchonete'); L.setShopTab('" + aba + "');";
-const LISTA = process.env.PRATOS ? process.env.PRATOS.split(',') : ['execFrango','strogonoff','mandioca','isca','torta','empadao','beirute','coalho','panqueca','panquecaEsp','execVeg','escondidinho','execVegano','moquecaBanana','curau','milhoCoalho','bolo','cremeMilho','pamonhaMel','canjicaCoco'];
+const TERRACO = ['vinho','galeto','escalope','dadinho','croquete','folhado','empadinhaCam','coalhoMel','crostini','pastelCamarao','ravioli','nhoque','polenta','curry','moquecaPalmito','liaRisoto'];
+const LISTA = process.env.PRATOS ? process.env.PRATOS.split(',') : PONTO === 'terraco' ? TERRACO : ['execFrango','strogonoff','mandioca','isca','torta','empadao','beirute','coalho','panqueca','panquecaEsp','execVeg','escondidinho','execVegano','moquecaBanana','curau','milhoCoalho','bolo','cremeMilho','pamonhaMel','canjicaCoco'];
 // a grade: uma linha por prato, a cada escala sem e com o avançado
 const GRADE = "document.body.innerHTML='';const L=window.__lcc;const cv=document.createElement('canvas');const ESC=[0.52,0.9,1.7],K=1.7,CW=[56,80,134],LN=" + JSON.stringify(LISTA) + ";const TW=120+2*CW.reduce((a,b)=>a+b,0),TH=LN.length*60;cv.width=TW*2;cv.height=TH*2;cv.style.cssText='position:fixed;left:0;top:0;width:'+TW+'px;height:'+TH+'px;background:#E8E2D0;z-index:99';document.body.appendChild(cv);const c=cv.getContext('2d');c.scale(2,2);c.fillStyle='#E8E2D0';c.fillRect(0,0,TW,TH);c.lineJoin='round';c.lineCap='round';LN.forEach((k,i)=>{c.fillStyle='#000';c.font='10px sans-serif';c.fillText(k,2,i*60+34);let x=120;for(const av of [false,true])ESC.forEach((s,j)=>{L.drawDish(c,k,x+CW[j]/2,i*60+30,s*K,false,null,av);x+=CW[j]});});window.__GW=TW;window.__GH=TH;";
 const CENAS = [
   ['grade', GRADE],
   ['avenida_pratos', BASE + SV('avenida', '{}') + DIA + MESA(0, 'executiva', ['execFrango'], 'ordered') + MESA(1, 'familia', ['strogonoff', 'mandioca', 'execFrango'], 'eating') + PRATO(0, 0, 'execFrango') + PRATO(1, 1, 'strogonoff') + PRATO(2, 1, 'mandioca') + PRATO(3, 1, 'moquecaBanana') + PRATO(4, 1, 'beirute') + PRATO(5, 1, 'panqueca')],
   ['loja_cardapio_avenida', LOJA('avenida', 'cardapio')],
+  ['terraco_pratos', BASE + SV('terraco', '{}') + DIA + MESA(0, 'executiva', ['vinho'], 'ordered') + MESA(1, 'familia', ['galeto', 'dadinho', 'nhoque'], 'eating') + PRATO(0, 0, 'vinho') + PRATO(1, 1, 'galeto') + PRATO(2, 1, 'dadinho') + PRATO(3, 1, 'nhoque') + PRATO(4, 1, 'crostini') + PRATO(5, 1, 'curry')],
+  ['loja_cardapio_terraco', LOJA('terraco', 'cardapio')],
   ['loja_barraca_avenida', LOJA('avenida', 'cardapio', "{evento:{sem:1,d:20,ev:'junina'}}")],
   ['loja_barraca_terraco', LOJA('terraco', 'cardapio', "{evento:{sem:1,d:20,ev:'junina'}}")],
   ['dev_cardapio', BASE + "g.setDev(true);" + SV(PONTO, '{}') + "g.goShop(20); L.abrirDev(); L.DEV.aba='equipe'; L.buildDev();"]
