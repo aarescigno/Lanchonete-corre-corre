@@ -798,7 +798,7 @@ function drawWallCommon(ctx,g,t){
   txt(ctx,'CARDÁPIO DA CASA',0,-10,10,PAL.faixa,'center',FB);
   const pt = g && g.ponto;   // os preços do cardápio (v8.3.8)
   const cu = g && g.cursos;   // v8.6.9: a placa mostra o que a cozinha faz de início
-  txt(ctx,'PF R$ ' + precoPrato('pf', pt, cu) + ' · Coxinha R$ ' + precoPrato('coxinha', pt, cu) + ' · Cafezinho R$ ' + DRINK_PRICE.coffee,0,6,16,PAL.formica,'center',FD,0,322);
+  txt(ctx,ROTULO_BASE[pratoBase(pt)] + ' R$ ' + precoPrato(pratoBase(pt), pt, cu) + ' · ' + ROTULO_BASE[fritoBase(pt)] + ' R$ ' + precoPrato(fritoBase(pt), pt, cu) + ' · Cafezinho R$ ' + cafePreco(pt),0,6,16,PAL.formica,'center',FD,0,322);
   ctx.restore();
 
   // relógio
@@ -1118,7 +1118,7 @@ function drawGiz(ctx,x,y,s,g){
   rr(ctx,-20,-50,40,32,2); fs(ctx,'#2E3B35',1.4);
   txt(ctx,'HOJE',0,-43,7,'rgba(255,255,255,.85)','center',FB);
   const pt = g && g.ponto;
-  txt(ctx,'PF R$ ' + precoPrato('pf', pt, g && g.cursos),0,-33,9,'#FFF3C9','center',FB);
+  txt(ctx,ROTULO_BASE[pratoBase(pt)] + ' R$ ' + precoPrato(pratoBase(pt), pt, g && g.cursos),0,-33,9,'#FFF3C9','center',FB);
   ctx.strokeStyle = 'rgba(255,255,255,.7)'; ctx.lineWidth = 1; ctx.beginPath(); ctx.moveTo(-12,-26); ctx.quadraticCurveTo(0,-23,12,-26); ctx.stroke();
   circ(ctx,13,-22,1.6); ctx.fillStyle = '#F7B6C8'; ctx.fill();
   rr(ctx,-20,-16,40,3,1); fs(ctx,PAL.madeiraEsc,1);
@@ -1893,7 +1893,7 @@ function drawKitchen(ctx,g,t){
     const n = g.marmitasLivres, cheio = n >= g.vagas, q = STATIONS.adiantar.rect;
     ctx.save(); if (cheio) ctx.globalAlpha = 0.55;
     rr(ctx,q.x + 4,q.y + 3,q.w - 8,q.h - 10,7); fs(ctx,'#FFFBEA',2);
-    drawMarmita(ctx,MARMITA.prato,q.x + 26,q.y + 16,0.55);
+    drawMarmita(ctx,pratoBase(g.ponto),q.x + 26,q.y + 16,0.55);
     circ(ctx,q.x + 13,q.y + 10,5.5); fs(ctx,cheio ? PAL.cromoEsc : PAL.ok,1.4); txt(ctx,'+',q.x + 13,q.y + 10.5,10,'#fff','center',FD);
     txt(ctx,n + '/' + g.vagas,q.x + 41,q.y + 17,10,PAL.tinta,'left',FD);
     ctx.restore();

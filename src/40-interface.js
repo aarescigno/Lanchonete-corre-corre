@@ -382,6 +382,9 @@ function devAbaEquipe(body, secao, botao, nota){
   });
   r = secao('Cursos');
   botao(r, 'Todos', () => game.devCursos(true)); botao(r, 'Nenhum', () => game.devCursos(false));
+  // v12.7: o cardápio do ponto (só leitura: cada prato com o preço do ponto) e "Saber tudo do ponto" (liga todos os pratos que o ponto vende, sem comprar curso; só na memória)
+  r = secao('Cardápio do ponto', pratosDoPonto(game.ponto).map(k => CARDAPIO[k].nome + ' R$ ' + precoPrato(k, game.ponto, game.cursos)).join(' · '));
+  botao(r, 'Saber tudo do ponto', () => game.devForca('saberTudo', DEV.forca.saberTudo ? '' : '1'), !!DEV.forca.saberTudo);
   r = secao('Melhorias');
   botao(r, 'Todas', () => game.devMelhorias(true)); botao(r, 'Nenhuma', () => game.devMelhorias(false));
   r = secao('Decoração');

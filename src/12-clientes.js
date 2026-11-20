@@ -364,7 +364,7 @@ class Group {
     this.cafePede = !!T.pedeCafe && game.mode === 'carreira' && Math.random() < T.pedeCafe;   // v9: o motorista pede o cafezinho ao terminar de comer
     this.semVeg = this.people.some((p, i) => p.veg && CARDAPIO[this.dishes[i]].carne);   // sem prato vegetariano: Cardápio 1 no Gúgou
     this.dish = this.dishes[0];
-    this.carnes = this.people.map(() => pratoAv('pf', game.cursos) ? pick(CARNES) : 'bife');   // v8.6.10: Carnes variadas
+    this.carnes = this.people.map(() => pratoAv(pratoBase(game.ponto), game.cursos) ? pick(CARNES) : 'bife');   // v8.6.10: Carnes variadas
     // o entregador (v8.6) não come no salão: leva o prato numa marmita, pela fila de retirada, sem 2º item
     this.retira = !!T.retira;
     // v9.2, doces: o que pediu depois de comer (sorteado no fim da refeição), os já entregues, os corações perdidos esperando e, no entregador, as marmitas "+ doce"
@@ -374,8 +374,8 @@ class Group {
     this.cafes = null; this.cafesDados = 0;   // v9.3: os cafés da máquina de espresso (ids de CAFES.lista) pedidos no fim da refeição, e os já entregues
     this.docesMarm = this.retira && game.mode === 'carreira' && game.up.confCaseira ? (this.lote ? this.dishes : [0]).filter(() => Math.random() < DOCES.marmita).length : 0; this.docesMarmDados = 0;
     this.extras = this.tempos ? this.people.map(p => pedePrato(type, game, true, p.veg)) : this.people.map((p, i) => !this.retira && game.mode !== 'treino' && Math.random() < (CARDAPIO[this.dishes[i]].cat === 'pf' ? T.mais : Math.max(T.mais, MAIS.salgado)) ? pedePrato(type, game, true, p.veg) : null);
-    if (!this.tempos && !this.retira && game.barracaOn){   // v10.6: a barraca junina: quem ficou sem 2º item pede um junino (pede), e quem pediria salgado troca por um (troca)
-      const B = EVENTOS.junina.barraca; this.extras = this.extras.map(k => Math.random() < (k ? B.troca : B.pede) ? pick(EVENTOS.junina.pratos) : k);
+    if (!this.retira && game.barracaOn){   // v10.6: a barraca junina: quem ficou sem 2º item pede um junino (pede), e quem pediria salgado troca por um (troca)
+      const B = EVENTOS.junina.barraca; this.extras = this.extras.map(k => Math.random() < (k ? B.troca : B.pede) ? pick(EVENTOS.junina.pratos[game.ponto.id] || EVENTOS.junina.pratos.garagem) : k);
     }
     this.bill = (this.lote ? [] : this.dishes).concat(this.extras).reduce((v, k) => v + (k ? precoPrato(k, game.ponto, game.cursos) : 0), 0) + (this.vip ? vipDish(this) : 0);
     if (this.tempos && !this.extras.some(Boolean)) this.tempo = 1;   // sem entrada que a cozinha saiba fazer (só vegetarianos sem opção): começa pelo principal

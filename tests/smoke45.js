@@ -38,12 +38,12 @@ const AV={ daniCursos:{ confCaseira:1 } }, ESP={ daniCursos:{ confCaseira:1 }, j
 
 // ---------- 3. os doces gourmet: lista, R$ 16, ingrediente R$ 4, Ambiente, marmita ----------
 { const H=aberto({},null,{ daniCursos:{ confCaseira:1, confGourmet:1 } }), {g,L}=H;
-  ok(L.docesLista(g.up).map(d=>d.id).join()==='shortcake,torta,brigGourmet' && L.docePreco(g.up)===16 && L.doceIngred(g.up)===4,'a lista passa a ser a gourmet, R$ 16, ingrediente R$ 4');
+  ok(L.docesLista(g.up).map(d=>d.id).join()==='shortcake,torta,brigGourmet' && L.docePreco(g.up)===22 && L.doceIngred(g.up)===6,'a lista passa a ser a gourmet, R$ 22, ingrediente R$ 6');
   let okQ=true,max=0; for(let i=0;i<300;i++){ const m=new L.Group(g,'familia',++g.gid,0,false), d=m.sorteiaDoces(); if(d.length){ max=Math.max(max,d.length); if(d.some(x=>!L.DOCES.gourmet.some(c=>c.id===x))) okQ=false; } } ok(okQ && max>=3,'os caseiros saem do sorteio: só gourmet');
   const t=g.tables[0], m=mesa(H,[],['shortcake','torta']); ok(m.docesFalta===2 && m.esperaSuco,'o grupo espera os 2 doces gourmet');
   g.bia.hands.push({ kind:'doce', id:'shortcake' },{ kind:'doce', id:'torta' }); g.pontos=0; g.bia.doTable(t);
-  ok(m.docesFalta===0 && m.bebConta===32 && g.pontos===10,'entrega 2: R$ 32 na conta, +10 pontos');
-  g.bia.clearActs(); g.custo=0; g.bia.perform({ type:'doces' }); ok(g.bia.hands.length===1 && g.bia.hands[0].kind==='doce' && L.DOCES.gourmet.some(c=>c.id===g.bia.hands[0].id) && g.custo===4,'a Bia pega 1 doce gourmet (ingrediente R$ 4)');
+  ok(m.docesFalta===0 && m.bebConta===44 && g.pontos===10,'entrega 2: R$ 44 na conta, +10 pontos');
+  g.bia.clearActs(); g.custo=0; g.bia.perform({ type:'doces' }); ok(g.bia.hands.length===1 && g.bia.hands[0].kind==='doce' && L.DOCES.gourmet.some(c=>c.id===g.bia.hands[0].id) && g.custo===6,'a Bia pega 1 doce gourmet (ingrediente R$ 6)');
   // Ambiente: +0,25 de quem comeu doce gourmet (nota crua do critério 5)
   const amb=(com)=>{ const q=new L.Group(g,'familia',++g.gid,0,false); q.avalia=true; q.docesDados=com?1:0; q.state='wantBill'; q.hearts=5; q.pratoQ=5; g.avals.length=0; g.mode='carreira'; g.avaliar(q,0,0); return g.avals[0].s[4]; };
   const a0=amb(false), a1=amb(true); ok((a1-a0)>0.19 && (a1-a0)<0.31 && L.AVAL.amb.doce===0.25,'o doce gourmet entregue soma +0,25 no Ambiente (AVAL.amb.doce)');
@@ -52,7 +52,7 @@ const AV={ daniCursos:{ confCaseira:1 } }, ESP={ daniCursos:{ confCaseira:1 }, j
   // marmita
   const e=new L.Group(g,'entregador',++g.gid,0,false); e.docesMarm=1; e.dish='pf'; g.retirada.push(e); e.setState('retirada'); e.path=[];
   const preco=L.precoPrato('pf',g.ponto,g.cursos), base=Math.round(preco*(1+L.GORJETA[e.hearts]))-Math.round(preco*L.MARMITA.efood); g.potes=1; g.money=0; g.entregaMarmita(e,{ kind:'marmita', dish:'pf', q:4 });
-  ok(g.money===base+16,'a marmita com doce leva o gourmet: +R$ 16'); }
+  ok(g.money===base+22,'a marmita com doce leva o gourmet: +R$ 22'); }
 
 // ---------- 4. o desenho da vitrine, dos doces e da máquina ----------
 { const H=aberto({},null,{ daniCursos:{ confCaseira:1, confGourmet:1 }, jocaCursos:{ espresso:1 } }), {g}=H; g.state='playing'; let erro=''; try { for(let i=0;i<3;i++){ g.update(0.05); H.L.render(g,H.ctx); } } catch(e){ erro=String(e); }

@@ -166,7 +166,11 @@ function drawCarne(ctx,carne){
     if (carne === 'cavalo'){ ell(ctx,3,3,4.6,2.8); fs(ctx,'#fff',1.3); circ(ctx,3,3,1.5); ctx.fillStyle = '#F5B800'; ctx.fill(); }
   }
 }
-const DESENHO_BASE = { empadaPalmito:'empada', kibeAbobora:'kibe', esfihaSoja:'esfihaA', pastelPalmito:'pastel', coxinhaJaca:'coxinha', mistoVegano:'misto' };
+const DESENHO_BASE = { empadaPalmito:'empada', kibeAbobora:'kibe', esfihaSoja:'esfihaA', pastelPalmito:'pastel', coxinhaJaca:'coxinha', mistoVegano:'misto',
+  // v12.7: os pratos novos da Avenida e do Terraço usam, por ora, o desenho da categoria (cada um com a sua cor); os desenhos próprios são da v12.8
+  execFrango:'pf', strogonoff:'pf', galeto:'pf', escalope:'pf', beirute:'bauru', coalho:'paoChapa', coalhoMel:'paoChapa', crostini:'misto', mandioca:'bolinho', dadinho:'bolinho', isca:'kibe', croquete:'kibe',
+  torta:'empada', empadao:'empada', folhado:'empada', empadinhaCam:'empada', escondidinho:'empada', vinho:'parmegiana',
+  curau:'canjica', milhoCoalho:'milho', bolo:'canjica', cremeMilho:'canjica', pamonhaMel:'pamonha', canjicaCoco:'canjica' };
 /* v10.2: os 6 pratos finos do Terraço (cursos Entradas finas e Alta gastronomia), no estilo das artes da v8.6.10; av = o detalhe do curso avançado */
 function drawFino(ctx,k,av){
   if (k === 'bruschetta'){   // duas fatias de pão tostado com tomate, manjericão (e, no avançado, gotas de balsâmico)
@@ -215,6 +219,7 @@ function drawFino(ctx,k,av){
 }
 /* v10.6, os pratos da barraca junina (sem carne, sem o "v"): a pamonha no embrulho de palha, a espiga de milho cozido e a canjica com canela */
 function drawJunino(ctx,k){
+  k = DESENHO_BASE[k] || k;   // v12.7: os pratos juninos novos usam o desenho de um dos três
   if (k === 'pamonha'){
     ctx.beginPath(); ctx.moveTo(-14,0); ctx.lineTo(-10,-6); ctx.quadraticCurveTo(0,-9,10,-6); ctx.lineTo(14,0); ctx.lineTo(10,6); ctx.quadraticCurveTo(0,9,-10,6); ctx.closePath(); fs(ctx,'#B9CE7A',2);
     ctx.strokeStyle = 'rgba(70,100,30,.55)'; ctx.lineWidth = 1; ctx.beginPath(); ctx.moveTo(-9,-4); ctx.lineTo(8,-4.6); ctx.moveTo(-10,0); ctx.lineTo(10,0); ctx.moveTo(-9,4); ctx.lineTo(8,4.6); ctx.stroke();
@@ -241,7 +246,7 @@ function drawComida(ctx,k,carne,av){
   let dx = 0, dy = 0;   // onde fica o detalhe do avançado
   if (pr && pr.fino){ drawFino(ctx,k,av); return; }   // v10.2
   if (pr && pr.cat === 'junina'){ drawJunino(ctx,k); return; }   // v10.6
-  if (k === 'parmegiana'){   // v9.1: filé empanado com molho vermelho e queijo gratinado, arroz e batata frita
+  if (kk === 'parmegiana'){   // v9.1: filé empanado com molho vermelho e queijo gratinado, arroz e batata frita
     ell(ctx,-7,-1.5,5.3,4); fs(ctx,'#FFF6DA',1.6);
     ctx.fillStyle = '#F2C94C'; ctx.strokeStyle = '#B58A1B'; ctx.lineWidth = 0.8;
     [[-3.5,-6.5,-0.5],[0,-7.5,-0.2],[3.5,-7,0.2],[6.5,-6,0.5]].forEach(f => { ctx.save(); ctx.translate(f[0],f[1]); ctx.rotate(f[2]); ctx.fillRect(-0.9,-3.5,1.8,7); ctx.restore(); });   // palitos de batata
@@ -255,9 +260,9 @@ function drawComida(ctx,k,carne,av){
   if (cat === 'pf'){
     ell(ctx,-5,-1,5.5,4.2); fs(ctx,'#FFF6DA',1.6);
     ell(ctx,4,-3.5,5,3.4); fs(ctx,'#5B2E1A',1.6);
-    if (k === 'pf') drawCarne(ctx,av ? carne : 'bife');
+    if (kk === 'pf') drawCarne(ctx,av ? carne : 'bife');
     else { ctx.fillStyle = '#7A4A2B'; [[-1,3],[2,5],[5,3],[8,5],[3,2]].forEach(g => { circ(ctx,g[0],g[1],1.9); ctx.fill(); }); }   // v8.6.11: a soja refogada, grumos marrons
-    if (k !== 'pfVegano' && !(k === 'pf' && av && carne === 'cavalo')){ ell(ctx,-7,5,3.4,2.2); fs(ctx,'#fff',1.4); circ(ctx,-7,5,1.2); ctx.fillStyle = '#F5B800'; ctx.fill(); }
+    if (!(pr && pr.vegano) && !(kk === 'pf' && av && carne === 'cavalo')){ ell(ctx,-7,5,3.4,2.2); fs(ctx,'#fff',1.4); circ(ctx,-7,5,1.2); ctx.fillStyle = '#F5B800'; ctx.fill(); }
     if (pr && pr.veg) drawVegSelo(ctx, pr.vegano);
     return;
   } else if (kk === 'risoles'){

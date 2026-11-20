@@ -962,13 +962,15 @@ function buildMoveis(grid){
 /* aba Divulgação (v7): escolha do dia, paga junto com a folha (no fim do dia, desde a v8.2.2); e o resumo das contas do dia */
 /* aba Cursos (v8.6.9): um cartão por curso do Tonhão; feito o básico, o cartão vira o do avançado. Um curso por lojinha */
 function cursoIcon(c, av){
-  return tipCanvas(x => { x.translate(32,32); drawDish(x, c.pratos[0] || c.av.pratos[0], 0, 4, 1.7, false, 'frango', av || !c.pratos[0]); });
+  // v12.7: o desenho é o de um prato da técnica que o ponto vende (o básico; sem ele, o do avançado ou o prato de base)
+  const bas = pratosCurso(c.id, game.ponto, 1)[0], k = bas || pratosCurso(c.id, game.ponto, 2)[0] || (c.id === 'pf' ? pratoBase(game.ponto) : Object.keys(CARDAPIO).find(x => tecnicaDe(x) === c.id)) || 'pf';
+  return tipCanvas(x => { x.translate(32,32); drawDish(x, k, 0, 4, 1.7, false, 'frango', av || !bas); });
 }
 /* seção Cardápio (v9.0.1): o que se serve hoje, a diversidade no Gúgou e os cursos do Tonhão */
 function buildCardapio(grid){
   if (game.noiteVisivel) buildNoite(grid);   // v10.10: a noite da estrela, no topo do Cardápio (Terraço, cap. 14 em diante)
   if (game.barracaVisivel) buildBarraca(grid);   // v10.6: no dia da festa junina, a barraca vem no topo
-  const cur = game.save.cursos, sab = pratosSabidos(cur);
+  const cur = game.save.cursos, sab = pratosSabidos(cur, game.ponto);
   const c = staffCard(upgradeIcon('cardapio'), 'No cardápio hoje (' + sab.length + ' pratos)');
   grid.appendChild(c);
   buildCursos(grid);
@@ -992,10 +994,10 @@ function buildRosa(grid){
   c.appendChild(own ? shopBtn('Aprendido', 'btn', false, () => false) : shopBtn(devLivre() ? 'Aprender (grátis)' : 'Aprender ' + fmt(ROSA.preco), 'btn', true, () => game.buyRosa(), devLivre() ? 0 : ROSA.preco));
   grid.appendChild(c);
 }
-/* v10.6: a barraca junina (só no dia da festa, fora do Terraço): só o nome, o preço e o "?" */
+/* v10.6: a barraca junina (só no dia da festa; v12.7: em todo ponto, com o nome do arraiá): só o nome, o preço e o "?" */
 function buildBarraca(grid){
   const own = game.save.barraca === game.shopNext, p = game.barracaPreco();
-  const c = staffCard(upgradeIcon('barraca'), 'Barraca junina');
+  const c = staffCard(upgradeIcon('barraca'), EVENTOS.junina.nomeBarraca[game.ponto.id] || 'Barraca junina');
   c.setAttribute('data-ficha', 'l-barraca');
   if (own) c.classList.add('own');
   c.appendChild(shopBtn(own ? 'Montada' : devLivre() ? 'Montar (grátis)' : 'Montar ' + fmt(p), 'btn', !own, () => game.buyBarraca(), devLivre() ? 0 : p));
@@ -1012,7 +1014,7 @@ function buildCursos(grid){
     card.appendChild(cursoIcon(c, av));
     card.appendChild(el('b', null, av ? c.av.nome : 'Curso de ' + c.nome));
     if (p) card.appendChild(el('span', 'cursos-lista', '+' + (av || c.preco <= 0 ? CURSO_XP.avancado : CURSO_XP.basico) + ' de experiência'));
-    const lis = av ? c.av.pratos.filter(k => CARDAPIO[k].nivel === 2) : c.pratos;
+    const lis = pratosCurso(c.id, game.ponto, av ? 2 : 1);
     if (c.id === 'veg' && lis.some(falta)) card.appendChild(el('span', 'cursos-lista apagado', 'Precisa do curso de ' + falta(lis.find(falta)).nome + '.'));
     if (p && game.cursoTrava) card.appendChild(el('span', 'cursos-lista', 'Em curso'));
     card.appendChild(p ? shopBtn('Comprar ' + fmt(p.preco), 'btn', !game.cursoTrava && bank >= p.preco, () => game.buyCurso(c.id), p.preco) : shopBtn('Curso completo', 'btn', false, () => false));

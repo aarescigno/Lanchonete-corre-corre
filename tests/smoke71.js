@@ -69,7 +69,7 @@ const JUN=['pamonha','milho','canjica'];
   const H2=nova('garagem',9,{ evento:{ sem:0, d:8, ev:'junina' } }); H2.g.goShop(9); H2.L.setShopTab('cardapio');
   ok(!H2.g.barracaVisivel && !/Barraca junina/.test(txt(H2.els['shop-grid'])),'no dia 9 (sem festa) o cartão não aparece');
   const H3=nova('terraco',8,{ evento:{ sem:0, d:8, ev:'junina' } }); H3.g.goShop(8); H3.L.setShopTab('cardapio');
-  ok(!H3.g.barracaVisivel && !/Barraca junina/.test(txt(H3.els['shop-grid'])),'no Terraço, que só tem refeição completa, também não'); }
+  ok(H3.g.barracaVisivel && /Arraiá do Terraço/.test(txt(H3.els['shop-grid'])) && H3.g.barracaPreco()===150,'v12.7: no Terraço o cartão é o Arraiá do Terraço, a R$ 150'); }
 
 // ---------- 7. o jogo do Brasil: as fases e sem apito (CA7) ----------
 { const H=nova('industrial',8,{ evento:{ sem:0, d:8, ev:'jogo' } }), {g,L}=H; g.startDay(8);

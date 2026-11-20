@@ -68,11 +68,11 @@ const fala=(L,id)=>L.liberaOf(id);
   g.bia.hands.push({ kind:'doce', id:'bolo' }); g.bia.hands.push({ kind:'doce', id:'pudim' });
   ok(g.bia.verbFor(t)==='doce','a Bia com doce na mão sabe que é a vez do doce');
   g.pontos=0; const h0=m.hearts, p0=g.pontos; g.bia.doTable(t);
-  ok(m.docesFalta===0 && m.docesDados===2 && m.bebConta===14 && g.stats.doces===2 && m.hearts>h0 && g.pontos-p0===10 && g.bia.hands.length===0,'entrega 2: R$ 14 na conta, +10 pontos, +coração, mãos vazias');
+  ok(m.docesFalta===0 && m.docesDados===2 && m.bebConta===18 && g.stats.doces===2 && m.hearts>h0 && g.pontos-p0===10 && g.bia.hands.length===0,'entrega 2: R$ 18 na conta, +10 pontos, +coração, mãos vazias');
   m.update(0.05); ok(m.state==='wantBill','com todos os doces, pede a conta');
   const bill=m.bill; g.money=0; g.collectBill(m,t); ok(g.money>=bill+14,'a conta paga os R$ 14 dos doces');
   // só 1 dos 2 chegou: o outro não entra na conta
-  const m2=mk(); m2.update(0.05); g.bia.hands.push({ kind:'doce', id:'bolo' }); g.bia.doTable(t); ok(m2.docesFalta===1 && m2.bebConta===7,'entrega parcial: só R$ 7 na conta, falta 1');
+  const m2=mk(); m2.update(0.05); g.bia.hands.push({ kind:'doce', id:'bolo' }); g.bia.doTable(t); ok(m2.docesFalta===1 && m2.bebConta===9,'entrega parcial: só R$ 9 na conta, falta 1');
   // a paciência corre esperando
   m2.patLeft=0.01; const hh=m2.hearts, pd=m2.perdDoce; m2.tick(0.05); ok(m2.hearts===hh-1 && m2.perdDoce===pd+1,'esperando o doce, perde coração (e conta o doce)');
   // mão: bandeja e dois doces
@@ -86,7 +86,7 @@ const fala=(L,id)=>L.liberaOf(id);
   ok(L.daniTaskOk('doce',g.up) && g.dani.does('doce'),'a tarefa "Servir doces" vale com o curso');
   const m=new L.Group(g,'familia',++g.gid,0,false); m.juiceWant=0; m.cafePede=false; t.group=m; m.table=t; m.setState('eating'); m.timer=0.01; m.hearts=4; m.doces=['pudim','bolo','brigadeiro']; g.groups.push(m); m.update(0.05);
   for(let i=0;i<1400 && m.docesFalta>0;i++){ g.update(0.05); m.patLeft=99; }
-  ok(m.docesFalta===0 && m.bebConta===21 && g.dani.feitas>=2,'a Dani leva os 3 doces em 2 viagens (2 mãos): R$ 21 na conta');
+  ok(m.docesFalta===0 && m.bebConta===27 && g.dani.feitas>=2,'a Dani leva os 3 doces em 2 viagens (2 mãos): R$ 27 na conta');
   const H2=aberto({ equipe:{ tonhao:1, dani:3, daniTasks:['cafe'] } }); const t2=H2.g.tables[0]; const m2=new H2.L.Group(H2.g,'familia',++H2.g.gid,0,false); m2.juiceWant=0; m2.cafePede=false; t2.group=m2; m2.table=t2; m2.setState('eating'); m2.timer=0.01; m2.doces=['bolo']; H2.g.groups.push(m2); m2.update(0.05);
   for(let i=0;i<300;i++){ H2.g.update(0.05); m2.patLeft=99; } ok(m2.docesFalta===1,'sem a tarefa, a Dani não leva doce'); }
 
@@ -99,7 +99,7 @@ const fala=(L,id)=>L.liberaOf(id);
   g.mode='carreira'; const e=new L.Group(g,'entregador',++g.gid,0,false); e.docesMarm=1; e.dish='pf'; g.retirada.push(e); e.setState('retirada'); e.path=[];
   const preco=L.precoPrato('pf',g.ponto,g.cursos), base=Math.round(preco*(1+L.GORJETA[e.hearts]))-Math.round(preco*L.MARMITA.efood);
   g.potes=1; g.money=0; g.entregaMarmita(e,{ kind:'marmita', dish:'pf', q:4 });
-  ok(g.money===base+7 && g.potes===0 && e.docesMarmDados===1 && g.stats.docesMarm===1,'marmita com pote no balcão: +R$ 7, o pote some');
+  ok(g.money===base+9 && g.potes===0 && e.docesMarmDados===1 && g.stats.docesMarm===1,'marmita com pote no balcão: +R$ 9, o pote some');
   const e2=new L.Group(g,'entregador',++g.gid,0,false); e2.docesMarm=1; e2.dish='pf'; g.retirada.push(e2); e2.setState('retirada'); e2.path=[]; g.money=0; g.entregaMarmita(e2,{ kind:'marmita', dish:'pf', q:4 });
   ok(g.money===Math.round(preco*(1+L.GORJETA[e2.hearts]))-Math.round(preco*L.MARMITA.efood) && e2.docesMarmDados===0,'sem o pote, só perde os R$ 7 (a marmita sai igual)');
   // a Bia leva o doce ao balcão: só vale se alguém ainda quer

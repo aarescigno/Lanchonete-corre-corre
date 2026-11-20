@@ -60,8 +60,8 @@ class Game {
     const f = DEV.on && DEV.forca.evento; if (f) return f === 'nada' ? '' : f;
     return eventoSemana(this.save, n);
   }
-  get barracaVisivel(){ return this.eventoDe(this.shopNext) === 'junina' && (this.ponto.nivel < 4 || (DEV.on && DEV.forca.evento === 'junina')); }
-  barracaPreco(){ return Math.ceil(EVENTOS.junina.barraca.preco * this.ponto.cardapio / 10) * 10; }
+  get barracaVisivel(){ return this.eventoDe(this.shopNext) === 'junina'; }   // v12.7: a barraca vale em todo ponto (no Terraço, o Arraiá do Terraço)
+  barracaPreco(){ return EVENTOS.junina.barraca.preco[this.ponto.id]; }   // v12.7: o preço da barraca é por ponto
   buyBarraca(){
     const n = this.shopNext, p = this.barracaPreco();
     if (!this.barracaVisivel || this.save.barraca === n || (!devLivre() && this.save.bank < p)) return false;
@@ -915,7 +915,7 @@ class Game {
   }
   /* entrega n cafés à mesa do grupo (a Bia ou o Joca): +1 coração cada, o preço do pedido (R$ 8 o espresso, R$ 12 o cappuccino) na conta, +5 pontos */
   entregaCafes(grp, n, x, y){
-    const ids = grp.cafes.slice(grp.cafesDados, grp.cafesDados + n), tot = ids.reduce((a, id) => a + cafeDe(id).preco, 0);
+    const ids = grp.cafes.slice(grp.cafesDados, grp.cafesDados + n), tot = ids.reduce((a, id) => a + cafePrecoDe(id, this.ponto), 0);
     grp.cafesDados += n; this.stats.cafesEsp += n;
     grp.gain(n); grp.bebConta += tot;
     this.pontos += PONTOS_ACAO.cafeEsp * n;
@@ -977,7 +977,7 @@ class Game {
   /* adiantar (o "+ marmita" da janela de pedidos): uma marmita de MARMITA.prato sem dono, até MARMITA.vagas */
   adiantar(x, y){
     if (!this.marmitaOk || this.marmitasLivres >= this.vagas) return false;
-    this.kitchen.submitMarmita(MARMITA.prato, null);
+    this.kitchen.submitMarmita(pratoBase(this.ponto), null);
     this.addText(x, y, 'Marmita adiantada!', PAL.faixa, 14); Sfx.ok();
     return true;
   }
