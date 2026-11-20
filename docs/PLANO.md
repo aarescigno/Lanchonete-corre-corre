@@ -17,7 +17,6 @@ Origem: retorno do Renan Martorelli (beta-tester) e conversa com o Arthur (15/10
 |---|---|---|---|
 | 5 | ~~Modo História, parte 1~~: juntou-se à 2f e aos capítulos da 3a, 3b e 4a (28/10) | — | — |
 | 14b | O bot humano, calibrado pelos relatórios | — (testes) | depois dos relatórios dos testers |
-| 16a | Cardápio de verdade em cada ponto: pratos e preços por ponto, curso como técnica, sem PF no Terraço | v12.7 | feita em 20/11 (`docs/spec-v12.7.md`; `smoke109`; `preco` por ponto em cada prato e sem o `cardapio` do ponto, 29 pratos novos da Avenida e do Terraço, os cursos como técnica, o prato de base de cada ponto, bebidas, doces e cafés com preço por ponto, o Arraiá da Avenida e o do Terraço; metas recalibradas; o ganho da industrial caiu 32% e o do Terraço subiu 78%, aceito pelo usuário) |
 | 16b-1 | Os desenhos dos pratos novos da Avenida, dos juninos e das barracas chiques | v12.8 | feita em 20/11 (`docs/spec-v12.8.md`; `smoke110`; `drawAvenida` com os 14 pratos, os 6 juninos novos, a barraca por ponto no cartão e o desenhinho no painel dev) |
 | 16b-2 | Os desenhos dos pratos novos do Terraço e do risoto da Lia | v12.8.1 | feita em 20/11 (`docs/spec-v12.8.1.md`) |
 | correção | O entretenimento (TV, som, TVs com sertanejo, couvert, música ao vivo) também nas Melhorias | v12.8.2 | feita em 20/11 (`docs/spec-v12.8.2.md`; `smoke112`; `buildEntrete` nas abas Melhorias e Luxo) |
