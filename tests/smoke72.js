@@ -29,7 +29,7 @@ const tudo=(H,ponto)=>{ const {g,L}=H, sv=g.save, pn=NIV[ponto];
   ok(L.LUXO.endereco.join()==='0,10,20,40' && L.LUXO.pede.join()==='20,40,60,90' && L.LUXO.vip===0.1 && L.LUXO.exigAv===0.25,'LUXO: endereço 0,10,20,40; pede 20,40,60,90; vip 0,1; exigAv 0,25'); }
 
 // ---------- 2. tudo comprado em cada ponto (CA2) ----------
-{ const alvo={ industrial:[44,2], avenida:[64,3], terraco:[100,5] };
+{ const alvo={ industrial:[45,2], avenida:[64,3], terraco:[100,5] };
   for(const p of ['industrial','avenida','terraco']){ const H=jogo(p), {g,L}=H; g.mode='carreira'; const v=tudo(H,p);
     ok(v.tot===alvo[p][0] && L.luxoNivel(g)===alvo[p][1],p+': tudo comprado dá '+alvo[p][0]+' (nível '+alvo[p][1]+') — deu '+v.tot+' '+JSON.stringify(v)); }
   const H=jogo('avenida'), {g,L}=H; const v=tudo(H,'avenida'); g.save.decor.quadros=0; const w=L.luxoPts(g);

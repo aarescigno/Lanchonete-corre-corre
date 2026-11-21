@@ -1687,7 +1687,7 @@ class Game {
     Sfx.win();
     return true;
   }
-  /* itens da área industrial (v9): TVs (instalar), fogão industrial e o assento da espera ('cadeira' ou 'banco'; trocar paga o novo);
+  /* itens da área industrial (v9): TVs (instalar), fogão industrial e o assento da espera ('cadeira' ou 'banco'; v12.8.4: uma escada, das cadeirinhas aos banquinhos pela `troca`, sem voltar, a não ser com a lojinha de graça do modo dev);
      v9.1: o fogão vale de 2 em diante; as TVs e a cadeirinha/banquinho só no nível 2; o sofá só na Avenida; v10: as poltronas só no Terraço */
   comprarInd(id, tipo){
     const nv = this.ponto.nivel;
@@ -1696,7 +1696,7 @@ class Game {
     let cost;
     if (id === 'tvs' && nv === 2 && !this.up.tvs) cost = I.tvs.instalar;
     else if (id === 'fogaoInd' && !this.up.fogaoInd) cost = I.fogao.cost;
-    else if (id === 'assento' && nv === 2 && (tipo === 'cadeira' || tipo === 'banco') && this.up.assento !== tipo) cost = I.assento[tipo].cost;
+    else if (id === 'assento' && nv === 2 && (tipo === 'cadeira' || tipo === 'banco') && this.up.assento !== tipo && (tipo === 'banco' || !this.up.assento || devLivre())) cost = assentoPreco(this.up.assento, tipo);
     else if (id === 'assento' && nv === 3 && tipo === 'sofa' && this.up.assento !== 'sofa') cost = AVENIDA.sofa.cost;
     else if (id === 'assento' && nv === 4 && tipo === 'poltrona' && this.up.assento !== 'poltrona') cost = TERRACO.poltrona.cost;   // v10: as poltronas do foyer, só no Terraço
     else return false;
@@ -2104,6 +2104,12 @@ class Game {
     if (!m || mv[id] || (i > 0 && !mv[MOVEIS[i - 1].id]) || this.save.bank < m.cost || (this.ponto.nivel < m.nivel && !devLivre())) return false;
     this.save.bank -= m.cost; caixaGasto(this.save, 'sal', m.cost);
     mv[id] = 1;
+    if (id === 'linho'){   // v12.8.4: o linho cobre todas as mesas: o enfeite de cada uma sai e volta pela metade
+      const com = this.save.salao.mesas.concat(this.estoque).filter(x => x.t), v = Math.round(com.length * TOALHA.cost * TOALHA.devolve);
+      com.forEach(x => { delete x.t; });
+      if (v){ this.save.bank += v; caixaGasto(this.save, 'sal', -v); }
+      if (com.length){ this.tablesKey = ''; this.buildTables(); }
+    }
     writeSave(this.save); Sfx.coin();
     return true;
   }
@@ -2119,7 +2125,7 @@ class Game {
   buyToalha(i, est){
     if (!this.cartaoAberto('salao')) return false;
     const m = (est ? this.estoque : this.save.salao.mesas)[i];
-    if (!m || m.t) return false;
+    if (!m || m.t || this.linho) return false;   // v12.8.4: com o linho, o enfeite não se compra
     if (this.save.bank < TOALHA.cost) return this.salaoNao('Falta dinheiro.');
     this.save.bank -= TOALHA.cost; caixaGasto(this.save, 'sal', TOALHA.cost);
     m.t = 1; Sfx.coin();
@@ -2127,10 +2133,11 @@ class Game {
   }
   /* toalha em todas as mesas que ainda não têm (salão e estoque) */
   get semToalha(){ return this.save.salao.mesas.concat(this.estoque).filter(m => !m.t); }
+  get linho(){ return !!(this.save.moveis && this.save.moveis.linho); }   // v12.8.4: as toalhas de linho cobrem todas as mesas
   buyToalhas(){
     if (!this.cartaoAberto('salao')) return false;
     const l = this.semToalha, v = l.length * TOALHA.cost;
-    if (!l.length || this.save.bank < v) return false;
+    if (!l.length || this.linho || this.save.bank < v) return false;
     this.save.bank -= v; caixaGasto(this.save, 'sal', v);
     l.forEach(m => { m.t = 1; }); Sfx.coin();
     return this.salaoSaved();

@@ -856,7 +856,7 @@ function buildSalao(grid){
       pop.style.top = tops[up ? 1 : 0] + '%';
       pop.appendChild(el('b', null, 'Mesa ' + (sel + 1) + ' · ' + m.seats + ' lugares'));
       pop.appendChild(edCores(m, k => game.pintarMesa(sel, k)));
-      if (!m.t) pop.appendChild(edBtn(enfeiteMesa(game).nome + ': ' + fmt(TOALHA.cost), 'btn', bank >= TOALHA.cost, () => game.buyToalha(sel), TOALHA.cost));   // v8.6.5
+      if (!m.t && !game.linho) pop.appendChild(edBtn(enfeiteMesa(game).nome + ': ' + fmt(TOALHA.cost), 'btn', bank >= TOALHA.cost, () => game.buyToalha(sel), TOALHA.cost));   // v8.6.5
       if (devLivre() || (game.save.equipe.cami > 0 && STAFF.cami.levels[game.save.equipe.cami].mesas)) pop.appendChild(edBtn(m.cami ? 'Tirar da Cami' : 'Mesa da Cami (' + camiMesasN(game.save) + ' de ' + CAMI_MESAS_MAX + ')', 'btn' + (m.cami ? ' alt' : ''), m.cami || camiMesasN(game.save) < CAMI_MESAS_MAX, () => game.camiMesa(sel)));   // v9.6
       if (m.seats === 2) pop.appendChild(edBtn('Virar mesa de 4: ' + fmt(SALAO.virar), 'btn', tot + 2 <= p.lugares && bank >= SALAO.virar, () => game.virarMesa(sel), SALAO.virar));
       pop.appendChild(edBtn('Guardar no estoque', 'btn alt', mesas.length > 1, () => game.guardarMesa(sel)));
@@ -870,7 +870,7 @@ function buildSalao(grid){
       pop.style.top = tops[up ? 1 : 0] + '%';
       pop.appendChild(el('b', null, 'Mesa no estoque · ' + me.seats + ' lugares'));
       pop.appendChild(edCores(me, k => game.pintarMesa(ks, k, true)));
-      if (!me.t) pop.appendChild(edBtn(enfeiteMesa(game).nome + ': ' + fmt(TOALHA.cost), 'btn', bank >= TOALHA.cost, () => game.buyToalha(ks, true), TOALHA.cost));
+      if (!me.t && !game.linho) pop.appendChild(edBtn(enfeiteMesa(game).nome + ': ' + fmt(TOALHA.cost), 'btn', bank >= TOALHA.cost, () => game.buyToalha(ks, true), TOALHA.cost));
       pop.appendChild(edBtn('Pôr no salão', 'btn', true, () => game.tirarMesa(ks)));
       if (me.seats === 2) pop.appendChild(edBtn('Virar mesa de 4: ' + fmt(SALAO.virar), 'btn', tot + 2 <= p.lugares && bank >= SALAO.virar, () => game.virarMesa(ks, true), SALAO.virar));
       pop.appendChild(edBtn('Vender por ' + fmt(mesaPreco(me.seats) * SALAO.venda), 'btn alt', true, () => game.venderMesa(ks, true)));
@@ -890,14 +890,14 @@ function buildSalao(grid){
   side.appendChild(edBtn('Mesa de 4: ' + fmt(SALAO.mesa4), 'btn', tot + 4 <= p.lugares && bank >= SALAO.mesa4, () => game.buyMesa(4), SALAO.mesa4));
   // v8.9.1: a toalha xadrez em todas as mesas (antes na Decoração); mesa a mesa, no balãozinho
   const todas = mesas.concat(est), sem = game.semToalha.length, vt = sem * TOALHA.cost;
-  side.appendChild(edBtn(!sem ? enfeiteMesa(game).nome + ': todas têm' : enfeiteMesa(game).nome + ' em ' + (sem > 1 ? 'todas (' + sem + ')' : '1 mesa') + ': ' + fmt(vt), 'btn', sem > 0 && bank >= vt, () => game.buyToalhas(), vt));
+  if (!game.linho) side.appendChild(edBtn(!sem ? enfeiteMesa(game).nome + ': todas têm' : enfeiteMesa(game).nome + ' em ' + (sem > 1 ? 'todas (' + sem + ')' : '1 mesa') + ': ' + fmt(vt), 'btn', sem > 0 && bank >= vt, () => game.buyToalhas(), vt));
   side.appendChild(edBtn('Arrumação automática', 'btn alt', true, () => game.arrumarSalao()));
   side.appendChild(edBtn('Desfazer', 'btn alt', game.salaoUndo.length > 0, () => game.desfazerSalao()));
   side.appendChild(el('span', game.salaoMsg ? 'msg' : 'ed-dica', game.salaoMsg || (tot >= p.lugares ? (nEst ? 'Salão e estoque estão no teto de ' + p.lugares + ' lugares.' : 'O salão está no teto de ' + p.lugares + ' lugares.') + ' Para rearrumar, arraste mesas para o estoque e de volta.' : 'Arraste as mesas. Toque numa mesa para mais opções.')));
   side.appendChild(el('span', 'ed-contas', 'Luz e gás: ' + fmt(contasDia(game.tables, p)) + ' por dia (' + fmt(CONTAS.mesa) + ' por mesa e ' + fmt(CONTAS.lugar) + ' por lugar).'));
   const mov = Math.round((movimentoSalao(lug) - 1) * 100);
   side.appendChild(el('span', 'ed-contas', 'Cada lugar acima de ' + MOVIMENTO.kit + ' traz ' + Math.round(MOVIMENTO.porLugar * 100) + '% mais clientes' + (mov > 0 ? ' (hoje, +' + mov + '%).' : '.')));
-  side.appendChild(el('span', 'ed-contas', enfeiteMesa(game).nome + ': ' + fmt(TOALHA.cost) + ' por mesa; melhora o ambiente no Gúgou para quem senta nela. ' + (todas.length - sem) + ' de ' + todas.length + (todas.length > 1 ? ' mesas têm.' : ' mesa tem.')));
+  side.appendChild(el('span', 'ed-contas', game.linho ? 'As toalhas de linho cobrem todas as mesas.' : enfeiteMesa(game).nome + ': ' + fmt(TOALHA.cost) + ' por mesa; melhora o ambiente no Gúgou para quem senta nela. ' + (todas.length - sem) + ' de ' + todas.length + (todas.length > 1 ? ' mesas têm.' : ' mesa tem.')));
   ed.appendChild(side);
   grid.appendChild(ed);
   drawEditor(cv);
@@ -1148,7 +1148,8 @@ function buildTvs(grid){
   });
   grid.appendChild(c);
 }
-/* v9: onde se espera lá fora: de pé (de graça), cadeirinhas de plástico ou banquinhos de madeira (um ou outro; trocar paga o novo) */
+/* v9: onde se espera lá fora: de pé (de graça), cadeirinhas de plástico ou banquinhos de madeira (v12.8.4: uma escada; das cadeirinhas aos banquinhos, só a troca; com os banquinhos,
+   o botão das cadeirinhas sai, a não ser com a lojinha de graça do modo dev) */
 function buildAssento(grid){
   game.manualVer('l-assento');
   if (game.ponto.nivel === 4){   // v10: as poltronas do foyer do Terraço (compra única)
@@ -1169,7 +1170,8 @@ function buildAssento(grid){
   const c = staffCard(upgradeIcon('assento'), 'Espera sentada'); c.setAttribute('data-ficha', 'l-assento');
   if (cur) c.classList.add('own');
   const duo = el('div', 'duo');
-  ['cadeira', 'banco'].forEach(k => duo.appendChild(shopBtn(cur === k ? 'Tem: ' + A[k].nome : A[k].nome + ' ' + fmt(A[k].cost), 'btn', devLivre() || (cur !== k && bank >= A[k].cost), () => game.comprarInd('assento', k), devLivre() ? 0 : A[k].cost)));
+  ['cadeira', 'banco'].filter(k => !(k === 'cadeira' && cur === 'banco' && !devLivre())).forEach(k => { const v = assentoPreco(cur, k);
+    duo.appendChild(shopBtn(cur === k ? 'Tem: ' + A[k].nome : A[k].nome + ' ' + fmt(v), 'btn', devLivre() || (cur !== k && bank >= v), () => game.comprarInd('assento', k), devLivre() ? 0 : v)); });
   c.appendChild(duo); grid.appendChild(c);
 }
 /* aba Mudança (v9): o próximo ponto, o que falta para mudar e a confirmação (não dá para voltar) */

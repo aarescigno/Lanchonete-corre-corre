@@ -117,7 +117,7 @@ const pegaPrato=(H,grp)=>{ const g=H.g, p=g.kitchen.plates.find(q=>q&&q.group===
 
 // ---------- 5. as poltronas do foyer ----------
 { const H=jogo(9,'terraco',{ bank:2000 }), {g,L}=H; g.resetDay(10);
-  ok(L.TERRACO.poltrona.cost===600 && L.TERRACO.poltrona.slow===0.35 && L.assentoSlow('poltrona')===0.35 && L.assentoSlow('sofa')===0.25 && L.assentoSlow('banco')===0.15,'poltronas: R$ 600, espera 35% mais devagar (o sofá 25%, o banco 15%)');
+  ok(L.TERRACO.poltrona.cost===600 && L.TERRACO.poltrona.slow===0.35 && L.assentoSlow('poltrona')===0.35 && L.assentoSlow('sofa')===0.25 && L.assentoSlow('banco')===0.2,'poltronas: R$ 600, espera 35% mais devagar (o sofá 25%, o banco 20%)');
   H.L.setShopGrupo('lanchonete'); H.L.setShopTab('melhorias'); const t=txt(grid(H));
   ok(/Poltronas do foyer/.test(t) && !/Água|Jarra|saborizadas|Sofás/.test(t),'a aba Melhorias do Terraço: as poltronas, sem o cartão da bebida da espera nem o sofá');
   ok(!g.comprarInd('assento','sofa') && !g.comprarInd('assento','cadeira') && !g.comprarInd('assento','banco') && g.save.bank===2000 && !g.up.assento,'o sofá e a cadeirinha não se compram no Terraço');

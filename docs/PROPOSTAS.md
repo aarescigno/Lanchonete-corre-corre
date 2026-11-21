@@ -9,7 +9,9 @@ Registro das ideias e dos retornos de quem jogou, com o texto original, e de ond
 
 Na escolha: quem tem as cadeirinhas paga pelos banquinhos "a diferença com desvalorização, pagaria 45"; o banquinho dá mais paciência e mais luxo; depois do banquinho, o botão da cadeirinha some.
 
-**Destino:** v12.8.4, `docs/spec-v12.8.4.md` (aprovada em 21/11): a espera sentada vira escada (cadeirinhas R$ 60 → banquinhos R$ 90, ou R$ 45 na troca), banquinho com 20% e 2 de luxo.
+E, na mesma conversa: "pesquisa se isso acontece em algum outro lugar, em algum outro nível" (achado: o enfeite das mesas depois das toalhas de linho; na escolha, "some e devolve"), e "sempre que eu fizer um upgrade, que seja mais caro, ele tem que ter um benefício a mais [...] não pode ter dois preços diferentes para um retorno igual" (virou regra no `CLAUDE.md`).
+
+**Destino:** v12.8.4, `docs/spec-v12.8.4.md` (entregue em 21/11): a espera sentada vira escada (cadeirinhas R$ 60 → banquinhos R$ 90, ou R$ 45 na troca), banquinho com 20% e 2 de luxo; com o linho, o enfeite sai e volta pela metade. Fica em aberto: a decoração tem enfeites de preços muito diferentes com o mesmo luxo (a planejar).
 
 ---
 

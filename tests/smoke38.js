@@ -118,10 +118,10 @@ const joga=(H,fat,custo)=>{ const {g,els}=H; if(g.state==='shop') els['btn-shop-
   const q0=new L.Group(g,'estudante',++g.gid,0,false); q0.setState('queue'); const pe=q0.patPer();
   ok(g.comprarInd('assento','cadeira') && g.save.bank===4940 && g.up.assento==='cadeira' && g.sentado,'cadeirinhas: R$ 60');
   q0.setState('queue'); ok(Math.abs(q0.patPer()*(1-0.15)-pe)<1e-9,'quem espera sentado perde a paciência 15% mais devagar');
-  ok(g.comprarInd('assento','banco') && g.save.bank===4850 && g.up.assento==='banco' && !g.comprarInd('assento','banco'),'trocar para o banquinho paga R$ 90 (o novo); o mesmo, não');
+  ok(g.comprarInd('assento','banco') && g.save.bank===4895 && g.up.assento==='banco' && !g.comprarInd('assento','banco') && !g.comprarInd('assento','cadeira') && g.save.bank===4895,'trocar para o banquinho paga só a troca, R$ 45 (v12.8.4); o mesmo, não; voltar às cadeirinhas, não');
   const u=L.UPGRADES.find(x=>x.id==='maquina'), pv=L.upgradeDe(u,g.ponto);
   ok(pv.name==='Jarra de suco' && pv.cost===120 && L.upgradeDe(u,L.PONTOS[0]).cost===80,'a melhoria "maquina" é a Jarra de suco (R$ 120) na área industrial');
-  ok(g.buy('maquina') && g.save.bank===4730 && g.up.maquina && g.bebida.id==='suco' && g.bebida.preco===8,'comprar a jarra: R$ 120; o suco vale R$ 8 (v12.7)');
+  ok(g.buy('maquina') && g.save.bank===4775 && g.up.maquina && g.bebida.id==='suco' && g.bebida.preco===8,'comprar a jarra: R$ 120; o suco vale R$ 8 (v12.7)');
   ok(L.DANI_TASKS.length>0 && L.daniTaskDe(L.DANI_TASKS.find(t=>t.id==='suco'),g.ponto).name==='Levar o suco da espera','a tarefa da Dani vira "Levar o suco da espera"'); }
 
 // ---------- 8. as plantas ----------

@@ -522,7 +522,7 @@ table.rank tr.me td{background:#fbe7a8}
 
     <div class="ov show" id="ov-menu">
       <div class="panel menu-panel">
-        <span class="vtag" id="vtag" aria-label="Versão 12.8.3">v12.8.3</span>
+        <span class="vtag" id="vtag" aria-label="Versão 12.8.4">v12.8.4</span>
         <h1 class="title">Lanchonete <br>Corre-Corre</h1>
         <p class="tag">Ajude a Bia a atender a freguesia da esquina antes que o cafezinho esfrie!</p>
         <div class="lbl" id="menu-dia">História</div>
@@ -824,7 +824,8 @@ table.rank tr.me td{background:#fbe7a8}
       <div class="panel">
         <h2>Versões</h2>
         <ul class="verlist">
-          <li><b>v12.8.3</b><span class="cur">versão atual</span><br>21/11/2026 &mdash; Tocar nos pés de uma turma da espera não pega mais a turma de baixo.</li>
+          <li><b>v12.8.4</b><span class="cur">versão atual</span><br>21/11/2026 &mdash; Os banquinhos de madeira valem mais que as cadeirinhas e a troca sai mais barata; com as toalhas de linho, o enfeite das mesas volta pela metade.</li>
+          <li><b>v12.8.3</b><br>21/11/2026 &mdash; Tocar nos pés de uma turma da espera não pega mais a turma de baixo.</li>
           <li><b>v12.8.2</b><br>20/11/2026 &mdash; A TV, o som, as TVs com sertanejo, o couvert e a música ao vivo aparecem também nas Melhorias.</li>
           <li><b>v12.8.1</b><br>20/11/2026 &mdash; Cada prato do Terraço ganha a cara dele, de cozinha fina: o galeto com a coxa dourada, o filé no arco de molho de vinho, os dadinhos de tapioca. O risoto da Lia deixa de sair com o desenho do medalhão.</li>
           <li><b>v12.8</b><br>20/11/2026 &mdash; Cada prato novo da Avenida ganha a cara dele (o strogonoff com batata palha, a moqueca na panela de barro) e as barracas da festa junina ficam mais chiques.</li>
@@ -1515,7 +1516,7 @@ const DECOR_GRUPOS = [
   { id:'rosa',    nome:'Cantinho da Rosa' },
   { id:'enfeites', nome:'Enfeites' }   // v10.7
 ];
-const TOALHA = { cost:12 };   // por mesa
+const TOALHA = { cost:12, devolve:0.5 };   // por mesa; v12.8.4: ao comprar as toalhas de linho, o enfeite das mesas sai e volta pela metade (devolve)
 /* v11.16.1: o upgrade da mesa (id interno 'toalha', campo t) é o enfeite da mesa e muda com o ponto: só o desenho e o nome */
 const ENFEITE_MESA = {
   garagem:{ nome:'Toalha xadrez', elogio:'A toalha xadrez dá um charme!' },
@@ -1548,7 +1549,7 @@ function decorOn(g, id){ return !!(g && g.save && g.save.decor && g.save.decor[i
    ============================================================ */
 const LUXO = {
   endereco:[0, 10, 20, 40], pede:[20, 40, 60, 90], vip:0.1, exigAv:0.25, passo:20, nomes:['Endereço', 'Decoração', 'Móveis', 'Ambiente', 'Fama'], max:[40, 25, 20, 10, 5],
-  assento:{ cadeira:1, banco:1, sofa:2, poltrona:3 }, louca:3, toalha:3, divulga:{ boca:0, panfleto:1, redes:2 }, nota:3, ambMax:3,
+  assento:{ cadeira:1, banco:2, sofa:2, poltrona:3 }, louca:3, toalha:3, divulga:{ boca:0, panfleto:1, redes:2 }, nota:3, ambMax:3,
   tv:2, som:2, tvs:[0, 3, 5], couvert:7, musica:[0, 8, 10], estrela:1   // v10.10: cada estrela do Michelzão vale 1 ponto de Fama
 };
 /* o jogo de mesas: uma escada (cada degrau só depois do anterior); save.moveis = { madeira, acolch, linho, marmore } (0 ou 1) */
@@ -1662,13 +1663,14 @@ const STAFF = {
 const INDUSTRIAL = {
   tvs:{ instalar:120, modos:[ null, { nome:'com anúncios', pay:9, effect:0.1 }, { nome:'sem anúncios', pay:29, effect:0.15 } ] },
   fogao:{ cost:400, emerg:160, fator:0.5, slots:1 },
-  assento:{ cadeira:{ nome:'Cadeirinhas de plástico', cost:60 }, banco:{ nome:'Banquinhos de madeira', cost:90 }, slow:0.15 }
+  // v12.8.4: uma escada: as cadeirinhas e, acima, os banquinhos (mais paciência e mais luxo); quem tem as cadeirinhas paga só a `troca` (90 menos 3/4 de 60) e não volta ao plástico
+  assento:{ cadeira:{ nome:'Cadeirinhas de plástico', cost:60, slow:0.15 }, banco:{ nome:'Banquinhos de madeira', cost:90, troca:45, slow:0.2 } }
 };
 function tvsModo(eq){ return INDUSTRIAL.tvs.modos[eq && eq.tvs] || null; }
 /* v9.1, Avenida Brasil: os sofás da espera (o assento `up.assento = 'sofa'`; compra única; quem espera sentado nele perde a paciência
    `slow` mais devagar). O couvert artístico (STAFF.couvert) e as flores (DECOR nivel:3) também são só daqui para cima */
 const AVENIDA = { sofa:{ nome:'Sofás com almofadas', cost:250, slow:0.25 } };
-/* quanto a espera sentada alivia a paciência: o sofá da Avenida 25%, a cadeirinha e o banquinho da área industrial 15% */
+/* quanto a espera sentada alivia a paciência: o sofá da Avenida 25%, a cadeirinha da área industrial 15% e o banquinho 20% (v12.8.4) */
 /* v10, Terraço Suíça: o foyer (a calçada do andar) com poltronas de veludo (compra única, `up.assento = 'poltrona'`; a espera 35% mais devagar) e o piano de cauda que
    já vem com o ponto: obstáculo fixo dos caminhos (fora da área das mesas; quem toca chega na 4a-5) */
 const TERRACO = { poltrona:{ nome:'Poltronas do foyer', cost:600, slow:0.35 }, piano:{ x0:28, y0:404, x1:148, y1:520 },
@@ -1677,7 +1679,9 @@ const TERRACO = { poltrona:{ nome:'Poltronas do foyer', cost:600, slow:0.35 }, p
 function musicaDe(eq){ return TERRACO.musica[eq && eq.musica] || null; }
 function musicaPay(m){ return m ? m.pay + (m.piano || 0) : 0; }
 function musicaOk(ponto){ return (ponto || PONTOS[0]).nivel === 4; }   // nem no modo dev: a música é só do Terraço
-function assentoSlow(a){ return a === 'sofa' ? AVENIDA.sofa.slow : a === 'poltrona' ? TERRACO.poltrona.slow : a ? INDUSTRIAL.assento.slow : 0; }
+/* v12.8.4: quanto custa o assento `tipo` da área industrial para quem já tem `cur`: das cadeirinhas aos banquinhos, só a troca */
+function assentoPreco(cur, tipo){ const A = INDUSTRIAL.assento; return cur === 'cadeira' && tipo === 'banco' ? A.banco.troca : A[tipo].cost; }
+function assentoSlow(a){ return a === 'sofa' ? AVENIDA.sofa.slow : a === 'poltrona' ? TERRACO.poltrona.slow : INDUSTRIAL.assento[a] ? INDUSTRIAL.assento[a].slow : 0; }
 /* obstáculos fixos do ponto (além das mesas): o piano do Terraço, no formato dos de mesaBox */
 function fixosDe(ponto){ return ponto && ponto.id === 'terraco' ? [{ x0:TERRACO.piano.x0, y0:TERRACO.piano.y0, x1:TERRACO.piano.x1, y1:TERRACO.piano.y1 }] : []; }
 const DANI_TASKS = [
@@ -2783,7 +2787,7 @@ const HIST_NOMES = { bia:'Bia', tonhao:'Tonhão', dani:'Dani', joca:'Joca', cami
 const ATU_TXT = { procurando:'Procurando versão nova...', nova:'Tem versão nova: {v}! Seu jogo salvo continua.', igual:'Você já está na versão mais nova ({v}).', erro:'Sem internet agora. Tente de novo mais tarde.', atualizando:'Atualizando...' };
 function atuEstado(remota, atual){ if (typeof remota !== 'string' || !remota.trim()) return 'erro'; return remota.trim() === atual ? 'igual' : 'nova'; }
 const CAIXA_MAX = 14;                                 // livro-caixa (v7.2): quantos dias da carreira ficam guardados
-const VERSAO = 'v12.8.3';                                   // vai no resumo do Caixa
+const VERSAO = 'v12.8.4';                                   // vai no resumo do Caixa
 const DIVULGA_DIA = 4;                                // antes disso, o movimento é o da inauguração (sem custo); v9.0.2: dia 4, e o padrão é o boca a boca
 function divulgaAberta(n, sv){ return devLivre() || n >= DIVULGA_DIA && !(sv && sv.convDiv === 'pend'); }   // no modo dev, desde o dia 1; v9.0.3: no Modo História, só depois da conversa
 /* v9.6.4: a Efood (os entregadores) só abre depois da conversa dos entregadores, no Modo História; antes dela, nenhum tipo com `retira` vem na agenda */
@@ -3679,7 +3683,7 @@ class Group {
     if (this.braulio) m *= NOITE.brauPat;   // v10.10
     const g0 = this.game, pt = g0.ponto;
     if (pt.patPressa && this.size <= 2 && !T0(this)) m *= pt.patPressa;   // v9: quem vem sozinho ou em dupla tem pressa (a turma, o motorista e a encomenda, não)
-    if (this.state === 'queue' && g0.mode === 'carreira' && g0.up.assento) m /= 1 - assentoSlow(g0.up.assento);   // v9: espera sentado (v9.1: o sofá 25%, a cadeirinha e o banquinho 15%)
+    if (this.state === 'queue' && g0.mode === 'carreira' && g0.up.assento) m /= 1 - assentoSlow(g0.up.assento);   // v9: espera sentado (v9.1: o sofá 25%; v12.8.4: a cadeirinha 15%, o banquinho 20%)
     if (this.state === 'queue' && this.sucoN) m /= 1 - MAQUINA.slow * Math.min(1, this.sucoN / this.size);
     const g = this.game, eq = g.save.equipe;
     const amb = ambienteEffect(eq) + g.ambienteEv;   // v10.6: no dia de jogo, a TV ligada acalma a espera
@@ -6585,7 +6589,7 @@ class Game {
     Sfx.win();
     return true;
   }
-  /* itens da área industrial (v9): TVs (instalar), fogão industrial e o assento da espera ('cadeira' ou 'banco'; trocar paga o novo);
+  /* itens da área industrial (v9): TVs (instalar), fogão industrial e o assento da espera ('cadeira' ou 'banco'; v12.8.4: uma escada, das cadeirinhas aos banquinhos pela `troca`, sem voltar, a não ser com a lojinha de graça do modo dev);
      v9.1: o fogão vale de 2 em diante; as TVs e a cadeirinha/banquinho só no nível 2; o sofá só na Avenida; v10: as poltronas só no Terraço */
   comprarInd(id, tipo){
     const nv = this.ponto.nivel;
@@ -6594,7 +6598,7 @@ class Game {
     let cost;
     if (id === 'tvs' && nv === 2 && !this.up.tvs) cost = I.tvs.instalar;
     else if (id === 'fogaoInd' && !this.up.fogaoInd) cost = I.fogao.cost;
-    else if (id === 'assento' && nv === 2 && (tipo === 'cadeira' || tipo === 'banco') && this.up.assento !== tipo) cost = I.assento[tipo].cost;
+    else if (id === 'assento' && nv === 2 && (tipo === 'cadeira' || tipo === 'banco') && this.up.assento !== tipo && (tipo === 'banco' || !this.up.assento || devLivre())) cost = assentoPreco(this.up.assento, tipo);
     else if (id === 'assento' && nv === 3 && tipo === 'sofa' && this.up.assento !== 'sofa') cost = AVENIDA.sofa.cost;
     else if (id === 'assento' && nv === 4 && tipo === 'poltrona' && this.up.assento !== 'poltrona') cost = TERRACO.poltrona.cost;   // v10: as poltronas do foyer, só no Terraço
     else return false;
@@ -7002,6 +7006,12 @@ class Game {
     if (!m || mv[id] || (i > 0 && !mv[MOVEIS[i - 1].id]) || this.save.bank < m.cost || (this.ponto.nivel < m.nivel && !devLivre())) return false;
     this.save.bank -= m.cost; caixaGasto(this.save, 'sal', m.cost);
     mv[id] = 1;
+    if (id === 'linho'){   // v12.8.4: o linho cobre todas as mesas: o enfeite de cada uma sai e volta pela metade
+      const com = this.save.salao.mesas.concat(this.estoque).filter(x => x.t), v = Math.round(com.length * TOALHA.cost * TOALHA.devolve);
+      com.forEach(x => { delete x.t; });
+      if (v){ this.save.bank += v; caixaGasto(this.save, 'sal', -v); }
+      if (com.length){ this.tablesKey = ''; this.buildTables(); }
+    }
     writeSave(this.save); Sfx.coin();
     return true;
   }
@@ -7017,7 +7027,7 @@ class Game {
   buyToalha(i, est){
     if (!this.cartaoAberto('salao')) return false;
     const m = (est ? this.estoque : this.save.salao.mesas)[i];
-    if (!m || m.t) return false;
+    if (!m || m.t || this.linho) return false;   // v12.8.4: com o linho, o enfeite não se compra
     if (this.save.bank < TOALHA.cost) return this.salaoNao('Falta dinheiro.');
     this.save.bank -= TOALHA.cost; caixaGasto(this.save, 'sal', TOALHA.cost);
     m.t = 1; Sfx.coin();
@@ -7025,10 +7035,11 @@ class Game {
   }
   /* toalha em todas as mesas que ainda não têm (salão e estoque) */
   get semToalha(){ return this.save.salao.mesas.concat(this.estoque).filter(m => !m.t); }
+  get linho(){ return !!(this.save.moveis && this.save.moveis.linho); }   // v12.8.4: as toalhas de linho cobrem todas as mesas
   buyToalhas(){
     if (!this.cartaoAberto('salao')) return false;
     const l = this.semToalha, v = l.length * TOALHA.cost;
-    if (!l.length || this.save.bank < v) return false;
+    if (!l.length || this.linho || this.save.bank < v) return false;
     this.save.bank -= v; caixaGasto(this.save, 'sal', v);
     l.forEach(m => { m.t = 1; }); Sfx.coin();
     return this.salaoSaved();
@@ -17091,7 +17102,7 @@ function buildSalao(grid){
       pop.style.top = tops[up ? 1 : 0] + '%';
       pop.appendChild(el('b', null, 'Mesa ' + (sel + 1) + ' · ' + m.seats + ' lugares'));
       pop.appendChild(edCores(m, k => game.pintarMesa(sel, k)));
-      if (!m.t) pop.appendChild(edBtn(enfeiteMesa(game).nome + ': ' + fmt(TOALHA.cost), 'btn', bank >= TOALHA.cost, () => game.buyToalha(sel), TOALHA.cost));   // v8.6.5
+      if (!m.t && !game.linho) pop.appendChild(edBtn(enfeiteMesa(game).nome + ': ' + fmt(TOALHA.cost), 'btn', bank >= TOALHA.cost, () => game.buyToalha(sel), TOALHA.cost));   // v8.6.5
       if (devLivre() || (game.save.equipe.cami > 0 && STAFF.cami.levels[game.save.equipe.cami].mesas)) pop.appendChild(edBtn(m.cami ? 'Tirar da Cami' : 'Mesa da Cami (' + camiMesasN(game.save) + ' de ' + CAMI_MESAS_MAX + ')', 'btn' + (m.cami ? ' alt' : ''), m.cami || camiMesasN(game.save) < CAMI_MESAS_MAX, () => game.camiMesa(sel)));   // v9.6
       if (m.seats === 2) pop.appendChild(edBtn('Virar mesa de 4: ' + fmt(SALAO.virar), 'btn', tot + 2 <= p.lugares && bank >= SALAO.virar, () => game.virarMesa(sel), SALAO.virar));
       pop.appendChild(edBtn('Guardar no estoque', 'btn alt', mesas.length > 1, () => game.guardarMesa(sel)));
@@ -17105,7 +17116,7 @@ function buildSalao(grid){
       pop.style.top = tops[up ? 1 : 0] + '%';
       pop.appendChild(el('b', null, 'Mesa no estoque · ' + me.seats + ' lugares'));
       pop.appendChild(edCores(me, k => game.pintarMesa(ks, k, true)));
-      if (!me.t) pop.appendChild(edBtn(enfeiteMesa(game).nome + ': ' + fmt(TOALHA.cost), 'btn', bank >= TOALHA.cost, () => game.buyToalha(ks, true), TOALHA.cost));
+      if (!me.t && !game.linho) pop.appendChild(edBtn(enfeiteMesa(game).nome + ': ' + fmt(TOALHA.cost), 'btn', bank >= TOALHA.cost, () => game.buyToalha(ks, true), TOALHA.cost));
       pop.appendChild(edBtn('Pôr no salão', 'btn', true, () => game.tirarMesa(ks)));
       if (me.seats === 2) pop.appendChild(edBtn('Virar mesa de 4: ' + fmt(SALAO.virar), 'btn', tot + 2 <= p.lugares && bank >= SALAO.virar, () => game.virarMesa(ks, true), SALAO.virar));
       pop.appendChild(edBtn('Vender por ' + fmt(mesaPreco(me.seats) * SALAO.venda), 'btn alt', true, () => game.venderMesa(ks, true)));
@@ -17125,14 +17136,14 @@ function buildSalao(grid){
   side.appendChild(edBtn('Mesa de 4: ' + fmt(SALAO.mesa4), 'btn', tot + 4 <= p.lugares && bank >= SALAO.mesa4, () => game.buyMesa(4), SALAO.mesa4));
   // v8.9.1: a toalha xadrez em todas as mesas (antes na Decoração); mesa a mesa, no balãozinho
   const todas = mesas.concat(est), sem = game.semToalha.length, vt = sem * TOALHA.cost;
-  side.appendChild(edBtn(!sem ? enfeiteMesa(game).nome + ': todas têm' : enfeiteMesa(game).nome + ' em ' + (sem > 1 ? 'todas (' + sem + ')' : '1 mesa') + ': ' + fmt(vt), 'btn', sem > 0 && bank >= vt, () => game.buyToalhas(), vt));
+  if (!game.linho) side.appendChild(edBtn(!sem ? enfeiteMesa(game).nome + ': todas têm' : enfeiteMesa(game).nome + ' em ' + (sem > 1 ? 'todas (' + sem + ')' : '1 mesa') + ': ' + fmt(vt), 'btn', sem > 0 && bank >= vt, () => game.buyToalhas(), vt));
   side.appendChild(edBtn('Arrumação automática', 'btn alt', true, () => game.arrumarSalao()));
   side.appendChild(edBtn('Desfazer', 'btn alt', game.salaoUndo.length > 0, () => game.desfazerSalao()));
   side.appendChild(el('span', game.salaoMsg ? 'msg' : 'ed-dica', game.salaoMsg || (tot >= p.lugares ? (nEst ? 'Salão e estoque estão no teto de ' + p.lugares + ' lugares.' : 'O salão está no teto de ' + p.lugares + ' lugares.') + ' Para rearrumar, arraste mesas para o estoque e de volta.' : 'Arraste as mesas. Toque numa mesa para mais opções.')));
   side.appendChild(el('span', 'ed-contas', 'Luz e gás: ' + fmt(contasDia(game.tables, p)) + ' por dia (' + fmt(CONTAS.mesa) + ' por mesa e ' + fmt(CONTAS.lugar) + ' por lugar).'));
   const mov = Math.round((movimentoSalao(lug) - 1) * 100);
   side.appendChild(el('span', 'ed-contas', 'Cada lugar acima de ' + MOVIMENTO.kit + ' traz ' + Math.round(MOVIMENTO.porLugar * 100) + '% mais clientes' + (mov > 0 ? ' (hoje, +' + mov + '%).' : '.')));
-  side.appendChild(el('span', 'ed-contas', enfeiteMesa(game).nome + ': ' + fmt(TOALHA.cost) + ' por mesa; melhora o ambiente no Gúgou para quem senta nela. ' + (todas.length - sem) + ' de ' + todas.length + (todas.length > 1 ? ' mesas têm.' : ' mesa tem.')));
+  side.appendChild(el('span', 'ed-contas', game.linho ? 'As toalhas de linho cobrem todas as mesas.' : enfeiteMesa(game).nome + ': ' + fmt(TOALHA.cost) + ' por mesa; melhora o ambiente no Gúgou para quem senta nela. ' + (todas.length - sem) + ' de ' + todas.length + (todas.length > 1 ? ' mesas têm.' : ' mesa tem.')));
   ed.appendChild(side);
   grid.appendChild(ed);
   drawEditor(cv);
@@ -17383,7 +17394,8 @@ function buildTvs(grid){
   });
   grid.appendChild(c);
 }
-/* v9: onde se espera lá fora: de pé (de graça), cadeirinhas de plástico ou banquinhos de madeira (um ou outro; trocar paga o novo) */
+/* v9: onde se espera lá fora: de pé (de graça), cadeirinhas de plástico ou banquinhos de madeira (v12.8.4: uma escada; das cadeirinhas aos banquinhos, só a troca; com os banquinhos,
+   o botão das cadeirinhas sai, a não ser com a lojinha de graça do modo dev) */
 function buildAssento(grid){
   game.manualVer('l-assento');
   if (game.ponto.nivel === 4){   // v10: as poltronas do foyer do Terraço (compra única)
@@ -17404,7 +17416,8 @@ function buildAssento(grid){
   const c = staffCard(upgradeIcon('assento'), 'Espera sentada'); c.setAttribute('data-ficha', 'l-assento');
   if (cur) c.classList.add('own');
   const duo = el('div', 'duo');
-  ['cadeira', 'banco'].forEach(k => duo.appendChild(shopBtn(cur === k ? 'Tem: ' + A[k].nome : A[k].nome + ' ' + fmt(A[k].cost), 'btn', devLivre() || (cur !== k && bank >= A[k].cost), () => game.comprarInd('assento', k), devLivre() ? 0 : A[k].cost)));
+  ['cadeira', 'banco'].filter(k => !(k === 'cadeira' && cur === 'banco' && !devLivre())).forEach(k => { const v = assentoPreco(cur, k);
+    duo.appendChild(shopBtn(cur === k ? 'Tem: ' + A[k].nome : A[k].nome + ' ' + fmt(v), 'btn', devLivre() || (cur !== k && bank >= v), () => game.comprarInd('assento', k), devLivre() ? 0 : v)); });
   c.appendChild(duo); grid.appendChild(c);
 }
 /* aba Mudança (v9): o próximo ponto, o que falta para mudar e a confirmação (não dá para voltar) */

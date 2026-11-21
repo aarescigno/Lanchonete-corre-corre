@@ -106,7 +106,7 @@ const html=fs.readFileSync(__dirname+'/../lanchonete.html','utf8');
   const I=jogo(4,'industrial',{ bank:5000 }).g; ok(!I.comprarInd('assento','sofa'),'na área industrial não há sofá');
   H.L.setShopGrupo('lanchonete'); H.L.setShopTab('melhorias');
   ok(/Sofás com almofadas/.test(txt(grid(H))) && /Águas saborizadas/.test(txt(grid(H))) && !/televisores/.test(txt(grid(H))) && !/Espera sentada/.test(txt(grid(H))),'Melhorias da Avenida: sofás e águas saborizadas; sem TVs nem cadeirinhas');
-  ok(L.assentoSlow('sofa')===0.25 && L.assentoSlow('cadeira')===0.15 && L.assentoSlow('banco')===0.15 && L.assentoSlow()===0,'assentoSlow: 25% o sofá, 15% os da área industrial'); }
+  ok(L.assentoSlow('sofa')===0.25 && L.assentoSlow('cadeira')===0.15 && L.assentoSlow('banco')===0.2 && L.assentoSlow()===0,'assentoSlow: 25% o sofá, 15% as cadeirinhas e 20% os banquinhos (v12.8.4)'); }
 
 // ---------- 6. águas saborizadas ----------
 { const H=jogo(6,'avenida',{ bank:5000 }), {g,L}=H; g.resetDay(10);
