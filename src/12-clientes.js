@@ -64,7 +64,13 @@ function seatPositions(t){
 function tableHalfW(t){ return t.seats === 2 ? 36 : 62; }
 const STATION_KEYS = ['adiantar','order','rosas','marmj','plates','coffee','juice','sink','trash','maquina','retirada','doces','espresso','drinks'];
 function tableRect(t){ return { x:t.cx - t.hx - 10, y:t.cy - 62, w:t.hx*2 + 20, h:132 }; }
-function queueRect(g){ return { x:QUEUE.x - 74, y:QUEUE.ys[g.slot] - 76, w:148, h:90 }; }
+/* área de toque de quem espera: dos corações até a sombra dos pés. v12.8.3: com turma no lugar de cima, começa onde a dela termina
+   (os lugares ficam a 80, 64 ou ~51 px e as áreas se cruzavam; o toque nos pés da de cima pegava a de baixo) */
+function queueRect(g){
+  const y0 = QUEUE.ys[g.slot], q = g.game && g.game.queue, cima = q && q[g.slot + 1] && QUEUE.ys[g.slot + 1] != null;
+  const top = cima ? Math.max(y0 - 76, QUEUE.ys[g.slot + 1] + 14) : y0 - 76;
+  return { x:QUEUE.x - 74, y:top, w:148, h:y0 + 14 - top };
+}
 /* onde a Bia (ou a Dani) para ao levar o suco a quem espera: ao lado do tablet do lugar */
 function esperaAp(slot){ return { x:QUEUE.x + 104, y:QUEUE.ys[slot] - 18 }; }
 function rectDist(x, y, r){ return Math.hypot(Math.max(r.x - x, 0, x - r.x - r.w), Math.max(r.y - y, 0, y - r.y - r.h)); }

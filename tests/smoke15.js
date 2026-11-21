@@ -30,7 +30,7 @@ ok(g.state==='shop' && g.shopNext===1,'até o dia 1 abre a lojinha no modo dev')
 
 // melhorias: todas na grade, de graça, liga e desliga, sem limite
 L.setShopTab('melhorias');
-{ const nM=cartoes().length;   /* v10.7: a TV e som saiu de Melhorias (aba Luxo) */ L.setShopTab('bia'); ok(nM+cartoes().length===L.UPGRADES.length,'as '+L.UPGRADES.length+' melhorias nas seções Melhorias e Bia (Tênis novos e de corrida juntos)'); }
+{ const nM=cartoes().filter(c=>!/TV e som|Couvert|Música ao vivo|televisores/.test(txt(c))).length;   /* v12.8.2: os cartões de entretenimento (que não são melhorias) aparecem também em Melhorias; no modo dev, o couvert e a música antes da hora */ L.setShopTab('bia'); ok(nM+cartoes().length===L.UPGRADES.length,'as '+L.UPGRADES.length+' melhorias nas seções Melhorias e Bia (Tênis novos e de corrida juntos)'); }
 ok(/Modo dev/.test(els['shop-limit'].textContent),'aviso de modo dev na lojinha');
 L.UPGRADES.forEach(u=>{ L.setShopTab(['tenis','corrida','bandeja','sudoku'].includes(u.id)?'bia':'melhorias'); const b=btnDe(cartao(u.name)); ok(b.textContent==='Ligar' && !b.disabled,'"Ligar" '+u.name); b.fire('click'); });
 ok(L.UPGRADES.every(u=>g.up[u.id]) && g.save.bank===10000,'todas ligadas, sem gastar');
