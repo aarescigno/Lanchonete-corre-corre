@@ -73,7 +73,7 @@ Nenhuma.
 ## Desvios
 - O enfeite das mesas com o linho entrou nesta versão a pedido do usuário, na mesma conversa ("pesquisa se isso acontece em algum outro lugar"); as Regras, os CA8 a CA10 e a T5 foram escritos antes do código.
 - Ao comprar o linho, a lista de mesas do jogo (`buildTables`) é refeita quando algum enfeite sai, para o salão desenhado na lojinha não ficar com o enfeite antigo.
-- A busca achou também a decoração com enfeites de preços muito diferentes e o mesmo luxo (de R$ 8 a R$ 120 por 1 ponto; de R$ 25 a R$ 1.500 por 2): fica para uma spec própria, porque mexe no balanceamento do luxo.
+- A busca achou também a decoração com o mesmo luxo a preços muito diferentes (de R$ 8 a R$ 120 por 1 ponto; de R$ 25 a R$ 1.500 por 2). Não é o mesmo problema: o preço sobe com o ponto (o usuário confirmou que o luxo deve custar mais nos pontos mais altos), e os enfeites não são opções de um ou outro: somam juntos, e os 20 dão exatamente o teto da Decoração (25 pontos). Fica como está.
 - Regra nova no `CLAUDE.md` (pedido do usuário): preço maior, benefício maior.
 - Smokes antigos que esperavam o assento de antes: `smoke38` (a troca por R$ 45 e sem voltar ao plástico), `smoke42` e `smoke60` (o banquinho com 20%) e `smoke72` (a área industrial com tudo comprado dá 45 pontos de luxo, e não 44; continua no nível 2). Só testes.
 

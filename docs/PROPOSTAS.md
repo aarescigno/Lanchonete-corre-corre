@@ -11,7 +11,7 @@ Na escolha: quem tem as cadeirinhas paga pelos banquinhos "a diferença com desv
 
 E, na mesma conversa: "pesquisa se isso acontece em algum outro lugar, em algum outro nível" (achado: o enfeite das mesas depois das toalhas de linho; na escolha, "some e devolve"), e "sempre que eu fizer um upgrade, que seja mais caro, ele tem que ter um benefício a mais [...] não pode ter dois preços diferentes para um retorno igual" (virou regra no `CLAUDE.md`).
 
-**Destino:** v12.8.4, `docs/spec-v12.8.4.md` (entregue em 21/11): a espera sentada vira escada (cadeirinhas R$ 60 → banquinhos R$ 90, ou R$ 45 na troca), banquinho com 20% e 2 de luxo; com o linho, o enfeite sai e volta pela metade. Fica em aberto: a decoração tem enfeites de preços muito diferentes com o mesmo luxo (a planejar).
+**Destino:** v12.8.4, `docs/spec-v12.8.4.md` (entregue em 21/11): a espera sentada vira escada (cadeirinhas R$ 60 → banquinhos R$ 90, ou R$ 45 na troca), banquinho com 20% e 2 de luxo; com o linho, o enfeite sai e volta pela metade. Depois, o usuário esclareceu: "haver diferenças de preços no luxo para diferentes locais, tudo bem [...] uma coisa que adiciona luxo no terraço tem que ser muito mais caro do que uma coisa que adiciona luxo na garagem". Por isso a decoração (o mesmo luxo a preços que sobem com o ponto, e todos os enfeites somam até o teto) fica como está; a regra do `CLAUDE.md` diz isso.
 
 ---
 
