@@ -4,6 +4,15 @@ Registro das ideias e dos retornos de quem jogou, com o texto original, e de ond
 
 ---
 
+## 21/11 — usuário: a espera sentada da área industrial
+> "Na área industrial, ficar comprando cadeira de plástico, cadeira de plástico, cadeira de madeira, vai consumindo dinheiro como se comprasse do zero todos eles. Então, vai comprando novos, sabe? Então, por exemplo, se comprar a cadeira de madeira, não deixa eu comprar mais a de plástico. Acho que é isso."
+
+Na escolha: quem tem as cadeirinhas paga pelos banquinhos "a diferença com desvalorização, pagaria 45"; o banquinho dá mais paciência e mais luxo; depois do banquinho, o botão da cadeirinha some.
+
+**Destino:** v12.8.4, `docs/spec-v12.8.4.md` (aprovada em 21/11): a espera sentada vira escada (cadeirinhas R$ 60 → banquinhos R$ 90, ou R$ 45 na troca), banquinho com 20% e 2 de luxo.
+
+---
+
 ## 21/11 — usuário: toque trocado na espera
 > "Tem um problema de sobreposição das pessoas que estão entrando na fila do lado de fora. A turma mais abaixo sempre se sobrepõe um pouco à turma de cima. Então, se eu toco nos pés da turma imediatamente acima, eu vou selecionar ainda a área da turma de baixo. E isso faz com que haja erros e manda, por exemplo, pessoas... Tem um grupo de 4 em cima e um grupo de 2 embaixo. Eu acabo mandando o grupo de 2 para a mesa de 4 lugares, sabe?"
 
