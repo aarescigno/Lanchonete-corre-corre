@@ -4,6 +4,21 @@ Registro das ideias e dos retornos de quem jogou, com o texto original, e de ond
 
 ---
 
+## 21/11 — usuário: a decoração de cada ponto
+> "Então temos um problema, porque se eu for no terraço, eu não vou querer comprar samambaias ou espada São Jorge, alguma coisa assim, entendeu? Eu acho que ao se avançar, muitas coisas devem ser compradas de novo do zero. Algumas coisas de luxo podem vir para manter o mesmo nível do anterior, né? Já no salão, então vem já algumas decorações compatíveis, né? Já vem, mas comprar samambaia no terraço surfista lá não vai fazer nenhum sentido, por exemplo. Às vezes faça sentido até a área industrial, os luxos da garagem."
+
+(Veio da conversa sobre a v12.8.4: hoje todo enfeite continua à venda e conta em todos os pontos de cima.)
+
+E, depois: "nessa transição entre a área industrial e a avenida, tem que rolar essa história falando, olha, que é outro nível, passamos de outra questão, agora é mais luxo, ou coisa assim. Isso dentro do perfil psicológico de cada personagem, pensando em conversas assim, né?"
+
+Na escolha: duas famílias de enfeites (simples: Garagem e área industrial; fina: Avenida e Terraço), com ajustes no que se repete; a foto da dona Rosa vai junto, com moldura nova; os simples são vendidos pela metade na mudança para a Avenida; enfeites novos na família fina (proposta aprovada: 6 novos, 3 redesenhados).
+
+Depois, na escolha: o preço de cada enfeite pelo ponto em que se compra (luxo 1: R$ 15, 30, 60, 150; luxo 2: R$ 30, 180, 200, 600; luxo 3: R$ 450 e R$ 1.500), o lustre com 3 de luxo e a estante de vinhos com 2; as 7 falas da chegada à Avenida como propostas; a espada da dona Cida vai para a casa da mãe.
+
+**Destino:** Etapa 17 do `docs/PLANO.md`: 17a em `docs/spec-v12.9.md` (os desenhos) e 17b em `docs/spec-v12.9.1.md` (as regras, a mudança e a conversa), as duas aprovadas em 21/11.
+
+---
+
 ## 21/11 — usuário: a espera sentada da área industrial
 > "Na área industrial, ficar comprando cadeira de plástico, cadeira de plástico, cadeira de madeira, vai consumindo dinheiro como se comprasse do zero todos eles. Então, vai comprando novos, sabe? Então, por exemplo, se comprar a cadeira de madeira, não deixa eu comprar mais a de plástico. Acho que é isso."
 
