@@ -108,7 +108,7 @@ const joga=(H,fat,custo)=>{ const {g,els}=H; if(g.state==='shop') els['btn-shop-
   const eq2={ tonhao:0, dani:0, couvert:false, taxa:false, tv:false, som:false, tvs:2 }; ok(L.folhaCortes(eq2,null,10).join()==='TVs' && L.folhaItens(eq2,null).join()==='Tonhão,TVs','sem dinheiro: as TVs ficam de fora ("TVs"; v10.5: o Tonhão sempre na folha)');
   // o ambiente do Gúgou
   ok(L.AVAL.amb.tvs===0.5 && L.AVAL.amb.tvsPlus===0.75,'Ambiente: 0,5 com anúncios e 0,75 sem');
-  H.L.setShopTab('melhorias'); ok(!/3 televisores/.test(txt(grid(H))) && !/TV de tubo/.test(txt(grid(H))) && /Espera sentada/.test(txt(grid(H))) && /Jarra de suco/.test(txt(grid(H))),'Melhorias: espera sentada e a jarra; as TVs e o cartão "TV e som" saíram para a aba Luxo (v10.7)');
+  H.L.setShopTab('melhorias'); ok(/3 televisores/.test(txt(grid(H))) && !/TV de tubo/.test(txt(grid(H))) && /Espera sentada/.test(txt(grid(H))) && /Jarra de suco/.test(txt(grid(H))),'Melhorias: espera sentada, a jarra e as TVs (também no Luxo desde a v12.8.2), sem a TV e som da Garagem');
   H.L.setShopTab('luxo'); ok(/3 televisores com sertanejo/.test(txt(grid(H))) && !/TV de tubo/.test(txt(grid(H))),'aba Luxo: as 3 TVs com sertanejo (v10.7)');
   const G=jogo(4,false,{ bank:5000 }).g; ok(!G.comprarInd('tvs'),'na Garagem não há TVs'); }
 

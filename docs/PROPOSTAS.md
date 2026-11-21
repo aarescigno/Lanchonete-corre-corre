@@ -4,6 +4,15 @@ Registro das ideias e dos retornos de quem jogou, com o texto original, e de ond
 
 ---
 
+## 21/11 — usuário: toque trocado na espera
+> "Tem um problema de sobreposição das pessoas que estão entrando na fila do lado de fora. A turma mais abaixo sempre se sobrepõe um pouco à turma de cima. Então, se eu toco nos pés da turma imediatamente acima, eu vou selecionar ainda a área da turma de baixo. E isso faz com que haja erros e manda, por exemplo, pessoas... Tem um grupo de 4 em cima e um grupo de 2 embaixo. Eu acabo mandando o grupo de 2 para a mesa de 4 lugares, sabe?"
+
+Na escolha: a turma de cima fica com a área inteira dela, até os pés; a de baixo começa logo abaixo.
+
+**Destino:** v12.8.3, `docs/spec-v12.8.3.md` (aprovada em 21/11): `queueRect` corta o topo da área da turma quando há turma no lugar de cima.
+
+---
+
 ## 20/11 — usuário: o entretenimento nas Melhorias
 > "Os itens de entretenimento, como televisão, rádio, sertanejo etc. Tem que ficar nas melhorias, eles destoam no luxo"
 

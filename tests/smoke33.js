@@ -27,7 +27,7 @@ ok(cartoes().join()==='bia,tonhao,dani','trocar de grupo vai aos cartões dele')
 L.setShopTab('cursos'); ok(els['shop-sec'].textContent==='Cardápio' && /Curso de /.test(txt(grid())),'setShopTab("cursos") cai em Lanchonete › Cardápio'); L.setShopTab('equipe'); ok(els['shop-sec'].textContent==='Tonhão' && /Tonhão · nível/.test(txt(grid())),'setShopTab("equipe") cai em Equipe › Tonhão');
 L.setShopTab('bia'); { const t=nomes(); ok(t.includes('Tênis de corrida') && t.includes('Bandeja') && t.includes('Livrinho de Sudoku'),'Bia: Tênis (de corrida, pois já tem os novos), Bandeja e Sudoku'); }
 L.setShopTab('melhorias'); { const t=nomes(); ok(!t.includes('Bandeja') && !t.some(n=>/Tênis|Sudoku/.test(n)) && t.includes('Jogo de pratos') && t.includes('Ventilador de teto'),'Melhorias sem os itens da Bia'); }
-L.setShopTab('melhorias'); ok(!/TV e som/.test(txt(grid())) && /Ventilador de teto/.test(txt(grid())),'Melhorias sem a TV e som (foi para a aba Luxo, v10.7)');
+L.setShopTab('melhorias'); ok(/TV e som/.test(txt(grid())) && /Ventilador de teto/.test(txt(grid())),'Melhorias com a TV e som (também no Luxo desde a v12.8.2)');
 L.setShopTab('luxo'); ok(/TV e som/.test(txt(grid())),'a aba Luxo tem a TV e som'); L.setShopTab('melhorias');
 g.goShop(4); L.setShopTab('divulga'); ok(!/TV e som/.test(txt(grid())) && /Contas do dia/.test(txt(grid())),'Divulgação não tem a TV e som');
 // v8.9.1: cartão Manutenção muda de cor com o pior equipamento
