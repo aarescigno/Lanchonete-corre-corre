@@ -17,10 +17,9 @@ Origem: retorno do Renan Martorelli (beta-tester) e conversa com o Arthur (15/10
 |---|---|---|---|
 | 5 | ~~Modo História, parte 1~~: juntou-se à 2f e aos capítulos da 3a, 3b e 4a (28/10) | — | — |
 | 14b | O bot humano, calibrado pelos relatórios | — (testes) | depois dos relatórios dos testers |
-| 16b-2 | Os desenhos dos pratos novos do Terraço e do risoto da Lia | v12.8.1 | feita em 20/11 (`docs/spec-v12.8.1.md`) |
 | correção | O entretenimento (TV, som, TVs com sertanejo, couvert, música ao vivo) também nas Melhorias | v12.8.2 | feita em 20/11 (`docs/spec-v12.8.2.md`; `smoke112`; `buildEntrete` nas abas Melhorias e Luxo) |
 | correção | As turmas da espera sem toque trocado (a de cima fica com a área dela até os pés) | v12.8.3 | feita em 21/11 (`docs/spec-v12.8.3.md`; `smoke113`; `queueRect` com o corte) |
-| correção | A espera sentada da área industrial sem pagar de novo (cadeirinhas → banquinhos, sem voltar) | v12.8.4 | planejada em 21/11 (`docs/spec-v12.8.4.md`, aprovada; **Modelo:** Sonnet, esforço médio) |
+| correção | A espera sentada e o enfeite das mesas sem pagar à toa (cadeirinhas → banquinhos por R$ 45, sem voltar; o enfeite sai com o linho e volta pela metade) | v12.8.4 | feita em 21/11 (`docs/spec-v12.8.4.md`; `smoke114`; `assentoPreco` e a devolução no `buyMovel('linho')`) |
 
 ---
 

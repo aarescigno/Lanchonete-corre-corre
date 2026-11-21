@@ -638,7 +638,7 @@ const DECOR_GRUPOS = [
   { id:'rosa',    nome:'Cantinho da Rosa' },
   { id:'enfeites', nome:'Enfeites' }   // v10.7
 ];
-const TOALHA = { cost:12 };   // por mesa
+const TOALHA = { cost:12, devolve:0.5 };   // por mesa; v12.8.4: ao comprar as toalhas de linho, o enfeite das mesas sai e volta pela metade (devolve)
 /* v11.16.1: o upgrade da mesa (id interno 'toalha', campo t) é o enfeite da mesa e muda com o ponto: só o desenho e o nome */
 const ENFEITE_MESA = {
   garagem:{ nome:'Toalha xadrez', elogio:'A toalha xadrez dá um charme!' },
@@ -671,7 +671,7 @@ function decorOn(g, id){ return !!(g && g.save && g.save.decor && g.save.decor[i
    ============================================================ */
 const LUXO = {
   endereco:[0, 10, 20, 40], pede:[20, 40, 60, 90], vip:0.1, exigAv:0.25, passo:20, nomes:['Endereço', 'Decoração', 'Móveis', 'Ambiente', 'Fama'], max:[40, 25, 20, 10, 5],
-  assento:{ cadeira:1, banco:1, sofa:2, poltrona:3 }, louca:3, toalha:3, divulga:{ boca:0, panfleto:1, redes:2 }, nota:3, ambMax:3,
+  assento:{ cadeira:1, banco:2, sofa:2, poltrona:3 }, louca:3, toalha:3, divulga:{ boca:0, panfleto:1, redes:2 }, nota:3, ambMax:3,
   tv:2, som:2, tvs:[0, 3, 5], couvert:7, musica:[0, 8, 10], estrela:1   // v10.10: cada estrela do Michelzão vale 1 ponto de Fama
 };
 /* o jogo de mesas: uma escada (cada degrau só depois do anterior); save.moveis = { madeira, acolch, linho, marmore } (0 ou 1) */
@@ -785,13 +785,14 @@ const STAFF = {
 const INDUSTRIAL = {
   tvs:{ instalar:120, modos:[ null, { nome:'com anúncios', pay:9, effect:0.1 }, { nome:'sem anúncios', pay:29, effect:0.15 } ] },
   fogao:{ cost:400, emerg:160, fator:0.5, slots:1 },
-  assento:{ cadeira:{ nome:'Cadeirinhas de plástico', cost:60 }, banco:{ nome:'Banquinhos de madeira', cost:90 }, slow:0.15 }
+  // v12.8.4: uma escada: as cadeirinhas e, acima, os banquinhos (mais paciência e mais luxo); quem tem as cadeirinhas paga só a `troca` (90 menos 3/4 de 60) e não volta ao plástico
+  assento:{ cadeira:{ nome:'Cadeirinhas de plástico', cost:60, slow:0.15 }, banco:{ nome:'Banquinhos de madeira', cost:90, troca:45, slow:0.2 } }
 };
 function tvsModo(eq){ return INDUSTRIAL.tvs.modos[eq && eq.tvs] || null; }
 /* v9.1, Avenida Brasil: os sofás da espera (o assento `up.assento = 'sofa'`; compra única; quem espera sentado nele perde a paciência
    `slow` mais devagar). O couvert artístico (STAFF.couvert) e as flores (DECOR nivel:3) também são só daqui para cima */
 const AVENIDA = { sofa:{ nome:'Sofás com almofadas', cost:250, slow:0.25 } };
-/* quanto a espera sentada alivia a paciência: o sofá da Avenida 25%, a cadeirinha e o banquinho da área industrial 15% */
+/* quanto a espera sentada alivia a paciência: o sofá da Avenida 25%, a cadeirinha da área industrial 15% e o banquinho 20% (v12.8.4) */
 /* v10, Terraço Suíça: o foyer (a calçada do andar) com poltronas de veludo (compra única, `up.assento = 'poltrona'`; a espera 35% mais devagar) e o piano de cauda que
    já vem com o ponto: obstáculo fixo dos caminhos (fora da área das mesas; quem toca chega na 4a-5) */
 const TERRACO = { poltrona:{ nome:'Poltronas do foyer', cost:600, slow:0.35 }, piano:{ x0:28, y0:404, x1:148, y1:520 },
@@ -800,7 +801,9 @@ const TERRACO = { poltrona:{ nome:'Poltronas do foyer', cost:600, slow:0.35 }, p
 function musicaDe(eq){ return TERRACO.musica[eq && eq.musica] || null; }
 function musicaPay(m){ return m ? m.pay + (m.piano || 0) : 0; }
 function musicaOk(ponto){ return (ponto || PONTOS[0]).nivel === 4; }   // nem no modo dev: a música é só do Terraço
-function assentoSlow(a){ return a === 'sofa' ? AVENIDA.sofa.slow : a === 'poltrona' ? TERRACO.poltrona.slow : a ? INDUSTRIAL.assento.slow : 0; }
+/* v12.8.4: quanto custa o assento `tipo` da área industrial para quem já tem `cur`: das cadeirinhas aos banquinhos, só a troca */
+function assentoPreco(cur, tipo){ const A = INDUSTRIAL.assento; return cur === 'cadeira' && tipo === 'banco' ? A.banco.troca : A[tipo].cost; }
+function assentoSlow(a){ return a === 'sofa' ? AVENIDA.sofa.slow : a === 'poltrona' ? TERRACO.poltrona.slow : INDUSTRIAL.assento[a] ? INDUSTRIAL.assento[a].slow : 0; }
 /* obstáculos fixos do ponto (além das mesas): o piano do Terraço, no formato dos de mesaBox */
 function fixosDe(ponto){ return ponto && ponto.id === 'terraco' ? [{ x0:TERRACO.piano.x0, y0:TERRACO.piano.y0, x1:TERRACO.piano.x1, y1:TERRACO.piano.y1 }] : []; }
 const DANI_TASKS = [
@@ -1906,7 +1909,7 @@ const HIST_NOMES = { bia:'Bia', tonhao:'Tonhão', dani:'Dani', joca:'Joca', cami
 const ATU_TXT = { procurando:'Procurando versão nova...', nova:'Tem versão nova: {v}! Seu jogo salvo continua.', igual:'Você já está na versão mais nova ({v}).', erro:'Sem internet agora. Tente de novo mais tarde.', atualizando:'Atualizando...' };
 function atuEstado(remota, atual){ if (typeof remota !== 'string' || !remota.trim()) return 'erro'; return remota.trim() === atual ? 'igual' : 'nova'; }
 const CAIXA_MAX = 14;                                 // livro-caixa (v7.2): quantos dias da carreira ficam guardados
-const VERSAO = 'v12.8.3';                                   // vai no resumo do Caixa
+const VERSAO = 'v12.8.4';                                   // vai no resumo do Caixa
 const DIVULGA_DIA = 4;                                // antes disso, o movimento é o da inauguração (sem custo); v9.0.2: dia 4, e o padrão é o boca a boca
 function divulgaAberta(n, sv){ return devLivre() || n >= DIVULGA_DIA && !(sv && sv.convDiv === 'pend'); }   // no modo dev, desde o dia 1; v9.0.3: no Modo História, só depois da conversa
 /* v9.6.4: a Efood (os entregadores) só abre depois da conversa dos entregadores, no Modo História; antes dela, nenhum tipo com `retira` vem na agenda */
