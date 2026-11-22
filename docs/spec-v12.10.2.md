@@ -1,6 +1,6 @@
 # v12.10.2 — A cozinha nova de cada ponto e o Caderno da Rosa (etapa 18c)
 
-**Situação:** rascunho
+**Situação:** aprovada
 **Origem:** a mesma entrevista da v12.10 (21 e 22/11): "Fala na chegada", "O caderno da Rosa" ("Achado na mudança"), "Eu escrevo, você aprova". O tio disse no cap. 4 (`docs/ARCO.md` §4.2): "a Rosa fazia um pastel que era uma beleza. Eu nunca aprendi."
 
 ## Objetivo
@@ -107,9 +107,9 @@ Em cada ponto novo, o Tonhão diz em voz alta o que o jogador já sente no fogã
 - `smoke119` novo (7 checagens). `shot_v12_10_2.js` novo. `menu_fit.py`.
 
 ## Decisões em aberto
-1. **Textos** (as três conversas e as 25 páginas): aprovar ou trocar. Sugestão: como estão.
+Nenhuma (fechada em 22/11: os textos aprovados como estão).
 
 ## Desvios
 (No fechamento.)
 
-**Modelo:** planejar com o Opus antes (rascunho; na aprovação, vira "Sonnet, esforço médio": textos prontos, aba nova no molde das fichas)
+**Modelo:** Sonnet, esforço médio (textos prontos, aba nova no molde das fichas)

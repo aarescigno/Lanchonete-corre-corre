@@ -1,6 +1,6 @@
 # v12.10.1 — Os pratos de estrada, o prato que ele estranha e o suor (etapa 18b)
 
-**Situação:** rascunho
+**Situação:** aprovada
 **Origem:** a mesma entrevista da v12.10 (21 e 22/11): "Só 1 prato por técnica", "mais devagar", "+40% e só o curso resolve", "Ele suando no fogão", "Desenho próprio, no padrão", "Empratamento: nível 7, nota e luxo".
 
 ## Objetivo
@@ -62,9 +62,9 @@ Na chegada a um ponto novo, dá para ver e sentir que a cozinha é nova para o T
 - `smoke118` novo (6 checagens). `shot_v12_10_1.js` novo (os pratos e a cozinha; capturas olhadas e apagadas).
 
 ## Decisões em aberto
-1. **A gota e o papelzinho** (desenho descrito em Regras): aprovar. Sugestão: como está.
+Nenhuma (fechada em 22/11: a gota e o papelzinho aprovados como estão).
 
 ## Desvios
 (No fechamento.)
 
-**Modelo:** planejar com o Opus antes (rascunho; na aprovação, vira "Sonnet, esforço médio": desenho no canvas e regras pequenas com plano detalhado)
+**Modelo:** Sonnet, esforço médio (desenho no canvas e regras pequenas com plano detalhado)
