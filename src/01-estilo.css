@@ -1,7 +1,7 @@
 :root{
   color-scheme: light;
   --piso1:#CFE8D6; --piso2:#F4EBD6; --azulejo:#FBFAF5; --faixa:#1F4FA3;
-  --formica:#D8432F; --cromo:#B9C2CC; --mostarda:#F2B33D; --tinta:#22201C;
+  --formica:#D8432F; --cromo:#B9C2CC; --mostarda:#F2B33D; --tinta:#22201C; --caneta:#1F4FA3;
   --ok:#3E9B5A; --alerta:#E26A2C; --perigo:#C2362B; --creme:#F7EFD8;
   --u:1px;
   --fd:"Bagel Fat One","Arial Black",system-ui,sans-serif;
@@ -79,6 +79,14 @@ p{margin:calc(var(--u)*6) 0;font-size:max(12px,calc(var(--u)*16));line-height:1.
 .ficha.trancada b{color:#6B645A}
 .ficha.trancada .linha{font-weight:500;color:#6B645A}
 .ficha.foco{outline:calc(var(--u)*5) solid var(--mostarda);outline-offset:calc(var(--u)*1)}
+#manual-grid.caderno{grid-template-columns:1fr 1fr;gap:calc(var(--u)*10)}
+.pagina{background:var(--creme) repeating-linear-gradient(transparent 0 calc(var(--u)*21),rgba(31,79,163,.16) calc(var(--u)*21) calc(var(--u)*22));border:calc(var(--u)*3) solid var(--tinta);border-left:calc(var(--u)*10) solid var(--formica);border-radius:calc(var(--u)*8) calc(var(--u)*12) calc(var(--u)*12) calc(var(--u)*8);padding:calc(var(--u)*8) calc(var(--u)*12);display:flex;flex-direction:column;gap:calc(var(--u)*4);position:relative;line-height:calc(var(--u)*22)}
+.pagina b{font-family:var(--fd);font-weight:400;font-size:max(14px,calc(var(--u)*18))}
+.pagina .frase{font-style:italic;font-weight:600;color:var(--tinta);font-size:max(12px,calc(var(--u)*14.5))}
+.pagina .receita{font-size:max(11px,calc(var(--u)*13.5));font-weight:600;color:var(--tinta)}
+.pagina.tonhao .receita{color:var(--caneta);font-style:normal}
+.pagina.nova::after{content:'novo';position:absolute;top:calc(var(--u)*-6);right:calc(var(--u)*8);background:var(--mostarda);color:var(--tinta);font-size:max(10px,calc(var(--u)*11));font-weight:700;padding:0 calc(var(--u)*6);border-radius:999px;border:calc(var(--u)*2) solid var(--tinta);line-height:1.4}
+@media (max-width:559px){#manual-grid.caderno{grid-template-columns:1fr}}
 .ficha.nova::after{content:'novo';position:absolute;top:calc(var(--u)*-6);right:calc(var(--u)*8);background:var(--mostarda);color:var(--tinta);font-size:max(10px,calc(var(--u)*11));font-weight:700;padding:1px 6px;border-radius:99px;line-height:1.3;border:calc(var(--u)*2) solid var(--tinta)}
 @media (max-width:559px){#manual-grid{grid-template-columns:1fr}#manual-abas{flex-wrap:wrap;justify-content:center}}
 /* a bolinha "novo" nos botões do Manual (menu, pausa e lojinha) */

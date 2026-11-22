@@ -86,7 +86,7 @@ const cinco=['neutra','insegura','firme','alegre','brava'];
   Object.keys(E).forEach(k=>ok(JSON.stringify(real[k])===JSON.stringify(E[k]),'CA5 as falas de '+k+' são as da spec ('+E[k].length+' falas)'));
   const todas=[].concat(...Object.keys(real).map(k=>real[k]||[]));
   ok(todas.every(f=>f[3].length<=120 && (!f[1] || cinco.includes(f[1]))),'CA5 nenhuma fala passa de 120 letras e o e é um dos cinco');
-  ok(L.ARCO.filter(a=>a.nivel===4).map(a=>a.id).join()==='liaPerfeita,liaRosa,anselmoRi,jocaNome,liaPetala,liaChef,roda','CA5 a ordem da ARCO no Terraço: liaPerfeita, liaRosa, ..., liaPetala, liaChef, roda'); }
+  ok(L.ARCO.filter(a=>a.nivel===4).map(a=>a.id).join()==='cozinhaNova4,liaPerfeita,liaRosa,anselmoRi,jocaNome,liaPetala,liaChef,roda','CA5 a ordem da ARCO no Terraço: liaPerfeita, liaRosa, ..., liaPetala, liaChef, roda'); }
 
 // ---------- CA6: os gatilhos ----------
 { const dia=(arr,n)=>{ const H=nova(), {g}=H, sv=g.save; sv.conversa=null; sv.bank=5000; sv.convCard=1; sv.convDiv=1; sv.convEnt=1; sv.convPlanta=1; sv.convQuit=1; sv.convTeto=1; Object.keys(sv.libera).forEach(k=>{ sv.libera[k]=1; });

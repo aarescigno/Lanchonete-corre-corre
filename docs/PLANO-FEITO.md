@@ -2122,3 +2122,5 @@ Pedido do usuário em 21/11 (`docs/PROPOSTAS.md`, "a decoração de cada ponto")
 - **17b** (v12.9.1, `docs/spec-v12.9.1.md`, aprovada; depois da 17a): as famílias, os preços por ponto, a venda na mudança, a espada da dona Cida, as 7 falas da chegada à Avenida e o save antigo.
 
   **Modelo:** Sonnet, esforço médio (regras, números e falas decididos)
+
+| 17b | A decoração de cada ponto: as duas famílias, os preços e a mudança | v12.9.1 | feita em 22/11 (`docs/spec-v12.9.1.md`; `smoke116`; `decorPreco`, `decorCombina` e a venda dos simples na mudança) |

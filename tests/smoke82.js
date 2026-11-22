@@ -25,7 +25,7 @@ const A1=L0.ARCO.find(a=>a.id==='braulio1');
 
 // ---------- CA2: a entrada braulio1 ----------
 { const av=L0.ARCO.filter(a=>a.nivel===3);
-  ok(av[0] && av[0].id==='braulio1' && av[1].id==='anselmoCopo' && L0.ARCO.length===21,'CA2 braulio1 é a 1ª entrada de nivel 3, antes de anselmoCopo (21 entradas, v12.6)');
+  ok(av[0] && av[0].id==='cozinhaNova3' && av[1].id==='braulio1' && av[2].id==='anselmoCopo' && L0.ARCO.length===24,'CA2 braulio1 vem logo depois da cozinhaNova3 (v12.10.2) e antes de anselmoCopo (24 entradas)');
   ok(A1 && typeof A1.quando==='function' && typeof A1.qualB==='function' && Array.isArray(A1.falas) && Array.isArray(A1.falasB),'CA2 braulio1 tem quando, falas, falasB e qualB');
   ok(A1 && JSON.stringify(ach(A1.falas))===JSON.stringify(FALAS),'CA2 as falas (com o Anselmo) têm o texto, o e e a nota exatos do roteiro');
   ok(A1 && JSON.stringify(ach(A1.falasB))===JSON.stringify(FALAS_B),'CA2 as falasB (sem o Anselmo) têm o texto, o e e a nota exatos do roteiro');
@@ -72,7 +72,7 @@ const toca=(anselmo)=>{ const H=nova(), {g,L}=H, sv=g.save; sv.conversa=null; sv
   ok(rot.includes('Arco: braulio1') && rot.includes('Arco: braulio1 (sem o Anselmo)'),'CA7 o modo dev lista Arco: braulio1 e Arco: braulio1 (sem o Anselmo)');
   const A=L.ARCO.find(a=>a.id==='braulio1');
   ok(cs.find(c=>c.rot==='Arco: braulio1').falas===A.falas && cs.find(c=>c.rot==='Arco: braulio1 (sem o Anselmo)').falas===A.falasB,'CA7 cada rótulo traz a sua versão das falas');
-  ok(rot.filter(r=>/^Arco: /.test(r)).length===22,'CA7 22 cenas de arco no modo dev (21 entradas e a versão sem o Anselmo)');
+  ok(rot.filter(r=>/^Arco: /.test(r)).length===25,'CA7 25 cenas de arco no modo dev (24 entradas e a versão sem o Anselmo)');
   g.devConversas('vistas'); ok(g.save.arco.braulio1===1,'CA7 "Conversas: vistas" marca braulio1 como 1'); }
 
 console.log('\n'+(total-fails)+'/'+total+' ok; fails = '+fails);

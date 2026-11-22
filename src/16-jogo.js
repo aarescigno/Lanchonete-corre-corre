@@ -1861,7 +1861,15 @@ class Game {
     if (pratosDoPonto(this.ponto).some(k => pratoEstranho(k, this.cursos, this.ponto))) this.manualVer('e-estranho');   // v12.10.1: o 1º dia com um prato estranho no cardápio
     if (this.save.equipe.tonhao >= EMPRATA.nivel) this.manualVer('e-emprata');
     if (this.ponto.tempos) this.manualVer('b-tempos');   // v10: a refeição completa, no 1º dia no Terraço
-    this.manualPontos();
+    this.manualPontos(); this.cadernoSync();
+  }
+  /* v12.10.2: as páginas do Caderno da Rosa (aba do Manual) que os cursos abriram e ainda não foram avisadas ('cad:' + chave em manual e manualNovo); só da área industrial em diante */
+  cadernoSync(){
+    const sv = this.save;
+    if (this.mode !== 'carreira' || sv._treino || sv._desafio || devLivre() || this.ponto.nivel < 2) return 0;
+    let n = 0; cadernoPaginas(sv.cursos).forEach(k => { const id = 'cad:' + k; if (sv.manual.indexOf(id) < 0){ sv.manual.push(id); sv.manualNovo.push(id); n++; } });
+    if (n) writeSave(sv);
+    return n;
   }
   /* os lugares: o ponto de agora e o de destino da Mudança (quando o cartão já aparece) */
   manualPontos(){
@@ -1930,7 +1938,7 @@ class Game {
     this.cursoMsg = 'O Tonhão foi fazer o curso de ' + p.nome + '!';
     const nx = tonhaoNivelAlc(sv.cursos, this.ponto);
     if (nx > this.save.equipe.tonhao) this.cursoMsg += ' Ele já pode subir para o nível ' + (nx + 1) + ': pague o aumento no cartão dele.';
-    writeSave(this.save); Sfx.coin();
+    this.cadernoSync(); writeSave(this.save); Sfx.coin();
     return true;
   }
   /* cursos da Dani (v8.9): +DANI_XP.curso de experiência cada; um por lojinha, à parte do curso do Tonhão; só depois que ela chega */

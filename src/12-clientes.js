@@ -258,10 +258,12 @@ function normSave(s){
   { const e = s.evento; if (e && typeof e === 'object' && Number.isInteger(+e.sem) && +e.sem >= 0 && Number.isInteger(+e.d) && +e.d >= EVENTOS.dia && (e.ev === 'junina' || e.ev === 'jogo')) out.evento = { sem:+e.sem, d:+e.d, ev:e.ev };
     const b = Math.round(+s.barraca); if (b >= 1) out.barraca = b; }
   // v9.6.7: o Manual. Save sem `manual` (novo ou antigo): a semente com o que a carreira já viu, sem "novo"
-  const manIds = (l, ok) => Array.isArray(l) ? l.filter((x, i) => typeof x === 'string' && MANUAL.some(f => f.id === x) && l.indexOf(x) === i && (!ok || ok.indexOf(x) >= 0)) : null;
+  const manIds = (l, ok) => Array.isArray(l) ? l.filter((x, i) => typeof x === 'string' && (MANUAL.some(f => f.id === x) || (x.indexOf('cad:') === 0 && !!CADERNO[x.slice(4)])) && l.indexOf(x) === i && (!ok || ok.indexOf(x) >= 0)) : null;
   const luxoFicha = l => Array.isArray(l) ? l.map(x => x === 'l-decor' ? 'l-luxo' : x) : l;   // v10.7: a ficha da Decoração virou a do Luxo
   out.manual = Array.isArray(s.manual) ? manIds(luxoFicha(s.manual)) : manualSemente(out);
   out.manualNovo = Array.isArray(s.manual) ? (manIds(luxoFicha(s.manualNovo), out.manual) || []) : [];
+  // v12.10.2: save antigo (sem as conversas da cozinha nova): a do ponto de agora já passou se o jogador está há mais de 3 dias no ponto
+  ARCO.forEach(A => { if (/^cozinhaNova/.test(A.id) && out.arco[A.id] === 0 && !(s.arco && typeof s.arco === 'object' && s.arco[A.id] !== undefined) && diaNoPonto(out) > 3) out.arco[A.id] = 1; });
   if (!up.tvs) out.equipe.tvs = 0;
   if (out.daniCursos.confCaseira) up.confCaseira = true; else delete up.confCaseira;   // v9.2: a geladeirinha de doces vem do curso da Dani
   if (out.daniCursos.confGourmet && out.daniCursos.confCaseira) up.confGourmet = true; else delete up.confGourmet;   // v9.3: a vitrine gourmet (só com a caseira)

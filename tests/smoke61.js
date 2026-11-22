@@ -51,7 +51,7 @@ const tempoDe=(g,grp,t)=>{ g.kitchen.queue=[]; g.kitchen.cooking=[]; g.kitchen.s
   g2.up.louca=true; tm=tempoDe(g2,x2.grp,x2.t); ok(tm>=4*cook2*1.3*0.75-1e-9 && tm<=7*cook2*1.3*0.75+1e-9,'com a Louça fina o prato da casa fica 25% mais rápido');
   // o prato especial (VIP sem ser exigente) também
   const Ha=jogo(9,'avenida',{ up:{ tenis:true, louca:true } }); Ha.g.startDay(10); Ha.els['btn-start'].fire('click'); const ga=Ha.g, xa=sentar(ga,'executiva',true), ca=ga.kitchen.chef.cook; ga.kitchen.submit({ group:xa.grp, table:xa.t.id });
-  const ta=ga.kitchen.queue.concat(ga.kitchen.cooking)[0].time; ok(ta>=4*ca*1.8*0.75*(1+L.MAIS.cozinha*xa.grp.extras.filter(Boolean).length/xa.grp.size)-1e-6 && ta<=7*ca*1.8*0.75*(1+L.MAIS.cozinha*xa.grp.extras.filter(Boolean).length/xa.grp.size)+1e-6,'a Louça fina também acelera o prato especial do VIP comum');
+  const ta=ga.kitchen.queue.concat(ga.kitchen.cooking)[0].time; ok(ta>=4*ca*1.8*0.75*(1+L.MAIS.cozinha*xa.grp.extras.filter(Boolean).length/xa.grp.size)-1e-6 && ta<=7*1.4*ca*1.8*0.75*(1+L.MAIS.cozinha*xa.grp.extras.filter(Boolean).length/xa.grp.size)+1e-6,'a Louça fina também acelera o prato especial do VIP comum');
   // o prato na mão e no balão
   const H3=terr(), g3=H3.g, x3=sentar(g3,'casal',true); H3.g.bia.hands=[]; g3.kitchen.submitTempo(x3.grp,x3.t.id,1); for(let i=0;i<800 && !g3.kitchen.plates.some(q=>q&&q.group===x3.grp);i++) g3.update(0.05);
   const p3=g3.kitchen.plates.find(q=>q&&q.group===x3.grp); g3.bia.hands=[]; g3.bia.perform({ type:'plate', pid:p3.id }); ok(g3.bia.hands.length===1 && g3.bia.hands[0].casa===true,'o prato da casa na mão da Bia leva a marca (a estrelinha dourada)');

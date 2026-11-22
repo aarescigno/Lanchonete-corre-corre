@@ -1,6 +1,6 @@
 # v12.10.2 — A cozinha nova de cada ponto e o Caderno da Rosa (etapa 18c)
 
-**Situação:** aprovada
+**Situação:** entregue em 22/11
 **Origem:** a mesma entrevista da v12.10 (21 e 22/11): "Fala na chegada", "O caderno da Rosa" ("Achado na mudança"), "Eu escrevo, você aprova". O tio disse no cap. 4 (`docs/ARCO.md` §4.2): "a Rosa fazia um pastel que era uma beleza. Eu nunca aprendi."
 
 ## Objetivo
@@ -96,12 +96,12 @@ Em cada ponto novo, o Tonhão diz em voz alta o que o jogador já sente no fogã
 - `docs/ARCO.md`: a seção 13.
 
 ## Tarefas
-- [ ] T1 `smoke119` com os critérios CA1 a CA7 (falhando).
-- [ ] T2 As três conversas no `ARCO` e o save antigo.
-- [ ] T3 `CADERNO` e a aba no Manual (páginas pelos cursos, "novo", modo dev).
-- [ ] T4 Visual da página; `shot_v12_10_2.js` e conferência no claro e no escuro.
-- [ ] T5 `docs/ARCO.md` seção 13.
-- [ ] Fechamento: `VERSAO`, `vtag`, `#ov-ver`, `docs/RESUMO.md`, `docs/TESTES.md`, `docs/PARTES.md`, esta spec como entregue, `tests/run_all.sh --tudo` verde, PR e merge.
+- [x] T1 `smoke119` com os critérios CA1 a CA7 (falhando).
+- [x] T2 As três conversas no `ARCO` e o save antigo.
+- [x] T3 `CADERNO` e a aba no Manual (páginas pelos cursos, "novo", modo dev).
+- [x] T4 Visual da página; `shot_v12_10_2.js` e conferência no claro e no escuro.
+- [x] T5 `docs/ARCO.md` seção 13.
+- [x] Fechamento: `VERSAO`, `vtag`, `#ov-ver`, `docs/RESUMO.md`, `docs/TESTES.md`, `docs/PARTES.md`, esta spec como entregue, `tests/run_all.sh --tudo` verde, PR e merge.
 
 ## Testes
 - `smoke119` novo (7 checagens). `shot_v12_10_2.js` novo. `menu_fit.py`.
@@ -110,6 +110,13 @@ Em cada ponto novo, o Tonhão diz em voz alta o que o jogador já sente no fogã
 Nenhuma (fechada em 22/11: os textos aprovados como estão).
 
 ## Desvios
-(No fechamento.)
+- **Números medidos:** `smoke119` 17/17 (7 critérios); `run_all.sh --tudo` verde; `menu_fit.py` 770 conferências, 0 falhas (14 telas), já com o Manual (aba Caderno e aba Básico) acrescentado ao script, que antes não abria o Manual (CA9). O `playwright` do Python foi instalado com `pip install playwright` (sem `playwright install`; o Chromium vem de `/opt/pw-browsers/chromium`).
+- **ARCO.md:** a seção 13 já era da v12.9.1 ("A chegada à Avenida com a decoração nova"); a das três conversas e do caderno entrou como **seção 14** (as referências do código dizem §14).
+- **Sem tema escuro:** o jogo só tem tema claro (`color-scheme: light`, nenhum `prefers-color-scheme`), então `--caneta` ficou só no `:root` e o CA8 foi conferido só no claro (capturas `caderno_garagem` e `caderno_terraco`: frase em itálico, receita do Terraço em azul; apagadas).
+- **"Novo" da aba sem campo novo:** as páginas entram em `save.manual` e `save.manualNovo` (os mesmos do Manual) como ids `cad:<técnica>.<ponto>`; o `manIds` do `normSave` passou a aceitar esse prefixo. `Game.cadernoSync` (chamada no começo do dia e ao comprar curso) registra as páginas novas.
+- **`pf.garagem`** não tem página (o PF da Garagem já vem feito, sem curso); as 25 páginas são as da tabela.
+- **Smokes antigos ajustados** (contagens e ordem do `ARCO`, lista de versões): `smoke79`, `smoke80`, `smoke82`, `smoke86`, `smoke106`, `smoke107`.
+- **Do v12.10/v12.10.1 que o `menu_fit.py` e o `run_all.sh` acusaram (nada de layout):** a lista de Versões esperava 33 linhas no `menu_fit.py` (já eram 34; agora 35) e o `smoke60` e o `smoke61` falhavam de vez em quando, porque o prato sorteado do VIP pode ser o estranho (+40% de preparo, v12.10.1): o limite superior das duas checagens passou a ×1,4.
+- **Regra de saber do escalope (`pratoSabido`):** não foi tocada (pergunta em aberto com o usuário).
 
 **Modelo:** Sonnet, esforço médio (textos prontos, aba nova no molde das fichas)
