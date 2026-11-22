@@ -1,6 +1,6 @@
 # v12.10.3 — O equilíbrio dos cursos em degraus (etapa 18d)
 
-**Situação:** rascunho
+**Situação:** aprovada
 **Origem:** a mesma entrevista da v12.10 (21 e 22/11): "não ligo de ter que fazer grandes rebalanceamentos se isso for deixar o jogo mais legal"; preços "pelo faturamento"; duração da carreira "a mesma, ±3 dias"; tabela de níveis "ajustável no balance".
 
 ## Objetivo
@@ -51,9 +51,9 @@ Com os cursos em degraus, a carreira tem o mesmo ritmo de antes: as mudanças de
 - Sem smoke novo: os alvos são do `balance.js` e do `carreira.js`. No fechamento: a linha de base, cada rodada de ajuste e os números finais.
 
 ## Decisões em aberto
-Nenhuma além das das specs v12.10 a v12.10.2 (esta só passa a aprovada depois delas).
+Nenhuma (as das specs v12.10 a v12.10.2 foram fechadas em 22/11; os preços de partida são os da v12.10, já 30% abaixo da proposta).
 
 ## Desvios
 (No fechamento.)
 
-**Modelo:** planejar com o Opus antes (rascunho; na aprovação, vira "Sonnet, esforço alto": balanceamento por tentativa em quatro pontos)
+**Modelo:** Sonnet, esforço alto (balanceamento por tentativa em quatro pontos)

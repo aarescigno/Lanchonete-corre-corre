@@ -1,6 +1,6 @@
 # v12.10 — Os cursos do Tonhão em degraus por ponto (etapa 18a)
 
-**Situação:** rascunho
+**Situação:** aprovada
 **Origem:** conversa de 21 e 22/11 (entrevista com o usuário; retorno no `docs/PROPOSTAS.md`, "os níveis do Tonhão"): "um curso [...] relativamente básico, tipo pastel, [...] quando ele avança [...] para uma Avenida Brasil ou [...] um terraço, ele não tem mais o mesmo impacto"; "é importante para mim que ele tenha que fazer novos cursos a cada nível [...] e não zerar tudo de uma vez na garagem ou na área industrial e o Tonhão ficar [...] congelado nos próximos"; "não ligo de ter que fazer grandes rebalanceamentos se isso for deixar o jogo mais legal".
 
 ## Objetivo
@@ -30,19 +30,19 @@ Cada ponto tem os seus cursos do Tonhão: a técnica que ele aprendeu na Garagem
   | `enroladinho` | Enroladinho de salsicha | R$ 8 | `fritos` | sim | o do `risoles` |
   | `bolinhoCarneSeca` | Bolinho de carne-seca | R$ 12 | `fritos` | sim | o do `bolinho` |
 
-- **Os degraus, com nomes e preços de partida** (básico / avançado; nomes do cartão; ver Decisões em aberto, item 1, para a aprovação dos nomes):
+- **Os degraus, com nomes e preços de partida** (básico / avançado; nomes do cartão, aprovados em 22/11; preços 30% abaixo da proposta, arredondados a R$ 10, também em 22/11; com eles, todos os cursos de um ponto custam ~3,5 dias de lucro na Garagem, ~7 na área industrial, ~6 na Avenida e ~5 no Terraço, lucro médio da v12.7):
 
   | técnica | Garagem | Área industrial | Avenida Brasil | Terraço Suíça |
   |---|---|---|---|---|
-  | `pastel` | Pastel de feira R$ 150 / Pastel de feira de verdade R$ 300 | Pastel de estrada R$ 200 / Pastel de estrada recheado R$ 400 | Panquecas R$ 450 / Panqueca gratinada R$ 900 | Massas finas R$ 1.000 / Massa fresca da casa R$ 2.000 |
-  | `chapa` | Chapa R$ 180 / Pão francês da padaria e requeijão de corte R$ 360 | Lanche de chapa R$ 240 / Hambúrguer de verdade R$ 480 | Chapa de restaurante R$ 500 / Beirute da casa R$ 1.000 | Chapa fina R$ 1.100 / Pão de fermentação natural R$ 2.200 |
-  | `fritos` | Salgados fritos R$ 220 / Coxinha de massa de batata com catupiry R$ 440 | Fritos de estrada R$ 280 / Carne-seca desfiada na hora R$ 560 | Peixe empanado R$ 550 / Empanado crocante R$ 1.100 | Croquetes R$ 1.200 / Croquete de costela de 12 horas R$ 2.400 |
-  | `assados` | — | Salgados assados R$ 250 / Massa podre da vó Nilza R$ 500 | Tortas R$ 550 / Torta de massa folhada R$ 1.100 | Folhados R$ 1.200 / Folhado na manteiga R$ 2.400 |
-  | `veg` | — | Vegetariano R$ 150 / Pratos veganos R$ 300 | Vegetariano de restaurante R$ 400 / Veganos de restaurante R$ 800 | Vegetariano fino R$ 900 / Veganos finos R$ 1.800 |
-  | `pf` | — (o PF é de base) | só o avançado: Carnes variadas R$ 400 | Molhos de panela R$ 600 / Carnes ao ponto R$ 1.200 | Molhos finos R$ 1.400 / Carnes nobres R$ 2.800 |
-  | `restaurante` | — | — | Cozinha de restaurante R$ 700 / Parmegiana da casa R$ 1.000 | Molho de vinho R$ 1.500 / Redução de vinho da casa R$ 2.500 |
-  | `entradas` | — | — | — | Entradas finas R$ 1.200 / Entradas de chef R$ 1.800 |
-  | `alta` | — | — | — | Alta gastronomia R$ 1.800 / Menu do chef R$ 2.800 |
+  | `pastel` | Pastel de feira R$ 110 / Pastel de feira de verdade R$ 210 | Pastel de estrada R$ 140 / Pastel de estrada recheado R$ 280 | Panquecas R$ 320 / Panqueca gratinada R$ 630 | Massas finas R$ 700 / Massa fresca da casa R$ 1.400 |
+  | `chapa` | Chapa R$ 130 / Pão francês da padaria e requeijão de corte R$ 250 | Lanche de chapa R$ 170 / Hambúrguer de verdade R$ 340 | Chapa de restaurante R$ 350 / Beirute da casa R$ 700 | Chapa fina R$ 770 / Pão de fermentação natural R$ 1.540 |
+  | `fritos` | Salgados fritos R$ 150 / Coxinha de massa de batata com catupiry R$ 310 | Fritos de estrada R$ 200 / Carne-seca desfiada na hora R$ 390 | Peixe empanado R$ 390 / Empanado crocante R$ 770 | Croquetes R$ 840 / Croquete de costela de 12 horas R$ 1.680 |
+  | `assados` | — | Salgados assados R$ 180 / Massa podre da vó Nilza R$ 350 | Tortas R$ 390 / Torta de massa folhada R$ 770 | Folhados R$ 840 / Folhado na manteiga R$ 1.680 |
+  | `veg` | — | Vegetariano R$ 110 / Pratos veganos R$ 210 | Vegetariano de restaurante R$ 280 / Veganos de restaurante R$ 560 | Vegetariano fino R$ 630 / Veganos finos R$ 1.260 |
+  | `pf` | — (o PF é de base) | só o avançado: Carnes variadas R$ 280 | Molhos de panela R$ 420 / Carnes ao ponto R$ 840 | Molhos finos R$ 980 / Carnes nobres R$ 1.960 |
+  | `restaurante` | — | — | Cozinha de restaurante R$ 490 / Parmegiana da casa R$ 700 | Molho de vinho R$ 1.050 / Redução de vinho da casa R$ 1.750 |
+  | `entradas` | — | — | — | Entradas finas R$ 840 / Entradas de chef R$ 1.260 |
+  | `alta` | — | — | — | Alta gastronomia R$ 1.260 / Menu do chef R$ 1.960 |
 
   Os textos `receita` dos avançados de hoje ficam nos degraus de onde vieram (Garagem: pastel, chapa, fritos; área industrial: assados, PF e veganos; Avenida: Parmegiana; Terraço: Entradas de chef e Menu do chef); os degraus novos não têm `receita` (o Caderno da Rosa, na v12.10.2, faz esse papel).
 - **Cartões por ponto:** Garagem 6, área industrial 11, Avenida 14, Terraço 18 (contando os avançados).
@@ -58,7 +58,7 @@ Cada ponto tem os seus cursos do Tonhão: a técnica que ele aprendeu na Garagem
 
 ### Lojinha (cartão Cardápio, `buildCursos`)
 - Mostra só os degraus do ponto atual. O cartão do avançado só aparece depois que o básico do degrau foi comprado (no `pf` da área industrial, que só tem o avançado, ele aparece desde o começo). Degraus de pontos anteriores não comprados não aparecem.
-- **Preço da troca:** quem tem o básico de um degrau anterior da técnica paga o preço do básico novo menos o preço do básico do degrau mais alto que já tem (exemplo: Panquecas R$ 450 com o Pastel de estrada feito: R$ 250). O avançado antigo não desconta. Sem degrau anterior, preço cheio. O avançado é sempre preço cheio. No botão, o preço que vai ser cobrado.
+- **Preço da troca:** quem tem o básico de um degrau anterior da técnica paga o preço do básico novo menos o preço do básico do degrau mais alto que já tem (exemplo: Panquecas R$ 320 com o Pastel de estrada feito: R$ 180). O avançado antigo não desconta. Sem degrau anterior, preço cheio. O avançado é sempre preço cheio. No botão, o preço que vai ser cobrado.
 - A linha "+N de experiência" sai do cartão (a experiência deixa de existir).
 - **Um curso por lojinha, dois no Terraço:** `cursoTrava` passa a contar as compras da lojinha (`save.cursoQt`, junto do `save.cursoDia`): o máximo é 1 na Garagem, na área industrial e na Avenida e 2 no Terraço (`CURSO_DIA = { 1:1, 2:1, 3:1, 4:2 }`, pelo `ponto.nivel`). O "Em curso" aparece quando o máximo foi atingido.
 - `cursoMsg` continua "O Tonhão foi fazer o curso de <nome>!" e, se o nível novo ficou ao alcance, "Ele já pode subir para o nível N: pague o aumento no cartão dele." (N de 1 a 9 na tela, como hoje: índice + 1).
@@ -93,7 +93,11 @@ Cada ponto tem os seus cursos do Tonhão: a técnica que ele aprendeu na Garagem
 
 ### Save
 - `save.cursos` passa de `{ id: 1|2 }` para `{ id: { ponto: 1|2 } }` (exemplo `{ pastel:{ garagem:2, industrial:1 } }`). `normCursos` aceita só técnicas e pontos que têm degrau.
-- **Save antigo** (sem `save.tonDeg`, convertido uma vez, com `save.tonDeg = 1`): `pastel`, `chapa` e `fritos` vão para `garagem`; `assados`, `veg` e `pf` para `industrial`; `restaurante` para `avenida`; `entradas` e `alta` para `terraco`. O nível vira `max(2 × nível antigo, nível ao alcance pelas regras novas)`, até 8; o jogador não perde força, e quem passar do teto do ponto fica onde está. O `save.tonXp` antigo é ignorado. `save.cardVisto` antigo é apagado (as chaves mudam para `id.ponto.nivel`).
+- **Save antigo** (sem `save.tonDeg`, convertido uma vez, com `save.tonDeg = 1`; decidido em 22/11: acertar pelo teto e devolver o dinheiro dos cursos que deixaram de valer):
+  - **Cursos:** `pastel`, `chapa` e `fritos` vão para `garagem`; `assados`, `veg` e `pf` para `industrial`; `restaurante` para `avenida`; `entradas` e `alta` para `terraco`. O curso cujo degrau novo é de um ponto **acima** do atual (exemplo: assados comprados na Garagem) sai do save, e o que foi pago por ele volta ao `save.caixa`, pelos preços de antes (os da v12.9.1: básico, mais o avançado se tinha o nível 2; tabela `CURSOS_ANTIGOS` nova, só para a conversão: pastel 150/300, chapa 180/360, fritos 220/440, assados 250/500, pf 0/400, veg 150/300, restaurante 400/600, entradas 600/900, alta 900/1.400). O `pf` da Garagem (preço 0 no básico) devolve só o avançado.
+  - **Nível:** `max(nível ao alcance pelas regras novas, min(2 × nível antigo, teto do ponto atual))`. Quem passar do teto desce até ele (o aumento é por dia, então não há o que devolver).
+  - **Aviso:** se algo voltou ao caixa, um aviso único na primeira lojinha depois da conversão (o mesmo jeito do `cursoMsg`): **"Os cursos do Tonhão mudaram: agora cada ponto tem os seus. R$ X dos cursos de outros pontos voltaram para o caixa."** Sem devolução, nenhum aviso.
+  - O `save.tonXp` antigo é ignorado. `save.cardVisto` antigo é apagado (as chaves mudam para `id.ponto.nivel`).
 - `save.cursoQt` novo (número de cursos do Tonhão comprados na lojinha de `save.cursoDia`).
 
 ### Versão
@@ -104,14 +108,14 @@ Cada ponto tem os seus cursos do Tonhão: a técnica que ele aprendeu na Garagem
 - **CA2** `degrauDe('pastel')` é `garagem`, `degrauDe('pastelFrango')` é `industrial`, `degrauDe('panqueca')` é `avenida` e `degrauDe('ravioli')` é `terraco` → `smoke117` (2)
 - **CA3** Com só o básico de pastel da Garagem, na Avenida o Tonhão sabe a `panqueca` (estranha) e não a `panquecaEsp`; com o básico das Panquecas, sabe as duas → `smoke117` (3)
 - **CA4** No `pf`, sem curso nenhum, o `strogonoff` é sabido na Avenida; o `escalope` no Terraço só com algum degrau de `pf` feito → `smoke117` (4)
-- **CA5** Na área industrial, sem o pastel da Garagem, comprar o Pastel de estrada cobra R$ 200 e dá o básico dos dois degraus; com o da Garagem, cobra R$ 50 → `smoke117` (5)
+- **CA5** Na área industrial, sem o pastel da Garagem, comprar o Pastel de estrada cobra R$ 140 e dá o básico dos dois degraus; com o da Garagem, cobra R$ 30 → `smoke117` (5)
 - **CA6** Na Avenida, a lojinha mostra só os 7 básicos (sem degraus de outros pontos); o avançado de um degrau só aparece depois do básico → `smoke117` (6)
 - **CA7** Na Garagem, com os 3 básicos, o nível ao alcance é 1; com os 3 avançados também, 2; nada mais na Garagem passa do 2 → `smoke117` (7)
 - **CA8** Na área industrial, chegando com nível 0 e fazendo os 5 básicos de lá, o nível ao alcance é 3 → `smoke117` (8)
 - **CA9** Cada aumento sobe um nível; o `setStaff` recusa nível acima do ao alcance → `smoke117` (9)
 - **CA10** Na Avenida, depois de um curso, a lojinha trava ("Em curso"); no Terraço, trava só depois do segundo → `smoke117` (10)
 - **CA11** Os números dos 9 níveis em `STAFF.tonhao.levels` batem com a tabela; `AVAL.prato` tem 9 faixas; `EXIGENTE.casa.nivel` é 6 → `smoke117` (11)
-- **CA12** Save antigo `{ pastel:2, assados:1, pf:2, restaurante:1 }` com Tonhão no nível 3 vira `{ pastel:{garagem:2}, assados:{industrial:1}, pf:{industrial:2}, restaurante:{avenida:1} }`, nível 6, e `tonDeg:1` → `smoke117` (12)
+- **CA12** Save antigo na área industrial `{ pastel:2, assados:1, pf:2, restaurante:1 }` com Tonhão no nível 3 vira `{ pastel:{garagem:2}, assados:{industrial:1}, pf:{industrial:2} }`, nível 4 (o teto), `tonDeg:1`, R$ 400 a mais no caixa (o restaurante) e o aviso; na Garagem, `{ pastel:1, veg:2 }` com nível 4 vira `{ pastel:{garagem:1} }`, nível 2 e R$ 450 a mais; sem curso acima do ponto, nada volta e não há aviso → `smoke117` (12)
 - **CA13** O avançado de fritos da Garagem soma ×1,15 à coxinha na Garagem e na área industrial, e não ao `enroladinho` → `smoke117` (13)
 - **CA14** Fora do modo dev, o menu não mostra "Turno sem fim"; com ele, mostra → `smoke117` (14)
 - **CA15** Modo dev: o botão de degrau gira básico → avançado → 0 sem cobrar; "Forçar nível" 8 na Garagem põe o nível 8 → `smoke117` (15)
@@ -120,7 +124,7 @@ Cada ponto tem os seus cursos do Tonhão: a técnica que ele aprendeu na Garagem
 
 ## Partes
 - `src/10-constantes.js`: `CARDAPIO` (preços da Garagem, pratos de estrada, `lento`), `CURSOS` (vira técnicas com `degraus`), `CURSO_AV`, `cursoOf`, `cursoNivel`, `CURSO_XP`, `tonhaoXp`, `tonhaoNivelXp`, `tecnicaDe`, `pratoAv`, `pratosCurso`, `cursoFeito`, `normCursos`, `pratoSabido`, `CURSOS_SEMFIM`, `precoPrato`, `STAFF.tonhao`, `AVAL.prato`, `avalMenu`, `EXIGENTE`, `HIST` (tabela dos capítulos), `MANUAL` (`e-tonhao`, `l-cardapio`), `cursoOk`.
-- `src/12-clientes.js`: `normSave` (perto da linha 289, a conversão).
+- `src/12-clientes.js`: `normSave` (perto da linha 289, a conversão, a devolução ao `save.caixa`).
 - `src/13-cozinha.js`: os usos de `STAFF.tonhao.levels[...]` e `AVAL.prato[...]` (só conferir com 9 níveis).
 - `src/16-jogo.js`: `cursoProx`, `cardapioNovo`, `cursoTrava`, `buyCurso`, `setStaff` (perto da linha 1565).
 - `src/41-lojinha.js`: `buildCursos`, o cartão do Tonhão (perto da linha 382), `buildCursosFeitos`.
@@ -135,7 +139,7 @@ Cada ponto tem os seus cursos do Tonhão: a técnica que ele aprendeu na Garagem
 - [ ] T3 Saber e preço: `pratoSabido` (degrau, estranho, incluir o antigo), `pratoAv`, `precoPrato`, `avalMenu`.
 - [ ] T4 Níveis: `STAFF.tonhao` com 9 níveis, `tonhaoNivelAlc`, `setStaff`, `AVAL.prato`, `EXIGENTE.casa.nivel`, `HIST`.
 - [ ] T5 Lojinha: `cursoProx` (troca), `buyCurso` (incluir o antigo, `cursoQt`), `cursoTrava` (2 no Terraço), `buildCursos`, cartão do Tonhão, `cardapioNovo`.
-- [ ] T6 Save: `normCursos`, conversão única (`tonDeg`), `cursoQt`.
+- [ ] T6 Save: `normCursos`, conversão única (`tonDeg`, teto, devolução pela `CURSOS_ANTIGOS` e o aviso), `cursoQt`.
 - [ ] T7 Turno sem fim fora do menu; modo dev (degrau por técnica, forçar nível); Manual.
 - [ ] T8 `tests/bot.js` no formato novo; smokes antigos que quebrarem pelo formato dos cursos ou pelo número de níveis corrigidos (só o formato, ver Avisos).
 - [ ] Fechamento: `VERSAO`, `vtag`, `#ov-ver`, `docs/RESUMO.md`, `docs/TESTES.md`, `docs/PARTES.md`, esta spec como entregue, `tests/run_all.sh --tudo` verde, PR e merge.
@@ -152,11 +156,9 @@ Cada ponto tem os seus cursos do Tonhão: a técnica que ele aprendeu na Garagem
 - No fechamento: a lista dos smokes antigos corrigidos e o que o `balance.js 20` e o `carreira.js 6` mediram (só registro; os alvos são da v12.10.3).
 
 ## Decisões em aberto
-1. **Nomes dos degraus** (tabela em Regras): aprovar ou trocar. Sugestão: os da tabela.
-2. **Preços de partida** (tabela em Regras): aprovar como ponto de partida da v12.10.3. Sugestão: os da tabela; com eles, todos os cursos de um ponto custam ~5 dias de lucro na Garagem, ~10 na área industrial, ~9 na Avenida e ~7 no Terraço (lucro médio da v12.7).
-3. **Save antigo acima do teto** (nível = 2 × o antigo): na Garagem, quem tinha o nível 4 de antes passa ao 8 e à diária de R$ 160 (hoje paga R$ 120). Sugestão: aceitar (é raro e o jogador não perde força); a outra opção é limitar ao nível com a diária mais perto da antiga.
+Nenhuma (fechadas em 22/11: nomes aprovados; preços 30% abaixo da proposta; save antigo pelo teto, com devolução dos cursos acima do ponto).
 
 ## Desvios
 (No fechamento.)
 
-**Modelo:** planejar com o Opus antes (rascunho; na aprovação, vira "Sonnet, esforço alto": muitas partes ao mesmo tempo e troca de formato do save)
+**Modelo:** Sonnet, esforço alto (muitas partes ao mesmo tempo e troca de formato do save)
