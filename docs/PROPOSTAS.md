@@ -11,7 +11,7 @@ Registro das ideias e dos retornos de quem jogou, com o texto original, e de ond
 
 As propostas do usuário (pontos de atributo como no Baldur's Gate; o Tonhão regredir um pouco a cada ponto, com história) e as outras discutidas (aprender fazendo, teto por ponto, talentos, nível pela prática, o caderno da Rosa) deram, na entrevista de 22/11: um degrau de curso por técnica em cada ponto (básico e avançado), dois níveis do Tonhão por ponto (9 no total), um prato "que ele estranha" por técnica no ponto novo (mais devagar até o curso), os lanches de estrada na área industrial, o empratamento no nível 7, a conversa da chegada a cada ponto e o Caderno da Rosa no Manual. Na mesma entrevista: o Turno sem fim sai do menu por ora (volta depois como extra).
 
-**Destino:** Etapa 17 do `docs/PLANO.md`: v12.9 (`docs/spec-v12.9.md`), v12.9.1, v12.9.2 e v12.9.3, em rascunho (textos, nomes e preços de partida esperando a aprovação do usuário).
+**Destino:** Etapa 18 do `docs/PLANO.md`: v12.10 (`docs/spec-v12.10.md`), v12.10.1, v12.10.2 e v12.10.3, em rascunho (textos, nomes e preços de partida esperando a aprovação do usuário).
 
 ---
 

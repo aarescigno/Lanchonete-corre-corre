@@ -1,18 +1,18 @@
-# v12.9.1 — Os pratos de estrada, o prato que ele estranha e o suor (etapa 17b)
+# v12.10.1 — Os pratos de estrada, o prato que ele estranha e o suor (etapa 18b)
 
 **Situação:** rascunho
-**Origem:** a mesma entrevista da v12.9 (21 e 22/11): "Só 1 prato por técnica", "mais devagar", "+40% e só o curso resolve", "Ele suando no fogão", "Desenho próprio, no padrão", "Empratamento: nível 7, nota e luxo".
+**Origem:** a mesma entrevista da v12.10 (21 e 22/11): "Só 1 prato por técnica", "mais devagar", "+40% e só o curso resolve", "Ele suando no fogão", "Desenho próprio, no padrão", "Empratamento: nível 7, nota e luxo".
 
 ## Objetivo
 Na chegada a um ponto novo, dá para ver e sentir que a cozinha é nova para o Tonhão: o prato que ele arrisca sai mais devagar, raramente caprichado, e ele sua no fogão até fazer o curso de lá. Os lanches de estrada da área industrial ganham desenho próprio. No Terraço, com o nível 7, os pratos caprichados que ele empratar para os VIPs valem mais.
 
 ## Fora do escopo
-- As falas da chegada e o Caderno da Rosa: v12.9.2.
-- Os preços, as metas e os alvos do bot: v12.9.3.
+- As falas da chegada e o Caderno da Rosa: v12.10.2.
+- Os preços, as metas e os alvos do bot: v12.10.3.
 - O desenho dos outros pratos: nada muda.
 
 ## Regras (decisões tomadas)
-- **Prato que ele estranha** (`pratoEstranho(k, cursos, ponto)`, novo em `src/10-constantes.js`): é o prato `lento:true` que é sabido só pela regra do estranho da v12.9 (sem o básico do degrau dele). Enquanto for estranho:
+- **Prato que ele estranha** (`pratoEstranho(k, cursos, ponto)`, novo em `src/10-constantes.js`): é o prato `lento:true` que é sabido só pela regra do estranho da v12.10 (sem o básico do degrau dele). Enquanto for estranho:
   - o preparo leva **40% a mais** (`ESTRANHO = { cook:1.4, crit:0.5 }`, multiplicando o tempo do nível do Tonhão);
   - a chance de caprichado é a do nível **×0,5** (o ×1,5 do avançado não vale, porque o estranho não tem o básico do degrau e o avançado vem depois dele);
   - com o básico do degrau, deixa de ser estranho na hora (inclusive no meio do dia, se for o caso do modo dev).
@@ -29,17 +29,17 @@ Na chegada a um ponto novo, dá para ver e sentir que a cozinha é nova para o T
 - **Modo dev:** no painel, **"Prato estranho"** (liga e desliga: com ele ligado, todos os pratos `lento` do ponto que forem sabidos contam como estranhos, mesmo com o degrau) e **"Forçar suor"** (a gota e o papelzinho aparecem o dia todo, para ver o desenho sem esperar o preparo).
 - **Manual:** ficha nova na aba Equipe, `e-estranho`, revelada no primeiro dia com um prato estranho no cardápio: **"Cozinha nova"** — **"No ponto novo, o Tonhão já arrisca um prato de cada coisa que sabe, mas devagar e sem tanto capricho. O curso de lá resolve."** Ficha nova `e-emprata`, revelada com o nível 7: **"Empratamento"** — **"Prato caprichado na mesa de VIP: o VIP fica mais contente, deixa mais gorjeta e conta mais na nota."**
 - **Save:** nada novo.
-- **Versão:** `VERSAO` e `vtag` em v12.9.1; linha no `#ov-ver`: **"No ponto novo, o Tonhão estranha a cozinha e sua no fogão até fazer o curso de lá. Os lanches de estrada ganham desenho, e o empratamento chega ao Terraço."**
+- **Versão:** `VERSAO` e `vtag` em v12.10.1; linha no `#ov-ver`: **"No ponto novo, o Tonhão estranha a cozinha e sua no fogão até fazer o curso de lá. Os lanches de estrada ganham desenho, e o empratamento chega ao Terraço."**
 
 ## Critérios de aceite
-- **CA1** Na Avenida, com só o pastel da Garagem, `pratoEstranho('panqueca')` é verdadeiro; com as Panquecas, falso → `smoke116` (1)
-- **CA2** O preparo da `panqueca` estranha leva 1,4× o da mesma panqueca sem ser estranha, no mesmo nível → `smoke116` (2)
-- **CA3** A chance de caprichado do prato estranho é a metade da do nível → `smoke116` (3)
-- **CA4** Com o nível 7, prato caprichado em mesa VIP dá +1 coração e gorjeta ×1,25; com o nível 6, não → `smoke116` (4)
-- **CA5** Modo dev: "Prato estranho" faz a `panqueca` estranha mesmo com as Panquecas; "Forçar suor" liga a gota sem preparo → `smoke116` (5)
-- **CA6** As fichas `e-estranho` e `e-emprata` aparecem quando reveladas → `smoke116` (6)
-- **CA7** Os 6 pratos de estrada têm desenho próprio (o `drawDish` não cai no desenho do parecido), no balcão e na mesa, com e sem avançado → captura `shot_v12_9_1.js`: recorte ampliado de cada prato ao lado dos parecidos (pastel, bauru, risoles, bolinho)
-- **CA8** A gota na testa e o papelzinho ao lado do fogão aparecem durante o preparo estranho e somem depois do curso; com `reducedMotion`, a gota fica parada → captura `shot_v12_9_1.js`: recorte da cozinha com e sem o suor
+- **CA1** Na Avenida, com só o pastel da Garagem, `pratoEstranho('panqueca')` é verdadeiro; com as Panquecas, falso → `smoke118` (1)
+- **CA2** O preparo da `panqueca` estranha leva 1,4× o da mesma panqueca sem ser estranha, no mesmo nível → `smoke118` (2)
+- **CA3** A chance de caprichado do prato estranho é a metade da do nível → `smoke118` (3)
+- **CA4** Com o nível 7, prato caprichado em mesa VIP dá +1 coração e gorjeta ×1,25; com o nível 6, não → `smoke118` (4)
+- **CA5** Modo dev: "Prato estranho" faz a `panqueca` estranha mesmo com as Panquecas; "Forçar suor" liga a gota sem preparo → `smoke118` (5)
+- **CA6** As fichas `e-estranho` e `e-emprata` aparecem quando reveladas → `smoke118` (6)
+- **CA7** Os 6 pratos de estrada têm desenho próprio (o `drawDish` não cai no desenho do parecido), no balcão e na mesa, com e sem avançado → captura `shot_v12_10_1.js`: recorte ampliado de cada prato ao lado dos parecidos (pastel, bauru, risoles, bolinho)
+- **CA8** A gota na testa e o papelzinho ao lado do fogão aparecem durante o preparo estranho e somem depois do curso; com `reducedMotion`, a gota fica parada → captura `shot_v12_10_1.js`: recorte da cozinha com e sem o suor
 
 ## Partes
 - `src/10-constantes.js`: `pratoEstranho`, `ESTRANHO`, `EMPRATA`, `MANUAL` (`e-estranho`, `e-emprata`).
@@ -50,16 +50,16 @@ Na chegada a um ponto novo, dá para ver e sentir que a cozinha é nova para o T
 - `src/40-interface.js`: `buildDev` ("Prato estranho", "Forçar suor").
 
 ## Tarefas
-- [ ] T1 `smoke116` com os critérios CA1 a CA6 (falhando).
+- [ ] T1 `smoke118` com os critérios CA1 a CA6 (falhando).
 - [ ] T2 `pratoEstranho`, `ESTRANHO` e o efeito na cozinha.
 - [ ] T3 `EMPRATA` (coração, gorjeta e peso da nota).
-- [ ] T4 Desenho dos 6 pratos de estrada; `shot_v12_9_1.js` e conferência dos recortes ampliados.
+- [ ] T4 Desenho dos 6 pratos de estrada; `shot_v12_10_1.js` e conferência dos recortes ampliados.
 - [ ] T5 O suor, o papelzinho e a cabeça virando; conferência por captura (com e sem `reducedMotion`).
 - [ ] T6 Modo dev e Manual.
 - [ ] Fechamento: `VERSAO`, `vtag`, `#ov-ver`, `docs/RESUMO.md`, `docs/TESTES.md`, `docs/PARTES.md`, esta spec como entregue, `tests/run_all.sh` verde, PR e merge.
 
 ## Testes
-- `smoke116` novo (6 checagens). `shot_v12_9_1.js` novo (os pratos e a cozinha; capturas olhadas e apagadas).
+- `smoke118` novo (6 checagens). `shot_v12_10_1.js` novo (os pratos e a cozinha; capturas olhadas e apagadas).
 
 ## Decisões em aberto
 1. **A gota e o papelzinho** (desenho descrito em Regras): aprovar. Sugestão: como está.

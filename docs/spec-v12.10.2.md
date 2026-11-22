@@ -1,7 +1,7 @@
-# v12.9.2 — A cozinha nova de cada ponto e o Caderno da Rosa (etapa 17c)
+# v12.10.2 — A cozinha nova de cada ponto e o Caderno da Rosa (etapa 18c)
 
 **Situação:** rascunho
-**Origem:** a mesma entrevista da v12.9 (21 e 22/11): "Fala na chegada", "O caderno da Rosa" ("Achado na mudança"), "Eu escrevo, você aprova". O tio disse no cap. 4 (`docs/ARCO.md` §4.2): "a Rosa fazia um pastel que era uma beleza. Eu nunca aprendi."
+**Origem:** a mesma entrevista da v12.10 (21 e 22/11): "Fala na chegada", "O caderno da Rosa" ("Achado na mudança"), "Eu escrevo, você aprova". O tio disse no cap. 4 (`docs/ARCO.md` §4.2): "a Rosa fazia um pastel que era uma beleza. Eu nunca aprendi."
 
 ## Objetivo
 Em cada ponto novo, o Tonhão diz em voz alta o que o jogador já sente no fogão: aquela cozinha é nova para ele. Na mudança para a área industrial, ele acha o caderno de receitas da Rosa, e cada curso feito abre uma página dele no Manual, com uma frase dela e a receita. As últimas páginas a Rosa deixou só com o título, e quem escreve as receitas é o Tonhão.
@@ -74,18 +74,18 @@ Em cada ponto novo, o Tonhão diz em voz alta o que o jogador já sente no fogã
 - **Visual da aba:** fundo creme com linhas finas de caderno, a frase da Rosa em itálico na cor do texto e a receita do Terraço numa cor de caneta azul (`--caneta` nos tokens claro e escuro do CSS); o resto como as fichas do Manual.
 - **Modo dev:** as três conversas entram na lista de conversas para assistir pelo motor (`Arco: cozinhaNova2` etc.); com o modo dev ligado, a aba Caderno mostra as 25 páginas.
 - **Save:** só as entradas novas em `save.arco`; as páginas saem dos cursos (`save.cursos`), sem campo novo. O "novo" da aba usa o mesmo registro de vistos das fichas do Manual.
-- **Versão:** `VERSAO` e `vtag` em v12.9.2; linha no `#ov-ver`: **"O Tonhão estranha a cozinha de cada ponto novo e acha o caderno de receitas da Rosa: cada curso abre uma página no Manual."**
-- **`docs/ARCO.md`:** seção nova "13. v12.9.2 — A cozinha nova e o Caderno da Rosa (etapa 17c)" com as três conversas e a lista das páginas (cópia desta spec).
+- **Versão:** `VERSAO` e `vtag` em v12.10.2; linha no `#ov-ver`: **"O Tonhão estranha a cozinha de cada ponto novo e acha o caderno de receitas da Rosa: cada curso abre uma página no Manual."**
+- **`docs/ARCO.md`:** seção nova "13. v12.10.2 — A cozinha nova e o Caderno da Rosa (etapa 18c)" com as três conversas e a lista das páginas (cópia desta spec).
 
 ## Critérios de aceite
-- **CA1** No Modo História, o fim do primeiro dia na área industrial marca `cozinhaNova2` como `'pend'` antes de qualquer outra entrada de `nivel` 2; na Avenida, `cozinhaNova3`; no Terraço, `cozinhaNova4` → `smoke117` (1)
-- **CA2** Save antigo no 5º dia da Avenida, sem as entradas: `cozinhaNova3` nasce `1` e não toca; no 2º dia, nasce `0` → `smoke117` (2)
-- **CA3** Na Garagem não há aba Caderno; na área industrial há, com uma página por degrau da Garagem já feito → `smoke117` (3)
-- **CA4** Comprar o Pastel de estrada abre `pastel.industrial` e acende o "novo" da aba → `smoke117` (4)
-- **CA5** As páginas do Terraço levam "Na letra do Tonhão:" antes da receita; as outras não → `smoke117` (5)
-- **CA6** Modo dev: a aba mostra 25 páginas; as três conversas aparecem na lista de conversas → `smoke117` (6)
-- **CA7** Nenhum texto do caderno tem algarismo → `smoke117` (7)
-- **CA8** A aba Caderno no claro e no escuro, com uma página da Garagem e uma do Terraço → captura `shot_v12_9_2.js`: recorte da página com a frase e a receita em azul
+- **CA1** No Modo História, o fim do primeiro dia na área industrial marca `cozinhaNova2` como `'pend'` antes de qualquer outra entrada de `nivel` 2; na Avenida, `cozinhaNova3`; no Terraço, `cozinhaNova4` → `smoke119` (1)
+- **CA2** Save antigo no 5º dia da Avenida, sem as entradas: `cozinhaNova3` nasce `1` e não toca; no 2º dia, nasce `0` → `smoke119` (2)
+- **CA3** Na Garagem não há aba Caderno; na área industrial há, com uma página por degrau da Garagem já feito → `smoke119` (3)
+- **CA4** Comprar o Pastel de estrada abre `pastel.industrial` e acende o "novo" da aba → `smoke119` (4)
+- **CA5** As páginas do Terraço levam "Na letra do Tonhão:" antes da receita; as outras não → `smoke119` (5)
+- **CA6** Modo dev: a aba mostra 25 páginas; as três conversas aparecem na lista de conversas → `smoke119` (6)
+- **CA7** Nenhum texto do caderno tem algarismo → `smoke119` (7)
+- **CA8** A aba Caderno no claro e no escuro, com uma página da Garagem e uma do Terraço → captura `shot_v12_10_2.js`: recorte da página com a frase e a receita em azul
 - **CA9** O painel do Manual com a aba nova cabe nas 14 telas → `python3 menu_fit.py`
 
 ## Partes
@@ -96,15 +96,15 @@ Em cada ponto novo, o Tonhão diz em voz alta o que o jogador já sente no fogã
 - `docs/ARCO.md`: a seção 13.
 
 ## Tarefas
-- [ ] T1 `smoke117` com os critérios CA1 a CA7 (falhando).
+- [ ] T1 `smoke119` com os critérios CA1 a CA7 (falhando).
 - [ ] T2 As três conversas no `ARCO` e o save antigo.
 - [ ] T3 `CADERNO` e a aba no Manual (páginas pelos cursos, "novo", modo dev).
-- [ ] T4 Visual da página; `shot_v12_9_2.js` e conferência no claro e no escuro.
+- [ ] T4 Visual da página; `shot_v12_10_2.js` e conferência no claro e no escuro.
 - [ ] T5 `docs/ARCO.md` seção 13.
 - [ ] Fechamento: `VERSAO`, `vtag`, `#ov-ver`, `docs/RESUMO.md`, `docs/TESTES.md`, `docs/PARTES.md`, esta spec como entregue, `tests/run_all.sh --tudo` verde, PR e merge.
 
 ## Testes
-- `smoke117` novo (7 checagens). `shot_v12_9_2.js` novo. `menu_fit.py`.
+- `smoke119` novo (7 checagens). `shot_v12_10_2.js` novo. `menu_fit.py`.
 
 ## Decisões em aberto
 1. **Textos** (as três conversas e as 25 páginas): aprovar ou trocar. Sugestão: como estão.

@@ -1,4 +1,4 @@
-# v12.9 — Os cursos do Tonhão em degraus por ponto (etapa 17a)
+# v12.10 — Os cursos do Tonhão em degraus por ponto (etapa 18a)
 
 **Situação:** rascunho
 **Origem:** conversa de 21 e 22/11 (entrevista com o usuário; retorno no `docs/PROPOSTAS.md`, "os níveis do Tonhão"): "um curso [...] relativamente básico, tipo pastel, [...] quando ele avança [...] para uma Avenida Brasil ou [...] um terraço, ele não tem mais o mesmo impacto"; "é importante para mim que ele tenha que fazer novos cursos a cada nível [...] e não zerar tudo de uma vez na garagem ou na área industrial e o Tonhão ficar [...] congelado nos próximos"; "não ligo de ter que fazer grandes rebalanceamentos se isso for deixar o jogo mais legal".
@@ -7,10 +7,11 @@
 Cada ponto tem os seus cursos do Tonhão: a técnica que ele aprendeu na Garagem não ensina a cozinha da Avenida nem a do Terraço. Em cada ponto há cursos novos que valem a pena, porque trazem pratos ao cardápio e os dois níveis do Tonhão daquele ponto. Ninguém chega ao topo na Garagem, e o Tonhão evolui até o fim da carreira.
 
 ## Fora do escopo
-- Os desenhos próprios dos 6 pratos de estrada, a lentidão do prato que ele estranha e o suor: **v12.9.1** (17b). Aqui o prato estranho já entra no cardápio, na velocidade normal, e os pratos de estrada usam o desenho do parecido (ver Regras).
-- As falas da chegada a cada ponto e o Caderno da Rosa: **v12.9.2** (17c).
-- O ajuste de preços dos cursos, das metas e dos alvos do bot: **v12.9.3** (17d). Aqui os valores são os de partida, e os smokes antigos que medem dinheiro só são corrigidos no que a regra nova muda.
-- O Empratamento do nível 7 é **v12.9.1** (17b). Aqui o nível 7 tem só os números da tabela.
+- A decoração de cada ponto (Etapa 17, v12.9 e v12.9.1, planejada antes desta): executa antes da v12.10, e esta parte do `claude/main` com ela entregue.
+- Os desenhos próprios dos 6 pratos de estrada, a lentidão do prato que ele estranha e o suor: **v12.10.1** (18b). Aqui o prato estranho já entra no cardápio, na velocidade normal, e os pratos de estrada usam o desenho do parecido (ver Regras).
+- As falas da chegada a cada ponto e o Caderno da Rosa: **v12.10.2** (18c).
+- O ajuste de preços dos cursos, das metas e dos alvos do bot: **v12.10.3** (18d). Aqui os valores são os de partida, e os smokes antigos que medem dinheiro só são corrigidos no que a regra nova muda.
+- O Empratamento do nível 7 é **v12.10.1** (18b). Aqui o nível 7 tem só os números da tabela.
 - Os cursos da Dani, do Joca, da Cami, do Anselmo e da Lia: nada muda (a Lia continua chegando com o básico das Entradas finas ou da Alta gastronomia, que agora são degraus do Terraço).
 
 ## Regras (decisões tomadas)
@@ -20,7 +21,7 @@ Cada ponto tem os seus cursos do Tonhão: a técnica que ele aprendeu na Garagem
 - **Saem da Garagem** (perdem o preço `garagem`, ficam só com o `industrial`): `empada`, `esfihaA`, `esfihaF`, `pfVeg`, `empadaPalmito`, `kibeAbobora`, `pfVegano`, `coxinhaJaca`, `pastelPalmito`, `esfihaSoja`, `mistoVegano`. A Garagem vende PF, coxinha, os 3 fritos, os 3 da chapa e os 3 pastéis.
 - **Pratos de estrada** (novos, só `industrial`; `cor` a escolher pela execução no tom do parecido):
 
-  | id | nome | preço | técnica | carne | desenho até a v12.9.1 |
+  | id | nome | preço | técnica | carne | desenho até a v12.10.1 |
   |---|---|---|---|---|---|
   | `pastelFrango` | Pastel de frango com catupiry | R$ 14 | `pastel` | sim | o do `pastel` |
   | `pastelCarneSeca` | Pastel de carne-seca com queijo | R$ 16 | `pastel` | sim | o do `pastelP` |
@@ -43,13 +44,13 @@ Cada ponto tem os seus cursos do Tonhão: a técnica que ele aprendeu na Garagem
   | `entradas` | — | — | — | Entradas finas R$ 1.200 / Entradas de chef R$ 1.800 |
   | `alta` | — | — | — | Alta gastronomia R$ 1.800 / Menu do chef R$ 2.800 |
 
-  Os textos `receita` dos avançados de hoje ficam nos degraus de onde vieram (Garagem: pastel, chapa, fritos; área industrial: assados, PF e veganos; Avenida: Parmegiana; Terraço: Entradas de chef e Menu do chef); os degraus novos não têm `receita` (o Caderno da Rosa, na v12.9.2, faz esse papel).
+  Os textos `receita` dos avançados de hoje ficam nos degraus de onde vieram (Garagem: pastel, chapa, fritos; área industrial: assados, PF e veganos; Avenida: Parmegiana; Terraço: Entradas de chef e Menu do chef); os degraus novos não têm `receita` (o Caderno da Rosa, na v12.10.2, faz esse papel).
 - **Cartões por ponto:** Garagem 6, área industrial 11, Avenida 14, Terraço 18 (contando os avançados).
 
 ### O que ele sabe fazer
 - **Prato do degrau:** sabido com o básico do degrau (`cursos[t][ponto] >= 1`); os veganos (`nivel:2`), com o avançado. O `dep` dos vegetarianos (`kibeAbobora` precisa de `fritos` etc.) pede o básico de qualquer degrau da técnica do `dep` até o ponto atual.
 - **O degrau novo inclui o antigo:** comprar o básico de um degrau dá também o básico dos degraus anteriores da técnica cujos pratos o ponto atual ainda vende (na prática, os degraus da Garagem de `pastel`, `chapa` e `fritos`, comprados na área industrial).
-- **Prato que ele estranha** (`lento:true` no `CARDAPIO`, escolhido a dedo, um por técnica e ponto): sabido sem o básico do degrau dele desde que o Tonhão tenha o básico de algum degrau anterior da mesma técnica. No `pf`, a Garagem conta como degrau feito (o PF é de base). Na v12.9 ele sai como qualquer prato; a lentidão e o suor vêm na v12.9.1. Os escolhidos:
+- **Prato que ele estranha** (`lento:true` no `CARDAPIO`, escolhido a dedo, um por técnica e ponto): sabido sem o básico do degrau dele desde que o Tonhão tenha o básico de algum degrau anterior da mesma técnica. No `pf`, a Garagem conta como degrau feito (o PF é de base). Na v12.10 ele sai como qualquer prato; a lentidão e o suor vêm na v12.10.1. Os escolhidos:
   - área industrial: `pastelFrango`, `xSalada`, `enroladinho`;
   - Avenida: `panqueca`, `coalho`, `isca`, `torta`, `execVeg`, `strogonoff`;
   - Terraço: `pastelCamarao`, `coalhoMel`, `croquete`, `empadinhaCam`, `polenta`, `escalope`, `vinho`.
@@ -63,7 +64,7 @@ Cada ponto tem os seus cursos do Tonhão: a técnica que ele aprendeu na Garagem
 - `cursoMsg` continua "O Tonhão foi fazer o curso de <nome>!" e, se o nível novo ficou ao alcance, "Ele já pode subir para o nível N: pague o aumento no cartão dele." (N de 1 a 9 na tela, como hoje: índice + 1).
 
 ### Níveis
-- `STAFF.tonhao.levels` passa a ter 9 níveis (0 a 8), todos com `slots:3` (pontos de partida; a v12.9.3 pode mexer em `cook`, `crit` e `wash` até ±10% e na `pay` até ±R$ 10 de cada valor, mantendo a ordem):
+- `STAFF.tonhao.levels` passa a ter 9 níveis (0 a 8), todos com `slots:3` (pontos de partida; a v12.10.3 pode mexer em `cook`, `crit` e `wash` até ±10% e na `pay` até ±R$ 10 de cada valor, mantendo a ordem):
 
   | nível | 0 | 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 |
   |---|---|---|---|---|---|---|---|---|---|
@@ -96,26 +97,26 @@ Cada ponto tem os seus cursos do Tonhão: a técnica que ele aprendeu na Garagem
 - `save.cursoQt` novo (número de cursos do Tonhão comprados na lojinha de `save.cursoDia`).
 
 ### Versão
-- `VERSAO` e `vtag` em v12.9; linha no `#ov-ver`: **"Cada ponto tem os seus cursos do Tonhão: pratos novos e dois níveis por ponto, até o nível 9. Na área industrial, os lanches de estrada."**
+- `VERSAO` e `vtag` em v12.10; linha no `#ov-ver`: **"Cada ponto tem os seus cursos do Tonhão: pratos novos e dois níveis por ponto, até o nível 9. Na área industrial, os lanches de estrada."**
 
 ## Critérios de aceite
-- **CA1** A Garagem não vende assados nem vegetarianos; a área industrial vende os 6 pratos de estrada com os preços da tabela → `smoke115` (1)
-- **CA2** `degrauDe('pastel')` é `garagem`, `degrauDe('pastelFrango')` é `industrial`, `degrauDe('panqueca')` é `avenida` e `degrauDe('ravioli')` é `terraco` → `smoke115` (2)
-- **CA3** Com só o básico de pastel da Garagem, na Avenida o Tonhão sabe a `panqueca` (estranha) e não a `panquecaEsp`; com o básico das Panquecas, sabe as duas → `smoke115` (3)
-- **CA4** No `pf`, sem curso nenhum, o `strogonoff` é sabido na Avenida; o `escalope` no Terraço só com algum degrau de `pf` feito → `smoke115` (4)
-- **CA5** Na área industrial, sem o pastel da Garagem, comprar o Pastel de estrada cobra R$ 200 e dá o básico dos dois degraus; com o da Garagem, cobra R$ 50 → `smoke115` (5)
-- **CA6** Na Avenida, a lojinha mostra só os 7 básicos (sem degraus de outros pontos); o avançado de um degrau só aparece depois do básico → `smoke115` (6)
-- **CA7** Na Garagem, com os 3 básicos, o nível ao alcance é 1; com os 3 avançados também, 2; nada mais na Garagem passa do 2 → `smoke115` (7)
-- **CA8** Na área industrial, chegando com nível 0 e fazendo os 5 básicos de lá, o nível ao alcance é 3 → `smoke115` (8)
-- **CA9** Cada aumento sobe um nível; o `setStaff` recusa nível acima do ao alcance → `smoke115` (9)
-- **CA10** Na Avenida, depois de um curso, a lojinha trava ("Em curso"); no Terraço, trava só depois do segundo → `smoke115` (10)
-- **CA11** Os números dos 9 níveis em `STAFF.tonhao.levels` batem com a tabela; `AVAL.prato` tem 9 faixas; `EXIGENTE.casa.nivel` é 6 → `smoke115` (11)
-- **CA12** Save antigo `{ pastel:2, assados:1, pf:2, restaurante:1 }` com Tonhão no nível 3 vira `{ pastel:{garagem:2}, assados:{industrial:1}, pf:{industrial:2}, restaurante:{avenida:1} }`, nível 6, e `tonDeg:1` → `smoke115` (12)
-- **CA13** O avançado de fritos da Garagem soma ×1,15 à coxinha na Garagem e na área industrial, e não ao `enroladinho` → `smoke115` (13)
-- **CA14** Fora do modo dev, o menu não mostra "Turno sem fim"; com ele, mostra → `smoke115` (14)
-- **CA15** Modo dev: o botão de degrau gira básico → avançado → 0 sem cobrar; "Forçar nível" 8 na Garagem põe o nível 8 → `smoke115` (15)
+- **CA1** A Garagem não vende assados nem vegetarianos; a área industrial vende os 6 pratos de estrada com os preços da tabela → `smoke117` (1)
+- **CA2** `degrauDe('pastel')` é `garagem`, `degrauDe('pastelFrango')` é `industrial`, `degrauDe('panqueca')` é `avenida` e `degrauDe('ravioli')` é `terraco` → `smoke117` (2)
+- **CA3** Com só o básico de pastel da Garagem, na Avenida o Tonhão sabe a `panqueca` (estranha) e não a `panquecaEsp`; com o básico das Panquecas, sabe as duas → `smoke117` (3)
+- **CA4** No `pf`, sem curso nenhum, o `strogonoff` é sabido na Avenida; o `escalope` no Terraço só com algum degrau de `pf` feito → `smoke117` (4)
+- **CA5** Na área industrial, sem o pastel da Garagem, comprar o Pastel de estrada cobra R$ 200 e dá o básico dos dois degraus; com o da Garagem, cobra R$ 50 → `smoke117` (5)
+- **CA6** Na Avenida, a lojinha mostra só os 7 básicos (sem degraus de outros pontos); o avançado de um degrau só aparece depois do básico → `smoke117` (6)
+- **CA7** Na Garagem, com os 3 básicos, o nível ao alcance é 1; com os 3 avançados também, 2; nada mais na Garagem passa do 2 → `smoke117` (7)
+- **CA8** Na área industrial, chegando com nível 0 e fazendo os 5 básicos de lá, o nível ao alcance é 3 → `smoke117` (8)
+- **CA9** Cada aumento sobe um nível; o `setStaff` recusa nível acima do ao alcance → `smoke117` (9)
+- **CA10** Na Avenida, depois de um curso, a lojinha trava ("Em curso"); no Terraço, trava só depois do segundo → `smoke117` (10)
+- **CA11** Os números dos 9 níveis em `STAFF.tonhao.levels` batem com a tabela; `AVAL.prato` tem 9 faixas; `EXIGENTE.casa.nivel` é 6 → `smoke117` (11)
+- **CA12** Save antigo `{ pastel:2, assados:1, pf:2, restaurante:1 }` com Tonhão no nível 3 vira `{ pastel:{garagem:2}, assados:{industrial:1}, pf:{industrial:2}, restaurante:{avenida:1} }`, nível 6, e `tonDeg:1` → `smoke117` (12)
+- **CA13** O avançado de fritos da Garagem soma ×1,15 à coxinha na Garagem e na área industrial, e não ao `enroladinho` → `smoke117` (13)
+- **CA14** Fora do modo dev, o menu não mostra "Turno sem fim"; com ele, mostra → `smoke117` (14)
+- **CA15** Modo dev: o botão de degrau gira básico → avançado → 0 sem cobrar; "Forçar nível" 8 na Garagem põe o nível 8 → `smoke117` (15)
 - **CA16** A lojinha da Avenida e do Terraço, com todos os cartões, cabe nas 14 telas → `python3 menu_fit.py`
-- **CA17** O jogo roda a carreira sem erro do dia 1 ao 65 (`DIAS=65 node carreira.js 2`): a história anda e o bot compra cursos em todos os pontos → `carreira` (o número de dias é o da v12.9.3; aqui só não pode travar)
+- **CA17** O jogo roda a carreira sem erro do dia 1 ao 65 (`DIAS=65 node carreira.js 2`): a história anda e o bot compra cursos em todos os pontos → `carreira` (o número de dias é o da v12.10.3; aqui só não pode travar)
 
 ## Partes
 - `src/10-constantes.js`: `CARDAPIO` (preços da Garagem, pratos de estrada, `lento`), `CURSOS` (vira técnicas com `degraus`), `CURSO_AV`, `cursoOf`, `cursoNivel`, `CURSO_XP`, `tonhaoXp`, `tonhaoNivelXp`, `tecnicaDe`, `pratoAv`, `pratosCurso`, `cursoFeito`, `normCursos`, `pratoSabido`, `CURSOS_SEMFIM`, `precoPrato`, `STAFF.tonhao`, `AVAL.prato`, `avalMenu`, `EXIGENTE`, `HIST` (tabela dos capítulos), `MANUAL` (`e-tonhao`, `l-cardapio`), `cursoOk`.
@@ -129,7 +130,7 @@ Cada ponto tem os seus cursos do Tonhão: a técnica que ele aprendeu na Garagem
 - `tests/bot.js`: `CURSOS_ORDEM`, `proximoCurso`, `cursosApos`, `cursos` (compra pelo degrau do ponto atual, ver Testes).
 
 ## Tarefas
-- [ ] T1 `smoke115` com os critérios CA1 a CA15 (falhando).
+- [ ] T1 `smoke117` com os critérios CA1 a CA15 (falhando).
 - [ ] T2 Dados: `CARDAPIO` (Garagem sem assados e vegetarianos; pratos de estrada; `lento`), `CURSOS` em técnicas com degraus, `degrauDe`.
 - [ ] T3 Saber e preço: `pratoSabido` (degrau, estranho, incluir o antigo), `pratoAv`, `precoPrato`, `avalMenu`.
 - [ ] T4 Níveis: `STAFF.tonhao` com 9 níveis, `tonhaoNivelAlc`, `setStaff`, `AVAL.prato`, `EXIGENTE.casa.nivel`, `HIST`.
@@ -142,17 +143,17 @@ Cada ponto tem os seus cursos do Tonhão: a técnica que ele aprendeu na Garagem
 ## Avisos para a execução
 - Procure em `src/` todo uso de `save.cursos`, `game.cursos`, `cursoNivel`, `equipe.tonhao`, `eq.tonhao` e `STAFF.tonhao` antes de mudar o formato: a conversa da chegada da Lia (`gatilho`, perto da linha 1751) e as fichas do Manual reveladas por curso também leem os cursos.
 - O `cursoNivel(cursos, id)` de hoje é usado fora do Tonhão como "tem a técnica?": deixe uma `cursoNivel(cursos, id, ponto)` que, sem `ponto`, devolve o maior nível entre os degraus (para esses usos) e, com `ponto`, o daquele degrau.
-- Smokes antigos que conferem preço de curso, experiência ou nível do Tonhão: corrija para a regra nova e anote em Testes quais foram. Os que medem dinheiro ou metas ficam para a v12.9.3, se só o valor mudar (marque no `run_all.sh` como na v12.7, se precisar).
+- Smokes antigos que conferem preço de curso, experiência ou nível do Tonhão: corrija para a regra nova e anote em Testes quais foram. Os que medem dinheiro ou metas ficam para a v12.10.3, se só o valor mudar (marque no `run_all.sh` como na v12.7, se precisar).
 - O `bot.js` hoje compra pela lista `CURSOS_ORDEM` de ids: passe a comprar o próximo cartão do ponto atual na ordem básicos (pastel, chapa, fritos, assados, veg, pf, restaurante, entradas, alta) e depois avançados, com a mesma reserva de hoje.
 
 ## Testes
-- `smoke115` novo (15 checagens, CA1 a CA15). `menu_fit.py` (CA16) e `DIAS=65 node carreira.js 2` (CA17).
+- `smoke117` novo (15 checagens, CA1 a CA15). `menu_fit.py` (CA16) e `DIAS=65 node carreira.js 2` (CA17).
 - `tests/bot.js`: a compra por cartão do ponto (Avisos). `CURSOS=bot|todos|0|lista` no `balance.js` passa a aceitar `todos` = todos os degraus até o ponto jogado.
-- No fechamento: a lista dos smokes antigos corrigidos e o que o `balance.js 20` e o `carreira.js 6` mediram (só registro; os alvos são da v12.9.3).
+- No fechamento: a lista dos smokes antigos corrigidos e o que o `balance.js 20` e o `carreira.js 6` mediram (só registro; os alvos são da v12.10.3).
 
 ## Decisões em aberto
 1. **Nomes dos degraus** (tabela em Regras): aprovar ou trocar. Sugestão: os da tabela.
-2. **Preços de partida** (tabela em Regras): aprovar como ponto de partida da v12.9.3. Sugestão: os da tabela; com eles, todos os cursos de um ponto custam ~5 dias de lucro na Garagem, ~10 na área industrial, ~9 na Avenida e ~7 no Terraço (lucro médio da v12.7).
+2. **Preços de partida** (tabela em Regras): aprovar como ponto de partida da v12.10.3. Sugestão: os da tabela; com eles, todos os cursos de um ponto custam ~5 dias de lucro na Garagem, ~10 na área industrial, ~9 na Avenida e ~7 no Terraço (lucro médio da v12.7).
 3. **Save antigo acima do teto** (nível = 2 × o antigo): na Garagem, quem tinha o nível 4 de antes passa ao 8 e à diária de R$ 160 (hoje paga R$ 120). Sugestão: aceitar (é raro e o jogador não perde força); a outra opção é limitar ao nível com a diária mais perto da antiga.
 
 ## Desvios
