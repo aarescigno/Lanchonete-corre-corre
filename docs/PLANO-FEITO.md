@@ -1939,6 +1939,7 @@ Partes: `src/42-resultados.js` (fim do dia), `src/21-cenario.js` (geladeira, mes
 | 8 | 46 | terraco (46) | 1500 | 3,9 | 3 | 4 | 3 | 2 | 2 | 0 | igual | igual | igual |
 | 9 | 50 | terraco (46) | 6000 | 4,2 | máx | máx | máx | 2 | 3 | 1 | + entradas 1, alta 1 | + Dani: confAlta | igual |
 | Fim | 60 | terraco (46) | 10000 | 4,6 | como "Tudo no máximo" de hoje (`devEquipe('max')` e `devMelhorias(true)`), Lia 1 |
+| 17a | Os enfeites novos da família fina e os redesenhos | v12.9 | feita em 22/11 (`docs/spec-v12.9.md`; `smoke115`; os 9 desenhos e a moldura dourada) |
 
 Se um id da tabela não existir (`UPGRADES`, `CURSOS`), o `devCapitulo` ignora e segue; o smoke confere que todos existem.
 

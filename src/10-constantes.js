@@ -357,6 +357,13 @@ function pratoSabido(k, cursos, ponto){
 }
 /* v12.7: os pratos do cardápio que o ponto vende (sem os da barraca junina nem o da Lia), na ordem do cardápio (o painel do modo dev) */
 function pratosDoPonto(ponto){ return Object.keys(CARDAPIO).filter(k => vendeNoPonto(k, ponto) && CARDAPIO[k].cat !== 'junina' && CARDAPIO[k].curso !== 'liaAutor'); }
+/* v12.10.1: o prato que ele estranha: lento, sabido só pela regra do estranho (sem o básico do degrau dele); o modo dev "Prato estranho" vale para todo prato lento sabido */
+const ESTRANHO = { cook:1.4, crit:0.5 };
+const EMPRATA = { nivel:7, coracao:1, gorjeta:1.25, peso:2 };   // v12.10.1: prato caprichado em mesa VIP com o Tonhão no nível 7 em diante
+function pratoEstranho(k, cursos, ponto){
+  const p = CARDAPIO[k]; if (!p || !p.lento || !p.curso || !pratoSabido(k, cursos, ponto)) return false;
+  return !!(DEV.on && DEV.forca.estranho) || cursoNivel(cursos, p.curso, degrauDe(k)) < 1;
+}
 function pratosSabidos(cursos, ponto){ return Object.keys(CARDAPIO).filter(k => pratoSabido(k, cursos, ponto)); }
 /* os cursos de um modo sem a lojinha: o Turno sem fim sabe os 3 básicos da Garagem (sem avançado); a Missão zero, só o PF e a coxinha */
 const CURSOS_SEMFIM = { pastel:{ garagem:1 }, chapa:{ garagem:1 }, fritos:{ garagem:1 } };   // v12.10: os 3 básicos da Garagem (os assados saíram dela)
@@ -2013,7 +2020,7 @@ const HIST_NOMES = { bia:'Bia', tonhao:'Tonhão', dani:'Dani', joca:'Joca', cami
 const ATU_TXT = { procurando:'Procurando versão nova...', nova:'Tem versão nova: {v}! Seu jogo salvo continua.', igual:'Você já está na versão mais nova ({v}).', erro:'Sem internet agora. Tente de novo mais tarde.', atualizando:'Atualizando...' };
 function atuEstado(remota, atual){ if (typeof remota !== 'string' || !remota.trim()) return 'erro'; return remota.trim() === atual ? 'igual' : 'nova'; }
 const CAIXA_MAX = 14;                                 // livro-caixa (v7.2): quantos dias da carreira ficam guardados
-const VERSAO = 'v12.10';                                   // vai no resumo do Caixa
+const VERSAO = 'v12.10.1';                                   // vai no resumo do Caixa
 const DIVULGA_DIA = 4;                                // antes disso, o movimento é o da inauguração (sem custo); v9.0.2: dia 4, e o padrão é o boca a boca
 function divulgaAberta(n, sv){ return devLivre() || n >= DIVULGA_DIA && !(sv && sv.convDiv === 'pend'); }   // no modo dev, desde o dia 1; v9.0.3: no Modo História, só depois da conversa
 /* v9.6.4: a Efood (os entregadores) só abre depois da conversa dos entregadores, no Modo História; antes dela, nenhum tipo com `retira` vem na agenda */
@@ -2188,6 +2195,8 @@ const MANUAL = [
 
   { id:'e-bia',     aba:'equipe', quem:'bia',     sempre:true, nome:'Bia', linha:'A garçonete. Anota, leva, entrega, cobra e recolhe.' },
   { id:'e-tonhao',  aba:'equipe', quem:'tonhao',  sempre:true, nome:'Tonhão', linha:'O chef. Em cada ponto, os cursos de lá ensinam pratos novos; com eles e com aumento, cozinha mais rápido, capricha mais e ajuda na pia.' },
+  { id:'e-estranho', aba:'equipe', quem:'tonhao', nome:'Cozinha nova', linha:'No ponto novo, o Tonhão já arrisca um prato de cada coisa que sabe, mas devagar e sem tanto capricho. O curso de lá resolve.' },   // v12.10.1
+  { id:'e-emprata', aba:'equipe', quem:'tonhao', nome:'Empratamento', linha:'Prato caprichado na mesa de VIP: o VIP fica mais contente, deixa mais gorjeta e conta mais na nota.' },
   { id:'e-dani',    aba:'equipe', quem:'dani',    nome:'Dani', linha:'Cuida da louça, do lixo e das mesas sujas; depois, dos doces. A freguesia da área industrial sente falta de sobremesa.' },
   { id:'e-joca',    aba:'equipe', quem:'joca',    nome:'Joca', linha:'O básico da casa; depois, o café espresso e os cafés especiais. Na Avenida, a freguesia quer café de máquina.' },
   { id:'e-cami',    aba:'equipe', quem:'cami',    nome:'Cami', linha:'Garçonete de rodízio: com cursos, cuida das mesas dela ou ajuda em todas.' },

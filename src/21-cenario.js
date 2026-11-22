@@ -1985,6 +1985,7 @@ function drawKitchen(ctx,g,t){
   let r = STATIONS.order.rect;
   glowSprite(ctx,g,'order',ctx => {
     rr(ctx,r.x+14,r.y+4,r.w-18,r.h-8,8); fs(ctx,'#F0DDA6',3);
+    if ((g.temEstranho || (DEV.on && DEV.forca.suor)) && g.state !== 'menu') drawPapelReceita(ctx);   // v12.10.1
     drawChef(ctx,g,930,172,t);
     if (g.liaAtiva && g.state !== 'menu') drawLia(ctx,{ x:LIA_HOME.x, y:LIA_HOME.y, s:LIA_HOME.s },t);   // v10.2: a Lia ao lado do Tonhão
     { const pc = g.kitchen.cooking.find(t => t.praca);   // v12.5: a praça da Lia: o anel de progresso da entrada ao lado dela
@@ -2194,8 +2195,17 @@ function drawKitchen(ctx,g,t){
   [204,304,394].forEach(y => { ctx.beginPath(); ctx.moveTo(760,y); ctx.lineTo(960,y); ctx.stroke(); });
 }
 
+/* v12.10.1: o papelzinho da receita, preso na parede da cozinha ao lado do Tonhão (a tachinha vermelha e 3 riscos de texto) */
+function drawPapelReceita(ctx){
+  ctx.save(); ctx.translate(952,106); ctx.rotate(0.06);
+  rr(ctx,-8,-9,16,19,1.5); fs(ctx,'#FBF1CF',1.6);
+  ctx.strokeStyle = 'rgba(34,32,28,.55)'; ctx.lineWidth = 1; ctx.beginPath(); ctx.moveTo(-5,-1); ctx.lineTo(5,-1); ctx.moveTo(-5,3); ctx.lineTo(5,3); ctx.moveTo(-5,7); ctx.lineTo(1,7); ctx.stroke();
+  circ(ctx,0,-6,1.9); fs(ctx,PAL.perigo,1.2);
+  ctx.restore();
+}
 function drawChef(ctx,g,x,y,t){
   const sick = !!g.day.gripe;
+  const nova = !!(g.kitchen && g.state !== 'menu' && EXPR === 'neutra' && g.kitchen.cozinhaNova), vira = nova && !RM && (t % 3) < 0.5;   // v12.10.1: o suor e a cabeça virando para o papelzinho
   ctx.save(); ctx.translate(x,y);
   // corpo
   ctx.beginPath(); ctx.moveTo(-20,34); ctx.lineTo(-17,2); ctx.lineTo(17,2); ctx.lineTo(20,34); ctx.closePath(); fs(ctx,'#fff',2.6);
@@ -2210,14 +2220,19 @@ function drawChef(ctx,g,x,y,t){
   // rosto (v11.5: no retrato do balão, as cinco expressões; a boca vai por baixo do bigode, depois dele)
   const exp = EXPR !== 'neutra';
   if (!exp){
-  ctx.fillStyle = PAL.tinta; circ(ctx,-5.5,-17,1.8); ctx.fill(); circ(ctx,5.5,-17,1.8); ctx.fill();
-  ctx.lineWidth = 2; ctx.beginPath(); ctx.moveTo(-9,-22); ctx.lineTo(-3,-20.5); ctx.moveTo(9,-22); ctx.lineTo(3,-20.5); ctx.stroke();
+  const vx = vira ? 3 : 0;   // o olhar vai para o papelzinho (à direita)
+  ctx.fillStyle = PAL.tinta; circ(ctx,-5.5+vx,-17,1.8); ctx.fill(); circ(ctx,5.5+vx,-17,1.8); ctx.fill();
+  ctx.lineWidth = 2; ctx.beginPath(); ctx.moveTo(-9+vx,-22); ctx.lineTo(-3+vx,-20.5); ctx.moveTo(9+vx,-22); ctx.lineTo(3+vx,-20.5); ctx.stroke();
   }
   if (sick){ circ(ctx,0,-12,3.6); fs(ctx,'#E0645A',1.5); }
   // bigode
   ctx.beginPath(); ctx.moveTo(0,-10); ctx.bezierCurveTo(-5,-15,-16,-13,-16,-7); ctx.bezierCurveTo(-12,-9,-5,-7,0,-8); ctx.bezierCurveTo(5,-7,12,-9,16,-7); ctx.bezierCurveTo(16,-13,5,-15,0,-10); ctx.closePath(); fs(ctx,'#1B1512',2);
   if (exp) rostoExpr(ctx,EXPR,5.5,-17,-2.6);
   else { ctx.strokeStyle = PAL.tinta; ctx.lineWidth = 1.8; ctx.beginPath(); ctx.arc(0,-4,4,0.3,Math.PI-0.3); ctx.stroke(); }
+  if (nova){   // a gota cai da testa a cada 1,2 s (com `prefers-reduced-motion`, parada na testa)
+    const f = RM ? 0.15 : (t / 1.2) % 1, gx = -11.5, gy = -21 + f * 7;
+    ctx.save(); ctx.globalAlpha = RM ? 1 : 1 - f * f; ctx.beginPath(); ctx.moveTo(gx,gy - 3.4); ctx.quadraticCurveTo(gx + 2.8,gy + 0.6,gx,gy + 2); ctx.quadraticCurveTo(gx - 2.8,gy + 0.6,gx,gy - 3.4); ctx.closePath(); fs(ctx,'#8FD3F4',1.1); ctx.restore();
+  }
   if (sick){ const a = (Math.floor(t*0.6) % 2); if (a) txt(ctx,'Atchim!',-26,-34,12,PAL.perigo,'center',FD,3); }
   ctx.restore();
 }

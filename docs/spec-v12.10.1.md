@@ -1,6 +1,6 @@
 # v12.10.1 — Os pratos de estrada, o prato que ele estranha e o suor (etapa 18b)
 
-**Situação:** aprovada
+**Situação:** entregue em 22/11
 **Origem:** a mesma entrevista da v12.10 (21 e 22/11): "Só 1 prato por técnica", "mais devagar", "+40% e só o curso resolve", "Ele suando no fogão", "Desenho próprio, no padrão", "Empratamento: nível 7, nota e luxo".
 
 ## Objetivo
@@ -50,13 +50,13 @@ Na chegada a um ponto novo, dá para ver e sentir que a cozinha é nova para o T
 - `src/40-interface.js`: `buildDev` ("Prato estranho", "Forçar suor").
 
 ## Tarefas
-- [ ] T1 `smoke118` com os critérios CA1 a CA6 (falhando).
-- [ ] T2 `pratoEstranho`, `ESTRANHO` e o efeito na cozinha.
-- [ ] T3 `EMPRATA` (coração, gorjeta e peso da nota).
-- [ ] T4 Desenho dos 6 pratos de estrada; `shot_v12_10_1.js` e conferência dos recortes ampliados.
-- [ ] T5 O suor, o papelzinho e a cabeça virando; conferência por captura (com e sem `reducedMotion`).
-- [ ] T6 Modo dev e Manual.
-- [ ] Fechamento: `VERSAO`, `vtag`, `#ov-ver`, `docs/RESUMO.md`, `docs/TESTES.md`, `docs/PARTES.md`, esta spec como entregue, `tests/run_all.sh` verde, PR e merge.
+- [x] T1 `smoke118` com os critérios CA1 a CA6 (falhando).
+- [x] T2 `pratoEstranho`, `ESTRANHO` e o efeito na cozinha.
+- [x] T3 `EMPRATA` (coração, gorjeta e peso da nota).
+- [x] T4 Desenho dos 6 pratos de estrada; `shot_v12_10_1.js` e conferência dos recortes ampliados.
+- [x] T5 O suor, o papelzinho e a cabeça virando; conferência por captura (com e sem `reducedMotion`).
+- [x] T6 Modo dev e Manual.
+- [x] Fechamento: `VERSAO`, `vtag`, `#ov-ver`, `docs/RESUMO.md`, `docs/TESTES.md`, `docs/PARTES.md`, esta spec como entregue, `tests/run_all.sh` verde, PR e merge.
 
 ## Testes
 - `smoke118` novo (6 checagens). `shot_v12_10_1.js` novo (os pratos e a cozinha; capturas olhadas e apagadas).
@@ -65,6 +65,10 @@ Na chegada a um ponto novo, dá para ver e sentir que a cozinha é nova para o T
 Nenhuma (fechada em 22/11: a gota e o papelzinho aprovados como estão).
 
 ## Desvios
-(No fechamento.)
+- Medido: `smoke118` com 13 checagens (CA1 a CA6); a panqueca estranha leva 1,42× o tempo; capturas dos CA7 e CA8 conferidas (recortes ampliados, com e sem `reducedMotion`) e apagadas. Os pratos de estrada saíram do `DESENHO_BASE` para a `drawEstrada` (`src/20-desenho-base.js`).
+- O avançado dos 6 pratos é uma folhinha de salsa; o caprichado não muda o desenho (o `drawDish` não recebe esse dado, como nos outros pratos).
+- O nível 7 do empratamento segue a convenção do `casaBoa`: `equipe.tonhao >= EMPRATA.nivel` (índice 7). Prato frio caprichado na mesa VIP não dá o coração extra.
+- A gota ficou no lado esquerdo da testa, abaixo da touca (acima dela a touca cobria); o papelzinho, no canto superior direito da janela de pedidos; a cabeça "vira" só no olhar (olhos e sobrancelhas 3 px à direita).
+- A regra de saber do escalope (`pratoSabido`) não foi tocada (pergunta em aberto com o usuário).
 
 **Modelo:** Sonnet, esforço médio (desenho no canvas e regras pequenas com plano detalhado)
