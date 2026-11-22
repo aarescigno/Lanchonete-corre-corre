@@ -1,6 +1,6 @@
 # v12.10.3 — O equilíbrio dos cursos em degraus (etapa 18d)
 
-**Situação:** aprovada
+**Situação:** rascunho
 **Origem:** a mesma entrevista da v12.10 (21 e 22/11): "não ligo de ter que fazer grandes rebalanceamentos se isso for deixar o jogo mais legal"; preços "pelo faturamento"; duração da carreira "a mesma, ±3 dias"; tabela de níveis "ajustável no balance".
 
 ## Objetivo
@@ -61,7 +61,25 @@ Com os cursos em degraus, a carreira tem o mesmo ritmo de antes: as mudanças de
 - `smoke120` novo (CA7 e CA8: o escalope e o `testeNivelMax`). Os outros alvos são do `balance.js` e do `carreira.js`. No fechamento: a linha de base, cada rodada de ajuste e os números finais.
 
 ## Decisões em aberto
-Nenhuma. As três perguntas da parada da T4 foram respondidas pelo usuário em 22/11 (ver as Regras abaixo e as Medidas, que guardam os números que as motivaram).
+**Pergunta ao usuário (22/11, 2ª parada da T4): "os cursos valem a pena" (CA4) na Garagem (≥ 0%) e na área industrial (≥ +10%) não fecha com as alavancas no limite.** Medido com os preços e as metas finais (3 repetições de 40 rodadas; com 8 repetições a Garagem dá R$ 354 contra R$ 361 e a industrial R$ 546 contra R$ 511):
+
+| | `CURSOS=todos` | `CURSOS=0` | ganho com cursos |
+|---|---|---|---|
+| Garagem | R$ 355 | R$ 358 | −0,8% (−1,9% em 8 repetições); alvo ≥ 0% |
+| Área industrial | R$ 547 | R$ 505 | +8,3% (+6,8% em 8 repetições); alvo ≥ +10% |
+| Avenida | R$ 1.323 | R$ 799 | +66%; alvo +15% (ok) |
+| Terraço | R$ 6.427 | R$ 5.395 | +19%; alvo +15% (ok) |
+
+A alavanca 2 (cook −10%, crit +10%, wash −10% e diária menor) não mexe nesse vão (Garagem R$ 363 contra R$ 363, industrial R$ 546 contra R$ 514), nem as alavancas 1, 3 e 4: o ganho nesses dois pontos é limitado pela freguesia, não pela cozinha. O que mexe é o preço do prato de curso avançado, `CURSO_AV.preco` (hoje ×1,15), que não está na lista de alavancas. Medido em 4 repetições:
+
+| `CURSO_AV.preco` | Garagem (`todos` / `0`) | industrial (`todos` / `0`) |
+|---|---|---|
+| ×1,15 (hoje) | R$ 354 / R$ 361 (−2%) | R$ 526 / R$ 516 (+2%) |
+| ×1,20 | R$ 362 / R$ 364 (−0,5%) | R$ 582 / R$ 510 (+14%) |
+| ×1,25 | R$ 381 / R$ 358 (+6%) | R$ 616 / R$ 492 (+25%) |
+| ×1,35 | n/d | R$ 689 / R$ 507 (+36%) |
+
+Opções: (a) liberar `CURSO_AV.preco` como alavanca (×1,25 fecha os dois pontos; sobe o ganho de todos os pontos, então `metaF`, o `expertF` e os preços dos cursos são recalibrados de novo, e o `CURSO_AV.preco` aparece no Manual: "um pouco mais caro" vira "bem mais caro"); (b) baixar os alvos (Garagem "não perde mais de 2%" e industrial "+5%"); (c) outro número.
 
 ## Medidas (22/11, `balance.js 40` e `DIAS=80 node carreira.js 6`; % = rodadas com a meta batida nos dias 3 a 7 na Garagem e 8 a 10 nos outros; ganho = lucro médio do dia nesses dias)
 | comando | v12.9.1 (linha de base) | v12.10.3 com a T0 (T3) |
@@ -83,8 +101,17 @@ Nenhuma. As três perguntas da parada da T4 foram respondidas pelo usuário em 2
 - Alavanca 1 (`PRECO_PONTO`, novo no `carreira.js`; Garagem, industrial, Avenida, Terraço): ×1,3 / 0,8 / 0,8 / 0,8 → fim 78, mudanças 21 / 37 / 51; ×1,2 / 0,8 / 0,7 / 0,7 → fim 66 (5/6), 22 / 37 / 50, Tonhão no teto da Avenida 1/6; ×1,4 / 1,0 / 0,7 / 0,6 → fim 70 (5/6), 22 / 37 / 52, teto da Avenida 2/6; ×1,3 / 0,7 / 0,7 / 0,7 → fim 67, 22 / 37 / 50, teto da Avenida 1/6.
 - Os alvos de meta (CA1 a CA3: Garagem `EQUIPE=auto` 97% contra 85 a 95; industrial 79% contra 85 a 95) pedem só a alavanca 3 e não foram mexidos: dependem de a pergunta acima mudar ou não os níveis.
 
+## Medidas da retomada (22/11, depois das respostas; cada comando com 3 repetições de 40 rodadas, porque o `balance.js` não tem semente e uma só repetição oscila 5 a 10 pontos)
+- Versão medida: `CURSO_DIA = { 1:1, 2:1, 3:2, 4:2 }`, preços da área industrial ×0,85 e da Avenida ×0,6 sobre os de partida (em múltiplos de R$ 10, na ordem estrita entre pontos: o mesmo degrau no ponto seguinte custa mais que no anterior), `metaF` da área industrial 1,3 (era 1,5). Níveis do Tonhão e Terraço sem mudança.
+- Metas: Garagem sem equipe 62,7% (40 a 70); Garagem `EQUIPE=auto` 97,3% (85 a 97, 0,3 acima, dentro do ruído e aceito pelo usuário); área industrial 89,7% (85 a 95; antes 82%, com `metaF` 1,5); Avenida 86,7% (85 a 95); Terraço 94,2% (90 a 100).
+- Carreira (`DIAS=80 node carreira.js 6`, 4 rodadas com os preços finais): história no dia 65, 69, 65 e 67 (62 a 68; 6/6, 5/6, 5/6 e 6/6, e o 5/6 é sempre a noite da estrela do capítulo 14 com ≥ 1★ em 83% das noites, um acaso do Terraço); mudanças: área industrial dia 21, 21, 20 e 21; Avenida 36; Terraço 48, 49, 48 e 49; o Tonhão no teto ao sair da Garagem, da industrial e da Avenida em 6/6 em todas as rodadas e no nível 7 do Terraço antes do fim em 6/6; um dia no negativo depois das mudanças em uma das 4 rodadas (nenhum nas outras).
+- Preços finais (básico / avançado; Garagem, área industrial, Avenida, Terraço): pastel 110/210, 120/240, 190/380, 700/1.400; chapa 130/250, 140/290, 210/420, 770/1.540; fritos 150/310, 170/330, 230/460, 840/1.680; assados 150/300, 230/460, 840/1.680; vegetariano 90/180, 170/340, 630/1.260; PF 0/240, 250/500, 980/1.960; restaurante 290/420, 1.050/1.750.
+- Preços testados e descartados (`PRECO_PONTO`): ×0,8 na área industrial deixa o Pastel de estrada igual ao da Garagem (a troca custaria R$ 0); ×0,7 na Avenida, ×0,6 com o Terraço ×0,8 ou ×0,7 em tudo cortam o teto do Tonhão na Avenida (1 de 6) ou adiantam a mudança além do alvo.
+
 ## Desvios
 - O smoke das duas regras de 22/11 é o `smoke120` (a v12.10.2 já usou o `smoke119`); a spec dizia `smoke119`. Para o `smoke120` testar `testeNivelMax`, ele entrou no `window.__lcc`. O `smoke117` (CA4) esperava o escalope sabido sem curso: corrigido para a regra nova.
+- `CURSO_DIA[3]` passou de 1 para 2 (resposta do usuário de 22/11, regra nova); o `smoke117` (CA10) agora confere a Avenida travando só depois do segundo curso, e a área industrial travando depois do primeiro. Smokes só com números novos: `smoke38`, `smoke42`, `smoke68`, `smoke117` (preços e `metaF`), `smoke97` e `smoke103` (o Tonhão no teto do ponto).
+- Ferramentas de medida novas: `TONHAO_CFG` e `CURSO_AV_CFG` no `balance.js`, `PRECO_PONTO` no `carreira.js`.
 (Os demais, no fechamento.)
 
 **Modelo:** Sonnet, esforço alto (balanceamento por tentativa em quatro pontos)
