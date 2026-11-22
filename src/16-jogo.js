@@ -47,6 +47,12 @@ class Game {
   get sentado(){ return this.ponto.assento !== 'pe' || (this.mode === 'carreira' && !!this.up.assento); }
   get vagas(){ return this.ponto.prateleira || MARMITA.vagas; }   // as vagas das marmitas adiantadas no balcão de retirada
   /* os cursos do Tonhão que valem no modo (v8.6.9): na Missão zero só o PF e a coxinha; no Turno sem fim, os 4 básicos */
+  /* v12.10.1: o dia tem algum prato que o Tonhão estranha no cardápio (o papelzinho da receita); guardado por dia, ponto e cursos */
+  get temEstranho(){
+    const c = this.cursos, key = this.ponto.id + '|' + (DEV.on && DEV.forca.estranho ? 1 : 0) + '|' + JSON.stringify(c);
+    if (this._estKey !== key){ this._estKey = key; this._est = this.mode === 'carreira' && pratosDoPonto(this.ponto).some(k => pratoEstranho(k, c, this.ponto)); }
+    return this._est;
+  }
   get cursos(){ return this.mode === 'treino' ? {} : this.mode === 'semfim' ? CURSOS_SEMFIM : this.save.cursos; }
   get bebida(){ return bebidaOf(this.ponto); }
   /* v10.3: a estação da bebida da espera está servindo? (no Terraço, o carrinho de coquetéis só nos dias em que o Anselmo vem) */
@@ -678,7 +684,7 @@ class Game {
   collectBill(g, t, semCorrente){
     // v8.3.8: os corações viram gorjeta (no máximo +10%; com 1 ou 2, desconto), mais a da executiva e a do VIP;
     // v8.5.2: o suco e o cafezinho da mesa entram aqui também, pelo preço (bebConta)
-    let amount = Math.round(g.bill * (1 + GORJETA[g.hearts] + g.T.tip + (g.vip ? (g.exigente ? EXIGENTE.tip + (g.hearts === 5 ? EXIGENTE.generosa : 0) : VIP.tip) : 0) + (g.cafePede && g.coffee ? g.T.cafeTip : 0))) + g.bebConta;
+    let amount = Math.round(g.bill * (1 + (GORJETA[g.hearts] + g.T.tip + (g.vip ? (g.exigente ? EXIGENTE.tip + (g.hearts === 5 ? EXIGENTE.generosa : 0) : VIP.tip) : 0) + (g.cafePede && g.coffee ? g.T.cafeTip : 0)) * (g.emprata ? EMPRATA.gorjeta : 1))) + g.bebConta;   // v12.10.1: o empratamento: gorjeta x EMPRATA.gorjeta
     // v10.5.1: no Terraço, com música ao vivo, a mesa às vezes fica para mais uma rodada (a conta sobe e os ingredientes também)
     const mu = musicaOk(this.ponto) ? musicaDe(this.save.equipe) : null;
     let rodada = false;
@@ -752,6 +758,9 @@ class Game {
       if (grp.braulio) grp.diz(NOITE.falas.prova);   // v10.10
       grp.rosa = true; grp.bill += ROSA.mais; this.pontos += ROSA.pts; this.stats.rosa++;
       this.addText(cx, cy - 136, 'Prato da Rosa!', AB_COR.petala, 16); this.addSparks(cx, cy - 70, 8, AB_COR.petala);
+    }
+    if (dish.crit && grp.vip && this.save.equipe.tonhao >= EMPRATA.nivel){   // v12.10.1: o empratamento: o prato caprichado na mesa VIP
+      grp.emprata = true; if (!dish.fria) grp.gain(EMPRATA.coracao); this.addText(cx, cy - 158, 'Empratamento!', PAL.mostarda, 16);
     }
     grp.pratoQ = dish.q || 0; grp.fria = !!dish.fria; if (dish.crit) grp.capricho = true;
     if (tp !== 0) grp.pratoMain = { rosa:!!dish.rosa, crit:!!dish.crit, fria:!!dish.fria };   // v10.9: o prato principal (a ficha do crítico)
@@ -1266,7 +1275,7 @@ class Game {
     if (g.exigente && Math.random() < 0.5) txt = bravo ? 'Inaceitável!' : f >= 0.75 ? pick(['Impecável. Voltarei.', 'Serviço à altura do endereço.']) : f < 0.5 ? pick(['Esperava mais de um terraço.', 'Não é para tanto.']) : txt;   // v10.1
     if (!bravo && g.rosa && s[2] >= 4 && Math.random() < 0.5) txt = ROSA.coment;   // v10.8: o molho da Rosa, em metade dos comentários bons de Qualidade da comida
     if (bravo === 'mesa') this.stats.bravoMesa++;   // v9.0.4: gatilho do cartão da Bia
-    this.avals.push({ r, s, txt, k:g.type, v:g.vip, x:g.exigente ? EXIGENTE.peso : 1 });
+    this.avals.push({ r, s, txt, k:g.type, v:g.vip, x:g.exigente ? EXIGENTE.peso : g.emprata ? EMPRATA.peso : 1 });
     // balãozinho branco (sobe devagar, acima dos textos da conta)
     this.fx.push({ k:'text', box:true, x, y, vy:-12, life:2.8, max:2.8, text:fmtNota(nota) + '★ ' + txt, color:f >= 0.75 ? PAL.ok : f >= 0.5 ? PAL.alerta : PAL.perigo, size:13 });
   }
@@ -1849,6 +1858,8 @@ class Game {
     if (this.day.gripe) this.manualVer('i-gripe');
     if (this.fiscal) this.manualVer('i-fiscal');
     if (MANUT.on && n >= MANUT.dia && MANUT.equip.some(q => manutChance(this.manut[q.id]) > 0)) this.manualVer('i-quebra');
+    if (pratosDoPonto(this.ponto).some(k => pratoEstranho(k, this.cursos, this.ponto))) this.manualVer('e-estranho');   // v12.10.1: o 1º dia com um prato estranho no cardápio
+    if (this.save.equipe.tonhao >= EMPRATA.nivel) this.manualVer('e-emprata');
     if (this.ponto.tempos) this.manualVer('b-tempos');   // v10: a refeição completa, no 1º dia no Terraço
     this.manualPontos();
   }

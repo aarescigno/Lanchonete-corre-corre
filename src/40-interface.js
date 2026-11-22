@@ -403,6 +403,8 @@ function devAbaEquipe(body, secao, botao, nota){
   });
   r = el('div', 'row'); body.appendChild(r);
   botao(r, 'Saber tudo do ponto', () => game.devForca('saberTudo', DEV.forca.saberTudo ? '' : '1'), !!DEV.forca.saberTudo);
+  botao(r, 'Prato estranho', () => game.devForca('estranho', DEV.forca.estranho ? '' : '1'), !!DEV.forca.estranho);   // v12.10.1
+  botao(r, 'Forçar suor', () => game.devForca('suor', DEV.forca.suor ? '' : '1'), !!DEV.forca.suor);
   r = secao('Melhorias');
   botao(r, 'Todas', () => game.devMelhorias(true)); botao(r, 'Nenhuma', () => game.devMelhorias(false));
   r = secao('Decoração');

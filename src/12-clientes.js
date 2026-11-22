@@ -415,7 +415,7 @@ class Group {
     this.state = 'queue'; this.stateT = 0; this.patLeft = 0;
     this.aguarda = false; this.piso = false;   // na fila sem mesa que sirva; segurando no piso de 1 coração
     // avaliação (v8.4): corações perdidos lá fora e na mesa, a nota do prato que comeu, a cor certa e a corrente
-    this.perdFila = 0; this.perdMesa = 0; this.pratoQ = 0; this.fria = false; this.corCerta = false; this.corrente = false; this.capricho = false;
+    this.perdFila = 0; this.perdMesa = 0; this.pratoQ = 0; this.fria = false; this.corCerta = false; this.corrente = false; this.capricho = false; this.emprata = false;
     this.setState('queue');
   }
   get vipAberto(){ return this.vip && !this.disfarce; }   // v10.9: o VIP que se vê (o crítico disfarçado não fura a fila nem leva plaquinha)
