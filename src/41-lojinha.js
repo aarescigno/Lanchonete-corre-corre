@@ -991,7 +991,7 @@ function buildMoveis(grid){
   grid.appendChild(c);
 }
 /* aba Divulgação (v7): escolha do dia, paga junto com a folha (no fim do dia, desde a v8.2.2); e o resumo das contas do dia */
-/* aba Cursos (v8.6.9): um cartão por curso do Tonhão; feito o básico, o cartão vira o do avançado. Um curso por lojinha */
+/* aba Cursos (v8.6.9): um cartão por curso do Tonhão; feito o básico, o cartão vira o do avançado. Um curso por lojinha (dois na Avenida e no Terraço) */
 function cursoIcon(c, av){
   // v12.7: o desenho é o de um prato da técnica que o ponto vende (o básico; sem ele, o do avançado ou o prato de base)
   const bas = pratosCurso(c.id, game.ponto, 1)[0], k = bas || pratosCurso(c.id, game.ponto, 2)[0] || (c.id === 'pf' ? pratoBase(game.ponto) : Object.keys(CARDAPIO).find(x => tecnicaDe(x) === c.id)) || 'pf';

@@ -122,7 +122,7 @@ const CARDAPIO = {
   pamonhaMel:   { nome:'Pamonha de queijo com mel', preco:{ terraco:24 }, cat:'junina', curso:'junina', carne:false, cor:'#E6D27A' },
   canjicaCoco:  { nome:'Canjica de coco com cumaru',preco:{ terraco:26 }, cat:'junina', curso:'junina', carne:false, cor:'#F6EBC8' }
 };
-/* os cursos do Tonhão (v8.6.9): um por lojinha. v12.7: o curso é uma técnica. v12.10: cada técnica tem um DEGRAU por ponto (`degraus`, as chaves são os ids de PONTOS): o básico (nome, preco) ensina os pratos do degrau
+/* os cursos do Tonhão (v8.6.9): um por lojinha (v12.10.3: dois na Avenida e no Terraço, CURSO_DIA). v12.7: o curso é uma técnica. v12.10: cada técnica tem um DEGRAU por ponto (`degraus`, as chaves são os ids de PONTOS): o básico (nome, preco) ensina os pratos do degrau
    (CARDAPIO[k].curso === técnica e degrauDe(k) === ponto) e o avançado (av: nome, preco, receita) soma CURSO_AV.preco ao preço e CURSO_AV.crit à chance de caprichado. preco 0 no degrau: o básico já vem feito (o PF da Garagem e da área
    industrial; só o avançado se compra). O degrau novo inclui o antigo (buyCurso) e cobra só a troca (cursoProx). save.cursos: { técnica: { ponto: 1 (básico) | 2 (avançado) } } */
 const CURSOS = [
@@ -166,8 +166,8 @@ const CURSOS = [
 const CURSOS_ANTIGOS = { pastel:[150, 300], chapa:[180, 360], fritos:[220, 440], assados:[250, 500], pf:[0, 400], veg:[150, 300], restaurante:[400, 600], entradas:[600, 900], alta:[900, 1400] };
 /* v12.10: o ponto onde cada técnica do save antigo passa a valer (o degrau novo em que ela cai) */
 const CURSOS_PONTO_ANTIGO = { pastel:'garagem', chapa:'garagem', fritos:'garagem', assados:'industrial', veg:'industrial', pf:'industrial', restaurante:'avenida', entradas:'terraco', alta:'terraco' };
-/* v12.10: quantos cursos do Tonhão se compram numa lojinha (pelo ponto.nivel): um, e dois no Terraço */
-const CURSO_DIA = { 1:1, 2:1, 3:1, 4:2 };
+/* v12.10: quantos cursos do Tonhão se compram numa lojinha (pelo ponto.nivel): um, e dois na Avenida e no Terraço (v12.10.3: a Avenida passou de 1 para 2, para o Tonhão chegar ao teto dela a tempo) */
+const CURSO_DIA = { 1:1, 2:1, 3:2, 4:2 };
 const pontoId = p => typeof p === 'string' ? p : (p && p.id) || PONTOS[0].id;
 const pontoIdx = p => Math.max(0, PONTOS.findIndex(x => x.id === pontoId(p)));
 /* v12.10: o degrau tem curso para comprar? (o básico, com preco > 0; o avançado, com av) */

@@ -1,6 +1,6 @@
 # v12.10.3 — O equilíbrio dos cursos em degraus (etapa 18d)
 
-**Situação:** rascunho
+**Situação:** aprovada
 **Origem:** a mesma entrevista da v12.10 (21 e 22/11): "não ligo de ter que fazer grandes rebalanceamentos se isso for deixar o jogo mais legal"; preços "pelo faturamento"; duração da carreira "a mesma, ±3 dias"; tabela de níveis "ajustável no balance".
 
 ## Objetivo
@@ -24,6 +24,10 @@ Com os cursos em degraus, a carreira tem o mesmo ritmo de antes: as mudanças de
   - **Os cursos valem a pena:** em cada ponto, `CURSOS=todos` dá um ganho do dia pelo menos 15% maior que `CURSOS=0` (`EQUIPE=auto`, `node balance.js 40`; no Terraço, o comando acima).
   - **Ritmo da carreira** (`DIAS=80 node carreira.js 6`): a história fecha em 6/6 carreiras, entre o dia da linha de base −3 e +3; cada mudança de ponto até 3 dias do dia da linha de base; nenhum dia no negativo depois das mudanças.
   - **O Tonhão evolui:** em pelo menos 4 de 6 carreiras, o bot chega ao teto de cada ponto (2, 4 e 6) antes de sair dele e ao nível 7 no Terraço antes do fim da história.
+- **Respostas do usuário de 22/11 (depois da parada da T4), que valem por cima dos alvos acima:**
+  1. **Cursos valem a pena:** na Garagem, `CURSOS=todos` não pode perder para `CURSOS=0` (ganho ≥ 0%); na área industrial, pelo menos +10%; na Avenida e no Terraço continua +15%.
+  2. **A Avenida passa a 2 cursos por lojinha:** `CURSO_DIA = { 1:1, 2:1, 3:2, 4:2 }` (regra nova, só desta vez). Os alvos de ritmo e o teto do Tonhão na Avenida continuam como estão. O CA10 da v12.10 (`smoke117`) trava na Avenida só depois do segundo curso.
+  3. **Mudança para a área industrial no dia 22 e Garagem com `EQUIPE=auto` a 97% aceitos:** o alvo da mudança para a área industrial passa a dia 21 a 30 e o da Garagem com `EQUIPE=auto` a 85% a 97%. Não mexer nas metas da Garagem por causa disso.
 - **Se um alvo não fechar com as quatro alavancas no limite:** pare e pergunte ao usuário (não mude regra nem limite por conta própria).
 - **Escalope (decidido em 22/11, pergunta da v12.10):** no Terraço, o `escalope` (prato estranho do `pf`) só é sabido se o Tonhão tiver **comprado** algum degrau de `pf`: o avançado da área industrial (Carnes variadas), o básico ou o avançado da Avenida, ou o básico do Terraço (aí deixa de ser estranho). A regra "no `pf`, a Garagem conta como degrau feito" continua só para o `strogonoff` da Avenida. Uma linha em `pratoSabido` (`src/10-constantes.js`).
 - **Teste de habilidade e Desafios (decidido em 22/11):** o Tonhão entra no **teto do ponto** jogado (2 na Garagem, 4 na área industrial, 6 na Avenida, 8 no Terraço), no lugar do nível 8 em qualquer ponto: `testeNivelMax` passa a `2 × ponto.nivel`.
@@ -57,10 +61,7 @@ Com os cursos em degraus, a carreira tem o mesmo ritmo de antes: as mudanças de
 - `smoke120` novo (CA7 e CA8: o escalope e o `testeNivelMax`). Os outros alvos são do `balance.js` e do `carreira.js`. No fechamento: a linha de base, cada rodada de ajuste e os números finais.
 
 ## Decisões em aberto
-**Pergunta ao usuário (22/11, parada da T4: dois alvos não fecham com as alavancas no limite; números em Medidas):**
-1. **"Os cursos valem a pena" (CA4, +15%) na Garagem e na área industrial.** Na Garagem o ganho do dia é o mesmo com e sem cursos (R$ 352 com todos, R$ 359 sem nenhum; na v12.9.1, R$ 358 e 339); com a alavanca 2 no limite a favor dos cursos (cook −10%, crit +10%, wash −10%, pay −R$ 10) dá R$ 369 e R$ 370, e piorando também o nível 0 dá R$ 361 e R$ 349 (+3%). Na área industrial: +10% (R$ 566 e R$ 514), +6,8% no limite e +13% piorando o nível 0. Quem limita o ganho ali é o movimento (a freguesia), não a cozinha, então número de nível não resolve. Opções: (a) o alvo da Garagem e da área industrial cai para "não perde" (≥ 0%) e fica o +15% só na Avenida (+71%) e no Terraço (+18%); (b) uma regra nova (por exemplo, o curso do degrau traz movimento ou preço no ponto baixo, como o `veg` traz +5% de movimento); (c) outro número.
-2. **Ritmo da carreira (CA5): o Terraço no dia 43 a 49 não combina com o Tonhão no teto da Avenida (nível 6) antes de sair.** O nível 6 pede todos os 14 cursos da Avenida (7 técnicas, básico e avançado) e o bot compra 1 por dia (`CURSO_DIA`), então a estada na Avenida dura 14 dias ou mais (37 → 51 ou mais); a linha de base saiu no dia 46 (9 dias). Com os preços de partida: a história fecha no dia 71 e o Terraço no 52, ambos fora de ±3; com preços menores (×0,7 na Avenida e no Terraço) fecha no dia 67 e o Terraço no 50, mas o Tonhão só chega ao teto da Avenida em 1/6 (alvo: 4/6). Opções: (a) afrouxar o alvo do Terraço para o dia 52 (±3) e da história para o dia 71; (b) o Tonhão sem o teto exigido na Avenida; (c) 2 cursos por dia na Avenida (`CURSO_DIA[3]` = 2, regra).
-3. **A mudança para a área industrial cai no dia 22 (alvo 24 a 30; linha de base 27) e não se mexe com o preço dos cursos da Garagem** (×1,2, ×1,3 e ×1,4: sempre 22), porque o bot termina os 6 cursos da Garagem bem antes e o resto é caixa, nota e capítulo. Com a alavanca 1 no limite (×1,4) o máximo que se junta é cerca de R$ 460 (um dia). Opção: aceitar o dia 22 (−5 da linha de base), ou mudar a meta dos dias da Garagem ou o preço da mudança (regra).
+Nenhuma. As três perguntas da parada da T4 foram respondidas pelo usuário em 22/11 (ver as Regras abaixo e as Medidas, que guardam os números que as motivaram).
 
 ## Medidas (22/11, `balance.js 40` e `DIAS=80 node carreira.js 6`; % = rodadas com a meta batida nos dias 3 a 7 na Garagem e 8 a 10 nos outros; ganho = lucro médio do dia nesses dias)
 | comando | v12.9.1 (linha de base) | v12.10.3 com a T0 (T3) |

@@ -46,8 +46,10 @@ ok(L.pratoSabido('strogonoff',{},A) && !L.pratoSabido('escalope',{},T) && L.prat
   const r=[g.setStaff('tonhao',1),g.save.equipe.tonhao,g.setStaff('tonhao',2),g.setStaff('tonhao',3),g.setStaff('tonhao',4),g.save.equipe.tonhao,g.setStaff('tonhao',2)];
   ok(r[0]&&r[1]===1&&r[2]&&r[3]&&!r[4]&&r[5]===3&&!r[6],'CA9: cada aumento sobe um nível; acima do ao alcance (3) ou abaixo do atual, recusa ('+r.join()+')'); }
 // CA10
-{ let H=jogo('avenida',{ bank:50000, cursos:{} }), {g}=H; g.save.cursoDia=0;
-  ok(!g.cursoTrava && g.buyCurso('pastel') && g.cursoTrava && !g.buyCurso('chapa') && /Em curso/.test(cartoes(H).map(texto).join('|')),'CA10: na Avenida, depois de um curso a lojinha trava ("Em curso")');
+{ let H=jogo('industrial',{ bank:50000, cursos:{} }), {g}=H; g.save.cursoDia=0;
+  ok(!g.cursoTrava && g.buyCurso('pastel') && g.cursoTrava && !g.buyCurso('chapa') && /Em curso/.test(cartoes(H).map(texto).join('|')),'CA10: na área industrial, depois de um curso a lojinha trava ("Em curso")');
+  H=jogo('avenida',{ bank:50000, cursos:{} }); { const g3=H.g; g3.save.cursoDia=0; const a3=g3.buyCurso('pastel'), t3=g3.cursoTrava, b3=g3.buyCurso('chapa'), t4=g3.cursoTrava, c3=g3.buyCurso('fritos');
+    ok(a3&&!t3&&b3&&t4&&!c3&&/Em curso/.test(cartoes(H).map(texto).join('|')),'CA10 (v12.10.3): na Avenida trava só depois do segundo curso ("Em curso")'); }
   H=jogo('terraco',{ bank:50000, cursos:{} }); const g2=H.g; g2.save.cursoDia=0;
   const a=g2.buyCurso('pastel'), t1=g2.cursoTrava, b=g2.buyCurso('chapa'), t2=g2.cursoTrava, c=g2.buyCurso('fritos');
   ok(a&&!t1&&b&&t2&&!c,'CA10: no Terraço trava só depois do segundo'); }
