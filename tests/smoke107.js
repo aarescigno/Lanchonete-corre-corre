@@ -46,7 +46,7 @@ L0.ARCO.forEach(a=>{ walk('arco.'+a.id,a.falas); if(a.falasB) walk('arco.'+a.id+
   E['arco.camiNome']=[['cami','alegre','','Chefe, a dona Lurdes da mesa dois faz aniversário hoje. E o seu Jorge voltou: o dele é sem cebola.'],['bia','alegre','','Você sabe o nome de todo mundo, Cami?'],['cami','firme','','De todo mundo. No rodízio eu contava mesa. Aqui eu conto gente.'],['tonhao','','','Essa moça aprendeu rápido.'],['cami','alegre','','Cami, Tonhão. Pode chamar de Cami.']];
   const r=E['arco.roda'], i=r.findIndex(f=>f[3].startsWith('Hoje eu não tenho medo'));
   r.splice(i+1,0,['joca','alegre','','Nem eu.'],['cami','','','Girou, serviu... estrela!'],['anselmo','alegre','','E sem ninguém gritar.'],['lia','','','Na hora.']);
-  const dif=[]; Object.keys(E).forEach(k=>{ if(JSON.stringify(E[k])!==JSON.stringify(REAL[k])) dif.push(k); }); Object.keys(REAL).forEach(k=>{ if(!(k in E)) dif.push('+'+k); });
+  const dif=[]; Object.keys(E).forEach(k=>{ if(JSON.stringify(E[k])!==JSON.stringify(REAL[k])) dif.push(k); }); Object.keys(REAL).forEach(k=>{ if(!(k in E) && !/^arco\.cozinhaNova[234]$/.test(k)) dif.push('+'+k); });   // v12.10.2: as 3 conversas da cozinha nova são de outra versão
   ok(dif.length===0,'CA1 as falas trocadas têm texto, quem fala, e e nota da spec, e as outras seguem iguais às da v12.5 (diferente: '+(dif.join(', ')||'nenhuma')+')'); }
 
 // ---------- CA2: a varredura do tratamento ----------

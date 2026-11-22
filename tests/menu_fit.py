@@ -84,6 +84,12 @@ with sync_playwright() as p:
                         run(pg,"L.setShopTab('"+sec+"');",False)
                         conf(pg,f'{tag} loja[{nome}] {gid}/{sec}','#ov-shop .panel',['#btn-shop-go','#btn-shop-menu','#shop-tabs','#btn-shop-voltar'])
         # ---- CA2: os sete painéis ----
+        if SOLO in ('','paineis','manual'):   # v12.10.2: o Manual com a aba Caderno (as 25 páginas do Terraço, com o modo dev) e uma aba comum
+            run(pg,"g.save=L.normSave({dia:70,bank:90000,cap:14,histV:1,capV:2,maxDay:70,v10:1,tonDeg:1,salao:{ponto:'terraco'},pontoDia:50,cursos:L.cursosAte()});g.up=g.save.up;g.tablesKey='';g.buildTables();g.setState('menu');"
+                  "document.getElementById('btn-manual').click();Array.from(document.querySelectorAll('#manual-abas button')).find(b=>b.textContent==='Caderno').click();")
+            conf(pg,f'{tag} Manual, aba Caderno','#ov-manual .panel',['#btn-manual-voltar','#manual-abas'])
+            run(pg,"document.getElementById('btn-manual').click();")
+            conf(pg,f'{tag} Manual, aba Básico','#ov-manual .panel',['#btn-manual-voltar','#manual-abas'])
         if SOLO in ('','paineis'):
             rank=("L.Rank.saveLocal('carreira',{nome:'NomeComDezesseis',pontos:9000,dia:30});"
                   "for(let i=0;i<50;i++) L.Rank.saveLocal('carreira',{nome:'Jogador '+i,pontos:100+i*37,dia:3+i%20});"
@@ -129,7 +135,7 @@ with sync_playwright() as p:
             conf(pg,f'{tag} Versões','#ov-ver .panel',['#btn-ver-close'])
             r=pg.evaluate("()=>{const l=document.querySelector('.verlist');return [l.scrollHeight,l.clientHeight,l.querySelectorAll('li').length]}")
             total+=1
-            if r[2]!=33: fails+=1; print(f'FAIL: {tag} a lista das Versões tem {r[2]} linhas (esperado 33: a v12.10, a v12.9.1, a v12.9, a v12.8.4, a v12.8.3, a v12.8.2, a v12.8.1, a v12.8, a v12.7, a v12.6.1, a v12.6, a v12.5, a v12.4.3, a v12.4.2, a v12.4.1, a v12.4, a v12.3.2, a v12.3.1, a v12.3, a v12.2, a v12.1, a v12, a v11 e da v10 à v1)')
+            if r[2]!=35: fails+=1; print(f'FAIL: {tag} a lista das Versões tem {r[2]} linhas (esperado 35: a v12.10.2, a v12.10.1, a v12.10, a v12.9.1, a v12.9, a v12.8.4, a v12.8.3, a v12.8.2, a v12.8.1, a v12.8, a v12.7, a v12.6.1, a v12.6, a v12.5, a v12.4.3, a v12.4.2, a v12.4.1, a v12.4, a v12.3.2, a v12.3.1, a v12.3, a v12.2, a v12.1, a v12, a v11 e da v10 à v1)')
         # ---- v11.15: a abertura (os botões Voltar e Pular, por cima do quadro cheio, à vista e sem se cobrir) ----
         if SOLO in ('','abertura'):
             run(pg,"g.setState('menu');document.getElementById('btn-historia').click();")

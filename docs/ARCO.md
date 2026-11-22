@@ -515,6 +515,62 @@ O `antes` do cap. 6 (`HISTORIA`, `src/10-constantes.js`) ganha 7 falas depois da
 6. Bia (alegre): Vai pra casa da mãe. Lá ela segue cuidando da gente.
 7. Bia: E a foto da mãe vem junto. Com moldura nova.
 
+## 14. v12.10.2 — A cozinha nova e o Caderno da Rosa (etapa 18c)
+Três conversas de chegada (a 1ª da lista do `nivel`, no fim do 1º dia no ponto: `diaNoPonto(sv, g.day.n) >= 1`) e o Caderno da Rosa no Manual (aba nova, 25 páginas, `CADERNO` em `src/10-constantes.js`). Spec: `docs/spec-v12.10.2.md`. Save antigo: a do ponto de agora nasce 1 se já passou do 3º dia no ponto.
+
+### `cozinhaNova2` (nivel 2)
+1. Tonhão (abrindo uma caixa da mudança): Ué... isso veio no meio das panelas.
+2. Bia (alegre): O caderno da mãe!
+3. Tonhão (insegura, folheando): Letra da Rosa. Pastel, salgado, tudo anotado... e eu achando que sabia.
+4. Tonhão: O povo da estrada quer lanche grande. X-tudo, carne-seca. Isso aqui é novo pra mim, Bia.
+5. Bia (firme): Na garagem você também não sabia pastel, tio, e aprendeu. Tem curso no Cardápio da lojinha.
+6. Tonhão (alegre): ...Panela nova, tempero velho. Bora.
+
+### `cozinhaNova3` (nivel 3)
+1. Tonhão (insegura, olhando o fogão novo): Coifa, forno de restaurante... Panqueca, Bia? Eu sou de pastel.
+2. Bia (firme): Então faz panqueca do jeito que faz pastel: no capricho. Deixa comigo.
+3. Tonhão (folheando o caderno): A Rosa anotou uma de panqueca. Nunca vi ela fazer.
+4. Bia: A gente aprende junto. O curso tá no Cardápio da lojinha.
+5. Tonhão: Até lá, vai sair devagar.
+6. Bia (alegre): Devagar e sempre. Foi você que me ensinou.
+
+### `cozinhaNova4` (nivel 4)
+1. Tonhão (insegura, de avental limpo demais): Molho de vinho, folhado, croquete de costela... Aqui eu sou aprendiz de novo, Bia.
+2. Bia (firme): Aprendiz que me trouxe da garagem até aqui.
+3. Bia: Aqui dá pra estudar de manhã e de noite. Tá no Cardápio da lojinha.
+4. Tonhão (abrindo o caderno no fim): As últimas páginas a Rosa deixou em branco. Só o título: "Quando a gente tiver casa grande".
+5. Bia (alegre): Então quem escreve é você, tio.
+6. Tonhão (alegre, pegando a caneta, de costas): ...Cebola. É a cebola.
+
+### O Caderno (aba do Manual, da área industrial em diante)
+Uma página por degrau com o básico feito (o PF da área industrial, com o avançado); a frase da Rosa e a receita; no Terraço a receita leva "Na letra do Tonhão:".
+
+- `pastel.garagem` — Pastel de feira: “Massa boa estala. Se não estalou, o Tonhão comeu a de teste.” Massa de farinha, óleo e um gole de cachaça. Recheio frio, borda apertada com o garfo, óleo bem quente.
+- `chapa.garagem` — Chapa: “Quem tem pressa espera o chiado.” Pão francês aberto, manteiga dos dois lados, presunto e queijo, prensa até o queijo escorrer.
+- `fritos.garagem` — Salgados fritos: “Coxinha boa se segura pelo bico e não desmancha.” Massa cozida no caldo do frango, recheio desfiado com cheiro-verde, ovo e farinha de rosca.
+- `pastel.industrial` — Pastel de estrada: “Caminhoneiro come com uma mão. Fecha bem.” Pastel grande, recheio farto de frango com catupiry ou carne-seca com queijo, borda dobrada duas vezes.
+- `chapa.industrial` — Lanche de chapa: “Hambúrguer se aperta uma vez só. Quem aperta de novo tira o suco.” Bola de carne moída na chapa, sal por cima, queijo no fim, pão tostado na gordura dela.
+- `fritos.industrial` — Fritos de estrada: “Carne-seca vai de molho na véspera. Quem esquece come sal.” Carne-seca dessalgada e desfiada, mandioca amassada por fora; salsicha enrolada em massa de pão.
+- `assados.industrial` — Salgados assados: “Massa podre é da minha mãe. Não conta pro Tonhão da manteiga gelada.” Manteiga gelada esfarelada na farinha, gema por cima, forno forte até dourar.
+- `veg.industrial` — Vegetariano: “Prato sem carne tem que ter cor. Se ficou bege, faltou coisa.” Legume refogado no alho, ovo da casa; palmito e abóbora no lugar da carne nos salgados.
+- `pf.industrial` — Carnes variadas: “Bife a cavalo: o ovo vai mole. Ovo duro é castigo.” Bife batido, frango grelhado, peixe frito na farinha de milho, ovo frito por cima de quem pedir.
+- `pastel.avenida` — Panquecas: “Panqueca é pastel que deitou pra descansar.” Massa mole de leite e ovo, frigideira fina e untada, enrola o recheio, molho por cima e forno para gratinar.
+- `chapa.avenida` — Chapa de restaurante: “Beirute é sanduíche que viajou.” Pão sírio na chapa, rosbife, queijo, tomate e orégano; coalho na chapa até fazer casquinha.
+- `fritos.avenida` — Peixe empanado: “Peixe frito não se mexe. A casquinha se forma sozinha.” Isca no limão e no alho, farinha de trigo e de rosca, óleo quente e pouco de cada vez.
+- `assados.avenida` — Tortas: “A torta de domingo da Casa Aurora. A fila dobrava a esquina.” Massa podre por baixo e por cima, frango cremoso ou palmito, gema por cima, forno devagar.
+- `veg.avenida` — Vegetariano de restaurante: “Escondidinho de abóbora: o Tonhão nunca percebeu que não tinha carne.” Purê de mandioca por cima, abóbora com cebola e cheiro-verde por baixo, queijo para gratinar.
+- `pf.avenida` — Molhos de panela: “Strogonoff é fogo baixo e paciência. Creme de leite só no fim.” Carne em tiras selada aos poucos, cebola, mostarda e tomate, creme de leite no fim, batata palha na hora.
+- `restaurante.avenida` — Cozinha de restaurante: “Filé batido fino e empanado com calma. O resto, um dia eu te conto.” Filé batido, empanado duas vezes, molho de tomate de panela e queijo gratinado na hora.
+- `pastel.terraco` — Massas finas: “Ravioli igual ao da cantina do centro.” Na letra do Tonhão: massa fresca de ovo aberta fina, recheio de queijo ou de camarão, fecha com dois dedos e frita rápido.
+- `chapa.terraco` — Chapa fina: “Pão de padaria de bairro chique. Um dia eu aprendo o fermento.” Na letra do Tonhão: pão de fermentação natural tostado, presunto cru, coalho dourado com melaço de cana.
+- `fritos.terraco` — Croquetes: “Costela que desmancha no garfo. Um dia eu tenho tempo pra isso.” Na letra do Tonhão: costela cozida devagar até desfiar, massa de batata, empanada e frita de pouquinho.
+- `assados.terraco` — Folhados: “Massa folhada, que eu nunca tive paciência de dobrar.” Na letra do Tonhão: massa dobrada várias vezes com manteiga gelada, brie ou camarão por dentro, forno forte.
+- `veg.terraco` — Vegetariano fino: “Nhoque de abóbora com sálvia. Vi numa revista.” Na letra do Tonhão: abóbora assada e amassada com farinha, nhoque cortado no garfo, manteiga com sálvia; polenta mole com legume grelhado.
+- `pf.terraco` — Molhos finos: “Molho de cogumelo, pra quem come de guardanapo no colo.” Na letra do Tonhão: escalope selado em fogo alto, cogumelo na manteiga, um pouco de vinho branco e creme para encorpar.
+- `restaurante.terraco` — Molho de vinho: “Filé ao molho de vinho. Esse eu quero aprender antes do Bráulio.” Na letra do Tonhão: filé alto selado, vinho tinto reduzido devagar com cebola, manteiga gelada no fim para brilhar.
+- `entradas.terraco` — Entradas finas: “Entrada é o bom-dia da mesa.” Na letra do Tonhão: bruschetta de tomate e manjericão, bolinho de bacalhau cremoso, quiche de alho-poró na massa fina.
+- `alta.terraco` — Alta gastronomia: “Prato bonito também alimenta. Primeiro o olho.” Na letra do Tonhão: risoto mexido sem parar, peixe do dia na manteiga de ervas, medalhão ao molho madeira, tudo empratado na hora.
+
 ## 12. Para todas as sessões
 - Cada versão fecha como as outras: spec `entregue`, `VERSAO`, `vtag`, `#ov-ver`, `docs/RESUMO.md`, `tests/run_all.sh` verde, PR e merge.
 - **Smoke novo por versão** (o próximo número livre depois do `smoke76`), com uma checagem por critério de aceite. Nas versões de texto (v11.1 e v11.2): cada fala trocada confere pelo texto exato; nenhuma fala passa de 120 letras; toda conversa que apontava uma aba da lojinha continua com as mesmas palavras da aba; o campo `e`, quando existe, é um dos cinco. Nas da `ARCO` (v11.3, v11.4, v11.6): cada entrada fica `'pend'` com o `quando` dela e só uma por fim de dia; não toca fora do Modo História; save antigo não recebe as dos pontos passados; aparece no modo dev.

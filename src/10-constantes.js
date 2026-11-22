@@ -1890,6 +1890,13 @@ const ARCO = [
             { q:'bia', s:'Sabe quantos pedidos eu errei na primeira semana?' },
             { q:'dani', s:'Quantos?' },
             { q:'bia', e:'alegre', s:'Perdi a conta. O tio me disse que é só voltar amanhã. Volta amanhã, Dani.' } ] },
+  { id:'cozinhaNova2', nivel:2, quando:(sv, g) => diaNoPonto(sv, g.day.n) >= 1,   // v12.10.2: o fim do 1º dia no ponto (docs/ARCO.md §14)
+    falas:[ { q:'tonhao', nota:'abrindo uma caixa da mudança', s:'Ué... isso veio no meio das panelas.' },
+            { q:'bia', e:'alegre', s:'O caderno da mãe!' },
+            { q:'tonhao', e:'insegura', nota:'folheando', s:'Letra da Rosa. Pastel, salgado, tudo anotado... e eu achando que sabia.' },
+            { q:'tonhao', s:'O povo da estrada quer lanche grande. X-tudo, carne-seca. Isso aqui é novo pra mim, Bia.' },
+            { q:'bia', e:'firme', s:'Na garagem você também não sabia pastel, tio, e aprendeu. Tem curso no Cardápio da lojinha.' },
+            { q:'tonhao', e:'alegre', s:'...Panela nova, tempero velho. Bora.' } ] },
   { id:'caderno', nivel:2, quando:(sv, g) => sv.cap >= 5 && g.fimDia.lucro > 0,
     falas:[ { q:'tonhao', s:'Bia, me passa o caderno do caixa pra eu conferir.' },
             { q:'bia', e:'firme', s:'Já fechei, tio. Bateu até o último real.' },
@@ -1914,6 +1921,13 @@ const ARCO = [
             { q:'dani', e:'alegre', s:'E ele?' },
             { q:'bia', e:'alegre', s:'Pediu desculpa. E mais uma marmita.' } ] },
   // v11.4: a Avenida (nivel 3) e o Terraço (nivel 4); roteiro em docs/ARCO.md §7
+  { id:'cozinhaNova3', nivel:3, quando:(sv, g) => diaNoPonto(sv, g.day.n) >= 1,   // v12.10.2: o fim do 1º dia no ponto (docs/ARCO.md §14)
+    falas:[ { q:'tonhao', e:'insegura', nota:'olhando o fogão novo', s:'Coifa, forno de restaurante... Panqueca, Bia? Eu sou de pastel.' },
+            { q:'bia', e:'firme', s:'Então faz panqueca do jeito que faz pastel: no capricho. Deixa comigo.' },
+            { q:'tonhao', nota:'folheando o caderno', s:'A Rosa anotou uma de panqueca. Nunca vi ela fazer.' },
+            { q:'bia', s:'A gente aprende junto. O curso tá no Cardápio da lojinha.' },
+            { q:'tonhao', s:'Até lá, vai sair devagar.' },
+            { q:'bia', e:'alegre', s:'Devagar e sempre. Foi você que me ensinou.' } ] },
   { id:'braulio1', nivel:3, quando:(sv, g) => sv.cap >= 7 && diaNoPonto(sv, g.day.n) >= 6, qualB:(sv) => !(sv.equipe && sv.equipe.anselmo > 0),   // v11.6: o Bráulio na porta; falasB quando o Anselmo não está contratado
     falas:[ { q:'braulio', nota:'de braços cruzados, na porta', s:'Então é esta a lanchonete da garagem. Vim buscar o meu coqueteleiro.' },
             { q:'bia', e:'insegura', s:'Ele... ele não é seu, chef. Pergunta pra ele.' },
@@ -1959,6 +1973,13 @@ const ARCO = [
             { q:'tonhao', e:'insegura', s:'Vinte anos naquela cozinha, Bia. E saí sem levar nem o meu nome.' },
             { q:'bia', e:'firme', s:'O senhor trouxe o que importava: a mão. O nome a gente faz aqui.' },
             { q:'tonhao', e:'alegre', nota:'fechando a cortina', s:'...Então vamos trabalhar, que nome não se faz sozinho.' } ] },
+  { id:'cozinhaNova4', nivel:4, quando:(sv, g) => diaNoPonto(sv, g.day.n) >= 1,   // v12.10.2: o fim do 1º dia no ponto (docs/ARCO.md §14)
+    falas:[ { q:'tonhao', e:'insegura', nota:'de avental limpo demais', s:'Molho de vinho, folhado, croquete de costela... Aqui eu sou aprendiz de novo, Bia.' },
+            { q:'bia', e:'firme', s:'Aprendiz que me trouxe da garagem até aqui.' },
+            { q:'bia', s:'Aqui dá pra estudar de manhã e de noite. Tá no Cardápio da lojinha.' },
+            { q:'tonhao', nota:'abrindo o caderno no fim', s:'As últimas páginas a Rosa deixou em branco. Só o título: "Quando a gente tiver casa grande".' },
+            { q:'bia', e:'alegre', s:'Então quem escreve é você, tio.' },
+            { q:'tonhao', e:'alegre', nota:'pegando a caneta, de costas', s:'...Cebola. É a cebola.' } ] },
   { id:'liaPerfeita', nivel:4, quando:(sv, g) => sv.equipe.lia > 0 && !sv.equipe.liaFora && sv.cap >= 11,   // v12.5: depois da cena dos temperos (cap. 10, depois)
     falas:[ { q:'tonhao', s:'Lia, a mesa quatro tá esperando a entrada faz tempo!' },
             { q:'lia', e:'insegura', s:'Refiz três vezes, chef. O corte não ficou igual.' },
@@ -2020,7 +2041,7 @@ const HIST_NOMES = { bia:'Bia', tonhao:'Tonhão', dani:'Dani', joca:'Joca', cami
 const ATU_TXT = { procurando:'Procurando versão nova...', nova:'Tem versão nova: {v}! Seu jogo salvo continua.', igual:'Você já está na versão mais nova ({v}).', erro:'Sem internet agora. Tente de novo mais tarde.', atualizando:'Atualizando...' };
 function atuEstado(remota, atual){ if (typeof remota !== 'string' || !remota.trim()) return 'erro'; return remota.trim() === atual ? 'igual' : 'nova'; }
 const CAIXA_MAX = 14;                                 // livro-caixa (v7.2): quantos dias da carreira ficam guardados
-const VERSAO = 'v12.10.1';                                   // vai no resumo do Caixa
+const VERSAO = 'v12.10.2';                                   // vai no resumo do Caixa
 const DIVULGA_DIA = 4;                                // antes disso, o movimento é o da inauguração (sem custo); v9.0.2: dia 4, e o padrão é o boca a boca
 function divulgaAberta(n, sv){ return devLivre() || n >= DIVULGA_DIA && !(sv && sv.convDiv === 'pend'); }   // no modo dev, desde o dia 1; v9.0.3: no Modo História, só depois da conversa
 /* v9.6.4: a Efood (os entregadores) só abre depois da conversa dos entregadores, no Modo História; antes dela, nenhum tipo com `retira` vem na agenda */
@@ -2164,7 +2185,42 @@ const FISCAL = { nivel:3, dia:2, chance:0.15, quando:[0.3, 0.7], visita:20, mesa
    Sem número nenhum no texto, na linha ou nos traços: só palavras e bolinhas.
    sempre: aberta desde o começo da carreira; tipo: a chave de CUSTOMER_TYPES (ou 'vip' e 'veg') para os traços; quem: a chave de STAFF
    ============================================================ */
-const MANUAL_ABAS = [['basico', 'Básico'], ['clientes', 'Clientes'], ['equipe', 'Equipe'], ['lojinha', 'Lojinha'], ['lugares', 'Lugares'], ['imprevistos', 'Imprevistos'], ['desafios', 'Desafios']];
+const MANUAL_ABAS = [['basico', 'Básico'], ['clientes', 'Clientes'], ['equipe', 'Equipe'], ['lojinha', 'Lojinha'], ['lugares', 'Lugares'], ['imprevistos', 'Imprevistos'], ['desafios', 'Desafios'], ['caderno', 'Caderno']];
+/* v12.10.2 (etapa 18c): o Caderno da Rosa, 25 páginas (chave `técnica.ponto`; f: a frase da Rosa, r: a receita sem números; no Terraço, a receita é na letra do Tonhão). A página abre com o básico do degrau
+   (o PF da área industrial, com o avançado); a aba aparece da área industrial em diante. Texto sem algarismo. Spec: docs/spec-v12.10.2.md */
+const CADERNO = {
+  'pastel.garagem': { f:'Massa boa estala. Se não estalou, o Tonhão comeu a de teste.', r:'Massa de farinha, óleo e um gole de cachaça. Recheio frio, borda apertada com o garfo, óleo bem quente.' },
+  'chapa.garagem': { f:'Quem tem pressa espera o chiado.', r:'Pão francês aberto, manteiga dos dois lados, presunto e queijo, prensa até o queijo escorrer.' },
+  'fritos.garagem': { f:'Coxinha boa se segura pelo bico e não desmancha.', r:'Massa cozida no caldo do frango, recheio desfiado com cheiro-verde, ovo e farinha de rosca.' },
+  'pastel.industrial': { f:'Caminhoneiro come com uma mão. Fecha bem.', r:'Pastel grande, recheio farto de frango com catupiry ou carne-seca com queijo, borda dobrada duas vezes.' },
+  'chapa.industrial': { f:'Hambúrguer se aperta uma vez só. Quem aperta de novo tira o suco.', r:'Bola de carne moída na chapa, sal por cima, queijo no fim, pão tostado na gordura dela.' },
+  'fritos.industrial': { f:'Carne-seca vai de molho na véspera. Quem esquece come sal.', r:'Carne-seca dessalgada e desfiada, mandioca amassada por fora; salsicha enrolada em massa de pão.' },
+  'assados.industrial': { f:'Massa podre é da minha mãe. Não conta pro Tonhão da manteiga gelada.', r:'Manteiga gelada esfarelada na farinha, gema por cima, forno forte até dourar.' },
+  'veg.industrial': { f:'Prato sem carne tem que ter cor. Se ficou bege, faltou coisa.', r:'Legume refogado no alho, ovo da casa; palmito e abóbora no lugar da carne nos salgados.' },
+  'pf.industrial': { f:'Bife a cavalo: o ovo vai mole. Ovo duro é castigo.', r:'Bife batido, frango grelhado, peixe frito na farinha de milho, ovo frito por cima de quem pedir.' },
+  'pastel.avenida': { f:'Panqueca é pastel que deitou pra descansar.', r:'Massa mole de leite e ovo, frigideira fina e untada, enrola o recheio, molho por cima e forno para gratinar.' },
+  'chapa.avenida': { f:'Beirute é sanduíche que viajou.', r:'Pão sírio na chapa, rosbife, queijo, tomate e orégano; coalho na chapa até fazer casquinha.' },
+  'fritos.avenida': { f:'Peixe frito não se mexe. A casquinha se forma sozinha.', r:'Isca no limão e no alho, farinha de trigo e de rosca, óleo quente e pouco de cada vez.' },
+  'assados.avenida': { f:'A torta de domingo da Casa Aurora. A fila dobrava a esquina.', r:'Massa podre por baixo e por cima, frango cremoso ou palmito, gema por cima, forno devagar.' },
+  'veg.avenida': { f:'Escondidinho de abóbora: o Tonhão nunca percebeu que não tinha carne.', r:'Purê de mandioca por cima, abóbora com cebola e cheiro-verde por baixo, queijo para gratinar.' },
+  'pf.avenida': { f:'Strogonoff é fogo baixo e paciência. Creme de leite só no fim.', r:'Carne em tiras selada aos poucos, cebola, mostarda e tomate, creme de leite no fim, batata palha na hora.' },
+  'restaurante.avenida': { f:'Filé batido fino e empanado com calma. O resto, um dia eu te conto.', r:'Filé batido, empanado duas vezes, molho de tomate de panela e queijo gratinado na hora.' },
+  'pastel.terraco': { f:'Ravioli igual ao da cantina do centro.', r:'massa fresca de ovo aberta fina, recheio de queijo ou de camarão, fecha com dois dedos e frita rápido.' },
+  'chapa.terraco': { f:'Pão de padaria de bairro chique. Um dia eu aprendo o fermento.', r:'pão de fermentação natural tostado, presunto cru, coalho dourado com melaço de cana.' },
+  'fritos.terraco': { f:'Costela que desmancha no garfo. Um dia eu tenho tempo pra isso.', r:'costela cozida devagar até desfiar, massa de batata, empanada e frita de pouquinho.' },
+  'assados.terraco': { f:'Massa folhada, que eu nunca tive paciência de dobrar.', r:'massa dobrada várias vezes com manteiga gelada, brie ou camarão por dentro, forno forte.' },
+  'veg.terraco': { f:'Nhoque de abóbora com sálvia. Vi numa revista.', r:'abóbora assada e amassada com farinha, nhoque cortado no garfo, manteiga com sálvia; polenta mole com legume grelhado.' },
+  'pf.terraco': { f:'Molho de cogumelo, pra quem come de guardanapo no colo.', r:'escalope selado em fogo alto, cogumelo na manteiga, um pouco de vinho branco e creme para encorpar.' },
+  'restaurante.terraco': { f:'Filé ao molho de vinho. Esse eu quero aprender antes do Bráulio.', r:'filé alto selado, vinho tinto reduzido devagar com cebola, manteiga gelada no fim para brilhar.' },
+  'entradas.terraco': { f:'Entrada é o bom-dia da mesa.', r:'bruschetta de tomate e manjericão, bolinho de bacalhau cremoso, quiche de alho-poró na massa fina.' },
+  'alta.terraco': { f:'Prato bonito também alimenta. Primeiro o olho.', r:'risoto mexido sem parar, peixe do dia na manteiga de ervas, medalhão ao molho madeira, tudo empratado na hora.' } };
+const CADERNO_TERRACO = 'Na letra do Tonhão:';
+function cadernoNome(k){ const [t, d] = k.split('.'), g = cursoOf(t).degraus[d]; return g.preco > 0 ? g.nome : g.av.nome; }
+function cadernoTexto(k){ const e = CADERNO[k]; return { titulo:cadernoNome(k), frase:e.f, receita:(k.split('.')[1] === 'terraco' ? CADERNO_TERRACO + ' ' : '') + e.r }; }
+/* as chaves das páginas abertas, na ordem da carreira (ponto e, dentro dele, o curso) */
+function cadernoPaginas(cursos){
+  const o = []; PONTOS.forEach(p => CURSOS.forEach(c => { const g = c.degraus[p.id], k = c.id + '.' + p.id; if (g && CADERNO[k] && cursoNivel(cursos, c.id, p.id) >= (g.preco > 0 ? 1 : 2)) o.push(k); })); return o;
+}
 const MANUAL = [
   { id:'b-sentar',   aba:'basico', nome:'Sentar a freguesia', sempre:true, linha:'Arraste o grupo da calçada até uma mesa livre. Grupo de três ou quatro só cabe em mesa de quatro.' },
   { id:'b-mesa',     aba:'basico', nome:'O ciclo da mesa', sempre:true, linha:'Anote o pedido, leve à cozinha, entregue o prato, cobre e recolha a louça.' },

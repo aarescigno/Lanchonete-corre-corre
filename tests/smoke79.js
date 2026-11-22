@@ -9,14 +9,15 @@ const nova=(o)=>{ const H=load(Object.assign({historia:true},o||{})); H.doc.crea
 const toque=els=>els['c'].fire('pointerdown',{preventDefault(){},pointerId:1,clientX:300,clientY:200,pointerType:'mouse'});
 const joga=(H,fat,custo,hook)=>{ const {g,els}=H; if(g.state==='shop') els['btn-shop-go'].fire('click'); if(g.state==='intro') els['btn-start'].fire('click'); g.schedule=[]; g.nextIdx=0; g.money=fat||0; g.custo=custo||0; if(hook) hook(g); g.finishDay(); };
 const vistas=H=>{ const v=[]; let n=0; while(H.g.conversa && n<200){ if(!v.includes(H.g.conversa.falas)) v.push(H.g.conversa.falas); toque(H.els); n++; } return v; };
-const base=H=>{ const sv=H.g.save; sv.conversa=null; sv.bank=5000; sv.convCard=1; sv.convDiv=1; sv.convEnt=1; sv.convPlanta=1; sv.convQuit=1; sv.convTeto=1; Object.keys(sv.libera).forEach(k=>{ sv.libera[k]=1; }); return sv; };
+const base=H=>{ const sv=H.g.save; sv.conversa=null; sv.bank=5000; sv.convCard=1; sv.convDiv=1; sv.convEnt=1; sv.convPlanta=1; sv.convQuit=1; sv.convTeto=1; Object.keys(sv.libera).forEach(k=>{ sv.libera[k]=1; }); ['cozinhaNova2','cozinhaNova3','cozinhaNova4'].forEach(k=>{ sv.arco[k]=1; }); return sv; };   // v12.10.2: as conversas da cozinha nova ficam de fora destes testes
+
 const pends=sv=>Object.keys(sv.arco).filter(k=>sv.arco[k]==='pend');
 const cinco=['neutra','insegura','firme','alegre','brava'];
 const ach=falas=>falas.map(f=>[f.q,f.e||'',f.nota||'',f.s]);
 const L0=load({historia:true}).L;
 
 // ---------- CA1: as 7 entradas ----------
-{ const A=L0.ARCO||[];
+{ const A=(L0.ARCO||[]).filter(a=>!/^cozinhaNova/.test(a.id));
   ok(Array.isArray(A) && A.length>=7 && A.slice(0,7).map(a=>a.id+':'+a.nivel).join()===EXP.map(e=>e[0]+':'+e[1]).join() && A.every(a=>typeof a.quando==='function'),'CA1 ARCO começa com as 7 entradas, na ordem e com o nivel de §6.2 e §6.3, cada uma com quando');
   const dif=EXP.filter(e=>{ const a=A.find(x=>x.id===e[0]); return !a || JSON.stringify(ach(a.falas))!==JSON.stringify(e[2]); }).map(e=>e[0]);
   ok(A.length>=7 && dif.length===0,'CA1 as falas têm o texto, o e e a rubrica exatos do roteiro (diferente: '+(dif.join(', ')||'nenhuma')+')');

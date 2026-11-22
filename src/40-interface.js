@@ -621,14 +621,28 @@ function manualTracosDe(f){
 function buildManual(){
   const sv = game.manualReal, box = $('manual-grid'), abas = $('manual-abas');
   clearEl(box); clearEl(abas); manualEls = {};
-  const temNovo = aba => !devLivre() && (sv.manualNovo || []).some(id => { const f = manualFicha(id); return f && f.aba === aba; });
-  MANUAL_ABAS.forEach(a => {
+  const temNovo = aba => !devLivre() && (sv.manualNovo || []).some(id => { const f = manualFicha(id); return (f && f.aba === aba) || (aba === 'caderno' && id.indexOf('cad:') === 0); });
+  const cadVis = devLivre() || pontoOf(sv.salao && sv.salao.ponto).nivel >= 2;   // v12.10.2: o Caderno da Rosa, da área industrial em diante
+  if (!cadVis && manualAba === 'caderno') manualAba = 'basico';
+  MANUAL_ABAS.filter(a => a[0] !== 'caderno' || cadVis).forEach(a => {
     const b = el('button', null, a[1]); b.type = 'button'; b.setAttribute('data-v', a[0]);
     b.setAttribute('aria-pressed', a[0] === manualAba ? 'true' : 'false');
     if (a[0] !== manualAba && temNovo(a[0])) b.classList.add('novo');
     b.addEventListener('click', () => { Sfx.init(); Sfx.tap(); manualAba = a[0]; buildManual(); box.scrollTop = 0; });
     abas.appendChild(b);
   });
+  if (manualAba === 'caderno'){
+    const paginas = devLivre() ? Object.keys(CADERNO) : cadernoPaginas(sv.cursos), novasC = devLivre() ? [] : (sv.manualNovo || []).filter(id => id.indexOf('cad:') === 0);
+    box.classList.add('caderno');
+    paginas.forEach(k => {
+      const t = cadernoTexto(k), card = el('div', 'pagina' + (novasC.indexOf('cad:' + k) >= 0 ? ' nova' : '') + (k.split('.')[1] === 'terraco' ? ' tonhao' : ''));
+      card.setAttribute('data-id', k); card.setAttribute('role', 'listitem');
+      card.appendChild(el('b', null, t.titulo)); card.appendChild(el('i', 'frase', '\u201C' + t.frase + '\u201D')); card.appendChild(el('span', 'receita', t.receita));
+      box.appendChild(card);
+    });
+    game.manualVista(paginas.map(k => 'cad:' + k)); manualBolinha(); return;
+  }
+  box.classList.remove('caderno');
   const fichas = MANUAL.filter(f => f.aba === manualAba), novas = devLivre() ? [] : (sv.manualNovo || []).filter(id => fichas.some(f => f.id === id));
   fichas.forEach(f => {
     const ab = manualAberta(f.id), card = el('div', 'ficha' + (ab ? '' : ' trancada') + (novas.indexOf(f.id) >= 0 ? ' nova' : ''));
@@ -650,8 +664,8 @@ function abrirManual(fichaId, volta){
   const f = fichaId ? manualFicha(fichaId) : null, sv = game.manualReal;
   if (f) manualAba = f.aba;
   else {
-    const nova = manualVolta === 'shop' || devLivre() ? null : (sv.manualNovo || []).map(manualFicha).find(x => x);
-    manualAba = nova ? nova.aba : 'basico';
+    const nova = manualVolta === 'shop' || devLivre() ? null : (sv.manualNovo || []).map(manualFicha).find(x => x), cn = manualVolta !== 'shop' && !devLivre() && (sv.manualNovo || []).some(id => id.indexOf('cad:') === 0);
+    manualAba = nova ? nova.aba : cn ? 'caderno' : 'basico';
   }
   buildManual(); showOnly(['ov-manual']);
   const box = $('manual-grid'), card = f ? manualEls[f.id] : null;
