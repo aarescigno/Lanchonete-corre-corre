@@ -17,10 +17,9 @@ Origem: retorno do Renan Martorelli (beta-tester) e conversa com o Arthur (15/10
 |---|---|---|---|
 | 5 | ~~Modo História, parte 1~~: juntou-se à 2f e aos capítulos da 3a, 3b e 4a (28/10) | — | — |
 | 14b | O bot humano, calibrado pelos relatórios | — (testes) | depois dos relatórios dos testers |
-| 18a | Os cursos do Tonhão em degraus por ponto (pratos de estrada, 9 níveis, Turno sem fim fora do menu) | v12.10 | feita em 22/11 (`docs/spec-v12.10.md`; `smoke117`; degraus por ponto, `tonhaoNivelAlc`, conversão do save, bot e dev) |
 | 18b | O prato que ele estranha, o suor, os desenhos dos pratos de estrada e o empratamento | v12.10.1 | feita em 22/11 (`docs/spec-v12.10.1.md`; `smoke118`; prato estranho, suor, desenhos de estrada, empratamento) |
 | 18c | A conversa da chegada a cada ponto e o Caderno da Rosa | v12.10.2 | feita em 22/11 (`docs/spec-v12.10.2.md`; `smoke119`; `cozinhaNova2/3/4`, `CADERNO` e a aba do Manual) |
-| 18d | O equilíbrio dos cursos em degraus | v12.10.3 | planejada em 22/11, em rascunho (`docs/spec-v12.10.3.md`) |
+| 18d | O equilíbrio dos cursos em degraus | v12.10.3 | feita em 22/11 (`docs/spec-v12.10.3.md`; `smoke120`; preços dos cursos, `metaF` da área industrial, `CURSO_DIA` da Avenida, `CURSO_AV.preco` 1,25) |
 
 ---
 
@@ -95,13 +94,6 @@ Pedido do usuário em 17/11: o bot joga "bem demais, melhor do que gente". Os al
   - O que muda no equilíbrio do jogo com esses perfis fica para a ideia guardada "Revisão geral de equilíbrio".
 
   **Modelo:** Sonnet, esforço alto (calibração por tentativa, em 4 fases e 2 perfis)
-
-## Etapa 18 — Os cursos do Tonhão em cada ponto (18a, v12.10; 18b, v12.10.1; 18c, v12.10.2; 18d, v12.10.3)
-Pedido do usuário em 21 e 22/11 (`docs/PROPOSTAS.md`, "os níveis do Tonhão"): os cursos baratos da Garagem levavam o Tonhão ao topo antes da Avenida, e o curso de pastel ensinava a panqueca e o ravioli. Agora cada ponto tem os seus cursos (um degrau por técnica, básico e avançado), que trazem pratos e os dois níveis do Tonhão daquele ponto; no ponto novo ele arrisca um prato de cada técnica que já sabe, mais devagar, até fazer o curso de lá.
-- **18a** (`docs/spec-v12.10.md`): degraus, pratos de estrada, 9 níveis, lojinha (troca, 2 cursos por dia no Terraço), save, Turno sem fim fora do menu, modo dev. **Modelo:** Sonnet, esforço alto (spec aprovada em 22/11)
-- **18b** (`docs/spec-v12.10.1.md`): o prato que ele estranha (+40% de preparo, metade do capricho), o suor e o papelzinho, os desenhos dos 6 pratos de estrada, o empratamento do nível 7. **Modelo:** Sonnet, esforço médio (spec aprovada em 22/11)
-- **18c** (`docs/spec-v12.10.2.md`): as conversas `cozinhaNova2` a `cozinhaNova4` e a aba Caderno no Manual (25 páginas). **Modelo:** Sonnet, esforço médio (spec aprovada em 22/11)
-- **18d** (`docs/spec-v12.10.3.md`): preços, níveis e metas pelo `balance.js` e pelo `carreira.js`, com a carreira no ritmo de antes (±3 dias). **Modelo:** Sonnet, esforço alto (spec aprovada em 22/11)
 
 ## Ideias guardadas (sem etapa ainda)
 - **Ranking compartilhado** (saiu da Etapa 7 em 15/11: "fica offline"): o código continua no jogo, desligado (`Rank.online = false`, `src/30-ranking.js`), e as chamadas ainda batem com o `db` do artifact (conferido em 15/11). Religar pede `Rank.online = true`, declarar nas capacidades a leitura da coleção `ranking-campanha` e decidir a ordem (lucro acumulado, ou estrelas do Michelzão com o lucro no desempate, a ideia adiada na v10.10).

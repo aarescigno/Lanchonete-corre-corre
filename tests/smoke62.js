@@ -29,7 +29,7 @@ const TIPOS=['estudante','executiva','familia','vovos','turma','motorista','nego
   ok(g.buyCurso('alta') && !g.buyCurso('pastel'),'dois cursos por lojinha no Terraço (v12.10): o terceiro fica travado');
   g.save.cursoDia=0; g.save.cursoQt=0; ok(g.save.cursos.alta.terraco===1 && g.buyCurso('entradas') && g.save.cursos.entradas.terraco===2,'o avançado das entradas (Entradas de chef) na lojinha seguinte');
   ok(L.pratoAv('bruschetta',g.save.cursos) && !L.pratoAv('risoto',g.save.cursos),'o avançado só vale para os pratos do curso');
-  ok(preco(L,g,'bruschetta')===Math.round(34*1.15) && preco(L,g,'risoto')===82,'preço no Terraço (v12.7: bruschetta R$ 34, risoto R$ 82): avançado ×1,15');
+  ok(preco(L,g,'bruschetta')===Math.round(34*L.CURSO_AV.preco) && preco(L,g,'risoto')===82,'preço no Terraço (v12.7: bruschetta R$ 34, risoto R$ 82): avançado ×CURSO_AV.preco (1,25 desde a v12.10.3)');
   ok(L.precoPrato('medalhao',g.ponto,{})===108,'medalhão: R$ '+L.precoPrato('medalhao',g.ponto,{})+' no Terraço'); }
 
 // ---------- 2. a regra do prato fino ----------

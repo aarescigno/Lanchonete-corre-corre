@@ -16,7 +16,7 @@ ok(Object.keys(C).length-CJ.length===65 && CJ.join()==='pamonha,milho,canjica,cu
 ok(Object.keys(C).filter(k=>C[k].cat!=='junina'&&k!=='liaRisoto').every(k=>C[k].cat && ['pf','frito','assado','chapa','pastel'].includes(C[k].cat) && (C[k].curso===null || L.cursoOf(C[k].curso))),'cada prato tem categoria e curso (ou nenhum)');
 ok(['pf:30','coxinha:10','risoles:7','kibe:8','bolinho:10','misto:12','bauru:14','paoChapa:8','pastel:12','pastelQ:12','pastelP:13'].every(x=>C[x.split(':')[0]].preco.garagem===+x.split(':')[1]) && ['empada:12','esfihaA:9','esfihaF:9','pfVeg:32','empadaPalmito:12','kibeAbobora:9','pfVegano:32','coxinhaJaca:11','pastelPalmito:13','esfihaSoja:9','mistoVegano:13'].every(x=>C[x.split(':')[0]].preco.garagem===undefined && C[x.split(':')[0]].preco.industrial===+x.split(':')[1]),'os preços da Garagem (os 11 pratos dela) e os da área industrial dos 11 que saíram da Garagem (v10.5: × 1,2; v12.10)');
 ok(Object.keys(C).filter(k=>C[k].cat!=='junina'&&!C[k].carne&&!C[k].veg).sort().join()==='paoChapa,pastelQ' && Object.keys(C).filter(k=>C[k].cat!=='junina'&&!C[k].carne).length===30,'sem carne de fábrica: só o pão na chapa e o pastel de queijo (mais os pratos do curso Vegetariano e os sem carne dos pontos novos)');
-ok(L.CURSOS.map(c=>c.id).join()==='pastel,chapa,fritos,assados,veg,pf,restaurante,entradas,alta' && ['pastel','chapa','fritos'].map(id=>L.CURSOS.find(c=>c.id===id).degraus.garagem).map(d=>d.preco+':'+d.av.preco).join()==='110:210,130:250,150:310','cursos: 9 técnicas; na Garagem pastel 110/210, chapa 130/250 e fritos 150/310 (v12.10: um degrau por ponto, os preços dos outros pontos no smoke117)');
+ok(L.CURSOS.map(c=>c.id).join()==='pastel,chapa,fritos,assados,veg,pf,restaurante,entradas,alta' && ['pastel','chapa','fritos'].map(id=>L.CURSOS.find(c=>c.id===id).degraus.garagem).map(d=>d.preco+':'+d.av.preco).join()==='140:270,170:330,200:400','cursos: 9 técnicas; na Garagem pastel 140/270, chapa 170/330 e fritos 200/400 (v12.10: um degrau por ponto, os preços dos outros pontos no smoke117)');
 novo();
 ok(L.pratosSabidos(g.save.cursos).join()==='pf,coxinha','save novo: a cozinha só sabe PF e coxinha');
 ok(Math.abs(L.avalMenu(g.save.cursos)-2)<1e-9,'Diversidade do cardápio: 2,0 de início');
@@ -28,24 +28,24 @@ ok(L.GOSTOS.estudante.join()==='2,3,1,2,2' && L.GOSTOS.executiva.join()==='4,0,2
 g.save=L.normSave({bank:1000,dia:3}); g.up=g.save.up; g.boughtFor=0; g.goShop(3);
 { const b0=g.save.bank;
   ok(g.cursoProx('pastel').nivel===1 && g.cursoProx('pf')===null,'o próximo degrau: básico; o PF não tem cartão na Garagem (o PF é de base)');
-  ok(g.buyCurso('pastel') && g.save.bank===b0-110 && g.save.cursos.pastel.garagem===1 && g.save.cursoDia===3,'comprar o curso de pastel: R$ 110, nível 1, dia 3');
+  ok(g.buyCurso('pastel') && g.save.bank===b0-140 && g.save.cursos.pastel.garagem===1 && g.save.cursoDia===3,'comprar o curso de pastel: R$ 140, nível 1, dia 3');
   ok(/curso de Pastel de feira/.test(g.cursoMsg),'a fala: "O Tonhão foi fazer o curso de Pastel de feira!"');
-  ok(g.save.caixaPend.mel===110,'a compra entra no Caixa, na coluna Compras');
-  ok(g.cursoTrava && !g.buyCurso('chapa') && g.save.bank===b0-110,'um curso por lojinha: o segundo fica travado');
+  ok(g.save.caixaPend.mel===140,'a compra entra no Caixa, na coluna Compras');
+  ok(g.cursoTrava && !g.buyCurso('chapa') && g.save.bank===b0-140,'um curso por lojinha: o segundo fica travado');
   L.setShopTab('cursos'); const t=txt(els['shop-grid']); if(process.env.V) console.log(t);
   ok(/Comprar R\$/.test(t)&&!/Receitas/.test(t)&&/Em curso/.test(t),'aba Cursos: pratos, o avançado do PF e o aviso do curso do dia');
   g.goShop(4); ok(!g.cursoTrava && g.buyCurso('chapa') && g.save.cursos.chapa.garagem===1,'na lojinha seguinte, outro curso');
-  g.goShop(5); ok(g.cursoProx('pastel').nivel===2 && g.cursoProx('pastel').preco===210 && g.buyCurso('pastel') && g.save.cursos.pastel.garagem===2,'feito o básico, vem o avançado (R$ 210)');
+  g.goShop(5); ok(g.cursoProx('pastel').nivel===2 && g.cursoProx('pastel').preco===270 && g.buyCurso('pastel') && g.save.cursos.pastel.garagem===2,'feito o básico, vem o avançado (R$ 270)');
   g.goShop(6); g.save.bank=100; ok(!g.buyCurso('fritos') && g.save.cursos.fritos===undefined,'sem dinheiro, não compra');
   g.save.bank=1000; ok(g.buyCurso('fritos'), 'com dinheiro, compra'); g.goShop(7); ok(g.cursoProx('fritos').nivel===2 && g.buyCurso('fritos') && g.cursoProx('fritos')===null,'o avançado de fritos, e depois "curso completo"'); }
 
 // ---------- o avançado: +15% no preço, caprichado x1,5 ----------
 { const cu={fritos:{garagem:2},chapa:{garagem:1}};
-  ok(L.precoPrato('pf',null,cu)===30 && L.precoPrato('pf',I,{pf:{industrial:2}})===39 && L.precoPrato('coxinha',null,cu)===12 && L.precoPrato('kibe',null,cu)===9,'avançado: coxinha 10 a 12 (vale também para a coxinha) e kibe 8 a 9 (v10.5); o PF só sobe com as Carnes variadas da área industrial (34 a 39)');
+  ok(L.precoPrato('pf',null,cu)===30 && L.precoPrato('pf',I,{pf:{industrial:2}})===Math.round(34*L.CURSO_AV.preco) && L.precoPrato('coxinha',null,cu)===Math.round(10*L.CURSO_AV.preco) && L.precoPrato('kibe',null,cu)===Math.round(8*L.CURSO_AV.preco),'avançado: coxinha 10 a 13 (vale também para a coxinha) e kibe 8 a 10 (v10.5; ×1,25 desde a v12.10.3); o PF só sobe com as Carnes variadas da área industrial (34 a 43)');
   ok(L.precoPrato('bauru',null,cu)===14 && L.precoPrato('pf',null,{})===30 && L.precoPrato('coxinha',null,{})===10,'sem o avançado, o preço é o de sempre');
   novo({cursos:cu}); const k=g.kitchen, cr=k.chef.crit;
   ok(Math.abs(k.chefCrit('pf')-cr)<1e-9 && Math.abs(k.chefCrit('coxinha')-cr*1.5)<1e-9 && Math.abs(k.chefCrit('bauru')-cr)<1e-9 && Math.abs(k.chefCrit('pastel')-cr)<1e-9,'caprichado x1,5 só nos pratos do curso avançado feito');
-  const gr=new L.Group(g,'executiva',1,0,false); gr.dishes=['coxinha']; ok(L.precoPrato(gr.dishes[0],g.ponto,g.cursos)===12,'o jogo cobra o preço do avançado'); }
+  const gr=new L.Group(g,'executiva',1,0,false); gr.dishes=['coxinha']; ok(L.precoPrato(gr.dishes[0],g.ponto,g.cursos)===Math.round(10*L.CURSO_AV.preco),'o jogo cobra o preço do avançado'); }
 
 // ---------- quem pede o quê ----------
 { novo(); let n=0, so=true, extraPf=false;
@@ -98,7 +98,7 @@ function normB(A){ return A.L.normSave({}).bank; }
   { const v1={veg:{industrial:1}}, f=(o)=>Object.assign({},v1,o); ok(L.pratoSabido('pfVeg',v1,I) && !L.pratoSabido('empadaPalmito',v1,I) && L.pratoSabido('empadaPalmito',f({assados:{industrial:1}}),I) && !L.pratoSabido('kibeAbobora',f({assados:{industrial:1}}),I) && L.pratoSabido('kibeAbobora',f({fritos:{garagem:1}}),I),'empada de palmito só com assados, kibe de abóbora só com fritos (o degrau da Garagem vale na área industrial)'); }
   { const v1={veg:{industrial:1}}, v2={veg:{industrial:2}}, f=(o)=>Object.assign({},v2,o); ok(!L.pratoSabido('pfVegano',v1,I) && L.pratoSabido('pfVegano',v2,I) && !L.pratoSabido('coxinhaJaca',v2,I) && L.pratoSabido('coxinhaJaca',f({fritos:{garagem:1}}),I) && !L.pratoSabido('pastelPalmito',f({fritos:{garagem:1}}),I) && L.pratoSabido('mistoVegano',f({chapa:{garagem:1}}),I),'os veganos pedem o avançado e o básico do curso de que dependem'); }
   ok(Math.abs(L.avalMenu({pastel:{garagem:1},chapa:{garagem:1},fritos:{garagem:1},assados:{industrial:1},veg:{industrial:1}},0,I)-5)<1e-9,'com os 5 básicos na área industrial, a Diversidade do cardápio é 5,0');
-  ok(L.precoPrato('pfVeg',I,{veg:{industrial:2}})===Math.round(32*1.15) && L.precoPrato('pfVegano',I,{veg:{industrial:2}})===32,'avançado: +15% no PF vegetariano, e os veganos ficam no preço comum');
+  ok(L.precoPrato('pfVeg',I,{veg:{industrial:2}})===Math.round(32*L.CURSO_AV.preco) && L.precoPrato('pfVegano',I,{veg:{industrial:2}})===32,'avançado: +CURSO_AV.preco no PF vegetariano, e os veganos ficam no preço comum');
   // pedem: o vegetariano só come sem carne; sem opção, coxinha (Cardápio 1)
   novo({salao:{ponto:'industrial'},cursos:{veg:{industrial:1},assados:{industrial:1}}}); let so=true, vegN=0, viuPfv=false;
   for(let i=0;i<3000;i++){ const gr=new L.Group(g,TIPOS[i%4],i,0,false); gr.people.forEach((p,j)=>{ if(p.veg){ vegN++; if(L.CARDAPIO[gr.dishes[j]].carne) so=false; if(gr.extras[j] && L.CARDAPIO[gr.extras[j]].carne) so=false; } }); if(gr.dishes.includes('pfVeg')) viuPfv=true; }

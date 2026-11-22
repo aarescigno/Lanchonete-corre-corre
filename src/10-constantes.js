@@ -122,40 +122,40 @@ const CARDAPIO = {
   pamonhaMel:   { nome:'Pamonha de queijo com mel', preco:{ terraco:24 }, cat:'junina', curso:'junina', carne:false, cor:'#E6D27A' },
   canjicaCoco:  { nome:'Canjica de coco com cumaru',preco:{ terraco:26 }, cat:'junina', curso:'junina', carne:false, cor:'#F6EBC8' }
 };
-/* os cursos do Tonhão (v8.6.9): um por lojinha. v12.7: o curso é uma técnica. v12.10: cada técnica tem um DEGRAU por ponto (`degraus`, as chaves são os ids de PONTOS): o básico (nome, preco) ensina os pratos do degrau
+/* os cursos do Tonhão (v8.6.9): um por lojinha (v12.10.3: dois na Avenida e no Terraço, CURSO_DIA). v12.7: o curso é uma técnica. v12.10: cada técnica tem um DEGRAU por ponto (`degraus`, as chaves são os ids de PONTOS): o básico (nome, preco) ensina os pratos do degrau
    (CARDAPIO[k].curso === técnica e degrauDe(k) === ponto) e o avançado (av: nome, preco, receita) soma CURSO_AV.preco ao preço e CURSO_AV.crit à chance de caprichado. preco 0 no degrau: o básico já vem feito (o PF da Garagem e da área
    industrial; só o avançado se compra). O degrau novo inclui o antigo (buyCurso) e cobra só a troca (cursoProx). save.cursos: { técnica: { ponto: 1 (básico) | 2 (avançado) } } */
 const CURSOS = [
   { id:'pastel', degraus:{
-    garagem:    { nome:'Pastel de feira',   preco:110, av:{ nome:'Pastel de feira de verdade', preco:210, receita:'carne com ovo e azeitona, queijo com orégano, pizza com calabresa' } },
-    industrial: { nome:'Pastel de estrada', preco:140, av:{ nome:'Pastel de estrada recheado', preco:280 } },
-    avenida:    { nome:'Panquecas',         preco:320, av:{ nome:'Panqueca gratinada', preco:630 } },
+    garagem:    { nome:'Pastel de feira',   preco:140, av:{ nome:'Pastel de feira de verdade', preco:270, receita:'carne com ovo e azeitona, queijo com orégano, pizza com calabresa' } },
+    industrial: { nome:'Pastel de estrada', preco:150, av:{ nome:'Pastel de estrada recheado', preco:310 } },
+    avenida:    { nome:'Panquecas',         preco:200, av:{ nome:'Panqueca gratinada', preco:380 } },
     terraco:    { nome:'Massas finas',      preco:700, av:{ nome:'Massa fresca da casa', preco:1400 } } } },
   { id:'chapa', degraus:{
-    garagem:    { nome:'Chapa',             preco:130, av:{ nome:'Pão francês da padaria e requeijão de corte', preco:250, receita:'misto de presunto defumado com queijo minas, bauru clássico com rosbife e picles' } },
-    industrial: { nome:'Lanche de chapa',   preco:170, av:{ nome:'Hambúrguer de verdade', preco:340 } },
-    avenida:    { nome:'Chapa de restaurante', preco:350, av:{ nome:'Beirute da casa', preco:700 } },
+    garagem:    { nome:'Chapa',             preco:170, av:{ nome:'Pão francês da padaria e requeijão de corte', preco:330, receita:'misto de presunto defumado com queijo minas, bauru clássico com rosbife e picles' } },
+    industrial: { nome:'Lanche de chapa',   preco:190, av:{ nome:'Hambúrguer de verdade', preco:370 } },
+    avenida:    { nome:'Chapa de restaurante', preco:210, av:{ nome:'Beirute da casa', preco:420 } },
     terraco:    { nome:'Chapa fina',        preco:770, av:{ nome:'Pão de fermentação natural', preco:1540 } } } },
   { id:'fritos', degraus:{
-    garagem:    { nome:'Salgados fritos',   preco:150, av:{ nome:'Coxinha de massa de batata com catupiry', preco:310, receita:'vale também para a coxinha; risoles de camarão, kibe com coalhada, bolinho japonês com queijo' } },
-    industrial: { nome:'Fritos de estrada', preco:200, av:{ nome:'Carne-seca desfiada na hora', preco:390 } },
-    avenida:    { nome:'Peixe empanado',    preco:390, av:{ nome:'Empanado crocante', preco:770 } },
+    garagem:    { nome:'Salgados fritos',   preco:200, av:{ nome:'Coxinha de massa de batata com catupiry', preco:400, receita:'vale também para a coxinha; risoles de camarão, kibe com coalhada, bolinho japonês com queijo' } },
+    industrial: { nome:'Fritos de estrada', preco:220, av:{ nome:'Carne-seca desfiada na hora', preco:430 } },
+    avenida:    { nome:'Peixe empanado',    preco:240, av:{ nome:'Empanado crocante', preco:470 } },
     terraco:    { nome:'Croquetes',         preco:840, av:{ nome:'Croquete de costela de 12 horas', preco:1680 } } } },
   { id:'assados', degraus:{
-    industrial: { nome:'Salgados assados',  preco:180, av:{ nome:'Massa podre da vó Nilza', preco:350, receita:'empada de frango com azeitona, esfihas com coalhada e limão' } },
-    avenida:    { nome:'Tortas',            preco:390, av:{ nome:'Torta de massa folhada', preco:770 } },
+    industrial: { nome:'Salgados assados',  preco:200, av:{ nome:'Massa podre da vó Nilza', preco:390, receita:'empada de frango com azeitona, esfihas com coalhada e limão' } },
+    avenida:    { nome:'Tortas',            preco:240, av:{ nome:'Torta de massa folhada', preco:470 } },
     terraco:    { nome:'Folhados',          preco:840, av:{ nome:'Folhado na manteiga', preco:1680 } } } },
   { id:'veg', degraus:{
-    industrial: { nome:'Vegetariano',       preco:110, av:{ nome:'Pratos veganos', preco:210, receita:'PF vegano (sem o ovo), coxinha de jaca, pastel de palmito, esfiha de soja e misto vegano com queijo de castanha' } },
-    avenida:    { nome:'Vegetariano de restaurante', preco:280, av:{ nome:'Veganos de restaurante', preco:560 } },
+    industrial: { nome:'Vegetariano',       preco:120, av:{ nome:'Pratos veganos', preco:230, receita:'PF vegano (sem o ovo), coxinha de jaca, pastel de palmito, esfiha de soja e misto vegano com queijo de castanha' } },
+    avenida:    { nome:'Vegetariano de restaurante', preco:170, av:{ nome:'Veganos de restaurante', preco:340 } },
     terraco:    { nome:'Vegetariano fino',  preco:630, av:{ nome:'Veganos finos', preco:1260 } } } },
   { id:'pf', degraus:{
     garagem:    { preco:0 },
-    industrial: { preco:0, av:{ nome:'Carnes variadas', preco:280, receita:'o PF vem com bife, filé de frango grelhado, peixe frito ou bife a cavalo' } },
-    avenida:    { nome:'Molhos de panela',  preco:420, av:{ nome:'Carnes ao ponto', preco:840 } },
+    industrial: { preco:0, av:{ nome:'Carnes variadas', preco:310, receita:'o PF vem com bife, filé de frango grelhado, peixe frito ou bife a cavalo' } },
+    avenida:    { nome:'Molhos de panela',  preco:260, av:{ nome:'Carnes ao ponto', preco:510 } },
     terraco:    { nome:'Molhos finos',      preco:980, av:{ nome:'Carnes nobres', preco:1960 } } } },
   { id:'restaurante', degraus:{
-    avenida:    { nome:'Cozinha de restaurante', preco:490, av:{ nome:'Parmegiana da casa', preco:700, receita:'molho de tomate de 6 horas e queijo gratinado na hora' } },
+    avenida:    { nome:'Cozinha de restaurante', preco:300, av:{ nome:'Parmegiana da casa', preco:420, receita:'molho de tomate de 6 horas e queijo gratinado na hora' } },
     terraco:    { nome:'Molho de vinho',    preco:1050, av:{ nome:'Redução de vinho da casa', preco:1750 } } } },
   { id:'entradas', degraus:{
     terraco:    { nome:'Entradas finas',    preco:840, av:{ nome:'Entradas de chef', preco:1260, receita:'bruschetta de tomate confitado, bolinho de bacalhau cremoso e quiche de alho-poró na massa folhada' } } } },
@@ -166,8 +166,8 @@ const CURSOS = [
 const CURSOS_ANTIGOS = { pastel:[150, 300], chapa:[180, 360], fritos:[220, 440], assados:[250, 500], pf:[0, 400], veg:[150, 300], restaurante:[400, 600], entradas:[600, 900], alta:[900, 1400] };
 /* v12.10: o ponto onde cada técnica do save antigo passa a valer (o degrau novo em que ela cai) */
 const CURSOS_PONTO_ANTIGO = { pastel:'garagem', chapa:'garagem', fritos:'garagem', assados:'industrial', veg:'industrial', pf:'industrial', restaurante:'avenida', entradas:'terraco', alta:'terraco' };
-/* v12.10: quantos cursos do Tonhão se compram numa lojinha (pelo ponto.nivel): um, e dois no Terraço */
-const CURSO_DIA = { 1:1, 2:1, 3:1, 4:2 };
+/* v12.10: quantos cursos do Tonhão se compram numa lojinha (pelo ponto.nivel): um, e dois na Avenida e no Terraço (v12.10.3: a Avenida passou de 1 para 2, para o Tonhão chegar ao teto dela a tempo) */
+const CURSO_DIA = { 1:1, 2:1, 3:2, 4:2 };
 const pontoId = p => typeof p === 'string' ? p : (p && p.id) || PONTOS[0].id;
 const pontoIdx = p => Math.max(0, PONTOS.findIndex(x => x.id === pontoId(p)));
 /* v12.10: o degrau tem curso para comprar? (o básico, com preco > 0; o avançado, com av) */
@@ -176,7 +176,7 @@ function cursoOk(c, ponto){ return !!c && !!c.degraus[pontoId(ponto)]; }
    vezes que pede PF; mov: o curso Vegetariano traz +5% de movimento no básico e mais +5% no avançado */
 const VEG = { chance:0.1, pfTroca:0.2, mov:0.05 };
 function vegMov(cursos){ return 1 + VEG.mov * cursoNivel(cursos, 'veg'); }   // v12.10: o maior nível entre os degraus
-const CURSO_AV = { preco:1.15, crit:1.5 };
+const CURSO_AV = { preco:1.25, crit:1.5 };   // v12.10.3: o preço do prato de curso avançado, de 1,15 para 1,25 (o avançado passa a render de verdade nos pontos baixos)
 function cursoOf(id){ return CURSOS.find(c => c.id === id) || null; }
 /* v12.10: os ids dos pontos que têm degrau da técnica, na ordem de PONTOS */
 function degrausDe(id){ const c = cursoOf(id); return c ? PONTOS.map(p => p.id).filter(i => c.degraus[i]) : []; }
@@ -353,7 +353,8 @@ function pratoSabido(k, cursos, ponto){
   if (!cursoOf(p.curso)) return false;   // a barraca junina e o prato da Lia não vêm de curso nenhum
   const d = degrauDe(k), need = p.nivel || 1;
   if (cursoNivel(cursos, p.curso, d) >= need) return true;
-  return !!p.lento && need === 1 && degrausDe(p.curso).some(x => pontoIdx(x) < pontoIdx(d) && cursoNivel(cursos, p.curso, x) >= 1);
+  const comprado = x => { const g = cursoOf(p.curso).degraus[x], r = cursos && cursos[p.curso] && cursos[p.curso][x]; return (+r || 0) >= (g.preco > 0 ? 1 : 2); };   // v12.10.3: o degrau comprado de verdade (a Garagem e o básico da área industrial vêm de graça e não contam)
+  return !!p.lento && need === 1 && degrausDe(p.curso).some(x => pontoIdx(x) < pontoIdx(d) && (p.curso === 'pf' && d === 'terraco' ? comprado(x) : cursoNivel(cursos, p.curso, x) >= 1));   // v12.10.3: o escalope (Terraço) pede algum degrau de PF comprado; o strogonoff (Avenida) continua com a Garagem
 }
 /* v12.7: os pratos do cardápio que o ponto vende (sem os da barraca junina nem o da Lia), na ordem do cardápio (o painel do modo dev) */
 function pratosDoPonto(ponto){ return Object.keys(CARDAPIO).filter(k => vendeNoPonto(k, ponto) && CARDAPIO[k].cat !== 'junina' && CARDAPIO[k].curso !== 'liaAutor'); }
@@ -508,7 +509,7 @@ const PONTOS = [
   // patPressa: a paciência de quem vem sozinho ou em dupla; vip: a chance de VIP; metaF: o fator das metas (v9.6.1: 1,25 → 2,3 e 1,7 → 3,2); expertF (v9.6.1): o da expert, a 3ª estrela (sem ele, o metaF); prateleira: as vagas do balcão de retirada;
   // grupos: o fator dos grupos do dia (os 20 lugares já trazem +60% de movimento; sem ele, nem o bot afiado fechava o dia sem perder ninguém)
   { id:'industrial', nome:'Lanchonete na área industrial', nivel:2, lugares:20, aluguel:120, mudanca:800, credito:2000, area:{ x0:160, y0:150, x1:684, y1:500 }, espera:5, assento:'pe', bebida:'suco', pratos:5, marmJanela:3, prateleira:4,
-    tipos:{ estudante:1, executiva:1, familia:0.5, vovos:0.7, entregador:2, turma:2, motorista:1 }, encomenda:0.6, apito:{ quando:0.45, max:3, gap:[8, 12], aviso:10 }, patPressa:0.85, vip:0.2, metaF:1.5, expertF:1.0, grupos:0.8,   // v12.7: metaF 2,3 → 1,5 e expertF 1,5 → 1,0 (os preços da lanchonete deixaram de ser ×1,5: PF R$ 45 → 34; metas em ~86%)
+    tipos:{ estudante:1, executiva:1, familia:0.5, vovos:0.7, entregador:2, turma:2, motorista:1 }, encomenda:0.6, apito:{ quando:0.45, max:3, gap:[8, 12], aviso:10 }, patPressa:0.85, vip:0.2, metaF:1.3, expertF:1.0, grupos:0.8,   // v12.7: metaF 2,3 → 1,5 e expertF 1,5 → 1,0 (os preços da lanchonete deixaram de ser ×1,5: PF R$ 45 → 34; metas em ~86%)
    
     traz:'a freguesia da fábrica e da estrada', deixa:'as TVs, o assento da espera e a jarra de suco ficam' },
   // v9.1: o 2º ponto novo (cap. 6 e 7). Sem apito, sem encomenda e sem patPressa: a turma, o motorista e a encomenda não vêm. vip: ×2 (restaurante atrai mais VIP)
@@ -1591,10 +1592,11 @@ const TESTE_PESSOAS = ['dani', 'joca', 'cami', 'anselmo', 'lia'];
 const TESTE_NOMES = { dani:'Dani', joca:'Joca', cami:'Cami', anselmo:'Anselmo', lia:'Lia' };
 function testeNivel(t){ return pontoOf(DEV_CAPS[clamp(Math.round(+t.cap) || 1, 1, DEV_CAPS.length) - 1].ponto).nivel; }   // o nível do ponto da fase (ou do Desafio)
 function testeTem(q, nv){ return q === 'dani' || (q === 'joca' && nv >= 2) || ((q === 'cami' || q === 'anselmo') && nv >= 3) || (q === 'lia' && nv >= 4); }   // quem a campanha tem no ponto de nível nv
-/* o nível mais alto de cada pessoa no ponto nv e no capítulo cap (0 = não vem ao ponto): o Tonhão e a Dani 4, o Joca 4, a Cami 3 (Avenida), 4 (Terraço) ou 5 (a gerência, do cap. 12), o Anselmo 2 ou 3, a Lia 3 (v12.5) */
+/* o nível mais alto de cada pessoa no ponto nv e no capítulo cap (0 = não vem ao ponto): o Tonhão, o teto do ponto (2, 4, 6 ou 8; v12.10.3), a Dani 4, o Joca 4, a Cami 3 (Avenida), 4 (Terraço) ou 5 (a gerência, do cap. 12), o Anselmo 2 ou 3, a Lia 3 (v12.5) */
 function testeNivelMax(q, nv, cap){
   if (!testeTem(q, nv) && q !== 'tonhao') return 0;
-  if (q === 'tonhao' || q === 'dani' || q === 'joca') return STAFF[q].levels.length - 1;
+  if (q === 'tonhao') return 2 * nv;   // v12.10.3: o teto do ponto jogado (2, 4, 6 ou 8)
+  if (q === 'dani' || q === 'joca') return STAFF[q].levels.length - 1;
   if (q === 'cami') return nv >= 4 ? (cap >= 12 ? STAFF.cami.levels.length - 1 : 4) : 3;
   if (q === 'anselmo') return nv >= 4 ? 3 : 2;
   return STAFF.lia.levels.length - 1;   // v12.5: a Lia no nível 3, com os dois cursos
@@ -2041,7 +2043,7 @@ const HIST_NOMES = { bia:'Bia', tonhao:'Tonhão', dani:'Dani', joca:'Joca', cami
 const ATU_TXT = { procurando:'Procurando versão nova...', nova:'Tem versão nova: {v}! Seu jogo salvo continua.', igual:'Você já está na versão mais nova ({v}).', erro:'Sem internet agora. Tente de novo mais tarde.', atualizando:'Atualizando...' };
 function atuEstado(remota, atual){ if (typeof remota !== 'string' || !remota.trim()) return 'erro'; return remota.trim() === atual ? 'igual' : 'nova'; }
 const CAIXA_MAX = 14;                                 // livro-caixa (v7.2): quantos dias da carreira ficam guardados
-const VERSAO = 'v12.10.2';                                   // vai no resumo do Caixa
+const VERSAO = 'v12.10.3';                                   // vai no resumo do Caixa
 const DIVULGA_DIA = 4;                                // antes disso, o movimento é o da inauguração (sem custo); v9.0.2: dia 4, e o padrão é o boca a boca
 function divulgaAberta(n, sv){ return devLivre() || n >= DIVULGA_DIA && !(sv && sv.convDiv === 'pend'); }   // no modo dev, desde o dia 1; v9.0.3: no Modo História, só depois da conversa
 /* v9.6.4: a Efood (os entregadores) só abre depois da conversa dos entregadores, no Modo História; antes dela, nenhum tipo com `retira` vem na agenda */

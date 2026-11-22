@@ -1560,7 +1560,7 @@ class Game {
     this.setState('endlessend');
     Sfx.lose();
   }
-  /* lojinha antes do dia n (a partir do dia 2): melhorias à vontade, se o dinheiro der (v8.6.14: sem o limite de 1 por dia; só o curso do Tonhão segue 1 por lojinha) */
+  /* lojinha antes do dia n (a partir do dia 2): melhorias à vontade, se o dinheiro der (v8.6.14: sem o limite de 1 por dia; só o curso do Tonhão segue limitado por lojinha, CURSO_DIA) */
   goShop(n){
     this.shopNext = Math.max(1, n || this.day.n + 1);
     if (devLivre() && this.save.bank < DEV.bank){ this.save.bank = DEV.bank; writeSave(this.save); }   // modo dev: o dinheiro não acaba
@@ -1924,7 +1924,7 @@ class Game {
     const n = this.cardapioNovo; if (!n.length) return;
     this.save.cardVisto = (this.save.cardVisto || []).concat(n); writeSave(this.save);
   }
-  /* um curso por lojinha (v12.10: dois no Terraço, CURSO_DIA): depois de comprar o último, os outros esperam o próximo dia */
+  /* um curso por lojinha (v12.10.3: dois na Avenida e no Terraço, CURSO_DIA): depois de comprar o último, os outros esperam o próximo dia */
   get cursoTrava(){ return !devLivre() && this.save.cursoDia === this.shopNext && this.save.cursoQt >= (CURSO_DIA[this.ponto.nivel] || 1); }
   buyCurso(id){
     const p = this.cursoProx(id), sv = this.save;

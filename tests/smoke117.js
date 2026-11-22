@@ -20,14 +20,14 @@ ok(L.degrauDe('pastel')==='garagem' && L.degrauDe('pastelFrango')==='industrial'
 { const s1={ pastel:{ garagem:1 } }, s2={ pastel:{ garagem:1, avenida:1 } };
   ok(L.pratoSabido('panqueca',s1,A) && !L.pratoSabido('panquecaEsp',s1,A) && L.pratoSabido('panqueca',s2,A) && L.pratoSabido('panquecaEsp',s2,A) && !L.pratoSabido('panqueca',{},A),'CA3: só com o pastel da Garagem, na Avenida sabe a panqueca (estranha) e não a de espinafre; com as Panquecas, as duas'); }
 // CA4
-ok(L.pratoSabido('strogonoff',{},A) && L.pratoSabido('escalope',{},T) && !L.pratoSabido('vinho',{},T) && L.pratoSabido('vinho',{ restaurante:{ avenida:1 } },T) && !L.pratoSabido('execVeg',{},A) && L.pratoSabido('execVeg',{ veg:{ industrial:1 } },A),'CA4: no PF o strogonoff (Avenida) e o escalope (Terraço) saem sem curso, pois a Garagem conta como degrau feito; o vinho e o executivo vegetariano pedem o degrau anterior');
+ok(L.pratoSabido('strogonoff',{},A) && !L.pratoSabido('escalope',{},T) && L.pratoSabido('escalope',{ pf:{ avenida:1 } },T) && !L.pratoSabido('vinho',{},T) && L.pratoSabido('vinho',{ restaurante:{ avenida:1 } },T) && !L.pratoSabido('execVeg',{},A) && L.pratoSabido('execVeg',{ veg:{ industrial:1 } },A),'CA4: no PF o strogonoff (Avenida) sai sem curso, pois a Garagem conta como degrau feito, e o escalope (Terraço) pede um degrau de PF comprado (v12.10.3); o vinho e o executivo vegetariano pedem o degrau anterior');
 // CA5
 { let H=jogo('industrial',{ bank:5000, cursos:{}, equipe:{ tonhao:0 } }), {g}=H; g.save.cursoDia=0; let b=g.save.bank;
-  const p=g.cursoProx('pastel'); ok(p && p.preco===140,'CA5: sem o pastel da Garagem, o Pastel de estrada custa R$ 140');
-  ok(g.buyCurso('pastel') && g.save.bank===b-140 && g.save.cursos.pastel.industrial===1 && g.save.cursos.pastel.garagem===1,'CA5: comprar dá o básico dos dois degraus e cobra R$ 140');
+  const p=g.cursoProx('pastel'); ok(p && p.preco===150,'CA5: sem o pastel da Garagem, o Pastel de estrada custa R$ 150');
+  ok(g.buyCurso('pastel') && g.save.bank===b-150 && g.save.cursos.pastel.industrial===1 && g.save.cursos.pastel.garagem===1,'CA5: comprar dá o básico dos dois degraus e cobra R$ 150');
   H=jogo('industrial',{ bank:5000, cursos:{ pastel:{ garagem:1 } }, equipe:{ tonhao:0 } }); const g2=H.g; g2.save.cursoDia=0; b=g2.save.bank;
-  ok(g2.cursoProx('pastel').preco===30 && g2.buyCurso('pastel') && g2.save.bank===b-30 && g2.save.cursos.pastel.industrial===1,'CA5: com o da Garagem, cobra só a troca, R$ 30');
-  H=jogo('avenida',{ bank:5000, cursos:{ pastel:{ garagem:1, industrial:1 } } }); ok(H.g.cursoProx('pastel').preco===180,'CA5: Panquecas R$ 320 com o Pastel de estrada feito: R$ 180'); }
+  ok(g2.cursoProx('pastel').preco===10 && g2.buyCurso('pastel') && g2.save.bank===b-10 && g2.save.cursos.pastel.industrial===1,'CA5: com o da Garagem, cobra só a troca, R$ 10');
+  H=jogo('avenida',{ bank:5000, cursos:{ pastel:{ garagem:1, industrial:1 } } }); ok(H.g.cursoProx('pastel').preco===50,'CA5: Panquecas R$ 200 com o Pastel de estrada feito: R$ 50'); }
 // CA6
 { const H=jogo('avenida',{ cursos:{} }), c=cartoes(H), t=c.map(texto).join('|');
   ok(c.length===7 && ['Panquecas','Chapa de restaurante','Peixe empanado','Tortas','Vegetariano de restaurante','Molhos de panela','Cozinha de restaurante'].every(n=>t.indexOf('Curso de '+n)>=0),'CA6: a lojinha da Avenida mostra os 7 básicos ('+c.length+')');
@@ -46,8 +46,10 @@ ok(L.pratoSabido('strogonoff',{},A) && L.pratoSabido('escalope',{},T) && !L.prat
   const r=[g.setStaff('tonhao',1),g.save.equipe.tonhao,g.setStaff('tonhao',2),g.setStaff('tonhao',3),g.setStaff('tonhao',4),g.save.equipe.tonhao,g.setStaff('tonhao',2)];
   ok(r[0]&&r[1]===1&&r[2]&&r[3]&&!r[4]&&r[5]===3&&!r[6],'CA9: cada aumento sobe um nível; acima do ao alcance (3) ou abaixo do atual, recusa ('+r.join()+')'); }
 // CA10
-{ let H=jogo('avenida',{ bank:50000, cursos:{} }), {g}=H; g.save.cursoDia=0;
-  ok(!g.cursoTrava && g.buyCurso('pastel') && g.cursoTrava && !g.buyCurso('chapa') && /Em curso/.test(cartoes(H).map(texto).join('|')),'CA10: na Avenida, depois de um curso a lojinha trava ("Em curso")');
+{ let H=jogo('industrial',{ bank:50000, cursos:{} }), {g}=H; g.save.cursoDia=0;
+  ok(!g.cursoTrava && g.buyCurso('pastel') && g.cursoTrava && !g.buyCurso('chapa') && /Em curso/.test(cartoes(H).map(texto).join('|')),'CA10: na área industrial, depois de um curso a lojinha trava ("Em curso")');
+  H=jogo('avenida',{ bank:50000, cursos:{} }); { const g3=H.g; g3.save.cursoDia=0; const a3=g3.buyCurso('pastel'), t3=g3.cursoTrava, b3=g3.buyCurso('chapa'), t4=g3.cursoTrava, c3=g3.buyCurso('fritos');
+    ok(a3&&!t3&&b3&&t4&&!c3&&/Em curso/.test(cartoes(H).map(texto).join('|')),'CA10 (v12.10.3): na Avenida trava só depois do segundo curso ("Em curso")'); }
   H=jogo('terraco',{ bank:50000, cursos:{} }); const g2=H.g; g2.save.cursoDia=0;
   const a=g2.buyCurso('pastel'), t1=g2.cursoTrava, b=g2.buyCurso('chapa'), t2=g2.cursoTrava, c=g2.buyCurso('fritos');
   ok(a&&!t1&&b&&t2&&!c,'CA10: no Terraço trava só depois do segundo'); }
@@ -65,7 +67,7 @@ ok(L.pratoSabido('strogonoff',{},A) && L.pratoSabido('escalope',{},T) && !L.prat
   ok(o.bank===1000 && !o.cursoAviso && H.g.cursoMsg==='' && o.equipe.tonhao===4,'CA12: sem curso acima do ponto, nada volta e não há aviso'); }
 // CA13
 { const c={ fritos:{ garagem:2 } };
-  ok(L.precoPrato('coxinha',G,c)===12 && L.precoPrato('coxinha',I,c)===13 && L.precoPrato('enroladinho',I,c)===8 && L.precoPrato('coxinha',I,{})===11,'CA13: o avançado de fritos da Garagem soma ×1,15 à coxinha na Garagem e na área industrial, e não ao enroladinho'); }
+  ok(L.precoPrato('coxinha',G,c)===Math.round(L.precoPrato('coxinha',G,{})*L.CURSO_AV.preco) && L.precoPrato('coxinha',I,c)===Math.round(L.precoPrato('coxinha',I,{})*L.CURSO_AV.preco) && L.precoPrato('enroladinho',I,c)===8 && L.precoPrato('coxinha',I,{})===11,'CA13: o avançado de fritos da Garagem soma o CURSO_AV.preco (×1,25) à coxinha na Garagem e na área industrial, e não ao enroladinho'); }
 // CA14
 { let H=load(); H.L.buildMenu(); const off=H.els['btn-endless'].style.display; H.L.DEV.on=true; H.L.buildMenu(); const on=H.els['btn-endless'].style.display;
   ok(off==='none' && on==='','CA14: o menu só mostra o "Turno sem fim" com o modo dev ('+off+'/'+on+')'); }
