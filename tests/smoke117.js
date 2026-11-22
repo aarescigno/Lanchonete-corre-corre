@@ -20,7 +20,7 @@ ok(L.degrauDe('pastel')==='garagem' && L.degrauDe('pastelFrango')==='industrial'
 { const s1={ pastel:{ garagem:1 } }, s2={ pastel:{ garagem:1, avenida:1 } };
   ok(L.pratoSabido('panqueca',s1,A) && !L.pratoSabido('panquecaEsp',s1,A) && L.pratoSabido('panqueca',s2,A) && L.pratoSabido('panquecaEsp',s2,A) && !L.pratoSabido('panqueca',{},A),'CA3: só com o pastel da Garagem, na Avenida sabe a panqueca (estranha) e não a de espinafre; com as Panquecas, as duas'); }
 // CA4
-ok(L.pratoSabido('strogonoff',{},A) && L.pratoSabido('escalope',{},T) && !L.pratoSabido('vinho',{},T) && L.pratoSabido('vinho',{ restaurante:{ avenida:1 } },T) && !L.pratoSabido('execVeg',{},A) && L.pratoSabido('execVeg',{ veg:{ industrial:1 } },A),'CA4: no PF o strogonoff (Avenida) e o escalope (Terraço) saem sem curso, pois a Garagem conta como degrau feito; o vinho e o executivo vegetariano pedem o degrau anterior');
+ok(L.pratoSabido('strogonoff',{},A) && !L.pratoSabido('escalope',{},T) && L.pratoSabido('escalope',{ pf:{ avenida:1 } },T) && !L.pratoSabido('vinho',{},T) && L.pratoSabido('vinho',{ restaurante:{ avenida:1 } },T) && !L.pratoSabido('execVeg',{},A) && L.pratoSabido('execVeg',{ veg:{ industrial:1 } },A),'CA4: no PF o strogonoff (Avenida) sai sem curso, pois a Garagem conta como degrau feito, e o escalope (Terraço) pede um degrau de PF comprado (v12.10.3); o vinho e o executivo vegetariano pedem o degrau anterior');
 // CA5
 { let H=jogo('industrial',{ bank:5000, cursos:{}, equipe:{ tonhao:0 } }), {g}=H; g.save.cursoDia=0; let b=g.save.bank;
   const p=g.cursoProx('pastel'); ok(p && p.preco===140,'CA5: sem o pastel da Garagem, o Pastel de estrada custa R$ 140');

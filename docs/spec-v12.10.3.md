@@ -35,8 +35,8 @@ Com os cursos em degraus, a carreira tem o mesmo ritmo de antes: as mudanças de
 - **CA3** Terraço dentro do alvo → `balance` (o comando da equipe toda)
 - **CA4** `CURSOS=todos` ganha 15% ou mais sobre `CURSOS=0` nos quatro pontos → `balance`
 - **CA5** Ritmo da carreira e evolução do Tonhão dentro dos alvos → `DIAS=80 node carreira.js 6` (`carreira`)
-- **CA7** Sem curso nenhum, o `escalope` não é sabido no Terraço; com Carnes variadas (avançado de `pf` da área industrial), é sabido e estranho; com o básico de `pf` do Terraço, sabido e não estranho; o `strogonoff` na Avenida continua sabido sem curso → `smoke119` (novo)
-- **CA8** `testeNivelMax` dá 2, 4, 6 e 8 na Garagem, na área industrial, na Avenida e no Terraço → `smoke119`
+- **CA7** Sem curso nenhum, o `escalope` não é sabido no Terraço; com Carnes variadas (avançado de `pf` da área industrial), é sabido e estranho; com o básico de `pf` do Terraço, sabido e não estranho; o `strogonoff` na Avenida continua sabido sem curso → `smoke120` (novo)
+- **CA8** `testeNivelMax` dá 2, 4, 6 e 8 na Garagem, na área industrial, na Avenida e no Terraço → `smoke120`
 - **CA6** Os smokes que medem preço de curso, nível ou meta batem com os números finais → `smoke117` e os corrigidos (lista em Testes)
 
 ## Partes
@@ -45,7 +45,7 @@ Com os cursos em degraus, a carreira tem o mesmo ritmo de antes: as mudanças de
 - `tests/carreira.js`: a linha nova com o dia em que o bot chega a cada nível do Tonhão (se ainda não houver) e o nível na saída de cada ponto.
 
 ## Tarefas
-- [ ] T0 `smoke119` (CA7 e CA8) e as duas regras de 22/11 (escalope e `testeNivelMax`), antes da medida da T3.
+- [x] T0 `smoke120` (CA7 e CA8) e as duas regras de 22/11 (escalope e `testeNivelMax`), antes da medida da T3.
 - [ ] T1 Linha de base na v12.9.1 (worktree): os comandos dos alvos; anote em Testes.
 - [ ] T2 `carreira.js`: o nível do Tonhão na saída de cada ponto e no fim da história.
 - [ ] T3 Medida na v12.10.2 com os mesmos comandos; anote.
@@ -54,12 +54,13 @@ Com os cursos em degraus, a carreira tem o mesmo ritmo de antes: as mudanças de
 - [ ] Fechamento: `VERSAO`, `vtag`, `#ov-ver`, `docs/RESUMO.md`, `docs/TESTES.md` (alvos e números novos), esta spec como entregue (números finais nas Regras), `tests/run_all.sh --tudo` verde, PR e merge.
 
 ## Testes
-- `smoke119` novo (CA7 e CA8: o escalope e o `testeNivelMax`). Os outros alvos são do `balance.js` e do `carreira.js`. No fechamento: a linha de base, cada rodada de ajuste e os números finais.
+- `smoke120` novo (CA7 e CA8: o escalope e o `testeNivelMax`). Os outros alvos são do `balance.js` e do `carreira.js`. No fechamento: a linha de base, cada rodada de ajuste e os números finais.
 
 ## Decisões em aberto
 Nenhuma (as das specs v12.10 a v12.10.2 foram fechadas em 22/11; os preços de partida são os da v12.10, já 30% abaixo da proposta).
 
 ## Desvios
-(No fechamento.)
+- O smoke das duas regras de 22/11 é o `smoke120` (a v12.10.2 já usou o `smoke119`); a spec dizia `smoke119`. Para o `smoke120` testar `testeNivelMax`, ele entrou no `window.__lcc`. O `smoke117` (CA4) esperava o escalope sabido sem curso: corrigido para a regra nova.
+(Os demais, no fechamento.)
 
 **Modelo:** Sonnet, esforço alto (balanceamento por tentativa em quatro pontos)

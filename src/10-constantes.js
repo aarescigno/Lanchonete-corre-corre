@@ -353,7 +353,8 @@ function pratoSabido(k, cursos, ponto){
   if (!cursoOf(p.curso)) return false;   // a barraca junina e o prato da Lia não vêm de curso nenhum
   const d = degrauDe(k), need = p.nivel || 1;
   if (cursoNivel(cursos, p.curso, d) >= need) return true;
-  return !!p.lento && need === 1 && degrausDe(p.curso).some(x => pontoIdx(x) < pontoIdx(d) && cursoNivel(cursos, p.curso, x) >= 1);
+  const comprado = x => { const g = cursoOf(p.curso).degraus[x], r = cursos && cursos[p.curso] && cursos[p.curso][x]; return (+r || 0) >= (g.preco > 0 ? 1 : 2); };   // v12.10.3: o degrau comprado de verdade (a Garagem e o básico da área industrial vêm de graça e não contam)
+  return !!p.lento && need === 1 && degrausDe(p.curso).some(x => pontoIdx(x) < pontoIdx(d) && (p.curso === 'pf' && d === 'terraco' ? comprado(x) : cursoNivel(cursos, p.curso, x) >= 1));   // v12.10.3: o escalope (Terraço) pede algum degrau de PF comprado; o strogonoff (Avenida) continua com a Garagem
 }
 /* v12.7: os pratos do cardápio que o ponto vende (sem os da barraca junina nem o da Lia), na ordem do cardápio (o painel do modo dev) */
 function pratosDoPonto(ponto){ return Object.keys(CARDAPIO).filter(k => vendeNoPonto(k, ponto) && CARDAPIO[k].cat !== 'junina' && CARDAPIO[k].curso !== 'liaAutor'); }
@@ -1591,10 +1592,11 @@ const TESTE_PESSOAS = ['dani', 'joca', 'cami', 'anselmo', 'lia'];
 const TESTE_NOMES = { dani:'Dani', joca:'Joca', cami:'Cami', anselmo:'Anselmo', lia:'Lia' };
 function testeNivel(t){ return pontoOf(DEV_CAPS[clamp(Math.round(+t.cap) || 1, 1, DEV_CAPS.length) - 1].ponto).nivel; }   // o nível do ponto da fase (ou do Desafio)
 function testeTem(q, nv){ return q === 'dani' || (q === 'joca' && nv >= 2) || ((q === 'cami' || q === 'anselmo') && nv >= 3) || (q === 'lia' && nv >= 4); }   // quem a campanha tem no ponto de nível nv
-/* o nível mais alto de cada pessoa no ponto nv e no capítulo cap (0 = não vem ao ponto): o Tonhão e a Dani 4, o Joca 4, a Cami 3 (Avenida), 4 (Terraço) ou 5 (a gerência, do cap. 12), o Anselmo 2 ou 3, a Lia 3 (v12.5) */
+/* o nível mais alto de cada pessoa no ponto nv e no capítulo cap (0 = não vem ao ponto): o Tonhão, o teto do ponto (2, 4, 6 ou 8; v12.10.3), a Dani 4, o Joca 4, a Cami 3 (Avenida), 4 (Terraço) ou 5 (a gerência, do cap. 12), o Anselmo 2 ou 3, a Lia 3 (v12.5) */
 function testeNivelMax(q, nv, cap){
   if (!testeTem(q, nv) && q !== 'tonhao') return 0;
-  if (q === 'tonhao' || q === 'dani' || q === 'joca') return STAFF[q].levels.length - 1;
+  if (q === 'tonhao') return 2 * nv;   // v12.10.3: o teto do ponto jogado (2, 4, 6 ou 8)
+  if (q === 'dani' || q === 'joca') return STAFF[q].levels.length - 1;
   if (q === 'cami') return nv >= 4 ? (cap >= 12 ? STAFF.cami.levels.length - 1 : 4) : 3;
   if (q === 'anselmo') return nv >= 4 ? 3 : 2;
   return STAFF.lia.levels.length - 1;   // v12.5: a Lia no nível 3, com os dois cursos
