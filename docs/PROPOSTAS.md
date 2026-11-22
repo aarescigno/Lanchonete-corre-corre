@@ -4,6 +4,17 @@ Registro das ideias e dos retornos de quem jogou, com o texto original, e de ond
 
 ---
 
+## 22/11 — usuário: os níveis do Tonhão e os cursos de cada ponto
+> "Um curso que ele faz, que é relativamente básico, né, tipo pastel, essas coisas, quando ele avança de nível, tipo avança para uma Avenida Brasil ou avança para um terraço, ele não tem mais o mesmo impacto para a rotina e para os pratos do cardápio, né? Então, em teoria, ele teria que fazer novos cursos. Mas, se ele já subiu de nível com base nos outros cursos, eu não teria como exigir que o jogador né, comprasse novos cursos para só ser coerente com a história."
+
+> "É importante para mim que ele tenha que fazer novos cursos a cada nível. E fazendo novos cursos ele libera mais cardápio, libera alguma coisa para ser um incentivo e de fato isso é uma coisa que vale a pena fazer novos cursos e não zerar tudo de uma vez na garagem ou na área industrial e o Tonhão ficar meio que paralisado, congelado nos próximos, né? E não ligo de ter que fazer grandes rebalanceamentos se isso for deixar o jogo mais legal."
+
+As propostas do usuário (pontos de atributo como no Baldur's Gate; o Tonhão regredir um pouco a cada ponto, com história) e as outras discutidas (aprender fazendo, teto por ponto, talentos, nível pela prática, o caderno da Rosa) deram, na entrevista de 22/11: um degrau de curso por técnica em cada ponto (básico e avançado), dois níveis do Tonhão por ponto (9 no total), um prato "que ele estranha" por técnica no ponto novo (mais devagar até o curso), os lanches de estrada na área industrial, o empratamento no nível 7, a conversa da chegada a cada ponto e o Caderno da Rosa no Manual. Na mesma entrevista: o Turno sem fim sai do menu por ora (volta depois como extra).
+
+**Destino:** Etapa 17 do `docs/PLANO.md`: v12.9 (`docs/spec-v12.9.md`), v12.9.1, v12.9.2 e v12.9.3, em rascunho (textos, nomes e preços de partida esperando a aprovação do usuário).
+
+---
+
 ## 21/11 — usuário: a espera sentada da área industrial
 > "Na área industrial, ficar comprando cadeira de plástico, cadeira de plástico, cadeira de madeira, vai consumindo dinheiro como se comprasse do zero todos eles. Então, vai comprando novos, sabe? Então, por exemplo, se comprar a cadeira de madeira, não deixa eu comprar mais a de plástico. Acho que é isso."
 

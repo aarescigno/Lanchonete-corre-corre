@@ -20,6 +20,10 @@ Origem: retorno do Renan Martorelli (beta-tester) e conversa com o Arthur (15/10
 | correção | O entretenimento (TV, som, TVs com sertanejo, couvert, música ao vivo) também nas Melhorias | v12.8.2 | feita em 20/11 (`docs/spec-v12.8.2.md`; `smoke112`; `buildEntrete` nas abas Melhorias e Luxo) |
 | correção | As turmas da espera sem toque trocado (a de cima fica com a área dela até os pés) | v12.8.3 | feita em 21/11 (`docs/spec-v12.8.3.md`; `smoke113`; `queueRect` com o corte) |
 | correção | A espera sentada e o enfeite das mesas sem pagar à toa (cadeirinhas → banquinhos por R$ 45, sem voltar; o enfeite sai com o linho e volta pela metade) | v12.8.4 | feita em 21/11 (`docs/spec-v12.8.4.md`; `smoke114`; `assentoPreco` e a devolução no `buyMovel('linho')`) |
+| 17a | Os cursos do Tonhão em degraus por ponto (pratos de estrada, 9 níveis, Turno sem fim fora do menu) | v12.9 | planejada em 22/11, em rascunho (`docs/spec-v12.9.md`) |
+| 17b | O prato que ele estranha, o suor, os desenhos dos pratos de estrada e o empratamento | v12.9.1 | planejada em 22/11, em rascunho (`docs/spec-v12.9.1.md`) |
+| 17c | A conversa da chegada a cada ponto e o Caderno da Rosa | v12.9.2 | planejada em 22/11, em rascunho (`docs/spec-v12.9.2.md`) |
+| 17d | O equilíbrio dos cursos em degraus | v12.9.3 | planejada em 22/11, em rascunho (`docs/spec-v12.9.3.md`) |
 
 ---
 
@@ -94,6 +98,13 @@ Pedido do usuário em 17/11: o bot joga "bem demais, melhor do que gente". Os al
   - O que muda no equilíbrio do jogo com esses perfis fica para a ideia guardada "Revisão geral de equilíbrio".
 
   **Modelo:** Sonnet, esforço alto (calibração por tentativa, em 4 fases e 2 perfis)
+
+## Etapa 17 — Os cursos do Tonhão em cada ponto (17a, v12.9; 17b, v12.9.1; 17c, v12.9.2; 17d, v12.9.3)
+Pedido do usuário em 21 e 22/11 (`docs/PROPOSTAS.md`, "os níveis do Tonhão"): os cursos baratos da Garagem levavam o Tonhão ao topo antes da Avenida, e o curso de pastel ensinava a panqueca e o ravioli. Agora cada ponto tem os seus cursos (um degrau por técnica, básico e avançado), que trazem pratos e os dois níveis do Tonhão daquele ponto; no ponto novo ele arrisca um prato de cada técnica que já sabe, mais devagar, até fazer o curso de lá.
+- **17a** (`docs/spec-v12.9.md`): degraus, pratos de estrada, 9 níveis, lojinha (troca, 2 cursos por dia no Terraço), save, Turno sem fim fora do menu, modo dev. **Modelo:** planejar com o Opus antes (falta a aprovação dos nomes e preços; depois, Sonnet, esforço alto)
+- **17b** (`docs/spec-v12.9.1.md`): o prato que ele estranha (+40% de preparo, metade do capricho), o suor e o papelzinho, os desenhos dos 6 pratos de estrada, o empratamento do nível 7. **Modelo:** planejar com o Opus antes (falta a aprovação do desenho; depois, Sonnet, esforço médio)
+- **17c** (`docs/spec-v12.9.2.md`): as conversas `cozinhaNova2` a `cozinhaNova4` e a aba Caderno no Manual (25 páginas). **Modelo:** planejar com o Opus antes (falta a aprovação dos textos; depois, Sonnet, esforço médio)
+- **17d** (`docs/spec-v12.9.3.md`): preços, níveis e metas pelo `balance.js` e pelo `carreira.js`, com a carreira no ritmo de antes (±3 dias). **Modelo:** planejar com o Opus antes (aprova junto com as outras; depois, Sonnet, esforço alto)
 
 ## Ideias guardadas (sem etapa ainda)
 - **Ranking compartilhado** (saiu da Etapa 7 em 15/11: "fica offline"): o código continua no jogo, desligado (`Rank.online = false`, `src/30-ranking.js`), e as chamadas ainda batem com o `db` do artifact (conferido em 15/11). Religar pede `Rank.online = true`, declarar nas capacidades a leitura da coleção `ranking-campanha` e decidir a ordem (lucro acumulado, ou estrelas do Michelzão com o lucro no desempate, a ideia adiada na v10.10).
