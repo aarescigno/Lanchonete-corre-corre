@@ -142,12 +142,12 @@ const html=fs.readFileSync(__dirname+'/../lanchonete.html','utf8');
 
 // ---------- 9. o curso Cozinha de restaurante ----------
 { const H=jogo(6,'avenida',{ bank:5000 }), {g,L}=H; g.resetDay(10);
-  const c=L.cursoOf('restaurante'), dg=c.degraus.avenida; ok(c && dg.nome==='Cozinha de restaurante' && dg.preco===490 && L.pratosCurso('restaurante',g.ponto,1).join()==='parmegiana' && !c.degraus.garagem && !c.degraus.industrial && dg.av.nome==='Parmegiana da casa' && dg.av.preco===700 && /molho de tomate de 6 horas/.test(dg.av.receita),'o degrau da Avenida: R$ 490 e o avançado "Parmegiana da casa" R$ 700 (v12.10)');
+  const c=L.cursoOf('restaurante'), dg=c.degraus.avenida; ok(c && dg.nome==='Cozinha de restaurante' && dg.preco===290 && L.pratosCurso('restaurante',g.ponto,1).join()==='parmegiana' && !c.degraus.garagem && !c.degraus.industrial && dg.av.nome==='Parmegiana da casa' && dg.av.preco===420 && /molho de tomate de 6 horas/.test(dg.av.receita),'o degrau da Avenida: R$ 290 e o avançado "Parmegiana da casa" R$ 420 (v12.10.3)');
   ok(L.CARDAPIO.parmegiana.nome==='Filé à parmegiana' && L.CARDAPIO.parmegiana.preco.avenida===58 && L.CARDAPIO.parmegiana.cat==='pf' && L.CARDAPIO.parmegiana.carne===true,'o prato: Filé à parmegiana, R$ 58 na Avenida (v12.7; era 72), categoria PF, com carne');
   H.L.setShopGrupo('lanchonete'); H.L.setShopTab('cardapio'); ok(/Curso de Cozinha de restaurante/.test(txt(grid(H))) && /Comprar R\$ /.test(txt(grid(H))),'o cartão aparece no Cardápio da Avenida, com o preço do curso');
-  ok(g.buyCurso('restaurante') && g.save.bank===4510 && g.save.cursos.restaurante.avenida===1,'comprar: R$ 490');
+  ok(g.buyCurso('restaurante') && g.save.bank===4710 && g.save.cursos.restaurante.avenida===1,'comprar: R$ 290');
   ok(L.precoPrato('parmegiana',g.ponto,g.cursos)===58 && L.pratoSabido('parmegiana',g.save.cursos,g.ponto) && !L.pratoSabido('parmegiana',{},g.ponto),'ensina o Filé à parmegiana (R$ 58 na Avenida)');
-  g.save.cursoDia=0; g.cursoMsg=''; ok(g.buyCurso('restaurante') && g.save.cursos.restaurante.avenida===2 && g.save.bank===3810,'o avançado: R$ 700');
+  g.save.cursoDia=0; g.cursoMsg=''; ok(g.buyCurso('restaurante') && g.save.cursos.restaurante.avenida===2 && g.save.bank===4290,'o avançado: R$ 420');
   ok(L.precoPrato('parmegiana',g.ponto,g.cursos)===67,'com o avançado, a parmegiana custa R$ 67');
   ok(L.cursoNivel(g.save.cursos,'restaurante',g.ponto)===2 && L.cursoNivel({ restaurante:{ avenida:1 } },'restaurante')===1,'o nível do degrau (1 o básico, 2 o avançado)');
   ok(L.avalMenu({ restaurante:{ avenida:1 } },0,g.ponto)>L.avalMenu({},0,g.ponto),'conta na Diversidade do cardápio');

@@ -23,11 +23,11 @@ ok(L.degrauDe('pastel')==='garagem' && L.degrauDe('pastelFrango')==='industrial'
 ok(L.pratoSabido('strogonoff',{},A) && !L.pratoSabido('escalope',{},T) && L.pratoSabido('escalope',{ pf:{ avenida:1 } },T) && !L.pratoSabido('vinho',{},T) && L.pratoSabido('vinho',{ restaurante:{ avenida:1 } },T) && !L.pratoSabido('execVeg',{},A) && L.pratoSabido('execVeg',{ veg:{ industrial:1 } },A),'CA4: no PF o strogonoff (Avenida) sai sem curso, pois a Garagem conta como degrau feito, e o escalope (Terraço) pede um degrau de PF comprado (v12.10.3); o vinho e o executivo vegetariano pedem o degrau anterior');
 // CA5
 { let H=jogo('industrial',{ bank:5000, cursos:{}, equipe:{ tonhao:0 } }), {g}=H; g.save.cursoDia=0; let b=g.save.bank;
-  const p=g.cursoProx('pastel'); ok(p && p.preco===140,'CA5: sem o pastel da Garagem, o Pastel de estrada custa R$ 140');
-  ok(g.buyCurso('pastel') && g.save.bank===b-140 && g.save.cursos.pastel.industrial===1 && g.save.cursos.pastel.garagem===1,'CA5: comprar dá o básico dos dois degraus e cobra R$ 140');
+  const p=g.cursoProx('pastel'); ok(p && p.preco===120,'CA5: sem o pastel da Garagem, o Pastel de estrada custa R$ 120');
+  ok(g.buyCurso('pastel') && g.save.bank===b-120 && g.save.cursos.pastel.industrial===1 && g.save.cursos.pastel.garagem===1,'CA5: comprar dá o básico dos dois degraus e cobra R$ 120');
   H=jogo('industrial',{ bank:5000, cursos:{ pastel:{ garagem:1 } }, equipe:{ tonhao:0 } }); const g2=H.g; g2.save.cursoDia=0; b=g2.save.bank;
-  ok(g2.cursoProx('pastel').preco===30 && g2.buyCurso('pastel') && g2.save.bank===b-30 && g2.save.cursos.pastel.industrial===1,'CA5: com o da Garagem, cobra só a troca, R$ 30');
-  H=jogo('avenida',{ bank:5000, cursos:{ pastel:{ garagem:1, industrial:1 } } }); ok(H.g.cursoProx('pastel').preco===180,'CA5: Panquecas R$ 320 com o Pastel de estrada feito: R$ 180'); }
+  ok(g2.cursoProx('pastel').preco===10 && g2.buyCurso('pastel') && g2.save.bank===b-10 && g2.save.cursos.pastel.industrial===1,'CA5: com o da Garagem, cobra só a troca, R$ 10');
+  H=jogo('avenida',{ bank:5000, cursos:{ pastel:{ garagem:1, industrial:1 } } }); ok(H.g.cursoProx('pastel').preco===70,'CA5: Panquecas R$ 190 com o Pastel de estrada feito: R$ 70'); }
 // CA6
 { const H=jogo('avenida',{ cursos:{} }), c=cartoes(H), t=c.map(texto).join('|');
   ok(c.length===7 && ['Panquecas','Chapa de restaurante','Peixe empanado','Tortas','Vegetariano de restaurante','Molhos de panela','Cozinha de restaurante'].every(n=>t.indexOf('Curso de '+n)>=0),'CA6: a lojinha da Avenida mostra os 7 básicos ('+c.length+')');
