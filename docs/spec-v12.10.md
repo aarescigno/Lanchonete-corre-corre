@@ -1,6 +1,6 @@
 # v12.10 — Os cursos do Tonhão em degraus por ponto (etapa 18a)
 
-**Situação:** aprovada
+**Situação:** entregue em 22/11
 **Origem:** conversa de 21 e 22/11 (entrevista com o usuário; retorno no `docs/PROPOSTAS.md`, "os níveis do Tonhão"): "um curso [...] relativamente básico, tipo pastel, [...] quando ele avança [...] para uma Avenida Brasil ou [...] um terraço, ele não tem mais o mesmo impacto"; "é importante para mim que ele tenha que fazer novos cursos a cada nível [...] e não zerar tudo de uma vez na garagem ou na área industrial e o Tonhão ficar [...] congelado nos próximos"; "não ligo de ter que fazer grandes rebalanceamentos se isso for deixar o jogo mais legal".
 
 ## Objetivo
@@ -134,15 +134,15 @@ Cada ponto tem os seus cursos do Tonhão: a técnica que ele aprendeu na Garagem
 - `tests/bot.js`: `CURSOS_ORDEM`, `proximoCurso`, `cursosApos`, `cursos` (compra pelo degrau do ponto atual, ver Testes).
 
 ## Tarefas
-- [ ] T1 `smoke117` com os critérios CA1 a CA15 (falhando).
-- [ ] T2 Dados: `CARDAPIO` (Garagem sem assados e vegetarianos; pratos de estrada; `lento`), `CURSOS` em técnicas com degraus, `degrauDe`.
-- [ ] T3 Saber e preço: `pratoSabido` (degrau, estranho, incluir o antigo), `pratoAv`, `precoPrato`, `avalMenu`.
-- [ ] T4 Níveis: `STAFF.tonhao` com 9 níveis, `tonhaoNivelAlc`, `setStaff`, `AVAL.prato`, `EXIGENTE.casa.nivel`, `HIST`.
-- [ ] T5 Lojinha: `cursoProx` (troca), `buyCurso` (incluir o antigo, `cursoQt`), `cursoTrava` (2 no Terraço), `buildCursos`, cartão do Tonhão, `cardapioNovo`.
-- [ ] T6 Save: `normCursos`, conversão única (`tonDeg`, teto, devolução pela `CURSOS_ANTIGOS` e o aviso), `cursoQt`.
-- [ ] T7 Turno sem fim fora do menu; modo dev (degrau por técnica, forçar nível); Manual.
-- [ ] T8 `tests/bot.js` no formato novo; smokes antigos que quebrarem pelo formato dos cursos ou pelo número de níveis corrigidos (só o formato, ver Avisos).
-- [ ] Fechamento: `VERSAO`, `vtag`, `#ov-ver`, `docs/RESUMO.md`, `docs/TESTES.md`, `docs/PARTES.md`, esta spec como entregue, `tests/run_all.sh --tudo` verde, PR e merge.
+- [x] T1 `smoke117` com os critérios CA1 a CA15 (falhando).
+- [x] T2 Dados: `CARDAPIO` (Garagem sem assados e vegetarianos; pratos de estrada; `lento`), `CURSOS` em técnicas com degraus, `degrauDe`.
+- [x] T3 Saber e preço: `pratoSabido` (degrau, estranho, incluir o antigo), `pratoAv`, `precoPrato`, `avalMenu`.
+- [x] T4 Níveis: `STAFF.tonhao` com 9 níveis, `tonhaoNivelAlc`, `setStaff`, `AVAL.prato`, `EXIGENTE.casa.nivel`, `HIST`.
+- [x] T5 Lojinha: `cursoProx` (troca), `buyCurso` (incluir o antigo, `cursoQt`), `cursoTrava` (2 no Terraço), `buildCursos`, cartão do Tonhão, `cardapioNovo`.
+- [x] T6 Save: `normCursos`, conversão única (`tonDeg`, teto, devolução pela `CURSOS_ANTIGOS` e o aviso), `cursoQt`.
+- [x] T7 Turno sem fim fora do menu; modo dev (degrau por técnica, forçar nível); Manual.
+- [x] T8 `tests/bot.js` no formato novo; smokes antigos que quebrarem pelo formato dos cursos ou pelo número de níveis corrigidos (só o formato, ver Avisos).
+- [x] Fechamento: `VERSAO`, `vtag`, `#ov-ver`, `docs/RESUMO.md`, `docs/TESTES.md`, `docs/PARTES.md`, esta spec como entregue, `tests/run_all.sh --tudo` verde, PR e merge.
 
 ## Avisos para a execução
 - Procure em `src/` todo uso de `save.cursos`, `game.cursos`, `cursoNivel`, `equipe.tonhao`, `eq.tonhao` e `STAFF.tonhao` antes de mudar o formato: a conversa da chegada da Lia (`gatilho`, perto da linha 1751) e as fichas do Manual reveladas por curso também leem os cursos.
@@ -159,6 +159,14 @@ Cada ponto tem os seus cursos do Tonhão: a técnica que ele aprendeu na Garagem
 Nenhuma (fechadas em 22/11: nomes aprovados; preços 30% abaixo da proposta; save antigo pelo teto, com devolução dos cursos acima do ponto).
 
 ## Desvios
-(No fechamento.)
+- **`smoke117` tem 29 checagens**, não 15: uma ou mais por critério (CA1 a CA15). O CA16 (`menu_fit.py`) passou com a lojinha de cada ponto (só o `#shop-grid` rola, então os cartões a mais não mexem no encaixe); o CA17 foi `DIAS=65 node carreira.js 2`.
+- **CA4, pergunta em aberto para o usuário:** a regra diz que no `pf` a Garagem conta como degrau feito, então o `strogonoff` (Avenida) **e o `escalope` (Terraço)** saem sempre, sem curso nenhum (implementado ao pé da letra; o `vinho`, de `restaurante`, pede o degrau anterior). O texto do CA4 ("o escalope só com algum degrau de `pf` feito") sugere que o escalope pediria algum degrau de `pf` comprado. Se for isso, a execução da v12.10.1 ou a v12.10.3 muda uma linha em `pratoSabido` (para o `pf`, só o degrau comprado conta além da Garagem).
+- **`testeNivelMax`** (Teste de habilidade e Desafios) não foi tocado: o Tonhão vem no máximo, o nível 8 (`levels.length - 1`) em qualquer ponto, no lugar do 4 de antes. Decidir na v12.10.3 se vira 2 × o nível do ponto.
+- Novas funções, além das da spec: `degrausDe`, `tecFeita`, `tonhaoDegrausPonto`, `tonhaoProgresso`, `cursosAte`, `pontoId`, `pontoIdx`, `Game.cursoDesconto`, `Game.devDegrau`, `Game.devNivelTonhao`. `cursoOk(c, ponto)` agora é só "tem degrau neste ponto" (nem o modo dev mostra o degrau de outro ponto). O cartão do Tonhão mantém "Pronto para o aumento!" quando o nível ao alcance passa do atual. `avalMenu` ganhou o 3º parâmetro (o ponto). `save.cursoAviso` guarda o valor devolvido até o aviso; `save.tonXp` saiu do save. O caixa ganhou `devK:'cursos'`. `CURSOS_PONTO_ANTIGO` guarda o mapa técnica → ponto da conversão.
+- O `DEV_CAPS` foi convertido pelo mapa antigo (pastel, chapa, fritos na Garagem; assados, veg, pf na área industrial; restaurante na Avenida; entradas e alta no Terraço) e o `eq.tonhao` dobrado (99 fica).
+- **Testes.** `harness.js` marca os saves dos testes como já convertidos (`tonDeg:1`; `load({saveAntigo:true})` deixa como veio, usado na conversão do `smoke117`). Smokes antigos corrigidos para a regra nova (formato dos cursos, 9 níveis, preços da Garagem, R$ dos cursos e do Tonhão): `smoke6`, `smoke15`, `smoke24`, `smoke25`, `smoke31`, `smoke35` (reescrito: sem experiência, pelo nível ao alcance), `smoke39`, `smoke42`, `smoke44`, `smoke53`, `smoke54`, `smoke60`, `smoke61`, `smoke62`, `smoke63`, `smoke67`, `smoke70`, `smoke73`, `smoke86`, `smoke97` (sem o Turno sem fim, o menu da 2ª fileira tem 3 botões), `smoke103`, `smoke106`, `smoke109`, `smoke111` (12 pratos no `DESENHO_BASE`) e `menu_fit.py` (33 linhas nas Versões). O `smoke115` já falhava desde a v12.9.1 (preço e nível do enfeite): ajustado. Os que medem dinheiro só trocaram o valor (ex.: folha da Garagem R$ 111 no `smoke24`, R$ 131 no `smoke67`); os alvos ficam para a v12.10.3.
+- `bot.js`, `balance.js`, `carreira.js` e `emprestimo.js` no formato novo (ver `docs/TESTES.md`): a equipe cheia do `balance.js` traz o Tonhão no nível ao alcance; `FULL` da `carreira.js` em 9 níveis; no Terraço o bot compra 2 cursos por lojinha.
+
+**Medido (só registro; os alvos são da v12.10.3):** `balance.js 20` sem equipe: passou 13/20, 15, 18, 12, 9 nos dias 3 a 7 (média ~67%, dentro de 40–70%); com `EQUIPE=auto`: 20, 20, 20, 19, 16 de 20 (~95%). `carreira.js 6` (14 dias): chegou a R$ 800 em 6/6 no dia mediano 13, 0 dias no negativo, o Tonhão chega aos níveis 1, 2 e 3 nos dias 3, 5,8 e 10,2 e compra os 6 cartões da Garagem até o dia 11. `DIAS=65 node carreira.js 2`: sem erro, 0 dias no negativo, a história chega ao cap. 12 no dia 62, o bot compra cursos nos quatro pontos e o Tonhão chega ao nível 9 no dia 60,5. `smoke117` 29 checagens; `menu_fit.py` verde (742 conferências).
 
 **Modelo:** Sonnet, esforço alto (muitas partes ao mesmo tempo e troca de formato do save)
