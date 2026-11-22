@@ -17,7 +17,7 @@ const joga=(H,fat)=>{ const {g,els}=H; if(g.state==='shop') els['btn-shop-go'].f
   ok(cartoes()[0]==='cardapio','o 1º cartão do grupo Lanchonete é o Cardápio');
   L.setShopTab('cardapio');
   ok(els['shop-sec'].textContent==='Cardápio' && /No cardápio hoje \(2 pratos\)/.test(txt(grid())),'abre o Cardápio: "No cardápio hoje (2 pratos)"');
-  ok(/Comprar R\$ 110/.test(txt(grid())) && /Curso de Pastel/.test(txt(grid())),'os cursos estão no Cardápio, com "Comprar R$ 110" no Pastel de feira (v12.10)');
+  ok(/Comprar R\$ 140/.test(txt(grid())) && /Curso de Pastel/.test(txt(grid())),'os cursos estão no Cardápio, com "Comprar R$ 140" no Pastel de feira (v12.10.3)');
   ok(!/Diversidade do cardápio/.test(txt(grid())) && !/Equipe › Tonhão/.test(txt(grid())),'sem a prosa da diversidade e da experiência (v9.6.8)');
   L.setShopTab('tonhao');
   ok(!/Comprar/.test(txt(grid())) && /Cursos de cardápio concluídos/.test(txt(grid())) && /Nenhum ainda/.test(txt(grid())),'a seção Tonhão não vende curso e diz "Nenhum ainda"');
@@ -34,12 +34,12 @@ const joga=(H,fat)=>{ const {g,els}=H; if(g.state==='shop') els['btn-shop-go'].f
   const card=()=>grid().children.find(c=>c.getAttribute('data-sec')==='cardapio');
   const tem=()=>card().classList.contains('novo');
   const abre=bank=>{ g.save=L.normSave({bank,maxDay:3,cursos:g.save&&g.save.cursos||{}}); g.up=g.save.up; g.buildTables(); g.goShop(3); L.setShopGrupo('lanchonete'); };
-  g.save=L.normSave({bank:120,maxDay:3}); g.up=g.save.up; g.buildTables(); g.goShop(3); L.setShopGrupo('lanchonete');
-  ok(tem(),'com R$ 120 (cabe o Pastel, R$ 110), o cartão tem o selo "novo"');
+  g.save=L.normSave({bank:150,maxDay:3}); g.up=g.save.up; g.buildTables(); g.goShop(3); L.setShopGrupo('lanchonete');
+  ok(tem(),'com R$ 150 (cabe o Pastel, R$ 140), o cartão tem o selo "novo"');
   card().fire('click'); els['btn-shop-voltar'].fire('click');
   ok(!tem(),'depois de abrir o Cardápio, o selo some');
-  g.save.bank=140; L.setShopGrupo('lanchonete');
-  ok(tem(),'com R$ 140 cabe outro curso (Chapa, R$ 130): o selo volta');
+  g.save.bank=170; L.setShopGrupo('lanchonete');
+  ok(tem(),'com R$ 170 cabe outro curso (Chapa, R$ 170): o selo volta');
   const H2=load(), g2=H2.g, L2=H2.L, e2=H2.els;
   g2.save=L2.normSave({bank:100,maxDay:3}); g2.up=g2.save.up; g2.buildTables(); g2.goShop(3); L2.setShopGrupo('lanchonete');
   ok(!e2['shop-grid'].children.find(c=>c.getAttribute('data-sec')==='cardapio').classList.contains('novo'),'com R$ 100, sem selo');
