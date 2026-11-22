@@ -142,22 +142,22 @@ const html=fs.readFileSync(__dirname+'/../lanchonete.html','utf8');
 
 // ---------- 9. o curso Cozinha de restaurante ----------
 { const H=jogo(6,'avenida',{ bank:5000 }), {g,L}=H; g.resetDay(10);
-  const c=L.cursoOf('restaurante'); ok(c && c.nome==='Cozinha de restaurante' && c.preco===400 && L.pratosCurso('restaurante',g.ponto,1).join()==='parmegiana' && c.nivel===3 && c.av.nome==='Parmegiana da casa' && c.av.preco===600 && /molho de tomate de 6 horas/.test(c.av.receita),'o curso: R$ 400 e o avançado "Parmegiana da casa" R$ 600');
+  const c=L.cursoOf('restaurante'), dg=c.degraus.avenida; ok(c && dg.nome==='Cozinha de restaurante' && dg.preco===490 && L.pratosCurso('restaurante',g.ponto,1).join()==='parmegiana' && !c.degraus.garagem && !c.degraus.industrial && dg.av.nome==='Parmegiana da casa' && dg.av.preco===700 && /molho de tomate de 6 horas/.test(dg.av.receita),'o degrau da Avenida: R$ 490 e o avançado "Parmegiana da casa" R$ 700 (v12.10)');
   ok(L.CARDAPIO.parmegiana.nome==='Filé à parmegiana' && L.CARDAPIO.parmegiana.preco.avenida===58 && L.CARDAPIO.parmegiana.cat==='pf' && L.CARDAPIO.parmegiana.carne===true,'o prato: Filé à parmegiana, R$ 58 na Avenida (v12.7; era 72), categoria PF, com carne');
   H.L.setShopGrupo('lanchonete'); H.L.setShopTab('cardapio'); ok(/Curso de Cozinha de restaurante/.test(txt(grid(H))) && /Comprar R\$ /.test(txt(grid(H))),'o cartão aparece no Cardápio da Avenida, com o preço do curso');
-  ok(g.buyCurso('restaurante') && g.save.bank===4600 && g.save.cursos.restaurante===1,'comprar: R$ 400');
+  ok(g.buyCurso('restaurante') && g.save.bank===4510 && g.save.cursos.restaurante.avenida===1,'comprar: R$ 490');
   ok(L.precoPrato('parmegiana',g.ponto,g.cursos)===58 && L.pratoSabido('parmegiana',g.save.cursos,g.ponto) && !L.pratoSabido('parmegiana',{},g.ponto),'ensina o Filé à parmegiana (R$ 58 na Avenida)');
-  g.save.cursoDia=0; g.cursoMsg=''; ok(g.buyCurso('restaurante') && g.save.cursos.restaurante===2 && g.save.bank===4000,'o avançado: R$ 600');
+  g.save.cursoDia=0; g.cursoMsg=''; ok(g.buyCurso('restaurante') && g.save.cursos.restaurante.avenida===2 && g.save.bank===3810,'o avançado: R$ 700');
   ok(L.precoPrato('parmegiana',g.ponto,g.cursos)===67,'com o avançado, a parmegiana custa R$ 67');
-  ok(L.tonhaoXp({ restaurante:1 })===1 && L.tonhaoXp({ restaurante:2 })===3,'conta na experiência do Tonhão (+1 e +2) como os outros');
-  ok(L.avalMenu({ restaurante:1 })>L.avalMenu({}),'conta na Diversidade do cardápio');
+  ok(L.cursoNivel(g.save.cursos,'restaurante',g.ponto)===2 && L.cursoNivel({ restaurante:{ avenida:1 } },'restaurante')===1,'o nível do degrau (1 o básico, 2 o avançado)');
+  ok(L.avalMenu({ restaurante:{ avenida:1 } },0,g.ponto)>L.avalMenu({},0,g.ponto),'conta na Diversidade do cardápio');
   // quem pede PF pode pedir a parmegiana; vegetariano nunca
-  g.save.cursos={ restaurante:1 }; let parm=0, pf=0, vegParm=0; for(let k=0;k<400;k++){ const d=L.pedePrato('negocios',g,false,false); if(d==='parmegiana') parm++; if(d==='execFrango') pf++; if(L.pedePrato('negocios',g,false,true)==='parmegiana') vegParm++; }
+  g.save.cursos={ restaurante:{ avenida:1 } }; let parm=0, pf=0, vegParm=0; for(let k=0;k<400;k++){ const d=L.pedePrato('negocios',g,false,false); if(d==='parmegiana') parm++; if(d==='execFrango') pf++; if(L.pedePrato('negocios',g,false,true)==='parmegiana') vegParm++; }
   ok(parm>60 && pf>60 && vegParm===0,'v12.7: o executivo de frango, o strogonoff e a parmegiana dividem os pratos principais depois do curso; vegetariano nunca ('+parm+' contra '+pf+')');
   // só na Avenida (fora do modo dev)
   const I=jogo(4,'industrial',{ bank:5000 }), gi=I.g; ok(gi.cursoProx('restaurante')===null && !gi.buyCurso('restaurante'),'na área industrial, o curso não está ao alcance');
   I.L.setShopGrupo('lanchonete'); I.L.setShopTab('cardapio'); ok(!/Cozinha de restaurante/.test(txt(grid(I))) && !gi.cardapioNovo.some(k=>/^restaurante/.test(k)),'e o cartão Cardápio não mostra o curso nem acende o selo "novo"');
-  const D=load({ store:{ lcc2_dev:'1' } }); ok(D.L.cursoOk(D.L.cursoOf('restaurante'),D.L.PONTOS[0]),'no modo dev, o curso aparece em qualquer ponto'); }
+  const D=load({ store:{ lcc2_dev:'1' } }); ok(D.L.cursoOk(D.L.cursoOf('restaurante'),D.L.PONTOS[2]) && !D.L.cursoOk(D.L.cursoOf('restaurante'),D.L.PONTOS[0]),'o curso só tem degrau na Avenida e no Terraço (v12.10: nem no modo dev ele aparece na Garagem)'); }
 
 // ---------- 10. cap. 6 ----------
 { const H=jogo(6,'avenida',{ capAzul:2 }), {g,L}=H; g.save.capDia=10;

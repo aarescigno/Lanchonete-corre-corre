@@ -102,7 +102,8 @@ const NMAX=Math.max(...DIAS);
 // v8.6.9, cursos do Tonhão: CURSOS=bot (padrão) o dia d começa com as d−1 primeiras compras da ordem do bot (1 curso por lojinha);
 // CURSOS=todos (os 4 básicos e todos os avançados); CURSOS=0 (nenhum: só PF e coxinha); CURSOS=chapa,pastel,... troca a ordem do bot
 const CUR=process.env.CURSOS||'bot', BOTM=require('./bot.js'), ORD_CUR=!['bot','todos','0'].includes(CUR)?CUR.split(','):null;
-const cursosFor=n=>CUR==='0'?{}:CUR==='todos'?BOTM.cursosApos(L,99):BOTM.cursosApos(L,n-1,ORD_CUR||undefined);
+// v12.10: os cursos são degraus por ponto: 'bot' começa o dia d com as d−1 primeiras compras do ponto jogado (os pontos de antes completos); 'todos' é todos os degraus até o ponto jogado
+const cursosFor=n=>CUR==='0'?{}:CUR==='todos'?L.cursosAte(PONTO):BOTM.cursosApos(L,n-1,ORD_CUR||undefined,PONTO);
 // v10.6: EVENTO=junina|jogo força o evento de bairro em todos os dias jogados (BARRACA=0: a festa junina sem a barraca; padrão: com); sem EVENTO, nada muda
 const EVENTO=process.env.EVENTO||'', BARRACA=process.env.BARRACA!=='0'; if(EVENTO&&!['junina','jogo'].includes(EVENTO)) throw new Error('EVENTO=junina|jogo');
 BOTM.eventos(g,L,{ off:!EVENTO, force:EVENTO });
@@ -124,9 +125,9 @@ function jogaDia(n,man){
   if(TE&&CAMIN>=4) g.save.camiCursos.salao=1;   // v10.3
   if(TE&&CAMIN>=5) g.save.camiCursos.gerente=1;   // v10.8: CAMI=5 é a gerente de salão (organiza a fila)
   if(TE&&process.env.ROSA==='1') g.save.rosa=1;   // v10.8: ROSA=1 aprende o molho da Rosa (a Bia pega pétalas no vaso e põe nos pratos da casa; o bot.js faz a viagem)   // v9.6: CAMI=3 liga o modo "Minhas mesas"
-  if(TE&&ALTA){ g.save.cursos.entradas=2; g.save.cursos.alta=2; g.save.daniCursos.confCaseira=1; g.save.daniCursos.confGourmet=1; g.save.daniCursos.confAlta=1; g.up.confCaseira=true; g.up.confGourmet=true; g.up.confAlta=true; }   // v10.2
-  if(AV&&CUR!=='0') g.save.cursos.restaurante=1;   // v9.1: o curso de restaurante (a parmegiana)
-  if(L.normSave){ g.save.equipe=L.normSave({equipe:eqFor(n),salao:{ponto:PONTO},up:IND?{tvs:true}:{}}).equipe; g.save.bank=1e6; }
+  if(TE&&ALTA){ g.save.cursos.entradas={ terraco:2 }; g.save.cursos.alta={ terraco:2 }; g.save.daniCursos.confCaseira=1; g.save.daniCursos.confGourmet=1; g.save.daniCursos.confAlta=1; g.up.confCaseira=true; g.up.confGourmet=true; g.up.confAlta=true; }   // v10.2
+  // v12.10: o curso de restaurante entra pela ordem do bot (7º cartão da Avenida)
+  if(L.normSave){ g.save.equipe=L.normSave({equipe:eqFor(n),salao:{ponto:PONTO},up:IND?{tvs:true}:{}}).equipe; g.save.bank=1e6; if(!(EQ0&&EQ0.tonhao!=null)&&g.save.equipe.tonhao>0) g.save.equipe.tonhao=L.tonhaoNivelAlc(g.save.cursos,PONTO); }   // v12.10: a equipe cheia traz o Tonhão no nível que os cursos do ponto deixam (os 9 níveis; EQUIPE com tonhao fixa o nível)
   const LUXO_T=process.env.LUXO==='tudo', PN={garagem:1,industrial:2,avenida:3,terraco:4}[PONTO];   // v10.7: LUXO=tudo põe à mostra os enfeites do ponto (os 5 novos também), toalha em todas as mesas e os degraus de mesa do ponto (sem o assento nem a louça)
   const dec=process.env.DECOR==='tudo'||LUXO_T;   // v8.6.6: DECOR=tudo põe todos os enfeites à mostra e toalha em todas as mesas (o bot não compra decoração)
   g.save.decor=L.normDecor?L.normDecor(dec?Object.fromEntries(L.DECOR.filter(d=>!LUXO_T||L.decorCombina(d,PN)).map(d=>[d.id,1])):{}):{};

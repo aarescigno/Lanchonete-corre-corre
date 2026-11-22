@@ -1,7 +1,7 @@
 // v12.7: cardápio de verdade em cada ponto (pratos e preços por ponto, curso como técnica, sem PF no Terraço). Spec: docs/spec-v12.7.md. CA1 a CA8 (CA9 e CA10: balance.js e carreira.js; CA11: shot_v12_7.js).
 const load=require('./harness.js');
 let fails=0,total=0; const ok=(c,m)=>{ total++; if(!c){fails++;console.log('FAIL:',m);} else console.log('ok  :',m); };
-const TODOS={ pastel:2, chapa:2, fritos:2, assados:2, veg:2, restaurante:2, entradas:2, alta:2 };
+const TODOS=load().L.cursosAte();   // v12.10: todos os degraus de todos os pontos, no avançado
 const mk=(ponto,cursos,extra)=>{ const H=load(), {L,g}=H;
   g.save=L.normSave(Object.assign({dia:10,maxDay:10,bank:9000,salao:{ponto},cursos:cursos||{}},extra||{})); g.up=g.save.up; g.buildTables(); g.startDay(10); g.begin(); g.schedule=[]; g.nextIdx=0; return {L,g,H}; };
 const P=L=>Object.fromEntries(L.PONTOS.map(p=>[p.id,p]));
@@ -18,12 +18,12 @@ const pedidos=q=>q.dishes.concat(q.extras).filter(Boolean);
 
 // CA2: Garagem e industrial são lanchonete, com os preços da tabela
 { const {L}=mk('garagem'), Pt=P(L);
-  const lanche=Object.keys(L.CARDAPIO).filter(k=>L.CARDAPIO[k].cat!=='junina' && L.CARDAPIO[k].preco.garagem!=null);
-  ok(lanche.length===22 && lanche.every(k=>L.CARDAPIO[k].preco.industrial!=null),'CA2: 22 pratos de lanchonete, nos dois pontos ('+lanche.length+')');
+  const lanche=Object.keys(L.CARDAPIO).filter(k=>L.CARDAPIO[k].cat!=='junina' && L.CARDAPIO[k].preco.industrial!=null), gar=lanche.filter(k=>L.CARDAPIO[k].preco.garagem!=null);
+  ok(lanche.length===28 && gar.length===11 && Object.keys(L.CARDAPIO).filter(k=>L.CARDAPIO[k].cat!=='junina' && L.CARDAPIO[k].preco.garagem!=null).length===11,'CA2: 28 pratos de lanchonete na área industrial e 11 na Garagem (v12.10: 22 pratos nos dois até a v12.9.1; 11 saíram da Garagem e 6 de estrada entraram) ('+lanche.length+', '+gar.length+')');
   ok(L.pratosSabidos({},Pt.garagem).join()==='pf,coxinha' && L.pratosSabidos({},Pt.industrial).join()==='pf,coxinha','CA2: sem curso, a lanchonete sabe o PF e a coxinha');
-  const sab=L.pratosSabidos(TODOS,Pt.industrial); ok(sab.length===22 && sab.every(k=>lanche.indexOf(k)>=0) && L.pratosSabidos(TODOS,Pt.garagem).length===22,'CA2: com todos os cursos, só os 22 pratos da lanchonete (nada da Avenida nem do Terraço)');
-  const T={ pf:[30,34], coxinha:[10,11], risoles:[7,8], kibe:[8,9], bolinho:[10,11], empada:[11,12], esfihaA:[8,9], esfihaF:[8,9], misto:[12,13], bauru:[14,16], paoChapa:[8,9], pastel:[12,13], pastelQ:[12,13], pastelP:[13,15], pfVeg:[28,32], pfVegano:[28,32], empadaPalmito:[11,12], kibeAbobora:[8,9], coxinhaJaca:[10,11], pastelPalmito:[12,13], esfihaSoja:[8,9], mistoVegano:[12,13] };
-  const err=Object.keys(T).filter(k=>L.precoPrato(k,Pt.garagem,{})!==T[k][0] || L.precoPrato(k,Pt.industrial,{})!==T[k][1]);
+  const sab=L.pratosSabidos(TODOS,Pt.industrial); ok(sab.length===28 && sab.every(k=>lanche.indexOf(k)>=0) && L.pratosSabidos(TODOS,Pt.garagem).length===11,'CA2: com todos os cursos, só os 28 pratos da área industrial e os 11 da Garagem (nada da Avenida nem do Terraço)');
+  const T={ pf:[30,34], coxinha:[10,11], risoles:[7,8], kibe:[8,9], bolinho:[10,11], empada:[null,12], esfihaA:[null,9], esfihaF:[null,9], misto:[12,13], bauru:[14,16], paoChapa:[8,9], pastel:[12,13], pastelQ:[12,13], pastelP:[13,15], pfVeg:[null,32], pfVegano:[null,32], empadaPalmito:[null,12], kibeAbobora:[null,9], coxinhaJaca:[null,11], pastelPalmito:[null,13], esfihaSoja:[null,9], mistoVegano:[null,13], pastelFrango:[null,14], pastelCarneSeca:[null,16], xSalada:[null,16], xTudo:[null,21], enroladinho:[null,8], bolinhoCarneSeca:[null,12] };   // null: a Garagem não vende (v12.10)
+  const err=Object.keys(T).filter(k=>(T[k][0]==null ? L.vendeNoPonto(k,Pt.garagem) : L.precoPrato(k,Pt.garagem,{})!==T[k][0]) || L.precoPrato(k,Pt.industrial,{})!==T[k][1]);
   ok(err.length===0 && L.precoPrato('pf',Pt.industrial,{})===34,'CA2: os preços batem com a tabela da Garagem e da industrial'+(err.length?' (erros: '+err.join()+')':'')); }
 
 // CA3: Avenida sem curso nenhum
@@ -43,12 +43,12 @@ const pedidos=q=>q.dishes.concat(q.extras).filter(Boolean);
   ok(!L.pratoSabido('parmegiana',TODOS,g.ponto) && L.pratoSabido('vinho',TODOS,g.ponto) && L.CARDAPIO.vinho.preco.terraco===92,'CA4: a parmegiana sai do Terraço; o filé ao molho de vinho (R$ 92) entra pelo mesmo curso'); }
 
 // CA5: o curso é técnica
-{ const {L}=mk('garagem'), Pt=P(L), C={ fritos:1 }, A={ fritos:2 };
+{ const {L}=mk('garagem'), Pt=P(L), C={ fritos:{ garagem:1, avenida:1, terraco:1 } }, A={ fritos:{ garagem:2, avenida:2, terraco:2 } };
   ok(L.pratoSabido('isca',C,Pt.avenida) && !L.pratoSabido('isca',{},Pt.avenida) && L.pratoSabido('croquete',C,Pt.terraco) && !L.pratoSabido('croquete',{},Pt.terraco) && L.pratoSabido('risoles',C,Pt.garagem),'CA5: com só o curso de fritos, a Avenida sabe a isca, o Terraço o croquete e a lanchonete o risoles');
   ok(!L.pratoSabido('isca',C,Pt.garagem) && !L.pratoSabido('risoles',C,Pt.avenida),'CA5: o prato só vale no ponto que o vende');
   ok(L.precoPrato('isca',Pt.avenida,C)===36 && L.precoPrato('isca',Pt.avenida,A)===Math.round(36*1.15) && L.precoPrato('croquete',Pt.terraco,A)===Math.round(38*1.15) && L.precoPrato('mandioca',Pt.avenida,A)===Math.round(26*1.15),'CA5: o avançado de fritos sobe em 15% o preço da isca, do croquete e da mandioca');
-  ok(L.precoPrato('execFrango',Pt.avenida,{})===39 && L.pratoAv('execFrango',{ pf:2 }) && L.precoPrato('execFrango',Pt.avenida,{ pf:2 })===Math.round(39*1.15) && L.pratoAv('strogonoff',{ pf:2 }) && !L.pratoAv('strogonoff',{}),'CA5: o avançado do PF vale para o executivo e o strogonoff');
-  ok(L.precoPrato('moquecaBanana',Pt.avenida,{ veg:2 })===42 && L.precoPrato('curry',Pt.terraco,{ veg:2 })===62,'CA5: os veganos do avançado não sobem o preço (semAv)'); }
+  ok(L.precoPrato('execFrango',Pt.avenida,{})===39 && L.pratoAv('execFrango',{ pf:{ avenida:2 } },Pt.avenida) && L.precoPrato('execFrango',Pt.avenida,{ pf:{ avenida:2 } })===Math.round(39*1.15) && L.pratoAv('strogonoff',{ pf:{ avenida:2 } },Pt.avenida) && !L.pratoAv('strogonoff',{},Pt.avenida),'CA5: o avançado do PF vale para o executivo e o strogonoff');
+  ok(L.precoPrato('moquecaBanana',Pt.avenida,{ veg:{ avenida:2, terraco:2 } })===42 && L.precoPrato('curry',Pt.terraco,{ veg:{ avenida:2, terraco:2 } })===62,'CA5: os veganos do avançado não sobem o preço (semAv)'); }
 
 // CA6: prato de base do ponto
 { const {L}=mk('garagem'), Pt=P(L);
@@ -71,7 +71,7 @@ const pedidos=q=>q.dishes.concat(q.extras).filter(Boolean);
   ok(J.nomeBarraca.avenida==='Arraiá da Avenida' && J.nomeBarraca.terraco==='Arraiá do Terraço','CA7: Arraiá da Avenida e Arraiá do Terraço'); }
 
 // CA8: um save da v12.6.1 no Terraço (sem campo novo) carrega e o cardápio do dia é do Terraço
-{ const {L,g}=mk('terraco',{ fritos:1, assados:1, pastel:1 });
+{ const {L,g}=mk('terraco',{ fritos:{ terraco:1 }, assados:{ terraco:1 }, pastel:{ terraco:1 } });
   ok(g.ponto.id==='terraco' && L.pratosSabidos(g.save.cursos,g.ponto).indexOf('croquete')>=0 && L.pratosSabidos(g.save.cursos,g.ponto).indexOf('empadinhaCam')>=0,'CA8: no Terraço, com os cursos feitos, a cozinha já sabe os pratos novos pelas técnicas');
   const vistos={}; grupos(L,g,150,['casal','familia','vovos','negocios','executiva']).forEach(q=>pedidos(q).forEach(k=>{ vistos[k]=1; }));
   ok(Object.keys(vistos).length>0 && Object.keys(vistos).every(k=>L.vendeNoPonto(k,g.ponto)) && !vistos.pf,'CA8: o cardápio do dia é do Terraço ('+Object.keys(vistos).join()+')');

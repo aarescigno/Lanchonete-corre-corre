@@ -30,7 +30,7 @@ ok(L.payroll({tonhao:0,dani:0,tv:true,som:true})===TP(0)+SP.tv.pay+SP.som.pay,'f
 const fresh=()=>{ g.schedule=[{t:1e9,type:'estudante',color:0}]; g.nextIdx=0; };
 for(const lv of [0,1,2]){ reset({tonhao:lv}); g.startDay(4); g.begin(); fresh();
   const grp=g.spawn({type:'estudante',color:0}); grp.extras=grp.extras.map(()=>null); g.seatGroup(grp,g.tables[0]); g.kitchen.submit({group:grp,table:1});   // sem o 2º item (v8.3.8)
-  const t=g.kitchen.queue[0].time, f=[1,0.85,0.7][lv]; ok(g.kitchen.slots===3 && t>=4*f-1e-9 && t<=7*f+1e-9,'Tonhão nível '+(lv+1)+': 3 bocas, cozinha em '+Math.round(f*100)+'% do tempo'); }
+  const t=g.kitchen.queue[0].time, f=L.STAFF.tonhao.levels[lv].cook; ok(g.kitchen.slots===3 && t>=4*f-1e-9 && t<=7*f+1e-9,'Tonhão nível '+(lv+1)+': 3 bocas, cozinha em '+Math.round(f*100)+'% do tempo'); }
 { reset({}); g.startDay(5); g.begin(); fresh(); const v=new L.Group(g,'estudante',1,0,true); ok(v.vip && v.bill===v.dishes.concat(v.extras).reduce((a,k)=>a+(k?L.precoPrato(k):0),0)+L.VIP.dish,'VIP: prato especial soma R$ '+L.VIP.dish+' à conta (o resto é o cardápio)'); v.extras=v.extras.map(()=>null);
   g.kitchen.submit({group:v,table:1}); const t=g.kitchen.queue[0].time; ok(t>=4*L.VIP.cook-1e-9 && t<=7*L.VIP.cook+1e-9,'VIP: o prato especial leva '+L.VIP.cook+'× o tempo'); }
 { reset({tonhao:2}); g.startDay(4); g.begin(); fresh(); const r=Math.random; Math.random=()=>0.01;
@@ -38,12 +38,12 @@ for(const lv of [0,1,2]){ reset({tonhao:lv}); g.startDay(4); g.begin(); fresh();
   const p=g.kitchen.plates.find(x=>x); ok(p && p.crit,'Tonhão: prato caprichado sai com ★');
   grp.state='ordered'; grp.hearts=2; g.money=0; g.bia.hands=[{kind:'dish',table:1,group:grp,dish:'pf',crit:true}]; g.bia.doTable(g.tables[0]);
   ok(grp.hearts===4 && g.pontos>=L.CRIT.bonus && g.money===0 && g.stats.crit===1,'caprichado: +2 corações e '+L.CRIT.bonus+' pontos a mais (v8.3.8)'); }
-{ reset({tonhao:1}); g.startDay(4); g.begin(); fresh(); g.bia.hands=[{kind:'dirty',n:2}];
+{ reset({tonhao:3}); g.startDay(4); g.begin(); fresh(); g.bia.hands=[{kind:'dirty',n:2}];   // v12.10: o nível de índice 3 é o que começa a lavar (a cada 7 s)
   ok(g.bia.duration({type:'sink'})===L.WASH.base,'Tonhão lava: a Bia só deixa na pia'); g.bia.perform({type:'sink'}); ok(g.kitchen.sinkN===1,'pilha na pia');
-  const c0=g.kitchen.clean; for(let i=0;i<6.8*20;i++) g.update(0.05); ok(g.kitchen.sinkN===1,'nível 2: ainda lavando antes de 7 s');
-  for(let i=0;i<0.4*20;i++) g.update(0.05); ok(g.kitchen.sinkN===0 && g.kitchen.clean===c0+1,'nível 2: lava 1 pilha a cada 7 s');
+  const c0=g.kitchen.clean; for(let i=0;i<6.8*20;i++) g.update(0.05); ok(g.kitchen.sinkN===1,'nível 4: ainda lavando antes de 7 s');
+  for(let i=0;i<0.4*20;i++) g.update(0.05); ok(g.kitchen.sinkN===0 && g.kitchen.clean===c0+1,'nível 4: lava 1 pilha a cada 7 s');
   g.kitchen.sinkN=2; ok(Math.abs(g.bia.duration({type:'sink'})-(L.WASH.base+2*L.WASH.perPile))<1e-9,'de mãos vazias, a Bia lava ela mesma'); g.kitchen.sinkN=0; }
-{ reset({tonhao:2}); g.startDay(4); g.begin(); fresh(); g.kitchen.sinkN=2; for(let i=0;i<8.2*20;i++) g.update(0.05); ok(g.kitchen.sinkN===0,'nível 3: lava 1 pilha a cada 4 s'); }
+{ reset({tonhao:6}); g.startDay(4); g.begin(); fresh(); g.kitchen.sinkN=2; for(let i=0;i<8.2*20;i++) g.update(0.05); ok(g.kitchen.sinkN===0,'nível 7: lava 1 pilha a cada 3,5 s'); }
 /* pia em 2 etapas: com louça na mão, só deixa; sem louça, lava. Só 1 pessoa lava por vez (o Tonhão lava à parte) */
 { reset({}); g.startDay(4); g.begin(); g.schedule=[{t:1e9,type:'estudante',color:0}]; g.nextIdx=0; g.trash=0;
   g.bia.hands=[{kind:'dirty',n:2}]; ok(g.bia.duration({type:'sink'})===L.WASH.base,'com louça na mão, a Bia só deixa na pia');
@@ -63,7 +63,7 @@ for(const lv of [0,1,2]){ reset({tonhao:lv}); g.startDay(4); g.begin(); fresh();
   while(g.bia.washing) g.update(0.05); g.kitchen.sinkN=2; const w0=g.stats.washed; run(L.WASH.perPile/0.5*2+3,true);
   ok(g.stats.washed===w0+2 && !g.bia.acts.length,'a Bia terminou: a Dani volta a lavar');
   L.TRASH.cap=TRASHCAP; g.trash=0; }
-{ reset({tonhao:2,dani:2,daniTasks:['lavar','lixo']}); g.startDay(4); g.begin(); g.schedule=[{t:1e9,type:'estudante',color:0}]; g.nextIdx=0;
+{ reset({tonhao:3,dani:2,daniTasks:['lavar','lixo']}); g.startDay(4); g.begin(); g.schedule=[{t:1e9,type:'estudante',color:0}]; g.nextIdx=0;
   const TRASHCAP=L.TRASH.cap; L.TRASH.cap=1e9; g.kitchen.sinkN=20; g.kitchen.clean=0; let tw=false;
   const add=g.addText.bind(g); g.addText=(x,y,t,c,sz)=>{ if(t==='Tonhão lavou!' && g.dani.washing) tw=true; add(x,y,t,c,sz); };
   run(12,true); g.addText=add; ok(tw,'o Tonhão lava mesmo com a Dani lavando');

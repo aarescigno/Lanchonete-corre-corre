@@ -34,19 +34,19 @@ const tempoDe=(g,grp,t)=>{ g.kitchen.queue=[]; g.kitchen.cooking=[]; g.kitchen.s
 
 // ---------- 2. o prato da casa ----------
 { const H=terr(), {g,L}=H, k=g.kitchen, E=L.EXIGENTE;
-  ok(E.casa.preco===40 && E.casa.cook===2 && E.casa.cookBom===1.3 && E.casa.nivel===3,'EXIGENTE.casa: R$ 40, ×2, ×1,3 e nível 3 (o 4º do Tonhão)');
+  ok(E.casa.preco===40 && E.casa.cook===2 && E.casa.cookBom===1.3 && E.casa.nivel===6,'EXIGENTE.casa: R$ 40, ×2, ×1,3 e nível 6 (o 7º do Tonhão; v12.10: era o 3, o 4º dos 5)');
   const x=sentar(g,'casal',true), grp=x.grp;
   ok(grp.bill===grp.dishes.concat(grp.extras).reduce((v,q)=>v+preco(L,g,q),0)+40,'a conta soma R$ 40 do prato da casa (no lugar do prato especial de R$ 12)');
   // Tonhão abaixo do nível 4: ×2 e sem garantia de capricho
-  g.save.equipe.tonhao=2; const cook=k.chef.cook; let tm=tempoDe(g,grp,x.t); ok(tm>=4*cook*2-1e-9 && tm<=7*cook*2+1e-9 && !L.casaBoa(grp,g),'Tonhão abaixo do nível 4: o principal leva ×2 o tempo');
+  g.save.equipe.tonhao=5; const cook=k.chef.cook; let tm=tempoDe(g,grp,x.t); ok(tm>=4*cook*2-1e-9 && tm<=7*cook*2+1e-9 && !L.casaBoa(grp,g),'Tonhão abaixo do nível 7: o principal leva ×2 o tempo');
   for(let i=0;i<600 && !k.plates.some(q=>q&&q.group===grp);i++) g.update(0.05);
   let pp=k.plates.find(q=>q&&q.group===grp); ok(pp && pp.casa===true && pp.tempo===1,'o prato pronto leva a marca da casa');
   // Tonhão no nível 4: ×1,3 e sempre caprichado
-  const H2=terr(), g2=H2.g, k2=g2.kitchen, x2=sentar(g2,'casal',true); g2.save.equipe.tonhao=3; const cook2=k2.chef.cook;
-  tm=tempoDe(g2,x2.grp,x2.t); ok(tm>=4*cook2*1.3-1e-9 && tm<=7*cook2*1.3+1e-9 && L.casaBoa(x2.grp,g2),'Tonhão no nível 4: ×1,3 o tempo');
+  const H2=terr(), g2=H2.g, k2=g2.kitchen, x2=sentar(g2,'casal',true); g2.save.equipe.tonhao=6; const cook2=k2.chef.cook;
+  tm=tempoDe(g2,x2.grp,x2.t); ok(tm>=4*cook2*1.3-1e-9 && tm<=7*cook2*1.3+1e-9 && L.casaBoa(x2.grp,g2),'Tonhão no nível 7: ×1,3 o tempo');
   let sempre=true; for(let n=0;n<8;n++){ const y=sentar(g2,'casal',true); k2.plates=k2.plates.map(()=>null); k2.clean=5; k2.queue=[]; k2.cooking=[]; k2.submitTempo(y.grp,y.t.id,1); for(let i=0;i<600 && !k2.plates.some(q=>q&&q.group===y.grp);i++) g2.update(0.05);
     const q=k2.plates.find(r=>r&&r.group===y.grp); if(!q || !q.crit || q.q!==5 || !q.casa) sempre=false; y.t.group=null; y.grp.setState('leaving'); g2.groups=g2.groups.filter(r=>r!==y.grp); }
-  ok(sempre,'com o Tonhão no nível 4 o prato da casa sai sempre caprichado (nota 5)');
+  ok(sempre,'com o Tonhão no nível 7 o prato da casa sai sempre caprichado (nota 5)');
   // a Louça fina: 25% mais rápido
   g2.up.louca=true; tm=tempoDe(g2,x2.grp,x2.t); ok(tm>=4*cook2*1.3*0.75-1e-9 && tm<=7*cook2*1.3*0.75+1e-9,'com a Louça fina o prato da casa fica 25% mais rápido');
   // o prato especial (VIP sem ser exigente) também

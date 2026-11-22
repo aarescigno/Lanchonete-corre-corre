@@ -11,9 +11,9 @@ const RENOM=[['lata','Temperos na lata',8,undefined,1],['violeta','Cactos',20,2,
 const ELOGIOS={lata:'Adorei os temperos na lata!',violeta:'Que cactos mais simpáticos na janela!',pendente:'A jiboia no toldo ficou linda!',orqArranjo:'Que bonsai mais caprichado!',espelho:'Que espelho mais elegante!',palmeira:'As palmeiras na entrada são um luxo!',vinhos:'Que estante de vinhos caprichada!',cortina:'Que cortinas de linho mais finas!',arandela:'As arandelas deixam a luz uma beleza!'};
 const {L}=load();
 // CA1
-NOVOS.forEach(n=>{ const d=L.decorOf(n[0]); ok(d && d.grupo===n[1] && d.name===n[2] && d.cost===n[3] && d.nivel===n[4] && d.lux===n[5],'CA1: '+n[0]+' na tabela'); });
-// CA2
-RENOM.forEach(n=>{ const d=L.decorOf(n[0]); ok(d && d.name===n[1] && d.cost===n[2] && d.nivel===n[3] && d.lux===n[4],'CA2: '+n[0]+' = '+n[1]); });
+NOVOS.forEach(n=>{ const d=L.decorOf(n[0]); ok(d && d.grupo===n[1] && d.name===n[2] && L.decorPreco(d,d.nivel||1)===n[3] && d.nivel===n[4] && d.lux===n[5],'CA1: '+n[0]+' na tabela'); });
+// CA2 (v12.9.1: o preço e o nível passaram a vir do ponto, DECOR_PRECO e decorCombina; smoke116)
+RENOM.forEach(n=>{ const d=L.decorOf(n[0]); ok(d && d.name===n[1] && d.lux===n[4],'CA2: '+n[0]+' = '+n[1]); });
 // CA3
 Object.keys(ELOGIOS).forEach(k=>ok(L.AVAL_DECOR[k]===ELOGIOS[k],'CA3: elogio de '+k));
 // CA4
@@ -27,7 +27,7 @@ Object.keys(ELOGIOS).forEach(k=>ok(L.AVAL_DECOR[k]===ELOGIOS[k],'CA3: elogio de 
   const H=jogo(p), {g,L}=H; let erro=null;
   L.DEV.on=true; g.devDecor(true);
   if(p==='garagem'||p==='industrial'){ ['lata','violeta','pendente'].forEach(k=>{ g.save.decor[k]=1; }); }
-  if(p==='avenida'||p==='terraco') NOVOS.concat(RENOM).forEach(n=>ok(g.save.decor[n[0]]===1 || (n[0]==='orqArranjo'&&p==='avenida'),'CA6: devDecor liga '+n[0]+' em '+p));
+  if(p==='avenida'||p==='terraco') NOVOS.concat(RENOM).filter(n=>L.decorCombina(L.decorOf(n[0]),p==='avenida'?3:4)).forEach(n=>ok(g.save.decor[n[0]]===1 || (n[0]==='orqArranjo'&&p==='avenida'),'CA6: devDecor liga '+n[0]+' em '+p));
   g.ponto && 0; try{ g.startDay(10); g.begin(); L.render(g,H.ctx); g.menu||0; }catch(e){ erro=e; }
   ok(!erro,'CA6: o salão desenha em '+p+' com a decoração'+(erro?': '+erro.stack:'')); });
 console.log(fails?('FALHOU: '+fails+'/'+total):('tudo certo ('+total+')')); process.exit(fails?1:0);

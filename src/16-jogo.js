@@ -1244,14 +1244,14 @@ class Game {
     // v10, a refeição completa: a comida é a média das notas dos tempos servidos; o cardápio perde TEMPOS.semSobremesa sem a confeitaria e TEMPOS.semBar sem o Anselmo no dia
     const vo = g.vontade || {};
     const comida = g.tempos ? (g.notaComida || 1) : (g.pratoQ || 1), menos = g.tempos ? (this.up.confCaseira ? 0 : TEMPOS.semSobremesa) + (this.anselmoAtivo ? 0 : TEMPOS.semBar) : 0 + (vo.doce ? VONTADE.menos : 0) + (vo.cafe ? VONTADE.menos : 0);   // v10.5.3: a vontade que ficou sem resposta
-    const s = [5 - A.porCoracao * (g.retira ? g.perdMesa : g.perdFila), bravo ? 1 : 5 - A.porCoracao * g.perdMesa, comida, g.semVeg ? 1 : avalMenu(this.cursos, cursosItem(this.save)) - menos, amb]
+    const s = [5 - A.porCoracao * (g.retira ? g.perdMesa : g.perdFila), bravo ? 1 : 5 - A.porCoracao * g.perdMesa, comida, g.semVeg ? 1 : avalMenu(this.cursos, cursosItem(this.save), this.ponto) - menos, amb]
       .map((v, i) => ve[i] ? clamp(Math.round(v * 10) / 10, 1, 5) : null);
     // v8.6.4: a nota no Gúgou fica na escala do ponto (o serviço 5 vale o teto), mais o humor de quem avalia; v8.6.7: o humor
     // e a folga são fração da faixa do ponto (teto − 1), e a cor certa, a corrente e o caprichado aumentam a chance de encantar
     const teto = avalTeto(this.ponto), faixa = teto - 1, lim = Math.min(5, teto + A.humor.folga * faixa);
     const h = bravo ? 0 : (rand(-A.humor.var, A.humor.var) + (Math.random() < encanta ? rand(A.humor.extra[0], A.humor.extra[1]) : 0)) * faixa;
     const r = s.map(v => v == null ? null : clamp(Math.round((avalEscala(v, teto) + h) * 10) / 10, 1, lim));
-    let txt = avalComentario(s, bravo, this.trashFull, this.ponto.nivel, decor, g.fria, g.semVeg, g.type, !CURSOS.some(c => c.preco > 0 && cursoNivel(this.save.cursos, c.id) >= 1)), nota = avalNota(r), f = avalFrac(nota, teto);
+    let txt = avalComentario(s, bravo, this.trashFull, this.ponto.nivel, decor, g.fria, g.semVeg, g.type, !cursoFeito(this.save.cursos)), nota = avalNota(r), f = avalFrac(nota, teto);
     if (!bravo && g.doces && g.doces.length && Math.random() < 0.4) txt = g.perdDoce > 0 ? 'A sobremesa demorou mais que o almoço.' : g.docesFalta ? txt : this.up.confAlta ? 'O entremet da casa é de outro mundo!' : 'A sobremesa da casa é uma delícia!';   // v9.2; v10.2
     if (!bravo && g.cafes && g.cafes.length && !g.cafesFalta && g.cafes.indexOf('cappuccino') >= 0 && Math.random() < 0.4) txt = 'Que cappuccino caprichado!';   // v9.3
     if (!bravo && g.drinks && g.drinks.length && Math.random() < 0.4) txt = g.perdDrink > 0 ? 'Pedi um drink e ele nunca veio.' : !g.drinksFalta ? 'O drink do balcão é uma obra de arte!' : txt;   // v9.5
@@ -1556,13 +1556,14 @@ class Game {
     this.shopNext = Math.max(1, n || this.day.n + 1);
     if (devLivre() && this.save.bank < DEV.bank){ this.save.bank = DEV.bank; writeSave(this.save); }   // modo dev: o dinheiro não acaba
     this.salaoSel = -1; this.estoqueSel = -1; this.salaoUndo = []; this.salaoMsg = ''; this.cursoMsg = '';
+    if (this.save.cursoAviso > 0){ this.cursoMsg = 'Os cursos do Tonhão mudaram: agora cada ponto tem os seus. ' + fmt(this.save.cursoAviso) + ' dos cursos de outros pontos voltaram para o caixa.'; this.save.cursoAviso = 0; writeSave(this.save); }   // v12.10: o aviso da conversão, uma vez só
     this.resetDay(this.shopNext);   // o salão ao fundo já mostra o dia que vem
     this.setState('shop');
   }
   /* equipe: mudanças à vontade na lojinha, desde que o dinheiro acumulado pague a folha do próximo dia */
   setStaff(key, val){
     const eq = this.save.equipe, old = eq[key];
-    if (key === 'tonhao' && !devLivre() && (val > tonhaoNivelXp(this.save.cursos) || val < old)) return false;   // v8.8: só com a xp dos cursos, e o nível pago é definitivo
+    if (key === 'tonhao' && !devLivre() && (val > tonhaoNivelAlc(this.save.cursos, this.ponto) || val < old)) return false;   // v8.8 (v12.10: o nível ao alcance, pelos cursos do ponto): e o nível pago é definitivo
     if (key === 'dani' && !devLivre() && (val > daniNivelXp(this.save) || val < old)) return false;   // v8.9: só com a experiência, e o nível pago é definitivo
     if (key === 'joca' && !devLivre() && (val > jocaNivelXp(this.save) || val < old)) return false;   // v9.2: como a Dani (a experiência manda; o nível pago é definitivo)
     if (key === 'joca' && val && !this.cartaoAberto('joca')) return false;
@@ -1878,31 +1879,45 @@ class Game {
     Sfx.coin();
     return true;
   }
-  /* cursos do Tonhão (v8.6.9): o próximo degrau do curso (o básico, ou o avançado se o básico já foi feito), ou null se está completo */
+  /* cursos do Tonhão (v8.6.9; v12.10: por degrau, o do ponto atual): o próximo cartão da técnica (o básico, ou o avançado se o básico já foi feito), ou null se está completo ou se o ponto não tem degrau dela. O básico cobra só a
+     troca de quem já tem o de um degrau anterior: o preço dele menos o do mais alto que já tem (preco; cheio fica em cheio); o avançado, sempre cheio */
   cursoProx(id){
-    const c = cursoOf(id), n = c ? cursoNivel(this.save.cursos, id) : 2;
-    if (!c || n >= 2 || !cursoOk(c, this.ponto)) return null;   // v9.1: o curso de restaurante só da Avenida em diante
-    return n >= 1 ? { nivel:2, nome:c.av.nome, preco:c.av.preco } : { nivel:1, nome:c.nome, preco:c.preco };
+    const c = cursoOf(id), d = this.ponto.id, g = c && c.degraus[d];
+    if (!g) return null;
+    const n = cursoNivel(this.save.cursos, id, d);
+    if (n < 1) return { nivel:1, nome:g.nome, preco:Math.max(0, g.preco - this.cursoDesconto(id)), cheio:g.preco };
+    if (g.av && n < 2) return { nivel:2, nome:g.av.nome, preco:g.av.preco, cheio:g.av.preco };
+    return null;
+  }
+  /* o preço do básico do degrau mais alto, antes do ponto atual, que o Tonhão já tem na técnica */
+  cursoDesconto(id){
+    const c = cursoOf(id), pi = pontoIdx(this.ponto); let v = 0;
+    degrausDe(id).forEach(d => { if (pontoIdx(d) < pi && c.degraus[d].preco > 0 && cursoNivel(this.save.cursos, id, d) >= 1) v = c.degraus[d].preco; });
+    return v;
   }
   /* v9.0.1: as chaves (id + nível) dos cursos ao alcance do caixa que o cartão Cardápio ainda não mostrou; o selo "novo" acende se houver */
   get cardapioNovo(){
     if (this.cursoTrava) return [];
     const vistos = this.save.cardVisto || [];
-    return CURSOS.map(c => ({ c, p:this.cursoProx(c.id) })).filter(x => x.p && this.save.bank >= x.p.preco).map(x => x.c.id + x.p.nivel).filter(k => vistos.indexOf(k) < 0);
+    return CURSOS.map(c => ({ c, p:this.cursoProx(c.id) })).filter(x => x.p && this.save.bank >= x.p.preco).map(x => x.c.id + '.' + this.ponto.id + '.' + x.p.nivel).filter(k => vistos.indexOf(k) < 0);   // v12.10: as chaves são id.ponto.nivel
   }
   cardVer(){
     const n = this.cardapioNovo; if (!n.length) return;
     this.save.cardVisto = (this.save.cardVisto || []).concat(n); writeSave(this.save);
   }
-  /* um curso por lojinha: depois de comprar um, os outros esperam o próximo dia */
-  get cursoTrava(){ return !devLivre() && this.save.cursoDia === this.shopNext; }
+  /* um curso por lojinha (v12.10: dois no Terraço, CURSO_DIA): depois de comprar o último, os outros esperam o próximo dia */
+  get cursoTrava(){ return !devLivre() && this.save.cursoDia === this.shopNext && this.save.cursoQt >= (CURSO_DIA[this.ponto.nivel] || 1); }
   buyCurso(id){
-    const p = this.cursoProx(id);
-    if (!p || this.cursoTrava || this.save.bank < p.preco) return false;
-    this.save.bank -= p.preco; caixaGasto(this.save, 'mel', p.preco);
-    this.save.cursos[id] = p.nivel; this.save.cursoDia = this.shopNext;
+    const p = this.cursoProx(id), sv = this.save;
+    if (!p || this.cursoTrava || sv.bank < p.preco) return false;
+    sv.bank -= p.preco; caixaGasto(sv, 'mel', p.preco);
+    const d = this.ponto.id, r = sv.cursos[id] || (sv.cursos[id] = {});
+    r[d] = p.nivel;
+    // o degrau novo inclui o antigo: o básico dos degraus anteriores da técnica cujos pratos este ponto ainda vende
+    if (p.nivel === 1) degrausDe(id).forEach(x => { if (pontoIdx(x) < pontoIdx(d) && cursoNivel(sv.cursos, id, x) < 1 && CURSOS.find(c => c.id === id).degraus[x].preco > 0 && Object.keys(CARDAPIO).some(k => CARDAPIO[k].curso === id && degrauDe(k) === x && vendeNoPonto(k, this.ponto))) r[x] = 1; });
+    sv.cursoQt = sv.cursoDia === this.shopNext ? sv.cursoQt + 1 : 1; sv.cursoDia = this.shopNext;
     this.cursoMsg = 'O Tonhão foi fazer o curso de ' + p.nome + '!';
-    const nx = tonhaoNivelXp(this.save.cursos);
+    const nx = tonhaoNivelAlc(sv.cursos, this.ponto);
     if (nx > this.save.equipe.tonhao) this.cursoMsg += ' Ele já pode subir para o nível ' + (nx + 1) + ': pague o aumento no cartão dele.';
     writeSave(this.save); Sfx.coin();
     return true;
@@ -2237,9 +2252,23 @@ class Game {
     if (!DEV.on) return false;
     return this.cursosTodos(on);
   }
+  /* v12.10, modo dev: o degrau (técnica `id` no ponto `d`) gira 0 → básico → avançado → 0 sem cobrar e sem o "incluir o antigo" (o degrau sem básico a comprar, o PF, gira 0 → avançado → 0) */
+  devDegrau(id, d){
+    const c = cursoOf(id), g = c && c.degraus[d], sv = this.save;
+    if (!DEV.on || !g || !(g.preco > 0 || g.av)) return false;
+    const n = (sv.cursos[id] && sv.cursos[id][d]) || 0, ciclo = g.preco > 0 ? (g.av ? [0, 1, 2] : [0, 1]) : [0, 2], nx = ciclo[(ciclo.indexOf(n) + 1) % ciclo.length];
+    const o = {}; Object.keys(sv.cursos).forEach(k => { o[k] = Object.assign({}, sv.cursos[k]); });
+    (o[id] || (o[id] = {}))[d] = nx; if (!nx) delete o[id][d];
+    sv.cursos = normCursos(o); sv.cursoDia = 0; this.kitchen.reset(); writeSave(sv); return true;
+  }
+  /* v12.10, modo dev: força o nível do Tonhão (0 a 8), sem olhar o ao alcance nem o teto */
+  devNivelTonhao(n){
+    if (!DEV.on) return false;
+    this.save.equipe.tonhao = clamp(Math.round(+n) || 0, 0, STAFF.tonhao.levels.length - 1); this.kitchen.slots = cozinhaSlots(this); writeSave(this.save); return true;
+  }
   cursosTodos(on){   // v12: o miolo (sem a trava do modo dev), usado também pela montaCap
     const sv = this.save, tudo = (lista, v) => { const o = {}; if (on) lista.forEach(x => { o[x.id] = v; }); return o; };
-    sv.cursos = normCursos(tudo(CURSOS, 2)); sv.daniCursos = normDaniCursos(tudo(DANI_CURSOS, true)); sv.jocaCursos = normJocaCursos(tudo(JOCA_CURSOS, true)); sv.camiCursos = normCamiCursos(tudo(CAMI_CURSOS, true)); sv.anselmoCursos = normAnselmoCursos(tudo(ANSELMO_CURSOS, true));
+    sv.cursos = on ? cursosAte() : {}; sv.daniCursos = normDaniCursos(tudo(DANI_CURSOS, true)); sv.jocaCursos = normJocaCursos(tudo(JOCA_CURSOS, true)); sv.camiCursos = normCamiCursos(tudo(CAMI_CURSOS, true)); sv.anselmoCursos = normAnselmoCursos(tudo(ANSELMO_CURSOS, true));
     sv.liaCursos = normLiaCursos(tudo(LIA_CURSOS, true)); if (sv.equipe.lia > 0) sv.equipe.lia = on ? STAFF.lia.levels.length - 1 : 1;   // v12.5: os cursos da Lia e o nível que vem com eles
     this.devSegueCursos(); sv.cursoDia = sv.daniCursoDia = sv.jocaCursoDia = sv.camiCursoDia = sv.anselmoCursoDia = sv.liaCursoDia = 0;
     this.kitchen.reset(); this.dani.reset(); this.joca.reset(); this.cami.reset();
@@ -2296,7 +2325,7 @@ class Game {
     writeSave(this.save); return true;
   }
   devNivel(quem, delta){
-    const NIV = { tonhao:[0, 1, 2, 3, 4], dani:[0, 1, 2, 3, 4], joca:[0, 2, 3, 4], cami:[0, 1, 2, 3, 4, 5], anselmo:[0, 2, 3], lia:[0, 1, 2, 3] };   // v12.5: a Lia de 0 a 3
+    const NIV = { tonhao:[0, 1, 2, 3, 4, 5, 6, 7, 8], dani:[0, 1, 2, 3, 4], joca:[0, 2, 3, 4], cami:[0, 1, 2, 3, 4, 5], anselmo:[0, 2, 3], lia:[0, 1, 2, 3] };   // v12.5: a Lia de 0 a 3
     if (!DEV.on || !NIV[quem]) return false;
     const sv = this.save, l = NIV[quem], at = l.indexOf(sv.equipe[quem]);
     if (at < 0) return false;
@@ -2356,8 +2385,7 @@ class Game {
     sv.rosa = ger ? 1 : 0;   // o molho da Rosa: do capítulo 12 em diante
     // os cursos até o ponto e o capítulo (o Tonhão no 2; a equipe, só de quem o ponto tem)
     const ate = (l, tem) => { const o = {}; if (tem) l.forEach(c => { if ((c.nivel || 1) <= nv && (!c.cap || c.cap <= cap)) o[c.id] = true; }); return o; }, cs = {};
-    CURSOS.forEach(c => { if (!c.nivel || c.nivel <= nv) cs[c.id] = 2; });
-    sv.cursos = normCursos(cs); sv.daniCursos = normDaniCursos(ate(DANI_CURSOS, true)); sv.jocaCursos = normJocaCursos(ate(JOCA_CURSOS, e.joca > 0)); sv.camiCursos = normCamiCursos(ate(CAMI_CURSOS, e.cami > 0)); sv.anselmoCursos = normAnselmoCursos(ate(ANSELMO_CURSOS, e.anselmo > 0)); sv.liaCursos = normLiaCursos(ate(LIA_CURSOS, e.lia > 0));
+    sv.cursos = cursosAte(P); sv.daniCursos = normDaniCursos(ate(DANI_CURSOS, true)); sv.jocaCursos = normJocaCursos(ate(JOCA_CURSOS, e.joca > 0)); sv.camiCursos = normCamiCursos(ate(CAMI_CURSOS, e.cami > 0)); sv.anselmoCursos = normAnselmoCursos(ate(ANSELMO_CURSOS, e.anselmo > 0)); sv.liaCursos = normLiaCursos(ate(LIA_CURSOS, e.lia > 0));
     sv.cursoDia = sv.daniCursoDia = sv.jocaCursoDia = sv.camiCursoDia = sv.anselmoCursoDia = sv.liaCursoDia = 0;
     // as melhorias e as compras do ponto
     Object.keys(up).forEach(k => delete up[k]);

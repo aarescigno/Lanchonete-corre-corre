@@ -43,7 +43,7 @@ function drawEfoodFlash(ctx,g){
   ctx.save(); ctx.globalAlpha = a; efoodLetras(ctx); ctx.restore();
 }
 function render(g, ctx){
-  COMIDA_CURSOS = g.cursos;   // v8.6.10: os pratos do curso avançado ganham o detalhe
+  COMIDA_CURSOS = g.cursos; COMIDA_PONTO = g.ponto;   // v8.6.10: os pratos do curso avançado ganham o detalhe
   const tm = g.anim;
   CRACHA_A = (devLivre() || (g.state !== 'playing' && g.state !== 'paused') || g.elapsed < 17) ? 1 : g.elapsed >= 20 ? 0 : RM ? 0 : 1 - (g.elapsed - 17) / 3;   // v9.6.9
   const menu = g.state === 'menu' && !g.conversa;   // v8.7: na conversa, o salão aparece como no dia (com a Bia)

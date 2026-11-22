@@ -48,7 +48,8 @@ function buildMenu(){
   const dv = game.desafiosVisivel;   // v12: o botão Desafios, a partir do Fim da história (ou do modo dev); as três fichas do Manual abrem junto
   $('btn-desafios').style.display = dv ? '' : 'none';
   $('btn-teste').style.display = DEV.on ? '' : 'none';   // v12.3.1: o Teste de habilidade, só com o modo dev ligado
-  const nbt = 3 + (dv ? 1 : 0) + (DEV.on ? 1 : 0);   // Turno sem fim, Manual e Ranking, mais o Desafios e o Teste
+  $('btn-endless').style.display = DEV.on ? '' : 'none';   // v12.10: o Turno sem fim só com o modo dev ligado (o código fica, para voltar como extra)
+  const nbt = 2 + (dv ? 1 : 0) + (DEV.on ? 2 : 0);   // Manual e Ranking, mais o Desafios e, com o modo dev, o Turno sem fim e o Teste
   $('menu-btns').classList[nbt >= 4 ? 'add' : 'remove']('quatro');   // v12: com 4 botões na 2ª fileira, o espaço dentro de cada um encolhe um pouco para caberem
   $('menu-btns').classList[nbt >= 5 ? 'add' : 'remove']('cinco');   // v12.3.1: com 5 (Desafios e Teste juntos), encolhe mais
   if (dv) DESAFIOS.forEach(d => game.manualVer('d-' + d.id));
@@ -382,13 +383,21 @@ function devAbaEquipe(body, secao, botao, nota){
   });
   r = secao('Cursos');
   botao(r, 'Todos', () => game.devCursos(true)); botao(r, 'Nenhum', () => game.devCursos(false));
+  // v12.10: o degrau de cada técnica em cada ponto, girando 0 → básico (B) → avançado (A) → 0, sem cobrar e sem o "incluir o antigo"
+  const TEC = { pastel:'Pastel', chapa:'Chapa', fritos:'Fritos', assados:'Assados', veg:'Vegetariano', pf:'PF', restaurante:'Restaurante', entradas:'Entradas', alta:'Alta gastr.' }, GP = [['garagem', 'Gar'], ['industrial', 'Ind'], ['avenida', 'Av'], ['terraco', 'Ter']];
+  CURSOS.forEach(c => {
+    const l = el('div', 'dev-pessoa'); body.appendChild(l); l.appendChild(el('span', 'dev-nome', TEC[c.id] || c.id));
+    GP.forEach(([d, nm]) => { const g = c.degraus[d]; if (!g || !(g.preco > 0 || g.av)) return; const n = cursoNivel(sv.cursos, c.id, d); const b = botao(l, nm + ' ' + ['—', 'B', 'A'][n], () => game.devDegrau(c.id, d), n > 0); b.setAttribute('aria-label', (TEC[c.id] || c.id) + ' ' + nm + ': ' + ['nada', 'básico', 'avançado'][n]); });
+  });
+  r = secao('Forçar nível do Tonhão', 'Teto aqui: ' + 2 * (pontoIdx(game.ponto) + 1) + ' · ao alcance: ' + tonhaoNivelAlc(sv.cursos, game.ponto));
+  for (let i = 0; i < STAFF.tonhao.levels.length; i++){ const n = i; botao(r, String(n), () => game.devNivelTonhao(n), eq.tonhao === n); }
   // v12.7: o cardápio do ponto (só leitura: cada prato com o preço do ponto) e "Saber tudo do ponto" (liga todos os pratos que o ponto vende, sem comprar curso; só na memória)
   secao('Cardápio do ponto');
   // v12.8: cada prato com o desenhinho ao lado do nome (com o detalhe do avançado quando os cursos o dão)
   const cd = el('div', 'dev-cardapio'); cd.id = 'dev-cardapio'; body.appendChild(cd);
   pratosDoPonto(game.ponto).forEach(k => {
     const it = el('span', 'dev-prato');
-    it.appendChild(tipCanvas(x => { x.translate(32,32); drawDish(x, k, 0, 3, 1.7, false, 'frango', pratoAv(k, game.cursos) && !CARDAPIO[k].semAv); }));
+    it.appendChild(tipCanvas(x => { x.translate(32,32); drawDish(x, k, 0, 3, 1.7, false, 'frango', pratoAv(k, game.cursos, game.ponto) && !CARDAPIO[k].semAv); }));
     it.appendChild(el('span', '', CARDAPIO[k].nome + ' R$ ' + precoPrato(k, game.ponto, game.cursos)));
     cd.appendChild(it);
   });

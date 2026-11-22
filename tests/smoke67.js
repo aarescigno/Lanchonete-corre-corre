@@ -12,7 +12,7 @@ const loja=(H,grupo,aba)=>{ H.L.setShopGrupo(grupo); H.L.setShopTab(aba); return
 
 // ---------- 1. as diárias ----------
 { const {L}=nova(), S=L.STAFF;
-  ok(S.tonhao.levels.map(l=>l.pay).join()==='50,65,80,100,120','Tonhão: 50 · 65 · 80 · 100 · 120 (a diária inteira do nível)');
+  ok(S.tonhao.levels.map(l=>l.pay).join()==='50,58,66,76,86,98,112,130,160','Tonhão: 50 · 58 · 66 · 76 · 86 · 98 · 112 · 130 · 160 (a diária inteira do nível; v12.10: 9 níveis)');
   ok(S.dani.levels.slice(1).map(l=>l.pay).join()==='15,25,32,40','Dani: 15 (ajuda de custo) · 25 · 32 · 40');
   ok(S.joca.levels.slice(2).map(l=>l.pay).join()==='65,78,90','Joca: 65 · 78 · 90');
   ok(S.cami.levels.slice(1).map(l=>l.pay).join()==='95,115,135,160,200','Cami: 95 · 115 · 135 · 160 · 200 (v10.8: o nível 5)');
@@ -22,7 +22,7 @@ const loja=(H,grupo,aba)=>{ H.L.setShopGrupo(grupo); H.L.setShopTab(aba); return
   const M=L.TERRACO.musica;
   ok(M[0]===null && M[1].nome==='Trio de cordas' && M[1].pay===500 && M[1].effect===0.35 && M[1].amb===1,'música 1: Trio de cordas, R$ 500, 35% de paciência, +1 no Ambiente');
   ok(M[2].nome==='Pianista' && M[2].pay===300 && M[2].piano===5 && M[2].effect===0.25 && M[2].amb===1.5,'música 2: Pianista, R$ 300 + R$ 5 de afinação, 25% de paciência, +1,5 no Ambiente');
-  ok(L.payroll({ tonhao:4, dani:4, tv:true, som:true })===165,'a folha completa da Garagem (Tonhão 4, Dani 4, TV e som) dá R$ 165');
+  ok(L.payroll({ tonhao:4, dani:4, tv:true, som:true })===131,'a folha completa da Garagem (Tonhão nível 5 de 9, Dani 4, TV e som) dá R$ 131 (v12.10)');
   ok(L.payroll({ tonhao:0, dani:1 })===65,'e a de quem começa (Tonhão 0, Dani 1) é R$ 65');
   const b=L.payroll({ tonhao:1, dani:1, musica:0 }); ok(L.payroll({ tonhao:1, dani:1, musica:1 })-b===500 && L.payroll({ tonhao:1, dani:1, musica:2 })-b===305,'a música soma 500 (trio) e 300 + 5 (pianista)'); }
 
@@ -34,8 +34,8 @@ const loja=(H,grupo,aba)=>{ H.L.setShopGrupo(grupo); H.L.setShopTab(aba); return
   ok(L.diariaDani({ dani:0 },{ confAlta:1 })===0,'sem a Dani na equipe, nada');
   ok(L.diariaJoca({ joca:4 },{})===90 && L.diariaJoca({ joca:4 },{ espresso:1 })===100 && L.diariaJoca({ joca:4 },{ espresso:1, cafesEsp:1 })===125,'Joca no nível 4: 90; com espresso 100; com cafés especiais 125');
   ok(L.diariaJoca({ joca:4 },{ atend:1, cozinha:1 })===90,'os cursos de atendimento do Joca não mudam a diária');
-  ok(L.payroll({ tonhao:2, dani:4, joca:4 },{ dani:{ confGourmet:1 }, joca:{ espresso:1 } })===80+105+100,'o payroll soma o degrau do curso (2º parâmetro)');
-  ok(L.payroll({ tonhao:2, dani:4, joca:4, jocaFora:true },{ dani:{}, joca:{ espresso:1 } })===80+40,'e o Joca que não vem não entra');
+  ok(L.payroll({ tonhao:2, dani:4, joca:4 },{ dani:{ confGourmet:1 }, joca:{ espresso:1 } })===66+105+100,'o payroll soma o degrau do curso (2º parâmetro)');
+  ok(L.payroll({ tonhao:2, dani:4, joca:4, jocaFora:true },{ dani:{}, joca:{ espresso:1 } })===66+40,'e o Joca que não vem não entra');
   // a folha cortada: o aumento que não baixa a diária não é cortado
   const eq={ tonhao:0, dani:3, joca:3, jocaFora:false }, cp={ dani:{ confCaseira:1 }, joca:{ espresso:1 } };
   const e1=Object.assign({},eq); ok(L.folhaCorta(e1,cp)==='o Joca (sem salário hoje)' && e1.dani===3 && e1.joca===3,'com os cursos feitos, sai o Joca inteiro e não o aumento dele nem o da Dani');
@@ -50,7 +50,7 @@ const loja=(H,grupo,aba)=>{ H.L.setShopGrupo(grupo); H.L.setShopTab(aba); return
   const g=H.g, b=g.payroll(); ok(g.setStaff('dani',3) && g.payroll()===b,'e subir sem custo não muda a folha');
   const H3=jogo('avenida',{ cap:8, equipe:{ tonhao:2, dani:3, joca:3 }, jocaCursos:{ espresso:1 }, jocaTar:100, libera:{ joca:1, cami:1 } },7); const t3=loja(H3,'equipe','joca');
   ok(/Aumento: sem custo/.test(t3),'o Joca no nível 3 com o espresso feito (100): "Aumento: sem custo" para o nível 4');
-  ok(H3.g.payroll()===H3.L.payroll({ tonhao:2, dani:3, joca:3 },{ joca:{ espresso:1 } }) && H3.g.payroll()===80+32+100,'e a folha do jogo usa o degrau do curso do Joca'); }
+  ok(H3.g.payroll()===H3.L.payroll({ tonhao:2, dani:3, joca:3 },{ joca:{ espresso:1 } }) && H3.g.payroll()===66+32+100,'e a folha do jogo usa o degrau do curso do Joca'); }
 
 // ---------- 2. sem dinheiro, a base do Tonhão e da Dani fica ----------
 { const L=nova().L, eq={ tonhao:0, dani:1 };
@@ -77,19 +77,19 @@ const loja=(H,grupo,aba)=>{ H.L.setShopGrupo(grupo); H.L.setShopTab(aba); return
     bruschetta:14, bacalhau:16, quiche:15, risoto:38, peixe:42, medalhao:46 };
   const ks=Object.keys(v10).filter(k=>L.CARDAPIO[k] && L.CARDAPIO[k].preco.garagem!=null), bons=ks.filter(k=>L.CARDAPIO[k].preco.garagem===Math.round(v10[k]*1.2));
   ok(ks.length===Object.keys(L.CARDAPIO).filter(k=>L.CARDAPIO[k].cat!=='junina'&&L.CARDAPIO[k].preco.garagem!=null).length && bons.length===ks.length,'os '+ks.length+' pratos da Garagem custam Math.round(antigo × 1,2) (v12.7: os dos outros pontos têm preço próprio) (erros: '+ks.filter(k=>!bons.includes(k)).join(',')+')');
-  const C=L.CARDAPIO; ok(C.pf.preco.garagem===30 && C.coxinha.preco.garagem===10 && C.misto.preco.garagem===12 && C.pastel.preco.garagem===12 && C.bauru.preco.garagem===14 && C.pfVeg.preco.garagem===28,'PF 30, coxinha 10, misto 12, pastel 12, bauru 14, PF vegetariano 28');
+  const C=L.CARDAPIO; ok(C.pf.preco.garagem===30 && C.coxinha.preco.garagem===10 && C.misto.preco.garagem===12 && C.pastel.preco.garagem===12 && C.bauru.preco.garagem===14 && C.pfVeg.preco.industrial===32 && C.pfVeg.preco.garagem===undefined,'PF 30, coxinha 10, misto 12, pastel 12, bauru 14; PF vegetariano R$ 32 na área industrial (v12.10: saiu da Garagem)');
   ok(L.precoPrato('pf',L.PONTOS[0],{})===30,'o PF da Garagem vende por R$ 30'); }
 
 // ---------- 5. as fichas do Manual ----------
 { const L=nova().L, f=id=>L.MANUAL.find(x=>x.id===id);
-  ok(f('e-tonhao').linha==='O chef. Aprende pratos nos cursos e, com aumento, cozinha mais rápido e ajuda na pia.','a ficha e-tonhao tem o texto novo');
+  ok(f('e-tonhao').linha==='O chef. Em cada ponto, os cursos de lá ensinam pratos novos; com eles e com aumento, cozinha mais rápido, capricha mais e ajuda na pia.','a ficha e-tonhao tem o texto novo');
   ok(f('l-musica').linha==='Trio ou pianista: a paciência nas mesas dura mais, o ambiente melhora e a mesa pede mais uma rodada.','a ficha l-musica tem o texto novo (trio)'); }
 
 // ---------- 6. um save da v10.4 ----------
 { const H=nova(), {L}=H;
   const sv=L.normSave({ histV:1, cap:8, dia:40, maxDay:40, bank:5000, v10:1, equipe:{ tonhao:3, dani:3, joca:3, cami:2, anselmo:2, lia:1, musica:1 }, salao:{ ponto:'terraco' } });
   ok(sv.equipe.musica===1 && L.musicaDe(sv.equipe).nome==='Trio de cordas','um save com musica: 1 carrega como Trio de cordas');
-  ok(L.payroll(sv.equipe,L.cursosPay(sv))===100+32+78+115+105+80+500,'e paga os valores novos a partir daí (R$ '+L.payroll(sv.equipe,L.cursosPay(sv))+')');
+  ok(L.payroll(sv.equipe,L.cursosPay(sv))===76+32+78+115+105+80+500,'e paga os valores novos a partir daí (R$ '+L.payroll(sv.equipe,L.cursosPay(sv))+')');
   ok(sv.equipe.tonhao===3 && sv.equipe.dani===3 && sv.equipe.joca===3,'os níveis não mudam'); }
 
 console.log('smoke67: total = '+total+'  fails = '+fails);

@@ -128,7 +128,7 @@ const fecha=(H,st,fat)=>{ const {g,els}=H; g.startDay(g.save.dia); els['btn-star
 // ---------- 10. o modo dev (CA10) ----------
 { const H=nova({ store:{ lcc2_dev:'1' } }), {g,L,els}=H; g.setDev(true); g.devReal(true); g.setState('menu');
   ok(g.devCapitulo(12) && g.save.cap===12 && g.save.salao.ponto==='terraco' && g.save.conversa==='antes' && g.save.dia===64 && g.save.bank===10000,'o capítulo 12 da lista: Terraço, dia 64, caixa 10000, com a conversa de antes');
-  ok(!g.save.rosa && !g.save.camiCursos.gerente && g.save.equipe.cami===4 && g.save.equipe.lia===3 && g.save.equipe.tonhao===4,'sem o molho e sem a gerência; o resto no máximo');
+  ok(!g.save.rosa && !g.save.camiCursos.gerente && g.save.equipe.cami===4 && g.save.equipe.lia===3 && g.save.equipe.tonhao===8,'sem o molho e sem a gerência; o resto no máximo');
   ok(g.devCapitulo(13) && g.save.cap===13 && g.save.rosa===1 && g.save.camiCursos.gerente===1 && g.save.equipe.cami===5,'o Fim (13): com o molho e a gerência');
   g.devCapitulo(12); g.devEquipe('max'); ok(g.save.rosa===1 && g.save.camiCursos.gerente===1 && g.save.equipe.cami===5,'"Tudo no máximo" compra o molho e a gerência');
   g.devEquipe('zero'); ok(!g.save.rosa,'"Do começo" tira o molho');

@@ -16,9 +16,9 @@ const novos=['vinho','galeto','escalope','dadinho','croquete','folhado','empadin
 const terraco=Object.keys(C).filter(k=>C[k].preco.terraco!=null && C[k].cat!=='junina');
 const sigD=(k,av)=>sig(c=>L.drawDish(c,k,0,0,1,false,null,av));
 
-// CA1: o DESENHO_BASE só tem os 6 pratos da v8.6.11
+// CA1: o DESENHO_BASE só tem os 6 pratos da v8.6.11 e os 6 de estrada da v12.10 (desenho do parecido até a v12.10.1)
 { const ks=Object.keys(L.DESENHO_BASE);
-  ok(ks.length===6 && novos.every(k=>!L.DESENHO_BASE[k]),'CA1: DESENHO_BASE com '+ks.length+' pratos ('+ks.join()+')'); }
+  ok(ks.length===12 && novos.every(k=>!L.DESENHO_BASE[k]),'CA1: DESENHO_BASE com '+ks.length+' pratos ('+ks.join()+')'); }
 
 // CA2: cada prato do Terraço (com o risoto da Lia) é diferente de todos os outros, com e sem o avançado
 { ok(novos.every(k=>terraco.includes(k)) && terraco.includes('liaRisoto'),'CA2: os 15 pratos novos e o risoto da Lia estão no Terraço ('+terraco.length+' pratos)');

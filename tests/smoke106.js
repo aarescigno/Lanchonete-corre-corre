@@ -92,10 +92,10 @@ const cinco=['neutra','insegura','firme','alegre','brava'];
 { const dia=(arr,n)=>{ const H=nova(), {g}=H, sv=g.save; sv.conversa=null; sv.bank=5000; sv.convCard=1; sv.convDiv=1; sv.convEnt=1; sv.convPlanta=1; sv.convQuit=1; sv.convTeto=1; Object.keys(sv.libera).forEach(k=>{ sv.libera[k]=1; });
     g.trocaPonto(H.L.PONTOS[3]); Object.keys(sv.arco).forEach(k=>{ sv.arco[k]=1; }); sv.equipe.lia=1; sv.equipe.anselmo=0; sv.equipe.cami=0; if(arr) arr(sv); g.startDay(n||20); joga(H,900,0); return pends(sv); };
   // a LIBERA lia, no Modo História, só com o cap. 10 começado
-  { const H=nova(), {g,L}=H, F=L.liberaOf('lia'); g.save.cursos={ entradas:1 };
+  { const H=nova(), {g,L}=H, F=L.liberaOf('lia'); g.save.cursos={ entradas:{ terraco:1 } };
     g.save.cap=9; const a=F.gatilho(g.stats,[],g); g.save.cap=10; const b=F.gatilho(g.stats,[],g); g.save.cursos={}; const c=F.gatilho(g.stats,[],g);
     ok(a===false && b===true && c===false,'CA6 LIBERA lia (História): o curso de entradas só vale no cap. 10 em diante ('+a+', '+b+', sem curso '+c+')');
-    const H2=nova({ historia:false }); H2.g.save.cursos={ entradas:1 }; H2.g.save.cap=4; ok(H2.L.liberaOf('lia').gatilho(H2.g.stats,[],H2.g)===true,'CA6 LIBERA lia (sem História): nada muda'); }
+    const H2=nova({ historia:false }); H2.g.save.cursos={ entradas:{ terraco:1 } }; H2.g.save.cap=4; ok(H2.L.liberaOf('lia').gatilho(H2.g.stats,[],H2.g)===true,'CA6 LIBERA lia (sem História): nada muda'); }
   ok(dia(sv=>{ sv.cap=10; sv.arco.liaPerfeita=0; }).length===0,'CA6 liaPerfeita não marca no cap. 10');
   ok(dia(sv=>{ sv.cap=11; sv.arco.liaPerfeita=0; }).join()==='liaPerfeita','CA6 liaPerfeita marca no cap. 11');
   ok(dia(sv=>{ sv.cap=11; sv.arco.liaRosa=0; }).join()==='liaRosa','CA6 liaRosa marca depois da liaPerfeita (cap. 11, Lia contratada)');

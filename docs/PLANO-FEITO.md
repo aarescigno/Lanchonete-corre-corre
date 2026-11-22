@@ -98,6 +98,7 @@ A cena final animada (oito cenas, no motor da abertura), os créditos, a placa n
 
 | # | Etapa | Versão | Situação |
 |---|---|---|---|
+| correção | A espera sentada e o enfeite das mesas sem pagar à toa (cadeirinhas → banquinhos por R$ 45, sem voltar; o enfeite sai com o linho e volta pela metade) | v12.8.4 | feita em 21/11 (`docs/spec-v12.8.4.md`; `smoke114`; `assentoPreco` e a devolução no `buyMovel('linho')`) |
 | R1 | Retornos da Letícia: verificar atualização, pernas na espera, bandeirinhas, o cabelo da Bia, o enfeite da mesa, a área industrial sem sobreposição e a buzina do eFood | v11.16.1 | feita em 17/11 (`docs/spec-v11.16.1.md`; `smoke95`; o botão Verificar atualização, as pernas na espera, as bandeirinhas presas, o cabelo crespo da Bia, o enfeite da mesa por ponto, a área industrial sem sobreposição e a buzina do eFood) |
 | S | Salários de verdade: equipe e música no custo real (~80%), cardápio e metas recalibrados | v10.5 | feita em 12/11 (`docs/spec-v10.5.md`; `smoke67`; a música não paga o preço no `balance.js`, ver Desvios) |
 | D-2 | Modo dev completo: História (cumprir, assistir, revelar) e Hoje (forçar imprevistos) | v10.2.2 | feita em 11/11 (`docs/spec-v10.2.2.md`; `smoke64`) |

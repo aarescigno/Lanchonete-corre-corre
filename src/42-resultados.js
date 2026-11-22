@@ -296,6 +296,8 @@ function segSync(id, val){
   Array.prototype.forEach.call(box.querySelectorAll('button'), b => b.setAttribute('aria-pressed', b.getAttribute('data-v') === val ? 'true' : 'false'));
 }
 function renderRank(){
+  if ($('rank-tabs')) Array.prototype.forEach.call($('rank-tabs').querySelectorAll('button'), b => { if (b.getAttribute('data-v') === 'semfim') b.style.display = DEV.on ? '' : 'none'; });   // v12.10: o Turno sem fim só aparece com o modo dev (o código fica, para voltar como extra)
+  if (!DEV.on && rk.tab === 'semfim') rk.tab = 'carreira';
   segSync('rank-tabs', rk.tab); segSync('rank-by', rk.by); segSync('rank-dir', rk.dir);
   $('rank-source').textContent = rk.source === 'shared' ? 'Ranking compartilhado' : 'Ranking deste aparelho';
   const wrap = $('rank-wrap');

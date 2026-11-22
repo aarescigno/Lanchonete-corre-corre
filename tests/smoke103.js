@@ -17,7 +17,7 @@ bloco('CA1',()=>{
   const {g,L}=mk(); const S={};
   IDS.forEach(id=>{ g.startTeste(id); S[id]={ eq:Object.assign({},g.save.equipe), sv:g.save, up:Object.assign({},g.up) }; g.setState('menu'); });
   const e=id=>S[id].eq;
-  ok(e('garagem').tonhao===4 && e('garagem').dani===4 && ['joca','cami','anselmo','lia'].every(q=>e('garagem')[q]===0),'CA1: Garagem: Tonhão 4, Dani 4 e nenhum outro ajudante ('+arr(['tonhao','dani','joca','cami','anselmo','lia'].map(q=>e('garagem')[q]))+')');
+  ok(e('garagem').tonhao===8 && e('garagem').dani===4 && ['joca','cami','anselmo','lia'].every(q=>e('garagem')[q]===0),'CA1: Garagem: Tonhão 8 (v12.10: o máximo dos 9 níveis), Dani 4 e nenhum outro ajudante ('+arr(['tonhao','dani','joca','cami','anselmo','lia'].map(q=>e('garagem')[q]))+')');
   ok(e('industrial').joca===4 && e('industrial').dani===4 && e('industrial').cami===0 && e('industrial').anselmo===0 && e('industrial').lia===0,'CA1: área industrial: Joca 4 e nenhuma Cami, Anselmo ou Lia');
   ok(e('avenida').cami===3 && e('avenida').anselmo===2 && e('avenida').lia===0 && e('avenida').joca===4,'CA1: Avenida: Cami 3 e Anselmo 2 (sem Lia)');
   { const t=S.terraco; ok(t.eq.cami===4 && t.eq.anselmo===3 && t.eq.lia===3 && t.sv.rosa===0 && !t.sv.camiCursos.gerente,'CA1: Terraço (cap 11): Cami 4, Anselmo 3, Lia 3 (v12.5), sem o molho da Rosa e sem o curso gerente'); }
@@ -31,7 +31,7 @@ bloco('CA1',()=>{
     L.UPGRADES.forEach(u=>{ if(u.nivel&&u.nivel>nv&&up[u.id]) acima.push(id+':'+u.id); }); });
   ok(acima.length===0,'CA1: nenhum curso nem melhoria com nível acima do ponto ('+acima.join()+')');
   ok(!S.industrial.up.espresso && !S.industrial.up.confGourmet && !S.industrial.sv.cursos.restaurante && !S.industrial.up.louca && !S.industrial.up.confAlta && S.industrial.up.confCaseira===true,'CA1: a área industrial sem restaurante, confeitaria gourmet, espresso e louça fina, com a confeitaria caseira');
-  ok(S.garagem.sv.cursos.pastel===2 && S.garagem.sv.cursos.pf===2 && !S.garagem.sv.cursos.restaurante && !S.garagem.sv.cursos.entradas && S.terraco.sv.cursos.alta===2 && S.terraco.sv.cursos.restaurante===2,'CA1: os cursos do Tonhão no avançado, só os do ponto (Garagem sem restaurante; Terraço com todos)');
+  ok(S.garagem.sv.cursos.pastel.garagem===2 && !S.garagem.sv.cursos.pf && !S.garagem.sv.cursos.restaurante && !S.garagem.sv.cursos.entradas && S.terraco.sv.cursos.alta.terraco===2 && S.terraco.sv.cursos.restaurante.avenida===2 && S.terraco.sv.cursos.restaurante.terraco===2 && S.terraco.sv.cursos.pf.industrial===2,'CA1: os cursos do Tonhão no avançado, só os do ponto (Garagem sem restaurante; Terraço com todos)');
   ok(IDS.every(id=>!!e(id).tv===(id==='garagem') && !!e(id).som===(id==='garagem')) && IDS.every(id=>!!e(id).couvert===(id==='avenida') && !!e(id).taxa===(id==='avenida')) && IDS.every(id=>(e(id).musica===1)===(id==='terraco')) && e('industrial').tvs===2 && IDS.every(id=>id==='industrial'||e(id).tvs===0),'CA1: TV e som só na Garagem; as TVs (modo 2) só na área industrial; couvert com taxa só na Avenida; música só no Terraço'); });
 
 // v12.4 (relato do usuário): a máquina de cafés especiais não aparece no Teste nem nos Desafios da Garagem e da área industrial; o espresso só da Avenida em diante e os cafés especiais (cafesEsp) só no Terraço
@@ -62,7 +62,7 @@ bloco('CA3',()=>{
   ['avenida','terraco'].forEach(id=>{ g.startTeste(id); ok(g.save.equipe.camiModo==='tarefas' && arr(t(g.cami))===arr(['lixo','lavar','pratos','suco']) && arr(t(g.joca))===arr(['cafe']) && arr(t(g.dani))===arr(['doce']),'CA3: '+id+': a Cami nas tarefas (lixo, lavar, pratos, suco), o Joca com o café e a Dani com o doce ('+t(g.cami)+' / '+t(g.joca)+' / '+t(g.dani)+')'); g.setState('menu'); });
   ok(arr(L.testeEqPadrao(L.TESTES[3])) === arr(L.TESTE_EQ_PADRAO.terraco) ,'CA3: a constante TESTE_EQ_PADRAO é a equipe padrão de cada ponto');
   g.startDesafio('semBravo'); ok(arr(t(g.cami))===arr(['lixo','lavar','pratos','suco']) && g.save.cap===8 && g.save.equipe.cami===3,'CA3: o Desafio também usa a equipe padrão (e o máximo do ponto: Avenida, Cami 3)'); g.setState('menu');
-  g.startDesafio('soBia'); ok(['dani','joca','cami','anselmo','lia'].every(q=>g.save.equipe[q]===0) && g.save.equipe.tonhao===4,'CA3: o mod.sem do Desafio vale por cima do máximo (Só a Bia: ninguém, o Tonhão no 4)'); });
+  g.startDesafio('soBia'); ok(['dani','joca','cami','anselmo','lia'].every(q=>g.save.equipe[q]===0) && g.save.equipe.tonhao===8,'CA3: o mod.sem do Desafio vale por cima do máximo (Só a Bia: ninguém, o Tonhão no 8)'); });
 
 // ---------- CA4: a tela da fase ----------
 const abre=(H,id)=>{ const {g,L,els}=H; g.setDev(true); g.setState('teste'); const b=todos(els['teste-lista'],n=>n.getAttribute&&n.getAttribute('data-teste')===id)[0]; b.fire('click'); };

@@ -17,7 +17,7 @@ const joga=(H,fat)=>{ const {g,els}=H; if(g.state==='shop') els['btn-shop-go'].f
   ok(cartoes()[0]==='cardapio','o 1º cartão do grupo Lanchonete é o Cardápio');
   L.setShopTab('cardapio');
   ok(els['shop-sec'].textContent==='Cardápio' && /No cardápio hoje \(2 pratos\)/.test(txt(grid())),'abre o Cardápio: "No cardápio hoje (2 pratos)"');
-  ok(/Comprar R\$ 150/.test(txt(grid())) && /Curso de Pastel/.test(txt(grid())),'os cursos estão no Cardápio, com "Comprar R$ 150" no Pastel de feira');
+  ok(/Comprar R\$ 110/.test(txt(grid())) && /Curso de Pastel/.test(txt(grid())),'os cursos estão no Cardápio, com "Comprar R$ 110" no Pastel de feira (v12.10)');
   ok(!/Diversidade do cardápio/.test(txt(grid())) && !/Equipe › Tonhão/.test(txt(grid())),'sem a prosa da diversidade e da experiência (v9.6.8)');
   L.setShopTab('tonhao');
   ok(!/Comprar/.test(txt(grid())) && /Cursos de cardápio concluídos/.test(txt(grid())) && /Nenhum ainda/.test(txt(grid())),'a seção Tonhão não vende curso e diz "Nenhum ainda"');
@@ -25,25 +25,25 @@ const joga=(H,fat)=>{ const {g,els}=H; if(g.state==='shop') els['btn-shop-go'].f
   const ver=(function f(e){ if(e.tagName==='BUTTON' && e.textContent==='Ver cursos') return e; for(const c of (e.children||[])){ const r=f(c); if(r) return r; } return null; })(grid());
   ok(!!ver,'há o botão "Ver cursos"'); ver.fire('click');
   ok(els['shop-sec'].textContent==='Cardápio','"Ver cursos" abre o Cardápio');
-  g.save=L.normSave({bank:5000,maxDay:3,cursos:{pastel:1,chapa:1}}); g.up=g.save.up; g.buildTables(); g.goShop(3); L.setShopTab('tonhao');
+  g.save=L.normSave({bank:5000,maxDay:3,cursos:{pastel:{garagem:1},chapa:{garagem:1}}}); g.up=g.save.up; g.buildTables(); g.goShop(3); L.setShopTab('tonhao');
   ok(/Curso de Pastel.*\(básico\)/.test(txt(grid())) && !/Nenhum ainda/.test(txt(grid())),'com cursos feitos, a seção Tonhão lista os concluídos');
-  ok(L.cursoFeito({pastel:1}) && !L.cursoFeito({}) && !L.cursoFeito({pf:1}) && L.cursoFeito({pf:2}),'cursoFeito: básico de qualquer curso ou o avançado do PF'); }
+  ok(L.cursoFeito({pastel:{garagem:1}}) && !L.cursoFeito({}) && !L.cursoFeito({pf:{industrial:1}}) && L.cursoFeito({pf:{industrial:2}}),'cursoFeito: básico de qualquer curso ou o avançado do PF'); }
 
 // ---------- 2. o selo "novo" ----------
 { const H=load(), {g,L,els}=H, grid=()=>els['shop-grid'];
   const card=()=>grid().children.find(c=>c.getAttribute('data-sec')==='cardapio');
   const tem=()=>card().classList.contains('novo');
   const abre=bank=>{ g.save=L.normSave({bank,maxDay:3,cursos:g.save&&g.save.cursos||{}}); g.up=g.save.up; g.buildTables(); g.goShop(3); L.setShopGrupo('lanchonete'); };
-  g.save=L.normSave({bank:200,maxDay:3}); g.up=g.save.up; g.buildTables(); g.goShop(3); L.setShopGrupo('lanchonete');
-  ok(tem(),'com R$ 200 (cabe o Pastel), o cartão tem o selo "novo"');
+  g.save=L.normSave({bank:120,maxDay:3}); g.up=g.save.up; g.buildTables(); g.goShop(3); L.setShopGrupo('lanchonete');
+  ok(tem(),'com R$ 120 (cabe o Pastel, R$ 110), o cartão tem o selo "novo"');
   card().fire('click'); els['btn-shop-voltar'].fire('click');
   ok(!tem(),'depois de abrir o Cardápio, o selo some');
-  g.save.bank=300; L.setShopGrupo('lanchonete');
-  ok(tem(),'com R$ 300 cabe outro curso (Salgados fritos): o selo volta');
+  g.save.bank=140; L.setShopGrupo('lanchonete');
+  ok(tem(),'com R$ 140 cabe outro curso (Chapa, R$ 130): o selo volta');
   const H2=load(), g2=H2.g, L2=H2.L, e2=H2.els;
   g2.save=L2.normSave({bank:100,maxDay:3}); g2.up=g2.save.up; g2.buildTables(); g2.goShop(3); L2.setShopGrupo('lanchonete');
   ok(!e2['shop-grid'].children.find(c=>c.getAttribute('data-sec')==='cardapio').classList.contains('novo'),'com R$ 100, sem selo');
-  g2.save=L2.normSave({bank:5000,maxDay:3}); g2.up=g2.save.up; g2.buildTables(); g2.goShop(3); g2.save.cursoDia=g2.shopNext; L2.setShopGrupo('lanchonete');
+  g2.save=L2.normSave({bank:5000,maxDay:3}); g2.up=g2.save.up; g2.buildTables(); g2.goShop(3); g2.save.cursoDia=g2.shopNext; g2.save.cursoQt=1; L2.setShopGrupo('lanchonete');
   ok(!e2['shop-grid'].children.find(c=>c.getAttribute('data-sec')==='cardapio').classList.contains('novo'),'no dia em que o curso já foi comprado, sem selo'); }
 
 // ---------- 3. a conversa do cardápio ----------
@@ -61,7 +61,7 @@ const joga=(H,fat)=>{ const {g,els}=H; if(g.state==='shop') els['btn-shop-go'].f
   g.startDay(3); joga(H,400); passa(H); els['btn-next'].fire('click');
   ok(g.save.convCard===1,'fechar o dia 3 depois não toca de novo'); }
 { const H=nova(), {g,L,els}=H;
-  g.save.conversa=null; g.save.bank=5000; g.save.cursos=L.normCursos({pastel:1}); g.startDay(2); joga(H,400); els['btn-next'].fire('click'); ate(H,/O pessoal adorou/);
+  g.save.conversa=null; g.save.bank=5000; g.save.cursos=L.normCursos({pastel:{garagem:1}}); g.startDay(2); joga(H,400); els['btn-next'].fire('click'); ate(H,/O pessoal adorou/);
   ok(g.conversa && /O pessoal adorou o prato novo!/.test(g.conversa.fala.s),'com um curso feito, toca a versão curta'); }
 { const H=load(), {g,L,els}=H;
   g.save.bank=5000; g.startDay(1); joga(H,400); g.startDay(2); joga(H,400);
