@@ -131,7 +131,7 @@ const joga=(H,fat,custo)=>{ const {g,els}=H; if(g.state==='shop') els['btn-shop-
   const a0=amb(); ok(g.buyDecor('violeta') && g.save.bank===4980,'comprar violetas na área industrial'); const a1=amb(); g.buyDecor('anturio'); const a2=amb(); g.buyDecor('pendente'); const a3=amb();
   ok(a1>=a0 && a2>=a1 && a3>=a2 && a3>a0,'v10.7: cada planta soma 1 ponto de luxo, e o Ambiente só sobe (0,075 cada na área industrial)');
   const G=jogo(4,false,{ bank:5000 }).g; ok(!G.buyDecor('violeta'),'na Garagem, essas plantas não estão à venda');
-  H.L.setShopTab('decor'); ok(/Violetas/.test(txt(grid(H))),'na lojinha da área industrial, o cartão das violetas'); }
+  H.L.setShopTab('decor'); ok(/Cactos/.test(txt(grid(H))),'na lojinha da área industrial, o cartão dos cactos (v12.9: antes Violetas)'); }
 
 // ---------- 9. cap. 4 ----------
 { const H=jogo(4,true,{ capAzul:2 }), {g,L}=H; g.save.capDia=10;

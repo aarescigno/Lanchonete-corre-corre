@@ -609,19 +609,19 @@ const SALAO_SEMFIM = [2,2,2,4,2,4];
    ============================================================ */
 const DECOR = [
   { id:'espada',    grupo:'plantas', name:'Espada-de-são-jorge', cost:15, lux:1 },
-  { id:'lata',      grupo:'plantas', name:'Muda na lata',        cost:8, lux:1 },
+  { id:'lata',      grupo:'plantas', name:'Temperos na lata',     cost:8, lux:1 },
   { id:'samambaia', grupo:'plantas', name:'Samambaia',           cost:30, lux:1 },
   // v9, só a partir da área industrial: as plantas da calçada (+0,1 cada no Ambiente)
-  { id:'violeta',   grupo:'plantas', name:'Violetas',            cost:20, nivel:2, amb:0.1, lux:1 },
+  { id:'violeta',   grupo:'plantas', name:'Cactos',               cost:20, nivel:2, amb:0.1, lux:1 },
   { id:'anturio',   grupo:'plantas', name:'Antúrio',             cost:30, nivel:2, amb:0.1, lux:1 },
-  { id:'pendente',  grupo:'plantas', name:'Samambaia pendurada', cost:40, nivel:2, amb:0.1, lux:1 },
+  { id:'pendente',  grupo:'plantas', name:'Jiboia pendurada',     cost:40, nivel:2, amb:0.1, lux:1 },
   // v9.1, só na Avenida Brasil: as flores da calçada (+0,15 cada no Ambiente)
   { id:'tulipa',    grupo:'plantas', name:'Tulipas',             cost:40, nivel:3, amb:0.15, lux:1 },
   { id:'copo',      grupo:'plantas', name:'Copos-de-leite',      cost:50, nivel:3, amb:0.15, lux:1 },
   { id:'orquidea',  grupo:'plantas', name:'Orquídeas',           cost:60, nivel:3, amb:0.15, lux:1 },
   // v10.4, só no Terraço: as flores finas do foyer (+0,2 cada no Ambiente)
   { id:'ikebana',   grupo:'plantas', name:'Ikebana',             cost:90,  nivel:4, amb:0.2, lux:1 },
-  { id:'orqArranjo', grupo:'plantas', name:'Arranjo de orquídeas', cost:120, nivel:4, amb:0.2, lux:1 },
+  { id:'orqArranjo', grupo:'plantas', name:'Bonsai',              cost:120, nivel:4, amb:0.2, lux:1 },
   { id:'campo',     grupo:'plantas', name:'Flores do campo',     cost:70,  nivel:4, amb:0.2, lux:1 },
   { id:'foto',      grupo:'rosa',    name:'Foto da dona Rosa',   cost:10, lux:1 },
   { id:'giz',       grupo:'rosa',    name:'Quadro de giz',       cost:25, lux:1 },
@@ -631,7 +631,13 @@ const DECOR = [
   { id:'chita',     grupo:'enfeites', name:'Cortina de chita',   cost:25,   nivel:1, lux:2 },
   { id:'luminaria', grupo:'enfeites', name:'Luminárias de fábrica', cost:180, nivel:2, lux:2 },
   { id:'quadros',   grupo:'enfeites', name:'Quadros de artista', cost:450,  nivel:3, lux:2 },
-  { id:'lustre',    grupo:'enfeites', name:'Lustre de cristal',  cost:1500, nivel:4, lux:2 }
+  { id:'lustre',    grupo:'enfeites', name:'Lustre de cristal',  cost:1500, nivel:4, lux:2 },
+  // v12.9, só na Avenida e no Terraço: a família fina (a regra de quem vale em cada ponto é da v12.9.1)
+  { id:'espelho',   grupo:'enfeites', name:'Espelho de moldura', cost:200,  nivel:3, lux:2 },
+  { id:'palmeira',  grupo:'plantas',  name:'Palmeiras na entrada', cost:200, nivel:3, lux:2 },
+  { id:'vinhos',    grupo:'enfeites', name:'Estante de vinhos',  cost:200,  nivel:3, lux:2 },
+  { id:'cortina',   grupo:'enfeites', name:'Cortinas de linho',  cost:450,  nivel:3, lux:3 },
+  { id:'arandela',  grupo:'enfeites', name:'Arandelas',          cost:450,  nivel:3, lux:3 }
 ];
 const DECOR_GRUPOS = [
   { id:'plantas', nome:'Plantas' },
@@ -1165,13 +1171,14 @@ const AVAL_POUCO = ['Só tem PF e coxinha?', 'Queria um pastel, mas não tem...'
 const AVAL_BRAVO = { fila:['Desisti de esperar!', 'Nem consegui sentar.'], mesa:['Fui embora sem comer!', 'Nunca mais volto!'], retirada:['Cadê a marmita?!', 'Saí sem o pedido!'] };   // retirada (v8.6): o entregador
 /* elogios do ambiente que citam a decoração (v8.6.6), por enfeite (a toalha, só de quem sentou numa mesa com ela) */
 const AVAL_DECOR = {
-  espada:'Que plantinha linda na entrada!', lata:'Adorei a mudinha na lata!', samambaia:'Que samambaia bonita!',
+  espada:'Que plantinha linda na entrada!', lata:'Adorei os temperos na lata!', samambaia:'Que samambaia bonita!',
   foto:'Que foto bonita na parede!', giz:'Adorei o quadro de giz!', placa:'"Comida é afeto": é isso mesmo!',
   toalha:'A toalha xadrez dá um charme!',
-  violeta:'Que violetas lindas na janela!', anturio:'Adorei o antúrio na entrada!', pendente:'A samambaia no toldo ficou linda!',
+  violeta:'Que cactos mais simpáticos na janela!', anturio:'Adorei o antúrio na entrada!', pendente:'A jiboia no toldo ficou linda!',
   tulipa:'Que tulipas lindas na calçada!', copo:'Adorei os copos-de-leite!', orquidea:'Que orquídea mais delicada!',
-  ikebana:'Que ikebana mais elegante!', orqArranjo:'O arranjo de orquídeas é um espetáculo!', campo:'Adorei as flores do campo!',
-  pisca:'Que luzinhas mais charmosas!', chita:'Adorei a cortina de chita!', luminaria:'As luminárias dão um charme!', quadros:'Que quadros bonitos!', lustre:'Que lustre maravilhoso!'   // v10.7
+  ikebana:'Que ikebana mais elegante!', orqArranjo:'Que bonsai mais caprichado!', campo:'Adorei as flores do campo!',
+  pisca:'Que luzinhas mais charmosas!', chita:'Adorei a cortina de chita!', luminaria:'As luminárias dão um charme!', quadros:'Que quadros bonitos!', lustre:'Que lustre maravilhoso!',   // v10.7
+  espelho:'Que espelho mais elegante!', palmeira:'As palmeiras na entrada são um luxo!', vinhos:'Que estante de vinhos caprichada!', cortina:'Que cortinas de linho mais finas!', arandela:'As arandelas deixam a luz uma beleza!'   // v12.9
 };
 function avalComentario(r, bravo, lixo, nivel, decor, fria, semVeg, tipo, pouco){   // v11.16.1: o elogio da toalha é o do enfeite do ponto (pelo nível)
   if (bravo) return pick(AVAL_BRAVO[bravo]);
@@ -1909,7 +1916,7 @@ const HIST_NOMES = { bia:'Bia', tonhao:'Tonhão', dani:'Dani', joca:'Joca', cami
 const ATU_TXT = { procurando:'Procurando versão nova...', nova:'Tem versão nova: {v}! Seu jogo salvo continua.', igual:'Você já está na versão mais nova ({v}).', erro:'Sem internet agora. Tente de novo mais tarde.', atualizando:'Atualizando...' };
 function atuEstado(remota, atual){ if (typeof remota !== 'string' || !remota.trim()) return 'erro'; return remota.trim() === atual ? 'igual' : 'nova'; }
 const CAIXA_MAX = 14;                                 // livro-caixa (v7.2): quantos dias da carreira ficam guardados
-const VERSAO = 'v12.8.4';                                   // vai no resumo do Caixa
+const VERSAO = 'v12.9';                                     // vai no resumo do Caixa
 const DIVULGA_DIA = 4;                                // antes disso, o movimento é o da inauguração (sem custo); v9.0.2: dia 4, e o padrão é o boca a boca
 function divulgaAberta(n, sv){ return devLivre() || n >= DIVULGA_DIA && !(sv && sv.convDiv === 'pend'); }   // no modo dev, desde o dia 1; v9.0.3: no Modo História, só depois da conversa
 /* v9.6.4: a Efood (os entregadores) só abre depois da conversa dos entregadores, no Modo História; antes dela, nenhum tipo com `retira` vem na agenda */

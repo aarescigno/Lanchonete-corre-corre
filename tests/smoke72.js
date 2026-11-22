@@ -29,13 +29,13 @@ const tudo=(H,ponto)=>{ const {g,L}=H, sv=g.save, pn=NIV[ponto];
   ok(L.LUXO.endereco.join()==='0,10,20,40' && L.LUXO.pede.join()==='20,40,60,90' && L.LUXO.vip===0.1 && L.LUXO.exigAv===0.25,'LUXO: endereço 0,10,20,40; pede 20,40,60,90; vip 0,1; exigAv 0,25'); }
 
 // ---------- 2. tudo comprado em cada ponto (CA2) ----------
-{ const alvo={ industrial:[45,2], avenida:[64,3], terraco:[100,5] };
+{ const alvo={ industrial:[45,2], avenida:[69,3], terraco:[100,5] };
   for(const p of ['industrial','avenida','terraco']){ const H=jogo(p), {g,L}=H; g.mode='carreira'; const v=tudo(H,p);
     ok(v.tot===alvo[p][0] && L.luxoNivel(g)===alvo[p][1],p+': tudo comprado dá '+alvo[p][0]+' (nível '+alvo[p][1]+') — deu '+v.tot+' '+JSON.stringify(v)); }
-  const H=jogo('avenida'), {g,L}=H; const v=tudo(H,'avenida'); g.save.decor.quadros=0; const w=L.luxoPts(g);
-  ok(w.dec===v.dec-2 && w.tot===v.tot-2,'enfeite guardado não conta (quadros de artista: −2)');
+  const H=jogo('avenida'), {g,L}=H; const v=tudo(H,'avenida'); ['quadros','espelho','palmeira','vinhos','cortina','arandela'].forEach(k=>g.save.decor[k]=0); const w=L.luxoPts(g);
+  ok(w.tot===62,'enfeite guardado não conta (quadros de artista −2 e os 5 finos guardados: de volta aos 64 de antes, menos 2) — deu '+w.tot);
   const novos=['pisca','chita','luminaria','quadros','lustre'].map(id=>L.decorOf(id));
-  ok(novos.map(d=>d.cost).join()==='30,25,180,450,1500' && novos.map(d=>d.nivel).join()==='1,1,2,3,4' && novos.every(d=>d.lux===2 && d.grupo==='enfeites') && L.DECOR.filter(d=>!d.grupo||d.grupo!=='enfeites').every(d=>d.lux===1),'os 5 enfeites novos (preço, ponto, 2 pontos) e os 15 antigos com 1');
+  ok(novos.map(d=>d.cost).join()==='30,25,180,450,1500' && novos.map(d=>d.nivel).join()==='1,1,2,3,4' && novos.every(d=>d.lux===2 && d.grupo==='enfeites') && L.DECOR.filter(d=>(!d.grupo||d.grupo!=='enfeites') && d.id!=='palmeira').every(d=>d.lux===1),'os 5 enfeites novos (preço, ponto, 2 pontos) e os 15 antigos com 1');
   ok(L.DECOR_GRUPOS.some(x=>x.id==='enfeites' && x.nome==='Enfeites'),'grupo Enfeites');
   const f=L.AVAL_DECOR; ok(f.pisca==='Que luzinhas mais charmosas!' && f.chita==='Adorei a cortina de chita!' && f.luminaria==='As luminárias dão um charme!' && f.quadros==='Que quadros bonitos!' && f.lustre==='Que lustre maravilhoso!','os elogios dos enfeites novos'); }
 

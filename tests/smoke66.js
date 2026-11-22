@@ -58,9 +58,9 @@ const sentar=(g,type)=>{ const grp=g.spawn({ type:type||'casal', color:0, vip:fa
 { const L=nova().L, f=id=>L.DECOR.find(d=>d.id===id);
   ok(f('ikebana') && f('ikebana').cost===90 && f('orqArranjo').cost===120 && f('campo').cost===70,'custam R$ 90, 120 e 70');
   ok(['ikebana','orqArranjo','campo'].every(id=>f(id).nivel===4 && f(id).amb===0.2 && f(id).grupo==='plantas'),'só do nível 4, +0,2 no Ambiente cada, no grupo das plantas');
-  ok(L.AVAL_DECOR.ikebana==='Que ikebana mais elegante!' && L.AVAL_DECOR.orqArranjo==='O arranjo de orquídeas é um espetáculo!' && L.AVAL_DECOR.campo==='Adorei as flores do campo!','os 3 elogios');
+  ok(L.AVAL_DECOR.ikebana==='Que ikebana mais elegante!' && L.AVAL_DECOR.orqArranjo==='Que bonsai mais caprichado!' && L.AVAL_DECOR.campo==='Adorei as flores do campo!','os 3 elogios');
   ok(L.normDecor({ ikebana:1, orqArranjo:1, campo:0 }).ikebana===1 && L.normDecor({ campo:1 }).campo===1,'normDecor aceita os 3 ids');
-  const Ht=jogo('terraco'); const t=loja(Ht,'lanchonete','decor'); ok(/Ikebana/.test(t) && /Arranjo de orquídeas/.test(t) && /Flores do campo/.test(t),'a Decoração do Terraço mostra as 3');
+  const Ht=jogo('terraco'); const t=loja(Ht,'lanchonete','decor'); ok(/Ikebana/.test(t) && /Bonsai/.test(t) && /Flores do campo/.test(t),'a Decoração do Terraço mostra as 3');
   const Ha=jogo('avenida',{},7); const ta=loja(Ha,'lanchonete','decor'); ok(!/Ikebana|Arranjo de orquídeas|Flores do campo/.test(ta),'a da Avenida não');
   const {g}=Ht; const b=g.save.bank; ok(g.buyDecor('ikebana') && g.save.bank===b-90 && g.save.decor.ikebana===1,'comprar a ikebana (R$ 90)');
   g.buyDecor('orqArranjo'); g.buyDecor('campo');
