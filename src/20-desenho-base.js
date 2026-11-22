@@ -152,7 +152,7 @@ function drawMarmita(ctx,k,x,y,s){
 }
 /* a comida do prato (sem o prato), centrada em (0, 0). v8.6.10: um desenho para cada prato; `av` (o detalhe do curso avançado) vem do
    curso do jogo (COMIDA_CURSOS, posto pelo render) quando não é dado; `carne` é a proteína do PF com as Carnes variadas */
-let COMIDA_CURSOS = null;
+let COMIDA_CURSOS = null, COMIDA_PONTO = null;   // v12.10: o ponto também (o prato de base vale com o avançado do ponto atual)
 function drawCarne(ctx,carne){
   if (carne === 'frango'){
     rr(ctx,-3,1.5,12,5,2.5); fs(ctx,'#E9C98F',1.6);
@@ -166,7 +166,8 @@ function drawCarne(ctx,carne){
     if (carne === 'cavalo'){ ell(ctx,3,3,4.6,2.8); fs(ctx,'#fff',1.3); circ(ctx,3,3,1.5); ctx.fillStyle = '#F5B800'; ctx.fill(); }
   }
 }
-const DESENHO_BASE = { empadaPalmito:'empada', kibeAbobora:'kibe', esfihaSoja:'esfihaA', pastelPalmito:'pastel', coxinhaJaca:'coxinha', mistoVegano:'misto' };
+const DESENHO_BASE = { empadaPalmito:'empada', kibeAbobora:'kibe', esfihaSoja:'esfihaA', pastelPalmito:'pastel', coxinhaJaca:'coxinha', mistoVegano:'misto',
+  pastelFrango:'pastel', pastelCarneSeca:'pastelP', xSalada:'bauru', xTudo:'bauru', enroladinho:'risoles', bolinhoCarneSeca:'bolinho' };   // v12.10: os pratos de estrada, com o desenho do parecido (os próprios saem na v12.10.1)
 /* v10.2: os 6 pratos finos do Terraço (cursos Entradas finas e Alta gastronomia), no estilo das artes da v8.6.10; av = o detalhe do curso avançado */
 function drawFino(ctx,k,av){
   if (k === 'bruschetta'){   // duas fatias de pão tostado com tomate, manjericão (e, no avançado, gotas de balsâmico)
@@ -536,7 +537,7 @@ function drawTerraco(ctx,k,av){
 }
 function drawComida(ctx,k,carne,av){
   const pr = CARDAPIO[k], cat = pr ? pr.cat : 'chapa', cor = pr ? pr.cor : '#D9A25B';
-  if (av === undefined || av === null) av = pratoAv(k, COMIDA_CURSOS) && !(pr && pr.semAv);
+  if (av === undefined || av === null) av = pratoAv(k, COMIDA_CURSOS, COMIDA_PONTO) && !(pr && pr.semAv);
   const kk = DESENHO_BASE[k] || k;   // os pratos veganos e vegetarianos reusam o desenho do prato com carne
   let dx = 0, dy = 0;   // onde fica o detalhe do avançado
   if (pr && pr.fino){ drawFino(ctx,k,av); return; }   // v10.2

@@ -41,7 +41,7 @@ ok(L.DEV.on && g.save.bank===10000 && !L.DEV.real && L.DEV.vel===1 && L.devLivre
 // ---------- 6. equipe ----------
 { g.devEquipe('max'); const e=g.save.equipe;
   ok(e.tonhao===L.STAFF.tonhao.levels.length-1 && e.dani===L.STAFF.dani.levels.length-1 && e.joca===L.STAFF.joca.levels.length-1,'max: níveis máximos');
-  ok(L.CURSOS.every(c=>g.save.cursos[c.id]===2) && L.DANI_CURSOS.every(c=>g.save.daniCursos[c.id]) && L.JOCA_CURSOS.every(c=>g.save.jocaCursos[c.id]),'max: todos os cursos');
+  ok(L.CURSOS.every(c=>Object.keys(c.degraus).every(d=>c.degraus[d].av?L.cursoNivel(g.save.cursos,c.id,d)===2:true)) && L.DANI_CURSOS.every(c=>g.save.daniCursos[c.id]) && L.JOCA_CURSOS.every(c=>g.save.jocaCursos[c.id]),'max: todos os cursos');
   g.devEquipe('zero'); ok(g.save.equipe.tonhao===0 && g.save.equipe.dani===1 && g.save.equipe.joca===0 && !Object.keys(g.save.cursos).length && !Object.keys(g.save.daniCursos).length && !Object.keys(g.save.jocaCursos).length,'zero: Tonhão 0, Dani 1, Joca 0, sem cursos'); }
 
 // ---------- 7. melhorias ----------

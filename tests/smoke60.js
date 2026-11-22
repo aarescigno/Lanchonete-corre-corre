@@ -57,7 +57,7 @@ const pegaPrato=(H,grp)=>{ const g=H.g, p=g.kitchen.plates.find(q=>q&&q.group===
   ok(D.g.mudancaVisivel && !D.g.mudancaFalta && D.g.mudarPonto() && D.g.save.salao.ponto==='terraco' && D.g.save.bank===b0,'modo dev: o cartão aparece sempre e a mudança é de graça'); }
 
 // ---------- 2. mudar ----------
-{ const H=jogo(9,'avenida',{ bank:9000, up:{ tenis:true, maquina:true, assento:'sofa', fogaoInd:true, pratos:2 }, equipe:{ tonhao:3, dani:2, joca:2, cami:1, anselmo:2, couvert:true }, cursos:{ restaurante:1 }, decor:{ espada:1, tulipa:1, anturio:1 } }), {g,L}=H;
+{ const H=jogo(9,'avenida',{ bank:9000, up:{ tenis:true, maquina:true, assento:'sofa', fogaoInd:true, pratos:2 }, equipe:{ tonhao:3, dani:2, joca:2, cami:1, anselmo:2, couvert:true }, cursos:{ restaurante:{ avenida:1 } }, decor:{ espada:1, tulipa:1, anturio:1 } }), {g,L}=H;
   g.save.salao=L.normSalao(salaoAv(L)); notaDe(g,4.2);
   const antes=g.save.salao.mesas.length, lug=g.lugaresTot;
   ok(antes===6 && lug===24 && g.up.assento==='sofa' && g.up.maquina,'(antes) 6 mesas de 4, sofás e águas na Avenida');
@@ -66,7 +66,7 @@ const pegaPrato=(H,grp)=>{ const g=H.g, p=g.kitchen.plates.find(q=>q&&q.group===
   ok(sv.bank===b0-5000+125,'−R$ 5.000 e a mesa que sobrou, vendida pela metade (+R$ 125)');
   ok(sv.salao.mesas.length===5 && g.lugaresTot===20 && L.salaoProblema(sv.salao.mesas,L.PONTOS[3])==='' && sv.salao.estoque.length===0,'5 mesas de 4 (20 lugares) com arranjo válido, a 6ª vendida');
   ok(!sv.up.assento && !sv.up.maquina,'os sofás e as águas saem do save');
-  ok(sv.up.fogaoInd && sv.up.tenis && sv.up.pratos===2 && sv.equipe.tonhao===3 && sv.equipe.dani===2 && sv.equipe.joca===2 && sv.equipe.cami===1 && sv.equipe.anselmo===2 && !sv.equipe.couvert && sv.equipe.musica===0 && sv.cursos.restaurante===1 && sv.decor.tulipa===1 && !sv.decor.espada && !sv.decor.anturio,'o fogão industrial, as melhorias, os pratos, a equipe (com o Anselmo e a Cami), o couvert sai (v10.4: no Terraço quem toca é a música), os cursos e as flores finas vão junto (os enfeites simples já saíram na Avenida, v12.9.1)');
+  ok(sv.up.fogaoInd && sv.up.tenis && sv.up.pratos===2 && sv.equipe.tonhao===3 && sv.equipe.dani===2 && sv.equipe.joca===2 && sv.equipe.cami===1 && sv.equipe.anselmo===2 && !sv.equipe.couvert && sv.equipe.musica===0 && sv.cursos.restaurante.avenida===1 && sv.decor.tulipa===1 && !sv.decor.espada && !sv.decor.anturio,'o fogão industrial, as melhorias, os pratos, a equipe (com o Anselmo e a Cami), o couvert sai (v10.4: no Terraço quem toca é a música), os cursos e as flores finas vão junto (os enfeites simples já saíram na Avenida, v12.9.1)');
   ok(sv.cap===9 && sv.conversa==='antes' && sv.capAzul===0,'o cap. 9 começa, com a conversa de antes pendente');
   g.resetDay(10); ok(L.PLATE_SLOTS.length===6 && g.kitchen.plates.length===6 && L.QUEUE.ys.length===6 && g.ponto.credito===8000,'6 vagas de prato e 6 de espera; o limite do banco sobe para R$ 8.000');
   ok(!g.mudancaVisivel && g.proximoPonto===null,'o Terraço é o último ponto: não há mais mudança');
@@ -169,7 +169,7 @@ const pegaPrato=(H,grp)=>{ const g=H.g, p=g.kitchen.plates.find(q=>q&&q.group===
   ok(n===300 && semEntrada===0 && semPf===0 && contaErrada===0 && veg>0,'o grupo do Terraço: uma entrada para cada pessoa (menos o vegetariano sem opção) e o principal da categoria PF; a conta soma os dois');
   const q=new L.Group(g,'familia',++g.gid,0,false); ok(q.tempos===true && q.tempo===0 && q.notaT.length===4 && q.notaT.every(v=>v===null) && L.TEMPOS.entrada.cook===0.6 && L.TEMPOS.entrada.eat===0.5 && L.TEMPOS.pts===30 && L.PONTOS_ACAO.completa===30,'grupo com `tempos`: começa na entrada (tempo 0), notas vazias; TEMPOS e os 30 pontos');
   // o principal com os pratos que a cozinha sabe: parmegiana (curso Cozinha de restaurante) e o PF vegetariano
-  const G2=terr({ cursos:{ restaurante:1, veg:1 } }).g; const vistos={}; for(let k=0;k<400;k++){ const q2=new L.Group(G2,'negocios',++G2.gid,0,false); q2.dishes.forEach(d=>{ vistos[d]=(vistos[d]||0)+1; }); }
+  const G2=terr({ cursos:{ restaurante:{ avenida:1 }, veg:{ industrial:1 } } }).g; const vistos={}; for(let k=0;k<400;k++){ const q2=new L.Group(G2,'negocios',++G2.gid,0,false); q2.dishes.forEach(d=>{ vistos[d]=(vistos[d]||0)+1; }); }
   ok(Object.keys(vistos).every(d=>L.CARDAPIO[d].cat==='pf') && vistos.galeto>0 && vistos.vinho>0 && (vistos.nhoque>0 || vistos.polenta>0) && !vistos.pf && !vistos.pfVeg && !vistos.parmegiana,'o principal sai do galeto, do escalope, do filé ao molho de vinho (curso Cozinha de restaurante) e dos sem carne do curso Vegetariano; nunca PF nem parmegiana (v12.7)');
   const vg=L.pedePrincipal('casal',G2,true); ok(!L.CARDAPIO[vg].carne,'vegetariano: o principal é sem carne');
   const G3=terr().g; ok(L.pedePrincipal('casal',G3,true)==='galeto','vegetariano sem prato vegetariano: o prato de base do Terraço (e o grupo reclama no Cardápio)');
@@ -244,7 +244,7 @@ const pegaPrato=(H,grp)=>{ const g=H.g, p=g.kitchen.plates.find(q=>q&&q.group===
   // sobremesa: 5 − corações perdidos esperando (perdDoce)
   x=mk(); { const q=x.q; q.doces=['pudim','pudim']; q.docesDados=0; q.perdDoce=2; q.setState('eating'); q.esperaSuco=true; x.g.entregaDoces(q,2,x.t.cx,x.t.cy); ok(q.notaT[3]===3,'sobremesa: 5 menos 1 por coração perdido esperando (5 − 2)'); }
   // o Gúgou: a comida é a média dos tempos servidos; o cardápio perde 1 sem a confeitaria e 0,5 sem o Anselmo
-  const gur=(sv,notas)=>{ const R=terr(sv), s=sentar(R.g,'casal'), q=s.grp; q.notaT=notas.slice(); q.semVeg=false; q.setState('wantBill'); q.hearts=5; q.avalia=true; R.g.collectBill(q,s.t); const a=R.g.avals[R.g.avals.length-1]; a.base=R.L.avalMenu(R.g.cursos, R.L.cursosItem(R.g.save)); return a; };
+  const gur=(sv,notas)=>{ const R=terr(sv), s=sentar(R.g,'casal'), q=s.grp; q.notaT=notas.slice(); q.semVeg=false; q.setState('wantBill'); q.hearts=5; q.avalia=true; R.g.collectBill(q,s.t); const a=R.g.avals[R.g.avals.length-1]; a.base=R.L.avalMenu(R.g.cursos, R.L.cursosItem(R.g.save), R.g.ponto); return a; };
   const lim=v=>Math.max(1,Math.min(5,Math.round(v*10)/10));
   const a1=gur({},[5,4,3,2]);
   ok(a1 && a1.s[2]===3.5 && a1.s[3]===lim(a1.base),'Gúgou no Terraço: a comida é a média dos tempos servidos ([5,4,3,2] → 3,5); o cardápio sem perda com a equipe toda');

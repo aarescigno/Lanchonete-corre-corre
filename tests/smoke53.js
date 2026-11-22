@@ -38,7 +38,7 @@ const aba=(H,k)=>{ const b=H.els['manual-abas'].children.find(x=>x.getAttribute(
   const en=L.manualTracos('entregador'); ok(en.indexOf('leva marmita')>=0 && !en.some(t=>/Refeição/.test(t)),'entregador: leva marmita e não tem "Refeição"');
   ok(L.manualTracos('motorista').indexOf('pede cafezinho no fim')>=0 && L.manualTracos('vip').length===5 && L.manualTracos('veg').length===2,'extras do motorista, do VIP e do vegetariano');
   ok(L.manualTracos('turma',{aberta:id=>id==='p-garagem'}).every(t=>!/Onde/.test(t)) && L.manualTracos('turma',{aberta:id=>id==='p-industrial'}).indexOf('Onde: Área industrial')>=0,'"Onde" só lista os lugares com a ficha aberta');
-  const sv=L.normSave({dia:3}); sv.equipe.tonhao=0; ok(L.manualTracos('tonhao',{save:sv}).indexOf('Nível ●○○○○')>=0,'Tonhão: bolinhas do nível');
+  const sv=L.normSave({dia:3}); sv.equipe.tonhao=0; ok(L.manualTracos('tonhao',{save:sv}).indexOf('Nível ●○○○○○○○○')>=0,'Tonhão: bolinhas do nível (9 níveis, v12.10)');
   ok(L.manualTracos('bia',{save:sv}).indexOf('duas mãos')>=0,'Bia: "duas mãos"');
   sv.equipe.dani=2; ok(L.manualTracos('dani',{save:sv}).indexOf('Nível ●●○○')>=0,'Dani nível 2 de 4: ●●○○');
 }

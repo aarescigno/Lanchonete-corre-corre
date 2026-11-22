@@ -212,27 +212,28 @@ function afiado(g,L){
     cands[0][1]();
   };
 }
-// v8.6.9: cursos do Tonhão. A ordem é uma lista de ids: a 1ª vez que o id aparece é o degrau 1 (o básico; no PF, o avançado, que não tem
-// básico), a 2ª é o avançado. Padrão: os 4 básicos, depois os avançados (CURSOS=chapa,pastel,... troca a lista inteira)
-const CURSOS_ORDEM=['pastel','veg','chapa','fritos','assados','pf','fritos','pastel','chapa','assados','veg'];   // v8.6.11: o Vegetariano logo depois do pastel, os Pratos veganos no fim
-function proximoCurso(L,cursos,ordem){
-  const vistos={};
-  for(const id of ordem){ vistos[id]=(vistos[id]||0)+1; const alvo=id==='pf'?2:vistos[id]; if(L.cursoNivel(cursos,id)<alvo&&!(id==='pf'&&vistos[id]>1)) return {id,nivel:alvo}; }
+// v8.6.9: cursos do Tonhão. v12.10: um cartão por técnica em cada ponto (degraus); a ordem é uma lista de ids: o bot compra o próximo cartão do ponto atual, primeiro os básicos na ordem e depois os
+// avançados na mesma ordem (CURSOS=chapa,pastel,... troca a lista inteira). O PF da área industrial só tem o avançado (entra na rodada dos avançados)
+const CURSOS_ORDEM=['pastel','chapa','fritos','assados','veg','pf','restaurante','entradas','alta'];
+// o próximo cartão ({ id, nivel }) do ponto, sem um Game (o balance.js, que joga os dias soltos); ponto: o objeto ou o id
+function proximoCartao(L,cursos,ponto,ordem){
+  const pid=typeof ponto==='string'?ponto:ponto.id;
+  for(const nivel of [1,2]) for(const id of ordem){ const c=L.CURSOS.find(x=>x.id===id), g=c&&c.degraus[pid]; if(!g) continue; const n=L.cursoNivel(cursos,id,pid);
+    if(nivel===1&&g.preco>0&&n<1) return {id,nivel:1}; if(nivel===2&&g.av&&n>=1&&n<2) return {id,nivel:2}; }
   return null;
 }
-// os cursos de quem já fez as k primeiras compras da ordem (o balance.js, que joga os dias soltos)
-module.exports.cursosApos=function(L,k,ordem){
-  const cu={}; ordem=ordem||CURSOS_ORDEM;
-  for(let i=0;i<k;i++){ const p=proximoCurso(L,cu,ordem); if(!p) break; cu[p.id]=p.nivel; }
-  return cu;
+// os cursos de quem já fez as k primeiras compras da ordem no ponto (os degraus dos pontos de antes, completos); o balance.js, que joga os dias soltos
+module.exports.cursosApos=function(L,k,ordem,ponto){
+  ponto=ponto||'garagem'; ordem=ordem||CURSOS_ORDEM; const pi=L.pontoIdx(ponto), pid=L.PONTOS[pi].id;
+  const cu=pi>0?JSON.parse(JSON.stringify(L.cursosAte(L.PONTOS[pi-1]))):{};
+  for(let i=0;i<k;i++){ const p=proximoCartao(L,cu,pid,ordem); if(!p) break; (cu[p.id]||(cu[p.id]={}))[pid]=p.nivel; }
+  return L.normCursos(cu);
 };
-// compra o próximo curso da ordem se sobrar o preço mais a reserva (a carreira.js); devolve o id comprado ou ''
-// v10.2: no Terraço (nivel 4), depois da lista: o básico e o avançado das Entradas finas e da Alta gastronomia (só o `cursos` usa; o balance.js usa ALTA=1)
-const CURSOS_TERRACO=['entradas','alta','entradas','alta'];
+// compra o próximo cartão da ordem no ponto atual se sobrar o preço mais a reserva (a carreira.js); devolve o id comprado ou ''
 module.exports.cursos=function(g,L,reserva,ordem){
-  const p=proximoCurso(L,g.save.cursos,(ordem||CURSOS_ORDEM).concat(g.ponto&&g.ponto.nivel>=4?CURSOS_TERRACO:[])); if(!p) return '';
-  const c=g.cursoProx(p.id); if(!c||c.nivel!==p.nivel) return '';
-  return g.save.bank-c.preco>=(reserva||0)&&g.buyCurso(p.id)?p.id+p.nivel:'';
+  ordem=ordem||CURSOS_ORDEM;
+  for(const nivel of [1,2]) for(const id of ordem){ const c=g.cursoProx(id); if(c&&c.nivel===nivel) return g.save.bank-c.preco>=(reserva||0)&&g.buyCurso(id)?id+nivel:''; }
+  return '';
 };
 module.exports.CURSOS_ORDEM=CURSOS_ORDEM;
 // v7.4: móveis na lojinha (1 compra por visita). Regra simples: mesa de 4 enquanto houver grupos perdidos por falta

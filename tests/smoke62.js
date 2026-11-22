@@ -17,18 +17,17 @@ const TIPOS=['estudante','executiva','familia','vovos','turma','motorista','nego
 
 // ---------- 1. os dois cursos só no Terraço, com os preços do plano ----------
 { const H=jogo(8,'terraco',{ v10:1, bank:9000 },true), {g,L}=H;
-  const e=L.cursoOf('entradas'), a=L.cursoOf('alta');
-  ok(e && a && e.preco===600 && e.av.preco===900 && a.preco===900 && a.av.preco===1400 && e.nivel===4 && a.nivel===4,'cursos: Entradas finas 600/900 e Alta gastronomia 900/1400, nivel 4');
+  const e=L.cursoOf('entradas'), a=L.cursoOf('alta'), de=e.degraus.terraco, da=a.degraus.terraco;
+  ok(e && a && de.preco===840 && de.av.preco===1260 && da.preco===1260 && da.av.preco===1960 && Object.keys(e.degraus).join()==='terraco' && Object.keys(a.degraus).join()==='terraco','cursos: Entradas finas 840/1260 e Alta gastronomia 1260/1960, só o degrau do Terraço (v12.10)');
   ok(L.cursoOk(e,g.ponto) && L.cursoOk(a,g.ponto),'no Terraço, os dois cursos aparecem');
   const Ha=jogo(9,'avenida'), Hg=nova();
   ok(!Ha.L.cursoOk(Ha.L.cursoOf('entradas'),Ha.g.ponto) && !Ha.L.cursoOk(Ha.L.cursoOf('alta'),Ha.g.ponto) && !Hg.L.cursoOk(Hg.L.cursoOf('alta'),Hg.g.ponto),'na Avenida e na Garagem, não');
   ok(FINAS.concat(ALTAS).every(k=>L.CARDAPIO[k].fino===true) && FINAS.concat(ALTAS).map(k=>L.CARDAPIO[k].preco.terraco).join()==='34,42,38,82,94,108','os 6 pratos finos, com os preços do Terraço (v12.7)');
   ok(L.CARDAPIO.bruschetta.cat==='chapa' && L.CARDAPIO.bacalhau.cat==='frito' && L.CARDAPIO.quiche.cat==='assado' && ALTAS.every(k=>L.CARDAPIO[k].cat==='pf'),'categorias: entradas na chapa, no frito e no assado; principais no PF');
   ok(!L.CARDAPIO.bruschetta.carne && !L.CARDAPIO.quiche.carne && !L.CARDAPIO.risoto.carne && L.CARDAPIO.bacalhau.carne && L.CARDAPIO.peixe.carne,'sem carne: bruschetta, quiche e risoto');
-  g.save.cursoDia=0; ok(g.buyCurso('entradas') && g.save.cursos.entradas===1 && g.save.bank===9000-600,'comprar o básico das entradas custa R$ 600');
-  ok(!g.buyCurso('alta'),'um curso por lojinha');
-  g.save.cursoDia=0; ok(g.buyCurso('alta') && g.save.cursos.alta===1,'no dia seguinte, a alta gastronomia');
-  g.save.cursoDia=0; ok(g.buyCurso('entradas') && g.save.cursos.entradas===2,'o avançado das entradas (Entradas de chef)');
+  g.save.cursoDia=0; ok(g.buyCurso('entradas') && g.save.cursos.entradas.terraco===1 && g.save.bank===9000-840,'comprar o básico das entradas custa R$ 840');
+  ok(g.buyCurso('alta') && !g.buyCurso('pastel'),'dois cursos por lojinha no Terraço (v12.10): o terceiro fica travado');
+  g.save.cursoDia=0; g.save.cursoQt=0; ok(g.save.cursos.alta.terraco===1 && g.buyCurso('entradas') && g.save.cursos.entradas.terraco===2,'o avançado das entradas (Entradas de chef) na lojinha seguinte');
   ok(L.pratoAv('bruschetta',g.save.cursos) && !L.pratoAv('risoto',g.save.cursos),'o avançado só vale para os pratos do curso');
   ok(preco(L,g,'bruschetta')===Math.round(34*1.15) && preco(L,g,'risoto')===82,'preço no Terraço (v12.7: bruschetta R$ 34, risoto R$ 82): avançado ×1,15');
   ok(L.precoPrato('medalhao',g.ponto,{})===108,'medalhão: R$ '+L.precoPrato('medalhao',g.ponto,{})+' no Terraço'); }
@@ -41,30 +40,28 @@ const TIPOS=['estudante','executiva','familia','vovos','turma','motorista','nego
   const sem=amostra(()=>L.pedePrato(T(),g,true,false),600);
   ok(Object.keys(sem).every(k=>!L.CARDAPIO[k].fino),'sem os cursos, a entrada é a de sempre (nenhuma fina)');
   const semP=amostra(()=>L.pedePrincipal(T(),g,false),400); ok(Object.keys(semP).every(k=>!L.CARDAPIO[k].fino),'sem os cursos, o principal é o de sempre');
-  g.save.cursos=L.normCursos({ entradas:1, restaurante:1, fritos:1 });
+  g.save.cursos=L.normCursos({ entradas:{ terraco:1 }, restaurante:{ avenida:1 }, fritos:{ garagem:1 } });
   const ent=amostra(()=>L.pedePrato(T(),g,true,false),900);
   ok(Object.keys(ent).every(k=>FINAS.indexOf(k)>=0) && FINAS.every(k=>ent[k]>0),'com as Entradas finas, a entrada sai só entre as finas (e as três saem)');
   const prin=amostra(()=>L.pedePrincipal(T(),g,false),400); ok(Object.keys(prin).every(k=>!L.CARDAPIO[k].fino),'só com as entradas, o principal segue sem fino (PF, parmegiana...)');
   const vegE=amostra(()=>L.pedePrato(T(),g,true,true),400); ok(Object.keys(vegE).every(k=>k==='bruschetta'||k==='quiche'),'o vegetariano acha entrada fina: bruschetta ou quiche');
-  g.save.cursos=L.normCursos({ alta:1, restaurante:1 });
+  g.save.cursos=L.normCursos({ alta:{ terraco:1 }, restaurante:{ avenida:1 } });
   const pr=amostra(()=>L.pedePrincipal(T(),g,false),600);
   ok(Object.keys(pr).every(k=>ALTAS.indexOf(k)>=0) && ALTAS.every(k=>pr[k]>0),'com a Alta gastronomia, o principal sai só entre os finos (e os três saem)');
   const ent2=amostra(()=>L.pedePrato(T(),g,true,false),400); ok(Object.keys(ent2).every(k=>!L.CARDAPIO[k].fino),'só com a alta, a entrada segue sem fino');
   const vegP=amostra(()=>L.pedePrincipal(T(),g,true),200); ok(Object.keys(vegP).length===1 && vegP.risoto>0,'o vegetariano acha principal fino: o risoto');
   // o peso: gosto + 1 (a executiva não gosta de frito, mas o bolinho de bacalhau ainda sai)
-  g.save.cursos=L.normCursos({ entradas:1 });
+  g.save.cursos=L.normCursos({ entradas:{ terraco:1 } });
   const ex=amostra(()=>L.pedePrato('executiva',g,true,false),1500); ok(ex.bacalhau>0 && ex.bruschetta>ex.bacalhau,'o peso é o gosto do tipo mais 1: a executiva (gosta de PF e assado) quase não pede o frito, mas pede');
   // fora do Terraço a regra não vale (nível do ponto < 4): a entrada sai de todas as categorias que a cozinha sabe
-  const Ha=jogo(9,'avenida',{},true); Ha.g.save.cursos=Ha.L.normCursos({ entradas:1, fritos:1, assados:1 }); Ha.g.mode='carreira';
+  const Ha=jogo(9,'avenida',{},true); Ha.g.save.cursos=Ha.L.normCursos({ entradas:{ terraco:1 }, fritos:{ garagem:1 }, assados:{ industrial:1 } }); Ha.g.mode='carreira';
   const fa=amostra(()=>Ha.L.pedePrato('casal',Ha.g,true,false),600); ok(Object.keys(fa).some(k=>!Ha.L.CARDAPIO[k].fino),'fora do Terraço a regra do prato fino não vale'); }
 
-// ---------- 3. experiência do Tonhão e Diversidade ----------
+// ---------- 3. Diversidade (v12.10: a experiência do Tonhão não existe mais) ----------
 { const H=terr(), {g,L}=H;
-  const base=L.tonhaoXp({}); const x1=L.tonhaoXp({ entradas:1 }), x2=L.tonhaoXp({ entradas:2, alta:2 });
-  ok(x1-base===L.CURSO_XP.basico && x2-base===2*(L.CURSO_XP.basico+L.CURSO_XP.avancado),'cada curso novo dá +1 (básico) e +2 (avançado) de experiência');
-  const m0=L.avalMenu({}), m1=L.avalMenu({ entradas:1 }), m2=L.avalMenu({ entradas:1, alta:1 });
+  const T4=L.PONTOS[3], m0=L.avalMenu({},0,T4), m1=L.avalMenu({ entradas:{ terraco:1 } },0,T4), m2=L.avalMenu({ entradas:{ terraco:1 }, alta:{ terraco:1 } },0,T4);
   ok(m1>m0 && m2>m1,'a Diversidade do cardápio sobe com cada curso (de '+m0+' a '+m2+')');
-  const sab=L.pratosSabidos(L.normCursos({ entradas:1, alta:1 }),L.PONTOS[3]); ok(FINAS.concat(ALTAS).every(k=>sab.indexOf(k)>=0),'a cozinha sabe os 6 pratos finos'); }
+  const sab=L.pratosSabidos(L.normCursos({ entradas:{ terraco:1 }, alta:{ terraco:1 } }),L.PONTOS[3]); ok(FINAS.concat(ALTAS).every(k=>sab.indexOf(k)>=0),'a cozinha sabe os 6 pratos finos'); }
 
 // ---------- 4. a Lia ----------
 { const H=terr({ bank:3000 },8,true), {g,L}=H;
@@ -135,7 +132,7 @@ const TIPOS=['estudante','executiva','familia','vovos','turma','motorista','nego
   ok(/^(v10\.(2|3|4|5|6|7|8|9|10)(\.|$)|v11(\.|$)|v12(\.|$))/.test(L.VERSAO),'VERSAO = série v10.2 a v12'); }
 
 // ---------- 8. as páginas desenham sem erro (cartão da Lia, Cardápio, os 6 pratos, a Lia na cozinha) ----------
-{ const H=jogo(8,'terraco',{ v10:1, equipe:{ tonhao:3, dani:2, lia:1 }, cursos:{ entradas:2, alta:2 }, daniCursos:{ confCaseira:1, confGourmet:1, confAlta:1 } },true), {g,L,els}=H;
+{ const H=jogo(8,'terraco',{ v10:1, equipe:{ tonhao:3, dani:2, lia:1 }, cursos:{ entradas:{ terraco:2 }, alta:{ terraco:2 } }, daniCursos:{ confCaseira:1, confGourmet:1, confAlta:1 } },true), {g,L,els}=H;
   let erro=null; try{ L.setShopTab('lia'); L.setShopTab('cardapio'); L.setShopTab('dani'); L.setShopTab('equipe'); }catch(e){ erro=e; } ok(!erro,'a lojinha desenha Lia, Cardápio e Dani sem erro'+(erro?': '+erro.message:''));
   const gr=els['shop-grid']; const txt=e=>(e.textContent||'')+(e.children||[]).map(txt).join(' ');
   L.setShopTab('lia'); ok(/Lia/.test(txt(gr)) && /pré-preparo/.test(txt(gr)),'o cartão da Lia: nome e "Ajuda no pré-preparo" (v12.5)');

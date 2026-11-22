@@ -51,7 +51,7 @@ for (const ponto of ['garagem','industrial','avenida']){
     const boxes=todos(grid(H),e=>(e.className||'')==='next'); const t=boxes.map(txt).join(' | ');
     ok(boxes.length>0 && /●/.test(t) && /Diária/.test(t) && /R\$ \d+/.test(t) && !/%/.test(t) && !/ s\b/.test(t) && !/Lava/.test(t),sec+': o quadro tem bolinhas e a diária em R$, sem % nem segundos'+(boxes.length?'':' (sem quadro)'));
   });
-  L.setShopTab('tonhao'); ok(/Experiência|Pronto para o aumento!/.test(txt(grid(H))) && !/Faltam|Prato caprichado/.test(txt(grid(H))),'Tonhão: rótulo Experiência, sem "Faltam" nem o prato caprichado');
+  L.setShopTab('tonhao'); ok(/Cursos daqui|Pronto para o aumento!/.test(txt(grid(H))) && !/Faltam|Prato caprichado/.test(txt(grid(H))),'Tonhão: rótulo Cursos daqui (v12.10), sem "Faltam" nem o prato caprichado');
 }
 
 // (d) a abertura do dia

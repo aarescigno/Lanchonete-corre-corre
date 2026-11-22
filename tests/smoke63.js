@@ -27,7 +27,7 @@ g.devReal(false); ok(store['lcc2_dev_real']==='0' && !L.histLiga(),'devReal(fals
   ok(C.every(c=>!c.eq || (tem(L.CURSOS,Object.keys(c.cursos)) && tem(L.DANI_CURSOS,c.dani) && tem(L.JOCA_CURSOS,c.joca) && tem(L.CAMI_CURSOS,c.cami) && tem(L.UPGRADES,c.up))),'DEV_CAPS: todos os ids de cursos e melhorias existem'); }
 
 // ---------- 4. pular para cada capítulo ----------
-const TAB={1:[1,'garagem',1,0,[0,0]],2:[4,'garagem',1,300,[0,1]],3:[8,'garagem',1,500,[1,2]],4:[13,'industrial',13,400,[1,2]],5:[17,'industrial',13,900,[2,3]],6:[30,'avenida',30,600,[2,3]],7:[34,'avenida',30,1500,[3,4]],8:[38,'avenida',30,2500,[3,4]],9:[50,'terraco',50,1500,[3,4]],10:[54,'terraco',50,4000,[4,4]],11:[58,'terraco',50,6000,[4,4]],12:[64,'terraco',50,10000,[4,4]],13:[64,'terraco',50,10000,[4,4]],14:[64,'terraco',50,10000,[4,4]],15:[64,'terraco',50,10000,[4,4]]};   // v10.5.2: 12 linhas
+const TAB={1:[1,'garagem',1,0,[0,0]],2:[4,'garagem',1,300,[0,1]],3:[8,'garagem',1,500,[2,2]],4:[13,'industrial',13,400,[2,2]],5:[17,'industrial',13,900,[4,3]],6:[30,'avenida',30,600,[4,3]],7:[34,'avenida',30,1500,[6,4]],8:[38,'avenida',30,2500,[6,4]],9:[50,'terraco',50,1500,[6,4]],10:[54,'terraco',50,4000,[8,4]],11:[58,'terraco',50,6000,[8,4]],12:[64,'terraco',50,10000,[8,4]],13:[64,'terraco',50,10000,[8,4]],14:[64,'terraco',50,10000,[8,4]],15:[64,'terraco',50,10000,[8,4]]};   // v12.10: o Tonhão em 9 níveis (o antigo × 2; o máximo 8)
 for(let n=1;n<=15;n++){
   const [dia,ponto,pdia,caixa,[ton,dan]]=TAB[n];
   ok(g.devCapitulo(n),'devCapitulo('+n+') funciona');
@@ -61,7 +61,7 @@ for(let n=1;n<=15;n++){
   g.devNivel('joca',1); ok(g.save.equipe.joca===2 && g.save.libera.joca===2,'Joca vai de 0 a 2 e fica com o cartão aberto');
   g.devNivel('lia',1); ok(g.save.equipe.lia===0,'Lia não existe na Avenida (de verdade)');
   ok(!g.devNivel('ninguem',1),'pessoa que não existe: false');
-  g.devCursos(true); ok(L.CURSOS.every(c=>g.save.cursos[c.id]===2) && g.up.confGourmet,'cursos: todos'); g.devCursos(false); ok(!Object.keys(g.save.cursos).length && !g.up.espresso && !g.up.confGourmet,'cursos: nenhum');
+  g.devCursos(true); ok(L.CURSOS.every(c=>Object.keys(c.degraus).every(d=>!c.degraus[d].av||L.cursoNivel(g.save.cursos,c.id,d)===2)) && g.up.confGourmet,'cursos: todos'); g.devCursos(false); ok(!Object.keys(g.save.cursos).length && !g.up.espresso && !g.up.confGourmet,'cursos: nenhum');
   g.devDecor(true); ok(L.DECOR.every(d=>!L.decorCombina(d,3)||g.save.decor[d.id]===1) && !g.save.decor.espada,'decoração: toda a que combina com a Avenida (v12.9.1)'); g.devDecor(false); ok(!g.save.decor.espada && !g.save.decor.foto,'decoração: nenhuma (na Avenida a espada já foi para a casa da mãe)');
   g.devManut(0.2); ok(L.MANUT.equip.every(q=>g.save.manut[q.id]===0.2),'manutenção: tudo gasto'); g.devManut(1); ok(L.MANUT.equip.every(q=>g.save.manut[q.id]===1),'tudo novo'); }
 

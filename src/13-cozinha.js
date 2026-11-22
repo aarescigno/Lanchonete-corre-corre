@@ -10,7 +10,7 @@ class Kitchen {
   /* v10.2: com a Lia no dia, todo pedido da cozinha (prato, entrada ou marmita) leva o `cook` do nível dela × o tempo (v12.5: 0,85 no nível 1, 0,75 nos 2 e 3) */
   get ajuda(){ return this.game.liaAtiva ? liaCfg(this.game.save.equipe).cook : 1; }
   /* a chance de caprichar: x CURSO_AV.crit nos pratos de um curso avançado que o Tonhão já fez (v8.6.9) */
-  chefCrit(dish){ return this.chef.crit * (pratoAv(dish, this.game.cursos) ? CURSO_AV.crit : 1); }
+  chefCrit(dish){ return this.chef.crit * (pratoAv(dish, this.game.cursos, this.game.ponto) ? CURSO_AV.crit : 1); }
   /* v10, a refeição completa: a comanda vira dois pedidos em sequência. Entra o da entrada (tempo 0: ×TEMPOS.entrada.cook, sem o ×VIP nem o 2º item, ocupa vaga
      do balcão mas não gasta prato limpo; ingrediente sobre o valor das entradas). Entregue a entrada, entra o do principal (tempo 1: tempo normal, ×VIP, gasta prato
      limpo; ingrediente sobre o valor dos principais e o prato do VIP), na frente das entradas que ainda não começaram */

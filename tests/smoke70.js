@@ -9,7 +9,7 @@ const passa=H=>{ let n=0; while(H.g.conversa && n<40){ toque(H.els); n++; } retu
 const nova=o=>{ const H=load(Object.assign({historia:true},o||{})); H.doc.createTextNode=t=>({textContent:String(t),children:[]}); return H; };
 // um jogo da História num ponto, no dia `dia` da carreira, que é o `dnp`-ésimo dia no ponto; sv troca o save
 const jogo=(ponto,dnp,sv,cap)=>{ const H=nova(), {g,L}=H, dia=30;
-  g.save=L.normSave(Object.assign({ histV:1, capV:2, cap:cap||5, dia, maxDay:dia, pontoDia:dia-dnp+1, bank:9000, v10:1, up:{ tenis:true }, cursos:{ pastel:1, chapa:1, fritos:1 }, equipe:{ tonhao:2, dani:2 }, salao:{ ponto }, conversa:null }, sv||{}));
+  g.save=L.normSave(Object.assign({ histV:1, capV:2, cap:cap||5, dia, maxDay:dia, pontoDia:dia-dnp+1, bank:9000, v10:1, up:{ tenis:true }, cursos:{ pastel:{ garagem:1 }, chapa:{ garagem:1 }, fritos:{ garagem:1 } }, equipe:{ tonhao:2, dani:2 }, salao:{ ponto }, conversa:null }, sv||{}));
   Object.keys(g.save.libera).forEach(k=>{ g.save.libera[k]=1; }); Object.assign(g.save,{ convCard:1, convDiv:1, convEnt:1, convPlanta:1, convExig:1, convQuit:1, convTeto:1 });
   g.up=g.save.up; g.tablesKey=''; g.buildTables(); g.goShop(dia); g.startDay(dia); H.els['btn-start'].fire('click'); g.schedule=[]; g.nextIdx=0; return H; };
 const fecha=(H,st)=>{ const {g,els}=H; g.startDay(g.save.dia); els['btn-start'].fire('click'); g.schedule=[]; g.nextIdx=0; g.money=0; g.custo=0; Object.assign(g.stats,st||{}); g.finishDay(); };

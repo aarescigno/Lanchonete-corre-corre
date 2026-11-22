@@ -25,7 +25,7 @@ ok(Math.abs(L.avalMovimento(Array.from({length:20},()=>[4.3,4.3,4.3,4.3,4.3]),{n
   const s2=L.normSave(JSON.parse(JSON.stringify(s))); ok(s2.aval[0].join()==='3,3,3,3,3' && s2.avalCom[0].n===28,'e só uma vez'); }
 ok(L.AVAL_SIMPLES[0].length>=2,'comentários de lugar simples na Garagem');
 ok(L.fmtNota(4.25)==='4,3' && L.fmtNota(null)==='–','nota com vírgula');
-ok(Math.abs(L.avalMenu({})-2)<1e-9 && Math.abs(L.avalMenu({pastel:1,chapa:1})-3.2)<1e-9,'cardápio da Garagem: 2,0 de início e +0,6 por curso (v8.6.9)');
+ok(Math.abs(L.avalMenu({})-2)<1e-9 && Math.abs(L.avalMenu({pastel:{garagem:1},chapa:{garagem:1}})-3.2)<1e-9,'cardápio da Garagem: 2,0 de início e +0,6 por curso (v8.6.9)');
 ok(L.avalComentario([5,5,5,5,5])!=='' && L.AVAL_BRAVO.fila.includes(L.avalComentario([1,1,1,4,3],'fila')),'comentário (e o de quem desistiu na fila)');
 ok(L.AVAL_CRIT[0].ruim.includes(L.avalComentario([1,3,3,3,3])),'nota baixa reclama do pior critério');
 ok(L.avalComentario([4,4,4,4,1],'',true)==='Que cheiro de lixo!','ambiente ruim com a lixeira cheia: o cheiro');

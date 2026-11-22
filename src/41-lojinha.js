@@ -390,12 +390,12 @@ function buildTonhao(grid){
   const pc = v => Math.round(v*100) + '%', sec = v => String(Math.round(v*10)/10).replace('.', ',') + ' s';
   // Tonhão
   const tRows = (a, b) => nivRows(T, [['Rapidez', 'cook', -1], ['Capricho', 'crit', 1], ['Pia', 'wash', -1]], a, b);
-  // v8.8: o nível vem da experiência dos cursos; o aumento de salário só consolida o nível que a xp já permite
-  const top = T.length - 1, xp = tonhaoXp(game.save.cursos), pronto = devLivre() || xp >= (T[eq.tonhao + 1] || T[top]).xp;
+  // v12.10: o nível ao alcance vem dos cursos do ponto (tonhaoNivelAlc); o aumento de salário só consolida o nível que eles já permitem. A barra: os cursos que faltam para o próximo nível do ponto
+  const top = T.length - 1, alc = tonhaoNivelAlc(game.save.cursos, game.ponto), pronto = devLivre() || alc > eq.tonhao, prog = tonhaoProgresso(game.save.cursos, game.ponto);
   let c = staffCard(upgradeIcon('tonhao'), 'Tonhão · nível ' + (eq.tonhao + 1) + ' de ' + T.length);
   const xl = el('div', 'tonxp');
-  xl.appendChild(el('span', null, eq.tonhao < top ? (pronto ? 'Pronto para o aumento!' : 'Experiência') : 'Experiência · nível máximo'));
-  if (eq.tonhao < top){ const bar = el('div', 'tonxp-bar'), fi = el('i'); fi.style.width = Math.round(clamp((xp - T[eq.tonhao].xp) / (T[eq.tonhao + 1].xp - T[eq.tonhao].xp), 0, 1) * 100) + '%'; bar.appendChild(fi); xl.appendChild(bar); }
+  xl.appendChild(el('span', null, eq.tonhao < top ? (pronto ? 'Pronto para o aumento!' : prog.total ? 'Cursos daqui' : 'Tudo o que tem aqui') : 'Nível máximo'));
+  if (eq.tonhao < top){ const bar = el('div', 'tonxp-bar'), fi = el('i'); fi.style.width = Math.round((prog.total ? clamp(prog.feitos / prog.total, 0, 1) : 1) * 100) + '%'; bar.appendChild(fi); xl.appendChild(bar); }
   c.appendChild(xl);
   c.appendChild(eq.tonhao < top ? staffNext('Com o aumento (nível ' + (eq.tonhao + 2) + '):', tRows(T[eq.tonhao], T[eq.tonhao+1])) : staffNext('Nível máximo:', tRows(null, T[top])));
   let duo = el('div', 'duo');
@@ -409,7 +409,7 @@ function buildTonhao(grid){
 /* v9.0.1: na seção Tonhão, só a lista dos cursos concluídos; comprar é no Cardápio */
 function buildCursosFeitos(grid){
   const cur = game.save.cursos, l = [];
-  CURSOS.forEach(c => { const n = cursoNivel(cur, c.id); if (c.preco > 0 && n >= 1) l.push('Curso de ' + c.nome + ' (básico)'); if (n >= 2) l.push(c.av.nome + ' (avançado)'); });
+  CURSOS.forEach(c => Object.keys(c.degraus).forEach(d => { const g = c.degraus[d], n = cursoNivel(cur, c.id, d); if (g.preco > 0 && n >= 1) l.push('Curso de ' + g.nome + ' (básico)'); if (g.av && n >= 2) l.push(g.av.nome + ' (avançado)'); }));   // v12.10: os degraus de todos os pontos
   const card = staffCard(upgradeIcon('cardapio'), 'Cursos de cardápio concluídos', l.length ? '' : 'Nenhum ainda.');
   l.forEach(t => card.appendChild(el('span', null, t)));
   card.appendChild(shopBtn('Ver cursos', 'btn', true, () => { shopAbrir('cardapio'); return true; }));
@@ -1038,13 +1038,13 @@ function buildCursos(grid){
   const sv = game.save, bank = sv.bank, cur = sv.cursos;
   if (game.cursoMsg) grid.appendChild(el('p', 'cursomsg', game.cursoMsg));
   // v8.6.11: o prato que precisa do básico de outro curso (dep) fica apagado até esse curso ser feito
-  const falta = k => { const d = CARDAPIO[k].dep; return d && cursoNivel(cur, d) < 1 ? cursoOf(d) : null; };
-  CURSOS.filter(c => cursoOk(c, game.ponto)).forEach(c => {   // v9.1: o curso de restaurante só aparece da Avenida em diante
-    const n = cursoNivel(cur, c.id), p = game.cursoProx(c.id), av = n >= 1;
+  const falta = k => { const d = CARDAPIO[k].dep; return d && !tecFeita(cur, d, game.ponto) ? cursoOf(d) : null; };
+  // v12.10: só os degraus do ponto atual (um cartão por técnica: o básico e, depois dele, o avançado; no PF da área industrial, só o avançado)
+  CURSOS.filter(c => cursoOk(c, game.ponto) && (c.degraus[game.ponto.id].preco > 0 || c.degraus[game.ponto.id].av)).forEach(c => {
+    const g = c.degraus[game.ponto.id], n = cursoNivel(cur, c.id, game.ponto), p = game.cursoProx(c.id), av = n >= 1;
     const card = el('div', 'item' + (!p ? ' own' : ''));
     card.appendChild(cursoIcon(c, av));
-    card.appendChild(el('b', null, av ? c.av.nome : 'Curso de ' + c.nome));
-    if (p) card.appendChild(el('span', 'cursos-lista', '+' + (av || c.preco <= 0 ? CURSO_XP.avancado : CURSO_XP.basico) + ' de experiência'));
+    card.appendChild(el('b', null, av ? g.av.nome : 'Curso de ' + g.nome));
     const lis = pratosCurso(c.id, game.ponto, av ? 2 : 1);
     if (c.id === 'veg' && lis.some(falta)) card.appendChild(el('span', 'cursos-lista apagado', 'Precisa do curso de ' + falta(lis.find(falta)).nome + '.'));
     if (p && game.cursoTrava) card.appendChild(el('span', 'cursos-lista', 'Em curso'));
@@ -1306,7 +1306,7 @@ function buildCaixa(grid){
     if (r.dev){
       // v7.4: o salão antigo (cadeiras e mesas da v6) foi trocado pela Garagem e o que custou voltou;
       // v7.7: a Máquina de suco virou a Água da torneira, mais barata, e a diferença voltou
-      const td = el('td', 'cx-dev', (r.devK === 'maquina' ? 'Devolução da máquina de suco (virou a Água da torneira): +' : r.devK === 'decor' ? 'Devolução dos enfeites simples (não combinam com a Avenida): +' : 'Devolução do salão antigo: +') + fmt(r.dev)); td.setAttribute('colspan', '9');
+      const td = el('td', 'cx-dev', (r.devK === 'maquina' ? 'Devolução da máquina de suco (virou a Água da torneira): +' : r.devK === 'decor' ? 'Devolução dos enfeites simples (não combinam com a Avenida): +' : r.devK === 'cursos' ? 'Devolução dos cursos do Tonhão de outros pontos: +' : 'Devolução do salão antigo: +') + fmt(r.dev)); td.setAttribute('colspan', '9');
       tr.appendChild(td); tr.appendChild(cxTd(r.saldo)); tb.appendChild(tr); return;
     }
     const dia = el('td', null, 'Dia ' + r.d + (r.st ? ' ' + '★'.repeat(r.st) : '')); tr.appendChild(dia);
