@@ -176,7 +176,7 @@ function cursoOk(c, ponto){ return !!c && !!c.degraus[pontoId(ponto)]; }
    vezes que pede PF; mov: o curso Vegetariano traz +5% de movimento no básico e mais +5% no avançado */
 const VEG = { chance:0.1, pfTroca:0.2, mov:0.05 };
 function vegMov(cursos){ return 1 + VEG.mov * cursoNivel(cursos, 'veg'); }   // v12.10: o maior nível entre os degraus
-const CURSO_AV = { preco:1.15, crit:1.5 };
+const CURSO_AV = { preco:1.25, crit:1.5 };   // v12.10.3: o preço do prato de curso avançado, de 1,15 para 1,25 (o avançado passa a render de verdade nos pontos baixos)
 function cursoOf(id){ return CURSOS.find(c => c.id === id) || null; }
 /* v12.10: os ids dos pontos que têm degrau da técnica, na ordem de PONTOS */
 function degrausDe(id){ const c = cursoOf(id); return c ? PONTOS.map(p => p.id).filter(i => c.degraus[i]) : []; }

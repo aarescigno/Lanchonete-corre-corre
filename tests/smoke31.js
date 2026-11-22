@@ -41,11 +41,11 @@ g.save=L.normSave({bank:1000,dia:3}); g.up=g.save.up; g.boughtFor=0; g.goShop(3)
 
 // ---------- o avançado: +15% no preço, caprichado x1,5 ----------
 { const cu={fritos:{garagem:2},chapa:{garagem:1}};
-  ok(L.precoPrato('pf',null,cu)===30 && L.precoPrato('pf',I,{pf:{industrial:2}})===39 && L.precoPrato('coxinha',null,cu)===12 && L.precoPrato('kibe',null,cu)===9,'avançado: coxinha 10 a 12 (vale também para a coxinha) e kibe 8 a 9 (v10.5); o PF só sobe com as Carnes variadas da área industrial (34 a 39)');
+  ok(L.precoPrato('pf',null,cu)===30 && L.precoPrato('pf',I,{pf:{industrial:2}})===Math.round(34*L.CURSO_AV.preco) && L.precoPrato('coxinha',null,cu)===Math.round(10*L.CURSO_AV.preco) && L.precoPrato('kibe',null,cu)===Math.round(8*L.CURSO_AV.preco),'avançado: coxinha 10 a 13 (vale também para a coxinha) e kibe 8 a 10 (v10.5; ×1,25 desde a v12.10.3); o PF só sobe com as Carnes variadas da área industrial (34 a 43)');
   ok(L.precoPrato('bauru',null,cu)===14 && L.precoPrato('pf',null,{})===30 && L.precoPrato('coxinha',null,{})===10,'sem o avançado, o preço é o de sempre');
   novo({cursos:cu}); const k=g.kitchen, cr=k.chef.crit;
   ok(Math.abs(k.chefCrit('pf')-cr)<1e-9 && Math.abs(k.chefCrit('coxinha')-cr*1.5)<1e-9 && Math.abs(k.chefCrit('bauru')-cr)<1e-9 && Math.abs(k.chefCrit('pastel')-cr)<1e-9,'caprichado x1,5 só nos pratos do curso avançado feito');
-  const gr=new L.Group(g,'executiva',1,0,false); gr.dishes=['coxinha']; ok(L.precoPrato(gr.dishes[0],g.ponto,g.cursos)===12,'o jogo cobra o preço do avançado'); }
+  const gr=new L.Group(g,'executiva',1,0,false); gr.dishes=['coxinha']; ok(L.precoPrato(gr.dishes[0],g.ponto,g.cursos)===Math.round(10*L.CURSO_AV.preco),'o jogo cobra o preço do avançado'); }
 
 // ---------- quem pede o quê ----------
 { novo(); let n=0, so=true, extraPf=false;
@@ -98,7 +98,7 @@ function normB(A){ return A.L.normSave({}).bank; }
   { const v1={veg:{industrial:1}}, f=(o)=>Object.assign({},v1,o); ok(L.pratoSabido('pfVeg',v1,I) && !L.pratoSabido('empadaPalmito',v1,I) && L.pratoSabido('empadaPalmito',f({assados:{industrial:1}}),I) && !L.pratoSabido('kibeAbobora',f({assados:{industrial:1}}),I) && L.pratoSabido('kibeAbobora',f({fritos:{garagem:1}}),I),'empada de palmito só com assados, kibe de abóbora só com fritos (o degrau da Garagem vale na área industrial)'); }
   { const v1={veg:{industrial:1}}, v2={veg:{industrial:2}}, f=(o)=>Object.assign({},v2,o); ok(!L.pratoSabido('pfVegano',v1,I) && L.pratoSabido('pfVegano',v2,I) && !L.pratoSabido('coxinhaJaca',v2,I) && L.pratoSabido('coxinhaJaca',f({fritos:{garagem:1}}),I) && !L.pratoSabido('pastelPalmito',f({fritos:{garagem:1}}),I) && L.pratoSabido('mistoVegano',f({chapa:{garagem:1}}),I),'os veganos pedem o avançado e o básico do curso de que dependem'); }
   ok(Math.abs(L.avalMenu({pastel:{garagem:1},chapa:{garagem:1},fritos:{garagem:1},assados:{industrial:1},veg:{industrial:1}},0,I)-5)<1e-9,'com os 5 básicos na área industrial, a Diversidade do cardápio é 5,0');
-  ok(L.precoPrato('pfVeg',I,{veg:{industrial:2}})===Math.round(32*1.15) && L.precoPrato('pfVegano',I,{veg:{industrial:2}})===32,'avançado: +15% no PF vegetariano, e os veganos ficam no preço comum');
+  ok(L.precoPrato('pfVeg',I,{veg:{industrial:2}})===Math.round(32*L.CURSO_AV.preco) && L.precoPrato('pfVegano',I,{veg:{industrial:2}})===32,'avançado: +CURSO_AV.preco no PF vegetariano, e os veganos ficam no preço comum');
   // pedem: o vegetariano só come sem carne; sem opção, coxinha (Cardápio 1)
   novo({salao:{ponto:'industrial'},cursos:{veg:{industrial:1},assados:{industrial:1}}}); let so=true, vegN=0, viuPfv=false;
   for(let i=0;i<3000;i++){ const gr=new L.Group(g,TIPOS[i%4],i,0,false); gr.people.forEach((p,j)=>{ if(p.veg){ vegN++; if(L.CARDAPIO[gr.dishes[j]].carne) so=false; if(gr.extras[j] && L.CARDAPIO[gr.extras[j]].carne) so=false; } }); if(gr.dishes.includes('pfVeg')) viuPfv=true; }

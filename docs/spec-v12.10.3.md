@@ -1,6 +1,6 @@
 # v12.10.3 — O equilíbrio dos cursos em degraus (etapa 18d)
 
-**Situação:** rascunho
+**Situação:** aprovada
 **Origem:** a mesma entrevista da v12.10 (21 e 22/11): "não ligo de ter que fazer grandes rebalanceamentos se isso for deixar o jogo mais legal"; preços "pelo faturamento"; duração da carreira "a mesma, ±3 dias"; tabela de níveis "ajustável no balance".
 
 ## Objetivo
@@ -28,6 +28,7 @@ Com os cursos em degraus, a carreira tem o mesmo ritmo de antes: as mudanças de
   1. **Cursos valem a pena:** na Garagem, `CURSOS=todos` não pode perder para `CURSOS=0` (ganho ≥ 0%); na área industrial, pelo menos +10%; na Avenida e no Terraço continua +15%.
   2. **A Avenida passa a 2 cursos por lojinha:** `CURSO_DIA = { 1:1, 2:1, 3:2, 4:2 }` (regra nova, só desta vez). Os alvos de ritmo e o teto do Tonhão na Avenida continuam como estão. O CA10 da v12.10 (`smoke117`) trava na Avenida só depois do segundo curso.
   3. **Mudança para a área industrial no dia 22 e Garagem com `EQUIPE=auto` a 97% aceitos:** o alvo da mudança para a área industrial passa a dia 21 a 30 e o da Garagem com `EQUIPE=auto` a 85% a 97%. Não mexer nas metas da Garagem por causa disso.
+- **Resposta do usuário de 22/11 (2ª parada da T4):** `CURSO_AV.preco` passa de ×1,15 a **×1,25** e vira uma 5ª alavanca liberada (de ×1,15 a ×1,35); os alvos do CA4 não mudam (Garagem ≥ 0%, área industrial ≥ +10%, Avenida e Terraço ≥ +15%). Recalibrar `metaF` e os preços dos cursos com as alavancas de sempre; corrigir os smokes que conferem o ×1,15 (`smoke31`, `smoke109`, o CA13 do `smoke117`).
 - **Se um alvo não fechar com as quatro alavancas no limite:** pare e pergunte ao usuário (não mude regra nem limite por conta própria).
 - **Escalope (decidido em 22/11, pergunta da v12.10):** no Terraço, o `escalope` (prato estranho do `pf`) só é sabido se o Tonhão tiver **comprado** algum degrau de `pf`: o avançado da área industrial (Carnes variadas), o básico ou o avançado da Avenida, ou o básico do Terraço (aí deixa de ser estranho). A regra "no `pf`, a Garagem conta como degrau feito" continua só para o `strogonoff` da Avenida. Uma linha em `pratoSabido` (`src/10-constantes.js`).
 - **Teste de habilidade e Desafios (decidido em 22/11):** o Tonhão entra no **teto do ponto** jogado (2 na Garagem, 4 na área industrial, 6 na Avenida, 8 no Terraço), no lugar do nível 8 em qualquer ponto: `testeNivelMax` passa a `2 × ponto.nivel`.
@@ -61,25 +62,7 @@ Com os cursos em degraus, a carreira tem o mesmo ritmo de antes: as mudanças de
 - `smoke120` novo (CA7 e CA8: o escalope e o `testeNivelMax`). Os outros alvos são do `balance.js` e do `carreira.js`. No fechamento: a linha de base, cada rodada de ajuste e os números finais.
 
 ## Decisões em aberto
-**Pergunta ao usuário (22/11, 2ª parada da T4): "os cursos valem a pena" (CA4) na Garagem (≥ 0%) e na área industrial (≥ +10%) não fecha com as alavancas no limite.** Medido com os preços e as metas finais (3 repetições de 40 rodadas; com 8 repetições a Garagem dá R$ 354 contra R$ 361 e a industrial R$ 546 contra R$ 511):
-
-| | `CURSOS=todos` | `CURSOS=0` | ganho com cursos |
-|---|---|---|---|
-| Garagem | R$ 355 | R$ 358 | −0,8% (−1,9% em 8 repetições); alvo ≥ 0% |
-| Área industrial | R$ 547 | R$ 505 | +8,3% (+6,8% em 8 repetições); alvo ≥ +10% |
-| Avenida | R$ 1.323 | R$ 799 | +66%; alvo +15% (ok) |
-| Terraço | R$ 6.427 | R$ 5.395 | +19%; alvo +15% (ok) |
-
-A alavanca 2 (cook −10%, crit +10%, wash −10% e diária menor) não mexe nesse vão (Garagem R$ 363 contra R$ 363, industrial R$ 546 contra R$ 514), nem as alavancas 1, 3 e 4: o ganho nesses dois pontos é limitado pela freguesia, não pela cozinha. O que mexe é o preço do prato de curso avançado, `CURSO_AV.preco` (hoje ×1,15), que não está na lista de alavancas. Medido em 4 repetições:
-
-| `CURSO_AV.preco` | Garagem (`todos` / `0`) | industrial (`todos` / `0`) |
-|---|---|---|
-| ×1,15 (hoje) | R$ 354 / R$ 361 (−2%) | R$ 526 / R$ 516 (+2%) |
-| ×1,20 | R$ 362 / R$ 364 (−0,5%) | R$ 582 / R$ 510 (+14%) |
-| ×1,25 | R$ 381 / R$ 358 (+6%) | R$ 616 / R$ 492 (+25%) |
-| ×1,35 | n/d | R$ 689 / R$ 507 (+36%) |
-
-Opções: (a) liberar `CURSO_AV.preco` como alavanca (×1,25 fecha os dois pontos; sobe o ganho de todos os pontos, então `metaF`, o `expertF` e os preços dos cursos são recalibrados de novo, e o `CURSO_AV.preco` aparece no Manual: "um pouco mais caro" vira "bem mais caro"); (b) baixar os alvos (Garagem "não perde mais de 2%" e industrial "+5%"); (c) outro número.
+Nenhuma. A 2ª parada da T4 (o CA4 da Garagem e da área industrial) foi respondida pelo usuário em 22/11: `CURSO_AV.preco` ×1,25 e vira alavanca liberada (ver Regras); a tabela da pergunta continua nas Medidas.
 
 ## Medidas (22/11, `balance.js 40` e `DIAS=80 node carreira.js 6`; % = rodadas com a meta batida nos dias 3 a 7 na Garagem e 8 a 10 nos outros; ganho = lucro médio do dia nesses dias)
 | comando | v12.9.1 (linha de base) | v12.10.3 com a T0 (T3) |

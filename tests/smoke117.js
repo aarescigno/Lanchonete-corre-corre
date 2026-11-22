@@ -67,7 +67,7 @@ ok(L.pratoSabido('strogonoff',{},A) && !L.pratoSabido('escalope',{},T) && L.prat
   ok(o.bank===1000 && !o.cursoAviso && H.g.cursoMsg==='' && o.equipe.tonhao===4,'CA12: sem curso acima do ponto, nada volta e não há aviso'); }
 // CA13
 { const c={ fritos:{ garagem:2 } };
-  ok(L.precoPrato('coxinha',G,c)===12 && L.precoPrato('coxinha',I,c)===13 && L.precoPrato('enroladinho',I,c)===8 && L.precoPrato('coxinha',I,{})===11,'CA13: o avançado de fritos da Garagem soma ×1,15 à coxinha na Garagem e na área industrial, e não ao enroladinho'); }
+  ok(L.precoPrato('coxinha',G,c)===Math.round(L.precoPrato('coxinha',G,{})*L.CURSO_AV.preco) && L.precoPrato('coxinha',I,c)===Math.round(L.precoPrato('coxinha',I,{})*L.CURSO_AV.preco) && L.precoPrato('enroladinho',I,c)===8 && L.precoPrato('coxinha',I,{})===11,'CA13: o avançado de fritos da Garagem soma o CURSO_AV.preco (×1,25) à coxinha na Garagem e na área industrial, e não ao enroladinho'); }
 // CA14
 { let H=load(); H.L.buildMenu(); const off=H.els['btn-endless'].style.display; H.L.DEV.on=true; H.L.buildMenu(); const on=H.els['btn-endless'].style.display;
   ok(off==='none' && on==='','CA14: o menu só mostra o "Turno sem fim" com o modo dev ('+off+'/'+on+')'); }
