@@ -2124,3 +2124,12 @@ Pedido do usuário em 21/11 (`docs/PROPOSTAS.md`, "a decoração de cada ponto")
   **Modelo:** Sonnet, esforço médio (regras, números e falas decididos)
 
 | 17b | A decoração de cada ponto: as duas famílias, os preços e a mudança | v12.9.1 | feita em 22/11 (`docs/spec-v12.9.1.md`; `smoke116`; `decorPreco`, `decorCombina` e a venda dos simples na mudança) |
+
+## Etapa 18 — Os cursos do Tonhão em cada ponto (18a, v12.10; 18b, v12.10.1; 18c, v12.10.2; 18d, v12.10.3)
+Pedido do usuário em 21 e 22/11 (`docs/PROPOSTAS.md`, "os níveis do Tonhão"): os cursos baratos da Garagem levavam o Tonhão ao topo antes da Avenida, e o curso de pastel ensinava a panqueca e o ravioli. Agora cada ponto tem os seus cursos (um degrau por técnica, básico e avançado), que trazem pratos e os dois níveis do Tonhão daquele ponto; no ponto novo ele arrisca um prato de cada técnica que já sabe, mais devagar, até fazer o curso de lá.
+- **18a** (`docs/spec-v12.10.md`): degraus, pratos de estrada, 9 níveis, lojinha (troca, 2 cursos por dia no Terraço), save, Turno sem fim fora do menu, modo dev. **Modelo:** Sonnet, esforço alto (spec aprovada em 22/11)
+- **18b** (`docs/spec-v12.10.1.md`): o prato que ele estranha (+40% de preparo, metade do capricho), o suor e o papelzinho, os desenhos dos 6 pratos de estrada, o empratamento do nível 7. **Modelo:** Sonnet, esforço médio (spec aprovada em 22/11)
+- **18c** (`docs/spec-v12.10.2.md`): as conversas `cozinhaNova2` a `cozinhaNova4` e a aba Caderno no Manual (25 páginas). **Modelo:** Sonnet, esforço médio (spec aprovada em 22/11)
+- **18d** (`docs/spec-v12.10.3.md`): preços, níveis e metas pelo `balance.js` e pelo `carreira.js`, com a carreira no ritmo de antes (±3 dias). **Modelo:** Sonnet, esforço alto (spec aprovada em 22/11)
+
+| 18a | Os cursos do Tonhão em degraus por ponto (pratos de estrada, 9 níveis, Turno sem fim fora do menu) | v12.10 | feita em 22/11 (`docs/spec-v12.10.md`; `smoke117`; degraus por ponto, `tonhaoNivelAlc`, conversão do save, bot e dev) |
