@@ -71,7 +71,7 @@ const TIPOS=['estudante','executiva','familia','vovos','turma','motorista','nego
   ok(!g.setStaff('lia',0),'contratar é definitivo (não dá para dispensar)');
   ok(g.liaAtiva && L.liaOn(g.save.equipe,g.ponto),'a Lia trabalha no dia');
   // a cozinha anda 25% mais rápida
-  const med=(ativa)=>{ g.save.equipe.lia=ativa?1:0; let s=0; const n=600, grp=g.spawn({ type:'casal', color:0, vip:false, av:true });
+  const grp=g.spawn({ type:'casal', color:0, vip:false, av:true }); const med=(ativa)=>{ g.save.equipe.lia=ativa?1:0; let s=0; const n=600;   // v12.10.1: o mesmo grupo (o mesmo prato) nas duas medidas
     for(let i=0;i<n;i++){ g.kitchen.queue=[]; g.kitchen.cooking=[]; g.kitchen.submitTempo(grp,1,1); s+=g.kitchen.queue[0].time; } return s/n; };
   const sem=med(false), com=med(true); ok(Math.abs(com/sem-0.85)<0.06,'com a Lia a cozinha leva ×0,85 do tempo ('+(com/sem).toFixed(2)+')');
   g.save.equipe.lia=1;

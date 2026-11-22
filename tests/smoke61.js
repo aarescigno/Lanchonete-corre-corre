@@ -18,7 +18,7 @@ const roda=(g,s)=>{ for(let i=0;i<Math.round(s/0.05);i++) g.update(0.05); };
 const preco=(L,g,k)=>k?L.precoPrato(k,g.ponto,g.cursos):0;
 const notaDe=(g,v,n)=>{ g.save.aval=Array(n||30).fill([v,v,v,v,v]); };
 const entrega=(x,tempo,extra)=>{ x.g.bia.hands=[Object.assign({ kind:'dish', table:x.t.id, group:x.grp, dish:'pf', q:4, tempo },extra||{})]; x.grp.setState('ordered'); x.grp.tempo=tempo; x.g.bia.perform({ type:'table', id:x.t.id }); };
-const tempoDe=(g,grp,t)=>{ g.kitchen.queue=[]; g.kitchen.cooking=[]; g.kitchen.submitTempo(grp,t.id,1); return g.kitchen.queue[0].time; };
+const tempoDe=(g,grp,t)=>{ g.kitchen.queue=[]; g.kitchen.cooking=[]; g.kitchen.submitTempo(grp,t.id,1); return g.kitchen.queue[0].time / (g.kitchen.estranho(grp.dish) ? 1.4 : 1); };   // v12.10.1: sem o ×1,4 do prato estranho (o Terraço sem cursos sorteia pratos estranhos)
 
 // ---------- 1. no Terraço todo VIP é exigente; na Avenida e na Garagem, não ----------
 { const H=terr(), {g,L}=H;
