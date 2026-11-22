@@ -20,7 +20,7 @@ Origem: retorno do Renan Martorelli (beta-tester) e conversa com o Arthur (15/10
 | 17a | Os enfeites novos da família fina e os redesenhos | v12.9 | feita em 22/11 (`docs/spec-v12.9.md`; `smoke115`; os 9 desenhos e a moldura dourada) |
 | 17b | A decoração de cada ponto: as duas famílias, os preços e a mudança | v12.9.1 | feita em 22/11 (`docs/spec-v12.9.1.md`; `smoke116`; `decorPreco`, `decorCombina` e a venda dos simples na mudança) |
 | correção | A espera sentada e o enfeite das mesas sem pagar à toa (cadeirinhas → banquinhos por R$ 45, sem voltar; o enfeite sai com o linho e volta pela metade) | v12.8.4 | feita em 21/11 (`docs/spec-v12.8.4.md`; `smoke114`; `assentoPreco` e a devolução no `buyMovel('linho')`) |
-| 18a | Os cursos do Tonhão em degraus por ponto (pratos de estrada, 9 níveis, Turno sem fim fora do menu) | v12.10 | planejada em 22/11, em rascunho (`docs/spec-v12.10.md`) |
+| 18a | Os cursos do Tonhão em degraus por ponto (pratos de estrada, 9 níveis, Turno sem fim fora do menu) | v12.10 | feita em 22/11 (`docs/spec-v12.10.md`; `smoke117`; degraus por ponto, `tonhaoNivelAlc`, conversão do save, bot e dev) |
 | 18b | O prato que ele estranha, o suor, os desenhos dos pratos de estrada e o empratamento | v12.10.1 | planejada em 22/11, em rascunho (`docs/spec-v12.10.1.md`) |
 | 18c | A conversa da chegada a cada ponto e o Caderno da Rosa | v12.10.2 | planejada em 22/11, em rascunho (`docs/spec-v12.10.2.md`) |
 | 18d | O equilíbrio dos cursos em degraus | v12.10.3 | planejada em 22/11, em rascunho (`docs/spec-v12.10.3.md`) |
