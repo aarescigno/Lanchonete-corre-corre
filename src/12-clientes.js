@@ -136,7 +136,7 @@ function normCaixa(c){
       const o = { d:Math.max(1, n(r.d)), fat:n(r.fat), ingr:n(r.ingr), contas:n(r.contas), folha:n(r.folha), div:n(r.div), lucro:n(r.lucro), meta:n(r.meta), ok:!!r.ok, perd:n(r.perd), mel:n(r.mel), sal:n(r.sal), man:n(r.man), saldo:n(r.saldo) };
       if (n(r.vig)) o.vig = n(r.vig);   // v9.4: a multa da vigilância (já somada em `contas`)
       if (n(r.dev)) o.dev = n(r.dev);   // linha "Devolução do salão" (v7.4): o que o salão antigo custou, de volta
-      if (o.dev && r.devK === 'maquina') o.devK = 'maquina';   // ou a da máquina de suco, que virou torneira (v7.7)
+      if (o.dev && (r.devK === 'maquina' || r.devK === 'decor')) o.devK = r.devK;   // v12.9.1: ou a dos enfeites simples vendidos na Avenida   // ou a da máquina de suco, que virou torneira (v7.7)
       if (n(r.int)){ o.int = n(r.int); o.mul = n(r.mul); }   // dia encerrado no meio (v8.2.3): grupos que saíram bravos e a multa
       if (n(r.st)) o.st = clamp(n(r.st), 0, 3);
       if (n(r.av)) o.av = clamp(n(r.av), 10, 50);   // v8.4: a nota do Gúgou no dia, ×10
@@ -265,8 +265,13 @@ function normSave(s){
     out.caixa.forEach(r => { if (r.av) r.av = Math.round(esc(r.av / 10) * 10); });
   }
   out.avalEsc = 2;
-  if (dev){ const last = out.caixa[out.caixa.length - 1]; out.caixa = normCaixa(out.caixa.concat([{ d:last ? last.d : 1, dev, saldo:out.bank - devMaq }])); }
-  if (devMaq){ const last = out.caixa[out.caixa.length - 1]; out.caixa = normCaixa(out.caixa.concat([{ d:last ? last.d : 1, dev:devMaq, devK:'maquina', saldo:out.bank }])); }
+  // v12.9.1: o save antigo na Avenida ou no Terraço com enfeites simples: eles saem e voltam pela metade, uma vez só (a espada da dona Cida do Modo História sai sem entrar na conta)
+  const venDec = pontoOf(out.salao.ponto).nivel >= 3 ? decorSimplesVenda(out.decor, hist && out.convPlanta === 1) : { ids:[], v:0 }, devDec = venDec.v;
+  venDec.ids.forEach(id => { delete out.decor[id]; });
+  out.bank += devDec;
+  if (dev){ const last = out.caixa[out.caixa.length - 1]; out.caixa = normCaixa(out.caixa.concat([{ d:last ? last.d : 1, dev, saldo:out.bank - devMaq - devDec }])); }
+  if (devMaq){ const last = out.caixa[out.caixa.length - 1]; out.caixa = normCaixa(out.caixa.concat([{ d:last ? last.d : 1, dev:devMaq, devK:'maquina', saldo:out.bank - devDec }])); }
+  if (devDec){ const last = out.caixa[out.caixa.length - 1]; out.caixa = normCaixa(out.caixa.concat([{ d:last ? last.d : 1, dev:devDec, devK:'decor', saldo:out.bank }])); }
   return out;
 }
 function loadSave(){

@@ -56,19 +56,19 @@ const sentar=(g,type)=>{ const grp=g.spawn({ type:type||'casal', color:0, vip:fa
 
 // ---------- 4. as 3 flores do foyer ----------
 { const L=nova().L, f=id=>L.DECOR.find(d=>d.id===id);
-  ok(f('ikebana') && f('ikebana').cost===90 && f('orqArranjo').cost===120 && f('campo').cost===70,'custam R$ 90, 120 e 70');
+  ok(f('ikebana') && ['ikebana','orqArranjo','campo'].every(id=>L.decorPreco(f(id),4)===150),'custam R$ 150 cada no Terraço (v12.9.1)');
   ok(['ikebana','orqArranjo','campo'].every(id=>f(id).nivel===4 && f(id).amb===0.2 && f(id).grupo==='plantas'),'só do nível 4, +0,2 no Ambiente cada, no grupo das plantas');
   ok(L.AVAL_DECOR.ikebana==='Que ikebana mais elegante!' && L.AVAL_DECOR.orqArranjo==='Que bonsai mais caprichado!' && L.AVAL_DECOR.campo==='Adorei as flores do campo!','os 3 elogios');
   ok(L.normDecor({ ikebana:1, orqArranjo:1, campo:0 }).ikebana===1 && L.normDecor({ campo:1 }).campo===1,'normDecor aceita os 3 ids');
   const Ht=jogo('terraco'); const t=loja(Ht,'lanchonete','decor'); ok(/Ikebana/.test(t) && /Bonsai/.test(t) && /Flores do campo/.test(t),'a Decoração do Terraço mostra as 3');
   const Ha=jogo('avenida',{},7); const ta=loja(Ha,'lanchonete','decor'); ok(!/Ikebana|Arranjo de orquídeas|Flores do campo/.test(ta),'a da Avenida não');
-  const {g}=Ht; const b=g.save.bank; ok(g.buyDecor('ikebana') && g.save.bank===b-90 && g.save.decor.ikebana===1,'comprar a ikebana (R$ 90)');
+  const {g}=Ht; const b=g.save.bank; ok(g.buyDecor('ikebana') && g.save.bank===b-150 && g.save.decor.ikebana===1,'comprar a ikebana (R$ 150)');
   g.buyDecor('orqArranjo'); g.buyDecor('campo');
   g.startDay(10); Ht.els['btn-start'].fire('click'); g.mode='carreira';
   const amb=()=>{ g.avals.length=0; const x=sentar(g,'casal'); x.grp.avalia=true; x.grp.setState('wantBill'); x.grp.hearts=5; g.avaliar(x.grp,0,0); return g.avals[g.avals.length-1].s[4]; };
   const com=amb(); ['ikebana','orqArranjo','campo'].forEach(id=>g.mostraDecor(id,false)); const sem=amb();
   ok(com>=sem && com-sem<0.31,'v10.7: as 3 flores somam 3 pontos de luxo (cerca de 0,1 no Ambiente do Terraço) ('+sem+' → '+com+')');
-  const Hd=nova(); Hd.g.setDev(true); Hd.g.devPonto('garagem'); ok(/Ikebana/.test(loja(Hd,'lanchonete','decor')),'no modo dev aparecem em qualquer ponto'); }
+  const Hd=nova(); Hd.g.setDev(true); Hd.g.devPonto('garagem'); ok(!/Ikebana/.test(loja(Hd,'lanchonete','decor')),'no modo dev, o ponto manda: a Garagem não vende as flores do Terraço (v12.9.1)'); }
 
 // ---------- 5. a ficha l-musica ----------
 { const H=jogo('terraco'), {g,L}=H; const f=L.MANUAL.find(x=>x.id==='l-musica');

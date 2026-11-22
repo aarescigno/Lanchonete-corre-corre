@@ -45,7 +45,7 @@ bloco('CA1 (espresso)',()=>{
 bloco('CA2',()=>{
   const {g,L}=mk();
   IDS.forEach(id=>{ g.startTeste(id); const nv=NV[id], sv=g.save, up=g.up;
-    const dec=L.DECOR.filter(d=>!d.nivel||d.nivel<=nv).map(d=>d.id).sort(), tem=Object.keys(sv.decor).filter(k=>sv.decor[k]).sort();
+    const dec=L.DECOR.filter(d=>L.decorCombina(d,nv)).map(d=>d.id).sort(), tem=Object.keys(sv.decor).filter(k=>sv.decor[k]).sort();
     ok(arr(dec)===arr(tem),'CA2: '+id+': todos os itens de DECOR do ponto à mostra e nenhum de fora ('+tem.length+' itens)');
     ok(L.movelNivel(g)===nv && sv.salao.mesas.length>0 && sv.salao.mesas.every(m=>m.t===1),'CA2: '+id+': o jogo de mesas do ponto (degrau '+L.movelNivel(g)+') e o enfeite em todas as mesas ('+sv.salao.mesas.length+' mesas)');
     if(id==='industrial') ok(up.fogaoInd===true && up.assento==='banco' && up.tvs===true && sv.equipe.tvs===2,'CA2: área industrial: fogão industrial, banquinhos de madeira e as TVs sem anúncios');

@@ -1678,7 +1678,12 @@ class Game {
     const sv = this.save, para = this.proximoPonto;
     if (!para || !this.mudancaVisivel || this.mudancaFalta) return false;
     if (!devLivre()){ sv.bank -= para.mudanca; caixaGasto(sv, 'sal', para.mudanca); }
+    const venda = para.nivel === 3 ? decorSimplesVenda(sv.decor, histLiga() && sv.histV === 1 && sv.convPlanta === 1) : null;   // v12.9.1: os enfeites simples não combinam com a Avenida: saem pela metade (a espada da dona Cida vai para a casa da mãe da Bia)
     this.trocaPonto(para);
+    if (venda && venda.ids.length){
+      venda.ids.forEach(id => { delete sv.decor[id]; });
+      if (venda.v){ sv.bank += venda.v; caixaGasto(sv, 'sal', -venda.v); }
+    }
     const chap = HISTORIA[sv.cap - 1];   // v9.1: o capítulo de agora é do ponto novo? Então começa (o 4 na área industrial, o 6 na Avenida, o 9 no Terraço)
     if (chap && chap.ponto === para.id){ sv.capDia = sv.dia; sv.capAzul = 0; sv.capFeito = 0; sv.capVezes = 0; sv.conversa = histLiga() ? 'antes' : null; }
     this.tablesKey = ''; this.buildTables();
@@ -2091,8 +2096,9 @@ class Game {
   buyDecor(id){
     if (!this.cartaoAberto('luxo')) return false;
     const d = decorOf(id), dec = this.save.decor;
-    if (!d || id in dec || this.save.bank < d.cost || (d.nivel && this.ponto.nivel < d.nivel && !devLivre())) return false;
-    this.save.bank -= d.cost; caixaGasto(this.save, 'sal', d.cost);
+    const cost = d ? decorPreco(d, this.ponto) : 0;   // v12.9.1: o preço do ponto de agora; o que não combina com o ponto não se compra, nem no modo dev
+    if (!d || id in dec || !decorCombina(d, this.ponto) || this.save.bank < cost) return false;
+    this.save.bank -= cost; caixaGasto(this.save, 'sal', cost);
     dec[id] = 1;
     writeSave(this.save); Sfx.coin();
     return true;
@@ -2194,6 +2200,7 @@ class Game {
     const para = PONTOS.find(p => p.id === id);
     if (!DEV.on || !para) return false;
     this.trocaPonto(para);
+    Object.keys(this.save.decor).forEach(id => { const d = decorOf(id); if (d && !decorCombina(d, para)) delete this.save.decor[id]; });   // v12.9.1: só ficam os enfeites que combinam com o ponto
     this.devRecarrega();
     return true;
   }
@@ -2304,8 +2311,8 @@ class Game {
   devDecor(on){
     if (!DEV.on) return false;
     const sv = this.save, d = {};
-    DECOR.forEach(x => { if (on && (!x.nivel || this.ponto.nivel >= x.nivel)) d[x.id] = 1; });
-    if (sv.convPlanta === 1 && sv.decor.espada) d.espada = 1;
+    DECOR.forEach(x => { if (on && decorCombina(x, this.ponto)) d[x.id] = 1; });
+    if (sv.convPlanta === 1 && sv.decor.espada && this.ponto.nivel <= 2) d.espada = 1;   // v12.9.1: na Avenida, a espada já foi para a casa da mãe da Bia
     sv.decor = normDecor(d); writeSave(sv); return true;
   }
   /* v10.7: todo o luxo do ponto de graça: os enfeites, o jogo de mesas e a toalha em todas as mesas (sem mexer no caixa) */
@@ -2359,7 +2366,7 @@ class Game {
     if (nv >= 2) up.fogaoInd = true;   // o fogão industrial vale do nível 2 em diante e vai junto na mudança
     if (nv === 2){ up.tvs = true; up.assento = 'banco'; } else if (nv === 3) up.assento = 'sofa'; else if (nv === 4) up.assento = 'poltrona';
     // a decoração, o jogo de mesas e o enfeite das mesas
-    const dec = {}; DECOR.forEach(d => { if (!d.nivel || d.nivel <= nv) dec[d.id] = 1; });
+    const dec = {}; DECOR.forEach(d => { if (decorCombina(d, nv)) dec[d.id] = 1; });
     sv.decor = normDecor(dec);
     const mv = {}; MOVEIS.forEach(m => { if (m.nivel <= nv) mv[m.id] = 1; });
     sv.moveis = normMoveis(mv);

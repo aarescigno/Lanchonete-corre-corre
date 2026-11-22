@@ -936,11 +936,11 @@ function decorCard(grupo, icon, title, desc){
 }
 function buildDecor(grid){
   const dec = game.save.decor, bank = game.save.bank;
-  DECOR.filter(d => !d.nivel || game.ponto.nivel >= d.nivel || devLivre()).forEach(d => {
-    const tem = d.id in dec, on = !!dec[d.id];
+  DECOR.filter(d => decorCombina(d, game.ponto)).forEach(d => {
+    const tem = d.id in dec, on = !!dec[d.id], cost = decorPreco(d, game.ponto);
     const c = decorCard(DECOR_GRUPOS.find(x => x.id === d.grupo).nome, upgradeIcon('d-' + d.id), d.name, tem && !on ? 'Guardado' : '');
     if (on) c.classList.add('own');
-    c.appendChild(!tem ? shopBtn('Comprar ' + fmt(d.cost), 'btn', bank >= d.cost, () => game.buyDecor(d.id), d.cost)
+    c.appendChild(!tem ? shopBtn('Comprar ' + fmt(cost), 'btn', bank >= cost, () => game.buyDecor(d.id), cost)
       : shopBtn(on ? 'Guardar' : 'Pôr de volta', on ? 'btn alt' : 'btn', true, () => game.mostraDecor(d.id, !on)));
     grid.appendChild(c);
   });
@@ -1187,6 +1187,12 @@ function buildAssento(grid){
   c.appendChild(duo); grid.appendChild(c);
 }
 /* aba Mudança (v9): o próximo ponto, o que falta para mudar e a confirmação (não dá para voltar) */
+/* v12.9.1: indo para a Avenida com algum enfeite simples (fora a espada da dona Cida no Modo História, que vai para a casa da mãe da Bia) */
+function decorVoltam(p){
+  if (!p || p.nivel !== 3) return false;
+  const cida = histLiga() && game.save.histV === 1 && game.save.convPlanta === 1;
+  return decorSimplesVenda(game.save.decor, cida).ids.some(id => !(cida && id === 'espada'));
+}
 function buildMudanca(grid){
   const p = game.proximoPonto, f = game.mudancaFalta, de = game.ponto;
   if (!p) return;
@@ -1194,7 +1200,7 @@ function buildMudanca(grid){
     'Mudança ' + fmt(p.mudanca) + ' · aluguel ' + fmt(p.aluguel) + '/dia');
   const falta = f ? [f.din ? 'Falta ' + fmt(f.din) : '', f.nota ? 'Nota ' + fmtNota(f.nota) + ' (agora ' + fmtNota(game.notaGurugol) + ')' : ''].filter(Boolean).join(' · ') : '';
   if (!f && mudarPede){
-    c.appendChild(el('span', 'full', 'Mudar para ' + (p.art || 'a') + ' ' + p.nome + ' por ' + fmt(p.mudanca) + '? Aluguel de ' + fmt(p.aluguel) + ' por dia.' + (p.lugares < de.lugares ? ' O ' + p.nome.split(' ')[0] + ' tem ' + p.lugares + ' lugares: as mesas que não couberem são vendidas.' : '') + ' Não dá para voltar.'));
+    c.appendChild(el('span', 'full', 'Mudar para ' + (p.art || 'a') + ' ' + p.nome + ' por ' + fmt(p.mudanca) + '? Aluguel de ' + fmt(p.aluguel) + ' por dia.' + (p.lugares < de.lugares ? ' O ' + p.nome.split(' ')[0] + ' tem ' + p.lugares + ' lugares: as mesas que não couberem são vendidas.' : '') + (decorVoltam(p) ? ' Os enfeites simples não combinam com a Avenida: voltam pela metade.' : '') + ' Não dá para voltar.'));
     const duo = el('div', 'duo');
     duo.appendChild(shopBtn(devLivre() ? 'Sim, mudar' : 'Sim, mudar: ' + fmt(p.mudanca), 'btn', true, () => { mudarPede = false; shopTab = null; shopTopo = true; return game.mudarPonto(); }, devLivre() ? 0 : p.mudanca));
     const nao = el('button', 'btn alt', 'Agora não'); nao.type = 'button'; nao.addEventListener('click', () => { Sfx.tap(); mudarPede = false; buildShop(); });
@@ -1252,7 +1258,7 @@ function caixaTotais(cx){
 function caixaResumo(save){
   const cx = save.caixa, eq = save.equipe, sal = save.salao;
   const out = ['Lanchonete Corre-Corre ' + VERSAO + ' · Caixa (valores em R$)'].concat(game.save.guia && (game.save.guia.est || game.save.guia.rec) ? [NOITE.selo[game.save.guia.est]] : []);   // v10.10: o selo do Michelzão
-  cx.forEach(r => out.push(r.int ? 'Dia ' + r.d + ' largado no meio: ' + r.int + (r.int > 1 ? ' grupos foram' : ' grupo foi') + ' embora bravo' + (r.int > 1 ? 's' : '') + ': −' + r.mul + ' · saldo ' + r.saldo : r.dev ? 'Devolução ' + (r.devK === 'maquina' ? 'da máquina de suco' : 'do salão') + ': +' + r.dev + ' · saldo ' + r.saldo : 'Dia ' + r.d + (r.ok ? ' ✓' : ' ✗') + ': fatura ' + r.fat + ' − ingred. ' + r.ingr + ' − contas ' + r.contas + ' − equipe ' + r.folha + (r.div ? ' − divulg. ' + r.div : '') +
+  cx.forEach(r => out.push(r.int ? 'Dia ' + r.d + ' largado no meio: ' + r.int + (r.int > 1 ? ' grupos foram' : ' grupo foi') + ' embora bravo' + (r.int > 1 ? 's' : '') + ': −' + r.mul + ' · saldo ' + r.saldo : r.dev ? 'Devolução ' + (r.devK === 'maquina' ? 'da máquina de suco' : r.devK === 'decor' ? 'dos enfeites simples' : 'do salão') + ': +' + r.dev + ' · saldo ' + r.saldo : 'Dia ' + r.d + (r.ok ? ' ✓' : ' ✗') + ': fatura ' + r.fat + ' − ingred. ' + r.ingr + ' − contas ' + r.contas + ' − equipe ' + r.folha + (r.div ? ' − divulg. ' + r.div : '') +
     ' = lucro ' + r.lucro + ' (meta ' + r.meta + ')' + (r.perd ? ' · ' + r.perd + (r.perd > 1 ? ' perdidos' : ' perdido') : '') + (r.mel + r.sal ? ' · compras ' + (r.mel + r.sal) : '') + (r.man ? ' · manutenção ' + r.man : '') + (r.emp ? ' · empréstimo +' + r.emp + (r.forc ? ' (à força)' : '') : '') + (r.par ? ' · banco −' + r.par + (r.jur ? ' (juros ' + r.jur + ')' : '') : '') + (r.atr ? ' · parcela atrasada' : '') + (r.tom ? ' · o banco tomou a lanchonete' : '') + (r.av ? ' · Gúgou ' + fmtNota(r.av / 10) : '') + ' · saldo ' + r.saldo));
   const nd = cx.filter(r => !r.dev && !r.int).length;
   if (nd) out.push('Para onde foi (' + nd + (nd > 1 ? ' dias' : ' dia') + '): ' + caixaTotais(cx).filter(t => t.v).map(t => t.name.toLowerCase() + ' ' + t.v).join(', '));
@@ -1300,7 +1306,7 @@ function buildCaixa(grid){
     if (r.dev){
       // v7.4: o salão antigo (cadeiras e mesas da v6) foi trocado pela Garagem e o que custou voltou;
       // v7.7: a Máquina de suco virou a Água da torneira, mais barata, e a diferença voltou
-      const td = el('td', 'cx-dev', (r.devK === 'maquina' ? 'Devolução da máquina de suco (virou a Água da torneira): +' : 'Devolução do salão antigo: +') + fmt(r.dev)); td.setAttribute('colspan', '9');
+      const td = el('td', 'cx-dev', (r.devK === 'maquina' ? 'Devolução da máquina de suco (virou a Água da torneira): +' : r.devK === 'decor' ? 'Devolução dos enfeites simples (não combinam com a Avenida): +' : 'Devolução do salão antigo: +') + fmt(r.dev)); td.setAttribute('colspan', '9');
       tr.appendChild(td); tr.appendChild(cxTd(r.saldo)); tb.appendChild(tr); return;
     }
     const dia = el('td', null, 'Dia ' + r.d + (r.st ? ' ' + '★'.repeat(r.st) : '')); tr.appendChild(dia);

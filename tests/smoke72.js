@@ -35,7 +35,7 @@ const tudo=(H,ponto)=>{ const {g,L}=H, sv=g.save, pn=NIV[ponto];
   const H=jogo('avenida'), {g,L}=H; const v=tudo(H,'avenida'); ['quadros','espelho','palmeira','vinhos','cortina','arandela'].forEach(k=>g.save.decor[k]=0); const w=L.luxoPts(g);
   ok(w.tot===62,'enfeite guardado não conta (quadros de artista −2 e os 5 finos guardados: de volta aos 64 de antes, menos 2) — deu '+w.tot);
   const novos=['pisca','chita','luminaria','quadros','lustre'].map(id=>L.decorOf(id));
-  ok(novos.map(d=>d.cost).join()==='30,25,180,450,1500' && novos.map(d=>d.nivel).join()==='1,1,2,3,4' && novos.every(d=>d.lux===2 && d.grupo==='enfeites') && L.DECOR.filter(d=>(!d.grupo||d.grupo!=='enfeites') && d.id!=='palmeira').every(d=>d.lux===1),'os 5 enfeites novos (preço, ponto, 2 pontos) e os 15 antigos com 1');
+  ok(novos.map(d=>L.decorPreco(d,d.nivel)).join()==='30,30,180,450,1500' && novos.map(d=>d.nivel).join()==='1,1,2,3,4' && novos.map(d=>d.lux).join()==='2,2,2,3,3' && novos.every(d=>d.grupo==='enfeites') && L.DECOR.filter(d=>(!d.grupo||d.grupo!=='enfeites') && d.id!=='palmeira').every(d=>d.lux===1),'os 5 enfeites novos (preço, ponto, 2 pontos) e os 15 antigos com 1');
   ok(L.DECOR_GRUPOS.some(x=>x.id==='enfeites' && x.nome==='Enfeites'),'grupo Enfeites');
   const f=L.AVAL_DECOR; ok(f.pisca==='Que luzinhas mais charmosas!' && f.chita==='Adorei a cortina de chita!' && f.luminaria==='As luminárias dão um charme!' && f.quadros==='Que quadros bonitos!' && f.lustre==='Que lustre maravilhoso!','os elogios dos enfeites novos'); }
 

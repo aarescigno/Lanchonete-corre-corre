@@ -190,6 +190,7 @@ A cena final animada (oito cenas, no motor da abertura), os créditos, a placa n
 | 16b-1 | Os desenhos dos pratos novos da Avenida, dos juninos e das barracas chiques | v12.8 | feita em 20/11 (`docs/spec-v12.8.md`; `smoke110`; `drawAvenida` com os 14 pratos, os 6 juninos novos, a barraca por ponto no cartão e o desenhinho no painel dev) |
 | 16b-2 | Os desenhos dos pratos novos do Terraço e do risoto da Lia | v12.8.1 | feita em 20/11 (`docs/spec-v12.8.1.md`) |
 | correção | O entretenimento (TV, som, TVs com sertanejo, couvert, música ao vivo) também nas Melhorias | v12.8.2 | feita em 20/11 (`docs/spec-v12.8.2.md`; `smoke112`; `buildEntrete` nas abas Melhorias e Luxo) |
+| correção | As turmas da espera sem toque trocado (a de cima fica com a área dela até os pés) | v12.8.3 | feita em 21/11 (`docs/spec-v12.8.3.md`; `smoke113`; `queueRect` com o corte) |
 
 ## Etapa 1a — Jogo justo: dá para não perder ninguém (v7.1)
 > **Feita em 15/10 (v7.1, `docs/spec-v7.1.md`).** Decisões: A + B; no Turno sem fim vale o ritmo da fila justa, sem o piso; ícone "aguardando mesa" sim. A medição mostrou que, com a equipe, a maior parte das perdas era a espera pelo prato, e não a fila. O que sobra é o limite de louça nos dias de 6 mesas: o bot afiado só chega ao alvo (0 perdidos em 94% dos dias) comprando o Jogo de pratos primeiro. A louça não mudou; se jogadores reclamarem da espera pelo prato, a etapa 1b pode rever `dishStock` ou a mecânica D. Metas sem mudança.
@@ -2110,3 +2111,12 @@ Vinda da Etapa 14 ("O bot com habilidade de gente"), cuja 14b segue no `docs/PLA
 Pedido do usuário em 19/11 (`docs/PROPOSTAS.md`): a Lia ganha um arco curto (a Cami indica, o Tonhão tem ciúme da cozinha, dois cursos e o prato dela), e cada personagem passa a tratar os outros do seu jeito (perfis e tabela de tratamento no `docs/ARCO.md` §2.1 e §2.2), com a revisão de todas as conversas pelos perfis e a conquista da Cami em cena.
 - **15a** — `docs/spec-v12.5.md`. **Modelo:** Sonnet, esforço alto (código de jogo em várias partes, a cozinha com uma vaga nova e calibração por tentativa)
 - **15b** — `docs/spec-v12.6.md`, depois da 15a. **Modelo:** Sonnet, esforço médio (só texto e uma conversa nova, em muitas listas)
+
+## Etapa 17 — A decoração de cada ponto (17a, v12.9; 17b, v12.9.1)
+Pedido do usuário em 21/11 (`docs/PROPOSTAS.md`, "a decoração de cada ponto"): samambaia e espada-de-são-jorge não combinam com o Terraço. Os enfeites viram duas famílias (a simples, da Garagem e da área industrial; a fina, da Avenida e do Terraço), com preço pelo ponto em que se compra; na mudança para a Avenida, os simples saem pela metade e a equipe conversa sobre o "outro nível". A foto da dona Rosa vai junto, com moldura nova.
+- **17a** (v12.9, `docs/spec-v12.9.md`, aprovada): os 5 enfeites novos da família fina, os 4 redesenhos (temperos, cactos, jiboia, bonsai) e a moldura dourada da foto.
+
+  **Modelo:** Sonnet, esforço alto (9 desenhos no canvas, conferidos por captura)
+- **17b** (v12.9.1, `docs/spec-v12.9.1.md`, aprovada; depois da 17a): as famílias, os preços por ponto, a venda na mudança, a espada da dona Cida, as 7 falas da chegada à Avenida e o save antigo.
+
+  **Modelo:** Sonnet, esforço médio (regras, números e falas decididos)

@@ -62,7 +62,7 @@ for(let n=1;n<=15;n++){
   g.devNivel('lia',1); ok(g.save.equipe.lia===0,'Lia não existe na Avenida (de verdade)');
   ok(!g.devNivel('ninguem',1),'pessoa que não existe: false');
   g.devCursos(true); ok(L.CURSOS.every(c=>g.save.cursos[c.id]===2) && g.up.confGourmet,'cursos: todos'); g.devCursos(false); ok(!Object.keys(g.save.cursos).length && !g.up.espresso && !g.up.confGourmet,'cursos: nenhum');
-  g.devDecor(true); ok(L.DECOR.every(d=>!d.nivel||d.nivel>3||g.save.decor[d.id]===1),'decoração: toda a da Avenida'); g.devDecor(false); ok(g.save.decor.espada===1 && !g.save.decor.foto,'decoração: nenhuma (a espada fica)');
+  g.devDecor(true); ok(L.DECOR.every(d=>!L.decorCombina(d,3)||g.save.decor[d.id]===1) && !g.save.decor.espada,'decoração: toda a que combina com a Avenida (v12.9.1)'); g.devDecor(false); ok(!g.save.decor.espada && !g.save.decor.foto,'decoração: nenhuma (na Avenida a espada já foi para a casa da mãe)');
   g.devManut(0.2); ok(L.MANUT.equip.every(q=>g.save.manut[q.id]===0.2),'manutenção: tudo gasto'); g.devManut(1); ok(L.MANUT.equip.every(q=>g.save.manut[q.id]===1),'tudo novo'); }
 
 // ---------- 8. painel em abas ----------
