@@ -90,7 +90,7 @@ bloco('CA3',()=>{
     ok(L.histLiga()===false,'CA3: '+id+': histLiga() dá falso durante o desafio');
     if (D.mod.sem) ok(D.mod.sem.every(q=>g.save.equipe[q]===0),'CA3: '+id+': '+D.mod.sem.join(', ')+' em 0');
     else ok(g.save.equipe.dani===L.STAFF.dani.levels.length-1 && g.save.equipe.joca===L.STAFF.joca.levels.length-1 && g.save.equipe.cami>=cap.eq.cami,'CA3: '+id+': a equipe no máximo ("Tudo no máximo"): Dani '+g.save.equipe.dani+', Joca '+g.save.equipe.joca+', Cami '+g.save.equipe.cami);
-    ok(g.save.equipe.tonhao===L.STAFF.tonhao.levels.length-1,'CA3: '+id+': o Tonhão no nível máximo ('+g.save.equipe.tonhao+')');
+    ok(g.save.equipe.tonhao===2*g.ponto.nivel,'CA3: '+id+': o Tonhão no teto do ponto, 2 por nível do ponto ('+g.save.equipe.tonhao+')');
     const nvD=g.ponto.nivel;   // v12.4: o máximo do ponto: os cursos e as melhorias só até o nível do ponto
     ok(L.CURSOS.every(c=>Object.keys(c.degraus).every(d=>{ const n=(g.save.cursos[c.id]&&g.save.cursos[c.id][d])||0; return L.pontoIdx(d)+1>nvD ? n===0 : (c.degraus[d].av ? n===2 : true); })) && L.DANI_CURSOS.every(c=>(c.nivel||1)>nvD?!g.save.daniCursos[c.id]:g.save.daniCursos[c.id]) && L.JOCA_CURSOS.every(c=>(c.nivel||1)>nvD?!g.save.jocaCursos[c.id]:g.save.jocaCursos[c.id]),'CA3: '+id+': todos os cursos até o ponto (do Tonhão, da Dani e do Joca)');
     ok(cap.up.every(u=>g.up[u]) && L.UPGRADES.every(u=>(u.nivel&&u.nivel>nvD)||g.up[u.id]) && Object.keys(g.up).length>cap.up.length+3,'CA3: '+id+': as melhorias do ponto no máximo ('+Object.keys(g.up).length+' contra '+cap.up.length+' da linha cap)');
