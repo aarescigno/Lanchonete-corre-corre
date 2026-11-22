@@ -17,9 +17,8 @@ Origem: retorno do Renan Martorelli (beta-tester) e conversa com o Arthur (15/10
 |---|---|---|---|
 | 5 | ~~Modo História, parte 1~~: juntou-se à 2f e aos capítulos da 3a, 3b e 4a (28/10) | — | — |
 | 14b | O bot humano, calibrado pelos relatórios | — (testes) | depois dos relatórios dos testers |
-| correção | O entretenimento (TV, som, TVs com sertanejo, couvert, música ao vivo) também nas Melhorias | v12.8.2 | feita em 20/11 (`docs/spec-v12.8.2.md`; `smoke112`; `buildEntrete` nas abas Melhorias e Luxo) |
 | correção | As turmas da espera sem toque trocado (a de cima fica com a área dela até os pés) | v12.8.3 | feita em 21/11 (`docs/spec-v12.8.3.md`; `smoke113`; `queueRect` com o corte) |
-| 17a | Os enfeites novos da família fina e os redesenhos | v12.9 | planejada em 21/11 (`docs/spec-v12.9.md`, aprovada) |
+| 17a | Os enfeites novos da família fina e os redesenhos | v12.9 | feita em 22/11 (`docs/spec-v12.9.md`; `smoke115`; os 9 desenhos e a moldura dourada) |
 | 17b | A decoração de cada ponto: as duas famílias, os preços e a mudança | v12.9.1 | planejada em 21/11 (`docs/spec-v12.9.1.md`, aprovada; depois da 17a) |
 | correção | A espera sentada e o enfeite das mesas sem pagar à toa (cadeirinhas → banquinhos por R$ 45, sem voltar; o enfeite sai com o linho e volta pela metade) | v12.8.4 | feita em 21/11 (`docs/spec-v12.8.4.md`; `smoke114`; `assentoPreco` e a devolução no `buyMovel('linho')`) |
 | 18a | Os cursos do Tonhão em degraus por ponto (pratos de estrada, 9 níveis, Turno sem fim fora do menu) | v12.10 | planejada em 22/11, em rascunho (`docs/spec-v12.10.md`) |

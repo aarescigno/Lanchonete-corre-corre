@@ -1,6 +1,6 @@
 # v12.9 — Os enfeites novos da família fina e os redesenhos (etapa 17a)
 
-**Situação:** aprovada
+**Situação:** entregue em 22/11
 **Origem:** conversa de 21/11 (`docs/PROPOSTAS.md`, "a decoração de cada ponto"): "se eu for no terraço, eu não vou querer comprar samambaias ou espada São Jorge [...] ao se avançar, muitas coisas devem ser compradas de novo do zero". Na escolha: duas famílias de enfeites (a simples, da Garagem e da área industrial; a fina, da Avenida e do Terraço), "com ajustes no que claramente ficar sobreposto", "o retrato da Rosa persiste, mudando moldura", e enfeites novos na família fina (a proposta da tabela foi aprovada como veio). Esta versão faz os desenhos; a regra das famílias, os preços e a mudança são a v12.9.1 (`docs/spec-v12.9.1.md`).
 
 ## Objetivo
@@ -55,12 +55,12 @@ A Avenida e o Terraço ganham uma decoração à altura: espelho, palmeiras, cor
 - `src/02-telas.html`: `vtag`, `#ov-ver`.
 
 ## Tarefas
-- [ ] T1 `smoke115` com CA1 a CA6 (falhando), no `run_all.sh`.
-- [ ] T2 `DECOR`, os nomes e o `AVAL_DECOR`.
-- [ ] T3 Os 4 redesenhos (temperos, cactos, jiboia, bonsai) e a moldura dourada da foto, no cenário e nos ícones.
-- [ ] T4 Os 5 enfeites novos no cenário da Avenida e do Terraço (com a regra "no mesmo lugar, o fino ganha") e nos ícones.
-- [ ] T5 `shot_v12_9.js` (CA7): conferir os recortes ampliados, ajustar posição e tamanho, apagar as capturas.
-- [ ] Fechamento: `VERSAO`, `vtag`, `#ov-ver` (`smoke86` e `menu_fit.py`: uma linha a mais no painel de Versões), `docs/RESUMO.md`, `docs/PARTES.md`, a tabela Situação do `docs/PLANO.md`, esta spec como entregue, `tests/run_all.sh` verde, PR e merge.
+- [x] T1 `smoke115` com CA1 a CA6 (falhando), no `run_all.sh`.
+- [x] T2 `DECOR`, os nomes e o `AVAL_DECOR`.
+- [x] T3 Os 4 redesenhos (temperos, cactos, jiboia, bonsai) e a moldura dourada da foto, no cenário e nos ícones.
+- [x] T4 Os 5 enfeites novos no cenário da Avenida e do Terraço (com a regra "no mesmo lugar, o fino ganha") e nos ícones.
+- [x] T5 `shot_v12_9.js` (CA7): conferir os recortes ampliados, ajustar posição e tamanho, apagar as capturas.
+- [x] Fechamento: `VERSAO`, `vtag`, `#ov-ver` (`smoke86` e `menu_fit.py`: uma linha a mais no painel de Versões), `docs/RESUMO.md`, `docs/PARTES.md`, a tabela Situação do `docs/PLANO.md`, esta spec como entregue, `tests/run_all.sh` verde, PR e merge.
 
 ## Avisos para a execução
 - Os desenhos dos enfeites seguem o traço dos de hoje (`fs(ctx, cor, espessura)` com contorno `PAL.tinta`, `rr`, `circ`, `ell`); o dourado do Terraço é o `TE_OURO`. Reaproveite `drawSamambaia` só como referência de folhagem: a jiboia tem folha em coração.
@@ -76,6 +76,12 @@ A Avenida e o Terraço ganham uma decoração à altura: espelho, palmeiras, cor
 Nenhuma.
 
 ## Desvios
-(No fechamento.)
+- O espelho ficou pequeno (escala 0,62 da samambaia, centro 8 acima do ponto dela): na Avenida e no Terraço só a faixa de baixo do cartaz de preços (y 58 a 82) está livre, e um espelho maior ficava atrás do cartaz.
+- As palmeiras ficaram em `PALMEIRA_POS` = (-20, 150) e (-20, 490), escala 0,75: o vaso de baixo, mais embaixo, cobria o antúrio e o de cima passava na placa "Cobertura" do Terraço.
+- A moldura dourada da foto não tem o prego e o barbante, e sim um pequeno ornamento no alto.
+- O `smoke115` confere a tabela, os nomes, os elogios, os ícones, a aba Luxo e o desenho sem erro; o que se vê é conferido na captura (CA7).
+- `smoke86` e `menu_fit.py`: 31 linhas no painel de Versões.
+
+**Medido:** `smoke115` 51 checagens, CA1 a CA6.
 
 **Modelo:** Sonnet, esforço alto (9 desenhos novos no canvas, conferidos por captura, em duas partes de desenho)

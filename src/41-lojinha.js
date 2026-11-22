@@ -134,11 +134,11 @@ function upgradeIcon(id){
     } else if (id === 'd-espada'){   // decoração (v8.6.5): os próprios enfeites, menores
       c.scale(0.42,0.42); drawVasoEspada(c,0,50);
     } else if (id === 'd-lata'){
-      c.scale(0.62,0.62); drawLataEspada(c,0,30);
+      c.scale(0.8,0.8); drawTemperos(c,0,14);
     } else if (id === 'd-samambaia'){
       c.scale(0.78,0.78); drawSamambaia(c,0,-4,1);
     } else if (id === 'd-foto'){
-      drawFotoRosa(c,0,3,0.8);
+      drawFotoRosa(c,0,3,0.8,game.ponto.nivel >= 3);
     } else if (id === 'd-giz'){
       c.scale(0.68,0.68); drawGiz(c,0,30,1,game);
     } else if (id === 'd-placa'){
@@ -149,11 +149,23 @@ function upgradeIcon(id){
       if (game.ponto.id === 'garagem'){ drawToalha(c,-17,6,34); drawToalhaEnfeites(c,0,6,17); }
       else { rr(c,-19,-4,38,14,5); fs(c,PAL.formica,2); drawEnfeiteMesa(c,game,{ cx:0, cy:14, hx:27, toalha:true, id:'' },0); }   // v11.16.1: o enfeite do ponto de agora
     } else if (id === 'd-violeta'){
-      c.scale(0.9,0.9); drawVioleta(c,0,12,1);
+      c.scale(0.9,0.9); drawCactos(c,0,12,1);
     } else if (id === 'd-anturio'){
       c.scale(0.8,0.8); drawAnturio(c,0,22,1);
     } else if (id === 'd-pendente'){
-      c.scale(0.78,0.78); drawSamambaia(c,0,-4,1);
+      c.scale(0.78,0.78); drawJiboia(c,0,-4,1);
+    } else if (id === 'd-orqArranjo'){
+      c.scale(0.46,0.46); drawBonsai(c,0,44,1);
+    } else if (id === 'd-espelho'){
+      c.scale(0.9,0.9); drawEspelho(c,0,2,1);
+    } else if (id === 'd-palmeira'){
+      c.scale(0.34,0.34); drawPalmeira(c,0,60,1);
+    } else if (id === 'd-vinhos'){
+      c.scale(0.4,0.4); drawEstanteVinhos(c,0,52,1);
+    } else if (id === 'd-cortina'){
+      drawCortinaLinho(c,{ x0:-10, x1:10, y0:-8, y1:14 });
+    } else if (id === 'd-arandela'){
+      c.scale(1.6,1.6); drawArandela(c,0,0);
     } else if (id === 'jarra'){
       c.scale(0.8,0.8); drawJarraSuco(c,0,22,1);
     } else if (id === 'tvs'){

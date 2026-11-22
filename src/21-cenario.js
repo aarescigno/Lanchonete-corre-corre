@@ -122,7 +122,7 @@ function drawParedeInd(ctx,g,t){
   ctx.strokeStyle = PAL.cromoEsc; ctx.lineWidth = 3; ctx.beginPath(); ctx.moveTo((x0+x1)/2,14); ctx.lineTo((x0+x1)/2,64); ctx.moveTo(x0,39); ctx.lineTo(x1,39); ctx.stroke();
   ctx.strokeStyle = PAL.tinta; ctx.lineWidth = 2.5; ctx.strokeRect(x0,14,x1-x0,50);
   rr(ctx,x0-5,64,x1-x0+10,6,2); fs(ctx,'#ABA394',1.5);
-  if (decorOn(g,'violeta')) drawVioleta(ctx,130,64,0.95);
+  if (decorOn(g,'violeta')) drawCactos(ctx,130,64,0.95);
   // letreiro: placa de metal com rebites e lâmpadas piscando devagar em volta
   rr(ctx,170,8,134,50,5); fs(ctx,'#7C858E',3);
   rr(ctx,176,14,122,38,3); fs(ctx,'#2B3440',2);
@@ -154,10 +154,28 @@ function drawTvsParede(ctx,g,t){
   });
   if (modo && !RM && g.state !== 'menu'){ const q = (t*0.5) % 1; ctx.globalAlpha = 1 - q; txt(ctx,'♪',542 + Math.sin(q*6)*4,50 - q*10,11,PAL.faixa,'center',FB); ctx.globalAlpha = 1; }
 }
-/* violetas em vasinhos de barro no parapeito (x, y: o pé do vaso do meio) */
-function drawVioleta(ctx,x,y,s){
+/* v12.9: três vasinhos de cacto no parapeito (x, y: o pé do vaso do meio): o redondo com flor, o alto de braços e a palma de espinhos */
+function drawCactos(ctx,x,y,s){
   ctx.save(); ctx.translate(x,y); ctx.scale(s || 1,s || 1);
-  [-14,0,14].forEach((dx,i) => drawVioletaVaso(ctx,dx,0,1,i));
+  const vaso = (dx,cor) => { ctx.beginPath(); ctx.moveTo(dx - 6,-9); ctx.lineTo(dx + 6,-9); ctx.lineTo(dx + 4.5,0); ctx.lineTo(dx - 4.5,0); ctx.closePath(); fs(ctx,cor,1.6); rr(ctx,dx - 7,-11,14,3,1.2); fs(ctx,'#D88A52',1.2); };
+  const espinhos = (pts) => { ctx.strokeStyle = '#F6EBC0'; ctx.lineWidth = 0.9; ctx.lineCap = 'round'; pts.forEach(q => { ctx.beginPath(); ctx.moveTo(q[0] - 1,q[1]); ctx.lineTo(q[0] + 1,q[1]); ctx.stroke(); }); };
+  // o do meio: alto, com dois braços
+  vaso(0,'#B85A30');
+  rr(ctx,-8,-22,3.4,8,1.7); fs(ctx,'#4E9F58',1.4); rr(ctx,-8,-17,8,3,1.5); fs(ctx,'#4E9F58',1.2);
+  rr(ctx,4.6,-27,3.4,9,1.7); fs(ctx,'#4E9F58',1.4); rr(ctx,0,-21,8,3,1.5); fs(ctx,'#4E9F58',1.2);
+  rr(ctx,-3.6,-34,7.2,25,3.6); fs(ctx,'#5FB065',1.6);
+  ctx.strokeStyle = 'rgba(34,32,28,.3)'; ctx.lineWidth = 0.9; ctx.beginPath(); ctx.moveTo(0,-32); ctx.lineTo(0,-10); ctx.stroke();
+  espinhos([[-1.8,-28],[1.8,-23],[-1.8,-17],[1.8,-13],[-6.5,-20],[6.2,-25]]);
+  // o da esquerda: redondo, com a florzinha rosa
+  vaso(-14,'#C9743F');
+  ctx.beginPath(); ctx.arc(-14,-15,6.2,0,TAU); fs(ctx,'#5FA05B',1.6);
+  ctx.strokeStyle = 'rgba(34,32,28,.3)'; ctx.lineWidth = 0.9; [-2.6,0,2.6].forEach(d => { ctx.beginPath(); ctx.moveTo(-14 + d,-20.6); ctx.quadraticCurveTo(-14 + d * 1.5,-15,-14 + d,-9.6); ctx.stroke(); });
+  espinhos([[-17,-17],[-11,-17],[-14,-13]]);
+  circ(ctx,-14,-22,2.4); fs(ctx,'#F28AA8',1.1); circ(ctx,-14,-22,0.8); ctx.fillStyle = '#F2C94C'; ctx.fill();
+  // o da direita: a palma (três raquetes)
+  vaso(14,'#C9743F');
+  [[14,-17,4.8,6.4,0],[10.5,-25,3.6,5.2,-0.35],[18,-24,3.4,5,0.4]].forEach(q => { ctx.save(); ctx.translate(q[0],q[1]); ctx.rotate(q[4]); ell(ctx,0,0,q[2],q[3]); fs(ctx,'#6DB36A',1.4); ctx.restore(); });
+  espinhos([[14,-17],[13,-20],[15,-14],[10.5,-25],[18,-24]]);
   ctx.restore();
 }
 /* v11.16.1: um vasinho de violeta (x, y: o pé); i === 1 é o do meio, de roxo mais claro. Também é o enfeite da mesa da área industrial */
@@ -287,7 +305,7 @@ function drawParedeAv(ctx,g,t){
   ctx.strokeStyle = '#fff'; ctx.lineWidth = 3; ctx.beginPath(); ctx.moveTo((x0+x1)/2,10); ctx.lineTo((x0+x1)/2,62); ctx.moveTo(x0,36); ctx.lineTo(x1,36); ctx.stroke();
   ctx.strokeStyle = PAL.tinta; ctx.lineWidth = 2.5; ctx.strokeRect(x0,10,x1-x0,52);
   rr(ctx,x0-5,62,x1-x0+10,6,2); fs(ctx,'#E6DCC4',1.5);
-  if (decorOn(g,'violeta')) drawVioleta(ctx,(x0+x1)/2,62,0.95);
+  if (decorOn(g,'violeta')) drawCactos(ctx,(x0+x1)/2,62,0.95);
   // o letreiro dourado sobre o toldo listrado vinho e creme
   const ax0 = 184, ax1 = 300, n = 8, aw = (ax1 - ax0) / n;
   for (let i=0;i<n;i++){
@@ -608,21 +626,21 @@ function drawIkebana(ctx,x,y,s){
   ell(ctx,0,-31,13,4.5); fs(ctx,'#8FB8A8',1.8); ell(ctx,0,-33,10,2.6); ctx.fillStyle = '#5B7F72'; ctx.fill();   // o vaso baixo, verde-celadon
   ctx.restore();
 }
-function drawArranjoOrquideas(ctx,x,y,s){
+/* v12.9: o bonsai num vaso raso, no pedestal dourado (x, y: o chão) */
+function drawBonsai(ctx,x,y,s){
   ctx.save(); ctx.translate(x,y); ctx.scale(s || 1,s || 1);
   shadowEll(ctx,0,1,17,4,0.2);
   ell(ctx,0,-3,15,4.5); fs(ctx,TE_OURO,1.8);   // o pedestal dourado: base, coluna e prato
   ctx.beginPath(); ctx.moveTo(-6,-5); ctx.lineTo(6,-5); ctx.lineTo(4,-36); ctx.lineTo(-4,-36); ctx.closePath(); fs(ctx,TE_OURO,1.8);
   ctx.fillStyle = 'rgba(255,255,255,.3)'; ctx.fillRect(-3,-33,1.6,26);
   rr(ctx,-13,-41,26,6,3); fs(ctx,TE_OURO_CL,1.6);
-  rr(ctx,-9,-52,18,12,3); fs(ctx,'#F4F1E8',1.8);   // o vasinho branco
-  ctx.strokeStyle = '#3E8A47'; ctx.lineWidth = 1.6; ctx.lineCap = 'round';
-  [[-3,-82,-14],[2,-92,4],[3,-76,16]].forEach(h => { ctx.beginPath(); ctx.moveTo(0,-52); ctx.quadraticCurveTo(h[2] * 0.4,-64,h[2],h[1] + 8); ctx.stroke(); });
-  [[-14,-74,'#FFFDF4'],[4,-84,'#E7A6D6'],[16,-68,'#FFFDF4'],[-8,-64,'#B77AC9'],[10,-60,'#E7A6D6']].forEach(f => {
-    for (let k = 0; k < 5; k++){ const a = k * TAU / 5 - 1.2; ell(ctx,f[0] + Math.cos(a) * 3.4,f[1] + Math.sin(a) * 3.4,3.1,2); fs(ctx,f[2],1); }
-    circ(ctx,f[0],f[1],1.7); fs(ctx,'#F2C94C',0.8);
-  });
-  ctx.fillStyle = '#4E8F4A'; [[-8,-50,-0.9],[8,-50,0.9]].forEach(l => { ctx.save(); ctx.translate(l[0],l[1]); ctx.rotate(l[2]); ell(ctx,0,0,2.6,8); ctx.fill(); ctx.restore(); });
+  rr(ctx,-10,-49,20,9,3); fs(ctx,'#8A4F36',1.8); rr(ctx,-11,-50,22,3.6,1.8); fs(ctx,'#A5654A',1.4);   // o vaso raso de cerâmica
+  ctx.fillStyle = '#5E8F45'; ell(ctx,-4,-50.5,4.5,1.2); ctx.fill();   // o musgo
+  ctx.lineCap = 'round'; ctx.strokeStyle = PAL.tinta; ctx.lineWidth = 5; ctx.beginPath(); ctx.moveTo(0,-50); ctx.quadraticCurveTo(-5,-58,2,-66); ctx.stroke();
+  ctx.strokeStyle = '#7A4E2E'; ctx.lineWidth = 3; ctx.beginPath(); ctx.moveTo(0,-50); ctx.quadraticCurveTo(-5,-58,2,-66); ctx.stroke();
+  ctx.strokeStyle = '#7A4E2E'; ctx.lineWidth = 2; ctx.beginPath(); ctx.moveTo(-2,-58); ctx.quadraticCurveTo(-8,-62,-12,-64); ctx.moveTo(1,-63); ctx.quadraticCurveTo(8,-65,12,-62); ctx.stroke();
+  [[-13,-67,7.5,'#3E8A47'],[12,-64,7,'#3E8A47'],[1,-74,9.5,'#4E9F52'],[-5,-71,6.5,'#5DB061'],[7,-70,6,'#5DB061']].forEach(q => { circ(ctx,q[0],q[1],q[2]); fs(ctx,q[3],1.4); });   // as três nuvens de folhas
+  ctx.fillStyle = 'rgba(255,255,255,.18)'; circ(ctx,-2,-77,3.4); ctx.fill(); circ(ctx,-15,-70,2.4); ctx.fill();
   ctx.restore();
 }
 function drawFloresCampo(ctx,x,y,s){
@@ -897,14 +915,15 @@ function drawCalcada(ctx,g,tm){
   // numa lata de tinta reaproveitada, encostada no muro (o banquinho de plástico da v7.5 fica para o nível 2).
   // Desde a v8.6.5, compradas na aba Decoração (DECOR)
   if (decorOn(g,'espada')) drawVasoEspada(ctx,x0 + 40,536);
-  if (decorOn(g,'lata')){ ctx.save(); ctx.translate(x0 + 78,56); ctx.scale(0.7,0.7); drawLataEspada(ctx,0,0); ctx.restore(); }   // v11.16.1: no parapeito da janela do muro (antes no chão, atrás da cabeça do 1º entregador)
+  if (decorOn(g,'lata')){ ctx.save(); ctx.translate(x0 + 78,56); ctx.scale(0.7,0.7); drawTemperos(ctx,0,0); ctx.restore(); }   // v11.16.1: no parapeito da janela do muro (antes no chão, atrás da cabeça do 1º entregador)
   if ((ind || av || te) && decorOn(g,'anturio')){ if (ind) drawAnturio(ctx,30,536,0.9); else drawAnturio(ctx,-38,534,1); }   // v11.16.1: na área industrial, dentro do salão, no canto da divisa (na calçada encostava no caixote)   // v9: o antúrio no chão, perto do portão, e a samambaia pendurada no toldo
-  if ((ind || av || te) && decorOn(g,'pendente')) drawSamambaia(ctx,x0 + 66,120,0.8);
+  if ((ind || av || te) && decorOn(g,'pendente')) drawJiboia(ctx,x0 + 66,120,0.8);
   if ((av || te) && decorOn(g,'tulipa')) drawTulipas(ctx,x0 + 112,138,1);   // v9.1: as flores da Avenida: tulipas na jardineira, copos-de-leite no vaso alto e a orquídea na mesinha
   if ((av || te) && decorOn(g,'copo')) drawCopoLeite(ctx,x0 + 38,300,1);
   if (te && decorOn(g,'ikebana')) drawIkebana(ctx,x0 + 80,106,1);   // v10.4: as flores do foyer: a ikebana na mesinha ao lado do elevador, o arranjo de orquídeas no pedestal (canto de baixo) e as flores do campo perto da porta do salão
-  if (te && decorOn(g,'orqArranjo')) drawArranjoOrquideas(ctx,x0 + 22,486,1);
+  if (te && decorOn(g,'orqArranjo')) drawBonsai(ctx,x0 + 22,486,1);
   if (te && decorOn(g,'campo')) drawFloresCampo(ctx,-28,330,1);
+  if ((av || te) && decorOn(g,'palmeira')) PALMEIRA_POS.forEach(q => drawPalmeira(ctx,q[0],q[1],q[2]));   // v12.9: um vaso de cada lado da porta do salão
   if ((av || te) && decorOn(g,'orquidea')) drawOrquidea(ctx,114,132,1);   // perto da porta, encostada na meia-parede (já dentro do salão)
   // portão de enrolar aberto, na borda do salão: trilho no alto e soleira no chão
   if (g && g.fechado) drawPlacaFechado(ctx,QUEUE.x + 28,196,tm);   // v9.6.4
@@ -928,11 +947,17 @@ function drawVasoEspada(ctx,vx,vy){
   ctx.beginPath(); ctx.moveTo(vx-11,vy-36); ctx.lineTo(vx+11,vy-36); ctx.lineTo(vx+8,vy-12); ctx.lineTo(vx-8,vy-12); ctx.closePath(); fs(ctx,'#C9673B',2);
   rr(ctx,vx-13,vy-40,26,6,2); fs(ctx,'#B85A30',2);
 }
-function drawLataEspada(ctx,lx,ly){
-  shadowEll(ctx,lx,ly+1,10,3,0.18);
-  drawEspada(ctx,lx,ly-18,0.68);
-  rr(ctx,lx-9,ly-20,18,20,2); fs(ctx,PAL.cromo,2);
-  ctx.fillStyle = 'rgba(216,67,47,.55)'; ctx.fillRect(lx-8,ly-14,16,7);   // o rótulo desbotado da lata
+/* v12.9: a lata de óleo com cebolinha e manjericão (lx, ly: o chão, no pé da lata) */
+function drawTemperos(ctx,lx,ly){
+  shadowEll(ctx,lx,ly + 1,10,3,0.18);
+  rr(ctx,lx - 9,ly - 20,18,20,2); fs(ctx,PAL.cromo,2);
+  ctx.fillStyle = '#F2C94C'; ctx.fillRect(lx - 8,ly - 14,16,7);   // o rótulo amarelo da lata de óleo
+  circ(ctx,lx,ly - 10.5,2); fs(ctx,'#6B8E23',0.9);
+  ell(ctx,lx,ly - 20,9,2.4); fs(ctx,'#4A3322',1.4);
+  ctx.lineCap = 'round'; ctx.strokeStyle = '#3E8A47'; ctx.lineWidth = 1.8;
+  [[-5,-12,-8],[-2.4,-15,-4],[0.4,-13,1],[-3.6,-10,-12]].forEach(h => { ctx.beginPath(); ctx.moveTo(lx + h[0] * 0.5,ly - 21); ctx.quadraticCurveTo(lx + h[0],ly - 21 + h[1] * 0.6,lx + h[0] + h[2] * 0.4,ly - 21 + h[1]); ctx.stroke(); });   // a cebolinha
+  [[5,-26,0.5],[8.5,-30,-0.2],[4,-32,-0.9],[8,-24,1.1]].forEach(f => { ctx.save(); ctx.translate(lx + f[0],ly + f[1]); ctx.rotate(f[2]); ell(ctx,0,0,3.6,2.5); fs(ctx,'#4FA84F',1.1); ctx.restore(); });   // o manjericão
+  ctx.strokeStyle = '#2F6B3A'; ctx.lineWidth = 1; ctx.beginPath(); ctx.moveTo(lx + 3,ly - 21); ctx.lineTo(lx + 6,ly - 28); ctx.stroke();
 }
 /* ============================================================
    DECORAÇÃO DA GARAGEM (v8.6.5): na parede, à esquerda da janela, a samambaia pendurada e a foto da Rosa; embaixo
@@ -948,11 +973,14 @@ const DECOR_POS = [
   { samambaia:[630,78,.8], foto:[330,74,.8],  placa:[242,68,1], giz:[62,150,1] }
 ];
 function drawDecorParede(ctx,g){
-  const P = DECOR_POS[Math.max(0, Math.min(2, ((g && g.ponto && g.ponto.nivel) || 1) - 1))];
-  if (decorOn(g,'samambaia')) drawSamambaia(ctx,P.samambaia[0],P.samambaia[1],P.samambaia[2]);
-  if (decorOn(g,'foto')) drawFotoRosa(ctx,P.foto[0],P.foto[1],P.foto[2]);
+  const nv = (g && g.ponto && g.ponto.nivel) || 1, P = DECOR_POS[Math.max(0, Math.min(2, nv - 1))], fino = nv >= 3;
+  // v12.9: na Avenida e no Terraço o espelho toma o lugar da samambaia da parede e a estante de vinhos, o da lousa de giz (enquanto a v12.9.1 não tira os simples)
+  if (fino && decorOn(g,'espelho')) drawEspelho(ctx,P.samambaia[0],P.samambaia[1] - 8,P.samambaia[2] * 0.62);   // pequeno: só a faixa de baixo do cartaz de preços está livre (y 58 a 82)
+  else if (decorOn(g,'samambaia')) drawSamambaia(ctx,P.samambaia[0],P.samambaia[1],P.samambaia[2]);
+  if (decorOn(g,'foto')) drawFotoRosa(ctx,P.foto[0],P.foto[1],P.foto[2],fino);
   if (decorOn(g,'placa')) drawPlaquinha(ctx,P.placa[0],P.placa[1],P.placa[2]);
-  if (decorOn(g,'giz') && !edDesenho) drawGiz(ctx,P.giz[0],P.giz[1],P.giz[2],g);
+  if (fino && decorOn(g,'vinhos') && !edDesenho) drawEstanteVinhos(ctx,P.giz[0],P.giz[1],P.giz[2]);
+  else if (decorOn(g,'giz') && !edDesenho) drawGiz(ctx,P.giz[0],P.giz[1],P.giz[2],g);
 }
 /* samambaia num vaso de barro pendurado por 3 correntinhas num suporte de ferro na parede; (x, y) é a boca do vaso */
 
@@ -1024,9 +1052,12 @@ function drawQuadro(ctx,x,y,w,h,k){
 function drawLuxoParede(ctx,g,tm){
   if (edDesenho) return;
   if (decorOn(g,'pisca')) drawPisca(ctx,tm);
-  if (decorOn(g,'chita')) drawCortinaChita(ctx,LUXO_JAN[Math.max(0,Math.min(3,((g.ponto && g.ponto.nivel) || 1) - 1))]);
-  const Q = LUXO_QUADROS[Math.max(0,Math.min(3,((g.ponto && g.ponto.nivel) || 1) - 1))];
+  const pn = Math.max(0,Math.min(3,((g.ponto && g.ponto.nivel) || 1) - 1)), J = LUXO_JAN[pn], fino = pn >= 2;
+  if (fino && decorOn(g,'cortina')) drawCortinaLinho(ctx,J);   // v12.9: o linho toma o lugar da chita
+  else if (decorOn(g,'chita')) drawCortinaChita(ctx,J);
+  const Q = LUXO_QUADROS[pn];
   if (decorOn(g,'quadros') && Q) Q.forEach(q => drawQuadro(ctx,q[0],q[1],q[2],q[3],q[4]));
+  if (Q && decorOn(g,'arandela')) for (let i = 0; i < Q.length - 1; i++) drawArandela(ctx,((Q[i][0] + Q[i][2] / 2) + (Q[i + 1][0] - Q[i + 1][2] / 2)) / 2,Q[i][1]);   // v12.9: no meio do vão entre dois quadros
 }
 /* o fio de quem pende do teto: sobe da peça e vai sumindo, porque o teto fica fora do quadro */
 function drawFioTeto(ctx,x,y,len,cor,lw){
@@ -1085,17 +1116,25 @@ function drawSamambaia(ctx,x,y,s){
 }
 /* foto da Rosa, a mãe da Bia (a mesma da abertura: coque, a rosa no cabelo, roupa rosa), num porta-retrato de
    madeira pendurado num prego; (x, y) é o centro */
-function drawFotoRosa(ctx,x,y,s){
+function drawFotoRosa(ctx,x,y,s,fino){   // v12.9: fino (Avenida e Terraço): a moldura dourada larga com cantoneiras, no lugar do prego, do barbante e da madeira
   ctx.save(); ctx.translate(x,y); ctx.scale(s,s);
+  if (fino){
+    rr(ctx,-4,-27,8,6,2); fs(ctx,TE_OURO_CL,1.2);
+    rr(ctx,-19,-23,38,46,3); fs(ctx,TE_OURO,2.2);
+    rr(ctx,-16,-20,32,40,2); fs(ctx,TE_OURO_CL,1.2);
+    [[-19,-23,1],[19,-23,-1],[-19,23,1],[19,23,-1]].forEach(c => { ctx.save(); ctx.translate(c[0],c[1]); ctx.scale(c[2],c[1] < 0 ? 1 : -1); ctx.beginPath(); ctx.moveTo(-1,-1); ctx.lineTo(8,-1); ctx.quadraticCurveTo(3,3,1,8); ctx.lineTo(-1,8); ctx.closePath(); fs(ctx,TE_OURO,1.2); circ(ctx,2.2,2.2,1.3); ctx.fillStyle = '#FFF3C9'; ctx.fill(); ctx.restore(); });
+    ctx.strokeStyle = TE_OURO; ctx.lineWidth = 1; ctx.beginPath(); ctx.rect(-13.4,-18.4,26.8,36.8); ctx.stroke();
+  } else {
   ctx.strokeStyle = 'rgba(34,32,28,.6)'; ctx.lineWidth = 1; ctx.beginPath(); ctx.moveTo(-9,-21); ctx.lineTo(0,-28); ctx.lineTo(9,-21); ctx.stroke();
   circ(ctx,0,-28,1.6); fs(ctx,PAL.cromoEsc,1);
   rr(ctx,-17,-22,34,42,3); fs(ctx,PAL.madeira,2.2);
+  }
   ctx.save(); rr(ctx,-12,-17,24,32,1.5); ctx.fillStyle = '#F6E7C9'; ctx.fill(); ctx.clip();
   ctx.fillStyle = 'rgba(242,194,61,.35)'; circ(ctx,0,-4,14); ctx.fill();
   drawPerson(ctx,{ skin:3, hair:2, hairC:'#1B1512', pants:'#4A4036' },0,30,{ s:0.62, shirt:'#C8506A', mood:0, noShadow:true });
   ctx.restore();
   abFlor(ctx,8,-12,2.2);
-  rr(ctx,-12,-17,24,32,1.5); ctx.strokeStyle = PAL.madeiraEsc; ctx.lineWidth = 1.4; ctx.stroke();
+  rr(ctx,-12,-17,24,32,1.5); ctx.strokeStyle = fino ? TE_OURO : PAL.madeiraEsc; ctx.lineWidth = 1.4; ctx.stroke();
   ctx.restore();
 }
 /* plaquinha "Comida é afeto": tábua clara pintada à mão, pendurada no letreiro por 2 cordinhas; (x, y) é o centro */
@@ -1106,6 +1145,101 @@ function drawPlaquinha(ctx,x,y,s){
   txt(ctx,'Comida é afeto',-4,0.5,10,PAL.faixa,'center',FB);
   const hx = 37, hy = 0;
   ctx.beginPath(); ctx.moveTo(hx,hy+3.5); ctx.bezierCurveTo(hx-6,hy-1,hx-3,hy-6,hx,hy-2.5); ctx.bezierCurveTo(hx+3,hy-6,hx+6,hy-1,hx,hy+3.5); ctx.closePath(); ctx.fillStyle = PAL.perigo; ctx.fill();
+  ctx.restore();
+}
+/* v12.9: a jiboia pendurada: o mesmo vaso de barro preso ao suporte da samambaia, com as folhas em coração caindo em ramas; (x, y) é a boca do vaso */
+function drawJiboia(ctx,x,y,s){
+  ctx.save(); ctx.translate(x,y); ctx.scale(s,s);
+  ctx.strokeStyle = PAL.cromoEsc; ctx.lineWidth = 2.4; ctx.beginPath(); ctx.moveTo(-14,-24); ctx.lineTo(4,-24); ctx.stroke();
+  rr(ctx,-18,-29,5,10,1.5); fs(ctx,PAL.cromoEsc,1.2);
+  ctx.strokeStyle = 'rgba(34,32,28,.55)'; ctx.lineWidth = 1;
+  [-9,0,9].forEach(dx => { ctx.beginPath(); ctx.moveTo(0,-23); ctx.lineTo(dx,0); ctx.stroke(); });
+  const cor = ['#3E8A47','#4E9F52','#5DB061'];
+  const coracao = (cx,cy,sz,rot,k) => {
+    ctx.save(); ctx.translate(cx,cy); ctx.rotate(rot);
+    ctx.beginPath(); ctx.moveTo(0,sz * 0.95); ctx.bezierCurveTo(-sz * 1.25,sz * 0.1,-sz * 0.7,-sz * 0.95,0,-sz * 0.35); ctx.bezierCurveTo(sz * 0.7,-sz * 0.95,sz * 1.25,sz * 0.1,0,sz * 0.95); ctx.closePath(); fs(ctx,cor[k % 3],1.1);
+    if (k % 2) { ctx.fillStyle = 'rgba(244,222,110,.6)'; ell(ctx,sz * 0.22,sz * 0.05,sz * 0.28,sz * 0.2); ctx.fill(); }   // a mancha amarela da jiboia
+    ctx.restore();
+  };
+  // as ramas descem pelos lados e pela frente do vaso
+  [[-8,1,-17,10,-20,24,-9],[-2,2,-6,14,-9,30,-3],[6,2,10,12,13,26,4],[9,0,19,9,22,20,8]].forEach((v,i) => {
+    ctx.strokeStyle = '#2F6B3A'; ctx.lineWidth = 1.2; ctx.beginPath(); ctx.moveTo(v[0],v[1]); ctx.quadraticCurveTo(v[2],v[3],v[4],v[5]); ctx.stroke();
+    [0.3,0.55,0.8,1].forEach((u,j) => { const px = (1 - u) * (1 - u) * v[0] + 2 * (1 - u) * u * v[2] + u * u * v[4], py = (1 - u) * (1 - u) * v[1] + 2 * (1 - u) * u * v[3] + u * u * v[5];
+      coracao(px + (j % 2 ? 2 : -2),py + 1,3.6 + (j === 3 ? 0.8 : 0),(j % 2 ? 0.25 : -0.25) + v[6] * 0.01,i + j); });
+  });
+  ctx.beginPath(); ctx.moveTo(-10,0); ctx.lineTo(10,0); ctx.lineTo(7,13); ctx.lineTo(-7,13); ctx.closePath(); fs(ctx,'#C9673B',1.8);
+  rr(ctx,-11,-2,22,4,1.5); fs(ctx,'#B85A30',1.6);
+  [[-5,-5,0],[1,-7,1],[6,-4,2],[-1,-3,3]].forEach(q => coracao(q[0],q[1],4,q[0] * 0.05,q[2]));   // as folhas de cima, sobre a boca do vaso
+  ctx.restore();
+}
+/* v12.9: o espelho de moldura dourada, oval, com o brilho em diagonal e o enfeite no alto; (x, y) é o centro */
+function drawEspelho(ctx,x,y,s){
+  ctx.save(); ctx.translate(x,y); ctx.scale(s,s);
+  ctx.beginPath(); ctx.moveTo(-5,-27); ctx.quadraticCurveTo(0,-34,5,-27); ctx.quadraticCurveTo(0,-24,-5,-27); ctx.closePath(); fs(ctx,TE_OURO_CL,1.2);   // o laço no alto
+  ell(ctx,0,0,16,25); fs(ctx,TE_OURO,2.2);
+  ell(ctx,0,0,13,22); fs(ctx,TE_OURO_CL,1.2);
+  ell(ctx,0,0,11,20); fs(ctx,'#D9E8EC',1.4);
+  ctx.save(); ctx.beginPath(); ctx.ellipse(0,0,10.4,19.4,0,0,TAU); ctx.clip();
+  ctx.fillStyle = 'rgba(255,255,255,.55)'; ctx.beginPath(); ctx.moveTo(-9,2); ctx.lineTo(-3,-18); ctx.lineTo(1,-18); ctx.lineTo(-5,2); ctx.closePath(); ctx.fill();
+  ctx.beginPath(); ctx.moveTo(-3,14); ctx.lineTo(4,-8); ctx.lineTo(6,-8); ctx.lineTo(-1,14); ctx.closePath(); ctx.fill();
+  ctx.restore();
+  [[0,-24],[0,24],[-15,0],[15,0]].forEach(q => { circ(ctx,q[0],q[1],1.8); fs(ctx,'#FFF3C9',0.9); });
+  ctx.restore();
+}
+/* v12.9: a estante de vinhos: o armário de madeira escura com as garrafas deitadas (só o fundo, redondo) e três em pé em cima; (x, y) é o chão */
+function drawEstanteVinhos(ctx,x,y,s){
+  ctx.save(); ctx.translate(x,y); ctx.scale(s,s);
+  shadowEll(ctx,0,0,27,4,0.18);
+  const verdes = ['#2F5E3E','#7A1F3A','#244B33','#8A2B45'];
+  [[-8,-80,4,'#2F5E3E'],[1,-82,4,'#7A1F3A'],[10,-80,4,'#244B33']].forEach(b => { rr(ctx,b[0] - b[2] / 2 - 1.6,b[1] + 18,b[2] + 3.2,22,2); fs(ctx,b[3],1.2); rr(ctx,b[0] - 1.2,b[1] + 8,2.4,12,1); fs(ctx,b[3],1); ctx.fillStyle = 'rgba(255,255,255,.25)'; ctx.fillRect(b[0] - 2.2,b[1] + 26,1.2,9); });
+  rr(ctx,-26,-48,52,5,2); fs(ctx,'#8A5A33',1.8);   // o tampo
+  rr(ctx,-23,-43,46,43,2); fs(ctx,'#4A2E1C',2);
+  rr(ctx,-20,-40,40,37,1.5); fs(ctx,'#2A1A10',1.2);
+  [-28,-16,-4].forEach((yy,r) => { ctx.fillStyle = '#6B452B'; ctx.fillRect(-20,yy + 9,40,2.4);
+    for (let i = 0; i < 4; i++){ const cx = -14.6 + i * 9.6 + (r % 2 ? 4.8 : 0); if (cx > 17) continue; circ(ctx,cx,yy + 4,3.5); fs(ctx,verdes[(i + r) % 4],1.1); circ(ctx,cx,yy + 4,1.4); ctx.fillStyle = 'rgba(255,255,255,.22)'; ctx.fill(); } });
+  ctx.restore();
+}
+/* v12.9: a cortina de linho: dois painéis cru com pregas, presos nas laterais por uma fita, e o bandô liso com a vara dourada */
+function drawCortinaLinho(ctx,j){
+  const x0 = j.x0 - 6, x1 = j.x1 + 6, y0 = j.y0 - 2, h = j.y1 - j.y0 + 4, pw = 14;
+  ctx.fillStyle = '#E7DAC0';
+  const painel = (xa,dir) => {   // dir 1: o da esquerda, -1: o da direita; o painel repuxa para a lateral na altura da fita
+    ctx.beginPath(); ctx.moveTo(xa,y0); ctx.lineTo(xa + dir * pw,y0); ctx.bezierCurveTo(xa + dir * pw,y0 + h * 0.3,xa + dir * 5,y0 + h * 0.42,xa + dir * 5,y0 + h * 0.54); ctx.bezierCurveTo(xa + dir * 5,y0 + h * 0.66,xa + dir * pw,y0 + h * 0.82,xa + dir * (pw - 1),y0 + h); ctx.lineTo(xa,y0 + h); ctx.closePath();
+    fs(ctx,'#E7DAC0',1.6);
+    ctx.strokeStyle = 'rgba(120,96,60,.35)'; ctx.lineWidth = 1; [4,8,12].forEach(d => { ctx.beginPath(); ctx.moveTo(xa + dir * d,y0 + 5); ctx.lineTo(xa + dir * Math.min(d,pw - 3),y0 + h - 2); ctx.stroke(); });
+    rr(ctx,xa + (dir > 0 ? 1 : -9),y0 + h * 0.5,8,4,1.5); fs(ctx,'#B79B6A',1.1);   // a fita
+  };
+  painel(x0,1); painel(x1,-1);
+  rr(ctx,x0 - 2,y0 - 3,x1 - x0 + 4,3.4,1.5); fs(ctx,TE_OURO,1.2);   // a vara
+  rr(ctx,x0 - 1,y0,x1 - x0 + 2,9,1.5); fs(ctx,'#EFE5CE',1.6);   // o bandô liso, com as pregas fundas
+  ctx.strokeStyle = 'rgba(120,96,60,.35)'; ctx.lineWidth = 1; for (let xx = x0 + 6; xx < x1 - 2; xx += 8){ ctx.beginPath(); ctx.moveTo(xx,y0 + 1); ctx.lineTo(xx,y0 + 8); ctx.stroke(); }
+}
+/* v12.9: a arandela acesa na parede: o halo quente, a placa dourada e a cúpula de vidro leitoso; (x, y) é o meio da cúpula (sem animação) */
+function drawArandela(ctx,x,y){
+  const gr = ctx.createRadialGradient(x,y,2,x,y,30); gr.addColorStop(0,'rgba(255,214,120,.5)'); gr.addColorStop(1,'rgba(255,214,120,0)');
+  ctx.fillStyle = gr; ctx.fillRect(x - 30,y - 30,60,60);
+  rr(ctx,x - 2.6,y + 3,5.2,6,1.6); fs(ctx,TE_OURO,1.2);   // a placa dourada
+  ctx.beginPath(); ctx.moveTo(x - 5.4,y + 3.4); ctx.quadraticCurveTo(x - 6.4,y - 6,x,y - 9); ctx.quadraticCurveTo(x + 6.4,y - 6,x + 5.4,y + 3.4); ctx.closePath(); fs(ctx,'#FFF1C4',1.5);
+  ctx.fillStyle = 'rgba(255,255,255,.55)'; ctx.fillRect(x - 3,y - 6,1.4,6);
+  rr(ctx,x - 3.4,y - 11,6.8,2.6,1.2); fs(ctx,TE_OURO_CL,1.1);
+}
+/* v12.9: a palmeira-ráfis num vaso alto de cerâmica creme com friso dourado; (x, y) é o chão */
+const PALMEIRA_POS = [[-20,150,0.75],[-20,490,0.75]];   // um de cada lado da porta do salão (a conferir na captura)
+function drawPalmeira(ctx,x,y,s){
+  ctx.save(); ctx.translate(x,y); ctx.scale(s,s);
+  shadowEll(ctx,0,1,18,4,0.2);
+  const leque = (cx,cy,r,rot,k) => { ctx.save(); ctx.translate(cx,cy); ctx.rotate(rot);
+    [-0.9,-0.55,-0.2,0.2,0.55,0.9].forEach((a,i) => { ctx.save(); ctx.rotate(a); ell(ctx,0,-r * 0.5,2.3,r * 0.5); fs(ctx,['#3E8A47','#4E9F52','#5DB061'][(i + k) % 3],0.9); ctx.restore(); });
+    ctx.restore(); };
+  ctx.lineCap = 'round';
+  [[-9,-96,-0.2],[-3,-110,-0.06],[4,-104,0.1],[10,-92,0.24],[-14,-80,-0.4]].forEach((c,i) => {
+    ctx.strokeStyle = '#7A5A33'; ctx.lineWidth = 1.8; ctx.beginPath(); ctx.moveTo(i % 2 ? -2 : 2,-50); ctx.quadraticCurveTo(c[0] * 0.8,(c[1] - 50) * 0.5 - 20,c[0],c[1] + 8); ctx.stroke();
+  });
+  [[-9,-96,-0.2],[-3,-110,-0.06],[4,-104,0.1],[10,-92,0.24],[-14,-80,-0.4]].forEach((c,i) => leque(c[0],c[1] + 8,22 - (i === 4 ? 4 : 0),c[2],i));
+  ctx.beginPath(); ctx.moveTo(-12,-44); ctx.lineTo(12,-44); ctx.lineTo(9,0); ctx.lineTo(-9,0); ctx.closePath(); fs(ctx,'#EDE6D6',2);
+  rr(ctx,-14,-50,28,7,3); fs(ctx,'#D9CFB8',1.8);
+  ctx.strokeStyle = TE_OURO; ctx.lineWidth = 1.6; ctx.beginPath(); ctx.moveTo(-10.6,-26); ctx.lineTo(10.6,-26); ctx.moveTo(-10,-22); ctx.lineTo(10,-22); ctx.stroke();
+  ctx.fillStyle = 'rgba(255,255,255,.4)'; ctx.fillRect(-8,-40,2,30);
   ctx.restore();
 }
 /* quadro de giz num cavalete de madeira, com o prato do dia escrito à mão; (x, y) é o chão, entre os pés */
