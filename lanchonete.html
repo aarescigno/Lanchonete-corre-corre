@@ -522,7 +522,7 @@ table.rank tr.me td{background:#fbe7a8}
 
     <div class="ov show" id="ov-menu">
       <div class="panel menu-panel">
-        <span class="vtag" id="vtag" aria-label="Versão 12.9">v12.9</span>
+        <span class="vtag" id="vtag" aria-label="Versão 12.9.1">v12.9.1</span>
         <h1 class="title">Lanchonete <br>Corre-Corre</h1>
         <p class="tag">Ajude a Bia a atender a freguesia da esquina antes que o cafezinho esfrie!</p>
         <div class="lbl" id="menu-dia">História</div>
@@ -824,7 +824,8 @@ table.rank tr.me td{background:#fbe7a8}
       <div class="panel">
         <h2>Versões</h2>
         <ul class="verlist">
-          <li><b>v12.9</b><span class="cur">versão atual</span><br>22/11/2026 &mdash; Enfeites novos na Avenida e no Terraço: espelho, palmeiras, cortinas de linho, arandelas e estante de vinhos. A foto da dona Rosa ganha moldura dourada.</li>
+          <li><b>v12.9.1</b><span class="cur">versão atual</span><br>22/11/2026 &mdash; Cada ponto tem a sua decoração: na Avenida, os enfeites simples saem pela metade e a decoração fina começa do zero.</li>
+          <li><b>v12.9</b><br>22/11/2026 &mdash; Enfeites novos na Avenida e no Terraço: espelho, palmeiras, cortinas de linho, arandelas e estante de vinhos. A foto da dona Rosa ganha moldura dourada.</li>
           <li><b>v12.8.4</b><br>21/11/2026 &mdash; Os banquinhos de madeira valem mais que as cadeirinhas e a troca sai mais barata; com as toalhas de linho, o enfeite das mesas volta pela metade.</li>
           <li><b>v12.8.3</b><br>21/11/2026 &mdash; Tocar nos pés de uma turma da espera não pega mais a turma de baixo.</li>
           <li><b>v12.8.2</b><br>20/11/2026 &mdash; A TV, o som, as TVs com sertanejo, o couvert e a música ao vivo aparecem também nas Melhorias.</li>
@@ -1487,36 +1488,36 @@ const SALAO_SEMFIM = [2,2,2,4,2,4];
    vai junto quando a mesa muda de lugar e some quando ela é vendida
    ============================================================ */
 const DECOR = [
-  { id:'espada',    grupo:'plantas', name:'Espada-de-são-jorge', cost:15, lux:1 },
-  { id:'lata',      grupo:'plantas', name:'Temperos na lata',     cost:8, lux:1 },
-  { id:'samambaia', grupo:'plantas', name:'Samambaia',           cost:30, lux:1 },
+  { id:'espada',    grupo:'plantas', name:'Espada-de-são-jorge', fam:'simples', lux:1 },
+  { id:'lata',      grupo:'plantas', name:'Temperos na lata', fam:'simples', lux:1 },
+  { id:'samambaia', grupo:'plantas', name:'Samambaia', fam:'simples', lux:1 },
   // v9, só a partir da área industrial: as plantas da calçada (+0,1 cada no Ambiente)
-  { id:'violeta',   grupo:'plantas', name:'Cactos',               cost:20, nivel:2, amb:0.1, lux:1 },
-  { id:'anturio',   grupo:'plantas', name:'Antúrio',             cost:30, nivel:2, amb:0.1, lux:1 },
-  { id:'pendente',  grupo:'plantas', name:'Jiboia pendurada',     cost:40, nivel:2, amb:0.1, lux:1 },
+  { id:'violeta',   grupo:'plantas', name:'Cactos', nivel:2, amb:0.1, fam:'simples', lux:1 },
+  { id:'anturio',   grupo:'plantas', name:'Antúrio', nivel:2, amb:0.1, fam:'simples', lux:1 },
+  { id:'pendente',  grupo:'plantas', name:'Jiboia pendurada', nivel:2, amb:0.1, fam:'simples', lux:1 },
   // v9.1, só na Avenida Brasil: as flores da calçada (+0,15 cada no Ambiente)
-  { id:'tulipa',    grupo:'plantas', name:'Tulipas',             cost:40, nivel:3, amb:0.15, lux:1 },
-  { id:'copo',      grupo:'plantas', name:'Copos-de-leite',      cost:50, nivel:3, amb:0.15, lux:1 },
-  { id:'orquidea',  grupo:'plantas', name:'Orquídeas',           cost:60, nivel:3, amb:0.15, lux:1 },
+  { id:'tulipa',    grupo:'plantas', name:'Tulipas', nivel:3, amb:0.15, fam:'fina', lux:1 },
+  { id:'copo',      grupo:'plantas', name:'Copos-de-leite', nivel:3, amb:0.15, fam:'fina', lux:1 },
+  { id:'orquidea',  grupo:'plantas', name:'Orquídeas', nivel:3, amb:0.15, fam:'fina', lux:1 },
   // v10.4, só no Terraço: as flores finas do foyer (+0,2 cada no Ambiente)
-  { id:'ikebana',   grupo:'plantas', name:'Ikebana',             cost:90,  nivel:4, amb:0.2, lux:1 },
-  { id:'orqArranjo', grupo:'plantas', name:'Bonsai',              cost:120, nivel:4, amb:0.2, lux:1 },
-  { id:'campo',     grupo:'plantas', name:'Flores do campo',     cost:70,  nivel:4, amb:0.2, lux:1 },
-  { id:'foto',      grupo:'rosa',    name:'Foto da dona Rosa',   cost:10, lux:1 },
-  { id:'giz',       grupo:'rosa',    name:'Quadro de giz',       cost:25, lux:1 },
-  { id:'placa',     grupo:'rosa',    name:'Plaquinha',           cost:15, lux:1 },
+  { id:'ikebana',   grupo:'plantas', name:'Ikebana',  nivel:4, amb:0.2, fam:'fina', lux:1 },
+  { id:'orqArranjo', grupo:'plantas', name:'Bonsai', nivel:4, amb:0.2, fam:'fina', lux:1 },
+  { id:'campo',     grupo:'plantas', name:'Flores do campo',  nivel:4, amb:0.2, fam:'fina', lux:1 },
+  { id:'foto',      grupo:'rosa',    name:'Foto da dona Rosa', lux:1 },
+  { id:'giz',       grupo:'rosa',    name:'Quadro de giz', fam:'simples', lux:1 },
+  { id:'placa',     grupo:'rosa',    name:'Plaquinha', fam:'simples', lux:1 },
   // v10.7, os enfeites do luxo (2 pontos cada; à venda do ponto do `nivel` em diante)
-  { id:'pisca',     grupo:'enfeites', name:'Pisca-pisca',        cost:30,   nivel:1, lux:2 },
-  { id:'chita',     grupo:'enfeites', name:'Cortina de chita',   cost:25,   nivel:1, lux:2 },
-  { id:'luminaria', grupo:'enfeites', name:'Luminárias de fábrica', cost:180, nivel:2, lux:2 },
-  { id:'quadros',   grupo:'enfeites', name:'Quadros de artista', cost:450,  nivel:3, lux:2 },
-  { id:'lustre',    grupo:'enfeites', name:'Lustre de cristal',  cost:1500, nivel:4, lux:2 },
+  { id:'pisca',     grupo:'enfeites', name:'Pisca-pisca',   nivel:1, fam:'simples', lux:2 },
+  { id:'chita',     grupo:'enfeites', name:'Cortina de chita',   nivel:1, fam:'simples', lux:2 },
+  { id:'luminaria', grupo:'enfeites', name:'Luminárias de fábrica', nivel:2, fam:'simples', lux:2 },
+  { id:'quadros',   grupo:'enfeites', name:'Quadros de artista',  nivel:3, fam:'fina', lux:3 },
+  { id:'lustre',    grupo:'enfeites', name:'Lustre de cristal', nivel:4, fam:'fina', lux:3 },
   // v12.9, só na Avenida e no Terraço: a família fina (a regra de quem vale em cada ponto é da v12.9.1)
-  { id:'espelho',   grupo:'enfeites', name:'Espelho de moldura', cost:200,  nivel:3, lux:2 },
-  { id:'palmeira',  grupo:'plantas',  name:'Palmeiras na entrada', cost:200, nivel:3, lux:2 },
-  { id:'vinhos',    grupo:'enfeites', name:'Estante de vinhos',  cost:200,  nivel:3, lux:2 },
-  { id:'cortina',   grupo:'enfeites', name:'Cortinas de linho',  cost:450,  nivel:3, lux:3 },
-  { id:'arandela',  grupo:'enfeites', name:'Arandelas',          cost:450,  nivel:3, lux:3 }
+  { id:'espelho',   grupo:'enfeites', name:'Espelho de moldura',  nivel:3, fam:'fina', lux:2 },
+  { id:'palmeira',  grupo:'plantas',  name:'Palmeiras na entrada', nivel:3, fam:'fina', lux:2 },
+  { id:'vinhos',    grupo:'enfeites', name:'Estante de vinhos',  nivel:3, fam:'fina', lux:2 },
+  { id:'cortina',   grupo:'enfeites', name:'Cortinas de linho',  nivel:3, fam:'fina', lux:3 },
+  { id:'arandela',  grupo:'enfeites', name:'Arandelas',  nivel:3, fam:'fina', lux:3 }
 ];
 const DECOR_GRUPOS = [
   { id:'plantas', nome:'Plantas' },
@@ -1534,6 +1535,25 @@ const ENFEITE_MESA = {
 function enfeiteDe(pid){ return ENFEITE_MESA[pid] || ENFEITE_MESA.garagem; }
 function enfeiteMesa(g){ return enfeiteDe(g && g.ponto && g.ponto.id); }
 function decorOf(id){ return DECOR.find(d => d.id === id); }
+/* v12.9.1: duas famílias de enfeite. A simples (`fam:'simples'`, nível 1 e 2) é da Garagem e da área industrial; a fina (`fam:'fina'`, nível 3 e 4), da Avenida e do Terraço; a foto da dona Rosa
+   não tem família e vale nos quatro pontos. O preço vem do luxo do enfeite e do ponto em que se compra (índice = nível do ponto − 1); na mudança para a Avenida, os simples saem por DECOR_VENDA do preço */
+const DECOR_PRECO = { 1:[15, 30, 60, 150], 2:[30, 180, 200, 600], 3:[0, 0, 450, 1500] };
+const DECOR_VENDA = 0.5;
+function decorNv(p){ return p && typeof p === 'object' ? (p.nivel || 1) : (+p || 1); }
+function decorCombina(d, p){
+  const nv = decorNv(p);
+  if (!d || (d.nivel || 1) > nv) return false;
+  return !d.fam || (d.fam === 'simples' ? nv <= 2 : nv >= 3);
+}
+function decorPreco(d, p){ const l = DECOR_PRECO[d.lux]; return l ? l[clamp(decorNv(p), 1, 4) - 1] : 0; }
+/* o que a mudança para a Avenida (ou o save antigo lá) faz com os enfeites simples: { ids (os que saem), v (o que volta ao dinheiro) }; `semEspada`: a espada da dona Cida (do Modo História) sai sem entrar na conta */
+function decorSimplesVenda(decor, semEspada){
+  const ids = [], soma = Object.keys(decor || {}).reduce((a, id) => {
+    const d = decorOf(id); if (!d || d.fam !== 'simples') return a;
+    ids.push(id); return a + (semEspada && id === 'espada' ? 0 : DECOR_PRECO[d.lux][(d.nivel || 1) - 1]);
+  }, 0);
+  return { ids, v:Math.round(soma * DECOR_VENDA) };
+}
 /* save.decor: { id: 1 à mostra, 0 guardado }; só os enfeites que existem */
 function normDecor(d){
   const out = {};
@@ -2182,7 +2202,14 @@ const HISTORIA = [
       { q:'bia', e:'alegre', s:'Avenida Brasil, tio! Olha o movimento dessa calçada.' },
       { q:'tonhao', e:'insegura', nota:'olhando pela janela', s:'E ali, do outro lado da rua... a Casa Aurora.' },
       { q:'bia', e:'firme', nota:'virando a foto da mãe pra janela', s:'Daqui ela vê tudo. E ele vai ver a gente crescer.' },
-      { q:'dani', s:'E aqui cabe até música ao vivo!' }],
+      { q:'dani', s:'E aqui cabe até música ao vivo!' },
+      { q:'tonhao', e:'insegura', nota:'segurando a cortina de chita', s:'E as nossas coisinhas? A chita, o pisca-pisca...' },
+      { q:'bia', e:'firme', s:'Aqui é outro nível, tio. O que não combina, eu vendo. O novo tá no Luxo.' },
+      { q:'dani', s:'Espelho, quadro de artista... Bi, eu vou ter medo de encostar em tudo!' },
+      { q:'tonhao', s:'Casa nova, avental novo. Mas o tempero é o mesmo.' },
+      { q:'dani', s:'E a espada da dona Cida?' },
+      { q:'bia', e:'alegre', s:'Vai pra casa da mãe. Lá ela segue cuidando da gente.' },
+      { q:'bia', s:'E a foto da mãe vem junto. Com moldura nova.' }],
     depois:[
       { q:'tonhao', s:'Três dias no azul com aluguel de gente grande.' },
       { q:'bia', s:'O pessoal do Bráulio passou duas vezes espiando pela janela.' },
@@ -2795,7 +2822,7 @@ const HIST_NOMES = { bia:'Bia', tonhao:'Tonhão', dani:'Dani', joca:'Joca', cami
 const ATU_TXT = { procurando:'Procurando versão nova...', nova:'Tem versão nova: {v}! Seu jogo salvo continua.', igual:'Você já está na versão mais nova ({v}).', erro:'Sem internet agora. Tente de novo mais tarde.', atualizando:'Atualizando...' };
 function atuEstado(remota, atual){ if (typeof remota !== 'string' || !remota.trim()) return 'erro'; return remota.trim() === atual ? 'igual' : 'nova'; }
 const CAIXA_MAX = 14;                                 // livro-caixa (v7.2): quantos dias da carreira ficam guardados
-const VERSAO = 'v12.9';                                     // vai no resumo do Caixa
+const VERSAO = 'v12.9.1';                                   // vai no resumo do Caixa
 const DIVULGA_DIA = 4;                                // antes disso, o movimento é o da inauguração (sem custo); v9.0.2: dia 4, e o padrão é o boca a boca
 function divulgaAberta(n, sv){ return devLivre() || n >= DIVULGA_DIA && !(sv && sv.convDiv === 'pend'); }   // no modo dev, desde o dia 1; v9.0.3: no Modo História, só depois da conversa
 /* v9.6.4: a Efood (os entregadores) só abre depois da conversa dos entregadores, no Modo História; antes dela, nenhum tipo com `retira` vem na agenda */
@@ -2994,7 +3021,7 @@ const MANUAL = [
   { id:'l-fogao',      aba:'lojinha', nome:'Fogão industrial', linha:'Uma boca a mais: o Tonhão faz mais pratos ao mesmo tempo.' },
   { id:'l-cardapio',   aba:'lojinha', nome:'Cardápio', linha:'Cursos do Tonhão e da equipe. Cada curso é uma técnica que vale em todo ponto, dá experiência e o avançado deixa os pratos mais caros e caprichados. Fritos: na lanchonete, salgados; na Avenida, porções; no Terraço, entradas fritas. Assados: na lanchonete, salgados de forno; na Avenida, tortas e empadões; no Terraço, folhados e empadinhas. Chapa: na lanchonete, lanches; na Avenida, beirute e queijo coalho; no Terraço, petiscos na chapa. Pastel: na lanchonete, pastel de feira; na Avenida, panquecas; no Terraço, massas fritas. Vegetariano: pratos sem carne em todo ponto. Cozinha de restaurante: na Avenida, a parmegiana; no Terraço, o filé ao molho de vinho.' },
   { id:'l-salao',      aba:'lojinha', nome:'Salão', linha:'Compre, venda e arrume as mesas.' },
-  { id:'l-luxo',       aba:'lojinha', nome:'Luxo', linha:'Enfeites, móveis, música e um endereço melhor deixam a casa mais chique. Mais luxo traz mais VIPs e melhora o ambiente no Gúgou.' },   // v10.7: a antiga ficha da Decoração
+  { id:'l-luxo',       aba:'lojinha', nome:'Luxo', linha:'Enfeites, móveis, música e um endereço melhor deixam a casa mais chique, e cada ponto tem os enfeites que combinam com ele. Mais luxo traz mais VIPs e melhora o ambiente no Gúgou.' },   // v10.7: a antiga ficha da Decoração
   { id:'l-manut',      aba:'lojinha', nome:'Manutenção', linha:'Revisão do fogão, da geladeira e da cafeteira, antes que quebrem.' },
   { id:'l-divulga',    aba:'lojinha', nome:'Divulgação', linha:'Boca a boca: de graça, menos gente. Panfletos: o movimento normal. Redes sociais: mais gente e mais VIPs.' },
   { id:'l-banco',      aba:'lojinha', nome:'Banco', linha:'Empréstimo para crescer. As parcelas saem do caixa no fim do dia; parcela atrasada é perigo.' },
@@ -3417,7 +3444,7 @@ function normCaixa(c){
       const o = { d:Math.max(1, n(r.d)), fat:n(r.fat), ingr:n(r.ingr), contas:n(r.contas), folha:n(r.folha), div:n(r.div), lucro:n(r.lucro), meta:n(r.meta), ok:!!r.ok, perd:n(r.perd), mel:n(r.mel), sal:n(r.sal), man:n(r.man), saldo:n(r.saldo) };
       if (n(r.vig)) o.vig = n(r.vig);   // v9.4: a multa da vigilância (já somada em `contas`)
       if (n(r.dev)) o.dev = n(r.dev);   // linha "Devolução do salão" (v7.4): o que o salão antigo custou, de volta
-      if (o.dev && r.devK === 'maquina') o.devK = 'maquina';   // ou a da máquina de suco, que virou torneira (v7.7)
+      if (o.dev && (r.devK === 'maquina' || r.devK === 'decor')) o.devK = r.devK;   // v12.9.1: ou a dos enfeites simples vendidos na Avenida   // ou a da máquina de suco, que virou torneira (v7.7)
       if (n(r.int)){ o.int = n(r.int); o.mul = n(r.mul); }   // dia encerrado no meio (v8.2.3): grupos que saíram bravos e a multa
       if (n(r.st)) o.st = clamp(n(r.st), 0, 3);
       if (n(r.av)) o.av = clamp(n(r.av), 10, 50);   // v8.4: a nota do Gúgou no dia, ×10
@@ -3546,8 +3573,13 @@ function normSave(s){
     out.caixa.forEach(r => { if (r.av) r.av = Math.round(esc(r.av / 10) * 10); });
   }
   out.avalEsc = 2;
-  if (dev){ const last = out.caixa[out.caixa.length - 1]; out.caixa = normCaixa(out.caixa.concat([{ d:last ? last.d : 1, dev, saldo:out.bank - devMaq }])); }
-  if (devMaq){ const last = out.caixa[out.caixa.length - 1]; out.caixa = normCaixa(out.caixa.concat([{ d:last ? last.d : 1, dev:devMaq, devK:'maquina', saldo:out.bank }])); }
+  // v12.9.1: o save antigo na Avenida ou no Terraço com enfeites simples: eles saem e voltam pela metade, uma vez só (a espada da dona Cida do Modo História sai sem entrar na conta)
+  const venDec = pontoOf(out.salao.ponto).nivel >= 3 ? decorSimplesVenda(out.decor, hist && out.convPlanta === 1) : { ids:[], v:0 }, devDec = venDec.v;
+  venDec.ids.forEach(id => { delete out.decor[id]; });
+  out.bank += devDec;
+  if (dev){ const last = out.caixa[out.caixa.length - 1]; out.caixa = normCaixa(out.caixa.concat([{ d:last ? last.d : 1, dev, saldo:out.bank - devMaq - devDec }])); }
+  if (devMaq){ const last = out.caixa[out.caixa.length - 1]; out.caixa = normCaixa(out.caixa.concat([{ d:last ? last.d : 1, dev:devMaq, devK:'maquina', saldo:out.bank - devDec }])); }
+  if (devDec){ const last = out.caixa[out.caixa.length - 1]; out.caixa = normCaixa(out.caixa.concat([{ d:last ? last.d : 1, dev:devDec, devK:'decor', saldo:out.bank }])); }
   return out;
 }
 function loadSave(){
@@ -6588,7 +6620,12 @@ class Game {
     const sv = this.save, para = this.proximoPonto;
     if (!para || !this.mudancaVisivel || this.mudancaFalta) return false;
     if (!devLivre()){ sv.bank -= para.mudanca; caixaGasto(sv, 'sal', para.mudanca); }
+    const venda = para.nivel === 3 ? decorSimplesVenda(sv.decor, histLiga() && sv.histV === 1 && sv.convPlanta === 1) : null;   // v12.9.1: os enfeites simples não combinam com a Avenida: saem pela metade (a espada da dona Cida vai para a casa da mãe da Bia)
     this.trocaPonto(para);
+    if (venda && venda.ids.length){
+      venda.ids.forEach(id => { delete sv.decor[id]; });
+      if (venda.v){ sv.bank += venda.v; caixaGasto(sv, 'sal', -venda.v); }
+    }
     const chap = HISTORIA[sv.cap - 1];   // v9.1: o capítulo de agora é do ponto novo? Então começa (o 4 na área industrial, o 6 na Avenida, o 9 no Terraço)
     if (chap && chap.ponto === para.id){ sv.capDia = sv.dia; sv.capAzul = 0; sv.capFeito = 0; sv.capVezes = 0; sv.conversa = histLiga() ? 'antes' : null; }
     this.tablesKey = ''; this.buildTables();
@@ -7001,8 +7038,9 @@ class Game {
   buyDecor(id){
     if (!this.cartaoAberto('luxo')) return false;
     const d = decorOf(id), dec = this.save.decor;
-    if (!d || id in dec || this.save.bank < d.cost || (d.nivel && this.ponto.nivel < d.nivel && !devLivre())) return false;
-    this.save.bank -= d.cost; caixaGasto(this.save, 'sal', d.cost);
+    const cost = d ? decorPreco(d, this.ponto) : 0;   // v12.9.1: o preço do ponto de agora; o que não combina com o ponto não se compra, nem no modo dev
+    if (!d || id in dec || !decorCombina(d, this.ponto) || this.save.bank < cost) return false;
+    this.save.bank -= cost; caixaGasto(this.save, 'sal', cost);
     dec[id] = 1;
     writeSave(this.save); Sfx.coin();
     return true;
@@ -7104,6 +7142,7 @@ class Game {
     const para = PONTOS.find(p => p.id === id);
     if (!DEV.on || !para) return false;
     this.trocaPonto(para);
+    Object.keys(this.save.decor).forEach(id => { const d = decorOf(id); if (d && !decorCombina(d, para)) delete this.save.decor[id]; });   // v12.9.1: só ficam os enfeites que combinam com o ponto
     this.devRecarrega();
     return true;
   }
@@ -7214,8 +7253,8 @@ class Game {
   devDecor(on){
     if (!DEV.on) return false;
     const sv = this.save, d = {};
-    DECOR.forEach(x => { if (on && (!x.nivel || this.ponto.nivel >= x.nivel)) d[x.id] = 1; });
-    if (sv.convPlanta === 1 && sv.decor.espada) d.espada = 1;
+    DECOR.forEach(x => { if (on && decorCombina(x, this.ponto)) d[x.id] = 1; });
+    if (sv.convPlanta === 1 && sv.decor.espada && this.ponto.nivel <= 2) d.espada = 1;   // v12.9.1: na Avenida, a espada já foi para a casa da mãe da Bia
     sv.decor = normDecor(d); writeSave(sv); return true;
   }
   /* v10.7: todo o luxo do ponto de graça: os enfeites, o jogo de mesas e a toalha em todas as mesas (sem mexer no caixa) */
@@ -7269,7 +7308,7 @@ class Game {
     if (nv >= 2) up.fogaoInd = true;   // o fogão industrial vale do nível 2 em diante e vai junto na mudança
     if (nv === 2){ up.tvs = true; up.assento = 'banco'; } else if (nv === 3) up.assento = 'sofa'; else if (nv === 4) up.assento = 'poltrona';
     // a decoração, o jogo de mesas e o enfeite das mesas
-    const dec = {}; DECOR.forEach(d => { if (!d.nivel || d.nivel <= nv) dec[d.id] = 1; });
+    const dec = {}; DECOR.forEach(d => { if (decorCombina(d, nv)) dec[d.id] = 1; });
     sv.decor = normDecor(dec);
     const mv = {}; MOVEIS.forEach(m => { if (m.nivel <= nv) mv[m.id] = 1; });
     sv.moveis = normMoveis(mv);
@@ -17324,11 +17363,11 @@ function decorCard(grupo, icon, title, desc){
 }
 function buildDecor(grid){
   const dec = game.save.decor, bank = game.save.bank;
-  DECOR.filter(d => !d.nivel || game.ponto.nivel >= d.nivel || devLivre()).forEach(d => {
-    const tem = d.id in dec, on = !!dec[d.id];
+  DECOR.filter(d => decorCombina(d, game.ponto)).forEach(d => {
+    const tem = d.id in dec, on = !!dec[d.id], cost = decorPreco(d, game.ponto);
     const c = decorCard(DECOR_GRUPOS.find(x => x.id === d.grupo).nome, upgradeIcon('d-' + d.id), d.name, tem && !on ? 'Guardado' : '');
     if (on) c.classList.add('own');
-    c.appendChild(!tem ? shopBtn('Comprar ' + fmt(d.cost), 'btn', bank >= d.cost, () => game.buyDecor(d.id), d.cost)
+    c.appendChild(!tem ? shopBtn('Comprar ' + fmt(cost), 'btn', bank >= cost, () => game.buyDecor(d.id), cost)
       : shopBtn(on ? 'Guardar' : 'Pôr de volta', on ? 'btn alt' : 'btn', true, () => game.mostraDecor(d.id, !on)));
     grid.appendChild(c);
   });
@@ -17575,6 +17614,12 @@ function buildAssento(grid){
   c.appendChild(duo); grid.appendChild(c);
 }
 /* aba Mudança (v9): o próximo ponto, o que falta para mudar e a confirmação (não dá para voltar) */
+/* v12.9.1: indo para a Avenida com algum enfeite simples (fora a espada da dona Cida no Modo História, que vai para a casa da mãe da Bia) */
+function decorVoltam(p){
+  if (!p || p.nivel !== 3) return false;
+  const cida = histLiga() && game.save.histV === 1 && game.save.convPlanta === 1;
+  return decorSimplesVenda(game.save.decor, cida).ids.some(id => !(cida && id === 'espada'));
+}
 function buildMudanca(grid){
   const p = game.proximoPonto, f = game.mudancaFalta, de = game.ponto;
   if (!p) return;
@@ -17582,7 +17627,7 @@ function buildMudanca(grid){
     'Mudança ' + fmt(p.mudanca) + ' · aluguel ' + fmt(p.aluguel) + '/dia');
   const falta = f ? [f.din ? 'Falta ' + fmt(f.din) : '', f.nota ? 'Nota ' + fmtNota(f.nota) + ' (agora ' + fmtNota(game.notaGurugol) + ')' : ''].filter(Boolean).join(' · ') : '';
   if (!f && mudarPede){
-    c.appendChild(el('span', 'full', 'Mudar para ' + (p.art || 'a') + ' ' + p.nome + ' por ' + fmt(p.mudanca) + '? Aluguel de ' + fmt(p.aluguel) + ' por dia.' + (p.lugares < de.lugares ? ' O ' + p.nome.split(' ')[0] + ' tem ' + p.lugares + ' lugares: as mesas que não couberem são vendidas.' : '') + ' Não dá para voltar.'));
+    c.appendChild(el('span', 'full', 'Mudar para ' + (p.art || 'a') + ' ' + p.nome + ' por ' + fmt(p.mudanca) + '? Aluguel de ' + fmt(p.aluguel) + ' por dia.' + (p.lugares < de.lugares ? ' O ' + p.nome.split(' ')[0] + ' tem ' + p.lugares + ' lugares: as mesas que não couberem são vendidas.' : '') + (decorVoltam(p) ? ' Os enfeites simples não combinam com a Avenida: voltam pela metade.' : '') + ' Não dá para voltar.'));
     const duo = el('div', 'duo');
     duo.appendChild(shopBtn(devLivre() ? 'Sim, mudar' : 'Sim, mudar: ' + fmt(p.mudanca), 'btn', true, () => { mudarPede = false; shopTab = null; shopTopo = true; return game.mudarPonto(); }, devLivre() ? 0 : p.mudanca));
     const nao = el('button', 'btn alt', 'Agora não'); nao.type = 'button'; nao.addEventListener('click', () => { Sfx.tap(); mudarPede = false; buildShop(); });
@@ -17640,7 +17685,7 @@ function caixaTotais(cx){
 function caixaResumo(save){
   const cx = save.caixa, eq = save.equipe, sal = save.salao;
   const out = ['Lanchonete Corre-Corre ' + VERSAO + ' · Caixa (valores em R$)'].concat(game.save.guia && (game.save.guia.est || game.save.guia.rec) ? [NOITE.selo[game.save.guia.est]] : []);   // v10.10: o selo do Michelzão
-  cx.forEach(r => out.push(r.int ? 'Dia ' + r.d + ' largado no meio: ' + r.int + (r.int > 1 ? ' grupos foram' : ' grupo foi') + ' embora bravo' + (r.int > 1 ? 's' : '') + ': −' + r.mul + ' · saldo ' + r.saldo : r.dev ? 'Devolução ' + (r.devK === 'maquina' ? 'da máquina de suco' : 'do salão') + ': +' + r.dev + ' · saldo ' + r.saldo : 'Dia ' + r.d + (r.ok ? ' ✓' : ' ✗') + ': fatura ' + r.fat + ' − ingred. ' + r.ingr + ' − contas ' + r.contas + ' − equipe ' + r.folha + (r.div ? ' − divulg. ' + r.div : '') +
+  cx.forEach(r => out.push(r.int ? 'Dia ' + r.d + ' largado no meio: ' + r.int + (r.int > 1 ? ' grupos foram' : ' grupo foi') + ' embora bravo' + (r.int > 1 ? 's' : '') + ': −' + r.mul + ' · saldo ' + r.saldo : r.dev ? 'Devolução ' + (r.devK === 'maquina' ? 'da máquina de suco' : r.devK === 'decor' ? 'dos enfeites simples' : 'do salão') + ': +' + r.dev + ' · saldo ' + r.saldo : 'Dia ' + r.d + (r.ok ? ' ✓' : ' ✗') + ': fatura ' + r.fat + ' − ingred. ' + r.ingr + ' − contas ' + r.contas + ' − equipe ' + r.folha + (r.div ? ' − divulg. ' + r.div : '') +
     ' = lucro ' + r.lucro + ' (meta ' + r.meta + ')' + (r.perd ? ' · ' + r.perd + (r.perd > 1 ? ' perdidos' : ' perdido') : '') + (r.mel + r.sal ? ' · compras ' + (r.mel + r.sal) : '') + (r.man ? ' · manutenção ' + r.man : '') + (r.emp ? ' · empréstimo +' + r.emp + (r.forc ? ' (à força)' : '') : '') + (r.par ? ' · banco −' + r.par + (r.jur ? ' (juros ' + r.jur + ')' : '') : '') + (r.atr ? ' · parcela atrasada' : '') + (r.tom ? ' · o banco tomou a lanchonete' : '') + (r.av ? ' · Gúgou ' + fmtNota(r.av / 10) : '') + ' · saldo ' + r.saldo));
   const nd = cx.filter(r => !r.dev && !r.int).length;
   if (nd) out.push('Para onde foi (' + nd + (nd > 1 ? ' dias' : ' dia') + '): ' + caixaTotais(cx).filter(t => t.v).map(t => t.name.toLowerCase() + ' ' + t.v).join(', '));
@@ -17688,7 +17733,7 @@ function buildCaixa(grid){
     if (r.dev){
       // v7.4: o salão antigo (cadeiras e mesas da v6) foi trocado pela Garagem e o que custou voltou;
       // v7.7: a Máquina de suco virou a Água da torneira, mais barata, e a diferença voltou
-      const td = el('td', 'cx-dev', (r.devK === 'maquina' ? 'Devolução da máquina de suco (virou a Água da torneira): +' : 'Devolução do salão antigo: +') + fmt(r.dev)); td.setAttribute('colspan', '9');
+      const td = el('td', 'cx-dev', (r.devK === 'maquina' ? 'Devolução da máquina de suco (virou a Água da torneira): +' : r.devK === 'decor' ? 'Devolução dos enfeites simples (não combinam com a Avenida): +' : 'Devolução do salão antigo: +') + fmt(r.dev)); td.setAttribute('colspan', '9');
       tr.appendChild(td); tr.appendChild(cxTd(r.saldo)); tb.appendChild(tr); return;
     }
     const dia = el('td', null, 'Dia ' + r.d + (r.st ? ' ' + '★'.repeat(r.st) : '')); tr.appendChild(dia);
@@ -18642,7 +18687,7 @@ try { Rank.init(); } catch(e) {}
 game.setState('menu');
 if (!aberturaVista() && !DEV.on) abrirAbertura('auto');   // v8.5: a abertura toca sozinha uma vez
 window.__game = game;
-window.__lcc = { upgradeIcon, DESENHO_BASE, tipoAparelho, TESTES, TESTE_LS, TESTE_EQ_PADRAO, TESTE_PESSOAS, testeEqNorm, testeEqPadrao, testeTarefas, testeVagas, testeNivel, testeDono, testeEfetivas, testeEqLe, testeEqGrava, buildTesteFase, testeRelatorio, buildTesteFim, DESAFIOS, MEDALHAS, normDesafios, MANUAL_ABAS, buildDesafios, DESAFIO_EST, ATU_TXT, atuEstado, atuVerifica, atuAplica, ENFEITE_MESA, enfeiteMesa, enfeiteDe, ENTREGA_CHEGA, drawEfoodFlash, drawMesinha, drawKitchen, TE_OURO, MARMJ_SLOTS, efoodFlashA, ab2Cam, ab2Cabe, ab2Tela, ab2Notas, AB_FX, AB2, AB2_CENAS, AB2_TE, ab2Terraco, ab2RuaAurora, ab2CozinhaAurora, ab2Gala, ab2Quarto, ab2Cozinha, ab2Banco, ab2RuaCasa, TRIO, drawTrio, rankAuto, rankNome, RANK_VOCE, drawBia, roupaBia, BIA_REACAO, BIA_ROUPA_COR, abBia, BRAULIO_LOOK, convCabeca, drawRetrato, drawRetratosTela, RETRATO, RETRATO_QUEM, RETRATO_POSE, EXPRESSOES, exprDe, exprAtual: () => EXPR, devRetratos, CONV_UI, socorroFalas, NOITE, HIST_RECOMENDA, HIST_NOTA, guiaPontos, guiaEstrelas, abreBoletim, drawVela, drawFala, CRITICO, HIST_CRITICO, normGuia, plantaBoato, drawCaderno, drawGarfo, ROSA, GERENTE, drawPetala, musicaPay, musicaDe, musicaOk, camiModoTudo, CAMI_TUDO, cafesLista, cafeIdx, cafeIngred, ANSELMO_CURSOS, LIA_CURSOS, liaCfg, normLiaCursos, normAnselmoCursos, drinksLista, drinksTodos, drinkPreco, drinkIngred, drinkVagas, drinkPrep, MAQUINA_LUGAR, drawCafesEsp, drawCarrinhoBoasVindas, espressoTrabalho, bebExtra, devCenas, devAssistir, devFinal, tocaFinal, drawPlacaGuia, FINAL, finalCenas, histLiga, DEV_CAPS, drawIcon, liaOn, drawLia, LIA_HOME, LIA_LOOK, doceIcone, drawFino, TEMPOS, tempoMarcas, pedePrincipal, drawTempoTrilha, HIST_SOCORRO, HIST_EXIGENTE, EXIGENTE, LOUCA, vipDish, vipCook, casaBoa, exigRep, HIST_PLANTA, HIST_QUITOU, HIST_TETO, VONTADE, vontadeChance, vontadeDia, vontadeFalas, HIST_VONTADE_DOCE, HIST_VONTADE_CAFE, filaPos, queueRect, STATIONS, MANUAL, manualTracos, manualAberta, abrirManual, buildManual, fecharManual, semente, manualSemente, FECHA, efoodAberto, drawTable, camiMesasN, camiModoMesas, CAMI_MESAS_MAX, drawAventalCami, FISCAL, Fiscal, FISCAL_PONTOS, abrirDev, fecharDev, buildDev, passoJogo, devLivre, diaNoPonto, manutEmerg, manutFator, daniTaskDe, plateSlotsFor, queueYsFor, assentoSlow, AVENIDA, SABORES, cursoOk, INDUSTRIAL, PLATE_SLOTS, cozinhaSlots, upgradeDe, DECOR, DECOR_GRUPOS, TOALHA, LUXO, MOVEIS, movelOf, movelNivel, normMoveis, luxoPts, luxoTot, luxoNivel, luxoForca, decorOf, normDecor, decorOn, FILA_ACOES, filaMax, MARMITA, RETIRADA, marmitaMao, drawMarmita, prateleiraPos, EFOOD_COR, AVAL_BRAVO, QUEUE, setShopTab: v => shopAbrir(v), setShopGrupo: g => shopGrupoAbrir(g), shopSecoes: () => SHOP_GRUPOS.map(g => shopSecoesVis(g)), TREINO, TREINO_PASSOS, TREINO_COR, Treino, treinoLugar, DICAS, dicaDe, dicaLigada, drawDica, HUD_LUCRO, hudEstrelas, drawHud, daniNaLoja, treinoPrimeiro, playCareer, buildMenu, introBanco, buildFalencia, BANCO, normEmprestimo, parcelaDe, devidoDe, jurosDe, tabelaDe, simulaEmprestimo, SEMANA, semanaOf, diaOf, FILA_JUSTA, PORTA, CHAIRS, PAT, CONTAS, INGRED, CARDAPIO, precoPrato, pratosDoPonto, precoCarta, vendeNoPonto, pratoBase, fritoBase, tecnicaDe, pratosCurso, PRATO_BASE, PRECO_BEB, cafePreco, sucoPreco, sucoIngred, cafePrecoDe, ROTULO_BASE, CURSOS, CURSO_AV, CURSO_XP, tonhaoXp, tonhaoNivelXp, daniXp, daniNivelXp, DANI_XP, DANI_CURSOS, CURSOS_SEMFIM, cursoOf, cursoNivel, normCursos, pratoAv, CARNES, drawDish, pratoSabido, pratosSabidos, GOSTOS, GOSTOS_CAT, pedePrato, VEG, vegMov, drawDish, MAIS, PONTOS_ACAO, GORJETA, DRINK_PRICE, MOVIMENTO, movimentoSalao, DIVULGA, DIVULGA_DIA, divulgaOf, contasDia, bomGoal, SALAO, PONTOS, pontoOf, MESA, mesaBox, mesaPreco, salaoLugares, mesaProblema, salaoCaminho, salaoProblema, salaoOrdena, salaoAuto, salaoVaga, salaoPerto, salaoKit, salaoDevolucao, SALAO_SEMFIM, normSalao, setObst, OBST, pathOk, MAQUINA, BEBIDA_ESPERA, bebidaOf, MANUT, manutOf, manutChance, manutPreco, normManut, CLIMA, CLIMA_DIA, EVENTOS, eventoSemana, introManut, normPend, CALCADA, TW, HUDX, esperaAp, tableApproach, CRIT, STAFF, diariaDani, diariaJoca, cursosPay, DANI_TASKS, DANI_HANDS, daniTaskOk, TRASH, WASH, payroll, FOLHA_CORTE, folhaCorta, folhaCortes, folhaItens, listaE, pratosDe, couvertEffect, couvertOk, ambienteEffect, dishStock, normSave, Helper, JUICE, KITCHEN_SLOTS, handLayout, trayOk, Game, Group, Table, Kitchen, Waitress, BIA_SPEED, DAYS, UPGRADES, CUSTOMER_TYPES, LAYOUT, PAL, Sfx, findPath, render, Rank, sortRows, cleanName, normName, CMD, ENDLESS, VIP, MULTA, rk, renderRank, openRank, closeRank, LS, lsGet, lsSet, loadSave, DEV, saveKey, devSync, divulgaAberta, CAIXA_MAX, VERSAO, normCaixa, caixaResumo, caixaTotais, copyText, PRATO, pratoPerde, pratoVapor, AVAL, AVAL_CRIT, AVAL_BRAVO, avalMenu, cursosItem, DOCES, CAFES, cafeDe, DRINKS, drinkDe, drinkIdx, anselmoOn, ANSELMO_HOME, ANSELMO_LOOK, drawAnselmo, docesLista, docePreco, doceIngred, doceIdx, CAMI_CURSOS, CAMI_HOME, CAMI_LOOK, camiNivelCursos, normCamiCursos, drawCami, drawEspresso, JOCA_XP, JOCA_CURSOS, JOCA_HOME, jocaXp, jocaNivelXp, BASICAS, donoBasico, cursoDaniVis, JOCA_LOOK, drawJoca, avalTeto, avalEscala, TERRACO, fixosDe, vipTipos, doorFor, DOOR, terraco, drawPiano, drawPoltrona, drawFoyerTe, drawParedeTe, drawElevadorTe, drawLugarTe, drawPerson, makePeople, drawChair, iconeMudanca, avalFrac, AVAL_SIMPLES, AVAL_DECOR, normAval, avalNota, avalMedias, avalGeral, avalMovimento, avalMinimo, avalComentario, fmtNota, notaFaixa, gurugolCaixa, AVAL_COM, normAvalCom, buildGurugol, ABERTURA, Abertura, AB_ALT, AB_BASE, abEsc, AB_VIVO, aberturaVista, aberturaSom, drawAbertura, abrirAbertura, HISTORIA, HIST_CARDAPIO, HIST_DIVULGA, HIST_ENTREGA, LIBERA, liberaOf, ARCO, HIST_NOMES, normEquipe, upgradeCartao, cursoFeito, AVAL_POUCO, REFORMA, HIST, carencia, Conversa, drawConversa, falar, fluxoHistoria, falar, aberturaAtual: () => abertura };
+window.__lcc = { upgradeIcon, DESENHO_BASE, tipoAparelho, TESTES, TESTE_LS, TESTE_EQ_PADRAO, TESTE_PESSOAS, testeEqNorm, testeEqPadrao, testeTarefas, testeVagas, testeNivel, testeDono, testeEfetivas, testeEqLe, testeEqGrava, buildTesteFase, testeRelatorio, buildTesteFim, DESAFIOS, MEDALHAS, normDesafios, MANUAL_ABAS, buildDesafios, DESAFIO_EST, ATU_TXT, atuEstado, atuVerifica, atuAplica, ENFEITE_MESA, enfeiteMesa, enfeiteDe, ENTREGA_CHEGA, drawEfoodFlash, drawMesinha, drawKitchen, TE_OURO, MARMJ_SLOTS, efoodFlashA, ab2Cam, ab2Cabe, ab2Tela, ab2Notas, AB_FX, AB2, AB2_CENAS, AB2_TE, ab2Terraco, ab2RuaAurora, ab2CozinhaAurora, ab2Gala, ab2Quarto, ab2Cozinha, ab2Banco, ab2RuaCasa, TRIO, drawTrio, rankAuto, rankNome, RANK_VOCE, drawBia, roupaBia, BIA_REACAO, BIA_ROUPA_COR, abBia, BRAULIO_LOOK, convCabeca, drawRetrato, drawRetratosTela, RETRATO, RETRATO_QUEM, RETRATO_POSE, EXPRESSOES, exprDe, exprAtual: () => EXPR, devRetratos, CONV_UI, socorroFalas, NOITE, HIST_RECOMENDA, HIST_NOTA, guiaPontos, guiaEstrelas, abreBoletim, drawVela, drawFala, CRITICO, HIST_CRITICO, normGuia, plantaBoato, drawCaderno, drawGarfo, ROSA, GERENTE, drawPetala, musicaPay, musicaDe, musicaOk, camiModoTudo, CAMI_TUDO, cafesLista, cafeIdx, cafeIngred, ANSELMO_CURSOS, LIA_CURSOS, liaCfg, normLiaCursos, normAnselmoCursos, drinksLista, drinksTodos, drinkPreco, drinkIngred, drinkVagas, drinkPrep, MAQUINA_LUGAR, drawCafesEsp, drawCarrinhoBoasVindas, espressoTrabalho, bebExtra, devCenas, devAssistir, devFinal, tocaFinal, drawPlacaGuia, FINAL, finalCenas, histLiga, DEV_CAPS, drawIcon, liaOn, drawLia, LIA_HOME, LIA_LOOK, doceIcone, drawFino, TEMPOS, tempoMarcas, pedePrincipal, drawTempoTrilha, HIST_SOCORRO, HIST_EXIGENTE, EXIGENTE, LOUCA, vipDish, vipCook, casaBoa, exigRep, HIST_PLANTA, HIST_QUITOU, HIST_TETO, VONTADE, vontadeChance, vontadeDia, vontadeFalas, HIST_VONTADE_DOCE, HIST_VONTADE_CAFE, filaPos, queueRect, STATIONS, MANUAL, manualTracos, manualAberta, abrirManual, buildManual, fecharManual, semente, manualSemente, FECHA, efoodAberto, drawTable, camiMesasN, camiModoMesas, CAMI_MESAS_MAX, drawAventalCami, FISCAL, Fiscal, FISCAL_PONTOS, abrirDev, fecharDev, buildDev, passoJogo, devLivre, diaNoPonto, manutEmerg, manutFator, daniTaskDe, plateSlotsFor, queueYsFor, assentoSlow, AVENIDA, SABORES, cursoOk, INDUSTRIAL, PLATE_SLOTS, cozinhaSlots, upgradeDe, DECOR, DECOR_GRUPOS, TOALHA, LUXO, MOVEIS, movelOf, movelNivel, normMoveis, luxoPts, luxoTot, luxoNivel, luxoForca, decorOf, normDecor, decorOn, decorCombina, decorPreco, decorSimplesVenda, DECOR_PRECO, FILA_ACOES, filaMax, MARMITA, RETIRADA, marmitaMao, drawMarmita, prateleiraPos, EFOOD_COR, AVAL_BRAVO, QUEUE, setShopTab: v => shopAbrir(v), setShopGrupo: g => shopGrupoAbrir(g), shopSecoes: () => SHOP_GRUPOS.map(g => shopSecoesVis(g)), TREINO, TREINO_PASSOS, TREINO_COR, Treino, treinoLugar, DICAS, dicaDe, dicaLigada, drawDica, HUD_LUCRO, hudEstrelas, drawHud, daniNaLoja, treinoPrimeiro, playCareer, buildMenu, introBanco, buildFalencia, BANCO, normEmprestimo, parcelaDe, devidoDe, jurosDe, tabelaDe, simulaEmprestimo, SEMANA, semanaOf, diaOf, FILA_JUSTA, PORTA, CHAIRS, PAT, CONTAS, INGRED, CARDAPIO, precoPrato, pratosDoPonto, precoCarta, vendeNoPonto, pratoBase, fritoBase, tecnicaDe, pratosCurso, PRATO_BASE, PRECO_BEB, cafePreco, sucoPreco, sucoIngred, cafePrecoDe, ROTULO_BASE, CURSOS, CURSO_AV, CURSO_XP, tonhaoXp, tonhaoNivelXp, daniXp, daniNivelXp, DANI_XP, DANI_CURSOS, CURSOS_SEMFIM, cursoOf, cursoNivel, normCursos, pratoAv, CARNES, drawDish, pratoSabido, pratosSabidos, GOSTOS, GOSTOS_CAT, pedePrato, VEG, vegMov, drawDish, MAIS, PONTOS_ACAO, GORJETA, DRINK_PRICE, MOVIMENTO, movimentoSalao, DIVULGA, DIVULGA_DIA, divulgaOf, contasDia, bomGoal, SALAO, PONTOS, pontoOf, MESA, mesaBox, mesaPreco, salaoLugares, mesaProblema, salaoCaminho, salaoProblema, salaoOrdena, salaoAuto, salaoVaga, salaoPerto, salaoKit, salaoDevolucao, SALAO_SEMFIM, normSalao, setObst, OBST, pathOk, MAQUINA, BEBIDA_ESPERA, bebidaOf, MANUT, manutOf, manutChance, manutPreco, normManut, CLIMA, CLIMA_DIA, EVENTOS, eventoSemana, introManut, normPend, CALCADA, TW, HUDX, esperaAp, tableApproach, CRIT, STAFF, diariaDani, diariaJoca, cursosPay, DANI_TASKS, DANI_HANDS, daniTaskOk, TRASH, WASH, payroll, FOLHA_CORTE, folhaCorta, folhaCortes, folhaItens, listaE, pratosDe, couvertEffect, couvertOk, ambienteEffect, dishStock, normSave, Helper, JUICE, KITCHEN_SLOTS, handLayout, trayOk, Game, Group, Table, Kitchen, Waitress, BIA_SPEED, DAYS, UPGRADES, CUSTOMER_TYPES, LAYOUT, PAL, Sfx, findPath, render, Rank, sortRows, cleanName, normName, CMD, ENDLESS, VIP, MULTA, rk, renderRank, openRank, closeRank, LS, lsGet, lsSet, loadSave, DEV, saveKey, devSync, divulgaAberta, CAIXA_MAX, VERSAO, normCaixa, caixaResumo, caixaTotais, copyText, PRATO, pratoPerde, pratoVapor, AVAL, AVAL_CRIT, AVAL_BRAVO, avalMenu, cursosItem, DOCES, CAFES, cafeDe, DRINKS, drinkDe, drinkIdx, anselmoOn, ANSELMO_HOME, ANSELMO_LOOK, drawAnselmo, docesLista, docePreco, doceIngred, doceIdx, CAMI_CURSOS, CAMI_HOME, CAMI_LOOK, camiNivelCursos, normCamiCursos, drawCami, drawEspresso, JOCA_XP, JOCA_CURSOS, JOCA_HOME, jocaXp, jocaNivelXp, BASICAS, donoBasico, cursoDaniVis, JOCA_LOOK, drawJoca, avalTeto, avalEscala, TERRACO, fixosDe, vipTipos, doorFor, DOOR, terraco, drawPiano, drawPoltrona, drawFoyerTe, drawParedeTe, drawElevadorTe, drawLugarTe, drawPerson, makePeople, drawChair, iconeMudanca, avalFrac, AVAL_SIMPLES, AVAL_DECOR, normAval, avalNota, avalMedias, avalGeral, avalMovimento, avalMinimo, avalComentario, fmtNota, notaFaixa, gurugolCaixa, AVAL_COM, normAvalCom, buildGurugol, ABERTURA, Abertura, AB_ALT, AB_BASE, abEsc, AB_VIVO, aberturaVista, aberturaSom, drawAbertura, abrirAbertura, HISTORIA, HIST_CARDAPIO, HIST_DIVULGA, HIST_ENTREGA, LIBERA, liberaOf, ARCO, HIST_NOMES, normEquipe, upgradeCartao, cursoFeito, AVAL_POUCO, REFORMA, HIST, carencia, Conversa, drawConversa, falar, fluxoHistoria, falar, aberturaAtual: () => abertura };
 window.requestAnimationFrame(frame);
 
 })();

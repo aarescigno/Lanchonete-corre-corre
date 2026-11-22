@@ -15,6 +15,7 @@ L0.ARCO.forEach(a=>{ walk('arco.'+a.id,a.falas); if(a.falasB) walk('arco.'+a.id+
 
 // ---------- CA1: o que a spec troca, e só isso ----------
 { const E=JSON.parse(JSON.stringify(BASE));
+  E['cap6.antes'].push(['tonhao','insegura','segurando a cortina de chita','E as nossas coisinhas? A chita, o pisca-pisca...'],['bia','firme','','Aqui é outro nível, tio. O que não combina, eu vendo. O novo tá no Luxo.'],['dani','','','Espelho, quadro de artista... Bi, eu vou ter medo de encostar em tudo!'],['tonhao','','','Casa nova, avental novo. Mas o tempero é o mesmo.'],['dani','','','E a espada da dona Cida?'],['bia','alegre','','Vai pra casa da mãe. Lá ela segue cuidando da gente.'],['bia','','','E a foto da mãe vem junto. Com moldura nova.']);   // v12.9.1: as 7 falas da chegada à Avenida
   const tr=(k,i,s)=>{ E[k][i][3]=s; };                       // troca o texto da fala i
   const ins=(k,i,q,e,s)=>{ E[k].splice(i,0,[q,e,'',s]); };   // insere antes do índice i
   tr('HIST_CRITICO.falas',0,'Bi! Aquele freguês sozinho... ele tinha um caderninho!');

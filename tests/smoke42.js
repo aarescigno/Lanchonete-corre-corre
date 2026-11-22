@@ -48,9 +48,9 @@ const html=fs.readFileSync(__dirname+'/../lanchonete.html','utf8');
   notaDe(g,3.6); const antes=g.save.salao.mesas.length, lug=g.lugaresTot;
   ok(g.up.tvs && g.up.assento==='cadeira' && g.up.maquina && g.save.equipe.tvs===2,'(antes) TVs, cadeirinhas e jarra na área industrial');
   ok(g.mudarPonto(),'mudou'); const sv=g.save;
-  ok(sv.bank===3000 && sv.salao.ponto==='avenida' && g.ponto.lugares===24,'−R$ 2.000 e o ponto novo (24 lugares)');
+  ok(sv.bank===3030 && sv.salao.ponto==='avenida' && g.ponto.lugares===24,'−R$ 2.000 e o ponto novo (24 lugares)');
   ok(!sv.up.tvs && !sv.up.assento && !sv.up.maquina && sv.equipe.tvs===0,'as TVs, o assento da espera e a jarra saem do save');
-  ok(sv.up.fogaoInd && sv.up.tenis && sv.up.pratos===2 && sv.equipe.tonhao===1 && sv.equipe.dani===1 && sv.decor.espada===1 && sv.decor.violeta===1 && sv.decor.anturio===1,'o fogão industrial, melhorias, pratos, equipe e as plantas vão junto');
+  ok(sv.up.fogaoInd && sv.up.tenis && sv.up.pratos===2 && sv.equipe.tonhao===1 && sv.equipe.dani===1 && Object.keys(sv.decor).length===0,'o fogão industrial, melhorias, pratos e equipe vão junto; os enfeites simples saem pela metade (v12.9.1)');
   ok(sv.salao.mesas.length===antes && g.lugaresTot===lug && L.salaoAuto([4,4,4,4,4,4].map((seats,c)=>({seats,c:c%4})),L.PONTOS[2])!==null,'as mesas vão junto e 24 lugares (6 mesas de 4) cabem na arrumação automática');
   ok(sv.cap===6 && sv.conversa==='antes' && sv.capAzul===0,'o cap. 6 começa, com a conversa de antes pendente');
   g.resetDay(10); ok(L.PLATE_SLOTS.length===6 && g.kitchen.plates.length===6 && g.vagas===4 && L.PLATE_SLOTS.every((s,i)=>i===0 || s.x-L.PLATE_SLOTS[i-1].x>=28) && L.PLATE_SLOTS[5].x+19<=960 && L.PLATE_SLOTS[0].x-19>=766,'balcão de pratos com 6 vagas dentro da janela e prateleira de 4');
@@ -123,11 +123,11 @@ const html=fs.readFileSync(__dirname+'/../lanchonete.html','utf8');
 
 // ---------- 7. as flores ----------
 { const H=jogo(6,'avenida',{ bank:5000 }), {g,L}=H; g.resetDay(10); g.begin(); g.mode='carreira';
-  ok(['tulipa','copo','orquidea'].every(id=>{ const d=L.decorOf(id); return d.nivel===3 && d.amb===0.15 && d.grupo==='plantas'; }) && [40,50,60].join()===['tulipa','copo','orquidea'].map(id=>L.decorOf(id).cost).join(),'tulipas R$ 40, copos-de-leite R$ 50 e orquídeas R$ 60, +0,15 cada');
+  ok(['tulipa','copo','orquidea'].every(id=>{ const d=L.decorOf(id); return d.nivel===3 && d.amb===0.15 && d.grupo==='plantas'; }) && [60,60,60].join()===['tulipa','copo','orquidea'].map(id=>L.decorPreco(L.decorOf(id),3)).join(),'tulipas, copos-de-leite e orquídeas R$ 60 cada na Avenida (v12.9.1), +0,15 cada');
   const amb=()=>{ g.avals=[]; const q={ avalia:true, retira:false, angry:false, state:'wantBill', perdFila:0, perdMesa:0, pratoQ:5, semVeg:false, coffee:false, table:null, fria:false, type:'estudante', vip:false }; g.avaliar(q,0,0); return g.avals[0].s[4]; };
-  const a0=amb(); ok(g.buyDecor('tulipa') && g.save.bank===4960,'comprar tulipas na Avenida'); const a1=amb(); g.buyDecor('copo'); const a2=amb(); g.buyDecor('orquidea'); const a3=amb();
+  const a0=amb(); ok(g.buyDecor('tulipa') && g.save.bank===4940,'comprar tulipas na Avenida'); const a1=amb(); g.buyDecor('copo'); const a2=amb(); g.buyDecor('orquidea'); const a3=amb();
   ok(a1>=a0 && a2>=a1 && a3>=a2 && a3>=a0,'v10.7: cada flor soma 1 ponto de luxo (0,05 cada no Ambiente da Avenida), e o Ambiente só sobe');
-  ok(g.buyDecor('violeta') && g.buyDecor('anturio') && g.buyDecor('pendente') && g.buyDecor('espada'),'as plantas da Garagem e da área industrial também estão à venda na Avenida');
+  ok(!g.buyDecor('violeta') && !g.buyDecor('anturio') && !g.buyDecor('pendente') && !g.buyDecor('espada'),'as plantas da Garagem e da área industrial não estão à venda na Avenida (v12.9.1)');
   const I=jogo(4,'industrial',{ bank:5000 }).g; ok(!I.buyDecor('tulipa') && I.buyDecor('violeta'),'na área industrial, as flores da Avenida não estão à venda');
   H.L.setShopGrupo('lanchonete'); H.L.setShopTab('decor'); ok(/Tulipas/.test(txt(grid(H))) && /Copos-de-leite/.test(txt(grid(H))) && /Orquídeas/.test(txt(grid(H))),'na lojinha da Avenida, os cartões das flores');
   ok(Object.keys(L.AVAL_DECOR).includes('tulipa') && Object.keys(L.AVAL_DECOR).includes('copo') && Object.keys(L.AVAL_DECOR).includes('orquidea'),'elogios das flores no Gúgou'); }
@@ -165,7 +165,7 @@ const html=fs.readFileSync(__dirname+'/../lanchonete.html','utf8');
   H.els['btn-start'].fire('click'); g.schedule=[]; g.nextIdx=0; g.money=2500; g.custo=0; g.finishDay();
   ok(g.save.capAzul===3 && g.result.cap.n===6 && g.result.cap.ok && g.save.conversa==='depois','3 dias no azul: cap. 6 cumprido');
   ok(g.avancaCap()===false && g.save.cap===7 && g.save.conversa==='antes','depois do cap. 6: o cap. 7 (novo, v10.5.2) começa com a conversa de antes');
-  ok(L.HISTORIA.length>=8 && L.HISTORIA[5].titulo==='Do outro lado da rua' && L.HISTORIA[5].antes.length===4 && L.HISTORIA[5].depois.length===4 && L.HISTORIA[7].titulo==='Nota de restaurante' && L.HISTORIA[7].antes.length===4 && L.HISTORIA[7].depois.length===6,'as falas dos caps. 6 e 8 (o 7 é novo, v10.5.2)');
+  ok(L.HISTORIA.length>=8 && L.HISTORIA[5].titulo==='Do outro lado da rua' && L.HISTORIA[5].antes.length===11 && L.HISTORIA[5].depois.length===4 && L.HISTORIA[7].titulo==='Nota de restaurante' && L.HISTORIA[7].antes.length===4 && L.HISTORIA[7].depois.length===6,'as falas dos caps. 6 e 8 (o 7 é novo, v10.5.2)');
   ok(L.HISTORIA[5].antes[2].nota==='virando a foto da mãe pra janela' && L.HISTORIA[7].depois[1].nota==='tirando o avental' && L.HISTORIA[5].antes[1].nota==='olhando pela janela','as rubricas em itálico'); }
 
 // ---------- 11. cap. 8 (era o 7 antes da v10.5.2) ----------

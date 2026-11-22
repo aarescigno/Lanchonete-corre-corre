@@ -17,9 +17,8 @@ Origem: retorno do Renan Martorelli (beta-tester) e conversa com o Arthur (15/10
 |---|---|---|---|
 | 5 | ~~Modo História, parte 1~~: juntou-se à 2f e aos capítulos da 3a, 3b e 4a (28/10) | — | — |
 | 14b | O bot humano, calibrado pelos relatórios | — (testes) | depois dos relatórios dos testers |
-| correção | As turmas da espera sem toque trocado (a de cima fica com a área dela até os pés) | v12.8.3 | feita em 21/11 (`docs/spec-v12.8.3.md`; `smoke113`; `queueRect` com o corte) |
 | 17a | Os enfeites novos da família fina e os redesenhos | v12.9 | feita em 22/11 (`docs/spec-v12.9.md`; `smoke115`; os 9 desenhos e a moldura dourada) |
-| 17b | A decoração de cada ponto: as duas famílias, os preços e a mudança | v12.9.1 | planejada em 21/11 (`docs/spec-v12.9.1.md`, aprovada; depois da 17a) |
+| 17b | A decoração de cada ponto: as duas famílias, os preços e a mudança | v12.9.1 | feita em 22/11 (`docs/spec-v12.9.1.md`; `smoke116`; `decorPreco`, `decorCombina` e a venda dos simples na mudança) |
 | correção | A espera sentada e o enfeite das mesas sem pagar à toa (cadeirinhas → banquinhos por R$ 45, sem voltar; o enfeite sai com o linho e volta pela metade) | v12.8.4 | feita em 21/11 (`docs/spec-v12.8.4.md`; `smoke114`; `assentoPreco` e a devolução no `buyMovel('linho')`) |
 | 18a | Os cursos do Tonhão em degraus por ponto (pratos de estrada, 9 níveis, Turno sem fim fora do menu) | v12.10 | planejada em 22/11, em rascunho (`docs/spec-v12.10.md`) |
 | 18b | O prato que ele estranha, o suor, os desenhos dos pratos de estrada e o empratamento | v12.10.1 | planejada em 22/11, em rascunho (`docs/spec-v12.10.1.md`) |
@@ -86,15 +85,6 @@ Origem: retorno do Renan Martorelli (beta-tester) e conversa com o Arthur (15/10
 > - **O Terraço mede pela equipe toda** (Joca, Cami, Anselmo e a confeitaria): é ela que passa ~90% das metas.
 > - **Regra da 3f em todas as sessões:** cartão novo da lojinha só com nome, preço e "?"; toda novidade ganha ficha no `MANUAL` (sem números), revelada quando aparece na história.
 > Ordem: 4a-1 (o ponto e a refeição completa, v10) → 4a-2 (o VIP exigente e a reputação, v10.1) → 4a-3 (a cozinha: alta gastronomia, a Lia e a alta confeitaria, v10.2) → 4a-4 (o salão e o bar: Cami, Joca e Anselmo, v10.3) → 4a-5 (música, flores e rebalanceamento, v10.4). Cada uma é uma versão, com PR e merge. As "Checagens de fim de sessão" da etapa 3 valem para todas.
-
-## Etapa 17 — A decoração de cada ponto (17a, v12.9; 17b, v12.9.1)
-Pedido do usuário em 21/11 (`docs/PROPOSTAS.md`, "a decoração de cada ponto"): samambaia e espada-de-são-jorge não combinam com o Terraço. Os enfeites viram duas famílias (a simples, da Garagem e da área industrial; a fina, da Avenida e do Terraço), com preço pelo ponto em que se compra; na mudança para a Avenida, os simples saem pela metade e a equipe conversa sobre o "outro nível". A foto da dona Rosa vai junto, com moldura nova.
-- **17a** (v12.9, `docs/spec-v12.9.md`, aprovada): os 5 enfeites novos da família fina, os 4 redesenhos (temperos, cactos, jiboia, bonsai) e a moldura dourada da foto.
-
-  **Modelo:** Sonnet, esforço alto (9 desenhos no canvas, conferidos por captura)
-- **17b** (v12.9.1, `docs/spec-v12.9.1.md`, aprovada; depois da 17a): as famílias, os preços por ponto, a venda na mudança, a espada da dona Cida, as 7 falas da chegada à Avenida e o save antigo.
-
-  **Modelo:** Sonnet, esforço médio (regras, números e falas decididos)
 
 ## Etapa 14 — O bot com habilidade de gente (14a, v12.2; 14b, só testes)
 Pedido do usuário em 17/11: o bot joga "bem demais, melhor do que gente". Os alvos do `balance.js` e do `carreira.js` saem de um bot que reage em 0,05 s, vê o salão inteiro e nunca erra o toque. A régua passa a ser o jogo de gente.

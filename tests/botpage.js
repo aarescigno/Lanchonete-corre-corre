@@ -282,7 +282,7 @@ mk.luxo=function(g,L,folha){
   let n=0;
   for(;;){
     const lista=[];
-    L.DECOR.forEach(d=>{ if(!(d.id in g.save.decor)&&(!d.nivel||d.nivel<=g.ponto.nivel)) lista.push({ id:d.id, cost:d.cost, movel:false }); });
+    L.DECOR.forEach(d=>{ if(!(d.id in g.save.decor)&&L.decorCombina(d,g.ponto)) lista.push({ id:d.id, cost:L.decorPreco(d,g.ponto), movel:false }); });
     const m=L.MOVEIS[L.movelNivel(g)]; if(m&&m.nivel<=g.ponto.nivel) lista.push({ id:m.id, cost:m.cost, movel:true });
     lista.sort((a,b)=>a.cost-b.cost);
     const it=lista[0];

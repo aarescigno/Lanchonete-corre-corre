@@ -4,14 +4,14 @@ const H=require('./harness.js')(); const {g,L,ctx,els}=H;
 let fails=0,total=0; const ok=(c,m)=>{ total++; if(!c){fails++;console.log('FAIL:',m);} else console.log('ok  :',m); };
 const novo=s=>{ g.save=L.normSave(Object.assign({bank:500,dia:5},s||{})); g.up=g.save.up; g.boughtFor=0; g.shopBought=false; g.buildTables(); };
 
-ok(L.DECOR.length===25 && L.DECOR.filter(d=>!d.nivel).length===6 && L.DECOR.every(d=>d.cost>0 && L.DECOR_GRUPOS.some(x=>x.id===d.grupo)),'6 enfeites da Garagem, cada um com preço e grupo (25 no total com os do luxo, v10.7, e os 5 finos, v12.9)');
+ok(L.DECOR.length===25 && L.DECOR.filter(d=>!d.nivel).length===6 && L.DECOR.every(d=>L.decorPreco(d,Math.max(d.nivel||1,1))>0 && L.DECOR_GRUPOS.some(x=>x.id===d.grupo)),'6 enfeites da Garagem, cada um com preço e grupo (25 no total com os do luxo, v10.7, e os 5 finos, v12.9)');
 ok(JSON.stringify(L.normDecor({espada:1,foto:0,xyz:1}))==='{"espada":1,"foto":0}' && JSON.stringify(L.normDecor(null))==='{}','normDecor: só os enfeites que existem, 1 à mostra e 0 guardado');
 
 // as plantas da v7.7 saíram: o jogo começa sem enfeite nenhum
 novo(); ok(JSON.stringify(g.save.decor)==='{}' && !L.decorOn(g,'espada') && !L.decorOn(g,'lata'),'save novo: sem plantas nem enfeites');
 
 // compra: à vontade, fora da melhoria do dia, e vai para o caixa do salão
-novo(); g.goShop(5); { const d=L.decorOf('samambaia'), b0=g.save.bank;
+novo(); g.goShop(5); { const d={cost:L.decorPreco(L.decorOf('samambaia'),1)}, b0=g.save.bank;
   ok(g.buyDecor('samambaia') && g.save.bank===b0-d.cost && g.save.decor.samambaia===1 && L.decorOn(g,'samambaia'),'comprou a samambaia (à mostra)');
   ok(g.save.caixaPend.sal===d.cost,'o gasto entra no caixa do salão');
   ok(!g.buyDecor('samambaia') && g.save.bank===b0-d.cost,'não compra o mesmo enfeite 2 vezes');
@@ -47,7 +47,7 @@ novo({decor:{espada:1,foto:0}}); g.goShop(5); L.setShopTab('decor'); {
   const c=cartoes().slice(1), nome=i=>c[i].children[2].textContent, btn=i=>c[i].children.filter(x=>!/qm/.test(x.className||'')).pop().textContent;
   ok(cartoes().length===11 && c.length===10,'o quadro e 10 cartões: 8 enfeites (6 antigos, o pisca-pisca e a chita), as mesas e a TV e som (a toalha foi para o Salão, v8.9.1)');
   ok(nome(0)==='Espada-de-são-jorge' && btn(0)==='Guardar','espada comprada: Guardar');
-  ok(btn(1)==='Comprar R$ 8','lata: Comprar R$ 8');
+  ok(btn(1)==='Comprar R$ 15','lata: Comprar R$ 15');
   ok(btn(3)==='Pôr de volta','foto guardada: Pôr de volta');
   ok(!c.some((x,i)=>nome(i)==='Toalha xadrez'),'Luxo sem a toalha'); }
 // v8.9.1: a toalha em todas as mesas, no painel do Salão

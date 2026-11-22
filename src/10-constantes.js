@@ -608,36 +608,36 @@ const SALAO_SEMFIM = [2,2,2,4,2,4];
    vai junto quando a mesa muda de lugar e some quando ela é vendida
    ============================================================ */
 const DECOR = [
-  { id:'espada',    grupo:'plantas', name:'Espada-de-são-jorge', cost:15, lux:1 },
-  { id:'lata',      grupo:'plantas', name:'Temperos na lata',     cost:8, lux:1 },
-  { id:'samambaia', grupo:'plantas', name:'Samambaia',           cost:30, lux:1 },
+  { id:'espada',    grupo:'plantas', name:'Espada-de-são-jorge', fam:'simples', lux:1 },
+  { id:'lata',      grupo:'plantas', name:'Temperos na lata', fam:'simples', lux:1 },
+  { id:'samambaia', grupo:'plantas', name:'Samambaia', fam:'simples', lux:1 },
   // v9, só a partir da área industrial: as plantas da calçada (+0,1 cada no Ambiente)
-  { id:'violeta',   grupo:'plantas', name:'Cactos',               cost:20, nivel:2, amb:0.1, lux:1 },
-  { id:'anturio',   grupo:'plantas', name:'Antúrio',             cost:30, nivel:2, amb:0.1, lux:1 },
-  { id:'pendente',  grupo:'plantas', name:'Jiboia pendurada',     cost:40, nivel:2, amb:0.1, lux:1 },
+  { id:'violeta',   grupo:'plantas', name:'Cactos', nivel:2, amb:0.1, fam:'simples', lux:1 },
+  { id:'anturio',   grupo:'plantas', name:'Antúrio', nivel:2, amb:0.1, fam:'simples', lux:1 },
+  { id:'pendente',  grupo:'plantas', name:'Jiboia pendurada', nivel:2, amb:0.1, fam:'simples', lux:1 },
   // v9.1, só na Avenida Brasil: as flores da calçada (+0,15 cada no Ambiente)
-  { id:'tulipa',    grupo:'plantas', name:'Tulipas',             cost:40, nivel:3, amb:0.15, lux:1 },
-  { id:'copo',      grupo:'plantas', name:'Copos-de-leite',      cost:50, nivel:3, amb:0.15, lux:1 },
-  { id:'orquidea',  grupo:'plantas', name:'Orquídeas',           cost:60, nivel:3, amb:0.15, lux:1 },
+  { id:'tulipa',    grupo:'plantas', name:'Tulipas', nivel:3, amb:0.15, fam:'fina', lux:1 },
+  { id:'copo',      grupo:'plantas', name:'Copos-de-leite', nivel:3, amb:0.15, fam:'fina', lux:1 },
+  { id:'orquidea',  grupo:'plantas', name:'Orquídeas', nivel:3, amb:0.15, fam:'fina', lux:1 },
   // v10.4, só no Terraço: as flores finas do foyer (+0,2 cada no Ambiente)
-  { id:'ikebana',   grupo:'plantas', name:'Ikebana',             cost:90,  nivel:4, amb:0.2, lux:1 },
-  { id:'orqArranjo', grupo:'plantas', name:'Bonsai',              cost:120, nivel:4, amb:0.2, lux:1 },
-  { id:'campo',     grupo:'plantas', name:'Flores do campo',     cost:70,  nivel:4, amb:0.2, lux:1 },
-  { id:'foto',      grupo:'rosa',    name:'Foto da dona Rosa',   cost:10, lux:1 },
-  { id:'giz',       grupo:'rosa',    name:'Quadro de giz',       cost:25, lux:1 },
-  { id:'placa',     grupo:'rosa',    name:'Plaquinha',           cost:15, lux:1 },
+  { id:'ikebana',   grupo:'plantas', name:'Ikebana',  nivel:4, amb:0.2, fam:'fina', lux:1 },
+  { id:'orqArranjo', grupo:'plantas', name:'Bonsai', nivel:4, amb:0.2, fam:'fina', lux:1 },
+  { id:'campo',     grupo:'plantas', name:'Flores do campo',  nivel:4, amb:0.2, fam:'fina', lux:1 },
+  { id:'foto',      grupo:'rosa',    name:'Foto da dona Rosa', lux:1 },
+  { id:'giz',       grupo:'rosa',    name:'Quadro de giz', fam:'simples', lux:1 },
+  { id:'placa',     grupo:'rosa',    name:'Plaquinha', fam:'simples', lux:1 },
   // v10.7, os enfeites do luxo (2 pontos cada; à venda do ponto do `nivel` em diante)
-  { id:'pisca',     grupo:'enfeites', name:'Pisca-pisca',        cost:30,   nivel:1, lux:2 },
-  { id:'chita',     grupo:'enfeites', name:'Cortina de chita',   cost:25,   nivel:1, lux:2 },
-  { id:'luminaria', grupo:'enfeites', name:'Luminárias de fábrica', cost:180, nivel:2, lux:2 },
-  { id:'quadros',   grupo:'enfeites', name:'Quadros de artista', cost:450,  nivel:3, lux:2 },
-  { id:'lustre',    grupo:'enfeites', name:'Lustre de cristal',  cost:1500, nivel:4, lux:2 },
+  { id:'pisca',     grupo:'enfeites', name:'Pisca-pisca',   nivel:1, fam:'simples', lux:2 },
+  { id:'chita',     grupo:'enfeites', name:'Cortina de chita',   nivel:1, fam:'simples', lux:2 },
+  { id:'luminaria', grupo:'enfeites', name:'Luminárias de fábrica', nivel:2, fam:'simples', lux:2 },
+  { id:'quadros',   grupo:'enfeites', name:'Quadros de artista',  nivel:3, fam:'fina', lux:3 },
+  { id:'lustre',    grupo:'enfeites', name:'Lustre de cristal', nivel:4, fam:'fina', lux:3 },
   // v12.9, só na Avenida e no Terraço: a família fina (a regra de quem vale em cada ponto é da v12.9.1)
-  { id:'espelho',   grupo:'enfeites', name:'Espelho de moldura', cost:200,  nivel:3, lux:2 },
-  { id:'palmeira',  grupo:'plantas',  name:'Palmeiras na entrada', cost:200, nivel:3, lux:2 },
-  { id:'vinhos',    grupo:'enfeites', name:'Estante de vinhos',  cost:200,  nivel:3, lux:2 },
-  { id:'cortina',   grupo:'enfeites', name:'Cortinas de linho',  cost:450,  nivel:3, lux:3 },
-  { id:'arandela',  grupo:'enfeites', name:'Arandelas',          cost:450,  nivel:3, lux:3 }
+  { id:'espelho',   grupo:'enfeites', name:'Espelho de moldura',  nivel:3, fam:'fina', lux:2 },
+  { id:'palmeira',  grupo:'plantas',  name:'Palmeiras na entrada', nivel:3, fam:'fina', lux:2 },
+  { id:'vinhos',    grupo:'enfeites', name:'Estante de vinhos',  nivel:3, fam:'fina', lux:2 },
+  { id:'cortina',   grupo:'enfeites', name:'Cortinas de linho',  nivel:3, fam:'fina', lux:3 },
+  { id:'arandela',  grupo:'enfeites', name:'Arandelas',  nivel:3, fam:'fina', lux:3 }
 ];
 const DECOR_GRUPOS = [
   { id:'plantas', nome:'Plantas' },
@@ -655,6 +655,25 @@ const ENFEITE_MESA = {
 function enfeiteDe(pid){ return ENFEITE_MESA[pid] || ENFEITE_MESA.garagem; }
 function enfeiteMesa(g){ return enfeiteDe(g && g.ponto && g.ponto.id); }
 function decorOf(id){ return DECOR.find(d => d.id === id); }
+/* v12.9.1: duas famílias de enfeite. A simples (`fam:'simples'`, nível 1 e 2) é da Garagem e da área industrial; a fina (`fam:'fina'`, nível 3 e 4), da Avenida e do Terraço; a foto da dona Rosa
+   não tem família e vale nos quatro pontos. O preço vem do luxo do enfeite e do ponto em que se compra (índice = nível do ponto − 1); na mudança para a Avenida, os simples saem por DECOR_VENDA do preço */
+const DECOR_PRECO = { 1:[15, 30, 60, 150], 2:[30, 180, 200, 600], 3:[0, 0, 450, 1500] };
+const DECOR_VENDA = 0.5;
+function decorNv(p){ return p && typeof p === 'object' ? (p.nivel || 1) : (+p || 1); }
+function decorCombina(d, p){
+  const nv = decorNv(p);
+  if (!d || (d.nivel || 1) > nv) return false;
+  return !d.fam || (d.fam === 'simples' ? nv <= 2 : nv >= 3);
+}
+function decorPreco(d, p){ const l = DECOR_PRECO[d.lux]; return l ? l[clamp(decorNv(p), 1, 4) - 1] : 0; }
+/* o que a mudança para a Avenida (ou o save antigo lá) faz com os enfeites simples: { ids (os que saem), v (o que volta ao dinheiro) }; `semEspada`: a espada da dona Cida (do Modo História) sai sem entrar na conta */
+function decorSimplesVenda(decor, semEspada){
+  const ids = [], soma = Object.keys(decor || {}).reduce((a, id) => {
+    const d = decorOf(id); if (!d || d.fam !== 'simples') return a;
+    ids.push(id); return a + (semEspada && id === 'espada' ? 0 : DECOR_PRECO[d.lux][(d.nivel || 1) - 1]);
+  }, 0);
+  return { ids, v:Math.round(soma * DECOR_VENDA) };
+}
 /* save.decor: { id: 1 à mostra, 0 guardado }; só os enfeites que existem */
 function normDecor(d){
   const out = {};
@@ -1303,7 +1322,14 @@ const HISTORIA = [
       { q:'bia', e:'alegre', s:'Avenida Brasil, tio! Olha o movimento dessa calçada.' },
       { q:'tonhao', e:'insegura', nota:'olhando pela janela', s:'E ali, do outro lado da rua... a Casa Aurora.' },
       { q:'bia', e:'firme', nota:'virando a foto da mãe pra janela', s:'Daqui ela vê tudo. E ele vai ver a gente crescer.' },
-      { q:'dani', s:'E aqui cabe até música ao vivo!' }],
+      { q:'dani', s:'E aqui cabe até música ao vivo!' },
+      { q:'tonhao', e:'insegura', nota:'segurando a cortina de chita', s:'E as nossas coisinhas? A chita, o pisca-pisca...' },
+      { q:'bia', e:'firme', s:'Aqui é outro nível, tio. O que não combina, eu vendo. O novo tá no Luxo.' },
+      { q:'dani', s:'Espelho, quadro de artista... Bi, eu vou ter medo de encostar em tudo!' },
+      { q:'tonhao', s:'Casa nova, avental novo. Mas o tempero é o mesmo.' },
+      { q:'dani', s:'E a espada da dona Cida?' },
+      { q:'bia', e:'alegre', s:'Vai pra casa da mãe. Lá ela segue cuidando da gente.' },
+      { q:'bia', s:'E a foto da mãe vem junto. Com moldura nova.' }],
     depois:[
       { q:'tonhao', s:'Três dias no azul com aluguel de gente grande.' },
       { q:'bia', s:'O pessoal do Bráulio passou duas vezes espiando pela janela.' },
@@ -1916,7 +1942,7 @@ const HIST_NOMES = { bia:'Bia', tonhao:'Tonhão', dani:'Dani', joca:'Joca', cami
 const ATU_TXT = { procurando:'Procurando versão nova...', nova:'Tem versão nova: {v}! Seu jogo salvo continua.', igual:'Você já está na versão mais nova ({v}).', erro:'Sem internet agora. Tente de novo mais tarde.', atualizando:'Atualizando...' };
 function atuEstado(remota, atual){ if (typeof remota !== 'string' || !remota.trim()) return 'erro'; return remota.trim() === atual ? 'igual' : 'nova'; }
 const CAIXA_MAX = 14;                                 // livro-caixa (v7.2): quantos dias da carreira ficam guardados
-const VERSAO = 'v12.9';                                     // vai no resumo do Caixa
+const VERSAO = 'v12.9.1';                                   // vai no resumo do Caixa
 const DIVULGA_DIA = 4;                                // antes disso, o movimento é o da inauguração (sem custo); v9.0.2: dia 4, e o padrão é o boca a boca
 function divulgaAberta(n, sv){ return devLivre() || n >= DIVULGA_DIA && !(sv && sv.convDiv === 'pend'); }   // no modo dev, desde o dia 1; v9.0.3: no Modo História, só depois da conversa
 /* v9.6.4: a Efood (os entregadores) só abre depois da conversa dos entregadores, no Modo História; antes dela, nenhum tipo com `retira` vem na agenda */
@@ -2115,7 +2141,7 @@ const MANUAL = [
   { id:'l-fogao',      aba:'lojinha', nome:'Fogão industrial', linha:'Uma boca a mais: o Tonhão faz mais pratos ao mesmo tempo.' },
   { id:'l-cardapio',   aba:'lojinha', nome:'Cardápio', linha:'Cursos do Tonhão e da equipe. Cada curso é uma técnica que vale em todo ponto, dá experiência e o avançado deixa os pratos mais caros e caprichados. Fritos: na lanchonete, salgados; na Avenida, porções; no Terraço, entradas fritas. Assados: na lanchonete, salgados de forno; na Avenida, tortas e empadões; no Terraço, folhados e empadinhas. Chapa: na lanchonete, lanches; na Avenida, beirute e queijo coalho; no Terraço, petiscos na chapa. Pastel: na lanchonete, pastel de feira; na Avenida, panquecas; no Terraço, massas fritas. Vegetariano: pratos sem carne em todo ponto. Cozinha de restaurante: na Avenida, a parmegiana; no Terraço, o filé ao molho de vinho.' },
   { id:'l-salao',      aba:'lojinha', nome:'Salão', linha:'Compre, venda e arrume as mesas.' },
-  { id:'l-luxo',       aba:'lojinha', nome:'Luxo', linha:'Enfeites, móveis, música e um endereço melhor deixam a casa mais chique. Mais luxo traz mais VIPs e melhora o ambiente no Gúgou.' },   // v10.7: a antiga ficha da Decoração
+  { id:'l-luxo',       aba:'lojinha', nome:'Luxo', linha:'Enfeites, móveis, música e um endereço melhor deixam a casa mais chique, e cada ponto tem os enfeites que combinam com ele. Mais luxo traz mais VIPs e melhora o ambiente no Gúgou.' },   // v10.7: a antiga ficha da Decoração
   { id:'l-manut',      aba:'lojinha', nome:'Manutenção', linha:'Revisão do fogão, da geladeira e da cafeteira, antes que quebrem.' },
   { id:'l-divulga',    aba:'lojinha', nome:'Divulgação', linha:'Boca a boca: de graça, menos gente. Panfletos: o movimento normal. Redes sociais: mais gente e mais VIPs.' },
   { id:'l-banco',      aba:'lojinha', nome:'Banco', linha:'Empréstimo para crescer. As parcelas saem do caixa no fim do dia; parcela atrasada é perigo.' },

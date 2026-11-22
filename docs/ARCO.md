@@ -505,6 +505,16 @@ Gestos curtos (0,8 s), sem efeito no jogo (não param a Bia nem mudam tempo de n
 - **Modo dev:** três botões, "Reação: mesa feliz / grupo bravo / meta", que disparam o gesto do ponto de agora.
 - **Capturas a olhar:** os seis gestos, ampliados 4×.
 
+## 13. v12.9.1 — A chegada à Avenida com a decoração nova
+O `antes` do cap. 6 (`HISTORIA`, `src/10-constantes.js`) ganha 7 falas depois das 4 de sempre; os enfeites simples saem pela metade na mudança (a espada da dona Cida vai para a casa da mãe da Bia), e a foto da dona Rosa vem junto, com moldura nova. Gatilho: o de sempre do capítulo (`conversa:'antes'` ao chegar à Avenida).
+1. Tonhão (insegura, "segurando a cortina de chita"): E as nossas coisinhas? A chita, o pisca-pisca...
+2. Bia (firme): Aqui é outro nível, tio. O que não combina, eu vendo. O novo tá no Luxo.
+3. Dani: Espelho, quadro de artista... Bi, eu vou ter medo de encostar em tudo!
+4. Tonhão: Casa nova, avental novo. Mas o tempero é o mesmo.
+5. Dani: E a espada da dona Cida?
+6. Bia (alegre): Vai pra casa da mãe. Lá ela segue cuidando da gente.
+7. Bia: E a foto da mãe vem junto. Com moldura nova.
+
 ## 12. Para todas as sessões
 - Cada versão fecha como as outras: spec `entregue`, `VERSAO`, `vtag`, `#ov-ver`, `docs/RESUMO.md`, `tests/run_all.sh` verde, PR e merge.
 - **Smoke novo por versão** (o próximo número livre depois do `smoke76`), com uma checagem por critério de aceite. Nas versões de texto (v11.1 e v11.2): cada fala trocada confere pelo texto exato; nenhuma fala passa de 120 letras; toda conversa que apontava uma aba da lojinha continua com as mesmas palavras da aba; o campo `e`, quando existe, é um dos cinco. Nas da `ARCO` (v11.3, v11.4, v11.6): cada entrada fica `'pend'` com o `quando` dela e só uma por fim de dia; não toca fora do Modo História; save antigo não recebe as dos pontos passados; aparece no modo dev.

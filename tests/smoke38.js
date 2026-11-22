@@ -126,9 +126,9 @@ const joga=(H,fat,custo)=>{ const {g,els}=H; if(g.state==='shop') els['btn-shop-
 
 // ---------- 8. as plantas ----------
 { const H=jogo(4,true,{ bank:5000 }), {g,L}=H; g.resetDay(10); g.begin(); g.mode='carreira';
-  ok(['violeta','anturio','pendente'].every(id=>{ const d=L.decorOf(id); return d.nivel===2 && d.amb===0.1; }) && [20,30,40].join()===['violeta','anturio','pendente'].map(id=>L.decorOf(id).cost).join(),'violetas R$ 20, antúrio R$ 30 e samambaia pendurada R$ 40, +0,1 cada');
+  ok(['violeta','anturio','pendente'].every(id=>{ const d=L.decorOf(id); return d.nivel===2 && d.amb===0.1; }) && [30,30,30].join()===['violeta','anturio','pendente'].map(id=>L.decorPreco(L.decorOf(id),2)).join(),'cactos, antúrio e jiboia R$ 30 cada na área industrial (v12.9.1), +0,1 cada');
   const amb=()=>{ g.avals=[]; const q={ avalia:true, retira:false, angry:false, state:'wantBill', perdFila:0, perdMesa:0, pratoQ:5, semVeg:false, coffee:false, table:null, fria:false, type:'estudante', vip:false }; g.avaliar(q,0,0); return g.avals[0].s[4]; };
-  const a0=amb(); ok(g.buyDecor('violeta') && g.save.bank===4980,'comprar violetas na área industrial'); const a1=amb(); g.buyDecor('anturio'); const a2=amb(); g.buyDecor('pendente'); const a3=amb();
+  const a0=amb(); ok(g.buyDecor('violeta') && g.save.bank===4970,'comprar violetas na área industrial'); const a1=amb(); g.buyDecor('anturio'); const a2=amb(); g.buyDecor('pendente'); const a3=amb();
   ok(a1>=a0 && a2>=a1 && a3>=a2 && a3>a0,'v10.7: cada planta soma 1 ponto de luxo, e o Ambiente só sobe (0,075 cada na área industrial)');
   const G=jogo(4,false,{ bank:5000 }).g; ok(!G.buyDecor('violeta'),'na Garagem, essas plantas não estão à venda');
   H.L.setShopTab('decor'); ok(/Cactos/.test(txt(grid(H))),'na lojinha da área industrial, o cartão dos cactos (v12.9: antes Violetas)'); }
