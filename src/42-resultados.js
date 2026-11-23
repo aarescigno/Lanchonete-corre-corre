@@ -70,6 +70,7 @@ function gurugolCaixa(a, sub, semCnt){
 }
 function buildEnd(){
   const r = game.result;
+  $('btn-end-rank').style.display = DEV.on ? '' : 'none';   // v12.10.4: o Ranking só com o modo dev ligado
   if (!r) return;
   $('end-title').textContent = r.passed ? ('Dia ' + r.day + ' concluído!') : 'Dia ' + r.day + ': faltou pouquinho...';
   starsHtml($('end-stars'), r.stars, 3);
@@ -229,6 +230,7 @@ function testeCopia(pre){
 }
 function buildFalencia(){
   const r = game.result, sv = game.save;
+  $('btn-falencia-rank').style.display = DEV.on ? '' : 'none';   // v12.10.4: o Ranking só com o modo dev ligado
   if (!r) return;
   $('falencia-msg').textContent = 'No fim do dia ' + r.day + ', o caixa (' + fmt(sv.bank) + ') não tinha os ' + fmt(r.devido) + ' da parcela atrasada e da do dia. A carreira acabou: recomece do zero quando quiser.';
   const st = $('falencia-stats');

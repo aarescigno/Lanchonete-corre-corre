@@ -54,7 +54,7 @@ els['btn-play'].fire('click');
 ok(!g.save.fechou && g.save.dia===1 && g.save.bank===0 && !g.save.emp.resto && !!L.aberturaAtual(),'Recomeçar do zero: carreira nova, dia 1 (v11.11: recomeça pela abertura)');
 // o botão da tela de fim também recomeça
 novo({dia:8,bank:300,fechou:7}); g.setState('falencia'); els['btn-falencia-zero'].fire('click'); ok(!g.save.fechou && g.save.dia===1 && !!L.aberturaAtual(),'"Recomeçar do zero" na tela do fim (v11.11: pela abertura)');
-novo({dia:8,bank:300,fechou:7}); els['btn-falencia-rank'].fire('click'); ok(els['ov-rank'].classList.contains('show'),'Ranking na tela do fim');
+novo({dia:8,bank:300,fechou:7}); L.DEV.on=true; els['btn-falencia-rank'].fire('click'); L.DEV.on=false; ok(els['ov-rank'].classList.contains('show'),'Ranking na tela do fim');
 
 // ---------- quitar tira o atraso ----------
 novo({dia:5,bank:600}); g.emprestar(500); cont(); fecha(0,50);

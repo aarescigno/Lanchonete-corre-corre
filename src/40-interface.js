@@ -49,7 +49,8 @@ function buildMenu(){
   $('btn-desafios').style.display = dv ? '' : 'none';
   $('btn-teste').style.display = DEV.on ? '' : 'none';   // v12.3.1: o Teste de habilidade, só com o modo dev ligado
   $('btn-endless').style.display = DEV.on ? '' : 'none';   // v12.10: o Turno sem fim só com o modo dev ligado (o código fica, para voltar como extra)
-  const nbt = 2 + (dv ? 1 : 0) + (DEV.on ? 2 : 0);   // Manual e Ranking, mais o Desafios e, com o modo dev, o Turno sem fim e o Teste
+  $('btn-rank').style.display = DEV.on ? '' : 'none';   // v12.10.4: o Ranking só com o modo dev ligado (o código fica, para voltar se o ranking compartilhado voltar)
+  const nbt = 1 + (dv ? 1 : 0) + (DEV.on ? 3 : 0);   // o Manual, mais o Desafios e, com o modo dev, o Turno sem fim, o Teste e o Ranking
   $('menu-btns').classList[nbt >= 4 ? 'add' : 'remove']('quatro');   // v12: com 4 botões na 2ª fileira, o espaço dentro de cada um encolhe um pouco para caberem
   $('menu-btns').classList[nbt >= 5 ? 'add' : 'remove']('cinco');   // v12.3.1: com 5 (Desafios e Teste juntos), encolhe mais
   if (dv) DESAFIOS.forEach(d => game.manualVer('d-' + d.id));
