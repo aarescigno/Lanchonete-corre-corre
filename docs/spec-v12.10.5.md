@@ -1,6 +1,6 @@
 # v12.10.5 — Os relatórios guardados no aparelho (etapa correção)
 
-**Situação:** aprovada
+**Situação:** entregue em 23/11
 **Origem:** conversa de 23/11: "Seria bom que os relatórios do modo teste ficassem registrados no celular de forma que desse para exportar/copiar para área de transferência todos os resultados. Também seria bom ter alguma forma de timestamp em cada relatório do teste." Nas escolhas, o usuário decidiu: a marca de hora fica como está (a 2ª linha do relatório já traz "dd/mm/aaaa hh:mm" do fim); guardam-se os relatórios do Teste e os dos Desafios; o botão de copiar todos fica na tela do Teste e no painel do modo dev; apagar pede confirmação.
 
 ## Objetivo
@@ -50,11 +50,11 @@ Cada relatório do Teste de habilidade e dos Desafios fica guardado no aparelho 
 - `src/02-telas.html`: `vtag` e `#ov-ver`. `src/43-telas.js`: o `window.__lcc`.
 
 ## Tarefas
-- [ ] T1 `tests/smoke122.js` com os CA1 a CA7 (falhando).
-- [ ] T2 Constantes e funções `rels*` (`10`, `12`) e o `relsGuarda` no `finishTeste` e no `finishDesafio` (`16`).
-- [ ] T3 `relsCaixa` na tela do Teste e no painel do dev (`40`), o CSS e o `window.__lcc`.
-- [ ] T4 `menu_fit.py` (CA8) e capturas da tela do Teste com 3 relatórios num celular deitado e no desktop (olhar e apagar).
-- [ ] Fechamento: `VERSAO`, `vtag`, `#ov-ver` (`smoke86`, `smoke98` e `menu_fit.py` contam as linhas do `#ov-ver`: ajuste os números se mudarem), `docs/RESUMO.md`, `docs/PARTES.md`, `docs/TESTES.md` (a chave `lcc-relatorios`), esta spec como entregue, `tests/run_all.sh --tudo` verde, PR e merge.
+- [x] T1 `tests/smoke122.js` com os CA1 a CA7 (falhando).
+- [x] T2 Constantes e funções `rels*` (`10`, `12`) e o `relsGuarda` no `finishTeste` e no `finishDesafio` (`16`).
+- [x] T3 `relsCaixa` na tela do Teste e no painel do dev (`40`), o CSS e o `window.__lcc`.
+- [x] T4 `menu_fit.py` (CA8) e capturas da tela do Teste com 3 relatórios num celular deitado e no desktop (olhar e apagar).
+- [x] Fechamento: `VERSAO`, `vtag`, `#ov-ver` (`smoke86`, `smoke98` e `menu_fit.py` contam as linhas do `#ov-ver`: ajuste os números se mudarem), `docs/RESUMO.md`, `docs/PARTES.md`, `docs/TESTES.md` (a chave `lcc-relatorios`), esta spec como entregue, `tests/run_all.sh --tudo` verde, PR e merge.
 
 ## Avisos para a execução
 - Executar depois da v12.10.4 (esta spec parte da `VERSAO` dela).
@@ -70,6 +70,9 @@ Cada relatório do Teste de habilidade e dos Desafios fica guardado no aparelho 
 Nenhuma.
 
 ## Desvios
-(No fechamento.)
+- **Smoke:** `smoke122` ficou com 25 checagens (a spec previa 15), pois cada CA ganhou checagens extras (aviso no singular, copiar de novo sem duplicar, desfazer o pedido de apagar, dado quebrado).
+- **Smokes antigos:** `smoke97` e `smoke99` conferem "nenhuma chave nova no localStorage"; passam a ignorar também `lcc-relatorios`. O `smoke121` conferia a `VERSAO` exata (v12.10.4); agora confere a série v12.10.
+- **CSS:** `.rels` ganhou `p{min-height:1em}` (o aviso não faz a tela pular) e `> div:empty{display:none}`; o `#teste-lista` não precisou rolar (CA8 passou nos 14 tamanhos, 280 conferências, 0 falhas).
+- **Medido:** `#ov-ver` com 38 linhas (`smoke86` e `menu_fit.py` ajustados); `run_all.sh --tudo` verde; `smoke122` incluído no `run_all.sh`. Capturas (desktop e celular deitado) conferidas e apagadas.
 
 **Modelo:** Sonnet, esforço médio (código de interface com plano detalhado, smoke e menu_fit)

@@ -111,6 +111,16 @@ function testeSobe(id){
   Object.keys(raw).forEach(k => { if (k.indexOf('eq-') === 0) r[k] = raw[k]; });   // v12.4: as equipes guardadas ficam
   r[id] = (r[id] || 0) + 1; lsSet(TESTE_LS, JSON.stringify(r)); return r[id];
 }
+/* v12.10.5: os relatórios guardados (RELS_LS): a lista de textos, a mais velha primeiro, só os que começam com 'LCC-TESTE ' */
+function relsLe(){
+  try { const a = JSON.parse(lsGet(RELS_LS) || '[]'); return Array.isArray(a) ? a.filter(t => typeof t === 'string' && t.indexOf('LCC-TESTE ') === 0) : []; } catch(e) { return []; }
+}
+function relsGuarda(t){
+  if (typeof t !== 'string' || t.indexOf('LCC-TESTE ') !== 0) return;
+  lsSet(RELS_LS, JSON.stringify(relsLe().concat(t).slice(-RELS_MAX)));
+}
+function relsApaga(){ lsSet(RELS_LS, '[]'); }
+function relsTexto(){ return relsLe().join('\n\n'); }
 /* v10.2.1: o Modo História liga fora do modo dev e no jeito "De verdade" do modo dev (no Livre fica desligado) */
 function histLiga(){ return HIST.on && !devLivre() && !DESAFIO_EST.on; }
 /* v12: durante um Desafio a História fica desligada (sem conversa, capítulo, objetivo nem reação de história); o Game liga e desliga */

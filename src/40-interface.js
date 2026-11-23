@@ -220,6 +220,34 @@ function buildTeste(){
     b.addEventListener('click', () => { Sfx.init(); Sfx.resume(); Sfx.tap(); grava(); game.testeFase = t.id; game.setState('testefase'); });   // v12.4: o toque abre a tela da fase (a equipe); quem começa o dia é o "Jogar"
     fases.appendChild(b);
   });
+  box.appendChild(relsCaixa('teste-rels'));   // v12.10.5
+}
+/* v12.10.5: a caixa dos relatórios guardados (na tela do Teste e no painel do dev): "Copiar todos (N)" e "Apagar relatórios" (pede um 2º toque) */
+function relsCaixa(id){
+  const cx = el('div', 'rels'); cx.id = id;
+  const row = el('div', 'row'), aviso = el('p'), caixa = el('div');
+  aviso.setAttribute('role', 'status');
+  const bc = el('button', 'btn alt'), ba = el('button', 'btn alt');
+  bc.type = 'button'; ba.type = 'button'; bc.setAttribute('data-rels', 'copia'); ba.setAttribute('data-rels', 'apaga');
+  let pede = false;
+  const rot = () => { const n = relsLe().length; bc.textContent = 'Copiar todos (' + n + ')'; ba.textContent = pede ? 'Toque de novo para apagar' : 'Apagar relatórios'; bc.disabled = ba.disabled = n === 0; };
+  bc.addEventListener('click', () => {
+    pede = false; rot();
+    const n = relsLe().length, t = relsTexto();
+    copyText(t).then(ok => {
+      clearEl(caixa);
+      if (ok){ Sfx.ok(); aviso.textContent = n === 1 ? 'Copiado 1 relatório! Cole na conversa.' : 'Copiados ' + n + ' relatórios! Cole na conversa.'; return; }
+      aviso.textContent = 'Não deu para copiar sozinho: selecione o texto abaixo.';
+      const ta = el('textarea', 'cx-txt'); ta.readOnly = true; ta.value = t; ta.setAttribute('readonly', ''); ta.setAttribute('aria-label', 'Relatórios'); caixa.appendChild(ta);
+      try { ta.focus(); ta.select(); } catch(e) {}
+    });
+  });
+  ba.addEventListener('click', () => {
+    if (!pede){ pede = true; rot(); return; }
+    pede = false; relsApaga(); Sfx.tap(); clearEl(caixa); rot(); aviso.textContent = 'Relatórios apagados.';
+  });
+  row.appendChild(bc); row.appendChild(ba); cx.appendChild(row); cx.appendChild(aviso); cx.appendChild(caixa); rot();
+  return cx;
 }
 /* v12.4: a tela da fase do Teste: uma linha por ajudante do ponto (o Tonhão sempre vem e não aparece), com "Vem"/"Não vem" e, para quem vem, as tarefas (e o modo da Cami); tudo no nível máximo do ponto.
    A equipe em edição (testeFaseEq, no formato guardado) vai para o lcc-teste a cada mudança; "Padrão" volta à da fase; "Jogar" começa o dia com ela */
@@ -273,6 +301,8 @@ function devTeste(secao, botao){
     });
     b.setAttribute('data-teste', t.id);
   });
+  r = secao('Relatórios guardados', 'Os relatórios do Teste e dos Desafios, neste aparelho.');   // v12.10.5
+  r.appendChild(relsCaixa('dev-rels'));
 }
 /* v10.2.2: a aba História (só no De verdade): cumprir o objetivo, assistir a qualquer cena, revelar o Manual e a lojinha, soltar as conversas */
 function devAbaHistoria(body, secao, botao){

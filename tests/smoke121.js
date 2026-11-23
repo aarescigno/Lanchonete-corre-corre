@@ -42,5 +42,5 @@ const fecha=(H,fat)=>{ const g=H.g, els=H.els; els['btn-start'].fire('click'); g
   const i=html.indexOf('id="ov-app"'), j=html.indexOf('id="ov-ver"');
   const app=html.slice(i,j);
   ok(i>0 && !/ranking/i.test(app),'CA4: o painel Instalar não fala mais em ranking');
-  ok(L.VERSAO==='v12.10.4','CA4: a VERSAO é v12.10.4 ('+L.VERSAO+')'); }
+  ok(/^v12\.10\.\d+$/.test(L.VERSAO),'CA4: a VERSAO é da série v12.10 ('+L.VERSAO+')'); }
 console.log(`\n${total-fails}/${total} ok`); process.exit(fails?1:0);

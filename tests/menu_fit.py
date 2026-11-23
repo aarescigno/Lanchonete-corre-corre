@@ -122,8 +122,8 @@ with sync_playwright() as p:
             bad=r[0]>r[1]+1 or r[2]>r[3]+1 or not r[4] or r[5]>3; fails+=bad; total+=1
             if bad and os.environ.get('V'): print(pg.evaluate("()=>[...document.querySelector('.menu-panel').children].map(e=>[e.id||e.className,Math.round(e.getBoundingClientRect().height)]).concat([...document.querySelectorAll('#menu-links > *')].filter(e=>e.getBoundingClientRect().width>0).map(e=>[e.id,Math.round(e.getBoundingClientRect().left),Math.round(e.getBoundingClientRect().top),Math.round(e.getBoundingClientRect().width),Math.round(e.getBoundingClientRect().height)]))"))
             print(('FAIL' if bad else 'ok  ')+f': {tag} menu do modo dev (Desafios e Teste) altura {r[0]}/{r[1]} largura {r[2]}/{r[3]} visíveis={r[4]} fileiras={r[5]}')
-            run(pg,FIMSV+"g.setDev(true);g.setState('teste');")
-            conf(pg,f'{tag} tela do Teste','#ov-teste .panel',['#btn-teste-menu-volta','#teste-nome','#teste-lista [data-teste=garagem]','#teste-lista [data-teste=terraco]'])
+            run(pg,FIMSV+"g.setDev(true);localStorage.setItem('lcc-relatorios',JSON.stringify(['LCC-TESTE 3 garagem\\nJogador: Ana · 23/11/2026 10:00']));g.setState('teste');")   # v12.10.5: com 1 relatório guardado
+            conf(pg,f'{tag} tela do Teste','#ov-teste .panel',['#btn-teste-menu-volta','#teste-nome','#teste-lista [data-teste=garagem]','#teste-lista [data-teste=terraco]','#teste-rels [data-rels=copia]','#teste-rels [data-rels=apaga]'])
             # v12.4: a tela da fase do Teste (a equipe): a área industrial (2 ajudantes) e o Terraço (5 pessoas, a Cami nas tarefas); o painel não rola, a lista rola por dentro e os botões ficam à vista
             for fase in ('industrial','terraco'):
                 run(pg,FIMSV+"g.setDev(true);g.testeFase='"+fase+"';g.setState('testefase');")
@@ -135,7 +135,7 @@ with sync_playwright() as p:
             conf(pg,f'{tag} Versões','#ov-ver .panel',['#btn-ver-close'])
             r=pg.evaluate("()=>{const l=document.querySelector('.verlist');return [l.scrollHeight,l.clientHeight,l.querySelectorAll('li').length]}")
             total+=1
-            if r[2]!=37: fails+=1; print(f'FAIL: {tag} a lista das Versões tem {r[2]} linhas (esperado 37: a v12.10.4, a v12.10.3, a v12.10.2, a v12.10.1, a v12.10, a v12.9.1, a v12.9, a v12.8.4, a v12.8.3, a v12.8.2, a v12.8.1, a v12.8, a v12.7, a v12.6.1, a v12.6, a v12.5, a v12.4.3, a v12.4.2, a v12.4.1, a v12.4, a v12.3.2, a v12.3.1, a v12.3, a v12.2, a v12.1, a v12, a v11 e da v10 à v1)')
+            if r[2]!=38: fails+=1; print(f'FAIL: {tag} a lista das Versões tem {r[2]} linhas (esperado 38: a v12.10.5, a v12.10.4, a v12.10.3, a v12.10.2, a v12.10.1, a v12.10, a v12.9.1, a v12.9, a v12.8.4, a v12.8.3, a v12.8.2, a v12.8.1, a v12.8, a v12.7, a v12.6.1, a v12.6, a v12.5, a v12.4.3, a v12.4.2, a v12.4.1, a v12.4, a v12.3.2, a v12.3.1, a v12.3, a v12.2, a v12.1, a v12, a v11 e da v10 à v1)')
         # ---- v11.15: a abertura (os botões Voltar e Pular, por cima do quadro cheio, à vista e sem se cobrir) ----
         if SOLO in ('','abertura'):
             run(pg,"g.setState('menu');document.getElementById('btn-historia').click();")
