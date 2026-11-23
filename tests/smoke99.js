@@ -16,7 +16,7 @@ const roteiro=(g,id)=>{ g.startTeste(id); g.begin(); g.schedule=[{ t:1e6, type:'
 const fam=g=>g.spawn({ type:'familia', color:0, vip:false, av:false });
 const mesa=(g,grp)=>g.tables.find(q=>q.free&&q.seats>=grp.size);
 const semHelp=g=>{ ['dani','joca','cami','anselmo','lia'].forEach(q=>{ g.save.equipe[q]=0; }); };
-const salva=store=>{ const o=Object.assign({},store); delete o['lcc-teste']; return JSON.stringify(o); };   // o localStorage sem a chave do teste
+const salva=store=>{ const o=Object.assign({},store); delete o['lcc-teste']; delete o['lcc-relatorios']; return JSON.stringify(o); };   // o localStorage sem a chave do teste
 
 // ---------- CA1: fora do modo dev nenhuma tela mostra o teste; no painel, a seção com o nome e os 4 botões ----------
 bloco('CA1',()=>{

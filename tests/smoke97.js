@@ -132,7 +132,7 @@ bloco('CA4',()=>{
   ok(JSON.stringify(sem(real,'desafios'))===JSON.stringify(sem(JSON.parse(antes),'desafios')),'CA4: o save de verdade só mudou na medalha (caixa, dia, estrelas, lucro, ranking, manutenção, Gúgou e guia iguais)');
   const dep=JSON.parse(store.lcc2_save);
   ok(JSON.stringify(sem(dep,'desafios'))===JSON.stringify(sem(JSON.parse(lsAntes),'desafios')) && dep.desafios.semBravo===3 && dep.desafios.soBia===2,'CA4: o localStorage só ganhou a medalha (desafios)');
-  ok(Object.keys(store).filter(k=>k!=='lcc-teste').sort().join()===ls0 && !store.lcc2_ranking,'CA4: nenhuma chave nova no localStorage além do lcc-teste (v12.3: as tentativas d-<id>), e o ranking não foi tocado');
+  ok(Object.keys(store).filter(k=>k!=='lcc-teste'&&k!=='lcc-relatorios').sort().join()===ls0 && !store.lcc2_ranking,'CA4: nenhuma chave nova no localStorage além do lcc-teste (v12.3: as tentativas d-<id>), e o ranking não foi tocado');
   ok(real.bank===12345 && real.dia===70 && real.estrelas===77 && real.lucroTot===54321,'CA4: caixa, dia, estrelas e lucro acumulado iguais'); });
 
 // ---------- CA5: o cartão do fim e a pausa ----------

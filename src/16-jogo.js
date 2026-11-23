@@ -515,7 +515,7 @@ class Game {
     const antes = (real.desafios && real.desafios[D.id]) || 0, nova = medalha > antes;
     if (nova){ real.desafios = normDesafios(Object.assign({}, real.desafios, { [D.id]:medalha })); writeSave(real); }
     this.desafioRes = { id:D.id, medalha, nova, falhou:!condOk, lucro:m, stars };
-    this.dTent.quando = new Date(); this.testeRel = testeRelatorio(this);   // v12.3: o relatório (só aparece, no botão, com o modo dev)
+    this.dTent.quando = new Date(); this.testeRel = testeRelatorio(this); relsGuarda(this.testeRel);   // v12.10.5: guarda no aparelho; v12.3: o relatório (só aparece, no botão, com o modo dev)
     this.setState('desafiofim');
     if (medalha) Sfx.win(); else Sfx.lose();
   }
@@ -523,7 +523,7 @@ class Game {
   finishTeste(){
     const m = Math.round(this.lucro), stars = this.estrelasDe(m);
     this.aberto = false; this.teste.quando = new Date();
-    this.testeRel = testeRelatorio(this);
+    this.testeRel = testeRelatorio(this); relsGuarda(this.testeRel);   // v12.10.5
     this.setState('testefim');
     if (stars) Sfx.win(); else Sfx.lose();
   }
