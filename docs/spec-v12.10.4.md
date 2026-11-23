@@ -1,6 +1,6 @@
 # v12.10.4 — O Ranking só no modo dev (etapa correção)
 
-**Situação:** aprovada
+**Situação:** entregue em 23/11
 **Origem:** conversa de 23/11: "O ranking também não faz sentido agora mais de se ter no menu principal". Na escolha, o usuário tirou o botão de todas as telas do jogador ("não sei a utilidade dele pra esse jogo. Única utilidade de registrar algo de uma partida me parece ser o relatório dos testes e dos jogos missão pós-jogo") e o deixou só com o modo dev ligado.
 
 ## Objetivo
@@ -34,10 +34,10 @@ O jogador não vê mais o Ranking em nenhuma tela: o menu, o fim do dia e a fal�
 - `src/10-constantes.js`: `VERSAO`.
 
 ## Tarefas
-- [ ] T1 `tests/smoke121.js` com os CA1 a CA4 (falhando).
-- [ ] T2 HTML, `buildMenu`, `buildEnd` e `buildFalencia` como nas Regras.
-- [ ] T3 Testes antigos: `smoke21` (o clique no `btn-falencia-rank` liga o `DEV.on` antes, ou chama o `openRank('ov-falencia')` direto) e `menu_fit.py` (tirar o `#btn-falencia-rank` da lista da falência, e o `#btn-end-rank` se aparecer em alguma lista); os outros (`smoke3`, `smoke85`, `smoke97`) chamam o `openRank` direto ou só olham o HTML e devem seguir verdes.
-- [ ] Fechamento: `VERSAO`, `vtag`, `#ov-ver` (`smoke86`, `smoke98` e `menu_fit.py` contam as linhas do `#ov-ver`: ajuste os números se mudarem), `docs/RESUMO.md`, `docs/PARTES.md`, esta spec como entregue, `tests/run_all.sh --tudo` verde, PR e merge.
+- [x] T1 `tests/smoke121.js` com os CA1 a CA4 (falhando).
+- [x] T2 HTML, `buildMenu`, `buildEnd` e `buildFalencia` como nas Regras.
+- [x] T3 Testes antigos: `smoke21` (o clique no `btn-falencia-rank` liga o `DEV.on` antes, ou chama o `openRank('ov-falencia')` direto) e `menu_fit.py` (tirar o `#btn-falencia-rank` da lista da falência, e o `#btn-end-rank` se aparecer em alguma lista); os outros (`smoke3`, `smoke85`, `smoke97`) chamam o `openRank` direto ou só olham o HTML e devem seguir verdes.
+- [x] Fechamento: `VERSAO`, `vtag`, `#ov-ver` (`smoke86`, `smoke98` e `menu_fit.py` contam as linhas do `#ov-ver`: ajuste os números se mudarem), `docs/RESUMO.md`, `docs/PARTES.md`, esta spec como entregue, `tests/run_all.sh --tudo` verde, PR e merge.
 
 ## Testes
 - Novo: `smoke121` (10 checagens).
@@ -48,6 +48,10 @@ O jogador não vê mais o Ranking em nenhuma tela: o menu, o fim do dia e a fal�
 Nenhuma.
 
 ## Desvios
-(No fechamento.)
+- `smoke21`: em vez de só trocar o `openRank`, liga o `DEV.on` antes do clique no `btn-falencia-rank` (como pede o T3) e desliga logo depois.
+- `smoke86` (lista do `#ov-ver` de 36 para 37 linhas, e o selo/`VERSAO` v12.10.4) e `menu_fit.py` (37 linhas; a lista da falência sem o `#btn-falencia-rank`, que fica escondido sem o modo dev). `smoke98` seguiu verde sem mudança.
+- `tests/run_all.sh` ganhou o `smoke121.js` na lista.
+- Ambiente: o pacote Python `playwright` não estava instalado; foi instalado com `pip install playwright` para rodar o `menu_fit.py`, que usa o Chromium de `/opt/pw-browsers/chromium`.
+- `smoke3` falhou em 1 de 4 corridas (3 checagens do Turno sem fim, que esta etapa não mexe) e passou nas outras 3. Não foi investigado nesta etapa.
 
 **Modelo:** Haiku, esforço médio (mecânico e localizado: esconder três botões, uma frase, a versão e dois testes antigos)

@@ -103,7 +103,7 @@ with sync_playwright() as p:
             run(pg,FIM+"g.startEndless();g.begin();g.pontos=300;g.money=50;g.finishEndless();")
             conf(pg,f'{tag} fim do Turno sem fim','#ov-endless .panel',['#btn-endless-again','#btn-endless-rank','#btn-endless-menu'])
             run(pg,FIM+"g.startDay(5);g.begin();g.schedule=[];g.money=0;g.custo=100;g.save.bank=0;g.save.socorro=1;g.save.emp=Object.assign(g.save.emp,{resto:550,n:5,atr:true});g.finishDay();")
-            conf(pg,f'{tag} falência','#ov-falencia .panel',['#btn-falencia-zero','#btn-falencia-rank','#btn-falencia-menu'])
+            conf(pg,f'{tag} falência','#ov-falencia .panel',['#btn-falencia-zero','#btn-falencia-menu'])
             run(pg,DIA2+"g.startDay(1);")
             conf(pg,f'{tag} abertura do dia 1','#ov-intro .panel',['#ov-intro .row .btn'])
             run(pg,FIM+"g.startDay(60);")
@@ -135,7 +135,7 @@ with sync_playwright() as p:
             conf(pg,f'{tag} Versões','#ov-ver .panel',['#btn-ver-close'])
             r=pg.evaluate("()=>{const l=document.querySelector('.verlist');return [l.scrollHeight,l.clientHeight,l.querySelectorAll('li').length]}")
             total+=1
-            if r[2]!=36: fails+=1; print(f'FAIL: {tag} a lista das Versões tem {r[2]} linhas (esperado 36: a v12.10.3, a v12.10.2, a v12.10.1, a v12.10, a v12.9.1, a v12.9, a v12.8.4, a v12.8.3, a v12.8.2, a v12.8.1, a v12.8, a v12.7, a v12.6.1, a v12.6, a v12.5, a v12.4.3, a v12.4.2, a v12.4.1, a v12.4, a v12.3.2, a v12.3.1, a v12.3, a v12.2, a v12.1, a v12, a v11 e da v10 à v1)')
+            if r[2]!=37: fails+=1; print(f'FAIL: {tag} a lista das Versões tem {r[2]} linhas (esperado 37: a v12.10.4, a v12.10.3, a v12.10.2, a v12.10.1, a v12.10, a v12.9.1, a v12.9, a v12.8.4, a v12.8.3, a v12.8.2, a v12.8.1, a v12.8, a v12.7, a v12.6.1, a v12.6, a v12.5, a v12.4.3, a v12.4.2, a v12.4.1, a v12.4, a v12.3.2, a v12.3.1, a v12.3, a v12.2, a v12.1, a v12, a v11 e da v10 à v1)')
         # ---- v11.15: a abertura (os botões Voltar e Pular, por cima do quadro cheio, à vista e sem se cobrir) ----
         if SOLO in ('','abertura'):
             run(pg,"g.setState('menu');document.getElementById('btn-historia').click();")

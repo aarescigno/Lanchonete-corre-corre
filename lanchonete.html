@@ -530,7 +530,7 @@ table.rank tr.me td{background:#fbe7a8}
 
     <div class="ov show" id="ov-menu">
       <div class="panel menu-panel">
-        <span class="vtag" id="vtag" aria-label="Versão 12.10.3">v12.10.3</span>
+        <span class="vtag" id="vtag" aria-label="Versão 12.10.4">v12.10.4</span>
         <h1 class="title">Lanchonete <br>Corre-Corre</h1>
         <p class="tag">Ajude a Bia a atender a freguesia da esquina antes que o cafezinho esfrie!</p>
         <div class="lbl" id="menu-dia">História</div>
@@ -549,7 +549,7 @@ table.rank tr.me td{background:#fbe7a8}
             <button class="btn alt" id="btn-desafios" style="display:none">Desafios</button>
             <button class="btn alt" id="btn-teste" style="display:none">Teste</button>
             <button class="btn alt" id="btn-manual">Manual</button>
-            <button class="btn alt" id="btn-rank">Ranking</button>
+            <button class="btn alt" id="btn-rank" style="display:none">Ranking</button>
           </div>
         </div>
         <div class="links" id="menu-links">
@@ -707,7 +707,7 @@ table.rank tr.me td{background:#fbe7a8}
         </div>
         <div class="row end-pe">
           <button class="btn go" id="btn-next">Próximo dia</button>
-          <button class="btn alt" id="btn-end-rank">Ranking</button>
+          <button class="btn alt" id="btn-end-rank" style="display:none">Ranking</button>
           <button class="btn alt" id="btn-end-menu">Menu principal</button>
         </div>
       </div>
@@ -738,7 +738,7 @@ table.rank tr.me td{background:#fbe7a8}
         <div class="stats" id="falencia-stats"></div>
         <div class="row">
           <button class="btn go" id="btn-falencia-zero">Recomeçar do zero</button>
-          <button class="btn alt" id="btn-falencia-rank">Ranking</button>
+          <button class="btn alt" id="btn-falencia-rank" style="display:none">Ranking</button>
           <button class="btn alt" id="btn-falencia-menu">Menu</button>
         </div>
       </div>
@@ -815,7 +815,7 @@ table.rank tr.me td{background:#fbe7a8}
             </ol>
           </section>
         </div>
-        <p class="small">Pronto: abra pelo ícone do hambúrguer na tela inicial e jogue com o celular deitado. No app, o ranking fica só no aparelho.</p>
+        <p class="small">Pronto: abra pelo ícone do hambúrguer na tela inicial e jogue com o celular deitado.</p>
         <div class="row"><button class="btn go" id="btn-app-close">Voltar</button></div>
       </div>
     </div>
@@ -832,7 +832,8 @@ table.rank tr.me td{background:#fbe7a8}
       <div class="panel">
         <h2>Versões</h2>
         <ul class="verlist">
-          <li><b>v12.10.3</b><span class="cur">versão atual</span><br>22/11/2026 &mdash; Preços dos cursos e metas acertados para os cursos em degraus.</li>
+          <li><b>v12.10.4</b><span class="cur">versão atual</span><br>23/11/2026 &mdash; O Ranking sai do menu, do fim do dia e da falência (fica só no modo dev).</li>
+          <li><b>v12.10.3</b><br>22/11/2026 &mdash; Preços dos cursos e metas acertados para os cursos em degraus.</li>
           <li><b>v12.10.2</b><br>22/11/2026 &mdash; O Tonhão estranha a cozinha de cada ponto novo e acha o caderno de receitas da Rosa: cada curso abre uma página no Manual.</li>
           <li><b>v12.10.1</b><br>22/11/2026 &mdash; No ponto novo, o Tonhão estranha a cozinha e sua no fogão até fazer o curso de lá. Os lanches de estrada ganham desenho, e o empratamento chega ao Terraço.</li>
           <li><b>v12.10</b><br>22/11/2026 &mdash; Cada ponto tem os seus cursos do Tonhão: pratos novos e dois níveis por ponto, até o nível 9. Na área industrial, os lanches de estrada.</li>
@@ -2935,7 +2936,7 @@ const HIST_NOMES = { bia:'Bia', tonhao:'Tonhão', dani:'Dani', joca:'Joca', cami
 const ATU_TXT = { procurando:'Procurando versão nova...', nova:'Tem versão nova: {v}! Seu jogo salvo continua.', igual:'Você já está na versão mais nova ({v}).', erro:'Sem internet agora. Tente de novo mais tarde.', atualizando:'Atualizando...' };
 function atuEstado(remota, atual){ if (typeof remota !== 'string' || !remota.trim()) return 'erro'; return remota.trim() === atual ? 'igual' : 'nova'; }
 const CAIXA_MAX = 14;                                 // livro-caixa (v7.2): quantos dias da carreira ficam guardados
-const VERSAO = 'v12.10.3';                                   // vai no resumo do Caixa
+const VERSAO = 'v12.10.4';                                   // vai no resumo do Caixa
 const DIVULGA_DIA = 4;                                // antes disso, o movimento é o da inauguração (sem custo); v9.0.2: dia 4, e o padrão é o boca a boca
 function divulgaAberta(n, sv){ return devLivre() || n >= DIVULGA_DIA && !(sv && sv.convDiv === 'pend'); }   // no modo dev, desde o dia 1; v9.0.3: no Modo História, só depois da conversa
 /* v9.6.4: a Efood (os entregadores) só abre depois da conversa dos entregadores, no Modo História; antes dela, nenhum tipo com `retira` vem na agenda */
@@ -16107,7 +16108,8 @@ function buildMenu(){
   $('btn-desafios').style.display = dv ? '' : 'none';
   $('btn-teste').style.display = DEV.on ? '' : 'none';   // v12.3.1: o Teste de habilidade, só com o modo dev ligado
   $('btn-endless').style.display = DEV.on ? '' : 'none';   // v12.10: o Turno sem fim só com o modo dev ligado (o código fica, para voltar como extra)
-  const nbt = 2 + (dv ? 1 : 0) + (DEV.on ? 2 : 0);   // Manual e Ranking, mais o Desafios e, com o modo dev, o Turno sem fim e o Teste
+  $('btn-rank').style.display = DEV.on ? '' : 'none';   // v12.10.4: o Ranking só com o modo dev ligado (o código fica, para voltar se o ranking compartilhado voltar)
+  const nbt = 1 + (dv ? 1 : 0) + (DEV.on ? 3 : 0);   // o Manual, mais o Desafios e, com o modo dev, o Turno sem fim, o Teste e o Ranking
   $('menu-btns').classList[nbt >= 4 ? 'add' : 'remove']('quatro');   // v12: com 4 botões na 2ª fileira, o espaço dentro de cada um encolhe um pouco para caberem
   $('menu-btns').classList[nbt >= 5 ? 'add' : 'remove']('cinco');   // v12.3.1: com 5 (Desafios e Teste juntos), encolhe mais
   if (dv) DESAFIOS.forEach(d => game.manualVer('d-' + d.id));
@@ -18261,6 +18263,7 @@ function gurugolCaixa(a, sub, semCnt){
 }
 function buildEnd(){
   const r = game.result;
+  $('btn-end-rank').style.display = DEV.on ? '' : 'none';   // v12.10.4: o Ranking só com o modo dev ligado
   if (!r) return;
   $('end-title').textContent = r.passed ? ('Dia ' + r.day + ' concluído!') : 'Dia ' + r.day + ': faltou pouquinho...';
   starsHtml($('end-stars'), r.stars, 3);
@@ -18420,6 +18423,7 @@ function testeCopia(pre){
 }
 function buildFalencia(){
   const r = game.result, sv = game.save;
+  $('btn-falencia-rank').style.display = DEV.on ? '' : 'none';   // v12.10.4: o Ranking só com o modo dev ligado
   if (!r) return;
   $('falencia-msg').textContent = 'No fim do dia ' + r.day + ', o caixa (' + fmt(sv.bank) + ') não tinha os ' + fmt(r.devido) + ' da parcela atrasada e da do dia. A carreira acabou: recomece do zero quando quiser.';
   const st = $('falencia-stats');
