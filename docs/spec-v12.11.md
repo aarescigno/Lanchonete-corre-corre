@@ -89,7 +89,7 @@ Nenhuma.
 - `salaoTroca` devolve também `ids`: os índices, na lista `mesas` recebida, de todas as mesas que saem do lugar (as que se deslocam e as que vão para o estoque), para o editor marcar. A marca tracejada é amarela, 7 px maior que a mesa, desenhada **por cima** da arrastada (com o mesmo tamanho a verde a cobria).
 - O balãozinho da mesa do estoque abre sempre para baixo da faixa (não vira para cima) e fica centrado sob a mesa escolhida, sem passar das bordas.
 - Medido: na Avenida com 12 mesas de 2 arrumadas, a mesa 1 solta sobre a 4 manda a 4 para o estoque, embora o lugar vago da 1 exista: o `salaoPerto` só procura até 300 px (30 passos) em volta, e o lugar vago fica a 330 px. É o que o CA5 do `smoke125` usa; a mesma troca entre mesas vizinhas desloca a outra no salão.
-- Comportamento antigo que a spec muda de propósito (soltar sobre outra mesa recusava, "Perto demais"): atualizados `smoke13` (2 checagens), `smoke22` (a faixa do alto no lugar do estoque à esquerda e a troca no lugar da recusa; 4 checagens), `smoke86` e `menu_fit.py` (o `#ov-ver` com 41 linhas).
+- Comportamento antigo que a spec muda de propósito (soltar sobre outra mesa recusava, "Perto demais"): atualizados `smoke13` (2 checagens), `smoke22` (a faixa do alto no lugar do estoque à esquerda e a troca no lugar da recusa; 4 checagens), `smoke86` e `menu_fit.py` (o `#ov-ver` com 41 linhas e o selo v12.11) e `smoke121` (a `VERSAO` aceita a série v12.1x).
 - `tests/run_all.sh` ganhou o `smoke125.js`. O `smoke76` continua falhando só neste ambiente (clone raso, sem o commit da v10.10), como na v12.10.7; o resto verde.
 - Sem balanceamento, como previsto (a Bia e as mesas são as mesmas).
 

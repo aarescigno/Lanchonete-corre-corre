@@ -15,7 +15,7 @@ const html=fs.readFileSync('../lanchonete.html','utf8');
   { const i9=lis.findIndex(l=>/^<b>v9<\/b>/.test(l)); ok(i9>0 && lis[i9-1].indexOf('<br><a href="versoes/v9.html" target="_blank" rel="noopener">Abrir a v9</a>')<0 && lis[i9].indexOf('<br><a href="versoes/v9.html" target="_blank" rel="noopener">Abrir a v9</a>')>=0,'CA5: o link da v9 no formato dos outros'); }
   ok(fs.existsSync('../versoes/v9.html') && fs.existsSync('../versoes/v10.html') && fs.existsSync('../versoes/v11.html'),'CA5: os arquivos versoes/v9.html, v10.html e v11.html existem');
   { const v11=fs.readFileSync('../versoes/v11.html','utf8'), v1=fs.readFileSync('../versoes/v1.html','utf8'); ok(v11.split('\n')[0]===v1.split('\n')[0] && v11.split('\n')[1].indexOf('<title>')===0 && v11.indexOf("VERSAO = 'v11.19'")>0,'CA5: versoes/v11.html: a 1ª linha é a do v1 e o resto é o jogo da v11.19'); }
-  ok(/ id="vtag" aria-label="Versão 12.10.7">v12.10.7</.test(html) && /VERSAO = 'v12.10.7'/.test(html),'CA5: o selo e a VERSAO dizem v12.10.7'); }
+  ok(/ id="vtag" aria-label="Versão 12.11">v12.11</.test(html) && /VERSAO = 'v12.11'/.test(html),'CA5: o selo e a VERSAO dizem v12.11'); }
 
 // ---------- CA6: o grid da lojinha guarda o lugar na mesma seção e volta ao alto ao trocar ----------
 { const H=load(); const {g,L,els}=H; g.save=L.normSave({bank:90000,dia:12,maxDay:12,up:{tenis:true}}); g.up=g.save.up; g.buildTables(); g.goShop(12);
