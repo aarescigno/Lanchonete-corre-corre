@@ -4,12 +4,57 @@ Registro das ideias e dos retornos de quem jogou, com o texto original, e de ond
 
 ---
 
+## 27/11 — usuário: a cabecinha nos cursos do Cardápio
+> "o curso de confeitaria gourmet e de barista aparecem no cardápio da avenida brasil, mas como tanto a dani quanto o joca estao em nível máximo, não dá vontade de comprar esses cursos. oculte essa frase de +2 de experiência nesses cards. e coloque a miniatura da cabeça de cada um dos personagens afetados pelos cursos junto do cardzinho de curso, entendeu?"
+
+Na conversa: a frase some sempre, e a cabecinha vai em todos os cursos do Cardápio (Tonhão, Dani, Joca, Anselmo e Lia).
+
+**Destino:** v12.11 (etapa 19), `docs/spec-v12.11.md`.
+
+---
+
+## 27/11 — usuário: o couvert cinza antes de contratar
+> "o couvert artístico tem um toggle de cobrar ou não antes de ele ser contratado, isso pode confundir. deixe-o cinzinha até que a pessoa contrate o couvert"
+
+**Destino:** v12.11 (etapa 19), `docs/spec-v12.11.md`.
+
+---
+
+## 27/11 — usuário: a espera da Avenida na chuva
+> "outro ponto é que não tem um telhado na sala de espera da avenida brasil, onde já se viu um restaurante assim que as pessoas esperam na chuva para serem atendidas. coloca um toldo ou restrinja a chuva às janelas do fundo, com chuviscos e relampagos de vez em quando"
+
+Na conversa: a chuva fica só nas janelas do fundo, na Avenida e também no Terraço (o foyer é dentro do prédio).
+
+**Destino:** v12.11 (etapa 19), `docs/spec-v12.11.md`.
+
+---
+
+## 27/11 — usuário: as pernas no sofá da Avenida
+> "se não for demais, as pessoas na avenida brasil ficam sem pernas na fila de espera também"
+
+Achado (27/11): no sofá da Avenida as pernas ficam de fora de propósito desde a v11.16.1 (só na cadeirinha e no banquinho).
+
+**Destino:** v12.11 (etapa 19), `docs/spec-v12.11.md`.
+
+---
+
+## 27/11 — usuário: a troca de lugar das mesas
+> "aproveita que vai mexer nas cadeiras do salão e adiciona função de swap entre as mesas, quando arrastar uma mesa em direção a outra, essa outra se desloca para caber a nova, se não tiver espaço no salão, a mesa vai para o estoque."
+
+Na conversa: a outra vai para o lugar livre mais perto; sem lugar, para o estoque.
+
+**Destino:** v12.11 (etapa 19), `docs/spec-v12.11.md`.
+
+---
+
+---
+
 ## 27/11 — usuário: o salão da Avenida não cabe os 24 lugares
 > "o salão na avenida brasil não cabe todas as mesas que ele comporta, nem quando toco no arrumação automática, nem quando tento arrastar. se comporta 24 lugares deve caber 24 lugares"
 
 Achado (27/11): a área das mesas (`area` do ponto, 160–684 × 150–500) só tem 2 fileiras (`salaoAuto`: `nRows` = 2 com `MESA.top`+`MESA.bot` = 112 e `SALAO.gap` = 46). Na Avenida os 24 lugares só cabem com 6 mesas de 4; com qualquer mesa de 2, não. Na área industrial e no Terraço (20), não cabem 10 mesas de 2 nem 1 de 4 com 8 de 2. Aproximar as mesas (gap de 46 até 16) e alargar a área (até 120–724, ou 120–528 na altura) não resolve a Avenida: a 3ª fileira não cabe na altura (precisa de ~448 px; o chão útil, `BOUNDS`, vai de 112 a 528). Na escolha, o usuário quis aumentar a área das mesas (e não baixar o teto nem só avisar).
 
-**Destino:** etapa a planejar com o Opus (spec nova): a geometria do salão (3 fileiras, mesas de 2 mais estreitas ou fileiras desencontradas) para que qualquer mistura de mesas até o teto caiba nos pontos de 20 e de 24 lugares, com o caminho da Bia, o desenho e o `menu_fit`.
+**Destino:** v12.11 (etapa 19), `docs/spec-v12.11.md` (aprovada em 27/11): a folga entre as mesas cai de 46 para 30 px e a área cresce para a esquerda (Avenida desde x 40; área industrial e Terraço desde x 150), com 2 fileiras; o estoque do editor vai para uma faixa no alto.
 
 ---
 
