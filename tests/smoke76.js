@@ -120,8 +120,12 @@ const E1=['telefone','placa','apagou','retrato','escola','roda'], E2=['telefone'
 
 // ---------- 9. a v10 guardada (CA10) ----------
 { const v10=fs.readFileSync(__dirname+'/../versoes/v10.html','utf8'), v1=fs.readFileSync(__dirname+'/../versoes/v1.html','utf8');
-  let base=''; try{ base=cp.execSync('git show e85d8ac:lanchonete.html',{ cwd:__dirname+'/..', maxBuffer:64*1024*1024 }).toString(); }catch(e){}
-  ok(v10.split('\n')[0]===v1.split('\n')[0] && base.length>1000 && v10.split('\n').slice(1).join('\n')===base,'versoes/v10.html: a 1ª linha é a do v1 e o resto é o lanchonete.html do commit da v10.10');
+  ok(v10.split('\n')[0]===v1.split('\n')[0],'versoes/v10.html: a 1ª linha é a do v1');
+  /* o commit da v10.10 (e85d8ac) só existe com o histórico inteiro: num clone raso (as sessões na nuvem), a comparação é pulada, sem falhar */
+  let temCommit=true; try{ cp.execSync('git cat-file -e e85d8ac^{commit}',{ cwd:__dirname+'/..', stdio:'ignore' }); }catch(e){ temCommit=false; }
+  if(!temCommit) console.log('pulo: histórico incompleto (clone raso, sem o commit da v10.10): a comparação de versoes/v10.html foi pulada');
+  else { let base=''; try{ base=cp.execSync('git show e85d8ac:lanchonete.html',{ cwd:__dirname+'/..', maxBuffer:64*1024*1024 }).toString(); }catch(e){}
+    ok(base.length>1000 && v10.split('\n').slice(1).join('\n')===base,'versoes/v10.html: o resto é o lanchonete.html do commit da v10.10'); }
   const html=fs.readFileSync(__dirname+'/../lanchonete.html','utf8'); ok(/href="versoes\/v10\.html"[^>]*>Abrir a v10</.test(html),'o painel Versões tem o link "Abrir a v10"'); }
 
 console.log('\n'+(total-fails)+'/'+total+' ok; fails = '+fails); process.exit(fails?1:0);
