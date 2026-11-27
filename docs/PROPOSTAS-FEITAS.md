@@ -4,6 +4,22 @@ Retornos com destino já feito, movidos de `docs/PROPOSTAS.md` em 30/10/2026 sem
 
 ---
 
+## 27/11 — usuário: a cabecinha nos cursos do Cardápio
+> "o curso de confeitaria gourmet e de barista aparecem no cardápio da avenida brasil, mas como tanto a dani quanto o joca estao em nível máximo, não dá vontade de comprar esses cursos. oculte essa frase de +2 de experiência nesses cards. e coloque a miniatura da cabeça de cada um dos personagens afetados pelos cursos junto do cardzinho de curso, entendeu?"
+
+Na conversa: a frase some sempre, e a cabecinha vai em todos os cursos do Cardápio (Tonhão, Dani, Joca, Anselmo e Lia).
+
+**Destino:** v12.11.2 (etapa 19c), `docs/spec-v12.11.2.md` (entregue em 27/11).
+
+---
+
+## 27/11 — usuário: o couvert cinza antes de contratar
+> "o couvert artístico tem um toggle de cobrar ou não antes de ele ser contratado, isso pode confundir. deixe-o cinzinha até que a pessoa contrate o couvert"
+
+**Destino:** v12.11.2 (etapa 19c), `docs/spec-v12.11.2.md` (entregue em 27/11).
+
+---
+
 ## 27/11 — usuário: a espera da Avenida na chuva
 > "outro ponto é que não tem um telhado na sala de espera da avenida brasil, onde já se viu um restaurante assim que as pessoas esperam na chuva para serem atendidas. coloca um toldo ou restrinja a chuva às janelas do fundo, com chuviscos e relampagos de vez em quando"
 

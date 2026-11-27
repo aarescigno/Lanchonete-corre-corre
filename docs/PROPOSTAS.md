@@ -4,22 +4,6 @@ Registro das ideias e dos retornos de quem jogou, com o texto original, e de ond
 
 ---
 
-## 27/11 — usuário: a cabecinha nos cursos do Cardápio
-> "o curso de confeitaria gourmet e de barista aparecem no cardápio da avenida brasil, mas como tanto a dani quanto o joca estao em nível máximo, não dá vontade de comprar esses cursos. oculte essa frase de +2 de experiência nesses cards. e coloque a miniatura da cabeça de cada um dos personagens afetados pelos cursos junto do cardzinho de curso, entendeu?"
-
-Na conversa: a frase some sempre, e a cabecinha vai em todos os cursos do Cardápio (Tonhão, Dani, Joca, Anselmo e Lia).
-
-**Destino:** v12.11.2 (etapa 19c), `docs/spec-v12.11.2.md`.
-
----
-
-## 27/11 — usuário: o couvert cinza antes de contratar
-> "o couvert artístico tem um toggle de cobrar ou não antes de ele ser contratado, isso pode confundir. deixe-o cinzinha até que a pessoa contrate o couvert"
-
-**Destino:** v12.11.2 (etapa 19c), `docs/spec-v12.11.2.md`.
-
----
-
 ## 27/11 — usuário: a Dani perde uma tarefa na chegada à Avenida
 > "ao iniciar a avenida brasil as atividades que a Dani estiver fazendo devem se manter, uma delas se desativou na passagem" (e, na pergunta: "era outra tarefa, ela estava com cafezinho e doce e uma delas estava desmarcada"; a folha estava paga)
 

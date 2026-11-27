@@ -670,8 +670,9 @@ function buildCouvert(grid){
   game.manualVer('l-couvert');
   c = staffCard(upgradeIcon('couvert'), 'Couvert artístico'); c.setAttribute('data-ficha', 'l-couvert');
   const tg = el('button', 'toggle', 'Cobrar couvert: ' + fmt(C.fee) + ' por pessoa (o efeito fica menor)'); tg.type = 'button';
-  tg.setAttribute('aria-pressed', eq.taxa ? 'true' : 'false');
-  tg.addEventListener('click', () => { Sfx.tap(); eq.taxa = !eq.taxa; writeSave(game.save); buildShop(); });
+  const tem = !!eq.couvert;   // v12.11.2: cinza até contratar; a escolha de cobrar fica guardada
+  tg.setAttribute('aria-pressed', tem && eq.taxa ? 'true' : 'false'); tg.disabled = !tem;
+  tg.addEventListener('click', () => { if (!tem) return; Sfx.tap(); eq.taxa = !eq.taxa; writeSave(game.save); buildShop(); });
   c.appendChild(tg);
   duo = el('div', 'duo');
   duo.appendChild(eq.couvert ? shopBtn('Dispensar', 'btn alt', true, () => game.setStaff('couvert', false)) : shopBtn('Contratar: ' + fmt(C.pay) + '/dia', 'btn', canPay(C.pay), () => game.setStaff('couvert', true)));
@@ -995,6 +996,19 @@ function cursoIcon(c, av){
   const bas = pratosCurso(c.id, game.ponto, 1)[0], k = bas || pratosCurso(c.id, game.ponto, 2)[0] || (c.id === 'pf' ? pratoBase(game.ponto) : Object.keys(CARDAPIO).find(x => tecnicaDe(x) === c.id)) || 'pf';
   return tipCanvas(x => { x.translate(32,32); drawDish(x, k, 0, 4, 1.7, false, 'frango', av || !bas); });
 }
+/* v12.11.2: a cabecinha de quem aprende, no canto de baixo à direita do ícone do curso (o retrato das conversas, escala 0,36, borda branca) */
+function cursoCabeca(cv, q){
+  const c = cv.getContext('2d'), x = 49, y = 49, k = 0.36;
+  c.save(); c.setTransform(2, 0, 0, 2, 0, 0); c.translate(x, y); c.scale(k, k);   // o tipCanvas deixou o translate do ícone: volta à base 64x64
+  c.beginPath(); c.arc(0, 0, RETRATO.raio + 6, 0, TAU); c.fillStyle = '#fff'; c.fill();
+  drawRetrato(c, q, 'neutra', 0, 0, game);
+  c.restore(); cv.setAttribute('data-cabeca', q);
+  return cv;
+}
+/* v12.11.2: o desenho do 1º item que o curso do ajudante abre, o mesmo que o jogo desenha */
+function cursoItemIcon(k, extra){
+  return tipCanvas(x => { x.translate(32,32); if (k === 'dish') drawDish(x, 'liaRisoto', 0, 4, 1.7, false, 'frango', false); else drawIcon(x, k, 0, 0, 1.7, extra); });
+}
 /* seção Cardápio (v9.0.1): o que se serve hoje, a diversidade no Gúgou e os cursos do Tonhão */
 function buildCardapio(grid){
   if (game.noiteVisivel) buildNoite(grid);   // v10.10: a noite da estrela, no topo do Cardápio (Terraço, cap. 14 em diante)
@@ -1041,7 +1055,7 @@ function buildCursos(grid){
   CURSOS.filter(c => cursoOk(c, game.ponto) && (c.degraus[game.ponto.id].preco > 0 || c.degraus[game.ponto.id].av)).forEach(c => {
     const g = c.degraus[game.ponto.id], n = cursoNivel(cur, c.id, game.ponto), p = game.cursoProx(c.id), av = n >= 1;
     const card = el('div', 'item' + (!p ? ' own' : ''));
-    card.appendChild(cursoIcon(c, av));
+    card.appendChild(cursoCabeca(cursoIcon(c, av), 'tonhao'));
     card.appendChild(el('b', null, av ? g.av.nome : 'Curso de ' + g.nome));
     const lis = pratosCurso(c.id, game.ponto, av ? 2 : 1);
     if (c.id === 'veg' && lis.some(falta)) card.appendChild(el('span', 'cursos-lista apagado', 'Precisa do curso de ' + falta(lis.find(falta)).nome + '.'));
@@ -1055,9 +1069,8 @@ function buildCursosAjudantes(grid){
   const sv = game.save, bank = sv.bank;
   DANI_CURSOS.filter(c => c.item && cursoDaniVis(c, game.ponto) && game.cartaoAberto('confeitaria') && game.daniChegou).forEach(c => {
     const feito = !!sv.daniCursos[c.id], card = el('div', 'item' + (feito ? ' own' : '')), falta = !!c.dep && !sv.daniCursos[c.dep];
-    card.appendChild(upgradeIcon('dani'));
+    card.appendChild(cursoCabeca(cursoItemIcon('doce', c.id === 'confAlta' ? 8 : c.id === 'confGourmet' ? 5 : 1), 'dani'));
     card.appendChild(el('b', null, 'Curso de ' + c.nome));
-    card.appendChild(el('span', 'cursos-lista', '+' + DANI_XP.curso + ' de experiência para a Dani'));
     if (!feito && falta) card.appendChild(el('span', 'cursos-lista apagado', 'Precisa do curso de ' + cursoDaniNome(c.dep) + '.'));
     if (!feito && game.daniCursoTrava) card.appendChild(el('span', 'cursos-lista', 'Em curso'));
     card.appendChild(feito ? shopBtn('Curso feito', 'btn', false, () => false) : shopBtn('Comprar ' + fmt(c.preco), 'btn', !falta && !game.daniCursoTrava && bank >= c.preco, () => game.buyDaniCurso(c.id), c.preco));
@@ -1066,9 +1079,8 @@ function buildCursosAjudantes(grid){
   // v9.3: o espresso do Joca (só na Avenida, com o Joca contratado); v10.3: os cafés especiais (só no Terraço, depois do espresso)
   JOCA_CURSOS.filter(c => c.item && cursoDaniVis(c, game.ponto) && game.cartaoAberto('joca')).forEach(c => {
     const feito = !!sv.jocaCursos[c.id], card = el('div', 'item' + (feito ? ' own' : '')), falta = !!c.dep && !sv.jocaCursos[c.dep];
-    card.appendChild(upgradeIcon('joca'));
+    card.appendChild(cursoCabeca(cursoItemIcon('cafeesp', c.id === 'espresso' ? 0 : 2), 'joca'));
     card.appendChild(el('b', null, 'Curso ' + c.nome.charAt(0).toLowerCase() + c.nome.slice(1)));
-    card.appendChild(el('span', 'cursos-lista', '+' + JOCA_XP.curso + ' de experiência para o Joca'));
     if (!feito && !(sv.equipe.joca > 0) && !devLivre()) card.appendChild(el('span', 'cursos-lista apagado', 'Precisa do Joca contratado.'));
     if (!feito && falta) card.appendChild(el('span', 'cursos-lista apagado', 'Precisa do curso ' + JOCA_CURSOS.find(x => x.id === c.dep).nome.replace('Barista: e', 'de e') + '.'));
     if (!feito && game.jocaCursoTrava) card.appendChild(el('span', 'cursos-lista', 'Em curso'));
@@ -1078,7 +1090,7 @@ function buildCursosAjudantes(grid){
   // v10.3: a coquetelaria de autor do Anselmo (só no Terraço, depois da clássica)
   ANSELMO_CURSOS.filter(c => c.item && cursoDaniVis(c, game.ponto) && game.cartaoAberto('anselmo')).forEach(c => {
     const feito = !!sv.anselmoCursos[c.id], card = el('div', 'item' + (feito ? ' own' : '')), falta = !!c.dep && !sv.anselmoCursos[c.dep];
-    card.appendChild(upgradeIcon('anselmo'));
+    card.appendChild(cursoCabeca(cursoItemIcon('drink', drinkIdx(DRINKS.autor[0].id)), 'anselmo'));
     card.appendChild(el('b', null, 'Curso de ' + c.nome.charAt(0).toLowerCase() + c.nome.slice(1)));
     if (!feito && !(sv.equipe.anselmo > 0) && !devLivre()) card.appendChild(el('span', 'cursos-lista apagado', 'Precisa do Anselmo contratado.'));
     if (!feito && falta) card.appendChild(el('span', 'cursos-lista apagado', 'Precisa do curso de ' + ANSELMO_CURSOS.find(x => x.id === c.dep).nome + '.'));
@@ -1089,7 +1101,7 @@ function buildCursosAjudantes(grid){
   // v12.5: a cozinha de autor da Lia (só no Terraço, depois do Chefe de praça; na História, depois da conversa liaPetala)
   LIA_CURSOS.filter(c => c.item && game.liaCursoVis(c)).forEach(c => {
     const feito = !!sv.liaCursos[c.id], card = el('div', 'item' + (feito ? ' own' : '')), falta = !!c.dep && !sv.liaCursos[c.dep];
-    card.appendChild(upgradeIcon('lia'));
+    card.appendChild(cursoCabeca(cursoItemIcon('dish'), 'lia'));
     card.appendChild(el('b', null, 'Curso de ' + c.nome.charAt(0).toLowerCase() + c.nome.slice(1)));
     if (!feito && !(sv.equipe.lia > 0) && !devLivre()) card.appendChild(el('span', 'cursos-lista apagado', 'Precisa da Lia contratada.'));
     if (!feito && falta) card.appendChild(el('span', 'cursos-lista apagado', 'Precisa do curso de ' + LIA_CURSOS.find(x => x.id === c.dep).nome + '.'));

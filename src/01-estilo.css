@@ -276,6 +276,7 @@ table.cx .rs{font-size:inherit}
 .item .tasks{display:grid;grid-template-columns:1fr 1fr;gap:4px;width:100%}
 .item .tasks button,.item .toggle{font:700 max(11px,calc(var(--u)*12)) var(--fb);color:var(--tinta);background:#fff;border:calc(var(--u)*2) solid var(--tinta);border-radius:999px;padding:2px 8px;min-height:32px;cursor:pointer}
 .item .tasks button[aria-pressed="true"],.item .toggle[aria-pressed="true"]{background:var(--faixa);color:#fff}
+.item .toggle[disabled]{opacity:.4;cursor:not-allowed}
 .item .tasks button[disabled]{opacity:.4;cursor:not-allowed}
 .item .next{grid-column:1 / -1;display:grid;gap:1px;background:#fff;border:calc(var(--u)*2) dashed rgba(34,32,28,.35);border-radius:calc(var(--u)*8);padding:calc(var(--u)*4) calc(var(--u)*7)}
 .item .next b{font:800 max(11px,calc(var(--u)*12.5)) var(--fb);color:var(--faixa)}

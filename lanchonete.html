@@ -281,6 +281,7 @@ table.cx .rs{font-size:inherit}
 .item .tasks{display:grid;grid-template-columns:1fr 1fr;gap:4px;width:100%}
 .item .tasks button,.item .toggle{font:700 max(11px,calc(var(--u)*12)) var(--fb);color:var(--tinta);background:#fff;border:calc(var(--u)*2) solid var(--tinta);border-radius:999px;padding:2px 8px;min-height:32px;cursor:pointer}
 .item .tasks button[aria-pressed="true"],.item .toggle[aria-pressed="true"]{background:var(--faixa);color:#fff}
+.item .toggle[disabled]{opacity:.4;cursor:not-allowed}
 .item .tasks button[disabled]{opacity:.4;cursor:not-allowed}
 .item .next{grid-column:1 / -1;display:grid;gap:1px;background:#fff;border:calc(var(--u)*2) dashed rgba(34,32,28,.35);border-radius:calc(var(--u)*8);padding:calc(var(--u)*4) calc(var(--u)*7)}
 .item .next b{font:800 max(11px,calc(var(--u)*12.5)) var(--fb);color:var(--faixa)}
@@ -535,7 +536,7 @@ table.rank tr.me td{background:#fbe7a8}
 
     <div class="ov show" id="ov-menu">
       <div class="panel menu-panel">
-        <span class="vtag" id="vtag" aria-label="Versão 12.11.1">v12.11.1</span>
+        <span class="vtag" id="vtag" aria-label="Versão 12.11.2">v12.11.2</span>
         <h1 class="title">Lanchonete <br>Corre-Corre</h1>
         <p class="tag">Ajude a Bia a atender a freguesia da esquina antes que o cafezinho esfrie!</p>
         <div class="lbl" id="menu-dia">História</div>
@@ -837,7 +838,8 @@ table.rank tr.me td{background:#fbe7a8}
       <div class="panel">
         <h2>Versões</h2>
         <ul class="verlist">
-          <li><b>v12.11.1</b><span class="cur">versão atual</span><br>27/11/2026 &mdash; Na Avenida e no Terraço, quem espera fica no seco: a chuva só aparece nas janelas do fundo, com chuvisco e um relâmpago de vez em quando. No sofá da Avenida, as pessoas sentadas têm pernas.</li>
+          <li><b>v12.11.2</b><span class="cur">versão atual</span><br>27/11/2026 &mdash; O &ldquo;Cobrar couvert&rdquo; fica cinza até o couvert ser contratado. Cada curso do Cardápio mostra a cabecinha de quem aprende, e os cursos dos ajudantes ganham o desenho do que ensinam.</li>
+          <li><b>v12.11.1</b><br>27/11/2026 &mdash; Na Avenida e no Terraço, quem espera fica no seco: a chuva só aparece nas janelas do fundo, com chuvisco e um relâmpago de vez em quando. No sofá da Avenida, as pessoas sentadas têm pernas.</li>
           <li><b>v12.11</b><br>27/11/2026 &mdash; O salão da Avenida (e os outros) comporta todos os lugares, com qualquer mistura de mesas; arrastar uma mesa para cima de outra faz a outra se mexer ou ir para o estoque, que agora é uma faixa no alto do editor.</li>
           <li><b>v12.10.7</b><br>27/11/2026 &mdash; O couvert artístico não mostra mais a porcentagem: só que o efeito fica menor se cobrar.</li>
           <li><b>v12.10.6</b><br>27/11/2026 &mdash; O cartão da Dani nos doces mostra só as tarefas que dá para escolher.</li>
@@ -2979,7 +2981,7 @@ const HIST_NOMES = { bia:'Bia', tonhao:'Tonhão', dani:'Dani', joca:'Joca', cami
 const ATU_TXT = { procurando:'Procurando versão nova...', nova:'Tem versão nova: {v}! Seu jogo salvo continua.', igual:'Você já está na versão mais nova ({v}).', erro:'Sem internet agora. Tente de novo mais tarde.', atualizando:'Atualizando...' };
 function atuEstado(remota, atual){ if (typeof remota !== 'string' || !remota.trim()) return 'erro'; return remota.trim() === atual ? 'igual' : 'nova'; }
 const CAIXA_MAX = 14;                                 // livro-caixa (v7.2): quantos dias da carreira ficam guardados
-const VERSAO = 'v12.11.1';                                     // vai no resumo do Caixa
+const VERSAO = 'v12.11.2';                                     // vai no resumo do Caixa
 const DIVULGA_DIA = 4;                                // antes disso, o movimento é o da inauguração (sem custo); v9.0.2: dia 4, e o padrão é o boca a boca
 function divulgaAberta(n, sv){ return devLivre() || n >= DIVULGA_DIA && !(sv && sv.convDiv === 'pend'); }   // no modo dev, desde o dia 1; v9.0.3: no Modo História, só depois da conversa
 /* v9.6.4: a Efood (os entregadores) só abre depois da conversa dos entregadores, no Modo História; antes dela, nenhum tipo com `retira` vem na agenda */
@@ -17540,8 +17542,9 @@ function buildCouvert(grid){
   game.manualVer('l-couvert');
   c = staffCard(upgradeIcon('couvert'), 'Couvert artístico'); c.setAttribute('data-ficha', 'l-couvert');
   const tg = el('button', 'toggle', 'Cobrar couvert: ' + fmt(C.fee) + ' por pessoa (o efeito fica menor)'); tg.type = 'button';
-  tg.setAttribute('aria-pressed', eq.taxa ? 'true' : 'false');
-  tg.addEventListener('click', () => { Sfx.tap(); eq.taxa = !eq.taxa; writeSave(game.save); buildShop(); });
+  const tem = !!eq.couvert;   // v12.11.2: cinza até contratar; a escolha de cobrar fica guardada
+  tg.setAttribute('aria-pressed', tem && eq.taxa ? 'true' : 'false'); tg.disabled = !tem;
+  tg.addEventListener('click', () => { if (!tem) return; Sfx.tap(); eq.taxa = !eq.taxa; writeSave(game.save); buildShop(); });
   c.appendChild(tg);
   duo = el('div', 'duo');
   duo.appendChild(eq.couvert ? shopBtn('Dispensar', 'btn alt', true, () => game.setStaff('couvert', false)) : shopBtn('Contratar: ' + fmt(C.pay) + '/dia', 'btn', canPay(C.pay), () => game.setStaff('couvert', true)));
@@ -17865,6 +17868,19 @@ function cursoIcon(c, av){
   const bas = pratosCurso(c.id, game.ponto, 1)[0], k = bas || pratosCurso(c.id, game.ponto, 2)[0] || (c.id === 'pf' ? pratoBase(game.ponto) : Object.keys(CARDAPIO).find(x => tecnicaDe(x) === c.id)) || 'pf';
   return tipCanvas(x => { x.translate(32,32); drawDish(x, k, 0, 4, 1.7, false, 'frango', av || !bas); });
 }
+/* v12.11.2: a cabecinha de quem aprende, no canto de baixo à direita do ícone do curso (o retrato das conversas, escala 0,36, borda branca) */
+function cursoCabeca(cv, q){
+  const c = cv.getContext('2d'), x = 49, y = 49, k = 0.36;
+  c.save(); c.setTransform(2, 0, 0, 2, 0, 0); c.translate(x, y); c.scale(k, k);   // o tipCanvas deixou o translate do ícone: volta à base 64x64
+  c.beginPath(); c.arc(0, 0, RETRATO.raio + 6, 0, TAU); c.fillStyle = '#fff'; c.fill();
+  drawRetrato(c, q, 'neutra', 0, 0, game);
+  c.restore(); cv.setAttribute('data-cabeca', q);
+  return cv;
+}
+/* v12.11.2: o desenho do 1º item que o curso do ajudante abre, o mesmo que o jogo desenha */
+function cursoItemIcon(k, extra){
+  return tipCanvas(x => { x.translate(32,32); if (k === 'dish') drawDish(x, 'liaRisoto', 0, 4, 1.7, false, 'frango', false); else drawIcon(x, k, 0, 0, 1.7, extra); });
+}
 /* seção Cardápio (v9.0.1): o que se serve hoje, a diversidade no Gúgou e os cursos do Tonhão */
 function buildCardapio(grid){
   if (game.noiteVisivel) buildNoite(grid);   // v10.10: a noite da estrela, no topo do Cardápio (Terraço, cap. 14 em diante)
@@ -17911,7 +17927,7 @@ function buildCursos(grid){
   CURSOS.filter(c => cursoOk(c, game.ponto) && (c.degraus[game.ponto.id].preco > 0 || c.degraus[game.ponto.id].av)).forEach(c => {
     const g = c.degraus[game.ponto.id], n = cursoNivel(cur, c.id, game.ponto), p = game.cursoProx(c.id), av = n >= 1;
     const card = el('div', 'item' + (!p ? ' own' : ''));
-    card.appendChild(cursoIcon(c, av));
+    card.appendChild(cursoCabeca(cursoIcon(c, av), 'tonhao'));
     card.appendChild(el('b', null, av ? g.av.nome : 'Curso de ' + g.nome));
     const lis = pratosCurso(c.id, game.ponto, av ? 2 : 1);
     if (c.id === 'veg' && lis.some(falta)) card.appendChild(el('span', 'cursos-lista apagado', 'Precisa do curso de ' + falta(lis.find(falta)).nome + '.'));
@@ -17925,9 +17941,8 @@ function buildCursosAjudantes(grid){
   const sv = game.save, bank = sv.bank;
   DANI_CURSOS.filter(c => c.item && cursoDaniVis(c, game.ponto) && game.cartaoAberto('confeitaria') && game.daniChegou).forEach(c => {
     const feito = !!sv.daniCursos[c.id], card = el('div', 'item' + (feito ? ' own' : '')), falta = !!c.dep && !sv.daniCursos[c.dep];
-    card.appendChild(upgradeIcon('dani'));
+    card.appendChild(cursoCabeca(cursoItemIcon('doce', c.id === 'confAlta' ? 8 : c.id === 'confGourmet' ? 5 : 1), 'dani'));
     card.appendChild(el('b', null, 'Curso de ' + c.nome));
-    card.appendChild(el('span', 'cursos-lista', '+' + DANI_XP.curso + ' de experiência para a Dani'));
     if (!feito && falta) card.appendChild(el('span', 'cursos-lista apagado', 'Precisa do curso de ' + cursoDaniNome(c.dep) + '.'));
     if (!feito && game.daniCursoTrava) card.appendChild(el('span', 'cursos-lista', 'Em curso'));
     card.appendChild(feito ? shopBtn('Curso feito', 'btn', false, () => false) : shopBtn('Comprar ' + fmt(c.preco), 'btn', !falta && !game.daniCursoTrava && bank >= c.preco, () => game.buyDaniCurso(c.id), c.preco));
@@ -17936,9 +17951,8 @@ function buildCursosAjudantes(grid){
   // v9.3: o espresso do Joca (só na Avenida, com o Joca contratado); v10.3: os cafés especiais (só no Terraço, depois do espresso)
   JOCA_CURSOS.filter(c => c.item && cursoDaniVis(c, game.ponto) && game.cartaoAberto('joca')).forEach(c => {
     const feito = !!sv.jocaCursos[c.id], card = el('div', 'item' + (feito ? ' own' : '')), falta = !!c.dep && !sv.jocaCursos[c.dep];
-    card.appendChild(upgradeIcon('joca'));
+    card.appendChild(cursoCabeca(cursoItemIcon('cafeesp', c.id === 'espresso' ? 0 : 2), 'joca'));
     card.appendChild(el('b', null, 'Curso ' + c.nome.charAt(0).toLowerCase() + c.nome.slice(1)));
-    card.appendChild(el('span', 'cursos-lista', '+' + JOCA_XP.curso + ' de experiência para o Joca'));
     if (!feito && !(sv.equipe.joca > 0) && !devLivre()) card.appendChild(el('span', 'cursos-lista apagado', 'Precisa do Joca contratado.'));
     if (!feito && falta) card.appendChild(el('span', 'cursos-lista apagado', 'Precisa do curso ' + JOCA_CURSOS.find(x => x.id === c.dep).nome.replace('Barista: e', 'de e') + '.'));
     if (!feito && game.jocaCursoTrava) card.appendChild(el('span', 'cursos-lista', 'Em curso'));
@@ -17948,7 +17962,7 @@ function buildCursosAjudantes(grid){
   // v10.3: a coquetelaria de autor do Anselmo (só no Terraço, depois da clássica)
   ANSELMO_CURSOS.filter(c => c.item && cursoDaniVis(c, game.ponto) && game.cartaoAberto('anselmo')).forEach(c => {
     const feito = !!sv.anselmoCursos[c.id], card = el('div', 'item' + (feito ? ' own' : '')), falta = !!c.dep && !sv.anselmoCursos[c.dep];
-    card.appendChild(upgradeIcon('anselmo'));
+    card.appendChild(cursoCabeca(cursoItemIcon('drink', drinkIdx(DRINKS.autor[0].id)), 'anselmo'));
     card.appendChild(el('b', null, 'Curso de ' + c.nome.charAt(0).toLowerCase() + c.nome.slice(1)));
     if (!feito && !(sv.equipe.anselmo > 0) && !devLivre()) card.appendChild(el('span', 'cursos-lista apagado', 'Precisa do Anselmo contratado.'));
     if (!feito && falta) card.appendChild(el('span', 'cursos-lista apagado', 'Precisa do curso de ' + ANSELMO_CURSOS.find(x => x.id === c.dep).nome + '.'));
@@ -17959,7 +17973,7 @@ function buildCursosAjudantes(grid){
   // v12.5: a cozinha de autor da Lia (só no Terraço, depois do Chefe de praça; na História, depois da conversa liaPetala)
   LIA_CURSOS.filter(c => c.item && game.liaCursoVis(c)).forEach(c => {
     const feito = !!sv.liaCursos[c.id], card = el('div', 'item' + (feito ? ' own' : '')), falta = !!c.dep && !sv.liaCursos[c.dep];
-    card.appendChild(upgradeIcon('lia'));
+    card.appendChild(cursoCabeca(cursoItemIcon('dish'), 'lia'));
     card.appendChild(el('b', null, 'Curso de ' + c.nome.charAt(0).toLowerCase() + c.nome.slice(1)));
     if (!feito && !(sv.equipe.lia > 0) && !devLivre()) card.appendChild(el('span', 'cursos-lista apagado', 'Precisa da Lia contratada.'));
     if (!feito && falta) card.appendChild(el('span', 'cursos-lista apagado', 'Precisa do curso de ' + LIA_CURSOS.find(x => x.id === c.dep).nome + '.'));
@@ -19132,7 +19146,7 @@ try { Rank.init(); } catch(e) {}
 game.setState('menu');
 if (!aberturaVista() && !DEV.on) abrirAbertura('auto');   // v8.5: a abertura toca sozinha uma vez
 window.__game = game;
-window.__lcc = { chuvaNaRua, relampago, RELS_LS, RELS_MAX, relsLe, relsGuarda, relsApaga, relsTexto, relsCaixa, CADERNO, cadernoPaginas, cadernoTexto, upgradeIcon, DESENHO_BASE, tipoAparelho, TESTES, TESTE_LS, TESTE_EQ_PADRAO, TESTE_PESSOAS, testeEqNorm, testeEqPadrao, testeTarefas, testeVagas, testeNivelMax, testeNivel, testeDono, testeEfetivas, testeEqLe, testeEqGrava, buildTesteFase, testeRelatorio, buildTesteFim, DESAFIOS, MEDALHAS, normDesafios, MANUAL_ABAS, buildDesafios, DESAFIO_EST, ATU_TXT, atuEstado, atuVerifica, atuAplica, ENFEITE_MESA, enfeiteMesa, enfeiteDe, ENTREGA_CHEGA, drawEfoodFlash, drawMesinha, drawKitchen, TE_OURO, MARMJ_SLOTS, efoodFlashA, ab2Cam, ab2Cabe, ab2Tela, ab2Notas, AB_FX, AB2, AB2_CENAS, AB2_TE, ab2Terraco, ab2RuaAurora, ab2CozinhaAurora, ab2Gala, ab2Quarto, ab2Cozinha, ab2Banco, ab2RuaCasa, TRIO, drawTrio, rankAuto, rankNome, RANK_VOCE, drawBia, roupaBia, BIA_REACAO, BIA_ROUPA_COR, abBia, BRAULIO_LOOK, convCabeca, drawRetrato, drawRetratosTela, RETRATO, RETRATO_QUEM, RETRATO_POSE, EXPRESSOES, exprDe, exprAtual: () => EXPR, devRetratos, CONV_UI, socorroFalas, NOITE, HIST_RECOMENDA, HIST_NOTA, guiaPontos, guiaEstrelas, abreBoletim, drawVela, drawFala, CRITICO, HIST_CRITICO, normGuia, plantaBoato, drawCaderno, drawGarfo, ROSA, GERENTE, drawPetala, musicaPay, musicaDe, musicaOk, camiModoTudo, CAMI_TUDO, cafesLista, cafeIdx, cafeIngred, ANSELMO_CURSOS, LIA_CURSOS, liaCfg, normLiaCursos, normAnselmoCursos, drinksLista, drinksTodos, drinkPreco, drinkIngred, drinkVagas, drinkPrep, MAQUINA_LUGAR, drawCafesEsp, drawCarrinhoBoasVindas, espressoTrabalho, bebExtra, devCenas, devAssistir, devFinal, tocaFinal, drawPlacaGuia, FINAL, finalCenas, histLiga, DEV_CAPS, drawIcon, liaOn, drawLia, LIA_HOME, LIA_LOOK, doceIcone, drawFino, TEMPOS, tempoMarcas, pedePrincipal, drawTempoTrilha, HIST_SOCORRO, HIST_EXIGENTE, EXIGENTE, LOUCA, vipDish, vipCook, casaBoa, exigRep, HIST_PLANTA, HIST_QUITOU, HIST_TETO, VONTADE, vontadeChance, vontadeDia, vontadeFalas, HIST_VONTADE_DOCE, HIST_VONTADE_CAFE, filaPos, queueRect, STATIONS, MANUAL, manualTracos, manualAberta, abrirManual, buildManual, fecharManual, semente, manualSemente, FECHA, efoodAberto, drawTable, camiMesasN, camiModoMesas, CAMI_MESAS_MAX, drawAventalCami, FISCAL, Fiscal, FISCAL_PONTOS, abrirDev, fecharDev, buildDev, passoJogo, devLivre, diaNoPonto, manutEmerg, manutFator, daniTaskDe, plateSlotsFor, queueYsFor, assentoSlow, AVENIDA, SABORES, cursoOk, INDUSTRIAL, PLATE_SLOTS, cozinhaSlots, upgradeDe, DECOR, DECOR_GRUPOS, TOALHA, LUXO, MOVEIS, movelOf, movelNivel, normMoveis, luxoPts, luxoTot, luxoNivel, luxoForca, decorOf, normDecor, decorOn, decorCombina, decorPreco, decorSimplesVenda, DECOR_PRECO, FILA_ACOES, filaMax, MARMITA, RETIRADA, marmitaMao, drawMarmita, prateleiraPos, EFOOD_COR, AVAL_BRAVO, QUEUE, setShopTab: v => shopAbrir(v), setShopGrupo: g => shopGrupoAbrir(g), shopSecoes: () => SHOP_GRUPOS.map(g => shopSecoesVis(g)), TREINO, TREINO_PASSOS, TREINO_COR, Treino, treinoLugar, DICAS, dicaDe, dicaLigada, drawDica, HUD_LUCRO, hudEstrelas, drawHud, daniNaLoja, treinoPrimeiro, playCareer, buildMenu, introBanco, buildFalencia, BANCO, normEmprestimo, parcelaDe, devidoDe, jurosDe, tabelaDe, simulaEmprestimo, SEMANA, semanaOf, diaOf, FILA_JUSTA, PORTA, CHAIRS, PAT, CONTAS, INGRED, CARDAPIO, precoPrato, pratosDoPonto, precoCarta, vendeNoPonto, pratoBase, fritoBase, tecnicaDe, pratosCurso, PRATO_BASE, PRECO_BEB, cafePreco, sucoPreco, sucoIngred, cafePrecoDe, ROTULO_BASE, CURSOS, CURSO_AV, CURSO_DIA, CURSOS_ANTIGOS, degrauDe, degrausDe, tecFeita, tonhaoNivelAlc, tonhaoProgresso, tonhaoDegrausPonto, cursosAte, pontoIdx, daniXp, daniNivelXp, DANI_XP, DANI_CURSOS, CURSOS_SEMFIM, cursoOf, cursoNivel, normCursos, pratoAv, CARNES, drawDish, pratoSabido, pratoEstranho, ESTRANHO, EMPRATA, pratosSabidos, GOSTOS, GOSTOS_CAT, pedePrato, VEG, vegMov, drawDish, MAIS, PONTOS_ACAO, GORJETA, DRINK_PRICE, MOVIMENTO, movimentoSalao, DIVULGA, DIVULGA_DIA, divulgaOf, contasDia, bomGoal, SALAO, PONTOS, pontoOf, MESA, mesaBox, mesaPreco, salaoLugares, mesaProblema, salaoCaminho, salaoProblema, salaoOrdena, salaoAuto, salaoVaga, salaoPerto, salaoTroca, EST, naEst, estSlots, salaoKit, salaoDevolucao, SALAO_SEMFIM, normSalao, setObst, OBST, pathOk, MAQUINA, BEBIDA_ESPERA, bebidaOf, MANUT, manutOf, manutChance, manutPreco, normManut, CLIMA, CLIMA_DIA, EVENTOS, eventoSemana, introManut, normPend, CALCADA, TW, HUDX, esperaAp, tableApproach, CRIT, STAFF, diariaDani, diariaJoca, cursosPay, DANI_TASKS, DANI_HANDS, daniTaskOk, TRASH, WASH, payroll, FOLHA_CORTE, folhaCorta, folhaCortes, folhaItens, listaE, pratosDe, couvertEffect, couvertOk, ambienteEffect, dishStock, normSave, Helper, JUICE, KITCHEN_SLOTS, handLayout, trayOk, Game, Group, Table, Kitchen, Waitress, BIA_SPEED, DAYS, UPGRADES, CUSTOMER_TYPES, LAYOUT, PAL, Sfx, findPath, render, Rank, sortRows, cleanName, normName, CMD, ENDLESS, VIP, MULTA, rk, renderRank, openRank, closeRank, LS, lsGet, lsSet, loadSave, DEV, saveKey, devSync, divulgaAberta, CAIXA_MAX, VERSAO, normCaixa, caixaResumo, caixaTotais, copyText, PRATO, pratoPerde, pratoVapor, AVAL, AVAL_CRIT, AVAL_BRAVO, avalMenu, cursosItem, DOCES, CAFES, cafeDe, DRINKS, drinkDe, drinkIdx, anselmoOn, ANSELMO_HOME, ANSELMO_LOOK, drawAnselmo, docesLista, docePreco, doceIngred, doceIdx, CAMI_CURSOS, CAMI_HOME, CAMI_LOOK, camiNivelCursos, normCamiCursos, drawCami, drawEspresso, JOCA_XP, JOCA_CURSOS, JOCA_HOME, jocaXp, jocaNivelXp, BASICAS, donoBasico, cursoDaniVis, JOCA_LOOK, drawJoca, avalTeto, avalEscala, TERRACO, fixosDe, vipTipos, doorFor, DOOR, terraco, drawPiano, drawPoltrona, drawFoyerTe, drawParedeTe, drawElevadorTe, drawLugarTe, drawPerson, makePeople, drawChair, iconeMudanca, avalFrac, AVAL_SIMPLES, AVAL_DECOR, normAval, avalNota, avalMedias, avalGeral, avalMovimento, avalMinimo, avalComentario, fmtNota, notaFaixa, gurugolCaixa, AVAL_COM, normAvalCom, buildGurugol, ABERTURA, Abertura, AB_ALT, AB_BASE, abEsc, AB_VIVO, aberturaVista, aberturaSom, drawAbertura, abrirAbertura, HISTORIA, HIST_CARDAPIO, HIST_DIVULGA, HIST_ENTREGA, LIBERA, liberaOf, ARCO, HIST_NOMES, normEquipe, upgradeCartao, cursoFeito, AVAL_POUCO, REFORMA, HIST, carencia, Conversa, drawConversa, falar, fluxoHistoria, falar, aberturaAtual: () => abertura };
+window.__lcc = { chuvaNaRua, relampago, RELS_LS, RELS_MAX, relsLe, relsGuarda, relsApaga, relsTexto, relsCaixa, CADERNO, cadernoPaginas, cadernoTexto, upgradeIcon, cursoCabeca, DESENHO_BASE, tipoAparelho, TESTES, TESTE_LS, TESTE_EQ_PADRAO, TESTE_PESSOAS, testeEqNorm, testeEqPadrao, testeTarefas, testeVagas, testeNivelMax, testeNivel, testeDono, testeEfetivas, testeEqLe, testeEqGrava, buildTesteFase, testeRelatorio, buildTesteFim, DESAFIOS, MEDALHAS, normDesafios, MANUAL_ABAS, buildDesafios, DESAFIO_EST, ATU_TXT, atuEstado, atuVerifica, atuAplica, ENFEITE_MESA, enfeiteMesa, enfeiteDe, ENTREGA_CHEGA, drawEfoodFlash, drawMesinha, drawKitchen, TE_OURO, MARMJ_SLOTS, efoodFlashA, ab2Cam, ab2Cabe, ab2Tela, ab2Notas, AB_FX, AB2, AB2_CENAS, AB2_TE, ab2Terraco, ab2RuaAurora, ab2CozinhaAurora, ab2Gala, ab2Quarto, ab2Cozinha, ab2Banco, ab2RuaCasa, TRIO, drawTrio, rankAuto, rankNome, RANK_VOCE, drawBia, roupaBia, BIA_REACAO, BIA_ROUPA_COR, abBia, BRAULIO_LOOK, convCabeca, drawRetrato, drawRetratosTela, RETRATO, RETRATO_QUEM, RETRATO_POSE, EXPRESSOES, exprDe, exprAtual: () => EXPR, devRetratos, CONV_UI, socorroFalas, NOITE, HIST_RECOMENDA, HIST_NOTA, guiaPontos, guiaEstrelas, abreBoletim, drawVela, drawFala, CRITICO, HIST_CRITICO, normGuia, plantaBoato, drawCaderno, drawGarfo, ROSA, GERENTE, drawPetala, musicaPay, musicaDe, musicaOk, camiModoTudo, CAMI_TUDO, cafesLista, cafeIdx, cafeIngred, ANSELMO_CURSOS, LIA_CURSOS, liaCfg, normLiaCursos, normAnselmoCursos, drinksLista, drinksTodos, drinkPreco, drinkIngred, drinkVagas, drinkPrep, MAQUINA_LUGAR, drawCafesEsp, drawCarrinhoBoasVindas, espressoTrabalho, bebExtra, devCenas, devAssistir, devFinal, tocaFinal, drawPlacaGuia, FINAL, finalCenas, histLiga, DEV_CAPS, drawIcon, liaOn, drawLia, LIA_HOME, LIA_LOOK, doceIcone, drawFino, TEMPOS, tempoMarcas, pedePrincipal, drawTempoTrilha, HIST_SOCORRO, HIST_EXIGENTE, EXIGENTE, LOUCA, vipDish, vipCook, casaBoa, exigRep, HIST_PLANTA, HIST_QUITOU, HIST_TETO, VONTADE, vontadeChance, vontadeDia, vontadeFalas, HIST_VONTADE_DOCE, HIST_VONTADE_CAFE, filaPos, queueRect, STATIONS, MANUAL, manualTracos, manualAberta, abrirManual, buildManual, fecharManual, semente, manualSemente, FECHA, efoodAberto, drawTable, camiMesasN, camiModoMesas, CAMI_MESAS_MAX, drawAventalCami, FISCAL, Fiscal, FISCAL_PONTOS, abrirDev, fecharDev, buildDev, passoJogo, devLivre, diaNoPonto, manutEmerg, manutFator, daniTaskDe, plateSlotsFor, queueYsFor, assentoSlow, AVENIDA, SABORES, cursoOk, INDUSTRIAL, PLATE_SLOTS, cozinhaSlots, upgradeDe, DECOR, DECOR_GRUPOS, TOALHA, LUXO, MOVEIS, movelOf, movelNivel, normMoveis, luxoPts, luxoTot, luxoNivel, luxoForca, decorOf, normDecor, decorOn, decorCombina, decorPreco, decorSimplesVenda, DECOR_PRECO, FILA_ACOES, filaMax, MARMITA, RETIRADA, marmitaMao, drawMarmita, prateleiraPos, EFOOD_COR, AVAL_BRAVO, QUEUE, setShopTab: v => shopAbrir(v), setShopGrupo: g => shopGrupoAbrir(g), shopSecoes: () => SHOP_GRUPOS.map(g => shopSecoesVis(g)), TREINO, TREINO_PASSOS, TREINO_COR, Treino, treinoLugar, DICAS, dicaDe, dicaLigada, drawDica, HUD_LUCRO, hudEstrelas, drawHud, daniNaLoja, treinoPrimeiro, playCareer, buildMenu, introBanco, buildFalencia, BANCO, normEmprestimo, parcelaDe, devidoDe, jurosDe, tabelaDe, simulaEmprestimo, SEMANA, semanaOf, diaOf, FILA_JUSTA, PORTA, CHAIRS, PAT, CONTAS, INGRED, CARDAPIO, precoPrato, pratosDoPonto, precoCarta, vendeNoPonto, pratoBase, fritoBase, tecnicaDe, pratosCurso, PRATO_BASE, PRECO_BEB, cafePreco, sucoPreco, sucoIngred, cafePrecoDe, ROTULO_BASE, CURSOS, CURSO_AV, CURSO_DIA, CURSOS_ANTIGOS, degrauDe, degrausDe, tecFeita, tonhaoNivelAlc, tonhaoProgresso, tonhaoDegrausPonto, cursosAte, pontoIdx, daniXp, daniNivelXp, DANI_XP, DANI_CURSOS, CURSOS_SEMFIM, cursoOf, cursoNivel, normCursos, pratoAv, CARNES, drawDish, pratoSabido, pratoEstranho, ESTRANHO, EMPRATA, pratosSabidos, GOSTOS, GOSTOS_CAT, pedePrato, VEG, vegMov, drawDish, MAIS, PONTOS_ACAO, GORJETA, DRINK_PRICE, MOVIMENTO, movimentoSalao, DIVULGA, DIVULGA_DIA, divulgaOf, contasDia, bomGoal, SALAO, PONTOS, pontoOf, MESA, mesaBox, mesaPreco, salaoLugares, mesaProblema, salaoCaminho, salaoProblema, salaoOrdena, salaoAuto, salaoVaga, salaoPerto, salaoTroca, EST, naEst, estSlots, salaoKit, salaoDevolucao, SALAO_SEMFIM, normSalao, setObst, OBST, pathOk, MAQUINA, BEBIDA_ESPERA, bebidaOf, MANUT, manutOf, manutChance, manutPreco, normManut, CLIMA, CLIMA_DIA, EVENTOS, eventoSemana, introManut, normPend, CALCADA, TW, HUDX, esperaAp, tableApproach, CRIT, STAFF, diariaDani, diariaJoca, cursosPay, DANI_TASKS, DANI_HANDS, daniTaskOk, TRASH, WASH, payroll, FOLHA_CORTE, folhaCorta, folhaCortes, folhaItens, listaE, pratosDe, couvertEffect, couvertOk, ambienteEffect, dishStock, normSave, Helper, JUICE, KITCHEN_SLOTS, handLayout, trayOk, Game, Group, Table, Kitchen, Waitress, BIA_SPEED, DAYS, UPGRADES, CUSTOMER_TYPES, LAYOUT, PAL, Sfx, findPath, render, Rank, sortRows, cleanName, normName, CMD, ENDLESS, VIP, MULTA, rk, renderRank, openRank, closeRank, LS, lsGet, lsSet, loadSave, DEV, saveKey, devSync, divulgaAberta, CAIXA_MAX, VERSAO, normCaixa, caixaResumo, caixaTotais, copyText, PRATO, pratoPerde, pratoVapor, AVAL, AVAL_CRIT, AVAL_BRAVO, avalMenu, cursosItem, DOCES, CAFES, cafeDe, DRINKS, drinkDe, drinkIdx, anselmoOn, ANSELMO_HOME, ANSELMO_LOOK, drawAnselmo, docesLista, docePreco, doceIngred, doceIdx, CAMI_CURSOS, CAMI_HOME, CAMI_LOOK, camiNivelCursos, normCamiCursos, drawCami, drawEspresso, JOCA_XP, JOCA_CURSOS, JOCA_HOME, jocaXp, jocaNivelXp, BASICAS, donoBasico, cursoDaniVis, JOCA_LOOK, drawJoca, avalTeto, avalEscala, TERRACO, fixosDe, vipTipos, doorFor, DOOR, terraco, drawPiano, drawPoltrona, drawFoyerTe, drawParedeTe, drawElevadorTe, drawLugarTe, drawPerson, makePeople, drawChair, iconeMudanca, avalFrac, AVAL_SIMPLES, AVAL_DECOR, normAval, avalNota, avalMedias, avalGeral, avalMovimento, avalMinimo, avalComentario, fmtNota, notaFaixa, gurugolCaixa, AVAL_COM, normAvalCom, buildGurugol, ABERTURA, Abertura, AB_ALT, AB_BASE, abEsc, AB_VIVO, aberturaVista, aberturaSom, drawAbertura, abrirAbertura, HISTORIA, HIST_CARDAPIO, HIST_DIVULGA, HIST_ENTREGA, LIBERA, liberaOf, ARCO, HIST_NOMES, normEquipe, upgradeCartao, cursoFeito, AVAL_POUCO, REFORMA, HIST, carencia, Conversa, drawConversa, falar, fluxoHistoria, falar, aberturaAtual: () => abertura };
 window.requestAnimationFrame(frame);
 
 })();
