@@ -4,6 +4,38 @@ Registro das ideias e dos retornos de quem jogou, com o texto original, e de ond
 
 ---
 
+## 27/11 — usuário: o salão da Avenida não cabe os 24 lugares
+> "o salão na avenida brasil não cabe todas as mesas que ele comporta, nem quando toco no arrumação automática, nem quando tento arrastar. se comporta 24 lugares deve caber 24 lugares"
+
+Achado (27/11): a área das mesas (`area` do ponto, 160–684 × 150–500) só tem 2 fileiras (`salaoAuto`: `nRows` = 2 com `MESA.top`+`MESA.bot` = 112 e `SALAO.gap` = 46). Na Avenida os 24 lugares só cabem com 6 mesas de 4; com qualquer mesa de 2, não. Na área industrial e no Terraço (20), não cabem 10 mesas de 2 nem 1 de 4 com 8 de 2. Aproximar as mesas (gap de 46 até 16) e alargar a área (até 120–724, ou 120–528 na altura) não resolve a Avenida: a 3ª fileira não cabe na altura (precisa de ~448 px; o chão útil, `BOUNDS`, vai de 112 a 528). Na escolha, o usuário quis aumentar a área das mesas (e não baixar o teto nem só avisar).
+
+**Destino:** etapa a planejar com o Opus (spec nova): a geometria do salão (3 fileiras, mesas de 2 mais estreitas ou fileiras desencontradas) para que qualquer mistura de mesas até o teto caiba nos pontos de 20 e de 24 lugares, com o caminho da Bia, o desenho e o `menu_fit`.
+
+---
+
+## 27/11 — usuário: a Dani perde uma tarefa na chegada à Avenida
+> "ao iniciar a avenida brasil as atividades que a Dani estiver fazendo devem se manter, uma delas se desativou na passagem" (e, na pergunta: "era outra tarefa, ela estava com cafezinho e doce e uma delas estava desmarcada"; a folha estava paga)
+
+Achado (27/11): na mudança (`trocaPonto`), só a tarefa da água/suco da espera some (a jarra fica para trás). Com o cafezinho e o doce, a mudança, a conversa da chegada e três dias na Avenida mantêm as duas marcadas (Dani nos níveis 2 a 4, com o Joca no básico). Não reproduzido. Suspeitas a conferir: o curso de espresso do Joca (nível 3, aparece na 1ª lojinha da Avenida) tira o cafezinho da Dani (v9.3).
+
+**Destino:** em aberto: falta saber qual das duas ficou desmarcada e o que foi comprado antes.
+
+---
+
+## 27/11 — usuário: o couvert sem a porcentagem
+> "na avenida brasil, no couvert artístico não precisa aparecer que o efeito cai para 10% quando cobra, pode deixar mais vago que o efeito é menor se cobrar das pessoas, lembra do sdd para jogo sem estimular calculos, apenas escolhas"
+
+**Destino:** v12.10.7, `docs/spec-v12.10.7.md` (entregue em 27/11).
+
+---
+
+## 27/11 — usuário: as tarefas da Dani nos doces
+> "dani depois que vai pros doces aparece no card dela que ela faz 3 funções, mas somente 2 são pactuáveis. deixar Tarefas (X de 2) pra ela nessa condição"
+
+**Destino:** v12.10.6, `docs/spec-v12.10.6.md` (entregue em 27/11).
+
+---
+
 ## 22/11 — usuário: os níveis do Tonhão e os cursos de cada ponto
 > "Um curso que ele faz, que é relativamente básico, né, tipo pastel, essas coisas, quando ele avança de nível, tipo avança para uma Avenida Brasil ou avança para um terraço, ele não tem mais o mesmo impacto para a rotina e para os pratos do cardápio, né? Então, em teoria, ele teria que fazer novos cursos. Mas, se ele já subiu de nível com base nos outros cursos, eu não teria como exigir que o jogador né, comprasse novos cursos para só ser coerente com a história."
 
