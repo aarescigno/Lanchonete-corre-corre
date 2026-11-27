@@ -695,9 +695,9 @@ function buildMusica(grid){
 }
 /* aba Salão (v7.4): o editor (o salão desenhado em escala, sem clientes) e a loja de móveis ao lado.
    Arrastar a mesa muda o lugar dela (encaixe na grade); tocar nela abre a cor das cadeiras, "virar mesa de 4" e "vender".
-   v8.3.5: o estoque, à esquerda do salão, guarda mesas (pequenas, em 2 colunas) para rearrumar com folga */
+   v8.3.5: o estoque guarda mesas (pequenas) para rearrumar com folga; v12.11: é uma faixa no alto do editor, por cima da parede do fundo (o lado esquerdo do salão da Avenida é salão), com as mesas em fila */
 const ED = { x:0, y:56, w:800, h:484, k:1.25 };  // pedaço do salão no editor (do pé da parede ao chão, até o balcão) e a resolução do canvas
-const EST = { x0:12, y0:118, x1:182, y1:530, top:30, k:0.55 };   // o estoque no editor (em px do salão) e a escala das mesas nele
+const EST = { x0:8, y0:60, x1:760, y1:146, top:22, k:0.55, kmin:0.4 };   // o estoque no editor (em px do salão; a área do salão começa em y 150) e a escala das mesas nele (cai até kmin se a fila não couber; top: o rótulo)
 let edDrag = null;
 function edPt(cv, e){
   const r = cv.getBoundingClientRect(), w = r.width || ED.w, h = r.height || ED.h;
@@ -709,46 +709,39 @@ function edPad(cv, e){
   return clamp(14 * ED.w / (cv.getBoundingClientRect().width || ED.w), 8, 32);
 }
 function edRect(m){ const hx = tableHalfW(m); return { x:m.x - hx - 10, y:m.y - 62, w:hx*2 + 20, h:132 }; }
-/* casinhas do estoque: 2 colunas, pelo menos 4 fileiras (as mesas encolhem se houver mais) */
-function estSlots(n){
-  const cols = 2, rows = Math.max(4, Math.ceil(n / cols)), w = (EST.x1 - EST.x0) / cols, h = (EST.y1 - EST.y0 - EST.top) / rows, k = Math.min(EST.k, h / 140), out = [];
-  for (let i = 0; i < n; i++) out.push({ x:EST.x0 + w * (i % cols + 0.5), y:EST.y0 + EST.top + h * (Math.floor(i / cols) + 0.5), w, h, k });
+/* casinhas do estoque: uma fila da esquerda para a direita (est: a lista de mesas, ou só quantas, todas de 2 lugares); a escala é EST.k e cai até caber na largura */
+function estSlots(est){
+  const l = typeof est === 'number' ? Array(est).fill({ seats:2 }) : est, wi = l.map(m => 2 * tableHalfW(m) + 16), tot = wi.reduce((a, b) => a + b, 0);
+  const k = l.length ? clamp((EST.x1 - EST.x0 - 16) / tot, EST.kmin, EST.k) : EST.k, h = EST.y1 - EST.y0 - EST.top, out = [];
+  let x = EST.x0 + 8;
+  l.forEach((m, i) => { const w = wi[i] * k; out.push({ x:x + w / 2, y:EST.y0 + EST.top + h / 2 - k * (6 - 4 * k), w, h, k }); x += w; });
   return out;
 }
 const naEst = p => p.x >= EST.x0 && p.x <= EST.x1 && p.y >= EST.y0 && p.y <= EST.y1;
 /* a mesa sob o toque: { est, i } (est: do estoque) ou null */
 function edHit(p, pad){
-  const sl = estSlots(game.estoque.length);
+  const sl = estSlots(game.estoque);
   for (let k = 0; k < sl.length; k++){ const q = sl[k]; if (rectDist(p.x, p.y, { x:q.x - q.w/2, y:q.y - q.h/2, w:q.w, h:q.h }) <= Math.min(pad, 4)) return { est:true, i:k }; }
   let best = -1, bd = Infinity;
   game.save.salao.mesas.forEach((m, i) => { const d = rectDist(p.x, p.y, edRect(m)); if (d <= pad && d < bd){ bd = d; best = i; } });
   return best < 0 ? null : { est:false, i:best };
 }
-/* mesas do salão como ficariam com a mesa arrastada solta onde está (no estoque, ela sai do salão) */
-function edMesas(){
-  const d = edDrag, l = game.save.salao.mesas.slice();
-  if (!d || !d.moved) return l;
-  if (d.est) return d.inEst ? l : l.concat([{ x:d.x, y:d.y, seats:game.estoque[d.i].seats, c:game.estoque[d.i].c, t:game.estoque[d.i].t }]);
-  if (d.inEst){ l.splice(d.i, 1); return l; }
-  l[d.i] = Object.assign({}, l[d.i], { x:d.x, y:d.y });
-  return l;
-}
-/* contorno da mesa escolhida (amarelo), arrastada (verde) ou num lugar que não vale (vermelho) */
-function edMarca(c, r, drag, bad){
-  c.save(); c.strokeStyle = bad ? PAL.perigo : (drag ? PAL.ok : PAL.mostarda); c.lineWidth = 5; c.setLineDash(drag ? [10,6] : []);
+/* contorno da mesa escolhida (amarelo), arrastada (verde), num lugar que não vale (vermelho) ou que vai se mover para dar lugar à arrastada (amarelo tracejado, v12.11) */
+function edMarca(c, r, drag, bad, vai){
+  c.save(); c.strokeStyle = bad ? PAL.perigo : (drag ? PAL.ok : PAL.mostarda); c.lineWidth = 5; c.setLineDash(drag || vai ? [10,6] : []);
   rr(c,r.x,r.y,r.w,r.h,14); c.stroke();
   if (bad){ c.fillStyle = 'rgba(194,54,43,.25)'; c.fill(); }
   c.restore();
 }
 function drawEstoque(c){
-  const d = edDrag && edDrag.moved ? edDrag : null, est = game.estoque, sl = estSlots(est.length), alvo = d && d.inEst && !d.est;
+  const d = edDrag && edDrag.moved ? edDrag : null, est = game.estoque, sl = estSlots(est), alvo = d && d.inEst && !d.est;
   c.save();
   rr(c,EST.x0,EST.y0,EST.x1-EST.x0,EST.y1-EST.y0,12); c.fillStyle = alvo ? (d.ok ? 'rgba(62,155,90,.3)' : 'rgba(194,54,43,.25)') : 'rgba(255,253,245,.7)'; c.fill();
   c.setLineDash([8,6]); c.strokeStyle = alvo ? (d.ok ? PAL.ok : PAL.perigo) : 'rgba(34,32,28,.45)'; c.lineWidth = alvo ? 4 : 2; c.stroke();
   c.restore();
-  txt(c,'ESTOQUE',(EST.x0+EST.x1)/2,EST.y0+17,17,PAL.tinta,'center',FD);
+  txt(c,'ESTOQUE',EST.x0+12,EST.y0+16,15,PAL.tinta,'left',FD);
   if (!est.length){
-    ['Arraste uma', 'mesa para cá', 'e abra espaço', 'no salão.', '', 'Aqui ela não', 'abre no dia.'].forEach((t, k) => txt(c,t,(EST.x0+EST.x1)/2,EST.y0+92+k*24,15,'rgba(34,32,28,.6)','center',FB));
+    txt(c,'Arraste uma mesa para cá: aqui ela não abre no dia.',(EST.x0+EST.x1)/2,EST.y0+EST.top+30,16,'rgba(34,32,28,.6)','center',FB);
     return;
   }
   est.forEach((m, i) => {
@@ -758,7 +751,7 @@ function drawEstoque(c){
     c.save(); c.translate(q.x, q.y); c.scale(q.k, q.k); c.translate(-q.x, -q.y);
     drawTable(c, game, t, 0, true);
     c.restore();
-    if (i === game.estoqueSel) edMarca(c, { x:q.x - q.w/2 + 3, y:q.y - q.h/2 + 3, w:q.w - 6, h:q.h - 6 }, false, false);
+    if (i === game.estoqueSel) edMarca(c, { x:q.x - q.w/2 + 1, y:q.y - q.h/2 + 1, w:q.w - 2, h:q.h - 2 }, false, false);
   });
 }
 function drawEditor(cv){
@@ -785,6 +778,7 @@ function drawEditor(cv){
     drawTable(c, game, t, 0, true);
     edMarca(c, edRect({ x:d.x, y:d.y, seats:m.seats }), true, !d.ok);
   }
+  if (d && d.troca) d.troca.ids.forEach(k => { const q = game.save.salao.mesas[k]; if (q){ const r = edRect(q); edMarca(c, { x:r.x - 7, y:r.y - 7, w:r.w + 14, h:r.h + 14 }, false, false, true); } });   // v12.11: as que vão se mover (ou para o estoque): contorno tracejado, um pouco maior (a arrastada cobre a mesa)
 }
 /* botão do editor: o motivo da recusa (salaoMsg) aparece logo abaixo */
 function edBtn(text, cls, enabled, fn, cost){
@@ -796,8 +790,12 @@ function edBtn(text, cls, enabled, fn, cost){
 /* vale soltar a mesa arrastada onde está? (d.why: o motivo, se não) */
 function edValida(d){
   const mesas = game.save.salao.mesas;
+  d.troca = null;
   if (d.inEst) d.why = d.est || mesas.length > 1 ? '' : 'O salão precisa de pelo menos 1 mesa.';
-  else d.why = salaoProblema(edMesas(), game.ponto);
+  else {   // v12.11: solta sobre outra mesa, a outra se desloca (ou vai para o estoque): vale se a troca dá certo
+    const r = salaoTroca(mesas, d.est ? -1 : d.i, d.est ? game.estoque[d.i] : mesas[d.i], d.x, d.y, game.ponto);
+    d.why = r.why || ''; if (!r.why) d.troca = r;
+  }
   d.ok = !d.why;
 }
 function edEvents(cv){
@@ -854,7 +852,7 @@ function buildSalao(grid){
   const sel = game.salaoSel, ks = game.estoqueSel;
   const ed = el('div', 'ed'), box = el('div', 'ed-cv'), cv = el('canvas');
   cv.width = Math.round(ED.w * ED.k); cv.height = Math.round(ED.h * ED.k);
-  cv.setAttribute('aria-label', 'Salão: arraste as mesas para mudar de lugar ou para o estoque, à esquerda, e toque numa mesa para ver as opções');
+  cv.setAttribute('aria-label', 'Salão: arraste as mesas para mudar de lugar ou para o estoque, no alto, e toque numa mesa para ver as opções');
   box.appendChild(cv); edEvents(cv);
   // mesa escolhida: cor das cadeiras, guardar no estoque, virar mesa de 4 e vender (balãozinho em cima do salão)
   const m = mesas[sel], me = est[ks];
@@ -874,12 +872,12 @@ function buildSalao(grid){
       pop.appendChild(edBtn('Guardar no estoque', 'btn alt', mesas.length > 1, () => game.guardarMesa(sel)));
       pop.appendChild(edBtn('Vender por ' + fmt(mesaPreco(m.seats) * SALAO.venda), 'btn alt', mesas.length > 1, () => game.venderMesa(sel)));
     } else {
-      // v8.3.5: mesa do estoque; o balãozinho sai ao lado do estoque, por cima do salão
-      const q = estSlots(est.length)[ks], up = q.y + 230 > ED.y + ED.h;
-      pop = el('div', 'ed-pop est' + (up ? ' up' : ''));
-      pop.style.left = (EST.x1 + 6 - ED.x) / ED.w * 100 + '%';
-      tops = [q.y - q.h / 2, q.y + q.h / 2].map(y => (y - ED.y) / ED.h * 100);
-      pop.style.top = tops[up ? 1 : 0] + '%';
+      // v8.3.5: mesa do estoque; o balãozinho abre logo abaixo da faixa, por cima do salão
+      const q = estSlots(est)[ks];
+      pop = el('div', 'ed-pop est');
+      pop.style.left = (q.x - ED.x) / ED.w * 100 + '%';
+      tops = [EST.y1 + 4, EST.y1 + 4].map(y => (y - ED.y) / ED.h * 100);   // v12.11: logo abaixo da faixa, sob a mesa escolhida
+      pop.style.top = tops[0] + '%';
       pop.appendChild(el('b', null, 'Mesa no estoque · ' + me.seats + ' lugares'));
       pop.appendChild(edCores(me, k => game.pintarMesa(ks, k, true)));
       if (!me.t && !game.linho) pop.appendChild(edBtn(enfeiteMesa(game).nome + ': ' + fmt(TOALHA.cost), 'btn', bank >= TOALHA.cost, () => game.buyToalha(ks, true), TOALHA.cost));
@@ -922,9 +920,9 @@ function buildSalao(grid){
     let f = fora();
     if (f[0] && f[1]){ pop.classList.add('largo'); f = fora(); }
     const up = pop.classList.contains('up') ? 1 : 0;
-    if (f[up] > f[1 - up]){ pop.classList.toggle('up'); pop.style.top = tops[1 - up] + '%'; }
-    const W = box.clientWidth, w = pop.offsetWidth;   // e não passa das bordas (o da mesa do salão fica centrado na mesa)
-    if (!me && w < W) pop.style.left = clamp(parseFloat(pop.style.left) / 100 * W, w / 2 + 4, W - w / 2 - 4) / W * 100 + '%';
+    if (!me && f[up] > f[1 - up]){ pop.classList.toggle('up'); pop.style.top = tops[1 - up] + '%'; }
+    const W = box.clientWidth, w = pop.offsetWidth;   // e não passa das bordas (o da mesa do salão fica centrado na mesa; o do estoque, que começa na esquerda, também sob a mesa)
+    if (w < W) pop.style.left = me ? clamp(parseFloat(pop.style.left) / 100 * W - w / 2, 4, W - w - 4) / W * 100 + '%' : clamp(parseFloat(pop.style.left) / 100 * W, w / 2 + 4, W - w / 2 - 4) / W * 100 + '%';
   }
 }
 /* aba Decoração (v8.6.5): os enfeites da Garagem (DECOR), comprados à vontade; comprado, guarda e põe de volta de

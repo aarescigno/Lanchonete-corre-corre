@@ -4,6 +4,26 @@ Retornos com destino já feito, movidos de `docs/PROPOSTAS.md` em 30/10/2026 sem
 
 ---
 
+## 27/11 — usuário: a troca de lugar das mesas
+> "aproveita que vai mexer nas cadeiras do salão e adiciona função de swap entre as mesas, quando arrastar uma mesa em direção a outra, essa outra se desloca para caber a nova, se não tiver espaço no salão, a mesa vai para o estoque."
+
+Na conversa: a outra vai para o lugar livre mais perto; sem lugar, para o estoque.
+
+**Destino:** v12.11 (etapa 19a), `docs/spec-v12.11.md` (entregue em 27/11).
+
+---
+
+---
+
+## 27/11 — usuário: o salão da Avenida não cabe os 24 lugares
+> "o salão na avenida brasil não cabe todas as mesas que ele comporta, nem quando toco no arrumação automática, nem quando tento arrastar. se comporta 24 lugares deve caber 24 lugares"
+
+Achado (27/11): a área das mesas (`area` do ponto, 160–684 × 150–500) só tem 2 fileiras (`salaoAuto`: `nRows` = 2 com `MESA.top`+`MESA.bot` = 112 e `SALAO.gap` = 46). Na Avenida os 24 lugares só cabem com 6 mesas de 4; com qualquer mesa de 2, não. Na área industrial e no Terraço (20), não cabem 10 mesas de 2 nem 1 de 4 com 8 de 2. Aproximar as mesas (gap de 46 até 16) e alargar a área (até 120–724, ou 120–528 na altura) não resolve a Avenida: a 3ª fileira não cabe na altura (precisa de ~448 px; o chão útil, `BOUNDS`, vai de 112 a 528). Na escolha, o usuário quis aumentar a área das mesas (e não baixar o teto nem só avisar).
+
+**Destino:** v12.11 (etapa 19a), `docs/spec-v12.11.md` (entregue em 27/11): a folga entre as mesas cai de 46 para 30 px e a área cresce para a esquerda (Avenida desde x 40; área industrial e Terraço desde x 150), com 2 fileiras; o estoque do editor vai para uma faixa no alto.
+
+---
+
 ## 21/11 — usuário: a decoração de cada ponto
 > "Então temos um problema, porque se eu for no terraço, eu não vou querer comprar samambaias ou espada São Jorge, alguma coisa assim, entendeu? Eu acho que ao se avançar, muitas coisas devem ser compradas de novo do zero. Algumas coisas de luxo podem vir para manter o mesmo nível do anterior, né? Já no salão, então vem já algumas decorações compatíveis, né? Já vem, mas comprar samambaia no terraço surfista lá não vai fazer nenhum sentido, por exemplo. Às vezes faça sentido até a área industrial, os luxos da garagem."
 

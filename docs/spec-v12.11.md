@@ -1,6 +1,6 @@
 # v12.11 — O salão que cabe o teto e a troca de mesas (etapa 19a)
 
-**Situação:** aprovada (27/11)
+**Situação:** entregue em 27/11
 **Origem:** retornos do usuário de 27/11 no `docs/PROPOSTAS.md`: "o salão da Avenida não cabe os 24 lugares" e "a troca de lugar das mesas". Decisões fechadas com o usuário em 27/11 (Opus); a etapa 19 foi dividida em 3 versões (19a, 19b e 19c), uma por sessão.
 
 ## Objetivo
@@ -20,14 +20,14 @@ Qualquer mistura de mesas de 2 e de 4 até o teto de lugares cabe no salão, na 
 - A mensagem do `buyMesa` acima do teto passa de "A garagem tem lugar para N pessoas, no máximo." para **"O salão tem lugar para N pessoas, no máximo."** (aparecia em todo ponto).
 
 ### O estoque no editor: faixa no alto
-- O painel do estoque (`EST`, `src/41-lojinha.js`) sai da esquerda (que agora é salão na Avenida) e vira uma **faixa no alto do editor, por cima da parede do fundo**: `EST = { x0:8, y0:60, x1:760, y1:146 }` (px do salão; o `ED` não muda de tamanho, e a `area` começa em y 150, então a faixa não cobre mesa).
+- O painel do estoque (`EST`, `src/41-lojinha.js`) sai da esquerda (que agora é salão na Avenida) e vira uma **faixa no alto do editor, por cima da parede do fundo**: `EST = { x0:8, y0:60, x1:760, y1:146, top:22, k:0.55, kmin:0.4 }` (px do salão; o `ED` não muda de tamanho, e a `area` começa em y 150, então a faixa não cobre mesa).
 - O rótulo "ESTOQUE" fica no canto esquerdo da faixa; as mesas guardadas ficam **em fila, da esquerda para a direita**, na escala 0,55 (`EST.k`); se a fila não couber na largura, a escala cai até caber (mínimo 0,4). O pior caso (11 mesas de 2 na Avenida) cabe a 0,55.
 - Com o estoque vazio, a faixa mostra: **"Arraste uma mesa para cá: aqui ela não abre no dia."**
 - Soltar a mesa na faixa guarda (`naEst` passa a ser o retângulo da faixa). O balãozinho da mesa do estoque abre logo abaixo da faixa, sob a mesa escolhida.
 - Textos: o `aria-label` do editor passa a ser "Salão: arraste as mesas para mudar de lugar ou para o estoque, no alto, e toque numa mesa para ver as opções".
 
 ### A troca ao arrastar (`salaoTroca`)
-- Função nova e pura em `src/10-constantes.js`: `salaoTroca(mesas, i, m, x, y, ponto)`: a mesa `m` (a do salão de índice `i`, ou uma do estoque com `i = -1`) solta em (x, y). Devolve `{ mesas, est, movidas }` (o salão novo, as mesas que vão para o estoque e quantas se deslocaram no salão) ou `{ why }`.
+- Função nova e pura em `src/10-constantes.js`: `salaoTroca(mesas, i, m, x, y, ponto)`: a mesa `m` (a do salão de índice `i`, ou uma do estoque com `i = -1`) solta em (x, y). Devolve `{ mesas, est, movidas, ids }` (o salão novo, as mesas que vão para o estoque, quantas se deslocaram no salão e os índices, em `mesas`, de todas as que saíram do lugar) ou `{ why }`.
 - Como decide:
   1. Fora da área (`mesaProblema` com "Fora do salão.") é recusa, como hoje.
   2. As mesas "no caminho" são as que ficam perto demais da mesa solta (a mesma conta do `mesaProblema`, com a `SALAO.gap`). Sem nenhuma, vale o de hoje (`salaoProblema`).
@@ -63,12 +63,12 @@ Qualquer mistura de mesas de 2 e de 4 até o teto de lugares cabe no salão, na 
 - `src/43-telas.js`: expor `salaoTroca`, `EST`, `naEst`, `estSlots` no `window.__lcc`.
 
 ## Tarefas
-- [ ] T1 Smoke novo `smoke125` com os critérios de aceite (falhando) e no `tests/run_all.sh`.
-- [ ] T2 O salão: `SALAO.gap`, as áreas, o texto do `buyMesa`.
-- [ ] T3 O estoque na faixa do alto (`EST`, `estSlots`, `naEst`, `drawEstoque`, o balãozinho, o `aria-label`).
-- [ ] T4 A `salaoTroca`, o `moverMesa`/`tirarMesa` e o arrasto do editor com as marcas e a mensagem.
-- [ ] T5 `shot_v12_11.js` (CA10): conferir em recortes ampliados, ajustar e apagar as capturas; `python3 menu_fit.py` (CA11).
-- [ ] Fechamento: `VERSAO`, `vtag`, `#ov-ver`, `docs/RESUMO.md`, `docs/TESTES.md`, os destinos no `docs/PROPOSTAS.md`, esta spec como entregue, `tests/run_all.sh` verde, PR e merge.
+- [x] T1 Smoke novo `smoke125` com os critérios de aceite (falhando) e no `tests/run_all.sh`.
+- [x] T2 O salão: `SALAO.gap`, as áreas, o texto do `buyMesa`.
+- [x] T3 O estoque na faixa do alto (`EST`, `estSlots`, `naEst`, `drawEstoque`, o balãozinho, o `aria-label`).
+- [x] T4 A `salaoTroca`, o `moverMesa`/`tirarMesa` e o arrasto do editor com as marcas e a mensagem.
+- [x] T5 `shot_v12_11.js` (CA10): conferir em recortes ampliados, ajustar e apagar as capturas; `python3 menu_fit.py` (CA11).
+- [x] Fechamento: `VERSAO`, `vtag`, `#ov-ver`, `docs/RESUMO.md`, `docs/TESTES.md`, os destinos no `docs/PROPOSTAS.md`, esta spec como entregue, `tests/run_all.sh` verde, PR e merge.
 
 ## Avisos para a execução
 - A conta da geometria foi feita com um script que muda `L.SALAO.gap` e `L.PONTOS[i].area` pelo `harness.js` e roda a `salaoAuto` em todas as misturas: o CA1 do smoke pode ser o mesmo laço.
@@ -78,12 +78,19 @@ Qualquer mistura de mesas de 2 e de 4 até o teto de lugares cabe no salão, na 
 
 ## Testes
 - Smoke novo: `smoke125` (CA1 a CA9). Captura: `shot_v12_11.js` (CA10). `python3 menu_fit.py` (CA11).
+- **Medido (27/11):** `smoke125` com 38 checagens (a do CA1 cobre 426 arranjos: toda mistura até o teto, nos 4 pontos, em 3 ordens, sem falha; antes da mudança falhava na área industrial e na Avenida). `menu_fit.py`: 770 conferências, 0 falhas (o editor do salão cabe nos 14 tamanhos). `shot_v12_11.js` em 960x540 e 844x390 conferido em recortes ampliados (o editor com a faixa, o estoque vazio e com 4 mesas, o balãozinho sob a mesa escolhida, o arrasto com a marca verde e o contorno tracejado, a Avenida, a área industrial e o Terraço com mesas de 2); as capturas foram apagadas.
 - Sem mudança no equilíbrio: a Bia e as mesas são as mesmas; não precisa de `balance.js` nem de `carreira.js` (o `run_all.sh` cobre o resto).
 
 ## Decisões em aberto
 Nenhuma.
 
 ## Desvios
-(No fechamento.)
+- `estSlots` recebe a **lista de mesas do estoque** (e não só quantas): a largura de cada casinha depende de a mesa ser de 2 ou de 4; um número ainda vale (é tratado como mesas de 2). O `edHit`, o `drawEstoque` e o balãozinho passam `game.estoque`.
+- `salaoTroca` devolve também `ids`: os índices, na lista `mesas` recebida, de todas as mesas que saem do lugar (as que se deslocam e as que vão para o estoque), para o editor marcar. A marca tracejada é amarela, 7 px maior que a mesa, desenhada **por cima** da arrastada (com o mesmo tamanho a verde a cobria).
+- O balãozinho da mesa do estoque abre sempre para baixo da faixa (não vira para cima) e fica centrado sob a mesa escolhida, sem passar das bordas.
+- Medido: na Avenida com 12 mesas de 2 arrumadas, a mesa 1 solta sobre a 4 manda a 4 para o estoque, embora o lugar vago da 1 exista: o `salaoPerto` só procura até 300 px (30 passos) em volta, e o lugar vago fica a 330 px. É o que o CA5 do `smoke125` usa; a mesma troca entre mesas vizinhas desloca a outra no salão.
+- Comportamento antigo que a spec muda de propósito (soltar sobre outra mesa recusava, "Perto demais"): atualizados `smoke13` (2 checagens), `smoke22` (a faixa do alto no lugar do estoque à esquerda e a troca no lugar da recusa; 4 checagens), `smoke86` e `menu_fit.py` (o `#ov-ver` com 41 linhas).
+- `tests/run_all.sh` ganhou o `smoke125.js`. O `smoke76` continua falhando só neste ambiente (clone raso, sem o commit da v10.10), como na v12.10.7; o resto verde.
+- Sem balanceamento, como previsto (a Bia e as mesas são as mesmas).
 
 **Modelo:** Sonnet, esforço alto (a lógica da troca com o caminho da Bia e o editor refeito, conferido em captura)

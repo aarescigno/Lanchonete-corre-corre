@@ -2133,3 +2133,4 @@ Pedido do usuário em 21 e 22/11 (`docs/PROPOSTAS.md`, "os níveis do Tonhão"):
 - **18d** (`docs/spec-v12.10.3.md`): preços, níveis e metas pelo `balance.js` e pelo `carreira.js`, com a carreira no ritmo de antes (±3 dias). **Modelo:** Sonnet, esforço alto (spec aprovada em 22/11)
 
 | 18a | Os cursos do Tonhão em degraus por ponto (pratos de estrada, 9 níveis, Turno sem fim fora do menu) | v12.10 | feita em 22/11 (`docs/spec-v12.10.md`; `smoke117`; degraus por ponto, `tonhaoNivelAlc`, conversão do save, bot e dev) |
+| 18b | O prato que ele estranha, o suor, os desenhos dos pratos de estrada e o empratamento | v12.10.1 | feita em 22/11 (`docs/spec-v12.10.1.md`; `smoke118`; prato estranho, suor, desenhos de estrada, empratamento) |

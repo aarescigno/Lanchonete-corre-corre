@@ -2056,7 +2056,7 @@ class Game {
   buyMesa(seats){
     if (!this.cartaoAberto('salao')) return false;
     const p = this.ponto, mesas = this.save.salao.mesas, price = mesaPreco(seats);
-    if (this.lugaresTot + seats > p.lugares) return this.salaoNao('A garagem tem lugar para ' + p.lugares + ' pessoas, no máximo.');
+    if (this.lugaresTot + seats > p.lugares) return this.salaoNao('O salão tem lugar para ' + p.lugares + ' pessoas, no máximo.');
     if (this.save.bank < price) return this.salaoNao('Falta dinheiro.');
     const m = { x:0, y:0, seats, c:salaoCor(mesas.concat(this.estoque)), sel:1 }, vaga = salaoVaga(mesas, seats, p);
     const l = vaga ? mesas.concat([Object.assign(m, vaga)]) : salaoAuto(mesas.concat([m]), p);
@@ -2100,15 +2100,19 @@ class Game {
     const l = lista.slice(); l[i] = Object.assign({}, m, { c, sel:1 });
     return est ? this.salaoSet(mesas, true, l) : this.salaoSet(l, true);
   }
-  /* editor: a mesa i vai para (x, y), se o lugar vale */
+  /* editor: a mesa i vai para (x, y), se o lugar vale. v12.11: as mesas no caminho se deslocam (ou vão para o estoque, se não há lugar), ver salaoTroca */
   moverMesa(i, x, y){
     const mesas = this.save.salao.mesas, m = mesas[i];
     if (!m) return false;
-    const l = mesas.slice(); l[i] = Object.assign({}, m, { x, y });
-    const why = salaoProblema(l, this.ponto);
-    if (why) return this.salaoNao(why);
-    if (x === m.x && y === m.y) return true;
-    return this.salaoSet(l, true);
+    if (x === m.x && y === m.y) return !salaoProblema(mesas, this.ponto) || this.salaoNao(salaoProblema(mesas, this.ponto));
+    const r = salaoTroca(mesas, i, m, x, y, this.ponto);
+    if (r.why) return this.salaoNao(r.why);
+    return this.salaoTrocou(this.salaoSet(r.mesas, true, r.est.length ? this.estoque.concat(r.est) : null), r.est.length);
+  }
+  /* depois da troca: a mensagem só quando alguma mesa foi para o estoque (o salaoSaved a zera) */
+  salaoTrocou(ok, n){
+    if (ok && n) this.salaoMsg = 'Sem lugar no salão: ' + (n === 1 ? '1 mesa foi' : n + ' mesas foram') + ' para o estoque.';
+    return ok;
   }
   /* editor (v8.3.5): a mesa i do salão vai para o estoque (o salão fica com pelo menos 1) */
   guardarMesa(i){
@@ -2122,9 +2126,9 @@ class Game {
     const p = this.ponto, mesas = this.save.salao.mesas, m = this.estoque[k];
     if (!m) return false;
     if (x == null){ const v = salaoVaga(mesas, m.seats, p); if (!v) return this.salaoNao('Não há lugar livre no salão: abra espaço ou guarde outra mesa.'); x = v.x; y = v.y; }
-    const l = mesas.concat([Object.assign({ x, y, seats:m.seats, c:m.c, sel:1 }, m.t ? { t:1 } : {})]), why = salaoProblema(l, p);
-    if (why) return this.salaoNao(why);
-    return this.salaoSet(l, true, this.estoque.filter(e => e !== m));
+    const r = salaoTroca(mesas, -1, Object.assign({ seats:m.seats, c:m.c, sel:1 }, m.t ? { t:1 } : {}), x, y, p);
+    if (r.why) return this.salaoNao(r.why);
+    return this.salaoTrocou(this.salaoSet(r.mesas, true, this.estoque.filter(e => e !== m).concat(r.est)), r.est.length);
   }
   /* decoração (v8.6.5): enfeite novo (fica à mostra), à vontade */
   buyDecor(id){

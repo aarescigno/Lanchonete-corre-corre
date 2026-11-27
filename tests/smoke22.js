@@ -27,7 +27,7 @@ ok(g.desfazerSalao() && mesas().length===n0 && !est().length,'Desfazer volta a m
 g.guardarMesa(0); g.guardarMesa(0); g.guardarMesa(0);
 ok(mesas().length===1 && est().length===3 && !g.guardarMesa(0) && /pelo menos 1 mesa/.test(g.salaoMsg),'o salão fica com pelo menos 1 mesa');
 ok(g.tirarMesa(0) && mesas().length===2 && est().length===2 && !L.salaoProblema(mesas(),P) && g.salaoSel>=0,'Pôr no salão: a mesa entra no primeiro lugar livre e fica escolhida');
-{ const m=mesas()[0]; ok(!g.tirarMesa(0,m.x+20,m.y) && /Perto demais/.test(g.salaoMsg) && est().length===2,'tirar para cima de outra mesa: recusa'); }
+{ const m=mesas()[0], tot=g.lugaresTot, n=mesas().length+est().length; ok(g.tirarMesa(0,m.x+20,m.y) && g.lugaresTot===tot && mesas().length+est().length===n && !L.salaoProblema(mesas(),P) && mesas().some(x=>x.x===m.x+20&&x.y===m.y),'tirar para cima de outra mesa (v12.11): a outra abre espaço (se desloca ou vai para o estoque)'); g.desfazerSalao(); }
 // teto contando o estoque
 novo(); g.buyMesa(2); g.buyMesa(4); ok(g.lugaresTot===16,'16 lugares');
 g.guardarMesa(0);
@@ -48,22 +48,23 @@ novo(); L.setShopTab('salao');
 const cv=()=>acha(els['shop-grid'],e=>e.tagName==='CANVAS');
 const tela=(x,y)=>({clientX:x*960/800, clientY:(y-56)*600/484});
 const ev=(p,o)=>Object.assign({preventDefault(){}, pointerId:1, pointerType:'mouse'},p,o||{});
+const slot0=()=>{ const q=L.estSlots(est())[0]; return {x:q.x,y:q.y}; };   // v12.11: onde está a 1ª mesa do estoque (a faixa do alto)
 const arrasta=(a,b)=>{ const c=cv(); c.fire('pointerdown',ev(tela(a.x,a.y))); c.fire('pointermove',ev(tela((a.x+b.x)/2,(a.y+b.y)/2))); c.fire('pointermove',ev(tela(b.x,b.y))); c.fire('pointerup',ev(tela(b.x,b.y))); };
 ok(/Arraste as mesas\. Toque numa mesa para mais opções\./.test(txt(els['shop-grid'])),'aba Salão: a dica de uma linha (v9.6.8)');
-{ const m=mesas()[0], n=mesas().length; arrasta(m,{x:100,y:300});
+{ const m=mesas()[0], n=mesas().length; arrasta(m,{x:300,y:100});   // v12.11: o estoque é a faixa do alto
   ok(mesas().length===n-1 && est().length===1 && /No estoque: 1 mesa/.test(txt(els['shop-grid'])),'arrastar a mesa para o estoque'); }
-{ const c=cv(); c.fire('pointerdown',ev(tela(56,195))); c.fire('pointerup',ev(tela(56,195)));
+{ const c=cv(), q=slot0(); c.fire('pointerdown',ev(tela(q.x,q.y))); c.fire('pointerup',ev(tela(q.x,q.y)));
   ok(g.estoqueSel===0 && g.salaoSel<0,'tocar na mesa do estoque escolhe a mesa');
   const p=pop(); ok(!!p && /Mesa no estoque/.test(txt(p)) && !!botao(p,/Pôr no salão/) && !!botao(p,/Vender/),'balãozinho do estoque: pôr no salão e vender');
   botao(p,/Pôr no salão/).fire('click'); ok(!est().length && mesas().length===4,'botão Pôr no salão'); }
 { g.salaoSel=1; L.setShopTab('salao'); const p=pop(), n=mesas().length; ok(!!botao(p,/Guardar no estoque/),'balãozinho da mesa do salão: guardar no estoque');
   botao(p,/Guardar no estoque/).fire('click'); ok(mesas().length===n-1 && est().length===1,'botão Guardar no estoque'); }
 { // do estoque para um lugar livre do salão, arrastando
-  const m=est()[0], alvo=L.salaoVaga(mesas(),m.seats,P); arrasta({x:56,y:195},alvo);
+  const m=est()[0], alvo=L.salaoVaga(mesas(),m.seats,P); arrasta(slot0(),alvo);
   ok(!est().length && mesas().some(x=>x.x===alvo.x&&x.y===alvo.y),'arrastar do estoque para o salão'); }
-{ g.guardarMesa(0); const o=mesas()[0], n=mesas().length; arrasta({x:56,y:195},{x:o.x+20,y:o.y});
-  ok(est().length===1 && mesas().length===n && /Aí não dá: perto demais/.test(txt(els['shop-grid'])),'do estoque para cima de outra mesa: volta e explica'); }
+{ g.guardarMesa(0); const o=mesas()[0], n=mesas().length, tot=g.lugaresTot; arrasta(slot0(),{x:o.x+20,y:o.y});
+  ok(g.lugaresTot===tot && mesas().some(x=>x.x===o.x+20&&x.y===o.y) && mesas().length+est().length===n+1 && !L.salaoProblema(mesas(),P),'do estoque para cima de outra mesa (v12.11): a outra abre espaço, se desloca ou vai para o estoque'); }
 let err=null; try{ L.render(g,H.ctx); }catch(e){ err=e; } ok(!err,'o salão ao fundo redesenha'+(err?': '+err:''));
 // o dia joga só com as mesas do salão
-{ g.startDay(3); ok(g.tables.length===mesas().length && est().length===1,'no dia, só as mesas do salão'); }
+{ g.startDay(3); ok(g.tables.length===mesas().length,'no dia, só as mesas do salão (as do estoque não abrem)'); }
 console.log('total = '+total+'  fails = '+fails); if(fails) process.exit(1);

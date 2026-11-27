@@ -7,8 +7,8 @@ const html=fs.readFileSync('../lanchonete.html','utf8');
 // ---------- CA5: a lista das Versões ----------
 { const i=html.indexOf('<ul class="verlist">'), j=html.indexOf('</ul>',i); const bloco=html.slice(i,j);
   const lis=bloco.split('<li>').slice(1); const vs=lis.map(l=>/^<b>(v[\d.]+)<\/b>/.exec(l)[1]);
-  const esp=['v12.10.7','v12.10.6','v12.10.5','v12.10.4','v12.10.3','v12.10.2','v12.10.1','v12.10','v12.9.1','v12.9','v12.8.4','v12.8.3','v12.8.2','v12.8.1','v12.8','v12.7','v12.6.1','v12.6','v12.5','v12.4.3','v12.4.2','v12.4.1','v12.4','v12.3.2','v12.3.1','v12.3','v12.2','v12.1','v12','v11','v10','v9','v8','v7','v6','v5','v4','v3','v2','v1'];
-  ok(vs.join()===esp.join(),'CA5: a lista tem as 40 linhas: v12.10.7 (a atual), v12.10.6, v12.10.5, v12.10.4, v12.10.3, v12.10.2, v12.10.1, v12.10, v12.9.1, v12.9, v12.8.4, v12.8.3, v12.8.2, v12.8.1, v12.8, v12.7, v12.6.1, v12.6, v12.5, v12.4.3, v12.4.2, v12.4.1, v12.4, v12.3.2, v12.3.1, v12.3, v12.2, v12.1, v12, v11 e v10 a v1, nesta ordem ('+vs.length+')');
+  const esp=['v12.11','v12.10.7','v12.10.6','v12.10.5','v12.10.4','v12.10.3','v12.10.2','v12.10.1','v12.10','v12.9.1','v12.9','v12.8.4','v12.8.3','v12.8.2','v12.8.1','v12.8','v12.7','v12.6.1','v12.6','v12.5','v12.4.3','v12.4.2','v12.4.1','v12.4','v12.3.2','v12.3.1','v12.3','v12.2','v12.1','v12','v11','v10','v9','v8','v7','v6','v5','v4','v3','v2','v1'];
+  ok(vs.join()===esp.join(),'CA5: a lista tem as 41 linhas: v12.11 (a atual), v12.10.7, v12.10.6, v12.10.5, v12.10.4, v12.10.3, v12.10.2, v12.10.1, v12.10, v12.9.1, v12.9, v12.8.4, v12.8.3, v12.8.2, v12.8.1, v12.8, v12.7, v12.6.1, v12.6, v12.5, v12.4.3, v12.4.2, v12.4.1, v12.4, v12.3.2, v12.3.1, v12.3, v12.2, v12.1, v12, v11 e v10 a v1, nesta ordem ('+vs.length+')');
   ok(lis.filter(l=>l.indexOf('versão atual')>=0).length===1 && lis[0].indexOf('versão atual')>=0,'CA5: "versão atual" só na v12.7');
   const comLink=lis.filter(l=>/Abrir a v\d+<\/a>/.test(l)).map(l=>/^<b>(v[\d.]+)<\/b>/.exec(l)[1]);
   ok(comLink.join()==='v11,v10,v9,v8,v7,v6,v5,v4,v3,v2,v1','CA5: link "Abrir" em v1 a v11 e em nenhuma outra ('+comLink.join()+')');

@@ -17,10 +17,9 @@ Origem: retorno do Renan Martorelli (beta-tester) e conversa com o Arthur (15/10
 |---|---|---|---|
 | 5 | ~~Modo História, parte 1~~: juntou-se à 2f e aos capítulos da 3a, 3b e 4a (28/10) | — | — |
 | 14b | O bot humano, calibrado pelos relatórios | — (testes) | depois dos relatórios dos testers |
-| 19a | O salão que cabe o teto e a troca de mesas | v12.11 | planejada em 27/11 (`docs/spec-v12.11.md`, aprovada) |
+| 19a | O salão que cabe o teto e a troca de mesas | v12.11 | feita em 27/11 (`docs/spec-v12.11.md`; `smoke125`; `salaoTroca`, o estoque na faixa do alto, `SALAO.gap` 30 e as áreas maiores) |
 | 19b | A espera no seco e as pernas no sofá | v12.11.1 | planejada em 27/11 (`docs/spec-v12.11.1.md`, aprovada) |
 | 19c | O couvert cinza e a cabecinha nos cursos | v12.11.2 | planejada em 27/11 (`docs/spec-v12.11.2.md`, aprovada) |
-| 18b | O prato que ele estranha, o suor, os desenhos dos pratos de estrada e o empratamento | v12.10.1 | feita em 22/11 (`docs/spec-v12.10.1.md`; `smoke118`; prato estranho, suor, desenhos de estrada, empratamento) |
 | 18c | A conversa da chegada a cada ponto e o Caderno da Rosa | v12.10.2 | feita em 22/11 (`docs/spec-v12.10.2.md`; `smoke119`; `cozinhaNova2/3/4`, `CADERNO` e a aba do Manual) |
 | 18d | O equilíbrio dos cursos em degraus | v12.10.3 | feita em 22/11 (`docs/spec-v12.10.3.md`; `smoke120`; preços dos cursos, `metaF` da área industrial, `CURSO_DIA` da Avenida, `CURSO_AV.preco` 1,25) |
 
