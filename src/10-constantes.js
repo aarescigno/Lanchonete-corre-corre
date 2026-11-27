@@ -13,6 +13,8 @@ const FD = '"Bagel Fat One","Arial Black",system-ui,sans-serif';
 const FB = 'Rubik,system-ui,-apple-system,"Segoe UI",sans-serif';
 
 let RM = false;
+/* v12.11.1: a espera fica na rua (e a chuva cai nela) só na Garagem e na área industrial; na Avenida e no Terraço a chuva só aparece nas janelas do fundo */
+function chuvaNaRua(ponto){ const id = ponto && ponto.id ? ponto.id : ponto; return id !== 'avenida' && id !== 'terraco'; }
 try { RM = !!(window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches); } catch(e) {}
 
 const CHAIRS = [
@@ -2074,7 +2076,7 @@ const HIST_NOMES = { bia:'Bia', tonhao:'Tonhão', dani:'Dani', joca:'Joca', cami
 const ATU_TXT = { procurando:'Procurando versão nova...', nova:'Tem versão nova: {v}! Seu jogo salvo continua.', igual:'Você já está na versão mais nova ({v}).', erro:'Sem internet agora. Tente de novo mais tarde.', atualizando:'Atualizando...' };
 function atuEstado(remota, atual){ if (typeof remota !== 'string' || !remota.trim()) return 'erro'; return remota.trim() === atual ? 'igual' : 'nova'; }
 const CAIXA_MAX = 14;                                 // livro-caixa (v7.2): quantos dias da carreira ficam guardados
-const VERSAO = 'v12.11';                                     // vai no resumo do Caixa
+const VERSAO = 'v12.11.1';                                     // vai no resumo do Caixa
 const DIVULGA_DIA = 4;                                // antes disso, o movimento é o da inauguração (sem custo); v9.0.2: dia 4, e o padrão é o boca a boca
 function divulgaAberta(n, sv){ return devLivre() || n >= DIVULGA_DIA && !(sv && sv.convDiv === 'pend'); }   // no modo dev, desde o dia 1; v9.0.3: no Modo História, só depois da conversa
 /* v9.6.4: a Efood (os entregadores) só abre depois da conversa dos entregadores, no Modo História; antes dela, nenhum tipo com `retira` vem na agenda */

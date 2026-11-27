@@ -359,6 +359,7 @@ function devAbaHoje(body, secao, botao){
     const r = secao(titulo);
     ops.forEach(([v, t]) => botao(r, t, () => game.devForca(k, v), (DEV.forca[k] || '') === v));
   });
+  if (game.clima === 'chuva') botao(secao('Relâmpago (Avenida e Terraço)', 'Dá o clarão agora, nas janelas do fundo'), 'Relâmpago agora', () => game.devRelampago());   // v12.11.1
   { const f = luxoForca(), r = secao('Luxo (VIPs, exigentes na Avenida e Ambiente)', 'Agora: ' + (f >= 0 ? 'forçado no nível ' + f : 'normal, nível ' + luxoNivel(game)));   // v10.7
     botao(r, 'normal', () => game.devLuxo(null), f < 0);
     [0, 1, 2, 3, 4, 5].forEach(n => botao(r, String(n), () => game.devLuxo(n), f === n)); }

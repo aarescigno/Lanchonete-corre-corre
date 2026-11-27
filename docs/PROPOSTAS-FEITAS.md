@@ -4,6 +4,24 @@ Retornos com destino já feito, movidos de `docs/PROPOSTAS.md` em 30/10/2026 sem
 
 ---
 
+## 27/11 — usuário: a espera da Avenida na chuva
+> "outro ponto é que não tem um telhado na sala de espera da avenida brasil, onde já se viu um restaurante assim que as pessoas esperam na chuva para serem atendidas. coloca um toldo ou restrinja a chuva às janelas do fundo, com chuviscos e relampagos de vez em quando"
+
+Na conversa: a chuva fica só nas janelas do fundo, na Avenida e também no Terraço (o foyer é dentro do prédio).
+
+**Destino:** v12.11.1 (etapa 19b), `docs/spec-v12.11.1.md` (entregue em 27/11).
+
+---
+
+## 27/11 — usuário: as pernas no sofá da Avenida
+> "se não for demais, as pessoas na avenida brasil ficam sem pernas na fila de espera também"
+
+Achado (27/11): no sofá da Avenida as pernas ficam de fora de propósito desde a v11.16.1 (só na cadeirinha e no banquinho).
+
+**Destino:** v12.11.1 (etapa 19b), `docs/spec-v12.11.1.md` (entregue em 27/11).
+
+---
+
 ## 27/11 — usuário: a troca de lugar das mesas
 > "aproveita que vai mexer nas cadeiras do salão e adiciona função de swap entre as mesas, quando arrastar uma mesa em direção a outra, essa outra se desloca para caber a nova, se não tiver espaço no salão, a mesa vai para o estoque."
 
