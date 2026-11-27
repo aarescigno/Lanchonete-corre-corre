@@ -1,6 +1,6 @@
 # v12.11.1 — A espera no seco e as pernas no sofá (etapa 19b)
 
-**Situação:** aprovada (27/11)
+**Situação:** entregue em 27/11
 **Origem:** retornos do usuário de 27/11 no `docs/PROPOSTAS.md`: "a espera da Avenida na chuva" e "as pernas no sofá da Avenida". Decisões fechadas com o usuário em 27/11 (Opus); a etapa 19 foi dividida em 3 versões (19a, 19b e 19c), uma por sessão.
 
 ## Objetivo
@@ -39,11 +39,11 @@ Na Avenida e no Terraço, quem espera fica no seco: a chuva aparece só nas jane
 - `src/43-telas.js`: expor `chuvaNaRua` e `relampago` no `window.__lcc`.
 
 ## Tarefas
-- [ ] T1 Smoke novo `smoke126` com os critérios de aceite (falhando) e no `tests/run_all.sh`.
-- [ ] T2 A chuva nas janelas e o relâmpago (Avenida e Terraço), com o "Relâmpago agora" do modo dev.
-- [ ] T3 As pernas no sofá da Avenida.
-- [ ] T4 `shot_v12_11_1.js` (CA3): conferir em recortes ampliados, ajustar e apagar as capturas.
-- [ ] Fechamento: `VERSAO`, `vtag`, `#ov-ver`, `docs/RESUMO.md`, `docs/TESTES.md`, os destinos no `docs/PROPOSTAS.md`, esta spec como entregue, `tests/run_all.sh` verde, PR e merge.
+- [x] T1 Smoke novo `smoke126` com os critérios de aceite (falhando) e no `tests/run_all.sh`.
+- [x] T2 A chuva nas janelas e o relâmpago (Avenida e Terraço), com o "Relâmpago agora" do modo dev.
+- [x] T3 As pernas no sofá da Avenida.
+- [x] T4 `shot_v12_11_1.js` (CA3): conferir em recortes ampliados, ajustar e apagar as capturas.
+- [x] Fechamento: `VERSAO`, `vtag`, `#ov-ver`, `docs/RESUMO.md`, `docs/TESTES.md`, os destinos no `docs/PROPOSTAS.md`, esta spec como entregue, `tests/run_all.sh` verde, PR e merge.
 
 ## Avisos para a execução
 - Para ver quem espera no sofá numa captura: `g.up.assento = g.save.up.assento = 'sofa'` antes do `startDay`, e `g.spawn({ type, color:0, vip:false })` para cada grupo, esperando uns 9 s para chegarem; a chuva, com `g.clima = 'chuva'`.
@@ -57,6 +57,15 @@ Na Avenida e no Terraço, quem espera fica no seco: a chuva aparece só nas jane
 Nenhuma.
 
 ## Desvios
-(No fechamento.)
+- `relampagoInfo(tm)` (nova, devolve `{ v, k }`: a intensidade e o número do clarão) é a base da `relampago(tm)`, para o raio sair numa só das janelas (`drawChuvaJanela(..., id, n)`); a sequência fixa é de 7 clarões por ciclo de 63 s (intervalos 7, 9, 6, 11, 8, 12 e 10 s).
+- O "Relâmpago agora" aparece na aba Hoje só com o dia em chuva (`game.clima`), numa seção própria ("Relâmpago (Avenida e Terraço)"); `Game.devRelampago` grava `DEV.relampago = anim`.
+- Na Avenida a chuva aparece também na janela do muro da calçada (com raio em uma das duas janelas); no Terraço só na vista do `drawParedeTe`.
+- `shot_v12_11_1.js`: o relâmpago é fixado na captura por um `setInterval` que repete `DEV.relampago`.
+
+## Regras corrigidas
+Nenhuma.
+
+## Medido (27/11)
+`smoke126` com 7 checagens (7 clarões em 60 s; 0 com movimento reduzido). Capturas conferidas em recortes ampliados (Avenida, Terraço, Garagem; raio na janela da calçada; o sofá cheio, com as pessoas de pernas) e apagadas. Sem mudança no equilíbrio.
 
 **Modelo:** Sonnet, esforço médio (desenho novo com regras e coordenadas dadas, conferido em captura)

@@ -2569,6 +2569,7 @@ class Game {
     if (!DEV.on || !BIA_REACAO.por[tipo]) return false;
     return this.bia.reage(tipo);
   }
+  devRelampago(){ if (!DEV.on) return false; DEV.relampago = this.anim; return true; }   // v12.11.1
   devForca(k, v){
     if (!DEV.on) return false;
     if (!v || v === 'sorteio') delete DEV.forca[k]; else DEV.forca[k] = v;

@@ -57,7 +57,7 @@ function render(g, ctx){
   drawMesinha(ctx,g,tm);   // v9.6.11: no lugar da geladeira (que sai da tela; a manutenção dela segue escondida)
   drawKitchen(ctx,g,tm);
   if (g.noite && !menu){ ctx.fillStyle = 'rgba(14,20,52,.08)'; ctx.fillRect(0,0,TW,H); }   // v10.10: a noite da estrela: o véu escuro por baixo das pessoas
-  if (g.clima === 'chuva' && !menu) drawChuvaFundo(ctx,tm);
+  if (g.clima === 'chuva' && !menu && chuvaNaRua(g.ponto)) drawChuvaFundo(ctx,tm);
   if (g.clima === 'feriado' && !menu) drawBandeirinhas(ctx);
   if (g.evento === 'junina' && !menu) drawBandeirinhas(ctx,BAND_JUNINA,tm); else if (g.evento === 'jogo' && !menu) drawBandeirinhas(ctx,BAND_JOGO,tm);   // v10.6
 
@@ -89,7 +89,7 @@ function render(g, ctx){
         ctx.translate(grp.x, grp.y); ctx.scale(1/sq, sq); ctx.translate(-grp.x, -grp.y);
         if (QUEUE.max >= 5){ ctx.translate(grp.x, grp.y); ctx.scale(0.85, 0.85); ctx.translate(-grp.x, -grp.y); }   // v9.6.9: a espera da Avenida (6 lugares) em escala menor
         const parado = !grp.path.length;   // no lugar: sentado ou de pé, conforme o ponto (na Garagem, de pé)
-        glowSprite(ctx,g,grp,ctx => drawCluster(ctx,grp,grp.x,grp.y,tm,{ sit:parado && g.sentado, bebe:parado, pernas:parado && g.sentado && !avenida(g) && !terraco(g) }));   // v11.16.1: pernas só na cadeirinha e no banquinho
+        glowSprite(ctx,g,grp,ctx => drawCluster(ctx,grp,grp.x,grp.y,tm,{ sit:parado && g.sentado, bebe:parado, pernas:parado && g.sentado && !terraco(g) }));   // v11.16.1: pernas só na cadeirinha e no banquinho
         ctx.restore();
       }});
     } else if (grp.state === 'retirada'){   // v8.6: o entregador no balcão de retirada, de pé
@@ -129,7 +129,10 @@ function render(g, ctx){
   if (g.cami.active && !menu) items.push({ y:g.cami.y, f:() => drawCami(ctx,g.cami,tm) });   // v9.3
   items.sort((a,c) => a.y - c.y).forEach(it => it.f());
   if (g.evento === 'junina' && !menu) drawBandeirinhasSalao(ctx,g,tm);   // v10.6
-  if (g.clima === 'chuva' && !menu) drawChuvaPingos(ctx,tm);
+  if (g.clima === 'chuva' && !menu){
+    if (chuvaNaRua(g.ponto)) drawChuvaPingos(ctx,tm);
+    else { const cl = relampago(tm); if (cl > 0){ ctx.fillStyle = 'rgba(255,255,255,' + (0.10*cl) + ')'; ctx.fillRect(-1000,0,3000,540); } }   // v12.11.1: o clarão leve na tela toda
+  }
   if (!menu) drawFumacaLixo(ctx,g,tm);   // v9.6.11
   if (!menu) drawConsertos(ctx,g,tm);
   if (!menu && g.setaMesinha) drawSetaMesinha(ctx,g,tm);   // v9.6.11

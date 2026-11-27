@@ -20,24 +20,6 @@ Na conversa: a frase some sempre, e a cabecinha vai em todos os cursos do Cardá
 
 ---
 
-## 27/11 — usuário: a espera da Avenida na chuva
-> "outro ponto é que não tem um telhado na sala de espera da avenida brasil, onde já se viu um restaurante assim que as pessoas esperam na chuva para serem atendidas. coloca um toldo ou restrinja a chuva às janelas do fundo, com chuviscos e relampagos de vez em quando"
-
-Na conversa: a chuva fica só nas janelas do fundo, na Avenida e também no Terraço (o foyer é dentro do prédio).
-
-**Destino:** v12.11.1 (etapa 19b), `docs/spec-v12.11.1.md`.
-
----
-
-## 27/11 — usuário: as pernas no sofá da Avenida
-> "se não for demais, as pessoas na avenida brasil ficam sem pernas na fila de espera também"
-
-Achado (27/11): no sofá da Avenida as pernas ficam de fora de propósito desde a v11.16.1 (só na cadeirinha e no banquinho).
-
-**Destino:** v12.11.1 (etapa 19b), `docs/spec-v12.11.1.md`.
-
----
-
 ## 27/11 — usuário: a Dani perde uma tarefa na chegada à Avenida
 > "ao iniciar a avenida brasil as atividades que a Dani estiver fazendo devem se manter, uma delas se desativou na passagem" (e, na pergunta: "era outra tarefa, ela estava com cafezinho e doce e uma delas estava desmarcada"; a folha estava paga)
 

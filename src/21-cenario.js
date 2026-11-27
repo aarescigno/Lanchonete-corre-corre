@@ -303,6 +303,7 @@ function drawParedeAv(ctx,g,t){
   drawIpe(ctx,x1-12,62,0.95);
   ctx.restore();
   ctx.strokeStyle = '#fff'; ctx.lineWidth = 3; ctx.beginPath(); ctx.moveTo((x0+x1)/2,10); ctx.lineTo((x0+x1)/2,62); ctx.moveTo(x0,36); ctx.lineTo(x1,36); ctx.stroke();
+  if (g.clima === 'chuva' && g.state !== 'menu') drawChuvaJanela(ctx,x0,10,x1,62,t,0,2);   // v12.11.1
   ctx.strokeStyle = PAL.tinta; ctx.lineWidth = 2.5; ctx.strokeRect(x0,10,x1-x0,52);
   rr(ctx,x0-5,62,x1-x0+10,6,2); fs(ctx,'#E6DCC4',1.5);
   if (decorOn(g,'violeta')) drawCactos(ctx,(x0+x1)/2,62,0.95);
@@ -539,6 +540,7 @@ function drawParedeTe(ctx,g,t){
   // o janelão de ponta a ponta, com a cidade lá embaixo
   const wx0 = 104, wx1 = 772, wy0 = 8, wy1 = 62;
   drawVistaTe(ctx,wx0,wy0,wx1,wy1,g.noite && !menu);
+  if (g.clima === 'chuva' && !menu) drawChuvaJanela(ctx,wx0,wy0,wx1,wy1,t,0,1);   // v12.11.1
   ctx.strokeStyle = '#4A3628'; ctx.lineWidth = 3; for (let k = 1; k <= 5; k++){ const x = wx0 + (wx1 - wx0) * k / 6; ctx.beginPath(); ctx.moveTo(x,wy0); ctx.lineTo(x,wy1); ctx.stroke(); }   // as colunas finas
   ctx.strokeStyle = TE_OURO; ctx.lineWidth = 0.8; for (let k = 1; k <= 5; k++){ const x = wx0 + (wx1 - wx0) * k / 6 - 0.8; ctx.beginPath(); ctx.moveTo(x,wy0); ctx.lineTo(x,wy1); ctx.stroke(); }
   ctx.strokeStyle = PAL.tinta; ctx.lineWidth = 2.5; ctx.strokeRect(wx0,wy0,wx1 - wx0,wy1 - wy0);
@@ -867,6 +869,7 @@ function drawCalcada(ctx,g,tm){
     ctx.save(); ctx.translate(x0 + 52,300); ctx.rotate(-Math.PI/2); txt(ctx,'CARGA E DESCARGA',0,0,9,'rgba(160,116,10,.9)','center',FD); ctx.restore();
   }   // v11.16.1: o poste saiu (passava atrás dos lugares 1 e 2 da espera)
   rr(ctx,x0 + 70,10,64,44,3); fs(ctx,'#BFE3F2',2.5);
+  if (av && g.clima === 'chuva' && g.state !== 'menu') drawChuvaJanela(ctx,x0 + 70,10,x0 + 134,54,tm,1,2);   // v12.11.1
   ctx.strokeStyle = PAL.tinta; ctx.lineWidth = 2; ctx.beginPath(); ctx.moveTo(x0 + 102,10); ctx.lineTo(x0 + 102,54); ctx.stroke();
   rr(ctx,x0 + 170,18,40,20,3); fs(ctx,'#fff',2); txt(ctx,ind ? 'Nº 410' : av ? 'Nº 1500' : 'Nº 27',x0 + 190,28.5,10,PAL.faixa,'center',FD);
   ctx.fillStyle = '#C7A27E'; ctx.fillRect(x0 + 26,74,-x0 - 26,8);
@@ -1890,6 +1893,37 @@ function drawChuvaFundo(ctx,t){
   });
   // pingos que escorrem do toldo
   for (let i=0;i<5;i++){ const ph = RM ? 0.3 : ((t*0.9 + i*0.37) % 1), x = -234 + i*45 + 6; ctx.globalAlpha = 1 - ph; circ(ctx,x,98 + ph*30,2); ctx.fillStyle = '#9CC4E4'; ctx.fill(); ctx.globalAlpha = 1; }
+}
+/* v12.11.1: o relâmpago, de 0 a 1, sem estado: um clarão a cada 6 a 12 s numa sequência fixa, de 0,25 s (com movimento reduzido, sempre 0); {v,k} diz a intensidade e qual clarão é */
+const RELAMP_GAPS = [7,9,6,11,8,12,10];
+function relampagoInfo(tm){
+  if (RM || tm == null) return { v:0, k:0 };
+  const per = RELAMP_GAPS.reduce((a,b) => a + b, 0);
+  if (DEV.relampago != null && tm >= DEV.relampago && tm - DEV.relampago < 0.25) return { v:1 - (tm - DEV.relampago)/0.25, k:Math.floor(DEV.relampago) };
+  const ciclo = Math.floor(tm / per), r = tm - ciclo*per; let ini = 0;
+  for (let i=0;i<RELAMP_GAPS.length;i++){ if (r >= ini && r - ini < 0.25) return { v:1 - (r - ini)/0.25, k:ciclo*RELAMP_GAPS.length + i }; ini += RELAMP_GAPS[i]; }
+  return { v:0, k:0 };
+}
+function relampago(tm){ return relampagoInfo(tm).v; }
+/* v12.11.1: a chuva vista pela janela: céu mais escuro, um chuvisco de 12 riscos finos e o relâmpago (o raio sai numa só das n janelas, a de número id) */
+function drawChuvaJanela(ctx,x0,y0,x1,y1,tm,id,n){
+  const w = x1 - x0, h = y1 - y0, rl = relampagoInfo(tm);
+  ctx.save(); ctx.beginPath(); ctx.rect(x0,y0,w,h); ctx.clip();
+  ctx.fillStyle = 'rgba(52,72,104,.35)'; ctx.fillRect(x0,y0,w,h);
+  ctx.strokeStyle = 'rgba(215,232,248,.7)'; ctx.lineWidth = 1; ctx.lineCap = 'round';
+  for (let i=0;i<12;i++){
+    const ph = RM ? ((i*0.37) % 1) : ((tm*0.7 + i*0.173) % 1), x = x0 + ((i*29.3 + 7) % w) - ph*4, y = y0 - 6 + ph*(h + 12);
+    ctx.beginPath(); ctx.moveTo(x,y); ctx.lineTo(x - 1.6,y + 5); ctx.stroke();
+  }
+  if (rl.v > 0){
+    ctx.fillStyle = 'rgba(255,255,255,' + (0.7*rl.v) + ')'; ctx.fillRect(x0,y0,w,h);
+    if ((rl.k % (n || 1)) === (id || 0)){
+      const bx = x0 + w*(0.3 + 0.4*((rl.k*0.37) % 1));
+      ctx.strokeStyle = 'rgba(255,255,255,' + rl.v + ')'; ctx.lineWidth = 2; ctx.lineJoin = 'miter';
+      ctx.beginPath(); ctx.moveTo(bx,y0); ctx.lineTo(bx - 5,y0 + h*0.3); ctx.lineTo(bx + 3,y0 + h*0.45); ctx.lineTo(bx - 4,y0 + h*0.75); ctx.lineTo(bx,y0 + h); ctx.stroke();
+    }
+  }
+  ctx.restore();
 }
 function drawChuvaPingos(ctx,t){
   const x0 = -CALCADA.w - 60, w = -x0;
