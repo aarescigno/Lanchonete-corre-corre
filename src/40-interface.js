@@ -375,6 +375,10 @@ function devAbaHoje(body, secao, botao){
   { const r = secao('Entregador do eFood', 'Chega um agora na fila de retirada (com o dia aberto, onde há retirada)');   // v11.16.1
     botao(r, 'Chegar entregador', () => game.devEntregador()); }
   if (musicaOk(game.ponto)) botao(secao('Música (Terraço)', 'Agora: ' + DEV_MUSICA[game.save.equipe.musica || 0]), 'Música: trocar', () => game.devMusica());   // v10.4: sem música → trioo → pianista
+  if (game.state === 'paused' || game.state === 'playing'){   // v12.12: a dancinha de quem está no salão hoje (a mesma do 5º toque)
+    const q = EGG.quem.filter(k => game.eggPresente(k));
+    if (q.length){ const r = secao('Dancinhas', 'Dispara a dancinha de quem está no dia'); q.forEach(k => botao(r, EGG.nome[k], () => game.danca(k))); }
+  }
   if ((game.state === 'paused' || game.state === 'playing') && game.mode === 'carreira'){
     let r = secao('No dia', 'Velocidade ' + DEV.vel + '×');
     [1, 2, 4, 8].forEach(v => botao(r, 'Velocidade ' + v + '×', () => { DEV.vel = v; }, DEV.vel === v));

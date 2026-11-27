@@ -1,6 +1,6 @@
 # v12.12 — As dancinhas escondidas (etapa 20a)
 
-**Situação:** aprovada (27/11)
+**Situação:** entregue em 27/11
 **Origem:** retorno do usuário de 27/11 no `docs/PROPOSTAS.md` ("easter eggs, os 5 toques nos personagens"). Decisões fechadas com o usuário em 27/11 (Opus); a etapa 20 foi dividida em 2 versões: esta (a equipe) e a v12.12.1 (`docs/spec-v12.12.1.md`: o fiscal, os músicos, a Bia do menu, a campainha, o Tonhão gripado e "Todos dançaram").
 
 ## Objetivo
@@ -62,12 +62,12 @@ Um segredo para quem fuça: tocar 5 vezes seguidas num personagem da equipe faz 
 - `src/43-telas.js`: expor `danca` e `eggAt` no `window.__lcc` (ou pelo `window.__game`).
 
 ## Tarefas
-- [ ] T1 Smoke novo `smoke128` com os critérios de aceite (falhando) e no `tests/run_all.sh`.
-- [ ] T2 A lógica: `g.eggs`, `eggAt`, `danca`, a ordem do toque no `onDown`, o tempo no `update`, `Sfx.tiriri`.
-- [ ] T3 O desenho das 7 dancinhas e o coraçãozinho do `RM`.
-- [ ] T4 O modo dev: a seção "Dancinhas".
-- [ ] T5 `shot_v12_12.js` (CA7): conferir em recortes ampliados, ajustar e apagar as capturas; `node balance.js 20` (CA8).
-- [ ] Fechamento: `VERSAO`, `vtag`, `#ov-ver`, `docs/RESUMO.md`, `docs/TESTES.md`, o destino no `docs/PROPOSTAS.md`, esta spec como entregue, `tests/run_all.sh` verde, PR e merge.
+- [x] T1 Smoke novo `smoke128` com os critérios de aceite (falhando) e no `tests/run_all.sh`.
+- [x] T2 A lógica: `g.eggs`, `eggAt`, `danca`, a ordem do toque no `onDown`, o tempo no `update`, `Sfx.tiriri`.
+- [x] T3 O desenho das 7 dancinhas e o coraçãozinho do `RM`.
+- [x] T4 O modo dev: a seção "Dancinhas".
+- [x] T5 `shot_v12_12.js` (CA7): conferir em recortes ampliados, ajustar e apagar as capturas; `node balance.js 20` (CA8).
+- [x] Fechamento: `VERSAO`, `vtag`, `#ov-ver`, `docs/RESUMO.md`, `docs/TESTES.md`, o destino no `docs/PROPOSTAS.md`, esta spec como entregue, `tests/run_all.sh` verde, PR e merge.
 
 ## Avisos para a execução
 - O Tonhão é desenhado em `drawKitchen` (`src/21-cenario.js`, `drawChef(ctx,g,930,172,t)`) e o corpo dele cai dentro do retângulo da estação `order` (`STATIONS.order`, y de 96 a 204); por isso só a cabeça conta e a regra da fila vazia vem antes do `pickAt`. A Lia (`LIA_HOME`, escala 0,72) também fica na janela dos pedidos.
@@ -78,11 +78,19 @@ Um segredo para quem fuça: tocar 5 vezes seguidas num personagem da equipe faz 
 ## Testes
 - Smoke novo: `smoke128` (CA1 a CA6). Captura: `shot_v12_12.js` (CA7). `node balance.js 20` (CA8).
 - O `smoke86`, o `menu_fit.py` e a lista do `#ov-ver` ganham a linha da v12.12.
+- **Medido:** `smoke128` com 59 checagens (CA1 a CA6), verde; `smoke86` e `smoke16` verdes; `tests/run_all.sh` verde, menos o `smoke42` numa rodada (sorteio de VIP, 41% contra o alvo; passou 3 vezes seguidas depois, não toca em nada desta versão). `node balance.js 20` (CA8, sem equipe), passou dias 3 a 7: 16, 16, 19, 14 e 11 de 20 (o bot não toca nos personagens). `menu_fit.py` não rodado neste clone (precisa do Playwright com o `--tudo`); a conta da lista passou de 43 para 44 linhas.
 
 ## Decisões em aberto
 Nenhuma.
 
 ## Desvios
-(No fechamento.)
+- **Estado de cada um:** `g.eggs[quem] = { n, t, p, s, on }` (o `s` é o tempo da dancinha e o `on` diz se ela corre; `p` fica 0,001 no 1º instante para o `p > 0` do CA1); `eggP(quem)` entrega o `p` ao desenho. Funções novas no `Game`: `eggsAnda`, `eggP`, `eggPresente`, `janelaVazia`, `eggCabeca`, `eggAt`, `eggZera`, `eggToque` e `danca`; a constante `EGG` (n 5, gap 1, dur 1,2, nomes) ficou em `src/10-constantes.js` e vai no `__lcc`.
+- **Como o desenho recebe a dancinha:** 4º argumento `egg` em `drawDani`, `drawJoca` e `drawCami` (no lugar de `d.egg`, para não mexer no objeto do jogo), `o.egg` no `drawBia`, `d.egg` no objeto literal do Anselmo e da Lia, e o `drawChef` lê `g.eggP` (o retrato das conversas, sem `eggP`, não muda). O `drawPerson` ganhou `o.rabo` (o balanço do rabo de cavalo da Cami).
+- **O giro nunca some de vez:** a escala horizontal da Bia e da Lia usa `eggGiro` (o `cos 2πp` com no mínimo 0,1 de módulo), porque em `p` 0,25 e 0,75 o `cos` é 0 e a personagem sumia por um quadro.
+- **Coraçãozinho do movimento reduzido:** `drawEggCoracao`, a 78 px acima dos pés da Bia, 72 nos ajudantes, 68 no Anselmo e na Lia e 62 no Tonhão (acima da touca).
+- **Folga do dedo:** o `pickAt(x, y, pad)` segue como antes (a plaquinha de conserto vence o que está embaixo, ver `smoke16`); o acerto exato num personagem só vale quando nenhum alvo foi acertado em cheio.
+- **Áreas que se cruzam:** a parte de baixo do retângulo do Anselmo (y 92 a 120) cai sobre a estação `drinks`, que vence (acerto exato num alvo), então na prática só a cabeça e o peito dele (y 56 a 92) valem; a cabeça da Lia fica sob o botão de adiantar marmita quando ele está ligado (como a spec manda).
+- **`smoke128`** usa `g.update` normal, congela os ajudantes no CA6 e conta as `bezierCurveTo` do `render` (2 por coraçãozinho). A `shot_v12_12.js` ganhou os momentos `p` 0,0625 e 0,125 (a inclinação da Dani e o rabo da Cami valem 0 nos `p` pedidos 0,25, 0,5 e 0,75) e força `g.clima=''`.
+- **Bug antigo achado, não corrigido (fora do escopo):** num dia de `clima === 'feriado'` o `render` lança erro, porque o `drawBandeirinhas(ctx)` perde o `cores = cores || BAND_FERIADO;` (a v11.16.1 deixou essa linha dentro de um comentário em `src/21-cenario.js`). Pede uma correção pequena com spec própria.
 
 **Modelo:** Sonnet, esforço alto (a ordem do toque no `onDown` e sete desenhos novos conferidos em captura)

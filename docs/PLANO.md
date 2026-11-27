@@ -17,10 +17,9 @@ Origem: retorno do Renan Martorelli (beta-tester) e conversa com o Arthur (15/10
 |---|---|---|---|
 | 5 | ~~Modo História, parte 1~~: juntou-se à 2f e aos capítulos da 3a, 3b e 4a (28/10) | — | — |
 | 14b | O bot humano, calibrado pelos relatórios | — (testes) | depois dos relatórios dos testers |
-| 19a | O salão que cabe o teto e a troca de mesas | v12.11 | feita em 27/11 (`docs/spec-v12.11.md`; `smoke125`; `salaoTroca`, o estoque na faixa do alto, `SALAO.gap` 30 e as áreas maiores) |
 | 19b | A espera no seco e as pernas no sofá | v12.11.1 | feita em 27/11 (`docs/spec-v12.11.1.md`; `smoke126`) |
 | 19c | O couvert cinza e a cabecinha nos cursos | v12.11.2 | feita em 27/11 (`docs/spec-v12.11.2.md`; `smoke127`; `cursoCabeca`) |
-| 20a | As dancinhas escondidas (os 5 toques na equipe) | v12.12 | aprovada em 27/11 (`docs/spec-v12.12.md`) |
+| 20a | As dancinhas escondidas (os 5 toques na equipe) | v12.12 | feita em 27/11 (`docs/spec-v12.12.md`; `smoke128`; `g.eggs`, `eggAt`, `danca` e a seção "Dancinhas" do dev) |
 | 20b | Os outros segredos e a dança da equipe | v12.12.1 | aprovada em 27/11 (`docs/spec-v12.12.1.md`) |
 
 ---

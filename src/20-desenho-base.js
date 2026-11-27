@@ -11,6 +11,12 @@ function rr(ctx,x,y,w,h,r){
 }
 function ell(ctx,x,y,rx,ry){ ctx.beginPath(); ctx.ellipse(x,y,rx,ry,0,0,TAU); }
 function circ(ctx,x,y,r){ ctx.beginPath(); ctx.arc(x,y,r,0,TAU); }
+/* v12.12: com `prefers-reduced-motion` a dancinha escondida é só um coraçãozinho parado sobre a cabeça (uns 7 px); (x, y) é o centro do coração */
+/* v12.12: a escala horizontal do giro da dancinha (cos 2πp), com um fio de largura (nunca some de vez) */
+function eggGiro(p){ const c = Math.cos(TAU * p); return Math.abs(c) < 0.1 ? (c < 0 ? -0.1 : 0.1) : c; }
+function drawEggCoracao(ctx,x,y){
+  ctx.beginPath(); ctx.moveTo(x,y + 4); ctx.bezierCurveTo(x - 8,y - 1,x - 4,y - 7,x,y - 3); ctx.bezierCurveTo(x + 4,y - 7,x + 8,y - 1,x,y + 4); ctx.closePath(); fs(ctx,PAL.perigo,1.6);
+}
 function fs(ctx,fill,lw){
   if (fill){ ctx.fillStyle = fill; ctx.fill(); }
   ctx.lineWidth = lw || 2.5; ctx.strokeStyle = PAL.tinta; ctx.lineJoin = 'round'; ctx.lineCap = 'round';
@@ -1054,7 +1060,7 @@ function drawPerson(ctx,p,x,y,o){
   if (o.back){   // de costas (sentado na frente da mesa, olhando para ela): nuca coberta, sem rosto
     if (p.acc !== 'helmet'){ circ(ctx,0,hy,11.3); fs(ctx,p.hair === 4 && !p.elder ? skin : hc,2.2); }
     else { ctx.beginPath(); ctx.arc(0,hy-1,12.5,Math.PI,0); ctx.closePath(); fs(ctx,PAL.faixa,2.5); rr(ctx,-13,hy-3,26,3.5,1.5); fs(ctx,'#1b1b1b',1.6); circ(ctx,0,hy+2,9.5); fs(ctx,skin,1.6); }
-    if (p.hair === 2){ circ(ctx,0,hy-15,6); fs(ctx,hc,2); }
+    if (p.hair === 2){ ctx.save(); if (o.rabo){ ctx.translate(0,hy); ctx.rotate(o.rabo); ctx.translate(0,-hy); } circ(ctx,0,hy-15,6); fs(ctx,hc,2); ctx.restore(); }
     if (p.flor === 'cabelo') florCasal(ctx,8.5,hy - 6,p.florC);   // v10
     if (p.chapeu) acExigente(ctx,p,hy,true);   // v10.1
     ctx.restore();
@@ -1073,7 +1079,7 @@ function drawPerson(ctx,p,x,y,o){
     if (p.hair === 0 || p.hair === 2) { ctx.quadraticCurveTo(5,hy-6,-2,hy-7); ctx.quadraticCurveTo(-8,hy-6,-11.5,hy-1); }
     else { ctx.lineTo(8,hy-5); ctx.lineTo(-8,hy-5); }
     ctx.closePath(); fs(ctx,hc,2);
-    if (p.hair === 2){ circ(ctx,0,hy-15,6); fs(ctx,hc,2); }
+    if (p.hair === 2){ ctx.save(); if (o.rabo){ ctx.translate(0,hy); ctx.rotate(o.rabo); ctx.translate(0,-hy); } circ(ctx,0,hy-15,6); fs(ctx,hc,2); ctx.restore(); }
   } else if (p.elder){
     ctx.strokeStyle = hc; ctx.lineWidth = 3.5; ctx.beginPath(); ctx.arc(0,hy+1,11.5,Math.PI*0.85,Math.PI*1.1); ctx.stroke(); ctx.beginPath(); ctx.arc(0,hy+1,11.5,-Math.PI*0.1,Math.PI*0.15); ctx.stroke();
   }
@@ -1141,7 +1147,8 @@ function drawBia(ctx,b,x,y,o){
   const skin = '#6B3F25', rp = clamp(Math.round(o.roupa || 1), 1, 4), C = BIA_ROUPA_COR;
   const blusa = rp === 3 ? C.camisa : rp === 4 ? C.clara : C.verde;       // a camiseta, a camisa
   const saia = rp >= 3 ? (rp === 4 ? C.saiaEsc : '#2B2B33') : C.verde;
-  ctx.save(); ctx.translate(x,y); ctx.scale(sc * (o.flip || 1), sc);
+  const egg = o.egg || 0;   // v12.12: a dancinha escondida (a pirueta: gira no lugar e dá um pulinho)
+  ctx.save(); ctx.translate(x,y - (egg && !RM ? 8 * Math.sin(Math.PI * egg) : 0)); ctx.scale(sc * (o.flip || 1) * (egg && !RM ? eggGiro(egg) : 1), sc);
   shadowEll(ctx,0,0,16,5,0.22);
   const sw = moving ? Math.sin(ph) * 5 : 0;
   // pernas

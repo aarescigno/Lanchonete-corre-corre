@@ -98,6 +98,7 @@ A cena final animada (oito cenas, no motor da abertura), os créditos, a placa n
 
 | # | Etapa | Versão | Situação |
 |---|---|---|---|
+| 19a | O salão que cabe o teto e a troca de mesas | v12.11 | feita em 27/11 (`docs/spec-v12.11.md`; `smoke125`; `salaoTroca`, o estoque na faixa do alto, `SALAO.gap` 30 e as áreas maiores) |
 | 18c | A conversa da chegada a cada ponto e o Caderno da Rosa | v12.10.2 | feita em 22/11 (`docs/spec-v12.10.2.md`; `smoke119`; `cozinhaNova2/3/4`, `CADERNO` e a aba do Manual) |
 | 18d | O equilíbrio dos cursos em degraus | v12.10.3 | feita em 22/11 (`docs/spec-v12.10.3.md`; `smoke120`; preços dos cursos, `metaF` da área industrial, `CURSO_DIA` da Avenida, `CURSO_AV.preco` 1,25) |
 | correção | A espera sentada e o enfeite das mesas sem pagar à toa (cadeirinhas → banquinhos por R$ 45, sem voltar; o enfeite sai com o linho e volta pela metade) | v12.8.4 | feita em 21/11 (`docs/spec-v12.8.4.md`; `smoke114`; `assentoPreco` e a devolução no `buyMovel('linho')`) |

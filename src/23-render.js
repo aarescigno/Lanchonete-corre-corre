@@ -103,7 +103,8 @@ function render(g, ctx){
   });
   const b = g.bia;
   items.push({ y:b.y, f:() => {
-    drawBia(ctx,b,b.x,b.y,{ moving:b.moving, ph:b.walkPh, flip:b.dir, t:tm, lava:b.washing && !RM, roupa:roupaBia(g), reacao:b.reacao ? { id:b.reacao.id, p:b.reacao.t / BIA_REACAO.dur } : null });
+    drawBia(ctx,b,b.x,b.y,{ moving:b.moving, ph:b.walkPh, flip:b.dir, t:tm, lava:b.washing && !RM, roupa:roupaBia(g), reacao:b.reacao ? { id:b.reacao.id, p:b.reacao.t / BIA_REACAO.dur } : null, egg:menu ? 0 : g.eggP('bia') });
+    if (RM && !menu && g.eggP('bia')) drawEggCoracao(ctx,b.x,b.y - 78);   // v12.12
     const lay = b.layout() || [b.hands.slice(0,1), b.hands.slice(1,2)];
     lay.forEach((its,i) => {
       const hx = b.x + (i ? 20 : -20);
@@ -124,9 +125,9 @@ function render(g, ctx){
   if (mus === 1) items.push({ y:528, f:() => drawTrio(ctx,g,tm) });
   if ((g.save.equipe.tv || g.save.equipe.som) && !menu) items.push({ y:532, f:() => drawAmbiente(ctx,g,tm) });
   if (g.fiscal && g.fiscal.ativo && !menu) items.push({ y:g.fiscal.y, f:() => drawFiscal(ctx,g.fiscal,tm) });   // v9.4
-  if (g.dani.active && !menu) items.push({ y:g.dani.y, f:() => drawDani(ctx,g.dani,tm) });
-  if (g.joca.active && !menu) items.push({ y:g.joca.y, f:() => drawJoca(ctx,g.joca,tm) });   // v9.2
-  if (g.cami.active && !menu) items.push({ y:g.cami.y, f:() => drawCami(ctx,g.cami,tm) });   // v9.3
+  if (g.dani.active && !menu) items.push({ y:g.dani.y, f:() => drawDani(ctx,g.dani,tm,g.eggP('dani')) });
+  if (g.joca.active && !menu) items.push({ y:g.joca.y, f:() => drawJoca(ctx,g.joca,tm,g.eggP('joca')) });   // v9.2
+  if (g.cami.active && !menu) items.push({ y:g.cami.y, f:() => drawCami(ctx,g.cami,tm,g.eggP('cami')) });   // v9.3
   items.sort((a,c) => a.y - c.y).forEach(it => it.f());
   if (g.evento === 'junina' && !menu) drawBandeirinhasSalao(ctx,g,tm);   // v10.6
   if (g.clima === 'chuva' && !menu){

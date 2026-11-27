@@ -28,7 +28,7 @@ class Game {
     this.bia = new Waitress(this);
     this.kitchen = new Kitchen(this);
     this.dani = new Helper(this, 'dani'); this.joca = new Helper(this, 'joca'); this.cami = new Helper(this, 'cami');
-    this.fx = [];
+    this.fx = []; this.eggs = {};   // v12.12: as contas e o tempo das dancinhas escondidas (zeram a cada dia)
     this.sel = null; this.drag = null; this.hover = null; this.hoverOk = false;
     this.cam = CALCADA.w;   // onde o mundo começa na tela larga (v7.6: a calçada inteira à vista, sem rolar)
     this.shopNext = 1;
@@ -161,7 +161,7 @@ class Game {
     this.retirada = []; this.prateleira = []; this.marmitaId = 0; this.efood = 0; this.potes = 0;   // v8.6: os entregadores no balcão, as marmitas na prateleira e a parte da Efood
     this.bia.reset();
     this.dani.reset(); this.joca.reset(); this.cami.reset();
-    this.fx = [];
+    this.fx = []; this.eggs = {};   // v12.12: as contas e o tempo das dancinhas escondidas (zeram a cada dia)
     this.stats = { served:0, lost:0, chain:0, spawned:0, full:0, vip:0, vipLost:0, juice:0, juiceMiss:0, trash:0, washed:0, emptied:0, sucoEsp:0, doces:0, docesMarm:0, cafesEsp:0, drinks:0, crit:0, consertos:0, quebras:0, lostBy:{ semMesa:0, comMesa:0, pedido:0, prato:0, conta:0, retirada:0 }, criticoH:0, saiMin:5, lotadoT:0, bravoMesa:0, lixoCheio:false, marmitas:0, esfriou:0, jogadas:0, lostGrande:0, completas:0, exigentes:0, rodadas:0, gol:0, rosa:0 };
     this.lastKind = null; this.chainN = 0;
     this.ending = false; this.endTimer = 0; this.reason = '';
@@ -1326,6 +1326,7 @@ class Game {
     }
     dt = Math.min(dt, 0.05);
     if (this.treino && this.treino.para){ this.updateFx(dt); return; }   // Missão zero: com o pop-up de explicação, o jogo espera
+    this.eggsAnda(dt);   // v12.12
     if (this.starFlash > 0) this.starFlash = Math.max(0, this.starFlash - dt);
     if (this.golT > 0) this.golT = Math.max(0, this.golT - dt);
     if (!this.ending){
@@ -2724,6 +2725,58 @@ class Game {
     if (this.bia.enqueue({ type:k })){ Sfx.tap(); this.addGlow(k); return true; }
     return false;
   }
+  /* ---------- v12.12: as dancinhas escondidas ----------
+     g.eggs[quem] = { n:toques seguidos, t:s desde o último toque, p:0..1 (a dancinha), on }; a lógica só guarda o tempo, o desenho lê eggP(quem) */
+  eggsAnda(dt){
+    for (const k in this.eggs){
+      const e = this.eggs[k];
+      if (e.on){ e.s += dt; e.p = Math.min(1, e.s / EGG.dur); if (e.s >= EGG.dur){ e.on = false; e.p = 0; e.n = 0; e.t = 0; } }
+      else e.t += dt;
+    }
+  }
+  eggP(quem){ const e = this.eggs && this.eggs[quem]; return e && e.on ? e.p : 0; }
+  /* a janela dos pedidos está livre: a Bia sem comanda na mão e sem ação de pedido na fila */
+  janelaVazia(){ return !this.bia.hands.some(h => h.kind === 'ticket') && !this.bia.acts.some(a => a.type === 'order'); }
+  /* quem está no salão hoje (a Bia e o Tonhão sempre) */
+  eggPresente(quem){
+    return quem === 'bia' || quem === 'tonhao' || (quem === 'anselmo' ? this.anselmoAtivo : quem === 'lia' ? this.liaAtiva : !!(this[quem] && this[quem].active));
+  }
+  /* a cabeça do Tonhão (a touca e o rosto) ou a da Lia; o botãozinho de adiantar marmita vence a da Lia */
+  eggCabeca(x, y){
+    if (x >= 914 && x <= 946 && y >= 120 && y <= 174) return 'tonhao';
+    if (this.liaAtiva){
+      const s = LIA_HOME.s;
+      if (x >= LIA_HOME.x - 16 * s && x <= LIA_HOME.x + 16 * s && y >= LIA_HOME.y - 68 * s && y <= LIA_HOME.y - 30 * s && this.stationAt(x, y) !== 'adiantar') return 'lia';
+    }
+    return null;
+  }
+  /* quem está sob o toque (o de cima no desenho, isto é, o de maior y); só a equipe, e a cabeça do Tonhão e a da Lia por último */
+  eggAt(x, y){
+    let best = null, by = -Infinity;
+    const pe = (k, cx, py, cima) => { if (x >= cx - 15 && x <= cx + 15 && y >= py - cima && y <= py + 2 && py > by){ best = k; by = py; } };
+    pe('bia', this.bia.x, this.bia.y, 64);
+    ['dani','joca','cami'].forEach(k => { const d = this[k]; if (d.active) pe(k, d.x, d.y, 64); });
+    if (this.anselmoAtivo) pe('anselmo', ANSELMO_HOME.x, ANSELMO_HOME.y, 62);
+    const cab = this.eggCabeca(x, y);
+    if (cab){ const py = cab === 'lia' ? LIA_HOME.y : 172; if (py > by){ best = cab; by = py; } }
+    return best;
+  }
+  eggZera(quem){ const e = this.eggs[quem]; if (e && !e.on){ e.n = 0; e.t = 0; } }
+  eggToque(quem){
+    const e = this.eggs[quem] || (this.eggs[quem] = { n:0, t:0, p:0, s:0, on:false });
+    if (e.on) return;   // durante a dancinha os toques não contam
+    if (e.n > 0 && e.t > EGG.gap) e.n = 0;
+    e.n++; e.t = 0;
+    if (e.n >= EGG.n) this.danca(quem);
+  }
+  danca(quem){
+    if (!EGG.quem.includes(quem)) return false;
+    const e = this.eggs[quem] || (this.eggs[quem] = { n:0, t:0, p:0, s:0, on:false });
+    e.on = true; e.s = 0; e.p = 0.001; e.n = 0; e.t = 0;
+    Sfx.tiriri();
+    if (quem === 'bia' && !RM) this.addSparks(this.bia.x, this.bia.y - 40, 8, PAL.mostarda);
+    return true;
+  }
   /* entrada: x e y chegam na tela (HUD na tela; o resto vira mundo, x - cam) */
   onDown(sx, y, pad){
     if (this.state !== 'playing') return;
@@ -2742,7 +2795,15 @@ class Game {
       return;
     }
     const x = sx - this.cam;
-    const hit = this.pickAt(x, y, pad);
+    // v12.12: a cabeça do Tonhão e a da Lia na janela dos pedidos: com a fila vazia a dancinha vence o toque na janela; com comanda na mão da Bia, o toque vai para a janela e zera a conta
+    const cab = this.eggCabeca(x, y);
+    if (cab){
+      if (this.janelaVazia()){ this.eggToque(cab); return; }
+      this.eggZera(cab);
+    }
+    const exato = this.pickAt(x, y, 0);
+    if (!exato){ const q = this.eggAt(x, y); if (q){ this.eggToque(q); return; } }   // v12.12: acerto exato num da equipe (não é toque perdido nem ação)
+    const hit = pad ? this.pickAt(x, y, pad) : exato;   // a folga do dedo como sempre (a plaquinha de conserto vence o que está embaixo)
     if (hit && hit.k === 'queue'){
       this.drag = { g:hit.g, sx:x, sy:y, x, y, moved:false, pad };
       return;
