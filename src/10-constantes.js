@@ -508,18 +508,18 @@ const PONTOS = [
   // apito: o pico do meio do dia (as primeiras `max` turmas chegam juntas a partir de `quando` do turno, uma a cada `gap` s, avisadas `aviso` s antes);
   // patPressa: a paciência de quem vem sozinho ou em dupla; vip: a chance de VIP; metaF: o fator das metas (v9.6.1: 1,25 → 2,3 e 1,7 → 3,2); expertF (v9.6.1): o da expert, a 3ª estrela (sem ele, o metaF); prateleira: as vagas do balcão de retirada;
   // grupos: o fator dos grupos do dia (os 20 lugares já trazem +60% de movimento; sem ele, nem o bot afiado fechava o dia sem perder ninguém)
-  { id:'industrial', nome:'Lanchonete na área industrial', nivel:2, lugares:20, aluguel:120, mudanca:800, credito:2000, area:{ x0:160, y0:150, x1:684, y1:500 }, espera:5, assento:'pe', bebida:'suco', pratos:5, marmJanela:3, prateleira:4,
+  { id:'industrial', nome:'Lanchonete na área industrial', nivel:2, lugares:20, aluguel:120, mudanca:800, credito:2000, area:{ x0:150, y0:150, x1:684, y1:500 }, espera:5, assento:'pe', bebida:'suco', pratos:5, marmJanela:3, prateleira:4,
     tipos:{ estudante:1, executiva:1, familia:0.5, vovos:0.7, entregador:2, turma:2, motorista:1 }, encomenda:0.6, apito:{ quando:0.45, max:3, gap:[8, 12], aviso:10 }, patPressa:0.85, vip:0.2, metaF:1.3, expertF:1.0, grupos:0.8,   // v12.7: metaF 2,3 → 1,5 e expertF 1,5 → 1,0 (os preços da lanchonete deixaram de ser ×1,5: PF R$ 45 → 34; metas em ~86%)
    
     traz:'a freguesia da fábrica e da estrada', deixa:'as TVs, o assento da espera e a jarra de suco ficam' },
   // v9.1: o 2º ponto novo (cap. 6 e 7). Sem apito, sem encomenda e sem patPressa: a turma, o motorista e a encomenda não vêm. vip: ×2 (restaurante atrai mais VIP)
-  { id:'avenida', nome:'Restaurante na Avenida Brasil', nivel:3, lugares:24, aluguel:400, mudanca:2000, credito:4000, area:{ x0:160, y0:150, x1:684, y1:500 }, espera:6, assento:'pe', bebida:'saborizada', pratos:6, marmJanela:3, prateleira:4,
+  { id:'avenida', nome:'Restaurante na Avenida Brasil', nivel:3, lugares:24, aluguel:400, mudanca:2000, credito:4000, area:{ x0:40, y0:150, x1:684, y1:500 }, espera:6, assento:'pe', bebida:'saborizada', pratos:6, marmJanela:3, prateleira:4,
     tipos:{ estudante:0.5, executiva:2, familia:1.5, vovos:1, entregador:1, negocios:1.5 }, vip:2, metaF:2.5, expertF:3.4, grupos:0.7,   // v12.7: metaF 3,1 → 2,5 (metas em ~90%; o ganho do dia ficou ~6% abaixo)
       // v9.6.4: 3,2 e 3,8 → 3,0 e 3,6 (o VIP mais exigente deixou a Avenida abaixo do alvo)
     traz:'o almoço de negócios e mais VIPs', art:'o', deixa:'os sofás, as águas saborizadas e o couvert ficam' },
   // v10: o último ponto da escada (cap. 8 e 9). 20 lugares, aluguel R$ 1.000, cardápio ×2,5. Sem entregador (semRetirada), sem bebida da espera (bebida:null até a 4a-4) e com o casal;
   // tempos: a refeição completa (bebida, entrada, prato e sobremesa; ver TEMPOS)
-  { id:'terraco', nome:'Terraço Suíça', nivel:4, lugares:20, aluguel:1200, mudanca:5000, credito:8000, area:{ x0:160, y0:150, x1:684, y1:500 }, espera:6, assento:'pe', bebida:'coquetel', pratos:6, marmJanela:2, prateleira:0,
+  { id:'terraco', nome:'Terraço Suíça', nivel:4, lugares:20, aluguel:1200, mudanca:5000, credito:8000, area:{ x0:150, y0:150, x1:684, y1:500 }, espera:6, assento:'pe', bebida:'coquetel', pratos:6, marmJanela:2, prateleira:0,
     tipos:{ executiva:0.5, familia:1, vovos:1, negocios:1.5, casal:2 }, vip:2.5, metaF:18, expertF:13.5, grupos:0.5, tempos:true, semRetirada:true, exigente:true,   // v12.7 (medido em 19/11, 40 rodadas, equipe toda com o bot afiado): metaF 8 → 18 e expertF 6 → 13,5 (os pratos de R$ 72 a 108 dobraram o ganho do dia: R$ 3.370 → ~R$ 6.100; metas em ~93% e 3★ em ~80%, como a noite da estrela pede);   // v10.4 (medido em 11/11, 80 rodadas, equipe toda com JOCA=4 CONFEITARIA=1): cardápio 2,4 → 1,3 (o ganho sobre a Avenida era de R$ 2.800 por dia e foi a ~R$ 850), metaF 9 → 12 e expertF 6 → 8,5 (metas em ~90% e 3★ em ~60%);   // v10 (medido em 10/11, equipe toda com o bot afiado): grupos 0,45 → 0,50 (mesas vazias em 33% do turno), metaF 4 → 9 e expertF 5 → 6 (91% das metas e 3★ em 61%), aluguel 1.000 → 1.200 e cardápio 2,5 → 2,4 (o ganho sobre a Avenida de R$ 918 caiu para ~R$ 700)
    
     traz:'a refeição completa e a freguesia mais fina', art:'o' }
@@ -530,9 +530,10 @@ function pontoOf(id){ return PONTOS.find(p => p.id === id) || PONTOS[0]; }
    de lugares do ponto e arrumadas no editor da lojinha. Cada mesa fica a pelo
    menos `gap` px das outras e com caminho da Bia até ela; ao arrastar, encaixa
    numa grade de `grid` px. Os números seguem a ordem no salão (de cima para
-   baixo, da esquerda para a direita)
+   baixo, da esquerda para a direita). v12.11: a folga caiu de 46 para 30 e a área da Avenida ganhou o lado esquerdo (até o teto
+   de lugares, qualquer mistura de mesas cabe na arrumação automática e no arrasto)
    ============================================================ */
-const SALAO = { gap:46, grid:10, kit:[2,2,2,4], mesa2:150, mesa4:250, virar:100, venda:0.5,
+const SALAO = { gap:30, grid:10, kit:[2,2,2,4], mesa2:150, mesa4:250, virar:100, venda:0.5,
   v6:{ chairs:16, chairPrice:60, tablePrice:300 } };   // v6: o salão da v6 à v7.3, para a devolução
 const MESA = { top:50, bot:62 };                     // a mesa ocupa do centro 50 px para cima (cadeiras de trás) e 62 para baixo
 function mesaPreco(seats){ return seats === 4 ? SALAO.mesa4 : SALAO.mesa2; }
@@ -637,6 +638,33 @@ function salaoPerto(mesas, i, ponto){
     }
   }
   return null;
+}
+/* v12.11: a mesa `m` (a do salão de índice `i`, ou uma do estoque, com i = -1) solta em (x, y): as mesas que ficam no caminho
+   saem e voltam uma a uma, na ordem do salão, no lugar livre mais perto de onde estavam (salaoPerto), sem empurrar nenhuma
+   outra; a que não acha lugar vai para o estoque (sem a marca da Cami). Devolve { mesas, est, movidas, ids } (o salão novo; as
+   mesas que vão para o estoque; quantas se deslocaram no salão; os índices, em `mesas`, de todas as que saíram do lugar) ou { why } */
+function salaoTroca(mesas, i, m, x, y, ponto){
+  const base = mesas.filter((_, k) => k !== i), solta = Object.assign({}, m, { x, y }), G = SALAO.gap;
+  const fora = mesaProblema([solta], 0, ponto);
+  if (fora) return { why:fora };
+  const b = mesaBox(x, y, m.seats), ids = [];
+  const noCaminho = base.filter(o => { const q = mesaBox(o.x, o.y, o.seats); return b.x0 < q.x1 + G && q.x0 < b.x1 + G && b.y0 < q.y1 + G && q.y0 < b.y1 + G; });
+  if (!noCaminho.length){
+    const l = base.concat([solta]), why = salaoProblema(l, ponto);
+    return why ? { why } : { mesas:l, est:[], movidas:0, ids };
+  }
+  noCaminho.forEach(o => ids.push(mesas.indexOf(o)));
+  const resto = base.filter(o => noCaminho.indexOf(o) < 0), ordem = salaoOrdena(noCaminho);
+  let l = resto.concat([solta]), est = [], movidas = 0, why = salaoProblema(l, ponto);
+  if (why) return { why };   // a mesa solta sozinha já tapa o caminho da Bia ou passa do teto
+  ordem.forEach(o => {
+    const t = l.concat([o]), r = salaoPerto(t, t.length - 1, ponto);
+    if (r){ l = r; movidas++; } else est.push(o);
+  });
+  if (salaoProblema(l, ponto)){   // o arranjo final ainda tem problema: todas as deslocadas vão para o estoque
+    l = resto.concat([solta]); est = ordem; movidas = 0;
+  }
+  return { mesas:l, est:est.map(o => Object.assign({ seats:o.seats, c:o.c }, o.t ? { t:1 } : {})), movidas, ids };
 }
 /* cor da cadeira de uma mesa nova: a menos usada no salão */
 function salaoCor(mesas){
@@ -2046,7 +2074,7 @@ const HIST_NOMES = { bia:'Bia', tonhao:'Tonhão', dani:'Dani', joca:'Joca', cami
 const ATU_TXT = { procurando:'Procurando versão nova...', nova:'Tem versão nova: {v}! Seu jogo salvo continua.', igual:'Você já está na versão mais nova ({v}).', erro:'Sem internet agora. Tente de novo mais tarde.', atualizando:'Atualizando...' };
 function atuEstado(remota, atual){ if (typeof remota !== 'string' || !remota.trim()) return 'erro'; return remota.trim() === atual ? 'igual' : 'nova'; }
 const CAIXA_MAX = 14;                                 // livro-caixa (v7.2): quantos dias da carreira ficam guardados
-const VERSAO = 'v12.10.7';                                   // vai no resumo do Caixa
+const VERSAO = 'v12.11';                                     // vai no resumo do Caixa
 const DIVULGA_DIA = 4;                                // antes disso, o movimento é o da inauguração (sem custo); v9.0.2: dia 4, e o padrão é o boca a boca
 function divulgaAberta(n, sv){ return devLivre() || n >= DIVULGA_DIA && !(sv && sv.convDiv === 'pend'); }   // no modo dev, desde o dia 1; v9.0.3: no Modo História, só depois da conversa
 /* v9.6.4: a Efood (os entregadores) só abre depois da conversa dos entregadores, no Modo História; antes dela, nenhum tipo com `retira` vem na agenda */

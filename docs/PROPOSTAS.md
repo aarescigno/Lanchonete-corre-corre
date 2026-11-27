@@ -38,26 +38,6 @@ Achado (27/11): no sofá da Avenida as pernas ficam de fora de propósito desde 
 
 ---
 
-## 27/11 — usuário: a troca de lugar das mesas
-> "aproveita que vai mexer nas cadeiras do salão e adiciona função de swap entre as mesas, quando arrastar uma mesa em direção a outra, essa outra se desloca para caber a nova, se não tiver espaço no salão, a mesa vai para o estoque."
-
-Na conversa: a outra vai para o lugar livre mais perto; sem lugar, para o estoque.
-
-**Destino:** v12.11 (etapa 19a), `docs/spec-v12.11.md`.
-
----
-
----
-
-## 27/11 — usuário: o salão da Avenida não cabe os 24 lugares
-> "o salão na avenida brasil não cabe todas as mesas que ele comporta, nem quando toco no arrumação automática, nem quando tento arrastar. se comporta 24 lugares deve caber 24 lugares"
-
-Achado (27/11): a área das mesas (`area` do ponto, 160–684 × 150–500) só tem 2 fileiras (`salaoAuto`: `nRows` = 2 com `MESA.top`+`MESA.bot` = 112 e `SALAO.gap` = 46). Na Avenida os 24 lugares só cabem com 6 mesas de 4; com qualquer mesa de 2, não. Na área industrial e no Terraço (20), não cabem 10 mesas de 2 nem 1 de 4 com 8 de 2. Aproximar as mesas (gap de 46 até 16) e alargar a área (até 120–724, ou 120–528 na altura) não resolve a Avenida: a 3ª fileira não cabe na altura (precisa de ~448 px; o chão útil, `BOUNDS`, vai de 112 a 528). Na escolha, o usuário quis aumentar a área das mesas (e não baixar o teto nem só avisar).
-
-**Destino:** v12.11 (etapa 19a), `docs/spec-v12.11.md` (aprovada em 27/11): a folga entre as mesas cai de 46 para 30 px e a área cresce para a esquerda (Avenida desde x 40; área industrial e Terraço desde x 150), com 2 fileiras; o estoque do editor vai para uma faixa no alto.
-
----
-
 ## 27/11 — usuário: a Dani perde uma tarefa na chegada à Avenida
 > "ao iniciar a avenida brasil as atividades que a Dani estiver fazendo devem se manter, uma delas se desativou na passagem" (e, na pergunta: "era outra tarefa, ela estava com cafezinho e doce e uma delas estava desmarcada"; a folha estava paga)
 

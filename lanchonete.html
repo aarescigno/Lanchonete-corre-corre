@@ -535,7 +535,7 @@ table.rank tr.me td{background:#fbe7a8}
 
     <div class="ov show" id="ov-menu">
       <div class="panel menu-panel">
-        <span class="vtag" id="vtag" aria-label="Versão 12.10.7">v12.10.7</span>
+        <span class="vtag" id="vtag" aria-label="Versão 12.11">v12.11</span>
         <h1 class="title">Lanchonete <br>Corre-Corre</h1>
         <p class="tag">Ajude a Bia a atender a freguesia da esquina antes que o cafezinho esfrie!</p>
         <div class="lbl" id="menu-dia">História</div>
@@ -837,7 +837,8 @@ table.rank tr.me td{background:#fbe7a8}
       <div class="panel">
         <h2>Versões</h2>
         <ul class="verlist">
-          <li><b>v12.10.7</b><span class="cur">versão atual</span><br>27/11/2026 &mdash; O couvert artístico não mostra mais a porcentagem: só que o efeito fica menor se cobrar.</li>
+          <li><b>v12.11</b><span class="cur">versão atual</span><br>27/11/2026 &mdash; O salão da Avenida (e os outros) comporta todos os lugares, com qualquer mistura de mesas; arrastar uma mesa para cima de outra faz a outra se mexer ou ir para o estoque, que agora é uma faixa no alto do editor.</li>
+          <li><b>v12.10.7</b><br>27/11/2026 &mdash; O couvert artístico não mostra mais a porcentagem: só que o efeito fica menor se cobrar.</li>
           <li><b>v12.10.6</b><br>27/11/2026 &mdash; O cartão da Dani nos doces mostra só as tarefas que dá para escolher.</li>
           <li><b>v12.10.5</b><br>23/11/2026 &mdash; Os relatórios do Teste e dos Desafios ficam guardados no aparelho, e um toque copia todos.</li>
           <li><b>v12.10.4</b><br>23/11/2026 &mdash; O Ranking sai do menu, do fim do dia e da falência (fica só no modo dev).</li>
@@ -1409,18 +1410,18 @@ const PONTOS = [
   // apito: o pico do meio do dia (as primeiras `max` turmas chegam juntas a partir de `quando` do turno, uma a cada `gap` s, avisadas `aviso` s antes);
   // patPressa: a paciência de quem vem sozinho ou em dupla; vip: a chance de VIP; metaF: o fator das metas (v9.6.1: 1,25 → 2,3 e 1,7 → 3,2); expertF (v9.6.1): o da expert, a 3ª estrela (sem ele, o metaF); prateleira: as vagas do balcão de retirada;
   // grupos: o fator dos grupos do dia (os 20 lugares já trazem +60% de movimento; sem ele, nem o bot afiado fechava o dia sem perder ninguém)
-  { id:'industrial', nome:'Lanchonete na área industrial', nivel:2, lugares:20, aluguel:120, mudanca:800, credito:2000, area:{ x0:160, y0:150, x1:684, y1:500 }, espera:5, assento:'pe', bebida:'suco', pratos:5, marmJanela:3, prateleira:4,
+  { id:'industrial', nome:'Lanchonete na área industrial', nivel:2, lugares:20, aluguel:120, mudanca:800, credito:2000, area:{ x0:150, y0:150, x1:684, y1:500 }, espera:5, assento:'pe', bebida:'suco', pratos:5, marmJanela:3, prateleira:4,
     tipos:{ estudante:1, executiva:1, familia:0.5, vovos:0.7, entregador:2, turma:2, motorista:1 }, encomenda:0.6, apito:{ quando:0.45, max:3, gap:[8, 12], aviso:10 }, patPressa:0.85, vip:0.2, metaF:1.3, expertF:1.0, grupos:0.8,   // v12.7: metaF 2,3 → 1,5 e expertF 1,5 → 1,0 (os preços da lanchonete deixaram de ser ×1,5: PF R$ 45 → 34; metas em ~86%)
    
     traz:'a freguesia da fábrica e da estrada', deixa:'as TVs, o assento da espera e a jarra de suco ficam' },
   // v9.1: o 2º ponto novo (cap. 6 e 7). Sem apito, sem encomenda e sem patPressa: a turma, o motorista e a encomenda não vêm. vip: ×2 (restaurante atrai mais VIP)
-  { id:'avenida', nome:'Restaurante na Avenida Brasil', nivel:3, lugares:24, aluguel:400, mudanca:2000, credito:4000, area:{ x0:160, y0:150, x1:684, y1:500 }, espera:6, assento:'pe', bebida:'saborizada', pratos:6, marmJanela:3, prateleira:4,
+  { id:'avenida', nome:'Restaurante na Avenida Brasil', nivel:3, lugares:24, aluguel:400, mudanca:2000, credito:4000, area:{ x0:40, y0:150, x1:684, y1:500 }, espera:6, assento:'pe', bebida:'saborizada', pratos:6, marmJanela:3, prateleira:4,
     tipos:{ estudante:0.5, executiva:2, familia:1.5, vovos:1, entregador:1, negocios:1.5 }, vip:2, metaF:2.5, expertF:3.4, grupos:0.7,   // v12.7: metaF 3,1 → 2,5 (metas em ~90%; o ganho do dia ficou ~6% abaixo)
       // v9.6.4: 3,2 e 3,8 → 3,0 e 3,6 (o VIP mais exigente deixou a Avenida abaixo do alvo)
     traz:'o almoço de negócios e mais VIPs', art:'o', deixa:'os sofás, as águas saborizadas e o couvert ficam' },
   // v10: o último ponto da escada (cap. 8 e 9). 20 lugares, aluguel R$ 1.000, cardápio ×2,5. Sem entregador (semRetirada), sem bebida da espera (bebida:null até a 4a-4) e com o casal;
   // tempos: a refeição completa (bebida, entrada, prato e sobremesa; ver TEMPOS)
-  { id:'terraco', nome:'Terraço Suíça', nivel:4, lugares:20, aluguel:1200, mudanca:5000, credito:8000, area:{ x0:160, y0:150, x1:684, y1:500 }, espera:6, assento:'pe', bebida:'coquetel', pratos:6, marmJanela:2, prateleira:0,
+  { id:'terraco', nome:'Terraço Suíça', nivel:4, lugares:20, aluguel:1200, mudanca:5000, credito:8000, area:{ x0:150, y0:150, x1:684, y1:500 }, espera:6, assento:'pe', bebida:'coquetel', pratos:6, marmJanela:2, prateleira:0,
     tipos:{ executiva:0.5, familia:1, vovos:1, negocios:1.5, casal:2 }, vip:2.5, metaF:18, expertF:13.5, grupos:0.5, tempos:true, semRetirada:true, exigente:true,   // v12.7 (medido em 19/11, 40 rodadas, equipe toda com o bot afiado): metaF 8 → 18 e expertF 6 → 13,5 (os pratos de R$ 72 a 108 dobraram o ganho do dia: R$ 3.370 → ~R$ 6.100; metas em ~93% e 3★ em ~80%, como a noite da estrela pede);   // v10.4 (medido em 11/11, 80 rodadas, equipe toda com JOCA=4 CONFEITARIA=1): cardápio 2,4 → 1,3 (o ganho sobre a Avenida era de R$ 2.800 por dia e foi a ~R$ 850), metaF 9 → 12 e expertF 6 → 8,5 (metas em ~90% e 3★ em ~60%);   // v10 (medido em 10/11, equipe toda com o bot afiado): grupos 0,45 → 0,50 (mesas vazias em 33% do turno), metaF 4 → 9 e expertF 5 → 6 (91% das metas e 3★ em 61%), aluguel 1.000 → 1.200 e cardápio 2,5 → 2,4 (o ganho sobre a Avenida de R$ 918 caiu para ~R$ 700)
    
     traz:'a refeição completa e a freguesia mais fina', art:'o' }
@@ -1431,9 +1432,10 @@ function pontoOf(id){ return PONTOS.find(p => p.id === id) || PONTOS[0]; }
    de lugares do ponto e arrumadas no editor da lojinha. Cada mesa fica a pelo
    menos `gap` px das outras e com caminho da Bia até ela; ao arrastar, encaixa
    numa grade de `grid` px. Os números seguem a ordem no salão (de cima para
-   baixo, da esquerda para a direita)
+   baixo, da esquerda para a direita). v12.11: a folga caiu de 46 para 30 e a área da Avenida ganhou o lado esquerdo (até o teto
+   de lugares, qualquer mistura de mesas cabe na arrumação automática e no arrasto)
    ============================================================ */
-const SALAO = { gap:46, grid:10, kit:[2,2,2,4], mesa2:150, mesa4:250, virar:100, venda:0.5,
+const SALAO = { gap:30, grid:10, kit:[2,2,2,4], mesa2:150, mesa4:250, virar:100, venda:0.5,
   v6:{ chairs:16, chairPrice:60, tablePrice:300 } };   // v6: o salão da v6 à v7.3, para a devolução
 const MESA = { top:50, bot:62 };                     // a mesa ocupa do centro 50 px para cima (cadeiras de trás) e 62 para baixo
 function mesaPreco(seats){ return seats === 4 ? SALAO.mesa4 : SALAO.mesa2; }
@@ -1538,6 +1540,33 @@ function salaoPerto(mesas, i, ponto){
     }
   }
   return null;
+}
+/* v12.11: a mesa `m` (a do salão de índice `i`, ou uma do estoque, com i = -1) solta em (x, y): as mesas que ficam no caminho
+   saem e voltam uma a uma, na ordem do salão, no lugar livre mais perto de onde estavam (salaoPerto), sem empurrar nenhuma
+   outra; a que não acha lugar vai para o estoque (sem a marca da Cami). Devolve { mesas, est, movidas, ids } (o salão novo; as
+   mesas que vão para o estoque; quantas se deslocaram no salão; os índices, em `mesas`, de todas as que saíram do lugar) ou { why } */
+function salaoTroca(mesas, i, m, x, y, ponto){
+  const base = mesas.filter((_, k) => k !== i), solta = Object.assign({}, m, { x, y }), G = SALAO.gap;
+  const fora = mesaProblema([solta], 0, ponto);
+  if (fora) return { why:fora };
+  const b = mesaBox(x, y, m.seats), ids = [];
+  const noCaminho = base.filter(o => { const q = mesaBox(o.x, o.y, o.seats); return b.x0 < q.x1 + G && q.x0 < b.x1 + G && b.y0 < q.y1 + G && q.y0 < b.y1 + G; });
+  if (!noCaminho.length){
+    const l = base.concat([solta]), why = salaoProblema(l, ponto);
+    return why ? { why } : { mesas:l, est:[], movidas:0, ids };
+  }
+  noCaminho.forEach(o => ids.push(mesas.indexOf(o)));
+  const resto = base.filter(o => noCaminho.indexOf(o) < 0), ordem = salaoOrdena(noCaminho);
+  let l = resto.concat([solta]), est = [], movidas = 0, why = salaoProblema(l, ponto);
+  if (why) return { why };   // a mesa solta sozinha já tapa o caminho da Bia ou passa do teto
+  ordem.forEach(o => {
+    const t = l.concat([o]), r = salaoPerto(t, t.length - 1, ponto);
+    if (r){ l = r; movidas++; } else est.push(o);
+  });
+  if (salaoProblema(l, ponto)){   // o arranjo final ainda tem problema: todas as deslocadas vão para o estoque
+    l = resto.concat([solta]); est = ordem; movidas = 0;
+  }
+  return { mesas:l, est:est.map(o => Object.assign({ seats:o.seats, c:o.c }, o.t ? { t:1 } : {})), movidas, ids };
 }
 /* cor da cadeira de uma mesa nova: a menos usada no salão */
 function salaoCor(mesas){
@@ -2947,7 +2976,7 @@ const HIST_NOMES = { bia:'Bia', tonhao:'Tonhão', dani:'Dani', joca:'Joca', cami
 const ATU_TXT = { procurando:'Procurando versão nova...', nova:'Tem versão nova: {v}! Seu jogo salvo continua.', igual:'Você já está na versão mais nova ({v}).', erro:'Sem internet agora. Tente de novo mais tarde.', atualizando:'Atualizando...' };
 function atuEstado(remota, atual){ if (typeof remota !== 'string' || !remota.trim()) return 'erro'; return remota.trim() === atual ? 'igual' : 'nova'; }
 const CAIXA_MAX = 14;                                 // livro-caixa (v7.2): quantos dias da carreira ficam guardados
-const VERSAO = 'v12.10.7';                                   // vai no resumo do Caixa
+const VERSAO = 'v12.11';                                     // vai no resumo do Caixa
 const DIVULGA_DIA = 4;                                // antes disso, o movimento é o da inauguração (sem custo); v9.0.2: dia 4, e o padrão é o boca a boca
 function divulgaAberta(n, sv){ return devLivre() || n >= DIVULGA_DIA && !(sv && sv.convDiv === 'pend'); }   // no modo dev, desde o dia 1; v9.0.3: no Modo História, só depois da conversa
 /* v9.6.4: a Efood (os entregadores) só abre depois da conversa dos entregadores, no Modo História; antes dela, nenhum tipo com `retira` vem na agenda */
@@ -7188,7 +7217,7 @@ class Game {
   buyMesa(seats){
     if (!this.cartaoAberto('salao')) return false;
     const p = this.ponto, mesas = this.save.salao.mesas, price = mesaPreco(seats);
-    if (this.lugaresTot + seats > p.lugares) return this.salaoNao('A garagem tem lugar para ' + p.lugares + ' pessoas, no máximo.');
+    if (this.lugaresTot + seats > p.lugares) return this.salaoNao('O salão tem lugar para ' + p.lugares + ' pessoas, no máximo.');
     if (this.save.bank < price) return this.salaoNao('Falta dinheiro.');
     const m = { x:0, y:0, seats, c:salaoCor(mesas.concat(this.estoque)), sel:1 }, vaga = salaoVaga(mesas, seats, p);
     const l = vaga ? mesas.concat([Object.assign(m, vaga)]) : salaoAuto(mesas.concat([m]), p);
@@ -7232,15 +7261,19 @@ class Game {
     const l = lista.slice(); l[i] = Object.assign({}, m, { c, sel:1 });
     return est ? this.salaoSet(mesas, true, l) : this.salaoSet(l, true);
   }
-  /* editor: a mesa i vai para (x, y), se o lugar vale */
+  /* editor: a mesa i vai para (x, y), se o lugar vale. v12.11: as mesas no caminho se deslocam (ou vão para o estoque, se não há lugar), ver salaoTroca */
   moverMesa(i, x, y){
     const mesas = this.save.salao.mesas, m = mesas[i];
     if (!m) return false;
-    const l = mesas.slice(); l[i] = Object.assign({}, m, { x, y });
-    const why = salaoProblema(l, this.ponto);
-    if (why) return this.salaoNao(why);
-    if (x === m.x && y === m.y) return true;
-    return this.salaoSet(l, true);
+    if (x === m.x && y === m.y) return !salaoProblema(mesas, this.ponto) || this.salaoNao(salaoProblema(mesas, this.ponto));
+    const r = salaoTroca(mesas, i, m, x, y, this.ponto);
+    if (r.why) return this.salaoNao(r.why);
+    return this.salaoTrocou(this.salaoSet(r.mesas, true, r.est.length ? this.estoque.concat(r.est) : null), r.est.length);
+  }
+  /* depois da troca: a mensagem só quando alguma mesa foi para o estoque (o salaoSaved a zera) */
+  salaoTrocou(ok, n){
+    if (ok && n) this.salaoMsg = 'Sem lugar no salão: ' + (n === 1 ? '1 mesa foi' : n + ' mesas foram') + ' para o estoque.';
+    return ok;
   }
   /* editor (v8.3.5): a mesa i do salão vai para o estoque (o salão fica com pelo menos 1) */
   guardarMesa(i){
@@ -7254,9 +7287,9 @@ class Game {
     const p = this.ponto, mesas = this.save.salao.mesas, m = this.estoque[k];
     if (!m) return false;
     if (x == null){ const v = salaoVaga(mesas, m.seats, p); if (!v) return this.salaoNao('Não há lugar livre no salão: abra espaço ou guarde outra mesa.'); x = v.x; y = v.y; }
-    const l = mesas.concat([Object.assign({ x, y, seats:m.seats, c:m.c, sel:1 }, m.t ? { t:1 } : {})]), why = salaoProblema(l, p);
-    if (why) return this.salaoNao(why);
-    return this.salaoSet(l, true, this.estoque.filter(e => e !== m));
+    const r = salaoTroca(mesas, -1, Object.assign({ seats:m.seats, c:m.c, sel:1 }, m.t ? { t:1 } : {}), x, y, p);
+    if (r.why) return this.salaoNao(r.why);
+    return this.salaoTrocou(this.salaoSet(r.mesas, true, this.estoque.filter(e => e !== m).concat(r.est)), r.est.length);
   }
   /* decoração (v8.6.5): enfeite novo (fica à mostra), à vontade */
   buyDecor(id){
@@ -17490,9 +17523,9 @@ function buildMusica(grid){
 }
 /* aba Salão (v7.4): o editor (o salão desenhado em escala, sem clientes) e a loja de móveis ao lado.
    Arrastar a mesa muda o lugar dela (encaixe na grade); tocar nela abre a cor das cadeiras, "virar mesa de 4" e "vender".
-   v8.3.5: o estoque, à esquerda do salão, guarda mesas (pequenas, em 2 colunas) para rearrumar com folga */
+   v8.3.5: o estoque guarda mesas (pequenas) para rearrumar com folga; v12.11: é uma faixa no alto do editor, por cima da parede do fundo (o lado esquerdo do salão da Avenida é salão), com as mesas em fila */
 const ED = { x:0, y:56, w:800, h:484, k:1.25 };  // pedaço do salão no editor (do pé da parede ao chão, até o balcão) e a resolução do canvas
-const EST = { x0:12, y0:118, x1:182, y1:530, top:30, k:0.55 };   // o estoque no editor (em px do salão) e a escala das mesas nele
+const EST = { x0:8, y0:60, x1:760, y1:146, top:22, k:0.55, kmin:0.4 };   // o estoque no editor (em px do salão; a área do salão começa em y 150) e a escala das mesas nele (cai até kmin se a fila não couber; top: o rótulo)
 let edDrag = null;
 function edPt(cv, e){
   const r = cv.getBoundingClientRect(), w = r.width || ED.w, h = r.height || ED.h;
@@ -17504,46 +17537,39 @@ function edPad(cv, e){
   return clamp(14 * ED.w / (cv.getBoundingClientRect().width || ED.w), 8, 32);
 }
 function edRect(m){ const hx = tableHalfW(m); return { x:m.x - hx - 10, y:m.y - 62, w:hx*2 + 20, h:132 }; }
-/* casinhas do estoque: 2 colunas, pelo menos 4 fileiras (as mesas encolhem se houver mais) */
-function estSlots(n){
-  const cols = 2, rows = Math.max(4, Math.ceil(n / cols)), w = (EST.x1 - EST.x0) / cols, h = (EST.y1 - EST.y0 - EST.top) / rows, k = Math.min(EST.k, h / 140), out = [];
-  for (let i = 0; i < n; i++) out.push({ x:EST.x0 + w * (i % cols + 0.5), y:EST.y0 + EST.top + h * (Math.floor(i / cols) + 0.5), w, h, k });
+/* casinhas do estoque: uma fila da esquerda para a direita (est: a lista de mesas, ou só quantas, todas de 2 lugares); a escala é EST.k e cai até caber na largura */
+function estSlots(est){
+  const l = typeof est === 'number' ? Array(est).fill({ seats:2 }) : est, wi = l.map(m => 2 * tableHalfW(m) + 16), tot = wi.reduce((a, b) => a + b, 0);
+  const k = l.length ? clamp((EST.x1 - EST.x0 - 16) / tot, EST.kmin, EST.k) : EST.k, h = EST.y1 - EST.y0 - EST.top, out = [];
+  let x = EST.x0 + 8;
+  l.forEach((m, i) => { const w = wi[i] * k; out.push({ x:x + w / 2, y:EST.y0 + EST.top + h / 2 - k * (6 - 4 * k), w, h, k }); x += w; });
   return out;
 }
 const naEst = p => p.x >= EST.x0 && p.x <= EST.x1 && p.y >= EST.y0 && p.y <= EST.y1;
 /* a mesa sob o toque: { est, i } (est: do estoque) ou null */
 function edHit(p, pad){
-  const sl = estSlots(game.estoque.length);
+  const sl = estSlots(game.estoque);
   for (let k = 0; k < sl.length; k++){ const q = sl[k]; if (rectDist(p.x, p.y, { x:q.x - q.w/2, y:q.y - q.h/2, w:q.w, h:q.h }) <= Math.min(pad, 4)) return { est:true, i:k }; }
   let best = -1, bd = Infinity;
   game.save.salao.mesas.forEach((m, i) => { const d = rectDist(p.x, p.y, edRect(m)); if (d <= pad && d < bd){ bd = d; best = i; } });
   return best < 0 ? null : { est:false, i:best };
 }
-/* mesas do salão como ficariam com a mesa arrastada solta onde está (no estoque, ela sai do salão) */
-function edMesas(){
-  const d = edDrag, l = game.save.salao.mesas.slice();
-  if (!d || !d.moved) return l;
-  if (d.est) return d.inEst ? l : l.concat([{ x:d.x, y:d.y, seats:game.estoque[d.i].seats, c:game.estoque[d.i].c, t:game.estoque[d.i].t }]);
-  if (d.inEst){ l.splice(d.i, 1); return l; }
-  l[d.i] = Object.assign({}, l[d.i], { x:d.x, y:d.y });
-  return l;
-}
-/* contorno da mesa escolhida (amarelo), arrastada (verde) ou num lugar que não vale (vermelho) */
-function edMarca(c, r, drag, bad){
-  c.save(); c.strokeStyle = bad ? PAL.perigo : (drag ? PAL.ok : PAL.mostarda); c.lineWidth = 5; c.setLineDash(drag ? [10,6] : []);
+/* contorno da mesa escolhida (amarelo), arrastada (verde), num lugar que não vale (vermelho) ou que vai se mover para dar lugar à arrastada (amarelo tracejado, v12.11) */
+function edMarca(c, r, drag, bad, vai){
+  c.save(); c.strokeStyle = bad ? PAL.perigo : (drag ? PAL.ok : PAL.mostarda); c.lineWidth = 5; c.setLineDash(drag || vai ? [10,6] : []);
   rr(c,r.x,r.y,r.w,r.h,14); c.stroke();
   if (bad){ c.fillStyle = 'rgba(194,54,43,.25)'; c.fill(); }
   c.restore();
 }
 function drawEstoque(c){
-  const d = edDrag && edDrag.moved ? edDrag : null, est = game.estoque, sl = estSlots(est.length), alvo = d && d.inEst && !d.est;
+  const d = edDrag && edDrag.moved ? edDrag : null, est = game.estoque, sl = estSlots(est), alvo = d && d.inEst && !d.est;
   c.save();
   rr(c,EST.x0,EST.y0,EST.x1-EST.x0,EST.y1-EST.y0,12); c.fillStyle = alvo ? (d.ok ? 'rgba(62,155,90,.3)' : 'rgba(194,54,43,.25)') : 'rgba(255,253,245,.7)'; c.fill();
   c.setLineDash([8,6]); c.strokeStyle = alvo ? (d.ok ? PAL.ok : PAL.perigo) : 'rgba(34,32,28,.45)'; c.lineWidth = alvo ? 4 : 2; c.stroke();
   c.restore();
-  txt(c,'ESTOQUE',(EST.x0+EST.x1)/2,EST.y0+17,17,PAL.tinta,'center',FD);
+  txt(c,'ESTOQUE',EST.x0+12,EST.y0+16,15,PAL.tinta,'left',FD);
   if (!est.length){
-    ['Arraste uma', 'mesa para cá', 'e abra espaço', 'no salão.', '', 'Aqui ela não', 'abre no dia.'].forEach((t, k) => txt(c,t,(EST.x0+EST.x1)/2,EST.y0+92+k*24,15,'rgba(34,32,28,.6)','center',FB));
+    txt(c,'Arraste uma mesa para cá: aqui ela não abre no dia.',(EST.x0+EST.x1)/2,EST.y0+EST.top+30,16,'rgba(34,32,28,.6)','center',FB);
     return;
   }
   est.forEach((m, i) => {
@@ -17553,7 +17579,7 @@ function drawEstoque(c){
     c.save(); c.translate(q.x, q.y); c.scale(q.k, q.k); c.translate(-q.x, -q.y);
     drawTable(c, game, t, 0, true);
     c.restore();
-    if (i === game.estoqueSel) edMarca(c, { x:q.x - q.w/2 + 3, y:q.y - q.h/2 + 3, w:q.w - 6, h:q.h - 6 }, false, false);
+    if (i === game.estoqueSel) edMarca(c, { x:q.x - q.w/2 + 1, y:q.y - q.h/2 + 1, w:q.w - 2, h:q.h - 2 }, false, false);
   });
 }
 function drawEditor(cv){
@@ -17580,6 +17606,7 @@ function drawEditor(cv){
     drawTable(c, game, t, 0, true);
     edMarca(c, edRect({ x:d.x, y:d.y, seats:m.seats }), true, !d.ok);
   }
+  if (d && d.troca) d.troca.ids.forEach(k => { const q = game.save.salao.mesas[k]; if (q){ const r = edRect(q); edMarca(c, { x:r.x - 7, y:r.y - 7, w:r.w + 14, h:r.h + 14 }, false, false, true); } });   // v12.11: as que vão se mover (ou para o estoque): contorno tracejado, um pouco maior (a arrastada cobre a mesa)
 }
 /* botão do editor: o motivo da recusa (salaoMsg) aparece logo abaixo */
 function edBtn(text, cls, enabled, fn, cost){
@@ -17591,8 +17618,12 @@ function edBtn(text, cls, enabled, fn, cost){
 /* vale soltar a mesa arrastada onde está? (d.why: o motivo, se não) */
 function edValida(d){
   const mesas = game.save.salao.mesas;
+  d.troca = null;
   if (d.inEst) d.why = d.est || mesas.length > 1 ? '' : 'O salão precisa de pelo menos 1 mesa.';
-  else d.why = salaoProblema(edMesas(), game.ponto);
+  else {   // v12.11: solta sobre outra mesa, a outra se desloca (ou vai para o estoque): vale se a troca dá certo
+    const r = salaoTroca(mesas, d.est ? -1 : d.i, d.est ? game.estoque[d.i] : mesas[d.i], d.x, d.y, game.ponto);
+    d.why = r.why || ''; if (!r.why) d.troca = r;
+  }
   d.ok = !d.why;
 }
 function edEvents(cv){
@@ -17649,7 +17680,7 @@ function buildSalao(grid){
   const sel = game.salaoSel, ks = game.estoqueSel;
   const ed = el('div', 'ed'), box = el('div', 'ed-cv'), cv = el('canvas');
   cv.width = Math.round(ED.w * ED.k); cv.height = Math.round(ED.h * ED.k);
-  cv.setAttribute('aria-label', 'Salão: arraste as mesas para mudar de lugar ou para o estoque, à esquerda, e toque numa mesa para ver as opções');
+  cv.setAttribute('aria-label', 'Salão: arraste as mesas para mudar de lugar ou para o estoque, no alto, e toque numa mesa para ver as opções');
   box.appendChild(cv); edEvents(cv);
   // mesa escolhida: cor das cadeiras, guardar no estoque, virar mesa de 4 e vender (balãozinho em cima do salão)
   const m = mesas[sel], me = est[ks];
@@ -17669,12 +17700,12 @@ function buildSalao(grid){
       pop.appendChild(edBtn('Guardar no estoque', 'btn alt', mesas.length > 1, () => game.guardarMesa(sel)));
       pop.appendChild(edBtn('Vender por ' + fmt(mesaPreco(m.seats) * SALAO.venda), 'btn alt', mesas.length > 1, () => game.venderMesa(sel)));
     } else {
-      // v8.3.5: mesa do estoque; o balãozinho sai ao lado do estoque, por cima do salão
-      const q = estSlots(est.length)[ks], up = q.y + 230 > ED.y + ED.h;
-      pop = el('div', 'ed-pop est' + (up ? ' up' : ''));
-      pop.style.left = (EST.x1 + 6 - ED.x) / ED.w * 100 + '%';
-      tops = [q.y - q.h / 2, q.y + q.h / 2].map(y => (y - ED.y) / ED.h * 100);
-      pop.style.top = tops[up ? 1 : 0] + '%';
+      // v8.3.5: mesa do estoque; o balãozinho abre logo abaixo da faixa, por cima do salão
+      const q = estSlots(est)[ks];
+      pop = el('div', 'ed-pop est');
+      pop.style.left = (q.x - ED.x) / ED.w * 100 + '%';
+      tops = [EST.y1 + 4, EST.y1 + 4].map(y => (y - ED.y) / ED.h * 100);   // v12.11: logo abaixo da faixa, sob a mesa escolhida
+      pop.style.top = tops[0] + '%';
       pop.appendChild(el('b', null, 'Mesa no estoque · ' + me.seats + ' lugares'));
       pop.appendChild(edCores(me, k => game.pintarMesa(ks, k, true)));
       if (!me.t && !game.linho) pop.appendChild(edBtn(enfeiteMesa(game).nome + ': ' + fmt(TOALHA.cost), 'btn', bank >= TOALHA.cost, () => game.buyToalha(ks, true), TOALHA.cost));
@@ -17717,9 +17748,9 @@ function buildSalao(grid){
     let f = fora();
     if (f[0] && f[1]){ pop.classList.add('largo'); f = fora(); }
     const up = pop.classList.contains('up') ? 1 : 0;
-    if (f[up] > f[1 - up]){ pop.classList.toggle('up'); pop.style.top = tops[1 - up] + '%'; }
-    const W = box.clientWidth, w = pop.offsetWidth;   // e não passa das bordas (o da mesa do salão fica centrado na mesa)
-    if (!me && w < W) pop.style.left = clamp(parseFloat(pop.style.left) / 100 * W, w / 2 + 4, W - w / 2 - 4) / W * 100 + '%';
+    if (!me && f[up] > f[1 - up]){ pop.classList.toggle('up'); pop.style.top = tops[1 - up] + '%'; }
+    const W = box.clientWidth, w = pop.offsetWidth;   // e não passa das bordas (o da mesa do salão fica centrado na mesa; o do estoque, que começa na esquerda, também sob a mesa)
+    if (w < W) pop.style.left = me ? clamp(parseFloat(pop.style.left) / 100 * W - w / 2, 4, W - w - 4) / W * 100 + '%' : clamp(parseFloat(pop.style.left) / 100 * W, w / 2 + 4, W - w / 2 - 4) / W * 100 + '%';
   }
 }
 /* aba Decoração (v8.6.5): os enfeites da Garagem (DECOR), comprados à vontade; comprado, guarda e põe de volta de
@@ -19059,7 +19090,7 @@ try { Rank.init(); } catch(e) {}
 game.setState('menu');
 if (!aberturaVista() && !DEV.on) abrirAbertura('auto');   // v8.5: a abertura toca sozinha uma vez
 window.__game = game;
-window.__lcc = { RELS_LS, RELS_MAX, relsLe, relsGuarda, relsApaga, relsTexto, relsCaixa, CADERNO, cadernoPaginas, cadernoTexto, upgradeIcon, DESENHO_BASE, tipoAparelho, TESTES, TESTE_LS, TESTE_EQ_PADRAO, TESTE_PESSOAS, testeEqNorm, testeEqPadrao, testeTarefas, testeVagas, testeNivelMax, testeNivel, testeDono, testeEfetivas, testeEqLe, testeEqGrava, buildTesteFase, testeRelatorio, buildTesteFim, DESAFIOS, MEDALHAS, normDesafios, MANUAL_ABAS, buildDesafios, DESAFIO_EST, ATU_TXT, atuEstado, atuVerifica, atuAplica, ENFEITE_MESA, enfeiteMesa, enfeiteDe, ENTREGA_CHEGA, drawEfoodFlash, drawMesinha, drawKitchen, TE_OURO, MARMJ_SLOTS, efoodFlashA, ab2Cam, ab2Cabe, ab2Tela, ab2Notas, AB_FX, AB2, AB2_CENAS, AB2_TE, ab2Terraco, ab2RuaAurora, ab2CozinhaAurora, ab2Gala, ab2Quarto, ab2Cozinha, ab2Banco, ab2RuaCasa, TRIO, drawTrio, rankAuto, rankNome, RANK_VOCE, drawBia, roupaBia, BIA_REACAO, BIA_ROUPA_COR, abBia, BRAULIO_LOOK, convCabeca, drawRetrato, drawRetratosTela, RETRATO, RETRATO_QUEM, RETRATO_POSE, EXPRESSOES, exprDe, exprAtual: () => EXPR, devRetratos, CONV_UI, socorroFalas, NOITE, HIST_RECOMENDA, HIST_NOTA, guiaPontos, guiaEstrelas, abreBoletim, drawVela, drawFala, CRITICO, HIST_CRITICO, normGuia, plantaBoato, drawCaderno, drawGarfo, ROSA, GERENTE, drawPetala, musicaPay, musicaDe, musicaOk, camiModoTudo, CAMI_TUDO, cafesLista, cafeIdx, cafeIngred, ANSELMO_CURSOS, LIA_CURSOS, liaCfg, normLiaCursos, normAnselmoCursos, drinksLista, drinksTodos, drinkPreco, drinkIngred, drinkVagas, drinkPrep, MAQUINA_LUGAR, drawCafesEsp, drawCarrinhoBoasVindas, espressoTrabalho, bebExtra, devCenas, devAssistir, devFinal, tocaFinal, drawPlacaGuia, FINAL, finalCenas, histLiga, DEV_CAPS, drawIcon, liaOn, drawLia, LIA_HOME, LIA_LOOK, doceIcone, drawFino, TEMPOS, tempoMarcas, pedePrincipal, drawTempoTrilha, HIST_SOCORRO, HIST_EXIGENTE, EXIGENTE, LOUCA, vipDish, vipCook, casaBoa, exigRep, HIST_PLANTA, HIST_QUITOU, HIST_TETO, VONTADE, vontadeChance, vontadeDia, vontadeFalas, HIST_VONTADE_DOCE, HIST_VONTADE_CAFE, filaPos, queueRect, STATIONS, MANUAL, manualTracos, manualAberta, abrirManual, buildManual, fecharManual, semente, manualSemente, FECHA, efoodAberto, drawTable, camiMesasN, camiModoMesas, CAMI_MESAS_MAX, drawAventalCami, FISCAL, Fiscal, FISCAL_PONTOS, abrirDev, fecharDev, buildDev, passoJogo, devLivre, diaNoPonto, manutEmerg, manutFator, daniTaskDe, plateSlotsFor, queueYsFor, assentoSlow, AVENIDA, SABORES, cursoOk, INDUSTRIAL, PLATE_SLOTS, cozinhaSlots, upgradeDe, DECOR, DECOR_GRUPOS, TOALHA, LUXO, MOVEIS, movelOf, movelNivel, normMoveis, luxoPts, luxoTot, luxoNivel, luxoForca, decorOf, normDecor, decorOn, decorCombina, decorPreco, decorSimplesVenda, DECOR_PRECO, FILA_ACOES, filaMax, MARMITA, RETIRADA, marmitaMao, drawMarmita, prateleiraPos, EFOOD_COR, AVAL_BRAVO, QUEUE, setShopTab: v => shopAbrir(v), setShopGrupo: g => shopGrupoAbrir(g), shopSecoes: () => SHOP_GRUPOS.map(g => shopSecoesVis(g)), TREINO, TREINO_PASSOS, TREINO_COR, Treino, treinoLugar, DICAS, dicaDe, dicaLigada, drawDica, HUD_LUCRO, hudEstrelas, drawHud, daniNaLoja, treinoPrimeiro, playCareer, buildMenu, introBanco, buildFalencia, BANCO, normEmprestimo, parcelaDe, devidoDe, jurosDe, tabelaDe, simulaEmprestimo, SEMANA, semanaOf, diaOf, FILA_JUSTA, PORTA, CHAIRS, PAT, CONTAS, INGRED, CARDAPIO, precoPrato, pratosDoPonto, precoCarta, vendeNoPonto, pratoBase, fritoBase, tecnicaDe, pratosCurso, PRATO_BASE, PRECO_BEB, cafePreco, sucoPreco, sucoIngred, cafePrecoDe, ROTULO_BASE, CURSOS, CURSO_AV, CURSO_DIA, CURSOS_ANTIGOS, degrauDe, degrausDe, tecFeita, tonhaoNivelAlc, tonhaoProgresso, tonhaoDegrausPonto, cursosAte, pontoIdx, daniXp, daniNivelXp, DANI_XP, DANI_CURSOS, CURSOS_SEMFIM, cursoOf, cursoNivel, normCursos, pratoAv, CARNES, drawDish, pratoSabido, pratoEstranho, ESTRANHO, EMPRATA, pratosSabidos, GOSTOS, GOSTOS_CAT, pedePrato, VEG, vegMov, drawDish, MAIS, PONTOS_ACAO, GORJETA, DRINK_PRICE, MOVIMENTO, movimentoSalao, DIVULGA, DIVULGA_DIA, divulgaOf, contasDia, bomGoal, SALAO, PONTOS, pontoOf, MESA, mesaBox, mesaPreco, salaoLugares, mesaProblema, salaoCaminho, salaoProblema, salaoOrdena, salaoAuto, salaoVaga, salaoPerto, salaoKit, salaoDevolucao, SALAO_SEMFIM, normSalao, setObst, OBST, pathOk, MAQUINA, BEBIDA_ESPERA, bebidaOf, MANUT, manutOf, manutChance, manutPreco, normManut, CLIMA, CLIMA_DIA, EVENTOS, eventoSemana, introManut, normPend, CALCADA, TW, HUDX, esperaAp, tableApproach, CRIT, STAFF, diariaDani, diariaJoca, cursosPay, DANI_TASKS, DANI_HANDS, daniTaskOk, TRASH, WASH, payroll, FOLHA_CORTE, folhaCorta, folhaCortes, folhaItens, listaE, pratosDe, couvertEffect, couvertOk, ambienteEffect, dishStock, normSave, Helper, JUICE, KITCHEN_SLOTS, handLayout, trayOk, Game, Group, Table, Kitchen, Waitress, BIA_SPEED, DAYS, UPGRADES, CUSTOMER_TYPES, LAYOUT, PAL, Sfx, findPath, render, Rank, sortRows, cleanName, normName, CMD, ENDLESS, VIP, MULTA, rk, renderRank, openRank, closeRank, LS, lsGet, lsSet, loadSave, DEV, saveKey, devSync, divulgaAberta, CAIXA_MAX, VERSAO, normCaixa, caixaResumo, caixaTotais, copyText, PRATO, pratoPerde, pratoVapor, AVAL, AVAL_CRIT, AVAL_BRAVO, avalMenu, cursosItem, DOCES, CAFES, cafeDe, DRINKS, drinkDe, drinkIdx, anselmoOn, ANSELMO_HOME, ANSELMO_LOOK, drawAnselmo, docesLista, docePreco, doceIngred, doceIdx, CAMI_CURSOS, CAMI_HOME, CAMI_LOOK, camiNivelCursos, normCamiCursos, drawCami, drawEspresso, JOCA_XP, JOCA_CURSOS, JOCA_HOME, jocaXp, jocaNivelXp, BASICAS, donoBasico, cursoDaniVis, JOCA_LOOK, drawJoca, avalTeto, avalEscala, TERRACO, fixosDe, vipTipos, doorFor, DOOR, terraco, drawPiano, drawPoltrona, drawFoyerTe, drawParedeTe, drawElevadorTe, drawLugarTe, drawPerson, makePeople, drawChair, iconeMudanca, avalFrac, AVAL_SIMPLES, AVAL_DECOR, normAval, avalNota, avalMedias, avalGeral, avalMovimento, avalMinimo, avalComentario, fmtNota, notaFaixa, gurugolCaixa, AVAL_COM, normAvalCom, buildGurugol, ABERTURA, Abertura, AB_ALT, AB_BASE, abEsc, AB_VIVO, aberturaVista, aberturaSom, drawAbertura, abrirAbertura, HISTORIA, HIST_CARDAPIO, HIST_DIVULGA, HIST_ENTREGA, LIBERA, liberaOf, ARCO, HIST_NOMES, normEquipe, upgradeCartao, cursoFeito, AVAL_POUCO, REFORMA, HIST, carencia, Conversa, drawConversa, falar, fluxoHistoria, falar, aberturaAtual: () => abertura };
+window.__lcc = { RELS_LS, RELS_MAX, relsLe, relsGuarda, relsApaga, relsTexto, relsCaixa, CADERNO, cadernoPaginas, cadernoTexto, upgradeIcon, DESENHO_BASE, tipoAparelho, TESTES, TESTE_LS, TESTE_EQ_PADRAO, TESTE_PESSOAS, testeEqNorm, testeEqPadrao, testeTarefas, testeVagas, testeNivelMax, testeNivel, testeDono, testeEfetivas, testeEqLe, testeEqGrava, buildTesteFase, testeRelatorio, buildTesteFim, DESAFIOS, MEDALHAS, normDesafios, MANUAL_ABAS, buildDesafios, DESAFIO_EST, ATU_TXT, atuEstado, atuVerifica, atuAplica, ENFEITE_MESA, enfeiteMesa, enfeiteDe, ENTREGA_CHEGA, drawEfoodFlash, drawMesinha, drawKitchen, TE_OURO, MARMJ_SLOTS, efoodFlashA, ab2Cam, ab2Cabe, ab2Tela, ab2Notas, AB_FX, AB2, AB2_CENAS, AB2_TE, ab2Terraco, ab2RuaAurora, ab2CozinhaAurora, ab2Gala, ab2Quarto, ab2Cozinha, ab2Banco, ab2RuaCasa, TRIO, drawTrio, rankAuto, rankNome, RANK_VOCE, drawBia, roupaBia, BIA_REACAO, BIA_ROUPA_COR, abBia, BRAULIO_LOOK, convCabeca, drawRetrato, drawRetratosTela, RETRATO, RETRATO_QUEM, RETRATO_POSE, EXPRESSOES, exprDe, exprAtual: () => EXPR, devRetratos, CONV_UI, socorroFalas, NOITE, HIST_RECOMENDA, HIST_NOTA, guiaPontos, guiaEstrelas, abreBoletim, drawVela, drawFala, CRITICO, HIST_CRITICO, normGuia, plantaBoato, drawCaderno, drawGarfo, ROSA, GERENTE, drawPetala, musicaPay, musicaDe, musicaOk, camiModoTudo, CAMI_TUDO, cafesLista, cafeIdx, cafeIngred, ANSELMO_CURSOS, LIA_CURSOS, liaCfg, normLiaCursos, normAnselmoCursos, drinksLista, drinksTodos, drinkPreco, drinkIngred, drinkVagas, drinkPrep, MAQUINA_LUGAR, drawCafesEsp, drawCarrinhoBoasVindas, espressoTrabalho, bebExtra, devCenas, devAssistir, devFinal, tocaFinal, drawPlacaGuia, FINAL, finalCenas, histLiga, DEV_CAPS, drawIcon, liaOn, drawLia, LIA_HOME, LIA_LOOK, doceIcone, drawFino, TEMPOS, tempoMarcas, pedePrincipal, drawTempoTrilha, HIST_SOCORRO, HIST_EXIGENTE, EXIGENTE, LOUCA, vipDish, vipCook, casaBoa, exigRep, HIST_PLANTA, HIST_QUITOU, HIST_TETO, VONTADE, vontadeChance, vontadeDia, vontadeFalas, HIST_VONTADE_DOCE, HIST_VONTADE_CAFE, filaPos, queueRect, STATIONS, MANUAL, manualTracos, manualAberta, abrirManual, buildManual, fecharManual, semente, manualSemente, FECHA, efoodAberto, drawTable, camiMesasN, camiModoMesas, CAMI_MESAS_MAX, drawAventalCami, FISCAL, Fiscal, FISCAL_PONTOS, abrirDev, fecharDev, buildDev, passoJogo, devLivre, diaNoPonto, manutEmerg, manutFator, daniTaskDe, plateSlotsFor, queueYsFor, assentoSlow, AVENIDA, SABORES, cursoOk, INDUSTRIAL, PLATE_SLOTS, cozinhaSlots, upgradeDe, DECOR, DECOR_GRUPOS, TOALHA, LUXO, MOVEIS, movelOf, movelNivel, normMoveis, luxoPts, luxoTot, luxoNivel, luxoForca, decorOf, normDecor, decorOn, decorCombina, decorPreco, decorSimplesVenda, DECOR_PRECO, FILA_ACOES, filaMax, MARMITA, RETIRADA, marmitaMao, drawMarmita, prateleiraPos, EFOOD_COR, AVAL_BRAVO, QUEUE, setShopTab: v => shopAbrir(v), setShopGrupo: g => shopGrupoAbrir(g), shopSecoes: () => SHOP_GRUPOS.map(g => shopSecoesVis(g)), TREINO, TREINO_PASSOS, TREINO_COR, Treino, treinoLugar, DICAS, dicaDe, dicaLigada, drawDica, HUD_LUCRO, hudEstrelas, drawHud, daniNaLoja, treinoPrimeiro, playCareer, buildMenu, introBanco, buildFalencia, BANCO, normEmprestimo, parcelaDe, devidoDe, jurosDe, tabelaDe, simulaEmprestimo, SEMANA, semanaOf, diaOf, FILA_JUSTA, PORTA, CHAIRS, PAT, CONTAS, INGRED, CARDAPIO, precoPrato, pratosDoPonto, precoCarta, vendeNoPonto, pratoBase, fritoBase, tecnicaDe, pratosCurso, PRATO_BASE, PRECO_BEB, cafePreco, sucoPreco, sucoIngred, cafePrecoDe, ROTULO_BASE, CURSOS, CURSO_AV, CURSO_DIA, CURSOS_ANTIGOS, degrauDe, degrausDe, tecFeita, tonhaoNivelAlc, tonhaoProgresso, tonhaoDegrausPonto, cursosAte, pontoIdx, daniXp, daniNivelXp, DANI_XP, DANI_CURSOS, CURSOS_SEMFIM, cursoOf, cursoNivel, normCursos, pratoAv, CARNES, drawDish, pratoSabido, pratoEstranho, ESTRANHO, EMPRATA, pratosSabidos, GOSTOS, GOSTOS_CAT, pedePrato, VEG, vegMov, drawDish, MAIS, PONTOS_ACAO, GORJETA, DRINK_PRICE, MOVIMENTO, movimentoSalao, DIVULGA, DIVULGA_DIA, divulgaOf, contasDia, bomGoal, SALAO, PONTOS, pontoOf, MESA, mesaBox, mesaPreco, salaoLugares, mesaProblema, salaoCaminho, salaoProblema, salaoOrdena, salaoAuto, salaoVaga, salaoPerto, salaoTroca, EST, naEst, estSlots, salaoKit, salaoDevolucao, SALAO_SEMFIM, normSalao, setObst, OBST, pathOk, MAQUINA, BEBIDA_ESPERA, bebidaOf, MANUT, manutOf, manutChance, manutPreco, normManut, CLIMA, CLIMA_DIA, EVENTOS, eventoSemana, introManut, normPend, CALCADA, TW, HUDX, esperaAp, tableApproach, CRIT, STAFF, diariaDani, diariaJoca, cursosPay, DANI_TASKS, DANI_HANDS, daniTaskOk, TRASH, WASH, payroll, FOLHA_CORTE, folhaCorta, folhaCortes, folhaItens, listaE, pratosDe, couvertEffect, couvertOk, ambienteEffect, dishStock, normSave, Helper, JUICE, KITCHEN_SLOTS, handLayout, trayOk, Game, Group, Table, Kitchen, Waitress, BIA_SPEED, DAYS, UPGRADES, CUSTOMER_TYPES, LAYOUT, PAL, Sfx, findPath, render, Rank, sortRows, cleanName, normName, CMD, ENDLESS, VIP, MULTA, rk, renderRank, openRank, closeRank, LS, lsGet, lsSet, loadSave, DEV, saveKey, devSync, divulgaAberta, CAIXA_MAX, VERSAO, normCaixa, caixaResumo, caixaTotais, copyText, PRATO, pratoPerde, pratoVapor, AVAL, AVAL_CRIT, AVAL_BRAVO, avalMenu, cursosItem, DOCES, CAFES, cafeDe, DRINKS, drinkDe, drinkIdx, anselmoOn, ANSELMO_HOME, ANSELMO_LOOK, drawAnselmo, docesLista, docePreco, doceIngred, doceIdx, CAMI_CURSOS, CAMI_HOME, CAMI_LOOK, camiNivelCursos, normCamiCursos, drawCami, drawEspresso, JOCA_XP, JOCA_CURSOS, JOCA_HOME, jocaXp, jocaNivelXp, BASICAS, donoBasico, cursoDaniVis, JOCA_LOOK, drawJoca, avalTeto, avalEscala, TERRACO, fixosDe, vipTipos, doorFor, DOOR, terraco, drawPiano, drawPoltrona, drawFoyerTe, drawParedeTe, drawElevadorTe, drawLugarTe, drawPerson, makePeople, drawChair, iconeMudanca, avalFrac, AVAL_SIMPLES, AVAL_DECOR, normAval, avalNota, avalMedias, avalGeral, avalMovimento, avalMinimo, avalComentario, fmtNota, notaFaixa, gurugolCaixa, AVAL_COM, normAvalCom, buildGurugol, ABERTURA, Abertura, AB_ALT, AB_BASE, abEsc, AB_VIVO, aberturaVista, aberturaSom, drawAbertura, abrirAbertura, HISTORIA, HIST_CARDAPIO, HIST_DIVULGA, HIST_ENTREGA, LIBERA, liberaOf, ARCO, HIST_NOMES, normEquipe, upgradeCartao, cursoFeito, AVAL_POUCO, REFORMA, HIST, carencia, Conversa, drawConversa, falar, fluxoHistoria, falar, aberturaAtual: () => abertura };
 window.requestAnimationFrame(frame);
 
 })();

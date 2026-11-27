@@ -49,7 +49,7 @@ novo(1000);
 // posição válida e inválida, desfazer e arrumação automática
 novo(1000);
 { const m0=mesas()[0], m2=mesas()[2];
-  ok(!g.moverMesa(2,m0.x+20,m0.y) && /Perto demais/.test(g.salaoMsg) && mesas()[2].x===m2.x,'em cima de outra mesa: recusa e a mesa volta');
+  ok(g.moverMesa(2,m0.x+20,m0.y) && mesas().some(m=>m.x===m0.x+20&&m.y===m0.y) && !L.salaoProblema(mesas(),P) && g.desfazerSalao() && mesas().some(m=>m.x===m2.x&&m.y===m2.y),'em cima de outra mesa (v12.11): a outra abre espaço (se desloca ou vai para o estoque) e o Desfazer volta');
   ok(!g.moverMesa(2,100,m2.y) && /Fora do salão/.test(g.salaoMsg),'fora da área útil: recusa');
   ok(!g.salaoUndo.length,'nada para desfazer ainda');
   const x=m2.x+50; ok(g.moverMesa(2,x,m2.y) && mesas().some(m=>m.x===x && m.y===m2.y) && g.salaoUndo.length===1,'lugar livre: a mesa muda e dá para desfazer');
@@ -112,7 +112,7 @@ novo(1000); L.setShopTab('salao');
   // arrastar a mesa 3 para um lugar livre (no dedo, com folga) e para cima de outra (volta)
   const cv2=acha(els['shop-grid'],e=>e.tagName==='CANVAS'), a=mesas()[2], b=mesas()[0];
   cv2.fire('pointerdown',ev(tela(a.x,a.y),{pointerType:'touch'})); cv2.fire('pointermove',ev(tela(b.x+10,b.y),{pointerType:'touch'})); cv2.fire('pointerup',ev(tela(b.x+10,b.y)));
-  ok(mesas()[2].x===a.x && mesas()[2].y===a.y && /Aí não dá: perto demais/.test(txt(els['shop-grid'])),'soltar em cima de outra mesa: volta e explica');
+  ok(mesas().some(m=>m.x===b.x+10&&m.y===b.y) && !L.salaoProblema(mesas(),P) && !/Aí não dá/.test(txt(els['shop-grid'])),'soltar em cima de outra mesa (v12.11): a outra abre espaço'); g.desfazerSalao();
   const cv3=acha(els['shop-grid'],e=>e.tagName==='CANVAS'), alvo={x:a.x+60,y:a.y};
   cv3.fire('pointerdown',ev(tela(a.x+20,a.y),{pointerType:'touch'})); cv3.fire('pointermove',ev(tela(alvo.x+20,alvo.y),{pointerType:'touch'})); cv3.fire('pointerup',ev(tela(alvo.x+20,alvo.y)));
   ok(mesas().some(m=>m.x===alvo.x && m.y===alvo.y) && g.salaoUndo.length===1,'arrastar a mesa para um lugar livre (encaixe na grade de '+S.grid+' px)');
