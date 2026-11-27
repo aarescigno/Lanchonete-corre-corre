@@ -1,6 +1,6 @@
 # v12.11.2 — O couvert cinza e a cabecinha nos cursos (etapa 19c)
 
-**Situação:** aprovada (27/11)
+**Situação:** entregue em 27/11
 **Origem:** retornos do usuário de 27/11 no `docs/PROPOSTAS.md`: "o couvert cinza antes de contratar" e "a cabecinha nos cursos do Cardápio". Decisões fechadas com o usuário em 27/11 (Opus); a etapa 19 foi dividida em 3 versões (19a, 19b e 19c), uma por sessão.
 
 ## Objetivo
@@ -34,11 +34,11 @@ O "Cobrar couvert" fica cinza até o couvert ser contratado. Cada curso do Card�
 - `src/43-telas.js`: expor `cursoCabeca` no `window.__lcc`.
 
 ## Tarefas
-- [ ] T1 Smoke novo `smoke127` com os critérios de aceite (falhando) e no `tests/run_all.sh`.
-- [ ] T2 O couvert cinza.
-- [ ] T3 A cabecinha nos cursos do Cardápio, os desenhos dos cursos dos ajudantes e a frase da experiência fora.
-- [ ] T4 `shot_v12_11_2.js` (CA3): conferir em recortes ampliados, ajustar e apagar as capturas; `python3 menu_fit.py` (CA4).
-- [ ] Fechamento: `VERSAO`, `vtag`, `#ov-ver`, `docs/RESUMO.md`, `docs/TESTES.md`, os destinos no `docs/PROPOSTAS.md`, esta spec como entregue, `tests/run_all.sh` verde, PR e merge.
+- [x] T1 Smoke novo `smoke127` com os critérios de aceite (falhando) e no `tests/run_all.sh`.
+- [x] T2 O couvert cinza.
+- [x] T3 A cabecinha nos cursos do Cardápio, os desenhos dos cursos dos ajudantes e a frase da experiência fora.
+- [x] T4 `shot_v12_11_2.js` (CA3): conferir em recortes ampliados, ajustar e apagar as capturas; `python3 menu_fit.py` (CA4).
+- [x] Fechamento: `VERSAO`, `vtag`, `#ov-ver`, `docs/RESUMO.md`, `docs/TESTES.md`, os destinos no `docs/PROPOSTAS.md`, esta spec como entregue, `tests/run_all.sh` verde, PR e merge.
 
 ## Avisos para a execução
 - Os cursos dos ajudantes só aparecem no Cardápio com a pessoa contratada e o cartão aberto (`game.cartaoAberto`, `game.daniChegou`); para a captura, o modo dev (`g.setDev(true)`) mostra todos.
@@ -52,6 +52,15 @@ O "Cobrar couvert" fica cinza até o couvert ser contratado. Cada curso do Card�
 Nenhuma.
 
 ## Desvios
-(No fechamento.)
+- A `cursoCabeca(cv, q)` devolve o canvas e marca `data-cabeca="quem"` nele (é o que o `smoke127` confere, já que a função é interna); o `tipCanvas` deixa o `translate(32,32)` do ícone no contexto, então a cabecinha volta à base 64x64 com `setTransform(2,0,0,2,0,0)` e fica em (49,49), raio 12 px (escala 0,36, fundo branco de raio 40/34 maior que o retrato como borda).
+- Cada ícone dos ajudantes sai de `cursoItemIcon(k, extra)` (nova): `doce` (1, 5, 8), `cafeesp` (0 no Barista, 2 nos Cafés especiais), `drink` (o 1º de `DRINKS.autor`, a Neblina da Serra) e o `drawDish('liaRisoto')` da Lia.
+- O `smoke127` junta o CA1 e o CA2 como previsto; o `smoke86`, o `menu_fit.py` e a lista do `#ov-ver` passaram de 42 para 43 linhas.
+- O smoke72 falhou uma vez numa rodada ("luxo 3 na Avenida: 19,7% exigentes", sorteio) e passou nas três seguintes; o smoke76 falha só neste clone raso (falta o commit da v10.10).
+
+## Regras corrigidas
+Nenhuma.
+
+## Medido (27/11)
+`smoke127` com 12 checagens (CA1 e CA2); `tests/run_all.sh` verde (menos o smoke76, do clone raso) e `menu_fit.py` com 770 conferências, 0 falhas. Capturas (`shot_v12_11_2.js`) conferidas em recortes ampliados e apagadas. Sem mudança no equilíbrio.
 
 **Modelo:** Sonnet, esforço médio (interface com regras dadas; o desenho dos ícones conferido em captura)
