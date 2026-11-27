@@ -17,7 +17,9 @@ Origem: retorno do Renan Martorelli (beta-tester) e conversa com o Arthur (15/10
 |---|---|---|---|
 | 5 | ~~Modo História, parte 1~~: juntou-se à 2f e aos capítulos da 3a, 3b e 4a (28/10) | — | — |
 | 14b | O bot humano, calibrado pelos relatórios | — (testes) | depois dos relatórios dos testers |
-| 19 | O salão que cabe o teto, a troca de mesas e a espera coberta | v12.11 | planejada em 27/11 (`docs/spec-v12.11.md`, aprovada) |
+| 19a | O salão que cabe o teto e a troca de mesas | v12.11 | planejada em 27/11 (`docs/spec-v12.11.md`, aprovada) |
+| 19b | A espera no seco e as pernas no sofá | v12.11.1 | planejada em 27/11 (`docs/spec-v12.11.1.md`, aprovada) |
+| 19c | O couvert cinza e a cabecinha nos cursos | v12.11.2 | planejada em 27/11 (`docs/spec-v12.11.2.md`, aprovada) |
 | 18b | O prato que ele estranha, o suor, os desenhos dos pratos de estrada e o empratamento | v12.10.1 | feita em 22/11 (`docs/spec-v12.10.1.md`; `smoke118`; prato estranho, suor, desenhos de estrada, empratamento) |
 | 18c | A conversa da chegada a cada ponto e o Caderno da Rosa | v12.10.2 | feita em 22/11 (`docs/spec-v12.10.2.md`; `smoke119`; `cozinhaNova2/3/4`, `CADERNO` e a aba do Manual) |
 | 18d | O equilíbrio dos cursos em degraus | v12.10.3 | feita em 22/11 (`docs/spec-v12.10.3.md`; `smoke120`; preços dos cursos, `metaF` da área industrial, `CURSO_DIA` da Avenida, `CURSO_AV.preco` 1,25) |
@@ -83,10 +85,14 @@ Origem: retorno do Renan Martorelli (beta-tester) e conversa com o Arthur (15/10
 > - **Regra da 3f em todas as sessões:** cartão novo da lojinha só com nome, preço e "?"; toda novidade ganha ficha no `MANUAL` (sem números), revelada quando aparece na história.
 > Ordem: 4a-1 (o ponto e a refeição completa, v10) → 4a-2 (o VIP exigente e a reputação, v10.1) → 4a-3 (a cozinha: alta gastronomia, a Lia e a alta confeitaria, v10.2) → 4a-4 (o salão e o bar: Cami, Joca e Anselmo, v10.3) → 4a-5 (música, flores e rebalanceamento, v10.4). Cada uma é uma versão, com PR e merge. As "Checagens de fim de sessão" da etapa 3 valem para todas.
 
-## Etapa 19 — O salão que cabe o teto, a troca de mesas e a espera coberta (v12.11)
-Retornos do usuário de 27/11. Qualquer mistura de mesas até o teto cabe no salão, nos quatro pontos, com 2 fileiras: a folga entre as mesas cai de 46 para 30 px, e a área cresce para a esquerda. O estoque do editor vai para uma faixa no alto. Arrastar uma mesa para cima de outra abre espaço: a outra vai para o lugar livre mais perto ou para o estoque. Na Avenida e no Terraço, a chuva fica só nas janelas do fundo, com relâmpagos. O sofá da Avenida ganha as pernas de quem senta, e o "Cobrar couvert" fica cinza antes da contratação. Os cursos do Cardápio ganham a cabecinha de quem aprende, sem o "+2 de experiência". Detalhes, critérios e tarefas: `docs/spec-v12.11.md`.
-
-**Modelo:** Sonnet, esforço alto (muitas partes ao mesmo tempo e desenho novo conferido em captura)
+## Etapa 19 — O salão, a espera e a lojinha: retornos de 27/11 (19a, v12.11; 19b, v12.11.1; 19c, v12.11.2)
+Planejada em 27/11 (Opus) e dividida em 3 sessões, na ordem:
+- **19a** (`docs/spec-v12.11.md`): qualquer mistura de mesas até o teto cabe nos quatro pontos (folga de 46 para 30 px e a área maior à esquerda), o estoque do editor numa faixa no alto e a troca de lugar ao arrastar (a outra mesa vai para o lugar livre mais perto, ou para o estoque).
+  **Modelo:** Sonnet, esforço alto (a lógica da troca com o caminho da Bia e o editor refeito)
+- **19b** (`docs/spec-v12.11.1.md`): na Avenida e no Terraço, a chuva só nas janelas do fundo, com chuvisco e relâmpagos; as pernas de quem senta no sofá da Avenida.
+  **Modelo:** Sonnet, esforço médio (desenho com regras e coordenadas dadas)
+- **19c** (`docs/spec-v12.11.2.md`): o "Cobrar couvert" cinza antes de contratar; a cabecinha de quem aprende em cada curso do Cardápio, sem o "+2 de experiência".
+  **Modelo:** Sonnet, esforço médio (interface com regras dadas)
 
 ## Etapa 14 — O bot com habilidade de gente (14a, v12.2; 14b, só testes)
 Pedido do usuário em 17/11: o bot joga "bem demais, melhor do que gente". Os alvos do `balance.js` e do `carreira.js` saem de um bot que reage em 0,05 s, vê o salão inteiro e nunca erra o toque. A régua passa a ser o jogo de gente.
