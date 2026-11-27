@@ -439,7 +439,8 @@ function buildDani(grid){
       b.addEventListener('click', () => { Sfx.tap(); game.toggleDaniTask(t.id); buildShop(); });
       tasks.appendChild(b);
     });
-    c.appendChild(el('span', 'full', 'Tarefas (' + Math.min(sel, sp.tasks) + ' de ' + sp.tasks + '):'));
+    const livres = avail.filter(t => BASICAS.indexOf(t.id) < 0 || donoBasico(game) === 'dani').length, vagas = Math.min(sp.tasks, livres);   // v12.10.6: nos doces, conta só as que dá para marcar
+    c.appendChild(el('span', 'full', 'Tarefas (' + Math.min(sel, vagas) + ' de ' + vagas + '):'));
     c.appendChild(tasks);
     if (donoBasico(game) !== 'dani') c.appendChild(el('span', 'cursos-lista', 'As tarefas da casa ficaram com ' + (donoBasico(game) === 'cami' ? 'a Cami' : 'o Joca') + '.'));
     if (game.up.espresso) c.appendChild(el('span', 'cursos-lista', 'O cafezinho agora é do Joca.'));

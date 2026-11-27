@@ -75,6 +75,6 @@ const R=n=>'LCC-TESTE 3 garagem\nJogador: Ana · 23/11/2026 10:'+String(n).padSt
   // CA7
   bloco('CA7',()=>{ const H=load(), {g,L,store}=H; L.relsGuarda(R(1)); g.resetProgress();
     ok(L.relsLe().length===1 && store['lcc-relatorios'],'CA7: "Recomeçar do zero" não apaga os relatórios guardados');
-    ok(L.VERSAO==='v12.10.5','CA7: a VERSAO é v12.10.5 ('+L.VERSAO+')'); });
+    ok(/^v12\.10\.(5|[6-9]|\d\d)$|^v12\.(1[1-9]|[2-9]\d)|^v1[3-9]/.test(L.VERSAO),'CA7: a VERSAO é v12.10.5 ou mais nova ('+L.VERSAO+')'); });
   console.log(fails?'\n'+fails+' FALHA(S) de '+total:'\nTudo ok ('+total+' checagens)'); process.exit(fails?1:0);
 })();
