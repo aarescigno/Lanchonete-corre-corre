@@ -668,9 +668,8 @@ function buildCouvert(grid){
   // Couvert: só do nível 3 do salão em diante
   if (!couvertOk(game.ponto)) return;
   game.manualVer('l-couvert');
-  const ef = Math.round(couvertEffect(Object.assign({}, eq, { taxa:true })) * 100);
   c = staffCard(upgradeIcon('couvert'), 'Couvert artístico'); c.setAttribute('data-ficha', 'l-couvert');
-  const tg = el('button', 'toggle', 'Cobrar couvert: ' + fmt(C.fee) + ' por pessoa (efeito cai para ' + ef + '%)'); tg.type = 'button';
+  const tg = el('button', 'toggle', 'Cobrar couvert: ' + fmt(C.fee) + ' por pessoa (o efeito fica menor)'); tg.type = 'button';
   tg.setAttribute('aria-pressed', eq.taxa ? 'true' : 'false');
   tg.addEventListener('click', () => { Sfx.tap(); eq.taxa = !eq.taxa; writeSave(game.save); buildShop(); });
   c.appendChild(tg);
