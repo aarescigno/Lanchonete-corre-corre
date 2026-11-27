@@ -11,5 +11,5 @@ bloco('CA1',()=>{ const {g,L,t}=cartao(true);
   ok(L.donoBasico(g)==='joca' && /Tarefas \(\d de 2\):/.test(t) && !/de 3\):/.test(t),'CA1: Dani no nível 4 nos doces, com o Joca no básico: "Tarefas (… de 2)" ('+(t.match(/Tarefas \([^)]*\)/)||['?'])[0]+')'); });
 bloco('CA2',()=>{ const {g,L,t}=cartao(false);
   ok(L.donoBasico(g)==='dani' && /Tarefas \(\d de 3\):/.test(t),'CA2: a mesma Dani dona do básico: "de 3" ('+(t.match(/Tarefas \([^)]*\)/)||['?'])[0]+')'); });
-bloco('CA3',()=>{ const {L}=load(); ok(L.VERSAO==='v12.10.6','CA3: a VERSAO é v12.10.6'); });
+bloco('CA3',()=>{ const {L}=load(); ok(/^v12\.10\.([6-9]|\d\d)$|^v12\.(1[1-9]|[2-9]\d)|^v1[3-9]/.test(L.VERSAO),'CA3: a VERSAO é v12.10.6 ou mais nova ('+L.VERSAO+')'); });
 console.log(fails?`\n${fails} de ${total} FALHARAM`:`\nTODOS OS ${total} PASSARAM`); process.exit(fails?1:0);

@@ -7,15 +7,15 @@ const html=fs.readFileSync('../lanchonete.html','utf8');
 // ---------- CA5: a lista das Versões ----------
 { const i=html.indexOf('<ul class="verlist">'), j=html.indexOf('</ul>',i); const bloco=html.slice(i,j);
   const lis=bloco.split('<li>').slice(1); const vs=lis.map(l=>/^<b>(v[\d.]+)<\/b>/.exec(l)[1]);
-  const esp=['v12.10.6','v12.10.5','v12.10.4','v12.10.3','v12.10.2','v12.10.1','v12.10','v12.9.1','v12.9','v12.8.4','v12.8.3','v12.8.2','v12.8.1','v12.8','v12.7','v12.6.1','v12.6','v12.5','v12.4.3','v12.4.2','v12.4.1','v12.4','v12.3.2','v12.3.1','v12.3','v12.2','v12.1','v12','v11','v10','v9','v8','v7','v6','v5','v4','v3','v2','v1'];
-  ok(vs.join()===esp.join(),'CA5: a lista tem as 39 linhas: v12.10.6 (a atual), v12.10.5, v12.10.4, v12.10.3, v12.10.2, v12.10.1, v12.10, v12.9.1, v12.9, v12.8.4, v12.8.3, v12.8.2, v12.8.1, v12.8, v12.7, v12.6.1, v12.6, v12.5, v12.4.3, v12.4.2, v12.4.1, v12.4, v12.3.2, v12.3.1, v12.3, v12.2, v12.1, v12, v11 e v10 a v1, nesta ordem ('+vs.length+')');
+  const esp=['v12.10.7','v12.10.6','v12.10.5','v12.10.4','v12.10.3','v12.10.2','v12.10.1','v12.10','v12.9.1','v12.9','v12.8.4','v12.8.3','v12.8.2','v12.8.1','v12.8','v12.7','v12.6.1','v12.6','v12.5','v12.4.3','v12.4.2','v12.4.1','v12.4','v12.3.2','v12.3.1','v12.3','v12.2','v12.1','v12','v11','v10','v9','v8','v7','v6','v5','v4','v3','v2','v1'];
+  ok(vs.join()===esp.join(),'CA5: a lista tem as 40 linhas: v12.10.7 (a atual), v12.10.6, v12.10.5, v12.10.4, v12.10.3, v12.10.2, v12.10.1, v12.10, v12.9.1, v12.9, v12.8.4, v12.8.3, v12.8.2, v12.8.1, v12.8, v12.7, v12.6.1, v12.6, v12.5, v12.4.3, v12.4.2, v12.4.1, v12.4, v12.3.2, v12.3.1, v12.3, v12.2, v12.1, v12, v11 e v10 a v1, nesta ordem ('+vs.length+')');
   ok(lis.filter(l=>l.indexOf('versão atual')>=0).length===1 && lis[0].indexOf('versão atual')>=0,'CA5: "versão atual" só na v12.7');
   const comLink=lis.filter(l=>/Abrir a v\d+<\/a>/.test(l)).map(l=>/^<b>(v[\d.]+)<\/b>/.exec(l)[1]);
   ok(comLink.join()==='v11,v10,v9,v8,v7,v6,v5,v4,v3,v2,v1','CA5: link "Abrir" em v1 a v11 e em nenhuma outra ('+comLink.join()+')');
   { const i9=lis.findIndex(l=>/^<b>v9<\/b>/.test(l)); ok(i9>0 && lis[i9-1].indexOf('<br><a href="versoes/v9.html" target="_blank" rel="noopener">Abrir a v9</a>')<0 && lis[i9].indexOf('<br><a href="versoes/v9.html" target="_blank" rel="noopener">Abrir a v9</a>')>=0,'CA5: o link da v9 no formato dos outros'); }
   ok(fs.existsSync('../versoes/v9.html') && fs.existsSync('../versoes/v10.html') && fs.existsSync('../versoes/v11.html'),'CA5: os arquivos versoes/v9.html, v10.html e v11.html existem');
   { const v11=fs.readFileSync('../versoes/v11.html','utf8'), v1=fs.readFileSync('../versoes/v1.html','utf8'); ok(v11.split('\n')[0]===v1.split('\n')[0] && v11.split('\n')[1].indexOf('<title>')===0 && v11.indexOf("VERSAO = 'v11.19'")>0,'CA5: versoes/v11.html: a 1ª linha é a do v1 e o resto é o jogo da v11.19'); }
-  ok(/ id="vtag" aria-label="Versão 12.10.6">v12.10.6</.test(html) && /VERSAO = 'v12.10.6'/.test(html),'CA5: o selo e a VERSAO dizem v12.10.6'); }
+  ok(/ id="vtag" aria-label="Versão 12.10.7">v12.10.7</.test(html) && /VERSAO = 'v12.10.7'/.test(html),'CA5: o selo e a VERSAO dizem v12.10.7'); }
 
 // ---------- CA6: o grid da lojinha guarda o lugar na mesma seção e volta ao alto ao trocar ----------
 { const H=load(); const {g,L,els}=H; g.save=L.normSave({bank:90000,dia:12,maxDay:12,up:{tenis:true}}); g.up=g.save.up; g.buildTables(); g.goShop(12);

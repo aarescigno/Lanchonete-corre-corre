@@ -535,7 +535,7 @@ table.rank tr.me td{background:#fbe7a8}
 
     <div class="ov show" id="ov-menu">
       <div class="panel menu-panel">
-        <span class="vtag" id="vtag" aria-label="Versão 12.10.6">v12.10.6</span>
+        <span class="vtag" id="vtag" aria-label="Versão 12.10.7">v12.10.7</span>
         <h1 class="title">Lanchonete <br>Corre-Corre</h1>
         <p class="tag">Ajude a Bia a atender a freguesia da esquina antes que o cafezinho esfrie!</p>
         <div class="lbl" id="menu-dia">História</div>
@@ -837,7 +837,8 @@ table.rank tr.me td{background:#fbe7a8}
       <div class="panel">
         <h2>Versões</h2>
         <ul class="verlist">
-          <li><b>v12.10.6</b><span class="cur">versão atual</span><br>27/11/2026 &mdash; O cartão da Dani nos doces mostra só as tarefas que dá para escolher.</li>
+          <li><b>v12.10.7</b><span class="cur">versão atual</span><br>27/11/2026 &mdash; O couvert artístico não mostra mais a porcentagem: só que o efeito fica menor se cobrar.</li>
+          <li><b>v12.10.6</b><br>27/11/2026 &mdash; O cartão da Dani nos doces mostra só as tarefas que dá para escolher.</li>
           <li><b>v12.10.5</b><br>23/11/2026 &mdash; Os relatórios do Teste e dos Desafios ficam guardados no aparelho, e um toque copia todos.</li>
           <li><b>v12.10.4</b><br>23/11/2026 &mdash; O Ranking sai do menu, do fim do dia e da falência (fica só no modo dev).</li>
           <li><b>v12.10.3</b><br>22/11/2026 &mdash; Preços dos cursos e metas acertados para os cursos em degraus.</li>
@@ -2946,7 +2947,7 @@ const HIST_NOMES = { bia:'Bia', tonhao:'Tonhão', dani:'Dani', joca:'Joca', cami
 const ATU_TXT = { procurando:'Procurando versão nova...', nova:'Tem versão nova: {v}! Seu jogo salvo continua.', igual:'Você já está na versão mais nova ({v}).', erro:'Sem internet agora. Tente de novo mais tarde.', atualizando:'Atualizando...' };
 function atuEstado(remota, atual){ if (typeof remota !== 'string' || !remota.trim()) return 'erro'; return remota.trim() === atual ? 'igual' : 'nova'; }
 const CAIXA_MAX = 14;                                 // livro-caixa (v7.2): quantos dias da carreira ficam guardados
-const VERSAO = 'v12.10.6';                                   // vai no resumo do Caixa
+const VERSAO = 'v12.10.7';                                   // vai no resumo do Caixa
 const DIVULGA_DIA = 4;                                // antes disso, o movimento é o da inauguração (sem custo); v9.0.2: dia 4, e o padrão é o boca a boca
 function divulgaAberta(n, sv){ return devLivre() || n >= DIVULGA_DIA && !(sv && sv.convDiv === 'pend'); }   // no modo dev, desde o dia 1; v9.0.3: no Modo História, só depois da conversa
 /* v9.6.4: a Efood (os entregadores) só abre depois da conversa dos entregadores, no Modo História; antes dela, nenhum tipo com `retira` vem na agenda */
@@ -17462,9 +17463,8 @@ function buildCouvert(grid){
   // Couvert: só do nível 3 do salão em diante
   if (!couvertOk(game.ponto)) return;
   game.manualVer('l-couvert');
-  const ef = Math.round(couvertEffect(Object.assign({}, eq, { taxa:true })) * 100);
   c = staffCard(upgradeIcon('couvert'), 'Couvert artístico'); c.setAttribute('data-ficha', 'l-couvert');
-  const tg = el('button', 'toggle', 'Cobrar couvert: ' + fmt(C.fee) + ' por pessoa (efeito cai para ' + ef + '%)'); tg.type = 'button';
+  const tg = el('button', 'toggle', 'Cobrar couvert: ' + fmt(C.fee) + ' por pessoa (o efeito fica menor)'); tg.type = 'button';
   tg.setAttribute('aria-pressed', eq.taxa ? 'true' : 'false');
   tg.addEventListener('click', () => { Sfx.tap(); eq.taxa = !eq.taxa; writeSave(game.save); buildShop(); });
   c.appendChild(tg);
