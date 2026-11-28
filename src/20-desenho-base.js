@@ -112,6 +112,10 @@ function heart(ctx,x,y,r,fill,stroke){
   if (fill){ ctx.fillStyle = fill; ctx.fill(); }
   ctx.lineWidth = 1.8; ctx.strokeStyle = stroke || PAL.tinta; ctx.lineJoin = 'round'; ctx.stroke();
 }
+/* v12.12: com `prefers-reduced-motion`, a dancinha escondida vira um coraçãozinho parado sobre a cabeça (no lugar de qualquer movimento) */
+function eggCoracao(ctx,x,y){ ctx.save(); heart(ctx,x,y,3.6,PAL.perigo,PAL.tinta); ctx.restore(); }
+/* v12.12: o progresso (0..1) da dancinha para os seno e cosseno do desenho: giro com um fio de largura (nunca some inteiro) */
+function eggGiro(p){ const c = Math.cos(TAU * p); return Math.abs(c) < 0.08 ? (c < 0 ? -0.08 : 0.08) : c; }
 function star(ctx,x,y,r,fill){
   ctx.beginPath();
   for (let i=0;i<10;i++){ const a = -Math.PI/2 + i*Math.PI/5, rad = i%2 ? r*0.45 : r; ctx.lineTo(x+Math.cos(a)*rad, y+Math.sin(a)*rad); }
@@ -1073,7 +1077,10 @@ function drawPerson(ctx,p,x,y,o){
     if (p.hair === 0 || p.hair === 2) { ctx.quadraticCurveTo(5,hy-6,-2,hy-7); ctx.quadraticCurveTo(-8,hy-6,-11.5,hy-1); }
     else { ctx.lineTo(8,hy-5); ctx.lineTo(-8,hy-5); }
     ctx.closePath(); fs(ctx,hc,2);
-    if (p.hair === 2){ circ(ctx,0,hy-15,6); fs(ctx,hc,2); }
+    if (p.hair === 2){
+      if (o.rabo){ ctx.save(); ctx.translate(0,hy-9); ctx.rotate(o.rabo); circ(ctx,0,-6,6); fs(ctx,hc,2); ctx.restore(); }   // v12.12: o rabo de cavalo balança na dancinha
+      else { circ(ctx,0,hy-15,6); fs(ctx,hc,2); }
+    }
   } else if (p.elder){
     ctx.strokeStyle = hc; ctx.lineWidth = 3.5; ctx.beginPath(); ctx.arc(0,hy+1,11.5,Math.PI*0.85,Math.PI*1.1); ctx.stroke(); ctx.beginPath(); ctx.arc(0,hy+1,11.5,-Math.PI*0.1,Math.PI*0.15); ctx.stroke();
   }
@@ -1104,7 +1111,8 @@ function drawPerson(ctx,p,x,y,o){
     ctx.beginPath(); ctx.moveTo(-1.2,hy-0.6); ctx.lineTo(1.2,hy-0.6); ctx.stroke();
     ctx.fillStyle = 'rgba(255,255,255,.45)'; ctx.fillRect(-7,hy-1.6,2,1.4); ctx.fillRect(2.8,hy-1.6,2,1.4);
   }
-  else if (p.glasses){ ctx.lineWidth = 1.5; circ(ctx,-4.4,hy+0.5,3.6); ctx.stroke(); circ(ctx,4.4,hy+0.5,3.6); ctx.stroke(); ctx.beginPath(); ctx.moveTo(-0.9,hy+0.5); ctx.lineTo(0.9,hy+0.5); ctx.stroke(); }
+  else if (p.glasses){ ctx.lineWidth = 1.5; circ(ctx,-4.4,hy+0.5,3.6); ctx.stroke(); circ(ctx,4.4,hy+0.5,3.6); ctx.stroke(); ctx.beginPath(); ctx.moveTo(-0.9,hy+0.5); ctx.lineTo(0.9,hy+0.5); ctx.stroke();
+    if (o.reflexo != null){ const rx = -9 + 18 * o.reflexo; ctx.strokeStyle = 'rgba(255,255,255,.95)'; ctx.lineWidth = 1.8; ctx.beginPath(); ctx.moveTo(rx - 1.6,hy + 3.6); ctx.lineTo(rx + 1.6,hy - 2.6); ctx.stroke(); } }   // v12.12: o reflexo que passa pelos óculos (0 a 1, da esquerda para a direita)
   if (p.bigode){   // v10.10: o bigode grande do Bráulio
     ctx.beginPath(); ctx.moveTo(0,hy+4); ctx.quadraticCurveTo(-5,hy+1.4,-11.5,hy+5.4); ctx.quadraticCurveTo(-5.5,hy+8.4,0,hy+6.8); ctx.quadraticCurveTo(5.5,hy+8.4,11.5,hy+5.4); ctx.quadraticCurveTo(5,hy+1.4,0,hy+4); ctx.closePath(); fs(ctx,'#1B1512',1.4);
   }
@@ -1141,7 +1149,8 @@ function drawBia(ctx,b,x,y,o){
   const skin = '#6B3F25', rp = clamp(Math.round(o.roupa || 1), 1, 4), C = BIA_ROUPA_COR;
   const blusa = rp === 3 ? C.camisa : rp === 4 ? C.clara : C.verde;       // a camiseta, a camisa
   const saia = rp >= 3 ? (rp === 4 ? C.saiaEsc : '#2B2B33') : C.verde;
-  ctx.save(); ctx.translate(x,y); ctx.scale(sc * (o.flip || 1), sc);
+  const eg = o.egg > 0 ? o.egg : 0, giro = eg && !RM;   // v12.12: a pirueta dos 5 toques (pulinho de 8 px e giro no lugar)
+  ctx.save(); ctx.translate(x,y - (giro ? 8 * Math.sin(Math.PI * eg) : 0)); ctx.scale(sc * (o.flip || 1) * (giro ? eggGiro(eg) : 1), sc);
   shadowEll(ctx,0,0,16,5,0.22);
   const sw = moving ? Math.sin(ph) * 5 : 0;
   // pernas

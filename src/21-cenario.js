@@ -1497,36 +1497,47 @@ const DANI_LOOK = { skin:3, hair:5, hairC:'#2F1D12', pants:'#3C5A4A', kid:false,
 /* v9.6.9: os crachás só aparecem nos primeiros 20 s do dia (somem aos poucos de 17 a 20 s); render() ajusta */
 let CRACHA_A = 1;
 function drawDani(ctx,d,tm){
-  drawPerson(ctx,DANI_LOOK,d.x,d.y,{ shirt:'#F7EFD8', moving:d.moving, ph:d.walkPh, mood:0, t:tm, lava:d.washing && !RM });
+  const eg = d.egg > 0 ? d.egg : 0;   // v12.12: a dancinha dos 5 toques (d.egg: 0..1): requebra com as mãos para cima
+  if (eg && !RM){ ctx.save(); ctx.translate(d.x,d.y); ctx.rotate(0.14 * Math.sin(4 * Math.PI * eg)); ctx.translate(-d.x,-d.y); }
+  drawPerson(ctx,DANI_LOOK,d.x,d.y,{ shirt:'#F7EFD8', moving:d.moving, ph:d.walkPh, mood:0, t:tm, lava:d.washing && !RM, bracoE:eg && !RM ? [[-17,-46],[-15,-65]] : null, bracoD:eg && !RM ? [[17,-46],[15,-65]] : null });
   const bob = (d.moving && !RM) ? -Math.abs(Math.sin(d.walkPh)) * 2.4 : 0;
   ctx.beginPath(); ctx.moveTo(d.x-8,d.y-30+bob); ctx.lineTo(d.x+8,d.y-30+bob); ctx.lineTo(d.x+11,d.y-12); ctx.lineTo(d.x-11,d.y-12); ctx.closePath(); fs(ctx,'#7B4FB5',2.2);
   if (CRACHA_A > 0){ ctx.save(); ctx.globalAlpha *= CRACHA_A; rr(ctx,d.x-14,d.y-84,28,12,5); fs(ctx,'#fff',1.6); txt(ctx,'Dani',d.x,d.y-77.5,9,'#7B4FB5','center',FD); ctx.restore(); }
   d.hands.forEach((h,i) => drawHandItem(ctx,h.kind === 'coffee' ? { kind:'coffee' } : h,d.x + (i ? 18 : -18),d.y - 28,0.7));   // sem o número da mesa em cima do café
+  if (eg && !RM) ctx.restore();
+  if (eg && RM) eggCoracao(ctx,d.x,d.y - 66);
 }
 /* Joca (v9.2): rapaz de uns 20 anos, pele parda, cabelo cacheado preto curto, óculos redondos, camiseta cinza, avental azul-marinho e crachá;
    os níveis 3 e 4 mudam o avental (faixa branca; azul mais vivo com bolso) */
 const JOCA_LOOK = { skin:4, hair:0, hairC:'#1B1512', pants:'#4A4D55', kid:false, elder:false, acc:null, glasses:true };
 const JOCA_AVENTAL = [null, null, '#243B63', '#1F4E8C', '#17639E'];
 function drawJoca(ctx,d,tm){
-  drawPerson(ctx,JOCA_LOOK,d.x,d.y,{ shirt:'#B9BDC4', moving:d.moving, ph:d.walkPh, mood:0, t:tm, lava:d.washing && !RM });
+  const eg = d.egg > 0 ? d.egg : 0;   // v12.12: a dancinha dos 5 toques: pulinho de 10 px e o reflexo passando pelos óculos (de p 0,3 a 0,7)
+  if (eg && !RM){ ctx.save(); ctx.translate(0,-10 * Math.sin(Math.PI * eg)); }
+  drawPerson(ctx,JOCA_LOOK,d.x,d.y,{ shirt:'#B9BDC4', moving:d.moving, ph:d.walkPh, mood:0, t:tm, lava:d.washing && !RM, reflexo:eg && !RM && eg >= 0.3 && eg <= 0.7 ? (eg - 0.3) / 0.4 : null });
   const bob = (d.moving && !RM) ? -Math.abs(Math.sin(d.walkPh)) * 2.4 : 0, lv = d.level;
   ctx.beginPath(); ctx.moveTo(d.x-8,d.y-30+bob); ctx.lineTo(d.x+8,d.y-30+bob); ctx.lineTo(d.x+11,d.y-12); ctx.lineTo(d.x-11,d.y-12); ctx.closePath(); fs(ctx,JOCA_AVENTAL[lv] || JOCA_AVENTAL[2],2.2);
   if (lv >= 3){ ctx.fillStyle = '#fff'; ctx.fillRect(d.x-9.5,d.y-17+bob,19,2.2); }
   if (lv >= 4){ rr(ctx,d.x+1,d.y-26+bob,7,6,1.5); fs(ctx,'#fff',1.2); }
   if (CRACHA_A > 0){ ctx.save(); ctx.globalAlpha *= CRACHA_A; rr(ctx,d.x-15,d.y-84,30,12,5); fs(ctx,'#fff',1.6); txt(ctx,'JOCA',d.x,d.y-77.5,9,'#2C7A7B','center',FD); ctx.restore(); }
   d.hands.forEach((h,i) => drawHandItem(ctx,h.kind === 'coffee' ? { kind:'coffee' } : h,d.x + (i ? 18 : -18),d.y - 28,0.7));
+  if (eg && !RM) ctx.restore();
+  if (eg && RM) eggCoracao(ctx,d.x,d.y - 66);
 }
 /* Cami (v9.3): mulher de uns 30 anos, pele morena clara, cabelo preto liso preso num rabo de cavalo alto, polo vinho (a cor da Avenida) com avental curto preto,
    crachá "CAMI" e tênis preto; o nível 2 ganha um tênis de corrida, o 3 uma caneta atrás da orelha e o bloquinho no avental */
 const CAMI_LOOK = { skin:2, hair:2, hairC:'#1B1512', pants:'#2B2A2F', kid:false, elder:false, acc:null, glasses:false };
 function drawCami(ctx,d,tm){
-  drawPerson(ctx,CAMI_LOOK,d.x,d.y,{ shirt:'#8A1F3D', moving:d.moving, ph:d.walkPh, mood:0, t:tm, lava:d.washing && !RM });
+  const egP = d.egg > 0 ? d.egg : 0, eg = egP && !RM ? egP : 0;   // v12.12: a dancinha dos 5 toques: corre no lugar (as pernas correm sem sair dele) e o rabo de cavalo balança
+  if (eg) d = Object.assign(Object.create(d),{ moving:true, walkPh:eg * 40 });
+  drawPerson(ctx,CAMI_LOOK,d.x,d.y,{ shirt:'#8A1F3D', moving:d.moving, ph:d.walkPh, mood:0, t:tm, lava:d.washing && !RM, rabo:eg ? 0.3 * Math.sin(8 * Math.PI * eg) : 0 });
   const bob = (d.moving && !RM) ? -Math.abs(Math.sin(d.walkPh)) * 2.4 : 0, lv = d.level;
   ctx.beginPath(); ctx.moveTo(d.x-8,d.y-26+bob); ctx.lineTo(d.x+8,d.y-26+bob); ctx.lineTo(d.x+10,d.y-12); ctx.lineTo(d.x-10,d.y-12); ctx.closePath(); fs(ctx,'#1E1D21',2.2);
   if (lv >= 2){ const sw = d.moving && !RM ? Math.sin(d.walkPh) * 3 : 0; ell(ctx,d.x-5+sw,d.y-0.5,5.2,2.8); fs(ctx,'#fff',1.4); ell(ctx,d.x+5-sw,d.y-0.5,5.2,2.8); fs(ctx,'#fff',1.4); ctx.fillStyle = PAL.perigo; ctx.fillRect(d.x-8+sw,d.y-1.6,6,1.6); ctx.fillRect(d.x+2-sw,d.y-1.6,6,1.6); }   // tênis de corrida
   if (lv >= 3){ rr(ctx,d.x+1,d.y-23+bob,7,6,1.5); fs(ctx,'#fff',1.2); ctx.strokeStyle = '#2C5AA0'; ctx.lineWidth = 2; ctx.beginPath(); ctx.moveTo(d.x-12,d.y-54+bob); ctx.lineTo(d.x-8,d.y-58+bob); ctx.stroke(); }
   if (CRACHA_A > 0){ ctx.save(); ctx.globalAlpha *= CRACHA_A; rr(ctx,d.x-15,d.y-84,30,12,5); fs(ctx,'#fff',1.6); txt(ctx,'CAMI',d.x,d.y-77.5,9,'#6B46C1','center',FD); ctx.restore(); }
   d.hands.forEach((h,i) => drawHandItem(ctx,h.kind === 'coffee' ? { kind:'coffee' } : h,d.x + (i ? 18 : -18),d.y - 28,0.7));
+  if (egP && RM) eggCoracao(ctx,d.x,d.y - 66);
 }
 /* Anselmo (v9.5): coqueteleiro de uns 45 anos, pele negra retinta, cabeça raspada e barba grisalha curta, camisa branca de manga dobrada, colete preto,
    gravata-borboleta bordô e crachá "ANSELMO". d.busy: chacoalha a coqueteleira (parado com prefers-reduced-motion) */
@@ -1541,21 +1552,25 @@ function drawAnselmo(ctx,d,tm){
   ctx.beginPath(); ctx.moveTo(d.x,d.y-31); ctx.lineTo(d.x+6,d.y-35); ctx.lineTo(d.x+6,d.y-27); ctx.closePath(); fs(ctx,'#8E3B46',1.3);
   if (CRACHA_A > 0){ ctx.save(); ctx.globalAlpha *= CRACHA_A; rr(ctx,d.x-19,d.y-84,38,12,5); fs(ctx,'#fff',1.6); txt(ctx,'ANSELMO',d.x,d.y-77.5,8,'#8E3B46','center',FD); ctx.restore(); }
   // a coqueteleira na mão direita, chacoalhando enquanto prepara
-  const sh = d.busy && !RM ? Math.sin(tm * 18) * 3 : 0;
-  ctx.save(); ctx.translate(d.x + 15,d.y - 40 + sh); ctx.rotate(d.busy && !RM ? 0.5 : 0.2);
+  const eg = d.egg > 0 ? d.egg : 0, voa = eg && !RM;   // v12.12: a dancinha dos 5 toques: joga a coqueteleira para o alto (40 px), ela dá uma volta e ele pega
+  const sh = voa ? -40 * Math.sin(Math.PI * eg) : d.busy && !RM ? Math.sin(tm * 18) * 3 : 0;
+  ctx.save(); ctx.translate(d.x + 15,d.y - 40 + sh); ctx.rotate(voa ? 0.2 + TAU * eg : d.busy && !RM ? 0.5 : 0.2);
   rr(ctx,-4,-9,8,18,2.5); fs(ctx,PAL.inox,1.6); rr(ctx,-3,-12,6,4,2); fs(ctx,PAL.cromo,1.2); ctx.fillStyle = 'rgba(255,255,255,.5)'; ctx.fillRect(-2.4,-6,1.4,12);
   ctx.restore();
+  if (eg && RM) eggCoracao(ctx,d.x,d.y - 66);
 }
 /* Lia (v10.2): ajudante de cozinha de uns 30 anos, pele parda, cabelo crespo preso num coque alto sob um lenço amarelo-mostarda, dólmã branca de mangas
    dobradas, avental cinza e crachá "LIA"; mexe uma panela (parada com prefers-reduced-motion) */
 const LIA_LOOK = { skin:3, hair:5, hairC:'#1B1512', pants:'#3A3A40', kid:false, elder:false, acc:null, glasses:false };
 function drawLia(ctx,d,tm){
-  ctx.save(); ctx.translate(d.x,d.y); ctx.scale(d.s || 1,d.s || 1);   // (0, 0) são os pés dela; d.s: a escala (na janela da cozinha ela fica menor)
+  const eg = d.egg > 0 ? d.egg : 0, giro = eg && !RM;   // v12.12: a dancinha dos 5 toques: rodopia como a Bia e a pontinha do nó do lenço balança
+  ctx.save(); ctx.translate(d.x,d.y); ctx.scale((d.s || 1) * (giro ? eggGiro(eg) : 1),d.s || 1);   // (0, 0) são os pés dela; d.s: a escala (na janela da cozinha ela fica menor)
   drawPerson(ctx,LIA_LOOK,0,0,{ shirt:'#FFFFFF', moving:false, mood:0, t:tm });
   const hy = 0 - 42;
   circ(ctx,0,hy - 15,6.4); fs(ctx,'#1B1512',1.8);   // o coque alto
   ctx.beginPath(); ctx.arc(0,hy - 1,12.6,Math.PI * 1.08,Math.PI * 1.92); ctx.lineTo(0 + 12,hy - 4); ctx.quadraticCurveTo(0,hy - 9,0 - 12,hy - 4); ctx.closePath(); fs(ctx,'#D9A21B',1.8);   // o lenço amarelo-mostarda
-  ctx.beginPath(); ctx.moveTo(0 - 3,hy - 12); ctx.lineTo(0 - 9,hy - 17); ctx.lineTo(0 - 7,hy - 10); ctx.closePath(); fs(ctx,'#D9A21B',1.2);   // a pontinha do nó
+  ctx.save(); if (giro){ ctx.translate(0 - 3,hy - 12); ctx.rotate(0.4 * Math.sin(6 * Math.PI * eg)); ctx.translate(3,12 - hy); }
+  ctx.beginPath(); ctx.moveTo(0 - 3,hy - 12); ctx.lineTo(0 - 9,hy - 17); ctx.lineTo(0 - 7,hy - 10); ctx.closePath(); fs(ctx,'#D9A21B',1.2); ctx.restore();   // a pontinha do nó
   ctx.beginPath(); ctx.moveTo(0 - 8,0 - 28); ctx.lineTo(0 + 8,0 - 28); ctx.lineTo(0 + 10,0 - 12); ctx.lineTo(0 - 10,0 - 12); ctx.closePath(); fs(ctx,'#8E939B',2.2);   // o avental cinza
   ctx.strokeStyle = '#fff'; ctx.lineWidth = 3; ctx.lineCap = 'round'; ctx.beginPath(); ctx.moveTo(0 - 11,0 - 28); ctx.lineTo(0 - 15,0 - 24); ctx.moveTo(0 + 11,0 - 28); ctx.lineTo(0 + 15,0 - 24); ctx.stroke();   // as mangas dobradas
   // a panela na mão direita, mexida com a colher
@@ -1566,6 +1581,7 @@ function drawLia(ctx,d,tm){
   ctx.restore();
   if (CRACHA_A > 0){ ctx.save(); ctx.globalAlpha *= CRACHA_A; rr(ctx,0-13,0-84,26,12,5); fs(ctx,'#fff',1.6); txt(ctx,'LIA',0,0-77.5,9,'#5E7A3A','center',FD); ctx.restore(); }
   ctx.restore();
+  if (eg && RM) eggCoracao(ctx,d.x,d.y - 74 * (d.s || 1) - 3);
 }
 /* v10.3, o carrinho de boas-vindas do foyer (Terraço Suíça): carrinho dourado com tampo de madeira, toldinho listrado, garrafas e os coquetéis de autor
    (os prontos cheios; a bolinha verde diz quantos). Só nos dias em que o Anselmo vem */
@@ -1596,7 +1612,7 @@ function drawBalcaoDrinks(ctx,g,tm){
   shadowEll(ctx,x + r.w/2,y + r.h + 1,r.w/2,3.5,0.22);
   rr(ctx,x,y,r.w,18,3); fs(ctx,'#6A4326',2);   // a prateleira
   [['#2F9E5A',6],['#F6A21E',16],['#D8334A',26],['#3F7FD0',36],['#F4D13A',46]].forEach(b => { rr(ctx,x + b[1],y - 6,6,15,2); fs(ctx,b[0],1.2); ctx.fillStyle = 'rgba(255,255,255,.5)'; ctx.fillRect(x + b[1] + 1.2,y - 3,1.2,8); });
-  drawAnselmo(ctx,{ x:ANSELMO_HOME.x, y:ANSELMO_HOME.y, busy:!!g.drinkJob },tm);
+  drawAnselmo(ctx,{ x:ANSELMO_HOME.x, y:ANSELMO_HOME.y, busy:!!g.drinkJob, egg:g.eggP('anselmo') },tm);   // (v12.12: egg, a dancinha)
   rr(ctx,x - 2,y + 22,r.w + 4,r.h - 22,4); fs(ctx,'#8A5A34',2.4);   // a frente do balcão
   rr(ctx,x - 4,y + 18,r.w + 8,7,3); fs(ctx,'#B8814F',2);   // o tampo
   ctx.fillStyle = 'rgba(255,255,255,.16)'; ctx.fillRect(x + 4,y + 30,r.w - 8,2);
@@ -2021,7 +2037,7 @@ function drawKitchen(ctx,g,t){
     rr(ctx,r.x+14,r.y+4,r.w-18,r.h-8,8); fs(ctx,'#F0DDA6',3);
     if ((g.temEstranho || (DEV.on && DEV.forca.suor)) && g.state !== 'menu') drawPapelReceita(ctx);   // v12.10.1
     drawChef(ctx,g,930,172,t);
-    if (g.liaAtiva && g.state !== 'menu') drawLia(ctx,{ x:LIA_HOME.x, y:LIA_HOME.y, s:LIA_HOME.s },t);   // v10.2: a Lia ao lado do Tonhão
+    if (g.liaAtiva && g.state !== 'menu') drawLia(ctx,{ x:LIA_HOME.x, y:LIA_HOME.y, s:LIA_HOME.s, egg:g.eggP('lia') },t);   // v10.2: a Lia ao lado do Tonhão (v12.12: egg, a dancinha)
     { const pc = g.kitchen.cooking.find(t => t.praca);   // v12.5: a praça da Lia: o anel de progresso da entrada ao lado dela
       if (pc && g.state !== 'menu'){
         const px = LIA_HOME.x + 29, py = 178, fr = clamp(pc.p / pc.time, 0, 1);   // ao lado da panela dela, entre ela e o Tonhão
@@ -2240,6 +2256,7 @@ function drawPapelReceita(ctx){
 function drawChef(ctx,g,x,y,t){
   const sick = !!g.day.gripe;
   const nova = !!(g.kitchen && g.state !== 'menu' && EXPR === 'neutra' && g.kitchen.cozinhaNova), vira = nova && !RM && (t % 3) < 0.5;   // v12.10.1: o suor e a cabeça virando para o papelzinho
+  const eg = g.eggP ? g.eggP('tonhao') : 0;   // v12.12: a dancinha dos 5 toques: a touca pula 16 px e cai de volta e ele abre um sorrisão (parado, com `prefers-reduced-motion`, só o coração)
   ctx.save(); ctx.translate(x,y);
   // corpo
   ctx.beginPath(); ctx.moveTo(-20,34); ctx.lineTo(-17,2); ctx.lineTo(17,2); ctx.lineTo(20,34); ctx.closePath(); fs(ctx,'#fff',2.6);
@@ -2248,9 +2265,11 @@ function drawChef(ctx,g,x,y,t){
   // cabeça
   circ(ctx,0,-14,15); fs(ctx,'#B9794B',2.6);
   // touca
+  ctx.save(); if (eg && !RM) ctx.translate(0,-16 * Math.sin(Math.PI * eg));
   rr(ctx,-13,-34,26,12,2); fs(ctx,'#fff',2.4);
   ctx.beginPath(); ctx.arc(-9,-38,8,0,TAU); ctx.arc(0,-43,9,0,TAU); ctx.arc(9,-38,8,0,TAU); fs(ctx,'#fff',2.4);
   rr(ctx,-13,-34,26,8,2); ctx.fillStyle = '#fff'; ctx.fill();
+  ctx.restore();
   // rosto (v11.5: no retrato do balão, as cinco expressões; a boca vai por baixo do bigode, depois dele)
   const exp = EXPR !== 'neutra';
   if (!exp){
@@ -2262,12 +2281,14 @@ function drawChef(ctx,g,x,y,t){
   // bigode
   ctx.beginPath(); ctx.moveTo(0,-10); ctx.bezierCurveTo(-5,-15,-16,-13,-16,-7); ctx.bezierCurveTo(-12,-9,-5,-7,0,-8); ctx.bezierCurveTo(5,-7,12,-9,16,-7); ctx.bezierCurveTo(16,-13,5,-15,0,-10); ctx.closePath(); fs(ctx,'#1B1512',2);
   if (exp) rostoExpr(ctx,EXPR,5.5,-17,-2.6);
+  else if (eg && !RM){ ctx.strokeStyle = PAL.tinta; ctx.lineWidth = 1.8; ctx.beginPath(); ctx.arc(0,-5,6,0.2,Math.PI-0.2); ctx.stroke(); }   // v12.12: o sorrisão (raio 6)
   else { ctx.strokeStyle = PAL.tinta; ctx.lineWidth = 1.8; ctx.beginPath(); ctx.arc(0,-4,4,0.3,Math.PI-0.3); ctx.stroke(); }
   if (nova){   // a gota cai da testa a cada 1,2 s (com `prefers-reduced-motion`, parada na testa)
     const f = RM ? 0.15 : (t / 1.2) % 1, gx = -11.5, gy = -21 + f * 7;
     ctx.save(); ctx.globalAlpha = RM ? 1 : 1 - f * f; ctx.beginPath(); ctx.moveTo(gx,gy - 3.4); ctx.quadraticCurveTo(gx + 2.8,gy + 0.6,gx,gy + 2); ctx.quadraticCurveTo(gx - 2.8,gy + 0.6,gx,gy - 3.4); ctx.closePath(); fs(ctx,'#8FD3F4',1.1); ctx.restore();
   }
   if (sick){ const a = (Math.floor(t*0.6) % 2); if (a) txt(ctx,'Atchim!',-26,-34,12,PAL.perigo,'center',FD,3); }
+  if (eg && RM) eggCoracao(ctx,0,-60);
   ctx.restore();
 }
 

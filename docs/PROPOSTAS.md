@@ -9,7 +9,7 @@ Registro das ideias e dos retornos de quem jogou, com o texto original, e de ond
 
 Das sugestões, o usuário escolheu (27/11): o fiscal, os músicos e a Bia grande do menu também com a surpresa; a campainha do balcão; o Tonhão gripado; e "Todos dançaram" (a equipe inteira dança no fim do dia).
 
-**Destino:** Etapa 20 do `docs/PLANO.md`: v12.12, `docs/spec-v12.12.md` (a equipe) e v12.12.1, `docs/spec-v12.12.1.md` (os outros e os extras).
+**Destino:** Etapa 20 do `docs/PLANO.md`: v12.12, `docs/spec-v12.12.md` (a equipe; entregue em 28/11) e v12.12.1, `docs/spec-v12.12.1.md` (os outros e os extras; ainda a fazer).
 
 ---
 

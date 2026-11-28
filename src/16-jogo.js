@@ -123,6 +123,7 @@ class Game {
     if (this.noite) this.day = this.diaNoite(this.day);
     this.money = 0; this.custo = 0; this.contas = 0; this.paidDiv = 0; this.conserto = 0; this.pontos = 0;
     this.visita = treino || !n ? null : this.criticoDia(n); this.ficha = null;   // v10.9: o crítico do dia (null, ou { n:1|2, boato, real }) e a ficha da visita (fechada quando o grupo dele sai)
+    this.eggs = {};   // v12.12: as dancinhas dos 5 toques ({ n: toques seguidos, t: s desde o último, p: 0 parado, ou 0..1 dançando })
     this.manualDia = [];   // v9.6.7: as fichas do Manual reveladas durante o dia (a linha "Novo no Manual" do fim do dia)
     this.semToque = 0; this.dica = null; this.dicaCand = null; this.dicaT = 0; this.dicaDesde = 0;   // v9.6.12: as dicas na hora (17-treino.js)
     this.avals = [];   // avaliações do dia (v8.4): { r: as notas dos critérios, txt: o comentário }; entram no save no fim do dia
@@ -1319,6 +1320,7 @@ class Game {
   reageMeta(){ if (this.mode === 'carreira' && Math.round(this.lucro) >= this.day.meta) this.bia.reage('meta'); }
   update(dt){
     this.anim += dt;
+    this.eggAnda(Math.min(dt, 0.05));   // v12.12: as dancinhas dos 5 toques (só o tempo; andam até pausado, para o botão do modo dev)
     this.bia.reacaoAnda(Math.min(dt, 0.05));   // v11.8: o relógio do gesto da Bia (só desenho; anda até pausado, com o painel do modo dev aberto)
     if (this.state !== 'playing') {
       if (this.state === 'menu' || this.state === 'intro' || this.state === 'dayend' || this.state === 'shop' || this.state === 'endlessend') this.updateFx(dt);
@@ -2742,7 +2744,19 @@ class Game {
       return;
     }
     const x = sx - this.cam;
-    const hit = this.pickAt(x, y, pad);
+    // v12.12: a cabeça do Tonhão e da Lia, na janela dos pedidos: com a fila vazia o toque conta para a dancinha; com comanda na mão da Bia, vai para a janela (e zera a conta)
+    const cab = this.eggAt(x, y), adi = STATIONS.adiantar.rect;
+    if ((cab === 'tonhao' || cab === 'lia') && !(this.estacaoOn('adiantar') && x >= adi.x && x <= adi.x + adi.w && y >= adi.y && y <= adi.y + adi.h)){
+      if (!this.bia.hands.some(h => h.kind === 'ticket') && !this.bia.acts.some(a => a.type === 'order')){ this.eggTap(cab); return; }
+      if (this.eggs[cab]) this.eggs[cab].n = 0;
+    }
+    const folga = pad ? this.pickAt(x, y, pad) : null;
+    let hit = folga && folga.k === 'conserto' ? folga : this.pickAt(x, y, 0);   // a plaquinha de conserto com a folga do dedo vence o que está embaixo dela, como sempre
+    if (!hit){   // sem acerto exato num alvo do jogo: o personagem tocado conta para a dancinha (não é toque perdido); depois, a folga do dedo
+      const q = this.eggAt(x, y);
+      if (q){ this.eggTap(q); return; }
+      hit = folga;
+    }
     if (hit && hit.k === 'queue'){
       this.drag = { g:hit.g, sx:x, sy:y, x, y, moved:false, pad };
       return;
@@ -2757,6 +2771,40 @@ class Game {
     else if (hit) this.tapStation(hit.st, x, y);
     else { if (this.tm) this.tm.perd++; if (pad) this.fx.push({ k:'tap', x, y, life:0, max:0.3 }); }   // v12.2: o toque no salão que não acerta nada é toque perdido
   }
+  /* ---------- v12.12, as dancinhas escondidas (docs/spec-v12.12.md) ---------- */
+  eggOn(q){ return q === 'bia' || q === 'tonhao' || (q === 'anselmo' ? this.anselmoAtivo : q === 'lia' ? this.liaAtiva : this[q] && this[q].active); }
+  /* quem está sob o ponto (x, y no salão): o retângulo de cada um; se dois se cruzam, o de cima no desenho (o de maior y nos pés) */
+  eggAt(x, y){
+    const E = EGG, g = E.gente, A = ANSELMO_HOME, L = LIA_HOME;
+    const pes = { bia:this.bia, dani:this.dani, joca:this.joca, cami:this.cami, anselmo:A };
+    let best = null, by = -Infinity;
+    const vale = (q, x0, x1, y0, y1, py) => { if (this.eggOn(q) && x >= x0 && x <= x1 && y >= y0 && y <= y1 && py > by){ best = q; by = py; } };
+    for (const q in pes){ const p = pes[q]; vale(q, p.x - g.x, p.x + g.x, p.y - g.cima, p.y + g.baixo, p.y); }
+    vale('tonhao', E.tonhao.x0, E.tonhao.x1, E.tonhao.y0, E.tonhao.y1, 172);
+    vale('lia', L.x - E.lia.x * L.s, L.x + E.lia.x * L.s, L.y - E.lia.cima * L.s, L.y - E.lia.baixo * L.s, L.y);
+    return best;
+  }
+  eggTap(q){
+    const e = this.eggs[q] || (this.eggs[q] = { n:0, t:0, p:0 });
+    if (e.p > 0) return;   // dançando: o toque não conta
+    e.n = e.n > 0 && e.t <= EGG.folga ? e.n + 1 : 1; e.t = 0;
+    if (e.n >= EGG.toques) this.danca(q);
+  }
+  /* a dancinha de q (o 5º toque e o botão do modo dev): só o tempo; o desenho lê g.eggs[q].p */
+  danca(q){
+    const e = this.eggs[q] || (this.eggs[q] = { n:0, t:0, p:0 });
+    e.n = 0; e.t = 0; e.p = 1e-6;
+    Sfx.tiriri();
+    if (q === 'bia' && !RM) this.addSparks(this.bia.x, this.bia.y - 40, 8, PAL.mostarda);
+  }
+  eggAnda(dt){
+    for (const q in this.eggs){
+      const e = this.eggs[q]; e.t += dt;
+      if (e.p > 0){ e.p += dt / EGG.dura; if (e.p >= 1){ e.p = 0; e.n = 0; e.t = 0; } }
+    }
+  }
+  /* o progresso da dancinha de q para o desenho (0 se não dança) */
+  eggP(q){ const e = this.eggs && this.eggs[q]; return e && e.p > 0 ? e.p : 0; }
   /* destaque da mesa sob o grupo arrastado ou escolhido */
   hoverAt(x, y, pad, grp){
     const t = this.tableAt(x, y, pad);

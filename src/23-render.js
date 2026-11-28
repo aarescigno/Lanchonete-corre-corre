@@ -103,14 +103,16 @@ function render(g, ctx){
   });
   const b = g.bia;
   items.push({ y:b.y, f:() => {
-    drawBia(ctx,b,b.x,b.y,{ moving:b.moving, ph:b.walkPh, flip:b.dir, t:tm, lava:b.washing && !RM, roupa:roupaBia(g), reacao:b.reacao ? { id:b.reacao.id, p:b.reacao.t / BIA_REACAO.dur } : null });
+    const eb = g.eggP('bia'), py = eb && !RM ? -8 * Math.sin(Math.PI * eb) : 0;   // v12.12: a dancinha dos 5 toques (o que ela leva sobe junto no pulinho)
+    drawBia(ctx,b,b.x,b.y,{ moving:b.moving, ph:b.walkPh, flip:b.dir, t:tm, lava:b.washing && !RM, roupa:roupaBia(g), reacao:b.reacao ? { id:b.reacao.id, p:b.reacao.t / BIA_REACAO.dur } : null, egg:eb });
     const lay = b.layout() || [b.hands.slice(0,1), b.hands.slice(1,2)];
     lay.forEach((its,i) => {
       const hx = b.x + (i ? 20 : -20);
-      if (i === 0 && b.tray && its.length){ ell(ctx,hx,b.y-20,its.length > 1 ? 20 : 14,5); fs(ctx,PAL.inox,2); }
-      if (its.length === 1) drawHandItem(ctx,its[0],hx,b.y - 28,0.75);
-      else its.forEach((h,k) => drawHandItem(ctx,h,hx + (k-(its.length-1)/2)*13,b.y - 27 - (k%2)*3,0.6,true));
+      if (i === 0 && b.tray && its.length){ ell(ctx,hx,b.y-20+py,its.length > 1 ? 20 : 14,5); fs(ctx,PAL.inox,2); }
+      if (its.length === 1) drawHandItem(ctx,its[0],hx,b.y - 28 + py,0.75);
+      else its.forEach((h,k) => drawHandItem(ctx,h,hx + (k-(its.length-1)/2)*13,b.y - 27 - (k%2)*3 + py,0.6,true));
     });
+    if (eb && RM) eggCoracao(ctx,b.x,b.y - 74);
   }});
   if (menu) items.pop();
   if (g.marmitaOk && !menu) items.push({ y:RETIRADA.balcao.y + 50, f:() => glowSprite(ctx,g,'retirada',ctx => drawRetirada(ctx,g,tm)) });
@@ -124,9 +126,10 @@ function render(g, ctx){
   if (mus === 1) items.push({ y:528, f:() => drawTrio(ctx,g,tm) });
   if ((g.save.equipe.tv || g.save.equipe.som) && !menu) items.push({ y:532, f:() => drawAmbiente(ctx,g,tm) });
   if (g.fiscal && g.fiscal.ativo && !menu) items.push({ y:g.fiscal.y, f:() => drawFiscal(ctx,g.fiscal,tm) });   // v9.4
-  if (g.dani.active && !menu) items.push({ y:g.dani.y, f:() => drawDani(ctx,g.dani,tm) });
-  if (g.joca.active && !menu) items.push({ y:g.joca.y, f:() => drawJoca(ctx,g.joca,tm) });   // v9.2
-  if (g.cami.active && !menu) items.push({ y:g.cami.y, f:() => drawCami(ctx,g.cami,tm) });   // v9.3
+  const comEgg = (d,q) => { const p = g.eggP(q); return p ? Object.assign(Object.create(d),{ egg:p }) : d; };   // v12.12: a dancinha dos 5 toques vai no objeto que chega ao desenho (a lógica não muda)
+  if (g.dani.active && !menu) items.push({ y:g.dani.y, f:() => drawDani(ctx,comEgg(g.dani,'dani'),tm) });
+  if (g.joca.active && !menu) items.push({ y:g.joca.y, f:() => drawJoca(ctx,comEgg(g.joca,'joca'),tm) });   // v9.2
+  if (g.cami.active && !menu) items.push({ y:g.cami.y, f:() => drawCami(ctx,comEgg(g.cami,'cami'),tm) });   // v9.3
   items.sort((a,c) => a.y - c.y).forEach(it => it.f());
   if (g.evento === 'junina' && !menu) drawBandeirinhasSalao(ctx,g,tm);   // v10.6
   if (g.clima === 'chuva' && !menu){

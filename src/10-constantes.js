@@ -1836,6 +1836,11 @@ function drinkPrep(up){ return DRINKS.prep * (up && up.coqClassica ? DRINKS.prep
 function anselmoOn(eq, ponto){ return !!eq && eq.anselmo > 0 && !eq.anselmoFora && ((ponto || PONTOS[0]).nivel >= 3 || devLivre()); }
 /* v10.2: a Lia trabalha hoje? (contratada, não cortada da folha e no Terraço; no modo dev, em qualquer ponto) */
 function liaOn(eq, ponto){ return !!eq && eq.lia > 0 && !eq.liaFora && ((ponto || PONTOS[0]).nivel >= 4 || devLivre()); }
+/* v12.12, as dancinhas escondidas: 5 toques seguidos (no máximo 1 s entre um e outro) num da equipe dão uma dancinha de 1,2 s (só no desenho); `area` é o retângulo do toque, relativo aos pés */
+const EGG = { toques:5, folga:1, dura:1.2, quem:['bia','tonhao','dani','joca','cami','anselmo','lia'],
+  gente:{ x:15, cima:64, baixo:2 },   // Bia, Dani, Joca, Cami e Anselmo: x ± 15, de y − 64 a y + 2
+  tonhao:{ x0:914, x1:946, y0:120, y1:174 },   // só a cabeça e a touca (ele é desenhado em drawChef(ctx,g,930,172,t))
+  lia:{ x:16, cima:68, baixo:30 } };   // só a cabeça, vezes a escala dela
 const LIA_HOME = { x:868, y:203, s:0.72 };   // v10.2: na janela dos pedidos, ao lado do Tonhão (s: a escala, menor que a da Bia, para caber abaixo das comandas)
 /* v9.0.4: a lojinha abre aos poucos no Modo História. Cada cartão: dia mínimo, garantia (ate), as reclamações do Gúgou
    no dia do gatilho e a conversa do fim do dia. save.libera[id]: 0 fechado | 'pend' | 1 aberto (selo "novo") | 2 aberto e visto */
@@ -2076,7 +2081,7 @@ const HIST_NOMES = { bia:'Bia', tonhao:'Tonhão', dani:'Dani', joca:'Joca', cami
 const ATU_TXT = { procurando:'Procurando versão nova...', nova:'Tem versão nova: {v}! Seu jogo salvo continua.', igual:'Você já está na versão mais nova ({v}).', erro:'Sem internet agora. Tente de novo mais tarde.', atualizando:'Atualizando...' };
 function atuEstado(remota, atual){ if (typeof remota !== 'string' || !remota.trim()) return 'erro'; return remota.trim() === atual ? 'igual' : 'nova'; }
 const CAIXA_MAX = 14;                                 // livro-caixa (v7.2): quantos dias da carreira ficam guardados
-const VERSAO = 'v12.11.2';                                     // vai no resumo do Caixa
+const VERSAO = 'v12.12';                                     // vai no resumo do Caixa
 const DIVULGA_DIA = 4;                                // antes disso, o movimento é o da inauguração (sem custo); v9.0.2: dia 4, e o padrão é o boca a boca
 function divulgaAberta(n, sv){ return devLivre() || n >= DIVULGA_DIA && !(sv && sv.convDiv === 'pend'); }   // no modo dev, desde o dia 1; v9.0.3: no Modo História, só depois da conversa
 /* v9.6.4: a Efood (os entregadores) só abre depois da conversa dos entregadores, no Modo História; antes dela, nenhum tipo com `retira` vem na agenda */

@@ -372,6 +372,10 @@ function devAbaHoje(body, secao, botao){
     botao(r, 'Simular sem internet', () => game.devAtu('erro'), f === 'erro'); }
   { const r = secao('Reação da Bia', 'O gesto do ponto de agora, na hora');   // v11.8
     [['mesa', 'Mesa feliz'], ['bravo', 'Grupo bravo'], ['meta', 'Meta']].forEach(([k, t]) => botao(r, t, () => game.devReacao(k))); }
+  if (game.state === 'paused' || game.state === 'playing'){   // v12.12: a dancinha dos 5 toques de cada um que está no dia, na hora
+    const r = secao('Dancinhas', 'A dancinha escondida (5 toques seguidos) de quem está no dia');
+    [['bia', 'Bia'], ['tonhao', 'Tonhão'], ['dani', 'Dani'], ['joca', 'Joca'], ['cami', 'Cami'], ['anselmo', 'Anselmo'], ['lia', 'Lia']].forEach(([q, nome]) => { if (game.eggOn(q)) botao(r, nome, () => game.danca(q)); });
+  }
   { const r = secao('Entregador do eFood', 'Chega um agora na fila de retirada (com o dia aberto, onde há retirada)');   // v11.16.1
     botao(r, 'Chegar entregador', () => game.devEntregador()); }
   if (musicaOk(game.ponto)) botao(secao('Música (Terraço)', 'Agora: ' + DEV_MUSICA[game.save.equipe.musica || 0]), 'Música: trocar', () => game.devMusica());   // v10.4: sem música → trioo → pianista
