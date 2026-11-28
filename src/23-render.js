@@ -125,8 +125,8 @@ function render(g, ctx){
   if (mus === 2) items.push({ y:TERRACO.piano.y1 + 2, f:() => drawPianista(ctx,g,tm) });
   if (mus === 1) items.push({ y:528, f:() => drawTrio(ctx,g,tm) });
   if ((g.save.equipe.tv || g.save.equipe.som) && !menu) items.push({ y:532, f:() => drawAmbiente(ctx,g,tm) });
-  if (g.fiscal && g.fiscal.ativo && !menu) items.push({ y:g.fiscal.y, f:() => drawFiscal(ctx,g.fiscal,tm) });   // v9.4
   const comEgg = (d,q) => { const p = g.eggP(q); return p ? Object.assign(Object.create(d),{ egg:p }) : d; };   // v12.12: a dancinha dos 5 toques vai no objeto que chega ao desenho (a lógica não muda)
+  if (g.fiscal && g.fiscal.ativo && !menu) items.push({ y:g.fiscal.y, f:() => drawFiscal(ctx,comEgg(g.fiscal,'fiscal'),tm) });   // v9.4 (v12.12.1: a dancinha dele)
   if (g.dani.active && !menu) items.push({ y:g.dani.y, f:() => drawDani(ctx,comEgg(g.dani,'dani'),tm) });
   if (g.joca.active && !menu) items.push({ y:g.joca.y, f:() => drawJoca(ctx,comEgg(g.joca,'joca'),tm) });   // v9.2
   if (g.cami.active && !menu) items.push({ y:g.cami.y, f:() => drawCami(ctx,comEgg(g.cami,'cami'),tm) });   // v9.3
@@ -205,7 +205,9 @@ function render(g, ctx){
 
   if (menu){
     ctx.fillStyle = 'rgba(34,32,28,.18)'; ctx.fillRect(0,92,TW,448);
-    drawBia(ctx,b,TW-170,520,{ s:2.3, wave:true, t:tm, roupa:roupaBia(g) });
+    const em = g.eggP('biaMenu');   // v12.12.1: a pirueta da Bia grande (5 toques nela); com movimento reduzido, o coraçãozinho parado
+    drawBia(ctx,b,TW-170,520,{ s:2.3, wave:true, t:tm, roupa:roupaBia(g), egg:em });
+    if (em && RM){ ctx.save(); ctx.translate(TW-170,520 - 74 * 2.3 - 8); ctx.scale(2.3,2.3); eggCoracao(ctx,0,0); ctx.restore(); }
     ctx.fillStyle = '#2B2823'; ctx.fillRect(0,540,TW,60);
     ctx.fillStyle = PAL.mostarda; ctx.fillRect(0,540,TW,4);
   } else {

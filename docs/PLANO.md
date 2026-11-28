@@ -17,10 +17,9 @@ Origem: retorno do Renan Martorelli (beta-tester) e conversa com o Arthur (15/10
 |---|---|---|---|
 | 5 | ~~Modo História, parte 1~~: juntou-se à 2f e aos capítulos da 3a, 3b e 4a (28/10) | — | — |
 | 14b | O bot humano, calibrado pelos relatórios | — (testes) | depois dos relatórios dos testers |
-| 19b | A espera no seco e as pernas no sofá | v12.11.1 | feita em 27/11 (`docs/spec-v12.11.1.md`; `smoke126`) |
 | 19c | O couvert cinza e a cabecinha nos cursos | v12.11.2 | feita em 27/11 (`docs/spec-v12.11.2.md`; `smoke127`; `cursoCabeca`) |
 | 20a | As dancinhas escondidas (os 5 toques na equipe) | v12.12 | feita em 28/11 (`docs/spec-v12.12.md`; `smoke128`; `g.eggs`, `danca`, `eggAt`) |
-| 20b | Os outros segredos e a dança da equipe | v12.12.1 | aprovada em 27/11 (`docs/spec-v12.12.1.md`) |
+| 20b | Os outros segredos e a dança da equipe | v12.12.1 | feita em 28/11 (`docs/spec-v12.12.1.md`; `smoke129`; `g.dancou`, `g.festa`) |
 
 ---
 
@@ -82,13 +81,6 @@ Origem: retorno do Renan Martorelli (beta-tester) e conversa com o Arthur (15/10
 > - **O Terraço mede pela equipe toda** (Joca, Cami, Anselmo e a confeitaria): é ela que passa ~90% das metas.
 > - **Regra da 3f em todas as sessões:** cartão novo da lojinha só com nome, preço e "?"; toda novidade ganha ficha no `MANUAL` (sem números), revelada quando aparece na história.
 > Ordem: 4a-1 (o ponto e a refeição completa, v10) → 4a-2 (o VIP exigente e a reputação, v10.1) → 4a-3 (a cozinha: alta gastronomia, a Lia e a alta confeitaria, v10.2) → 4a-4 (o salão e o bar: Cami, Joca e Anselmo, v10.3) → 4a-5 (música, flores e rebalanceamento, v10.4). Cada uma é uma versão, com PR e merge. As "Checagens de fim de sessão" da etapa 3 valem para todas.
-
-## Etapa 20 — Os segredos: as dancinhas dos 5 toques (20a, v12.12; 20b, v12.12.1)
-Pedido do usuário de 27/11 (`docs/PROPOSTAS.md`), planejada em 27/11 (Opus) e dividida em 2 sessões, na ordem:
-- **20a** (`docs/spec-v12.12.md`): 5 toques seguidos na Bia, no Tonhão, na Dani, no Joca, na Cami, no Anselmo ou na Lia fazem uma dancinha de 1 s, diferente para cada um, só no desenho; no Tonhão e na Lia, só com a fila vazia para a janela.
-  **Modelo:** Sonnet, esforço alto (a ordem do toque no `onDown` e sete desenhos novos conferidos em captura)
-- **20b** (`docs/spec-v12.12.1.md`): o fiscal, os músicos e a Bia grande do menu também dançam; a campainha do balcão ("Já vai, já vai!"); o Tonhão gripado espirra três vezes; e, se todos da equipe dançaram no dia, a festa no fim do expediente.
-  **Modelo:** Sonnet, esforço alto (muitas partes ao mesmo tempo: o menu, a cozinha, a festa no fim do dia e cinco desenhos novos)
 
 ## Etapa 19 — O salão, a espera e a lojinha: retornos de 27/11 (19a, v12.11; 19b, v12.11.1; 19c, v12.11.2)
 Planejada em 27/11 (Opus) e dividida em 3 sessões, na ordem:

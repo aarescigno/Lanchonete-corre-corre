@@ -333,10 +333,21 @@ function drawSeloVig(ctx,x,y){
 }
 /* o fiscal da vigilância (v9.4): colete azul-claro com "VIGILÂNCIA", prancheta e caneta; as falhas viram ícones em cima dele */
 function drawFiscal(ctx,f,tm){
-  drawPerson(ctx,f.look,f.x,f.y,{ shirt:'#F4F1E8', moving:f.moving, ph:f.walkPh, mood:0, t:tm });
+  /* v12.12.1, a dancinha dos 5 toques (f.egg, 0..1): de 0 a 0,3 ajeita a gravata (a mão na gola); de 0,3 a 0,55 olha para um lado e para o outro (o rosto desloca 2 px);
+     de 0,55 a 0,85 um passinho escondido (sobe 6 e vai 4 px para o lado); depois volta à pose séria. Com movimento reduzido, só o coraçãozinho */
+  const eg = f.egg > 0 ? f.egg : 0, ed = eg && !RM ? eg : 0;
+  const gola = ed > 0 && ed < 0.3, olha = ed >= 0.3 && ed < 0.55 ? (ed < 0.425 ? -0.8 : 0.8) : 0, pass = ed >= 0.55 && ed < 0.85 ? (ed - 0.55) / 0.3 : 0;
+  if (pass){ ctx.save(); ctx.translate(4 * Math.sin(TAU * pass),-6 * Math.sin(Math.PI * pass)); }
+  drawPerson(ctx,f.look,f.x,f.y,{ shirt:'#F4F1E8', moving:f.moving, ph:f.walkPh, mood:0, t:tm, bracoE:gola ? [[-17,-24],[-4,-28.5]] : null, olha });
   const bob = (f.moving && !RM) ? -Math.abs(Math.sin(f.walkPh)) * 2.4 : 0;
   ctx.beginPath(); ctx.moveTo(f.x-8,f.y-30+bob); ctx.lineTo(f.x+8,f.y-30+bob); ctx.lineTo(f.x+11,f.y-12); ctx.lineTo(f.x-11,f.y-12); ctx.closePath(); fs(ctx,'#9FD3EE',2.2);
   ctx.fillStyle = '#fff'; ctx.fillRect(f.x-9.5,f.y-20+bob,19,2.2);
+  if (gola){   // a mão na gola, por cima do colete: o antebraço e a mão de novo, na frente dele
+    ctx.save(); ctx.lineCap = 'round'; ctx.lineJoin = 'round';
+    ctx.strokeStyle = PAL.tinta; ctx.lineWidth = 8; ctx.beginPath(); ctx.moveTo(f.x-11,f.y-30); ctx.lineTo(f.x-17,f.y-24); ctx.lineTo(f.x-4,f.y-28.5); ctx.stroke();
+    ctx.strokeStyle = '#F4F1E8'; ctx.lineWidth = 4.5; ctx.beginPath(); ctx.moveTo(f.x-11,f.y-30); ctx.lineTo(f.x-17,f.y-24); ctx.lineTo(f.x-4,f.y-28.5); ctx.stroke();
+    circ(ctx,f.x-4,f.y-28.5,3.6); fs(ctx,SKINS[f.look.skin],1.8); ctx.restore();
+  }
   rr(ctx,f.x+9,f.y-36+bob,13,17,2); fs(ctx,'#8A5A33',1.6);
   rr(ctx,f.x+11,f.y-33+bob,9,12,1); fs(ctx,'#fff',1);
   ctx.strokeStyle = '#2C5AA0'; ctx.lineWidth = 1.2; ctx.beginPath(); ctx.moveTo(f.x+12.5,f.y-29+bob); ctx.lineTo(f.x+18.5,f.y-29+bob); ctx.moveTo(f.x+12.5,f.y-26+bob); ctx.lineTo(f.x+18.5,f.y-26+bob); ctx.stroke();
@@ -348,6 +359,8 @@ function drawFiscal(ctx,f,tm){
     else if (k === 'lixo'){ ctx.beginPath(); ctx.moveTo(ix-4,iy-2); ctx.lineTo(ix+4,iy-2); ctx.lineTo(ix+3,iy+5); ctx.lineTo(ix-3,iy+5); ctx.closePath(); fs(ctx,'#8E99A6',1.2); ctx.fillStyle = '#B9C2CC'; ctx.fillRect(ix-5,iy-4.5,10,2.2); }
     else { ell(ctx,ix,iy+3,5.5,1.8); fs(ctx,'#E6DCC4',1); ell(ctx,ix,iy,5.5,1.8); fs(ctx,'#fff',1); ell(ctx,ix,iy-3,5.5,1.8); fs(ctx,'#E6DCC4',1); }
   });
+  if (pass) ctx.restore();
+  if (eg && RM) eggCoracao(ctx,f.x,f.y - 63);
 }
 /* pedra portuguesa em ondas preto e branco (a calçada da Avenida; x0: onde o piso começa) */
 function drawPedraPort(ctx,x0){
@@ -673,19 +686,21 @@ function drawNotas(ctx,x,y,tm,n){
 }
 function drawPianista(ctx,g,tm){
   const P = TERRACO.piano, x = P.x0 + 60, y = P.y0 + 98, k = RM ? 0 : Math.sin(tm * 6);
-  drawPerson(ctx,PIANISTA_LOOK,x,y,{ sit:true, back:true, shirt:'#1B1B22', mood:0, bob:RM ? 0 : Math.sin(tm * 2.4) * 0.8, bracoE:[[-15,-26],[-8 + k * 2.5,-39]], bracoD:[[15,-26],[8 - k * 2.5,-39]] });
-  drawNotas(ctx,x + 8,y - 78,tm,3);
+  const fl = g.eggP ? g.eggP('pianista') : 0, f2 = fl && !RM ? 2 : 1;   // v12.12.1: o floreio dos 5 toques: o dobro de balanço e o triplo de notinhas
+  drawPerson(ctx,PIANISTA_LOOK,x,y,{ sit:true, back:true, shirt:'#1B1B22', mood:0, bob:RM ? 0 : Math.sin(tm * 2.4) * 0.8 * f2, bracoE:[[-15,-26],[-8 + k * 2.5,-39]], bracoD:[[15,-26],[8 - k * 2.5,-39]] });
+  drawNotas(ctx,x + 8,y - 78,tm,fl ? 9 : 3);
+  if (fl && RM) eggCoracao(ctx,x - 6,y - 52);
 }
 function drawTrio(ctx,g,tm){
   const yb = 534, K = 0.8, mv = RM ? 0 : 1;   // menores e no fim do chão, para não cobrir as cadeiras das mesas de baixo
   TRIO.forEach((q,i) => {
-    const x = 0, y = 0, bow = mv * Math.sin(tm * 3 + i * 1.3);
+    const x = 0, y = 0, bow = mv * Math.sin(tm * 3 + i * 1.3), fl = g.eggP ? g.eggP('trio') : 0, f2 = fl && !RM ? 2 : 1;   // v12.12.1: o floreio dos 5 toques (os três juntos)
     ctx.save(); ctx.translate(q.x,yb); ctx.scale(K,K);
     shadowEll(ctx,x,y,20,5,0.18);
     ctx.strokeStyle = '#3B2416'; ctx.lineWidth = 3; ctx.beginPath(); ctx.moveTo(x - 9,y); ctx.lineTo(x - 6,y - 16); ctx.moveTo(x + 9,y); ctx.lineTo(x + 6,y - 16); ctx.stroke();
     ell(ctx,x,y - 17,12,4); fs(ctx,'#6B452B',2);
     const cello = q.inst === 'violoncelo';
-    drawPerson(ctx,q.look,x,y - 26,{ sit:true, shirt:q.shirt, mood:0, bob:mv * Math.sin(tm * 2 + i) * 0.8 });
+    drawPerson(ctx,q.look,x,y - 26,{ sit:true, shirt:q.shirt, mood:0, bob:mv * Math.sin(tm * 2 + i) * 0.8 * f2 });
     ctx.save(); ctx.translate(x,y - 26); ctx.lineCap = 'round';
     if (cello){   // o violoncelo entre os joelhos, o arco na horizontal
       ctx.strokeStyle = '#5A3A1E'; ctx.lineWidth = 2.2; ctx.beginPath(); ctx.moveTo(1,-6); ctx.lineTo(1,-34); ctx.stroke();
@@ -698,7 +713,8 @@ function drawTrio(ctx,g,tm){
     }
     ctx.restore();
     ctx.restore();
-    drawNotas(ctx,q.x + 5,yb - 56,tm + i * 0.37,1);
+    drawNotas(ctx,q.x + 5,yb - 56,tm + i * 0.37,fl ? 3 : 1);
+    if (fl && RM) eggCoracao(ctx,q.x,yb - 62);
   });
 }
 /* o foyer no lugar da rua e do meio-fio: parede do corredor (lambri, arandelas, o elevador, o letreiro e a plaquinha "Cobertura") e o carpete */
@@ -1631,13 +1647,15 @@ function drawMusico(ctx,g,tm){
   shadowEll(ctx,x,y,22,5,0.18);
   ctx.strokeStyle = PAL.madeiraEsc; ctx.lineWidth = 3; ctx.beginPath(); ctx.moveTo(x-10,y); ctx.lineTo(x-7,y-16); ctx.moveTo(x+10,y); ctx.lineTo(x+7,y-16); ctx.stroke();
   ell(ctx,x,y-17,13,4); fs(ctx,PAL.madeira,2);
-  drawPerson(ctx,m.look,x,y-26,{ sit:true, shirt:m.shirt, mood:0, bob: RM ? 0 : Math.sin(tm*4)*1 });
+  const fl = g.eggP ? g.eggP('musico') : 0;   // v12.12.1: o floreio dos 5 toques: o dobro de balanço e 6 notinhas no lugar de 2
+  drawPerson(ctx,m.look,x,y-26,{ sit:true, shirt:m.shirt, mood:0, bob: RM ? 0 : Math.sin(tm*4)*(fl ? 2 : 1) });
   ctx.save(); ctx.translate(x+2,y-24);
   if (m.inst === 'sanfona'){ rr(ctx,-14,-10,28,16,3); fs(ctx,PAL.formica,2); ctx.fillStyle = '#fff'; for (let i=0;i<4;i++) ctx.fillRect(-11+i*6,-7,3,10); }
   else { const big = m.inst === 'violao'; ctx.rotate(-0.5); ell(ctx,0,0,big?10:7,big?8:6); fs(ctx,'#B5733A',2); circ(ctx,0,0,big?3:2); ctx.fillStyle = PAL.tinta; ctx.fill(); rr(ctx,8,-2,big?22:16,4,1); fs(ctx,PAL.madeiraEsc,1.4); }
   ctx.restore();
-  if (!RM){ for (let i=0;i<2;i++){ const p = (tm*0.6 + i*0.5) % 1; ctx.globalAlpha = 1 - p; txt(ctx,'♪',x+14+i*10,y-56-p*30,14,PAL.faixa,'center',FB); ctx.globalAlpha = 1; } }
+  if (!RM){ const nn = fl ? 6 : 2; for (let i=0;i<nn;i++){ const p = (tm*0.6 + i/nn) % 1; ctx.globalAlpha = 1 - p; txt(ctx,'♪',x+14+i*(fl ? 5 : 10),y-56-p*30,14,PAL.faixa,'center',FB); ctx.globalAlpha = 1; } }
   else txt(ctx,'♪',x+16,y-62,14,PAL.faixa,'center',FB);
+  if (fl && RM) eggCoracao(ctx,x,y - 74);
 }
 /* ambiente da Garagem (v7.4.3): TV de tubo passando a Rede Esfera e aparelho de som na rádio Velha Brasil FM.
    drawTv e drawSom desenham com a base em (x, y); a TV troca de programa a cada 6 s (parada, só o logo) */
@@ -2020,6 +2038,22 @@ function drawConsertos(ctx,g,t){
     txt(ctx,lbl,b.x,b.y + R + 5.8,10.5,PAL.tinta,'center',FD);
   });
 }
+/* v12.12.1: a campainha de balcão (segredo: 5 toques chamam o Tonhão): base escura e cúpula dourada numa prateleirinha na ponta do balcão dos pratos; `af`: a cúpula afunda 1,5 px ao toque (parada com movimento reduzido) */
+function drawCampainha(ctx,x,y,af){
+  const d = af > 0 && !RM ? 1.5 : 0;
+  rr(ctx,x - 12,y + 8,24,4,1.6); fs(ctx,PAL.madeiraEsc,1.4);
+  rr(ctx,x - 8,y + 3,16,5.5,2); fs(ctx,'#3A3430',1.5);
+  ctx.beginPath(); ctx.arc(x,y + 3 + d,7,Math.PI,0); ctx.closePath(); fs(ctx,TE_OURO_CL,1.8);
+  circ(ctx,x,y - 4 + d,1.8); fs(ctx,TE_OURO,1.2);
+  ctx.strokeStyle = 'rgba(255,255,255,.7)'; ctx.lineWidth = 1.2; ctx.beginPath(); ctx.arc(x,y + 3 + d,4.6,Math.PI * 1.1,Math.PI * 1.45); ctx.stroke();
+}
+/* v12.12.1: os três "Atchim!" da dancinha do Tonhão gripado (aos 0, 0,4 e 0,8 s de 1,2: à esquerda, acima e à direita da cabeça dele, em (930, 172)), cada um por uns 0,35 s;
+   desenhados depois dos papeizinhos da janela, para não ficarem desbotados por baixo deles */
+function drawAtchins(ctx,g){
+  const eg = g.eggP ? g.eggP('tonhao') : 0;
+  if (!eg || !g.day.gripe) return;
+  [[904,138,12],[930,106,12],[936,128,11]].forEach((a,k) => { if (eg >= k / 3 && eg < k / 3 + 0.3) txt(ctx,'Atchim!',a[0],a[1],a[2],PAL.perigo,'center',FD,3); });
+}
 function drawKitchen(ctx,g,t){
   const bia = g.bia;
   const target = bia.acts.length ? (bia.acts[0].type === 'plate' ? 'plates' : (bia.acts[0].type === 'table' ? null : bia.acts[0].type)) : null;  // order, coffee, juice, sink
@@ -2143,6 +2177,8 @@ function drawKitchen(ctx,g,t){
     });
   }
   glow('plates');
+  drawCampainha(ctx,EGG.campainha.x,EGG.campainha.y,g.eggs && g.eggs.campainha ? g.eggs.campainha.af : 0);   // v12.12.1
+  drawAtchins(ctx,g);
 
   // --- cafezinho (metade esquerda da bancada)
   r = STATIONS.coffee.rect;
@@ -2265,7 +2301,11 @@ function drawChef(ctx,g,x,y,t){
   // cabeça
   circ(ctx,0,-14,15); fs(ctx,'#B9794B',2.6);
   // touca
-  ctx.save(); if (eg && !RM) ctx.translate(0,-16 * Math.sin(Math.PI * eg));
+  ctx.save();
+  if (eg && !RM){
+    if (sick){ const s = Math.sin(Math.PI * eg); ctx.translate(0,-24 * s - 28); ctx.rotate(0.4 * s); ctx.translate(0,28); }   // v12.12.1: gripado, a touca voa (sobe 24 px e inclina) a cada espirro
+    else ctx.translate(0,-16 * Math.sin(Math.PI * eg));
+  }
   rr(ctx,-13,-34,26,12,2); fs(ctx,'#fff',2.4);
   ctx.beginPath(); ctx.arc(-9,-38,8,0,TAU); ctx.arc(0,-43,9,0,TAU); ctx.arc(9,-38,8,0,TAU); fs(ctx,'#fff',2.4);
   rr(ctx,-13,-34,26,8,2); ctx.fillStyle = '#fff'; ctx.fill();
@@ -2281,14 +2321,14 @@ function drawChef(ctx,g,x,y,t){
   // bigode
   ctx.beginPath(); ctx.moveTo(0,-10); ctx.bezierCurveTo(-5,-15,-16,-13,-16,-7); ctx.bezierCurveTo(-12,-9,-5,-7,0,-8); ctx.bezierCurveTo(5,-7,12,-9,16,-7); ctx.bezierCurveTo(16,-13,5,-15,0,-10); ctx.closePath(); fs(ctx,'#1B1512',2);
   if (exp) rostoExpr(ctx,EXPR,5.5,-17,-2.6);
-  else if (eg && !RM){ ctx.strokeStyle = PAL.tinta; ctx.lineWidth = 1.8; ctx.beginPath(); ctx.arc(0,-5,6,0.2,Math.PI-0.2); ctx.stroke(); }   // v12.12: o sorrisão (raio 6)
+  else if (eg && !RM && !sick){ ctx.strokeStyle = PAL.tinta; ctx.lineWidth = 1.8; ctx.beginPath(); ctx.arc(0,-5,6,0.2,Math.PI-0.2); ctx.stroke(); }   // v12.12: o sorrisão (raio 6)
   else { ctx.strokeStyle = PAL.tinta; ctx.lineWidth = 1.8; ctx.beginPath(); ctx.arc(0,-4,4,0.3,Math.PI-0.3); ctx.stroke(); }
   if (nova){   // a gota cai da testa a cada 1,2 s (com `prefers-reduced-motion`, parada na testa)
     const f = RM ? 0.15 : (t / 1.2) % 1, gx = -11.5, gy = -21 + f * 7;
     ctx.save(); ctx.globalAlpha = RM ? 1 : 1 - f * f; ctx.beginPath(); ctx.moveTo(gx,gy - 3.4); ctx.quadraticCurveTo(gx + 2.8,gy + 0.6,gx,gy + 2); ctx.quadraticCurveTo(gx - 2.8,gy + 0.6,gx,gy - 3.4); ctx.closePath(); fs(ctx,'#8FD3F4',1.1); ctx.restore();
   }
   if (sick){ const a = (Math.floor(t*0.6) % 2); if (a) txt(ctx,'Atchim!',-26,-34,12,PAL.perigo,'center',FD,3); }
-  if (eg && RM) eggCoracao(ctx,0,-60);
+  if (eg && RM && !sick) eggCoracao(ctx,0,-60);
   ctx.restore();
 }
 

@@ -1,6 +1,6 @@
 /* ---------- troca de telas ---------- */
 game.hooks.state = function(s){
-  if (s === 'menu'){ game.resetDay(game.proxDia); buildMenu(); devSync(); showOnly(['ov-menu']); }
+  if (s === 'menu'){ game.resetDay(game.proxDia); game.menuEgg(); buildMenu(); devSync(); showOnly(['ov-menu']); }   // (v12.12.1: menuEgg, a pirueta pedida no modo dev)
   else if (s === 'desafios'){ game.sairDesafio(); game.resetDay(game.proxDia); buildDesafios(); showOnly(['ov-desafios']); }   // v12: a tela de Desafios (o save de verdade volta, se estava no de mentira)
   else if (s === 'teste'){ game.sairDesafio(); game.resetDay(game.proxDia); buildTeste(); showOnly(['ov-teste']); }   // v12.3.1: a tela do Teste de habilidade (modo dev); como nos Desafios, o save de verdade volta
   else if (s === 'testefase'){ game.sairDesafio(); game.resetDay(game.proxDia); testeFaseAbre(); showOnly(['ov-teste-fase']); }   // v12.4: a tela da fase do Teste (a equipe)
@@ -398,6 +398,12 @@ canvas.addEventListener('pointerdown', e => {
   if (game.conversa){ Sfx.tap(); game.conversa.seguir(); return; }   // conversa (v8.7): o toque passa para a próxima fala
   try { canvas.setPointerCapture(e.pointerId); } catch(err) {}
   const p = toLogical(e); game.onDown(p.x, p.y, touchPad(e));
+});
+/* v12.12.1: no menu a Bia grande responde aos 5 toques; o #ov-menu cobre o canvas, então o toque chega nele (só quando o alvo é ele mesmo, não um botão nem um cartão) */
+$('ov-menu').addEventListener('pointerdown', e => {
+  if (e.target !== $('ov-menu') || game.state !== 'menu') return;
+  Sfx.init(); Sfx.resume();
+  const p = toLogical(e); game.menuToque(p.x, p.y);
 });
 canvas.addEventListener('pointermove', e => { const p = toLogical(e); game.onMove(p.x, p.y); });
 canvas.addEventListener('pointerup', e => { const p = toLogical(e); game.onUp(p.x, p.y); });

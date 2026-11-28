@@ -536,7 +536,7 @@ table.rank tr.me td{background:#fbe7a8}
 
     <div class="ov show" id="ov-menu">
       <div class="panel menu-panel">
-        <span class="vtag" id="vtag" aria-label="Versão 12.12">v12.12</span>
+        <span class="vtag" id="vtag" aria-label="Versão 12.12.1">v12.12.1</span>
         <h1 class="title">Lanchonete <br>Corre-Corre</h1>
         <p class="tag">Ajude a Bia a atender a freguesia da esquina antes que o cafezinho esfrie!</p>
         <div class="lbl" id="menu-dia">História</div>
@@ -838,7 +838,8 @@ table.rank tr.me td{background:#fbe7a8}
       <div class="panel">
         <h2>Versões</h2>
         <ul class="verlist">
-          <li><b>v12.12</b><span class="cur">versão atual</span><br>28/11/2026 &mdash; Um segredo para quem fuça: toque cinco vezes seguidas em alguém da equipe e veja o que acontece.</li>
+          <li><b>v12.12.1</b><span class="cur">versão atual</span><br>28/11/2026 &mdash; Mais segredos para quem fuça: tem coisa nova no salão, na cozinha e na tela de abertura. E, se todo mundo dançar no mesmo dia, tem festa no fim.</li>
+          <li><b>v12.12</b><br>28/11/2026 &mdash; Um segredo para quem fuça: toque cinco vezes seguidas em alguém da equipe e veja o que acontece.</li>
           <li><b>v12.11.2</b><br>27/11/2026 &mdash; O &ldquo;Cobrar couvert&rdquo; fica cinza até o couvert ser contratado. Cada curso do Cardápio mostra a cabecinha de quem aprende, e os cursos dos ajudantes ganham o desenho do que ensinam.</li>
           <li><b>v12.11.1</b><br>27/11/2026 &mdash; Na Avenida e no Terraço, quem espera fica no seco: a chuva só aparece nas janelas do fundo, com chuvisco e um relâmpago de vez em quando. No sofá da Avenida, as pessoas sentadas têm pernas.</li>
           <li><b>v12.11</b><br>27/11/2026 &mdash; O salão da Avenida (e os outros) comporta todos os lugares, com qualquer mistura de mesas; arrastar uma mesa para cima de outra faz a outra se mexer ou ir para o estoque, que agora é uma faixa no alto do editor.</li>
@@ -2746,7 +2747,15 @@ function liaOn(eq, ponto){ return !!eq && eq.lia > 0 && !eq.liaFora && ((ponto |
 const EGG = { toques:5, folga:1, dura:1.2, quem:['bia','tonhao','dani','joca','cami','anselmo','lia'],
   gente:{ x:15, cima:64, baixo:2 },   // Bia, Dani, Joca, Cami e Anselmo: x ± 15, de y − 64 a y + 2
   tonhao:{ x0:914, x1:946, y0:120, y1:174 },   // só a cabeça e a touca (ele é desenhado em drawChef(ctx,g,930,172,t))
-  lia:{ x:16, cima:68, baixo:30 } };   // só a cabeça, vezes a escala dela
+  lia:{ x:16, cima:68, baixo:30 },   // só a cabeça, vezes a escala dela
+  /* v12.12.1 (docs/spec-v12.12.1.md): o fiscal, os músicos, a Bia grande do menu, a campainha do balcão e a festa */
+  fiscal:{ x:15, cima:64, baixo:2 },   // g.fiscal.x ± 15, de y − 64 a y + 2
+  musico:{ x:186, lx:16, y0:440, y1:528 },   // o do couvert (drawMusico)
+  trio:{ lx:14, y0:464, y1:534 },   // cada um do trio, em TRIO[i].x (os três somam na mesma conta)
+  pianista:{ dx:60, dy:98, lx:16, cima:64 },   // em TERRACO.piano.x0 + dx, y0 + dy (os pés)
+  menu:{ lx:34, y0:375, y1:522 },   // a Bia grande do menu, em TW − 170
+  campainha:{ x:754, y:214, r:12 },   // a campainha de balcão (fora de todas as estações)
+  festa:2 };   // a festa do fim do dia: 2 s, duas dancinhas de 1 s
 const LIA_HOME = { x:868, y:203, s:0.72 };   // v10.2: na janela dos pedidos, ao lado do Tonhão (s: a escala, menor que a da Bia, para caber abaixo das comandas)
 /* v9.0.4: a lojinha abre aos poucos no Modo História. Cada cartão: dia mínimo, garantia (ate), as reclamações do Gúgou
    no dia do gatilho e a conversa do fim do dia. save.libera[id]: 0 fechado | 'pend' | 1 aberto (selo "novo") | 2 aberto e visto */
@@ -2987,7 +2996,7 @@ const HIST_NOMES = { bia:'Bia', tonhao:'Tonhão', dani:'Dani', joca:'Joca', cami
 const ATU_TXT = { procurando:'Procurando versão nova...', nova:'Tem versão nova: {v}! Seu jogo salvo continua.', igual:'Você já está na versão mais nova ({v}).', erro:'Sem internet agora. Tente de novo mais tarde.', atualizando:'Atualizando...' };
 function atuEstado(remota, atual){ if (typeof remota !== 'string' || !remota.trim()) return 'erro'; return remota.trim() === atual ? 'igual' : 'nova'; }
 const CAIXA_MAX = 14;                                 // livro-caixa (v7.2): quantos dias da carreira ficam guardados
-const VERSAO = 'v12.12';                                     // vai no resumo do Caixa
+const VERSAO = 'v12.12.1';                                     // vai no resumo do Caixa
 const DIVULGA_DIA = 4;                                // antes disso, o movimento é o da inauguração (sem custo); v9.0.2: dia 4, e o padrão é o boca a boca
 function divulgaAberta(n, sv){ return devLivre() || n >= DIVULGA_DIA && !(sv && sv.convDiv === 'pend'); }   // no modo dev, desde o dia 1; v9.0.3: no Modo História, só depois da conversa
 /* v9.6.4: a Efood (os entregadores) só abre depois da conversa dos entregadores, no Modo História; antes dela, nenhum tipo com `retira` vem na agenda */
@@ -3423,6 +3432,8 @@ const Sfx = {
   tap(){   this.tone(420, 0.05, 'triangle', 0.07); },
   buzina(){ this.tone(466, 0.09, 'square', 0.05); this.tone(587, 0.09, 'square', 0.03); this.tone(466, 0.15, 'square', 0.05, 0.14); this.tone(587, 0.15, 'square', 0.03, 0.14); },   // v11.16.1: a buzina da moto do entregador do eFood, "bi-bip"
   tiriri(){ [784,988,1175].forEach((f,i) => this.tone(f, 0.06, 'triangle', 0.05, i * 0.07)); },   // v12.12: o "tiriri" da dancinha escondida
+  plim(){ this.tone(2093, 0.15, 'sine', 0.06); },   // v12.12.1: a campainha de balcão (não é o sino do prato pronto)
+  atchim(){ this.noise(0.12, 0.08, 0, 1800); },   // v12.12.1: o espirro do Tonhão gripado
   coin(){  this.tone(988, 0.07, 'square', 0.06); this.tone(1318, 0.2, 'square', 0.06, 0.07); },
   bell(){  this.tone(1568, 0.6, 'sine', 0.12); this.tone(2093, 0.5, 'sine', 0.05, 0.03); },
   huff(){  this.noise(0.4, 0.14, 0, 700); this.tone(200, 0.3, 'sawtooth', 0.04, 0, 90); },
@@ -5297,6 +5308,7 @@ class Game {
     this.money = 0; this.custo = 0; this.contas = 0; this.paidDiv = 0; this.conserto = 0; this.pontos = 0;
     this.visita = treino || !n ? null : this.criticoDia(n); this.ficha = null;   // v10.9: o crítico do dia (null, ou { n:1|2, boato, real }) e a ficha da visita (fechada quando o grupo dele sai)
     this.eggs = {};   // v12.12: as dancinhas dos 5 toques ({ n: toques seguidos, t: s desde o último, p: 0 parado, ou 0..1 dançando })
+    this.dancou = new Set(); this.festa = 0; this.festaI = -1;   // v12.12.1: quem dançou no dia e a festa do fim do expediente (2 → 0 s)
     this.manualDia = [];   // v9.6.7: as fichas do Manual reveladas durante o dia (a linha "Novo no Manual" do fim do dia)
     this.semToque = 0; this.dica = null; this.dicaCand = null; this.dicaT = 0; this.dicaDesde = 0;   // v9.6.12: as dicas na hora (17-treino.js)
     this.avals = [];   // avaliações do dia (v8.4): { r: as notas dos critérios, txt: o comentário }; entram no save no fim do dia
@@ -6575,6 +6587,7 @@ class Game {
           resta.forEach(g => this.timeUpLeave(g));
           this.bia.clearActs();
           this.ending = true; this.endTimer = 2.0; this.reason = 'time'; this.reageMeta();
+          this.festaIni();   // v12.12.1: todos dançaram no dia: a festa, só no desenho
           Sfx.bell();
         }
       } else if (this.nextIdx >= this.schedule.length && this.groups.length === 0){
@@ -6587,6 +6600,7 @@ class Game {
   }
 
   finishDay(){
+    this.festaFim();   // v12.12.1
     if (this.desafio) return this.finishDesafio();   // v12: o Desafio só conta as estrelas; nada do caixa, empréstimo, ranking nem save roda
     const d = this.day, m = Math.round(this.lucro), fat = Math.round(this.money), sv = this.save;
     const passed = m >= d.meta;
@@ -7919,6 +7933,7 @@ class Game {
     const x = sx - this.cam;
     // v12.12: a cabeça do Tonhão e da Lia, na janela dos pedidos: com a fila vazia o toque conta para a dancinha; com comanda na mão da Bia, vai para a janela (e zera a conta)
     const cab = this.eggAt(x, y), adi = STATIONS.adiantar.rect;
+    if (cab === 'campainha'){ this.eggTap('campainha'); return; }   // v12.12.1: a campainha do balcão, antes de tudo (é pequena e fica fora das estações)
     if ((cab === 'tonhao' || cab === 'lia') && !(this.estacaoOn('adiantar') && x >= adi.x && x <= adi.x + adi.w && y >= adi.y && y <= adi.y + adi.h)){
       if (!this.bia.hands.some(h => h.kind === 'ticket') && !this.bia.acts.some(a => a.type === 'order')){ this.eggTap(cab); return; }
       if (this.eggs[cab]) this.eggs[cab].n = 0;
@@ -7945,37 +7960,111 @@ class Game {
     else { if (this.tm) this.tm.perd++; if (pad) this.fx.push({ k:'tap', x, y, life:0, max:0.3 }); }   // v12.2: o toque no salão que não acerta nada é toque perdido
   }
   /* ---------- v12.12, as dancinhas escondidas (docs/spec-v12.12.md) ---------- */
-  eggOn(q){ return q === 'bia' || q === 'tonhao' || (q === 'anselmo' ? this.anselmoAtivo : q === 'lia' ? this.liaAtiva : this[q] && this[q].active); }
+  eggOn(q){
+    if (q === 'bia' || q === 'tonhao' || q === 'campainha') return true;
+    if (q === 'anselmo') return this.anselmoAtivo;
+    if (q === 'lia') return this.liaAtiva;
+    if (q === 'fiscal') return !!(this.fiscal && this.fiscal.ativo);   // v12.12.1: o fiscal no salão
+    if (q === 'musico') return this.state !== 'menu' && !!this.save.equipe.couvert;   // o do couvert
+    if (q === 'trio' || q === 'pianista') return this.state !== 'menu' && terraco(this) && this.save.equipe.musica === (q === 'trio' ? 1 : 2);   // a música ao vivo do Terraço
+    if (q === 'biaMenu') return this.state === 'menu';
+    return !!(this[q] && this[q].active);
+  }
   /* quem está sob o ponto (x, y no salão): o retângulo de cada um; se dois se cruzam, o de cima no desenho (o de maior y nos pés) */
   eggAt(x, y){
-    const E = EGG, g = E.gente, A = ANSELMO_HOME, L = LIA_HOME;
+    const E = EGG, g = E.gente, A = ANSELMO_HOME, L = LIA_HOME, C = E.campainha;
+    if ((x - C.x) * (x - C.x) + (y - C.y) * (y - C.y) <= C.r * C.r) return 'campainha';   // v12.12.1: o círculo dela vence quem estiver por perto (a Bia no balcão dos pratos)
     const pes = { bia:this.bia, dani:this.dani, joca:this.joca, cami:this.cami, anselmo:A };
     let best = null, by = -Infinity;
     const vale = (q, x0, x1, y0, y1, py) => { if (this.eggOn(q) && x >= x0 && x <= x1 && y >= y0 && y <= y1 && py > by){ best = q; by = py; } };
     for (const q in pes){ const p = pes[q]; vale(q, p.x - g.x, p.x + g.x, p.y - g.cima, p.y + g.baixo, p.y); }
     vale('tonhao', E.tonhao.x0, E.tonhao.x1, E.tonhao.y0, E.tonhao.y1, 172);
     vale('lia', L.x - E.lia.x * L.s, L.x + E.lia.x * L.s, L.y - E.lia.cima * L.s, L.y - E.lia.baixo * L.s, L.y);
+    const f = this.fiscal, F = E.fiscal; if (f) vale('fiscal', f.x - F.x, f.x + F.x, f.y - F.cima, f.y + F.baixo, f.y);   // v12.12.1
+    const M = E.musico; vale('musico', M.x - M.lx, M.x + M.lx, M.y0, M.y1, 528);
+    TRIO.forEach(q => vale('trio', q.x - E.trio.lx, q.x + E.trio.lx, E.trio.y0, E.trio.y1, 534));
+    const P = TERRACO.piano, Q = E.pianista, px = P.x0 + Q.dx, py = P.y0 + Q.dy; vale('pianista', px - Q.lx, px + Q.lx, py - Q.cima, py, py);
     return best;
   }
   eggTap(q){
     const e = this.eggs[q] || (this.eggs[q] = { n:0, t:0, p:0 });
+    if (q === 'campainha'){   // v12.12.1: cada toque toca o plim e afunda a cúpula; o 5º seguido chama o Tonhão
+      e.n = e.n > 0 && e.t <= EGG.folga ? e.n + 1 : 1; e.t = 0; e.af = 0.15; Sfx.plim();
+      if (e.n >= EGG.toques){ e.n = 0; this.campainhaResposta(); }
+      return;
+    }
     if (e.p > 0) return;   // dançando: o toque não conta
     e.n = e.n > 0 && e.t <= EGG.folga ? e.n + 1 : 1; e.t = 0;
     if (e.n >= EGG.toques) this.danca(q);
   }
+  campainhaResposta(){ this.addText(900, 104, 'Já vai, já vai!', '#fff', 15); }   // o Tonhão responde à campainha (5º toque seguido; o botão do modo dev chama direto)
+  /* o toque na tela do menu (só no #ov-menu, fora dos botões; 43-telas.js): a Bia grande que dá tchau */
+  menuToque(x, y){
+    const M = EGG.menu, cx = TW - 170;
+    if (this.state !== 'menu' || this.conversa) return;
+    if (x >= cx - M.lx && x <= cx + M.lx && y >= M.y0 && y <= M.y1) this.eggTap('biaMenu');
+  }
+  /* a pirueta da Bia grande pedida no modo dev durante o dia: vista ao voltar ao menu (o resetDay zera as dancinhas) */
+  devBiaMenu(){ this.menuDanca = true; }
+  menuEgg(){ if (this.menuDanca){ this.menuDanca = false; this.danca('biaMenu'); } }
   /* a dancinha de q (o 5º toque e o botão do modo dev): só o tempo; o desenho lê g.eggs[q].p */
   danca(q){
     const e = this.eggs[q] || (this.eggs[q] = { n:0, t:0, p:0 });
-    e.n = 0; e.t = 0; e.p = 1e-6;
-    Sfx.tiriri();
+    e.n = 0; e.t = 0; e.p = 1e-6; this.dancou.add(q);
+    if (q === 'tonhao' && this.day && this.day.gripe){ e.at = 0; e.pa = 0; this.atchimAnda(e); }   // v12.12.1: gripado, ele espirra no lugar da touca que pula (três "Atchim!")
+    else Sfx.tiriri();
     if (q === 'bia' && !RM) this.addSparks(this.bia.x, this.bia.y - 40, 8, PAL.mostarda);
+  }
+  /* o Tonhão gripado dançando: o espirro (som) de cada terço da dancinha (0, 0,4 e 0,8 s de 1,2); na festa, a volta de 1 s recomeça a conta */
+  atchimAnda(e){
+    const k = Math.min(2, Math.floor(e.p * 3));
+    if (e.p < (e.pa || 0)) e.at = 0;
+    e.pa = e.p;
+    while ((e.at || 0) <= k){ Sfx.atchim(); e.at = (e.at || 0) + 1; }
   }
   eggAnda(dt){
     for (const q in this.eggs){
       const e = this.eggs[q]; e.t += dt;
-      if (e.p > 0){ e.p += dt / EGG.dura; if (e.p >= 1){ e.p = 0; e.n = 0; e.t = 0; } }
+      if (e.af > 0) e.af = Math.max(0, e.af - dt);   // a cúpula da campainha afundada
+      if (e.p > 0){
+        e.p += dt / EGG.dura;
+        if (e.p >= 1){ e.p = 0; e.n = 0; e.t = 0; }
+        else if (q === 'tonhao' && this.day && this.day.gripe) this.atchimAnda(e);
+      }
     }
+    if (this.festa > 0) this.festaAnda(dt);
   }
+  /* ---------- v12.12.1: todos dançaram ---------- */
+  festaQuem(){ return EGG.quem.filter(q => this.eggOn(q)); }   // quem precisa dançar para a festa: a Bia, o Tonhão e os ajudantes que estão no dia
+  /* começa a festa se todos dançaram no dia (forcar: o botão do modo dev, sem precisar do fim do dia) */
+  festaIni(forcar){
+    if (this.festa > 0) return false;
+    if (!forcar && !this.festaQuem().every(q => this.dancou.has(q))) return false;
+    this.festa = EGG.festa; this.festaI = -1;
+    return true;
+  }
+  festaAnda(dt){
+    const quem = this.festaQuem(), s = EGG.festa - this.festa, idx = Math.floor(s / 0.5 + 1e-6);
+    if (idx > this.festaI){   // a cada 0,5 s os brilhinhos sobre cada um (movimento reduzido: sem), e o tiriri aos 0 e 1 s
+      this.festaI = idx; if (idx % 2 === 0) Sfx.tiriri();
+      if (!RM) quem.forEach(q => { const o = this.festaOnde(q); this.festaBrilho(o.x, o.y - 60); });
+    }
+    quem.forEach(q => {
+      const e = this.eggs[q] || (this.eggs[q] = { n:0, t:0, p:0 });
+      e.n = 0; e.p = Math.max(1e-6, s % 1); this.dancou.add(q);
+      if (q === 'tonhao' && this.day && this.day.gripe) this.atchimAnda(e);
+    });
+    this.festa = Math.max(0, this.festa - dt);
+    if (this.festa <= 0) this.festaFim();
+  }
+  festaFim(){
+    if (!(this.festa > 0) && this.festaI < 0) return;
+    this.festa = 0; this.festaI = -1;
+    EGG.quem.forEach(q => { const e = this.eggs[q]; if (e) e.p = 0; });
+  }
+  festaOnde(q){ return q === 'tonhao' ? { x:930, y:172 } : q === 'anselmo' ? ANSELMO_HOME : q === 'lia' ? LIA_HOME : this[q]; }
+  /* os brilhinhos da festa: como o addSparks, mas sem sorteio (a festa não mexe no que o jogo sorteia) */
+  festaBrilho(x, y){ for (let i = 0; i < 4; i++){ const a = Math.PI * (0.25 + 0.5 * i); this.fx.push({ k:'spark', x, y, vx:Math.cos(a) * 80, vy:Math.sin(a) * 80, life:0, max:0.7, color:PAL.mostarda }); } }
   /* o progresso da dancinha de q para o desenho (0 se não dança) */
   eggP(q){ const e = this.eggs && this.eggs[q]; return e && e.p > 0 ? e.p : 0; }
   /* destaque da mesa sob o grupo arrastado ou escolhido */
@@ -10057,10 +10146,21 @@ function drawSeloVig(ctx,x,y){
 }
 /* o fiscal da vigilância (v9.4): colete azul-claro com "VIGILÂNCIA", prancheta e caneta; as falhas viram ícones em cima dele */
 function drawFiscal(ctx,f,tm){
-  drawPerson(ctx,f.look,f.x,f.y,{ shirt:'#F4F1E8', moving:f.moving, ph:f.walkPh, mood:0, t:tm });
+  /* v12.12.1, a dancinha dos 5 toques (f.egg, 0..1): de 0 a 0,3 ajeita a gravata (a mão na gola); de 0,3 a 0,55 olha para um lado e para o outro (o rosto desloca 2 px);
+     de 0,55 a 0,85 um passinho escondido (sobe 6 e vai 4 px para o lado); depois volta à pose séria. Com movimento reduzido, só o coraçãozinho */
+  const eg = f.egg > 0 ? f.egg : 0, ed = eg && !RM ? eg : 0;
+  const gola = ed > 0 && ed < 0.3, olha = ed >= 0.3 && ed < 0.55 ? (ed < 0.425 ? -0.8 : 0.8) : 0, pass = ed >= 0.55 && ed < 0.85 ? (ed - 0.55) / 0.3 : 0;
+  if (pass){ ctx.save(); ctx.translate(4 * Math.sin(TAU * pass),-6 * Math.sin(Math.PI * pass)); }
+  drawPerson(ctx,f.look,f.x,f.y,{ shirt:'#F4F1E8', moving:f.moving, ph:f.walkPh, mood:0, t:tm, bracoE:gola ? [[-17,-24],[-4,-28.5]] : null, olha });
   const bob = (f.moving && !RM) ? -Math.abs(Math.sin(f.walkPh)) * 2.4 : 0;
   ctx.beginPath(); ctx.moveTo(f.x-8,f.y-30+bob); ctx.lineTo(f.x+8,f.y-30+bob); ctx.lineTo(f.x+11,f.y-12); ctx.lineTo(f.x-11,f.y-12); ctx.closePath(); fs(ctx,'#9FD3EE',2.2);
   ctx.fillStyle = '#fff'; ctx.fillRect(f.x-9.5,f.y-20+bob,19,2.2);
+  if (gola){   // a mão na gola, por cima do colete: o antebraço e a mão de novo, na frente dele
+    ctx.save(); ctx.lineCap = 'round'; ctx.lineJoin = 'round';
+    ctx.strokeStyle = PAL.tinta; ctx.lineWidth = 8; ctx.beginPath(); ctx.moveTo(f.x-11,f.y-30); ctx.lineTo(f.x-17,f.y-24); ctx.lineTo(f.x-4,f.y-28.5); ctx.stroke();
+    ctx.strokeStyle = '#F4F1E8'; ctx.lineWidth = 4.5; ctx.beginPath(); ctx.moveTo(f.x-11,f.y-30); ctx.lineTo(f.x-17,f.y-24); ctx.lineTo(f.x-4,f.y-28.5); ctx.stroke();
+    circ(ctx,f.x-4,f.y-28.5,3.6); fs(ctx,SKINS[f.look.skin],1.8); ctx.restore();
+  }
   rr(ctx,f.x+9,f.y-36+bob,13,17,2); fs(ctx,'#8A5A33',1.6);
   rr(ctx,f.x+11,f.y-33+bob,9,12,1); fs(ctx,'#fff',1);
   ctx.strokeStyle = '#2C5AA0'; ctx.lineWidth = 1.2; ctx.beginPath(); ctx.moveTo(f.x+12.5,f.y-29+bob); ctx.lineTo(f.x+18.5,f.y-29+bob); ctx.moveTo(f.x+12.5,f.y-26+bob); ctx.lineTo(f.x+18.5,f.y-26+bob); ctx.stroke();
@@ -10072,6 +10172,8 @@ function drawFiscal(ctx,f,tm){
     else if (k === 'lixo'){ ctx.beginPath(); ctx.moveTo(ix-4,iy-2); ctx.lineTo(ix+4,iy-2); ctx.lineTo(ix+3,iy+5); ctx.lineTo(ix-3,iy+5); ctx.closePath(); fs(ctx,'#8E99A6',1.2); ctx.fillStyle = '#B9C2CC'; ctx.fillRect(ix-5,iy-4.5,10,2.2); }
     else { ell(ctx,ix,iy+3,5.5,1.8); fs(ctx,'#E6DCC4',1); ell(ctx,ix,iy,5.5,1.8); fs(ctx,'#fff',1); ell(ctx,ix,iy-3,5.5,1.8); fs(ctx,'#E6DCC4',1); }
   });
+  if (pass) ctx.restore();
+  if (eg && RM) eggCoracao(ctx,f.x,f.y - 63);
 }
 /* pedra portuguesa em ondas preto e branco (a calçada da Avenida; x0: onde o piso começa) */
 function drawPedraPort(ctx,x0){
@@ -10397,19 +10499,21 @@ function drawNotas(ctx,x,y,tm,n){
 }
 function drawPianista(ctx,g,tm){
   const P = TERRACO.piano, x = P.x0 + 60, y = P.y0 + 98, k = RM ? 0 : Math.sin(tm * 6);
-  drawPerson(ctx,PIANISTA_LOOK,x,y,{ sit:true, back:true, shirt:'#1B1B22', mood:0, bob:RM ? 0 : Math.sin(tm * 2.4) * 0.8, bracoE:[[-15,-26],[-8 + k * 2.5,-39]], bracoD:[[15,-26],[8 - k * 2.5,-39]] });
-  drawNotas(ctx,x + 8,y - 78,tm,3);
+  const fl = g.eggP ? g.eggP('pianista') : 0, f2 = fl && !RM ? 2 : 1;   // v12.12.1: o floreio dos 5 toques: o dobro de balanço e o triplo de notinhas
+  drawPerson(ctx,PIANISTA_LOOK,x,y,{ sit:true, back:true, shirt:'#1B1B22', mood:0, bob:RM ? 0 : Math.sin(tm * 2.4) * 0.8 * f2, bracoE:[[-15,-26],[-8 + k * 2.5,-39]], bracoD:[[15,-26],[8 - k * 2.5,-39]] });
+  drawNotas(ctx,x + 8,y - 78,tm,fl ? 9 : 3);
+  if (fl && RM) eggCoracao(ctx,x - 6,y - 52);
 }
 function drawTrio(ctx,g,tm){
   const yb = 534, K = 0.8, mv = RM ? 0 : 1;   // menores e no fim do chão, para não cobrir as cadeiras das mesas de baixo
   TRIO.forEach((q,i) => {
-    const x = 0, y = 0, bow = mv * Math.sin(tm * 3 + i * 1.3);
+    const x = 0, y = 0, bow = mv * Math.sin(tm * 3 + i * 1.3), fl = g.eggP ? g.eggP('trio') : 0, f2 = fl && !RM ? 2 : 1;   // v12.12.1: o floreio dos 5 toques (os três juntos)
     ctx.save(); ctx.translate(q.x,yb); ctx.scale(K,K);
     shadowEll(ctx,x,y,20,5,0.18);
     ctx.strokeStyle = '#3B2416'; ctx.lineWidth = 3; ctx.beginPath(); ctx.moveTo(x - 9,y); ctx.lineTo(x - 6,y - 16); ctx.moveTo(x + 9,y); ctx.lineTo(x + 6,y - 16); ctx.stroke();
     ell(ctx,x,y - 17,12,4); fs(ctx,'#6B452B',2);
     const cello = q.inst === 'violoncelo';
-    drawPerson(ctx,q.look,x,y - 26,{ sit:true, shirt:q.shirt, mood:0, bob:mv * Math.sin(tm * 2 + i) * 0.8 });
+    drawPerson(ctx,q.look,x,y - 26,{ sit:true, shirt:q.shirt, mood:0, bob:mv * Math.sin(tm * 2 + i) * 0.8 * f2 });
     ctx.save(); ctx.translate(x,y - 26); ctx.lineCap = 'round';
     if (cello){   // o violoncelo entre os joelhos, o arco na horizontal
       ctx.strokeStyle = '#5A3A1E'; ctx.lineWidth = 2.2; ctx.beginPath(); ctx.moveTo(1,-6); ctx.lineTo(1,-34); ctx.stroke();
@@ -10422,7 +10526,8 @@ function drawTrio(ctx,g,tm){
     }
     ctx.restore();
     ctx.restore();
-    drawNotas(ctx,q.x + 5,yb - 56,tm + i * 0.37,1);
+    drawNotas(ctx,q.x + 5,yb - 56,tm + i * 0.37,fl ? 3 : 1);
+    if (fl && RM) eggCoracao(ctx,q.x,yb - 62);
   });
 }
 /* o foyer no lugar da rua e do meio-fio: parede do corredor (lambri, arandelas, o elevador, o letreiro e a plaquinha "Cobertura") e o carpete */
@@ -11355,13 +11460,15 @@ function drawMusico(ctx,g,tm){
   shadowEll(ctx,x,y,22,5,0.18);
   ctx.strokeStyle = PAL.madeiraEsc; ctx.lineWidth = 3; ctx.beginPath(); ctx.moveTo(x-10,y); ctx.lineTo(x-7,y-16); ctx.moveTo(x+10,y); ctx.lineTo(x+7,y-16); ctx.stroke();
   ell(ctx,x,y-17,13,4); fs(ctx,PAL.madeira,2);
-  drawPerson(ctx,m.look,x,y-26,{ sit:true, shirt:m.shirt, mood:0, bob: RM ? 0 : Math.sin(tm*4)*1 });
+  const fl = g.eggP ? g.eggP('musico') : 0;   // v12.12.1: o floreio dos 5 toques: o dobro de balanço e 6 notinhas no lugar de 2
+  drawPerson(ctx,m.look,x,y-26,{ sit:true, shirt:m.shirt, mood:0, bob: RM ? 0 : Math.sin(tm*4)*(fl ? 2 : 1) });
   ctx.save(); ctx.translate(x+2,y-24);
   if (m.inst === 'sanfona'){ rr(ctx,-14,-10,28,16,3); fs(ctx,PAL.formica,2); ctx.fillStyle = '#fff'; for (let i=0;i<4;i++) ctx.fillRect(-11+i*6,-7,3,10); }
   else { const big = m.inst === 'violao'; ctx.rotate(-0.5); ell(ctx,0,0,big?10:7,big?8:6); fs(ctx,'#B5733A',2); circ(ctx,0,0,big?3:2); ctx.fillStyle = PAL.tinta; ctx.fill(); rr(ctx,8,-2,big?22:16,4,1); fs(ctx,PAL.madeiraEsc,1.4); }
   ctx.restore();
-  if (!RM){ for (let i=0;i<2;i++){ const p = (tm*0.6 + i*0.5) % 1; ctx.globalAlpha = 1 - p; txt(ctx,'♪',x+14+i*10,y-56-p*30,14,PAL.faixa,'center',FB); ctx.globalAlpha = 1; } }
+  if (!RM){ const nn = fl ? 6 : 2; for (let i=0;i<nn;i++){ const p = (tm*0.6 + i/nn) % 1; ctx.globalAlpha = 1 - p; txt(ctx,'♪',x+14+i*(fl ? 5 : 10),y-56-p*30,14,PAL.faixa,'center',FB); ctx.globalAlpha = 1; } }
   else txt(ctx,'♪',x+16,y-62,14,PAL.faixa,'center',FB);
+  if (fl && RM) eggCoracao(ctx,x,y - 74);
 }
 /* ambiente da Garagem (v7.4.3): TV de tubo passando a Rede Esfera e aparelho de som na rádio Velha Brasil FM.
    drawTv e drawSom desenham com a base em (x, y); a TV troca de programa a cada 6 s (parada, só o logo) */
@@ -11744,6 +11851,22 @@ function drawConsertos(ctx,g,t){
     txt(ctx,lbl,b.x,b.y + R + 5.8,10.5,PAL.tinta,'center',FD);
   });
 }
+/* v12.12.1: a campainha de balcão (segredo: 5 toques chamam o Tonhão): base escura e cúpula dourada numa prateleirinha na ponta do balcão dos pratos; `af`: a cúpula afunda 1,5 px ao toque (parada com movimento reduzido) */
+function drawCampainha(ctx,x,y,af){
+  const d = af > 0 && !RM ? 1.5 : 0;
+  rr(ctx,x - 12,y + 8,24,4,1.6); fs(ctx,PAL.madeiraEsc,1.4);
+  rr(ctx,x - 8,y + 3,16,5.5,2); fs(ctx,'#3A3430',1.5);
+  ctx.beginPath(); ctx.arc(x,y + 3 + d,7,Math.PI,0); ctx.closePath(); fs(ctx,TE_OURO_CL,1.8);
+  circ(ctx,x,y - 4 + d,1.8); fs(ctx,TE_OURO,1.2);
+  ctx.strokeStyle = 'rgba(255,255,255,.7)'; ctx.lineWidth = 1.2; ctx.beginPath(); ctx.arc(x,y + 3 + d,4.6,Math.PI * 1.1,Math.PI * 1.45); ctx.stroke();
+}
+/* v12.12.1: os três "Atchim!" da dancinha do Tonhão gripado (aos 0, 0,4 e 0,8 s de 1,2: à esquerda, acima e à direita da cabeça dele, em (930, 172)), cada um por uns 0,35 s;
+   desenhados depois dos papeizinhos da janela, para não ficarem desbotados por baixo deles */
+function drawAtchins(ctx,g){
+  const eg = g.eggP ? g.eggP('tonhao') : 0;
+  if (!eg || !g.day.gripe) return;
+  [[904,138,12],[930,106,12],[936,128,11]].forEach((a,k) => { if (eg >= k / 3 && eg < k / 3 + 0.3) txt(ctx,'Atchim!',a[0],a[1],a[2],PAL.perigo,'center',FD,3); });
+}
 function drawKitchen(ctx,g,t){
   const bia = g.bia;
   const target = bia.acts.length ? (bia.acts[0].type === 'plate' ? 'plates' : (bia.acts[0].type === 'table' ? null : bia.acts[0].type)) : null;  // order, coffee, juice, sink
@@ -11867,6 +11990,8 @@ function drawKitchen(ctx,g,t){
     });
   }
   glow('plates');
+  drawCampainha(ctx,EGG.campainha.x,EGG.campainha.y,g.eggs && g.eggs.campainha ? g.eggs.campainha.af : 0);   // v12.12.1
+  drawAtchins(ctx,g);
 
   // --- cafezinho (metade esquerda da bancada)
   r = STATIONS.coffee.rect;
@@ -11989,7 +12114,11 @@ function drawChef(ctx,g,x,y,t){
   // cabeça
   circ(ctx,0,-14,15); fs(ctx,'#B9794B',2.6);
   // touca
-  ctx.save(); if (eg && !RM) ctx.translate(0,-16 * Math.sin(Math.PI * eg));
+  ctx.save();
+  if (eg && !RM){
+    if (sick){ const s = Math.sin(Math.PI * eg); ctx.translate(0,-24 * s - 28); ctx.rotate(0.4 * s); ctx.translate(0,28); }   // v12.12.1: gripado, a touca voa (sobe 24 px e inclina) a cada espirro
+    else ctx.translate(0,-16 * Math.sin(Math.PI * eg));
+  }
   rr(ctx,-13,-34,26,12,2); fs(ctx,'#fff',2.4);
   ctx.beginPath(); ctx.arc(-9,-38,8,0,TAU); ctx.arc(0,-43,9,0,TAU); ctx.arc(9,-38,8,0,TAU); fs(ctx,'#fff',2.4);
   rr(ctx,-13,-34,26,8,2); ctx.fillStyle = '#fff'; ctx.fill();
@@ -12005,14 +12134,14 @@ function drawChef(ctx,g,x,y,t){
   // bigode
   ctx.beginPath(); ctx.moveTo(0,-10); ctx.bezierCurveTo(-5,-15,-16,-13,-16,-7); ctx.bezierCurveTo(-12,-9,-5,-7,0,-8); ctx.bezierCurveTo(5,-7,12,-9,16,-7); ctx.bezierCurveTo(16,-13,5,-15,0,-10); ctx.closePath(); fs(ctx,'#1B1512',2);
   if (exp) rostoExpr(ctx,EXPR,5.5,-17,-2.6);
-  else if (eg && !RM){ ctx.strokeStyle = PAL.tinta; ctx.lineWidth = 1.8; ctx.beginPath(); ctx.arc(0,-5,6,0.2,Math.PI-0.2); ctx.stroke(); }   // v12.12: o sorrisão (raio 6)
+  else if (eg && !RM && !sick){ ctx.strokeStyle = PAL.tinta; ctx.lineWidth = 1.8; ctx.beginPath(); ctx.arc(0,-5,6,0.2,Math.PI-0.2); ctx.stroke(); }   // v12.12: o sorrisão (raio 6)
   else { ctx.strokeStyle = PAL.tinta; ctx.lineWidth = 1.8; ctx.beginPath(); ctx.arc(0,-4,4,0.3,Math.PI-0.3); ctx.stroke(); }
   if (nova){   // a gota cai da testa a cada 1,2 s (com `prefers-reduced-motion`, parada na testa)
     const f = RM ? 0.15 : (t / 1.2) % 1, gx = -11.5, gy = -21 + f * 7;
     ctx.save(); ctx.globalAlpha = RM ? 1 : 1 - f * f; ctx.beginPath(); ctx.moveTo(gx,gy - 3.4); ctx.quadraticCurveTo(gx + 2.8,gy + 0.6,gx,gy + 2); ctx.quadraticCurveTo(gx - 2.8,gy + 0.6,gx,gy - 3.4); ctx.closePath(); fs(ctx,'#8FD3F4',1.1); ctx.restore();
   }
   if (sick){ const a = (Math.floor(t*0.6) % 2); if (a) txt(ctx,'Atchim!',-26,-34,12,PAL.perigo,'center',FD,3); }
-  if (eg && RM) eggCoracao(ctx,0,-60);
+  if (eg && RM && !sick) eggCoracao(ctx,0,-60);
   ctx.restore();
 }
 
@@ -12841,8 +12970,8 @@ function render(g, ctx){
   if (mus === 2) items.push({ y:TERRACO.piano.y1 + 2, f:() => drawPianista(ctx,g,tm) });
   if (mus === 1) items.push({ y:528, f:() => drawTrio(ctx,g,tm) });
   if ((g.save.equipe.tv || g.save.equipe.som) && !menu) items.push({ y:532, f:() => drawAmbiente(ctx,g,tm) });
-  if (g.fiscal && g.fiscal.ativo && !menu) items.push({ y:g.fiscal.y, f:() => drawFiscal(ctx,g.fiscal,tm) });   // v9.4
   const comEgg = (d,q) => { const p = g.eggP(q); return p ? Object.assign(Object.create(d),{ egg:p }) : d; };   // v12.12: a dancinha dos 5 toques vai no objeto que chega ao desenho (a lógica não muda)
+  if (g.fiscal && g.fiscal.ativo && !menu) items.push({ y:g.fiscal.y, f:() => drawFiscal(ctx,comEgg(g.fiscal,'fiscal'),tm) });   // v9.4 (v12.12.1: a dancinha dele)
   if (g.dani.active && !menu) items.push({ y:g.dani.y, f:() => drawDani(ctx,comEgg(g.dani,'dani'),tm) });
   if (g.joca.active && !menu) items.push({ y:g.joca.y, f:() => drawJoca(ctx,comEgg(g.joca,'joca'),tm) });   // v9.2
   if (g.cami.active && !menu) items.push({ y:g.cami.y, f:() => drawCami(ctx,comEgg(g.cami,'cami'),tm) });   // v9.3
@@ -12921,7 +13050,9 @@ function render(g, ctx){
 
   if (menu){
     ctx.fillStyle = 'rgba(34,32,28,.18)'; ctx.fillRect(0,92,TW,448);
-    drawBia(ctx,b,TW-170,520,{ s:2.3, wave:true, t:tm, roupa:roupaBia(g) });
+    const em = g.eggP('biaMenu');   // v12.12.1: a pirueta da Bia grande (5 toques nela); com movimento reduzido, o coraçãozinho parado
+    drawBia(ctx,b,TW-170,520,{ s:2.3, wave:true, t:tm, roupa:roupaBia(g), egg:em });
+    if (em && RM){ ctx.save(); ctx.translate(TW-170,520 - 74 * 2.3 - 8); ctx.scale(2.3,2.3); eggCoracao(ctx,0,0); ctx.restore(); }
     ctx.fillStyle = '#2B2823'; ctx.fillRect(0,540,TW,60);
     ctx.fillStyle = PAL.mostarda; ctx.fillRect(0,540,TW,4);
   } else {
@@ -16617,8 +16748,11 @@ function devAbaHoje(body, secao, botao){
   { const r = secao('Reação da Bia', 'O gesto do ponto de agora, na hora');   // v11.8
     [['mesa', 'Mesa feliz'], ['bravo', 'Grupo bravo'], ['meta', 'Meta']].forEach(([k, t]) => botao(r, t, () => game.devReacao(k))); }
   if (game.state === 'paused' || game.state === 'playing'){   // v12.12: a dancinha dos 5 toques de cada um que está no dia, na hora
-    const r = secao('Dancinhas', 'A dancinha escondida (5 toques seguidos) de quem está no dia');
-    [['bia', 'Bia'], ['tonhao', 'Tonhão'], ['dani', 'Dani'], ['joca', 'Joca'], ['cami', 'Cami'], ['anselmo', 'Anselmo'], ['lia', 'Lia']].forEach(([q, nome]) => { if (game.eggOn(q)) botao(r, nome, () => game.danca(q)); });
+    const r = secao('Dancinhas', 'A dancinha escondida (5 toques seguidos) de quem está no dia. "Bia do menu": a pirueta vista ao voltar ao menu');
+    [['bia', 'Bia'], ['tonhao', 'Tonhão'], ['dani', 'Dani'], ['joca', 'Joca'], ['cami', 'Cami'], ['anselmo', 'Anselmo'], ['lia', 'Lia'], ['fiscal', 'Fiscal'], ['musico', 'Músico'], ['trio', 'Trio'], ['pianista', 'Pianista']].forEach(([q, nome]) => { if (game.eggOn(q)) botao(r, nome, () => game.danca(q)); });
+    botao(r, 'Campainha', () => { Sfx.plim(); game.campainhaResposta(); });   // v12.12.1: o "Já vai, já vai!" na hora
+    botao(r, 'Bia do menu', () => game.devBiaMenu());
+    botao(r, 'Todos dançam', () => game.festaIni(true));
   }
   { const r = secao('Entregador do eFood', 'Chega um agora na fila de retirada (com o dia aberto, onde há retirada)');   // v11.16.1
     botao(r, 'Chegar entregador', () => game.devEntregador()); }
@@ -18780,7 +18914,7 @@ function rostinhoCliente(k){
 }
 /* ---------- troca de telas ---------- */
 game.hooks.state = function(s){
-  if (s === 'menu'){ game.resetDay(game.proxDia); buildMenu(); devSync(); showOnly(['ov-menu']); }
+  if (s === 'menu'){ game.resetDay(game.proxDia); game.menuEgg(); buildMenu(); devSync(); showOnly(['ov-menu']); }   // (v12.12.1: menuEgg, a pirueta pedida no modo dev)
   else if (s === 'desafios'){ game.sairDesafio(); game.resetDay(game.proxDia); buildDesafios(); showOnly(['ov-desafios']); }   // v12: a tela de Desafios (o save de verdade volta, se estava no de mentira)
   else if (s === 'teste'){ game.sairDesafio(); game.resetDay(game.proxDia); buildTeste(); showOnly(['ov-teste']); }   // v12.3.1: a tela do Teste de habilidade (modo dev); como nos Desafios, o save de verdade volta
   else if (s === 'testefase'){ game.sairDesafio(); game.resetDay(game.proxDia); testeFaseAbre(); showOnly(['ov-teste-fase']); }   // v12.4: a tela da fase do Teste (a equipe)
@@ -19178,6 +19312,12 @@ canvas.addEventListener('pointerdown', e => {
   if (game.conversa){ Sfx.tap(); game.conversa.seguir(); return; }   // conversa (v8.7): o toque passa para a próxima fala
   try { canvas.setPointerCapture(e.pointerId); } catch(err) {}
   const p = toLogical(e); game.onDown(p.x, p.y, touchPad(e));
+});
+/* v12.12.1: no menu a Bia grande responde aos 5 toques; o #ov-menu cobre o canvas, então o toque chega nele (só quando o alvo é ele mesmo, não um botão nem um cartão) */
+$('ov-menu').addEventListener('pointerdown', e => {
+  if (e.target !== $('ov-menu') || game.state !== 'menu') return;
+  Sfx.init(); Sfx.resume();
+  const p = toLogical(e); game.menuToque(p.x, p.y);
 });
 canvas.addEventListener('pointermove', e => { const p = toLogical(e); game.onMove(p.x, p.y); });
 canvas.addEventListener('pointerup', e => { const p = toLogical(e); game.onUp(p.x, p.y); });

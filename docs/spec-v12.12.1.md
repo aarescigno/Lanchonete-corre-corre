@@ -1,6 +1,6 @@
 # v12.12.1 — Os outros segredos e a dança da equipe (etapa 20b)
 
-**Situação:** aprovada (27/11)
+**Situação:** entregue em 28/11
 **Origem:** retorno do usuário de 27/11 no `docs/PROPOSTAS.md` ("easter eggs, os 5 toques nos personagens"), com as sugestões que ele escolheu. Decisões fechadas com o usuário em 27/11 (Opus). Vem depois da v12.12 (`docs/spec-v12.12.md`), que faz os 5 toques e as dancinhas da equipe; esta usa o mesmo mecanismo (`g.eggs`, `eggAt`, `danca`, `Sfx.tiriri`, a ordem do toque no `onDown`).
 
 ## Objetivo
@@ -63,15 +63,15 @@ Valem as regras dos 5 toques da v12.12 (1 s entre toques, sem pista, 1,2 s de da
 - `src/43-telas.js`: o `pointerdown` do `#ov-menu` e o tempo da dancinha no menu.
 
 ## Tarefas
-- [ ] T1 Smoke novo `smoke129` com os critérios de aceite (falhando) e no `tests/run_all.sh`.
-- [ ] T2 O fiscal e os músicos (as áreas e os desenhos).
-- [ ] T3 A Bia grande do menu.
-- [ ] T4 A campainha e o "Já vai, já vai!".
-- [ ] T5 O Tonhão gripado.
-- [ ] T6 Todos dançaram (a festa).
-- [ ] T7 O modo dev: os botões novos.
-- [ ] T8 `shot_v12_12_1.js` (CA8): conferir em recortes ampliados, ajustar e apagar as capturas.
-- [ ] Fechamento: `VERSAO`, `vtag`, `#ov-ver`, `docs/RESUMO.md`, `docs/TESTES.md`, o destino no `docs/PROPOSTAS.md`, esta spec como entregue, `tests/run_all.sh` verde, PR e merge.
+- [x] T1 Smoke novo `smoke129` com os critérios de aceite (falhando) e no `tests/run_all.sh`.
+- [x] T2 O fiscal e os músicos (as áreas e os desenhos).
+- [x] T3 A Bia grande do menu.
+- [x] T4 A campainha e o "Já vai, já vai!".
+- [x] T5 O Tonhão gripado.
+- [x] T6 Todos dançaram (a festa).
+- [x] T7 O modo dev: os botões novos.
+- [x] T8 `shot_v12_12_1.js` (CA8): conferir em recortes ampliados, ajustar e apagar as capturas.
+- [x] Fechamento: `VERSAO`, `vtag`, `#ov-ver`, `docs/RESUMO.md`, `docs/TESTES.md`, o destino no `docs/PROPOSTAS.md`, esta spec como entregue, `tests/run_all.sh` verde, PR e merge.
 
 ## Avisos para a execução
 - O fim do expediente pelo tempo é o trecho de `Game.update` com `this.ending = true; this.endTimer = 2.0; this.reason = 'time'` (`src/16-jogo.js`); a festa dura o mesmo `endTimer`, então o Caixa não atrasa.
@@ -86,7 +86,23 @@ Valem as regras dos 5 toques da v12.12 (1 s entre toques, sem pista, 1,2 s de da
 ## Decisões em aberto
 Nenhuma.
 
+## Testes (medido)
+- `smoke129`: 99 checagens (CA1 a CA7), todas verdes (o fiscal com a mesma semente e o mesmo caminho dançando ou não; o resultado do dia igual com e sem a festa: lucro, estrelas, dinheiro e dia). `shot_v12_12_1.js` (CA8): fiscal, músico, trio, pianista e Bia do menu em 4 momentos e com `RM`; a campainha parada, afundada e com a resposta, na Garagem e no Terraço; os três "Atchim!"; a festa da Avenida; sem erro de página, e conferidos em recortes ampliados (as capturas foram apagadas).
+- Sem mudança no equilíbrio (só desenho e toques que o bot não faz); o `balance.js` não foi rodado.
+
+## Regras corrigidas
+- **"Já vai, já vai!"**: texto branco com o contorno de sempre, em `x` 900 (e não `PAL.tinta` em 930): em `tinta` o contorno comia o texto (uma mancha preta) e em 930 ele passava da borda de 960.
+- **Campainha:** o centro (754, 214) fica no corredor (a parede da cozinha começa em 766), então ganhou uma prateleirinha de madeira de 24 px sob a base, presa ao canto da janela dos pratos.
+- **Os três "Atchim!":** desenhados em `drawAtchins` (depois dos papeizinhos da janela, que os desbotavam), em (904, 138), (930, 106) e (936, 128), e não dentro da `drawChef`.
+
 ## Desvios
-(No fechamento.)
+- **O rosto, não a cabeça:** no "olha para os lados" do fiscal, o deslocamento de ±2 px é só do rosto (a opção `olha` do `drawPerson`), com o cabelo parado.
+- **A mão na gola é redesenhada por cima do colete** (o colete e a cabeça escondiam a mão no lugar da spec).
+- **Bia do menu pelo modo dev:** o `resetDay` zera as dancinhas ao voltar ao menu; o botão liga `g.menuDanca` e o gancho do menu (`menuEgg`) dispara a pirueta ao chegar lá.
+- **Brilhinhos da festa sem sorteio** (`festaBrilho`, ângulos fixos): o `addSparks` usa `Math.random` e a festa não pode mexer no que o jogo sorteia.
+- **A campainha vence quem estiver por perto** (a Bia no balcão dos pratos cobre o círculo): ela é conferida antes das pessoas, em `eggAt`.
+- **No teste, o `normSave` tira o couvert do Terraço:** o `smoke129` e a captura ligam o couvert e a música à mão para ver cada um.
+- **Bug antigo achado, fora do escopo:** em `src/21-cenario.js`, `drawBandeirinhas`, a linha `cores = cores || BAND_FERIADO;` ficou dentro do comentário (desde a v11.16.1): em dia de feriado (`clima === 'feriado'`) o `render` lança erro a cada quadro. Não foi mexido aqui (sem spec); fica para uma correção com spec enxuta.
+- `menu_fit.py` não rodou (falta o módulo `playwright` do Python); só a contagem (45 linhas das Versões) mudou nele.
 
 **Modelo:** Sonnet, esforço alto (muitas partes ao mesmo tempo: o menu, a cozinha, a festa no fim do dia e cinco desenhos novos)

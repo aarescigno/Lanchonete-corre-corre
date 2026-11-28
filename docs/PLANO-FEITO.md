@@ -2137,3 +2137,10 @@ Pedido do usuário em 21 e 22/11 (`docs/PROPOSTAS.md`, "os níveis do Tonhão"):
 
 | 18a | Os cursos do Tonhão em degraus por ponto (pratos de estrada, 9 níveis, Turno sem fim fora do menu) | v12.10 | feita em 22/11 (`docs/spec-v12.10.md`; `smoke117`; degraus por ponto, `tonhaoNivelAlc`, conversão do save, bot e dev) |
 | 18b | O prato que ele estranha, o suor, os desenhos dos pratos de estrada e o empratamento | v12.10.1 | feita em 22/11 (`docs/spec-v12.10.1.md`; `smoke118`; prato estranho, suor, desenhos de estrada, empratamento) |
+
+## Etapa 20 — Os segredos: as dancinhas dos 5 toques (20a, v12.12; 20b, v12.12.1)
+Pedido do usuário de 27/11 (`docs/PROPOSTAS.md`), planejada em 27/11 (Opus) e dividida em 2 sessões, na ordem:
+- **20a** (`docs/spec-v12.12.md`): 5 toques seguidos na Bia, no Tonhão, na Dani, no Joca, na Cami, no Anselmo ou na Lia fazem uma dancinha de 1 s, diferente para cada um, só no desenho; no Tonhão e na Lia, só com a fila vazia para a janela.
+  **Modelo:** Sonnet, esforço alto (a ordem do toque no `onDown` e sete desenhos novos conferidos em captura)
+- **20b** (`docs/spec-v12.12.1.md`): o fiscal, os músicos e a Bia grande do menu também dançam; a campainha do balcão ("Já vai, já vai!"); o Tonhão gripado espirra três vezes; e, se todos da equipe dançaram no dia, a festa no fim do expediente.
+  **Modelo:** Sonnet, esforço alto (muitas partes ao mesmo tempo: o menu, a cozinha, a festa no fim do dia e cinco desenhos novos)

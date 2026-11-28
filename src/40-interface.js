@@ -373,8 +373,11 @@ function devAbaHoje(body, secao, botao){
   { const r = secao('Reação da Bia', 'O gesto do ponto de agora, na hora');   // v11.8
     [['mesa', 'Mesa feliz'], ['bravo', 'Grupo bravo'], ['meta', 'Meta']].forEach(([k, t]) => botao(r, t, () => game.devReacao(k))); }
   if (game.state === 'paused' || game.state === 'playing'){   // v12.12: a dancinha dos 5 toques de cada um que está no dia, na hora
-    const r = secao('Dancinhas', 'A dancinha escondida (5 toques seguidos) de quem está no dia');
-    [['bia', 'Bia'], ['tonhao', 'Tonhão'], ['dani', 'Dani'], ['joca', 'Joca'], ['cami', 'Cami'], ['anselmo', 'Anselmo'], ['lia', 'Lia']].forEach(([q, nome]) => { if (game.eggOn(q)) botao(r, nome, () => game.danca(q)); });
+    const r = secao('Dancinhas', 'A dancinha escondida (5 toques seguidos) de quem está no dia. "Bia do menu": a pirueta vista ao voltar ao menu');
+    [['bia', 'Bia'], ['tonhao', 'Tonhão'], ['dani', 'Dani'], ['joca', 'Joca'], ['cami', 'Cami'], ['anselmo', 'Anselmo'], ['lia', 'Lia'], ['fiscal', 'Fiscal'], ['musico', 'Músico'], ['trio', 'Trio'], ['pianista', 'Pianista']].forEach(([q, nome]) => { if (game.eggOn(q)) botao(r, nome, () => game.danca(q)); });
+    botao(r, 'Campainha', () => { Sfx.plim(); game.campainhaResposta(); });   // v12.12.1: o "Já vai, já vai!" na hora
+    botao(r, 'Bia do menu', () => game.devBiaMenu());
+    botao(r, 'Todos dançam', () => game.festaIni(true));
   }
   { const r = secao('Entregador do eFood', 'Chega um agora na fila de retirada (com o dia aberto, onde há retirada)');   // v11.16.1
     botao(r, 'Chegar entregador', () => game.devEntregador()); }

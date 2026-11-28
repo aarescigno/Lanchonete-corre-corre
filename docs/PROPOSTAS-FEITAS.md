@@ -4,6 +4,15 @@ Retornos com destino já feito, movidos de `docs/PROPOSTAS.md` em 30/10/2026 sem
 
 ---
 
+## 27/11 — usuário: easter eggs, os 5 toques nos personagens
+> "adicionar easter eggs ao jogo. Um easter egg interessante é quando alguém tocar 5 vezes em algum dos personagens, em cada um dos personagens, tipo na Bia, ou na Dani, ou no Joca, ou no Canhão, etc. Os personagens vão fazer uma coisinha diferentinha. Dá uma dançadinha, uma coisa bem rapidinha assim, com uma giradinha, cada um faz uma coisinha diferente. E é isso por enquanto. Sugira mais easter eggs nesse estilo. Além desse, né?"
+
+Das sugestões, o usuário escolheu (27/11): o fiscal, os músicos e a Bia grande do menu também com a surpresa; a campainha do balcão; o Tonhão gripado; e "Todos dançaram" (a equipe inteira dança no fim do dia).
+
+**Destino:** Etapa 20 do `docs/PLANO.md`: v12.12, `docs/spec-v12.12.md` (a equipe; entregue em 28/11) e v12.12.1, `docs/spec-v12.12.1.md` (os outros e os extras; entregue em 28/11).
+
+---
+
 ## 27/11 — usuário: a cabecinha nos cursos do Cardápio
 > "o curso de confeitaria gourmet e de barista aparecem no cardápio da avenida brasil, mas como tanto a dani quanto o joca estao em nível máximo, não dá vontade de comprar esses cursos. oculte essa frase de +2 de experiência nesses cards. e coloque a miniatura da cabeça de cada um dos personagens afetados pelos cursos junto do cardzinho de curso, entendeu?"
 
