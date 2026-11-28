@@ -194,6 +194,7 @@ A cena final animada (oito cenas, no motor da abertura), os créditos, a placa n
 | 16b-2 | Os desenhos dos pratos novos do Terraço e do risoto da Lia | v12.8.1 | feita em 20/11 (`docs/spec-v12.8.1.md`) |
 | correção | O entretenimento (TV, som, TVs com sertanejo, couvert, música ao vivo) também nas Melhorias | v12.8.2 | feita em 20/11 (`docs/spec-v12.8.2.md`; `smoke112`; `buildEntrete` nas abas Melhorias e Luxo) |
 | correção | As turmas da espera sem toque trocado (a de cima fica com a área dela até os pés) | v12.8.3 | feita em 21/11 (`docs/spec-v12.8.3.md`; `smoke113`; `queueRect` com o corte) |
+| 19a | O salão que cabe o teto e a troca de mesas | v12.11 | feita em 27/11 (`docs/spec-v12.11.md`; `smoke125`; `salaoTroca`, o estoque na faixa do alto, `SALAO.gap` 30 e as áreas maiores) |
 
 ## Etapa 1a — Jogo justo: dá para não perder ninguém (v7.1)
 > **Feita em 15/10 (v7.1, `docs/spec-v7.1.md`).** Decisões: A + B; no Turno sem fim vale o ritmo da fila justa, sem o piso; ícone "aguardando mesa" sim. A medição mostrou que, com a equipe, a maior parte das perdas era a espera pelo prato, e não a fila. O que sobra é o limite de louça nos dias de 6 mesas: o bot afiado só chega ao alvo (0 perdidos em 94% dos dias) comprando o Jogo de pratos primeiro. A louça não mudou; se jogadores reclamarem da espera pelo prato, a etapa 1b pode rever `dishStock` ou a mecânica D. Metas sem mudança.

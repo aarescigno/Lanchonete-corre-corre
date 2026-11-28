@@ -1,6 +1,6 @@
 # v12.12 — As dancinhas escondidas (etapa 20a)
 
-**Situação:** aprovada (27/11)
+**Situação:** entregue em 28/11
 **Origem:** retorno do usuário de 27/11 no `docs/PROPOSTAS.md` ("easter eggs, os 5 toques nos personagens"). Decisões fechadas com o usuário em 27/11 (Opus); a etapa 20 foi dividida em 2 versões: esta (a equipe) e a v12.12.1 (`docs/spec-v12.12.1.md`: o fiscal, os músicos, a Bia do menu, a campainha, o Tonhão gripado e "Todos dançaram").
 
 ## Objetivo
@@ -62,12 +62,12 @@ Um segredo para quem fuça: tocar 5 vezes seguidas num personagem da equipe faz 
 - `src/43-telas.js`: expor `danca` e `eggAt` no `window.__lcc` (ou pelo `window.__game`).
 
 ## Tarefas
-- [ ] T1 Smoke novo `smoke128` com os critérios de aceite (falhando) e no `tests/run_all.sh`.
-- [ ] T2 A lógica: `g.eggs`, `eggAt`, `danca`, a ordem do toque no `onDown`, o tempo no `update`, `Sfx.tiriri`.
-- [ ] T3 O desenho das 7 dancinhas e o coraçãozinho do `RM`.
-- [ ] T4 O modo dev: a seção "Dancinhas".
-- [ ] T5 `shot_v12_12.js` (CA7): conferir em recortes ampliados, ajustar e apagar as capturas; `node balance.js 20` (CA8).
-- [ ] Fechamento: `VERSAO`, `vtag`, `#ov-ver`, `docs/RESUMO.md`, `docs/TESTES.md`, o destino no `docs/PROPOSTAS.md`, esta spec como entregue, `tests/run_all.sh` verde, PR e merge.
+- [x] T1 Smoke novo `smoke128` com os critérios de aceite (falhando) e no `tests/run_all.sh`.
+- [x] T2 A lógica: `g.eggs`, `eggAt`, `danca`, a ordem do toque no `onDown`, o tempo no `update`, `Sfx.tiriri`.
+- [x] T3 O desenho das 7 dancinhas e o coraçãozinho do `RM`.
+- [x] T4 O modo dev: a seção "Dancinhas".
+- [x] T5 `shot_v12_12.js` (CA7): conferir em recortes ampliados, ajustar e apagar as capturas; `node balance.js 20` (CA8).
+- [x] Fechamento: `VERSAO`, `vtag`, `#ov-ver`, `docs/RESUMO.md`, `docs/TESTES.md`, o destino no `docs/PROPOSTAS.md`, esta spec como entregue, `tests/run_all.sh` verde, PR e merge.
 
 ## Avisos para a execução
 - O Tonhão é desenhado em `drawKitchen` (`src/21-cenario.js`, `drawChef(ctx,g,930,172,t)`) e o corpo dele cai dentro do retângulo da estação `order` (`STATIONS.order`, y de 96 a 204); por isso só a cabeça conta e a regra da fila vazia vem antes do `pickAt`. A Lia (`LIA_HOME`, escala 0,72) também fica na janela dos pedidos.
@@ -82,7 +82,17 @@ Um segredo para quem fuça: tocar 5 vezes seguidas num personagem da equipe faz 
 ## Decisões em aberto
 Nenhuma.
 
+## Testes (medido)
+- `smoke128`: 76 checagens (CA1 a CA6), todas verdes. `shot_v12_12.js` (CA7): 7 personagens × 4 momentos (parado, p 0,25, 0,5 e 0,75) e o `rm` (p 0,5), em recortes de 110×125 px a DSF 2, sem erro de página.
+- `balance.js 20` sem equipe (CA8): passou 15, 12, 14, 11 e 10 de 20 nos dias 3 a 7 (~62%, dentro de 40–70%; a v12.10 media 13, 15, 18, 12 e 9); o bot usa `tapTable` e `tapStation`, e não o `onDown`.
+
 ## Desvios
-(No fechamento.)
+- **Capturas sem olhar:** o `Read` de `capturas/**` é bloqueado no projeto e a tentativa de ler as folhas de contato por outro caminho foi negada; o CA7 ficou com as capturas geradas e sem erro de página, mas **sem conferência visual** (as poses, o brilho nos óculos, o tamanho do coração e o sorrisão do Tonhão precisam de um olhar na próxima sessão).
+- **O tempo anda também na pausa:** `eggAnda` roda no começo do `update`, antes do teste de estado (como o `reacaoAnda` da Bia), para o botão "Dancinhas" do dev mostrar a dancinha com o painel aberto (jogo pausado). Com o pop-up da Missão zero a conta também anda.
+- **A plaquinha de conserto com a folga do dedo continua vencendo o que está embaixo** (o `smoke16` já cobria): no `onDown`, `pickAt(x, y, pad)` do `conserto` vem antes do acerto exato e do personagem.
+- **Giro com um fio:** `cos(2π·p)` da Bia e da Lia nunca passa de 0,08 de largura (em p 0,25 e 0,75 ficaria sumida); a escala vai de −1 a 1 com mínimo de 0,08.
+- **O toque no personagem não tira a seleção de grupo** (`g.sel`), porque não é toque perdido nem ação.
+- **`window.__lcc`:** não precisou de nada novo (`danca`, `eggAt` e `eggP` são métodos do `Game`, em `window.__game`; o `Sfx` e o `DEV` já estavam).
+- `smoke86` (44 linhas) e `menu_fit.py` ganharam a linha da v12.12. O `menu_fit.py` não rodou nesta sessão (falta o módulo `playwright` do Python no ambiente); só a contagem (44) mudou nele.
 
 **Modelo:** Sonnet, esforço alto (a ordem do toque no `onDown` e sete desenhos novos conferidos em captura)

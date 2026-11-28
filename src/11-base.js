@@ -82,6 +82,7 @@ const Sfx = {
   blip(){  this.tone(620, 0.07, 'square', 0.05); },
   tap(){   this.tone(420, 0.05, 'triangle', 0.07); },
   buzina(){ this.tone(466, 0.09, 'square', 0.05); this.tone(587, 0.09, 'square', 0.03); this.tone(466, 0.15, 'square', 0.05, 0.14); this.tone(587, 0.15, 'square', 0.03, 0.14); },   // v11.16.1: a buzina da moto do entregador do eFood, "bi-bip"
+  tiriri(){ [784,988,1175].forEach((f,i) => this.tone(f, 0.06, 'triangle', 0.05, i * 0.07)); },   // v12.12: o "tiriri" da dancinha escondida
   coin(){  this.tone(988, 0.07, 'square', 0.06); this.tone(1318, 0.2, 'square', 0.06, 0.07); },
   bell(){  this.tone(1568, 0.6, 'sine', 0.12); this.tone(2093, 0.5, 'sine', 0.05, 0.03); },
   huff(){  this.noise(0.4, 0.14, 0, 700); this.tone(200, 0.3, 'sawtooth', 0.04, 0, 90); },
